@@ -5,7 +5,7 @@
 ################################################################
 
 
-Debug:	1
+Debug:	0
 
 
 
@@ -44,8 +44,9 @@ IncludeEvent:			y
 
 
 #Magnetic field map name:  SummedSingleMap_v14.2.table
-Magnetic field map name:  SummedSingleMap.table
-#Magnetic field map name:  DoubleDipole.table
+#Magnetic field map name:  SummedSingleMap_mag10cm_inter5cm.table
+#Magnetic field map name:  SummedSingleMap.table
+Magnetic field map name:  DoubleDipole.table
 #Magnetic field map name:  DoubleGaussMag.table
 
 

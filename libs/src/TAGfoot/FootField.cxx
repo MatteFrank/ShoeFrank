@@ -33,7 +33,11 @@ FootField::FootField ( string fileName ) {
 
     // read position and field  -->	 fill a multidimensional map called lattice3D = map< double, map< double, map< double, TVector3 > > >
     string line = "";
+    int countLine = 0;
     while( getline( ifile, line ) ) {  
+
+    	countLine++;
+    	if ( countLine == 1 )	continue;
 
         if (line == "")  continue;
         if ( line.find("#") != string::npos || line.find("*") != string::npos )
@@ -58,7 +62,6 @@ FootField::FootField ( string fileName ) {
         // cout << "x " << x << " y " << y << " z " << z << " px " <<  bx << " by " << by << " bz " << bz << endl;
         // multidimensional map called lattice3D = map< double, map< double, map< double, TVector3 > > >
         
-        // m_filedMap[x][y][z] = TVector3(bx, by, bz);
         if ( !bFieldSmearTest ) {
 	        m_filedMap[x][y][z] = TVector3(bx, by, bz);
 	    }
@@ -75,6 +78,7 @@ FootField::FootField ( string fileName ) {
 
 
 // constant simple field constructor, Field along y axis ONLY in the magnet reagion taken from the foot_geo.h file
+// deprecated!!!!!!!!!
 FootField::FootField ( float constValue ) {
 	
 	m_fieldSetting = "constField";
@@ -104,7 +108,9 @@ FootField::FootField ( float constValue ) {
 
 // return B as a vector, given vector position
 TVector3 FootField::get(const TVector3& position) const {
-	const TVector3 localPosition = TVector3( position.x(), position.y(), position.z() );	// v14.0.1  map is in global coord ...
+	// const TVector3 localPosition = TVector3( position.x(), position.y(), position.z() );	// from v14.0.1  map is in global coord ...
+	// const TVector3 localPosition = TVector3( position.x(), position.y(), position.z()-14 );	//  v14.2long  has a shift
+	const TVector3 localPosition = TVector3( position.x(), position.y(), position.z()-31.9 );	//  v14.2long  has a shift
 	// const TVector3 localPosition = TVector3( position.x() - MAG_AIR_X, position.y() - MAG_AIR_Y, position.z() - MAG_AIR_Z );	//to local coord
 	return const_cast<FootField*>(this)->Interpolate( localPosition );
 }
@@ -115,7 +121,10 @@ TVector3 FootField::get(const TVector3& position) const {
 // first 3 variables are the input position components, last 3 var are the output b components
 void FootField::get(const double& posX, const double& posY, const double& posZ, double& Bx, double& By, double& Bz) const { 
 		
-	const TVector3 position = TVector3(posX, posY, posZ );	// v14.0.1  map is in global coord ...
+	// const TVector3 position = TVector3(posX, posY, posZ );	// from v14.0.1  map is in global coord ...
+	// const TVector3 position = TVector3(posX, posY, posZ-14 );	//  v14.2long  has a shift
+	// const TVector3 position = TVector3(posX, posY, posZ-31.9 );	//  v14.2long  has a shift
+	const TVector3 position = TVector3(posX, posY, posZ-31.9 );	//  v14.2long  has a shift
 	// const TVector3 position = TVector3(posX - MAG_AIR_X, posY - MAG_AIR_Y, posZ - MAG_AIR_Z );	//to local coord
 
 	TVector3 outField = const_cast<FootField*>(this)->Interpolate( position );
@@ -157,12 +166,13 @@ TVector3 FootField::Interpolate( const TVector3 &position ) {
 
 	// if position out of the field boudaries, return a zero field
 	// cout << "magnetic debug: "<< endl;
-	// cout << "\tAlong X: " << position.x() << "  "<< m_filedMap.begin()->first <<"  "<< m_filedMap.rbegin()->first << endl;
-	if ( position.x() < m_filedMap.begin()->first || position.x() > m_filedMap.rbegin()->first )	return outField;
-	// cout << "\tAlong Y: " << position.y() << "  "<< m_filedMap.begin()->second.begin()->first <<"  "<< m_filedMap.rbegin()->second.rbegin()->first << endl;
-	if ( position.y() < m_filedMap.begin()->second.begin()->first || position.y() > m_filedMap.rbegin()->second.rbegin()->first )	return outField;
-	// cout << "\tAlong Z: " << position.z() << "  "<< m_filedMap.begin()->second.begin()->second.begin()->first <<"  "<< m_filedMap.rbegin()->second.rbegin()->second.rbegin()->first << endl;
-	if ( position.z() < m_filedMap.begin()->second.begin()->second.begin()->first || position.z() > m_filedMap.rbegin()->second.rbegin()->second.rbegin()->first )	return outField;
+	
+	// // cout << "\tAlong X: " << position.x() << "  "<< m_filedMap.begin()->first <<"  "<< m_filedMap.rbegin()->first << endl;
+	// if ( position.x() < m_filedMap.begin()->first || position.x() > m_filedMap.rbegin()->first )	return outField;
+	// // cout << "\tAlong Y: " << position.y() << "  "<< m_filedMap.begin()->second.begin()->first <<"  "<< m_filedMap.rbegin()->second.rbegin()->first << endl;
+	// if ( position.y() < m_filedMap.begin()->second.begin()->first || position.y() > m_filedMap.rbegin()->second.rbegin()->first )	return outField;
+	// // cout << "\tAlong Z: " << position.z() << "  "<< m_filedMap.begin()->second.begin()->second.begin()->first <<"  "<< m_filedMap.rbegin()->second.rbegin()->second.rbegin()->first << endl;
+	// if ( position.z() < m_filedMap.begin()->second.begin()->second.begin()->first || position.z() > m_filedMap.rbegin()->second.rbegin()->second.rbegin()->first )	return outField;
 
 
 	if (m_fieldSetting == "constField") {
@@ -170,6 +180,30 @@ TVector3 FootField::Interpolate( const TVector3 &position ) {
 		// m_filedMap.begin()->second.begin()->second.begin()->second.Print();
 		return m_filedMap.begin()->second.begin()->second.begin()->second;
 	}
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+	for ( lattice3D::iterator xIt=m_filedMap.begin(); xIt!=m_filedMap.end();) {
+		for ( lattice2D::iterator yIt=m_filedMap.begin()->second.begin(); yIt!=m_filedMap.begin()->second.end();) {
+			if ( fabs( (*(xIt)).first ) == 60 ||  fabs( (*(yIt)).first ) == 60 )	continue;
+			m_filedMap[(*(xIt)).first][(*(yIt)).first][-60] = TVector3(0,0,0);
+			m_filedMap[(*(xIt)).first][(*(yIt)).first][60] = TVector3(0,0,0);
+		}
+		for ( map< double, TVector3 >::iterator zIt=m_filedMap.begin()->second.begin()->second.begin(); zIt!=m_filedMap.begin()->second.begin()->second.end(); ) {
+			if ( fabs( (*(xIt)).first ) == 60 ||  fabs( (*(zIt)).first ) == 60 )	continue;
+			m_filedMap[(*(xIt)).first][-60][(*(zIt)).first] = TVector3(0,0,0);
+			m_filedMap[(*(xIt)).first][60][(*(zIt)).first] = TVector3(0,0,0);
+		}
+	}
+
+	for ( lattice2D::iterator yIt=m_filedMap.begin()->second.begin(); yIt!=m_filedMap.begin()->second.end();) {
+		for ( map< double, TVector3 >::iterator zIt=m_filedMap.begin()->second.begin()->second.begin(); zIt!=m_filedMap.begin()->second.begin()->second.end(); ) {
+			if ( fabs( (*(zIt)).first ) == 60 ||  fabs( (*(yIt)).first ) == 60 )	continue;
+			m_filedMap[-60][(*(yIt)).first][(*(zIt)).first] = TVector3(0,0,0);
+			m_filedMap[60][(*(yIt)).first][(*(zIt)).first] = TVector3(0,0,0);
+		}
+	}
+
 
 	// find position boundaries
 	double xMin=0, xMax=0, yMin=0, yMax=0, zMin=0, zMax=0;

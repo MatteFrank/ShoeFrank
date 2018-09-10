@@ -310,6 +310,9 @@ void Booter::MagFieldTest() {
     cout << "Total mag field on the FOOT axis (from VT to MDS cm) = " << ff->IntegralField( 400, ((TAVTparGeo*) myp_vtgeo->Object())->GetSensorPosition(0).z(), ((TAMSDparGeo*) myp_msdgeo->Object())->GetLayerCenter(2).z() ) << " kG*cm" << endl;
 
 
+    TH1F* magMap = new TH1F( "magMap", "magMap", 700, 0, 70 );
+
+
     // print out of the magnetic field
     if ( GlobalPar::GetPar()->Debug() > 1 ) {
         ofstream bFieldTest;
@@ -317,7 +320,14 @@ void Booter::MagFieldTest() {
 
         bFieldTest << setiosflags(ios::fixed) << setprecision(8);
 
-        float zCoord = -29.75 + 14;     // global coordinates
+        // fill plot with value on one axis
+        for (int k=0; k<700; k++) {
+            TVector3 vecB = genfit::FieldManager::getInstance()->getFieldVal( TVector3( 0, 0, (float)k/10 ) );
+            magMap->SetBinContent( k+1, vecB.Mag() );
+        }
+
+        // float zCoord = -29.75 + 14;     // global coordinates
+        float zCoord = 1;     // global coordinates
         for (int k=0; k<120; k++) {
             float yCoord = -4.75;
             for (int j=0; j<20; j++) {
@@ -326,10 +336,14 @@ void Booter::MagFieldTest() {
 
                     TVector3 vecB = genfit::FieldManager::getInstance()->getFieldVal( TVector3( xCoord, yCoord, zCoord ) );
                     // bFieldTest << vecB.x() << " " << vecB.y() << " " << vecB.z() << endl;
-                    bFieldTest << " " << xCoord << " " << yCoord << " " << zCoord-14;
-                    bFieldTest << "  " << genfit::FieldManager::getInstance()->getFieldVal( TVector3( xCoord, yCoord, zCoord ) ).x() / 10
-                                << "  " << genfit::FieldManager::getInstance()->getFieldVal( TVector3( xCoord, yCoord, zCoord ) ).y() / 10
-                                << "  " << genfit::FieldManager::getInstance()->getFieldVal( TVector3( xCoord, yCoord, zCoord ) ).z() / 10 << endl;
+                    bFieldTest << " " << xCoord << " " << yCoord << " " << zCoord;
+                    bFieldTest << "  " << vecB.x() / 10
+                                << "  " << vecB.y() / 10
+                                << "  " << vecB.z() / 10 << endl;
+                    // test
+                    // bFieldTest << "  " << genfit::FieldManager::getInstance()->getFieldVal( TVector3( xCoord, yCoord, zCoord ) ).x() / 10
+                    //             << "  " << genfit::FieldManager::getInstance()->getFieldVal( TVector3( xCoord, yCoord, zCoord ) ).y() / 10
+                    //             << "  " << genfit::FieldManager::getInstance()->getFieldVal( TVector3( xCoord, yCoord, zCoord ) ).z() / 10 << endl;
                     xCoord += 0.5;
                 }
                 yCoord += 0.5;
@@ -339,6 +353,12 @@ void Booter::MagFieldTest() {
         bFieldTest.close();
     }
 
+    TCanvas* calamita = new TCanvas("footMagField", "footMagField",  700, 700);
+    // gGeoManager->GetMasterVolume()->Draw();
+    // top->Draw("");
+    magMap->Draw("");
+    calamita->SaveAs("footMagField.png");
+    calamita->SaveAs("footMagField.root");
 
 }
 
