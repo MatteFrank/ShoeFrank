@@ -63,8 +63,7 @@ void FillBmVME(TString name) {
 
    TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
    TABMparMap*  parMap = (TABMparMap*)bmMap->Object();
-   parFileName = "./geomaps/";
-   parFileName += parConf->GetParmapfile();
+   parFileName = "./geomaps/beammonitor_geoch.map";
    parMap->FromFile(parFileName.Data(), geomap);
 
   

@@ -89,7 +89,8 @@ void FillBm(TString fExpName) {
   parConf->FromFile(parFileName.Data());
   parFileName = "./config/bmreso_vs_r.root";
   parConf->LoadReso(parFileName);
-  parFileName = "./config/T0evaluation_data_built.2242.physics_foot.daq.VTX.1.dat.cfg";
+  //~ parFileName = "./config/T0evaluation_data_built.2242.physics_foot.daq.VTX.1.dat.cfg";
+  parFileName = "./config/T0evaluation_data_built.2211.physics_foot.daq.VTX.1.dat.cfg";
   parConf->loadT0s(parFileName);
   
   TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
@@ -187,7 +188,7 @@ void Booking(TFile *f_out){
 }
 
 //~ void ReadBmVtxRaw(TString name = "data_test.00001462.physics_foot.daq.RAW._lb0000._EB-RCD._0001.data")
-void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.VTX.1.dat")
+void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2211.physics_foot.daq.VTX.1.dat")
 //~ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242.physics_foot.daq.VTX.1.dat")
 {  
   Int_t maxevents=1e7;

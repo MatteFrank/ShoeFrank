@@ -32,7 +32,6 @@ class TABMparCon : public TAGpara {
     void SetIsMC(Bool_t ism){m_isMC=ism; return;};
     void SetRdriftCut(Double_t Rdcut){rdrift_cut=Rdcut; return;};
     void SetEnxcellcut(Double_t Encut){enxcell_cut=Encut; return;};
-    void SetBmt0filename(TString filename_in){bmt0file=filename_in;};
     void SetT0choice(Int_t in){t0choice=in;};
     
     //getters
@@ -47,14 +46,10 @@ class TABMparCon : public TAGpara {
     Int_t GetFitterIndex(){return fitter_index;};
     Int_t GetPrefitEnable(){return prefit_enable;};
     Int_t GetBMdebug(){return bm_debug;};
-    Int_t GetBMvietrack(){return bm_vietrack;};
     //~ string GetBMdataFileName(){return datafile_name;};
     Int_t GetT0switch(){return t0_switch;};
     Double_t GetT0sigma(){return t0_sigma;};
     Double_t GetHitTimecut(){return hit_timecut;};
-    Int_t GetmanageADCped(){return manageADCped;};
-    string GetParmapfile(){return parmapfile;};
-    Int_t GetCalibro(){return calibro;};
     Int_t GetNumIte(){return num_ite;};
     Double_t GetParMove(){return par_move;};
     Int_t GetSmearhits(){return smearhits;};
@@ -64,14 +59,12 @@ class TABMparCon : public TAGpara {
     Double_t GetMCEffMean(){return mceff_mean;};
     Double_t GetMCEffSigma(){return mceff_sigma;};
     Int_t GetSmearrdrift(){return smearrdrift;};
-    TVector3 GetMeas_shift(){return meas_shift;};
-    TVector3 GetMeas_tilt(){return meas_tilt;};
     TRandom3* GetRand(){return rand;};
     Double_t GetRdrift_err(){return rdrift_err;};
     Int_t GetT0choice(){return t0choice;};
 
     //T0 stuff
-    void        PrintT0s(TString &input_file_name, Long64_t);
+    void        PrintT0s(TString , TString, Long64_t);
     Bool_t      loadT0s(TString filename); 
     void        SetT0s(vector<Double_t> t0s);
     void        SetT0(Int_t cha, Double_t t0in);   
@@ -118,7 +111,7 @@ class TABMparCon : public TAGpara {
 
     Bool_t m_isMC;
     Double_t rdrift_cut;
-    Double_t enxcell_cut;
+    Double_t enxcell_cut; //(Gev) if a hit has deposited energy less then energyxcell_cut the hit will be thrown (only for MC events)
     Double_t chi2red_cut;
     Int_t    planehit_cut;
     Int_t    minnhit_cut;
@@ -126,20 +119,12 @@ class TABMparCon : public TAGpara {
     Int_t    rejmax_cut;
     Int_t    fitter_index;
     Int_t    bm_debug;//index for the bm_debug, (it is set at least to the global debug level)
-    Int_t    bm_vietrack;//every bm_vietrack events SHOE will plot the BM track
     //~ string   datafile_name;//name of the input data file 
-    Int_t    calibro;//flag for the calibration
     Int_t    strel_switch;//flag to choose the st relations (1=garfield, 0=FIRST embedded)
     Int_t    prefit_enable;//flag to enable or disable the prefit
-    TVector3 meas_shift;//shift for the calibration
-    TVector3 meas_tilt;//tilt for the calibration
     Int_t    t0_switch;//0=t0 from the beginning of the tdc signal, 1=from the peak, 2=negative T0 enabled, 3=peak/2
     Double_t t0_sigma;//t0 with the gaussian shift for the negative T0 hits
     Double_t hit_timecut;//timecut on the lenght of the signal (ns)
-    Int_t    manageADCped; //0=calculate and save ADCped in bmpedfile, 1=loadadcped from bmpedfile
-    TString  bmt0file; //name of the T0 value file to be charged or to be written 
-    string   bmpedfile; //name of the ped value file to be charged or to be written 
-    string   parmapfile; //name of the file with the tdc channel map for TABMparMap 
     vector<Double_t> v_t0s;//T0 in ns
     vector<Double_t> adc_ped_mean;//pedestals mean 
     vector<Double_t> adc_ped_rms;//pedestals rms

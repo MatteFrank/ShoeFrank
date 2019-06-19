@@ -214,7 +214,7 @@ void BaseLocalReco::ReadParFiles()
       
       fpParConfBm = new TAGparaDsc("bmConf", new TABMparCon());
       TABMparCon* parConf = (TABMparCon*)fpParConfBm->Object();
-      parFileName = "./config/beammonitor.cfg";
+      parFileName = "./config/TABMdetector.cfg";
       parConf->FromFile(parFileName.Data());
       parFileName = Form("./config/%sT0_beammonitor.cfg", fExpName.Data());
       parConf->loadT0s(parFileName);

@@ -64,11 +64,6 @@ Bool_t TABMactNtuMC::Action()
    if (fDebugLevel > 0)
       Info("Action()","Processing n :: %2d hits \n",fpEvtStr->BMNn);
    
-   if(p_bmcon->GetCalibro()!=0){
-      if(p_bmcon->GetCalibro()==1) {
-         p_bmgeo->SetWireAlignment();
-      }
-   }
   //loop for double hits and hits with energy less than enxcell_cut:
   for (Int_t i = 0; i < fpEvtStr->BMNn; i++) {
      
@@ -86,16 +81,6 @@ Bool_t TABMactNtuMC::Action()
        
       loc = geoTrafo->FromGlobalToBMLocal(glo);
       gmom.SetXYZ(fpEvtStr->BMNpxin[i],fpEvtStr->BMNpyin[i],fpEvtStr->BMNpzin[i]);
-       
-      //~ A0.SetXYZ(p_bmgeo->GetWireX(p_bmgeo->GetSenseId(cell),lay,view),    
-                //~ p_bmgeo->GetWireY(p_bmgeo->GetSenseId(cell),lay,view),   
-                //~ p_bmgeo->GetWireZ(p_bmgeo->GetSenseId(cell),lay,view));
-       
-      //~ Wvers.SetXYZ(p_bmgeo->GetWireCX(p_bmgeo->GetSenseId(cell),lay,view),
-                   //~ p_bmgeo->GetWireCY(p_bmgeo->GetSenseId(cell),lay,view),
-                   //~ p_bmgeo->GetWireCZ(p_bmgeo->GetSenseId(cell),lay,view));
-       
-      //~ Wvers.SetMag(1.);
       rdriftxcell.at(i) = FindRdrift(loc, gmom, p_bmgeo->GetWirePos(view, lay,p_bmgeo->GetSenseId(cell)), p_bmgeo->GetWireDir(view));
       
       if(rdriftxcell.at(i)==99) //FindRdrift return 99 if a particle is born without energy, so it shouldn't release energy for a hit.
@@ -112,12 +97,6 @@ Bool_t TABMactNtuMC::Action()
       }
     }
     
-   if(p_bmcon->GetCalibro()!=0){
-      if(p_bmcon->GetCalibro()==1) {
-         p_bmgeo->SetWireAlignment(false);
-      }
-   }
-          
   //set the number of hits
   Int_t hitsrandtot;    
   gRandom->SetSeed(0);
@@ -247,7 +226,7 @@ void TABMactNtuMC::CreateFakeHits(Int_t nfake, Int_t &nhits)
     //charge the fake hits
     TABMntuHit *mytmp = p_nturaw->NewHit(
                     -100,	view, plane, cell,        
-                    rdrift, p_bmcon->InverseStrel(rdrift), -1.);     //tdrift has no meaning for MC (now)
+                    rdrift, p_bmcon->InverseStrel(rdrift), -1.);
 
     if(p_bmcon->ResoEval(rdrift)>0)
       mytmp->SetSigma(p_bmcon->ResoEval(rdrift));
@@ -267,9 +246,6 @@ Double_t TABMactNtuMC::FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVect
   TVector3 D0, R0, Pvers;
   Wvers.SetMag(1.);
 
-  //~ if (dir.Mag()!=0.)
-    //~ dir.SetMag(1.);
-  //~ else{
   if(dir.Mag()==0.){
     //~ cout<<"WARNING: FindRdrift: momentum is 0 and the hit shouldn't be charged because this hit is from a fragmentated particle with zero momentum"<<endl;
     return 99;//fake value
@@ -300,10 +276,6 @@ Double_t TABMactNtuMC::FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVect
     cout<<"pos=("<<pos.X()<<","<<pos.Y()<<","<<pos.Z()<<")  dir=("<<dir.X()<<","<<dir.Y()<<","<<dir.Z()<<")"<<endl;
     cout<<"A0=("<<A0.X()<<","<<A0.Y()<<","<<A0.Z()<<")  Wvers=("<<Wvers.X()<<","<<Wvers.Y()<<","<<Wvers.Z()<<")"<<endl;
     }
-    
-    //~ cout<<"rdrift="<<rdrift<<endl;
-    //~ cout<<"pos=("<<pos.X()<<","<<pos.Y()<<","<<pos.Z()<<")  dir=("<<dir.X()<<","<<dir.Y()<<","<<dir.Z()<<")"<<endl;
-    //~ cout<<"A0=("<<A0.X()<<","<<A0.Y()<<","<<A0.Z()<<")  Wvers=("<<Wvers.X()<<","<<Wvers.Y()<<","<<Wvers.Z()<<")"<<endl;  
     
   return rdrift;
 }
