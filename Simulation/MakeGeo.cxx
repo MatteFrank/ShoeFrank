@@ -62,11 +62,12 @@ int main (int argc, char *argv[]) {
 
     TAGroot* fTAGroot = new TAGroot();
     TAGmaterials* fTAGmat = new TAGmaterials();
-   
+
     TAGgeoTrafo geoTrafo;
+
     TString parFileName = Form("./geomaps/%sFOOT_geo.map", exp.Data());
     geoTrafo.FromFile(parFileName.Data());
-   
+
     // GlobalFootGeo footGeo;
 
     TADIparGeo* dipGeo = new TADIparGeo();
@@ -104,38 +105,38 @@ int main (int argc, char *argv[]) {
     string fileName = "foot.inp";
     file.open( fileName.c_str(), ios::in );
     if ( !file.is_open() )        cout<< "ERROR  -->  wrong input in GlobalPar::ReadParemFile file:: "<<fileName.c_str()<< endl, exit(0);
-    
+
     string line = "";
     stringstream init, geomat, end;
     bool readInit = true;
     bool readGeoMat = false;
     bool readEnd = false;
     // read the old file
-    while( getline( file, line ) ) {  
+    while( getline( file, line ) ) {
 
       if ( readInit )           init    << line << endl;
 
-      if ( line == "* @@@START GENERATED, DO NOT MODIFY:GENERAL@@@ *********************************" ) 
+      if ( line == "* @@@START GENERATED, DO NOT MODIFY:GENERAL@@@ *********************************" )
 	readInit = false;
-      	  
-      if ( line == "* @@@END GENERATED:GENERAL@@@ **************************************************" ) 
+
+      if ( line == "* @@@END GENERATED:GENERAL@@@ **************************************************" )
 	readGeoMat = true;
 
       if ( readGeoMat )         geomat  << line << endl;
-	  
-      if ( line == "* @@@START GENERATED, DO NOT MODIFY:MATERIAL&MAGFIELD@@@ ***********************" ) 
+
+      if ( line == "* @@@START GENERATED, DO NOT MODIFY:MATERIAL&MAGFIELD@@@ ***********************" )
 	readGeoMat = false;
-	  
-      if ( line == "* @@@END GENERATED:MATERIAL&MAGFIELD@@@ ****************************************" ) 
+
+      if ( line == "* @@@END GENERATED:MATERIAL&MAGFIELD@@@ ****************************************" )
 	readEnd = true;
 
       if ( readEnd )            end     << line << endl;
-      
+
     }
 
-    
+
     file.close();
-  
+
 
     // PRINT OUT foot.geo -> FLUKA geometry file
     string geofileName = "foot.geo";
@@ -146,15 +147,15 @@ int main (int argc, char *argv[]) {
     geofile <<"* ******************************************************************************"<<endl;
     geofile <<"*                         BODIES                                               *"<<endl;
     geofile <<"* ******************************************************************************"<<endl;
-    
+
     //print bodies
     geofile << generalGeo->PrintStandardBodies(  );
     geofile << stcGeo->PrintBodies(  );
     geofile << bmGeo->PrintBodies(  );
     geofile << generalGeo->PrintTargBody(  );
     geofile << vtxGeo->PrintBodies(  );
-    // geofile << itrGeo->PrintBodies(  );    
-    // geofile << "* ***Magnets\n";    
+    // geofile << itrGeo->PrintBodies(  );
+    // geofile << "* ***Magnets\n";
     // geofile << "RCC MagCvOu0   " << MAG_X << " " << MAG_Y << " "
     // 	    << MAG_Z - MAG_CV_LENGTH/2. - MAG_DIST/2. << " 0.000000 0.000000 "
     // 	    // << MAG_Z - MAG_DIST/2. << " 0.000000 0.000000 "
@@ -187,7 +188,7 @@ int main (int argc, char *argv[]) {
     // geofile << "RPP MagAir     " << MAG_X - 5. << " " << MAG_X + 5. << " "
     // 	    << MAG_Y - 5. << " " << MAG_Y + 5. << " "
     // 	    << MAG_Z - 30. << " " << MAG_Z + 30. << endl;
-    // geofile << msdGeo->PrintBodies(  );
+    geofile << msdGeo->PrintBodies(  );
     // geofile << "* ***Air Box for Scintillator and Calorimeter\n";
     // geofile << "RPP box     " << SCN_X - SCN_BAR_HEIGHT/2. - 1. << " "
     // 	    << SCN_X + SCN_BAR_HEIGHT/2. + 1. << " "
@@ -212,13 +213,13 @@ int main (int argc, char *argv[]) {
     geofile << generalGeo->PrintSubtractTargBodyFromAir();
     geofile << vtxGeo->PrintSubtractBodiesFromAir();
     // geofile << itrGeo->PrintSubtractBodiesFromAir();
-    // geofile << msdGeo->PrintSubtractBodiesFromAir();
+    geofile << msdGeo->PrintSubtractBodiesFromAir();
     geofile << twGeo->PrintSubtractBodiesFromAir();
     geofile << stcGeo->PrintRegions();
     geofile << bmGeo->PrintRegions();
     geofile << generalGeo->PrintTargRegion();
     geofile << vtxGeo->PrintRegions();
-    // geofile << itrGeo->PrintRegions();    
+    // geofile << itrGeo->PrintRegions();
     // geofile <<"* ***Magnets\n";
     // geofile <<"MAG_PM0      5 MagPMOu0 -MagPMIn0\n";
     // geofile <<"MAG_CV0      5 MagCvOu0 -(MagPMOu0 -MagPMIn0) -Gap0\n";
@@ -229,7 +230,7 @@ int main (int argc, char *argv[]) {
     // geofile << vtxGeo->PrintSubtractBodiesFromAir();
     // geofile << itrGeo->PrintSubtractBodiesFromAir();
     // geofile << msdGeo->PrintSubtractBodiesFromAir();
-    // geofile << msdGeo->PrintRegions(  );
+    geofile << msdGeo->PrintRegions(  );
     // geofile <<"* ***Air Box for Scintillator and Calorimeter\n";
     // geofile <<"BOX          5 box ";
     // geofile << caGeo->PrintSubtractBodiesFromAir();
@@ -269,13 +270,14 @@ int main (int argc, char *argv[]) {
     // outfile << "ASSIGNMA        SmCo   MAG_PM1\n";
     // outfile << "ASSIGNMA    ALUMINUM   MAG_CV1\n";
     // outfile << "ASSIGNMA         AIR   MAG_AIR                             1\n";
-    // outfile << msdGeo->PrintAssignMaterial();
+    outfile << msdGeo->PrintAssignMaterial();
     // outfile << "ASSIGNMA         AIR       BOX\n";
     outfile << twGeo->PrintAssignMaterial();
     // outfile << caGeo->PrintAssignMaterial();
 
-    // print rotations 
+    // print rotations
     outfile << vtxGeo->PrintRotations();
+    outfile << msdGeo->PrintRotations();
     outfile << twGeo->PrintRotations();
 
     outfile << end.str();
@@ -287,16 +289,16 @@ int main (int argc, char *argv[]) {
     paramfile.open("../../Simulation/ROUTINES/parameters.inc");
     if ( !paramfile.is_open() )
       cout<< "ERROR  --> I do not find the parameters.inc file"<<fileName.c_str()<< endl;
-    
+
     paramfile << bmGeo->PrintParameters();
     paramfile << vtxGeo->PrintParameters();
     // paramfile << itrGeo->PrintParameters();
-    // paramfile << msdGeo->PrintParameters();
+    //paramfile << msdGeo->PrintParameters();
     paramfile << twGeo->PrintParameters();
     // paramfile << caGeo->PrintParameters();
-    
+
     paramfile.close();
-    
+
     // stop time
     end_tot = clock();
     double tempo=((double)(end_tot-start_tot ))/CLOCKS_PER_SEC;
@@ -316,9 +318,9 @@ int main (int argc, char *argv[]) {
 
 // string PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
 // 		 TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM) {
-  
+
 //   stringstream fLine;
-	
+
 //   if (fTitle.Sizeof() != 10) fTitle.Resize(10);
 //   if (fSDUM.Sizeof() != 10) fSDUM.Resize(10);
 //   if (fWHAT1.Sizeof() > 10) fWHAT1.Resize(10);
@@ -331,8 +333,7 @@ int main (int argc, char *argv[]) {
 //   fLine << setw(10) << fTitle << setw(10) << fWHAT1 << setw(10) << fWHAT2
 // 	<< setw(10) << fWHAT3 << setw(10) << fWHAT4 << setw(10) << fWHAT5
 // 	<< setw(10) << fWHAT6 << setw(10) << fSDUM;
-	
-//   return fLine.str();
-  
-// }
 
+//   return fLine.str();
+
+// }

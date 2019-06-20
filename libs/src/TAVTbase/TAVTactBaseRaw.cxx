@@ -80,6 +80,7 @@ TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
 //! Destructor.
 TAVTactBaseRaw::~TAVTactBaseRaw()
 {
+   delete [] fDataEvent;
 }
 
 //------------------------------------------+-----------------------------------

@@ -3,6 +3,8 @@
   \brief   Implementation of TAVTactVmeReader.
 */
 
+#include <limits.h>
+
 #include "DECardEvent.hh"
 
 #include "GlobalPar.hxx"
@@ -13,31 +15,39 @@
 
 /*!
   \class TAVTactVmeReader 
-  \brief Reader action for ascii files M26-28 (Catania Test). **
-   (binary file never been used)
+  \brief Reader action for ascii files **
 */
 
 ClassImp(TAVTactVmeReader);
 
-      TString TAVTactVmeReader::fgDefaultFolderName = "run_";
-      TString TAVTactVmeReader::fgDefaultExtName    = ".ZS";
+TString TAVTactVmeReader::fgDefaultFolderName = "run_";
+TString TAVTactVmeReader::fgDefaultExtName    = ".ZS";
+ Bool_t TAVTactVmeReader::fgTrigJumpAuto      = true;
+
 // run 221
 //map<pair<int, int>, int > TAVTactVmeReader::fgTrigJumpMap = { {{1,18564}, 4}, {{1,18674}, 2}, {{1,18715}, 1},  {{1,37425}, 1}, {{1,37482}, 5},  {{1,37599}, 5}, {{1,38721}, 1},
 //                                                              {{1,38834}, 1}, {{1,38838}, 1}, {{1,39847}, 15}, {{1,39956}, 1}, {{1,40990}, 13}, {{1,40993}, 1}, {{1,41008}, 1},
 //                                                              {{1,41105}, 4}, {{1,41123}, 1},  {{1,41145}, 1} };
 
 // run 5007
-map<pair<int, int>, int > TAVTactVmeReader::fgTrigJumpMap = { {{0, 8425}, 2},
-                                                              {{1, 4}, 2}, {{1, 9306}, 2},
-                                                              {{2, 7}, 5}, {{2, 8424}, 1},
-                                                              {{3, 5}, 1}, {{3, 9305}, 1}};
+//map<pair<int, int>, int > TAVTactVmeReader::fgTrigJumpMap = { {{0, 8425}, 2},
+//                                                              {{1, 4}, 2}, {{1, 9306}, 2},
+//                                                              {{2, 7}, 5}, {{2, 8424}, 1},
+//                                                              {{3, 5}, 1}, {{3, 9305}, 1}};
+
+// set nil
+map<pair<int, int>, int > TAVTactVmeReader::fgTrigJumpMap = { {{0, 0}, 0}};
+
+// run 2242
+//map<pair<int, int>, int > TAVTactVmeReader::fgTrigJumpMap = { {{1, 60}, 59}};
 
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAVTactVmeReader::TAVTactVmeReader(const char* name, TAGdataDsc* pDatRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
-: TAVTactBaseRaw(name, pDatRaw, pGeoMap, pConfig, pParMap),
-  fRunNumber(-1)
+ : TAVTactBaseRaw(name, pDatRaw, pGeoMap, pConfig, pParMap),
+   fRunNumber(-1),
+   fTrigJumpStart(-1)
 {
    SetTitle("TAVTactVmeReader - reader for VME reader");
    fBaseName ="data_FPGA_Mouser993P0160_V1_ch";
@@ -45,17 +55,18 @@ TAVTactVmeReader::TAVTactVmeReader(const char* name, TAGdataDsc* pDatRaw, TAGpar
    Int_t size = (sizeof(MI26_FrameRaw)/4)*3 + 3; // 3 frame per event and 3 header word for each sensor
    fDataEvent = new UInt_t[size];
 
+   if (!fgTrigJumpAuto)
+      fTrigJumpStart = INT_MAX;
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAVTactVmeReader::~TAVTactVmeReader()
 {
-   delete [] fDataEvent;
 }
 
 // --------------------------------------------------------------------------------------
-void TAVTactVmeReader::SettrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump)
+void TAVTactVmeReader::SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump)
 {
    pair<int, int> id{iSensor, trigger};
    fgTrigJumpMap[id] = jump;
@@ -183,8 +194,8 @@ Bool_t TAVTactVmeReader::GetSensorEvent(Int_t iSensor)
       UInt_t data = 0;
       sscanf(tmp, "%x", &data);
 
-      if(FootDebugLevel(1)) {
-         if (line.Contains(tail))
+      if (line.Contains(tail)){
+         if(FootDebugLevel(1))
             printf("unexpected trailer for sensor %d previous data %08x\n", iSensor, dataPrev);
       }
 
@@ -205,11 +216,16 @@ Bool_t TAVTactVmeReader::GetSensorEvent(Int_t iSensor)
          sscanf(tmp, "%x", &fTriggerNumber);
          fDataEvent[fIndex++] = fTriggerNumber;
          
-         if (fPrevTriggerNumber[iSensor] != fTriggerNumber-1)
+         pair<int, int> id(iSensor, fTriggerNumber);
+
+         if (fPrevTriggerNumber[iSensor] != fTriggerNumber-1) {
             if(FootDebugLevel(1))
                printf("Jump sensor %d %d %d\n", iSensor, fPrevTriggerNumber[iSensor], fTriggerNumber);
-         
-         pair<int, int> id(iSensor, fTriggerNumber);
+            if (fTrigJumpFirst[id] == 0 && fTriggerNumber > fTrigJumpStart) {
+               fgTrigJumpMap[id] = fTriggerNumber - fPrevTriggerNumber[iSensor] -1;
+               fTrigJumpFirst[id] = 1;
+            }
+         }
          
          if (fgTrigJumpMap[id] > 0) {
             Int_t pos =  (int) fRawFileAscii[iSensor].tellg();

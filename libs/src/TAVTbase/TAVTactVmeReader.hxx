@@ -23,17 +23,22 @@ public:
       
    //! Open file with a given prefix and suffix for the files
    virtual Int_t   Open(const TString& prefix, Option_t* opt = "");
+   
    //! close files
    virtual void    Close();
+   
    //! Process
    virtual Bool_t  Process();
    
+   //! Set start trigger number for re-synchronization
+   void    SetTrigJumpStart(Int_t start)                    { fTrigJumpStart = start;     }
+
  public:
    enum {kSize = 10};
    static void     SetDefaultFolderName(const Char_t* name) { fgDefaultFolderName = name; }
    static TString  GetDefaultFolderName()                   { return fgDefaultFolderName; }
    
-   static void     SettrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump);
+   static void     SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump);
    
 private:
    ifstream          fRawFileAscii[kSize]; // file streamm
@@ -42,11 +47,14 @@ private:
    TString           fPrefixName;          // prefix folder name
    TString           fBaseName;         // base file name
    
+   Int_t             fTrigJumpStart;
+   map<pair<int,int>,  int>  fTrigJumpFirst;
+   
 private:
    static       TString fgDefaultFolderName;
    static       TString fgDefaultExtName;
    static       map< pair<int, int>, int> fgTrigJumpMap;
-
+   static       Bool_t fgTrigJumpAuto;
    
 private:	
    //! Get the event

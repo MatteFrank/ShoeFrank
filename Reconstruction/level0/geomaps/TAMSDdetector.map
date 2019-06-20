@@ -1,7 +1,7 @@
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 //
-// Mapping file for FOOT Multi-Strip Detector
+// Mapping file for FOOT Micro Strip Detector
 //
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
@@ -9,24 +9,30 @@
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 Sensors:              6
 
+
+//NO MORE KAPTON BUT AIR IN BETWEEN
+//0.8 um di SiO2
+//150 silicio
+//da 1.2 um di metallizzazione ALUMINUM
+
+
 // MSD
 TypeName:          "MSD"
-TypeNumber:           1
-PixelsNx:           640
-PixelsNy:           640
-PitchX:           0.0150
-PitchY:           0.0150
-TotalSizeX:       10.560   TotalSizeY:   10.850   TotalSizeZ:    0.0200
-EpiSizeX:          9.390   EpiSizeY:      9.600   EpiSizeZ:      0.0150
-EpiOffsetX:        0.000   EpiOffsetY:    0.000   EpiOffsetZ:    0.0000
+TypeNumber:        1
+StripN:            640
+Pitch:             0.0150
+TotalSizeX:        9.815   TotalSizeY:    9.815   TotalSizeZ:    0.0200
+EpiSizeX:          9.600   EpiSizeY:      9.390   EpiSizeZ:      0.0150
+EpiOffsetX:        0.1075  EpiOffsetY:    0.2125  EpiOffsetZ:    0.0000
 EpiMat:            "Si"
-EpiMatDensity:    2.329
-PixThickness:     0.00064
-PixMat:          "SiO2/Al"
-PixMatDensities: "2.65/2.70"
-PixMatProp:      "0.89/0.11"
-PixMatDensity:      2.3
-SupportInfo:         0
+EpiMatDensity:     2.329
+//PixThickness:      0.00064
+PixMat:            "SiO2"
+PixMatDensity:     2.65
+MetalThickness:    0.0001
+MetalMat:          "Al"
+MetalDensity:      2.6989
+SupportInfo:       0
 
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
