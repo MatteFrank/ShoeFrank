@@ -104,13 +104,13 @@ void FillBm(TString name) {
 
   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
   TABMparCon* parConf = (TABMparCon*)bmConf->Object();
-  TString parFileName = "./config/beammonitor.cfg";
+  TString parFileName = "./config/TABMdetector.cfg";
   parConf->FromFile(parFileName.Data());
   parFileName = "./config/bmreso_vs_r.root";
   
   TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
   TABMparMap*  bmparMap = (TABMparMap*)bmMap->Object();
-  parFileName = "./geomaps/beammonitor_geoch.map";
+  parFileName = "./config/TABMdetector.map";
   bmparMap->FromFile(parFileName.Data(), bmgeomap);
 
    TAGparaDsc* fpParTimeSt = new TAGparaDsc("stTime", new TASTparTime()); // need the file

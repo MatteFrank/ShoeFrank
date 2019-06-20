@@ -224,7 +224,7 @@ void BaseLocalReco::ReadParFiles()
       
       fpParMapBm = new TAGparaDsc("bmMap", new TABMparMap());
       TABMparMap*  parMapBm = (TABMparMap*)fpParMapBm->Object();
-      parFileName = Form("./geomaps/%sbeammonitor_geoch.map", fExpName.Data());
+      parFileName = Form("./config/%sTABMdetector.map", fExpName.Data());
       parMapBm->FromFile(parFileName.Data(), parGeo);
    }
    

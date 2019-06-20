@@ -113,8 +113,7 @@ Bool_t TABMactNtuMC::Action()
     if(nprunehits<0)
       nprunehits=0;
 
-    //provv
-     Int_t tmp_int=gRandom->Uniform(0,10);//check if this number is ok
+     Int_t tmp_int=gRandom->Uniform(0,10);
      if(tmp_int<p_bmcon->GetFakehitsMean())
         hitsrandtot = 12 - (Int_t) fabs(gRandom->Gaus(0, p_bmcon->GetFakehitsSigmaLeft()));
      else
@@ -161,7 +160,7 @@ Bool_t TABMactNtuMC::Action()
       cout<<"In the charging hits loop: I'm going to charge hit number:"<<i<<"/"<<fpEvtStr->BMNn<<"  tobecharged="<<tobecharged[i]<<"  view="<<view<<"  lay="<<lay<<"  cell="<<cell<<"  rdriftxcell.at(i)="<<rdriftxcell.at(i)<<"  time="<<p_bmcon->InverseStrel(rdriftxcell.at(i))<<endl;
       
       //create hit
-      TABMntuHit *mytmp = p_nturaw->NewHit(fpEvtStr->BMNid[i],	view, lay, cell, rdriftxcell.at(i), p_bmcon->InverseStrel(rdriftxcell.at(i)), 0.);
+      TABMntuHit *mytmp = p_nturaw->NewHit(view, lay, cell, rdriftxcell.at(i), p_bmcon->InverseStrel(rdriftxcell.at(i)), 0.);
        mytmp->AddMcTrackId(ipoint, i);
        
       if(p_bmcon->ResoEval(rdriftxcell.at(i))>0)
@@ -225,7 +224,7 @@ void TABMactNtuMC::CreateFakeHits(Int_t nfake, Int_t &nhits)
 
     //charge the fake hits
     TABMntuHit *mytmp = p_nturaw->NewHit(
-                    -100,	view, plane, cell,        
+                    view, plane, cell,        
                     rdrift, p_bmcon->InverseStrel(rdrift), -1.);
 
     if(p_bmcon->ResoEval(rdrift)>0)

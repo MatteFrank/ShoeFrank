@@ -282,10 +282,6 @@ Bool_t TABMactNtuTrack::Action()
     for(Int_t i=0;i<hitxtrack.at(best_index).size();i++){
       p_hit = p_nturaw->Hit(hitxtrack.at(best_index).at(i));    
       p_hit->SetIsSelected(true);
-      if(p_bmcon->GetFitterIndex()<5){
-        p_hit->SetChi2(best_mysqrtchi2.at(i)*best_mysqrtchi2.at(i));
-        p_hit->SetResidualSigma(best_mysqrtchi2.at(i));
-      }
       if (ValidHistogram())  
         fpResTot->Fill(p_hit->GetResidual(),p_hit->Dist());    
       if(p_hit->GetIsSelected() && p_ntutrk->GetTrackStatus()==0){
@@ -769,7 +765,7 @@ void TABMactNtuTrack::ComputeAA(vector<Int_t> &singlehittrack, TABMntuTrackTr *&
       parametri_moved(ii) = p_bmcon->GetParMove();
     
     if(p_bmcon->GetBMdebug()>10){
-      cout<<"ii="<<ii<<"old parameters:"<<endl;
+      cout<<"ii="<<ii<<" old parameters:"<<endl;
       tmp_trackTr->PrintR0Pvers();
     }
     

@@ -22,7 +22,7 @@ TABMntuHit::~TABMntuHit()
 //! Default constructor.
 
 TABMntuHit::TABMntuHit()
-: idmon(0),    iview(0),    ilayer(0),    icell(0), ichi2(999),
+: iview(0),    ilayer(0),    icell(0), ichi2(999),
   rdrift(0.),    tdrift(0.)
 {
   sigma = 0;
@@ -34,9 +34,8 @@ TABMntuHit::TABMntuHit()
   isFake=false;  
 }
 
-TABMntuHit::TABMntuHit(Int_t id, Int_t iv, Int_t il, Int_t ic, Double_t r, Double_t t, Double_t s) {
+TABMntuHit::TABMntuHit(Int_t iv, Int_t il, Int_t ic, Double_t r, Double_t t, Double_t s) {
 
-  idmon = id;  
   iview = iv;  ilayer = il;   icell = ic;  
   rdrift = r;   tdrift = t; 
   ichi2 = 999;

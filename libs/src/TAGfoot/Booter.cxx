@@ -722,7 +722,7 @@ void Booter::initBMCon(TAGparaDsc* beamcon)  {
 
   Bool_t b_bad = kTRUE;
 
-  TString filename = m_wd + "/config/beammonitor.cfg";
+  TString filename = m_wd + "/config/TABMdetector.cfg";
 
   cout << "   from file " << filename << endl;
 

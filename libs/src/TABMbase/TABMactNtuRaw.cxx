@@ -119,7 +119,7 @@ Bool_t TABMactNtuRaw::Action()
     
     
     //create the hit (no selection of hit)
-    TABMntuHit *mytmp = p_nturaw->NewHit(0, hit.View(), hit.Plane(), hit.Cell(), i_drift, i_time, p_parcon->ResoEval(i_drift));
+    TABMntuHit *mytmp = p_nturaw->NewHit(hit.View(), hit.Plane(), hit.Cell(), i_drift, i_time, p_parcon->ResoEval(i_drift));
     p_nturaw->AddCellOccupyHit(hit.Idcell());
     if (ValidHistogram()){
       fpHisCell->Fill(hit.Cell()); 

@@ -29,15 +29,31 @@ ClassImp(TABMparCon);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TABMparCon::TABMparCon() {
-
-  //~ f_mypol = new TF1("mymcpol","[0]+[1]*pow(x,1)+[2]*pow(x,2)+[3]*pow(x,3)+[4]*pow(x,4)+[5]*pow(x,5)",-0.01,-0.003);
-  //~ f_mypol2 = new TF1("mymcpol2","[0]+[1]*pow(x,1)+[2]*pow(x,2)+[3]*pow(x,3)+[4]*pow(x,4)+[5]*pow(x,5)",-0.01,-0.004);
+TABMparCon::TABMparCon() 
+  :  TAGparTools(),
+  rdrift_err(0.015),
+  enxcell_cut(0.000002),
+  planehit_cut(3),  
+  m_isMC (false),
+  rdrift_cut (2.),
+  chi2red_cut (5.),
+  fitter_index (0),
+  bm_debug(0),
+  minnhit_cut(6),
+  maxnhit_cut(20),
+  rejmax_cut(36),
+  num_ite(0),
+  par_move(0.0001),  
+  fakehits_mean(5.57), 
+  fakehits_sigmaleft(1.8), 
+  fakehits_sigmaright(2.3), 
+  mceff_mean(1),
+  mceff_sigma(0.2)
+{
   rand= new TRandom3();
-  
-  //default parameters
-  rdrift_err=0.015;
-  enxcell_cut=0.000002;
+  fkDefaultParName = "./config/TABMdetector.cfg";
+  vector<Float_t> myt0s(36,-10000);
+  v_t0s = myt0s;
 }
 
 //------------------------------------------+-----------------------------------
@@ -50,7 +66,73 @@ TABMparCon::~TABMparCon()
 //------------------------------------------+-----------------------------------
 //! Read mapping data from file \a name .
 
+
 Bool_t TABMparCon::FromFile(const TString& name) {
+  Clear();
+  TString nameExp;
+  
+  if (name.IsNull())
+     nameExp = fkDefaultParName;
+  else
+     nameExp = name;
+  
+  if (!Open(nameExp)) return false;
+   
+  if(fDebugLevel)
+     cout<<"Beam Monitor read config file from "<<nameExp.Data()<<endl;
+
+  //cuts 
+  ReadItem(minnhit_cut);
+  if(fDebugLevel)
+     cout<<"minnhit_cut="<<minnhit_cut<<endl;
+  ReadItem(maxnhit_cut);
+  if(fDebugLevel)
+     cout<<"maxnhit_cut="<<maxnhit_cut<<endl;
+  ReadItem(rejmax_cut);
+  if(fDebugLevel)
+     cout<<"rejmax_cut="<<rejmax_cut<<endl;
+  ReadItem(chi2red_cut);
+  if(fDebugLevel)
+     cout<<"chi2red_cut="<<chi2red_cut<<endl;
+
+  //track reco
+  ReadItem(fitter_index);
+  if(fDebugLevel)
+     cout<<"fitter_index="<<fitter_index<<endl;
+  ReadItem(prefit_enable);
+  if(fDebugLevel)
+     cout<<"prefit_enable="<<prefit_enable<<endl;
+  ReadItem(num_ite);
+  if(fDebugLevel)
+     cout<<"num_ite="<<num_ite<<endl;
+  ReadItem(par_move);
+  if(fDebugLevel)
+     cout<<"par_move="<<par_move<<endl;
+  ReadItem(strel_switch);
+  if(fDebugLevel)
+     cout<<"strel_switch="<<strel_switch<<endl;
+
+  //other parameters
+  ReadItem(bm_debug);
+  if(fDebugLevel)
+     cout<<"bm_debug="<<bm_debug<<endl;
+  ReadItem(hit_timecut);
+  if(fDebugLevel)
+     cout<<"hit_timecut="<<hit_timecut<<endl;
+
+  //MC parameters
+  ReadItem(smearrdrift);
+  if(fDebugLevel)
+     cout<<"smearrdrift="<<smearrdrift<<endl;
+  ReadItem(smearhits);
+  if(fDebugLevel)
+     cout<<"smearhits="<<smearhits<<endl;
+
+return false;
+}
+
+
+Bool_t TABMparCon::FromFileOld(const TString& name) {
 
   Clear();
   
@@ -58,7 +140,7 @@ Bool_t TABMparCon::FromFile(const TString& name) {
   gSystem->ExpandPathName(name_exp);
 
   char bufConf[1024], tmp_char[200];
-  Double_t myArg1(-1),myArg2(-1),myArg3(-1),myArg4(-1),myArg5(-1),myArg6(-1); 
+  Float_t myArg1(-1),myArg2(-1),myArg3(-1),myArg4(-1),myArg5(-1),myArg6(-1); 
   Int_t myArgInt(-1), myArgIntmax(-1), myArgIntmin(-1);
   
   ifstream incF;
@@ -98,9 +180,8 @@ Bool_t TABMparCon::FromFile(const TString& name) {
 	      return kTRUE;
         }
     }else if(strchr(bufConf,'Z')) {
-      sscanf(bufConf, "Z  %d %lf %d %lf %s", &myArgIntmax, &myArg1,&myArgIntmin, &myArg2, tmp_char);
+      sscanf(bufConf, "Z  %lf %d %lf", &myArg1,&myArgIntmin, &myArg2);
       if((myArgIntmax==1 || myArgIntmax==0 || myArgIntmax==2 || myArgIntmax==3)  &&  myArg1>=0 && myArg2>=0){
-        t0_switch=myArgIntmax;
         t0_sigma=myArg1;
         t0choice=myArgIntmin;
         hit_timecut=myArg2;
@@ -152,6 +233,8 @@ Bool_t TABMparCon::FromFile(const TString& name) {
 }
 
 
+
+
 void TABMparCon::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
   ofstream outfile;
   outfile.open(output_filename.Data(),ios::out);
@@ -171,40 +254,24 @@ Bool_t TABMparCon::loadT0s(TString filename) {
     cout<<"TABMparCon::ERROR: Cannot open T0 file: "<<filename<<endl;
     return kTRUE;
   }
-  Int_t file_evnum, file_t0switch, file_t0choice;
-  char tmp_char[200], dataset[200];
-  vector<Double_t> fileT0(36,-10000.);
+  char tmp_char[200];
+  vector<Float_t> fileT0(36,-10000.);
   Int_t tmp_int=-1, status=0;  
-  if(infile.is_open() && infile.good())
-    infile>>tmp_char>>dataset>>tmp_char>>file_evnum>>tmp_char>>file_t0switch>>tmp_char>>file_t0choice;
-  else
-    status=1;
+  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>t0_switch>>tmp_char>>t0choice;
 
-  if(file_t0switch!=t0_switch){
-    cout<<"TABMparCon::loadT0s::WARNING!!: the t0_switch given by the config file is:"<<t0_switch<<", but you load a T0 file calculated from "<<dataset<<" in which the t0's were calculated with a t0_switch="<<file_t0switch<<", now the t0_switch will be adjusted to "<<file_t0switch<<endl;
-    t0_switch=file_t0switch;
-  }
-  if(file_t0choice!=t0choice){
-    cout<<"TABMparCon::loadT0s::WARNING!!: the t0choice given by the config file is:"<<t0choice<<", but you load a T0 file calculated from "<<dataset<<" in which the t0's were calculated with a t0choice="<<file_t0choice<<", now the t0choice will be adjusted to "<<file_t0choice<<endl;
-    t0choice=file_t0choice;
-  }
   for(Int_t i=0;i<36;i++)
     if(!infile.eof() && tmp_int==i-1)
       infile>>tmp_char>>tmp_int>>tmp_char>>fileT0.at(i);
     else{
       cout<<"TABMparCon::loadT0s::Error in the T0 file "<<filename<<"!!!!!! check if it is write properly"<<endl;  
-      status=1;
+      infile.close();
+      return kTRUE;
       }
   infile.close();
-  if(status==0)
-    v_t0s=fileT0;
-  else{
-    cout<<"TABMparCon::loadT0s::ERROR, the T0 can not be charged"<<endl;
-    return kTRUE;
-  }
+  v_t0s=fileT0;
 
   //check if the T0 are ok
-  if(GetBMdebug()> 0) {
+  if(bm_debug> 0) {
      for(Int_t i=0;i<36;i++) {
         cout<<"BM T0: "<<v_t0s[i]<<endl;
         if(v_t0s[i]==-10000)
@@ -218,7 +285,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
 
 
 
-void TABMparCon::SetT0s(vector<Double_t> t0s) {
+void TABMparCon::SetT0s(vector<Float_t> t0s) {
 
   if(t0s.size() == 36) {
     v_t0s = t0s; 
@@ -230,7 +297,7 @@ void TABMparCon::SetT0s(vector<Double_t> t0s) {
 }
 
 
-void TABMparCon::SetT0(Int_t cha, Double_t t0in){
+void TABMparCon::SetT0(Int_t cha, Float_t t0in){
 
 if(cha<36 && cha>=0) 
   v_t0s[cha]=t0in;   
@@ -242,12 +309,10 @@ else {
 }
 
 void TABMparCon::CoutT0(){
-  //~ TAGparaDsc* myp_bmmap=gTAGroot->FindParaDsc("myp_bmmap", "TABMparMap");
-  //~ TABMparMap* bmmap = (TABMparMap*) myp_bmmap->Object();
   cout<<"Print BM T0 time:"<<endl;
   for(Int_t i=0;i<v_t0s.size();i++)
     cout<<"cell_id="<<i<<"  T0="<<v_t0s[i]<<endl;
-    //~ cout<<"cell_id="<<i<<"  TDC_channel="<<bmmap->cell2tdc(i)<<"  T0="<<v_t0s[i]<<endl;
+  cout<<endl;
 }
 
 
@@ -256,20 +321,28 @@ void TABMparCon::CoutT0(){
 
 void TABMparCon::Clear(Option_t*)
 {
+  rdrift_err=0.015;
+  enxcell_cut=0.000002;
+  planehit_cut=3;  
   m_isMC = false;
-  rdrift_cut = 10.;
-  enxcell_cut = 0.00000001;
+  rdrift_cut = 2.;
   chi2red_cut = 5.;
   fitter_index = 0;
   bm_debug=0;
-  minnhit_cut=0;
+  minnhit_cut=6;
   maxnhit_cut=20;
   rejmax_cut=36;
   num_ite=0;
   par_move=0.0001;
   
-  vector<Double_t> myt0s(36,-10000);
-  //~ myt0s.resize(36);
+  //The following parameters for MC are set from the measurements with protons at Trento
+  fakehits_mean=5.57; 
+  fakehits_sigmaleft=1.8; 
+  fakehits_sigmaright=2.3; 
+  mceff_mean=1;
+  mceff_sigma=0.2;
+    
+  vector<Float_t> myt0s(36,-10000);
   v_t0s = myt0s;
   
   return;
@@ -319,12 +392,12 @@ void TABMparCon::LoadSTrel(TString sF) {
 
  /*-------------------------------------------------*/
 
-Double_t TABMparCon::FirstSTrel(Double_t tdrift){
+Float_t TABMparCon::FirstSTrel(Float_t tdrift){
   
   if(tdrift<0 && t0_switch==2)
     return 0.03289 + 0.008*tdrift;
   
-  Double_t rdrift;
+  Float_t rdrift;
   
   if(strel_switch==1){ //garfield strel
     rdrift=0.00915267+0.00634507*tdrift+2.02527e-05*tdrift*tdrift-7.60133e-07*tdrift*tdrift*tdrift+5.55868e-09*tdrift*tdrift*tdrift*tdrift-1.68944e-11*tdrift*tdrift*tdrift*tdrift*tdrift+1.87124e-14*tdrift*tdrift*tdrift*tdrift*tdrift*tdrift;  
@@ -351,7 +424,7 @@ Double_t TABMparCon::FirstSTrel(Double_t tdrift){
 }
 
 
-Double_t TABMparCon::InverseStrel(Double_t rdrift){
+Float_t TABMparCon::InverseStrel(Float_t rdrift){
   //~ if(strel_switch==5){
     TF1 f1("f1","1./0.78*(0.032891770+0.0075746330*x-(5.1692440e-05)*x*x+(1.8928600e-07)*x*x*x-(2.4652420e-10)*x*x*x*x)", 0., 320.);
     return f1.GetX(rdrift);
@@ -368,7 +441,7 @@ Double_t TABMparCon::InverseStrel(Double_t rdrift){
 }
 
 
-Double_t TABMparCon::FirstSTrelMC(Double_t tdrift, Int_t mc_switch){
+Float_t TABMparCon::FirstSTrelMC(Float_t tdrift, Int_t mc_switch){
   
   if(tdrift<0 && t0_switch==2)
       return 0.03289 + 0.008*tdrift;
@@ -406,9 +479,9 @@ void TABMparCon::LoadReso(TString sF) {
   
 }
 
-Double_t TABMparCon::ResoEval(Double_t dist) {
+Float_t TABMparCon::ResoEval(Float_t dist) {
   //~ return 0.001;
-  Double_t sigma;
+  Float_t sigma;
   Int_t mybin(-1);
   if(my_hreso) {
     mybin = my_hreso->FindBin(dist);

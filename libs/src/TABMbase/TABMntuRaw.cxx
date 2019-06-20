@@ -48,11 +48,11 @@ Int_t TABMntuRaw::GetHitsN() const
 //______________________________________________________________________________
 //! new hit
 
-TABMntuHit* TABMntuRaw::NewHit(Int_t id, Int_t iv, Int_t il, Int_t ic, Double_t r, Double_t t, Double_t s)
+TABMntuHit* TABMntuRaw::NewHit(Int_t iv, Int_t il, Int_t ic, Double_t r, Double_t t, Double_t s)
 {
    TClonesArray &pixelArray = *fListOfHits;
    
-   TABMntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TABMntuHit(id, iv, il, ic, r, t,  s);
+   TABMntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TABMntuHit(iv, il, ic, r, t,  s);
    
    return hit;
    
