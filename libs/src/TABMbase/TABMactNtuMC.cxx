@@ -78,7 +78,6 @@ Bool_t TABMactNtuMC::Action()
 
       hitxcell[i]=p_bmgeo->GetBMNcell(lay, view, cell);
       glo.SetXYZ(fpEvtStr->BMNxin[i],fpEvtStr->BMNyin[i],fpEvtStr->BMNzin[i]);
-       
       loc = geoTrafo->FromGlobalToBMLocal(glo);
       gmom.SetXYZ(fpEvtStr->BMNpxin[i],fpEvtStr->BMNpyin[i],fpEvtStr->BMNpzin[i]);
       rdriftxcell.at(i) = FindRdrift(loc, gmom, p_bmgeo->GetWirePos(view, lay,p_bmgeo->GetSenseId(cell)), p_bmgeo->GetWireDir(view));
@@ -268,10 +267,10 @@ Double_t TABMactNtuMC::FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVect
   else  //if they go parallel
     rdrift = sqrt(abs( D0.Mag2() - D0W*D0W)); 
 
-  if(rdrift<0){
-    cout<<"WARNING!!!!! SOMETHING IS WRONG, YOU HAVE A NEGATIVE RDRIFT!!!!!!!!!  look at TABMactNtuMC::FindRdrift   rdrift="<<rdrift<<endl;
-    rdrift=0;
-    cout<<"rdrift="<<rdrift<<endl;
+  if(rdrift<0 || rdrift>0.945){
+    cout<<"WARNING!!!!! SOMETHING IS WRONG IN THE BM RDRIFT!!!!!!!!!  look at TABMactNtuMC::FindRdrift   rdrift="<<rdrift<<endl;
+    rdrift= (rdrift<0) ? 0. : 0.945 ;
+    cout<<"now rdrift="<<rdrift<<endl;
     cout<<"pos=("<<pos.X()<<","<<pos.Y()<<","<<pos.Z()<<")  dir=("<<dir.X()<<","<<dir.Y()<<","<<dir.Z()<<")"<<endl;
     cout<<"A0=("<<A0.X()<<","<<A0.Y()<<","<<A0.Z()<<")  Wvers=("<<Wvers.X()<<","<<Wvers.Y()<<","<<Wvers.Z()<<")"<<endl;
     }

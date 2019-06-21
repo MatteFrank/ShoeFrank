@@ -84,7 +84,7 @@ void Booking(TFile *f_out, TABMparMap *bmmap){
   h=new TH1D("tdc_sync","Registered time;Time [ns]; counts",3000,-1000.,2000.);
   h=new TH1D("st_trigtime","Registered trigger time from st;Time [ns]; counts",3000,-1000.,2000.);
   h=new TH1D("bm_trigtime","Registered trigger time from bm;Time [ns]; counts",3000,-1000.,2000.);
-  h=new TH1D("bm-st_trigtime","Trigger time difference between bm and st;Time [ns]; counts",200,-100.,100.);
+  h=new TH1D("bm-st_trigtime","Trigger time difference between bm and st;Time [ns]; counts",1000,-100.,900.);
   f_out->cd("..");
     
   return;
@@ -142,7 +142,7 @@ void FillBm(TString name) {
 void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.VTX.1.dat")
 //~ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_built.2242.physics_foot.daq.VTX.1.dat")
 {  
-   int maxevnum=110000;
+   int maxevnum=1e7;
    int t0choice=0;
    int tmp_int; 
    TString tmp_tstring;

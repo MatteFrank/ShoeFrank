@@ -80,7 +80,7 @@ void FillBm(TString fExpName) {
    
    TAGparaDsc* fpParTimeSt = new TAGparaDsc("stTime", new TASTparTime()); // need the file
    TASTparTime* parTimeSt = (TASTparTime*) fpParTimeSt->Object();
-   parTimeSt->FromFile("GSI_", 2190);
+   parTimeSt->FromFile("GSI", 2190);
   
    TAGparaDsc*  stMap  = new TAGparaDsc("stMap", new TASTparMap());
    TASTparMap*  stparMap = (TASTparMap*)stMap->Object();

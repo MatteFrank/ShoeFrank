@@ -59,7 +59,8 @@ void FillBmVME(TString name) {
    parConf->FromFile(parFileName.Data());
    parFileName = "./config/bmreso_vs_r.root";
    parConf->LoadReso(parFileName);
-   parConf->loadT0s(10000000000);
+   parFileName = "./config/trento_marzo.cfg";
+   parConf->loadT0s(parFileName);
    parConf->CoutT0();
 
    TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
@@ -89,59 +90,54 @@ void FillBmVME(TString name) {
 }
 
 void ReadBmRawVME(TString name = "80MeV_HV2175_100kEv.dat")
-{
-   GlobalPar::Instance();
-   GlobalPar::GetPar()->Print();
+{  
+  Int_t maxevt=10000;
+  GlobalPar::Instance();
+  GlobalPar::GetPar()->Print();
 
-   TAGroot tagr;
-   TAGgeoTrafo geoTrafo;
-   geoTrafo.FromFile();
+  TAGroot tagr;
+  TAGgeoTrafo geoTrafo;
+  geoTrafo.FromFile();
 
-   tagr.SetCampaignNumber(-1);
-   tagr.SetRunNumber(1);
+  tagr.SetCampaignNumber(-1);
+  tagr.SetRunNumber(1);
 
-   outFile = new TAGactTreeWriter("outFile");
-   FillBmVME(name);
-   
-   tagr.AddRequiredItem("bmActVmeReader");
-   tagr.AddRequiredItem("bmActNtuRaw");
-   tagr.AddRequiredItem("bmActTrack");
-   tagr.AddRequiredItem("outFile");
-   tagr.Print();
-   
-   Int_t pos = name.Last('.');
-   TString nameOut = name(0, pos);
-   nameOut.Append("_readbmrawvme_Out.root");
-   
-   if (outFile->Open(nameOut.Data(), "RECREATE")) return;
-   bmActTrack->SetHistogramDir(outFile->File());
-   bmActNtuRaw->SetHistogramDir(outFile->File());
-   
-   cout<<" Beginning the Event Loop "<<endl;
-   tagr.BeginEventLoop();
-   TStopwatch watch;
-   watch.Start();
-   
-   for (Long64_t ientry = 0; ientry < 1000; ientry++) {
-      
-      
-      //~ if(ientry % 100 == 0)
-         cout<<" Loaded Event:: " << ientry << endl;
-      
-      if (ientry == 10000)
-//      if (ientry == 20000)
-         break;
-      
-      tagr.NextEvent();
-   }
-   
-   tagr.EndEventLoop();
-   
-   outFile->Print();
-   outFile->Close();
-   bmActVmeReader->Close();
-   
-   watch.Print();
+  outFile = new TAGactTreeWriter("outFile");
+  FillBmVME(name);
+  
+  tagr.AddRequiredItem("bmActVmeReader");
+  tagr.AddRequiredItem("bmActNtuRaw");
+  tagr.AddRequiredItem("bmActTrack");
+  tagr.AddRequiredItem("outFile");
+  tagr.Print();
+  
+  Int_t pos = name.Last('.');
+  TString nameOut = name(0, pos);
+  nameOut.Append("_readbmrawvme_Out.root");
+  
+  if (outFile->Open(nameOut.Data(), "RECREATE")) return;
+  bmActTrack->SetHistogramDir(outFile->File());
+  bmActNtuRaw->SetHistogramDir(outFile->File());
+  
+  cout<<" Beginning the Event Loop "<<endl;
+  tagr.BeginEventLoop();
+  TStopwatch watch;
+  watch.Start();
+  
+  for (Long64_t ientry = 0; ientry < maxevt; ientry++) {
+    if(ientry % 100 == 0)
+      cout<<" Loaded Event:: " << ientry << endl;
+    if(!tagr.NextEvent())
+      break;
+  }
+  
+  tagr.EndEventLoop();
+  
+  outFile->Print();
+  outFile->Close();
+  bmActVmeReader->Close();
+  
+  watch.Print();
 }
 
 

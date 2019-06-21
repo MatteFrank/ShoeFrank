@@ -184,32 +184,35 @@ Bool_t TABMparGeo::FromFile(const TString& name)
       cout << "  Delta: "
       << Form("%f %f %f", fBmDeltaDch[0], fBmDeltaDch[1], fBmDeltaDch[2]) << endl;
    
-   // read wire align position
-   ReadVector3(fWireAlign);
-   if(fDebugLevel)
-      cout << "  Alignment: "
-      << Form("%f %f %f", fWireAlign[0], fWireAlign[1], fWireAlign[2]) << endl;
-   
-   // read wire tilt angles
-   ReadVector3(fWireTilt);
-   if(fDebugLevel)
-      cout  << "  Tilt: "
-      << Form("%f %f %f", fWireTilt[0], fWireTilt[1], fWireTilt[2]) << endl;
-
-   // Build wire matrix transformation
-   SetupMatrices(1);
-
-   TGeoTranslation trans(fWireAlign[0], fWireAlign[1], fWireAlign[2]);
-
-   TGeoRotation rot;
-   rot.RotateX(fWireTilt[0]);
-   rot.RotateY(fWireTilt[1]);
-   rot.RotateZ(fWireTilt[2]);
-
-   TGeoHMatrix  transfo;
-   transfo  = trans;
-   transfo *= rot;
-   AddTransMatrix(new TGeoHMatrix(transfo));
+  
+   SetupMatrices(36);
+   for(Int_t i=0;i<36;i++){
+     // read wire align position
+     ReadVector3(fWireAlign);
+     if(fDebugLevel)
+        cout << "  Alignment: "
+        << Form("%f %f %f", fWireAlign[0], fWireAlign[1], fWireAlign[2]) << endl;
+     
+     // read wire tilt angles
+     ReadVector3(fWireTilt);
+     if(fDebugLevel)
+        cout  << "  Tilt: "
+        << Form("%f %f %f", fWireTilt[0], fWireTilt[1], fWireTilt[2]) << endl;
+  
+     // Build wire matrix transformation
+  
+     TGeoTranslation trans(fWireAlign[0], fWireAlign[1], fWireAlign[2]);
+  
+     TGeoRotation rot;
+     rot.RotateX(fWireTilt[0]);
+     rot.RotateY(fWireTilt[1]);
+     rot.RotateZ(fWireTilt[2]);
+  
+     TGeoHMatrix  transfo;
+     transfo  = trans;
+     transfo *= rot;
+     AddTransMatrix(new TGeoHMatrix(transfo),i);
+   }
    
    InitGeo();
    
@@ -228,7 +231,12 @@ void TABMparGeo::InitGeo()
    
    Int_t modXY = fWireLayersN/fSensesN;
    Int_t modZ  = fSensesN;
+   Int_t cellid, cell;
+   TVector3 wiredir;
    
+   if (fDebugLevel) 
+     cout<<"I'll printout the BM wire positions"<<endl;
+     
    for(int iLayer = 0; iLayer < fLayersN; ++iLayer) {
       Int_t iWire = 0;
       
@@ -248,14 +256,58 @@ void TABMparGeo::InitGeo()
             
             fPosZ[iWire][iLayer][0] = -fBmSideDch[2]/2 + fBmDeltaDch[2] + i*fBmStep + (2*iLayer)*(2*fBmStep + fBmDplane) ;
             fPosZ[iWire][iLayer][1] = -fBmSideDch[2]/2 + fBmDeltaDch[2] + i*fBmStep + (2*iLayer+1)*(2*fBmStep + fBmDplane) ;
-            
-            fPosCX[iWire][iLayer][0] = fBmSideDch[0];
-            fPosCY[iWire][iLayer][0] = 0.;
-            fPosCZ[iWire][iLayer][0] = 0.;
 
-            fPosCX[iWire][iLayer][1] = 0.;
-            fPosCY[iWire][iLayer][1] = fBmSideDch[1];
-            fPosCZ[iWire][iLayer][1] = 0.;
+            cell=-1;
+            if(iWire==fBmIdSense[0]){
+              cell=0;
+            }else if(iWire==fBmIdSense[1]){
+              cell=1;
+            }else if (iWire==fBmIdSense[2]){
+              cell=2;
+            }
+            if(cell!=-1){//it's a sense wire! I need to adjust it
+              cellid=GetBMNcell(iLayer,0,cell);
+              fPosX[iWire][iLayer][0]=fPosX[iWire][iLayer][0]+GetTransfo(cellid)->GetTranslation()[0];
+              fPosY[iWire][iLayer][0]=fPosY[iWire][iLayer][0]+GetTransfo(cellid)->GetTranslation()[1];
+              fPosZ[iWire][iLayer][0]=fPosZ[iWire][iLayer][0]+GetTransfo(cellid)->GetTranslation()[2];
+              wiredir.SetXYZ(fBmSideDch[0],0.,0.);
+              wiredir=MasterToLocalVect(cellid,wiredir);
+              fPosCX[iWire][iLayer][0] = wiredir.X();
+              fPosCY[iWire][iLayer][0] = wiredir.Y();
+              fPosCZ[iWire][iLayer][0] = wiredir.Z();
+              
+              if (fDebugLevel){ 
+                cout<<"cellid="<<cellid<<"   traslation="<<GetTransfo(cellid)->GetTranslation()[0]<<"  "<<GetTransfo(cellid)->GetTranslation()[1]<<"  "<<GetTransfo(cellid)->GetTranslation()[2]<<endl;
+                cout<<"pos= "<<fPosX[iWire][iLayer][0]<<"  "<<fPosY[iWire][iLayer][0]<<"  "<<fPosZ[iWire][iLayer][0]<<endl;
+                cout<<"dir= "<<fPosCX[iWire][iLayer][0]<<"  "<<fPosCY[iWire][iLayer][0]<<"  "<<fPosCZ[iWire][iLayer][0]<<endl;
+              }
+              
+              cellid=GetBMNcell(iLayer,1,cell);
+              fPosX[iWire][iLayer][1]=fPosX[iWire][iLayer][1]+GetTransfo(cellid)->GetTranslation()[0];
+              fPosY[iWire][iLayer][1]=fPosY[iWire][iLayer][1]+GetTransfo(cellid)->GetTranslation()[1];
+              fPosZ[iWire][iLayer][1]=fPosZ[iWire][iLayer][1]+GetTransfo(cellid)->GetTranslation()[2];
+              wiredir.SetXYZ(0.,fBmSideDch[1],0.);
+              wiredir=MasterToLocalVect(cellid,wiredir);
+              fPosCX[iWire][iLayer][1] = wiredir.X();
+              fPosCY[iWire][iLayer][1] = wiredir.Y();
+              fPosCZ[iWire][iLayer][1] = wiredir.Z();              
+              
+              if (fDebugLevel) {
+                cout<<"cellid="<<cellid<<"   traslation="<<GetTransfo(cellid)->GetTranslation()[0]<<"  "<<GetTransfo(cellid)->GetTranslation()[1]<<"  "<<GetTransfo(cellid)->GetTranslation()[2]<<endl;
+                cout<<"pos= "<<fPosX[iWire][iLayer][1]<<"  "<<fPosY[iWire][iLayer][1]<<"  "<<fPosZ[iWire][iLayer][1]<<endl;
+                cout<<"dir= "<<fPosCX[iWire][iLayer][1]<<"  "<<fPosCY[iWire][iLayer][1]<<"  "<<fPosCZ[iWire][iLayer][1]<<endl;
+              }
+              
+            }else{//it's a field wire
+              fPosCX[iWire][iLayer][0] = fBmSideDch[0];
+              fPosCY[iWire][iLayer][0] = 0.;
+              fPosCZ[iWire][iLayer][0] = 0.;
+  
+              fPosCX[iWire][iLayer][1] = 0.;
+              fPosCY[iWire][iLayer][1] = fBmSideDch[1];
+              fPosCZ[iWire][iLayer][1] = 0.;
+            }
+            
             iWire++;
          }
       }
@@ -263,6 +315,7 @@ void TABMparGeo::InitGeo()
    
    DefineMaterial();
 }
+
 
 //_____________________________________________________________________________
 void TABMparGeo::DefineMaterial()
@@ -353,33 +406,33 @@ TVector3 TABMparGeo::ProjectFromPversR0(Double_t PversXZ, Double_t PversYZ, Doub
 }
 
 //_____________________________________________________________________________
-void TABMparGeo::SetWireAlignment(Bool_t reverse)
-{
-   Int_t modZ  = 2;
+//~ void TABMparGeo::SetWireAlignment(Bool_t reverse)
+//~ {
+   //~ Int_t modZ  = 2;
    
-      for (Int_t iWire = 0; iWire< fWireLayersN; ++iWire) {
-         for(int iLayer = 0; iLayer < fLayersN; ++iLayer) {
-         for (Int_t j = 0; j < modZ; ++j) {
-            Double_t x = fPosX[iWire][iLayer][j];
-            Double_t y = fPosY[iWire][iLayer][j];
-            Double_t z = fPosZ[iWire][iLayer][j];
+      //~ for (Int_t iWire = 0; iWire< fWireLayersN; ++iWire) {
+         //~ for(int iLayer = 0; iLayer < fLayersN; ++iLayer) {
+         //~ for (Int_t j = 0; j < modZ; ++j) {
+            //~ Double_t x = fPosX[iWire][iLayer][j];
+            //~ Double_t y = fPosY[iWire][iLayer][j];
+            //~ Double_t z = fPosZ[iWire][iLayer][j];
             
-            Double_t cx = fPosCX[iWire][iLayer][j];
-            Double_t cy = fPosCY[iWire][iLayer][j];
-            Double_t cz = fPosCZ[iWire][iLayer][j];
+            //~ Double_t cx = fPosCX[iWire][iLayer][j];
+            //~ Double_t cy = fPosCY[iWire][iLayer][j];
+            //~ Double_t cz = fPosCZ[iWire][iLayer][j];
             
-            if (reverse) {
-               Detector2Wire(x, y, z, fPosX[iWire][iLayer][j], fPosY[iWire][iLayer][j], fPosZ[iWire][iLayer][j]);
-               Detector2Wire(cx, cy, cz, fPosCX[iWire][iLayer][j], fPosCY[iWire][iLayer][j], fPosCZ[iWire][iLayer][j]);
+            //~ if (reverse) {
+               //~ Detector2Wire(x, y, z, fPosX[iWire][iLayer][j], fPosY[iWire][iLayer][j], fPosZ[iWire][iLayer][j]);
+               //~ Detector2Wire(cx, cy, cz, fPosCX[iWire][iLayer][j], fPosCY[iWire][iLayer][j], fPosCZ[iWire][iLayer][j]);
 
-            } else {
-               Wire2Detector(x, y, z, fPosX[iWire][iLayer][j], fPosY[iWire][iLayer][j], fPosZ[iWire][iLayer][j]);
-               Wire2Detector(cx, cy, cz, fPosCX[iWire][iLayer][j], fPosCY[iWire][iLayer][j], fPosCZ[iWire][iLayer][j]);
-            }
-         }
-      }
-   }
-}
+            //~ } else {
+               //~ Wire2Detector(x, y, z, fPosX[iWire][iLayer][j], fPosY[iWire][iLayer][j], fPosZ[iWire][iLayer][j]);
+               //~ Wire2Detector(cx, cy, cz, fPosCX[iWire][iLayer][j], fPosCY[iWire][iLayer][j], fPosCZ[iWire][iLayer][j]);
+            //~ }
+         //~ }
+      //~ }
+   //~ }
+//~ }
 
 //______________________________________________________________________________
 TVector3 TABMparGeo::GetPlaneInfo(TVector3 pos, Int_t& view, Int_t& layer, Int_t& wire, Int_t& senseId)
@@ -940,7 +993,7 @@ string TABMparGeo::PrintParameters() {
 
 //______________________________________________________________________________
 /// Get cell id from position of the hit, layer and view
-Int_t TABMparGeo::GetCellId(TVector3 pos, int layer, int view)
+Int_t TABMparGeo::GetCell(TVector3 pos, int layer, int view)
 {
     Int_t cell = -1 ;
     Float_t shift = fBmDeltaDch[1]-fSensesN*fBmCellWide ;

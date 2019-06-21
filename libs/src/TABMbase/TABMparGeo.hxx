@@ -79,7 +79,7 @@ public:
    TVector3       GetWirePos(Int_t view, Int_t layer, Int_t wire) const;
    TVector3       GetWireDir(Int_t view) const;
 
-   int         GetCellId(TVector3 pos, int layer, int view) ;
+   int         GetCell(TVector3 pos, int layer, int view) ;
    
    void           GetCellInfo(Int_t view, Int_t plane, Int_t cellID,
                               Double_t& h_x, Double_t& h_y, Double_t& h_z,
@@ -107,7 +107,7 @@ public:
    TVector3       ProjectFromPversR0(TVector3 Pvers, TVector3 R0, Double_t z);
    TVector3       ProjectFromPversR0(Double_t PversXZ, Double_t PversYZ, Double_t R0X, Double_t R0Y, Double_t z);
    
-   void           SetWireAlignment(Bool_t reverse = false);
+   //~ void           SetWireAlignment(Bool_t reverse = false);
    
    void           InitGeo();
    
