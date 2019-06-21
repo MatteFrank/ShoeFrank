@@ -15,11 +15,12 @@
 class G4LogicalVolume; //General class to define a logical volume (properties, material)
 class G4VPhysicalVolume; //General class to define the position of the volume
 class TAVTparGeo;
+class TAVTbaseParGeo;
 
 class TCVTgeometryConstructor : public TCGbaseConstructor
 {
 public:
-   TCVTgeometryConstructor(TAVTparGeo* pParGeo, Bool_t bmFlag = false);
+   TCVTgeometryConstructor(TAVTbaseParGeo* pParGeo, Bool_t bmFlag = false);
    virtual ~TCVTgeometryConstructor();
    virtual G4LogicalVolume* Construct(); //method in which the physical volume is constructed
    
@@ -54,7 +55,7 @@ protected:
    G4VPhysicalVolume* fEpiPhy;
    G4VPhysicalVolume* fPixPhy;
    
-   TAVTparGeo* fpParGeo;
+   TAVTbaseParGeo* fpParGeo;
    
    TVector3 fMinPosition;
    TVector3 fMaxPosition;

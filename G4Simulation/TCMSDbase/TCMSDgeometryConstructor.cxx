@@ -14,7 +14,7 @@ TString TCMSDgeometryConstructor::fgkMsdEpiSDname = "MsdSD";
 using namespace CLHEP;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-TCMSDgeometryConstructor::TCMSDgeometryConstructor(TAVTparGeo* pParGeo)
+TCMSDgeometryConstructor::TCMSDgeometryConstructor(TAVTbaseParGeo* pParGeo)
 : TCVTgeometryConstructor(pParGeo)
 {
     SetEpiName("msdEpiPhy");

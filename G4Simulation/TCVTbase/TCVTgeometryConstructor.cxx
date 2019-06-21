@@ -35,7 +35,7 @@ TString TCVTgeometryConstructor::fgkBmEpiSDname  = "BmSD";
 using namespace CLHEP;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-TCVTgeometryConstructor::TCVTgeometryConstructor(TAVTparGeo* pParGeo, Bool_t bmFlag)
+TCVTgeometryConstructor::TCVTgeometryConstructor(TAVTbaseParGeo* pParGeo, Bool_t bmFlag)
 : TCGbaseConstructor("TCVTgeometryConstructor", "1.0"),
   fCmosLog(0x0),
   fEpiLog(0x0),

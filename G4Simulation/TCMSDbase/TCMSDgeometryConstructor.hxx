@@ -10,12 +10,12 @@
  \author Ch, Finck
  */
 
-class TAVTparGeo;
+class TAVTbaseParGeo;
 
 class TCMSDgeometryConstructor : public TCVTgeometryConstructor
 {
 public:
-   TCMSDgeometryConstructor(TAVTparGeo* pParGeo);
+   TCMSDgeometryConstructor(TAVTbaseParGeo* pParGeo);
    virtual ~TCMSDgeometryConstructor();
   
 public:
