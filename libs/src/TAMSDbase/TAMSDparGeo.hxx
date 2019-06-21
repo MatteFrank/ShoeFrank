@@ -32,19 +32,24 @@ public:
   // Define materials
   //   void        DefineMaterial();
   
+  //! Add SSSD module geometry to strip detector
+  TGeoVolume* AddModule(const char* basemoduleName = "SSSD", const char *name = "MSD");
+   
   //! Build MSD
   TGeoVolume* BuildMultiStripDetector(const char* basemoduleName = "Module", const char *name = "MSD");
+   
+  //! Reading from file
   Bool_t      FromFile(const TString& name = "");
   
   // to keep interace for compilation
-  virtual string PrintParameters();
-  virtual string PrintRotations();
-  virtual string PrintBodies();
-  virtual string PrintRegions();
-  virtual string PrintAssignMaterial();
-  virtual string PrintSubtractBodiesFromAir();
+  string      PrintParameters();
+  string      PrintRotations();
+  string      PrintBodies();
+  string      PrintRegions();
+  string      PrintAssignMaterial();
+  string      PrintSubtractBodiesFromAir();
 
-protected:
+private:
   map<string, vector<string> > m_regionName;
   map<string, vector<string> > m_bodyName;
   // map<string, vector<string> > m_regionPrintOut;

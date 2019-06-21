@@ -45,6 +45,7 @@ TAMSDparGeo::~TAMSDparGeo()
 //   TAVTbaseParGeo::DefineMaterial();
 //}
 
+//_____________________________________________________________________________
 Bool_t TAMSDparGeo::FromFile(const TString& name)
 {
    // simple file reading, waiting for real config file
@@ -100,9 +101,9 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
    if(fDebugLevel)
       cout  << "  Sensitive material density:  "<< fEpiMatDensity << endl;
 
-   // ReadItem(fPixThickness);
-   // if(fDebugLevel)
-   //    cout  << endl << "  Pixel thickness: "<< fPixThickness << endl;
+    ReadItem(fPixThickness);
+    if(fDebugLevel)
+       cout  << endl << "  Pixel thickness: "<< fPixThickness << endl;
 
    ReadStrings(fPixMat);
    if(fDebugLevel)
@@ -213,6 +214,26 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
 }
 
 //_____________________________________________________________________________
+TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *vertexName)
+{
+   // create MSD module
+   const Char_t* matName = fEpiMat.Data();
+   TGeoMedium*   medMod = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
+   
+   TGeoBBox *box = new TGeoBBox(Form("%s_Box",basemoduleName), fEpiSize.X()/2., fEpiSize.Y()/2.,
+                                fTotalSize.Z()/2.);
+   
+   TGeoVolume *vertexMod = new TGeoVolume(Form("%s_MSD",basemoduleName),box, medMod);
+   vertexMod->SetLineColor(kAzure-5);
+   vertexMod->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+   
+   // if (GlobalPar::GetPar()->geoFLUKA())
+   //    PrintFluka();
+   
+   return vertexMod;
+}
+
+//_____________________________________________________________________________
 TGeoVolume* TAMSDparGeo::BuildMultiStripDetector(const char* basemoduleName, const char *msdName)
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
@@ -231,13 +252,14 @@ TGeoVolume* TAMSDparGeo::BuildMultiStripDetector(const char* basemoduleName, con
 
    TGeoVolume* msdMod = 0x0;
 
-   //    TGeoHMatrix* hm = GetTransfo(iSensor);
-   //    msdMod = AddModule(Form("%s%d",basemoduleName, iSensor), msdName);
-   //
-   //    TGeoHMatrix* transf = (TGeoHMatrix*)hm->Clone();
-   //
-   //    msd->AddNode(msdMod, iSensor, transf);
+   for(Int_t iSensor = 0; iSensor < fSensorsN; iSensor++) {
 
+      TGeoHMatrix* hm = GetTransfo(iSensor);
+      msdMod = AddModule(Form("%s%d",basemoduleName, iSensor), msdName);
+   
+      TGeoHMatrix* transf = (TGeoHMatrix*)hm->Clone();
+      msd->AddNode(msdMod, iSensor, transf);
+   }
    return msd;
 }
 

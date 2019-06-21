@@ -26,7 +26,7 @@ EpiSizeX:          9.600   EpiSizeY:      9.390   EpiSizeZ:      0.0150
 EpiOffsetX:        0.1075  EpiOffsetY:    0.2125  EpiOffsetZ:    0.0000
 EpiMat:            "Si"
 EpiMatDensity:     2.329
-//PixThickness:      0.00064
+PixThickness:      0.00064
 PixMat:            "SiO2"
 PixMatDensity:     2.65
 MetalThickness:    0.0001
