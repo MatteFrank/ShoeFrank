@@ -46,7 +46,8 @@ void FillBmVME(TString name) {
    
    TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
    TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
-   geomap->FromFile();
+   TString parFileName = Form("./geomaps/TABMdetector.map");
+   geomap->FromFile(parFileName.Data());
             
    TAGparaDsc* tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
    TAGparGeo* parGeo = (TAGparGeo*)tgGeo->Object();
@@ -54,7 +55,7 @@ void FillBmVME(TString name) {
 
    TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
    TABMparCon* parConf = (TABMparCon*)bmConf->Object();
-   TString parFileName = "./config/beammonitor.cfg";
+   parFileName = "./config/TABMdetector.cfg";
    parConf->FromFile(parFileName.Data());
    parFileName = "./config/bmreso_vs_r.root";
    parConf->LoadReso(parFileName);
@@ -63,8 +64,7 @@ void FillBmVME(TString name) {
 
    TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
    TABMparMap*  parMap = (TABMparMap*)bmMap->Object();
-   parFileName = "./geomaps/";
-   parFileName += parConf->GetParmapfile();
+   parFileName = "./config/TABMdetector.map";
    parMap->FromFile(parFileName.Data(), geomap);
 
   

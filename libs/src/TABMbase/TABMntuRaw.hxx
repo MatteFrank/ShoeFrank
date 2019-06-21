@@ -38,7 +38,7 @@ class TABMntuRaw : public TAGdata {
     TABMntuHit*       Hit(Int_t i_ind);
     const TABMntuHit* Hit(Int_t i_ind) const;
 
-    TABMntuHit*       NewHit(Int_t id, Int_t iv, Int_t il, Int_t ic, Double_t r, Double_t t, Double_t s);
+    TABMntuHit*       NewHit(Int_t iv, Int_t il, Int_t ic, Double_t r, Double_t t, Double_t s);
 
     virtual void      SetupClones();
 

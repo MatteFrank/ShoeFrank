@@ -85,16 +85,17 @@ void FillBm(TString fExpName) {
 
   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
   TABMparCon* parConf = (TABMparCon*)bmConf->Object();
-  parFileName = "./config/beammonitor.cfg";
+  parFileName = "./config/TABMdetector.cfg";
   parConf->FromFile(parFileName.Data());
   parFileName = "./config/bmreso_vs_r.root";
   parConf->LoadReso(parFileName);
-  parFileName = "./config/T0evaluation_data_built.2242.physics_foot.daq.VTX.1.dat.cfg";
+  //~ parFileName = "./config/T0evaluation_data_built.2242.physics_foot.daq.VTX.1.dat.cfg";
+  parFileName = "./config/T0evaluation_data_built.2211.physics_foot.daq.VTX.1.dat.cfg";
   parConf->loadT0s(parFileName);
   
   TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
   TABMparMap*  bmparMap = (TABMparMap*)bmMap->Object();
-  parFileName = Form("./geomaps/%sbeammonitor_geoch.map", fExpName.Data());
+  parFileName = Form("./config/%sTABMdetector.map", fExpName.Data());
   bmparMap->FromFile(parFileName.Data(), bmgeomap);
   
   TAGparaDsc* fpParTimeSt = new TAGparaDsc("stTime", new TASTparTime()); // need the file
@@ -187,7 +188,7 @@ void Booking(TFile *f_out){
 }
 
 //~ void ReadBmVtxRaw(TString name = "data_test.00001462.physics_foot.daq.RAW._lb0000._EB-RCD._0001.data")
-void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.VTX.1.dat")
+void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2211.physics_foot.daq.VTX.1.dat")
 //~ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242.physics_foot.daq.VTX.1.dat")
 {  
   Int_t maxevents=1e7;

@@ -104,14 +104,13 @@ void FillBm(TString name) {
 
   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
   TABMparCon* parConf = (TABMparCon*)bmConf->Object();
-  TString parFileName = "./config/beammonitor.cfg";
+  TString parFileName = "./config/TABMdetector.cfg";
   parConf->FromFile(parFileName.Data());
   parFileName = "./config/bmreso_vs_r.root";
   
   TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
   TABMparMap*  bmparMap = (TABMparMap*)bmMap->Object();
-  parFileName = "./geomaps/";
-  parFileName += parConf->GetParmapfile();
+  parFileName = "./config/TABMdetector.map";
   bmparMap->FromFile(parFileName.Data(), bmgeomap);
 
    TAGparaDsc* fpParTimeSt = new TAGparaDsc("stTime", new TASTparTime()); // need the file
@@ -154,7 +153,7 @@ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_
    out_filename.Prepend(tmp_tstring.Data());
    out_filename.Append(".root");
    TString T0filename=in_filename(in_filename.Last('/')+1,in_filename.Last('.'));
-   T0filename.Prepend("T0evaluation_");
+   T0filename.Prepend("./config/T0evaluation_");
    T0filename.Append(".cfg");
       
    GlobalPar::Instance();
@@ -268,7 +267,7 @@ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_
         break;// no more events
       ((TH1D*)gDirectory->Get("TDC/st_trigtime"))->Fill(sttrigger);            
       ((TH1D*)gDirectory->Get("TDC/bm_trigtime"))->Fill(mytrigger/10.);            
-      ((TH1D*)gDirectory->Get("TDC/bm-st_trigtime"))->Fill(sttrigger);            
+      ((TH1D*)gDirectory->Get("TDC/bm-st_trigtime"))->Fill(mytrigger/10.-sttrigger);            
     }//end of the event loop
    
     tagr.EndEventLoop();
@@ -315,8 +314,7 @@ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_
   
   //  if(bmcon->GetBMdebug()>3)
   bmcon->CoutT0();
-  bmcon->SetBmt0filename(T0filename.Data());
-  bmcon->PrintT0s(in_filename,ientry);
+  bmcon->PrintT0s(T0filename, in_filename,ientry);
   
   f_out->Write();
   f_out->Close(); 

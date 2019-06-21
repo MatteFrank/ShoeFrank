@@ -214,7 +214,7 @@ void BaseLocalReco::ReadParFiles()
       
       fpParConfBm = new TAGparaDsc("bmConf", new TABMparCon());
       TABMparCon* parConf = (TABMparCon*)fpParConfBm->Object();
-      parFileName = "./config/beammonitor.cfg";
+      parFileName = "./config/TABMdetector.cfg";
       parConf->FromFile(parFileName.Data());
       parFileName = Form("./config/%sT0_beammonitor.cfg", fExpName.Data());
       parConf->loadT0s(parFileName);
@@ -224,7 +224,7 @@ void BaseLocalReco::ReadParFiles()
       
       fpParMapBm = new TAGparaDsc("bmMap", new TABMparMap());
       TABMparMap*  parMapBm = (TABMparMap*)fpParMapBm->Object();
-      parFileName = Form("./geomaps/%sbeammonitor_geoch.map", fExpName.Data());
+      parFileName = Form("./config/%sTABMdetector.map", fExpName.Data());
       parMapBm->FromFile(parFileName.Data(), parGeo);
    }
    
