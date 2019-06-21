@@ -41,6 +41,7 @@ TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
   fpConfig(pConfig),
   fpParMap(pParMap),
   fData(0x0),
+  fDataEvent(0x0),
   fEventNumber(0),
   fTriggerNumber(0),
   fTimeStamp(0),
@@ -80,7 +81,8 @@ TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
 //! Destructor.
 TAVTactBaseRaw::~TAVTactBaseRaw()
 {
-   delete [] fDataEvent;
+   if (fDataEvent)
+      delete [] fDataEvent;
 }
 
 //------------------------------------------+-----------------------------------
