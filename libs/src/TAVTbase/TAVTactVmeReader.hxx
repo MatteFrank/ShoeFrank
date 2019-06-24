@@ -58,13 +58,13 @@ private:
    
 private:	
    //! Get the event
-   Bool_t GetSensorEvent(Int_t iSensor);
+   Bool_t           GetSensorEvent(Int_t iSensor);
    
    //! Get frame and returns frameRaw
-   Bool_t GetFrame(Int_t iSensor, MI26_FrameRaw* data);
+   Bool_t           GetFrame(Int_t iSensor, MI26_FrameRaw* data);
    
    //! Set run number
-   void   SetRunNumber(const TString& name);
+   void             SetRunNumber(const TString& name);
    
    ClassDef(TAVTactVmeReader,0)
 };
