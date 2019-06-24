@@ -31,7 +31,7 @@ public:
    virtual Bool_t  Process();
    
    //! Set start trigger number for re-synchronization
-   void    SetTrigJumpStart(Int_t start)                    { fTrigJumpStart = start;     }
+   void            SetTrigJumpStart(Int_t start)            { fTrigJumpStart = start;     }
 
  public:
    enum {kSize = 10};
@@ -41,20 +41,20 @@ public:
    static void     SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump);
    
 private:
-   ifstream          fRawFileAscii[kSize]; // file streamm
-   Int_t             fRunNumber;           // run number
+   ifstream        fRawFileAscii[kSize]; // file streamm
+   Int_t           fRunNumber;           // run number
 
-   TString           fPrefixName;          // prefix folder name
-   TString           fBaseName;         // base file name
+   TString         fPrefixName;          // prefix folder name
+   TString         fBaseName;            // base file name
    
-   Int_t             fTrigJumpStart;
+   Int_t            fTrigJumpStart;
    map<pair<int,int>,  int>  fTrigJumpFirst;
    
 private:
-   static       TString fgDefaultFolderName;
-   static       TString fgDefaultExtName;
-   static       map< pair<int, int>, int> fgTrigJumpMap;
-   static       Bool_t fgTrigJumpAuto;
+   static           TString fgDefaultFolderName;
+   static           TString fgDefaultExtName;
+   static           map< pair<int, int>, int> fgTrigJumpMap;
+   static           Bool_t fgTrigJumpAuto;
    
 private:	
    //! Get the event
