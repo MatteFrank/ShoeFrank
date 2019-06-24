@@ -53,7 +53,7 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
 
    TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
    TABMparCon* parConf = (TABMparCon*)bmConf->Object();
-   TString parFileName = "./config/beammonitor.cfg";
+   TString parFileName = "./config/TABMdetector.cfg";
    parConf->FromFile(parFileName.Data());
    
    parFileName = "./config/bmreso_vs_r.root";
