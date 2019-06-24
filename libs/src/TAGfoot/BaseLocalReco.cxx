@@ -209,7 +209,7 @@ void BaseLocalReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeBM()) {
       fpParGeoBm = new TAGparaDsc("bmGeo", new TABMparGeo());
       TABMparGeo* parGeo = (TABMparGeo*)fpParGeoBm->Object();
-      TString parFileName = Form("./geomaps/%sTABMdetector.map", fExpName.Data());
+      TString parFileName = "./geomaps/TABMdetector.map";
       parGeo->FromFile(parFileName.Data());
       
       fpParConfBm = new TAGparaDsc("bmConf", new TABMparCon());

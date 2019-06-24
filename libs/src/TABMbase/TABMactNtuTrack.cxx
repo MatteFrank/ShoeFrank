@@ -169,18 +169,24 @@ Bool_t TABMactNtuTrack::Action()
       p_ntutrk->GetTrackStatus()=1;
     else
       p_ntutrk->GetTrackStatus()=2;
+    if(ValidHistogram())
+      fpHisTrackStatus->Fill(p_ntutrk->GetTrackStatus());  
     fpNtuTrk->SetBit(kValid);
     return kTRUE;
   }else if(i_nhit>=p_bmcon->GetMaxnhit_cut()){
     if(p_bmcon->GetBMdebug()>3)
       cout<<"TABMactNtuTrack::WARNING!!::the number of hits is too high:  number of hit="<<i_nhit<<"  Maxhitcut="<<p_bmcon->GetMaxnhit_cut()<<endl;
-      p_ntutrk->GetTrackStatus()=-2;
+    p_ntutrk->GetTrackStatus()=-2;
+    if(ValidHistogram())
+      fpHisTrackStatus->Fill(p_ntutrk->GetTrackStatus());  
     fpNtuTrk->SetBit(kValid);
     return kTRUE;
   }else if(i_nhit<=p_bmcon->GetMinnhit_cut()){
     if(p_bmcon->GetBMdebug()>3)
       cout<<"TABMactNtuTrack::WARNING!!::the number of hits is too low:  number of hit="<<i_nhit<<"  Minhitcut="<<p_bmcon->GetMinnhit_cut()<<endl;
-      p_ntutrk->GetTrackStatus()=-1;  
+    p_ntutrk->GetTrackStatus()=-1;
+    if(ValidHistogram())
+      fpHisTrackStatus->Fill(p_ntutrk->GetTrackStatus());    
     fpNtuTrk->SetBit(kValid);
     return kTRUE;
   }else
