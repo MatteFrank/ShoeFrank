@@ -259,7 +259,7 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
             TVector3 pos(vin[0],vin[1],vin[2]);
             layer = (int)sensorId/2;
             view = -sensorId%2;
-            Int_t cell = fFootGeomConstructor->GetParGeoBm()->GetCellId(pos,sensorId,view);
+            Int_t cell = fFootGeomConstructor->GetParGeoBm()->GetCell(pos,sensorId,view);
             hit->AddBMN(trackId,TMath::Abs(layer),view, cell,
                         vin[0], vin[1], vin[2], vou[0], vou[1], vou[2], pin[0], pin[1], pin[2], pou[0], pou[1], pou[2],
                         edep, al, time);
