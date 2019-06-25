@@ -80,15 +80,17 @@ void FillBm(TString fExpName) {
     
   TAGparaDsc* bmGeo    = new TAGparaDsc("bmGeo", new TABMparGeo());
   TABMparGeo* bmgeomap   = (TABMparGeo*) bmGeo->Object();
-  TString parFileName = Form("./geomaps/%sTABMdetector.map", fExpName.Data());
+  TString  parFileName = "./geomaps/TABMdetector.map";
   bmgeomap->FromFile(parFileName.Data());
 
   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
   TABMparCon* parConf = (TABMparCon*)bmConf->Object();
   parFileName = "./config/TABMdetector.cfg";
   parConf->FromFile(parFileName.Data());
+  
   parFileName = "./config/bmreso_vs_r.root";
   parConf->LoadReso(parFileName);
+  
   //~ parFileName = "./config/T0evaluation_data_built.2242.physics_foot.daq.VTX.1.dat.cfg";
   parFileName = "./config/T0evaluation_data_built.2211.physics_foot.daq.VTX.1.dat.cfg";
   parConf->loadT0s(parFileName);
@@ -191,8 +193,8 @@ void Booking(TFile *f_out){
 void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2211.physics_foot.daq.VTX.1.dat")
 //~ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242.physics_foot.daq.VTX.1.dat")
 {  
-  Int_t maxevents=1e7;
-  TString fExpName="";
+  Int_t maxevents=300;
+  TString fExpName="GSI/";
   GlobalPar::Instance();
   GlobalPar::GetPar()->Print();
 
@@ -269,6 +271,7 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
     //~ }
     ((TH1D*)(f_out->Get("bm_tracknum")))->Fill(pbmntutrack->GetTracksN());
     vtx_bestchi2=1e7;
+    vtx_best_chi2_index=0;
     if(pbmntutrack->GetTracksN()==1){
       ((TH1D*)(f_out->Get("vtx_tracknum")))->Fill(pvtxntutrack->GetTracksN());
       for(int i=0;i<pvtxntutrack->GetTracksN();i++){//select the best vtx track
@@ -315,6 +318,7 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
   f_out->Write();
   f_out->Close();
   watch.Print();
+  cout<<"job done!  the output file are:"<<endl<<myfileoutname.Data()<<endl<<nameOut.Data()<<endl;
   }
 
 

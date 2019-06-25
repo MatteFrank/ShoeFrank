@@ -43,17 +43,18 @@ TABMactNtuTrack* bmActTrack = 0x0;
 void FillMCMsd(EVENT_STRUCT *myStr) {
    
    /*Ntupling the MC Vertex information*/
-   TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
-   TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
-   geomap->FromFile();
-   
    TAGparaDsc* tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
    TAGparGeo* parGeo = (TAGparGeo*)tgGeo->Object();
    parGeo->FromFile();
+   
+   TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
+   TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
+   TString  parFileName = "./geomaps/TABMdetector.map";  
+   geomap->FromFile(parFileName.Data());
 
    TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
    TABMparCon* parConf = (TABMparCon*)bmConf->Object();
-   TString parFileName = "./config/TABMdetector.cfg";
+   parFileName = "./config/TABMdetector.cfg";
    parConf->FromFile(parFileName.Data());
    
    parFileName = "./config/bmreso_vs_r.root";
@@ -71,11 +72,12 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
    outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
 }
 
-void ReadBmRawMC(TString name = "./data/footC200_C2H4.root")
+void ReadBmRawMC(TString name = "./data/flukasim/footC200_C2H4.root")
 //void ReadMsdRawMC(TString name = "p_80_vtx.root")
 //void ReadMsdRawMC(TString name = "12C_80_vtx.root")
 //void ReadMsdRawMC(TString name = "12C_400_vtx.root")
-{
+{  Long64_t nev=1000;
+  
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
 
@@ -125,20 +127,17 @@ void ReadBmRawMC(TString name = "./data/footC200_C2H4.root")
    
    Long64_t nentries = tree->GetEntries();
    
-   cout<<"Running against ntuple with:: "<<nentries<<" entries!"<<endl;
-   Long64_t nbytes = 0, nb = 0;
-   for (Long64_t ientry = 0; ientry < nentries; ientry++) {
+   Long64_t nbytes = 0, nb = 0, maxevents=min(nentries, nev);
+   cout<<"Running against ntuple with:: "<<nentries<<" entries, maxevents="<<maxevents<<endl;
+   
+   for (Long64_t ientry = 0; ientry < maxevents; ientry++) {
       
       nb = tree->GetEntry(ientry);
       nbytes += nb;
       
       if(ientry % 100 == 0)
          cout<<" Loaded Event:: " << ientry << endl;
-      
-      if (ientry == 1000)
-//      if (ientry == 20000)
-         break;
-      
+            
       if (!tagr.NextEvent()) break;
    }
    
@@ -148,6 +147,7 @@ void ReadBmRawMC(TString name = "./data/footC200_C2H4.root")
    outFile->Close();
    
    watch.Print();
+   cout<<"job done, the output file is: "<<nameOut.Data()<<endl;
 }
 
 

@@ -46,7 +46,7 @@ void FillBmVME(TString name) {
    
    TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
    TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
-   TString parFileName = Form("./geomaps/TABMdetector.map");
+   TString parFileName = "./geomaps/TABMdetector.map";
    geomap->FromFile(parFileName.Data());
             
    TAGparaDsc* tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
@@ -89,9 +89,9 @@ void FillBmVME(TString name) {
    outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
 }
 
-void ReadBmRawVME(TString name = "80MeV_HV2175_100kEv.dat")
+void ReadBmRawVME(TString name = "./data/msd_marzo/bmdata/6_March_2019/80MeV_HV2175_100kEv.dat")
 {  
-  Int_t maxevt=10000;
+  Int_t maxevt=1000;
   GlobalPar::Instance();
   GlobalPar::GetPar()->Print();
 
@@ -111,8 +111,7 @@ void ReadBmRawVME(TString name = "80MeV_HV2175_100kEv.dat")
   tagr.AddRequiredItem("outFile");
   tagr.Print();
   
-  Int_t pos = name.Last('.');
-  TString nameOut = name(0, pos);
+  TString nameOut = name(name.Last('/')+1, name.Last('.'));
   nameOut.Append("_readbmrawvme_Out.root");
   
   if (outFile->Open(nameOut.Data(), "RECREATE")) return;
@@ -138,6 +137,7 @@ void ReadBmRawVME(TString name = "80MeV_HV2175_100kEv.dat")
   bmActVmeReader->Close();
   
   watch.Print();
+  cout<<"job done, the output file is: "<<nameOut.Data()<<endl;
 }
 
 
