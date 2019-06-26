@@ -83,7 +83,7 @@ int main (int argc, char *argv[]) {
     // read geomap files
     dipGeo->FromFile();
     stcGeo->FromFile();
-    parFileName = Form("./geomaps/%sTABMdetector.map", exp.Data());
+    parFileName = "./geomaps/TABMdetector.map";
     bmGeo->FromFile(parFileName.Data());
 
     parFileName = Form("./geomaps/%sTAVTdetector.map", exp.Data());

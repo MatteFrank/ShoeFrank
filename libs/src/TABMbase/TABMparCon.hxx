@@ -97,9 +97,9 @@ class TABMparCon : public TAGparTools {
     Float_t enxcell_cut; //(Gev) if a hit has deposited energy less then energyxcell_cut the hit will be thrown (only for MC events)
     Float_t chi2red_cut;
     Int_t    planehit_cut;//minimum number of plane with at least 1 hit for each view (<=6 && >=3)
-    Int_t    minnhit_cut;
-    Int_t    maxnhit_cut;
-    Int_t    rejmax_cut;
+    Int_t    minnhit_cut; //cut on the minimum number of hit for the reconstruction algorithm
+    Int_t    maxnhit_cut; //cut on the maximum number of hit for the reconstruction algorithm
+    Int_t    rejmax_cut; //maximum number of hit that can be rejected during the reconstruction 
     Int_t    fitter_index;
     Int_t    bm_debug;//index for the bm_debug, (it is set at least to the global debug level)
     //~ string   datafile_name;//name of the input data file 

@@ -61,7 +61,7 @@ void FillBm(TString fExpName) {
      
    TAGparaDsc* bmGeo    = new TAGparaDsc("bmGeo", new TABMparGeo());
    TABMparGeo* bmgeomap   = (TABMparGeo*) bmGeo->Object();
-   TString parFileName = Form("./geomaps/%sTABMdetector.map", fExpName.Data());
+   TString parFileName = "./geomaps/TABMdetector.map";
    bmgeomap->FromFile(parFileName.Data());
 
    TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
@@ -116,7 +116,7 @@ void FillBm(TString fExpName) {
 //~ void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.VTX.1.dat")
 void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242.physics_foot.daq.VTX.1.dat")
 {  
-   Int_t maxevents=1e7;
+   Int_t maxevents=200;
    TString fExpName="";
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
@@ -158,7 +158,7 @@ void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242
    for (Long64_t ientry = 0; ientry < maxevents; ientry++) {
      cout<<" Loaded Event:: " <<std::dec<< ientry << endl;
      if(!tagr.NextEvent()) 
-       break 
+       break; 
    }
    
    tagr.EndEventLoop();
