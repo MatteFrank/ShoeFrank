@@ -19,7 +19,7 @@
 
 /*!
  \class TAVTactBaseRaw TAVTactBaseRaw.hxx "TAVTactBaseRaw.hxx"
- \brief Base class to get vertex raw data. **
+ \brief Base class to decode vertex raw data. **
  */
 
 ClassImp(TAVTactBaseRaw);

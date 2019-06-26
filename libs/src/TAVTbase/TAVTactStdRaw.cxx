@@ -15,7 +15,7 @@
 
 /*!
  \class TAVTactStdRaw TAVTactStdRaw.hxx "TAVTactStdRaw.hxx"
- \brief Get vertex raw data from DAQ. **
+ \brief Read raw data from single VTX file ()ascii format) from new firmware **
  */
 
 ClassImp(TAVTactStdRaw);

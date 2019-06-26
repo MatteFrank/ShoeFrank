@@ -14,7 +14,7 @@
 
 /*!
  \class TAVTactBaseNtuRaw TAVTactBaseNtuRaw.hxx "TAVTactBaseNtuRaw.hxx"
- \brief Get vertex raw data from DAQ. **
+ \brief Base to decode raw data from single file **
  */
 
 ClassImp(TAVTactBaseNtuRaw);

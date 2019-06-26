@@ -14,7 +14,7 @@
 
 /*!
  \class TAVTactNtuRaw TAVTactNtuRaw.hxx "TAVTactNtuRaw.hxx"
- \brief Get vertex raw data from DAQ. **
+ \brief Get vertex raw data from DAQ (binary format) **
  */
 
 ClassImp(TAVTactNtuRaw);

@@ -1,6 +1,7 @@
 /*!
   \file
-  \brief   Implementation of TAVTactVmeReader.
+ \brief Get vertex raw data from stanbd alone files (ascii format)
+  Keep VME name, though new card is no more VME standard
 */
 
 #include <limits.h>
