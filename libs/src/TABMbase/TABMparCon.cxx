@@ -154,7 +154,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
     if(strchr(bufConf,'!')) {
       //      Info("FromFile()","Skip comment line:: %s",bufConf);
     }else if(strchr(bufConf,'R')) {
-      sscanf(bufConf, "R %lf",&myArg1);
+      sscanf(bufConf, "R %f",&myArg1);
       if(myArg1>0) 
         rdrift_cut = myArg1;
       else {
@@ -180,7 +180,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
 	      return kTRUE;
         }
     }else if(strchr(bufConf,'Z')) {
-      sscanf(bufConf, "Z  %lf %d %lf", &myArg1,&myArgIntmin, &myArg2);
+      sscanf(bufConf, "Z  %f %d %f", &myArg1,&myArgIntmin, &myArg2);
       if((myArgIntmax==1 || myArgIntmax==0 || myArgIntmax==2 || myArgIntmax==3)  &&  myArg1>=0 && myArg2>=0){
         t0_sigma=myArg1;
         t0choice=myArgIntmin;
@@ -190,7 +190,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
 	      return kTRUE;
         }
     }else if(strchr(bufConf,'M')) {
-      sscanf(bufConf, "M %d %lf %lf %lf %lf %lf %d",&myArgInt, &myArg1, &myArg2, &myArg3, &myArg4, &myArg5, &myArgIntmax);
+      sscanf(bufConf, "M %d %f %f %f %f %f %d",&myArgInt, &myArg1, &myArg2, &myArg3, &myArg4, &myArg5, &myArgIntmax);
       if((myArgInt==0 || myArgInt==1) && myArg1>=0 && myArg2>=0 && myArg3>=0 && myArg4>=0 && myArg5>=0 && myArgIntmax>=0 && myArgIntmax<6){
         smearhits = myArgInt;
         fakehits_mean=myArg1;
@@ -207,7 +207,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
       sscanf(bufConf, "W %d",&myArgInt);
       strel_switch = myArgInt;        
     }else if(strchr(bufConf,'J')) {
-      sscanf(bufConf, "J %d %lf ",&myArgInt, &myArg1);
+      sscanf(bufConf, "J %d %f ",&myArgInt, &myArg1);
       if(myArgInt>=0 && myArg1>0){
         rejmax_cut = myArgInt;
         chi2red_cut=myArg1;
@@ -216,7 +216,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
 	      return kTRUE;
         }
     }else if(strchr(bufConf,'F')) {
-      sscanf(bufConf, "F %d %d %d %lf",&myArgInt, &myArgIntmax, &myArgIntmin, &myArg1);
+      sscanf(bufConf, "F %d %d %d %f",&myArgInt, &myArgIntmax, &myArgIntmin, &myArg1);
       if(myArgInt>=0 && (myArgIntmax==0 || myArgIntmax==1 || myArgIntmax==2) && myArgIntmin>=0 && myArg1>=0.){
         fitter_index = myArgInt;
         prefit_enable=myArgIntmax;
