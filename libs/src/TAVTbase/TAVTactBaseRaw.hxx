@@ -116,6 +116,9 @@ protected:
    
    //! Fill histogram frame
    void FillHistoEvt(Int_t iSensor);
+   
+   //! Fill DAQ event
+   virtual void FillDaqEvent() { return; }
 
    ClassDef(TAVTactBaseRaw,0)
 

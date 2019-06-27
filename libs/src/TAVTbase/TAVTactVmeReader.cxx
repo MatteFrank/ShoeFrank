@@ -48,6 +48,9 @@ map<pair<int, int>, int > TAVTactVmeReader::fgTrigJumpMap = { {{0, 0}, 0}};
 // run 2242
 //map<pair<int, int>, int > TAVTactVmeReader::fgTrigJumpMap = { {{1, 60}, 59}};
 
+// run 2251
+//map<pair<int, int>, int > TAVTactVmeReader::fgTrigJumpMap = { {{0, 0}, 0}};
+
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -247,7 +250,7 @@ Bool_t TAVTactVmeReader::GetSensorEvent(Int_t iSensor)
          }
 
 
-         if(FootDebugLevel(3))
+       //  if(FootDebugLevel(3))
             printf("sensor %d: %d %d\n", iSensor, fTriggerNumber, fEventNumber);
          
          // fake time stamp
@@ -299,6 +302,8 @@ Bool_t TAVTactVmeReader::GetSensorEvent(Int_t iSensor)
       printf("\n");
    }
    
+   FillDaqEvent();
+
    return true;
 }
 

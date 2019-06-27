@@ -40,7 +40,7 @@ public:
    
    static void     SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump);
    
-private:
+protected:
    ifstream        fRawFileAscii[kSize]; // file streamm
    Int_t           fRunNumber;           // run number
 
@@ -50,13 +50,13 @@ private:
    Int_t            fTrigJumpStart;
    map<pair<int,int>,  int>  fTrigJumpFirst;
    
-private:
+protected:
    static           TString fgDefaultFolderName;
    static           TString fgDefaultExtName;
    static           map< pair<int, int>, int> fgTrigJumpMap;
    static           Bool_t fgTrigJumpAuto;
    
-private:	
+protected:
    //! Get the event
    Bool_t           GetSensorEvent(Int_t iSensor);
    

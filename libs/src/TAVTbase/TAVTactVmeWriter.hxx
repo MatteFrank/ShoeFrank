@@ -9,14 +9,11 @@
 #include <map>
 
 #include "TString.h"
-#include "TH1F.h"
 
-#include "TAVTactBaseRaw.hxx"
+#include "TAVTactVmeReader.hxx"
 
-class TH2F;
-class TH1F;
 //##############################################################################
-class TAVTactVmeWriter : public TAVTactBaseRaw  {
+class TAVTactVmeWriter : public TAVTactVmeReader  {
 public:
    explicit        TAVTactVmeWriter(const char* name=0, TAGdataDsc* pDatRaw = 0, TAGparaDsc* p_geomap=0, TAGparaDsc* p_config=0, TAGparaDsc* pParMap=0);
    virtual         ~TAVTactVmeWriter();
@@ -30,46 +27,19 @@ public:
    //! Process
    virtual Bool_t  Process();
    
-   //! Set start trigger number for re-synchronization
-   void            SetTrigJumpStart(Int_t start)            { fTrigJumpStart = start;     }
-
- public:
-   enum {kSize = 10};
-   static void     SetDefaultFolderName(const Char_t* name) { fgDefaultFolderName = name; }
-   static TString  GetDefaultFolderName()                   { return fgDefaultFolderName; }
-   
-   static void     SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump);
-   
 private:
-   ifstream        fRawFileAscii[kSize]; // file streamm
    ofstream        fDaqFile;
 
-   Int_t           fRunNumber;           // run number
-
-   TString         fPrefixName;          // prefix folder name
-   TString         fBaseName;            // base file name
-   
    vector<UInt_t>  fDaqEvent;
    Int_t           fDaqSize;
    
-   Int_t           fTrigJumpStart;
-   map<pair<int,int>,  int>  fTrigJumpFirst;
    
 private:
-   static           TString fgDefaultFolderName;
-   static           TString fgDefaultExtName;
-   static           map< pair<int, int>, int> fgTrigJumpMap;
-   static           Bool_t fgTrigJumpAuto;
-   
-private:	
-   //! Get the event
-   Bool_t           GetSensorEvent(Int_t iSensor);
-   
-   //! Fill and write DAQ event
+   //! Fill DAQ event
    void             FillDaqEvent();
    
-   //! Set run number
-   void             SetRunNumber(const TString& name);
+   //! Write DAQ event
+   void             WriteDaqEvent();
    
    ClassDef(TAVTactVmeWriter,0)
 };
