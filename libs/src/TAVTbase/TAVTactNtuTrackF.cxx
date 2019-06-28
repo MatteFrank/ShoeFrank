@@ -23,6 +23,7 @@
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
+#include "TAVTtrack.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTactNtuTrackF.hxx"

@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////
 
 #include "TAVTcluster.hxx"
-#include "TAVTntuTrack.hxx"
+#include "TAVTtrack.hxx"
 
 ClassImp(TAVTcluster) // Description of a cluster
 

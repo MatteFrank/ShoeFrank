@@ -18,7 +18,7 @@
 // VTX
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuTrack.hxx"
+#include "TAVTtrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTactBaseNtuVertex.hxx"
@@ -224,7 +224,7 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 
 //--------------------------------------------------------------
 //!Compute the point interaction of diffusion
-void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTline lvtx)
+void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtrack lvtx)
 {
    // retrieve trafo
    TAGgeoTrafo* pFirstGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());

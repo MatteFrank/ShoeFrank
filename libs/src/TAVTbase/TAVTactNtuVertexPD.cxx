@@ -10,7 +10,7 @@
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
 
-#include "TAVTntuTrack.hxx"
+#include "TAVTtrack.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTactNtuVertexPD.hxx"
 #include "TAVTactBaseNtuVertex.hxx"
@@ -69,11 +69,9 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
         for(Int_t j = i+1; j < nTracks; ++j){
        
             TAVTtrack* track0 = ntuTrack->GetTrack(i);
-            TAVTline  line0   = track0->GetTrackLine();
         
             TAVTtrack* track1 = ntuTrack->GetTrack(j);
-            TAVTline  line1   = track1->GetTrackLine();
-            SearchMaxProduct (line0, line1, i, j);             
+            SearchMaxProduct (track0, track1, i, j);
             
             if(fProbValuesMax[i*fTrack + j] < fProbabilityCut){
                 fFlagValidity[i*fTrack + j] = 0;
@@ -128,7 +126,7 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
 //___________________________________________
 //!Search max Value
 
-void TAVTactNtuVertexPD::SearchMaxProduct(TAVTline linei, TAVTline linej, Int_t i, Int_t j) 
+void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, Int_t i, Int_t j)
 {
     Double_t fi = 0;
     Double_t fj = 0;    
@@ -160,12 +158,12 @@ void TAVTactNtuVertexPD::SearchMaxProduct(TAVTline linei, TAVTline linej, Int_t 
 //----------------------------------------------
 //!Calcola il punto di vertice
 
-TVector3 TAVTactNtuVertexPD::ComputeVertexPoint(TAVTline line0, TAVTline line1, Double_t zVal)
+TVector3 TAVTactNtuVertexPD::ComputeVertexPoint(TAVTtrack* line0, TAVTtrack* line1, Double_t zVal)
 {
     //Calcolare la media delle due tracce
     TVector3 result;
-    Double_t x = (line0.GetPoint(zVal).X() + line1.GetPoint(zVal).X())/2;
-    Double_t y = (line0.GetPoint(zVal).Y() + line1.GetPoint(zVal).Y())/2;
+    Double_t x = (line0->GetPoint(zVal).X() + line1->GetPoint(zVal).X())/2;
+    Double_t y = (line0->GetPoint(zVal).Y() + line1->GetPoint(zVal).Y())/2;
     result.SetXYZ(x,y,zVal);
     return result;
 
@@ -174,7 +172,7 @@ TVector3 TAVTactNtuVertexPD::ComputeVertexPoint(TAVTline line0, TAVTline line1, 
 //----------------------------------------------
 //!Calcola il probabilitá
 
-Double_t TAVTactNtuVertexPD::ComputeProbabilityForSingleTrack(TAVTline lin0, TVector3 v)
+Double_t TAVTactNtuVertexPD::ComputeProbabilityForSingleTrack(TAVTtrack* lin0, TVector3 v)
 {
     //prendo le posizioni della tracia in esame
    
@@ -192,14 +190,14 @@ Double_t TAVTactNtuVertexPD::ComputeProbabilityForSingleTrack(TAVTline lin0, TVe
 //______________________________________________________
 //!Routin che calcola la minima distanza della retta dal punto
 
-TVector3 TAVTactNtuVertexPD::ComputeMinimumPointDistance(TAVTline l, TVector3 vt)
+TVector3 TAVTactNtuVertexPD::ComputeMinimumPointDistance(TAVTtrack* l, TVector3 vt)
 {
     Double_t z = vt[2];
     
-    TVector3 A  (l.GetPoint(z).X(), l.GetPoint(z).Y(),z);
+    TVector3 A  (l->GetPoint(z).X(), l->GetPoint(z).Y(),z);
     
     Double_t DZ = 1;
-    TVector3 cosDir = l.GetSlopeZ()*DZ;//Direzione della retta
+    TVector3 cosDir = l->GetSlopeZ()*DZ;//Direzione della retta
     Double_t cosDirMod = cosDir.Mag();
     cosDir *= 1/cosDirMod; //ho normalizzato quindi dovrebbe essere 1
     TVector3 AP = vt-A;
@@ -228,10 +226,9 @@ Double_t TAVTactNtuVertexPD::ComputeV (TVector3 rpos)
     //Loop sulle tracce 
     for (Int_t i = 0; i<fTrack; ++i){
         TAVTtrack* track1 = ntuTrack->GetTrack(i);
-        TAVTline  line1 = track1->GetTrackLine();
         if (fNotValidTrack[i] == -1){ //se sono valide
            // cout<<"Metto la traccia "<<i<<endl;
-            Double_t fi = ComputeProbabilityForSingleTrack(line1, rpos);
+            Double_t fi = ComputeProbabilityForSingleTrack(track1, rpos);
             firstMember += fi;
             secondMember += fi*fi;
         }

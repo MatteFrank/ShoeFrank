@@ -25,6 +25,7 @@
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
 #include "TAVTparCal.hxx"
+#include "TAVTtrack.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
@@ -504,9 +505,8 @@ void TAVTactBaseNtuTrack::UpdateParam(TAVTtrack* track)
 //  
 void TAVTactBaseNtuTrack::FillHistogramm(TAVTtrack* track)
 {   
-   TAVTline line = track->GetTrackLine();
-   fpHisTheta->Fill(line.GetTheta());
-   fpHisPhi->Fill(line.GetPhi());
+   fpHisTheta->Fill(track->GetTheta());
+   fpHisPhi->Fill(track->GetPhi());
    
    TAVTparGeo* pGeoMap = (TAVTparGeo*)fpGeoMap->Object();
    
@@ -534,7 +534,7 @@ void TAVTactBaseNtuTrack::FillHistogramm(TAVTtrack* track)
    fpHisChi2TotX->Fill(track->GetChi2U());
    fpHisChi2TotY->Fill(track->GetChi2V());
    
-   TVector3 origin = track->GetTrackLine().GetOrigin();
+   TVector3 origin = track->GetOrigin();
    fpHisBeamProf->Fill(origin.X(), origin.Y());
 }
 

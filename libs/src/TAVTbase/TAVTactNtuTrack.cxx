@@ -18,6 +18,7 @@
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
+#include "TAVTtrack.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTactNtuTrack.hxx"
@@ -122,7 +123,7 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
 			if (nClusters1 == 0) continue; //empty planes
 			
 			// loop on all clusters of this plane and keep the nearest one
-			minDistance = fSearchClusDistance*(1 + 3.*TMath::Tan(track->GetTrackLine().GetTheta()*TMath::DegToRad()));
+			minDistance = fSearchClusDistance*(1 + 3.*TMath::Tan(track->GetTheta()*TMath::DegToRad()));
 			TAVTcluster* bestCluster = 0x0;
 			
 			for( Int_t iClus = 0; iClus < nClusters1; ++iClus ) { // loop on plane clusters
