@@ -71,7 +71,7 @@ public:
    TAVTbaseTrack(const TAVTbaseTrack& aTrack);
    
    //! Get cluster
-   virtual TAVTcluster*   GetCluster(Int_t /*index*/) { return 0x0; }
+   virtual TAVTbaseCluster*   GetCluster(Int_t /*index*/) { return 0x0; }
    
    //! Reset line
    void               Zero();

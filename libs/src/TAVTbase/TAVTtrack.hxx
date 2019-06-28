@@ -28,7 +28,7 @@ public:
    void           SetupClones();
 
     //! Get cluster
-   TAVTcluster*   GetCluster(Int_t index)  { return (TAVTcluster*)fListOfClusters->At(index); }
+   TAVTbaseCluster*   GetCluster(Int_t index)  { return (TAVTcluster*)fListOfClusters->At(index); }
  
    //! Add cluster
    void           AddCluster(TAVTcluster* cluster);
