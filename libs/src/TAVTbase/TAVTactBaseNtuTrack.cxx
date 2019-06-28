@@ -276,7 +276,7 @@ void TAVTactBaseNtuTrack::SetChargeProba()
 	  Int_t nClus = track->GetClustersN();
 	  
 	  for (Int_t i=0;i<nClus;i++) {
-		 TAVTcluster* clus = track->GetCluster(i);
+		 TAVTbaseCluster* clus = track->GetCluster(i);
 		 nPixelsTot += clus->GetPixelsN();
 	  }
 	  nPixelsMean = nPixelsTot/nClus;
@@ -440,8 +440,8 @@ void TAVTactBaseNtuTrack::UpdateParam(TAVTtrack* track)
    Int_t nClusters = track->GetClustersN();
    
    if( nClusters == 2) {
-	  TAVTcluster* cluster0 = track->GetCluster(0);
-	  TAVTcluster* cluster1 = track->GetCluster(1);
+	  TAVTbaseCluster* cluster0 = track->GetCluster(0);
+	  TAVTbaseCluster* cluster1 = track->GetCluster(1);
 	  
      if(FootDebugLevel(1))
 		 printf("TAVTactNtuTrack::Analyse track with %d cluster taking origin from it and slope 0\n", track->GetClustersN());
@@ -474,7 +474,7 @@ void TAVTactBaseNtuTrack::UpdateParam(TAVTtrack* track)
 	  fGraphV->Set(nClusters);
 	  
 	  for (Int_t i = 0; i < nClusters; ++i) {
-		 TAVTcluster* cluster = track->GetCluster(i);
+		 TAVTbaseCluster* cluster = track->GetCluster(i);
 		 x  = cluster->GetPositionG()(0);
 		 y  = cluster->GetPositionG()(1);
 		 z  = cluster->GetPositionG()(2);
@@ -512,7 +512,7 @@ void TAVTactBaseNtuTrack::FillHistogramm(TAVTtrack* track)
    
    fpHisTrackClus->Fill(track->GetClustersN());
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
-	  TAVTcluster * cluster = track->GetCluster(i);
+	  TAVTbaseCluster * cluster = track->GetCluster(i);
 	  cluster->SetFound();
 	  Int_t idx = cluster->GetPlaneNumber();
 	  fpHisPixelTot->Fill(cluster->GetPixelsN());

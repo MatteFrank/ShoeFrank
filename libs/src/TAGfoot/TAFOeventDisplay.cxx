@@ -478,7 +478,7 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form(" with %3d clusters\n", track->GetClustersN()) );
       
       for (Int_t i = 0; i < track->GetClustersN(); i++) {
-         TAVTcluster* clus = track->GetCluster(i);
+         TAVTbaseCluster* clus = track->GetCluster(i);
          TVector3 posG = clus->GetPositionG();
          fInfoView->AddLine( Form(" for plane %d\n", clus->GetPlaneNumber()));
          fInfoView->AddLine( Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y()) );
