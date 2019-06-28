@@ -98,10 +98,10 @@ protected:
    TVector3         fBmTrackPos;         // BM track position 
    
    TH1F*            fpHisPixelTot;		 // Total number of pixels per tracked cluster
-   TH1F*            fpHisPixel[8];		 // Total number of pixels per tracked cluster for each sensor
-   TH2F*            fpHisTrackMap[8];    // track map per sensor
-   TH1F*            fpHisResX[8];        // Residual in X
-   TH1F*            fpHisResY[8];        // Residual in Y
+   TH1F*            fpHisPixel[32];		 // Total number of pixels per tracked cluster for each sensor
+   TH2F*            fpHisTrackMap[32];    // track map per sensor
+   TH1F*            fpHisResX[32];        // Residual in X
+   TH1F*            fpHisResY[32];        // Residual in Y
    TH1F*            fpHisResTotX;        // Total Residual in X
    TH1F*            fpHisResTotY;        // Total Residual in Y
    TH1F*            fpHisChi2TotX;       // Total Chi2 in X direction
