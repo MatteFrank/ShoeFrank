@@ -59,14 +59,25 @@ TAVTactBaseNtuTrack::TAVTactBaseNtuTrack(const char* name,
   fBmTrack(0x0),
   fBmTrackPos(0,0,0)
 {
-   AddDataIn(pNtuClus,   "TAVTntuCluster");
-   AddDataOut(pNtuTrack, "TAVTntuTrack");
-   AddPara(pGeoMap, "TAVTparGeo");
-   AddPara(pConfig, "TAVTparConf");
+   AddPara(pGeoMap, "TAVTbaseParGeo");
+   AddPara(pConfig, "TAVTbaseParConf");
    if (pCalib)
 	  AddPara(pCalib, "TAVTparCal");
    
-   TAVTparConf* config = (TAVTparConf*) fpConfig->Object();
+   
+   TString tmp(name);
+   fPrefix = tmp(0,2);
+   
+   fTitleDev = fPrefix;
+   if (fPrefix.Contains("vt"))
+      fTitleDev = "Vertex";
+   else if (fPrefix.Contains("it"))
+      fTitleDev = "Inner Tracker";
+   else
+      printf("Wrong prefix for histograms !");
+
+   
+   TAVTbaseParConf* config = (TAVTbaseParConf*) fpConfig->Object();
    fRequiredClusters   = config->GetAnalysisPar().PlanesForTrackMinimum;
    fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
    SetGeoTrafo(TAGgeoTrafo::GetDefaultActName().Data());
@@ -86,21 +97,20 @@ TAVTactBaseNtuTrack::~TAVTactBaseNtuTrack()
 void TAVTactBaseNtuTrack::CreateHistogram()
 {
    DeleteHistogram();   
-   TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
-   TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
    
-   fpHisPixelTot = new TH1F("vtTrackedClusPixTot", "Total # pixels per tracked clusters", 100, -0.5, 99.5);
+   fpHisPixelTot = new TH1F(Form("%sTrackedClusPixTot", fPrefix.Data()), Form("%s - Total # pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
    AddHistogram(fpHisPixelTot);
    
-   fpHiVtxTgResX = new TH1F("vtTgResX", "Resolution at target in X", 500, -0.02, 0.02);
+   fpHiVtxTgResX = new TH1F(Form("%sTgResX", fPrefix.Data()), Form("%s - Resolution at target in X", fTitleDev.Data()), 500, -0.02, 0.02);
    AddHistogram(fpHiVtxTgResX);
    
-   fpHiVtxTgResY = new TH1F("vtTgResY", "Resolution at target in Y", 500, -0.02, 0.02);
+   fpHiVtxTgResY = new TH1F(Form("%sTgResY", fPrefix.Data()), Form("%s - Resolution at target in Y", fTitleDev.Data()), 500, -0.02, 0.02);
    AddHistogram(fpHiVtxTgResY);
    
-   for (Int_t i = 0; i < pConfig->GetSensorsN(); ++i) {
-	  if (TAVTparConf::IsMapHistOn()) {
-		 fpHisTrackMap[i] = new TH2F(Form("vtTrackMap%d", i+1), Form("Vertex - Tracks map for sensor %d", i+1), 
+   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+	  if (TAVTbaseParConf::IsMapHistOn()) {
+		 fpHisTrackMap[i] = new TH2F(Form("%sTrackMap%d", fPrefix.Data(), i+1), Form("%s - Tracks map for sensor %d", fTitleDev.Data(), i+1),
 									 100, -pGeoMap->GetPitchY()*pGeoMap->GetNPixelY()/2., pGeoMap->GetPitchY()*pGeoMap->GetNPixelY()/2., 
 									 100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2.);
 		 fpHisTrackMap[i]->SetMarkerStyle(24);
@@ -110,65 +120,65 @@ void TAVTactBaseNtuTrack::CreateHistogram()
 		 AddHistogram(fpHisTrackMap[i]);
 	  }
 	  
-	  fpHisPixel[i] = new TH1F(Form("vtTrackedClusPix%d", i+1), Form("# pixels per tracked clusters of sensor %d", i+1), 100, -0.5, 99.5);
+	  fpHisPixel[i] = new TH1F(Form("%sTrackedClusPix%d", fPrefix.Data(), i+1), Form("%s - # pixels per tracked clusters of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
 	  AddHistogram(fpHisPixel[i]);
 	  
-	  fpHisResX[i] = new TH1F(Form("vtResX%d", i+1), Form("ResidualX of sensor %d", i+1), 400, -0.01, 0.01);
+	  fpHisResX[i] = new TH1F(Form("%sResX%d", fPrefix.Data(), i+1), Form("%s - ResidualX of sensor %d", fTitleDev.Data(), i+1), 400, -0.01, 0.01);
 	  AddHistogram(fpHisResX[i]);
-	  fpHisResY[i] = new TH1F(Form("vtResY%d", i+1), Form("ResidualY of sensor %d", i+1), 400, -0.01, 0.01);
+	  fpHisResY[i] = new TH1F(Form("%sResY%d", fPrefix.Data(), i+1), Form("%s - ResidualY of sensor %d", fTitleDev.Data(), i+1), 400, -0.01, 0.01);
 	  AddHistogram(fpHisResY[i]);
    }
    
-   fpHisResTotX = new TH1F("vtResTotX", "Total ResidualX", 400, -0.01, 0.01);
-   fpHisResTotY = new TH1F("vtResTotY", "Total ResidualY", 400, -0.01, 0.01);
+   fpHisResTotX = new TH1F(Form("%sResTotX", fPrefix.Data()), Form("%s - Total ResidualX", fTitleDev.Data()), 400, -0.01, 0.01);
+   fpHisResTotY = new TH1F(Form("%sResTotY", fPrefix.Data()), Form("%s - Total ResidualY", fTitleDev.Data()), 400, -0.01, 0.01);
    AddHistogram(fpHisResTotX);
    AddHistogram(fpHisResTotY);
    
-   fpHisChi2TotX = new TH1F("vtChi2TotX", "Total Chi2 X", 200, 0, 20);
-   fpHisChi2TotY = new TH1F("vtChi2TotY", "Total Chi2 Y", 200, 0, 20);
+   fpHisChi2TotX = new TH1F(Form("%sChi2TotX", fPrefix.Data()), Form("%s - Total Chi2 X", fTitleDev.Data()), 200, 0, 20);
+   fpHisChi2TotY = new TH1F(Form("%sChi2TotY", fPrefix.Data()), Form("%s - Total Chi2 Y", fTitleDev.Data()), 200, 0, 20);
    AddHistogram(fpHisChi2TotX);
    AddHistogram(fpHisChi2TotY);
    
-   fpHisTrackEvt = new TH1F("vtTrackEvt", "Number of tracks per event", 20, -0.5, 19.5);
+   fpHisTrackEvt = new TH1F(Form("%sTrackEvt", fPrefix.Data()), Form("%s - Number of tracks per event", fTitleDev.Data()), 20, -0.5, 19.5);
    AddHistogram(fpHisTrackEvt);
    
-   fpHisTrackClus = new TH1F("vtTrackClus", "Number of clusters per track", 9, -0.5, 8.5);
+   fpHisTrackClus = new TH1F(Form("%sTrackClus", fPrefix.Data()), Form("%s - Number of clusters per track", fTitleDev.Data()), 9, -0.5, 8.5);
    AddHistogram(fpHisTrackClus);
    
-   fpHisClusSensor = new TH1F("vtClusSensor", "Number of tracked clusters per sensor", 9, -0.5, 8.5);
+   fpHisClusSensor = new TH1F(Form("%sClusSensor", fPrefix.Data()), Form("%s - Number of tracked clusters per sensor", fTitleDev.Data()), 9, -0.5, 8.5);
    AddHistogram(fpHisClusSensor);
    
-   fpHisTheta = new TH1F("vtTrackTheta", "Track polar distribution", 500, 0, 90);
+   fpHisTheta = new TH1F(Form("%sTrackTheta", fPrefix.Data()), Form("%s - Track polar distribution", fTitleDev.Data()), 500, 0, 90);
    AddHistogram(fpHisTheta);
    
-   fpHisPhi = new TH1F("vtTrackPhi", "Track azimutal distribution (#theta > 5)", 500, -180, 180);
+   fpHisPhi = new TH1F(Form("%sTrackPhi", fPrefix.Data()), Form("%s - Track azimutal distribution (#theta > 5)", fTitleDev.Data()), 500, -180, 180);
    AddHistogram(fpHisPhi);
    
-   fpHisBeamProf = new TH2F("vtBeamProf", "Vertex Beam Profile", 
+   fpHisBeamProf = new TH2F(Form("%sBeamProf", fPrefix.Data()), Form("%s -  Beam Profile", fTitleDev.Data()),
 							100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., 
 							100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2.);
    fpHisBeamProf->SetStats(kFALSE);
    AddHistogram(fpHisBeamProf);
    
-   fpHisBmBeamProf = new TH2F("bmBeamProf", "BM Beam Profile", 
+   fpHisBmBeamProf = new TH2F(Form("%sbmBeamProf", fPrefix.Data()), Form("%s - BM Beam Profile", fTitleDev.Data()),
 							  100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., 
 							  100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2.);
    fpHisBmBeamProf->SetStats(kFALSE);
    AddHistogram(fpHisBmBeamProf);
    
-   fpHisVtxResX = new TH1F("vtBmResX", "Vertex position resisdualX BM/VT",  500, -0.5, 0.5);
+   fpHisVtxResX = new TH1F(Form("%sBmResX", fPrefix.Data()), Form("%s - Vertex position resisdualX BM/VT", fTitleDev.Data()), 500, -0.5, 0.5);
    AddHistogram(fpHisVtxResX);
    
-   fpHisVtxResY = new TH1F("vtBmResY", "Vertex position resisdualY BM/VT",  500, -0.5, 0.5);
+   fpHisVtxResY = new TH1F(Form("%sBmResY", fPrefix.Data()), Form("%s - Vertex position resisdualY BM/VT", fTitleDev.Data()), 500, -0.5, 0.5);
    AddHistogram(fpHisVtxResY);
    
-   fpHisBmChi2 = new TH1F("bmChi2", "BM chi2 of tracks", 200, 0, 1000);
+   fpHisBmChi2 = new TH1F(Form("%sbmChi2", fPrefix.Data()), Form("%s - BM Chi2 of tracks", fTitleDev.Data()), 200, 0, 1000);
    AddHistogram(fpHisBmChi2);
    
-   fpHisClusLeft = new TH1F("vtClusLeft", "Clusters left per sensor", 8, 1, 8);
+   fpHisClusLeft = new TH1F(Form("%sClusLeft", fPrefix.Data()), Form("%s - Clusters left per sensor", fTitleDev.Data()), 8, 1, 8);
    AddHistogram(fpHisClusLeft);
    
-   fpHisClusLeftPix = new TH2F("vtClusLeftPix", "Number of pixels for left clusters vs sensor", 
+   fpHisClusLeftPix = new TH2F(Form("%sClusLeftPix", fPrefix.Data()), Form("%s - Number of pixels for left clusters vs sensor", fTitleDev.Data()),
 							   10, 0, 9, 50, 1, 50);
    fpHisClusLeftPix->SetStats(kFALSE);
    AddHistogram(fpHisClusLeftPix);
@@ -230,7 +240,7 @@ Bool_t TAVTactBaseNtuTrack::Action()
 void TAVTactBaseNtuTrack::CheckBM()
 {   
    // BM info
-   TAVTparConf*  pConfig  = (TAVTparConf*) fpConfig->Object();
+   TAVTbaseParConf*  pConfig  = (TAVTbaseParConf*) fpConfig->Object();
    
    Float_t zDiff = 0;
    
@@ -307,10 +317,10 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
    lineOrigin.SetXYZ(0.,0.,0.);
    lineSlope.SetXYZ(0.,0.,1.);
    
-   TAVTntuCluster* pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
-   TAVTntuTrack*   pNtuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
-   TAVTparGeo*     pGeoMap   = (TAVTparGeo*)     fpGeoMap->Object();
-   TAVTparConf*    pConfig   = (TAVTparConf*)    fpConfig->Object();
+   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
+   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
+   TAVTbaseParGeo*  pGeoMap   = (TAVTbaseParGeo*)  fpGeoMap->Object();
+   TAVTbaseParConf* pConfig   = (TAVTbaseParConf*) fpConfig->Object();
    
    TList array;
    array.SetOwner(false);
@@ -417,7 +427,7 @@ Bool_t TAVTactBaseNtuTrack::AppyCuts(TAVTtrack* track)
 {
    Bool_t valid = false;  
    
-   TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
+   TAVTbaseParConf* pConfig = (TAVTbaseParConf*) fpConfig->Object();
    if (track->GetClustersN() >= pConfig->GetAnalysisPar().PlanesForTrackMinimum )
   	  valid = true;
    
@@ -435,7 +445,7 @@ void TAVTactBaseNtuTrack::UpdateParam(TAVTtrack* track)
    lineOrigin.SetXYZ(0.,0.,0.);
    lineSlope.SetXYZ(0.,0.,1.);
    
-   TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*) fpGeoMap->Object();
    
    Int_t nClusters = track->GetClustersN();
    
@@ -508,7 +518,7 @@ void TAVTactBaseNtuTrack::FillHistogramm(TAVTtrack* track)
    fpHisTheta->Fill(track->GetTheta());
    fpHisPhi->Fill(track->GetPhi());
    
-   TAVTparGeo* pGeoMap = (TAVTparGeo*)fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*)fpGeoMap->Object();
    
    fpHisTrackClus->Fill(track->GetClustersN());
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
@@ -523,7 +533,7 @@ void TAVTactBaseNtuTrack::FillHistogramm(TAVTtrack* track)
    
      TVector3 impactLoc =  pGeoMap->Detector2Sensor(idx, impact);
       
-	  if (TAVTparConf::IsMapHistOn()) 
+	  if (TAVTbaseParConf::IsMapHistOn()) 
 		 fpHisTrackMap[idx]->Fill(impactLoc[0], impactLoc[1]);
 	  fpHisResTotX->Fill(impact[0]-cluster->GetPositionG()[0]);
 	  fpHisResTotY->Fill(impact[1]-cluster->GetPositionG()[1]);
@@ -542,7 +552,7 @@ void TAVTactBaseNtuTrack::FillHistogramm(TAVTtrack* track)
 //  
 void TAVTactBaseNtuTrack::FillHistogramm()
 {
-   TAVTparGeo*     pGeoMap   = (TAVTparGeo*)     fpGeoMap->Object();
+   TAVTbaseParGeo*     pGeoMap   = (TAVTbaseParGeo*)     fpGeoMap->Object();
    TAVTntuCluster* pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
    TAVTntuTrack*   pNtuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
    

@@ -37,6 +37,8 @@ TAVTactNtuTrack::TAVTactNtuTrack(const char* name,
 								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
 : TAVTactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib, pBMntuTrack)
 {
+   AddDataIn(pNtuClus,   "TAVTntuCluster");
+   AddDataOut(pNtuTrack, "TAVTntuTrack");
 }
 
 //------------------------------------------+-----------------------------------
@@ -61,10 +63,10 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
    lineOrigin.SetXYZ(0.,0.,0.);
    lineSlope.SetXYZ(0.,0.,1.);
    
-   TAVTntuCluster* pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
-   TAVTntuTrack*   pNtuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
-   TAVTparGeo*     pGeoMap   = (TAVTparGeo*)     fpGeoMap->Object();
-   TAVTparConf*    pConfig   = (TAVTparConf*)    fpConfig->Object();
+   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
+   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
+   TAVTbaseParGeo*  pGeoMap   = (TAVTbaseParGeo*)  fpGeoMap->Object();
+   TAVTbaseParConf* pConfig   = (TAVTbaseParConf*) fpConfig->Object();
    
    TList array;
    array.SetOwner(false);

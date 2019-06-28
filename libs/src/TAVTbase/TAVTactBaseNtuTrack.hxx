@@ -122,6 +122,9 @@ protected:
    TH1F*            fpHiVtxTgResX;       // Vertex resolution at Target X
    TH1F*            fpHiVtxTgResY;       // Vertex resolution at Target Y
    
+   TString           fPrefix;            // prefix of histogram
+   TString           fTitleDev;          // device name for histogram title
+
 protected:
    static Bool_t    fgRefit;             // flag to update parameter during tracking   
       
