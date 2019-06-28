@@ -250,7 +250,7 @@ Bool_t TAVTactVmeReader::GetSensorEvent(Int_t iSensor)
          }
 
 
-       //  if(FootDebugLevel(3))
+         if(FootDebugLevel(3))
             printf("sensor %d: %d %d\n", iSensor, fTriggerNumber, fEventNumber);
          
          // fake time stamp
