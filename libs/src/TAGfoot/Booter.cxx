@@ -56,7 +56,6 @@
 #include "TAITactNtuMC.hxx"
 #include "TAITactNtuClusterF.hxx"
 #include "TAITactNtuTrack.hxx"
-#include "TAITactNtuTrackH.hxx"
 #include "TAITactNtuTrackF.hxx"
 
 //MicroStrip Detector
