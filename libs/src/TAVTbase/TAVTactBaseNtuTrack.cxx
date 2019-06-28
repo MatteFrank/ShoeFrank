@@ -62,7 +62,7 @@ TAVTactBaseNtuTrack::TAVTactBaseNtuTrack(const char* name,
    AddPara(pGeoMap, "TAVTbaseParGeo");
    AddPara(pConfig, "TAVTbaseParConf");
    if (pCalib)
-	  AddPara(pCalib, "TAVTparCal");
+	  AddPara(pCalib, "TAVTbaseParCal");
    
    
    TString tmp(name);
@@ -272,8 +272,8 @@ void TAVTactBaseNtuTrack::CheckBM()
 void TAVTactBaseNtuTrack::SetChargeProba()
 {
    if (fpCalib == 0x0) return;
-   TAVTntuTrack* ntuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-   TAVTparCal*    pCalib  = (TAVTparCal*) fpCalib->Object();
+   TAVTntuTrack*   ntuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
+   TAVTbaseParCal* pCalib   = (TAVTbaseParCal*) fpCalib->Object();
    
    Int_t nTrack = ntuTrack->GetTracksN();
    if (nTrack == 0) return;
