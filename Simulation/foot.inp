@@ -14,7 +14,7 @@ RADDECAY          2.                  1.
 * -------1---------2---------3---------4---------5---------6---------7---------8
 * @@@START GENERATED, DO NOT MODIFY:GENERAL@@@ *********************************
 BEAM       -0.200000            0.000000  0.480000 -0.480000       1.0HEAVYION  
-HI-PROPE           8        16                                                  
+HI-PROPE           6        12                                                  
 BEAMPOS        0.000     0.000   -30.000                                        
 PHYSICS           1.                                                  COALESCE  
 EMFCUT           -1.        1.               BLACK  @LASTREG       1.0          
@@ -81,7 +81,7 @@ MATERIAL                           1.023                              EJ232
 COMPOUND          9.    CARBON       10.  HYDROGEN                    EJ232
 MATERIAL         83.    208.98     9.747                              BISMUTH
 MATERIAL         32.     72.61     5.323                              GERMANIU
-MATERIAL                           1.023                              BGO
+MATERIAL                            7.13                              BGO
 COMPOUND          4.   BISMUTH        3.  GERMANIU       12.    OXYGENBGO
 ASSIGNMA    BLCKHOLE     BLACK                                                  
 ASSIGNMA         AIR       AIR                             0                    
@@ -99,71 +99,156 @@ ASSIGNMA      CARBON    TARGET                             0
 ASSIGNMA     SILICON     VTXE0     VTXE3        1.         0
 ASSIGNMA     SILICON     VTXM0     VTXM3        1.         0
 ASSIGNMA     SiO2/Al     VTXP0     VTXP3        1.         0
-ASSIGNMA       EJ232     SCN00     SCN39        1.         0
-ROT-DEFI        300.                  90                              vtZ_0
-ROT-DEFI        300.                  90                              vtZ_1
-ROT-DEFI        300.                  90                              vtZ_2
-ROT-DEFI        300.                  90                              vtZ_3
-ROT-DEFI        300.                                     -19          twZ_0
-ROT-DEFI        300.                  90                              twZ_0
-ROT-DEFI        300.                                      19          twZ_0
-ROT-DEFI        300.                                     -17          twZ_1
-ROT-DEFI        300.                  90                              twZ_1
-ROT-DEFI        300.                                      17          twZ_1
-ROT-DEFI        300.                                     -15          twZ_2
-ROT-DEFI        300.                  90                              twZ_2
-ROT-DEFI        300.                                      15          twZ_2
-ROT-DEFI        300.                                     -13          twZ_3
-ROT-DEFI        300.                  90                              twZ_3
-ROT-DEFI        300.                                      13          twZ_3
-ROT-DEFI        300.                                     -11          twZ_4
-ROT-DEFI        300.                  90                              twZ_4
-ROT-DEFI        300.                                      11          twZ_4
-ROT-DEFI        300.                                      -9          twZ_5
-ROT-DEFI        300.                  90                              twZ_5
-ROT-DEFI        300.                                       9          twZ_5
-ROT-DEFI        300.                                      -7          twZ_6
-ROT-DEFI        300.                  90                              twZ_6
-ROT-DEFI        300.                                       7          twZ_6
-ROT-DEFI        300.                                      -5          twZ_7
-ROT-DEFI        300.                  90                              twZ_7
-ROT-DEFI        300.                                       5          twZ_7
-ROT-DEFI        300.                                      -3          twZ_8
-ROT-DEFI        300.                  90                              twZ_8
-ROT-DEFI        300.                                       3          twZ_8
-ROT-DEFI        300.                                      -1          twZ_9
-ROT-DEFI        300.                  90                              twZ_9
-ROT-DEFI        300.                                       1          twZ_9
-ROT-DEFI        300.                                       1          twZ_10
-ROT-DEFI        300.                  90                              twZ_10
-ROT-DEFI        300.                                      -1          twZ_10
-ROT-DEFI        300.                                       3          twZ_11
-ROT-DEFI        300.                  90                              twZ_11
-ROT-DEFI        300.                                      -3          twZ_11
-ROT-DEFI        300.                                       5          twZ_12
-ROT-DEFI        300.                  90                              twZ_12
-ROT-DEFI        300.                                      -5          twZ_12
-ROT-DEFI        300.                                       7          twZ_13
-ROT-DEFI        300.                  90                              twZ_13
-ROT-DEFI        300.                                      -7          twZ_13
-ROT-DEFI        300.                                       9          twZ_14
-ROT-DEFI        300.                  90                              twZ_14
-ROT-DEFI        300.                                      -9          twZ_14
-ROT-DEFI        300.                                      11          twZ_15
-ROT-DEFI        300.                  90                              twZ_15
-ROT-DEFI        300.                                     -11          twZ_15
-ROT-DEFI        300.                                      13          twZ_16
-ROT-DEFI        300.                  90                              twZ_16
-ROT-DEFI        300.                                     -13          twZ_16
-ROT-DEFI        300.                                      15          twZ_17
-ROT-DEFI        300.                  90                              twZ_17
-ROT-DEFI        300.                                     -15          twZ_17
-ROT-DEFI        300.                                      17          twZ_18
-ROT-DEFI        300.                  90                              twZ_18
-ROT-DEFI        300.                                     -17          twZ_18
-ROT-DEFI        300.                                      19          twZ_19
-ROT-DEFI        300.                  90                              twZ_19
-ROT-DEFI        300.                                     -19          twZ_19
+ASSIGNMA     SILICON     ITRE0    ITRE31        1.         0
+ASSIGNMA     SILICON     ITRM0    ITRM31        1.         0
+ASSIGNMA     SiO2/Al     ITRP0    ITRP31        1.         0
+ASSIGNMA       EJ232    SCN000    SCN119        1.         0
+ROT-DEFI                                        -0        -0      -0.9vt_1
+ROT-DEFI        200.                 180                              vt_1
+ROT-DEFI                                         0         0       0.9vt_1
+ROT-DEFI                                        -0        -0     -2.42vt_3
+ROT-DEFI        200.                 180                              vt_3
+ROT-DEFI                                         0         0      2.42vt_3
+ROT-DEFI                                    3.0186   -0.8105  -13.3845it_8
+ROT-DEFI        100.                 180                              it_8
+ROT-DEFI        200.                 180                              it_8
+ROT-DEFI                                   -3.0186    0.8105   13.3845it_8
+ROT-DEFI                                    0.9946   -0.8105  -13.3845it_9
+ROT-DEFI        100.                 180                              it_9
+ROT-DEFI        200.                 180                              it_9
+ROT-DEFI                                   -0.9946    0.8105   13.3845it_9
+ROT-DEFI                                   -1.0294   -0.8105  -13.3845it_10
+ROT-DEFI        100.                 180                              it_10
+ROT-DEFI        200.                 180                              it_10
+ROT-DEFI                                    1.0294    0.8105   13.3845it_10
+ROT-DEFI                                   -3.0534   -0.8105  -13.3845it_11
+ROT-DEFI        100.                 180                              it_11
+ROT-DEFI        200.                 180                              it_11
+ROT-DEFI                                    3.0534    0.8105   13.3845it_11
+ROT-DEFI                                    3.0186   -2.4314  -14.3845it_12
+ROT-DEFI        100.                 180                              it_12
+ROT-DEFI        200.                 180                              it_12
+ROT-DEFI                                   -3.0186    2.4314   14.3845it_12
+ROT-DEFI                                    0.9946   -2.4314  -14.3845it_13
+ROT-DEFI        100.                 180                              it_13
+ROT-DEFI        200.                 180                              it_13
+ROT-DEFI                                   -0.9946    2.4314   14.3845it_13
+ROT-DEFI                                   -1.0294   -2.4314  -14.3845it_14
+ROT-DEFI        100.                 180                              it_14
+ROT-DEFI        200.                 180                              it_14
+ROT-DEFI                                    1.0294    2.4314   14.3845it_14
+ROT-DEFI                                   -3.0534   -2.4314  -14.3845it_15
+ROT-DEFI        100.                 180                              it_15
+ROT-DEFI        200.                 180                              it_15
+ROT-DEFI                                    3.0534    2.4314   14.3845it_15
+ROT-DEFI                                    3.0186    2.4314  -13.6155it_16
+ROT-DEFI        200.                 180                              it_16
+ROT-DEFI                                   -3.0186   -2.4314   13.6155it_16
+ROT-DEFI                                    0.9946    2.4314  -13.6155it_17
+ROT-DEFI        200.                 180                              it_17
+ROT-DEFI                                   -0.9946   -2.4314   13.6155it_17
+ROT-DEFI                                   -1.0294    2.4314  -13.6155it_18
+ROT-DEFI        200.                 180                              it_18
+ROT-DEFI                                    1.0294   -2.4314   13.6155it_18
+ROT-DEFI                                   -3.0534    2.4314  -13.6155it_19
+ROT-DEFI        200.                 180                              it_19
+ROT-DEFI                                    3.0534   -2.4314   13.6155it_19
+ROT-DEFI                                    3.0186    0.8105  -14.6155it_20
+ROT-DEFI        200.                 180                              it_20
+ROT-DEFI                                   -3.0186   -0.8105   14.6155it_20
+ROT-DEFI                                    0.9946    0.8105  -14.6155it_21
+ROT-DEFI        200.                 180                              it_21
+ROT-DEFI                                   -0.9946   -0.8105   14.6155it_21
+ROT-DEFI                                   -1.0294    0.8105  -14.6155it_22
+ROT-DEFI        200.                 180                              it_22
+ROT-DEFI                                    1.0294   -0.8105   14.6155it_22
+ROT-DEFI                                   -3.0534    0.8105  -14.6155it_23
+ROT-DEFI        200.                 180                              it_23
+ROT-DEFI                                    3.0534   -0.8105   14.6155it_23
+ROT-DEFI                                    3.0534   -0.8105  -13.6155it_24
+ROT-DEFI        100.                 180                              it_24
+ROT-DEFI                                   -3.0534    0.8105   13.6155it_24
+ROT-DEFI                                    1.0294   -0.8105  -13.6155it_25
+ROT-DEFI        100.                 180                              it_25
+ROT-DEFI                                   -1.0294    0.8105   13.6155it_25
+ROT-DEFI                                   -0.9946   -0.8105  -13.6155it_26
+ROT-DEFI        100.                 180                              it_26
+ROT-DEFI                                    0.9946    0.8105   13.6155it_26
+ROT-DEFI                                   -3.0186   -0.8105  -13.6155it_27
+ROT-DEFI        100.                 180                              it_27
+ROT-DEFI                                    3.0186    0.8105   13.6155it_27
+ROT-DEFI                                    3.0534   -2.4314  -14.6155it_28
+ROT-DEFI        100.                 180                              it_28
+ROT-DEFI                                   -3.0534    2.4314   14.6155it_28
+ROT-DEFI                                    1.0294   -2.4314  -14.6155it_29
+ROT-DEFI        100.                 180                              it_29
+ROT-DEFI                                   -1.0294    2.4314   14.6155it_29
+ROT-DEFI                                   -0.9946   -2.4314  -14.6155it_30
+ROT-DEFI        100.                 180                              it_30
+ROT-DEFI                                    0.9946    2.4314   14.6155it_30
+ROT-DEFI                                   -3.0186   -2.4314  -14.6155it_31
+ROT-DEFI        100.                 180                              it_31
+ROT-DEFI                                    3.0186    2.4314   14.6155it_31
+ROT-DEFI        300.                                     -19          twZ_100
+ROT-DEFI        300.                  90                              twZ_100
+ROT-DEFI        300.                                      17          twZ_100
+ROT-DEFI        300.                                     -17          twZ_101
+ROT-DEFI        300.                  90                              twZ_101
+ROT-DEFI        300.                                      15          twZ_101
+ROT-DEFI        300.                                     -15          twZ_102
+ROT-DEFI        300.                  90                              twZ_102
+ROT-DEFI        300.                                      13          twZ_102
+ROT-DEFI        300.                                     -13          twZ_103
+ROT-DEFI        300.                  90                              twZ_103
+ROT-DEFI        300.                                      11          twZ_103
+ROT-DEFI        300.                                     -11          twZ_104
+ROT-DEFI        300.                  90                              twZ_104
+ROT-DEFI        300.                                       9          twZ_104
+ROT-DEFI        300.                                      -9          twZ_105
+ROT-DEFI        300.                  90                              twZ_105
+ROT-DEFI        300.                                       7          twZ_105
+ROT-DEFI        300.                                      -7          twZ_106
+ROT-DEFI        300.                  90                              twZ_106
+ROT-DEFI        300.                                       5          twZ_106
+ROT-DEFI        300.                                      -5          twZ_107
+ROT-DEFI        300.                  90                              twZ_107
+ROT-DEFI        300.                                       3          twZ_107
+ROT-DEFI        300.                                      -3          twZ_108
+ROT-DEFI        300.                  90                              twZ_108
+ROT-DEFI        300.                                       1          twZ_108
+ROT-DEFI        300.                                      -1          twZ_109
+ROT-DEFI        300.                  90                              twZ_109
+ROT-DEFI        300.                                      -1          twZ_109
+ROT-DEFI        300.                                       1          twZ_110
+ROT-DEFI        300.                  90                              twZ_110
+ROT-DEFI        300.                                      -3          twZ_110
+ROT-DEFI        300.                                       3          twZ_111
+ROT-DEFI        300.                  90                              twZ_111
+ROT-DEFI        300.                                      -5          twZ_111
+ROT-DEFI        300.                                       5          twZ_112
+ROT-DEFI        300.                  90                              twZ_112
+ROT-DEFI        300.                                      -7          twZ_112
+ROT-DEFI        300.                                       7          twZ_113
+ROT-DEFI        300.                  90                              twZ_113
+ROT-DEFI        300.                                      -9          twZ_113
+ROT-DEFI        300.                                       9          twZ_114
+ROT-DEFI        300.                  90                              twZ_114
+ROT-DEFI        300.                                     -11          twZ_114
+ROT-DEFI        300.                                      11          twZ_115
+ROT-DEFI        300.                  90                              twZ_115
+ROT-DEFI        300.                                     -13          twZ_115
+ROT-DEFI        300.                                      13          twZ_116
+ROT-DEFI        300.                  90                              twZ_116
+ROT-DEFI        300.                                     -15          twZ_116
+ROT-DEFI        300.                                      15          twZ_117
+ROT-DEFI        300.                  90                              twZ_117
+ROT-DEFI        300.                                     -17          twZ_117
+ROT-DEFI        300.                                      17          twZ_118
+ROT-DEFI        300.                  90                              twZ_118
+ROT-DEFI        300.                                     -19          twZ_118
+ROT-DEFI        300.                                      19          twZ_119
+ROT-DEFI        300.                  90                              twZ_119
+ROT-DEFI        300.                                     -21          twZ_119
 * @@@END GENERATED:MATERIAL&MAGFIELD@@@ ****************************************
 *
 * ******************************************************************************
