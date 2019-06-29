@@ -40,7 +40,7 @@ public:
    //! Build Vertex
    TGeoVolume* BuildVertex( const char *name = "Vertex", const char* basemoduleName = "M28");
    
-   // to keep interace for compilation
+   // to print fluka files
    virtual string PrintParameters();
    virtual string PrintRotations();
    virtual string PrintBodies();
@@ -51,7 +51,6 @@ public:
 protected:
    map<string, vector<string> > m_regionName;
    map<string, vector<string> > m_bodyName;
-   // map<string, vector<string> > m_regionPrintOut;
    map<string, vector<string> > m_bodyPrintOut;
    vector<string> vEpiBody, vModBody, vPixBody;
    vector<string> vEpiRegion, vModRegion, vPixRegion;
