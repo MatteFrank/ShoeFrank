@@ -154,7 +154,7 @@ int main (int argc, char *argv[]) {
     geofile << bmGeo->PrintBodies(  );
     geofile << generalGeo->PrintTargBody(  );
     geofile << vtxGeo->PrintBodies(  );
-    // geofile << itrGeo->PrintBodies(  );
+    geofile << itrGeo->PrintBodies(  );
     // geofile << "* ***Magnets\n";
     // geofile << "RCC MagCvOu0   " << MAG_X << " " << MAG_Y << " "
     // 	    << MAG_Z - MAG_CV_LENGTH/2. - MAG_DIST/2. << " 0.000000 0.000000 "
@@ -212,14 +212,14 @@ int main (int argc, char *argv[]) {
     geofile << bmGeo->PrintSubtractBodiesFromAir();
     geofile << generalGeo->PrintSubtractTargBodyFromAir();
     geofile << vtxGeo->PrintSubtractBodiesFromAir();
-    // geofile << itrGeo->PrintSubtractBodiesFromAir();
+    geofile << itrGeo->PrintSubtractBodiesFromAir();
     geofile << msdGeo->PrintSubtractBodiesFromAir();
     geofile << twGeo->PrintSubtractBodiesFromAir();
     geofile << stcGeo->PrintRegions();
     geofile << bmGeo->PrintRegions();
     geofile << generalGeo->PrintTargRegion();
     geofile << vtxGeo->PrintRegions();
-    // geofile << itrGeo->PrintRegions();
+    geofile << itrGeo->PrintRegions();
     // geofile <<"* ***Magnets\n";
     // geofile <<"MAG_PM0      5 MagPMOu0 -MagPMIn0\n";
     // geofile <<"MAG_CV0      5 MagCvOu0 -(MagPMOu0 -MagPMIn0) -Gap0\n";
@@ -240,6 +240,9 @@ int main (int argc, char *argv[]) {
 
     // end print regions
     geofile << "END        " <<endl;
+
+    //print lattice in the geofile
+    //geofile << vtxGeo->PrintLattice();
 
     // close geometry file
     geofile.close();
@@ -264,7 +267,7 @@ int main (int argc, char *argv[]) {
     outfile << bmGeo->PrintAssignMaterial();
     outfile << generalGeo->PrintTargAssignMaterial();
     outfile << vtxGeo->PrintAssignMaterial();
-    // outfile << itrGeo->PrintAssignMaterial();
+    outfile << itrGeo->PrintAssignMaterial();
     // outfile << "ASSIGNMA        SmCo   MAG_PM0\n";
     // outfile << "ASSIGNMA    ALUMINUM   MAG_CV0\n";
     // outfile << "ASSIGNMA        SmCo   MAG_PM1\n";
@@ -277,6 +280,7 @@ int main (int argc, char *argv[]) {
 
     // print rotations
     outfile << vtxGeo->PrintRotations();
+    outfile << itrGeo->PrintRotations();
     outfile << msdGeo->PrintRotations();
     outfile << twGeo->PrintRotations();
 
@@ -292,7 +296,7 @@ int main (int argc, char *argv[]) {
 
     paramfile << bmGeo->PrintParameters();
     paramfile << vtxGeo->PrintParameters();
-    // paramfile << itrGeo->PrintParameters();
+    paramfile << itrGeo->PrintParameters();
     //paramfile << msdGeo->PrintParameters();
     paramfile << twGeo->PrintParameters();
     // paramfile << caGeo->PrintParameters();
