@@ -92,9 +92,23 @@ public:
    TGeoVolume* BuildInnerTracker(const char* basemoduleName = "Module", const char *name = "IT");
    
    // to keep interace for compilation
+   // virtual void   PrintFluka();
+
+   // to print fluka files
    virtual string PrintParameters();
-   virtual void   PrintFluka();
+   virtual string PrintRotations();
+   virtual string PrintBodies();
+   virtual string PrintRegions();
+   virtual string PrintAssignMaterial();
+   virtual string PrintSubtractBodiesFromAir();
    
+protected:
+   map<string, vector<string> > m_regionName;
+   map<string, vector<string> > m_bodyName;
+   map<string, vector<string> > m_bodyPrintOut;
+   vector<string> vEpiBody, vModBody, vPixBody;
+   vector<string> vEpiRegion, vModRegion, vPixRegion;
+  
 public:
    static const Char_t* GetItBaseName()    { return fgkBaseNameIt.Data();    }
    static const Char_t* GetItDefParaName() { return fgkDefParaNameIt.Data(); }
