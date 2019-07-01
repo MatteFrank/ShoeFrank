@@ -366,8 +366,8 @@ c
 c     scrivo l'inner tracker
 c         
          do ii = 1,nITR
-            write(outunit,*) idITR(ii), iplumeITR(ii), imimoITR(ii),
-     &           ilayITR(ii),
+            write(outunit,*) idITR(ii), isensITR(ii),
+c     &       iplumeITR(ii), imimoITR(ii), ilayITR(ii),
      &           xinITR(ii), yinITR(ii), zinITR(ii),
      &           xoutITR(ii), youtITR(ii), zoutITR(ii),
      &           pxinITR(ii), pyinITR(ii), pzinITR(ii), 

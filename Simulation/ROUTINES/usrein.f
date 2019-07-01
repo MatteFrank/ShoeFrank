@@ -157,9 +157,10 @@ c
       nITR = 0
       do ii = 1,maxITR
          idITR(ii)    = 0
-         iplumeITR(ii)= 0
-         imimoITR(ii) = 0
-         ilayITR(ii)  = 0
+         isensITR(ii)= 0
+c         iplumeITR(ii)= 0
+c         imimoITR(ii) = 0
+c         ilayITR(ii)  = 0
          xinITR(ii)   = 0.  
          xoutITR(ii)  = 0. 
          yinITR(ii)   = 0. 
