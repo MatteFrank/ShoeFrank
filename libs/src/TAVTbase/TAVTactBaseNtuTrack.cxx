@@ -181,41 +181,6 @@ void TAVTactBaseNtuTrack::CheckBM()
 
 //_____________________________________________________________________________
 //  
-void TAVTactBaseNtuTrack::SetChargeProba()
-{
-   if (fpCalib == 0x0) return;
-   TAVTntuTrack*   ntuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
-   TAVTbaseParCal* pCalib   = (TAVTbaseParCal*) fpCalib->Object();
-   
-   Int_t nTrack = ntuTrack->GetTracksN();
-   if (nTrack == 0) return;
-   
-   for (Int_t iTrack = 0; iTrack < nTrack; ++iTrack) {
-	  
-	  Int_t nPixelsTot = 0;
-	  Float_t nPixelsMean;
-	  TAVTtrack* track = ntuTrack->GetTrack(iTrack);
-	  Int_t nClus = track->GetClustersN();
-	  
-	  for (Int_t i=0;i<nClus;i++) {
-		 TAVTbaseCluster* clus = track->GetCluster(i);
-		 nPixelsTot += clus->GetPixelsN();
-	  }
-	  nPixelsMean = nPixelsTot/nClus;
-	  const TArrayF* proba =  pCalib->GetChargeProba(nPixelsMean);
-	  track->SetChargeProba(proba);
-	  track->SetChargeMaxProba(pCalib->GetChargeMaxProba());
-	  track->SetChargeWithMaxProba(pCalib->GetChargeWithMaxProba());
-      
-      proba =  pCalib->GetChargeProbaNorm(nPixelsMean);
-	  track->SetChargeProbaNorm(proba);
-	  track->SetChargeMaxProbaNorm(pCalib->GetChargeMaxProbaNorm());
-	  track->SetChargeWithMaxProbaNorm(pCalib->GetChargeWithMaxProbaNorm());
-   }   
-}
-
-//_____________________________________________________________________________
-//  
 Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 {
    Double_t minDistance  = 1.e9;
@@ -356,50 +321,23 @@ void TAVTactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
    }   
 }
 
-//_____________________________________________________________________________
-//  
-//TAVTbaseCluster* TAVTactBaseNtuTrack::NearestCluster(TAVTbaseTrack *aTrack, Int_t iSensor)
-//{   
-//   // For a given track, return the index of the nearest hit of a given plane
-//   TAVTntuCluster* pNtuClus = (TAVTntuCluster*) fpNtuClus->Object();
-//
-//   Double_t minDist = 1.e9;
-//   Double_t distance;
-//   TAVTbaseCluster *tCluster;
-//   
-//   TAVTbaseCluster *tNearest = 0x0;
-//   for (Int_t ht = 0; ht < pNtuClus->GetClustersN(iSensor); ++ht) { // loop on hits
-//	  tCluster = pNtuClus->GetCluster(iSensor, ht);
-//	  distance = tCluster->Distance( aTrack) ;
-//	  if( distance < minDist) {
-//		 minDist = distance;
-//		 tNearest = tCluster;
-//	  }
-//   } //end loop on hits
-//   
-//   return tNearest;
-//}
 
 //_____________________________________________________________________________
-//  
-//TAVTbaseTrack* TAVTactBaseNtuTrack::NearestTrack(TAVTbaseCluster *aCluster) {
-//   
-//   // For a given track, return the index of the nearest hit of a given plane
-//   Double_t minDist = 1.e9;
-//   Double_t distance;
-//   TAVTtrack *tTrack;
-//   
-//   TAVTbaseTrack *tNearest = 0x0;
-//   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
 //
-//   for( Int_t it = 0; it < pNtuTrack->GetTracksN(); ++it) { // loop on tracks
-//	  tTrack = pNtuTrack->GetTrack(it);
-//	  distance = aCluster->Distance( tTrack);
-//	  if( distance < minDist) {
-//		 minDist = distance;
-//		 tNearest = tTrack;
-//	  }
-//   } // end loop on tracks
-//   
-//   return tNearest;
-//}
+TAVTbaseTrack* TAVTactBaseNtuTrack::GetTrack(Int_t idx)
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   TAVTbaseTrack* track  = pNtuTrack->GetTrack(idx);
+
+   return track;
+}
+
+//_____________________________________________________________________________
+//
+Int_t TAVTactBaseNtuTrack::GetTracksN() const
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+
+   return pNtuTrack->GetTracksN();
+}
+

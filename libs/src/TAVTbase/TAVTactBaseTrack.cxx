@@ -320,6 +320,41 @@ void TAVTactBaseTrack::FillHistogramm()
 }
 
 //_____________________________________________________________________________
+//
+void TAVTactBaseTrack::SetChargeProba()
+{
+   if (fpCalib == 0x0) return;
+   TAVTbaseParCal* pCalib   = (TAVTbaseParCal*) fpCalib->Object();
+   
+   Int_t nTrack = GetTracksN();
+   if (nTrack == 0) return;
+   
+   for (Int_t iTrack = 0; iTrack < nTrack; ++iTrack) {
+      
+      Int_t nPixelsTot = 0;
+      Float_t nPixelsMean;
+      TAVTbaseTrack* track = GetTrack(iTrack);
+      Int_t nClus = track->GetClustersN();
+      
+      for (Int_t i=0;i<nClus;i++) {
+         TAVTbaseCluster* clus = track->GetCluster(i);
+         nPixelsTot += clus->GetPixelsN();
+      }
+      nPixelsMean = nPixelsTot/nClus;
+      const TArrayF* proba =  pCalib->GetChargeProba(nPixelsMean);
+      track->SetChargeProba(proba);
+      track->SetChargeMaxProba(pCalib->GetChargeMaxProba());
+      track->SetChargeWithMaxProba(pCalib->GetChargeWithMaxProba());
+      
+      proba =  pCalib->GetChargeProbaNorm(nPixelsMean);
+      track->SetChargeProbaNorm(proba);
+      track->SetChargeMaxProbaNorm(pCalib->GetChargeMaxProbaNorm());
+      track->SetChargeWithMaxProbaNorm(pCalib->GetChargeWithMaxProbaNorm());
+   }   
+}
+
+
+//_____________________________________________________________________________
 //  
 //TAVTbaseCluster* TAVTactBaseTrack::NearestCluster(TAVTbaseTrack *aTrack, Int_t iSensor)
 //{   

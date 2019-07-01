@@ -60,13 +60,16 @@ public:
    //! Get refit flag
    static Bool_t    GetRefit()                                 { return fgRefit;              }
    
-protected:       
+protected:
+   virtual TAVTbaseTrack* GetTrack(Int_t idx)                  { return 0x0;                  }
+   virtual Int_t          GetTracksN()                const    { return -1;                   }
+
    void   FillHistogramm(TAVTbaseTrack* track);
    void   FillHistogramm();
+   void   SetChargeProba();
    void   UpdateParam(TAVTbaseTrack* track);
    Bool_t AppyCuts(TAVTbaseTrack* track) ;
    
-
 protected:
    TAGdataDsc*     fpNtuTrack;		     // input data dsc
    TAGdataDsc*     fpNtuClus;		     // output data dsc

@@ -47,20 +47,16 @@ public:
    //! Set BM track pointer
    void             SetBMntuTrack(TAGdataDsc* pBMtrack)        { fpBMntuTrack = pBMtrack;     }
    
-//   //! Get nearest track to a given cluster
-//   TAVTbaseTrack*       NearestTrack(TAVTbaseCluster *aCluster); 
-//   //! Get nearest cluster for a given track and plane
-//   TAVTbaseCluster*     NearestCluster(TAVTbaseTrack *aTrack, Int_t aPlaneNumber); 
-   
-protected:    
-   
+protected:
    void   FillBmHistogramm(TVector3 bmTrackPos);
-   void   SetChargeProba();
    
    virtual Bool_t FindStraightTracks();
    virtual Bool_t FindTiltedTracks() { return true; }
    virtual Bool_t FindVertices()     { return false; }
-
+   
+   TAVTbaseTrack* GetTrack(Int_t idx);
+   Int_t          GetTracksN() const;
+   
 protected:
    TAGdataDsc*     fpBMntuTrack;	     // BM track pointer
 	
