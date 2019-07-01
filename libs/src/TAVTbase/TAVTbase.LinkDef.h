@@ -47,6 +47,7 @@
 #pragma link C++ class TAVTline+;
 #pragma link C++ class TAVTbaseTrack+;
 #pragma link C++ class TAVTtrack+;
+#pragma link C++ class TAVTactBaseTrack+;
 #pragma link C++ class TAVTactBaseNtuTrack+;
 #pragma link C++ class TAVTactNtuTrack+;
 #pragma link C++ class TAVTactNtuTrackF+;

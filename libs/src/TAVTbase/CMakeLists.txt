@@ -50,6 +50,7 @@ set( with_dictionnaries
    TAVTbaseTrack
    TAVTtrack
    TAVTntuTrack
+   TAVTactBaseTrack
    TAVTactBaseNtuTrack
    TAVTactNtuTrack
    TAVTactNtuTrackF
