@@ -6,6 +6,7 @@
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
+#include "TAVTcluster.hxx"
 #include "TAVTbaseTrack.hxx"
 
 
@@ -16,7 +17,6 @@
  \author Ch. Finck
  */
 
-class TAVTcluster;
 class TClonesArray;
 class TAVTtrack : public TAVTbaseTrack {
    
