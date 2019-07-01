@@ -267,29 +267,21 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
 
         if (fVtxCollId >= 0 && fDetName==TCVTgeometryConstructor::GetSDname()) {
             Int_t layer = sensorId;
-            Int_t row   = -1;
-            Int_t line  = -1;
-            hit->AddVTX(trackId, layer, row, line,
+            hit->AddVTX(trackId, layer,
                         vin[0], vin[1], vin[2], vou[0], vou[1], vou[2], pin[0], pin[1], pin[2], pou[0], pou[1], pou[2],
                         edep, al, time);
         }
 
         if (fItCollId >= 0 && fDetName==TCITgeometryConstructor::GetSDname()) {
             Int_t layer = sensorId;
-            Int_t row   = -1;
-            Int_t line  = -1;
-            Int_t plume = -1;
-            Int_t mimo  = -1;
-            hit->AddITR(trackId, layer, row, line, plume, mimo,
+            hit->AddITR(trackId, layer,
                         vin[0], vin[1], vin[2], vou[0], vou[1], vou[2], pin[0], pin[1], pin[2], pou[0], pou[1], pou[2],
                         edep, al, time);
         }
 
         if (fMsdCollId >= 0 && fDetName==TCMSDgeometryConstructor::GetSDname()) {
             Int_t layer  = sensorId;
-            Int_t stripx = -1;
-            Int_t stripy = -1;
-            hit->AddMSD(trackId, layer, stripx, stripy,
+            hit->AddMSD(trackId, layer,
                         vin[0], vin[1], vin[2], vou[0], vou[1], vou[2], pin[0], pin[1], pin[2], pou[0], pou[1], pou[2],
                         edep, al, time);
         }
