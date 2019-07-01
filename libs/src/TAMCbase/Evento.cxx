@@ -95,8 +95,6 @@ Evento::Evento()
   for(int kk=0;kk<MAXVTX;kk++){
     eve.VTXid[kk]    = 0;
     eve.VTXilay[kk]  = 0;
-    eve.VTXirow[kk]  = 0;
-    eve.VTXicol[kk]  = 0;
     eve.VTXxin[kk]   = 0.;
     eve.VTXyin[kk]   = 0.;
     eve.VTXzin[kk]   = 0.;
@@ -116,11 +114,7 @@ Evento::Evento()
 
   for(int kk=0;kk<MAXITR;kk++){
     eve.ITRid[kk]    = 0;
-    eve.ITRiplume[kk]  = 0;
-    eve.ITRimimo[kk]  = 0;
-    eve.ITRilay[kk]  = 0;
-    eve.ITRirow[kk]  = 0;
-    eve.ITRicol[kk]  = 0;
+    eve.ITRisens[kk]  = 0;
     eve.ITRxin[kk]   = 0.;
     eve.ITRyin[kk]   = 0.;
     eve.ITRzin[kk]   = 0.;
@@ -141,8 +135,6 @@ Evento::Evento()
   for(int kk=0;kk<MAXMSD;kk++){
     eve.MSDid[kk]    = 0;
     eve.MSDilay[kk]  = 0;
-    eve.MSDistripx[kk]= 0;
-    eve.MSDistripy[kk]= 0;
     eve.MSDxin[kk]   = 0.;
     eve.MSDyin[kk]   = 0.;
     eve.MSDzin[kk]   = 0.;
@@ -301,8 +293,6 @@ Int_t Evento::Clean(){
   for(int kk=0;kk<eve.VTXn;kk++){
     eve.VTXid[kk]    = 0;
     eve.VTXilay[kk]  = 0;
-    eve.VTXirow[kk]  = 0;
-    eve.VTXicol[kk]  = 0;
     eve.VTXxin[kk]   = 0.;
     eve.VTXyin[kk]   = 0.;
     eve.VTXzin[kk]   = 0.;
@@ -322,11 +312,7 @@ Int_t Evento::Clean(){
 
   for(int kk=0;kk<eve.ITRn;kk++){
     eve.ITRid[kk]    = 0;
-    eve.ITRiplume[kk]  = 0;
-    eve.ITRimimo[kk]  = 0;
-    eve.ITRilay[kk]  = 0;
-    eve.ITRirow[kk]  = 0;
-    eve.ITRicol[kk]  = 0;
+    eve.ITRisens[kk]  = 0;
     eve.ITRxin[kk]   = 0.;
     eve.ITRyin[kk]   = 0.;
     eve.ITRzin[kk]   = 0.;
@@ -347,8 +333,6 @@ Int_t Evento::Clean(){
   for(int kk=0;kk<eve.MSDn;kk++){
     eve.MSDid[kk]    = 0;
     eve.MSDilay[kk]  = 0;
-    eve.MSDistripx[kk]= 0;
-    eve.MSDistripy[kk]= 0;
     eve.MSDxin[kk]   = 0.;
     eve.MSDyin[kk]   = 0.;
     eve.MSDzin[kk]   = 0.;
@@ -557,7 +541,6 @@ Int_t Evento::AddBMN(Int_t fBMNid, Int_t fBMNilay, Int_t fBMNiview,
 /*-----------------------------------------------------------------*/
 
 Int_t Evento::AddVTX(Int_t fVTXid, Int_t fVTXilay,
-		     Int_t fVTXirow, Int_t fVTXicol,
 		     Double_t fVTXxin, Double_t fVTXyin, Double_t fVTXzin,
 		     Double_t fVTXxout, Double_t fVTXyout, Double_t fVTXzout,
 		     Double_t fVTXpxin, Double_t fVTXpyin, Double_t fVTXpzin,
@@ -568,8 +551,6 @@ Int_t Evento::AddVTX(Int_t fVTXid, Int_t fVTXilay,
       eve.VTXn ++;
       eve.VTXilay[eve.VTXn-1] = fVTXilay;
       eve.VTXid[eve.VTXn-1] = fVTXid;
-      eve.VTXirow[eve.VTXn-1] = fVTXirow;
-      eve.VTXicol[eve.VTXn-1] = fVTXicol;
       eve.VTXxin[eve.VTXn-1] = fVTXxin;
       eve.VTXyin[eve.VTXn-1] = fVTXyin;
       eve.VTXzin[eve.VTXn-1] = fVTXzin;
@@ -595,8 +576,7 @@ Int_t Evento::AddVTX(Int_t fVTXid, Int_t fVTXilay,
 
 /*-----------------------------------------------------------------*/
 
-Int_t Evento::AddITR(Int_t fITRid, Int_t fITRilay,Int_t fITRirow,
-		     Int_t fITRicol,Int_t fITRiplume, Int_t fITRimimo,
+Int_t Evento::AddITR(Int_t fITRid, Int_t fITRisens,
 		     Double_t fITRxin, Double_t fITRyin, Double_t fITRzin,
 		     Double_t fITRxout, Double_t fITRyout, Double_t fITRzout,
 		     Double_t fITRpxin, Double_t fITRpyin, Double_t fITRpzin,
@@ -605,12 +585,8 @@ Int_t Evento::AddITR(Int_t fITRid, Int_t fITRilay,Int_t fITRirow,
 
   if(eve.ITRn<MAXITR){
       eve.ITRn ++;
-      eve.ITRilay[eve.ITRn-1] = fITRilay;
       eve.ITRid[eve.ITRn-1] = fITRid;
-      eve.ITRirow[eve.ITRn-1] = fITRirow;
-      eve.ITRicol[eve.ITRn-1] = fITRicol;
-      eve.ITRiplume[eve.ITRn-1] = fITRiplume;
-      eve.ITRimimo[eve.ITRn-1] = fITRimimo;
+      eve.ITRisens[eve.ITRn-1] = fITRisens;
       eve.ITRxin[eve.ITRn-1] = fITRxin;
       eve.ITRyin[eve.ITRn-1] = fITRyin;
       eve.ITRzin[eve.ITRn-1] = fITRzin;
@@ -637,7 +613,6 @@ Int_t Evento::AddITR(Int_t fITRid, Int_t fITRilay,Int_t fITRirow,
 /*-----------------------------------------------------------------*/
 
 Int_t Evento::AddMSD(Int_t fMSDid, Int_t fMSDilay,
-		     Int_t fMSDistripx, Int_t fMSDistripy,
 		     Double_t fMSDxin, Double_t fMSDyin, Double_t fMSDzin,
 		     Double_t fMSDxout, Double_t fMSDyout, Double_t fMSDzout,
 		     Double_t fMSDpxin, Double_t fMSDpyin, Double_t fMSDpzin,
@@ -648,8 +623,6 @@ Int_t Evento::AddMSD(Int_t fMSDid, Int_t fMSDilay,
       eve.MSDn ++;
       eve.MSDid[eve.MSDn-1] = fMSDid;
       eve.MSDilay[eve.MSDn-1] = fMSDilay;
-      eve.MSDistripx[eve.MSDn-1] = fMSDistripx;
-      eve.MSDistripy[eve.MSDn-1] = fMSDistripy;
       eve.MSDxin[eve.MSDn-1] = fMSDxin;
       eve.MSDyin[eve.MSDn-1] = fMSDyin;
       eve.MSDzin[eve.MSDn-1] = fMSDzin;
@@ -848,8 +821,6 @@ int Evento::SetBranches(TTree *RootTree){
    RootTree->Branch("VTXn", &eve.VTXn,"VTXn/I");
    RootTree->Branch("VTXid",&eve.VTXid,"VTXid[VTXn]/I");
    RootTree->Branch("VTXilay",&eve.VTXilay,"VTXilay[VTXn]/I");
-   RootTree->Branch("VTXirow",&eve.VTXirow,"VTXirow[VTXn]/I");
-   RootTree->Branch("VTXicol",&eve.VTXicol,"VTXicol[VTXn]/I");
    RootTree->Branch("VTXxin",&eve.VTXxin,"VTXxin[VTXn]/D");
    RootTree->Branch("VTXyin",&eve.VTXyin,"VTXyin[VTXn]/D");
    RootTree->Branch("VTXzin",&eve.VTXzin,"VTXzin[VTXn]/D");
@@ -868,11 +839,7 @@ int Evento::SetBranches(TTree *RootTree){
    
    RootTree->Branch("ITRn",&eve.ITRn,"ITRn/I");
    RootTree->Branch("ITRid",&eve.ITRid,"ITRid[ITRn]/I");
-   RootTree->Branch("ITRiplume",&eve.ITRiplume,"ITRiplume[ITRn]/I");
-   RootTree->Branch("ITRimimo",&eve.ITRimimo,"ITRimimo[ITRn]/I");
-   RootTree->Branch("ITRilay",&eve.ITRilay,"ITRilay[ITRn]/I");
-   RootTree->Branch("ITRirow",&eve.ITRirow,"ITRirow[ITRn]/I");
-   RootTree->Branch("ITRicol",&eve.ITRicol,"ITRicol[ITRn]/I");
+   RootTree->Branch("ITRisens",&eve.ITRisens,"ITRisens[ITRn]/I");
    RootTree->Branch("ITRxin",&eve.ITRxin,"ITRxin[ITRn]/D");
    RootTree->Branch("ITRyin",&eve.ITRyin,"ITRyin[ITRn]/D");
    RootTree->Branch("ITRzin",&eve.ITRzin,"ITRzin[ITRn]/D");
@@ -892,8 +859,6 @@ int Evento::SetBranches(TTree *RootTree){
    RootTree->Branch("MSDn",&eve.MSDn,"MSDn/I");
    RootTree->Branch("MSDid",&eve.MSDid,"MSDid[MSDn]/I");
    RootTree->Branch("MSDilay",&eve.MSDilay,"MSDilay[MSDn]/I");
-   RootTree->Branch("MSDistripx",&eve.MSDistripx,"MSDistripx[MSDn]/I");
-   RootTree->Branch("MSDistripy",&eve.MSDistripy,"MSDistripy[MSDn]/I");
    RootTree->Branch("MSDxin",&eve.MSDxin,"MSDxin[MSDn]/D");
    RootTree->Branch("MSDyin",&eve.MSDyin,"MSDyin[MSDn]/D");
    RootTree->Branch("MSDzin",&eve.MSDzin,"MSDzin[MSDn]/D");
@@ -1037,8 +1002,6 @@ int Evento::FindBranches(TTree *RootTree, EVENT_STRUCT *eve){
   RootTree->SetBranchAddress("VTXn",&(eve->VTXn));
   RootTree->SetBranchAddress("VTXid",&(eve->VTXid));
   RootTree->SetBranchAddress("VTXilay",&(eve->VTXilay));
-  RootTree->SetBranchAddress("VTXirow",&(eve->VTXirow));
-  RootTree->SetBranchAddress("VTXicol",&(eve->VTXicol));
   RootTree->SetBranchAddress("VTXxin",&(eve->VTXxin));
   RootTree->SetBranchAddress("VTXyin",&(eve->VTXyin));
   RootTree->SetBranchAddress("VTXzin",&(eve->VTXzin));
@@ -1057,11 +1020,7 @@ int Evento::FindBranches(TTree *RootTree, EVENT_STRUCT *eve){
   
   RootTree->SetBranchAddress("ITRn",&(eve->ITRn));
   RootTree->SetBranchAddress("ITRid",&(eve->ITRid));
-  RootTree->SetBranchAddress("ITRiplume",&(eve->ITRiplume));
-  RootTree->SetBranchAddress("ITRimimo",&(eve->ITRimimo));
-  RootTree->SetBranchAddress("ITRilay",&(eve->ITRilay));
-  RootTree->SetBranchAddress("ITRirow",&(eve->ITRirow));
-  RootTree->SetBranchAddress("ITRicol",&(eve->ITRicol));
+  RootTree->SetBranchAddress("ITRisens",&(eve->ITRisens));
   RootTree->SetBranchAddress("ITRxin",&(eve->ITRxin));
   RootTree->SetBranchAddress("ITRyin",&(eve->ITRyin));
   RootTree->SetBranchAddress("ITRzin",&(eve->ITRzin));
@@ -1081,8 +1040,6 @@ int Evento::FindBranches(TTree *RootTree, EVENT_STRUCT *eve){
   RootTree->SetBranchAddress("MSDn",&(eve->MSDn));
   RootTree->SetBranchAddress("MSDid",&(eve->MSDid));
   RootTree->SetBranchAddress("MSDilay",&(eve->MSDilay));
-  RootTree->SetBranchAddress("MSDistripx",&(eve->MSDistripx));
-  RootTree->SetBranchAddress("MSDistripy",&(eve->MSDistripy));
   RootTree->SetBranchAddress("MSDxin",&(eve->MSDxin));
   RootTree->SetBranchAddress("MSDyin",&(eve->MSDyin));
   RootTree->SetBranchAddress("MSDzin",&(eve->MSDzin));
@@ -1141,6 +1098,7 @@ int Evento::FindBranches(TTree *RootTree, EVENT_STRUCT *eve){
   RootTree->SetBranchAddress("CROSSn",&(eve->CROSSn));
   RootTree->SetBranchAddress("CROSSid",&(eve->CROSSid));
   RootTree->SetBranchAddress("CROSSnreg",&(eve->CROSSnreg));
+  RootTree->SetBranchAddress("CROSSnregold",&(eve->CROSSnregold));
   RootTree->SetBranchAddress("CROSSx",&(eve->CROSSx));
   RootTree->SetBranchAddress("CROSSy",&(eve->CROSSy));
   RootTree->SetBranchAddress("CROSSz",&(eve->CROSSz));

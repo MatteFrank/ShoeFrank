@@ -103,6 +103,7 @@ typedef struct {
 
   Int_t    ITRn;                
   Int_t    ITRid[MAXITR];	       
+  Int_t    ITRisens[MAXITR];   	       
   Int_t    ITRilay[MAXITR];    	       
   Int_t    ITRiplume[MAXITR]; 	       
   Int_t    ITRimimo[MAXITR];    
