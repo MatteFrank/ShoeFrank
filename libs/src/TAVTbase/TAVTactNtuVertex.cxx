@@ -12,6 +12,7 @@
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
 
+#include "TAVTtrack.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTactNtuVertex.hxx"
 
@@ -106,9 +107,8 @@ Double_t TAVTactNtuVertex::ComputeDistance(Double_t zVal)
     
     for(Int_t q = 0; q<nTracks; ++q ) {
         TAVTtrack* track0 = ntuTrack->GetTrack(q);
-        TAVTline  line = track0->GetTrackLine();
-        meanX += line.GetPoint(zVal).X();
-        meanY += line.GetPoint(zVal).Y();
+        meanX += track0->GetPoint(zVal).X();
+        meanY += track0->GetPoint(zVal).Y();
     }
    
     meanX /= float(nTracks);
@@ -116,9 +116,8 @@ Double_t TAVTactNtuVertex::ComputeDistance(Double_t zVal)
    
     for(Int_t qq = 0; qq < nTracks; ++qq) {
         TAVTtrack* track0 = ntuTrack->GetTrack(qq);
-        TAVTline  line = track0->GetTrackLine();
-        distance += TMath::Sqrt( (line.GetPoint(zVal).X() - meanX)*(line.GetPoint(zVal).X() - meanX) 
-								+ (line.GetPoint(zVal).Y() - meanY)*(line.GetPoint(zVal).Y() - meanY) );
+        distance += TMath::Sqrt( (track0->GetPoint(zVal).X() - meanX)*(track0->GetPoint(zVal).X() - meanX)
+								+ (track0->GetPoint(zVal).Y() - meanY)*(track0->GetPoint(zVal).Y() - meanY) );
     }
     
     return distance;
@@ -134,11 +133,10 @@ Double_t TAVTactNtuVertex::ComputeFinalCoordinate(Int_t a, Double_t zVal)
    
     for(Int_t q = 0; q<nTracks; ++q ){
         TAVTtrack* track0 = ntuTrack->GetTrack(q);
-        TAVTline  line = track0->GetTrackLine();
         if(a ==0)
-            returnValue += line.GetPoint(zVal).X();
+            returnValue += track0->GetPoint(zVal).X();
         if(a == 1)
-            returnValue += line.GetPoint(zVal).Y();
+            returnValue += track0->GetPoint(zVal).Y();
     }
     returnValue /= float(nTracks);
    

@@ -18,6 +18,7 @@
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
+#include "TAVTtrack.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTactNtuTrack.hxx"
@@ -36,6 +37,8 @@ TAVTactNtuTrack::TAVTactNtuTrack(const char* name,
 								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
 : TAVTactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib, pBMntuTrack)
 {
+   AddDataIn(pNtuClus,   "TAVTntuCluster");
+   AddDataOut(pNtuTrack, "TAVTntuTrack");
 }
 
 //------------------------------------------+-----------------------------------
@@ -60,10 +63,10 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
    lineOrigin.SetXYZ(0.,0.,0.);
    lineSlope.SetXYZ(0.,0.,1.);
    
-   TAVTntuCluster* pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
-   TAVTntuTrack*   pNtuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
-   TAVTparGeo*     pGeoMap   = (TAVTparGeo*)     fpGeoMap->Object();
-   TAVTparConf*    pConfig   = (TAVTparConf*)    fpConfig->Object();
+   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
+   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
+   TAVTbaseParGeo*  pGeoMap   = (TAVTbaseParGeo*)  fpGeoMap->Object();
+   TAVTbaseParConf* pConfig   = (TAVTbaseParConf*) fpConfig->Object();
    
    TList array;
    array.SetOwner(false);
@@ -122,7 +125,7 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
 			if (nClusters1 == 0) continue; //empty planes
 			
 			// loop on all clusters of this plane and keep the nearest one
-			minDistance = fSearchClusDistance*(1 + 3.*TMath::Tan(track->GetTrackLine().GetTheta()*TMath::DegToRad()));
+			minDistance = fSearchClusDistance*(1 + 3.*TMath::Tan(track->GetTheta()*TMath::DegToRad()));
 			TAVTcluster* bestCluster = 0x0;
 			
 			for( Int_t iClus = 0; iClus < nClusters1; ++iClus ) { // loop on plane clusters

@@ -22,7 +22,7 @@
 #include "TAGgeoTrafo.hxx"
 
 #include "TAVTparGeo.hxx"
-#include "TAVTparConf.hxx"
+#include "TAVTtrack.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTactNtuTrackF.hxx"
@@ -42,7 +42,8 @@ TAVTactNtuTrackF::TAVTactNtuTrackF(const char* name,
 								   TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
 : TAVTactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib, pBMntuTrack)
 {
-
+   AddDataIn(pNtuClus,   "TAVTntuCluster");
+   AddDataOut(pNtuTrack, "TAVTntuTrack");
 }
 
 //------------------------------------------+-----------------------------------
@@ -61,7 +62,7 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
    
    TAVTntuCluster* pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
    TAVTntuTrack*   pNtuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
-   TAVTparGeo*     pGeoMap   = (TAVTparGeo*)     fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMap   = (TAVTbaseParGeo*) fpGeoMap->Object();
    
    TList array;
    array.SetOwner(false);
@@ -178,7 +179,7 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
 //  
 Bool_t TAVTactNtuTrackF::IsGoodCandidate(TAVTtrack* track)
 {
-   TAVTparGeo*  pGeoMap  = (TAVTparGeo*)     fpGeoMap->Object();
+   TAVTbaseParGeo*  pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
    TAGgeoTrafo* pFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
    Float_t width  = pGeoMap->GetEpiSize()[0];//VTX_WIDTH/2.;

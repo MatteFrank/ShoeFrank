@@ -77,7 +77,7 @@ protected:
     Bool_t CheckBmMatching();
     Bool_t CheckPileUp();
     void   ComputePileUp();
-    void   ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTline lvtx);
+    void   ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtrack lvtx);
 
     ClassDef(TAVTactBaseNtuVertex,0)
 };

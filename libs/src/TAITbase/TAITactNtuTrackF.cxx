@@ -14,9 +14,6 @@
 //TAGroot
 #include "TAGroot.hxx"
 
-//BM
-#include "TABMntuTrack.hxx"
-
 //First
 #include "TAGgeoTrafo.hxx"
 
@@ -38,10 +35,11 @@ ClassImp(TAITactNtuTrackF);
 //! Default constructor.
 TAITactNtuTrackF::TAITactNtuTrackF(const char* name, 
 								   TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
-								   TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
-: TAITactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib, pBMntuTrack)
+								   TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
+: TAITactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib)
 {
-
+   AddDataIn(pNtuClus,   "TAITntuCluster");
+   AddDataOut(pNtuTrack, "TAITntuTrack");
 }
 
 //------------------------------------------+-----------------------------------
@@ -67,7 +65,7 @@ Bool_t TAITactNtuTrackF::FindTiltedTracks()
    array.Clear();
    
    TAITtrack* track = 0x0;
-   Int_t nPlane   = pGeoMap->GetSensorsN()-1;
+   Int_t nPlane   = pGeoMap->GetNSensors()-1;
    Int_t curPlane = nPlane;
    
    while (curPlane >= fRequiredClusters-1) {
@@ -82,7 +80,7 @@ Bool_t TAITactNtuTrackF::FindTiltedTracks()
 
 	  for( Int_t iLastClus = 0; iLastClus < nLastClusters; ++iLastClus) { // loop on cluster of last plane
 		 TAITcluster* lastCluster = (TAITcluster*)lastList->At(iLastClus);
-		 if (lastCluster->GetFound()) continue;
+		 if (lastCluster->Found()) continue;
 		 if (lastCluster->GetPixelsN() <= 1) continue;
 		 lastCluster->SetFound();
 
@@ -93,7 +91,7 @@ Bool_t TAITactNtuTrackF::FindTiltedTracks()
 			
 			for( Int_t iNextClus = 0; iNextClus < nNextClusters; ++iNextClus) { // loop on cluster of next plane
 			   TAITcluster* nextCluster = (TAITcluster*)nextList->At(iNextClus);
-			   if (nextCluster->GetFound()) continue;
+			   if (nextCluster->Found()) continue;
 			   if (nextCluster->GetPixelsN() <= 1) continue;
 			   
 			   track = new TAITtrack();
@@ -123,7 +121,7 @@ Bool_t TAITactNtuTrackF::FindTiltedTracks()
 				  for( Int_t iFirstClus = 0; iFirstClus < nFirstClusters; ++iFirstClus) { // loop on cluster of first planes
 					 TAITcluster* firstCluster = (TAITcluster*)firstList->At(iFirstClus);
 					 if (firstCluster->GetPixelsN() <= 1) continue;
-					 if( firstCluster->GetFound()) continue; // skip cluster already found
+					 if( firstCluster->Found()) continue; // skip cluster already found
 					 
 					 aDistance = firstCluster->Distance(track);
 					 if( aDistance < minDistance ) {
@@ -178,8 +176,10 @@ Bool_t TAITactNtuTrackF::IsGoodCandidate(TAITtrack* track)
 {
    TAITparGeo* pGeoMap = (TAITparGeo*)fpGeoMap->Object();
 
-   Float_t width = pGeoMap->GetTargetWidth()/2.;
-   TVector3 vec = track->Intersection(0.);
+   Float_t width  = pGeoMap->GetEpiSize()[0];//VTX_WIDTH/2.;
+   Float_t height = pGeoMap->GetEpiSize()[1];//VTX_HEIGHT/2.;
+   TVector3 vec = track->Intersection(-fpFootGeo->GetVTCenter()[2]);
+
    if (TMath::Abs(vec.X()) > width || TMath::Abs(vec.Y()) > width)
 	  return false;
    

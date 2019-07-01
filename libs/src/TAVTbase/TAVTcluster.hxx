@@ -26,6 +26,7 @@ public:
 
       //! Compute distance from a track
    Float_t            Distance(TAVTtrack *aTrack); 
+
    //! Add pixel to the list
    void               AddPixel(TAVTntuHit* pixel);
    

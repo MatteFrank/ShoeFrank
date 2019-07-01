@@ -32,6 +32,10 @@ set( with_dictionnaries
    TAITntuCluster
    TAITcluster
    TAITactNtuClusterF
+   TAITtrack
+   TAITntuTrack
+   TAITactBaseNtuTrack
+   TAITactNtuTrackF
 )
 
 set( without_dictionnaries

@@ -212,7 +212,7 @@ string TAITparGeo::PrintParameters()
     outstr << endl;
    
     map<string, int> intp;
-    intp["nlayITR"] = fSensorsN;
+    intp["nsensITR"] = fSensorsN;
     for (auto i : intp){
       outstr << "      integer " << i.first << endl;
       outstr << "      parameter (" << i.first << " = " << i.second << ")" << endl;
@@ -332,7 +332,7 @@ string TAITparGeo::PrintBodies()
               
       //epitaxial layer
       bodyname = Form("itre%d",iSens);
-      regionname = Form("ITRE%d",iSens);
+      regionname = Form("ITRE%02d",iSens);
       posEpi.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
 		     fCenter.Y() + GetSensorPosition(iSens).Y(),
 		     fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fPixThickness + fEpiSize.Z()/2. );
@@ -430,6 +430,7 @@ string TAITparGeo::PrintSubtractBodiesFromAir()
 
     for(int i=0; i<vModBody.size(); i++) {
       ss << " -" << vModBody.at(i);
+      if ((i+1)%10==0) ss << endl;
     }
     ss << endl;
 

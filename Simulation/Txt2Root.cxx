@@ -159,8 +159,6 @@ int main(int argc, char *argv[])
   RootTree->Branch("VTXn",&eve.VTXn,"VTXn/I");
   RootTree->Branch("VTXid",&eve.VTXid,"VTXid[VTXn]/I");
   RootTree->Branch("VTXilay",&eve.VTXilay,"VTXilay[VTXn]/I");
-  RootTree->Branch("VTXirow",&eve.VTXirow,"VTXirow[VTXn]/I");
-  RootTree->Branch("VTXicol",&eve.VTXicol,"VTXicol[VTXn]/I");
   RootTree->Branch("VTXxin",&eve.VTXxin,"VTXxin[VTXn]/D");
   RootTree->Branch("VTXyin",&eve.VTXyin,"VTXyin[VTXn]/D");
   RootTree->Branch("VTXzin",&eve.VTXzin,"VTXzin[VTXn]/D");
@@ -179,11 +177,7 @@ int main(int argc, char *argv[])
 
   RootTree->Branch("ITRn",&eve.ITRn,"ITRn/I");
   RootTree->Branch("ITRid",&eve.ITRid,"ITRid[ITRn]/I");
-  RootTree->Branch("ITRiplume",&eve.ITRiplume,"ITRiplume[ITRn]/I");
-  RootTree->Branch("ITRimimo",&eve.ITRimimo,"ITRimimo[ITRn]/I");
-  RootTree->Branch("ITRilay",&eve.ITRilay,"ITRilay[ITRn]/I");
-  RootTree->Branch("ITRirow",&eve.ITRirow,"ITRirow[ITRn]/I");
-  RootTree->Branch("ITRicol",&eve.ITRicol,"ITRicol[ITRn]/I");
+  RootTree->Branch("ITRisens",&eve.ITRisens,"ITRisens[ITRn]/I");
   RootTree->Branch("ITRxin",&eve.ITRxin,"ITRxin[ITRn]/D");
   RootTree->Branch("ITRyin",&eve.ITRyin,"ITRyin[ITRn]/D");
   RootTree->Branch("ITRzin",&eve.ITRzin,"ITRzin[ITRn]/D");
@@ -203,8 +197,6 @@ int main(int argc, char *argv[])
   RootTree->Branch("MSDn",&eve.MSDn,"MSDn/I");
   RootTree->Branch("MSDid",&eve.MSDid,"MSDid[MSDn]/I");
   RootTree->Branch("MSDilay",&eve.MSDilay,"MSDilay[MSDn]/I");
-  RootTree->Branch("MSDistripx",&eve.MSDistripx,"MSDistripx[MSDn]/I");
-  RootTree->Branch("MSDistripy",&eve.MSDistripy,"MSDistripy[MSDn]/I");
   RootTree->Branch("MSDxin",&eve.MSDxin,"MSDxin[MSDn]/D");
   RootTree->Branch("MSDyin",&eve.MSDyin,"MSDyin[MSDn]/D");
   RootTree->Branch("MSDzin",&eve.MSDzin,"MSDzin[MSDn]/D");
@@ -399,7 +391,6 @@ int main(int argc, char *argv[])
 	  nread = fscanf(pfile,
 			 "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 			 &eve.VTXid[jj],&eve.VTXilay[jj],
-			 // &eve.VTXirow[jj],&eve.VTXicol[jj],
 			 &eve.VTXxin[jj],&eve.VTXyin[jj],&eve.VTXzin[jj],
 			 &eve.VTXxout[jj],&eve.VTXyout[jj],&eve.VTXzout[jj],
 			 &eve.VTXpxin[jj],&eve.VTXpyin[jj],&eve.VTXpzin[jj],
@@ -420,15 +411,14 @@ int main(int argc, char *argv[])
  
 	for(int jj=0; jj<eve.ITRn;jj++){
 	  nread = fscanf(pfile,
-			 "%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
-			 &eve.ITRid[jj],&eve.ITRiplume[jj],&eve.ITRimimo[jj],
-			 &eve.ITRilay[jj],//&eve.ITRirow[jj],&eve.ITRicol[jj],
+			 "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
+			 &eve.ITRid[jj],&eve.ITRisens[jj],
 			 &eve.ITRxin[jj],&eve.ITRyin[jj],&eve.ITRzin[jj],
 			 &eve.ITRxout[jj],&eve.ITRyout[jj],&eve.ITRzout[jj],
 			 &eve.ITRpxin[jj],&eve.ITRpyin[jj],&eve.ITRpzin[jj],
 			 &eve.ITRpxout[jj],&eve.ITRpyout[jj],&eve.ITRpzout[jj],
 			 &eve.ITRde[jj],&eve.ITRal[jj],&eve.ITRtim[jj]);
-	  if(nread!=19){
+	  if(nread!=17){
 	    ReadError = true;
 	    cout<<"ReadError in ITR section: nread = "<<nread<<
 	      " instead of 19; ev= "<<NumProcessed<<endl;
@@ -446,7 +436,6 @@ int main(int argc, char *argv[])
 	  nread = fscanf(pfile,
 			 "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
 			 &eve.MSDid[jj],&eve.MSDilay[jj],
-			 // &eve.MSDistripx[jj],&eve.MSDistripy[jj],
 			 &eve.MSDxin[jj],&eve.MSDyin[jj],&eve.MSDzin[jj],
 			 &eve.MSDxout[jj],&eve.MSDyout[jj],&eve.MSDzout[jj],
 			 &eve.MSDpxin[jj],&eve.MSDpyin[jj],&eve.MSDpzin[jj],

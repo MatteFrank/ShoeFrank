@@ -37,7 +37,10 @@ TAVTactNtuTrackH::TAVTactNtuTrackH(const char* name,
 : TAVTactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib, pBMntuTrack),
   fListOfVertices(new TList())
 {
-   TAVTparGeo* geoMap  = (TAVTparGeo*) fpGeoMap->Object();
+   AddDataIn(pNtuClus,   "TAVTntuCluster");
+   AddDataOut(pNtuTrack, "TAVTntuTrack");
+   
+   TAVTbaseParGeo* geoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
 
    fpHisHoughXZ = new TH2F("vtHoughXZ", "Hough Transform XZ space",534,-1.6,1.6,
 						   140,-geoMap->GetPitchU()*geoMap->GetPixelsNu()/2., geoMap->GetPitchU()*geoMap->GetPixelsNu()/2.);
@@ -65,7 +68,7 @@ Bool_t TAVTactNtuTrackH::FindTiltedTracks()
 {
 	TAVTntuCluster* pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
 	TAVTntuTrack*   pNtuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
-	TAVTparGeo*     pGeoMap   = (TAVTparGeo*)     fpGeoMap->Object();
+	TAVTbaseParGeo* pGeoMap   = (TAVTbaseParGeo*) fpGeoMap->Object();
 	
 	TAVTtrack* track = 0x0;
 	Int_t nPlane   = pGeoMap->GetNSensors()-1;
@@ -328,7 +331,7 @@ Bool_t TAVTactNtuTrackH::FindVertices()
 			TAVTtrack* track0 = pNtuTrack->GetTrack(i);
 			TAVTtrack* track1 = pNtuTrack->GetTrack(j);
 			TVector2 pos = track0->DistanceMin(track1);
-			if (TMath::Abs(pos.X()) < TAVTparGeo::GetTargetWidth()/2. && pos.Y() < fSearchClusDistance) {
+			if (TMath::Abs(pos.X()) < TAVTbaseParGeo::GetTargetWidth()/2. && pos.Y() < fSearchClusDistance) {
 			   TVector3* vec = new TVector3(0.,0.,0.);
 			   TAVTline line  = track0->GetTrackLine();
 			   vec->SetXYZ(line.GetSlopeZ()(0)*pos.X() + line.GetOrigin()(0),line.GetSlopeZ()(1)*pos.X() + line.GetOrigin()(1),pos.X());

@@ -35,7 +35,8 @@ c
       include "parameters.inc"
       character*8 REGNAM
       integer cellBMN, strip, cry, layMSD
-      integer plmITR, layITR, mimoITR
+      integer sensITR
+c      integer plmITR, layITR, mimoITR
       integer ia,ib,ic,id,ie,ig,ih,il,im
 *
 *
@@ -95,9 +96,10 @@ c
          ireg2layBMN(nn)   = -10
       end do
       do nn = 1,MAXITRREG
-         ireg2plumeITR(nn) = -10
-         ireg2layITR(nn)   = -10
-         ireg2mimoITR(nn)  = -10
+         ireg2sensITR(nn) = -10
+c         ireg2plumeITR(nn) = -10
+c         ireg2layITR(nn)   = -10
+c         ireg2mimoITR(nn)  = -10
       end do
       do nn = 1,MAXMSDREG
          ireg2layMSD(nn)   = -10
@@ -146,16 +148,18 @@ c
                   nregLastVTX=ii
                endif
                ia = ia + 1
-            elseif(REGNAM(1:4).eq.'ITRS') then
-               read(REGNAM(5:5),*) plmITR
-               ireg2plumeITR(ii) = plmITR
-               read(REGNAM(6:6),*) layITR
-               ireg2layITR(ii) = layITR
-               read(REGNAM(7:7),*) mimoITR
-               ireg2mimoITR(ii) = mimoITR
+            elseif(REGNAM(1:4).eq.'ITRE') then
+                read(REGNAM(5:6),*) sensITR
+                ireg2sensITR(ii) = sensITR
+c                read(REGNAM(5:5),*) plmITR
+c               ireg2plumeITR(ii) = plmITR
+c               read(REGNAM(6:6),*) layITR
+c               ireg2layITR(ii) = layITR
+c               read(REGNAM(7:7),*) mimoITR
+c               ireg2mimoITR(ii) = mimoITR
                if(ib.eq.1) then
                   nregFirstITR=ii
-               elseif(ib.eq.nlayITR*nplumeITR*nmimoITR) then
+               elseif(ib.eq.nsensITR) then
                   nregLastITR=ii
                endif
                ib = ib + 1
@@ -199,6 +203,7 @@ c
 c
       write(*,*)'======================================'
       write(*,*)'USRINI: idbflg =  ',idbflg
+      write(*,*)'USRINI: =  ',ib, "  ", nsensITR
 c     
       if(((nregtarg*nregLastVTX*nregaria*nregLastSCN*nregSTC*nregLastITR
      &     *nregLastCAL*nregLastBMN*nregMagAir
