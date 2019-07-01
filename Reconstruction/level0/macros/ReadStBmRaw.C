@@ -59,7 +59,6 @@ void FillBM()
    TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
    TABMparCon* parconf = (TABMparCon*) bmConf->Object();
    parconf->FromFile("./config/TABMdetector.cfg");
-   parconf->LoadReso("./config/bmreso_vs_r.root");
 
    TAGparaDsc* bmMap = new TAGparaDsc("bmMap", new TABMparMap());
    TAGdataDsc* bmDat = new TAGdataDsc("bmDat", new TABMdatRaw());

@@ -54,6 +54,8 @@ TABMparCon::TABMparCon()
   fkDefaultParName = "./config/TABMdetector.cfg";
   vector<Float_t> myt0s(36,-10000);
   v_t0s = myt0s;
+  my_hreso=new TF1("poly","pol10",0.,0.95);
+  my_hreso->SetParameters(832.013,-9483.35,42697.4,-57369.7,-53877.2,96272.6,145773.,-67990.3,-284751.,-5173.99,234058.);
 }
 
 //------------------------------------------+-----------------------------------
@@ -183,7 +185,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
       sscanf(bufConf, "Z  %f %d %f", &myArg1,&myArgIntmin, &myArg2);
       if((myArgIntmax==1 || myArgIntmax==0 || myArgIntmax==2 || myArgIntmax==3)  &&  myArg1>=0 && myArg2>=0){
         t0_sigma=myArg1;
-        t0choice=myArgIntmin;
+        t0_choice=myArgIntmin;
         hit_timecut=myArg2;
           }else {
 	      Error(""," Plane Map Error:: check config file!! (Z)");
@@ -238,7 +240,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
 void TABMparCon::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
   ofstream outfile;
   outfile.open(output_filename.Data(),ios::out);
-  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<"     t0_switch= "<<t0_switch<<"    t0choice= "<<t0choice<<endl;
+  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<"     t0_switch= "<<t0_switch<<"    t0_choice= "<<t0_choice<<endl;
   for(Int_t i=0;i<36;i++)
     outfile<<"cellid= "<<i<<"  T0_time= "<<v_t0s[i]<<endl;
   outfile.close();
@@ -248,6 +250,11 @@ void TABMparCon::PrintT0s(TString output_filename, TString input_filename, Long6
  
 Bool_t TABMparCon::loadT0s(TString filename) {
   ifstream infile;
+  if(gTAGroot->CurrentRunNumber()==2210 || gTAGroot->CurrentRunNumber()==2211 || gTAGroot->CurrentRunNumber()==2212)
+    filename.Insert(filename.Last('.'),"_7April");
+  else if(gTAGroot->CurrentRunNumber()==2239 || gTAGroot->CurrentRunNumber()==2240 || gTAGroot->CurrentRunNumber()==2241 || gTAGroot->CurrentRunNumber()==2242 || gTAGroot->CurrentRunNumber()==2251)
+    filename.Insert(filename.Last('.'),"_8April");
+    
   gSystem->ExpandPathName(filename);
   infile.open(filename,ios::in);
   if(infile.is_open()==kFALSE){
@@ -257,7 +264,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
   char tmp_char[200];
   vector<Float_t> fileT0(36,-10000.);
   Int_t tmp_int=-1, status=0;  
-  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>t0_switch>>tmp_char>>t0choice;
+  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>t0_switch>>tmp_char>>t0_choice;
 
   for(Int_t i=0;i<36;i++)
     if(!infile.eof() && tmp_int==i-1)
@@ -359,37 +366,6 @@ void TABMparCon::ToStream(ostream& os, Option_t*) const
 }
 
 
-void TABMparCon::LoadSTrel(TString sF) {
-
-  ifstream inS; TFile *f; char fname[200], bufConf[200];
-  char name[200]; int idx;
-  inS.open(sF.Data());
-  if(!inS.is_open())
-    cout<<"ERROR in TABMparCon::LoadSTrel:  cannot find the file "<<sF.Data()<<endl;
-  Info("Action()","Processing STrel from %s  LIST file!",sF.Data());
-  while (inS.getline(bufConf, 200, '\n')) {
-    sscanf(bufConf,"%s",fname);
-    Info("Action()","Adding %s STrel to be processed!",fname);
-    f = new TFile(fname,"READ");
-    f->cd();
-
-    Int_t i_run = gTAGroot->CurrentRunNumber();
-    sprintf(name,"%d",i_run);
-    gDirectory->cd(name);
-    //    gDirectory->ls();
-
-    sprintf(name,"strel_fun_new");
-    //	  cout<<" "<<name<<endl;
-    m_myFunSpl = ((TF1*)gDirectory->Get(name));
-    m_myVFunSpl.push_back(m_myFunSpl);
-  }
-  Info("Action()","Processed data from %s LIST file!",sF.Data());
-  inS.close();
-  
-  return;
-  
-}
-
  /*-------------------------------------------------*/
 
 Float_t TABMparCon::FirstSTrel(Float_t tdrift){
@@ -464,32 +440,16 @@ Float_t TABMparCon::FirstSTrelMC(Float_t tdrift, Int_t mc_switch){
 
 
 
-void TABMparCon::LoadReso(TString sF) {
+//~ Float_t TABMparCon::ResoEval(Float_t dist) {
+  //~ Float_t sigma;
+  //~ Int_t mybin(-1);
+  //~ if(my_hreso) {
+    //~ mybin = my_hreso->FindBin(dist);
+    //~ sigma = my_hreso->GetBinContent(mybin)/10000;
+  //~ }
+  //~ return sigma>0 ? sigma:0.12;
   
-  TDirectory* cd_pwd = gDirectory;
-
-  TFile *f; 
-  Info("Action()","Processing Reso vs R from %s  LIST file!",sF.Data());
-  
-  f = new TFile(sF.Data(),"READ");
-  f->cd();
-  my_hreso = ((TH1D*)gDirectory->Get("myHp"));
-  gDirectory = cd_pwd;
-  return;
-  
-}
-
-Float_t TABMparCon::ResoEval(Float_t dist) {
-  //~ return 0.001;
-  Float_t sigma;
-  Int_t mybin(-1);
-  if(my_hreso) {
-    mybin = my_hreso->FindBin(dist);
-    sigma = my_hreso->GetBinContent(mybin)/10000;
-  }
-  return sigma>0 ? sigma:0.12;
-  
-}
+//~ }
 
 //~ TF1* TABMparCon::GetCalibX() {
 

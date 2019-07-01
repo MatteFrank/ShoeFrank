@@ -69,6 +69,20 @@ TAVTactNtuRaw*      vtActRaw  = 0x0;
 TAVTactNtuClusterF* vtActClus = 0x0;
 TAVTactNtuTrackF*   vtActTrck = 0x0;
 
+int GetRunNumber(TString name){
+   // Done by hand shoud be given by DAQ header
+   if (name.IsNull()) return 0;
+   // protection about file name starting with .
+   if (name[0] == '.')
+      name.Remove(0,1);
+   Int_t pos1   = name.First(".");
+   Int_t len    = name.Length();
+   TString tmp1 = name(pos1+1, len);
+   Int_t pos2   = tmp1.First(".");
+   TString tmp  = tmp1(0, pos2);
+   return tmp.Atoi();
+ }
+
 void FillBm(TString fExpName) {
   
   cout<<"start FillBm"<<endl;
@@ -87,10 +101,7 @@ void FillBm(TString fExpName) {
   TABMparCon* parConf = (TABMparCon*)bmConf->Object();
   parFileName = "./config/TABMdetector.cfg";
   parConf->FromFile(parFileName.Data());
-  
-  parFileName = "./config/bmreso_vs_r.root";
-  parConf->LoadReso(parFileName);
-  
+    
   //~ parFileName = "./config/T0evaluation_data_built.2242.physics_foot.daq.VTX.1.dat.cfg";
   parFileName = "./config/T0evaluation_data_built.2211.physics_foot.daq.VTX.1.dat.cfg";
   parConf->loadT0s(parFileName);
@@ -203,7 +214,7 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
   geoTrafo.FromFile();
 
   tagr.SetCampaignNumber(1);
-  tagr.SetRunNumber(1);
+  tagr.SetRunNumber(GetRunNumber(name));
 
   outFile = new TAGactTreeWriter("outFile");
   FillBm(fExpName);

@@ -105,8 +105,6 @@ void FillBm(TString name) {
   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
   TABMparCon* parConf = (TABMparCon*)bmConf->Object();
   TString parFileName = "./config/TABMdetector.cfg";
-  parConf->FromFile(parFileName.Data());
-  parFileName = "./config/bmreso_vs_r.root";
   
   TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
   TABMparMap*  bmparMap = (TABMparMap*)bmMap->Object();
@@ -139,11 +137,12 @@ void FillBm(TString name) {
 
 //~ void ReadBmRaw(TString name = "data_test.00001462.physics_foot.daq.RAW._lb0000._EB-RCD._0001.data")
 //~ void EvaluateBMT0(TString in_filename = "data_built.2205.physics_foot.daq.WD.full.dat")//not working: it crashes after 1200 events and prob in datas
-void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.VTX.1.dat")
-//~ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_built.2242.physics_foot.daq.VTX.1.dat")
+//~ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.VTX.1.dat")
+void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_built.2242.physics_foot.daq.VTX.1.dat")
 {  
-   int maxevnum=1e7;
-   int t0choice=0;
+   int maxevnum=1e8;
+   int t0choice=1;//0=wd, 1=internal
+   int t0switch=0;//0=t0 from the beginning of the tdc signal, 1=from the peak, 2=negative T0 enabled, 3=peak/2
    int tmp_int; 
    TString tmp_tstring;
    TString out_filename=in_filename(in_filename.Last('/')+1,in_filename.Last('.'));
@@ -198,6 +197,7 @@ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_
    
    bmcon->SetT0choice(t0choice);
    Booking(f_out, bmmap);
+   bmcon->SetT0switch(t0switch);
    f_out->cd();
    //event loop
    for (ientry = 0; ientry<maxevnum; ientry++) {

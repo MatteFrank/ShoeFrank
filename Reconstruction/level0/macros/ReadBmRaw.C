@@ -68,8 +68,6 @@ void FillBm(TString fExpName) {
    TABMparCon* parConf = (TABMparCon*)bmConf->Object();
    parFileName = "./config/TABMdetector.cfg";
    parConf->FromFile(parFileName.Data());
-   parFileName = "./config/bmreso_vs_r.root";
-   parConf->LoadReso(parFileName);
    parFileName = Form("./config/%sT0_beammonitor.cfg", fExpName.Data());
    parConf->loadT0s(parFileName);
    

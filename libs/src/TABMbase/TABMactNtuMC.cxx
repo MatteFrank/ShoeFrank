@@ -214,7 +214,7 @@ void TABMactNtuMC::CreateFakeHits(Int_t nfake, Int_t &nhits)
     }while(plane<0 || plane>5);
      
      
-    view=(gRandom->Uniform(0,2)>1) ? 1: -1;
+    view=(gRandom->Uniform(0,2)>1) ? 1: 0;
     do{
        cell=gRandom->Uniform(0,3);
     }while(cell<0 || cell>2);

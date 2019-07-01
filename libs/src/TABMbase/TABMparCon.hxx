@@ -32,7 +32,8 @@ class TABMparCon : public TAGparTools {
     void SetIsMC(Bool_t ism){m_isMC=ism; return;};
     void SetRdriftCut(Float_t Rdcut){rdrift_cut=Rdcut; return;};
     void SetEnxcellcut(Float_t Encut){enxcell_cut=Encut; return;};
-    void SetT0choice(Int_t in){t0choice=in;};
+    void SetT0choice(Int_t in){t0_choice=in;};
+    void SetT0switch(Int_t in){t0_switch=in;};
     
     //getters
     Bool_t   IsMC(){return m_isMC;};
@@ -60,15 +61,15 @@ class TABMparCon : public TAGparTools {
     Int_t GetSmearrdrift(){return smearrdrift;};
     TRandom3* GetRand(){return rand;};
     Float_t GetRdrift_err(){return rdrift_err;};
-    Int_t GetT0choice(){return t0choice;};
+    Int_t GetT0choice(){return t0_choice;};
 
     //T0 stuff
     void        PrintT0s(TString , TString, Long64_t);
     Bool_t      loadT0s(TString filename); 
     void        SetT0s(vector<Float_t> t0s);
     void        SetT0(Int_t cha, Float_t t0in);   
-    Float_t    GetT0(Int_t view, Int_t plane, Int_t cell){return GetT0(cell+view*3+plane*6);};
-    Float_t    GetT0(Int_t index_in){return (index_in<36 && index_in>-1) ? v_t0s[index_in]:-1000;};
+    Float_t     GetT0(Int_t view, Int_t plane, Int_t cell){return GetT0(cell+view*3+plane*6);};
+    Float_t     GetT0(Int_t index_in){return (index_in<36 && index_in>-1) ? v_t0s[index_in]:-1000;};
     void        CoutT0();
     
     //strel stuff
@@ -77,8 +78,7 @@ class TABMparCon : public TAGparTools {
     Float_t InverseStrel(Float_t rdrift);
     Float_t FirstSTrelMC(Float_t tdrift, Int_t mc_switch);    
   
-    void LoadReso(TString sF);
-    Float_t ResoEval(Float_t dist);
+    Float_t ResoEval(Float_t dist){return (dist>0 && dist<=0.8) ? my_hreso->Eval(dist)/10000. : 0.15;};
 
     Bool_t FromFile(const TString& name);
     Bool_t FromFileOld(const TString& name);
@@ -107,6 +107,7 @@ class TABMparCon : public TAGparTools {
     Int_t    prefit_enable;//flag to enable or disable the prefit
     Int_t    t0_switch;//0=t0 from the beginning of the tdc signal, 1=from the peak, 2=negative T0 enabled, 3=peak/2
     Float_t t0_sigma;//t0 with the gaussian shift for the negative T0 hits
+    Int_t    t0_choice; //0=wd, 1=internal
     Float_t hit_timecut;//timecut on the lenght of the signal (ns)
     vector<Float_t> v_t0s;//T0 in ns
     vector<Float_t> adc_ped_mean;//pedestals mean 
@@ -122,15 +123,8 @@ class TABMparCon : public TAGparTools {
     Float_t mceff_sigma;//sigma for the number of primary hits (only MC)
     TRandom3 *rand;
     Float_t rdrift_err;  //rdrift default error (used if from parcon file the error isn't loaded)
-    Int_t    t0choice; //0=wd, 1=internal
     
-    //~ TF1* f_mypol;
-    //~ TF1* f_mypol2;
-    TSpline3 *m_mySpl;
-    vector <TSpline3*> m_myVSpl;
-    TF1 *m_myFunSpl;
-    vector <TF1*> m_myVFunSpl;
-    TH1D *my_hreso;
+    TF1 *my_hreso;
   
 };
 

@@ -57,8 +57,6 @@ void FillBmVME(TString name) {
    TABMparCon* parConf = (TABMparCon*)bmConf->Object();
    parFileName = "./config/TABMdetector.cfg";
    parConf->FromFile(parFileName.Data());
-   parFileName = "./config/bmreso_vs_r.root";
-   parConf->LoadReso(parFileName);
    parFileName = "./config/trento_marzo.cfg";
    parConf->loadT0s(parFileName);
    parConf->CoutT0();

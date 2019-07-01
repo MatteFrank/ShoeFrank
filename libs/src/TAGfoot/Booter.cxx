@@ -741,8 +741,6 @@ void Booter::initBMCon(TAGparaDsc* beamcon)  {
 //
 //  o_beamcon->ConfigureTrkCalib();
 
-  filename = m_wd + "/config/bmreso_vs_r.root";
-  o_beamcon->LoadReso(filename);
 
   if (!b_bad) beamcon->SetBit(TAGparaDsc::kValid);
 

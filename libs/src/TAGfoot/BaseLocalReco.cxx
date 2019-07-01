@@ -218,10 +218,7 @@ void BaseLocalReco::ReadParFiles()
       parConf->FromFile(parFileName.Data());
       parFileName = Form("./config/%sT0_beammonitor.cfg", fExpName.Data());
       parConf->loadT0s(parFileName);
-      
-      parFileName = "./config/bmreso_vs_r.root";
-      parConf->LoadReso(parFileName);
-      
+            
       fpParMapBm = new TAGparaDsc("bmMap", new TABMparMap());
       TABMparMap*  parMapBm = (TABMparMap*)fpParMapBm->Object();
       parFileName = Form("./config/%sTABMdetector.map", fExpName.Data());

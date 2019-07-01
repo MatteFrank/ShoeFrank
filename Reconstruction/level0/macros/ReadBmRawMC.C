@@ -57,9 +57,6 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
    parFileName = "./config/TABMdetector.cfg";
    parConf->FromFile(parFileName.Data());
    
-   parFileName = "./config/bmreso_vs_r.root";
-   parConf->LoadReso(parFileName);
-
    TAGdataDsc* bmRaw    = new TAGdataDsc("bmRaw", new TABMntuRaw());
    bmActRaw  = new TABMactNtuMC("bmActRaw", bmRaw, bmConf, bmGeo, myStr);
    bmActRaw->CreateHistogram();
