@@ -134,7 +134,7 @@ TGeoVolume* TAVTparGeo::AddModule(const char* basemoduleName, const char *vertex
 string TAVTparGeo::PrintParameters()
 {   
   stringstream outstr;
-  outstr << setiosflags(ios::fixed) << setprecision(5);
+  // outstr << setiosflags(ios::fixed) << setprecision(5);
    
   if(GlobalPar::GetPar()->IncludeVertex()){
     
@@ -163,40 +163,72 @@ string TAVTparGeo::PrintRotations()
   stringstream ss;
 
   if(GlobalPar::GetPar()->IncludeVertex()){
-  
+
+    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+    TVector3  fCenter = fpFootGeo->GetVTCenter();
     for(int iSens=0; iSens<GetNSensors(); iSens++) {
 
-      // if(fSensorParameter[iSens].Tilt[0]!=0){
-      // 	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-      // 	   << setw(10) << setfill(' ') << std::right << "100."
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setfill(' ') << std::left << Form("vtX_%d",iSens) 
-      // 	   << endl;
-      // }
-      // if(fSensorParameter[iSens].Tilt[1]!=0){
-      // 	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-      // 	   << setw(10) << setfill(' ') << std::right << "200."
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setfill(' ') << std::left << Form("vtY_%d",iSens) 
-      // 	   << endl;
-      // }
-      if(fSensorParameter[iSens].Tilt[2]!=0){
+
+
+      if (fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0){
+
+	//put the sensor in 0,0,0 before the rotation
 	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-	   << setw(10) << setfill(' ') << std::right << "300."
-	   << setw(10) << setfill(' ') << std::right << " "
-	   << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()
+	   << setw(10) << setfill(' ') << std::right << ""
 	   << setw(10) << setfill(' ') << std::right << " "
 	   << setw(10) << setfill(' ') << std::right << " "
+	   << setw(10) << setfill(' ') << std::right << -fCenter.X()-GetSensorPosition(iSens).X()
+	   << setw(10) << setfill(' ') << std::right << -fCenter.Y()-GetSensorPosition(iSens).Y()
+	   << setw(10) << setfill(' ') << std::right << -fCenter.Z()-GetSensorPosition(iSens).Z()
+	   << setfill(' ') << std::left << Form("vt_%d",iSens) 
+	   << endl;
+      
+	//rot around x
+	if(fSensorParameter[iSens].Tilt[0]!=0){
+	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
+	     << setw(10) << setfill(' ') << std::right << "100."
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setfill(' ') << std::left << Form("vt_%d",iSens) 
+	     << endl;
+	}
+	//rot around y      
+	if(fSensorParameter[iSens].Tilt[1]!=0){
+	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
+	     << setw(10) << setfill(' ') << std::right << "200."
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setfill(' ') << std::left << Form("vt_%d",iSens) 
+	     << endl;
+	}
+	//rot around z
+	if(fSensorParameter[iSens].Tilt[2]!=0){
+	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
+	     << setw(10) << setfill(' ') << std::right << "300."
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setfill(' ') << std::left << Form("vt_%d",iSens) 
+	     << endl;
+	}
+	
+	//put back the sensor into its position
+	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
+	   << setw(10) << setfill(' ') << std::right << ""
 	   << setw(10) << setfill(' ') << std::right << " "
-	   << setfill(' ') << std::left << Form("vtZ_%d",iSens) 
+	   << setw(10) << setfill(' ') << std::right << " "
+	   << setw(10) << setfill(' ') << std::right << fCenter.X()+GetSensorPosition(iSens).X()
+	   << setw(10) << setfill(' ') << std::right << fCenter.Y()+GetSensorPosition(iSens).Y()
+	   << setw(10) << setfill(' ') << std::right << fCenter.Z()+GetSensorPosition(iSens).Z()
+	   << setfill(' ') << std::left << Form("vt_%d",iSens) 
 	   << endl;
       }
 
@@ -226,13 +258,9 @@ string TAVTparGeo::PrintBodies()
 
     for(int iSens=0; iSens<GetNSensors(); iSens++) {
 
-      // if(fSensorParameter[iSens].Tilt[0]!=0)
-      // 	ss << "$start_transform " << Form("vtX_%d",iSens) << endl;
-      // if(fSensorParameter[iSens].Tilt[1]!=0)
-      // 	ss << "$start_transform " << Form("vtY_%d",iSens) << endl;
-      if(fSensorParameter[iSens].Tilt[2]!=0)
-	ss << "$start_transform " << Form("vtZ_%d",iSens) << endl;
-        
+      if(fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0)
+	ss << "$start_transform " << Form("vt_%d",iSens) << endl;
+               
       //epitaxial layer
       bodyname = Form("vtxe%d",iSens);
       regionname = Form("VTXE%d",iSens);
@@ -278,17 +306,10 @@ string TAVTparGeo::PrintBodies()
 	 << posPix.z() + fPixThickness/2. << endl;
       vPixBody.push_back(bodyname);
       vPixRegion.push_back(regionname);
-
-      // if(fSensorParameter[iSens].Tilt[0]!=0){
-      // 	ss << "$end_transform " << endl;
-      // }
-      // if(fSensorParameter[iSens].Tilt[1]!=0){
-      // 	ss << "$end_transform " << endl;
-      // }
-      if(fSensorParameter[iSens].Tilt[2]!=0){
-	ss << "$end_transform " << endl;
-      }
     
+      if(fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0)
+	ss << "$end_transform " << endl;
+	  
     }
   }
   

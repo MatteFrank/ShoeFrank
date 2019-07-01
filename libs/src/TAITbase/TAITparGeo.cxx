@@ -17,6 +17,7 @@
 #include "TAGgeoTrafo.hxx"
 
 #include "TAITparGeo.hxx"
+#include "TAGroot.hxx"
 
 //##############################################################################
 
@@ -174,6 +175,7 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
    return it;
 }
 //_____________________________________________________________________________
+/*
 void TAITparGeo::PrintFluka()
 {
    static Int_t count = 0;
@@ -194,59 +196,296 @@ void TAITparGeo::PrintFluka()
    m_bodyPrintOut[matName].push_back(Form("ITRP%d", count));
    m_bodyName[matName].push_back(Form("ITRP%d", count));
 }
+*/
 
 //_____________________________________________________________________________
 string TAITparGeo::PrintParameters()
 {
-   stringstream outstr;
-   outstr << setiosflags(ios::fixed) << setprecision(5);
+  stringstream outstr;
+  // outstr << setiosflags(ios::fixed) << setprecision(5);
+
+  if(GlobalPar::GetPar()->IncludeInnerTracker()){
    
-   string precision = "D+00";
+    string precision = "D+00";
    
-   outstr << "c     INTERMEDIATE TRACKER PARAMETERS " << endl;
-   outstr << endl;
+    outstr << "c     INNER TRACKER PARAMETERS " << endl;
+    outstr << endl;
    
-   map<string, int> intp;
-   intp["xpixITR"] = fPixelsNx;
-   intp["ypixITR"] = fPixelsNx;
-   intp["nlayITR"] = fSensorsN;
-   for (auto i : intp){
+    map<string, int> intp;
+    intp["nlayITR"] = fSensorsN;
+    for (auto i : intp){
       outstr << "      integer " << i.first << endl;
       outstr << "      parameter (" << i.first << " = " << i.second << ")" << endl;
       // outstr << endl;
-   }
-   
-   map<string, double> doublep;
-   doublep["widthITR"]  =  fTotalSize[0];
-   doublep["heightITR"] =  fTotalSize[1];
-   doublep["deadITR"] = 0;//ITR_M28_WIDTH - ITR_SENSE_WIDTH + ITR_M28_DIST;
-   for (auto i : doublep){
-      outstr << "      double precision " << i.first << endl;
-      outstr << "      parameter (" << i.first << " = " << i.second << precision << ")" << endl;
-   }
-   
-   // to implemement
-//   map<string, vector<double>> dvectorp;
-//   string name;
-//   for ( int j = 0; j<m_xmin.size(); j++ ){
-//      name = "xminITR" + to_string(j);
-//      dvectorp[name] = m_xmin[j];
-//      name = "yminITR" + to_string(j);
-//      dvectorp[name] = m_ymin[j];
-//   }
-//   for (auto i : dvectorp){
-//      outstr << "      double precision " << i.first << "(" << dvectorp.size() << ")" << endl;
-//      outstr << "      data " << i.first << "/";
-//      for ( double d : i.second ){
-//         outstr << d << precision << ",";
-//      }
-//      outstr.seekp(-1, std::ios_base::end);
-//      outstr << "/" << endl;
-//      
-//   }
-   
-   outstr << endl;
+    }
+        
+    outstr << endl;
+  }
    
    return outstr.str();
+}
+
+//_____________________________________________________________________________
+string TAITparGeo::PrintRotations()
+{
+  stringstream ss;
+
+  if(GlobalPar::GetPar()->IncludeVertex()){
+
+    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+    TVector3  fCenter = fpFootGeo->GetITCenter();
+    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+
+
+
+      if (fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0){
+
+	//put the sensor in 0,0,0 before the rotation
+	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
+	   << setw(10) << setfill(' ') << std::right << ""
+	   << setw(10) << setfill(' ') << std::right << " "
+	   << setw(10) << setfill(' ') << std::right << " "
+	   << setw(10) << setfill(' ') << std::right << -fCenter.X()-GetSensorPosition(iSens).X()
+	   << setw(10) << setfill(' ') << std::right << -fCenter.Y()-GetSensorPosition(iSens).Y()
+	   << setw(10) << setfill(' ') << std::right << -fCenter.Z()-GetSensorPosition(iSens).Z()
+	   << setfill(' ') << std::left << Form("it_%d",iSens) 
+	   << endl;
+      
+	//rot around x
+	if(fSensorParameter[iSens].Tilt[0]!=0){
+	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
+	     << setw(10) << setfill(' ') << std::right << "100."
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setfill(' ') << std::left << Form("it_%d",iSens) 
+	     << endl;
+	}
+	//rot around y      
+	if(fSensorParameter[iSens].Tilt[1]!=0){
+	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
+	     << setw(10) << setfill(' ') << std::right << "200."
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setfill(' ') << std::left << Form("it_%d",iSens) 
+	     << endl;
+	}
+	//rot around z
+	if(fSensorParameter[iSens].Tilt[2]!=0){
+	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
+	     << setw(10) << setfill(' ') << std::right << "300."
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setw(10) << setfill(' ') << std::right << " "
+	     << setfill(' ') << std::left << Form("it_%d",iSens) 
+	     << endl;
+	}
+	
+	//put back the sensor into its position
+	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
+	   << setw(10) << setfill(' ') << std::right << ""
+	   << setw(10) << setfill(' ') << std::right << " "
+	   << setw(10) << setfill(' ') << std::right << " "
+	   << setw(10) << setfill(' ') << std::right << fCenter.X()+GetSensorPosition(iSens).X()
+	   << setw(10) << setfill(' ') << std::right << fCenter.Y()+GetSensorPosition(iSens).Y()
+	   << setw(10) << setfill(' ') << std::right << fCenter.Z()+GetSensorPosition(iSens).Z()
+	   << setfill(' ') << std::left << Form("it_%d",iSens) 
+	   << endl;
+      }
+
+    }
+  }
+  return ss.str();
+
+}
+
+//_____________________________________________________________________________
+string TAITparGeo::PrintBodies()
+{
+
+  stringstream ss;
+  ss << setiosflags(ios::fixed) << setprecision(10);
+
+  if(GlobalPar::GetPar()->IncludeInnerTracker()){
+
+    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  
+    TVector3  fCenter = fpFootGeo->GetITCenter();
+    TVector3 posEpi, posPix, posMod;
+
+    string bodyname, regionname;
+    
+    ss << "* ***Inner tracker bodies" << endl;  
+    
+    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+
+          
+      if(fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0)
+	ss << "$start_transform " << Form("it_%d",iSens) << endl;
+              
+      //epitaxial layer
+      bodyname = Form("itre%d",iSens);
+      regionname = Form("ITRE%d",iSens);
+      posEpi.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
+		     fCenter.Y() + GetSensorPosition(iSens).Y(),
+		     fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fPixThickness + fEpiSize.Z()/2. );
+      ss <<  "RPP " << bodyname <<  "     "
+	 << posEpi.x() - fEpiSize.X()/2. << " "
+	 << posEpi.x() + fEpiSize.X()/2. << " "
+	 << posEpi.y() - fEpiSize.Y()/2. << " "
+	 << posEpi.y() + fEpiSize.Y()/2. << " "
+	 << posEpi.z() - fEpiSize.Z()/2. << " "
+	 << posEpi.z() + fEpiSize.Z()/2. << endl;
+      vEpiBody.push_back(bodyname);
+      vEpiRegion.push_back(regionname);
+    
+      //module
+      bodyname = Form("itrm%d",iSens);
+      regionname = Form("ITRM%d",iSens);
+      posMod.SetXYZ( posEpi.X() + fEpiSize.X()/2. + fEpiOffset.X() - fTotalSize.X()/2.,
+		     posEpi.Y() - fEpiSize.Y()/2. - fEpiOffset.Y() + fTotalSize.Y()/2.,
+		     fCenter.Z() + GetSensorPosition(iSens).Z() );
+      ss <<  "RPP " << bodyname <<  "     "
+	 << posMod.x() - fTotalSize.X()/2. << " "
+	 << posMod.x() + fTotalSize.X()/2. << " "
+	 << posMod.y() - fTotalSize.Y()/2. << " "
+	 << posMod.y() + fTotalSize.Y()/2. << " "
+	 << posMod.z() - fTotalSize.Z()/2. << " "
+	 << posMod.z() + fTotalSize.Z()/2. << endl;
+      vModBody.push_back(bodyname);
+      vModRegion.push_back(regionname);
+    
+      //pixel layer
+      bodyname = Form("itrp%d",iSens);
+      regionname = Form("ITRP%d",iSens);
+      posPix.SetXYZ( posEpi.X(), posEpi.Y(), posEpi.Z() - fEpiSize.Z()/2. - fPixThickness/2.);   
+      ss <<  "RPP " << bodyname <<  "     "
+	 << posPix.x() - fEpiSize.X()/2. << " "
+	 << posPix.x() + fEpiSize.X()/2. << " "
+	 << posPix.y() - fEpiSize.Y()/2. << " "
+	 << posPix.y() + fEpiSize.Y()/2. << " "
+	 << posPix.z() - fPixThickness/2. << " "
+	 << posPix.z() + fPixThickness/2. << endl;
+      vPixBody.push_back(bodyname);
+      vPixRegion.push_back(regionname);
+      
+      if(fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0)
+	ss << "$end_transform " << endl;
+	  
+    }
+  }
+  
+    return ss.str();
+}
+
+
+//_____________________________________________________________________________
+string TAITparGeo::PrintRegions()
+{
+
+  stringstream ss;
+
+  if(GlobalPar::GetPar()->IncludeInnerTracker()){
+
+    string name;
+
+    ss << "* ***Vertex regions" << endl;
+
+    for(int i=0; i<vEpiRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << vEpiRegion.at(i)
+    	 << "5 " << vEpiBody.at(i) <<endl;
+    }
+
+    for(int i=0; i<vModRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << vModRegion.at(i)
+	 << "5 " << vModBody.at(i)
+	 << " -" << vEpiBody.at(i) << " -" << vPixBody.at(i) <<endl;
+    }
+
+    for(int i=0; i<vPixRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << vPixRegion.at(i)
+    	 << "5 " << vPixBody.at(i) <<endl;
+    }
+
+  }
+  
+  return ss.str();
+  
+}
+
+//_____________________________________________________________________________
+string TAITparGeo::PrintSubtractBodiesFromAir()
+{
+  
+  stringstream ss;
+
+  if(GlobalPar::GetPar()->IncludeInnerTracker()){
+
+    for(int i=0; i<vModBody.size(); i++) {
+      ss << " -" << vModBody.at(i);
+    }
+    ss << endl;
+
+  }
+
+   return ss.str();   
+}
+
+//_____________________________________________________________________________
+string TAITparGeo::PrintAssignMaterial()
+{
+
+  stringstream ss;
+  
+  if(GlobalPar::GetPar()->IncludeInnerTracker()){
+
+    string matMod = "SILICON";//fEpiMat.Data();
+    if (fEpiMat.CompareTo("Si")!=0)
+      cout << "ATTENTION in TAITparGeo PrintAssignMaterial: check the IT material"<<endl;
+    // matMod[1] =toupper(matMod[1]);
+    // const Char_t* matMod = fEpiMat.Data();
+    const Char_t* matPix = fPixMat.Data();
+    bool magnetic = false;
+    if(GlobalPar::GetPar()->IncludeDI())
+      magnetic = true;
+    
+    if (vEpiRegion.size()==0 || vModRegion.size()==0 || vPixRegion.size()==0 )
+      cout << "Error: IT regions vector not correctly filled!"<<endl;
+    
+    ss << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
+       << setw(10) << setfill(' ') << std::right << matMod
+       << setw(10) << setfill(' ') << std::right << vEpiRegion.at(0)
+       << setw(10) << setfill(' ') << std::right << vEpiRegion.back()
+       << setw(10) << setfill(' ') << std::right << "1."
+       << setw(10) << setfill(' ') << std::right << magnetic
+       << endl;
+
+    ss << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
+       << setw(10) << setfill(' ') << std::right << matMod
+       << setw(10) << setfill(' ') << std::right << vModRegion.at(0)
+       << setw(10) << setfill(' ') << std::right << vModRegion.back()
+       << setw(10) << setfill(' ') << std::right << "1."
+       << setw(10) << setfill(' ') << std::right << magnetic
+       << endl;
+
+    ss << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
+       << setw(10) << setfill(' ') << std::right << matPix
+       << setw(10) << setfill(' ') << std::right << vPixRegion.at(0)
+       << setw(10) << setfill(' ') << std::right << vPixRegion.back()
+       << setw(10) << setfill(' ') << std::right << "1."
+       << setw(10) << setfill(' ') << std::right << magnetic
+       << endl;
+
+  }
+
+  return ss.str();
+
 }
 
