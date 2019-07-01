@@ -7,22 +7,13 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "TVector3.h"
-
 #include "TAVTactBaseTrack.hxx"
 
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 
-
-class TAGgeoTrafo;
-class TABMntuTrackTr;
-class TGraphErrors;
-class TAVTbaseCluster;
-class TAVTntuHit;
 class TAVTbaseTrack;
-class TH2F;
-class TH1F;
+
 class TAITactBaseNtuTrack : public TAVTactBaseTrack {
    
 public:
@@ -39,9 +30,14 @@ public:
    virtual         Bool_t  Action();
    
 protected:
+   virtual Bool_t FindStraightTracks();
+   virtual Bool_t FindTiltedTracks() { return true; }
+   virtual Bool_t FindVertices()     { return false; }
+
    TAVTbaseTrack* GetTrack(Int_t idx);
    Int_t          GetTracksN() const;
-      
+
+   
    ClassDef(TAITactBaseNtuTrack,0)
 };
 

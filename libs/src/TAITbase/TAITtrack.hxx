@@ -6,6 +6,7 @@
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
+#include "TAITcluster.hxx"
 #include "TAVTbaseTrack.hxx"
 
 
@@ -16,7 +17,7 @@
  \author Ch. Finck
  */
 
-class TAITcluster;
+class TAVTbaseCluster;
 class TClonesArray;
 class TAITtrack : public TAVTbaseTrack {
    
@@ -28,7 +29,7 @@ public:
    void           SetupClones();
 
     //! Get cluster
-   TAVTbaseCluster*   GetCluster(Int_t index)  { return (TAITcluster*)fListOfClusters->At(index); }
+   TAVTbaseCluster* GetCluster(Int_t index)  { return (TAITcluster*)fListOfClusters->At(index); }
  
    //! Add cluster
    void           AddCluster(TAITcluster* cluster);

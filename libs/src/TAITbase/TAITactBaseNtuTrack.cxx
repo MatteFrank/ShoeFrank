@@ -3,25 +3,16 @@
  \version $Id: TAITactBaseNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
  \brief   Implementation of TAITactBaseNtuTrack.
  */
-#include "TClonesArray.h"
-#include "TMath.h"
-#include "TF1.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TGraphErrors.h"
-#include "TMath.h"
-#include "TVector3.h"
-#include "TVector2.h"
 
-
-//TAG
-#include "TAGroot.hxx"
+#include "GlobalPar.hxx"
 
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
 #include "TAITparCal.hxx"
+#include "TAITtrack.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAITntuCluster.hxx"
+
 #include "TAITactBaseNtuTrack.hxx"
 
 /*!
@@ -35,7 +26,7 @@ ClassImp(TAITactBaseNtuTrack);
 //! Default constructor.
 TAITactBaseNtuTrack::TAITactBaseNtuTrack(const char* name, 
 										 TAGdataDsc* pNtuClus,TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig,  
-										 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
+										 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
 : TAVTactBaseTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib)
 {
 }
@@ -71,7 +62,7 @@ Bool_t TAITactBaseNtuTrack::Action()
    if(FootDebugLevel(1)) {
 	  printf(" %d tracks found\n", pNtuTrack->GetTracksN());
 	  for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
-		 TAVTtrack* track = pNtuTrack->GetTrack(i);
+		 TAITtrack* track = pNtuTrack->GetTrack(i);
 		 printf("   with # clusters %d\n", track->GetClustersN());
 	  }
    }
@@ -127,9 +118,9 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
 		 
 		 if( pNtuTrack->GetTracksN() >= pConfig->GetAnalysisPar().TracksMaximum ) break; // if max track number reach, stop
 		 
-		 TAVTcluster* cluster = (TAVTcluster*)list->At( iLastClus );
+		 TAITcluster* cluster = (TAITcluster*)list->At( iLastClus );
 		 if (cluster->Found()) continue;
-		 TAVTtrack*   track   = new TAVTtrack();
+		 TAITtrack*   track   = new TAITtrack();
 		 array.Clear();
 		 track->AddCluster(cluster);
 		 array.Add(cluster);
@@ -148,10 +139,10 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
 			
 			// loop on all clusters of this plane and keep the nearest one
 			minDistance = fSearchClusDistance;
-			TAVTcluster* bestCluster = 0x0;
+			TAITcluster* bestCluster = 0x0;
 			
 			for( Int_t iClus = 0; iClus < nClusters1; ++iClus ) { // loop on plane clusters
-			   TAVTcluster* aCluster = (TAVTcluster*)list1->At( iClus );
+			   TAITcluster* aCluster = (TAITcluster*)list1->At( iClus );
 			   
 			   if( aCluster->Found()) continue; // skip cluster already found
 			   
@@ -191,7 +182,7 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
 			delete track;
 		 } else { // reset clusters
 			for (Int_t i = 0; i < array.GetEntries(); ++i) {
-			   TAVTcluster*  cluster1 = (TAVTcluster*)array.At(i);
+			   TAITcluster*  cluster1 = (TAITcluster*)array.At(i);
 			   cluster1->SetFound(false);
 			}
 			delete track;
