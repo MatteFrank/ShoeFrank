@@ -25,13 +25,13 @@ public:
    ~TAVTtrack();
    
    //! Set up clones
-   void           SetupClones();
+   void             SetupClones();
 
     //! Get cluster
-   TAVTbaseCluster*   GetCluster(Int_t index)  { return (TAVTcluster*)fListOfClusters->At(index); }
+   TAVTbaseCluster* GetCluster(Int_t index)  { return (TAVTcluster*)fListOfClusters->At(index); }
  
    //! Add cluster
-   void           AddCluster(TAVTcluster* cluster);
+   void             AddCluster(TAVTcluster* cluster);
    
    ClassDef(TAVTtrack,8)                      // Describes TAVTtrack
 };
