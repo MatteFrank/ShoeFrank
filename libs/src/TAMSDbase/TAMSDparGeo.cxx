@@ -112,19 +112,19 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
    ReadItem(fPixMatDensity);
    if(fDebugLevel)
      cout  << "  Pixel material density:  "<< fPixMatDensity << endl;
-   
+
    ReadItem(fMetalThickness);
    if(fDebugLevel)
      cout  << endl << "  Metal thickness: "<< fMetalThickness << endl;
-   
+
    ReadStrings(fMetalMat);
    if(fDebugLevel)
      cout   << "  Metal material: "<< fMetalMat.Data() << endl;
-   
+
    ReadItem(fMetalDensity);
    if(fDebugLevel)
      cout  << "  Metal density:  "<< fMetalDensity << endl;
- 
+
    ReadItem(fSupportInfo);
    if(fDebugLevel)
       cout  << "  Info flag for support:  "<< fSupportInfo << endl;
@@ -219,18 +219,18 @@ TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *verte
    // create MSD module
    const Char_t* matName = fEpiMat.Data();
    TGeoMedium*   medMod = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
-   
+
    TGeoBBox *box = new TGeoBBox(Form("%s_Box",basemoduleName), fEpiSize.X()/2., fEpiSize.Y()/2.,
                                 fTotalSize.Z()/2.);
-   
-   TGeoVolume *vertexMod = new TGeoVolume(Form("%s_MSD",basemoduleName),box, medMod);
-   vertexMod->SetLineColor(kAzure-5);
-   vertexMod->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
-   
+
+   TGeoVolume *msdMod = new TGeoVolume(Form("%s_MSD",basemoduleName),box, medMod);
+   msdMod->SetLineColor(kViolet-5);
+   msdMod->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+
    // if (GlobalPar::GetPar()->geoFLUKA())
    //    PrintFluka();
-   
-   return vertexMod;
+
+   return msdMod;
 }
 
 //_____________________________________________________________________________
@@ -256,7 +256,7 @@ TGeoVolume* TAMSDparGeo::BuildMultiStripDetector(const char* basemoduleName, con
 
       TGeoHMatrix* hm = GetTransfo(iSensor);
       msdMod = AddModule(Form("%s%d",basemoduleName, iSensor), msdName);
-   
+
       TGeoHMatrix* transf = (TGeoHMatrix*)hm->Clone();
       msd->AddNode(msdMod, iSensor, transf);
    }
@@ -277,7 +277,7 @@ string TAMSDparGeo::PrintParameters()
     outstr << endl;
 
     map<string, int> intp;
-    intp["nlayVTX"] = fSensorsN;
+    intp["nlayMSD"] = fSensorsN;
     for (auto i : intp){
       outstr << "      integer " << i.first << endl;
       outstr << "      parameter (" << i.first << " = " << i.second << ")" << endl;

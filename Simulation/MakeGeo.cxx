@@ -39,7 +39,7 @@ int main (int argc, char *argv[]) {
 
     if (!exp.IsNull())
        exp += "/";
-   
+
     clock_t start_tot, end_tot;
 
     // start time
@@ -94,7 +94,7 @@ int main (int argc, char *argv[]) {
     msdGeo->FromFile();
     twGeo->FromFile();
     caGeo->FromFile();
-   
+
     parFileName = Form("./geomaps/%sTAGdetector.map", exp.Data());
     generalGeo->FromFile(parFileName.Data());
 
@@ -297,7 +297,7 @@ int main (int argc, char *argv[]) {
     paramfile << bmGeo->PrintParameters();
     paramfile << vtxGeo->PrintParameters();
     paramfile << itrGeo->PrintParameters();
-    //paramfile << msdGeo->PrintParameters();
+    paramfile << msdGeo->PrintParameters();
     paramfile << twGeo->PrintParameters();
     // paramfile << caGeo->PrintParameters();
 
