@@ -121,8 +121,9 @@ c     common needed to score the hit in the inner tracker
 c     
       integer nITR, maxITR 
       parameter (maxITR=300)
-      integer idITR (maxITR), iplumeITR(maxITR), ilayITR(maxITR), 
-     &     imimoITR(maxITR)
+      integer idITR (maxITR), isensITR(maxITR)
+c      integer idITR (maxITR), iplumeITR(maxITR), ilayITR(maxITR), 
+c     &     imimoITR(maxITR)
 
       real xinITR(maxITR), xoutITR(maxITR), yinITR(maxITR),
      &     youtITR(maxITR), zinITR(maxITR), zoutITR(maxITR)
@@ -132,16 +133,19 @@ c
       common /ITR_common/ xinITR, xoutITR, yinITR, youtITR, 
      &     zinITR, zoutITR, pxinITR, pxoutITR, pyinITR, pyoutITR,
      &     pzinITR, pzoutITR, deITR, alITR, timITR, nITR, idITR,
-     &     iplumeITR, ilayITR, imimoITR
+     &     isensITR
+c     &     iplumeITR, ilayITR, imimoITR
 c     
 c  common for the indexing of the ITR
 c
        integer MAXITRREG
        parameter (MAXITRREG=300)
-       integer ireg2plumeITR(MAXITRREG), ireg2layITR(MAXITRREG),
-     &      ireg2mimoITR(MAXITRREG)
-       common /ITR_index_common/ireg2plumeITR, ireg2layITR,
-     &      ireg2mimoITR
+       integer ireg2sensITR(MAXITRREG)
+       common /ITR_index_common/ireg2sensITR
+c       integer ireg2plumeITR(MAXITRREG), ireg2layITR(MAXITRREG),
+c     &      ireg2mimoITR(MAXITRREG)
+c       common /ITR_index_common/ireg2plumeITR, ireg2layITR,
+c     &      ireg2mimoITR
       
 c     *************************************************************
 c     common needed to score the hit in the microstrip detector

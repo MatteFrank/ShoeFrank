@@ -389,35 +389,43 @@ c
       include 'mgdraw.inc'
       include 'parameters.inc'
       integer mreg, ii
-      integer iplume, imimo, ilay
+      integer isens
+c      integer iplume, imimo, ilay
 c     
-      iplume  = ireg2plumeITR(mreg)
-      ilay    = ireg2layITR(mreg)
-      imimo   = ireg2mimoITR(mreg)        
+      isens  = ireg2sensITR(mreg)
+c      iplume  = ireg2plumeITR(mreg)
+c      ilay    = ireg2layITR(mreg)
+c      imimo   = ireg2mimoITR(mreg)        
 c      
-      if (ilay.ge.nlayITR.or.ilay.lt.0) THEN
-         write(*,*) ' WARNING!!!! ilayITR= ',ilay,
+      if (isens.ge.nsensITR.or.sens.lt.0) THEN
+         write(*,*) ' WARNING!!!! isensITR= ',isens,
      &        ' xcordin= ',xcordin, ' ycordin= ',ycordin,
      &        ' zcordin= ',zcordin,' mreg= ',mreg
       ENDIF
-      if (iplume.ge.nplumeITR.or.iplume.lt.0) THEN
-         write(*,*) ' WARNING!!!! iplumeITR= ',iplume,
-     &        ' xcordin= ',xcordin, ' ycordin= ',ycordin,
-     &        ' zcordin= ',zcordin,' mreg= ',mreg
-      ENDIF
-      if (ilay.ge.nmimoITR.or.imimo.lt.0) THEN
-         write(*,*) ' WARNING!!!! imimoITR= ',imimo,
-     &        ' xcordin= ',xcordin, ' ycordin= ',ycordin,
-     &        ' zcordin= ',zcordin,' mreg= ',mreg
-      ENDIF
+c      if (ilay.ge.nlayITR.or.ilay.lt.0) THEN
+c         write(*,*) ' WARNING!!!! ilayITR= ',ilay,
+c     &        ' xcordin= ',xcordin, ' ycordin= ',ycordin,
+c     &        ' zcordin= ',zcordin,' mreg= ',mreg
+c      ENDIF
+c      if (iplume.ge.nplumeITR.or.iplume.lt.0) THEN
+c         write(*,*) ' WARNING!!!! iplumeITR= ',iplume,
+c     &        ' xcordin= ',xcordin, ' ycordin= ',ycordin,
+c     &        ' zcordin= ',zcordin,' mreg= ',mreg
+c      ENDIF
+c      if (ilay.ge.nmimoITR.or.imimo.lt.0) THEN
+c         write(*,*) ' WARNING!!!! imimoITR= ',imimo,
+c     &        ' xcordin= ',xcordin, ' ycordin= ',ycordin,
+c     &        ' zcordin= ',zcordin,' mreg= ',mreg
+c      ENDIF
 c      
       nITR_now = 0
 c
       if(idbflg.gt.1) then
          write(*,*)' '
          write(*,*)'---------------Score_ITR-----------------'
-         write(*,*)'test ','idcurr= ',idcurr,' lay= ',
-     &        ilay, ' plume=',iplume, ' mimosa= ',imimo,
+         write(*,*)'test ','idcurr= ',idcurr,
+     &        ' sens= ', isens,
+c     &        ' lay= ', ilay, ' plume=',iplume, ' mimosa= ',imimo,
      &        ' mreg =',mreg, ' nITR= ',nITR
          write(*,*)'xyz= ',xcordin,ycordin,zcordin
       endif             
@@ -432,13 +440,15 @@ c
          if (idbflg.gt.1) then
             write(*,*)'ii= ',ii
             write(*,*)'idITR(ii)= ',idITR(ii),' idcurr= ',idcurr
-            write(*,*)'iplume= ',iplume,'ilay= ',ilay,'imimo= ',imimo
+            write(*,*)'isens= ',isens
+c            write(*,*)'iplume= ',iplume,'ilay= ',ilay,'imimo= ',imimo
          endif
          if( ( idITR(ii).eq.idcurr .and.
-     &        iplumeITR(ii).eq.iplume .and.
+c     &        iplumeITR(ii).eq.iplume .and.
 c     &        iplumeITR(ii).eq.ipulme .and.
-     &        ilayITR(ii).eq.ilay .and.
-     &        imimoITR(ii).eq.imimo ) .OR.
+c     &        ilayITR(ii).eq.ilay .and.
+c     &        imimoITR(ii).eq.imimo ) .OR.
+     &        isensITR(ii).eq.isens ) .OR.
      &        ( sngl(xcordin).eq.xinITR(ii) .and. 
      &          sngl(ycordin).eq.yinITR(ii) .and.
      &          sngl(zcordin).eq.zinITR(ii) )
@@ -462,9 +472,10 @@ c
          nITR = nITR + 1
          nITR_now = nITR
          idITR(nITR) = idcurr
-         iplumeITR(nITR_now) = iplume
-         imimoITR(nITR_now) = imimo
-         ilayITR(nITR_now) = ilay
+         isensITR(nITR_now) = isens
+c         iplumeITR(nITR_now) = iplume
+c         imimoITR(nITR_now) = imimo
+c         ilayITR(nITR_now) = ilay
          xinITR(nITR_now)  = sngl(xcordin)
          yinITR(nITR_now)  = sngl(ycordin)
          zinITR(nITR_now)  = sngl(zcordin)
@@ -487,7 +498,8 @@ c
          do ii=1,nITR
             write(*,*)'ii= ',ii
             write(*,*)'idITR(ii)= ',idITR(ii),' idcurr= ',idcurr
-            write(*,*)'ilay= ',ilayITR(ii)
+c            write(*,*)'ilay= ',ilayITR(ii)
+            write(*,*)'isens= ',isensITR(ii)
          enddo
          write(*,*)'nITR_now= ',nITR_now,' nITR= ',nITR,
      &         ' deITR(nITR)= ',deITR(nITR_now)
