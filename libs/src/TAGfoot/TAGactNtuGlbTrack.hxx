@@ -1,0 +1,64 @@
+#ifndef _TAGactNtuGlbTrack_HXX
+#define _TAGactNtuGlbTrack_HXX
+/*!
+ \file
+ \version $Id: TAGactNtuGlbTrack.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
+ \brief   Declaration of TAGactNtuGlbTrack.
+ */
+/*------------------------------------------+---------------------------------*/
+
+#include "TVector3.h"
+
+#include "TAGactTreeReader.hxx"
+#include "TAGparaDsc.hxx"
+#include "TAGdataDsc.hxx"
+
+
+
+class TH1F;
+class TAGactNtuGlbTrack : public TAGactTreeReader {
+public:
+   
+   explicit  TAGactNtuGlbTrack(const char* name       = 0,
+                                     TAGdataDsc* p_vtxtrack = 0,
+                                     TAGdataDsc* p_itrclus  = 0,
+                                     TAGdataDsc* p_msdclus  = 0,
+                                     TAGdataDsc* p_twpoint  = 0,
+                                     TAGdataDsc* p_glbtrack = 0,
+                                     TAGparaDsc* p_geodi    = 0);
+   
+   virtual  ~TAGactNtuGlbTrack();
+   
+   //! Action
+   Bool_t    Action();
+   
+   //! Base creation of histogram
+   void      CreateHistogram();
+   
+   //! Set up branches
+   void      SetupBranches();
+
+   
+private:
+   TAGdataDsc*     fpVtxVertex;		 // Vertex
+   TAGdataDsc*     fpItrClus;		    // ITR clusters
+   TAGdataDsc*     fpMsdClus;		    // MSD clusters
+   TAGdataDsc*     fpTwPoint;		    // TOF points, should be cluster
+   TAGdataDsc*     fpGlbTrack;		 // global tracks
+   TAGparaDsc*     fpDiGeoMap;       // par geo for dipole
+   
+   TH1F*           fpHisMass;
+
+public:
+   //! Disable/Enable stand alone DAQ
+   static void DisableStdAlone()   { fgStdAloneFlag = false;  }
+   static void EnableStdAlone()    { fgStdAloneFlag = true;   }
+
+private:
+   static Bool_t         fgStdAloneFlag;   // flag for standalone (read from root file)
+
+   ClassDef(TAGactNtuGlbTrack,0)
+   
+};
+
+#endif

@@ -34,6 +34,10 @@ set( with_dictionnaries
    BaseLocalReco
    LocalRecoMC
    LocalReco
+   TAGntuPoint
+   TAGntuGlbTrack
+   TAGactNtuGlbTrack
+   GlobalReco
 )
 
 set( without_dictionnaries
