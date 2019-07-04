@@ -1,4 +1,4 @@
-# CMake for Qapivi_rec
+# CMake for FOOT_src
 # Ch. Finck
 
 #------------------------------------------------------------------------------
@@ -18,6 +18,7 @@ MESSAGE("  src:")
 add_subdirectory(TAGdaq)
 add_subdirectory(TAGdaqApi)
 add_subdirectory(TAGbase)
+add_subdirectory(TADIbase)
 add_subdirectory(TASTbase)
 add_subdirectory(TAIRbase)
 add_subdirectory(TABMbase)

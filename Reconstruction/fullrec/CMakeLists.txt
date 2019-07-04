@@ -22,7 +22,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/  DESTINATION ${CMAKE_BINARY_DIR}/Rec
 #----------------------------------------------------------------------------
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAPI} ${TAAPI} ${TAVT} ${TAIT} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAST} ${TAMC} ${TAFO})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI}  ${TAAPI} ${TAVT} ${TAIT} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAST} ${TAMC} ${TAFO})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES} ${GENFIT_LIBRARIES})
 
 #----------------------------------------------------------------------------
@@ -39,7 +39,7 @@ set( with_dictionnaries
 #
 include_directories(${ROOT_INCLUDE_DIR})
 include_directories(${TAG_INCLUDE_DIR})
-include_directories(${TADAQ_INCLUDE_DIR})
+include_directories(${TADI_INCLUDE_DIR})
 include_directories(${TAAPI_INCLUDE_DIR})
 include_directories(${TAST_INCLUDE_DIR})
 include_directories(${TABM_INCLUDE_DIR})

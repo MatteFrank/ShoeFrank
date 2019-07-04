@@ -6,7 +6,6 @@
 
 
 #pragma link C++ class KFitter;
-#pragma link C++ class FootField;
 #pragma link C++ class GlobalTrackRepostory;
 #pragma link C++ class GlobalTrackKalman;
 #pragma link C++ class Materials;
@@ -16,8 +15,6 @@
 
 #pragma link C++ class TAFOeventDisplayMC;
 #pragma link C++ class TAFOeventDisplay;
-#pragma link C++ class TADIeveField;
-#pragma link C++ class TADIparGeo;
 
 #pragma link C++ class  BaseLocalReco;
 #pragma link C++ class  LocalRecoMC;

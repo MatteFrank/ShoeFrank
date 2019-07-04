@@ -22,7 +22,6 @@
 #include "TAGparGeo.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAITparGeo.hxx"
-#include "TADIparGeo.hxx"
 #include "TAMSDparGeo.hxx"
 #include "TATWparGeo.hxx"
 #include "TACAparGeo.hxx"
