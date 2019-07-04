@@ -10,7 +10,7 @@ ClassImp(GlobalReco)
 
 //__________________________________________________________
 GlobalReco::GlobalReco(TString expName, TString fileNameIn, TString fileNameout)
- : LocalReco(fileNameIn.Data(), fileNameout.Data()),
+ : LocalReco(expName, fileNameIn, fileNameout),
    fpNtuGlbTrack(0x0),
    fActGlbTrack(0x0)
 {
@@ -27,7 +27,9 @@ void GlobalReco::CreateRecAction()
    LocalReco::CreateRecAction();
    
    fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-   fActGlbTrack  = new TAGactNtuGlbTrack("glbTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi);
+   fActGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi);
+   if (fFlagHisto)
+      fActGlbTrack->CreateHistogram();
 }
 
 //__________________________________________________________
@@ -38,9 +40,8 @@ void GlobalReco::SetHistogramDir()
 }
 
 //__________________________________________________________
-void GlobalReco::AddRequiredItem()
+void GlobalReco::AddRecRequiredItem()
 {
    LocalReco::AddRecRequiredItem();
-   
-   gTAGroot->AddRequiredItem("glbTrack");
+   gTAGroot->AddRequiredItem("glbActTrack");
 }

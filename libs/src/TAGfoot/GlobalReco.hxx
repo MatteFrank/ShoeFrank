@@ -20,7 +20,7 @@ public:
    virtual void CreateRecAction();
    
    //! Add required items
-   virtual void AddRequiredItem();
+   virtual void AddRecRequiredItem();
    
    //! Set rec histogram directory
    virtual void SetHistogramDir();
