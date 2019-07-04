@@ -422,7 +422,7 @@ void BaseLocalReco::SetTreeBranches()
       if (!fFlagTrack)
          fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
       else {
-	fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
          fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
          if (GlobalPar::GetPar()->IncludeTG())
             fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
@@ -435,6 +435,9 @@ void BaseLocalReco::SetTreeBranches()
    if (GlobalPar::GetPar()->IncludeMSD()) 
       fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
    
+   if (GlobalPar::GetPar()->IncludeTW())
+      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
+
 }
 
 //__________________________________________________________
