@@ -8,6 +8,11 @@ MESSAGE("  ${PROJECT_NAME}:")
 set(LIBNAME RecoTools)
 
 #----------------------------------------------------------------------------
+# Copy rootlogon
+#
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/fullrec/rootlogon.C"  @ONLY)
+
+#----------------------------------------------------------------------------
 # Copy geomaps + config (tmp solution)
 #
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../level0/geomaps/ DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/geomaps/)
@@ -17,7 +22,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/  DESTINATION ${CMAKE_BINARY_DIR}/Rec
 #----------------------------------------------------------------------------
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAVT} ${TAIT} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAFO})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAPI} ${TAAPI} ${TAVT} ${TAIT} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAST} ${TAMC} ${TAFO})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES} ${GENFIT_LIBRARIES})
 
 #----------------------------------------------------------------------------
@@ -34,7 +39,9 @@ set( with_dictionnaries
 #
 include_directories(${ROOT_INCLUDE_DIR})
 include_directories(${TAG_INCLUDE_DIR})
-include_directories(${TAIR_INCLUDE_DIR})
+include_directories(${TADAQ_INCLUDE_DIR})
+include_directories(${TAAPI_INCLUDE_DIR})
+include_directories(${TAST_INCLUDE_DIR})
 include_directories(${TABM_INCLUDE_DIR})
 include_directories(${TAVT_INCLUDE_DIR})
 include_directories(${TAIT_INCLUDE_DIR})
@@ -98,3 +105,16 @@ target_link_libraries(DecodeGlb ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIB
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS DecodeGlb DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(DecodeGlob DecodeGlb.cc)
+#
+target_link_libraries(DecodeGlob ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS DecodeGlob DESTINATION bin)
+
