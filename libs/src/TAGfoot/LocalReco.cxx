@@ -271,12 +271,13 @@ void LocalReco::SetTreeBranches()
    
    if (GlobalPar::GetPar()->IncludeST()) {
       if (fFlagHits)
-	fActEvtWriter->SetupElementBranch(fpDatRawSt, TASTdatRaw::GetBranchName());
-      fActEvtWriter->SetupElementBranch(fpNtuRawSt, TASTntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpDatRawSt, TASTdatRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuRawSt, TASTntuRaw::GetBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeBM()) {
-     fActEvtWriter->SetupElementBranch(fpDatRawBm, TABMdatRaw::GetBranchName());
+      if (fFlagHits)
+         fActEvtWriter->SetupElementBranch(fpDatRawBm, TABMdatRaw::GetBranchName());
      fActEvtWriter->SetupElementBranch(fpNtuRawBm, TABMntuRaw::GetBranchName());
    }
    
