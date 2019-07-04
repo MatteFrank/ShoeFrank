@@ -7,16 +7,17 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "TVector3.h"
+#include "TString.h"
 
-#include "TAGactTreeReader.hxx"
+#include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
 
 
 
 class TH1F;
-class TAGactNtuGlbTrack : public TAGactTreeReader {
+class TAGactTreeReader;
+class TAGactNtuGlbTrack : public TAGaction {
 public:
    
    explicit  TAGactNtuGlbTrack(const char* name       = 0,
@@ -38,16 +39,23 @@ public:
    //! Set up branches
    void      SetupBranches();
 
+   //! Open File
+   void      Open(TString name);
    
+   //! Close File
+   void      Close();
+
 private:
-   TAGdataDsc*     fpVtxVertex;		 // Vertex
-   TAGdataDsc*     fpItrClus;		    // ITR clusters
-   TAGdataDsc*     fpMsdClus;		    // MSD clusters
-   TAGdataDsc*     fpTwPoint;		    // TOF points, should be cluster
-   TAGdataDsc*     fpGlbTrack;		 // global tracks
-   TAGparaDsc*     fpDiGeoMap;       // par geo for dipole
+   TAGdataDsc*       fpVtxVertex;		// Vertex
+   TAGdataDsc*       fpItrClus;		   // ITR clusters
+   TAGdataDsc*       fpMsdClus;		   // MSD clusters
+   TAGdataDsc*       fpTwPoint;		   // TOF points, should be cluster
+   TAGdataDsc*       fpGlbTrack;		   // global tracks
+   TAGparaDsc*       fpDiGeoMap;       // par geo for dipole
    
-   TH1F*           fpHisMass;
+   TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
+   
+   TH1F*             fpHisMass;
 
 public:
    //! Disable/Enable stand alone DAQ
@@ -55,10 +63,9 @@ public:
    static void EnableStdAlone()    { fgStdAloneFlag = true;   }
 
 private:
-   static Bool_t         fgStdAloneFlag;   // flag for standalone (read from root file)
+   static Bool_t     fgStdAloneFlag;   // flag for standalone (read from root file)
 
    ClassDef(TAGactNtuGlbTrack,0)
-   
 };
 
 #endif
