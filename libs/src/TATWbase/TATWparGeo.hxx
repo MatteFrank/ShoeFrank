@@ -97,13 +97,7 @@ private:
 
    TString    fkDefaultGeoName;  // default par geo file name
 
-  // map<string, vector<string> > m_regionPrintOut;
-  // map<string, vector<string> > m_bodyPrintOut;
-  // map<string, vector<string> > m_regionName;
-  // map<string, vector<string> > m_bodyName;
-  // map<string, int > m_magneticRegion;
   vector<string> vBody, vRegion;
-  // TVector3 vTilt[200][200];
   vector< vector<TVector3> > vTilt;
    
 private:
