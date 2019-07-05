@@ -7,6 +7,12 @@
 /** TAFOeventDisplay FOOT class to work on event display
  
  */
+#include "TAEDcluster.hxx"
+#include "TAEDtrack.hxx"
+#include "TAEDwire.hxx"
+#include "TAEDglbTrack.hxx"
+#include "TAEDbaseEventDisplay.hxx"
+
 #include "TAEDbaseEventDisplay.hxx"
 
 /** TAFOeventnDisplay FOOT class to work on event display
