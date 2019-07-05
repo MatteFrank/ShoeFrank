@@ -17,13 +17,6 @@
 #pragma link C++ class TAGactNtuCluster2D;
 #pragma link C++ class TAGactNtuCluster1D;
 
-#pragma link C++ class TAGwireDisplay+;
-#pragma link C++ class TAGclusterDisplay+;
-#pragma link C++ class TAGpointDisplay+;
-#pragma link C++ class TAGtrackDisplay+;
-#pragma link C++ class TAGglbTrackDisplay+;
-#pragma link C++ class TAGbaseEventDisplay+;
-
 #pragma link C++ class TAGdata;
 #pragma link C++ function operator<<(ostream&,const TAGdata&);
 

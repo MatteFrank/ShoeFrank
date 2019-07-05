@@ -1,6 +1,6 @@
 # Ch. Finck
 #
-project (TAGbase)
+project (TAEDbase)
 #
 MESSAGE("  src/${PROJECT_NAME}:")
 #
@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG}  ${GENFIT_LIBRARIES})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -19,34 +19,12 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TAGactTreeReader
-   TAGactTreeWriter
-   TAGactNtuCluster2D
-   TAGactNtuCluster1D
-   TAGaction
-   TAGactionFile
-   TAGbaseDigitizer
-   TAGconfigFile
-   TAGdata
-   TAGdataDsc
-   TAGeventId
-   TAGgeoTrafo
-   TAGnamed
-   TAGobject
-   TAGpadGroup
-   TAGparTools
-   TAGpara
-   TAGparaDsc
-   TAGroot
-   TAGrunInfo
-   TAGtimestamp
-   TAGview
-   TAGbaseMaterials
-   TAGmaterials
-   ControlPlotsRepository
-   ControlPlotInfo
-   MagicSkills
-   GlobalPar
+   TAGwireDisplay
+   TAGtrackDisplay
+   TAGclusterDisplay
+   TAGpointDisplay
+   TAGglbTrackDisplay
+   TAGbaseEventDisplay
 )
 	
 set( without_dictionnaries
@@ -56,6 +34,7 @@ set( without_dictionnaries
 # add includes : root + current 
 #
 include_directories(${ROOT_INCLUDE_DIR})
+include_directories(${TAG_INCLUDE_DIR})
 include_directories(${SIM_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

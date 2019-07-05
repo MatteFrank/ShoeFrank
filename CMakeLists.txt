@@ -82,6 +82,7 @@ Set(TAMSD "TAMSDbase")
 Set(TATW  "TATWbase")
 Set(TACA  "TACAbase")
 Set(TAMC  "TAMCbase")
+Set(TAED  "TAEDbase")
 Set(TAFO  "TAGfoot")
 add_definitions(-std=c++14)
 
@@ -101,6 +102,7 @@ set(TAMSD_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAMSD}")
 set(TATW_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TATW}")
 set(TACA_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TACA}")
 set(TAMC_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAMC}")
+set(TAED_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAED}")
 set(TAFO_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAFO}")
 
 #----------------------------------------------------------------------------

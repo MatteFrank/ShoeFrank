@@ -28,5 +28,6 @@ add_subdirectory(TAMSDbase)
 add_subdirectory(TAMCbase)
 add_subdirectory(TATWbase)
 add_subdirectory(TACAbase)
+add_subdirectory(TAEDbase)
 add_subdirectory(TAGfoot)
 
