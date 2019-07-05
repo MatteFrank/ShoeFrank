@@ -7,8 +7,8 @@
 
 /*!
   \class TADItrackPropagator TADItrackPropagator.hxx "TADItrackPropagator.hxx"
-  \brief TEve Propagator in Mag field **
-   units: B (Testla), pos (cm), momentum (GeV/c)
+  \brief Track Propagator in Mag field base on RK4 **
+   units: B (Gaus), pos (cm), momentum (MeV/c)
 */
 
 ClassImp(TADItrackPropagator);
