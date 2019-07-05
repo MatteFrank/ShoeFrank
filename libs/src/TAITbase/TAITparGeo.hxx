@@ -103,9 +103,6 @@ public:
    virtual string PrintSubtractBodiesFromAir();
    
 protected:
-   map<string, vector<string> > m_regionName;
-   map<string, vector<string> > m_bodyName;
-   map<string, vector<string> > m_bodyPrintOut;
    vector<string> vEpiBody, vModBody, vPixBody;
    vector<string> vEpiRegion, vModRegion, vPixRegion;
   
