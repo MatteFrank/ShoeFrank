@@ -25,9 +25,7 @@ TADItrackPropagator::TADItrackPropagator(FootField* field)
 //______________________________________________________________________________
 Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, TVector3& vOut, TVector3& pOut)
 {
-   // Propagate in Z charged particle with momentum p to vertex v.
-   
-   
+   // Propagate particle with momentum p to pos Z with an initial position v.
    fNormP       = p.Mag();
    fPosition    = v;
    fDerivative  = TVector3(0, 0, 1);
@@ -47,7 +45,7 @@ Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, 
 //______________________________________________________________________________
 void TADItrackPropagator::RungeKutta4()
 {
-   TVector3 K1 = SolveLorentz(fDerivative,            GetFieldB(fPosition) );
+   TVector3 K1 = SolveLorentz(fDerivative,               GetFieldB(fPosition) );
    TVector3 K2 = SolveLorentz(fDerivative + fStep/2.*K1, GetFieldB(fPosition + fStep/2. * fDerivative));
    TVector3 K3 = SolveLorentz(fDerivative + fStep/2.*K2, GetFieldB(fPosition + fStep/2. * fDerivative + K1 * (fStep*fStep/4.)));
    TVector3 K4 = SolveLorentz(fDerivative + fStep*K3,    GetFieldB(fPosition + fStep*fDerivative + K2 * (fStep*fStep/2.)));
