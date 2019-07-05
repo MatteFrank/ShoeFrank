@@ -18,7 +18,15 @@ ClassImp(TADItrackPropagator);
 
 //______________________________________________________________________________
 TADItrackPropagator::TADItrackPropagator(FootField* field)
-: TAGobject()
+ : TAGobject(),
+   fField(0x0),
+   fTrackLength(0.),
+   fNormP(0.),
+   fDerivative(0,0,0),
+   fPosition(0,0,0),
+   fZ(-99),
+   fA(-1),
+   fStep(0.1)
 {
 }
 

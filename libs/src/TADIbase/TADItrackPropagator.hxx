@@ -25,7 +25,18 @@ public:
    
    Bool_t	ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, TVector3& vOut, TVector3& pOut);
    
-   TVector3 GetFieldB(TVector3 vertex)          { return fField->get(vertex); }
+   TVector3 GetFieldB(TVector3 vertex) const { return fField->get(vertex); }
+
+   // Getter
+   Double_t GetTrackLength()           const { return fTrackLength;        }
+   Int_t    GetPartZ()                 const { return fZ;                  }
+   Int_t    GetPartA()                 const { return fA;                  }
+   Double_t GetStep()                  const { return fStep;               }
+
+   // Setter
+   void SetPartA(Double_t A)                 { fA = A;                     }
+   void SetPartZ(Double_t Z)                 { fZ = Z;                     }
+   void SetStep(Double_t step)               { fStep = step;               }
    
 private:
    FootField* fField;
