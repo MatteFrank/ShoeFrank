@@ -43,11 +43,6 @@
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
 
-#include "TAGclusterDisplay.hxx"
-#include "TAGtrackDisplay.hxx"
-#include "TAGwireDisplay.hxx"
-#include "TAGglbTrackDisplay.hxx"
-#include "TAGbaseEventDisplay.hxx"
 #include "TAGactionFile.hxx"
 
 #include "TAVTactNtuClusterF.hxx"

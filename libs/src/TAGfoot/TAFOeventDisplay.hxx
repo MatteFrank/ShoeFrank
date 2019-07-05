@@ -2,12 +2,12 @@
 #ifndef _TAFOeventDisplay_HXX_
 #define _TAFOeventDisplay_HXX_
 
-#include "TAGbaseEventDisplay.hxx"
+#include "TAEDbaseEventDisplay.hxx"
 
 /** TAFOeventDisplay FOOT class to work on event display
  
  */
-#include "TAGbaseEventDisplay.hxx"
+#include "TAEDbaseEventDisplay.hxx"
 
 /** TAFOeventnDisplay FOOT class to work on event display
  
@@ -24,7 +24,7 @@
 class TEveDigitSet;
 class TGCheckButton;
 
-class TAFOeventDisplay : public TAGbaseEventDisplay
+class TAFOeventDisplay : public TAEDbaseEventDisplay
 {
    
 protected:
@@ -142,24 +142,24 @@ protected:
    TAGparaDsc*            fpParGeoDi;
 
    //Display
-   TAGclusterDisplay*    fStClusDisplay;  // list of quad to display hits
+   TAEDcluster*    fStClusDisplay;  // list of quad to display hits
 
-   TAGclusterDisplay*    fVtxClusDisplay;  // list of quad to display hits
-   TAGtrackDisplay*      fVtxTrackDisplay; // list of line to display tracks
+   TAEDcluster*    fVtxClusDisplay;  // list of quad to display hits
+   TAEDtrack*      fVtxTrackDisplay; // list of line to display tracks
    
-   TAGclusterDisplay*    fItClusDisplay;  // list of quad to display hits
+   TAEDcluster*    fItClusDisplay;  // list of quad to display hits
    
-   TAGclusterDisplay*    fMsdClusDisplay;  // list of quad to display hits
+   TAEDcluster*    fMsdClusDisplay;  // list of quad to display hits
    
-   TAGclusterDisplay*    fTwClusDisplay;  // list of quad to display hits
+   TAEDcluster*    fTwClusDisplay;  // list of quad to display hits
    
-   TAGclusterDisplay*    fCaClusDisplay;  // list of quad to display hits
+   TAEDcluster*    fCaClusDisplay;  // list of quad to display hits
    
-   TAGwireDisplay*       fBmClusDisplay;  // list of line to display wires
-   TAGtrackDisplay*      fBmTrackDisplay; // list of line to display tracks
+   TAEDwire*       fBmClusDisplay;  // list of line to display wires
+   TAEDtrack*      fBmTrackDisplay; // list of line to display tracks
     TEveBoxSet*          fBmDriftCircleDisplay;
 
-   TAGglbTrackDisplay*   fGlbTrackDisplay;  // list of global tracks to display
+   TAEDglbTrack*   fGlbTrackDisplay;  // list of global tracks to display
 
    // Magnet
    FootField*            fFieldImpl;       // magnetic field implementation

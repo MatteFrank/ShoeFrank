@@ -5,11 +5,11 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class TAGwireDisplay+;
-#pragma link C++ class TAGclusterDisplay+;
-#pragma link C++ class TAGpointDisplay+;
-#pragma link C++ class TAGtrackDisplay+;
-#pragma link C++ class TAGglbTrackDisplay+;
-#pragma link C++ class TAGbaseEventDisplay+;
+#pragma link C++ class TAEDwire+;
+#pragma link C++ class TAEDcluster+;
+#pragma link C++ class TAEDpoint+;
+#pragma link C++ class TAEDtrack+;
+#pragma link C++ class TAEDglbTrack+;
+#pragma link C++ class TAEDbaseEventDisplay+;
 
 #endif

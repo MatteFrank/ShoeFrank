@@ -19,12 +19,12 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TAGwireDisplay
-   TAGtrackDisplay
-   TAGclusterDisplay
-   TAGpointDisplay
-   TAGglbTrackDisplay
-   TAGbaseEventDisplay
+   TAEDwire
+   TAEDtrack
+   TAEDcluster
+   TAEDpoint
+   TAEDglbTrack
+   TAEDbaseEventDisplay
 )
 	
 set( without_dictionnaries

@@ -24,13 +24,13 @@ TAFOeventDisplay* TAFOeventDisplayMC::Instance(Int_t type, const TString name)
 //__________________________________________________________
 TAFOeventDisplayMC::TAFOeventDisplayMC(Int_t type, const TString expName)
  : TAFOeventDisplay(type, expName),
-   fCaMcDisplay(new TAGpointDisplay("Cal MC hit")),
-   fTwMcDisplay(new TAGpointDisplay("ToF MC hit")),
-   fMsdMcDisplay(new TAGpointDisplay("MSD MC hit")),
-   fItMcDisplay(new TAGpointDisplay("IT MC hit")),
-   fVtMcDisplay(new TAGpointDisplay("VTX MC hit")),
-   fBmMcDisplay(new TAGpointDisplay("STC MC hit")),
-   fStMcDisplay(new TAGpointDisplay("STC MC hit"))
+   fCaMcDisplay(new TAEDpoint("Cal MC hit")),
+   fTwMcDisplay(new TAEDpoint("ToF MC hit")),
+   fMsdMcDisplay(new TAEDpoint("MSD MC hit")),
+   fItMcDisplay(new TAEDpoint("IT MC hit")),
+   fVtMcDisplay(new TAEDpoint("VTX MC hit")),
+   fBmMcDisplay(new TAEDpoint("STC MC hit")),
+   fStMcDisplay(new TAEDpoint("STC MC hit"))
 {
    // local reco
    SetLocalReco();

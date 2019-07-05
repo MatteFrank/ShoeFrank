@@ -8,7 +8,7 @@
  */
 
 #include "TAFOeventDisplay.hxx"
-#include "TAGpointDisplay.hxx"
+#include "TAEDpoint.hxx"
 
 class TTree;
 
@@ -57,13 +57,13 @@ public:
    
 private:
    //Display
-   TAGpointDisplay*      fStMcDisplay;
-   TAGpointDisplay*      fBmMcDisplay;
-   TAGpointDisplay*      fVtMcDisplay;
-   TAGpointDisplay*      fItMcDisplay;
-   TAGpointDisplay*      fMsdMcDisplay;
-   TAGpointDisplay*      fTwMcDisplay;
-   TAGpointDisplay*      fCaMcDisplay;
+   TAEDpoint*      fStMcDisplay;
+   TAEDpoint*      fBmMcDisplay;
+   TAEDpoint*      fVtMcDisplay;
+   TAEDpoint*      fItMcDisplay;
+   TAEDpoint*      fMsdMcDisplay;
+   TAEDpoint*      fTwMcDisplay;
+   TAEDpoint*      fCaMcDisplay;
 
 private:
    void  UpdateMcElements(const TString prefix);

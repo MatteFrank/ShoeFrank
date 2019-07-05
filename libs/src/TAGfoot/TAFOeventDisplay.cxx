@@ -51,19 +51,19 @@ TAFOeventDisplay* TAFOeventDisplay::Instance(Int_t type, const TString name)
 
 //__________________________________________________________
 TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
- : TAGbaseEventDisplay(expName),
+ : TAEDbaseEventDisplay(expName),
    fType(type),
-   fStClusDisplay(new TAGclusterDisplay("Start counter hit")),
-   fBmClusDisplay(new TAGwireDisplay("Beam Monitoring Wires")),
-   fBmTrackDisplay(new TAGtrackDisplay("Beam Monitoring Tracks")),
+   fStClusDisplay(new TAEDcluster("Start counter hit")),
+   fBmClusDisplay(new TAEDwire("Beam Monitoring Wires")),
+   fBmTrackDisplay(new TAEDtrack("Beam Monitoring Tracks")),
    fBmDriftCircleDisplay(new TEveBoxSet("Beam Monitoring Drift Circle")),
-   fVtxClusDisplay(new TAGclusterDisplay("Vertex Cluster")),
-   fVtxTrackDisplay(new TAGtrackDisplay("Vertex Tracks")),
-   fItClusDisplay(new TAGclusterDisplay("Inner tracker Cluster")),
-   fMsdClusDisplay(new TAGclusterDisplay("Multi Strip Cluster")),
-   fTwClusDisplay(new TAGclusterDisplay("Tof Wall hit")),
-   fCaClusDisplay(new TAGclusterDisplay("Calorimeter hit")),
-   fGlbTrackDisplay(new TAGglbTrackDisplay("Global Tracks"))
+   fVtxClusDisplay(new TAEDcluster("Vertex Cluster")),
+   fVtxTrackDisplay(new TAEDtrack("Vertex Tracks")),
+   fItClusDisplay(new TAEDcluster("Inner tracker Cluster")),
+   fMsdClusDisplay(new TAEDcluster("Multi Strip Cluster")),
+   fTwClusDisplay(new TAEDcluster("Tof Wall hit")),
+   fCaClusDisplay(new TAEDcluster("Calorimeter hit")),
+   fGlbTrackDisplay(new TAEDglbTrack("Global Tracks"))
 {
    // local reco
    SetLocalReco();
@@ -189,7 +189,7 @@ void TAFOeventDisplay::ReadParFiles()
 //__________________________________________________________
 void TAFOeventDisplay::BuildDefaultGeometry()
 {
-   TAGbaseEventDisplay::BuildDefaultGeometry();
+   TAEDbaseEventDisplay::BuildDefaultGeometry();
    
    // ST
    if (GlobalPar::GetPar()->IncludeST()) {
@@ -420,7 +420,7 @@ void TAFOeventDisplay::ConnectElements()
 //__________________________________________________________
 void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
 {
-   TAGclusterDisplay* quadHits = dynamic_cast<TAGclusterDisplay*> (qs);
+   TAEDcluster* quadHits = dynamic_cast<TAEDcluster*> (qs);
    TObject* obj = quadHits->GetId(idx);
    
    if(obj == 0x0) return;
@@ -465,7 +465,7 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
 //__________________________________________________________
 void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
 {
-   TAGtrackDisplay* lineTracks = dynamic_cast<TAGtrackDisplay*> (qs);
+   TAEDtrack* lineTracks = dynamic_cast<TAEDtrack*> (qs);
    TObject* obj = lineTracks->GetId(idx);
    if (obj == 0x0) return;
    
