@@ -9,4 +9,7 @@
 #pragma link C++ class TADIeveField;
 #pragma link C++ class TADIparGeo;
 
+#pragma link C++ class TADItrackPropagator;
+#pragma link C++ class TADIeveTrackPropagator;
+
 #endif
