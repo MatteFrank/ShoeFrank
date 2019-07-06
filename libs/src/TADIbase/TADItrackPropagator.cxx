@@ -39,7 +39,7 @@ Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, 
    fDerivative  = TVector3(0, 0, 1);
    fTrackLength = 0;
    
-   while(fPosition.Z() < posZ && fPosition.Z() >= 0){
+   while(fPosition.Z() <= posZ && fPosition.Z() >= 0){
       RungeKutta4();
       fTrackLength += fStep;
    }
