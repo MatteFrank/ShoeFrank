@@ -10,6 +10,6 @@
 #pragma link C++ class TAEDpoint+;
 #pragma link C++ class TAEDtrack+;
 #pragma link C++ class TAEDglbTrack+;
-#pragma link C++ class TAEDbaseEventDisplay+;
+#pragma link C++ class TAEDbaseInterface+;
 
 #endif

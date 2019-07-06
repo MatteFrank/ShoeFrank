@@ -51,7 +51,7 @@ TAFOeventDisplay* TAFOeventDisplay::Instance(Int_t type, const TString name)
 
 //__________________________________________________________
 TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
- : TAEDbaseEventDisplay(expName),
+ : TAEDbaseInterface(expName),
    fType(type),
    fStClusDisplay(new TAEDcluster("Start counter hit")),
    fBmClusDisplay(new TAEDwire("Beam Monitoring Wires")),
@@ -189,7 +189,7 @@ void TAFOeventDisplay::ReadParFiles()
 //__________________________________________________________
 void TAFOeventDisplay::BuildDefaultGeometry()
 {
-   TAEDbaseEventDisplay::BuildDefaultGeometry();
+   TAEDbaseInterface::BuildDefaultGeometry();
    
    // ST
    if (GlobalPar::GetPar()->IncludeST()) {

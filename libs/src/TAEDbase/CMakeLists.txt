@@ -24,7 +24,7 @@ set( with_dictionnaries
    TAEDcluster
    TAEDpoint
    TAEDglbTrack
-   TAEDbaseEventDisplay
+   TAEDbaseInterface
 )
 	
 set( without_dictionnaries

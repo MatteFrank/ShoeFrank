@@ -2,7 +2,7 @@
 #ifndef _TAFOeventDisplay_HXX_
 #define _TAFOeventDisplay_HXX_
 
-#include "TAEDbaseEventDisplay.hxx"
+#include "TAEDbaseInterface.hxx"
 
 /** TAFOeventDisplay FOOT class to work on event display
  
@@ -11,9 +11,7 @@
 #include "TAEDtrack.hxx"
 #include "TAEDwire.hxx"
 #include "TAEDglbTrack.hxx"
-#include "TAEDbaseEventDisplay.hxx"
-
-#include "TAEDbaseEventDisplay.hxx"
+#include "TAEDbaseInterface.hxx"
 
 /** TAFOeventnDisplay FOOT class to work on event display
  
@@ -30,7 +28,7 @@
 class TEveDigitSet;
 class TGCheckButton;
 
-class TAFOeventDisplay : public TAEDbaseEventDisplay
+class TAFOeventDisplay : public TAEDbaseInterface
 {
    
 protected:
