@@ -1,12 +1,12 @@
+#include <Riostream.h>
 
-
-#include "TAEDglbTrack.hxx"
 #include "TEveTrackPropagator.h"
 #include "TEveRGBAPalette.h"
 #include "TColor.h"
 
+#include "TADIeveTrackPropagator.hxx"
 
-#include <Riostream.h>
+#include "TAEDglbTrack.hxx"
 
 //
 ClassImp(TAEDglbTrack)
@@ -18,7 +18,9 @@ TAEDglbTrack::TAEDglbTrack(const Char_t* name)
    fNofTracks(0),
    fMaxMomentum(0.)
 {
-  // Set propagator to Runge-Kutta
+   // Set propagator to Runge-Kutta
+   TADIeveTrackPropagator* propagator = new TADIeveTrackPropagator();
+   SetPropagator(propagator);
    fPropagator->SetStepper(TEveTrackPropagator::kRungeKutta);
 }
 
@@ -27,6 +29,8 @@ TAEDglbTrack::~TAEDglbTrack()
 {
   // default destructor
    delete fPalette;
+   TADIeveTrackPropagator* propagator  = (TADIeveTrackPropagator*)GetPropagator();
+   if (propagator) delete propagator; // not done in TEveTrackList ?
 }
 
 //__________________________________________________________
