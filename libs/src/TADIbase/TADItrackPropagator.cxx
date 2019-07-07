@@ -1,4 +1,6 @@
 
+#include "TMath.h"
+
 #include "FootField.hxx"
 
 #include "TADItrackPropagator.hxx"
@@ -13,7 +15,9 @@
 
 ClassImp(TADItrackPropagator);
 
- Double_t TADItrackPropagator::fgkConvFactor = 0.299792458;
+const  Double_t TADItrackPropagator::fgkConvFactor = 0.299792458;
+const  Double_t TADItrackPropagator::fgkMassFactor = 938.3;
+const  Double_t TADItrackPropagator::fgkLightSpeed = 2.998e8;
 
 
 //______________________________________________________________________________
@@ -44,8 +48,14 @@ Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, 
       fTrackLength += fStep;
    }
    
+   // new position
    vOut = fPosition;
-   pOut = TVector3(0,0,0); //wait for formula
+   
+   // new momentum
+   // p = gamma*mv = gamma*mc^2*(beta)/c
+   TVector3 beta  = fDerivative*(1./fgkLightSpeed);
+   Double_t gamma = 1./TMath::Sqrt(1-beta.Mag2());
+   pOut = gamma*fA*fgkMassFactor*beta;
    
    return kTRUE;
 }

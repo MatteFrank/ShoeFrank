@@ -55,7 +55,9 @@ private:
    void RungeKutta4();
    
 private:
-   static Double_t fgkConvFactor;
+   static const Double_t fgkConvFactor;
+   static const Double_t fgkMassFactor;
+   static const Double_t fgkLightSpeed;
    
    
    ClassDef(TADItrackPropagator,1)
