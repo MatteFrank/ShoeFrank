@@ -27,7 +27,8 @@ void GlobalReco::CreateRecAction()
    LocalReco::CreateRecAction();
    
    fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-   fActGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi);
+   fActGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi,
+                                         fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw);
    if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
 }

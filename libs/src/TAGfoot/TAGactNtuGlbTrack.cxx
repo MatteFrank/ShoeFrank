@@ -7,6 +7,10 @@
 #include "TH1F.h"
 #include "TVector3.h"
 
+#include "TAITparGeo.hxx"
+#include "TAMSDparGeo.hxx"
+#include "TADIparGeo.hxx"
+
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGactTreeReader.hxx"
@@ -35,7 +39,8 @@ ClassImp(TAGactNtuGlbTrack)
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, TAGdataDsc* p_itrclus, TAGdataDsc* p_msdclus,
-                                     TAGdataDsc* p_twpoint, TAGdataDsc* p_glbtrack, TAGparaDsc* p_geodi)
+                                     TAGdataDsc* p_twpoint, TAGdataDsc* p_glbtrack, TAGparaDsc* p_geodi, TAGparaDsc* p_geoVtx,
+                                     TAGparaDsc* p_geoItr,  TAGparaDsc* p_geoMsd, TAGparaDsc* p_geoTof)
  : TAGaction(name, "TAGactNtuGlbTrack - Global Tracker"),
    fpVtxVertex(p_vtxvertex),
    fpItrClus(p_itrclus),
@@ -43,6 +48,10 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, 
    fpTwPoint(p_twpoint),
    fpGlbTrack(p_glbtrack),
    fpDiGeoMap(p_geodi),
+   fpVtxGeoMap(p_geoVtx),
+   fpItrGeoMap(p_geoItr),
+   fpMsdGeoMap(p_geoMsd),
+   fpTofGeoMap(p_geoTof),
    fActEvtReader(0x0)
 {
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
@@ -182,9 +191,10 @@ void TAGactNtuGlbTrack::FillItrPoint()
    Double_t charge  = 0.;
    Float_t proba    = 0.;
    
-   TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpItrClus->Object();
+   TAITntuCluster* pNtuClus = (TAITntuCluster*) fpItrClus->Object();
+   TAITparGeo*     pParGeo  = (TAITparGeo*)     fpItrGeoMap->Object();
    
-   for (Int_t i = 0; i < 32; ++i) {
+   for (Int_t i = 0; i < pParGeo->GetNSensors(); ++i) {
       
       for (Int_t k = 0; k < pNtuClus->GetClustersN(i); ++k) {
          TAITcluster* clus = (TAITcluster*)pNtuClus->GetCluster(i, k);
@@ -204,9 +214,10 @@ void TAGactNtuGlbTrack::FillMsdPoint()
    Double_t charge  = 0.;
    Float_t proba    = 0.;
    
-   TAMSDntuCluster* pNtuClus  = (TAMSDntuCluster*) fpMsdClus->Object();
-   
-   for (Int_t i = 0; i < 3; ++i) {
+   TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpMsdClus->Object();
+   TAMSDparGeo*     pParGeo  = (TAMSDparGeo*)     fpMsdGeoMap->Object();
+
+   for (Int_t i = 0; i < pParGeo->GetNSensors(); ++i) {
       
       for (Int_t k = 0; k < pNtuClus->GetClustersN(i); ++k) {
          TAMSDcluster* clus = (TAMSDcluster*)pNtuClus->GetCluster(i, k);

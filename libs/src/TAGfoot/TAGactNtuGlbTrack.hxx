@@ -23,12 +23,16 @@ class TAGactNtuGlbTrack : public TAGaction {
 public:
    
    explicit  TAGactNtuGlbTrack(const char* name       = 0,
-                                     TAGdataDsc* p_vtxtrack = 0,
-                                     TAGdataDsc* p_itrclus  = 0,
-                                     TAGdataDsc* p_msdclus  = 0,
-                                     TAGdataDsc* p_twpoint  = 0,
-                                     TAGdataDsc* p_glbtrack = 0,
-                                     TAGparaDsc* p_geodi    = 0);
+                               TAGdataDsc* p_vtxtrack = 0,
+                               TAGdataDsc* p_itrclus  = 0,
+                               TAGdataDsc* p_msdclus  = 0,
+                               TAGdataDsc* p_twpoint  = 0,
+                               TAGdataDsc* p_glbtrack = 0,
+                               TAGparaDsc* p_geodi    = 0,
+                               TAGparaDsc* p_geoVtx   = 0,
+                               TAGparaDsc* p_geoItr   = 0,
+                               TAGparaDsc* p_geoMsd   = 0,
+                               TAGparaDsc* p_geoTof   = 0);
    
    virtual  ~TAGactNtuGlbTrack();
    
@@ -55,6 +59,10 @@ private:
    TAGdataDsc*       fpTwPoint;		   // TOF points, should be cluster
    TAGdataDsc*       fpGlbTrack;		   // global tracks
    TAGparaDsc*       fpDiGeoMap;       // par geo for dipole
+   TAGparaDsc*       fpVtxGeoMap;      // par geo for vertex
+   TAGparaDsc*       fpItrGeoMap;      // par geo for inner tracker
+   TAGparaDsc*       fpMsdGeoMap;      // par geo for MSD
+   TAGparaDsc*       fpTofGeoMap;      // par geo for ToF
    
    TAGntuPoint*       fpNtuPoint;      // tmp containers of all points
    TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
