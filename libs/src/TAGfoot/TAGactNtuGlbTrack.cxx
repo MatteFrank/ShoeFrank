@@ -7,13 +7,18 @@
 #include "TH1F.h"
 #include "TVector3.h"
 
+#include "TAGroot.hxx"
+#include "TAGgeoTrafo.hxx"
 #include "TAGactTreeReader.hxx"
 #include "TAGntuGlbTrack.hxx"
 
 #include "TAVTntuVertex.hxx"
+#include "TAVTtrack.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TATWntupoint.hxx"
+
+#include "TAGntuPoint.hxx"
 
 #include "TAGactNtuGlbTrack.hxx"
 
@@ -55,6 +60,11 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, 
    
    if (fgStdAloneFlag)
       SetupBranches();
+   
+   fpNtuPoint = new TAGntuPoint();
+   
+   TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -63,6 +73,8 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
 {  
    if (fActEvtReader)
       delete fActEvtReader;
+   
+   delete fpNtuPoint;
 }
 
 //------------------------------------------+-----------------------------------
@@ -117,16 +129,112 @@ void TAGactNtuGlbTrack::CreateHistogram()
 //! Action.
 Bool_t TAGactNtuGlbTrack::Action()
 {
-   if(GlobalPar::GetPar()->IncludeTW()) {
-      TATWntuPoint* pNtuPoint  = (TATWntuPoint*) fpTwPoint->Object();
-      for (Int_t i = 0; i < pNtuPoint->GetPointN(); ++i) {
-         TATWpoint* point = pNtuPoint->GetPoint(i);
-         TVector3 pos = point->GetPosition();
-         pos.Print();
-      }
-   }
+   if(GlobalPar::GetPar()->IncludeVertex())
+      FillVtxPoint();
+   
+   if(GlobalPar::GetPar()->IncludeInnerTracker())
+      FillItrPoint();
+
+   if(GlobalPar::GetPar()->IncludeMSD())
+      FillMsdPoint();
+   
+   if(GlobalPar::GetPar()->IncludeTW())
+      FillTofPoint();
    
    fpGlbTrack->SetBit(kValid);
    return kTRUE;
 }
+
+//------------------------------------------+-----------------------------------
+//! Fill Tw point.
+void TAGactNtuGlbTrack::FillVtxPoint()
+{
+   Double_t time   = 0.;
+
+   TAVTntuVertex* pNtuVtx  = (TAVTntuVertex*) fpVtxVertex->Object();
+   for (Int_t i = 0; i < pNtuVtx->GetVertexN(); ++i) {
+      TAVTvertex* vtx = pNtuVtx->GetVertex(i);
+      
+      if (!vtx->GetVertexValidity()) continue;
+      if (!vtx->IsBmMatched()) continue;
+      
+      for (Int_t j = 0; j < vtx->GetTracksN(); ++j) {
+         TAVTtrack* track = vtx->GetTrack(j);
+         Double_t charge  = track->GetChargeWithMaxProba();
+         Float_t proba    = track->GetChargeMaxProba();
+         
+         for (Int_t k = 0; k < track->GetClustersN(); ++k) {
+            TAVTcluster* clus = (TAVTcluster*)track->GetCluster(k);
+            
+            TVector3 pos    = clus->GetPositionG();
+            TVector3 posG = fpFootGeo->FromVTLocalToGlobal(pos);
+            fpNtuPoint->NewPoint(posG, time, charge, proba);
+         }
+      }
+   }
+}
+
+//------------------------------------------+-----------------------------------
+//! Fill Itr point.
+void TAGactNtuGlbTrack::FillItrPoint()
+{
+   Double_t time    = 0.;
+   Double_t charge  = 0.;
+   Float_t proba    = 0.;
+   
+   TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpItrClus->Object();
+   
+   for (Int_t i = 0; i < 32; ++i) {
+      
+      for (Int_t k = 0; k < pNtuClus->GetClustersN(i); ++k) {
+         TAITcluster* clus = (TAITcluster*)pNtuClus->GetCluster(i, k);
+         
+         TVector3 pos    = clus->GetPositionG();
+         TVector3 posG = fpFootGeo->FromITLocalToGlobal(pos);
+         fpNtuPoint->NewPoint(posG, time, charge, proba);
+      }
+   }
+}
+
+//------------------------------------------+-----------------------------------
+//! Fill Itr point.
+void TAGactNtuGlbTrack::FillMsdPoint()
+{
+   Double_t time    = 0.;
+   Double_t charge  = 0.;
+   Float_t proba    = 0.;
+   
+   TAMSDntuCluster* pNtuClus  = (TAMSDntuCluster*) fpMsdClus->Object();
+   
+   for (Int_t i = 0; i < 3; ++i) {
+      
+      for (Int_t k = 0; k < pNtuClus->GetClustersN(i); ++k) {
+         TAMSDcluster* clus = (TAMSDcluster*)pNtuClus->GetCluster(i, k);
+         
+         TVector3 pos    = clus->GetPositionG();
+         TVector3 posG = fpFootGeo->FromMSDLocalToGlobal(pos);
+         fpNtuPoint->NewPoint(posG, time, charge, proba);
+      }
+   }
+}
+
+//------------------------------------------+-----------------------------------
+//! Fill Tw point.
+void TAGactNtuGlbTrack::FillTofPoint()
+{
+   TATWntuPoint* pNtuPoint  = (TATWntuPoint*) fpTwPoint->Object();
+   for (Int_t i = 0; i < pNtuPoint->GetPointN(); ++i) {
+      TATWpoint* point = pNtuPoint->GetPoint(i);
+      
+      TVector3 pos    = point->GetPosition();
+      Double_t time   = point->GetTime();
+      Double_t charge = point->GetChargeZ();
+      Double_t proba  = 0.;
+   
+      TVector3 posG = fpFootGeo->FromBMLocalToGlobal(pos);
+
+      fpNtuPoint->NewPoint(pos, time, charge, proba);
+   }
+}
+
 

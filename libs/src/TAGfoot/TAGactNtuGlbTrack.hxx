@@ -13,10 +13,12 @@
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
 
-
-
 class TH1F;
 class TAGactTreeReader;
+
+class TAGntuPoint;
+class TAGgeoTrafo;
+
 class TAGactNtuGlbTrack : public TAGaction {
 public:
    
@@ -46,6 +48,7 @@ public:
    void      Close();
 
 private:
+   TAGgeoTrafo*      fpFootGeo;        // geo trafo
    TAGdataDsc*       fpVtxVertex;		// Vertex
    TAGdataDsc*       fpItrClus;		   // ITR clusters
    TAGdataDsc*       fpMsdClus;		   // MSD clusters
@@ -53,6 +56,7 @@ private:
    TAGdataDsc*       fpGlbTrack;		   // global tracks
    TAGparaDsc*       fpDiGeoMap;       // par geo for dipole
    
+   TAGntuPoint*       fpNtuPoint;      // tmp containers of all points
    TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
    
    TH1F*             fpHisMass;
@@ -65,6 +69,13 @@ public:
 private:
    static Bool_t     fgStdAloneFlag;   // flag for standalone (read from root file)
 
+private:
+   void FillTofPoint();
+   void FillVtxPoint();
+   void FillItrPoint();
+   void FillMsdPoint();
+   
+   
    ClassDef(TAGactNtuGlbTrack,0)
 };
 
