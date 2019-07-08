@@ -28,73 +28,73 @@ public:
 
    virtual         ~TAGtrack();
    
-   void                       SetMass(Double_t amass)    { fMass = amass; }
-   Double_t                   GetMass()     const { return fMass; }
+   void             SetMass(Double_t amass)    { fMass = amass; }
+   Double_t         GetMass()     const { return fMass; }
    
-   void                       SetMomentum(Double_t amom) { fMom = amom; }
-   Double_t                   GetMomentum() const { return fMom;}
+   void             SetMomentum(Double_t amom) { fMom = amom; }
+   Double_t         GetMomentum() const { return fMom;}
    
-   void                       SetCharge(Double_t acharge) { fCharge = acharge; }
-   Double_t                   GetCharge()   const { return fCharge; }
+   void             SetCharge(Double_t acharge) { fCharge = acharge; }
+   Double_t         GetCharge()   const { return fCharge; }
    
-   void                       SetTof(Double_t atoff)     { fTof = atoff; }
-   Double_t                   GetTof()     const { return fTof; }
+   void             SetTof(Double_t atoff)     { fTof = atoff; }
+   Double_t         GetTof()     const { return fTof; }
    
-   void                       SetId(Int_t id)             { fId = id; }
-   Int_t                      GetId()       const { return fId; }
+   void             SetId(Int_t id)             { fId = id; }
+   Int_t            GetId()       const { return fId; }
    
-   void                       SetTgtDirection(TVector3 dir) { fTgtDir = dir; }
-   TVector3                   GetTgtDirection() { return fTgtDir; }
+   void             SetTgtDirection(TVector3 dir) { fTgtDir = dir; }
+   TVector3         GetTgtDirection() { return fTgtDir; }
    
-   void                       SetTgtPosition(TVector3 pos) { fTgtPos = pos; }
-   TVector3                   GetTgtPosition() { return fTgtPos; }
+   void             SetTgtPosition(TVector3 pos) { fTgtPos = pos; }
+   TVector3         GetTgtPosition() { return fTgtPos; }
    
-   void                       SetTofPosition(TVector3 pos) { fTofPos = pos; }
-   TVector3                   GetTofPosition() { return fTofPos; }
+   void             SetTofPosition(TVector3 pos) { fTofPos = pos; }
+   TVector3         GetTofPosition() { return fTofPos; }
    
-   void                       SetTofDirection(TVector3 dir) { fTofDir = dir; }
-   TVector3                   GetTofDirection() { return fTofDir; }
+   void             SetTofDirection(TVector3 dir) { fTofDir = dir; }
+   TVector3         GetTofDirection() { return fTofDir; }
       
-   void                       SetTrackId(Int_t trid) { fTrkID = trid; }
-   Int_t                      GetTrackId() const { return fTrkID; }
+   void             SetTrackId(Int_t trid) { fTrkID = trid; }
+   Int_t            GetTrackId() const { return fTrkID; }
    
-   void                       SetEnergy(Double_t e) { fEnergy = e; }
-   Double_t                   GetEnergy() const { return fEnergy; }
+   void             SetEnergy(Double_t e) { fEnergy = e; }
+   Double_t         GetEnergy() const { return fEnergy; }
    
    //! Get list of points
-   TClonesArray*              GetListOfPoints()       const { return   fListOfPoints;   }
+   TClonesArray*    GetListOfPoints()       const { return   fListOfPoints;   }
    
    //! Get number of points
-   Int_t                      GetPointsN()            const { return   fListOfPoints->GetEntries(); }
+   Int_t            GetPointsN()            const { return   fListOfPoints->GetEntries(); }
    
    //! Get point
-   TAGpoint*                  GetPoint(Int_t index)  { return (TAGpoint*)fListOfPoints->At(index); }
+   TAGpoint*        GetPoint(Int_t index)  { return (TAGpoint*)fListOfPoints->At(index); }
    
    //! Add point
-   void                       AddPoint(TAGpoint* point);
+   void             AddPoint(TAGpoint* point);
 
-   void                       Clear(Option_t* opt="");
+   void             Clear(Option_t* opt="");
    
-   void                       SetupClones();
+   void             SetupClones();
    
 private:
-   Double32_t fMass;
-   Double32_t fMom;
-   Double32_t fCharge;
-   Double32_t fTof;
-   Double32_t fEnergy;
-   Int_t      fId;
-   Int_t      fTrkID;
+   Double32_t       fMass;
+   Double32_t       fMom;
+   Double32_t       fCharge;
+   Double32_t       fTof;
+   Double32_t       fEnergy;
+   Int_t            fId;
+   Int_t            fTrkID;
    
    //Particle directions and positions computed on ToF Wall
-   TVector3 fTgtDir;
-   TVector3 fTgtPos;
+   TVector3         fTgtDir;
+   TVector3         fTgtPos;
    
    //Particle directions and positions computed on ToF Wall
-   TVector3 fTofPos;
-   TVector3 fTofDir;
+   TVector3         fTofPos;
+   TVector3         fTofDir;
    
-   TClonesArray*   fListOfPoints;		    // Attached points
+   TClonesArray*    fListOfPoints;		    // Attached points
    
    ClassDef(TAGtrack,1)
    
