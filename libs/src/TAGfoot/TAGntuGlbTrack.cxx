@@ -44,6 +44,26 @@ TAGtrack::TAGtrack()
 }
 
 //------------------------------------------+-----------------------------------
+//! Constructor.
+TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t id, Int_t trkID)
+ : TAGobject(),
+   fMass(mass),
+   fMom(mom),
+   fCharge(charge),
+   fTof(tof),
+   fEnergy(energy),
+   fId(id),
+   fTrkID(trkID),
+   fTgtDir(0,0,0),
+   fTgtPos(0,0,0),
+   fTofPos(0,0,0),
+   fTofDir(0,0,0),
+   fListOfPoints(0x0)
+{
+   SetupClones();
+}
+
+//------------------------------------------+-----------------------------------
 //! Destructor.
 
 TAGtrack::~TAGtrack()
@@ -146,12 +166,22 @@ void TAGntuGlbTrack::Clear(Option_t*)
 
 //______________________________________________________________________________
 //
+TAGtrack* TAGntuGlbTrack::NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t id, Int_t trkID)
+{
+   TClonesArray &trackArray = *fListOfTracks;
+   TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(mass, mom, charge, tof, energy, id, trkID);
+   return track;
+}
+
+//______________________________________________________________________________
+//
 TAGtrack* TAGntuGlbTrack::NewTrack()
 {
    TClonesArray &trackArray = *fListOfTracks;
    TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack();
    return track;
 }
+
 
 //______________________________________________________________________________
 //

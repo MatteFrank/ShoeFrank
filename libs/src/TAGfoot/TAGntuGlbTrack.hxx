@@ -24,6 +24,8 @@ class TAGtrack : public TAGobject {
 public:
    
    TAGtrack();
+   TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t id, Int_t trkID);
+
    virtual         ~TAGtrack();
    
    void                       SetMass(Double_t amass)    { fMass = amass; }
@@ -81,8 +83,8 @@ private:
    Double32_t fCharge;
    Double32_t fTof;
    Double32_t fEnergy;
-   Int_t    fId;
-   Int_t    fTrkID;
+   Int_t      fId;
+   Int_t      fTrkID;
    
    //Particle directions and positions computed on ToF Wall
    TVector3 fTgtDir;
@@ -119,6 +121,7 @@ public:
    TClonesArray*    GetListOfTracks() { return fListOfTracks; }
    
    TAGtrack*        NewTrack();
+   TAGtrack*        NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t id, Int_t trkID);
    TAGtrack*        NewTrack(TAGtrack& track);
    
    virtual void     SetupClones();
