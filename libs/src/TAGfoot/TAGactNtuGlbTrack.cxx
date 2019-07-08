@@ -189,7 +189,7 @@ void TAGactNtuGlbTrack::FillItrPoint()
       for (Int_t k = 0; k < pNtuClus->GetClustersN(i); ++k) {
          TAITcluster* clus = (TAITcluster*)pNtuClus->GetCluster(i, k);
          
-         TVector3 pos    = clus->GetPositionG();
+         TVector3 pos  = clus->GetPositionG();
          TVector3 posG = fpFootGeo->FromITLocalToGlobal(pos);
          fpNtuPoint->NewPoint(posG, time, charge, proba);
       }
@@ -211,7 +211,7 @@ void TAGactNtuGlbTrack::FillMsdPoint()
       for (Int_t k = 0; k < pNtuClus->GetClustersN(i); ++k) {
          TAMSDcluster* clus = (TAMSDcluster*)pNtuClus->GetCluster(i, k);
          
-         TVector3 pos    = clus->GetPositionG();
+         TVector3 pos  = clus->GetPositionG();
          TVector3 posG = fpFootGeo->FromMSDLocalToGlobal(pos);
          fpNtuPoint->NewPoint(posG, time, charge, proba);
       }
@@ -231,7 +231,7 @@ void TAGactNtuGlbTrack::FillTofPoint()
       Double_t charge = point->GetChargeZ();
       Double_t proba  = 0.;
    
-      TVector3 posG = fpFootGeo->FromBMLocalToGlobal(pos);
+      TVector3 posG = fpFootGeo->FromTWLocalToGlobal(pos);
 
       fpNtuPoint->NewPoint(pos, time, charge, proba);
    }
