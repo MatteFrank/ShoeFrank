@@ -166,8 +166,8 @@ void TAGactNtuGlbTrack::FillVtxPoint()
          for (Int_t k = 0; k < track->GetClustersN(); ++k) {
             TAVTcluster* clus = (TAVTcluster*)track->GetCluster(k);
             
-            TVector3 pos    = clus->GetPositionG();
-            TVector3 posG = fpFootGeo->FromVTLocalToGlobal(pos);
+            TVector3 pos      = clus->GetPositionG();
+            TVector3 posG     = fpFootGeo->FromVTLocalToGlobal(pos);
             fpNtuPoint->NewPoint(posG, time, charge, proba);
          }
       }
@@ -189,8 +189,8 @@ void TAGactNtuGlbTrack::FillItrPoint()
       for (Int_t k = 0; k < pNtuClus->GetClustersN(i); ++k) {
          TAITcluster* clus = (TAITcluster*)pNtuClus->GetCluster(i, k);
          
-         TVector3 pos  = clus->GetPositionG();
-         TVector3 posG = fpFootGeo->FromITLocalToGlobal(pos);
+         TVector3 pos      = clus->GetPositionG();
+         TVector3 posG     = fpFootGeo->FromITLocalToGlobal(pos);
          fpNtuPoint->NewPoint(posG, time, charge, proba);
       }
    }
@@ -211,8 +211,8 @@ void TAGactNtuGlbTrack::FillMsdPoint()
       for (Int_t k = 0; k < pNtuClus->GetClustersN(i); ++k) {
          TAMSDcluster* clus = (TAMSDcluster*)pNtuClus->GetCluster(i, k);
          
-         TVector3 pos  = clus->GetPositionG();
-         TVector3 posG = fpFootGeo->FromMSDLocalToGlobal(pos);
+         TVector3 pos       = clus->GetPositionG();
+         TVector3 posG      = fpFootGeo->FromMSDLocalToGlobal(pos);
          fpNtuPoint->NewPoint(posG, time, charge, proba);
       }
    }
@@ -225,11 +225,11 @@ void TAGactNtuGlbTrack::FillTofPoint()
    TATWntuPoint* pNtuPoint  = (TATWntuPoint*) fpTwPoint->Object();
    for (Int_t i = 0; i < pNtuPoint->GetPointN(); ++i) {
       TATWpoint* point = pNtuPoint->GetPoint(i);
-      
-      TVector3 pos    = point->GetPosition();
-      Double_t time   = point->GetTime();
-      Double_t charge = point->GetChargeZ();
-      Double_t proba  = 0.;
+
+      TVector3 pos     = point->GetPosition();
+      Double_t time    = point->GetTime();
+      Double_t charge  = point->GetChargeZ();
+      Double_t proba   = 0.;
    
       TVector3 posG = fpFootGeo->FromTWLocalToGlobal(pos);
 
