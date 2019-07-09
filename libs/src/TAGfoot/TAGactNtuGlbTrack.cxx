@@ -155,7 +155,7 @@ Bool_t TAGactNtuGlbTrack::Action()
 }
 
 //------------------------------------------+-----------------------------------
-//! Fill Tw point.
+//! Fill Vtx point.
 void TAGactNtuGlbTrack::FillVtxPoint()
 {
    Double_t time   = 0.;
@@ -207,7 +207,7 @@ void TAGactNtuGlbTrack::FillItrPoint()
 }
 
 //------------------------------------------+-----------------------------------
-//! Fill Itr point.
+//! Fill Msd point.
 void TAGactNtuGlbTrack::FillMsdPoint()
 {
    Double_t time    = 0.;
