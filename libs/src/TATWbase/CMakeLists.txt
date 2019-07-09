@@ -36,6 +36,7 @@ set( with_dictionnaries
    CCalibrationMap
    Message
    XmlParser
+   TATWbetheBloch
 )
 
 set( without_dictionnaries
