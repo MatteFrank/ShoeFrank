@@ -20,7 +20,7 @@
 #include "TAVTtrack.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
-#include "TATWntupoint.hxx"
+#include "TATWntuPoint.hxx"
 
 #include "TAGntuPoint.hxx"
 
