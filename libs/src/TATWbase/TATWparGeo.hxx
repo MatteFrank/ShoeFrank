@@ -36,6 +36,7 @@ public:
    Float_t        GetBarThick()    const  { return fBarSize[2]; }
 
    TString        GetBarMat()      const  { return fBarMat;     }
+   Float_t        GetBarDensity()  const  { return fBarDensity; }
 
    Int_t          GetBarId(Int_t layer, Float_t xGlob, Float_t yGlob);
    TVector3       GetBarPosition(Int_t layer, Int_t barId);
