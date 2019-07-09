@@ -7,7 +7,6 @@
 #include <Riostream.h>
 #include <TString.h>
 #include "TAFOeventDisplay.hxx"
-#include "TAGbaseEventDisplay.hxx"
 #endif
 
 void DisplayFOOT(TString file = "data/data_built.2211.physics_foot.daq.VTX.1.dat")
