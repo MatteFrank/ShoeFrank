@@ -20,5 +20,6 @@
 #pragma link C++ class TATWparGeo+;
 #pragma link C++ class TATWdigitizer+;
 #pragma link C++ class TATWbetheBloch+;
+#pragma link C++ class TAGactWDreader;
 
 #endif

@@ -15,6 +15,7 @@
 #pragma link C++ class  TASTparGeo+;
 #pragma link C++ class  TASTparMap+;
 #pragma link C++ class  TASTdigitizer+;
+#pragma link C++ class  TAGbaseWD+;
 
 
 #endif

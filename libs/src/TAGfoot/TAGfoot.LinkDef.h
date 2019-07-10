@@ -15,8 +15,6 @@
 
 #pragma link C++ class TAFOeventDisplayMC;
 #pragma link C++ class TAFOeventDisplay;
-#pragma link C++ class TAGbaseWD+;
-#pragma link C++ class TAGactWDreader;
 
 #pragma link C++ class  BaseLocalReco;
 #pragma link C++ class  LocalRecoMC;

@@ -9,7 +9,8 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADAQ} ${TAAPI} ${TAMC} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TADAQ} ${TAAPI} ${TAMC})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${GENFIT_LIBRARIES})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 #
 # headers / dictionnary / sources 
@@ -26,6 +27,8 @@ set( with_dictionnaries
    TASTparMap
    TASTparTime	
    TASTdigitizer
+   TAGbaseWD
+   TWaveformContainer
 )
 
 set( without_dictionnaries
