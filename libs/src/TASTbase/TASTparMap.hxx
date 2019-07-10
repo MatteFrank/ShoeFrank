@@ -32,6 +32,7 @@ class TASTparMap : public TAGpara {
   inline vector<int> GetChannels() { return TDchaID; }
   inline vector<int> GetBoards() { return TDboaID; }
   
+  Bool_t IsSTClock(int iCha);
   Bool_t IsSTChannel(int iCha);
   Bool_t IsSTBoard(int iCha);
   

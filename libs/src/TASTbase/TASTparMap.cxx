@@ -57,6 +57,17 @@ Bool_t TASTparMap::IsSTChannel(int iCha){
 }
 
 
+Bool_t TASTparMap::IsSTClock(int iCha){
+
+  if(std::find(TDclkID.begin(),TDclkID.end(),iCha) == TDclkID.end()){
+    return false;
+  }
+  return true;
+
+    
+}
+
+
 
 Bool_t TASTparMap::IsSTBoard(int iBo){
 
@@ -104,6 +115,7 @@ Bool_t TASTparMap::FromFile(const TString& name) {
 	  TDboaID.push_back(myArg2);
 	}else{
 	  TDclkID.push_back(myArg1);
+	  TDboaID.push_back(myArg2);
 	}
       } else {
 	Error(""," Plane Map Error:: check config file!!");

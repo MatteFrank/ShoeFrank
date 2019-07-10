@@ -25,6 +25,8 @@ public:
 
   virtual Bool_t  Action();
 
+  virtual void CreateHistogram();
+
   ClassDef(TASTactNtuRaw,0)
     
   private:
@@ -34,7 +36,24 @@ public:
 
   bool m_debug;
   
- private:
+  TH1F *hArrivalTime[8];
+  TH1F *hCharge[8];
+  TH1F *hAmplitude[8];
+  TH1F *hTrigTime;
+  TH1F *hTotCharge;
+  TH1F *hEventTime;
+
+  int m_nev;
+  vector<int> delta_clk_bo;
+  vector<int> delta_clk_ch;
+  vector<double> delta_clk;
+
+private:
+  double find_deltaclock(int ch_num, int bo_num);
+  //  bool ComputeArrivalTime(TASTrawHit *hit, double *tarr, double *ampl, double *charge);
+  //  double ComputeCharge(TASTrawHit *hit);
+  //  double ComputeMaxAmplitude(TASTrawHit *hit);
+  void   SavePlot(TGraph g,TF1 f1, TF1 f2, TASTrawHit *hit);
 
 };
 

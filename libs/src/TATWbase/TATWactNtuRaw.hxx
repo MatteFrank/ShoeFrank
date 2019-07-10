@@ -29,9 +29,14 @@ public:
   virtual Bool_t  Action();
 
   ClassDef(TATWactNtuRaw,0);
-    
+
+  vector<int> delta_clk_bo;
+  vector<int> delta_clk_ch;
+  vector<double> delta_clk;
+
   private:
-    
+  double find_deltaclock(int ch_num, int bo_num);
+  
   TAGdataDsc*     fpDatRaw;		    // input data dsc
   TAGdataDsc*     fpNtuRaw;		    // output data dsc
   TAGparaDsc*     fpParGeo;		    // parameter dsc

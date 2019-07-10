@@ -32,7 +32,7 @@ TABMactNtuRaw::TABMactNtuRaw(const char* name,
 {
   AddDataOut(p_nturaw, "TABMntuRaw");
   AddDataIn(p_datraw, "TABMdatRaw");
-  AddDataIn(p_timraw, "TASTdatRaw");
+  AddDataIn(p_timraw, "TASTntuRaw");
   AddPara(p_geomap, "TABMparGeo");
   AddPara(p_parcon, "TABMparCon");
 }
@@ -81,7 +81,7 @@ void TABMactNtuRaw::CreateHistogram(){
 Bool_t TABMactNtuRaw::Action()
 {
   TABMdatRaw* p_datraw = (TABMdatRaw*) fpDatRaw->Object();
-  TASTdatRaw* p_timraw = (TASTdatRaw*) fpTimRaw->Object();
+  TASTntuRaw* p_timraw = (TASTntuRaw*) fpTimRaw->Object();
   TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuRaw->Object();
   TABMparGeo* p_pargeo = (TABMparGeo*) fpGeoMap->Object();
   TABMparCon* p_parcon = (TABMparCon*) fpParCon->Object();
@@ -90,7 +90,7 @@ Bool_t TABMactNtuRaw::Action()
   p_nturaw->SetupClones();
   p_nturaw->ResetEffPaoloni();
   
-  if(p_timraw->TrigTime() == -10000 || p_timraw->TrigTime()<-9999999999) {
+  if(p_timraw->GetTriggerTime() == -10000 || p_timraw->GetTriggerTime()<-9999999999) {
      Info("Action()","Trigger IR Time is Missing!!!");
      fpNtuRaw->SetBit(kValid);
      return kTRUE;

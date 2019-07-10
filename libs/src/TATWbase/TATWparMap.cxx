@@ -127,7 +127,7 @@ bool TATWparMap::GetIDFromTDC(int channel, int board, int &detID, int &chaID) {
 */
 
 
-Bool_t TATWparMap::IsSTChannel(int iCha){
+Bool_t TATWparMap::IsTWChannel(int iCha){
 
   if(std::find(TDchaID.begin(),TDchaID.end(),iCha) == TDchaID.end()){
     return false;
@@ -139,7 +139,7 @@ Bool_t TATWparMap::IsSTChannel(int iCha){
 
 
 
-Bool_t TATWparMap::IsSTBoard(int iBo){
+Bool_t TATWparMap::IsTWBoard(int iBo){
 
   if(std::find(TDboaID.begin(),TDboaID.end(),iBo) == TDboaID.end()){
     return false;

@@ -21,7 +21,6 @@
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TATWntuPoint.hxx"
-
 #include "TAGntuPoint.hxx"
 
 #include "TAGactNtuGlbTrack.hxx"

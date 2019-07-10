@@ -71,6 +71,8 @@ public:
    inline double GetTriggerTime(){return m_TrigTime;}
    inline int GetTrigType(){return m_TrigType;}
    inline void SetTrigType(int value){m_TrigType=value;}
+   inline int GetDeltaClk(){return m_deltaclk;}
+   inline void SetDeltaClk(double value){m_deltaclk=value;}
   
 
   
@@ -81,6 +83,7 @@ private:
    TClonesArray*     fListOfHits;			    // hits
    double m_TrigTime;
    double m_Charge;
+  double m_deltaclk;
   int m_TrigType;
 private:
    static TString fgkBranchName;    // Branch name in TTree

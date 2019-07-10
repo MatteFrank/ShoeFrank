@@ -11,7 +11,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TABMdatRaw.hxx"
 #include "TABMrawHit.hxx"
-#include "TASTdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 
 #include "TABMactDatRaw.hxx"
 #include <iomanip>
@@ -45,7 +45,7 @@ TABMactDatRaw::TABMactDatRaw(const char* name,
   AddPara(p_parmap, "TABMparMap");
   AddPara(p_parcon, "TABMparCon");
   AddPara(p_pargeo, "TABMparGeo");
-  AddDataIn(p_timraw, "TASTdatRaw");
+  AddDataIn(p_timraw, "TASTntuRaw");
   AddDataIn(p_datdaq, "TAGdaqEvent");
 }
 
@@ -111,7 +111,7 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt) {
    TABMparMap*    p_parmap = (TABMparMap*)    fpParMap->Object();
    TABMparCon*    p_parcon = (TABMparCon*)    fpParCon->Object();
    TABMparGeo*    p_pargeo = (TABMparGeo*)    fpParGeo->Object();
-   TASTdatRaw*    p_timraw = (TASTdatRaw*)    fpTimRaw->Object();
+   TASTntuRaw*    p_timraw = (TASTntuRaw*)    fpTimRaw->Object();
    
   Int_t view,plane,cell, channel, measurement,up, hitnum=0, discharged=0, tdc_trigger;
    
@@ -126,7 +126,7 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt) {
     }
   }
   
-  Double_t used_trigger= (p_parcon->GetT0choice()==0) ? p_timraw->TrigTime() : tdc_trigger/10.;
+  Double_t used_trigger= (p_parcon->GetT0choice()==0) ? p_timraw->GetTriggerTime() : tdc_trigger/10.;
   p_datraw->SetTrigtime(used_trigger);
   for(Int_t i = 0; i < ((int)evt->measurement.size());i++) {
      measurement=evt->measurement.at(i) & 0x7ffff;

@@ -5,19 +5,14 @@
 */
 
 #include <string.h>
-
 #include <fstream>
 #include <bitset>
 using namespace std;
 #include <algorithm>
-
 #include "TString.h"
-
 #include "TASTdatRaw.hxx"
+#include "TGraph.h"
 #include "TF1.h"
-
-
-
 /*!
   \class TASTdatRaw TASTdatRaw.hxx "TASTdatRaw.hxx"
   \brief Mapping and Geometry parameters for IR detectors. **
@@ -27,139 +22,60 @@ ClassImp(TASTrawHit);
 
 TString TASTdatRaw::fgkBranchName   = "stdat.";
 
-//------------------------------------------+-----------------------------------
-//! Destructor.
+TASTrawHit::TASTrawHit(TWaveformContainer &W)
+  : TAGbaseWD(W)
+{
+}
 
+//______________________________________________________________________________
+//
 TASTrawHit::~TASTrawHit()
-{}
+{
+}
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
 TASTrawHit::TASTrawHit()
-  :   m_ch_num(0), m_time(0.), m_amplitude(0.),  m_tarr(-10000), m_charge(-10000), m_trig_type(-1000)
-{}
-
-
-TASTrawHit::TASTrawHit(int ch_num, vector<double> time, vector<double> amplitude, int type){
-  m_ch_num = ch_num;
-  m_time = time;
-  m_amplitude = amplitude;
-  m_tarr = -10000;
-  m_charge = -10000;
-  m_trig_type=type;
-  
+  : TAGbaseWD()
+{
 }
 
-
-void TASTrawHit::Clear(Option_t* op/*option*/)
+TASTrawHit::TASTrawHit(Int_t cha ,Int_t board, Double_t charge,
+		       Double_t amplitude, Double_t pedestal,
+		       Double_t time,Int_t isclock,Double_t clock_time,
+		       Int_t TriggerType ) :
+  TAGbaseWD(cha, board,charge,amplitude,pedestal,time,
+	    isclock,clock_time,TriggerType)
 {
-  m_board_id = -100;
-  m_ch_num = -100;
-  m_tarr = -10000;
-  m_charge = -10000;
-  m_max_amp=-1000;
-  m_time.clear();
-  m_amplitude.clear();
-  m_trig_type=-1000;
 }
 
 //##############################################################################
-
-
 
 ClassImp(TASTdatRaw);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
-TASTdatRaw::TASTdatRaw(): TAGdata(),fListOfWaveforms(0x0), fListOfWaveforms_cfd(0x0),
-			  fSumWaves(0x0), fSumWaves_cfd(0x0), m_run_time(0x0) {
-
-  fdTrgTime = -1000000000000.;
-  
-
+TASTdatRaw::TASTdatRaw() :
+  nirhit(0), hir(0), m_run_time(0x0) {
 }
-
 
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TASTdatRaw::~TASTdatRaw(){
-
-
+TASTdatRaw::~TASTdatRaw() {
+  delete hir;
 }
 
+//------------------------------------------+-----------------------------------
+//! Setup clones.
 
-
-
-void TASTdatRaw::AddWaveform(int ch_num, vector<double> time, vector<double> amplitude, int type){
-
-  // vector<double> clean_amplitude;
-  // clean_amplitude.assign(1024,0);
-
-  Double_t old=amplitude.at(0);
-  for (int bin=0;bin<1024;++bin){
-    Double_t derivative=(amplitude.at(bin)-old);
-    if (fabs(derivative)>0.5){
-      amplitude.at(bin)-=TMath::Sign(1,derivative);
-    }
-    old=amplitude.at(bin);
-  }
-  
-  
-  fListOfWaveforms.push_back(new TASTrawHit(ch_num, time ,amplitude, type));
-
-  vector<double> amplitude_cfd;
-  amplitude_cfd.assign(amplitude.size(), 0);
-  
-  for(int i=0;i<1024;i++){
-    if(i>4 && i<1021){
-      amplitude_cfd.at(i)+=(0.5*amplitude.at(i)-amplitude.at(i-4));
-    }else{
-      amplitude_cfd.at(i)=0;
-    }
-  }
-
-  fListOfWaveforms_cfd.push_back(new TASTrawHit(ch_num, time ,amplitude_cfd, type));
-
-
-}
-
-
-void TASTdatRaw::SumWaveforms(){
-
-  //fSumWaves
-
-  vector<double> tmp_time, tmp_amp, tmp_amp_cfd;
-  tmp_time.assign(1024,0);
-  tmp_amp.assign(1024,0);
-  tmp_amp_cfd.assign(1024,0);
-  
-  for(int iWa=0;iWa<fListOfWaveforms.size()-1;iWa++){
-    for(int i=0;i<1024;i++){
-      tmp_amp.at(i)+=(fListOfWaveforms.at(iWa)->GetAmplitudeArray()).at(i);
-      tmp_time.at(i)=i*256/1024.; //to be changed...
-    }
-  }
-
- 
-  for(int i=0;i<1024;i++){
-    if(i>4 && i<1021){
-      tmp_amp_cfd.at(i)+=(0.5*tmp_amp.at(i)-tmp_amp.at(i-4));
-    }else{
-      tmp_amp_cfd.at(i)=0;
-    }
-  }
-
-  fSumWaves = new TASTrawHit(WAVE_ID,tmp_time, tmp_amp, -100);
-  fSumWaves_cfd = new TASTrawHit(WAVE_CFD_ID,tmp_time, tmp_amp_cfd,-100);
-
+void TASTdatRaw::SetupClones()
+{
+  if (!hir) hir = new TClonesArray("TASTrawHit");
   return;
 }
-
-  
 
 
 //------------------------------------------+-----------------------------------
@@ -168,31 +84,70 @@ void TASTdatRaw::SumWaveforms(){
 void TASTdatRaw::Clear(Option_t*)
 {
   TAGdata::Clear();
+  nirhit = 0;
 
-  for(int i=0;i<fListOfWaveforms.size();i++){
-    delete fListOfWaveforms.at(i);
-    delete fListOfWaveforms_cfd.at(i);
-  }
-
-  fListOfWaveforms.clear();
-  fListOfWaveforms_cfd.clear();
-
-
-  delete fSumWaves;
-  delete fSumWaves_cfd;
-  
-  
+  if (hir) hir->Clear();
   return;
-  
 }
 
+
+void TASTdatRaw::NewHit(TWaveformContainer &W)
+{
+  // get channel/board id
+  Int_t cha =W.ChannelId;
+  Int_t board =W.BoardId;
+  W.SanitizeWaveform(); 
+  // do not change the order of these methods
+  Double_t pedestal=W.ComputePedestal();
+  Double_t amplitude=W.ComputeAmplitude();
+  Double_t charge= W.ComputeChargeST();
+  Double_t time= W.ComputeArrivalTime();
+  Double_t ClockRaisingTime=-1;
+  Int_t TriggerType= W.TrigType;
+
+  if (W.IsAClock())
+    {
+      ClockRaisingTime=W.FindFirstRaisingEdgeTime();
+    }
+  
+  TClonesArray &pixelArray = *hir;
+  TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(cha ,board, charge, amplitude, pedestal, time, W.IsAClock(),ClockRaisingTime,TriggerType);
+  nirhit++;
+  return;
+}
+
+void TASTdatRaw::NewHit(int cha, int board, double pedestal, double amplitude, double charge, double time, int TriggerType, bool isclock, double ClockRaisingTime)
+{
+
+  TClonesArray &pixelArray = *hir;
+  TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(cha ,board, charge, amplitude, pedestal, time, isclock, ClockRaisingTime,TriggerType);
+  nirhit++;
+  return;
+}
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
 
 void TASTdatRaw::ToStream(ostream& os, Option_t* option) const
 {
+  os << "TASTdatRaw " << GetName()
+	 << " nirhit"    << nirhit
+     << endl;
   return;
 }
 
+//------------------------------------------+-----------------------------------
+//! Access \a i 'th hit
 
+TASTrawHit* TASTdatRaw::Hit(Int_t i)
+{
+  return (TASTrawHit*) ((*hir)[i]);;
+}
+
+//------------------------------------------+-----------------------------------
+//! Read-only access \a i 'th hit
+
+const TASTrawHit* TASTdatRaw::Hit(Int_t i) const
+{
+  return (const TASTrawHit*) ((*hir)[i]);;
+}

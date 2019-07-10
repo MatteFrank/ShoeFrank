@@ -22,84 +22,34 @@ ClassImp(TATWrawHit);
 
 TString TATWdatRaw::fgkBranchName   = "twdat.";
 
-//------------------------------------------+-----------------------------------
-//! Destructor.
-
-
-
-
-TATWrawHit::~TATWrawHit()
-{}
-
-
 TATWrawHit::TATWrawHit(TWaveformContainer &W)
+  : TAGbaseWD(W)
 {
-	// set channel/board id
-	ir_chid=W.ChannelId;
-	ir_boardid=W.BoardId;
-	// do not change the order of these methods
-	ir_pedestal=W.ComputePedestal();
-	ir_amplitude=W.ComputeAmplitude();
-	ir_chg= W.ComputeCharge();
-	ir_time= W.ComputeTimeStamp();
-	ir_triggertype=W.TrigType;
+}
+
+//______________________________________________________________________________
+//
+TATWrawHit::~TATWrawHit()
+{
 }
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
 TATWrawHit::TATWrawHit()
-  : ir_time(999999.), ir_chg(0.), ir_chid(0),ir_pedestal(0),
-	ir_amplitude(0),ir_boardid(0), ir_isclock(0),ir_clock_time(0),ir_triggertype(0)
+  : TAGbaseWD()
 {
 }
 
 TATWrawHit::TATWrawHit(Int_t cha ,Int_t board, Double_t charge,
-					   Double_t amplitude, Double_t pedestal,
-					   Double_t time,Int_t isclock,Double_t clock_time,
-					   Int_t TriggerType )
+		       Double_t amplitude, Double_t pedestal,
+		       Double_t time,Int_t isclock,Double_t clock_time,
+		       Int_t TriggerType ) :
+  TAGbaseWD(cha,board,charge,amplitude,pedestal,time,
+	    isclock,clock_time,TriggerType)
 {
-  ir_time = time;
-  ir_chg  = charge;
-  ir_pedestal=pedestal;
-  ir_amplitude=amplitude;
-  ir_chid   = cha;
-  ir_boardid=board;
-  ir_isclock=isclock;
-  ir_clock_time=clock_time;
-  ir_triggertype=TriggerType;
 }
 
-
-  void TATWrawHit::SetData(Int_t cha ,Int_t board, Double_t charge,
-		  	  	  	  	   Double_t amplitude, Double_t pedestal, Double_t time,
-						   Int_t isclock,Double_t clock_time,
-						   Int_t TriggerType) {
-
-	ir_time = time;
-	ir_chg  = charge;
-	ir_pedestal=pedestal;
-	ir_amplitude=amplitude;
-	ir_chid   = cha;
-	ir_boardid=board;
-	ir_isclock=isclock;
-	ir_clock_time=clock_time;
-	ir_triggertype=TriggerType;
-	return;
-}
-
-  Int_t  TATWrawHit::IsClock()
-  {
-	  return ir_isclock;
-  }
-  Double_t TATWrawHit::Clocktime()
-  {
-	  if (IsClock())
-	  {
-		  return ir_clock_time;
-	  }
-	  return -1;
-  }
 //##############################################################################
 
 ClassImp(TATWdatRaw);
@@ -128,17 +78,6 @@ void TATWdatRaw::SetupClones()
 }
 
 
-/*------------------------------------------+---------------------------------*/
-//! Set statistics counters.
-
-void TATWdatRaw::SetCounter(Int_t i_ntdc, Int_t i_nadc, Int_t i_ndrop)
-{
-  fiNTdc  = i_ntdc;
-  fiNAdc  = i_nadc;
-  fiNDrop = i_ndrop;
-  return;
-}
-
 //------------------------------------------+-----------------------------------
 //! Clear event.
 
@@ -157,7 +96,7 @@ void TATWdatRaw::NewHit(TWaveformContainer &W)
   // get channel/board id
   Int_t cha =W.ChannelId;
   Int_t board =W.BoardId;
-  W.SanitizeWaveform();
+  W.SanitizeWaveform(); 
   // do not change the order of these methods
   Double_t pedestal=W.ComputePedestal();
   Double_t amplitude=W.ComputeAmplitude();
@@ -165,12 +104,23 @@ void TATWdatRaw::NewHit(TWaveformContainer &W)
   Double_t time= W.ComputeTimeStamp();
   Double_t ClockRaisingTime=-1;
   Int_t TriggerType= W.TrigType;
+
   if (W.IsAClock())
   {
 	  ClockRaisingTime=W.FindFirstRaisingEdgeTime();
   }
+
   TClonesArray &pixelArray = *hir;
-  TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(cha ,board, charge, amplitude, pedestal, time,W.IsAClock(),ClockRaisingTime,TriggerType);
+  TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(cha ,board, charge, amplitude, pedestal, time, W.IsAClock(),ClockRaisingTime,TriggerType);
+  nirhit++;
+  return;
+}
+
+void TATWdatRaw::NewHit(int cha, int board, double pedestal, double amplitude, double charge, double time, int TriggerType, bool isclock, double ClockRaisingTime)
+{
+
+  TClonesArray &pixelArray = *hir;
+  TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(cha ,board, charge, amplitude, pedestal, time, isclock, ClockRaisingTime,TriggerType);
   nirhit++;
   return;
 }
@@ -184,4 +134,20 @@ void TATWdatRaw::ToStream(ostream& os, Option_t* option) const
 	 << " nirhit"    << nirhit
      << endl;
   return;
+}
+
+//------------------------------------------+-----------------------------------
+//! Access \a i 'th hit
+
+TATWrawHit* TATWdatRaw::Hit(Int_t i)
+{
+  return (TATWrawHit*) ((*hir)[i]);;
+}
+
+//------------------------------------------+-----------------------------------
+//! Read-only access \a i 'th hit
+
+const TATWrawHit* TATWdatRaw::Hit(Int_t i) const
+{
+  return (const TATWrawHit*) ((*hir)[i]);;
 }

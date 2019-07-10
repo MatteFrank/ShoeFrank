@@ -29,6 +29,7 @@ private:
     Int_t m_bar;
     Double_t m_de;                     // energy loss in the scintillator bar
     Double_t m_time;                   // timestamp
+    Double_t m_timeofflight;           // time of flight
     Double_t m_coordinate;             // x or y coordinate in the local detector frame, depending on the layer
     Double_t m_z;                         // z coordinate in the local detector frame
     Double_t m_chargeCOM;                  // Center of Mass evaluated with the charge
@@ -54,6 +55,7 @@ public:
    Int_t     GetLayer()                const   { return  m_layer;            }
    Double_t  GetEnergyLoss()           const   { return m_de;                }
    Double_t  GetTime()                 const   { return m_time;              }
+   Double_t  GetToF()                  const   { return m_timeofflight;      }
    Double_t  GetPosition()             const   { return m_coordinate;        }
    Double_t  GetCOM()const    { return m_chargeCOM; }
    Double_t  GetChargeChA() const {return m_ChargeA;}
@@ -68,7 +70,9 @@ public:
    Int_t      GetMcTrackCount()         const   { return m_McTrackId.GetSize(); }
    // Add MC track Id
    void       AddMcTrackId(Int_t trackId, Int_t mcId = -1);
-    ClassDef(TATWntuHit,1)                            // Pixel or Pixel of a Detector Plane
+   inline void  SetToF(Double_t time) { m_timeofflight = time; return; }
+
+  ClassDef(TATWntuHit,1)                            // Pixel or Pixel of a Detector Plane
 };
 
 //##############################################################################

@@ -20,6 +20,8 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 #
 set( with_dictionnaries
    KFitter
+   TAGbaseWD
+   TAGactWDreader
    GlobalTrackRepostory
    GlobalTrackKalman
    Materials

@@ -18,7 +18,6 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TASTactDatRaw
    TASTactNtuMC
    TASTactNtuRaw
    TASTdatRaw
@@ -38,6 +37,8 @@ include_directories(${ROOT_INCLUDE_DIR})
 include_directories(${SIM_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${TAG_INCLUDE_DIR})
+include_directories(${TAFO_INCLUDE_DIR})
+include_directories(${TATW_INCLUDE_DIR})
 include_directories(${TADAQ_INCLUDE_DIR})
 include_directories(${TAAPI_INCLUDE_DIR})
 include_directories(${TAMC_INCLUDE_DIR})

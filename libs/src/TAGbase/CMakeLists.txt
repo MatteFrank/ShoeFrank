@@ -56,6 +56,7 @@ set( without_dictionnaries
 # add includes : root + current 
 #
 include_directories(${ROOT_INCLUDE_DIR})
+include_directories(${TATW_INCLUDE_DIR})
 include_directories(${SIM_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
