@@ -20,7 +20,7 @@ TAEDglbTrack::TAEDglbTrack(const Char_t* name)
 {
    // Set propagator to Runge-Kutta
    TADIeveTrackPropagator* propagator = new TADIeveTrackPropagator();
-   SetPropagator(propagator);
+  // SetPropagator(propagator);
    fPropagator->SetStepper(TEveTrackPropagator::kRungeKutta);
 }
 
