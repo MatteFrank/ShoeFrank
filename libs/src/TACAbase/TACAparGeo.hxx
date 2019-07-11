@@ -28,6 +28,8 @@ public:
    
    void DefineMaterial();
    
+   TVector3       GetCaloSize()     const  { return fCaloSize;    }
+  
    TVector3       GetCrystalSize()     const  { return fCrystalSize;    }
    Float_t        GetCrystalWidth()    const  { return fCrystalSize[0]; }
    Float_t        GetCrystalHeight()   const  { return fCrystalSize[1]; }
@@ -83,6 +85,7 @@ private:
    static const Char_t* GetDefaultCrysName(Int_t idx) { return Form("%s_%d", fgkDefaultCrysName.Data(), idx); }
 
 private:
+   TVector3  fCaloSize;
    TVector3  fCrystalSize;
    TString   fCrystalMat;
    Float_t   fCrystalDensity;
