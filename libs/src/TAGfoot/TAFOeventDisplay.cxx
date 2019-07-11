@@ -158,7 +158,7 @@ TAFOeventDisplay::~TAFOeventDisplay()
    if (fItClusDisplay)        delete fItClusDisplay;
    if (fMsdClusDisplay)       delete fMsdClusDisplay;
    if (fTwClusDisplay)        delete fTwClusDisplay;
-   if (fCaClusDisplay)        delete fCaClusDisplay
+   if (fCaClusDisplay)        delete fCaClusDisplay;
    if (fGlbTrackDisplay)      delete fGlbTrackDisplay;
    
    if (fField)                delete fField;
