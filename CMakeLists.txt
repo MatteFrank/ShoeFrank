@@ -123,6 +123,12 @@ SET(GENFIT_INCLUDE_DIR
 set (GENFIT_LIBRARIES  genfit2)
 
 #----------------------------------------------------------------------------
+## for rootlogon.C
+##
+string(REPLACE ";" " -I" GENFIT_INCLUDE_ROOT "${GENFIT_INCLUDE_DIR}")
+string(PREPEND  GENFIT_INCLUDE_ROOT "-I")
+
+#----------------------------------------------------------------------------
 # Globals 
 #
 add_subdirectory(libs)

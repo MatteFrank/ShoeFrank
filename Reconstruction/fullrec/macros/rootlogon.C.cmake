@@ -70,10 +70,9 @@
    tmp.Prepend(" .include "); 
    gROOT->ProcessLine(tmp.Data());
 
-   tmp = "@GENFIT_INCLUDE_DIR@";
+   tmp = "@GENFIT_INCLUDE_ROOT@";
    printf("- Add GenFit to the include path \n");
-   tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data());
+   gSystem->AddIncludePath(tmp.Data());
    
    gSystem->Load("libEve.so");
    gSystem->Load("libgenfit2.so");
