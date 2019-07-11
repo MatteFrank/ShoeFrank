@@ -70,12 +70,12 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       cout  << "   Crystals density : " <<  fCrystalDensity << endl;
    
    ReadVector3(fCaloSize);
-   // if(fDebugLevel)
+   if(fDebugLevel)
       cout << "   Calorimeter size: "
       << Form("%f %f %f", fCaloSize[0], fCaloSize[1], fCaloSize[2]) << endl;
    
    ReadVector3(fCrystalSize);
-   // if(fDebugLevel)
+   if(fDebugLevel)
       cout << "   Crystal size: "
       << Form("%f %f %f", fCrystalSize[0], fCrystalSize[1], fCrystalSize[2]) << endl;
    
