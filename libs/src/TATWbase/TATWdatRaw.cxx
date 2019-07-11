@@ -57,7 +57,9 @@ ClassImp(TATWdatRaw);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TATWdatRaw::TATWdatRaw() :
-  nirhit(0), hir(0) {
+  nirhit(0), hir(0)
+{
+   SetupClones();
 }
 
 
