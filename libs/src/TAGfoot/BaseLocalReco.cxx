@@ -225,6 +225,14 @@ void BaseLocalReco::ReadParFiles()
       parMapBm->FromFile(parFileName.Data(), parGeo);
    }
    
+   // initialise par files dipole
+   if (GlobalPar::GetPar()->IncludeDI()) {
+      fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
+      TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
+      TString parFileName = "./geomaps/TADIdetector.map";
+      parGeo->FromFile(parFileName.Data());
+   }
+   
    // initialise par files for vertex
    if (GlobalPar::GetPar()->IncludeVertex()) {
       fpParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());

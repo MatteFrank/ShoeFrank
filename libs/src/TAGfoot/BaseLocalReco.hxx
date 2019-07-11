@@ -20,6 +20,7 @@
 #include "TASTparGeo.hxx"
 #include "TABMparGeo.hxx"
 #include "TAGparGeo.hxx"
+#include "TADIparGeo.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAITparGeo.hxx"
 #include "TAMSDparGeo.hxx"
