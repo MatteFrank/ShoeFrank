@@ -188,7 +188,7 @@ void BaseLocalReco::ReadParFiles()
    }
    
    // initialise par files for start counter
-   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM()) {
+   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()|| GlobalPar::GetPar()->IncludeBM()) {
 
      fpParGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
       TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
@@ -203,6 +203,15 @@ void BaseLocalReco::ReadParFiles()
       fpParTimeSt = new TAGparaDsc("stTime", new TASTparTime()); // need the file
       TASTparTime* parTimeSt = (TASTparTime*) fpParTimeSt->Object();
       parTimeSt->FromFile(fExpName.Data(), 2190);
+      
+      fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
+      TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
+      parFileName = Form("./config/%sTATWChannelMap.xml", fExpName.Data());
+      parMap->FromFile(parFileName.Data());
+      
+      fpParTimeTw = new TAGparaDsc("twTim", new TATWparTime());
+      TATWparTime* parTimeTw = (TATWparTime*) fpParTimeTw->Object();
+      parTimeTw->FromFile(fExpName.Data(), 2190);
    }
    
    // initialise par files for Beam Monitor
@@ -293,15 +302,6 @@ void BaseLocalReco::ReadParFiles()
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       parFileName = Form("./config/%sTATWCalibrationMap.xml", fExpName.Data());
       parCal->FromFile(parFileName.Data());
-      
-      fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
-      TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
-      parFileName = Form("./config/%sTATWChannelMap.xml", fExpName.Data());
-      parMap->FromFile(parFileName.Data());
-      
-      fpParTimeTw = new TAGparaDsc("twTim", new TATWparTime());
-      TATWparTime* parTimeTw = (TATWparTime*) fpParTimeTw->Object();
-      parTimeTw->FromFile(fExpName.Data(), 2190);
    }
    
    // initialise par files for caloriomter
