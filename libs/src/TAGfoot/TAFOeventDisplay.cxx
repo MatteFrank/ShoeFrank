@@ -53,89 +53,116 @@ TAFOeventDisplay* TAFOeventDisplay::Instance(Int_t type, const TString name)
 TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
  : TAEDbaseInterface(expName),
    fType(type),
-   fStClusDisplay(new TAEDcluster("Start counter hit")),
-   fBmClusDisplay(new TAEDwire("Beam Monitoring Wires")),
-   fBmTrackDisplay(new TAEDtrack("Beam Monitoring Tracks")),
-   fBmDriftCircleDisplay(new TEveBoxSet("Beam Monitoring Drift Circle")),
-   fVtxClusDisplay(new TAEDcluster("Vertex Cluster")),
-   fVtxTrackDisplay(new TAEDtrack("Vertex Tracks")),
-   fItClusDisplay(new TAEDcluster("Inner tracker Cluster")),
-   fMsdClusDisplay(new TAEDcluster("Multi Strip Cluster")),
-   fTwClusDisplay(new TAEDcluster("Tof Wall hit")),
-   fCaClusDisplay(new TAEDcluster("Calorimeter hit")),
-   fGlbTrackDisplay(new TAEDglbTrack("Global Tracks"))
+   fStClusDisplay(0x0),
+   fBmClusDisplay(0x0),
+   fBmTrackDisplay(0x0),
+   fBmDriftCircleDisplay(0x0),
+   fVtxClusDisplay(0x0),
+   fVtxTrackDisplay(0x0),
+   fItClusDisplay(0x0),
+   fMsdClusDisplay(0x0),
+   fTwClusDisplay(0x0),
+   fCaClusDisplay(0x0),
+   fGlbTrackDisplay(0x0)
 {
    // local reco
    SetLocalReco();
+   
+   // Par instance
+   GlobalPar::Instance();
 
    // default constructon
-   fStClusDisplay->SetMaxEnergy(fMaxEnergy);
-   fStClusDisplay->SetDefWidth(fQuadDefWidth/2.);
-   fStClusDisplay->SetDefHeight(fQuadDefHeight/2.);
-   fStClusDisplay->SetPickable(true);
-
-   fBmClusDisplay->SetPickable(true);
-   fBmTrackDisplay->SetMaxEnergy(fMaxEnergy);
-   fBmTrackDisplay->SetDefWidth(fBoxDefWidth);
-   fBmTrackDisplay->SetDefHeight(fBoxDefHeight);
-   fBmTrackDisplay->SetPickable(true);
-   fBmDriftCircleDisplay->SetPickable(true);
-
+   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM()) {
+      fStClusDisplay = new TAEDcluster("Start counter hit");
+      fStClusDisplay->SetMaxEnergy(fMaxEnergy);
+      fStClusDisplay->SetDefWidth(fQuadDefWidth/2.);
+      fStClusDisplay->SetDefHeight(fQuadDefHeight/2.);
+      fStClusDisplay->SetPickable(true);
+   }
    
-   fVtxClusDisplay->SetMaxEnergy(fMaxEnergy);
-   fVtxClusDisplay->SetDefWidth(fQuadDefWidth/2.);
-   fVtxClusDisplay->SetDefHeight(fQuadDefHeight/2.);
-   fVtxClusDisplay->SetPickable(true);
+   if (GlobalPar::GetPar()->IncludeBM()) {
+      fBmClusDisplay = new TAEDwire("Beam Monitoring Wires");
+      fBmClusDisplay->SetPickable(true);
+      
+      fBmTrackDisplay = new TAEDtrack("Beam Monitoring Tracks");
+      fBmTrackDisplay->SetMaxEnergy(fMaxEnergy);
+      fBmTrackDisplay->SetDefWidth(fBoxDefWidth);
+      fBmTrackDisplay->SetDefHeight(fBoxDefHeight);
+      fBmTrackDisplay->SetPickable(true);
+      
+      fBmDriftCircleDisplay = new TEveBoxSet("Beam Monitoring Drift Circle");
+      fBmDriftCircleDisplay->SetPickable(true);
+   }
    
-   fVtxTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
-   fVtxTrackDisplay->SetDefWidth(fBoxDefWidth);
-   fVtxTrackDisplay->SetDefHeight(fBoxDefHeight);
-   fVtxTrackDisplay->SetPickable(true);
+   if (GlobalPar::GetPar()->IncludeVertex()) {
+      fVtxClusDisplay = new TAEDcluster("Vertex Cluster");
+      fVtxClusDisplay->SetMaxEnergy(fMaxEnergy);
+      fVtxClusDisplay->SetDefWidth(fQuadDefWidth/2.);
+      fVtxClusDisplay->SetDefHeight(fQuadDefHeight/2.);
+      fVtxClusDisplay->SetPickable(true);
    
-   fItClusDisplay->SetMaxEnergy(fMaxEnergy);
-   fItClusDisplay->SetDefWidth(fQuadDefWidth);
-   fItClusDisplay->SetDefHeight(fQuadDefHeight);
-   fItClusDisplay->SetPickable(true);
+      fVtxTrackDisplay = new TAEDtrack("Vertex Tracks");
+      fVtxTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+      fVtxTrackDisplay->SetDefWidth(fBoxDefWidth);
+      fVtxTrackDisplay->SetDefHeight(fBoxDefHeight);
+      fVtxTrackDisplay->SetPickable(true);
+   }
    
-   fMsdClusDisplay->SetMaxEnergy(fMaxEnergy);
-   fMsdClusDisplay->SetDefWidth(fQuadDefWidth);
-   fMsdClusDisplay->SetDefHeight(fQuadDefHeight);
-   fMsdClusDisplay->SetPickable(true);
+   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+      fItClusDisplay = new TAEDcluster("Inner tracker Cluster");
+      fItClusDisplay->SetMaxEnergy(fMaxEnergy);
+      fItClusDisplay->SetDefWidth(fQuadDefWidth);
+      fItClusDisplay->SetDefHeight(fQuadDefHeight);
+      fItClusDisplay->SetPickable(true);
+   }
    
-   fTwClusDisplay->SetMaxEnergy(fMaxEnergy);
-   fTwClusDisplay->SetDefWidth(fQuadDefWidth*8);
-   fTwClusDisplay->SetDefHeight(fQuadDefHeight*8);
-   fTwClusDisplay->SetPickable(true);
+   if (GlobalPar::GetPar()->IncludeMSD()) {
+      fMsdClusDisplay = new TAEDcluster("Multi Strip Cluster");
+      fMsdClusDisplay->SetMaxEnergy(fMaxEnergy);
+      fMsdClusDisplay->SetDefWidth(fQuadDefWidth);
+      fMsdClusDisplay->SetDefHeight(fQuadDefHeight);
+      fMsdClusDisplay->SetPickable(true);
+   }
    
-   fCaClusDisplay->SetMaxEnergy(fMaxEnergy);
-   fCaClusDisplay->SetDefWidth(fQuadDefWidth*4);
-   fCaClusDisplay->SetDefHeight(fQuadDefHeight*4);
-   fCaClusDisplay->SetPickable(true);
+   if (GlobalPar::GetPar()->IncludeTW()) {
+      fTwClusDisplay = new TAEDcluster("Tof Wall hit");
+      fTwClusDisplay->SetMaxEnergy(fMaxEnergy);
+      fTwClusDisplay->SetDefWidth(fQuadDefWidth*8);
+      fTwClusDisplay->SetDefHeight(fQuadDefHeight*8);
+      fTwClusDisplay->SetPickable(true);
+   }
+   if (GlobalPar::GetPar()->IncludeCA()) {
+      fCaClusDisplay = new TAEDcluster("Calorimeter hit");
+      fCaClusDisplay->SetMaxEnergy(fMaxEnergy);
+      fCaClusDisplay->SetDefWidth(fQuadDefWidth*4);
+      fCaClusDisplay->SetDefHeight(fQuadDefHeight*4);
+      fCaClusDisplay->SetPickable(true);
+   }
    
-   fGlbTrackDisplay->SetMaxMomentum(fMaxMomentum);
-   
-   GlobalPar::Instance();
+   if (GlobalPar::GetPar()->IncludeDI() || GlobalPar::GetPar()->IncludeKalman()) {
+      fGlbTrackDisplay = new TAEDglbTrack("Global Tracks");
+      fGlbTrackDisplay->SetMaxMomentum(fMaxMomentum);
+   }
 }
 
 //__________________________________________________________
 TAFOeventDisplay::~TAFOeventDisplay()
 {
    // default destructor
-   delete fStClusDisplay;
-   delete fBmClusDisplay;
-   delete fBmTrackDisplay;
-   delete fVtxClusDisplay;
-   delete fVtxTrackDisplay;
-   delete fItClusDisplay;
-   delete fMsdClusDisplay;
-   delete fTwClusDisplay;
-   delete fCaClusDisplay;
-   delete fBmDriftCircleDisplay;
+   if (fStClusDisplay)        delete fStClusDisplay;
+   if (fBmClusDisplay)        delete fBmClusDisplay;
+   if (fBmDriftCircleDisplay) delete fBmDriftCircleDisplay;
+   if (fBmTrackDisplay)       delete fBmTrackDisplay;
+   if (fVtxClusDisplay)       delete fVtxClusDisplay;
+   if (fVtxTrackDisplay)      delete fVtxTrackDisplay;
+   if (fItClusDisplay)        delete fItClusDisplay;
+   if (fMsdClusDisplay)       delete fMsdClusDisplay;
+   if (fTwClusDisplay)        delete fTwClusDisplay;
+   if (fCaClusDisplay)        delete fCaClusDisplay
+   if (fGlbTrackDisplay)      delete fGlbTrackDisplay;
    
-   delete fGlbTrackDisplay;
-   
-   if (fField) delete fField;
-   if (fFieldImpl) delete fFieldImpl;
+   if (fField)                delete fField;
+   if (fFieldImpl)            delete fFieldImpl;
    
    delete fLocalReco;
 }
@@ -168,21 +195,16 @@ void TAFOeventDisplay::ReadParFiles()
    fLocalReco->ReadParFiles();
    
    // initialise par files for Magnet
-   if (GlobalPar::GetPar()->IncludeDI()) {
-      fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
+   if (GlobalPar::GetPar()->IncludeKalman() && GlobalPar::GetPar()->IncludeDI()) {
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
-      TString parFileName = "./geomaps/TADIdetector.map";
-      parGeo->FromFile(parFileName.Data());
       
-      if (GlobalPar::GetPar()->IncludeKalman()) {
-         fFieldImpl  = new FootField("", parGeo);
-         fField = new TADIeveField(fFieldImpl);
-         fGlbTrackDisplay->GetPropagator()->SetMagFieldObj(fField);
-         fGlbTrackDisplay->GetPropagator()->SetMaxZ(fWorldSizeZ);
-         fGlbTrackDisplay->GetPropagator()->SetMaxR(fWorldSizeXY);
-      }
+      fFieldImpl = new FootField("", parGeo);
+      fField     = new TADIeveField(fFieldImpl);
+      fGlbTrackDisplay->GetPropagator()->SetMagFieldObj(fField);
+      fGlbTrackDisplay->GetPropagator()->SetMaxZ(fWorldSizeZ);
+      fGlbTrackDisplay->GetPropagator()->SetMaxR(fWorldSizeXY);
    }
-   
+          
    TAVTparConf::SetHistoMap();
 }
 
@@ -390,31 +412,40 @@ void TAFOeventDisplay::AddElements()
 //__________________________________________________________
 void TAFOeventDisplay::ConnectElements()
 {
-   fStClusDisplay->SetEmitSignals(true);
-   fStClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+   if (GlobalPar::GetPar()->IncludeST()){
+      fStClusDisplay->SetEmitSignals(true);
+      fStClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+   }
+   
+   if (GlobalPar::GetPar()->IncludeBM()) {
+      fBmTrackDisplay->SetEmitSignals(true);
+      fBmTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
+      fBmDriftCircleDisplay->SetEmitSignals(true);
+      fBmDriftCircleDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateDriftCircleInfo(TEveDigitSet*, Int_t)");
+   }
 
-   fBmTrackDisplay->SetEmitSignals(true);
-   fBmTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
-    
-    fBmDriftCircleDisplay->SetEmitSignals(true);
-    fBmDriftCircleDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateDriftCircleInfo(TEveDigitSet*, Int_t)");
-    
-
-   fVtxClusDisplay->SetEmitSignals(true);
-   fVtxClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+   if (GlobalPar::GetPar()->IncludeVertex()) {
+      fVtxClusDisplay->SetEmitSignals(true);
+      fVtxClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      
+      fVtxTrackDisplay->SetEmitSignals(true);
+      fVtxTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
+   }
    
-   fVtxTrackDisplay->SetEmitSignals(true);
-   fVtxTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
+   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+      fItClusDisplay->SetEmitSignals(true);
+      fItClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+   }
    
-   fItClusDisplay->SetEmitSignals(true);
-   fItClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+   if (GlobalPar::GetPar()->IncludeMSD()) {
+      fMsdClusDisplay->SetEmitSignals(true);
+      fMsdClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+   }
    
-   fMsdClusDisplay->SetEmitSignals(true);
-   fMsdClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
-   
-   fTwClusDisplay->SetEmitSignals(true);
-   fTwClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
-
+   if (GlobalPar::GetPar()->IncludeTW()) {
+      fTwClusDisplay->SetEmitSignals(true);
+      fTwClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+   }
 }
 
 //__________________________________________________________
