@@ -26,23 +26,27 @@ void GlobalReco::CreateRecAction()
 {
    LocalReco::CreateRecAction();
    
-   fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-   fActGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi,
-                                         fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw);
-   if (fFlagHisto)
-      fActGlbTrack->CreateHistogram();
+   if (GlobalPar::GetPar()->IncludeKalman()) {
+      fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+      fActGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi,
+                                            fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw);
+      if (fFlagHisto)
+         fActGlbTrack->CreateHistogram();
+   }
 }
 
 //__________________________________________________________
 void GlobalReco::SetHistogramDir()
 {
    LocalReco::SetRecHistogramDir();
-   fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   if (GlobalPar::GetPar()->IncludeKalman())
+	  fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
 }
 
 //__________________________________________________________
 void GlobalReco::AddRecRequiredItem()
 {
    LocalReco::AddRecRequiredItem();
-   gTAGroot->AddRequiredItem("glbActTrack");
+   if (GlobalPar::GetPar()->IncludeKalman())
+     gTAGroot->AddRequiredItem("glbActTrack");
 }
