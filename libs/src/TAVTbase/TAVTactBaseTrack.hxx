@@ -61,7 +61,7 @@ public:
    static Bool_t    GetRefit()                                 { return fgRefit;              }
    
 protected:
-   virtual TAVTbaseTrack* GetTrack(Int_t idx)                  { return 0x0;                  }
+   virtual TAVTbaseTrack* GetTrack(Int_t /*idx*/)              { return 0x0;                  }
    virtual Int_t          GetTracksN()                const    { return -1;                   }
 
    void   FillHistogramm(TAVTbaseTrack* track);
