@@ -30,7 +30,6 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
-
 ClassImp(TAFOeventDisplay)
 
 Bool_t  TAFOeventDisplay::fgTrackFlag       = true;
@@ -63,7 +62,10 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    fMsdClusDisplay(0x0),
    fTwClusDisplay(0x0),
    fCaClusDisplay(0x0),
-   fGlbTrackDisplay(0x0)
+   fGlbTrackDisplay(0x0),
+   fFieldImpl(0x0),
+   fField(0x0),
+   fGlbTrackProp(0x0)
 {
    // local reco
    SetLocalReco();
@@ -140,7 +142,8 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
    
    if (GlobalPar::GetPar()->IncludeDI() || GlobalPar::GetPar()->IncludeKalman()) {
-      fGlbTrackDisplay = new TAEDglbTrack("Global Tracks");
+      fGlbTrackProp    = new TADIeveTrackPropagator();
+      fGlbTrackDisplay = new TAEDglbTrack("Global Tracks", fGlbTrackProp);
       fGlbTrackDisplay->SetMaxMomentum(fMaxMomentum);
    }
 }
@@ -163,6 +166,7 @@ TAFOeventDisplay::~TAFOeventDisplay()
    
    if (fField)                delete fField;
    if (fFieldImpl)            delete fFieldImpl;
+   if (fGlbTrackProp)         delete fGlbTrackProp;
    
    delete fLocalReco;
 }

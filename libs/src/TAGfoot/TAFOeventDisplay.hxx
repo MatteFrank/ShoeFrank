@@ -12,6 +12,7 @@
 #include "TAEDwire.hxx"
 #include "TAEDglbTrack.hxx"
 #include "TAEDbaseInterface.hxx"
+#include "TADIeveTrackPropagator.hxx"
 
 /** TAFOeventnDisplay FOOT class to work on event display
  
@@ -161,14 +162,15 @@ protected:
    
    TAEDwire*       fBmClusDisplay;  // list of line to display wires
    TAEDtrack*      fBmTrackDisplay; // list of line to display tracks
-    TEveBoxSet*          fBmDriftCircleDisplay;
+   TEveBoxSet*     fBmDriftCircleDisplay;
 
    TAEDglbTrack*   fGlbTrackDisplay;  // list of global tracks to display
 
    // Magnet
    FootField*            fFieldImpl;       // magnetic field implementation
    TADIeveField*         fField;           // Eve magnetic field
-
+   TADIeveTrackPropagator* fGlbTrackProp;  // global track propagator
+   
    // TW
    map< pair<Int_t, Int_t>, Int_t > fFiredTofBar;       // list of fired bar per event
    
