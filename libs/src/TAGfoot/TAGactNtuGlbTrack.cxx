@@ -51,6 +51,7 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, 
    fpItrGeoMap(p_geoItr),
    fpMsdGeoMap(p_geoMsd),
    fpTofGeoMap(p_geoTof),
+   fpNtuPoint(new TAGntuPoint()),
    fActEvtReader(0x0)
 {
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
@@ -69,10 +70,7 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, 
    if (fgStdAloneFlag)
       SetupBranches();
    
-   fpNtuPoint = new TAGntuPoint();
-   
-   TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-
+   fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 }
 
 //------------------------------------------+-----------------------------------
@@ -240,7 +238,6 @@ void TAGactNtuGlbTrack::FillTofPoint()
       Double_t time    = point->GetTime();
       Double_t charge  = point->GetChargeZ();
       Double_t proba   = 0.;
-   
       TVector3 posG = fpFootGeo->FromTWLocalToGlobal(pos);
 
       fpNtuPoint->NewPoint(pos, time, charge, proba);
