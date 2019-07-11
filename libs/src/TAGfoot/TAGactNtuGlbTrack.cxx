@@ -135,6 +135,9 @@ void TAGactNtuGlbTrack::CreateHistogram()
 //! Action.
 Bool_t TAGactNtuGlbTrack::Action()
 {
+   if (fgStdAloneFlag)
+      fActEvtReader->Process();
+   
    if(GlobalPar::GetPar()->IncludeVertex())
       FillVtxPoint();
    
@@ -148,6 +151,7 @@ Bool_t TAGactNtuGlbTrack::Action()
       FillTofPoint();
    
    fpGlbTrack->SetBit(kValid);
+   
    return kTRUE;
 }
 
