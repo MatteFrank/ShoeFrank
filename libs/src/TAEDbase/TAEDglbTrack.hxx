@@ -9,11 +9,12 @@
  
 */
 class TEveRGBAPalette;
+class TADIeveTrackPropagator;
 
 class TAEDglbTrack : public TEveTrackList {
 
 public:
-   TAEDglbTrack(const Char_t* name);
+   TAEDglbTrack(const Char_t* name, TADIeveTrackPropagator* prop);
    virtual ~TAEDglbTrack();
   
    //! return number of tracks

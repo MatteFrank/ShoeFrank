@@ -12,15 +12,13 @@
 ClassImp(TAEDglbTrack)
 
 //__________________________________________________________
-TAEDglbTrack::TAEDglbTrack(const Char_t* name)
- : TEveTrackList(name),
+TAEDglbTrack::TAEDglbTrack(const Char_t* name, TADIeveTrackPropagator* prop)
+ : TEveTrackList(name, prop),
    fPalette(new TEveRGBAPalette()),
    fNofTracks(0),
    fMaxMomentum(0.)
 {
    // Set propagator to Runge-Kutta
-   TADIeveTrackPropagator* propagator = new TADIeveTrackPropagator();
-  // SetPropagator(propagator);
    fPropagator->SetStepper(TEveTrackPropagator::kRungeKutta);
 }
 
@@ -29,8 +27,6 @@ TAEDglbTrack::~TAEDglbTrack()
 {
   // default destructor
    delete fPalette;
-   TADIeveTrackPropagator* propagator  = (TADIeveTrackPropagator*)GetPropagator();
-   if (propagator) delete propagator; // not done in TEveTrackList ?
 }
 
 //__________________________________________________________
