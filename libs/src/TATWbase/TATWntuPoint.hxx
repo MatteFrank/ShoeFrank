@@ -86,8 +86,6 @@ class TATWntuPoint : public TAGdata {
 private:
    
    TClonesArray*        m_listOfPoints;
-
-	TATWparGeo* m_twGeo; //! do not save in file
    
 public:
 
@@ -113,7 +111,7 @@ public:
 private:
    static TString fgkBranchName;    // Branch name in TTree
    
-   ClassDef(TATWntuPoint,1)
+   ClassDef(TATWntuPoint,2)
 };
 
 #endif

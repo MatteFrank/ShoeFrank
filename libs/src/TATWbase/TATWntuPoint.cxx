@@ -75,7 +75,6 @@ TATWntuPoint::TATWntuPoint()
 : TAGdata(),
   m_listOfPoints(0x0)
 {
-   m_twGeo = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
 	SetupClones();
 }
 
@@ -135,7 +134,7 @@ void TATWntuPoint::SetupClones()
 //! Clear event.
 void TATWntuPoint::Clear(Option_t*)
 {
-	m_listOfPoints->Clear("C");
+	m_listOfPoints->Delete();
 }
 
 
