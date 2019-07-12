@@ -1,6 +1,6 @@
 
-// Macro to read back local reco tree and make global reconstruction
-// Ch. Finck, July 19.
+// Macro to read catania raw data
+// Ch. Finck, sept 11.
 
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
@@ -72,7 +72,7 @@ void FillGlb(TString expName)
    
    TAGdataDsc* glbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
    actGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", vtVtx, itClus, msClus, twPoint, glbTrack, pParGeoDi);
-
+   actGlbTrack->CreateHistogram();
 }
 
 void ReadGlbStd(TString filename = "run_2211_GSI.root", Int_t nMaxEvts = 500)
@@ -97,12 +97,10 @@ void ReadGlbStd(TString filename = "run_2211_GSI.root", Int_t nMaxEvts = 500)
    tagr.Print();
    
    Int_t pos = filename.First(".");
+   TString filenameOut(filename(0, pos));
+   filenameOut.Append("_Out.root");
    
-   TString outFileName = filename(pos+1, 8);
-   outFileName.Prepend("run.");
-
-   outFileName.Append(".root");
-   if (outFile->Open(outFileName.Data(), "RECREATE")) return;
+   if (outFile->Open(filenameOut.Data(), "RECREATE")) return;
    actGlbTrack->SetHistogramDir(outFile->File());
 
    cout<<" Beginning the Event Loop "<<endl;
