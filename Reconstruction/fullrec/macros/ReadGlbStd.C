@@ -1,6 +1,6 @@
 
-// Macro to read catania raw data
-// Ch. Finck, sept 11.
+// Macro to read back local reco tree and make global reconstruction
+// Ch. Finck, July 19.
 
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
