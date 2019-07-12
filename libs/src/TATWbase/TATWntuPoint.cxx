@@ -27,7 +27,8 @@ TATWpoint::TATWpoint()
    m_de1(0.),
    m_de2(0.),
    m_time(0.),
-   m_chargeZ(0)
+   m_chargeZ(0),
+   m_chargeZProba(0.)
 {
 }
 
@@ -38,7 +39,8 @@ TATWpoint::TATWpoint( double x, TATWntuHit* colHit, double y, TATWntuHit* rowHit
    m_position(x, y, 0),
    m_columnHit(new TATWntuHit(*colHit)),
    m_rowHit(new TATWntuHit(*rowHit)),
-   m_chargeZ(0)
+   m_chargeZ(0),
+   m_chargeZProba(0.)
 {
    m_column = m_columnHit->GetBar();
    m_row    = m_rowHit->GetBar();
@@ -59,7 +61,7 @@ void TATWpoint::Clear(Option_t*)
 
 /*!
   \file
-  \version $Id: TATWntuPoint.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \version $Id: TATWntuPoint.cxx
   \brief   Implementation of TATWntuPoint.
 */
 

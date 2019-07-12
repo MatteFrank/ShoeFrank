@@ -47,7 +47,8 @@ private:
    Double32_t  m_time;          // for the moment I take the column time
    
    int         m_chargeZ;       // raw guess of charge Z
-   
+   Double32_t  m_chargeZProba;  // raw guess of charge Z probability
+
 public:
    
    TATWpoint();
@@ -71,12 +72,14 @@ public:
    double    GetEnergyLoss()  const  { return m_de1+m_de2;           }
    double    GetTime()        const  { return m_time;                }
    int       GetChargeZ()     const  { return m_chargeZ;             }
-   
+   double    GetChargeZProba() const  { return m_chargeZProba;       }
+
    void      SetChargeZ(int z)       { m_chargeZ = z;                }
-   
+   void      SetChargeZProba(double p){ m_chargeZProba = p;          }
+
    void      Clear(Option_t* opt);
    
-   ClassDef(TATWpoint,3)
+   ClassDef(TATWpoint,4)
 };
 
 //##############################################################################
