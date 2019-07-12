@@ -120,3 +120,14 @@ target_link_libraries(DecodeGlob ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LI
 #
 install(TARGETS DecodeGlob DESTINATION bin)
 
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(DecodeGlobMC DecodeGlbMC.cc)
+#
+target_link_libraries(DecodeGlobMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS DecodeGlobMC DESTINATION bin)
