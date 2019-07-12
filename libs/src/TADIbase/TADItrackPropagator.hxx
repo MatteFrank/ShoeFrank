@@ -56,9 +56,7 @@ private:
    
 private:
    static const Double_t fgkConvFactor;
-   static const Double_t fgkMassFactor;
-   static const Double_t fgkLightSpeed;
-   
+   static const Double_t fgkMassFactor;   
    
    ClassDef(TADItrackPropagator,1)
 };
