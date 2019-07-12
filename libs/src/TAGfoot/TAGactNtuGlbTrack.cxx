@@ -238,11 +238,11 @@ void TAGactNtuGlbTrack::FillTofPoint()
    for (Int_t i = 0; i < pNtuPoint->GetPointN(); ++i) {
       TATWpoint* point = pNtuPoint->GetPoint(i);
 
-      TVector3 pos     = point->GetPosition();
-      Double_t time    = point->GetTime();
-      Double_t charge  = point->GetChargeZ();
-      Double_t proba   = 0.;
-      TVector3 posG = fpFootGeo->FromTWLocalToGlobal(pos);
+      TVector3 pos    = point->GetPosition();
+      Double_t time   = point->GetTime();
+      Double_t charge = point->GetChargeZ();
+      Double_t proba  = point->GetChargeZProba();
+      TVector3 posG   = fpFootGeo->FromTWLocalToGlobal(pos);
 
       fpNtuPoint->NewPoint(pos, time, charge, proba);
    }
