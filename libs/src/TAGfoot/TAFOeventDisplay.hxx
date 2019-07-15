@@ -24,7 +24,7 @@
 #include "TADIeveField.hxx"
 #include "FootField.hxx"
 
-#include "LocalReco.hxx"
+#include "GlobalReco.hxx"
 
 class TEveDigitSet;
 class TGCheckButton;
@@ -140,11 +140,11 @@ public:
    static void EnableBmSelectHit()    { fgBmSelectHt = true;   }
 
 protected:
-   BaseReco*        fLocalReco;    // local reco
+   BaseReco*       fReco;    // local reco
 
-   Int_t                 fType;         // type of sensor
+   Int_t           fType;         // type of sensor
    
-   TAGparaDsc*            fpParGeoDi;
+   TAGparaDsc*     fpParGeoDi;
 
    //Display
    TAEDcluster*    fStClusDisplay;  // list of quad to display hits

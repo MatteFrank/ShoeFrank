@@ -7,7 +7,7 @@
 #include "TGeoManager.h"
 
 #include "GlobalPar.hxx"
-#include "LocalRecoMC.hxx"
+#include "GlobalRecoMC.hxx"
 
 ClassImp(TAFOeventDisplay)
 
@@ -55,23 +55,23 @@ void TAFOeventDisplayMC::SetLocalReco()
    if (fType != 1) return;
    
    // local reco
-   fLocalReco = new LocalRecoMC(fExpName);
+   fReco = new GlobalRecoMC(fExpName);
    
-   fLocalReco->DisableTree();
-   fLocalReco->DisableSaveHits();
+   fReco->DisableTree();
+   fReco->DisableSaveHits();
 
    if (fgTrackFlag) {
-      fLocalReco->SetTrackingAlgo(fgVtxTrackingAlgo[0]);
-      fLocalReco->EnableTracking();
+      fReco->SetTrackingAlgo(fgVtxTrackingAlgo[0]);
+      fReco->EnableTracking();
    }
    
-   fpFootGeo = fLocalReco->GetGeoTrafo();
+   fpFootGeo = fReco->GetGeoTrafo();
 }
 
 //__________________________________________________________
 Bool_t TAFOeventDisplayMC::GetEntry(Int_t entry)
 {
-   if (!fLocalReco->GetTree()->GetEntry(entry)) return false;
+   if (!fReco->GetTree()->GetEntry(entry)) return false;
    
    return true;
 }
@@ -79,14 +79,14 @@ Bool_t TAFOeventDisplayMC::GetEntry(Int_t entry)
 //__________________________________________________________
 void TAFOeventDisplayMC::CreateRawAction()
 {
-   fLocalReco->CreateRawAction();
+   fReco->CreateRawAction();
 }
 
 //__________________________________________________________
 void TAFOeventDisplayMC::AddRequiredItem()
 {
-   fLocalReco->AddRawRequiredItem();
-   fLocalReco->AddRecRequiredItem();
+   fReco->AddRawRequiredItem();
+   fReco->AddRecRequiredItem();
    
    gTAGroot->BeginEventLoop();
    gTAGroot->Print();
@@ -242,7 +242,7 @@ void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
    fInfoView->AddLine( Form("eLoss: %.3g MeV time: %.3g ns\n", point->GetDeltaE()*TAGgeoTrafo::GevToMev(), point->GetTof()*TAGgeoTrafo::SecToNs()) );
    
    Int_t trackId       = point->GetTrackId();
-   TAMCntuEve* pNtuHit = fLocalReco->GetNtuMcEve();
+   TAMCntuEve* pNtuHit = fReco->GetNtuMcEve();
    TAMCeveTrack* track   = pNtuHit->GetHit(trackId);
    
    fInfoView->AddLine( Form("Generated from track # %d\n", trackId) );
@@ -305,25 +305,25 @@ void TAFOeventDisplayMC::UpdateMcElements(const TString prefix)
    TAMCntuHit* pNtuHit = 0x0;
    
    if (prefix == "st")
-      pNtuHit = fLocalReco->GetNtuMcSt();
+      pNtuHit = fReco->GetNtuMcSt();
    
    if (prefix == "bm")
-      pNtuHit = fLocalReco->GetNtuMcBm();
+      pNtuHit = fReco->GetNtuMcBm();
    
    if (prefix == "vt")
-      pNtuHit = fLocalReco->GetNtuMcVtx();
+      pNtuHit = fReco->GetNtuMcVtx();
    
    if (prefix == "it")
-      pNtuHit = fLocalReco->GetNtuMcIt();
+      pNtuHit = fReco->GetNtuMcIt();
    
    if (prefix == "ms")
-      pNtuHit = fLocalReco->GetNtuMcMsd();
+      pNtuHit = fReco->GetNtuMcMsd();
    
    if (prefix == "tw")
-      pNtuHit = fLocalReco->GetNtuMcTw();
+      pNtuHit = fReco->GetNtuMcTw();
    
    if (prefix == "ca")
-      pNtuHit = fLocalReco->GetNtuMcCa();
+      pNtuHit = fReco->GetNtuMcCa();
    
    Int_t nHits = pNtuHit->GetHitsN();
    if (nHits == 0) return;

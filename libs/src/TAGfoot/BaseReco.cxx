@@ -22,6 +22,7 @@
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
 
+
 #include "GlobalPar.hxx"
 
 ClassImp(BaseReco)
@@ -167,6 +168,10 @@ void BaseReco::SetRecHistogramDir()
    // MSD
    if (GlobalPar::GetPar()->IncludeMSD()) 
       fActClusMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   
+   //Global track
+   if (GlobalPar::GetPar()->IncludeKalman())
+      fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
 }
 
 //__________________________________________________________
@@ -332,6 +337,9 @@ void BaseReco::CreateRecAction()
    
    if (GlobalPar::GetPar()->IncludeTW())
       CreateRecActionTw();
+   
+   if (GlobalPar::GetPar()->IncludeKalman())
+      CreateRecActionGlb();
 }
 
 //__________________________________________________________
@@ -419,6 +427,18 @@ void BaseReco::CreateRecActionTw()
 }
 
 //__________________________________________________________
+void BaseReco::CreateRecActionGlb()
+{
+   if(fFlagTrack) {
+      fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+      fActGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi,
+                                            fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw);
+      if (fFlagHisto)
+         fActGlbTrack->CreateHistogram();
+   }
+}
+
+//__________________________________________________________
 void BaseReco::SetTreeBranches()
 {
    if (GlobalPar::GetPar()->IncludeBM()) {
@@ -491,6 +511,9 @@ void BaseReco::AddRecRequiredItem()
    if (GlobalPar::GetPar()->IncludeCA()) {
       gTAGroot->AddRequiredItem("caActNtu");
    }
+   
+   if (GlobalPar::GetPar()->IncludeKalman())
+      gTAGroot->AddRequiredItem("glbActTrack");
 }
 
 //__________________________________________________________
