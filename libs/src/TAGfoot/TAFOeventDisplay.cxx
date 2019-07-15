@@ -133,6 +133,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
       fTwClusDisplay->SetDefHeight(fQuadDefHeight*8);
       fTwClusDisplay->SetPickable(true);
    }
+   
    if (GlobalPar::GetPar()->IncludeCA()) {
       fCaClusDisplay = new TAEDcluster("Calorimeter hit");
       fCaClusDisplay->SetMaxEnergy(fMaxEnergy);
@@ -141,7 +142,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
       fCaClusDisplay->SetPickable(true);
    }
    
-   if (GlobalPar::GetPar()->IncludeDI() || GlobalPar::GetPar()->IncludeKalman()) {
+   if (GlobalPar::GetPar()->IncludeKalman()) {
       fGlbTrackProp    = new TADIeveTrackPropagator();
       fGlbTrackDisplay = new TAEDglbTrack("Global Tracks", fGlbTrackProp);
       fGlbTrackDisplay->SetMaxMomentum(fMaxMomentum);
@@ -198,7 +199,7 @@ void TAFOeventDisplay::ReadParFiles()
 {
    fReco->ReadParFiles();
    
-   // initialise par files for Magnet
+   // Set field for propagator if field defined
    if (GlobalPar::GetPar()->IncludeKalman() && GlobalPar::GetPar()->IncludeDI()) {
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
       
@@ -407,7 +408,7 @@ void TAFOeventDisplay::AddElements()
       gEve->AddElement(fCaClusDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeKalman() && GlobalPar::GetPar()->IncludeDI()) {
+   if (GlobalPar::GetPar()->IncludeKalman()) {
       fGlbTrackDisplay->ResetTracks();
       gEve->AddElement(fGlbTrackDisplay);
    }
