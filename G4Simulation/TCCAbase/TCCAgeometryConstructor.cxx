@@ -50,7 +50,7 @@ G4LogicalVolume* TCCAgeometryConstructor::Construct()
 
    for(Int_t i = 0; i< 3; ++i)
       fSizeBoxCal[i] = (fMaxPosition[i] - fMinPosition[i]);
-   
+
    // Vtx box
    G4Material* vacuum = G4NistManager::Instance()->FindOrBuildMaterial("Vacuum");
    G4Material* matBGO = G4NistManager::Instance()->FindOrBuildMaterial("BGO");
@@ -64,7 +64,7 @@ G4LogicalVolume* TCCAgeometryConstructor::Construct()
    Int_t crystalsN = fpParGeo->GetCrystalsN();
    
    //logical
-   G4Box* calo    = new G4Box("Crystal", width/2., width/2., thick/2.);
+   G4Box* calo = new G4Box("Crystal", width/2., width/2., thick/2.);
    fCalLog = new G4LogicalVolume(calo, matBGO, "CrystalLog");
    
    G4VisAttributes* targetLog_att = new G4VisAttributes(G4Colour(0.,0.3,1)); //light blue
@@ -72,7 +72,6 @@ G4LogicalVolume* TCCAgeometryConstructor::Construct()
    fCalLog->SetVisAttributes(targetLog_att);
    
    for (Int_t i = 0; i < crystalsN; ++i) {
-      
       TVector3 pos = fpParGeo->GetCrystalPosition(i)*cm;
       new G4PVPlacement(0, G4ThreeVector(pos[0], pos[1], 0), fCalLog, "Calo", fBoxLog, false, i + 1);
    }
@@ -102,7 +101,7 @@ void  TCCAgeometryConstructor::DefineSensitive()
 void TCCAgeometryConstructor::DefineMaxMinDimension()
 {
 
-   TVector3 size  = fpParGeo->GetCrystalSize();
+   TVector3 size  = fpParGeo->GetCaloSize();
    Float_t  thick = fpParGeo->GetCrystalThick();
 
    TVector3 minPosition(10e10, 10e10, 10e10);
