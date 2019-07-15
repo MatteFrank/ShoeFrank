@@ -26,18 +26,6 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/macros/  DESTINATION ${CMAKE_BINARY_DIR}/R
 set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADAQ} ${TAAPI} ${TAST} ${TADI} ${TAVT} ${TAIT} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${TAFO})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES} ${GENFIT_LIBRARIES})
 
-#----------------------------------------------------------------------------
-# headers / dictionnary / sources 
-# 
-# so far no automatic methods for computing which class has a dictionnary or not
-# manual method : base file name separated in two lists with different treatment.
-#
-set( with_dictionnaries
-   BaseLocalReco
-   LocalRecoMC
-   LocalReco
-)
-
 # add includes : root + current + dependencies
 #
 include_directories(${ROOT_INCLUDE_DIR})
