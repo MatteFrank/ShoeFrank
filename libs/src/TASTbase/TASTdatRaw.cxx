@@ -57,7 +57,9 @@ ClassImp(TASTdatRaw);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TASTdatRaw::TASTdatRaw() :
-  nirhit(0), hir(0), m_run_time(0x0) {
+  nirhit(0), hir(0), m_run_time(0x0)
+{
+   SetupClones();
 }
 
 
