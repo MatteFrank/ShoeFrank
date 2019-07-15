@@ -2,7 +2,7 @@
 #ifndef _LocalReco_HXX_
 #define _LocalReco_HXX_
 
-#include "BaseLocalReco.hxx"
+#include "BaseReco.hxx"
 
 #include "TAGdataDsc.hxx"
 #include "TAGactWDreader.hxx"
@@ -25,7 +25,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 
-class LocalReco : public BaseLocalReco
+class LocalReco : public BaseReco
 {
 public:
    //! default constructor

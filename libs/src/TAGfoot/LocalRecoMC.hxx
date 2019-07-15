@@ -2,7 +2,7 @@
 #ifndef _LocalRecoMC_HXX_
 #define _LocalRecoMC_HXX_
 
-#include "BaseLocalReco.hxx"
+#include "BaseReco.hxx"
 
 #include "TFile.h"
 
@@ -33,7 +33,7 @@
 
 class TTree;
 
-class LocalRecoMC : public BaseLocalReco
+class LocalRecoMC : public BaseReco
 {
 public:
    //! default constructor

@@ -22,7 +22,7 @@ Bool_t  LocalReco::fgStdAloneFlag = false;
 
 //__________________________________________________________
 LocalReco::LocalReco(TString expName, TString fileNameIn, TString fileNameout)
- : BaseLocalReco(expName, fileNameIn, fileNameout),
+ : BaseReco(expName, fileNameIn, fileNameout),
    fpDaqEvent(0x0),
    fActWdRaw(0x0),
    fActDatRawBm(0x0),
@@ -270,7 +270,7 @@ void LocalReco::AddRawRequiredItem()
 //__________________________________________________________
 void LocalReco::SetTreeBranches()
 {
-   BaseLocalReco::SetTreeBranches();
+   BaseReco::SetTreeBranches();
    
    if (GlobalPar::GetPar()->IncludeST()) {
      if (fFlagHits) {

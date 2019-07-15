@@ -1,6 +1,6 @@
 
-#ifndef _BaseLocalReco_HXX_
-#define _BaseLocalReco_HXX_
+#ifndef _BaseReco_HXX_
+#define _BaseReco_HXX_
 
 #include "TNamed.h"
 #include "TString.h"
@@ -57,13 +57,13 @@
 
 class TAMCntuHit;
 class TAMCntuEve;
-class BaseLocalReco : public TNamed // using TNamed for the in/out files
+class BaseReco : public TNamed // using TNamed for the in/out files
 {
 public:
    //! default constructor
-   BaseLocalReco(TString expName, TString fileNameIn, TString fileNameout);
+   BaseReco(TString expName, TString fileNameIn, TString fileNameout);
    
-   virtual ~BaseLocalReco();
+   virtual ~BaseReco();
    
    //! Read parameters
    void ReadParFiles();
@@ -262,7 +262,7 @@ protected:
    void CreateRecActionMsd();
    void CreateRecActionTw();
    
-   ClassDef(BaseLocalReco, 1); // Base class for event display
+   ClassDef(BaseReco, 1); // Base class for event display
 };
 
 

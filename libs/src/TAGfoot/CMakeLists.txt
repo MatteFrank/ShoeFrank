@@ -28,7 +28,7 @@ set( with_dictionnaries
    MultiTrackCheck
    TAFOeventDisplay
    TAFOeventDisplayMC
-   BaseLocalReco
+   BaseReco
    LocalRecoMC
    LocalReco
    TAGntuPoint

@@ -17,7 +17,7 @@ ClassImp(LocalRecoMC)
 
 //__________________________________________________________
 LocalRecoMC::LocalRecoMC(TString expName, TString fileNameIn, TString fileNameout)
- : BaseLocalReco(expName, fileNameIn, fileNameout),
+ : BaseReco(expName, fileNameIn, fileNameout),
    fActNtuRawVtx(0x0),
    fActNtuRawIt(0x0),
    fActNtuRawMsd(0x0),
@@ -253,7 +253,7 @@ void LocalRecoMC::AddRequiredMcItemCa()
 //__________________________________________________________
 void LocalRecoMC::SetTreeBranches()
 {
-   BaseLocalReco::SetTreeBranches();
+   BaseReco::SetTreeBranches();
    
    fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
 

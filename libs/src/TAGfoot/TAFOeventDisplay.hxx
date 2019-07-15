@@ -140,7 +140,7 @@ public:
    static void EnableBmSelectHit()    { fgBmSelectHt = true;   }
 
 protected:
-   BaseLocalReco*        fLocalReco;    // local reco
+   BaseReco*        fLocalReco;    // local reco
 
    Int_t                 fType;         // type of sensor
    

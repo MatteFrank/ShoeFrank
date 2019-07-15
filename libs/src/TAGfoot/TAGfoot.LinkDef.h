@@ -16,7 +16,7 @@
 #pragma link C++ class TAFOeventDisplayMC;
 #pragma link C++ class TAFOeventDisplay;
 
-#pragma link C++ class  BaseLocalReco;
+#pragma link C++ class  BaseReco;
 #pragma link C++ class  LocalRecoMC;
 #pragma link C++ class  LocalReco;
 

@@ -1,6 +1,6 @@
 
 
-#include "BaseLocalReco.hxx"
+#include "BaseReco.hxx"
 
 // root include
 
@@ -24,10 +24,10 @@
 
 #include "GlobalPar.hxx"
 
-ClassImp(BaseLocalReco)
+ClassImp(BaseReco)
 
 //__________________________________________________________
-BaseLocalReco::BaseLocalReco(TString expName, TString fileNameIn, TString fileNameout)
+BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
    fpParTimeSt(0x0),
@@ -85,7 +85,7 @@ BaseLocalReco::BaseLocalReco(TString expName, TString fileNameIn, TString fileNa
 }
 
 //__________________________________________________________
-BaseLocalReco::~BaseLocalReco()
+BaseReco::~BaseReco()
 {
    // default destructor
    delete fTAGroot; // should delete all data, para and actions
@@ -97,7 +97,7 @@ BaseLocalReco::~BaseLocalReco()
 
 
 //__________________________________________________________
-void BaseLocalReco::BeforeEventLoop()
+void BaseReco::BeforeEventLoop()
 {
    ReadParFiles();
    CreateRawAction();
@@ -116,7 +116,7 @@ void BaseLocalReco::BeforeEventLoop()
 }
 
 //__________________________________________________________
-void BaseLocalReco::AfterEventLoop()
+void BaseReco::AfterEventLoop()
 {
    fTAGroot->EndEventLoop();
    if (fFlagOut)
@@ -125,7 +125,7 @@ void BaseLocalReco::AfterEventLoop()
 }
 
 //__________________________________________________________
-void BaseLocalReco::OpenFileOut()
+void BaseReco::OpenFileOut()
 {
    if (fFlagTree)
       SetTreeBranches();
@@ -140,7 +140,7 @@ void BaseLocalReco::OpenFileOut()
 
 
 //__________________________________________________________
-void BaseLocalReco::SetRecHistogramDir()
+void BaseReco::SetRecHistogramDir()
 {
    //BMN
    if (GlobalPar::GetPar()->IncludeBM()) {
@@ -170,14 +170,14 @@ void BaseLocalReco::SetRecHistogramDir()
 }
 
 //__________________________________________________________
-void BaseLocalReco::CloseFileOut()
+void BaseReco::CloseFileOut()
 {
    fActEvtWriter->Print();
    fActEvtWriter->Close();
 }
 
 //__________________________________________________________
-void BaseLocalReco::ReadParFiles()
+void BaseReco::ReadParFiles()
 {
    // initialise par files for target
    if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM()) {
@@ -316,7 +316,7 @@ void BaseLocalReco::ReadParFiles()
 }
 
 //__________________________________________________________
-void BaseLocalReco::CreateRecAction()
+void BaseReco::CreateRecAction()
 {
    if (GlobalPar::GetPar()->IncludeBM())
       CreateRecActionBm();
@@ -335,7 +335,7 @@ void BaseLocalReco::CreateRecAction()
 }
 
 //__________________________________________________________
-void BaseLocalReco::CreateRecActionBm()
+void BaseReco::CreateRecActionBm()
 {
    if(fFlagTrack) {
       fpNtuTrackBm = new TAGdataDsc("bmTrack", new TABMntuTrack());
@@ -346,7 +346,7 @@ void BaseLocalReco::CreateRecActionBm()
 }
 
 //__________________________________________________________
-void BaseLocalReco::CreateRecActionVtx()
+void BaseReco::CreateRecActionVtx()
 {
    if(fFlagTrack) {
       fpNtuTrackVtx = new TAGdataDsc("vtTrack", new TAVTntuTrack());
@@ -392,7 +392,7 @@ void BaseLocalReco::CreateRecActionVtx()
 }
 
 //__________________________________________________________
-void BaseLocalReco::CreateRecActionIt()
+void BaseReco::CreateRecActionIt()
 {
    fpNtuClusIt  = new TAGdataDsc("itClus", new TAITntuCluster());
    fActClusIt   = new TAITactNtuClusterF("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
@@ -401,7 +401,7 @@ void BaseLocalReco::CreateRecActionIt()
 }
 
 //__________________________________________________________
-void BaseLocalReco::CreateRecActionMsd()
+void BaseReco::CreateRecActionMsd()
 {
    fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
    fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuRawMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
@@ -410,7 +410,7 @@ void BaseLocalReco::CreateRecActionMsd()
 }
 
 //__________________________________________________________
-void BaseLocalReco::CreateRecActionTw()
+void BaseReco::CreateRecActionTw()
 {
    fpNtuRecTw  = new TAGdataDsc("twPoint", new TATWntuPoint());
    fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuRawTw, fpNtuRecTw, fpParGeoTw, fpParCalTw);
@@ -419,7 +419,7 @@ void BaseLocalReco::CreateRecActionTw()
 }
 
 //__________________________________________________________
-void BaseLocalReco::SetTreeBranches()
+void BaseReco::SetTreeBranches()
 {
    if (GlobalPar::GetPar()->IncludeBM()) {
       if (fFlagTrack)
@@ -449,7 +449,7 @@ void BaseLocalReco::SetTreeBranches()
 }
 
 //__________________________________________________________
-void BaseLocalReco::AddRecRequiredItem()
+void BaseReco::AddRecRequiredItem()
 {
    if (fFlagOut)
       gTAGroot->AddRequiredItem("locRecFile");
@@ -494,7 +494,7 @@ void BaseLocalReco::AddRecRequiredItem()
 }
 
 //__________________________________________________________
-void BaseLocalReco::SetTrackingAlgo(char c)
+void BaseReco::SetTrackingAlgo(char c)
 {
    switch (c) {
       case 'S':
