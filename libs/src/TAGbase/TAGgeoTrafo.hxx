@@ -46,6 +46,8 @@ private:
    static const Float_t fgkGevToKev;      //! conversion factor bw GeV and keV
    static const Float_t fgkMevToGev;      //! conversion factor bw MeV and GeV
    
+   static const Float_t fgkMassFactor;     // default proton mass
+   
    static const Char_t* fgkGeomName;      //! name of GeoManager
    static const Char_t* fgkGeomTitle;     //! title of GeoManager
    static       Char_t  fgDefaultTransp;  // default transparency value
@@ -171,6 +173,9 @@ public:
    static           Float_t MevToGev()               { return fgkMevToGev;      }
    
    static           Float_t GevToKev()               { return fgkGevToKev;      }
+   
+   static           Float_t GetMassFactorMeV()       { return fgkMassFactor*fgkGevToMev;    }
+   static           Float_t GetMassFactor()          { return fgkMassFactor;    }
 
    static     const Char_t* GetDefaultGeomName()     { return fgkGeomName;      }
    static     const Char_t* GetDefaultGeomTitle()    { return fgkGeomTitle;     }
