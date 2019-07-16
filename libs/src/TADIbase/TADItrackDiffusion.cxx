@@ -104,7 +104,7 @@ Float_t TADItrackDiffusion::EnergyCalc(Float_t energy, Float_t massNumber, Int_t
 Float_t TADItrackDiffusion::PCCalc(Float_t energy, Float_t massNumber)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
-   Float_t pc = sqrt(energy * energy + 2*energy * massFac) * massNumber ;
+   Float_t pc      = sqrt(energy * energy + 2*energy * massFac) * massNumber ;
    
    return pc;
 }
@@ -115,7 +115,7 @@ Float_t TADItrackDiffusion::PCCalc(Float_t energy, Float_t massNumber)
 Float_t TADItrackDiffusion::BetaCalc(Float_t energy)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
-   Float_t beta = sqrt(1.0 - (1/(energy/massFac +1.0))*(1/(energy/massFac +1.0)));
+   Float_t beta    = sqrt(1.0 - (1/(energy/massFac +1.0))*(1/(energy/massFac +1.0)));
    
    return beta;
 }
@@ -143,8 +143,8 @@ Float_t TADItrackDiffusion::SigmaThetaCalc(Float_t energy, TString mat, Float_t 
 {
    Double_t pc   = PCCalc(energy, A);
    Double_t beta = BetaCalc(energy);
-   Double_t radL = GetRadLength(mat);  // [g/cm^2] Radiation length for material
-   Double_t rho  = GetDensity(mat);    // [g/cm^3] density of material
+   Double_t rho  = GetDensity(mat);        // density of material  [g/cm^3]
+   Double_t radL = GetRadLength(mat)*rho;  // Radiation length for material, multiply by density [g/cm^2]
 
    fFuncSigTheta->SetParameter(0, beta);
    fFuncSigTheta->SetParameter(1, pc);
