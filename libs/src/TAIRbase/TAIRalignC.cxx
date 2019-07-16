@@ -104,7 +104,7 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    TAGparGeo* geomapG   = (TAGparGeo*) fpGeoMapG->Object();
    TString parFile = "./geomaps/TAGdetector.map";
    geomapG->FromFile(parFile.Data());
-   fpDiff         = new TAIRparDiff(fpGeoMapG);
+   fpDiff         = new TADItrackDiffusion();
 
    // VTX
    if (fFlagVtx) {
@@ -720,8 +720,8 @@ Bool_t TAIRalignC::DefineWeights()
    
    Double_t LrSi   = fpDiff->GetRadLength("Si");   // [g/cm^2] Radiation length for silicon
    Double_t rhoSi  = fpDiff->GetDensity("Si");     // [g/cm^3] density silicon
-   Double_t LrAir  = fpDiff->GetRadLength("Air");  // [g/cm^2] Radiation length for air
-   Double_t rhoAir = fpDiff->GetDensity("Air");    // [g/cm^3] density air
+   Double_t LrAir  = fpDiff->GetRadLength("AIR");  // [g/cm^2] Radiation length for air
+   Double_t rhoAir = fpDiff->GetDensity("AIR");    // [g/cm^3] density air
    
    Int_t    iSensor   = 0;
    Double_t sigmaMeas = 5.0;
