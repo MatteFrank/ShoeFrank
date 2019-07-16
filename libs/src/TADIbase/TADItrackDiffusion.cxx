@@ -1,6 +1,8 @@
 
 #include "Riostream.h"
 #include "TMath.h"
+#include "TGeoManager.h"
+#include "TGeoMaterial.h"
 
 #include "TADItrackDiffusion.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -22,7 +24,8 @@ TADItrackDiffusion::TADItrackDiffusion()
   fAlpha(0),
   fPfactor(0)
 {
-   SetMaterials();
+   if (gGeoManager == 0x0)
+      Error("TADItrackDiffusion()", "gGeoManager not defined");
    
    fFuncSigTheta = new TF1("funcSigTheta", this, &TADItrackDiffusion::SigmaTheta, 0, 500, 5, "TADItrackDiffusion", "SigmaTheta");
 }
@@ -33,54 +36,6 @@ TADItrackDiffusion::TADItrackDiffusion()
 TADItrackDiffusion::~TADItrackDiffusion()
 {
    delete fFuncSigTheta;
-}
-
-//_____________________________________________________________________________
-//
-// List of materials parameters
-//_____________________________________________________________________________
-//
-void TADItrackDiffusion::SetMaterials()
-{
-   TString name;
-   MaterialParameter_t  materialParameter;
-   
-   name = "Air";
-   materialParameter.RadiationLength = 36.2;
-   materialParameter.Density = 0.00129;
-   fListMaterials[name] = materialParameter;
-   
-   name = "Si";
-   materialParameter.RadiationLength = 21.82;
-   materialParameter.Density = 2.33;
-   fListMaterials[name] = materialParameter;
-   
-   name = "Sc.";
-   materialParameter.RadiationLength = 43.8;
-   materialParameter.Density = 1.032;
-   fListMaterials[name] = materialParameter;
-   
-   name = "H2O";
-   materialParameter.RadiationLength = 36.08;
-   materialParameter.Density = 1;
-   fListMaterials[name] = materialParameter;
-   
-   name = "Water";
-   materialParameter.RadiationLength = 36.08;
-   materialParameter.Density = 1;
-   fListMaterials[name] = materialParameter;
-   
-   name = "PMMA";
-   materialParameter.RadiationLength = 40.26;
-   materialParameter.Density = 0.95;
-   fListMaterials[name] = materialParameter;
-   
-   name = "Ti";
-   materialParameter.RadiationLength = 16.17;
-   materialParameter.Density = 4.506;
-   fListMaterials[name] = materialParameter;
-   
-   return;
 }
 
 //_____________________________________________________________________________
@@ -108,14 +63,11 @@ Float_t TADItrackDiffusion::WEPLCalc(const TString& mat, Float_t thickness)
       factor = 1.;
    } else if (material == "TI"){
    	  factor = 3.136600294;
-  	} else if (material == "SC."){
-   	  factor = 1.017862901;
-   } else Warning("WEPLCalc()","Material is not in the list.... Candidates: Air, Si, 12C, PMMA, H2O, Ti, Sc. .");
+   } else Warning("WEPLCalc()","Material is not in the list.... Candidates: Air, Si, 12C, PMMA, H2O, Ti");
    
    waterEq = thickness * factor;
 
    return waterEq;
-   
 }
 
 //_____________________________________________________________________________
@@ -201,4 +153,26 @@ Float_t TADItrackDiffusion::SigmaThetaCalc(Float_t energy, TString mat, Float_t 
    fFuncSigTheta->SetParameter(4, rho);
    
    return  fFuncSigTheta->Eval(x);
+}
+
+// --------------------------------------------------------------------------------------
+Float_t TADItrackDiffusion::GetRadLength(TString name)
+{
+   TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
+   if (mat == 0x0) {
+      Warning("GetRadLength()", "Unknown material %s", name.Data());
+      return -1;
+   } else
+      return mat->GetRadLen();
+}
+
+// --------------------------------------------------------------------------------------
+Float_t TADItrackDiffusion::GetDensity(TString name)
+{
+   TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
+   if (mat == 0x0) {
+      Warning("GetDensity()", "Unknown material %s", name.Data());
+      return -1;
+   } else
+      return mat->GetDensity();
 }

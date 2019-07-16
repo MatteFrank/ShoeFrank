@@ -14,8 +14,6 @@
 #include "TString.h"
 #include "TF1.h"
 
-#include <map>
-
 #include "TAGpara.hxx"
 
 class TADItrackDiffusion : public TAGpara {
@@ -32,11 +30,8 @@ public:
    Float_t  BetaCalc(Float_t energy);
    Float_t  WEPLCalc(const TString& material, Float_t thickness);
 
-   Float_t  GetRadLength(TString name) { return fListMaterials[name].RadiationLength;   }
-   Float_t  GetDensity(TString name)   { return fListMaterials[name].Density;           }
-   
-private:
-   void SetMaterials();
+   Float_t  GetRadLength(TString name); 
+   Float_t  GetDensity(TString name);
    
 private:
    struct MaterialParameter_t {
@@ -49,8 +44,6 @@ private:
    Float_t        fPfactor;
    
    TF1*           fFuncSigTheta;
-   
-   map<TString, MaterialParameter_t> fListMaterials;  //!
    
    ClassDef(TADItrackDiffusion,0)
 };
