@@ -48,10 +48,7 @@ TAVTactBaseNtuMC::TAVTactBaseNtuMC(const char* name,  TAGparaDsc* pGeoMap, EVENT
    fpGeoMap(pGeoMap),
 	fpEvtStr(evStr),
 	fNoisyPixelsN(0)
-{
-
-   CreateDigitizer();
-   
+{   
 	fpHisPoisson = (TH1F*)gDirectory->FindObject("vtPoisson");
 	if (fpHisPoisson == 0x0) {
 	   
