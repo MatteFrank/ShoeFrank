@@ -2,6 +2,7 @@
 #include "TMath.h"
 
 #include "FootField.hxx"
+#include "TAGgeoTrafo.hxx"
 
 #include "TADItrackPropagator.hxx"
 
@@ -16,7 +17,6 @@
 ClassImp(TADItrackPropagator);
 
 const  Double_t TADItrackPropagator::fgkConvFactor = 0.299792458;
-const  Double_t TADItrackPropagator::fgkMassFactor = 938.3;
 
 //______________________________________________________________________________
 TADItrackPropagator::TADItrackPropagator(FootField* field)
@@ -51,9 +51,10 @@ Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, 
    
    // new momentum
    // p = gamma*mv = gamma*mc^2*(beta)/c
+   Double_t mass = TAGgeoTrafo::GetMassFactorMeV();
    TVector3 beta  = fDerivative*(1./TMath::Ccgs());
    Double_t gamma = 1./TMath::Sqrt(1-beta.Mag2());
-   pOut = gamma*fA*fgkMassFactor*beta;
+   pOut = gamma*fA*mass*beta;
    
    return kTRUE;
 }
