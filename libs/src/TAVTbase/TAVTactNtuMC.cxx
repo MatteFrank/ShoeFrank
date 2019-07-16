@@ -11,6 +11,7 @@
 #include "TDirectory.h"
 
 
+#include "TAMCntuHit.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
 
@@ -32,22 +33,32 @@ using namespace std;
 
 ClassImp(TAVTactNtuMC);
 
-
-
-
 //------------------------------------------+-----------------------------------
 //
 TAVTactNtuMC::TAVTactNtuMC(const char* name, TAGdataDsc* pNtuRaw,  TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
  : TAVTactBaseNtuMC(name, pGeoMap, evStr),
+   fpNtuMC(0x0),
    fpNtuRaw(pNtuRaw)
 {
 	AddDataOut(pNtuRaw, "TAVTntuRaw");
 	AddPara(pGeoMap, "TAVTparGeo");
 
    CreateDigitizer();
-   
 }
 
+//------------------------------------------+-----------------------------------
+//
+TAVTactNtuMC::TAVTactNtuMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
+: TAVTactBaseNtuMC(name, pGeoMap),
+   fpNtuMC(pNtuMC),
+   fpNtuRaw(pNtuRaw)
+{
+   AddDataIn(pNtuMC, "TAMCntuHit");
+   AddDataOut(pNtuRaw, "TAVTntuRaw");
+   AddPara(pGeoMap, "TAVTparGeo");
+   
+   CreateDigitizer();
+}
 
 //------------------------------------------+-----------------------------------
 //! Create digitizer
@@ -59,67 +70,20 @@ void TAVTactNtuMC::CreateDigitizer()
       ComputeNoiseLevel();
 }
 
-
 //------------------------------------------+-----------------------------------
 //! Action.
 bool TAVTactNtuMC::Action()
 {
-   if(FootDebugLevel(1))
-	  Info("TAVTactNtuMC::Action()", "start  -->  VTn : %d  ", fpEvtStr->VTXn);
-
-	TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();     
 	TAVTntuRaw* pNtuRaw = (TAVTntuRaw*) fpNtuRaw->Object();
 	pNtuRaw->Clear();
 
 	static Int_t storedEvents = 0;
 	std::vector<RawMcHit_t> storedEvtInfo;
-	RawMcHit_t mcHit;
 
-	// Loop over all MC hits
-	for (Int_t i = 0; i < fpEvtStr->VTXn; i++) {
-      if(FootDebugLevel(1))    cout<< endl << "FLUKA id =   " << fpEvtStr->TRfx[i] << "  "<< fpEvtStr->TRfy[i] << "  "<< fpEvtStr->TRfz[i] << endl;
-
-		// !!  in ntuple, the row and col start from 0  !!!
-		Int_t myTrow, myTcol;
-		myTrow = fpEvtStr->VTXirow[i];
-		myTcol = fpEvtStr->VTXicol[i];
-		Int_t sensorId = pGeoMap->GetSensorID( fpEvtStr->VTXilay[i], myTcol, myTrow );
-	   
-		// used for pileup ...
-		if (fgPileup && storedEvents <= fgPileupEventsN) {
-			mcHit.id  = sensorId;
-			mcHit.de  = fpEvtStr->VTXde[i];
-			mcHit.x   = fpEvtStr->VTXxin[i];
-			mcHit.y   = fpEvtStr->VTXyin[i];
-			mcHit.zi  = fpEvtStr->VTXzin[i];
-			mcHit.zo  = fpEvtStr->VTXzout[i];
-			storedEvtInfo.push_back(mcHit);
-		}
-
-		// Digitizing
-//      don't change anything ?
-//      Int_t genPartID = fpEvtStr->VTXid[i] - 1;
-//      if (fpEvtStr->TRcha[genPartID] < 1) continue;
-      
-      if (ValidHistogram()) {
-         fpHisDeTot->Fill(fpEvtStr->VTXde[i]*TAGgeoTrafo::GevToKev());
-         fpHisDeSensor[sensorId]->Fill(fpEvtStr->VTXde[i]*TAGgeoTrafo::GevToKev());
-      }
-      
-      TVector3 posIn(fpEvtStr->VTXxin[i], fpEvtStr->VTXyin[i], fpEvtStr->VTXzin[i]);
-      TVector3 posOut(fpEvtStr->VTXxout[i], fpEvtStr->VTXyout[i], fpEvtStr->VTXzout[i]);
-      posIn = pGeoMap->Detector2Sensor(sensorId, posIn);
-      posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
-      
-      if (!fDigitizer->Process(fpEvtStr->VTXde[i], posIn[0], posIn[1], posIn[2], posOut[2])) continue;
-		FillPixels(sensorId, i);
-		
-		if (ValidHistogram()) {
-         Int_t pixelsN = fDigitizer->GetMap().size();
-         fpHisPixel[sensorId]->Fill(pixelsN);
-         fpHisPixelTot->Fill(pixelsN);
-		}
-   }
+   if (fpEvtStr == 0x0)
+      Digitize(storedEvtInfo, storedEvents);
+   else
+      DigitizeOld(storedEvtInfo, storedEvents);
 
    // Pileup
    if (fgPileup && storedEvents <= fgPileupEventsN) {
@@ -129,7 +93,6 @@ bool TAVTactNtuMC::Action()
 	
    if (fgPileup && storedEvents >= fgPileupEventsN)
       GeneratePileup();
-
 
    if(FootDebugLevel(1)) {
       std::vector<RawMcHit_t> mcInfo;
@@ -146,9 +109,107 @@ bool TAVTactNtuMC::Action()
    }
    
    fpNtuRaw->SetBit(kValid);
+   
    return kTRUE;
 }
 
+//------------------------------------------+-----------------------------------
+void TAVTactNtuMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
+{
+   TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
+   
+   RawMcHit_t mcHit;
+   
+   if(FootDebugLevel(1))
+   Info("TAVTactNtuMC::Action()", "start  -->  VTn : %d  ", fpEvtStr->VTXn);
+   
+   // Loop over all MC hits
+   for (Int_t i = 0; i < fpEvtStr->VTXn; i++) {
+      if(FootDebugLevel(1))    cout<< endl << "FLUKA id =   " << fpEvtStr->TRfx[i] << "  "<< fpEvtStr->TRfy[i] << "  "<< fpEvtStr->TRfz[i] << endl;
+      
+      // !!  in ntuple, the row and col start from 0  !!!
+      Int_t myTrow, myTcol;
+      myTrow = fpEvtStr->VTXirow[i];
+      myTcol = fpEvtStr->VTXicol[i];
+      Int_t sensorId = pGeoMap->GetSensorID( fpEvtStr->VTXilay[i], myTcol, myTrow );
+      
+      // used for pileup ...
+      if (fgPileup && storedEvents <= fgPileupEventsN) {
+         mcHit.id  = sensorId;
+         mcHit.de  = fpEvtStr->VTXde[i];
+         mcHit.x   = fpEvtStr->VTXxin[i];
+         mcHit.y   = fpEvtStr->VTXyin[i];
+         mcHit.zi  = fpEvtStr->VTXzin[i];
+         mcHit.zo  = fpEvtStr->VTXzout[i];
+         storedEvtInfo.push_back(mcHit);
+      }
+      
+      // Digitizing
+      //      don't change anything ?
+      //      Int_t genPartID = fpEvtStr->VTXid[i] - 1;
+      //      if (fpEvtStr->TRcha[genPartID] < 1) continue;
+      TVector3 posIn(fpEvtStr->VTXxin[i], fpEvtStr->VTXyin[i], fpEvtStr->VTXzin[i]);
+      TVector3 posOut(fpEvtStr->VTXxout[i], fpEvtStr->VTXyout[i], fpEvtStr->VTXzout[i]);
+      posIn = pGeoMap->Detector2Sensor(sensorId, posIn);
+      posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
+      
+      DigitizeHit(sensorId, fpEvtStr->VTXde[i], posIn, posOut, i);
+   }
+}
+
+//------------------------------------------+-----------------------------------
+void TAVTactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
+{
+   TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
+   TAMCntuHit* pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
+
+   RawMcHit_t mcHit;
+   
+   if(FootDebugLevel(1))
+      Info("TAVTactNtuMC::Action()", "start  -->  VTn : %d  ", pNtuMC->GetHitsN());
+   
+   // Loop over all MC hits
+   for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
+      TAMChit* hit = pNtuMC->GetHit(i);
+      
+      TVector3 posIn(hit->GetInPosition());
+      TVector3 posOut(hit->GetOutPosition());
+      Int_t sensorId = hit->GetLayer(); // sensorId
+      Float_t de     = hit->GetDeltaE();
+      
+      // used for pileup ...
+      if (fgPileup && storedEvents <= fgPileupEventsN) {
+         mcHit.id  = sensorId;
+         mcHit.de  = de;
+         mcHit.x   = posIn.X();
+         mcHit.y   = posIn.Y();
+         mcHit.zi  = posIn.Z();
+         mcHit.zo  = posOut.Z();
+         storedEvtInfo.push_back(mcHit);
+      }
+      
+      // Digitizing
+      posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);
+      posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
+      
+      DigitizeHit(sensorId, de, posIn, posOut, i);
+   }
+}
+//------------------------------------------+-----------------------------------
+void TAVTactNtuMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx)
+{
+   if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2])) return;
+   FillPixels(sensorId, idx);
+   
+   if (ValidHistogram()) {
+      fpHisDeTot->Fill(de*TAGgeoTrafo::GevToKev());
+      fpHisDeSensor[sensorId]->Fill(de*TAGgeoTrafo::GevToKev());
+      
+      Int_t pixelsN = fDigitizer->GetMap().size();
+      fpHisPixel[sensorId]->Fill(pixelsN);
+      fpHisPixelTot->Fill(pixelsN);
+   }
+}
 
 //------------------------------------------+-----------------------------------
 void TAVTactNtuMC::FillPixels(Int_t sensorId, Int_t hitId )
