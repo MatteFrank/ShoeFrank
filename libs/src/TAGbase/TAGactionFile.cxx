@@ -35,7 +35,7 @@ TAGactionFile::~TAGactionFile()
 //------------------------------------------+-----------------------------------
 //! Open file.
 
-Int_t TAGactionFile::Open(const TString& name, Option_t* option)
+Int_t TAGactionFile::Open(const TString& name, Option_t* option, const TString treeName)
 {
   MayNotUse("Open");
   return -1;
