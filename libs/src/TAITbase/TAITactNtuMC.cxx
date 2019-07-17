@@ -81,9 +81,9 @@ bool TAITactNtuMC::Action()
    std::vector<RawMcHit_t> storedEvtInfo;
    
    if (fpEvtStr == 0x0)
-   Digitize(storedEvtInfo, storedEvents);
+      Digitize(storedEvtInfo, storedEvents);
    else
-   DigitizeOld(storedEvtInfo, storedEvents);
+      DigitizeOld(storedEvtInfo, storedEvents);
    
    // Pileup
    if (fgPileup && storedEvents <= fgPileupEventsN) {
