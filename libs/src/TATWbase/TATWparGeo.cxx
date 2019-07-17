@@ -406,34 +406,13 @@ string TATWparGeo::PrintRotations()
 		    fCenter.Z() + GetBarPosition(i,j).Z());
 
 	if(vTilt.at(i).at(j).Z()!=0){  
-	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-	     << setw(10) << setfill(' ') << std::right << "300."
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << fCenter.Y()-pos.Y()
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setfill(' ') << std::left << Form("twZ_%d%02d",i,j) 
-	     << endl;
-	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-	     << setw(10) << setfill(' ') << std::right << "300."
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << vTilt.at(i).at(j).Z()
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setfill(' ') << std::left << Form("twZ_%d%02d",i,j) 
-	     << endl;
-	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-	     << setw(10) << setfill(' ') << std::right << "300."
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << fCenter.Y()+pos.Y()
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setfill(' ') << std::left << Form("twZ_%d%02d",i,j) 
-	     << endl;
-
+	  ss << PrintCard("ROT-DEFI", "300.", "", "", "", Form("%f",fCenter.Y()-pos.Y()),
+			  "", Form("twZ_%d%02d",i,j)) << endl;
+	  ss << PrintCard("ROT-DEFI", "300.", "", "", "", Form("%f",vTilt.at(i).at(j).Z()),
+			  "", Form("twZ_%d%02d",i,j)) << endl;
+	  ss << PrintCard("ROT-DEFI", "300.", "", "", Form("%f",fCenter.Y()+pos.Y()), "", 
+			  "", Form("twZ_%d%02d",i,j)) << endl;
+	
 	}
 	
       }
@@ -468,39 +447,10 @@ string TATWparGeo::PrintBodies()
       cout << "TW rotation around y found: ATTENTION not implemented in fluka" << endl;
     if(fAngle.Z()!=0)
       cout << "TW rotation around z found: ATTENTION not implemented in fluka" << endl;
-    //   ss << "$start_transform " << "twZ" << endl;
         
     for (int i=0; i<GetNLayers(); i++){
       for (int j=0; j<GetNBars(); j++){
 	
-  // TGeoHMatrix gm; //global matrix
-  // gm = *node->GetMatrix();
-  // Double_t *tr  = gm.GetTranslation();
-  // Double_t *rot = gm.GetRotationMatrix();
-	
-	// Double_t *mat = TATWparGeo::GetTransfo(i,j)->GetRotationMatrix();
-	// TMatrixD p(3,3);
-	// TArrayD a(9);
-	// if(j==0&&i==0){
-	//   for(int m=0; m<9; m++){
-	    // a[m]=mat[m];
-	    // cout<<i<<"  "<<rot[m]<<endl;
-	    // mat[0]=rot->XX();
-	    // mat[1]=rot->XY();
-	    // mat[2]=rot->XZ();
-	    // mat[3]=rot->YX();
-	    // mat[4]=rot->YY();
-	    // mat[5]=rot->YZ();
-	    // mat[6]=rot->ZX();
-	    // mat[7]=rot->ZY();
-	    // mat[8]=rot->ZZ();
-	//   }
-	// }
-	// p.SetMatrixArray(a.GetArray());
-	// cout<<rot->GetXPhi()<<" "<<rot->GetXPsi()<<" "<<rot->GetXTheta()<<endl;
-	// TRotation rot(p);
-
-
  	if (vTilt.at(i).at(j).X()!=0)
 	  cout << "TW bar rotation around x found: ATTENTION not implemented in fluka" << endl;
  	if (vTilt.at(i).at(j).Y()!=0)
@@ -547,10 +497,8 @@ string TATWparGeo::PrintRegions()
 
     ss << "* ***Scintillator regions" << endl;
 
-    for(int i=0; i<vRegion.size(); i++) {
-      ss << setw(13) << setfill( ' ' ) << std::left << vRegion.at(i)
-    	 << "5 " << vBody.at(i) <<endl;
-    }    
+    for(int i=0; i<vRegion.size(); i++) 
+      ss << setw(13) << setfill( ' ' )  << std::left << vRegion.at(i) << "5 " << vBody.at(i) << endl;
     
   }
   return ss.str();
@@ -566,7 +514,7 @@ string TATWparGeo::PrintSubtractBodiesFromAir() {
 
     for (int i=0; i<vBody.size(); i++) {
       ss << " -" << vBody.at(i);
-      if ((i+1)%10==0) ss << endl;
+      if ((i+1)%10==0 && (i+1)<(GetNLayers()*GetNBars())) ss << endl;
     }
     ss << endl;
 
@@ -593,14 +541,10 @@ string TATWparGeo::PrintAssignMaterial()
 
     if (vRegion.size()==0 )
       cout << "Error: TW regions vector not correctly filled!"<<endl;
+
+    ss << PrintCard("ASSIGNMA", mat, vRegion.at(0), vRegion.back(),
+		    "1.", Form("%d",magnetic), "", "") << endl;
     
-    ss << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-       << setw(10) << setfill(' ') << std::right << mat
-       << setw(10) << setfill(' ') << std::right << vRegion.at(0)
-       << setw(10) << setfill(' ') << std::right << vRegion.back()
-       << setw(10) << setfill(' ') << std::right << "1."
-       << setw(10) << setfill(' ') << std::right << magnetic
-       << endl;
   }
 
   return ss.str();
@@ -614,19 +558,18 @@ string TATWparGeo::PrintAssignMaterial()
 //_____________________________________________________________________________
 string TATWparGeo::PrintParameters() {
 
-  stringstream outstr;
-  outstr << setiosflags(ios::fixed) << setprecision(5);
+  stringstream ss;
+  ss << setiosflags(ios::fixed) << setprecision(5);
 
-  outstr << "c     SCINTILLATOR PARAMETERS " << endl;
-  outstr << endl;
+  ss << "c     SCINTILLATOR PARAMETERS " << endl;
+  ss << endl;
   
   string nstrip = "nstripSCN";
-  outstr << "      integer " << nstrip << endl;
-  outstr << "      parameter(" << nstrip << " = " << GetNBars() << ")" << endl;
-  // outstr << typeid(m_nBar).name()<< endl;
-  outstr << endl;  
+  ss << "      integer " << nstrip << endl;
+  ss << "      parameter(" << nstrip << " = " << GetNBars() << ")" << endl;
+  ss << endl;  
 
-  return outstr.str();
+  return ss.str();
 
 }
 
