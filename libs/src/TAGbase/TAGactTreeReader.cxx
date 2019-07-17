@@ -69,7 +69,7 @@ Int_t TAGactTreeReader::NEvents()
 //------------------------------------------+-----------------------------------
 //! Open root file.
 
-Int_t TAGactTreeReader::Open(const TString& name, Option_t* option)
+Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TString treeName)
 {
   TDirectory* p_cwd = gDirectory;
   
@@ -87,7 +87,7 @@ Int_t TAGactTreeReader::Open(const TString& name, Option_t* option)
     return 1;
   }
 
-  fpTree = (TTree*) fpFile->Get("tree");
+  fpTree = (TTree*) fpFile->Get(treeName.Data());
   if (!fpTree) {
     Error("Open()", "No object named 'tree' found");
     Close();
