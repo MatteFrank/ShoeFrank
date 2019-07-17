@@ -17,7 +17,7 @@
 
 #include "TAMSDparGeo.hxx"
 #include "TAGroot.hxx"
-
+#include "TAGmaterials.hxx"
 
 const TString TAMSDparGeo::fgkBaseName      = "MSD";
 const TString TAMSDparGeo::fgkDefParaName   = "msdGeo";
@@ -39,11 +39,23 @@ TAMSDparGeo::~TAMSDparGeo()
 
 
 //_____________________________________________________________________________
-//void TAMSDparGeo::DefineMaterial()
-//{
-//   // material for strip, same as M28 ?
-//   TAVTbaseParGeo::DefineMaterial();
-//}
+void TAMSDparGeo::DefineMaterial()
+{
+    TAVTbaseParGeo::DefineMaterial();
+
+    // Pixel material
+    TGeoMaterial* pixMat = TAGmaterials::Instance()->CreateMaterial(fPixMat, fPixMatDensity);
+    if(FootDebugLevel(1)) {
+        printf("pixels material:\n");
+        pixMat->Print();
+    }
+    // Metal material
+    TGeoMaterial* metMat = TAGmaterials::Instance()->CreateMaterial(fMetalMat, fMetalDensity);
+    if(FootDebugLevel(1)) {
+        printf("metal material:\n");
+        metMat->Print();
+    }
+}
 
 //_____________________________________________________________________________
 Bool_t TAMSDparGeo::FromFile(const TString& name)
@@ -203,7 +215,6 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
       fSensorParameter[p].Tilt[2] = fSensorParameter[p].Tilt[2]*TMath::DegToRad();
       fSensorParameter[p].TiltW   = fSensorParameter[p].TiltW*TMath::DegToRad();
    }
-
    // Close file
    Close();
 

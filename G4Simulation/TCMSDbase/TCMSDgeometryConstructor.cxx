@@ -27,6 +27,14 @@ TCMSDgeometryConstructor::~TCMSDgeometryConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void TCMSDgeometryConstructor::DefineMaterial()
+{
+    TString pixMat = fpParGeo->GetPixMaterial();
+    G4double pixRho = fpParGeo->GetPixMatDensity();
+    fpMaterials->CreateG4Material(pixMat,pixRho);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCMSDgeometryConstructor::DefineSensitive()
 {
    Info("DefineSensitive()", "Define sensitive for Multi Strip Detector");
@@ -47,6 +55,8 @@ void TCMSDgeometryConstructor::DefineMaxMinDimension()
    TVector3 size = fpParGeo->GetTotalSize();
    Int_t nSens   = fpParGeo->GetNSensors();
 
+    printf("MSD %d \t %.3e \t %.3e \t %.3e \n",nSens,size[0],size[1],size[2]);
+
    TVector3 minPosition( 10e10,  10e10,  10e10);
    TVector3 maxPosition(-10e10, -10e10, -10e10);
    TVector3 posAct(0, 0, 0);
@@ -64,6 +74,9 @@ void TCMSDgeometryConstructor::DefineMaxMinDimension()
    minPosition[1] -= size[1]/2.;  maxPosition[1] += size[1]/2.;
    minPosition[2] -= size[2]/2.;  maxPosition[2] += size[2]/2.;
    
+   printf("Min \t %.3e \t %.3e \t %.3e \n",minPosition[0],minPosition[1],minPosition[2]);
+   printf("Max \t %.3e \t %.3e \t %.3e \n",maxPosition[0],maxPosition[1],maxPosition[2]);
+
    fMinPosition = minPosition*cm;
    fMaxPosition = maxPosition*cm;
 }

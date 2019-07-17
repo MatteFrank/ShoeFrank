@@ -27,6 +27,7 @@ private:
 private:
    void DefineSensitive();
    void DefineMaxMinDimension();
+   void DefineMaterial();
 
 };
 
