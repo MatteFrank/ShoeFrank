@@ -29,6 +29,16 @@ inline TList* TAGroot::ListOfParaDsc() const
 }
 
 /*------------------------------------------+---------------------------------*/
+//! Set campaign name.
+
+inline void TAGroot::SetCampaignName(TString s_cam)
+{
+   fRunInfo.SetCampaignName(s_cam);
+
+   return;
+}
+
+/*------------------------------------------+---------------------------------*/
 //! Set campaign number.
 
 inline void TAGroot::SetCampaignNumber(Short_t i_cam)
@@ -55,6 +65,14 @@ inline void TAGroot::SetEventNumber(Int_t i_evt)
 {
   fEventId.SetEventNumber(i_evt);
   return;
+}
+
+/*------------------------------------------+---------------------------------*/
+//! Returns current campaign name.
+
+inline const Char_t* TAGroot::CurrentCampaignName() const
+{
+   return fRunInfo.CampaignName();
 }
 
 /*------------------------------------------+---------------------------------*/

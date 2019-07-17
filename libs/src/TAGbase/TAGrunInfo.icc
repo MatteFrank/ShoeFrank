@@ -33,7 +33,7 @@ inline void TAGrunInfo::SetCampaignNumber(Short_t i_cam)
 //------------------------------------------+-----------------------------------
 //! Set campaign name.
 
-inline void TAGrunInfo::SetCampaignNumber(TString s_cam)
+inline void TAGrunInfo::SetCampaignName(TString s_cam)
 {
    fsCam = s_cam;
    return;

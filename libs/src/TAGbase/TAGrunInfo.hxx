@@ -16,7 +16,7 @@ class TAGrunInfo : public TAGobject {
                     TAGrunInfo(Short_t i_cam, Short_t i_run);
     virtual         ~TAGrunInfo();
 
-    void            SetCampaignNumber(TString s_cam);
+    void            SetCampaignName(TString s_cam);
     void            SetCampaignNumber(Short_t i_cam);
     void            SetRunNumber(Short_t i_run);
 
