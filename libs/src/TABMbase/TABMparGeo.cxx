@@ -856,7 +856,6 @@ string TABMparGeo::PrintSubtractBodiesFromAir() {
   if(GlobalPar::GetPar()->IncludeBM()){
 
     ss << "-(BmnShiOu -BmnShiIn) -(BmnShiIn -BmnMyl0 +BmnMyl3)" << endl;
-    ss << endl;
 
   }
   
