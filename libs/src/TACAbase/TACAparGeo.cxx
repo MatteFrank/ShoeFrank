@@ -307,7 +307,6 @@ string TACAparGeo::PrintBodies(){
 	      <<  fCenter.Y() + GetCrystalPosition(iCal).Y() + GetCrystalSize().Y()/2.<< " "
 	      <<  fCenter.Z() + GetCrystalPosition(iCal).Z() - GetCrystalSize().Z()/2.<< " "
 	      <<  fCenter.Z() + GetCrystalPosition(iCal).Z() + GetCrystalSize().Z()/2.<< endl;
-       //controllare la width di crystalsize in TACAdetector.map
      }
      
    }
@@ -329,8 +328,6 @@ string TACAparGeo::PrintRegions(){
     ss << "* ***Vertex regions" << endl;
 
     for(int i=0; i<vRegion.size(); i++) 
-      //   ss << setw(13) << setfill( ' ' ) << std::left << vRegion.at(i)
-      // << "5 " <<  vRegion.at(i) <<endl;*/
       ss << setw(13) << setfill( ' ' )  << std::left << vRegion.at(i) << "5 " << vBody.at(i) << endl;
   
   }
