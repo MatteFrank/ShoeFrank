@@ -177,7 +177,7 @@ void  TAVTactBaseNtuMC::GeneratePileup()
 		  RawMcHit_t hit = mcInfo[j];
 		  
 		  if (!fDigitizer->Process(hit.de, hit.x, hit.y, hit.zi, hit.zo)) continue;
-		  FillPixels( hit.id, -1);
+		  FillPixels( hit.id, -1, -1);
 	   }
 	}
 }
