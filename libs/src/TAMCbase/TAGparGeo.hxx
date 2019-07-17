@@ -104,7 +104,8 @@ public:
 
   //blackbody and air
   string PrintStandardBodies();
-  string PrintStandardRegions();
+  string PrintStandardRegions1();
+  string PrintStandardRegions2();
   string PrintStandardAssignMaterial();
 
   //target
@@ -118,8 +119,6 @@ public:
   //physics cards
   string PrintPhysics();
   
-  string PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
-		   TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM);
    
 public:
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
