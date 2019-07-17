@@ -183,27 +183,27 @@ string TAVTparGeo::PrintRotations()
 	//rot around x
 	if(fSensorParameter[iSens].Tilt[0]!=0){
 	  ss << PrintCard("ROT-DEFI", "100.", "",
-			  Form("%d",fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
+			  Form("%f",fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
 			  "", "", "", Form("vt_%d",iSens) ) << endl;
 	}
 	//rot around y      
 	if(fSensorParameter[iSens].Tilt[1]!=0){
 	  ss << PrintCard("ROT-DEFI", "200.", "",
-			  Form("%d",fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
+			  Form("%f",fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
 			  "", "", "", Form("vt_%d",iSens) ) << endl;
 	}
 	//rot around z
 	if(fSensorParameter[iSens].Tilt[2]!=0){
 	  ss << PrintCard("ROT-DEFI", "300.", "",
-			  Form("%d",fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
+			  Form("%f",fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
 			  "", "", "", Form("vt_%d",iSens) ) << endl;
 	}
 	
 	//put back the sensor into its position
 	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",-fCenter.X()+GetSensorPosition(iSens).X()),
-			Form("%f",-fCenter.Y()+GetSensorPosition(iSens).Y()),
-			Form("%f",-fCenter.Z()+GetSensorPosition(iSens).Z()),
+			Form("%f",fCenter.X()+GetSensorPosition(iSens).X()),
+			Form("%f",fCenter.Y()+GetSensorPosition(iSens).Y()),
+			Form("%f",fCenter.Z()+GetSensorPosition(iSens).Z()),
 			Form("vt_%d",iSens) ) << endl;
       }
 
