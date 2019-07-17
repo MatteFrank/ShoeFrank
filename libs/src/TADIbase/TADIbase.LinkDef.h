@@ -11,5 +11,6 @@
 
 #pragma link C++ class TADItrackPropagator;
 #pragma link C++ class TADIeveTrackPropagator;
+#pragma link C++ class TADItrackDiffusion;
 
 #endif

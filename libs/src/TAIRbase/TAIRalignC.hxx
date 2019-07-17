@@ -20,7 +20,7 @@
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGactTreeReader.hxx"
-#include "TAIRparDiff.hxx"
+#include "TADItrackDiffusion.hxx"
 #include "TAIRntuAlignC.hxx"
 
 class TAVTbaseCluster;
@@ -82,7 +82,7 @@ private:
    TAGparaDsc*          fpConfigMsd;	 // configuration dsc
    TAGparaDsc*          fpGeoMapMsd;    // geometry para dsc
    TAGparaDsc*          fpGeoMapG;      // geometry para dsc
-   TAIRparDiff*         fpDiff;		    // diffusion parameters
+   TADItrackDiffusion*  fpDiff;		    // diffusion parameters
    TAGactTreeReader*    fInfile;        // action for reading cluster
    TAIRntuAlignC*       fAlign;         // pointer to align para
    

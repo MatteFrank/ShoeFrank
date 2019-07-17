@@ -41,7 +41,7 @@ class TAGactTreeReader : public TAGactionFile {
 
     void            SetupBranch(TAGdataDsc* p_data, const char* branch);
 
-    virtual Int_t   Open(const TString& name, Option_t* option="READ");
+    virtual Int_t   Open(const TString& name, Option_t* option="READ", const TString treeName="tree");
     virtual void    Close();
 
     virtual Bool_t  IsOpen() const;

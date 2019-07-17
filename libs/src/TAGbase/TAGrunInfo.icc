@@ -9,7 +9,8 @@
 
 inline TAGrunInfo::TAGrunInfo()
   : fiCam(-1),
-    fiRun(-1)
+    fiRun(-1),
+    fsCam("")
 {}
 
 //------------------------------------------+-----------------------------------
@@ -30,6 +31,15 @@ inline void TAGrunInfo::SetCampaignNumber(Short_t i_cam)
 }
 
 //------------------------------------------+-----------------------------------
+//! Set campaign name.
+
+inline void TAGrunInfo::SetCampaignName(TString s_cam)
+{
+   fsCam = s_cam;
+   return;
+}
+
+//------------------------------------------+-----------------------------------
 //! Set run number.
 
 inline void TAGrunInfo::SetRunNumber(Short_t i_run)
@@ -44,6 +54,14 @@ inline void TAGrunInfo::SetRunNumber(Short_t i_run)
 inline Short_t TAGrunInfo::CampaignNumber() const
 {
   return fiCam;
+}
+
+//------------------------------------------+-----------------------------------
+//! Returns campaign number.
+
+inline const Char_t* TAGrunInfo::CampaignName() const
+{
+   return fsCam.Data();
 }
 
 //------------------------------------------+-----------------------------------

@@ -102,7 +102,7 @@ protected:
    
    virtual void    FillNoise(Int_t /*sensorId*/)                    { return; }
    virtual void    CreateDigitizer()                                { return; }
-   virtual void    FillPixels( Int_t /*sensorId*/, Int_t /*mcId*/ ) { return; }
+   virtual void    FillPixels( Int_t /*sensorId*/, Int_t /*mcId*/, Int_t /*trackId*/ ) { return; }
    
 
 protected:

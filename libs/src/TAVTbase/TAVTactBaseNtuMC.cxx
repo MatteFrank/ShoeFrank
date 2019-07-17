@@ -48,10 +48,7 @@ TAVTactBaseNtuMC::TAVTactBaseNtuMC(const char* name,  TAGparaDsc* pGeoMap, EVENT
    fpGeoMap(pGeoMap),
 	fpEvtStr(evStr),
 	fNoisyPixelsN(0)
-{
-
-   CreateDigitizer();
-   
+{   
 	fpHisPoisson = (TH1F*)gDirectory->FindObject("vtPoisson");
 	if (fpHisPoisson == 0x0) {
 	   
@@ -180,7 +177,7 @@ void  TAVTactBaseNtuMC::GeneratePileup()
 		  RawMcHit_t hit = mcInfo[j];
 		  
 		  if (!fDigitizer->Process(hit.de, hit.x, hit.y, hit.zi, hit.zo)) continue;
-		  FillPixels( hit.id, -1);
+		  FillPixels( hit.id, -1, -1);
 	   }
 	}
 }

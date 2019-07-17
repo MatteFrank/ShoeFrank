@@ -7,6 +7,8 @@
  */
 /*------------------------------------------+---------------------------------*/
 
+#include "TVector3.h"
+
 #include "Evento.hxx"
 
 #include "TAGaction.hxx"
@@ -22,13 +24,13 @@
 class TAVTntuRaw;
 class TAVTparGeo;
 
-class TAVTactNtuMC : public TAVTactBaseNtuMC {
+using namespace std;
 
-// class TAVTbaseDigitizerg;
-// class TAVTntuHit;
+class TAVTactNtuMC : public TAVTactBaseNtuMC {
 
 public:
    explicit TAVTactNtuMC(const char* name=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap = 0, EVENT_STRUCT* evtStr=0);
+   explicit TAVTactNtuMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0);
    virtual ~TAVTactNtuMC() {};
    
    //! Base action 
@@ -37,17 +39,19 @@ public:
    // Fill noise over sensors
    void           FillNoise();
 
-   
 private:
-   TAGdataDsc*    fpNtuRaw;		    // output data dsc
+   TAGdataDsc*    fpNtuMC;          // input data dsc
+   TAGdataDsc*    fpNtuRaw;          // output data dsc
 
 private:
    void           FillNoise(Int_t sensorId) ;
    void           SetMCinfo(TAVTntuHit* pixel, Int_t hitId);
    void           CreateDigitizer();
-   void           FillPixels( Int_t sensorId, Int_t mcId );
-  
-   
+   void           FillPixels( Int_t sensorId, Int_t mcId, Int_t trackId);
+   void           DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackId);
+   void           DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
+   void           Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
+
    ClassDef(TAVTactNtuMC,0)
 };
 

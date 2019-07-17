@@ -24,6 +24,7 @@ set( with_dictionnaries
    TADIparGeo
    TADItrackPropagator
    TADIeveTrackPropagator
+   TADItrackDiffusion
 )
 
 set( without_dictionnaries

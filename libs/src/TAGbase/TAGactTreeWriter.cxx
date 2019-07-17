@@ -98,7 +98,7 @@ void TAGactTreeWriter::SetCompressionLevel(Int_t i_compress)
 //------------------------------------------+-----------------------------------
 //! Open root file.
 
-Int_t TAGactTreeWriter::Open(const TString& name, Option_t* option)
+Int_t TAGactTreeWriter::Open(const TString& name, Option_t* option, const TString treeName)
 {
   TDirectory* p_cwd = gDirectory;
 
@@ -116,7 +116,7 @@ Int_t TAGactTreeWriter::Open(const TString& name, Option_t* option)
 
   fpFile->SetCompressionLevel(fiCompress);
 
-  fpTree = new TTree("tree", GetTitle());
+  fpTree = new TTree(treeName.Data(), GetTitle());
 
   for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
     TAGactTreeWriterBranch* p_chan =(TAGactTreeWriterBranch*)lnk->GetObject();

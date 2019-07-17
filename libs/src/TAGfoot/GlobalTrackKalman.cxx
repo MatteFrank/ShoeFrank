@@ -16,46 +16,12 @@ GlobalTrackKalman::GlobalTrackKalman( string name, Track* track, long evNum, int
 		m_mom = *mom;
 		m_pos = *pos;
 
-		m_lenght;
-		m_pdgID;
-		m_chi2;
-		m_pVal;
+//		m_lenght;
+//		m_pdgID;
+//		m_chi2;
+//		m_pVal;
+//
+//		m_sigmaMom;
+//		m_sigmaPos;
 
-		m_sigmaMom;
-		m_sigmaPos;
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
