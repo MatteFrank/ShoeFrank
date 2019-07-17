@@ -1,6 +1,6 @@
 /*!
   \file
-  \version $Id: TAGrunInfo.cxx,v 1.2 2003/06/09 18:50:12 mueller Exp $
+  \version $Id: TAGrunInfo.cxx
   \brief   Implementation of TAGrunInfo.
 */
 
@@ -26,6 +26,7 @@ TAGrunInfo::~TAGrunInfo()
 
 void TAGrunInfo::Clear(Option_t*)
 {
+  fsCam = "";
   fiCam = -1;
   fiRun = -1;
   return;
@@ -36,7 +37,8 @@ void TAGrunInfo::Clear(Option_t*)
 
 void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
 {
-  os << "TAGrunInfo:     " 
+  os << "TAGrunInfo:     "
+     << Form("  cam: %s", fsCam.Data())
      << Form("  cam = %4d", fiCam)
      << Form("  run = %4d", fiRun)
      << endl;
