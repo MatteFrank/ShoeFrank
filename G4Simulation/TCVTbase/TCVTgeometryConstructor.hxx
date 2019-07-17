@@ -25,8 +25,8 @@ public:
    virtual G4LogicalVolume* Construct(); //method in which the physical volume is constructed
    
    TVector3 GetBoxSize()     const { return fSizeBoxVtx;  }
-   TVector3 GetMinPoistion() const { return fMinPosition; }
-   TVector3 GetMaxPoistion() const { return fMaxPosition; }
+   TVector3 GetMinPosition() const { return fMinPosition; }
+   TVector3 GetMaxPosition() const { return fMaxPosition; }
 
    const Char_t* GetEpiName() { return fEpiName.Data();}
 
@@ -74,11 +74,11 @@ protected:
    static Bool_t  fgSmearFlag;
    
 protected:
-   void DefineMaterial();
+   virtual void DefineMaterial();
    virtual void DefineMaxMinDimension();
    virtual void DefineSensitive();
    
-   void BuildSensor();
+   virtual void BuildSensor();
    void PlaceSensor();
 };
 

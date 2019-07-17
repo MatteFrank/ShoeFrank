@@ -30,7 +30,7 @@ public:
   virtual ~TAMSDparGeo();
   
   // Define materials
-  //   void        DefineMaterial();
+   void DefineMaterial();
   
   //! Add SSSD module geometry to strip detector
   TGeoVolume* AddModule(const char* basemoduleName = "SSSD", const char *name = "MSD");
