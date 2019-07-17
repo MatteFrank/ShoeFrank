@@ -1,5 +1,5 @@
 
-// Macro to read catania raw data
+// Macro to reconstruct from raw data
 // Ch. Finck, sept 11.
 
 
@@ -71,8 +71,8 @@ void FillVertex()
    vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
    vtActClus->CreateHistogram();
 
-//   vtActTrck = new TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);
-//   vtActTrck->CreateHistogram();
+   vtActTrck = new TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);
+   vtActTrck->CreateHistogram();
    
 //   outFile->SetupElementBranch(vtNtu, "vtrh.");
 //   outFile->SetupElementBranch(vtClus, "vtclus.");
