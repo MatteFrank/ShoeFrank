@@ -5,7 +5,6 @@
 #pragma link off all functions;
 
 
-#pragma link C++ class TAIRparDiff+;
 #pragma link C++ class TAIRalignC+;
 #pragma link C++ class TAIRntuAlignC+;
 
