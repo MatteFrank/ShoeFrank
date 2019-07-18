@@ -126,11 +126,7 @@ void TAITactNtuMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
    for (Int_t i = 0; i < fpEvtStr->ITRn; i++) {
       if(FootDebugLevel(1))    cout<< endl << "FLUKA id =   " << fpEvtStr->TRfx[i] << "  "<< fpEvtStr->TRfy[i] << "  "<< fpEvtStr->TRfz[i] << endl;
       
-      // !!  in ntuple, the row and col start from 0  !!!
-      Int_t myTrow, myTcol;
-      myTrow = fpEvtStr->ITRirow[i];
-      myTcol = fpEvtStr->ITRicol[i];
-      Int_t sensorId = pGeoMap->GetSensorID( fpEvtStr->ITRilay[i], myTcol, myTrow );
+      Int_t sensorId = fpEvtStr->ITRisens[i];
       
       // used for pileup ...
       if (fgPileup && storedEvents <= fgPileupEventsN) {
