@@ -26,10 +26,10 @@ public:
 
    Bool_t FromFile(const TString& name = "");
    
-   void DefineMaterial();
+   void DefineMaterial(); 
    
    TVector3       GetCaloSize()     const  { return fCaloSize;    }
-  
+   
    TVector3       GetCrystalSize()     const  { return fCrystalSize;    }
    Float_t        GetCrystalWidth()    const  { return fCrystalSize[0]; }
    Float_t        GetCrystalHeight()   const  { return fCrystalSize[1]; }
@@ -52,6 +52,7 @@ public:
    TVector3        Sensor2DetectorVect(Int_t idx, TVector3& loc) const;
 
 
+   // to print fluka files
   string PrintBodies();
   string PrintRegions();
   string PrintAssignMaterial();
@@ -69,6 +70,10 @@ public:
   virtual void    Clear(Option_t* opt="");
   virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
    
+protected:
+   vector<string> vBody;
+   vector<string> vRegion;
+  
 public:
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
    static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }

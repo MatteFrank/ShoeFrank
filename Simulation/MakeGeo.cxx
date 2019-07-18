@@ -197,7 +197,7 @@ int main (int argc, char *argv[]) {
     // 	    << SCN_Z - SCN_BAR_THICK/2. - 1. << " "
     // 	    << CAL_Z + CAL_CRY_THICK/2. +1. << endl;
     geofile << twGeo->PrintBodies(  );
-    // geofile << caGeo->PrintBodies(  );
+    geofile << caGeo->PrintBodies(  );
 
     // end print bodies
     geofile << "END        " <<endl;
@@ -207,14 +207,16 @@ int main (int argc, char *argv[]) {
     geofile <<"*                         REGIONS                                              *"<<endl;
     geofile <<"* ******************************************************************************"<<endl;
     //print regions
-    geofile << generalGeo->PrintStandardRegions();
+    geofile << generalGeo->PrintStandardRegions1();
     geofile << stcGeo->PrintSubtractBodiesFromAir();
     geofile << bmGeo->PrintSubtractBodiesFromAir();
     geofile << generalGeo->PrintSubtractTargBodyFromAir();
     geofile << vtxGeo->PrintSubtractBodiesFromAir();
     geofile << itrGeo->PrintSubtractBodiesFromAir();
     geofile << msdGeo->PrintSubtractBodiesFromAir();
+    geofile << generalGeo->PrintStandardRegions2();
     geofile << twGeo->PrintSubtractBodiesFromAir();
+    geofile << caGeo->PrintSubtractBodiesFromAir();    
     geofile << stcGeo->PrintRegions();
     geofile << bmGeo->PrintRegions();
     geofile << generalGeo->PrintTargRegion();
@@ -236,7 +238,7 @@ int main (int argc, char *argv[]) {
     // geofile << caGeo->PrintSubtractBodiesFromAir();
     // geofile <<"\n";
     geofile << twGeo->PrintRegions(  );
-    // geofile << caGeo->PrintRegions(  );
+    geofile << caGeo->PrintRegions(  );
 
     // end print regions
     geofile << "END        " <<endl;
@@ -276,7 +278,7 @@ int main (int argc, char *argv[]) {
     outfile << msdGeo->PrintAssignMaterial();
     // outfile << "ASSIGNMA         AIR       BOX\n";
     outfile << twGeo->PrintAssignMaterial();
-    // outfile << caGeo->PrintAssignMaterial();
+    outfile << caGeo->PrintAssignMaterial();
 
     // print rotations
     outfile << vtxGeo->PrintRotations();
@@ -299,7 +301,7 @@ int main (int argc, char *argv[]) {
     paramfile << itrGeo->PrintParameters();
     paramfile << msdGeo->PrintParameters();
     paramfile << twGeo->PrintParameters();
-    // paramfile << caGeo->PrintParameters();
+    paramfile << caGeo->PrintParameters();
 
     paramfile.close();
 

@@ -80,6 +80,10 @@ public:
    //! Get matrix transformation
    TGeoHMatrix*    GetTransfo(Int_t idx);
 
+  
+   string PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
+		   TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM);
+
    ClassDef(TAGparTools,2)
 };
 

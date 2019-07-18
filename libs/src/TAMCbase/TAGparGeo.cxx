@@ -20,6 +20,7 @@
 #include "TAGparGeo.hxx"
 #include "TAGroot.hxx"
 
+
 //##############################################################################
 
 /*!
@@ -315,6 +316,18 @@ string TAGparGeo::PrintStandardBodies( ) {
   ss << "* ***Air" << endl;
   ss << "RPP air        -900.0 900.0 -900.0 900.0 -900.0 900.0" << endl;
 
+  double zplane;
+  
+  TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  
+  TVector3  fCenterTW = fpFootGeo->GetTWCenter();
+  TVector3  fCenterMSD = fpFootGeo->GetMSDCenter();
+  zplane =  fCenterMSD.Z() + ( fCenterTW.Z()-fCenterMSD.Z() ) /2.;
+  //needed to subdivide air in two because when the calo is present too many bodies
+  //are subtracted to air and fluka complains
+  if(GlobalPar::GetPar()->IncludeCA())
+    ss << "XYP airpla     " << zplane << endl;
+
   return ss.str();
   
 }
@@ -350,13 +363,33 @@ string TAGparGeo::PrintTargBody( ) {
 
 
 //_____________________________________________________________________________
-string TAGparGeo::PrintStandardRegions() {
+// for blackbody and air 
+string TAGparGeo::PrintStandardRegions1() {
   
   stringstream ss;
 
   ss <<"BLACK        5 blk -air\n";
   ss <<"* ***Air\n";
-  ss <<"AIR          5 air";
+  if(GlobalPar::GetPar()->IncludeCA())
+    ss <<"AIR1          5 air +airpla";
+  else
+    ss <<"AIR1          5 air";
+    
+  
+  return ss.str();
+
+}
+
+
+//_____________________________________________________________________________
+//for air 2 because when the calo is present too many bodies
+//are subtracted to air and fluka complains so it's necessary to subdivide air in 2 parts
+string TAGparGeo::PrintStandardRegions2() {
+  
+  stringstream ss;
+  
+  if(GlobalPar::GetPar()->IncludeCA())
+    ss <<"AIR2          5 air -airpla";
   
   return ss.str();
 
@@ -387,7 +420,7 @@ string TAGparGeo::PrintSubtractTargBodyFromAir() {
 
   if(GlobalPar::GetPar()->IncludeTG()){
 
-    ss << "-tgt " << endl;;
+    ss << "-tgt " << endl;
 
   }
   
@@ -432,8 +465,11 @@ string TAGparGeo::PrintStandardAssignMaterial() {
     magnetic = 1;
     
   ss << PrintCard("ASSIGNMA","BLCKHOLE", "BLACK","","","","","") << endl;
-  ss << PrintCard("ASSIGNMA","AIR","AIR","","",TString::Format("%d",magnetic),"","") << endl;
+  ss << PrintCard("ASSIGNMA","AIR","AIR1","","",TString::Format("%d",magnetic),"","") << endl;
   
+  if(GlobalPar::GetPar()->IncludeCA())
+    ss << PrintCard("ASSIGNMA","AIR","AIR2","","",TString::Format("%d",magnetic),"","") << endl;
+
   return ss.str();
 }
 
@@ -495,25 +531,3 @@ string TAGparGeo::PrintPhysics() {
 }
 
 
-//_____________________________________________________________________________
-string  TAGparGeo::PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
-		 TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM) {
-  
-  stringstream fLine;
-	
-  if (fTitle.Sizeof() != 10) fTitle.Resize(10);
-  if (fSDUM.Sizeof() != 10) fSDUM.Resize(10);
-  if (fWHAT1.Sizeof() > 10) fWHAT1.Resize(10);
-  if (fWHAT2.Sizeof() > 10) fWHAT2.Resize(10);
-  if (fWHAT3.Sizeof() > 10) fWHAT3.Resize(10);
-  if (fWHAT4.Sizeof() > 10) fWHAT4.Resize(10);
-  if (fWHAT5.Sizeof() > 10) fWHAT5.Resize(10);
-  if (fWHAT6.Sizeof() > 10) fWHAT6.Resize(10);
-
-  fLine << setw(10) << fTitle << setw(10) << fWHAT1 << setw(10) << fWHAT2
-	<< setw(10) << fWHAT3 << setw(10) << fWHAT4 << setw(10) << fWHAT5
-	<< setw(10) << fWHAT6 << setw(10) << fSDUM;
-	
-  return fLine.str();
-  
-}

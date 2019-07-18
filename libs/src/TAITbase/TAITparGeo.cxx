@@ -241,63 +241,37 @@ string TAITparGeo::PrintRotations()
       if (fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0){
 
 	//put the sensor in 0,0,0 before the rotation
-	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-	   << setw(10) << setfill(' ') << std::right << ""
-	   << setw(10) << setfill(' ') << std::right << " "
-	   << setw(10) << setfill(' ') << std::right << " "
-	   << setw(10) << setfill(' ') << std::right << -fCenter.X()-GetSensorPosition(iSens).X()
-	   << setw(10) << setfill(' ') << std::right << -fCenter.Y()-GetSensorPosition(iSens).Y()
-	   << setw(10) << setfill(' ') << std::right << -fCenter.Z()-GetSensorPosition(iSens).Z()
-	   << setfill(' ') << std::left << Form("it_%d",iSens) 
-	   << endl;
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f",-fCenter.X()-GetSensorPosition(iSens).X()),
+			Form("%f",-fCenter.Y()-GetSensorPosition(iSens).Y()),
+			Form("%f",-fCenter.Z()-GetSensorPosition(iSens).Z()),
+    			Form("it_%d",iSens) ) << endl;
       
 	//rot around x
 	if(fSensorParameter[iSens].Tilt[0]!=0){
-	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-	     << setw(10) << setfill(' ') << std::right << "100."
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setfill(' ') << std::left << Form("it_%d",iSens) 
-	     << endl;
+	  ss << PrintCard("ROT-DEFI", "100.", "",
+			  Form("%f",fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
+			  "", "", "", Form("it_%d",iSens) ) << endl;
 	}
 	//rot around y      
 	if(fSensorParameter[iSens].Tilt[1]!=0){
-	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-	     << setw(10) << setfill(' ') << std::right << "200."
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setfill(' ') << std::left << Form("it_%d",iSens) 
-	     << endl;
+	  ss << PrintCard("ROT-DEFI", "200.", "",
+			  Form("%f",fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
+			  "", "", "", Form("it_%d",iSens) ) << endl;
 	}
 	//rot around z
 	if(fSensorParameter[iSens].Tilt[2]!=0){
-	  ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-	     << setw(10) << setfill(' ') << std::right << "300."
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setw(10) << setfill(' ') << std::right << " "
-	     << setfill(' ') << std::left << Form("it_%d",iSens) 
-	     << endl;
+	  ss <<PrintCard("ROT-DEFI", "300.", "",
+			 Form("%f",fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
+			 "", "", "", Form("it_%d",iSens) ) << endl;
 	}
 	
 	//put back the sensor into its position
-	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-	   << setw(10) << setfill(' ') << std::right << ""
-	   << setw(10) << setfill(' ') << std::right << " "
-	   << setw(10) << setfill(' ') << std::right << " "
-	   << setw(10) << setfill(' ') << std::right << fCenter.X()+GetSensorPosition(iSens).X()
-	   << setw(10) << setfill(' ') << std::right << fCenter.Y()+GetSensorPosition(iSens).Y()
-	   << setw(10) << setfill(' ') << std::right << fCenter.Z()+GetSensorPosition(iSens).Z()
-	   << setfill(' ') << std::left << Form("it_%d",iSens) 
-	   << endl;
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f", fCenter.X()+GetSensorPosition(iSens).X()),
+			Form("%f", fCenter.Y()+GetSensorPosition(iSens).Y()),
+			Form("%f", fCenter.Z()+GetSensorPosition(iSens).Z()),
+			Form("it_%d",iSens) ) << endl;
       }
 
     }
@@ -460,29 +434,12 @@ string TAITparGeo::PrintAssignMaterial()
     if (vEpiRegion.size()==0 || vModRegion.size()==0 || vPixRegion.size()==0 )
       cout << "Error: IT regions vector not correctly filled!"<<endl;
     
-    ss << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-       << setw(10) << setfill(' ') << std::right << matMod
-       << setw(10) << setfill(' ') << std::right << vEpiRegion.at(0)
-       << setw(10) << setfill(' ') << std::right << vEpiRegion.back()
-       << setw(10) << setfill(' ') << std::right << "1."
-       << setw(10) << setfill(' ') << std::right << magnetic
-       << endl;
-
-    ss << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-       << setw(10) << setfill(' ') << std::right << matMod
-       << setw(10) << setfill(' ') << std::right << vModRegion.at(0)
-       << setw(10) << setfill(' ') << std::right << vModRegion.back()
-       << setw(10) << setfill(' ') << std::right << "1."
-       << setw(10) << setfill(' ') << std::right << magnetic
-       << endl;
-
-    ss << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-       << setw(10) << setfill(' ') << std::right << matPix
-       << setw(10) << setfill(' ') << std::right << vPixRegion.at(0)
-       << setw(10) << setfill(' ') << std::right << vPixRegion.back()
-       << setw(10) << setfill(' ') << std::right << "1."
-       << setw(10) << setfill(' ') << std::right << magnetic
-       << endl;
+    ss << PrintCard("ASSIGNMA", matMod, vEpiRegion.at(0), vEpiRegion.back(),
+		    "1.", Form("%d",magnetic), "", "") << endl;
+    ss << PrintCard("ASSIGNMA", matMod, vModRegion.at(0), vModRegion.back(),
+		    "1.", Form("%d",magnetic), "", "") << endl;
+    ss << PrintCard("ASSIGNMA", matPix, vPixRegion.at(0), vPixRegion.back(),
+		    "1.", Form("%d",magnetic), "", "") << endl;
 
   }
 

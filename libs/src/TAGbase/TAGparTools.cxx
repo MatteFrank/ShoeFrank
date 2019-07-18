@@ -453,3 +453,28 @@ void TAGparTools::SetupMatrices(Int_t size)
    fMatrixList = new TObjArray(size);
    fMatrixList->SetOwner(true);
 }
+
+
+
+//_____________________________________________________________________________
+string  TAGparTools::PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
+		 TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM) {
+  
+  stringstream fLine;
+	
+  if (fTitle.Sizeof() != 10) fTitle.Resize(10);
+  if (fSDUM.Sizeof() != 10) fSDUM.Resize(10);
+  if (fWHAT1.Sizeof() > 10) fWHAT1.Resize(10);
+  if (fWHAT2.Sizeof() > 10) fWHAT2.Resize(10);
+  if (fWHAT3.Sizeof() > 10) fWHAT3.Resize(10);
+  if (fWHAT4.Sizeof() > 10) fWHAT4.Resize(10);
+  if (fWHAT5.Sizeof() > 10) fWHAT5.Resize(10);
+  if (fWHAT6.Sizeof() > 10) fWHAT6.Resize(10);
+
+  fLine << setw(10) << fTitle << setw(10) << fWHAT1 << setw(10) << fWHAT2
+	<< setw(10) << fWHAT3 << setw(10) << fWHAT4 << setw(10) << fWHAT5
+	<< setw(10) << fWHAT6 << setw(10) << fSDUM;
+	
+  return fLine.str();
+  
+}
