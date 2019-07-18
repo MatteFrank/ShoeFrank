@@ -49,6 +49,9 @@ private:
    TVector3   fMinPosition;
    TVector3   fMaxPosition;
    TVector3   fSizeBox;
+
+   vector<string> vReg, vRegShield;
+   vector<string> vBodyOut, vBodyIn;
    
 private:
    static const TString fgkDefParaName;
@@ -66,6 +69,7 @@ public:
     virtual ~TADIparGeo();
 
     TString        GetMagMat() const  { return fMagMat; }
+    TString        GetShieldMat() const  { return fShieldMat; }
 
    //! Transform point from the global reference frame
    //! to the local reference frame of the detection id
@@ -111,6 +115,12 @@ public:
    TVector3    GetBoxSize()     const { return fSizeBox;  }
    TVector3    GetMinPoistion() const { return fMinPosition; }
    TVector3    GetMaxPoistion() const { return fMaxPosition; }
+  
+   // to print fluka files
+   string PrintBodies();
+   string PrintRegions();
+   string PrintAssignMaterial();
+   string PrintSubtractBodiesFromAir();
    
 private:
    void DefineMaxMinDimension();

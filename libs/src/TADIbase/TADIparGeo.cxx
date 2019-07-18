@@ -16,6 +16,7 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGmaterials.hxx"
 #include "TADIparGeo.hxx"
+#include "TAGroot.hxx"
 
 //##############################################################################
 
@@ -349,3 +350,155 @@ void TADIparGeo::DefineMaxMinDimension()
       fSizeBox[i] = (fMaxPosition[i] - fMinPosition[i]);
 }
 
+//_____________________________________________________________________________
+string TADIparGeo::PrintBodies(){
+   
+   stringstream ss;
+   
+   if ( GlobalPar::GetPar()->IncludeDI()){   
+
+    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  
+    TVector3  fCenter = fpFootGeo->GetDICenter();
+   
+     ss << "* ***Dipoles bodies" << endl;
+
+     // for (int i=0; i<2; i++){
+     //   cout << GetMagnetPar(i).MagnetIdx << endl;
+     //   cout << GetMagnetPar(i).Size.X() << " " << GetMagnetPar(i).Size.Y() << " "
+     // 	    << GetMagnetPar(i).Size.Z() << endl;
+     //   cout << GetMagnetPar(i).ShieldSize.X() << " " << GetMagnetPar(i).ShieldSize.Y() << " "
+     // 	    << GetMagnetPar(i).ShieldSize.Z() << endl;
+     //   cout << GetMagnetPar(i).Position.X() << " " << GetMagnetPar(i).Position.Y() << " "
+     // 	    << GetMagnetPar(i).Position.Z() << endl;
+     // }
+     
+     for (int iMag=0; iMag<GetMagnetsN(); iMag++){
+       
+       string bodyname, regionname;
+       
+       regionname = Form("MAG_SH%d",iMag);
+       vRegShield.push_back(regionname);
+       
+       //shield outer body
+       bodyname = Form("MagShOu%d",iMag);
+       vBodyOut.push_back(bodyname);
+       ss << "RCC " << bodyname <<  "     " 
+	  << fCenter.X() + GetMagnetPar(iMag).Position.X() << " "	
+	  << fCenter.Y() + GetMagnetPar(iMag).Position.Y() << " "
+	  << fCenter.Z() + GetMagnetPar(iMag).Position.Z() - GetMagnetPar(iMag).ShieldSize.Z()/2.
+	  << " 0.000000 0.000000 " << GetMagnetPar(iMag).ShieldSize.Z() << " "
+	  << GetMagnetPar(iMag).ShieldSize.Y() << endl;
+
+       //shield inner body
+       bodyname = Form("MagShIn%d",iMag);
+       vBodyIn.push_back(bodyname);
+       ss << "ZCC " << bodyname <<  "     " 
+	  << fCenter.X() + GetMagnetPar(iMag).Position.X() << " "	
+	  << fCenter.Y() + GetMagnetPar(iMag).Position.Y() << " "
+	  << GetMagnetPar(iMag).ShieldSize.X() << endl;
+
+       regionname = Form("MAG%d",iMag);
+       vReg.push_back(regionname);
+
+       //magnet outer body
+       ss << "RCC MagOu" << iMag <<  "     " 
+	  << fCenter.X() + GetMagnetPar(iMag).Position.X() << " "	
+	  << fCenter.Y() + GetMagnetPar(iMag).Position.Y() << " "
+	  << fCenter.Z() + GetMagnetPar(iMag).Position.Z() - GetMagnetPar(iMag).Size.Z()/2.
+	  << " 0.000000 0.000000 " << GetMagnetPar(iMag).Size.Z() << " "
+	  << GetMagnetPar(iMag).Size.Y() << endl;
+
+       //magnet inner body
+       ss << "RCC MagIn" << iMag <<  "     " 
+	  << fCenter.X() + GetMagnetPar(iMag).Position.X() << " "	
+	  << fCenter.Y() + GetMagnetPar(iMag).Position.Y() << " "
+	  << fCenter.Z() + GetMagnetPar(iMag).Position.Z() - GetMagnetPar(iMag).Size.Z()/2.
+	  << " 0.000000 0.000000 " << GetMagnetPar(iMag).Size.Z() << " "
+	  << GetMagnetPar(iMag).Size.X() << endl;
+       
+     }
+     
+   }
+   
+   return ss.str();
+}
+
+
+
+//_____________________________________________________________________________
+string TADIparGeo::PrintRegions(){
+
+  stringstream ss;
+
+  if(GlobalPar::GetPar()->IncludeDI()){
+
+    string name;
+
+    ss << "* ***Dipoles regions" << endl;
+   
+
+    if (vReg.size()==0 || vRegShield.size()==0)
+      cout << "Error: DI regions vectors not correctly filled!" << endl;
+       
+    for (int iMag=0; iMag<vReg.size(); iMag++)              
+      ss << vReg.at(iMag) << "         5 MagOu" << iMag << " -MagIn" << iMag << endl;
+       
+       
+    for (int iMag=0; iMag<vRegShield.size(); iMag++){
+      ss << vRegShield.at(iMag) << "      5 " << vBodyOut.at(iMag) << " -(MagOu" << iMag
+	 << " -MagIn" << iMag << ") -" << vBodyIn.at(iMag) << endl;
+    }
+
+  }
+  
+  return ss.str();
+
+}
+
+
+//_____________________________________________________________________________
+string TADIparGeo::PrintAssignMaterial() {
+
+  stringstream ss;
+  
+  if(GlobalPar::GetPar()->IncludeDI()){
+    
+    const Char_t* mat = GetMagMat().Data();
+    const Char_t* matShield = "ALUMINUM";//GetShieldMat().Data();
+      
+    if (vReg.size()==0 || vRegShield.size()==0)
+      cout << "Error: DI regions vectors not correctly filled!" << endl;
+
+    ss << PrintCard("ASSIGNMA", mat, vReg.at(0), vReg.back(),
+    		    "1.", "1.", "", "") << endl;
+    ss << PrintCard("ASSIGNMA", matShield, vRegShield.at(0), vRegShield.back(),
+    		    "1.", "1.", "", "") << endl;
+    
+  }
+
+  return ss.str();
+  
+}
+
+
+
+//_____________________________________________________________________________
+string TADIparGeo::PrintSubtractBodiesFromAir() {
+
+  stringstream ss;
+
+  if(GlobalPar::GetPar()->IncludeDI()){
+
+    if (vBodyOut.size()==0 || vBodyIn.size()==0 || vBodyOut.size()!=vBodyIn.size())
+      cout << "Error: DI body vectors not correctly filled!" << endl;
+    
+    for(int i=0; i<vBodyOut.size(); i++) {
+      ss << " -(" << vBodyOut.at(i) << " -" << vBodyIn.at(i) << ")" ;
+    }
+    ss << endl;
+
+  }
+
+    return ss.str();
+}

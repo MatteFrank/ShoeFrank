@@ -70,7 +70,7 @@ int main (int argc, char *argv[]) {
 
     // GlobalFootGeo footGeo;
 
-    TADIparGeo* dipGeo = new TADIparGeo();
+    TADIparGeo* diGeo = new TADIparGeo();
     TASTparGeo* stcGeo = new TASTparGeo();
     TABMparGeo* bmGeo = new TABMparGeo();
     TAVTparGeo* vtxGeo = new TAVTparGeo();
@@ -81,7 +81,7 @@ int main (int argc, char *argv[]) {
     TAGparGeo* generalGeo = new TAGparGeo();
 
     // read geomap files
-    dipGeo->FromFile();
+    diGeo->FromFile();
     stcGeo->FromFile();
     parFileName = "./geomaps/TABMdetector.map";
     bmGeo->FromFile(parFileName.Data());
@@ -92,6 +92,7 @@ int main (int argc, char *argv[]) {
 
     itrGeo->FromFile();
     msdGeo->FromFile();
+    diGeo->FromFile();
     twGeo->FromFile();
     caGeo->FromFile();
 
@@ -99,7 +100,7 @@ int main (int argc, char *argv[]) {
     generalGeo->FromFile(parFileName.Data());
 
     if(GlobalPar::GetPar()->IncludeDI())
-      genfit::FieldManager::getInstance()->init(new FootField( GlobalPar::GetPar()->MagFieldInputMapName().data(),dipGeo) ); // variable field
+      genfit::FieldManager::getInstance()->init(new FootField( GlobalPar::GetPar()->MagFieldInputMapName().data(),diGeo) ); // variable field
 
     ifstream file;
     string fileName = "foot.inp";
@@ -155,47 +156,8 @@ int main (int argc, char *argv[]) {
     geofile << generalGeo->PrintTargBody(  );
     geofile << vtxGeo->PrintBodies(  );
     geofile << itrGeo->PrintBodies(  );
-    // geofile << "* ***Magnets\n";
-    // geofile << "RCC MagCvOu0   " << MAG_X << " " << MAG_Y << " "
-    // 	    << MAG_Z - MAG_CV_LENGTH/2. - MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    // << MAG_Z - MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    << MAG_CV_LENGTH << " " << MAG_CV0_OUTRAD << endl;
-    // geofile << "RCC MagCvOu1   " << MAG_X << " " << MAG_Y << " "
-    // 	    << MAG_Z - MAG_CV_LENGTH/2. + MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    // << MAG_Z + MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    << MAG_CV_LENGTH << " " << MAG_CV1_OUTRAD << endl;
-    // geofile << "RCC MagPMOu0   " << MAG_X << " " << MAG_Y << " "
-    // 	    << MAG_Z - MAG_PM_LENGTH/2. - MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    // << MAG_Z - MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    << MAG_PM_LENGTH << " " << MAG_PM0_OUTRAD << endl;
-    // geofile << "RCC MagPMOu1   " << MAG_X << " " << MAG_Y << " "
-    // 	    << MAG_Z - MAG_PM_LENGTH/2. + MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    // << MAG_Z + MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    << MAG_PM_LENGTH << " " << MAG_PM1_OUTRAD << endl;
-    // geofile << "RCC MagPMIn0   " << MAG_X << " " << MAG_Y << " "
-    // 	    << MAG_Z - MAG_PM_LENGTH/2. - MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    // << MAG_Z - MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    << MAG_PM_LENGTH << " " << MAG_PM0_INRAD << endl;
-    // geofile << "RCC MagPMIn1   " << MAG_X << " " << MAG_Y << " "
-    // 	    << MAG_Z - MAG_PM_LENGTH/2. + MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    // << MAG_Z + MAG_DIST/2. << " 0.000000 0.000000 "
-    // 	    << MAG_PM_LENGTH << " " << MAG_PM1_INRAD << endl;
-    // geofile << "* ***Gap for magnets\n";
-    // geofile << "ZCC Gap0       0.000000 0.000000 " << MAG_CV0_INRAD << endl;
-    // geofile << "ZCC Gap1       0.000000 0.000000 " << MAG_CV1_INRAD << endl;
-    // geofile << "* ***Magnetic field air region\n";
-    // //mappa sanelli si estende per: -5<x<5 , -5<y<5 , -30<z<30
-    // geofile << "RPP MagAir     " << MAG_X - 5. << " " << MAG_X + 5. << " "
-    // 	    << MAG_Y - 5. << " " << MAG_Y + 5. << " "
-    // 	    << MAG_Z - 30. << " " << MAG_Z + 30. << endl;
     geofile << msdGeo->PrintBodies(  );
-    // geofile << "* ***Air Box for Scintillator and Calorimeter\n";
-    // geofile << "RPP box     " << SCN_X - SCN_BAR_HEIGHT/2. - 1. << " "
-    // 	    << SCN_X + SCN_BAR_HEIGHT/2. + 1. << " "
-    // 	    << SCN_Y - SCN_BAR_HEIGHT/2. - 1. << " "
-    // 	    << SCN_Y + SCN_BAR_HEIGHT/2. + 1. << " "
-    // 	    << SCN_Z - SCN_BAR_THICK/2. - 1. << " "
-    // 	    << CAL_Z + CAL_CRY_THICK/2. +1. << endl;
+    geofile << diGeo->PrintBodies(  );
     geofile << twGeo->PrintBodies(  );
     geofile << caGeo->PrintBodies(  );
 
@@ -214,6 +176,7 @@ int main (int argc, char *argv[]) {
     geofile << vtxGeo->PrintSubtractBodiesFromAir();
     geofile << itrGeo->PrintSubtractBodiesFromAir();
     geofile << msdGeo->PrintSubtractBodiesFromAir();
+    geofile << diGeo->PrintSubtractBodiesFromAir();
     geofile << generalGeo->PrintStandardRegions2();
     geofile << twGeo->PrintSubtractBodiesFromAir();
     geofile << caGeo->PrintSubtractBodiesFromAir();    
@@ -222,29 +185,13 @@ int main (int argc, char *argv[]) {
     geofile << generalGeo->PrintTargRegion();
     geofile << vtxGeo->PrintRegions();
     geofile << itrGeo->PrintRegions();
-    // geofile <<"* ***Magnets\n";
-    // geofile <<"MAG_PM0      5 MagPMOu0 -MagPMIn0\n";
-    // geofile <<"MAG_CV0      5 MagCvOu0 -(MagPMOu0 -MagPMIn0) -Gap0\n";
-    // geofile <<"MAG_PM1      5 MagPMOu1 -MagPMIn1\n";
-    // geofile <<"MAG_CV1      5 MagCvOu1 -(MagPMOu1 -MagPMIn1) -Gap1\n";
-    // geofile <<"* ***Magnetic field air region\n";
-    // geofile <<"MAG_AIR      5 MagAir -tgt -(BmnShiIn -BmnMyl0 +BmnMyl3) -(MagCvOu0 -Gap0) -(MagCvOu1 -Gap1) ";
-    // geofile << vtxGeo->PrintSubtractBodiesFromAir();
-    // geofile << itrGeo->PrintSubtractBodiesFromAir();
-    // geofile << msdGeo->PrintSubtractBodiesFromAir();
     geofile << msdGeo->PrintRegions(  );
-    // geofile <<"* ***Air Box for Scintillator and Calorimeter\n";
-    // geofile <<"BOX          5 box ";
-    // geofile << caGeo->PrintSubtractBodiesFromAir();
-    // geofile <<"\n";
+    geofile << diGeo->PrintRegions(  );
     geofile << twGeo->PrintRegions(  );
     geofile << caGeo->PrintRegions(  );
 
     // end print regions
     geofile << "END        " <<endl;
-
-    //print lattice in the geofile
-    //geofile << vtxGeo->PrintLattice();
 
     // close geometry file
     geofile.close();
@@ -270,13 +217,8 @@ int main (int argc, char *argv[]) {
     outfile << generalGeo->PrintTargAssignMaterial();
     outfile << vtxGeo->PrintAssignMaterial();
     outfile << itrGeo->PrintAssignMaterial();
-    // outfile << "ASSIGNMA        SmCo   MAG_PM0\n";
-    // outfile << "ASSIGNMA    ALUMINUM   MAG_CV0\n";
-    // outfile << "ASSIGNMA        SmCo   MAG_PM1\n";
-    // outfile << "ASSIGNMA    ALUMINUM   MAG_CV1\n";
-    // outfile << "ASSIGNMA         AIR   MAG_AIR                             1\n";
     outfile << msdGeo->PrintAssignMaterial();
-    // outfile << "ASSIGNMA         AIR       BOX\n";
+    outfile << diGeo->PrintAssignMaterial();
     outfile << twGeo->PrintAssignMaterial();
     outfile << caGeo->PrintAssignMaterial();
 
@@ -319,27 +261,3 @@ int main (int argc, char *argv[]) {
     return 0;
 }
 
-
-
-
-// string PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
-// 		 TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM) {
-
-//   stringstream fLine;
-
-//   if (fTitle.Sizeof() != 10) fTitle.Resize(10);
-//   if (fSDUM.Sizeof() != 10) fSDUM.Resize(10);
-//   if (fWHAT1.Sizeof() > 10) fWHAT1.Resize(10);
-//   if (fWHAT2.Sizeof() > 10) fWHAT2.Resize(10);
-//   if (fWHAT3.Sizeof() > 10) fWHAT3.Resize(10);
-//   if (fWHAT4.Sizeof() > 10) fWHAT4.Resize(10);
-//   if (fWHAT5.Sizeof() > 10) fWHAT5.Resize(10);
-//   if (fWHAT6.Sizeof() > 10) fWHAT6.Resize(10);
-
-//   fLine << setw(10) << fTitle << setw(10) << fWHAT1 << setw(10) << fWHAT2
-// 	<< setw(10) << fWHAT3 << setw(10) << fWHAT4 << setw(10) << fWHAT5
-// 	<< setw(10) << fWHAT6 << setw(10) << fSDUM;
-
-//   return fLine.str();
-
-// }
