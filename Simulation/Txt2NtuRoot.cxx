@@ -22,8 +22,6 @@
 
 #include "Evento.hxx"
 #include "TAMCevent.hxx"
-#include "TAMCntuEve.hxx"
-#include "TAMCntuHit.hxx"
 
 using namespace std;
 
@@ -42,8 +40,7 @@ int main(int argc, char *argv[])
    int fragtrig=0;
    double Ethreshold = 0;
    
-   static TTree *RootTree = 0;
-   static Evento *pEv = 0;
+   static TTree *rootTree = 0;
    
    EVENT_STRUCT eve;
    
@@ -90,33 +87,25 @@ int main(int argc, char *argv[])
    
    TFile *f_out = new TFile(outname,"RECREATE");
    f_out->cd();
+   rootTree = new TTree("EventTree","gsimay");
    
-   
-   RootTree = new TTree("EventTree","gsimay");
-   
-   
-   //Track
-   TAMCntuEve* ntuEve = new TAMCntuEve();
-   RootTree->Branch(TAMCntuEve::GetBranchName(), &ntuEve);
-   
+   // Event
    TAMCevent* event = new TAMCevent();
-   event->SetBranches(RootTree);
+   event->SetBranches(rootTree);
    
-   //  RootTree->Branch("CROSSn",&eve.CROSSn,"CROSSn/I");
-   //  RootTree->Branch("CROSSid",&eve.CROSSid,"CROSSid[CROSSn]/I");
-   //  RootTree->Branch("CROSSnreg",&eve.CROSSnreg,"CROSSnreg[CROSSn]/I");
-   //  RootTree->Branch("CROSSnregold",&eve.CROSSnregold,"CROSSnregold[CROSSn]/I");
-   //  RootTree->Branch("CROSSx",&eve.CROSSx,"CROSSx[CROSSn]/D");
-   //  RootTree->Branch("CROSSy",&eve.CROSSy,"CROSSy[CROSSn]/D");
-   //  RootTree->Branch("CROSSz",&eve.CROSSz,"CROSSz[CROSSn]/D");
-   //  RootTree->Branch("CROSSpx",&eve.CROSSpx,"CROSSpx[CROSSn]/D");
-   //  RootTree->Branch("CROSSpy",&eve.CROSSpy,"CROSSpy[CROSSn]/D");
-   //  RootTree->Branch("CROSSpz",&eve.CROSSpz,"CROSSpz[CROSSn]/D");
-   //  RootTree->Branch("CROSSm",&eve.CROSSm,"CROSSm[CROSSn]/D");
-   //  RootTree->Branch("CROSSch",&eve.CROSSch,"CROSSch[CROSSn]/D");
-   //  RootTree->Branch("CROSSt",&eve.CROSSt,"CROSSt[CROSSn]/D");
-   
-   pEv = new Evento();
+   //  rootTree->Branch("CROSSn",&eve.CROSSn,"CROSSn/I");
+   //  rootTree->Branch("CROSSid",&eve.CROSSid,"CROSSid[CROSSn]/I");
+   //  rootTree->Branch("CROSSnreg",&eve.CROSSnreg,"CROSSnreg[CROSSn]/I");
+   //  rootTree->Branch("CROSSnregold",&eve.CROSSnregold,"CROSSnregold[CROSSn]/I");
+   //  rootTree->Branch("CROSSx",&eve.CROSSx,"CROSSx[CROSSn]/D");
+   //  rootTree->Branch("CROSSy",&eve.CROSSy,"CROSSy[CROSSn]/D");
+   //  rootTree->Branch("CROSSz",&eve.CROSSz,"CROSSz[CROSSn]/D");
+   //  rootTree->Branch("CROSSpx",&eve.CROSSpx,"CROSSpx[CROSSn]/D");
+   //  rootTree->Branch("CROSSpy",&eve.CROSSpy,"CROSSpy[CROSSn]/D");
+   //  rootTree->Branch("CROSSpz",&eve.CROSSpz,"CROSSpz[CROSSn]/D");
+   //  rootTree->Branch("CROSSm",&eve.CROSSm,"CROSSm[CROSSn]/D");
+   //  rootTree->Branch("CROSSch",&eve.CROSSch,"CROSSch[CROSSn]/D");
+   //  rootTree->Branch("CROSSt",&eve.CROSSt,"CROSSt[CROSSn]/D");
    
    //    loop sui file della lista ( if any)
    
@@ -153,7 +142,7 @@ int main(int argc, char *argv[])
          eve.CROSSn      = 0;
          
          if(NumProcessed%10000==0){ cout<<"# event = "<<NumProcessed<<endl;}
-         status = pEv->Clean();
+         status = event->Clean();
          
          //	header
          
@@ -436,7 +425,7 @@ int main(int argc, char *argv[])
             if((eve.TRn<=MAXTR)&&(eve.STCn<=MAXSTC)&&(eve.BMNn<=MAXBMN)&&(eve.VTXn<=MAXVTX)
                &&(eve.ITRn<=MAXITR)&&(eve.SCNn<=MAXSCN)&&(eve.CALn<=MAXCAL)
                &&(eve.MSDn<=MAXMSD)&&(eve.CROSSn<=MAXCROSS)){
-               RootTree->Fill() ;
+               rootTree->Fill() ;
             }
             else{
                cout<<ReadError<<" "<<eve.EventNumber<<" "<<eve.TRn<<" "<<eve.STCn
@@ -449,7 +438,7 @@ int main(int argc, char *argv[])
       
       fclose(pfile);
    }
-   RootTree->Write();
+   rootTree->Write();
    
    f_out->Close();
    cout<<" total number of event safely converted= "<<NumProcessed<<endl;
