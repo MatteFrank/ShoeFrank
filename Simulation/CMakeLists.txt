@@ -69,3 +69,15 @@ target_link_libraries(Txt2Root ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIB
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS Txt2Root DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the libraries
+#
+add_executable(Txt2NtuRoot Txt2NtuRoot.cxx)
+#
+target_link_libraries(Txt2NtuRoot ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIBRARIES} )
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS Txt2NtuRoot DESTINATION bin)
