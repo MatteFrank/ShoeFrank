@@ -325,7 +325,7 @@ string TACAparGeo::PrintRegions(){
 
     string name;
 
-    ss << "* ***Vertex regions" << endl;
+    ss << "* ***Calorimeter regions" << endl;
 
     for(int i=0; i<vRegion.size(); i++) 
       ss << setw(13) << setfill( ' ' )  << std::left << vRegion.at(i) << "5 " << vBody.at(i) << endl;
