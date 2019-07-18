@@ -185,13 +185,30 @@ void TAMCevent::SetBranches(TTree *RootTree){
 /*-----------------------------------------------------------------*/
 void TAMCevent::FindBranches(TTree *RootTree)
 {
-    RootTree->SetBranchAddress(fHitSTC->GetStcBranchName(),&fHitSTC);
-    RootTree->SetBranchAddress(fHitBMN->GetBmBranchName(),&fHitBMN);
-    RootTree->SetBranchAddress(fHitVTX->GetVtxBranchName(),&fHitVTX);
-    RootTree->SetBranchAddress(fHitITR->GetItrBranchName(),&fHitITR);
-    RootTree->SetBranchAddress(fHitMSD->GetMsdBranchName(),&fHitMSD);
-    RootTree->SetBranchAddress(fHitTW->GetTofBranchName(),&fHitTW);
-    RootTree->SetBranchAddress(fHitCAL->GetCalBranchName(),&fHitCAL);
+    RootTree->SetBranchAddress("EventNumber",&fEventNumber);
+
+    RootTree->SetBranchAddress(fTrack->GetBranchName(),&fTrack);
+
+    if (GlobalPar::GetPar()->IncludeST())
+       RootTree->SetBranchAddress(fHitSTC->GetStcBranchName(),&fHitSTC);
+   
+    if (GlobalPar::GetPar()->IncludeBM())
+       RootTree->SetBranchAddress(fHitBMN->GetBmBranchName(),&fHitBMN);
+   
+    if (GlobalPar::GetPar()->IncludeVertex())
+       RootTree->SetBranchAddress(fHitVTX->GetVtxBranchName(),&fHitVTX);
+   
+    if (GlobalPar::GetPar()->IncludeInnerTracker())
+       RootTree->SetBranchAddress(fHitITR->GetItrBranchName(),&fHitITR);
+   
+    if (GlobalPar::GetPar()->IncludeMSD())
+       RootTree->SetBranchAddress(fHitMSD->GetMsdBranchName(),&fHitMSD);
+   
+    if (GlobalPar::GetPar()->IncludeTW())
+       RootTree->SetBranchAddress(fHitTW->GetTofBranchName(),&fHitTW);
+   
+    if (GlobalPar::GetPar()->IncludeCA())
+       RootTree->SetBranchAddress(fHitCAL->GetCalBranchName(),&fHitCAL);
 }
 
 
