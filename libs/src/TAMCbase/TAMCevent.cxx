@@ -5,35 +5,71 @@
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
 
+#include "GlobalPar.hxx"
+
 using namespace std;
 
 ClassImp(TAMCevent);
 
 /*-----------------------------------------------------------------*/
 TAMCevent::TAMCevent()
-: fEventNumber(-1)
+ : fEventNumber(-1),
+   fTrack(new TAMCntuEve()),
+   fHitSTC(0x0),
+   fHitBMN(0x0),
+   fHitVTX(0x0),
+   fHitITR(0x0),
+   fHitMSD(0x0),
+   fHitTW(0x0),
+   fHitCAL(0x0)
 {
-    fTrack  = new TAMCntuEve();
-    fHitSTC = new TAMCntuHit();
-    fHitBMN = new TAMCntuHit();
-    fHitVTX = new TAMCntuHit();
-    fHitITR = new TAMCntuHit();
-    fHitMSD = new TAMCntuHit();
-    fHitTW  = new TAMCntuHit();
-    fHitCAL = new TAMCntuHit();
+    if (GlobalPar::GetPar()->IncludeST())
+      fHitSTC = new TAMCntuHit();
+   
+    if (GlobalPar::GetPar()->IncludeBM())
+      fHitBMN = new TAMCntuHit();
+   
+    if (GlobalPar::GetPar()->IncludeVertex())
+       fHitVTX = new TAMCntuHit();
+   
+    if (GlobalPar::GetPar()->IncludeInnerTracker())
+       fHitITR = new TAMCntuHit();
+   
+    if (GlobalPar::GetPar()->IncludeMSD())
+       fHitMSD = new TAMCntuHit();
+   
+    if (GlobalPar::GetPar()->IncludeTW())
+       fHitTW  = new TAMCntuHit();
+   
+    if (GlobalPar::GetPar()->IncludeCA())
+       fHitCAL = new TAMCntuHit();
 }
 
 /*-----------------------------------------------------------------*/
 Int_t TAMCevent::Clean()
 {
     fTrack->Clear();
-    fHitSTC->Clear();
-    fHitBMN->Clear();
-    fHitVTX->Clear();
-    fHitITR->Clear();
-    fHitMSD->Clear();
-    fHitTW->Clear();
-    fHitCAL->Clear();
+   
+    if (fHitSTC)
+       fHitSTC->Clear();
+   
+    if (fHitBMN)
+       fHitBMN->Clear();
+   
+    if (fHitVTX)
+       fHitVTX->Clear();
+   
+    if (fHitITR)
+       fHitITR->Clear();
+   
+    if (fHitMSD)
+       fHitMSD->Clear();
+   
+    if (fHitTW)
+       fHitTW->Clear();
+   
+    if (fHitCAL)
+       fHitCAL->Clear();
 
     return 0;
 }
@@ -121,14 +157,29 @@ void TAMCevent::AddCAL(Int_t aCALid, Int_t aCALicry,
 void TAMCevent::SetBranches(TTree *RootTree){
 
     RootTree->Branch("EventNumber",&fEventNumber,"EventNumber/I");
-    RootTree->Branch("mctrack.",&fTrack);
-    RootTree->Branch(fHitSTC->GetStcBranchName(),&fHitSTC);
-    RootTree->Branch(fHitBMN->GetBmBranchName(),&fHitBMN);
-    RootTree->Branch(fHitVTX->GetVtxBranchName(),&fHitVTX);
-    RootTree->Branch(fHitITR->GetItrBranchName(),&fHitITR);
-    RootTree->Branch(fHitMSD->GetMsdBranchName(),&fHitMSD);
-    RootTree->Branch(fHitTW->GetTofBranchName(),&fHitTW);
-    RootTree->Branch(fHitCAL->GetCalBranchName(),&fHitCAL);
+   
+    RootTree->Branch(fTrack->GetBranchName(),&fTrack);
+   
+    if (GlobalPar::GetPar()->IncludeST())
+       RootTree->Branch(fHitSTC->GetStcBranchName(),&fHitSTC);
+   
+    if (GlobalPar::GetPar()->IncludeBM())
+       RootTree->Branch(fHitBMN->GetBmBranchName(),&fHitBMN);
+   
+    if (GlobalPar::GetPar()->IncludeVertex())
+       RootTree->Branch(fHitVTX->GetVtxBranchName(),&fHitVTX);
+   
+    if (GlobalPar::GetPar()->IncludeInnerTracker())
+       RootTree->Branch(fHitITR->GetItrBranchName(),&fHitITR);
+   
+    if (GlobalPar::GetPar()->IncludeMSD())
+       RootTree->Branch(fHitMSD->GetMsdBranchName(),&fHitMSD);
+   
+    if (GlobalPar::GetPar()->IncludeTW())
+       RootTree->Branch(fHitTW->GetTofBranchName(),&fHitTW);
+   
+    if (GlobalPar::GetPar()->IncludeCA())
+       RootTree->Branch(fHitCAL->GetCalBranchName(),&fHitCAL);
 }
 
 /*-----------------------------------------------------------------*/
@@ -155,13 +206,27 @@ void TAMCevent::Dump() const
 TAMCevent::~TAMCevent()
 {
     delete fTrack;
-    delete fHitSTC;
-    delete fHitBMN;
-    delete fHitVTX;
-    delete fHitITR;
-    delete fHitMSD;
-    delete fHitTW;
-    delete fHitCAL;
+   
+    if (fHitCAL)
+       delete fHitSTC;
+   
+    if (fHitBMN)
+       delete fHitBMN;
+   
+    if (fHitVTX)
+       delete fHitVTX;
+   
+    if (fHitITR)
+       delete fHitITR;
+   
+    if (fHitMSD)
+       delete fHitMSD;
+   
+    if (fHitTW)
+       delete fHitTW;
+   
+    if (fHitCAL)
+       delete fHitCAL;
 }
 
 
