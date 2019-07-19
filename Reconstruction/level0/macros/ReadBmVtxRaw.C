@@ -196,6 +196,8 @@ void Booking(TFile *f_out){
   h2=new TH2D("Combo_VTX_r0xy","Projections of VTX tracks in vtx sys;x[cm]; y[cm]",100,-5.,5.,100,-5.,5.);
   h2=new TH2D("BM_mylar1_bmsys","Projections of BM tracks on mylar1 in BM sys;x[cm]; y[cm]",1000,-5.,5.,1000,-5.,5.);
   h2=new TH2D("BM_mylar2_bmsys","Projections of BM tracks on mylar2 in BM sys;x[cm]; y[cm]",1000,-5.,5.,1000,-5.,5.);
+  h2=new TH2D("BM_mylar1_glbsys","Projections of BM tracks on mylar1 in global sys;x[cm]; y[cm]",1000,-5.,5.,1000,-5.,5.);
+  h2=new TH2D("BM_mylar2_glbsys","Projections of BM tracks on mylar2 in global sys;x[cm]; y[cm]",1000,-5.,5.,1000,-5.,5.);
 
   return;
 }
@@ -204,14 +206,15 @@ void Booking(TFile *f_out){
 void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2211.physics_foot.daq.VTX.1.dat")
 //~ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242.physics_foot.daq.VTX.1.dat")
 {  
-  Int_t maxevents=300;
+  Int_t maxevents=999999999999;
   TString fExpName="GSI/";
   GlobalPar::Instance();
   GlobalPar::GetPar()->Print();
 
   TAGroot tagr;
   TAGgeoTrafo geoTrafo;
-  geoTrafo.FromFile();
+  TString parFileName = Form("./geomaps/%sFOOT_geo.map", fExpName.Data());
+  geoTrafo.FromFile(parFileName);
 
   tagr.SetCampaignNumber(1);
   tagr.SetRunNumber(GetRunNumber(name));
@@ -313,16 +316,17 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
       }//end of bm+vtx combo events
       bm_project=bmgeo->ProjectFromPversR0(pbmntutracktr->GetPvers(), pbmntutracktr->GetR0(),bmgeo->GetMylar1().Z());
       ((TH2D*)(f_out->Get("BM_mylar1_bmsys")))->Fill(bm_project.X(),bm_project.Y());
+      bm_project=geoTrafo.FromBMLocalToGlobal(bm_project);
+      ((TH2D*)(f_out->Get("BM_mylar1_glbsys")))->Fill(bm_project.X(),bm_project.Y());
       bm_project=bmgeo->ProjectFromPversR0(pbmntutracktr->GetPvers(), pbmntutracktr->GetR0(),bmgeo->GetMylar2().Z());
       ((TH2D*)(f_out->Get("BM_mylar2_bmsys")))->Fill(bm_project.X(),bm_project.Y());
-      
-      
+      bm_project=geoTrafo.FromBMLocalToGlobal(bm_project);
+      ((TH2D*)(f_out->Get("BM_mylar2_glbsys")))->Fill(bm_project.X(),bm_project.Y());
     }
   }
   
   tagr.EndEventLoop();
   
-  outFile->File()->ls();   
   outFile->Print();
   outFile->Close();
   

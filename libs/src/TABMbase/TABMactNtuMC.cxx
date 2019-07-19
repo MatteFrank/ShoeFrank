@@ -29,11 +29,11 @@ TABMactNtuMC::TABMactNtuMC(const char* name,
     fpParGeo(dscbmgeo),
     fpEvtStr(evStr)
 {
- if (fDebugLevel > 0)
-    Info("Action()"," Creating the Beam Monitor MC tuplizer action\n");
-  AddPara(fpParCon, "TABMparCon");
-  AddPara(fpParGeo, "TABMparGeo");
-  AddDataOut(fpNtuMC, "TABMntuRaw");
+ if (FootDebugLevel(1))
+   cout<<"TABMactNtuMC::default constructor::Creating the Beam Monitor MC tuplizer action"<<endl;
+ AddPara(fpParCon, "TABMparCon");
+ AddPara(fpParGeo, "TABMparGeo");
+ AddDataOut(fpNtuMC, "TABMntuRaw");
 }
 
 //------------------------------------------+-----------------------------------
@@ -61,8 +61,8 @@ Bool_t TABMactNtuMC::Action()
   TVector3 loc, gmom, mom,  glo;
   p_nturaw->SetupClones();//se non c'è l'array di h, lo crea
    
-   if (fDebugLevel > 0)
-      Info("Action()","Processing n :: %2d hits \n",fpEvtStr->BMNn);
+  if (FootDebugLevel(1))
+    cout<<"TABMactNtuMC::Processing "<<fpEvtStr->BMNn<<" hits"<<endl;
    
   //loop for double hits and hits with energy less than enxcell_cut:
   for (Int_t i = 0; i < fpEvtStr->BMNn; i++) {
@@ -155,8 +155,8 @@ Bool_t TABMactNtuMC::Action()
       //shift the t0 and change the strelations:
       realrdrift = rdriftxcell.at(i);
        
-    if(p_bmcon->GetBMdebug()>=3)
-      cout<<"In the charging hits loop: I'm going to charge hit number:"<<i<<"/"<<fpEvtStr->BMNn<<"  tobecharged="<<tobecharged[i]<<"  view="<<view<<"  lay="<<lay<<"  cell="<<cell<<"  rdriftxcell.at(i)="<<rdriftxcell.at(i)<<"  time="<<p_bmcon->InverseStrel(rdriftxcell.at(i))<<endl;
+      if(FootDebugLevel(4))
+        cout<<"TABMactNtuMC::Action::In the charging hits loop: I'm going to charge hit number:"<<i<<"/"<<fpEvtStr->BMNn<<"  tobecharged="<<tobecharged[i]<<"  view="<<view<<"  lay="<<lay<<"  cell="<<cell<<"  rdriftxcell.at(i)="<<rdriftxcell.at(i)<<"  time="<<p_bmcon->InverseStrel(rdriftxcell.at(i))<<endl;
       
       //create hit
       TABMntuHit *mytmp = p_nturaw->NewHit(view, lay, cell, rdriftxcell.at(i), p_bmcon->InverseStrel(rdriftxcell.at(i)), 0.);
@@ -187,6 +187,10 @@ Bool_t TABMactNtuMC::Action()
     cout<<"TABMactNtuMC::ERROR!!!!!!!!  nhits="<<nhits<<"  hitsrandtot="<<hitsrandtot<<"  remainhitsn"<<remainhitsn<<"  nrealhits"<<nrealhits<<endl;
   
   fpNtuMC->SetBit(kValid);
+  
+  if(FootDebugLevel(2))
+    cout<<"TABMactNtuMC::Action():: done without problems!"<<endl;
+  
   return kTRUE;
 }
 
@@ -207,6 +211,8 @@ void TABMactNtuMC::CreateFakeHits(Int_t nfake, Int_t &nhits)
   TABMntuRaw* p_nturaw  = (TABMntuRaw*) fpNtuMC->Object();
 
   Int_t plane, view, cell;
+  if(FootDebugLevel(2))
+    cout<<"TABMactNtuMC::CreateFakeHits:: I'm going to create "<<nfake<<" number of fake hits"<<endl;
   for(Int_t i=0;i<nfake;i++){
      
     do{
@@ -222,10 +228,9 @@ void TABMactNtuMC::CreateFakeHits(Int_t nfake, Int_t &nhits)
     Double_t rdrift=gRandom->Uniform(0.,0.9);
 
     //charge the fake hits
-    TABMntuHit *mytmp = p_nturaw->NewHit(
-                    view, plane, cell,        
-                    rdrift, p_bmcon->InverseStrel(rdrift), -1.);
-
+    if(FootDebugLevel(3))
+      cout<<"TABMactNtuMC::CreateFakeHits::I'm going to charge a fake hit view="<<view<<"  plane="<<plane<<"  cell="<<cell<<"  rdrift="<<rdrift<<"  time="<<p_bmcon->InverseStrel(rdrift)<<endl;
+    TABMntuHit *mytmp = p_nturaw->NewHit(view, plane, cell, rdrift, p_bmcon->InverseStrel(rdrift), -1.);
     if(p_bmcon->ResoEval(rdrift)>0)
       mytmp->SetSigma(p_bmcon->ResoEval(rdrift));
     else
@@ -234,6 +239,10 @@ void TABMactNtuMC::CreateFakeHits(Int_t nfake, Int_t &nhits)
     mytmp->SetIsFake(2);
     nhits++;  
   }
+  
+  if(FootDebugLevel(2))
+    cout<<"TABMactNtuMC::CreateFakeHits::done"<<endl;
+  
   return;
 }
 

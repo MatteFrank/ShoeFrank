@@ -302,7 +302,7 @@ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_
        bmcon->SetT0(bmmap->tdc2cell(i),(Double_t)((TH1D*)gDirectory->Get(tmp_char))->GetBinCenter(tdc_peak)); 
       }
       else{
-        cout<<"WARNING IN BmBooter::EvaluateT0! too few events to evaluate T0 in tdc_cha=i="<<i<<"  cellid="<<bmmap->tdc2cell(i)<<"  Number of events="<<((TH1D*)gDirectory->Get(tmp_char))->GetEntries()<<"  T0 for this channel will wrongly set to -20000"<<endl;
+        cout<<"WARNING  too few events to evaluate T0 in tdc_cha=i="<<i<<"  cellid="<<bmmap->tdc2cell(i)<<"  Number of events="<<((TH1D*)gDirectory->Get(tmp_char))->GetEntries()<<"  T0 for this channel will wrongly set to -20000"<<endl;
         bmcon->SetT0(bmmap->tdc2cell(i),-20000.);
       }
     }  
@@ -310,7 +310,7 @@ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_
   //final check
   for(Int_t i=0;i<36;i++)
     if(bmcon->GetT0(i)==-10000)
-      cout<<"WARNING IN BmBooter::EvaluateT0! channel not considered in tdc map tdc_cha=i="<<i<<"  cellid="<<bmmap->tdc2cell(i)<<" T0 for this channel will set to -10000"<<endl;
+      cout<<"WARNING EvaluateT0! channel not considered in tdc map tdc_cha=i="<<i<<"  cellid="<<bmmap->tdc2cell(i)<<" T0 for this channel will set to -10000"<<endl;
   
   //  if(bmcon->GetBMdebug()>3)
   bmcon->CoutT0();

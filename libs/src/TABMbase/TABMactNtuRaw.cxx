@@ -114,8 +114,8 @@ Bool_t TABMactNtuRaw::Action()
     }
     
     Double_t i_drift = p_parcon->FirstSTrel(i_time);
-    if(p_parcon->GetBMdebug()>10)
-      cout<<"TABMactNtuRaw:: charging hit i_time="<<i_time<<"  i_drift="<<i_drift<<"  cell="<<hit.Cell()<<"  view="<<hit.View()<<"  Plane="<<hit.Plane()<<"   hit.time="<<hit.Time()<<"  T0="<<p_parcon->GetT0(hit.View(),hit.Plane(),hit.Cell())<<"  trigtime="<<p_datraw->GetTrigtime()<<endl;
+    if(FootDebugLevel(3))
+      cout<<"TABMactNtuRaw::Action:: charging hit i_time="<<i_time<<"  i_drift="<<i_drift<<"  cell="<<hit.Cell()<<"  view="<<hit.View()<<"  Plane="<<hit.Plane()<<"   hit.time="<<hit.Time()<<"  T0="<<p_parcon->GetT0(hit.View(),hit.Plane(),hit.Cell())<<"  trigtime="<<p_datraw->GetTrigtime()<<endl;
     
     
     //create the hit (no selection of hit)
@@ -131,7 +131,7 @@ Bool_t TABMactNtuRaw::Action()
   }
   
   //print cell_occupy
-  if(p_parcon->GetBMdebug()>9)
+  if(FootDebugLevel(3))
     p_nturaw->PrintCellOccupy();
 
   vector<Int_t>pivot (8,0);
@@ -151,8 +151,10 @@ Bool_t TABMactNtuRaw::Action()
   } 
   
   fpNtuRaw->SetBit(kValid);
+  
+  if(FootDebugLevel(2))
+    cout<<"TABMacnNtuRaw::Action():: done"<<endl;
   return kTRUE;
-
 }
 
 

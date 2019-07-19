@@ -151,7 +151,7 @@ Bool_t TABMparMap::FromFile(const TString& name, TABMparGeo *bmgeo) {
     return kTRUE;
   }
   
-  if(kFALSE){
+  if(FootDebugLevel(1)){
     cout<<"TABMparMap::print tdc2cell_vec"<<endl;
     for(Int_t i=0;i<tdc2cell_vec.size();i++)
       cout<<"i="<<i<<"  tdc2cell_vec[i]="<<tdc2cell_vec[i]<<endl;

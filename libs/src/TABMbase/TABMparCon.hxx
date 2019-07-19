@@ -28,7 +28,6 @@ class TABMparCon : public TAGparTools {
     virtual         ~TABMparCon();
 
     //setters
-    void SetBMdebug(Int_t deb_in){bm_debug=deb_in; return;};
     void SetIsMC(Bool_t ism){m_isMC=ism; return;};
     void SetRdriftCut(Float_t Rdcut){rdrift_cut=Rdcut; return;};
     void SetEnxcellcut(Float_t Encut){enxcell_cut=Encut; return;};
@@ -46,7 +45,6 @@ class TABMparCon : public TAGparTools {
     Int_t GetRejmaxcut(){return rejmax_cut;};
     Int_t GetFitterIndex(){return fitter_index;};
     Int_t GetPrefitEnable(){return prefit_enable;};
-    Int_t GetBMdebug(){return bm_debug;};
     Int_t GetT0switch(){return t0_switch;};
     Float_t GetT0sigma(){return t0_sigma;};
     Float_t GetHitTimecut(){return hit_timecut;};
@@ -101,7 +99,6 @@ class TABMparCon : public TAGparTools {
     Int_t    maxnhit_cut; //cut on the maximum number of hit for the reconstruction algorithm
     Int_t    rejmax_cut; //maximum number of hit that can be rejected during the reconstruction 
     Int_t    fitter_index;
-    Int_t    bm_debug;//index for the bm_debug, (it is set at least to the global debug level)
     //~ string   datafile_name;//name of the input data file 
     Int_t    strel_switch;//flag to choose the st relations (1=garfield, 0=FIRST embedded)
     Int_t    prefit_enable;//flag to enable or disable the prefit

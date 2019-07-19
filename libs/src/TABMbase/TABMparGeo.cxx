@@ -93,94 +93,98 @@ Bool_t TABMparGeo::FromFile(const TString& name)
    if (!Open(nameExp)) return false;
    
    ReadItem(fWireLayersN);
-   if(fDebugLevel)
+   
+   if(FootDebugLevel(1))
+      cout<<"TABMparGeo::FromFile() read parameters:"<<endl;
+   
+   if(FootDebugLevel(1))
       cout << endl << "  Wire layer "<< fWireLayersN << endl;
    
    ReadItem(fLayersN);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Layers: " <<  fLayersN << endl;
    
    ReadItem(fSensesN);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Senses: " <<  fSensesN << endl;
    
    ReadItem(fSenseRadius);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Sense Radius:  "<< fSenseRadius << endl;
    
    ReadStrings(fSenseMat);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Sense wire material:  "<< fSenseMat << endl;
    
    ReadItem(fSenseDensity);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Sense wire density:  "<< fSenseDensity << endl;
    
    ReadItem(fFieldRadius);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Field wire Radius:  "<< fFieldRadius << endl;
    
    ReadStrings(fFieldMat);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Field wire material:  "<< fFieldMat << endl;
    
    ReadItem(fFieldDensity);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Field wire density:  "<< fFieldDensity << endl;
    
    
    ReadItem(fFoilThick);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Foil thickness:  "<< fFoilThick << endl;
    
    ReadStrings(fFoilMat);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Foil material:  "<< fFoilMat << endl;
    
    ReadItem(fFoilDensity);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Foil density:  "<< fFoilDensity << endl;
 
    ReadItem(fBmStep);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  BM step  "<< fBmStep << endl;
    
    ReadItem(fBmCellWide);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  BM cell width  "<< fBmCellWide << endl;
    
    ReadItem(fBmDplane);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  BM delta plane  "<< fBmDplane << endl;
    
    ReadStrings(fGasMixture);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  BM gas mixture  "<< fGasMixture << endl;
    
    ReadStrings(fGasProp);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  BM gas proportion  "<< fGasProp << endl;
    
    ReadStrings(fGasDensities);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  BM gas densities  "<< fGasDensities << endl;
    
    ReadItem(fGasDensity);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  BM gas mixture density:  "<< fGasDensity << endl;
 
    ReadItem(fShieldThick);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Shielding Thickness:  "<< fShieldThick << endl;
    
    
    ReadVector3(fBmSideDch);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout << "  Size: "
       << Form("%f %f %f", fBmSideDch[0], fBmSideDch[1], fBmSideDch[2]) << endl;
    
    ReadVector3(fBmDeltaDch);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout << "  Delta: "
       << Form("%f %f %f", fBmDeltaDch[0], fBmDeltaDch[1], fBmDeltaDch[2]) << endl;
    
@@ -189,13 +193,13 @@ Bool_t TABMparGeo::FromFile(const TString& name)
    for(Int_t i=0;i<36;i++){
      // read wire align position
      ReadVector3(fWireAlign);
-     if(fDebugLevel)
+     if(FootDebugLevel(2))
         cout << "  Alignment: "
         << Form("%f %f %f", fWireAlign[0], fWireAlign[1], fWireAlign[2]) << endl;
      
      // read wire tilt angles
      ReadVector3(fWireTilt);
-     if(fDebugLevel)
+     if(FootDebugLevel(2))
         cout  << "  Tilt: "
         << Form("%f %f %f", fWireTilt[0], fWireTilt[1], fWireTilt[2]) << endl;
   
@@ -234,8 +238,8 @@ void TABMparGeo::InitGeo()
    Int_t cellid, cell;
    TVector3 wiredir;
    
-   if (fDebugLevel) 
-     cout<<"I'll printout the BM wire positions"<<endl;
+   if (FootDebugLevel(2)) 
+     cout<<"TABMparGeo::InitGeo()::I'll printout the BM wire positions"<<endl;
      
    for(int iLayer = 0; iLayer < fLayersN; ++iLayer) {
       Int_t iWire = 0;
@@ -276,7 +280,7 @@ void TABMparGeo::InitGeo()
               fPosCY[iWire][iLayer][0] = wiredir.Y();
               fPosCZ[iWire][iLayer][0] = wiredir.Z();
               
-              if (fDebugLevel){ 
+              if (FootDebugLevel(2)){ 
                 cout<<"cellid="<<cellid<<"   traslation="<<GetTransfo(cellid)->GetTranslation()[0]<<"  "<<GetTransfo(cellid)->GetTranslation()[1]<<"  "<<GetTransfo(cellid)->GetTranslation()[2]<<endl;
                 cout<<"pos= "<<fPosX[iWire][iLayer][0]<<"  "<<fPosY[iWire][iLayer][0]<<"  "<<fPosZ[iWire][iLayer][0]<<endl;
                 cout<<"dir= "<<fPosCX[iWire][iLayer][0]<<"  "<<fPosCY[iWire][iLayer][0]<<"  "<<fPosCZ[iWire][iLayer][0]<<endl;
@@ -292,7 +296,7 @@ void TABMparGeo::InitGeo()
               fPosCY[iWire][iLayer][1] = wiredir.Y();
               fPosCZ[iWire][iLayer][1] = wiredir.Z();              
               
-              if (fDebugLevel) {
+              if (FootDebugLevel(2)) {
                 cout<<"cellid="<<cellid<<"   traslation="<<GetTransfo(cellid)->GetTranslation()[0]<<"  "<<GetTransfo(cellid)->GetTranslation()[1]<<"  "<<GetTransfo(cellid)->GetTranslation()[2]<<endl;
                 cout<<"pos= "<<fPosX[iWire][iLayer][1]<<"  "<<fPosY[iWire][iLayer][1]<<"  "<<fPosZ[iWire][iLayer][1]<<endl;
                 cout<<"dir= "<<fPosCX[iWire][iLayer][1]<<"  "<<fPosCY[iWire][iLayer][1]<<"  "<<fPosCZ[iWire][iLayer][1]<<endl;
@@ -323,28 +327,31 @@ void TABMparGeo::DefineMaterial()
    
    // Cathode material field wire
    TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fFieldMat, fFieldDensity);
-   if (fDebugLevel) {
+   if (FootDebugLevel(1))
+     cout<<"TABMparGeo::DefineMaterial::I'll printout the BM material"<<endl;
+     
+   if (FootDebugLevel(1)) {
       printf("Cathode material:\n");
       mat->Print();
    }
    
    // Anode material field wire
    mat = TAGmaterials::Instance()->CreateMaterial(fSenseMat, fSenseDensity);
-   if (fDebugLevel) {
+   if (FootDebugLevel(1)) {
       printf("Anode material:\n");
       mat->Print();
    }
    
    // Gas mixture
    TGeoMixture* mix = TAGmaterials::Instance()->CreateMixture(fGasMixture, fGasDensities, fGasProp, fGasDensity);
-   if (fDebugLevel) {
+   if (FootDebugLevel(1)) {
       printf("Gas mixture material:\n");
       mix->Print();
    }
    
    // Mylar
    mat = TAGmaterials::Instance()->CreateMaterial(fFoilMat, fFoilDensity);
-   if (fDebugLevel) {
+   if (FootDebugLevel(1)) {
       printf("Anode material:\n");
       mat->Print();
    }

@@ -38,7 +38,6 @@ TABMparCon::TABMparCon()
   rdrift_cut (2.),
   chi2red_cut (5.),
   fitter_index (0),
-  bm_debug(0),
   minnhit_cut(6),
   maxnhit_cut(20),
   rejmax_cut(36),
@@ -80,54 +79,51 @@ Bool_t TABMparCon::FromFile(const TString& name) {
   
   if (!Open(nameExp)) return false;
    
-  if(fDebugLevel)
-     cout<<"Beam Monitor read config file from "<<nameExp.Data()<<endl;
+  if(FootDebugLevel(1))
+     cout<<"TABMparCon::FromFile:: read config file from "<<nameExp.Data()<<endl<<"Now I'll printout the BM FromFile read parameters"<<endl;
 
   //cuts 
   ReadItem(minnhit_cut);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"minnhit_cut="<<minnhit_cut<<endl;
   ReadItem(maxnhit_cut);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"maxnhit_cut="<<maxnhit_cut<<endl;
   ReadItem(rejmax_cut);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"rejmax_cut="<<rejmax_cut<<endl;
   ReadItem(chi2red_cut);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"chi2red_cut="<<chi2red_cut<<endl;
 
   //track reco
   ReadItem(fitter_index);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"fitter_index="<<fitter_index<<endl;
   ReadItem(prefit_enable);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"prefit_enable="<<prefit_enable<<endl;
   ReadItem(num_ite);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"num_ite="<<num_ite<<endl;
   ReadItem(par_move);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"par_move="<<par_move<<endl;
   ReadItem(strel_switch);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"strel_switch="<<strel_switch<<endl;
 
   //other parameters
-  ReadItem(bm_debug);
-  if(fDebugLevel)
-     cout<<"bm_debug="<<bm_debug<<endl;
   ReadItem(hit_timecut);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"hit_timecut="<<hit_timecut<<endl;
 
   //MC parameters
   ReadItem(smearrdrift);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"smearrdrift="<<smearrdrift<<endl;
   ReadItem(smearhits);
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
      cout<<"smearhits="<<smearhits<<endl;
 
 return false;
@@ -161,14 +157,6 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
         rdrift_cut = myArg1;
       else {
 	      Error(""," Plane Map Error:: check config file!! (R)");
-	      return kTRUE;
-        }
-    }else if(strchr(bufConf,'D')) {
-      sscanf(bufConf, "D %d",&myArgInt);
-      if(myArgInt>=0) 
-        bm_debug = myArgInt;
-      else {
-	      Error(""," Plane Map Error:: check config file!! (D)");
 	      return kTRUE;
         }
     }else if(strchr(bufConf,'H')) {
@@ -278,7 +266,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
   v_t0s=fileT0;
 
   //check if the T0 are ok
-  if(bm_debug> 0) {
+  if(FootDebugLevel(1)) {
      for(Int_t i=0;i<36;i++) {
         cout<<"BM T0: "<<v_t0s[i]<<endl;
         if(v_t0s[i]==-10000)
@@ -335,7 +323,6 @@ void TABMparCon::Clear(Option_t*)
   rdrift_cut = 2.;
   chi2red_cut = 5.;
   fitter_index = 0;
-  bm_debug=0;
   minnhit_cut=6;
   maxnhit_cut=20;
   rejmax_cut=36;

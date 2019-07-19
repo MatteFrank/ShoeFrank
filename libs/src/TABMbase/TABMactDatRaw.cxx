@@ -80,11 +80,13 @@ void TABMactDatRaw::CreateHistogram(){
 //! Action.
 Bool_t TABMactDatRaw::Action() {
 
-  if(GetDebugLevel()) { cout<<" Entering the TABMactDatRaw action "<<endl; }
     
    TAGdaqEvent*   p_datdaq = (TAGdaqEvent*)  fpDatDaq->Object();
 
    Int_t nFragments = p_datdaq->GetFragmentsN();
+
+  if(FootDebugLevel(1)) 
+    cout<<"TABMactDatRaw::Action():: I'm going to charge "<<nFragments<<" number of fragments"<<endl;
    
    for (Int_t i = 0; i < nFragments; ++i) {
       
@@ -96,6 +98,9 @@ Bool_t TABMactDatRaw::Action() {
    }
    
    fpDatRaw->SetBit(kValid);
+   
+  if(FootDebugLevel(2)) 
+    cout<<"TABMactDatRaw::Action():: done"<<endl;   
    
    return kTRUE;
 }
@@ -149,13 +154,13 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt) {
            fpRawMapX->AddBinContent(fpRawMapX->GetBin(plane*2+1,cell*2+up+2),1);
          }  
        }    
-       if(p_parcon->GetBMdebug()>10)
+       if(FootDebugLevel(3))
          cout<<"BM hit charged : channel="<<channel<<"  tdc2cell="<<p_parmap->tdc2cell(channel)<<"  measurement/10.="<<measurement/10.<<"  T0="<<p_parcon->GetT0(p_parmap->tdc2cell(channel))<<"  triggertime="<<used_trigger<<"  hittime="<<(((Double_t) measurement)/10.) - p_parcon->GetT0(p_parmap->tdc2cell(channel))-used_trigger<<"  hittimecut="<<p_parcon->GetHitTimecut()<<endl;
      }else if(channel!=p_parmap->GetTrefCh()){
        if (ValidHistogram())
          fpRawDiscAccept->Fill(-1);    
          p_datraw->AddDischarged();    
-         if(p_parcon->GetBMdebug()>10)
+         if(FootDebugLevel(3))
            cout<<"BM hit DIScharged: channel="<<channel<<"  tdc2cell="<<p_parmap->tdc2cell(channel)<<"  measurement/10.="<<measurement/10.<<"  T0="<<p_parcon->GetT0(p_parmap->tdc2cell(channel))<<"  triggertime="<<used_trigger<<"  hittime="<<(((Double_t) measurement)/10.) - p_parcon->GetT0(p_parmap->tdc2cell(channel))-used_trigger<<"  hittimecut="<<p_parcon->GetHitTimecut()<<endl;
        }
    }
