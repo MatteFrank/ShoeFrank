@@ -291,7 +291,6 @@ string TACAparGeo::PrintRotations()
     TVector3 fCenter = fpFootGeo->GetCACenter();
     TVector3  fAngle = fpFootGeo->GetCAAngles();
     
-    cout<<fAngle.X()<< fAngle.Y()<< fAngle.Z()<<endl;
     if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
 	  
       ss << PrintCard("ROT-DEFI", "300.", "", "",

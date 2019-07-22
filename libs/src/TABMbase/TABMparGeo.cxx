@@ -792,7 +792,6 @@ string TABMparGeo::PrintRotations()
     TVector3 fCenter = fpFootGeo->GetBMCenter();
     TVector3  fAngle = fpFootGeo->GetBMAngles();
     
-    cout<<fAngle.X()<< fAngle.Y()<< fAngle.Z()<<endl;
     if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
 	  
       ss << PrintCard("ROT-DEFI", "300.", "", "",
