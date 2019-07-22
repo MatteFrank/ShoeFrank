@@ -131,6 +131,42 @@ TGeoVolume* TASTparGeo::BuildStartCounter(const char *stName )
    return start;
 }
 
+
+//_____________________________________________________________________________
+string TASTparGeo::PrintRotations()
+{
+  stringstream ss;
+
+  if(GlobalPar::GetPar()->IncludeST()){
+
+    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  
+    TVector3 fCenter = fpFootGeo->GetSTCenter();
+    TVector3  fAngle = fpFootGeo->GetSTAngles();
+    
+    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
+	  
+      ss << PrintCard("ROT-DEFI", "300.", "", "",
+		      Form("%f",-fCenter.X()), Form("%f",-fCenter.Y()),
+		      Form("%f",-fCenter.Z()), "st") << endl;
+      if(fAngle.X()!=0)
+	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", "", "st") << endl;
+      if(fAngle.Y()!=0)
+	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", "", "st") << endl;
+      if(fAngle.Z()!=0)
+	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", "", "st") << endl;
+      ss << PrintCard("ROT-DEFI", "300.", "", "",
+		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+		      Form("%f",fCenter.Z()), "st") << endl;
+      
+    }
+  }
+
+  return ss.str();
+
+}
+
+
 //_____________________________________________________________________________
 string TASTparGeo::PrintBodies( ) {
   
@@ -149,6 +185,11 @@ string TASTparGeo::PrintBodies( ) {
       printf("GeoTrafo default action found\n");
 
     TVector3  fCenter = fpFootGeo->GetSTCenter();
+    TVector3  fAngle = fpFootGeo->GetSTAngles();
+
+    
+    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+      outstr << "$start_transform st" << endl;
 
     outstr << setiosflags(ios::fixed) << setprecision(6);
     outstr << "RPP stc     "  << fCenter[0]-fSize[0]/2. << " " << fCenter[0]+fSize[0]/2 << " " <<
@@ -159,6 +200,9 @@ string TASTparGeo::PrintBodies( ) {
     outstr << "XYP stcmyl1    "  << fCenter[2]-fSize[2]/2. - 0.001<<  endl;
     //Mylar that is 10\mum thick
     outstr << "XYP stcmyl2    "  << fCenter[2]+fSize[2]/2. + 0.001<<  endl;
+    
+    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+      outstr << "$end_transform" << endl;
   }
 
   return outstr.str();

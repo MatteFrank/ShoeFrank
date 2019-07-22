@@ -35,6 +35,7 @@ public:
    
    TGeoVolume*     BuildStartCounter(const char *bmName = "ST");
 
+  string PrintRotations();
   string PrintBodies();
   string PrintRegions();
   string PrintAssignMaterial();
