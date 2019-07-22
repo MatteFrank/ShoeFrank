@@ -147,9 +147,9 @@ void TAITactNtuMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
       TVector3 posOut(fpEvtStr->ITRxout[i], fpEvtStr->ITRyout[i], fpEvtStr->ITRzout[i]);
       posIn = pGeoMap->Detector2Sensor(sensorId, posIn);
       posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
-      Int_t genPartID = fpEvtStr->ITRid[i] - 1;
+      Int_t genPartIdx = fpEvtStr->ITRid[i] - 1;
       
-      DigitizeHit(sensorId, fpEvtStr->ITRde[i], posIn, posOut, i, genPartID);
+      DigitizeHit(sensorId, fpEvtStr->ITRde[i], posIn, posOut, i, genPartIdx);
    }
 }
 
@@ -172,7 +172,7 @@ void TAITactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents
       TVector3 posOut(hit->GetOutPosition());
       Int_t sensorId = hit->GetLayer(); // sensorId
       Float_t de     = hit->GetDeltaE();
-      Int_t  trackId = hit->GetID();
+      Int_t  trackIdx = hit->GetTrackId();
       
       // used for pileup ...
       if (fgPileup && storedEvents <= fgPileupEventsN) {
@@ -189,15 +189,15 @@ void TAITactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents
       posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);
       posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
       
-      DigitizeHit(sensorId, de, posIn, posOut, i, trackId);
+      DigitizeHit(sensorId, de, posIn, posOut, i, trackIdx);
    }
 }
 
 //------------------------------------------+-----------------------------------
-void TAITactNtuMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackId)
+void TAITactNtuMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
 {
    if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2])) return;
-   FillPixels(sensorId, idx, trackId);
+   FillPixels(sensorId, idx, trackIdx);
    
    if (ValidHistogram()) {
       fpHisDeTot->Fill(de*TAGgeoTrafo::GevToKev());
@@ -210,7 +210,7 @@ void TAITactNtuMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVec
 }
 
 //------------------------------------------+-----------------------------------
-void TAITactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackId )
+void TAITactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx )
 {
 	TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
 	TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
@@ -229,7 +229,7 @@ void TAITactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackId )
          
 			TAITntuHit* pixel = (TAITntuHit*)pNtuRaw->NewPixel(sensorId, 1., line, col);
 
-         pixel->AddMcTrackId(trackId, hitId);
+         pixel->AddMcTrackId(trackIdx, hitId);
 
 
          if(FootDebugLevel(1))
