@@ -668,10 +668,6 @@ string TABMparGeo::PrintBodies(){
   if(GlobalPar::GetPar()->IncludeBM()){
     
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-    if (!fpFootGeo)
-      printf("No default GeoTrafo action available yet\n");
-    else 
-      printf("GeoTrafo default action found\n");
 
     //Reading the BM global position from global map file.
     TVector3  fCenter = fpFootGeo->GetBMCenter();

@@ -362,16 +362,6 @@ string TADIparGeo::PrintBodies(){
     TVector3  fCenter = fpFootGeo->GetDICenter();
    
      ss << "* ***Dipoles bodies" << endl;
-
-     // for (int i=0; i<2; i++){
-     //   cout << GetMagnetPar(i).MagnetIdx << endl;
-     //   cout << GetMagnetPar(i).Size.X() << " " << GetMagnetPar(i).Size.Y() << " "
-     // 	    << GetMagnetPar(i).Size.Z() << endl;
-     //   cout << GetMagnetPar(i).ShieldSize.X() << " " << GetMagnetPar(i).ShieldSize.Y() << " "
-     // 	    << GetMagnetPar(i).ShieldSize.Z() << endl;
-     //   cout << GetMagnetPar(i).Position.X() << " " << GetMagnetPar(i).Position.Y() << " "
-     // 	    << GetMagnetPar(i).Position.Z() << endl;
-     // }
      
      for (int iMag=0; iMag<GetMagnetsN(); iMag++){
        
