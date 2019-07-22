@@ -244,9 +244,7 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
    Double_t al       = 0;
 
    hit->SetEvent(fEventNumber);
-
-    hit->SetEvent(fEventNumber);
-
+   
     G4bool kElectron  = mcHit->GetParticleName().contains("e-");
 
     if(!kElectron){
