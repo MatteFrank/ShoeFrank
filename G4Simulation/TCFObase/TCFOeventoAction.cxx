@@ -219,13 +219,12 @@ void TCFOeventoAction::FillTrack()
         initmom = fMcTrack->GetHit(i)->GetInitP();
         finalpos = fMcTrack->GetHit(i)->GetFinalPos();
         finalmom = fMcTrack->GetHit(i)->GetFinalP();
-        /// electrons not registered to limit output file size
-        if(mass > 0.511) hit->AddPart(parentID,trackID,charge,-1,nbaryon,-1,flukaID,
-                                      initpos.X(),initpos.Y(),initpos.Z(),
-                                      finalpos.X(),finalpos.Y(),finalpos.Z(),
-                                      initmom.X(),initmom.Y(),initmom.Z(),
-                                      finalmom.X(),finalmom.Y(),finalmom.Z(),
-                                      mass,time,tof,length);
+        hit->AddPart(parentID,trackID,charge,-1,nbaryon,-1,flukaID,
+                     initpos.X(),initpos.Y(),initpos.Z(),
+                     finalpos.X(),finalpos.Y(),finalpos.Z(),
+                     initmom.X(),initmom.Y(),initmom.Z(),
+                     finalmom.X(),finalmom.Y(),finalmom.Z(),
+                     mass,time,tof,length);
     }
 }
 
@@ -245,7 +244,8 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
 
    hit->SetEvent(fEventNumber);
    
-    G4bool kElectron  = mcHit->GetParticleName().contains("e-");
+  // G4bool kElectron  = mcHit->GetParticleName().contains("e-");
+   G4bool kElectron  = false; // do not cut on e-
 
     if(!kElectron){
         if (fIrCollId >= 0 && fDetName==TCSTgeometryConstructor::GetSDname())
