@@ -278,6 +278,42 @@ void TACAparGeo::SetCrystalColorOff(Int_t idx)
       vol->SetLineColor(GetDefaultModCol());
 }
 
+
+//_____________________________________________________________________________
+string TACAparGeo::PrintRotations()
+{
+  stringstream ss;
+
+  if(GlobalPar::GetPar()->IncludeCA()){
+
+    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  
+    TVector3 fCenter = fpFootGeo->GetCACenter();
+    TVector3  fAngle = fpFootGeo->GetCAAngles();
+    
+    cout<<fAngle.X()<< fAngle.Y()<< fAngle.Z()<<endl;
+    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
+	  
+      ss << PrintCard("ROT-DEFI", "300.", "", "",
+		      Form("%f",-fCenter.X()), Form("%f",-fCenter.Y()),
+		      Form("%f",-fCenter.Z()), "ca") << endl;
+      if(fAngle.X()!=0)
+	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", "", "ca") << endl;
+      if(fAngle.Y()!=0)
+	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", "", "ca") << endl;
+      if(fAngle.Z()!=0)
+	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", "", "ca") << endl;
+      ss << PrintCard("ROT-DEFI", "300.", "", "",
+		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+		      Form("%f",fCenter.Z()), "ca") << endl;
+      
+    }
+  }
+
+  return ss.str();
+
+}
+
 //_____________________________________________________________________________
 string TACAparGeo::PrintBodies(){
    
@@ -288,8 +324,12 @@ string TACAparGeo::PrintBodies(){
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
     TVector3  fCenter = fpFootGeo->GetCACenter();
+    TVector3  fAngle = fpFootGeo->GetCAAngles();
    
      ss << "* ***Calorimeter" << endl;
+         
+     if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+       ss << "$start_transform ca" << endl;
 
      for (int iCal=0; iCal<GetCrystalsN(); iCal++){
        
@@ -308,6 +348,9 @@ string TACAparGeo::PrintBodies(){
 	      <<  fCenter.Z() + GetCrystalPosition(iCal).Z() - GetCrystalSize().Z()/2.<< " "
 	      <<  fCenter.Z() + GetCrystalPosition(iCal).Z() + GetCrystalSize().Z()/2.<< endl;
      }
+     
+     if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+       ss << "$end_transform" << endl;
      
    }
    

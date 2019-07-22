@@ -228,6 +228,7 @@ int main (int argc, char *argv[]) {
     outfile << itrGeo->PrintRotations();
     outfile << msdGeo->PrintRotations();
     outfile << twGeo->PrintRotations();
+    outfile << caGeo->PrintRotations();
 
     outfile << end.str();
 
