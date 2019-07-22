@@ -223,6 +223,7 @@ int main (int argc, char *argv[]) {
     outfile << caGeo->PrintAssignMaterial();
 
     // print rotations
+    outfile << bmGeo->PrintRotations();
     outfile << vtxGeo->PrintRotations();
     outfile << itrGeo->PrintRotations();
     outfile << msdGeo->PrintRotations();
