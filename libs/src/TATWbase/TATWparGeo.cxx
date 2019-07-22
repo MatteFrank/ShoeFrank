@@ -401,18 +401,22 @@ string TATWparGeo::PrintRotations()
     for (int i=0; i<GetNLayers(); i++){
       for (int j=0; j<GetNBars(); j++){      
   
-	pos.SetXYZ( fCenter.X() + GetBarPosition(i,j).X(),
-		    fCenter.Y() + GetBarPosition(i,j).Y(),
-		    fCenter.Z() + GetBarPosition(i,j).Z());
+	pos.SetXYZ(  GetBarPosition(i,j).X(),
+		     GetBarPosition(i,j).Y(),
+		     GetBarPosition(i,j).Z());
 
-	if(vTilt.at(i).at(j).Z()!=0){  
-	  ss << PrintCard("ROT-DEFI", "300.", "", "", "", Form("%f",fCenter.Y()-pos.Y()),
+
+	if(vTilt.at(i).at(j).Z()!=0){
+	  
+	  ss << PrintCard("ROT-DEFI", "300.", "", "",
+			  Form("%f",-fCenter.X()-pos.X()), Form("%f",-fCenter.Y()-pos.Y()),
+			  Form("%f",-fCenter.Z()-pos.Z()), Form("twZ_%d%02d",i,j)) << endl;
+	  ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",vTilt.at(i).at(j).Z()),"", "", 
 			  "", Form("twZ_%d%02d",i,j)) << endl;
-	  ss << PrintCard("ROT-DEFI", "300.", "", "", "", Form("%f",vTilt.at(i).at(j).Z()),
-			  "", Form("twZ_%d%02d",i,j)) << endl;
-	  ss << PrintCard("ROT-DEFI", "300.", "", "", Form("%f",fCenter.Y()+pos.Y()), "", 
-			  "", Form("twZ_%d%02d",i,j)) << endl;
-	
+	  ss << PrintCard("ROT-DEFI", "300.", "", "",
+			  Form("%f",fCenter.X()+pos.X()), Form("%f",fCenter.Y()+pos.Y()),
+			  Form("%f",fCenter.Z()+pos.Z()), Form("twZ_%d%02d",i,j)) << endl;
+			  
 	}
 	
       }
@@ -476,7 +480,7 @@ string TATWparGeo::PrintBodies()
 	if (vTilt.at(i).at(j).Z()!=0)
 	  ss << "$end_transform " << endl;
 
-      }
+      } 
     }
        
   }
