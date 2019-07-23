@@ -3,6 +3,7 @@
 #ifndef TCFOeventAction_h
 #define TCFOeventAction_h 1
 
+#include <map>
 #include "TCFObaseEventAction.hxx"
 #include "globals.hh"
 
@@ -32,6 +33,9 @@ class TCFOeventAction : public TCFObaseEventAction
     void   FillTrack();
     void   GetHitPerPlane(const G4Event* evt, G4int idColl);
     void   FillHits(TAMCevent* mcHit, TCGmcHit* hit);
+   
+    private:
+   std::map<int, int> fMapTrackIdx; 
 };
 
 #endif
