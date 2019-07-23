@@ -182,6 +182,7 @@ void TAFOeventDisplay::SetLocalReco()
    
    fReco->DisableTree();
    fReco->DisableSaveHits();
+   fReco->EnableHisto();
    
    if (fgTrackFlag) {
       fReco->SetTrackingAlgo(fgVtxTrackingAlgo[0]);
