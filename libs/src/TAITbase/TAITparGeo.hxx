@@ -78,10 +78,6 @@ public:
    //! Get Kapton density
    Float_t GetAlMatDensity()            const { return fAlMatDensity;     }
    
-   
-   // for MC Fluka
-   Int_t GetSensorID(Int_t layer, Int_t col, Int_t row)  { return layer*4*4 + col*4 + row; };
-
    // Define materials
    void    DefineMaterial();
 
