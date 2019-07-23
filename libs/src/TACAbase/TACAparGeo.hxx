@@ -53,6 +53,7 @@ public:
 
 
    // to print fluka files
+  string PrintRotations();
   string PrintBodies();
   string PrintRegions();
   string PrintAssignMaterial();

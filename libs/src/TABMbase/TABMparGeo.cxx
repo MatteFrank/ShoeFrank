@@ -663,20 +663,17 @@ void TABMparGeo::SetLayerColorOff(Int_t idx)
 //_____________________________________________________________________________
 string TABMparGeo::PrintBodies(){
     
-  stringstream outstr;
+  stringstream ss;
     
   if(GlobalPar::GetPar()->IncludeBM()){
     
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-    if (!fpFootGeo)
-      printf("No default GeoTrafo action available yet\n");
-    else 
-      printf("GeoTrafo default action found\n");
 
     //Reading the BM global position from global map file.
     TVector3  fCenter = fpFootGeo->GetBMCenter();
+    TVector3  fAngle = fpFootGeo->GetBMAngles();
 
-    outstr << "* ***Beam Monitor" << endl;
+    ss << "* ***Beam Monitor" << endl;
 
     int iSense[2]={-1,-1}, iField[2]={-1,-1};
     // stringstream ss;
@@ -685,28 +682,31 @@ string TABMparGeo::PrintBodies(){
   
     double shift = 0.00001;
   
-    outstr << setiosflags(ios::fixed) << setprecision(6);
+    ss << setiosflags(ios::fixed) << setprecision(6);
+    
+    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+      ss << "$start_transform bm" << endl;
 
-    outstr << "RPP BmnShiOu    "
-	   << fCenter[0]-fBmSideDch[0]/2.-fShieldThick << " "
-	   << fCenter[0]+fBmSideDch[0]/2.+fShieldThick << " "
-	   << fCenter[1]-fBmSideDch[1]/2.-fShieldThick << " "
-	   << fCenter[1]+fBmSideDch[1]/2.+fShieldThick << " "
-	   << fCenter[2]-fBmSideDch[2]/2.-1. << " "
-	   << fCenter[2]+fBmSideDch[2]/2.+1. << endl;
+    ss << "RPP BmnShiOu    "
+       << fCenter[0]-fBmSideDch[0]/2.-fShieldThick << " "
+       << fCenter[0]+fBmSideDch[0]/2.+fShieldThick << " "
+       << fCenter[1]-fBmSideDch[1]/2.-fShieldThick << " "
+       << fCenter[1]+fBmSideDch[1]/2.+fShieldThick << " "
+       << fCenter[2]-fBmSideDch[2]/2.-1. << " "
+       << fCenter[2]+fBmSideDch[2]/2.+1. << endl;
   
-    outstr << "RPP BmnShiIn    "
-	   << fCenter[0]-fBmSideDch[0]/2. << " "
-	   << fCenter[0]+fBmSideDch[0]/2. << " "
-	   << fCenter[1]-fBmSideDch[1]/2. << " "
-	   << fCenter[1]+fBmSideDch[1]/2. << " "
-	   << fCenter[2]-fBmSideDch[2]/2.-1. << " "
-	   << fCenter[2]+fBmSideDch[2]/2.+1. << endl;
+    ss << "RPP BmnShiIn    "
+       << fCenter[0]-fBmSideDch[0]/2. << " "
+       << fCenter[0]+fBmSideDch[0]/2. << " "
+       << fCenter[1]-fBmSideDch[1]/2. << " "
+       << fCenter[1]+fBmSideDch[1]/2. << " "
+       << fCenter[2]-fBmSideDch[2]/2.-1. << " "
+       << fCenter[2]+fBmSideDch[2]/2.+1. << endl;
   
-    outstr << "XYP BmnMyl0     " << fCenter[2]-fBmSideDch[2]/2.-fFoilThick << endl;
-    outstr << "XYP BmnMyl1     " << fCenter[2]-fBmSideDch[2]/2. << endl;
-    outstr << "XYP BmnMyl2     " << fCenter[2]+fBmSideDch[2]/2. << endl;
-    outstr << "XYP BmnMyl3     " << fCenter[2]+fBmSideDch[2]/2.+fFoilThick << endl;
+    ss << "XYP BmnMyl0     " << fCenter[2]-fBmSideDch[2]/2.-fFoilThick << endl;
+    ss << "XYP BmnMyl1     " << fCenter[2]-fBmSideDch[2]/2. << endl;
+    ss << "XYP BmnMyl2     " << fCenter[2]+fBmSideDch[2]/2. << endl;
+    ss << "XYP BmnMyl3     " << fCenter[2]+fBmSideDch[2]/2.+fFoilThick << endl;
  
 	
     // Cells
@@ -730,9 +730,9 @@ string TABMparGeo::PrintBodies(){
 	    }
 	    zmin = fCenter[2] + fPosZ[ic][il][iv] - fBmStep + fFieldRadius + shift;
 	    zmax = fCenter[2] + fPosZ[ic][il][iv] + fBmStep - fFieldRadius -shift;
-	    outstr << "RPP BmnC" << iv << cella << "   "
-		   << xmin << " " << xmax << " " << ymin << " " << ymax
-		   << " " << zmin << " " << zmax << endl;
+	    ss << "RPP BmnC" << iv << cella << "   "
+	       << xmin << " " << xmax << " " << ymin << " " << ymax
+	       << " " << zmin << " " << zmax << endl;
 	  }
 	  cella++;
 	}
@@ -747,27 +747,67 @@ string TABMparGeo::PrintBodies(){
 	  if ( (iw==fBmIdSense[0]) ||(iw==fBmIdSense[1]) ||
 	       (iw==fBmIdSense[2]) ){	
 	    iSense[iv]++;	
-	    outstr << "RCC BmnS" << iv << iSense[iv] << "   "
-		   << fCenter[0] + fPosX[iw][il][iv] << " "
-		   << fCenter[1] + fPosY[iw][il][iv] << " "
-		   << fCenter[2] + fPosZ[iw][il][iv] << " "
-		   << fPosCX[iw][il][iv] << " " << fPosCY[iw][il][iv] << " "
-		   << fPosCZ[iw][il][iv] << " " << fSenseRadius << endl;
+	    ss << "RCC BmnS" << iv << iSense[iv] << "   "
+	       << fCenter[0] + fPosX[iw][il][iv] << " "
+	       << fCenter[1] + fPosY[iw][il][iv] << " "
+	       << fCenter[2] + fPosZ[iw][il][iv] << " "
+	       << fPosCX[iw][il][iv] << " " << fPosCY[iw][il][iv] << " "
+	       << fPosCZ[iw][il][iv] << " " << fSenseRadius << endl;
 	  } else {
 	    iField[iv]++;     // loop on views    		
-	    outstr << "RCC BmnF" << iv << iField[iv] << "   "
-		   << fCenter[0] + fPosX[iw][il][iv] << " "
-		   << fCenter[1] + fPosY[iw][il][iv] << " "
-		   << fCenter[2] + fPosZ[iw][il][iv] << " "
-		   << fPosCX[iw][il][iv] << " " << fPosCY[iw][il][iv] << " "
-		   << fPosCZ[iw][il][iv] << " " << fFieldRadius << endl;
+	    ss << "RCC BmnF" << iv << iField[iv] << "   "
+	       << fCenter[0] + fPosX[iw][il][iv] << " "
+	       << fCenter[1] + fPosY[iw][il][iv] << " "
+	       << fCenter[2] + fPosZ[iw][il][iv] << " "
+	       << fPosCX[iw][il][iv] << " " << fPosCY[iw][il][iv] << " "
+	       << fPosCZ[iw][il][iv] << " " << fFieldRadius << endl;
 	  }
 	}
       }
     }
+
+    
+    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+      ss << "$end_transform" << endl;
+    
   }
   
-  return outstr.str();
+  return ss.str();
+}
+
+
+//_____________________________________________________________________________
+string TABMparGeo::PrintRotations()
+{
+  stringstream ss;
+
+  if(GlobalPar::GetPar()->IncludeBM()){
+
+    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  
+    TVector3 fCenter = fpFootGeo->GetBMCenter();
+    TVector3  fAngle = fpFootGeo->GetBMAngles();
+    
+    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
+	  
+      ss << PrintCard("ROT-DEFI", "300.", "", "",
+		      Form("%f",-fCenter.X()), Form("%f",-fCenter.Y()),
+		      Form("%f",-fCenter.Z()), "bm") << endl;
+      if(fAngle.X()!=0)
+	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", "", "bm") << endl;
+      if(fAngle.Y()!=0)
+	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", "", "bm") << endl;
+      if(fAngle.Z()!=0)
+	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", "", "bm") << endl;
+      ss << PrintCard("ROT-DEFI", "300.", "", "",
+		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+		      Form("%f",fCenter.Z()), "bm") << endl;
+      
+    }
+  }
+
+  return ss.str();
+
 }
 
 

@@ -343,10 +343,6 @@ string TAGparGeo::PrintTargBody( ) {
     double zero = 0.;
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-    if (!fpFootGeo)
-      printf("No default GeoTrafo action available yet\n");
-    else 
-      printf("GeoTrafo default action found\n");
 
     TVector3  fCenter = fpFootGeo->GetTGCenter();
 

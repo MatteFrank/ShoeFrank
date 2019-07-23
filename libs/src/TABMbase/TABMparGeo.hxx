@@ -127,6 +127,7 @@ public:
     void SetLayerColorOn(Int_t idx);
     void SetLayerColorOff(Int_t idx);
    
+   string PrintRotations();
    string PrintBodies();
    string PrintRegions();
    string PrintAssignMaterial();
