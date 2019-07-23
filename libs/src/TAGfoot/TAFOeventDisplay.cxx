@@ -113,8 +113,8 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       fItClusDisplay = new TAEDcluster("Inner tracker Cluster");
       fItClusDisplay->SetMaxEnergy(fMaxEnergy);
-      fItClusDisplay->SetDefWidth(fQuadDefWidth);
-      fItClusDisplay->SetDefHeight(fQuadDefHeight);
+      fItClusDisplay->SetDefWidth(fQuadDefWidth*2.);
+      fItClusDisplay->SetDefHeight(fQuadDefHeight*2.);
       fItClusDisplay->SetPickable(true);
    }
    
@@ -634,6 +634,7 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
       parGeo = fReco->GetParGeoMsd();
 
    // known bug if first event is empty
+   if (fVtxClusDisplay)
       fVtxClusDisplay->AddHit(-1, 0, 0, 0);
    
    
