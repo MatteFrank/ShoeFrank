@@ -165,48 +165,81 @@ string TAVTparGeo::PrintRotations()
   if(GlobalPar::GetPar()->IncludeVertex()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+    
     TVector3  fCenter = fpFootGeo->GetVTCenter();
+    TVector3  fAngle = fpFootGeo->GetVTAngles();
+    
     for(int iSens=0; iSens<GetNSensors(); iSens++) {
 
+      //check if sensor or detector have a tilt
+      if (fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0){
 
-
-      if (fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0){
-
-	//put the sensor in 0,0,0 before the rotation
+	//put the sensor in local coord before the rotation
 	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",-fCenter.X()-GetSensorPosition(iSens).X()),
-			Form("%f",-fCenter.Y()-GetSensorPosition(iSens).Y()),
-			Form("%f",-fCenter.Z()-GetSensorPosition(iSens).Z()),
+			Form("%f",-fCenter.X()),
+			Form("%f",-fCenter.Y()),
+			Form("%f",-fCenter.Z()),
 			Form("vt_%d",iSens) ) << endl;
-	//	Form("%d",)
-      
-	//rot around x
-	if(fSensorParameter[iSens].Tilt[0]!=0){
-	  ss << PrintCard("ROT-DEFI", "100.", "",
-			  Form("%f",fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
-			  "", "", "", Form("vt_%d",iSens) ) << endl;
+
+	//check if sensor has a tilt
+	if (fSensorParameter[iSens].Tilt.Mag()!=0){
+	  
+	  // put the sensor in 0,0,0 before the sensor's rot
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",-GetSensorPosition(iSens).X()),
+			  Form("%f",-GetSensorPosition(iSens).Y()),
+			  Form("%f",-GetSensorPosition(iSens).Z()),
+			  Form("vt_%d",iSens) ) << endl;
+	  //rot around x
+	  if(fSensorParameter[iSens].Tilt[0]!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "",
+			    Form("%f",fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
+			    "", "", "", Form("vt_%d",iSens) ) << endl;
+	  }
+	  //rot around y      
+	  if(fSensorParameter[iSens].Tilt[1]!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "",
+			    Form("%f",fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
+			    "", "", "", Form("vt_%d",iSens) ) << endl;
+	  }
+	  //rot around z
+	  if(fSensorParameter[iSens].Tilt[2]!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "",
+			    Form("%f",fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
+			    "", "", "", Form("vt_%d",iSens) ) << endl;
+	  }
+	  
+	  //put back the sensor into its position in local coord
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",GetSensorPosition(iSens).X()),
+			  Form("%f",GetSensorPosition(iSens).Y()),
+			  Form("%f",GetSensorPosition(iSens).Z()),
+			  Form("vt_%d",iSens) ) << endl;
 	}
-	//rot around y      
-	if(fSensorParameter[iSens].Tilt[1]!=0){
-	  ss << PrintCard("ROT-DEFI", "200.", "",
-			  Form("%f",fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
-			  "", "", "", Form("vt_%d",iSens) ) << endl;
-	}
-	//rot around z
-	if(fSensorParameter[iSens].Tilt[2]!=0){
-	  ss << PrintCard("ROT-DEFI", "300.", "",
-			  Form("%f",fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
-			  "", "", "", Form("vt_%d",iSens) ) << endl;
-	}
-	
-	//put back the sensor into its position
-	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",fCenter.X()+GetSensorPosition(iSens).X()),
-			Form("%f",fCenter.Y()+GetSensorPosition(iSens).Y()),
-			Form("%f",fCenter.Z()+GetSensorPosition(iSens).Z()),
-			Form("vt_%d",iSens) ) << endl;
       }
 
+      //check if detector has a tilt and then apply rot
+      if(fAngle.Mag()!=0){
+	  
+	if(fAngle.X()!=0){
+	  ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+	  		  "", Form("vt_%d",iSens)) << endl;
+	}
+	if(fAngle.Y()!=0){
+	  ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+	  		  "", Form("vt_%d",iSens)) << endl;
+	}
+	if(fAngle.Z()!=0){
+	  ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+	  		  "", Form("vt_%d",iSens)) << endl;
+	}
+      }
+      
+	//put back the detector in global coord
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+			Form("%f",fCenter.Z()), Form("vt_%d",iSens)) << endl;
+       
     }
   }
   return ss.str();
@@ -225,16 +258,17 @@ string TAVTparGeo::PrintBodies()
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
     TVector3  fCenter = fpFootGeo->GetVTCenter();
+    TVector3  fAngle = fpFootGeo->GetVTAngles();
     TVector3 posEpi, posPix, posMod;
 
     string bodyname, regionname;
   
     ss << "* ***Vertex bodies" << endl;  
-
+    
     for(int iSens=0; iSens<GetNSensors(); iSens++) {
 
-      if(fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0)
-	ss << "$start_transform " << Form("vt_%d",iSens) << endl;
+      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+	ss << "$start_transform " << Form("vt_%d",iSens) << endl;  
                
       //epitaxial layer
       bodyname = Form("vtxe%d",iSens);
@@ -282,7 +316,7 @@ string TAVTparGeo::PrintBodies()
       vPixBody.push_back(bodyname);
       vPixRegion.push_back(regionname);
     
-      if(fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0)
+      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$end_transform " << endl;
 	  
     }
