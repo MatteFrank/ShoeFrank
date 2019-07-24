@@ -57,7 +57,7 @@ public:
   TAGparaDsc*     fpStTim;		    // parameter dsc
   TAGparaDsc*     fpTwTim;		    // parameter dsc
 
-  vector<TH1F *> wv0;
+  //vector<TH1F *> wv0;
 
   bool m_debug;
   int m_nev;

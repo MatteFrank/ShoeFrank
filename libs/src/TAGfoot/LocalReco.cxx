@@ -78,7 +78,7 @@ void LocalReco::CreateRawAction()
    
    if (GlobalPar::GetPar()->IncludeST() ||GlobalPar::GetPar()->IncludeBM()) {
       fpNtuRawSt   = new TAGdataDsc("stNtu", new TASTntuRaw());
-      fActNtuRawSt = new TASTactNtuRaw("stActNtu", fpDatRawSt, fpNtuRawSt);
+      fActNtuRawSt = new TASTactNtuRaw("stActNtu", fpDatRawSt, fpNtuRawSt, fpParMapSt);
       fActNtuRawSt->CreateHistogram();
    }
 

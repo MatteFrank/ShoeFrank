@@ -30,9 +30,6 @@ public:
 
   ClassDef(TATWactNtuRaw,0);
 
-  vector<int> delta_clk_bo;
-  vector<int> delta_clk_ch;
-  vector<double> delta_clk;
 
   private:
   double find_deltaclock(int ch_num, int bo_num);
@@ -47,7 +44,9 @@ public:
   Float_t         fTofErrPropAlpha;
 
   bool m_debug;
-  
+
+  map<pair<int,int>, double> clktime_map;
+
 
  private:
   //
@@ -59,6 +58,9 @@ public:
   Double_t GetPosition(TATWrawHit*a,TATWrawHit*b);
   Double_t GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b);
 
+
+  double find_clocktime(int ch_num, int bo_num);
+  bool clocktimeIsSet(int ch_num, int bo_num);
 };
 
 #endif

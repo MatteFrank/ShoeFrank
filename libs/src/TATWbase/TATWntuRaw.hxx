@@ -39,6 +39,8 @@ private:
     Double_t m_ChargeB;
     Double_t m_TimeA;
     Double_t m_TimeB;
+
+
 public:
   TATWntuHit();
   TATWntuHit( TATWrawHit* hit );
@@ -72,6 +74,9 @@ public:
    void       AddMcTrackId(Int_t trackId, Int_t mcId = -1);
    inline void  SetToF(Double_t time) { m_timeofflight = time; return; }
 
+
+
+  
   ClassDef(TATWntuHit,1)                            // Pixel or Pixel of a Detector Plane
 };
 

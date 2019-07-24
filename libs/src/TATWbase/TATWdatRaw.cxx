@@ -41,14 +41,7 @@ TATWrawHit::TATWrawHit()
 {
 }
 
-TATWrawHit::TATWrawHit(Int_t cha ,Int_t board, Double_t charge,
-		       Double_t amplitude, Double_t pedestal,
-		       Double_t time,Int_t isclock,Double_t clock_time,
-		       Int_t TriggerType ) :
-  TAGbaseWD(cha,board,charge,amplitude,pedestal,time,
-	    isclock,clock_time,TriggerType)
-{
-}
+
 
 //##############################################################################
 
@@ -95,37 +88,18 @@ void TATWdatRaw::Clear(Option_t*)
 
 void TATWdatRaw::NewHit(TWaveformContainer &W)
 {
-  // get channel/board id
-  Int_t cha =W.ChannelId;
-  Int_t board =W.BoardId;
+
   W.SanitizeWaveform(); 
-  // do not change the order of these methods
-  Double_t pedestal=W.ComputePedestal();
-  Double_t amplitude=W.ComputeAmplitude();
-  Double_t charge= W.ComputeCharge();
-  Double_t time= W.ComputeTimeStamp();
-  Double_t ClockRaisingTime=-1;
-  Int_t TriggerType= W.TrigType;
-
-  if (W.IsAClock())
-  {
-	  ClockRaisingTime=W.FindFirstRaisingEdgeTime();
-  }
 
   TClonesArray &pixelArray = *hir;
-  TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(cha ,board, charge, amplitude, pedestal, time, W.IsAClock(),ClockRaisingTime,TriggerType);
+  TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(W);
   nirhit++;
   return;
 }
 
-void TATWdatRaw::NewHit(int cha, int board, double pedestal, double amplitude, double charge, double time, int TriggerType, bool isclock, double ClockRaisingTime)
-{
 
-  TClonesArray &pixelArray = *hir;
-  TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(cha ,board, charge, amplitude, pedestal, time, isclock, ClockRaisingTime,TriggerType);
-  nirhit++;
-  return;
-}
+
+
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.

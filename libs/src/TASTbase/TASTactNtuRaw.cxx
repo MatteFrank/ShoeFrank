@@ -23,13 +23,19 @@ ClassImp(TASTactNtuRaw);
 
 TASTactNtuRaw::TASTactNtuRaw(const char* name,
 			     TAGdataDsc* p_datraw, 
-			     TAGdataDsc* p_nturaw)
+			     TAGdataDsc* p_nturaw,
+			     TAGparaDsc* p_parmap)
   : TAGaction(name, "TASTactNtuRaw - Unpack ST raw data"),
     fpDatRaw(p_datraw),
-    fpNtuRaw(p_nturaw)
+    fpNtuRaw(p_nturaw),
+    fpParMap(p_parmap)
 {
   AddDataIn(p_datraw, "TASTdatRaw");
   AddDataOut(p_nturaw, "TASTntuRaw");
+
+  m_debug = GetDebugLevel();
+  
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -45,50 +51,74 @@ Bool_t TASTactNtuRaw::Action() {
 
    TASTdatRaw*    p_datraw = (TASTdatRaw*)   fpDatRaw->Object();
    TASTntuRaw*   p_nturaw = (TASTntuRaw*)  fpNtuRaw->Object();
+   TASTparMap*   p_parmap = (TASTparMap*)  fpParMap->Object();
 
    p_nturaw->SetupClones();
 
+   clktime_map.clear();
+ 
    int nHit = p_datraw->nirhit;
-   double TrigTime, Charge, time, q, deltaclk;
+   double TrigTime, Charge, time, q, clktime=0;
    int nvalid(0), ch_num, bo_num;
-   delta_clk.clear();
-   delta_clk_bo.clear();
-   delta_clk_ch.clear();
    for(int ih = 0; ih< nHit; ih++) {
      //Find out the deltas
      ch_num = p_datraw->Hit(ih)->ChID();
      bo_num = p_datraw->Hit(ih)->BoardId();
      time = p_datraw->Hit(ih)->Time();
      if(ch_num == 16 || ch_num == 17) {
-       delta_clk.push_back(p_datraw->Hit(ih)->Clocktime());
-       delta_clk_bo.push_back(bo_num);
-       delta_clk_ch.push_back(ch_num);
+       clktime_map[make_pair(bo_num, ch_num)] = p_datraw->Hit(ih)->Clocktime();
      }
    }
+
+
    
+   double clktime_ref =0;
+   if(clocktimeIsSet(REF_CLK.first, REF_CLK.second)){
+     clktime_ref=find_clocktime(REF_CLK.first, REF_CLK.second);
+   }else{
+     printf("warning::reference clock not found for the ST\n");
+   }
+
+
+   double deltaclk=0;
+   double norm=0;
    for(int ih = 0; ih< nHit; ih++) {
      ch_num = p_datraw->Hit(ih)->ChID();
      bo_num = p_datraw->Hit(ih)->BoardId();
      q =  p_datraw->Hit(ih)->Charge();
      time = p_datraw->Hit(ih)->Time();
-     if(delta_clk.size() != 1) {
-       deltaclk = find_deltaclock(ch_num,bo_num);
-       time -= deltaclk;
-     }
-     TrigTime+= time;     
-     Charge+=q;
-     nvalid++;
-     p_nturaw->NewHit(ch_num, q, time);
-   }
 
-   if(nvalid) TrigTime = TrigTime/(double)nvalid;
+     if(ch_num != 16 && ch_num != 17) {
+
+       pair<int,int> clk_channel_bo = p_parmap->GetClockChannel(ch_num, bo_num);
+       if(clocktimeIsSet(clk_channel_bo.first, clk_channel_bo.second)){
+	 clktime=find_clocktime(clk_channel_bo.first, clk_channel_bo.second);
+	 deltaclk = clktime-clktime_ref;
+       }else{
+	 printf("warning::clk not found for wavedream channel %d, board::%df\n", ch_num, bo_num);
+       }
+       time -= clktime + deltaclk;
+       
+       //here I select only waveforms with signals above a threshold, and with a correct chisquare
+       if(p_datraw->Hit(ih)->GetChiSquare()< CHISQUARE_THRESHOLD && p_datraw->Hit(ih)->Amplitude() > AMPLITUDE_THRESHOLD){
+
+	 double weight = p_parmap->GetChannelWeight(ch_num, bo_num);
+	 TrigTime+= time*weight;
+	 nvalid++;
+	 norm+=weight;
+       }
+       Charge+=q;
+       
+       p_nturaw->NewHit(ch_num, q, time);
+
+     }
+   }
+   
+   //   if(nvalid) TrigTime = TrigTime/(double)nvalid;
+   if(nvalid) TrigTime = TrigTime/norm;
+
    p_nturaw->SetTriggerTime(TrigTime);
-   if(delta_clk.size())
-     p_nturaw->SetDeltaClk(delta_clk.at(0));
-   else {
-     p_nturaw->SetDeltaClk(0);
-     cout<<" Missing reference clock time:: ERROR!!! CHK CONFIG!! "<<endl;
-   } 
+   p_nturaw->SetDeltaClk(deltaclk);
    if(nHit>0) p_nturaw->SetTrigType(p_datraw->Hit(0)->TriggerType());
    p_nturaw->SetCharge(Charge);
 
@@ -103,6 +133,8 @@ Bool_t TASTactNtuRaw::Action() {
        if(ch_num>=0 && ch_num<8) hCharge[ch_num]->Fill(p_datraw->Hit(iHit)->Charge());
      }
    }
+
+   
    
    fpNtuRaw->SetBit(kValid);
    return kTRUE;
@@ -133,12 +165,27 @@ void TASTactNtuRaw::SavePlot(TGraph WaveGraph, TF1 fun1, TF1 fun2, TASTrawHit *m
   
 }
 
-double TASTactNtuRaw::find_deltaclock(int ch_num, int bo_num) {
 
-  double deltaclock = 0;
-  return deltaclock;
+double TASTactNtuRaw::find_clocktime(int ch_num, int bo_num) {
+
+
+  if(m_debug)printf("looking for clocktime for board::%d   channel::%d\n", bo_num, ch_num);
+  return clktime_map.find(make_pair(bo_num, ch_num))->second;
 
 }
+
+
+
+bool TASTactNtuRaw::clocktimeIsSet(int ch_num, int bo_num) {
+
+  if(m_debug)printf("looking for clocktime definition for board::%d   channel::%d   count::%d\n", bo_num, ch_num, clktime_map.count(make_pair(bo_num, ch_num)));
+
+  return (bool)clktime_map.count(make_pair(bo_num, ch_num));
+
+}
+
+
+
 
 void TASTactNtuRaw::CreateHistogram(){
 

@@ -14,13 +14,18 @@
 #include "TASTdatRaw.hxx"
 #include "TASTntuRaw.hxx"
 
+#define REF_CLK make_pair(16,27)
+#define CHISQUARE_THRESHOLD 1.0
+#define AMPLITUDE_THRESHOLD 0.04
+
 class TASTactNtuRaw : public TAGaction {
 
 public:
 
   explicit        TASTactNtuRaw(const char* name=0,
 				TAGdataDsc* p_datraw=0,
-				TAGdataDsc* p_datdaq=0);
+				TAGdataDsc* p_datdaq=0,
+				TAGparaDsc* p_parmap=0);
   virtual         ~TASTactNtuRaw();
 
   virtual Bool_t  Action();
@@ -33,6 +38,7 @@ public:
     
   TAGdataDsc*     fpDatRaw;		    // input data dsc
   TAGdataDsc*     fpNtuRaw;		    // output data dsc
+  TAGparaDsc*      fpParMap;		    // output data dsc
 
   bool m_debug;
   
@@ -44,12 +50,12 @@ public:
   TH1F *hEventTime;
 
   int m_nev;
-  vector<int> delta_clk_bo;
-  vector<int> delta_clk_ch;
-  vector<double> delta_clk;
+  map<pair<int,int>, double> clktime_map;
+  
 
 private:
-  double find_deltaclock(int ch_num, int bo_num);
+  double find_clocktime(int ch_num, int bo_num);
+  bool clocktimeIsSet(int ch_num, int bo_num);
   //  bool ComputeArrivalTime(TASTrawHit *hit, double *tarr, double *ampl, double *charge);
   //  double ComputeCharge(TASTrawHit *hit);
   //  double ComputeMaxAmplitude(TASTrawHit *hit);
