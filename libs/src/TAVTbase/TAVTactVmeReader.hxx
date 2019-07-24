@@ -22,7 +22,7 @@ public:
    virtual         ~TAVTactVmeReader();
       
    //! Open file with a given prefix and suffix for the files
-   virtual Int_t   Open(const TString& prefix, Option_t* opt = "");
+   virtual Int_t   Open(const TString& prefix, Option_t* opt = "",  const TString treeName="");
    
    //! close files
    virtual void    Close();

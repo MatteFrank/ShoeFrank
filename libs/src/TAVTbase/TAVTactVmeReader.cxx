@@ -87,7 +87,7 @@ void TAVTactVmeReader::SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump)
 
 //------------------------------------------+-----------------------------------
 //! Open ascii data sources.
-Int_t TAVTactVmeReader::Open(const TString& name, Option_t* opt)
+Int_t TAVTactVmeReader::Open(const TString& name, Option_t* opt, const TString)
 {
    TString inputFileName;
    
