@@ -34,9 +34,9 @@ TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
 : TAGbaseDigitizer(),
   fpParGeo(parGeo),
   fPixelsN(-1),
-  fDe0Par(20),
+  fDe0Par(0),
   fDe0ParErr(0),
-  fRsPar(0.85),
+  fRsPar(1.7),
   fRsParErr(0.04),
   fThresPar(885),
   fThresParErr(250)
