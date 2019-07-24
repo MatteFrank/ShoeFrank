@@ -24,21 +24,22 @@ class TAGbaseWD : public TAGobject {
     TAGbaseWD();
     virtual         ~TAGbaseWD();
     TAGbaseWD( TWaveformContainer &w);
-    TAGbaseWD(Int_t cha ,Int_t board, Double_t charge,
-	    Double_t ampl, Double_t apedestal,
-	    Double_t atime,Int_t iscl,Double_t clock_t,Int_t TriggerType);
+   
     void  SetData(Int_t cha ,Int_t board, Double_t charge,
 		  Double_t ampl, Double_t apedestal,
 		  Double_t atime, Int_t iscl,Double_t clock_t,Int_t TriggerType);
     //
-    Double_t 		Clocktime();
-    Int_t 			IsClock();
+
+  Double_t 		Clocktime();
+  Int_t 			IsClock();
   //
   inline Int_t ChID() const {  return chid; }
   inline Int_t BoardId() const { return boardid; }
   inline Double_t Pedestal() const { return pedestal; }
   inline Double_t Amplitude() const { return amplitude; }
   inline Int_t TriggerType() const { return triggertype; }
+  inline Double_t GetChiSquare(){return chisquare;}
+  
   inline void SetAmplitdue(double amplitude) { amplitude=amplitude; }
   inline void SetPedestal(double pedestal) { pedestal=pedestal; }
   inline void SetBoardId(Int_t boardid) { boardid=boardid; }
@@ -49,7 +50,8 @@ class TAGbaseWD : public TAGobject {
   inline void SetMCID(int id) {  mcid = id;  return; }
   inline void SetTime(double atime) {  time = atime;  return; }
   inline void SetCharge(double achg) {  chg = achg;  return; }
-
+  inline void SetChiSquare(double achisq) {  chisquare = achisq;  return; }
+    
   ClassDef(TAGbaseWD,4);
     //
   private:
@@ -63,6 +65,8 @@ class TAGbaseWD : public TAGobject {
     Int_t isclock;
     Int_t triggertype;
     Double_t clock_time;
+    Double_t chisquare;
+
 };
 
 #endif

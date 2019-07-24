@@ -11,10 +11,14 @@
 
 TWaveformContainer::TWaveformContainer()
 {
+
+  
 	T=(Double_t *)malloc(sizeof(Double_t)*WAVEFORMBINS);
 	W=(Double_t *)malloc(sizeof(Double_t)*WAVEFORMBINS);
 	m_vectT.clear();
 	m_vectW.clear();
+	high_level_debug = false; //it can be set only hard-coding this variable
+
 	Clear();
 }
 
@@ -31,6 +35,9 @@ void TWaveformContainer::Clear()
 	memset((void *)W,0,sizeof(Double_t)* WAVEFORMBINS);
 	m_vectT.assign(WAVEFORMBINS,0);
 	m_vectW.assign(WAVEFORMBINS,0);
+
+
+	
 }
 
 TWaveformContainer::TWaveformContainer(const TWaveformContainer &other)
@@ -74,7 +81,7 @@ Double_t TWaveformContainer::ComputeAmplitude()
 {
   ir_amplitude=W[AMPLITUDESTARTBIN];
   // rember TW => negative signals
-  ir_amplitude=TMath::MinElement(AMPLITUDESTOPBIN-AMPLITUDESTARTBIN+1,&W[AMPLITUDESTARTBIN]);
+  ir_amplitude=-TMath::MinElement(AMPLITUDESTOPBIN-AMPLITUDESTARTBIN+1,&W[AMPLITUDESTARTBIN]);
   ir_amplitude-=ir_pedestal;
   return ir_amplitude;
 }
@@ -156,10 +163,9 @@ void TWaveformContainer::GraphWaveForm(TH1F *wv0)
   double min = TMath::MinElement(WAVEFORMBINS,T);
   double max = TMath::MaxElement(WAVEFORMBINS,T);
   wv0->SetBins(WAVEFORMBINS,min,max);
-  for (int bin=0;bin<WAVEFORMBINS;++bin)
-    {
-      wv0->SetBinContent(bin+1,W[bin]);
-    }
+  for (int bin=0;bin<WAVEFORMBINS;++bin){
+    wv0->SetBinContent(bin+1,W[bin]);
+  }
   wv0->GetXaxis()->SetTitle("t (s)");
   wv0->GetYaxis()->SetTitle("Amplitude (V)");
   wv0->SetTitle(TString::Format(" Board %d Channel %d",BoardId,ChannelId));
@@ -194,16 +200,16 @@ bool TWaveformContainer::IsAClock()
   return false;
 }
 
-Double_t TWaveformContainer::FindFirstRaisingEdgeTime()
-{
+Double_t TWaveformContainer::FindFirstRaisingEdgeTime(){
 
+  
   vector<double> tmp_unc;
-  tmp_unc.assign(1022,0.007);
+  tmp_unc.assign(1024,0.007);
 
   vector<TF1> fclocks;
-  vector<double> chi_s;
+  vector<double> tarrclk_s, n_clk_s;
+
   
-  vector<double> tarrclk_s;
   double tleft=0, tright=0;
   int bin_trigTime=0;
   double t0 = 0;
@@ -213,6 +219,7 @@ Double_t TWaveformContainer::FindFirstRaisingEdgeTime()
 
   tarrSum =0.;
   bin_trigTime=20.;
+  
   while(bin_trigTime > 10 && bin_trigTime <990){
     double amp = W[bin_trigTime];
 
@@ -272,25 +279,25 @@ Double_t TWaveformContainer::FindFirstRaisingEdgeTime()
      
     fclocks.push_back(fclock);     
 
-    chi_s.push_back(fclock.GetChisquare()/fclock.GetNDF());
-    //myWave->SetChiSquare(fclock.GetChisquare()/fclock.GetNDF());
-
-    tarr = fclock.GetX(0);
-
-    tarrclk_s.push_back(tarr);
-
-    tarrSum =tarrSum+tarr;  
     count++;
+    
+    tarr = fclock.GetX(0);
+    tarrclk_s.push_back(tarr);
+    n_clk_s.push_back(count);
+    
     bin_trigTime+=25;
   }
-  /*
-  myWave->SetFclocks(fclocks);
-  myWave->SetChiSquare_s(chi_s);
-  myWave->SetValidMethod(true);
-  myWave->SetArrivalTime(tarrSum/(double)(count-1));
 
-  */
-  return tarrSum/(double)(count-1);
+  
+  TGraph WaveGraph(count, &n_clk_s[0], &tarrclk_s[0]);
+  TF1 f("fun","[0]+[1]*x",0,250);
+  f.SetParName(0, "phase");
+  f.SetParName(1, "period");
+  f.SetParameter(0,7);
+  f.SetParameter(1,12.5);
+  WaveGraph.Fit(&f,"RQ");   //&fclock
+  
+  return f.GetParameter(0);
 
  }
 
@@ -302,7 +309,10 @@ Double_t TWaveformContainer::FindFirstRaisingEdgeTime()
  }
 
 
-bool TWaveformContainer::ComputeArrivalTime(){
+
+
+
+Double_t TWaveformContainer::ComputeArrivalTime(){
 
   vector<double> tmp_amp = m_vectW;
   tmp_amp.erase(tmp_amp.begin(),tmp_amp.begin()+2); 
@@ -329,47 +339,84 @@ bool TWaveformContainer::ComputeArrivalTime(){
 
   double tmp_baseline = tmp_amp.at(5);
   
-  //to be commented...
-  TF1 f("f", "-[0]/(1+TMath::Exp(-(x-[1])/[2]))/(1+TMath::Exp((x-[3])/[4]))+[5]",tleft,tright);
+  //double fermi-dirac fit to extrapolate the waveform shape
+  //  TF1 f("f", "-[0]/(1+TMath::Exp(-(x-[1])/[2]))/(1+TMath::Exp((x-[3])/[4]))+[5]",tleft,tright);
+  // f.SetParameter(1,time_crossbin);
+  // f.SetParameter(2,30);
+  // f.SetParameter(3,time_crossbin+2);
+  // f.SetParameter(4,2);
+  // f.SetParameter(5,tmp_baseline);
+
+  //log-normal fit to extrapolate the waveform shape
+  TF1 f("f","-[0]*ROOT::Math::lognormal_pdf(x,[1],[2],[3])+[4]", tleft, tright); 
   f.SetParameter(0,1);
-  f.SetParameter(1,time_crossbin);
+  f.SetParameter(1,0.1);
   f.SetParameter(2,1);
-  f.SetParameter(3,time_crossbin+2);
-  f.SetParameter(4,2);
-  f.SetParameter(5,tmp_baseline);
+  f.SetParameter(3,time_crossbin-3);
+  f.SetParameter(4,0);
+
   
   TGraphErrors WaveGraph(tmp_time.size(), &tmp_time[0], &tmp_amp[0], 0, &tmp_unc[0]);
   WaveGraph.Fit(&f,"Q", "",tleft, tright);
+  m_chisquare = f.GetChisquare()/(double)f.GetNDF();
   
+  char text[1000]="";
+
   //CFD method implemented with HARDCODED params.
+  TF1 fcfd("fcfd","f+f",0,200);
+
+  //if using log-normal fit
+  fcfd.FixParameter(0, m_frac*f.GetParameter(0));
+  fcfd.FixParameter(1, f.GetParameter(1));
+  fcfd.FixParameter(2, f.GetParameter(2));
+  fcfd.FixParameter(3, f.GetParameter(3));
+  fcfd.FixParameter(4, 0);
+  fcfd.FixParameter(5, -f.GetParameter(0));
+  fcfd.FixParameter(6, f.GetParameter(1));
+  fcfd.FixParameter(7, f.GetParameter(2));
+  fcfd.FixParameter(8, f.GetParameter(3)+m_del);
+  fcfd.FixParameter(9, 0);
+
   
-  TF1 f1("f1", "-[5]*[0]/(1+TMath::Exp(-(x-[1])/[2]))/(1+TMath::Exp((x-[3])/[4]))+[0]/(1+TMath::Exp(-(x-[1]-[6])/[2]))/(1+TMath::Exp((x-[3]-[6])/[4]))",0,100);
-  f1.SetLineColor(kGreen);
-  f1.FixParameter(0, f.GetParameter(0));
-  f1.FixParameter(1, f.GetParameter(1));
-  f1.FixParameter(2, f.GetParameter(2));
-  f1.FixParameter(3, f.GetParameter(3));
-  f1.FixParameter(4, f.GetParameter(4));
-  f1.FixParameter(5, m_frac);
-  f1.FixParameter(6, m_del);
-
-  tleft = f1.GetMinimumX();
-  tright = f1.GetMaximumX();
+  //if using fermi-dirac fit
+  //fcfd.FixParameter(0, m_frac*f.GetParameter(0));
+  // fcfd.FixParameter(1, f.GetParameter(1)+m_del);
+  // fcfd.FixParameter(2, f.GetParameter(2));
+  // fcfd.FixParameter(3, f.GetParameter(3)+m_del);
+  // fcfd.FixParameter(4, f.GetParameter(4));
+  // fcfd.FixParameter(5, 0);
+  // fcfd.FixParameter(6, -f.GetParameter(0));
+  // fcfd.FixParameter(7, f.GetParameter(1)+m_del);
+  // fcfd.FixParameter(8, f.GetParameter(2));
+  // fcfd.FixParameter(9, f.GetParameter(3)+m_del);
+  // fcfd.FixParameter(10,f.GetParameter(4));
+  // fcfd.FixParameter(11, 0);
+ 
   
-  double t1=f1.GetX(0.0,tleft,tright);
+  tleft = fcfd.GetMinimumX();
+  tright = fcfd.GetMaximumX();
 
-  f.SetParameter(5,0.0);
-  ir_time = t1;
-  //Done in compute Charge
-  //  ir_chg = -f.Integral(f.GetMinimumX()-10, f.GetMinimumX()+10);
-  //Done in compute Amplitude
-  //ir_amplitude = fabs(f.GetParameter(5)-f.GetMinimum());
+   //evaluate the zero-crossin point of the CFD signal
+  double time = fcfd.GetX(0.0,tleft,tright);
+  
+  if(high_level_debug){
+    sprintf(text,"wave_board%d_channel%d_evt%d.pdf", BoardId, ChannelId, m_nEvent);
+    TCanvas c("c","",600,600);
+    TLine l(time, -10, time,10);
+    l.SetLineWidth(3);
+    WaveGraph.GetXaxis()->SetLimits(time-30,time+50);
+    WaveGraph.Draw("AP");
+    f.Draw("same");
+    l.Draw("same");
+    c.SaveAs(text);    
+  }
+  
 
-  if(t1>tleft && t1<tright){
-    return true;
-  }else{
-    return false;
- }
+
+  return time;
+
+  
+ 
 }
 
 Double_t TWaveformContainer::ComputeChargeST() {
@@ -397,6 +444,33 @@ Double_t TWaveformContainer::ComputeChargeST() {
   return q;
 
 }
+
+Double_t TWaveformContainer::ClockWave(Double_t *x, Double_t *par) {
+
+ double fun=0;
+  
+  double phase, period;
+  phase= par[2];
+  period = par[3];
+
+  double t=0;
+  double r=0;
+  t = (x[0]-phase);
+  r= t/period -(int)(t/period);
+  
+  if(r>0.5) {
+    return par[0]+ par[1]/(1+TMath::Exp(-(x[0]-phase)/par[4]));
+  }else{
+    TF1::RejectPoint();
+     return 0;
+
+  }
+
+  
+ 
+  
+}
+
 
 /*
 AS: to be implemented if needed

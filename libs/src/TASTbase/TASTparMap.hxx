@@ -11,7 +11,7 @@
 using namespace std;
 
 #include "TString.h"
-
+#include <map>
 #include "TAGpara.hxx"
 
 //##############################################################################
@@ -35,6 +35,9 @@ class TASTparMap : public TAGpara {
   Bool_t IsSTClock(int iCha);
   Bool_t IsSTChannel(int iCha);
   Bool_t IsSTBoard(int iCha);
+
+  double GetChannelWeight(int ch_num, int bo_num);
+  pair<int,int> GetClockChannel(int ch_num, int bo_num);
   
     ClassDef(TASTparMap,1)
 
@@ -44,6 +47,7 @@ class TASTparMap : public TAGpara {
    vector<int> TDchaID;
    vector<int> TDboaID;
 
+    map<pair<int,int>, double> reso;
 
 };
 

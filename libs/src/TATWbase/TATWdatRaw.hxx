@@ -23,10 +23,7 @@ public:
   TATWrawHit();
   virtual         ~TATWrawHit();
   TATWrawHit( TWaveformContainer &w);
-  TATWrawHit(Int_t cha ,Int_t board, Double_t charge,
-	     Double_t amplitude, Double_t pedestal,
-			   Double_t time,Int_t isclock,Double_t clock_time,Int_t TriggerType);
-    ClassDef(TATWrawHit,2);
+  ClassDef(TATWrawHit,2);
     //
 };
 
@@ -39,7 +36,7 @@ class TATWdatRaw : public TAGdata {
     TATWrawHit*       Hit(Int_t i_ind);
     const TATWrawHit* Hit(Int_t i_ind) const;
   void       NewHit(TWaveformContainer &W);
-  void       NewHit(int cha, int board, double pedestal, double amplitude, double charge, double time, int TriggerType, bool isclock, double ClockRaisingTime);
+
   virtual void    Clear(Option_t* opt="");
     void SetupClones();
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;

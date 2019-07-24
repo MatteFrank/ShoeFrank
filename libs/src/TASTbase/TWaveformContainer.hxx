@@ -27,17 +27,22 @@ public:
   void SanitizeWaveform();
   bool IsAClock();
   Double_t FindFirstRaisingEdgeTime();
-  bool ComputeArrivalTime();
+  Double_t ComputeArrivalTime();
   inline void SetDel(double d)  {m_del = d; return;}
   inline void SetFrac(double f) {m_frac = f; return;}
   inline void SetBinMin(int bm) {m_binmin = bm; return;}
   inline void SetBinMax(int bM) {m_binmax = bM; return;}
-
+  inline void SetNEvent(int value){ m_nEvent = value;}
+  inline void SetChiSquare(double achi){m_chisquare = achi;}
+  
+  inline double GetChiSquare(){return m_chisquare;}
   inline double GetDel()  {return m_del;}
   inline double GetFrac() {return m_frac;}
   inline int GetBinMin()  {return m_binmin;}
   inline int GetBinMax()  {return m_binmax;}
 
+  static Double_t ClockWave(Double_t *x, Double_t *par);
+  
   double m_del, m_frac;
   int m_binmin, m_binmax;
   int TrigType;
@@ -50,9 +55,14 @@ public:
   Double_t ir_amplitude;
   Double_t *T;
   Double_t *W;
+  Double_t m_chisquare;
   vector<double> m_vectT;
   vector<double> m_vectW;
+  Int_t m_nEvent;
 
+  bool high_level_debug;
+  
+  
 };
 
 #endif

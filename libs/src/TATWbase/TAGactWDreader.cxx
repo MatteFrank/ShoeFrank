@@ -226,7 +226,7 @@ Bool_t TAGactWDreader::DecodeHits(const WDEvent* evt, TASTdatRaw *p_straw, TASTp
 	    
 	    if(ch_num != 16 && ch_num != 17){
 	      for(int iSa=0;iSa<w_adc.size();iSa++){
-		v_sa = w_adc.at(iSa)/65536.+range;
+		v_sa = w_adc.at(iSa)/65536.+range-0.5;
 		w_amp.push_back(v_sa);
 	      }
 	    } else {
@@ -236,19 +236,20 @@ Bool_t TAGactWDreader::DecodeHits(const WDEvent* evt, TASTdatRaw *p_straw, TASTp
 	      }
 
 	    }
-
+	    
 	    if(p_stMap->IsSTChannel(ch_num) && p_stMap->IsSTBoard(board_id)){
 	      p_stTime->GetTimeArray(board_id, ch_num, trig_cell, &w_time);
-	      w.SetDel(2); w.SetFrac(0.2); w.SetBinMin(10); w.SetBinMax(2);
+	      w.SetDel(2); w.SetFrac(0.2); w.SetBinMin(30); w.SetBinMax(2);
 	    } else {
 	      p_twTime->GetTimeArray(board_id, ch_num, trig_cell, &w_time);
-	      w.SetDel(2); w.SetFrac(0.2); w.SetBinMin(40); w.SetBinMax(10);
+	      w.SetDel(4); w.SetFrac(0.2); w.SetBinMin(30); w.SetBinMax(30);
 	    }
 	    
 	    w.ChannelId = ch_num;
 	    w.BoardId = board_id;
 	    w.m_vectT = w_time;
 	    w.m_vectW = w_amp;
+	    w.m_nEvent = m_nev;
 	    for(int iw = 0; iw<w_amp.size(); iw++) {
 	      w.T[iw] = w_time.at(iw);
 	      w.W[iw] = w_amp.at(iw);
@@ -259,10 +260,7 @@ Bool_t TAGactWDreader::DecodeHits(const WDEvent* evt, TASTdatRaw *p_straw, TASTp
 	    } else {
 	      p_twraw->NewHit(w);
 	    }
-	    if(ValidHistogram()) {
-	      if (nhitsA<wv0.size())
-		w.GraphWaveForm(wv0[nhitsA]);
-	    }
+
 	    nhitsA++;
 	    w.Clear();
 
@@ -294,17 +292,17 @@ Bool_t TAGactWDreader::DecodeHits(const WDEvent* evt, TASTdatRaw *p_straw, TASTp
 void TAGactWDreader::CreateHistogram()
 {
   // max number of histo
-  Int_t MaxHist0=20;
+  // Int_t MaxHist0=20;
   DeleteHistogram();
-  wv0.resize(MaxHist0);
+  //  wv0.resize(MaxHist0);
   //
-  for (int i=0;i<MaxHist0;++i)
-    {
-      wv0[i] = new TH1F();
-      wv0[i]->SetName("WD"+TString::Format("%d",i));
-      wv0[i]->SetTitle("WD graph"+TString::Format("%d",i));
-      AddHistogram(wv0[i]);
-    }
+  // for (int i=0;i<MaxHist0;++i)
+  //   {
+  //     wv0[i] = new TH1F();
+  //     wv0[i]->SetName("WD"+TString::Format("%d",i));
+  //     wv0[i]->SetTitle("WD graph"+TString::Format("%d",i));
+  //     AddHistogram(wv0[i]);
+  //   }
   SetValidHistogram(kTRUE);
 }
 

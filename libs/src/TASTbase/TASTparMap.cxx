@@ -32,6 +32,8 @@ TASTparMap::TASTparMap() {
 
   TDchaID =    tdchaID;   
   TDboaID =    tdboaID;   
+
+  reso.clear();
   
 }
 
@@ -90,7 +92,8 @@ Bool_t TASTparMap::FromFile(const TString& name) {
 
   
   char bufConf[1024];
-  int myArg1(0), myArg2(0); 
+  int myArg1(0), myArg2(0);
+  double myArg3(0.); 
  
   ifstream incF;
   incF.open(name_exp.Data());
@@ -107,12 +110,12 @@ Bool_t TASTparMap::FromFile(const TString& name) {
       //      Info("FromFile()","Skip comment line:: %s",bufConf);
     } else if(strchr(bufConf,'T')) {
       //Cha id and board
-      //      printf("%s\n",bufConf);
-      sscanf(bufConf, "T%d %d",&myArg1,&myArg2);
+      sscanf(bufConf, "T%d %d %lf",&myArg1,&myArg2, &myArg3);
       if((myArg1>-1 && myArg1<18) && (myArg2>-1 && myArg2<100)) {
 	if(myArg1<16){
 	  TDchaID.push_back(myArg1);
 	  TDboaID.push_back(myArg2);
+	  reso[make_pair(myArg1, myArg2)] = myArg3;
 	}else{
 	  TDclkID.push_back(myArg1);
 	  TDboaID.push_back(myArg2);
@@ -138,5 +141,38 @@ void TASTparMap::Clear(Option_t*)
   TAGpara::Clear();
   TDchaID.clear();   
   return;
+}
+
+
+double TASTparMap::GetChannelWeight(int ch_num, int bo_num){
+
+  double sigma = reso.find(make_pair(ch_num, bo_num))->second;
+  
+  return 1/sigma/sigma;
+
+
+}
+
+
+
+pair<int,int> TASTparMap::GetClockChannel(int ch_num, int bo_num){
+
+  int bo_clk = bo_num;
+  int ch_clk;
+  
+  if(ch_num <8){
+    ch_clk = 16;
+  }else if(ch_num>=8 && ch_num<16){
+    ch_clk = 17;
+  }else{
+    ch_clk = -999;
+    printf("error!!!! channel %d board %d not associated to a clk!!\n", ch_num, bo_num);
+  }
+
+  return make_pair(ch_clk,bo_clk);
+
+
+
+
 }
 

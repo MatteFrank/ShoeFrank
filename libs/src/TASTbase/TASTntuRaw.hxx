@@ -80,9 +80,9 @@ public:
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
 private:
-   TClonesArray*     fListOfHits;			    // hits
-   double m_TrigTime;
-   double m_Charge;
+  TClonesArray*     fListOfHits;			    // hits
+  double m_TrigTime;
+  double m_Charge;
   double m_deltaclk;
   int m_TrigType;
 private:

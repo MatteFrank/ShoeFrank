@@ -148,3 +148,26 @@ Bool_t TATWparMap::IsTWBoard(int iBo){
 
     
 }
+
+
+pair<int,int> TATWparMap::GetClockChannel(int ch_num, int bo_num){
+
+  int bo_clk = bo_num;
+  int ch_clk;
+  
+  if(ch_num <8){
+    ch_clk = 16;
+  }else if(ch_num>=8 && ch_num<16){
+    ch_clk = 17;
+  }else{
+    ch_clk = -999;
+    printf("error!!!! channel %d board %d not associated to a clk!!\n", ch_num, bo_num);
+  }
+
+  return make_pair(ch_clk,bo_clk);
+
+
+
+
+}
+
