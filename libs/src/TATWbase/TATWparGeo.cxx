@@ -405,20 +405,73 @@ string TATWparGeo::PrintRotations()
 		     GetBarPosition(i,j).Y(),
 		     GetBarPosition(i,j).Z());
 
-
-	if(vTilt.at(i).at(j).Z()!=0){
+	  cout<<i<<" "<<j<<" "<<vTilt.at(i).at(j)[0]<<" "<<vTilt.at(i).at(j)[1]<<" "<<vTilt.at(i).at(j)[2]<<" "<<fAngle.X()<<" "<<fAngle.Y()<<" "<<fAngle.Z()<<endl;
 	  
-	  ss << PrintCard("ROT-DEFI", "300.", "", "",
-			  Form("%f",-fCenter.X()-pos.X()), Form("%f",-fCenter.Y()-pos.Y()),
-			  Form("%f",-fCenter.Z()-pos.Z()), Form("twZ_%d%02d",i,j)) << endl;
-	  ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",vTilt.at(i).at(j).Z()),"", "", 
-			  "", Form("twZ_%d%02d",i,j)) << endl;
-	  ss << PrintCard("ROT-DEFI", "300.", "", "",
-			  Form("%f",fCenter.X()+pos.X()), Form("%f",fCenter.Y()+pos.Y()),
-			  Form("%f",fCenter.Z()+pos.Z()), Form("twZ_%d%02d",i,j)) << endl;
-			  
-	}
+	//check if bars or detector have a tilt
+	if(vTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0){
+
+	  //put the bars in local coord before the rotation
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",-fCenter.X()),
+			  Form("%f",-fCenter.Y()),
+			  Form("%f",-fCenter.Z()),
+			  Form("tw_%d%02d",i,j) ) << endl;
+
+	  //check if bar has a tilt
+	  if (vTilt.at(i).at(j).Mag()!=0){
+	  
+	    // put the bar in 0,0,0 before the bar's rot
+	    ss << PrintCard("ROT-DEFI", "", "", "",
+			    Form("%f",-pos.X()), Form("%f",-pos.Y()), Form("%f",-pos.Z()),
+			    Form("tw_%d%02d",i,j) ) << endl;
+	    //rot around x
+	    if(vTilt.at(i).at(j)[0]!=0){
+	      ss << PrintCard("ROT-DEFI", "100.", "",
+			      Form("%f",vTilt.at(i).at(j)[0]),
+			      "", "", "", Form("tw_%d%02d",i,j) ) << endl;
+	    }
+	    //rot around y      
+	    if(vTilt.at(i).at(j)[1]!=0){
+	      ss << PrintCard("ROT-DEFI", "200.", "",
+			      Form("%f",vTilt.at(i).at(j)[1]),
+			      "", "", "", Form("tw_%d%02d",i,j) ) << endl;
+	    }
+	    //rot around z
+	    if(vTilt.at(i).at(j)[2]!=0){
+	      ss << PrintCard("ROT-DEFI", "300.", "",
+			      Form("%f",vTilt.at(i).at(j)[2]),
+			      "", "", "", Form("tw_%d%02d",i,j) ) << endl;
+	    }
+	  
+	    //put back the bar into its position in local coord
+	    ss << PrintCard("ROT-DEFI", "", "", "",
+			    Form("%f",pos.X()), Form("%f",pos.Y()), Form("%f",pos.Z()),
+			    Form("tw_%d%02d",i,j) ) << endl;
+	  }
+
+	  //check if detector has a tilt and then apply rot
+	  if(fAngle.Mag()!=0){
+	  
+	    if(fAngle.X()!=0){
+	      ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+			      "", Form("tw_%d%02d",i,j)) << endl;
+	    }
+	    if(fAngle.Y()!=0){
+	      ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+			      "", Form("tw_%d%02d",i,j)) << endl;
+	    }
+	    if(fAngle.Z()!=0){
+	      ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+			      "", Form("tw_%d%02d",i,j)) << endl;
+	    }
+	  }
+      
+	  //put back the detector in global coord
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+			  Form("%f",fCenter.Z()), Form("tw_%d%02d",i,j)) << endl;
 	
+	}	
       }
     }
   }
@@ -444,23 +497,12 @@ string TATWparGeo::PrintBodies()
     string bodyname, regionname;
   
     ss << "* ***Scintillator bodies" << endl;
-    
-    if(fAngle.X()!=0)
-      cout << "TW rotation around x found: ATTENTION not implemented in fluka" << endl;
-    if(fAngle.Y()!=0)
-      cout << "TW rotation around y found: ATTENTION not implemented in fluka" << endl;
-    if(fAngle.Z()!=0)
-      cout << "TW rotation around z found: ATTENTION not implemented in fluka" << endl;
-        
+            
     for (int i=0; i<GetNLayers(); i++){
       for (int j=0; j<GetNBars(); j++){
 	
- 	if (vTilt.at(i).at(j).X()!=0)
-	  cout << "TW bar rotation around x found: ATTENTION not implemented in fluka" << endl;
- 	if (vTilt.at(i).at(j).Y()!=0)
-	  cout << "TW bar rotation around y found: ATTENTION not implemented in fluka" << endl;
- 	if (vTilt.at(i).at(j).Z()!=0)
-	  ss << "$start_transform " << Form("twZ_%d%02d",i,j) << endl;
+ 	if (vTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0)
+	  ss << "$start_transform " << Form("tw_%d%02d",i,j) << endl;
       	
 	bodyname = Form("scn%d%02d",i,j);
 	regionname = Form("SCN%d%02d",i,j);
@@ -477,12 +519,11 @@ string TATWparGeo::PrintBodies()
 	vBody.push_back(bodyname);
 	vRegion.push_back(regionname);
 
-	if (vTilt.at(i).at(j).Z()!=0)
+ 	if (vTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0)
 	  ss << "$end_transform " << endl;
-
+	
       } 
-    }
-       
+    }       
   }
 
   return ss.str();
