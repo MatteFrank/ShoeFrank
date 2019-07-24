@@ -134,7 +134,6 @@ TGeoVolume* TAVTparGeo::AddModule(const char* basemoduleName, const char *vertex
 string TAVTparGeo::PrintParameters()
 {   
   stringstream outstr;
-  // outstr << setiosflags(ios::fixed) << setprecision(5);
    
   if(GlobalPar::GetPar()->IncludeVertex()){
     
@@ -235,10 +234,10 @@ string TAVTparGeo::PrintRotations()
 	}
       }
       
-	//put back the detector in global coord
-	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-			Form("%f",fCenter.Z()), Form("vt_%d",iSens)) << endl;
+      //put back the detector in global coord
+      ss << PrintCard("ROT-DEFI", "", "", "",
+		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+		      Form("%f",fCenter.Z()), Form("vt_%d",iSens)) << endl;
        
     }
   }

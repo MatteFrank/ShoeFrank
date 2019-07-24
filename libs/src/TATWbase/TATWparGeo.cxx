@@ -404,8 +404,6 @@ string TATWparGeo::PrintRotations()
 	pos.SetXYZ(  GetBarPosition(i,j).X(),
 		     GetBarPosition(i,j).Y(),
 		     GetBarPosition(i,j).Z());
-
-	  cout<<i<<" "<<j<<" "<<vTilt.at(i).at(j)[0]<<" "<<vTilt.at(i).at(j)[1]<<" "<<vTilt.at(i).at(j)[2]<<" "<<fAngle.X()<<" "<<fAngle.Y()<<" "<<fAngle.Z()<<endl;
 	  
 	//check if bars or detector have a tilt
 	if(vTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0){
