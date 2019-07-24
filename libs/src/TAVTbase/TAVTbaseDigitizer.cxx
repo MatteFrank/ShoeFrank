@@ -34,11 +34,11 @@ TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
 : TAGbaseDigitizer(),
   fpParGeo(parGeo),
   fPixelsN(-1),
-  fDe0Par(0),      // old 20
+  fDe0Par(20),
   fDe0ParErr(0),
-  fRsPar(1.2),     // old 0.65
-  fRsParErr(0.12), // old 0.05
-  fThresPar(1885), // old 885
+  fRsPar(0.85),
+  fRsParErr(0.04),
+  fThresPar(885),
   fThresParErr(250)
 {
    SetFunctions();
