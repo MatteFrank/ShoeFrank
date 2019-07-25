@@ -98,6 +98,8 @@ private:
    Int_t     fCrystalsN;
    TString   fkDefaultGeoName;  // default par geo file name
 
+   vector<TVector3> vTilt;
+  
   ClassDef(TACAparGeo,1)
 };
 

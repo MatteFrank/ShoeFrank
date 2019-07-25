@@ -91,7 +91,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    Int_t nCrystal = 0;
    
    SetupMatrices(fCrystalsN);
-   
+     
    // Read transformtion info
       for (Int_t iCrystal = 0; iCrystal < fCrystalsN; ++iCrystal) {
          
@@ -109,6 +109,8 @@ Bool_t TACAparGeo::FromFile(const TString& name)
          if(fDebugLevel)
             cout  << "   Tilt: "
             << Form("%f %f %f", tilt[0], tilt[1], tilt[2]) << endl;
+
+	 vTilt.push_back(tilt);
          
          TGeoRotation rot;
          rot.RotateX(tilt[0]);
@@ -291,22 +293,77 @@ string TACAparGeo::PrintRotations()
     TVector3 fCenter = fpFootGeo->GetCACenter();
     TVector3  fAngle = fpFootGeo->GetCAAngles();
     
-    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
+     for(int iCry=0; iCry<GetCrystalsN(); iCry++) {
+
+      //check if crystal or detector have a tilt
+      if (vTilt.at(iCry).Mag()!=0 || fAngle.Mag()!=0){
+
+	//put the crystal in local coord before the rotation
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f",-fCenter.X()),
+			Form("%f",-fCenter.Y()),
+			Form("%f",-fCenter.Z()),
+			Form("ca_%d",iCry) ) << endl;
+
+	//check if crystal has a tilt
+	if (vTilt.at(iCry).Mag()!=0){
 	  
-      ss << PrintCard("ROT-DEFI", "300.", "", "",
-		      Form("%f",-fCenter.X()), Form("%f",-fCenter.Y()),
-		      Form("%f",-fCenter.Z()), "ca") << endl;
-      if(fAngle.X()!=0)
-	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", "", "ca") << endl;
-      if(fAngle.Y()!=0)
-	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", "", "ca") << endl;
-      if(fAngle.Z()!=0)
-	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", "", "ca") << endl;
-      ss << PrintCard("ROT-DEFI", "300.", "", "",
-		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-		      Form("%f",fCenter.Z()), "ca") << endl;
+	  // put the crystal in 0,0,0 before the crystal's rot
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",-GetCrystalPosition(iCry).X()),
+			  Form("%f",-GetCrystalPosition(iCry).Y()),
+			  Form("%f",-GetCrystalPosition(iCry).Z()),
+			  Form("ca_%d",iCry) ) << endl;
+	  //rot around x
+	  if(vTilt.at(iCry)[0]!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "",
+			    Form("%f",vTilt.at(iCry)[0]),
+			    "", "", "", Form("ca_%d",iCry) ) << endl;
+	  }
+	  //rot around y      
+	  if(vTilt.at(iCry)[1]!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "",
+			    Form("%f",vTilt.at(iCry)[1]),
+			    "", "", "", Form("ca_%d",iCry) ) << endl;
+	  }
+	  //rot around z
+	  if(vTilt.at(iCry)[2]!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "",
+			    Form("%f",vTilt.at(iCry)[2]),
+			    "", "", "", Form("ca_%d",iCry) ) << endl;
+	  }
+	  
+	  //put back the crystal into its position in local coord
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",GetCrystalPosition(iCry).X()),
+			  Form("%f",GetCrystalPosition(iCry).Y()),
+			  Form("%f",GetCrystalPosition(iCry).Z()),
+			  Form("ca_%d",iCry) ) << endl;
+	}
       
-    }
+	//check if detector has a tilt and then apply rot
+	if(fAngle.Mag()!=0){
+	  
+	  if(fAngle.X()!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+			    "", Form("ca_%d",iCry)) << endl;
+	  }
+	  if(fAngle.Y()!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+			    "", Form("ca_%d",iCry)) << endl;
+	  }
+	  if(fAngle.Z()!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+			    "", Form("ca_%d",iCry)) << endl;
+	  }
+	}
+      
+	//put back the detector in global coord
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+			Form("%f",fCenter.Z()), Form("ca_%d",iCry)) << endl;
+      }
+     }
   }
 
   return ss.str();
@@ -326,12 +383,12 @@ string TACAparGeo::PrintBodies(){
     TVector3  fAngle = fpFootGeo->GetCAAngles();
    
      ss << "* ***Calorimeter" << endl;
-         
-     if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
-       ss << "$start_transform ca" << endl;
 
      for (int iCal=0; iCal<GetCrystalsN(); iCal++){
        
+       if(vTilt.at(iCal).Mag()!=0 || fAngle.Mag()!=0)
+	 ss << "$start_transform " << Form("ca_%d",iCal) << endl;
+     
        string bodyname, regionname;
 
        bodyname = Form("cal%d",iCal);
@@ -346,10 +403,11 @@ string TACAparGeo::PrintBodies(){
 	      <<  fCenter.Y() + GetCrystalPosition(iCal).Y() + GetCrystalSize().Y()/2.<< " "
 	      <<  fCenter.Z() + GetCrystalPosition(iCal).Z() - GetCrystalSize().Z()/2.<< " "
 	      <<  fCenter.Z() + GetCrystalPosition(iCal).Z() + GetCrystalSize().Z()/2.<< endl;
-     }
-     
-     if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+       
+       if(vTilt.at(iCal).Mag()!=0 || fAngle.Mag()!=0)
        ss << "$end_transform" << endl;
+	 
+     }
      
    }
    
