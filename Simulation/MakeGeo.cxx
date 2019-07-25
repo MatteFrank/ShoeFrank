@@ -225,9 +225,11 @@ int main (int argc, char *argv[]) {
     // print rotations
     outfile << stcGeo->PrintRotations();
     outfile << bmGeo->PrintRotations();
+    outfile << generalGeo->PrintTargRotations();
     outfile << vtxGeo->PrintRotations();
     outfile << itrGeo->PrintRotations();
     outfile << msdGeo->PrintRotations();
+    outfile << diGeo->PrintRotations();
     outfile << twGeo->PrintRotations();
     outfile << caGeo->PrintRotations();
 
