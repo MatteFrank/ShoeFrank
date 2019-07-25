@@ -109,6 +109,7 @@ public:
   string PrintStandardAssignMaterial();
 
   //target
+  string PrintTargRotations();
   string PrintTargBody();
   string PrintTargRegion();
   string PrintTargAssignMaterial();

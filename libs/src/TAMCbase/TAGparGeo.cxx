@@ -332,6 +332,42 @@ string TAGparGeo::PrintStandardBodies( ) {
   
 }
 
+
+//_____________________________________________________________________________
+string TAGparGeo::PrintTargRotations()
+{
+  stringstream ss;
+
+  if(GlobalPar::GetPar()->IncludeTG()){
+
+    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  
+    TVector3 fCenter = fpFootGeo->GetTGCenter();
+    TVector3  fAngle = fpFootGeo->GetTGAngles();
+    
+    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
+	  
+      ss << PrintCard("ROT-DEFI", "300.", "", "",
+		      Form("%f",-fCenter.X()), Form("%f",-fCenter.Y()),
+		      Form("%f",-fCenter.Z()), "tg") << endl;
+      if(fAngle.X()!=0)
+	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", "", "tg") << endl;
+      if(fAngle.Y()!=0)
+	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", "", "tg") << endl;
+      if(fAngle.Z()!=0)
+	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", "", "tg") << endl;
+      ss << PrintCard("ROT-DEFI", "300.", "", "",
+		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+		      Form("%f",fCenter.Z()), "tg") << endl;
+      
+    }
+  }
+
+  return ss.str();
+
+}
+
+
 //_____________________________________________________________________________
 string TAGparGeo::PrintTargBody( ) {
   
@@ -345,13 +381,20 @@ string TAGparGeo::PrintTargBody( ) {
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
     TVector3  fCenter = fpFootGeo->GetTGCenter();
+    TVector3  fAngle = fpFootGeo->GetTGAngles();
 
     TVector3 tgSize =  GetTargetPar().Size;
+    
+    if(fAngle.Mag()!=0)
+      ss << "$start_transform tg" << endl;
 
     ss << setiosflags(ios::fixed) << setprecision(6);
     ss << "RPP tgt     "  << fCenter[0]-tgSize.X()/2. << " " << fCenter[0]+tgSize.X()/2 << " " <<
       fCenter[1]-tgSize.Y()/2. << " " << fCenter[1]+tgSize.Y()/2. << " " <<
       fCenter[2]-tgSize.Z()/2. << " " << fCenter[2]+tgSize.Z()/2. << " " <<  endl;
+
+    if(fAngle.Mag()!=0)
+      ss << "$end_transform" << endl;
 
   }
   return ss.str();
