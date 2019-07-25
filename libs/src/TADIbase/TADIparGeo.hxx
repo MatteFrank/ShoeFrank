@@ -117,6 +117,7 @@ public:
    TVector3    GetMaxPoistion() const { return fMaxPosition; }
   
    // to print fluka files
+   string PrintRotations();
    string PrintBodies();
    string PrintRegions();
    string PrintAssignMaterial();

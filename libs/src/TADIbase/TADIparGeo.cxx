@@ -351,6 +351,96 @@ void TADIparGeo::DefineMaxMinDimension()
 }
 
 //_____________________________________________________________________________
+string TADIparGeo::PrintRotations()
+{
+  stringstream ss;
+
+  if(GlobalPar::GetPar()->IncludeDI()){
+
+    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  
+    TVector3 fCenter = fpFootGeo->GetDICenter();
+    TVector3  fAngle = fpFootGeo->GetDIAngles();
+    
+     for(int iMag=0; iMag<GetMagnetsN(); iMag++) {
+
+      //check if a dipole or the magnets system have a tilt
+       if (fMagnetParameter[iMag].Tilt.Mag()!=0 || fAngle.Mag()!=0){
+
+	//put the magnets system in local coord before the rotation
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f",-fCenter.X()),
+			Form("%f",-fCenter.Y()),
+			Form("%f",-fCenter.Z()),
+			Form("di_%d",iMag) ) << endl;
+
+	//check if a dipole has a tilt
+	if (fMagnetParameter[iMag].Tilt.Mag()!=0){
+	  
+	  // put the a dipole in 0,0,0 before the crystal's rot
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",-GetMagnetPar(iMag).Position.X()),
+			  Form("%f",-GetMagnetPar(iMag).Position.Y()),
+			  Form("%f",-GetMagnetPar(iMag).Position.Z()),
+			  Form("di_%d",iMag) ) << endl;
+	  //rot around x
+	  if(fMagnetParameter[iMag].Tilt[0]!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "",
+			    Form("%f",fMagnetParameter[iMag].Tilt[0]*TMath::RadToDeg()),
+			    "", "", "", Form("di_%d",iMag) ) << endl;
+	  }
+	  //rot around y      
+	  if(fMagnetParameter[iMag].Tilt[1]!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "",
+			    Form("%f",fMagnetParameter[iMag].Tilt[1]*TMath::RadToDeg()),
+			    "", "", "", Form("di_%d",iMag) ) << endl;
+	  }
+	  //rot around z
+	  if(fMagnetParameter[iMag].Tilt[2]!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "",
+			    Form("%f",fMagnetParameter[iMag].Tilt[2]*TMath::RadToDeg()),
+			    "", "", "", Form("di_%d",iMag) ) << endl;
+	  }
+	  
+	  //put back the a dipole into its position in local coord
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",GetMagnetPar(iMag).Position.X()),
+			  Form("%f",GetMagnetPar(iMag).Position.Y()),
+			  Form("%f",GetMagnetPar(iMag).Position.Z()),
+			  Form("di_%d",iMag) ) << endl;
+	}
+      
+	//check if the magnets system has a tilt and then apply rot
+	if(fAngle.Mag()!=0){
+	  
+	  if(fAngle.X()!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+			    "", Form("di_%d",iMag)) << endl;
+	  }
+	  if(fAngle.Y()!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+			    "", Form("di_%d",iMag)) << endl;
+	  }
+	  if(fAngle.Z()!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+			    "", Form("di_%d",iMag)) << endl;
+	  }
+	}
+      
+	//put back the magnets system in global coord
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+			Form("%f",fCenter.Z()), Form("di_%d",iMag)) << endl;
+      }
+     }
+  }
+
+  return ss.str();
+
+}
+
+
+//_____________________________________________________________________________
 string TADIparGeo::PrintBodies(){
    
    stringstream ss;
@@ -360,12 +450,16 @@ string TADIparGeo::PrintBodies(){
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
     TVector3  fCenter = fpFootGeo->GetDICenter();
+    TVector3  fAngle = fpFootGeo->GetDIAngles();
+    
+    string bodyname, regionname;
    
      ss << "* ***Dipoles bodies" << endl;
      
      for (int iMag=0; iMag<GetMagnetsN(); iMag++){
        
-       string bodyname, regionname;
+       if(fMagnetParameter[iMag].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+	 ss << "$start_transform " << Form("di_%d",iMag) << endl; 
        
        regionname = Form("MAG_SH%d",iMag);
        vRegShield.push_back(regionname);
@@ -407,6 +501,9 @@ string TADIparGeo::PrintBodies(){
 	  << " 0.000000 0.000000 " << GetMagnetPar(iMag).Size.Z() << " "
 	  << GetMagnetPar(iMag).Size.X() << endl;
        
+      if(fMagnetParameter[iMag].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+	ss << "$end_transform " << endl;
+      
      }
      
    }
