@@ -215,30 +215,30 @@ string TAVTparGeo::PrintRotations()
 			  Form("%f",GetSensorPosition(iSens).Z()),
 			  Form("vt_%d",iSens) ) << endl;
 	}
-      }
 
-      //check if detector has a tilt and then apply rot
-      if(fAngle.Mag()!=0){
+	//check if detector has a tilt and then apply rot
+	if(fAngle.Mag()!=0){
 	  
-	if(fAngle.X()!=0){
-	  ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
-	  		  "", Form("vt_%d",iSens)) << endl;
+	  if(fAngle.X()!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+			    "", Form("vt_%d",iSens)) << endl;
+	  }
+	  if(fAngle.Y()!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+			    "", Form("vt_%d",iSens)) << endl;
+	  }
+	  if(fAngle.Z()!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+			    "", Form("vt_%d",iSens)) << endl;
+	  }
 	}
-	if(fAngle.Y()!=0){
-	  ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
-	  		  "", Form("vt_%d",iSens)) << endl;
-	}
-	if(fAngle.Z()!=0){
-	  ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
-	  		  "", Form("vt_%d",iSens)) << endl;
-	}
-      }
       
-      //put back the detector in global coord
-      ss << PrintCard("ROT-DEFI", "", "", "",
-		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-		      Form("%f",fCenter.Z()), Form("vt_%d",iSens)) << endl;
+	//put back the detector in global coord
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+			Form("%f",fCenter.Z()), Form("vt_%d",iSens)) << endl;
        
+      }
     }
   }
   return ss.str();
