@@ -684,7 +684,7 @@ string TABMparGeo::PrintBodies(){
   
     ss << setiosflags(ios::fixed) << setprecision(6);
     
-    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+    if(fAngle.Mag()!=0)
       ss << "$start_transform bm" << endl;
 
     ss << "RPP BmnShiOu    "
@@ -767,7 +767,7 @@ string TABMparGeo::PrintBodies(){
     }
 
     
-    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+    if(fAngle.Mag()!=0)
       ss << "$end_transform" << endl;
     
   }

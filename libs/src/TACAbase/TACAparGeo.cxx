@@ -298,7 +298,7 @@ string TACAparGeo::PrintRotations()
       //check if crystal or detector have a tilt
       if (vTilt.at(iCry).Mag()!=0 || fAngle.Mag()!=0){
 
-	//put the crystal in local coord before the rotation
+	//put the detector in local coord before the rotation
 	ss << PrintCard("ROT-DEFI", "", "", "",
 			Form("%f",-fCenter.X()),
 			Form("%f",-fCenter.Y()),

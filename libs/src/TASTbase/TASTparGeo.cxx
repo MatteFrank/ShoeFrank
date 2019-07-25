@@ -144,7 +144,7 @@ string TASTparGeo::PrintRotations()
     TVector3 fCenter = fpFootGeo->GetSTCenter();
     TVector3  fAngle = fpFootGeo->GetSTAngles();
     
-    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
+    if(fAngle.Mag()!=0){
 	  
       ss << PrintCard("ROT-DEFI", "300.", "", "",
 		      Form("%f",-fCenter.X()), Form("%f",-fCenter.Y()),
@@ -184,7 +184,7 @@ string TASTparGeo::PrintBodies( ) {
     TVector3  fAngle = fpFootGeo->GetSTAngles();
 
     
-    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+    if(fAngle.Mag()!=0)
       outstr << "$start_transform st" << endl;
 
     outstr << setiosflags(ios::fixed) << setprecision(6);
@@ -197,7 +197,7 @@ string TASTparGeo::PrintBodies( ) {
     //Mylar that is 10\mum thick
     outstr << "XYP stcmyl2    "  << fCenter[2]+fSize[2]/2. + 0.001<<  endl;
     
-    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0)
+    if(fAngle.Mag()!=0)
       outstr << "$end_transform" << endl;
   }
 
