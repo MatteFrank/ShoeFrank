@@ -308,44 +308,85 @@ string TAMSDparGeo::PrintRotations()
 
   if(GlobalPar::GetPar()->IncludeMSD()){
 
+    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+    
+    TVector3  fCenter = fpFootGeo->GetMSDCenter();
+    TVector3  fAngle = fpFootGeo->GetMSDAngles();
+    
     for(int iSens=0; iSens<GetNSensors(); iSens++) {
 
-      // if(fSensorParameter[iSens].Tilt[0]!=0){
-      // 	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-      // 	   << setw(10) << setfill(' ') << std::right << "100."
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setfill(' ') << std::left << Form("vtX_%d",iSens)
-      // 	   << endl;
-      // }
-      // if(fSensorParameter[iSens].Tilt[1]!=0){
-      // 	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-      // 	   << setw(10) << setfill(' ') << std::right << "200."
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setw(10) << setfill(' ') << std::right << " "
-      // 	   << setfill(' ') << std::left << Form("vtY_%d",iSens)
-      // 	   << endl;
-      // }
-      if(fSensorParameter[iSens].Tilt[2]!=0){
-	ss << setw(10) << setfill(' ') << std::left << "ROT-DEFI"
-	   << setw(10) << setfill(' ') << std::right << "300."
-	   << setw(10) << setfill(' ') << std::right << " "
-	   << setw(10) << setfill(' ') << std::right << fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()
-	   << setw(10) << setfill(' ') << std::right << " "
-	   << setw(10) << setfill(' ') << std::right << " "
-	   << setw(10) << setfill(' ') << std::right << " "
-	   << setfill(' ') << std::left << Form("msdZ_%d",iSens)
-	   << endl;
-      }
+      //check if sensor or detector have a tilt
+      if (fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0){
 
+	//put the sensor in local coord before the rotation
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f",-fCenter.X()),
+			Form("%f",-fCenter.Y()),
+			Form("%f",-fCenter.Z()),
+			Form("msd_%d",iSens) ) << endl;
+
+	//check if sensor has a tilt
+	if (fSensorParameter[iSens].Tilt.Mag()!=0){
+	  
+	  // put the sensor in 0,0,0 before the sensor's rot
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",-GetSensorPosition(iSens).X()),
+			  Form("%f",-GetSensorPosition(iSens).Y()),
+			  Form("%f",-GetSensorPosition(iSens).Z()),
+			  Form("msd_%d",iSens) ) << endl;
+	  //rot around x
+	  if(fSensorParameter[iSens].Tilt[0]!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "",
+			    Form("%f",fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
+			    "", "", "", Form("msd_%d",iSens) ) << endl;
+	  }
+	  //rot around y      
+	  if(fSensorParameter[iSens].Tilt[1]!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "",
+			    Form("%f",fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
+			    "", "", "", Form("msd_%d",iSens) ) << endl;
+	  }
+	  //rot around z
+	  if(fSensorParameter[iSens].Tilt[2]!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "",
+			    Form("%f",fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
+			    "", "", "", Form("msd_%d",iSens) ) << endl;
+	  }
+	  
+	  //put back the sensor into its position in local coord
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",GetSensorPosition(iSens).X()),
+			  Form("%f",GetSensorPosition(iSens).Y()),
+			  Form("%f",GetSensorPosition(iSens).Z()),
+			  Form("msd_%d",iSens) ) << endl;
+	}
+
+	//check if detector has a tilt and then apply rot
+	if(fAngle.Mag()!=0){
+	  
+	  if(fAngle.X()!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+			    "", Form("msd_%d",iSens)) << endl;
+	  }
+	  if(fAngle.Y()!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+			    "", Form("msd_%d",iSens)) << endl;
+	  }
+	  if(fAngle.Z()!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+			    "", Form("msd_%d",iSens)) << endl;
+	  }
+	}
+      
+	//put back the detector in global coord
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+			Form("%f",fCenter.Z()), Form("msd_%d",iSens)) << endl;
+       
+      }
     }
   }
+  
   return ss.str();
 
 }
@@ -362,27 +403,24 @@ string TAMSDparGeo::PrintBodies()
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
     TVector3  fCenter = fpFootGeo->GetMSDCenter();
+    TVector3  fAngle = fpFootGeo->GetMSDAngles();
+    
     TVector3 posMet, posStrip, posMod;
-
     string bodyname, regionname;
 
     ss << "* ***MSD bodies" << endl;
 
     for(int iSens=0; iSens<GetNSensors(); iSens++) {
 
-      // if(fSensorParameter[iSens].Tilt[0]!=0)
-      // 	ss << "$start_transform " << Form("vtX_%d",iSens) << endl;
-      // if(fSensorParameter[iSens].Tilt[1]!=0)
-      // 	ss << "$start_transform " << Form("vtY_%d",iSens) << endl;
-      if(fSensorParameter[iSens].Tilt[2]!=0)
-	ss << "$start_transform " << Form("msdZ_%d",iSens) << endl;
-
+      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+	ss << "$start_transform " << Form("msd_%d",iSens) << endl;
+      
       //strip layer
       bodyname = Form("msds%d",iSens);
       regionname = Form("MSDS%d",iSens);
       posStrip.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
-		     fCenter.Y() + GetSensorPosition(iSens).Y(),
-		     fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fMetalThickness + fEpiSize.Z()/2. );
+		       fCenter.Y() + GetSensorPosition(iSens).Y(),
+		       fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fMetalThickness + fEpiSize.Z()/2. );
       ss <<  "RPP " << bodyname <<  "     "
 	 << posStrip.x() - fEpiSize.X()/2. << " "
 	 << posStrip.x() + fEpiSize.X()/2. << " "
@@ -423,17 +461,10 @@ string TAMSDparGeo::PrintBodies()
       vMetalBody.push_back(bodyname);
       vMetalRegion.push_back(regionname);
 
-      // if(fSensorParameter[iSens].Tilt[0]!=0){
-      // 	ss << "$end_transform " << endl;
-      // }
-      // if(fSensorParameter[iSens].Tilt[1]!=0){
-      // 	ss << "$end_transform " << endl;
-      // }
-      if(fSensorParameter[iSens].Tilt[2]!=0){
+      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$end_transform " << endl;
-      }
-
     }
+
   }
 
   return ss.str();
