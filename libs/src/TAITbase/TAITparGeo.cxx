@@ -234,48 +234,83 @@ string TAITparGeo::PrintRotations()
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
     TVector3  fCenter = fpFootGeo->GetITCenter();
+    TVector3  fAngle = fpFootGeo->GetITAngles();
+    
     for(int iSens=0; iSens<GetNSensors(); iSens++) {
 
+   
+      //check if sensor or detector have a tilt
+      if (fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0){
 
-
-      if (fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0){
-
-	//put the sensor in 0,0,0 before the rotation
+	//put the sensor in local coord before the rotation
 	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",-fCenter.X()-GetSensorPosition(iSens).X()),
-			Form("%f",-fCenter.Y()-GetSensorPosition(iSens).Y()),
-			Form("%f",-fCenter.Z()-GetSensorPosition(iSens).Z()),
-    			Form("it_%d",iSens) ) << endl;
-      
-	//rot around x
-	if(fSensorParameter[iSens].Tilt[0]!=0){
-	  ss << PrintCard("ROT-DEFI", "100.", "",
-			  Form("%f",fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
-			  "", "", "", Form("it_%d",iSens) ) << endl;
-	}
-	//rot around y      
-	if(fSensorParameter[iSens].Tilt[1]!=0){
-	  ss << PrintCard("ROT-DEFI", "200.", "",
-			  Form("%f",fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
-			  "", "", "", Form("it_%d",iSens) ) << endl;
-	}
-	//rot around z
-	if(fSensorParameter[iSens].Tilt[2]!=0){
-	  ss <<PrintCard("ROT-DEFI", "300.", "",
-			 Form("%f",fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
-			 "", "", "", Form("it_%d",iSens) ) << endl;
-	}
-	
-	//put back the sensor into its position
-	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f", fCenter.X()+GetSensorPosition(iSens).X()),
-			Form("%f", fCenter.Y()+GetSensorPosition(iSens).Y()),
-			Form("%f", fCenter.Z()+GetSensorPosition(iSens).Z()),
+			Form("%f",-fCenter.X()),
+			Form("%f",-fCenter.Y()),
+			Form("%f",-fCenter.Z()),
 			Form("it_%d",iSens) ) << endl;
+
+	//check if sensor has a tilt
+	if (fSensorParameter[iSens].Tilt.Mag()!=0){
+	  
+	  // put the sensor in 0,0,0 before the sensor's rot
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",-GetSensorPosition(iSens).X()),
+			  Form("%f",-GetSensorPosition(iSens).Y()),
+			  Form("%f",-GetSensorPosition(iSens).Z()),
+			  Form("it_%d",iSens) ) << endl;
+	  //rot around x
+	  if(fSensorParameter[iSens].Tilt[0]!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "",
+			    Form("%f",fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
+			    "", "", "", Form("it_%d",iSens) ) << endl;
+	  }
+	  //rot around y      
+	  if(fSensorParameter[iSens].Tilt[1]!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "",
+			    Form("%f",fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
+			    "", "", "", Form("it_%d",iSens) ) << endl;
+	  }
+	  //rot around z
+	  if(fSensorParameter[iSens].Tilt[2]!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "",
+			    Form("%f",fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
+			    "", "", "", Form("it_%d",iSens) ) << endl;
+	  }
+	  
+	  //put back the sensor into its position in local coord
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",GetSensorPosition(iSens).X()),
+			  Form("%f",GetSensorPosition(iSens).Y()),
+			  Form("%f",GetSensorPosition(iSens).Z()),
+			  Form("it_%d",iSens) ) << endl;
+	}
       }
+
+      //check if detector has a tilt and then apply rot
+      if(fAngle.Mag()!=0){
+	  
+	if(fAngle.X()!=0){
+	  ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+	  		  "", Form("it_%d",iSens)) << endl;
+	}
+	if(fAngle.Y()!=0){
+	  ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+	  		  "", Form("it_%d",iSens)) << endl;
+	}
+	if(fAngle.Z()!=0){
+	  ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+	  		  "", Form("it_%d",iSens)) << endl;
+	}
+      }
+      
+      //put back the detector in global coord
+      ss << PrintCard("ROT-DEFI", "", "", "",
+		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
+		      Form("%f",fCenter.Z()), Form("it_%d",iSens)) << endl;
 
     }
   }
+  
   return ss.str();
 
 }
@@ -292,8 +327,9 @@ string TAITparGeo::PrintBodies()
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
     TVector3  fCenter = fpFootGeo->GetITCenter();
+    TVector3  fAngle = fpFootGeo->GetITAngles();
+    
     TVector3 posEpi, posPix, posMod;
-
     string bodyname, regionname;
     
     ss << "* ***Inner tracker bodies" << endl;  
@@ -301,7 +337,7 @@ string TAITparGeo::PrintBodies()
     for(int iSens=0; iSens<GetNSensors(); iSens++) {
 
           
-      if(fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0)
+      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$start_transform " << Form("it_%d",iSens) << endl;
               
       //epitaxial layer
@@ -309,7 +345,8 @@ string TAITparGeo::PrintBodies()
       regionname = Form("ITRE%02d",iSens);
       posEpi.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
 		     fCenter.Y() + GetSensorPosition(iSens).Y(),
-		     fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fPixThickness + fEpiSize.Z()/2. );
+		     fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2.
+		     + fPixThickness + fEpiSize.Z()/2. );
       ss <<  "RPP " << bodyname <<  "     "
 	 << posEpi.x() - fEpiSize.X()/2. << " "
 	 << posEpi.x() + fEpiSize.X()/2. << " "
@@ -350,7 +387,7 @@ string TAITparGeo::PrintBodies()
       vPixBody.push_back(bodyname);
       vPixRegion.push_back(regionname);
       
-      if(fSensorParameter[iSens].Tilt[0]!=0 | fSensorParameter[iSens].Tilt[1]!=0 | fSensorParameter[iSens].Tilt[2]!=0)
+      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$end_transform " << endl;
 	  
     }
