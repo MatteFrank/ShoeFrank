@@ -531,7 +531,7 @@ string TAGparGeo::PrintBeam() {
   
   str << PrintCard("BEAM",TString::Format("%f",-(GetBeamPar().Energy)), "",
 		   TString::Format("%f",GetBeamPar().AngDiv),
-		   TString::Format("%f",GetBeamPar().Size),
+		   TString::Format("%f",-GetBeamPar().Size),
 		   TString::Format("%f",-GetBeamPar().Size),
 		   "1.0",part_type) << endl;
   if(part_type == "HEAVYION")
