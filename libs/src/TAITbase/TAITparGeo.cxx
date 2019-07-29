@@ -230,7 +230,7 @@ string TAITparGeo::PrintRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeVertex()){
+  if(GlobalPar::GetPar()->IncludeInnerTracker()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
     TVector3  fCenter = fpFootGeo->GetITCenter();
