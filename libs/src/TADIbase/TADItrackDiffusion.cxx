@@ -131,12 +131,13 @@ Double_t TADItrackDiffusion::SigmaTheta(Double_t *x, Double_t *par)
    /// par[2]=z of the beam (Z)
    /// par[3]=radiation length of the target material (Lr)
    /// x[0] in cm
+   /// return in rad
    
    Double_t radL = x[0]/par[3];
    Double_t A    = 14.1*par[2]/(par[0]*par[1]);
    Double_t B    = TMath::Sqrt(radL)*(1+TMath::Log10(radL)/9.);
    
-   return A*B*TMath::RadToDeg();
+   return A*B;
 }
 
 // --------------------------------------------------------------------------------------
