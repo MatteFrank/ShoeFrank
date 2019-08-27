@@ -34,11 +34,7 @@ public:
    Float_t  GetDensity(TString name);
    
 private:
-   // Parameters for energy loss calculation
-   Float_t        fAlpha;
-   Float_t        fPfactor;
-   
-   TF1*           fFuncSigTheta;
+   TF1*     fFuncSigTheta;
    
 private:
    static Float_t fgkX0w;   // radiation for water

@@ -21,9 +21,7 @@ Float_t TADItrackDiffusion::fgkX0w = 36.08;
 //
 // Default constructor
 TADItrackDiffusion::TADItrackDiffusion()
-: TAGpara(),
-  fAlpha(0),
-  fPfactor(0)
+: TAGpara()
 {
    if (gGeoManager == 0x0)
       Error("TADItrackDiffusion()", "gGeoManager not defined");
@@ -44,7 +42,6 @@ TADItrackDiffusion::~TADItrackDiffusion()
 // Calculation of the WEPL of the material layer
 Float_t TADItrackDiffusion::GetWEPL(const TString& mat, Float_t thickness)
 {
-   
    Float_t factor = 0;
    Float_t waterEq = 0;
    
@@ -76,27 +73,30 @@ Float_t TADItrackDiffusion::GetWEPL(const TString& mat, Float_t thickness)
 // Calculation of the energy loss in the material layer (WEPL in [cm])
 Float_t TADItrackDiffusion::GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL)
 {
+   // rage formula Bortfeld et al, PMB 41 (1996)
+   // R = alpha*Energy^(pFactor)
+   
+   Float_t alpha   = 0.0022;
+   Float_t pfactor = 1.;
+
    if (energy < 250){
-      fAlpha = 0.0022;
-      fPfactor = 1.77;
+      pfactor = 1.77;
    } else if ((energy >= 250) && (energy < 400)){
-      fAlpha = 0.0022;
-      fPfactor = 1.76;
+      pfactor = 1.76;
    } else {
-      fAlpha = 0.0022;
-      fPfactor = 1.75;
+      pfactor = 1.75;
    }
    
-   Float_t range = (massNumber / (atomicNumber*atomicNumber) * fAlpha * pow(energy, fPfactor));
-   Float_t path = range - WEPL;
-   Float_t dE = pow((path * atomicNumber * atomicNumber / (fAlpha * massNumber)), (1/fPfactor));
-   energy = dE;
+   Float_t rangeW = (massNumber / (atomicNumber*atomicNumber) * alpha * TMath::Power(energy, pfactor));
+   Float_t path   = rangeW - WEPL;
+   Float_t dE     = TMath::Power((path * atomicNumber * atomicNumber / (alpha * massNumber)), (1/pfactor));
+
    if (path < 0) {
       Info("GetEnergyLoss()","The remaining energy is 0....");
-      energy = 0;
+      dE = 0;
    }
    
-   return energy;
+   return dE;
 }
 
 //_____________________________________________________________________________
