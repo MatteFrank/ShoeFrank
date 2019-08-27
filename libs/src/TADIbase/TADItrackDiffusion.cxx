@@ -127,7 +127,7 @@ Double_t TADItrackDiffusion::SigmaTheta(Double_t *x, Double_t *par)
    /// Function to modelize the scattering angle of incident ions at a depth x (Highland)
    /// (14.1MeV/p*beta)*Z*sqrt(x/Lr)*[1 +1/9log(x/Lr)]
    /// par[0]=beta of particule (beta)
-   /// par[1]=momentum MeV/c2 (p)
+   /// par[1]=momentum MeV/c (pc)
    /// par[2]=z of the beam (Z)
    /// par[3]=radiation length of the target material (Lr)
    /// x[0] in cm
