@@ -74,7 +74,7 @@ Float_t TADItrackDiffusion::GetWEPL(const TString& mat, Float_t thickness)
 //_____________________________________________________________________________
 //
 // Calculation of the energy loss in the material layer (WEPL in [cm])
-Float_t TADItrackDiffusion::GetEnergy(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL)
+Float_t TADItrackDiffusion::GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL)
 {
    if (energy < 250){
       fAlpha = 0.0022;
@@ -92,7 +92,7 @@ Float_t TADItrackDiffusion::GetEnergy(Float_t energy, Float_t massNumber, Int_t 
    Float_t dE = pow((path * atomicNumber * atomicNumber / (fAlpha * massNumber)), (1/fPfactor));
    energy = dE;
    if (path < 0) {
-      Info("GetEnergy()","The remaining energy is 0....");
+      Info("GetEnergyLoss()","The remaining energy is 0....");
       energy = 0;
    }
    

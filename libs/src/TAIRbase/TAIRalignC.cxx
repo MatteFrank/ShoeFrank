@@ -743,7 +743,7 @@ Bool_t TAIRalignC::DefineWeights()
    
    wepl = fpDiff->GetWEPL("Air", TMath::Abs(pGeoMapG->GetBeamPar().Position[2]*TAGgeoTrafo::CmToMm()-fZposition[iSensor]));
 
-   fEbeam   = fpDiff->GetEnergy(fEbeam, fAbeam, fZbeam, wepl);
+   fEbeam   = fpDiff->GetEnergyLoss(fEbeam, fAbeam, fZbeam, wepl);
    fpc      = fpDiff->GetPCC(fEbeam, fAbeam);
    fBeta    = fpDiff->GetBeta(fEbeam);
    
@@ -772,7 +772,7 @@ Bool_t TAIRalignC::DefineWeights()
          sigmaAlfaMeasQ   = factor1;
          km               = km * factor2 + fThickDect[i]; // see scattman formalismus paper
          previousTermSumQ = previousTermSumQ + sigmaAlfaScattSi*sigmaAlfaScattSi;
-         fEbeam           = fpDiff->GetEnergy(fEbeam, fAbeam, fZbeam, weplSi*0.1);
+         fEbeam           = fpDiff->GetEnergyLoss(fEbeam, fAbeam, fZbeam, weplSi*0.1);
          fpc              = fpDiff->GetPCC(fEbeam, fAbeam);
          fBeta            = fpDiff->GetBeta(fEbeam);
          
@@ -796,7 +796,7 @@ Bool_t TAIRalignC::DefineWeights()
             km                 = km * factor2 + distance/nLayers ; // see scattman formalismus paper
             previousTermSumQ   = previousTermSumQ + sigmaAlfaScattAir*sigmaAlfaScattAir;
             wepl               = fpDiff->GetWEPL("Air", distance/nLayers);
-            fEbeam             = fpDiff->GetEnergy(fEbeam, fAbeam, fZbeam, wepl*0.1);
+            fEbeam             = fpDiff->GetEnergyLoss(fEbeam, fAbeam, fZbeam, wepl*0.1);
             fpc                = fpDiff->GetPCC(fEbeam, fAbeam);
             fBeta              = fpDiff->GetBeta(fEbeam);
             
