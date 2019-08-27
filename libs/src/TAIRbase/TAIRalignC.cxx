@@ -710,8 +710,8 @@ Bool_t TAIRalignC::DefineWeights()
    fZbeam     = pGeoMapG->GetBeamPar().AtomicNumber;
    fAbeam     = pGeoMapG->GetBeamPar().AtomicMass;
    
-   fpcInit    = fpDiff->PCCalc(fEbeamInit, fAbeam);
-   fBetaInit  = fpDiff->BetaCalc(fEbeamInit);
+   fpcInit    = fpDiff->GetPCC(fEbeamInit, fAbeam);
+   fBetaInit  = fpDiff->GetBeta(fEbeamInit);
    
    fEbeam     = fEbeamInit;
    fpc        = fpcInit;
@@ -741,11 +741,11 @@ Bool_t TAIRalignC::DefineWeights()
    Float_t previousTermSumQ    = 0;
    Float_t previousDistanceSum = 0;
    
-   wepl = fpDiff->WEPLCalc("Air", TMath::Abs(pGeoMapG->GetBeamPar().Position[2]*TAGgeoTrafo::CmToMm()-fZposition[iSensor]));
+   wepl = fpDiff->GetWEPL("Air", TMath::Abs(pGeoMapG->GetBeamPar().Position[2]*TAGgeoTrafo::CmToMm()-fZposition[iSensor]));
 
-   fEbeam   = fpDiff->EnergyCalc(fEbeam, fAbeam, fZbeam, wepl);
-   fpc      = fpDiff->PCCalc(fEbeam, fAbeam);
-   fBeta    = fpDiff->BetaCalc(fEbeam);
+   fEbeam   = fpDiff->GetEnergy(fEbeam, fAbeam, fZbeam, wepl);
+   fpc      = fpDiff->GetPCC(fEbeam, fAbeam);
+   fBeta    = fpDiff->GetBeta(fEbeam);
    
    if(fEbeam == 0){
       Error("DefineWeights()","Remaining energy in air is 0...");
@@ -756,7 +756,7 @@ Bool_t TAIRalignC::DefineWeights()
       iSensor = fSecArray[i];
       Double_t sigmaAlfaScattSi = 0;
       Double_t sigmaAlfaScattAir = 0;
-      Float_t weplSi = fpDiff->WEPLCalc("Si", fThickDect[i]);
+      Float_t weplSi = fpDiff->GetWEPL("Si", fThickDect[i]);
 
       if (i > 0){
          Float_t distance = TMath::Abs(fZposition[i] - fZposition[i-1] - fThickDect[i]);
@@ -772,9 +772,9 @@ Bool_t TAIRalignC::DefineWeights()
          sigmaAlfaMeasQ   = factor1;
          km               = km * factor2 + fThickDect[i]; // see scattman formalismus paper
          previousTermSumQ = previousTermSumQ + sigmaAlfaScattSi*sigmaAlfaScattSi;
-         fEbeam           = fpDiff->EnergyCalc(fEbeam, fAbeam, fZbeam, weplSi*0.1);
-         fpc              = fpDiff->PCCalc(fEbeam, fAbeam);
-         fBeta            = fpDiff->BetaCalc(fEbeam);
+         fEbeam           = fpDiff->GetEnergy(fEbeam, fAbeam, fZbeam, weplSi*0.1);
+         fpc              = fpDiff->GetPCC(fEbeam, fAbeam);
+         fBeta            = fpDiff->GetBeta(fEbeam);
          
          if(fEbeam == 0){
             Error("DefineWeights()","Remaining energy is 0...");
@@ -795,10 +795,10 @@ Bool_t TAIRalignC::DefineWeights()
             sigmaAlfaMeasQ     = factor1;
             km                 = km * factor2 + distance/nLayers ; // see scattman formalismus paper
             previousTermSumQ   = previousTermSumQ + sigmaAlfaScattAir*sigmaAlfaScattAir;
-            wepl               = fpDiff->WEPLCalc("Air", distance/nLayers);
-            fEbeam             = fpDiff->EnergyCalc(fEbeam, fAbeam, fZbeam, wepl*0.1);
-            fpc                = fpDiff->PCCalc(fEbeam, fAbeam);
-            fBeta              = fpDiff->BetaCalc(fEbeam);
+            wepl               = fpDiff->GetWEPL("Air", distance/nLayers);
+            fEbeam             = fpDiff->GetEnergy(fEbeam, fAbeam, fZbeam, wepl*0.1);
+            fpc                = fpDiff->GetPCC(fEbeam, fAbeam);
+            fBeta              = fpDiff->GetBeta(fEbeam);
             
             if(fEbeam == 0){
                Error("DefineWeights()","Remaining energy is 0...");
