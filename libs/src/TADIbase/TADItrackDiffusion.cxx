@@ -16,6 +16,7 @@
 
 ClassImp(TADItrackDiffusion);
 
+Float_t TADItrackDiffusion::fgkX0w = 36.08;
 //_____________________________________________________________________________
 //
 // Default constructor
@@ -27,7 +28,7 @@ TADItrackDiffusion::TADItrackDiffusion()
    if (gGeoManager == 0x0)
       Error("TADItrackDiffusion()", "gGeoManager not defined");
    
-   fFuncSigTheta = new TF1("funcSigTheta", this, &TADItrackDiffusion::SigmaTheta, 0, 500, 5, "TADItrackDiffusion", "SigmaTheta");
+   fFuncSigTheta = new TF1("funcSigTheta", this, &TADItrackDiffusion::SigmaTheta, 0, 500, 4, "TADItrackDiffusion", "SigmaTheta");
 }
 
 //_____________________________________________________________________________
@@ -41,7 +42,7 @@ TADItrackDiffusion::~TADItrackDiffusion()
 //_____________________________________________________________________________
 //
 // Calculation of the WEPL of the material layer
-Float_t TADItrackDiffusion::WEPLCalc(const TString& mat, Float_t thickness)
+Float_t TADItrackDiffusion::GetWEPL(const TString& mat, Float_t thickness)
 {
    
    Float_t factor = 0;
@@ -63,7 +64,7 @@ Float_t TADItrackDiffusion::WEPLCalc(const TString& mat, Float_t thickness)
       factor = 1.;
    } else if (material == "TI"){
    	  factor = 3.136600294;
-   } else Warning("WEPLCalc()","Material is not in the list.... Candidates: Air, Si, 12C, PMMA, H2O, Ti");
+   } else Warning("GetWEPL()","Material is not in the list.... Candidates: Air, Si, 12C, PMMA, H2O, Ti");
    
    waterEq = thickness * factor;
 
@@ -73,7 +74,7 @@ Float_t TADItrackDiffusion::WEPLCalc(const TString& mat, Float_t thickness)
 //_____________________________________________________________________________
 //
 // Calculation of the energy loss in the material layer (WEPL in [cm])
-Float_t TADItrackDiffusion::EnergyCalc(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL)
+Float_t TADItrackDiffusion::GetEnergy(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL)
 {
    if (energy < 250){
       fAlpha = 0.0022;
@@ -91,7 +92,7 @@ Float_t TADItrackDiffusion::EnergyCalc(Float_t energy, Float_t massNumber, Int_t
    Float_t dE = pow((path * atomicNumber * atomicNumber / (fAlpha * massNumber)), (1/fPfactor));
    energy = dE;
    if (path < 0) {
-      Info("EnergyCalc()","The remaining energy is 0....");
+      Info("GetEnergy()","The remaining energy is 0....");
       energy = 0;
    }
    
@@ -101,7 +102,7 @@ Float_t TADItrackDiffusion::EnergyCalc(Float_t energy, Float_t massNumber, Int_t
 //_____________________________________________________________________________
 //
 // Calculation of the impact*c [MeV]
-Float_t TADItrackDiffusion::PCCalc(Float_t energy, Float_t massNumber)
+Float_t TADItrackDiffusion::GetPCC(Float_t energy, Float_t massNumber)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
    Float_t pc      = sqrt(energy * energy + 2*energy * massFac) * massNumber ;
@@ -112,7 +113,7 @@ Float_t TADItrackDiffusion::PCCalc(Float_t energy, Float_t massNumber)
 //_____________________________________________________________________________
 //
 // Calculation of beta
-Float_t TADItrackDiffusion::BetaCalc(Float_t energy)
+Float_t TADItrackDiffusion::GetBeta(Float_t energy)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
    Float_t beta    = sqrt(1.0 - (1/(energy/massFac +1.0))*(1/(energy/massFac +1.0)));
@@ -123,15 +124,15 @@ Float_t TADItrackDiffusion::BetaCalc(Float_t energy)
 // --------------------------------------------------------------------------------------
 Double_t TADItrackDiffusion::SigmaTheta(Double_t *x, Double_t *par)
 {
-   /// Function to modelize the scattering angle of incident ions at a depth x (Highlands)
-   /// par[0]=beta of particule
-   /// par[1]=momentum MeV/c2
-   /// par[2]=z of the beam
-   /// par[3]=radiation length of the target material
-   /// par[4]=density of target material
+   /// Function to modelize the scattering angle of incident ions at a depth x (Highland)
+   /// (14.1MeV/p*beta)*Z*sqrt(x/Lr)*[1 +1/9log(x/Lr)]
+   /// par[0]=beta of particule (beta)
+   /// par[1]=momentum MeV/c2 (p)
+   /// par[2]=z of the beam (Z)
+   /// par[3]=radiation length of the target material (Lr)
    /// x[0] in cm
    
-   Double_t radL = x[0]*par[4]/par[3];
+   Double_t radL = x[0]/par[3];
    Double_t A    = 14.1*par[2]/(par[0]*par[1]);
    Double_t B    = TMath::Sqrt(radL)*(1+TMath::Log10(radL)/9.);
    
@@ -139,18 +140,17 @@ Double_t TADItrackDiffusion::SigmaTheta(Double_t *x, Double_t *par)
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackDiffusion::SigmaThetaCalc(Float_t energy, TString mat, Float_t x, Float_t A, Float_t Z )
+Float_t TADItrackDiffusion::GetSigmaTheta(Float_t energy, TString mat, Float_t x, Float_t A, Float_t Z )
 {
-   Double_t pc   = PCCalc(energy, A);
-   Double_t beta = BetaCalc(energy);
+   Double_t pc   = GetPCC(energy, A);
+   Double_t beta = GetBeta(energy);
    Double_t rho  = GetDensity(mat);        // density of material  [g/cm^3]
-   Double_t radL = GetRadLength(mat)*rho;  // Radiation length for material, multiply by density [g/cm^2]
+   Double_t radL = GetRadLength(mat);  // Radiation length for material, multiply by density [g/cm^2]
 
    fFuncSigTheta->SetParameter(0, beta);
    fFuncSigTheta->SetParameter(1, pc);
    fFuncSigTheta->SetParameter(2, Z);
    fFuncSigTheta->SetParameter(3, radL);
-   fFuncSigTheta->SetParameter(4, rho);
    
    return  fFuncSigTheta->Eval(x);
 }
@@ -158,6 +158,9 @@ Float_t TADItrackDiffusion::SigmaThetaCalc(Float_t energy, TString mat, Float_t 
 // --------------------------------------------------------------------------------------
 Float_t TADItrackDiffusion::GetRadLength(TString name)
 {
+   if (name == "H20" || name == "Water")
+      return fgkX0w;
+      
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
    if (mat == 0x0) {
       Warning("GetRadLength()", "Unknown material %s", name.Data());
