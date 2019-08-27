@@ -157,7 +157,9 @@ Float_t TADItrackDiffusion::GetSigmaTheta(Float_t energy, TString mat, Float_t x
 // --------------------------------------------------------------------------------------
 Float_t TADItrackDiffusion::GetRadLength(TString name)
 {
-   if (name == "H20" || name == "Water")
+   TString tmp(name);
+   tmp.ToUpper();
+   if (tmp == "H20" || tmp == "WATER")
       return fgkX0w;
       
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
