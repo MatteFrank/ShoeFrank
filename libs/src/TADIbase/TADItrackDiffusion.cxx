@@ -144,8 +144,7 @@ Float_t TADItrackDiffusion::GetSigmaTheta(Float_t energy, TString mat, Float_t x
 {
    Double_t pc   = GetPCC(energy, A);
    Double_t beta = GetBeta(energy);
-   Double_t rho  = GetDensity(mat);        // density of material  [g/cm^3]
-   Double_t radL = GetRadLength(mat);  // Radiation length for material, multiply by density [g/cm^2]
+   Double_t radL = GetRadLength(mat);  // Radiation length for material
 
    fFuncSigTheta->SetParameter(0, beta);
    fFuncSigTheta->SetParameter(1, pc);
