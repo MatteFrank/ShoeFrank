@@ -135,7 +135,7 @@ Float_t TADItrackDiffusion::GetEnergyLoss(const TString& mat, Float_t thickness,
 Float_t TADItrackDiffusion::GetPCC(Float_t energy, Float_t massNumber)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
-   Float_t pc      = sqrt(energy * energy + 2*energy * massFac) * massNumber ;
+   Float_t pc      = TMath::Sqrt(energy * energy + 2*energy * massFac) * massNumber ;
    
    return pc;
 }
@@ -146,7 +146,7 @@ Float_t TADItrackDiffusion::GetPCC(Float_t energy, Float_t massNumber)
 Float_t TADItrackDiffusion::GetBeta(Float_t energy)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
-   Float_t beta    = sqrt(1.0 - (1/(energy/massFac +1.0))*(1/(energy/massFac +1.0)));
+   Float_t beta    = TMath::Sqrt(1.0 - (1/(energy/massFac +1.0))*(1/(energy/massFac +1.0)));
    
    return beta;
 }
