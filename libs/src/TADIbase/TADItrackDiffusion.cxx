@@ -102,7 +102,7 @@ Float_t TADItrackDiffusion::GetEnergyLoss(Float_t energy, Float_t massNumber, In
 //_____________________________________________________________________________
 //
 // Calculation of the energy loss in the material layer (thickness in [cm])
-Float_t TADItrackDiffusion::GetEnergyLoss(const TString& mat, Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t thickness)
+Float_t TADItrackDiffusion::GetEnergyLoss(const TString& mat, Float_t thickness, Float_t energy, Float_t massNumber, Int_t atomicNumber)
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
    // R = alpha*Energy^(pFactor)
