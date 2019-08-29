@@ -1,8 +1,8 @@
-#ifndef _TADItrackDiffusion_HXX
-#define _TADItrackDiffusion_HXX
+#ifndef _TADItrackEmProp_HXX
+#define _TADItrackEmProp_HXX
 /*!
  \file
- \brief   Declaration of TADItrackDiffusion.
+ \brief   Declaration of TADItrackEmProp.
  
  \author C.A. Reidel & Ch. Finck
  */
@@ -16,11 +16,11 @@
 
 #include "TAGpara.hxx"
 
-class TADItrackDiffusion : public TAGpara {
+class TADItrackEmProp : public TAGpara {
    
 public:
-   TADItrackDiffusion();
-   virtual ~TADItrackDiffusion();
+   TADItrackEmProp();
+   virtual ~TADItrackEmProp();
    
    Double_t SigmaTheta(Double_t* x, Double_t* par);
    Float_t  GetSigmaTheta(const TString& mat, Float_t x, Float_t energy, Float_t A, Float_t Z);
@@ -45,7 +45,7 @@ private:
    static Float_t fgkX0w;     // radiation for water
    static Float_t fgkElossK;  // K factor for Bethe-Bloch formula
 
-   ClassDef(TADItrackDiffusion,0)
+   ClassDef(TADItrackEmProp,0)
 };
 
 #endif

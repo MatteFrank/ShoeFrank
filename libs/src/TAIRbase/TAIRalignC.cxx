@@ -104,7 +104,7 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    TAGparGeo* geomapG   = (TAGparGeo*) fpGeoMapG->Object();
    TString parFile = "./geomaps/TAGdetector.map";
    geomapG->FromFile(parFile.Data());
-   fpDiff         = new TADItrackDiffusion();
+   fpDiff         = new TADItrackEmProp();
 
    // VTX
    if (fFlagVtx) {
