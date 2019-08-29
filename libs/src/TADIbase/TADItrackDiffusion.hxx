@@ -27,19 +27,24 @@ public:
    
    Float_t  GetEnergyLoss(const TString& mat, Float_t thickness, Float_t energy, Float_t massNumber, Int_t atomicNumber);
    Float_t  GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL);
+   Float_t  GetEnergyLossBB(const TString& mat, Double_t deltaX, Double_t beta,  Double_t zBeam);
    Float_t  GetPCC(Float_t energy, Float_t massNumber);
    Float_t  GetBeta(Float_t energy);
    Float_t  GetWEPL(const TString& material, Float_t thickness);
 
    Float_t  GetRadLength(TString name); 
    Float_t  GetDensity(TString name);
-   
+   Float_t  GetA(TString name);
+   Float_t  GetZ(TString name);
+   Float_t  GetMeanExcitationEnergy(TString name);
+
 private:
    TF1*     fFuncSigTheta;
    
 private:
-   static Float_t fgkX0w;   // radiation for water
-   
+   static Float_t fgkX0w;     // radiation for water
+   static Float_t fgkElossK;  // K factor for Bethe-Bloch formula
+
    ClassDef(TADItrackDiffusion,0)
 };
 

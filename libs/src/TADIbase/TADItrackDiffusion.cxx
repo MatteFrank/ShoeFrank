@@ -3,6 +3,7 @@
 #include "TMath.h"
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
+#include "TAGionisMaterials.hxx"
 
 #include "TADItrackDiffusion.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -16,7 +17,8 @@
 
 ClassImp(TADItrackDiffusion);
 
-Float_t TADItrackDiffusion::fgkX0w = 36.08;
+Float_t TADItrackDiffusion::fgkX0w    = 36.08;
+Float_t TADItrackDiffusion::fgkElossK = 0.307075;  // MeV cm2/g for A = 1 g/mol, in  [MeV].
 //_____________________________________________________________________________
 //
 // Default constructor
@@ -129,6 +131,37 @@ Float_t TADItrackDiffusion::GetEnergyLoss(const TString& mat, Float_t thickness,
    
    return dE;
 }
+
+//_____________________________________________________________________________
+//
+// Calculation of the energy loss with Bethe-Bloch in the material layer (dX in [cm])
+Float_t TADItrackDiffusion::GetEnergyLossBB(const TString& mat, Double_t deltaX, Double_t beta,  Double_t zBeam)
+{
+   Double_t K       = fgkElossK;
+   Double_t ro      = GetDensity(mat);     // mean density g/cm3
+
+   Double_t Zmed    = GetZ(mat);
+   Double_t Amed    = GetA(mat);
+   Double_t I       = GetMeanExcitationEnergy(mat);
+
+   Double_t Q       = K*ro*(Zmed/Amed)*zBeam*zBeam;      //Kroz2Z/A
+   Double_t me      = TAGgeoTrafo::GetElectronMassMeV();                           // MeV
+   
+   // calculating the beta,gamma and Tmax
+   Double_t massFac = TAGgeoTrafo::GetMassFactorMeV();
+   Double_t mass    = Amed*massFac;
+
+   Double_t beta2   = beta*beta;
+   Double_t gamma   = TMath::Sqrt(1/(1-beta2));
+   Double_t gamma2  = gamma *gamma;
+   Double_t Tmax    = 2*gamma2*beta2*me/(1+(2*gamma*(me/mass))+TMath::Power(me/mass,2));
+   Double_t logar   = (0.5*log(2*me*beta2*gamma2*Tmax/(I*I))-beta2);
+   Double_t dEdX    = Q/beta2*logar;
+   Double_t dE      = dEdX*deltaX;
+   
+   return dE;
+   
+}
 //_____________________________________________________________________________
 //
 // Calculation of the impact*c [MeV]
@@ -211,3 +244,42 @@ Float_t TADItrackDiffusion::GetDensity(TString name)
    } else
       return mat->GetDensity();
 }
+                  
+// --------------------------------------------------------------------------------------
+Float_t TADItrackDiffusion::GetA(TString name)
+{
+   TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
+   if (mat == 0x0) {
+      Warning("GetDensity()", "Unknown material %s", name.Data());
+      return -1;
+   } else
+      return mat->GetA();
+}
+
+// --------------------------------------------------------------------------------------
+Float_t TADItrackDiffusion::GetZ(TString name)
+{
+   TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
+   if (mat == 0x0) {
+      Warning("GetDensity()", "Unknown material %s", name.Data());
+      return -1;
+   } else
+      return mat->GetZ();
+}
+
+// --------------------------------------------------------------------------------------
+Float_t TADItrackDiffusion::GetMeanExcitationEnergy(TString name)
+{
+   TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
+   if (mat == 0x0) {
+      Warning("GetDensity()", "Unknown material %s", name.Data());
+      return -1;
+   } else {
+      TAGionisMaterials* ionis = (TAGionisMaterials*)mat->GetCerenkovProperties();
+      if (ionis == 0x0)
+         return -1;
+      else
+         return ionis->GetMeanExcitationEnergy();
+   }
+}
+
