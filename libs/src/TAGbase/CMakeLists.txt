@@ -43,6 +43,7 @@ set( with_dictionnaries
    TAGview
    TAGbaseMaterials
    TAGmaterials
+   TAGionisMaterials
    ControlPlotsRepository
    ControlPlotInfo
    MagicSkills

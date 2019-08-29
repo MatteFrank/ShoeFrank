@@ -56,6 +56,7 @@
 
 #pragma link C++ class TAGbaseMaterials+;
 #pragma link C++ class TAGmaterials+;
+#pragma link C++ class TAGionisMaterials+;
 
 #pragma link C++ class TAGlineFit.hxx+;
 #pragma link C++ class TAGconfigFile+;
