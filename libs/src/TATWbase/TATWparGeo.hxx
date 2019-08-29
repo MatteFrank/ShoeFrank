@@ -30,13 +30,15 @@ public:
 
     void           DefineMaterial();
 
-   TVector3       GetBarSize()     const  { return fBarSize;    }
-   Float_t        GetBarWidth()    const  { return fBarSize[0]; }
-   Float_t        GetBarHeight()   const  { return fBarSize[1]; }
-   Float_t        GetBarThick()    const  { return fBarSize[2]; }
+   TVector3       GetBarSize()     const  { return fBarSize;     }
+   Float_t        GetBarWidth()    const  { return fBarSize[0];  }
+   Float_t        GetBarHeight()   const  { return fBarSize[1];  }
+   Float_t        GetBarThick()    const  { return fBarSize[2];  }
 
-   TString        GetBarMat()      const  { return fBarMat;     }
-   Float_t        GetBarDensity()  const  { return fBarDensity; }
+   TString        GetBarMat()      const  { return fBarMat;      }
+   Float_t        GetBarDensity()  const  { return fBarDensity;  }
+   Float_t        GetBarIonisMat() const  { return fBarIonisMat; }
+   Float_t        GetBarBirkMat()  const  { return fBarBirkMat;  }
 
    Int_t          GetBarId(Int_t layer, Float_t xGlob, Float_t yGlob);
    TVector3       GetBarPosition(Int_t layer, Int_t barId);
@@ -90,8 +92,10 @@ private:
 
    TVector3  fSize;
    TVector3  fBarSize;
-   TString fBarMat;
-   Float_t fBarDensity;
+   TString   fBarMat;
+   Float_t   fBarDensity;
+   Float_t   fBarIonisMat;
+   Float_t   fBarBirkMat;
 
    int fLayersN;
    int fBarsN;

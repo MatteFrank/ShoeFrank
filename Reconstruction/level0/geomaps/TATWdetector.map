@@ -11,6 +11,8 @@ LayersN:      2
 BarsN:       20
 Material:  "EJ232"
 Density:    1.023
+Excitation: 4.8e-5
+BirkFac:    0.0138
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the TW (cm)

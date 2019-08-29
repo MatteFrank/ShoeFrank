@@ -17,6 +17,7 @@
 #include "TArrayD.h"
 
 #include "TAGmaterials.hxx"
+#include "TAGionisMaterials.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TATWparGeo.hxx"
@@ -70,6 +71,14 @@ Bool_t TATWparGeo::FromFile(const TString& name)
    ReadItem(fBarDensity);
    if(fDebugLevel)
       cout  << "   Bars density : " <<  fBarDensity << endl;
+   
+   ReadItem(fBarIonisMat);
+   if(fDebugLevel)
+      cout  << "   Bars material mean excitation energy : " <<  fBarIonisMat << endl;
+   
+   ReadItem(fBarBirkMat);
+   if(fDebugLevel)
+      cout  << "   Bars material Birk factor : " <<  fBarBirkMat << endl;
    
    ReadVector3(fBarSize);
    if(fDebugLevel)
@@ -261,6 +270,13 @@ void TATWparGeo::DefineMaterial()
       printf("ToF Wall material:\n");
       mat->Print();
    }
+   
+   TAGionisMaterials* ionis = new TAGionisMaterials();
+   ionis->SetMeanExcitationEnergy(fBarIonisMat);
+   ionis->SetBirksConstant(fBarBirkMat);
+   
+   // put it under Cerenkov since TGeoShader exits nor more
+   mat->SetCerenkovProperties(ionis);
 }
 
 //_____________________________________________________________________________
