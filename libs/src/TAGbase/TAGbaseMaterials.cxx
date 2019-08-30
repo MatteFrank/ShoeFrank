@@ -196,7 +196,7 @@ void TAGbaseMaterials::CreateDefaultMaterials()
         mix->AddElement(elementN, 0.21);
        
        TAGionisMaterials* ionis = new TAGionisMaterials();
-       ionis->SetMeanExcitationEnergy(95.9e-6);
+       ionis->SetMeanExcitationEnergy(85.9e-6);
        
        // put it under Cerenkov since only this EM property is available
        mix->SetCerenkovProperties(ionis);
