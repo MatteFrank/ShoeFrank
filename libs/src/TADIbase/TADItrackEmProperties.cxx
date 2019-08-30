@@ -145,7 +145,7 @@ Float_t TADItrackEmProperties::GetEnergyLossBB(const TString& mat, Double_t delt
    Double_t I       = GetMeanExcitationEnergy(mat);
 
    Double_t Q       = K*ro*(Zmed/Amed)*zBeam*zBeam;      //Kroz2Z/A
-   Double_t me      = TAGgeoTrafo::GetElectronMassMeV();                           // MeV
+   Double_t me      = TAGgeoTrafo::GetElectronMassMeV();
    
    // calculating the beta,gamma and Tmax
    Double_t massFac = TAGgeoTrafo::GetMassFactorMeV();
@@ -154,8 +154,8 @@ Float_t TADItrackEmProperties::GetEnergyLossBB(const TString& mat, Double_t delt
    Double_t beta2   = beta*beta;
    Double_t gamma   = TMath::Sqrt(1/(1-beta2));
    Double_t gamma2  = gamma *gamma;
-   Double_t Tmax    = 2*gamma2*beta2*me/(1+(2*gamma*(me/mass))+TMath::Power(me/mass,2));
-   Double_t logar   = (0.5*log(2*me*beta2*gamma2*Tmax/(I*I))-beta2);
+   Double_t Tmax    = 2*gamma2*beta2*me/(1+(2*gamma*(me/mass))+me*me/(mass*mass));
+   Double_t logar   = (0.5*TMath::Log(2*me*beta2*gamma2*Tmax/(I*I))-beta2);
    Double_t dEdX    = Q/beta2*logar;
    Double_t dE      = dEdX*deltaX;
    
