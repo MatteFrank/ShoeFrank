@@ -35,7 +35,6 @@ set( with_dictionnaries
    CCalibrationMap
    Message
    XmlParser
-   TATWbetheBloch
    TAGactWDreader
 )
 
