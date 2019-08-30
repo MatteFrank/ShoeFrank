@@ -160,8 +160,8 @@ Float_t TADItrackEmProperties::GetEnergyLossBB(const TString& mat, Double_t delt
    Double_t dE      = dEdX*deltaX;
    
    return dE;
-   
 }
+
 //_____________________________________________________________________________
 //
 // Calculation of the impact*c [MeV]
@@ -282,4 +282,3 @@ Float_t TADItrackEmProperties::GetMeanExcitationEnergy(TString name)
          return ionis->GetMeanExcitationEnergy();
    }
 }
-
