@@ -16,6 +16,7 @@
 
 #include "TAGpara.hxx"
 
+class TGeoMixture;
 class TADItrackEmProperties : public TAGpara {
    
 public:
@@ -27,16 +28,19 @@ public:
    
    Float_t  GetEnergyLoss(const TString& mat, Float_t thickness, Float_t energy, Float_t massNumber, Int_t atomicNumber);
    Float_t  GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL);
-   Float_t  GetEnergyLossBB(const TString& mat, Double_t deltaX, Double_t beta,  Double_t zBeam);
+   Float_t  GetdEdX(const TString& mat, Double_t beta,  Double_t zBeam);
    Float_t  GetPCC(Float_t energy, Float_t massNumber);
    Float_t  GetBeta(Float_t energy);
    Float_t  GetWEPL(const TString& material, Float_t thickness);
 
    Float_t  GetRadLength(TString name); 
    Float_t  GetDensity(TString name);
-   Float_t  GetA(TString name);
-   Float_t  GetZ(TString name);
+   Float_t  GetA(TString name, Bool_t eff=false);
+   Float_t  GetZ(TString name, Bool_t eff=false);
    Float_t  GetMeanExcitationEnergy(TString name);
+
+   Float_t  GetA(TGeoMixture* mix);
+   Float_t  GetZ(TGeoMixture* mix);
 
 private:
    TF1*     fFuncSigTheta;

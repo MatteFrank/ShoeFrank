@@ -135,13 +135,14 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 //_____________________________________________________________________________
 //
 // Calculation of the energy loss with Bethe-Bloch in the material layer (dX in [cm])
-Float_t TADItrackEmProperties::GetEnergyLossBB(const TString& mat, Double_t deltaX, Double_t beta,  Double_t zBeam)
+Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Double_t zBeam)
 {
    Double_t K       = fgkElossK;
    Double_t rho     = GetDensity(mat);     // mean density g/cm3
 
-   Double_t Zmed    = GetZ(mat);
-   Double_t Amed    = GetA(mat);
+   Double_t Zmed    = GetZ(mat); // raw number not effective A
+   Double_t Amed    = GetA(mat); // raw number not effective Z
+   
    Double_t I       = GetMeanExcitationEnergy(mat);
 
    Double_t Q       = K*rho*(Zmed/Amed)*zBeam*zBeam;      //Kroz2Z/A
@@ -157,9 +158,8 @@ Float_t TADItrackEmProperties::GetEnergyLossBB(const TString& mat, Double_t delt
    Double_t Tmax    = 2*gamma2*beta2*me/(1+(2*gamma*(me/mass))+me*me/(mass*mass));
    Double_t logar   = (0.5*TMath::Log(2*me*beta2*gamma2*Tmax/(I*I))-beta2);
    Double_t dEdX    = Q/beta2*logar;
-   Double_t dE      = dEdX*deltaX;
    
-   return dE;
+   return dEdX;
 }
 
 //_____________________________________________________________________________
@@ -246,25 +246,61 @@ Float_t TADItrackEmProperties::GetDensity(TString name)
 }
                   
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProperties::GetA(TString name)
+Float_t TADItrackEmProperties::GetA(TString name, Bool_t eff)
 {
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
    if (mat == 0x0) {
-      Warning("GetDensity()", "Unknown material %s", name.Data());
+      Warning("GetA()", "Unknown material %s", name.Data());
       return -1;
-   } else
-      return mat->GetA();
+   } else {
+      if (mat->IsMixture() && !eff)
+         return GetA((TGeoMixture*)mat);
+      else
+         return mat->GetA();
+   }
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProperties::GetZ(TString name)
+Float_t TADItrackEmProperties::GetZ(TString name, Bool_t eff)
 {
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
    if (mat == 0x0) {
-      Warning("GetDensity()", "Unknown material %s", name.Data());
+      Warning("GetZ()", "Unknown material %s", name.Data());
       return -1;
-   } else
-      return mat->GetZ();
+   } else {
+      if (mat->IsMixture() && !eff)
+         return GetZ((TGeoMixture*)mat);
+      else
+         return mat->GetZ();
+   }
+}
+
+// --------------------------------------------------------------------------------------
+Float_t TADItrackEmProperties::GetA(TGeoMixture* mix)
+{
+   if (mix == 0x0) {
+      Warning("GetA()", "Unknown material");
+      return -1;
+   } else {
+      Float_t A = 0;
+      for(Int_t i = 0; i < mix->GetNelements(); ++i)
+         A += mix->GetAmixt()[i]*mix->GetNmixt()[i];
+      return A;
+   }
+}
+
+// --------------------------------------------------------------------------------------
+Float_t TADItrackEmProperties::GetZ(TGeoMixture* mix)
+{
+   if (mix == 0x0) {
+      Warning("GetZ()", "Unknown material");
+      return -1;
+   } else {
+      Float_t Z = 0;
+      for(Int_t i = 0; i < mix->GetNelements(); ++i)
+         Z += mix->GetZmixt()[i]*mix->GetNmixt()[i];
+      return Z;
+   }
 }
 
 // --------------------------------------------------------------------------------------
