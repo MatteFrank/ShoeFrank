@@ -138,13 +138,13 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 Float_t TADItrackEmProperties::GetEnergyLossBB(const TString& mat, Double_t deltaX, Double_t beta,  Double_t zBeam)
 {
    Double_t K       = fgkElossK;
-   Double_t ro      = GetDensity(mat);     // mean density g/cm3
+   Double_t rho     = GetDensity(mat);     // mean density g/cm3
 
    Double_t Zmed    = GetZ(mat);
    Double_t Amed    = GetA(mat);
    Double_t I       = GetMeanExcitationEnergy(mat);
 
-   Double_t Q       = K*ro*(Zmed/Amed)*zBeam*zBeam;      //Kroz2Z/A
+   Double_t Q       = K*rho*(Zmed/Amed)*zBeam*zBeam;      //Kroz2Z/A
    Double_t me      = TAGgeoTrafo::GetElectronMassMeV();
    
    // calculating the beta,gamma and Tmax
