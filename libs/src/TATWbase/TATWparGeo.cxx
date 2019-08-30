@@ -275,7 +275,7 @@ void TATWparGeo::DefineMaterial()
    ionis->SetMeanExcitationEnergy(fBarIonisMat);
    ionis->SetBirksConstant(fBarBirkMat);
    
-   // put it under Cerenkov since TGeoShader exits nor more
+   // put it under Cerenkov since only this EM property is available
    mat->SetCerenkovProperties(ionis);
 }
 

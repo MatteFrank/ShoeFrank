@@ -64,7 +64,7 @@ void TAVTbaseParGeo::DefineMaterial()
    TAGionisMaterials* ionis = new TAGionisMaterials();
    ionis->SetMeanExcitationEnergy(fEpiMatExc);
    
-   // put it under Cerenkov since only this EM properties is available
+   // put it under Cerenkov since only this EM property is available
    mat->SetCerenkovProperties(ionis);
 }
 
