@@ -16,6 +16,7 @@
 #include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGmaterials.hxx"
+#include "TAGionisMaterials.hxx"
 
 #include "TAGparGeo.hxx"
 #include "TAGroot.hxx"
@@ -61,6 +62,12 @@ void TAGparGeo::DefineMaterial()
       printf("Target material:\n");
       mat->Print();
    }
+   
+   TAGionisMaterials* ionis = new TAGionisMaterials();
+   ionis->SetMeanExcitationEnergy(fTargetParameter.ExcEnergy);
+   
+   // put it under Cerenkov since only this EM property is available
+   mat->SetCerenkovProperties(ionis);
 }
 
 //______________________________________________________________________________
