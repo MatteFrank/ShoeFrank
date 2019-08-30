@@ -34,6 +34,7 @@ private:
 	  TVector3  Size;     // Target size 
 	  TString   Material; // Target material
      Float_t   Density;  // Target density
+     Float_t   ExcEnergy; // Target mean excitation energy
      TVector3  Position; // Target position
    };
    TargetParameter_t  fTargetParameter;

@@ -137,6 +137,9 @@ Bool_t TAGparGeo::FromFile(const TString& name)
    if(FootDebugLevel(1))
       cout  << "  Target density:  "<< fTargetParameter.Density << endl;
    
+   ReadItem(fTargetParameter.ExcEnergy);
+   if(FootDebugLevel(1))
+      cout  << "  Target material mean excitation energy:  "<< fTargetParameter.ExcEnergy << endl;
    
    ReadItem(fInsertsN);
    if(FootDebugLevel(1))
