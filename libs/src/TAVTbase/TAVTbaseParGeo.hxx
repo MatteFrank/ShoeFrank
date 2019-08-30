@@ -40,7 +40,8 @@ protected:
    TVector3   fEpiOffset;        // Position offset of sensitive size
    TString    fEpiMat;           // Material of epitaxial
    Float_t    fEpiMatDensity;    // density of epitaxial material
-   
+   Float_t    fEpiMatExc;        // mean excitation energy of epitaxial material
+
    Float_t    fPixThickness;     // Pixel Thickness
    TString    fPixMat;           // Material of pixel
    TString    fPixMatDensities;  // density of pixel material for each component
@@ -121,6 +122,8 @@ public:
    TString GetEpiMaterial()            const { return fEpiMat;         }
    //! Get epitaxial density
    Float_t GetEpiMatDensity()          const { return fEpiMatDensity;  }
+   //! Get epitaxial excitation
+   Float_t GetEpiMatExc()              const { return fEpiMatExc;      }
 
    //! Get pixel thickness
    Float_t GetPixThickness()           const { return fPixThickness;   }

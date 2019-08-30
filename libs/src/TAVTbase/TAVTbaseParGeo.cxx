@@ -14,6 +14,7 @@
 #include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGmaterials.hxx"
+#include "TAGionisMaterials.hxx"
 
 #include "TAVTbaseParGeo.hxx"
 
@@ -59,6 +60,12 @@ void TAVTbaseParGeo::DefineMaterial()
       printf("Expitaxial material:\n");
       mat->Print();
    }
+   
+   TAGionisMaterials* ionis = new TAGionisMaterials();
+   ionis->SetMeanExcitationEnergy(fEpiMatExc);
+   
+   // put it under Cerenkov since only this EM properties is available
+   mat->SetCerenkovProperties(ionis);
 }
 
 //______________________________________________________________________________
@@ -124,6 +131,10 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
    ReadItem(fEpiMatDensity);
    if(FootDebugLevel(1))
       cout  << "  Sensitive material density:  "<< fEpiMatDensity << endl;
+   
+   ReadItem(fEpiMatExc);
+   if(FootDebugLevel(1))
+      cout  << "  Sensitive material mean excitation energy:  "<< fEpiMatExc << endl;
    
    ReadItem(fPixThickness);
    if(FootDebugLevel(1))
@@ -199,7 +210,7 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
       if (fFlagMC)
          fSensorParameter[p].TiltW = 0.;
       
-      if(fDebugLevel)
+      if(FootDebugLevel(1))
          cout  << "   Rotation tiltW: " << fSensorParameter[p].TiltW << endl;
       
       Float_t thetaX = fSensorParameter[p].Tilt[0];
