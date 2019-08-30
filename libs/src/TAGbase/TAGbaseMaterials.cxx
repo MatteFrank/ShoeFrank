@@ -4,6 +4,7 @@
 // author: M. Vanstalle
 
 #include "TAGbaseMaterials.hxx"
+#include "TAGionisMaterials.hxx"
 
 #include "TGeoManager.h"
 #include "TObjString.h"
@@ -193,6 +194,12 @@ void TAGbaseMaterials::CreateDefaultMaterials()
         mix = new TGeoMixture(mixNameAir, 2, 1.29e-3);
         mix->AddElement(elementO, 0.79);
         mix->AddElement(elementN, 0.21);
+       
+       TAGionisMaterials* ionis = new TAGionisMaterials();
+       ionis->SetMeanExcitationEnergy(95.9e-6);
+       
+       // put it under Cerenkov since only this EM property is available
+       mix->SetCerenkovProperties(ionis);
     }
 
     if ( (med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(mixNameAir)) == 0x0 )
