@@ -5,36 +5,36 @@
 #include "TGeoMaterial.h"
 #include "TAGionisMaterials.hxx"
 
-#include "TADItrackEmProp.hxx"
+#include "TADItrackEmProperties.hxx"
 #include "TAGgeoTrafo.hxx"
 
 //##############################################################################
 
 /*!
- \class TADItrackEmProp TADItrackEmProp.hxx "TADItrackEmProp.hxx"
+ \class TADItrackEmProperties TADItrackEmProperties.hxx "TADItrackEmProperties.hxx"
  \brief  Functions for EM track properties **
  */
 
-ClassImp(TADItrackEmProp);
+ClassImp(TADItrackEmProperties);
 
-Float_t TADItrackEmProp::fgkX0w    = 36.08;
-Float_t TADItrackEmProp::fgkElossK = 0.307075;  // MeV cm2/g for A = 1 g/mol, in  [MeV].
+Float_t TADItrackEmProperties::fgkX0w    = 36.08;
+Float_t TADItrackEmProperties::fgkElossK = 0.307075;  // MeV cm2/g for A = 1 g/mol, in  [MeV].
 //_____________________________________________________________________________
 //
 // Default constructor
-TADItrackEmProp::TADItrackEmProp()
+TADItrackEmProperties::TADItrackEmProperties()
 : TAGpara()
 {
    if (gGeoManager == 0x0)
-      Error("TADItrackEmProp()", "gGeoManager not defined");
+      Error("TADItrackEmProperties()", "gGeoManager not defined");
    
-   fFuncSigTheta = new TF1("funcSigTheta", this, &TADItrackEmProp::SigmaTheta, 0, 500, 4, "TADItrackEmProp", "SigmaTheta");
+   fFuncSigTheta = new TF1("funcSigTheta", this, &TADItrackEmProperties::SigmaTheta, 0, 500, 4, "TADItrackEmProperties", "SigmaTheta");
 }
 
 //_____________________________________________________________________________
 //
 // Destructor
-TADItrackEmProp::~TADItrackEmProp()
+TADItrackEmProperties::~TADItrackEmProperties()
 {
    delete fFuncSigTheta;
 }
@@ -42,7 +42,7 @@ TADItrackEmProp::~TADItrackEmProp()
 //_____________________________________________________________________________
 //
 // Calculation of the WEPL of the material layer
-Float_t TADItrackEmProp::GetWEPL(const TString& mat, Float_t thickness)
+Float_t TADItrackEmProperties::GetWEPL(const TString& mat, Float_t thickness)
 {
    Float_t factor = 0;
    Float_t waterEq = 0;
@@ -73,7 +73,7 @@ Float_t TADItrackEmProp::GetWEPL(const TString& mat, Float_t thickness)
 //_____________________________________________________________________________
 //
 // Calculation of the energy loss in the material layer (WEPL in [cm])
-Float_t TADItrackEmProp::GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL)
+Float_t TADItrackEmProperties::GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL)
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
    // R = alpha*Energy^(pFactor)
@@ -104,7 +104,7 @@ Float_t TADItrackEmProp::GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t
 //_____________________________________________________________________________
 //
 // Calculation of the energy loss in the material layer (thickness in [cm])
-Float_t TADItrackEmProp::GetEnergyLoss(const TString& mat, Float_t thickness, Float_t energy, Float_t massNumber, Int_t atomicNumber)
+Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickness, Float_t energy, Float_t massNumber, Int_t atomicNumber)
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
    // R = alpha*Energy^(pFactor)
@@ -135,7 +135,7 @@ Float_t TADItrackEmProp::GetEnergyLoss(const TString& mat, Float_t thickness, Fl
 //_____________________________________________________________________________
 //
 // Calculation of the energy loss with Bethe-Bloch in the material layer (dX in [cm])
-Float_t TADItrackEmProp::GetEnergyLossBB(const TString& mat, Double_t deltaX, Double_t beta,  Double_t zBeam)
+Float_t TADItrackEmProperties::GetEnergyLossBB(const TString& mat, Double_t deltaX, Double_t beta,  Double_t zBeam)
 {
    Double_t K       = fgkElossK;
    Double_t ro      = GetDensity(mat);     // mean density g/cm3
@@ -165,7 +165,7 @@ Float_t TADItrackEmProp::GetEnergyLossBB(const TString& mat, Double_t deltaX, Do
 //_____________________________________________________________________________
 //
 // Calculation of the impact*c [MeV]
-Float_t TADItrackEmProp::GetPCC(Float_t energy, Float_t massNumber)
+Float_t TADItrackEmProperties::GetPCC(Float_t energy, Float_t massNumber)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
    Float_t pc      = TMath::Sqrt(energy * energy + 2*energy * massFac) * massNumber ;
@@ -176,7 +176,7 @@ Float_t TADItrackEmProp::GetPCC(Float_t energy, Float_t massNumber)
 //_____________________________________________________________________________
 //
 // Calculation of beta
-Float_t TADItrackEmProp::GetBeta(Float_t energy)
+Float_t TADItrackEmProperties::GetBeta(Float_t energy)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
    Float_t beta    = TMath::Sqrt(1.0 - (1/(energy/massFac +1.0))*(1/(energy/massFac +1.0)));
@@ -185,7 +185,7 @@ Float_t TADItrackEmProp::GetBeta(Float_t energy)
 }
 
 // --------------------------------------------------------------------------------------
-Double_t TADItrackEmProp::SigmaTheta(Double_t *x, Double_t *par)
+Double_t TADItrackEmProperties::SigmaTheta(Double_t *x, Double_t *par)
 {
    /// Function to modelize the scattering angle of incident ions at a depth x (Highland)
    /// (14.1MeV/p*beta)*Z*sqrt(x/Lr)*[1 +1/9log(x/Lr)]
@@ -204,7 +204,7 @@ Double_t TADItrackEmProp::SigmaTheta(Double_t *x, Double_t *par)
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProp::GetSigmaTheta(const TString& mat, Float_t x, Float_t energy, Float_t A, Float_t Z )
+Float_t TADItrackEmProperties::GetSigmaTheta(const TString& mat, Float_t x, Float_t energy, Float_t A, Float_t Z )
 {
    Double_t pc   = GetPCC(energy, A);
    Double_t beta = GetBeta(energy);
@@ -219,7 +219,7 @@ Float_t TADItrackEmProp::GetSigmaTheta(const TString& mat, Float_t x, Float_t en
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProp::GetRadLength(TString name)
+Float_t TADItrackEmProperties::GetRadLength(TString name)
 {
    TString tmp(name);
    tmp.ToUpper();
@@ -235,7 +235,7 @@ Float_t TADItrackEmProp::GetRadLength(TString name)
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProp::GetDensity(TString name)
+Float_t TADItrackEmProperties::GetDensity(TString name)
 {
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
    if (mat == 0x0) {
@@ -246,7 +246,7 @@ Float_t TADItrackEmProp::GetDensity(TString name)
 }
                   
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProp::GetA(TString name)
+Float_t TADItrackEmProperties::GetA(TString name)
 {
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
    if (mat == 0x0) {
@@ -257,7 +257,7 @@ Float_t TADItrackEmProp::GetA(TString name)
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProp::GetZ(TString name)
+Float_t TADItrackEmProperties::GetZ(TString name)
 {
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
    if (mat == 0x0) {
@@ -268,7 +268,7 @@ Float_t TADItrackEmProp::GetZ(TString name)
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProp::GetMeanExcitationEnergy(TString name)
+Float_t TADItrackEmProperties::GetMeanExcitationEnergy(TString name)
 {
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
    if (mat == 0x0) {
