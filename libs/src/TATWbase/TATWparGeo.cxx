@@ -34,7 +34,8 @@ const TString TATWparGeo::fgkDefaultBarName = "twBar";
 
 //_____________________________________________________________________________
 TATWparGeo::TATWparGeo()
-: TAGparTools()
+: TAGparTools(),
+  fIonisation(new TAGionisMaterials())
 {
    fkDefaultGeoName = "./geomaps/TATWdetector.map";
 }
@@ -42,6 +43,7 @@ TATWparGeo::TATWparGeo()
 //______________________________________________________________________________
 TATWparGeo::~TATWparGeo()
 {
+   delete fIonisation;
 }
 
 //______________________________________________________________________________
@@ -271,12 +273,20 @@ void TATWparGeo::DefineMaterial()
       mat->Print();
    }
    
-   TAGionisMaterials* ionis = new TAGionisMaterials();
-   ionis->SetMeanExcitationEnergy(fBarIonisMat);
-   ionis->SetBirksConstant(fBarBirkMat);
-   
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+   fIonisation->SetMaterial(mat);
+   fIonisation->AddMeanExcitationEnergy(fBarIonisMat);
+   fIonisation->AddBirksFactor(fBarBirkMat);
+
+#else
+   fIonisation->SetMeanExcitationEnergy(fBarIonisMat);
+   fIonisation->SetBirksConstant(fBarBirkMat);
+
    // put it under Cerenkov since only this EM property is available
    mat->SetCerenkovProperties(ionis);
+   
+#endif
+
 }
 
 //_____________________________________________________________________________

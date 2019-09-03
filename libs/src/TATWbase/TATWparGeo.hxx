@@ -18,6 +18,8 @@
 class TGeoHMatrix;
 class TGeoVolume;
 class TObjArray;
+class TAGionisMaterials;
+
 //##############################################################################
 
 class TATWparGeo : public TAGparTools {
@@ -89,7 +91,7 @@ public:
     virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
    
 private:
-
+   TAGionisMaterials* fIonisation; //! pointer for ionisation property
    TVector3  fSize;
    TVector3  fBarSize;
    TString   fBarMat;

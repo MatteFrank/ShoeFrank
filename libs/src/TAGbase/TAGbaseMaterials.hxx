@@ -13,6 +13,7 @@
 using namespace std;
 
 class TGeoElementTable;
+class TAGionisMaterials;
 
 class TAGbaseMaterials : public TAGobject
 {
@@ -21,6 +22,8 @@ public:
    virtual ~TAGbaseMaterials();
    
 protected:
+   TAGionisMaterials* fIonisation; //! pointer for ionisation property
+
    static map<TString, TString> fgkCommonName;
    static map<TString, Int_t>   fgkLowMat;
    static TString               fgkWhat;

@@ -19,11 +19,13 @@
 
 class TGeoHMatrix;
 class TGeoVolume;
+class TAGionisMaterials;
 //##############################################################################
 
 class TAVTbaseParGeo : public TAGparTools {
       
-protected:   
+protected:
+   TAGionisMaterials* fIonisation; //! pointer for ionisation property
    Int_t      fSensorsN;         // Number of sensors
    TString    fkDefaultGeoName;  // default par geo file name
    Int_t      fLayersN;          // Number of layer (planes)

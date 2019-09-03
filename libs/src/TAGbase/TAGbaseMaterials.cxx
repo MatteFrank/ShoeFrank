@@ -26,6 +26,7 @@ ClassImp(TAGbaseMaterials);
 //______________________________________________________________________________
 TAGbaseMaterials::TAGbaseMaterials()
  : TAGobject(),
+   fIonisation(new TAGionisMaterials()),
    fTable(0x0),
    fDegugLevel(0)
 {
@@ -38,6 +39,7 @@ TAGbaseMaterials::TAGbaseMaterials()
 //______________________________________________________________________________
 TAGbaseMaterials::~TAGbaseMaterials()
 {
+   delete fIonisation;
 }
 
 //______________________________________________________________________________
@@ -195,11 +197,17 @@ void TAGbaseMaterials::CreateDefaultMaterials()
         mix->AddElement(elementO, 0.79);
         mix->AddElement(elementN, 0.21);
        
-       TAGionisMaterials* ionis = new TAGionisMaterials();
-       ionis->SetMeanExcitationEnergy(85.9e-6);
        
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+       fIonisation->SetMaterial(mix);
+       fIonisation->AddMeanExcitationEnergy(85.9e-6);
+       
+#else
+       fIonisation->SetMeanExcitationEnergy(85.9e-6);
        // put it under Cerenkov since only this EM property is available
        mix->SetCerenkovProperties(ionis);
+       
+#endif
     }
 
     if ( (med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(mixNameAir)) == 0x0 )

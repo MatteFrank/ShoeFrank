@@ -20,12 +20,14 @@
 
 class TGeoHMatrix;
 class TGeoVolume;
+class TAGionisMaterials;
+
 //##############################################################################
 
 class TAGparGeo : public TAGparTools {
       
 private:
-   
+   TAGionisMaterials* fIonisation; //! pointer for ionisation property
    TString    fkDefaultGeoName;  // default par geo file name
 
    // Target parameters

@@ -311,10 +311,17 @@ Float_t TADItrackEmProperties::GetMeanExcitationEnergy(TString name)
       Warning("GetDensity()", "Unknown material %s", name.Data());
       return -1;
    } else {
+      
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+      return  mat->GetConstProperty(TAGionisMaterials::GetMeanExcitationEnergyName());
+
+#else
       TAGionisMaterials* ionis = (TAGionisMaterials*)mat->GetCerenkovProperties();
       if (ionis == 0x0)
          return -1;
       else
          return ionis->GetMeanExcitationEnergy();
+      
+#endif
    }
 }

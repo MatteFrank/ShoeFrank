@@ -32,6 +32,7 @@ const Int_t TAVTbaseParGeo::fgkDefSensorsN   = 32;
 //______________________________________________________________________________
 TAVTbaseParGeo::TAVTbaseParGeo()
  : TAGparTools(),
+   fIonisation(new TAGionisMaterials()),
    fSensorsN(0),
    fkDefaultGeoName(""),
    fLayersN(fSensorsN),
@@ -45,6 +46,7 @@ TAVTbaseParGeo::TAVTbaseParGeo()
 TAVTbaseParGeo::~TAVTbaseParGeo()
 {
    // Destructor
+   delete fIonisation;
 }
 
 //_____________________________________________________________________________
@@ -61,11 +63,17 @@ void TAVTbaseParGeo::DefineMaterial()
       mat->Print();
    }
    
-   TAGionisMaterials* ionis = new TAGionisMaterials();
-   ionis->SetMeanExcitationEnergy(fEpiMatExc);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+   fIonisation->SetMaterial(mat);
+   fIonisation->AddMeanExcitationEnergy(fEpiMatExc);
    
+#else
+   fIonisation->SetMeanExcitationEnergy(fEpiMatExc);
    // put it under Cerenkov since only this EM property is available
    mat->SetCerenkovProperties(ionis);
+   
+#endif
+  
 }
 
 //______________________________________________________________________________

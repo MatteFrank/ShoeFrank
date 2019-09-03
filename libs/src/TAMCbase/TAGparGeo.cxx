@@ -37,7 +37,8 @@ const TString TAGparGeo::fgkDefParaName = "tgGeo";
 
 //______________________________________________________________________________
 TAGparGeo::TAGparGeo()
-: TAGparTools()
+: TAGparTools(),
+  fIonisation(new TAGionisMaterials())
 {
    // Standard constructor
    fkDefaultGeoName = "./geomaps/TAGdetector.map";
@@ -47,6 +48,7 @@ TAGparGeo::TAGparGeo()
 TAGparGeo::~TAGparGeo()
 {
    // Destructor
+   delete fIonisation;
 }
 
 //_____________________________________________________________________________
@@ -63,11 +65,17 @@ void TAGparGeo::DefineMaterial()
       mat->Print();
    }
    
-   TAGionisMaterials* ionis = new TAGionisMaterials();
-   ionis->SetMeanExcitationEnergy(fTargetParameter.ExcEnergy);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+   fIonisation->SetMaterial(mat);
+   fIonisation->AddMeanExcitationEnergy(fTargetParameter.ExcEnergy);
    
+#else
+   fIonisation->SetMeanExcitationEnergy(fTargetParameter.ExcEnergy);
    // put it under Cerenkov since only this EM property is available
    mat->SetCerenkovProperties(ionis);
+   
+#endif
+   
 }
 
 //______________________________________________________________________________
