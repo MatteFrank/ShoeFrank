@@ -205,7 +205,7 @@ void TAGbaseMaterials::CreateDefaultMaterials()
 #else
        fIonisation->SetMeanExcitationEnergy(85.9e-6);
        // put it under Cerenkov since only this EM property is available
-       mix->SetCerenkovProperties(ionis);
+       mix->SetCerenkovProperties(fIonisation);
        
 #endif
     }
