@@ -72,7 +72,7 @@ void TAGparGeo::DefineMaterial()
 #else
    fIonisation->SetMeanExcitationEnergy(fTargetParameter.ExcEnergy);
    // put it under Cerenkov since only this EM property is available
-   mat->SetCerenkovProperties(ionis);
+   mat->SetCerenkovProperties(fIonisation);
    
 #endif
    
