@@ -70,7 +70,7 @@ void TAVTbaseParGeo::DefineMaterial()
 #else
    fIonisation->SetMeanExcitationEnergy(fEpiMatExc);
    // put it under Cerenkov since only this EM property is available
-   mat->SetCerenkovProperties(ionis);
+   mat->SetCerenkovProperties(fIonisation);
    
 #endif
   
