@@ -11,17 +11,15 @@
 
 class TAMSDntuCluster;
 class TAMSDcluster;
-class TAVTntuHit;
-class TAVTbaseParGeo;
+class TAMSDntuHit;
+class TAMSDparGeo;
 
 class TAMSDactNtuCluster : public TAGactNtuCluster1D {
    
 public:
-   explicit  TAMSDactNtuCluster(const char* name     = 0,
-								       TAGdataDsc* p_nturaw  = 0,
-                               TAGdataDsc* p_ntuclus = 0,
-								       TAGparaDsc* p_config  = 0,
-							          TAGparaDsc* p_geomap  = 0);
+   explicit  TAMSDactNtuCluster(const char* name     = 0, TAGdataDsc* p_nturaw  = 0,
+                               TAGdataDsc* p_ntuclus = 0, TAGparaDsc* p_config  = 0,
+			       TAGparaDsc* p_geomap  = 0);
    
    virtual ~TAMSDactNtuCluster();
    
@@ -72,14 +70,14 @@ private:
    Int_t          fClustersN;     // number of cluster
    
    TH1F*          fpHisStripTot;	     // Total number of pixels per cluster
-   TH1F*          fpHisStrip[32];	  // number of pixels per cluster per sensor
-   TH1F*          fpHisClusMap[32];   // cluster map per sensor
+   TH1F*          fpHisStrip[6];	  // number of pixels per cluster per sensor
+   TH1F*          fpHisClusMap[6];   // cluster map per sensor
 
 private:
    void    SearchCluster();
    void    FillMaps();
    Bool_t  FindClusters(Int_t iSensor, TAMSDntuCluster* pNtuClus);
-   Bool_t  CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuClus, TAVTbaseParGeo* pGeoMap);
+   Bool_t  CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuClus, TAMSDparGeo* pGeoMap);
 
 
    ClassDef(TAMSDactNtuCluster,0)

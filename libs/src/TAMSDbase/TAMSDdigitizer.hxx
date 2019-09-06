@@ -7,12 +7,12 @@
 #include "TAGbaseDigitizer.hxx"
 
 // --------------------------------------------------------------------------------------
-class TAVTbaseParGeo;
+class TAMSDparGeo;
 class TAMSDdigitizer : public TAGbaseDigitizer {
    
    // Class to digitize the energy into pixel based on given patterns
 public:
-   TAMSDdigitizer(TAVTbaseParGeo* parGeo);
+   TAMSDdigitizer(TAMSDparGeo* parGeo);
    virtual ~TAMSDdigitizer();
 
    void  FillMap(Int_t strip, Double_t value);
@@ -21,12 +21,12 @@ public:
    Int_t GetStrip(Float_t pos) const;
 
 private:
-   TAVTbaseParGeo* fpParGeo;
+   TAMSDparGeo*    fpParGeo;
    Int_t           fStripsN;         // number of strips for a given eloss
    Float_t         fPitch;
    Int_t           fView;
    
-   std::map<int, double> fMap;      // map of found pixels
+   std::map<int, double> fMap;      // map of found strips
 
 private:
    static Float_t  fgChargeGain;      // gain factor for despoted charge

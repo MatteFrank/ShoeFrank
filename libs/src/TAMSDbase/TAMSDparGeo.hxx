@@ -73,6 +73,12 @@ public:
   static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
   static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
 
+  Float_t GetPosition(Int_t strip) const;
+
+  //! Get number of strip
+  Int_t GetNStrip()                  const { return fStripN;       }
+  Int_t GetPitch()                   const { return fPitch;        }
+
   
   ClassDef(TAMSDparGeo,1)
 };

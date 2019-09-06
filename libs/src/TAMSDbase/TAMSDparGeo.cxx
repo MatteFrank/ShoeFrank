@@ -224,6 +224,14 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
    return true;
 }
 
+
+Float_t TAMSDparGeo::GetPosition(Int_t strip) const{
+  Float_t x = (Float_t(2*strip - fStripN + 1) * fPitch)/2.;
+  return  x;
+}
+
+
+
 //_____________________________________________________________________________
 TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *vertexName)
 {
@@ -419,8 +427,8 @@ string TAMSDparGeo::PrintBodies()
       bodyname = Form("msds%d",iSens);
       regionname = Form("MSDS%d",iSens);
       posStrip.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
-		       fCenter.Y() + GetSensorPosition(iSens).Y(),
-		       fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fMetalThickness + fEpiSize.Z()/2. );
+		     fCenter.Y() + GetSensorPosition(iSens).Y(),
+		     fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fMetalThickness + fEpiSize.Z()/2. );
       ss <<  "RPP " << bodyname <<  "     "
 	 << posStrip.x() - fEpiSize.X()/2. << " "
 	 << posStrip.x() + fEpiSize.X()/2. << " "
@@ -463,8 +471,8 @@ string TAMSDparGeo::PrintBodies()
 
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$end_transform " << endl;
-    }
 
+    }
   }
 
   return ss.str();
