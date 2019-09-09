@@ -106,6 +106,8 @@ void TCEMfieldSetup::CreateStepperAndChordFinder()
   Info("CreateStepperAndChordFinder()", "The minimal step is equal to %f mm\n ", fMinStep/mm);
 
   fFieldManager->SetDetectorField(fMagneticField);
+  fFieldManager->SetFieldChangesEnergy(true);
+
   fChordFinder = new G4ChordFinder( fMagneticField, fMinStep, fStepper);
   fFieldManager->SetChordFinder(fChordFinder);
 }
