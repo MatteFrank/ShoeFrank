@@ -59,7 +59,7 @@ TAMSDntuRaw::~TAMSDntuRaw()
 Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetNSensors()) {
-      TClonesArray*list = GetListOfStrips(iSensor);
+      TClonesArray* list = GetListOfStrips(iSensor);
       return list->GetEntries();
    } else  {
       Error("GetStripsN()", "Wrong sensor number %d\n", iSensor);

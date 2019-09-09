@@ -54,46 +54,46 @@ TAMSDactNtuMC::TAMSDactNtuMC(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* 
 //! Setup all histograms.
 void TAMSDactNtuMC::CreateHistogram()
 {
+  
+  DeleteHistogram();
+  
+  TString prefix = "ms";
+  TString titleDev = "Multi Strip Detector";
+  
+  TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
+  
+  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+    fpHisStrip[i] = new TH1F(Form("%sMcStripl%d", prefix.Data(), i+1), Form("%s - MC # strip per clusters for sensor %d", titleDev.Data(), i+1), 100, 0., 100.);
+    AddHistogram(fpHisStrip[i]);
+  }
+  
+  fpHisStripTot = new TH1F(Form("%sMcStripTot", prefix.Data()), Form("%s - MC # total strips per clusters", titleDev.Data()), 100, 0., 100.);
+  AddHistogram(fpHisStripTot);
+  
+  fpHisDeTot = new TH1F(Form("%sMcDeTot", prefix.Data()), Form("%s - MC total energy loss", titleDev.Data()), 1000, 0., 10000.);
+  AddHistogram(fpHisDeTot);
+  
+  
+  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+    fpHisDeSensor[i] = new TH1F(Form("%sMcDe%d", prefix.Data(), i+1), Form("%s - MC energy loss for sensor %d", titleDev.Data(), i+1), 1000, 0., 10000.);
+    AddHistogram(fpHisDeSensor[i]);
+  }
+  
+  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+    fpHisStripMap[i]  = new TH1F(Form("%sMcStripMap%d", prefix.Data(), i+1) , Form("%s - MC strip map for sensor %d", titleDev.Data(), i+1),
+				 pGeoMap->GetNStrip(), 0, pGeoMap->GetNStrip());
+    AddHistogram(fpHisStripMap[i]);
+    
+  }
+  
+  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+    fpHisPosMap[i] =  new TH1F(Form("%sMcPosMap%d", prefix.Data(), i+1), Form("%s - MC position map for sensor %d", titleDev.Data(), i+1),
+			       pGeoMap->GetNStrip(), -pGeoMap->GetPitch()/2.*pGeoMap->GetNStrip(), pGeoMap->GetPitch()/2.*pGeoMap->GetNStrip());
+    AddHistogram(fpHisPosMap[i]);
+    
+  }
    
-   DeleteHistogram();
-   
-   TString prefix = "ms";
-   TString titleDev = "Multi Strip Detector";
-
-   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*) fpGeoMap->Object();
-   
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
-      fpHisStrip[i] = new TH1F(Form("%sMcStripl%d", prefix.Data(), i+1), Form("%s - MC # strip per clusters for sensor %d", titleDev.Data(), i+1), 100, 0., 100.);
-      AddHistogram(fpHisStrip[i]);
-   }
-   
-   fpHisStripTot = new TH1F(Form("%sMcStripTot", prefix.Data()), Form("%s - MC # total strips per clusters", titleDev.Data()), 100, 0., 100.);
-   AddHistogram(fpHisStripTot);
-   
-   fpHisDeTot = new TH1F(Form("%sMcDeTot", prefix.Data()), Form("%s - MC total energy loss", titleDev.Data()), 1000, 0., 10000.);
-   AddHistogram(fpHisDeTot);
-   
-   
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
-      fpHisDeSensor[i] = new TH1F(Form("%sMcDe%d", prefix.Data(), i+1), Form("%s - MC energy loss for sensor %d", titleDev.Data(), i+1), 1000, 0., 10000.);
-      AddHistogram(fpHisDeSensor[i]);
-   }
-   
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
-         fpHisStripMap[i]  = new TH1F(Form("%sMcStripMap%d", prefix.Data(), i+1) , Form("%s - MC strip map for sensor %d", titleDev.Data(), i+1),
-                                      pGeoMap->GetNPixelX(), 0, pGeoMap->GetNPixelX());
-         AddHistogram(fpHisStripMap[i]);
-      
-   }
-   
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
-         fpHisPosMap[i] =  new TH1F(Form("%sMcPosMap%d", prefix.Data(), i+1), Form("%s - MC position map for sensor %d", titleDev.Data(), i+1),
-                                    pGeoMap->GetNPixelX(), -pGeoMap->GetPitchX()/2.*pGeoMap->GetNPixelX(), pGeoMap->GetPitchX()/2.*pGeoMap->GetNPixelX());
-         AddHistogram(fpHisPosMap[i]);
-      
-   }
-   
-   SetValidHistogram(kTRUE);
+  SetValidHistogram(kTRUE);
 }
 
 
@@ -155,39 +155,39 @@ bool TAMSDactNtuMC::Action()
 //------------------------------------------+-----------------------------------
 void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
 {
-	TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
-	TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
- 
-   Int_t view = pGeoMap->GetSensorPar(sensorId).TypeIdx;
-   
-	map<int, double> digiMap = fDigitizer->GetMap();
- 
-	// fill strips from map
-   int count = 0;
-	for ( map< int, double >::iterator it = digiMap.begin(); it != digiMap.end(); ++it) {
-
-	   if ( digiMap[it->first] > 0 ) {
-         count++;
-			int stripId = it->first;
-         
-			TAMSDntuHit* strip = (TAMSDntuHit*)pNtuRaw->NewStrip(sensorId, digiMap[it->first], view, stripId);
-
-         Int_t genPartID = fpEvtStr->MSDid[hitId] - 1;
-         strip->AddMcTrackId(genPartID, hitId);
-
-         if ( fDebugLevel> 0 )
-				printf("strip %d\n", stripId);
-
-			double pos = pGeoMap->GetPositionU(stripId);
-         
-         strip->SetPosition(pos);
-         
-			if (ValidHistogram()) {
-				fpHisStripMap[sensorId]->Fill(stripId);
-				fpHisPosMap[sensorId]->Fill(pos);
-			}
-		}
-   }
+  TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
+  TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
+  
+  Int_t view = pGeoMap->GetSensorPar(sensorId).TypeIdx;
+  
+  map<int, double> digiMap = fDigitizer->GetMap();
+  
+  // fill strips from map
+  int count = 0;
+  for ( map< int, double >::iterator it = digiMap.begin(); it != digiMap.end(); ++it) {
+    
+    if ( digiMap[it->first] > 0 ) {
+      count++;
+      int stripId = it->first;
+      
+      TAMSDntuHit* strip = (TAMSDntuHit*)pNtuRaw->NewStrip(sensorId, digiMap[it->first], view, stripId);
+      
+      Int_t genPartID = fpEvtStr->MSDid[hitId] - 1;
+      strip->AddMcTrackId(genPartID, hitId);
+      
+      if ( fDebugLevel> 0 )
+	printf("strip %d\n", stripId);
+      
+      double pos = pGeoMap->GetPosition(stripId);
+      
+      strip->SetPosition(pos);
+      
+      if (ValidHistogram()) {
+	fpHisStripMap[sensorId]->Fill(stripId);
+	fpHisPosMap[sensorId]->Fill(pos);
+      }
+    }
+  }
 }
 
 //___________________________________
@@ -202,34 +202,34 @@ void TAMSDactNtuMC::FillNoise()
 //___________________________________
 void TAMSDactNtuMC::FillNoise(Int_t sensorId)
 {
-	TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
-   TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
-   
-   Int_t view = pGeoMap->GetSensorPar(sensorId).TypeIdx;
-
-	Int_t stripsN = gRandom->Uniform(0, fNoisyStripsN);
-	for (Int_t i = 0; i < stripsN; ++i) {
-	   Int_t stripId  = gRandom->Uniform(0,fDigitizer->GetStripsN());
-	   TAMSDntuHit* strip = pNtuRaw->NewStrip(sensorId, 1., view, stripId);
-	   strip->AddMcTrackId(fgMcNoiseId);
-	}
+  TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
+  TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
+  
+  Int_t view = pGeoMap->GetSensorPar(sensorId).TypeIdx;
+  
+  Int_t stripsN = gRandom->Uniform(0, fNoisyStripsN);
+  for (Int_t i = 0; i < stripsN; ++i) {
+    Int_t stripId  = gRandom->Uniform(0,fDigitizer->GetStripsN());
+    TAMSDntuHit* strip = pNtuRaw->NewStrip(sensorId, 1., view, stripId);
+    strip->AddMcTrackId(fgMcNoiseId);
+  }
 }
 
 // --------------------------------------------------------------------------------------
 void TAMSDactNtuMC::ComputeNoiseLevel()
 {
-   // computing number of noise pixels (sigma level) from gaussian
-   TF1* f = new TF1("f", "gaus", -10, 10);
-   f->SetParameters(1,0,1);
-   Float_t fraction = 0;
-   
-   if (fgSigmaNoiseLevel > 0) {
-      fraction = f->Integral(-fgSigmaNoiseLevel, fgSigmaNoiseLevel)/TMath::Sqrt(2*TMath::Pi());
-      fNoisyStripsN = TMath::Nint(fDigitizer->GetStripsN()*(1.-fraction));
-   }
-   
-   if (fDebugLevel)
+  // computing number of noise pixels (sigma level) from gaussian
+  TF1* f = new TF1("f", "gaus", -10, 10);
+  f->SetParameters(1,0,1);
+  Float_t fraction = 0;
+  
+  if (fgSigmaNoiseLevel > 0) {
+    fraction = f->Integral(-fgSigmaNoiseLevel, fgSigmaNoiseLevel)/TMath::Sqrt(2*TMath::Pi());
+    fNoisyStripsN = TMath::Nint(fDigitizer->GetStripsN()*(1.-fraction));
+  }
+  
+  if (fDebugLevel)
       printf("Number of noise pixels %d\n", fNoisyStripsN);
-   
-   delete f;
+  
+  delete f;
 }
