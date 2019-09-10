@@ -149,13 +149,13 @@ Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Doubl
    Double_t Q       = K*rho*(Zmed/Amed)*zBeam*zBeam;      //Kroz2Z/A
    Double_t me      = TAGgeoTrafo::GetElectronMassMeV();
    
-   // calculating the beta,gamma and Tmax
+   // calculating the gamma and Tmax
    Double_t massFac = TAGgeoTrafo::GetMassFactorMeV();
    Double_t mass    = Amed*massFac;
 
    Double_t beta2   = beta*beta;
    Double_t gamma   = TMath::Sqrt(1/(1-beta2));
-   Double_t gamma2  = gamma *gamma;
+   Double_t gamma2  = gamma*gamma;
    Double_t Tmax    = 2*gamma2*beta2*me/(1+(2*gamma*(me/mass))+me*me/(mass*mass));
    Double_t logar   = (0.5*TMath::Log(2*me*beta2*gamma2*Tmax/(I*I))-beta2);
    Double_t dEdX    = Q/beta2*logar;
