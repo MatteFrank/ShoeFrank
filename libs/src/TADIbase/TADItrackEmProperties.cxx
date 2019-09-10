@@ -134,7 +134,7 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 
 //_____________________________________________________________________________
 //
-// Calculation of the energy loss with Bethe-Bloch in the material layer
+// Calculation of the energy loss per range with Bethe-Bloch [MeV.cm^2/g]
 Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Double_t zBeam)
 {
    // Inspired from Alessio's ChargeBetheBloch formula
