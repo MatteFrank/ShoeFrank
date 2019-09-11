@@ -32,7 +32,6 @@
 #include "TAMSDactNtuCluster.hxx"
 
 #include "GlobalPar.hxx"
-#include "Materials.hxx"
 
 #endif
 

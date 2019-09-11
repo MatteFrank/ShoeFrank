@@ -33,7 +33,6 @@
 #include "TAITactNtuTrack.hxx"
 
 #include "GlobalPar.hxx"
-#include "Materials.hxx"
 
 #endif
 

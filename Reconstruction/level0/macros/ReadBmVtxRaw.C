@@ -50,7 +50,6 @@
 #include "TABMactNtuTrack.hxx"
 
 #include "GlobalPar.hxx"
-#include "Materials.hxx"
 
 #endif
 
