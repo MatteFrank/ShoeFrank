@@ -78,8 +78,6 @@
 #include "TACAntuRaw.hxx"
 #include "TACAactNtuMC.hxx"
 
-#include "foot_geo.h"
-
 #include "Materials.hxx"
 #include "FootField.hxx"
 #include "MeasurementCreator.h"
