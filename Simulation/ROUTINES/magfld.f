@@ -32,6 +32,7 @@
 *
       INCLUDE '(CMEMFL)'
       INCLUDE '(CSMCRY)'
+      include "parameters.inc"
 *     
       INTEGER NX, NY, NZ, NROW
       INTEGER XDIM, YDIM, ZDIM
@@ -40,7 +41,7 @@
       PARAMETER (G2T=1.D-04)
       PARAMETER (XDIM=50) 
       PARAMETER (YDIM=50) 
-      PARAMETER (ZDIM=200)
+      PARAMETER (ZDIM=500)
 
       DOUBLE PRECISION XLAT, YLAT, ZLAT
       DOUBLE PRECISION XDIFF, YDIFF, ZDIFF
@@ -66,8 +67,8 @@
          
       IF (LFIRST) THEN 
          
-         CALL OAUXFI('DoubleDipole.table',22,'OLD',IERR)
-*         CALL OAUXFI(mapname,22,'OLD',IERR)
+*         CALL OAUXFI('DoubleDipole.table',22,'OLD',IERR)
+         CALL OAUXFI(mapname,22,'OLD',IERR)
          
          READ (22,*) NROW, NX, NY, NZ
 
@@ -94,7 +95,7 @@
                   BZLAT(I,J,K) = BZLAT(I,J,K)*G2T
                ENDDO
             END DO
-         END DO  
+         END DO
          
 *     controllo che abbia letto tutte le righe
          IF (ICOUNT.NE.NROW) THEN

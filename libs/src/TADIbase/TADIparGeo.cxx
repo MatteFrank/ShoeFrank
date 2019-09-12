@@ -603,17 +603,18 @@ string TADIparGeo::PrintSubtractBodiesFromAir() {
      TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    
      TVector3  fCenter = fpFootGeo->GetDICenter();
+     outstr << setiosflags(ios::fixed) << setprecision(5);
     
      outstr << "c     MAGNETS PARAMETERS " << endl;
      outstr << endl;
     
      outstr << "      double precision MagCenterX, MagCenterY, MagCenterZ" << endl;
-     outstr << "      parameter (MagCenterX=" << fCenter.X() << ")" << endl;
-     outstr << "      parameter (MagCenterY=" << fCenter.Y() << ")" << endl;
-     outstr << "      parameter (MagCenterZ=" << fCenter.Z() << ")" << endl;
+     outstr << "      parameter (MagCenterX=" << fCenter.X() << precision << ")" << endl;
+     outstr << "      parameter (MagCenterY=" << fCenter.Y() << precision << ")" << endl;
+     outstr << "      parameter (MagCenterZ=" << fCenter.Z() << precision << ")" << endl;
      
      outstr << "      character*50 mapname" << endl;
-     outstr << "      parameter (mapname='" << fMapName << "')" << endl;
+     outstr << "      parameter (mapname='" << fMapName.Data() << "')" << endl;
      
         
      outstr << endl;
