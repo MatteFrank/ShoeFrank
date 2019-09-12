@@ -34,23 +34,21 @@
       INCLUDE '(CSMCRY)'
 *     
       INTEGER NX, NY, NZ, NROW
-      DOUBLE PRECISION G2T, ZSHIFT
+      INTEGER XDIM, YDIM, ZDIM
+      DOUBLE PRECISION G2T
 
-      PARAMETER (NROW=53361) 
-      PARAMETER (NX=21) 
-      PARAMETER (NY=21) 
-      PARAMETER (NZ=121)
-      PARAMETER (ZSHIFT=0.D+00)
-*      PARAMETER (ZSHIFT=14.D+00)
-*      PARAMETER (ZSHIFT=14.7D+00)
       PARAMETER (G2T=1.D-04)
+      PARAMETER (XDIM=50) 
+      PARAMETER (YDIM=50) 
+      PARAMETER (ZDIM=200)
 
       DOUBLE PRECISION XLAT, YLAT, ZLAT
       DOUBLE PRECISION XDIFF, YDIFF, ZDIFF
       DOUBLE PRECISION BXLAT, BYLAT, BZLAT
       
-      DIMENSION XLAT(NX), YLAT(NY), ZLAT(NZ)
-      DIMENSION BXLAT(NX,NY,NZ), BYLAT(NX,NY,NZ), BZLAT(NX,NY,NZ)
+      DIMENSION XLAT(XDIM), YLAT(YDIM), ZLAT(ZDIM)
+      DIMENSION BXLAT(XDIM,YDIM,ZDIM), BYLAT(XDIM,YDIM,ZDIM),
+     &     BZLAT(XDIM,YDIM,ZDIM)
       
       INTEGER I0, J0, K0
       INTEGER I1, J1, K1
@@ -68,8 +66,15 @@
          
       IF (LFIRST) THEN 
          
-         CALL OAUXFI('SummedSingleMap.table',22,'OLD',IERR)
-*         CALL OAUXFI('DoubleDipole.table',22,'OLD',IERR)
+         CALL OAUXFI('DoubleDipole.table',22,'OLD',IERR)
+*         CALL OAUXFI(mapname,22,'OLD',IERR)
+         
+         READ (22,*) NROW, NX, NY, NZ
+
+         IF (XDIM.LT.NX .OR. YDIM.LT.NY .OR. ZDIM.LT.NZ) THEN
+            WRITE(*,*)'magfld.f error: problem in arrays dimension'
+            CALL FLABRT('MAGFLD','Error in arrays dimension')
+         ENDIF
          
          DO I=1,NX
             DO J=1,NY
@@ -81,7 +86,9 @@
 *     corrispondenti a quel punto
                   READ (22,*) XLAT(I), YLAT(J), ZLAT(K),
      &                 BXLAT(I,J,K), BYLAT(I,J,K), BZLAT(I,J,K)
-                  ZLAT(K) = ZLAT(K)+ZSHIFT
+                  XLAT(I) = XLAT(I)+MagCenterX
+                  YLAT(J) = YLAT(J)+MagCenterY
+                  ZLAT(K) = ZLAT(K)+MagCenterZ
                   BXLAT(I,J,K) = BXLAT(I,J,K)*G2T
                   BYLAT(I,J,K) = BYLAT(I,J,K)*G2T
                   BZLAT(I,J,K) = BZLAT(I,J,K)*G2T

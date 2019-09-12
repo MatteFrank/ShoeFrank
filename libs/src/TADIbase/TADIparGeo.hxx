@@ -122,6 +122,7 @@ public:
    string PrintRegions();
    string PrintAssignMaterial();
    string PrintSubtractBodiesFromAir();
+   string PrintParameters();
    
 private:
    void DefineMaxMinDimension();

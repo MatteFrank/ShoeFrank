@@ -589,3 +589,35 @@ string TADIparGeo::PrintSubtractBodiesFromAir() {
 
     return ss.str();
 }
+
+
+//_____________________________________________________________________________
+ string TADIparGeo::PrintParameters()
+ {   
+   stringstream outstr;
+    
+   if(GlobalPar::GetPar()->IncludeDI()){
+     
+     string precision = "D+00";
+     
+     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   
+     TVector3  fCenter = fpFootGeo->GetDICenter();
+    
+     outstr << "c     MAGNETS PARAMETERS " << endl;
+     outstr << endl;
+    
+     outstr << "      double precision MagCenterX, MagCenterY, MagCenterZ" << endl;
+     outstr << "      parameter (MagCenterX=" << fCenter.X() << ")" << endl;
+     outstr << "      parameter (MagCenterY=" << fCenter.Y() << ")" << endl;
+     outstr << "      parameter (MagCenterZ=" << fCenter.Z() << ")" << endl;
+     
+     outstr << "      character*50 mapname" << endl;
+     outstr << "      parameter (mapname='" << fMapName << "')" << endl;
+     
+        
+     outstr << endl;
+   }
+    
+   return outstr.str();
+ }

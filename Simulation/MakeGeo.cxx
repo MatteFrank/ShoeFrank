@@ -247,6 +247,7 @@ int main (int argc, char *argv[]) {
     paramfile << vtxGeo->PrintParameters();
     paramfile << itrGeo->PrintParameters();
     paramfile << msdGeo->PrintParameters();
+    paramfile << diGeo->PrintParameters();
     paramfile << twGeo->PrintParameters();
     paramfile << caGeo->PrintParameters();
 
