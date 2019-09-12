@@ -8,7 +8,7 @@ $FLUPRO/flutil/fff  mgdraw.f
 $FLUPRO/flutil/fff  mgdraw_lib.f
 $FLUPRO/flutil/fff  UpdateCurrentParticle.f
 
-$FLUPRO/flutil/ldpm3qmd -m fluka usrini.o usrout.o usreou.o usrein.o mgdraw.o mgdraw_lib.o UpdateCurrentParticle.o -o fluka_FOOT.exe
+$FLUPRO/flutil/ldpmqmd -m fluka usrini.o usrout.o usreou.o usrein.o mgdraw.o mgdraw_lib.o UpdateCurrentParticle.o -o fluka_FOOT.exe
 
 rm *.o
 
