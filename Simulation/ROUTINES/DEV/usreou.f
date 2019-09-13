@@ -3,7 +3,12 @@
 *
 *=== Usreou ===========================================================*
 *
-      SUBROUTINE USREOU
+      SUBROUTINE USREOU ( NOMORE )
+
+*       Input variables:                                               *
+* *
+*              Nomore = if > 0 the run will be terminated              *
+* *
 
       INCLUDE '(DBLPRC)'
       INCLUDE '(DIMPAR)'

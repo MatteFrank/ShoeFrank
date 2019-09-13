@@ -28,7 +28,7 @@
 *----------------------------------------------------------------------*
 *
       DIMENSION WHAT (6)
-      CHARACTER SDUM*8
+      CHARACTER SDUM*8, SDUM10*10
 c
       INCLUDE '(FLKMAT)'
       include "mgdraw.inc"
