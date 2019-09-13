@@ -26,8 +26,8 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/foot.inp DESTINATION ${CMAKE_BINARY_DIR}/S
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ROUTINES/  DESTINATION ${CMAKE_BINARY_DIR}/Simulation/ROUTINES)
 
 execute_process(COMMAND ln -sf ${FOOT_FULLREC}/data/  ${CMAKE_BINARY_DIR}/Simulation)
-execute_process(COMMAND ln -sf ${FOOT_LEVEL0}/geomaps/  ${CMAKE_BINARY_DIR}/Simulation)
-execute_process(COMMAND ln -sf ${FOOT_LEVEL0}/config/  ${CMAKE_BINARY_DIR}/Simulation)
+execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/level0/geomaps/  ${CMAKE_BINARY_DIR}/Simulation)
+execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/level0/config/  ${CMAKE_BINARY_DIR}/Simulation)
 
 #----------------------------------------------------------------------------
 # internal and external dependencies
