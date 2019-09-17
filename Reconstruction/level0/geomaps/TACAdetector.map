@@ -5,1105 +5,125 @@
 //
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-// Parameters of the Calorimeter
+// Parameters of the Crystal  (truncated) (cm)
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-CrystalsN:     360
 Material:      "BGO"
 Density:       7.13
+Dim1:          1.0     Dim2:      1.45      Length:     12.0
+Delta:         0.1
+
+// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
+// Parameters of the support
+// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
+SupMaterial:   "Al"
+SupDensity:     2.6989
+SupDim1:        3.875     SupDim2:      4.55      SupLength:     5.9
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Calorimeter (cm)
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Width:         44.0     Height:      44.0      Thick:     24.0
+Width:          44.0     Height:      44.0      Thick:     24.0
 
+ModulesN:       32
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-// Parameter of the Crystals (cm)
+// Parameter of the modules used in the run
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Width:         2.0     Height:      2.0      Thick:     24.0
-
-// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-// Parameter of the Detector crystal used in the run
-// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-CrystalId:   0
-PositionX:  -3.0  PositionY: -21.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:   1
-PositionX:  -1.0  PositionY: -21.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:   2
-PositionX:   1.0  PositionY: -21.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:   3
-PositionX:   3.0  PositionY: -21.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:   4
-PositionX:  -9.0  PositionY: -19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:   5
-PositionX:  -7.0  PositionY: -19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:   6
-PositionX:  -5.0  PositionY: -19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:   7
-PositionX:  -3.0  PositionY: -19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:   8
-PositionX:  -1.0  PositionY: -19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:   9
-PositionX:   1.0  PositionY: -19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  10
-PositionX:   3.0  PositionY: -19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  11
-PositionX:   5.0  PositionY: -19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  12
-PositionX:   7.0  PositionY: -19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  13
-PositionX:   9.0  PositionY: -19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  14
-PositionX: -11.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  15
-PositionX:  -9.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  16
-PositionX:  -7.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  17
-PositionX:  -5.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  18
-PositionX:  -3.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  19
-PositionX:  -1.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  20
-PositionX:   1.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  21
-PositionX:   3.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  22
-PositionX:   5.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  23
-PositionX:   7.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  24
-PositionX:   9.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  25
-PositionX:  11.0  PositionY: -17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  26
-PositionX: -15.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  27
-PositionX: -13.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  28
-PositionX: -11.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  29
-PositionX:  -9.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  30
-PositionX:  -7.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  31
-PositionX:  -5.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  32
-PositionX:  -3.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  33
-PositionX:  -1.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  34
-PositionX:   1.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  35
-PositionX:   3.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  36
-PositionX:   5.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  37
-PositionX:   7.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  38
-PositionX:   9.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  39
-PositionX:  11.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  40
-PositionX:  13.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  41
-PositionX:  15.0  PositionY: -15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  42
-PositionX: -15.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  43
-PositionX: -13.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  44
-PositionX: -11.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  45
-PositionX:  -9.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  46
-PositionX:  -7.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  47
-PositionX:  -5.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  48
-PositionX:  -3.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  49
-PositionX:  -1.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  50
-PositionX:   1.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  51
-PositionX:   3.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  52
-PositionX:   5.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  53
-PositionX:   7.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  54
-PositionX:   9.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  55
-PositionX:  11.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  56
-PositionX:  13.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  57
-PositionX:  15.0  PositionY: -13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  58
-PositionX: -17.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  59
-PositionX: -15.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  60
-PositionX: -13.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  61
-PositionX: -11.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  62
-PositionX:  -9.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  63
-PositionX:  -7.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  64
-PositionX:  -5.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  65
-PositionX:  -3.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  66
-PositionX:  -1.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  67
-PositionX:   1.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  68
-PositionX:   3.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  69
-PositionX:   5.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  70
-PositionX:   7.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  71
-PositionX:   9.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  72
-PositionX:  11.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  73
-PositionX:  13.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  74
-PositionX:  15.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  75
-PositionX:  17.0  PositionY: -11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  76
-PositionX: -19.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  77
-PositionX: -17.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  78
-PositionX: -15.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  79
-PositionX: -13.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  80
-PositionX: -11.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  81
-PositionX:  -9.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  82
-PositionX:  -7.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  83
-PositionX:  -5.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  84
-PositionX:  -3.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  85
-PositionX:  -1.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  86
-PositionX:   1.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  87
-PositionX:   3.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  88
-PositionX:   5.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  89
-PositionX:   7.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  90
-PositionX:   9.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  91
-PositionX:  11.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  92
-PositionX:  13.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  93
-PositionX:  15.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  94
-PositionX:  17.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  95
-PositionX:  19.0  PositionY:  -9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  96
-PositionX: -19.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  97
-PositionX: -17.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  98
-PositionX: -15.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  99
-PositionX: -13.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  100
-PositionX: -11.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  101
-PositionX:  -9.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  102
-PositionX:  -7.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  103
-PositionX:  -5.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  104
-PositionX:  -3.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  105
-PositionX:  -1.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  106
-PositionX:   1.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  107
-PositionX:   3.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  108
-PositionX:   5.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  109
-PositionX:   7.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  110
-PositionX:   9.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  111
-PositionX:  11.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  112
-PositionX:  13.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  113
-PositionX:  15.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  114
-PositionX:  17.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  115
-PositionX:  19.0  PositionY:  -7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  116
-PositionX: -19.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  117
-PositionX: -17.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  118
-PositionX: -15.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  119
-PositionX: -13.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  120
-PositionX: -11.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  121
-PositionX:  -9.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  122
-PositionX:  -7.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  123
-PositionX:  -5.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  124
-PositionX:  -3.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  125
-PositionX:  -1.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  126
-PositionX:   1.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  127
-PositionX:   3.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  128
-PositionX:   5.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  129
-PositionX:   7.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  130
-PositionX:   9.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  131
-PositionX:  11.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  132
-PositionX:  13.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  133
-PositionX:  15.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  134
-PositionX:  17.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  135
-PositionX:  19.0  PositionY:  -5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  136
-PositionX: -21.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  137
-PositionX: -19.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  138
-PositionX: -17.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  139
-PositionX: -15.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  140
-PositionX: -13.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  141
-PositionX: -11.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  142
-PositionX:  -9.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  143
-PositionX:  -7.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  144
-PositionX:  -5.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  145
-PositionX:  -3.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  146
-PositionX:  -1.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  147
-PositionX:   1.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  148
-PositionX:   3.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  149
-PositionX:   5.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  150
-PositionX:   7.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  151
-PositionX:   9.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  152
-PositionX:  11.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  153
-PositionX:  13.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  154
-PositionX:  15.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  155
-PositionX:  17.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  156
-PositionX:  19.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  157
-PositionX:  21.0  PositionY:  -3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  158
-PositionX: -21.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  159
-PositionX: -19.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  160
-PositionX: -17.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  161
-PositionX: -15.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  162
-PositionX: -13.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  163
-PositionX: -11.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  164
-PositionX:  -9.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  165
-PositionX:  -7.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  166
-PositionX:  -5.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  167
-PositionX:  -3.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  168
-PositionX:  -1.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  169
-PositionX:   1.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  170
-PositionX:   3.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  171
-PositionX:   5.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  172
-PositionX:   7.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  173
-PositionX:   9.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  174
-PositionX:  11.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  175
-PositionX:  13.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  176
-PositionX:  15.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  177
-PositionX:  17.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  178
-PositionX:  19.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  179
-PositionX:  21.0  PositionY:  -1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  180
-PositionX: -21.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  181
-PositionX: -19.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  182
-PositionX: -17.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  183
-PositionX: -15.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  184
-PositionX: -13.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  185
-PositionX: -11.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  186
-PositionX:  -9.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  187
-PositionX:  -7.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  188
-PositionX:  -5.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  189
-PositionX:  -3.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  190
-PositionX:  -1.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  191
-PositionX:   1.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  192
-PositionX:   3.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  193
-PositionX:   5.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  194
-PositionX:   7.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  195
-PositionX:   9.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  196
-PositionX:  11.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  197
-PositionX:  13.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  198
-PositionX:  15.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  199
-PositionX:  17.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  200
-PositionX:  19.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  201
-PositionX:  21.0  PositionY:   1.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  202
-PositionX: -21.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  203
-PositionX: -19.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  204
-PositionX: -17.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  205
-PositionX: -15.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  206
-PositionX: -13.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  207
-PositionX: -11.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  208
-PositionX:  -9.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  209
-PositionX:  -7.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  210
-PositionX:  -5.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  211
-PositionX:  -3.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  212
-PositionX:  -1.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  213
-PositionX:   1.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  214
-PositionX:   3.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  215
-PositionX:   5.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  216
-PositionX:   7.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  217
-PositionX:   9.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  218
-PositionX:  11.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  219
-PositionX:  13.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  220
-PositionX:  15.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  221
-PositionX:  17.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  222
-PositionX:  19.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  223
-PositionX:  21.0  PositionY:   3.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  224
-PositionX: -19.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  225
-PositionX: -17.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  226
-PositionX: -15.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  227
-PositionX: -13.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  228
-PositionX: -11.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  229
-PositionX:  -9.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  230
-PositionX:  -7.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  231
-PositionX:  -5.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  232
-PositionX:  -3.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  233
-PositionX:  -1.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  234
-PositionX:   1.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  235
-PositionX:   3.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  236
-PositionX:   5.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  237
-PositionX:   7.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  238
-PositionX:   9.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  239
-PositionX:  11.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  240
-PositionX:  13.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  241
-PositionX:  15.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  242
-PositionX:  17.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  243
-PositionX:  19.0  PositionY:   5.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  244
-PositionX: -19.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  245
-PositionX: -17.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  246
-PositionX: -15.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  247
-PositionX: -13.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  248
-PositionX: -11.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  249
-PositionX:  -9.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  250
-PositionX:  -7.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  251
-PositionX:  -5.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  252
-PositionX:  -3.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  253
-PositionX:  -1.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  254
-PositionX:   1.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  255
-PositionX:   3.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  256
-PositionX:   5.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  257
-PositionX:   7.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  258
-PositionX:   9.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  259
-PositionX:  11.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  260
-PositionX:  13.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  261
-PositionX:  15.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  262
-PositionX:  17.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  263
-PositionX:  19.0  PositionY:   7.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  264
-PositionX: -19.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  265
-PositionX: -17.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  266
-PositionX: -15.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  267
-PositionX: -13.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  268
-PositionX: -11.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  269
-PositionX:  -9.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  270
-PositionX:  -7.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  271
-PositionX:  -5.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  272
-PositionX:  -3.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  273
-PositionX:  -1.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  274
-PositionX:   1.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  275
-PositionX:   3.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  276
-PositionX:   5.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  277
-PositionX:   7.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  278
-PositionX:   9.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  279
-PositionX:  11.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  280
-PositionX:  13.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  281
-PositionX:  15.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  282
-PositionX:  17.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  283
-PositionX:  19.0  PositionY:   9.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  284
-PositionX: -17.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  285
-PositionX: -15.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  286
-PositionX: -13.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  287
-PositionX: -11.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  288
-PositionX:  -9.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  289
-PositionX:  -7.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  290
-PositionX:  -5.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  291
-PositionX:  -3.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  292
-PositionX:  -1.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  293
-PositionX:   1.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  294
-PositionX:   3.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  295
-PositionX:   5.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  296
-PositionX:   7.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  297
-PositionX:   9.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  298
-PositionX:  11.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  299
-PositionX:  13.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  300
-PositionX:  15.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  301
-PositionX:  17.0  PositionY:  11.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  302
-PositionX: -15.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  303
-PositionX: -13.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  304
-PositionX: -11.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  305
-PositionX:  -9.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  306
-PositionX:  -7.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  307
-PositionX:  -5.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  308
-PositionX:  -3.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  309
-PositionX:  -1.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  310
-PositionX:   1.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  311
-PositionX:   3.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  312
-PositionX:   5.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  313
-PositionX:   7.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  314
-PositionX:   9.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  315
-PositionX:  11.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  316
-PositionX:  13.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  317
-PositionX:  15.0  PositionY:  13.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  318
-PositionX: -15.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  319
-PositionX: -13.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  320
-PositionX: -11.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  321
-PositionX:  -9.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  322
-PositionX:  -7.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  323
-PositionX:  -5.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  324
-PositionX:  -3.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  325
-PositionX:  -1.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  326
-PositionX:   1.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  327
-PositionX:   3.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  328
-PositionX:   5.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  329
-PositionX:   7.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  330
-PositionX:   9.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  331
-PositionX:  11.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  332
-PositionX:  13.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  333
-PositionX:  15.0  PositionY:  15.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  334
-PositionX: -11.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  335
-PositionX:  -9.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  336
-PositionX:  -7.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  337
-PositionX:  -5.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  338
-PositionX:  -3.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  339
-PositionX:  -1.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  340
-PositionX:   1.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  341
-PositionX:   3.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  342
-PositionX:   5.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  343
-PositionX:   7.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  344
-PositionX:   9.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  345
-PositionX:  11.0  PositionY:  17.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  346
-PositionX:  -9.0  PositionY:  19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  347
-PositionX:  -7.0  PositionY:  19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  348
-PositionX:  -5.0  PositionY:  19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  349
-PositionX:  -3.0  PositionY:  19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  350
-PositionX:  -1.0  PositionY:  19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  351
-PositionX:   1.0  PositionY:  19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  352
-PositionX:   3.0  PositionY:  19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  353
-PositionX:   5.0  PositionY:  19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  354
-PositionX:   7.0  PositionY:  19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  355
-PositionX:   9.0  PositionY:  19.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  356
-PositionX:  -3.0  PositionY:  21.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  357
-PositionX:  -1.0  PositionY:  21.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  358
-PositionX:   1.0  PositionY:  21.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
-CrystalId:  359
-PositionX:   3.0  PositionY:  21.0 PositionZ:   0.0
-TiltX:       0.0  TiltY:       0.0 TiltZ:       0.0
+ModuleId:     0
+PositionX:   -3.9   PositionY:    -3.9   PositionZ:    -0.2
+TiltX:        3.2   TiltY:        -3.2   TiltZ:         0.0
+ModuleId:     1
+PositionX:   -3.9   PositionY:     3.9   PositionZ:    -0.2
+TiltX:       -3.2   TiltY:        -3.2   TiltZ:         0.0
+ModuleId:     2
+PositionX:    3.9   PositionY:    -3.9   PositionZ:    -0.2
+TiltX:        3.2   TiltY:         3.2   TiltZ:         0.0
+ModuleId:     3
+PositionX:    3.9   PositionY:     3.9   PositionZ:    -0.2
+TiltX:       -3.2   TiltY:         3.2   TiltZ:         0.0
+ModuleId:     4
+PositionX:  -11.7   PositionY:    -3.9   PositionZ:    -0.2
+TiltX:        3.3   TiltY:        -9.7   TiltZ:        -0.3
+ModuleId:     5
+PositionX:  -11.7   PositionY:     3.9   PositionZ:    -0.2
+TiltX:       -3.3   TiltY:        -9.7   TiltZ:         0.3
+ModuleId:     6
+PositionX:   11.7   PositionY:    -3.9   PositionZ:    -0.2
+TiltX:        3.3   TiltY:         9.7   TiltZ:         0.3
+ModuleId:     7
+PositionX:   11.7   PositionY:     3.9   PositionZ:    -0.2
+TiltX:       -3.3   TiltY:         9.7   TiltZ:        -0.3
+ModuleId:     8
+PositionX:   -3.9   PositionY:   -11.7   PositionZ:    -0.2
+TiltX:        9.7   TiltY:        -3.2   TiltZ:        -0.4
+ModuleId:     9
+PositionX:   -3.9   PositionY:    11.7   PositionZ:    -0.2
+TiltX:       -9.7   TiltY:        -3.2   TiltZ:         0.4
+ModuleId:     10
+PositionX:    3.9   PositionY:   -11.7   PositionZ:    -0.2
+TiltX:        9.7   TiltY:         3.2   TiltZ:         0.4
+ModuleId:     11
+PositionX:    3.9   PositionY:    11.7   PositionZ:    -0.2
+TiltX:       -9.7   TiltY:         3.2   TiltZ:        -0.4
+ModuleId:     12
+PositionX:  -11.7   PositionY:   -11.7   PositionZ:    -0.1
+TiltX:        9.8   TiltY:        -9.5   TiltZ:        -0.7
+ModuleId:     13
+PositionX:  -11.7   PositionY:    11.7   PositionZ:    -0.1
+TiltX:       -9.8   TiltY:        -9.5   TiltZ:         0.7
+ModuleId:     14
+PositionX:   11.7   PositionY:   -11.7   PositionZ:    -0.1
+TiltX:        9.8   TiltY:         9.5   TiltZ:         0.7
+ModuleId:     15
+PositionX:   11.7   PositionY:    11.7   PositionZ:    -0.1
+TiltX:       -9.8   TiltY:         9.5   TiltZ:        -0.7
+ModuleId:     16
+PositionX:  -19.7   PositionY:    -3.9   PositionZ:    -0.5
+TiltX:        3.2   TiltY:       -16.1   TiltZ:         0.0
+ModuleId:     17
+PositionX:  -19.7   PositionY:     3.9   PositionZ:    -0.5
+TiltX:       -3.2   TiltY:       -16.1   TiltZ:         0.0
+ModuleId:     18
+PositionX:   19.7   PositionY:    -3.9   PositionZ:    -0.5
+TiltX:        3.2   TiltY:        16.1   TiltZ:         0.0
+ModuleId:     19
+PositionX:   19.7   PositionY:     3.9   PositionZ:    -0.5
+TiltX:       -3.2   TiltY:        16.1   TiltZ:         0.0
+ModuleId:     20
+PositionX:   -3.8   PositionY:   -19.7   PositionZ:    -0.5
+TiltX:       16.1   TiltY:        -3.0   TiltZ:        -0.7
+ModuleId:     21
+PositionX:   -3.8   PositionY:    19.7   PositionZ:    -0.5
+TiltX:      -16.1   TiltY:        -3.0   TiltZ:         0.7
+ModuleId:     22
+PositionX:    3.8   PositionY:   -19.7   PositionZ:    -0.5
+TiltX:       16.1   TiltY:         3.0   TiltZ:         0.7
+ModuleId:     23
+PositionX:    3.8   PositionY:    19.7   PositionZ:    -0.5
+TiltX:      -16.1   TiltY:         3.0   TiltZ:        -0.7
+ModuleId:     24
+PositionX:  -19.7   PositionY:   -11.7   PositionZ:    -0.5
+TiltX:       10.0   TiltY:       -15.9   TiltZ:        -1.2
+ModuleId:     25
+PositionX:  -19.7   PositionY:    11.7   PositionZ:    -0.5
+TiltX:      -10.0   TiltY:       -15.9   TiltZ:         1.2
+ModuleId:     26
+PositionX:   19.7   PositionY:   -11.7   PositionZ:    -0.5
+TiltX:       10.0   TiltY:        15.9   TiltZ:         1.2
+ModuleId:     27
+PositionX:   19.7   PositionY:    11.7   PositionZ:    -0.5
+TiltX:      -10.0   TiltY:        15.9   TiltZ:        -1.2
+ModuleId:     28
+PositionX:  -11.7   PositionY:   -19.7   PositionZ:    -0.5
+TiltX:       16.3   TiltY:        -9.3   TiltZ:        -1.1
+ModuleId:     29
+PositionX:  -11.7   PositionY:    19.7   PositionZ:    -0.5
+TiltX:      -16.3   TiltY:        -9.3   TiltZ:         1.1
+ModuleId:     30
+PositionX:   11.7   PositionY:   -19.7   PositionZ:    -0.5
+TiltX:       16.3   TiltY:         9.3   TiltZ:         1.1
+ModuleId:     31
+PositionX:   11.7   PositionY:    19.7   PositionZ:    -0.5
+TiltX:      -16.3   TiltY:         9.3   TiltZ:        -1.1
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // End of geometry File
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-

@@ -28,16 +28,29 @@ public:
    
    void DefineMaterial(); 
    
-   TVector3       GetCaloSize()     const  { return fCaloSize;    }
-   
+   TVector3       GetCaloSize()        const  { return fCaloSize;       }
+   Int_t          GetModulesN()        const  { return fModulesN;       }
+   Float_t        GetDelta()           const  { return fCrystalDelta;    }
+
+   // Crystal
+   Int_t          GetCrystalsN()       const  { return fCrystalsN;      }
    TVector3       GetCrystalSize()     const  { return fCrystalSize;    }
-   Float_t        GetCrystalWidth()    const  { return fCrystalSize[0]; }
+   Float_t        GetCrystalWidth()    const  { return fCrystalSize[0]; }  // keep for backward compatibility
    Float_t        GetCrystalHeight()   const  { return fCrystalSize[1]; }
    Float_t        GetCrystalThick()    const  { return fCrystalSize[2]; }
-
-   Int_t          GetCrystalsN()       const  { return fCrystalsN;      }
    
+   Float_t        GetCrystalBotBase()  const  { return fCrystalSize[0]; }
+   Float_t        GetCrystalTopBase()  const  { return fCrystalSize[1]; }
+   Float_t        GetCrystalLength()   const  { return fCrystalSize[2]; }
    TString        GetCrystalMat()      const  { return fCrystalMat;     }
+
+   // Support
+   TVector3       GetSupportSize()     const  { return fSupportSize;    }
+   Float_t        GetSupportBotBase()  const  { return fSupportSize[0]; }
+   Float_t        GetSupportTopBase()  const  { return fSupportSize[1]; }
+   Float_t        GetSupportLength()   const  { return fSupportSize[2]; }
+   TString        GetSupportMat()      const  { return fSupportMat;     }
+
 
    TVector3       GetCrystalPosition(Int_t iCrystal);
 
@@ -63,7 +76,7 @@ public:
 
   // TGeoVolume*     GetVolume();
   TGeoVolume*     BuildCalorimeter(const char *caName = "CA");
-  TGeoVolume*     BuildModule(Int_t idx);
+  TGeoVolume*     BuildModule();
 
   void            SetCrystalColorOn(Int_t idx);
   void            SetCrystalColorOff(Int_t idx);
@@ -87,6 +100,7 @@ private:
    static const Color_t fgkDefaultModCol;     // default color of slat/module;
    static const Color_t fgkDefaultModColOn;  // default color of fired slat/module;
    static const TString fgkDefaultCrysName;  // default crystal name;
+   static const TString fgkDefaultModName;  // default module name;
 
    static const Char_t* GetDefaultCrysName(Int_t idx) { return Form("%s_%d", fgkDefaultCrysName.Data(), idx); }
 
@@ -96,6 +110,15 @@ private:
    TString   fCrystalMat;
    Float_t   fCrystalDensity;
    Int_t     fCrystalsN;
+   Int_t     fModulesN;
+   
+   TVector3  fSupportSize;
+   TString   fSupportMat;
+   Float_t   fSupportDensity;
+   
+   Float_t   fCrystalDelta; // delta between two crystal in a module
+
+   
    TString   fkDefaultGeoName;  // default par geo file name
 
    vector<TVector3> vTilt;
