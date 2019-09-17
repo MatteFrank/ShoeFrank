@@ -6,6 +6,7 @@
 RPP blk        -1000. 1000. -1000. 1000. -1000. 1000.
 * ***Air
 RPP air        -900.0 900.0 -900.0 900.0 -900.0 900.0
+XYP airpla     64.35
 * ***Start Counter
 RPP stc     -2.500000 2.500000 -2.500000 2.500000 -29.012500 -28.987500 
 XYP stcmyl1    -29.013500
@@ -469,6 +470,40 @@ RPP itre31     2.0249999762 4.0121999979 1.4709200859 3.3918800354 14.6136399733
 RPP itrm31     2.0238000676 4.0477999970 1.1429200768 3.4139199853 14.6129999734 14.6179999732
 RPP itrp31     2.0249999762 4.0121999979 1.4709200859 3.3918800354 14.6129999734 14.6136399733
 $end_transform 
+* ***MSD bodies
+RPP msds0     -4.8 4.8 -4.695 4.695 28.4801 28.4951
+RPP msdp0     -4.9075 4.9075 -4.9075 4.9075 28.48 28.5
+RPP msdm0     -4.8 4.8 -4.695 4.695 28.48 28.4801
+$start_transform msd_1
+RPP msds1     -4.8 4.8 -4.695 4.695 28.5001 28.5151
+RPP msdp1     -4.9075 4.9075 -4.9075 4.9075 28.5 28.52
+RPP msdm1     -4.8 4.8 -4.695 4.695 28.5 28.5001
+$end_transform 
+RPP msds2     -4.8 4.8 -4.695 4.695 28.9801 28.9951
+RPP msdp2     -4.9075 4.9075 -4.9075 4.9075 28.98 29
+RPP msdm2     -4.8 4.8 -4.695 4.695 28.98 28.9801
+$start_transform msd_3
+RPP msds3     -4.8 4.8 -4.695 4.695 29.0001 29.0151
+RPP msdp3     -4.9075 4.9075 -4.9075 4.9075 29 29.02
+RPP msdm3     -4.8 4.8 -4.695 4.695 29 29.0001
+$end_transform 
+RPP msds4     -4.8 4.8 -4.695 4.695 29.4801 29.4951
+RPP msdp4     -4.9075 4.9075 -4.9075 4.9075 29.48 29.5
+RPP msdm4     -4.8 4.8 -4.695 4.695 29.48 29.4801
+$start_transform msd_5
+RPP msds5     -4.8 4.8 -4.695 4.695 29.5001 29.5151
+RPP msdp5     -4.9075 4.9075 -4.9075 4.9075 29.5 29.52
+RPP msdm5     -4.8 4.8 -4.695 4.695 29.5 29.5001
+$end_transform 
+* ***Dipoles bodies
+RCC MagShOu0     0 0 0.5 0.000000 0.000000 11 15.5
+ZCC MagShIn0     0 0 2.5
+RCC MagOu0     0 0 1 0.000000 0.000000 10 15
+RCC MagIn0     0 0 1 0.000000 0.000000 10 3
+RCC MagShOu1     0 0 16.5 0.000000 0.000000 11 25.5
+ZCC MagShIn1     0 0 5.7
+RCC MagOu1     0 0 17 0.000000 0.000000 10 25
+RCC MagIn1     0 0 17 0.000000 0.000000 10 6.2
 * ***Scintillator bodies
 RPP scn000     17 19 -23 21 99.7 100
 RPP scn001     15 17 -23 21 99.7 100
@@ -490,83 +525,483 @@ RPP scn016     -15 -13 -23 21 99.7 100
 RPP scn017     -17 -15 -23 21 99.7 100
 RPP scn018     -19 -17 -23 21 99.7 100
 RPP scn019     -21 -19 -23 21 99.7 100
-$start_transform twZ_100
+$start_transform tw_100
 RPP scn100     -2 0 -4 40 99.4 99.7
 $end_transform 
-$start_transform twZ_101
+$start_transform tw_101
 RPP scn101     -2 0 -6 38 99.4 99.7
 $end_transform 
-$start_transform twZ_102
+$start_transform tw_102
 RPP scn102     -2 0 -8 36 99.4 99.7
 $end_transform 
-$start_transform twZ_103
+$start_transform tw_103
 RPP scn103     -2 0 -10 34 99.4 99.7
 $end_transform 
-$start_transform twZ_104
+$start_transform tw_104
 RPP scn104     -2 0 -12 32 99.4 99.7
 $end_transform 
-$start_transform twZ_105
+$start_transform tw_105
 RPP scn105     -2 0 -14 30 99.4 99.7
 $end_transform 
-$start_transform twZ_106
+$start_transform tw_106
 RPP scn106     -2 0 -16 28 99.4 99.7
 $end_transform 
-$start_transform twZ_107
+$start_transform tw_107
 RPP scn107     -2 0 -18 26 99.4 99.7
 $end_transform 
-$start_transform twZ_108
+$start_transform tw_108
 RPP scn108     -2 0 -20 24 99.4 99.7
 $end_transform 
-$start_transform twZ_109
+$start_transform tw_109
 RPP scn109     -2 0 -22 22 99.4 99.7
 $end_transform 
-$start_transform twZ_110
+$start_transform tw_110
 RPP scn110     -2 0 -24 20 99.4 99.7
 $end_transform 
-$start_transform twZ_111
+$start_transform tw_111
 RPP scn111     -2 0 -26 18 99.4 99.7
 $end_transform 
-$start_transform twZ_112
+$start_transform tw_112
 RPP scn112     -2 0 -28 16 99.4 99.7
 $end_transform 
-$start_transform twZ_113
+$start_transform tw_113
 RPP scn113     -2 0 -30 14 99.4 99.7
 $end_transform 
-$start_transform twZ_114
+$start_transform tw_114
 RPP scn114     -2 0 -32 12 99.4 99.7
 $end_transform 
-$start_transform twZ_115
+$start_transform tw_115
 RPP scn115     -2 0 -34 10 99.4 99.7
 $end_transform 
-$start_transform twZ_116
+$start_transform tw_116
 RPP scn116     -2 0 -36 8 99.4 99.7
 $end_transform 
-$start_transform twZ_117
+$start_transform tw_117
 RPP scn117     -2 0 -38 6 99.4 99.7
 $end_transform 
-$start_transform twZ_118
+$start_transform tw_118
 RPP scn118     -2 0 -40 4 99.4 99.7
 $end_transform 
-$start_transform twZ_119
+$start_transform tw_119
 RPP scn119     -2 0 -42 2 99.4 99.7
 $end_transform 
+* ***Calorimeter
+RPP cal0     -4 -2 -22 -20 100 124
+RPP cal1     -2 0 -22 -20 100 124
+RPP cal2     0 2 -22 -20 100 124
+RPP cal3     2 4 -22 -20 100 124
+RPP cal4     -10 -8 -20 -18 100 124
+RPP cal5     -8 -6 -20 -18 100 124
+RPP cal6     -6 -4 -20 -18 100 124
+RPP cal7     -4 -2 -20 -18 100 124
+RPP cal8     -2 0 -20 -18 100 124
+RPP cal9     0 2 -20 -18 100 124
+RPP cal10     2 4 -20 -18 100 124
+RPP cal11     4 6 -20 -18 100 124
+RPP cal12     6 8 -20 -18 100 124
+RPP cal13     8 10 -20 -18 100 124
+RPP cal14     -12 -10 -18 -16 100 124
+RPP cal15     -10 -8 -18 -16 100 124
+RPP cal16     -8 -6 -18 -16 100 124
+RPP cal17     -6 -4 -18 -16 100 124
+RPP cal18     -4 -2 -18 -16 100 124
+RPP cal19     -2 0 -18 -16 100 124
+RPP cal20     0 2 -18 -16 100 124
+RPP cal21     2 4 -18 -16 100 124
+RPP cal22     4 6 -18 -16 100 124
+RPP cal23     6 8 -18 -16 100 124
+RPP cal24     8 10 -18 -16 100 124
+RPP cal25     10 12 -18 -16 100 124
+RPP cal26     -16 -14 -16 -14 100 124
+RPP cal27     -14 -12 -16 -14 100 124
+RPP cal28     -12 -10 -16 -14 100 124
+RPP cal29     -10 -8 -16 -14 100 124
+RPP cal30     -8 -6 -16 -14 100 124
+RPP cal31     -6 -4 -16 -14 100 124
+RPP cal32     -4 -2 -16 -14 100 124
+RPP cal33     -2 0 -16 -14 100 124
+RPP cal34     0 2 -16 -14 100 124
+RPP cal35     2 4 -16 -14 100 124
+RPP cal36     4 6 -16 -14 100 124
+RPP cal37     6 8 -16 -14 100 124
+RPP cal38     8 10 -16 -14 100 124
+RPP cal39     10 12 -16 -14 100 124
+RPP cal40     12 14 -16 -14 100 124
+RPP cal41     14 16 -16 -14 100 124
+RPP cal42     -16 -14 -14 -12 100 124
+RPP cal43     -14 -12 -14 -12 100 124
+RPP cal44     -12 -10 -14 -12 100 124
+RPP cal45     -10 -8 -14 -12 100 124
+RPP cal46     -8 -6 -14 -12 100 124
+RPP cal47     -6 -4 -14 -12 100 124
+RPP cal48     -4 -2 -14 -12 100 124
+RPP cal49     -2 0 -14 -12 100 124
+RPP cal50     0 2 -14 -12 100 124
+RPP cal51     2 4 -14 -12 100 124
+RPP cal52     4 6 -14 -12 100 124
+RPP cal53     6 8 -14 -12 100 124
+RPP cal54     8 10 -14 -12 100 124
+RPP cal55     10 12 -14 -12 100 124
+RPP cal56     12 14 -14 -12 100 124
+RPP cal57     14 16 -14 -12 100 124
+RPP cal58     -18 -16 -12 -10 100 124
+RPP cal59     -16 -14 -12 -10 100 124
+RPP cal60     -14 -12 -12 -10 100 124
+RPP cal61     -12 -10 -12 -10 100 124
+RPP cal62     -10 -8 -12 -10 100 124
+RPP cal63     -8 -6 -12 -10 100 124
+RPP cal64     -6 -4 -12 -10 100 124
+RPP cal65     -4 -2 -12 -10 100 124
+RPP cal66     -2 0 -12 -10 100 124
+RPP cal67     0 2 -12 -10 100 124
+RPP cal68     2 4 -12 -10 100 124
+RPP cal69     4 6 -12 -10 100 124
+RPP cal70     6 8 -12 -10 100 124
+RPP cal71     8 10 -12 -10 100 124
+RPP cal72     10 12 -12 -10 100 124
+RPP cal73     12 14 -12 -10 100 124
+RPP cal74     14 16 -12 -10 100 124
+RPP cal75     16 18 -12 -10 100 124
+RPP cal76     -20 -18 -10 -8 100 124
+RPP cal77     -18 -16 -10 -8 100 124
+RPP cal78     -16 -14 -10 -8 100 124
+RPP cal79     -14 -12 -10 -8 100 124
+RPP cal80     -12 -10 -10 -8 100 124
+RPP cal81     -10 -8 -10 -8 100 124
+RPP cal82     -8 -6 -10 -8 100 124
+RPP cal83     -6 -4 -10 -8 100 124
+RPP cal84     -4 -2 -10 -8 100 124
+RPP cal85     -2 0 -10 -8 100 124
+RPP cal86     0 2 -10 -8 100 124
+RPP cal87     2 4 -10 -8 100 124
+RPP cal88     4 6 -10 -8 100 124
+RPP cal89     6 8 -10 -8 100 124
+RPP cal90     8 10 -10 -8 100 124
+RPP cal91     10 12 -10 -8 100 124
+RPP cal92     12 14 -10 -8 100 124
+RPP cal93     14 16 -10 -8 100 124
+RPP cal94     16 18 -10 -8 100 124
+RPP cal95     18 20 -10 -8 100 124
+RPP cal96     -20 -18 -8 -6 100 124
+RPP cal97     -18 -16 -8 -6 100 124
+RPP cal98     -16 -14 -8 -6 100 124
+RPP cal99     -14 -12 -8 -6 100 124
+RPP cal100     -12 -10 -8 -6 100 124
+RPP cal101     -10 -8 -8 -6 100 124
+RPP cal102     -8 -6 -8 -6 100 124
+RPP cal103     -6 -4 -8 -6 100 124
+RPP cal104     -4 -2 -8 -6 100 124
+RPP cal105     -2 0 -8 -6 100 124
+RPP cal106     0 2 -8 -6 100 124
+RPP cal107     2 4 -8 -6 100 124
+RPP cal108     4 6 -8 -6 100 124
+RPP cal109     6 8 -8 -6 100 124
+RPP cal110     8 10 -8 -6 100 124
+RPP cal111     10 12 -8 -6 100 124
+RPP cal112     12 14 -8 -6 100 124
+RPP cal113     14 16 -8 -6 100 124
+RPP cal114     16 18 -8 -6 100 124
+RPP cal115     18 20 -8 -6 100 124
+RPP cal116     -20 -18 -6 -4 100 124
+RPP cal117     -18 -16 -6 -4 100 124
+RPP cal118     -16 -14 -6 -4 100 124
+RPP cal119     -14 -12 -6 -4 100 124
+RPP cal120     -12 -10 -6 -4 100 124
+RPP cal121     -10 -8 -6 -4 100 124
+RPP cal122     -8 -6 -6 -4 100 124
+RPP cal123     -6 -4 -6 -4 100 124
+RPP cal124     -4 -2 -6 -4 100 124
+RPP cal125     -2 0 -6 -4 100 124
+RPP cal126     0 2 -6 -4 100 124
+RPP cal127     2 4 -6 -4 100 124
+RPP cal128     4 6 -6 -4 100 124
+RPP cal129     6 8 -6 -4 100 124
+RPP cal130     8 10 -6 -4 100 124
+RPP cal131     10 12 -6 -4 100 124
+RPP cal132     12 14 -6 -4 100 124
+RPP cal133     14 16 -6 -4 100 124
+RPP cal134     16 18 -6 -4 100 124
+RPP cal135     18 20 -6 -4 100 124
+RPP cal136     -22 -20 -4 -2 100 124
+RPP cal137     -20 -18 -4 -2 100 124
+RPP cal138     -18 -16 -4 -2 100 124
+RPP cal139     -16 -14 -4 -2 100 124
+RPP cal140     -14 -12 -4 -2 100 124
+RPP cal141     -12 -10 -4 -2 100 124
+RPP cal142     -10 -8 -4 -2 100 124
+RPP cal143     -8 -6 -4 -2 100 124
+RPP cal144     -6 -4 -4 -2 100 124
+RPP cal145     -4 -2 -4 -2 100 124
+RPP cal146     -2 0 -4 -2 100 124
+RPP cal147     0 2 -4 -2 100 124
+RPP cal148     2 4 -4 -2 100 124
+RPP cal149     4 6 -4 -2 100 124
+RPP cal150     6 8 -4 -2 100 124
+RPP cal151     8 10 -4 -2 100 124
+RPP cal152     10 12 -4 -2 100 124
+RPP cal153     12 14 -4 -2 100 124
+RPP cal154     14 16 -4 -2 100 124
+RPP cal155     16 18 -4 -2 100 124
+RPP cal156     18 20 -4 -2 100 124
+RPP cal157     20 22 -4 -2 100 124
+RPP cal158     -22 -20 -2 0 100 124
+RPP cal159     -20 -18 -2 0 100 124
+RPP cal160     -18 -16 -2 0 100 124
+RPP cal161     -16 -14 -2 0 100 124
+RPP cal162     -14 -12 -2 0 100 124
+RPP cal163     -12 -10 -2 0 100 124
+RPP cal164     -10 -8 -2 0 100 124
+RPP cal165     -8 -6 -2 0 100 124
+RPP cal166     -6 -4 -2 0 100 124
+RPP cal167     -4 -2 -2 0 100 124
+RPP cal168     -2 0 -2 0 100 124
+RPP cal169     0 2 -2 0 100 124
+RPP cal170     2 4 -2 0 100 124
+RPP cal171     4 6 -2 0 100 124
+RPP cal172     6 8 -2 0 100 124
+RPP cal173     8 10 -2 0 100 124
+RPP cal174     10 12 -2 0 100 124
+RPP cal175     12 14 -2 0 100 124
+RPP cal176     14 16 -2 0 100 124
+RPP cal177     16 18 -2 0 100 124
+RPP cal178     18 20 -2 0 100 124
+RPP cal179     20 22 -2 0 100 124
+RPP cal180     -22 -20 0 2 100 124
+RPP cal181     -20 -18 0 2 100 124
+RPP cal182     -18 -16 0 2 100 124
+RPP cal183     -16 -14 0 2 100 124
+RPP cal184     -14 -12 0 2 100 124
+RPP cal185     -12 -10 0 2 100 124
+RPP cal186     -10 -8 0 2 100 124
+RPP cal187     -8 -6 0 2 100 124
+RPP cal188     -6 -4 0 2 100 124
+RPP cal189     -4 -2 0 2 100 124
+RPP cal190     -2 0 0 2 100 124
+RPP cal191     0 2 0 2 100 124
+RPP cal192     2 4 0 2 100 124
+RPP cal193     4 6 0 2 100 124
+RPP cal194     6 8 0 2 100 124
+RPP cal195     8 10 0 2 100 124
+RPP cal196     10 12 0 2 100 124
+RPP cal197     12 14 0 2 100 124
+RPP cal198     14 16 0 2 100 124
+RPP cal199     16 18 0 2 100 124
+RPP cal200     18 20 0 2 100 124
+RPP cal201     20 22 0 2 100 124
+RPP cal202     -22 -20 2 4 100 124
+RPP cal203     -20 -18 2 4 100 124
+RPP cal204     -18 -16 2 4 100 124
+RPP cal205     -16 -14 2 4 100 124
+RPP cal206     -14 -12 2 4 100 124
+RPP cal207     -12 -10 2 4 100 124
+RPP cal208     -10 -8 2 4 100 124
+RPP cal209     -8 -6 2 4 100 124
+RPP cal210     -6 -4 2 4 100 124
+RPP cal211     -4 -2 2 4 100 124
+RPP cal212     -2 0 2 4 100 124
+RPP cal213     0 2 2 4 100 124
+RPP cal214     2 4 2 4 100 124
+RPP cal215     4 6 2 4 100 124
+RPP cal216     6 8 2 4 100 124
+RPP cal217     8 10 2 4 100 124
+RPP cal218     10 12 2 4 100 124
+RPP cal219     12 14 2 4 100 124
+RPP cal220     14 16 2 4 100 124
+RPP cal221     16 18 2 4 100 124
+RPP cal222     18 20 2 4 100 124
+RPP cal223     20 22 2 4 100 124
+RPP cal224     -20 -18 4 6 100 124
+RPP cal225     -18 -16 4 6 100 124
+RPP cal226     -16 -14 4 6 100 124
+RPP cal227     -14 -12 4 6 100 124
+RPP cal228     -12 -10 4 6 100 124
+RPP cal229     -10 -8 4 6 100 124
+RPP cal230     -8 -6 4 6 100 124
+RPP cal231     -6 -4 4 6 100 124
+RPP cal232     -4 -2 4 6 100 124
+RPP cal233     -2 0 4 6 100 124
+RPP cal234     0 2 4 6 100 124
+RPP cal235     2 4 4 6 100 124
+RPP cal236     4 6 4 6 100 124
+RPP cal237     6 8 4 6 100 124
+RPP cal238     8 10 4 6 100 124
+RPP cal239     10 12 4 6 100 124
+RPP cal240     12 14 4 6 100 124
+RPP cal241     14 16 4 6 100 124
+RPP cal242     16 18 4 6 100 124
+RPP cal243     18 20 4 6 100 124
+RPP cal244     -20 -18 6 8 100 124
+RPP cal245     -18 -16 6 8 100 124
+RPP cal246     -16 -14 6 8 100 124
+RPP cal247     -14 -12 6 8 100 124
+RPP cal248     -12 -10 6 8 100 124
+RPP cal249     -10 -8 6 8 100 124
+RPP cal250     -8 -6 6 8 100 124
+RPP cal251     -6 -4 6 8 100 124
+RPP cal252     -4 -2 6 8 100 124
+RPP cal253     -2 0 6 8 100 124
+RPP cal254     0 2 6 8 100 124
+RPP cal255     2 4 6 8 100 124
+RPP cal256     4 6 6 8 100 124
+RPP cal257     6 8 6 8 100 124
+RPP cal258     8 10 6 8 100 124
+RPP cal259     10 12 6 8 100 124
+RPP cal260     12 14 6 8 100 124
+RPP cal261     14 16 6 8 100 124
+RPP cal262     16 18 6 8 100 124
+RPP cal263     18 20 6 8 100 124
+RPP cal264     -20 -18 8 10 100 124
+RPP cal265     -18 -16 8 10 100 124
+RPP cal266     -16 -14 8 10 100 124
+RPP cal267     -14 -12 8 10 100 124
+RPP cal268     -12 -10 8 10 100 124
+RPP cal269     -10 -8 8 10 100 124
+RPP cal270     -8 -6 8 10 100 124
+RPP cal271     -6 -4 8 10 100 124
+RPP cal272     -4 -2 8 10 100 124
+RPP cal273     -2 0 8 10 100 124
+RPP cal274     0 2 8 10 100 124
+RPP cal275     2 4 8 10 100 124
+RPP cal276     4 6 8 10 100 124
+RPP cal277     6 8 8 10 100 124
+RPP cal278     8 10 8 10 100 124
+RPP cal279     10 12 8 10 100 124
+RPP cal280     12 14 8 10 100 124
+RPP cal281     14 16 8 10 100 124
+RPP cal282     16 18 8 10 100 124
+RPP cal283     18 20 8 10 100 124
+RPP cal284     -18 -16 10 12 100 124
+RPP cal285     -16 -14 10 12 100 124
+RPP cal286     -14 -12 10 12 100 124
+RPP cal287     -12 -10 10 12 100 124
+RPP cal288     -10 -8 10 12 100 124
+RPP cal289     -8 -6 10 12 100 124
+RPP cal290     -6 -4 10 12 100 124
+RPP cal291     -4 -2 10 12 100 124
+RPP cal292     -2 0 10 12 100 124
+RPP cal293     0 2 10 12 100 124
+RPP cal294     2 4 10 12 100 124
+RPP cal295     4 6 10 12 100 124
+RPP cal296     6 8 10 12 100 124
+RPP cal297     8 10 10 12 100 124
+RPP cal298     10 12 10 12 100 124
+RPP cal299     12 14 10 12 100 124
+RPP cal300     14 16 10 12 100 124
+RPP cal301     16 18 10 12 100 124
+RPP cal302     -16 -14 12 14 100 124
+RPP cal303     -14 -12 12 14 100 124
+RPP cal304     -12 -10 12 14 100 124
+RPP cal305     -10 -8 12 14 100 124
+RPP cal306     -8 -6 12 14 100 124
+RPP cal307     -6 -4 12 14 100 124
+RPP cal308     -4 -2 12 14 100 124
+RPP cal309     -2 0 12 14 100 124
+RPP cal310     0 2 12 14 100 124
+RPP cal311     2 4 12 14 100 124
+RPP cal312     4 6 12 14 100 124
+RPP cal313     6 8 12 14 100 124
+RPP cal314     8 10 12 14 100 124
+RPP cal315     10 12 12 14 100 124
+RPP cal316     12 14 12 14 100 124
+RPP cal317     14 16 12 14 100 124
+RPP cal318     -16 -14 14 16 100 124
+RPP cal319     -14 -12 14 16 100 124
+RPP cal320     -12 -10 14 16 100 124
+RPP cal321     -10 -8 14 16 100 124
+RPP cal322     -8 -6 14 16 100 124
+RPP cal323     -6 -4 14 16 100 124
+RPP cal324     -4 -2 14 16 100 124
+RPP cal325     -2 0 14 16 100 124
+RPP cal326     0 2 14 16 100 124
+RPP cal327     2 4 14 16 100 124
+RPP cal328     4 6 14 16 100 124
+RPP cal329     6 8 14 16 100 124
+RPP cal330     8 10 14 16 100 124
+RPP cal331     10 12 14 16 100 124
+RPP cal332     12 14 14 16 100 124
+RPP cal333     14 16 14 16 100 124
+RPP cal334     -12 -10 16 18 100 124
+RPP cal335     -10 -8 16 18 100 124
+RPP cal336     -8 -6 16 18 100 124
+RPP cal337     -6 -4 16 18 100 124
+RPP cal338     -4 -2 16 18 100 124
+RPP cal339     -2 0 16 18 100 124
+RPP cal340     0 2 16 18 100 124
+RPP cal341     2 4 16 18 100 124
+RPP cal342     4 6 16 18 100 124
+RPP cal343     6 8 16 18 100 124
+RPP cal344     8 10 16 18 100 124
+RPP cal345     10 12 16 18 100 124
+RPP cal346     -10 -8 18 20 100 124
+RPP cal347     -8 -6 18 20 100 124
+RPP cal348     -6 -4 18 20 100 124
+RPP cal349     -4 -2 18 20 100 124
+RPP cal350     -2 0 18 20 100 124
+RPP cal351     0 2 18 20 100 124
+RPP cal352     2 4 18 20 100 124
+RPP cal353     4 6 18 20 100 124
+RPP cal354     6 8 18 20 100 124
+RPP cal355     8 10 18 20 100 124
+RPP cal356     -4 -2 20 22 100 124
+RPP cal357     -2 0 20 22 100 124
+RPP cal358     0 2 20 22 100 124
+RPP cal359     2 4 20 22 100 124
 END        
 * ******************************************************************************
 *                         REGIONS                                              *
 * ******************************************************************************
 BLACK        5 blk -air
 * ***Air
-AIR          5 air-stc 
+AIR1          5 air +airpla-stc 
 -(BmnShiOu -BmnShiIn) -(BmnShiIn -BmnMyl0 +BmnMyl3)
-
 -tgt 
  -vtxm0 -vtxm1 -vtxm2 -vtxm3
- -itrm0 -itrm1 -itrm2 -itrm3 -itrm4 -itrm5 -itrm6 -itrm7 -itrm8 -itrm9 -itrm10 -itrm11 -itrm12 -itrm13 -itrm14 -itrm15 -itrm16 -itrm17 -itrm18 -itrm19 -itrm20 -itrm21 -itrm22 -itrm23 -itrm24 -itrm25 -itrm26 -itrm27 -itrm28 -itrm29 -itrm30 -itrm31
- -scn000 -scn001 -scn002 -scn003 -scn004 -scn005 -scn006 -scn007 -scn008 -scn009
+ -itrm0 -itrm1 -itrm2 -itrm3 -itrm4 -itrm5 -itrm6 -itrm7 -itrm8 -itrm9
+ -itrm10 -itrm11 -itrm12 -itrm13 -itrm14 -itrm15 -itrm16 -itrm17 -itrm18 -itrm19
+ -itrm20 -itrm21 -itrm22 -itrm23 -itrm24 -itrm25 -itrm26 -itrm27 -itrm28 -itrm29
+ -itrm30 -itrm31
+ -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5
+ -(MagShOu0 -MagShIn0) -(MagShOu1 -MagShIn1)
+AIR2          5 air -airpla -scn000 -scn001 -scn002 -scn003 -scn004 -scn005 -scn006 -scn007 -scn008 -scn009
  -scn010 -scn011 -scn012 -scn013 -scn014 -scn015 -scn016 -scn017 -scn018 -scn019
  -scn100 -scn101 -scn102 -scn103 -scn104 -scn105 -scn106 -scn107 -scn108 -scn109
  -scn110 -scn111 -scn112 -scn113 -scn114 -scn115 -scn116 -scn117 -scn118 -scn119
-
+ -cal0 -cal1 -cal2 -cal3 -cal4 -cal5 -cal6 -cal7 -cal8 -cal9
+ -cal10 -cal11 -cal12 -cal13 -cal14 -cal15 -cal16 -cal17 -cal18 -cal19
+ -cal20 -cal21 -cal22 -cal23 -cal24 -cal25 -cal26 -cal27 -cal28 -cal29
+ -cal30 -cal31 -cal32 -cal33 -cal34 -cal35 -cal36 -cal37 -cal38 -cal39
+ -cal40 -cal41 -cal42 -cal43 -cal44 -cal45 -cal46 -cal47 -cal48 -cal49
+ -cal50 -cal51 -cal52 -cal53 -cal54 -cal55 -cal56 -cal57 -cal58 -cal59
+ -cal60 -cal61 -cal62 -cal63 -cal64 -cal65 -cal66 -cal67 -cal68 -cal69
+ -cal70 -cal71 -cal72 -cal73 -cal74 -cal75 -cal76 -cal77 -cal78 -cal79
+ -cal80 -cal81 -cal82 -cal83 -cal84 -cal85 -cal86 -cal87 -cal88 -cal89
+ -cal90 -cal91 -cal92 -cal93 -cal94 -cal95 -cal96 -cal97 -cal98 -cal99
+ -cal100 -cal101 -cal102 -cal103 -cal104 -cal105 -cal106 -cal107 -cal108 -cal109
+ -cal110 -cal111 -cal112 -cal113 -cal114 -cal115 -cal116 -cal117 -cal118 -cal119
+ -cal120 -cal121 -cal122 -cal123 -cal124 -cal125 -cal126 -cal127 -cal128 -cal129
+ -cal130 -cal131 -cal132 -cal133 -cal134 -cal135 -cal136 -cal137 -cal138 -cal139
+ -cal140 -cal141 -cal142 -cal143 -cal144 -cal145 -cal146 -cal147 -cal148 -cal149
+ -cal150 -cal151 -cal152 -cal153 -cal154 -cal155 -cal156 -cal157 -cal158 -cal159
+ -cal160 -cal161 -cal162 -cal163 -cal164 -cal165 -cal166 -cal167 -cal168 -cal169
+ -cal170 -cal171 -cal172 -cal173 -cal174 -cal175 -cal176 -cal177 -cal178 -cal179
+ -cal180 -cal181 -cal182 -cal183 -cal184 -cal185 -cal186 -cal187 -cal188 -cal189
+ -cal190 -cal191 -cal192 -cal193 -cal194 -cal195 -cal196 -cal197 -cal198 -cal199
+ -cal200 -cal201 -cal202 -cal203 -cal204 -cal205 -cal206 -cal207 -cal208 -cal209
+ -cal210 -cal211 -cal212 -cal213 -cal214 -cal215 -cal216 -cal217 -cal218 -cal219
+ -cal220 -cal221 -cal222 -cal223 -cal224 -cal225 -cal226 -cal227 -cal228 -cal229
+ -cal230 -cal231 -cal232 -cal233 -cal234 -cal235 -cal236 -cal237 -cal238 -cal239
+ -cal240 -cal241 -cal242 -cal243 -cal244 -cal245 -cal246 -cal247 -cal248 -cal249
+ -cal250 -cal251 -cal252 -cal253 -cal254 -cal255 -cal256 -cal257 -cal258 -cal259
+ -cal260 -cal261 -cal262 -cal263 -cal264 -cal265 -cal266 -cal267 -cal268 -cal269
+ -cal270 -cal271 -cal272 -cal273 -cal274 -cal275 -cal276 -cal277 -cal278 -cal279
+ -cal280 -cal281 -cal282 -cal283 -cal284 -cal285 -cal286 -cal287 -cal288 -cal289
+ -cal290 -cal291 -cal292 -cal293 -cal294 -cal295 -cal296 -cal297 -cal298 -cal299
+ -cal300 -cal301 -cal302 -cal303 -cal304 -cal305 -cal306 -cal307 -cal308 -cal309
+ -cal310 -cal311 -cal312 -cal313 -cal314 -cal315 -cal316 -cal317 -cal318 -cal319
+ -cal320 -cal321 -cal322 -cal323 -cal324 -cal325 -cal326 -cal327 -cal328 -cal329
+ -cal330 -cal331 -cal332 -cal333 -cal334 -cal335 -cal336 -cal337 -cal338 -cal339
+ -cal340 -cal341 -cal342 -cal343 -cal344 -cal345 -cal346 -cal347 -cal348 -cal349
+ -cal350 -cal351 -cal352 -cal353 -cal354 -cal355 -cal356 -cal357 -cal358 -cal359
 * ***Start Counter
 STC          5 +stc -stcmyl1 +stcmyl2
 STCMYL1      5 +stc +stcmyl1
@@ -733,16 +1168,16 @@ VTXP1        5 vtxp1
 VTXP2        5 vtxp2
 VTXP3        5 vtxp3
 * ***Vertex regions
-ITRE0        5 itre0
-ITRE1        5 itre1
-ITRE2        5 itre2
-ITRE3        5 itre3
-ITRE4        5 itre4
-ITRE5        5 itre5
-ITRE6        5 itre6
-ITRE7        5 itre7
-ITRE8        5 itre8
-ITRE9        5 itre9
+ITRE00       5 itre0
+ITRE01       5 itre1
+ITRE02       5 itre2
+ITRE03       5 itre3
+ITRE04       5 itre4
+ITRE05       5 itre5
+ITRE06       5 itre6
+ITRE07       5 itre7
+ITRE08       5 itre8
+ITRE09       5 itre9
 ITRE10       5 itre10
 ITRE11       5 itre11
 ITRE12       5 itre12
@@ -829,6 +1264,30 @@ ITRP28       5 itrp28
 ITRP29       5 itrp29
 ITRP30       5 itrp30
 ITRP31       5 itrp31
+* ***MSD regions
+MSDS0        5 msds0
+MSDS1        5 msds1
+MSDS2        5 msds2
+MSDS3        5 msds3
+MSDS4        5 msds4
+MSDS5        5 msds5
+MSDP0        5 msdp0 -msds0 -msdm0
+MSDP1        5 msdp1 -msds1 -msdm1
+MSDP2        5 msdp2 -msds2 -msdm2
+MSDP3        5 msdp3 -msds3 -msdm3
+MSDP4        5 msdp4 -msds4 -msdm4
+MSDP5        5 msdp5 -msds5 -msdm5
+MSDM0        5 msdm0
+MSDM1        5 msdm1
+MSDM2        5 msdm2
+MSDM3        5 msdm3
+MSDM4        5 msdm4
+MSDM5        5 msdm5
+* ***Dipoles regions
+MAG0         5 MagOu0 -MagIn0
+MAG1         5 MagOu1 -MagIn1
+MAG_SH0      5 MagShOu0 -(MagOu0 -MagIn0) -MagShIn0
+MAG_SH1      5 MagShOu1 -(MagOu1 -MagIn1) -MagShIn1
 * ***Scintillator regions
 SCN000       5 scn000
 SCN001       5 scn001
@@ -870,4 +1329,365 @@ SCN116       5 scn116
 SCN117       5 scn117
 SCN118       5 scn118
 SCN119       5 scn119
+* ***Calorimeter regions
+CAL0         5 cal0
+CAL1         5 cal1
+CAL2         5 cal2
+CAL3         5 cal3
+CAL4         5 cal4
+CAL5         5 cal5
+CAL6         5 cal6
+CAL7         5 cal7
+CAL8         5 cal8
+CAL9         5 cal9
+CAL10        5 cal10
+CAL11        5 cal11
+CAL12        5 cal12
+CAL13        5 cal13
+CAL14        5 cal14
+CAL15        5 cal15
+CAL16        5 cal16
+CAL17        5 cal17
+CAL18        5 cal18
+CAL19        5 cal19
+CAL20        5 cal20
+CAL21        5 cal21
+CAL22        5 cal22
+CAL23        5 cal23
+CAL24        5 cal24
+CAL25        5 cal25
+CAL26        5 cal26
+CAL27        5 cal27
+CAL28        5 cal28
+CAL29        5 cal29
+CAL30        5 cal30
+CAL31        5 cal31
+CAL32        5 cal32
+CAL33        5 cal33
+CAL34        5 cal34
+CAL35        5 cal35
+CAL36        5 cal36
+CAL37        5 cal37
+CAL38        5 cal38
+CAL39        5 cal39
+CAL40        5 cal40
+CAL41        5 cal41
+CAL42        5 cal42
+CAL43        5 cal43
+CAL44        5 cal44
+CAL45        5 cal45
+CAL46        5 cal46
+CAL47        5 cal47
+CAL48        5 cal48
+CAL49        5 cal49
+CAL50        5 cal50
+CAL51        5 cal51
+CAL52        5 cal52
+CAL53        5 cal53
+CAL54        5 cal54
+CAL55        5 cal55
+CAL56        5 cal56
+CAL57        5 cal57
+CAL58        5 cal58
+CAL59        5 cal59
+CAL60        5 cal60
+CAL61        5 cal61
+CAL62        5 cal62
+CAL63        5 cal63
+CAL64        5 cal64
+CAL65        5 cal65
+CAL66        5 cal66
+CAL67        5 cal67
+CAL68        5 cal68
+CAL69        5 cal69
+CAL70        5 cal70
+CAL71        5 cal71
+CAL72        5 cal72
+CAL73        5 cal73
+CAL74        5 cal74
+CAL75        5 cal75
+CAL76        5 cal76
+CAL77        5 cal77
+CAL78        5 cal78
+CAL79        5 cal79
+CAL80        5 cal80
+CAL81        5 cal81
+CAL82        5 cal82
+CAL83        5 cal83
+CAL84        5 cal84
+CAL85        5 cal85
+CAL86        5 cal86
+CAL87        5 cal87
+CAL88        5 cal88
+CAL89        5 cal89
+CAL90        5 cal90
+CAL91        5 cal91
+CAL92        5 cal92
+CAL93        5 cal93
+CAL94        5 cal94
+CAL95        5 cal95
+CAL96        5 cal96
+CAL97        5 cal97
+CAL98        5 cal98
+CAL99        5 cal99
+CAL100       5 cal100
+CAL101       5 cal101
+CAL102       5 cal102
+CAL103       5 cal103
+CAL104       5 cal104
+CAL105       5 cal105
+CAL106       5 cal106
+CAL107       5 cal107
+CAL108       5 cal108
+CAL109       5 cal109
+CAL110       5 cal110
+CAL111       5 cal111
+CAL112       5 cal112
+CAL113       5 cal113
+CAL114       5 cal114
+CAL115       5 cal115
+CAL116       5 cal116
+CAL117       5 cal117
+CAL118       5 cal118
+CAL119       5 cal119
+CAL120       5 cal120
+CAL121       5 cal121
+CAL122       5 cal122
+CAL123       5 cal123
+CAL124       5 cal124
+CAL125       5 cal125
+CAL126       5 cal126
+CAL127       5 cal127
+CAL128       5 cal128
+CAL129       5 cal129
+CAL130       5 cal130
+CAL131       5 cal131
+CAL132       5 cal132
+CAL133       5 cal133
+CAL134       5 cal134
+CAL135       5 cal135
+CAL136       5 cal136
+CAL137       5 cal137
+CAL138       5 cal138
+CAL139       5 cal139
+CAL140       5 cal140
+CAL141       5 cal141
+CAL142       5 cal142
+CAL143       5 cal143
+CAL144       5 cal144
+CAL145       5 cal145
+CAL146       5 cal146
+CAL147       5 cal147
+CAL148       5 cal148
+CAL149       5 cal149
+CAL150       5 cal150
+CAL151       5 cal151
+CAL152       5 cal152
+CAL153       5 cal153
+CAL154       5 cal154
+CAL155       5 cal155
+CAL156       5 cal156
+CAL157       5 cal157
+CAL158       5 cal158
+CAL159       5 cal159
+CAL160       5 cal160
+CAL161       5 cal161
+CAL162       5 cal162
+CAL163       5 cal163
+CAL164       5 cal164
+CAL165       5 cal165
+CAL166       5 cal166
+CAL167       5 cal167
+CAL168       5 cal168
+CAL169       5 cal169
+CAL170       5 cal170
+CAL171       5 cal171
+CAL172       5 cal172
+CAL173       5 cal173
+CAL174       5 cal174
+CAL175       5 cal175
+CAL176       5 cal176
+CAL177       5 cal177
+CAL178       5 cal178
+CAL179       5 cal179
+CAL180       5 cal180
+CAL181       5 cal181
+CAL182       5 cal182
+CAL183       5 cal183
+CAL184       5 cal184
+CAL185       5 cal185
+CAL186       5 cal186
+CAL187       5 cal187
+CAL188       5 cal188
+CAL189       5 cal189
+CAL190       5 cal190
+CAL191       5 cal191
+CAL192       5 cal192
+CAL193       5 cal193
+CAL194       5 cal194
+CAL195       5 cal195
+CAL196       5 cal196
+CAL197       5 cal197
+CAL198       5 cal198
+CAL199       5 cal199
+CAL200       5 cal200
+CAL201       5 cal201
+CAL202       5 cal202
+CAL203       5 cal203
+CAL204       5 cal204
+CAL205       5 cal205
+CAL206       5 cal206
+CAL207       5 cal207
+CAL208       5 cal208
+CAL209       5 cal209
+CAL210       5 cal210
+CAL211       5 cal211
+CAL212       5 cal212
+CAL213       5 cal213
+CAL214       5 cal214
+CAL215       5 cal215
+CAL216       5 cal216
+CAL217       5 cal217
+CAL218       5 cal218
+CAL219       5 cal219
+CAL220       5 cal220
+CAL221       5 cal221
+CAL222       5 cal222
+CAL223       5 cal223
+CAL224       5 cal224
+CAL225       5 cal225
+CAL226       5 cal226
+CAL227       5 cal227
+CAL228       5 cal228
+CAL229       5 cal229
+CAL230       5 cal230
+CAL231       5 cal231
+CAL232       5 cal232
+CAL233       5 cal233
+CAL234       5 cal234
+CAL235       5 cal235
+CAL236       5 cal236
+CAL237       5 cal237
+CAL238       5 cal238
+CAL239       5 cal239
+CAL240       5 cal240
+CAL241       5 cal241
+CAL242       5 cal242
+CAL243       5 cal243
+CAL244       5 cal244
+CAL245       5 cal245
+CAL246       5 cal246
+CAL247       5 cal247
+CAL248       5 cal248
+CAL249       5 cal249
+CAL250       5 cal250
+CAL251       5 cal251
+CAL252       5 cal252
+CAL253       5 cal253
+CAL254       5 cal254
+CAL255       5 cal255
+CAL256       5 cal256
+CAL257       5 cal257
+CAL258       5 cal258
+CAL259       5 cal259
+CAL260       5 cal260
+CAL261       5 cal261
+CAL262       5 cal262
+CAL263       5 cal263
+CAL264       5 cal264
+CAL265       5 cal265
+CAL266       5 cal266
+CAL267       5 cal267
+CAL268       5 cal268
+CAL269       5 cal269
+CAL270       5 cal270
+CAL271       5 cal271
+CAL272       5 cal272
+CAL273       5 cal273
+CAL274       5 cal274
+CAL275       5 cal275
+CAL276       5 cal276
+CAL277       5 cal277
+CAL278       5 cal278
+CAL279       5 cal279
+CAL280       5 cal280
+CAL281       5 cal281
+CAL282       5 cal282
+CAL283       5 cal283
+CAL284       5 cal284
+CAL285       5 cal285
+CAL286       5 cal286
+CAL287       5 cal287
+CAL288       5 cal288
+CAL289       5 cal289
+CAL290       5 cal290
+CAL291       5 cal291
+CAL292       5 cal292
+CAL293       5 cal293
+CAL294       5 cal294
+CAL295       5 cal295
+CAL296       5 cal296
+CAL297       5 cal297
+CAL298       5 cal298
+CAL299       5 cal299
+CAL300       5 cal300
+CAL301       5 cal301
+CAL302       5 cal302
+CAL303       5 cal303
+CAL304       5 cal304
+CAL305       5 cal305
+CAL306       5 cal306
+CAL307       5 cal307
+CAL308       5 cal308
+CAL309       5 cal309
+CAL310       5 cal310
+CAL311       5 cal311
+CAL312       5 cal312
+CAL313       5 cal313
+CAL314       5 cal314
+CAL315       5 cal315
+CAL316       5 cal316
+CAL317       5 cal317
+CAL318       5 cal318
+CAL319       5 cal319
+CAL320       5 cal320
+CAL321       5 cal321
+CAL322       5 cal322
+CAL323       5 cal323
+CAL324       5 cal324
+CAL325       5 cal325
+CAL326       5 cal326
+CAL327       5 cal327
+CAL328       5 cal328
+CAL329       5 cal329
+CAL330       5 cal330
+CAL331       5 cal331
+CAL332       5 cal332
+CAL333       5 cal333
+CAL334       5 cal334
+CAL335       5 cal335
+CAL336       5 cal336
+CAL337       5 cal337
+CAL338       5 cal338
+CAL339       5 cal339
+CAL340       5 cal340
+CAL341       5 cal341
+CAL342       5 cal342
+CAL343       5 cal343
+CAL344       5 cal344
+CAL345       5 cal345
+CAL346       5 cal346
+CAL347       5 cal347
+CAL348       5 cal348
+CAL349       5 cal349
+CAL350       5 cal350
+CAL351       5 cal351
+CAL352       5 cal352
+CAL353       5 cal353
+CAL354       5 cal354
+CAL355       5 cal355
+CAL356       5 cal356
+CAL357       5 cal357
+CAL358       5 cal358
+CAL359       5 cal359
 END        

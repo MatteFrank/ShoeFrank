@@ -13,7 +13,7 @@ RADDECAY          2.                  1.
 * command| what(1) | what(2) | what(3) | what(4) | what(5) | what(6) | SDUM    |
 * -------1---------2---------3---------4---------5---------6---------7---------8
 * @@@START GENERATED, DO NOT MODIFY:GENERAL@@@ *********************************
-BEAM       -0.200000            0.000000  0.480000 -0.480000       1.0HEAVYION  
+BEAM       -0.200000            0.000000 -0.480000 -0.480000       1.0HEAVYION  
 HI-PROPE           6        12                                                  
 BEAMPOS        0.000     0.000   -30.000                                        
 PHYSICS           1.                                                  COALESCE  
@@ -21,6 +21,7 @@ EMFCUT           -1.        1.               BLACK  @LASTREG       1.0
 EMFCUT           -1.        1.        1.  BLCKHOLE  @LASTMAT       1.0PROD-CUT  
 DELTARAY          1.                      BLCKHOLE  @LASTMAT       1.0          
 PAIRBREM         -3.                      BLCKHOLE  @LASTMAT                    
+MGNFIELD         0.1   0.00001                  0.        0.        0.          
 * @@@END GENERATED:GENERAL@@@ **************************************************
 * ******************************************************************************
 *                          GEOMETRY                                            *
@@ -84,183 +85,297 @@ MATERIAL         32.     72.61     5.323                              GERMANIU
 MATERIAL                            7.13                              BGO
 COMPOUND          4.   BISMUTH        3.  GERMANIU       12.    OXYGENBGO
 ASSIGNMA    BLCKHOLE     BLACK                                                  
-ASSIGNMA         AIR       AIR                             0                    
-ASSIGNMA       EJ228       STC                             0
-ASSIGNMA       Mylar   STCMYL1   STCMYL2        1.         0
-ASSIGNMA    ALUMINUM   BMN_SHI                             0
-ASSIGNMA       Mylar  BMN_MYL0                             0
-ASSIGNMA       Mylar  BMN_MYL1                             0
-ASSIGNMA      Ar/CO2  BMN_C000  BMN_C017        1.         0
-ASSIGNMA      Ar/CO2  BMN_C100  BMN_C117        1.         0
-ASSIGNMA      Ar/CO2   BMN_GAS                             0
-ASSIGNMA    ALUMINUM   BMN_FWI                             0
-ASSIGNMA    TUNGSTEN   BMN_SWI                             0
-ASSIGNMA      CARBON    TARGET                             0
-ASSIGNMA     SILICON     VTXE0     VTXE3        1.         0
-ASSIGNMA     SILICON     VTXM0     VTXM3        1.         0
-ASSIGNMA     SiO2/Al     VTXP0     VTXP3        1.         0
-ASSIGNMA     SILICON     ITRE0    ITRE31        1.         0
-ASSIGNMA     SILICON     ITRM0    ITRM31        1.         0
-ASSIGNMA     SiO2/Al     ITRP0    ITRP31        1.         0
-ASSIGNMA       EJ232    SCN000    SCN119        1.         0
-ROT-DEFI                                        -0        -0      -0.9vt_1
-ROT-DEFI        200.                 180                              vt_1
-ROT-DEFI                                         0         0       0.9vt_1
-ROT-DEFI                                        -0        -0     -2.42vt_3
-ROT-DEFI        200.                 180                              vt_3
-ROT-DEFI                                         0         0      2.42vt_3
-ROT-DEFI                                    3.0186   -0.8105  -13.3845it_8
-ROT-DEFI        100.                 180                              it_8
-ROT-DEFI        200.                 180                              it_8
-ROT-DEFI                                   -3.0186    0.8105   13.3845it_8
-ROT-DEFI                                    0.9946   -0.8105  -13.3845it_9
-ROT-DEFI        100.                 180                              it_9
-ROT-DEFI        200.                 180                              it_9
-ROT-DEFI                                   -0.9946    0.8105   13.3845it_9
-ROT-DEFI                                   -1.0294   -0.8105  -13.3845it_10
-ROT-DEFI        100.                 180                              it_10
-ROT-DEFI        200.                 180                              it_10
-ROT-DEFI                                    1.0294    0.8105   13.3845it_10
-ROT-DEFI                                   -3.0534   -0.8105  -13.3845it_11
-ROT-DEFI        100.                 180                              it_11
-ROT-DEFI        200.                 180                              it_11
-ROT-DEFI                                    3.0534    0.8105   13.3845it_11
-ROT-DEFI                                    3.0186   -2.4314  -14.3845it_12
-ROT-DEFI        100.                 180                              it_12
-ROT-DEFI        200.                 180                              it_12
-ROT-DEFI                                   -3.0186    2.4314   14.3845it_12
-ROT-DEFI                                    0.9946   -2.4314  -14.3845it_13
-ROT-DEFI        100.                 180                              it_13
-ROT-DEFI        200.                 180                              it_13
-ROT-DEFI                                   -0.9946    2.4314   14.3845it_13
-ROT-DEFI                                   -1.0294   -2.4314  -14.3845it_14
-ROT-DEFI        100.                 180                              it_14
-ROT-DEFI        200.                 180                              it_14
-ROT-DEFI                                    1.0294    2.4314   14.3845it_14
-ROT-DEFI                                   -3.0534   -2.4314  -14.3845it_15
-ROT-DEFI        100.                 180                              it_15
-ROT-DEFI        200.                 180                              it_15
-ROT-DEFI                                    3.0534    2.4314   14.3845it_15
-ROT-DEFI                                    3.0186    2.4314  -13.6155it_16
-ROT-DEFI        200.                 180                              it_16
-ROT-DEFI                                   -3.0186   -2.4314   13.6155it_16
-ROT-DEFI                                    0.9946    2.4314  -13.6155it_17
-ROT-DEFI        200.                 180                              it_17
-ROT-DEFI                                   -0.9946   -2.4314   13.6155it_17
-ROT-DEFI                                   -1.0294    2.4314  -13.6155it_18
-ROT-DEFI        200.                 180                              it_18
-ROT-DEFI                                    1.0294   -2.4314   13.6155it_18
-ROT-DEFI                                   -3.0534    2.4314  -13.6155it_19
-ROT-DEFI        200.                 180                              it_19
-ROT-DEFI                                    3.0534   -2.4314   13.6155it_19
-ROT-DEFI                                    3.0186    0.8105  -14.6155it_20
-ROT-DEFI        200.                 180                              it_20
-ROT-DEFI                                   -3.0186   -0.8105   14.6155it_20
-ROT-DEFI                                    0.9946    0.8105  -14.6155it_21
-ROT-DEFI        200.                 180                              it_21
-ROT-DEFI                                   -0.9946   -0.8105   14.6155it_21
-ROT-DEFI                                   -1.0294    0.8105  -14.6155it_22
-ROT-DEFI        200.                 180                              it_22
-ROT-DEFI                                    1.0294   -0.8105   14.6155it_22
-ROT-DEFI                                   -3.0534    0.8105  -14.6155it_23
-ROT-DEFI        200.                 180                              it_23
-ROT-DEFI                                    3.0534   -0.8105   14.6155it_23
-ROT-DEFI                                    3.0534   -0.8105  -13.6155it_24
-ROT-DEFI        100.                 180                              it_24
-ROT-DEFI                                   -3.0534    0.8105   13.6155it_24
-ROT-DEFI                                    1.0294   -0.8105  -13.6155it_25
-ROT-DEFI        100.                 180                              it_25
-ROT-DEFI                                   -1.0294    0.8105   13.6155it_25
-ROT-DEFI                                   -0.9946   -0.8105  -13.6155it_26
-ROT-DEFI        100.                 180                              it_26
-ROT-DEFI                                    0.9946    0.8105   13.6155it_26
-ROT-DEFI                                   -3.0186   -0.8105  -13.6155it_27
-ROT-DEFI        100.                 180                              it_27
-ROT-DEFI                                    3.0186    0.8105   13.6155it_27
-ROT-DEFI                                    3.0534   -2.4314  -14.6155it_28
-ROT-DEFI        100.                 180                              it_28
-ROT-DEFI                                   -3.0534    2.4314   14.6155it_28
-ROT-DEFI                                    1.0294   -2.4314  -14.6155it_29
-ROT-DEFI        100.                 180                              it_29
-ROT-DEFI                                   -1.0294    2.4314   14.6155it_29
-ROT-DEFI                                   -0.9946   -2.4314  -14.6155it_30
-ROT-DEFI        100.                 180                              it_30
-ROT-DEFI                                    0.9946    2.4314   14.6155it_30
-ROT-DEFI                                   -3.0186   -2.4314  -14.6155it_31
-ROT-DEFI        100.                 180                              it_31
-ROT-DEFI                                    3.0186    2.4314   14.6155it_31
-ROT-DEFI        300.                                     -19          twZ_100
-ROT-DEFI        300.                  90                              twZ_100
-ROT-DEFI        300.                                      17          twZ_100
-ROT-DEFI        300.                                     -17          twZ_101
-ROT-DEFI        300.                  90                              twZ_101
-ROT-DEFI        300.                                      15          twZ_101
-ROT-DEFI        300.                                     -15          twZ_102
-ROT-DEFI        300.                  90                              twZ_102
-ROT-DEFI        300.                                      13          twZ_102
-ROT-DEFI        300.                                     -13          twZ_103
-ROT-DEFI        300.                  90                              twZ_103
-ROT-DEFI        300.                                      11          twZ_103
-ROT-DEFI        300.                                     -11          twZ_104
-ROT-DEFI        300.                  90                              twZ_104
-ROT-DEFI        300.                                       9          twZ_104
-ROT-DEFI        300.                                      -9          twZ_105
-ROT-DEFI        300.                  90                              twZ_105
-ROT-DEFI        300.                                       7          twZ_105
-ROT-DEFI        300.                                      -7          twZ_106
-ROT-DEFI        300.                  90                              twZ_106
-ROT-DEFI        300.                                       5          twZ_106
-ROT-DEFI        300.                                      -5          twZ_107
-ROT-DEFI        300.                  90                              twZ_107
-ROT-DEFI        300.                                       3          twZ_107
-ROT-DEFI        300.                                      -3          twZ_108
-ROT-DEFI        300.                  90                              twZ_108
-ROT-DEFI        300.                                       1          twZ_108
-ROT-DEFI        300.                                      -1          twZ_109
-ROT-DEFI        300.                  90                              twZ_109
-ROT-DEFI        300.                                      -1          twZ_109
-ROT-DEFI        300.                                       1          twZ_110
-ROT-DEFI        300.                  90                              twZ_110
-ROT-DEFI        300.                                      -3          twZ_110
-ROT-DEFI        300.                                       3          twZ_111
-ROT-DEFI        300.                  90                              twZ_111
-ROT-DEFI        300.                                      -5          twZ_111
-ROT-DEFI        300.                                       5          twZ_112
-ROT-DEFI        300.                  90                              twZ_112
-ROT-DEFI        300.                                      -7          twZ_112
-ROT-DEFI        300.                                       7          twZ_113
-ROT-DEFI        300.                  90                              twZ_113
-ROT-DEFI        300.                                      -9          twZ_113
-ROT-DEFI        300.                                       9          twZ_114
-ROT-DEFI        300.                  90                              twZ_114
-ROT-DEFI        300.                                     -11          twZ_114
-ROT-DEFI        300.                                      11          twZ_115
-ROT-DEFI        300.                  90                              twZ_115
-ROT-DEFI        300.                                     -13          twZ_115
-ROT-DEFI        300.                                      13          twZ_116
-ROT-DEFI        300.                  90                              twZ_116
-ROT-DEFI        300.                                     -15          twZ_116
-ROT-DEFI        300.                                      15          twZ_117
-ROT-DEFI        300.                  90                              twZ_117
-ROT-DEFI        300.                                     -17          twZ_117
-ROT-DEFI        300.                                      17          twZ_118
-ROT-DEFI        300.                  90                              twZ_118
-ROT-DEFI        300.                                     -19          twZ_118
-ROT-DEFI        300.                                      19          twZ_119
-ROT-DEFI        300.                  90                              twZ_119
-ROT-DEFI        300.                                     -21          twZ_119
+ASSIGNMA         AIR      AIR1                             1                    
+ASSIGNMA         AIR      AIR2                             1                    
+ASSIGNMA       EJ228       STC                             1
+ASSIGNMA       Mylar   STCMYL1   STCMYL2        1.         1
+ASSIGNMA    ALUMINUM   BMN_SHI                             1
+ASSIGNMA       Mylar  BMN_MYL0                             1
+ASSIGNMA       Mylar  BMN_MYL1                             1
+ASSIGNMA      Ar/CO2  BMN_C000  BMN_C017        1.         1
+ASSIGNMA      Ar/CO2  BMN_C100  BMN_C117        1.         1
+ASSIGNMA      Ar/CO2   BMN_GAS                             1
+ASSIGNMA    ALUMINUM   BMN_FWI                             1
+ASSIGNMA    TUNGSTEN   BMN_SWI                             1
+ASSIGNMA      CARBON    TARGET                             1
+ASSIGNMA     SILICON     VTXE0     VTXE3        1.         1                    
+ASSIGNMA     SILICON     VTXM0     VTXM3        1.         1                    
+ASSIGNMA     SiO2/Al     VTXP0     VTXP3        1.         1                    
+ASSIGNMA     SILICON    ITRE00    ITRE31        1.         1                    
+ASSIGNMA     SILICON     ITRM0    ITRM31        1.         1                    
+ASSIGNMA     SiO2/Al     ITRP0    ITRP31        1.         1                    
+ASSIGNMA     SILICON     MSDS0     MSDS5        1.         1
+ASSIGNMA        SiO2     MSDP0     MSDP5        1.         1
+ASSIGNMA    ALUMINUM     MSDM0     MSDM5        1.         1
+ASSIGNMA        SmCo      MAG0      MAG1        1.        1.                    
+ASSIGNMA    ALUMINUM   MAG_SH0   MAG_SH1        1.        1.                    
+ASSIGNMA       EJ232    SCN000    SCN119        1.         1                    
+ASSIGNMA         BGO      CAL0    CAL359        1.         1                    
+ROT-DEFI                                 -0.000000 -0.000000 -1.500000vt_1      
+ROT-DEFI                                 -0.000000 -0.000000  0.600000vt_1      
+ROT-DEFI        200.          180.000000                              vt_1      
+ROT-DEFI                                  0.000000  0.000000 -0.600000vt_1      
+ROT-DEFI                                  0.000000  0.000000  1.500000vt_1      
+ROT-DEFI                                 -0.000000 -0.000000 -1.500000vt_3      
+ROT-DEFI                                 -0.000000 -0.000000 -0.920000vt_3      
+ROT-DEFI        200.          180.000000                              vt_3      
+ROT-DEFI                                  0.000000  0.000000  0.920000vt_3      
+ROT-DEFI                                  0.000000  0.000000  1.500000vt_3      
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_8      
+ROT-DEFI                                  3.018600 -0.810500  0.615500it_8      
+ROT-DEFI        100.          180.000000                              it_8      
+ROT-DEFI        200.          180.000000                              it_8      
+ROT-DEFI                                 -3.018600  0.810500 -0.615500it_8      
+ROT-DEFI                                  0.000000  0.000000 14.000000it_8      
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_9      
+ROT-DEFI                                  0.994600 -0.810500  0.615500it_9      
+ROT-DEFI        100.          180.000000                              it_9      
+ROT-DEFI        200.          180.000000                              it_9      
+ROT-DEFI                                 -0.994600  0.810500 -0.615500it_9      
+ROT-DEFI                                  0.000000  0.000000 14.000000it_9      
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_10     
+ROT-DEFI                                 -1.029400 -0.810500  0.615500it_10     
+ROT-DEFI        100.          180.000000                              it_10     
+ROT-DEFI        200.          180.000000                              it_10     
+ROT-DEFI                                  1.029400  0.810500 -0.615500it_10     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_10     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_11     
+ROT-DEFI                                 -3.053400 -0.810500  0.615500it_11     
+ROT-DEFI        100.          180.000000                              it_11     
+ROT-DEFI        200.          180.000000                              it_11     
+ROT-DEFI                                  3.053400  0.810500 -0.615500it_11     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_11     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_12     
+ROT-DEFI                                  3.018600 -2.431400 -0.384500it_12     
+ROT-DEFI        100.          180.000000                              it_12     
+ROT-DEFI        200.          180.000000                              it_12     
+ROT-DEFI                                 -3.018600  2.431400  0.384500it_12     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_12     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_13     
+ROT-DEFI                                  0.994600 -2.431400 -0.384500it_13     
+ROT-DEFI        100.          180.000000                              it_13     
+ROT-DEFI        200.          180.000000                              it_13     
+ROT-DEFI                                 -0.994600  2.431400  0.384500it_13     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_13     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_14     
+ROT-DEFI                                 -1.029400 -2.431400 -0.384500it_14     
+ROT-DEFI        100.          180.000000                              it_14     
+ROT-DEFI        200.          180.000000                              it_14     
+ROT-DEFI                                  1.029400  2.431400  0.384500it_14     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_14     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_15     
+ROT-DEFI                                 -3.053400 -2.431400 -0.384500it_15     
+ROT-DEFI        100.          180.000000                              it_15     
+ROT-DEFI        200.          180.000000                              it_15     
+ROT-DEFI                                  3.053400  2.431400  0.384500it_15     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_15     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_16     
+ROT-DEFI                                  3.018600  2.431400  0.384500it_16     
+ROT-DEFI        200.          180.000000                              it_16     
+ROT-DEFI                                 -3.018600 -2.431400 -0.384500it_16     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_16     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_17     
+ROT-DEFI                                  0.994600  2.431400  0.384500it_17     
+ROT-DEFI        200.          180.000000                              it_17     
+ROT-DEFI                                 -0.994600 -2.431400 -0.384500it_17     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_17     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_18     
+ROT-DEFI                                 -1.029400  2.431400  0.384500it_18     
+ROT-DEFI        200.          180.000000                              it_18     
+ROT-DEFI                                  1.029400 -2.431400 -0.384500it_18     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_18     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_19     
+ROT-DEFI                                 -3.053400  2.431400  0.384500it_19     
+ROT-DEFI        200.          180.000000                              it_19     
+ROT-DEFI                                  3.053400 -2.431400 -0.384500it_19     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_19     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_20     
+ROT-DEFI                                  3.018600  0.810500 -0.615500it_20     
+ROT-DEFI        200.          180.000000                              it_20     
+ROT-DEFI                                 -3.018600 -0.810500  0.615500it_20     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_20     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_21     
+ROT-DEFI                                  0.994600  0.810500 -0.615500it_21     
+ROT-DEFI        200.          180.000000                              it_21     
+ROT-DEFI                                 -0.994600 -0.810500  0.615500it_21     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_21     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_22     
+ROT-DEFI                                 -1.029400  0.810500 -0.615500it_22     
+ROT-DEFI        200.          180.000000                              it_22     
+ROT-DEFI                                  1.029400 -0.810500  0.615500it_22     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_22     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_23     
+ROT-DEFI                                 -3.053400  0.810500 -0.615500it_23     
+ROT-DEFI        200.          180.000000                              it_23     
+ROT-DEFI                                  3.053400 -0.810500  0.615500it_23     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_23     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_24     
+ROT-DEFI                                  3.053400 -0.810500  0.384500it_24     
+ROT-DEFI        100.          180.000000                              it_24     
+ROT-DEFI                                 -3.053400  0.810500 -0.384500it_24     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_24     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_25     
+ROT-DEFI                                  1.029400 -0.810500  0.384500it_25     
+ROT-DEFI        100.          180.000000                              it_25     
+ROT-DEFI                                 -1.029400  0.810500 -0.384500it_25     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_25     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_26     
+ROT-DEFI                                 -0.994600 -0.810500  0.384500it_26     
+ROT-DEFI        100.          180.000000                              it_26     
+ROT-DEFI                                  0.994600  0.810500 -0.384500it_26     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_26     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_27     
+ROT-DEFI                                 -3.018600 -0.810500  0.384500it_27     
+ROT-DEFI        100.          180.000000                              it_27     
+ROT-DEFI                                  3.018600  0.810500 -0.384500it_27     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_27     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_28     
+ROT-DEFI                                  3.053400 -2.431400 -0.615500it_28     
+ROT-DEFI        100.          180.000000                              it_28     
+ROT-DEFI                                 -3.053400  2.431400  0.615500it_28     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_28     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_29     
+ROT-DEFI                                  1.029400 -2.431400 -0.615500it_29     
+ROT-DEFI        100.          180.000000                              it_29     
+ROT-DEFI                                 -1.029400  2.431400  0.615500it_29     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_29     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_30     
+ROT-DEFI                                 -0.994600 -2.431400 -0.615500it_30     
+ROT-DEFI        100.          180.000000                              it_30     
+ROT-DEFI                                  0.994600  2.431400  0.615500it_30     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_30     
+ROT-DEFI                                 -0.000000 -0.000000-14.000000it_31     
+ROT-DEFI                                 -3.018600 -2.431400 -0.615500it_31     
+ROT-DEFI        100.          180.000000                              it_31     
+ROT-DEFI                                  3.018600  2.431400  0.615500it_31     
+ROT-DEFI                                  0.000000  0.000000 14.000000it_31     
+ROT-DEFI                                 -0.000000 -0.000000-29.000000msd_1     
+ROT-DEFI                                 -0.000000 -0.000000  0.490000msd_1     
+ROT-DEFI        300.           90.000000                              msd_1     
+ROT-DEFI                                  0.000000  0.000000 -0.490000msd_1     
+ROT-DEFI                                  0.000000  0.000000 29.000000msd_1     
+ROT-DEFI                                 -0.000000 -0.000000-29.000000msd_3     
+ROT-DEFI                                 -0.000000 -0.000000 -0.010000msd_3     
+ROT-DEFI        300.           90.000000                              msd_3     
+ROT-DEFI                                  0.000000  0.000000  0.010000msd_3     
+ROT-DEFI                                  0.000000  0.000000 29.000000msd_3     
+ROT-DEFI                                 -0.000000 -0.000000-29.000000msd_5     
+ROT-DEFI                                 -0.000000 -0.000000 -0.510000msd_5     
+ROT-DEFI        300.           90.000000                              msd_5     
+ROT-DEFI                                  0.000000  0.000000  0.510000msd_5     
+ROT-DEFI                                  0.000000  0.000000 29.000000msd_5     
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_100    
+ROT-DEFI                                 -0.000000-19.000000  0.150000tw_100    
+ROT-DEFI        300.           90.000000                              tw_100    
+ROT-DEFI                                  0.000000 19.000000 -0.150000tw_100    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_100    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_101    
+ROT-DEFI                                 -0.000000-17.000000  0.150000tw_101    
+ROT-DEFI        300.           90.000000                              tw_101    
+ROT-DEFI                                  0.000000 17.000000 -0.150000tw_101    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_101    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_102    
+ROT-DEFI                                 -0.000000-15.000000  0.150000tw_102    
+ROT-DEFI        300.           90.000000                              tw_102    
+ROT-DEFI                                  0.000000 15.000000 -0.150000tw_102    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_102    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_103    
+ROT-DEFI                                 -0.000000-13.000000  0.150000tw_103    
+ROT-DEFI        300.           90.000000                              tw_103    
+ROT-DEFI                                  0.000000 13.000000 -0.150000tw_103    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_103    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_104    
+ROT-DEFI                                 -0.000000-11.000000  0.150000tw_104    
+ROT-DEFI        300.           90.000000                              tw_104    
+ROT-DEFI                                  0.000000 11.000000 -0.150000tw_104    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_104    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_105    
+ROT-DEFI                                 -0.000000 -9.000000  0.150000tw_105    
+ROT-DEFI        300.           90.000000                              tw_105    
+ROT-DEFI                                  0.000000  9.000000 -0.150000tw_105    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_105    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_106    
+ROT-DEFI                                 -0.000000 -7.000000  0.150000tw_106    
+ROT-DEFI        300.           90.000000                              tw_106    
+ROT-DEFI                                  0.000000  7.000000 -0.150000tw_106    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_106    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_107    
+ROT-DEFI                                 -0.000000 -5.000000  0.150000tw_107    
+ROT-DEFI        300.           90.000000                              tw_107    
+ROT-DEFI                                  0.000000  5.000000 -0.150000tw_107    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_107    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_108    
+ROT-DEFI                                 -0.000000 -3.000000  0.150000tw_108    
+ROT-DEFI        300.           90.000000                              tw_108    
+ROT-DEFI                                  0.000000  3.000000 -0.150000tw_108    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_108    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_109    
+ROT-DEFI                                 -0.000000 -1.000000  0.150000tw_109    
+ROT-DEFI        300.           90.000000                              tw_109    
+ROT-DEFI                                  0.000000  1.000000 -0.150000tw_109    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_109    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_110    
+ROT-DEFI                                 -0.000000  1.000000  0.150000tw_110    
+ROT-DEFI        300.           90.000000                              tw_110    
+ROT-DEFI                                  0.000000 -1.000000 -0.150000tw_110    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_110    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_111    
+ROT-DEFI                                 -0.000000  3.000000  0.150000tw_111    
+ROT-DEFI        300.           90.000000                              tw_111    
+ROT-DEFI                                  0.000000 -3.000000 -0.150000tw_111    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_111    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_112    
+ROT-DEFI                                 -0.000000  5.000000  0.150000tw_112    
+ROT-DEFI        300.           90.000000                              tw_112    
+ROT-DEFI                                  0.000000 -5.000000 -0.150000tw_112    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_112    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_113    
+ROT-DEFI                                 -0.000000  7.000000  0.150000tw_113    
+ROT-DEFI        300.           90.000000                              tw_113    
+ROT-DEFI                                  0.000000 -7.000000 -0.150000tw_113    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_113    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_114    
+ROT-DEFI                                 -0.000000  9.000000  0.150000tw_114    
+ROT-DEFI        300.           90.000000                              tw_114    
+ROT-DEFI                                  0.000000 -9.000000 -0.150000tw_114    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_114    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_115    
+ROT-DEFI                                 -0.000000 11.000000  0.150000tw_115    
+ROT-DEFI        300.           90.000000                              tw_115    
+ROT-DEFI                                  0.000000-11.000000 -0.150000tw_115    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_115    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_116    
+ROT-DEFI                                 -0.000000 13.000000  0.150000tw_116    
+ROT-DEFI        300.           90.000000                              tw_116    
+ROT-DEFI                                  0.000000-13.000000 -0.150000tw_116    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_116    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_117    
+ROT-DEFI                                 -0.000000 15.000000  0.150000tw_117    
+ROT-DEFI        300.           90.000000                              tw_117    
+ROT-DEFI                                  0.000000-15.000000 -0.150000tw_117    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_117    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_118    
+ROT-DEFI                                 -0.000000 17.000000  0.150000tw_118    
+ROT-DEFI        300.           90.000000                              tw_118    
+ROT-DEFI                                  0.000000-17.000000 -0.150000tw_118    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_118    
+ROT-DEFI                                  1.000000  1.000000-99.699997tw_119    
+ROT-DEFI                                 -0.000000 19.000000  0.150000tw_119    
+ROT-DEFI        300.           90.000000                              tw_119    
+ROT-DEFI                                  0.000000-19.000000 -0.150000tw_119    
+ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_119    
 * @@@END GENERATED:MATERIAL&MAGFIELD@@@ ****************************************
 *
 * ******************************************************************************
 * -------1---------2---------3---------4---------5---------6---------7---------8
 * command| idbflg  | FragTrg |Eth(Mev) |unused   |unused   |unused | SDUM      |
 * -------1---------2---------3---------4---------5---------6---------7---------8
-USRICALL         0.0        6.       0.1       0.0       0.0       0.0
+USRICALL         0.0        0.        0.       0.0       0.0       0.0
 USERDUMP        100.       69.       0.0        1.                    Opt
 USROCALL
 RANDOMIZ          1.   593585.
 * ******************************************************************************
 *                          RUN                                                 *
 * ******************************************************************************
-START           1.e4
+START           1.e1
 STOP

@@ -65,8 +65,8 @@ int main (int argc, char *argv[]) {
 
     TAGgeoTrafo geoTrafo;
 
-    TString parFileName = Form("./geomaps/%sFOOT_geo.map", exp.Data());
-    geoTrafo.FromFile(parFileName.Data());
+    TString parFileName;
+    geoTrafo.FromFile("../Reconstruction/level0/geomaps/FOOT_geo.map");
 
     // GlobalFootGeo footGeo;
 
@@ -81,29 +81,22 @@ int main (int argc, char *argv[]) {
     TAGparGeo* generalGeo = new TAGparGeo();
 
     // read geomap files
-    diGeo->FromFile();
     stcGeo->FromFile();
-    parFileName = "./geomaps/TABMdetector.map";
-    bmGeo->FromFile(parFileName.Data());
-
-    parFileName = Form("./geomaps/%sTAVTdetector.map", exp.Data());
+    bmGeo->FromFile();
     vtxGeo->SetMcFlag();
-    vtxGeo->FromFile(parFileName.Data());
-
+    vtxGeo->FromFile();
     itrGeo->FromFile();
     msdGeo->FromFile();
     diGeo->FromFile();
     twGeo->FromFile();
     caGeo->FromFile();
-
-    parFileName = Form("./geomaps/%sTAGdetector.map", exp.Data());
-    generalGeo->FromFile(parFileName.Data());
+    generalGeo->FromFile();
 
     if(GlobalPar::GetPar()->IncludeDI())
       genfit::FieldManager::getInstance()->init(new FootField( GlobalPar::GetPar()->MagFieldInputMapName().data(),diGeo) ); // variable field
 
     ifstream file;
-    string fileName = "foot.inp";
+    string fileName = Form("foot.inp");
     file.open( fileName.c_str(), ios::in );
     if ( !file.is_open() )        cout<< "ERROR  -->  wrong input in GlobalPar::ReadParemFile file:: "<<fileName.c_str()<< endl, exit(0);
 
@@ -140,7 +133,7 @@ int main (int argc, char *argv[]) {
 
 
     // PRINT OUT foot.geo -> FLUKA geometry file
-    string geofileName = "foot.geo";
+    string geofileName = Form("foot.geo");
     ofstream geofile;
     geofile.open( geofileName.c_str(), std::ofstream::out | std::ofstream::trunc );
 
@@ -238,8 +231,9 @@ int main (int argc, char *argv[]) {
     outfile.close();
 
     //parameter file needed by the user routines
+    parFileName = Form("./ROUTINES/parameters.inc");
     ofstream paramfile;
-    paramfile.open("../../Simulation/ROUTINES/parameters.inc");
+    paramfile.open(parFileName);
     if ( !paramfile.is_open() )
       cout<< "ERROR  --> I do not find the parameters.inc file"<<fileName.c_str()<< endl;
 
@@ -247,6 +241,7 @@ int main (int argc, char *argv[]) {
     paramfile << vtxGeo->PrintParameters();
     paramfile << itrGeo->PrintParameters();
     paramfile << msdGeo->PrintParameters();
+    paramfile << diGeo->PrintParameters();
     paramfile << twGeo->PrintParameters();
     paramfile << caGeo->PrintParameters();
 
