@@ -10,11 +10,10 @@
 
 #include "GlobalPar.hxx"
 
-
-
-
 class TGeoHMatrix;
 class TGeoVolume;
+class TAGionisMaterials;
+
 //##############################################################################
 
 class TACAparGeo : public TAGparTools {
@@ -108,10 +107,12 @@ private:
    static const Char_t* GetDefaultCrysName(Int_t idx) { return Form("%s_%d", fgkDefaultCrysName.Data(), idx); }
 
 private:
+   TAGionisMaterials* fIonisation; //! pointer for ionisation property
    TVector3  fCaloSize;
    TVector3  fCrystalSize;
    TString   fCrystalMat;
    Float_t   fCrystalDensity;
+   Float_t   fCrystalIonisMat;
    Int_t     fCrystalsN;
    Int_t     fModulesN;
    

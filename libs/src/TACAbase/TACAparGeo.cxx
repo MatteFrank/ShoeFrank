@@ -14,6 +14,7 @@
 #include "TSystem.h"
 
 #include "TAGgeoTrafo.hxx"
+#include "TAGionisMaterials.hxx"
 #include "TAGmaterials.hxx"
 
 #include "TACAparGeo.hxx"
@@ -65,6 +66,10 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    ReadItem(fCrystalDensity);
    if(fDebugLevel)
       cout  << "   Crystals density : " <<  fCrystalDensity << endl;
+   
+   ReadItem(fCrystalIonisMat);
+   if(fDebugLevel)
+      cout  << "   Crystals mean exciation energy : " <<  fCrystalIonisMat << endl;
    
    ReadVector3(fCrystalSize);
    if(fDebugLevel)
@@ -222,6 +227,18 @@ void TACAparGeo::DefineMaterial()
       printf("Support material:\n");
       matSup->Print();
    }
+   
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+   fIonisation->SetMaterial(mat);
+   fIonisation->AddBirksFactor(fCrystalIonisMat);
+   
+#else
+   fIonisation->SetMeanExcitationEnergy(fCrystalIonisMat);
+   
+   // put it under Cerenkov since only this EM property is available
+   mat->SetCerenkovProperties(fIonisation);
+   
+#endif
 }
 
 //_____________________________________________________________________________
