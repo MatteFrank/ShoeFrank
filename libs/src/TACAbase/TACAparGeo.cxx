@@ -36,7 +36,8 @@ const Int_t   TACAparGeo::fgkDefaultModulesN = 32;
 
 //_____________________________________________________________________________
 TACAparGeo::TACAparGeo() 
-: TAGparTools()
+: TAGparTools(),
+  fIonisation(new TAGionisMaterials())
 {
    fkDefaultGeoName = "./geomaps/TACAdetector.map";
 }
@@ -44,6 +45,7 @@ TACAparGeo::TACAparGeo()
 //______________________________________________________________________________
 TACAparGeo::~TACAparGeo()
 {
+   delete fIonisation;
 }
 
 //______________________________________________________________________________
