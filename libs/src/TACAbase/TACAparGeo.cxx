@@ -14,6 +14,7 @@
 #include "TSystem.h"
 
 #include "TAGgeoTrafo.hxx"
+#include "TAGionisMaterials.hxx"
 #include "TAGmaterials.hxx"
 
 #include "TACAparGeo.hxx"
@@ -35,7 +36,8 @@ const Int_t   TACAparGeo::fgkDefaultModulesN = 32;
 
 //_____________________________________________________________________________
 TACAparGeo::TACAparGeo() 
-: TAGparTools()
+: TAGparTools(),
+  fIonisation(new TAGionisMaterials())
 {
    fkDefaultGeoName = "./geomaps/TACAdetector.map";
 }
@@ -43,6 +45,7 @@ TACAparGeo::TACAparGeo()
 //______________________________________________________________________________
 TACAparGeo::~TACAparGeo()
 {
+   delete fIonisation;
 }
 
 //______________________________________________________________________________
@@ -65,6 +68,10 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    ReadItem(fCrystalDensity);
    if(fDebugLevel)
       cout  << "   Crystals density : " <<  fCrystalDensity << endl;
+   
+   ReadItem(fCrystalIonisMat);
+   if(fDebugLevel)
+      cout  << "   Crystals mean exciation energy : " <<  fCrystalIonisMat << endl;
    
    ReadVector3(fCrystalSize);
    if(fDebugLevel)
@@ -222,6 +229,18 @@ void TACAparGeo::DefineMaterial()
       printf("Support material:\n");
       matSup->Print();
    }
+   
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+   fIonisation->SetMaterial(mat);
+   fIonisation->AddBirksFactor(fCrystalIonisMat);
+   
+#else
+   fIonisation->SetMeanExcitationEnergy(fCrystalIonisMat);
+   
+   // put it under Cerenkov since only this EM property is available
+   mat->SetCerenkovProperties(fIonisation);
+   
+#endif
 }
 
 //_____________________________________________________________________________
@@ -290,37 +309,62 @@ TGeoVolume* TACAparGeo::BuildModule()
    crystal->SetFillColor(fgkDefaultModCol);
   // crystal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
 
-   // set rotations/translation
-   TGeoRotation * rotP = new TGeoRotation ();
-   rotP->RotateY(alfa_degree * 2);
-   TGeoTranslation * trasP = new TGeoTranslation(posx, 0, posz - piramid_base_c );
-   TGeoRotation * rotN = new TGeoRotation ();
-   rotN->RotateY(-alfa_degree * 2);
-   TGeoTranslation * trasN = new TGeoTranslation(-posx, 0, posz - piramid_base_c );
-   
-   TGeoVolumeAssembly * row = new TGeoVolumeAssembly("CAL_ROW");
-   row->AddNode(crystal, 1);
-   row->AddNode(crystal, 2, new TGeoCombiTrans(*trasP, *rotP));
-   row->AddNode(crystal, 3, new TGeoCombiTrans(*trasN, *rotN));
    
    
    ////////////   MODULE
-   ////////////   Create a 3x3 module by assembly 3 ROWs
+   ////////////   Create a 3x3 modules
    const char* moduleName     = fgkDefaultModName;
    TGeoVolumeAssembly* module = new TGeoVolumeAssembly(moduleName);
    
    // set rotations/translation
-   TGeoRotation * rotUp = new TGeoRotation ();
-   rotUp->RotateX(-alfa_degree * 2);
-   TGeoTranslation * trasUp = new TGeoTranslation(0, posx, posz - piramid_base_c );
-   TGeoRotation * rotDn = new TGeoRotation ();
-   rotDn->RotateX(alfa_degree * 2);
-   TGeoTranslation * trasDn = new TGeoTranslation(0, -posx, posz - piramid_base_c );
+   Int_t dirX[] = {1, 0,-1,-1,-1, 0, 1, 1, 0};
+   Int_t dirY[] = {0, 1 ,1, 1, 0,-1,-1,-1, 0};
 
+   TGeoRotation * rot10 = new TGeoRotation ();
+   rot10->RotateY(alfa_degree * 2);
+   TGeoTranslation * tras10 = new TGeoTranslation(posx, 0, posz - piramid_base_c );
+   
+   TGeoRotation * rot11 = new TGeoRotation ();
+   rot11->RotateX(-alfa_degree * 2);
+   rot11->RotateY(alfa_degree * 2);
+   TGeoTranslation * tras11 = new TGeoTranslation(posx, posx, posz - piramid_base_c );
+   
+   TGeoRotation * rot01 = new TGeoRotation ();
+   rot01->RotateX(-alfa_degree * 2);
+   TGeoTranslation * tras01 = new TGeoTranslation(0, posx, posz - piramid_base_c );
+   
+   TGeoRotation * rot_11 = new TGeoRotation ();
+   rot_11->RotateX(-alfa_degree * 2);
+   rot_11->RotateY(-alfa_degree * 2);
+   TGeoTranslation * tras_11 = new TGeoTranslation(-posx, posx, posz - piramid_base_c );
+   
+   TGeoRotation * rot_10 = new TGeoRotation ();
+   rot_10->RotateY(-alfa_degree * 2);
+   TGeoTranslation * tras_10 = new TGeoTranslation(-posx, 0, posz - piramid_base_c );
+   
+   TGeoRotation * rot0_1 = new TGeoRotation ();
+   rot0_1->RotateX(alfa_degree * 2);
+   TGeoTranslation * tras0_1 = new TGeoTranslation(0, -posx, posz - piramid_base_c );
 
-   module->AddNode(row, 1);
-   module->AddNode(row, 2, new TGeoCombiTrans(*trasUp, *rotUp));
-   module->AddNode(row, 3, new TGeoCombiTrans(*trasDn, *rotDn));
+   TGeoRotation * rot_1_1 = new TGeoRotation ();
+   rot_1_1->RotateX(alfa_degree * 2);
+   rot_1_1->RotateY(-alfa_degree * 2);
+   TGeoTranslation * tras_1_1 = new TGeoTranslation(-posx, -posx, posz - piramid_base_c );
+   
+   TGeoRotation * rot1_1 = new TGeoRotation ();
+   rot1_1->RotateX(alfa_degree * 2);
+   rot1_1->RotateY(alfa_degree * 2);
+   TGeoTranslation * tras1_1 = new TGeoTranslation(posx, -posx, posz - piramid_base_c );
+
+   module->AddNode(crystal, 0, new TGeoCombiTrans(*tras10, *rot10));
+   module->AddNode(crystal, 1, new TGeoCombiTrans(*tras11, *rot11));
+   module->AddNode(crystal, 2, new TGeoCombiTrans(*tras01, *rot01));
+   module->AddNode(crystal, 3, new TGeoCombiTrans(*tras_11, *rot_11));
+   module->AddNode(crystal, 4, new TGeoCombiTrans(*tras_10, *rot_10));
+   module->AddNode(crystal, 5, new TGeoCombiTrans(*tras_1_1, *rot_1_1));
+   module->AddNode(crystal, 6, new TGeoCombiTrans(*tras0_1, *rot0_1));
+   module->AddNode(crystal, 7, new TGeoCombiTrans(*tras1_1, *rot1_1));
+   module->AddNode(crystal, 8);
 
    //---- Crystal Support as truncate piramid (just for visual propouses)
    double xdimS1 = fSupportSize[0] ;
