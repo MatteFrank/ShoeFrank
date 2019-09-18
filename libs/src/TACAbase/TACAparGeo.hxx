@@ -93,6 +93,7 @@ public:
    static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
    static Color_t GetDefaultModCol()     { return fgkDefaultModCol;      }
    static Color_t GetDefaultModColOn()   { return fgkDefaultModColOn;    }
+   static Int_t   GetDefaultModulesN()   { return fgkDefaultModulesN;    }
 
 private:
    static const TString fgkBaseName;
@@ -101,6 +102,8 @@ private:
    static const Color_t fgkDefaultModColOn;  // default color of fired slat/module;
    static const TString fgkDefaultCrysName;  // default crystal name;
    static const TString fgkDefaultModName;  // default module name;
+
+   static const Int_t fgkDefaultModulesN;  // default number of modules;
 
    static const Char_t* GetDefaultCrysName(Int_t idx) { return Form("%s_%d", fgkDefaultCrysName.Data(), idx); }
 

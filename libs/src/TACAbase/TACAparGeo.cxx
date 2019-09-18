@@ -29,6 +29,8 @@ const Color_t TACAparGeo::fgkDefaultModCol   = kAzure+6;
 const Color_t TACAparGeo::fgkDefaultModColOn = kRed-5;
 const TString TACAparGeo::fgkDefaultCrysName = "caCrys";
 const TString TACAparGeo::fgkDefaultModName  = "caMod";
+const Int_t   TACAparGeo::fgkDefaultModulesN = 32;
+
 
 
 //_____________________________________________________________________________
@@ -105,7 +107,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    
    Int_t nModule = 0;
    
-   SetupMatrices(fModulesN);
+   SetupMatrices(fgkDefaultModulesN);
      
    // Read transformtion info
       for (Int_t iModule = 0; iModule < fModulesN; ++iModule) {
@@ -237,9 +239,10 @@ TGeoVolume* TACAparGeo::BuildCalorimeter(const char *caName)
    
    TGeoVolume* module = BuildModule();
 
-   for (Int_t i = 0; i < fModulesN; ++i) {
+   for (Int_t i = 0; i < fgkDefaultModulesN; ++i) {
       TGeoHMatrix* hm = GetTransfo(i);
-      wall->AddNode(module, i, hm);
+      if (hm)
+         wall->AddNode(module, i, hm);
    }
    
    return wall;
