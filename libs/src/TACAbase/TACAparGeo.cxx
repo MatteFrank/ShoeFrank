@@ -14,6 +14,7 @@
 #include "TSystem.h"
 
 #include "TAGgeoTrafo.hxx"
+#include "TAGionisMaterials.hxx"
 #include "TAGmaterials.hxx"
 
 #include "TACAparGeo.hxx"
@@ -25,14 +26,18 @@
 
 const TString TACAparGeo::fgkDefParaName     = "caGeo";
 const TString TACAparGeo::fgkBaseName        = "CA";
-const Color_t TACAparGeo::fgkDefaultModCol   = kAzure+5;
+const Color_t TACAparGeo::fgkDefaultModCol   = kAzure+6;
 const Color_t TACAparGeo::fgkDefaultModColOn = kRed-5;
 const TString TACAparGeo::fgkDefaultCrysName = "caCrys";
+const TString TACAparGeo::fgkDefaultModName  = "caMod";
+const Int_t   TACAparGeo::fgkDefaultModulesN = 32;
+
 
 
 //_____________________________________________________________________________
 TACAparGeo::TACAparGeo() 
-: TAGparTools()
+: TAGparTools(),
+  fIonisation(new TAGionisMaterials())
 {
    fkDefaultGeoName = "./geomaps/TACAdetector.map";
 }
@@ -40,6 +45,7 @@ TACAparGeo::TACAparGeo()
 //______________________________________________________________________________
 TACAparGeo::~TACAparGeo()
 {
+   delete fIonisation;
 }
 
 //______________________________________________________________________________
@@ -54,15 +60,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
    
-   //   FootDebug(1, "FromFile()", Form("Number of crystals: %d", fCrystalsN));
-   //
-   //   if(FootDebugLevel(1))
-   //      cout  << "Number of crystals: " <<  fCrystalsN << endl;
-   
-   ReadItem(fCrystalsN);
-   if (fDebugLevel)
-      cout  << "Number of crystals: " <<  fCrystalsN << endl;
-   
+   // Crystal
    ReadStrings(fCrystalMat);
    if(fDebugLevel)
       cout  << "   Crystals material : " <<  fCrystalMat << endl;
@@ -71,33 +69,59 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    if(fDebugLevel)
       cout  << "   Crystals density : " <<  fCrystalDensity << endl;
    
-   ReadVector3(fCaloSize);
+   ReadItem(fCrystalIonisMat);
    if(fDebugLevel)
-      cout << "   Calorimeter size: "
-      << Form("%f %f %f", fCaloSize[0], fCaloSize[1], fCaloSize[2]) << endl;
+      cout  << "   Crystals mean exciation energy : " <<  fCrystalIonisMat << endl;
    
    ReadVector3(fCrystalSize);
    if(fDebugLevel)
       cout << "   Crystal size: "
       << Form("%f %f %f", fCrystalSize[0], fCrystalSize[1], fCrystalSize[2]) << endl;
    
+   ReadItem(fCrystalDelta);
+   if(fDebugLevel)
+      cout  << "   Crystals in-between distance : " <<  fCrystalDelta << endl;
+
+   
+   // Support
+   ReadStrings(fSupportMat);
+   if(fDebugLevel)
+      cout  << "   Support material : " <<  fSupportMat << endl;
+   
+   ReadItem(fSupportDensity);
+   if(fDebugLevel)
+      cout  << "   Support density : " <<  fSupportDensity << endl;
+   
+   ReadVector3(fSupportSize);
+   if(fDebugLevel)
+      cout << "   Support size: "
+      << Form("%f %f %f", fSupportSize[0], fSupportSize[1], fSupportSize[2]) << endl;
+
    // define material
    DefineMaterial();
-   
    
    TVector3 position;
    TVector3 tilt;
    
-   Int_t nCrystal = 0;
+   ReadVector3(fCaloSize);
+   if(fDebugLevel)
+      cout << "   Calorimeter size: "
+      << Form("%f %f %f", fCaloSize[0], fCaloSize[1], fCaloSize[2]) << endl;
    
-   SetupMatrices(fCrystalsN);
+   ReadItem(fModulesN);
+   if (fDebugLevel)
+      cout  << "Number of modules: " <<  fModulesN << endl;
+   
+   Int_t nModule = 0;
+   
+   SetupMatrices(fgkDefaultModulesN);
      
    // Read transformtion info
-      for (Int_t iCrystal = 0; iCrystal < fCrystalsN; ++iCrystal) {
+      for (Int_t iModule = 0; iModule < fModulesN; ++iModule) {
          
-         ReadItem(nCrystal);
+         ReadItem(nModule);
          if(fDebugLevel)
-            cout  << "Crystal id "<< nCrystal << endl;
+            cout  << "Module id "<< nModule << endl;
          
          // read  position
          ReadVector3(position);
@@ -107,10 +131,9 @@ Bool_t TACAparGeo::FromFile(const TString& name)
          
          ReadVector3(tilt);
          if(fDebugLevel)
-            cout  << "   Tilt: "
-            << Form("%f %f %f", tilt[0], tilt[1], tilt[2]) << endl;
+            cout  << "   tilt: " << Form("%f %f %f", tilt[0], tilt[1], tilt[2]) << endl;
 
-	 vTilt.push_back(tilt);
+         vTilt.push_back(tilt);
          
          TGeoRotation rot;
          rot.RotateX(tilt[0]);
@@ -122,7 +145,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
          TGeoHMatrix  transfo;
          transfo  = trans;
          transfo *= rot;
-         AddTransMatrix(new TGeoHMatrix(transfo), nCrystal);
+         AddTransMatrix(new TGeoHMatrix(transfo), nModule);
       }
 
    return true;
@@ -196,9 +219,28 @@ void TACAparGeo::DefineMaterial()
    // TW material
    TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fCrystalMat, fCrystalDensity);
    if (fDebugLevel) {
-      printf("Calorimeter material:\n");
+      printf("Crystal material:\n");
       mat->Print();
    }
+   
+   // TW material
+   TGeoMaterial* matSup = TAGmaterials::Instance()->CreateMaterial(fSupportMat, fSupportDensity);
+   if (fDebugLevel) {
+      printf("Support material:\n");
+      matSup->Print();
+   }
+   
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+   fIonisation->SetMaterial(mat);
+   fIonisation->AddBirksFactor(fCrystalIonisMat);
+   
+#else
+   fIonisation->SetMeanExcitationEnergy(fCrystalIonisMat);
+   
+   // put it under Cerenkov since only this EM property is available
+   mat->SetCerenkovProperties(fIonisation);
+   
+#endif
 }
 
 //_____________________________________________________________________________
@@ -214,10 +256,11 @@ TGeoVolume* TACAparGeo::BuildCalorimeter(const char *caName)
       wall = gGeoManager->MakeBox(caName, med,  GetCrystalHeight()/2.,  GetCrystalHeight()/2., GetCrystalThick()/2.);
    }
    
-   for (Int_t i = 0; i < fCrystalsN; ++i) {
-      
-         TGeoHMatrix* hm = GetTransfo(i);
-         TGeoVolume* module = BuildModule(i);
+   TGeoVolume* module = BuildModule();
+
+   for (Int_t i = 0; i < fgkDefaultModulesN; ++i) {
+      TGeoHMatrix* hm = GetTransfo(i);
+      if (hm)
          wall->AddNode(module, i, hm);
    }
    
@@ -225,25 +268,118 @@ TGeoVolume* TACAparGeo::BuildCalorimeter(const char *caName)
 }
 
 
-/*------------------------------------------+---------------------------------*/
+//_____________________________________________________________________________
 //! build module
-
-TGeoVolume* TACAparGeo::BuildModule(Int_t idx)
+TGeoVolume* TACAparGeo::BuildModule()
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
       new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
    }
    
-   const char* moduleName = GetDefaultCrysName(idx);
-   TGeoVolume* module     = gGeoManager->FindVolumeFast(moduleName);
-   if ( module == 0x0 ) {
-      const Char_t* matName = fCrystalMat.Data();
-      TGeoMedium*   med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
-      module = gGeoManager->MakeBox(moduleName, med,  GetCrystalWidth()/2., GetCrystalWidth()/2., GetCrystalThick()/2.);
-   }
+   Float_t xdim1 = fCrystalSize[0];
+   Float_t xdim2 = fCrystalSize[1];
+   Float_t ydim1 = xdim1; // assume squart
+   Float_t ydim2 = xdim2;
+   Float_t zdim  = fCrystalSize[2];
    
-   module->SetLineColor(fgkDefaultModCol);
-   module->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+   // half open angle of the truncate piramide
+   double deltaX    = (xdim2 - xdim1);
+   double trp_hipot = TMath::Sqrt( zdim * zdim * 4  + deltaX * deltaX );
+   double alfa      = TMath::ASin (deltaX / trp_hipot);
+   //alfa += 0.0005; // small increase to correct the 1mm between the crystals
+   double alfa_degree = alfa  * TMath::RadToDeg();
+   
+   // compute some values of the full piramid dimensions
+   double piramid_hipot = xdim2 / TMath::Sin(alfa);
+   //cout << "piramid_hipot " << piramid_hipot << endl;
+   double piramid_base = piramid_hipot * TMath::Cos(alfa);
+   double piramid_base_c = piramid_base - zdim; // distance from center to the piramid vertex
+   
+   // translation of crystal center after 2*alfa rotation about vetex piramid
+   double delta  = 0.1; // 1mm between crystals
+   double deltax = delta * TMath::Cos(alfa*2);
+   double deltaz = -delta * TMath::Sin(alfa*2);
+   double posx   = TMath::Sin(alfa*2) * piramid_base_c + deltax;
+   double posz   = TMath::Cos(alfa*2) * piramid_base_c + deltaz;
+   
+   const Char_t* matName = fCrystalMat.Data();
+   TGeoMedium*   med   = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
+   TGeoVolume* crystal = gGeoManager->MakeTrd2(fgkDefaultCrysName, med, xdim1, xdim2, ydim1, ydim2, zdim);
+   crystal->SetLineColor(fgkDefaultModCol);
+   crystal->SetFillColor(fgkDefaultModCol);
+  // crystal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+
+   
+   
+   ////////////   MODULE
+   ////////////   Create a 3x3 modules
+   const char* moduleName     = fgkDefaultModName;
+   TGeoVolumeAssembly* module = new TGeoVolumeAssembly(moduleName);
+   
+   // set rotations/translation
+   Int_t dirX[] = {1, 0,-1,-1,-1, 0, 1, 1, 0};
+   Int_t dirY[] = {0, 1 ,1, 1, 0,-1,-1,-1, 0};
+
+   TGeoRotation * rot10 = new TGeoRotation ();
+   rot10->RotateY(alfa_degree * 2);
+   TGeoTranslation * tras10 = new TGeoTranslation(posx, 0, posz - piramid_base_c );
+   
+   TGeoRotation * rot11 = new TGeoRotation ();
+   rot11->RotateX(-alfa_degree * 2);
+   rot11->RotateY(alfa_degree * 2);
+   TGeoTranslation * tras11 = new TGeoTranslation(posx, posx, posz - piramid_base_c );
+   
+   TGeoRotation * rot01 = new TGeoRotation ();
+   rot01->RotateX(-alfa_degree * 2);
+   TGeoTranslation * tras01 = new TGeoTranslation(0, posx, posz - piramid_base_c );
+   
+   TGeoRotation * rot_11 = new TGeoRotation ();
+   rot_11->RotateX(-alfa_degree * 2);
+   rot_11->RotateY(-alfa_degree * 2);
+   TGeoTranslation * tras_11 = new TGeoTranslation(-posx, posx, posz - piramid_base_c );
+   
+   TGeoRotation * rot_10 = new TGeoRotation ();
+   rot_10->RotateY(-alfa_degree * 2);
+   TGeoTranslation * tras_10 = new TGeoTranslation(-posx, 0, posz - piramid_base_c );
+   
+   TGeoRotation * rot0_1 = new TGeoRotation ();
+   rot0_1->RotateX(alfa_degree * 2);
+   TGeoTranslation * tras0_1 = new TGeoTranslation(0, -posx, posz - piramid_base_c );
+
+   TGeoRotation * rot_1_1 = new TGeoRotation ();
+   rot_1_1->RotateX(alfa_degree * 2);
+   rot_1_1->RotateY(-alfa_degree * 2);
+   TGeoTranslation * tras_1_1 = new TGeoTranslation(-posx, -posx, posz - piramid_base_c );
+   
+   TGeoRotation * rot1_1 = new TGeoRotation ();
+   rot1_1->RotateX(alfa_degree * 2);
+   rot1_1->RotateY(alfa_degree * 2);
+   TGeoTranslation * tras1_1 = new TGeoTranslation(posx, -posx, posz - piramid_base_c );
+
+   module->AddNode(crystal, 0, new TGeoCombiTrans(*tras10, *rot10));
+   module->AddNode(crystal, 1, new TGeoCombiTrans(*tras11, *rot11));
+   module->AddNode(crystal, 2, new TGeoCombiTrans(*tras01, *rot01));
+   module->AddNode(crystal, 3, new TGeoCombiTrans(*tras_11, *rot_11));
+   module->AddNode(crystal, 4, new TGeoCombiTrans(*tras_10, *rot_10));
+   module->AddNode(crystal, 5, new TGeoCombiTrans(*tras_1_1, *rot_1_1));
+   module->AddNode(crystal, 6, new TGeoCombiTrans(*tras0_1, *rot0_1));
+   module->AddNode(crystal, 7, new TGeoCombiTrans(*tras1_1, *rot1_1));
+   module->AddNode(crystal, 8);
+
+   //---- Crystal Support as truncate piramid (just for visual propouses)
+   double xdimS1 = fSupportSize[0] ;
+   double xdimS2 = fSupportSize[1];
+   double ydimS1 = xdimS1;
+   double ydimS2 = xdimS2;
+   double zdimS  = fSupportSize[2];
+
+   const Char_t* matSupName = fSupportMat.Data();
+   TGeoMedium*   medSup     = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matSupName);
+
+   TGeoVolume * support = gGeoManager->MakeTrd2("MOD_SUPPORT", medSup, xdimS1, xdimS2, ydimS1, ydimS2, zdimS);
+   support->SetLineColor(kGray);
+   support->SetLineColor(kGray);
+   module->AddNode(support, 0, new TGeoTranslation(0, 0, zdimS - 0.1));
    
    return module;
 }
