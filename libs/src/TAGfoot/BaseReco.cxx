@@ -278,7 +278,7 @@ void BaseReco::ReadParFiles()
       parConf->FromFile(parItFileName.Data());
       
       fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
-      TAVTparMap* parMap = (TAVTparMap*)fpParMapIt->Object();
+      TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
       parItFileName = Form("./config/%sTAITdetector.map", fExpName.Data());
      // parMap->FromFile(parItFileName.Data());
    }
