@@ -88,21 +88,23 @@ protected:
    vector<string> vRegion;
   
 public:
-   static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
-   static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
-   static Color_t GetDefaultModCol()     { return fgkDefaultModCol;      }
-   static Color_t GetDefaultModColOn()   { return fgkDefaultModColOn;    }
-   static Int_t   GetDefaultModulesN()   { return fgkDefaultModulesN;    }
+   static const Char_t* GetBaseName()     { return fgkBaseName.Data();    }
+   static const Char_t* GetDefParaName()  { return fgkDefParaName.Data(); }
+   static Color_t GetDefaultModCol()      { return fgkDefaultModCol;      }
+   static Color_t GetDefaultModColOn()    { return fgkDefaultModColOn;    }
+   static Int_t   GetDefaultModulesN()    { return fgkDefaultModulesN;    }
+   static Int_t   GetCrystalsNperModule() { return fgkCrystalsNperModule; }
 
 private:
    static const TString fgkBaseName;
    static const TString fgkDefParaName;
    static const Color_t fgkDefaultModCol;     // default color of slat/module;
-   static const Color_t fgkDefaultModColOn;  // default color of fired slat/module;
-   static const TString fgkDefaultCrysName;  // default crystal name;
-   static const TString fgkDefaultModName;  // default module name;
+   static const Color_t fgkDefaultModColOn;   // default color of fired slat/module;
+   static const TString fgkDefaultCrysName;   // default crystal name;
+   static const TString fgkDefaultModName;    // default module name;
 
-   static const Int_t fgkDefaultModulesN;  // default number of modules;
+   static const Int_t fgkDefaultModulesN;     // default number of modules;
+   static const Int_t fgkCrystalsNperModule;  // Number of crystals per module;
 
    static const Char_t* GetDefaultCrysName(Int_t idx) { return Form("%s_%d", fgkDefaultCrysName.Data(), idx); }
 

@@ -29,8 +29,9 @@ const TString TACAparGeo::fgkBaseName        = "CA";
 const Color_t TACAparGeo::fgkDefaultModCol   = kAzure+6;
 const Color_t TACAparGeo::fgkDefaultModColOn = kRed-5;
 const TString TACAparGeo::fgkDefaultCrysName = "caCrys";
-const TString TACAparGeo::fgkDefaultModName  = "caMod";
-const Int_t   TACAparGeo::fgkDefaultModulesN = 32;
+const TString TACAparGeo::fgkDefaultModName     = "caMod";
+const Int_t   TACAparGeo::fgkDefaultModulesN    = 32;
+const Int_t   TACAparGeo::fgkCrystalsNperModule = 9;
 
 
 
@@ -296,7 +297,7 @@ TGeoVolume* TACAparGeo::BuildModule()
    double piramid_base_c = piramid_base - zdim; // distance from center to the piramid vertex
    
    // translation of crystal center after 2*alfa rotation about vetex piramid
-   double delta  = 0.1; // 1mm between crystals
+   double delta  = fCrystalDelta; // 1mm between crystals
    double deltax = delta * TMath::Cos(alfa*2);
    double deltaz = -delta * TMath::Sin(alfa*2);
    double posx   = TMath::Sin(alfa*2) * piramid_base_c + deltax;
@@ -311,8 +312,7 @@ TGeoVolume* TACAparGeo::BuildModule()
    
    ////////////   MODULE
    ////////////   Create a 3x3 modules
-   const char* moduleName     = fgkDefaultModName;
-   TGeoVolumeAssembly* module = new TGeoVolumeAssembly(moduleName);
+   TGeoVolumeAssembly* module = new TGeoVolumeAssembly(fgkDefaultModName.Data());
    
    // set rotations/translations
    Float_t dirX[] = {1, 1, 0,-1,-1,-1, 0, 1, 0};
@@ -323,7 +323,7 @@ TGeoVolume* TACAparGeo::BuildModule()
    TGeoRotation* rot     = new TGeoRotation();
    TGeoTranslation* tras = new TGeoTranslation();
 
-   for (Int_t i = 0; i < 9; ++i) {
+   for (Int_t i = 0; i < fgkCrystalsNperModule; ++i) {
       rot->Clear();
       rot->RotateX(alfa_degree * 2 * angX[i]);
       rot->RotateY(alfa_degree * 2 * angY[i]);
