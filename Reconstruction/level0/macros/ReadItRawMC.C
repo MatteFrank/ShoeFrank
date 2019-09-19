@@ -38,7 +38,6 @@
 TAGactTreeWriter* outFile = 0x0;
 TAITactNtuMC* itActRaw = 0x0;
 TAITactNtuClusterF* itActClus = 0x0;
-TAITactNtuTrackF*    itActTrck = 0x0;
 
 void FillMCInner(EVENT_STRUCT *myStr) {
    
@@ -62,14 +61,8 @@ void FillMCInner(EVENT_STRUCT *myStr) {
    itActClus = new TAITactNtuClusterF("itActCluster", itRaw, itClus, itConf, itGeo);
    itActClus->CreateHistogram();
    
-//   itActTrck = new TAITactNtuTrackF("itActTrck", itClus, itTrck, itConf, itGeo);
-//   itActTrck->CreateHistogram();
-//   
-   
    // outFile->SetupElementBranch(itRaw, TAITntuRaw::GetBranchName());
-  //outFile->SetupElementBranch(itClus, TAITntuCluster::GetBranchName());
-   // outFile->SetupElementBranch(itTrck, TAITntuTrack::GetBranchName());
-   
+  //outFile->SetupElementBranch(itClus, TAITntuCluster::GetBranchName());   
 }
 
 //void ReadItRawMC(TString name = "16O_C2H4_200_1.root")
