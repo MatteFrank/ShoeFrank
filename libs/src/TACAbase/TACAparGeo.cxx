@@ -407,7 +407,6 @@ void TACAparGeo::SetCrystalColorOff(Int_t idx, Int_t iMod)
    
    TGeoVolume* vol = gGeoManager->FindVolumeFast(name.Data());
    if (vol) {
-      printf("toto\n");
       vol->SetLineColor(GetDefaultModCol());
    }
 }
