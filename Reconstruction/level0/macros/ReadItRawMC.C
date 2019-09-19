@@ -29,8 +29,6 @@
 
 #include "TAITactNtuMC.hxx"
 #include "TAITactNtuClusterF.hxx"
-#include "TAITactNtuTrackF.hxx"
-#include "TAITactNtuTrack.hxx"
 
 #include "GlobalPar.hxx"
 
