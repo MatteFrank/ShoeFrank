@@ -177,6 +177,34 @@ TVector3 TACAparGeo::GetCrystalAngle(Int_t idx)
 }
 
 //_____________________________________________________________________________
+TVector3 TACAparGeo::GetModulePosition(Int_t idx)
+{
+   if (idx < 0 || idx > fModulesN) {
+     
+      Warning("GetCrystalPosition()","Wrong crystal id number: %d ", idx);
+      return TVector3(0,0,0);
+   }
+   
+   TGeoHMatrix* hm = GetTransfo(idx);
+   if (hm) {
+      Double_t* dis = hm->GetTranslation();
+      return TVector3(dis[0], dis[1], dis[2]);
+   }
+   
+   return TVector3(0,0,0);
+}
+
+//_____________________________________________________________________________
+TVector3 TACAparGeo::GetModuleAngle(Int_t idx)
+{
+   if (idx < 0 || idx > fModulesN) {
+      Warning("GetCrystalAngle()","Wrong crystal id number: %d ", idx);
+      return TVector3(0,0,0);
+   }
+   
+   return vTilt[idx];
+}
+//_____________________________________________________________________________
 TVector3 TACAparGeo::Module2Detector(Int_t idx, TVector3& loc) const
 {
    if (idx < 0 || idx > fModulesN) {

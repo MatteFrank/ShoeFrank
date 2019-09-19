@@ -53,6 +53,10 @@ public:
    // Position/angle inside the module
    TVector3       GetCrystalPosition(Int_t iCrystal);
    TVector3       GetCrystalAngle(Int_t iCrystal);
+   
+   // Position/angle of the module
+   TVector3       GetModulePosition(Int_t iModule);
+   TVector3       GetModuleAngle(Int_t iModule);
 
    //! Transform point from the global detector reference frame
    //! to the local Module reference frame of the detection id
