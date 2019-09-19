@@ -135,7 +135,7 @@ private:
 
    TString   fkDefaultGeoName;  // default par geo file name
 
-   vector<TVector3> vTilt;
+   vector<TVector3> fListOfModAng; // list of angles for module
    
 private:
    void      ComputeCrystalPos();
