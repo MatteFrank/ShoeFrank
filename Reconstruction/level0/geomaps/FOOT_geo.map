@@ -32,5 +32,5 @@ TofWallPosX: -1. TofWallPosY:  -1. TofWallPosZ: 99.7
 TofWallAngX: 0. TofWallAngY:  0. TofWallAngZ: 0.
 
 CaloBaseName: "CA"
-CaloPosX: 0. CaloPosY:  0. CaloPosZ: 112
+CaloPosX: 0. CaloPosY:  0. CaloPosZ: 114
 CaloAngX: 0. CaloAngY:  0. CaloAngZ: 0.
