@@ -13,12 +13,13 @@
 class TACAntuHit : public TAGobject {
 public:
    TACAntuHit();
-   TACAntuHit(int cha, double charge, double time, Int_t type = 0);
+   TACAntuHit(int cha, int mod, double charge, double time, Int_t type = 0);
    virtual         ~TACAntuHit();
    
    Double_t        GetTime()          const { return fTime;      }
    Double_t        GetCharge()        const { return fCharge;    }
    Int_t           GetCrystalId()     const { return fCrystalId; }
+   Int_t           GetModuleId()      const { return fModuleId; }
    Int_t           GetType()          const { return fType;      }
    TVector3        GetPosition()      const { return fPosition;  }
    
@@ -39,6 +40,7 @@ private:
    Double32_t      fTime;
    Double32_t      fCharge;
    Int_t           fCrystalId;
+   Int_t           fModuleId;
    Int_t           fType;
    TVector3        fPosition;
    
@@ -59,7 +61,7 @@ public:
    TACAntuHit*        GetHit(Int_t i_ind);
    const TACAntuHit*  GetHit(Int_t i_ind) const;
    
-   TACAntuHit*        NewHit(int channel, double charge, double time, int type = 0);
+   TACAntuHit*        NewHit(int crys, int mod, double charge, double time, int type = 0);
    
    void               SetTrigTime(Double_t time) { fTrigTime = time; }
    Double_t           GetTrigTime()        const { return fTrigTime; }

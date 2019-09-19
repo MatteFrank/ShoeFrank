@@ -50,8 +50,9 @@ public:
    Float_t        GetSupportLength()   const  { return fSupportSize[2]; }
    TString        GetSupportMat()      const  { return fSupportMat;     }
 
-
+   // Position/angle inside the module
    TVector3       GetCrystalPosition(Int_t iCrystal);
+   TVector3       GetCrystalAngle(Int_t iCrystal);
 
    //! Transform point from the global detector reference frame
    //! to the local sensor reference frame of the detection id
@@ -75,10 +76,10 @@ public:
 
   // TGeoVolume*     GetVolume();
   TGeoVolume*     BuildCalorimeter(const char *caName = "CA");
-  TGeoVolume*     BuildModule();
+  TGeoVolume*     BuildModule(Int_t iMod);
 
-  void            SetCrystalColorOn(Int_t idx);
-  void            SetCrystalColorOff(Int_t idx);
+  void            SetCrystalColorOn(Int_t idx, Int_t iMod);
+  void            SetCrystalColorOff(Int_t idx, Int_t iMod);
 
   virtual void    Clear(Option_t* opt="");
   virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
@@ -106,7 +107,8 @@ private:
    static const Int_t fgkDefaultModulesN;     // default number of modules;
    static const Int_t fgkCrystalsNperModule;  // Number of crystals per module;
 
-   static const Char_t* GetDefaultCrysName(Int_t idx) { return Form("%s_%d", fgkDefaultCrysName.Data(), idx); }
+   static const Char_t* GetDefaultCrysName(Int_t idx, Int_t iMod) { return Form("%s_%d_%d", fgkDefaultCrysName.Data(), idx, iMod); }
+   static const Char_t* GetDefaultModName(Int_t idx) { return Form("%s_%d", fgkDefaultModName.Data(), idx); }
 
 private:
    TAGionisMaterials* fIonisation; //! pointer for ionisation property
@@ -124,11 +126,16 @@ private:
    
    Float_t   fCrystalDelta; // delta between two crystal in a module
 
-   
+   TVector3  fCrystalPos[9];  // position of crystals in module
+   TVector3  fCrystalAng[9];  // angle of crystals in module
+
    TString   fkDefaultGeoName;  // default par geo file name
 
    vector<TVector3> vTilt;
-  
+   
+private:
+   void      ComputeCrystalPos();
+
   ClassDef(TACAparGeo,1)
 };
 

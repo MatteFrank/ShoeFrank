@@ -27,17 +27,19 @@ TACAntuHit::TACAntuHit()
    fTime(999999.),
    fCharge(0.),
    fCrystalId(0),
+   fModuleId(0),
    fType(0),
    fPosition()
 {
 }
 
 //------------------------------------------+-----------------------------------
-TACAntuHit::TACAntuHit(int cha, double charge, double time, int typ)
+TACAntuHit::TACAntuHit(int cha, int mod, double charge, double time, int typ)
  : TAGobject(),
    fTime(time),
    fCharge(charge),
    fCrystalId(cha),
+   fModuleId(mod),
    fType(typ),
    fPosition()
 {
@@ -127,11 +129,11 @@ const TACAntuHit* TACAntuRaw::GetHit(Int_t id) const
 
 //______________________________________________________________________________
 //
-TACAntuHit* TACAntuRaw::NewHit(int channel, double charge, double time, int type)
+TACAntuHit* TACAntuRaw::NewHit(int crys, int mod, double charge, double time, int type)
 {
    TClonesArray &pixelArray = *fListOfHits;
 
-   TACAntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TACAntuHit(channel, charge, time, type);
+   TACAntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TACAntuHit(crys, mod, charge, time, type);
    return hit;
 
 }

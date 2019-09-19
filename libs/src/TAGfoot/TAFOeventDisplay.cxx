@@ -921,8 +921,9 @@ void TAFOeventDisplay::UpdateCrystalElements()
    if ( fRefreshButton->IsOn()) {
       map<int, int >::iterator it;
       for (it = fFiredCaCrystal.begin(); it != fFiredCaCrystal.end(); it++) {
-         Int_t idx = it->first;
-         parGeo->SetCrystalColorOff(idx);
+         Int_t idx = it->first % TACAparGeo::GetCrystalsNperModule();
+         Int_t iMod = it->first / TACAparGeo::GetCrystalsNperModule();
+         parGeo->SetCrystalColorOff(idx, iMod);
       }
    }
    
@@ -938,9 +939,10 @@ void TAFOeventDisplay::UpdateCrystalElements()
       TACAntuHit *hit = pNtuHit->GetHit(iHit);
       
       Int_t idx = hit->GetCrystalId();
-      
-      fFiredCaCrystal[idx] = 1;
-      parGeo->SetCrystalColorOn(idx);
+      Int_t iMod = hit->GetModuleId();
+
+      fFiredCaCrystal[idx + iMod*TACAparGeo::GetCrystalsNperModule()] = 1;
+      parGeo->SetCrystalColorOn(idx, iMod);
       
    } //end loop on hits
    

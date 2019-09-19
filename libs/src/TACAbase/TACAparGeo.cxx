@@ -46,7 +46,7 @@ TACAparGeo::TACAparGeo()
 //______________________________________________________________________________
 TACAparGeo::~TACAparGeo()
 {
-   delete fIonisation;
+   delete   fIonisation;
 }
 
 //______________________________________________________________________________
@@ -149,24 +149,37 @@ Bool_t TACAparGeo::FromFile(const TString& name)
          AddTransMatrix(new TGeoHMatrix(transfo), nModule);
       }
 
+   ComputeCrystalPos();
+
    return true;
 }
 
 //_____________________________________________________________________________
 TVector3 TACAparGeo::GetCrystalPosition(Int_t idx)
 {
-   TGeoHMatrix* hm = GetTransfo(idx);
-   if (hm) {
-      TVector3 local(0,0,0);
-      fCurrentPosition =  Sensor2Detector(idx, local);
+   if (idx < 0 || idx > fgkCrystalsNperModule) {
+      Warning("GetCrystalPosition()","Wrong crystal id number: %d ", idx);
+      return TVector3(0,0,0);
    }
-   return fCurrentPosition;   
+   
+   return fCrystalPos[idx];
+}
+
+//_____________________________________________________________________________
+TVector3 TACAparGeo::GetCrystalAngle(Int_t idx)
+{
+   if (idx < 0 || idx > fgkCrystalsNperModule) {
+      Warning("GetCrystalAngle()","Wrong crystal id number: %d ", idx);
+      return TVector3(0,0,0);
+   }
+   
+   return fCrystalAng[idx];
 }
 
 //_____________________________________________________________________________
 TVector3 TACAparGeo::Sensor2Detector(Int_t idx, TVector3& loc) const
 {
-   if (idx < 0 || idx > fCrystalsN) {
+   if (idx < 0 || idx > fModulesN) {
       Warning("Sensor2Detector()","Wrong detector id number: %d ", idx);
       return TVector3(0,0,0);
    }
@@ -178,7 +191,7 @@ TVector3 TACAparGeo::Sensor2Detector(Int_t idx, TVector3& loc) const
 //_____________________________________________________________________________
 TVector3 TACAparGeo::Sensor2DetectorVect(Int_t idx, TVector3& loc) const
 {
-   if (idx < 0 || idx > fCrystalsN) {
+   if (idx < 0 || idx > fModulesN) {
       Warning("Sensor2DetectorVect()","Wrong detector id number: %d ", idx);
       TVector3(0,0,0);
    }
@@ -189,7 +202,7 @@ TVector3 TACAparGeo::Sensor2DetectorVect(Int_t idx, TVector3& loc) const
 //_____________________________________________________________________________
 TVector3 TACAparGeo::Detector2Sensor(Int_t idx, TVector3& glob) const
 {
-   if (idx < 0 || idx > fCrystalsN) {
+   if (idx < 0 || idx > fModulesN) {
       Warning("Detector2Sensor()","Wrong detector id number: %d ", idx);
       return TVector3(0,0,0);
    }
@@ -200,7 +213,7 @@ TVector3 TACAparGeo::Detector2Sensor(Int_t idx, TVector3& glob) const
 //_____________________________________________________________________________
 TVector3 TACAparGeo::Detector2SensorVect(Int_t idx, TVector3& glob) const
 {
-   if (idx < 0 || idx > fCrystalsN) {
+   if (idx < 0 || idx > fModulesN) {
       Warning("Detector2SensorVect()","Wrong detector id number: %d ", idx);
       return TVector3(0,0,0);
    }
@@ -245,38 +258,9 @@ void TACAparGeo::DefineMaterial()
 }
 
 //_____________________________________________________________________________
-TGeoVolume* TACAparGeo::BuildCalorimeter(const char *caName)
+//! compute crystal positions in a module
+void TACAparGeo::ComputeCrystalPos()
 {
-   if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
-      new TGeoManager(TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
-   }
-   
-   TGeoVolume* wall = gGeoManager->FindVolumeFast(caName);
-   if ( wall == 0x0 ) {
-      TGeoMedium*  med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject("AIR");
-      wall = gGeoManager->MakeBox(caName, med,  GetCrystalHeight()/2.,  GetCrystalHeight()/2., GetCrystalThick()/2.);
-   }
-   
-   TGeoVolume* module = BuildModule();
-
-   for (Int_t i = 0; i < fgkDefaultModulesN; ++i) {
-      TGeoHMatrix* hm = GetTransfo(i);
-      if (hm)
-         wall->AddNode(module, i, hm);
-   }
-   
-   return wall;
-}
-
-
-//_____________________________________________________________________________
-//! build module
-TGeoVolume* TACAparGeo::BuildModule()
-{
-   if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
-      new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
-   }
-   
    Float_t xdim1 = fCrystalSize[0];
    Float_t xdim2 = fCrystalSize[1];
    Float_t ydim1 = xdim1; // assume squart
@@ -303,31 +287,76 @@ TGeoVolume* TACAparGeo::BuildModule()
    double posx   = TMath::Sin(alfa*2) * piramid_base_c + deltax;
    double posz   = TMath::Cos(alfa*2) * piramid_base_c + deltaz;
    
-   const Char_t* matName = fCrystalMat.Data();
-   TGeoMedium*   med   = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
-   TGeoVolume* crystal = gGeoManager->MakeTrd2(fgkDefaultCrysName, med, xdim1, xdim2, ydim1, ydim2, zdim);
-   crystal->SetLineColor(fgkDefaultModCol);
-   crystal->SetFillColor(fgkDefaultModCol);
-  // crystal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
-   
-   ////////////   MODULE
-   ////////////   Create a 3x3 modules
-   TGeoVolumeAssembly* module = new TGeoVolumeAssembly(fgkDefaultModName.Data());
-   
    // set rotations/translations
    Float_t dirX[] = {1, 1, 0,-1,-1,-1, 0, 1, 0};
    Float_t dirY[] = {0, 1 ,1, 1, 0,-1,-1,-1, 0};
    Float_t angX[] = {0,-1,-1,-1, 0, 1, 1, 1, 0};
    Float_t angY[] = {1, 1, 0,-1,-1,-1, 0, 1, 0};
 
+   for (Int_t i = 0; i < fgkCrystalsNperModule; ++i) {
+      fCrystalAng[i] = TVector3(alfa_degree * 2 * angX[i], alfa_degree * 2 * angY[i], 0);
+      fCrystalPos[i] = TVector3(posx*dirX[i], posx*dirY[i], posz - piramid_base_c);
+   }
+}
+
+//_____________________________________________________________________________
+TGeoVolume* TACAparGeo::BuildCalorimeter(const char *caName)
+{
+   if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
+      new TGeoManager(TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
+   }
+   
+   TGeoVolume* wall = gGeoManager->FindVolumeFast(caName);
+   if ( wall == 0x0 ) {
+      TGeoMedium*  med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject("AIR");
+      wall = gGeoManager->MakeBox(caName, med,  GetCrystalHeight()/2.,  GetCrystalHeight()/2., GetCrystalThick()/2.);
+   }
+   
+   for (Int_t i = 0; i < fgkDefaultModulesN; ++i) {
+      TGeoHMatrix* hm = GetTransfo(i);
+      TGeoVolume* module = BuildModule(i);
+      if (hm)
+         wall->AddNode(module, i, new TGeoHMatrix(*hm));
+   }
+   
+   return wall;
+}
+
+
+//_____________________________________________________________________________
+//! build module
+TGeoVolume* TACAparGeo::BuildModule(Int_t iMod)
+{
+   if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
+      new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
+   }
+   
+   Float_t xdim1 = fCrystalSize[0];
+   Float_t xdim2 = fCrystalSize[1];
+   Float_t ydim1 = xdim1; // assume squart
+   Float_t ydim2 = xdim2;
+   Float_t zdim  = fCrystalSize[2];
+   
+   const Char_t* matName = fCrystalMat.Data();
+   TGeoMedium*   med     = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
+  // crystal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+   
+   ////////////   MODULE
+   ////////////   Create a 3x3 modules
+   TGeoVolumeAssembly* module = new TGeoVolumeAssembly(GetDefaultModName(iMod));
+
    TGeoRotation* rot     = new TGeoRotation();
    TGeoTranslation* tras = new TGeoTranslation();
 
    for (Int_t i = 0; i < fgkCrystalsNperModule; ++i) {
+      TGeoVolume* crystal   = gGeoManager->MakeTrd2(GetDefaultCrysName(i, iMod), med, xdim1, xdim2, ydim1, ydim2, zdim);
+      crystal->SetLineColor(fgkDefaultModCol);
+      crystal->SetFillColor(fgkDefaultModCol);
+
       rot->Clear();
-      rot->RotateX(alfa_degree * 2 * angX[i]);
-      rot->RotateY(alfa_degree * 2 * angY[i]);
-      tras->SetTranslation(posx*dirX[i], posx*dirY[i], posz - piramid_base_c);
+      rot->RotateX(fCrystalAng[i].X());
+      rot->RotateY(fCrystalAng[i].Y());
+      tras->SetTranslation(fCrystalPos[i].X(), fCrystalPos[i].Y(), fCrystalPos[i].Z());
       module->AddNode(crystal, i, new TGeoCombiTrans(*tras, *rot));
    }
    
@@ -341,7 +370,7 @@ TGeoVolume* TACAparGeo::BuildModule()
    const Char_t* matSupName = fSupportMat.Data();
    TGeoMedium*   medSup     = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matSupName);
 
-   TGeoVolume* support = gGeoManager->MakeTrd2("MOD_SUPPORT", medSup, xdimS1, xdimS2, ydimS1, ydimS2, zdimS);
+   TGeoVolume* support = gGeoManager->MakeTrd2("modSup", medSup, xdimS1, xdimS2, ydimS1, ydimS2, zdimS);
    support->SetLineColor(kGray);
    support->SetLineColor(kGray);
    module->AddNode(support, 0, new TGeoTranslation(0, 0, zdimS - 0.1));
@@ -351,14 +380,14 @@ TGeoVolume* TACAparGeo::BuildModule()
 
 //_____________________________________________________________________________
 //! set color on for fired bars
-void TACAparGeo::SetCrystalColorOn(Int_t idx)
+void TACAparGeo::SetCrystalColorOn(Int_t idx, Int_t iMod)
 {
    if (!gGeoManager) {
       Error("SetBarcolorOn()", "No Geo manager defined");
       return;
    }
    
-   TString name = GetDefaultCrysName(idx);
+   TString name = GetDefaultCrysName(idx, iMod);
    
    TGeoVolume* vol = gGeoManager->FindVolumeFast(name.Data());
    if (vol)
@@ -367,18 +396,20 @@ void TACAparGeo::SetCrystalColorOn(Int_t idx)
 
 //_____________________________________________________________________________
 //! reset color for unfired bars
-void TACAparGeo::SetCrystalColorOff(Int_t idx)
+void TACAparGeo::SetCrystalColorOff(Int_t idx, Int_t iMod)
 {
    if (!gGeoManager) {
       Error("SetBarcolorOn()", "No Geo manager defined");
       return;
    }
    
-   TString name = GetDefaultCrysName(idx);
+   TString name = GetDefaultCrysName(idx, iMod);
    
    TGeoVolume* vol = gGeoManager->FindVolumeFast(name.Data());
-   if (vol)
+   if (vol) {
+      printf("toto\n");
       vol->SetLineColor(GetDefaultModCol());
+   }
 }
 
 
