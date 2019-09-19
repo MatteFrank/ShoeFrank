@@ -55,14 +55,14 @@ public:
    TVector3       GetCrystalAngle(Int_t iCrystal);
 
    //! Transform point from the global detector reference frame
-   //! to the local sensor reference frame of the detection id
-   TVector3        Detector2Sensor(Int_t idx, TVector3& glob) const;
-   TVector3        Detector2SensorVect(Int_t idx, TVector3& glob) const;
+   //! to the local Module reference frame of the detection id
+   TVector3        Detector2Module(Int_t idx, TVector3& glob) const;
+   TVector3        Detector2ModuleVect(Int_t idx, TVector3& glob) const;
    
    //! Transform point from the local reference frame
    //! of the detection id to the global reference frame
-   TVector3        Sensor2Detector(Int_t idx, TVector3& loc) const;
-   TVector3        Sensor2DetectorVect(Int_t idx, TVector3& loc) const;
+   TVector3        Module2Detector(Int_t idx, TVector3& loc) const;
+   TVector3        Module2DetectorVect(Int_t idx, TVector3& loc) const;
 
 
    // to print fluka files

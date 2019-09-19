@@ -177,10 +177,10 @@ TVector3 TACAparGeo::GetCrystalAngle(Int_t idx)
 }
 
 //_____________________________________________________________________________
-TVector3 TACAparGeo::Sensor2Detector(Int_t idx, TVector3& loc) const
+TVector3 TACAparGeo::Module2Detector(Int_t idx, TVector3& loc) const
 {
    if (idx < 0 || idx > fModulesN) {
-      Warning("Sensor2Detector()","Wrong detector id number: %d ", idx);
+      Warning("Module2Detector()","Wrong detector id number: %d ", idx);
       return TVector3(0,0,0);
    }
    
@@ -189,10 +189,10 @@ TVector3 TACAparGeo::Sensor2Detector(Int_t idx, TVector3& loc) const
 
 
 //_____________________________________________________________________________
-TVector3 TACAparGeo::Sensor2DetectorVect(Int_t idx, TVector3& loc) const
+TVector3 TACAparGeo::Module2DetectorVect(Int_t idx, TVector3& loc) const
 {
    if (idx < 0 || idx > fModulesN) {
-      Warning("Sensor2DetectorVect()","Wrong detector id number: %d ", idx);
+      Warning("Module2DetectorVect()","Wrong detector id number: %d ", idx);
       TVector3(0,0,0);
    }
    
@@ -200,10 +200,10 @@ TVector3 TACAparGeo::Sensor2DetectorVect(Int_t idx, TVector3& loc) const
 }
 
 //_____________________________________________________________________________
-TVector3 TACAparGeo::Detector2Sensor(Int_t idx, TVector3& glob) const
+TVector3 TACAparGeo::Detector2Module(Int_t idx, TVector3& glob) const
 {
    if (idx < 0 || idx > fModulesN) {
-      Warning("Detector2Sensor()","Wrong detector id number: %d ", idx);
+      Warning("Detector2Module()","Wrong detector id number: %d ", idx);
       return TVector3(0,0,0);
    }
    
@@ -211,10 +211,10 @@ TVector3 TACAparGeo::Detector2Sensor(Int_t idx, TVector3& glob) const
 }
 
 //_____________________________________________________________________________
-TVector3 TACAparGeo::Detector2SensorVect(Int_t idx, TVector3& glob) const
+TVector3 TACAparGeo::Detector2ModuleVect(Int_t idx, TVector3& glob) const
 {
    if (idx < 0 || idx > fModulesN) {
-      Warning("Detector2SensorVect()","Wrong detector id number: %d ", idx);
+      Warning("Detector2ModuleVect()","Wrong detector id number: %d ", idx);
       return TVector3(0,0,0);
    }
    
@@ -313,10 +313,22 @@ TGeoVolume* TACAparGeo::BuildCalorimeter(const char *caName)
    }
    
    for (Int_t i = 0; i < fgkDefaultModulesN; ++i) {
-      TGeoHMatrix* hm = GetTransfo(i);
+      
       TGeoVolume* module = BuildModule(i);
-      if (hm)
-         wall->AddNode(module, i, new TGeoHMatrix(*hm));
+      
+      TGeoHMatrix* hm = GetTransfo(i);
+      if (hm) {
+         Double_t* mat = hm->GetRotationMatrix();
+         Double_t* dis = hm->GetTranslation();
+         
+         TGeoRotation rot;
+         rot.SetMatrix(mat);
+         
+         TGeoTranslation trans;
+         trans.SetTranslation(dis[0], dis[1], dis[2]);
+         
+         wall->AddNode(module, i, new TGeoCombiTrans(trans, rot));
+      }
    }
    
    return wall;
