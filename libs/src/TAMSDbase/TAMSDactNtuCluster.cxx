@@ -206,25 +206,25 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
     cluster->SetPosition(GetCurrentPosition());
     cluster->SetPosError(GetCurrentPosError());
     
-    if (ApplyCuts(cluster)) {
-      // histogramms
-      if (ValidHistogram()) {
-	if (cluster->GetStripsN() > 0) {
-	  fpHisStripTot->Fill(cluster->GetStripsN());
-	  fpHisStrip[iSensor]->Fill(cluster->GetStripsN());
-	  // printf("sensor %d %d\n", iSensor, cluster->GetPixelsN());
-	  if (TAMSDparConf::IsMapHistOn()) {
-	    fpHisClusMap[iSensor]->Fill(cluster->GetPosition());
-	  }
-	}
-      }
-    }
-    if (pNtuClus->GetClustersN(iSensor))
-      return true;
-    
-    return false;
-    
+     if (ApplyCuts(cluster)) {
+        // histogramms
+        if (ValidHistogram()) {
+           if (cluster->GetStripsN() > 0) {
+              fpHisStripTot->Fill(cluster->GetStripsN());
+              fpHisStrip[iSensor]->Fill(cluster->GetStripsN());
+              // printf("sensor %d %d\n", iSensor, cluster->GetPixelsN());
+              if (TAMSDparConf::IsMapHistOn()) {
+                 fpHisClusMap[iSensor]->Fill(cluster->GetPosition());
+              }
+           }
+        }
+     }
   }
+   
+  if (pNtuClus->GetClustersN(iSensor))
+     return true;
+  
+   return false;
 }
   
 //______________________________________________________________________________
