@@ -73,13 +73,15 @@ void LocalReco::CreateRawAction()
       fpDatRawTw   = new TAGdataDsc("twdDat", new TATWdatRaw());
 
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpParMapSt, fpParMapTw, fpParTimeSt, fpParTimeTw);
-      fActWdRaw->CreateHistogram();
+      if (fFlagHisto)
+         fActWdRaw->CreateHistogram();
    }
    
    if (GlobalPar::GetPar()->IncludeST() ||GlobalPar::GetPar()->IncludeBM()) {
       fpNtuRawSt   = new TAGdataDsc("stNtu", new TASTntuRaw());
       fActNtuRawSt = new TASTactNtuRaw("stActNtu", fpDatRawSt, fpNtuRawSt, fpParMapSt);
-      fActNtuRawSt->CreateHistogram();
+      if (fFlagHisto)
+         fActNtuRawSt->CreateHistogram();
    }
 
    if (GlobalPar::GetPar()->IncludeBM()) {
@@ -88,14 +90,18 @@ void LocalReco::CreateRawAction()
       
       if (fgStdAloneFlag) {
          fActVmeReaderBm  = new TABMactVmeReader("bmActNtu", fpDatRawBm, fpParMapBm, fpParConfBm, fpParGeoBm, fpNtuRawSt);
-         fActVmeReaderBm->CreateHistogram();
+         if (fFlagHisto)
+            fActVmeReaderBm->CreateHistogram();
          
       } else {
          fActDatRawBm = new TABMactDatRaw("bmActDat", fpDatRawBm, fpDaqEvent, fpParMapBm, fpParConfBm, fpParGeoBm, fpNtuRawSt);
-         fActDatRawBm->CreateHistogram();
+         if (fFlagHisto)
+            fActDatRawBm->CreateHistogram();
          if(GlobalPar::GetPar()->Debug()) fActDatRawBm->SetDebugLevel(1);
+         
          fActNtuRawBm = new TABMactNtuRaw("bmActNtu", fpNtuRawBm, fpDatRawBm, fpNtuRawSt, fpParGeoBm, fpParConfBm);
-         fActNtuRawBm->CreateHistogram();
+         if (fFlagHisto)
+            fActNtuRawBm->CreateHistogram();
          if(GlobalPar::GetPar()->Debug()) fActNtuRawBm->SetDebugLevel(1);
       }
    }
@@ -105,20 +111,22 @@ void LocalReco::CreateRawAction()
       
       if (fgStdAloneFlag) {
          fActVmeReaderVtx  = new TAVTactVmeReader("vtActNtu", fpNtuRawVtx, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
-         fActVmeReaderVtx->CreateHistogram();
+         if (fFlagHisto)
+            fActVmeReaderVtx->CreateHistogram();
          
       } else {
          fActNtuRawVtx = new TAVTactNtuRaw("vtActNtu", fpNtuRawVtx, fpDaqEvent, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
+         if (fFlagHisto)
          fActNtuRawVtx->CreateHistogram();
-	 if(GlobalPar::GetPar()->Debug()) fActNtuRawVtx->SetDebugLevel(1);
-
+         if(GlobalPar::GetPar()->Debug()) fActNtuRawVtx->SetDebugLevel(1);
       }
    }
    
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       fpNtuRawIt   = new TAGdataDsc("itRaw", new TAITntuRaw());
       fActNtuRawIt = new TAITactNtuRaw("itActNtu", fpNtuRawIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
-      fActNtuRawIt->CreateHistogram();
+      if (fFlagHisto)
+         fActNtuRawIt->CreateHistogram();
    }
    
 //   if (GlobalPar::GetPar()->IncludeMSD()) {
@@ -136,7 +144,8 @@ void LocalReco::CreateRawAction()
       fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
       fActNtuRawTw = new TATWactNtuRaw("twActNtu", fpDatRawTw, fpNtuRawTw, fpParGeoTw, fpParMapTw, fpParCalTw);
       if(GlobalPar::GetPar()->Debug()) fActNtuRawTw->SetDebugLevel(1);
-      fActNtuRawTw->CreateHistogram();
+      if (fFlagHisto)
+         fActNtuRawTw->CreateHistogram();
    }
    
    //   if(GlobalPar::GetPar()->IncludeCA()) {
@@ -252,9 +261,9 @@ void LocalReco::AddRawRequiredItem()
       fTAGroot->AddRequiredItem("vtActNtu");
    }
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
-      fTAGroot->AddRequiredItem("itActNtu");
-   }
+//   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+//      fTAGroot->AddRequiredItem("itActNtu");
+//   }
    
    if (GlobalPar::GetPar()->IncludeTW()) {
       fTAGroot->AddRequiredItem("twActNtu");
