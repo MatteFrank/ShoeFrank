@@ -144,8 +144,6 @@ protected:
 
    Int_t           fType;         // type of sensor
    
-   TAGparaDsc*     fpParGeoDi;
-
    //Display
    TAEDcluster*    fStClusDisplay;  // list of quad to display hits
 

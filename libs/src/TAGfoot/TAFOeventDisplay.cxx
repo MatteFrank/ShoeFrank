@@ -201,14 +201,17 @@ void TAFOeventDisplay::ReadParFiles()
    fReco->ReadParFiles();
    
    // Set field for propagator if field defined
-   if (GlobalPar::GetPar()->IncludeKalman() && GlobalPar::GetPar()->IncludeDI()) {
-      TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
+   if (GlobalPar::GetPar()->IncludeDI()) {
+      TADIparGeo* parGeo = fReco->GetParGeoDi();
       
       fFieldImpl = new FootField("", parGeo);
       fField     = new TADIeveField(fFieldImpl);
-      fGlbTrackDisplay->GetPropagator()->SetMagFieldObj(fField);
-      fGlbTrackDisplay->GetPropagator()->SetMaxZ(fWorldSizeZ);
-      fGlbTrackDisplay->GetPropagator()->SetMaxR(fWorldSizeXY);
+      
+      if (GlobalPar::GetPar()->IncludeKalman()) {
+         fGlbTrackDisplay->GetPropagator()->SetMagFieldObj(fField);
+         fGlbTrackDisplay->GetPropagator()->SetMaxZ(fWorldSizeZ);
+         fGlbTrackDisplay->GetPropagator()->SetMaxR(fWorldSizeXY);
+      }
    }
           
    TAVTparConf::SetHistoMap();
@@ -261,7 +264,7 @@ void TAFOeventDisplay::BuildDefaultGeometry()
 
    // Magnet
    if (GlobalPar::GetPar()->IncludeDI()) {
-      TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
+      TADIparGeo* parGeo = fReco->GetParGeoDi();
       TGeoVolume* vtVol = parGeo->BuildMagnet();
       
       const TGeoHMatrix* transfo = fpFootGeo->GetTrafo(TADIparGeo::GetBaseName());
