@@ -134,7 +134,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
          if(fDebugLevel)
             cout  << "   tilt: " << Form("%f %f %f", tilt[0], tilt[1], tilt[2]) << endl;
 
-         vTilt.push_back(tilt);
+         vTilt.insert(vTilt.begin()+nModule, tilt);
          
          TGeoRotation rot;
          rot.RotateX(tilt[0]);
