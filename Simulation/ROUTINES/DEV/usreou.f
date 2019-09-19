@@ -32,7 +32,7 @@
 *----------------------------------------------------------------------*
 *
       include '(CASLIM)'
-      include 'mgdraw.inc'
+      include '../mgdraw.inc'
       integer ii
       logical trigger
       double precision Eqcalo, Eqscint

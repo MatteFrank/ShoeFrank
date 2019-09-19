@@ -16,15 +16,15 @@ VertexPosX: 0. VertexPosY:   0. VertexPosZ: 1.5
 VertexAngX: 0. VertexAngY:   0. VertexAngZ: 0.
 
 MagnetsBaseName: "DI"
-MagnetsPosX: 0. MagnetsPosY:   0. MagnetsPosZ: 14.
+MagnetsPosX: 0. MagnetsPosY:   0. MagnetsPosZ: 16.5
 MagnetsAngX: 0. MagnetsAngY:   0. MagnetsAngZ: 0.
 
 InnerTrackerBaseName: "IT"
-InnerTrackerPosX: 0. InnerTrackerPosY: 0. InnerTrackerPosZ: 14.
+InnerTrackerPosX: 0. InnerTrackerPosY: 0. InnerTrackerPosZ: 16.5
 InnerTrackerAngX: 0. InnerTrackerAngY: 0. InnerTrackerAngZ: 0.
 
 MultiStripBaseName: "MSD"
-MultiStripPosX: 0. MultiStripPosY: 0. MultiStripPosZ: 29.
+MultiStripPosX: 0. MultiStripPosY: 0. MultiStripPosZ: 31.5
 MultiStripAngX: 0. MultiStripAngY: 0. MultiStripAngZ: 0.
 
 TofWallBaseName: "TW"

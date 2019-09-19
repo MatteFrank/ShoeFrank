@@ -31,8 +31,8 @@
       CHARACTER SDUM*8, SDUM10*10
 c
       INCLUDE '(FLKMAT)'
-      include "mgdraw.inc"
-      include "parameters.inc"
+      include "../mgdraw.inc"
+      include "../parameters.inc"
       character*8 REGNAM
       integer cellBMN, strip, cry, layMSD
       integer sensITR
