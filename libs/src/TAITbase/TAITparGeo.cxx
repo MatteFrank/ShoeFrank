@@ -163,13 +163,10 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
    TGeoVolume* itMod = 0x0;
    
    for(Int_t iSensor = 0; iSensor < GetNSensors(); iSensor++) {
-      TGeoHMatrix* hm = GetTransfo(iSensor);
+      TGeoCombiTrans* hm = GetCombiTransfo(iSensor);
       itMod = AddModule(Form("%s%d",basemoduleName, iSensor), itName);
-      
-      TGeoHMatrix* transf = (TGeoHMatrix*)hm->Clone();
-      double* trans = transf->GetTranslation();
-      
-      it->AddNode(itMod, iSensor, transf);
+            
+      it->AddNode(itMod, iSensor, hm);
    }
    
    return it;

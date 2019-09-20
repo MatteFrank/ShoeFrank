@@ -448,6 +448,27 @@ TGeoHMatrix* TAGparTools::GetTransfo(Int_t idx)
 }
 
 //_____________________________________________________________________________
+TGeoCombiTrans* TAGparTools::GetCombiTransfo(Int_t idx)
+{
+   if (idx < 0 || idx >= fMatrixList->Capacity()) {
+      Warning("GetTransfo()","Wrong detector id number: %d ", idx);
+      return 0x0;
+   }
+   
+   TGeoHMatrix* hm = (TGeoHMatrix*)fMatrixList->At(idx);
+   Double_t* mat   = hm->GetRotationMatrix();
+   Double_t* dis   = hm->GetTranslation();
+   
+   TGeoRotation rot;
+   rot.SetMatrix(mat);
+   
+   TGeoTranslation trans;
+   trans.SetTranslation(dis[0], dis[1], dis[2]);
+   
+   return  new TGeoCombiTrans(trans, rot);
+}
+
+//_____________________________________________________________________________
 void TAGparTools::SetupMatrices(Int_t size)
 {
    fMatrixList = new TObjArray(size);

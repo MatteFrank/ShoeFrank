@@ -273,11 +273,10 @@ TGeoVolume* TAMSDparGeo::BuildMultiStripDetector(const char* basemoduleName, con
 
    for(Int_t iSensor = 0; iSensor < fSensorsN; iSensor++) {
 
-      TGeoHMatrix* hm = GetTransfo(iSensor);
+      TGeoCombiTrans* hm = GetCombiTransfo(iSensor);
       msdMod = AddModule(Form("%s%d",basemoduleName, iSensor), msdName);
 
-      TGeoHMatrix* transf = (TGeoHMatrix*)hm->Clone();
-      msd->AddNode(msdMod, iSensor, transf);
+      msd->AddNode(msdMod, iSensor, hm);
    }
    return msd;
 }

@@ -21,6 +21,7 @@
 using namespace std;
 
 class TGeoHMatrix;
+class TGeoCombiTrans;
 //##############################################################################
 
 class TAGparTools : public TAGpara {
@@ -79,6 +80,8 @@ public:
    void            RemoveTransMatrix(TGeoHMatrix* mat);
    //! Get matrix transformation
    TGeoHMatrix*    GetTransfo(Int_t idx);
+   //! Get matrix tranformation for volume placing
+   TGeoCombiTrans* GetCombiTransfo(Int_t idx);
 
   
    string PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,

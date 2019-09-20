@@ -303,16 +303,14 @@ TGeoVolume* TADIparGeo::BuildMagnet(const char* basemoduleName, const char *magn
    for(Int_t iMag = 0; iMag < GetMagnetsN(); ++iMag) {
       TVector3 size = GetMagnetPar(iMag).Size;
 
-      TGeoHMatrix* transfo = GetTransfo(iMag);
-      TGeoHMatrix* transf = (TGeoHMatrix*)transfo->Clone();
-      
+      TGeoCombiTrans* hm = GetCombiTransfo(iMag);
       TGeoTube* tube = new TGeoTube(Form("TubeMagnet%d", iMag+1), size[0], size[1], size[2]/2.);
       
       TGeoVolume *magnetMod = new TGeoVolume(Form("%s_Magnet",basemoduleName), tube, medMod);
       magnetMod->SetLineColor(kBlue-3);
       magnetMod->SetTransparency( TAGgeoTrafo::GetDefaultTransp());
       
-      magnet->AddNode(magnetMod, iMag, transf);
+      magnet->AddNode(magnetMod, iMag, hm);
    }
 
    return magnet;

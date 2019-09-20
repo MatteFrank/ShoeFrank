@@ -343,20 +343,10 @@ TGeoVolume* TACAparGeo::BuildCalorimeter(const char *caName)
    for (Int_t i = 0; i < fgkDefaultModulesN; ++i) {
       
       TGeoVolume* module = BuildModule(i);
+      TGeoCombiTrans* hm = GetCombiTransfo(i);
       
-      TGeoHMatrix* hm = GetTransfo(i);
-      if (hm) {
-         Double_t* mat = hm->GetRotationMatrix();
-         Double_t* dis = hm->GetTranslation();
-         
-         TGeoRotation rot;
-         rot.SetMatrix(mat);
-         
-         TGeoTranslation trans;
-         trans.SetTranslation(dis[0], dis[1], dis[2]);
-         
-         wall->AddNode(module, i, new TGeoCombiTrans(trans, rot));
-      }
+      if (hm)
+         wall->AddNode(module, i, hm);
    }
    
    return wall;

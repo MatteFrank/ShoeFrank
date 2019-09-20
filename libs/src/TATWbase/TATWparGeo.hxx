@@ -15,7 +15,7 @@
 
 #include "GlobalPar.hxx"
 
-class TGeoHMatrix;
+class TGeoCombiTrans;
 class TGeoVolume;
 class TObjArray;
 class TAGionisMaterials;
@@ -47,7 +47,7 @@ public:
    TVector3       Detector2Sensor(Int_t layer, TVector3 vec);
 
    //! Get matrix transformation
-   TGeoHMatrix*    GetTransfo(Int_t layer, Int_t barId);
+   TGeoCombiTrans* GetTransfo(Int_t layer, Int_t barId);
 
    
    //! Transform point from the global detector reference frame

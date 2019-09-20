@@ -99,11 +99,10 @@ TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemodu
    
   for(Int_t iSensor = 0; iSensor < GetNSensors(); iSensor++) {
       
-    TGeoHMatrix* hm = GetTransfo(iSensor);
+    TGeoCombiTrans* hm = GetCombiTransfo(iSensor);
     vertexMod = AddModule(Form("%s%d",basemoduleName, iSensor), vertexName);
       
-    TGeoHMatrix* transf = (TGeoHMatrix*)hm->Clone();
-    vertex->AddNode(vertexMod, iSensor, transf);
+    vertex->AddNode(vertexMod, iSensor, hm);
   }
    
   return vertex;

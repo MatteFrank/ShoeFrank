@@ -152,11 +152,11 @@ Bool_t TATWparGeo::FromFile(const TString& name)
 }
 
 //_____________________________________________________________________________
-TGeoHMatrix* TATWparGeo::GetTransfo(Int_t iLayer, Int_t iBar)
+TGeoCombiTrans* TATWparGeo::GetTransfo(Int_t iLayer, Int_t iBar)
 {
    Int_t idx = iLayer*fBarsN + iBar;
 
-   return TAGparTools::GetTransfo(idx);
+   return TAGparTools::GetCombiTransfo(idx);
 }
 
 //_____________________________________________________________________________
@@ -325,7 +325,7 @@ TGeoVolume* TATWparGeo::BuildTofWallXY(const char *wallName, Int_t iLayer)
    
    for (Int_t i = 0; i < fBarsN; ++i) {
 
-      TGeoHMatrix* hm = GetTransfo(iLayer, i);
+      TGeoCombiTrans* hm = GetTransfo(iLayer, i);
       
       TGeoVolume* module = BuildModule(i, iLayer);
       
