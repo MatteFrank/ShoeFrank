@@ -74,6 +74,30 @@ const TGeoHMatrix* TAGgeoTrafo::GetTrafo(const char* nameSuf) const
 }
 
 //_____________________________________________________________________________
+TGeoCombiTrans* TAGgeoTrafo::GetCombiTrafo(const char* nameSuf) const
+{
+   TString name = Form("%s%s", fgkTrafoBaseName, nameSuf);
+   const TGeoHMatrix* matrix = (const TGeoHMatrix*)fMatrixList->FindObject(name);
+   
+   if (matrix) {
+      const Double_t* mat = matrix->GetRotationMatrix();
+      const Double_t* dis = matrix->GetTranslation();
+      
+      TGeoRotation rot;
+      rot.SetMatrix(mat);
+      
+      TGeoTranslation trans;
+      trans.SetTranslation(dis[0], dis[1], dis[2]);
+      
+      return  new TGeoCombiTrans(trans, rot);
+      
+   } else {
+      Error("GetTrafo","No matrix with name %s found, reset to ID", name.Data());
+      return new TGeoCombiTrans();
+   }
+}
+
+//_____________________________________________________________________________
 TVector3 TAGgeoTrafo::GetDeviceCenter(const char* nameSuf) const
 {
    TString name = Form("%s%s", fgkTrafoBaseName, nameSuf);

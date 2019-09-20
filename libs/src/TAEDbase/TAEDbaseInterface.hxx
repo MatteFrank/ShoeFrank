@@ -112,7 +112,7 @@ public:
    
    virtual void LoadGeometry(const Char_t* fileName);
    
-   virtual void AddGeometry(TGeoVolume* volume, TGeoMatrix* matrix = gGeoIdentity);
+   virtual void AddGeometry(TGeoVolume* volume, TGeoCombiTrans* matrix = 0x0);
    
    virtual void BuildDefaultGeometry();
    

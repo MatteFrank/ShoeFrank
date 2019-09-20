@@ -138,6 +138,7 @@ public:
 
    
    const TGeoHMatrix*   GetTrafo(const char* name) const;
+   TGeoCombiTrans*      GetCombiTrafo(const char* name) const;
    void                 AddTrafo(TGeoHMatrix* mat);
    void                 AddDevice(DeviceParameter_t* device);
    TVector3             GetDeviceCenter(const char* name) const;

@@ -180,7 +180,7 @@ void TAEDbaseInterface::LoadGeometry(const Char_t* fileName)
 }
 
 //__________________________________________________________
-void TAEDbaseInterface::AddGeometry(TGeoVolume* volume, TGeoMatrix* transf)
+void TAEDbaseInterface::AddGeometry(TGeoVolume* volume, TGeoCombiTrans* transf)
 {
    static Int_t nb = 0;
    TObjArray* list =  fTopVolume->GetNodes();

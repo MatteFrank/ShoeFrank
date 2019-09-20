@@ -227,9 +227,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
       TASTparGeo* parGeo = fReco->GetParGeoSt();
       TGeoVolume* irVol  = parGeo->BuildStartCounter();
    
-      const TGeoHMatrix* transfo = fpFootGeo->GetTrafo(TASTparGeo::GetBaseName());
-      TGeoHMatrix* transf        = (TGeoHMatrix*)transfo->Clone();
-      AddGeometry(irVol, transf);
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TASTparGeo::GetBaseName());
+      AddGeometry(irVol, transfo);
    }
 
    // BM
@@ -237,9 +236,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
       TABMparGeo* parGeo = fReco->GetParGeoBm();;
       TGeoVolume* bmVol  = parGeo->BuildBeamMonitor();
       
-      const TGeoHMatrix* transfo = fpFootGeo->GetTrafo(TABMparGeo::GetBaseName());
-      TGeoHMatrix* transf        = (TGeoHMatrix*)transfo->Clone();
-      AddGeometry(bmVol, transf);
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TABMparGeo::GetBaseName());
+      AddGeometry(bmVol, transfo);
    }
 
    // target
@@ -247,9 +245,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
       TAGparGeo* parGeo = fReco->GetParGeoG();;
       TGeoVolume* tgVol = parGeo->BuildTarget();
       
-      const TGeoHMatrix* transfo = fpFootGeo->GetTrafo(TAGparGeo::GetBaseName());
-      TGeoHMatrix* transf        = (TGeoHMatrix*)transfo->Clone();
-      AddGeometry(tgVol, transf);
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAGparGeo::GetBaseName());
+      AddGeometry(tgVol, transfo);
    }
 
    // Vertex
@@ -257,9 +254,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
       TAVTparGeo* parGeo = fReco->GetParGeoVtx();
       TGeoVolume* vtVol  = parGeo->BuildVertex();
       
-      const TGeoHMatrix* transfo = fpFootGeo->GetTrafo(TAVTparGeo::GetBaseName());
-      TGeoHMatrix* transf        = (TGeoHMatrix*)transfo->Clone();
-      AddGeometry(vtVol, transf);
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAVTparGeo::GetBaseName());
+      AddGeometry(vtVol, transfo);
    }
 
    // Magnet
@@ -267,9 +263,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
       TADIparGeo* parGeo = fReco->GetParGeoDi();
       TGeoVolume* vtVol = parGeo->BuildMagnet();
       
-      const TGeoHMatrix* transfo = fpFootGeo->GetTrafo(TADIparGeo::GetBaseName());
-      TGeoHMatrix* transf        = (TGeoHMatrix*)transfo->Clone();
-      AddGeometry(vtVol, transf);
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TADIparGeo::GetBaseName());
+      AddGeometry(vtVol, transfo);
    }
 
    // IT
@@ -277,9 +272,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
       TAITparGeo* parGeo = fReco->GetParGeoIt();
       TGeoVolume* itVol  = parGeo->BuildInnerTracker();
       
-      const TGeoHMatrix* transfo = fpFootGeo->GetTrafo(TAITparGeo::GetItBaseName());
-      TGeoHMatrix* transf        = (TGeoHMatrix*)transfo->Clone();
-      AddGeometry(itVol, transf);
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAITparGeo::GetItBaseName());
+      AddGeometry(itVol, transfo);
    }
    
    // MSD
@@ -287,9 +281,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
       TAMSDparGeo* parGeo = fReco->GetParGeoMsd();
       TGeoVolume* msdVol = parGeo->BuildMultiStripDetector();
       
-      const TGeoHMatrix* transfo = fpFootGeo->GetTrafo(TAMSDparGeo::GetBaseName());
-      TGeoHMatrix* transf        = (TGeoHMatrix*)transfo->Clone();
-      AddGeometry(msdVol, transf);
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAMSDparGeo::GetBaseName());
+      AddGeometry(msdVol, transfo);
    }
 
    // TW
@@ -297,9 +290,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
       TATWparGeo* parGeo = fReco->GetParGeoTw();;
       TGeoVolume* twVol = parGeo->BuildTofWall();
       
-      const TGeoHMatrix* transfo = fpFootGeo->GetTrafo(TATWparGeo::GetBaseName());
-      TGeoHMatrix* transf        = (TGeoHMatrix*)transfo->Clone();
-      AddGeometry(twVol, transf);
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TATWparGeo::GetBaseName());
+      AddGeometry(twVol, transfo);
    }
 
    // CA
@@ -307,9 +299,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
       TACAparGeo* parGeo = fReco->GetParGeoCa();
       TGeoVolume* caVol = parGeo->BuildCalorimeter();
       
-      const TGeoHMatrix* transfo = fpFootGeo->GetTrafo(TACAparGeo::GetBaseName());
-      TGeoHMatrix* transf        = (TGeoHMatrix*)transfo->Clone();
-      AddGeometry(caVol, transf);
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TACAparGeo::GetBaseName());
+      AddGeometry(caVol, transfo);
    }
 }
 
