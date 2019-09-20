@@ -18,16 +18,9 @@ endif()
 
 
 #----------------------------------------------------------------------------
-#  Print Geant4 directory and find REC part of FOOT
+#  Print Geant4 directory
 #
-message("-- Found Geant4 in ${Geant4_DIR}")
-
-find_package(REC)
-if (REC_FOUND)
-   	include_directories(${REC_INCLUDE_DIR})
-else()
-   MESSAGE(" --> REC has NOT been found")
-endif()
+message(" --> Found Geant4 in ${Geant4_DIR}")
 
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions

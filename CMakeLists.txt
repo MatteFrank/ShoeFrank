@@ -106,6 +106,16 @@ set(TAED_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAED}")
 set(TAFO_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAFO}")
 
 #----------------------------------------------------------------------------
+#  Print Geant4 directory and find REC part of FOOT
+#
+find_package(REC)
+if (REC_FOUND)
+#  	include_directories(${REC_INCLUDE_DIR})
+else()
+   MESSAGE(" --> REC has NOT been found")
+endif()
+
+#----------------------------------------------------------------------------
 # GenFit
 #
 SET(GENFIT_INCLUDE_DIR

@@ -22,7 +22,7 @@ set(REC_GEOMAPS_DIR ${FOOT_LEVEL0}/geomaps)
 set(REC_CONFIG_DIR  ${FOOT_LEVEL0}/config)
   
 if(NOT REC_FIND_QUIETLY)
-  message(STATUS "Found REC in ${FOOT_REC}")
+  message(" --> Found REC in ${FOOT_REC}")
  endif()
  
 set(REC_FOUND TRUE)

@@ -6,16 +6,6 @@ MESSAGE("${PROJECT_NAME}:")
 #
 
 #----------------------------------------------------------------------------
-#  Print Geant4 directory and find REC part of FOOT
-#
-find_package(REC)
-if (REC_FOUND)
-   	include_directories(${REC_INCLUDE_DIR})
-else()
-   MESSAGE(" --> REC has NOT been found")
-endif()
-
-#----------------------------------------------------------------------------
 # Copy
 #
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/link_FOOTdev.sh DESTINATION ${CMAKE_BINARY_DIR}/Simulation/)
