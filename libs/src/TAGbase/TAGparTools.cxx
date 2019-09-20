@@ -181,6 +181,8 @@ void TAGparTools::ReadItem(Float_t* coeff, Int_t size,  const Char_t delimiter)
    TString key;
    TAGparTools::ReadItem(key);
    
+   if (key.IsNull()) return;
+   
    TObjArray* list = key.Tokenize(delimiter);
    if (list->GetEntries() != size)
 	  Error("ReadItem()","wrong tokenize for [%s] with size %d", key.Data(), size);
@@ -223,7 +225,9 @@ void TAGparTools::ReadStrings(TString& aString)
    
    TString key;
    TAGparTools::ReadItem(key);
-   
+
+   if (key.IsNull()) return;
+
    Int_t pos = key.First('"');
    Int_t end = key.Last('"');
    
