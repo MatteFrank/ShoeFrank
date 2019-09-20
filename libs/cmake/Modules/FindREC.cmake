@@ -16,6 +16,8 @@ set(REC_INCLUDE_DIR ${FOOT_REC}/TAGbase ${FOOT_REC}/TADIbase ${FOOT_REC}/TAMCbas
 
 
 set(REC_LIBRARIES -lTAGbase -lTADIbase -lTAMCbase -lTASTbase -lTABMbase -lTAMCbase -lTAVTbase -lTAITbase -lTAMSDbase -lTACAbase -lTATWbase -lTAEDbase  -lTAGfoot -L${BUILD_REC}/lib)
+
+set(SIM_REC_LIBRARIES TAGbase TADIbase TAMCbase TASTbase TABMbase TAMCbase TAVTbase TAITbase TAMSDbase TACAbase TATWbase TAEDbase TAGfoot)
 set(REC_LIBRARY_DIR ${FOOT_REC}/lib)
 
 set(REC_GEOMAPS_DIR ${FOOT_LEVEL0}/geomaps)

@@ -42,6 +42,7 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 #
 add_executable(makeGeo MakeGeo.cxx)
 #
+add_dependencies(makeGeo ${SIM_REC_LIBRARIES})
 target_link_libraries(makeGeo ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIBRARIES} )
 
 #----------------------------------------------------------------------------
@@ -55,6 +56,7 @@ install(TARGETS makeGeo DESTINATION bin)
 #
 add_executable(Txt2Root Txt2Root.cxx)
 #
+add_dependencies(Txt2Root ${SIM_REC_LIBRARIES})
 target_link_libraries(Txt2Root ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIBRARIES} )
 
 #----------------------------------------------------------------------------
@@ -67,6 +69,7 @@ install(TARGETS Txt2Root DESTINATION bin)
 #
 add_executable(Txt2NtuRoot Txt2NtuRoot.cxx)
 #
+add_dependencies(Txt2NtuRoot ${SIM_REC_LIBRARIES})
 target_link_libraries(Txt2NtuRoot ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIBRARIES} )
 
 #----------------------------------------------------------------------------

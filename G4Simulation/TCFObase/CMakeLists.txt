@@ -53,6 +53,7 @@ include_directories(${TCEM_INCLUDE_DIR})
 # Install lib and headers 
 #
 add_library(${LIBNAME} SHARED ${sources})
+add_dependencies(${LIBNAME} ${SIM_REC_LIBRARIES})
 #
 set_target_properties(${LIBNAME} PROPERTIES SUFFIX ".so")
 #
