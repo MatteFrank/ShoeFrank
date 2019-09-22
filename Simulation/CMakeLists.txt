@@ -15,7 +15,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/link_FOOT_mag.sh DESTINATION ${CMAKE_BINAR
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/foot.inp DESTINATION ${CMAKE_BINARY_DIR}/Simulation/)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ROUTINES/  DESTINATION ${CMAKE_BINARY_DIR}/Simulation/ROUTINES)
 
-execute_process(COMMAND ln -sf ${FOOT_FULLREC}/data/  ${CMAKE_BINARY_DIR}/Simulation)
+execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/data/  ${CMAKE_BINARY_DIR}/Simulation)
 execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/level0/geomaps/  ${CMAKE_BINARY_DIR}/Simulation)
 execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/level0/config/  ${CMAKE_BINARY_DIR}/Simulation)
 
