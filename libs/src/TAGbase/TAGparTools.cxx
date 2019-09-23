@@ -460,6 +460,9 @@ TGeoCombiTrans* TAGparTools::GetCombiTransfo(Int_t idx)
    }
    
    TGeoHMatrix* hm = (TGeoHMatrix*)fMatrixList->At(idx);
+   if (hm == 0x0)
+      return 0x0;
+   
    Double_t* mat   = hm->GetRotationMatrix();
    Double_t* dis   = hm->GetTranslation();
    
