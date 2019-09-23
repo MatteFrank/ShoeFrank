@@ -106,7 +106,7 @@ G4LogicalVolume* TCCAgeometryConstructor::Construct()
                    if(j==0) sup = new G4SubtractionSolid("sup",support,bgo,rotCrys, G4ThreeVector(pos[0], pos[1],pos[2]-(zdimCrys/2.0)));
                    else sup = new G4SubtractionSolid("sup",sup,bgo,rotCrys, G4ThreeVector(pos[0], pos[1], pos[2]-(zdimCrys/2.0)));
                }
-              new G4PVPlacement(rotCrys, G4ThreeVector(pos[0], pos[1], pos[2]), fCalLog, "Crystals", fModLog, false, j + 1);
+              new G4PVPlacement(rotCrys, G4ThreeVector(pos[0], pos[1], pos[2]), fCalLog, "Crystals", fModLog, false, i*crystalsN + j);
            }
            if(i==0) fSupLog = new G4LogicalVolume(sup, air, "SupportLog");
            TVector3 posMod = fpParGeo->GetModulePosition(i)*cm;
