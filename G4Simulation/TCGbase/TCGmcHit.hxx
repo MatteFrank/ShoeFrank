@@ -44,7 +44,8 @@ private:
    G4ThreeVector   fMomentumDir; //momentum dir in case of interaction
    G4double        fKineticEnergy; // charge of particle
    G4double        fGlobalTime; // global time
-   
+   G4double        fLocalTime; // local time
+
 public:
    void AddEdep(G4double de)               { fEdep  += de;               }
    void SetEdep(G4double de)               { fEdep = de;                 } //keV
@@ -82,7 +83,9 @@ public:
    
    void SetGlobalTime(G4double time)       { fGlobalTime = time;         }  //Global time of track
    G4double GetGlobalTime()          const { return fGlobalTime;         }
-   
+    void SetLocalTime(G4double time)       { fLocalTime = time;         }  //Local time of track
+    G4double GetLocalTime()          const { return fLocalTime;         }
+
 	void SetSensorId(G4int SensorId)        { fSensorId = SensorId;       }
 	G4int GetSensorId()                     { return fSensorId;           }
 	void SetlocPos(G4ThreeVector xyz)       { flocalPos = xyz;            } //mm

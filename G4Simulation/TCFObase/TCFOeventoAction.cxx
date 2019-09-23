@@ -200,6 +200,8 @@ void TCFOeventoAction::FillTrack()
     Int_t parentID ;
     Int_t nbaryon ;
     Int_t charge ;
+    Int_t dead ;
+    Int_t region ;
     Double_t mass ;
     Double_t tof ;
     Double_t time ;
@@ -219,7 +221,9 @@ void TCFOeventoAction::FillTrack()
         initmom = fMcTrack->GetHit(i)->GetInitP();
         finalpos = fMcTrack->GetHit(i)->GetFinalPos();
         finalmom = fMcTrack->GetHit(i)->GetFinalP();
-        hit->AddPart(parentID,trackID,charge,-1,nbaryon,-1,flukaID,
+        dead = fMcTrack->GetHit(i)->GetDead() ;
+        region = fMcTrack->GetHit(i)->GetRegion() ;
+    hit->AddPart(parentID,trackID,charge,region,nbaryon,dead,flukaID,
                      initpos.X(),initpos.Y(),initpos.Z(),
                      finalpos.X(),finalpos.Y(),finalpos.Z(),
                      initmom.X(),initmom.Y(),initmom.Z(),
@@ -243,7 +247,7 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
    Double_t al       = 0;
 
    hit->SetEvent(fEventNumber);
-   
+
   // G4bool kElectron  = mcHit->GetParticleName().contains("e-");
    G4bool kElectron  = false; // do not cut on e-
 

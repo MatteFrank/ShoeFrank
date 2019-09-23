@@ -50,6 +50,7 @@
 #include "G4TransportationManager.hh"
 #include "G4RunManager.hh"
 #include "G4VisAttributes.hh"
+#include "G4Region.hh"
 
 #include "TCGtargetConstructor.hxx"
 #include "TCGmaterials.hxx"
@@ -132,7 +133,11 @@ G4VPhysicalVolume* TCGbaseGeometryConstructor::Construct()
       tgRot->rotateY(-tgAng[1]);
       tgRot->rotateZ(-tgAng[2]);
       tgRot->invert(); // inversion ???
-      
+
+       G4Region *regTgt = new G4Region("Target");
+       logTarget->SetRegion(regTgt);
+       regTgt->AddRootLogicalVolume(logTarget);
+
       new G4PVPlacement(tgRot, G4ThreeVector(tgCenter[0], tgCenter[1], tgCenter[2]), logTarget, "Target", fLogWorld, false, 0);
    }
    
