@@ -480,6 +480,7 @@ void TAGparTools::SetupMatrices(Int_t size)
 {
    fMatrixList = new TObjArray(size);
    fMatrixList->SetOwner(true);
+   fMatrixList->Clear();
 }
 
 
