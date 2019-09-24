@@ -34,10 +34,6 @@ public:
    // Crystal
    Int_t          GetCrystalsN()       const  { return fCrystalsN;      }
    TVector3       GetCrystalSize()     const  { return fCrystalSize;    }
-   Float_t        GetCrystalWidth()    const  { return fCrystalSize[0]; }  // keep for backward compatibility
-   Float_t        GetCrystalHeight()   const  { return fCrystalSize[1]; }
-   Float_t        GetCrystalThick()    const  { return fCrystalSize[2]; }
-   
    Float_t        GetCrystalBotBase()  const  { return fCrystalSize[0]; }
    Float_t        GetCrystalTopBase()  const  { return fCrystalSize[1]; }
    Float_t        GetCrystalLength()   const  { return fCrystalSize[2]; }
@@ -80,6 +76,8 @@ public:
    TVector3        Crystal2Detector(Int_t idx, Int_t iMod, TVector3& loc) const;
    TVector3        Crystal2DetectorVect(Int_t idx, Int_t iMod, TVector3& loc) const;
 
+ 
+   
    // to print fluka files
   string PrintRotations();
   string PrintBodies();
@@ -110,6 +108,8 @@ public:
    static Color_t GetDefaultModColOn()    { return fgkDefaultModColOn;    }
    static Int_t   GetDefaultModulesN()    { return fgkDefaultModulesN;    }
    static Int_t   GetCrystalsNperModule() { return fgkCrystalsNperModule; }
+   static Int_t   GetCrystalId(Int_t idx) { return idx % fgkCrystalsNperModule; }
+   static Int_t   GetModuleId(Int_t idx)  { return idx / fgkCrystalsNperModule; }
 
 private:
    static const TString fgkBaseName;
@@ -124,7 +124,7 @@ private:
 
    static const Char_t* GetDefaultCrysName(Int_t idx, Int_t iMod) { return Form("%s_%d_%d", fgkDefaultCrysName.Data(), idx, iMod); }
    static const Char_t* GetDefaultModName(Int_t idx) { return Form("%s_%d", fgkDefaultModName.Data(), idx); }
-
+   
 private:
    TAGionisMaterials* fIonisation; //! pointer for ionisation property
    TObjArray* fCrystalMatrixList;       //! list of transformation matrices  (rotation+translation for each crystal)

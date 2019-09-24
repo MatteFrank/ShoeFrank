@@ -483,7 +483,7 @@ TGeoVolume* TACAparGeo::BuildCalorimeter(const char *caName)
    TGeoVolume* wall = gGeoManager->FindVolumeFast(caName);
    if ( wall == 0x0 ) {
       TGeoMedium*  med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject("AIR");
-      wall = gGeoManager->MakeBox(caName, med,  GetCrystalHeight()/2.,  GetCrystalHeight()/2., GetCrystalThick()/2.);
+      wall = gGeoManager->MakeBox(caName, med,  GetCrystalTopBase()/2.,  GetCrystalTopBase()/2., GetCrystalLength());
    }
    
    for (Int_t i = 0; i < fgkDefaultModulesN; ++i) {
