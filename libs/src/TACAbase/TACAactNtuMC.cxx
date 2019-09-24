@@ -101,9 +101,12 @@ Bool_t TACAactNtuMC::Action()
       Float_t edep  = fpEvtStr->CALde[i]*TAGgeoTrafo::GevToMev();
       Float_t time  = fpEvtStr->CALtim[i]*TAGgeoTrafo::SecToNs();
       
+      Int_t iCrys  = TACAparGeo::GetCrystalId(id);
+      Int_t iMod   = TACAparGeo::GetModuleId(id);
 
       TVector3 posIn(x0, y0, z0);
-      TVector3 posInLoc = geoTrafo->FromGlobalToCALocal(posIn);
+      posIn = geoTrafo->FromGlobalToCALocal(posIn);
+      TVector3 posInLoc =  parGeo->Detector2Crystal(iCrys, iMod, posIn);
 
       // don't use z for the moment
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, id);
@@ -112,10 +115,7 @@ Bool_t TACAactNtuMC::Action()
       hit->SetPosition(posInLoc);
       
       if (ValidHistogram()) {
-         Int_t iCrys  = TACAparGeo::GetCrystalId(id);
-         Int_t iMod   = TACAparGeo::GetModuleId(id);
-         TVector3 pos = parGeo->GetGlobalCrystalPosition(iCrys, iMod);
-         fpHisHitMap->Fill(pos[0], pos[1]);
+         fpHisHitMap->Fill(posInLoc[0], posInLoc[1]);
          fpHisDeTot->Fill(hit->GetCharge());
          fpHisTimeTot->Fill(hit->GetTime());
          
