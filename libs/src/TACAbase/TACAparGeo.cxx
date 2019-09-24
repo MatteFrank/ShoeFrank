@@ -38,7 +38,9 @@ const Int_t   TACAparGeo::fgkCrystalsNperModule = 9;
 //_____________________________________________________________________________
 TACAparGeo::TACAparGeo() 
 : TAGparTools(),
-  fIonisation(new TAGionisMaterials())
+  fCrystalsN(0),
+  fIonisation(new TAGionisMaterials()),
+  fCrystalMatrixList(new TObjArray(fgkCrystalsNperModule))
 {
    fkDefaultGeoName = "./geomaps/TACAdetector.map";
 }
@@ -46,7 +48,8 @@ TACAparGeo::TACAparGeo()
 //______________________________________________________________________________
 TACAparGeo::~TACAparGeo()
 {
-   delete   fIonisation;
+   delete fIonisation;
+   delete fCrystalMatrixList;
 }
 
 //______________________________________________________________________________
@@ -116,7 +119,8 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    Int_t nModule = 0;
    
    SetupMatrices(fgkDefaultModulesN);
-     
+   fListOfModAng.resize(fgkDefaultModulesN);
+   
    // Read transformtion info
       for (Int_t iModule = 0; iModule < fModulesN; ++iModule) {
          
@@ -134,8 +138,8 @@ Bool_t TACAparGeo::FromFile(const TString& name)
          if(fDebugLevel)
             cout  << "   tilt: " << Form("%f %f %f", tilt[0], tilt[1], tilt[2]) << endl;
 
-         fListOfModAng.insert(fListOfModAng.begin()+nModule, tilt);
-         
+         fListOfModAng[nModule] = tilt;
+
          TGeoRotation rot;
          rot.RotateX(tilt[0]);
          rot.RotateY(tilt[1]);
@@ -152,6 +156,20 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    ComputeCrystalPos();
 
    return true;
+}
+
+//_____________________________________________________________________________
+TVector3 TACAparGeo::GetGlobalCrystalPosition(Int_t iCrystal, Int_t iModule)
+{
+   TVector3 loc(0, 0, 0);
+   return Crystal2Detector(iCrystal, iModule, loc);
+}
+
+//_____________________________________________________________________________
+TVector3 TACAparGeo::GetGlobalCrystalFrontPosition(Int_t iCrystal, Int_t iModule)
+{
+   TVector3 loc(0, 0, GetCrystalLength());
+   return Crystal2Detector(iCrystal, iModule, loc);
 }
 
 //_____________________________________________________________________________
@@ -204,6 +222,7 @@ TVector3 TACAparGeo::GetModuleAngle(Int_t idx)
    
    return fListOfModAng[idx];
 }
+
 //_____________________________________________________________________________
 TVector3 TACAparGeo::Module2Detector(Int_t idx, TVector3& loc) const
 {
@@ -214,7 +233,6 @@ TVector3 TACAparGeo::Module2Detector(Int_t idx, TVector3& loc) const
    
    return LocalToMaster(idx, loc);
 }
-
 
 //_____________________________________________________________________________
 TVector3 TACAparGeo::Module2DetectorVect(Int_t idx, TVector3& loc) const
@@ -239,16 +257,112 @@ TVector3 TACAparGeo::Detector2Module(Int_t idx, TVector3& glob) const
 }
 
 //_____________________________________________________________________________
-TVector3 TACAparGeo::Detector2ModuleVect(Int_t idx, TVector3& glob) const
+TVector3 TACAparGeo::Detector2Crystal(Int_t idx, Int_t iMod, TVector3& glob) const
 {
-   if (idx < 0 || idx > fModulesN) {
-      Warning("Detector2ModuleVect()","Wrong detector id number: %d ", idx);
+   if (iMod < 0 || iMod > fModulesN) {
+      Warning("Detector2ModuleVect()","Wrong module id number: %d ", idx);
       return TVector3(0,0,0);
    }
    
-   return MasterToLocalVect(idx, glob);
+   if (idx < 0 || idx > fgkCrystalsNperModule) {
+      Warning("Detector2ModuleVect()","Wrong crystal id number: %d ", idx);
+      return TVector3(0,0,0);
+   }
+   
+   TVector3 vecMod =  MasterToLocal(iMod, glob);
+   
+   TGeoHMatrix* mat = static_cast<TGeoHMatrix*> ( fCrystalMatrixList->At(idx) );
+   if (mat == 0x0)
+      return TVector3(0,0,0);
+
+   Double_t local[3]  = {0., 0., 0.};
+   Double_t global[3] = {glob.X(), glob.Y(), glob.Z()};
+   
+   mat->MasterToLocal(global, local);
+   
+   return  TVector3(local[0], local[1], local[2]);
 }
 
+//_____________________________________________________________________________
+TVector3 TACAparGeo::Detector2CrystalVect(Int_t idx, Int_t iMod, TVector3& glob) const
+{
+   if (iMod < 0 || iMod > fModulesN) {
+      Warning("Detector2ModuleVect()","Wrong module id number: %d ", idx);
+      return TVector3(0,0,0);
+   }
+   
+   if (idx < 0 || idx > fgkCrystalsNperModule) {
+      Warning("Detector2ModuleVect()","Wrong crystal id number: %d ", idx);
+      return TVector3(0,0,0);
+   }
+   
+   TVector3 vecMod =  MasterToLocalVect(iMod, glob);
+   
+   TGeoHMatrix* mat = static_cast<TGeoHMatrix*> ( fCrystalMatrixList->At(idx) );
+   if (mat == 0x0)
+      return TVector3(0,0,0);
+
+   Double_t local[3]  = {0., 0., 0.};
+   Double_t global[3] = {glob.X(), glob.Y(), glob.Z()};
+   
+   mat->MasterToLocalVect(global, local);
+   
+   return  TVector3(local[0], local[1], local[2]);
+}
+
+//_____________________________________________________________________________
+TVector3 TACAparGeo::Crystal2Detector(Int_t idx, Int_t iMod, TVector3& loc) const
+{
+   if (iMod < 0 || iMod > fModulesN) {
+      Warning("Detector2ModuleVect()","Wrong module id number: %d ", iMod);
+      return TVector3(0,0,0);
+   }
+   
+   if (idx < 0 || idx > fgkCrystalsNperModule) {
+      Warning("Detector2ModuleVect()","Wrong crystal id number: %d ", idx);
+      return TVector3(0,0,0);
+   }
+   
+   TVector3 vecMod =  LocalToMaster(iMod, loc);
+   
+   TGeoHMatrix* mat = static_cast<TGeoHMatrix*> ( fCrystalMatrixList->At(idx) );
+   if (mat == 0x0)
+      return TVector3(0,0,0);
+
+   Double_t local[3]  = {vecMod.X(), vecMod.Y(), vecMod.Z()};
+   Double_t global[3] = {0., 0., 0.};
+   
+   mat->LocalToMaster(local, global);
+   
+   return TVector3(global[0], global[1], global[2]);
+}
+
+//_____________________________________________________________________________
+TVector3 TACAparGeo::Crystal2DetectorVect(Int_t idx, Int_t iMod, TVector3& loc) const
+{
+   if (iMod < 0 || iMod > fModulesN) {
+      Warning("Detector2ModuleVect()","Wrong module id number: %d ", iMod);
+      return TVector3(0,0,0);
+   }
+   
+   if (idx < 0 || idx > fgkCrystalsNperModule) {
+      Warning("Detector2ModuleVect()","Wrong crystal id number: %d ", idx);
+      return TVector3(0,0,0);
+   }
+   
+   TVector3 vecMod =  LocalToMaster(iMod, loc);
+   
+   TGeoHMatrix* mat = static_cast<TGeoHMatrix*> ( fCrystalMatrixList->At(idx) );
+   if (mat == 0x0)
+      return TVector3(0,0,0);
+
+   Double_t local[3]  = {vecMod.X(), vecMod.Y(), vecMod.Z()};
+   Double_t global[3] = {0., 0., 0.};
+   
+   mat->LocalToMaster(local, global);
+   
+   return TVector3(global[0], global[1], global[2]);
+}
 
 //_____________________________________________________________________________
 void TACAparGeo::DefineMaterial()
@@ -324,7 +438,28 @@ void TACAparGeo::ComputeCrystalPos()
    for (Int_t i = 0; i < fgkCrystalsNperModule; ++i) {
       fCrystalAng[i] = TVector3(alfa_degree * 2 * angX[i], alfa_degree * 2 * angY[i], 0);
       fCrystalPos[i] = TVector3(posx*dirX[i], posx*dirY[i], posz - piramid_base_c);
+      TGeoRotation rot;
+      rot.RotateX(fCrystalAng[i].X());
+      rot.RotateY(fCrystalAng[i].Y());
+      rot.RotateZ(fCrystalAng[i].Z());
+      
+      TGeoTranslation trans(fCrystalPos[i].X(), fCrystalPos[i].Y(), fCrystalPos[i].Z());
+      
+      TGeoHMatrix  transfo;
+      transfo  = trans;
+      transfo *= rot;
+      AddCrystalMatrix(new TGeoHMatrix(transfo), i);
+      
    }
+}
+
+//_____________________________________________________________________________
+void TACAparGeo::AddCrystalMatrix(TGeoHMatrix* mat, Int_t idx)
+{
+   if (idx == -1)
+      fCrystalMatrixList->Add(mat);
+   else
+      fCrystalMatrixList->AddAt(mat, idx);
 }
 
 //_____________________________________________________________________________
@@ -342,11 +477,11 @@ TGeoVolume* TACAparGeo::BuildCalorimeter(const char *caName)
    
    for (Int_t i = 0; i < fgkDefaultModulesN; ++i) {
       
-      TGeoVolume* module = BuildModule(i);
       TGeoCombiTrans* hm = GetCombiTransfo(i);
-      
-      if (hm)
+      if (hm) {
+         TGeoVolume* module = BuildModule(i);
          wall->AddNode(module, i, hm);
+      }
    }
    
    return wall;
@@ -379,6 +514,7 @@ TGeoVolume* TACAparGeo::BuildModule(Int_t iMod)
    TGeoTranslation* tras = new TGeoTranslation();
 
    for (Int_t i = 0; i < fgkCrystalsNperModule; ++i) {
+      fCrystalsN++;
       TGeoVolume* crystal   = gGeoManager->MakeTrd2(GetDefaultCrysName(i, iMod), med, xdim1, xdim2, ydim1, ydim2, zdim);
       crystal->SetLineColor(fgkDefaultModCol);
       crystal->SetFillColor(fgkDefaultModCol);

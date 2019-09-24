@@ -50,6 +50,10 @@ public:
    Float_t        GetSupportLength()   const  { return fSupportSize[2]; }
    TString        GetSupportMat()      const  { return fSupportMat;     }
 
+   // Position inside the detector framework
+   TVector3       GetGlobalCrystalPosition(Int_t iCrystal, Int_t iModule);
+   TVector3       GetGlobalCrystalFrontPosition(Int_t iCrystal, Int_t iModule);
+
    // Position/angle inside the module
    TVector3       GetCrystalPosition(Int_t iCrystal);
    TVector3       GetCrystalAngle(Int_t iCrystal);
@@ -63,11 +67,18 @@ public:
    TVector3        Detector2Module(Int_t idx, TVector3& glob) const;
    TVector3        Detector2ModuleVect(Int_t idx, TVector3& glob) const;
    
+   //! to the local crystal reference frame of the detection id
+   TVector3        Detector2Crystal(Int_t idx, Int_t iMod, TVector3& glob) const;
+   TVector3        Detector2CrystalVect(Int_t idx, Int_t iMod, TVector3& glob) const;
+   
    //! Transform point from the local reference frame
    //! of the detection id to the global reference frame
    TVector3        Module2Detector(Int_t idx, TVector3& loc) const;
    TVector3        Module2DetectorVect(Int_t idx, TVector3& loc) const;
 
+   //! of the detection id to the global reference frame
+   TVector3        Crystal2Detector(Int_t idx, Int_t iMod, TVector3& loc) const;
+   TVector3        Crystal2DetectorVect(Int_t idx, Int_t iMod, TVector3& loc) const;
 
    // to print fluka files
   string PrintRotations();
@@ -116,6 +127,7 @@ private:
 
 private:
    TAGionisMaterials* fIonisation; //! pointer for ionisation property
+   TObjArray* fCrystalMatrixList;       //! list of transformation matrices  (rotation+translation for each crystal)
    TVector3  fCaloSize;
    TVector3  fCrystalSize;
    TString   fCrystalMat;
@@ -139,7 +151,9 @@ private:
    
 private:
    void      ComputeCrystalPos();
-
+   //! Add matrxi transformation
+   void      AddCrystalMatrix(TGeoHMatrix* mat, Int_t idx = -1);
+   
   ClassDef(TACAparGeo,1)
 };
 
