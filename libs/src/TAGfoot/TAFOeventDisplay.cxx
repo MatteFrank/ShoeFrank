@@ -915,8 +915,8 @@ void TAFOeventDisplay::UpdateCrystalElements()
    if ( fRefreshButton->IsOn()) {
       map<int, int >::iterator it;
       for (it = fFiredCaCrystal.begin(); it != fFiredCaCrystal.end(); it++) {
-         Int_t idx = it->first % TACAparGeo::GetCrystalsNperModule();
-         Int_t iMod = it->first / TACAparGeo::GetCrystalsNperModule();
+         Int_t idx  = TACAparGeo::GetCrystalId(it->first);
+         Int_t iMod = TACAparGeo::GetModuleId(it->first);
          parGeo->SetCrystalColorOff(idx, iMod);
       }
    }
