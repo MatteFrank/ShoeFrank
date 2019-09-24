@@ -81,8 +81,8 @@ Float_t TACAdigitizer::GetPhotonsN(Float_t /*X*/, Float_t /*Y*/, Float_t edep)
 //___________________________________________________________________________________________
 Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id)
 {
-   Int_t idx = id % TACAparGeo::GetCrystalsNperModule();
-   Int_t mod = id / TACAparGeo::GetCrystalsNperModule();
+   Int_t idx = TACAparGeo::GetCrystalId(id);
+   Int_t mod = TACAparGeo::GetModuleId(id);
    
    Float_t photonsN = GetPhotonsN(x0, y0, edep)*fGain;
    fCurrentHit = (TACAntuHit*)fpNtuRaw->NewHit(idx, mod, photonsN, time);
