@@ -43,7 +43,7 @@ void TACAactNtuMC::CreateHistogram()
    
    TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
 
-   Float_t height = parGeo->GetCrystalHeight();
+   Float_t height = parGeo->GetCrystalBotBase();
    
    fpHisHitMap = new TH2F("caHitMap", "Calorimeter - hits", 22, -height/2., height/2.,
                                                             22, -height/2., height/2.);
@@ -112,7 +112,9 @@ Bool_t TACAactNtuMC::Action()
       hit->SetPosition(posInLoc);
       
       if (ValidHistogram()) {
-         TVector3 pos = parGeo->GetCrystalPosition(id);
+         Int_t iCrys  = TACAparGeo::GetCrystalId(id);
+         Int_t iMod   = TACAparGeo::GetModuleId(id);
+         TVector3 pos = parGeo->GetGlobalCrystalPosition(iCrys, iMod);
          fpHisHitMap->Fill(pos[0], pos[1]);
          fpHisDeTot->Fill(hit->GetCharge());
          fpHisTimeTot->Fill(hit->GetTime());
