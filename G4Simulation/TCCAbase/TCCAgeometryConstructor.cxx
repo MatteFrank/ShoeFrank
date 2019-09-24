@@ -166,7 +166,7 @@ void TCCAgeometryConstructor::DefineMaxMinDimension()
 {
 
    TVector3 size  = fpParGeo->GetCaloSize();
-   Float_t  thick = fpParGeo->GetCrystalThick()+2.0;
+   Float_t  thick = fpParGeo->GetCrystalLength()+2.0;
 
    TVector3 minPosition(10e10, 10e10, 10e10);
    TVector3 maxPosition(-10e10, -10e10, -10e10);
