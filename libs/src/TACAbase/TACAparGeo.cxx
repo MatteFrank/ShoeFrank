@@ -257,15 +257,26 @@ TVector3 TACAparGeo::Detector2Module(Int_t idx, TVector3& glob) const
 }
 
 //_____________________________________________________________________________
+TVector3 TACAparGeo::Detector2ModuleVect(Int_t idx, TVector3& glob) const
+{
+   if (idx < 0 || idx > fModulesN) {
+      Warning("Detector2ModuleVect()","Wrong detector id number: %d ", idx);
+      return TVector3(0,0,0);
+   }
+   
+   return MasterToLocalVect(idx, glob);
+}
+
+//_____________________________________________________________________________
 TVector3 TACAparGeo::Detector2Crystal(Int_t idx, Int_t iMod, TVector3& glob) const
 {
    if (iMod < 0 || iMod > fModulesN) {
-      Warning("Detector2ModuleVect()","Wrong module id number: %d ", idx);
+      Warning("Detector2Crystal()","Wrong module id number: %d ", idx);
       return TVector3(0,0,0);
    }
    
    if (idx < 0 || idx > fgkCrystalsNperModule) {
-      Warning("Detector2ModuleVect()","Wrong crystal id number: %d ", idx);
+      Warning("Detector2Crystal()","Wrong crystal id number: %d ", idx);
       return TVector3(0,0,0);
    }
    
@@ -287,12 +298,12 @@ TVector3 TACAparGeo::Detector2Crystal(Int_t idx, Int_t iMod, TVector3& glob) con
 TVector3 TACAparGeo::Detector2CrystalVect(Int_t idx, Int_t iMod, TVector3& glob) const
 {
    if (iMod < 0 || iMod > fModulesN) {
-      Warning("Detector2ModuleVect()","Wrong module id number: %d ", idx);
+      Warning("Detector2CrystalVect()","Wrong module id number: %d ", idx);
       return TVector3(0,0,0);
    }
    
    if (idx < 0 || idx > fgkCrystalsNperModule) {
-      Warning("Detector2ModuleVect()","Wrong crystal id number: %d ", idx);
+      Warning("Detector2CrystalVect()","Wrong crystal id number: %d ", idx);
       return TVector3(0,0,0);
    }
    
@@ -314,12 +325,12 @@ TVector3 TACAparGeo::Detector2CrystalVect(Int_t idx, Int_t iMod, TVector3& glob)
 TVector3 TACAparGeo::Crystal2Detector(Int_t idx, Int_t iMod, TVector3& loc) const
 {
    if (iMod < 0 || iMod > fModulesN) {
-      Warning("Detector2ModuleVect()","Wrong module id number: %d ", iMod);
+      Warning("Crystal2Detector()","Wrong module id number: %d ", iMod);
       return TVector3(0,0,0);
    }
    
    if (idx < 0 || idx > fgkCrystalsNperModule) {
-      Warning("Detector2ModuleVect()","Wrong crystal id number: %d ", idx);
+      Warning("Crystal2Detector()","Wrong crystal id number: %d ", idx);
       return TVector3(0,0,0);
    }
    
@@ -341,12 +352,12 @@ TVector3 TACAparGeo::Crystal2Detector(Int_t idx, Int_t iMod, TVector3& loc) cons
 TVector3 TACAparGeo::Crystal2DetectorVect(Int_t idx, Int_t iMod, TVector3& loc) const
 {
    if (iMod < 0 || iMod > fModulesN) {
-      Warning("Detector2ModuleVect()","Wrong module id number: %d ", iMod);
+      Warning("Crystal2DetectorVect()","Wrong module id number: %d ", iMod);
       return TVector3(0,0,0);
    }
    
    if (idx < 0 || idx > fgkCrystalsNperModule) {
-      Warning("Detector2ModuleVect()","Wrong crystal id number: %d ", idx);
+      Warning("Crystal2DetectorVect()","Wrong crystal id number: %d ", idx);
       return TVector3(0,0,0);
    }
    
