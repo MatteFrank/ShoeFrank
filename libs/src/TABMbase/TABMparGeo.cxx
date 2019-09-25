@@ -24,7 +24,6 @@
 
 
 #include "TAGroot.hxx"
-#include "TAGmaterials.hxx"
 #include "TAGgeoTrafo.hxx" 
 #include "TABMparGeo.hxx"
 
@@ -913,96 +912,41 @@ string TABMparGeo::PrintSubtractBodiesFromAir() {
 
 
 //_____________________________________________________________________________
-string TABMparGeo::PrintAssignMaterial() {
-
-    // if ( !GlobalPar::GetPar()->geoFLUKA() ) 
-    //     cout << "ERROR << TABMparGeo::PrintAssignMaterial()  -->  Calling this function without enabling the correct parameter in the param file.\n", exit(0);
-
+string TABMparGeo::PrintAssignMaterial(TAGmaterials *Material) {
 
     // loop in order of the material alfabeth
     stringstream outstr; 
  
     if(GlobalPar::GetPar()->IncludeBM()){
+
+      TString flkmatFWire, flkmatSWire, flkmatGas, flkmatFoil;  
+    
+      if (Material == NULL){
+	TAGmaterials::Instance()->PrintMaterialFluka();
+	flkmatFWire = TAGmaterials::Instance()->GetFlukaMatName(fFieldMat.Data());
+	flkmatSWire = TAGmaterials::Instance()->GetFlukaMatName(fSenseMat.Data());
+	flkmatGas   = TAGmaterials::Instance()->GetFlukaMatName(fGasMixture.Data());
+	flkmatFoil  = TAGmaterials::Instance()->GetFlukaMatName(fFoilMat.Data());
+      }
+      else{
+	flkmatFWire = Material->GetFlukaMatName(fFieldMat.Data());
+	flkmatSWire = Material->GetFlukaMatName(fSenseMat.Data());
+	flkmatGas   = Material->GetFlukaMatName(fGasMixture.Data());
+	flkmatFoil  = Material->GetFlukaMatName(fFoilMat.Data());
+      }
       
       bool magnetic = false;
       if(GlobalPar::GetPar()->IncludeDI())
 	magnetic = true;
-         
-      string matFWire = "ALUMINUM";//fFieldMat.Data();
-      if (fFieldMat.CompareTo("Al")!=0)
-	cout << "ATTENTION in TABMparGeo PrintAssignMaterial: check the BM FWires material"<<endl;
-      // matFWire[1] =toupper(matFWire[1]);
-      const Char_t* matGas = fGasMixture.Data();
-      // const Char_t* matFWire = fFieldMat.Data();
-      const Char_t* matSWire = "TUNGSTEN";//fSenseMat.Data();
-      if (fSenseMat.CompareTo("W")!=0)
-	cout << "ATTENTION in TABMparGeo PrintAssignMaterial: check the BM SWires material"<<endl;
-      const Char_t* matFoil = fFoilMat.Data();
       
-      outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	     << setw(10) << setfill(' ') << std::right << matFWire// same mat as Field Wires
-	     << setw(10) << setfill(' ') << std::right << "BMN_SHI"
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << magnetic
-	     << endl;
-    
-      outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	     << setw(10) << setfill(' ') << std::right << matFoil
-	     << setw(10) << setfill(' ') << std::right << "BMN_MYL0"
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << magnetic
-	     << endl; 
-    
-      outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	     << setw(10) << setfill(' ') << std::right << matFoil
-	     << setw(10) << setfill(' ') << std::right << "BMN_MYL1"
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << magnetic
-	     << endl;
-    
-      outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	     << setw(10) << setfill(' ') << std::right << matGas
-	     << setw(10) << setfill(' ') << std::right << "BMN_C000"
-	     << setw(10) << setfill(' ') << std::right << "BMN_C017"
-	     << setw(10) << setfill(' ') << std::right << "1."
-	     << setw(10) << setfill(' ') << std::right << magnetic
-	     << endl;
-    
-      outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	     << setw(10) << setfill(' ') << std::right << matGas
-	     << setw(10) << setfill(' ') << std::right << "BMN_C100"
-	     << setw(10) << setfill(' ') << std::right << "BMN_C117"
-	     << setw(10) << setfill(' ') << std::right << "1."
-	     << setw(10) << setfill(' ') << std::right << magnetic
-	     << endl;
-    
-      outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	     << setw(10) << setfill(' ') << std::right << matGas
-	     << setw(10) << setfill(' ') << std::right << "BMN_GAS"
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << magnetic
-	     << endl;
-    
-      outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	     << setw(10) << setfill(' ') << std::right << matFWire
-	     << setw(10) << setfill(' ') << std::right << "BMN_FWI"
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << magnetic
-	     << endl;
-    
-      outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	     << setw(10) << setfill(' ') << std::right << matSWire
-	     << setw(10) << setfill(' ') << std::right << "BMN_SWI"
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << ""
-	     << setw(10) << setfill(' ') << std::right << magnetic
-	     << endl;
-
+      outstr << PrintCard("ASSIGNMA", flkmatFWire, "BMN_SHI", "", "", Form("%d",magnetic), "", "") << endl;//shield has the same mat as field wires
+      outstr << PrintCard("ASSIGNMA", flkmatFWire, "BMN_FWI", "", "", Form("%d",magnetic), "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatSWire, "BMN_SWI", "", "", Form("%d",magnetic), "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatGas, "BMN_GAS", "", "", Form("%d",magnetic), "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatGas, "BMN_C000", "BMN_C017", "1.", Form("%d",magnetic), "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatGas, "BMN_C100", "BMN_C117", "1.", Form("%d",magnetic), "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatFoil, "BMN_MYL0", "BMN_MYL1", "1.", Form("%d",magnetic), "", "") << endl;
+        
     }
     
     return outstr.str();

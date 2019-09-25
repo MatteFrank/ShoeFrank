@@ -24,7 +24,10 @@ public:
    TGeoMaterial* CreateMaterial(TString formula, Float_t density, Float_t temperature = STP_temperature, Float_t pressure = STP_pressure);
    TGeoMixture*  CreateMixture(TString formula, const TString densities, const TString prop, Float_t density);
 
-   string          SaveFileFluka();
+   string      PrintMaterialFluka();
+   TString     GetFlukaMatName(TString matname);
+  
+   map<TString, TString> NameMap;
    
 public:
     static TAGmaterials* Instance();

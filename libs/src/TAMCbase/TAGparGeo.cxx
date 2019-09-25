@@ -486,27 +486,27 @@ string TAGparGeo::PrintSubtractTargBodyFromAir() {
 }
 
 //_____________________________________________________________________________
-string TAGparGeo::PrintTargAssignMaterial() {
+string TAGparGeo::PrintTargAssignMaterial(TAGmaterials *Material) {
 
   stringstream outstr;
 
   if(GlobalPar::GetPar()->IncludeTG()){
 
+    TString flkmat;  
+    
+    if (Material == NULL){
+      TAGmaterials::Instance()->PrintMaterialFluka();
+      flkmat = TAGmaterials::Instance()->GetFlukaMatName(GetTargetPar().Material);
+    }
+    else
+      flkmat = Material->GetFlukaMatName(GetTargetPar().Material);
+
     bool magnetic = false;
     if(GlobalPar::GetPar()->IncludeDI())
       magnetic = true;
-  
-    const Char_t* matName =  GetTargetPar().Material;
-
         
-    outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	   << setw(10) << setfill(' ') << std::right << "CARBON"//matName
-	   << setw(10) << setfill(' ') << std::right << "TARGET"
-	   << setw(10) << setfill(' ') << std::right << ""
-	   << setw(10) << setfill(' ') << std::right << ""
-	   << setw(10) << setfill(' ') << std::right << magnetic
-	   << endl;
-    
+    outstr << PrintCard("ASSIGNMA", flkmat, "TARGET", "", "", Form("%d",magnetic), "", "") << endl;
+
   }
   
   return outstr.str();

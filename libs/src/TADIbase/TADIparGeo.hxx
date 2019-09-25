@@ -15,6 +15,7 @@
 #include "TString.h"
 
 #include "TAGparTools.hxx"
+#include "TAGmaterials.hxx"
 
 
 class TGeoHMatrix;
@@ -120,7 +121,7 @@ public:
    string PrintRotations();
    string PrintBodies();
    string PrintRegions();
-   string PrintAssignMaterial();
+   string PrintAssignMaterial(TAGmaterials *Material);
    string PrintSubtractBodiesFromAir();
    string PrintParameters();
    

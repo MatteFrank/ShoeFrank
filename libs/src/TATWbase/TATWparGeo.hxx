@@ -12,6 +12,7 @@
 #include "TRotation.h"
 
 #include "TAGparTools.hxx"
+#include "TAGmaterials.hxx"
 
 #include "GlobalPar.hxx"
 
@@ -75,7 +76,7 @@ public:
 
     virtual string PrintBodies();
     virtual string PrintRegions();
-    virtual string PrintAssignMaterial();
+    virtual string PrintAssignMaterial(TAGmaterials *Material);
     virtual string PrintSubtractBodiesFromAir();
     virtual string PrintParameters();
     virtual string PrintRotations();

@@ -21,6 +21,7 @@ map<TString, TString> TAGbaseMaterials::fgkCommonName = {{"SmCo", "Sm2Co17"}, {"
 
 map<TString, Int_t>   TAGbaseMaterials::fgkLowMat = {{"Graphite", 1}};
 
+
 ClassImp(TAGbaseMaterials);
 
 //______________________________________________________________________________
@@ -215,6 +216,65 @@ void TAGbaseMaterials::CreateDefaultMaterials()
     
 }
 
+//______________________________________________________________________________
+Bool_t TAGbaseMaterials::ReadFlukaDefMat()
+{
+
+  ifstream file;
+ 
+  string buff;
+   
+  string fileName = Form("./config/FlukaMaterials.par");
+  file.open( fileName.c_str(), ios::in );
+  if ( !file.is_open() )
+    cout<< "ERROR  -->  wrong input FlukaMaterials.par file:: " << fileName.c_str() << endl, exit(0);
+  
+  Int_t m = 0;
+  while (!file.eof()) {
+    getline(file,buff,'\n');
+    if (buff[0] == '/')
+      continue; 
+    else{
+      file >> fFlukaMat[m].Name >> fFlukaMat[m].Z >> fFlukaMat[m].Amean >> fFlukaMat[m].Density;      
+      m++;      
+    }
+  }
+   
+  return true;
+
+
+}
 
 
 
+//______________________________________________________________________________
+Int_t TAGbaseMaterials::GetFlukaMatId(Double_t Z)
+{
+
+  int m;
+  
+  for(int i=0; i<(sizeof(fFlukaMat)/sizeof(*fFlukaMat)); i++)
+    if (fFlukaMat[i].Z == Z){
+      m =i;
+      break;
+    }
+  
+  return m;
+  
+}
+
+//______________________________________________________________________________
+void TAGbaseMaterials::CheckFlukaMat(Double_t density, Double_t A, Double_t Z)
+{
+
+  int id = GetFlukaMatId(Z);
+  
+  if(fabs(fFlukaMat[id].Amean - A) > 0.00001*fFlukaMat[id].Amean)
+    cout << "Warning: redefined FLUKA element: " << fFlukaMat[id].Name << " new mean mass number = " <<  A << " instead of " << fFlukaMat[id].Amean << endl; 
+        
+  if(fabs(fFlukaMat[id].Density - density) > 0.00001*fFlukaMat[id].Density)
+    cout << "Warning: redefined FLUKA element: " << fFlukaMat[id].Name << " new density = " << density << " instead of " << fFlukaMat[id].Density << endl; 
+   
+  return;
+  
+}

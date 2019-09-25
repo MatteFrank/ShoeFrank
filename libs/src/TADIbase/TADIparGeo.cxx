@@ -14,7 +14,6 @@
 
 #include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "TAGmaterials.hxx"
 #include "TADIparGeo.hxx"
 #include "TAGroot.hxx"
 
@@ -543,21 +542,29 @@ string TADIparGeo::PrintRegions(){
 
 
 //_____________________________________________________________________________
-string TADIparGeo::PrintAssignMaterial() {
+string TADIparGeo::PrintAssignMaterial(TAGmaterials *Material) {
 
   stringstream ss;
   
   if(GlobalPar::GetPar()->IncludeDI()){
+
+    TString flkmatMag, flkmatShi;  
     
-    const Char_t* mat = GetMagMat().Data();
-    const Char_t* matShield = "ALUMINUM";//GetShieldMat().Data();
+    if (Material == NULL){
+      TAGmaterials::Instance()->PrintMaterialFluka();
+      flkmatMag = TAGmaterials::Instance()->GetFlukaMatName(GetMagMat().Data());
+      flkmatShi = TAGmaterials::Instance()->GetFlukaMatName(GetShieldMat().Data());
+    }else{
+      flkmatMag = Material->GetFlukaMatName(GetMagMat().Data());
+      flkmatShi = Material->GetFlukaMatName(GetShieldMat().Data());
+    }
       
     if (vReg.size()==0 || vRegShield.size()==0)
       cout << "Error: DI regions vectors not correctly filled!" << endl;
 
-    ss << PrintCard("ASSIGNMA", mat, vReg.at(0), vReg.back(),
+    ss << PrintCard("ASSIGNMA", flkmatMag, vReg.at(0), vReg.back(),
     		    "1.", "1.", "", "") << endl;
-    ss << PrintCard("ASSIGNMA", matShield, vRegShield.at(0), vRegShield.back(),
+    ss << PrintCard("ASSIGNMA", flkmatShi, vRegShield.at(0), vRegShield.back(),
     		    "1.", "1.", "", "") << endl;
     
   }

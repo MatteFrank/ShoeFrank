@@ -16,6 +16,7 @@
 
 #include "TAGparTools.hxx"
 #include "GlobalPar.hxx"
+#include "TAGmaterials.hxx"
 
 
 class TGeoHMatrix;
@@ -115,7 +116,7 @@ public:
   string PrintTargRotations();
   string PrintTargBody();
   string PrintTargRegion();
-  string PrintTargAssignMaterial();
+  string PrintTargAssignMaterial(TAGmaterials *Material);
   string PrintSubtractTargBodyFromAir();
 
   //beam cards
