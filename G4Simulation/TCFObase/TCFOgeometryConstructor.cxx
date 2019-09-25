@@ -50,6 +50,7 @@
 #include "G4TransportationManager.hh"
 #include "G4RunManager.hh"
 #include "G4VisAttributes.hh"
+#include "G4Region.hh"
 
 #include "TCGtargetConstructor.hxx"
 #include "TCSTgeometryConstructor.hxx"
@@ -207,12 +208,15 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
       
       TVector3 center2      = geoTrafo->GetSTCenter()*cm;
       G4ThreeVector center(center2[0], center2[1], center2[2]);
-      
-   
+
       //To rotate the box wrt hall origin
       G4ThreeVector trans = (*rot)*(center);
       rot->invert(); // inversion ??
-      
+
+       G4Region *regST = new G4Region("Start");
+       log->SetRegion(regST);
+       regST->AddRootLogicalVolume(log);
+
       new G4PVPlacement(rot, trans, log, "StartCounter", fLogWorld, false, 0);
    }
    
@@ -228,12 +232,15 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
       
       TVector3 center2      = geoTrafo->GetBMCenter()*cm;
       G4ThreeVector center(center2[0], center2[1], center2[2]);
-      
-      
+
       //To rotate the box wrt hall origin
       G4ThreeVector trans = (*rot)*(center);
       rot->invert(); // inversion ??
-      
+
+       G4Region *regBM = new G4Region("BM");
+       log->SetRegion(regBM);
+       regBM->AddRootLogicalVolume(log);
+
       new G4PVPlacement(rot, trans, log, "BeamMonitor", fLogWorld, false, 0);
    }
 
@@ -254,7 +261,11 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
       //To rotate the box wrt hall origin
       G4ThreeVector trans = (*rot)*(center);
       rot->invert(); // inversion ??
-      
+
+       G4Region *regVtx = new G4Region("Vertex");
+       log->SetRegion(regVtx);
+       regVtx->AddRootLogicalVolume(log);
+
       new G4PVPlacement(rot, trans, log, "Vertex", fLogWorld, false, 0);
    }
 
@@ -277,7 +288,11 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
       //To rotate the box wrt hall origin
       G4ThreeVector trans = (*rot)*(center);
       rot->invert(); // inversion ??
-      
+
+       G4Region *regMag = new G4Region("Magnet");
+       logMag->SetRegion(regMag);
+       regMag->AddRootLogicalVolume(logMag);
+
       new G4PVPlacement(rot, trans, logMag, "Magnet", fLogWorld, false, 0);
       isMagnet = true;
    }
@@ -303,6 +318,10 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
       //To rotate the box wrt hall origin
       G4ThreeVector trans = (*rot)*(center);
       rot->invert(); // inversion ??
+
+       G4Region *regIT = new G4Region("InnerTracker");
+       log->SetRegion(regIT);
+       regIT->AddRootLogicalVolume(log);
       
       if (isMagnet)
          new G4PVPlacement(rot, trans, log, "InnerTracker", logMag, false, 0);
@@ -326,7 +345,11 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
       //To rotate the box wrt hall origin
       G4ThreeVector trans = (*rot)*(center);
       rot->invert(); // inversion ??
-      
+
+       G4Region *regMSD = new G4Region("MSD");
+       log->SetRegion(regMSD);
+       regMSD->AddRootLogicalVolume(log);
+
       new G4PVPlacement(rot, trans, log, "MultiStrip", fLogWorld, false, 0);
    }
    
@@ -346,7 +369,11 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
       //To rotate the box wrt hall origin
       G4ThreeVector trans = (*rot)*(center);
       rot->invert(); // inversion ??
-      
+
+       G4Region *regTW = new G4Region("Tof");
+       log->SetRegion(regTW);
+       regTW->AddRootLogicalVolume(log);
+
       new G4PVPlacement(rot, trans, log, "TofWall", fLogWorld, false, 0);
    }
 
@@ -366,7 +393,11 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
       //To rotate the box wrt hall origin
       G4ThreeVector trans = (*rot)*(caCenter);
       rot->invert(); // inversion ??
-      
+
+       G4Region *regCA = new G4Region("Calorimeter");
+       log->SetRegion(regCA);
+       regCA->AddRootLogicalVolume(log);
+
       new G4PVPlacement(rot, trans, log, "Calorimeter", fLogWorld, false, 0);
    }
 

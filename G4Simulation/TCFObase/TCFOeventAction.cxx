@@ -133,6 +133,12 @@ void TCFOeventAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
 
     if(fDebugLevel) printf("%s \n",fDetName.Data());
 
+    /// If only 1 hit in the detector (e.g. in SC)
+    if(entries==1){
+        TCGmcHit* mcHit = (*hitList)[0];
+        FillHits(hit, mcHit);
+    }
+    /// If several hits in detector
     for (Int_t i = 1; i < entries; ++i) {
         TCGmcHit* mcHit1 = (*hitList)[i-1];
         TCGmcHit* mcHit2 = (*hitList)[i];
@@ -225,7 +231,6 @@ void TCFOeventAction::FillTrack()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCFOeventAction::FillHits(TAMCevent* hit, TCGmcHit* mcHit)
 {
-    //  G4bool kElectron  = mcHit->GetParticleName().contains("e-");
     G4ThreeVector vin = mcHit->GetPosIn()*TAGgeoTrafo::MmToCm();
     G4ThreeVector vou = mcHit->GetPosOut()*TAGgeoTrafo::MmToCm();
     G4ThreeVector pin = mcHit->GetMomIn()*TAGgeoTrafo::MmToCm();
@@ -235,13 +240,15 @@ void TCFOeventAction::FillHits(TAMCevent* hit, TCGmcHit* mcHit)
     Int_t    trackId  = mcHit->GetTrackId();
     Double_t edep     = mcHit->GetEdep()*TAGgeoTrafo::MevToGev();
     Double_t time     = mcHit->GetGlobalTime()*TAGgeoTrafo::NsToSec();
+//    Double_t time     = mcHit->GetLocalTime()*TAGgeoTrafo::NsToSec();
     Double_t al       = 0;
     Int_t    trackIdx = fMapTrackIdx[trackId];
    
     hit->SetEvent(fEventNumber);
 
-    if (fIrCollId >= 0 && fDetName==TCSTgeometryConstructor::GetSDname())
+    if (fIrCollId >= 0 && fDetName==TCSTgeometryConstructor::GetSDname()){
         hit->AddSTC(trackId, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackIdx);
+    }
 
     if (fBmCollId >= 0  && fDetName==TCBMgeometryConstructor::GetSDname()) {
         Int_t layer ;

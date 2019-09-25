@@ -63,7 +63,7 @@ void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack){
     Int_t regId = fgkVolumeToRegion[regName] ;
     Double_t mass = aTrack->GetDefinition()->GetPDGMass() ;
     Double_t tof = aTrack->GetLocalTime()/s ;
-    Double_t time = aTrack->GetProperTime()/s ;
+    Double_t time = aTrack->GetGlobalTime()/s ;
     Double_t length = aTrack->GetTrackLength()/cm ;
 
     TVector3 vtxpos ; /// position of the vertex of the track

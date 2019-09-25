@@ -65,18 +65,19 @@ void TCFOfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
    }
    
    TVector3 field = fMagField->get(pos);
-   
+//    printf("[%.3e,%.3e,%.3e] \t %.3e %.3e %.3e\n", pos[0],pos[1],pos[2], field[0],field[1],field[2]);
+
    for (Int_t i = 0; i < 3; ++i) {
-//      field[i] *= 1e-7; // gauss -> to ??
        field[i] *= 1e-4; // gauss -> to Tesla
    }
-   
+
    fieldB[0] = field[0];
    fieldB[1] = field[1];
    fieldB[2] = field[2];
    
    if (fDebugLevel)
-      printf("%f %f\n", pos[2], fieldB[0]);
+//      printf("%f %f\n", pos[2], fieldB[0]);
+       printf("%f %.3e %.3e %.3e\n", pos[2], fieldB[0],fieldB[1],fieldB[2]);
 
   return;
 }
