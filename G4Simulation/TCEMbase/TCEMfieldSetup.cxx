@@ -49,6 +49,7 @@
 #include "G4ImplicitEuler.hh"
 #include "G4SimpleRunge.hh"
 #include "G4SimpleHeum.hh"
+#include "G4DormandPrince745.hh"
 #include "G4ClassicalRK4.hh"
 #include "G4HelixExplicitEuler.hh"
 #include "G4HelixImplicitEuler.hh"
@@ -60,7 +61,6 @@
 #include "G4SystemOfUnits.hh"
 #include "G4ThreeVector.hh"
 
-#include "G4UniformMagField.hh"
 #include <Riostream.h>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -106,8 +106,6 @@ void TCEMfieldSetup::CreateStepperAndChordFinder()
   Info("CreateStepperAndChordFinder()", "The minimal step is equal to %f mm\n ", fMinStep/mm);
 
   fFieldManager->SetDetectorField(fMagneticField);
-  fFieldManager->SetFieldChangesEnergy(true);
-
   fChordFinder = new G4ChordFinder( fMagneticField, fMinStep, fStepper);
   fFieldManager->SetChordFinder(fChordFinder);
 }
@@ -115,54 +113,58 @@ void TCEMfieldSetup::CreateStepperAndChordFinder()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCEMfieldSetup::SetStepper()
 {
-// Set stepper according to the stepper type
+    // Set stepper according to the stepper type
 
-  if (fStepper) delete fStepper;
+    if (fStepper) delete fStepper;
 
-  switch (fStepperType)
-  {
-    case 0:
-      fStepper = new G4ExplicitEuler(fEquation);
-      G4cout<<"G4ExplicitEuler is calledS"<<G4endl;
-      break;
-    case 1:
-      fStepper = new G4ImplicitEuler(fEquation);
-      G4cout<<"G4ImplicitEuler is called"<<G4endl;
-      break;
-    case 2:
-      fStepper = new G4SimpleRunge(fEquation);
-      G4cout<<"G4SimpleRunge is called"<<G4endl;
-      break;
-    case 3:
-      fStepper = new G4SimpleHeum(fEquation);
-      G4cout<<"G4SimpleHeum is called"<<G4endl;
-      break;
-    case 4:
-      fStepper = new G4ClassicalRK4(fEquation, 8);
-      G4cout<<"G4ClassicalRK4 (default) is called"<<G4endl;
-      break;
-    case 5:
-      fStepper = new G4HelixExplicitEuler(fEquation);
-      G4cout<<"G4HelixExplicitEuler is called"<<G4endl;
-      break;
-    case 6:
-      fStepper = new G4HelixImplicitEuler(fEquation);
-      G4cout<<"G4HelixImplicitEuler is called"<<G4endl;
-      break;
-    case 7:
-      fStepper = new G4HelixSimpleRunge(fEquation);
-      G4cout<<"G4HelixSimpleRunge is called"<<G4endl;
-      break;
-    case 8:
-      fStepper = new G4CashKarpRKF45(fEquation);
-      G4cout<<"G4CashKarpRKF45 is called"<<G4endl;
-      break;
-    case 9:
-      fStepper = new G4RKG3_Stepper(fEquation);
-      G4cout<<"G4RKG3_Stepper is called"<<G4endl;
-      break;
-    default: fStepper = 0;
-  }
+    switch (fStepperType)
+    {
+        case 0:
+            fStepper = new G4ExplicitEuler(fEquation);
+            G4cout<<"G4ExplicitEuler is calledS"<<G4endl;
+            break;
+        case 1:
+            fStepper = new G4ImplicitEuler(fEquation);
+            G4cout<<"G4ImplicitEuler is called"<<G4endl;
+            break;
+        case 2:
+            fStepper = new G4SimpleRunge(fEquation);
+            G4cout<<"G4SimpleRunge is called"<<G4endl;
+            break;
+        case 3:
+            fStepper = new G4SimpleHeum(fEquation);
+            G4cout<<"G4SimpleHeum is called"<<G4endl;
+            break;
+        case 4:
+            fStepper = new G4ClassicalRK4(fEquation);
+            G4cout<<"G4ClassicalRK4 (default) is called"<<G4endl;
+            break;
+        case 5:
+            fStepper = new G4HelixExplicitEuler(fEquation);
+            G4cout<<"G4HelixExplicitEuler is called"<<G4endl;
+            break;
+        case 6:
+            fStepper = new G4HelixImplicitEuler(fEquation);
+            G4cout<<"G4HelixImplicitEuler is called"<<G4endl;
+            break;
+        case 7:
+            fStepper = new G4HelixSimpleRunge(fEquation);
+            G4cout<<"G4HelixSimpleRunge is called"<<G4endl;
+            break;
+        case 8:
+            fStepper = new G4CashKarpRKF45(fEquation);
+            G4cout<<"G4CashKarpRKF45 is called"<<G4endl;
+            break;
+        case 9:
+            fStepper = new G4RKG3_Stepper(fEquation);
+            G4cout<<"G4RKG3_Stepper is called"<<G4endl;
+            break;
+        case 10:
+            fStepper = new G4DormandPrince745(fEquation);
+            G4cout<<"G4DormandPrince745 is called"<<G4endl;
+            break;
+        default: fStepper = 0;
+    }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

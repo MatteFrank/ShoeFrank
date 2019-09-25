@@ -50,7 +50,7 @@ public:
   virtual ~TCEMfield();
 
   /// DoesFieldChangeEnergy() returns true.
-  virtual G4bool DoesFieldChangeEnergy() const { return true; };
+  virtual G4bool DoesFieldChangeEnergy() const { return false; };
 
   /// GetFieldValue() returns the field value at a given point[].
   /// field is really field[6]: Bx,By,Bz.
