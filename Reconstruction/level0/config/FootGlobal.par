@@ -16,7 +16,7 @@ MC Particle Types:	C11	C12	C13 C14	Li6	Li7	B7	B9	B10	Be10	Be11	N14	N15	O16 O15
 
 ############	Kalman Filter Control Parameters	################
 
-IncludeKalman: 		y
+IncludeKalman:    n
 Kalman Mode: 		ON
 Tracking Systems Considered:		all
 Reverse Tracking:	false
@@ -34,7 +34,7 @@ IncludeDI:			   n
 IncludeST:				y
 IncludeBM:				y
 IncludeIR:				n
-IncludeTG:			    y
+IncludeTG:			   y
 IncludeVertex:			y
 IncludeInnerTracker:	n
 IncludeMSD:				n
