@@ -515,7 +515,6 @@ TGeoVolume* TACAparGeo::BuildModule(Int_t iMod)
    
    const Char_t* matName = fCrystalMat.Data();
    TGeoMedium*   med     = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
-  // crystal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
    
    ////////////   MODULE
    ////////////   Create a 3x3 modules
@@ -529,6 +528,7 @@ TGeoVolume* TACAparGeo::BuildModule(Int_t iMod)
       TGeoVolume* crystal   = gGeoManager->MakeTrd2(GetDefaultCrysName(i, iMod), med, xdim1, xdim2, ydim1, ydim2, zdim);
       crystal->SetLineColor(fgkDefaultModCol);
       crystal->SetFillColor(fgkDefaultModCol);
+      crystal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
 
       rot->Clear();
       rot->RotateX(fCrystalAng[i].X());
