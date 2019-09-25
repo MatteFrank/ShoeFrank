@@ -242,8 +242,6 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
 
    Int_t    sensorId = mcHit->GetSensorId();
    Int_t    trackId  = mcHit->GetTrackId();
-   if (trackId == 1475)
-      printf("titi %d\n", sensorId);
    Double_t edep     = mcHit->GetEdep()*TAGgeoTrafo::MevToGev(); 
    Double_t time     = mcHit->GetGlobalTime()*TAGgeoTrafo::NsToSec();
    Double_t al       = 0;
