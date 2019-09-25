@@ -211,7 +211,7 @@ void TCFOeventoAction::FillTrack()
         flukaID = fMcTrack->GetHit(i)->GetFlukaID();
         trackID = fMcTrack->GetHit(i)->GetType();
         parentID = fMcTrack->GetHit(i)->GetMotherID();
-        mass = fMcTrack->GetHit(i)->GetMass();
+        mass = fMcTrack->GetHit(i)->GetMass()*TAGgeoTrafo::MevToGev();
         charge = fMcTrack->GetHit(i)->GetCharge();
         nbaryon = fMcTrack->GetHit(i)->GetBaryon();
         tof = fMcTrack->GetHit(i)->GetTof();
@@ -242,6 +242,8 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
 
    Int_t    sensorId = mcHit->GetSensorId();
    Int_t    trackId  = mcHit->GetTrackId();
+   if (trackId == 1475)
+      printf("titi %d\n", sensorId);
    Double_t edep     = mcHit->GetEdep()*TAGgeoTrafo::MevToGev(); 
    Double_t time     = mcHit->GetGlobalTime()*TAGgeoTrafo::NsToSec();
    Double_t al       = 0;
