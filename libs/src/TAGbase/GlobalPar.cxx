@@ -223,12 +223,6 @@ void GlobalPar::ReadParamFile () {
             if ( rev == "y" )        m_includeBM = true;
             else                     m_includeBM = false;
         }
-        else if ( line.find("IncludeIR:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeIR:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeIR = true;
-            else                     m_includeIR = false;
-        }
         else if ( line.find("IncludeTW:") != string::npos ) {
             string rev =StrReplace( line, "IncludeTW:", "" );   
             RemoveSpace( &rev );

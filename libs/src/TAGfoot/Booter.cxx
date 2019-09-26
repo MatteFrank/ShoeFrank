@@ -143,7 +143,7 @@ void Booter::Initialize( EVENT_STRUCT* evStr ) {
     // Initialization of detectors parameters, geometry and materials   
     if( GlobalPar::GetPar()->IncludeEvent() )           FillMCEvent(evStr);
     if( GlobalPar::GetPar()->IncludeBM() )              FillMCBeamMonitor(evStr);
-    if( GlobalPar::GetPar()->IncludeIR() )              FillMCInteractionRegion(evStr);
+    if( GlobalPar::GetPar()->IncludeST() )              FillMCInteractionRegion(evStr);
     if( GlobalPar::GetPar()->IncludeInnerTracker() )    FillMCInnerTracker(evStr);
     if( GlobalPar::GetPar()->IncludeVertex() )          FillMCVertex(evStr);
     if( GlobalPar::GetPar()->IncludeMSD() )             FillMCMSD(evStr);
