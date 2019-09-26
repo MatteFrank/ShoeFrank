@@ -13,7 +13,7 @@ $FLUKA/flutil/ldpm3qmd -m fluka DEV/usrini.o usrout.o DEV/usreou.o usrein.o  mgd
 
 rm -rf  *.o DEV/*.o
 
-mv fluka_FOOT_mag.exe ../
+mv fluka_FOOTdev_mag.exe ../
 
 cd ../
 
