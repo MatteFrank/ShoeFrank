@@ -3,6 +3,7 @@
 #ifndef TCFOeventoAction_h
 #define TCFOeventoAction_h 1
 
+#include <map>
 #include "TCFObaseEventAction.hxx"
 #include "globals.hh"
 
@@ -26,6 +27,10 @@ class TCFOeventoAction : public TCFObaseEventAction
     public:
     void   EndOfEventAction(const G4Event*);
     void   Collect(const G4Event* evt);
+
+private:
+   
+   std::map<int, int> fMapTrackIdx;
 
     private:
     void   FillTrack();

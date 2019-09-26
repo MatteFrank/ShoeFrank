@@ -223,7 +223,9 @@ void TCFOeventoAction::FillTrack()
         finalmom = fMcTrack->GetHit(i)->GetFinalP();
         dead = fMcTrack->GetHit(i)->GetDead() ;
         region = fMcTrack->GetHit(i)->GetRegion() ;
-    hit->AddPart(parentID,trackID,charge,region,nbaryon,dead,flukaID,
+        fMapTrackIdx[trackID] = i;
+
+       hit->AddPart(parentID,trackID,charge,region,nbaryon,dead,flukaID,
                      initpos.X(),initpos.Y(),initpos.Z(),
                      finalpos.X(),finalpos.Y(),finalpos.Z(),
                      initmom.X(),initmom.Y(),initmom.Z(),
@@ -244,7 +246,7 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
    Int_t    trackId  = mcHit->GetTrackId();
    Double_t edep     = mcHit->GetEdep()*TAGgeoTrafo::MevToGev(); 
    Double_t time     = mcHit->GetGlobalTime()*TAGgeoTrafo::NsToSec();
-   Double_t al       = 0;
+   Double_t al       = fMapTrackIdx[trackId];// using al for track index
 
    hit->SetEvent(fEventNumber);
 
