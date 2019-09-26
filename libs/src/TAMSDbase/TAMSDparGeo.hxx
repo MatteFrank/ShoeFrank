@@ -16,6 +16,7 @@
 #include "TObject.h"
 #include "TString.h"
 
+#include "TAGmaterials.hxx"
 #include "TAVTbaseParGeo.hxx"
 
 class TGeoHMatrix;
@@ -46,7 +47,7 @@ public:
   string      PrintRotations();
   string      PrintBodies();
   string      PrintRegions();
-  string      PrintAssignMaterial();
+  string      PrintAssignMaterial(TAGmaterials *Material);
   string      PrintSubtractBodiesFromAir();
 
 private:

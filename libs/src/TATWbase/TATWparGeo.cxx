@@ -16,7 +16,6 @@
 #include "TMatrixD.h"
 #include "TArrayD.h"
 
-#include "TAGmaterials.hxx"
 #include "TAGionisMaterials.hxx"
 #include "TAGgeoTrafo.hxx"
 
@@ -595,14 +594,21 @@ string TATWparGeo::PrintSubtractBodiesFromAir() {
 
 
 //_____________________________________________________________________________
-string TATWparGeo::PrintAssignMaterial()
+string TATWparGeo::PrintAssignMaterial(TAGmaterials *Material)
 {
 
   stringstream ss; 
   
   if(GlobalPar::GetPar()->IncludeTW()){
 
-    const Char_t* mat = fBarMat.Data();
+      TString flkmat;  
+    
+    if (Material == NULL){
+      TAGmaterials::Instance()->PrintMaterialFluka();
+      flkmat = TAGmaterials::Instance()->GetFlukaMatName(fBarMat.Data());
+    }
+    else
+      flkmat = Material->GetFlukaMatName(fBarMat.Data());
       
     bool magnetic = false;
     if(GlobalPar::GetPar()->IncludeDI())
@@ -611,7 +617,7 @@ string TATWparGeo::PrintAssignMaterial()
     if (vRegion.size()==0 )
       cout << "Error: TW regions vector not correctly filled!"<<endl;
 
-    ss << PrintCard("ASSIGNMA", mat, vRegion.at(0), vRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmat, vRegion.at(0), vRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
     
   }

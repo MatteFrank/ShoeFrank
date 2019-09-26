@@ -1,3 +1,4 @@
+
 #ifndef _TABMparGeo_HXX
 #define _TABMparGeo_HXX
 /*!
@@ -11,6 +12,7 @@
 #include "TVector3.h"
 
 #include "TAGparTools.hxx"
+#include "TAGmaterials.hxx"
 
 #include "GlobalPar.hxx"
 
@@ -130,7 +132,7 @@ public:
    string PrintRotations();
    string PrintBodies();
    string PrintRegions();
-   string PrintAssignMaterial();
+   string PrintAssignMaterial(TAGmaterials *Material);
    string PrintParameters();
    string PrintSubtractBodiesFromAir();
 

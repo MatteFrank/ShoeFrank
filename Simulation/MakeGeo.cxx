@@ -55,7 +55,6 @@ int main (int argc, char *argv[]) {
     cout << "Hello Footer!" << endl;
 
     // real coding starts here!
-    // GlobalPar* GlobalPar;
 
     GlobalPar::Instance("FootGlobal.par");
     GlobalPar::GetPar()->Print();
@@ -64,11 +63,6 @@ int main (int argc, char *argv[]) {
     TAGmaterials* fTAGmat = new TAGmaterials();
 
     TAGgeoTrafo geoTrafo;
-
-    TString parFileName;
-    geoTrafo.FromFile("../Reconstruction/level0/geomaps/FOOT_geo.map");
-
-    // GlobalFootGeo footGeo;
 
     TADIparGeo* diGeo = new TADIparGeo();
     TASTparGeo* stcGeo = new TASTparGeo();
@@ -81,6 +75,7 @@ int main (int argc, char *argv[]) {
     TAGparGeo* generalGeo = new TAGparGeo();
 
     // read geomap files
+    generalGeo->FromFile();
     stcGeo->FromFile();
     bmGeo->FromFile();
     vtxGeo->SetMcFlag();
@@ -90,10 +85,9 @@ int main (int argc, char *argv[]) {
     diGeo->FromFile();
     twGeo->FromFile();
     caGeo->FromFile();
-    generalGeo->FromFile();
 
-    if(GlobalPar::GetPar()->IncludeDI())
-      genfit::FieldManager::getInstance()->init(new FootField( GlobalPar::GetPar()->MagFieldInputMapName().data(),diGeo) ); // variable field
+    TString parFileName;
+    geoTrafo.FromFile("./geomaps/FOOT_geo.map");
 
     ifstream file;
     string fileName = Form("foot.inp");
@@ -201,19 +195,19 @@ int main (int argc, char *argv[]) {
     outfile << geomat.str();
 
     //print materials and compounds
-    outfile << fTAGmat->SaveFileFluka();
+    outfile << fTAGmat->PrintMaterialFluka();
 
     //print assig nmaterials
     outfile << generalGeo->PrintStandardAssignMaterial();
-    outfile << stcGeo->PrintAssignMaterial();
-    outfile << bmGeo->PrintAssignMaterial();
-    outfile << generalGeo->PrintTargAssignMaterial();
-    outfile << vtxGeo->PrintAssignMaterial();
-    outfile << itrGeo->PrintAssignMaterial();
-    outfile << msdGeo->PrintAssignMaterial();
-    outfile << diGeo->PrintAssignMaterial();
-    outfile << twGeo->PrintAssignMaterial();
-    outfile << caGeo->PrintAssignMaterial();
+    outfile << stcGeo->PrintAssignMaterial(fTAGmat);
+    outfile << bmGeo->PrintAssignMaterial(fTAGmat);
+    outfile << generalGeo->PrintTargAssignMaterial(fTAGmat);
+    outfile << vtxGeo->PrintAssignMaterial(fTAGmat);
+    outfile << itrGeo->PrintAssignMaterial(fTAGmat);
+    outfile << msdGeo->PrintAssignMaterial(fTAGmat);
+    outfile << diGeo->PrintAssignMaterial(fTAGmat);
+    outfile << twGeo->PrintAssignMaterial(fTAGmat);
+    outfile << caGeo->PrintAssignMaterial(fTAGmat);
 
     // print rotations
     outfile << stcGeo->PrintRotations();

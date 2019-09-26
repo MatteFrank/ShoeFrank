@@ -10,7 +10,7 @@
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 Magnets:     2
 Type:        2
-MapName:     "./data/NewDoubleDipole.table"
+MapName:     "./data/AsymmetricDipoles.table"
 
 ShieldThickness:  0.5
 ShieldMat:        "Al"

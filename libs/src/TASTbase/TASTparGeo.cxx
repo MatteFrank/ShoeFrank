@@ -14,7 +14,6 @@
 #include "TGeoBBox.h"
 
 #include "TASTparGeo.hxx"
-#include "TAGmaterials.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
@@ -240,35 +239,28 @@ string TASTparGeo::PrintSubtractBodiesFromAir() {
 }
 
 //_____________________________________________________________________________
-string TASTparGeo::PrintAssignMaterial() {
+string TASTparGeo::PrintAssignMaterial(TAGmaterials *Material) {
 
   stringstream outstr;
 
   if(GlobalPar::GetPar()->IncludeST()){
 
+    TString flkmat;  
+    
+    if (Material == NULL){
+      TAGmaterials::Instance()->PrintMaterialFluka();
+      flkmat = TAGmaterials::Instance()->GetFlukaMatName(fMaterial.Data());
+    }
+    else
+      flkmat = Material->GetFlukaMatName(fMaterial.Data());
+
     bool magnetic = false;
     if(GlobalPar::GetPar()->IncludeDI())
       magnetic = true;
-  
-    const Char_t* matName = fMaterial.Data();
-
         
-    outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	   << setw(10) << setfill(' ') << std::right << matName
-	   << setw(10) << setfill(' ') << std::right << "STC"
-	   << setw(10) << setfill(' ') << std::right << ""
-	   << setw(10) << setfill(' ') << std::right << ""
-	   << setw(10) << setfill(' ') << std::right << magnetic
-	   << endl;
+    outstr << PrintCard("ASSIGNMA", flkmat, "STC", "", "", Form("%d",magnetic), "", "") << endl;
+    outstr << PrintCard("ASSIGNMA", "Mylar", "STCMYL1", "STCMYL2", "1.", Form("%d",magnetic), "", "") << endl;
         
-    outstr << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-	   << setw(10) << setfill(' ') << std::right << "Mylar"
-	   << setw(10) << setfill(' ') << std::right << "STCMYL1"
-	   << setw(10) << setfill(' ') << std::right << "STCMYL2"
-	   << setw(10) << setfill(' ') << std::right << "1."
-	   << setw(10) << setfill(' ') << std::right << magnetic
-    	   << endl;
-    
   }
   
   return outstr.str();

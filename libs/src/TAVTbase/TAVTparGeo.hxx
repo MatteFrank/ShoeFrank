@@ -17,6 +17,7 @@
 #include "TString.h"
 
 #include "TAVTbaseParGeo.hxx"
+#include "TAGmaterials.hxx"
 
 //##############################################################################
 
@@ -45,7 +46,7 @@ public:
    virtual string PrintRotations();
    virtual string PrintBodies();
    virtual string PrintRegions();
-   virtual string PrintAssignMaterial();
+   virtual string PrintAssignMaterial(TAGmaterials *Material);
    virtual string PrintSubtractBodiesFromAir();
    
 protected:

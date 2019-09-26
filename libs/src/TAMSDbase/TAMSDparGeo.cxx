@@ -17,7 +17,6 @@
 
 #include "TAMSDparGeo.hxx"
 #include "TAGroot.hxx"
-#include "TAGmaterials.hxx"
 
 const TString TAMSDparGeo::fgkBaseName      = "MSD";
 const TString TAMSDparGeo::fgkDefParaName   = "msdGeo";
@@ -530,50 +529,39 @@ string TAMSDparGeo::PrintSubtractBodiesFromAir()
 }
 
 //_____________________________________________________________________________
-string TAMSDparGeo::PrintAssignMaterial()
+string TAMSDparGeo::PrintAssignMaterial(TAGmaterials *Material)
 {
 
   stringstream ss;
 
   if(GlobalPar::GetPar()->IncludeMSD()){
 
-    string matMod = "SILICON";//fEpiMat.Data();
-    if (fEpiMat.CompareTo("Si")!=0)
-      cout << "ATTENTION in TAMSDparGeo PrintAssignMaterial: check the MSD material"<<endl;
-    // matMod[1] =toupper(matMod[1]);
-    // const Char_t* matMod = fEpiMat.Data();
-    const Char_t* matMetal = "ALUMINUM";//fMetalMat.Data();
-    const Char_t* matSupp = fPixMat.Data();
+    TString flkmatMod, flkmatMetal, flkmatSupp;  
+    
+    if (Material == NULL){
+      TAGmaterials::Instance()->PrintMaterialFluka();
+      flkmatMod = TAGmaterials::Instance()->GetFlukaMatName(fEpiMat.Data());
+      flkmatMetal = TAGmaterials::Instance()->GetFlukaMatName(fMetalMat.Data());
+      flkmatSupp = TAGmaterials::Instance()->GetFlukaMatName(fPixMat.Data());
+    }else{
+      flkmatMod = Material->GetFlukaMatName(fEpiMat.Data());
+      flkmatMetal = Material->GetFlukaMatName(fMetalMat.Data());
+      flkmatSupp = Material->GetFlukaMatName(fPixMat.Data());
+    }
+        
     bool magnetic = false;
     if(GlobalPar::GetPar()->IncludeDI())
       magnetic = true;
 
     if (vStripRegion.size()==0 || vModRegion.size()==0 || vMetalRegion.size()==0 )
       cout << "Error: MSD regions vector not correctly filled!"<<endl;
-
-    ss << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-       << setw(10) << setfill(' ') << std::right << matMod
-       << setw(10) << setfill(' ') << std::right << vStripRegion.at(0)
-       << setw(10) << setfill(' ') << std::right << vStripRegion.back()
-       << setw(10) << setfill(' ') << std::right << "1."
-       << setw(10) << setfill(' ') << std::right << magnetic
-       << endl;
-
-    ss << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-       << setw(10) << setfill(' ') << std::right << matSupp
-       << setw(10) << setfill(' ') << std::right << vModRegion.at(0)
-       << setw(10) << setfill(' ') << std::right << vModRegion.back()
-       << setw(10) << setfill(' ') << std::right << "1."
-       << setw(10) << setfill(' ') << std::right << magnetic
-       << endl;
-
-    ss << setw(10) << setfill(' ') << std::left << "ASSIGNMA"
-       << setw(10) << setfill(' ') << std::right << matMetal
-       << setw(10) << setfill(' ') << std::right << vMetalRegion.at(0)
-       << setw(10) << setfill(' ') << std::right << vMetalRegion.back()
-       << setw(10) << setfill(' ') << std::right << "1."
-       << setw(10) << setfill(' ') << std::right << magnetic
-       << endl;
+    
+    ss << PrintCard("ASSIGNMA", flkmatMod, vStripRegion.at(0), vStripRegion.back(),
+		    "1.", Form("%d",magnetic), "", "") << endl;
+    ss << PrintCard("ASSIGNMA", flkmatMetal, vMetalRegion.at(0), vMetalRegion.back(),
+		    "1.", Form("%d",magnetic), "", "") << endl;
+    ss << PrintCard("ASSIGNMA", flkmatSupp, vModRegion.at(0), vModRegion.back(),
+		    "1.", Form("%d",magnetic), "", "") << endl;
 
   }
 

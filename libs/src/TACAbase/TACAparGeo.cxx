@@ -15,7 +15,6 @@
 
 #include "TAGgeoTrafo.hxx"
 #include "TAGionisMaterials.hxx"
-#include "TAGmaterials.hxx"
 
 #include "TACAparGeo.hxx"
 #include "TAGroot.hxx"
@@ -763,14 +762,21 @@ string TACAparGeo::PrintParameters() {
 
 }
 //_____________________________________________________________________________
-string TACAparGeo::PrintAssignMaterial() {
+string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material) {
 
   stringstream ss;
   
   if(GlobalPar::GetPar()->IncludeCA()){
 
-    const Char_t* mat = fCrystalMat.Data();
-      
+    TString flkmat;  
+    
+    if (Material == NULL){
+      TAGmaterials::Instance()->PrintMaterialFluka();
+      flkmat = TAGmaterials::Instance()->GetFlukaMatName(fCrystalMat.Data());
+    }
+    else
+      flkmat = Material->GetFlukaMatName(fCrystalMat.Data());
+
     bool magnetic = false;
     if(GlobalPar::GetPar()->IncludeDI())
       magnetic = true;
@@ -778,7 +784,7 @@ string TACAparGeo::PrintAssignMaterial() {
     if (vRegion.size()==0 )
       cout << "Error: CA regions vector not correctly filled!" << endl;
 
-    ss << PrintCard("ASSIGNMA", mat, vRegion.at(0), vRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmat, vRegion.at(0), vRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
 
   }

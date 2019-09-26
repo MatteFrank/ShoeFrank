@@ -29,6 +29,14 @@ protected:
    static TString               fgkWhat;
    static Int_t                 fgkWhatWidth;
 
+   struct FlukaMat_t {
+	TString     Name;      // material name
+	Int_t       Z;         // atomic number
+	Double_t    Amean;  // mean mass number
+	Double_t    Density;   // density (g/cmˆ3)
+   };
+   FlukaMat_t  fFlukaMat[128];
+
 protected:
    vector<TString>              fIsotope;
    vector<Float_t>              fIsotopeWeight;
@@ -44,6 +52,10 @@ protected:
    void             GetCoeff(TString key, Float_t* coeff, Int_t size,  const Char_t delimiter = '/');
    TString          FindByValue(TString value);
    virtual void     CreateDefaultMaterials();
+   Bool_t           ReadFlukaDefMat();
+   Int_t            GetFlukaMatId(Double_t Z);
+   void             CheckFlukaMat(Double_t density, Double_t A, Double_t Z);
+
 
    ClassDef(TAGbaseMaterials,0)
 };

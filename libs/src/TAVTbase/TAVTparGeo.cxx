@@ -31,7 +31,6 @@
 
 #include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx" 
-#include "TAGmaterials.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAGroot.hxx"
@@ -376,19 +375,24 @@ string TAVTparGeo::PrintSubtractBodiesFromAir()
 }
 
 //_____________________________________________________________________________
-string TAVTparGeo::PrintAssignMaterial()
+string TAVTparGeo::PrintAssignMaterial(TAGmaterials *Material)
 {
 
   stringstream ss;
   
   if(GlobalPar::GetPar()->IncludeVertex()){
 
-    string matMod = "SILICON";//fEpiMat.Data();
-    if (fEpiMat.CompareTo("Si")!=0)
-      cout << "ATTENTION in TAVTparGeo PrintAssignMaterial: check the VT material"<<endl;
-    // matMod[1] =toupper(matMod[1]);
-    // const Char_t* matMod = fEpiMat.Data();
-    const Char_t* matPix = fPixMat.Data();
+    TString flkmatMod, flkmatPix;  
+    
+    if (Material == NULL){
+      TAGmaterials::Instance()->PrintMaterialFluka();
+      flkmatMod = TAGmaterials::Instance()->GetFlukaMatName(fEpiMat.Data());
+      flkmatPix = TAGmaterials::Instance()->GetFlukaMatName(fPixMat.Data());
+    }else{
+      flkmatMod = Material->GetFlukaMatName(fEpiMat.Data());
+      flkmatPix = Material->GetFlukaMatName(fPixMat.Data());
+    }
+
     bool magnetic = false;
     if(GlobalPar::GetPar()->IncludeDI())
       magnetic = true;
@@ -396,11 +400,11 @@ string TAVTparGeo::PrintAssignMaterial()
     if (vEpiRegion.size()==0 || vModRegion.size()==0 || vPixRegion.size()==0 )
       cout << "Error: VT regions vector not correctly filled!"<<endl;
     
-    ss << PrintCard("ASSIGNMA", matMod, vEpiRegion.at(0), vEpiRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatMod, vEpiRegion.at(0), vEpiRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
-    ss << PrintCard("ASSIGNMA", matMod, vModRegion.at(0), vModRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatMod, vModRegion.at(0), vModRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
-    ss << PrintCard("ASSIGNMA", matPix, vPixRegion.at(0), vPixRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatPix, vPixRegion.at(0), vPixRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
 
   }
