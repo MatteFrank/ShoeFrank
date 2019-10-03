@@ -65,6 +65,17 @@ class TAMCevent : public TObject {
 
   void Dump() const;
 
+public:
+   // Getters
+   TAMCntuEve* GetNtuEve() const { return fTrack;  }
+   TAMCntuHit* GetHitSTC() const { return fHitSTC; }
+   TAMCntuHit* GetHitBMN() const { return fHitBMN; }
+   TAMCntuHit* GetHitVTX() const { return fHitVTX; }
+   TAMCntuHit* GetHitITR() const { return fHitITR; }
+   TAMCntuHit* GetHitMSD() const { return fHitMSD; }
+   TAMCntuHit* GetHitTW()  const { return fHitTW;  }
+   TAMCntuHit* GetHitCAL() const { return fHitCAL; }
+
  private:
 
     Int_t fEventNumber;
