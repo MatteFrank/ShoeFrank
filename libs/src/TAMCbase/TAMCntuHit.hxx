@@ -52,11 +52,11 @@ public:
    TVector3      fOutPosition;  // final position
    TVector3      fInMomentum;   // initial momentum
    TVector3      fOutMomentum;  // final momentum
-   Double_t      fDelatE;     // deposited energy
-   Double_t      fTof;        // time fo flight
-   Double_t      fTrackId;    // MC track Id
+   Double32_t    fDelatE;       // deposited energy
+   Double32_t    fTof;          // time fo flight
+   Double32_t    fTrackId;      // MC track Id
    
-   ClassDef(TAMChit,2)
+   ClassDef(TAMChit,3)
 };
 
 //##############################################################################
