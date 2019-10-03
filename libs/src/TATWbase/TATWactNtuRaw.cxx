@@ -9,6 +9,7 @@
 #include "TATWparMap.hxx"
 #include "TATWactNtuRaw.hxx"
 #include "TMath.h"
+#include "TH1F.h"
 #include <map>
 #include "TATWparCal.hxx"
 #include "CCalibrationMap.hxx"
@@ -55,6 +56,22 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
 TATWactNtuRaw::~TATWactNtuRaw()
 {}
 
+//------------------------------------------+-----------------------------------
+//! Setup all histograms.
+void TATWactNtuRaw::CreateHistogram()
+{
+   DeleteHistogram();
+   
+   fpHisDeTot = new TH1F("twDeTot", "TW - Total Energy Loss", 500, 0., 300.);
+   AddHistogram(fpHisDeTot);
+   
+   fpHisTimeTot = new TH1F("twTimeTot", "TW - Total Time Of Flight", 500, 0., 300);
+   AddHistogram(fpHisTimeTot);
+   
+   SetValidHistogram(kTRUE);
+   
+   return;
+}
 //------------------------------------------+-----------------------------------
 //! Action.
 
@@ -159,6 +176,8 @@ Bool_t TATWactNtuRaw::Action() {
 	       Double_t TimeB=hitb->Time();
 	       p_nturaw->NewHit((int)c->GetBarLayer(BarId),ShoeBarId, Energy,Time,rawPos,chargeCOM,
 				ChargeA,ChargeB,TimeA,TimeB);
+          fpHisDeTot->Fill(Energy);
+          fpHisTimeTot->Fill(Time);
 	     }
 	 }
      }

@@ -14,6 +14,8 @@
 #include "TATWdatRaw.hxx"
 #include "TATWntuRaw.hxx"
 
+class TH1F;
+
 class TATWactNtuRaw : public TAGaction {
 
 public:
@@ -28,6 +30,8 @@ public:
 
   virtual Bool_t  Action();
 
+  virtual void    CreateHistogram();
+   
   ClassDef(TATWactNtuRaw,0);
 
 
@@ -40,9 +44,12 @@ public:
   TAGparaDsc*     fpParMap;
   TAGparaDsc*     fpCalPar;
 
-  Float_t         fTofPropAlpha; // inverse of light propagation velocity
-  Float_t         fTofErrPropAlpha;
+   Float_t        fTofPropAlpha;    // inverse of light propagation velocity
+   Float_t        fTofErrPropAlpha;
 
+   TH1F*          fpHisDeTot;       // Total energy loss
+   TH1F*          fpHisTimeTot;     // Total time of flight
+   
   bool m_debug;
 
   map<pair<int,int>, double> clktime_map;
