@@ -38,13 +38,15 @@ public:
    
    //    All the Get methods
    TVector3    GetPosition()         const  { return fPosition;   }
-   Double32_t  GetTime()             const  { return fTime;      }
-   Int_t       GetChargeZ()          const  { return fChargeZ;   }
-   Double32_t  GetChargeProbaZ()     const  { return fChargeZ;   }
+   Double32_t  GetTime()             const  { return fTime;       }
+   Int_t       GetChargeZ()          const  { return fChargeZ;    }
+   Double32_t  GetChargeProbaZ()     const  { return fChargeZ;    }
    
+   void        SetTime(Double_t time)       { fTime = time;       }
    void        SetPosition(TVector3 pos)    { fPosition = pos;    }
    void        SetChargeZ(Int_t z)          { fChargeZ = z;       }
    void        SetChargeProbaZ(Double_t z)  { fChargeProbaZ = z;  }
+   
    void        Clear(Option_t* opt);
    
    ClassDef(TAGpoint,1)
