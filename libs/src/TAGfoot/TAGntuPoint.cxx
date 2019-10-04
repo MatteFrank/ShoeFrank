@@ -1,19 +1,10 @@
 
-
-
-
-#include "TAGntuPoint.hxx"
-
-
 #include "TString.h"
 #include "TClonesArray.h"
-#include "TATWparGeo.hxx"
 #include "TAGntuPoint.hxx"
-
 
 
 ClassImp(TAGpoint) // Description of Single Detector TAGpoint
-
 
 //______________________________________________________________________________
 //  default constructor
@@ -44,9 +35,9 @@ void TAGpoint::Clear(Option_t*)
 }
 
 
+//##############################################################################
 ClassImp(TAGntuPoint);
 
-//##############################################################################
 
 TString TAGntuPoint::fgkBranchName   = "glbpoint.";
 
@@ -87,12 +78,10 @@ Int_t TAGntuPoint::GetPointsN()
 TAGpoint* TAGntuPoint::GetPoint(Int_t iPoint) {
 
 	if ( iPoint < 0  || iPoint >= GetPointsN() ) {
-		cout << "ERROR >> TAGntuPoint::GetPoint_includingDuplicates  -->  number of point "<<iPoint<<" required is wrong. Max num  " << GetPointsN() << endl;
+      Error("GetPoint", "Index %d outside the limit %d", iPoint, GetPointsN() -1);
 	}
 	return (TAGpoint*)fListOfPoints->At(iPoint);
 }
-
-
 
 //------------------------------------------+-----------------------------------
 //! Setup clones. Crate and initialise the list of pixels
@@ -101,10 +90,6 @@ void TAGntuPoint::SetupClones()
    if (fListOfPoints) return;
    fListOfPoints = new TClonesArray("TAGpoint", 500);
 }
-
-
-
-
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
@@ -137,32 +122,3 @@ void TAGntuPoint::ToStream(ostream& os, Option_t* option) const
 	  // }
    // }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
