@@ -14,8 +14,9 @@ class BaseFragment {
 
 public:
   u_int channelID;
+  int   debugLevel;
 
-  BaseFragment() : channelID(0){};
+   BaseFragment() : channelID(0), debugLevel(0){};
   virtual ~BaseFragment();
   
   virtual void readData(unsigned int **p);
