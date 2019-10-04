@@ -301,29 +301,30 @@ unsigned int  EventReader::getROSInformation(unsigned int **p1){
   unsigned int * base = p + p[2];
   unsigned int sizeROS = p[1];
 
-  if( *base != ROSHeader2 ){
-    std::cout<< "Error on ROSHeader2 " << (std::hex)<< *base << std::endl;
-  }
-  base = base + base[1];
-
-  // here a Read out Buffer (ROB)
-  BaseFragment* bp = NULL;
-  if( *base!=0 ){
-    do {
-      u_int id = *base;
-      //std::cout<< "Reading " << (std::hex)<< *base << std::endl;
-
-      bp = BaseFragment::create(&base);
-      if( bp!=NULL ){
-	m_fragments[id] = bp;
-      } else {
-	std::cout<< "Null pointer ?? " << (std::hex)<< *base << std::endl;
-      }
-    } while (*base!=0 && bp!=NULL);
-    //std::cout<< "After base=" << (std::hex)<< *base << std::endl;    
-  }
-  *p1 = base;
-  return sizeROS;
+   if( *base != ROSHeader2 ){
+      std::cout<< "Error on ROSHeader2 " << (std::hex)<< *base << std::endl;
+   }
+   base = base + base[1];
+   
+   // here a Read out Buffer (ROB)
+   BaseFragment* bp = NULL;
+   if( *base!=0 ){
+      do {
+         u_int id = *base;
+         //std::cout<< "Reading " << (std::hex)<< *base << std::endl;
+         
+         bp = BaseFragment::create(&base);
+         if( bp!=NULL ){
+            m_fragments[id] = bp;
+         } else {
+            if (m_debugLevel)
+               std::cout<< "Null pointer ?? " << (std::hex)<< *base << std::endl;
+         }
+      } while (*base!=0 && bp!=NULL);
+      //std::cout<< "After base=" << (std::hex)<< *base << std::endl;
+   }
+   *p1 = base;
+   return sizeROS;
 }
 
 
