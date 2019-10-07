@@ -19,6 +19,8 @@
 #include "TASTdatRaw.hxx"
 #include "TASTactNtuMC.hxx"
 
+//Magnet Info
+
 //Beam Monitor
 #include "TABMparGeo.hxx"
 #include "TABMparCon.hxx"
@@ -112,14 +114,17 @@ void Booter::Initialize( EVENT_STRUCT* evStr ) {
 
 	//Initializing the Geometry class that handles the
     //detector positioning and global to local transformations
-    fGeoTrafo = new TAGgeoTrafo();   
+    fGeoTrafo = new TAGgeoTrafo();
+    fDipole = new TADIparGeo();
+    fDipole->FromFile();
+
     TString filename = m_wd + "/geomap/FOOT_geo.map";   // obsolete, to be removed carefully
     //fGeoTrafo->InitGeo(filename.Data()); // avoid to load an unexisting file !
 
 	cout << "Make Geo" << endl;
     TGeoManager *masterGeo = new TGeoManager("genfitGeom", "GENFIT geometry");
     
-	Materials* listMaterials = new Materials() ;
+    Materials* listMaterials = new Materials() ;
     if ( GlobalPar::GetPar()->Debug() > 1 ) {
        listMaterials->PrintCompMap();
        listMaterials->PrintMatMap();
@@ -129,11 +134,11 @@ void Booter::Initialize( EVENT_STRUCT* evStr ) {
     gGeoManager->SetTopVolume(top); // mandatory !
 
 
-    string magFieldMapName = GlobalPar::GetPar()->MagFieldInputMapName();
+    TString magFieldMapName = fDipole->GetMapName();
     // genfit::FieldManager::getInstance()->init(new genfit::ConstField(0. ,10., 0.)); // 1 T
     // genfit::FieldManager::getInstance()->init(new genfit::ConstField(0. ,0., 0.)); // no mag
     // genfit::FieldManager::getInstance()->init( new FootField( 7 ) ); // const field
-    genfit::FieldManager::getInstance()->init( new FootField(magFieldMapName.c_str()) ); // variable field
+    genfit::FieldManager::getInstance()->init( new FootField(magFieldMapName.Data()) ); // variable field
 
     // include the nucleon into the genfit pdg repository
     if ( GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeKalman() )
@@ -293,7 +298,9 @@ void Booter::Finalize() {
 //------------------------------------------------------------------------------
 void Booter::MagFieldTest() {
 
-    FootField * ff = new FootField( GlobalPar::GetPar()->MagFieldInputMapName().c_str() );
+  TString magFieldMapName = fDipole->GetMapName();
+
+  FootField * ff = new FootField(magFieldMapName.Data() );
     cout << endl << "Magnetic Field in kGauss test in 0,0,14 : ", genfit::FieldManager::getInstance()->getFieldVal( TVector3( 0,0,14 ) ).Print();
     cout << endl << "Magnetic no Field in kGauss test in 0,0,0 : ", genfit::FieldManager::getInstance()->getFieldVal( TVector3( 0,0,0 ) ).Print();
     // cout << "Total mag field on the FOOT axis (from 0 to 40 cm) = " << ff->IntegralField( 4000, 0, 40 ) << " kG*cm" << endl;

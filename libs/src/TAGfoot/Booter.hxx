@@ -12,7 +12,7 @@
 
 // #include "TAGpadGroup.hxx"
 #include "TAGgeoTrafo.hxx"
-
+#include "TADIparGeo.hxx"
 // #include "TAGactTreeWriter.hxx"
 // #include "TAGdataDsc.hxx"
 #include "TAGroot.hxx"
@@ -73,6 +73,7 @@ class Booter {
   void AssociateHitsToParticle();
 
   TAGgeoTrafo* fGeoTrafo;
+  TADIparGeo *fDipole;
   TGeoVolume *top;
 
   KFitter* m_kFitter;

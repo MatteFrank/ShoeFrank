@@ -68,7 +68,7 @@ public:
     bool IncludeEvent() { return m_includeEvent; };
 
 
-    string MagFieldInputMapName() { return m_magFieldMap; };
+  //    string MagFieldInputMapName() { return m_magFieldMap; };
     void RemoveSpace( string* s );
     bool IEquals(const string& a, const string& b);
     bool frankFind( string what, string where );
@@ -164,7 +164,7 @@ private:
     string  m_outputntuplename;
     bool m_printoutntuple;
 
-    string m_magFieldMap;
+  //    string m_magFieldMap;
 
    bool m_includeST;
    bool m_includeBM;

@@ -273,12 +273,6 @@ void GlobalPar::ReadParamFile () {
             else                     m_includeEvent = false;
         }
 
-        else if ( line.find("Magnetic field map name:") != string::npos ) {
-            m_magFieldMap = StrReplace( line, "Magnetic field map name:", "" );
-            RemoveSpace( &m_magFieldMap );
-        }
-
-
     }
 
 
