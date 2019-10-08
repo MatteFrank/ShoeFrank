@@ -42,14 +42,6 @@ IncludeCA:				n
 
 IncludeEvent:			n
 
-
-
-#Magnetic field map name:  SummedSingleMap_v14.2.table
-#Magnetic field map name:  SummedSingleMap.table
-Magnetic field map name:  DoubleDipole.table
-#Magnetic field map name:  DoubleGaussMag.table
-
-
 Print OutputFile: true
 Output Filename: RecoHistos.root
 
