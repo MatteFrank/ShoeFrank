@@ -8,66 +8,70 @@
 
 //----------------------------------------------------------------------------------------------------
 KFitter::KFitter () {
-	
-    int nIter = 20; // max number of iterations
-    double dPVal = 1.E-3; // convergence criterion
-    m_AMU = 0.9310986964; // in GeV // conversion betweem mass in GeV and atomic mass unit
 
-	m_debug = GlobalPar::GetPar()->Debug();
+  int nIter = 20; // max number of iterations
+  double dPVal = 1.E-3; // convergence criterion
+  m_AMU = 0.9310986964; // in GeV // conversion betweem mass in GeV and atomic mass unit
+  
+  m_debug = GlobalPar::GetPar()->Debug();
+  
+  // if start KF in forward or reverse mode
+  m_reverse = GlobalPar::GetPar()->IsKalReverse();
 
-	// if start KF in forward or reverse mode
-	m_reverse = GlobalPar::GetPar()->IsKalReverse();
+  // m_diceRoll = new TRandom3();
+  //    m_diceRoll->SetSeed(0);
 
-	// m_diceRoll = new TRandom3();
- //    m_diceRoll->SetSeed(0);
+  // clear hits collection
+  m_VT_hitCollection.clear();
+  m_IT_hitCollection.clear();
+  m_MSD_hitCollection.clear();
 
-    // clear hits collection
-	m_VT_hitCollection.clear();
-	m_IT_hitCollection.clear();
-	m_MSD_hitCollection.clear();
+  m_VT_clusCollection.clear();
+  m_IT_clusCollection.clear();
+  m_MSD_clusCollection.clear();
 
-	m_fitTrackCollection = new GlobalTrackRepostory();  // contains the fitted track info
+  m_fitTrackCollection = new GlobalTrackRepostory();  // contains the fitted track info
 
-	// Create dir for kalman output
-	struct stat info;
-	m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman";
-	if( stat( m_kalmanOutputDir.c_str(), &info ) != 0 )		//cannot access
-	    system(("mkdir "+m_kalmanOutputDir).c_str());
+  // Create dir for kalman output
+  struct stat info;
+  m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman";
+  if( stat( m_kalmanOutputDir.c_str(), &info ) != 0 )		//cannot access
+    system(("mkdir "+m_kalmanOutputDir).c_str());
 
-	// class for control plot dumping
-	m_controlPlotter = ControlPlotsRepository::GetControlObject( m_kalmanOutputDir );
+  // class for control plot dumping
+  m_controlPlotter = ControlPlotsRepository::GetControlObject( m_kalmanOutputDir );
 
-	// checks for the detector to be used for kalman
-	IncludeDetectors();
+  // checks for the detector to be used for kalman
+  IncludeDetectors();
 
-	// take the geometry object
-	if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVertex() )
-		m_VT_geo = shared_ptr<TAVTparGeo> ( (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
-	if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() )
-		m_IT_geo = shared_ptr<TAITparGeo> ( (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
-	if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() ) 
-		m_MSD_geo = shared_ptr<TAMSDparGeo> ( (TAMSDparGeo*) gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() );
-	// if ( (m_systemsON == "all" || m_systemsON.find( "SCT" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() ) 
-	if ( ( m_systemsON.find( "TW" ) != string::npos) && GlobalPar::GetPar()->IncludeTW() ) 
-		m_TW_geo = shared_ptr<TATWparGeo> ( (TATWparGeo*) gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object() );
-
-	
-	// initialise the kalman method selected from param file
-	if ( GlobalPar::GetPar()->KalMode() == 1 )
-		m_fitter = new KalmanFitter(nIter, dPVal);
-	else if ( GlobalPar::GetPar()->KalMode() == 2 )
-		m_refFitter = new KalmanFitterRefTrack(nIter, dPVal);  
-	else if ( GlobalPar::GetPar()->KalMode() == 3 ) 
-		m_dafRefFitter = new DAF(true, nIter, dPVal);
-	else if ( GlobalPar::GetPar()->KalMode() == 4 )
-		m_dafSimpleFitter = new DAF(false, nIter, dPVal);
-
-	InitEventDisplay();		// empty!!!!
+  // take the geometry object
+  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVertex() )
+    m_VT_geo = shared_ptr<TAVTparGeo> ( (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
+  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() )
+    m_IT_geo = shared_ptr<TAITparGeo> ( (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
+  if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() )
+    m_MSD_geo = shared_ptr<TAMSDparGeo> ( (TAMSDparGeo*) gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() );
+  // if ( (m_systemsON == "all" || m_systemsON.find( "SCT" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() )
+  if ( ( m_systemsON.find( "TW" ) != string::npos) && GlobalPar::GetPar()->IncludeTW() )
+    m_TW_geo = shared_ptr<TATWparGeo> ( (TATWparGeo*) gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object() );
 
 
-	m_vecHistoColor = { kBlack, kRed-9, kRed+1, kRed-2, kOrange+7, kOrange, kOrange+3, kGreen+1, 
-						kGreen+3, kBlue+1, kBlue+3, kAzure+8, kAzure+1, kMagenta+2, 
-						kMagenta+3, kViolet+1, kViolet+6, kViolet-4 };
+  // initialise the kalman method selected from param file
+  if ( GlobalPar::GetPar()->KalMode() == 1 )
+    m_fitter = new KalmanFitter(nIter, dPVal);
+  else if ( GlobalPar::GetPar()->KalMode() == 2 )
+    m_refFitter = new KalmanFitterRefTrack(nIter, dPVal);
+  else if ( GlobalPar::GetPar()->KalMode() == 3 )
+    m_dafRefFitter = new DAF(true, nIter, dPVal);
+  else if ( GlobalPar::GetPar()->KalMode() == 4 )
+    m_dafSimpleFitter = new DAF(false, nIter, dPVal);
+
+  InitEventDisplay();		// empty!!!!
+
+
+  m_vecHistoColor = { kBlack, kRed-9, kRed+1, kRed-2, kOrange+7, kOrange, kOrange+3, kGreen+1,
+		      kGreen+3, kBlue+1, kBlue+3, kAzure+8, kAzure+1, kMagenta+2,
+		      kMagenta+3, kViolet+1, kViolet+6, kViolet-4 };
 
 }
 
@@ -79,35 +83,35 @@ KFitter::KFitter () {
 // check and print which detectors included and/or used in the kalman
 void KFitter::IncludeDetectors() {
 
-	// all possible detector and a map with an ID num
-	vector<string> tmp_detName = { "STC", "BM", "TG", "VT", "IT", "MSD", "TW", "CALO" };
-	for (unsigned int i=0; i<tmp_detName.size(); i++)
-		m_detectorID_map[ tmp_detName[i] ] = i;
+  // all possible detector and a map with an ID num
+  vector<string> tmp_detName = { "STC", "BM", "TG", "VT", "IT", "MSD", "TW", "CALO" };
+  for (unsigned int i=0; i<tmp_detName.size(); i++)
+    m_detectorID_map[ tmp_detName[i] ] = i;
 
-	// check kalman detectors set in param file are correct
-	if ( !(GlobalPar::GetPar()->KalSystems().size() == 1 && GlobalPar::GetPar()->KalSystems().at(0) == "all") )	 {
-	// if ( GlobalPar::GetPar()->KalSystems().size() != 0 )	 {
-		for (unsigned int i=0; i<GlobalPar::GetPar()->KalSystems().size(); i++ ) {
-			if ( m_detectorID_map.find( GlobalPar::GetPar()->KalSystems().at(i) ) == m_detectorID_map.end() ) 
-				cout<< "ERROR::KFitter::KFitter  --> KalSystems parameter not set properly, check befor continue."<< endl, exit(0);
-		}
-	}
-	if (GlobalPar::GetPar()->KalSystems().size() == 0)		cout<< "ERROR::KFitter::KFitter  --> KalSystems parameter not set properly, zero parameters, check befor continue."<< endl, exit(0);
+  // check kalman detectors set in param file are correct
+  if ( !(GlobalPar::GetPar()->KalSystems().size() == 1 && GlobalPar::GetPar()->KalSystems().at(0) == "all") )	 {
+    // if ( GlobalPar::GetPar()->KalSystems().size() != 0 )	 {
+    for (unsigned int i=0; i<GlobalPar::GetPar()->KalSystems().size(); i++ ) {
+      if ( m_detectorID_map.find( GlobalPar::GetPar()->KalSystems().at(i) ) == m_detectorID_map.end() )
+	cout<< "ERROR::KFitter::KFitter  --> KalSystems parameter not set properly, check before continue."<< endl, exit(0);
+    }
+  }
+  if (GlobalPar::GetPar()->KalSystems().size() == 0)		cout<< "ERROR::KFitter::KFitter  --> KalSystems parameter not set properly, zero parameters, check befor continue."<< endl, exit(0);
 
-	// list of detectors used for kalman
-	m_systemsON = "";  
-	for (unsigned int i=0; i<GlobalPar::GetPar()->KalSystems().size(); i++ ) {
-		if (i != 0)		m_systemsON += " ";
-		m_systemsON += GlobalPar::GetPar()->KalSystems().at(i);
-	}
-	if (m_debug > 0)	cout << "Detector systems for Kalman:  " << m_systemsON << endl;
+  // list of detectors used for kalman
+  m_systemsON = "";
+  for (unsigned int i=0; i<GlobalPar::GetPar()->KalSystems().size(); i++ ) {
+    if (i != 0)		m_systemsON += " ";
+    m_systemsON += GlobalPar::GetPar()->KalSystems().at(i);
+  }
+  if (m_debug > 0)	cout << "Detector systems for Kalman:  " << m_systemsON << endl;
 
-	// print-out of the particle hypothesis used for the fit
-    cout << "GlobalPar::GetPar()->MCParticles()";
-	for (unsigned int i=0; i<GlobalPar::GetPar()->MCParticles().size(); i++ ) {
-		cout << "   " << GlobalPar::GetPar()->MCParticles().at(i);
-	}
-	cout << endl;
+  // print-out of the particle hypothesis used for the fit
+  cout << "GlobalPar::GetPar()->MCParticles()";
+  for (unsigned int i=0; i<GlobalPar::GetPar()->MCParticles().size(); i++ ) {
+    cout << "   " << GlobalPar::GetPar()->MCParticles().at(i);
+  }
+  cout << endl;
 }
 
 
@@ -119,56 +123,167 @@ void KFitter::IncludeDetectors() {
 //----------------------------------------------------------------------------------------------------
 // upload measurement points from vertex pixel
 int KFitter::UploadHitsVT() {
-	
-	// take the ntuple object already filled
-	TAVTntuRaw* ntup = (TAVTntuRaw*) gTAGroot->FindDataDsc("vtRaw", "TAVTntuRaw")->Object();
-   TAVTparGeo* vtxGeo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
+  
 
-	if ( m_debug > 0 )		cout << "N vertex sensors: " << vtxGeo->GetNSensors() << endl;
-
-	// MC hits example
-	// TAMCntuEve* ntuMC = (TAMCntuEve*) gTAGroot->FindDataDsc("myn_mceve", "TAMCntuEve")->Object();
-	// cout << "Number of MC tracks from repo  " << ntuMC->nhit  << endl;
-	
-	int totPix = 0;
-	// save pixels in the collection
-	for (int nSensor = 0; nSensor < vtxGeo->GetNSensors(); nSensor++) {	// over all sensors
-		totPix += ntup->GetPixelsN( nSensor );
-		if ( m_debug > 0 )		cout << "N vertex pixel in sensor " << nSensor << ": " << ntup->GetPixelsN( nSensor ) << endl;
-
-		for (int nPx = 0; nPx < ntup->GetPixelsN( nSensor ); nPx++) 		// over all pixels for each sensor
-	        m_VT_hitCollection.push_back( ntup->GetPixel( nSensor, nPx) );
-	}
-
-	return totPix;
+  // take the ntuple object already filled
+  TAVTntuRaw* ntup = (TAVTntuRaw*) gTAGroot->FindDataDsc("vtRaw", "TAVTntuRaw")->Object();
+  TAVTparGeo* vtxGeo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
+  
+  if ( m_debug > 0 )		cout << "N vertex sensors: " << vtxGeo->GetNSensors() << endl;
+  
+  // MC hits example
+  // TAMCntuEve* ntuMC = (TAMCntuEve*) gTAGroot->FindDataDsc("myn_mceve", "TAMCntuEve")->Object();
+  // cout << "Number of MC tracks from repo  " << ntuMC->nhit  << endl;
+  
+  int totPix = 0;
+  // save pixels in the collection
+  for (int nSensor = 0; nSensor < vtxGeo->GetNSensors(); nSensor++) {	// over all sensors
+    totPix += ntup->GetPixelsN( nSensor );
+    if ( m_debug > 0 )		cout << "N vertex pixel in sensor " << nSensor << ": " << ntup->GetPixelsN( nSensor ) << endl;
+    
+    for (int nPx = 0; nPx < ntup->GetPixelsN( nSensor ); nPx++) 		// over all pixels for each sensor
+      m_VT_hitCollection.push_back( ntup->GetPixel( nSensor, nPx) );
+  }
+  
+  return totPix;
 }
 
 
 
+//-------------------------------------------------------------------------------------------------
+int KFitter::UploadClusVT(){
+
+  fGeoTrafo = new TAGgeoTrafo();
+  fGeoTrafo->FromFile();
+
+  //cluster test
+  TAVTparGeo* vtxGeo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
+  TAVTntuCluster* vtclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object();
+
+  TAMCntuEve*  eve = (TAMCntuEve*)   gTAGroot->FindDataDsc("myn_mceve", "TAMCntuEve")->Object(); 
+  TAMCntuHit* vtMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
+
+  int totClus = 0;
+  Int_t nPlanes = vtxGeo->GetNSensors();
+
+  for(Int_t iPlane = 0; iPlane < nPlanes; iPlane++){
+    Int_t nclus = vtclus->GetClustersN(iPlane);
+    totClus += nclus;
+    if (nclus == 0) continue;
+
+    for(Int_t iClus = 0; iClus < nclus; ++iClus){
+      TAVTcluster* clus = vtclus->GetCluster(iPlane, iClus);
+      if (!clus->IsValid()) continue;
+
+      m_VT_clusCollection.push_back(clus);
+
+
+      //---------------------------testing access to hits and pixels from cluster--------------------
+      Int_t nHits = clus->GetPixelsN();
+      // cout << "nHits: " << nHits  << endl;
+      
+
+      for (Int_t jHit = 0; jHit < nHits; ++jHit) {
+      	TAVTntuHit* hit = clus->GetPixel(jHit);
+      	for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
+	  Int_t id = hit->GetMcTrackId(k);
+	  Int_t idx = hit->GetMcIndex(k);
+	  // cout << "id: " << id  << endl;
+	  // cout << "idxx: " << idx  << endl;
+	  // printf("TrackMcId %d ", id);
+	  TAMCeveTrack* track = eve->GetHit(id);
+	  //printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
+	  TAMChit* mcHit = vtMc->GetHit(idx);
+	  TVector3 pos = mcHit->GetInPosition();
+	  // printf("MC pos (%.4f %.4f %.4f)\n", pos[0], pos[1], pos[2]);
+	}
+      }
+
+      //---------------------------------------------------------------------------------------------
+    }
+  }
+  
+}
 
 //----------------------------------------------------------------------------------------------------
 // upload measurement points from Inner Tracker pixel
 int KFitter::UploadHitsIT() {
-	
-	// take the ntuple object already filled
-	TAITntuRaw* ntup = (TAITntuRaw*) gTAGroot->FindDataDsc("itRaw", "TAITntuRaw")->Object();
-   TAITparGeo* vtxGeo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetItDefParaName(), "TAITparGeo")->Object();
 
-	if ( m_debug > 0 )		cout << "N IT sensors: " << vtxGeo->GetNSensors() << endl;
+  // take the ntuple object already filled
+  TAITntuRaw* ntup = (TAITntuRaw*) gTAGroot->FindDataDsc("itRaw", "TAITntuRaw")->Object();
+  TAITparGeo* vtxGeo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetItDefParaName(), "TAITparGeo")->Object();
+
+  if ( m_debug > 0 )		cout << "N IT sensors: " << vtxGeo->GetNSensors() << endl;
 
 
-	int totPix = 0;
-	// save pixels in the collection
-	for (int nSensor = 0; nSensor < vtxGeo->GetNSensors(); nSensor++) {	// over all sensors
-		totPix += ntup->GetPixelsN( nSensor);
-		if ( m_debug > 0 )		cout << "N IT pixel in sensor " << nSensor << ": " << ntup->GetPixelsN( nSensor) << endl;
+  int totPix = 0;
+  // save pixels in the collection
+  for (int nSensor = 0; nSensor < vtxGeo->GetNSensors(); nSensor++) {	// over all sensors
+    totPix += ntup->GetPixelsN( nSensor);
+    if ( m_debug > 0 )		cout << "N IT pixel in sensor " << nSensor << ": " << ntup->GetPixelsN( nSensor) << endl;
 
-		for (int nPx = 0; nPx < ntup->GetPixelsN( nSensor); nPx++) 		// over all pixels for each sensor
-         m_IT_hitCollection.push_back( (TAITntuHit*)ntup->GetPixel( nSensor, nPx) );
+    for (int nPx = 0; nPx < ntup->GetPixelsN( nSensor); nPx++) 		// over all pixels for each sensor
+      m_IT_hitCollection.push_back( (TAITntuHit*)ntup->GetPixel( nSensor, nPx) );
 
+  }
+
+  return totPix;
+}
+
+
+//---------------------------------------------------------------------------------------------------
+int KFitter::UploadClusIT(){
+
+  fGeoTrafo = new TAGgeoTrafo();
+  fGeoTrafo->FromFile();
+
+  //cluster test
+  TAITparGeo* itGeo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
+  TAITntuCluster* itclus = (TAITntuCluster*) gTAGroot->FindDataDsc("itClus","TAITntuCluster")->Object();
+
+  TAMCntuEve*  eve = (TAMCntuEve*)   gTAGroot->FindDataDsc("myn_mceve", "TAMCntuEve")->Object(); 
+  TAMCntuHit* itMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
+
+  int totClus = 0;
+  Int_t nPlanes = itGeo->GetNSensors();
+
+  for(Int_t iPlane = 0; iPlane < nPlanes; iPlane++){
+    Int_t nclus = itclus->GetClustersN(iPlane);
+    totClus += nclus;
+    if (nclus == 0) continue;
+
+    for(Int_t iClus = 0; iClus < nclus; ++iClus){
+      TAITcluster* clus = itclus->GetCluster(iPlane, iClus);
+      if (!clus->IsValid()) continue;
+
+      m_IT_clusCollection.push_back(clus);
+
+
+      //---------------------------testing access to hits and pixels from cluster--------------------
+      Int_t nHits = clus->GetPixelsN();
+      // cout << "nHits: " << nHits  << endl;
+      
+
+      for (Int_t jHit = 0; jHit < nHits; ++jHit) {
+      	TAITntuHit* hit = (TAITntuHit*)clus->GetPixel(jHit);
+      	for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
+	  Int_t id = hit->GetMcTrackId(k);
+	  Int_t idx = hit->GetMcIndex(k);
+	  // cout << "id: " << id  << endl;
+	  // cout << "idxx: " << idx  << endl;
+	  // printf("TrackMcId %d ", id);
+	  TAMCeveTrack* track = eve->GetHit(id);
+	  //printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
+	  TAMChit* mcHit = itMc->GetHit(idx);
+	  TVector3 pos = mcHit->GetInPosition();
+	  // printf("MC pos (%.4f %.4f %.4f)\n", pos[0], pos[1], pos[2]);
 	}
+      }
 
-	return totPix;
+      //---------------------------------------------------------------------------------------------
+    }
+  }
+  
 }
 
 
@@ -176,16 +291,16 @@ int KFitter::UploadHitsIT() {
 //----------------------------------------------------------------------------------------------------
 // upload measurement points from Strip
 int KFitter::UploadHitsMSD() {
-	
-	// take the ntuple object already filled
-	TAMSDntuRaw* ntup = (TAMSDntuRaw*) gTAGroot->FindDataDsc("msdRaw", "TAMSDntuRaw")->Object();
-	if ( m_debug > 0 )		cout << "Strip detector hits read: " << ntup->GetStripsN(0) << endl;
 
-	// save strips hits in the collection
-	for (int i = 0; i < ntup->GetStripsN(0); i++)
-        m_MSD_hitCollection.push_back( ntup->GetStrip(0,i) );
+  // take the ntuple object already filled
+  TAMSDntuRaw* ntup = (TAMSDntuRaw*) gTAGroot->FindDataDsc("msdRaw", "TAMSDntuRaw")->Object();
+  if ( m_debug > 0 )		cout << "Strip detector hits read: " << ntup->GetStripsN(0) << endl;
 
-	return ntup->GetStripsN(0);
+  // save strips hits in the collection
+  for (int i = 0; i < ntup->GetStripsN(0); i++)
+    m_MSD_hitCollection.push_back( ntup->GetStrip(0,i) );
+
+  return ntup->GetStripsN(0);
 }
 
 
@@ -194,18 +309,18 @@ int KFitter::UploadHitsMSD() {
 //----------------------------------------------------------------------------------------------------
 // upload measurement points from Scintillator TofWall
 int KFitter::UploadHitsTW() {
-	
-	// take the ntuple object already filled
-	TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc("containerPoint", "TATWntuPoint")->Object();
-	if ( m_debug > 0 )		cout << "N point read: " << ntup->GetPointN() << endl;
 
-	// save hits in the collection
-	for (int i = 0; i < ntup->GetPointN(); i++) {
-		//if ( ntup->GetPoint(i)->IsTrueGhost() )		continue;		// skip the ghost hits
-        m_TW_hitCollection.push_back( ntup->GetPoint(i) );
-    }
+  // take the ntuple object already filled
+  TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc("containerPoint", "TATWntuPoint")->Object();
+  if ( m_debug > 0 )		cout << "N point read: " << ntup->GetPointN() << endl;
 
-	return ntup->GetPointN();
+  // save hits in the collection
+  for (int i = 0; i < ntup->GetPointN(); i++) {
+    //if ( ntup->GetPoint(i)->IsTrueGhost() )		continue;		// skip the ghost hits
+    m_TW_hitCollection.push_back( ntup->GetPoint(i) );
+  }
+
+  return ntup->GetPointN();
 }
 
 
@@ -215,77 +330,77 @@ int KFitter::UploadHitsTW() {
 // pack together the hits to be fitted, from all the detectors, selct different preselecion m_systemsONs
 int KFitter::PrepareData4Fit( Track* fitTrack ) {
 
-	if ( m_debug > 0 )		cout << "\n\n*******\tKFitter::PrepareData4Fit\t*******\n" << endl;
+  if ( m_debug > 0 )		cout << "\n\n*******\tKFitter::PrepareData4Fit\t*******\n" << endl;
 
-	// Vertex -  fill fitter collections
-	// Vertex -  fill fitter collections
-	if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVertex() ) {
-		UploadHitsVT();
-		if ( m_debug > 0 )		cout << endl<<endl << "Filling vertex hit collection  = " << m_VT_hitCollection.size() << endl;
-		Prepare4Vertex(fitTrack);
-	}
-	// Inner Tracker -  fill fitter collections
-	if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() ) {
-		UploadHitsIT();
-		if ( m_debug > 0 )		cout <<endl<<endl << "Filling inner detector hit collection = " << m_IT_hitCollection.size() << endl;
-		Prepare4InnerTracker(fitTrack);    
-	}
-	// MSD -  fill fitter collections
-	if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() ) {
-		UploadHitsMSD();
-		if ( m_debug > 0 )		cout << endl<<endl << "Filling Strip hit collection = " << m_MSD_hitCollection.size() << endl;		
-		Prepare4Strip(fitTrack);
-	}
-	// Inner Tracker -  fill fitter collections
-	// if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() ) {
-	if ( ( m_systemsON.find( "TW" ) != string::npos) && GlobalPar::GetPar()->IncludeTW() ) {
-		UploadHitsTW();
-		if ( m_debug > 0 )		cout <<endl<<endl << "Filling scintillator hit collection = " << m_TW_hitCollection.size() << endl;
-		Prepare4TofWall(fitTrack);    
-	}
+  // Vertex -  fill fitter collections
+  // Vertex -  fill fitter collections
+  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVertex() ) {
+    UploadHitsVT();
+    if ( m_debug > 0 )		cout << endl<<endl << "Filling vertex hit collection  = " << m_VT_hitCollection.size() << endl;
+    Prepare4Vertex(fitTrack);
+  }
+  // Inner Tracker -  fill fitter collections
+  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() ) {
+    UploadHitsIT();
+    if ( m_debug > 0 )		cout <<endl<<endl << "Filling inner detector hit collection = " << m_IT_hitCollection.size() << endl;
+    Prepare4InnerTracker(fitTrack);
+  }
+  // MSD -  fill fitter collections
+  if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() ) {
+    UploadHitsMSD();
+    if ( m_debug > 0 )		cout << endl<<endl << "Filling Strip hit collection = " << m_MSD_hitCollection.size() << endl;
+    Prepare4Strip(fitTrack);
+  }
+  // Inner Tracker -  fill fitter collections
+  // if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() ) {
+  if ( ( m_systemsON.find( "TW" ) != string::npos) && GlobalPar::GetPar()->IncludeTW() ) {
+    UploadHitsTW();
+    if ( m_debug > 0 )		cout <<endl<<endl << "Filling scintillator hit collection = " << m_TW_hitCollection.size() << endl;
+    Prepare4TofWall(fitTrack);
+  }
 
-	// try to categorise the particle that generated the hit. If it fails --> clean the hit object
-    CategoriseHitsToFit_withTrueInfo();
+  // try to categorise the particle that generated the hit. If it fails --> clean the hit object
+  CategoriseHitsToFit_withTrueInfo();
 
-	// remove the category if does not satisfy the requirements  ///////////////////
-	vector <int> hitsToBeRemoved;
-	int hitsCount = 0;
-	for ( map< string, vector<AbsMeasurement*> >::iterator it=m_hitCollectionToFit.begin(); it != m_hitCollectionToFit.end(); it++ ) {
-		if ( !PrefitRequirements( it ) )	{	// to be exactely 1 hit per layer
-			hitsToBeRemoved.push_back( hitsCount );
-			// // if requirements are FALSE -> delete each AbsMeasurement objects
-			// for ( vector<AbsMeasurement*>::iterator it2=(*it).second.begin(); it2 != (*it).second.end(); it2++ ) {
-			// 	delete (*it2);
-			// 	// delete (*it).second.at(i);	// wrong!
-			// }
-		}
-		hitsCount++;
-	}
-	hitsCount = 0;
-	for ( auto it = m_hitCollectionToFit.cbegin(), next_it = m_hitCollectionToFit.cbegin(); it != m_hitCollectionToFit.cend(); it = next_it)	{
-		next_it = it; ++next_it;
-		// check the pre-fit requirements
-		if ( find( hitsToBeRemoved.begin(), hitsToBeRemoved.end(), hitsCount ) != hitsToBeRemoved.end() ) {
-			// if requirements are FALSE -> clear the map element
-			m_hitCollectionToFit.erase(it);
-		}
-		hitsCount++;
-	}
-	///////////////////////////////////////////////////////////////////////////////
+  // remove the category if does not satisfy the requirements  ///////////////////
+  vector <int> hitsToBeRemoved;
+  int hitsCount = 0;
+  for ( map< string, vector<AbsMeasurement*> >::iterator it=m_hitCollectionToFit.begin(); it != m_hitCollectionToFit.end(); it++ ) {
+    if ( !PrefitRequirements( it ) )	{	// to be exactely 1 hit per layer
+      hitsToBeRemoved.push_back( hitsCount );
+      // // if requirements are FALSE -> delete each AbsMeasurement objects
+      // for ( vector<AbsMeasurement*>::iterator it2=(*it).second.begin(); it2 != (*it).second.end(); it2++ ) {
+      // 	delete (*it2);
+      // 	// delete (*it).second.at(i);	// wrong!
+      // }
+    }
+    hitsCount++;
+  }
+  hitsCount = 0;
+  for ( auto it = m_hitCollectionToFit.cbegin(), next_it = m_hitCollectionToFit.cbegin(); it != m_hitCollectionToFit.cend(); it = next_it)	{
+    next_it = it; ++next_it;
+    // check the pre-fit requirements
+    if ( find( hitsToBeRemoved.begin(), hitsToBeRemoved.end(), hitsCount ) != hitsToBeRemoved.end() ) {
+      // if requirements are FALSE -> clear the map element
+      m_hitCollectionToFit.erase(it);
+    }
+    hitsCount++;
+  }
+  ///////////////////////////////////////////////////////////////////////////////
 
-	//	if no map element survive -> clear the single-detector hit-collections
-	if ( m_hitCollectionToFit.size() == 0 ) {
-		m_VT_hitCollection.clear();
-		m_IT_hitCollection.clear();
-		m_MSD_hitCollection.clear();
-		m_TW_hitCollection.clear();
-		for ( vector<AbsMeasurement*>::iterator it2=m_allHitsInMeasurementFormat.begin(); it2 != m_allHitsInMeasurementFormat.end(); it2++ )
-			delete (*it2);
-		m_allHitsInMeasurementFormat.clear();
-		return 0;
-	}	
+  //	if no map element survive -> clear the single-detector hit-collections
+  if ( m_hitCollectionToFit.size() == 0 ) {
+    m_VT_hitCollection.clear();
+    m_IT_hitCollection.clear();
+    m_MSD_hitCollection.clear();
+    m_TW_hitCollection.clear();
+    for ( vector<AbsMeasurement*>::iterator it2=m_allHitsInMeasurementFormat.begin(); it2 != m_allHitsInMeasurementFormat.end(); it2++ )
+      delete (*it2);
+    m_allHitsInMeasurementFormat.clear();
+    return 0;
+  }
 
-	return m_hitCollectionToFit.size();
+  return m_hitCollectionToFit.size();
 }
 
 
@@ -296,43 +411,49 @@ int KFitter::PrepareData4Fit( Track* fitTrack ) {
 
 //----------------------------------------------------------------------------------------------------
 void KFitter::Prepare4Vertex( Track* fitTrack ) {
-	
-//	TMatrixDSym hitCov(3); 
-//	TVectorD hitCoords(3);
-//    for (unsigned int i = 0; i < m_VT_hitCollection.size(); i++) {
-//        
-//        TAVTntuHit* p_hit = m_VT_hitCollection.at(i);
-//
-//        // get pixel coord
-//        TVector3 hitPos = m_VT_geo->GetPixelPos_footFrame( p_hit->GetLayer(), p_hit->GetPixelColumn(), p_hit->GetPixelLine() );
-//        // get true MC coord
-//        // TVector3 hitPos = m_VT_hitCollection.at(i)->GetMCPosition_Global();
-//
-//        if ( m_debug > 0 )		cout << "VTX hit = Layer:" << p_hit->GetLayer() <<" col:"<< p_hit->GetPixelColumn() <<" row:"<< p_hit->GetPixelLine() << 
-//        								" \n\t\tGEN Type: " << p_hit->m_genPartFLUKAid << 
-//        								"  genID= " << p_hit->m_genPartID << endl;
-//        // if ( m_debug > 0 )		cout << "Hit " << i;
-//        if ( m_debug > 0 )		hitPos.Print();
-//
-//        // set hit position vector
-//        hitCoords(0)=hitPos.x();
-//		hitCoords(1)=hitPos.y();
-//		hitCoords(2)=hitPos.z();
-//		// set covariance matrix
-//		// double pixReso = 0.001;
-//		double pixReso = GlobalPar::GetPar()->VTReso();
-//		hitCov.UnitMatrix();         
-//		hitCov *= pixReso*pixReso; 
-//		// double zErr = 0.02;
-//		double zErr = 0.005;
-//		hitCov[2][2] = zErr*zErr; 
-//
-//        // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
-//        AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["VT"], i, nullptr );
-//        
-//        m_allHitsInMeasurementFormat.push_back(hit);
-//
-//    }
+
+  TMatrixDSym hitCov(3);
+  TVectorD hitCoords(3);
+  for (unsigned int i = 0; i < m_VT_clusCollection.size(); i++) {
+    TAVTcluster* p_hit = m_VT_clusCollection.at(i);
+    
+    // get pixel coord
+    TVector3 hitPos = p_hit->GetPositionG();
+    // get true MC coord
+    // TVector3 hitPos = m_VT_hitCollection.at(i)->GetMCPosition_Global();
+    
+    // if ( m_debug > 0 )		cout << "VTX hit = Layer:" << p_hit->GetLayer() <<" col:"<< p_hit->GetPixelColumn() <<" row:"<< p_hit->GetPixelLine() <<
+    // 								" \n\t\tGEN Type: " << p_hit->m_genPartFLUKAid <<
+    //  								"  genID= " << p_hit->m_genPartID << endl;
+    // // if ( m_debug > 0 )		cout << "Hit " << i;
+    if ( m_debug > 0 )
+      hitPos.Print();
+    
+    // set hit position vector
+    hitCoords(0)=hitPos.x();
+    hitCoords(1)=hitPos.y();
+    hitCoords(2)=hitPos.z();
+    // set covariance matrix
+    // double pixReso = 0.001;
+    // double pixReso = GlobalPar::GetPar()->VTReso();
+
+    TVector3 pixReso = p_hit->GetPosError();
+    hitCov.UnitMatrix();
+    for (int j = 0; j < 3; j++){
+      hitCov[j][j] = pixReso(i)*pixReso(i);
+    }
+
+    //hitCov *= pixReso*pixReso;
+    // double zErr = 0.02;
+    // double zErr = 0.005;
+    // hitCov[2][2] = zErr*zErr;
+    
+    // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
+    AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["VT"], i, nullptr );
+    
+    m_allHitsInMeasurementFormat.push_back(hit);
+    
+  }
 }
 
 
@@ -340,119 +461,124 @@ void KFitter::Prepare4Vertex( Track* fitTrack ) {
 
 //----------------------------------------------------------------------------------------------------
 void KFitter::Prepare4InnerTracker( Track* fitTrack ) {
-	TMatrixDSym hitCov(3); 
-	TVectorD hitCoords(3);
 
-//    for (unsigned int i = 0; i < m_IT_hitCollection.size(); i++) {
-//        
-//        TAITntuHit* p_hit = m_IT_hitCollection.at(i);
-//
-//        // get pixel coord
-//        TVector3 hitPos = m_IT_geo->GetPixelPos_footFrame( p_hit->GetSensorID(), p_hit->GetPixelColumn(), p_hit->GetPixelLine() );
-//        // get true MC coord
-//        // TVector3 hitPos = m_IT_hitCollection.at(i)->GetMCPosition_Global();
-//
-//        if ( m_debug > 0 )		cout << "ITR hit = Layer:" << p_hit->GetLayer() <<" col:"<< p_hit->GetPixelColumn() <<" row:"<< p_hit->GetPixelLine() << 
-//        								" \n\t\tGEN Type: " << p_hit->m_genPartFLUKAid << 
-//        								"  genID= " << p_hit->m_genPartID << endl;
-//        // if ( m_debug > 0 )		cout << "Hit " << i;
-//        if ( m_debug > 0 )		hitPos.Print();
-//
-//        // set hit position vector
-//        hitCoords(0)=hitPos.x();
-//		hitCoords(1)=hitPos.y();
-//		hitCoords(2)=hitPos.z();
-//		// set covariance matrix
-//		// double pixReso = 0.001;
-//		double pixReso = GlobalPar::GetPar()->ITReso();
-//		hitCov.UnitMatrix();         
-//		hitCov *= pixReso*pixReso; 
-//		// double zErr = 0.01;	// >95%
-//		double zErr = 0.02;	// >90%
-//		// double zErr = 0.005; // >99%
-//		// double zErr = 0.05;	// >86%
-//		hitCov[2][2] = zErr*zErr; 
-//
-//        // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
-//        AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["IT"], i, nullptr );
-//
-//        m_allHitsInMeasurementFormat.push_back(hit);
-//
-//    }
+  TMatrixDSym hitCov(3);
+  TVectorD hitCoords(3);
+
+  for (unsigned int i = 0; i < m_IT_clusCollection.size(); i++) {
+    TAITcluster* p_hit = m_IT_clusCollection.at(i);
+    // get pixel coord
+    TVector3 hitPos = p_hit->GetPositionG();
+    // get true MC coord
+    // TVector3 hitPos = m_IT_hitCollection.at(i)->GetMCPosition_Global();
+    //if ( m_debug > 0 )		cout << "ITR hit = Layer:" << p_hit->GetLayer() <<" col:"<< p_hit->GetPixelColumn() <<" row:"<< p_hit->GetPixelLine() <<
+    // 							  " \n\t\tGEN Type: " << p_hit->m_genPartFLUKAid <<
+    //   								"  genID= " << p_hit->m_genPartID << endl;
+    // if ( m_debug > 0 )		cout << "Hit " << i;
+    if ( m_debug > 0 )
+      hitPos.Print();
+
+    // set hit position vector
+    hitCoords(0)=hitPos.x();
+    hitCoords(1)=hitPos.y();
+    hitCoords(2)=hitPos.z();
+    // set covariance matrix
+    // double pixReso = 0.001;
+
+    TVector3 pixReso = p_hit->GetPosError();
+    hitCov.UnitMatrix();
+    for (int j = 0; j < 3; j++){
+      hitCov[j][j] = pixReso(i)*pixReso(i);
+    }
+
+    // double pixReso = GlobalPar::GetPar()->ITReso();
+    // hitCov.UnitMatrix();
+    // hitCov *= pixReso*pixReso;
+    // // double zErr = 0.01;	// >95%
+    // double zErr = 0.02;	// >90%
+    // // double zErr = 0.005; // >99%
+    // // double zErr = 0.05;	// >86%
+    // hitCov[2][2] = zErr*zErr;
+    
+    // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
+    AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["IT"], i, nullptr );
+    m_allHitsInMeasurementFormat.push_back(hit);
+    
+  }
 }
 
 
 
 //----------------------------------------------------------------------------------------------------
 void KFitter::Prepare4TofWall( Track* fitTrack ) {
-	
-	TMatrixDSym hitCov(3); 
-	TVectorD hitCoords(3);
-    for (unsigned int i = 0; i < m_TW_hitCollection.size(); i++) {
-        
-        TATWpoint* p_hit = m_TW_hitCollection.at(i);
 
-        // get pixel coord// should used TAGgeoTrafo
-        TVector3 hitPos = p_hit->GetPosition();
-
-        // if ( m_debug > 0 )		cout << "Hit " << i;
-        if ( m_debug > 0 )		hitPos.Print();
-
-        // set hit position vector
-        hitCoords(0)=hitPos.x();
-		hitCoords(1)=hitPos.y();
-		hitCoords(2)=hitPos.z();
-		// set covariance matrix
-		// double pixReso = 0.001;
-		double pixReso = GlobalPar::GetPar()->TWReso();
-		
-		hitCov.UnitMatrix();         
-		hitCov *= pixReso*pixReso; 
-		double zErr = 0.5;
-		hitCov[2][2] = zErr*zErr; 
-
-        // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
-        AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["TW"], i, nullptr );
-        
-        m_allHitsInMeasurementFormat.push_back(hit);
-
-    }
+  TMatrixDSym hitCov(3);
+  TVectorD hitCoords(3);
+  for (unsigned int i = 0; i < m_TW_hitCollection.size(); i++) {
+    
+    TATWpoint* p_hit = m_TW_hitCollection.at(i);
+    
+    // get pixel coord// should used TAGgeoTrafo
+    TVector3 hitPos = p_hit->GetPosition();
+    
+    // if ( m_debug > 0 )		cout << "Hit " << i;
+    if ( m_debug > 0 )		hitPos.Print();
+    
+    // set hit position vector
+    hitCoords(0)=hitPos.x();
+    hitCoords(1)=hitPos.y();
+    hitCoords(2)=hitPos.z();
+    // set covariance matrix
+    // double pixReso = 0.001;
+    double pixReso = GlobalPar::GetPar()->TWReso();
+    
+    hitCov.UnitMatrix();
+    hitCov *= pixReso*pixReso;
+    double zErr = 0.5;
+    hitCov[2][2] = zErr*zErr;
+    
+    // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
+    AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["TW"], i, nullptr );
+    
+    m_allHitsInMeasurementFormat.push_back(hit);
+    
+  }
 }
 
 
 
 //----------------------------------------------------------------------------------------------------
 void KFitter::Prepare4Strip( Track* fitTrack ) {
-	
-//	TMatrixDSym hitCov(3); 
+
+//	TMatrixDSym hitCov(3);
 //	TVectorD hitCoords(3);
-//	 
-//	vector<TAMSDntuHit*> allStripSignals_x; 
-//	vector<TAMSDntuHit*> allStripSignals_y; 
+//
+//	vector<TAMSDntuHit*> allStripSignals_x;
+//	vector<TAMSDntuHit*> allStripSignals_y;
 //
 //	m_MSD_posVectorSmearedHit.clear();
 //	m_MSD_momVectorSmearedHit.clear();
 //	m_MSD_mass.clear();
-//    
+//
 //    for (unsigned int i = 0; i < m_MSD_hitCollection.size(); i++) {
-//        
+//
 //        TAMSDntuHit* p_hit = m_MSD_hitCollection.at(i);
 //
 //        // if ( m_debug > 0 )		cout << "Hit " << i << endl;
 //        if ( m_debug > 0 )		cout << "MSD hit = Layer:" << p_hit->GetLayer() <<" view:"<< p_hit->GetPixelView() <<
-//        								" strip:"<< p_hit->GetPixelStrip() << 
-//        								" \n\t\tGEN Type: " << p_hit->m_genPartFLUKAid << 
+//        								" strip:"<< p_hit->GetPixelStrip() <<
+//        								" \n\t\tGEN Type: " << p_hit->m_genPartFLUKAid <<
 //        								"  genID= " << p_hit->m_genPartID << endl;
 //        // if ( m_debug > 0 )		hitPos.Print();
-//        
+//
 //
 //        // set covariance matrix
 //        // double stripReso = 0.001;
 //		double stripReso = GlobalPar::GetPar()->MSDReso();
-//		hitCov.UnitMatrix();         
-//		hitCov *= stripReso*stripReso; 
+//		hitCov.UnitMatrix();
+//		hitCov *= stripReso*stripReso;
 //		double zErr = 0.01;
-//		hitCov[2][2] = zErr*zErr; 
+//		hitCov[2][2] = zErr*zErr;
 //
 ////		double simulatedStripHit_X = p_hit->GetMCPosition_Global().X();
 ////		double simulatedStripHit_Y = p_hit->GetMCPosition_Global().Y();
@@ -470,9 +596,9 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
 //		 hitCoords(0)=hitPos.x();
 //		 hitCoords(1)=hitPos.y();
 //		 hitCoords(2)=hitPos.z();
-//		
 //
-//		
+//
+//
 //		// MC info, provvisorio solo per il test!!!!!
 //		//m_MSD_posVectorSmearedHit.push_back( gen_hitPos );
 ////		TVector3 hitMomMC( p_hit->GetMCMomentum_Global().X(), p_hit->GetMCMomentum_Global().Y(), p_hit->GetMCMomentum_Global().Z() );
@@ -502,13 +628,13 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
 // //    for ( vector<TAMSDntuHit*>::iterator xIt=allStripSignals_x.begin(); xIt != allStripSignals_x.end(); xIt++ ) {
 //
 //	//         // TVector3 hitPos = m_MSD_geo->GetPosition( (*xIt)->GetLayer(), (*xIt)->GetPixelView(), (*xIt)->GetPixelStrip() );
-//	        
+//
 //	//         // set covariance matrix
 //	// 		double stripReso = GlobalPar::GetPar()->MSDReso();
-//	// 		hitCov.UnitMatrix();         
-//	// 		hitCov *= stripReso*stripReso; 
+//	// 		hitCov.UnitMatrix();
+//	// 		hitCov *= stripReso*stripReso;
 //	// 		double zErr = 0.001;
-//	// 		hitCov[2][2] = zErr*zErr; 
+//	// 		hitCov[2][2] = zErr*zErr;
 //
 //	// 		double simulatedStripHit_X = (*xIt)->GetMCPosition_Global().X();
 //	// 		double simulatedStripHit_Y = (*xIt)->GetMCPosition_Global().Y();
@@ -524,9 +650,9 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
 //	// 		// hitCoords(0)=hitPos.x();
 //	// 		// hitCoords(1)=hitPos.y();
 //	// 		// hitCoords(2)=hitPos.z();
-//			
 //
-//			
+//
+//
 //	// 		// MC info, provvisorio solo per il test!!!!!
 //	// 		m_MSD_posVectorSmearedHit.push_back( gen_hitPos );
 //	// 		TVector3 hitMomMC( (*xIt)->GetMCMomentum_Global().X(), (*xIt)->GetMCMomentum_Global().Y(), (*xIt)->GetMCMomentum_Global().Z() );
@@ -540,14 +666,14 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
 //
 //	//         // count the combined hits
 //	// 		countStripHits++;
-//	        
+//
 // //    }
 //	//***********************************************************************************************
 //	//***********************************************************************************************
 //
 //
 ////***********************************************************************************************
-////		include smearing 
+////		include smearing
 ////***********************************************************************************************
 //
 //   //  int countStripHits = 0;
@@ -556,7 +682,7 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
 //   //  m_MSD_mass.clear();
 //   //  for ( vector<TAMSDntuHit*>::iterator xIt=allStripSignals_x.begin(); xIt != allStripSignals_x.end(); xIt++ ) {
 //	  //   for ( vector<TAMSDntuHit*>::iterator yIt=allStripSignals_y.begin(); yIt != allStripSignals_y.end(); yIt++ ) {
-//	
+//
 //	  //   	if ( (*xIt)->GetLayer() != (*yIt)->GetLayer() )		continue;
 //
 //	  //   	// combine strip signals ONLY if coming from th same fragment
@@ -565,20 +691,20 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
 //
 //	  //       TVector3 x_hitPos = m_MSD_geo->GetPosition( (*xIt)->GetLayer(), (*xIt)->GetPixelView(), (*xIt)->GetPixelStrip() );
 //	  //       TVector3 y_hitPos = m_MSD_geo->GetPosition( (*yIt)->GetLayer(), (*yIt)->GetPixelView(), (*yIt)->GetPixelStrip() );
-//	        
+//
 //	  //       // TVector3 geo_hitPos = TVector3 ( x_hitPos.x(), x_hitPos.y(), x_hitPos.z() );
 //	  //       TVector3 geo_hitPos = TVector3 ( x_hitPos.y(), y_hitPos.y(), 0.5*(x_hitPos.z() + y_hitPos.z()) );
-//	        
+//
 //	  //       if ( m_debug > 0 )		cout << "Hit strip " << countStripHits << endl;
 //	  //       if ( m_debug > 0 )		cout << "\tMSD hit = Layer:" << (*xIt)->GetLayer() << " xStrip:" << (*xIt)->GetPixelStrip() <<" yStrip:"<<  (*yIt)->GetPixelStrip() << endl;
-//	        
+//
 //	  //       if ( m_debug > 0 )		cout << "\t", geo_hitPos.Print();
-//			
+//
 //			// double stripReso = GlobalPar::GetPar()->MSDReso();
-//			// hitCov.UnitMatrix();         
-//			// hitCov *= stripReso*stripReso; 
+//			// hitCov.UnitMatrix();
+//			// hitCov *= stripReso*stripReso;
 //			// double zErr = 0.0025*2;
-//			// hitCov[2][2] = zErr*zErr; 
+//			// hitCov[2][2] = zErr*zErr;
 //
 //			// double simulatedStripHit_X = (*xIt)->GetMCPosition_Global().X() + m_diceRoll->Gaus(0.,1.) * stripReso/4;
 //			// double simulatedStripHit_Y = (*yIt)->GetMCPosition_Global().Y() + m_diceRoll->Gaus(0.,1.) * stripReso/4;
@@ -592,7 +718,7 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
 //	  //       hitCoords(0)=hitPos.x();
 //			// hitCoords(1)=hitPos.y();
 //			// hitCoords(2)=hitPos.z();
-//			
+//
 //			// // MC info
 //			// TVector3 hitPosMC( (*xIt)->GetMCPosition_Global().X(), (*yIt)->GetMCPosition_Global().Y(), m_MSD_geo->GetLayerCenter( (*xIt)->GetLayer() ).Z() );
 //			// // TVector3 hitPosMC( (*xIt)->GetMCPosition_Global().X(), (*xIt)->GetMCPosition_Global().Y(), m_MSD_geo->GetLayerCenter( (*xIt)->GetLayer() ).Z() );
@@ -606,7 +732,7 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
 //
 //	  //       // count the combined hits
 //			// countStripHits++;
-//	        
+//
 //	  //        // try to categorise the particle that generated the hit. If it fails --> clean the hit object
 //	  //       string category = CategoriseHitsToFit_withTrueInfo( (*xIt)->m_genPartFLUKAid, (*xIt)->m_genPartCharge, (*xIt)->m_genPartMass );
 //	  //       if (category == "fail")	{
@@ -655,7 +781,7 @@ bool KFitter::PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterat
 	// 	if ( m_debug > 0 )		cout << "WARNING :: KFitter::PrefitRequirements  -->  number of elements different wrt the expected ones : Nel=" << (int)((*element).second.size()) << "   Nexp= " << testHitNumberLimit << endl;
 	// 	return false;
 	// }
- 
+
  	int nHitVT = 0;
 	int nHitIT = 0;
 	int nHitMSD = 0;
@@ -670,8 +796,8 @@ bool KFitter::PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterat
 	}
 	// test the num of hits per each detector
 	if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD != testHit_MSD ){
-		if ( m_debug > 0 )		
-			cout << "WARNING :: KFitter::PrefitRequirements  -->  number of elements different wrt the expected ones : " << 
+		if ( m_debug > 0 )
+			cout << "WARNING :: KFitter::PrefitRequirements  -->  number of elements different wrt the expected ones : " <<
 									"\n\t nVTX = " << nHitVT << "  Nexp = " << testHit_VT << endl <<
 									"\n\t nITR = " << nHitIT << "  Nexp = " << testHit_IT << endl <<
 									"\n\t nITR = " << nHitMSD << "  Nexp = " << testHit_MSD << endl <<
@@ -713,10 +839,10 @@ void KFitter::CategoriseHitsToFit_withTrueInfo() {
 		// if ( flukaID == -2 && charge == 6 &&  round(mass) == 10 )  outName =  "C10";
 		// if ( flukaID == -2 && charge == 6 &&  round(mass) == 11 )  outName =  "C11";
 		// if ( flukaID == -2 && charge == 6 &&  round(mass) == 12 )  outName =  "C12";
-		
+
 		// if ( flukaID == -2 && charge == 3 &&  round(mass) == 6 )  outName =  "Li6";
 		// if ( flukaID == -2 && charge == 3 &&  round(mass) == 7 && mass < 7 )  outName =  "Li7";
-		
+
 		// if ( flukaID == -2 && charge == 4 &&  round(mass) == 7 )  outName =  "B7";
 		// if ( flukaID == -2 && charge == 4 &&  round(mass) == 8 )  outName =  "B8";
 		// if ( flukaID == -2 && charge == 4 &&  round(mass) == 9 )  outName =  "B9";
@@ -803,14 +929,14 @@ void KFitter::GetTrueParticleType( AbsMeasurement* hit, int* flukaID, int* partI
 //	else if ( detID == m_detectorID_map["TW"] ) {
 //		TAMCntuEveHit* twGeneratorParticle = m_TW_hitCollection.at( hitID )->GetGenParticle();
 //		*flukaID = twGeneratorParticle->FlukaID();
-//		*partID  = m_TW_hitCollection.at( hitID )->GetGenPartID();	
+//		*partID  = m_TW_hitCollection.at( hitID )->GetGenPartID();
 //		*charge  = twGeneratorParticle->Chg();
 //		*mass    = twGeneratorParticle->Mass();
 //		// *flukaID = m_TW_hitCollection.at( hitID )->m_genPartFLUKAid;
 //		// *partID  = m_TW_hitCollection.at( hitID )->m_genPartID;
 //		// *charge  = m_TW_hitCollection.at( hitID )->m_genPartCharge;
 //		// *mass    = m_TW_hitCollection.at( hitID )->m_genPartMass;
-//	}	
+//	}
 }
 
 
@@ -822,7 +948,7 @@ int KFitter::MakeFit( long evNum ) {
 	int isConverged = 0;
 	m_evNum = evNum;
 	m_evNum_vect.push_back( evNum );
-	
+
 	// start values for the fit (seed), change below
 	TVector3 pos(0, 0, 0);	// global coord   [cm]
 	TVector3 mom(0, 0, 6);	// GeV
@@ -831,7 +957,7 @@ int KFitter::MakeFit( long evNum ) {
 	// fill m_hitCollectionToFit
     PrepareData4Fit( fitTrack );
     // check the hit vector not empty otherwise clear
-	if ( m_hitCollectionToFit.size() <= 0 )	{	
+	if ( m_hitCollectionToFit.size() <= 0 )	{
 		if ( m_debug > 0 )		cout << "No category to fit in this event..." << endl;
 		// m_VT_hitCollection.clear();
 		// m_IT_hitCollection.clear();
@@ -842,12 +968,12 @@ int KFitter::MakeFit( long evNum ) {
 		return 2;
 	}
 	if ( m_debug > 0 )		cout << "\nMakeFit::m_hitCollectionToFit.size  =  " << m_hitCollectionToFit.size() << endl << endl;
-	
+
 
 	// loop over all hit category
 	for ( map< string, vector<AbsMeasurement*> >::iterator hitSample=m_hitCollectionToFit.begin(); hitSample != m_hitCollectionToFit.end(); hitSample++ ) {
 
-		if ( m_debug > 0 )	{	
+		if ( m_debug > 0 )	{
 			// check if the category is defined in UpdatePDG  -->  also done in GetPdgCode()
 			if ( !UpdatePDG::GetPDG()->IsParticleDefined( (*hitSample).first ) )
 				cout << "ERROR :: KFitter::MakeFit  -->	 in UpdatePDG not found the category " << (*hitSample).first << endl, exit(0);
@@ -865,7 +991,7 @@ int KFitter::MakeFit( long evNum ) {
 
 		// SetTrueSeed( &pos, &mom );	// get seed from MC for debug
 		// set seed
-		fitTrack->setStateSeed(pos, mom);		
+		fitTrack->setStateSeed(pos, mom);
 
 		// insert points to be fitted  -   loop over each measurement in the current collection
 		for ( unsigned int i=0; i < (*hitSample).second.size(); i++ )	{
@@ -893,7 +1019,7 @@ int KFitter::MakeFit( long evNum ) {
 				m_dafRefFitter->processTrack(fitTrack);
 			else if ( GlobalPar::GetPar()->KalMode() == 4 )
 				m_dafSimpleFitter->processTrack(fitTrack);
-		
+
 			if ( m_debug > 3 )		fitTrack->Print();
 			if ( m_debug > 0 )		cout << "Fitted " << fitTrack->getFitStatus(rep)->isFitted() << endl;
 			if ( fitTrack->getFitStatus(rep)->isFitConverged() &&  fitTrack->getFitStatus(rep)->isFitted() )	isConverged = 1;	// convergence check
@@ -904,7 +1030,7 @@ int KFitter::MakeFit( long evNum ) {
 			m_nTotTracks[ (*hitSample).first ]++;
 
 			// map of the CONVERGED tracks for each category
-			if (isConverged) {	
+			if (isConverged) {
 				if ( m_nConvergedTracks.find( (*hitSample).first ) == m_nConvergedTracks.end() )	m_nConvergedTracks[ (*hitSample).first ] = 0;
 				m_nConvergedTracks[ (*hitSample).first ]++;
 				RecordTrackInfo( fitTrack, (*hitSample).first );
@@ -926,16 +1052,16 @@ int KFitter::MakeFit( long evNum ) {
 	m_IT_hitCollection.clear();
 	m_MSD_hitCollection.clear();
 	m_TW_hitCollection.clear();
-	// // clean all hits 
+	// // clean all hits
 	m_allHitsInMeasurementFormat.clear();
 	delete fitTrack;	// include un delete rep pare
 	// clean m_hitCollectionToFit
 	for ( auto it = m_hitCollectionToFit.cbegin(), next_it = m_hitCollectionToFit.cbegin(); it != m_hitCollectionToFit.cend(); it = next_it)	{
-		next_it = it; ++next_it;		
+		next_it = it; ++next_it;
 		m_hitCollectionToFit.erase(it);
 	}
 
-	m_hitCollectionToFit.clear();	
+	m_hitCollectionToFit.clear();
 
 	if ( m_debug > 0 )		cout << "Ready for the next track fit!" << endl;
 	// if ( m_debug > 0 )		cin.get();
@@ -970,7 +1096,7 @@ void KFitter::SetTrueSeed( TVector3* pos, TVector3* mom ) {
 		// 	pos = m_MSD_posVectorSmearedHit.at( hitID );
 		// 	mom = m_MSD_momVectorSmearedHit.at( hitID );
 		// }
-		
+
 		// if ( m_debug > 2 )		cout << "pos mom "<< endl, pos.Print(), mom.Print();
 
 }
@@ -1016,7 +1142,7 @@ void KFitter::MatrixToZero( TMatrixD *matrix ) {
 
 
 //----------------------------------------------------------------------------------------------------
-// 
+//
 void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 
 	TVector3 expectedPos;
@@ -1028,8 +1154,8 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 
 	// InitAllHistos( hitSampleName );
 
-	TMatrixD KalmanPos_cov(3,3); 
-	TMatrixD KalmanMom_cov(3,3); 
+	TMatrixD KalmanPos_cov(3,3);
+	TMatrixD KalmanMom_cov(3,3);
 
 	// loop over hits
 	for ( unsigned int i =0; i<m_hitCollectionToFit[ hitSampleName ].size(); i++ ) {	//
@@ -1046,7 +1172,7 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 		TVector3 tmp_genMom;
 		TVector3 hitPos;
 
-		GetTrueMCInfo( hitSampleName, x, 
+		GetTrueMCInfo( hitSampleName, x,
 						&tmpPos, &tmpMom, &tmp_mass,
 						&tmp_genPos, &tmp_genMom, &hitPos );
 
@@ -1061,7 +1187,7 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 								&KalmanPos_cov, &KalmanMom_cov,
 								&KalmanMass );
 		/////////////////////////////////////////////////
-		
+
 		if ( m_debug > 0 )	{
 			cout <<endl<< "Single Event Debug\t--\t" << hitSampleName << endl;
 			cout << "Hit num = " << i << "  --  MC mass = " << tmp_mass << endl;
@@ -1071,13 +1197,13 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 			// cout << "\t Kalman Pos da State6D = "; KalmanPos.Print();
 			// cout << "\t Kalman Pos Error da State6D = "; KalmanPos_err.Print();
 			cout <<endl<< "\t Gen_Mom = "<< tmp_genMom.Mag() << endl;
-			cout <<endl<< "\t MC_Mom = "<< tmpMom.Mag() <<"     " <<endl; 
+			cout <<endl<< "\t MC_Mom = "<< tmpMom.Mag() <<"     " <<endl;
 			// tmpMom.Print();
 			cout << "\t Kalman Mom da State6D = "<< KalmanMom.Mag() << "  = Mom " << track->getFittedState(i).getMom().Mag() << endl;
 			// cout << "\t Kalman Mom da State6D = "<< KalmanMom.Mag() <<"    "; KalmanMom.Print();
 			// cout << "\t Kalman Mom Error da State6D = "; KalmanMom_err.Print();
 		}
-		
+
 		//! Get the accumulated X/X0 (path / radiation length) of the material crossed in the last extrapolation.
 		// virtual double getRadiationLenght() const = 0;
 
@@ -1098,31 +1224,31 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 			// tuuta la info andra esportata per essere messa in ntupla x l'analisi....
 			m_fitTrackCollection->AddTrack( hitSampleName, track, m_evNum, i, // trackID?
 															&KalmanMom, &KalmanPos,
-															&expectedMom, &expectedPos, 
+															&expectedMom, &expectedPos,
 															&KalmanMom_cov );
-			
+
 			m_controlPlotter->SetMom_Gen( hitSampleName, &tmp_genMom );
 			m_controlPlotter->SetMom_TrueMC( hitSampleName, &expectedMom, massMC );
 			m_controlPlotter->SetMom_Kal( hitSampleName, &kalmanMom, &kalmanMom_err );
 
 			m_controlPlotter->SetPos_Kal( hitSampleName, &kalmanPos, &KalmanPos_err );
-			
+
 			m_controlPlotter->SetTrackInfo( hitSampleName, track );
 
 
-			if ( GlobalPar::GetPar()->IsPrintOutputNtuple() ) 
+			if ( GlobalPar::GetPar()->IsPrintOutputNtuple() )
 				m_controlPlotter->Set_Outputntuple(&kalmanMom, &kalmanPos, &tmp_genMom);
 
 		}
 	}
-	
+
 }
 
 
 
 
 //----------------------------------------------------------------------------------------------------
-void KFitter::GetTrueMCInfo( string hitSampleName, int x, 
+void KFitter::GetTrueMCInfo( string hitSampleName, int x,
 						TVector3* tmpPos, TVector3* tmpMom, double* tmp_mass,
 						TVector3* tmp_genPos,  TVector3* tmp_genMom, TVector3* hitPos ) {
 
@@ -1167,7 +1293,7 @@ void KFitter::GetTrueMCInfo( string hitSampleName, int x,
 //		// *tmp_genPos = m_TW_hitCollection.at( hitID )->m_genPartPosition;   // genaration position
 //		// *tmp_genMom = m_TW_hitCollection.at( hitID )->m_genPartMomentum;		// genaration momentum
 //        *hitPos = m_TW_hitCollection.at(hitID)->GetPosition_footFrame(); // pixel coord
-//		
+//
 //		TAMCntuEveHit* twGeneratorParticle = m_TW_hitCollection.at( hitID )->GetGenParticle();
 //		*tmp_genPos  = twGeneratorParticle->InitPos();
 //		*tmp_genMom  = twGeneratorParticle->InitP();
@@ -1194,7 +1320,7 @@ void KFitter::GetKalmanTrackInfo ( string hitSampleName, int i, Track* track,
 	*KalmanMom_err = TVector3( (track->getFittedState(i).get6DCov())[3][3],	(track->getFittedState(i).get6DCov())[4][4], (track->getFittedState(i).get6DCov())[5][5] );
 
 	// AbsMeasurement* measurement = track->getPointWithMeasurement(i)->getRawMeasurement(0);		// return the given coord -> aka the pixel coord
-	
+
 	// prduce the covariance matrix on the measured state
 	MatrixToZero(KalmanPos_cov);
 	MatrixToZero(KalmanMom_cov);
@@ -1221,7 +1347,7 @@ void KFitter::PrintEfficiency() {
 
 	int nCollection = m_nTotTracks.size();
 	TH1F* h_trackEfficiency = new TH1F( "TrackEfficiency", "TrackEfficiency", nCollection, 0, nCollection );
-	
+
 	int k = 0;
 	for ( map<string, int>::iterator itTotNum = m_nTotTracks.begin(); itTotNum != m_nTotTracks.end(); itTotNum++ ) {
 		k++;
@@ -1238,7 +1364,7 @@ void KFitter::PrintEfficiency() {
 	h_trackEfficiency->Draw();
 	mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
 	mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.root").c_str() );
-	
+
 }
 
 
@@ -1265,20 +1391,20 @@ double KFitter::EvalError( TVector3 mom, TVector3 err ) {
 //  measure the Kalman uncertainty INCLUDING the cross terms in the covariance matrix. CORRELATION considered!!!
 double KFitter::EvalError( TVector3 mom, TMatrixD cov ) {
 
-	if ( cov.GetNcols() != 3 || cov.GetNrows() != 3 ) 
+	if ( cov.GetNcols() != 3 || cov.GetNrows() != 3 )
 		cout << "ERROR :: KFitter::EvalError  >>  covariance dimension (should be 6) is wrong " << cov.GetNcols() << " x " << cov.GetNrows() << endl, exit(0);
 
-	array<double,3> partialDer = { 	( mom.x()/( sqrt(mom.Mag()) ) ), 
-									( mom.y()/( sqrt(mom.Mag()) ) ), 
+	array<double,3> partialDer = { 	( mom.x()/( sqrt(mom.Mag()) ) ),
+									( mom.y()/( sqrt(mom.Mag()) ) ),
 									( mom.z()/( sqrt(mom.Mag()) ) )   };
 
 
 	double err = 0;
 	for ( int j=0; j<cov.GetNrows(); j++ ) {
 		for ( int k=0; k<cov.GetNcols(); k++ ) {
-			
+
 			err += partialDer[j] * partialDer[k] * cov(j,k); // * diagFactor;
-			
+
 		}
 	}
 
@@ -1345,24 +1471,11 @@ void KFitter::InitEventDisplay() {
 ////////////////////     remember for the future!   ///////////////////////////////////////
 
 // clear & delete objects  -  measueremnt delete made by Track class
-	
-	// no perche' gestito come puntatore esterno 
+
+	// no perche' gestito come puntatore esterno
 	// for ( vector<TAVTntuHit*>::iterator it=m_VT_hitCollection.begin(); it != m_VT_hitCollection.end(); it++ ) {
 	// 	delete (*it);
 	// }
 	// for ( vector<TAITntuHit*>::iterator it=m_IT_hitCollection.begin(); it != m_IT_hitCollection.end(); it++ ) {
 	// 	delete (*it);
 	// }
-	
-
-
-
-
-
-
-
-
-
-
-
-
