@@ -95,8 +95,11 @@ TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemodu
     vertex = gGeoManager->MakeBox(vertexName,med,fSizeBox.X()/2.,fSizeBox.Y()/2.,fSizeBox.Z()/2.); // volume corresponding to vertex
   }
    
-  TGeoVolume* vertexBoard = BuildBoard();
+  TGeoVolume* vertexBoard = 0x0;
   TGeoVolume* vertexMod   = 0x0;
+   
+  if (board)
+     vertexBoard = BuildBoard();
    
   for(Int_t iSensor = 0; iSensor < GetNSensors(); iSensor++) {
       
