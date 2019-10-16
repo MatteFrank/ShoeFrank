@@ -149,7 +149,12 @@ TGeoVolume* TAVTparGeo::AddModule(const char* basemoduleName, const char *vertex
 //_____________________________________________________________________________
 TGeoVolume* TAVTparGeo::BuildBoard(const char* boardName, const char *moduleName)
 {
-   // create M28 module
+   // check if board exists
+   TGeoVolume* board = gGeoManager->FindVolumeFast(boardName);
+   if (board)
+      return board;
+
+   // create M28 board
    const Char_t* matName = fEpiMat.Data();
    TGeoMedium*   medMod = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
    
