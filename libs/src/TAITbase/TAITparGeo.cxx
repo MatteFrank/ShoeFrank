@@ -80,10 +80,14 @@ void TAITparGeo::DefineMaterial()
 //_____________________________________________________________________________
 void TAITparGeo::ReadSupportInfo()
 {
-   ReadVector3(fFoamSize);
+   ReadVector3(fSupportSize);
    if(FootDebugLevel(1))
-      cout  << endl << "  Foam size of support: "<< fFoamSize.X() << " " <<  fFoamSize.Y() << " "
-      <<  fFoamSize.Z()  << endl;
+      cout  << endl << "  Foam size of support: "<< fSupportSize.X() << " " <<  fSupportSize.Y() << " "
+      <<  fSupportSize.Z()  << endl;
+   
+   ReadItem(fFoamThickness);
+   if(FootDebugLevel(1))
+      cout  << endl << "  Foam thickness: "<< fFoamThickness << endl;
    
    ReadStrings(fFoamMat);
    if(FootDebugLevel(1))
@@ -143,7 +147,7 @@ void TAITparGeo::ReadSupportInfo()
 }
 
 //_____________________________________________________________________________
-TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemoduleName)
+TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemoduleName, Bool_t board, Bool_t suport)
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
       new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
@@ -154,22 +158,172 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
    
    TGeoVolume* it = gGeoManager->FindVolumeFast(itName);
    if ( it == 0x0 ) {
-      TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject("AIR");
       TGeoMedium*   med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject("AIR");
       it = gGeoManager->MakeBox(itName,med,fSizeBox.X()/2.,fSizeBox.Y()/2.,fSizeBox.Z()/2.); // volume corresponding to vertex
    }
    
    TGeoVolume* itMod = 0x0;
+   TGeoVolume* itBoard = 0x0;
    
+   if (board)
+      itBoard = BuildBoard();
+
    for(Int_t iSensor = 0; iSensor < GetNSensors(); iSensor++) {
+
       TGeoCombiTrans* hm = GetCombiTransfo(iSensor);
       itMod = AddModule(Form("%s%d",basemoduleName, iSensor), itName);
             
       it->AddNode(itMod, iSensor, hm);
+      
+      if (board) {
+         Float_t signY = fSensorParameter[iSensor].IsReverseX ? +1. : -1.;
+         Float_t signX = fSensorParameter[iSensor].IsReverseY ? +1. : -1.;
+         
+         const Double_t* mat = hm->GetRotationMatrix();
+         const Double_t* dis = hm->GetTranslation();
+         
+         TGeoRotation rot;
+         rot.SetMatrix(mat);
+         
+         TGeoTranslation trans;
+         trans.SetTranslation(dis[0] + signX*fEpiOffset[0]/2., dis[1] + signY*fEpiOffset[1]/2., dis[2] - fEpiOffset[2]);
+         
+         it->AddNode(itBoard, iSensor+GetNSensors(), new TGeoCombiTrans(trans, rot));
+      }
+   }
+   
+   if (suport) {
+      TGeoVolume* itSupoort = BuildPlumeSupport("Support", itName);
+   
+      for(Int_t iSup = 0; iSup < 16; iSup+=4) {
+         TGeoCombiTrans* hm1 = GetCombiTransfo(iSup);
+         TGeoCombiTrans* hm2 = GetCombiTransfo(iSup+16);
+         TGeoRotation rot;
+         Float_t x = 0.;
+         Float_t y = (hm1->GetTranslation()[1] + hm2->GetTranslation()[1])/2.;
+         Float_t z = (hm1->GetTranslation()[2] + hm2->GetTranslation()[2])/2.;
+         TGeoTranslation trans(x, y, z);
+         
+         it->AddNode(itSupoort, iSup+100, new TGeoCombiTrans(trans, rot));
+      }
    }
    
    return it;
 }
+
+//_____________________________________________________________________________
+TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char *vertexName)
+{
+   // create support module
+   // create foam medium
+   const Char_t* matName = fFoamMat.Data();
+   TGeoMedium*   medFoam = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
+   
+   matName = fKaptonMat.Data();
+   TGeoMedium*  medKapton = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
+   
+   matName = fAlMat.Data();
+   TGeoMedium*  medAl = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
+   
+   matName = fEpoxyMat.Data();
+   TGeoMedium*  medEpoxy = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
+   
+   TGeoMedium* medAir = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject("AIR");
+
+   // Support volume
+   TGeoBBox *box = new TGeoBBox(Form("%s_Box",basemoduleName), fSupportSize.X()/2., fSupportSize.Y()/2., fSupportSize.Z()/2.);
+   TGeoVolume *supportMod = new TGeoVolume(Form("%s_Support",basemoduleName),box, medAir);
+   supportMod->SetVisibility(0);
+   supportMod->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+   
+   // Foam volume
+   TGeoBBox *foamBox = new TGeoBBox("Foam", fSupportSize.X()/2., fSupportSize.Y()/2.,  fFoamThickness/2.);
+   TGeoVolume *foam = new TGeoVolume("Foam",foamBox, medFoam);
+   foam->SetLineColor(kAzure-2);
+   foam->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+   
+   // Kapton1 volume
+   TGeoBBox *kapton1Box = new TGeoBBox("Kapton1", fSupportSize.X()/2., fSupportSize.Y()/2.,  fKaptonThickness/2.);
+   TGeoVolume *kapton1 = new TGeoVolume("Kapton1",kapton1Box, medKapton);
+   kapton1->SetLineColor(kOrange-5);
+   kapton1->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+
+   // Kapton2 volume
+   TGeoBBox *kapton2Box = new TGeoBBox("Kapton2", fSupportSize.X()/2., fSupportSize.Y()/2.,  fKaptonThickness); // double thickness
+   TGeoVolume *kapton2 = new TGeoVolume("Kapton2",kapton2Box, medKapton);
+   kapton2->SetLineColor(kOrange-5);
+   kapton2->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+
+   // Al volume
+   TGeoBBox *alBox = new TGeoBBox("Al", fSupportSize.X()/2., fSupportSize.Y()/2.,  fAlThickness/2.);
+   TGeoVolume *al = new TGeoVolume("Al",alBox, medAl);
+   al->SetLineColor(kBlue-5);
+   al->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+
+   // Epoxy volume
+   TGeoBBox *epoxyBox = new TGeoBBox("Epoxy", fSupportSize.X()/2., fSupportSize.Y()/2.,  fEpoxyThickness/2.);
+   TGeoVolume *epoxy = new TGeoVolume("Epoxy", epoxyBox, medEpoxy);
+   epoxy->SetLineColor(kViolet-5);
+   epoxy->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+
+   // placement
+   Int_t count = 0;
+   
+   // foam
+   TGeoTranslation trans(0, 0, 0);
+   supportMod->AddNode(foam, count++, new TGeoTranslation(trans));
+
+   Float_t posZ = fFoamThickness/2. + fKaptonThickness/2.;
+   // first kapton layer
+   trans.SetTranslation(0, 0, posZ);
+   supportMod->AddNode(kapton1, count++, new TGeoTranslation(trans));
+   
+   trans.SetTranslation(0, 0, -posZ);
+   supportMod->AddNode(kapton1, count++, new TGeoTranslation(trans));
+
+   // first layer aluminium
+   posZ += fKaptonThickness/2. + fAlThickness/2.;
+   trans.SetTranslation(0, 0, posZ);
+   supportMod->AddNode(al, count++, new TGeoTranslation(trans));
+
+   trans.SetTranslation(0, 0, -posZ);
+   supportMod->AddNode(al, count++, new TGeoTranslation(trans));
+
+   // Second kapton layer
+   posZ += fAlThickness/2. + fKaptonThickness;
+   trans.SetTranslation(0, 0, posZ);
+   supportMod->AddNode(kapton2, count++, new TGeoTranslation(trans));
+
+   trans.SetTranslation(0, 0, -posZ);
+   supportMod->AddNode(kapton2, count++, new TGeoTranslation(trans));
+
+   // second layer aluminium
+   posZ += fKaptonThickness +  fAlThickness/2.;
+   trans.SetTranslation(0, 0, posZ);
+   supportMod->AddNode(al, count++, new TGeoTranslation(trans));
+
+   trans.SetTranslation(0, 0, -posZ);
+   supportMod->AddNode(al, count++, new TGeoTranslation(trans));
+
+   // Third kapton layer
+   posZ += fAlThickness/2. + fKaptonThickness/2.;
+   trans.SetTranslation(0, 0, posZ);
+   supportMod->AddNode(kapton1, count++, new TGeoTranslation(trans));
+
+   trans.SetTranslation(0, 0, -posZ);
+   supportMod->AddNode(kapton1, count++, new TGeoTranslation(trans));
+
+   // layer of epoxy
+   posZ += fKaptonThickness/2. + fEpoxyThickness/2.;
+   trans.SetTranslation(0, 0, posZ);
+   supportMod->AddNode(epoxy, count++, new TGeoTranslation(trans));
+
+   trans.SetTranslation(0, 0, -posZ);
+   supportMod->AddNode(epoxy, count++, new TGeoTranslation(trans));
+
+   return supportMod;
+}
+
 //_____________________________________________________________________________
 /*
 void TAITparGeo::PrintFluka()

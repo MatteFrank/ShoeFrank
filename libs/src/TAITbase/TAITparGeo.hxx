@@ -19,7 +19,8 @@ class TAITparGeo : public TAVTparGeo {
    
 private:
    
-   TVector3   fFoamSize;          // Foam sizse
+   TVector3   fSupportSize;       // Support sizse
+   Float_t    fFoamThickness;     // Foam thickness
    TString    fFoamMat;           // Material of foam
    TString    fFoamMatDensities;  // Density of foam material for each component
    TString    fFoamMatProp;       // Material of foam component proportion
@@ -46,7 +47,9 @@ public:
     virtual ~TAITparGeo();
    
    //! Get Foam size
-   TVector3 GetFoamiSize()              const { return fFoamSize;         }
+   TVector3 GetSupportSize()            const { return fSupportSize;      }
+   //! Get Foam thickness
+   Float_t GetFoamThickness()           const { return fFoamThickness;    }
    //! Get Foam material
    TString GetFoamMaterial()            const { return fFoamMat;          }
    //! Get Foam coponent densities
@@ -58,7 +61,7 @@ public:
    
    
    //! Get Kapton thickness
-   Float_t GetKaptonSize()              const { return fKaptonThickness;  }
+   Float_t GetKaptonThickness()         const { return fKaptonThickness;  }
    //! Get Kapton material
    TString GetKaptonMaterial()          const { return fKaptonMat;        }
    //! Get Kapton density
@@ -66,17 +69,17 @@ public:
 
    
    //! Get Epoxy thickness
-   Float_t GetEpoxySize()               const { return fEpoxyThickness;   }
+   Float_t GetEpoxyThickness()          const { return fEpoxyThickness;   }
    //! Get Epoxy material
    TString GetEpoxyMaterial()           const { return fEpoxyMat;         }
    //! Get Epoxy density
    Float_t GetEpoxyMatDensity()         const { return fEpoxyMatDensity;  }
 
    //! Get Al thickness
-   Float_t GetAlSize()                  const { return fAlThickness;      }
-   //! Get Kapton material
+   Float_t GetAlThickness()             const { return fAlThickness;      }
+   //! Get Al material
    TString GetAlMaterial()              const { return fAlMat;            }
-   //! Get Kapton density
+   //! Get Al density
    Float_t GetAlMatDensity()            const { return fAlMatDensity;     }
    
    // Define materials
@@ -86,8 +89,11 @@ public:
    void    ReadSupportInfo();
 
    //! Build Innert Tracker
-   TGeoVolume* BuildInnerTracker(const char* basemoduleName = "Module", const char *name = "IT");
+   TGeoVolume* BuildInnerTracker(const char *name = "IT", const char* basemoduleName = "Module", Bool_t board = false,  Bool_t support = false);
    
+   //! Add CMOS module geometry to world
+   TGeoVolume* BuildPlumeSupport(const char* basemoduleName = "Plume", const char *name = "ITSP");
+
    // to keep interace for compilation
    // virtual void   PrintFluka();
 
