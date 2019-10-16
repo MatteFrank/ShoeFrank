@@ -28,6 +28,7 @@
 #include "TColor.h"
 #include "TGeoManager.h"
 #include "TGeoMatrix.h"
+#include "TGeoCompositeShape.h"
 
 #include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx" 
@@ -79,7 +80,7 @@ void TAVTparGeo::DefineMaterial()
 }
 
 //_____________________________________________________________________________
-TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemoduleName)
+TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemoduleName, Bool_t board)
 {
   if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
     new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
@@ -94,7 +95,8 @@ TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemodu
     vertex = gGeoManager->MakeBox(vertexName,med,fSizeBox.X()/2.,fSizeBox.Y()/2.,fSizeBox.Z()/2.); // volume corresponding to vertex
   }
    
-  TGeoVolume* vertexMod = 0x0; 
+  TGeoVolume* vertexBoard = BuildBoard();
+  TGeoVolume* vertexMod   = 0x0;
    
   for(Int_t iSensor = 0; iSensor < GetNSensors(); iSensor++) {
       
@@ -102,6 +104,23 @@ TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemodu
     vertexMod = AddModule(Form("%s%d",basemoduleName, iSensor), vertexName);
       
     vertex->AddNode(vertexMod, iSensor, hm);
+
+    // Board
+     if (board) {
+       Float_t signY = fSensorParameter[iSensor].IsReverseX ? +1. : -1.;
+       Float_t signX = fSensorParameter[iSensor].IsReverseY ? +1. : -1.;
+
+       const Double_t* mat = hm->GetRotationMatrix();
+       const Double_t* dis = hm->GetTranslation();
+     
+       TGeoRotation rot;
+       rot.SetMatrix(mat);
+     
+       TGeoTranslation trans;
+       trans.SetTranslation(dis[0] + signX*fEpiOffset[0]/2., dis[1] + signY*fEpiOffset[1]/2., dis[2] - fEpiOffset[2]);
+        
+       vertex->AddNode(vertexBoard, iSensor+GetNSensors(), new TGeoCombiTrans(trans, rot));
+    }
   }
    
   return vertex;
@@ -121,12 +140,33 @@ TGeoVolume* TAVTparGeo::AddModule(const char* basemoduleName, const char *vertex
    vertexMod->SetLineColor(kAzure-5);
    vertexMod->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
    
-   // if (GlobalPar::GetPar()->geoFLUKA())
-   //    PrintFluka();
-   
    return vertexMod;
 }
 
+//_____________________________________________________________________________
+TGeoVolume* TAVTparGeo::BuildBoard(const char* boardName, const char *moduleName)
+{
+   // create M28 module
+   const Char_t* matName = fEpiMat.Data();
+   TGeoMedium*   medMod = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
+   
+   Float_t eps = 1e-4;
+   
+   TGeoBBox *boxBoard  = new TGeoBBox(boardName,  fTotalSize.X()/2., fTotalSize.Y()/2., fTotalSize.Z()/2.);
+   TGeoBBox *boxModule = new TGeoBBox(moduleName, fEpiSize.X()/2.,   fEpiSize.Y()/2.,   fTotalSize.Z()/2. + eps);
+
+   TGeoTranslation *tr = new TGeoTranslation(fEpiOffset.X()/2., fEpiOffset.Y()/2., fEpiOffset.Z());
+   tr->SetName("offset");
+   tr->RegisterYourself();
+
+   TGeoCompositeShape *cs  = new TGeoCompositeShape("cs", Form("%s - %s:offset", boardName, moduleName));
+
+   TGeoVolume *vertexBoard = new TGeoVolume(boardName, cs, medMod);
+   vertexBoard->SetLineColor(kRed);
+   vertexBoard->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+
+   return vertexBoard;
+}
 
 //_____________________________________________________________________________
 string TAVTparGeo::PrintParameters()

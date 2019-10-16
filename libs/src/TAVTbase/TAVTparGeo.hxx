@@ -35,11 +35,14 @@ public:
    // Define materials
    virtual void  DefineMaterial();
 
-   //! Add CMOS module geometry to world
+   //! Add CMOS module geometry to vertex
    TGeoVolume* AddModule(const char* basemoduleName = "Module", const char *name = "Vertex");
+      
+   //! Add CMOS module geometry to vertex
+   TGeoVolume* BuildBoard(const char* basemoduleName = "ModuleBoard", const char *name = "Module");
    
    //! Build Vertex
-   TGeoVolume* BuildVertex( const char *name = "Vertex", const char* basemoduleName = "M28");
+   TGeoVolume* BuildVertex( const char *name = "Vertex", const char* basemoduleName = "M28", Bool_t board = false);
    
    // to print fluka files
    virtual string PrintParameters();
