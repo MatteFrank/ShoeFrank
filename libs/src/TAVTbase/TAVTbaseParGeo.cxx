@@ -222,6 +222,11 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
          cout  << "   Rotation tiltW: " << fSensorParameter[p].TiltW << endl;
       
       Float_t thetaX = fSensorParameter[p].Tilt[0];
+      if (TMath::Nint(thetaX) == 180)
+         fSensorParameter[p].IsReverseX = true;
+      else
+         fSensorParameter[p].IsReverseX = false;
+
       Float_t thetaY = fSensorParameter[p].Tilt[1];
       if (TMath::Nint(thetaY) == 180)
          fSensorParameter[p].IsReverseY = true;

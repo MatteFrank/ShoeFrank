@@ -62,7 +62,8 @@ protected:
 	  Float_t   AlignmentU;  // U alignment
 	  Float_t   AlignmentV;  // V alignment
 	  Float_t   TiltW;       // Tilted angle around beam axis
-	  Bool_t    IsReverseY;  // Rotation of 180 around Y axis
+     Bool_t    IsReverseX;  // Rotation of 180 around X axis
+     Bool_t    IsReverseY;  // Rotation of 180 around Y axis
    };
    SensorParameter_t  fSensorParameter[128];
 
@@ -118,8 +119,10 @@ public:
    //! Get total size of sensor
    TVector3 GetTotalSize()             const { return fTotalSize;      }
 
-   //! Get epixtaxyal size of sensor
+   //! Get epitaxial size of sensor
    TVector3 GetEpiSize()               const { return fEpiSize;        }
+   //! Get epitaxial offset
+   TVector3 GetEpiOffset()             const { return fEpiOffset;      }
    //! Get epitaxial material
    TString GetEpiMaterial()            const { return fEpiMat;         }
    //! Get epitaxial density
