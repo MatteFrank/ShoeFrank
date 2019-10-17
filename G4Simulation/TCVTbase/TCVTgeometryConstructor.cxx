@@ -164,7 +164,7 @@ void TCVTgeometryConstructor::PlaceSensor()
       
       G4ThreeVector rotation(0,0,0);
       for (Int_t c = 0; c < 3; ++c)
-         rotation(c) = (fpParGeo->GetSensorPar(iSensor).Tilt(c));
+         rotation[c] = (fpParGeo->GetSensorPar(iSensor).Tilt(c));
       
       G4RotationMatrix rot;
       rot.rotateX(rotation[0]);
@@ -173,21 +173,23 @@ void TCVTgeometryConstructor::PlaceSensor()
       rot.invert();
       
       //Rotation Shift
-      G4ThreeVector delta(0, fpParGeo->GetTotalSize()[1] - fpParGeo->GetEpiSize()[1], 0);
-      G4ThreeVector shift = delta.transform(rot);
-      shift *= cm/2.;
+      G4ThreeVector shift(fpParGeo->GetEpiOffset()[0], fpParGeo->GetEpiOffset()[1], fpParGeo->GetEpiOffset()[2]);
+      shift *= cm/2;
       
       G4ThreeVector origin(0,0,0);
-      for (Int_t c = 0; c < 3; ++c){
-         origin(c)  = (fpParGeo->GetSensorPar(iSensor).Position(c))*cm;
-         Int_t sign = (TMath::Cos(rotation[1]) > 0) ? +1 : -1;
-         origin(c) += (TMath::Sin(rotation[2]) < 0.01) ? -sign*shift[c] : +sign*shift[c];
-      }
+      for (Int_t c = 0; c < 3; ++c)
+         origin[c]  = (fpParGeo->GetSensorPar(iSensor).Position(c))*cm;
+      
+      Float_t signY = fpParGeo->GetSensorPar(iSensor).IsReverseX ? +1. : -1.;
+      Float_t signX = fpParGeo->GetSensorPar(iSensor).IsReverseY ? +1. : -1.;
+      origin[0] += signX*shift[0];
+      origin[1] += signY*shift[1];
+
       
       if (fgSmearFlag) {
-         origin(0)    += gRandom->Uniform(-fgDefSmearPos, fgDefSmearPos)*cm;
-         origin(1)    += gRandom->Uniform(-fgDefSmearPos, fgDefSmearPos)*cm;
-         rotation(2)  += gRandom->Uniform(-fgDefSmearAng, fgDefSmearAng);
+         origin[0]    += gRandom->Uniform(-fgDefSmearPos, fgDefSmearPos)*cm;
+         origin[1]    += gRandom->Uniform(-fgDefSmearPos, fgDefSmearPos)*cm;
+         rotation[2]  += gRandom->Uniform(-fgDefSmearAng, fgDefSmearAng);
       }
 
       //Take tilt of alignement
