@@ -76,13 +76,17 @@ void TCITgeometryConstructor::DefineMaterial()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCITgeometryConstructor::PlacePlumeSupport()
 {
-   Int_t halfSensors =  fpParGeo->GetSensorsN()/2;
-   
+   Int_t halfSensors  = fpParGeo->GetSensorsN()/2;
+   TAITparGeo* parGeo = (TAITparGeo*)fpParGeo;
+
    for(Int_t iSup = 0; iSup < halfSensors; iSup+=4) {
       
       G4ThreeVector origin(0,0,0);
-      for (Int_t c = 1; c < 3; ++c)
-         origin(c)  = 0.5*(fpParGeo->GetSensorPar(iSup).Position(c))*cm + 0.5*(fpParGeo->GetSensorPar(iSup+halfSensors).Position(c))*cm;
+      
+      Float_t sign = (iSup > 7) ? +1 : -1;
+      origin[0] = sign*parGeo->GetSupportOffset()[0]/2.*cm;
+      origin[1] = 0.5*(parGeo->GetSensorPar(iSup).Position(1))*cm + 0.5*(parGeo->GetSensorPar(iSup+halfSensors).Position(1))*cm + 0.5*sign*parGeo->GetSupportOffset()[1]*cm;
+      origin[2] = 0.5*(parGeo->GetSensorPar(iSup).Position(2))*cm + 0.5*(parGeo->GetSensorPar(iSup+halfSensors).Position(2))*cm;
    
       new G4PVPlacement(0, origin, fSupportLog, Form("Support%d", iSup+100), fBoxVtxLog, false, iSup+100);
    }
