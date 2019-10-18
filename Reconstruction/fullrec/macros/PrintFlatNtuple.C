@@ -295,7 +295,7 @@ void PrintFlatNtuple(TString nameFile = "", Int_t nentries = 0)
 
 
      
-      // Int_t nPlanes = vtparGeo->GetNSensors();
+      // Int_t nPlanes = vtparGeo->GetSensorsN();
      // cout << " iPlane  " <<   nPlanes  << endl;
       
      

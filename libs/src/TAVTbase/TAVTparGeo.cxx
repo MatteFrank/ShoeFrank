@@ -101,7 +101,7 @@ TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemodu
   if (board)
      vertexBoard = BuildBoard();
    
-  for(Int_t iSensor = 0; iSensor < GetNSensors(); iSensor++) {
+  for(Int_t iSensor = 0; iSensor < GetSensorsN(); iSensor++) {
       
     TGeoCombiTrans* hm = GetCombiTransfo(iSensor);
     vertexMod = AddModule(Form("%s%d",basemoduleName, iSensor), vertexName);
@@ -122,7 +122,7 @@ TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemodu
        TGeoTranslation trans;
        trans.SetTranslation(dis[0] + signX*fEpiOffset[0]/2., dis[1] + signY*fEpiOffset[1]/2., dis[2] - fEpiOffset[2]);
         
-       vertex->AddNode(vertexBoard, iSensor+GetNSensors(), new TGeoCombiTrans(trans, rot));
+       vertex->AddNode(vertexBoard, iSensor+GetSensorsN(), new TGeoCombiTrans(trans, rot));
     }
   }
    
@@ -214,7 +214,7 @@ string TAVTparGeo::PrintRotations()
     TVector3  fCenter = fpFootGeo->GetVTCenter();
     TVector3  fAngle = fpFootGeo->GetVTAngles();
     
-    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       //check if sensor or detector have a tilt
       if (fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0){
@@ -310,7 +310,7 @@ string TAVTparGeo::PrintBodies()
   
     ss << "* ***Vertex bodies" << endl;  
     
-    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$start_transform " << Form("vt_%d",iSens) << endl;  

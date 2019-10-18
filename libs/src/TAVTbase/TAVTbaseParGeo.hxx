@@ -103,7 +103,7 @@ public:
    Int_t GetSensorIdx(Int_t iSensor, Int_t type);
 
    //! Get number of Sensors
-   Int_t GetNSensors()                 const { return fSensorsN;       }
+   Int_t GetSensorsN()                 const { return fSensorsN;       }
    //! Get number of layers
    Int_t GetNLayers()                  const { return fLayersN;        }
 

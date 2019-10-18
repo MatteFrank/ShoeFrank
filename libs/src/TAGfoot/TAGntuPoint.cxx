@@ -106,7 +106,7 @@ void TAGntuPoint::Clear(Option_t*)
 //! ostream insertion.
 void TAGntuPoint::ToStream(ostream& os, Option_t* option) const
 {
-   // for (Int_t i = 0; i < m_vtxGeo->GetNSensors(); ++i) {
+   // for (Int_t i = 0; i < m_vtxGeo->GetSensorsN(); ++i) {
 	  
 	  // os << "TAGntuPoint " << GetName()
 	  // << Form("  nPixels=%3d", GetPixelsN(i))

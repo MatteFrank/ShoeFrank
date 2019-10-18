@@ -102,7 +102,7 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
    array.SetOwner(false);
    array.Clear();
    
-   Int_t nPlane = pGeoMap->GetNSensors()-1;
+   Int_t nPlane = pGeoMap->GetSensorsN()-1;
    Int_t curPlane = nPlane;
    
    while (curPlane >= fRequiredClusters-1) {

@@ -168,7 +168,7 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
    if (board)
       itBoard = BuildBoard();
 
-   for(Int_t iSensor = 0; iSensor < GetNSensors(); iSensor++) {
+   for(Int_t iSensor = 0; iSensor < GetSensorsN(); iSensor++) {
 
       TGeoCombiTrans* hm = GetCombiTransfo(iSensor);
       itMod = AddModule(Form("%s%d",basemoduleName, iSensor), itName);
@@ -188,14 +188,14 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
          TGeoTranslation trans;
          trans.SetTranslation(dis[0] + signX*fEpiOffset[0]/2., dis[1] + signY*fEpiOffset[1]/2., dis[2] - fEpiOffset[2]);
          
-         it->AddNode(itBoard, iSensor+GetNSensors(), new TGeoCombiTrans(trans, rot));
+         it->AddNode(itBoard, iSensor+GetSensorsN(), new TGeoCombiTrans(trans, rot));
       }
    }
    
    if (suport) {
       TGeoVolume* itSupoort = BuildPlumeSupport("Support", itName);
    
-      for(Int_t iSup = 0; iSup < GetNSensors()/2; iSup+=4) {
+      for(Int_t iSup = 0; iSup < GetSensorsN()/2; iSup+=4) {
          TGeoCombiTrans* hm1 = GetCombiTransfo(iSup);
          TGeoCombiTrans* hm2 = GetCombiTransfo(iSup+16);
          TGeoRotation rot;
@@ -385,7 +385,7 @@ string TAITparGeo::PrintRotations()
     TVector3  fCenter = fpFootGeo->GetITCenter();
     TVector3  fAngle = fpFootGeo->GetITAngles();
     
-    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
    
       //check if sensor or detector have a tilt
@@ -483,7 +483,7 @@ string TAITparGeo::PrintBodies()
     
     ss << "* ***Inner tracker bodies" << endl;  
     
-    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
           
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)

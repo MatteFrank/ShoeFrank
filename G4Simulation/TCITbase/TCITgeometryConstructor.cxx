@@ -76,7 +76,7 @@ void TCITgeometryConstructor::DefineMaterial()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCITgeometryConstructor::PlacePlumeSupport()
 {
-   Int_t halfSensors =  fpParGeo->GetNSensors()/2;
+   Int_t halfSensors =  fpParGeo->GetSensorsN()/2;
    
    for(Int_t iSup = 0; iSup < halfSensors; iSup+=4) {
       

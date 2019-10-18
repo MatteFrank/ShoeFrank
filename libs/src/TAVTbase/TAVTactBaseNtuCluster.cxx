@@ -73,12 +73,12 @@ void TAVTactBaseNtuCluster::CreateHistogram()
    
    TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
    
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 	  fpHisPixel[i] = new TH1F(Form("%sClusPixel%d",fPrefix.Data(), i+1), Form("%s - # pixels per clusters for sensor %d", fTitleDev.Data(), i+1), 100, 0., 100.);
 	  AddHistogram(fpHisPixel[i]);
    }
    
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 	  if (TAVTparConf::IsMapHistOn()) {
 		 fpHisClusMap[i] = new TH2F(Form("%sClusMap%d", fPrefix.Data(), i+1), Form("%s - clusters map for sensor %d", fTitleDev.Data(), i+1),
 									100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchY()*pGeoMap->GetNPixelX()/2.,

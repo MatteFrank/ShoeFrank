@@ -633,7 +633,7 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
       fVtxClusDisplay->AddHit(-1, 0, 0, 0);
    
    
-   Int_t nPlanes = parGeo->GetNSensors();
+   Int_t nPlanes = parGeo->GetSensorsN();
    
    TAVTntuTrack*  pNtuTrack = 0x0;
    
@@ -735,7 +735,7 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
    if (prefix == "vt") {
       
       TAVTparGeo*  parGeo   = fReco->GetParGeoVtx();
-      Int_t nPlanes         = parGeo->GetNSensors();
+      Int_t nPlanes         = parGeo->GetSensorsN();
       Float_t posfirstPlane = parGeo->GetSensorPosition(0)[2]*1.1;
       Float_t posLastPlane  = parGeo->GetSensorPosition(nPlanes-1)[2]*1.1;
       

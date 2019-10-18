@@ -99,7 +99,7 @@ void TAVTactBaseTrack::CreateHistogram()
    fpHisPixelTot = new TH1F(Form("%sTrackedClusPixTot", fPrefix.Data()), Form("%s - Total # pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
    AddHistogram(fpHisPixelTot);
    
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 	  if (TAVTbaseParConf::IsMapHistOn()) {
 		 fpHisTrackMap[i] = new TH2F(Form("%sTrackMap%d", fPrefix.Data(), i+1), Form("%s - Tracks map for sensor %d", fTitleDev.Data(), i+1),
 									 100, -pGeoMap->GetPitchY()*pGeoMap->GetNPixelY()/2., pGeoMap->GetPitchY()*pGeoMap->GetNPixelY()/2., 
@@ -297,7 +297,7 @@ void TAVTactBaseTrack::FillHistogramm()
    if (pNtuTrack->GetTracksN() == 0)
 	  fpHisClusSensor->Fill(0);
    
-   for (Int_t iPlane = 0; iPlane < pGeoMap->GetNSensors(); ++iPlane) {
+   for (Int_t iPlane = 0; iPlane < pGeoMap->GetSensorsN(); ++iPlane) {
 	  
 	  TClonesArray* list = pNtuClus->GetListOfClusters(iPlane);
 	  Int_t nClusters = pNtuClus->GetClustersN(iPlane);

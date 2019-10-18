@@ -58,7 +58,7 @@ TAVTntuRaw::~TAVTntuRaw()
 //! return number of pixels for a given sensor.
 Int_t TAVTntuRaw::GetPixelsN(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetNSensors()) {
+   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray*list = GetListOfPixels(iSensor);
       return list->GetEntries();
    } else  {
@@ -70,7 +70,7 @@ Int_t TAVTntuRaw::GetPixelsN(Int_t iSensor) const
 //------------------------------------------+-----------------------------------
 TClonesArray* TAVTntuRaw::GetListOfPixels(Int_t iSensor)
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetNSensors()) {
+   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray* list = (TClonesArray*)fListOfPixels->At(iSensor);
       return list;
    } else {
@@ -82,7 +82,7 @@ TClonesArray* TAVTntuRaw::GetListOfPixels(Int_t iSensor)
 //------------------------------------------+-----------------------------------
 TClonesArray* TAVTntuRaw::GetListOfPixels(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetNSensors()) {
+   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray* list = (TClonesArray*)fListOfPixels->At(iSensor);
       return list;
    } else {
@@ -124,7 +124,7 @@ void TAVTntuRaw::SetupClones()
    if (fListOfPixels) return;
    fListOfPixels = new TObjArray();
    
-   for (Int_t i = 0; i < fpGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
       TClonesArray* arr = new TClonesArray("TAVTntuHit", 500);
       arr->SetOwner(true);
       fListOfPixels->AddAt(arr, i);
@@ -137,7 +137,7 @@ void TAVTntuRaw::SetupClones()
 //! Clear event.
 void TAVTntuRaw::Clear(Option_t*)
 {
-   for (Int_t i = 0; i < fpGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
       TClonesArray* list = GetListOfPixels(i);
       list->Clear("C");
    }
@@ -148,7 +148,7 @@ void TAVTntuRaw::Clear(Option_t*)
 //
 TAVTntuHit* TAVTntuRaw::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn)
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetNSensors()) {
+   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray &pixelArray = *GetListOfPixels(iSensor);
       std::pair<int, int> idx(aLine, aColumn);
       
@@ -176,7 +176,7 @@ TAVTntuHit* TAVTntuRaw::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int
 //! ostream insertion.
 void TAVTntuRaw::ToStream(ostream& os, Option_t* option) const
 {
-   for (Int_t i = 0; i < fpGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
       
       os << "TAVTntuRaw " << GetName()
       << Form("  nPixels=%3d", GetPixelsN(i))

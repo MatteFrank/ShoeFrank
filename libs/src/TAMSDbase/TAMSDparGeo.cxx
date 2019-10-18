@@ -319,7 +319,7 @@ string TAMSDparGeo::PrintRotations()
     TVector3  fCenter = fpFootGeo->GetMSDCenter();
     TVector3  fAngle = fpFootGeo->GetMSDAngles();
     
-    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       //check if sensor or detector have a tilt
       if (fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0){
@@ -416,7 +416,7 @@ string TAMSDparGeo::PrintBodies()
 
     ss << "* ***MSD bodies" << endl;
 
-    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$start_transform " << Form("msd_%d",iSens) << endl;

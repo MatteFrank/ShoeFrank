@@ -129,7 +129,7 @@ int KFitter::UploadHitsVT() {
   TAVTntuRaw* ntup = (TAVTntuRaw*) gTAGroot->FindDataDsc("vtRaw", "TAVTntuRaw")->Object();
   TAVTparGeo* vtxGeo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
   
-  if ( m_debug > 0 )		cout << "N vertex sensors: " << vtxGeo->GetNSensors() << endl;
+  if ( m_debug > 0 )		cout << "N vertex sensors: " << vtxGeo->GetSensorsN() << endl;
   
   // MC hits example
   // TAMCntuEve* ntuMC = (TAMCntuEve*) gTAGroot->FindDataDsc("myn_mceve", "TAMCntuEve")->Object();
@@ -137,7 +137,7 @@ int KFitter::UploadHitsVT() {
   
   int totPix = 0;
   // save pixels in the collection
-  for (int nSensor = 0; nSensor < vtxGeo->GetNSensors(); nSensor++) {	// over all sensors
+  for (int nSensor = 0; nSensor < vtxGeo->GetSensorsN(); nSensor++) {	// over all sensors
     totPix += ntup->GetPixelsN( nSensor );
     if ( m_debug > 0 )		cout << "N vertex pixel in sensor " << nSensor << ": " << ntup->GetPixelsN( nSensor ) << endl;
     
@@ -164,7 +164,7 @@ int KFitter::UploadClusVT(){
   TAMCntuHit* vtMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
 
   int totClus = 0;
-  Int_t nPlanes = vtxGeo->GetNSensors();
+  Int_t nPlanes = vtxGeo->GetSensorsN();
 
   for(Int_t iPlane = 0; iPlane < nPlanes; iPlane++){
     Int_t nclus = vtclus->GetClustersN(iPlane);
@@ -213,12 +213,12 @@ int KFitter::UploadHitsIT() {
   TAITntuRaw* ntup = (TAITntuRaw*) gTAGroot->FindDataDsc("itRaw", "TAITntuRaw")->Object();
   TAITparGeo* vtxGeo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetItDefParaName(), "TAITparGeo")->Object();
 
-  if ( m_debug > 0 )		cout << "N IT sensors: " << vtxGeo->GetNSensors() << endl;
+  if ( m_debug > 0 )		cout << "N IT sensors: " << vtxGeo->GetSensorsN() << endl;
 
 
   int totPix = 0;
   // save pixels in the collection
-  for (int nSensor = 0; nSensor < vtxGeo->GetNSensors(); nSensor++) {	// over all sensors
+  for (int nSensor = 0; nSensor < vtxGeo->GetSensorsN(); nSensor++) {	// over all sensors
     totPix += ntup->GetPixelsN( nSensor);
     if ( m_debug > 0 )		cout << "N IT pixel in sensor " << nSensor << ": " << ntup->GetPixelsN( nSensor) << endl;
 
@@ -245,7 +245,7 @@ int KFitter::UploadClusIT(){
   TAMCntuHit* itMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
 
   int totClus = 0;
-  Int_t nPlanes = itGeo->GetNSensors();
+  Int_t nPlanes = itGeo->GetSensorsN();
 
   for(Int_t iPlane = 0; iPlane < nPlanes; iPlane++){
     Int_t nclus = itclus->GetClustersN(iPlane);

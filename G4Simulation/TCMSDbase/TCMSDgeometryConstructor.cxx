@@ -53,7 +53,7 @@ void TCMSDgeometryConstructor::DefineSensitive()
 void TCMSDgeometryConstructor::DefineMaxMinDimension()
 {
    TVector3 size = fpParGeo->GetTotalSize();
-   Int_t nSens   = fpParGeo->GetNSensors();
+   Int_t nSens   = fpParGeo->GetSensorsN();
 
     printf("MSD %d \t %.3e \t %.3e \t %.3e \n",nSens,size[0],size[1],size[2]);
 

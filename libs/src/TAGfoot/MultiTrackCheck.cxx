@@ -102,7 +102,7 @@ void MultiTrackCheck::Process( Long64_t jentry ){
 //  // // save pixels in the collection
 //   TAVTparGeo* vtxGeo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
 //
-//  for (int nSensor = 0; nSensor <  vtxGeo->GetNSensors(); nSensor++) {	// over all sensors
+//  for (int nSensor = 0; nSensor <  vtxGeo->GetSensorsN(); nSensor++) {	// over all sensors
 //    for (int nPx = 0; nPx <  myn_vtraw->GetPixelsN( nSensor ); nPx++){ 		// over all pixels for each sensor
 //      
 //      TAVTntuHit* vt_hit = myn_vtraw->GetPixel( nSensor, nPx);
@@ -137,7 +137,7 @@ void MultiTrackCheck::Process( Long64_t jentry ){
 //  // // VT cluster
 //    
 //  // TAVTntuCluster* vtclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus", "TAVTntuCluster")->Object();
-//  // // for (int nSensor = 0; nSensor < ntup->GetNSensors(); nSensor++) {   // over all sensors
+//  // // for (int nSensor = 0; nSensor < ntup->GetSensorsN(); nSensor++) {   // over all sensors
 //  // for (int nSensor = 0; nSensor < 4; nSensor++) {   // over all sensors
 //    
 //  //   cout << "N vertex pixel in sensor " << nSensor << ": " << vtclus->GetClustersN( nSensor ) << endl;
@@ -155,7 +155,7 @@ void MultiTrackCheck::Process( Long64_t jentry ){
 //   TAITparGeo* itGeo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetItDefParaName(), "TAITparGeo")->Object();
 //
 //  
-//  for (int nSensor = 0; nSensor < itGeo->GetNSensors(); nSensor++) {	// over all sensors
+//  for (int nSensor = 0; nSensor < itGeo->GetSensorsN(); nSensor++) {	// over all sensors
 //    
 //    for (int nPx = 0; nPx < myn_itraw->GetPixelsN( nSensor ); nPx++){ 		// over all pixels for each sensor
 //      
@@ -188,7 +188,7 @@ void MultiTrackCheck::Process( Long64_t jentry ){
 //
 //  // IT cluster 
 //  // TAITntuCluster* itclus = (TAITntuCluster*) gTAGroot->FindDataDsc("itClus", "TAITntuCluster")->Object();
-//  // //for (int nSensor = 0; nSensor < ntup->GetNSensors(); nSensor++) {   // over all sensors
+//  // //for (int nSensor = 0; nSensor < ntup->GetSensorsN(); nSensor++) {   // over all sensors
 //    
 //  //   for (int nSensor = 0; nSensor < 32; nSensor++) {   // over all sensors
 //

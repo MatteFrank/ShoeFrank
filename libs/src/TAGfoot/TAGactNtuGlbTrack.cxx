@@ -195,7 +195,7 @@ void TAGactNtuGlbTrack::FillItrPoint()
    TAITntuCluster* pNtuClus = (TAITntuCluster*) fpItrClus->Object();
    TAITparGeo*     pParGeo  = (TAITparGeo*)     fpItrGeoMap->Object();
    
-   for (Int_t i = 0; i < pParGeo->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pParGeo->GetSensorsN(); ++i) {
       
       for (Int_t k = 0; k < pNtuClus->GetClustersN(i); ++k) {
          TAITcluster* clus = (TAITcluster*)pNtuClus->GetCluster(i, k);
@@ -218,7 +218,7 @@ void TAGactNtuGlbTrack::FillMsdPoint()
    TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpMsdClus->Object();
    TAMSDparGeo*     pParGeo  = (TAMSDparGeo*)     fpMsdGeoMap->Object();
 
-   for (Int_t i = 0; i < pParGeo->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pParGeo->GetSensorsN(); ++i) {
       
       for (Int_t k = 0; k < pNtuClus->GetClustersN(i); ++k) {
          TAMSDcluster* clus = (TAMSDcluster*)pNtuClus->GetCluster(i, k);

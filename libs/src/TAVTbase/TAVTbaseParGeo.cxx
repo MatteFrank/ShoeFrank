@@ -335,7 +335,7 @@ void TAVTbaseParGeo::Detector2Sensor(Int_t detID,
 									Double_t xg, Double_t yg, Double_t zg, 
 									Double_t& xl, Double_t& yl, Double_t& zl) const
 {  
-   if (detID < 0 || detID > GetNSensors()) {
+   if (detID < 0 || detID > GetSensorsN()) {
 	  Warning("Detector2Sensor()","Wrong detector id number: %d ", detID); 
 	  return ;
    }
@@ -346,7 +346,7 @@ void TAVTbaseParGeo::Detector2Sensor(Int_t detID,
 //_____________________________________________________________________________
 TVector3 TAVTbaseParGeo::Detector2Sensor(Int_t detID, TVector3& glob) const
 {
-   if (detID < 0 || detID > GetNSensors()) {
+   if (detID < 0 || detID > GetSensorsN()) {
 	  Warning("Detector2Sensor()","Wrong detector id number: %d ", detID); 
 	  return TVector3(0,0,0);
    }
@@ -357,7 +357,7 @@ TVector3 TAVTbaseParGeo::Detector2Sensor(Int_t detID, TVector3& glob) const
 //_____________________________________________________________________________
 TVector3 TAVTbaseParGeo::Detector2SensorVect(Int_t detID, TVector3& glob) const
 {
-   if (detID < 0 || detID > GetNSensors()) {
+   if (detID < 0 || detID > GetSensorsN()) {
 	  Warning("Detector2SensorVect()","Wrong detector id number: %d ", detID); 
 	  return TVector3(0,0,0);
    }
@@ -370,7 +370,7 @@ void TAVTbaseParGeo::Sensor2Detector(Int_t detID,
 									Double_t xl, Double_t yl, Double_t zl, 
 									Double_t& xg, Double_t& yg, Double_t& zg) const
 {
-   if (detID < 0 || detID > GetNSensors()) {
+   if (detID < 0 || detID > GetSensorsN()) {
 	  Warning("Sensor2Detector()","Wrong detector id number: %d ", detID); 
 	  return;
    }
@@ -381,7 +381,7 @@ void TAVTbaseParGeo::Sensor2Detector(Int_t detID,
 //_____________________________________________________________________________
 TVector3 TAVTbaseParGeo::Sensor2Detector(Int_t detID, TVector3& loc) const
 {
-   if (detID < 0 || detID > GetNSensors()) {
+   if (detID < 0 || detID > GetSensorsN()) {
 	  Warning("Sensor2Detector()","Wrong detector id number: %d ", detID); 
 	  TVector3(0,0,0);
    }
@@ -393,7 +393,7 @@ TVector3 TAVTbaseParGeo::Sensor2Detector(Int_t detID, TVector3& loc) const
 //_____________________________________________________________________________
 TVector3 TAVTbaseParGeo::Sensor2DetectorVect(Int_t detID, TVector3& loc) const
 {
-   if (detID < 0 || detID > GetNSensors()) {
+   if (detID < 0 || detID > GetSensorsN()) {
 	  Warning("Sensor2DetectorVect()","Wrong detector id number: %d ", detID); 
 	  TVector3(0,0,0);
    }
@@ -411,7 +411,7 @@ void TAVTbaseParGeo::DefineMaxMinDimension()
    TVector3 minPosition(10e10, 10e10, 10e10);
    TVector3 maxPosition(-10e10, -10e10, -10e10);
    
-   Int_t nSens = GetNSensors();
+   Int_t nSens = GetSensorsN();
    for (Int_t iS = 0; iS < nSens; iS++) {
       posAct = GetSensorPar(iS).Position;
       

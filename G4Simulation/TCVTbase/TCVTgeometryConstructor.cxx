@@ -158,7 +158,7 @@ G4LogicalVolume* TCVTgeometryConstructor::Construct()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCVTgeometryConstructor::PlaceSensor()
 {
-    Int_t nSensor = fpParGeo->GetNSensors();
+    Int_t nSensor = fpParGeo->GetSensorsN();
 
    for(Int_t iSensor = 0; iSensor< nSensor; ++iSensor) {
       
@@ -221,7 +221,7 @@ void TCVTgeometryConstructor::DefineMaxMinDimension()
    TVector3 sizeEpi = fpParGeo->GetEpiSize();
    
    TVector3 posAct(0, 0, 0);
-   Int_t nSens = fpParGeo->GetNSensors();
+   Int_t nSens = fpParGeo->GetSensorsN();
    TVector3 EnvDim(0,0,0);
    TVector3 shift(0,0,0);
    
