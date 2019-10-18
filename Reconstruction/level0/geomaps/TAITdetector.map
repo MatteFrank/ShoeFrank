@@ -29,7 +29,9 @@ PixMatProp:      "0.89/0.11"
 PixMatDensity:      2.3
 
 SupportInfo:         1
-FoamSizeX:         9.00   FoamSizeY:     3.00  FoamSizeZ:      0.226
+FoamSizeX:       15.634   FoamSizeY:     2.938  FoamSizeZ:      0.226
+FoamOffsetX:      5.080   FoamOffsetY:   0.667  FoamOffsetZ:    0.0000
+
 FoamThickness:     0.2
 FoamMat:           "SiC/AIR"
 FoamMatDensities: "3.22/1.29e-3"

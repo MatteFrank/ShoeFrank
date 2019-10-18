@@ -19,7 +19,8 @@ class TAITparGeo : public TAVTparGeo {
    
 private:
    
-   TVector3   fSupportSize;       // Support sizse
+   TVector3   fSupportSize;       // Support size
+   TVector3   fSupportOffset;     // Support offset
    Float_t    fFoamThickness;     // Foam thickness
    TString    fFoamMat;           // Material of foam
    TString    fFoamMatDensities;  // Density of foam material for each component
@@ -48,6 +49,8 @@ public:
    
    //! Get Foam size
    TVector3 GetSupportSize()            const { return fSupportSize;      }
+   //! Get Foam Offset
+   TVector3 GetSupportOffset()          const { return fSupportOffset;    }
    //! Get Foam thickness
    Float_t GetFoamThickness()           const { return fFoamThickness;    }
    //! Get Foam material

@@ -82,8 +82,13 @@ void TAITparGeo::ReadSupportInfo()
 {
    ReadVector3(fSupportSize);
    if(FootDebugLevel(1))
-      cout  << endl << "  Foam size of support: "<< fSupportSize.X() << " " <<  fSupportSize.Y() << " "
+      cout  << endl << "  Size of support: "<< fSupportSize.X() << " " <<  fSupportSize.Y() << " "
       <<  fSupportSize.Z()  << endl;
+   
+   ReadVector3(fSupportOffset);
+   if(FootDebugLevel(1))
+      cout  << endl << "  Offset of support: "<< fSupportOffset.X() << " " <<  fSupportOffset.Y() << " "
+      <<  fSupportOffset.Z()  << endl;
    
    ReadItem(fFoamThickness);
    if(FootDebugLevel(1))
@@ -199,8 +204,10 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
          TGeoCombiTrans* hm1 = GetCombiTransfo(iSup);
          TGeoCombiTrans* hm2 = GetCombiTransfo(iSup+16);
          TGeoRotation rot;
-         Float_t x = 0.;
-         Float_t y = (hm1->GetTranslation()[1] + hm2->GetTranslation()[1])/2.;
+         
+         Float_t sign = (iSup > 7) ? +1 : -1;
+         Float_t x = sign*fSupportOffset[0]/2.;
+         Float_t y = (hm1->GetTranslation()[1] + hm2->GetTranslation()[1])/2. + sign*fSupportOffset[1]/2.;
          Float_t z = (hm1->GetTranslation()[2] + hm2->GetTranslation()[2])/2.;
          TGeoTranslation trans(x, y, z);
          
