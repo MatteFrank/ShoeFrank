@@ -91,7 +91,7 @@ public:
    //! Build Innert Tracker
    TGeoVolume* BuildInnerTracker(const char *name = "IT", const char* basemoduleName = "Module", Bool_t board = false,  Bool_t support = false);
    
-   //! Add CMOS module geometry to world
+   //! Build plume support
    TGeoVolume* BuildPlumeSupport(const char* basemoduleName = "Plume", const char *name = "ITSP");
 
    // to print fluka files
@@ -102,10 +102,6 @@ public:
    virtual string PrintAssignMaterial(TAGmaterials *Material);
    virtual string PrintSubtractBodiesFromAir();
    
-protected:
-   vector<string> vEpiBody, vModBody, vPixBody;
-   vector<string> vEpiRegion, vModRegion, vPixRegion;
-  
 public:
    static const Char_t* GetItBaseName()    { return fgkBaseNameIt.Data();    }
    static const Char_t* GetItDefParaName() { return fgkDefParaNameIt.Data(); }
