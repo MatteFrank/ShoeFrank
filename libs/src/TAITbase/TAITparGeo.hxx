@@ -94,9 +94,6 @@ public:
    //! Add CMOS module geometry to world
    TGeoVolume* BuildPlumeSupport(const char* basemoduleName = "Plume", const char *name = "ITSP");
 
-   // to keep interace for compilation
-   // virtual void   PrintFluka();
-
    // to print fluka files
    virtual string PrintParameters();
    virtual string PrintRotations();

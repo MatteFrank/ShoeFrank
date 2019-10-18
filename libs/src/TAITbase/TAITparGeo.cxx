@@ -324,30 +324,6 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
 }
 
 //_____________________________________________________________________________
-/*
-void TAITparGeo::PrintFluka()
-{
-   static Int_t count = 0;
-   const Char_t* matName = fEpiMat.Data();
-   
-   TVector3 pos = GetSensorPosition(count);
-   stringstream ss;
-   ss << setiosflags(ios::fixed) << setprecision(6);
-   ss <<  "RPP " << Form("ITRP%d", count) <<  "     "
-   << pos.x() - fTotalSize.X()/2.  << " " << pos.x() +  fTotalSize.X()/2. << " "
-   << pos.y() - fTotalSize.Y()/2.  << " " << pos.y() +  fTotalSize.Y()/2. << " "
-   << pos.z() - fTotalSize.Z()/2.  << " " << pos.z() +  fTotalSize.Z()/2. << endl;
-   
-   m_bodyPrintOut[matName].push_back( ss.str() );
-   
-   m_regionName[matName].push_back(Form("itrp%d", count));
-   m_bodyName[matName].push_back(Form("ITRP%d", count));
-   m_bodyPrintOut[matName].push_back(Form("ITRP%d", count));
-   m_bodyName[matName].push_back(Form("ITRP%d", count));
-}
-*/
-
-//_____________________________________________________________________________
 string TAITparGeo::PrintParameters()
 {
   stringstream outstr;
