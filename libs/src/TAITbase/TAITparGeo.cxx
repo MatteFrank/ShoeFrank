@@ -159,7 +159,7 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
    TGeoVolume* it = gGeoManager->FindVolumeFast(itName);
    if ( it == 0x0 ) {
       TGeoMedium*   med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject("AIR");
-      it = gGeoManager->MakeBox(itName,med,fSizeBox.X()/2.,fSizeBox.Y()/2.,fSizeBox.Z()/2.); // volume corresponding to vertex
+      it = gGeoManager->MakeBox(itName,med,fSizeBox.X()/2.,fSizeBox.Y()/2.,fSizeBox.Z()/2.); // volume corresponding to IT
    }
    
    TGeoVolume* itMod = 0x0;
@@ -214,8 +214,7 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
 //_____________________________________________________________________________
 TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char *vertexName)
 {
-   // create support module
-   // create foam medium
+   // create media
    const Char_t* matName = fFoamMat.Data();
    TGeoMedium*   medFoam = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
    
