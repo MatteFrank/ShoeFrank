@@ -195,7 +195,7 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
    if (suport) {
       TGeoVolume* itSupoort = BuildPlumeSupport("Support", itName);
    
-      for(Int_t iSup = 0; iSup < 16; iSup+=4) {
+      for(Int_t iSup = 0; iSup < GetNSensors()/2; iSup+=4) {
          TGeoCombiTrans* hm1 = GetCombiTransfo(iSup);
          TGeoCombiTrans* hm2 = GetCombiTransfo(iSup+16);
          TGeoRotation rot;
