@@ -328,8 +328,8 @@ string TAVTparGeo::PrintBodies()
 	 << posEpi.y() + fEpiSize.Y()/2. << " "
 	 << posEpi.z() - fEpiSize.Z()/2. << " "
 	 << posEpi.z() + fEpiSize.Z()/2. << endl;
-      vEpiBody.push_back(bodyname);
-      vEpiRegion.push_back(regionname);
+      fvEpiBody.push_back(bodyname);
+      fvEpiRegion.push_back(regionname);
     
       //module
       bodyname = Form("vtxm%d",iSens);
@@ -344,8 +344,8 @@ string TAVTparGeo::PrintBodies()
 	 << posMod.y() + fTotalSize.Y()/2. << " "
 	 << posMod.z() - fTotalSize.Z()/2. << " "
 	 << posMod.z() + fTotalSize.Z()/2. << endl;
-      vModBody.push_back(bodyname);
-      vModRegion.push_back(regionname);
+      fvModBody.push_back(bodyname);
+      fvModRegion.push_back(regionname);
     
       //pixel layer
       bodyname = Form("vtxp%d",iSens);
@@ -358,8 +358,8 @@ string TAVTparGeo::PrintBodies()
 	 << posPix.y() + fEpiSize.Y()/2. << " "
 	 << posPix.z() - fPixThickness/2. << " "
 	 << posPix.z() + fPixThickness/2. << endl;
-      vPixBody.push_back(bodyname);
-      vPixRegion.push_back(regionname);
+      fvPixBody.push_back(bodyname);
+      fvPixRegion.push_back(regionname);
     
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$end_transform " << endl;
@@ -382,20 +382,20 @@ string TAVTparGeo::PrintRegions()
 
     ss << "* ***Vertex regions" << endl;
 
-    for(int i=0; i<vEpiRegion.size(); i++) {
-      ss << setw(13) << setfill( ' ' ) << std::left << vEpiRegion.at(i)
-    	 << "5 " << vEpiBody.at(i) <<endl;
+    for(int i=0; i<fvEpiRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvEpiRegion.at(i)
+    	 << "5 " << fvEpiBody.at(i) <<endl;
     }
 
-    for(int i=0; i<vModRegion.size(); i++) {
-      ss << setw(13) << setfill( ' ' ) << std::left << vModRegion.at(i)
-	 << "5 " << vModBody.at(i)
-	 << " -" << vEpiBody.at(i) << " -" << vPixBody.at(i) <<endl;
+    for(int i=0; i<fvModRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvModRegion.at(i)
+	 << "5 " << fvModBody.at(i)
+	 << " -" << fvEpiBody.at(i) << " -" << fvPixBody.at(i) <<endl;
     }
 
-    for(int i=0; i<vPixRegion.size(); i++) {
-      ss << setw(13) << setfill( ' ' ) << std::left << vPixRegion.at(i)
-    	 << "5 " << vPixBody.at(i) <<endl;
+    for(int i=0; i<fvPixRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvPixRegion.at(i)
+    	 << "5 " << fvPixBody.at(i) <<endl;
     }
 
   }
@@ -412,8 +412,8 @@ string TAVTparGeo::PrintSubtractBodiesFromAir()
 
   if(GlobalPar::GetPar()->IncludeVertex()){
 
-    for(int i=0; i<vModBody.size(); i++) {
-      ss << " -" << vModBody.at(i);
+    for(int i=0; i<fvModBody.size(); i++) {
+      ss << " -" << fvModBody.at(i);
     }
     ss << endl;
 
@@ -445,14 +445,14 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials *Material)
     if(GlobalPar::GetPar()->IncludeDI())
       magnetic = true;
     
-    if (vEpiRegion.size()==0 || vModRegion.size()==0 || vPixRegion.size()==0 )
+    if (fvEpiRegion.size()==0 || fvModRegion.size()==0 || fvPixRegion.size()==0 )
       cout << "Error: VT regions vector not correctly filled!"<<endl;
     
-    ss << PrintCard("ASSIGNMA", flkmatMod, vEpiRegion.at(0), vEpiRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatMod, fvEpiRegion.at(0), fvEpiRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
-    ss << PrintCard("ASSIGNMA", flkmatMod, vModRegion.at(0), vModRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatMod, fvModRegion.at(0), fvModRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
-    ss << PrintCard("ASSIGNMA", flkmatPix, vPixRegion.at(0), vPixRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatPix, fvPixRegion.at(0), fvPixRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
 
   }

@@ -53,8 +53,12 @@ public:
    virtual string PrintSubtractBodiesFromAir();
    
 protected:
-   vector<string> vEpiBody, vModBody, vPixBody;
-   vector<string> vEpiRegion, vModRegion, vPixRegion;
+   vector<string> fvEpiBody;   //!
+   vector<string> fvModBody;   //!
+   vector<string> fvPixBody;   //!
+   vector<string> fvEpiRegion; //!
+   vector<string> fvModRegion; //!
+   vector<string> fvPixRegion; //!
 
 public:
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
