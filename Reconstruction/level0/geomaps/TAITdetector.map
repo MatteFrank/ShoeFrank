@@ -30,7 +30,7 @@ PixMatDensity:      2.3
 
 SupportInfo:         1
 FoamSizeX:       15.634   FoamSizeY:     2.871  FoamSizeZ:      0.226
-FoamOffsetX:      5.080   FoamOffsetY:   0.531  FoamOffsetZ:    0.0000
+FoamOffsetX:      3.908   FoamOffsetY:   0.531  FoamOffsetZ:    0.0000
 
 FoamThickness:     0.2
 FoamMat:           "SiC/AIR"
