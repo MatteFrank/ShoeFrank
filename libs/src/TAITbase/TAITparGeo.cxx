@@ -623,6 +623,7 @@ string TAITparGeo::PrintModuleBodies()
 string TAITparGeo::PrintSupportBodies()
 {
    stringstream ss;
+   ss << setiosflags(ios::fixed) << setprecision(10);
 
    if(GlobalPar::GetPar()->IncludeInnerTracker()){
 
