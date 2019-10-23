@@ -39,10 +39,24 @@ private:
    TString    fAlMat;             // Material of aluminum
    Float_t    fAlMatDensity;      // Density of aluminum material
 
+private:
+   vector<string> fvFoamBody;     //!
+   vector<string> fvKaptonBody;   //!
+   vector<string> fvEpoxyBody;    //!
+   vector<string> fvAlBody;       //!
+   vector<string> fvFoamRegion;   //!
+   vector<string> fvKaptonRegion; //!
+   vector<string> fvEpoxyRegion;  //!
+   vector<string> fvAlRegion;     //!
+
 protected:
    static const TString fgkBaseNameIt;   // IT base name
    static const TString fgkDefParaNameIt;
-
+   
+private:
+   Float_t GetlayerPosZ(Int_t layer);
+   
+   
 public:
    TAITparGeo();
     virtual ~TAITparGeo();
@@ -84,6 +98,15 @@ public:
    TString GetAlMaterial()              const { return fAlMat;            }
    //! Get Al density
    Float_t GetAlMatDensity()            const { return fAlMatDensity;     }
+   
+   // return local Z positon of the layers
+   Float_t GetFoamLayer();
+   Float_t Get1stKaptonLayer();
+   Float_t Get1stAlLayer();
+   Float_t Get2ndKaptonLayer();
+   Float_t Get2ndAlLayer();
+   Float_t Get3rdKaptonLayer();
+   Float_t GetEpoxyLayer();
    
    // Define materials
    void    DefineMaterial();

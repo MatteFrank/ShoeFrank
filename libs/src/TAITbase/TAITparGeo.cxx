@@ -279,8 +279,8 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
    TGeoTranslation trans(0, 0, 0);
    supportMod->AddNode(foam, count++, new TGeoTranslation(trans));
 
-   Float_t posZ = fFoamThickness/2. + fKaptonThickness/2.;
    // first kapton layer
+   Float_t posZ = Get1stKaptonLayer();
    trans.SetTranslation(0, 0, posZ);
    supportMod->AddNode(kapton1, count++, new TGeoTranslation(trans));
    
@@ -288,7 +288,7 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
    supportMod->AddNode(kapton1, count++, new TGeoTranslation(trans));
 
    // first layer aluminium
-   posZ += fKaptonThickness/2. + fAlThickness/2.;
+   posZ = Get1stAlLayer();
    trans.SetTranslation(0, 0, posZ);
    supportMod->AddNode(al, count++, new TGeoTranslation(trans));
 
@@ -296,7 +296,7 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
    supportMod->AddNode(al, count++, new TGeoTranslation(trans));
 
    // Second kapton layer
-   posZ += fAlThickness/2. + fKaptonThickness;
+   posZ = Get2ndKaptonLayer();
    trans.SetTranslation(0, 0, posZ);
    supportMod->AddNode(kapton2, count++, new TGeoTranslation(trans));
 
@@ -304,7 +304,7 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
    supportMod->AddNode(kapton2, count++, new TGeoTranslation(trans));
 
    // second layer aluminium
-   posZ += fKaptonThickness +  fAlThickness/2.;
+   posZ = Get2ndAlLayer();
    trans.SetTranslation(0, 0, posZ);
    supportMod->AddNode(al, count++, new TGeoTranslation(trans));
 
@@ -312,7 +312,7 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
    supportMod->AddNode(al, count++, new TGeoTranslation(trans));
 
    // Third kapton layer
-   posZ += fAlThickness/2. + fKaptonThickness/2.;
+   posZ = Get3rdKaptonLayer();
    trans.SetTranslation(0, 0, posZ);
    supportMod->AddNode(kapton1, count++, new TGeoTranslation(trans));
 
@@ -320,7 +320,7 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
    supportMod->AddNode(kapton1, count++, new TGeoTranslation(trans));
 
    // layer of epoxy
-   posZ += fKaptonThickness/2. + fEpoxyThickness/2.;
+   posZ = GetEpoxyLayer();
    trans.SetTranslation(0, 0, posZ);
    supportMod->AddNode(epoxy, count++, new TGeoTranslation(trans));
 
@@ -328,6 +328,80 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
    supportMod->AddNode(epoxy, count++, new TGeoTranslation(trans));
 
    return supportMod;
+}
+
+//_____________________________________________________________________________
+Float_t TAITparGeo:: GetlayerPosZ(Int_t layer)
+{
+   
+   Float_t posZ = 0;
+   
+   // first kapton layer
+   if (layer >= 1)
+      posZ = fFoamThickness/2. + fKaptonThickness/2.;
+   
+   // first layer aluminium
+   if (layer >= 2)
+      posZ += fKaptonThickness/2. + fAlThickness/2.;
+   
+   // Second kapton layer
+   if (layer >= 3)
+      posZ += fAlThickness/2. + fKaptonThickness;
+   
+   // second layer aluminium
+   if (layer >= 4)
+      posZ += fKaptonThickness +  fAlThickness/2.;
+   
+   // Third kapton layer
+   if (layer >= 5)
+      posZ += fAlThickness/2. + fKaptonThickness/2.;
+
+   // layer of epoxy
+   if (layer == 6)
+   posZ += fKaptonThickness/2. + fEpoxyThickness/2.;
+   
+   return posZ;
+}
+
+//_____________________________________________________________________________
+Float_t TAITparGeo::GetFoamLayer()
+{
+   return GetlayerPosZ(0);
+}
+
+//_____________________________________________________________________________
+Float_t TAITparGeo::Get1stKaptonLayer()
+{
+   return GetlayerPosZ(1);
+}
+
+//_____________________________________________________________________________
+Float_t TAITparGeo::Get1stAlLayer()
+{
+   return GetlayerPosZ(2);
+}
+
+//_____________________________________________________________________________
+Float_t TAITparGeo::Get2ndKaptonLayer()
+{
+   return GetlayerPosZ(3);
+}
+
+//_____________________________________________________________________________
+Float_t TAITparGeo::Get2ndAlLayer()
+{
+   return GetlayerPosZ(4);
+}
+
+//_____________________________________________________________________________
+Float_t TAITparGeo::Get3rdKaptonLayer()
+{
+   return GetlayerPosZ(5);
+}
+//_____________________________________________________________________________
+Float_t TAITparGeo::GetEpoxyLayer()
+{
+   return GetlayerPosZ(6);
 }
 
 //_____________________________________________________________________________
@@ -352,6 +426,8 @@ string TAITparGeo::PrintParameters()
     }
         
     outstr << endl;
+     
+     // add something for support ??
   }
    
    return outstr.str();
@@ -443,6 +519,8 @@ string TAITparGeo::PrintRotations()
     }
   }
   
+   // for support here no rotation ??
+
   return ss.str();
 
 }
@@ -451,81 +529,329 @@ string TAITparGeo::PrintRotations()
 string TAITparGeo::PrintBodies()
 {
 
-  stringstream ss;
-  ss << setiosflags(ios::fixed) << setprecision(10);
-
-  if(GlobalPar::GetPar()->IncludeInnerTracker()){
-
-    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-  
-    TVector3  fCenter = fpFootGeo->GetITCenter();
-    TVector3  fAngle = fpFootGeo->GetITAngles();
-    
-    TVector3 posEpi, posPix, posMod;
-    string bodyname, regionname;
-    
-    ss << "* ***Inner tracker bodies" << endl;  
-    
-    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
-
-          
-      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
-	ss << "$start_transform " << Form("it_%d",iSens) << endl;
-              
-      //epitaxial layer
-      bodyname = Form("itre%d",iSens);
-      regionname = Form("ITRE%02d",iSens);
-      posEpi.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
-		     fCenter.Y() + GetSensorPosition(iSens).Y(),
-		     fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2.
-		     + fPixThickness + fEpiSize.Z()/2. );
-      ss <<  "RPP " << bodyname <<  "     "
-	 << posEpi.x() - fEpiSize.X()/2. << " "
-	 << posEpi.x() + fEpiSize.X()/2. << " "
-	 << posEpi.y() - fEpiSize.Y()/2. << " "
-	 << posEpi.y() + fEpiSize.Y()/2. << " "
-	 << posEpi.z() - fEpiSize.Z()/2. << " "
-	 << posEpi.z() + fEpiSize.Z()/2. << endl;
-      fvEpiBody.push_back(bodyname);
-      fvEpiRegion.push_back(regionname);
-    
-      //module
-      bodyname = Form("itrm%d",iSens);
-      regionname = Form("ITRM%d",iSens);
-      posMod.SetXYZ( posEpi.X() + fEpiSize.X()/2. + fEpiOffset.X() - fTotalSize.X()/2.,
-		     posEpi.Y() - fEpiSize.Y()/2. - fEpiOffset.Y() + fTotalSize.Y()/2.,
-		     fCenter.Z() + GetSensorPosition(iSens).Z() );
-      ss <<  "RPP " << bodyname <<  "     "
-	 << posMod.x() - fTotalSize.X()/2. << " "
-	 << posMod.x() + fTotalSize.X()/2. << " "
-	 << posMod.y() - fTotalSize.Y()/2. << " "
-	 << posMod.y() + fTotalSize.Y()/2. << " "
-	 << posMod.z() - fTotalSize.Z()/2. << " "
-	 << posMod.z() + fTotalSize.Z()/2. << endl;
-      fvModBody.push_back(bodyname);
-      fvModRegion.push_back(regionname);
-    
-      //pixel layer
-      bodyname = Form("itrp%d",iSens);
-      regionname = Form("ITRP%d",iSens);
-      posPix.SetXYZ( posEpi.X(), posEpi.Y(), posEpi.Z() - fEpiSize.Z()/2. - fPixThickness/2.);   
-      ss <<  "RPP " << bodyname <<  "     "
-	 << posPix.x() - fEpiSize.X()/2. << " "
-	 << posPix.x() + fEpiSize.X()/2. << " "
-	 << posPix.y() - fEpiSize.Y()/2. << " "
-	 << posPix.y() + fEpiSize.Y()/2. << " "
-	 << posPix.z() - fPixThickness/2. << " "
-	 << posPix.z() + fPixThickness/2. << endl;
-      fvPixBody.push_back(bodyname);
-      fvPixRegion.push_back(regionname);
+   stringstream ss;
+   ss << setiosflags(ios::fixed) << setprecision(10);
+   
+   if(GlobalPar::GetPar()->IncludeInnerTracker()){
       
-      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
-	ss << "$end_transform " << endl;
-	  
-    }
-  }
+      TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+      
+      TVector3  fCenter = fpFootGeo->GetITCenter();
+      TVector3  fAngle = fpFootGeo->GetITAngles();
+      
+      TVector3 posEpi, posPix, posMod;
+      string bodyname, regionname;
+      
+      ss << "* ***Inner tracker bodies" << endl;
+      
+      for(int iSens=0; iSens<GetSensorsN(); iSens++) {
+         
+         
+         if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+            ss << "$start_transform " << Form("it_%d",iSens) << endl;
+         
+         //epitaxial layer
+         bodyname = Form("itre%d",iSens);
+         regionname = Form("ITRE%02d",iSens);
+         posEpi.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
+                       fCenter.Y() + GetSensorPosition(iSens).Y(),
+                       fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2.
+                       + fPixThickness + fEpiSize.Z()/2. );
+         ss <<  "RPP " << bodyname <<  "     "
+         << posEpi.x() - fEpiSize.X()/2. << " "
+         << posEpi.x() + fEpiSize.X()/2. << " "
+         << posEpi.y() - fEpiSize.Y()/2. << " "
+         << posEpi.y() + fEpiSize.Y()/2. << " "
+         << posEpi.z() - fEpiSize.Z()/2. << " "
+         << posEpi.z() + fEpiSize.Z()/2. << endl;
+         fvEpiBody.push_back(bodyname);
+         fvEpiRegion.push_back(regionname);
+         
+         //module
+         bodyname = Form("itrm%d",iSens);
+         regionname = Form("ITRM%d",iSens);
+         posMod.SetXYZ( posEpi.X() + fEpiSize.X()/2. + fEpiOffset.X() - fTotalSize.X()/2.,
+                       posEpi.Y() - fEpiSize.Y()/2. - fEpiOffset.Y() + fTotalSize.Y()/2.,
+                       fCenter.Z() + GetSensorPosition(iSens).Z() );
+         ss <<  "RPP " << bodyname <<  "     "
+         << posMod.x() - fTotalSize.X()/2. << " "
+         << posMod.x() + fTotalSize.X()/2. << " "
+         << posMod.y() - fTotalSize.Y()/2. << " "
+         << posMod.y() + fTotalSize.Y()/2. << " "
+         << posMod.z() - fTotalSize.Z()/2. << " "
+         << posMod.z() + fTotalSize.Z()/2. << endl;
+         fvModBody.push_back(bodyname);
+         fvModRegion.push_back(regionname);
+         
+         //pixel layer
+         bodyname = Form("itrp%d",iSens);
+         regionname = Form("ITRP%d",iSens);
+         posPix.SetXYZ( posEpi.X(), posEpi.Y(), posEpi.Z() - fEpiSize.Z()/2. - fPixThickness/2.);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posPix.x() - fEpiSize.X()/2. << " "
+         << posPix.x() + fEpiSize.X()/2. << " "
+         << posPix.y() - fEpiSize.Y()/2. << " "
+         << posPix.y() + fEpiSize.Y()/2. << " "
+         << posPix.z() - fPixThickness/2. << " "
+         << posPix.z() + fPixThickness/2. << endl;
+         fvPixBody.push_back(bodyname);
+         fvPixRegion.push_back(regionname);
+         
+         if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+            ss << "$end_transform " << endl;
+         
+      }
+      
+      cout << ss.str() << endl;
+
+      // support
+      for(Int_t iSup = 0; iSup < GetSensorsN()/2; iSup+=4) {
+         
+         TVector3 posFoam, posKapton, posEpoxy, posAl;
+         string bodyname, regionname;
+         
+         Float_t sign = (iSup > 7) ? +1 : -1;
+         
+         // foam
+         bodyname = Form("itrf%d",iSup);
+         regionname = Form("ITRF%02d",iSup);
+         posFoam.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                        fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                        fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2.);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posFoam.x() - fSupportSize.X()/2. << " "
+         << posFoam.x() + fSupportSize.X()/2. << " "
+         << posFoam.y() - fSupportSize.Y()/2. << " "
+         << posFoam.y() + fSupportSize.Y()/2. << " "
+         << posFoam.z() - fFoamThickness/2. << " "
+         << posFoam.z() + fFoamThickness/2. << endl;
+         fvFoamBody.push_back(bodyname);
+         fvFoamRegion.push_back(regionname);
+         
+         // Kapton
+         Float_t posZ = Get1stKaptonLayer();
+
+         bodyname = Form("itrk%d",iSup);
+         regionname = Form("ITRK%02d",iSup);
+         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                        fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                        fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posKapton.x() - fSupportSize.X()/2. << " "
+         << posKapton.x() + fSupportSize.X()/2. << " "
+         << posKapton.y() - fSupportSize.Y()/2. << " "
+         << posKapton.y() + fSupportSize.Y()/2. << " "
+         << posKapton.z() - fKaptonThickness/2. << " "
+         << posKapton.z() + fKaptonThickness/2. << endl;
+         fvKaptonBody.push_back(bodyname);
+         fvKaptonRegion.push_back(regionname);
+         
+         // negative side
+         bodyname = Form("itrk%d",iSup+100);
+         regionname = Form("ITRK%02d",iSup+100);
+         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posKapton.x() - fSupportSize.X()/2. << " "
+         << posKapton.x() + fSupportSize.X()/2. << " "
+         << posKapton.y() - fSupportSize.Y()/2. << " "
+         << posKapton.y() + fSupportSize.Y()/2. << " "
+         << posKapton.z() - fKaptonThickness/2. << " "
+         << posKapton.z() + fKaptonThickness/2. << endl;
+         fvKaptonBody.push_back(bodyname);
+         fvKaptonRegion.push_back(regionname);
+      
+         // Al
+         posZ = Get1stAlLayer();
+         bodyname = Form("itra%d",iSup);
+         regionname = Form("ITRA%02d",iSup);
+         posAl.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                        fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                        fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posAl.x() - fSupportSize.X()/2. << " "
+         << posAl.x() + fSupportSize.X()/2. << " "
+         << posAl.y() - fSupportSize.Y()/2. << " "
+         << posAl.y() + fSupportSize.Y()/2. << " "
+         << posAl.z() - fAlThickness/2. << " "
+         << posAl.z() + fAlThickness/2. << endl;
+         fvAlBody.push_back(bodyname);
+         fvAlRegion.push_back(regionname);
+         
+         // negative side
+         bodyname = Form("itra%d",iSup+100);
+         regionname = Form("ITRA%02d",iSup+100);
+         posAl.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                      fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                      fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posAl.x() - fSupportSize.X()/2. << " "
+         << posAl.x() + fSupportSize.X()/2. << " "
+         << posAl.y() - fSupportSize.Y()/2. << " "
+         << posAl.y() + fSupportSize.Y()/2. << " "
+         << posAl.z() - fAlThickness/2. << " "
+         << posAl.z() + fAlThickness/2. << endl;
+         fvAlBody.push_back(bodyname);
+         fvAlRegion.push_back(regionname);
+         
+         // Kapton 2nd (twice thickness)
+         posZ = Get2ndKaptonLayer();
+         bodyname = Form("itrk%d",iSup+2);
+         regionname = Form("ITRK%02d",iSup+2);
+         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posKapton.x() - fSupportSize.X()/2. << " "
+         << posKapton.x() + fSupportSize.X()/2. << " "
+         << posKapton.y() - fSupportSize.Y()/2. << " "
+         << posKapton.y() + fSupportSize.Y()/2. << " "
+         << posKapton.z() - fKaptonThickness << " "
+         << posKapton.z() + fKaptonThickness << endl;
+         fvKaptonBody.push_back(bodyname);
+         fvKaptonRegion.push_back(regionname);
+         
+         // negative side
+         bodyname = Form("itrk%d",iSup+102);
+         regionname = Form("ITRK%02d",iSup+102);
+         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posKapton.x() - fSupportSize.X()/2. << " "
+         << posKapton.x() + fSupportSize.X()/2. << " "
+         << posKapton.y() - fSupportSize.Y()/2. << " "
+         << posKapton.y() + fSupportSize.Y()/2. << " "
+         << posKapton.z() - fKaptonThickness << " "
+         << posKapton.z() + fKaptonThickness << endl;
+         fvKaptonBody.push_back(bodyname);
+         fvKaptonRegion.push_back(regionname);
+         
+         
+         // Al 2nd
+         posZ = Get2ndAlLayer();
+         bodyname = Form("itra%d",iSup+2);
+         regionname = Form("ITRA%02d",iSup+2);
+         posAl.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                      fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                      fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posAl.x() - fSupportSize.X()/2. << " "
+         << posAl.x() + fSupportSize.X()/2. << " "
+         << posAl.y() - fSupportSize.Y()/2. << " "
+         << posAl.y() + fSupportSize.Y()/2. << " "
+         << posAl.z() - fAlThickness/2. << " "
+         << posAl.z() + fAlThickness/2. << endl;
+         fvAlBody.push_back(bodyname);
+         fvAlRegion.push_back(regionname);
+         
+         // negative side
+         bodyname = Form("itra%d",iSup+102);
+         regionname = Form("ITRA%02d",iSup+102);
+         posAl.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                      fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                      fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - fFoamThickness/2. - posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posAl.x() - fSupportSize.X()/2. << " "
+         << posAl.x() + fSupportSize.X()/2. << " "
+         << posAl.y() - fSupportSize.Y()/2. << " "
+         << posAl.y() + fSupportSize.Y()/2. << " "
+         << posAl.z() - fAlThickness/2. << " "
+         << posAl.z() + fAlThickness/2. << endl;
+         fvAlBody.push_back(bodyname);
+         fvAlRegion.push_back(regionname);
+         
+         // Kapton 3rd
+         posZ = Get3rdKaptonLayer();
+         bodyname = Form("itrk%d",iSup+3);
+         regionname = Form("ITRK%02d",iSup+3);
+         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + fFoamThickness/2. + posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posKapton.x() - fSupportSize.X()/2. << " "
+         << posKapton.x() + fSupportSize.X()/2. << " "
+         << posKapton.y() - fSupportSize.Y()/2. << " "
+         << posKapton.y() + fSupportSize.Y()/2. << " "
+         << posKapton.z() - fKaptonThickness/2. << " "
+         << posKapton.z() + fKaptonThickness/2. << endl;
+         fvKaptonBody.push_back(bodyname);
+         fvKaptonRegion.push_back(regionname);
+         
+         // negative side
+         bodyname = Form("itrk%d",iSup+103);
+         regionname = Form("ITRK%02d",iSup+103);
+         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posKapton.x() - fSupportSize.X()/2. << " "
+         << posKapton.x() + fSupportSize.X()/2. << " "
+         << posKapton.y() - fSupportSize.Y()/2. << " "
+         << posKapton.y() + fSupportSize.Y()/2. << " "
+         << posKapton.z() - fKaptonThickness/2. << " "
+         << posKapton.z() + fKaptonThickness/2. << endl;
+         fvKaptonBody.push_back(bodyname);
+         fvKaptonRegion.push_back(regionname);
+         
+         // Epoxy
+         posZ = GetEpoxyLayer();
+         bodyname = Form("itry%d",iSup);
+         regionname = Form("ITRY%02d",iSup);
+         posEpoxy.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posEpoxy.x() - fSupportSize.X()/2. << " "
+         << posEpoxy.x() + fSupportSize.X()/2. << " "
+         << posEpoxy.y() - fSupportSize.Y()/2. << " "
+         << posEpoxy.y() + fSupportSize.Y()/2. << " "
+         << posEpoxy.z() - fEpoxyThickness/2. << " "
+         << posEpoxy.z() + fEpoxyThickness/2. << endl;
+         fvEpoxyBody.push_back(bodyname);
+         fvEpoxyRegion.push_back(regionname);
+         
+         // negative side
+         bodyname = Form("itry%d",iSup+100);
+         regionname = Form("ITRY%02d",iSup+100);
+         posEpoxy.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
+                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         ss <<  "RPP " << bodyname <<  "     "
+         << posEpoxy.x() - fSupportSize.X()/2. << " "
+         << posEpoxy.x() + fSupportSize.X()/2. << " "
+         << posEpoxy.y() - fSupportSize.Y()/2. << " "
+         << posEpoxy.y() + fSupportSize.Y()/2. << " "
+         << posEpoxy.z() - fEpoxyThickness/2. << " "
+         << posEpoxy.z() + fEpoxyThickness/2. << endl;
+         fvEpoxyBody.push_back(bodyname);
+         fvEpoxyRegion.push_back(regionname);
+      }
+   }
   
-    return ss.str();
+   if(FootDebugLevel(2)) {
+      cout << "Foam " << fvFoamRegion.size() << endl;
+      for(int i=0; i<fvFoamRegion.size(); i++)
+         cout << setw(13) << setfill( ' ' ) << std::left << fvFoamRegion.at(i) <<endl;
+      
+      cout << endl;
+      cout << "Kapton " << fvKaptonRegion.size() << endl;
+      for(int i=0; i<fvKaptonRegion.size(); i++)
+         cout << setw(13) << setfill( ' ' ) << std::left << fvKaptonRegion.at(i) <<endl;
+      
+      cout << endl;
+      cout << "Al " << fvAlRegion.size() << endl;
+      for(int i=0; i<fvAlRegion.size(); i++)
+         cout << setw(13) << setfill( ' ' ) << std::left << fvAlRegion.at(i) <<endl;
+      
+      cout << endl;
+      cout << "Epoxy " << fvEpoxyRegion.size() << endl;
+      for(int i=0; i<fvEpoxyRegion.size(); i++)
+         cout << setw(13) << setfill( ' ' ) << std::left << fvEpoxyRegion.at(i) <<endl;
+   }
+         
+   return ss.str();
 }
 
 
@@ -557,6 +883,7 @@ string TAITparGeo::PrintRegions()
     	 << "5 " << fvPixBody.at(i) <<endl;
     }
 
+     // for support here ??
   }
   
   return ss.str();
@@ -579,26 +906,39 @@ string TAITparGeo::PrintSubtractBodiesFromAir()
 
   }
 
+   // something to do for support ??
+   
    return ss.str();   
 }
 
 //_____________________________________________________________________________
-string TAITparGeo::PrintAssignMaterial(TAGmaterials *Material)
+string TAITparGeo::PrintAssignMaterial(TAGmaterials *material)
 {
 
   stringstream ss;
   
   if(GlobalPar::GetPar()->IncludeInnerTracker()){
 
-    TString flkmatMod, flkmatPix;  
+    TString flkmatMod, flkmatPix;
+    TString flkmatFoam, flkmatKapton, flkmatEpoxy, flkmatAl;
+
     
-    if (Material == NULL){
+    if (material == NULL){
       TAGmaterials::Instance()->PrintMaterialFluka();
-      flkmatMod = TAGmaterials::Instance()->GetFlukaMatName(fEpiMat.Data());
-      flkmatPix = TAGmaterials::Instance()->GetFlukaMatName(fPixMat.Data());
+      flkmatMod    = TAGmaterials::Instance()->GetFlukaMatName(fEpiMat.Data());
+      flkmatPix    = TAGmaterials::Instance()->GetFlukaMatName(fPixMat.Data());
+      flkmatFoam   = TAGmaterials::Instance()->GetFlukaMatName(fFoamMat.Data());
+      flkmatKapton = TAGmaterials::Instance()->GetFlukaMatName(fKaptonMat.Data());
+      flkmatEpoxy  = TAGmaterials::Instance()->GetFlukaMatName(fEpoxyMat.Data());
+      flkmatAl     = TAGmaterials::Instance()->GetFlukaMatName(fAlMat.Data());
+
     }else{
-      flkmatMod = Material->GetFlukaMatName(fEpiMat.Data());
-      flkmatPix = Material->GetFlukaMatName(fPixMat.Data());
+      flkmatMod    = material->GetFlukaMatName(fEpiMat.Data());
+      flkmatPix    = material->GetFlukaMatName(fPixMat.Data());
+      flkmatFoam   = material->GetFlukaMatName(fFoamMat.Data());
+      flkmatKapton = material->GetFlukaMatName(fKaptonMat.Data());
+      flkmatEpoxy  = material->GetFlukaMatName(fEpoxyMat.Data());
+      flkmatAl     = material->GetFlukaMatName(fAlMat.Data());
     }
 
     bool magnetic = false;
@@ -614,6 +954,10 @@ string TAITparGeo::PrintAssignMaterial(TAGmaterials *Material)
 		    "1.", Form("%d",magnetic), "", "") << endl;
     ss << PrintCard("ASSIGNMA", flkmatPix, fvPixRegion.at(0), fvPixRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
+
+     // for support what else ??
+     if (fvFoamRegion.size()==0 || fvKaptonRegion.size()==0 || fvAlRegion.size()==0 || fvEpoxyRegion.size()==0)
+        cout << "Error: IT regions vector not correctly filled!"<<endl;
 
   }
 

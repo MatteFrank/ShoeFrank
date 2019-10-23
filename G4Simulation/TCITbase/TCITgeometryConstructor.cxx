@@ -163,32 +163,32 @@ G4LogicalVolume* TCITgeometryConstructor::BuildPlumeSupport()
     new G4PVPlacement(0, G4ThreeVector(0,0,0),foam, "foam", fSupportLog, false, count++);
 
    // first kapton layer
-   Float_t posZ = (parGeo->GetFoamThickness()/2. + parGeo->GetKaptonThickness()/2.)*cm;
+   Float_t posZ = parGeo->Get1stKaptonLayer()*cm;
    new G4PVPlacement(0, G4ThreeVector(0,0, posZ), kapton1, "kapton1",  fSupportLog, false, count++);
    new G4PVPlacement(0, G4ThreeVector(0,0,-posZ), kapton1, "kapton1-", fSupportLog, false, count++);
    
    // first layer aluminium
-   posZ += (parGeo->GetKaptonThickness()/2. + parGeo->GetAlThickness()/2.)*cm;
+   posZ = parGeo->Get1stAlLayer()*cm;
    new G4PVPlacement(0, G4ThreeVector(0,0, posZ), al, "al1",  fSupportLog, false, count++);
    new G4PVPlacement(0, G4ThreeVector(0,0,-posZ), al, "al1-", fSupportLog, false, count++);
 
    // Second kapton layer
-   posZ += (parGeo->GetAlThickness()/2. + parGeo->GetKaptonThickness())*cm;
+   posZ = parGeo->Get2ndKaptonLayer()*cm;
    new G4PVPlacement(0, G4ThreeVector(0,0, posZ), kapton2, "kapton2",  fSupportLog, false, count++);
    new G4PVPlacement(0, G4ThreeVector(0,0,-posZ), kapton2, "kapton2-", fSupportLog, false, count++);
 
    // second layer aluminium
-   posZ += (parGeo->GetKaptonThickness() +  parGeo->GetAlThickness()/2.)*cm;
+   posZ = parGeo->Get2ndAlLayer()*cm;
    new G4PVPlacement(0, G4ThreeVector(0,0, posZ), al, "al2",  fSupportLog, false, count++);
    new G4PVPlacement(0, G4ThreeVector(0,0,-posZ), al, "al2-", fSupportLog, false, count++);
 
    // Third kapton layer
-   posZ += (parGeo->GetAlThickness()/2. + parGeo->GetKaptonThickness()/2.)*cm;
+   posZ = parGeo->Get3rdKaptonLayer()*cm;
    new G4PVPlacement(0, G4ThreeVector(0,0, posZ), kapton1, "kapton3",  fSupportLog, false, count++);
    new G4PVPlacement(0, G4ThreeVector(0,0,-posZ), kapton1, "kapton3-", fSupportLog, false, count++);
 
    // layer of epoxy
-   posZ += (parGeo->GetKaptonThickness()/2. + parGeo->GetEpoxyThickness()/2.)*cm;
+   posZ = parGeo->GetEpoxyLayer()*cm;
    new G4PVPlacement(0, G4ThreeVector(0,0, posZ), epoxy, "epoxy",  fSupportLog, false, count++);
    new G4PVPlacement(0, G4ThreeVector(0,0,-posZ), epoxy, "epoxy-", fSupportLog, false, count++);
    
