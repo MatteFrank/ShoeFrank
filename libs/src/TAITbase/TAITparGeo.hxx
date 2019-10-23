@@ -55,8 +55,9 @@ protected:
    
 private:
    Float_t GetlayerPosZ(Int_t layer);
-   
-   
+   string  PrintModuleBodies();
+   string  PrintSupportBodies();
+
 public:
    TAITparGeo();
     virtual ~TAITparGeo();

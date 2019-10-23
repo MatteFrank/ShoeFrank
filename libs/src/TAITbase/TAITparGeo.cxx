@@ -528,6 +528,17 @@ string TAITparGeo::PrintRotations()
 //_____________________________________________________________________________
 string TAITparGeo::PrintBodies()
 {
+   
+   stringstream ss;
+   ss << PrintModuleBodies() << endl;
+   ss << PrintSupportBodies() << endl;
+
+   return ss.str();
+}
+
+//_____________________________________________________________________________
+string TAITparGeo::PrintModuleBodies()
+{
 
    stringstream ss;
    ss << setiosflags(ios::fixed) << setprecision(10);
@@ -601,8 +612,24 @@ string TAITparGeo::PrintBodies()
             ss << "$end_transform " << endl;
          
       }
+       if(FootDebugLevel(2))
+          cout << ss.str() << endl;
+   }
+   
+   return ss.str();
+}
+
+//_____________________________________________________________________________
+string TAITparGeo::PrintSupportBodies()
+{
+   stringstream ss;
+
+   if(GlobalPar::GetPar()->IncludeInnerTracker()){
+
+      TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
       
-      cout << ss.str() << endl;
+      TVector3  fCenter = fpFootGeo->GetITCenter();
+      TVector3  fAngle = fpFootGeo->GetITAngles();
 
       // support
       for(Int_t iSup = 0; iSup < GetSensorsN()/2; iSup+=4) {
