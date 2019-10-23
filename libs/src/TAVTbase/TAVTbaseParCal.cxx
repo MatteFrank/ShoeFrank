@@ -64,7 +64,7 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
    
    if (Open(nameExp)) return kTRUE;
    
-   Float_t* tmp = new Float_t[4];
+   Double_t* tmp = new Double_t[4];
    for (Int_t p = 0; p < fgkChargesN; p++) { // Loop on each charge
      
 	  // read parameters

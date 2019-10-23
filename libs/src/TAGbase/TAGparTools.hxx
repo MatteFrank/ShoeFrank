@@ -44,7 +44,7 @@ public:
    void    ReadItem(Int_t &arg);
    void    ReadItem(Float_t &arg);
    void    ReadItem(TArrayC& array, const Char_t delimiter = ';');
-   void    ReadItem(Float_t* coeff, Int_t size, const Char_t delimiter = ' ');
+   void    ReadItem(Double_t* coeff, Int_t size, const Char_t delimiter = ' ');
    void    ReadItem(map< pair<int, int>, int>& map, const Char_t delimiter1 = ',', const Char_t delimiter2 = ';');
    void    ReadVector3(TVector3 &arg);
    void    ReadStrings(TString& aString);
@@ -83,9 +83,9 @@ public:
    //! Get matrix tranformation for volume placing
    TGeoCombiTrans* GetCombiTransfo(Int_t idx);
 
-  
-   string PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
-		   TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM);
+  //! Print card for Fluka
+   string          PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
+                             TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM);
 
    ClassDef(TAGparTools,2)
 };
