@@ -43,7 +43,7 @@ void TACAactNtuMC::CreateHistogram()
    
    TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
 
-   Float_t height = parGeo->GetCrystalBotBase();
+   Float_t height = parGeo->GetCrystalHeightFront();
    
    fpHisHitMap = new TH2F("caHitMap", "Calorimeter - hits", 22, -height/2., height/2.,
                                                             22, -height/2., height/2.);
@@ -92,7 +92,7 @@ Bool_t TACAactNtuMC::Action()
 
    for (Int_t i = 0; i < fpEvtStr->CALn; i++) {
       
-      Int_t id      = fpEvtStr->CALicry[i];
+      Int_t iCrys   = fpEvtStr->CALicry[i];
       Int_t trackId = fpEvtStr->CALid[i] - 1;
       Float_t x0    = fpEvtStr->CALxin[i];
       Float_t y0    = fpEvtStr->CALyin[i];
@@ -101,15 +101,12 @@ Bool_t TACAactNtuMC::Action()
       Float_t edep  = fpEvtStr->CALde[i]*TAGgeoTrafo::GevToMev();
       Float_t time  = fpEvtStr->CALtim[i]*TAGgeoTrafo::SecToNs();
       
-      Int_t iCrys  = TACAparGeo::GetCrystalId(id);
-      Int_t iMod   = TACAparGeo::GetModuleId(id);
-
       TVector3 posIn(x0, y0, z0);
       posIn = geoTrafo->FromGlobalToCALocal(posIn);
-      TVector3 posInLoc =  parGeo->Detector2Crystal(iCrys, iMod, posIn);
+      TVector3 posInLoc =  parGeo->Detector2Crystal(iCrys, posIn);
 
       // don't use z for the moment
-      fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, id);
+      fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, iCrys);
       TACAntuHit* hit = fDigitizer->GetCurrentHit();
       hit->AddMcTrackId(trackId, i);
       hit->SetPosition(posInLoc);

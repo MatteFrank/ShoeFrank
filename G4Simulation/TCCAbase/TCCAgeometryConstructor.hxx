@@ -33,9 +33,8 @@ public:
    
 private:
    G4LogicalVolume* fBoxLog;
-   G4LogicalVolume* fCalLog;
    G4LogicalVolume* fSupLog;
-   G4LogicalVolume* fModLog;
+   G4LogicalVolume* fCrysLog;
    TACAparGeo*      fpParGeo;
    TVector3         fSizeBoxCal;
    TVector3         fMinPosition;
