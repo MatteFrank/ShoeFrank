@@ -104,7 +104,7 @@ G4LogicalVolume* TCCAgeometryConstructor::Construct()
    if ( fpParGeo->GetConfigTypeGeo().CompareTo("ONE_CRY") == 0 )
       crystalsN = 1;
    else if ( fpParGeo->GetConfigTypeGeo().CompareTo("ONE_MOD") == 0)
-      crystalsN = 9;
+      crystalsN = fpParGeo->GetCrystalsNperModule();
    else if ( fpParGeo->GetConfigTypeGeo().CompareTo("CENTRAL_DET") == 0)
       crystalsN = fpParGeo->GetCrystalsN()/2;
    else if ( fpParGeo->GetConfigTypeGeo().CompareTo("FULL_DET") == 0)
