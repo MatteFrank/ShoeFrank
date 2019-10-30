@@ -53,6 +53,7 @@ TACAparGeo::~TACAparGeo()
 Bool_t TACAparGeo::FromFile(const TString& name)
 { 
    // Read config map created with macro BuildCaGeoFile.C
+   cout << setiosflags(ios::fixed) << setprecision(5);
 
    TString nameExp;
 
@@ -89,13 +90,13 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    ReadVector3(crystalFront);
    if (fDebugLevel) 
       cout << "   Crystal front size: "
-           << Form("%f %f %f", crystalFront[0], crystalFront[1], crystalFront[2]) << endl;
+           <<  crystalFront[0]  << " " <<  crystalFront[1] << " " << crystalFront[2] << endl;
 
    TVector3 crystalBack;
    ReadVector3(crystalBack);
    if (fDebugLevel) 
       cout << "   Crystal back size: "
-           << Form("%f %f %f", crystalBack[0], crystalBack[1], crystalBack[2]) << endl;
+           << crystalBack[0] << " " << crystalBack[1] << " " << crystalBack[2] << endl;
 
    fCrystalSize[0] = crystalFront[0];
    fCrystalSize[1] = crystalBack[0];
@@ -120,12 +121,12 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    ReadVector3(supportFront);
    if (fDebugLevel) 
       cout << "   Support front size: "
-           << Form("%f %f %f", supportFront[0], supportFront[1], supportFront[2]) << endl;
+           << supportFront[0] << " " << supportFront[1] << " " << supportFront[2] << endl;
    TVector3 supportBack;
    ReadVector3(supportBack);
    if (fDebugLevel) 
       cout << "   Support back size: "
-           << Form("%f %f %f", supportBack[0], supportBack[1], supportBack[2]) << endl;
+           << supportBack[0] << " " << supportBack[1] << " " << supportBack[2] << endl;
    fSupportSize[0] = supportFront[0];
    fSupportSize[1] = supportBack[0];
    fSupportSize[2] = supportFront[1];
@@ -145,12 +146,12 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    ReadVector3(airModflukaFront);
    if (fDebugLevel) 
       cout << "   AIR region around module front size: "
-           << Form("%f %f %f", airModflukaFront[0], airModflukaFront[1], airModflukaFront[2]) << endl;
+           << airModflukaFront[0] << " " << airModflukaFront[1] << " " << airModflukaFront[2] << endl;
    TVector3 airModflukaBack;
    ReadVector3(airModflukaBack);
    if (fDebugLevel) 
       cout << "   AIR region around module back size: "
-           << Form("%f %f %f", airModflukaBack[0], airModflukaBack[1], airModflukaBack[2]) << endl;
+           << airModflukaBack[0] << " " << airModflukaBack[1] << " " << airModflukaBack[2] << endl;
    fModAirFlukaSize[0] = airModflukaFront[0];
    fModAirFlukaSize[1] = airModflukaBack[0];
    fModAirFlukaSize[2] = airModflukaFront[1];
@@ -165,7 +166,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    ReadVector3(fCaloSize);
    if(fDebugLevel)
       cout << "   Calorimeter size: "
-      << Form("%f %f %f", fCaloSize[0], fCaloSize[1], fCaloSize[2]) << endl;
+      << fCaloSize[0] << " " << fCaloSize[1] << " " << fCaloSize[2] << endl;
    ReadItem(fCaloBoxPositionZ);
    if (fDebugLevel)
       cout  << "   AIR region around detector PositionZ : " <<  fCaloBoxPositionZ << endl;
@@ -197,11 +198,11 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       ReadVector3(position);
       if(fDebugLevel)
          cout << "   Position: "
-         << Form("%f %f %f", position[0], position[1], position[2]) << endl;
+         << position[0] << " " << position[1] << " " << position[2] << endl;
       
       ReadVector3(tilt);
       if(fDebugLevel)
-         cout  << "   tilt: " << Form("%f %f %f", tilt[0], tilt[1], tilt[2]) << endl;
+         cout  << "   tilt: " << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
 
       fListOfCrysAng[idCry] = tilt;
 
