@@ -239,8 +239,8 @@ bool TAVTactNtuMC::Action() {
 // ************  fDigitizer  ****************************************************************************************
 
 		// gives all empty
-		// if (!fDigitizer->Process(fpEvtStr->VTXde[i], fpEvtStr->VTXpxin[i], fpEvtStr->VTXpyin[i], fpEvtStr->VTXzin[i], fpEvtStr->VTXpxout[i])) continue;     // when false?
-		// FillPixels( pixel, sensorId, i );
+		if (!fDigitizer->Process(fpEvtStr->VTXde[i], fpEvtStr->VTXpxin[i], fpEvtStr->VTXpyin[i], fpEvtStr->VTXzin[i], fpEvtStr->VTXpxout[i])) continue;     // when false?
+		FillPixels( pixel, sensorId, i );
 		
 // ****************************************************************************************************
 

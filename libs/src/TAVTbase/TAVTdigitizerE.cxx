@@ -64,8 +64,16 @@ Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    fDistance.clear();
    std::pair<int, float> pairDistance;
    
-   if (TMath::Abs(x0) > fPitchX*fPixelsNx/2.) return false;
-   if (TMath::Abs(y0) > fPitchY*fPixelsNy/2.) return false;
+   if (TMath::Abs(x0) > fPitchX*fPixelsNx/2.) {
+      // if ( GlobalPar::GetPar()->Debug() > 0 )   
+         cout << "WARNING :: TAVTdigitizerE::MakeCluster  -->  TMath::Abs(x0) > fPitchX*fPixelsNx/2 is false. x0 = " << TMath::Abs(x0) << " fPitchX "<<fPitchX<<" fPixelsNx "<<fPixelsNx<< endl;
+      return false;
+   }
+   if (TMath::Abs(y0) > fPitchY*fPixelsNy/2.) { 
+      // if ( GlobalPar::GetPar()->Debug() > 0 )   
+         cout << "WARNING :: TAVTdigitizerE::MakeCluster  -->  TMath::Abs(y0) > fPitchY*fPixelsNy/2 is false. y0 = "  << TMath::Abs(y0) << " fPitchY "<<fPitchY<<" fPixelsNy "<<fPixelsNy<< endl;
+      return false;
+   }
    
    Int_t line0 = GetLine(y0);
    Int_t col0  = GetColumn(x0);
@@ -73,12 +81,16 @@ Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    if (fDebugLevel)
       printf("%d %d %d\n", fPixelsN, line0, col0);
    
+   // why this? WE already have fPitchX fPitchY...
    Float_t pitchX  = GetPitchX();
    Float_t pitchY  = GetPitchY();
    
    // choose the cluster version
-   if (!SetRegion(x0, y0))
+   if (!SetRegion(x0, y0)) {
+      cout << "WARNING :: TAVTdigitizerE::MakeCluster  -->  SetRegion false" << endl;
       return false;
+   }
+      
    
    // define radii
    Int_t rpixels      = fPixelsN;

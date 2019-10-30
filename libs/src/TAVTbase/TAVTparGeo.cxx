@@ -127,10 +127,7 @@ void TAVTparGeo::InitGeo()  {
 //---------------------------------------------------------------------
     if ( GlobalPar::GetPar()->Debug() > 0 ) cout << " Init SENSOR geometry " << endl;
 
-    double pixelDistance = 0;
-
-    double pixelWidth_Lx = VTX_DX;
-    double pixelHeight_Ly = VTX_DY;    
+    double pixelDistance = 0;  
 
     // evaluate sensor dimension 
     // double sensor_Width_Lx = VTX_SENSE_WIDTH;
@@ -142,6 +139,8 @@ void TAVTparGeo::InitGeo()  {
     // pixels per sensors
     m_nPixel_X = VTX_XPIX;
     m_nPixel_Y = VTX_YPIX;
+    m_pitchX = VTX_DX;
+    m_pitchY = VTX_DY;  
 
 
     // fill sensor matrix
@@ -168,7 +167,7 @@ void TAVTparGeo::InitGeo()  {
                         TVector3( sensor_newX, sensor_newY, sensor_newZ ),  // sensor center
                         TVector3( sensorDimension.x(), sensorDimension.y(), sensorDimension.z() ),    // sensor dimension
                         m_nPixel_X, m_nPixel_Y,
-                        pixelWidth_Lx, pixelHeight_Ly, m_siliconSensorThick_Lz,
+                        m_pitchX, m_pitchY, m_siliconSensorThick_Lz,
                         pixelDistance, pixelDistance, 0, //layerDistance,
                         TVector3(0,0,0)
                  );
@@ -420,12 +419,12 @@ float TAVTparGeo::GetRowCenter_footFrame( int layer, int row )    { return GetPi
 
 //_____________________________________________________________________________
 Float_t TAVTparGeo::GetPositionU(Int_t column) const {      // GetColumnCenter_sensorFrame
-   return ((2*column - m_nPixel_X + 1 ) * m_Pitch_X)/2 ;
+   return ((2*column - m_pitchX + 1 ) * m_pitchX)/2 ;
  }
 
 //_____________________________________________________________________________
 Float_t TAVTparGeo::GetPositionV(Int_t line) const{         //TAVTparGeo::GetRowCenter_sensorFrame(
-   return -((2*line - m_nPixel_Y + 1 ) * m_Pitch_Y)/2 ;   
+   return -((2*line - m_pitchY + 1 ) * m_pitchY)/2 ;   
 }
 
 

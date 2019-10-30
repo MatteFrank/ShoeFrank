@@ -141,8 +141,8 @@ public:
     int GetLayerFromSensorID( int sensID )            { return sensID; };
 
     // pixel dimension
-    double GetPitchX()  { return m_Pitch_X; };
-    double GetPitchY()  { return m_Pitch_Y; };
+    double GetPitchX()  { return m_pitchX; };
+    double GetPitchY()  { return m_pitchY; };
     
     // function for the FRUKA geometry creation
     string PrintBodies();
@@ -193,15 +193,13 @@ private:
     double m_layerDistance_samePair;
     double m_layerDistance_interPair;
 
-    int m_nPixel_X;
-    int m_nPixel_Y;
-
     int m_debug;
     int m_setW_0number;
 
-
-    double m_Pitch_X;
-    double m_Pitch_Y;
+    int m_nPixel_X;
+    int m_nPixel_Y;
+    double m_pitchX;
+    double m_pitchY;
 
     double m_xmin, m_ymin;
 

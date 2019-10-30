@@ -58,8 +58,9 @@ TAVTbaseDigitizer::~TAVTbaseDigitizer()
 //! fill pixel signal
 Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin, Double_t zout)
 {
-   x0 *= fgkCm2Mu;
-   y0 *= fgkCm2Mu;
+   // leave everything in cm
+   // x0 *= fgkCm2Mu;
+   // y0 *= fgkCm2Mu;
    
    Double_t deltaE = edep*fgkGeV2keV;
    Double_t  smear = 0;
