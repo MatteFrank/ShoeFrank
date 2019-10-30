@@ -79,6 +79,8 @@ void TAVTbaseParGeo::DefineMaterial()
 //______________________________________________________________________________
 Bool_t TAVTbaseParGeo::FromFile(const TString& name)
 {
+   cout << setiosflags(ios::fixed) << setprecision(5);
+
    // simple file reading, waiting for real config file
    TString nameExp;
    
@@ -195,14 +197,13 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
          fSensorParameter[p].Position[0] = fSensorParameter[p].Position[1] = 0.;
    
       if(FootDebugLevel(1))
-         cout << "   Position: "
-         << Form("%f %f %f", fSensorParameter[p].Position[0], fSensorParameter[p].Position[1], fSensorParameter[p].Position[2]) << endl;
+         cout << "   Position: " << fSensorParameter[p].Position[0] << " " << fSensorParameter[p].Position[1] << " " << fSensorParameter[p].Position[2] << endl;
       
       // read sensor angles
       ReadVector3(fSensorParameter[p].Tilt);
       if(FootDebugLevel(1))
          cout  << "   Tilt: "
-		       << Form("%f %f %f", fSensorParameter[p].Tilt[0], fSensorParameter[p].Tilt[1], fSensorParameter[p].Tilt[2]) << endl;
+		       << fSensorParameter[p].Tilt[0] << " " <<  fSensorParameter[p].Tilt[1] << " " << fSensorParameter[p].Tilt[2] << endl;
       
       // read alignment
       ReadItem(fSensorParameter[p].AlignmentU);
