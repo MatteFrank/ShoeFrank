@@ -246,7 +246,7 @@ void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
    TAMCntuEve* pNtuHit = fReco->GetNtuMcEve();
    TAMCeveTrack* track = pNtuHit->GetHit(trackId);
    
-   fInfoView->AddLine( Form("Generated from track with index %d\n", trackId) );
+   fInfoView->AddLine( Form("Generated from track with index: %d\n", trackId) );
    fInfoView->AddLine( Form("Charge: %d Mass: %.3g GeV/c2\n", track->GetCharge(), track->GetMass()) );
 }
 
