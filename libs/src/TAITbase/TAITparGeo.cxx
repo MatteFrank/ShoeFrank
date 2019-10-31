@@ -779,7 +779,7 @@ string TAITparGeo::PrintSupportBodies()
          regionname = Form("ITRA%02d",iSup+102);
          posAl.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
                       fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                      fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - fFoamThickness/2. - posZ);
+                      fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posAl.x() - fSupportSize.X()/2. << " "
          << posAl.x() + fSupportSize.X()/2. << " "
@@ -796,7 +796,7 @@ string TAITparGeo::PrintSupportBodies()
          regionname = Form("ITRK%02d",iSup+3);
          posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
                           fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + fFoamThickness/2. + posZ);
+                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posKapton.x() - fSupportSize.X()/2. << " "
          << posKapton.x() + fSupportSize.X()/2. << " "
