@@ -70,10 +70,10 @@ TCFOeventoAction::~TCFOeventoAction()
 void TCFOeventoAction::EndOfEventAction(const G4Event* evt)
 {
     // digitize evt
+    FillTrack();
     Collect(evt);
 
     //At the end of each EVENT
-    FillTrack();
     FillAndClear();
 }
 
@@ -191,6 +191,7 @@ void TCFOeventoAction::FillTrack()
 
     Int_t nTracks = fMcTrack->GetHitsN();
 
+    fMapTrackIdx.clear();
     TVector3 initpos ;
     TVector3 initmom ;
     TVector3 finalpos ;
@@ -223,7 +224,7 @@ void TCFOeventoAction::FillTrack()
         finalmom = fMcTrack->GetHit(i)->GetFinalP();
         dead = fMcTrack->GetHit(i)->GetDead() ;
         region = fMcTrack->GetHit(i)->GetRegion() ;
-        fMapTrackIdx[trackID] = i;
+        fMapTrackIdx[trackID] = i+1; // to be compliant with Fluka
 
        hit->AddPart(parentID,trackID,charge,region,nbaryon,dead,flukaID,
                      initpos.X(),initpos.Y(),initpos.Z(),
@@ -243,10 +244,10 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
    G4ThreeVector pou = mcHit->GetMomOut()*TAGgeoTrafo::MmToCm();
 
    Int_t    sensorId = mcHit->GetSensorId();
-   Int_t    trackId  = mcHit->GetTrackId();
+   Int_t    al       = mcHit->GetTrackId();
    Double_t edep     = mcHit->GetEdep()*TAGgeoTrafo::MevToGev(); 
    Double_t time     = mcHit->GetGlobalTime()*TAGgeoTrafo::NsToSec();
-   Double_t al       = fMapTrackIdx[trackId];// using al for track index
+   Int_t trackId     = fMapTrackIdx[al];// storing the index, to be compliant with Fluka
 
    hit->SetEvent(fEventNumber);
 
