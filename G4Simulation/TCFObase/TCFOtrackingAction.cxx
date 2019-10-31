@@ -57,7 +57,7 @@ void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack){
     Int_t flukaID = fgkGeantToFlukaID[partName] ;
     Int_t trackID = aTrack->GetTrackID() ;
     Int_t parentID = aTrack->GetParentID() ;
-    Int_t charge = aTrack->GetDefinition()->GetAtomicNumber() ;
+    Int_t charge = (int)aTrack->GetDefinition()->GetPDGCharge() ;
     Int_t baryon = aTrack->GetDefinition()->GetBaryonNumber() ;
     Int_t deadId = fgkVolumeToRegion[detName] ;
     Int_t regId = fgkVolumeToRegion[regName] ;
