@@ -779,7 +779,7 @@ string TAITparGeo::PrintSupportBodies()
          regionname = Form("ITRA%02d",iSup+102);
          posAl.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
                       fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                      fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - fFoamThickness/2. - posZ);
+                      fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posAl.x() - fSupportSize.X()/2. << " "
          << posAl.x() + fSupportSize.X()/2. << " "
@@ -796,7 +796,7 @@ string TAITparGeo::PrintSupportBodies()
          regionname = Form("ITRK%02d",iSup+3);
          posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
                           fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + fFoamThickness/2. + posZ);
+                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posKapton.x() - fSupportSize.X()/2. << " "
          << posKapton.x() + fSupportSize.X()/2. << " "
@@ -912,6 +912,26 @@ string TAITparGeo::PrintRegions()
     }
 
      // for support here ??
+    for(int i=0; i<fvFoamRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvFoamRegion.at(i)
+    	 << "5 " << fvFoamBody.at(i) <<endl;
+    }
+
+    for(int i=0; i<fvKaptonRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvKaptonRegion.at(i)
+    	 << "5 " << fvKaptonBody.at(i) <<endl;
+    }
+
+    for(int i=0; i<fvAlRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvAlRegion.at(i)
+    	 << "5 " << fvAlBody.at(i) <<endl;
+    }
+
+    for(int i=0; i<fvEpoxyRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvEpoxyRegion.at(i)
+    	 << "5 " << fvEpoxyBody.at(i) <<endl;
+    }
+    
   }
   
   return ss.str();
@@ -932,9 +952,33 @@ string TAITparGeo::PrintSubtractBodiesFromAir()
     }
     ss << endl;
 
-  }
-
    // something to do for support ??
+    
+    for(int i=0; i<fvFoamBody.size(); i++) {
+      ss << " -" << fvFoamBody.at(i);
+      if ((i+1)%10==0) ss << endl;
+    }
+    ss << endl;
+
+    for(int i=0; i<fvKaptonBody.size(); i++) {
+      ss << " -" << fvKaptonBody.at(i);
+      if ((i+1)%10==0) ss << endl;
+    }
+    ss << endl;
+    
+    for(int i=0; i<fvAlBody.size(); i++) {
+      ss << " -" << fvAlBody.at(i);
+      if ((i+1)%10==0) ss << endl;
+    }
+    ss << endl;
+
+    for(int i=0; i<fvEpoxyBody.size(); i++) {
+      ss << " -" << fvEpoxyBody.at(i);
+      if ((i+1)%10==0) ss << endl;
+    }
+    ss << endl;
+
+  }
    
    return ss.str();   
 }
