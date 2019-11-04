@@ -65,7 +65,7 @@ void TASTparGeo::DefineMaterial()
 //______________________________________________________________________________
 Bool_t TASTparGeo::FromFile(const TString& name)
 {
-   cout << setiosflags(ios::fixed) << setprecision(5);
+   cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
    TString nameExp;
    
@@ -172,6 +172,7 @@ string TASTparGeo::PrintRotations()
 string TASTparGeo::PrintBodies( ) {
   
   stringstream outstr;
+  outstr << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
   if(GlobalPar::GetPar()->IncludeST()){
     outstr << "* ***Start Counter" << endl;

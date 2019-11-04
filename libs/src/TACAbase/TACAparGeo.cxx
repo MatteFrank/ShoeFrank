@@ -53,7 +53,7 @@ TACAparGeo::~TACAparGeo()
 Bool_t TACAparGeo::FromFile(const TString& name)
 { 
    // Read config map created with macro BuildCaGeoFile.C
-   cout << setiosflags(ios::fixed) << setprecision(5);
+   cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
    TString nameExp;
 
@@ -465,6 +465,7 @@ string TACAparGeo::PrintBodies()
 {
 
    stringstream outstr;  
+   outstr << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
    if ( !GlobalPar::GetPar()->IncludeCA())
       return outstr.str();

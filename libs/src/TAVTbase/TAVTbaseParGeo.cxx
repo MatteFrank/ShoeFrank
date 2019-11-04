@@ -79,7 +79,7 @@ void TAVTbaseParGeo::DefineMaterial()
 //______________________________________________________________________________
 Bool_t TAVTbaseParGeo::FromFile(const TString& name)
 {
-   cout << setiosflags(ios::fixed) << setprecision(5);
+   cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
    // simple file reading, waiting for real config file
    TString nameExp;

@@ -82,7 +82,7 @@ TABMparGeo::~TABMparGeo()
 //_____________________________________________________________________________
 Bool_t TABMparGeo::FromFile(const TString& name)
 {
-   cout << setiosflags(ios::fixed) << setprecision(5);
+   cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
    TString nameExp;
    
@@ -665,7 +665,8 @@ void TABMparGeo::SetLayerColorOff(Int_t idx)
 string TABMparGeo::PrintBodies(){
     
   stringstream ss;
-    
+  ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
+
   if(GlobalPar::GetPar()->IncludeBM()){
     
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());

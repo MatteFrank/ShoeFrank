@@ -48,7 +48,7 @@ TATWparGeo::~TATWparGeo()
 //______________________________________________________________________________
 Bool_t TATWparGeo::FromFile(const TString& name)
 {
-   cout << setiosflags(ios::fixed) << setprecision(5);
+   cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
    TString nameExp;
    
@@ -510,6 +510,7 @@ string TATWparGeo::PrintBodies()
 {
   
   stringstream ss;
+  ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
   if(GlobalPar::GetPar()->IncludeTW()){
 
