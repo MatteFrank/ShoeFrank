@@ -87,11 +87,11 @@ public:
    string          PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
                              TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM);
 public:
-   static Int_t GetPrecsionLevel()            { return fgPrecesionLevel;  }
-   static void  GetPrecsionLevel(Int_t level) { fgPrecesionLevel = level; }
+   static Int_t GetPrecisionLevel()            { return fgPrecisionLevel;  }
+   static void  GetPrecisionLevel(Int_t level) { fgPrecisionLevel = level; }
 
-private:
-   static Int_t fgPrecesionLevel;
+protected:
+   static Int_t fgPrecisionLevel;
 
    ClassDef(TAGparTools,2)
 };

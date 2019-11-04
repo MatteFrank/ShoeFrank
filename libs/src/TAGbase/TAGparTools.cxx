@@ -19,7 +19,7 @@
 
 ClassImp(TAGparTools);
 
-Int_t TAGparTools::fgPrecesionLevel = 6;
+Int_t TAGparTools::fgPrecisionLevel = 6;
 
 //______________________________________________________________________________
 TAGparTools::TAGparTools()
