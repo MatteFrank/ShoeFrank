@@ -88,7 +88,7 @@ public:
                              TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM);
 public:
    static Int_t GetPrecisionLevel()            { return fgPrecisionLevel;  }
-   static void  GetPrecisionLevel(Int_t level) { fgPrecisionLevel = level; }
+   static void  SetPrecisionLevel(Int_t level) { fgPrecisionLevel = level; }
 
 protected:
    static Int_t fgPrecisionLevel;
