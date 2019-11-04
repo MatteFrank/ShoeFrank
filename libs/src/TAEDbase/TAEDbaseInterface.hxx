@@ -175,7 +175,7 @@ public:
 
 protected:
    TString            fExpName;
-	Float_t            fWorldSizeZ;
+   Float_t            fWorldSizeZ;
    Float_t            fWorldSizeXY;
    TGeoMedium*        fWorldMedium;
    

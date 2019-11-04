@@ -30,9 +30,9 @@ FootField::FootField ( string fileName , TADIparGeo* diGeo) {
   if (fileName == "")
     fullFileName = m_diGeo->GetMapName().Data();
   else
-    fullFileName = "./data/" + fileName;
+    fullFileName = "../fullrec/" + fileName;
   
-  cout<<" Going to open "<<fullFileName.data()<<endl;
+  cout << " Going to open " << fullFileName.data()<<endl;
   
   ifile.open( fullFileName.c_str() );
   
@@ -88,11 +88,18 @@ FootField::FootField ( string fileName , TADIparGeo* diGeo) {
     
     }  
   ifile.close();
-  
+
+  if ( GlobalPar::GetPar()->Debug() > 0 ){
+    std::cout << "FootField::FootField: exiting" << std::endl;
+}
 }
 
 
 // constant simple field constructor, Field along y axis ONLY in the magnet reagion taken from the foot_geo.h file
+
+
+
+
 FootField::FootField ( float constValue, TADIparGeo* diGeo)
 {
   TADIparGeo* m_diGeo;

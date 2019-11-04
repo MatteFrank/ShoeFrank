@@ -22,13 +22,16 @@
 //Magnet Info
 
 //Beam Monitor
+
+#include "TAGparGeo.hxx"
 #include "TABMparGeo.hxx"
+#include "TABMparMap.hxx"
 #include "TABMparCon.hxx"
+#include "TABMdatRaw.hxx"
 #include "TABMntuRaw.hxx"
-#include "TABMntuTrack.hxx"
+
 #include "TABMactNtuMC.hxx"
 #include "TABMactNtuTrack.hxx"
-#include "TABMvieTrackFOOT.hxx"
 
 //Vertex
 #include "TAVTparMap.hxx"
@@ -112,16 +115,16 @@ void Booter::Initialize( EVENT_STRUCT* evStr ) {
     gStyle->SetStatW(0.2);                  // Set width of stat-box (fraction of pad size)
     gStyle->SetStatH(0.1);                  // Set height of stat-box (fraction of pad size)
 
-	//Initializing the Geometry class that handles the
+    //Initializing the Geometry class that handles the
     //detector positioning and global to local transformations
     fGeoTrafo = new TAGgeoTrafo();
-    fDipole = new TADIparGeo();
+    TADIparGeo* fDipole = new TADIparGeo();
     fDipole->FromFile();
 
     TString filename = m_wd + "/geomap/FOOT_geo.map";   // obsolete, to be removed carefully
     //fGeoTrafo->InitGeo(filename.Data()); // avoid to load an unexisting file !
 
-	cout << "Make Geo" << endl;
+    cout << "Make Geo" << endl;
     TGeoManager *masterGeo = new TGeoManager("genfitGeom", "GENFIT geometry");
     
     Materials* listMaterials = new Materials() ;
@@ -138,11 +141,11 @@ void Booter::Initialize( EVENT_STRUCT* evStr ) {
     // genfit::FieldManager::getInstance()->init(new genfit::ConstField(0. ,10., 0.)); // 1 T
     // genfit::FieldManager::getInstance()->init(new genfit::ConstField(0. ,0., 0.)); // no mag
     // genfit::FieldManager::getInstance()->init( new FootField( 7 ) ); // const field
-    genfit::FieldManager::getInstance()->init( new FootField(magFieldMapName.Data()) ); // variable field
+    genfit::FieldManager::getInstance()->init( new FootField(magFieldMapName.Data(), fDipole) ); // variable field
 
     // include the nucleon into the genfit pdg repository
     if ( GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeKalman() )
-        UpdatePDG::Instance();
+      UpdatePDG::Instance();
 
     // Setting up the detectors that we want to decode.    
     // Initialization of detectors parameters, geometry and materials   
@@ -487,9 +490,6 @@ void Booter::FillMCEvent(EVENT_STRUCT *myStr) {
 }
 
 
-
-
-
 //----------------------------------------------------------------------------------------------------
 void Booter::FillMCInteractionRegion(EVENT_STRUCT *myStr) {
 
@@ -509,37 +509,26 @@ void Booter::FillMCInteractionRegion(EVENT_STRUCT *myStr) {
 
 
 
-
 //----------------------------------------------------------------------------------------------------
 void Booter::FillMCBeamMonitor(EVENT_STRUCT *myStr) {
 
-  /*Ntupling the MC Beam Monitor information*/
-  myn_bmraw    = new TAGdataDsc("myn_bmraw", new TABMntuRaw());
-  myp_bmcon  = new TAGparaDsc("myp_bmcon", new TABMparCon());
-
-  initBMCon(myp_bmcon);
-
-  myp_bmgeo  = new TAGparaDsc("p_bmgeo", new TABMparGeo());
-
-  initBMGeo(myp_bmgeo);
-
-  // ?? @ Yun, serve ??
-  new TABMactNtuMC("an_bmraw", myn_bmraw, myp_bmcon, myp_bmgeo, myStr);
-
-  // my_out->SetupElementBranch(myn_bmraw,     "bmrh.");
-
-  myn_bmtrk    = new TAGdataDsc("myn_bmtrk", new TABMntuTrack());
-
-  new TABMactNtuTrack("an_bmtrk", myn_bmtrk, myn_bmraw, myp_bmgeo, myp_bmcon);
-
-  // my_out->SetupElementBranch(myn_bmtrk,     "bmtrk.");
-
+  TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
+  TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
+  TString  parFileName = "./geomaps/TABMdetector.map";  
+  geomap->FromFile(parFileName.Data());
+  
+  TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
+  TABMparCon* parConf = (TABMparCon*)bmConf->Object();
+  parFileName = "./config/TABMdetector.cfg";
+  parConf->FromFile(parFileName.Data());
+  
+  TAGdataDsc* bmRaw    = new TAGdataDsc("bmRaw", new TABMntuRaw());
+  TABMactNtuMC* bmActRaw  = new TABMactNtuMC("bmActRaw", bmRaw, bmConf, bmGeo, myStr);
+     
+  TAGdataDsc* bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
+  TABMactNtuTrack* bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmRaw, bmGeo, bmConf);
+    
 }
-
-
-
-
-
 
 
 
@@ -548,7 +537,7 @@ void Booter::FillMCBeamMonitor(EVENT_STRUCT *myStr) {
 //----------------------------------------------------------------------------------------------------
 void Booter::FillMCVertex(EVENT_STRUCT *myStr) {
 
-    myp_vtgeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());  // put fist!!!!!!!
+    myp_vtgeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());  // put first!!!!!!!
     ((TAVTparGeo*) myp_vtgeo->Object())->FromFile();
   //  top->AddNode( ((TAVTparGeo*) myp_vtgeo->Object())->GetVolume(), 0, new TGeoCombiTrans( 0,0,0,new TGeoRotation("Vertex",0,0,0)) );
     
