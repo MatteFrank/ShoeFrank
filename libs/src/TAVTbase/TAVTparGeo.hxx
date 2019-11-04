@@ -35,11 +35,14 @@ public:
    // Define materials
    virtual void  DefineMaterial();
 
-   //! Add CMOS module geometry to world
+   //! Add CMOS module geometry to vertex
    TGeoVolume* AddModule(const char* basemoduleName = "Module", const char *name = "Vertex");
+      
+   //! Add CMOS module geometry to vertex
+   TGeoVolume* BuildBoard(const char* basemoduleName = "M28Board", const char *name = "M28Epi");
    
    //! Build Vertex
-   TGeoVolume* BuildVertex( const char *name = "Vertex", const char* basemoduleName = "M28");
+   TGeoVolume* BuildVertex( const char *name = "Vertex", const char* basemoduleName = "M28", Bool_t board = false);
    
    // to print fluka files
    virtual string PrintParameters();
@@ -50,8 +53,12 @@ public:
    virtual string PrintSubtractBodiesFromAir();
    
 protected:
-   vector<string> vEpiBody, vModBody, vPixBody;
-   vector<string> vEpiRegion, vModRegion, vPixRegion;
+   vector<string> fvEpiBody;   //!
+   vector<string> fvModBody;   //!
+   vector<string> fvPixBody;   //!
+   vector<string> fvEpiRegion; //!
+   vector<string> fvModRegion; //!
+   vector<string> fvPixRegion; //!
 
 public:
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }

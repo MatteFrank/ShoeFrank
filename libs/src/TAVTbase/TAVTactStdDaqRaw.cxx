@@ -27,7 +27,7 @@ TAVTactStdDaqRaw::TAVTactStdDaqRaw(const char* name, TAGdataDsc* pNtuRaw, TAGpar
 : TAVTactBaseNtuRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
    TAVTparGeo*  pGeoPar = (TAVTparGeo*)  fpGeoMap->Object();
-   Int_t size = ((sizeof(MI26_FrameRaw)/4)*3 + 3)*pGeoPar->GetNSensors(); // 3 frame per event and 3 header word for each sensor
+   Int_t size = ((sizeof(MI26_FrameRaw)/4)*3 + 3)*pGeoPar->GetSensorsN(); // 3 frame per event and 3 header word for each sensor
    fData.reserve(size);
 }
 

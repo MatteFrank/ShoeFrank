@@ -633,7 +633,7 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
       fVtxClusDisplay->AddHit(-1, 0, 0, 0);
    
    
-   Int_t nPlanes = parGeo->GetNSensors();
+   Int_t nPlanes = parGeo->GetSensorsN();
    
    TAVTntuTrack*  pNtuTrack = 0x0;
    
@@ -735,7 +735,7 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
    if (prefix == "vt") {
       
       TAVTparGeo*  parGeo   = fReco->GetParGeoVtx();
-      Int_t nPlanes         = parGeo->GetNSensors();
+      Int_t nPlanes         = parGeo->GetSensorsN();
       Float_t posfirstPlane = parGeo->GetSensorPosition(0)[2]*1.1;
       Float_t posLastPlane  = parGeo->GetSensorPosition(nPlanes-1)[2]*1.1;
       
@@ -915,9 +915,8 @@ void TAFOeventDisplay::UpdateCrystalElements()
    if ( fRefreshButton->IsOn()) {
       map<int, int >::iterator it;
       for (it = fFiredCaCrystal.begin(); it != fFiredCaCrystal.end(); it++) {
-         Int_t idx  = TACAparGeo::GetCrystalId(it->first);
-         Int_t iMod = TACAparGeo::GetModuleId(it->first);
-         parGeo->SetCrystalColorOff(idx, iMod);
+         Int_t idx  = it->first;
+         parGeo->SetCrystalColorOff(idx);
       }
    }
    
@@ -931,12 +930,10 @@ void TAFOeventDisplay::UpdateCrystalElements()
    for (Int_t iHit = 0; iHit < nHits; ++iHit) {
       
       TACAntuHit *hit = pNtuHit->GetHit(iHit);
-      
       Int_t idx = hit->GetCrystalId();
-      Int_t iMod = hit->GetModuleId();
 
-      fFiredCaCrystal[idx + iMod*TACAparGeo::GetCrystalsNperModule()] = 1;
-      parGeo->SetCrystalColorOn(idx, iMod);
+      fFiredCaCrystal[idx] = 1;
+      parGeo->SetCrystalColorOn(idx);
       
    } //end loop on hits
    

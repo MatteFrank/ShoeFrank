@@ -33,7 +33,7 @@ TAVTactStdRaw::TAVTactStdRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* 
 
    fBaseName ="data_FPGA_Mouser993P0160_V1_ch";
 
-   Int_t size = ((sizeof(MI26_FrameRaw)/4)*3 + 3)*pGeoPar->GetNSensors(); // 3 frame per event and 3 header word for each sensor
+   Int_t size = ((sizeof(MI26_FrameRaw)/4)*3 + 3)*pGeoPar->GetSensorsN(); // 3 frame per event and 3 header word for each sensor
    fData.reserve(size);
 }
 

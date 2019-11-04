@@ -65,7 +65,7 @@ Bool_t TAITactNtuTrackF::FindTiltedTracks()
    array.Clear();
    
    TAITtrack* track = 0x0;
-   Int_t nPlane   = pGeoMap->GetNSensors()-1;
+   Int_t nPlane   = pGeoMap->GetSensorsN()-1;
    Int_t curPlane = nPlane;
    
    while (curPlane >= fRequiredClusters-1) {

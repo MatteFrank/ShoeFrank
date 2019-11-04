@@ -212,7 +212,7 @@ void Booter::Process( Long64_t jentry ) {
     // // cluster test  -  myn_vtclus
     // // TAVTntuCluster* ntup = (TAVTntuCluster*)myn_vtclus->Object();
     // TAVTntuCluster* ntupVT = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus", "TAVTntuCluster")->Object();
-    // // for (int nSensor = 0; nSensor < ntup->GetNSensors(); nSensor++) {   // over all sensors
+    // // for (int nSensor = 0; nSensor < ntup->GetSensorsN(); nSensor++) {   // over all sensors
 
     // for (int nSensor = 0; nSensor < 4; nSensor++) {   // over all sensors
     //     if ( m_debug > 0 )      
@@ -234,7 +234,7 @@ void Booter::Process( Long64_t jentry ) {
     // // cluster test  -  myn_vtclus
     // // TAVTntuCluster* ntup = (TAVTntuCluster*)myn_vtclus->Object();
     // TAITntuCluster* ntup = (TAITntuCluster*) gTAGroot->FindDataDsc("itClus", "TAITntuCluster")->Object();
-    // // for (int nSensor = 0; nSensor < ntup->GetNSensors(); nSensor++) {   // over all sensors
+    // // for (int nSensor = 0; nSensor < ntup->GetSensorsN(); nSensor++) {   // over all sensors
 
     // for (int nSensor = 0; nSensor < 32; nSensor++) {   // over all sensors
     //     // if ( m_debug > 0 )      
@@ -419,7 +419,7 @@ void Booter::AssociateHitsToParticle() {
   //   //     }
 
   //   //Check VTX pixels
-  //   for (int nSensor = 0; nSensor < ntup->GetNSensors(); nSensor++) {   // over all sensors
+  //   for (int nSensor = 0; nSensor < ntup->GetSensorsN(); nSensor++) {   // over all sensors
 
   //       for (int nPx = 0; nPx < ntup->GetPixelsN( nSensor, "mc_hit" ); nPx++)       // over all pixels for each sensor
 

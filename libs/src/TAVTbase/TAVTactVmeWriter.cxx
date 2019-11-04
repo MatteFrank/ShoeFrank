@@ -77,7 +77,7 @@ Bool_t TAVTactVmeWriter::Process()
    fDaqSize = 0;
    
    // loop over boards
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       Int_t planeStatus = pConfig->GetStatus(i);
       if (planeStatus == -1) continue;
       

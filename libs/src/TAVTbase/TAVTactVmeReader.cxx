@@ -102,7 +102,7 @@ Int_t TAVTactVmeReader::Open(const TString& name, Option_t* opt, const TString)
    TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
 
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
      Int_t planeStatus = pConfig->GetStatus(i);
 	  if (planeStatus == -1) continue;
 	  
@@ -132,7 +132,7 @@ Int_t TAVTactVmeReader::Open(const TString& name, Option_t* opt, const TString)
 void TAVTactVmeReader::Close()
 {
    TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i)
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i)
 	  fRawFileAscii[i].close();
 }
 
@@ -149,7 +149,7 @@ Bool_t TAVTactVmeReader::Process()
    
    Bool_t neof = false;
    // loop over boards
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       Int_t planeStatus = pConfig->GetStatus(i);
       if (planeStatus == -1) continue;
       

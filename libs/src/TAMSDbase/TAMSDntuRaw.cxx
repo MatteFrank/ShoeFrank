@@ -58,7 +58,7 @@ TAMSDntuRaw::~TAMSDntuRaw()
 //! return number of strips for a given sensor.
 Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetNSensors()) {
+   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray* list = GetListOfStrips(iSensor);
       return list->GetEntries();
    } else  {
@@ -70,7 +70,7 @@ Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 //------------------------------------------+-----------------------------------
 TClonesArray* TAMSDntuRaw::GetListOfStrips(Int_t iSensor)
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetNSensors()) {
+   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray* list = (TClonesArray*)fListOfStrips->At(iSensor);
       return list;
    } else {
@@ -82,7 +82,7 @@ TClonesArray* TAMSDntuRaw::GetListOfStrips(Int_t iSensor)
 //------------------------------------------+-----------------------------------
 TClonesArray* TAMSDntuRaw::GetListOfStrips(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetNSensors()) {
+   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray* list = (TClonesArray*)fListOfStrips->At(iSensor);
       return list;
    } else {
@@ -124,7 +124,7 @@ void TAMSDntuRaw::SetupClones()
    if (fListOfStrips) return;
    fListOfStrips = new TObjArray();
    
-   for (Int_t i = 0; i < fpGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
       TClonesArray* arr = new TClonesArray("TAMSDntuHit", 500);
       arr->SetOwner(true);
       fListOfStrips->AddAt(arr, i);
@@ -137,7 +137,7 @@ void TAMSDntuRaw::SetupClones()
 //! Clear event.
 void TAMSDntuRaw::Clear(Option_t*)
 {
-   for (Int_t i = 0; i < fpGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
       TClonesArray* list = GetListOfStrips(i);
       list->Clear("C");
    }
@@ -148,7 +148,7 @@ void TAMSDntuRaw::Clear(Option_t*)
 //
 TAMSDntuHit* TAMSDntuRaw::NewStrip(Int_t iSensor, Double_t value, Int_t aView, Int_t aStrip)
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetNSensors()) {
+   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray &stripArray = *GetListOfStrips(iSensor);
       std::pair<int, int> idx(aView, aStrip);
       
@@ -174,7 +174,7 @@ TAMSDntuHit* TAMSDntuRaw::NewStrip(Int_t iSensor, Double_t value, Int_t aView, I
 //! ostream insertion.
 void TAMSDntuRaw::ToStream(ostream& os, Option_t* option) const
 {
-   for (Int_t i = 0; i < fpGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
       
       os << "TAMSDntuRaw " << GetName()
       << Form("  nPixels=%3d", GetStripsN(i))

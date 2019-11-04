@@ -19,9 +19,10 @@ TAGpoint::TAGpoint()
 
 //______________________________________________________________________________
 //  build a point
-TAGpoint::TAGpoint(TVector3 pos, Double_t time, Double_t chargeZ, Double_t probaZ)
+TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, Double_t time, Double_t chargeZ, Double_t probaZ)
  : TAGobject(),
    fPosition(pos),
+   fPosError(posErr),
    fTime(time),
    fChargeZ(chargeZ),
    fChargeProbaZ(probaZ)
@@ -59,10 +60,10 @@ TAGntuPoint::~TAGntuPoint()
 
 //______________________________________________________________________________
 //  standard 
-TAGpoint* TAGntuPoint::NewPoint(TVector3 pos, Double_t time, Double_t chargeZ, Double_t probaZ)
+TAGpoint* TAGntuPoint::NewPoint(TVector3 pos, TVector3 posErr, Double_t time, Double_t chargeZ, Double_t probaZ)
 {
 	TClonesArray &pixelArray = *fListOfPoints;
-	TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(pos, time, chargeZ, probaZ);
+	TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(pos, posErr, time, chargeZ, probaZ);
 
 	return pixel;
 }
@@ -106,7 +107,7 @@ void TAGntuPoint::Clear(Option_t*)
 //! ostream insertion.
 void TAGntuPoint::ToStream(ostream& os, Option_t* option) const
 {
-   // for (Int_t i = 0; i < m_vtxGeo->GetNSensors(); ++i) {
+   // for (Int_t i = 0; i < m_vtxGeo->GetSensorsN(); ++i) {
 	  
 	  // os << "TAGntuPoint " << GetName()
 	  // << Form("  nPixels=%3d", GetPixelsN(i))

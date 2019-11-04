@@ -62,7 +62,7 @@ void TAMSDactNtuMC::CreateHistogram()
   
   TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
   
-  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fpHisStrip[i] = new TH1F(Form("%sMcStripl%d", prefix.Data(), i+1), Form("%s - MC # strip per clusters for sensor %d", titleDev.Data(), i+1), 100, 0., 100.);
     AddHistogram(fpHisStrip[i]);
   }
@@ -74,19 +74,19 @@ void TAMSDactNtuMC::CreateHistogram()
   AddHistogram(fpHisDeTot);
   
   
-  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fpHisDeSensor[i] = new TH1F(Form("%sMcDe%d", prefix.Data(), i+1), Form("%s - MC energy loss for sensor %d", titleDev.Data(), i+1), 1000, 0., 10000.);
     AddHistogram(fpHisDeSensor[i]);
   }
   
-  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fpHisStripMap[i]  = new TH1F(Form("%sMcStripMap%d", prefix.Data(), i+1) , Form("%s - MC strip map for sensor %d", titleDev.Data(), i+1),
 				 pGeoMap->GetNStrip(), 0, pGeoMap->GetNStrip());
     AddHistogram(fpHisStripMap[i]);
     
   }
   
-  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fpHisPosMap[i] =  new TH1F(Form("%sMcPosMap%d", prefix.Data(), i+1), Form("%s - MC position map for sensor %d", titleDev.Data(), i+1),
 			       pGeoMap->GetNStrip(), -pGeoMap->GetPitch()/2.*pGeoMap->GetNStrip(), pGeoMap->GetPitch()/2.*pGeoMap->GetNStrip());
     AddHistogram(fpHisPosMap[i]);
@@ -194,7 +194,7 @@ void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
 void TAMSDactNtuMC::FillNoise()
 {
    TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       FillNoise(i);
    }
 }

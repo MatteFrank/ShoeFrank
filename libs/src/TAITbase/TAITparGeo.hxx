@@ -19,7 +19,9 @@ class TAITparGeo : public TAVTparGeo {
    
 private:
    
-   TVector3   fFoamSize;          // Foam sizse
+   TVector3   fSupportSize;       // Support size
+   TVector3   fSupportOffset;     // Support offset
+   Float_t    fFoamThickness;     // Foam thickness
    TString    fFoamMat;           // Material of foam
    TString    fFoamMatDensities;  // Density of foam material for each component
    TString    fFoamMatProp;       // Material of foam component proportion
@@ -37,16 +39,35 @@ private:
    TString    fAlMat;             // Material of aluminum
    Float_t    fAlMatDensity;      // Density of aluminum material
 
+private:
+   vector<string> fvFoamBody;     //!
+   vector<string> fvKaptonBody;   //!
+   vector<string> fvEpoxyBody;    //!
+   vector<string> fvAlBody;       //!
+   vector<string> fvFoamRegion;   //!
+   vector<string> fvKaptonRegion; //!
+   vector<string> fvEpoxyRegion;  //!
+   vector<string> fvAlRegion;     //!
+
 protected:
    static const TString fgkBaseNameIt;   // IT base name
    static const TString fgkDefParaNameIt;
+   
+private:
+   Float_t GetlayerPosZ(Int_t layer);
+   string  PrintModuleBodies();
+   string  PrintSupportBodies();
 
 public:
    TAITparGeo();
     virtual ~TAITparGeo();
    
    //! Get Foam size
-   TVector3 GetFoamiSize()              const { return fFoamSize;         }
+   TVector3 GetSupportSize()            const { return fSupportSize;      }
+   //! Get Foam Offset
+   TVector3 GetSupportOffset()          const { return fSupportOffset;    }
+   //! Get Foam thickness
+   Float_t GetFoamThickness()           const { return fFoamThickness;    }
    //! Get Foam material
    TString GetFoamMaterial()            const { return fFoamMat;          }
    //! Get Foam coponent densities
@@ -58,7 +79,7 @@ public:
    
    
    //! Get Kapton thickness
-   Float_t GetKaptonSize()              const { return fKaptonThickness;  }
+   Float_t GetKaptonThickness()         const { return fKaptonThickness;  }
    //! Get Kapton material
    TString GetKaptonMaterial()          const { return fKaptonMat;        }
    //! Get Kapton density
@@ -66,18 +87,27 @@ public:
 
    
    //! Get Epoxy thickness
-   Float_t GetEpoxySize()               const { return fEpoxyThickness;   }
+   Float_t GetEpoxyThickness()          const { return fEpoxyThickness;   }
    //! Get Epoxy material
    TString GetEpoxyMaterial()           const { return fEpoxyMat;         }
    //! Get Epoxy density
    Float_t GetEpoxyMatDensity()         const { return fEpoxyMatDensity;  }
 
    //! Get Al thickness
-   Float_t GetAlSize()                  const { return fAlThickness;      }
-   //! Get Kapton material
+   Float_t GetAlThickness()             const { return fAlThickness;      }
+   //! Get Al material
    TString GetAlMaterial()              const { return fAlMat;            }
-   //! Get Kapton density
+   //! Get Al density
    Float_t GetAlMatDensity()            const { return fAlMatDensity;     }
+   
+   // return local Z positon of the layers
+   Float_t GetFoamLayer();
+   Float_t Get1stKaptonLayer();
+   Float_t Get1stAlLayer();
+   Float_t Get2ndKaptonLayer();
+   Float_t Get2ndAlLayer();
+   Float_t Get3rdKaptonLayer();
+   Float_t GetEpoxyLayer();
    
    // Define materials
    void    DefineMaterial();
@@ -86,10 +116,10 @@ public:
    void    ReadSupportInfo();
 
    //! Build Innert Tracker
-   TGeoVolume* BuildInnerTracker(const char* basemoduleName = "Module", const char *name = "IT");
+   TGeoVolume* BuildInnerTracker(const char *name = "IT", const char* basemoduleName = "Module", Bool_t board = false,  Bool_t support = false);
    
-   // to keep interace for compilation
-   // virtual void   PrintFluka();
+   //! Build plume support
+   TGeoVolume* BuildPlumeSupport(const char* basemoduleName = "Plume", const char *name = "ITSP");
 
    // to print fluka files
    virtual string PrintParameters();
@@ -99,10 +129,6 @@ public:
    virtual string PrintAssignMaterial(TAGmaterials *Material);
    virtual string PrintSubtractBodiesFromAir();
    
-protected:
-   vector<string> vEpiBody, vModBody, vPixBody;
-   vector<string> vEpiRegion, vModRegion, vPixRegion;
-  
 public:
    static const Char_t* GetItBaseName()    { return fgkBaseNameIt.Data();    }
    static const Char_t* GetItDefParaName() { return fgkDefParaNameIt.Data(); }

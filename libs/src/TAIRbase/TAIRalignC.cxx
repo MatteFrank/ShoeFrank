@@ -319,7 +319,7 @@ void TAIRalignC::FillPosition(TAVTbaseParGeo* parGeo, Int_t offset)
 {
    TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-   for (Int_t i = 0; i < parGeo->GetNSensors(); i++) {
+   for (Int_t i = 0; i < parGeo->GetSensorsN(); i++) {
       TVector3 posSens = parGeo->GetSensorPosition(i);
       posSens = geoTrafo->FromVTLocalToGlobal(posSens);
 

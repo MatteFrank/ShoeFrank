@@ -48,6 +48,8 @@ TATWparGeo::~TATWparGeo()
 //______________________________________________________________________________
 Bool_t TATWparGeo::FromFile(const TString& name)
 {
+   cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
+
    TString nameExp;
    
    if (name.IsNull())
@@ -84,7 +86,7 @@ Bool_t TATWparGeo::FromFile(const TString& name)
    ReadVector3(fBarSize);
    if(fDebugLevel)
       cout << "   Bar size: "
-      << Form("%f %f %f", fBarSize[0], fBarSize[1], fBarSize[2]) << endl;
+      << fBarSize[0] << " " << fBarSize[1] << " " << fBarSize[2] << endl;
    
    // define material
    DefineMaterial();
@@ -117,12 +119,12 @@ Bool_t TATWparGeo::FromFile(const TString& name)
          ReadVector3(position);
          if(fDebugLevel)
             cout << "   Position: "
-            << Form("%f %f %f", position[0], position[1], position[2]) << endl;
+            << position[0] << " " << position[1] << " " << position[2] << endl;
          
          ReadVector3(tilt);
          if(fDebugLevel)
             cout  << "   Tilt: "
-            << Form("%f %f %f", tilt[0], tilt[1], tilt[2]) << endl;
+            << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
 
 	 mytilt.push_back(tilt);
 
@@ -508,6 +510,7 @@ string TATWparGeo::PrintBodies()
 {
   
   stringstream ss;
+  ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
   if(GlobalPar::GetPar()->IncludeTW()){
 

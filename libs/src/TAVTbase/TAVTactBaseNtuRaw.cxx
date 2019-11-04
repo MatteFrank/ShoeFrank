@@ -46,7 +46,7 @@ Bool_t TAVTactBaseNtuRaw::DecodeEvent()
    if (!GetVtxHeader()) return false;
    
    // loop over boards
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       
       if (!GetSensorHeader(i)) return false;
       

@@ -29,13 +29,16 @@ PixMatProp:      "0.89/0.11"
 PixMatDensity:      2.3
 
 SupportInfo:         1
-FoamSizeX:         1.9972   FoamSizeY:     1.92096  FoamSizeZ:      0.2
+FoamSizeX:       15.634   FoamSizeY:     2.871  FoamSizeZ:      0.226
+FoamOffsetX:      3.908   FoamOffsetY:   0.531  FoamOffsetZ:    0.0000
+
+FoamThickness:     0.2
 FoamMat:           "SiC/AIR"
 FoamMatDensities: "3.22/1.29e-3"
 FoamMatProp:      "0.04/0.96"
 FoamMatDensity:    0.1288
 
-KaptonThickness:    0.005
+KaptonThickness:    0.0025
 KaptonMat:        "Kapton"
 KaptonMatDensity:   1.42
 
@@ -44,7 +47,7 @@ EpoxyMat:         "Epoxy"
 EpoxyMatDensity:   1.18
 
 AlThickness:       0.001
-AlMat   :          "Al"
+AlMat:             "Al"
 AlMatDensity:     2.6989
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-

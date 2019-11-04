@@ -26,6 +26,7 @@ class TAGpoint : public TAGobject {
    
 private:
    TVector3    fPosition;      // position in FOOT framework
+   TVector3    fPosError;      // position error in FOOT framework
    Double32_t  fTime;          // Time information
    Double32_t  fChargeZ;       // Charge Z
    Double32_t  fChargeProbaZ;  // Probability of charge Z
@@ -33,17 +34,19 @@ private:
 public:
    
    TAGpoint();
-   TAGpoint(TVector3 pos, Double_t time, Double_t chargeZ, Double_t probaZ);
+   TAGpoint(TVector3 pos, TVector3 posErr, Double_t time, Double_t chargeZ, Double_t probaZ);
    ~TAGpoint() {};
    
    //    All the Get methods
    TVector3    GetPosition()         const  { return fPosition;   }
+   TVector3    GetPosError()         const  { return fPosError;   }
    Double32_t  GetTime()             const  { return fTime;       }
    Int_t       GetChargeZ()          const  { return fChargeZ;    }
    Double32_t  GetChargeProbaZ()     const  { return fChargeZ;    }
    
    void        SetTime(Double_t time)       { fTime = time;       }
    void        SetPosition(TVector3 pos)    { fPosition = pos;    }
+   void        SetPosError(TVector3 pos)    { fPosError = pos;    }
    void        SetChargeZ(Int_t z)          { fChargeZ = z;       }
    void        SetChargeProbaZ(Double_t z)  { fChargeProbaZ = z;  }
    
@@ -65,7 +68,7 @@ public:
 	TAGntuPoint();
 	virtual ~TAGntuPoint();
 	
-	TAGpoint*         NewPoint(TVector3 pos, Double_t time, Double_t chargeZ, Double_t probaZ);
+	TAGpoint*         NewPoint(TVector3 pos, TVector3 posErr, Double_t time, Double_t chargeZ, Double_t probaZ);
 
 	Int_t             GetPointsN();
 	TAGpoint*         GetPoint(Int_t iPoint );

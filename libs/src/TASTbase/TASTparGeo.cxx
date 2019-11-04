@@ -65,6 +65,8 @@ void TASTparGeo::DefineMaterial()
 //______________________________________________________________________________
 Bool_t TASTparGeo::FromFile(const TString& name)
 {
+   cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
+
    TString nameExp;
    
    if (name.IsNull())
@@ -78,7 +80,7 @@ Bool_t TASTparGeo::FromFile(const TString& name)
    ReadVector3(fSize);
    if(fDebugLevel)
       cout  << "  Size: "
-      << Form("%f %f %f", fSize[0], fSize[1], fSize[2]) << endl;
+      << fSize[0] << " " << fSize[1]  << " " <<  fSize[2] << endl;
    
    ReadStrings(fMaterial);
    if(fDebugLevel)
@@ -170,6 +172,7 @@ string TASTparGeo::PrintRotations()
 string TASTparGeo::PrintBodies( ) {
   
   stringstream outstr;
+  outstr << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
   if(GlobalPar::GetPar()->IncludeST()){
     outstr << "* ***Start Counter" << endl;

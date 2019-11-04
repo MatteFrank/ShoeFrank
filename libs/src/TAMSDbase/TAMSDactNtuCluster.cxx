@@ -58,12 +58,12 @@ void TAMSDactNtuCluster::CreateHistogram()
   
   TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMap->Object();
   
-  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fpHisStrip[i] = new TH1F(Form("%sClusPixel%d",prefix.Data(), i+1), Form("%s - # strips per clusters for sensor %d", titleDev.Data(), i+1), 100, 0., 100.);
     AddHistogram(fpHisStrip[i]);
   }
   
-  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fpHisClusMap[i] = new TH1F(Form("%sClusMap%d", prefix.Data(), i+1), Form("%s - clusters map for sensor %d", titleDev.Data(), i+1),
 			       pGeoMap->GetNStrip(), -pGeoMap->GetPitch()*pGeoMap->GetNStrip()/2., pGeoMap->GetPitch()*pGeoMap->GetNStrip()/2.);
     
@@ -88,7 +88,7 @@ Bool_t TAMSDactNtuCluster::Action()
   TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMap->Object();
   Bool_t ok = true;
   
-  for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fListOfStrips = pNtuHit->GetListOfStrips(i);
     if (fListOfStrips->GetEntries() == 0) continue;
     ok += FindClusters(i);

@@ -59,6 +59,8 @@ void TAMSDparGeo::DefineMaterial()
 //_____________________________________________________________________________
 Bool_t TAMSDparGeo::FromFile(const TString& name)
 {
+   cout << setiosflags(ios::fixed) << setprecision(5);
+
    // simple file reading, waiting for real config file
    TString nameExp;
 
@@ -165,13 +167,13 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
       ReadVector3(fSensorParameter[p].Position);
       if(fDebugLevel)
          cout << "   Position: "
-         << Form("%f %f %f", fSensorParameter[p].Position[0], fSensorParameter[p].Position[1], fSensorParameter[p].Position[2]) << endl;
+         << fSensorParameter[p].Position[0] << " " << fSensorParameter[p].Position[1] << " " << fSensorParameter[p].Position[2] << endl;
 
       // read sensor angles
       ReadVector3(fSensorParameter[p].Tilt);
       if(fDebugLevel)
          cout  << "   Tilt: "
-		       << Form("%f %f %f", fSensorParameter[p].Tilt[0], fSensorParameter[p].Tilt[1], fSensorParameter[p].Tilt[2]) << endl;
+		       << fSensorParameter[p].Tilt[0] << " " << fSensorParameter[p].Tilt[1] << " " << fSensorParameter[p].Tilt[2] << endl;
 
       // read alignment
       ReadItem(fSensorParameter[p].AlignmentU);
@@ -319,7 +321,7 @@ string TAMSDparGeo::PrintRotations()
     TVector3  fCenter = fpFootGeo->GetMSDCenter();
     TVector3  fAngle = fpFootGeo->GetMSDAngles();
     
-    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       //check if sensor or detector have a tilt
       if (fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0){
@@ -416,7 +418,7 @@ string TAMSDparGeo::PrintBodies()
 
     ss << "* ***MSD bodies" << endl;
 
-    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$start_transform " << Form("msd_%d",iSens) << endl;

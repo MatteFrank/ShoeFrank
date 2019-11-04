@@ -28,6 +28,7 @@
 #include "TColor.h"
 #include "TGeoManager.h"
 #include "TGeoMatrix.h"
+#include "TGeoCompositeShape.h"
 
 #include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx" 
@@ -79,7 +80,7 @@ void TAVTparGeo::DefineMaterial()
 }
 
 //_____________________________________________________________________________
-TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemoduleName)
+TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemoduleName, Bool_t board)
 {
   if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
     new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
@@ -94,14 +95,35 @@ TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemodu
     vertex = gGeoManager->MakeBox(vertexName,med,fSizeBox.X()/2.,fSizeBox.Y()/2.,fSizeBox.Z()/2.); // volume corresponding to vertex
   }
    
-  TGeoVolume* vertexMod = 0x0; 
+  TGeoVolume* vertexBoard = 0x0;
+  TGeoVolume* vertexMod   = 0x0;
    
-  for(Int_t iSensor = 0; iSensor < GetNSensors(); iSensor++) {
+  if (board)
+     vertexBoard = BuildBoard();
+   
+  for(Int_t iSensor = 0; iSensor < GetSensorsN(); iSensor++) {
       
     TGeoCombiTrans* hm = GetCombiTransfo(iSensor);
     vertexMod = AddModule(Form("%s%d",basemoduleName, iSensor), vertexName);
       
     vertex->AddNode(vertexMod, iSensor, hm);
+
+    // Board
+     if (board) {
+       Float_t signY = fSensorParameter[iSensor].IsReverseX ? +1. : -1.;
+       Float_t signX = fSensorParameter[iSensor].IsReverseY ? +1. : -1.;
+
+       const Double_t* mat = hm->GetRotationMatrix();
+       const Double_t* dis = hm->GetTranslation();
+     
+       TGeoRotation rot;
+       rot.SetMatrix(mat);
+     
+       TGeoTranslation trans;
+       trans.SetTranslation(dis[0] + signX*fEpiOffset[0]/2., dis[1] + signY*fEpiOffset[1]/2., dis[2] - fEpiOffset[2]);
+        
+       vertex->AddNode(vertexBoard, iSensor+GetSensorsN(), new TGeoCombiTrans(trans, rot));
+    }
   }
    
   return vertex;
@@ -121,12 +143,38 @@ TGeoVolume* TAVTparGeo::AddModule(const char* basemoduleName, const char *vertex
    vertexMod->SetLineColor(kAzure-5);
    vertexMod->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
    
-   // if (GlobalPar::GetPar()->geoFLUKA())
-   //    PrintFluka();
-   
    return vertexMod;
 }
 
+//_____________________________________________________________________________
+TGeoVolume* TAVTparGeo::BuildBoard(const char* boardName, const char *moduleName)
+{
+   // check if board exists
+   TGeoVolume* board = gGeoManager->FindVolumeFast(boardName);
+   if (board)
+      return board;
+
+   // create M28 board
+   const Char_t* matName = fEpiMat.Data();
+   TGeoMedium*   medMod = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
+   
+   Float_t eps = 1e-4;
+   
+   TGeoBBox *boxBoard  = new TGeoBBox(boardName,  fTotalSize.X()/2., fTotalSize.Y()/2., fTotalSize.Z()/2.);
+   TGeoBBox *boxModule = new TGeoBBox(moduleName, fEpiSize.X()/2.,   fEpiSize.Y()/2.,   fTotalSize.Z()/2. + eps);
+
+   TGeoTranslation *tr = new TGeoTranslation(fEpiOffset.X()/2., fEpiOffset.Y()/2., fEpiOffset.Z());
+   tr->SetName("offset");
+   tr->RegisterYourself();
+
+   TGeoCompositeShape *cs  = new TGeoCompositeShape("cs", Form("%s - %s:offset", boardName, moduleName));
+
+   TGeoVolume *vertexBoard = new TGeoVolume(boardName, cs, medMod);
+   vertexBoard->SetLineColor(kRed);
+   vertexBoard->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+
+   return vertexBoard;
+}
 
 //_____________________________________________________________________________
 string TAVTparGeo::PrintParameters()
@@ -166,7 +214,7 @@ string TAVTparGeo::PrintRotations()
     TVector3  fCenter = fpFootGeo->GetVTCenter();
     TVector3  fAngle = fpFootGeo->GetVTAngles();
     
-    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       //check if sensor or detector have a tilt
       if (fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0){
@@ -249,6 +297,7 @@ string TAVTparGeo::PrintBodies()
 {
 
   stringstream ss;
+   ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
   if(GlobalPar::GetPar()->IncludeVertex()){
 
@@ -262,7 +311,7 @@ string TAVTparGeo::PrintBodies()
   
     ss << "* ***Vertex bodies" << endl;  
     
-    for(int iSens=0; iSens<GetNSensors(); iSens++) {
+    for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$start_transform " << Form("vt_%d",iSens) << endl;  
@@ -280,8 +329,8 @@ string TAVTparGeo::PrintBodies()
 	 << posEpi.y() + fEpiSize.Y()/2. << " "
 	 << posEpi.z() - fEpiSize.Z()/2. << " "
 	 << posEpi.z() + fEpiSize.Z()/2. << endl;
-      vEpiBody.push_back(bodyname);
-      vEpiRegion.push_back(regionname);
+      fvEpiBody.push_back(bodyname);
+      fvEpiRegion.push_back(regionname);
     
       //module
       bodyname = Form("vtxm%d",iSens);
@@ -296,8 +345,8 @@ string TAVTparGeo::PrintBodies()
 	 << posMod.y() + fTotalSize.Y()/2. << " "
 	 << posMod.z() - fTotalSize.Z()/2. << " "
 	 << posMod.z() + fTotalSize.Z()/2. << endl;
-      vModBody.push_back(bodyname);
-      vModRegion.push_back(regionname);
+      fvModBody.push_back(bodyname);
+      fvModRegion.push_back(regionname);
     
       //pixel layer
       bodyname = Form("vtxp%d",iSens);
@@ -310,8 +359,8 @@ string TAVTparGeo::PrintBodies()
 	 << posPix.y() + fEpiSize.Y()/2. << " "
 	 << posPix.z() - fPixThickness/2. << " "
 	 << posPix.z() + fPixThickness/2. << endl;
-      vPixBody.push_back(bodyname);
-      vPixRegion.push_back(regionname);
+      fvPixBody.push_back(bodyname);
+      fvPixRegion.push_back(regionname);
     
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$end_transform " << endl;
@@ -334,20 +383,20 @@ string TAVTparGeo::PrintRegions()
 
     ss << "* ***Vertex regions" << endl;
 
-    for(int i=0; i<vEpiRegion.size(); i++) {
-      ss << setw(13) << setfill( ' ' ) << std::left << vEpiRegion.at(i)
-    	 << "5 " << vEpiBody.at(i) <<endl;
+    for(int i=0; i<fvEpiRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvEpiRegion.at(i)
+    	 << "5 " << fvEpiBody.at(i) <<endl;
     }
 
-    for(int i=0; i<vModRegion.size(); i++) {
-      ss << setw(13) << setfill( ' ' ) << std::left << vModRegion.at(i)
-	 << "5 " << vModBody.at(i)
-	 << " -" << vEpiBody.at(i) << " -" << vPixBody.at(i) <<endl;
+    for(int i=0; i<fvModRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvModRegion.at(i)
+	 << "5 " << fvModBody.at(i)
+	 << " -" << fvEpiBody.at(i) << " -" << fvPixBody.at(i) <<endl;
     }
 
-    for(int i=0; i<vPixRegion.size(); i++) {
-      ss << setw(13) << setfill( ' ' ) << std::left << vPixRegion.at(i)
-    	 << "5 " << vPixBody.at(i) <<endl;
+    for(int i=0; i<fvPixRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvPixRegion.at(i)
+    	 << "5 " << fvPixBody.at(i) <<endl;
     }
 
   }
@@ -364,8 +413,8 @@ string TAVTparGeo::PrintSubtractBodiesFromAir()
 
   if(GlobalPar::GetPar()->IncludeVertex()){
 
-    for(int i=0; i<vModBody.size(); i++) {
-      ss << " -" << vModBody.at(i);
+    for(int i=0; i<fvModBody.size(); i++) {
+      ss << " -" << fvModBody.at(i);
     }
     ss << endl;
 
@@ -397,14 +446,14 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials *Material)
     if(GlobalPar::GetPar()->IncludeDI())
       magnetic = true;
     
-    if (vEpiRegion.size()==0 || vModRegion.size()==0 || vPixRegion.size()==0 )
+    if (fvEpiRegion.size()==0 || fvModRegion.size()==0 || fvPixRegion.size()==0 )
       cout << "Error: VT regions vector not correctly filled!"<<endl;
     
-    ss << PrintCard("ASSIGNMA", flkmatMod, vEpiRegion.at(0), vEpiRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatMod, fvEpiRegion.at(0), fvEpiRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
-    ss << PrintCard("ASSIGNMA", flkmatMod, vModRegion.at(0), vModRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatMod, fvModRegion.at(0), fvModRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
-    ss << PrintCard("ASSIGNMA", flkmatPix, vPixRegion.at(0), vPixRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatPix, fvPixRegion.at(0), fvPixRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
 
   }

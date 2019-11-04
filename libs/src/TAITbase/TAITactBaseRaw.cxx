@@ -65,9 +65,9 @@ TAITactBaseRaw::TAITactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
    AddPara(pConfig, "TAITparConf");
    
    TAITparGeo* parGeo = (TAITparGeo*) fpGeoMap->Object();
-   fNSensors = parGeo->GetNSensors();
+   fNSensors = parGeo->GetSensorsN();
    
-   Int_t size = parGeo->GetNSensors()*sizeof(MI26_FrameRaw)*4;
+   Int_t size = parGeo->GetSensorsN()*sizeof(MI26_FrameRaw)*4;
    fData.resize(size);
 }
 
@@ -83,7 +83,7 @@ void TAITactBaseRaw::CreateHistogram()
 {
    DeleteHistogram();
    TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 	  if (TAITparConf::IsMapHistOn()) {
 		 fpHisPixelMap[i] = new TH2F(Form("itPixelMap%d", i+1), Form("Vertex - pixel map for sensor %d", i+1), 
 									 pGeoMap->GetNPixelY(), 0, pGeoMap->GetNPixelY(), 
@@ -132,7 +132,7 @@ Int_t TAITactBaseRaw::GetSensor(UInt_t key)
    TAITparGeo*  pGeoMap = (TAITparGeo*)  fpGeoMap->Object();
    
    key = (key >> 16) & 0xFFFF;
-   for (Int_t i = 0; i <  pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i <  pGeoMap->GetSensorsN(); ++i) {
       if (fgkKeyHeader[i] == key)
          return i;
    }

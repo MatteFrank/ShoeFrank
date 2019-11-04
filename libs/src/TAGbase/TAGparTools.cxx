@@ -19,6 +19,8 @@
 
 ClassImp(TAGparTools);
 
+Int_t TAGparTools::fgPrecisionLevel = 6;
+
 //______________________________________________________________________________
 TAGparTools::TAGparTools()
 : TAGpara(),
@@ -176,7 +178,7 @@ void TAGparTools::ReadItem(map<pair<int, int>, int>& map, const Char_t delimiter
 }
 
 //_____________________________________________________________________________
-void TAGparTools::ReadItem(Float_t* coeff, Int_t size,  const Char_t delimiter)
+void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter)
 {
    TString key;
    TAGparTools::ReadItem(key);
@@ -210,7 +212,7 @@ void TAGparTools::ReadItem(Float_t* coeff, Int_t size,  const Char_t delimiter)
 //_____________________________________________________________________________
 void TAGparTools::ReadVector3(TVector3 &arg)
 {
-   Float_t* co = new Float_t[3];
+   Double_t* co = new Double_t[3];
    ReadItem(co, 3, ':');
    arg.SetXYZ(co[0], co[1], co[2]); 
    delete[] co;

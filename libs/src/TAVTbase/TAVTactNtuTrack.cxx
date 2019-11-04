@@ -73,7 +73,7 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
    array.Clear();
 
    // loop over last planes
-   Int_t nPlane = pGeoMap->GetNSensors()-1;
+   Int_t nPlane = pGeoMap->GetSensorsN()-1;
    Int_t curPlane = nPlane;
    
    while (curPlane >= fRequiredClusters-1) {

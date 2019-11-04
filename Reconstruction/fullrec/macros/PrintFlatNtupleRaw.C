@@ -324,7 +324,7 @@ void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
      tw_timeA.clear();
      tw_timeB.clear();
      tw_chargeCOM.clear();
-      // Int_t nPlanes = vtparGeo->GetNSensors();
+      // Int_t nPlanes = vtparGeo->GetSensorsN();
      // cout << " iPlane  " <<   nPlanes  << endl;
       
      

@@ -250,7 +250,7 @@ void TAVTactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
 void TAVTactNtuMC::FillNoise()
 {
    TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
-   for (Int_t i = 0; i < pGeoMap->GetNSensors(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       FillNoise(i);
    }
 }
