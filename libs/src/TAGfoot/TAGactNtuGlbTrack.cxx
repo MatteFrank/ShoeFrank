@@ -178,7 +178,10 @@ void TAGactNtuGlbTrack::FillVtxPoint()
             
             TVector3 pos      = clus->GetPositionG();
             TVector3 posG     = fpFootGeo->FromVTLocalToGlobal(pos);
-            fpNtuPoint->NewPoint(posG, time, charge, proba);
+            TVector3 posErr   = clus->GetPosError();
+            TVector3 posErrG  = fpFootGeo->FromVTLocalToGlobal(posErr);
+
+            fpNtuPoint->NewPoint(posG, posErrG, time, charge, proba);
          }
       }
    }
@@ -202,7 +205,10 @@ void TAGactNtuGlbTrack::FillItrPoint()
          
          TVector3 pos      = clus->GetPositionG();
          TVector3 posG     = fpFootGeo->FromITLocalToGlobal(pos);
-         fpNtuPoint->NewPoint(posG, time, charge, proba);
+         TVector3 posErr   = clus->GetPosError();
+         TVector3 posErrG  = fpFootGeo->FromITLocalToGlobal(posErr);
+
+         fpNtuPoint->NewPoint(posG, posErrG, time, charge, proba);
       }
    }
 }
@@ -225,7 +231,11 @@ void TAGactNtuGlbTrack::FillMsdPoint()
          
          TVector3 pos       = clus->GetPositionG();
          TVector3 posG      = fpFootGeo->FromMSDLocalToGlobal(pos);
-         fpNtuPoint->NewPoint(posG, time, charge, proba);
+         Float_t err        = clus->GetPosError();
+         TVector3 posErr(err, err, 0); // temporary
+         TVector3 posErrG  = fpFootGeo->FromMSDLocalToGlobal(posErr);
+
+         fpNtuPoint->NewPoint(posG, posErrG, time, charge, proba);
       }
    }
 }
@@ -243,8 +253,9 @@ void TAGactNtuGlbTrack::FillTofPoint()
       Double_t charge = point->GetChargeZ();
       Double_t proba  = point->GetChargeZProba();
       TVector3 posG   = fpFootGeo->FromTWLocalToGlobal(pos);
-
-      fpNtuPoint->NewPoint(pos, time, charge, proba);
+      TVector3 posErrG(0,0,0); // for the moment
+      
+      fpNtuPoint->NewPoint(posG, posErrG, time, charge, proba);
    }
 }
 
