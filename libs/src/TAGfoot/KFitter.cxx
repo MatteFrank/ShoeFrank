@@ -345,7 +345,7 @@ int KFitter::UploadClusIT(){
 
   int totClus = 0;
 
-  Int_t nPlanes = m_IT_geo->GetNSensors();
+  Int_t nPlanes = m_IT_geo->GetNLayers();
 
   for(Int_t iPlane = 0; iPlane < nPlanes; iPlane++){
     Int_t nclus = itclus->GetClustersN(iPlane);
@@ -885,11 +885,11 @@ bool KFitter::PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterat
   int testHit_TW = 0;
   // define the number of hits per each detector to consider to satisfy the pre-fit requirements
   if ( m_systemsON == "all" ) {
-    testHit_VT = m_VT_geo->GetNSensors(), testHit_IT = m_IT_geo->GetNLayers(), testHit_MSD = m_MSD_geo->GetNLayers();
+    testHit_VT = m_VT_geo->GetNLayers(), testHit_IT = m_IT_geo->GetNLayers(), testHit_MSD = m_MSD_geo->GetNLayers();
   }
 
   else {
-    if ( m_systemsON.find( "VT" ) != string::npos )			testHit_VT = m_VT_geo->GetNSensors();
+    if ( m_systemsON.find( "VT" ) != string::npos )			testHit_VT = m_VT_geo->GetNLayers();
     if ( m_systemsON.find( "IT" ) != string::npos )			testHit_IT = m_IT_geo->GetNLayers();
     if ( m_systemsON.find( "MSD" ) != string::npos )		        testHit_MSD = m_MSD_geo->GetNLayers();
     if ( m_systemsON.find( "TW" ) != string::npos )			testHit_TW = m_TW_geo->GetNLayers()/2;
