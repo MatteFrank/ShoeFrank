@@ -637,25 +637,27 @@ void TABMactNtuTrack::Chi2Fit(vector<Int_t> &singlehittrack, vector<vector<Int_t
   
   TABMntuTrackTr *tmp_atrackTr=new TABMntuTrackTr();    
   TABMntuTrackTr *tmp_btrackTr=new TABMntuTrackTr();  
-  TMatrixD AA, VV, VbV, AbA;
-  TVectorD alpha, Dy, Eta, alphb, Dby;
+  TMatrixD AA, VV; 
+  //~ TMatrixD VbV, AbA;
+  TVectorD alpha, Dy, Eta;
+  //~ TVectorD alphb, Dby;
 
   alpha.ResizeTo(4);
-  alphb.ResizeTo(4);
+  //~ alphb.ResizeTo(4);
   Eta.ResizeTo(4);
   Eta.Zero();
     
   Dy.ResizeTo(tmp_trackTr->GetNhit());
-  Dby.ResizeTo(tmp_trackTr->GetNhit());
+  //~ Dby.ResizeTo(tmp_trackTr->GetNhit());
   alpha(0) = tmp_trackTr->GetR0().X();
   alpha(1) = tmp_trackTr->GetR0().Y();
   alpha(2) = tmp_trackTr->GetPvers().X();
   alpha(3) = tmp_trackTr->GetPvers().Y();
-  alphb=alpha;
+  //~ alphb=alpha;
   AA.ResizeTo(tmp_trackTr->GetNhit(),4);
-  AbA.ResizeTo(tmp_trackTr->GetNhit(),4);
+  //~ AbA.ResizeTo(tmp_trackTr->GetNhit(),4);
   VV.ResizeTo(tmp_trackTr->GetNhit(),tmp_trackTr->GetNhit());
-  VbV.ResizeTo(tmp_trackTr->GetNhit(),tmp_trackTr->GetNhit());
+  //~ VbV.ResizeTo(tmp_trackTr->GetNhit(),tmp_trackTr->GetNhit());
   
   if(FootDebugLevel(3))
     cout<<"TABMactNtuTrack::Chi2Fit::start with computeDy and VV"<<endl;
@@ -663,8 +665,8 @@ void TABMactNtuTrack::Chi2Fit(vector<Int_t> &singlehittrack, vector<vector<Int_t
   //compute Dy and VV:
   ComputeDy(singlehittrack, tmp_trackTr, Dy);
   ComputeVV(singlehittrack, tmp_trackTr, VV);
-  VbV=VV;
-  Dby=Dy;
+  //~ VbV=VV;
+  //~ Dby=Dy;
   if(FootDebugLevel(3))
     cout<<"TABMactNtuTrack::Chi2Fit::computechiqua"<<endl;
   //~ cout<<"Before iteration matrices: Dy, AA, alpha, VV, Eta: "<<endl;

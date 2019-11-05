@@ -104,7 +104,7 @@ class TABMparCon : public TAGparTools {
     Int_t    prefit_enable;//flag to enable or disable the prefit
     Int_t    t0_switch;//0=t0 from the beginning of the tdc signal, 1=from the peak, 2=negative T0 enabled, 3=peak/2
     Float_t t0_sigma;//t0 with the gaussian shift for the negative T0 hits
-    Int_t    t0_choice; //0=wd, 1=internal
+    Int_t    t0_choice; //0=wd, 1=internal, 2=internal-wd
     Float_t hit_timecut;//timecut on the lenght of the signal (ns)
     vector<Float_t> v_t0s;//T0 in ns
     vector<Float_t> adc_ped_mean;//pedestals mean 
