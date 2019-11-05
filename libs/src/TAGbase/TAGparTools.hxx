@@ -86,6 +86,12 @@ public:
   //! Print card for Fluka
    string          PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
                              TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM);
+public:
+   static Int_t GetPrecisionLevel()            { return fgPrecisionLevel;  }
+   static void  SetPrecisionLevel(Int_t level) { fgPrecisionLevel = level; }
+
+protected:
+   static Int_t fgPrecisionLevel;
 
    ClassDef(TAGparTools,2)
 };

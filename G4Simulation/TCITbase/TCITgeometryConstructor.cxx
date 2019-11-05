@@ -66,7 +66,7 @@ G4LogicalVolume* TCITgeometryConstructor::Construct()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCITgeometryConstructor::DefineMaterial()
 {
-   TAITparGeo* parGeo = (TAITparGeo*)fpParGeo;
+   TAITparGeo* parGeo = dynamic_cast<TAITparGeo*>(fpParGeo);
    fpMaterials->CreateG4Material(parGeo->GetFoamMaterial());
    fpMaterials->CreateG4Material(parGeo->GetKaptonMaterial());
    fpMaterials->CreateG4Material(parGeo->GetEpoxyMaterial());
@@ -77,7 +77,7 @@ void TCITgeometryConstructor::DefineMaterial()
 void TCITgeometryConstructor::PlacePlumeSupport()
 {
    Int_t halfSensors  = fpParGeo->GetSensorsN()/2;
-   TAITparGeo* parGeo = (TAITparGeo*)fpParGeo;
+   TAITparGeo* parGeo = dynamic_cast<TAITparGeo*>(fpParGeo);
 
    for(Int_t iSup = 0; iSup < halfSensors; iSup+=4) {
       
@@ -95,7 +95,7 @@ void TCITgeometryConstructor::PlacePlumeSupport()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4LogicalVolume* TCITgeometryConstructor::BuildPlumeSupport()
 {
-   TAITparGeo* parGeo = (TAITparGeo*)fpParGeo;
+   TAITparGeo* parGeo = dynamic_cast<TAITparGeo*>(fpParGeo);
 
    // fetch support material
    const Char_t* matName = parGeo->GetFoamMaterial().Data();

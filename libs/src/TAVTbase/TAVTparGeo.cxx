@@ -297,6 +297,7 @@ string TAVTparGeo::PrintBodies()
 {
 
   stringstream ss;
+   ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
   if(GlobalPar::GetPar()->IncludeVertex()){
 

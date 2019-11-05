@@ -196,27 +196,27 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()|| GlobalPar::GetPar()->IncludeBM()) {
 
      fpParGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
-      TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
-      TString parFileName = "./geomaps/TASTdetector.map";
-      parGeo->FromFile(parFileName.Data());
-      
-      fpParMapSt = new TAGparaDsc("stMap", new TASTparMap()); // need the file
-      TASTparMap* parMapSt = (TASTparMap*) fpParMapSt->Object();
-      parFileName = Form("./config/%sTASTdetector.cfg", fExpName.Data());
-      parMapSt->FromFile(parFileName);
-      
-      fpParTimeSt = new TAGparaDsc("stTime", new TASTparTime()); // need the file
-      TASTparTime* parTimeSt = (TASTparTime*) fpParTimeSt->Object();
-      parTimeSt->FromFile(fExpName.Data(), 2190);
-      
-      fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
-      TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
-      parFileName = Form("./config/%sTATWChannelMap.xml", fExpName.Data());
-      parMap->FromFile(parFileName.Data());
-      
-      fpParTimeTw = new TAGparaDsc("twTim", new TATWparTime());
-      TATWparTime* parTimeTw = (TATWparTime*) fpParTimeTw->Object();
-      parTimeTw->FromFile(fExpName.Data(), 2190);
+     TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
+     TString parFileName = "./geomaps/TASTdetector.map";
+     parGeo->FromFile(parFileName.Data());
+     
+     fpParMapSt = new TAGparaDsc("stMap", new TASTparMap()); // need the file
+     TASTparMap* parMapSt = (TASTparMap*) fpParMapSt->Object();
+     parFileName = Form("./config/%sTASTdetector.cfg", fExpName.Data());
+     parMapSt->FromFile(parFileName);
+     
+     fpParTimeSt = new TAGparaDsc("stTime", new TASTparTime()); // need the file
+     TASTparTime* parTimeSt = (TASTparTime*) fpParTimeSt->Object();
+     parTimeSt->FromFile(fExpName.Data(), 2190);
+     
+     fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
+     TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
+     parFileName = Form("./config/%sTATWChannelMap.xml", fExpName.Data());
+     parMap->FromFile(parFileName.Data());
+     
+     fpParTimeTw = new TAGparaDsc("twTim", new TATWparTime());
+     TATWparTime* parTimeTw = (TATWparTime*) fpParTimeTw->Object();
+     parTimeTw->FromFile(fExpName.Data(), 2190);
    }
    
    // initialise par files for Beam Monitor
@@ -402,10 +402,12 @@ void BaseReco::CreateRecActionVtx()
 //__________________________________________________________
 void BaseReco::CreateRecActionIt()
 {
+   cout << "CreateRecActionIt::Entered\n";
    fpNtuClusIt  = new TAGdataDsc("itClus", new TAITntuCluster());
    fActClusIt   = new TAITactNtuClusterF("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
    if (fFlagHisto)
-      fActClusIt->CreateHistogram();
+     fActClusIt->CreateHistogram();
+   cout << "CreateRecActionIt::Exiting\n";
 }
 
 //__________________________________________________________
@@ -429,42 +431,43 @@ void BaseReco::CreateRecActionTw()
 //__________________________________________________________
 void BaseReco::CreateRecActionGlb()
 {
-   if(fFlagTrack) {
-      fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-      fActGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi,
-                                            fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw);
-      if (fFlagHisto)
-         fActGlbTrack->CreateHistogram();
-   }
+  if(fFlagTrack) {
+    fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+    fActGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi,
+					  fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw);
+    if (fFlagHisto)
+      fActGlbTrack->CreateHistogram();
+  }
+  
 }
 
 //__________________________________________________________
 void BaseReco::SetTreeBranches()
 {
-   if (GlobalPar::GetPar()->IncludeBM()) {
-      if (fFlagTrack)
-         fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
-   }
-
-   if (GlobalPar::GetPar()->IncludeVertex()) {
-      if (!fFlagTrack)
-         fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-      else {
-         fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-         fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
-         if (GlobalPar::GetPar()->IncludeTG())
-            fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
-      }
-   }
-   
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
-      fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
-
-   if (GlobalPar::GetPar()->IncludeMSD()) 
-      fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
-   
-   if (GlobalPar::GetPar()->IncludeTW())
-      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
+  if (GlobalPar::GetPar()->IncludeBM()) {
+    if (fFlagTrack)
+      fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+  }
+  
+  if (GlobalPar::GetPar()->IncludeVertex()) {
+    if (!fFlagTrack)
+      fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+    else {
+      fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
+      if (GlobalPar::GetPar()->IncludeTG())
+	fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
+    }
+  }
+  
+  if (GlobalPar::GetPar()->IncludeInnerTracker())
+    fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
+  
+  if (GlobalPar::GetPar()->IncludeMSD()) 
+    fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
+  
+  if (GlobalPar::GetPar()->IncludeTW())
+    fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
 
 }
 

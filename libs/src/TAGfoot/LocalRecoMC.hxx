@@ -31,6 +31,8 @@
 
 #include "Evento.hxx"
 
+#include "FootField.hxx"
+
 class TTree;
 
 class LocalRecoMC : public BaseReco
@@ -82,7 +84,7 @@ private:
    void AddRequiredMcItemTw();
    void AddRequiredMcItemCa();
 
-private:
+protected:
    EVENT_STRUCT*         fEvtStruct;
    
    TASTactNtuMC*         fActNtuRawSt;  // action for ntu data

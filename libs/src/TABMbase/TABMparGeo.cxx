@@ -82,6 +82,8 @@ TABMparGeo::~TABMparGeo()
 //_____________________________________________________________________________
 Bool_t TABMparGeo::FromFile(const TString& name)
 {
+   cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
+
    TString nameExp;
    
    if (name.IsNull())
@@ -180,12 +182,12 @@ Bool_t TABMparGeo::FromFile(const TString& name)
    ReadVector3(fBmSideDch);
    if(FootDebugLevel(1))
       cout << "  Size: "
-      << Form("%f %f %f", fBmSideDch[0], fBmSideDch[1], fBmSideDch[2]) << endl;
+      << fBmSideDch[0]  << " " <<  fBmSideDch[1] << " " <<  fBmSideDch[2] << endl;
    
    ReadVector3(fBmDeltaDch);
    if(FootDebugLevel(1))
       cout << "  Delta: "
-      << Form("%f %f %f", fBmDeltaDch[0], fBmDeltaDch[1], fBmDeltaDch[2]) << endl;
+      << fBmDeltaDch[0] << " " << fBmDeltaDch[1] << " " << fBmDeltaDch[2] << endl;
    
   
    SetupMatrices(36);
@@ -194,13 +196,13 @@ Bool_t TABMparGeo::FromFile(const TString& name)
      ReadVector3(fWireAlign);
      if(FootDebugLevel(2))
         cout << "  Alignment: "
-        << Form("%f %f %f", fWireAlign[0], fWireAlign[1], fWireAlign[2]) << endl;
+        << fWireAlign[0] << " " << fWireAlign[1] << " " << fWireAlign[2] << endl;
      
      // read wire tilt angles
      ReadVector3(fWireTilt);
      if(FootDebugLevel(2))
         cout  << "  Tilt: "
-        << Form("%f %f %f", fWireTilt[0], fWireTilt[1], fWireTilt[2]) << endl;
+        << fWireTilt[0] << " " << fWireTilt[1] << " " << fWireTilt[2] << endl;
   
      // Build wire matrix transformation
   
@@ -663,7 +665,8 @@ void TABMparGeo::SetLayerColorOff(Int_t idx)
 string TABMparGeo::PrintBodies(){
     
   stringstream ss;
-    
+  ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
+
   if(GlobalPar::GetPar()->IncludeBM()){
     
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());

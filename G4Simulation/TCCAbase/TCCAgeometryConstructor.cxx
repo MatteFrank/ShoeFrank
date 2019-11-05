@@ -54,92 +54,92 @@ G4LogicalVolume* TCCAgeometryConstructor::Construct()
    for(Int_t i = 0; i< 3; ++i)
       fSizeBoxCal[i] = (fMaxPosition[i] - fMinPosition[i]);
 
-    Float_t xdimCrys1 = fpParGeo->GetCrystalBotBase()*cm;
-    Float_t xdimCrys2 = fpParGeo->GetCrystalTopBase()*cm;
-    Float_t ydimCrys1 = xdimCrys1; // assume squart
-    Float_t ydimCrys2 = xdimCrys2;
-    Float_t zdimCrys  = fpParGeo->GetCrystalLength()*cm;
-    Float_t space = fpParGeo->GetDelta()*cm;
-
-    Int_t modulesN = fpParGeo->GetModulesN();
-    Int_t crystalsN = 9;
 
     // Calorimeter box
-   G4Material* vacuum = G4NistManager::Instance()->FindOrBuildMaterial("Vacuum");
    G4Material* air    = G4NistManager::Instance()->FindOrBuildMaterial("Air");
-   G4Material* matBGO = G4NistManager::Instance()->FindOrBuildMaterial("BGO");
-   G4Material* matAl  = G4NistManager::Instance()->FindOrBuildMaterial("Al");
+   G4Material* matBGO = G4NistManager::Instance()->FindOrBuildMaterial(fpParGeo->GetCrystalMat().Data());
+   G4Material* matAl  = G4NistManager::Instance()->FindOrBuildMaterial(fpParGeo->GetSupportMat().Data());
    G4Box* boxCal = new G4Box("boxCal", 0.5*fSizeBoxCal.X(), 0.5*fSizeBoxCal.Y(), fSizeBoxCal.Z());
-   fBoxLog = new G4LogicalVolume(boxCal, vacuum, "boxCaloLog");
+   fBoxLog = new G4LogicalVolume(boxCal, air, "boxCaloLog");
    fBoxLog->SetVisAttributes(G4VisAttributes::Invisible);
 
-    G4Trd* bgo = new G4Trd("Crystal", xdimCrys1, xdimCrys2, ydimCrys1, ydimCrys2, zdimCrys);
-    fCalLog = new G4LogicalVolume(bgo, matBGO, "CrystalLog");
-
-    Float_t xdimS1 = fpParGeo->GetSupportBotBase()*cm;
-    Float_t xdimS2 = fpParGeo->GetSupportTopBase()*cm;
-    Float_t ydimS1 = xdimS1;
-    Float_t ydimS2 = xdimS2;
-    Float_t zdimS  = fpParGeo->GetSupportLength()*cm;
-
-    Float_t xdimMod1 = (crystalsN*(xdimCrys1+space)/3.0)+(space/2.) ;
-    Float_t xdimMod2 = xdimS2+(space/2.) ;
-    Float_t ydimMod1 = xdimMod1+(space/2.) ;
-    Float_t ydimMod2 = xdimMod2+(space/2.) ;
-    Float_t zdimMod  = zdimCrys+space ;
-    G4Trd* moduleCal = new G4Trd("moduleCal", xdimMod1,xdimMod2,ydimMod1,ydimMod2, zdimMod);
-    fModLog = new G4LogicalVolume(moduleCal, air, "ModuleLog");
+    Double_t xdimCrys1 = fpParGeo->GetCrystalSize()[0]*cm;
+    Double_t xdimCrys2 = fpParGeo->GetCrystalSize()[1]*cm;
+    Double_t ydimCrys1 = fpParGeo->GetCrystalSize()[2]*cm;
+    Double_t ydimCrys2 = fpParGeo->GetCrystalSize()[3]*cm;
+    Double_t zdimCrys  = fpParGeo->GetCrystalSize()[4]*cm;
+   
+   Double_t xdimS1 = fpParGeo->GetSupportSize()[0]*cm;
+   Double_t xdimS2 = fpParGeo->GetSupportSize()[1]*cm;
+   Double_t ydimS1 = fpParGeo->GetSupportSize()[2]*cm;
+   Double_t ydimS2 = fpParGeo->GetSupportSize()[3]*cm;
+   Double_t zdimS  = fpParGeo->GetSupportSize()[4]*cm;
+   
+   Double_t xdimM1 = fpParGeo->GetModuleSize()[0]*cm;
+   Double_t xdimM2 = fpParGeo->GetModuleSize()[1]*cm;
+   Double_t ydimM1 = fpParGeo->GetModuleSize()[2]*cm;
+   Double_t ydimM2 = fpParGeo->GetModuleSize()[3]*cm;
+   Double_t zdimM  = fpParGeo->GetModuleSize()[4]*cm;
+   
+   G4Trd* bgo = new G4Trd("Crystal", xdimCrys1, xdimCrys2, ydimCrys1, ydimCrys2, zdimCrys);
+   fCrysLog = new G4LogicalVolume(bgo, matBGO, "CrystalLog");
 
    G4Trd* support = new G4Trd("Support", xdimS1, xdimS2, ydimS1, ydimS2, zdimS);
-    G4SubtractionSolid *sup = new G4SubtractionSolid("sup",support,bgo);
+   G4Trd* support1 = new G4Trd("Support1", xdimM1, xdimM2, ydimM1, ydimM2, zdimM);
+   G4SubtractionSolid *sup = new G4SubtractionSolid("sup",support,support1);
+   fSupLog = new  G4LogicalVolume(sup, matAl, "SupportLog");
 
-       for (Int_t i = 0; i < modulesN; ++i) {
-           for(Int_t j=0 ; j<crystalsN ; ++j){
-               TVector3 pos = fpParGeo->GetCrystalPosition(j)*cm;
-               TVector3 ang = fpParGeo->GetCrystalAngle(j);
-               G4RotationMatrix* rotCrys = new G4RotationMatrix;
-               rotCrys->rotateX(ang[0]*degree);
-               rotCrys->rotateY(ang[1]*degree);
-               rotCrys->rotateZ(ang[2]*degree);
-               rotCrys->invert(); // inversion
-               if(i==0){
-                   if(j==0) sup = new G4SubtractionSolid("sup",support,bgo,rotCrys, G4ThreeVector(pos[0], pos[1],pos[2]-(zdimCrys/2.0)));
-                   else sup = new G4SubtractionSolid("sup",sup,bgo,rotCrys, G4ThreeVector(pos[0], pos[1], pos[2]-(zdimCrys/2.0)));
-               }
-              new G4PVPlacement(rotCrys, G4ThreeVector(pos[0], pos[1], pos[2]), fCalLog, "Crystals", fModLog, false, i*crystalsN + j);
-           }
-           if(i==0) fSupLog = new G4LogicalVolume(sup, air, "SupportLog");
-           TVector3 posMod = fpParGeo->GetModulePosition(i)*cm;
-           TVector3 angMod = fpParGeo->GetModuleAngle(i);
-           G4RotationMatrix* rotMod = new G4RotationMatrix;
-           rotMod->rotateX(angMod[0]*degree);
-           rotMod->rotateY(angMod[1]*degree);
-           rotMod->rotateZ(angMod[2]*degree);
-           rotMod->invert(); // inversion
-           new G4PVPlacement(rotMod, G4ThreeVector(posMod[0], posMod[1], posMod[2]), fModLog, "Calo", fBoxLog, false, i + 1);
-           TVector3 ang = fpParGeo->GetCrystalAngle(crystalsN-1);
-           G4RotationMatrix* rotSup = new G4RotationMatrix;
-           rotSup->rotateX(ang[0]*degree);
-           rotSup->rotateY(ang[1]*degree);
-           rotSup->rotateZ(ang[2]*degree);
-           rotSup->invert(); // inversion
-           new G4PVPlacement(rotSup, G4ThreeVector(0.0, 0.0,zdimCrys/2.0), fSupLog, "Supports", fModLog, false, 0);
+   /// Visualisation attributes
+   G4VisAttributes* supportLogAtt = new G4VisAttributes(G4Colour(0.5,0.5,0.5,0.6)); //light grey
+   supportLogAtt->SetForceSolid(true);
+   fSupLog->SetVisAttributes(supportLogAtt);
+   
+   G4VisAttributes* crysLogAtt = new G4VisAttributes(G4Colour(0.,0.3,1)); //light blue
+   crysLogAtt->SetForceWireframe(true);
+   fCrysLog->SetVisAttributes(crysLogAtt);
+   
+   Int_t crystalsN = 0;
+   
+   printf("%s\n", fpParGeo->GetConfigTypeGeo().Data());
+   if ( fpParGeo->GetConfigTypeGeo().CompareTo("ONE_CRY") == 0 )
+      crystalsN = 1;
+   else if ( fpParGeo->GetConfigTypeGeo().CompareTo("ONE_MOD") == 0)
+      crystalsN = fpParGeo->GetCrystalsNperModule();
+   else if ( fpParGeo->GetConfigTypeGeo().CompareTo("CENTRAL_DET") == 0)
+      crystalsN = fpParGeo->GetCrystalsN()/2;
+   else if ( fpParGeo->GetConfigTypeGeo().CompareTo("FULL_DET") == 0)
+      crystalsN = fpParGeo->GetCrystalsN();
+   else
+      G4cout << "Error in GetConfigTypeGeo no " << fpParGeo->GetConfigTypeGeo().Data() << " config available" << G4endl;
+
+   
+   G4ThreeVector supZ;
+   G4ThreeVector posSup;
+   
+   for (Int_t iCrys = 0; iCrys < crystalsN; ++iCrys) {
+      
+      TVector3 posCrys = fpParGeo->GetCrystalPosition(iCrys)*cm;
+      TVector3 ang     = fpParGeo->GetCrystalAngle(iCrys)*degree;
+      G4RotationMatrix* rotCrys = new G4RotationMatrix;
+      rotCrys->rotateX(ang[0]);
+      rotCrys->rotateY(ang[1]);
+      rotCrys->rotateZ(ang[2]);
+      
+      if (iCrys % fpParGeo->GetCrystalsNperModule() == 0) {
+         supZ.set(0,0,fpParGeo->GetSupportPositionZ()*cm);
+         posSup = *(rotCrys)*supZ;
+      }
+      
+      rotCrys->invert(); // inversion
+      new G4PVPlacement(rotCrys, G4ThreeVector(posCrys[0], posCrys[1], posCrys[2]), fCrysLog, "Crystal", fBoxLog, false, iCrys);
+      
+       if (iCrys % fpParGeo->GetCrystalsNperModule() == 0) {
+          posSup += G4ThreeVector(posCrys[0], posCrys[1], posCrys[2]);
+          new G4PVPlacement(rotCrys, posSup, fSupLog, "Support", fBoxLog, false, iCrys + crystalsN);
        }
-
-
-    /// Visualisation attributes
-    G4VisAttributes* bgoLogAtt = new G4VisAttributes(G4Colour(0.,0.3,1)); //light blue
-    bgoLogAtt->SetForceWireframe(true);
-    fCalLog->SetVisAttributes(bgoLogAtt);
-
-    G4VisAttributes* supportLogAtt = new G4VisAttributes(G4Colour(0.5,0.5,0.5,0.6)); //light grey
-    supportLogAtt->SetForceSolid(true);
-    fSupLog->SetVisAttributes(supportLogAtt);
-
-    G4VisAttributes* modLogAtt = new G4VisAttributes(G4Colour(0.5,0.5,0.5,0.2)); //grey
-    modLogAtt->SetForceWireframe(true);
-    fModLog->SetVisAttributes(modLogAtt);
-
+   }
+   
+   printf("PosZ %g\n", fpParGeo->GetSupportPositionZ());
    DefineSensitive();
 
    return fBoxLog;
@@ -158,7 +158,7 @@ void  TCCAgeometryConstructor::DefineSensitive()
    TCCAsensitiveDetector* calSensitive = new TCCAsensitiveDetector(calSDname);
    calSensitive->SetCopyLevel(0);
    SDman->AddNewDetector(calSensitive);
-   fCalLog->SetSensitiveDetector(calSensitive);
+   fCrysLog->SetSensitiveDetector(calSensitive);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -166,7 +166,7 @@ void TCCAgeometryConstructor::DefineMaxMinDimension()
 {
 
    TVector3 size  = fpParGeo->GetCaloSize();
-   Float_t  thick = fpParGeo->GetCrystalLength()+2.0;
+   Float_t  thick = fpParGeo->GetCrystalThick()+2.0;
 
    TVector3 minPosition(10e10, 10e10, 10e10);
    TVector3 maxPosition(-10e10, -10e10, -10e10);

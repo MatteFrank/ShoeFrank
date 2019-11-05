@@ -3,6 +3,8 @@
 
 
 #include <TGeoManager.h>
+#include <TGeoMedium.h>
+#include <TGeoMaterial.h>
 
 #include <TGeoMaterialInterface.h>
 #include <ConstField.h>
@@ -42,10 +44,11 @@
 #include <TRandom3.h>
 
 #include <TVector3.h>
-// #include <array>
 #include <vector>
 
 #include <TMath.h>
+
+#include "TAGparGeo.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTntuRaw.hxx"
@@ -94,21 +97,29 @@
 using namespace std;
 using namespace genfit;
 
-#define build_string(expr) \
-    (static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
+#define build_string(expr)						\
+  (static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
 
 
 typedef vector<genfit::AbsMeasurement*> MeasurementVector;
-// typedef vector<GlobalTrackFoot*> TrackVector;
 
 class KFitter {
-
+  
 public:
-
+  
   
   KFitter();
   ~KFitter() {
     delete m_fitter;
+  };
+
+
+  struct MCTruthInfo{
+
+    int MCTrackId;
+    int MCFlukaId;
+    int MCMass;
+    int MCCharge;
   };
   
   
@@ -174,19 +185,6 @@ public:
   double EvalError( TVector3 mom, TMatrixD cov );
   void MatrixToZero( TMatrixD *matrix );
   
-
-  
-  // GlobalTrackFoot* GetTrack( int id ) {
-  // 	// fai controllo sul vettore
-  // 	if ( id >= (int)m_fitTrackCollection->size() ) {
-  // 		cout << "KFitter::GetTrack >> required track id exeeds the TrackCollection size." << endl;
-  // 		exit(0);
-  // 	}
-  // 	return ( m_fitTrackCollection->at(id) );
-  // 	// return ( new GlobalTrackFoot( m_fitTrackCollection->at(id) ) );
-  // };
-  
-  
   bool frankFind( string what, string where )	{
     
     int wildcard_pos = what.find("*");
@@ -215,7 +213,7 @@ private:
   
   KalmanFitter* m_fitter;
   AbsKalmanFitter*  m_refFitter;    		 //KalmanFitterRefTrack()
-  AbsKalmanFitter*  m_dafRefFitter;    	 //DAF with kalman ref
+  AbsKalmanFitter*  m_dafRefFitter;    	         //DAF with kalman ref
   AbsKalmanFitter*  m_dafSimpleFitter;    	 //DAF with simple kalman
   
   // Track*  m_fitTrack;
@@ -244,11 +242,16 @@ private:
   // vector<AbsMeasurement*> m_hitCollectionToFit;
   map <string, vector<AbsMeasurement*> > m_hitCollectionToFit;
   vector<AbsMeasurement*> m_allHitsInMeasurementFormat;
+
+  map <int, map<int, MCTruthInfo> > m_MCInfo;
   
+  shared_ptr<TAGparGeo> m_TG_geo;
   shared_ptr<TAVTparGeo> m_VT_geo;
   shared_ptr<TAITparGeo> m_IT_geo;
   shared_ptr<TAMSDparGeo> m_MSD_geo;
   shared_ptr<TATWparGeo> m_TW_geo;
+
+  TGeoVolume* m_TopVolume;          // top volume of geometry
   
   // TrackVector* m_fitTrackCollection;
   vector<int> m_evNum_vect;
@@ -271,7 +274,7 @@ private:
   
   bool m_reverse;
 
-  TAGgeoTrafo* fGeoTrafo;
+  TAGgeoTrafo* m_GeoTrafo;
   
   
 };

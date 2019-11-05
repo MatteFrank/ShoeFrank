@@ -59,6 +59,8 @@ void TAMSDparGeo::DefineMaterial()
 //_____________________________________________________________________________
 Bool_t TAMSDparGeo::FromFile(const TString& name)
 {
+   cout << setiosflags(ios::fixed) << setprecision(5);
+
    // simple file reading, waiting for real config file
    TString nameExp;
 
@@ -165,13 +167,13 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
       ReadVector3(fSensorParameter[p].Position);
       if(fDebugLevel)
          cout << "   Position: "
-         << Form("%f %f %f", fSensorParameter[p].Position[0], fSensorParameter[p].Position[1], fSensorParameter[p].Position[2]) << endl;
+         << fSensorParameter[p].Position[0] << " " << fSensorParameter[p].Position[1] << " " << fSensorParameter[p].Position[2] << endl;
 
       // read sensor angles
       ReadVector3(fSensorParameter[p].Tilt);
       if(fDebugLevel)
          cout  << "   Tilt: "
-		       << Form("%f %f %f", fSensorParameter[p].Tilt[0], fSensorParameter[p].Tilt[1], fSensorParameter[p].Tilt[2]) << endl;
+		       << fSensorParameter[p].Tilt[0] << " " << fSensorParameter[p].Tilt[1] << " " << fSensorParameter[p].Tilt[2] << endl;
 
       // read alignment
       ReadItem(fSensorParameter[p].AlignmentU);
