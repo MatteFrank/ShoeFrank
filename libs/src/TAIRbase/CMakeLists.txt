@@ -21,6 +21,7 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 set( with_dictionnaries
    TAIRalignC
    TAIRntuAlignC
+   TAIRmillepede
 )
 
 set( without_dictionnaries
