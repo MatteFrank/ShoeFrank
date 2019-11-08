@@ -38,9 +38,7 @@ public:
    //! Instance of class
    static TAIRalignM* Instance(const TString name = "16O_C2H4_200_1.root",
                                Bool_t flagVtx = false,
-                               Bool_t flagIt  = false,
-                               Bool_t flagMsd = false,
-                               Int_t weight = -1); // The weight is barely influencing the results
+                               Bool_t flagIt  = false); 
    virtual ~TAIRalignM();
    
    void ProcessTrack(TAVTbaseTrack *track, Double_t* param = 0x0);
@@ -75,7 +73,7 @@ public:
    
 private:
    //! ctr
-   TAIRalignM(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight);
+   TAIRalignM(const TString name, Bool_t flagVtx, Bool_t flagIt);
    void ResetLocalEquation();
    void LocalEquationX(Double_t* param = 0x0);
    void LocalEquationY(Double_t* param = 0x0);
@@ -101,7 +99,6 @@ private:
    TAGgeoTrafo*         fGeoTrafo;
    Bool_t               fFlagVtx;
    Bool_t               fFlagIt;
-   Bool_t               fFlagMsd;
    TAGdataDsc*          fpNtuTrackVtx;	 // Track VTX
    TAGparaDsc*          fpConfigVtx;	 // configuration dsc
    TAGparaDsc*          fpGeoMapVtx;    // geometry para dsc
@@ -109,7 +106,7 @@ private:
    TAGparaDsc*          fpConfigItr;	 // configuration dsc
    TAGparaDsc*          fpGeoMapItr;    // geometry para dsc
    TAGparaDsc*          fpGeoMapG;      // geometry para dsc
-   TAGactTreeReader*    fInfile;        // action for reading cluster
+   TAGactTreeReader*    fInfile;        // action for reading track
    TAIRmillepede*       fMillepede;     // pointer to align para
    
    const TString        fFileName;      // input file
