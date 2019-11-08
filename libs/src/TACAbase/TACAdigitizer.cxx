@@ -1,27 +1,3 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
 
 #include "TRandom3.h"
 #include "TF1.h"
@@ -31,7 +7,6 @@
 #include "TACAparGeo.hxx"
 #include "TACAdigitizer.hxx"
 
-// Compute the number of photons for 5 mm slice width
 
 // --------------------------------------------------------------------------------------
 TACAdigitizer::TACAdigitizer(TACAntuRaw* pNtuRaw)
@@ -53,8 +28,8 @@ void  TACAdigitizer::SetFunctions()
 // --------------------------------------------------------------------------------------
 void  TACAdigitizer::SetParFunction()
 {
-   //all in mm
-   fFuncBirks->SetParameters(9000, 3.679e-3, 1./240.); // photons yield (n/MeV), kB: birks (mm/MeV), collection efficiency (0.4%) for BGO
+   // photons yield (n/MeV), kB: birks (mm/MeV), collection efficiency (0.4%) for BGO
+   fFuncBirks->SetParameters(9000, 3.679e-3, 1./240.); 
 }
 
 // --------------------------------------------------------------------------------------
@@ -81,10 +56,8 @@ Float_t TACAdigitizer::GetPhotonsN(Float_t /*X*/, Float_t /*Y*/, Float_t edep)
 //___________________________________________________________________________________________
 Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id)
 {
-   Int_t mod = TACAparGeo::GetModuleId(id);
-   
    Float_t photonsN = GetPhotonsN(x0, y0, edep)*fGain;
-   fCurrentHit = (TACAntuHit*)fpNtuRaw->NewHit(id, mod, photonsN, time);
+   fCurrentHit = (TACAntuHit*)fpNtuRaw->NewHit(id, photonsN, time);
    
    return true;
 }
