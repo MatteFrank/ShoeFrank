@@ -252,6 +252,7 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
 {
    //init Millipede
    TAITparConf* pConfigIt = (TAITparConf*) fpConfigItr->Object();
+   TAITparGeo* pGeoMap    = (TAITparGeo*) fpGeoMapItr->Object();
    TAITntuTrack* pNtuTrk  = (TAITntuTrack*) fpNtuTrackItr->Object();
 
    Int_t     nPlanes  = pConfigIt->GetSensorsN();
@@ -340,7 +341,9 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    UpdateGeoMaps();
    
   
-   
+   Float_t limitShift = 5;
+   Float_t limitTilt  = 0.1*TMath::DegToRad();
+
    // Now display the filled histos
    printf("------------------------------------------------------------\n");
    printf("--------------------- Alignment RESULT --------------------\n");
@@ -348,7 +351,7 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    
    for(Int_t i = 0; i < fSecArray.GetSize(); i++) {
       Int_t iPlane = fSecArray[i];
-//      fStatus[i] = ((fAlign->GetOffsetU()[i]*TAGgeoTrafo::MmToMu() < limitShift) && (fAlign->GetOffsetV()[i]*TAGgeoTrafo::MmToMu() < limitShift)) && (fAlign->GetTiltW()[i]<limitTilt);
+     fStatus[i] = (pGeoMap->GetSensorPar(iPlane).AlignmentU < limitShift) && (pGeoMap->GetSensorPar(iPlane).AlignmentV < limitShift) && (pGeoMap->GetSensorPar(iPlane).TiltW <limitTilt);
       printf("----------------------------------------------\n");
       printf("Sensor: %d AlignmentU: %5.1f AlignmentV: %5.1f TiltW: %5.2f status %d\n", iPlane+1,
              fAlignmentU[i]*TAGgeoTrafo::MmToMu(),
