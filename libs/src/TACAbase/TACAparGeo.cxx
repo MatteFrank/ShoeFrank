@@ -183,7 +183,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       cout  << "Number of modules: " <<  fModulesN << endl;  
 
    // Set number of matrices
-   SetupMatrices(fCrystalsN + fModulesN);
+   SetupMatrices(fCrystalsN);
    fListOfCrysAng.resize(fCrystalsN);
 
    // Read transformtion info
@@ -218,42 +218,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       transfo *= rot;
       AddTransMatrix(new TGeoHMatrix(transfo), idCry);
    }
-
-   // Modules 
-   // Read transformtion info
-   Int_t nModule = 0;
-   fListOfModAng.resize(fModulesN);
-   for (Int_t imod = 0; imod < fModulesN; ++imod) {
-      
-      ReadItem(nModule);
-      if(fDebugLevel)
-         cout  << "Module id "<< nModule << endl;
-      
-      // read  position
-      ReadVector3(position);
-      if(fDebugLevel)
-         cout << "   Position: "
-         << position[0] << " " << position[1] << " " << position[2] << endl;
-
-      ReadVector3(tilt);
-      if(fDebugLevel)
-         cout  << "   tilt: " << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
-
-      fListOfModAng[nModule] = tilt;
-
-      TGeoRotation rot;
-      rot.RotateX(tilt[0]);
-      rot.RotateY(tilt[1]);
-      rot.RotateZ(tilt[2]);
-      
-      TGeoTranslation trans(position[0], position[1], position[2]);
-      
-      TGeoHMatrix  transfo;
-      transfo  = trans;
-      transfo *= rot;
-      AddTransMatrix(new TGeoHMatrix(transfo), fCrystalsN + nModule);
-   }
-  
+   
    return true;
 }
 
@@ -280,8 +245,18 @@ TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)
    double ydim2 = fCrystalSize[3];
    double zdim  = fCrystalSize[4];
 
+   // half dimensions of module support
+   double xdim1s = fSupportSize[0];
+   double xdim2s = fSupportSize[1];
+   double ydim1s = fSupportSize[2];
+   double ydim2s = fSupportSize[3];
+   double zdims  = fSupportSize[4];
+   
    const Char_t* matName = fCrystalMat.Data();
    TGeoMedium*   medBGO  = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
+
+   const Char_t* matSupName = fSupportMat.Data();
+   TGeoMedium*   medSup     = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matSupName);
 
    for (Int_t iCry = 0; iCry < fCrystalsN; ++iCry) {
       TGeoCombiTrans* hm = GetCombiTransfo(iCry);
@@ -291,32 +266,20 @@ TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)
          caloCristal->SetFillColor(fgkDefaultCryCol);
          caloCristal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
          detector->AddNode(caloCristal, iCry, hm);
-      }
-   }         
-
-   // half dimensions of module support
-   xdim1 = fSupportSize[0];
-   xdim2 = fSupportSize[1]; 
-   ydim1 = fSupportSize[2]; 
-   ydim2 = fSupportSize[3];
-   zdim  = fSupportSize[4];
-
-   const Char_t* matSupName = fSupportMat.Data();
-   TGeoMedium*   medSup     = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matSupName);
-
-   for (Int_t imod = 0; imod < fModulesN; ++imod) {
-      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN+imod);
-      if (hm) {
-         TGeoVolume *support = gGeoManager->MakeTrd2("modSup", medSup, xdim1, xdim2, ydim1, ydim2, zdim);
-         support->SetLineColor(fgkDefaultModCol);
-         support->SetFillColor(fgkDefaultModCol);
-         // support->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
-         // Add Z shift to the support
-         *hm *=  TGeoTranslation(0, 0, fSupportPositionZ);
-         detector->AddNode(support, imod, hm);
+         
+         if (iCry % fgkCrystalsNperModule == 0) {
+            TGeoVolume *support = gGeoManager->MakeTrd2("modSup", medSup, xdim1s, xdim2s, ydim1s, ydim2s, zdims);
+            support->SetLineColor(fgkDefaultModCol);
+            support->SetFillColor(fgkDefaultModCol);
+            // support->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+            
+            // Add Z shift to the support
+            TGeoCombiTrans* hms = new TGeoCombiTrans(*hm);
+            *hms *=  TGeoTranslation(0, 0, fSupportPositionZ);
+            detector->AddNode(support, iCry+fCrystalsN, hms);
+         }
       }
    }
-
    return detector;
 }
 
@@ -340,28 +303,6 @@ TVector3 TACAparGeo::GetCrystalAngle(Int_t idx)
    }
    
    return fListOfCrysAng[idx];
-}
-
-//_____________________________________________________________________________
-TVector3 TACAparGeo::GetModulePosition(Int_t idx)
-{
-   TGeoHMatrix* hm = GetTransfo(fCrystalsN + idx);
-   if (hm) {
-      TVector3 local(0,0,0);
-      fCurrentPosition =  LocalToMaster(fCrystalsN + idx, local);
-   }
-   return fCurrentPosition;   
-}
-
-//_____________________________________________________________________________
-TVector3 TACAparGeo::GetModuleAngle(Int_t idx)
-{
-   if (idx < 0 || idx > fCrystalsN) {
-      Warning("GetCrystalAngle()","Wrong crystal id number: %d ", idx);
-      return TVector3(0,0,0);
-   }
-   
-   return fListOfModAng[idx];
 }
 
 //_____________________________________________________________________________
@@ -563,11 +504,14 @@ string TACAparGeo::PrintBodies()
 
    // air regions around each module (6 PLA bodies)
    TString modBodyName = "AP";
-   for (Int_t imod=0; imod<fModulesN; imod++) {  
-      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + imod);
-      if (hm) {
-         *hm *=  TGeoTranslation(0, 0, fModAirFlukaPositionZ);
-         outstr << SPrintCrystalBody( imod, hm, modBodyName, fModAirFlukaSize );
+   for (Int_t iCry=0; iCry<fCrystalsN; iCry++) {
+      if (iCry % fgkCrystalsNperModule == 0) {
+         TGeoCombiTrans* hm = GetCombiTransfo(iCry);
+         if (hm) {
+            TGeoCombiTrans* hms = new TGeoCombiTrans(*hm);
+            *hms *=  TGeoTranslation(0, 0, fModAirFlukaPositionZ);
+            outstr << SPrintCrystalBody( iCry / fgkCrystalsNperModule , hms, modBodyName, fModAirFlukaSize );
+         }
       }
    } 
 
@@ -579,35 +523,35 @@ string TACAparGeo::PrintBodies()
       int dir[2];
       // Vertical planes
       dir[0] = 1; dir[1] = 0; //dir[0] =1 -> right plane
-      int id = 16;
-      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + id);
+      int id = 16*fgkCrystalsNperModule;
+      TGeoCombiTrans* hm = GetCombiTransfo(id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 4;
-      hm = GetCombiTransfo(fCrystalsN + id);
+      id = 4*fgkCrystalsNperModule;
+      hm = GetCombiTransfo(id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
       id = 0;
-      hm = GetCombiTransfo(fCrystalsN + id);
+      hm = GetCombiTransfo(id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 6; dir[0] = -1; //dir[0] =-1 -> left plane
-      hm = GetCombiTransfo(fCrystalsN + id);
+      id = 6*fgkCrystalsNperModule; dir[0] = -1; //dir[0] =-1 -> left plane
+      hm = GetCombiTransfo(id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 18;
-      hm = GetCombiTransfo(fCrystalsN + id);
+      id = 18*fgkCrystalsNperModule;
+      hm = GetCombiTransfo(id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
       // horizontal planes
       dir[0] = 0; dir[1] = 1; //dir[1] =1 -> top plane
-      id = 9;
-      hm = GetCombiTransfo(fCrystalsN + id);
+      id = fgkCrystalsNperModule*fgkCrystalsNperModule;
+      hm = GetCombiTransfo(id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 11;
-      hm = GetCombiTransfo(fCrystalsN + id);
+      id = 11*fgkCrystalsNperModule;
+      hm = GetCombiTransfo(id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
       dir[1] = -1;  //dir[1] =1 -> botton plane
-      id = 8;
-      hm = GetCombiTransfo(fCrystalsN + id);
+      id = 8*fgkCrystalsNperModule;
+      hm = GetCombiTransfo(id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 10;
-      hm = GetCombiTransfo(fCrystalsN + id);
+      id = 10*fgkCrystalsNperModule;
+      hm = GetCombiTransfo(id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
    }
 
@@ -990,140 +934,140 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
 
       // 4 top modules
       int id = 29;
-      line.Form(" +air_cal -MP009 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP081 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 21;
-      line.Form(" +air_cal -MP009 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP081 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 23;
-      line.Form("AIR_CAL1    5 | +air_cal -MP011 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL1    5 | +air_cal -MP099 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 31;
-      line.Form(" +air_cal -MP011 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP099 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
 
       // 4 botton modules
       id = 28;
-      line.Form("AIR_CAL2    5 | +air_cal -MP008 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL2    5 | +air_cal -MP072 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 20;
-      line.Form(" +air_cal -MP008 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP072 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 22;
-      line.Form("AIR_CAL3    5 | +air_cal -MP010 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL3    5 | +air_cal -MP090 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 30;
-      line.Form(" +air_cal -MP010 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP090 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
 
       // 6 blocks of 4 modules from left to right
       id = 25;
-      line.Form("AIR_CAL4    5 | +air_cal +MP016 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL4    5 | +air_cal +MP144 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 17;
-      line.Form(" +air_cal +MP016 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP144 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 16;
-      line.Form(" +air_cal +MP016 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP144 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 24;
-      line.Form(" +air_cal +MP016 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP144 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       //
       id = 13;
-      line.Form("AIR_CAL5    5 | +air_cal -MP016 +MP004 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL5    5 | +air_cal -MP144 +MP036 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 5;
-      line.Form(" +air_cal -MP016 +MP004 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP144 +MP036 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 4;
-      line.Form(" +air_cal -MP016 +MP004 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP144 +MP036 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 12;
-      line.Form(" +air_cal -MP016 +MP004 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP144 +MP036 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       //
       id = 9;
-      line.Form("AIR_CAL6    5 | +air_cal -MP004 +MP000 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL6    5 | +air_cal -MP036 +MP000 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 1;
-      line.Form(" +air_cal -MP004 +MP000 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP036 +MP000 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 0;
-      line.Form(" +air_cal -MP004 +MP000 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP036 +MP000 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 8;
-      line.Form(" +air_cal -MP004 +MP000 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP036 +MP000 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       //
       id = 11;
-      line.Form("AIR_CAL7    5 | +air_cal -MP000 -MP006 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL7    5 | +air_cal -MP000 -MP054 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 3;
-      line.Form(" +air_cal -MP000 -MP006 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP000 -MP054 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 2;
-      line.Form(" +air_cal -MP000 -MP006 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP000 -MP054 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 10;
-      line.Form(" +air_cal -MP000 -MP006 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP000 -MP054 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       //
       id = 15;
-      line.Form("AIR_CAL8    5 | +air_cal +MP006 -MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL8    5 | +air_cal +MP054 -MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 7;
-      line.Form(" +air_cal +MP006 -MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP054 -MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 6;
-      line.Form(" +air_cal +MP006 -MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP054 -MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 14;
-      line.Form(" +air_cal +MP006 -MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP054 -MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       //
       id = 27;
-      line.Form("AIR_CAL9    5 | +air_cal +MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL9    5 | +air_cal +MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 19;
-      line.Form(" +air_cal +MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 18;
-      line.Form(" +air_cal +MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 26;
-      line.Form(" +air_cal +MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
    }
