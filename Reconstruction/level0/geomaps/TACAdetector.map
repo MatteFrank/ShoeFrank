@@ -919,3 +919,103 @@ TiltX:      -14.253568417394   TiltY:       11.415213344897   TiltZ:       -1.70
 CrystalId:  287
 PositionX:  9.525740029457   PositionY:   17.489234211297   PositionZ:   1.528556384022
 TiltX:      -14.080672451157   TiltY:       7.249091079002   TiltZ:       -0.638762536525
+
+// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
+// Parameter of the modules used in the run
+// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
+ModuleId:   0
+PositionX:  -3.865876853086   PositionY:   -3.872316177238   PositionZ:   -0.228920210837
+TiltX:      3.233733009436   TiltY:       -3.211247674512   TiltZ:       -0.199997790452
+ModuleId:   1
+PositionX:  -3.865876853086   PositionY:   3.872316177238   PositionZ:   -0.228920210837
+TiltX:      -3.233733009436   TiltY:       -3.211247674512   TiltZ:       0.199997790452
+ModuleId:   2
+PositionX:  3.865876853086   PositionY:   -3.872316177238   PositionZ:   -0.228920210837
+TiltX:      3.233733009436   TiltY:       3.211247674512   TiltZ:       0.199997790452
+ModuleId:   3
+PositionX:  3.865876853086   PositionY:   3.872316177238   PositionZ:   -0.228920210837
+TiltX:      -3.233733009436   TiltY:       3.211247674512   TiltZ:       -0.199997790452
+ModuleId:   4
+PositionX:  -11.745234987481   PositionY:   -3.872316177238   PositionZ:   0.041464145089
+TiltX:      3.222509995118   TiltY:       -9.667529985354   TiltZ:       0.000000000000
+ModuleId:   5
+PositionX:  -11.745234987481   PositionY:   3.872316177238   PositionZ:   0.041464145089
+TiltX:      -3.222509995118   TiltY:       -9.667529985354   TiltZ:       0.000000000000
+ModuleId:   6
+PositionX:  11.745234987481   PositionY:   -3.872316177238   PositionZ:   0.041464145089
+TiltX:      3.222509995118   TiltY:       9.667529985354   TiltZ:       0.000000000000
+ModuleId:   7
+PositionX:  11.745234987481   PositionY:   3.872316177238   PositionZ:   0.041464145089
+TiltX:      -3.222509995118   TiltY:       9.667529985354   TiltZ:       0.000000000000
+ModuleId:   8
+PositionX:  -3.880994910796   PositionY:   -11.764471567213   PositionZ:   0.039593262399
+TiltX:      9.686777919761   TiltY:       -3.163676101701   TiltZ:       -0.345556168089
+ModuleId:   9
+PositionX:  -3.880994910796   PositionY:   11.764471567213   PositionZ:   0.039593262399
+TiltX:      -9.686777919761   TiltY:       -3.163676101701   TiltZ:       0.345556168089
+ModuleId:   10
+PositionX:  3.880994910796   PositionY:   -11.764471567213   PositionZ:   0.039593262399
+TiltX:      9.686777919761   TiltY:       3.163676101701   TiltZ:       0.345556168089
+ModuleId:   11
+PositionX:  3.880994910796   PositionY:   11.764471567213   PositionZ:   0.039593262399
+TiltX:      -9.686777919761   TiltY:       3.163676101701   TiltZ:       -0.345556168089
+ModuleId:   12
+PositionX:  -11.790398069147   PositionY:   -11.764471567213   PositionZ:   0.306583621991
+TiltX:      9.784329971522   TiltY:       -9.549273675971   TiltZ:       -0.699755447422
+ModuleId:   13
+PositionX:  -11.790398069147   PositionY:   11.764471567213   PositionZ:   0.306583621991
+TiltX:      -9.784329971522   TiltY:       -9.549273675971   TiltZ:       0.699755447422
+ModuleId:   14
+PositionX:  11.790398069147   PositionY:   -11.764471567213   PositionZ:   0.306583621991
+TiltX:      9.784329971522   TiltY:       9.549273675971   TiltZ:       0.699755447422
+ModuleId:   15
+PositionX:  11.790398069147   PositionY:   11.764471567213   PositionZ:   0.306583621991
+TiltX:      -9.784329971522   TiltY:       9.549273675971   TiltZ:       -0.699755447422
+ModuleId:   16
+PositionX:  -19.880328160436   PositionY:   -3.872316177238   PositionZ:   0.244148546259
+TiltX:      3.222509995118   TiltY:       -16.112549975589   TiltZ:       0.000000000000
+ModuleId:   17
+PositionX:  -19.880328160436   PositionY:   3.872316177238   PositionZ:   0.244148546259
+TiltX:      -3.222509995118   TiltY:       -16.112549975589   TiltZ:       0.000000000000
+ModuleId:   18
+PositionX:  19.880328160436   PositionY:   -3.872316177238   PositionZ:   0.244148546259
+TiltX:      3.222509995118   TiltY:       16.112549975589   TiltZ:       0.000000000000
+ModuleId:   19
+PositionX:  19.880328160436   PositionY:   3.872316177238   PositionZ:   0.244148546259
+TiltX:      -3.222509995118   TiltY:       16.112549975589   TiltZ:       0.000000000000
+ModuleId:   20
+PositionX:  -3.919979571957   PositionY:   -19.912118846381   PositionZ:   0.239088735595
+TiltX:      16.159334327042   TiltY:       -2.972379654807   TiltZ:       -0.865808716723
+ModuleId:   21
+PositionX:  -3.919979571957   PositionY:   19.912118846381   PositionZ:   0.239088735595
+TiltX:      -16.159334327042   TiltY:       -2.972379654807   TiltZ:       0.865808716723
+ModuleId:   22
+PositionX:  3.919979571957   PositionY:   -19.912118846381   PositionZ:   0.239088735595
+TiltX:      16.159334327042   TiltY:       2.972379654807   TiltZ:       0.865808716723
+ModuleId:   23
+PositionX:  3.919979571957   PositionY:   19.912118846381   PositionZ:   0.239088735595
+TiltX:      -16.159334327042   TiltY:       2.972379654807   TiltZ:       -0.865808716723
+ModuleId:   24
+PositionX:  -19.954965407055   PositionY:   -11.764471567213   PositionZ:   0.502522930429
+TiltX:      10.006802379881   TiltY:       -15.907523397074   TiltZ:       -1.230067992729
+ModuleId:   25
+PositionX:  -19.954965407055   PositionY:   11.764471567213   PositionZ:   0.502522930429
+TiltX:      -10.006802379881   TiltY:       -15.907523397074   TiltZ:       1.230067992729
+ModuleId:   26
+PositionX:  19.954965407055   PositionY:   -11.764471567213   PositionZ:   0.502522930429
+TiltX:      10.006802379881   TiltY:       15.907523397074   TiltZ:       1.230067992729
+ModuleId:   27
+PositionX:  19.954965407055   PositionY:   11.764471567213   PositionZ:   0.502522930429
+TiltX:      -10.006802379881   TiltY:       15.907523397074   TiltZ:       -1.230067992729
+ModuleId:   28
+PositionX:  -11.990467607068   PositionY:   -19.912118846381   PositionZ:   0.503557482782
+TiltX:      16.305386816423   TiltY:       -9.332548521574   TiltZ:       -1.168321871295
+ModuleId:   29
+PositionX:  -11.990467607068   PositionY:   19.912118846381   PositionZ:   0.503557482782
+TiltX:      -16.305386816423   TiltY:       -9.332548521574   TiltZ:       1.168321871295
+ModuleId:   30
+PositionX:  11.990467607068   PositionY:   -19.912118846381   PositionZ:   0.503557482782
+TiltX:      16.305386816423   TiltY:       9.332548521574   TiltZ:       1.168321871295
+ModuleId:   31
+PositionX:  11.990467607068   PositionY:   19.912118846381   PositionZ:   0.503557482782
+TiltX:      -16.305386816423   TiltY:       9.332548521574   TiltZ:       -1.168321871295
