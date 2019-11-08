@@ -8,6 +8,7 @@
 #pragma link C++ class TAIRalignC+;
 #pragma link C++ class TAIRntuAlignC+;
 
+#pragma link C++ class TAIRalignM+;
 #pragma link C++ class TAIRmillepede+;
 
 
