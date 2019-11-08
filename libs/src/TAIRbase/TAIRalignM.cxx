@@ -46,22 +46,21 @@ ClassImp(TAIRalignM);
 
 TAIRalignM* TAIRalignM::fgInstance = 0x0;
 //__________________________________________________________
-TAIRalignM* TAIRalignM::Instance(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
+TAIRalignM* TAIRalignM::Instance(const TString name, Bool_t flagVtx, Bool_t flagIt)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAIRalignM(name, flagVtx, flagIt, flagMsd, weight);
+      fgInstance = new TAIRalignM(name, flagVtx, flagIt);
    
    return fgInstance;
 }
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAIRalignM::TAIRalignM(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
+TAIRalignM::TAIRalignM(const TString name, Bool_t flagVtx, Bool_t flagIt)
  : TObject(),
    fFileName(name),
    fFlagVtx(flagVtx),
    fFlagIt(flagIt),
-   fFlagMsd(flagMsd),
    fFixPlaneRef1(false),
    fFixPlaneRef2(false),
    fPlaneRef1(-1),
@@ -113,7 +112,7 @@ TAIRalignM::TAIRalignM(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    }
    
    // ITR
-   if (fFlagMsd) {
+   if (fFlagIt) {
       fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
       TAITparGeo* geomapMsd   = (TAITparGeo*) fpGeoMapItr->Object();
       TString parFile = "./geomaps/TAMSDdetector.map";
@@ -307,7 +306,6 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    printf("Number of total entries: %d \n", fInfile->NEvents());
    printf("Number of events: %d \n", nEvts);
    
-  // fAlign->DefineConstant(fWeightQ, fZposition);
    fInfile->Reset();
    
    // loop over events
@@ -321,10 +319,6 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
       
       for( Int_t iTrack = 0; iTrack < pNtuTrk->GetTracksN(); ++iTrack ) {
          TAVTbaseTrack* aTrack = pNtuTrk->GetTrack(iTrack);
-         //       DLine line = aTrack->GetTrackLine();
-         //       Float_t slopeX = line.GetSlopeZ()(0);
-         //       Float_t slopeY = line.GetSlopeZ()(1);
-         //       if (fabs(slopeX) > 5e-3 || fabs(slopeY) > 5e-3) continue;
          
          ProcessTrack(aTrack);
          LocalFit(nTrack,trackParams,1);
