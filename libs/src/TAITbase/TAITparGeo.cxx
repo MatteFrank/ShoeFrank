@@ -528,17 +528,6 @@ string TAITparGeo::PrintRotations()
 //_____________________________________________________________________________
 string TAITparGeo::PrintBodies()
 {
-   
-   stringstream ss;
-   ss << PrintModuleBodies() << endl;
-   ss << PrintSupportBodies() << endl;
-
-   return ss.str();
-}
-
-//_____________________________________________________________________________
-string TAITparGeo::PrintModuleBodies()
-{
 
    stringstream ss;
    ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
@@ -551,6 +540,7 @@ string TAITparGeo::PrintModuleBodies()
       TVector3  fAngle = fpFootGeo->GetITAngles();
       
       TVector3 posEpi, posPix, posMod;
+      TVector3 posFoam, posKapton, posEpoxy, posAl;
       string bodyname, regionname;
       
       ss << "* ***Inner tracker bodies" << endl;
@@ -612,31 +602,13 @@ string TAITparGeo::PrintModuleBodies()
             ss << "$end_transform " << endl;
          
       }
+      ss << "* End of IT bodies" << endl;
        if(FootDebugLevel(2))
           cout << ss.str() << endl;
-   }
-   
-   return ss.str();
-}
-
-//_____________________________________________________________________________
-string TAITparGeo::PrintSupportBodies()
-{
-   stringstream ss;
-   ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
-
-   if(GlobalPar::GetPar()->IncludeInnerTracker()){
-
-      TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-      
-      TVector3  fCenter = fpFootGeo->GetITCenter();
-      TVector3  fAngle = fpFootGeo->GetITAngles();
-
       // support
       for(Int_t iSup = 0; iSup < GetSensorsN()/2; iSup+=4) {
          
-         TVector3 posFoam, posKapton, posEpoxy, posAl;
-         string bodyname, regionname;
+	 //         string bodyname, regionname;
          
          Float_t sign = (iSup > 7) ? +1 : -1;
          
@@ -856,8 +828,9 @@ string TAITparGeo::PrintSupportBodies()
          fvEpoxyBody.push_back(bodyname);
          fvEpoxyRegion.push_back(regionname);
       }
+      ss << "* End of IT Support bodies" << endl;
    }
-  
+
    if(FootDebugLevel(2)) {
       cout << "Foam " << fvFoamRegion.size() << endl;
       for(int i=0; i<fvFoamRegion.size(); i++)
@@ -878,10 +851,8 @@ string TAITparGeo::PrintSupportBodies()
       for(int i=0; i<fvEpoxyRegion.size(); i++)
          cout << setw(13) << setfill( ' ' ) << std::left << fvEpoxyRegion.at(i) <<endl;
    }
-         
    return ss.str();
 }
-
 
 //_____________________________________________________________________________
 string TAITparGeo::PrintRegions()
@@ -893,7 +864,7 @@ string TAITparGeo::PrintRegions()
 
     string name;
 
-    ss << "* ***Vertex regions" << endl;
+    ss << "* ***Inner Tracker regions" << endl;
 
     for(int i=0; i<fvEpiRegion.size(); i++) {
       ss << setw(13) << setfill( ' ' ) << std::left << fvEpiRegion.at(i)
