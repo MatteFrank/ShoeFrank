@@ -1,87 +1,81 @@
 /*!
  \file
- \version $Id: TAITactBaseNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAITactBaseNtuTrack.
+ \version $Id: TAITactNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \brief   Implementation of TAITactNtuTrack.
  */
+#include "TClonesArray.h"
+#include "TMath.h"
 
-#include "GlobalPar.hxx"
+
+//TAGroot
+#include "TAGroot.hxx"
+#include "TAGgeoTrafo.hxx"
+
+//VTX
+#include "TAVTntuVertex.hxx"
 
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
-#include "TAITparCal.hxx"
-#include "TAITtrack.hxx"
+#include "TAITparMap.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAITntuCluster.hxx"
-
-#include "TAITactBaseNtuTrack.hxx"
+#include "TAITactNtuTrack.hxx"
 
 /*!
- \class TAITactBaseNtuTrack 
- \brief NTuplizer for Inner Tracker tracking **
+ \class TAITactNtuTrack 
+ \brief NTuplizer for Inner tracker tracks. **
  */
 
-ClassImp(TAITactBaseNtuTrack);
+ClassImp(TAITactNtuTrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAITactBaseNtuTrack::TAITactBaseNtuTrack(const char* name, 
-										 TAGdataDsc* pNtuClus,TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig,  
-										 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
-: TAVTactBaseTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib)
+TAITactNtuTrack::TAITactNtuTrack(const char* name, 
+								 TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
+								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pVtVertex)
+ : TAITactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
+   fpVtVertex(pVtVertex),
+   fVtVertex(0x0),
+   fVtVertexPos(),
+   fVtVertexOk(false)
 {
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAITactBaseNtuTrack::~TAITactBaseNtuTrack()
-{   
+TAITactNtuTrack::~TAITactNtuTrack()
+{
+
+}
+
+//_____________________________________________________________________________
+//
+void TAITactNtuTrack::CheckVtx()
+{
+   // VTX info
+   fVtVertexOk = false;
+   TAVTntuVertex* pNtuVertex  = (TAVTntuVertex*) fpVtVertex->Object();
+   
+   Int_t nVertex = pNtuVertex->GetVertexN();
+   
+   for (Int_t i = 0; i < nVertex; ++i) {
+      
+      TAVTvertex* vtx = pNtuVertex->GetVertex(i);
+      if (vtx->IsBmMatched()) {
+         fVtVertexPos.SetXYZ(vtx->GetVertexPosition().X(), vtx->GetVertexPosition().Y(), vtx->GetVertexPosition().Z());
+         TVector3 posVtG = fpFootGeo->FromVTLocalToGlobal(fVtVertexPos);
+         fVtVertexPos    = fpFootGeo->FromGlobalToITLocal(posVtG);
+         fVtVertexOk     = true;
+      }
+   }
 }
 
 //_____________________________________________________________________________
 //  
-Bool_t TAITactBaseNtuTrack::Action()
+Bool_t TAITactNtuTrack::FindTiltedTracks()
 {
-   // IT
-   TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
-   pNtuTrack->Clear();
+   CheckVtx();
    
-   // looking straight
-   FindStraightTracks();
-   
-   // looking inclined line
-   if (!FindTiltedTracks()){
-	  if (ValidHistogram())
-		 FillHistogramm();
-	  fpNtuTrack->SetBit(kValid);
-	  return true;
-   }
-   
-   if (FindVertices())
-	  FindTiltedTracks();
-   
-   if(FootDebugLevel(1)) {
-	  printf(" %d tracks found\n", pNtuTrack->GetTracksN());
-	  for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
-		 TAITtrack* track = pNtuTrack->GetTrack(i);
-		 printf("   with # clusters %d\n", track->GetClustersN());
-	  }
-   }
-   
-
-   if (ValidHistogram())
-	  FillHistogramm();
-   
-   // Set charge probability
-   SetChargeProba();
-   
-   fpNtuTrack->SetBit(kValid);
-   return true;
-}
-
-//_____________________________________________________________________________
-//  
-Bool_t TAITactBaseNtuTrack::FindStraightTracks()
-{
    Double_t minDistance  = 1.e9;
    Double_t aDistance;
    
@@ -93,15 +87,16 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
    lineOrigin.SetXYZ(0.,0.,0.);
    lineSlope.SetXYZ(0.,0.,1.);
    
-   TAITntuCluster*  pNtuClus  = (TAITntuCluster*)  fpNtuClus->Object();
-   TAITntuTrack*    pNtuTrack = (TAITntuTrack*)    fpNtuTrack->Object();
-   TAVTbaseParGeo*  pGeoMap   = (TAVTbaseParGeo*)  fpGeoMap->Object();
-   TAVTbaseParConf* pConfig   = (TAVTbaseParConf*) fpConfig->Object();
+   TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpNtuClus->Object();
+   TAITntuTrack*   pNtuTrack = (TAITntuTrack*)   fpNtuTrack->Object();
+   TAITparGeo*     pGeoMap   = (TAITparGeo*)     fpGeoMap->Object();
+   TAITparConf*    pConfig   = (TAITparConf*)    fpConfig->Object();
    
    TList array;
    array.SetOwner(false);
    array.Clear();
-   
+
+   // loop over last planes
    Int_t nPlane = pGeoMap->GetSensorsN()-1;
    Int_t curPlane = nPlane;
    
@@ -112,8 +107,7 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
 	  Int_t nClusters = pNtuClus->GetClustersN(curPlane);
 	  if ( nClusters == 0) continue;
 	  
-	  // Loop on all clusters of the first plane
-	  // and try to make a track out of each one
+	  // Loop on all clusters of the last plane
 	  for( Int_t iLastClus = 0; iLastClus < nClusters; ++iLastClus) { // loop on cluster of last plane, 
 		 
 		 if( pNtuTrack->GetTracksN() >= pConfig->GetAnalysisPar().TracksMaximum ) break; // if max track number reach, stop
@@ -125,9 +119,21 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
 		 track->AddCluster(cluster);
 		 array.Add(cluster);
 		 
-		 lineOrigin.SetXYZ(cluster->GetPositionU(), cluster->GetPositionV(), 0); // parallel lines
-		 lineOrigin = pGeoMap->Sensor2Detector(curPlane, lineOrigin);
-		 lineSlope.SetXYZ(0, 0, 1);
+		 if (fpVtVertex == 0x0 || fpFootGeo == 0x0) { // no vertex info available
+			lineOrigin.SetXYZ(0, 0, 0);  
+		 } else {
+			if (fpVtVertex) {
+			   if (fVtVertexOk)
+				  lineOrigin.SetXYZ(fVtVertexPos.X(), fVtVertexPos.Y(), fVtVertexPos.Z());
+			   else 
+				  lineOrigin.SetXYZ(0, 0, 0); 
+			} else {
+			   return true;  // think about it !
+			}
+		 }
+		 lineOrigin[2] = 0;
+		 lineSlope     = cluster->GetPositionG() - lineOrigin;
+		 lineSlope    *= 1/(lineSlope)(2);
 		 
 		 track->SetLineValue(lineOrigin, lineSlope);
 		 
@@ -138,7 +144,7 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
 			if (nClusters1 == 0) continue; //empty planes
 			
 			// loop on all clusters of this plane and keep the nearest one
-			minDistance = fSearchClusDistance;
+			minDistance = fSearchClusDistance*(1 + 2.*TMath::Tan(track->GetTheta()*TMath::DegToRad()));
 			TAITcluster* bestCluster = 0x0;
 			
 			for( Int_t iClus = 0; iClus < nClusters1; ++iClus ) { // loop on plane clusters
@@ -170,49 +176,29 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
 		 if (AppyCuts(track)) {
 			track->SetNumber(pNtuTrack->GetTracksN());
 			track->MakeChiSquare();
-			track->SetType(0);
+			track->SetType(1);
          pNtuTrack->NewTrack(*track);
-			TVector3 orig(0,0,0);
-			pNtuTrack->SetBeamPosition(orig);
-			
-			if (ValidHistogram()) {
+          
+			if (ValidHistogram()) 
 			   FillHistogramm(track);
-			}
-			
+				  
 			delete track;
+			
 		 } else { // reset clusters
 			for (Int_t i = 0; i < array.GetEntries(); ++i) {
 			   TAITcluster*  cluster1 = (TAITcluster*)array.At(i);
 			   cluster1->SetFound(false);
 			}
-			delete track;
 			array.Clear();
+			delete track;
 		 }
 		 
 	  } // end loop on first clusters
 	  
    } // while
-   
-   
+      
    return true;
 }
 
-//_____________________________________________________________________________
-//
-TAVTbaseTrack* TAITactBaseNtuTrack::GetTrack(Int_t idx)
-{
-   TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
-   TAVTbaseTrack* track  = pNtuTrack->GetTrack(idx);
 
-   return track;
-}
-
-//_____________________________________________________________________________
-//
-Int_t TAITactBaseNtuTrack::GetTracksN() const
-{
-   TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
-
-   return pNtuTrack->GetTracksN();
-}
 

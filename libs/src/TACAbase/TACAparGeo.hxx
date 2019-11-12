@@ -61,6 +61,8 @@ public:
    
    TVector3        GetCrystalPosition(Int_t iCrystal);
    TVector3        GetCrystalAngle(Int_t iCrystal);
+   TVector3        GetModulePosition(Int_t iMod);
+   TVector3        GetModuleAngle(Int_t iMod);
 
    //! of the detection id to the global reference frame
    TVector3        Detector2Crystal(Int_t idx, TVector3& glob) const;
@@ -98,7 +100,7 @@ public:
    static Color_t GetDefaultCryColOn()    { return fgkDefaultCryColOn;    }
    static Color_t GetDefaultModCol()      { return fgkDefaultModCol;      }
    static Int_t   GetCrystalsNperModule() { return fgkCrystalsNperModule; }
-   static Int_t   GetModuleId(Int_t idx)  { return idx / fgkCrystalsNperModule; }
+//   static Int_t   GetModuleId(Int_t idx)  { return idx / fgkCrystalsNperModule; }
 
 
 private:
@@ -133,11 +135,12 @@ private:
    Double_t            fModAirFlukaSize[5];   //
    Float_t             fModAirFlukaPositionZ;
 
-   TString             fkDefaultGeoName;  // default par geo file name
+   TString             fkDefaultGeoName;   // default par geo file name
    TString             fDetectorName;
-   TString             fConfigTypeGeo;   // config geometry of calo
+   TString             fConfigTypeGeo;     // config geometry of calo
    
-   vector<TVector3>    fListOfCrysAng; // list of angles for module
+   vector<TVector3>    fListOfCrysAng;     // list of angles for crystal
+   vector<TVector3>    fListOfModAng;      // list of angles for module
 
   
    ClassDef(TACAparGeo, 2)

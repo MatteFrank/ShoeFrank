@@ -38,10 +38,12 @@ class TACAactNtuMC : public TAGaction {
     TACAdigitizer*   fDigitizer;       // cluster size digitizer
 
    TH1F* fpHisDeTot;
+   TH1F* fpHisMass;
    TH1F* fpHisTimeTot;
    TH1F* fpHisDeTotMc;
    TH1F* fpHisTimeTotMc;
-   TH2F* fpHisHitMap;
+   TH2F* fpHisHitMapXY;
+   TH2F* fpHisHitMapZY;
    
 private:
    void           CreateDigitizer();

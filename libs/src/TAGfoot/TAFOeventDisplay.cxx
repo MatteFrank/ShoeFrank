@@ -665,7 +665,7 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
    else if (prefix == "it")
       pNtuClus = (TAVTntuCluster*)fReco->GetNtuClusterIt();
    else if (prefix == "ms")
-      pNtuClus = (TAVTntuCluster*)fReco->GetNtuClusterVtx();
+      pNtuClus = (TAVTntuCluster*)fReco->GetNtuClusterMsd();
 
    for( Int_t iPlane = 0; iPlane < nPlanes; iPlane++) {
       

@@ -640,6 +640,7 @@ void EndGeometry(FILE* fp)
    fprintf(fp,"ModulesN:  %d\n", nModule); 
 
    PrintCrystals(fp);
+   PrintModules(fp);
 
    fclose(fp);
 
