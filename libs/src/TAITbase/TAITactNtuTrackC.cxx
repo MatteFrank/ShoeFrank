@@ -25,6 +25,7 @@
 /*!
  \class TAITactNtuTrackC
  \brief NTuplizer for Inner tracker tracks. **
+ Combining VTX tracks with IT clusters
  */
 
 ClassImp(TAITactNtuTrackC);
@@ -98,11 +99,11 @@ Bool_t TAITactNtuTrackC::FindTiltedTracks()
       TAITtrack* track   = new TAITtrack(*vtTrack);
    
       // Loop on all sensors to find a matching cluster in them
-      for( Int_t iSensor = 0; iSensor < nSensor; ++iSensor) { // loop on planes
+      for( Int_t iSensor = 0; iSensor < nSensor; ++iSensor) { // loop on sensors
          
          TClonesArray* list = pNtuClus->GetListOfClusters(iSensor);
          Int_t nClusters = pNtuClus->GetClustersN(iSensor);
-         if (nClusters == 0) continue; //empty planes
+         if (nClusters == 0) continue; //empty sensors
          
          if( pNtuTrack->GetTracksN() >= pConfig->GetAnalysisPar().TracksMaximum ) break; // if max track number reach, stop
          
@@ -133,7 +134,7 @@ Bool_t TAITactNtuTrackC::FindTiltedTracks()
                minDistance = aDistance;
                bestCluster = aCluster;
             }
-         } // end loop on plane clusters
+         } // end loop on sensor clusters
          
          // if a cluster has been found, add the cluster
          if( bestCluster ) {
@@ -144,7 +145,7 @@ Bool_t TAITactNtuTrackC::FindTiltedTracks()
                UpdateParam(track);
          }
          
-      } // end loop on planes
+      } // end loop on sensors
       
       // Apply cuts
       if (AppyCuts(track)) {
