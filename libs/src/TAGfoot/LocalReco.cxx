@@ -99,7 +99,7 @@ void LocalReco::CreateRawAction()
             fActDatRawBm->CreateHistogram();
          if(GlobalPar::GetPar()->Debug()) fActDatRawBm->SetDebugLevel(1);
          
-         fActNtuRawBm = new TABMactNtuRaw("bmActNtu", fpNtuRawBm, fpDatRawBm, fpNtuRawSt, fpParGeoBm, fpParConfBm);
+         fActNtuRawBm = new TABMactNtuRaw("bmActNtu", fpNtuRawBm, fpDatRawBm, fpParGeoBm, fpParConfBm);
          if (fFlagHisto)
             fActNtuRawBm->CreateHistogram();
          if(GlobalPar::GetPar()->Debug()) fActNtuRawBm->SetDebugLevel(1);

@@ -1,6 +1,3 @@
-#include "TRandom3.h"
-
-
 #include "TAGroot.hxx"
 #include "TAGparaDsc.hxx"
 #include "TABMparGeo.hxx"

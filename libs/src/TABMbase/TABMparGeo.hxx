@@ -108,6 +108,7 @@ public:
    //other methods
    TVector3       ProjectFromPversR0(TVector3 Pvers, TVector3 R0, Double_t z);
    TVector3       ProjectFromPversR0(Double_t PversXZ, Double_t PversYZ, Double_t R0X, Double_t R0Y, Double_t z);
+   Double_t       FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVector3 Wvers, Bool_t isTrack);
    
    //~ void           SetWireAlignment(Bool_t reverse = false);
    

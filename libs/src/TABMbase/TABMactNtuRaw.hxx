@@ -18,13 +18,13 @@
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 
+#include "TRandom3.h"
 
 class TABMactNtuRaw : public TAGaction {
   public:
     explicit        TABMactNtuRaw(const char* name=0,
 				 TAGdataDsc* p_nturaw=0, 
 				 TAGdataDsc* p_datraw=0, 
-				 TAGdataDsc* p_timraw=0, 
 				 TAGparaDsc* p_geomap=0, 
 				 TAGparaDsc* p_parcon=0);
     virtual         ~TABMactNtuRaw();
@@ -37,7 +37,6 @@ class TABMactNtuRaw : public TAGaction {
   private:
     TAGdataDsc*     fpNtuRaw;		    // output data dsc
     TAGdataDsc*     fpDatRaw;		    // input data dsc
-    TAGdataDsc*     fpTimRaw;		    // input time dsc
     TAGparaDsc*     fpGeoMap;		    // geometry para dsc
     TAGparaDsc*     fpParCon;		    // BM config params.
     

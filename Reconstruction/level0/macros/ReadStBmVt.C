@@ -104,7 +104,7 @@ void FillBM()
    bmActDat  = new TABMactDatRaw("bmActDat", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
    bmActDat->CreateHistogram();
    
-   bmActNtu = new TABMactNtuRaw("bmActNtu", bmNtu, bmDat, stDat, bmGeo, bmConf);
+   bmActNtu = new TABMactNtuRaw("bmActNtu", bmNtu, bmDat, bmGeo, bmConf);
    bmActNtu->CreateHistogram();
 
    bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmNtu, bmGeo, bmConf, tgGeo);

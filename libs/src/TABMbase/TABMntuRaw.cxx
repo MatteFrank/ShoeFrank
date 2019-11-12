@@ -108,15 +108,13 @@ void TABMntuRaw::ToStream(ostream& os, Option_t* option) const
 }
 
 void TABMntuRaw::ClearCellOccupy(){
-  cell_occupy.clear();
-  for(Int_t i=0;i<36;i++)
-    cell_occupy.push_back(0);
+  memset(cell_occupy, 0, sizeof(cell_occupy));
 return;
 }
 
 Bool_t TABMntuRaw::AddCellOccupyHit(Int_t pos){
   if(pos<36 && pos>=0){  
-    cell_occupy.at(pos)++;
+    cell_occupy[pos]++;
     return kTRUE;
   }else
     cout<<"ERROR in TABMntuRaw::AddCellOccupyHit: cell id of the hit is wrong: pos="<<pos<<endl;
@@ -124,65 +122,58 @@ Bool_t TABMntuRaw::AddCellOccupyHit(Int_t pos){
 }
 
 
-void TABMntuRaw::Efficiency_paoloni(vector<Int_t> &pivot, vector<Int_t> &probe){
-
-  if(cell_occupy.size()!=36){
-    eff_paoloni=-2;
-    eff_paolonixview=-2;
-    eff_paoloniyview=-2;
-    return;
-  }
+void TABMntuRaw::Efficiency_paoloni(Int_t pivot[], Int_t probe[]){
 
   //xview
-  if(cell_occupy.at(0)>0 && cell_occupy.at(12)>0 && cell_occupy.at(24)>0){
-    pivot.at(0)++;
-    if((cell_occupy.at(7)>0 || cell_occupy.at(6)>0) && (cell_occupy.at(19)>0 || cell_occupy.at(18)>0))
-      probe.at(0)++;
+  if(cell_occupy[0]>0 && cell_occupy[12]>0 && cell_occupy[24]>0){
+    pivot[0]++;
+    if((cell_occupy[7]>0 || cell_occupy[6]>0) && (cell_occupy[19]>0 || cell_occupy[18]>0))
+      probe[0]++;
   }
-  if(cell_occupy.at(1)>0 && cell_occupy.at(13)>0 && cell_occupy.at(25)>0){
-    pivot.at(1)++;
-    if((cell_occupy.at(8)>0 || cell_occupy.at(7)>0) && (cell_occupy.at(19)>0 || cell_occupy.at(20)>0))
-      probe.at(1)++;
+  if(cell_occupy[1]>0 && cell_occupy[13]>0 && cell_occupy[25]>0){
+    pivot[1]++;
+    if((cell_occupy[8]>0 || cell_occupy[7]>0) && (cell_occupy[19]>0 || cell_occupy[20]>0))
+      probe[1]++;
   }
-  if(cell_occupy.at(7)>0 && cell_occupy.at(19)>0 && cell_occupy.at(31)>0){
-    pivot.at(2)++;
-    if((cell_occupy.at(12)>0 || cell_occupy.at(13)>0) && (cell_occupy.at(24)>0 || cell_occupy.at(25)>0))
-      probe.at(2)++;
+  if(cell_occupy[7]>0 && cell_occupy[19]>0 && cell_occupy[31]>0){
+    pivot[2]++;
+    if((cell_occupy[12]>0 || cell_occupy[13]>0) && (cell_occupy[24]>0 || cell_occupy[25]>0))
+      probe[2]++;
   }
-  if(cell_occupy.at(8)>0 && cell_occupy.at(20)>0 && cell_occupy.at(32)>0){
-    pivot.at(3)++;
-    if((cell_occupy.at(13)>0 || cell_occupy.at(14)>0) && (cell_occupy.at(25)>0 || cell_occupy.at(26)>0))
-      probe.at(3)++;
+  if(cell_occupy[8]>0 && cell_occupy[20]>0 && cell_occupy[32]>0){
+    pivot[3]++;
+    if((cell_occupy[13]>0 || cell_occupy[14]>0) && (cell_occupy[25]>0 || cell_occupy[26]>0))
+      probe[3]++;
   }
   
   //yview
-  if(cell_occupy.at(4)>0 && cell_occupy.at(16)>0 && cell_occupy.at(28)>0){
-    pivot.at(4)++;
-    if((cell_occupy.at(10)>0 || cell_occupy.at(19)>0) && (cell_occupy.at(22)>0 || cell_occupy.at(21)>0))
-      probe.at(4)++;
+  if(cell_occupy[4]>0 && cell_occupy[16]>0 && cell_occupy[28]>0){
+    pivot[4]++;
+    if((cell_occupy[10]>0 || cell_occupy[19]>0) && (cell_occupy[22]>0 || cell_occupy[21]>0))
+      probe[4]++;
   }
-  if(cell_occupy.at(5)>0 && cell_occupy.at(17)>0 && cell_occupy.at(29)>0){
-    pivot.at(5)++;
-    if((cell_occupy.at(10)>0 || cell_occupy.at(11)>0) && (cell_occupy.at(22)>0 || cell_occupy.at(23)>0))
-      probe.at(5)++;
+  if(cell_occupy[5]>0 && cell_occupy[17]>0 && cell_occupy[29]>0){
+    pivot[5]++;
+    if((cell_occupy[10]>0 || cell_occupy[11]>0) && (cell_occupy[22]>0 || cell_occupy[23]>0))
+      probe[5]++;
   }
-  if(cell_occupy.at(9)>0 && cell_occupy.at(21)>0 && cell_occupy.at(33)>0){
-    pivot.at(6)++;
-    if((cell_occupy.at(15)>0 || cell_occupy.at(16)>0) && (cell_occupy.at(27)>0 || cell_occupy.at(28)>0))
-      probe.at(6)++;
+  if(cell_occupy[9]>0 && cell_occupy[21]>0 && cell_occupy[33]>0){
+    pivot[6]++;
+    if((cell_occupy[15]>0 || cell_occupy[16]>0) && (cell_occupy[27]>0 || cell_occupy[28]>0))
+      probe[6]++;
   }
-  if(cell_occupy.at(10)>0 && cell_occupy.at(22)>0 && cell_occupy.at(34)>0){
-    pivot.at(7)++;
-    if((cell_occupy.at(16)>0 || cell_occupy.at(17)>0) && (cell_occupy.at(28)>0 || cell_occupy.at(29)>0))
-      probe.at(7)++;
+  if(cell_occupy[10]>0 && cell_occupy[22]>0 && cell_occupy[34]>0){
+    pivot[7]++;
+    if((cell_occupy[16]>0 || cell_occupy[17]>0) && (cell_occupy[28]>0 || cell_occupy[29]>0))
+      probe[7]++;
   }
   
   Int_t total_probesxview=0, total_pivotsxview=0, total_probesyview=0, total_pivotsyview=0;
   for(Int_t i=0;i<4;i++){
-    total_probesxview+=probe.at(i);
-    total_pivotsxview+=pivot.at(i);
-    total_probesyview+=probe.at(i+4);
-    total_pivotsyview+=pivot.at(i+4);
+    total_probesxview+=probe[i];
+    total_pivotsxview+=pivot[i];
+    total_probesyview+=probe[i+4];
+    total_pivotsyview+=pivot[i+4];
   }
   eff_paoloni= ((total_pivotsxview+total_pivotsyview)==0) ?  -1 : ((Double_t) (total_probesxview+total_probesyview))/(total_pivotsxview+total_pivotsyview);
   eff_paolonixview=(total_pivotsxview==0) ? -1: ((Double_t) total_probesxview)/total_pivotsxview;
@@ -193,16 +184,11 @@ return;
 
 void TABMntuRaw::PrintCellOccupy(){
   
-  if(cell_occupy.size()==0)
-    return;
-  else if(cell_occupy.size()==36){
-    cout<<"TABMactNtuRaw::evaluate_cell_occupy: print cell_occupy"<<endl;
-    for(Int_t i=0;i<cell_occupy.size();i++)
-      cout<<cell_occupy.at(i)<<" ";
-    cout<<endl;
-  }
-  else
-    cout<<"ERROR in TABMactNtuRaw::cell_occupy.size()!=0 || cell_occupy.size()!=36"<<endl;
+  cout<<"TABMactNtuRaw::evaluate_cell_occupy: print cell_occupy"<<endl;
+  for(Int_t i=0;i<36;i++)
+    cout<<cell_occupy[i]<<" ";
+  cout<<endl;
+
 return;  
 }
 

@@ -71,24 +71,19 @@ public:
    
   //new tracking
   void Print_matrix(vector<vector<int>>& vec);
-  void PruneNotConvTrack(vector<vector<Int_t>> &prunedhit,vector< vector<Int_t> > &hitxtrack, Int_t index);
-  void ChargePrunedTrack(vector<Int_t> &prunedhit, Int_t &firedUview, Int_t &firedVview, vector< vector<Int_t> > &hitxtrack, Int_t index);  
-  Int_t EstimateFIRSTTrackPar(vector<Int_t> &singlehittrack, Int_t &firedSingleUview, Int_t &firedSingleVview,TABMntuTrackTr *&tmp_trackTr);
+  void ChargePrunedTrack(const Int_t prunedhit, Int_t &firedUview, Int_t &firedVview, vector< vector<Int_t> > &hitxtrack, const Int_t index);  
+  Int_t EstimateFIRSTTrackPar(vector<Int_t> &singlehittrack, Int_t &firedSingleUview, Int_t &firedSingleVview);
   TG_STRUCT Circles2Tangents(Double_t xc1, Double_t yc1, Double_t r1, Double_t xc2, Double_t yc2, Double_t r2);
-  void Chi2Fit(vector<Int_t> &singlehittrack, vector<vector<Int_t>> &prunedhit, TABMntuTrackTr *&tmp_trackTr,Bool_t converged);
-  void ComputeDy(vector<Int_t> &singlehittrack, TABMntuTrackTr *&tmp_trackTr, TVectorD &Dy);
-  void ComputeVV(vector<Int_t> &singlehittrack, TABMntuTrackTr *&tmp_trackTr, TMatrixD &VV);
+  void Chi2Fit(vector<Int_t> &singlehittrack, Int_t &prunedhit,Bool_t converged);
+  void ComputeDy(vector<Int_t> &singlehittrack, TVectorD &Dy);
+  void ComputeVV(vector<Int_t> &singlehittrack, TMatrixD &VV);
   Double_t ComputeChiQua(TVectorD &Dy, TMatrixD &VV);
-  void ComputeAA(vector<Int_t> &singlehittrack, TABMntuTrackTr *&tmp_trackTr, TVectorD &alpha, TMatrixD &AA, Bool_t sign);
-  void ComputeDataAll(TABMntuTrackTr *&tmp_trackTr, vector<Int_t> &singlehittrack);
+  void ComputeAA(vector<Int_t> &singlehittrack, TVectorD &alpha, TMatrixD &AA);
+  void ComputeDataAll(vector<Int_t> &singlehittrack);
   Int_t Mini(Int_t nmeas,TMatrixD &AA, TMatrixD &VV, TVectorD &Dy, TVectorD &Eta);
-  void Update(TABMntuTrackTr *&tmp_trackTr, vector<Int_t> &singlehittrack, TVectorD Dy, TVectorD& alpha, TVectorD &Eta, TMatrixD &VV, Int_t &worst_hit);  
-  Int_t SortFirstDoubleHits(TABMntuTrackTr *&tmp_trackTr, vector< vector<Int_t> > &hitxplane, vector< vector<Int_t> > &hitxtrack);
+  void Update(vector<Int_t> &singlehittrack, TVectorD Dy, TVectorD& alpha, TVectorD &Eta, TMatrixD &VV, Int_t &worst_hit);  
+  Int_t SortFirstDoubleHits(vector< vector<Int_t> > &hitxplane, vector< vector<Int_t> > &hitxtrack);
   void ChargeAllTracks(vector< vector<Int_t> > &hitxtrack,vector< vector<Int_t> > &hitxplane, Int_t tracknum, Int_t firedPlane);
-  
-  void NumericalMinimization(vector<Int_t> &singlehittrack, TABMntuTrackTr *&tmp_trackTr, vector<Double_t> &newpar);
-  //~ Double_t EvaluateChi2(const Double_t *xx);
-  
   
   
   ClassDef(TABMactNtuTrack,0)
@@ -102,6 +97,7 @@ public:
   TAGparaDsc*       fpBMCon;		    // input data dsc
   TAGparaDsc*       fpTGgeo;		    // input data dsc
 
+  TABMntuTrackTr *tmp_trackTr;
   //ntu objects
   TABMntuRaw*   p_nturaw;
   TABMntuHit*   p_hit;

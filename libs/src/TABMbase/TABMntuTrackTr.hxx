@@ -74,7 +74,6 @@ class TABMntuTrackTr : public TObject {
     Int_t GetNite(){return nite;};
     Double_t GetEffFittedPlane(){return eff_fittedplane;};
 
-    Double_t FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVector3 Wvers);    
     void PrintR0Pvers();
    
    TVector3 PointAtLocalZ(double zloc);

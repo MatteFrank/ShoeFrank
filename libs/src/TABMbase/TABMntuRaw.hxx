@@ -14,7 +14,6 @@
 #include "TABMparGeo.hxx"
 #include "TABMntuHit.hxx"
 
-#include <TRandom3.h>
 #include "TString.h"
 
 #include <string.h>
@@ -49,11 +48,11 @@ class TABMntuRaw : public TAGdata {
     //cell_occupy
     void ClearCellOccupy();
     Bool_t AddCellOccupyHit(Int_t pos);
-    Int_t GetCellOccupy(Int_t pos){return (pos<36 && pos>=0) ? cell_occupy.at(pos) : -1;};
+    Int_t GetCellOccupy(Int_t pos){return (pos<36 && pos>=0) ? cell_occupy[pos] : -1;};
     void PrintCellOccupy();
     
     //efficieny paoloni's method
-    void Efficiency_paoloni(vector<Int_t> &pivot, vector<Int_t> &probe);
+    void Efficiency_paoloni(Int_t pivot[], Int_t probe[]);
     void ResetEffPaoloni(){eff_paoloni=-3;eff_paolonixview=-3;eff_paoloniyview=-3;return;};
     Double_t GetEffPaoloni(){return eff_paoloni;};
     Double_t GetEffPaolonixview(){return eff_paolonixview;};
@@ -68,7 +67,7 @@ class TABMntuRaw : public TAGdata {
   private:
    static TString fgkBranchName;    // Branch name in TTree
    
-   vector<Int_t>   cell_occupy;    //occupancy of the BM cell
+   Int_t           cell_occupy[36];    //occupancy of the BM cell
    Double_t        eff_paoloni;    //value of the efficiency calculated with the Paoloni's method
    Double_t        eff_paolonixview;    //value of the efficiency calculated with the Paoloni's method for the x view
    Double_t        eff_paoloniyview;    //value of the efficiency calculated with the Paoloni's method for the y view

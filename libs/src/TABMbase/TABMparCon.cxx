@@ -49,7 +49,6 @@ TABMparCon::TABMparCon()
   mceff_mean(1),
   mceff_sigma(0.2)
 {
-  rand= new TRandom3();
   fkDefaultParName = "./config/TABMdetector.cfg";
   vector<Float_t> myt0s(36,-10000);
   v_t0s = myt0s;
@@ -60,8 +59,7 @@ TABMparCon::TABMparCon()
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TABMparCon::~TABMparCon()
-{delete rand;}
+TABMparCon::~TABMparCon(){}
 
 
 //------------------------------------------+-----------------------------------
@@ -170,15 +168,14 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
 	      return kTRUE;
         }
     }else if(strchr(bufConf,'Z')) {
-      sscanf(bufConf, "Z  %f %d %f", &myArg1,&myArgIntmin, &myArg2);
-      if((myArgIntmax==1 || myArgIntmax==0 || myArgIntmax==2 || myArgIntmax==3)  &&  myArg1>=0 && myArg2>=0){
+      sscanf(bufConf, "Z  %f %f", &myArg1, &myArg2);
+      if(myArg1>=0 && myArg2>=0){
         t0_sigma=myArg1;
-        t0_choice=myArgIntmin;
         hit_timecut=myArg2;
-          }else {
+      }else {
 	      Error(""," Plane Map Error:: check config file!! (Z)");
 	      return kTRUE;
-        }
+      }
     }else if(strchr(bufConf,'M')) {
       sscanf(bufConf, "M %d %f %f %f %f %f %d",&myArgInt, &myArg1, &myArg2, &myArg3, &myArg4, &myArg5, &myArgIntmax);
       if((myArgInt==0 || myArgInt==1) && myArg1>=0 && myArg2>=0 && myArg3>=0 && myArg4>=0 && myArg5>=0 && myArgIntmax>=0 && myArgIntmax<6){
@@ -228,7 +225,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
 void TABMparCon::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
   ofstream outfile;
   outfile.open(output_filename.Data(),ios::out);
-  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<"     t0_switch= "<<t0_switch<<"    t0_choice= "<<t0_choice<<endl;
+  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<"     t0_switch= "<<t0_switch<<endl;
   for(Int_t i=0;i<36;i++)
     outfile<<"cellid= "<<i<<"  T0_time= "<<v_t0s[i]<<endl;
   outfile.close();

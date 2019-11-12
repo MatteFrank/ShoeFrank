@@ -1,6 +1,4 @@
-// Macro to make reconstruction from MC data
-// Ch. Finck
-
+// Macro to calulate the BM t0s
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
 
@@ -277,7 +275,7 @@ void EvaluateT0time(char *graphname, vector<vector<double>> &t0values, const int
 //~ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.VTX.1.dat")
 void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.WD.1.dat")
 {  
-   int maxevnum=1e8;
+   int maxevnum=1e10;
    //~ int maxevnum=1000;
    TString expname="GSI/";
    int tmp_int; 
@@ -328,7 +326,6 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
    Double_t  sttrigger;
    
    Booking(f_out, bmmap);
-   //~ bmcon->SetT0switch(t0switch);
    f_out->cd();
    //event loop
    for (ientry = 0; ientry<maxevnum; ientry++) {
@@ -422,7 +419,7 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
   
   
   //*****************************************************************EVALUATE T0****************************************************
-  vector<vector<double>> t0values(36,vector<double>(9)); // for each cell (36): 0=bmsync start; 1= bmsync middle; 2=bmsync peak; 3=stsync start; 4=stsync middle; 5= stsync peak;6=st-bmsync start; 7=st-bmsync middle; 8=st-bmsync peak;
+  vector<vector<double>> t0values(36,vector<double>(12)); // for each cell (36): 0=meas-bmsync start; 1= meas-bmsync middle; 2=meas-bmsync peak; 3=meas-stsync start; 4=meas-stsync middle; 5= meas-stsync peak;6=meas-st-bmsync start; 7=meas-st-bmsync middle; 8=meas-st-bmsync peak, 9=meas-bmsync+st start, 10=meas-bmsync+st middle, 11=meas-bmsync+st peak;
 
   cout<<"TH1D done, now I will EVALUATE T0"<<endl;
   for(Int_t i=0;i<bmmap->GetTdcMaxcha();i++){
@@ -433,6 +430,8 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
       EvaluateT0time(tmp_char, t0values, bmmap->tdc2cell(i), 3, i);    
       sprintf(tmp_char,"TDC/TDC_raw_-stsync-bmsync/tdc_cha-stsync-bmsync_%d",i);
       EvaluateT0time(tmp_char, t0values, bmmap->tdc2cell(i), 6, i);    
+      sprintf(tmp_char,"TDC/TDC_raw_+stsync-bmsync/tdc_cha+stsync-bmsync_%d",i);
+      EvaluateT0time(tmp_char, t0values, bmmap->tdc2cell(i), 9, i);    
     }  
   }
   
@@ -448,19 +447,18 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
 //~ void PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev, const int t0_switch, const int to_choice, const double &vector<vector<double>>t0values, cons
   
   //print the t0s
-  int t0switch;//0=t0 from the beginning of the tdc signal, 1=from the peak, 2=negative T0 enabled, 3=peak/2
+  int t0switch;
   TString T0filename;
   cout<<"T0 evaluation finished, now I'll print the T0s on *.cfg files"<<endl;
-  for(int t0choice=0;t0choice<3;t0choice++){  //t0choice: 0=wd, 1=internal, 2=internal-st
-    for(int k=0;k<3;k++){
-      t0switch= (k==0) ? 0 : ((k==1) ? 3 : 1);
+  for(int t0choice=0;t0choice<4;t0choice++){  //t0choice: 0=meas-internal, 1=meas-st, 2=meas-internal-st, 3=meas-internal+st
+    for(int k=0;k<3;k++){//k=t0_switch: 0=t0 from the beginning of the tdc signal, 1=peak/2, 2=peak, 3=negative T0 enabled
       T0filename=in_filename(in_filename.Last('/')+1,in_filename.Last('.'));
       T0filename.Prepend("T0evaluation_t0switch_");
-      T0filename+=t0switch;
+      T0filename+=k;
       T0filename+="_t0choice_";
       T0filename+=t0choice;
       T0filename.Append(".cfg");
-      PrintT0s(T0filename, in_filename, ientry, t0switch, t0choice, t0values,t0choice*3+k);
+      PrintT0s(T0filename, in_filename, ientry, k, t0choice, t0values,t0choice*3+k);
     }
   }
   
