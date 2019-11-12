@@ -109,7 +109,7 @@ void FillBm(TString fExpName) {
    bmActDatRaw  = new TABMactDatRaw("bmActDatRaw", bmDatRaw, bmDaq, bmMap, bmConf, bmGeo,stDatRaw);
 
    TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuRaw());
-   bmActNtuRaw  = new TABMactNtuRaw("bmActNtuRaw", bmNtuRaw, bmDatRaw, stDatRaw, bmGeo, bmConf);
+   bmActNtuRaw  = new TABMactNtuRaw("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
    bmActNtuRaw->CreateHistogram();   
    
    TAGdataDsc* bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());

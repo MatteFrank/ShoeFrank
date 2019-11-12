@@ -5,6 +5,7 @@
 */
 
 #include "math.h"
+
 #include "TABMactNtuRaw.hxx"
 
 /*!
@@ -20,19 +21,18 @@ ClassImp(TABMactNtuRaw);
 TABMactNtuRaw::TABMactNtuRaw(const char* name,
 			   TAGdataDsc* p_nturaw, 
 			   TAGdataDsc* p_datraw, 
-			   TAGdataDsc* p_timraw, 
 			   TAGparaDsc* p_geomap, 
 			   TAGparaDsc* p_parcon)
   : TAGaction(name, "TABMactNtuRaw - NTuplize BM raw data"),
     fpNtuRaw(p_nturaw),
     fpDatRaw(p_datraw),
-    fpTimRaw(p_timraw),
     fpGeoMap(p_geomap),
     fpParCon(p_parcon)
 {
+  if (FootDebugLevel(1))
+   cout<<"TABMactNtuRaw::default constructor::Creating the Beam Monitor data Ntuplizer"<<endl;
   AddDataOut(p_nturaw, "TABMntuRaw");
   AddDataIn(p_datraw, "TABMdatRaw");
-  AddDataIn(p_timraw, "TASTntuRaw");
   AddPara(p_geomap, "TABMparGeo");
   AddPara(p_parcon, "TABMparCon");
 }
@@ -81,7 +81,6 @@ void TABMactNtuRaw::CreateHistogram(){
 Bool_t TABMactNtuRaw::Action()
 {
   TABMdatRaw* p_datraw = (TABMdatRaw*) fpDatRaw->Object();
-  TASTntuRaw* p_timraw = (TASTntuRaw*) fpTimRaw->Object();
   TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuRaw->Object();
   TABMparGeo* p_pargeo = (TABMparGeo*) fpGeoMap->Object();
   TABMparCon* p_parcon = (TABMparCon*) fpParCon->Object();
@@ -90,12 +89,6 @@ Bool_t TABMactNtuRaw::Action()
   p_nturaw->SetupClones();
   p_nturaw->ResetEffPaoloni();
   
-  if(p_timraw->GetTriggerTime() == -10000 || p_timraw->GetTriggerTime()<-9999999999) {
-     Info("Action()","Trigger IR Time is Missing!!!");
-     fpNtuRaw->SetBit(kValid);
-     return kTRUE;
-  }
-
   Double_t i_time;
   p_nturaw->ClearCellOccupy();
   
@@ -105,12 +98,13 @@ Bool_t TABMactNtuRaw::Action()
     //retrive hit parameters
     i_time = hit.Time()- p_parcon->GetT0(hit.View(),hit.Plane(),hit.Cell()) - p_datraw->GetTrigtime();
     
+    gRandom->SetSeed();
     if(i_time<0){ 
-      if(p_parcon->GetT0switch()!=2 && p_parcon->GetT0sigma()==0)
+      if(p_parcon->GetT0switch()!=3 || p_parcon->GetT0sigma()==0)
         i_time=0.;
       else if(p_parcon->GetT0sigma()>0)
         while(i_time<0)
-          i_time=p_parcon->GetRand()->Gaus(hit.Time()- p_parcon->GetT0(hit.View(),hit.Plane(),hit.Cell()) - p_datraw->GetTrigtime(), p_parcon->GetT0sigma());  
+          i_time=gRandom->Gaus(hit.Time()- p_parcon->GetT0(hit.View(),hit.Plane(),hit.Cell()) - p_datraw->GetTrigtime(), p_parcon->GetT0sigma());  
     }
     
     Double_t i_drift = p_parcon->FirstSTrel(i_time);
@@ -134,13 +128,13 @@ Bool_t TABMactNtuRaw::Action()
   if(FootDebugLevel(3))
     p_nturaw->PrintCellOccupy();
 
-  vector<Int_t>pivot (8,0);
-  vector<Int_t>probe (8,0);  
+  Int_t pivot[8]={0};
+  Int_t probe[8]={0};  
   p_nturaw->Efficiency_paoloni(pivot, probe); 
   if (ValidHistogram()){
     for(Int_t i=0;i<8;i++){
-      fpHisProbe_paoloni->Fill(i,probe.at(i));
-      fpHisPivot_paoloni->Fill(i,pivot.at(i));
+      fpHisProbe_paoloni->Fill(i,probe[i]);
+      fpHisPivot_paoloni->Fill(i,pivot[i]);
     }
     if(p_nturaw->GetEffPaoloni()>=0)
       fpHisEval_paoloni->Fill(p_nturaw->GetEffPaoloni());
@@ -150,10 +144,11 @@ Bool_t TABMactNtuRaw::Action()
       fpHisEval_paoloni_Yview->Fill(p_nturaw->GetEffPaoloniyview());
   } 
   
-  fpNtuRaw->SetBit(kValid);
-  
   if(FootDebugLevel(2))
     cout<<"TABMacnNtuRaw::Action():: done"<<endl;
+
+  fpNtuRaw->SetBit(kValid);
+  
   return kTRUE;
 }
 

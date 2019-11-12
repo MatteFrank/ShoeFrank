@@ -1007,6 +1007,42 @@ Int_t TABMparGeo::GetCell(TVector3 pos, int layer, int view)
 }
 
 
+//______________________________________________________________________________
+
+Double_t TABMparGeo::FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVector3 Wvers, Bool_t isTrack) {
+
+  Double_t tp = 0., tf= 0., rdrift; 
+  Wvers.SetMag(1.);
+  dir.SetMag(1.);
+  
+  TVector3 D0 = pos - A0;//distance between position of reference point of current wire and current particle position
+  Double_t prosca = dir*Wvers ;//scalar product of directions
+  Double_t D0W = D0*Wvers;//distance projected on wire
+  Double_t D0P = D0*dir;//distance projected on particle direction
+
+  if(prosca!= 1.) {//if the don't fly parallel
+    tp = (D0W*prosca - D0P)/(1.-prosca*prosca);
+    tf = (-D0P*prosca + D0W)/(1.-prosca*prosca);
+    rdrift = sqrt( abs(D0.Mag2() + tp*tp + tf*tf + 2.*tp*D0P -2.*tf*D0W -2.*prosca*tf*tp ));
+    } 
+  else  //if they go parallel
+    rdrift = sqrt(abs( D0.Mag2() - D0W*D0W)); 
+
+  if((rdrift<0 || rdrift>0.945) && isTrack==false){
+    cout<<"WARNING!!!!! SOMETHING IS WRONG IN THE BM RDRIFT!!!!!!!!!  look at TABMactNtuMC;   rdrift="<<rdrift<<endl;
+    rdrift= (rdrift<0) ? 0. : 0.945 ;
+    cout<<"now rdrift="<<rdrift<<endl;
+    cout<<"pos=("<<pos.X()<<","<<pos.Y()<<","<<pos.Z()<<")  dir=("<<dir.X()<<","<<dir.Y()<<","<<dir.Z()<<")"<<endl;
+    cout<<"A0=("<<A0.X()<<","<<A0.Y()<<","<<A0.Z()<<")  Wvers=("<<Wvers.X()<<","<<Wvers.Y()<<","<<Wvers.Z()<<")"<<endl;
+  }else if(rdrift<0 && isTrack==true){
+    cout<<"WARNING!!!!! SOMETHING IS WRONG, YOU HAVE A NEGATIVE RDRIFT!!!!!!!!! look at TABMactNtuTrack::FindRdrift    rdrift="<<rdrift<<endl;    
+    cout<<"pos=("<<pos.X()<<","<<pos.Y()<<","<<pos.Z()<<")  dir=("<<dir.X()<<","<<dir.Y()<<","<<dir.Z()<<")"<<endl;
+    cout<<"A0=("<<A0.X()<<","<<A0.Y()<<","<<A0.Z()<<")  Wvers=("<<Wvers.X()<<","<<Wvers.Y()<<","<<Wvers.Z()<<")"<<endl;
+    rdrift=0.;
+  }
+    
+  return rdrift;
+}
 
 
 

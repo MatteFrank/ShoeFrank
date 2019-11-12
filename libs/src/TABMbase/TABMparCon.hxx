@@ -12,7 +12,6 @@
 #include "TSpline.h"
 #include "TF1.h"
 #include "TH1.h"
-#include "TRandom3.h"
 
 #include <vector>
 
@@ -57,7 +56,6 @@ class TABMparCon : public TAGparTools {
     Float_t GetMCEffMean(){return mceff_mean;};
     Float_t GetMCEffSigma(){return mceff_sigma;};
     Int_t GetSmearrdrift(){return smearrdrift;};
-    TRandom3* GetRand(){return rand;};
     Float_t GetRdrift_err(){return rdrift_err;};
     Int_t GetT0choice(){return t0_choice;};
 
@@ -102,9 +100,9 @@ class TABMparCon : public TAGparTools {
     //~ string   datafile_name;//name of the input data file 
     Int_t    strel_switch;//flag to choose the st relations (1=garfield, 0=FIRST embedded)
     Int_t    prefit_enable;//flag to enable or disable the prefit
-    Int_t    t0_switch;//0=t0 from the beginning of the tdc signal, 1=from the peak, 2=negative T0 enabled, 3=peak/2
+    Int_t    t0_switch;//0=t0 from the beginning of the tdc signal, 1=peak/2, 2=peak, 3=negative T0 enabled
     Float_t t0_sigma;//t0 with the gaussian shift for the negative T0 hits
-    Int_t    t0_choice; //0=wd, 1=internal, 2=internal-wd
+    Int_t    t0_choice; //0=meas-internal, 1=meas-st, 2=meas-internal-st, 3=meas-internal+st
     Float_t hit_timecut;//timecut on the lenght of the signal (ns)
     vector<Float_t> v_t0s;//T0 in ns
     vector<Float_t> adc_ped_mean;//pedestals mean 
@@ -118,7 +116,6 @@ class TABMparCon : public TAGparTools {
     Float_t fakehits_sigmaright;//sigma for the fake hits generator on the right tail (only MC)
     Float_t mceff_mean;//mean for the number of primary hits (only MC)
     Float_t mceff_sigma;//sigma for the number of primary hits (only MC)
-    TRandom3 *rand;
     Float_t rdrift_err;  //rdrift default error (used if from parcon file the error isn't loaded)
     
     TF1 *my_hreso;

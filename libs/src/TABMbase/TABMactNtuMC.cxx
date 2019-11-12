@@ -11,7 +11,6 @@
   \brief NTuplizer for BM raw hits. **
 */
 
-#include "TRandom3.h"
 
 ClassImp(TABMactNtuMC);
 
@@ -54,21 +53,20 @@ Bool_t TABMactNtuMC::Action()
   
   Int_t cell, view, lay, ipoint, tmp_int;
   vector<Int_t> hitxcell(fpEvtStr->BMNn, 99); 
-  vector<bool> tobecharged(fpEvtStr->BMNn, true);
+  bool tobecharged[fpEvtStr->BMNn];
   vector<Double_t> rdriftxcell(fpEvtStr->BMNn, 99.);
   Int_t nhits=0;
    
   TVector3 loc, gmom, mom,  glo;
-  p_nturaw->SetupClones();//se non c'è l'array di h, lo crea
+  p_nturaw->SetupClones();
    
   if (FootDebugLevel(1))
     cout<<"TABMactNtuMC::Processing "<<fpEvtStr->BMNn<<" hits"<<endl;
    
   //loop for double hits and hits with energy less than enxcell_cut:
-  for (Int_t i = 0; i < fpEvtStr->BMNn; i++) {
+  for (Int_t i = 0; i < fpEvtStr->BMNn; ++i) {
      
-    if(fpEvtStr->BMNde[i] < p_bmcon->GetEnxcellcut() && fpEvtStr->TRpaid[fpEvtStr->BMNid[i]-1]!=0)
-      tobecharged[i]=false;
+    tobecharged[i]=(fpEvtStr->BMNde[i] < p_bmcon->GetEnxcellcut() && fpEvtStr->TRpaid[fpEvtStr->BMNid[i]-1]!=0) ? false : true;
      
     if(tobecharged[i]){
       cell = fpEvtStr->BMNicell[i];
@@ -80,9 +78,9 @@ Bool_t TABMactNtuMC::Action()
       glo.SetXYZ(fpEvtStr->BMNxin[i],fpEvtStr->BMNyin[i],fpEvtStr->BMNzin[i]);
       loc = geoTrafo->FromGlobalToBMLocal(glo);
       gmom.SetXYZ(fpEvtStr->BMNpxin[i],fpEvtStr->BMNpyin[i],fpEvtStr->BMNpzin[i]);
-      rdriftxcell.at(i) = FindRdrift(loc, gmom, p_bmgeo->GetWirePos(view, lay,p_bmgeo->GetSenseId(cell)), p_bmgeo->GetWireDir(view));
-      
-      if(rdriftxcell.at(i)==99) //FindRdrift return 99 if a particle is born without energy, so it shouldn't release energy for a hit.
+      if(gmom.Mag()!=0)
+        rdriftxcell.at(i) = p_bmgeo->FindRdrift(loc, gmom, p_bmgeo->GetWirePos(view, lay,p_bmgeo->GetSenseId(cell)), p_bmgeo->GetWireDir(view),false);
+      else //if a particle is born without energy, it shouldn't release energy for a hit
         tobecharged[i]=false;
        
       //if there is a double hit in the same cell, it charges the hits if they have rdrift difference more than p_bmcon->GetRdriftCut()
@@ -92,18 +90,18 @@ Bool_t TABMactNtuMC::Action()
          
         if((rdriftxcell.at(j)-rdriftxcell.at(i)) < p_bmcon->GetRdriftCut() && rdriftxcell.at(j) > rdriftxcell.at(i) && hitxcell[i]==hitxcell[j])
           tobecharged[j]=false;
-        }
       }
     }
+  }
     
   //set the number of hits
   Int_t hitsrandtot;    
-  gRandom->SetSeed(0);
+  gRandom->SetSeed(); 
   Int_t remainhitsn, nrealhits;
   
   if(p_bmcon->GetSmearhits()){
     nrealhits=0;
-    for(Int_t i=0;i<tobecharged.size();i++)
+    for(Int_t i=0;i<fpEvtStr->BMNn;i++)
       if(tobecharged[i])
         nrealhits++;
      
@@ -244,47 +242,6 @@ void TABMactNtuMC::CreateFakeHits(Int_t nfake, Int_t &nhits)
     cout<<"TABMactNtuMC::CreateFakeHits::done"<<endl;
   
   return;
-}
-
-
-Double_t TABMactNtuMC::FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVector3 Wvers) {
-
-  Double_t tp = 0., tf= 0., rdrift; 
-  TVector3 D0, R0, Pvers;
-  Wvers.SetMag(1.);
-
-  if(dir.Mag()==0.){
-    //~ cout<<"WARNING: FindRdrift: momentum is 0 and the hit shouldn't be charged because this hit is from a fragmentated particle with zero momentum"<<endl;
-    return 99;//fake value
-    }
-    
-  R0.SetXYZ(pos.X(),pos.Y(),pos.Z());//set position
-  Pvers=dir;
-  Pvers.SetMag(1.);
-  
-  D0 = R0 - A0;//distance between position of reference point of current wire and current particle position
-
-  Double_t prosca = Pvers*Wvers ;//scalar product of directions
-  Double_t D0W = D0*Wvers;//distance projected on wire
-  Double_t D0P = D0*Pvers;//distance projected on particle direction
-
-  if(prosca!= 1.) {//if the don't fly parallel
-    tp = (D0W*prosca - D0P)/(1.-prosca*prosca);
-    tf = (-D0P*prosca + D0W)/(1.-prosca*prosca);
-    rdrift = sqrt( abs(D0.Mag2() + tp*tp + tf*tf + 2.*tp*D0P -2.*tf*D0W -2.*prosca*tf*tp ));
-    } 
-  else  //if they go parallel
-    rdrift = sqrt(abs( D0.Mag2() - D0W*D0W)); 
-
-  if(rdrift<0 || rdrift>0.945){
-    cout<<"WARNING!!!!! SOMETHING IS WRONG IN THE BM RDRIFT!!!!!!!!!  look at TABMactNtuMC::FindRdrift   rdrift="<<rdrift<<endl;
-    rdrift= (rdrift<0) ? 0. : 0.945 ;
-    cout<<"now rdrift="<<rdrift<<endl;
-    cout<<"pos=("<<pos.X()<<","<<pos.Y()<<","<<pos.Z()<<")  dir=("<<dir.X()<<","<<dir.Y()<<","<<dir.Z()<<")"<<endl;
-    cout<<"A0=("<<A0.X()<<","<<A0.Y()<<","<<A0.Z()<<")  Wvers=("<<Wvers.X()<<","<<Wvers.Y()<<","<<Wvers.Z()<<")"<<endl;
-    }
-    
-  return rdrift;
 }
 
 

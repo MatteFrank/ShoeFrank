@@ -18,6 +18,7 @@
 #include "TAGgeoTrafo.hxx"
 
 #include "TVector3.h"
+#include "TRandom3.h"
 
 class TABMactNtuMC : public TAGaction {
   public:
@@ -30,8 +31,6 @@ class TABMactNtuMC : public TAGaction {
 
     virtual Bool_t  Action();
     virtual  void   CreateHistogram();
-
-    Double_t FindRdrift(TVector3 loc, TVector3 mom, TVector3 A0, TVector3 Wvers);
     void CreateFakeHits(Int_t nfake, Int_t &nhits);
 
 
