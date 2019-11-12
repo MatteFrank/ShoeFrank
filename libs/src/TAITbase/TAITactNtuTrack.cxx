@@ -177,7 +177,8 @@ Bool_t TAITactNtuTrack::FindTiltedTracks()
 			track->SetNumber(pNtuTrack->GetTracksN());
 			track->MakeChiSquare();
 			track->SetType(1);
-			
+         pNtuTrack->NewTrack(*track);
+          
 			if (ValidHistogram()) 
 			   FillHistogramm(track);
 				  
