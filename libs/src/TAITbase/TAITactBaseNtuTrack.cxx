@@ -17,7 +17,7 @@
 
 /*!
  \class TAITactBaseNtuTrack 
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for Inner Tracker tracking **
  */
 
 ClassImp(TAITactBaseNtuTrack);
