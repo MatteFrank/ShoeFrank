@@ -25,6 +25,7 @@
 #pragma link C++ class TAITactBaseNtuTrack+;
 #pragma link C++ class TAITactNtuTrack+;
 #pragma link C++ class TAITactNtuTrackF+;
+#pragma link C++ class TAITactNtuTrackC+;
 
 
 

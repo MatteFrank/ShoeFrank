@@ -37,6 +37,7 @@ set( with_dictionnaries
    TAITactBaseNtuTrack
    TAITactNtuTrack
    TAITactNtuTrackF
+   TAITactNtuTrackC
 )
 
 set( without_dictionnaries
