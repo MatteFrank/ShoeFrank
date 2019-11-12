@@ -36,6 +36,13 @@ TAITtrack::~TAITtrack()
 {
 }
 
+//______________________________________________________________________________
+//
+TAITtrack::TAITtrack(const TAVTbaseTrack& aTrack)
+: TAVTbaseTrack::TAVTbaseTrack(aTrack)
+{
+   
+}
 
 //______________________________________________________________________________
 //
