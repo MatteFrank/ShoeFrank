@@ -35,6 +35,7 @@ set( with_dictionnaries
    TAITtrack
    TAITntuTrack
    TAITactBaseNtuTrack
+   TAITactNtuTrack
    TAITactNtuTrackF
 )
 
