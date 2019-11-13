@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITactNtuTrackC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAITactNtuTrackC.
+ \version $Id: TAIRactNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \brief   Implementation of TAIRactNtuTrack.
  */
 #include "TClonesArray.h"
 #include "TMath.h"
@@ -20,19 +20,19 @@
 #include "TAVTtrack.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAITntuCluster.hxx"
-#include "TAITactNtuTrackC.hxx"
+#include "TAIRactNtuTrack.hxx"
 
 /*!
- \class TAITactNtuTrackC
+ \class TAIRactNtuTrack
  \brief NTuplizer for Inner tracker tracks. **
  Combining VTX tracks with IT clusters
  */
 
-ClassImp(TAITactNtuTrackC);
+ClassImp(TAIRactNtuTrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAITactNtuTrackC::TAITactNtuTrackC(const char* name,
+TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
 								 TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
 								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pVtVertex)
  : TAITactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
@@ -43,14 +43,14 @@ TAITactNtuTrackC::TAITactNtuTrackC(const char* name,
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAITactNtuTrackC::~TAITactNtuTrackC()
+TAIRactNtuTrack::~TAIRactNtuTrack()
 {
 
 }
 
 //_____________________________________________________________________________
 //
-Bool_t TAITactNtuTrackC::CheckVtx()
+Bool_t TAIRactNtuTrack::CheckVtx()
 {
    // VTX info
    Bool_t vtVertexOk = false;
@@ -72,7 +72,7 @@ Bool_t TAITactNtuTrackC::CheckVtx()
 
 //_____________________________________________________________________________
 //  
-Bool_t TAITactNtuTrackC::FindTiltedTracks()
+Bool_t TAIRactNtuTrack::FindTiltedTracks()
 {
    if (!CheckVtx()) return false;
    
