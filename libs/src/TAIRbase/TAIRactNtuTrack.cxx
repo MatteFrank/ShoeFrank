@@ -59,12 +59,7 @@ Bool_t TAIRactNtuTrack::Action()
    pNtuTrack->Clear();
    
    
-   
-   // looking inclined line
-   if (!FindTracks()){
-      fpNtuTrack->SetBit(kValid);
-      return true;
-   }
+   FindTracks();
    
    if(FootDebugLevel(1)) {
       printf(" %d tracks found\n", pNtuTrack->GetTracksN());
@@ -73,8 +68,9 @@ Bool_t TAIRactNtuTrack::Action()
          printf("   with # clusters %d\n", track->GetClustersN());
       }
    }
-      
+   
    fpNtuTrack->SetBit(kValid);
+   
    return true;
 }
 
