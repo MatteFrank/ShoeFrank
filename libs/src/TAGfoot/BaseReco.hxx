@@ -168,8 +168,10 @@ public:
    
    TACAntuRaw*          GetNtuHitCa()       const { return (TACAntuRaw*) fpNtuRawCa->Object();       }
 
-   TAIRntuTrack*        GetNtuTrackIr()    const { return (TAIRntuTrack*)fpNtuTrackIr->Object();     }
+   TAGactNtuGlbTrack*   GetNtuGlbTrack()    const { return (TAGactNtuGlbTrack*)fpNtuGlbTrack->Object();}
+   TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();     }
 
+   
    //! MC container Getter (virtual)
    virtual TAMCntuEve*  GetNtuMcEve()       const { return 0x0; }
    virtual TAMCntuHit*  GetNtuMcSt()        const { return 0x0; }
@@ -199,9 +201,8 @@ protected:
    TAGparaDsc*           fpParGeoG;
    TAGparaDsc*           fpParGeoDi;
    TAGparaDsc*           fpParGeoBm;
-   
-   TAGparaDsc*           fpParGeoIt;
    TAGparaDsc*           fpParGeoVtx;
+   TAGparaDsc*           fpParGeoIt;
    TAGparaDsc*           fpParGeoMsd;
    TAGparaDsc*           fpParGeoTw;
    TAGparaDsc*           fpParGeoCa;
@@ -209,35 +210,34 @@ protected:
    TAGparaDsc*           fpParCalTw;
    
    TAGparaDsc*           fpParConfBm;
-   TAGparaDsc*           fpParConfIt;
    TAGparaDsc*           fpParConfVtx;
+   TAGparaDsc*           fpParConfIt;
    TAGparaDsc*           fpParConfMsd;
    
    TAGdataDsc*           fpDatRawSt;    // input data dsc
    TAGdataDsc*           fpNtuRawSt;    // input data dsc
    TAGdataDsc*           fpDatRawBm;    // input data dsc
    TAGdataDsc*           fpNtuRawBm;    // input data dsc
-   TAGdataDsc*           fpNtuTrackBm;  // input track data dsc
-   
-   TAGdataDsc*           fpDatRawVtx;    // input data dsc
-   TAGdataDsc*           fpNtuRawVtx;	  // input ntu data dsc
-   TAGdataDsc*           fpNtuClusVtx;	  // input cluster data dsc
-   TAGdataDsc*           fpNtuTrackVtx;  // input track data dsc
-   TAGdataDsc*           fpNtuVtx;		  // input Vtx data dsc
-   
-   TAGdataDsc*           fpDatRawIt;     // input data dsc
-   TAGdataDsc*           fpNtuRawIt;	  // input ntu data dsc
-   TAGdataDsc*           fpNtuClusIt;	  // input cluster data dsc
-   
+   TAGdataDsc*           fpNtuRawVtx;     // input ntu data dsc
+   TAGdataDsc*           fpNtuRawIt;     // input ntu data dsc
    TAGdataDsc*           fpDatRawMsd;    // input data dsc
-   TAGdataDsc*           fpNtuRawMsd;	  // input ntu data dsc
-   TAGdataDsc*           fpNtuClusMsd;	  // input cluster data dsc
-   
-  //   TAGdataDsc*           fpWdRawTw;     // input data dsc
+   TAGdataDsc*           fpNtuRawMsd;     // input ntu data dsc
    TAGdataDsc*           fpDatRawTw;     // input data dsc
    TAGdataDsc*           fpNtuRawTw;     // input data dsc
-   TAGdataDsc*           fpNtuRecTw;     // input data dsc
    TAGdataDsc*           fpNtuRawCa;     // input data dsc
+
+   
+   TAGdataDsc*           fpNtuClusVtx;	  // input cluster data dsc
+   TAGdataDsc*           fpNtuClusIt;	  // input cluster data dsc
+   TAGdataDsc*           fpNtuClusMsd;     // input cluster data dsc
+   TAGdataDsc*           fpNtuRecTw;     // input data dsc
+
+   
+  //   TAGdataDsc*           fpWdRawTw;     // input data dsc
+   TAGdataDsc*           fpNtuTrackBm;  // input track data dsc
+   TAGdataDsc*           fpNtuTrackVtx;  // input track data dsc
+   TAGdataDsc*           fpNtuVtx;        // input Vtx data dsc
+
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
    TAGdataDsc*           fpNtuTrackIr;     // input data dsc
 
