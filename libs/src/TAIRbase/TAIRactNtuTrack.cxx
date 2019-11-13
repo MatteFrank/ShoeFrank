@@ -129,8 +129,8 @@ Bool_t TAIRactNtuTrack::FindTracks()
    Double_t aDistance;
    
    // get containers
-   TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpNtuClus->Object();
    TAIRntuTrack*   pNtuTrack = (TAIRntuTrack*)   fpNtuTrack->Object();
+   TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpNtuClus->Object();
    TAITparGeo*     pGeoMap   = (TAITparGeo*)     fpGeoMap->Object();
    TAITparConf*    pConfig   = (TAITparConf*)    fpConfig->Object();
    
