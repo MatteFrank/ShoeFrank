@@ -241,18 +241,18 @@ int KFitter::UploadClusVT(){
 
 
   //cluster test
-  TAVTparGeo* vtxGeo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
+  //TAVTparGeo* vtxGeo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
   TAVTntuCluster* vtclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object();
 
   TAMCntuEve*  eve = (TAMCntuEve*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuEve")->Object(); 
   TAMCntuHit* vtMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
 
   int totClus = 0;
-  Int_t nPlanes = vtxGeo->GetSensorsN();
+  Int_t nPlanes = m_VT_geo->GetSensorsN();
 
   for(Int_t iPlane = 0; iPlane < nPlanes; iPlane++){
     Int_t nclus = vtclus->GetClustersN(iPlane);
-    std::cout << "found " << nclus << " in plane " << iPlane << std::endl;
+    std::cout << "\nfound " << nclus << " in plane " << iPlane << std::endl;
     totClus += nclus;
     if (nclus == 0) continue;
 
@@ -283,14 +283,21 @@ int KFitter::UploadClusVT(){
 	  cout << "McIndex: " << idx  << endl;
 	  TAMCeveTrack* track = eve->GetHit(id);
 	  printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
-	  //TAMChit* mcHit = vtMc->GetHit(idx);
-	  //TVector3 pos = mcHit->GetInPosition();
-	  //printf("MC pos (%.4f %.4f %.4f)\n", pos[0], pos[1], pos[2]);
+	  TAMChit* mcHit = vtMc->GetHit(idx);
+	  TVector3 posin = mcHit->GetInPosition();
+	  TVector3 posout = mcHit->GetOutPosition();
+	  TVector3 momin = mcHit->GetInMomentum();
+	  TVector3 momout = mcHit->GetOutMomentum();
+	  printf("MC In Position pos (%.4f %.4f %.4f)\n", posin[0], posin[1], posin[2]);
 	  MCTruthInfo VTInfo;
 	  VTInfo.MCTrackId = id;
 	  VTInfo.MCFlukaId = track->GetFlukaID();
 	  VTInfo.MCMass = track->GetMass();
 	  VTInfo.MCCharge = track->GetCharge();
+	  VTInfo.MCGenPosition = track->GetInitPos();
+	  VTInfo.MCGenMomentum = track->GetInitP();
+	  VTInfo.MCPosition = (posin + posout)*.5;
+	  VTInfo.MCMomentum = (momin + momout)*.5;
 	  MCVTInfo[m_VT_clusCollection.size()-1] = VTInfo;
 	  break;
 	}
@@ -345,14 +352,16 @@ int KFitter::UploadClusIT(){
 
   int totClus = 0;
 
-  Int_t nPlanes = m_IT_geo->GetNLayers();
+  Int_t nPlanes = m_IT_geo->GetSensorsN();
 
   for(Int_t iPlane = 0; iPlane < nPlanes; iPlane++){
     Int_t nclus = itclus->GetClustersN(iPlane);
+    std::cout << "\nfound " << nclus << " in plane " << iPlane << std::endl;
     totClus += nclus;
     if (nclus == 0) continue;
 
     for(Int_t iClus = 0; iClus < nclus; ++iClus){
+      std::cout << "entered cycle clusIT of plane " << iPlane << std::endl;
       TAITcluster* clus = itclus->GetCluster(iPlane, iClus);
       if (!clus->IsValid()) continue;
 
@@ -380,14 +389,21 @@ int KFitter::UploadClusIT(){
 	  // printf("TrackMcId %d ", id);
 	  TAMCeveTrack* track = eve->GetHit(id);
 	  //printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
-	  //TAMChit* mcHit = itMc->GetHit(idx);
-	  //TVector3 pos = mcHit->GetInPosition();
+	  TAMChit* mcHit = itMc->GetHit(idx);
+	  TVector3 posin = mcHit->GetInPosition();
+	  TVector3 posout = mcHit->GetOutPosition();
+	  TVector3 momin = mcHit->GetInMomentum();
+	  TVector3 momout = mcHit->GetOutMomentum();
 	  // printf("MC pos (%.4f %.4f %.4f)\n", pos[0], pos[1], pos[2]);
 	  MCTruthInfo ITInfo;
 	  ITInfo.MCTrackId = id;
 	  ITInfo.MCFlukaId = track->GetFlukaID();
 	  ITInfo.MCMass = track->GetMass();
 	  ITInfo.MCCharge = track->GetCharge();
+	  ITInfo.MCGenPosition = track->GetInitPos();
+	  ITInfo.MCGenMomentum = track->GetInitP();
+	  ITInfo.MCPosition = (posin + posout)*.5;
+	  ITInfo.MCMomentum = (momin + momout)*.5;
 	  MCITInfo[m_IT_clusCollection.size()-1] = ITInfo;
 	  break;
 	}
@@ -505,7 +521,6 @@ int KFitter::PrepareData4Fit( Track* fitTrack ) {
     }
     hitsCount++;
   }
-  ///////////////////////////////////////////////////////////////////////////////
 
   //	if no map element survive -> clear the single-detector hit-collections
   if ( m_hitCollectionToFit.size() == 0 ) {
@@ -543,7 +558,7 @@ void KFitter::Prepare4Vertex( Track* fitTrack ) {
     TAVTcluster* p_hit = m_VT_clusCollection.at(i);
     
     // get pixel coord
-    TVector3 hitPos = p_hit->GetPositionG();
+    TVector3 hitPos = m_GeoTrafo->FromVTLocalToGlobal( p_hit->GetPositionG() );
     // get true MC coord
     // TVector3 hitPos = m_VT_hitCollection.at(i)->GetMCPosition_Global();
     
@@ -594,7 +609,7 @@ void KFitter::Prepare4InnerTracker( Track* fitTrack ) {
   for (unsigned int i = 0; i < m_IT_clusCollection.size(); i++) {
     TAITcluster* p_hit = m_IT_clusCollection.at(i);
     // get pixel coord
-    TVector3 hitPos = p_hit->GetPositionG();
+    TVector3 hitPos = m_GeoTrafo->FromITLocalToGlobal( p_hit->GetPositionG() );
     // get true MC coord
     // TVector3 hitPos = m_IT_hitCollection.at(i)->GetMCPosition_Global();
     //if ( m_debug > 0 )		cout << "ITR hit = Layer:" << p_hit->GetLayer() <<" col:"<< p_hit->GetPixelColumn() <<" row:"<< p_hit->GetPixelLine() <<
@@ -883,15 +898,16 @@ bool KFitter::PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterat
   int testHit_IT = 0;
   int testHit_MSD = 0;
   int testHit_TW = 0;
+
   // define the number of hits per each detector to consider to satisfy the pre-fit requirements
   if ( m_systemsON == "all" ) {
-    testHit_VT = m_VT_geo->GetNLayers(), testHit_IT = m_IT_geo->GetNLayers(), testHit_MSD = m_MSD_geo->GetNLayers();
+    testHit_VT = m_VT_geo->GetSensorsN(), testHit_IT = m_IT_geo->GetSensorsN()/16, testHit_MSD = m_MSD_geo->GetSensorsN();
   }
 
   else {
-    if ( m_systemsON.find( "VT" ) != string::npos )			testHit_VT = m_VT_geo->GetNLayers();
-    if ( m_systemsON.find( "IT" ) != string::npos )			testHit_IT = m_IT_geo->GetNLayers();
-    if ( m_systemsON.find( "MSD" ) != string::npos )		        testHit_MSD = m_MSD_geo->GetNLayers();
+    if ( m_systemsON.find( "VT" ) != string::npos )			testHit_VT = m_VT_geo->GetSensorsN();
+    if ( m_systemsON.find( "IT" ) != string::npos )			testHit_IT = m_IT_geo->GetSensorsN()/16;
+    if ( m_systemsON.find( "MSD" ) != string::npos )		        testHit_MSD = m_MSD_geo->GetSensorsN();
     if ( m_systemsON.find( "TW" ) != string::npos )			testHit_TW = m_TW_geo->GetNLayers()/2;
   }
 
@@ -916,8 +932,10 @@ bool KFitter::PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterat
     if ( (*it)->getDetId() == m_detectorID_map["IT"] )	nHitIT++;
     if ( (*it)->getDetId() == m_detectorID_map["MSD"] )	nHitMSD++;
     if ( (*it)->getDetId() == m_detectorID_map["TW"] )	nHitTW++;
-    if ( m_debug > 0 )	cout << "nHitVT  " <<nHitVT<< " nHitIT " <<nHitIT<< " nHitMSD "<<nHitMSD<< " nHitTW "<<nHitTW<<endl;
   }
+  
+  if ( m_debug > 0 )	cout << "nHitVT  " <<nHitVT<< " nHitIT " <<nHitIT<< " nHitMSD "<<nHitMSD<< " nHitTW "<<nHitTW<<endl;
+
   // test the num of hits per each detector
   if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD != testHit_MSD ){
     if ( m_debug > 0 )
@@ -993,7 +1011,7 @@ void KFitter::CategoriseHitsToFit_withTrueInfo() {
     
     if ( m_debug > 0 )		cout << "\tSelected Category: " << outName << "  flukaID=" << flukaID << "  partID="<<partID << "  charge="<<charge << "  mass="<<mass<< endl;
 
-    // if a category already defineed but with particle with a different partID  ->  make a new category with an incremental index
+    // if a category already defined but with particle with a different partID  ->  make a new category with an incremental index
     int coll = 0;
     for ( map< string, vector<AbsMeasurement*> >::iterator it = m_hitCollectionToFit.begin(); it != m_hitCollectionToFit.end(); it++ ) {
       if ( (*it).first.find( outName ) != string::npos ) {	// enter if a category have part of the found outname
@@ -1027,7 +1045,7 @@ void KFitter::GetTrueParticleType( AbsMeasurement* hit, int* flukaID, int* track
   int detID = hit->getDetId();
   int hitID = hit->getHitId();
   
-  if ( m_debug > 3 )		cout << "\t\tDetector Type = " << detID << "    HitID = " << hitID << endl;
+  if ( m_debug > 3 )		cout << "\t\tDetector Type (in KFitter::GetTrueParticleType)= " << detID << "    HitID = " << hitID << endl;
 
   *flukaID = m_MCInfo[detID][hitID].MCFlukaId;
   *trackID  = m_MCInfo[detID][hitID].MCTrackId;
@@ -1050,22 +1068,38 @@ int KFitter::MakeFit( long evNum ) {
   TVector3 mom(0, 0, 6);	// GeV
   Track*  fitTrack = new Track();  // container of the tracking objects
 
+  // TAVTvertex* vtxPD = 0x0;
+  // TVector3 vtxPositionPD(0., 0., 0.);
+
+  // for (Int_t iVtx = 0; iVtx < vtx->GetVertexN(); ++iVtx) {
+  //   vtxPD = vtx->GetVertex(iVtx);
+    
+  //   if (vtxPD == 0x0) continue;
+  //   vtxPositionPD = vtxPD->GetVertexPosition();
+    
+  //   // cout << " vtxPositionPD  local " << vtxPositionPD[2]  << endl;
+  //   vtxPositionPD = fGeoTrafo->FromVTLocalToGlobal(vtxPositionPD);
+  // }
+  
   // fill m_hitCollectionToFit
   PrepareData4Fit( fitTrack );
   // check the hit vector not empty otherwise clear
   if ( m_hitCollectionToFit.size() <= 0 )	{
     if ( m_debug > 0 )		cout << "No category to fit in this event..." << endl;
-    // m_VT_hitCollection.clear();
-    // m_IT_hitCollection.clear();
-    // m_MSD_hitCollection.clear();
+    m_VT_hitCollection.clear();
+    m_VT_clusCollection.clear();
+    m_IT_hitCollection.clear();
+    m_IT_clusCollection.clear();
+    m_MSD_hitCollection.clear();
+    
     // for ( vector<AbsMeasurement*>::iterator it2=m_allHitsInMeasurementFormat.begin(); it2 != m_allHitsInMeasurementFormat.end(); it2++ )
     // 	delete (*it2);
     delete fitTrack;
     return 2;
   }
   if ( m_debug > 0 )		cout << "\nMakeFit::m_hitCollectionToFit.size  =  " << m_hitCollectionToFit.size() << endl << endl;
-
-
+  
+  
   // loop over all hit category
   for ( map< string, vector<AbsMeasurement*> >::iterator hitSample=m_hitCollectionToFit.begin(); hitSample != m_hitCollectionToFit.end(); hitSample++ ) {
     
@@ -1081,32 +1115,35 @@ int KFitter::MakeFit( long evNum ) {
     fitTrack->addTrackRep( rep );
     
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    //  more than one repo can be added and genfit test everyone of them
-    //use DetermineCardinalRepresentation to choose the CardinalRep with minChi2 otherwise it takes
-    // the first added
+    // more than one repo can be added and genfit test everyone of them
+    // use DetermineCardinalRepresentation to choose the CardinalRep with minChi2 otherwise it takes the first added
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // SetTrueSeed( &pos, &mom );	// get seed from MC for debug
 
     // set seed
+    //here I'd like to access to TAVTVertex
     fitTrack->setStateSeed(pos, mom);
 
-    // insert points to be fitted  -   loop over each measurement in the current collection
-    for ( unsigned int i=0; i < (*hitSample).second.size(); i++ )	{
+    // insert points to be fitted - loop over each measurement in the current collection
+    for ( unsigned int i=0; i < (*hitSample).second.size(); i++ ){
       fitTrack->insertMeasurement( (*hitSample).second.at(i) );
       fitTrack->checkConsistency();
-      if ( m_debug > 3 )		fitTrack->Print("C");
+      if ( m_debug > 3 )
+	fitTrack->Print("C");
     }
-
-    if ( m_reverse )		fitTrack->reverseTrackPoints();
-
+    
+    if ( m_reverse )
+      fitTrack->reverseTrackPoints();
+    
     //check
     fitTrack->checkConsistency();
-    if ( m_debug > 3 )		fitTrack->Print();
-
+    if ( m_debug > 3 )
+      fitTrack->Print();
+    
     //pre-fit
     //MakePrefit();
-
+    
     // THE REAL FIT with different Kalman modes
     try{
       if ( GlobalPar::GetPar()->KalMode() == 1 )
@@ -1253,9 +1290,9 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
   TVector3 kalmanMom, kalmanPos;
   TVector3 kalmanMom_err;
   double massMC = -666;
-  // double myChi2 = 0;
+  //double myChi2 = 0;
 
-  // InitAllHistos( hitSampleName );
+  //InitAllHistos( hitSampleName );
 
   TMatrixD KalmanPos_cov(3,3);
   TMatrixD KalmanMom_cov(3,3);
@@ -1289,15 +1326,16 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 			 &KalmanPos, &KalmanMom, &KalmanPos_err, &KalmanMom_err,
 			 &KalmanPos_cov, &KalmanMom_cov,
 			 &KalmanMass );
-    /////////////////////////////////////////////////
+
 
     if ( m_debug > 0 )	{
       cout <<endl<< "Single Event Debug\t--\t" << hitSampleName << endl;
       cout << "Hit num = " << i << "  --  MC mass = " << tmp_mass << endl;
-      cout << "\t TruePos =       " << tmpPos.Mag() << "  ~=  measuredPos  " << hitPos.Mag() << endl;
-      // cout << "\t TruePos =       "; tmpPos.Print();
+      //      cout << "\t TruePos =       " << tmpPos.Mag() << "  ~=  measuredPos  " << hitPos.Mag() << endl;
+      cout << "\t TruePos =       "; tmpPos.Print();
+      cout << "\t MeasuredPos =       "; hitPos.Print();
       cout << "\t Kalman Pos da State6D = " << KalmanPos.Mag() << "  = Pos " << track->getFittedState(i).getPos().Mag() << endl;
-      // cout << "\t Kalman Pos da State6D = "; KalmanPos.Print();
+      cout << "\t Kalman Pos da State6D = "; KalmanPos.Print();
       // cout << "\t Kalman Pos Error da State6D = "; KalmanPos_err.Print();
       cout <<endl<< "\t Gen_Mom = "<< tmp_genMom.Mag() << endl;
       cout <<endl<< "\t MC_Mom = "<< tmpMom.Mag() <<"     " <<endl;
@@ -1352,87 +1390,80 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 
 //----------------------------------------------------------------------------------------------------
 void KFitter::GetTrueMCInfo( string hitSampleName, int x,
-						TVector3* tmpPos, TVector3* tmpMom, double* tmp_mass,
-						TVector3* tmp_genPos,  TVector3* tmp_genMom, TVector3* hitPos ) {
+			     TVector3* tmpPos, TVector3* tmpMom, double* tmp_mass,
+			     TVector3* tmp_genPos,  TVector3* tmp_genMom, TVector3* hitPos ) {
+  
+  int detID = m_hitCollectionToFit[ hitSampleName ].at(x)->getDetId();
+  int hitID = m_hitCollectionToFit[ hitSampleName ].at(x)->getHitId();
 
-//	int detID = m_hitCollectionToFit[ hitSampleName ].at(x)->getDetId();
-//	int hitID = m_hitCollectionToFit[ hitSampleName ].at(x)->getHitId();
-//
-//	// Generated positions and momentums
-//	if ( detID == m_detectorID_map["VT"] ) {
-//		*tmpPos = m_VT_hitCollection.at( hitID )->GetMCPosition_footFrame();
-//		*tmpMom = m_VT_hitCollection.at( hitID )->GetMCMomentum_footFrame();
-//		// information on the particle that genearated the hit
-//		*tmp_mass = m_VT_hitCollection.at( hitID )->m_genPartMass;
-//		*tmp_genPos = m_VT_hitCollection.at( hitID )->m_genPartPosition;   // genaration position
-//		*tmp_genMom = m_VT_hitCollection.at( hitID )->m_genPartMomentum;		// genaration momentum
-//		// TAVTntuHit* p_hit = m_VT_hitCollection.at(hitID);
-//        *hitPos = m_VT_hitCollection.at(hitID)->GetPixelPosition_footFrame(); // pixel coord
-//
-//	}
-//	else if ( detID == m_detectorID_map["IT"] ) {
-//		*tmpPos = m_IT_hitCollection.at( hitID )->GetMCPosition_footFrame();
-//		*tmpMom = m_IT_hitCollection.at( hitID )->GetMCMomentum_footFrame();
-//		// information on the particle that genearated the hit
-//		*tmp_mass = m_IT_hitCollection.at( hitID )->m_genPartMass;
-//		*tmp_genPos = m_IT_hitCollection.at( hitID )->m_genPartPosition;	// genaration position
-//		*tmp_genMom = m_IT_hitCollection.at( hitID )->m_genPartMomentum;	// genaration momentum
-//		// TAITntuHit* p_hit = m_IT_hitCollection.at(hitID);
-//        *hitPos = m_IT_hitCollection.at(hitID)->GetPixelPosition_footFrame(); // pixel coord
-//	}
-//	else if ( detID == m_detectorID_map["MSD"] ) {
-//		*tmpPos = m_MSD_posVectorSmearedHit.at( hitID );
-//		*tmpMom =  m_MSD_momVectorSmearedHit.at( hitID );
-//		*tmp_mass = m_MSD_mass.at( hitID );
-//		*tmp_genPos = TVector3(-1, -1, -1);
-//		*tmp_genMom = TVector3(-1, -1, -1);;
-//		hitPos = tmpPos;
-//	}
-//	else if ( detID == m_detectorID_map["TW"] ) {
-//		*tmpPos = m_TW_hitCollection.at( hitID )->GetMCPosition_footFrame();
-//		*tmpMom = m_TW_hitCollection.at( hitID )->GetMCMomentum_footFrame();
-//		// // information on the particle that genearated the hit
-//		// *tmp_mass = m_TW_hitCollection.at( hitID )->m_genPartMass;
-//		// *tmp_genPos = m_TW_hitCollection.at( hitID )->m_genPartPosition;   // genaration position
-//		// *tmp_genMom = m_TW_hitCollection.at( hitID )->m_genPartMomentum;		// genaration momentum
-//        *hitPos = m_TW_hitCollection.at(hitID)->GetPosition_footFrame(); // pixel coord
-//
-//		TAMCntuEveHit* twGeneratorParticle = m_TW_hitCollection.at( hitID )->GetGenParticle();
-//		*tmp_genPos  = twGeneratorParticle->InitPos();
-//		*tmp_genMom  = twGeneratorParticle->InitP();
-//		*tmp_mass    = twGeneratorParticle->Mass();
-//
-//	}
+  
+  if ( m_debug > 3 )		cout << "\t\tDetector Type (in KFitter::GetTrueMCInfo)= " << detID << "    HitID = " << hitID << endl;
+
+  // Generated position and momentum at particle birth
+  *tmp_mass = m_MCInfo[detID][hitID].MCMass;
+  *tmp_genPos = m_MCInfo[detID][hitID].MCGenPosition;
+  *tmp_genMom = m_MCInfo[detID][hitID].MCGenMomentum;
+
+  //MC position and momentum in the hit
+  *tmpPos = m_MCInfo[detID][hitID].MCPosition;
+  *tmpMom = m_MCInfo[detID][hitID].MCMomentum;
+
+  //Position of the hit
+  hitPos->SetX( m_hitCollectionToFit[ hitSampleName ].at(x)->getRawHitCoords()(0) );
+  hitPos->SetY( m_hitCollectionToFit[ hitSampleName ].at(x)->getRawHitCoords()(1) );
+  hitPos->SetZ( m_hitCollectionToFit[ hitSampleName ].at(x)->getRawHitCoords()(2) );
+
+  //else if ( detID == m_detectorID_map["MSD"] ) {
+  //		*tmpPos = m_MSD_posVectorSmearedHit.at( hitID );
+  //		*tmpMom =  m_MSD_momVectorSmearedHit.at( hitID );
+  //		*tmp_mass = m_MSD_mass.at( hitID );
+  //		*tmp_genPos = TVector3(-1, -1, -1);
+  //		*tmp_genMom = TVector3(-1, -1, -1);;
+  //		hitPos = tmpPos;
+  //	}
+  //	else if ( detID == m_detectorID_map["TW"] ) {
+  //		*tmpPos = m_TW_hitCollection.at( hitID )->GetMCPosition_footFrame();
+  //		*tmpMom = m_TW_hitCollection.at( hitID )->GetMCMomentum_footFrame();
+  //		// // information on the particle that genearated the hit
+  //		// *tmp_mass = m_TW_hitCollection.at( hitID )->m_genPartMass;
+  //		// *tmp_genPos = m_TW_hitCollection.at( hitID )->m_genPartPosition;   // genaration position
+  //		// *tmp_genMom = m_TW_hitCollection.at( hitID )->m_genPartMomentum;		// genaration momentum
+  //        *hitPos = m_TW_hitCollection.at(hitID)->GetPosition_footFrame(); // pixel coord
+  //
+  //		TAMCntuEveHit* twGeneratorParticle = m_TW_hitCollection.at( hitID )->GetGenParticle();
+  //		*tmp_genPos  = twGeneratorParticle->InitPos();
+  //		*tmp_genMom  = twGeneratorParticle->InitP();
+  //		*tmp_mass    = twGeneratorParticle->Mass();
+  //
+  //	}
 }
-
-
-
 
 
 //----------------------------------------------------------------------------------------------------
 void KFitter::GetKalmanTrackInfo ( string hitSampleName, int i, Track* track,
-								TVector3* KalmanPos, TVector3* KalmanMom, TVector3* KalmanPos_err, TVector3* KalmanMom_err,
-								TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov,
-								double* KalmanMass ) {
+				   TVector3* KalmanPos, TVector3* KalmanMom,
+				   TVector3* KalmanPos_err, TVector3* KalmanMom_err,
+				   TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov,
+				   double* KalmanMass ) {
 
 
-	// Get reco track kinematics and errors
-	*KalmanPos = TVector3( (track->getFittedState(i).get6DState())[0],	(track->getFittedState(i).get6DState())[1],	(track->getFittedState(i).get6DState())[2] );
-	*KalmanMom = TVector3( (track->getFittedState(i).get6DState())[3], (track->getFittedState(i).get6DState())[4],	(track->getFittedState(i).get6DState())[5] );
-	*KalmanPos_err = TVector3( (track->getFittedState(i).get6DCov())[0][0], (track->getFittedState(i).get6DCov())[1][1], (track->getFittedState(i).get6DCov())[2][2] );
-	*KalmanMom_err = TVector3( (track->getFittedState(i).get6DCov())[3][3],	(track->getFittedState(i).get6DCov())[4][4], (track->getFittedState(i).get6DCov())[5][5] );
+  // Get reco track kinematics and errors
+  *KalmanPos = TVector3( (track->getFittedState(i).get6DState())[0],	(track->getFittedState(i).get6DState())[1],	(track->getFittedState(i).get6DState())[2] );
+  *KalmanMom = TVector3( (track->getFittedState(i).get6DState())[3], (track->getFittedState(i).get6DState())[4],	(track->getFittedState(i).get6DState())[5] );
+  *KalmanPos_err = TVector3( (track->getFittedState(i).get6DCov())[0][0], (track->getFittedState(i).get6DCov())[1][1], (track->getFittedState(i).get6DCov())[2][2] );
+  *KalmanMom_err = TVector3( (track->getFittedState(i).get6DCov())[3][3],	(track->getFittedState(i).get6DCov())[4][4], (track->getFittedState(i).get6DCov())[5][5] );
 
-	// AbsMeasurement* measurement = track->getPointWithMeasurement(i)->getRawMeasurement(0);		// return the given coord -> aka the pixel coord
+  // AbsMeasurement* measurement = track->getPointWithMeasurement(i)->getRawMeasurement(0);		// return the given coord -> aka the pixel coord
 
-	// prduce the covariance matrix on the measured state
-	MatrixToZero(KalmanPos_cov);
-	MatrixToZero(KalmanMom_cov);
-	for ( int j=0; j<3; j++ ) {
-		for ( int k=0; k<3; k++ ) {
-			(*KalmanMom_cov)(j,k) = (track->getFittedState(i).get6DCov())[j+3][k+3];
-			(*KalmanPos_cov)(j,k) = (track->getFittedState(i).get6DCov())[j][k];
-		}
-	}
+  // prduce the covariance matrix on the measured state
+  MatrixToZero(KalmanPos_cov);
+  MatrixToZero(KalmanMom_cov);
+  for ( int j=0; j<3; j++ ) {
+    for ( int k=0; k<3; k++ ) {
+      (*KalmanMom_cov)(j,k) = (track->getFittedState(i).get6DCov())[j+3][k+3];
+      (*KalmanPos_cov)(j,k) = (track->getFittedState(i).get6DCov())[j][k];
+    }
+  }
 
 }
 
@@ -1444,29 +1475,31 @@ void KFitter::GetKalmanTrackInfo ( string hitSampleName, int i, Track* track,
 //----------------------------------------------------------------------------------------------------
 void KFitter::PrintEfficiency() {
 
-	TCanvas* mirror = new TCanvas("TrackEfficiencyPlot", "TrackEfficiencyPlot", 700, 700);
-	mirror->SetRightMargin(0.05);
-    mirror->SetLeftMargin(0.13);
+  TCanvas* mirror = new TCanvas("TrackEfficiencyPlot", "TrackEfficiencyPlot", 700, 700);
+  mirror->SetRightMargin(0.05);
+  mirror->SetLeftMargin(0.13);
 
-	int nCollection = m_nTotTracks.size();
-	TH1F* h_trackEfficiency = new TH1F( "TrackEfficiency", "TrackEfficiency", nCollection, 0, nCollection );
+  int nCollection = m_nTotTracks.size();
+  TH1F* h_trackEfficiency = new TH1F( "TrackEfficiency", "TrackEfficiency", nCollection, 0, nCollection );
 
-	int k = 0;
-	for ( map<string, int>::iterator itTotNum = m_nTotTracks.begin(); itTotNum != m_nTotTracks.end(); itTotNum++ ) {
-		k++;
-		float eff = (float)m_nConvergedTracks[ (*itTotNum).first ] / (*itTotNum).second;
-		if ( m_debug > -1 )		cout << "Efficiency " << (*itTotNum).first << " = " << eff << "  " << m_nConvergedTracks[ (*itTotNum).first ]<< " " << (*itTotNum).second << endl;
-		h_trackEfficiency->SetBinContent(k, eff);
-		h_trackEfficiency->GetXaxis()->SetBinLabel(k, (*itTotNum).first.c_str() );
-	}
-	h_trackEfficiency->SetTitle(0);
-	h_trackEfficiency->SetStats(0);
-	h_trackEfficiency->GetYaxis()->SetTitle("KF Efficiency");
-	h_trackEfficiency->GetYaxis()->SetTitleOffset(1.1);
-	h_trackEfficiency->SetLineWidth(2); // take short ~ int
-	h_trackEfficiency->Draw();
-	mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
-	mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.root").c_str() );
+  int k = 0;
+
+  for ( map<string, int>::iterator itTotNum = m_nTotTracks.begin(); itTotNum != m_nTotTracks.end(); itTotNum++ ) {
+    k++;
+    float eff = (float)m_nConvergedTracks[ (*itTotNum).first ] / (*itTotNum).second;
+    if ( m_debug > -1 )		cout << "Efficiency " << (*itTotNum).first << " = " << eff << "  " << m_nConvergedTracks[ (*itTotNum).first ]<< " " << (*itTotNum).second << endl;
+    h_trackEfficiency->SetBinContent(k, eff);
+    h_trackEfficiency->GetXaxis()->SetBinLabel(k, (*itTotNum).first.c_str() );
+  }
+
+  h_trackEfficiency->SetTitle(0);
+  h_trackEfficiency->SetStats(0);
+  h_trackEfficiency->GetYaxis()->SetTitle("KF Efficiency");
+  h_trackEfficiency->GetYaxis()->SetTitleOffset(1.1);
+  h_trackEfficiency->SetLineWidth(2); // take short ~ int
+  h_trackEfficiency->Draw();
+  mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
+  mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.root").c_str() );
 
 }
 
@@ -1477,15 +1510,15 @@ void KFitter::PrintEfficiency() {
 //  evaluate uncertainty from the diagonal of the covariance matrix ONLY. No correlation is considered!!!
 double KFitter::EvalError( TVector3 mom, TVector3 err ) {
 
-	double dx2 = 2 * sqrt(err.x()) * mom.x();
-	double dy2 = 2 * sqrt(err.y()) * mom.y();
-	double dz2 = 2 * sqrt(err.z()) * mom.z();
-
-	double p = mom.Mag();
-	double dp2 = dx2 + dy2 + dz2;
-	double dp = dp2 / ( 2 * p );
-
-	return dp;
+  double dx2 = 2 * sqrt(err.x()) * mom.x();
+  double dy2 = 2 * sqrt(err.y()) * mom.y();
+  double dz2 = 2 * sqrt(err.z()) * mom.z();
+  
+  double p = mom.Mag();
+  double dp2 = dx2 + dy2 + dz2;
+  double dp = dp2 / ( 2 * p );
+  
+  return dp;
 }
 
 
@@ -1494,26 +1527,26 @@ double KFitter::EvalError( TVector3 mom, TVector3 err ) {
 //  measure the Kalman uncertainty INCLUDING the cross terms in the covariance matrix. CORRELATION considered!!!
 double KFitter::EvalError( TVector3 mom, TMatrixD cov ) {
 
-	if ( cov.GetNcols() != 3 || cov.GetNrows() != 3 )
-		cout << "ERROR :: KFitter::EvalError  >>  covariance dimension (should be 6) is wrong " << cov.GetNcols() << " x " << cov.GetNrows() << endl, exit(0);
+  if ( cov.GetNcols() != 3 || cov.GetNrows() != 3 )
+    cout << "ERROR :: KFitter::EvalError  >>  covariance dimension (should be 6) is wrong " << cov.GetNcols() << " x " << cov.GetNrows() << endl, exit(0);
 
-	array<double,3> partialDer = { 	( mom.x()/( sqrt(mom.Mag()) ) ),
-									( mom.y()/( sqrt(mom.Mag()) ) ),
-									( mom.z()/( sqrt(mom.Mag()) ) )   };
+  array<double,3> partialDer = { 	( mom.x()/( sqrt(mom.Mag()) ) ),
+					( mom.y()/( sqrt(mom.Mag()) ) ),
+					( mom.z()/( sqrt(mom.Mag()) ) )   };
 
 
-	double err = 0;
-	for ( int j=0; j<cov.GetNrows(); j++ ) {
-		for ( int k=0; k<cov.GetNcols(); k++ ) {
+  double err = 0;
+  for ( int j=0; j<cov.GetNrows(); j++ ) {
+    for ( int k=0; k<cov.GetNcols(); k++ ) {
 
-			err += partialDer[j] * partialDer[k] * cov(j,k); // * diagFactor;
+      err += partialDer[j] * partialDer[k] * cov(j,k); // * diagFactor;
 
-		}
-	}
+    }
+  }
 
-	double dp = sqrt(err);
+  double dp = sqrt(err);
 
-	return dp;
+  return dp;
 }
 
 
@@ -1532,10 +1565,14 @@ void KFitter::Finalize() {
 
   PrintEfficiency();
 
-  m_fitTrackCollection->EvaluateMomentumResolution();
+  //  m_fitTrackCollection->EvaluateMomentumResolution();
 
   m_categoryFitted.clear();
 
+  //show event display
+
+  //display->open();
+  
 }
 
 
@@ -1545,25 +1582,29 @@ void KFitter::Finalize() {
 void KFitter::InitEventDisplay() {
 
 
+
+  // init event display
+  //display = genfit::EventDisplay::getInstance();
+
   // needed for the event display
   //const genfit::eFitterType fitterId = genfit::SimpleKalman;
   //const genfit::eFitterType fitterId = genfit::RefKalman;
   //const genfit::eFitterType fitterId = genfit::DafRef;
   //const genfit::eFitterType fitterId = genfit::DafSimple;
 
-  // const genfit::eMultipleMeasurementHandling mmHandling = genfit::weightedAverage;	//	suggested
-  // const genfit::eMultipleMeasurementHandling mmHandling = genfit::unweightedClosestToReference;
+  //const genfit::eMultipleMeasurementHandling mmHandling = genfit::weightedAverage;	//	suggested
+  //const genfit::eMultipleMeasurementHandling mmHandling = genfit::unweightedClosestToReference;
   //const genfit::eMultipleMeasurementHandling mmHandling = genfit::unweightedClosestToPrediction;
   //const genfit::eMultipleMeasurementHandling mmHandling = genfit::weightedClosestToReference;
   //const genfit::eMultipleMeasurementHandling mmHandling = genfit::weightedClosestToPrediction;
-  // const genfit::eMultipleMeasurementHandling mmHandling = genfit::unweightedClosestToReferenceWire;
-  // const genfit::eMultipleMeasurementHandling mmHandling = genfit::unweightedClosestToPredictionWire; //
+  //const genfit::eMultipleMeasurementHandling mmHandling = genfit::unweightedClosestToReferenceWire;
+  //const genfit::eMultipleMeasurementHandling mmHandling = genfit::unweightedClosestToPredictionWire; //
   //const genfit::eMultipleMeasurementHandling mmHandling = genfit::weightedClosestToReferenceWire;
   //const genfit::eMultipleMeasurementHandling mmHandling = genfit::weightedClosestToPredictionWire;
 
 
-  // m_fitter->setMultipleMeasurementHandling(mmHandling);
-  // f_fitter->setMultipleMeasurementHandling(unweightedClosestToPredictionWire);
+  //m_fitter->setMultipleMeasurementHandling(mmHandling);
+  //f_fitter->setMultipleMeasurementHandling(unweightedClosestToPredictionWire);
 
 
 }
