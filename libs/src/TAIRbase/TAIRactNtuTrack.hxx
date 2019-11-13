@@ -6,26 +6,31 @@
  \brief   Declaration of TAIRactNtuTrack.
  */
 /*------------------------------------------+---------------------------------*/
-class TAVTvertex;
-#include "TAITactBaseNtuTrack.hxx"
 
-class TAIRactNtuTrack : public TAITactBaseNtuTrack {
+#include "TAVTactBaseTrack.hxx"
+
+class TAVTvertex;
+class TAVTtrack;
+class TAIRtrack;
+class TAIRactNtuTrack : public TAVTactBaseTrack {
    
 public:
-   
    explicit  TAIRactNtuTrack(const char* name       = 0,
-							 TAGdataDsc* p_ntuclus  = 0, 
-							 TAGdataDsc* p_ntutrack = 0, 
-							 TAGparaDsc* p_config   = 0,
-							 TAGparaDsc* p_geomap   = 0,
-							 TAGparaDsc* p_calib    = 0,
-							 TAGdataDsc* p_vtvertex = 0);
+                             TAGdataDsc* p_ntuclus  = 0,
+                             TAGdataDsc* p_ntutrack = 0,
+                             TAGparaDsc* p_config   = 0,
+                             TAGparaDsc* p_geomap   = 0,
+                             TAGparaDsc* p_calib    = 0,
+                             TAGdataDsc* p_vtvertex = 0);
    virtual ~TAIRactNtuTrack();
    
-protected:
-   virtual Bool_t FindTiltedTracks();
-   virtual Bool_t CheckVtx();
+   virtual  Bool_t  Action();
 
+protected:
+    Bool_t FindTracks();
+    Bool_t CheckVtx();
+   TAIRtrack* FillTracks(TAVTtrack* vtTrack);
+   
 protected:
    TAGdataDsc*  fpVtVertex;        // VT vertex container
    TAVTvertex*  fVtVertex;         // VT vertex pointer

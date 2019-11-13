@@ -6,10 +6,10 @@
 #include "TClonesArray.h"
 #include "TMath.h"
 
-
 //TAGroot
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "GlobalPar.hxx"
 
 //VTX
 #include "TAVTntuVertex.hxx"
@@ -18,9 +18,11 @@
 #include "TAITparConf.hxx"
 #include "TAITparMap.hxx"
 #include "TAVTtrack.hxx"
-#include "TAITntuTrack.hxx"
+#include "TAIRtrack.hxx"
+#include "TAIRntuTrack.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAIRactNtuTrack.hxx"
+
 
 /*!
  \class TAIRactNtuTrack
@@ -35,7 +37,7 @@ ClassImp(TAIRactNtuTrack);
 TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
 								 TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
 								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pVtVertex)
- : TAITactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
+ : TAVTactBaseTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
    fpVtVertex(pVtVertex),
    fVtVertex(0x0)
 {
@@ -46,6 +48,39 @@ TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
 TAIRactNtuTrack::~TAIRactNtuTrack()
 {
 
+}
+
+//_____________________________________________________________________________
+//
+Bool_t TAIRactNtuTrack::Action()
+{
+   // IT
+   TAIRntuTrack* pNtuTrack = (TAIRntuTrack*) fpNtuTrack->Object();
+   pNtuTrack->Clear();
+   
+   
+   
+   // looking inclined line
+   if (!FindTracks()){
+      if (ValidHistogram())
+         FillHistogramm();
+      fpNtuTrack->SetBit(kValid);
+      return true;
+   }
+   
+   if(FootDebugLevel(1)) {
+      printf(" %d tracks found\n", pNtuTrack->GetTracksN());
+      for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
+         TAIRtrack* track = pNtuTrack->GetTrack(i);
+         printf("   with # clusters %d\n", track->GetClustersN());
+      }
+   }
+   
+   if (ValidHistogram())
+      FillHistogramm();
+   
+   fpNtuTrack->SetBit(kValid);
+   return true;
 }
 
 //_____________________________________________________________________________
@@ -71,8 +106,31 @@ Bool_t TAIRactNtuTrack::CheckVtx()
 }
 
 //_____________________________________________________________________________
+//
+TAIRtrack* TAIRactNtuTrack::FillTracks(TAVTtrack* vtTrack)
+{
+   TAIRtrack* track   = new TAIRtrack();
+   Int_t nClus = vtTrack->GetClustersN();
+   
+   for (Int_t i = 0; i < nClus; ++i) {
+      TAVTbaseCluster* cluster = vtTrack->GetCluster(i);
+      TVector3 posG = cluster->GetPositionG();
+      
+      // from VT local to FOOT global
+      posG = fpFootGeo->FromVTLocalToGlobal(posG);
+      cluster->SetPositionG(&posG);
+      
+      track->AddCluster(cluster);
+   }
+   
+   UpdateParam(track);
+   
+   return track;
+}
+
+//_____________________________________________________________________________
 //  
-Bool_t TAIRactNtuTrack::FindTiltedTracks()
+Bool_t TAIRactNtuTrack::FindTracks()
 {
    if (!CheckVtx()) return false;
    
@@ -81,14 +139,10 @@ Bool_t TAIRactNtuTrack::FindTiltedTracks()
    
    // get containers
    TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpNtuClus->Object();
-   TAITntuTrack*   pNtuTrack = (TAITntuTrack*)   fpNtuTrack->Object();
+   TAIRntuTrack*   pNtuTrack = (TAIRntuTrack*)   fpNtuTrack->Object();
    TAITparGeo*     pGeoMap   = (TAITparGeo*)     fpGeoMap->Object();
    TAITparConf*    pConfig   = (TAITparConf*)    fpConfig->Object();
    
-   TList array;
-   array.SetOwner(false);
-   array.Clear();
-
    Int_t nSensor = pGeoMap->GetSensorsN();
    
    Int_t nTracks = fVtVertex->GetTracksN();
@@ -96,7 +150,7 @@ Bool_t TAIRactNtuTrack::FindTiltedTracks()
    for(Int_t i = 0; i < nTracks; ++i) {	  // loop over VTX tracks
       
       TAVTtrack* vtTrack = fVtVertex->GetTrack(i);
-      TAITtrack* track   = new TAITtrack(*vtTrack);
+      TAIRtrack* track   = FillTracks(vtTrack);
    
       // Loop on all sensors to find a matching cluster in them
       for( Int_t iSensor = 0; iSensor < nSensor; ++iSensor) { // loop on sensors
@@ -116,12 +170,9 @@ Bool_t TAIRactNtuTrack::FindTiltedTracks()
             
             if( aCluster->Found()) continue; // skip cluster already found
             
-            // put IT cluster pos in VT frame
-            TVector3 posG = aCluster->GetPositionG();
             // from IT local to FOOT global
+            TVector3 posG = aCluster->GetPositionG();
             posG = fpFootGeo->FromITLocalToGlobal(posG);
-            // from FOOT global to VT local
-            posG = fpFootGeo->FromGlobalToVTLocal(posG);
    
             // track intersection with the sensor
             TVector3 inter = track->Intersection(posG.Z());
@@ -140,7 +191,6 @@ Bool_t TAIRactNtuTrack::FindTiltedTracks()
          if( bestCluster ) {
             bestCluster->SetFound();
             track->AddCluster(bestCluster);
-            array.Add(bestCluster);
             if (fgRefit)
                UpdateParam(track);
          }
@@ -159,12 +209,7 @@ Bool_t TAIRactNtuTrack::FindTiltedTracks()
          
          delete track;
          
-      } else { // reset clusters
-         for (Int_t i = 0; i < array.GetEntries(); ++i) {
-            TAITcluster*  cluster1 = (TAITcluster*)array.At(i);
-            cluster1->SetFound(false);
-         }
-         array.Clear();
+      } else {
          delete track;
       }
    }
