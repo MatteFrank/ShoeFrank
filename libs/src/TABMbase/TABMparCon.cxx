@@ -32,7 +32,6 @@ ClassImp(TABMparCon);
 TABMparCon::TABMparCon() 
   :  TAGparTools(),
   rdrift_err(0.015),
-  enxcell_cut(0.000002),
   planehit_cut(3),  
   m_isMC (false),
   rdrift_cut (2.),
@@ -314,10 +313,9 @@ void TABMparCon::CoutT0(){
 void TABMparCon::Clear(Option_t*)
 {
   rdrift_err=0.015;
-  enxcell_cut=0.000002;
   planehit_cut=3;  
   m_isMC = false;
-  rdrift_cut = 2.;
+  rdrift_cut = 0.11;
   chi2red_cut = 5.;
   fitter_index = 0;
   minnhit_cut=6;
@@ -385,19 +383,11 @@ Float_t TABMparCon::FirstSTrel(Float_t tdrift){
 
 
 Float_t TABMparCon::InverseStrel(Float_t rdrift){
-  //~ if(strel_switch==5){
-    TF1 f1("f1","1./0.78*(0.032891770+0.0075746330*x-(5.1692440e-05)*x*x+(1.8928600e-07)*x*x*x-(2.4652420e-10)*x*x*x*x)", 0., 320.);
+  if(rdrift<0.959){
+    TF1 f1("f1","1./0.78*(0.0075746330*x-(5.1692440e-05)*x*x+(1.8928600e-07)*x*x*x-(2.4652420e-10)*x*x*x*x)", 0., 320.);
     return f1.GetX(rdrift);
-  //~ }else if(strel_switch==0){
-    //~ TF1 f1("f1","0.032891770+0.0075746330*x-(5.1692440e-05)*x*x+(1.8928600e-07)*x*x*x-(2.4652420e-10)*x*x*x*x", 0., 320.);
-    //~ return f1.GetX(rdrift);
-  //~ }else if(strel_switch==4){
-    //~ TF1 f1("f1","0.0092254*x-7.1192e-5*x*x+3.01951e-7*x*x*x-4.66646e-10*x*x*x*x", 0., 320.);
-    //~ return f1.GetX(rdrift);
-  //~ }
-  
-  
-  return 0.;
+  }
+  return 320;
 }
 
 

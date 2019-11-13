@@ -28,15 +28,12 @@ class TABMparCon : public TAGparTools {
 
     //setters
     void SetIsMC(Bool_t ism){m_isMC=ism; return;};
-    void SetRdriftCut(Float_t Rdcut){rdrift_cut=Rdcut; return;};
-    void SetEnxcellcut(Float_t Encut){enxcell_cut=Encut; return;};
     void SetT0choice(Int_t in){t0_choice=in;};
     void SetT0switch(Int_t in){t0_switch=in;};
     
     //getters
     Bool_t   IsMC(){return m_isMC;};
     Float_t GetRdriftCut(){return rdrift_cut;};
-    Float_t GetEnxcellcut(){return enxcell_cut;};
     Float_t GetChi2Redcut(){return chi2red_cut;};
     Int_t GetPlanehitcut(){return planehit_cut;};
     Int_t GetMinnhit_cut(){return minnhit_cut;};
@@ -90,7 +87,6 @@ class TABMparCon : public TAGparTools {
   private:
     Bool_t m_isMC;
     Float_t rdrift_cut;
-    Float_t enxcell_cut; //(Gev) if a hit has deposited energy less then energyxcell_cut the hit will be thrown (only for MC events)
     Float_t chi2red_cut;
     Int_t    planehit_cut;//minimum number of plane with at least 1 hit for each view (<=6 && >=3)
     Int_t    minnhit_cut; //cut on the minimum number of hit for the reconstruction algorithm

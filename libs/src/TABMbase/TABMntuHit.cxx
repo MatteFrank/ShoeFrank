@@ -43,8 +43,7 @@ TABMntuHit::TABMntuHit(Int_t iv, Int_t il, Int_t ic, Double_t r, Double_t t, Dou
   isSelected=false;
   isFake=false;
   sigma=s;
-
-   SetAW();
+  SetAW();
 }
 
 void TABMntuHit::Clear(Option_t* /*option*/)
@@ -81,36 +80,6 @@ void TABMntuHit::SetAW() {
   return;
 }
 
-void TABMntuHit::SmearRdrift(Int_t smear_type){
-   Double_t smeared;
-   
-   if(smear_type==0)
-      return;
-   
-   if(smear_type==1){ //gaussian truncated to 1 sigma
-      do{smeared=gRandom->Gaus(rdrift,sigma);}while(fabs(smeared-rdrift)>sigma);
-   }
-   
-   if(smear_type==2){ //gaussian truncated to 2 sigma
-      do{smeared=gRandom->Gaus(rdrift,sigma);}while(fabs(smeared-rdrift)>2.*sigma);
-   }
-   
-   if(smear_type==3){ //gaussian truncated to 3 sigma
-      do{smeared=gRandom->Gaus(rdrift,sigma);}while(fabs(smeared-rdrift)>3.*sigma);
-   }
-   
-   if(smear_type==4) //gaussian not truncated
-      smeared=gRandom->Gaus(rdrift,sigma);
-   
-   
-   if(smear_type==5) //flat smearing
-      smeared=rdrift+gRandom->Uniform(-sigma*sqrt(12.)/2.,sigma*sqrt(12.)/2.);
-   
-   
-   if (smeared<0)
-      smeared=0.;
-   rdrift=smeared;
-   return;  
-} 
+
 
 

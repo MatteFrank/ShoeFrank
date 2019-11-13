@@ -32,7 +32,7 @@ class TABMactNtuMC : public TAGaction {
     virtual Bool_t  Action();
     virtual  void   CreateHistogram();
     void CreateFakeHits(Int_t nfake, Int_t &nhits);
-
+    void SmearRdrift(Int_t smear_type, Double_t &tobesmeared, Double_t sigma); //to smear rdrift with resolution
 
     ClassDef(TABMactNtuMC,0)
 
@@ -45,6 +45,13 @@ class TABMactNtuMC : public TAGaction {
     
     //histos
 
+    TH1I*            fpHisCell;    //hits cell
+    TH1I*            fpHisView;    //hits view
+    TH1I*            fpHisPlane;   //hits plane
+    TH1F*            fpHisRdrift;  //hits rdrift
+    TH1F*            fpHisSmearDiff;  //hits real rdrift - smeared rdrift
+    TH1I*            fpHisHitNum;  //raw hit map    
+    TH1I*            fpHisFakeIndex;  //hits fake index
 };
 
 #endif
