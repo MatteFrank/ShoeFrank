@@ -35,7 +35,7 @@ public:
    //! Add cluster
    void           AddCluster(TAVTbaseCluster* cluster);
    
-   ClassDef(TAIRtrack,8)                      // Describes TAIRtrack
+   ClassDef(TAIRtrack,1)                      // Describes TAIRtrack
 };
 
 #endif

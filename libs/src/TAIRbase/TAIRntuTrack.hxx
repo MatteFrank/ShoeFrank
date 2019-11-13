@@ -21,7 +21,7 @@ private:
    TClonesArray*    fListOfTracks;		// tracks
    
 private:
-   static TString fgkBranchName;    // Branch name in TTree
+   static TString   fgkBranchName;    // Branch name in TTree
    
 public:
    TAIRntuTrack();
@@ -45,7 +45,7 @@ public:
 public:
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }  
    
-   ClassDef(TAIRntuTrack,2)
+   ClassDef(TAIRntuTrack,1)
 };
 
 #endif
