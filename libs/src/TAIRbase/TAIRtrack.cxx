@@ -55,7 +55,7 @@ void TAIRtrack::SetupClones()
 
 // __________________________________________________________________________
 //
-void TAIRtrack::AddCluster(TAIRcluster* cluster)
+void TAIRtrack::AddCluster(TAVTbaseCluster* cluster)
 {
    TClonesArray &clusterArray = *fListOfClusters;
    new(clusterArray[clusterArray.GetEntriesFast()]) TAIRcluster(*cluster);

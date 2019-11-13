@@ -34,7 +34,7 @@ public:
    TAVTbaseCluster* GetCluster(Int_t index)  { return (TAIRcluster*)fListOfClusters->At(index); }
  
    //! Add cluster
-   void           AddCluster(TAIRcluster* cluster);
+   void           AddCluster(TAVTbaseCluster* cluster);
    
    ClassDef(TAIRtrack,8)                      // Describes TAIRtrack
 };

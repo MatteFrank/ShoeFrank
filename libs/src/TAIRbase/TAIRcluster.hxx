@@ -12,13 +12,13 @@
  */
 
 class TAIRtrack;
-
+class TAVTbaseCluster;
 class TAIRcluster : public TAVTbaseCluster {
    
    
 public:
    TAIRcluster();
-   TAIRcluster(const TAIRcluster& cluster);
+   TAIRcluster(const TAVTbaseCluster& cluster);
    ~TAIRcluster();
    
    //! Compute distance from a track

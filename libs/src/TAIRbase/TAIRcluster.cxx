@@ -19,7 +19,7 @@ TAIRcluster::TAIRcluster()
 
 //______________________________________________________________________________
 //  
-TAIRcluster::TAIRcluster(const TAIRcluster& cluster)
+TAIRcluster::TAIRcluster(const TAVTbaseCluster& cluster)
 :  TAVTbaseCluster(cluster)
 {
 }
