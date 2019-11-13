@@ -62,8 +62,6 @@ Bool_t TAIRactNtuTrack::Action()
    
    // looking inclined line
    if (!FindTracks()){
-      if (ValidHistogram())
-         FillHistogramm();
       fpNtuTrack->SetBit(kValid);
       return true;
    }
@@ -75,10 +73,7 @@ Bool_t TAIRactNtuTrack::Action()
          printf("   with # clusters %d\n", track->GetClustersN());
       }
    }
-   
-   if (ValidHistogram())
-      FillHistogramm();
-   
+      
    fpNtuTrack->SetBit(kValid);
    return true;
 }
