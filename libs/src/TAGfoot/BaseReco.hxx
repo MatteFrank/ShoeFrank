@@ -43,6 +43,7 @@
 #include "TAMSDntuRaw.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
+#include "TAIRntuTrack.hxx"
 #include "TAGntuGlbTrack.hxx"
 
 #include "TAGactionFile.hxx"
@@ -56,6 +57,7 @@
 #include "TAVTactBaseNtuTrack.hxx"
 #include "TAVTactNtuVertex.hxx"
 
+#include "TAIRactNtuTrack.hxx"
 #include "TAGactNtuGlbTrack.hxx"
 
 class TAMCntuHit;
@@ -162,9 +164,11 @@ public:
    TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
    
    TATWntuRaw*          GetNtuHitTw()       const { return (TATWntuRaw*) fpNtuRawTw->Object();       }
-   TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();      }
+   TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
    
    TACAntuRaw*          GetNtuHitCa()       const { return (TACAntuRaw*) fpNtuRawCa->Object();       }
+
+   TAIRntuTrack*        GetNtuTrackIr()    const { return (TAIRntuTrack*)fpNtuTrackIr->Object();     }
 
    //! MC container Getter (virtual)
    virtual TAMCntuEve*  GetNtuMcEve()       const { return 0x0; }
@@ -235,6 +239,7 @@ protected:
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
    TAGdataDsc*           fpNtuRawCa;     // input data dsc
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
+   TAGdataDsc*           fpNtuTrackIr;     // input data dsc
 
    TAGactionFile*        fActEvtReader;
    TAGactTreeWriter*     fActEvtWriter;  // write histo and tree
@@ -253,6 +258,7 @@ protected:
    TATWactNtuPoint*      fActPointTw;    // action for clusters
    
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
+   TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
 
    Bool_t                fFlagOut;       // flag for output file
    Bool_t                fFlagTree;      // flag to save in tree
@@ -269,6 +275,7 @@ protected:
    void CreateRecActionMsd();
    void CreateRecActionTw();
    void CreateRecActionGlb();
+   void CreateRecActionIr();
 
    ClassDef(BaseReco, 1); // Base class for event display
 };

@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TADAQ} ${TAAPI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TADAQ} ${TAAPI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${GENFIT_LIBRARIES})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -55,6 +55,7 @@ include_directories(${TAVT_INCLUDE_DIR})
 include_directories(${TAIT_INCLUDE_DIR})
 include_directories(${TAMC_INCLUDE_DIR})
 include_directories(${TAMSD_INCLUDE_DIR})
+include_directories(${TAIR_INCLUDE_DIR})
 include_directories(${TATW_INCLUDE_DIR})
 include_directories(${TACA_INCLUDE_DIR})
 include_directories(${TAED_INCLUDE_DIR})

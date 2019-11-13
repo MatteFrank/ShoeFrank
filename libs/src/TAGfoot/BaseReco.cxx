@@ -53,11 +53,15 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fpNtuClusIt(0x0),
    fpNtuRawMsd(0x0),
    fpNtuClusMsd(0x0),
+   fpNtuGlbTrack(0x0),
+   fpNtuTrackIr(0x0),
    fActEvtWriter(0x0),
    fActClusVtx(0x0),
    fActTrackVtx(0x0),
    fActVtx(0x0),
    fActClusIt(0x0),
+   fActGlbTrack(0x0),
+   fActTrackIr(0x0),
    fFlagOut(true),
    fFlagTree(false),
    fFlagHits(false),
@@ -340,6 +344,11 @@ void BaseReco::CreateRecAction()
    
    if (GlobalPar::GetPar()->IncludeKalman())
       CreateRecActionGlb();
+   
+   if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
+       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
+       CreateRecActionIr();
 }
 
 //__________________________________________________________
@@ -439,6 +448,18 @@ void BaseReco::CreateRecActionGlb()
       fActGlbTrack->CreateHistogram();
   }
   
+}
+
+//__________________________________________________________
+void BaseReco::CreateRecActionIr()
+{
+   if(fFlagTrack) {
+      fpNtuTrackIr = new TAGdataDsc("irTrack", new TAIRntuTrack());
+      fActTrackIr  = new TAIRactNtuTrack("irActTrack", fpNtuClusIt, fpNtuTrackIr, fpParConfIt, fpParGeoIt, 0x0, fpNtuVtx);
+      if (fFlagHisto)
+         fActTrackIr->CreateHistogram();
+   }
+   
 }
 
 //__________________________________________________________
