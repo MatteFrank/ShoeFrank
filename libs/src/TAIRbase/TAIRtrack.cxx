@@ -2,7 +2,6 @@
 #include "TClonesArray.h"
 
 #include "GlobalPar.hxx"
-#include "TAIRcluster.hxx"
 #include "TAIRtrack.hxx"
 
 

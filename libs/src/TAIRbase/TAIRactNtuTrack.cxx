@@ -190,6 +190,11 @@ Bool_t TAIRactNtuTrack::FindTracks()
          // if a cluster has been found, add the cluster
          if( bestCluster ) {
             bestCluster->SetFound();
+            // from IT local to FOOT global
+            TVector3 posG = bestCluster->GetPositionG();
+            posG = fpFootGeo->FromITLocalToGlobal(posG);
+            bestCluster->SetPositionG(&posG);
+            
             track->AddCluster(bestCluster);
             if (fgRefit)
                UpdateParam(track);
