@@ -559,6 +559,12 @@ void BaseReco::AddRecRequiredItem()
    
    if (GlobalPar::GetPar()->IncludeKalman())
       gTAGroot->AddRequiredItem("glbActTrack");
+   
+   if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
+       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
+      gTAGroot->AddRequiredItem("irActTrack");
+
 }
 
 //__________________________________________________________
