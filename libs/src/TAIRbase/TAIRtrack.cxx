@@ -48,7 +48,7 @@ TAIRtrack::TAIRtrack(const TAIRtrack& aTrack)
 //
 void TAIRtrack::SetupClones()
 {
-   fListOfClusters = new TClonesArray("TAIRcluster");
+   fListOfClusters = new TClonesArray("TAVTbaseCluster");
    fListOfClusters->SetOwner(true);
 }
 
@@ -58,6 +58,6 @@ void TAIRtrack::SetupClones()
 void TAIRtrack::AddCluster(TAVTbaseCluster* cluster)
 {
    TClonesArray &clusterArray = *fListOfClusters;
-   new(clusterArray[clusterArray.GetEntriesFast()]) TAIRcluster(*cluster);
+   new(clusterArray[clusterArray.GetEntriesFast()]) TAVTbaseCluster(*cluster);
    fMeanPixelsN += cluster->GetPixelsN()/float(fListOfClusters->GetEntries());
 }
