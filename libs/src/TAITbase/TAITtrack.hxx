@@ -24,6 +24,8 @@ class TAITtrack : public TAVTbaseTrack {
 public:
    TAITtrack();                                 
    ~TAITtrack();
+   TAITtrack(const TAVTbaseTrack& aTrack);
+
    
    //! Set up clones
    void           SetupClones();

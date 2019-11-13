@@ -27,7 +27,7 @@
 #include <TMatrixD.h>
 
 
-// #include <EventDisplay.h>
+#include <EventDisplay.h>
 
 #include "WireMeasurement.h"
 #include "PlanarMeasurement.h"
@@ -120,6 +120,10 @@ public:
     int MCFlukaId;
     int MCMass;
     int MCCharge;
+    TVector3 MCGenPosition;
+    TVector3 MCGenMomentum;
+    TVector3 MCPosition;
+    TVector3 MCMomentum;
   };
   
   
@@ -185,27 +189,27 @@ public:
   double EvalError( TVector3 mom, TMatrixD cov );
   void MatrixToZero( TMatrixD *matrix );
   
-  bool frankFind( string what, string where )	{
+  // bool frankFind( string what, string where )	{
     
-    int wildcard_pos = what.find("*");
+  //   int wildcard_pos = what.find("*");
     
-    if ( wildcard_pos == 0 )    {
-      if( where.find( what.substr( wildcard_pos+1 ) ) != string::npos )
-	return true;
-    }
-    else if( wildcard_pos == what.size()-1 )    {
-      if( where.find( what.substr( 0, wildcard_pos ) ) != string::npos )
-	return true;
-    }
-    else if ( wildcard_pos != string::npos )    {
-      int pre = where.find( what.substr( 0, wildcard_pos ) );
-      int post = where.find( what.substr( wildcard_pos+1 ) );
-      if( pre!=string::npos && post!=string::npos )
-	return true;
-    }
+  //   if ( wildcard_pos == 0 )    {
+  //     if( where.find( what.substr( wildcard_pos+1 ) ) != string::npos )
+  // 	return true;
+  //   }
+  //   else if( wildcard_pos == what.size()-1 )    {
+  //     if( where.find( what.substr( 0, wildcard_pos ) ) != string::npos )
+  // 	return true;
+  //   }
+  //   else if ( wildcard_pos != string::npos )    {
+  //     int pre = where.find( what.substr( 0, wildcard_pos ) );
+  //     int post = where.find( what.substr( wildcard_pos+1 ) );
+  //     if( pre!=string::npos && post!=string::npos )
+  // 	return true;
+  //   }
     
-    return false;
-  }
+  //   return false;
+  // }
   
   
   
@@ -215,6 +219,10 @@ private:
   AbsKalmanFitter*  m_refFitter;    		 //KalmanFitterRefTrack()
   AbsKalmanFitter*  m_dafRefFitter;    	         //DAF with kalman ref
   AbsKalmanFitter*  m_dafSimpleFitter;    	 //DAF with simple kalman
+
+
+  // init event display
+  //EventDisplay* display;
   
   // Track*  m_fitTrack;
   ControlPlotsRepository* m_controlPlotter;

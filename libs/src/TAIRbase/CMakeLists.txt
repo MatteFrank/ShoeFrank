@@ -23,6 +23,9 @@ set( with_dictionnaries
    TAIRntuAlignC
    TAIRalignM
    TAIRmillepede
+   TAIRtrack
+   TAIRntuTrack
+   TAIRactNtuTrack
 )
 
 set( without_dictionnaries

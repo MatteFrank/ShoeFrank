@@ -10,6 +10,9 @@
 
 #pragma link C++ class TAIRalignM+;
 #pragma link C++ class TAIRmillepede+;
+#pragma link C++ class TAIRtrack+;
+#pragma link C++ class TAIRntuTrack+;
+#pragma link C++ class TAIRactNtuTrack+;
 
 
 #endif

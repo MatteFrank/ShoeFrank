@@ -2,14 +2,13 @@
 #include "TClonesArray.h"
 
 #include "GlobalPar.hxx"
-#include "TAITcluster.hxx"
-#include "TAITtrack.hxx"
+#include "TAIRtrack.hxx"
 
 
 //#################################################################
 
   //////////////////////////////////////////////////////////////////
-  // Class Description of TAITtrack                               //
+  // Class Description of TAIRtrack                               //
   //                                                              //
   // A particle track from e.g. accelerator passing the tracker   //
   // The track is measured by the tracker with its silicon        //
@@ -20,11 +19,11 @@
   //////////////////////////////////////////////////////////////////
 
 
-ClassImp(TAITtrack) // Description of a Track
+ClassImp(TAIRtrack) // Description of a Track
 
 //______________________________________________________________________________
 //  
-TAITtrack::TAITtrack()
+TAIRtrack::TAIRtrack()
 :  TAVTbaseTrack()
 {
    SetupClones();
@@ -32,13 +31,13 @@ TAITtrack::TAITtrack()
 
 //______________________________________________________________________________
 //  
-TAITtrack::~TAITtrack()
+TAIRtrack::~TAIRtrack()
 {
 }
 
 //______________________________________________________________________________
 //
-TAITtrack::TAITtrack(const TAVTbaseTrack& aTrack)
+TAIRtrack::TAIRtrack(const TAIRtrack& aTrack)
 : TAVTbaseTrack::TAVTbaseTrack(aTrack)
 {
    
@@ -46,18 +45,18 @@ TAITtrack::TAITtrack(const TAVTbaseTrack& aTrack)
 
 //______________________________________________________________________________
 //
-void TAITtrack::SetupClones()
+void TAIRtrack::SetupClones()
 {
-   fListOfClusters = new TClonesArray("TAITcluster");
+   fListOfClusters = new TClonesArray("TAVTbaseCluster");
    fListOfClusters->SetOwner(true);
 }
 
 
 // __________________________________________________________________________
 //
-void TAITtrack::AddCluster(TAITcluster* cluster)
+void TAIRtrack::AddCluster(TAVTbaseCluster* cluster)
 {
    TClonesArray &clusterArray = *fListOfClusters;
-   new(clusterArray[clusterArray.GetEntriesFast()]) TAITcluster(*cluster);
+   new(clusterArray[clusterArray.GetEntriesFast()]) TAVTbaseCluster(*cluster);
    fMeanPixelsN += cluster->GetPixelsN()/float(fListOfClusters->GetEntries());
 }
