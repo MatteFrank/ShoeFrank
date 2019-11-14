@@ -169,7 +169,6 @@ Bool_t TAIRactNtuTrack::FindTracks()
             TVector3 inter = track->Intersection(posG.Z());
             
             // compute distance
-            posG[2] = 0.; // do not considered Z axis
             aDistance = (inter-posG).Mag();
             
             if( aDistance < minDistance ) {
@@ -181,12 +180,14 @@ Bool_t TAIRactNtuTrack::FindTracks()
          // if a cluster has been found, add the cluster
          if( bestCluster ) {
             bestCluster->SetFound();
+            track->AddCluster(bestCluster);
+            
             // from IT local to FOOT global
             TVector3 posG = bestCluster->GetPositionG();
             posG = fpFootGeo->FromITLocalToGlobal(posG);
-            bestCluster->SetPositionG(&posG);
-            
-            track->AddCluster(bestCluster);
+            TAIRcluster* last = track->GetLastCluster();
+            last->SetPositionG(&posG);
+
             if (fgRefit)
                UpdateParam(track);
          }
