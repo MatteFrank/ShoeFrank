@@ -120,7 +120,7 @@ void TAITactNtuMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
    RawMcHit_t mcHit;
    
    if(FootDebugLevel(1))
-   Info("TAVTactNtuMC::Action()", "start  -->  VTn : %d  ", fpEvtStr->ITRn);
+      Info("TAITactNtuMC::Action()", "start  -->  ITn : %d  ", fpEvtStr->ITRn);
    
    // Loop over all MC hits
    for (Int_t i = 0; i < fpEvtStr->ITRn; i++) {
