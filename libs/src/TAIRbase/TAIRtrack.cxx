@@ -2,6 +2,7 @@
 #include "TClonesArray.h"
 
 #include "GlobalPar.hxx"
+#include "TAIRcluster.hxx"
 #include "TAIRtrack.hxx"
 
 
@@ -47,7 +48,7 @@ TAIRtrack::TAIRtrack(const TAIRtrack& aTrack)
 //
 void TAIRtrack::SetupClones()
 {
-   fListOfClusters = new TClonesArray("TAVTbaseCluster");
+   fListOfClusters = new TClonesArray("TAIRcluster");
    fListOfClusters->SetOwner(true);
 }
 
@@ -57,6 +58,6 @@ void TAIRtrack::SetupClones()
 void TAIRtrack::AddCluster(TAVTbaseCluster* cluster)
 {
    TClonesArray &clusterArray = *fListOfClusters;
-   new(clusterArray[clusterArray.GetEntriesFast()]) TAVTbaseCluster(*cluster);
+   new(clusterArray[clusterArray.GetEntriesFast()]) TAIRcluster(*cluster);
    fMeanPixelsN += cluster->GetPixelsN()/float(fListOfClusters->GetEntries());
 }

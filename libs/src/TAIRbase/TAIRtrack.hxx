@@ -6,6 +6,7 @@
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
+#include "TAIRcluster.hxx"
 #include "TAVTbaseTrack.hxx"
 
 
@@ -17,6 +18,7 @@
  */
 
 class TAVTbaseCluster;
+class TAIRcluster;
 class TClonesArray;
 class TAIRtrack : public TAVTbaseTrack {
    
@@ -30,7 +32,9 @@ public:
    void           SetupClones();
 
     //! Get cluster
-   TAVTbaseCluster* GetCluster(Int_t index)  { return (TAVTbaseCluster*)fListOfClusters->At(index); }
+   TAIRcluster* GetCluster(Int_t index)  { return (TAIRcluster*)fListOfClusters->At(index); }
+   
+   TAIRcluster* GetLastCluster()         { return (TAIRcluster*)fListOfClusters->Last(); }
  
    //! Add cluster
    void           AddCluster(TAVTbaseCluster* cluster);
