@@ -864,6 +864,11 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       Float_t posfirstPlane = 0.;
       Float_t posLastPlane  = parGeo->GetSensorPosition(nPlanes-1)[2]*1.1;
       
+      // Go to FOOT frame
+      TVector3 pos(0,0,posLastPlane);
+      pos = fpFootGeo->FromITLocalToGlobal(pos);
+      posLastPlane = pos.Z();
+      
       TAIRntuTrack* pNtuTrack = fReco->GetNtuTrackIr();
       
       if( pNtuTrack->GetTracksN() > 0 ) {
@@ -872,11 +877,11 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
             
             TAIRtrack* track = pNtuTrack->GetTrack(iTrack);
             TVector3 posG(0, 0, 0);
-         
+            
+            posG  = track->Intersection(0);
             x = posG(0); y = posG(1); z = posG(2);
             
             posG  = track->Intersection(posLastPlane);
-            
             x1 = posG(0); y1 = posG(1); z1 = posG(2);
             
             Float_t nPix = track->GetMeanPixelsN();
