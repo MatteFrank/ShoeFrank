@@ -57,22 +57,18 @@ class TABMntuRaw : public TAGdata {
     Double_t GetEffPaoloni(){return eff_paoloni;};
     Double_t GetEffPaolonixview(){return eff_paolonixview;};
     Double_t GetEffPaoloniyview(){return eff_paoloniyview;};
-
-  public:
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
 
   private:
     TClonesArray*   fListOfHits;			    // hits
+    static TString fgkBranchName;    // Branch name in TTree
    
-  private:
-   static TString fgkBranchName;    // Branch name in TTree
-   
-   Int_t           cell_occupy[36];    //occupancy of the BM cell
-   Double_t        eff_paoloni;    //value of the efficiency calculated with the Paoloni's method
-   Double_t        eff_paolonixview;    //value of the efficiency calculated with the Paoloni's method for the x view
-   Double_t        eff_paoloniyview;    //value of the efficiency calculated with the Paoloni's method for the y view
-   
-   ClassDef(TABMntuRaw,1)
+    Int_t           cell_occupy[36];    //occupancy of the BM cell
+    Double_t        eff_paoloni;    //value of the efficiency calculated with the Paoloni's method
+    Double_t        eff_paolonixview;    //value of the efficiency calculated with the Paoloni's method for the x view
+    Double_t        eff_paoloniyview;    //value of the efficiency calculated with the Paoloni's method for the y view
+    
+    ClassDef(TABMntuRaw,1)
 };
 
 //------------------------------------------+-----------------------------------

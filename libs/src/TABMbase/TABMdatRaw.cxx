@@ -47,13 +47,6 @@ void TABMdatRaw::SetHitData(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_
 /*------------------------------------------+---------------------------------*/
 //! Set statistics counters.
 
-//~ void TABMdatRaw::SetCounter(Int_t i_ntdc, Int_t i_ndrop)
-//~ {
-  //~ fiNTdc  = i_ntdc;
-  //~ fiNDrop = i_ndrop;
-  //~ return;
-//~ }
-
 void TABMdatRaw::AddDischarged()
 {
   fiNDrop++;

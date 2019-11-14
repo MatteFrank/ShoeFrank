@@ -62,19 +62,22 @@ TABMactDatRaw::~TABMactDatRaw()
 
 void TABMactDatRaw::CreateHistogram(){
    
-   DeleteHistogram();
-   Int_t dim=72;
-   fpRawMapX=new TH2I( "BM_Dat_cell_raw_occupancy_2d_x", "Cell occupancy for raw hits; z; x", 11, -5.5, 5.5,7, -3.5,3.5);
-   AddHistogram(fpRawMapX);   
-   fpRawMapY=new TH2I( "BM_Dat_cell_raw_occupancy_2d_y", "Cell occupancy for raw hits; z; y", 11, -5.5, 5.5,7, -3.5,3.5);
-   AddHistogram(fpRawMapY);   
-   fpRawHitNum=new TH1I( "BM_Dat_Raw_hit_distribution", "Number of accepted hits x event; Number of hits; Events", 30, 0, 30);
-   AddHistogram(fpRawHitNum);   
-   fpRawDiscAccept=new TH1I( "BM_Dat_Accepted and discharged hits", "Number of hits accepted/discharged in the time cut; -1=discharged 1=accepted; Events", 3, -1, 2);
-   AddHistogram(fpRawDiscAccept);   
-      
-   
-   SetValidHistogram(kTRUE);
+  DeleteHistogram();
+  TABMparMap*    p_parmap = (TABMparMap*)    fpParMap->Object();
+  Int_t dim=72;
+  fpRawMapX=new TH2I( "BM_Dat_cell_raw_occupancy_2d_x", "Cell occupancy for raw hits; z; x", 11, -5.5, 5.5,7, -3.5,3.5);
+  AddHistogram(fpRawMapX);   
+  fpRawMapY=new TH2I( "BM_Dat_cell_raw_occupancy_2d_y", "Cell occupancy for raw hits; z; y", 11, -5.5, 5.5,7, -3.5,3.5);
+  AddHistogram(fpRawMapY);   
+  fpRawHitNum=new TH1I( "BM_Dat_Raw_hit_distribution", "Number of accepted hits x event; Number of hits; Events", 30, 0, 30);
+  AddHistogram(fpRawHitNum);   
+  fpRawDiscAccept=new TH1I( "BM_Dat_Accepted and discharged hits", "Number of hits accepted/discharged in the tdc channels; -1=discharged 1=accepted; Events", 3, -1, 2);
+  AddHistogram(fpRawDiscAccept);   
+  fpRawDiscChannel=new TH1I( "BM_Dat_discharged hits channel", "Number of discharged hits tdc channel; tdc channel; Events", p_parmap->GetTdcMaxcha(), 0, p_parmap->GetTdcMaxcha());
+  AddHistogram(fpRawDiscChannel);   
+     
+  
+  SetValidHistogram(kTRUE);
 }
 
 
@@ -127,7 +130,7 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
    TABMparCon*    p_parcon = (TABMparCon*)    fpParCon->Object();
    TABMparGeo*    p_pargeo = (TABMparGeo*)    fpParGeo->Object();
    
-  Int_t view,plane,cell, channel,up, hitnum=0, discharged=0;
+  Int_t view,plane,cell, channel,up, hitnum=0, discharged=0, bmcellid;
   Double_t used_trigger, measurement;
   for(Int_t i = 0; i < ((int)evt->measurement.size());++i) {
     if(((evt->measurement.at(i)>>19) & 0x7f) == p_parmap->GetTrefCh()){
@@ -148,9 +151,10 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
   for(Int_t i = 0; i < ((int)evt->measurement.size());i++) {
     measurement=(Double_t) (evt->measurement.at(i) & 0x7ffff)/10.;
     channel=(evt->measurement.at(i)>>19) & 0x7f;
-    if(p_parmap->tdc2cell(channel)>=0 && ((((Double_t) measurement)/10.) - p_parcon->GetT0(p_parmap->tdc2cell(channel))-used_trigger)<p_parcon->GetHitTimecut()){//-1000=syncTime, -1=not set
-      p_pargeo->GetBMNlvc(p_parmap->tdc2cell(channel),plane,view,cell);
-      p_datraw->SetHitData(p_parmap->tdc2cell(channel), plane,view,cell,measurement);
+    bmcellid=p_parmap->tdc2cell(channel);
+    if(bmcellid!=-1 && bmcellid!=-1000){//-1000=syncTime, -1=not set
+      p_pargeo->GetBMNlvc(bmcellid,plane,view,cell);
+      p_datraw->SetHitData(bmcellid, plane,view,cell,measurement);
       hitnum++;
       if (ValidHistogram()){
         fpRawDiscAccept->Fill(1);    
@@ -167,13 +171,15 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
         }  
       }    
       if(FootDebugLevel(3))
-        cout<<"BM hit charged : channel="<<channel<<"  tdc2cell="<<p_parmap->tdc2cell(channel)<<"  measurement="<<measurement<<"  T0="<<p_parcon->GetT0(p_parmap->tdc2cell(channel))<<"  triggertime="<<used_trigger<<"  hittime="<<measurement - p_parcon->GetT0(p_parmap->tdc2cell(channel))-used_trigger<<"  hittimecut="<<p_parcon->GetHitTimecut()<<endl;
+        cout<<"BM hit charged : channel="<<channel<<"  tdc2cell="<<bmcellid<<"  measurement="<<measurement<<"  T0="<<p_parcon->GetT0(bmcellid)<<"  triggertime="<<used_trigger<<"  hittime="<<measurement - p_parcon->GetT0(bmcellid)-used_trigger<<"  hittimecut="<<p_parcon->GetHitTimecut()<<endl;
     }else if(channel!=p_parmap->GetTrefCh()){
-      if (ValidHistogram())
-        fpRawDiscAccept->Fill(-1);    
+      if (ValidHistogram()){
+        fpRawDiscAccept->Fill(-1);
+        fpRawDiscChannel->Fill(channel);
+      }    
       p_datraw->AddDischarged();    
       if(FootDebugLevel(3))
-        cout<<"BM hit DIScharged: channel="<<channel<<"  tdc2cell="<<p_parmap->tdc2cell(channel)<<"  measurement="<<measurement<<"  T0="<<p_parcon->GetT0(p_parmap->tdc2cell(channel))<<"  triggertime="<<used_trigger<<"  hittime="<<measurement - p_parcon->GetT0(p_parmap->tdc2cell(channel))-used_trigger<<"  hittimecut="<<p_parcon->GetHitTimecut()<<endl;
+        cout<<"BM hit DIScharged: tdc channel="<<channel<<"  measurement="<<measurement<<endl;
     }
   }
    if (ValidHistogram())
