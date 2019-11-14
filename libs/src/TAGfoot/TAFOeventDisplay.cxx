@@ -63,6 +63,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    fTwClusDisplay(0x0),
    fCaClusDisplay(0x0),
    fGlbTrackDisplay(0x0),
+   fIrTrackDisplay(0x0),
    fFieldImpl(0x0),
    fField(0x0),
    fGlbTrackProp(0x0)
@@ -147,6 +148,18 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
       fGlbTrackDisplay = new TAEDglbTrack("Global Tracks", fGlbTrackProp);
       fGlbTrackDisplay->SetMaxMomentum(fMaxMomentum);
    }
+   
+   if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
+       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI()) {
+      
+      fIrTrackDisplay = new TAEDtrack("Interaction Region Tracks");
+      fIrTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+      fIrTrackDisplay->SetDefWidth(fBoxDefWidth);
+      fIrTrackDisplay->SetDefHeight(fBoxDefHeight);
+      fIrTrackDisplay->SetPickable(true);
+
+   }
 }
 
 //__________________________________________________________
@@ -164,7 +177,8 @@ TAFOeventDisplay::~TAFOeventDisplay()
    if (fTwClusDisplay)        delete fTwClusDisplay;
    if (fCaClusDisplay)        delete fCaClusDisplay;
    if (fGlbTrackDisplay)      delete fGlbTrackDisplay;
-   
+   if (fIrTrackDisplay)       delete fIrTrackDisplay;
+
    if (fField)                delete fField;
    if (fFieldImpl)            delete fFieldImpl;
    if (fGlbTrackProp)         delete fGlbTrackProp;
@@ -407,6 +421,13 @@ void TAFOeventDisplay::AddElements()
       fGlbTrackDisplay->ResetTracks();
       gEve->AddElement(fGlbTrackDisplay);
    }
+   
+   if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
+       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI()) {
+      fIrTrackDisplay->ResetTracks();
+      gEve->AddElement(fIrTrackDisplay);
+   }
 }
 
 //__________________________________________________________
@@ -445,6 +466,13 @@ void TAFOeventDisplay::ConnectElements()
    if (GlobalPar::GetPar()->IncludeTW()) {
       fTwClusDisplay->SetEmitSignals(true);
       fTwClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+   }
+   
+   if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
+       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI()) {
+      fIrTrackDisplay->SetEmitSignals(true);
+      fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
 }
 
@@ -500,9 +528,9 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
    TObject* obj = lineTracks->GetId(idx);
    if (obj == 0x0) return;
    
-   if (obj->InheritsFrom("TAVTtrack")) {
+   if (obj->InheritsFrom("TAVTbaseTrack")) {
       
-      TAVTtrack* track =  (TAVTtrack*)obj;
+      TAVTbaseTrack* track =  (TAVTbaseTrack*)obj;
       if (track == 0x0) return;
 
       fInfoView->AddLine( Form("Track # %2d:", track->GetNumber()) );
@@ -572,6 +600,12 @@ void TAFOeventDisplay::UpdateElements()
    
    if (GlobalPar::GetPar()->IncludeCA())
       UpdateElements("ca");
+
+   if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
+       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
+      UpdateElements("ir");
+
 
    gEve->FullRedraw3D(kFALSE);
 }
@@ -723,6 +757,9 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
 
       if (prefix == "vt")
          fVtxTrackDisplay->ResetTracks();
+      
+      if (prefix == "ir")
+         fIrTrackDisplay->ResetTracks();
    }
    
    if (!fgDisplayFlag) // do not update event display
@@ -818,6 +855,38 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
          
       } // nTracks > 0
       fBmTrackDisplay->RefitPlex();
+   }
+   
+   if (prefix == "ir") {
+      
+      TAITparGeo*  parGeo   = fReco->GetParGeoIt();
+      Int_t nPlanes         = parGeo->GetSensorsN();
+      Float_t posfirstPlane = 0.;
+      Float_t posLastPlane  = parGeo->GetSensorPosition(nPlanes-1)[2]*1.1;
+      
+      TAIRntuTrack* pNtuTrack = fReco->GetNtuTrackIr();
+      
+      if( pNtuTrack->GetTracksN() > 0 ) {
+         for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+            fIrTrackDisplay->AddNewTrack();
+            
+            TAIRtrack* track = pNtuTrack->GetTrack(iTrack);
+            TVector3 posG(0, 0, 0);
+         
+            x = posG(0); y = posG(1); z = posG(2);
+            
+            posG  = track->Intersection(posLastPlane);
+            
+            x1 = posG(0); y1 = posG(1); z1 = posG(2);
+            
+            Float_t nPix = track->GetMeanPixelsN();
+            fIrTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
+            fIrTrackDisplay->TrackId(track);
+            
+         } // end loop on tracks
+         
+      } // nTracks > 0
+      fIrTrackDisplay->RefitPlex();
    }
 }
 

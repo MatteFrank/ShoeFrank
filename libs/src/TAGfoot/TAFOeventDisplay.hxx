@@ -163,6 +163,7 @@ protected:
    TEveBoxSet*     fBmDriftCircleDisplay;
 
    TAEDglbTrack*   fGlbTrackDisplay;  // list of global tracks to display
+   TAEDtrack*      fIrTrackDisplay;   // list of line to display tracks
 
    // Magnet
    FootField*            fFieldImpl;       // magnetic field implementation
