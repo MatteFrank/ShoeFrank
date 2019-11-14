@@ -17,6 +17,7 @@ TAVTbaseCluster::TAVTbaseCluster()
    fPosition(new TVector3(0., 0., 0.)),
    fPosError(new TVector3(0., 0., 0.)),
    fPositionG(new TVector3(0., 0., 0.)),
+   fListOfPixels(0x0),
    fNumber(0),
    fPlaneNumber(10),
 	fFoundXZ(kFALSE),
@@ -37,7 +38,8 @@ TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
    fFoundYZ(cluster.fFoundYZ)
 {
    // TAVTbaseCluster constructor
-   fListOfPixels = (TClonesArray*)cluster.fListOfPixels->Clone();
+   if (cluster.fListOfPixels)
+      fListOfPixels = (TClonesArray*)cluster.fListOfPixels->Clone();
 }
 
 //______________________________________________________________________________
