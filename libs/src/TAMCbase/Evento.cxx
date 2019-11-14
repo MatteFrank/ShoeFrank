@@ -410,6 +410,7 @@ Int_t Evento::Clean(){
   eve.TRn       = 0;
   eve.STCn      = 0;
   eve.VTXn      = 0;
+  eve.ITRn      = 0;
   eve.BMNn      = 0;
   eve.MSDn      = 0;
   eve.SCNn      = 0;
