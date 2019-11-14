@@ -52,6 +52,8 @@ class TABMactNtuRaw : public TAGaction {
     TH1I*            fpHisPlane;   //hits plane
     TH1F*            fpHisRdrift;  //hits rdrift
     TH1F*            fpHisTdrift;  //hits tdrift
+    TH1I*            fpHisDiscAccept;  //discharged vs accepted number of hits    
+    TH1F*            fpHisDiscTime;  //raw discharged hit time difference    
 };
 
 #endif

@@ -26,7 +26,6 @@ class TABMdatRaw : public TAGdata {
     virtual         ~TABMdatRaw();
 
     void            SetHitData(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t time);
-    void            SetCounter(Int_t i_ntdc, Int_t i_ndrop);
     void            AddDischarged();
     static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
     Double_t        GetTrigtime(){return trigtime;};

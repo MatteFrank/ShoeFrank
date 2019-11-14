@@ -48,10 +48,11 @@ class TABMactDatRaw : public TAGaction {
     Bool_t DecodeHits(const TDCEvent* evt, const double sttrigger);
     
     //histos
-    TH2I*            fpRawMapX;  //raw hit map    
-    TH2I*            fpRawMapY;  //raw hit map    
-    TH1I*            fpRawHitNum;  //raw hit map    
-    TH1I*            fpRawDiscAccept;  //raw hit map    
+    TH2I*            fpRawMapX;  //raw hit map X view    
+    TH2I*            fpRawMapY;  //raw hit map Y view
+    TH1I*            fpRawHitNum;  //raw hit number distribution    
+    TH1I*            fpRawDiscAccept;  //raw discharged vs accepted number of hits    
+    TH1I*            fpRawDiscChannel;  //raw discharged hit channel    
 };
 
 #endif

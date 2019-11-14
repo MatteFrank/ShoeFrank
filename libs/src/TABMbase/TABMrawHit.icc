@@ -23,7 +23,7 @@ inline Int_t TABMrawHit::Plane() const
 }
 
 //------------------------------------------+-----------------------------------
-//! Returns plane number.
+//! Returns time.
 
 inline Double_t TABMrawHit::Time() const
 {
@@ -37,3 +37,5 @@ inline Int_t TABMrawHit::View() const
 {
   return iview;
 }
+
+
