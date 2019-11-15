@@ -49,17 +49,7 @@ public:
 		 TVector3* mom, TVector3* pos,
 		 TVector3* mom_MC, TVector3* pos_MC, 
 		 TMatrixD* mom_cov 
-		 ) {
-    
-    m_fitTrackCollection.push_back( new GlobalTrackKalman( name, track, evNum, stateID, // trackID?
-							   mom, pos,
-							   mom_MC, pos_MC, 
-							   mom_cov ) );
-    
-    PrintPositionResidual( *pos, *pos_MC, name );
-    PrintMomentumResidual( *mom, *mom_MC, *mom_cov, name );
-    
-  };
+		 );
   
   double EvalError( TVector3 mom, TVector3 err );
   double EvalError( TVector3 mom, TMatrixD cov );

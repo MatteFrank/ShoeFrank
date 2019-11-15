@@ -148,7 +148,7 @@ KFitter::KFitter () {
   else if ( GlobalPar::GetPar()->KalMode() == 4 )
     m_dafSimpleFitter = new DAF(false, nIter, dPVal);
 
-  InitEventDisplay();		// empty!!!!
+  InitEventDisplay();
 
 
   m_vecHistoColor = { kBlack, kRed-9, kRed+1, kRed-2, kOrange+7, kOrange, kOrange+3, kGreen+1,
@@ -279,8 +279,8 @@ int KFitter::UploadClusVT(){
       	for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
 	  Int_t id = hit->GetMcTrackId(k);
 	  Int_t idx = hit->GetMcIndex(k);
-	  cout << "McTrackId: " << id  << endl;
-	  cout << "McIndex: " << idx  << endl;
+	  cout << "McTrackId: " << id << endl;
+	  cout << "McIndex: " << idx << endl;
 	  TAMCeveTrack* track = eve->GetHit(id);
 	  printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
 	  TAMChit* mcHit = vtMc->GetHit(idx);
@@ -1298,7 +1298,7 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
   TMatrixD KalmanMom_cov(3,3);
 
   // loop over hits
-  for ( unsigned int i =0; i<m_hitCollectionToFit[ hitSampleName ].size(); i++ ) {	//
+  for ( unsigned int i = 0; i<m_hitCollectionToFit[ hitSampleName ].size(); i++ ) {	//
     // for ( unsigned int i =0; i<track.getNpoint(); i++ ) {
 
     if ( m_debug > 0 )		cout << "Start hit num: " << i << endl;
@@ -1315,36 +1315,33 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
     GetTrueMCInfo( hitSampleName, x,
 		   &tmpPos, &tmpMom, &tmp_mass,
 		   &tmp_genPos, &tmp_genMom, &hitPos );
-
+    
     TVector3 KalmanPos;
     TVector3 KalmanMom;
     TVector3 KalmanPos_err;
     TVector3 KalmanMom_err;
     double KalmanMass = 0;
-
+    
     GetKalmanTrackInfo ( hitSampleName, i, track,
 			 &KalmanPos, &KalmanMom, &KalmanPos_err, &KalmanMom_err,
 			 &KalmanPos_cov, &KalmanMom_cov,
 			 &KalmanMass );
 
-
+    
     if ( m_debug > 0 )	{
       cout <<endl<< "Single Event Debug\t--\t" << hitSampleName << endl;
       cout << "Hit num = " << i << "  --  MC mass = " << tmp_mass << endl;
-      //      cout << "\t TruePos =       " << tmpPos.Mag() << "  ~=  measuredPos  " << hitPos.Mag() << endl;
       cout << "\t TruePos =       "; tmpPos.Print();
       cout << "\t MeasuredPos =       "; hitPos.Print();
-      cout << "\t Kalman Pos da State6D = " << KalmanPos.Mag() << "  = Pos " << track->getFittedState(i).getPos().Mag() << endl;
       cout << "\t Kalman Pos da State6D = "; KalmanPos.Print();
-      // cout << "\t Kalman Pos Error da State6D = "; KalmanPos_err.Print();
       cout <<endl<< "\t Gen_Mom = "<< tmp_genMom.Mag() << endl;
       cout <<endl<< "\t MC_Mom = "<< tmpMom.Mag() <<"     " <<endl;
       // tmpMom.Print();
-      cout << "\t Kalman Mom da State6D = "<< KalmanMom.Mag() << "  = Mom " << track->getFittedState(i).getMom().Mag() << endl;
-      // cout << "\t Kalman Mom da State6D = "<< KalmanMom.Mag() <<"    "; KalmanMom.Print();
+      //cout << "\t Kalman Mom da State6D = "<< KalmanMom.Mag() << "  = Mom " << track->getFittedState(i).getMom().Mag() << endl;
+      cout << "\t Kalman Mom da State6D =  "; KalmanMom.Print();
       // cout << "\t Kalman Mom Error da State6D = "; KalmanMom_err.Print();
     }
-
+    
     //! Get the accumulated X/X0 (path / radiation length) of the material crossed in the last extrapolation.
     // virtual double getRadiationLenght() const = 0;
 
@@ -1353,7 +1350,7 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 
     // keep quantities to be plotted of the state CLOSER to the interaction point
     unsigned int measuredState = ( m_reverse ? m_hitCollectionToFit[ hitSampleName ].size()-1 : 0 );
-    // if ( i == m_hitCollectionToFit[ hitSampleName ].size() -1 ) {
+
     if ( i == measuredState ) {
       expectedPos = tmpPos;
       expectedMom = tmpMom;
@@ -1362,27 +1359,26 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
       kalmanPos = KalmanPos;
       massMC = tmp_mass;
 
-      // tuuta la info andra esportata per essere messa in ntupla x l'analisi....
       m_fitTrackCollection->AddTrack( hitSampleName, track, m_evNum, i, // trackID?
 				      &KalmanMom, &KalmanPos,
 				      &expectedMom, &expectedPos,
 				      &KalmanMom_cov );
-
+      
       m_controlPlotter->SetMom_Gen( hitSampleName, &tmp_genMom );
+
       m_controlPlotter->SetMom_TrueMC( hitSampleName, &expectedMom, massMC );
+      
       m_controlPlotter->SetMom_Kal( hitSampleName, &kalmanMom, &kalmanMom_err );
-
+      
       m_controlPlotter->SetPos_Kal( hitSampleName, &kalmanPos, &KalmanPos_err );
-
+      
       m_controlPlotter->SetTrackInfo( hitSampleName, track );
-
-
+      
       if ( GlobalPar::GetPar()->IsPrintOutputNtuple() )
 	m_controlPlotter->Set_Outputntuple(&kalmanMom, &kalmanPos, &tmp_genMom);
-
     }
   }
-
+  
 }
 
 
@@ -1562,10 +1558,10 @@ void KFitter::Finalize() {
     if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
       system(("mkdir "+pathName).c_str());
   }
-
+  
   PrintEfficiency();
 
-  //  m_fitTrackCollection->EvaluateMomentumResolution();
+  m_fitTrackCollection->EvaluateMomentumResolution();
 
   m_categoryFitted.clear();
 

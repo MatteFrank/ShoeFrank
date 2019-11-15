@@ -18,46 +18,46 @@
 #include <Track.h>
 
 
-#define build_string(expr) \
-    (static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
+#define build_string(expr)						\
+  (static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
 
 
 using namespace std;
 using namespace genfit;
 
 class GlobalTrackKalman {
-	
+  
 public:
-
-	GlobalTrackKalman( string name, Track* track, long evNum, int stateID, 
-						TVector3* mom, TVector3* pos,
-						TVector3* mom_MC, TVector3* pos_MC, 
-						TMatrixD* mom_cov 
-						 );
-
-	~GlobalTrackKalman() {};
-
-
-/***	variables	***/
-
-	string m_name;
-	
-	long m_evNum;
-	int m_stateID;
-	TVector3 m_mom;
-	TVector3 m_pos;
-
-	double m_lenght;
-	int m_pdgID;
-	double m_chi2;
-	double m_pVal;
-
-	TVector3 m_sigmaMom;
-	TVector3 m_sigmaPos;
-
+  
+  GlobalTrackKalman( string name, Track* track, long evNum, int stateID, 
+		     TVector3* mom, TVector3* pos,
+		     TVector3* mom_MC, TVector3* pos_MC, 
+		     TMatrixD* mom_cov 
+		     );
+  
+  ~GlobalTrackKalman() {};
+  
+  
+  /***	variables	***/
+  
+  string m_name;
+  
+  long m_evNum;
+  int m_stateID;
+  TVector3 m_mom;
+  TVector3 m_pos;
+  
+  double m_lenght;
+  int m_pdgID;
+  double m_chi2;
+  double m_pVal;
+  
+  TVector3 m_sigmaMom;
+  TVector3 m_sigmaPos;
+  
 private:
-
-
+  
+  
 };
 
 #endif

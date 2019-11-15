@@ -30,7 +30,7 @@ FootField::FootField ( string fileName , TADIparGeo* diGeo) {
   if (fileName == "")
     fullFileName = m_diGeo->GetMapName().Data();
   else
-    fullFileName = "../fullrec/" + fileName;
+    fullFileName = fileName;
   
   cout << " Going to open " << fullFileName.data()<<endl;
   
@@ -51,6 +51,9 @@ FootField::FootField ( string fileName , TADIparGeo* diGeo) {
   
   // read position and field  -->	 fill a multidimensional map called lattice3D = map< double, map< double, map< double, TVector3 > > >
   string line = "";
+
+  //HACK
+  getline(ifile,line);
   while( getline( ifile, line ) ) {  
     
     if (line == "")  continue;

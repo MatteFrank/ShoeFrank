@@ -2,7 +2,21 @@
 #include "GlobalTrackRepostory.hxx"
 
 
-
+void GlobalTrackRepostory::AddTrack( string name, Track* track, long evNum, int stateID, 
+	       TVector3* mom, TVector3* pos,
+	       TVector3* mom_MC, TVector3* pos_MC, 
+	       TMatrixD* mom_cov 
+	       ) {
+  
+  m_fitTrackCollection.push_back( new GlobalTrackKalman( name, track, evNum, stateID, // trackID?
+							 mom, pos,
+							 mom_MC, pos_MC, 
+							 mom_cov ) );
+  
+  PrintPositionResidual( *pos, *pos_MC, name );
+  PrintMomentumResidual( *mom, *mom_MC, *mom_cov, name );
+  
+};
 
 
 //----------------------------------------------------------------------------------------------------
@@ -117,14 +131,14 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
   if ( h_dP_x_bin.find( hitSampleName ) == h_dP_x_bin.end() ) {
     map<float, TH1F*> tmp_dP_x_bin;
 		
-    string name = "dP_dist_"+hitSampleName+"_"+build_string(binCenter);
+    string name = "dP_dist_" + hitSampleName + "_" + build_string(binCenter);
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -2, 2 );
     tmp_dP_x_bin[ binCenter ] = h;
 				
     h_dP_x_bin[ hitSampleName ] = tmp_dP_x_bin;
   }
   else if ( h_dP_x_bin[ hitSampleName ].find( binCenter ) == h_dP_x_bin[ hitSampleName ].end() ) {
-    string name = "dP_dist_"+hitSampleName+"_"+build_string(binCenter);
+    string name = "dP_dist_" + hitSampleName + "_" + build_string(binCenter);
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -2, 2 );
     h_dP_x_bin[ hitSampleName ][ binCenter ] = h;
   }
@@ -134,14 +148,14 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
   if ( h_dPOverP_x_bin.find( hitSampleName ) == h_dPOverP_x_bin.end() ) {
     map<float, TH1F*> tmp_dPOverP_x_bin;
 		
-    string name = "dPOverP_dist_"+hitSampleName+"_"+build_string(binCenter);
+    string name = "dPOverP_dist_" + hitSampleName + "_" + build_string(binCenter);
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -0.2, 0.2 );
     tmp_dPOverP_x_bin[ binCenter ] = h;
 				
     h_dPOverP_x_bin[ hitSampleName ] = tmp_dPOverP_x_bin;
   }
   else if ( h_dPOverP_x_bin[ hitSampleName ].find( binCenter ) == h_dPOverP_x_bin[ hitSampleName ].end() ) {
-    string name = "dPOverP_dist_"+hitSampleName+"_"+build_string(binCenter);
+    string name = "dPOverP_dist_" + hitSampleName + "_" + build_string(binCenter);
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -0.2, 0.2 );
     h_dPOverP_x_bin[ hitSampleName ][ binCenter ] = h;
   }
@@ -151,14 +165,14 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
   if ( h_dPOverSigmaP_x_bin.find( hitSampleName ) == h_dPOverSigmaP_x_bin.end() ) {
     map<float, TH1F*> tmp_dPOverSigmaP_x_bin;
 		
-    string name = "dPOverSigmaP_dist_"+hitSampleName+"_"+build_string(binCenter);
+    string name = "dPOverSigmaP_dist_" + hitSampleName + "_" + build_string(binCenter);
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -2, 2 );
     tmp_dPOverSigmaP_x_bin[ binCenter ] = h;
 				
     h_dPOverSigmaP_x_bin[ hitSampleName ] = tmp_dPOverSigmaP_x_bin;
   }
   else if ( h_dPOverSigmaP_x_bin[ hitSampleName ].find( binCenter ) == h_dPOverSigmaP_x_bin[ hitSampleName ].end() ) {
-    string name = "dPOverSigmaP_dist_"+hitSampleName+"_"+build_string(binCenter);
+    string name = "dPOverSigmaP_dist_" + hitSampleName + "_" + build_string(binCenter);
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -4, 4 );
     h_dPOverSigmaP_x_bin[ hitSampleName ][ binCenter ] = h;
   }
@@ -194,8 +208,6 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 		
     histoName = (string)"h_biasP_over_Pkf"+"__"+(*collIt).first;
     h_biasP_over_Pkf[ (*collIt).first ] = new TH1F( histoName.c_str(), histoName.c_str(), nbin, resoP_min, resoP_max );
-	
-
 
     int k=0;
     for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
@@ -223,11 +235,11 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
       TF1 * f1 = new TF1("gauss", "[0] / sqrt(2.0 * TMath::Pi()) / [2] * exp(-(x-[1])*(x-[1])/2./[2]/[2])", 0, 100);
       f1->SetParNames("Constant","Mean","Sigma");
       cout << " getmean is " << (*it).second->GetMean() << " and getrms is "  <<  (*it).second->GetRMS() << std::endl;
-      f1->SetParameters( 0, (*it).second->GetMean(), (*it).second->GetRMS() );
+      f1->SetParameters( 0., (*it).second->GetMean(), (*it).second->GetRMS() );
       // f1->SetParameters( 0, h_resoP_over_Pkf[ (*collIt).first ]->GetMean(), h_resoP_over_Pkf[ (*collIt).first ]->GetStdDev() );
-      f1->SetParLimits(0,  0.1, (*it).second->GetMaximum());
-      f1->SetParLimits(1, -0.18,  0.18);
-      f1->SetParLimits(2,  0.001,  0.16);
+      f1->SetParLimits(0.,  0.1, (*it).second->GetMaximum());
+      f1->SetParLimits(1., -0.18,  0.18);
+      f1->SetParLimits(2.,  0.001,  0.16);
       f1->SetLineWidth(2);
       f1->SetLineColor(2);
       // h_resoP_over_Pkf[ (*collIt).first ]->Fit("f1","R");
