@@ -23,7 +23,7 @@ set( with_dictionnaries
    TAIRntuAlignC
    TAIRalignM
    TAIRmillepede
-   TAIRCluster
+   TAIRcluster
    TAIRntuCluster
    TAIRtrack
    TAIRntuTrack
