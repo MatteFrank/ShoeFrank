@@ -164,6 +164,7 @@ protected:
 
    TAEDglbTrack*   fGlbTrackDisplay;  // list of global tracks to display
    TAEDtrack*      fIrTrackDisplay;   // list of line to display tracks
+   Bool_t          fIrFlag;
 
    // Magnet
    FootField*            fFieldImpl;       // magnetic field implementation

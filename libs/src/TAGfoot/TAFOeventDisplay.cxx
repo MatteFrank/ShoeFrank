@@ -64,6 +64,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    fCaClusDisplay(0x0),
    fGlbTrackDisplay(0x0),
    fIrTrackDisplay(0x0),
+   fIrFlag(false),
    fFieldImpl(0x0),
    fField(0x0),
    fGlbTrackProp(0x0)
@@ -158,7 +159,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
       fIrTrackDisplay->SetDefWidth(fBoxDefWidth);
       fIrTrackDisplay->SetDefHeight(fBoxDefHeight);
       fIrTrackDisplay->SetPickable(true);
-
+      fIrFlag = true;
    }
 }
 
@@ -769,7 +770,7 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
    Float_t x1 = 0.,  y1 =0., z1 = 0.;
    
    
-   if (prefix == "vt") {
+   if (prefix == "vt" && !fIrFlag) {
       
       TAVTparGeo*  parGeo   = fReco->GetParGeoVtx();
       Int_t nPlanes         = parGeo->GetSensorsN();
@@ -881,7 +882,14 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
             posG  = track->Intersection(0);
             x = posG(0); y = posG(1); z = posG(2);
             
-            posG  = track->Intersection(posLastPlane);
+            
+            if (GlobalPar::GetPar()->IncludeTW()) {
+               Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+               posG = track->Intersection(posZtw);
+            } else {
+               posG  = track->Intersection(posLastPlane);
+            }
+            
             x1 = posG(0); y1 = posG(1); z1 = posG(2);
             
             Float_t nPix = track->GetMeanPixelsN();
