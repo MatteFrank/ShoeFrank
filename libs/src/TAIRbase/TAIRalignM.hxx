@@ -16,7 +16,6 @@
 #include "TGraphErrors.h"
 
 #include "TAGroot.hxx"
-#include "TAGgeoTrafo.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGactTreeReader.hxx"
@@ -26,8 +25,8 @@ class TAVTbaseCluster;
 class TAVTbaseParGeo;
 class TAVTbaseParConf;
 class TObjArray;
-class TAVTbaseTrack;
-class TAVTbaseCluster;
+class TAIRtrack;
+class TAIRcluster;
 
 class TAIRalignM : public TObject {
    
@@ -36,12 +35,10 @@ private:
    
 public:
    //! Instance of class
-   static TAIRalignM* Instance(const TString name = "16O_C2H4_200_1.root",
-                               Bool_t flagVtx = false,
-                               Bool_t flagIt  = false); 
+   static TAIRalignM* Instance(const TString name = "16O_C2H4_200_1.root");
    virtual ~TAIRalignM();
    
-   void ProcessTrack(TAVTbaseTrack *track, Double_t* param = 0x0);
+   void ProcessTrack(TAIRtrack *track, Double_t* param = 0x0);
    
    void AllowVariations(Bool_t *bPlaneOnOff);
    void SetNonLinear(Bool_t *bPlaneOnOff, Bool_t *bVarXYT);
@@ -73,7 +70,7 @@ public:
    
 private:
    //! ctr
-   TAIRalignM(const TString name, Bool_t flagVtx, Bool_t flagIt);
+   TAIRalignM(const TString name);
    void ResetLocalEquation();
    void LocalEquationX(Double_t* param = 0x0);
    void LocalEquationY(Double_t* param = 0x0);
@@ -96,16 +93,11 @@ private:
       
 private:
    TAGroot*             fAGRoot;        // pointer to TAGroot
-   TAGgeoTrafo*         fGeoTrafo;
-   Bool_t               fFlagVtx;
-   Bool_t               fFlagIt;
-   TAGdataDsc*          fpNtuTrackVtx;	 // Track VTX
    TAGparaDsc*          fpConfigVtx;	 // configuration dsc
    TAGparaDsc*          fpGeoMapVtx;    // geometry para dsc
-   TAGdataDsc*          fpNtuTrackItr;	 // Track IT
    TAGparaDsc*          fpConfigItr;	 // configuration dsc
    TAGparaDsc*          fpGeoMapItr;    // geometry para dsc
-   TAGparaDsc*          fpGeoMapG;      // geometry para dsc
+   TAGdataDsc*          fpNtuTrackIr;   // Track IR
    TAGactTreeReader*    fInfile;        // action for reading track
    TAIRmillepede*       fMillepede;     // pointer to align para
    

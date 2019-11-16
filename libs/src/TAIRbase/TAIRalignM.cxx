@@ -15,52 +15,44 @@
 #include "TObjArray.h"
 #include "TCanvas.h"
 
-#include "TAGparGeo.hxx"
 #include "TAGactTreeReader.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuCluster.hxx"
-#include "TAVTntuTrack.hxx"
 
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
-#include "TAITntuCluster.hxx"
-#include "TAITntuTrack.hxx"
 
-#include "TAGgeoTrafo.hxx"
+#include "TAIRntuTrack.hxx"
 
 #include "TAIRalignM.hxx"
-
-#include "TAIRmillepede.hxx"
-
 
 /*!
  \class TAIRalignM
  \brief Alignment class for vertex tracks. **
+  Input of TAIRtracks, vertex plane already aligned, all vertex planes nust be set as reference (status = 1)
+  All inner tracker set to status 2.
  */
 
 ClassImp(TAIRalignM);
 
 TAIRalignM* TAIRalignM::fgInstance = 0x0;
 //__________________________________________________________
-TAIRalignM* TAIRalignM::Instance(const TString name, Bool_t flagVtx, Bool_t flagIt)
+TAIRalignM* TAIRalignM::Instance(const TString name)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAIRalignM(name, flagVtx, flagIt);
+      fgInstance = new TAIRalignM(name);
    
    return fgInstance;
 }
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAIRalignM::TAIRalignM(const TString name, Bool_t flagVtx, Bool_t flagIt)
+TAIRalignM::TAIRalignM(const TString name)
  : TObject(),
    fFileName(name),
-   fFlagVtx(flagVtx),
-   fFlagIt(flagIt),
    fFixPlaneRef1(false),
    fFixPlaneRef2(false),
    fPlaneRef1(-1),
@@ -83,51 +75,38 @@ TAIRalignM::TAIRalignM(const TString name, Bool_t flagVtx, Bool_t flagIt)
    Int_t devsNtot = 0;
    
    fAGRoot        = new TAGroot();
-   fGeoTrafo      = new TAGgeoTrafo();
-   fGeoTrafo->FromFile();
-   
    fInfile        = new TAGactTreeReader("inFile");
-   
-   fpGeoMapG    = new TAGparaDsc("gGeo", new TAGparGeo());
-   TAGparGeo* geomapG   = (TAGparGeo*) fpGeoMapG->Object();
-   TString parFile = "./geomaps/TAGdetector.map";
-   geomapG->FromFile(parFile.Data());
 
    // VTX
-   if (fFlagVtx) {
-      fpGeoMapVtx    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
-      TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
-      TString parFile = "./geomaps/TAVTdetector.map";
-      geomapVtx->FromFile(parFile.Data());
+   fpGeoMapVtx    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
+   TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
+   TString parFile = "./geomaps/TAVTdetector.map";
+   geomapVtx->FromFile(parFile.Data());
       
-      fpConfigVtx    = new TAGparaDsc("vtConf", new TAVTparConf());
-      parFile = "./config/TAVTdetector.cfg";
-      TAVTparConf* parConfVtx = (TAVTparConf*) fpConfigVtx->Object();
-      parConfVtx->FromFile(parFile.Data());
+   fpConfigVtx    = new TAGparaDsc("vtConf", new TAVTparConf());
+   parFile = "./config/TAVTdetector.cfg";
+   TAVTparConf* parConfVtx = (TAVTparConf*) fpConfigVtx->Object();
+   parConfVtx->FromFile(parFile.Data());
       
-      devsNtot += parConfVtx->GetSensorsN();
-
-      fpNtuTrackVtx   = new TAGdataDsc("vtClus", new TAVTntuCluster());
-      fInfile->SetupBranch(fpNtuTrackVtx, TAVTntuCluster::GetBranchName());
-   }
+   devsNtot += parConfVtx->GetSensorsN();
    
    // ITR
-   if (fFlagIt) {
-      fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
-      TAITparGeo* geomapMsd   = (TAITparGeo*) fpGeoMapItr->Object();
-      TString parFile = "./geomaps/TAMSDdetector.map";
-      geomapMsd->FromFile(parFile.Data());
+   fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
+   TAITparGeo* geomapMsd   = (TAITparGeo*) fpGeoMapItr->Object();
+    parFile = "./geomaps/TAMSDdetector.map";
+   geomapMsd->FromFile(parFile.Data());
    
-      fpConfigItr    = new TAGparaDsc("msdConf", new TAITparConf());
-      TAITparConf* parConfItr = (TAITparConf*) fpConfigItr->Object();
-      parFile = "./config/TAMSDdetector.cfg";
-      parConfItr->FromFile(parFile.Data());
+   fpConfigItr    = new TAGparaDsc("msdConf", new TAITparConf());
+   TAITparConf* parConfItr = (TAITparConf*) fpConfigItr->Object();
+   parFile = "./config/TAMSDdetector.cfg";
+   parConfItr->FromFile(parFile.Data());
       
-      devsNtot += parConfItr->GetSensorsN();
-      
-      fpNtuTrackItr  = new TAGdataDsc("itTrack", new TAITntuTrack());
-      fInfile->SetupBranch(fpNtuTrackItr, TAITntuTrack::GetBranchName());
-   }
+   devsNtot += parConfItr->GetSensorsN();
+   
+   //IR
+   fpNtuTrackIr  = new TAGdataDsc("itTrack", new TAIRntuTrack());
+   fInfile->SetupBranch(fpNtuTrackIr, TAIRntuTrack::GetBranchName());
+   
 
    if (devsNtot <= 2) {
       Error("TAIRalignM", "No enough sensors to align");
@@ -153,7 +132,6 @@ TAIRalignM::~TAIRalignM()
    
    delete fResidualX;
    delete fResidualY;
-   delete fGeoTrafo;
 }
 
 //______________________________________________________________________________
@@ -190,16 +168,12 @@ void TAIRalignM::FillStatus()
    TAVTbaseParConf* parConf = 0x0;
    fOffsetItr = 0;
 
-   if (fFlagVtx) {
-      parConf = (TAVTparConf*) fpConfigVtx->Object();
-      FillStatus(parConf);
-      fOffsetItr += fSecArray.GetSize();
-   }
+   parConf = (TAVTparConf*) fpConfigVtx->Object();
+   FillStatus(parConf);
+   fOffsetItr += fSecArray.GetSize();
    
-   if (fFlagIt) {
-      parConf = (TAITparConf*) fpConfigItr->Object();
-      FillStatus(parConf, fOffsetItr);
-   }
+   parConf = (TAITparConf*) fpConfigItr->Object();
+   FillStatus(parConf, fOffsetItr);
 }
 
 //______________________________________________________________________________
@@ -251,12 +225,10 @@ void TAIRalignM::CreateHistogram()
 void TAIRalignM::LoopEvent(Int_t nEvts)
 {
    //init Millipede
-   TAITparConf* pConfigIt = (TAITparConf*) fpConfigItr->Object();
-   TAITparGeo* pGeoMap    = (TAITparGeo*) fpGeoMapItr->Object();
-   TAITntuTrack* pNtuTrk  = (TAITntuTrack*) fpNtuTrackItr->Object();
+   TAITparGeo* pGeoMap   = (TAITparGeo*) fpGeoMapItr->Object();
+   TAIRntuTrack* pNtuTrk = (TAIRntuTrack*) fpNtuTrackIr->Object();
 
-   Int_t     nPlanes  = pConfigIt->GetSensorsN();
-
+   Int_t   nPlanes  = fSecArray.GetSize();
    Int_t nParPlanes = 3;
    Int_t nParam     = nParPlanes*nPlanes;
    Int_t nLocPar    = 4;
@@ -283,7 +255,8 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    SetIterations(20);
 
    for(Int_t k = 0; k < nPlanes; ++k) {
-      if (pConfigIt->GetStatus(k) == 1) {
+      if (fDevStatus[k] == -1) continue;
+      if (fDevStatus[k] == 1) {
          FixPlane(k);
       } else {
          FixParameter(nParPlanes*k+0, 600);
@@ -319,7 +292,7 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
       if (!fAGRoot->NextEvent()) break;
       
       for( Int_t iTrack = 0; iTrack < pNtuTrk->GetTracksN(); ++iTrack ) {
-         TAVTbaseTrack* aTrack = pNtuTrk->GetTrack(iTrack);
+         TAIRtrack* aTrack = pNtuTrk->GetTrack(iTrack);
          
          ProcessTrack(aTrack);
          LocalFit(nTrack,trackParams,1);
@@ -619,7 +592,7 @@ void TAIRalignM::LocalEquationY(Double_t* param)
 }
 
 //_________________________________________________________________
-void TAIRalignM::ProcessTrack(TAVTbaseTrack* track, Double_t* param)
+void TAIRalignM::ProcessTrack(TAIRtrack* track, Double_t* param)
 {
    /// Process track; Loop over clusters and set local equations
    // get size of arrays
@@ -698,38 +671,37 @@ void TAIRalignM::UpdateGeoMaps()
    fstream  configFileNew;
    Char_t configFileName[1000];
    
-   if (fFlagVtx) { // tmp solution
-      TAVTparGeo* pGeoMap  = (TAVTparGeo*)fpGeoMapVtx->Object();
-      sprintf(configFileName,"%s", pGeoMap->GetFileName().Data());
-      configFileOld.open(configFileName, ios::in);
-      sprintf(configFileName,"%s_new", pGeoMap->GetFileName().Data());
-      configFileNew.open(configFileName, ios::out);
-      
-      
-      Char_t tmp[255];
-      
-      printf("\nCreating new file %s with updated alignment parameters\n", configFileName);
-      
-      TString key;
-      while (!configFileOld.eof()) {
-         configFileOld.getline(tmp, 255);
-         key = tmp;
-         configFileNew << tmp;
-         configFileNew << "\n";
-         if (key.Contains("Inputs:")) {
-            Int_t pos = key.First(':');
-            TString sIdx = key(pos+1, key.Length());
-            Int_t idx = (Int_t)sIdx.Atoi()-1;
-            for (Int_t i = 0; i < fSecArray.GetSize(); ++i) {
-               if (idx == fSecArray[i]){
-                  UpdateGeoMapsUVW(configFileOld, configFileNew, idx);
-                  break;
-               }
+   TAITparGeo* pGeoMap  = (TAITparGeo*)fpGeoMapItr->Object();
+   sprintf(configFileName,"%s", pGeoMap->GetFileName().Data());
+   configFileOld.open(configFileName, ios::in);
+   sprintf(configFileName,"%s_new", pGeoMap->GetFileName().Data());
+   configFileNew.open(configFileName, ios::out);
+   
+   
+   Char_t tmp[255];
+   
+   printf("\nCreating new file %s with updated alignment parameters\n", configFileName);
+   
+   TString key;
+   while (!configFileOld.eof()) {
+      configFileOld.getline(tmp, 255);
+      key = tmp;
+      configFileNew << tmp;
+      configFileNew << "\n";
+      if (key.Contains("Inputs:")) {
+         Int_t pos = key.First(':');
+         TString sIdx = key(pos+1, key.Length());
+         Int_t idx = (Int_t)sIdx.Atoi()-1;
+         for (Int_t i = 0; i < fSecArray.GetSize(); ++i) {
+            if (fDevStatus[i] != 2) continue;
+            if (idx == fSecArray[i]){
+               UpdateGeoMapsUVW(configFileOld, configFileNew, idx);
+               break;
             }
          }
       }
-      configFileOld.close();
    }
+   configFileOld.close();
    
    return;
 }
@@ -741,7 +713,7 @@ void TAIRalignM::UpdateGeoMapsUVW(fstream &fileIn, fstream &fileOut, Int_t idx)
 {
    Char_t tmp[255];
    TString key;
-   TAVTparGeo* pGeoMap  = (TAVTparGeo*)fpGeoMapVtx->Object();
+   TAITparGeo* pGeoMap  = (TAITparGeo*)fpGeoMapItr->Object();
    
    Float_t alignU = pGeoMap->GetSensorPar(idx).AlignmentU*TAGgeoTrafo::MmToCm();
    Float_t alignV = pGeoMap->GetSensorPar(idx).AlignmentV*TAGgeoTrafo::MmToCm();
