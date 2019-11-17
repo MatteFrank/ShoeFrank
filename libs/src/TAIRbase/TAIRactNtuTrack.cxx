@@ -35,8 +35,8 @@ ClassImp(TAIRactNtuTrack);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
-								 TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
-								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pVtVertex)
+								 TAGdataDsc* pNtuClus, TAGdataDsc* pVtVertex, TAGdataDsc* pNtuTrack,
+								 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
  : TAVTactBaseTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
    fpVtVertex(pVtVertex),
    fVtVertex(0x0)
@@ -87,10 +87,10 @@ Bool_t TAIRactNtuTrack::CheckVtx()
    for (Int_t i = 0; i < nVertex; ++i) {
       
       TAVTvertex* vtx = pNtuVertex->GetVertex(i);
-      if (vtx->IsBmMatched()) {
+     // if (vtx->IsBmMatched()) {
          vtVertexOk     = true;
          fVtVertex       = vtx;
-      }
+   //   }
    }
    
    return vtVertexOk;
@@ -187,6 +187,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
             posG = fpFootGeo->FromITLocalToGlobal(posG);
             TAIRcluster* last = track->GetLastCluster();
             last->SetPositionG(&posG);
+            last->SetPlaneNumber(last->GetPlaneNumber()+4); // tmp solution
 
             if (fgRefit)
                UpdateParam(track);

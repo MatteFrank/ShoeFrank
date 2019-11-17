@@ -17,11 +17,11 @@ class TAIRactNtuTrack : public TAVTactBaseTrack {
 public:
    explicit  TAIRactNtuTrack(const char* name       = 0,
                              TAGdataDsc* p_ntuclus  = 0,
+                             TAGdataDsc* p_vtvertex = 0,
                              TAGdataDsc* p_ntutrack = 0,
                              TAGparaDsc* p_config   = 0,
                              TAGparaDsc* p_geomap   = 0,
-                             TAGparaDsc* p_calib    = 0,
-                             TAGdataDsc* p_vtvertex = 0);
+                             TAGparaDsc* p_calib    = 0);
    virtual ~TAIRactNtuTrack();
    
    virtual  Bool_t  Action();

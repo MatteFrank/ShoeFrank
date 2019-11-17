@@ -476,7 +476,7 @@ void BaseReco::CreateRecActionIr()
 {
    if(fFlagTrack) {
       fpNtuTrackIr = new TAGdataDsc("irTrack", new TAIRntuTrack());
-      fActTrackIr  = new TAIRactNtuTrack("irActTrack", fpNtuClusIt, fpNtuTrackIr, fpParConfIt, fpParGeoIt, 0x0, fpNtuVtx);
+      fActTrackIr  = new TAIRactNtuTrack("irActTrack", fpNtuClusIt, fpNtuVtx, fpNtuTrackIr, fpParConfIt, fpParGeoIt);
       if (fFlagHisto)
          fActTrackIr->CreateHistogram();
    }
