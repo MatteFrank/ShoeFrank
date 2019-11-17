@@ -388,17 +388,6 @@ void TAIRalignM::Init(Int_t nGlobal,  /* number of global paramers */
    fNPlanes   = nPlanes;
    fNParPlane = nGlobal/nPlanes;
    
-   // Define global constrains to be applied
-   // X, Y, P, XvsZ, YvsZ, PvsZ, XvsY, YvsY, PvsY
-   Bool_t bVarXYT[9] = {kTRUE,kTRUE,kTRUE,kTRUE,kTRUE,kTRUE,kTRUE,kTRUE,kTRUE};
-   Bool_t bDetTLBR[4] = {kFALSE,kTRUE,kFALSE,kTRUE};
-   
-   // Other possible way to add constrains
-   bVarXYT[0] = kFALSE; bVarXYT[1] = kFALSE; bVarXYT[2] = kTRUE;
-   bDetTLBR[0] = kFALSE; bDetTLBR[1] = kTRUE; bDetTLBR[2] = kFALSE; bDetTLBR[3] = kFALSE;
-   
-   bVarXYT[0] = kTRUE; bVarXYT[1] = kTRUE; bVarXYT[2] = kFALSE;
-   
    // Set iterations
    if (fStartFac > 1) fMillepede->SetIterations(fStartFac);
    
