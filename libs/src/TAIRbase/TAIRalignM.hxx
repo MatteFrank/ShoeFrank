@@ -83,8 +83,6 @@ private:
    void    FillStatus();
    void    FillStatus(TAVTbaseParConf* parConf, Int_t offset = 0);
 
-
-   void    UpdateTransfo(Int_t idx);
    void    UpdateAlignmentParams(Double_t* parameters);
    void    UpdateGeoMaps();
    void    UpdateGeoMapsUVW(fstream &fileIn, fstream &fileOut, Int_t idx);
@@ -102,59 +100,43 @@ private:
    
    const TString        fFileName;      // input file
       
-   Float_t*  fTiltW;
-   Float_t*  fAlignmentU;
-   Float_t*  fAlignmentV;
-   
-   Bool_t*   fStatus;
-   Int_t*    fDevStatus;
-   
-   
-   Bool_t fFixPlaneRef1;
-   Bool_t fFixPlaneRef2;
-   Int_t  fPlaneRef1;
-   Int_t  fPlaneRef2;
-   
-   Int_t  fOffsetItr;
-   
-   TGraphErrors*        fResidualX;
-   TGraphErrors*        fResidualY;
+   Float_t*             fTiltW;
+   Float_t*             fAlignmentU;
+   Float_t*             fAlignmentV;
+   Bool_t*              fStatus;
+   Int_t*               fDevStatus;
+   Int_t                fOffsetItr;
    TArrayI              fSecArray;   // contains the sensor number to be aligned
    
-   
-   Bool_t   fDoF[3];         // Flags degrees of freedom to align (x,y,phi)
-   Double_t fAllowVar[3];    // "Encouraged" variation for degrees of freedom
-   Double_t fStartFac;       // Initial value for chi2 cut
+   // Millepede members
+   Bool_t               fDoF[3];         // Flags degrees of freedom to align (x,y,phi)
+   Double_t             fAllowVar[3];    // "Encouraged" variation for degrees of freedom
+   Double_t             fStartFac;       // Initial value for chi2 cut
                              // if > 1 Iterations in AliMillepede are turned on
-   Double_t fResCutInitial;  // Cut on residual for first iteration
-   Double_t fResCut;         // Cut on residual for other iterations
+   Double_t             fResCutInitial;  // Cut on residual for first iteration
+   Double_t             fResCut;         // Cut on residual for other iterations
    
-   Int_t    fNGlobal;        // Number of global parameters
-   Int_t    fNLocal;         // Number of local parameters
-   Int_t    fNStdDev;        // Number of standard deviations for chi2 cut
-   Int_t    fNParPlane;      // Number of degrees of freedom per chamber
-   Int_t    fNPlanes;        // Total number of detection elements
+   Int_t                fNGlobal;        // Number of global parameters
+   Int_t                fNLocal;         // Number of local parameters
+   Int_t                fNStdDev;        // Number of standard deviations for chi2 cut
+   Int_t                fNParPlane;      // Number of degrees of freedom per chamber
+   Int_t                fNPlanes;        // Total number of detection elements
    
-   Double_t fMeas[2];        // Current measurement (depend on B field On/Off)
-   Double_t fSigma[2];       // Estimated resolution on measurement
+   Double_t             fMeas[2];        // Current measurement (depend on B field On/Off)
+   Double_t             fSigma[2];       // Estimated resolution on measurement
    
-   Double_t fGlobalDerivatives[30]; // Array of global derivatives
-   Double_t fLocalDerivatives[4];   // Array of local derivatives
+   Double_t             fGlobalDerivatives[30]; // Array of global derivatives
+   Double_t             fLocalDerivatives[4];   // Array of local derivatives
    
-   
-   Double_t fPhi;            // Azimuthal tilt of detection element
-   Double_t fCosPhi;         // Cosine of fPhi
-   Double_t fSinPhi;         // Sine of fPhi
-   Int_t    fDebugLevel;     // debug level
+   Double_t             fPhi;            // Azimuthal tilt of detection element
+   Double_t             fCosPhi;         // Cosine of fPhi
+   Double_t             fSinPhi;         // Sine of fPhi
+   Int_t                fDebugLevel;     // debug level
 
- 
-   
-   TH1F*   fpResXC[50];        // Residual in X
-   TH1F*   fpResYC[50];        // Residual in Y
-   TH1F*   fpResTotXC;        // Total residuals in x
-   TH1F*   fpResTotYC;        // Total residuals in y
-   
-   
+   TH1F*                fpResXC[50];        // Residual in X
+   TH1F*                fpResYC[50];        // Residual in Y
+   TH1F*                fpResTotXC;        // Total residuals in x
+   TH1F*                fpResTotYC;        // Total residuals in y
    
    ClassDef(TAIRalignM,0)
 };

@@ -53,12 +53,6 @@ TAIRalignM* TAIRalignM::Instance(const TString name)
 TAIRalignM::TAIRalignM(const TString name)
  : TObject(),
    fFileName(name),
-   fFixPlaneRef1(false),
-   fFixPlaneRef2(false),
-   fPlaneRef1(-1),
-   fPlaneRef2(-1),
-   fResidualX(new TGraphErrors()),
-   fResidualY(new TGraphErrors()),
    fStartFac(16.),
    fResCutInitial(100.),
    fResCut(100.),
@@ -129,9 +123,6 @@ TAIRalignM::~TAIRalignM()
    delete[] fAlignmentV;
    delete[] fStatus;
    delete[] fDevStatus;
-   
-   delete fResidualX;
-   delete fResidualY;
 }
 
 //______________________________________________________________________________
@@ -185,15 +176,6 @@ void TAIRalignM::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
       if (parConf->GetStatus(i) != -1) {
          fSecArray.Set(fSecArray.GetSize()+1);
          fSecArray.AddAt(i, fSecArray.GetSize()-1);
-      }
-      if (parConf->GetStatus(i) == 0) {
-         fFixPlaneRef1 = true;
-         fPlaneRef1 = fSecArray.GetSize()-1;
-      }
-      
-      if (parConf->GetStatus(i) == 1) {
-         fFixPlaneRef2 = true;
-         fPlaneRef2 = fSecArray.GetSize()-1;
       }
       
       Int_t iSensor = fSecArray.GetSize()-1;
@@ -391,21 +373,6 @@ void TAIRalignM::UpdateAlignmentParams(Double_t* parameters)
    }
    return;
 }
-
-//______________________________________________________________________________
-//
-// Update transfo for every loop when it changes the alignment parameters
-void TAIRalignM::UpdateTransfo(Int_t idx)
-{
-   TAITparGeo* pGeoMap  = (TAITparGeo*) fpGeoMapItr->Object();
-   Int_t       iPlane   = fSecArray[idx];
-   pGeoMap->GetSensorPar(iPlane).AlignmentU = fAlignmentU[idx];
-   pGeoMap->GetSensorPar(iPlane).AlignmentV = fAlignmentV[idx];
-   pGeoMap->GetSensorPar(iPlane).TiltW      = -fTiltW[idx];
-   
-   return;
-}
-
 
 //_________________________________________________________________
 void TAIRalignM::Init(Int_t nGlobal,  /* number of global paramers */
