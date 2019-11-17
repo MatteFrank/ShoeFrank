@@ -539,12 +539,12 @@ void TAIRalignM::SetNonLinear(Int_t iPar  /* set non linear flag */ ) {
 }
 
 //_________________________________________________________________
-void TAIRalignM::LocalEquationX(Double_t* param)
+void TAIRalignM::LocalEquationX(TAIRcluster* cluster, Double_t* param)
 {
    /// Define local equation for current track and cluster in x coor. measurement
    // set local derivatives   
-   Int_t planeNumber = fCluster->GetPlaneNumber();
-   TVector3 pos      = fCluster->GetPositionG();
+   Int_t planeNumber = cluster->GetPlaneNumber();
+   TVector3 pos      = cluster->GetPositionG();
 
    SetLocalDerivative(0, 1.);
    SetLocalDerivative(1, pos(2));
@@ -566,12 +566,12 @@ void TAIRalignM::LocalEquationX(Double_t* param)
 }
 
 //_________________________________________________________________
-void TAIRalignM::LocalEquationY(Double_t* param)
+void TAIRalignM::LocalEquationY(TAIRcluster* cluster, Double_t* param)
 {
    /// Define local equation for current track and cluster in y coor. measurement
    // set local derivatives
-   Int_t planeNumber = fCluster->GetPlaneNumber();
-   TVector3 pos      = fCluster->GetPositionG();
+   Int_t planeNumber = cluster->GetPlaneNumber();
+   TVector3 pos      = cluster->GetPositionG();
    
    SetLocalDerivative(0, 0.);
    SetLocalDerivative(1, 0.);
@@ -603,21 +603,21 @@ void TAIRalignM::ProcessTrack(TAIRtrack* track, Double_t* param)
       printf("Number of track param entries : %i ", nClusters);
    
    for(Int_t iCluster = 0; iCluster < nClusters; iCluster++) {
-      fCluster = track->GetCluster(iCluster);
-      if (!fCluster) continue;
+      TAIRcluster* cluster = track->GetCluster(iCluster);
+      if (!cluster) continue;
       // fill local variables for this position --> one measurement
       
-      fMeas[0]  = fCluster->GetPositionG()(0);
-      fMeas[1]  = fCluster->GetPositionG()(1);
-      fSigma[0] = fCluster->GetPosError()(0);
-      fSigma[1] = fCluster->GetPosError()(1);
+      fMeas[0]  = cluster->GetPositionG()(0);
+      fMeas[1]  = cluster->GetPositionG()(1);
+      fSigma[0] = cluster->GetPosError()(0);
+      fSigma[1] = cluster->GetPosError()(1);
       
       if (fDebugLevel > 0)
          printf("fMeas[0]: %f\t fMeas[1]: %f\t fSigma[0]: %f\t fSigma[1]: %f\n", fMeas[0], fMeas[1], fSigma[0], fSigma[1]);
       
       // Set local equations
-      LocalEquationY(param);
-      LocalEquationX(param);
+      LocalEquationY(cluster, param);
+      LocalEquationX(cluster, param);
    }
 }
 

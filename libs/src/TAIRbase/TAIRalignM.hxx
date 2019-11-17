@@ -4,7 +4,7 @@
  \file
  \brief   Declaration of TAIRalignM.
  
- \author C.A. Reidel & Ch. Finck
+ \author Ch. Finck
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -21,7 +21,6 @@
 #include "TAGactTreeReader.hxx"
 #include "TAIRmillepede.hxx"
 
-class TAVTbaseCluster;
 class TAVTbaseParGeo;
 class TAVTbaseParConf;
 class TObjArray;
@@ -72,8 +71,8 @@ private:
    //! ctr
    TAIRalignM(const TString name);
    void ResetLocalEquation();
-   void LocalEquationX(Double_t* param = 0x0);
-   void LocalEquationY(Double_t* param = 0x0);
+   void LocalEquationX(TAIRcluster* cluster, Double_t* param = 0x0);
+   void LocalEquationY(TAIRcluster* cluster, Double_t* param = 0x0);
 
 public:
    void   LoopEvent(Int_t nEvts = 1);
@@ -129,8 +128,6 @@ private:
                              // if > 1 Iterations in AliMillepede are turned on
    Double_t fResCutInitial;  // Cut on residual for first iteration
    Double_t fResCut;         // Cut on residual for other iterations
-   
-   TAVTbaseCluster* fCluster;
    
    Int_t    fNGlobal;        // Number of global parameters
    Int_t    fNLocal;         // Number of local parameters
