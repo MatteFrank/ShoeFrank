@@ -1,10 +1,11 @@
 #ifndef _TAMSDcluster_HXX
 #define _TAMSDcluster_HXX
 
+#include <map>
 // ROOT classes
 #include "TVector3.h"
 #include "TClonesArray.h"
-
+#include "TArrayC.h"
 #include "TAGobject.hxx"
 
 
@@ -18,13 +19,16 @@ class TAMSDntuHit;
 class TAMSDcluster : public TAGobject {
    
 private:
-   Float_t          fPosition;                 // position of the cluster in plane frame
-   Float_t          fPosError;                 // position's errors of the cluster in plane frame
-   TVector3*        fPositionG;                // position of the clus in tracker frame
-   TClonesArray*    fListOfStrips;             // list of strips attached to this cluster
+   Float_t            fPosition;                 // position of the cluster in plane frame
+   Float_t            fPosError;                 // position's errors of the cluster in plane frame
+   TVector3*          fPositionG;                // position of the clus in tracker frame
+   TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
    
-   Int_t            fPlaneNumber;              // plane number
-   Bool_t           fIsValid;                  // validity flag
+   Int_t              fPlaneNumber;              // plane number
+   Bool_t             fIsValid;                  // validity flag
+   
+   TArrayC            fMcTrackIdx;               // Idx of the track created in the simulation
+   std::map<int, int> fMcTrackMap;               // Map of MC track Id
 
 public:
    TAMSDcluster(); 
@@ -71,7 +75,9 @@ public:
    //! Add pixel to the list
    void               AddPixel(TAMSDntuHit* pixel);
 
-   
+   // Add MC track Idx
+   void               AddMcTrackIdx(Int_t trackIdx);
+
    ClassDef(TAMSDcluster,2)                          // Describes TAMSDcluster
 };
 

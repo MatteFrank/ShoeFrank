@@ -7,6 +7,7 @@
 #include "TVector2.h"
 #include "TClonesArray.h"
 #include "TObjArray.h"
+#include "TArrayC.h"
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
@@ -33,6 +34,9 @@ protected:
    Bool_t             fFoundXZ;					    //! kTRUE is associated to a track in XZ Projection
    Bool_t             fFoundYZ;					    //! kTRUE is associated to a track in YZ Projection
    Bool_t             fIsValid;                  // validity flag
+   
+   TArrayC            fMcTrackIdx;               // Idx of the track created in the simulation
+   std::map<int, int> fMcTrackMap;               // Map of MC track Id
    
 public:
    TAVTbaseCluster(); 
@@ -103,6 +107,9 @@ public:
    //! reset pixels
    void               ResetPixels();
    
+   // Add MC track Idx
+   void               AddMcTrackIdx(Int_t trackIdx);
+
    ClassDef(TAVTbaseCluster,2)                          // Describes TAVTbaseCluster
 };
 

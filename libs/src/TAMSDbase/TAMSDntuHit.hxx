@@ -73,7 +73,7 @@ public:
   
   // MC track id
   Int_t      GetMcIndex(Int_t index)   const   { return fMCindex[index];      }
-  Int_t      GetMcTrackI(Int_t index)  const   { return fMcTrackId[index];    }
+  Int_t      GetMcTrackId(Int_t index) const   { return fMcTrackId[index];    }
   Int_t      GetMcTrackCount()         const   { return fMcTrackId.GetSize(); }
   
   
@@ -89,7 +89,6 @@ public:
    void     SetIndex(Int_t index)        { fIndex = index;    }
   // Set position
   void     SetPosition(Float_t pos)     { fPosition = pos;   }
-  
   // Add MC track Id
   void     AddMcTrackId(Int_t trackId, Int_t mcId = -1);
   
