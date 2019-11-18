@@ -37,8 +37,8 @@ protected:
   Int_t     fView;
   Int_t     fStrip;
   
-  TArrayC   fMCindex;                  // Id of the hit created in the simulation
-  TArrayC   fMcTrackIdx;                // Id of the track created in the simulation
+  TArrayC   fMCindex;                  // Index of the hit created in the simulation
+  TArrayC   fMcTrackIdx;               // Index of the track created in the simulation
   
 public:
    TAMSDntuHit();
