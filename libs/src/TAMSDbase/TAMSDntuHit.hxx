@@ -61,20 +61,20 @@ public:
    //! Get line number
    Int_t      GetView()         const    { return fView;     }
    //! Get column number
-  Int_t      GetStrip()        const    { return fStrip;    }
+  Int_t      GetStrip()         const    { return fStrip;    }
   //! Get index
-  Int_t      GetIndex()        const    { return fIndex;    }
+  Int_t      GetIndex()         const    { return fIndex;    }
   // Get position
-  Float_t    GetPosition()     const    { return fPosition;  }
+  Float_t    GetPosition()      const    { return fPosition; }
   
   
   //! Is Sortable
-  Bool_t     IsSortable()      const    { return kTRUE;   }
+  Bool_t     IsSortable()       const    { return kTRUE;     }
   
   // MC track id
-  Int_t      GetMcIndex(Int_t index)   const   { return fMCindex[index];      }
+  Int_t      GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
   Int_t      GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
-  Int_t      GetMcTrackCount()         const   { return fMcTrackIdx.GetSize(); }
+  Int_t      GetMcTrackCount()          const   { return fMcTrackIdx.GetSize(); }
   
   
   //! Set input type
@@ -86,7 +86,7 @@ public:
   //! Set column number
   void     SetStrip(Int_t strip)        { fStrip = strip;    }
   //! Set index
-   void     SetIndex(Int_t index)        { fIndex = index;    }
+   void     SetIndex(Int_t index)       { fIndex = index;    }
   // Set position
   void     SetPosition(Float_t pos)     { fPosition = pos;   }
   // Add MC track Id
