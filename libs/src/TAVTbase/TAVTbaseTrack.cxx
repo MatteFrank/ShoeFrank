@@ -67,6 +67,8 @@ TAVTbaseTrack::TAVTbaseTrack()
    fChargeMaxProbaNorm(0.),
    fMeanPixelsN(0)
 {
+   fMcTrackIdx.Reset();
+   fMcTrackMap.clear();
 }
 
 //______________________________________________________________________________
@@ -90,7 +92,8 @@ TAVTbaseTrack::TAVTbaseTrack(const TAVTbaseTrack& aTrack)
    fChargeProbaNorm(new TArrayF(*aTrack.fChargeProbaNorm)),
    fChargeWithMaxProbaNorm(aTrack.fChargeWithMaxProbaNorm),
    fChargeMaxProbaNorm(aTrack.fChargeMaxProbaNorm),
-   fMeanPixelsN(aTrack.fMeanPixelsN)
+   fMeanPixelsN(aTrack.fMeanPixelsN),
+   fMcTrackIdx(aTrack.fMcTrackIdx)
 {
    fListOfClusters = (TClonesArray*)aTrack.fListOfClusters->Clone();
 }
@@ -316,3 +319,13 @@ void TAVTbaseTrack::SetChargeProbaNorm(const TArrayF* proba)
    fChargeProbaNorm->Set(proba->GetSize(), array);
 }
 
+//______________________________________________________________________________
+//
+void TAVTbaseTrack::AddMcTrackIdx(Int_t trackIdx)
+{
+   if (fMcTrackMap[trackIdx] == 0) {
+      fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
+      fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
+      fMcTrackMap[trackIdx] = 1;
+   }
+}
