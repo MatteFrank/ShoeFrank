@@ -67,12 +67,12 @@ public:
    Float_t   GetHitCoordinate_detectorFrame() const   { return m_coordinate; }
    Float_t   GetHitZ_detectorFrame()          const   { return m_z;          }
    // MC track id
-   Int_t      GetMcIndex(Int_t index)   const   { return m_MCindex[index];      }
-   Int_t      GetMcTrackId(Int_t index) const   { return m_McTrackId[index];    }
-   Int_t      GetMcTrackCount()         const   { return m_McTrackId.GetSize(); }
+   Int_t     GetMcIndex(Int_t index)    const   { return m_MCindex[index];      }
+   Int_t     GetMcTrackIdx(Int_t index) const   { return m_McTrackId[index];    }
+   Int_t     GetMcTrackCount()          const   { return m_McTrackId.GetSize(); }
    // Add MC track Id
-   void       AddMcTrackId(Int_t trackId, Int_t mcId = -1);
-   inline void  SetToF(Double_t time) { m_timeofflight = time; return; }
+   void      AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
+   void      SetToF(Double_t time) { m_timeofflight = time; return; }
 
 
 

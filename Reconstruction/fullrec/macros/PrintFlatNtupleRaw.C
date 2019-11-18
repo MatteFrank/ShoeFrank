@@ -547,9 +547,9 @@ void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
   	 // for (Int_t j = 0; j < nHits; ++j) {
   	 //   TAVTntuHit* hit = clus->GetPixel(j);
   	 //   for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
-  	 //     Int_t id = hit->GetMcTrackId(k);
+  	 //     Int_t id = hit->GetMcTrackIdx(k);
   	 //     Int_t idx = hit->GetMcIndex(k);
-  	 //     cout << " TrackMcId  " <<   id   <<endl;
+  	 //     cout << " TrackMcIdx  " <<   id   <<endl;
   	 //     cout << "  McIndex   " <<   idx    <<endl;
   	 //     // printf("TrackMcId %d ", id);
   	 //     // printf("McIndex   %d ", idx);

@@ -277,9 +277,9 @@ int KFitter::UploadClusVT(){
       for (Int_t jHit = 0; jHit < nHits; ++jHit) {
       	TAVTntuHit* hit = clus->GetPixel(jHit);
       	for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
-	  Int_t id = hit->GetMcTrackId(k);
+	  Int_t id = hit->GetMcTrackIdx(k);
 	  Int_t idx = hit->GetMcIndex(k);
-	  cout << "McTrackId: " << id << endl;
+	  cout << "McTrackIdx: " << id << endl;
 	  cout << "McIndex: " << idx << endl;
 	  TAMCeveTrack* track = eve->GetHit(id);
 	  printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
@@ -382,7 +382,7 @@ int KFitter::UploadClusIT(){
       for (Int_t jHit = 0; jHit < nHits; ++jHit) {
       	TAITntuHit* hit = (TAITntuHit*)clus->GetPixel(jHit);
       	for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
-	  Int_t id = hit->GetMcTrackId(k);
+	  Int_t id = hit->GetMcTrackIdx(k);
 	  Int_t idx = hit->GetMcIndex(k);
 	  // cout << "id: " << id  << endl;
 	  // cout << "idxx: " << idx  << endl;

@@ -38,7 +38,7 @@ protected:
   Int_t     fStrip;
   
   TArrayC   fMCindex;                  // Id of the hit created in the simulation
-  TArrayC   fMcTrackId;                // Id of the track created in the simulation
+  TArrayC   fMcTrackIdx;                // Id of the track created in the simulation
   
 public:
    TAMSDntuHit();
@@ -73,8 +73,8 @@ public:
   
   // MC track id
   Int_t      GetMcIndex(Int_t index)   const   { return fMCindex[index];      }
-  Int_t      GetMcTrackId(Int_t index) const   { return fMcTrackId[index];    }
-  Int_t      GetMcTrackCount()         const   { return fMcTrackId.GetSize(); }
+  Int_t      GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+  Int_t      GetMcTrackCount()         const   { return fMcTrackIdx.GetSize(); }
   
   
   //! Set input type
@@ -90,7 +90,7 @@ public:
   // Set position
   void     SetPosition(Float_t pos)     { fPosition = pos;   }
   // Add MC track Id
-  void     AddMcTrackId(Int_t trackId, Int_t mcId = -1);
+  void     AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
   
   
   ClassDef(TAMSDntuHit,3)                            // Pixel or Pixel of a Detector Plane

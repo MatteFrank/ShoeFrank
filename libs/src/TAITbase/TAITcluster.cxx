@@ -61,7 +61,7 @@ Float_t TAITcluster::Distance(TAITtrack *aTrack) {
 void TAITcluster::AddPixel(TAITntuHit* pixel)
 {
    for (Int_t k = 0; k < pixel->GetMcTrackCount(); ++k) {
-      Int_t idx = pixel->GetMcTrackId(k);
+      Int_t idx = pixel->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);
    }
    

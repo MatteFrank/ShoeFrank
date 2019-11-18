@@ -84,7 +84,7 @@ Bool_t TASTactNtuMC::Action()
 
      TASTntuHit* hit = fDigitizer->GetCurrentHit();
      trigtime = hit->GetTime();
-     hit->AddMcTrackId(trackId, i);
+     hit->AddMcTrackIdx(trackId, i);
   }
   
   p_nturaw->SetCharge(edep);

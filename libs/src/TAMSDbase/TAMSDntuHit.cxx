@@ -40,7 +40,7 @@ TAMSDntuHit::TAMSDntuHit( Int_t input, Float_t value, Int_t view, Int_t strip)
 void TAMSDntuHit::Clear(Option_t* /*option*/)
 {
    fMCindex.Set(0);
-   fMcTrackId.Set(0);
+   fMcTrackIdx.Set(0);
 }
 
 //______________________________________________________________________________
@@ -55,13 +55,13 @@ Bool_t TAMSDntuHit::IsEqual(const TObject* hit) const
 
 //______________________________________________________________________________
 //
-void TAMSDntuHit:: AddMcTrackId(Int_t trackId, Int_t mcId)
+void TAMSDntuHit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
    fMCindex[fMCindex.GetSize()-1]   = mcId;
    
-   fMcTrackId.Set(fMcTrackId.GetSize()+1);
-   fMcTrackId[fMcTrackId.GetSize()-1] = trackId;
+   fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
+   fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackId;
 }
 
 //______________________________________________________________________________

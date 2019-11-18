@@ -173,7 +173,7 @@ void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
       TAMSDntuHit* strip = (TAMSDntuHit*)pNtuRaw->NewStrip(sensorId, digiMap[it->first], view, stripId);
       
       Int_t genPartID = fpEvtStr->MSDid[hitId] - 1;
-      strip->AddMcTrackId(genPartID, hitId);
+      strip->AddMcTrackIdx(genPartID, hitId);
       
       if ( fDebugLevel> 0 )
 	printf("strip %d\n", stripId);
@@ -211,7 +211,7 @@ void TAMSDactNtuMC::FillNoise(Int_t sensorId)
   for (Int_t i = 0; i < stripsN; ++i) {
     Int_t stripId  = gRandom->Uniform(0,fDigitizer->GetStripsN());
     TAMSDntuHit* strip = pNtuRaw->NewStrip(sensorId, 1., view, stripId);
-    strip->AddMcTrackId(fgMcNoiseId);
+    strip->AddMcTrackIdx(fgMcNoiseId);
   }
 }
 

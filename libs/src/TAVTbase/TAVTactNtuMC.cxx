@@ -228,7 +228,7 @@ void TAVTactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
          
 			TAVTntuHit* pixel = (TAVTntuHit*)pNtuRaw->NewPixel(sensorId, 1., line, col);
 
-         pixel->AddMcTrackId(trackIdx, hitId);
+         pixel->AddMcTrackIdx(trackIdx, hitId);
 
          if(FootDebugLevel(1))
 				printf("line %d col %d\n", line, col);
@@ -265,6 +265,6 @@ void TAVTactNtuMC::FillNoise(Int_t sensorId)
 	   Int_t col  = gRandom->Uniform(0,fDigitizer->GetNPixelX());
 	   Int_t line = gRandom->Uniform(0,fDigitizer->GetNPixelY());
 	   TAVTntuHit* pixel = pNtuRaw->NewPixel(sensorId, 1., line, col);
-	   pixel->AddMcTrackId(fgMcNoiseId);
+	   pixel->AddMcTrackIdx(fgMcNoiseId);
 	}
 }

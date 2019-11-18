@@ -28,12 +28,12 @@ public:
    void            SetType(int type)        { fType = type;      }
    void            SetPosition(TVector3 pos){ fPosition = pos;   }
 
-   Int_t           GetMcIndex(Int_t index)   const   { return fMCindex[index];      }
-   Int_t           GetMcTrackI(Int_t index)  const   { return fMcTrackId[index];    }
-   Int_t           GetMcTrackCount()         const   { return fMcTrackId.GetSize(); }
+   Int_t           GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
+   Int_t           GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+   Int_t           GetMcTrackCount()          const   { return fMcTrackIdx.GetSize(); }
 
    void            Clear(Option_t* option = "C");
-   void            AddMcTrackId(Int_t trackId, Int_t mcId = -1);
+   void            AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
 
 private:
    Double32_t      fTime;
@@ -43,7 +43,7 @@ private:
    TVector3        fPosition;
    
    TArrayC         fMCindex;                  // Id of the hit created in the simulation
-   TArrayC         fMcTrackId;                // Id of the track created in the simulation
+   TArrayC         fMcTrackIdx;                // Id of the track created in the simulation
    
    ClassDef(TACAntuHit,1)
 };

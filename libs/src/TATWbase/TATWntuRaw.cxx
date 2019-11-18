@@ -91,7 +91,7 @@ TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime,
 
 //______________________________________________________________________________
 //
-void TATWntuHit::AddMcTrackId(Int_t trackId, Int_t mcId)
+void TATWntuHit::AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
 	m_MCindex.Set(m_MCindex.GetSize()+1);
 	m_MCindex[m_MCindex.GetSize()-1]   = mcId;
