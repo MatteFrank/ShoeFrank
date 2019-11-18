@@ -60,7 +60,7 @@ Float_t TAVTcluster::Distance( TAVTtrack *aTrack) {
 //  
 void TAVTcluster::AddPixel(TAVTntuHit* pixel)
 {
-   for (Int_t k = 0; k < pixel->GetMcTrackCount(); ++k) {
+   for (Int_t k = 0; k < pixel->GetMcTracksN(); ++k) {
       Int_t idx = pixel->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);
    }

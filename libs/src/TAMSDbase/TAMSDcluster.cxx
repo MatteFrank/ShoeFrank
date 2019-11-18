@@ -59,7 +59,7 @@ TAMSDcluster::~TAMSDcluster()
 //  
 void TAMSDcluster::AddPixel(TAMSDntuHit* pixel)
 {
-   for (Int_t k = 0; k < pixel->GetMcTrackCount(); ++k) {
+   for (Int_t k = 0; k < pixel->GetMcTracksN(); ++k) {
       Int_t idx = pixel->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);
    }

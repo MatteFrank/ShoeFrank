@@ -93,7 +93,7 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
          
          for (Int_t j = 0; j < nHits; ++j) {
             TAVTntuHit* hit = clus->GetPixel(j);
-            for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
+            for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
                Int_t idx = hit->GetMcTrackIdx(k);
                printf("TrackMcId %d ", idx);
                TAMCeveTrack* track = eve->GetHit(idx);

@@ -57,7 +57,7 @@ void TAITtrack::SetupClones()
 //
 void TAITtrack::AddCluster(TAITcluster* cluster)
 {
-   for (Int_t k = 0; k < cluster->GetMcTrackCount(); ++k) {
+   for (Int_t k = 0; k < cluster->GetMcTracksN(); ++k) {
       Int_t idx = cluster->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);
    }

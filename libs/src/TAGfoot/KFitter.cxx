@@ -276,7 +276,7 @@ int KFitter::UploadClusVT(){
 
       for (Int_t jHit = 0; jHit < nHits; ++jHit) {
       	TAVTntuHit* hit = clus->GetPixel(jHit);
-      	for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
+      	for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
 	  Int_t id = hit->GetMcTrackIdx(k);
 	  Int_t idx = hit->GetMcIndex(k);
 	  cout << "McTrackIdx: " << id << endl;
@@ -381,7 +381,7 @@ int KFitter::UploadClusIT(){
 
       for (Int_t jHit = 0; jHit < nHits; ++jHit) {
       	TAITntuHit* hit = (TAITntuHit*)clus->GetPixel(jHit);
-      	for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
+      	for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
 	  Int_t id = hit->GetMcTrackIdx(k);
 	  Int_t idx = hit->GetMcIndex(k);
 	  // cout << "id: " << id  << endl;

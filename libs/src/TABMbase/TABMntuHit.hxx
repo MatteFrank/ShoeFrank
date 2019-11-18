@@ -57,9 +57,9 @@ class TABMntuHit : public TAGdata {
     void SetWvers(TVector3 w_in){Wvers=w_in;};
     void SetIsFake(Int_t in_fake){isFake=in_fake;};
    
-   Int_t           GetMcIndex(Int_t index)   const   { return fMCindex[index];      }
-   Int_t           GetMcTrackI(Int_t index)  const   { return fMcTrackIdx[index];    }
-   Int_t           GetMcTrackCount()         const   { return fMcTrackIdx.GetSize(); }
+   Int_t           GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
+   Int_t           GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+   Int_t           GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
    
    void            Clear(Option_t* option = "C");
    void            AddMcTrackIdx(Int_t trackId, Int_t mcId = -1);
