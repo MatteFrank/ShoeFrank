@@ -571,7 +571,7 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 			   for (j=iLocFirst; j<=i ; j++) { // Symmetric matrix, don't bother j>i coeffs
 				  jIdx = fIndexLocEq[j];						
 				  fMatCLoc[iIdx][jIdx] += lWeight*fDerivLocEq[i]*fDerivLocEq[j];	    
-               FootDebug(2, "LocalFit()", Form("fMatCLoc[%d][%d] = ", iIdx, jIdx, fMatCLoc[iIdx][jIdx]));
+               FootDebug(2, "LocalFit()", Form("fMatCLoc[%d][%d] = %g", iIdx, jIdx, fMatCLoc[iIdx][jIdx]));
 			   }
 			}
 			iMeas   = -1;
