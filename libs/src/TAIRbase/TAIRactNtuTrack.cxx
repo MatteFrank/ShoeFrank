@@ -204,7 +204,6 @@ Bool_t TAIRactNtuTrack::FindTracks()
          track->MakeChiSquare();
          track->SetType(1);
          pNtuTrack->NewTrack(*track);
-         printf("toto\n");
          if (ValidHistogram())
             FillHistogramm(track);
          
