@@ -43,6 +43,7 @@ TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
    fpVtVertex(pVtVertex),
    fVtVertex(0x0)
 {
+   AddDataOut(pNtuTrack, "TAIRntuTrack");
 }
 
 //------------------------------------------+-----------------------------------
