@@ -90,10 +90,10 @@ Bool_t TAIRactNtuTrack::CheckVtx()
    for (Int_t i = 0; i < nVertex; ++i) {
       
       TAVTvertex* vtx = pNtuVertex->GetVertex(i);
-      if (vtx->IsBmMatched() && fgBmMatched) { // only for pileup
-         vtVertexOk     = true;
-         fVtVertex       = vtx;
-      }
+      if (!vtx->IsBmMatched() && fgBmMatched) continue; // only for pileup
+      vtVertexOk     = true;
+      fVtVertex       = vtx;
+      
    }
    
    return vtVertexOk;
@@ -204,7 +204,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
          track->MakeChiSquare();
          track->SetType(1);
          pNtuTrack->NewTrack(*track);
-         
+         printf("toto\n");
          if (ValidHistogram())
             FillHistogramm(track);
          
