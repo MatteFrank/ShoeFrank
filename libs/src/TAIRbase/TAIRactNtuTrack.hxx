@@ -40,7 +40,7 @@ private:
    TAVTvertex*  fVtVertex;         // VT vertex pointer
 
 private:
-   Bool_t       fgBmMatched;       // vertex matched with BM flag
+   static Bool_t fgBmMatched;      // vertex matched with BM flag
 
    ClassDef(TAIRactNtuTrack,0)
 };
