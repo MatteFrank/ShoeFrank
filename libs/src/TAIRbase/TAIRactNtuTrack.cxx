@@ -32,6 +32,8 @@
 
 ClassImp(TAIRactNtuTrack);
 
+Bool_t  TAIRactNtuTrack::fgBmMatched = false;
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
@@ -87,10 +89,10 @@ Bool_t TAIRactNtuTrack::CheckVtx()
    for (Int_t i = 0; i < nVertex; ++i) {
       
       TAVTvertex* vtx = pNtuVertex->GetVertex(i);
-     // if (vtx->IsBmMatched()) {
+      if (vtx->IsBmMatched() && fgBmMatched) { // only for pileup
          vtVertexOk     = true;
          fVtVertex       = vtx;
-   //   }
+      }
    }
    
    return vtVertexOk;

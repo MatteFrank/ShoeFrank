@@ -26,14 +26,21 @@ public:
    
    virtual  Bool_t  Action();
 
-protected:
+public:
+   static Bool_t  IsBmMatched()             { return fgBmMatched; }
+   static void    SetBmMatched(Bool_t flag) { fgBmMatched = flag; }
+
+private:
     Bool_t FindTracks();
     Bool_t CheckVtx();
    TAIRtrack* FillTracks(TAVTtrack* vtTrack);
    
-protected:
+private:
    TAGdataDsc*  fpVtVertex;        // VT vertex container
    TAVTvertex*  fVtVertex;         // VT vertex pointer
+
+private:
+   Bool_t       fgBmMatched;       // vertex matched with BM flag
 
    ClassDef(TAIRactNtuTrack,0)
 };
