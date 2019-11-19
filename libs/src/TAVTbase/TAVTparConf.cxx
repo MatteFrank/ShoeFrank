@@ -22,7 +22,7 @@
 
 /*!
   \class TAVTparConf TAVTparConf.hxx "TAVTparConf.hxx"
-  \brief Map and Geometry parameters for Inner Tracker **
+  \brief Map and Geometry parameters for vertex **
 */
 
 ClassImp(TAVTparConf);
@@ -33,7 +33,7 @@ TAVTparConf::TAVTparConf()
 : TAVTbaseParConf()
 {
    // Standard constructor
-   fkDefaultConfName = "./config/TAITdetector.cfg";
+   fkDefaultConfName = "./config/TAVTdetector.cfg";
 }
 
 //______________________________________________________________________________
