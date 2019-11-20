@@ -195,7 +195,7 @@ void BaseReco::SetRecHistogramDir()
       fActClusMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    
    //Global track
-   if (GlobalPar::GetPar()->IncludeKalman())
+   if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
       fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
 }
 
@@ -363,7 +363,7 @@ void BaseReco::CreateRecAction()
    if (GlobalPar::GetPar()->IncludeTW())
       CreateRecActionTw();
    
-   if (GlobalPar::GetPar()->IncludeKalman())
+   if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
       CreateRecActionGlb();
    
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
@@ -557,7 +557,7 @@ void BaseReco::AddRecRequiredItem()
       gTAGroot->AddRequiredItem("caActNtu");
    }
    
-   if (GlobalPar::GetPar()->IncludeKalman())
+   if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
       gTAGroot->AddRequiredItem("glbActTrack");
    
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&

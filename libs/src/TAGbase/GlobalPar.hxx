@@ -64,6 +64,7 @@ public:
     bool IncludeVertex() { return m_includeVertex; };
     bool IncludeInnerTracker() { return m_includeInnerTracker; };
     
+    bool IncludeTOE() { return m_includeTOE; };
     bool IncludeKalman() { return m_includeKalman; };
     bool IncludeEvent() { return m_includeEvent; };
 
@@ -179,7 +180,8 @@ private:
     
     bool m_includeEvent;
     bool m_includeKalman;
-   
+    bool m_includeTOE;
+
    TObjArray  m_ClassDebugLevels;          // debug levels for classes
 
    

@@ -144,7 +144,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
       fCaClusDisplay->SetPickable(true);
    }
    
-   if (GlobalPar::GetPar()->IncludeKalman()) {
+   if (GlobalPar::GetPar()->IncludeTOE()) {
       fGlbTrackProp    = new TADIeveTrackPropagator();
       fGlbTrackDisplay = new TAEDglbTrack("Global Tracks", fGlbTrackProp);
       fGlbTrackDisplay->SetMaxMomentum(fMaxMomentum);
@@ -222,7 +222,7 @@ void TAFOeventDisplay::ReadParFiles()
       fFieldImpl = new FootField("", parGeo);
       fField     = new TADIeveField(fFieldImpl);
       
-      if (GlobalPar::GetPar()->IncludeKalman()) {
+      if (GlobalPar::GetPar()->IncludeTOE()) {
          fGlbTrackDisplay->GetPropagator()->SetMagFieldObj(fField);
          fGlbTrackDisplay->GetPropagator()->SetMaxZ(fWorldSizeZ);
          fGlbTrackDisplay->GetPropagator()->SetMaxR(fWorldSizeXY);
@@ -418,7 +418,7 @@ void TAFOeventDisplay::AddElements()
       gEve->AddElement(fCaClusDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeKalman()) {
+   if (GlobalPar::GetPar()->IncludeTOE()) {
       fGlbTrackDisplay->ResetTracks();
       gEve->AddElement(fGlbTrackDisplay);
    }
@@ -628,7 +628,7 @@ void TAFOeventDisplay::UpdateElements(const TString prefix)
       UpdateQuadElements(prefix);
       if (fgTrackFlag) {
          UpdateTrackElements(prefix);
-         if (GlobalPar::GetPar()->IncludeKalman())
+         if (GlobalPar::GetPar()->IncludeTOE())
             UpdateGlbTrackElements();
       }
    }
