@@ -75,7 +75,7 @@ void FillGlb(TString expName)
    actGlbTrack->CreateHistogram();
 }
 
-void ReadGlbStd(TString filename = "run_2211_GSI.root", Int_t nMaxEvts = 500)
+void ReadGlbToeStd(TString filename = "run_2211_GSI.root", Int_t nMaxEvts = 500)
 {
    TAGroot tagr;
    tagr.SetCampaignNumber(100);
