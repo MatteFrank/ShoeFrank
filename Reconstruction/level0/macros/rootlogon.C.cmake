@@ -70,6 +70,11 @@
    tmp.Prepend(" .include "); 
    gROOT->ProcessLine(tmp.Data());
 
+   tmp = "@TOE_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
    tmp = "@GENFIT_INCLUDE_ROOT@";
    printf("- Add GenFit to the include path \n");
    gSystem->AddIncludePath(tmp.Data());
