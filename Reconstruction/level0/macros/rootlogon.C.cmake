@@ -76,6 +76,7 @@
    
    gSystem->Load("libEve.so");
    gSystem->Load("libgenfit2.so");
+   gSystem->Load("libTOE.so");
    gSystem->Load("libTAGbase.so");
 
    gSystem->Load("libTAGbase.so");

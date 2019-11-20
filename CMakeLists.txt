@@ -133,6 +133,13 @@ SET(GENFIT_INCLUDE_DIR
 set (GENFIT_LIBRARIES  genfit2)
 
 #----------------------------------------------------------------------------
+# TOE
+#
+SET(TOE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/TOE/)
+
+set (TOE_LIBRARIES  TOE)
+
+#----------------------------------------------------------------------------
 ## for rootlogon.C
 ##
 string(REPLACE ";" " -I" GENFIT_INCLUDE_ROOT "${GENFIT_INCLUDE_DIR}")
