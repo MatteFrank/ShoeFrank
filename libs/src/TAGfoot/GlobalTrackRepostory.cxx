@@ -8,7 +8,7 @@ void GlobalTrackRepostory::AddTrack( string name, Track* track, long evNum, int 
 	       TMatrixD* mom_cov 
 	       ) {
   
-  m_fitTrackCollection.push_back( new GlobalTrackKalman( name, track, evNum, stateID, // trackID?
+  m_fitTrackCollection.push_back( new GlobalTrackKalman( name, track, evNum, stateID,
 							 mom, pos,
 							 mom_MC, pos_MC, 
 							 mom_cov ) );
@@ -96,11 +96,12 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
 //----------------------------------------------------------------------------------------------------
 void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expected, double err, string hitSampleName ) {
 
-  if ( m_debug > 2 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- Start!!!!  " << endl;
+  if ( m_debug > 0 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- Start!!!!  " << endl;
+  
   double dP = meas.Mag() - expected.Mag();
 
-  if ( m_debug > 1 )		cout << "dp= " <<meas.Mag() << "-"<<expected.Mag() << "   err= " << err<< endl;
-  if ( m_debug > 1 )		cout << " residuo= "<< dP / err <<endl;
+  if ( m_debug > 0 )		cout << "dp= " <<meas.Mag() << "-"<<expected.Mag() << "   err= " << err<< endl;
+  if ( m_debug > 0 )		cout << " residuo= "<< dP / err <<endl;
 
   // h_deltaP[ hitSampleName ]->Fill( dP );
   // h_sigmaP[ hitSampleName ]->Fill(err);
@@ -111,74 +112,81 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
   // h_sigmaP_over_Ptrue[ hitSampleName ]->Fill( err / expected.Mag() );
   // h_sigmaP_over_Pkf[ hitSampleName ]->Fill( err / meas.Mag() );
 
-	
+  //can ask for TH1::Print
+  
   // histos for momentum reso
   if ( meas.Mag() == 0 || expected.Mag() == 0 ) 
     cout<< "ERROR::GlobalTrackRepostory::PrintMomentumResidual  -->  track momentum - 0. "<< endl, exit(0);
+  
   // find the center of the momentum bin
   int roundUp = ceil( (double)expected.Mag() );
   int roundDown = floor( (double)expected.Mag() );
   float binCenter = -666;
   int nstep = ((float)(roundUp - roundDown)) / m_resoP_step;
+  
   for ( int i=0; i<nstep; i++ ) {
-    if ( expected.Mag() > roundDown+(i*m_resoP_step) &&  expected.Mag() <= roundDown+((i+1)*m_resoP_step) ) {
+    if ( expected.Mag() > roundDown+(i*m_resoP_step) && expected.Mag() <= roundDown+( (i+1)*m_resoP_step) ) {
       binCenter = roundDown + m_resoP_step*i + 0.5*m_resoP_step;
       break;
     }
   }
-
+  
   // fill the h_dP_x_bin
   if ( h_dP_x_bin.find( hitSampleName ) == h_dP_x_bin.end() ) {
     map<float, TH1F*> tmp_dP_x_bin;
-		
-    string name = "dP_dist_" + hitSampleName + "_" + build_string(binCenter);
+    string name = "dP_dist_" + hitSampleName + "_" + build_string( binCenter );
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -2, 2 );
     tmp_dP_x_bin[ binCenter ] = h;
-				
+    
     h_dP_x_bin[ hitSampleName ] = tmp_dP_x_bin;
   }
+  
   else if ( h_dP_x_bin[ hitSampleName ].find( binCenter ) == h_dP_x_bin[ hitSampleName ].end() ) {
-    string name = "dP_dist_" + hitSampleName + "_" + build_string(binCenter);
+    string name = "dP_dist_" + hitSampleName + "_" + build_string( binCenter );
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -2, 2 );
     h_dP_x_bin[ hitSampleName ][ binCenter ] = h;
   }
-  h_dP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP );
 
+  
+  if ( m_debug > 0 ) cout << "Filling h_dP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP << endl;
+  h_dP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP );
+  
   // fill the h_dPOverP_x_bin
   if ( h_dPOverP_x_bin.find( hitSampleName ) == h_dPOverP_x_bin.end() ) {
     map<float, TH1F*> tmp_dPOverP_x_bin;
-		
-    string name = "dPOverP_dist_" + hitSampleName + "_" + build_string(binCenter);
+    string name = "dPOverP_dist_" + hitSampleName + "_" + build_string( binCenter );
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -0.2, 0.2 );
     tmp_dPOverP_x_bin[ binCenter ] = h;
-				
     h_dPOverP_x_bin[ hitSampleName ] = tmp_dPOverP_x_bin;
   }
+  
   else if ( h_dPOverP_x_bin[ hitSampleName ].find( binCenter ) == h_dPOverP_x_bin[ hitSampleName ].end() ) {
-    string name = "dPOverP_dist_" + hitSampleName + "_" + build_string(binCenter);
+    string name = "dPOverP_dist_" + hitSampleName + "_" + build_string( binCenter );
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -0.2, 0.2 );
     h_dPOverP_x_bin[ hitSampleName ][ binCenter ] = h;
   }
-  h_dPOverP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP/expected.Mag() );
+
+  if ( m_debug > 0 ) cout << "Filling h_dPOverP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP/expected.Mag() << endl;
+  // h_dPOverP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP/expected.Mag() );
+  ( (h_dPOverP_x_bin.at( hitSampleName )).at(binCenter) )->Fill( dP/expected.Mag() );
 
   // fill the h_dPOverSigmaP_x_bin
   if ( h_dPOverSigmaP_x_bin.find( hitSampleName ) == h_dPOverSigmaP_x_bin.end() ) {
     map<float, TH1F*> tmp_dPOverSigmaP_x_bin;
-		
-    string name = "dPOverSigmaP_dist_" + hitSampleName + "_" + build_string(binCenter);
+    string name = "dPOverSigmaP_dist_" + hitSampleName + "_" + build_string( binCenter );
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -2, 2 );
     tmp_dPOverSigmaP_x_bin[ binCenter ] = h;
 				
     h_dPOverSigmaP_x_bin[ hitSampleName ] = tmp_dPOverSigmaP_x_bin;
   }
+  
   else if ( h_dPOverSigmaP_x_bin[ hitSampleName ].find( binCenter ) == h_dPOverSigmaP_x_bin[ hitSampleName ].end() ) {
-    string name = "dPOverSigmaP_dist_" + hitSampleName + "_" + build_string(binCenter);
+    string name = "dPOverSigmaP_dist_" + hitSampleName + "_" + build_string( binCenter );
     TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -4, 4 );
     h_dPOverSigmaP_x_bin[ hitSampleName ][ binCenter ] = h;
   }
+  
   h_dPOverSigmaP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP/err );
-
-
 
   if ( m_debug > 1 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- End!!!!  " << endl;
 }
@@ -192,32 +200,39 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
 void GlobalTrackRepostory::EvaluateMomentumResolution() {
 
 
+  //problem on iterator it not resolved
   for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ ) {
-		
+
+    cout << "+++++++++++++++TEST histo dPoverP+++++++++++++++++++++++\n";
+    cout << (*collIt).first << endl;
+    
     //  initialize output resolution histos
     float resoP_min = (*(*collIt).second.begin()).first - m_resoP_step*0.5;
     float resoP_max = (*(*collIt).second.rbegin()).first + m_resoP_step*0.5;
     float nfbin = (resoP_max-resoP_min)/m_resoP_step;
-    // if ( modf( (resoP_max-resoP_min)/m_resoP_step, &nfbin ) == 0.0 ) 
-    if ( fabs(nfbin-round(nfbin)) > 0.001 )
+    if ( m_debug > 0 ) cout << "in GlobalTrackRepostory::EvaluateMomentumResolution-> " << (*collIt).first << " resoP_min/max " << resoP_min << " " << resoP_max << " nfbin " << nfbin << endl;
+    //if ( modf( (resoP_max-resoP_min)/m_resoP_step, &nfbin ) == 0.0 )
+    
+    if ( fabs( nfbin-round(nfbin) ) > 0.001 )
       cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl, exit(0);		// check correct binning
     int nbin = round(nfbin);
-
+    
     string histoName = (string)"h_resoP_over_Pkf"+"__"+(*collIt).first;
     h_resoP_over_Pkf[ (*collIt).first ] = new TH1F( histoName.c_str(), histoName.c_str(), nbin, resoP_min, resoP_max );
-		
+    
     histoName = (string)"h_biasP_over_Pkf"+"__"+(*collIt).first;
     h_biasP_over_Pkf[ (*collIt).first ] = new TH1F( histoName.c_str(), histoName.c_str(), nbin, resoP_min, resoP_max );
-
+    
     int k=0;
     for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
-			
-      k++;
-      if ( k > h_resoP_over_Pkf[ (*collIt).first ]->GetNbinsX() )			
-	cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<< "  binning problem! do not fill all the reso plot. " << endl, exit(0);	
-
-      if ( m_debug <= 0 && (*it).second->GetEntries() < 100 )		continue;
-
+      k++; //jump the underflow
+      if ( k > h_resoP_over_Pkf[ (*collIt).first ]->GetNbinsX() )
+	{
+	  cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<< "  binning problem! do not fill all the reso plot. " << endl, exit(0);
+	}
+      
+      //if ( m_debug <= 0 && (*it).second->GetEntries() < 100 ) continue;
+      
       // check if the binning produce even bounds for the bins, not irrational numbers for examples
       float a = (h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinLowEdge(k) + h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinUpEdge(k)) /2;
       float b = (*it).first;
@@ -230,20 +245,23 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 	it--;
 	continue;
       }
-
+      
       // TF1 *f1 = new TF1("f1","gaus",-3,3);
       TF1 * f1 = new TF1("gauss", "[0] / sqrt(2.0 * TMath::Pi()) / [2] * exp(-(x-[1])*(x-[1])/2./[2]/[2])", 0, 100);
       f1->SetParNames("Constant","Mean","Sigma");
-      cout << " getmean is " << (*it).second->GetMean() << " and getrms is "  <<  (*it).second->GetRMS() << std::endl;
-      f1->SetParameters( 0., (*it).second->GetMean(), (*it).second->GetRMS() );
+      //      cout << " getmean is " << ((*it).second)->GetParameter(1) << " and getrms is " << ((*it).second)->GetParameter(2) << std::endl;
+      cout << "before TF1->SetParameters " << endl;
+      f1->SetParameters( 0., ((*it).second)->GetMean(), ((*it).second)->GetRMS() );
       // f1->SetParameters( 0, h_resoP_over_Pkf[ (*collIt).first ]->GetMean(), h_resoP_over_Pkf[ (*collIt).first ]->GetStdDev() );
-      f1->SetParLimits(0.,  0.1, (*it).second->GetMaximum());
+      f1->SetParLimits(0.,  0.1, ((*it).second)->GetMaximum());
       f1->SetParLimits(1., -0.18,  0.18);
       f1->SetParLimits(2.,  0.001,  0.16);
       f1->SetLineWidth(2);
       f1->SetLineColor(2);
       // h_resoP_over_Pkf[ (*collIt).first ]->Fit("f1","R");
-      (*it).second->Fit("gauss", "LQ");	// log likelihood fit, quiet mode
+      cout << "before fit f1" << endl;
+      (*it).second->Fit("f1", "LQ");	// log likelihood fit, quiet mode
+      cout << "after fit f1" << endl;
 
       if ( m_debug <= 0 && (f1->GetParError(f1->GetParNumber("Sigma")) / f1->GetParameter(f1->GetParNumber("Sigma")) > 0.1) )	
 	continue;
