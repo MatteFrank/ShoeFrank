@@ -1363,20 +1363,24 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 				      &KalmanMom, &KalmanPos,
 				      &expectedMom, &expectedPos,
 				      &KalmanMom_cov );
+      m_fitTrackCollection->AddTrack( hitSampleName, track, m_evNum, i, // trackID?
+				      &KalmanMom, &KalmanPos,
+				      &expectedMom, &expectedPos,
+				      &KalmanMom_cov );
       
-      m_controlPlotter->SetMom_Gen( hitSampleName, &tmp_genMom );
+  //     m_controlPlotter->SetMom_Gen( hitSampleName, &tmp_genMom );
 
-      m_controlPlotter->SetMom_TrueMC( hitSampleName, &expectedMom, massMC );
+  //     m_controlPlotter->SetMom_TrueMC( hitSampleName, &expectedMom, massMC );
       
-      m_controlPlotter->SetMom_Kal( hitSampleName, &kalmanMom, &kalmanMom_err );
+  //     m_controlPlotter->SetMom_Kal( hitSampleName, &kalmanMom, &kalmanMom_err );
       
-      m_controlPlotter->SetPos_Kal( hitSampleName, &kalmanPos, &KalmanPos_err );
+  //     m_controlPlotter->SetPos_Kal( hitSampleName, &kalmanPos, &KalmanPos_err );
       
-      m_controlPlotter->SetTrackInfo( hitSampleName, track );
+  //     m_controlPlotter->SetTrackInfo( hitSampleName, track );
       
-      if ( GlobalPar::GetPar()->IsPrintOutputNtuple() )
-	m_controlPlotter->Set_Outputntuple(&kalmanMom, &kalmanPos, &tmp_genMom);
-    }
+  //     if ( GlobalPar::GetPar()->IsPrintOutputNtuple() )
+		// m_controlPlotter->Set_Outputntuple(&kalmanMom, &kalmanPos, &tmp_genMom);
+	    }
   }
   
 }

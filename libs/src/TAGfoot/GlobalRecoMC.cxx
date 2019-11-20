@@ -70,6 +70,7 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents)
 //______________________________________________________________
 void GlobalRecoMC::AfterEventLoop()
 {
-  LocalRecoMC::AfterEventLoop();
   m_kFitter->Finalize();
+  LocalRecoMC::AfterEventLoop();
+  
 }
