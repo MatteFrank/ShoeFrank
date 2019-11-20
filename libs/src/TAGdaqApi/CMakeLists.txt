@@ -2,7 +2,7 @@
 #
 project (TAGdaqApi)
 #
-MESSAGE("  rec/${PROJECT_NAME}:")
+MESSAGE("  src/${PROJECT_NAME}:")
 #
 #
 set(LIBNAME ${PROJECT_NAME})
