@@ -36,6 +36,9 @@ set( with_dictionnaries
    TAGactNtuGlbTrack
    GlobalReco
    GlobalRecoMC
+   GlobalToeReco
+   GlobalToeRecoMC
+
 )
 
 set( without_dictionnaries
