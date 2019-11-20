@@ -33,7 +33,12 @@
    tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
    tmp += "/TAGfoot/"; printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data()); 
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
+   tmp += "/TATOEbase/"; printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
    
    tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
    tmp += "/TAIRbase/"; printf("- Add %s to the include path \n",tmp.Data());
@@ -93,5 +98,6 @@
    gSystem->Load("libTAITbase.so");
    gSystem->Load("libTAMSDbase.so");
    gSystem->Load("libTATWbase.so");
+   gSystem->Load("libTATOEbase.so");
    gSystem->Load("libTAGfoot.so");
 }

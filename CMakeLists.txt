@@ -69,6 +69,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/libs/lib)
 #----------------------------------------------------------------------------
 # Set src libraries name
 #
+Set(TATOE "TATOEbase")
 Set(TAG   "TAGbase")
 Set(TADAQ "TAGdaq")
 Set(TAAPI "TAGdaqApi")
@@ -89,6 +90,7 @@ add_definitions(-std=c++14)
 #----------------------------------------------------------------------------
 # Set src includes
 #
+set(TATOE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TATOE}")
 set(TAG_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAG}")
 set(TADAQ_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TADAQ}")
 set(TAAPI_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAAPI}")
