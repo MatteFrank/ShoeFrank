@@ -494,7 +494,7 @@ void TABMactNtuTrack::CheckAssHits(const Int_t asshitx, const Int_t asshity) {
       xvalue=legpolxsum->GetXaxis()->GetBinCenter(best_mxbin);
       yvalue=p_hit->GetA0().X()-xvalue*p_hit->GetA0().Z()+p_hit->Dist()*sqrt(xvalue*xvalue+1.);
       cellplane=p_bmgeo->GetWirePlane(p_hit->GetCellid());
-      res=(p_hit->GetSigma()>legpolysum->GetYaxis()->GetBinWidth(best_rybin)) ? p_hit->GetSigma() : legpolysum->GetYaxis()->GetBinWidth(best_rxbin);
+      res=(p_hit->GetSigma()>legpolxsum->GetYaxis()->GetBinWidth(best_rxbin)) ? p_hit->GetSigma() : legpolxsum->GetYaxis()->GetBinWidth(best_rxbin);
       res=res*3.;
       diff=fabs(yvalue - legpolxsum->GetYaxis()->GetBinCenter(best_rxbin));
       if(diff<res){
