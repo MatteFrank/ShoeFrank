@@ -11,6 +11,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 set( EXTRA_INTERNAL_LIBRARIES "")
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3")
 
 #
 # headers / dictionnary / sources 
