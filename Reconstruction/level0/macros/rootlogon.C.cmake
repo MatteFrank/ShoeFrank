@@ -90,6 +90,7 @@
    gSystem->Load("libTAGbase.so");
 
    gSystem->Load("libTAMCbase.so");
+   gSystem->Load("libTASTbase.so");
    gSystem->Load("libTABMbase.so");
    gSystem->Load("libTAVTbase.so");
    gSystem->Load("libTAITbase.so");
