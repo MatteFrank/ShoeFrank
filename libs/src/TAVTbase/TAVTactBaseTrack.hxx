@@ -87,10 +87,10 @@ protected:
    TGraphErrors*    fGraphV;             // pointer to graph for fit in V  
       
    TH1F*            fpHisPixelTot;		 // Total number of pixels per tracked cluster
-   TH1F*            fpHisPixel[32];		 // Total number of pixels per tracked cluster for each sensor
-   TH2F*            fpHisTrackMap[32];    // track map per sensor
-   TH1F*            fpHisResX[32];        // Residual in X
-   TH1F*            fpHisResY[32];        // Residual in Y
+   TH1F*            fpHisPixel[36];		 // Total number of pixels per tracked cluster for each sensor
+   TH2F*            fpHisTrackMap[36];    // track map per sensor
+   TH1F*            fpHisResX[36];        // Residual in X
+   TH1F*            fpHisResY[36];        // Residual in Y
    TH1F*            fpHisResTotX;        // Total Residual in X
    TH1F*            fpHisResTotY;        // Total Residual in Y
    TH1F*            fpHisChi2TotX;       // Total Chi2 in X direction

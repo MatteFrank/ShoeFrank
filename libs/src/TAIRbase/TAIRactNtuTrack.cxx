@@ -40,10 +40,11 @@ Bool_t  TAIRactNtuTrack::fgBmMatched = false;
 //! Default constructor.
 TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
 								 TAGdataDsc* pNtuClus, TAGdataDsc* pVtVertex, TAGdataDsc* pNtuTrack,
-								 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
+								 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pvtGeoMap, TAGparaDsc* pCalib)
  : TAVTactBaseTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
    fpVtVertex(pVtVertex),
-   fVtVertex(0x0)
+   fVtVertex(0x0),
+   fpVtGeoMap(pvtGeoMap)
 {
    AddDataOut(pNtuTrack, "TAIRntuTrack");
 }
@@ -60,12 +61,13 @@ TAIRactNtuTrack::~TAIRactNtuTrack()
 void TAIRactNtuTrack::CreateHistogram()
 {
    DeleteHistogram();
-   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
-   
+   TAVTbaseParGeo* pGeoMapIt  = (TAVTbaseParGeo*) fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMapVt  = (TAVTbaseParGeo*) fpVtGeoMap->Object();
+
    fpHisPixelTot = new TH1F(Form("%sTrackedClusPixTot", fPrefix.Data()), Form("%s - Total # pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
    AddHistogram(fpHisPixelTot);
    
-   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < pGeoMapVt->GetSensorsN() + pGeoMapIt->GetSensorsN(); ++i) {
       
       fpHisPixel[i] = new TH1F(Form("%sTrackedClusPix%d", fPrefix.Data(), i+1), Form("%s - # pixels per tracked clusters of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
       AddHistogram(fpHisPixel[i]);
@@ -102,8 +104,8 @@ void TAIRactNtuTrack::CreateHistogram()
    AddHistogram(fpHisPhi);
    
    fpHisBeamProf = new TH2F(Form("%sBeamProf", fPrefix.Data()), Form("%s -  Beam Profile", fTitleDev.Data()),
-                            100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2.,
-                            100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2.);
+                            100, -pGeoMapIt->GetPitchX()*pGeoMapIt->GetNPixelX()/2., pGeoMapIt->GetPitchX()*pGeoMapIt->GetNPixelX()/2.,
+                            100, -pGeoMapIt->GetPitchX()*pGeoMapIt->GetNPixelX()/2., pGeoMapIt->GetPitchX()*pGeoMapIt->GetNPixelX()/2.);
    fpHisBeamProf->SetStats(kFALSE);
    AddHistogram(fpHisBeamProf);
    
@@ -198,7 +200,8 @@ Bool_t TAIRactNtuTrack::FindTracks()
    TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpNtuClus->Object();
    TAITparGeo*     pGeoMap   = (TAITparGeo*)     fpGeoMap->Object();
    TAITparConf*    pConfig   = (TAITparConf*)    fpConfig->Object();
-   
+   TAVTbaseParGeo* pGeoMapVt = (TAVTbaseParGeo*) fpVtGeoMap->Object();
+
    Int_t nSensor = pGeoMap->GetSensorsN();
    
    Int_t nTracks = fVtVertex->GetTracksN();
@@ -252,7 +255,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
             posG = fpFootGeo->FromITLocalToGlobal(posG);
             TAIRcluster* last = track->GetLastCluster();
             last->SetPositionG(&posG);
-         //   last->SetPlaneNumber(last->GetPlaneNumber()+4); // tmp solution
+            last->SetPlaneNumber(last->GetPlaneNumber()+pGeoMapVt->GetSensorsN());
 
             if (fgRefit)
                UpdateParam(track);
@@ -286,26 +289,32 @@ void TAIRactNtuTrack::FillHistogramm(TAVTbaseTrack* track)
    fpHisTheta->Fill(track->GetTheta());
    fpHisPhi->Fill(track->GetPhi());
    
-   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*)fpGeoMap->Object();
-   
+   TAVTbaseParGeo* pGeoMapIt = (TAVTbaseParGeo*)fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMapVt = (TAVTbaseParGeo*)fpVtGeoMap->Object();
+
    fpHisTrackClus->Fill(track->GetClustersN());
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
       TAVTbaseCluster * cluster = track->GetCluster(i);
       cluster->SetFound();
       Int_t idx = cluster->GetPlaneNumber();
+      fpHisClusSensor->Fill(idx+1);
       fpHisPixelTot->Fill(cluster->GetPixelsN());
       fpHisPixel[idx]->Fill(cluster->GetPixelsN());
       
       Float_t posZ       = cluster->GetPositionG()[2];
       TVector3 impact    = track->Intersection(posZ);
       
-      TVector3 impactLoc =  pGeoMap->Detector2Sensor(idx, impact);
+      TVector3 impactLoc;
       
+      if (idx < pGeoMapVt->GetSensorsN())
+         impactLoc = pGeoMapVt->Detector2Sensor(idx, impact);
+      else
+         impactLoc = pGeoMapIt->Detector2Sensor(idx-pGeoMapVt->GetSensorsN(), impact);
+
       fpHisResTotX->Fill(impact[0]-cluster->GetPositionG()[0]);
       fpHisResTotY->Fill(impact[1]-cluster->GetPositionG()[1]);
       fpHisResX[idx]->Fill(impact[0]-cluster->GetPositionG()[0]);
       fpHisResY[idx]->Fill(impact[1]-cluster->GetPositionG()[1]);
-      fpHisClusSensor->Fill(idx+1);
    }
    fpHisChi2TotX->Fill(track->GetChi2U());
    fpHisChi2TotY->Fill(track->GetChi2V());

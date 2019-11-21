@@ -21,6 +21,7 @@ public:
                              TAGdataDsc* p_ntutrack = 0,
                              TAGparaDsc* p_config   = 0,
                              TAGparaDsc* p_geomap   = 0,
+                             TAGparaDsc* p_vtgeomap = 0,
                              TAGparaDsc* p_calib    = 0);
    virtual ~TAIRactNtuTrack();
    
@@ -44,6 +45,7 @@ private:
 private:
    TAGdataDsc*  fpVtVertex;        // VT vertex container
    TAVTvertex*  fVtVertex;         // VT vertex pointer
+   TAGparaDsc*  fpVtGeoMap;        // VT par geo
 
 private:
    static Bool_t fgBmMatched;      // vertex matched with BM flag
