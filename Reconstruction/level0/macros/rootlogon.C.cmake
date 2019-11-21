@@ -89,15 +89,13 @@
    gSystem->Load("libTOE.so");
    gSystem->Load("libTAGbase.so");
 
-   gSystem->Load("libTAGbase.so");
-   gSystem->Load("libTACAbase.so");
-   
    gSystem->Load("libTAMCbase.so");
    gSystem->Load("libTABMbase.so");
    gSystem->Load("libTAVTbase.so");
    gSystem->Load("libTAITbase.so");
    gSystem->Load("libTAMSDbase.so");
    gSystem->Load("libTATWbase.so");
+   gSystem->Load("libTACAbase.so");
    gSystem->Load("libTATOEbase.so");
    gSystem->Load("libTAGfoot.so");
 }
