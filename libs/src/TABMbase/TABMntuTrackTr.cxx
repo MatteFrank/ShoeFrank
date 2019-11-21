@@ -11,13 +11,10 @@ ClassImp(TABMntuTrackTr);
 //! Default constructor.
 
 TABMntuTrackTr::TABMntuTrackTr():
-    nhit(0), chi2Red(999), isConverged(0),prefit_status(-10)
-    
+    nhit(0), chi2Red(999), isConverged(0),eff_fittedplane(-1)
 {
   Pvers.SetXYZ(-100.,-100.,-100.);
   R0.SetXYZ(-100.,-100.,-100.);
-  nite=0;
-  eff_fittedplane=-2.;
  }
 
 //------------------------------------------+-----------------------------------
@@ -32,37 +29,33 @@ TABMntuTrackTr::~TABMntuTrackTr(){}
 void TABMntuTrackTr::Dump() const
 { 
   cout<<endl<<"------------ Dump Track Class ---------"<<endl;
-  cout<<"new tracking: nhit="<<nhit<<"  chi2Red="<<chi2Red<<"  isConverged="<<isConverged<<"  prefit_status="<<prefit_status<<"  nite="<<nite<<endl;
+  cout<<"new tracking: nhit="<<nhit<<"  chi2Red="<<chi2Red<<"  isConverged="<<isConverged<<"  eff_fittedplane="<<eff_fittedplane<<endl;
   cout<<"Pvers=("<<Pvers.X()<<", "<<Pvers.Y()<<", "<<Pvers.Z()<<")"<<endl;
   cout<<"R0=("<<R0.X()<<", "<<R0.Y()<<", "<<R0.Z()<<")"<<endl;
 }
 
 /*-----------------------------------------------------------------*/
 
+//reset the Track values to default 
 void TABMntuTrackTr::Clean()
 {
-  /*  
-      reset the Track values to default 
-  */
-
   //new tracking
   nhit=0;
   chi2Red=999;
   isConverged=0;
-  Pvers.SetXYZ(-100.,-100.,-100.);
+  eff_fittedplane=-1;
   R0.SetXYZ(-100.,-100.,-100.);
-  prefit_status=-10;
-  nite=0;
+  Pvers.SetXYZ(-100.,-100.,-100.);
+  
 }
 
 TABMntuTrackTr::TABMntuTrackTr(const TABMntuTrackTr &tr_in){
   nhit=tr_in.nhit;
   chi2Red=tr_in.chi2Red;
   isConverged=tr_in.isConverged;
-  prefit_status=tr_in.prefit_status;
+  eff_fittedplane=tr_in.eff_fittedplane;
   R0=tr_in.R0;
   Pvers=tr_in.Pvers;
-  nite=tr_in.nite;
 }
 
 TVector3 TABMntuTrackTr::PointAtLocalZ(double zloc)

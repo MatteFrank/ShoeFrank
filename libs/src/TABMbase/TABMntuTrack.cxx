@@ -56,7 +56,7 @@ void TABMntuTrack::Clear(Option_t*)
   TAGdata::Clear();
   fStatus=-1000;
   if(fListOfTracks) 
-    fListOfTracks->Delete();//presente prima
+    fListOfTracks->Delete();
 
    return;
 }

@@ -19,29 +19,34 @@ TABMntuHit::~TABMntuHit()
 //! Default constructor.
 
 TABMntuHit::TABMntuHit()
-: iview(0),    ilayer(0),    icell(0), ichi2(999),
-  rdrift(0.),    tdrift(0.)
+: iview(0),    ilayer(0),    icell(0), cellid(-1),
+  rdrift(0.),    tdrift(0.), sigma(0)
 {
-  sigma = 0;
+  ichi2=999;
   A0.SetXYZ(0,0,0);
   Wvers.SetXYZ(0,0,0);
   realRdrift=100.;
   residual=100.;
   isSelected=false;
-  isFake=false;  
+  isFake=-1;  
+  cellid=-1;
 }
 
-TABMntuHit::TABMntuHit(Int_t iv, Int_t il, Int_t ic, Double_t r, Double_t t, Double_t s) {
+TABMntuHit::TABMntuHit(Int_t iv, Int_t il, Int_t ic, Int_t id, Double_t r, Double_t t, Double_t s) {
 
-  iview = iv;  ilayer = il;   icell = ic;  
-  rdrift = r;   tdrift = t; 
+  iview = iv;  
+  ilayer = il;   
+  icell = ic;
+  cellid=id;  
+  rdrift = r;   
+  tdrift = t; 
   ichi2 = 999;
   A0.SetXYZ(0,0,0);
   Wvers.SetXYZ(0,0,0);
   realRdrift=100.;
   residual=100.;
   isSelected=false;
-  isFake=false;
+  isFake=-1;
   sigma=s;
   SetAW();
 }

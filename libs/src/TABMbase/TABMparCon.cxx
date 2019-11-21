@@ -46,7 +46,11 @@ TABMparCon::TABMparCon()
   fakehits_sigmaleft(1.8), 
   fakehits_sigmaright(2.3), 
   mceff_mean(1),
-  mceff_sigma(0.2)
+  mceff_sigma(0.2),
+  legmbin(40),
+  legmrange(0.1),
+  legrbin(75),
+  legrrange(2.)
 {
   fkDefaultParName = "./config/TABMdetector.cfg";
   vector<Float_t> myt0s(36,-10000);
@@ -97,9 +101,6 @@ Bool_t TABMparCon::FromFile(const TString& name) {
   ReadItem(fitter_index);
   if(FootDebugLevel(1))
      cout<<"fitter_index="<<fitter_index<<endl;
-  ReadItem(prefit_enable);
-  if(FootDebugLevel(1))
-     cout<<"prefit_enable="<<prefit_enable<<endl;
   ReadItem(num_ite);
   if(FootDebugLevel(1))
      cout<<"num_ite="<<num_ite<<endl;
@@ -202,10 +203,9 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
 	      return kTRUE;
         }
     }else if(strchr(bufConf,'F')) {
-      sscanf(bufConf, "F %d %d %d %f",&myArgInt, &myArgIntmax, &myArgIntmin, &myArg1);
-      if(myArgInt>=0 && (myArgIntmax==0 || myArgIntmax==1 || myArgIntmax==2) && myArgIntmin>=0 && myArg1>=0.){
+      sscanf(bufConf, "F %d %d %f",&myArgInt, &myArgIntmin, &myArg1);
+      if(myArgInt>=0 && myArgIntmin>=0 && myArg1>=0.){
         fitter_index = myArgInt;
-        prefit_enable=myArgIntmax;
         num_ite=myArgIntmin;
         par_move=myArg1;
       }else {
@@ -323,6 +323,10 @@ void TABMparCon::Clear(Option_t*)
   rejmax_cut=36;
   num_ite=0;
   par_move=0.0001;
+  legmbin=40;
+  legmrange=0.1;
+  legrbin=75;
+  legrrange=2.;
   
   //The following parameters for MC are set from the measurements with protons at Trento
   fakehits_mean=5.57; 

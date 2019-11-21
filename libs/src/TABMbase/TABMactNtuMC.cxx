@@ -141,10 +141,10 @@ Bool_t TABMactNtuMC::Action()
         SmearRdrift(p_bmcon->GetSmearrdrift(), rdriftxcell[i], p_bmcon->ResoEval(rdriftxcell[i]));   
       time=p_bmcon->InverseStrel(rdriftxcell[i]);  
       if(FootDebugLevel(4))
-        cout<<"TABMactNtuMC::Action::In the charging hits loop: I'm going to charge hit number:"<<i<<"/"<<fpEvtStr->BMNn<<"  tobecharged="<<tobecharged[i]<<"  view="<<view<<"  lay="<<lay<<"  cell="<<cell<<"  rdriftxcell[i]="<<rdriftxcell[i]<<"  realrdrift="<<realrdrift<<"  time="<<time<<endl;
+        cout<<"TABMactNtuMC::Action::In the charging hits loop: I'm going to charge hit number:"<<i<<"/"<<fpEvtStr->BMNn<<"  tobecharged="<<tobecharged[i]<<"  view="<<view<<"  lay="<<lay<<"  cell="<<cell<<"  rdriftxcell[i]="<<rdriftxcell[i]<<"  realrdrift="<<realrdrift<<"  time="<<time<<"  resolution="<<p_bmcon->ResoEval(rdriftxcell[i])<<endl;
       
       //create hit
-      TABMntuHit *mytmp = p_nturaw->NewHit(view, lay, cell, rdriftxcell[i], time, p_bmcon->ResoEval(rdriftxcell[i]));
+      TABMntuHit *mytmp = p_nturaw->NewHit(view, lay, cell,p_bmgeo->GetBMNcell(lay,view,cell), rdriftxcell[i], time, p_bmcon->ResoEval(rdriftxcell[i]));
       mytmp->AddMcTrackId(ipoint, i);
       mytmp->SetRealRdrift(realrdrift);
       mytmp->SetIsFake( (fpEvtStr->TRpaid[fpEvtStr->BMNid[i]-1]==0) ? 0 : 1);
@@ -219,7 +219,7 @@ void TABMactNtuMC::CreateFakeHits(Int_t nfake, Int_t &nhits)
     //charge the fake hits
     if(FootDebugLevel(3))
       cout<<"TABMactNtuMC::CreateFakeHits::I'm going to charge a fake hit view="<<view<<"  plane="<<plane<<"  cell="<<cell<<"  rdrift="<<rdrift<<"  time="<<p_bmcon->InverseStrel(rdrift)<<endl;
-    TABMntuHit *mytmp = p_nturaw->NewHit(view, plane, cell, rdrift, p_bmcon->InverseStrel(rdrift), -1.);
+    TABMntuHit *mytmp = p_nturaw->NewHit(view, plane, cell, p_bmgeo->GetBMNcell(plane,view,cell), rdrift, p_bmcon->InverseStrel(rdrift), -1.);
     mytmp->SetSigma(p_bmcon->ResoEval(rdrift));
     mytmp->SetRealRdrift(rdrift);  
     mytmp->SetIsFake(2);
@@ -247,19 +247,19 @@ void TABMactNtuMC::SmearRdrift(Int_t smear_type, Double_t &tobesmeared, Double_t
       return;
    
    if(smear_type==1){ //gaussian truncated to 1 sigma
-      do{smeared=gRandom->Gaus(tobesmeared,sigma);}while(fabs(smeared-tobesmeared)>sigma);
+      do{smeared=gRandom->Gaus(tobesmeared,sigma);}while(fabs(smeared-tobesmeared)>sigma || smeared>0.944  || smeared<0);
    }
    
    if(smear_type==2){ //gaussian truncated to 2 sigma
-      do{smeared=gRandom->Gaus(tobesmeared,sigma);}while(fabs(smeared-tobesmeared)>2.*sigma);
+      do{smeared=gRandom->Gaus(tobesmeared,sigma);}while(fabs(smeared-tobesmeared)>2.*sigma || smeared>0.944  || smeared<0);
    }
    
    if(smear_type==3){ //gaussian truncated to 3 sigma
-      do{smeared=gRandom->Gaus(tobesmeared,sigma);}while(fabs(smeared-tobesmeared)>3.*sigma);
+      do{smeared=gRandom->Gaus(tobesmeared,sigma);}while(fabs(smeared-tobesmeared)>3.*sigma || smeared>0.944  || smeared<0);
    }
    
    if(smear_type==4) //gaussian not truncated
-      smeared=gRandom->Gaus(tobesmeared,sigma);
+      do{smeared=gRandom->Gaus(tobesmeared,sigma);}while(smeared>0.944 || smeared<0);
    
    
    if(smear_type==5) //flat smearing

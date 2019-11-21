@@ -94,6 +94,7 @@ public:
    Int_t          GetBMNcell(Int_t ilay, Int_t iview, Int_t icell){return icell+iview*3+ilay*6;};
    //get a number from 0 to 12 to identify real wire plane (iview=0 or 1)
    Int_t          GetWirePlane(Int_t ilay, Int_t iview){return iview + ilay*2;};   
+   Int_t          GetWirePlane(Int_t cellid){return (cellid+0.1)/3 ;};   
    // transformation from BM to wire and vice versa
    void           Wire2Detector(Double_t xl, Double_t yl, Double_t zl,
                                 Double_t& xg, Double_t& yg, Double_t& zg) const;

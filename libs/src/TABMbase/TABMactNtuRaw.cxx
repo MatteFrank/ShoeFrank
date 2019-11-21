@@ -118,7 +118,7 @@ Bool_t TABMactNtuRaw::Action()
       
       
       //create the hit (no selection of hit)
-      TABMntuHit *mytmp = p_nturaw->NewHit(hit.View(), hit.Plane(), hit.Cell(), i_drift, i_time, p_parcon->ResoEval(i_drift));
+      TABMntuHit *mytmp = p_nturaw->NewHit(hit.View(), hit.Plane(), hit.Cell(),hit.Idcell(), i_drift, i_time, p_parcon->ResoEval(i_drift));
       p_nturaw->AddCellOccupyHit(hit.Idcell());
       if (ValidHistogram()){
         fpHisCell->Fill(hit.Cell()); 
@@ -128,7 +128,7 @@ Bool_t TABMactNtuRaw::Action()
         fpHisTdrift->Fill(i_time);
         fpHisDiscAccept->Fill(1);
       }
-    }else{
+    }else{//hit discharged, it will not be saved in the TABMntuHit collection
       if (ValidHistogram()){
         fpHisDiscAccept->Fill(-1);  
         fpHisDiscTime->Fill( (i_time<-40) ? i_time-p_parcon->GetHitTimecut() : i_time);
@@ -140,24 +140,27 @@ Bool_t TABMactNtuRaw::Action()
   if(FootDebugLevel(3))
     p_nturaw->PrintCellOccupy();
 
+  //Evaluate the raw hit efficiency
   Int_t pivot[8]={0};
   Int_t probe[8]={0};  
-  p_nturaw->Efficiency_paoloni(pivot, probe); 
+  Double_t efftot, effxview, effyview;
+  p_nturaw->Efficiency_paoloni(pivot, probe,efftot, effxview, effyview);
+  p_nturaw->SetEfficiency(efftot, effxview, effyview);
   if (ValidHistogram()){
     for(Int_t i=0;i<8;i++){
       fpHisProbe_paoloni->Fill(i,probe[i]);
       fpHisPivot_paoloni->Fill(i,pivot[i]);
     }
     if(p_nturaw->GetEffPaoloni()>=0)
-      fpHisEval_paoloni->Fill(p_nturaw->GetEffPaoloni());
-    if(p_nturaw->GetEffPaolonixview()>=0)
-      fpHisEval_paoloni_Xview->Fill(p_nturaw->GetEffPaolonixview());
-    if(p_nturaw->GetEffPaoloniyview()>=0)
-      fpHisEval_paoloni_Yview->Fill(p_nturaw->GetEffPaoloniyview());
+      fpHisEval_paoloni->Fill(efftot);
+    if(effxview>=0)
+      fpHisEval_paoloni_Xview->Fill(effxview);
+    if(effyview>=0)
+      fpHisEval_paoloni_Yview->Fill(effyview);
   } 
   
-  if(FootDebugLevel(2))
-    cout<<"TABMacnNtuRaw::Action():: done"<<endl;
+  if(FootDebugLevel(1))
+    cout<<"TABMacnNtuRaw::Action():: done  Number of hit added="<<p_nturaw->GetHitsN()<<";  overall efficiency="<<efftot<<";  xz plane efficiency="<<effxview<<";  yzplane"<<effyview<<endl;
 
   fpNtuRaw->SetBit(kValid);
   

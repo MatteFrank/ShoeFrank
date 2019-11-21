@@ -25,10 +25,12 @@ TString TABMntuRaw::fgkBranchName   = "bmrh.";
 
 TABMntuRaw::TABMntuRaw() :
   fListOfHits(0x0) {
-  eff_paoloni=-3;  
-  eff_paolonixview=-3;  
-  eff_paoloniyview=-3;  
-    }
+    eff_paoloni=-3;  
+    eff_paolonixview=-3;  
+    eff_paoloniyview=-3;
+    nselhitx=0;
+    nselhity=0;  
+  }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
@@ -48,11 +50,11 @@ Int_t TABMntuRaw::GetHitsN() const
 //______________________________________________________________________________
 //! new hit
 
-TABMntuHit* TABMntuRaw::NewHit(Int_t iv, Int_t il, Int_t ic, Double_t r, Double_t t, Double_t s)
+TABMntuHit* TABMntuRaw::NewHit(Int_t iv, Int_t il, Int_t ic, Int_t id, Double_t r, Double_t t, Double_t s)
 {
    TClonesArray &pixelArray = *fListOfHits;
    
-   TABMntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TABMntuHit(iv, il, ic, r, t,  s);
+   TABMntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TABMntuHit(iv, il, ic, id, r, t,  s);
    
    return hit;
    
@@ -74,7 +76,12 @@ void TABMntuRaw::Clear(Option_t*)
 {
   if (fListOfHits)
     fListOfHits->Clear("C");
-   
+    
+    eff_paoloni=-3;  
+    eff_paolonixview=-3;  
+    eff_paoloniyview=-3;
+    nselhitx=0;
+    nselhity=0;    
   return;
 }
 
@@ -117,12 +124,27 @@ Bool_t TABMntuRaw::AddCellOccupyHit(Int_t pos){
     cell_occupy[pos]++;
     return kTRUE;
   }else
-    cout<<"ERROR in TABMntuRaw::AddCellOccupyHit: cell id of the hit is wrong: pos="<<pos<<endl;
+    cout<<"ERROR in TABMntuRaw::AddCellOccupyHit: cellid of the hit is wrong: pos="<<pos<<endl;
   return kFALSE;
 }
 
+Bool_t TABMntuRaw::RemoveCellOccupyHit(Int_t pos){
+  if(pos<36 && pos>=0){
+    if(cell_occupy[pos]>0){  
+      cell_occupy[pos]--;
+      return kTRUE;
+    }else
+      cout<<"ERROR in TABMntuRaw::RemoveCellOccupyHit: remove an empty hit! pos="<<pos<<endl;
+  }else
+    cout<<"ERROR in TABMntuRaw::RemoveCellOccupyHit: cellid of the hit is wrong: pos="<<pos<<endl;
 
-void TABMntuRaw::Efficiency_paoloni(Int_t pivot[], Int_t probe[]){
+int provv;
+cin>>provv;
+
+return kFALSE;
+}
+
+void TABMntuRaw::Efficiency_paoloni(Int_t pivot[], Int_t probe[], Double_t &efftot, Double_t &effxview, Double_t &effyview){
 
   //xview
   if(cell_occupy[0]>0 && cell_occupy[12]>0 && cell_occupy[24]>0){
@@ -175,10 +197,17 @@ void TABMntuRaw::Efficiency_paoloni(Int_t pivot[], Int_t probe[]){
     total_probesyview+=probe[i+4];
     total_pivotsyview+=pivot[i+4];
   }
-  eff_paoloni= ((total_pivotsxview+total_pivotsyview)==0) ?  -1 : ((Double_t) (total_probesxview+total_probesyview))/(total_pivotsxview+total_pivotsyview);
-  eff_paolonixview=(total_pivotsxview==0) ? -1: ((Double_t) total_probesxview)/total_pivotsxview;
-  eff_paoloniyview=(total_pivotsyview==0) ? -1: ((Double_t) total_probesyview)/total_pivotsyview;
+  efftot= ((total_pivotsxview+total_pivotsyview)==0) ?  -1 : ((Double_t) (total_probesxview+total_probesyview))/(total_pivotsxview+total_pivotsyview);
+  effxview=(total_pivotsxview==0) ? -1: ((Double_t) total_probesxview)/total_pivotsxview;
+  effyview=(total_pivotsyview==0) ? -1: ((Double_t) total_probesyview)/total_pivotsyview;
   
+return;
+}
+
+void TABMntuRaw::SetEfficiency(Double_t efftot, Double_t effxview, Double_t effyview){
+  eff_paoloni=efftot;
+  eff_paolonixview=effxview;
+  eff_paoloniyview=effyview;
 return;
 }
 

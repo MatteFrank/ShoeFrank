@@ -40,7 +40,6 @@ class TABMparCon : public TAGparTools {
     Int_t GetMaxnhit_cut(){return maxnhit_cut;};
     Int_t GetRejmaxcut(){return rejmax_cut;};
     Int_t GetFitterIndex(){return fitter_index;};
-    Int_t GetPrefitEnable(){return prefit_enable;};
     Int_t GetT0switch(){return t0_switch;};
     Float_t GetT0sigma(){return t0_sigma;};
     Float_t GetHitTimecut(){return hit_timecut;};
@@ -55,6 +54,10 @@ class TABMparCon : public TAGparTools {
     Int_t GetSmearrdrift(){return smearrdrift;};
     Float_t GetRdrift_err(){return rdrift_err;};
     Int_t GetT0choice(){return t0_choice;};
+    Int_t GetLegmbin(){return legmbin;};
+    Int_t GetLegrbin(){return legrbin;};
+    Double_t GetLegmrange(){return legmrange;};
+    Double_t GetLegrrange(){return legrrange;};
 
     //T0 stuff
     void        PrintT0s(TString , TString, Long64_t);
@@ -65,14 +68,14 @@ class TABMparCon : public TAGparTools {
     Float_t     GetT0(Int_t index_in){return (index_in<36 && index_in>-1) ? v_t0s[index_in]:-1000;};
     void        CoutT0();
     
-    //strel stuff
+    //strel
     void LoadSTrel(TString sF);
     Float_t FirstSTrel(Float_t tdrift);
     Float_t InverseStrel(Float_t rdrift);
     Float_t FirstSTrelMC(Float_t tdrift, Int_t mc_switch);    
-  
+    
+    //others
     Float_t ResoEval(Float_t dist){return (dist>0 && dist<=0.8) ? my_hreso->Eval(dist)/10000. : 0.15;};
-
     Bool_t FromFile(const TString& name);
     Bool_t FromFileOld(const TString& name);
 
@@ -95,7 +98,6 @@ class TABMparCon : public TAGparTools {
     Int_t    fitter_index;
     //~ string   datafile_name;//name of the input data file 
     Int_t    strel_switch;//flag to choose the st relations (1=garfield, 0=FIRST embedded)
-    Int_t    prefit_enable;//flag to enable or disable the prefit
     Int_t    t0_switch;//0=t0 from the beginning of the tdc signal, 1=peak/2, 2=peak, 3=negative T0 enabled
     Float_t t0_sigma;//t0 with the gaussian shift for the negative T0 hits
     Int_t    t0_choice; //0=meas-internal, 1=meas-st, 2=meas-internal-st, 3=meas-internal+st
@@ -103,8 +105,8 @@ class TABMparCon : public TAGparTools {
     vector<Float_t> v_t0s;//T0 in ns
     vector<Float_t> adc_ped_mean;//pedestals mean 
     vector<Float_t> adc_ped_rms;//pedestals rms
-    Int_t    num_ite;//number of iteration for the fit (only for FIRST fit)
-    Float_t par_move;//change of the parameters for the FIRST fit
+    Int_t    num_ite;//number of iteration for the fit 
+    Float_t par_move;//change of parameters stepsize 
     Int_t    smearhits;//0=no smearhits on MC, 1=smear the number of hits
     Int_t    smearrdrift;//0=no smear rdrift, 1=gauss truncated 1sigma, 2=gaus 2sigma, 3=gaus 3sigma, 4=gaus no truncated, 5=uniform  
     Float_t fakehits_mean;//ratio between the left and the right tail of the hit distribution(only MC)
@@ -113,6 +115,10 @@ class TABMparCon : public TAGparTools {
     Float_t mceff_mean;//mean for the number of primary hits (only MC)
     Float_t mceff_sigma;//sigma for the number of primary hits (only MC)
     Float_t rdrift_err;  //rdrift default error (used if from parcon file the error isn't loaded)
+    Int_t legmbin;  //number of bin in the m th2d legendre tracking
+    Double_t legmrange; //half range for the m th2d in the legendre tracking
+    Int_t legrbin;  //number of bin in the r th2d legendre tracking
+    Double_t legrrange; //half range for the r th2d in the legendre tracking
     
     TF1 *my_hreso;
   
