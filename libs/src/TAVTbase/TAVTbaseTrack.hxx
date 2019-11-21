@@ -1,11 +1,14 @@
 #ifndef _TAVTbaseTrack_HXX
 #define _TAVTbaseTrack_HXX
 
+#include <map>
+
 // ROOT classes
 #include "TClonesArray.h"
 #include "TVector3.h"
 #include "TVector2.h"
 #include "TArrayF.h"
+#include "TArrayC.h"
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
@@ -65,6 +68,9 @@ protected:
    Float_t        fChargeMaxProbaNorm;           //! charge maximum probability for normalized charge disttribution
    Double32_t     fMeanPixelsN;                  // Average number of pixels per track
 
+   TArrayC            fMcTrackIdx;               // Idx of the track created in the simulation
+   std::map<int, int> fMcTrackMap;               //! Map of MC track Id
+   
 public:
    TAVTbaseTrack();                                 
    ~TAVTbaseTrack();
@@ -170,7 +176,10 @@ public:
    //Get mean number of pixels per tracks
    Float_t       GetMeanPixelsN()             const { return fMeanPixelsN; }
    
-   ClassDef(TAVTbaseTrack,7)                      // Describes TAVTbaseTrack
+   // Add MC track Idx
+   void          AddMcTrackIdx(Int_t trackIdx);
+   
+   ClassDef(TAVTbaseTrack,8)                      // Describes TAVTbaseTrack
 };
 
 #endif

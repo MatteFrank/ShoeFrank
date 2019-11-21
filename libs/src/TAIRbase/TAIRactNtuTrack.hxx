@@ -24,16 +24,29 @@ public:
                              TAGparaDsc* p_calib    = 0);
    virtual ~TAIRactNtuTrack();
    
+   //! Create histograms
+   virtual  void    CreateHistogram();
+   
+   //! Action
    virtual  Bool_t  Action();
 
-protected:
-    Bool_t FindTracks();
-    Bool_t CheckVtx();
+public:
+   static Bool_t  IsBmMatched()             { return fgBmMatched; }
+   static void    SetBmMatched(Bool_t flag) { fgBmMatched = flag; }
+
+private:
+    Bool_t    FindTracks();
+    Bool_t    CheckVtx();
    TAIRtrack* FillTracks(TAVTtrack* vtTrack);
-   
-protected:
+   void       FillHistogramm(TAVTbaseTrack* track);
+   void       FillHistogramm();
+
+private:
    TAGdataDsc*  fpVtVertex;        // VT vertex container
    TAVTvertex*  fVtVertex;         // VT vertex pointer
+
+private:
+   static Bool_t fgBmMatched;      // vertex matched with BM flag
 
    ClassDef(TAIRactNtuTrack,0)
 };

@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 # Setup the project
 #
 #
-MESSAGE("  src:")
+MESSAGE(" src:")
 
 #----------------------------------------------------------------------------
 # Add sub directories
@@ -29,5 +29,6 @@ add_subdirectory(TAMCbase)
 add_subdirectory(TATWbase)
 add_subdirectory(TACAbase)
 add_subdirectory(TAEDbase)
+add_subdirectory(TATOEbase)
 add_subdirectory(TAGfoot)
 

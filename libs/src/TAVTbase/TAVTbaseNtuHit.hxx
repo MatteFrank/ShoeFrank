@@ -45,8 +45,8 @@ protected:
 	Double32_t         fPulseHeight;              // pulseheight on pixel
    Bool_t             fValidFrames;              // ok when 3 consecutive frame numbers 
 
-   TArrayC            fMCindex;                  // Id of the hit created in the simulation
-   TArrayC            fMcTrackId;                // Id of the track created in the simulation
+   TArrayC            fMCindex;                  // Index of the hit created in the simulation
+   TArrayC            fMcTrackIdx;               // Index of the track created in the simulation
 
 public:
 
@@ -95,12 +95,12 @@ public:
 
 
    // MC track id
-   Int_t      GetMcIndex(Int_t index)   const   { return fMCindex[index];      }
-   Int_t      GetMcTrackId(Int_t index) const   { return fMcTrackId[index];    }
-   Int_t      GetMcTrackCount()         const   { return fMcTrackId.GetSize(); }
+   Int_t      GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
+   Int_t      GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+   Int_t      GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
    
    // Add MC track Id
-   void       AddMcTrackId(Int_t trackId, Int_t mcId = -1);
+   void       AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
 
     ClassDef(TAVTbaseNtuHit,4)                            // Pixel or Pixel of a Detector Plane
 };

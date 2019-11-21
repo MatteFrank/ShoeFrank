@@ -229,7 +229,7 @@ void TAITactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx )
          
 			TAITntuHit* pixel = (TAITntuHit*)pNtuRaw->NewPixel(sensorId, 1., line, col);
 
-         pixel->AddMcTrackId(trackIdx, hitId);
+         pixel->AddMcTrackIdx(trackIdx, hitId);
 
 
          if(FootDebugLevel(1))
@@ -267,6 +267,6 @@ void TAITactNtuMC::FillNoise(Int_t sensorId)
 	   Int_t col  = gRandom->Uniform(0,fDigitizer->GetNPixelX());
 	   Int_t line = gRandom->Uniform(0,fDigitizer->GetNPixelY());
 	   TAITntuHit* pixel = pNtuRaw->NewPixel(sensorId, 1., line, col);
-	   pixel->AddMcTrackId(fgMcNoiseId);
+	   pixel->AddMcTrackIdx(fgMcNoiseId);
 	}
 }

@@ -8,12 +8,12 @@
 #include <TStopwatch.h>
 
 #include "GlobalPar.hxx"
-#include "GlobalRecoMC.h"
+#include "GlobalReco.h"
 
 #endif
 
 
-void DecodeGlbMC(TString name = "16O_C2H4_200_1.root")
+void DecodeGlbToe(TString name = "data/data_built.2211.physics_foot.daq.VTX.1.dat")
 {
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
@@ -22,7 +22,7 @@ void DecodeGlbMC(TString name = "16O_C2H4_200_1.root")
    TString nameOut = name(0, pos);
    nameOut.Append("_Out.root");
    
-   GlobalRecoMC* glbRec = new GlobalRecoMC(name, nameOut);
+   GlobalReco* glbRec = new GlobalReco(name, nameOut);
    
    // global setting
    glbRec->EnableTree();

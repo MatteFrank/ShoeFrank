@@ -254,7 +254,7 @@ Bool_t TACAactNtuMC::Action()
       // don't use z for the moment
       fDigitizer->Process(endep->fDE, posInLoc[0], posInLoc[1], z0_i, z0_f, time, endep->fCryid);
       TACAntuHit* hit = fDigitizer->GetCurrentHit();
-      hit->AddMcTrackId(trackId, i);
+      hit->AddMcTrackIdx(trackId, i);
       hit->SetPosition(posInLoc);   
    }
 

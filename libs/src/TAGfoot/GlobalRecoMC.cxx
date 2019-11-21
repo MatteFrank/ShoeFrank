@@ -19,7 +19,6 @@ GlobalRecoMC::~GlobalRecoMC()
 void GlobalRecoMC::BeforeEventLoop()
 {
   LocalRecoMC::BeforeEventLoop();
-  std::cout << "AFTER BEFOREEVENTLOOP" << std::endl;
 
   TADIparGeo* fDipole = GetParGeoDi();
   //if (!fDipole) std::cout << "WARNING NO MAG FIELD LOADED" << std::endl;
@@ -70,6 +69,6 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents)
 //______________________________________________________________
 void GlobalRecoMC::AfterEventLoop()
 {
-  LocalRecoMC::AfterEventLoop();
   m_kFitter->Finalize();
+  LocalRecoMC::AfterEventLoop();
 }

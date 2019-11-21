@@ -5,6 +5,8 @@
  */
 #include "TClonesArray.h"
 #include "TMath.h"
+#include "TH1F.h"
+#include "TH2F.h"
 
 //TAGroot
 #include "TAGroot.hxx"
@@ -32,6 +34,8 @@
 
 ClassImp(TAIRactNtuTrack);
 
+Bool_t  TAIRactNtuTrack::fgBmMatched = false;
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
@@ -41,6 +45,7 @@ TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
    fpVtVertex(pVtVertex),
    fVtVertex(0x0)
 {
+   AddDataOut(pNtuTrack, "TAIRntuTrack");
 }
 
 //------------------------------------------+-----------------------------------
@@ -48,6 +53,63 @@ TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
 TAIRactNtuTrack::~TAIRactNtuTrack()
 {
 
+}
+
+//------------------------------------------+-----------------------------------
+//! Setup all histograms.
+void TAIRactNtuTrack::CreateHistogram()
+{
+   DeleteHistogram();
+   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
+   
+   fpHisPixelTot = new TH1F(Form("%sTrackedClusPixTot", fPrefix.Data()), Form("%s - Total # pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
+   AddHistogram(fpHisPixelTot);
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      
+      fpHisPixel[i] = new TH1F(Form("%sTrackedClusPix%d", fPrefix.Data(), i+1), Form("%s - # pixels per tracked clusters of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
+      AddHistogram(fpHisPixel[i]);
+      
+      fpHisResX[i] = new TH1F(Form("%sResX%d", fPrefix.Data(), i+1), Form("%s - ResidualX of sensor %d", fTitleDev.Data(), i+1), 400, -0.01, 0.01);
+      AddHistogram(fpHisResX[i]);
+      fpHisResY[i] = new TH1F(Form("%sResY%d", fPrefix.Data(), i+1), Form("%s - ResidualY of sensor %d", fTitleDev.Data(), i+1), 400, -0.01, 0.01);
+      AddHistogram(fpHisResY[i]);
+   }
+   
+   fpHisResTotX = new TH1F(Form("%sResTotX", fPrefix.Data()), Form("%s - Total ResidualX", fTitleDev.Data()), 400, -0.01, 0.01);
+   fpHisResTotY = new TH1F(Form("%sResTotY", fPrefix.Data()), Form("%s - Total ResidualY", fTitleDev.Data()), 400, -0.01, 0.01);
+   AddHistogram(fpHisResTotX);
+   AddHistogram(fpHisResTotY);
+   
+   fpHisChi2TotX = new TH1F(Form("%sChi2TotX", fPrefix.Data()), Form("%s - Total Chi2 X", fTitleDev.Data()), 200, 0, 20);
+   fpHisChi2TotY = new TH1F(Form("%sChi2TotY", fPrefix.Data()), Form("%s - Total Chi2 Y", fTitleDev.Data()), 200, 0, 20);
+   AddHistogram(fpHisChi2TotX);
+   AddHistogram(fpHisChi2TotY);
+   
+   fpHisTrackEvt = new TH1F(Form("%sTrackEvt", fPrefix.Data()), Form("%s - Number of tracks per event", fTitleDev.Data()), 20, -0.5, 19.5);
+   AddHistogram(fpHisTrackEvt);
+   
+   fpHisTrackClus = new TH1F(Form("%sTrackClus", fPrefix.Data()), Form("%s - Number of clusters per track", fTitleDev.Data()), 9, -0.5, 8.5);
+   AddHistogram(fpHisTrackClus);
+   
+   fpHisClusSensor = new TH1F(Form("%sClusSensor", fPrefix.Data()), Form("%s - Number of tracked clusters per sensor", fTitleDev.Data()), 9, -0.5, 8.5);
+   AddHistogram(fpHisClusSensor);
+   
+   fpHisTheta = new TH1F(Form("%sTrackTheta", fPrefix.Data()), Form("%s - Track polar distribution", fTitleDev.Data()), 500, 0, 90);
+   AddHistogram(fpHisTheta);
+   
+   fpHisPhi = new TH1F(Form("%sTrackPhi", fPrefix.Data()), Form("%s - Track azimutal distribution (#theta > 5)", fTitleDev.Data()), 500, -180, 180);
+   AddHistogram(fpHisPhi);
+   
+   fpHisBeamProf = new TH2F(Form("%sBeamProf", fPrefix.Data()), Form("%s -  Beam Profile", fTitleDev.Data()),
+                            100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2.,
+                            100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2.);
+   fpHisBeamProf->SetStats(kFALSE);
+   AddHistogram(fpHisBeamProf);
+   
+   SetValidHistogram(kTRUE);
+   
+   return;
 }
 
 //_____________________________________________________________________________
@@ -87,10 +149,10 @@ Bool_t TAIRactNtuTrack::CheckVtx()
    for (Int_t i = 0; i < nVertex; ++i) {
       
       TAVTvertex* vtx = pNtuVertex->GetVertex(i);
-     // if (vtx->IsBmMatched()) {
-         vtVertexOk     = true;
-         fVtVertex       = vtx;
-   //   }
+      if (!vtx->IsBmMatched() && fgBmMatched) continue; // only for pileup
+      vtVertexOk     = true;
+      fVtVertex       = vtx;
+      
    }
    
    return vtVertexOk;
@@ -116,6 +178,9 @@ TAIRtrack* TAIRactNtuTrack::FillTracks(TAVTtrack* vtTrack)
    
    UpdateParam(track);
    
+   if (ValidHistogram())
+      FillHistogramm();
+
    return track;
 }
 
@@ -187,7 +252,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
             posG = fpFootGeo->FromITLocalToGlobal(posG);
             TAIRcluster* last = track->GetLastCluster();
             last->SetPositionG(&posG);
-            last->SetPlaneNumber(last->GetPlaneNumber()+4); // tmp solution
+         //   last->SetPlaneNumber(last->GetPlaneNumber()+4); // tmp solution
 
             if (fgRefit)
                UpdateParam(track);
@@ -201,7 +266,6 @@ Bool_t TAIRactNtuTrack::FindTracks()
          track->MakeChiSquare();
          track->SetType(1);
          pNtuTrack->NewTrack(*track);
-         
          if (ValidHistogram())
             FillHistogramm(track);
          
@@ -215,5 +279,49 @@ Bool_t TAIRactNtuTrack::FindTracks()
    return true;
 }
 
+//_____________________________________________________________________________
+//
+void TAIRactNtuTrack::FillHistogramm(TAVTbaseTrack* track)
+{
+   fpHisTheta->Fill(track->GetTheta());
+   fpHisPhi->Fill(track->GetPhi());
+   
+   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*)fpGeoMap->Object();
+   
+   fpHisTrackClus->Fill(track->GetClustersN());
+   for (Int_t i = 0; i < track->GetClustersN(); ++i) {
+      TAVTbaseCluster * cluster = track->GetCluster(i);
+      cluster->SetFound();
+      Int_t idx = cluster->GetPlaneNumber();
+      fpHisPixelTot->Fill(cluster->GetPixelsN());
+      fpHisPixel[idx]->Fill(cluster->GetPixelsN());
+      
+      Float_t posZ       = cluster->GetPositionG()[2];
+      TVector3 impact    = track->Intersection(posZ);
+      
+      TVector3 impactLoc =  pGeoMap->Detector2Sensor(idx, impact);
+      
+      fpHisResTotX->Fill(impact[0]-cluster->GetPositionG()[0]);
+      fpHisResTotY->Fill(impact[1]-cluster->GetPositionG()[1]);
+      fpHisResX[idx]->Fill(impact[0]-cluster->GetPositionG()[0]);
+      fpHisResY[idx]->Fill(impact[1]-cluster->GetPositionG()[1]);
+      fpHisClusSensor->Fill(idx+1);
+   }
+   fpHisChi2TotX->Fill(track->GetChi2U());
+   fpHisChi2TotY->Fill(track->GetChi2V());
+   
+   TVector3 origin = track->GetOrigin();
+   fpHisBeamProf->Fill(origin.X(), origin.Y());
+}
 
+//_____________________________________________________________________________
+//
+void TAIRactNtuTrack::FillHistogramm()
+{
+   TAIRntuTrack*   pNtuTrack = (TAIRntuTrack*)   fpNtuTrack->Object();
+   
+   fpHisTrackEvt->Fill(pNtuTrack->GetTracksN());
+   if (pNtuTrack->GetTracksN() == 0)
+      fpHisClusSensor->Fill(0);
+}
 

@@ -47,7 +47,7 @@ TAVTbaseNtuHit::~TAVTbaseNtuHit()
 void TAVTbaseNtuHit::Clear(Option_t* /*option*/)
 {
    fMCindex.Set(0);
-   fMcTrackId.Set(0);
+   fMcTrackIdx.Set(0);
 }
 
 //______________________________________________________________________________
@@ -79,13 +79,13 @@ Double_t TAVTbaseNtuHit::DistanceV(const TVector3& aPosition)
 
 //______________________________________________________________________________
 //
-void TAVTbaseNtuHit::AddMcTrackId(Int_t trackId,Int_t mcId)
+void TAVTbaseNtuHit::AddMcTrackIdx(Int_t trackId,Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
    fMCindex[fMCindex.GetSize()-1]   = mcId;
    
-   fMcTrackId.Set(fMcTrackId.GetSize()+1);
-   fMcTrackId[fMcTrackId.GetSize()-1] = trackId;
+   fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
+   fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackId;
 }
 
 //______________________________________________________________________________

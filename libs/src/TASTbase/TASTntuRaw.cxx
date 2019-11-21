@@ -49,17 +49,17 @@ TASTntuHit::~TASTntuHit()
 void TASTntuHit::Clear(Option_t* /*option*/)
 {
    fMCindex.Set(0);
-   fMcTrackId.Set(0);
+   fMcTrackIdx.Set(0);
 }
 
 //------------------------------------------+-----------------------------------
-void TASTntuHit:: AddMcTrackId(Int_t trackId, Int_t mcId)
+void TASTntuHit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
    fMCindex[fMCindex.GetSize()-1]   = mcId;
    
-   fMcTrackId.Set(fMcTrackId.GetSize()+1);
-   fMcTrackId[fMcTrackId.GetSize()-1] = trackId;
+   fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
+   fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackId;
 }
 
 

@@ -37,8 +37,8 @@ protected:
   Int_t     fView;
   Int_t     fStrip;
   
-  TArrayC   fMCindex;                  // Id of the hit created in the simulation
-  TArrayC   fMcTrackId;                // Id of the track created in the simulation
+  TArrayC   fMCindex;                  // Index of the hit created in the simulation
+  TArrayC   fMcTrackIdx;               // Index of the track created in the simulation
   
 public:
    TAMSDntuHit();
@@ -61,20 +61,20 @@ public:
    //! Get line number
    Int_t      GetView()         const    { return fView;     }
    //! Get column number
-  Int_t      GetStrip()        const    { return fStrip;    }
+  Int_t      GetStrip()         const    { return fStrip;    }
   //! Get index
-  Int_t      GetIndex()        const    { return fIndex;    }
+  Int_t      GetIndex()         const    { return fIndex;    }
   // Get position
-  Float_t    GetPosition()     const    { return fPosition;  }
+  Float_t    GetPosition()      const    { return fPosition; }
   
   
   //! Is Sortable
-  Bool_t     IsSortable()      const    { return kTRUE;   }
+  Bool_t     IsSortable()       const    { return kTRUE;     }
   
   // MC track id
-  Int_t      GetMcIndex(Int_t index)   const   { return fMCindex[index];      }
-  Int_t      GetMcTrackId(Int_t index) const   { return fMcTrackId[index];    }
-  Int_t      GetMcTrackCount()         const   { return fMcTrackId.GetSize(); }
+  Int_t      GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
+  Int_t      GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+  Int_t      GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
   
   
   //! Set input type
@@ -86,11 +86,11 @@ public:
   //! Set column number
   void     SetStrip(Int_t strip)        { fStrip = strip;    }
   //! Set index
-   void     SetIndex(Int_t index)        { fIndex = index;    }
+   void     SetIndex(Int_t index)       { fIndex = index;    }
   // Set position
   void     SetPosition(Float_t pos)     { fPosition = pos;   }
   // Add MC track Id
-  void     AddMcTrackId(Int_t trackId, Int_t mcId = -1);
+  void     AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
   
   
   ClassDef(TAMSDntuHit,3)                            // Pixel or Pixel of a Detector Plane

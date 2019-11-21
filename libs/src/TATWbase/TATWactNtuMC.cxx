@@ -119,7 +119,7 @@ bool TATWactNtuMC::Action() {
 
        m_Digitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, id+TATWparGeo::GetLayerOffset()*view);
        TATWntuHit* hit = m_Digitizer->GetCurrentHit();
-       hit->AddMcTrackId(trackId, i);
+       hit->AddMcTrackIdx(trackId, i);
 
        if (ValidHistogram()) {
           fpHisDeTotMc->Fill(edep);

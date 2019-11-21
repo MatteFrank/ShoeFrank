@@ -252,19 +252,22 @@ int KFitter::UploadClusVT(){
 
   for(Int_t iPlane = 0; iPlane < nPlanes; iPlane++){
     Int_t nclus = vtclus->GetClustersN(iPlane);
-    std::cout << "\nfound " << nclus << " in plane " << iPlane << std::endl;
+    if (m_debug > 1)
+      std::cout << "\nfound " << nclus << " in plane " << iPlane << std::endl;
     totClus += nclus;
     if (nclus == 0) continue;
 
     for(Int_t iClus = 0; iClus < nclus; ++iClus){
-      std::cout << "entered cycle clusVT of plane " << iPlane << std::endl;
+      if (m_debug > 1)
+	std::cout << "entered cycle clusVT of plane " << iPlane << std::endl;
       TAVTcluster* clus = vtclus->GetCluster(iPlane, iClus);
       if (!clus->IsValid()) continue;
 
       //TVector3 prova = clus->GetPositionG();
       TVector3 prova = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
 
-      prova.Print();  
+      if (m_debug > 1)
+	prova.Print();  
 
       m_VT_clusCollection.push_back(clus);
 
@@ -276,19 +279,23 @@ int KFitter::UploadClusVT(){
 
       for (Int_t jHit = 0; jHit < nHits; ++jHit) {
       	TAVTntuHit* hit = clus->GetPixel(jHit);
-      	for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
-	  Int_t id = hit->GetMcTrackId(k);
+      	for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
+	  Int_t id = hit->GetMcTrackIdx(k);
 	  Int_t idx = hit->GetMcIndex(k);
-	  cout << "McTrackId: " << id << endl;
-	  cout << "McIndex: " << idx << endl;
+	  if (m_debug > 1){
+	    cout << "McTrackId: " << id << endl;
+	    cout << "McIndex: " << idx << endl;
+	  }
 	  TAMCeveTrack* track = eve->GetHit(id);
-	  printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
+	  if (m_debug > 1)
+	    printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
 	  TAMChit* mcHit = vtMc->GetHit(idx);
 	  TVector3 posin = mcHit->GetInPosition();
 	  TVector3 posout = mcHit->GetOutPosition();
 	  TVector3 momin = mcHit->GetInMomentum();
 	  TVector3 momout = mcHit->GetOutMomentum();
-	  printf("MC In Position pos (%.4f %.4f %.4f)\n", posin[0], posin[1], posin[2]);
+	  if (m_debug > 1)
+	    printf("MC In Position pos (%.4f %.4f %.4f)\n", posin[0], posin[1], posin[2]);
 	  MCTruthInfo VTInfo;
 	  VTInfo.MCTrackId = id;
 	  VTInfo.MCFlukaId = track->GetFlukaID();
@@ -356,19 +363,22 @@ int KFitter::UploadClusIT(){
 
   for(Int_t iPlane = 0; iPlane < nPlanes; iPlane++){
     Int_t nclus = itclus->GetClustersN(iPlane);
-    std::cout << "\nfound " << nclus << " in plane " << iPlane << std::endl;
+    if (m_debug > 1)
+      std::cout << "\nfound " << nclus << " in plane " << iPlane << std::endl;
     totClus += nclus;
     if (nclus == 0) continue;
 
     for(Int_t iClus = 0; iClus < nclus; ++iClus){
-      std::cout << "entered cycle clusIT of plane " << iPlane << std::endl;
+      if (m_debug > 1)
+	std::cout << "entered cycle clusIT of plane " << iPlane << std::endl;
       TAITcluster* clus = itclus->GetCluster(iPlane, iClus);
       if (!clus->IsValid()) continue;
 
       //TVector3 prova = clus->GetPositionG();
       TVector3 prova = m_GeoTrafo->FromITLocalToGlobal( clus->GetPositionG() );
-      
-      prova.Print();  
+
+      if (m_debug > 1)
+	prova.Print();  
 
 
       m_IT_clusCollection.push_back(clus);
@@ -381,20 +391,21 @@ int KFitter::UploadClusIT(){
 
       for (Int_t jHit = 0; jHit < nHits; ++jHit) {
       	TAITntuHit* hit = (TAITntuHit*)clus->GetPixel(jHit);
-      	for (Int_t k = 0; k < hit->GetMcTrackCount(); ++k) {
-	  Int_t id = hit->GetMcTrackId(k);
+      	for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
+	  Int_t id = hit->GetMcTrackIdx(k);
 	  Int_t idx = hit->GetMcIndex(k);
 	  // cout << "id: " << id  << endl;
 	  // cout << "idxx: " << idx  << endl;
-	  // printf("TrackMcId %d ", id);
+	  if (m_debug > 1)
+	    printf("TrackMcId %d \n ", id);
 	  TAMCeveTrack* track = eve->GetHit(id);
-	  //printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
+	  if (m_debug > 1)
+	    printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
 	  TAMChit* mcHit = itMc->GetHit(idx);
 	  TVector3 posin = mcHit->GetInPosition();
 	  TVector3 posout = mcHit->GetOutPosition();
 	  TVector3 momin = mcHit->GetInMomentum();
 	  TVector3 momout = mcHit->GetOutMomentum();
-	  // printf("MC pos (%.4f %.4f %.4f)\n", pos[0], pos[1], pos[2]);
 	  MCTruthInfo ITInfo;
 	  ITInfo.MCTrackId = id;
 	  ITInfo.MCFlukaId = track->GetFlukaID();
@@ -510,7 +521,7 @@ int KFitter::PrepareData4Fit( Track* fitTrack ) {
     }
     hitsCount++;
   }
-
+  
   hitsCount = 0;
   for ( auto it = m_hitCollectionToFit.cbegin(), next_it = m_hitCollectionToFit.cbegin(); it != m_hitCollectionToFit.cend(); it = next_it)	{
     next_it = it; ++next_it;
@@ -1359,24 +1370,28 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
       kalmanPos = KalmanPos;
       massMC = tmp_mass;
 
+      m_fitTrackCollection->AddTrack( hitSampleName, track, m_evNum, i,
+				      &KalmanMom, &KalmanPos,
+				      &expectedMom, &expectedPos,
+				      &KalmanMom_cov );
       m_fitTrackCollection->AddTrack( hitSampleName, track, m_evNum, i, // trackID?
 				      &KalmanMom, &KalmanPos,
 				      &expectedMom, &expectedPos,
 				      &KalmanMom_cov );
       
-      m_controlPlotter->SetMom_Gen( hitSampleName, &tmp_genMom );
+  //     m_controlPlotter->SetMom_Gen( hitSampleName, &tmp_genMom );
 
-      m_controlPlotter->SetMom_TrueMC( hitSampleName, &expectedMom, massMC );
+  //     m_controlPlotter->SetMom_TrueMC( hitSampleName, &expectedMom, massMC );
       
-      m_controlPlotter->SetMom_Kal( hitSampleName, &kalmanMom, &kalmanMom_err );
+  //     m_controlPlotter->SetMom_Kal( hitSampleName, &kalmanMom, &kalmanMom_err );
       
-      m_controlPlotter->SetPos_Kal( hitSampleName, &kalmanPos, &KalmanPos_err );
+  //     m_controlPlotter->SetPos_Kal( hitSampleName, &kalmanPos, &KalmanPos_err );
       
-      m_controlPlotter->SetTrackInfo( hitSampleName, track );
+  //     m_controlPlotter->SetTrackInfo( hitSampleName, track );
       
-      if ( GlobalPar::GetPar()->IsPrintOutputNtuple() )
-	m_controlPlotter->Set_Outputntuple(&kalmanMom, &kalmanPos, &tmp_genMom);
-    }
+  //     if ( GlobalPar::GetPar()->IsPrintOutputNtuple() )
+		// m_controlPlotter->Set_Outputntuple(&kalmanMom, &kalmanPos, &tmp_genMom);
+	    }
   }
   
 }
@@ -1409,29 +1424,6 @@ void KFitter::GetTrueMCInfo( string hitSampleName, int x,
   hitPos->SetY( m_hitCollectionToFit[ hitSampleName ].at(x)->getRawHitCoords()(1) );
   hitPos->SetZ( m_hitCollectionToFit[ hitSampleName ].at(x)->getRawHitCoords()(2) );
 
-  //else if ( detID == m_detectorID_map["MSD"] ) {
-  //		*tmpPos = m_MSD_posVectorSmearedHit.at( hitID );
-  //		*tmpMom =  m_MSD_momVectorSmearedHit.at( hitID );
-  //		*tmp_mass = m_MSD_mass.at( hitID );
-  //		*tmp_genPos = TVector3(-1, -1, -1);
-  //		*tmp_genMom = TVector3(-1, -1, -1);;
-  //		hitPos = tmpPos;
-  //	}
-  //	else if ( detID == m_detectorID_map["TW"] ) {
-  //		*tmpPos = m_TW_hitCollection.at( hitID )->GetMCPosition_footFrame();
-  //		*tmpMom = m_TW_hitCollection.at( hitID )->GetMCMomentum_footFrame();
-  //		// // information on the particle that genearated the hit
-  //		// *tmp_mass = m_TW_hitCollection.at( hitID )->m_genPartMass;
-  //		// *tmp_genPos = m_TW_hitCollection.at( hitID )->m_genPartPosition;   // genaration position
-  //		// *tmp_genMom = m_TW_hitCollection.at( hitID )->m_genPartMomentum;		// genaration momentum
-  //        *hitPos = m_TW_hitCollection.at(hitID)->GetPosition_footFrame(); // pixel coord
-  //
-  //		TAMCntuEveHit* twGeneratorParticle = m_TW_hitCollection.at( hitID )->GetGenParticle();
-  //		*tmp_genPos  = twGeneratorParticle->InitPos();
-  //		*tmp_genMom  = twGeneratorParticle->InitP();
-  //		*tmp_mass    = twGeneratorParticle->Mass();
-  //
-  //	}
 }
 
 
@@ -1567,7 +1559,7 @@ void KFitter::Finalize() {
 
   //show event display
 
-  //display->open();
+  display->open();
   
 }
 
@@ -1580,7 +1572,7 @@ void KFitter::InitEventDisplay() {
 
 
   // init event display
-  //display = genfit::EventDisplay::getInstance();
+  display = genfit::EventDisplay::getInstance();
 
   // needed for the event display
   //const genfit::eFitterType fitterId = genfit::SimpleKalman;

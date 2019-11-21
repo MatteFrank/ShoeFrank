@@ -26,16 +26,16 @@ public:
    virtual         ~TASTntuHit();
    
    
-   Int_t          GetChannel()              const   { return fChannel;             }
-   Double_t       GetTime()                 const   { return fTime;                }
-   Double_t       GetCharge()               const   { return fCharge;              }
+   Int_t          GetChannel()               const   { return fChannel;              }
+   Double_t       GetTime()                  const   { return fTime;                 }
+   Double_t       GetCharge()                const   { return fCharge;               }
    
-   Int_t          GetMcIndex(Int_t index)   const   { return fMCindex[index];      }
-   Int_t          GetMcTrackI(Int_t index)  const   { return fMcTrackId[index];    }
-   Int_t          GetMcTrackCount()         const   { return fMcTrackId.GetSize(); }
+   Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
+   Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+   Int_t          GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
    
    void           Clear(Option_t* option = "C");
-   void           AddMcTrackId(Int_t trackId, Int_t mcId = -1);
+   void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
    
    
    ClassDef(TASTntuHit,1)
@@ -46,7 +46,7 @@ private:
    Double32_t      fTime;
    
    TArrayC         fMCindex;                  // Id of the hit created in the simulation
-   TArrayC         fMcTrackId;                // Id of the track created in the simulation
+   TArrayC         fMcTrackIdx;               // Index of the track created in the simulation
    
 };
 

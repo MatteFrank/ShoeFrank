@@ -222,7 +222,7 @@ private:
 
 
   // init event display
-  //EventDisplay* display;
+  EventDisplay* display;
   
   // Track*  m_fitTrack;
   ControlPlotsRepository* m_controlPlotter;

@@ -59,12 +59,12 @@ class TABMntuHit : public TAGdata {
     void SetWvers(TVector3 w_in){Wvers=w_in;return;};
     void SetIsFake(Int_t in_fake){isFake=in_fake;return;};
    
-   Int_t           GetMcIndex(Int_t index)   const   { return fMCindex[index];      }
-   Int_t           GetMcTrackI(Int_t index)  const   { return fMcTrackId[index];    }
-   Int_t           GetMcTrackCount()         const   { return fMcTrackId.GetSize(); }
+   Int_t           GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
+   Int_t           GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+   Int_t           GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
    
    void            Clear(Option_t* option = "C");
-   void            AddMcTrackId(Int_t trackId, Int_t mcId = -1);
+   void            AddMcTrackIdx(Int_t trackId, Int_t mcId = -1);
 
 
   ClassDef(TABMntuHit,1)
@@ -89,7 +89,7 @@ class TABMntuHit : public TAGdata {
     Double_t  realRdrift;   //real rdrift, not smeared, only for MC 
     Int_t      isFake;   //-1=not set, 0=primary hit, 1=secondary hit, 2=fake creator hit
     TArrayC         fMCindex;                  // Id of the hit created in the simulation
-    TArrayC         fMcTrackId;                // Id of the track created in the simulation
+    TArrayC         fMcTrackIdx;                // Id of the track created in the simulation
 };
 
 

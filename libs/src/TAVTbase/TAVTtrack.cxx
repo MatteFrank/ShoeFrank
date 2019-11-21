@@ -35,7 +35,6 @@ TAVTtrack::~TAVTtrack()
 {
 }
 
-
 //______________________________________________________________________________
 //
 void TAVTtrack::SetupClones()
@@ -44,11 +43,15 @@ void TAVTtrack::SetupClones()
    fListOfClusters->SetOwner(true);
 }
 
-
 // __________________________________________________________________________
 //
 void TAVTtrack::AddCluster(TAVTcluster* cluster)
 {
+   for (Int_t k = 0; k < cluster->GetMcTracksN(); ++k) {
+      Int_t idx = cluster->GetMcTrackIdx(k);
+      AddMcTrackIdx(idx);
+   }
+   
    TClonesArray &clusterArray = *fListOfClusters;
    new(clusterArray[clusterArray.GetEntriesFast()]) TAVTcluster(*cluster);
    fMeanPixelsN += cluster->GetPixelsN()/float(fListOfClusters->GetEntries());

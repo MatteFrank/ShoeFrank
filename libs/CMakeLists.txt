@@ -7,4 +7,5 @@
 MESSAGE("libs:")
 #
 add_subdirectory(GenFit)
+add_subdirectory(TOE)
 add_subdirectory(src)
