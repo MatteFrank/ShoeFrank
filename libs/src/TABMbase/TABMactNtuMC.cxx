@@ -145,7 +145,7 @@ Bool_t TABMactNtuMC::Action()
       
       //create hit
       TABMntuHit *mytmp = p_nturaw->NewHit(view, lay, cell,p_bmgeo->GetBMNcell(lay,view,cell), rdriftxcell[i], time, p_bmcon->ResoEval(rdriftxcell[i]));
-      mytmp->AddMcTrackId(ipoint, i);
+      mytmp->AddMcTrackIdx(ipoint, i);
 
       mytmp->SetRealRdrift(realrdrift);
       mytmp->SetIsFake( (fpEvtStr->TRpaid[fpEvtStr->BMNid[i]-1]==0) ? 0 : 1);
