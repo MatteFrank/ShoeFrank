@@ -87,14 +87,20 @@
    gSystem->Load("libEve.so");
    gSystem->Load("libgenfit2.so");
    gSystem->Load("libTOE.so");
-   gSystem->Load("libTAGbase.so");
 
+   gSystem->Load("libTAGbase.so");
    gSystem->Load("libTAMCbase.so");
+   gSystem->Load("libTAGdaq.so");
+   gSystem->Load("libTAGdaqApi.so");
+   gSystem->Load("libTAEDbase.so");
+   gSystem->Load("libTADIbase.so");
+
    gSystem->Load("libTASTbase.so");
    gSystem->Load("libTABMbase.so");
    gSystem->Load("libTAVTbase.so");
    gSystem->Load("libTAITbase.so");
    gSystem->Load("libTAMSDbase.so");
+   gSystem->Load("libTAIRbase.so");
    gSystem->Load("libTATWbase.so");
    gSystem->Load("libTACAbase.so");
    gSystem->Load("libTATOEbase.so");
