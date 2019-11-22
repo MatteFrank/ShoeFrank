@@ -62,6 +62,7 @@ TAVTactNtuClusterF* vtActClus = 0x0;
 TAVTactNtuTrackF*   vtActTrck = 0x0;
 TAVTactNtuVertex*   vtActVtx  = 0x0;
 TAGdataDsc*         vtVtx     = 0x0;
+TAGparaDsc*         vtGeo     = 0x0;
 
 TAITactNtuMC*       itActRaw  = 0x0;
 TAITactNtuClusterF* itActClus = 0x0;
@@ -75,7 +76,7 @@ void FillMCVertex(EVENT_STRUCT *myStr) {
    TAGparGeo* parGeoG = (TAGparGeo*)tgGeo->Object();
    parGeoG->FromFile();
    
-   TAGparaDsc* vtGeo    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
+   vtGeo    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
    geomap->FromFile();
    
@@ -118,7 +119,7 @@ void FillMCInnerTracker(EVENT_STRUCT *myStr) {
    itActClus = new TAITactNtuClusterF("itActCluster", itRaw, itClus, itConf, itGeo);
    
    TAGdataDsc* irTrck   = new TAGdataDsc("irTrack", new TAIRntuTrack());
-   irActTrck = new TAIRactNtuTrack("irActTrack", itClus, vtVtx, irTrck, itConf, itGeo);
+   irActTrck = new TAIRactNtuTrack("irActTrack", itClus, vtVtx, irTrck, itConf, itGeo, vtGeo);
    irActTrck->CreateHistogram();
 
    outFile->SetupElementBranch(irTrck, TAIRntuTrack::GetBranchName());
