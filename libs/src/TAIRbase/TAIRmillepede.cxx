@@ -68,25 +68,24 @@ Int_t TAIRmillepede::InitMille(int nGlo, int nLoc, int lNStdDev,
 							double lResCut, double lResCutInit)
 {
    /// Initialization of millepede
-   printf("\n                                         \n");
-   printf("            * o o                   o      \n");
-   printf("              o o                   o      \n");
-   printf("   o ooooo  o o o  oo  ooo   oo   ooo  oo  \n");
-   printf("    o  o  o o o o o  o o  o o  o o  o o  o \n");
-   printf("    o  o  o o o o oooo o  o oooo o  o oooo \n");
-   printf("    o  o  o o o o o    ooo  o    o  o o    \n");
-   printf("    o  o  o o o o  oo  o     oo   ooo  oo  ++ starts\n");	   
-   printf("                       o                 \n\n");	     
-   
-   
-   if (fDebugLevel) {
-	  printf("\n");
-	  printf("----------------------------------------------------\n");
-	  printf("\n");
-	  printf("    Entering InitMille\n");
-	  printf("\n");
-	  printf("-----------------------------------------------------\n");
-	  printf("\n");
+   if (FootDebugLevel(1)) {
+      printf("\n                                         \n");
+      printf("            * o o                   o      \n");
+      printf("              o o                   o      \n");
+      printf("   o ooooo  o o o  oo  ooo   oo   ooo  oo  \n");
+      printf("    o  o  o o o o o  o o  o o  o o  o o  o \n");
+      printf("    o  o  o o o o oooo o  o oooo o  o oooo \n");
+      printf("    o  o  o o o o o    ooo  o    o  o o    \n");
+      printf("    o  o  o o o o  oo  o     oo   ooo  oo  ++ starts\n");
+      printf("                       o                 \n\n");
+
+      printf("\n");
+      printf("----------------------------------------------------\n");
+      printf("\n");
+      printf("    Entering InitMille\n");
+      printf("\n");
+      printf("-----------------------------------------------------\n");
+      printf("\n");
    }
    
    fNGlobalConstraints = 0;
@@ -1035,16 +1034,19 @@ Int_t TAIRmillepede::GlobalFit(double par[], double error[], double pull[])
 	  error[j] = TMath::Sqrt(TMath::Abs(fMatCGlo[j][j]));
    }
    
-   printf("\n                                         \n");
-   printf("            * o o                   o      \n");
-   printf("              o o                   o      \n");
-   printf("   o ooooo  o o o  oo  ooo   oo   ooo  oo  \n");
-   printf("    o  o  o o o o o  o o  o o  o o  o o  o \n");
-   printf("    o  o  o o o o oooo o  o oooo o  o oooo \n");
-   printf("    o  o  o o o o o    ooo  o    o  o o    \n");
-   printf("    o  o  o o o o  oo  o     oo   ooo  oo  \n");
-   printf("    o  o  o o o o  oo  o     oo   ooo  oo  ++ ends\n");	   
-   printf("                       o                 \n\n");	   
+   if (FootDebugLevel(2)) {
+      printf("\n                                         \n");
+      printf("            * o o                   o      \n");
+      printf("              o o                   o      \n");
+      printf("   o ooooo  o o o  oo  ooo   oo   ooo  oo  \n");
+      printf("    o  o  o o o o o  o o  o o  o o  o o  o \n");
+      printf("    o  o  o o o o oooo o  o oooo o  o oooo \n");
+      printf("    o  o  o o o o o    ooo  o    o  o o    \n");
+      printf("    o  o  o o o o  oo  o     oo   ooo  oo  \n");
+      printf("    o  o  o o o o  oo  o     oo   ooo  oo  ++ ends\n");
+      printf("                       o                 \n\n");
+   }
+   
    return 1;
 }
 
