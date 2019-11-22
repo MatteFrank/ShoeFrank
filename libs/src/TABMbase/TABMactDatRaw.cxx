@@ -74,8 +74,9 @@ void TABMactDatRaw::CreateHistogram(){
   fpRawDiscAccept=new TH1I( "BM_Dat_Accepted and discharged hits", "Number of hits accepted/discharged in the tdc channels; -1=discharged 1=accepted; Events", 3, -1, 2);
   AddHistogram(fpRawDiscAccept);   
   fpRawDiscChannel=new TH1I( "BM_Dat_discharged hits channel", "Number of discharged hits tdc channel; tdc channel; Events", p_parmap->GetTdcMaxcha(), 0, p_parmap->GetTdcMaxcha());
-  AddHistogram(fpRawDiscChannel);   
-     
+  AddHistogram(fpRawDiscChannel);
+  fpRawTrigTime=new TH1I( "BM_Dat_Trigger", "Trigger time; Trigger time [ns]; Events", 200, 0, 0);
+  AddHistogram(fpRawTrigTime);   
   
   SetValidHistogram(kTRUE);
 }
@@ -148,6 +149,8 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
   }
   
   p_datraw->SetTrigtime(used_trigger);
+  if (ValidHistogram())
+    fpRawTrigTime->Fill(used_trigger);
   for(Int_t i = 0; i < ((int)evt->measurement.size());i++) {
     measurement=(Double_t) (evt->measurement.at(i) & 0x7ffff)/10.;
     channel=(evt->measurement.at(i)>>19) & 0x7f;

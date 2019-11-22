@@ -53,6 +53,7 @@ class TABMactDatRaw : public TAGaction {
     TH1I*            fpRawHitNum;  //raw hit number distribution    
     TH1I*            fpRawDiscAccept;  //raw discharged vs accepted number of hits    
     TH1I*            fpRawDiscChannel;  //raw discharged hit channel    
+    TH1I*            fpRawTrigTime;  //Trigger time    
 };
 
 #endif
