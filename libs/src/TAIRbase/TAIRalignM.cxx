@@ -66,7 +66,8 @@ TAIRalignM::TAIRalignM(const TString name)
    fDebugLevel(0)
 {
       
-   Int_t devsNtot = 0;
+   Int_t devsNtot =  parConfVtx->GetSensorsN() + parConfItr->GetSensorsN();
+   fDevStatus     = new Int_t[devsNtot];
    
    fAGRoot        = new TAGroot();
    fInfile        = new TAGactTreeReader("inFile");
@@ -81,8 +82,6 @@ TAIRalignM::TAIRalignM(const TString name)
    parFile = "./config/TAVTdetector_align.cfg";
    TAVTparConf* parConfVtx = (TAVTparConf*) fpConfigVtx->Object();
    parConfVtx->FromFile(parFile.Data());
-      
-   devsNtot += parConfVtx->GetSensorsN();
    
    // ITR
    fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
@@ -94,8 +93,6 @@ TAIRalignM::TAIRalignM(const TString name)
    TAITparConf* parConfItr = (TAITparConf*) fpConfigItr->Object();
    parFile = "./config/TAITdetector_align.cfg";
    parConfItr->FromFile(parFile.Data());
-      
-   devsNtot += parConfItr->GetSensorsN();
    
    //IR
    fpNtuTrackIr  = new TAGdataDsc("itTrack", new TAIRntuTrack());
@@ -107,10 +104,7 @@ TAIRalignM::TAIRalignM(const TString name)
       exit(0);
    }
 
-   fDevStatus = new Int_t[devsNtot];
-
-   FillStatus();
-   
+   FillStatus();   
    InitParameters();
 }
 
@@ -263,7 +257,7 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
          
          ProcessTrack(aTrack, trackParams);
          LocalFit(nTrack++,trackParams,0);
-                  
+         
       } // end loop on tracks
       
    }
