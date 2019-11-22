@@ -78,7 +78,7 @@ TAIRalignM::TAIRalignM(const TString name)
    geomapVtx->FromFile(parFile.Data());
       
    fpConfigVtx    = new TAGparaDsc("vtConf", new TAVTparConf());
-   parFile = "./config/TAVTdetector.cfg";
+   parFile = "./config/TAVTdetector_align.cfg";
    TAVTparConf* parConfVtx = (TAVTparConf*) fpConfigVtx->Object();
    parConfVtx->FromFile(parFile.Data());
       
@@ -87,12 +87,12 @@ TAIRalignM::TAIRalignM(const TString name)
    // ITR
    fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
    TAITparGeo* geomapMsd   = (TAITparGeo*) fpGeoMapItr->Object();
-    parFile = "./geomaps/TAMSDdetector.map";
+    parFile = "./geomaps/TAITdetector.map";
    geomapMsd->FromFile(parFile.Data());
    
-   fpConfigItr    = new TAGparaDsc("msdConf", new TAITparConf());
+   fpConfigItr    = new TAGparaDsc("itConf", new TAITparConf());
    TAITparConf* parConfItr = (TAITparConf*) fpConfigItr->Object();
-   parFile = "./config/TAMSDdetector.cfg";
+   parFile = "./config/TAITdetector_align.cfg";
    parConfItr->FromFile(parFile.Data());
       
    devsNtot += parConfItr->GetSensorsN();
@@ -118,10 +118,6 @@ TAIRalignM::TAIRalignM(const TString name)
 //! Destructor.
 TAIRalignM::~TAIRalignM()
 {
-   delete[] fTiltW;
-   delete[] fAlignmentU;
-   delete[] fAlignmentV;
-   delete[] fStatus;
    delete[] fDevStatus;
 }
 
@@ -129,19 +125,7 @@ TAIRalignM::~TAIRalignM()
 //
 // Create all the residuals histograms
 void TAIRalignM::InitParameters()
-{
-   fTiltW           = new Float_t[fSecArray.GetSize()];
-   fAlignmentU      = new Float_t[fSecArray.GetSize()];
-   fAlignmentV      = new Float_t[fSecArray.GetSize()];
-   fStatus          = new Bool_t[fSecArray.GetSize()];
-   
-   for(Int_t i = 0; i < fSecArray.GetSize(); i++){
-      fTiltW[i]           = 0;
-      fAlignmentU[i]      = 0;
-      fAlignmentV[i]      = 0;
-      fStatus[i]          = false;
-   }
-   
+{   
    /// Default constructor, setting define alignment parameters
    fSigma[0] = 10;
    fSigma[1] = 10;
@@ -178,8 +162,7 @@ void TAIRalignM::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
          fSecArray.AddAt(i, fSecArray.GetSize()-1);
       }
       
-      Int_t iSensor = fSecArray.GetSize()-1;
-      fDevStatus[fSecArray.GetSize()-1] = parConf->GetStatus(iSensor);
+      fDevStatus[fSecArray.GetSize()-1] = parConf->GetStatus(i);
    }
 }
 
@@ -210,7 +193,7 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    TAIRntuTrack* pNtuTrk = (TAIRntuTrack*) fpNtuTrackIr->Object();
 
    Int_t   nPlanes  = fSecArray.GetSize();
-   Int_t nParPlanes = 3;
+   Int_t nParPlanes = 3; // Alignment X-Y and rotation around Z
    Int_t nParam     = nParPlanes*nPlanes;
    Int_t nLocPar    = 4;
    Int_t stdDev     = 3;
@@ -240,14 +223,14 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
       if (fDevStatus[k] == 1) {
          FixPlane(k);
       } else {
-         FixParameter(nParPlanes*k+0, 600);
-         FixParameter(nParPlanes*k+1, 600);
-         FixParameter(nParPlanes*k+2, 0.2);
+         FixParameter(nParPlanes*k+0, 0.08);
+         FixParameter(nParPlanes*k+1, 0.08);
+         FixParameter(nParPlanes*k+2, 0.001);
       }
    }
    
    InitGlobalParameters(parameters);
-   //AddConstraint(gloConst, 0.0);
+   AddConstraint(gloConst, 0.0);
    
    fAGRoot->AddRequiredItem(fInfile);
    if (fInfile->Open(fFileName.Data())) return;
@@ -280,11 +263,7 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
          
          ProcessTrack(aTrack, trackParams);
          LocalFit(nTrack++,trackParams,0);
-         
-         //       printf("param %6.3f %6.3f %e %e    %6.3f %6.3f %e %e\n",
-         //            aTrack->GetTrackLine().GetOrigin()(0), trackParams[0], aTrack->GetTrackLine().GetSlopeZ()(0), trackParams[2],
-         //            aTrack->GetTrackLine().GetOrigin()(1), trackParams[4], aTrack->GetTrackLine().GetSlopeZ()(1), trackParams[6] );
-         
+                  
       } // end loop on tracks
       
    }
@@ -294,84 +273,39 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    
    UpdateGeoMaps();
    
-   TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMapItr->Object();
-   Float_t limitShift  = 5;
-   Float_t limitTilt   = 0.1*TMath::DegToRad();
+   fInfile->Reset();
 
    // Now display the filled histos
-   printf("------------------------------------------------------------\n");
-   printf("--------------------- Alignment RESULT --------------------\n");
-   printf("------------------------------------------------------------\n");
    
-   for(Int_t i = 0; i < fSecArray.GetSize(); i++) {
-      if (fDevStatus[i] != 2) continue; //only IT
-      Int_t iPlane = fSecArray[i];
-     fStatus[i] = (pGeoMap->GetSensorPar(iPlane).AlignmentU < limitShift) && (pGeoMap->GetSensorPar(iPlane).AlignmentV < limitShift) && (pGeoMap->GetSensorPar(iPlane).TiltW <limitTilt);
-      printf("----------------------------------------------\n");
-      printf("Sensor: %d AlignmentU: %5.1f AlignmentV: %5.1f TiltW: %5.2f status %d\n", iPlane+1,
-             fAlignmentU[i]*TAGgeoTrafo::MmToMu(),
-             fAlignmentV[i]*TAGgeoTrafo::MmToMu(),
-             fTiltW[i]*TMath::RadToDeg(),
-             fStatus[i]);
-   }
-   
-   printf("\n----------------------------------------------\n");
-   printf("Restart to produce residual plots with %d evts\n", nEvts);
-   
-   fInfile->Reset();
-   
-   TCanvas* canvas1 = new TCanvas("canvas1", "ResidualX");
-   canvas1->Divide(fSecArray.GetSize()/2,3);
-   gStyle->SetOptStat(1111);
-   
-   TCanvas* canvas2 = new TCanvas("canvas2", "ResidualY");
-   canvas2->Divide(fSecArray.GetSize()/2,3);
-   gStyle->SetOptStat(1111);
-   
-   TCanvas* canvas3 = new TCanvas("canvas3", "ResidualTotX");
-   gStyle->SetOptStat(1111);
-   
-   TCanvas* canvas4 = new TCanvas("canvas4", "ResidualTotY");
-   gStyle->SetOptStat(1111);
-   
-   
-   for(Int_t i = 0; i < fSecArray.GetSize(); i++) {
-      canvas1->cd(i+1);
-      fpResXC[i]->Draw();
-      
-      canvas2->cd(i+1);
-      fpResYC[i]->Draw();
-   }
-   
-   canvas3->cd();
-   fpResTotXC->Draw();
-   
-   canvas4->cd();
-   fpResTotYC->Draw();
-   
-}
-
-//______________________________________________________________________________
+//   TCanvas* canvas1 = new TCanvas("canvas1", "ResidualX");
+//   canvas1->Divide(fSecArray.GetSize()/2,3);
+//   gStyle->SetOptStat(1111);
 //
-// The final vector containing the alignment parameters are calculated
-void TAIRalignM::UpdateAlignmentParams(Double_t* parameters)
-{
-   TAITparGeo* pGeoMap  = (TAITparGeo*) fpGeoMapItr->Object();
-
-   for (Int_t iPlane = 0; iPlane < fSecArray.GetSize(); iPlane++){
-      Int_t iSensor = fSecArray[iPlane];
-      if (fDevStatus[iPlane] != 2) continue; //only IT
-
-      printf("Sensor: %d OffsetU: %5.1f OffsetV: %5.1f TiltW: %6.3f \n", iSensor+1,
-             pGeoMap->GetSensorPar(iPlane).AlignmentU,
-             pGeoMap->GetSensorPar(iPlane).AlignmentV,
-             pGeoMap->GetSensorPar(iPlane).TiltW*TMath::RadToDeg());
-      
-      fAlignmentU[iPlane] = pGeoMap->GetSensorPar(iPlane).AlignmentU - parameters[iPlane*GetNParPlane() + 0];
-      fAlignmentV[iPlane] = pGeoMap->GetSensorPar(iPlane).AlignmentV - parameters[iPlane*GetNParPlane() + 1];
-      fTiltW[iPlane]      = pGeoMap->GetSensorPar(iPlane).TiltW      - parameters[iPlane*GetNParPlane() + 2];
-   }
-   return;
+//   TCanvas* canvas2 = new TCanvas("canvas2", "ResidualY");
+//   canvas2->Divide(fSecArray.GetSize()/2,3);
+//   gStyle->SetOptStat(1111);
+//
+//   TCanvas* canvas3 = new TCanvas("canvas3", "ResidualTotX");
+//   gStyle->SetOptStat(1111);
+//
+//   TCanvas* canvas4 = new TCanvas("canvas4", "ResidualTotY");
+//   gStyle->SetOptStat(1111);
+//
+//
+//   for(Int_t i = 0; i < fSecArray.GetSize(); i++) {
+//      canvas1->cd(i+1);
+//      fpResXC[i]->Draw();
+//
+//      canvas2->cd(i+1);
+//      fpResYC[i]->Draw();
+//   }
+//
+//   canvas3->cd();
+//   fpResTotXC->Draw();
+//
+//   canvas4->cd();
+//   fpResTotYC->Draw();
+   
 }
 
 //_________________________________________________________________
@@ -441,12 +375,10 @@ void TAIRalignM::InitGlobalParameters(Double_t *par)
 //_________________________________________________________________
 void TAIRalignM::FixPlane(Int_t iPlane)
 {
-   /// Fix all detection elements of chamber iCh
-   
+   /// Fix all detection elements of chamber isensor
    FixParameter(iPlane*fNParPlane+0, 0.0);
    FixParameter(iPlane*fNParPlane+1, 0.0);
    FixParameter(iPlane*fNParPlane+2, 0.0);
-   
 }
 
 //_________________________________________________________________
@@ -455,7 +387,8 @@ void TAIRalignM::FixParameter(Int_t iPar, Double_t value)
    /// Parameter iPar is encourage to vary in [-value;value].
    /// If value == 0, parameter is fixed
    fMillepede->SetParSigma(iPar, value);
-   if (value==0) printf("Parameter %i Fixed\n", iPar);
+   if (fDebugLevel> 1)
+      if (value==0) printf("Parameter %i Fixed\n", iPar);
 }
 
 //_________________________________________________________________
@@ -587,7 +520,6 @@ void TAIRalignM::LocalFit(Int_t iTrack, Double_t *lTrackParam, Int_t lSingleFit)
    }
 }
 
-
 //_________________________________________________________________
 void TAIRalignM::GlobalFit(Double_t *parameters,Double_t *errors,Double_t *pulls)
 {
@@ -618,6 +550,22 @@ void TAIRalignM::PrintGlobalParameters()
    fMillepede->PrintGlobalParameters();
 }
 
+//______________________________________________________________________________
+//
+// The final vector containing the alignment parameters are calculated
+void TAIRalignM::UpdateAlignmentParams(Double_t* parameters)
+{
+   TAITparGeo* pGeoMap  = (TAITparGeo*) fpGeoMapItr->Object();
+   
+   for (Int_t iPlane = 0; iPlane < fSecArray.GetSize(); iPlane++){
+      Int_t iSensor = fSecArray[iPlane];
+      if (fDevStatus[iPlane] != 2) continue; //only IT
+      
+      pGeoMap->GetSensorPar(iSensor).AlignmentU -= parameters[iPlane*GetNParPlane() + 0];
+      pGeoMap->GetSensorPar(iSensor).AlignmentV -= parameters[iPlane*GetNParPlane() + 1];
+      pGeoMap->GetSensorPar(iSensor).TiltW      -= parameters[iPlane*GetNParPlane() + 2];
+   }
+}
 
 //______________________________________________________________________________
 //
@@ -672,8 +620,8 @@ void TAIRalignM::UpdateGeoMapsUVW(fstream &fileIn, fstream &fileOut, Int_t idx)
    TString key;
    TAITparGeo* pGeoMap  = (TAITparGeo*)fpGeoMapItr->Object();
    
-   Float_t alignU = pGeoMap->GetSensorPar(idx).AlignmentU*TAGgeoTrafo::MmToCm();
-   Float_t alignV = pGeoMap->GetSensorPar(idx).AlignmentV*TAGgeoTrafo::MmToCm();
+   Float_t alignU = pGeoMap->GetSensorPar(idx).AlignmentU*TAGgeoTrafo::CmToMu();
+   Float_t alignV = pGeoMap->GetSensorPar(idx).AlignmentV*TAGgeoTrafo::CmToMu();
    Float_t tiltW  = pGeoMap->GetSensorPar(idx).TiltW*TMath::RadToDeg();
    
    while (!fileIn.eof()) {

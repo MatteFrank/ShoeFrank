@@ -100,10 +100,6 @@ private:
    
    const TString        fFileName;      // input file
       
-   Float_t*             fTiltW;
-   Float_t*             fAlignmentU;
-   Float_t*             fAlignmentV;
-   Bool_t*              fStatus;
    Int_t*               fDevStatus;
    Int_t                fOffsetItr;
    TArrayI              fSecArray;   // contains the sensor number to be aligned
