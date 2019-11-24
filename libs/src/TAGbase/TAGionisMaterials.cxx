@@ -81,9 +81,11 @@ void TAGionisMaterials::AddMeanExcitationEnergy(Double_t value)
    }
    
    TString ref = fgkMeanExcitationEnergy + fMaterial->GetName();
-   gGeoManager->AddProperty(ref.Data(), value);
+   if (gGeoManager->GetProperty(ref.Data()) < 1e-10) {
+      gGeoManager->AddProperty(ref.Data(), value);
 
-   fMaterial->AddConstProperty(GetMeanExcitationEnergyName(), ref.Data());
+      fMaterial->AddConstProperty(GetMeanExcitationEnergyName(), ref.Data());
+   }
    
 #else
    Warning("AddMeanExcitationEnergy()", "Method not compatible with present root version, need version >= 6.17");
