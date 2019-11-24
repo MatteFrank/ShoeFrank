@@ -52,28 +52,43 @@ TABMactNtuTrack::TABMactNtuTrack(const char* name,
   p_bmgeo->SetTarget(targetPos);
   
   //new chi2 ROOT based
+  functorx= new ROOT::Math::Functor(this,&TABMactNtuTrack::EvaluateChi2,3); 
   minx = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Fumili2");
-  miny = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Fumili2");
   minx->SetMaxFunctionCalls(p_bmcon->GetNumIte());
   minx->SetMaxIterations(p_bmcon->GetNumIte());
   minx->SetTolerance(p_bmcon->GetParMove());
   minx->SetPrintLevel(0);
-  miny->SetMaxFunctionCalls(p_bmcon->GetNumIte());
-  miny->SetMaxIterations(p_bmcon->GetNumIte());
-  miny->SetTolerance(p_bmcon->GetParMove());
-  miny->SetPrintLevel(0);
-  functorx= new ROOT::Math::Functor(this,&TABMactNtuTrack::EvaluateChi2,3); 
-  functory= new ROOT::Math::Functor(this,&TABMactNtuTrack::EvaluateChi2,3);   
   minx->SetFunction(*functorx);
   minx->SetVariable(0,"mx",0., p_bmcon->GetParMove());
   minx->SetVariable(1,"qx",0., p_bmcon->GetParMove());
   minx->SetVariable(2,"viewx",1.01, 0.);
   minx->FixVariable(2);
+  
+  functory= new ROOT::Math::Functor(this,&TABMactNtuTrack::EvaluateChi2,3);   
+  miny = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Fumili2");
+  miny->SetMaxFunctionCalls(p_bmcon->GetNumIte());
+  miny->SetMaxIterations(p_bmcon->GetNumIte());
+  miny->SetTolerance(p_bmcon->GetParMove());
+  miny->SetPrintLevel(0);
   miny->SetFunction(*functory);
   miny->SetVariable(0,"my",0., p_bmcon->GetParMove());
   miny->SetVariable(1,"qy",0., p_bmcon->GetParMove());
   miny->SetVariable(2,"viewy",0.01, 0.);
   miny->FixVariable(2);
+  
+  functorGSI= new ROOT::Math::Functor(this,&TABMactNtuTrack::EvaluateChi2GSI,5);   
+  minGSI = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Fumili2");
+  minGSI->SetMaxFunctionCalls(p_bmcon->GetNumIte());
+  minGSI->SetMaxIterations(p_bmcon->GetNumIte());
+  minGSI->SetTolerance(p_bmcon->GetParMove());
+  minGSI->SetPrintLevel(0);
+  minGSI->SetFunction(*functorGSI);
+  minGSI->SetVariable(0,"my",0., p_bmcon->GetParMove());
+  minGSI->SetVariable(1,"qy",0., p_bmcon->GetParMove());
+  minGSI->SetVariable(2,"mx",0., p_bmcon->GetParMove());
+  minGSI->SetVariable(3,"qy",0., p_bmcon->GetParMove());
+  minGSI->SetVariable(4,"t0",0., 1.);
+  minGSI->FixVariable(4);
   
   //legendre
   legpolxsum=new TH2D("legpolxsum","Legendre polynomial space on xz plane; mx; q[cm]",p_bmcon->GetLegmbin(),-p_bmcon->GetLegmrange(),p_bmcon->GetLegmrange(), p_bmcon->GetLegrbin(),-p_bmcon->GetLegrrange(),p_bmcon->GetLegrrange());
@@ -87,9 +102,11 @@ TABMactNtuTrack::TABMactNtuTrack(const char* name,
 TABMactNtuTrack::~TABMactNtuTrack(){ 
 delete tmp_trackTr;    
 delete minx;
-delete miny;
 delete functorx;
+delete miny;
 delete functory;
+delete minGSI;
+delete functorGSI;
 }
 
 
@@ -119,6 +136,8 @@ void TABMactNtuTrack::CreateHistogram()
    AddHistogram(fpHisChi2Red);   
    fpHisTrackEff = new TH1F("BM_Track_FitEff","Efficiency with pivot-probe method on FITTED tracks", 110, 0., 1.1);
    AddHistogram(fpHisTrackEff);   
+   fpHisTrigTime = new TH1I("BM_Track_FitTrigTime","Fitted trigger time shift; [ns]", 40, -20, 20);
+   AddHistogram(fpHisTrigTime);   
 
    SetValidHistogram(kTRUE);
 }
@@ -211,10 +230,10 @@ Bool_t TABMactNtuTrack::Action()
       tmp_trackTr->Clean();
       tmp_trackTr->SetNhit(p_nturaw->GetNselhits());
       TVector3 tmp_tvector3(legpolxsum->GetXaxis()->GetBinCenter(best_mxbin),legpolysum->GetXaxis()->GetBinCenter(best_mybin),1.);
-      tmp_tvector3.SetMag(1.);
       tmp_trackTr->SetPvers(tmp_tvector3);
       tmp_trackTr->SetR0(legpolxsum->GetXaxis()->GetBinCenter(best_rxbin),legpolysum->GetXaxis()->GetBinCenter(best_rybin),0.);
       tmp_int=NumericalMinimizationDouble();
+      //~ tmp_int=NumericalMinimizationGSI();
       if(tmp_int!=0){
         p_ntutrk->GetTrackStatus()=7+tmp_int;
         if(ValidHistogram())
@@ -528,9 +547,9 @@ void TABMactNtuTrack::CheckAssHits(const Int_t asshitx, const Int_t asshity) {
         yvalue=p_hit->GetA0().X()-xvalue*p_hit->GetA0().Z()-p_hit->Dist()*sqrt(xvalue*xvalue+1.);
         diff=fabs(yvalue - legpolxsum->GetYaxis()->GetBinCenter(best_rxbin));
         if(diff<res){
-          if(FootDebugLevel(3))
-            cout<<"TABMactNtuTrack::CheckAssHits: hit selected: hitnum="<<i<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<1<<"  yvalue="<<yvalue<<"  bestvalue="<<legpolxsum->GetYaxis()->GetBinCenter(best_rxbin)<<"  diff="<<diff<<"   residual="<<((Double_t)diff)/res<<endl;
           if(wireplane[cellplane]==-1){
+            if(FootDebugLevel(4))
+              cout<<"TABMactNtuTrack::CheckAssHits: hit selected: hitnum="<<i<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<1<<"  yvalue="<<yvalue<<"  bestvalue="<<legpolxsum->GetYaxis()->GetBinCenter(best_rxbin)<<"  diff="<<diff<<"   residual="<<((Double_t)diff)/res<<endl;
             wireplane[cellplane]=i;
             p_hit->SetIsSelected(1);
             p_hit->SetResidual(((Double_t)diff)/res);
@@ -602,15 +621,16 @@ Double_t TABMactNtuTrack::EvaluateChi2(const double *params){
 }
 
 
+
 Int_t TABMactNtuTrack::NumericalMinimizationDouble(){
   
   if(FootDebugLevel(2))
     cout<<"TABMactNtuTrack:: NumericalMinimizationDouble start"<<endl;
   
   // Set the variables to be minimized
-  minx->SetVariableValue(0,tmp_trackTr->GetPvers().X());
+  minx->SetVariableValue(0,tmp_trackTr->GetPvers().X()/tmp_trackTr->GetPvers().Z());
   minx->SetVariableValue(1,tmp_trackTr->GetR0().X());
-  miny->SetVariableValue(0,tmp_trackTr->GetPvers().Y());
+  miny->SetVariableValue(0,tmp_trackTr->GetPvers().Y()/tmp_trackTr->GetPvers().Z());
   miny->SetVariableValue(1,tmp_trackTr->GetR0().Y());
     
   minx->Minimize();       
@@ -620,9 +640,7 @@ Int_t TABMactNtuTrack::NumericalMinimizationDouble(){
   if(status==0){
     tmp_trackTr->SetR0(minx->X()[1], miny->X()[1], 0.);
     TVector3 tmp_tvector3(minx->X()[0],miny->X()[0], 1.);
-    tmp_tvector3.SetMag(1.);
     tmp_trackTr->SetPvers(tmp_tvector3);
-    
     if(FootDebugLevel(1)){
       cout<<"TABMactNtuTrack:: NumericalMinimizationDouble done: The track parameters are:"<<endl;
       cout<<"Pvers=("<<tmp_trackTr->GetPvers().X()<<", "<<tmp_trackTr->GetPvers().Y()<<", "<<tmp_trackTr->GetPvers().Z()<<")"<<endl;
@@ -636,6 +654,71 @@ Int_t TABMactNtuTrack::NumericalMinimizationDouble(){
 }
 
 
+
+Double_t TABMactNtuTrack::EvaluateChi2GSI(const double *params){
+  
+  Double_t chi2=0, res, newrdrift, newresolution;
+  TVector3 vers,r0;
+  vers.SetXYZ(params[2],params[0], 1.); 
+  r0.SetXYZ(params[3],params[1],0.);
+  
+  for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
+    p_hit = p_nturaw->Hit(i);
+    if(p_hit->GetIsSelected()==1){
+      //~ newrdrift=p_bmcon->FirstSTrel(p_hit->Tdrift()+params[4]);
+      //~ newresolution=p_bmcon->ResoEval(newrdrift);
+      //~ res=newrdrift - p_bmgeo->FindRdrift(r0, vers, p_hit->GetA0(), p_hit->GetWvers(), true);    
+      //~ chi2+=res*res/newresolution/newresolution;
+      res=p_hit->Dist()-p_bmgeo->FindRdrift(r0, vers, p_hit->GetA0(), p_hit->GetWvers(), true);    
+      chi2+=res*res/p_hit->GetSigma()/p_hit->GetSigma();
+    }
+  }
+  
+  return chi2;
+}
+
+Int_t TABMactNtuTrack::NumericalMinimizationGSI(){
+  
+  if(FootDebugLevel(2))
+    cout<<"TABMactNtuTrack:: NumericalMinimizationGSI start"<<endl;
+  
+  // Set the variables to be minGSIimized
+  minGSI->SetVariableValue(0,tmp_trackTr->GetPvers().Y());
+  minGSI->SetVariableValue(1,tmp_trackTr->GetR0().Y());
+  minGSI->SetVariableValue(2,tmp_trackTr->GetPvers().X());
+  minGSI->SetVariableValue(3,tmp_trackTr->GetR0().X());
+  //~ minGSI->SetVariableValue(4,0.);
+  //~ minGSI->SetVariableLimits(4,-10.,10.);
+  
+  minGSI->Minimize();       
+  Int_t status=minGSI->Status();
+  if(status==0){
+    tmp_trackTr->SetR0(minGSI->X()[3], minGSI->X()[1], 0.);
+    TVector3 tmp_tvector3(minGSI->X()[2],minGSI->X()[0], 1.);
+    tmp_trackTr->SetPvers(tmp_tvector3);
+    //~ TABMdatRaw* p_datraw = (TABMdatRaw*)  (gTAGroot->FindDataDsc("bmDat", "TABMdatRaw")->Object());
+    //~ p_datraw->SetTrigtime(minGSI->X()[4]);
+    for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
+      p_hit=p_nturaw->Hit(i);
+      p_hit->SetTdrift(p_hit->Tdrift()+minGSI->X()[4]);
+      p_hit->SetRdrift(p_bmcon->FirstSTrel(p_hit->Tdrift()));
+      p_hit->SetSigma(p_bmcon->ResoEval(p_hit->Dist()));
+    }  
+    if(FootDebugLevel(1)){
+      cout<<"TABMactNtuTrack:: NumericalminGSIimizationGSI done: The track parameters are:"<<endl;
+      cout<<"Pvers=("<<tmp_trackTr->GetPvers().X()<<", "<<tmp_trackTr->GetPvers().Y()<<", "<<tmp_trackTr->GetPvers().Z()<<")"<<endl;
+      cout<<"R0=("<<tmp_trackTr->GetR0().X()<<", "<<tmp_trackTr->GetR0().Y()<<", "<<tmp_trackTr->GetR0().Z()<<")"<<endl;
+    }
+    if(ValidHistogram())
+      fpHisTrigTime->Fill(minGSI->X()[4]);
+    return 0;
+  }else if(FootDebugLevel(1))
+    cout<<"TABMactNtuTrack:: NumericalminGSIimizationGSI: minGSIimization failed: status="<<status<<endl;
+  
+  return status;
+}
+
+
 Bool_t TABMactNtuTrack::ComputeDataAll(){
 
   if(p_nturaw->GetNselhits()<5){
@@ -643,7 +726,7 @@ Bool_t TABMactNtuTrack::ComputeDataAll(){
     return kTRUE;
   }
   Double_t res, chi2red=0.;
-  for(Int_t i=0;i<p_nturaw->GetHitsN();i++){
+  for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
     p_hit=p_nturaw->Hit(i);
     if(p_hit->GetIsSelected()==1){
       res=p_hit->Dist()-p_bmgeo->FindRdrift(tmp_trackTr->GetR0(), tmp_trackTr->GetPvers(), p_hit->GetA0(), p_hit->GetWvers(),true);

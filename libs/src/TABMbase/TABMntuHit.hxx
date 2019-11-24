@@ -51,6 +51,7 @@ class TABMntuHit : public TAGdata {
     void SetChi2(Double_t in_chi2) { ichi2 = in_chi2; return;};
     void SetSigma(Double_t in_sigma) {sigma = in_sigma; return;};
     void SetRdrift(Double_t in_rdrift){rdrift=in_rdrift;return;};
+    void SetTdrift(Double_t in_tdrift){tdrift=in_tdrift;return;};
     void SetRealRdrift(Double_t in_rdrift){realRdrift=in_rdrift;return;};
     void SetIsSelected(Int_t in_is){isSelected=in_is;return;};
     void SetResidual(Double_t res_in){residual=res_in;return;};

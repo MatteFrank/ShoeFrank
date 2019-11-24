@@ -74,7 +74,9 @@ public:
   Int_t FindLegendreBestValues();  
   void CheckAssHits(const Int_t asshitx, const Int_t asshity);
   Double_t EvaluateChi2(const double *params);
+  Double_t EvaluateChi2GSI(const double *params);
   Int_t NumericalMinimizationDouble();
+  Int_t NumericalMinimizationGSI();//same as NumericalMinimizationDouble, but specific for the first FOOT GSI run 2019, with t0 passed as free par 
   Bool_t ComputeDataAll();
   
   ClassDef(TABMactNtuTrack,0)
@@ -107,9 +109,11 @@ public:
   
   //new chi2 ROOT based
   ROOT::Math::Minimizer* minx; 
-  ROOT::Math::Minimizer* miny; 
   ROOT::Math::Functor* functorx;
+  ROOT::Math::Minimizer* miny; 
   ROOT::Math::Functor* functory;
+  ROOT::Math::Minimizer* minGSI; 
+  ROOT::Math::Functor* functorGSI;
   
   //histos 
   //~ TH2F*            fpHisR02d;
@@ -123,6 +127,7 @@ public:
   TH1I*            fpHisTrackStatus;
   TH1I*            fpHisTrackFakeHit;
   TH1F*            fpHisTrackEff;
+  TH1I*            fpHisTrigTime;
 
 };
 
