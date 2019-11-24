@@ -32,7 +32,7 @@
 /*!
  \class TAIRalignM
  \brief Alignment class for vertex tracks. **
-  Input of TAIRtracks, vertex plane already aligned, all vertex planes nust be set as reference (status = 1)
+  Input of TAIRtracks, vertex Sensor already aligned, all vertex Sensors nust be set as reference (status = 1)
   All inner tracker set to status 2.
  */
 
@@ -80,7 +80,7 @@ TAIRalignM::TAIRalignM(const TString name)
    parConfVtx->FromFile(parFile.Data());
    
    // ITR
-   fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
+   fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetItDefParaName(), new TAITparGeo());
    TAITparGeo* geomapMsd   = (TAITparGeo*) fpGeoMapItr->Object();
     parFile = "./geomaps/TAITdetector.map";
    geomapMsd->FromFile(parFile.Data());
@@ -158,12 +158,12 @@ void TAIRalignM::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
 // Create all the residuals histograms
 void TAIRalignM::CreateHistogram()
 {   
-   Int_t iPlane = 0;
+   Int_t iSensor = 0;
    for (Int_t i = 0; i < fSecArray.GetSize(); i++) {
-      iPlane = fSecArray[i];
+      iSensor = fSecArray[i];
       
-      fpResXC[i] = new TH1F(Form("ResX%dC", i+1), Form("ResidualX of sensor %d", iPlane+1), 400, -200, 200);
-      fpResYC[i] = new TH1F(Form("ResY%dC", i+1), Form("ResidualY of sensor %d", iPlane+1), 400, -200, 200);
+      fpResXC[i] = new TH1F(Form("ResX%dC", i+1), Form("ResidualX of sensor %d", iSensor+1), 400, -200, 200);
+      fpResYC[i] = new TH1F(Form("ResY%dC", i+1), Form("ResidualY of sensor %d", iSensor+1), 400, -200, 200);
    }
    
    fpResTotXC = new TH1F("TotResXC", "Total residualX", 400, -200, 200);
@@ -179,16 +179,16 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    //init Millipede
    TAIRntuTrack* pNtuTrk = (TAIRntuTrack*) fpNtuTrackIr->Object();
 
-   Int_t   nPlanes  = fSecArray.GetSize();
-   Int_t nParPlanes = 3; // Alignment X-Y and rotation around Z
-   Int_t nParam     = nParPlanes*nPlanes;
+   Int_t   nSensors  = fSecArray.GetSize();
+   Int_t nParSensors = 3; // Alignment X-Y and rotation around Z
+   Int_t nParam     = nParSensors*nSensors;
    Int_t nLocPar    = 4;
    Int_t stdDev     = 3;
    
    Double_t parameters[nParam];
    Double_t errors[nParam];
    Double_t pulls[nParam];
-   Double_t gloConst[nPlanes];
+   Double_t gloConst[nSensors];
    
    for(Int_t k = 0; k < nParam; ++k) {
       parameters[k] = 0.;
@@ -210,17 +210,17 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    fAGRoot->Print();
    
    // init millepede
-   Init(nParam, nLocPar, stdDev, nPlanes);
+   Init(nParam, nLocPar, stdDev, nSensors);
    SetIterations(20);
    
-   for(Int_t k = 0; k < nPlanes; ++k) {
+   for(Int_t k = 0; k < nSensors; ++k) {
       if (fDevStatus[k] == -1) continue;
       if (fDevStatus[k] == 1) {
-         FixPlane(k);
+         FixSensor(k);
       } else {
-         FixParameter(nParPlanes*k+0, 0.08);
-         FixParameter(nParPlanes*k+1, 0.08);
-         FixParameter(nParPlanes*k+2, 0.001);
+         FixParameter(nParSensors*k+0, 0.08);
+         FixParameter(nParSensors*k+1, 0.08);
+         FixParameter(nParSensors*k+2, 0.001);
       }
    }
    
@@ -299,20 +299,20 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
 void TAIRalignM::Init(Int_t nGlobal,  /* number of global paramers */
                       Int_t nLocal,   /* number of local parameters */
                       Int_t nStdDev,  /* std dev cut */
-                      Int_t nPlanes   /* number of planes */)
+                      Int_t nSensors   /* number of Sensors */)
 {
    /// Initialization of AliMillepede. Fix parameters, define constraints ...
    fMillepede->InitMille(nGlobal,nLocal,nStdDev,fResCut,fResCutInitial);
    fNGlobal   = nGlobal;
    fNLocal    = nLocal;
    fNStdDev   = nStdDev;
-   fNPlanes   = nPlanes;
-   fNParPlane = nGlobal/nPlanes;
+   fNSensors   = nSensors;
+   fNParSensor = nGlobal/nSensors;
    
    // Set iterations
    if (fStartFac > 1) fMillepede->SetIterations(fStartFac);
    
-   printf("fNPlanes: %i\t fNGlobal: %i\t fNLocal: %i\n", fNPlanes, fNGlobal, fNLocal);
+   printf("fNSensors: %i\t fNGlobal: %i\t fNLocal: %i\n", fNSensors, fNGlobal, fNLocal);
    
    ResetLocalEquation();
    printf("Parameters initialized to zero\n");
@@ -322,17 +322,17 @@ void TAIRalignM::Init(Int_t nGlobal,  /* number of global paramers */
 //_________________________________________________________________
 void TAIRalignM::SetNonLinear(Bool_t *lChOnOff,Bool_t *lVarXYT)
 {
-   /// Set non linear parameter flag selected chambers and degrees of freedom
-   for (Int_t i = 0; i < fNPlanes; i++){
+   /// Set non linear parameter flag selected sensors and degrees of freedom
+   for (Int_t i = 0; i < fNSensors; i++){
       if (lChOnOff[i]){
          if (lVarXYT[0]) { // X constraint
-            SetNonLinear(i*fNParPlane+0);
+            SetNonLinear(i*fNParSensor+0);
          }
          if (lVarXYT[1]) { // Y constraint
-            SetNonLinear(i*fNParPlane+1);
+            SetNonLinear(i*fNParSensor+1);
          }
          if (lVarXYT[2]) { // T constraint
-            SetNonLinear(i*fNParPlane+2);
+            SetNonLinear(i*fNParSensor+2);
          }
       }
    }
@@ -360,12 +360,12 @@ void TAIRalignM::InitGlobalParameters(Double_t *par)
 }
 
 //_________________________________________________________________
-void TAIRalignM::FixPlane(Int_t iPlane)
+void TAIRalignM::FixSensor(Int_t iSensor)
 {
-   /// Fix all detection elements of chamber isensor
-   FixParameter(iPlane*fNParPlane+0, 0.0);
-   FixParameter(iPlane*fNParPlane+1, 0.0);
-   FixParameter(iPlane*fNParPlane+2, 0.0);
+   /// Fix all detection elements of sensor
+   FixParameter(iSensor*fNParSensor+0, 0.0);
+   FixParameter(iSensor*fNParSensor+1, 0.0);
+   FixParameter(iSensor*fNParSensor+2, 0.0);
 }
 
 //_________________________________________________________________
@@ -391,16 +391,16 @@ void TAIRalignM::ResetLocalEquation()
 }
 
 //_________________________________________________________________
-void TAIRalignM::AllowVariations(Bool_t *bPlaneOnOff)
+void TAIRalignM::AllowVariations(Bool_t *bSensorOnOff)
 {
-   /// Set allowed variation for selected chambers based on fDoF and fAllowVar
-   for (Int_t iPlane = 0; iPlane < fNPlanes; iPlane++) {
-      if (bPlaneOnOff[iPlane]) {
-         for (int i=0; i<fNParPlane; i++) {
+   /// Set allowed variation for selected sensors based on fDoF and fAllowVar
+   for (Int_t iSensor = 0; iSensor < fNSensors; iSensor++) {
+      if (bSensorOnOff[iSensor]) {
+         for (int i=0; i<fNParSensor; i++) {
             if (fDebugLevel)
                printf("fDoF[%d]= %d",i,fDoF[i]);
             if (fDoF[i]) {
-               FixParameter(iPlane*fNParPlane+i, fAllowVar[i]);
+               FixParameter(iSensor*fNParSensor+i, fAllowVar[i]);
                
             }
          }
@@ -429,13 +429,13 @@ void TAIRalignM::LocalEquationX(TAIRcluster* cluster, Double_t* param)
    
    // set global derivatives
    if (param == 0x0) {
-      SetGlobalDerivative(planeNumber*fNParPlane+0, 0.);
-      SetGlobalDerivative(planeNumber*fNParPlane+1, 0.);
-      SetGlobalDerivative(planeNumber*fNParPlane+2, 0.);
+      SetGlobalDerivative(planeNumber*fNParSensor+0, 0.);
+      SetGlobalDerivative(planeNumber*fNParSensor+1, 0.);
+      SetGlobalDerivative(planeNumber*fNParSensor+2, 0.);
    } else {
-      SetGlobalDerivative(planeNumber*fNParPlane+0, 1.);
-      SetGlobalDerivative(planeNumber*fNParPlane+1, 0.);
-      SetGlobalDerivative(planeNumber*fNParPlane+2, -(param[4]+param[6]*pos(2)));
+      SetGlobalDerivative(planeNumber*fNParSensor+0, 1.);
+      SetGlobalDerivative(planeNumber*fNParSensor+1, 0.);
+      SetGlobalDerivative(planeNumber*fNParSensor+2, -(param[4]+param[6]*pos(2)));
    }
    
    fMillepede->SetLocalEquation(fGlobalDerivatives, fLocalDerivatives, fMeas[0], fSigma[0]);
@@ -456,13 +456,13 @@ void TAIRalignM::LocalEquationY(TAIRcluster* cluster, Double_t* param)
    
    // set global derivatives
    if (param == 0x0) {
-      SetGlobalDerivative(planeNumber*fNParPlane+0, 0.);
-      SetGlobalDerivative(planeNumber*fNParPlane+1, 0.);
-      SetGlobalDerivative(planeNumber*fNParPlane+2, 0.);
+      SetGlobalDerivative(planeNumber*fNParSensor+0, 0.);
+      SetGlobalDerivative(planeNumber*fNParSensor+1, 0.);
+      SetGlobalDerivative(planeNumber*fNParSensor+2, 0.);
    } else {
-      SetGlobalDerivative(planeNumber*fNParPlane+0, 0.);
-      SetGlobalDerivative(planeNumber*fNParPlane+1, 1.);
-      SetGlobalDerivative(planeNumber*fNParPlane+2, -(param[0]+param[2]*pos(2)));
+      SetGlobalDerivative(planeNumber*fNParSensor+0, 0.);
+      SetGlobalDerivative(planeNumber*fNParSensor+1, 1.);
+      SetGlobalDerivative(planeNumber*fNParSensor+2, -(param[0]+param[2]*pos(2)));
    }
    
    fMillepede->SetLocalEquation(fGlobalDerivatives, fLocalDerivatives, fMeas[1], fSigma[1]);
@@ -514,11 +514,11 @@ void TAIRalignM::GlobalFit(Double_t *parameters,Double_t *errors,Double_t *pulls
    fMillepede->GlobalFit(parameters,errors,pulls);
    
    printf("Done fitting global parameters!\n");
-   for (int i = 0; i < fNPlanes; i++){
+   for (int i = 0; i < fNSensors; i++){
       printf("%d\t %8.3f (%8.3f)\t %8.3f (%8.3f)\t %7.4f (%7.4f)\n",i+1,
-             parameters[i*fNParPlane+0], errors[i*fNParPlane+0],
-             parameters[i*fNParPlane+1], errors[i*fNParPlane+1],
-             parameters[i*fNParPlane+2]*TMath::RadToDeg(), errors[i*fNParPlane+2]*TMath::RadToDeg());
+             parameters[i*fNParSensor+0], errors[i*fNParSensor+0],
+             parameters[i*fNParSensor+1], errors[i*fNParSensor+1],
+             parameters[i*fNParSensor+2]*TMath::RadToDeg(), errors[i*fNParSensor+2]*TMath::RadToDeg());
    }
 }
 
@@ -548,9 +548,9 @@ void TAIRalignM::UpdateAlignmentParams(Double_t* parameters)
       Int_t iSensor = fSecArray[i];
       if (fDevStatus[i] != 2) continue; //only IT
 
-      pGeoMap->GetSensorPar(iSensor).AlignmentU = parameters[i*fNParPlane + 0];
-      pGeoMap->GetSensorPar(iSensor).AlignmentV = parameters[i*fNParPlane + 1];
-      pGeoMap->GetSensorPar(iSensor).TiltW      = parameters[i*fNParPlane + 2];
+      pGeoMap->GetSensorPar(iSensor).AlignmentU = parameters[i*fNParSensor + 0];
+      pGeoMap->GetSensorPar(iSensor).AlignmentV = parameters[i*fNParSensor + 1];
+      pGeoMap->GetSensorPar(iSensor).TiltW      = parameters[i*fNParSensor + 2];
    }
 }
 
@@ -600,7 +600,7 @@ void TAIRalignM::UpdateGeoMaps()
 
 //______________________________________________________________________________
 //
-// Modification of the geomap file with the final results of alignment for each plane
+// Modification of the geomap file with the final results of alignment for each Sensor
 void TAIRalignM::UpdateGeoMapsUVW(fstream &fileIn, fstream &fileOut, Int_t idx)
 {
    Char_t tmp[255];

@@ -39,15 +39,15 @@ public:
    
    void ProcessTrack(TAIRtrack *track, Double_t* param = 0x0);
    
-   void AllowVariations(Bool_t *bPlaneOnOff);
-   void SetNonLinear(Bool_t *bPlaneOnOff, Bool_t *bVarXYT);
+   void AllowVariations(Bool_t *bSensorOnOff);
+   void SetNonLinear(Bool_t *bSensorOnOff, Bool_t *bVarXYT);
    
-   void FixPlane(Int_t iPlane);
+   void FixSensor(Int_t iSensor);
    void FixParameter(Int_t param, Double_t value);
    void SetNonLinear(Int_t param);
    void AddConstraint(Double_t *factor, Double_t value );
    void InitGlobalParameters(Double_t *par);
-   void Init(Int_t nGlobal, Int_t nLocal, Int_t nStdDev, Int_t nPlanes);
+   void Init(Int_t nGlobal, Int_t nLocal, Int_t nStdDev, Int_t nSensors);
    void SetIterations(Int_t iter);
    
    //! Set array of local derivatives
@@ -65,7 +65,7 @@ public:
    void PrintGlobalParameters();
    Double_t GetParError(Int_t iPar);
    
-   Int_t  GetNParPlane() const {return fNParPlane;}
+   Int_t  GetNParSensor() const {return fNParSensor;}
    
 private:
    //! ctr
@@ -115,8 +115,8 @@ private:
    Int_t                fNGlobal;        // Number of global parameters
    Int_t                fNLocal;         // Number of local parameters
    Int_t                fNStdDev;        // Number of standard deviations for chi2 cut
-   Int_t                fNParPlane;      // Number of degrees of freedom per chamber
-   Int_t                fNPlanes;        // Total number of detection elements
+   Int_t                fNParSensor;     // Number of degrees of freedom per sensor
+   Int_t                fNSensors;       // Total number of detection elements
    
    Double_t             fMeas[2];        // Current measurement (depend on B field On/Off)
    Double_t             fSigma[2];       // Estimated resolution on measurement
