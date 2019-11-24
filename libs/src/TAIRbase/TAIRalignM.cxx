@@ -65,13 +65,9 @@ TAIRalignM::TAIRalignM(const TString name)
    fSinPhi(0.),
    fDebugLevel(0)
 {
-      
-   Int_t devsNtot =  parConfVtx->GetSensorsN() + parConfItr->GetSensorsN();
-   fDevStatus     = new Int_t[devsNtot];
-   
    fAGRoot        = new TAGroot();
    fInfile        = new TAGactTreeReader("inFile");
-
+   
    // VTX
    fpGeoMapVtx    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
    TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
@@ -97,13 +93,10 @@ TAIRalignM::TAIRalignM(const TString name)
    //IR
    fpNtuTrackIr  = new TAGdataDsc("itTrack", new TAIRntuTrack());
    fInfile->SetupBranch(fpNtuTrackIr, TAIRntuTrack::GetBranchName());
+
+   Int_t devsNtot =  parConfVtx->GetSensorsN() + parConfItr->GetSensorsN();
+   fDevStatus     = new Int_t[devsNtot];
    
-
-   if (devsNtot <= 2) {
-      Error("TAIRalignM", "No enough sensors to align");
-      exit(0);
-   }
-
    FillStatus();   
    InitParameters();
 }
@@ -208,10 +201,18 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    for(Int_t k = 0; k < nLocPar*2; ++k)
       trackParams[k] = 0.;
    
+   fAGRoot->AddRequiredItem(fInfile);
+   if (fInfile->Open(fFileName.Data())) return;
+   
+   CreateHistogram();
+   
+   fAGRoot->BeginEventLoop();
+   fAGRoot->Print();
+   
    // init millepede
    Init(nParam, nLocPar, stdDev, nPlanes);
    SetIterations(20);
-
+   
    for(Int_t k = 0; k < nPlanes; ++k) {
       if (fDevStatus[k] == -1) continue;
       if (fDevStatus[k] == 1) {
@@ -225,14 +226,6 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    
    InitGlobalParameters(parameters);
    AddConstraint(gloConst, 0.0);
-   
-   fAGRoot->AddRequiredItem(fInfile);
-   if (fInfile->Open(fFileName.Data())) return;
-   
-   CreateHistogram();
-   
-   fAGRoot->BeginEventLoop();
-   fAGRoot->Print();
    
    if (nEvts > fInfile->NEvents() || nEvts == 1) nEvts = fInfile->NEvents();
    printf("Number of total entries: %d \n", fInfile->NEvents());
@@ -263,7 +256,7 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
    }
    
    GlobalFit(parameters,errors,pulls);
-   UpdateAlignmentParams(trackParams);
+   UpdateAlignmentParams(parameters);
    
    UpdateGeoMaps();
    
@@ -551,13 +544,13 @@ void TAIRalignM::UpdateAlignmentParams(Double_t* parameters)
 {
    TAITparGeo* pGeoMap  = (TAITparGeo*) fpGeoMapItr->Object();
    
-   for (Int_t iPlane = 0; iPlane < fSecArray.GetSize(); iPlane++){
-      Int_t iSensor = fSecArray[iPlane];
-      if (fDevStatus[iPlane] != 2) continue; //only IT
-      
-      pGeoMap->GetSensorPar(iSensor).AlignmentU -= parameters[iPlane*GetNParPlane() + 0];
-      pGeoMap->GetSensorPar(iSensor).AlignmentV -= parameters[iPlane*GetNParPlane() + 1];
-      pGeoMap->GetSensorPar(iSensor).TiltW      -= parameters[iPlane*GetNParPlane() + 2];
+   for (Int_t i = 0; i < fSecArray.GetSize(); i++){
+      Int_t iSensor = fSecArray[i];
+      if (fDevStatus[i] != 2) continue; //only IT
+
+      pGeoMap->GetSensorPar(iSensor).AlignmentU = parameters[i*fNParPlane + 0];
+      pGeoMap->GetSensorPar(iSensor).AlignmentV = parameters[i*fNParPlane + 1];
+      pGeoMap->GetSensorPar(iSensor).TiltW      = parameters[i*fNParPlane + 2];
    }
 }
 
@@ -624,17 +617,17 @@ void TAIRalignM::UpdateGeoMapsUVW(fstream &fileIn, fstream &fileOut, Int_t idx)
       if (key.Contains("AlignementU:")) {
          key = "AlignementU:";
          TString sIdx;
-         sIdx = Form("      %7.4f\n", alignU);
+         sIdx = Form("      %.1f\n", alignU);
          TString line = key+sIdx;
          fileOut << line.Data();
          fileIn.getline(tmp, 255);
          key = "AlignementV:";
-         sIdx = Form("      %7.4f\n", alignV);
+         sIdx = Form("      %.1f\n", alignV);
          line = key + sIdx;
          fileOut << line.Data();
          fileIn.getline(tmp, 255);
          key = "AlignementTilt:";
-         sIdx = Form("   %6.3f\n", tiltW);
+         sIdx = Form("   %.1f\n", tiltW);
          line = key + sIdx;
          fileOut << line.Data();
          break;
