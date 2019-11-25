@@ -219,7 +219,7 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    posErr *= 1./tClusterPulseSum;
    
    // for cluster with a single pixel
-   Float_t lim = 2.5e-3; // in cm !
+   Float_t lim = 2.5e-7; // in cm !
    if (posErr(0) < lim) posErr(0) = lim; //(20/Sqrt(12)^2
    if (posErr(1) < lim) posErr(1) = lim; //(20/Sqrt(12)^2
    
