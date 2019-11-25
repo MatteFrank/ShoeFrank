@@ -515,10 +515,10 @@ void TAIRalignM::GlobalFit(Double_t *parameters,Double_t *errors,Double_t *pulls
    
    printf("Done fitting global parameters!\n");
    for (int i = 0; i < fNSensors; i++){
-      printf("%d\t %8.3f (%8.3f)\t %8.3f (%8.3f)\t %7.4f (%7.4f)\n",i+1,
-             parameters[i*fNParSensor+0], errors[i*fNParSensor+0],
-             parameters[i*fNParSensor+1], errors[i*fNParSensor+1],
-             parameters[i*fNParSensor+2]*TMath::RadToDeg(), errors[i*fNParSensor+2]*TMath::RadToDeg());
+      printf("%d\t %5.0f (%5.0f)mu\t %5.0f (%5.0f)mu\t %5.2f (%5.2f) deg\n",i+1,
+             parameters[i*fNParSensor+0]*TAGgeoTrafo::CmToMu(), errors[i*fNParSensor+0]*TAGgeoTrafo::CmToMu(),
+             parameters[i*fNParSensor+1]*TAGgeoTrafo::CmToMu(), errors[i*fNParSensor+1]*TAGgeoTrafo::CmToMu(),
+             parameters[i*fNParSensor+2]*TMath::RadToDeg(),     errors[i*fNParSensor+2]*TMath::RadToDeg());
    }
 }
 
