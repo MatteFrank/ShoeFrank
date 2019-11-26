@@ -422,8 +422,8 @@ void TAIRalignM::ProcessTrack(TAIRtrack* track, Double_t* param)
    if (fDebugLevel)
       printf("Number of track param entries : %i ", nClusters);
    
-   fCosTheta   = TMath::Cos(track->GetTheta());
-   fSinTheta   = TMath::Sin(track->GetTheta());
+   fCosTheta   = TMath::Cos(track->GetTheta()*TMath::DegToRad());
+   fSinTheta   = TMath::Sin(track->GetTheta()*TMath::DegToRad());
 
    
    // first cluster none nil
