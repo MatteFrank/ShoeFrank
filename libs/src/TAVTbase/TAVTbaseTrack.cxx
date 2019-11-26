@@ -65,7 +65,8 @@ TAVTbaseTrack::TAVTbaseTrack()
    fChargeProbaNorm(new TArrayF(6)),
    fChargeWithMaxProbaNorm(0),
    fChargeMaxProbaNorm(0.),
-   fMeanPixelsN(0)
+   fMeanPixelsN(0),
+   fMeanCharge(0.)
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
@@ -93,6 +94,7 @@ TAVTbaseTrack::TAVTbaseTrack(const TAVTbaseTrack& aTrack)
    fChargeWithMaxProbaNorm(aTrack.fChargeWithMaxProbaNorm),
    fChargeMaxProbaNorm(aTrack.fChargeMaxProbaNorm),
    fMeanPixelsN(aTrack.fMeanPixelsN),
+   fMeanCharge(aTrack.fMeanCharge),
    fMcTrackIdx(aTrack.fMcTrackIdx)
 {
    fListOfClusters = (TClonesArray*)aTrack.fListOfClusters->Clone();

@@ -67,6 +67,7 @@ protected:
    Int_t          fChargeWithMaxProbaNorm;       //! charge with maximum probability for normalized charge disttribution
    Float_t        fChargeMaxProbaNorm;           //! charge maximum probability for normalized charge disttribution
    Double32_t     fMeanPixelsN;                  // Average number of pixels per track
+   Double32_t     fMeanCharge;                   // Average charge (for analogic sensor) per track
 
    TArrayC            fMcTrackIdx;               // Idx of the track created in the simulation
    std::map<int, int> fMcTrackMap;               //! Map of MC track Id
@@ -174,7 +175,10 @@ public:
    Float_t       GetChargeMaxProbaNorm()     const { return fChargeMaxProbaNorm; }
 
    //Get mean number of pixels per tracks
-   Float_t       GetMeanPixelsN()             const { return fMeanPixelsN; }
+   Double32_t    GetMeanPixelsN()            const { return fMeanPixelsN; }
+   
+   //Get mean charge per tracks
+   Double32_t    GetMeanCharge()             const { return fMeanCharge; }
    
    // Add MC track Idx
    void          AddMcTrackIdx(Int_t trackIdx);
