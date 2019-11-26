@@ -13,6 +13,7 @@
 #include "TObject.h"
 #include "TString.h"
 #include "TArrayI.h"
+#include "TVector3.h"
 #include "TGraphErrors.h"
 
 #include "TAGroot.hxx"
@@ -71,8 +72,8 @@ private:
    //! ctr
    TAIRalignM(const TString name);
    void ResetLocalEquation();
-   void LocalEquationX(TAIRcluster* cluster, Double_t* param = 0x0);
-   void LocalEquationY(TAIRcluster* cluster, Double_t* param = 0x0);
+   void LocalEquationX(TAIRcluster* cluster, Double_t* param, TAIRtrack* track);
+   void LocalEquationY(TAIRcluster* cluster, Double_t* param, TAIRtrack* track);
 
 public:
    void   LoopEvent(Int_t nEvts = 1);
@@ -103,6 +104,7 @@ private:
    Int_t*               fDevStatus;
    Int_t                fOffsetItr;
    TArrayI              fSecArray;   // contains the sensor number to be aligned
+   TVector3             fTrackPos0;
    
    // Millepede members
    Bool_t               fDoF[3];         // Flags degrees of freedom to align (x,y,phi)
