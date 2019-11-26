@@ -422,15 +422,15 @@ void TAIRalignM::ProcessTrack(TAIRtrack* track, Double_t* param)
    if (fDebugLevel)
       printf("Number of track param entries : %i ", nClusters);
    
-   fCosTheta   = TMath::Cos(track->GetTheta()*TMath::DegToRad());
-   fSinTheta   = TMath::Sin(track->GetTheta()*TMath::DegToRad());
+   fCosTheta = TMath::Cos(track->GetTheta()*TMath::DegToRad());
+   fSinTheta = TMath::Sin(track->GetTheta()*TMath::DegToRad());
 
    
    // first cluster none nil
    for(Int_t iCluster = 0; iCluster < nClusters; iCluster++) {
       TAIRcluster* cluster = track->GetCluster(iCluster);
       if (!cluster) continue;
-      TVector3 pos      = cluster->GetPositionG();
+      TVector3 pos = cluster->GetPositionG();
       fTrackPos0 = track->Intersection(pos[2]);
       break;
    }
@@ -439,14 +439,13 @@ void TAIRalignM::ProcessTrack(TAIRtrack* track, Double_t* param)
    for(Int_t iCluster = 0; iCluster < nClusters; iCluster++) {
       TAIRcluster* cluster = track->GetCluster(iCluster);
       if (!cluster) continue;
-      // fill local variables for this position --> one measurement
       
+      // fill local variables for this position --> one measurement
       fTrackPos = track->Intersection(cluster->GetPositionG()(2));
-
       fMeas[0]  = -cluster->GetPositionG()(0);
       fMeas[1]  = -cluster->GetPositionG()(1);
-      fSigma[0] = cluster->GetPosError()(0);
-      fSigma[1] = cluster->GetPosError()(1);
+      fSigma[0] =  cluster->GetPosError()(0);
+      fSigma[1] =  cluster->GetPosError()(1);
       
       if (fDebugLevel > 0)
          printf("fMeas[0]: %f\t fMeas[1]: %f\t fSigma[0]: %f\t fSigma[1]: %f\n", fMeas[0], fMeas[1], fSigma[0], fSigma[1]);
@@ -472,7 +471,7 @@ void TAIRalignM::LocalEquationX(TAIRcluster* cluster, Double_t* param, TAIRtrack
    
    // set global derivatives
    SetGlobalDerivative(planeNumber*fNParSensor+0, -1.);
-   SetGlobalDerivative(planeNumber*fNParSensor+1, 0.);
+   SetGlobalDerivative(planeNumber*fNParSensor+1,  0.);
    SetGlobalDerivative(planeNumber*fNParSensor+2, -(param[4]+param[6]*pos(2)));
 
    fMillepede->SetLocalEquation(fGlobalDerivatives, fLocalDerivatives, fMeas[0], fSigma[0]);
@@ -492,7 +491,7 @@ void TAIRalignM::LocalEquationY(TAIRcluster* cluster, Double_t* param, TAIRtrack
    SetLocalDerivative(3, fCosTheta*(fTrackPos[2]- fTrackPos0[2]));
    
    // set global derivatives
-   SetGlobalDerivative(planeNumber*fNParSensor+0, 0.);
+   SetGlobalDerivative(planeNumber*fNParSensor+0,  0.);
    SetGlobalDerivative(planeNumber*fNParSensor+1, -1.);
    SetGlobalDerivative(planeNumber*fNParSensor+2, -(param[0]+param[2]*pos(2)));
 
