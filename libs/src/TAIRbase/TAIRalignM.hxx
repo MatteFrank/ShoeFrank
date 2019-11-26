@@ -104,13 +104,15 @@ private:
    Int_t*               fDevStatus;
    Int_t                fOffsetItr;
    TArrayI              fSecArray;   // contains the sensor number to be aligned
-   TVector3             fTrackPos0;
    
    // Millepede members
+   TVector3             fTrackPos0;
+   TVector3             fTrackPos;
+   Double_t             fCosTheta;
+   Double_t             fSinTheta;
    Bool_t               fDoF[3];         // Flags degrees of freedom to align (x,y,phi)
    Double_t             fAllowVar[3];    // "Encouraged" variation for degrees of freedom
-   Double_t             fStartFac;       // Initial value for chi2 cut
-                             // if > 1 Iterations in AliMillepede are turned on
+   Double_t             fStartFac;       // Initial value for chi2 cut, if > 1 Iterations in AliMillepede are turned on
    Double_t             fResCutInitial;  // Cut on residual for first iteration
    Double_t             fResCut;         // Cut on residual for other iterations
    
