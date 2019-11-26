@@ -832,9 +832,6 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
             TVector3 A0 = track->PointAtLocalZ(parGeo->GetMylar1().Z());
             TVector3 A1 = track->PointAtLocalZ(parGeo->GetMylar2().Z());
             
-            A0[2] *= 1.1;
-            A1[2] *= 1.1;
-            
             if (GlobalPar::GetPar()->IncludeTG()) {
                Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
                posZtg = fpFootGeo->FromGlobalToBMLocal(TVector3(0, 0, posZtg)).Z();
