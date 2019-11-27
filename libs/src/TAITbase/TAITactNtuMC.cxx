@@ -226,8 +226,9 @@ void TAITactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx )
          count++;
 			int line = it->first / nPixelX;
 			int col  = it->first % nPixelX;
-         
-			TAITntuHit* pixel = (TAITntuHit*)pNtuRaw->NewPixel(sensorId, 1., line, col);
+         Double_t value = digiMap[it->first];
+
+			TAITntuHit* pixel = (TAITntuHit*)pNtuRaw->NewPixel(sensorId, value, line, col);
 
          pixel->AddMcTrackIdx(trackIdx, hitId);
 

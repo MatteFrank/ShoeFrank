@@ -226,7 +226,8 @@ void TAVTactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
 			int line = it->first / nPixelX;
 			int col  = it->first % nPixelX;
          
-			TAVTntuHit* pixel = (TAVTntuHit*)pNtuRaw->NewPixel(sensorId, 1., line, col);
+         Double_t value = digiMap[it->first];
+			TAVTntuHit* pixel = (TAVTntuHit*)pNtuRaw->NewPixel(sensorId, value, line, col);
 
          pixel->AddMcTrackIdx(trackIdx, hitId);
 
