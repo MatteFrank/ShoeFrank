@@ -29,9 +29,7 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
 {
    // std array
    fMap.clear();
-   
-   Float_t FWTH = 2*TMath::Sqrt(2*TMath::Log(10));
-   
+      
    if (TMath::Abs(y0) > fPitchX*fPixelsNx/2.) return false;
    if (TMath::Abs(x0) > fPitchY*fPixelsNy/2.) return false;
    
