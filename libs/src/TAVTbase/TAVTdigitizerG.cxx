@@ -73,7 +73,7 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
          
          Float_t value = fFuncClusterDisX->Eval(x)*fFuncClusterDisY->Eval(y);
          if (value > height/TMath::Sqrt(fgkFWTH)) {
-            Int_t idx  = GetIndex(y, x);
+            Int_t idx  = GetIndex(x, y);
             if (idx < 0) continue;
             fMap[idx] = value;
          }
