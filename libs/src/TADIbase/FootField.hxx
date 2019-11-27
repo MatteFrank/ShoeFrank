@@ -15,7 +15,7 @@
 
 #include <TVector3.h>
 
-
+#include "TAGgeoTrafo.hxx"
 #include "TADIparGeo.hxx"
 #include "AbsBField.h"
 
@@ -35,13 +35,15 @@ public:
 	~FootField() {};
 
 	TVector3 get(const TVector3& position) const;
-	void get(const double& posX, const double& posY, const double& posZ, double& Bx, double& By, double& Bz) const ;	
+	void get(const double& posX, const double& posY, const double& posZ, double& Bx, double& By, double& Bz) const ;
 
  	TVector3 Interpolate( const TVector3 &position );
  	double IntegralField( int step, double start, double end );  // in cm
 
 
 private:
+
+  TAGgeoTrafo* tmpGeoTrafo;
 
 
 	lattice3D  m_filedMap;
@@ -51,26 +53,3 @@ private:
 
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

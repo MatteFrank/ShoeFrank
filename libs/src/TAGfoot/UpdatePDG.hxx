@@ -21,23 +21,23 @@ class UpdatePDG {
 
 public:
 
-	static UpdatePDG* Instance();
-	static UpdatePDG* GetPDG();
-	~UpdatePDG() {};
+  static UpdatePDG* Instance();
+  static UpdatePDG* GetPDG();
+  ~UpdatePDG() {};
 
-	void MakePdgDatabase();
+  void MakePdgDatabase();
 
-	bool IsParticleDefined( string partName );
-	int GetPdgCode( string partName );
+  bool IsParticleDefined( string partName );
+  int GetPdgCode( string partName );
 
 
 
 private:
 
-	UpdatePDG();
-	static UpdatePDG* m_pInstance;
+  UpdatePDG();
+  static UpdatePDG* m_pInstance;
 
-	map<string, int> m_pdgCodeMap;
+  map<string, int> m_pdgCodeMap;
 
 
 };
