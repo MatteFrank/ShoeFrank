@@ -59,13 +59,11 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    Float_t height = fPixelSeed;
    Float_t sig    = fgkFWTH*sigmaX;
    
-   if (regX == 5 && regY == 5) {
-      fFuncClusterDisX->SetParameters(height, line0+regY/10., sigmaX);
-      fFuncClusterDisY->SetParameters(height, col0+regX/10.,  sigmaY);
-   } else {
-      fFuncClusterDisX->SetParameters(height, line0, sigmaX);
-      fFuncClusterDisY->SetParameters(height, col0,  sigmaY);
-   }
+   if (regX == 1) regX = 0;
+   if (regY == 1) regY = 0;
+
+   fFuncClusterDisX->SetParameters(height, line0+regY/10., sigmaX);
+   fFuncClusterDisY->SetParameters(height, col0+regX/10.,  sigmaY);
    
    Int_t xmin = TMath::Nint(line0-sig*sigmaX);
    Int_t xmax = TMath::Nint(line0+sig*sigmaY);
