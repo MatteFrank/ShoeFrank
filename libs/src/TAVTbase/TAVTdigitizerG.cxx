@@ -45,11 +45,6 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    // choose the cluster version
    Int_t regX  = GetColRegion(x0);
    Int_t regY  = GetLineRegion(y0);
-   if (regX == 5 && regY == 5) {
-      // rounding pb
-      x0 += (x0 > 0) ? -1 : +1;
-      y0 += (y0 > 0) ? -1 : +1;
-   }
    
    Float_t sigmaX = TMath::Sqrt(fPixelsN)/fgkFWTH;
    Float_t sigmaY = TMath::Sqrt(fPixelsN)/fgkFWTH;
