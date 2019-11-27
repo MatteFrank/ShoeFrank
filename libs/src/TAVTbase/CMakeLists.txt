@@ -41,6 +41,7 @@ set( with_dictionnaries
    TAVTactNtuMC
    TAVTbaseDigitizer
    TAVTdigitizerE
+   TAVTdigitizerG
    TAVTntuCluster
    TAVTcluster
    TAVTbaseCluster

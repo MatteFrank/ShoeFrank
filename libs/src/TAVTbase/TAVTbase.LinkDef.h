@@ -35,6 +35,7 @@
 
 #pragma link C++ class TAVTbaseDigitizer+;
 #pragma link C++ class TAVTdigitizerE+;
+#pragma link C++ class TAVTdigitizerG+;
 
 #pragma link C++ class TAVTntuCluster+;
 #pragma link C++ class TAVTcluster+;
