@@ -64,5 +64,6 @@ void TAIRtrack::AddCluster(TAVTbaseCluster* cluster)
    
    TClonesArray &clusterArray = *fListOfClusters;
    new(clusterArray[clusterArray.GetEntriesFast()]) TAIRcluster(*cluster);
-   fMeanPixelsN += cluster->GetPixelsN()/float(fListOfClusters->GetEntries());
+   fMeanPixelsN += cluster->GetPixelsN();
+   fMeanCharge  += cluster->GetCharge();
 }

@@ -175,10 +175,10 @@ public:
    Float_t       GetChargeMaxProbaNorm()     const { return fChargeMaxProbaNorm; }
 
    //Get mean number of pixels per tracks
-   Double32_t    GetMeanPixelsN()            const { return fMeanPixelsN; }
+   Double32_t    GetMeanPixelsN()            const { return fMeanPixelsN/(float) fListOfClusters->GetEntries(); }
    
    //Get mean charge per tracks
-   Double32_t    GetMeanCharge()             const { return fMeanCharge; }
+   Double32_t    GetMeanCharge()             const { return fMeanCharge/(float) fListOfClusters->GetEntries(); }
    
    // Add MC track Idx
    void          AddMcTrackIdx(Int_t trackIdx);

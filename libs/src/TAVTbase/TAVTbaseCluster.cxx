@@ -19,9 +19,11 @@ TAVTbaseCluster::TAVTbaseCluster()
    fPositionG(new TVector3(0., 0., 0.)),
    fListOfPixels(0x0),
    fNumber(0),
-   fPlaneNumber(10),
+   fPlaneNumber(0),
+   fCharge(0.),
 	fFoundXZ(kFALSE),
-	fFoundYZ(kFALSE)
+	fFoundYZ(kFALSE),
+   fIsValid(kFALSE)
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
@@ -36,8 +38,10 @@ TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
    fPositionG(new TVector3(*cluster.fPositionG)),
    fNumber(cluster.fNumber),
    fPlaneNumber(cluster.fPlaneNumber),
+   fCharge(cluster.fCharge),
    fFoundXZ(cluster.fFoundXZ),
    fFoundYZ(cluster.fFoundYZ),
+   fIsValid(cluster.fIsValid),
    fMcTrackIdx(cluster.fMcTrackIdx)
 {
    // TAVTbaseCluster constructor

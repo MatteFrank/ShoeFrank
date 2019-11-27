@@ -31,6 +31,7 @@ protected:
    
    Int_t              fNumber;                   // number
    Int_t              fPlaneNumber;              // plane number
+   Float_t            fCharge;                   // sum of pulseheight
    Bool_t             fFoundXZ;					    //! kTRUE is associated to a track in XZ Projection
    Bool_t             fFoundYZ;					    //! kTRUE is associated to a track in YZ Projection
    Bool_t             fIsValid;                  // validity flag
@@ -55,9 +56,11 @@ public:
    //! Found flag for this cluster ((Hough Transform YZ)
    void               SetFoundYZ(Bool_t flag = true)         { fFoundYZ = flag;        }
    //! Set cluster number
-   //void               SetNumber(Int_t nb)                    { fNumber = nb;           }
+   void               SetNumber(Int_t nb)                    { fNumber = nb;           }
    //! Set plane number
    void               SetPlaneNumber(Int_t nb)               { fPlaneNumber = nb;      }
+   //! Set sum of pulse height
+   void               SetCharge(Float_t chg)                 { fCharge = chg;          }
    //! Set validy
    void               SetValid(Bool_t v = true)              { fIsValid = v;           }
    // Compute size
@@ -92,6 +95,8 @@ public:
    Float_t            GetPulseHeight(Int_t tSk)        const { return ((TAVTntuHit*)fListOfPixels->At(tSk))->GetPulseHeight(); } 
    //! Get number of pixels in this clusters
    Int_t              GetPixelsN()                     const { return  fListOfPixels->GetEntries(); }
+   //! Get sum of pulse height
+   Float_t            GetCharge()                      const { return fCharge;  }
    //! Get pixel
    TAVTntuHit*        GetPixel(Int_t idx);
    //! Get position of seed pixel

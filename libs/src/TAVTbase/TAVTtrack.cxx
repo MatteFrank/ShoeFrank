@@ -54,5 +54,6 @@ void TAVTtrack::AddCluster(TAVTcluster* cluster)
    
    TClonesArray &clusterArray = *fListOfClusters;
    new(clusterArray[clusterArray.GetEntriesFast()]) TAVTcluster(*cluster);
-   fMeanPixelsN += cluster->GetPixelsN()/float(fListOfClusters->GetEntries());
+   fMeanPixelsN += cluster->GetPixelsN();
+   fMeanCharge  += cluster->GetCharge();
 }

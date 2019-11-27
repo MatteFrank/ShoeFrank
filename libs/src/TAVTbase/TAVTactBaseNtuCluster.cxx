@@ -196,17 +196,17 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    tCorrection.SetXYZ( 0., 0., 0.);
    tCorrection2.SetXYZ( 0., 0., 0.);
    
-   Float_t tClusterPulseSum = 0.;
+   fClusterPulseSum = 0.;
    
    
    for (Int_t i = 0; i < fCurListOfPixels->GetEntries(); ++i) {
       TAVTntuHit* pixel = (TAVTntuHit*)fCurListOfPixels->At(i);
       tCorTemp.SetXYZ(pixel->GetPosition()(0)*pixel->GetPulseHeight(), pixel->GetPosition()(1)*pixel->GetPulseHeight(), pixel->GetPosition()(2));
       tCorrection  += tCorTemp;
-      tClusterPulseSum  += pixel->GetPulseHeight();
+      fClusterPulseSum  += pixel->GetPulseHeight();
 	  }
    
-   pos = tCorrection*(1./tClusterPulseSum);
+   pos = tCorrection*(1./fClusterPulseSum);
    
    for (Int_t i = 0; i < fCurListOfPixels->GetEntries(); ++i) {
 	  TAVTntuHit* pixel = (TAVTntuHit*)fCurListOfPixels->At(i);
@@ -216,7 +216,7 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
 	  posErr += tCorrection2;
    }
    
-   posErr *= 1./tClusterPulseSum;
+   posErr *= 1./fClusterPulseSum;
    
    // for cluster with a single pixel
    Float_t lim = 2.5e-7; // in cm !

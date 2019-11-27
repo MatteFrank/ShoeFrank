@@ -116,6 +116,7 @@ Bool_t TAVTactNtuClusterF::CreateClusters(Int_t iSensor, TAVTntuCluster* pNtuClu
       cluster->SetPositionG(&posG);
       cluster->SetPosition(GetCurrentPosition());
       cluster->SetPosError(GetCurrentPosError());
+      cluster->SetCharge(GetClusterPulseSum());
       
       if (ApplyCuts(cluster)) {
          // histogramms

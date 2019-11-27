@@ -42,19 +42,22 @@ public:
    virtual  void   CreateHistogram();
    
     //! Get list of pixels for a given plane
-   TClonesArray*   GetListOfPixels()   const { return fListOfPixels; }
+   TClonesArray*   GetListOfPixels()   const { return fListOfPixels;    }
     //! Return seed pixel
-   TAVTntuHit*     GetSeedPixel()      const { return fPSeed; }  
+   TAVTntuHit*     GetSeedPixel()      const { return fPSeed;           }
+   //! Get total charge
+   Float_t GetClusterPulseSum()        const { return fClusterPulseSum; }
    
    //! Get position of current cluster
-   TVector3*       GetCurrentPosition()        { return fCurrentPosition; }
+   TVector3*       GetCurrentPosition()      { return fCurrentPosition; }
    //! Get position error of current cluster
-   TVector3*       GetCurrentPosError()        { return fCurrentPosError; }
+   TVector3*       GetCurrentPosError()      { return fCurrentPosError; }
+
    
    //! Set list of pixels
-   void SetListOfPixels(TClonesArray* list)    { fListOfPixels = list;    }
+   void SetListOfPixels(TClonesArray* list)                 { fListOfPixels = list;            }
    //! Set position of current cluster
-   void SetCurrentPosition(Float_t u, Float_t v, Float_t z)   { fCurrentPosition->SetXYZ(u,v,z); }
+   void SetCurrentPosition(Float_t u, Float_t v, Float_t z) { fCurrentPosition->SetXYZ(u,v,z); }
    
    //! Compute position
    virtual void ComputePosition();
@@ -71,6 +74,7 @@ protected:
    TVector3*      fCurrentPosError ;  // pointer to current position error
    TClonesArray*  fListOfPixels;      // list of pixels 
    TClonesArray*  fCurListOfPixels;   // list of pixels in current cluster
+   Float_t        fClusterPulseSum;   // total charge of cluster
    
    Int_t          fClustersN;     // number of cluster
 
