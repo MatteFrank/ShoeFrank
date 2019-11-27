@@ -39,6 +39,7 @@ Float_t TAVTactBaseNtuMC::fgPoissonPar      = 0.736; // ajust for FIRST
 Int_t   TAVTactBaseNtuMC::fgPileupEventsN   = 10;
 Float_t TAVTactBaseNtuMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAVTactBaseNtuMC::fgMcNoiseId       = -99;
+Bool_t  TAVTactBaseNtuMC::fgAnalogic        = false;
 
 
 //------------------------------------------+-----------------------------------

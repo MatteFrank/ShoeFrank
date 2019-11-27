@@ -65,7 +65,10 @@ TAVTactNtuMC::TAVTactNtuMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNt
 void TAVTactNtuMC::CreateDigitizer()
 {
    TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
-   fDigitizer = new TAVTdigitizerE(pGeoMap);
+   if (fgAnalogic)
+      fDigitizer = new TAVTdigitizerG(pGeoMap);
+   else
+      fDigitizer = new TAVTdigitizerE(pGeoMap);
    if (fgSigmaNoiseLevel > 0)
       ComputeNoiseLevel();
 }
