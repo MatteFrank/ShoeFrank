@@ -111,7 +111,7 @@ void  TAVTbaseDigitizer::SetFunctions()
 {
    // compute cluster size for a given Edep, x and y
    fFuncClusterSize   = new TF1("ClusterSize", this, &TAVTbaseDigitizer::FuncClusterSize, 0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterSize");
-   fFuncClusterCharge = new TF1("ClusterSize", this, &TAVTbaseDigitizer::FuncClusterSize, 0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterCharge");
+   fFuncClusterCharge = new TF1("ClusterCharge", this, &TAVTbaseDigitizer::FuncClusterCharge, 0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterCharge");
 }
 
 // --------------------------------------------------------------------------------------
