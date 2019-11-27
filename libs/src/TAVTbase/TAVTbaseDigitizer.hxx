@@ -28,6 +28,7 @@ public:
    virtual ~TAVTbaseDigitizer();
    
    Double_t     FuncClusterSize(Double_t* x, Double_t* par);
+   Double_t     FuncClusterCharge(Double_t* x, Double_t* par);
    virtual Bool_t Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin = 0, Double_t zout = 0, Double_t time = 0, Int_t sensorId = 0);
 
    virtual Bool_t MakeCluster(Double_t /*x0*/, Double_t /*y0*/, Double_t /*zin*/, Double_t /*zout*/) { return false; }
@@ -39,6 +40,10 @@ public:
    void         SetThresPar(Double_t par)    { fThresPar = par;    }
    void         SetThresParErr(Double_t par) { fThresParErr = par; }
    
+   void         SetGainPar(Double_t par)     { fGainPar = par;     }
+   void         SetGainParErr(Double_t par)  { fGainParErr = par;  }
+   void         SetCstPar(Double_t par)      { fCstPar = par;      }
+   void         SetCstParErr(Double_t par)   { fCstParErr = par;   }
    
    Float_t      GetNPixelX() const           { return fPixelsNx;   }
    Float_t      GetNPixelY() const           { return fPixelsNy;   }
@@ -47,7 +52,7 @@ public:
    Float_t      GetPitchY()  const           { return fPitchX;     }
 
    //! Get Map
-   std::map<int, double>  GetMap() const        { return fMap;        }
+   std::map<int, double>  GetMap() const     { return fMap;        }
    
    //! Get column/line from x/y position
    Int_t        GetColumn(Float_t x) const;
@@ -68,8 +73,9 @@ public:
 
 protected:
    TAVTbaseParGeo* fpParGeo;
-   TF1*        fFuncClusterSize; // cluster size function
-   
+   TF1*        fFuncClusterSize;   // cluster size function
+   TF1*        fFuncClusterCharge; // cluster charge height function
+
    std::map<int, double> fMap;      // map of found pixels
    
    Int_t       fPixelsN;         // number of pixels for a given eloss
@@ -80,6 +86,12 @@ protected:
    Double_t    fThresPar;        // parameter threshold for cluster size function
    Double_t    fThresParErr;     // parameter threshold for cluster size function
 
+   Double_t    fPixelSeed;       // charge of seed pixel for a given eloss
+   Double_t    fGainPar;         // gain parameter for the cluster charge function
+   Double_t    fGainParErr;      // gain parameter for the cluster charge function
+   Double_t    fCstPar;          // constant parameter for cluster charge function
+   Double_t    fCstParErr;       // constant parameter for cluster charge function
+   
    Int_t       fPixelsNx;        // number of pixels in X (colummn)
    Int_t       fPixelsNy;        // number of pixels in Y (line)
    

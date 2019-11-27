@@ -22,12 +22,14 @@ public:
    TAVTdigitizerG(TAVTbaseParGeo* parGeo);
    virtual ~TAVTdigitizerG();
    
-
    Bool_t   MakeCluster(Double_t x0, Double_t y0, Double_t zin, Double_t zout);
    
 private:
-   TF1*     fDistriX;
-   TF1*     fDistriY;
+   TF1*     fFuncClusterDisX;   // cluster distribution function in X
+   TF1*     fFuncClusterDisY;   // cluster distribution function in Y
+   
+private:
+   void     SetFunctions();
    
 private:
    static Float_t  fgkFWTH;

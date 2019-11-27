@@ -39,7 +39,12 @@ TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
   fRsPar(1.7),
   fRsParErr(0.04),
   fThresPar(885),
-  fThresParErr(250)
+  fThresParErr(250),
+  fPixelSeed(0.),
+  fGainPar(1.),
+  fGainParErr(0.0),
+  fCstPar(10.),
+  fCstParErr(0.0)
 {
    SetFunctions();
    fPitchX   = fpParGeo->GetPitchX()*TAGgeoTrafo::CmToMu();
@@ -74,9 +79,17 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
    fFuncClusterSize->SetParameter(1, fThresPar+smear);
    
    fPixelsN = TMath::Nint(fFuncClusterSize->Eval(deltaE));
-   
    if (fPixelsN <= 0) fPixelsN = 1;
+
+   smear = gRandom->Gaus(0, fCstParErr);
+   fFuncClusterCharge->SetParameter(0, fCstPar+smear);
+
+   smear = gRandom->Gaus(0, fGainParErr);
+   fFuncClusterCharge->SetParameter(1, fGainPar+smear);
    
+   fPixelSeed = fFuncClusterCharge->Eval(deltaE);
+   if (fPixelSeed <= 1) fPixelSeed = 1.;
+
    if(FootDebugLevel(1)) {
       printf("\nnext hit:\n");
       printf("eloss %6.1f pixels %d\n", deltaE, fPixelsN);
@@ -97,7 +110,8 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
 void  TAVTbaseDigitizer::SetFunctions()
 {
    // compute cluster size for a given Edep, x and y
-   fFuncClusterSize = new TF1("ClusterSize", this, &TAVTbaseDigitizer::FuncClusterSize, 0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterSize");
+   fFuncClusterSize   = new TF1("ClusterSize", this, &TAVTbaseDigitizer::FuncClusterSize, 0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterSize");
+   fFuncClusterCharge = new TF1("ClusterSize", this, &TAVTbaseDigitizer::FuncClusterSize, 0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterCharge");
 }
 
 // --------------------------------------------------------------------------------------
@@ -110,6 +124,15 @@ Double_t TAVTbaseDigitizer::FuncClusterSize(Double_t* x, Double_t* par)
    return f;
 }
 
+// --------------------------------------------------------------------------------------
+Double_t TAVTbaseDigitizer::FuncClusterCharge(Double_t* x, Double_t* par)
+{
+   Float_t xx = x[0];
+   
+   Float_t f = par[0]*TMath::Log(xx*par[1]);
+   
+   return f;
+}
 
 //_____________________________________________________________________________
 Int_t TAVTbaseDigitizer::GetColumn(Float_t x) const
