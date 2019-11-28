@@ -202,10 +202,6 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 
   //problem on iterator it not resolved
   for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ ) {
-
-    cout << "+++++++++++++++TEST histo dPoverP+++++++++++++++++++++++\n";
-    cout << (*collIt).first << endl;
-    
     //  initialize output resolution histos
     float resoP_min = (*(*collIt).second.begin()).first - m_resoP_step*0.5;
     float resoP_max = (*(*collIt).second.rbegin()).first + m_resoP_step*0.5;
@@ -246,8 +242,8 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 	continue;
       }
       
-      // TF1 *f1 = new TF1("f1","gaus",-3,3);
-      TF1 * f1 = new TF1("gauss", "[0] / sqrt(2.0 * TMath::Pi()) / [2] * exp(-(x-[1])*(x-[1])/2./[2]/[2])", 0, 100);
+      TF1 *f1 = new TF1("f1","gaus",-50 ,50);
+      //TF1* f1 = new TF1("gauss", "[0] / sqrt(2.0 * TMath::Pi()) / [2] * exp(-(x-[1])*(x-[1])/2./[2]/[2])", 0, 100);
       f1->SetParNames("Constant","Mean","Sigma");
       //      cout << " getmean is " << ((*it).second)->GetParameter(1) << " and getrms is " << ((*it).second)->GetParameter(2) << std::endl;
       cout << "before TF1->SetParameters " << endl;
