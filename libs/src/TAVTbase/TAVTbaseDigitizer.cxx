@@ -41,11 +41,15 @@ TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
   fThresPar(885),
   fThresParErr(250),
   fClusterHeight(0.),
-  fGainPar(1.),
-  fGainParErr(0.0),
-  fCstPar(10.),
-  fCstParErr(0.0),
-  fClusterWidth(0.)
+  fLogHeightPar(702),
+  fLogHeightParErr(40),
+  fCstHeightPar(3650),
+  fCstHeightParErr(150),
+  fClusterWidth(0.),
+  fLogWidthPar(0.064),
+  fLogWidthParErr(0.008),
+  fCstWidthPar(0.97),
+  fCstWidthParErr(0.03)
 {
    SetFunctions();
    fPitchX   = fpParGeo->GetPitchX()*TAGgeoTrafo::CmToMu();
@@ -59,8 +63,10 @@ TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
 TAVTbaseDigitizer::~TAVTbaseDigitizer()
 {
    delete fFuncClusterSize;
-   delete fFuncClusterHeight;
-   delete fFuncClusterWidth;
+   if (fpParGeo->GetType() == 1) {
+      delete fFuncClusterHeight;
+      delete fFuncClusterWidth;
+   }
 }
 
 //------------------------------------------+-----------------------------------
@@ -72,6 +78,7 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
    
    Double_t  smear = 0;
 
+   // cluster size
    smear = gRandom->Gaus(0, fDe0Par);
    Double_t deltaE = edep*TAGgeoTrafo::GevToKev()+ fDe0Par + fDe0ParErr;
    
@@ -84,15 +91,28 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
    fPixelsN = TMath::Nint(fFuncClusterSize->Eval(deltaE));
    if (fPixelsN <= 0) fPixelsN = 1;
 
-   smear = gRandom->Gaus(0, fCstParErr);
-   fFuncClusterHeight->SetParameter(0, fCstPar+smear);
-
-   smear = gRandom->Gaus(0, fGainParErr);
-   fFuncClusterHeight->SetParameter(1, fGainPar+smear);
+   if (fpParGeo->GetType() == 1) {
+      // cluster height
+      smear = gRandom->Gaus(0, fCstHeightParErr);
+      fFuncClusterHeight->SetParameter(0, fCstHeightPar+smear);
+      
+      smear = gRandom->Gaus(0, fLogHeightParErr);
+      fFuncClusterHeight->SetParameter(1, fLogHeightPar+smear);
+      
+      fClusterHeight = fFuncClusterHeight->Eval(deltaE);
+      if (fClusterHeight <= 1) fClusterHeight = 1.;
+      
+      // cluster width
+      smear = gRandom->Gaus(0, fCstWidthParErr);
+      fFuncClusterWidth->SetParameter(0, fCstWidthPar+smear);
+      
+      smear = gRandom->Gaus(0, fLogWidthParErr);
+      fFuncClusterWidth->SetParameter(1, fLogWidthPar+smear);
+      
+      fClusterWidth = fFuncClusterWidth->Eval(deltaE);
+      if (fClusterWidth <= 0) fClusterWidth = 0.8;
+   }
    
-   fClusterHeight = fFuncClusterHeight->Eval(deltaE);
-   if (fClusterHeight <= 1) fClusterHeight = 1.;
-
    if(FootDebugLevel(1)) {
       printf("\nnext hit:\n");
       printf("eloss %6.1f pixels %d\n", deltaE, fPixelsN);
@@ -114,8 +134,10 @@ void  TAVTbaseDigitizer::SetFunctions()
 {
    // compute cluster size for a given Edep, x and y
    fFuncClusterSize   = new TF1("ClusterSize",   this, &TAVTbaseDigitizer::FuncClusterSize,   0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterSize");
-   fFuncClusterHeight = new TF1("ClusterHeight", this, &TAVTbaseDigitizer::FuncClusterHeight, 0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterHeight");
-   fFuncClusterWidth  = new TF1("ClusterWidth",  this, &TAVTbaseDigitizer::FuncClusterWidth,  0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterWidth");
+   if (fpParGeo->GetType() == 1) {
+      fFuncClusterHeight = new TF1("ClusterHeight", this, &TAVTbaseDigitizer::FuncClusterHeight, 0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterHeight");
+      fFuncClusterWidth  = new TF1("ClusterWidth",  this, &TAVTbaseDigitizer::FuncClusterWidth,  0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterWidth");
+   }
 }
 
 // --------------------------------------------------------------------------------------
@@ -133,8 +155,8 @@ Double_t TAVTbaseDigitizer::FuncClusterHeight(Double_t* x, Double_t* par)
 {
    Float_t xx = x[0];
    
-   Float_t f = par[0]*TMath::Log(xx*par[1]);
-   
+   Float_t f = par[0]+par[1]*TMath::Log(xx);
+
    return f;
 }
 
@@ -143,7 +165,7 @@ Double_t TAVTbaseDigitizer::FuncClusterWidth(Double_t* x, Double_t* par)
 {
    Float_t xx = x[0];
    
-   Float_t f = par[0]*TMath::Log(xx*par[1]);
+   Float_t f = par[0]+par[1]*TMath::Log(xx);
    
    return f;
 }

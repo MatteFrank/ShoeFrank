@@ -35,26 +35,32 @@ public:
 
    virtual Bool_t MakeCluster(Double_t /*x0*/, Double_t /*y0*/, Double_t /*zin*/, Double_t /*zout*/) { return false; }
 
-   Int_t        GetPixelsN() const           { return fPixelsN;    }
+   Int_t        GetPixelsN()       const         { return fPixelsN;        }
+   void         SetRsPar(Double_t par)           { fRsPar = par;           }
+   void         SetRsParErr(Double_t par)        { fRsParErr = par;        }
+   void         SetThresPar(Double_t par)        { fThresPar = par;        }
+   void         SetThresParErr(Double_t par)     { fThresParErr = par;     }
    
-   void         SetRsPar(Double_t par)       { fRsPar = par;       }
-   void         SetRsParErr(Double_t par)    { fRsParErr = par;    }
-   void         SetThresPar(Double_t par)    { fThresPar = par;    }
-   void         SetThresParErr(Double_t par) { fThresParErr = par; }
+   Float_t      GetClusterHeight() const         { return fClusterHeight;  }
+   void         SetLogHeightPar(Double_t par)    { fLogHeightPar = par;    }
+   void         SetLogHeightParErr(Double_t par) { fLogHeightParErr = par; }
+   void         SetCstHeightPar(Double_t par)    { fCstHeightPar = par;    }
+   void         SetCstHeightParErr(Double_t par) { fCstHeightParErr = par; }
    
-   void         SetGainPar(Double_t par)     { fGainPar = par;     }
-   void         SetGainParErr(Double_t par)  { fGainParErr = par;  }
-   void         SetCstPar(Double_t par)      { fCstPar = par;      }
-   void         SetCstParErr(Double_t par)   { fCstParErr = par;   }
+   Float_t      GetClusterWidth()  const        { return fClusterWidth;    }
+   void         SetLogWidthPar(Double_t par)    { fLogWidthPar = par;      }
+   void         SetLogWidthParErr(Double_t par) { fLogWidthParErr = par;   }
+   void         SetCstWidthPar(Double_t par)    { fCstWidthPar = par;      }
+   void         SetCstWidthParErr(Double_t par) { fCstWidthParErr = par;   }
    
-   Float_t      GetNPixelX() const           { return fPixelsNx;   }
-   Float_t      GetNPixelY() const           { return fPixelsNy;   }
+   Float_t      GetNPixelX()       const        { return fPixelsNx;        }
+   Float_t      GetNPixelY()       const        { return fPixelsNy;        }
    
-   Float_t      GetPitchX()  const           { return fPitchX;     }
-   Float_t      GetPitchY()  const           { return fPitchX;     }
+   Float_t      GetPitchX()        const        { return fPitchX;          }
+   Float_t      GetPitchY()        const        { return fPitchX;          }
 
    //! Get Map
-   std::map<int, double>  GetMap() const     { return fMap;        }
+   std::map<int, double>  GetMap() const        { return fMap;             }
    
    //! Get column/line from x/y position
    Int_t        GetColumn(Float_t x) const;
@@ -90,13 +96,17 @@ protected:
    Double_t    fThresParErr;     // parameter threshold for cluster size function
 
    Double_t    fClusterHeight;   // height of the cluster for a given eloss
-   Double_t    fGainPar;         // gain parameter for the cluster charge function
-   Double_t    fGainParErr;      // gain parameter for the cluster charge function
-   Double_t    fCstPar;          // constant parameter for cluster charge function
-   Double_t    fCstParErr;       // constant parameter for cluster charge function
+   Double_t    fLogHeightPar;    // Log parameter for the cluster height function
+   Double_t    fLogHeightParErr; // Log parameter for the cluster height function
+   Double_t    fCstHeightPar;    // constant parameter for cluster height function
+   Double_t    fCstHeightParErr; // constant parameter for cluster height function
    
    Double_t    fClusterWidth;    // width of the cluster for a given eloss
-
+   Double_t    fLogWidthPar;     // log parameter for the cluster width function
+   Double_t    fLogWidthParErr;  // log parameter for the cluster width function
+   Double_t    fCstWidthPar;     // constant parameter for cluster width function
+   Double_t    fCstWidthParErr;  // constant parameter for cluster width function
+   
    Int_t       fPixelsNx;        // number of pixels in X (colummn)
    Int_t       fPixelsNy;        // number of pixels in Y (line)
    
