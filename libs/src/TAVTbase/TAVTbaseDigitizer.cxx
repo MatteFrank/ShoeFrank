@@ -31,25 +31,29 @@ Float_t  TAVTbaseDigitizer::fgDefSmearPos     =  10.35;    // in micron
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
-: TAGbaseDigitizer(),
-  fpParGeo(parGeo),
-  fPixelsN(-1),
-  fDe0Par(0),
-  fDe0ParErr(0),
-  fRsPar(0.9),
-  fRsParErr(0.04),
-  fThresPar(885),
-  fThresParErr(250),
-  fClusterHeight(0.),
-  fLogHeightPar(702),
-  fLogHeightParErr(40),
-  fCstHeightPar(3650),
-  fCstHeightParErr(150),
-  fClusterWidth(0.),
-  fLogWidthPar(0.064),
-  fLogWidthParErr(0.008),
-  fCstWidthPar(0.97),
-  fCstWidthParErr(0.03)
+ : TAGbaseDigitizer(),
+   fpParGeo(parGeo),
+   fPixelsN(-1),
+   fDe0Par(0),
+   fDe0ParErr(0),
+   fRsPar(0.9),
+   fRsParErr(0.04),
+   fThresPar(885),
+   fThresParErr(250),
+   fClusterHeight(0.),
+   fLogHeightPar(702),
+   fLogHeightParErr(40),
+   fCstHeightPar(3650),
+   fCstHeightParErr(150),
+   fZcstHeightPar(0.935),
+   fZgainHeightPar(0.0325),
+   fClusterWidth(0.),
+   fLogWidthPar(0.064),
+   fLogWidthParErr(0.008),
+   fCstWidthPar(0.97),
+   fCstWidthParErr(0.03),
+   fZcstWidthPar(0.925),
+   fZgainWidthPar(0.0375)
 {
    SetFunctions();
    fPitchX   = fpParGeo->GetPitchX()*TAGgeoTrafo::CmToMu();
@@ -99,7 +103,13 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
       smear = gRandom->Gaus(0, fLogHeightParErr);
       fFuncClusterHeight->SetParameter(1, fLogHeightPar+smear);
       
-      fClusterHeight = fFuncClusterHeight->Eval(deltaE);
+      smear = 0;
+      fFuncClusterHeight->SetParameter(2, fZcstHeightPar+smear);
+      
+      smear = 0;
+      fFuncClusterHeight->SetParameter(3, fZgainHeightPar+smear);
+
+      fClusterHeight = fFuncClusterHeight->Eval(deltaE, Z);
       if (fClusterHeight <= 1) fClusterHeight = 1.;
       
       // cluster width
@@ -109,7 +119,13 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
       smear = gRandom->Gaus(0, fLogWidthParErr);
       fFuncClusterWidth->SetParameter(1, fLogWidthPar+smear);
       
-      fClusterWidth = fFuncClusterWidth->Eval(deltaE);
+      smear = 0;
+      fFuncClusterWidth->SetParameter(2, fZcstWidthPar+smear);
+
+      smear = 0;
+      fFuncClusterWidth->SetParameter(3, fZgainWidthPar+smear);
+
+      fClusterWidth = fFuncClusterWidth->Eval(deltaE, Z);
       if (fClusterWidth <= 0) fClusterWidth = 0.8;
    }
    
@@ -135,8 +151,8 @@ void  TAVTbaseDigitizer::SetFunctions()
    // compute cluster size for a given Edep, x and y
    fFuncClusterSize   = new TF1("ClusterSize",   this, &TAVTbaseDigitizer::FuncClusterSize,   0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterSize");
    if (fpParGeo->GetType() == 1) {
-      fFuncClusterHeight = new TF1("ClusterHeight", this, &TAVTbaseDigitizer::FuncClusterHeight, 0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterHeight");
-      fFuncClusterWidth  = new TF1("ClusterWidth",  this, &TAVTbaseDigitizer::FuncClusterWidth,  0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterWidth");
+      fFuncClusterHeight = new TF1("ClusterHeight", this, &TAVTbaseDigitizer::FuncClusterHeight, 0, 2000, 4, "TAVTbaseDigitizer", "FuncClusterHeight");
+      fFuncClusterWidth  = new TF1("ClusterWidth",  this, &TAVTbaseDigitizer::FuncClusterWidth,  0, 2000, 4, "TAVTbaseDigitizer", "FuncClusterWidth");
    }
 }
 
@@ -153,9 +169,10 @@ Double_t TAVTbaseDigitizer::FuncClusterSize(Double_t* x, Double_t* par)
 // --------------------------------------------------------------------------------------
 Double_t TAVTbaseDigitizer::FuncClusterHeight(Double_t* x, Double_t* par)
 {
-   Float_t xx = x[0];
+   Float_t de = x[0];
+   Float_t z  = x[1];
    
-   Float_t f = par[0]+par[1]*TMath::Log(xx);
+   Float_t f = par[0]+par[1]*TMath::Log(de) + par[2] + par[3]*z;
 
    return f;
 }
@@ -163,9 +180,10 @@ Double_t TAVTbaseDigitizer::FuncClusterHeight(Double_t* x, Double_t* par)
 // --------------------------------------------------------------------------------------
 Double_t TAVTbaseDigitizer::FuncClusterWidth(Double_t* x, Double_t* par)
 {
-   Float_t xx = x[0];
-   
-   Float_t f = par[0]+par[1]*TMath::Log(xx);
+   Float_t de = x[0];
+   Float_t z  = x[1];
+
+   Float_t f = par[0]+par[1]*TMath::Log(de) + par[2] + par[3]*z;
    
    return f;
 }

@@ -100,12 +100,17 @@ protected:
    Double_t    fLogHeightParErr; // Log parameter for the cluster height function
    Double_t    fCstHeightPar;    // constant parameter for cluster height function
    Double_t    fCstHeightParErr; // constant parameter for cluster height function
-   
+   Double_t    fZcstHeightPar;   // z constant parameter for the cluster height function
+   Double_t    fZgainHeightPar;  // z gain parameter for the cluster height function
+
    Double_t    fClusterWidth;    // width of the cluster for a given eloss
    Double_t    fLogWidthPar;     // log parameter for the cluster width function
    Double_t    fLogWidthParErr;  // log parameter for the cluster width function
    Double_t    fCstWidthPar;     // constant parameter for cluster width function
    Double_t    fCstWidthParErr;  // constant parameter for cluster width function
+   Double_t    fZcstWidthPar;    // z constant parameter for the cluster width function
+   Double_t    fZgainWidthPar;   // z gain parameter for the cluster width function
+
    
    Int_t       fPixelsNx;        // number of pixels in X (colummn)
    Int_t       fPixelsNy;        // number of pixels in Y (line)
