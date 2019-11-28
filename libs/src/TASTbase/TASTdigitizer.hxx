@@ -17,7 +17,7 @@ public:
    void           SetFunctions();
    void           SetParFunction();
    
-   Bool_t         Process(Double_t edep, Double_t x0, Double_t y0, Double_t zin=0, Double_t zout=0, Double_t time = 0, Int_t sensorId = 0);
+   Bool_t         Process(Double_t edep, Double_t x0, Double_t y0, Double_t zin=0, Double_t zout=0, Double_t time = 0, Int_t sensorId = 0, Int_t Z = -99);
   
    
    Float_t        GetPhotonsN(Float_t X, Float_t Y, Float_t edep);

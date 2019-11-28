@@ -34,7 +34,7 @@ TAMSDdigitizer::~TAMSDdigitizer()
 
 //------------------------------------------+-----------------------------------
 //! fill pixel signal
-Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double_t zin, Double_t zout,  Double_t /*time*/, Int_t sensorId)
+Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double_t zin, Double_t zout,  Double_t /*time*/, Int_t sensorId, Int_t /*Z*/)
 {
   //   if (fgSmearFlag) {
   //      Float_t dx = gRandom->Gaus(0, fPitchX/2.);

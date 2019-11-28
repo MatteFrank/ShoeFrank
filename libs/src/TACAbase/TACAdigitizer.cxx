@@ -54,7 +54,7 @@ Float_t TACAdigitizer::GetPhotonsN(Float_t /*X*/, Float_t /*Y*/, Float_t edep)
 }
 
 //___________________________________________________________________________________________
-Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id)
+Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/)
 {
    Float_t photonsN = GetPhotonsN(x0, y0, edep)*fGain;
    fCurrentHit = (TACAntuHit*)fpNtuRaw->NewHit(id, photonsN, time);

@@ -19,7 +19,7 @@ public:
    TAGbaseDigitizer();
    virtual ~TAGbaseDigitizer();
    
-   virtual Bool_t Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin = 0, Double_t zout = 0, Double_t time = 0, Int_t sensorId = 0) = 0;
+   virtual Bool_t Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin = 0, Double_t zout = 0, Double_t time = 0, Int_t sensorId = 0, Int_t Z = -99) = 0;
 
    ClassDef(TAGbaseDigitizer,0)
 };

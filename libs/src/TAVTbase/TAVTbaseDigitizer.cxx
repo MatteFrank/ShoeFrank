@@ -36,7 +36,7 @@ TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
   fPixelsN(-1),
   fDe0Par(0),
   fDe0ParErr(0),
-  fRsPar(1.7),
+  fRsPar(0.9),
   fRsParErr(0.04),
   fThresPar(885),
   fThresParErr(250),
@@ -62,7 +62,7 @@ TAVTbaseDigitizer::~TAVTbaseDigitizer()
 
 //------------------------------------------+-----------------------------------
 //! fill pixel signal
-Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin, Double_t zout, Double_t /*time*/, Int_t /*sensorId*/)
+Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin, Double_t zout, Double_t /*time*/, Int_t /*sensorId*/, Int_t Z)
 {
    x0 *= TAGgeoTrafo::CmToMu();
    y0 *= TAGgeoTrafo::CmToMu();

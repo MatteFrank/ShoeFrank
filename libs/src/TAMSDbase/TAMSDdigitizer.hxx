@@ -16,7 +16,7 @@ public:
    virtual ~TAMSDdigitizer();
 
    void  FillMap(Int_t strip, Double_t value);
-   Bool_t Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin = 0, Double_t zout = 0, Double_t time = 0, Int_t sensorId = 0);
+   Bool_t Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin = 0, Double_t zout = 0, Double_t time = 0, Int_t sensorId = 0, Int_t Z = -99);
    
    Int_t GetStrip(Float_t pos) const;
 

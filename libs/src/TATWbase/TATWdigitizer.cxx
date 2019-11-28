@@ -214,7 +214,7 @@ Float_t TATWdigitizer::GetTofRight(Float_t pos, Float_t time, Float_t edep)
 }
 
 //___________________________________________________________________________________________
-Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id )
+Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/ )
 {
    // energy resolution
    fDeAttAsymSmear = gRandom->Uniform(-fDeAttAsym, +fDeAttAsym); // asymmetry btw left/right ends
