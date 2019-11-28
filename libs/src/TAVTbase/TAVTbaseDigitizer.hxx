@@ -28,7 +28,9 @@ public:
    virtual ~TAVTbaseDigitizer();
    
    Double_t     FuncClusterSize(Double_t* x, Double_t* par);
-   Double_t     FuncClusterCharge(Double_t* x, Double_t* par);
+   Double_t     FuncClusterHeight(Double_t* x, Double_t* par);
+   Double_t     FuncClusterWidth(Double_t* x, Double_t* par);
+
    virtual Bool_t Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin = 0, Double_t zout = 0, Double_t time = 0, Int_t sensorId = 0, Int_t Z = -99);
 
    virtual Bool_t MakeCluster(Double_t /*x0*/, Double_t /*y0*/, Double_t /*zin*/, Double_t /*zout*/) { return false; }
@@ -74,9 +76,10 @@ public:
 protected:
    TAVTbaseParGeo* fpParGeo;
    TF1*        fFuncClusterSize;   // cluster size function
-   TF1*        fFuncClusterCharge; // cluster charge height function
+   TF1*        fFuncClusterHeight; // cluster charge height function
+   TF1*        fFuncClusterWidth;  // cluster charge width function
 
-   std::map<int, double> fMap;      // map of found pixels
+   std::map<int, double> fMap;   // map of found pixels
    
    Int_t       fPixelsN;         // number of pixels for a given eloss
    Double_t    fDe0Par;          // parameter shift in edep for the cluster size function
@@ -86,12 +89,14 @@ protected:
    Double_t    fThresPar;        // parameter threshold for cluster size function
    Double_t    fThresParErr;     // parameter threshold for cluster size function
 
-   Double_t    fPixelSeed;       // charge of seed pixel for a given eloss
+   Double_t    fClusterHeight;   // height of the cluster for a given eloss
    Double_t    fGainPar;         // gain parameter for the cluster charge function
    Double_t    fGainParErr;      // gain parameter for the cluster charge function
    Double_t    fCstPar;          // constant parameter for cluster charge function
    Double_t    fCstParErr;       // constant parameter for cluster charge function
    
+   Double_t    fClusterWidth;    // width of the cluster for a given eloss
+
    Int_t       fPixelsNx;        // number of pixels in X (colummn)
    Int_t       fPixelsNy;        // number of pixels in Y (line)
    

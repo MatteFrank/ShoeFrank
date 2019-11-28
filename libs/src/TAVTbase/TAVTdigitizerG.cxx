@@ -7,7 +7,7 @@ ClassImp(TAVTdigitizerG);
 
 using namespace std;
 
-Float_t   TAVTdigitizerG::fgkFWTH = 2*TMath::Sqrt(2*TMath::Log(10));
+Float_t TAVTdigitizerG::fgkFWTH = 2*TMath::Sqrt(2*TMath::Log(10));
 
 
 // --------------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    Float_t sigmaX = TMath::Sqrt(fPixelsN)/fgkFWTH;
    Float_t sigmaY = TMath::Sqrt(fPixelsN)/fgkFWTH;
 
-   Float_t height = fPixelSeed;
+   Float_t height = fClusterHeight;
    Float_t sig    = fgkFWTH*sigmaX;
    
    if (regX == 1) regX = 0;
