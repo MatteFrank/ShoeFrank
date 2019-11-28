@@ -73,11 +73,7 @@ public:
    
    static Int_t   GetMcNoiseId()                    { return fgMcNoiseId;        }
    static void    SetMcNoiseId(Int_t id)            { fgMcNoiseId = id;          }
-   
-   //! Set analogical flag
-   static void   SetAnalogic(Bool_t flag)           { fgAnalogic = flag;         }
-
-   
+      
 protected:
    TAGparaDsc*     fpGeoMap;		    // geometry para dsc
    EVENT_STRUCT*   fpEvtStr;
@@ -113,7 +109,6 @@ protected:
    static Float_t  fgPoissonPar;       // Poisson parameter for pileup simulation
    static Float_t  fgSigmaNoiseLevel;
    static Int_t    fgMcNoiseId;
-   static Bool_t   fgAnalogic;        // flag for analogical output
 
    ClassDef(TAVTactBaseNtuMC,0)
 };
