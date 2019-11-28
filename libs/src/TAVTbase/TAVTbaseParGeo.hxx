@@ -107,6 +107,11 @@ public:
    //! Get number of layers
    Int_t GetNLayers()                  const { return fLayersN;        }
 
+   //! Get type name of sensor
+   const Char_t* GetTypeName()         const { return fTypeName.Data();}
+   //! Get type of sensor
+   Int_t GetType()                     const { return fTypeNumber;     }
+   
    //! Get number of pixel in X
    Int_t GetNPixelX()                  const { return fPixelsNx;       }
    //! Get number of pixel in Y
