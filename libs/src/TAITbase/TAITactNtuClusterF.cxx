@@ -127,11 +127,18 @@ Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor, TAITntuCluster* pNtuClu
                }
             }
          }
+         cluster->SetValid(true);
       } else {
-         pNtuClus->GetListOfClusters(iSensor)->Remove(cluster);
-         pNtuClus->GetListOfClusters(iSensor)->Compress();
+         cluster->SetValid(false);
       }
    }
+   
+   for (Int_t i = pNtuClus->GetClustersN(iSensor)-1; i >= 0; --i) {
+      cluster = pNtuClus->GetCluster(iSensor, i);
+      if (!cluster->IsValid())
+         pNtuClus->GetListOfClusters(iSensor)->Remove(cluster);
+   }
+   
    if (pNtuClus->GetClustersN(iSensor))
       return true;
    
