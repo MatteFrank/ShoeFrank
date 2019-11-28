@@ -46,8 +46,8 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    Int_t regX  = GetColRegion(x0);
    Int_t regY  = GetLineRegion(y0);
    
-   Float_t sigmaX = TMath::Sqrt(fPixelsN)/fgkFWTH;
-   Float_t sigmaY = TMath::Sqrt(fPixelsN)/fgkFWTH;
+   Float_t sigmaX = fClusterWidth; //TMath::Sqrt(fPixelsN)/fgkFWTH;
+   Float_t sigmaY = fClusterWidth; //TMath::Sqrt(fPixelsN)/fgkFWTH;
 
    Float_t height = fClusterHeight;
    Float_t sig    = fgkFWTH*sigmaX;

@@ -199,7 +199,8 @@ void TAVTactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents
 //------------------------------------------+-----------------------------------
 void TAVTactNtuMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
 {
-   if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2])) return;
+   Int_t Z = fpEvtStr->TRcha[trackIdx];
+   if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2], 0, 0, Z)) return;
    FillPixels(sensorId, idx, trackIdx);
    
    if (ValidHistogram()) {
