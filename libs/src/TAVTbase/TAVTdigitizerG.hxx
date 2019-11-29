@@ -34,6 +34,7 @@ private:
 private:
    static Float_t  fgkFWTH;
    static Float_t  fgThreshold;
+   static Float_t  fgGain;
 
    ClassDef(TAVTdigitizerG,0)
 };
