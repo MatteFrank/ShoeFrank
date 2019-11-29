@@ -10,7 +10,7 @@
 #include <math.h>
 #include <vector>
 
-using namespace std; 
+using namespace std;
 #include "TSystem.h"
 #include "TString.h"
 #include "TFile.h"
@@ -29,10 +29,10 @@ ClassImp(TABMparCon);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TABMparCon::TABMparCon() 
+TABMparCon::TABMparCon()
   :  TAGparTools(),
   rdrift_err(0.015),
-  planehit_cut(3),  
+  planehit_cut(3),
   m_isMC (false),
   rdrift_cut (2.),
   chi2red_cut (5.),
@@ -41,16 +41,17 @@ TABMparCon::TABMparCon()
   maxnhit_cut(20),
   rejmax_cut(36),
   num_ite(0),
-  par_move(0.0001),  
-  fakehits_mean(5.57), 
-  fakehits_sigmaleft(1.8), 
-  fakehits_sigmaright(2.3), 
+  par_move(0.0001),
+  fakehits_mean(5.57),
+  fakehits_sigmaleft(1.8),
+  fakehits_sigmaright(2.3),
   mceff_mean(1),
   mceff_sigma(0.2),
   legmbin(40),
   legmrange(0.1),
   legrbin(75),
-  legrrange(2.)
+  legrrange(2.),
+  asshitratio(3.)
 {
   fkDefaultParName = "./config/TABMdetector.cfg";
   vector<Float_t> myt0s(36,-10000);
@@ -72,18 +73,18 @@ TABMparCon::~TABMparCon(){}
 Bool_t TABMparCon::FromFile(const TString& name) {
   Clear();
   TString nameExp;
-  
+
   if (name.IsNull())
      nameExp = fkDefaultParName;
   else
      nameExp = name;
-  
+
   if (!Open(nameExp)) return false;
-   
+
   if(FootDebugLevel(1))
      cout<<"TABMparCon::FromFile:: read config file from "<<nameExp.Data()<<endl<<"Now I'll printout the BM FromFile read parameters"<<endl;
 
-  //cuts 
+  //cuts
   ReadItem(minnhit_cut);
   if(FootDebugLevel(1))
      cout<<"minnhit_cut="<<minnhit_cut<<endl;
@@ -131,14 +132,14 @@ return false;
 Bool_t TABMparCon::FromFileOld(const TString& name) {
 
   Clear();
-  
+
   TString name_exp = name;
   gSystem->ExpandPathName(name_exp);
 
   char bufConf[1024], tmp_char[200];
-  Float_t myArg1(-1),myArg2(-1),myArg3(-1),myArg4(-1),myArg5(-1),myArg6(-1); 
+  Float_t myArg1(-1),myArg2(-1),myArg3(-1),myArg4(-1),myArg5(-1),myArg6(-1);
   Int_t myArgInt(-1), myArgIntmax(-1), myArgIntmin(-1);
-  
+
   ifstream incF;
   incF.open(name_exp.Data());
   if (!incF) {
@@ -146,12 +147,12 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
     return kTRUE;
   }
 
-  while (incF.getline(bufConf, 200, '\n')) {    
+  while (incF.getline(bufConf, 200, '\n')) {
     if(strchr(bufConf,'!')) {
       //      Info("FromFile()","Skip comment line:: %s",bufConf);
     }else if(strchr(bufConf,'R')) {
       sscanf(bufConf, "R %f",&myArg1);
-      if(myArg1>0) 
+      if(myArg1>0)
         rdrift_cut = myArg1;
       else {
 	      Error(""," Plane Map Error:: check config file!! (R)");
@@ -159,7 +160,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
         }
     }else if(strchr(bufConf,'H')) {
       sscanf(bufConf, "H %d %d %d", &myArgInt, &myArgIntmin, &myArgIntmax);
-      if( myArgInt>0 && myArgInt<7 && myArgIntmin>=0 && myArgIntmax>0 && myArgIntmax>=myArgInt){ 
+      if( myArgInt>0 && myArgInt<7 && myArgIntmin>=0 && myArgIntmax>0 && myArgIntmax>=myArgInt){
         planehit_cut= myArgInt;
         minnhit_cut = myArgIntmin;
         maxnhit_cut = myArgIntmax;
@@ -192,7 +193,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
         }
     }else if(strchr(bufConf,'W')) {
       sscanf(bufConf, "W %d",&myArgInt);
-      strel_switch = myArgInt;        
+      strel_switch = myArgInt;
     }else if(strchr(bufConf,'J')) {
       sscanf(bufConf, "J %d %f ",&myArgInt, &myArg1);
       if(myArgInt>=0 && myArg1>0){
@@ -214,7 +215,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
         }
       }
   }//end of readline
-      
+
   return kFALSE;
 }
 
@@ -231,14 +232,14 @@ void TABMparCon::PrintT0s(TString output_filename, TString input_filename, Long6
   return;
 }
 
- 
+
 Bool_t TABMparCon::loadT0s(TString filename) {
   ifstream infile;
   if(gTAGroot->CurrentRunNumber()==2210 || gTAGroot->CurrentRunNumber()==2211 || gTAGroot->CurrentRunNumber()==2212)
     filename.Insert(filename.Last('.'),"_7April");
   else if(gTAGroot->CurrentRunNumber()==2239 || gTAGroot->CurrentRunNumber()==2240 || gTAGroot->CurrentRunNumber()==2241 || gTAGroot->CurrentRunNumber()==2242 || gTAGroot->CurrentRunNumber()==2251)
     filename.Insert(filename.Last('.'),"_8April");
-    
+
   gSystem->ExpandPathName(filename);
   infile.open(filename,ios::in);
   if(infile.is_open()==kFALSE){
@@ -247,14 +248,14 @@ Bool_t TABMparCon::loadT0s(TString filename) {
   }
   char tmp_char[200];
   vector<Float_t> fileT0(36,-10000.);
-  Int_t tmp_int=-1, status=0;  
+  Int_t tmp_int=-1, status=0;
   infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>t0_switch>>tmp_char>>t0_choice;
 
   for(Int_t i=0;i<36;i++)
     if(!infile.eof() && tmp_int==i-1)
       infile>>tmp_char>>tmp_int>>tmp_char>>fileT0.at(i);
     else{
-      cout<<"TABMparCon::loadT0s::Error in the T0 file "<<filename<<"!!!!!! check if it is write properly"<<endl;  
+      cout<<"TABMparCon::loadT0s::Error in the T0 file "<<filename<<"!!!!!! check if it is write properly"<<endl;
       infile.close();
       return kTRUE;
       }
@@ -279,7 +280,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
 void TABMparCon::SetT0s(vector<Float_t> t0s) {
 
   if(t0s.size() == 36) {
-    v_t0s = t0s; 
+    v_t0s = t0s;
   } else {
     Error("Parameter()","Vectors size mismatch:: fix the t0 vector inmput size!!! %d ",(int) t0s.size());
   }
@@ -290,8 +291,8 @@ void TABMparCon::SetT0s(vector<Float_t> t0s) {
 
 void TABMparCon::SetT0(Int_t cha, Float_t t0in){
 
-if(cha<36 && cha>=0) 
-  v_t0s[cha]=t0in;   
+if(cha<36 && cha>=0)
+  v_t0s[cha]=t0in;
 else {
     Error("Parameter()","Channel out of Range!!! cha=%d",cha);
   }
@@ -313,7 +314,7 @@ void TABMparCon::CoutT0(){
 void TABMparCon::Clear(Option_t*)
 {
   rdrift_err=0.015;
-  planehit_cut=3;  
+  planehit_cut=3;
   m_isMC = false;
   rdrift_cut = 0.11;
   chi2red_cut = 5.;
@@ -327,17 +328,18 @@ void TABMparCon::Clear(Option_t*)
   legmrange=0.1;
   legrbin=75;
   legrrange=2.;
-  
+  asshitratio=3.;
+
   //The following parameters for MC are set from the measurements with protons at Trento
-  fakehits_mean=5.57; 
-  fakehits_sigmaleft=1.8; 
-  fakehits_sigmaright=2.3; 
+  fakehits_mean=5.57;
+  fakehits_sigmaleft=1.8;
+  fakehits_sigmaright=2.3;
   mceff_mean=1;
   mceff_sigma=0.2;
-    
+
   vector<Float_t> myt0s(36,-10000);
   v_t0s = myt0s;
-  
+
   return;
 }
 
@@ -355,34 +357,34 @@ void TABMparCon::ToStream(ostream& os, Option_t*) const
  /*-------------------------------------------------*/
 
 Float_t TABMparCon::FirstSTrel(Float_t tdrift){
-  
+
   if(tdrift<0 && t0_switch==2)
     return 0.03289 + 0.008*tdrift;
-  
+
   Float_t rdrift;
-  
+
   if(strel_switch==1){ //garfield strel
-    rdrift=0.00915267+0.00634507*tdrift+2.02527e-05*tdrift*tdrift-7.60133e-07*tdrift*tdrift*tdrift+5.55868e-09*tdrift*tdrift*tdrift*tdrift-1.68944e-11*tdrift*tdrift*tdrift*tdrift*tdrift+1.87124e-14*tdrift*tdrift*tdrift*tdrift*tdrift*tdrift;  
+    rdrift=0.00915267+0.00634507*tdrift+2.02527e-05*tdrift*tdrift-7.60133e-07*tdrift*tdrift*tdrift+5.55868e-09*tdrift*tdrift*tdrift*tdrift-1.68944e-11*tdrift*tdrift*tdrift*tdrift*tdrift+1.87124e-14*tdrift*tdrift*tdrift*tdrift*tdrift*tdrift;
   }else if(strel_switch==2){//
-    rdrift= 0.00972903*tdrift-8.21676e-05*tdrift*tdrift+3.66446e-07*tdrift*tdrift*tdrift-5.85882e-10*tdrift*tdrift*tdrift*tdrift;  
+    rdrift= 0.00972903*tdrift-8.21676e-05*tdrift*tdrift+3.66446e-07*tdrift*tdrift*tdrift-5.85882e-10*tdrift*tdrift*tdrift*tdrift;
   }else if(strel_switch==3){//
-    rdrift= 0.0087776*tdrift-6.41845e-05*tdrift*tdrift+2.4946e-07*tdrift*tdrift*tdrift-3.48422e-10*tdrift*tdrift*tdrift*tdrift;  
+    rdrift= 0.0087776*tdrift-6.41845e-05*tdrift*tdrift+2.4946e-07*tdrift*tdrift*tdrift-3.48422e-10*tdrift*tdrift*tdrift*tdrift;
   }else if(strel_switch==4){//HIT 2014
-    rdrift= 0.0092254*tdrift-7.1192e-5*tdrift*tdrift+3.01951e-7*tdrift*tdrift*tdrift-4.66646e-10*tdrift*tdrift*tdrift*tdrift;  
+    rdrift= 0.0092254*tdrift-7.1192e-5*tdrift*tdrift+3.01951e-7*tdrift*tdrift*tdrift-4.66646e-10*tdrift*tdrift*tdrift*tdrift;
   }else if (strel_switch==5){
-    rdrift= (0.032891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift)/0.78;     
+    rdrift= (0.032891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift)/0.78;
   }else if (strel_switch==6){//from strel calibration
-    rdrift= -0.118715 + (0.0098028*tdrift) + (-0.000119206*tdrift*tdrift) + (8.75103e-07*tdrift*tdrift*tdrift) + (-3.16015e-09*tdrift*tdrift*tdrift*tdrift) + (4.37948e-12*tdrift*tdrift*tdrift*tdrift*tdrift);    
+    rdrift= -0.118715 + (0.0098028*tdrift) + (-0.000119206*tdrift*tdrift) + (8.75103e-07*tdrift*tdrift*tdrift) + (-3.16015e-09*tdrift*tdrift*tdrift*tdrift) + (4.37948e-12*tdrift*tdrift*tdrift*tdrift*tdrift);
   }else if (strel_switch==7){//from strel calibration
     tdrift+=43.7;
-    rdrift= 0.0201024 + (0.00408601*tdrift) + (-4.42738e-05*tdrift*tdrift) + (4.9932e-07*tdrift*tdrift*tdrift) + (-2.45383e-09*tdrift*tdrift*tdrift*tdrift) + (4.08383e-12*tdrift*tdrift*tdrift*tdrift*tdrift);     
+    rdrift= 0.0201024 + (0.00408601*tdrift) + (-4.42738e-05*tdrift*tdrift) + (4.9932e-07*tdrift*tdrift*tdrift) + (-2.45383e-09*tdrift*tdrift*tdrift*tdrift) + (4.08383e-12*tdrift*tdrift*tdrift*tdrift*tdrift);
   }else{
     //FIRST strel embedded in old Framework
-    rdrift= 0.032891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift;
+    rdrift=(tdrift>320) ? 0.79 : 0.012891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift;
   }
-  
-  return rdrift<=0 ? 0.0001:rdrift;
-  
+
+  return rdrift<=0 ? 0.0001 : rdrift;
+
 }
 
 
@@ -396,24 +398,24 @@ Float_t TABMparCon::InverseStrel(Float_t rdrift){
 
 
 Float_t TABMparCon::FirstSTrelMC(Float_t tdrift, Int_t mc_switch){
-  
+
   if(tdrift<0 && t0_switch==2)
       return 0.03289 + 0.008*tdrift;
-  
+
   if(mc_switch==1){ //garfield strel
-    return 0.00915267+0.00634507*tdrift+2.02527e-05*tdrift*tdrift-7.60133e-07*tdrift*tdrift*tdrift+5.55868e-09*tdrift*tdrift*tdrift*tdrift-1.68944e-11*tdrift*tdrift*tdrift*tdrift*tdrift+1.87124e-14*tdrift*tdrift*tdrift*tdrift*tdrift*tdrift;  
+    return 0.00915267+0.00634507*tdrift+2.02527e-05*tdrift*tdrift-7.60133e-07*tdrift*tdrift*tdrift+5.55868e-09*tdrift*tdrift*tdrift*tdrift-1.68944e-11*tdrift*tdrift*tdrift*tdrift*tdrift+1.87124e-14*tdrift*tdrift*tdrift*tdrift*tdrift*tdrift;
   }else if(mc_switch==2){//
-    return 0.00972903*tdrift-8.21676e-05*tdrift*tdrift+3.66446e-07*tdrift*tdrift*tdrift-5.85882e-10*tdrift*tdrift*tdrift*tdrift;  
+    return 0.00972903*tdrift-8.21676e-05*tdrift*tdrift+3.66446e-07*tdrift*tdrift*tdrift-5.85882e-10*tdrift*tdrift*tdrift*tdrift;
   }else if(mc_switch==3){//
-    return 0.0087776*tdrift-6.41845e-05*tdrift*tdrift+2.4946e-07*tdrift*tdrift*tdrift-3.48422e-10*tdrift*tdrift*tdrift*tdrift;  
+    return 0.0087776*tdrift-6.41845e-05*tdrift*tdrift+2.4946e-07*tdrift*tdrift*tdrift-3.48422e-10*tdrift*tdrift*tdrift*tdrift;
   }else if(mc_switch==4){//HIT 2014
-    return 0.0092254*tdrift-7.1192e-5*tdrift*tdrift+3.01951e-7*tdrift*tdrift*tdrift-4.66646e-10*tdrift*tdrift*tdrift*tdrift;  
+    return 0.0092254*tdrift-7.1192e-5*tdrift*tdrift+3.01951e-7*tdrift*tdrift*tdrift-4.66646e-10*tdrift*tdrift*tdrift*tdrift;
   }else if (mc_switch==5)
-    return (0.032891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift)/0.78; 
+    return (0.032891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift)/0.78;
 
   //FIRST strel embedded in old Framework
-  return 0.032891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift; 
-  
+  return 0.032891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift;
+
 }
 
 
@@ -426,7 +428,7 @@ Float_t TABMparCon::FirstSTrelMC(Float_t tdrift, Int_t mc_switch){
     //~ sigma = my_hreso->GetBinContent(mybin)/10000;
   //~ }
   //~ return sigma>0 ? sigma:0.12;
-  
+
 //~ }
 
 //~ TF1* TABMparCon::GetCalibX() {
@@ -548,15 +550,14 @@ Float_t TABMparCon::FirstSTrelMC(Float_t tdrift, Int_t mc_switch){
         //~ Info("Action()","STrel:: %d %lf ",ih,(m_myVFunSpl.at(ih))->Eval(time));
       //~ }
     //~ }
-    
+
     //~ //  res *= 0.3;
   //~ } else {
-    //~ res -= STrel_Delta1(fabs(time)); 
-    //~ res -= STrel_Delta2(fabs(time)); 
-    //~ res -= STrel_Delta3(fabs(time)); 
+    //~ res -= STrel_Delta1(fabs(time));
+    //~ res -= STrel_Delta2(fabs(time));
+    //~ res -= STrel_Delta3(fabs(time));
   //~ }
 
   //~ return res;
 
 //~ }
-

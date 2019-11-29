@@ -21,7 +21,7 @@ using namespace std;
 #include "TAGparGeo.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
-#include "TABMntuTrack.hxx" 
+#include "TABMntuTrack.hxx"
 
 #include "FieldManager.h"
 #include "MaterialEffects.h"
@@ -66,23 +66,27 @@ public:
                                   TAGparaDsc* dsctggeo=0);
   virtual         ~TABMactNtuTrack();
   virtual Bool_t  Action();
-  
+
   virtual  void   CreateHistogram();
-   
+
   //tracking
   void ChargeLegendrePoly();
-  Int_t FindLegendreBestValues();  
+  Int_t FindLegendreBestValues();
   void CheckAssHits(const Int_t asshitx, const Int_t asshity);
+  void CheckPossibleHits(const Int_t cellplane, Int_t wireplane[], TH2D* legpolsum, Double_t yvalue, const Int_t best_rbin, Double_t diff, Double_t res, Int_t &selview, const Int_t hitnum);
   Double_t EvaluateChi2(const double *params);
-  Double_t EvaluateChi2GSI(const double *params);
+  Double_t EvaluateChi2Xview(const double *params);
+  Double_t EvaluateChi2Yview(const double *params);
+  Double_t EvaluateChi2GSIx(const double *params);
+  Double_t EvaluateChi2GSIy(const double *params);
   Int_t NumericalMinimizationDouble();
-  Int_t NumericalMinimizationGSI();//same as NumericalMinimizationDouble, but specific for the first FOOT GSI run 2019, with t0 passed as free par 
+  Int_t NumericalMinimizationGSI();//same as NumericalMinimizationDouble, but specific for the first FOOT GSI run 2019, with t0 passed as free par
   Bool_t ComputeDataAll();
-  
+
   ClassDef(TABMactNtuTrack,0)
-    
+
   private:
-  
+
   TGeoManager*      f_BMgeoMan;
   TAGdataDsc*       fpNtuTrk;		    // output data dsc
   TAGdataDsc*       fpNtuHit;		    // input data dsc
@@ -98,7 +102,7 @@ public:
   TABMparCon* p_bmcon;
   TABMparGeo* p_bmgeo;
   TAGparGeo*  p_tggeo;
-     
+
   //Legendre:
   TH2D*    legpolxsum;
   TH2D*    legpolysum;
@@ -106,16 +110,16 @@ public:
   Int_t    best_mybin;
   Int_t    best_rxbin;
   Int_t    best_rybin;
-  
+
   //new chi2 ROOT based
-  ROOT::Math::Minimizer* minx; 
+  ROOT::Math::Minimizer* minx;
+  ROOT::Math::Minimizer* miny;
   ROOT::Math::Functor* functorx;
-  ROOT::Math::Minimizer* miny; 
   ROOT::Math::Functor* functory;
-  ROOT::Math::Minimizer* minGSI; 
-  ROOT::Math::Functor* functorGSI;
-  
-  //histos 
+  ROOT::Math::Functor* functorGSIx;
+  ROOT::Math::Functor* functorGSIy;
+
+  //histos
   //~ TH2F*            fpHisR02d;
   TH2F*            fpResTot;//
   TH2F*            fpHisMap;
