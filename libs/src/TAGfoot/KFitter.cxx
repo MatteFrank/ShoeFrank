@@ -93,15 +93,15 @@ KFitter::KFitter () {
   // target
   if (GlobalPar::GetPar()->IncludeTG()) {
     TGeoVolume* tgVol = m_TG_geo->BuildTarget();
-
-    //    TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAGparGeo::GetBaseName());
+    TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAGparGeo::GetBaseName());
+    m_TopVolume->AddNode(tgVol, 1, transfo);
   }
 
   // Vertex
   if (GlobalPar::GetPar()->IncludeVertex()) {
     TGeoVolume* vtVol  = m_VT_geo->BuildVertex();
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAVTparGeo::GetBaseName());
-    m_TopVolume->AddNode(vtVol, 1, transfo);
+    m_TopVolume->AddNode(vtVol, 2, transfo);
   }
 
   // // Magnet
@@ -114,7 +114,7 @@ KFitter::KFitter () {
   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
     TGeoVolume* itVol  = m_IT_geo->BuildInnerTracker();
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAITparGeo::GetItBaseName());
-    m_TopVolume->AddNode(itVol, 2, transfo);
+    m_TopVolume->AddNode(itVol, 3, transfo);
 
   }
 
@@ -122,7 +122,7 @@ KFitter::KFitter () {
   if (GlobalPar::GetPar()->IncludeMSD()) {
     TGeoVolume* msdVol = m_MSD_geo->BuildMultiStripDetector();
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAMSDparGeo::GetBaseName());
-    m_TopVolume->AddNode(msdVol, 3, transfo);
+    m_TopVolume->AddNode(msdVol, 4, transfo);
 
   }
 
@@ -130,6 +130,7 @@ KFitter::KFitter () {
   if (GlobalPar::GetPar()->IncludeTW()) {
     TGeoVolume* twVol = m_TW_geo->BuildTofWall();
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TATWparGeo::GetBaseName());
+    m_TopVolume->AddNode(twVol, 5, transfo);
   }
 
   // // CA
@@ -155,8 +156,8 @@ KFitter::KFitter () {
 
   InitEventDisplay();
 
-  // //---------------------------------------------------------------
-  // //---------------------------------------------------------------
+  //---------------------------------------------------------------
+  //---------------------------------------------------------------
   // //DUMP GEOMETRY
   //
   // //--- close the geometry
@@ -782,7 +783,7 @@ int KFitter::PrepareData4Fit( Track* fitTrack ) {
 //----------------------------------------------------------------------------------------------------
 void KFitter::Prepare4Vertex( Track* fitTrack ) {
 
-
+  if ( m_debug > 0 )
   cout << "\nPrepare4Vertex::Entered\n";
 
   TMatrixDSym hitCov(3);
@@ -814,7 +815,7 @@ void KFitter::Prepare4Vertex( Track* fitTrack ) {
     //hardcoded
     hitCov[2][2] = 0.000005;
 
-    hitCov.Print();
+    //hitCov.Print();
 
     // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
     AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["VT"], i, nullptr );
@@ -822,6 +823,7 @@ void KFitter::Prepare4Vertex( Track* fitTrack ) {
     m_allHitsInMeasurementFormat.push_back(hit);
 
   }
+  if ( m_debug > 0 )
   cout << "\nPrepare4Vertex::Exiting\n";
 }
 
@@ -830,6 +832,9 @@ void KFitter::Prepare4Vertex( Track* fitTrack ) {
 
 //----------------------------------------------------------------------------------------------------
 void KFitter::Prepare4InnerTracker( Track* fitTrack ) {
+
+  if ( m_debug > 0 )
+  cout << "\nPrepare4InnerTracker::Entered\n";
 
   TMatrixDSym hitCov(3);
   TVectorD hitCoords(3);
@@ -864,19 +869,24 @@ void KFitter::Prepare4InnerTracker( Track* fitTrack ) {
     //hardcoded
     hitCov[2][2] = 0.000005;
 
-    hitCov.Print();
+    //hitCov.Print();
 
     // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
     AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["IT"], i, nullptr );
     m_allHitsInMeasurementFormat.push_back(hit);
 
   }
+  if ( m_debug > 0 )
+  cout << "\nPrepare4InnerTracker::Exiting\n";
 }
 
 
 
 //----------------------------------------------------------------------------------------------------
 void KFitter::Prepare4TofWall( Track* fitTrack ) {
+
+  if ( m_debug > 0 )
+  cout << "\nPrepare4TofWall::Entered\n";
 
   TMatrixDSym hitCov(3);
   TVectorD hitCoords(3);
@@ -909,6 +919,8 @@ void KFitter::Prepare4TofWall( Track* fitTrack ) {
     m_allHitsInMeasurementFormat.push_back(hit);
 
   }
+  if ( m_debug > 0 )
+  cout << "\nPrepare4TofWall::Exiting\n";
 }
 
 
@@ -916,6 +928,7 @@ void KFitter::Prepare4TofWall( Track* fitTrack ) {
 //----------------------------------------------------------------------------------------------------
 void KFitter::Prepare4Strip( Track* fitTrack ) {
 
+  if ( m_debug > 0 )
   cout << "\nPrepare4Strip::Entered\n";
 
   TMatrixDSym hitCov(3);
@@ -973,7 +986,7 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
     //hardcoded
     hitCov[2][2] = 0.0002;
 
-    hitCov.Print();
+    //hitCov.Print();
 
     // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
     AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["MSD"], i, nullptr );
@@ -981,194 +994,9 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
     m_allHitsInMeasurementFormat.push_back(hit);
 
   }
+
+  if ( m_debug > 0 )
   cout << "\nPrepare4Strip::Exiting\n";
-
-
-  // if ( m_debug > 0 )		cout << "Hit " << i << endl;
-  //if ( m_debug > 0 )		cout << "MSD hit = Layer:" << p_hit->GetLayer() <<" view:"<< p_hit->GetPixelView() <<
-  //        								" strip:"<< p_hit->GetPixelStrip() <<
-  //        								" \n\t\tGEN Type: " << p_hit->m_genPartFLUKAid <<
-  //        								"  genID= " << p_hit->m_genPartID << endl;
-  //        // if ( m_debug > 0 )		hitPos.Print();
-  //
-  //
-  //        // set covariance matrix
-  //        // double stripReso = 0.001;
-  //		double stripReso = GlobalPar::GetPar()->MSDReso();
-  //		hitCov.UnitMatrix();
-  //		hitCov *= stripReso*stripReso;
-  //		double zErr = 0.01;
-  //		hitCov[2][2] = zErr*zErr;
-  //
-  ////		double simulatedStripHit_X = p_hit->GetMCPosition_Global().X();
-  ////		double simulatedStripHit_Y = p_hit->GetMCPosition_Global().Y();
-  ////		double simulatedStripHit_Z = p_hit->GetMCPosition_Global().Z();
-  ////		TVector3 gen_hitPos = TVector3 ( simulatedStripHit_X, simulatedStripHit_Y, simulatedStripHit_Z );
-  //		// if ( m_debug > 0 )		cout << "\tSimulated hits coordinate using smearing (nope!): \t\t ";
-  //		// if ( m_debug > 0 )		gen_hitPos.Print();
-  //		// if ( m_debug > 0 )		hitPos.Print();
-  //
-  //       TVector3 hitPos = m_MSD_geo->GetPixelPos_footFrame( p_hit->GetSensorID(), p_hit->GetPixelColumn(), p_hit->GetPixelLine() );
-  //
-  ////        hitCoords(0)=gen_hitPos.x();
-  ////		hitCoords(1)=gen_hitPos.y();
-  ////		hitCoords(2)=gen_hitPos.z();
-  //		 hitCoords(0)=hitPos.x();
-  //		 hitCoords(1)=hitPos.y();
-  //		 hitCoords(2)=hitPos.z();
-  //
-  //
-  //
-  //		// MC info, provvisorio solo per il test!!!!!
-  //		//m_MSD_posVectorSmearedHit.push_back( gen_hitPos );
-  ////		TVector3 hitMomMC( p_hit->GetMCMomentum_Global().X(), p_hit->GetMCMomentum_Global().Y(), p_hit->GetMCMomentum_Global().Z() );
-  ////		m_MSD_momVectorSmearedHit.push_back( hitMomMC );
-  ////		m_MSD_mass.push_back( p_hit->m_genPartMass );
-  //
-  //        // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
-  //    	AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["MSD"], i, nullptr );
-  //
-  //    	m_allHitsInMeasurementFormat.push_back(hit);
-  //
-  //
-  //        // if ( p_hit->GetPixelView() == 0 )        allStripSignals_x.push_back(p_hit);
-  //        // if ( p_hit->GetPixelView() == 1 )        allStripSignals_y.push_back(p_hit);
-  //
-  //    }
-  //
-  //	// if ( m_debug > 0 )		cout << "x=  " << allStripSignals_x.size() << "  y= " << allStripSignals_y.size() << endl;
-  //
-  //	// //***********************************************************************************************
-  //	// //		test senza smearing su x
-  //	// //***********************************************************************************************
-  //	// int countStripHits = 0;
-  // //    m_MSD_posVectorSmearedHit.clear();
-  // //    m_MSD_momVectorSmearedHit.clear();
-  // //    m_MSD_mass.clear();
-  // //    for ( vector<TAMSDntuHit*>::iterator xIt=allStripSignals_x.begin(); xIt != allStripSignals_x.end(); xIt++ ) {
-  //
-  //	//         // TVector3 hitPos = m_MSD_geo->GetPosition( (*xIt)->GetLayer(), (*xIt)->GetPixelView(), (*xIt)->GetPixelStrip() );
-  //
-  //	//         // set covariance matrix
-  //	// 		double stripReso = GlobalPar::GetPar()->MSDReso();
-  //	// 		hitCov.UnitMatrix();
-  //	// 		hitCov *= stripReso*stripReso;
-  //	// 		double zErr = 0.001;
-  //	// 		hitCov[2][2] = zErr*zErr;
-  //
-  //	// 		double simulatedStripHit_X = (*xIt)->GetMCPosition_Global().X();
-  //	// 		double simulatedStripHit_Y = (*xIt)->GetMCPosition_Global().Y();
-  //	// 		double simulatedStripHit_Z = (*xIt)->GetMCPosition_Global().Z();
-  //	// 		TVector3 gen_hitPos = TVector3 ( simulatedStripHit_X, simulatedStripHit_Y, simulatedStripHit_Z );
-  //	// 		if ( m_debug > 0 )		cout << "\tSimulated hits coordinate using smearing (nope!): \t\t ";
-  //	// 		if ( m_debug > 0 )		gen_hitPos.Print();
-  //	// 		// if ( m_debug > 0 )		hitPos.Print();
-  //
-  //	//         hitCoords(0)=gen_hitPos.x();
-  //	// 		hitCoords(1)=gen_hitPos.y();
-  //	// 		hitCoords(2)=gen_hitPos.z();
-  //	// 		// hitCoords(0)=hitPos.x();
-  //	// 		// hitCoords(1)=hitPos.y();
-  //	// 		// hitCoords(2)=hitPos.z();
-  //
-  //
-  //
-  //	// 		// MC info, provvisorio solo per il test!!!!!
-  //	// 		m_MSD_posVectorSmearedHit.push_back( gen_hitPos );
-  //	// 		TVector3 hitMomMC( (*xIt)->GetMCMomentum_Global().X(), (*xIt)->GetMCMomentum_Global().Y(), (*xIt)->GetMCMomentum_Global().Z() );
-  //	// 		m_MSD_momVectorSmearedHit.push_back( hitMomMC );
-  //	// 		m_MSD_mass.push_back( (*xIt)->m_genPartMass );
-  //
-  //	//         // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
-  // //        	AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["MSD"], countStripHits, nullptr );
-  //
-  // //        	m_allHitsInMeasurementFormat.push_back(hit);
-  //
-  //	//         // count the combined hits
-  //	// 		countStripHits++;
-  //
-  // //    }
-  //	//***********************************************************************************************
-  //	//***********************************************************************************************
-  //
-  //
-  ////***********************************************************************************************
-  ////		include smearing
-  ////***********************************************************************************************
-  //
-  //   //  int countStripHits = 0;
-  //   //  m_MSD_posVectorSmearedHit.clear();
-  //   //  m_MSD_momVectorSmearedHit.clear();
-  //   //  m_MSD_mass.clear();
-  //   //  for ( vector<TAMSDntuHit*>::iterator xIt=allStripSignals_x.begin(); xIt != allStripSignals_x.end(); xIt++ ) {
-  //	  //   for ( vector<TAMSDntuHit*>::iterator yIt=allStripSignals_y.begin(); yIt != allStripSignals_y.end(); yIt++ ) {
-  //
-  //	  //   	if ( (*xIt)->GetLayer() != (*yIt)->GetLayer() )		continue;
-  //
-  //	  //   	// combine strip signals ONLY if coming from th same fragment
-  //	  //   	if ( (*xIt)->m_genPartID != (*yIt)->m_genPartID )		continue;
-  //
-  //
-  //	  //       TVector3 x_hitPos = m_MSD_geo->GetPosition( (*xIt)->GetLayer(), (*xIt)->GetPixelView(), (*xIt)->GetPixelStrip() );
-  //	  //       TVector3 y_hitPos = m_MSD_geo->GetPosition( (*yIt)->GetLayer(), (*yIt)->GetPixelView(), (*yIt)->GetPixelStrip() );
-  //
-  //	  //       // TVector3 geo_hitPos = TVector3 ( x_hitPos.x(), x_hitPos.y(), x_hitPos.z() );
-  //	  //       TVector3 geo_hitPos = TVector3 ( x_hitPos.y(), y_hitPos.y(), 0.5*(x_hitPos.z() + y_hitPos.z()) );
-  //
-  //	  //       if ( m_debug > 0 )		cout << "Hit strip " << countStripHits << endl;
-  //	  //       if ( m_debug > 0 )		cout << "\tMSD hit = Layer:" << (*xIt)->GetLayer() << " xStrip:" << (*xIt)->GetPixelStrip() <<" yStrip:"<<  (*yIt)->GetPixelStrip() << endl;
-  //
-  //	  //       if ( m_debug > 0 )		cout << "\t", geo_hitPos.Print();
-  //
-  //			// double stripReso = GlobalPar::GetPar()->MSDReso();
-  //			// hitCov.UnitMatrix();
-  //			// hitCov *= stripReso*stripReso;
-  //			// double zErr = 0.0025*2;
-  //			// hitCov[2][2] = zErr*zErr;
-  //
-  //			// double simulatedStripHit_X = (*xIt)->GetMCPosition_Global().X() + m_diceRoll->Gaus(0.,1.) * stripReso/4;
-  //			// double simulatedStripHit_Y = (*yIt)->GetMCPosition_Global().Y() + m_diceRoll->Gaus(0.,1.) * stripReso/4;
-  //			// double simulatedStripHit_Z = m_MSD_geo->GetLayerCenter( (*xIt)->GetLayer() ).Z();
-  //			// // double simulatedStripHit_Z = m_MSD_geo->GetLayerCenter( (*xIt)->GetLayer() ).Z() + m_diceRoll->Gaus(0.,1.) * zErr;
-  //
-  //			// TVector3 hitPos = TVector3 ( simulatedStripHit_X, simulatedStripHit_Y, simulatedStripHit_Z );
-  //			// if ( m_debug > 0 )		cout << "\tSimulated hits coosrdinate using smearing: \t\t ";
-  //			// if ( m_debug > 0 )		hitPos.Print();
-  //
-  //	  //       hitCoords(0)=hitPos.x();
-  //			// hitCoords(1)=hitPos.y();
-  //			// hitCoords(2)=hitPos.z();
-  //
-  //			// // MC info
-  //			// TVector3 hitPosMC( (*xIt)->GetMCPosition_Global().X(), (*yIt)->GetMCPosition_Global().Y(), m_MSD_geo->GetLayerCenter( (*xIt)->GetLayer() ).Z() );
-  //			// // TVector3 hitPosMC( (*xIt)->GetMCPosition_Global().X(), (*xIt)->GetMCPosition_Global().Y(), m_MSD_geo->GetLayerCenter( (*xIt)->GetLayer() ).Z() );
-  //			// m_MSD_posVectorSmearedHit.push_back( hitPosMC );
-  //			// TVector3 hitMomMC( (*xIt)->GetMCMomentum_Global().X(), (*yIt)->GetMCMomentum_Global().Y(), (*xIt)->GetMCMomentum_Global().Z() );
-  //			// m_MSD_momVectorSmearedHit.push_back( hitMomMC );
-  //			// m_MSD_mass.push_back( (*xIt)->m_genPartMass );
-  //
-  //	  //       // AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["MSD"], i, new TrackPoint(fitTrack));
-  //	  //       AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["MSD"], countStripHits, nullptr );
-  //
-  //	  //       // count the combined hits
-  //			// countStripHits++;
-  //
-  //	  //        // try to categorise the particle that generated the hit. If it fails --> clean the hit object
-  //	  //       string category = CategoriseHitsToFit_withTrueInfo( (*xIt)->m_genPartFLUKAid, (*xIt)->m_genPartCharge, (*xIt)->m_genPartMass );
-  //	  //       if (category == "fail")	{
-  //	  //       	delete hit;
-  //	  //       	continue;
-  //	  //       }
-  //	  //       // cout << category << "   " << p_hit->m_genPartMass << endl;
-  //	  //       m_hitCollectionToFit[ category ].push_back(hit);
-  //
-  //	  //   }
-  //   //  }
-  //    //***********************************************************************************************
-  //	//***********************************************************************************************
-  //
-  //
-
 }
 
 //----------------------------------------------------------------------------------------------------
