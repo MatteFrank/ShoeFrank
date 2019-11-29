@@ -33,6 +33,7 @@ private:
    
 private:
    static Float_t  fgkFWTH;
+   static Float_t  fgThreshold;
 
    ClassDef(TAVTdigitizerG,0)
 };
