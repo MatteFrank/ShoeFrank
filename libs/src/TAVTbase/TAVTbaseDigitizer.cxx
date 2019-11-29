@@ -172,7 +172,7 @@ Double_t TAVTbaseDigitizer::FuncClusterHeight(Double_t* x, Double_t* par)
    Float_t de = x[0];
    Float_t z  = x[1];
    
-   Float_t f = par[0]+par[1]*TMath::Log(de) + par[2] + par[3]*z;
+   Float_t f = (par[0]+par[1]*TMath::Log(de))*(par[2] + par[3]*z);
 
    return f;
 }
@@ -183,7 +183,7 @@ Double_t TAVTbaseDigitizer::FuncClusterWidth(Double_t* x, Double_t* par)
    Float_t de = x[0];
    Float_t z  = x[1];
 
-   Float_t f = par[0]+par[1]*TMath::Log(de) + par[2] + par[3]*z;
+   Float_t f = (par[0]+par[1]*TMath::Log(de))*(par[2] + par[3]*z);
    
    return f;
 }
