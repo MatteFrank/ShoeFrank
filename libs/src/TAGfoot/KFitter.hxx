@@ -104,10 +104,10 @@ using namespace genfit;
 typedef vector<genfit::AbsMeasurement*> MeasurementVector;
 
 class KFitter {
-  
+
 public:
-  
-  
+
+
   KFitter();
   ~KFitter() {
     delete m_fitter;
@@ -125,19 +125,19 @@ public:
     TVector3 MCPosition;
     TVector3 MCMomentum;
   };
-  
-  
+
+
   // int PrepareData4Fit( string option );
   int PrepareData4Fit( Track* fitTrack );
   void Prepare4Vertex( Track* fitTrack );
   void Prepare4InnerTracker( Track* fitTrack );
   void Prepare4Strip( Track* fitTrack );
   void Prepare4TofWall( Track* fitTrack );
-  
+
   bool PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element );
-  
+
   int MakeFit(long evNum);
-  
+
   void GetTrueMCInfo( string hitSampleName, int x,
 		      TVector3* tmpPos, TVector3* tmpMom, double* tmp_mass,
 		      TVector3* tmp_genPos,  TVector3* tmp_genMom, TVector3* hitPos );
@@ -146,16 +146,16 @@ public:
 			    TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov,
 			    double* KalmanMass );
   void GetTrueParticleType( AbsMeasurement* , int* flukaID, int* partID, int* charge, double* mass );
-  
+
   void SetTrueSeed( TVector3* pos, TVector3* mom );
   void MakePrefit();
-  
+
   void CategoriseHitsToFit_withTrueInfo();
-  
+
   void RecordTrackInfo( Track* track, string hitSampleName );
-  
+
   void IncludeDetectors();
-  
+
   int UploadHitsVT();
   int UploadHitsIT();
   int UploadHitsMSD();
@@ -164,35 +164,35 @@ public:
   int UploadClusVT();
   int UploadClusIT();
   int UploadClusMSD();
-  
-  
+
+
   void Finalize();	// save control plot and calculate resolutions
-  
+
   void PrintEfficiency();
   // void PrintPositionResidual( TVector3 pos, TVector3 expectedPos, string hitSampleName );
   // void PrintMomentumResidual( TVector3 pos, TVector3 expectedPos, TVector3 cov, string hitSampleName );
   // void PrintMomentumResidual( TVector3 pos, TVector3 expectedPos, TMatrixD cov, string hitSampleName );
   // void PrintMomentumResidual( TVector3 pos, TVector3 expectedPos, double cov, string hitSampleName );
-  
+
   // void InitAllHistos( string hitSampleName );
   // void InitSingleHisto( map< string, TH1F* >* histoMap, string collectionName, string histoName, int nBin, float minBin, float maxBin );
   // void InitMultiBinHistoMap( map< string, vector<TH1F*> >* histoMap, string collectionName, string histoName, int nBin, float minBin, float maxBin );
-  
+
   void InitEventDisplay();
-  
+
   // void Save();
   // void SaveHisto( TCanvas* mirror, map< string, TH1F* > histoMap, string title, string saveName );
   // void SaveHisto( TCanvas* mirror, TH1F* histoMap, string title, string saveName );
-  
-  
+
+
   double EvalError( TVector3 mom, TVector3 err );
   double EvalError( TVector3 mom, TMatrixD cov );
   void MatrixToZero( TMatrixD *matrix );
-  
+
   // bool frankFind( string what, string where )	{
-    
+
   //   int wildcard_pos = what.find("*");
-    
+
   //   if ( wildcard_pos == 0 )    {
   //     if( where.find( what.substr( wildcard_pos+1 ) ) != string::npos )
   // 	return true;
@@ -207,14 +207,14 @@ public:
   //     if( pre!=string::npos && post!=string::npos )
   // 	return true;
   //   }
-    
+
   //   return false;
   // }
-  
-  
-  
+
+
+
 private:
-  
+
   KalmanFitter* m_fitter;
   AbsKalmanFitter*  m_refFitter;    		 //KalmanFitterRefTrack()
   AbsKalmanFitter*  m_dafRefFitter;    	         //DAF with kalman ref
@@ -222,29 +222,29 @@ private:
 
 
   // init event display
-  //  EventDisplay* display;
-  
+  EventDisplay* display;
+
   // Track*  m_fitTrack;
   ControlPlotsRepository* m_controlPlotter;
   GlobalTrackRepostory* m_fitTrackCollection;
-  
+
   // TRandom3* m_diceRoll;
-  
-  
+
+
   //  delete non va fatto il delete perche APPARENTEMENTE gia fatto
   vector<TAVTntuHit*> m_VT_hitCollection;
   vector<TAITntuHit*> m_IT_hitCollection;
   vector<TAMSDntuHit*> m_MSD_hitCollection;
   vector<TATWpoint*> m_TW_hitCollection;
-  
+
   vector<TAVTcluster*> m_VT_clusCollection;
   vector<TAITcluster*> m_IT_clusCollection;
   vector<TAMSDcluster*> m_MSD_clusCollection;
-  
+
   vector<TVector3> m_MSD_posVectorSmearedHit;
   vector<TVector3> m_MSD_momVectorSmearedHit;
   vector<double> m_MSD_mass;
-  
+
   // kept as std pointer just to remember how to correctely delete and free resources iwth them
   // correctely freed
   // vector<AbsMeasurement*> m_hitCollectionToFit;
@@ -252,7 +252,7 @@ private:
   vector<AbsMeasurement*> m_allHitsInMeasurementFormat;
 
   map <int, map<int, MCTruthInfo> > m_MCInfo;
-  
+
   shared_ptr<TAGparGeo> m_TG_geo;
   shared_ptr<TAVTparGeo> m_VT_geo;
   shared_ptr<TAITparGeo> m_IT_geo;
@@ -260,31 +260,31 @@ private:
   shared_ptr<TATWparGeo> m_TW_geo;
 
   TGeoVolume* m_TopVolume;          // top volume of geometry
-  
+
   // TrackVector* m_fitTrackCollection;
   vector<int> m_evNum_vect;
-  
+
   vector<Color_t> m_vecHistoColor;
-  
+
   map<string, int> m_nTotTracks;
   map<string, int> m_nConvergedTracks;
   vector<string> m_categoryFitted;
   map<string, int> m_detectorID_map;
-  
+
   string m_systemsON;
   string m_kalmanOutputDir;
 
   double m_AMU; // conversion betweem mass in GeV and atomic mass unit
-  
+
   int m_debug;
-  
+
   long m_evNum;
-  
+
   bool m_reverse;
 
   TAGgeoTrafo* m_GeoTrafo;
-  
-  
+
+
 };
 
 
