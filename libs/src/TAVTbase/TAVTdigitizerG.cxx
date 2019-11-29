@@ -77,6 +77,9 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
       for (Int_t y = ymin; y <= ymax; ++y) {
          
          Float_t value = fFuncClusterDisX->Eval(x)*fFuncClusterDisY->Eval(y);
+         Float_t err = TMath::Sqrt(value);
+         value += gRandom->Uniform(err);;
+         
          if (value > height*height*fgThreshold) {
             Int_t idx  = GetIndex(x, y);
             if (idx < 0) continue;
