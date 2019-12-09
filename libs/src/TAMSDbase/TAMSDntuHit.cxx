@@ -16,7 +16,7 @@ TAMSDntuHit::TAMSDntuHit()
  : TAGobject(),
    fSensorId(0),
    fPosition(0),
-   fValue(0.),
+   // fValue(0.),
    fIndex(0),
    fView(0),
    fStrip(0)
@@ -24,11 +24,11 @@ TAMSDntuHit::TAMSDntuHit()
 }
 
 //______________________________________________________________________________
-TAMSDntuHit::TAMSDntuHit( Int_t input, Float_t value, Int_t view, Int_t strip)
+TAMSDntuHit::TAMSDntuHit( Int_t input, Int_t view, Int_t strip)
  : TAGobject(),
    fSensorId(input),
    fPosition(0),
-   fValue(value),
+   // fValue(value),
    fIndex(0),
    fView(view),
    fStrip(strip)

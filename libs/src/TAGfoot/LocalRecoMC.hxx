@@ -104,7 +104,7 @@ protected:
    TAGdataDsc*           fpNtuMcTw;    // input data dsc
    TAGdataDsc*           fpNtuMcCa;    // input data dsc
 
-   TAGdataDsc*           containerHit;    // input data dsc
+   // TAGdataDsc*           containerHit;    // input data dsc
    TAGdataDsc*           containerPoint;    // input data dsc
    
    TAMCactNtuEve*        fActNtuMcEve;

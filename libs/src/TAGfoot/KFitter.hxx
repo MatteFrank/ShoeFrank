@@ -129,9 +129,17 @@ public:
 
   // int PrepareData4Fit( string option );
   int PrepareData4Fit( Track* fitTrack );
+  int PrepareData4Fit_dataLike( Track* fitTrack );
+
+  void Prepare4Vertex( TAVTcluster* clus, int track_ID, int iHit );
   void Prepare4Vertex( Track* fitTrack );
+
   void Prepare4InnerTracker( Track* fitTrack );
+  void Prepare4InnerTracker( TAITcluster* clus, int track_ID, int iHit );
+
   void Prepare4Strip( Track* fitTrack );
+  void Prepare4Strip(TVector3 pos, int track_ID, int iHit );
+
   void Prepare4TofWall( Track* fitTrack );
 
   bool PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element );
@@ -151,6 +159,8 @@ public:
   void MakePrefit();
 
   void CategoriseHitsToFit_withTrueInfo();
+  void CategoriseHitsToFit_fromVTX() {};
+
 
   void RecordTrackInfo( Track* track, string hitSampleName );
 
@@ -249,6 +259,7 @@ private:
   // correctely freed
   // vector<AbsMeasurement*> m_hitCollectionToFit;
   map <string, vector<AbsMeasurement*> > m_hitCollectionToFit;
+  map <int, vector<AbsMeasurement*> > m_hitCollectionToFit_dataLike;
   vector<AbsMeasurement*> m_allHitsInMeasurementFormat;
 
   map <int, map<int, MCTruthInfo> > m_MCInfo;
@@ -281,6 +292,7 @@ private:
   long m_evNum;
 
   bool m_reverse;
+  bool m_recolike1;
 
   TAGgeoTrafo* m_GeoTrafo;
 
