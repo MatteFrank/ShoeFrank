@@ -988,7 +988,7 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 		// virtual double getRadiationLenght() const = 0;
 
 		ControlPlotsRepository::GetControlObject( m_kalmanOutputDir )->SetControlMom_4eachState( hitSampleName, i, &KalmanMom, &tmpMom, &tmp_genMom );
-		ControlPlotsRepository::GetControlObject( m_kalmanOutputDir )->SetControlPos_4eachState( hitSampleName, i, &KalmanPos, &tmpPos, &hitPos );
+		ControlPlotsRepository::GetControlObject( m_kalmanOutputDir )->SetControlPos_4eachState( hitSampleName, i, &KalmanPos, &tmpPos, &tmp_genPos );
 
 		// keep quantities to be plotted of the state CLOSER to the interaction point
 		unsigned int measuredState = ( m_reverse ? m_hitCollectionToFit[ hitSampleName ].size()-1 : 0 );
