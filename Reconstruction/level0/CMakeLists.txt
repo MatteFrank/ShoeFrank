@@ -76,15 +76,3 @@ target_link_libraries(DecodeMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBR
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS DecodeMC DESTINATION bin)
-
-#----------------------------------------------------------------------------
-# Add the executable, and link it to the Genfit and root libraries
-#
-add_executable(Decode_Kal Decode_Kal.cxx)
-#
-target_link_libraries(Decode_Kal ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
-
-#----------------------------------------------------------------------------
-# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
-#
-install(TARGETS Decode_Kal DESTINATION bin)
