@@ -43,7 +43,7 @@ void GlobalRecoMC::BeforeEventLoop()
 
 	// Initialisation of KFfitter
 	if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init!" << endl;
-	// m_kFitter = new KFitter();
+	m_kFitter = new KFitter();
 	if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init done!" << endl;
   
 
@@ -68,7 +68,7 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents)
       if (!fTAGroot->NextEvent()) break;
 
       m_globalTrackingStudies->Execute();
-      // m_kFitter->MakeFit(ientry);
+      m_kFitter->MakeFit(ientry);
 
    }
 }
@@ -78,7 +78,7 @@ void GlobalRecoMC::AfterEventLoop()
 {
   
   m_globalTrackingStudies->Finalize();
-  // m_kFitter->Finalize();
+  m_kFitter->Finalize();
   LocalRecoMC::AfterEventLoop();
 }
 
