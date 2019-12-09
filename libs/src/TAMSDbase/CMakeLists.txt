@@ -22,6 +22,8 @@ set( with_dictionnaries
    TAMSDdatRaw
    TAMSDntuRaw
    TAMSDntuHit
+   TAMSD_Point
+   TAMSD_ContainerPoint
    TAMSDparMap
    TAMSDparGeo
    TAMSDparConf

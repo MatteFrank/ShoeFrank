@@ -11,6 +11,8 @@
 #include "KFitter.hxx"
 #include "UpdatePDG.hxx"
 
+#include "GlobalTrackingStudies.hxx"
+
 
 class GlobalRecoMC : public LocalRecoMC
 {
@@ -30,6 +32,7 @@ public:
 
 private:
   KFitter* m_kFitter;
+  GlobalTrackingStudies* m_globalTrackingStudies;
 };
 
 
