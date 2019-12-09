@@ -47,7 +47,6 @@ class TAVTbaseTrack : public TAGobject {
 protected:
    TVector3*      fOrigin;                       //->   origin x0,y0,z0
    TVector3*      fSlope;                        //->   the slope (dx/dz, dy/dz, 1)
-   TVector3 	  m_vertex;						// vertex (interaction point) position
    Float_t        fLength;
 
    Bool_t         fPileup;                       // true if track is part of pileup events
@@ -131,9 +130,6 @@ public:
    void           SetPileUp(Bool_t pileup = true)    { fPileup = pileup;            }
    //Set Validity of track in vertex reconstruction
    void           SetValidity(Int_t q)               { fValidity = q;               }
-   // Set Vertex Position
-   void           SetVertex(TVector3 v)              { m_vertex = v;                }
-   void           SetVertex(float x, float y, float z)              { m_vertex = TVector3(x,y,z);    }
    //! Set Z vertex
    void           SetVertexZ(Float_t z)              { fVertexZ = z;                }
    //! Set values of line track
@@ -160,8 +156,6 @@ public:
    Float_t        GetChi2U()          const { return   fChiSquareU;    }   
    //! Get chi squareV 
    Float_t        GetChi2V()          const { return   fChiSquareV;    }
-   // Get Vertex position
-   TVector3       GetVertex()         const { return m_vertex;         }
    //! Get Z vertex
    Float_t       GetVertexZ()         const { return fVertexZ;         }
    //Get Validity

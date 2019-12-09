@@ -261,8 +261,7 @@ Bool_t TAVTactNtuVertexPD::SetVertex()
        if(fNotValidTrack[q] == 1) continue;
         TAVTtrack* track0 = ntuTrack->GetTrack(q);
         track0->SetValidity(1);
-	    track0->SetVertex(fVtxPos.X(), fVtxPos.Y(), fVtxPos.Z());
-	    track0->SetVertexZ(fVtxPos.Z());
+       track0->SetVertexZ(fVtxPos.Z());
         vtx->AddTrack(track0);
     }
     
