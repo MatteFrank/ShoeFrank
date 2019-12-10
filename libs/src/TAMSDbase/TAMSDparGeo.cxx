@@ -29,29 +29,12 @@ TAMSDparGeo::TAMSDparGeo()
 : TAVTbaseParGeo()
 {
    fkDefaultGeoName = "./geomaps/TAMSDdetector.map";
-   m_nLayer = 6;
-   StripN =  640;
-	// Pitch=  0.0150
-	// TotalSizeX:        9.815   
-	// TotalSizeY:    9.815   
-	// TotalSizeZ:    0.0200
-	EpiSizeX=         9.600 ; 
-	EpiSizeY=     9.390  ; 
-	EpiSizeZ=      0.0150;
-	// EpiOffsetX:        0.1075  
-	// EpiOffsetY:    0.2125  
-	// EpiOffsetZ:    0.0000
-
-	// X
-	stripSizeX = EpiSizeX / StripN;  // spazio tra le strip
-	stripSizeY = EpiSizeY / StripN;  // spazio tra le strip
-	for (int i = 0; i<StripN; i++ ) {
-		x_strip[i] = -(EpiSizeX*0.5) + stripSizeX/2 + i*stripSizeX;
-		y_strip[i] = -(EpiSizeY*0.5) + stripSizeY/2 + i*stripSizeY;
-	}
-
 }
 
+//_____________________________________________________________________________
+TAMSDparGeo::~TAMSDparGeo()
+{
+}
 
 
 //_____________________________________________________________________________

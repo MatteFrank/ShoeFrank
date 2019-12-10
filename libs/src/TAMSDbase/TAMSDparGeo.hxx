@@ -28,7 +28,7 @@ class TAMSDparGeo : public TAVTbaseParGeo {
 
 public:
   TAMSDparGeo();
-  virtual ~TAMSDparGeo() {};
+  virtual ~TAMSDparGeo();
   
   // Define materials
    void DefineMaterial();
@@ -50,32 +50,6 @@ public:
   string      PrintAssignMaterial(TAGmaterials *Material);
   string      PrintSubtractBodiesFromAir();
 
-  int StripN;
-  float EpiSizeX;
-  float EpiSizeY;
-  float EpiSizeZ;
-  float stripSizeX;
-  float stripSizeY;
-
-  map<int, float> x_strip;
-  map<int, float> y_strip;
-
-  int GetStrip( int view, float k ) { 
-  	if (view == 0 ) {
-	  	for ( map< int, float >::iterator stripx = x_strip.begin(); stripx != x_strip.end(); stripx++ ) 
-	  		if ( k < (*stripx).second + stripSizeX*0.5 )	return (*stripx).first;
-  	}
-  	else {
-  		for ( map< int, float >::iterator stripx = y_strip.begin(); stripx != y_strip.end(); stripx++ ) 
-	  		if ( k < (*stripx).second + stripSizeY*0.5 )	return (*stripx).first;
-  	}
-  	return -1;
-  };
-  float GetPosition (int view,  int s ) { 
-  	if (view == 0 )		return x_strip[s];
-  	else 		 		return y_strip[s]; 
-  };
-
 private:
   map<string, vector<string> > m_regionName;
   map<string, vector<string> > m_bodyName;
@@ -85,7 +59,6 @@ private:
   vector<string> vMetalRegion, vModRegion, vStripRegion;
   
   Int_t      fStripN;          // Number of strips
-  int 		 m_nLayer;
   Float_t    fPitch;           // Pitch value
   
   TVector3   fMetalSize;        // Sensitive size of metallization
@@ -104,7 +77,6 @@ public:
   Float_t GetPosition(Int_t strip) const;
 
   //! Get number of strip
-  int GetNLayers()  				{ return m_nLayer; };
   Int_t GetNStrip()                  const { return fStripN;       }
   Int_t GetPitch()                   const { return fPitch;        }
 
