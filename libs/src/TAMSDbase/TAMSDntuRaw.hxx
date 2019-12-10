@@ -19,8 +19,6 @@ protected:
    TObjArray*        fListOfStrips;
    TAMSDparGeo*      fpGeoMap;         //! do not store
    
-   // nsensor!!!!!!!!!   aggiungi!
-
    std::map<pair<int, int>, int > fMap; //!
 
 private:
@@ -38,7 +36,7 @@ public:
    
    Int_t              GetStripsN(Int_t iSensor) const;
    
-   TAMSDntuHit*       NewStrip(Int_t sensor, Int_t aView, Int_t aStrip);
+   TAMSDntuHit*       NewStrip(Int_t sensor, Double_t value, Int_t aView, Int_t aStrip);
    
    virtual void       SetupClones();
    

@@ -42,7 +42,7 @@ protected:
   
 public:
    TAMSDntuHit();
-    TAMSDntuHit( Int_t input, Int_t view, Int_t strip);
+    TAMSDntuHit( Int_t input, Float_t value, Int_t view, Int_t strip);
 
    virtual ~TAMSDntuHit() {};
 
@@ -72,7 +72,7 @@ public:
   Bool_t     IsSortable()       const    { return kTRUE;     }
   
   // MC track id
-  Int_t      GetMcIndex(Int_t index)    const   { return fMCindex[index];       }  // non e' un vettore... cambia
+  Int_t      GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
   Int_t      GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
   Int_t      GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
   

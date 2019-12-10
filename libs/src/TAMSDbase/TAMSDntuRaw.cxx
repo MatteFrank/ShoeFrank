@@ -146,7 +146,7 @@ void TAMSDntuRaw::Clear(Option_t*)
 
 //______________________________________________________________________________
 //
-TAMSDntuHit* TAMSDntuRaw::NewStrip(Int_t iSensor,  Int_t aView, Int_t aStrip)
+TAMSDntuHit* TAMSDntuRaw::NewStrip(Int_t iSensor, Double_t value, Int_t aView, Int_t aStrip)
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray &stripArray = *GetListOfStrips(iSensor);
@@ -154,14 +154,14 @@ TAMSDntuHit* TAMSDntuRaw::NewStrip(Int_t iSensor,  Int_t aView, Int_t aStrip)
       
       // check if strip already exists
       if ( fMap[idx] == iSensor+1) {
-         TAMSDntuHit* strip = new TAMSDntuHit(iSensor, aView, aStrip);
+         TAMSDntuHit* strip = new TAMSDntuHit(iSensor, value, aView, aStrip);
          TAMSDntuHit* curStrip = (TAMSDntuHit*)stripArray.FindObject(strip);
          delete strip;
          return curStrip;
          
       } else {
          fMap[idx] = iSensor+1;
-         TAMSDntuHit* strip = new(stripArray[stripArray.GetEntriesFast()]) TAMSDntuHit(iSensor, aView, aStrip);
+         TAMSDntuHit* strip = new(stripArray[stripArray.GetEntriesFast()]) TAMSDntuHit(iSensor, value, aView, aStrip);
          return strip;
       }
    } else {
