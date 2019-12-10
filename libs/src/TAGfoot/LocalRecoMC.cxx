@@ -9,7 +9,6 @@
 #include "TAVTntuRaw.hxx"
 #include "TAITntuRaw.hxx"
 #include "TAMSDntuRaw.hxx"
-#include "TAMSD_ContainerPoint.hxx"
 #include "TATWntuRaw.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
@@ -106,8 +105,6 @@ void LocalRecoMC::CreateRawAction()
    
    if (GlobalPar::GetPar()->IncludeMSD()) {
       fpNtuRawMsd = new TAGdataDsc("msdRaw", new TAMSDntuRaw());
-		containerPoint = new TAGdataDsc("containerPoint", new TAMSD_ContainerPoint() );
-
       fActNtuRawMsd = new TAMSDactNtuMC("msdActNtu", fpNtuRawMsd, fpParGeoMsd, fEvtStruct);
       if (fFlagHisto)
          fActNtuRawMsd->CreateHistogram();
