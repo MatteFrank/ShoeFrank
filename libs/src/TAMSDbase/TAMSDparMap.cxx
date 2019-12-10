@@ -15,7 +15,7 @@
 
 ClassImp(TAMSDparMap);
 
-const Int_t TAMSDparMap::fgkSensorsN = 8;
+const Int_t TAMSDparMap::fgkSensorsN = 6;
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
