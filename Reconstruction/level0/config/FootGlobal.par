@@ -5,7 +5,7 @@
 ################################################################
 
 
-Debug:	2
+Debug:	0
 
 
 
@@ -32,17 +32,17 @@ Kalman Particle Types:	C
 
 ############	END - Kalman Filter Control Parameters	################
 
-IncludeDI:			   y
+IncludeDI:			   n
 IncludeST:				y
 IncludeBM:				y
 IncludeTG:			   y
 IncludeVertex:			y
-IncludeInnerTracker:	y
-IncludeMSD:				y
-IncludeTW:				n
+IncludeInnerTracker:	n
+IncludeMSD:				n
+IncludeTW:				y
 IncludeCA:				n
 
-IncludeEvent:			y
+IncludeEvent:			n
 
 Print OutputFile: true
 Output Filename: RecoHistos.root
