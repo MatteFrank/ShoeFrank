@@ -9,6 +9,7 @@ using namespace std;
 
 Float_t TAVTdigitizerG::fgkFWTH     = 2*TMath::Sqrt(2*TMath::Log(10));
 Float_t TAVTdigitizerG::fgThreshold = 0.1;
+Float_t TAVTdigitizerG::fgGain      = 280.;
 
 
 // --------------------------------------------------------------------------------------
@@ -77,6 +78,9 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
       for (Int_t y = ymin; y <= ymax; ++y) {
          
          Float_t value = fFuncClusterDisX->Eval(x)*fFuncClusterDisY->Eval(y);
+         Float_t err = TMath::Sqrt(value*fgGain);
+         value += gRandom->Uniform(err);;
+         
          if (value > height*height*fgThreshold) {
             Int_t idx  = GetIndex(x, y);
             if (idx < 0) continue;

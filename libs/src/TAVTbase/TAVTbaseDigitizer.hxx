@@ -59,6 +59,10 @@ public:
    Float_t      GetPitchX()        const        { return fPitchX;          }
    Float_t      GetPitchY()        const        { return fPitchX;          }
 
+   TF1*         GetFuncClusterSize()            { return fFuncClusterSize;   }
+   TF1*         GetFuncClusterHeight()          { return fFuncClusterHeight; }
+   TF1*         GetFuncClusterWidth()           { return fFuncClusterWidth;  }
+
    //! Get Map
    std::map<int, double>  GetMap() const        { return fMap;             }
    
