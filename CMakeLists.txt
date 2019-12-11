@@ -85,7 +85,7 @@ Set(TACA  "TACAbase")
 Set(TAMC  "TAMCbase")
 Set(TAED  "TAEDbase")
 Set(TAFO  "TAGfoot")
-add_definitions(-std=c++14)
+set(CMAKE_CXX_STANDARD 14)
 
 #----------------------------------------------------------------------------
 # Set src includes
