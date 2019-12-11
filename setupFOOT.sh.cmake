@@ -8,7 +8,7 @@ export FOOTRES=$FOOTLEVEL0/results
 export FOOTSIMU=$FOOTMAIN/Simulation
 
 
-if [ "$OSTYPE" = "darwin" ]
+if [[ "$OSTYPE" == "darwin"* ]]
 then
   export DYLD_LIBRARY_PATH=$ROOTSYS/lib:./:$ASOFTREF/lib:${DYLD_LIBRARY_PATH}
 else
