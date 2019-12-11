@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <fstream>
 #include <Riostream.h>
@@ -183,7 +184,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       cout  << "Number of modules: " <<  fModulesN << endl;  
 
    // Set number of matrices
-   SetupMatrices(fCrystalsN);
+   SetupMatrices(fCrystalsN + fModulesN);
    fListOfCrysAng.resize(fCrystalsN);
 
    // Read transformtion info
@@ -217,6 +218,41 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       transfo  = trans;
       transfo *= rot;
       AddTransMatrix(new TGeoHMatrix(transfo), idCry);
+   }
+
+   // Modules 
+   // Read transformtion info
+   Int_t nModule = 0;
+   fListOfModAng.resize(fModulesN);
+   for (Int_t imod = 0; imod < fModulesN; ++imod) {
+      
+      ReadItem(nModule);
+      if(fDebugLevel)
+         cout  << "Module id "<< nModule << endl;
+      
+      // read  position
+      ReadVector3(position);
+      if(fDebugLevel)
+         cout << "   Position: "
+         << position[0] << " " << position[1] << " " << position[2] << endl;
+
+      ReadVector3(tilt);
+      if(fDebugLevel)
+         cout  << "   tilt: " << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
+
+      fListOfModAng[nModule] = tilt;
+
+      TGeoRotation rot;
+      rot.RotateX(tilt[0]);
+      rot.RotateY(tilt[1]);
+      rot.RotateZ(tilt[2]);
+      
+      TGeoTranslation trans(position[0], position[1], position[2]);
+      
+      TGeoHMatrix  transfo;
+      transfo  = trans;
+      transfo *= rot;
+      AddTransMatrix(new TGeoHMatrix(transfo), fCrystalsN + nModule);
    }
    
    return true;
@@ -266,20 +302,37 @@ TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)
          caloCristal->SetFillColor(fgkDefaultCryCol);
          caloCristal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
          detector->AddNode(caloCristal, iCry, hm);
-         
-         if (iCry % fgkCrystalsNperModule == 0) {
-            TGeoVolume *support = gGeoManager->MakeTrd2("modSup", medSup, xdim1s, xdim2s, ydim1s, ydim2s, zdims);
-            support->SetLineColor(fgkDefaultModCol);
-            support->SetFillColor(fgkDefaultModCol);
-            // support->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
-            
-            // Add Z shift to the support
-            TGeoCombiTrans* hms = new TGeoCombiTrans(*hm);
-            *hms *=  TGeoTranslation(0, 0, fSupportPositionZ);
-            detector->AddNode(support, iCry+fCrystalsN, hms);
-         }
+
+	 /*
+	   AS:: Turned off the 'crystal per crystal construction'
+	   if (iCry % fgkCrystalsNperModule == 0) {
+	   TGeoVolume *support = gGeoManager->MakeTrd2("modSup", medSup, xdim1s, xdim2s, ydim1s, ydim2s, zdims);
+	   support->SetLineColor(fgkDefaultModCol);
+	   support->SetFillColor(fgkDefaultModCol);
+	   // support->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+           
+	   // Add Z shift to the support
+	   TGeoCombiTrans* hms = new TGeoCombiTrans(*hm);
+	   *hms *=  TGeoTranslation(0, 0, fSupportPositionZ);
+	   detector->AddNode(support, iCry+fCrystalsN, hms);
+	   }
+	 */
       }
    }
+
+   for (Int_t imod = 0; imod < fModulesN; ++imod) {
+     TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN+imod);
+     if (hm) {
+       TGeoVolume *support = gGeoManager->MakeTrd2("modSup", medSup, xdim1s, xdim2s, ydim1s, ydim2s, zdims);
+       support->SetLineColor(fgkDefaultModCol);
+       support->SetFillColor(fgkDefaultModCol);
+       // support->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+       // Add Z shift to the support
+       *hm *=  TGeoTranslation(0, 0, fSupportPositionZ);
+       detector->AddNode(support, imod, hm);
+     }
+   }
+
    return detector;
 }
 
@@ -303,6 +356,28 @@ TVector3 TACAparGeo::GetCrystalAngle(Int_t idx)
    }
    
    return fListOfCrysAng[idx];
+}
+
+//_____________________________________________________________________________
+TVector3 TACAparGeo::GetModulePosition(Int_t idx)
+{
+   TGeoHMatrix* hm = GetTransfo(fCrystalsN + idx);
+   if (hm) {
+      TVector3 local(0,0,0);
+      fCurrentPosition =  LocalToMaster(fCrystalsN + idx, local);
+   }
+   return fCurrentPosition;   
+}
+
+//_____________________________________________________________________________
+TVector3 TACAparGeo::GetModuleAngle(Int_t idx)
+{
+   if (idx < 0 || idx > fCrystalsN) {
+      Warning("GetCrystalAngle()","Wrong crystal id number: %d ", idx);
+      return TVector3(0,0,0);
+   }
+   
+   return fListOfModAng[idx];
 }
 
 //_____________________________________________________________________________
@@ -503,15 +578,13 @@ string TACAparGeo::PrintBodies()
    }    
 
    // air regions around each module (6 PLA bodies)
+   // AS: restored a 'per module' positioning
    TString modBodyName = "AP";
-   for (Int_t iCry=0; iCry<fCrystalsN; iCry++) {
-      if (iCry % fgkCrystalsNperModule == 0) {
-         TGeoCombiTrans* hm = GetCombiTransfo(iCry);
-         if (hm) {
-            TGeoCombiTrans* hms = new TGeoCombiTrans(*hm);
-            *hms *=  TGeoTranslation(0, 0, fModAirFlukaPositionZ);
-            outstr << SPrintCrystalBody( iCry / fgkCrystalsNperModule , hms, modBodyName, fModAirFlukaSize );
-         }
+   for (Int_t imod=0; imod<fModulesN; imod++) {  
+      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + imod);
+      if (hm) {
+         *hm *=  TGeoTranslation(0, 0, fModAirFlukaPositionZ);
+         outstr << SPrintCrystalBody( imod, hm, modBodyName, fModAirFlukaSize );
       }
    } 
 
@@ -523,35 +596,35 @@ string TACAparGeo::PrintBodies()
       int dir[2];
       // Vertical planes
       dir[0] = 1; dir[1] = 0; //dir[0] =1 -> right plane
-      int id = 16*fgkCrystalsNperModule;
-      TGeoCombiTrans* hm = GetCombiTransfo(id);
+      int id = 16;
+      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 4*fgkCrystalsNperModule;
-      hm = GetCombiTransfo(id);
+      id = 4;
+      hm = GetCombiTransfo(fCrystalsN + id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
       id = 0;
-      hm = GetCombiTransfo(id);
+      hm = GetCombiTransfo(fCrystalsN + id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 6*fgkCrystalsNperModule; dir[0] = -1; //dir[0] =-1 -> left plane
-      hm = GetCombiTransfo(id);
+      id = 6; dir[0] = -1; //dir[0] =-1 -> left plane
+      hm = GetCombiTransfo(fCrystalsN + id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 18*fgkCrystalsNperModule;
-      hm = GetCombiTransfo(id);
+      id = 18;
+      hm = GetCombiTransfo(fCrystalsN + id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
       // horizontal planes
       dir[0] = 0; dir[1] = 1; //dir[1] =1 -> top plane
-      id = fgkCrystalsNperModule*fgkCrystalsNperModule;
-      hm = GetCombiTransfo(id);
+      id = 9;
+      hm = GetCombiTransfo(fCrystalsN + id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 11*fgkCrystalsNperModule;
-      hm = GetCombiTransfo(id);
+      id = 11;
+      hm = GetCombiTransfo(fCrystalsN + id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
       dir[1] = -1;  //dir[1] =1 -> botton plane
-      id = 8*fgkCrystalsNperModule;
-      hm = GetCombiTransfo(id);
+      id = 8;
+      hm = GetCombiTransfo(fCrystalsN + id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 10*fgkCrystalsNperModule;
-      hm = GetCombiTransfo(id);
+      id = 10;
+      hm = GetCombiTransfo(fCrystalsN + id);
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
    }
 
