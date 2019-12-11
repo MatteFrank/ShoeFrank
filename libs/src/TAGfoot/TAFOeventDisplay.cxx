@@ -492,6 +492,14 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form("Cluster # %3d\n", idx) );
       fInfoView->AddLine( Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetPlaneNumber()) );
       fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
+    
+   } else if (obj->InheritsFrom("TAMSDcluster")) {
+         TAMSDcluster* clus = (TAMSDcluster*)obj;
+         if (clus == 0x0) return;
+         TVector3 pos = clus->GetPositionG();
+         fInfoView->AddLine( Form("Cluster # %3d\n", idx) );
+         fInfoView->AddLine( Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetPlaneNumber()) );
+         fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
       
    } else if (obj->InheritsFrom("TAVTvertex")) {
       TAVTvertex* vtx = (TAVTvertex*)obj;
@@ -624,6 +632,8 @@ void TAFOeventDisplay::UpdateElements(const TString prefix)
       UpdateLayerElements();
       if (fgTrackFlag)
          UpdateTrackElements(prefix);
+   } else if (prefix == "ms") {
+      UpdateStripElements();
    } else {
       UpdateQuadElements(prefix);
       if (fgTrackFlag) {
@@ -642,8 +652,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
          fVtxClusDisplay->ResetHits();
       }  else if (prefix == "it") {
          fItClusDisplay->ResetHits();
-      }  else if (prefix == "ms") {
-         fMsdClusDisplay->ResetHits();
       } else
          return;
    }
@@ -660,8 +668,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
       parGeo = fReco->GetParGeoVtx();
    else if (prefix == "it")
       parGeo = fReco->GetParGeoIt();
-   else if (prefix == "ms")
-      parGeo = fReco->GetParGeoMsd();
 
    // known bug if first event is empty
    if (fVtxClusDisplay)
@@ -699,8 +705,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
       pNtuClus = fReco->GetNtuClusterVtx();
    else if (prefix == "it")
       pNtuClus = (TAVTntuCluster*)fReco->GetNtuClusterIt();
-   else if (prefix == "ms")
-      pNtuClus = (TAVTntuCluster*)fReco->GetNtuClusterMsd();
 
    for( Int_t iPlane = 0; iPlane < nPlanes; iPlane++) {
       
@@ -718,10 +722,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
             posG = fpFootGeo->FromVTLocalToGlobal(posG);
          else if (prefix == "it")
             posG = fpFootGeo->FromITLocalToGlobal(posG);
-         else if (prefix == "ms")
-            posG = fpFootGeo->FromMSDLocalToGlobal(posG);
-
-
          x = posG(0);
          y = posG(1);
          z = posG(2);
@@ -732,9 +732,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
          } else if (prefix == "it") {
             fItClusDisplay->AddHit(nPix*10, x, y, z);
             fItClusDisplay->QuadId(clus);
-         } else if (prefix == "ms") {
-            fMsdClusDisplay->AddHit(nPix*10, x, y, z);
-            fMsdClusDisplay->QuadId(clus);
          }
 
       } //end loop on hits
@@ -745,8 +742,55 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
       fVtxClusDisplay->RefitPlex();
    else if (prefix == "it")
       fItClusDisplay->RefitPlex();
-   else if (prefix == "ms")
-      fMsdClusDisplay->RefitPlex();
+}
+
+//__________________________________________________________
+void TAFOeventDisplay::UpdateStripElements()
+{
+   if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn()))
+      fMsdClusDisplay->ResetHits();
+   
+   if (!fgDisplayFlag) // do not update event display
+      return;
+   
+   Float_t  x = 0.,  y = 0.,  z = 0.;
+   
+   TAMSDparGeo* parGeo = fReco->GetParGeoMsd();
+   Float_t pitch = parGeo->GetPitch()*5;
+   TVector3 epi  = parGeo->GetEpiSize();
+   Int_t nPlanes = parGeo->GetSensorsN();
+   
+   TAMSDntuCluster* pNtuClus  = (TAMSDntuCluster*)fReco->GetNtuClusterMsd();
+   
+   for( Int_t iPlane = 0; iPlane < nPlanes; iPlane++) {
+      
+      Int_t nclus = pNtuClus->GetClustersN(iPlane);
+      
+      if (nclus == 0) continue;
+      
+      for (Int_t iClus = 0; iClus < nclus; ++iClus) {
+         TAMSDcluster *clus = pNtuClus->GetCluster(iPlane, iClus);
+         if (!clus->IsValid()) continue;
+         TVector3 pos = clus->GetPositionG();
+         TVector3 posG = fpFootGeo->FromMSDLocalToGlobal(pos);
+         Int_t nStrip = clus->GetListOfStrips()->GetEntries();
+         
+         x = posG(0);
+         y = posG(1);
+         z = posG(2);
+
+         if (clus->GetPlaneView() == 0)
+            fMsdClusDisplay->AddHit(nStrip*10, x, y, z, pitch, epi[1]);
+         else
+            fMsdClusDisplay->AddHit(nStrip*10, x, y, z, epi[0], pitch);
+
+         fMsdClusDisplay->QuadId(clus);
+      
+      } //end loop on hits
+   
+   } //end loop on planes
+
+   fMsdClusDisplay->RefitPlex();
 }
 
 //__________________________________________________________
@@ -809,6 +853,7 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
             x1 = posG(0); y1 = posG(1); z1 = posG(2);
             
             Float_t nPix = track->GetMeanPixelsN();
+            printf("npix %f\n", nPix);
             fVtxTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
             fVtxTrackDisplay->TrackId(track);
             

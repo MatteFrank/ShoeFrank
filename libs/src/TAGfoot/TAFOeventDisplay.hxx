@@ -103,6 +103,7 @@ protected:
    void UpdateLayerElements();
    void UpdateBarElements();
    void UpdateCrystalElements();
+   void UpdateStripElements();
    void UpdateQuadElements(const TString prefix);
    void UpdateTrackElements(const TString prefix);
    void UpdateGlbTrackElements();
@@ -152,7 +153,7 @@ protected:
    
    TAEDcluster*    fItClusDisplay;  // list of quad to display hits
    
-   TAEDcluster*    fMsdClusDisplay;  // list of quad to display hits
+   TAEDcluster*    fMsdClusDisplay;  // list of strip to display hits
    
    TAEDcluster*    fTwClusDisplay;  // list of quad to display hits
    
