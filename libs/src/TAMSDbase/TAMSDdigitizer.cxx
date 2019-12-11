@@ -18,13 +18,12 @@ Float_t TAMSDdigitizer::fgChargeFac       = 0.8;
 TAMSDdigitizer::TAMSDdigitizer(TAMSDparGeo* parGeo)
 : TAGbaseDigitizer(),
   fpParGeo(parGeo),
-  fPitch(0),
+  fPitch(0.),
   fStripsN(-1),
   fView(-1)
 {
-  
   fStripsN = fpParGeo->GetNStrip();
-  fPitch = fpParGeo->GetPitch();
+  fPitch   = fpParGeo->GetPitch();
 }
 
 // --------------------------------------------------------------------------------------
