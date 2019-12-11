@@ -83,14 +83,12 @@ void TAMSDactNtuMC::CreateHistogram()
     fpHisStripMap[i]  = new TH1F(Form("%sMcStripMap%d", prefix.Data(), i+1) , Form("%s - MC strip map for sensor %d", titleDev.Data(), i+1),
 				 pGeoMap->GetNStrip(), 0, pGeoMap->GetNStrip());
     AddHistogram(fpHisStripMap[i]);
-    
   }
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fpHisPosMap[i] =  new TH1F(Form("%sMcPosMap%d", prefix.Data(), i+1), Form("%s - MC position map for sensor %d", titleDev.Data(), i+1),
-			       pGeoMap->GetNStrip(), -pGeoMap->GetPitch()/2.*pGeoMap->GetNStrip(), pGeoMap->GetPitch()/2.*pGeoMap->GetNStrip());
+			       pGeoMap->GetNStrip(), -pGeoMap->GetPitch()*pGeoMap->GetNStrip(), pGeoMap->GetPitch()*pGeoMap->GetNStrip());
     AddHistogram(fpHisPosMap[i]);
-    
   }
    
   SetValidHistogram(kTRUE);
@@ -175,16 +173,16 @@ void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
       Int_t genPartID = fpEvtStr->MSDid[hitId] - 1;
       strip->AddMcTrackIdx(genPartID, hitId);
       
-      if ( fDebugLevel> 0 )
-	printf("strip %d\n", stripId);
+       if ( fDebugLevel> 0 )
+         printf("strip %d\n", stripId);
       
       double pos = pGeoMap->GetPosition(stripId);
       
       strip->SetPosition(pos);
       
       if (ValidHistogram()) {
-	fpHisStripMap[sensorId]->Fill(stripId);
-	fpHisPosMap[sensorId]->Fill(pos);
+         fpHisStripMap[sensorId]->Fill(stripId);
+         fpHisPosMap[sensorId]->Fill(pos);
       }
     }
   }
