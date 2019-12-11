@@ -53,13 +53,13 @@ void TAMSDactNtuCluster::CreateHistogram()
   TString prefix = "ms";
   TString titleDev = "Multi Strip Detector";
   
-  fpHisStripTot = new TH1F(Form("%sClusPixelTot", prefix.Data()), Form("%s - Total # strips per clusters", titleDev.Data()), 100, 0., 100.);
+  fpHisStripTot = new TH1F(Form("%sClusStripTot", prefix.Data()), Form("%s - Total # strips per clusters", titleDev.Data()), 100, 0., 100.);
   AddHistogram(fpHisStripTot);
   
   TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMap->Object();
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-    fpHisStrip[i] = new TH1F(Form("%sClusPixel%d",prefix.Data(), i+1), Form("%s - # strips per clusters for sensor %d", titleDev.Data(), i+1), 100, 0., 100.);
+    fpHisStrip[i] = new TH1F(Form("%sClusStrip%d",prefix.Data(), i+1), Form("%s - # strips per clusters for sensor %d", titleDev.Data(), i+1), 100, 0., 100.);
     AddHistogram(fpHisStrip[i]);
   }
   
@@ -212,7 +212,6 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
            if (cluster->GetStripsN() > 0) {
               fpHisStripTot->Fill(cluster->GetStripsN());
               fpHisStrip[iSensor]->Fill(cluster->GetStripsN());
-              // printf("sensor %d %d\n", iSensor, cluster->GetPixelsN());
               if (TAMSDparConf::IsMapHistOn()) {
                  fpHisClusMap[iSensor]->Fill(cluster->GetPosition());
               }
