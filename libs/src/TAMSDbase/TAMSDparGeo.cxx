@@ -226,12 +226,12 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
 }
 
 
-Float_t TAMSDparGeo::GetPosition(Int_t strip) const{
+//_____________________________________________________________________________
+Float_t TAMSDparGeo::GetPosition(Int_t strip) const
+{
   Float_t x = (Float_t(2*strip - fStripN + 1) * fPitch)/2.;
   return  x;
 }
-
-
 
 //_____________________________________________________________________________
 TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *vertexName)
