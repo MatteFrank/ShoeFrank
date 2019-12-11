@@ -39,6 +39,9 @@ public:
   //! Add hit
   void AddHit(Float_t e, Float_t x, Float_t y, Float_t z);
   
+  //! Add hit
+   void AddHit(Float_t e, Float_t x, Float_t y, Float_t z, Float_t dx, Float_t dy);
+
   //! Reset hits
   void ResetHits();
   
