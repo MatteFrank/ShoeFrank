@@ -59,7 +59,7 @@ void TAEDcluster::AddHit(Float_t e, Float_t x, Float_t y, Float_t z)
 //__________________________________________________________
 void TAEDcluster::AddHit(Float_t e, Float_t x, Float_t y, Float_t z, Float_t dx, Float_t dy)
 {
-   AddQuad(x-dx/2., y-dy/2., z);
+   AddQuad(x-dx/2., y-dy/2., z, dx, dy);
    DigitValue(Int_t(e+0.5));
 }
 
