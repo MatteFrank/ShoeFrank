@@ -16,7 +16,9 @@ TAMSDcluster::TAMSDcluster()
    fPosition(0.),
    fPosError(0),
    fPositionG(new TVector3(0., 0., 0.)),
-   fPlaneNumber(10)
+   fPlaneNumber(10),
+   fPlaneView(-1),
+   fIsValid(false)
 {
    // TAMSDcluster constructor
    SetupClones();
@@ -40,6 +42,8 @@ TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
    fPosError(cluster.fPosError),
    fPositionG(new TVector3(*cluster.fPositionG)),
    fPlaneNumber(cluster.fPlaneNumber),
+   fPlaneView(cluster.fPlaneView),
+   fIsValid(cluster.fIsValid),
    fMcTrackIdx(cluster.fMcTrackIdx)
 {
    fListOfStrips = (TClonesArray*)cluster.fListOfStrips->Clone();
@@ -57,15 +61,15 @@ TAMSDcluster::~TAMSDcluster()
 
 //______________________________________________________________________________
 //  
-void TAMSDcluster::AddPixel(TAMSDntuHit* pixel)
+void TAMSDcluster::AddStrip(TAMSDntuHit* strip)
 {
-   for (Int_t k = 0; k < pixel->GetMcTracksN(); ++k) {
-      Int_t idx = pixel->GetMcTrackIdx(k);
+   for (Int_t k = 0; k < strip->GetMcTracksN(); ++k) {
+      Int_t idx = strip->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);
    }
    
-   TClonesArray &pixelArray = *fListOfStrips;
-   new(pixelArray[pixelArray.GetEntriesFast()]) TAMSDntuHit(*pixel);
+   TClonesArray &StripArray = *fListOfStrips;
+   new(StripArray[StripArray.GetEntriesFast()]) TAMSDntuHit(*strip);
 }
 
 //______________________________________________________________________________

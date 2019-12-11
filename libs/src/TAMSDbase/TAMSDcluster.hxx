@@ -25,6 +25,7 @@ private:
    TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
    
    Int_t              fPlaneNumber;              // plane number
+   Int_t              fPlaneView;                // plane view = 0 for X and = 1 for Y plane
    Bool_t             fIsValid;                  // validity flag
    
    TArrayC            fMcTrackIdx;               // Idx of the track created in the simulation
@@ -43,13 +44,15 @@ public:
    void               SetPositionG(TVector3* pos);
    //! Set plane number
    void               SetPlaneNumber(Int_t nb)               { fPlaneNumber = nb;      }
+   //! Set view
+   void               SetPlaneView(Int_t v)                  { fPlaneView = v;         }
    //! Set validy
    void               SetValid(Bool_t v = true)              { fIsValid = v;           }
    
    //! Get position in local frame
-   Float_t           GetPosition()                     const { return fPosition;      }
+   Float_t           GetPosition()                     const { return fPosition;       }
    //! Get position error in local frame
-   Float_t           GetPosError()                     const { return fPosError;      }
+   Float_t           GetPosError()                     const { return fPosError;       }
    //! Get position in global tracker frame
    TVector3&           GetPositionG()                  const { return *fPositionG ;    }
    //! Get Pixel list
@@ -57,12 +60,14 @@ public:
    //! Get cluster number
    Int_t              GetPlaneNumber()                 const { return fPlaneNumber;    }
    
+   //! Get view
+   Int_t              GetPlaneView()                   const { return fPlaneView;      }
    //! Get validity
    Bool_t             IsValid()                        const { return fIsValid;        }
    //! Get number of pixels in this clusters
    Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntries(); }
    //! Get pixel
-   TAMSDntuHit*        GetStrip(Int_t idx);
+   TAMSDntuHit*       GetStrip(Int_t idx);
       
    //! Compute distance from another cluster
    Float_t            Distance(TAMSDcluster *aClus);
@@ -73,7 +78,7 @@ public:
    virtual void       SetupClones();
 
    //! Add pixel to the list
-   void               AddPixel(TAMSDntuHit* pixel);
+   void               AddStrip(TAMSDntuHit* strip);
 
    // Add MC track Idx
    void               AddMcTrackIdx(Int_t trackIdx);
