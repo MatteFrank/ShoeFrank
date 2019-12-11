@@ -432,12 +432,10 @@ void BaseReco::CreateRecActionVtx()
 //__________________________________________________________
 void BaseReco::CreateRecActionIt()
 {
-   cout << "CreateRecActionIt::Entered\n";
    fpNtuClusIt  = new TAGdataDsc("itClus", new TAITntuCluster());
    fActClusIt   = new TAITactNtuClusterF("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
    if (fFlagHisto)
      fActClusIt->CreateHistogram();
-   cout << "CreateRecActionIt::Exiting\n";
 }
 
 //__________________________________________________________
