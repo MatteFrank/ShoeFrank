@@ -48,8 +48,8 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    Int_t regX  = GetColRegion(x0);
    Int_t regY  = GetLineRegion(y0);
    
-   Float_t sigmaX = fClusterWidth/2.; //TMath::Sqrt(fPixelsN)/fgkFWTH;
-   Float_t sigmaY = fClusterWidth/2.; //TMath::Sqrt(fPixelsN)/fgkFWTH;
+   Float_t sigmaX = fClusterWidth/TMath::Sqrt(2);// taking into account that M18 the pitch /= 2 compared to M28
+   Float_t sigmaY = fClusterWidth/TMath::Sqrt(2);
 
    if(FootDebugLevel(1))
       printf("%g\n", fClusterWidth);
