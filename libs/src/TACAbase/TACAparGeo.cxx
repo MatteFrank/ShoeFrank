@@ -1007,140 +1007,140 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
 
       // 4 top modules
       int id = 29;
-      line.Form(" +air_cal -MP081 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP009 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 21;
-      line.Form(" +air_cal -MP081 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP009 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 23;
-      line.Form("AIR_CAL1    5 | +air_cal -MP099 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL1    5 | +air_cal -MP011 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 31;
-      line.Form(" +air_cal -MP099 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP011 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
 
       // 4 botton modules
       id = 28;
-      line.Form("AIR_CAL2    5 | +air_cal -MP072 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL2    5 | +air_cal -MP008 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 20;
-      line.Form(" +air_cal -MP072 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP008 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 22;
-      line.Form("AIR_CAL3    5 | +air_cal -MP090 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL3    5 | +air_cal -MP010 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 30;
-      line.Form(" +air_cal -MP090 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP010 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
 
       // 6 blocks of 4 modules from left to right
       id = 25;
-      line.Form("AIR_CAL4    5 | +air_cal +MP144 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL4    5 | +air_cal +MP016 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 17;
-      line.Form(" +air_cal +MP144 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP016 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 16;
-      line.Form(" +air_cal +MP144 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP016 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 24;
-      line.Form(" +air_cal +MP144 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP016 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       //
       id = 13;
-      line.Form("AIR_CAL5    5 | +air_cal -MP144 +MP036 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL5    5 | +air_cal -MP016 +MP004 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 5;
-      line.Form(" +air_cal -MP144 +MP036 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP016 +MP004 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 4;
-      line.Form(" +air_cal -MP144 +MP036 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP016 +MP004 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 12;
-      line.Form(" +air_cal -MP144 +MP036 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP016 +MP004 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       //
       id = 9;
-      line.Form("AIR_CAL6    5 | +air_cal -MP036 +MP000 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL6    5 | +air_cal -MP004 +MP000 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 1;
-      line.Form(" +air_cal -MP036 +MP000 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP004 +MP000 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 0;
-      line.Form(" +air_cal -MP036 +MP000 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP004 +MP000 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 8;
-      line.Form(" +air_cal -MP036 +MP000 +MP072 +MP081 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP004 +MP000 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       //
       id = 11;
-      line.Form("AIR_CAL7    5 | +air_cal -MP000 -MP054 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL7    5 | +air_cal -MP000 -MP006 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 3;
-      line.Form(" +air_cal -MP000 -MP054 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP000 -MP006 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 2;
-      line.Form(" +air_cal -MP000 -MP054 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP000 -MP006 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 10;
-      line.Form(" +air_cal -MP000 -MP054 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal -MP000 -MP006 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       //
       id = 15;
-      line.Form("AIR_CAL8    5 | +air_cal +MP054 -MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL8    5 | +air_cal +MP006 -MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 7;
-      line.Form(" +air_cal +MP054 -MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP006 -MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 6;
-      line.Form(" +air_cal +MP054 -MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP006 -MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 14;
-      line.Form(" +air_cal +MP054 -MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP006 -MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       //
       id = 27;
-      line.Form("AIR_CAL9    5 | +air_cal +MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIR_CAL9    5 | +air_cal +MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 19;
-      line.Form(" +air_cal +MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 18;
-      line.Form(" +air_cal +MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 26;
-      line.Form(" +air_cal +MP162 +MP090 +MP099 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form(" +air_cal +MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
    }

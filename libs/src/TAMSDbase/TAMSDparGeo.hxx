@@ -78,7 +78,7 @@ public:
 
   //! Get number of strip
   Int_t GetNStrip()                  const { return fStripN;       }
-  Int_t GetPitch()                   const { return fPitch;        }
+  Float_t GetPitch()                 const { return fPitch;        }
 
   
   ClassDef(TAMSDparGeo,1)
