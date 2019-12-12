@@ -853,7 +853,6 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
             x1 = posG(0); y1 = posG(1); z1 = posG(2);
             
             Float_t nPix = track->GetMeanPixelsN();
-            printf("npix %f\n", nPix);
             fVtxTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
             fVtxTrackDisplay->TrackId(track);
             
