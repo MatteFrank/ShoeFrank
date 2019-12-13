@@ -153,6 +153,13 @@ void TAVTactBaseTrack::CreateHistogram()
    fpHisBeamProf->SetStats(kFALSE);
    AddHistogram(fpHisBeamProf);
    
+   fpHisMeanPixel = new TH1F(Form("%sMeanClusPix", fPrefix.Data()), Form("%s - mean pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
+   AddHistogram(fpHisMeanPixel);
+   
+   fpHisMeanCharge = new TH1F(Form("%sMeanClusChg", fPrefix.Data()), Form("%s - mean charge per tracked clusters", fTitleDev.Data()), 500, 0, 10000);
+   AddHistogram(fpHisMeanCharge);
+
+
    SetValidHistogram(kTRUE);
    
    return;
@@ -285,6 +292,9 @@ void TAVTactBaseTrack::FillHistogramm(TAVTbaseTrack* track)
    
    TVector3 origin = track->GetOrigin();
    fpHisBeamProf->Fill(origin.X(), origin.Y());
+   
+   fpHisMeanPixel->Fill(track->GetMeanPixelsN());
+   fpHisMeanCharge->Fill(track->GetMeanCharge());
 }
 
 //_____________________________________________________________________________
