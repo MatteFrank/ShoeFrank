@@ -24,7 +24,6 @@
 #include "TAVTparGeo.hxx"
 #include "TAVTparMap.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTdatRaw.hxx"
 #include "TAVTntuRaw.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
