@@ -8,7 +8,7 @@
 #include "TRandom3.h"
 #include "TString.h"
 #include "TAGdata.hxx"
-#include "TArrayC.h"
+#include "TArrayI.h"
 
 #include <vector>
 #include <string.h>
@@ -89,8 +89,8 @@ class TABMntuHit : public TAGdata {
     //MC parameters
     Double_t  realRdrift;   //real rdrift, not smeared, only for MC 
     Int_t      isFake;   //-1=not set, 0=primary hit, 1=secondary hit, 2=fake creator hit
-    TArrayC         fMCindex;                  // Id of the hit created in the simulation
-    TArrayC         fMcTrackIdx;                // Id of the track created in the simulation
+    TArrayI         fMCindex;                  // Id of the hit created in the simulation
+    TArrayI         fMcTrackIdx;                // Id of the track created in the simulation
 };
 
 

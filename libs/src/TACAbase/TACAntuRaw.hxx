@@ -2,7 +2,7 @@
 #define _TACAntuRaw_HXX
 
 
-#include "TArrayC.h"
+#include "TArrayI.h"
 #include "TClonesArray.h"
 #include "TString.h"
 #include "TVector3.h"
@@ -42,8 +42,8 @@ private:
    Int_t           fType;
    TVector3        fPosition;
    
-   TArrayC         fMCindex;                  // Id of the hit created in the simulation
-   TArrayC         fMcTrackIdx;                // Id of the track created in the simulation
+   TArrayI         fMCindex;                  // Id of the hit created in the simulation
+   TArrayI         fMcTrackIdx;                // Id of the track created in the simulation
    
    ClassDef(TACAntuHit,1)
 };

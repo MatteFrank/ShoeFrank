@@ -10,6 +10,8 @@ using namespace std;
 Float_t TAVTdigitizerG::fgkFWTH     = 2*TMath::Sqrt(2*TMath::Log(10));
 Float_t TAVTdigitizerG::fgThreshold = 0.1;
 Float_t TAVTdigitizerG::fgGain      = 280.;
+Int_t   TAVTdigitizerG::fgAdcDepth  = 10;
+Float_t TAVTdigitizerG::fgChargeMax = 1e4;
 
 
 // --------------------------------------------------------------------------------------
@@ -48,8 +50,8 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    Int_t regX  = GetColRegion(x0);
    Int_t regY  = GetLineRegion(y0);
    
-   Float_t sigmaX = fClusterWidth/2.; //TMath::Sqrt(fPixelsN)/fgkFWTH;
-   Float_t sigmaY = fClusterWidth/2.; //TMath::Sqrt(fPixelsN)/fgkFWTH;
+   Float_t sigmaX = fClusterWidth/TMath::Sqrt(2);// taking into account that M18 the pitch /= 2 compared to M28
+   Float_t sigmaY = fClusterWidth/TMath::Sqrt(2);
 
    if(FootDebugLevel(1))
       printf("%g\n", fClusterWidth);
@@ -84,7 +86,7 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
          if (value > height*height*fgThreshold) {
             Int_t idx  = GetIndex(x, y);
             if (idx < 0) continue;
-            fMap[idx] = value;
+            fMap[idx] = GetAdcValue(value);
          }
       }
    }
@@ -97,4 +99,10 @@ void TAVTdigitizerG::SetFunctions()
 {
    fFuncClusterDisX = new TF1("fFuncClusterDisX", "gaus");
    fFuncClusterDisY = new TF1("fFuncClusterDisY", "gaus");
+}
+
+// --------------------------------------------------------------------------------------
+Int_t TAVTdigitizerG::GetAdcValue(Float_t charge)
+{
+   return int(TMath::Power(2, fgAdcDepth)/fgChargeMax*(charge-fgThreshold));
 }

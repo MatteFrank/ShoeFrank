@@ -7,7 +7,7 @@
 #include "TVector2.h"
 #include "TClonesArray.h"
 #include "TObjArray.h"
-#include "TArrayC.h"
+#include "TArrayI.h"
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
@@ -36,7 +36,7 @@ protected:
    Bool_t             fFoundYZ;					    //! kTRUE is associated to a track in YZ Projection
    Bool_t             fIsValid;                  // validity flag
    
-   TArrayC            fMcTrackIdx;               // Idx of the track created in the simulation
+   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
    std::map<int, int> fMcTrackMap;               // Map of MC track Id
    
 public:

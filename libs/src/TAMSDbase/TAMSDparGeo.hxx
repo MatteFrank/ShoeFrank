@@ -77,8 +77,8 @@ public:
   Float_t GetPosition(Int_t strip) const;
 
   //! Get number of strip
-  Int_t GetNStrip()                  const { return fStripN;       }
-  Float_t GetPitch()                 const { return fPitch;        }
+  Int_t   GetNStrip()                  const { return fStripN;       }
+  Float_t GetPitch()                   const { return fPitch;        }
 
   
   ClassDef(TAMSDparGeo,1)

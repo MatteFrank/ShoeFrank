@@ -4,7 +4,7 @@
 
 // ROOT classes
 #include "TObject.h"
-#include "TArrayC.h"
+#include "TArrayI.h"
 #include "TObjArray.h"
 #include "TClonesArray.h"
 #include "TVector3.h"
@@ -45,8 +45,8 @@ protected:
 	Double32_t         fPulseHeight;              // pulseheight on pixel
    Bool_t             fValidFrames;              // ok when 3 consecutive frame numbers 
 
-   TArrayC            fMCindex;                  // Index of the hit created in the simulation
-   TArrayC            fMcTrackIdx;               // Index of the track created in the simulation
+   TArrayI            fMCindex;                  // Index of the hit created in the simulation
+   TArrayI            fMcTrackIdx;               // Index of the track created in the simulation
 
 public:
 
