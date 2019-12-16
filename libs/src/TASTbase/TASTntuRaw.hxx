@@ -14,7 +14,7 @@ using namespace std;
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
-#include "TArrayC.h"
+#include "TArrayI.h"
 
 class TASTntuHit : public TAGobject {
 public:
@@ -45,8 +45,8 @@ private:
    Double32_t      fCharge;
    Double32_t      fTime;
    
-   TArrayC         fMCindex;                  // Id of the hit created in the simulation
-   TArrayC         fMcTrackIdx;               // Index of the track created in the simulation
+   TArrayI         fMCindex;                  // Id of the hit created in the simulation
+   TArrayI         fMcTrackIdx;               // Index of the track created in the simulation
    
 };
 

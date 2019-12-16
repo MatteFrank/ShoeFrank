@@ -5,7 +5,7 @@
 // ROOT classes
 #include "TVector3.h"
 #include "TClonesArray.h"
-#include "TArrayC.h"
+#include "TArrayI.h"
 #include "TAGobject.hxx"
 
 
@@ -28,7 +28,7 @@ private:
    Int_t              fPlaneView;                // plane view = 0 for X and = 1 for Y plane
    Bool_t             fIsValid;                  // validity flag
    
-   TArrayC            fMcTrackIdx;               // Idx of the track created in the simulation
+   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
    std::map<int, int> fMcTrackMap;               // Map of MC track Id
 
 public:

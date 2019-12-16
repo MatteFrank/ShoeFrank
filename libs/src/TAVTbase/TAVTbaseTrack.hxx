@@ -8,7 +8,7 @@
 #include "TVector3.h"
 #include "TVector2.h"
 #include "TArrayF.h"
-#include "TArrayC.h"
+#include "TArrayI.h"
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
@@ -69,7 +69,7 @@ protected:
    Double32_t     fMeanPixelsN;                  // Average number of pixels per track
    Double32_t     fMeanCharge;                   // Average charge (for analogic sensor) per track
 
-   TArrayC            fMcTrackIdx;               // Idx of the track created in the simulation
+   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
    std::map<int, int> fMcTrackMap;               //! Map of MC track Id
    
 public:

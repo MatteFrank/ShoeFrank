@@ -3,7 +3,7 @@
 #define _TAMSDntuHit_HXX
 
 // ROOT classes
-#include "TArrayC.h"
+#include "TArrayI.h"
 #include "TObjArray.h"
 #include "TClonesArray.h"
 #include "TVector3.h"
@@ -37,8 +37,8 @@ protected:
   Int_t     fView;
   Int_t     fStrip;
   
-  TArrayC   fMCindex;                  // Index of the hit created in the simulation
-  TArrayC   fMcTrackIdx;               // Index of the track created in the simulation
+  TArrayI   fMCindex;                  // Index of the hit created in the simulation
+  TArrayI   fMcTrackIdx;               // Index of the track created in the simulation
   
 public:
    TAMSDntuHit();
