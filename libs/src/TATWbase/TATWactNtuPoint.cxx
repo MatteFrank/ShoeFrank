@@ -135,7 +135,7 @@ Bool_t TATWactNtuPoint::FindPoints()
       if (best) {
          TATWntuHit* hitmin = pNtuHit->GetHit(minId, 1);
 
-	 if(!hitmin) continue;
+         if(!hitmin) continue;
 	 
          Int_t bar2   = hitmin->GetBar();
          Float_t xmin = pGeoMap->GetBarPosition(0, bar1)[0];
@@ -143,15 +143,15 @@ Bool_t TATWactNtuPoint::FindPoints()
       
          TATWpoint* point = pNtuPoint->NewPoint(xmin, hit1, ymin, hitmin);
          
-//         Int_t Z = pCalMap->GetChargeZ(point->GetEnergyLoss1());
-//         point->SetChargeZ(Z);
+         Int_t Z = hit1->GetChargeZ(); // taking MC Z from hit since no reconstruction available
+         point->SetChargeZ(Z);
 	 
-	 if (ValidHistogram()) {
-	   fpHisDist->Fill(minDist);
-	   fpHisCharge1->Fill(point->GetEnergyLoss1());
-	   fpHisCharge2->Fill(point->GetEnergyLoss2());
-	   fpHisChargeTot->Fill(point->GetEnergyLoss());
-	 }
+         if (ValidHistogram()) {
+            fpHisDist->Fill(minDist);
+            fpHisCharge1->Fill(point->GetEnergyLoss1());
+            fpHisCharge2->Fill(point->GetEnergyLoss2());
+            fpHisChargeTot->Fill(point->GetEnergyLoss());
+         }
       }
    }
 

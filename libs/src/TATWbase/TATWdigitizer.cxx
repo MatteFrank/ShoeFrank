@@ -214,7 +214,7 @@ Float_t TATWdigitizer::GetTofRight(Float_t pos, Float_t time, Float_t edep)
 }
 
 //___________________________________________________________________________________________
-Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/ )
+Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t Z)
 {
    // energy resolution
    fDeAttAsymSmear = gRandom->Uniform(-fDeAttAsym, +fDeAttAsym); // asymmetry btw left/right ends
@@ -274,6 +274,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    //Time should be stored in ns
    tof /= 1000.;
    fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, pos, 0 ,0 ,0 ,0 ,0); // save time in ns, Class TATW_Hit not compatible with real data)
+   fCurrentHit->SetChargeZ(Z);
    
    return true;
 }

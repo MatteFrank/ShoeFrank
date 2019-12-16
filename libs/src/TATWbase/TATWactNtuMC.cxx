@@ -117,7 +117,8 @@ bool TATWactNtuMC::Action() {
        TVector3 posIn(x0, y0, z0);
        TVector3 posInLoc = geoTrafo->FromGlobalToTWLocal(posIn);
 
-       m_Digitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, id+TATWparGeo::GetLayerOffset()*view);
+       Int_t Z = m_eventStruct->TRcha[trackId];
+       m_Digitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, id+TATWparGeo::GetLayerOffset()*view, Z);
        TATWntuHit* hit = m_Digitizer->GetCurrentHit();
        hit->AddMcTrackIdx(trackId, i);
 
