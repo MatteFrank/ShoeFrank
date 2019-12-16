@@ -201,13 +201,14 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
     posG = pGeoMap->Sensor2Detector(iSensor, posG);
-    cluster->SetPlaneView(pGeoMap->GetType());
+    cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
     cluster->SetPositionG(&posG);
     cluster->SetPosition(GetCurrentPosition());
     cluster->SetPosError(GetCurrentPosError());
     
      if (ApplyCuts(cluster)) {
         // histogramms
+        cluster->SetValid();
         if (ValidHistogram()) {
            if (cluster->GetStripsN() > 0) {
               fpHisStripTot->Fill(cluster->GetStripsN());
