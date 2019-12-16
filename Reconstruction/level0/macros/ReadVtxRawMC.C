@@ -124,6 +124,7 @@ void ReadVtxRawMC(TString name = "ionEventoC_IR_100k.root")
    
    FillMCVertex(&evStr);
    tagr.AddRequiredItem("eveActNtuMc");
+   tagr.AddRequiredItem("vtActRaw");
    tagr.AddRequiredItem("vtActCluster");
    tagr.AddRequiredItem("vtActTrck");
    tagr.AddRequiredItem("vtActVtx");
