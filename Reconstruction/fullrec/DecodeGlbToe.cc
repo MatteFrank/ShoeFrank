@@ -3,7 +3,7 @@
 #include <TApplication.h>
 
 #include "GlobalPar.hxx"
-#include "GlobalReco.hxx"
+#include "GlobalToeReco.hxx"
 
 int main (int argc, char *argv[])  {
 
@@ -18,7 +18,8 @@ int main (int argc, char *argv[])  {
    Bool_t his = false;
    Bool_t hit = false;
    Bool_t trk = false;
-   
+   Bool_t isMC = false;
+
    Int_t nTotEv = 1e7;
    
    for (int i = 0; i < argc; i++){
@@ -31,7 +32,8 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
       if(strcmp(argv[i],"-trk") == 0)   { trk = true;   } // enable tracking action
-      
+      if(strcmp(argv[i],"-mc") == 0)    { isMC = true;  } // MC local reco
+
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
          cout<<" Ex: Decoder [opts] "<<endl;
@@ -53,7 +55,7 @@ int main (int argc, char *argv[])  {
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
    
-   GlobalReco* glbRec = new GlobalReco(exp, in, out);
+   GlobalToeReco* glbRec = new GlobalToeReco(exp, in, out, isMC);
 
    // global setting
    if (ntu)
