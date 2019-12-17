@@ -77,10 +77,13 @@ public:
    
    //! Set Tracking algorithm
    void SetTrackingAlgo(char c)      { fReco->SetTrackingAlgo(c);   }
+
+   //! Set name
+   void SetName(const Char_t* name)  { fReco->SetName(name);        }
    
    //! Set experiment name
    virtual void SetExpName(const Char_t* name) { fReco->SetExpName(name); }
-   
+
    //! Par geo getters
    TAGgeoTrafo*         GetGeoTrafo()       const { return fReco->GetGeoTrafo();      }
    TADIparGeo*          GetParGeoDi()       const { return fReco->GetParGeoDi();      }
