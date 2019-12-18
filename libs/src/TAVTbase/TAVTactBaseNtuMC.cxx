@@ -101,7 +101,7 @@ void TAVTactBaseNtuMC::CreateHistogram()
 
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-      fpHisDeSensor[i] = new TH1F(Form("%sMcDe%d", fPrefix.Data(), i+1), Form("%s - MC energy loss for sensor %d", fTitleDev.Data(), i+1), 1000, 0., 10000.);
+      fpHisDeSensor[i] = new TH1F(Form("%sMcDe%d", fPrefix.Data(), i+1), Form("%s - MC energy loss for sensor %d", fTitleDev.Data(), i+1), 1000, 0., 2000.);
       AddHistogram(fpHisDeSensor[i]);
    }
    
