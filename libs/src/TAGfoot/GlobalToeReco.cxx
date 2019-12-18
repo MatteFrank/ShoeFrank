@@ -34,6 +34,9 @@ GlobalToeReco::GlobalToeReco(TString expName, TString fileNameIn, TString fileNa
 {
    TAGactNtuGlbTrack::EnableStdAlone();
    
+   if (!fExpName.IsNull())
+      fExpName += "/";
+   
    // Read Trafo file
    TString parFileName = Form("./geomaps/%sFOOT_geo.map", fExpName.Data());
    fpFootGeo->FromFile(parFileName);
