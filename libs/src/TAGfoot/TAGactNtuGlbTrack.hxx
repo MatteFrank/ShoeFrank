@@ -73,6 +73,7 @@ public:
    //! Disable/Enable stand alone DAQ
    static void DisableStdAlone()   { fgStdAloneFlag = false;  }
    static void EnableStdAlone()    { fgStdAloneFlag = true;   }
+   static Bool_t GetStdAloneFlag() { return fgStdAloneFlag;   }
 
 private:
    static Bool_t     fgStdAloneFlag;   // flag for standalone (read from root file)
