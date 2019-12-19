@@ -29,4 +29,5 @@ GlobalToeReco::GlobalToeReco(TString expName, TString fileNameIn, TString fileNa
 //__________________________________________________________
 GlobalToeReco::~GlobalToeReco()
 {
+   delete fReco;
 }
