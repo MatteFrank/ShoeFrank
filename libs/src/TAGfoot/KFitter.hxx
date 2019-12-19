@@ -62,6 +62,7 @@
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TAMSDntuCluster.hxx"
+#include "TAMSDntuPoint.hxx"
 
 #include "TATWparGeo.hxx"
 #include "TATWntuPoint.hxx"
@@ -233,6 +234,7 @@ private:
 
   // init event display
   EventDisplay* display;
+  bool m_IsEDOn;
 
   // Track*  m_fitTrack;
   ControlPlotsRepository* m_controlPlotter;
@@ -250,6 +252,8 @@ private:
   vector<TAVTcluster*> m_VT_clusCollection;
   vector<TAITcluster*> m_IT_clusCollection;
   vector<TAMSDcluster*> m_MSD_clusCollection;
+
+  vector<TAMSDpoint*> m_MSD_pointCollection;
 
   vector<TVector3> m_MSD_posVectorSmearedHit;
   vector<TVector3> m_MSD_momVectorSmearedHit;

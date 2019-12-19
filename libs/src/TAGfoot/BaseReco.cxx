@@ -67,6 +67,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fpNtuClusIt(0x0),
    fpNtuClusMsd(0x0),
    fpNtuRecTw(0x0),
+   fpNtuRecMsd(0x0),
    fpNtuTrackBm(0x0),
    fpNtuTrackVtx(0x0),
    fpNtuVtx(0x0),
@@ -80,6 +81,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fActVtx(0x0),
    fActClusIt(0x0),
    fActClusMsd(0x0),
+   fActPointMsd(0x0),
    fActPointTw(0x0),
    fActGlbTrack(0x0),
    fActTrackIr(0x0),
@@ -115,7 +117,7 @@ BaseReco::~BaseReco()
 {
    // default destructor
    delete fTAGroot; // should delete all data, para and actions
-   
+
    if (fFlagOut)
       delete fActEvtWriter;
    delete fpFootGeo;
@@ -133,10 +135,10 @@ void BaseReco::BeforeEventLoop()
 
    AddRawRequiredItem();
    AddRecRequiredItem();
-   
+
    if (fFlagOut)
       OpenFileOut();
-   
+
    fTAGroot->BeginEventLoop();
    fTAGroot->Print();
 }
@@ -155,9 +157,9 @@ void BaseReco::OpenFileOut()
 {
    if (fFlagTree)
       SetTreeBranches();
-   
+
    fActEvtWriter->Open(GetTitle(), "RECREATE");
-   
+
    if (fFlagHisto) {
       SetRawHistogramDir();
       SetRecHistogramDir();
@@ -170,30 +172,30 @@ void BaseReco::SetRecHistogramDir()
 {
    //BMN
    if (GlobalPar::GetPar()->IncludeBM()) {
-     if (fFlagTrack) 
+     if (fFlagTrack)
        fActTrackBm->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    }
-   
+
    // VTX
    if (GlobalPar::GetPar()->IncludeVertex()) {
       fActClusVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-      
+
       if (fFlagTrack) {
          fActTrackVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-         if (GlobalPar::GetPar()->IncludeTG()) 
+         if (GlobalPar::GetPar()->IncludeTG())
             fActVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
       }
    }
-   
+
    // IT
    if (GlobalPar::GetPar()->IncludeInnerTracker())
       fActClusIt->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-   
-   
+
+
    // MSD
-   if (GlobalPar::GetPar()->IncludeMSD()) 
+   if (GlobalPar::GetPar()->IncludeMSD())
       fActClusMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-   
+
    //Global track
    if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
       fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
@@ -216,7 +218,7 @@ void BaseReco::ReadParFiles()
       TString parFileName = Form("./geomaps/%sTAGdetector.map", fExpName.Data());
       parGeo->FromFile(parFileName.Data());
    }
-   
+
    // initialise par files for start counter
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()|| GlobalPar::GetPar()->IncludeBM()) {
 
@@ -224,46 +226,46 @@ void BaseReco::ReadParFiles()
      TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
      TString parFileName = "./geomaps/TASTdetector.map";
      parGeo->FromFile(parFileName.Data());
-     
+
      fpParMapSt = new TAGparaDsc("stMap", new TASTparMap()); // need the file
      TASTparMap* parMapSt = (TASTparMap*) fpParMapSt->Object();
      parFileName = Form("./config/%sTASTdetector.cfg", fExpName.Data());
      parMapSt->FromFile(parFileName);
-     
+
      fpParTimeSt = new TAGparaDsc("stTime", new TASTparTime()); // need the file
      TASTparTime* parTimeSt = (TASTparTime*) fpParTimeSt->Object();
      parTimeSt->FromFile(fExpName.Data(), 2190);
-     
+
      fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
      TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
      parFileName = Form("./config/%sTATWChannelMap.xml", fExpName.Data());
      parMap->FromFile(parFileName.Data());
-     
+
      fpParTimeTw = new TAGparaDsc("twTim", new TATWparTime());
      TATWparTime* parTimeTw = (TATWparTime*) fpParTimeTw->Object();
      parTimeTw->FromFile(fExpName.Data(), 2190);
    }
-   
+
    // initialise par files for Beam Monitor
    if (GlobalPar::GetPar()->IncludeBM()) {
       fpParGeoBm = new TAGparaDsc("bmGeo", new TABMparGeo());
       TABMparGeo* parGeo = (TABMparGeo*)fpParGeoBm->Object();
       TString parFileName = "./geomaps/TABMdetector.map";
       parGeo->FromFile(parFileName.Data());
-      
+
       fpParConfBm = new TAGparaDsc("bmConf", new TABMparCon());
       TABMparCon* parConf = (TABMparCon*)fpParConfBm->Object();
       parFileName = "./config/TABMdetector.cfg";
       parConf->FromFile(parFileName.Data());
       parFileName = Form("./config/%sT0_beammonitor.cfg", fExpName.Data());
       parConf->loadT0s(parFileName);
-            
+
       fpParMapBm = new TAGparaDsc("bmMap", new TABMparMap());
       TABMparMap*  parMapBm = (TABMparMap*)fpParMapBm->Object();
       parFileName = Form("./config/%sTABMdetector.map", fExpName.Data());
       parMapBm->FromFile(parFileName.Data(), parGeo);
    }
-   
+
    // initialise par files dipole
    if (GlobalPar::GetPar()->IncludeDI()) {
       fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
@@ -271,69 +273,69 @@ void BaseReco::ReadParFiles()
       TString parFileName = "./geomaps/TADIdetector.map";
       parGeo->FromFile(parFileName.Data());
    }
-   
+
    // initialise par files for vertex
    if (GlobalPar::GetPar()->IncludeVertex()) {
       fpParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
       TString parVtxFileName = Form("./geomaps/%sTAVTdetector.map", fExpName.Data());
       parGeo->FromFile(parVtxFileName.Data());
-      
+
       fpParConfVtx = new TAGparaDsc("vtConf", new TAVTparConf());
       TAVTparConf* parConf = (TAVTparConf*)fpParConfVtx->Object();
       parVtxFileName = Form("./config/%sTAVTdetector.cfg", fExpName.Data());
       parConf->FromFile(parVtxFileName.Data());
-      
+
       fpParMapVtx = new TAGparaDsc("vtMap", new TAVTparMap());
       TAVTparMap* parMap = (TAVTparMap*)fpParMapVtx->Object();
       parVtxFileName = Form("./config/%sTAVTdetector.map", fExpName.Data());
       parMap->FromFile(parVtxFileName.Data());
    }
-   
+
    // initialise par files for inner tracker
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       fpParGeoIt = new TAGparaDsc(TAITparGeo::GetItDefParaName(), new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
       TString parItFileName = Form("./geomaps/%sTAITdetector.map", fExpName.Data());
       parGeo->FromFile(parItFileName.Data());
-      
+
       fpParConfIt = new TAGparaDsc("itConf", new TAITparConf());
       TAITparConf* parConf = (TAITparConf*)fpParConfIt->Object();
       parItFileName = Form("./config/%sTAITdetector.cfg", fExpName.Data());
       parConf->FromFile(parItFileName.Data());
-      
+
       fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
       TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
       parItFileName = Form("./config/%sTAITdetector.map", fExpName.Data());
      // parMap->FromFile(parItFileName.Data());
    }
-   
+
    // initialise par files for multi strip detector
    if (GlobalPar::GetPar()->IncludeMSD()) {
       fpParGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
       TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
       TString parMsdFileName = Form("./geomaps/%sTAMSDdetector.map", fExpName.Data());
       parGeo->FromFile(parMsdFileName.Data());
-      
+
       fpParConfMsd = new TAGparaDsc("msdConf", new TAMSDparConf());
       TAMSDparConf* parConf = (TAMSDparConf*)fpParConfMsd->Object();
       parMsdFileName = Form("./config/%sTAMSDdetector.cfg", fExpName.Data());
       // parConf->FromFile(parMsdFileName.Data());
    }
-   
+
    // initialise par files for Tof Wall
    if (GlobalPar::GetPar()->IncludeTW()) {
       fpParGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
       TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
       TString parFileName = "./geomaps/TATWdetector.map";
       parGeo->FromFile(parFileName);
-      
+
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       parFileName = Form("./config/%sTATWCalibrationMap.xml", fExpName.Data());
       parCal->FromFile(parFileName.Data());
    }
-   
+
    // initialise par files for caloriomter
    if (GlobalPar::GetPar()->IncludeCA()) {
       fpParGeoCa = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
@@ -350,22 +352,22 @@ void BaseReco::CreateRecAction()
 {
    if (GlobalPar::GetPar()->IncludeBM())
       CreateRecActionBm();
-   
+
    if (GlobalPar::GetPar()->IncludeVertex())
       CreateRecActionVtx();
-   
+
    if (GlobalPar::GetPar()->IncludeInnerTracker())
       CreateRecActionIt();
-   
+
    if (GlobalPar::GetPar()->IncludeMSD())
       CreateRecActionMsd();
-   
+
    if (GlobalPar::GetPar()->IncludeTW())
       CreateRecActionTw();
-   
+
    if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
       CreateRecActionGlb();
-   
+
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
        GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
@@ -391,12 +393,12 @@ void BaseReco::CreateRecActionVtx()
       if (GlobalPar::GetPar()->IncludeTG())
          fpNtuVtx      = new TAGdataDsc("vtVtx",   new TAVTntuVertex());
    }
-   
+
    fpNtuClusVtx  = new TAGdataDsc("vtClus", new TAVTntuCluster());
    fActClusVtx   = new TAVTactNtuClusterF("vtActClus", fpNtuRawVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
    if (fFlagHisto)
       fActClusVtx->CreateHistogram();
-   
+
    if (fFlagTrack) {
       if (fgTrackingAlgo.Contains("Std") ) {
          if (GlobalPar::GetPar()->IncludeBM())
@@ -411,10 +413,10 @@ void BaseReco::CreateRecActionVtx()
       } else {
          Error("CreateRecActionVtx()", "No Tracking algorithm defined !");
       }
-      
+
       if (fFlagHisto)
          fActTrackVtx->CreateHistogram();
-      
+
       if (GlobalPar::GetPar()->IncludeTG()) {
 	  if(GlobalPar::GetPar()->IncludeBM()) {
 	    fActVtx    = new TAVTactNtuVertexPD("vtActVtx", fpNtuTrackVtx, fpNtuVtx, fpParConfVtx, fpParGeoVtx, fpParGeoG);
@@ -444,7 +446,9 @@ void BaseReco::CreateRecActionIt()
 void BaseReco::CreateRecActionMsd()
 {
    fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
+   fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
    fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuRawMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
+   fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuRawMsd, fpNtuRecMsd, fpParGeoMsd);
    if (fFlagHisto)
       fActClusMsd->CreateHistogram();
 }
@@ -468,7 +472,7 @@ void BaseReco::CreateRecActionGlb()
     if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
   }
-  
+
 }
 
 //__________________________________________________________
@@ -480,7 +484,7 @@ void BaseReco::CreateRecActionIr()
       if (fFlagHisto)
          fActTrackIr->CreateHistogram();
    }
-   
+
 }
 
 //__________________________________________________________
@@ -490,7 +494,7 @@ void BaseReco::SetTreeBranches()
     if (fFlagTrack)
       fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
   }
-  
+
   if (GlobalPar::GetPar()->IncludeVertex()) {
     if (!fFlagTrack)
       fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
@@ -501,13 +505,13 @@ void BaseReco::SetTreeBranches()
 	fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
     }
   }
-  
+
   if (GlobalPar::GetPar()->IncludeInnerTracker())
     fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
-  
-  if (GlobalPar::GetPar()->IncludeMSD()) 
+
+  if (GlobalPar::GetPar()->IncludeMSD())
     fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
-  
+
   if (GlobalPar::GetPar()->IncludeTW())
     fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
 
@@ -518,16 +522,16 @@ void BaseReco::AddRecRequiredItem()
 {
    if (fFlagOut)
       gTAGroot->AddRequiredItem("locRecFile");
-   
+
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
       gTAGroot->AddRequiredItem("stActNtu");
-   
+
    if (GlobalPar::GetPar()->IncludeBM()) {
       gTAGroot->AddRequiredItem("bmActNtu");
       if (fFlagTrack)
          gTAGroot->AddRequiredItem("bmActTrack");
    }
-   
+
    if (GlobalPar::GetPar()->IncludeVertex()) {
       gTAGroot->AddRequiredItem("vtActNtu");
       gTAGroot->AddRequiredItem("vtActClus");
@@ -537,29 +541,30 @@ void BaseReco::AddRecRequiredItem()
             gTAGroot->AddRequiredItem("vtActVtx");
       }
    }
-   
+
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       gTAGroot->AddRequiredItem("itActNtu");
       gTAGroot->AddRequiredItem("itActClus");
    }
-   
+
    if (GlobalPar::GetPar()->IncludeMSD()) {
       gTAGroot->AddRequiredItem("msdActNtu");
       gTAGroot->AddRequiredItem("msdActClus");
+      gTAGroot->AddRequiredItem("msdActPoint");
    }
-   
+
    if (GlobalPar::GetPar()->IncludeTW()) {
       gTAGroot->AddRequiredItem("twActNtu");
       gTAGroot->AddRequiredItem("twActPoint");
    }
-   
+
    if (GlobalPar::GetPar()->IncludeCA()) {
       gTAGroot->AddRequiredItem("caActNtu");
    }
-   
+
    if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
       gTAGroot->AddRequiredItem("glbActTrack");
-   
+
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
        GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())

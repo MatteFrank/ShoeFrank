@@ -7,7 +7,7 @@
 
 #include "TAMSDntuHit.hxx"
 
-ClassImp(TAMSDntuHit) // Description of Single Detector TAMSDntuHit 
+ClassImp(TAMSDntuHit) // Description of Single Detector TAMSDntuHit
 
 
 //______________________________________________________________________________
@@ -16,7 +16,7 @@ TAMSDntuHit::TAMSDntuHit()
  : TAGobject(),
    fSensorId(0),
    fPosition(0),
-   // fValue(0.),
+   fValue(0.),
    fIndex(0),
    fView(0),
    fStrip(0)
@@ -24,11 +24,11 @@ TAMSDntuHit::TAMSDntuHit()
 }
 
 //______________________________________________________________________________
-TAMSDntuHit::TAMSDntuHit( Int_t input, Int_t view, Int_t strip)
+TAMSDntuHit::TAMSDntuHit( Int_t input, Float_t value, Int_t view, Int_t strip)
  : TAGobject(),
    fSensorId(input),
    fPosition(0),
-   // fValue(value),
+   fValue(value),
    fIndex(0),
    fView(view),
    fStrip(strip)
@@ -59,7 +59,7 @@ void TAMSDntuHit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
    fMCindex[fMCindex.GetSize()-1]   = mcId;
-   
+
    fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
    fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackId;
 }
@@ -71,7 +71,7 @@ Int_t TAMSDntuHit::Compare(const TObject* obj) const
    Int_t aView = ((TAMSDntuHit *)obj)->GetView();
    Int_t strip = fStrip;
    Int_t aStrip = ((TAMSDntuHit *)obj)->GetStrip();
-   
+
    if (view == aView) { //Order ok then order for column
       if(strip<aStrip)
          return -1;

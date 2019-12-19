@@ -13,8 +13,8 @@ set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAVT} ${TAMC} ${GENFIT_LIBRARIES})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
-# headers / dictionnary / sources 
-# 
+# headers / dictionnary / sources
+#
 # so far no automatic methods for computing which class has a dictionnary or not
 # manual method : base file name separated in two lists with different treatment.
 #
@@ -22,8 +22,8 @@ set( with_dictionnaries
    TAMSDdatRaw
    TAMSDntuRaw
    TAMSDntuHit
-   TAMSD_Point
-   TAMSD_ContainerPoint
+   TAMSDntuPoint
+   TAMSDactNtuPoint
    TAMSDparMap
    TAMSDparGeo
    TAMSDparConf
@@ -50,14 +50,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(${ROOT_LIBRARY_DIR})
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 #
-# headers / linkdef etc ... 
+# headers / linkdef etc ...
 #
 set(headers "")
 set(sources "")
 set(dictionnaries "")
 set(linkdefs "")
 #
-# set headers/ etc and generate dictionnary for the files which require it 
+# set headers/ etc and generate dictionnary for the files which require it
 #
 foreach( f ${with_dictionnaries} )
   set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.cxx)
@@ -88,14 +88,14 @@ file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
 
 #----------------------------------------------------------------------------
 #
-# Use root functions to generate the library and the root map file 
+# Use root functions to generate the library and the root map file
 #
 ROOT_LINKER_LIBRARY(${LIBNAME} ${sources} CMAKENOEXPORT LIBRARIES ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 if (!ROOT6_USED)
   ROOT_GENERATE_ROOTMAP(${LIBNAME} LINKDEF ${linkdefs} DEPENDENCIES ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 endif()
 #
-# Install lib and headers 
+# Install lib and headers
 #
 install(TARGETS ${LIBNAME}  RUNTIME DESTINATION bin
 							LIBRARY DESTINATION lib

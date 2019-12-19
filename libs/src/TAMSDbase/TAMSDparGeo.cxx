@@ -29,27 +29,6 @@ TAMSDparGeo::TAMSDparGeo()
 : TAVTbaseParGeo()
 {
    fkDefaultGeoName = "./geomaps/TAMSDdetector.map";
-   m_nLayer = 6;
-   StripN =  640;
-	// Pitch=  0.0150
-	// TotalSizeX:        9.815   
-	// TotalSizeY:    9.815   
-	// TotalSizeZ:    0.0200
-	EpiSizeX=         9.600 ; 
-	EpiSizeY=     9.390  ; 
-	EpiSizeZ=      0.0150;
-	// EpiOffsetX:        0.1075  
-	// EpiOffsetY:    0.2125  
-	// EpiOffsetZ:    0.0000
-
-	// X
-	stripSizeX = EpiSizeX / StripN;  // spazio tra le strip
-	stripSizeY = EpiSizeY / StripN;  // spazio tra le strip
-	for (int i = 0; i<StripN; i++ ) {
-		x_strip[i] = -(EpiSizeX*0.5) + stripSizeX/2 + i*stripSizeX;
-		y_strip[i] = -(EpiSizeY*0.5) + stripSizeY/2 + i*stripSizeY;
-	}
-
 }
 
 
@@ -232,6 +211,16 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
       fSensorParameter[p].Tilt[1] = fSensorParameter[p].Tilt[1]*TMath::DegToRad();
       fSensorParameter[p].Tilt[2] = fSensorParameter[p].Tilt[2]*TMath::DegToRad();
       fSensorParameter[p].TiltW   = fSensorParameter[p].TiltW*TMath::DegToRad();
+
+      // calculation of other geometrical parameters
+      stripSizeX = fEpiSize.X() / fStripN;  // space between strips
+      stripSizeY = fEpiSize.Y() / fStripN;  // space between strips
+      //centre of strips
+      for (int i = 0; i < fStripN; i++ ) {
+        x_strip[i] = -(fEpiSize.X()*0.5) + stripSizeX/2 + i*stripSizeX;
+        y_strip[i] = -(fEpiSize.Y()*0.5) + stripSizeY/2 + i*stripSizeY;
+      }
+
    }
    // Close file
    Close();
@@ -334,10 +323,10 @@ string TAMSDparGeo::PrintRotations()
   if(GlobalPar::GetPar()->IncludeMSD()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-    
+
     TVector3  fCenter = fpFootGeo->GetMSDCenter();
     TVector3  fAngle = fpFootGeo->GetMSDAngles();
-    
+
     for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       //check if sensor or detector have a tilt
@@ -352,7 +341,7 @@ string TAMSDparGeo::PrintRotations()
 
 	//check if sensor has a tilt
 	if (fSensorParameter[iSens].Tilt.Mag()!=0){
-	  
+
 	  // put the sensor in 0,0,0 before the sensor's rot
 	  ss << PrintCard("ROT-DEFI", "", "", "",
 			  Form("%f",-GetSensorPosition(iSens).X()),
@@ -365,7 +354,7 @@ string TAMSDparGeo::PrintRotations()
 			    Form("%f",fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
 			    "", "", "", Form("msd_%d",iSens) ) << endl;
 	  }
-	  //rot around y      
+	  //rot around y
 	  if(fSensorParameter[iSens].Tilt[1]!=0){
 	    ss << PrintCard("ROT-DEFI", "200.", "",
 			    Form("%f",fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
@@ -377,7 +366,7 @@ string TAMSDparGeo::PrintRotations()
 			    Form("%f",fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
 			    "", "", "", Form("msd_%d",iSens) ) << endl;
 	  }
-	  
+
 	  //put back the sensor into its position in local coord
 	  ss << PrintCard("ROT-DEFI", "", "", "",
 			  Form("%f",GetSensorPosition(iSens).X()),
@@ -388,30 +377,30 @@ string TAMSDparGeo::PrintRotations()
 
 	//check if detector has a tilt and then apply rot
 	if(fAngle.Mag()!=0){
-	  
+
 	  if(fAngle.X()!=0){
-	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "",
 			    "", Form("msd_%d",iSens)) << endl;
 	  }
 	  if(fAngle.Y()!=0){
-	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "",
 			    "", Form("msd_%d",iSens)) << endl;
 	  }
 	  if(fAngle.Z()!=0){
-	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "",
 			    "", Form("msd_%d",iSens)) << endl;
 	  }
 	}
-      
+
 	//put back the detector in global coord
 	ss << PrintCard("ROT-DEFI", "", "", "",
 			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
 			Form("%f",fCenter.Z()), Form("msd_%d",iSens)) << endl;
-       
+
       }
     }
   }
-  
+
   return ss.str();
 
 }
@@ -429,7 +418,7 @@ string TAMSDparGeo::PrintBodies()
 
     TVector3  fCenter = fpFootGeo->GetMSDCenter();
     TVector3  fAngle = fpFootGeo->GetMSDAngles();
-    
+
     TVector3 posMet, posStrip, posMod;
     string bodyname, regionname;
 
@@ -439,7 +428,7 @@ string TAMSDparGeo::PrintBodies()
 
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$start_transform " << Form("msd_%d",iSens) << endl;
-      
+
       //strip layer
       bodyname = Form("msds%d",iSens);
       regionname = Form("MSDS%d",iSens);
@@ -555,8 +544,8 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials *Material)
 
   if(GlobalPar::GetPar()->IncludeMSD()){
 
-    TString flkmatMod, flkmatMetal, flkmatSupp;  
-    
+    TString flkmatMod, flkmatMetal, flkmatSupp;
+
     if (Material == NULL){
       TAGmaterials::Instance()->PrintMaterialFluka();
       flkmatMod = TAGmaterials::Instance()->GetFlukaMatName(fEpiMat.Data());
@@ -567,14 +556,14 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials *Material)
       flkmatMetal = Material->GetFlukaMatName(fMetalMat.Data());
       flkmatSupp = Material->GetFlukaMatName(fPixMat.Data());
     }
-        
+
     bool magnetic = false;
     if(GlobalPar::GetPar()->IncludeDI())
       magnetic = true;
 
     if (vStripRegion.size()==0 || vModRegion.size()==0 || vMetalRegion.size()==0 )
       cout << "Error: MSD regions vector not correctly filled!"<<endl;
-    
+
     ss << PrintCard("ASSIGNMA", flkmatMod, vStripRegion.at(0), vStripRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
     ss << PrintCard("ASSIGNMA", flkmatMetal, vMetalRegion.at(0), vMetalRegion.back(),

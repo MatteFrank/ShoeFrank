@@ -123,7 +123,7 @@ void TAMSDntuRaw::SetupClones()
 {
    if (fListOfStrips) return;
    fListOfStrips = new TObjArray();
-   
+
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
       TClonesArray* arr = new TClonesArray("TAMSDntuHit", 500);
       arr->SetOwner(true);
@@ -146,22 +146,22 @@ void TAMSDntuRaw::Clear(Option_t*)
 
 //______________________________________________________________________________
 //
-TAMSDntuHit* TAMSDntuRaw::NewStrip(Int_t iSensor,  Int_t aView, Int_t aStrip)
+TAMSDntuHit* TAMSDntuRaw::NewStrip(Int_t iSensor, Double_t value, Int_t aView, Int_t aStrip)
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray &stripArray = *GetListOfStrips(iSensor);
       std::pair<int, int> idx(aView, aStrip);
-      
+
       // check if strip already exists
       if ( fMap[idx] == iSensor+1) {
-         TAMSDntuHit* strip = new TAMSDntuHit(iSensor, aView, aStrip);
+         TAMSDntuHit* strip = new TAMSDntuHit(iSensor, value, aView, aStrip);
          TAMSDntuHit* curStrip = (TAMSDntuHit*)stripArray.FindObject(strip);
          delete strip;
          return curStrip;
-         
+
       } else {
          fMap[idx] = iSensor+1;
-         TAMSDntuHit* strip = new(stripArray[stripArray.GetEntriesFast()]) TAMSDntuHit(iSensor, aView, aStrip);
+         TAMSDntuHit* strip = new(stripArray[stripArray.GetEntriesFast()]) TAMSDntuHit(iSensor, value, aView, aStrip);
          return strip;
       }
    } else {
@@ -175,11 +175,11 @@ TAMSDntuHit* TAMSDntuRaw::NewStrip(Int_t iSensor,  Int_t aView, Int_t aStrip)
 void TAMSDntuRaw::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
-      
+
       os << "TAMSDntuRaw " << GetName()
       << Form("  nPixels=%3d", GetStripsN(i))
       << endl;
-      
+
       //TODO properly
       //os << "slat stat    adct    adcb    tdct    tdcb" << endl;
       for (Int_t j = 0; j < GetStripsN(i); j++) {
@@ -190,4 +190,3 @@ void TAMSDntuRaw::ToStream(ostream& os, Option_t* option) const
       }
    }
 }
-

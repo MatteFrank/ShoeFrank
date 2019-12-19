@@ -22,14 +22,14 @@ TAMSDdigitizer::TAMSDdigitizer(TAMSDparGeo* parGeo)
   fStripsN(-1),
   fView(-1)
 {
-  
+
   fStripsN = fpParGeo->GetNStrip();
   fPitch = fpParGeo->GetPitch();
 }
 
 // --------------------------------------------------------------------------------------
-TAMSDdigitizer::~TAMSDdigitizer() 
-{   
+TAMSDdigitizer::~TAMSDdigitizer()
+{
 }
 
 //------------------------------------------+-----------------------------------
@@ -42,35 +42,35 @@ Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double
   //      x0 += dx;
   //      y0 += dy;
   //   }
-  
+
   Int_t view = fpParGeo->GetSensorPar(sensorId).TypeIdx;
-  
+
   Float_t pos = 0.;
-  
+
   if (view == 0)
     pos = x0;
   else
     pos = y0;
-  
+
   fMap.clear();
-  
+
   Double_t value = 0.;
-  
+
   Int_t strip = GetStrip(pos);
-  
-  if (strip-1 >= 0) {
-    value = edep*fgChargeGain*(1-fgChargeFac/2.);
-    FillMap(strip-1, value);
-  }
-  
+
+  // if (strip-1 >= 0) {
+  //   value = edep*fgChargeGain*(1-fgChargeFac/2.);
+  //   FillMap(strip-1, value);
+  // }
+
   value = edep*fgChargeGain*fgChargeFac;
   FillMap(strip, value);
-  
-  if (strip+1 < fStripsN) {
-    value = edep*fgChargeGain*(1-fgChargeFac/2.);
-    FillMap(strip+1, value);
-  }
-  
+
+  // if (strip+1 < fStripsN) {
+  //   value = edep*fgChargeGain*(1-fgChargeFac/2.);
+  //   FillMap(strip+1, value);
+  // }
+
   return true;
 }
 
@@ -79,7 +79,7 @@ Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double
 void TAMSDdigitizer::FillMap(Int_t strip, Double_t value)
 {
   if (strip < 0) return;
-  
+
   fMap[strip] = value;
 }
 
@@ -89,15 +89,14 @@ Int_t TAMSDdigitizer::GetStrip(Float_t pos) const
 {
   // equivalent to  floor((-y-ymin)/fPitchV)-1
   Float_t min = -fStripsN*fPitch/2.;
-  
+
   if (pos < min || pos > -min) {
     if (fDebugLevel)
       Warning("GetLine()", "Value of Y: %f out of range +/- %f\n", pos, min);
     return -1;
   }
-  
+
   Int_t strip = floor((pos-min)/fPitch);
-  
+
   return strip;
 }
-

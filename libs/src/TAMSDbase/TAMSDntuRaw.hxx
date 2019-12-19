@@ -13,68 +13,43 @@
 
 class TAMSDparGeo;
 class TAMSDntuRaw : public TAGdata {
-   
+
 protected:
    //using TObjArray here
    TObjArray*        fListOfStrips;
    TAMSDparGeo*      fpGeoMap;         //! do not store
-   
+
    // nsensor!!!!!!!!!   aggiungi!
 
    std::map<pair<int, int>, int > fMap; //!
 
 private:
    static TString    fgkBranchName;    // Branch name in TTree
-   
+
 public:
    TAMSDntuRaw();
    virtual           ~TAMSDntuRaw();
-   
+
    TAMSDntuHit*       GetStrip(Int_t iSensor, Int_t iStrip);
    const TAMSDntuHit* GetStrip(Int_t iSensor, Int_t iStrip) const;
-   
+
    TClonesArray*      GetListOfStrips(Int_t iSensor);
    TClonesArray*      GetListOfStrips(Int_t iSensor) const;
-   
+
    Int_t              GetStripsN(Int_t iSensor) const;
-   
-   TAMSDntuHit*       NewStrip(Int_t sensor, Int_t aView, Int_t aStrip);
-   
+
+   TAMSDntuHit*       NewStrip(Int_t sensor, Double_t value, Int_t aView, Int_t aStrip);
+
    virtual void       SetupClones();
-   
+
    virtual void       Clear(Option_t* opt="");
-   
+
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
-   
+
 public:
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-   
+
    ClassDef(TAMSDntuRaw,1)
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
