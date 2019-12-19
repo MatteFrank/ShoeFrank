@@ -29,9 +29,9 @@ public:
    void DisableTracking() { fReco->DisableTracking(); }
    
    
-   void BeforeEventLoop()       {  fReco->BeforeEventLoop(); }
-   void LoopEvent(Int_t nTotEv) { fReco->LoopEvent(nTotEv);  }
-   void AfterEventLoop()        { fReco->AfterEventLoop();   }
+   void BeforeEventLoop()       { fReco->BeforeEventLoop(); }
+   void LoopEvent(Int_t nTotEv) { fReco->LoopEvent(nTotEv); }
+   void AfterEventLoop()        { fReco->AfterEventLoop();  }
    
 private:
    BaseReco*       fReco;    // local reco
