@@ -3,80 +3,38 @@
 #define _GlobalToeReco_HXX_
 
 #include "TString.h"
-#include "TNamed.h"
-
-#include "TAGparaDsc.hxx"
-#include "TAGroot.hxx"
-#include "TAGactTreeWriter.hxx"
-#include "TAGgeoTrafo.hxx"
-#include "TAGactNtuGlbTrack.hxx"
+#include "TAGobject.hxx"
+#include "BaseReco.hxx"
 
 
-class GlobalToeReco : public TNamed
+class GlobalToeReco : public TAGobject
 {
 public:
    //! default constructor
-   GlobalToeReco(TString expName, TString fileNameIn = "", TString fileNameout = "");
+   GlobalToeReco(TString expName, TString fileNameIn = "", TString fileNameout = "", Bool_t isMC = false);
    
    virtual ~GlobalToeReco();
-   
-   //! Read parameters
-   void ReadParFiles();
-   
-   //! Create raw action
-   virtual void CreateRecAction();
-   
-   //! Add required items
-   virtual void AddRecRequiredItem();
-   
-   //! Set rec histogram directory
-   virtual void SetRecHistogramDir();
-   
-   //! Loop events
-   void LoopEvent(Int_t nTotEv);
 
-   //! Begin loop
-   void BeforeEventLoop();
-
-   //! End loop
-   void AfterEventLoop();
-
-   //! Open File In
-   virtual void OpenFileIn();
+   void EnableTree()      { fReco->EnableTree();      }
+   void DisableTree()     { fReco->DisableTree();     }
    
-   //! Close File in
-   virtual void CloseFileIn();
+   void EnableSaveHits()  { fReco->EnableSaveHits();  }
+   void DisableSaveHits() { fReco->DisableSaveHits(); }
    
-   //! Open File Out
-   virtual void OpenFileOut();
    
-   //! Close File Out
-   virtual void CloseFileOut();
+   void EnableHisto()     { fReco->EnableHisto();     }
+   void DisableHisto()    { fReco->DisableHisto();    }
    
-   //! Set experiment name
-   virtual void SetExpName(const Char_t* name) { fExpName = name; }
-
+   void EnableTracking()  { fReco->EnableTracking();  }
+   void DisableTracking() { fReco->DisableTracking(); }
+   
+   
+   void BeforeEventLoop()       {  fReco->BeforeEventLoop(); }
+   void LoopEvent(Int_t nTotEv) { fReco->LoopEvent(nTotEv);  }
+   void AfterEventLoop()        { fReco->AfterEventLoop();   }
+   
 private:
-   TString           fExpName;       // exp name
-   TAGroot*          fTAGroot;       // pointer to TAGroot
-   TAGgeoTrafo*      fpFootGeo;      // trafo prointer
-   TAGactTreeWriter* fActEvtWriter;  // write histo and tree
-   
-   //! Par geo
-   TAGparaDsc*       fpParGeoDi;
-   TAGparaDsc*       fpParGeoVtx;
-   TAGparaDsc*       fpParGeoIt;
-   TAGparaDsc*       fpParGeoMsd;
-   TAGparaDsc*       fpParGeoTw;
-   
-   //! Containers
-   TAGdataDsc*        fpNtuVtx;
-   TAGdataDsc*        fpNtuClusIt;
-   TAGdataDsc*        fpNtuClusMsd;
-   TAGdataDsc*        fpNtuRecTw;
-   TAGdataDsc*        fpNtuGlbTrack;     // input data dsc
-
-   TAGactNtuGlbTrack* fActGlbTrack;    // Global tracking action
+   BaseReco*       fReco;    // local reco
 
    ClassDef(GlobalToeReco, 0); 
 };
