@@ -43,6 +43,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -trk           : enable tracking actions"<<endl;
+         cout<<"      -mc            : enable MC local reco"<<endl;
          cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
          cout<<"      -ntu           : enable tree filling"<<endl;
          cout<<"      -his           : enable crtl histograming"<<endl;
