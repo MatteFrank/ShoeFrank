@@ -94,7 +94,7 @@ private:
 
 
 template<class ... Ts>
-auto start_list(Ts... t_p) -> list<Ts...> { return {std::move(t_p)... }; }
+auto start_list(Ts... t_p) -> detector_list<Ts...> { return {std::move(t_p)... }; }
 
 
 #endif /* DETECTOR_LIST_HPP */
