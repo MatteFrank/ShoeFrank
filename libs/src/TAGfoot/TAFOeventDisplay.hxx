@@ -24,7 +24,7 @@
 #include "TADIeveField.hxx"
 #include "FootField.hxx"
 
-#include "GlobalReco.hxx"
+#include "LocalReco.hxx"
 
 class TEveDigitSet;
 class TGCheckButton;

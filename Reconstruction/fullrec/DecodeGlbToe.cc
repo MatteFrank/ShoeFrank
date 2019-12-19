@@ -14,11 +14,6 @@ int main (int argc, char *argv[])  {
    TString out = in(0, pos);
    out.Append("_Out.root");
    
-   Bool_t ntu = false;
-   Bool_t his = false;
-   Bool_t hit = false;
-   Bool_t trk = false;
-   Bool_t isMC = false;
 
    Int_t nTotEv = 1e7;
    
@@ -28,12 +23,6 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
   
-      if(strcmp(argv[i],"-ntu") == 0)   { ntu = true;   } // enable tree filling
-      if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
-      if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
-      if(strcmp(argv[i],"-trk") == 0)   { trk = true;   } // enable tracking action
-      if(strcmp(argv[i],"-mc") == 0)    { isMC = true;  } // MC local reco
-
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
          cout<<" Ex: Decoder [opts] "<<endl;
@@ -42,10 +31,6 @@ int main (int argc, char *argv[])  {
          cout<<"      -out path/file : [def=*_Out.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
-         cout<<"      -trk           : enable tracking actions"<<endl;
-         cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
-         cout<<"      -ntu           : enable tree filling"<<endl;
-         cout<<"      -his           : enable crtl histograming"<<endl;
          return 1;
       }
    }
@@ -55,21 +40,7 @@ int main (int argc, char *argv[])  {
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
    
-   GlobalToeReco* glbRec = new GlobalToeReco(exp, in, out, isMC);
-
-   // global setting
-   if (ntu)
-      glbRec->EnableTree();
-   if(his)
-      glbRec->EnableHisto();
-   if(hit) {
-      glbRec->EnableTree();
-      glbRec->EnableSaveHits();
-   }
-   if (trk) {
-      glbRec->EnableTracking();
-   }
-
+   GlobalToeReco* glbRec = new GlobalToeReco(exp, in, out);
    
    TStopwatch watch;
    watch.Start();

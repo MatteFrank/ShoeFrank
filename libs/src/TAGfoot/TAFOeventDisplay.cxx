@@ -193,7 +193,7 @@ void TAFOeventDisplay::SetLocalReco()
    if (fType != 0) return;
    
    // local reco
-   fReco = new GlobalReco(fExpName);
+   fReco = new LocalReco(fExpName);
    
    fReco->DisableTree();
    fReco->DisableSaveHits();
