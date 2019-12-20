@@ -21,6 +21,7 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 set( without_dictionnaries
    TATOEtest
+    TATOEact
 )
 
 # add includes : root + current + dependencies

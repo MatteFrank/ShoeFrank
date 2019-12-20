@@ -22,6 +22,7 @@
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
 
+#include "TATOEact.hxx"
 
 #include "GlobalPar.hxx"
 
@@ -462,11 +463,19 @@ void BaseReco::CreateRecActionGlb()
   if(fFlagTrack) {
     fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
     fActGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi,
-					  fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw);
+                      fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw);
     if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
   }
-  
+    
+    
+    auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpNtuClusVtx->Object() );
+    auto list = start_list( detector_properties<details::vertex_tag>(clusterVTX_hc, 5.5) ).finish();
+//    auto list = start_list( 5.8 ).finish();
+    TATOEbaseAct * action = make_new_TATOEactGlb(5.1, std::move(list));
+    action->Action();
+    delete action;
+    
 }
 
 //__________________________________________________________
