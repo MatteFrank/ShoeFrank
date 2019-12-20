@@ -5,6 +5,10 @@
 #include "GlobalPar.hxx"
 #include "GlobalToeReco.hxx"
 
+// executabel to read back from local reconstruction tree
+// author: Ch. Finck
+
+
 int main (int argc, char *argv[])  {
 
    TString in("");
@@ -32,7 +36,6 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
       if(strcmp(argv[i],"-trk") == 0)   { trk = true;   } // enable tracking action
-      if(strcmp(argv[i],"-mc") == 0)    { isMC = true;  } // MC local reco
 
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
@@ -43,7 +46,6 @@ int main (int argc, char *argv[])  {
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -trk           : enable tracking actions"<<endl;
-         cout<<"      -mc            : enable MC local reco"<<endl;
          cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
          cout<<"      -ntu           : enable tree filling"<<endl;
          cout<<"      -his           : enable crtl histograming"<<endl;
@@ -56,7 +58,7 @@ int main (int argc, char *argv[])  {
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
    
-   GlobalToeReco* glbRec = new GlobalToeReco(exp, in, out, isMC);
+   GlobalToeReco* glbRec = new GlobalToeReco(exp, in, out);
 
    // global setting
    if (ntu)
