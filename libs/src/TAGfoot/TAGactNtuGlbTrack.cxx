@@ -84,6 +84,7 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, 
 TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
 {  
 }
+
 //__________________________________________________________
 // ! Get Tree
 TTree* TAGactNtuGlbTrack::GetTree()
