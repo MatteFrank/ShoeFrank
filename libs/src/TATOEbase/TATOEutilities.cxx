@@ -1,16 +1,11 @@
 ///////////////////////////////////////////////////////////
 //                                                        //
-// Class Description of TATOEtest                       //
+// Class Description of TATOEutilities                       //
 //                                                        //
 ////////////////////////////////////////////////////////////
 
-#include "TATOEtest.hxx"
+#include "TATOEutilities.hxx"
 
 
 //______________________________________________________________________________
 //
-TATOEtest::TATOEtest()
-{
-//   auto identity = make_identity_matrix<5>();
-//
-}
