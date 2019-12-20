@@ -62,9 +62,12 @@ endforeach()
 
 #----------------------------------------------------------------------------
 #
-# Use root functions to generate the library
+# Generate the library
 #
-ROOT_LINKER_LIBRARY(${LIBNAME} ${sources} LIBRARIES )
+add_library(${LIBNAME} SHARED  ${sources} )
+#
+target_link_libraries(${LIBNAME} ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
 #
 # Install lib and headers
 #
