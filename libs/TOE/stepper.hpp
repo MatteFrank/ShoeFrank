@@ -360,15 +360,15 @@ namespace details{
 
 
 
-template< class Callback, class Data = data_grkn56 >
-struct stepper : public stepping_policy< stepper<Callback, Data> >,
-                        worker< stepper<Callback, Data> >
+template< class Callable, class Data >
+struct stepper : public stepping_policy< stepper<Callable, Data> >,
+                        worker< stepper<Callable, Data> >
 {
     using stepping_policy<stepper>::step;
     using stepping_policy<stepper>::force_step;
     
 public:
-    Callback ode;
+    Callable ode;
     
 private:
     const Data data_mc;
@@ -376,9 +376,9 @@ public:
     const Data& data() const {return data_mc;}
     
 public:
-    template< class Callable,
-              class MoveAllower = std::enable_if_t< !std::is_same<std::decay_t<Callable>, stepper>::value >,
-              class OrderChecker = std::enable_if_t< details::is_order_coherent<Callback, Data>::value >>
+    template< class Callable_ = Callable,
+              class MoveAllower = std::enable_if_t< !std::is_same<std::decay_t<Callable_>, stepper>::value >,
+              class OrderChecker = std::enable_if_t< details::is_order_coherent<Callable_, Data>::value >>
     stepper(Callable&& f_p) : ode{ std::forward<Callable>(f_p) } {}
 };
 
@@ -433,22 +433,26 @@ constexpr auto make_stepper(Callable&& c_p) -> stepper<Callable, Data>
 
 
 
-template<class OperatingType, std::size_t Order, class Callback>
+template<class OperatingType, std::size_t Order, class Callable>
 struct ode{
     using operating_type = OperatingType;
     static constexpr std::size_t order = Order;
     
 private:
-    const Callback c_m;
+    Callable c_m;
     
 public:
-    template< class Callable >
     constexpr ode(Callable&& c_p) : c_m{std::forward<Callable>(c_p)} {}
     
     template< class T >
     constexpr operating_type operator()(T&& t_p) const
     {
         return c_m(std::forward<T>(t_p));
+    }
+    
+    Callable& model()
+    {
+        return c_m;
     }
 };
 

@@ -263,7 +263,7 @@ Matrix<N, N> LUPInverter::ComputePermutationMatrix(const Matrix<N, N>& matrix_p)
 //__ooo000OOOOOO000ooo____ooo000OOOOOO000ooo____ooo000OOOOOO000ooo____ooo000OOOOOO000ooo__
 
 template< std::size_t N>
-Matrix< N, N > LUPInverter::Invert(const Matrix<N, N>& matrix_p) const
+inline Matrix< N, N > LUPInverter::Invert(const Matrix<N, N>& matrix_p) const
 {
     auto permutationMatrix{ ComputePermutationMatrix(matrix_p) };
     auto targetMatrix = permutationMatrix * matrix_p;
@@ -280,8 +280,11 @@ Matrix< N, N > LUPInverter::Invert(const Matrix<N, N>& matrix_p) const
 
 
 template<>
-Matrix<1,1> LUPInverter::Invert(const Matrix<1, 1>& matrix_p) const
+inline Matrix<1,1> LUPInverter::Invert(const Matrix<1, 1>& matrix_p) const
 {
     return Matrix<1,1>{1./matrix_p(0,0)};
 }
+
+
+
 #endif /* LUPInverter_h */

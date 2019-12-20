@@ -45,6 +45,14 @@ namespace details {
     struct has_correct_dimension< Matrix<Size, NCols>, row_tag, Size> : std::true_type {};
     
     
+    
+    template<class T, std::size_t Size>
+    struct lower_triangular_array{
+        const std::array<T, Size> data_mc;
+        const std::array<T, Size>& data() const { return data_mc; }
+    };
+    
+    
 } // namespace details
 
 
