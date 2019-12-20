@@ -11,7 +11,7 @@ class GlobalToeReco : public TAGobject
 {
 public:
    //! default constructor
-   GlobalToeReco(TString expName, TString fileNameIn = "", TString fileNameout = "", Bool_t isMC = false);
+   GlobalToeReco(TString expName, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~GlobalToeReco();
 

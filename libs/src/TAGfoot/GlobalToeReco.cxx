@@ -15,15 +15,11 @@
 ClassImp(GlobalToeReco)
 
 //__________________________________________________________
-GlobalToeReco::GlobalToeReco(TString expName, TString fileNameIn, TString fileNameout, Bool_t isMC)
+GlobalToeReco::GlobalToeReco(TString expName, TString fileNameIn, TString fileNameout)
  : TAGobject()
 {
    TAGactNtuGlbTrack::EnableStdAlone();
-
-   if (isMC)
-      fReco = new LocalRecoMC(expName, fileNameIn, fileNameout);
-   else
-      fReco = new LocalReco(expName, fileNameIn, fileNameout);
+   fReco = new LocalRecoMC(expName, fileNameIn, fileNameout); // using MC framework to read back in Tree
 }
 
 //__________________________________________________________

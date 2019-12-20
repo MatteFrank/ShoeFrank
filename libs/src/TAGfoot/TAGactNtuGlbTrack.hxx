@@ -50,6 +50,9 @@ public:
    
    //! Close File
    void      Close();
+   
+   //! Get tree in standalone mode
+   TTree*    GetTree();
 
 private:
    TAGgeoTrafo*      fpFootGeo;        // geo trafo

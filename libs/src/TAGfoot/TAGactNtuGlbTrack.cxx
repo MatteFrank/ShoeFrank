@@ -26,10 +26,7 @@
 #include <utility>
 #include <numeric>
 #include <iostream>
-#include "utility_types.hpp"
-#include "state.hpp"
-#include "ukf.hpp"
-#include "matrix.hpp"
+
 
 #include "TAGactNtuGlbTrack.hxx"
 
@@ -80,13 +77,21 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, 
    
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    
-   auto identity = make_identity_matrix<5>();
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
 {  
+}
+//__________________________________________________________
+// ! Get Tree
+TTree* TAGactNtuGlbTrack::GetTree()
+{
+   if (fgStdAloneFlag)
+      return fActEvtReader->GetTree();
+   else
+      return 0x0;
 }
 
 //------------------------------------------+-----------------------------------

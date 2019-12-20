@@ -67,6 +67,8 @@ endforeach()
 #
 add_library(${LIBNAME} SHARED  ${sources} )
 #
+set_target_properties(${LIBNAME} PROPERTIES ${ROOT_LIBRARY_PROPERTIES})
+#
 target_link_libraries(${LIBNAME} ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
 #
