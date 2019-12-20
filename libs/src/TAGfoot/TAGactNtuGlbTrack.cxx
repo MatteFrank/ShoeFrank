@@ -23,6 +23,14 @@
 #include "TATWntuPoint.hxx"
 #include "TAGntuPoint.hxx"
 
+#include <utility>
+#include <numeric>
+#include <iostream>
+#include "utility_types.hpp"
+#include "state.hpp"
+#include "ukf.hpp"
+#include "matrix.hpp"
+
 #include "TAGactNtuGlbTrack.hxx"
 
 
@@ -71,16 +79,14 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, 
       SetupBranches();
    
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   
+   auto identity = make_identity_matrix<5>();
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
 {  
-   if (fActEvtReader)
-      delete fActEvtReader;
-   
-   delete fpNtuPoint;
 }
 
 //------------------------------------------+-----------------------------------
