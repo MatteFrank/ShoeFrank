@@ -1185,6 +1185,8 @@ void TAFOeventDisplay::UpdateLayerElements()
 //__________________________________________________________
 void TAFOeventDisplay::UpdateGlbTrackElements()
 {
+   fGlbTrackDisplay->ResetTracks();
+
    TVector3 vtx(0,0,0);
    TVector3 momentum(0,0,3);
    Int_t charge = 6;
