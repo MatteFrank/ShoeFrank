@@ -292,8 +292,9 @@ void LocalRecoMC::SetTreeBranches()
    }
    
    if (GlobalPar::GetPar()->IncludeTW()) {
-      fActEvtWriter->SetupElementBranch(fpNtuRawTw, TATWntuRaw::GetBranchName());
-      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
+      if (fFlagHits)
+         fActEvtWriter->SetupElementBranch(fpNtuRawTw, TATWntuRaw::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeCA()) {
