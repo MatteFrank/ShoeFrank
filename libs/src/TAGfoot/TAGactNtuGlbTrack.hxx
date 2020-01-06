@@ -73,13 +73,17 @@ private:
    TH1F*             fpHisMass;
 
 public:
-   //! Disable/Enable stand alone DAQ
+   //! Disable/Enable stand alone reading
    static void DisableStdAlone()   { fgStdAloneFlag = false;  }
    static void EnableStdAlone()    { fgStdAloneFlag = true;   }
    static Bool_t GetStdAloneFlag() { return fgStdAloneFlag;   }
-
+   
+   static void DisableMacStdAlone() { fgMacStdAloneFlag = false;  }
+   static void EnableMacStdAlone()  { fgMacStdAloneFlag = true;   }
+   
 private:
-   static Bool_t     fgStdAloneFlag;   // flag for standalone (read from root file)
+   static Bool_t     fgStdAloneFlag;    // flag for standalone (read from root file using MC interface)
+   static Bool_t     fgMacStdAloneFlag; // flag for standalone with macro (read from root file)
 
 private:
    void FillTofPoint();

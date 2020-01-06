@@ -38,7 +38,7 @@ TAGactNtuGlbTrack*  actGlbTrack = 0x0;
 
 void FillGlb(TString expName)
 {
-   TAGactNtuGlbTrack::EnableStdAlone();
+   TAGactNtuGlbTrack::EnableMacStdAlone();
    
    TAGparaDsc* pParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
    TADIparGeo* parGeoDi = (TADIparGeo*)pParGeoDi->Object();

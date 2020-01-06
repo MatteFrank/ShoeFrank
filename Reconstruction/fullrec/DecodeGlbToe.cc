@@ -18,11 +18,10 @@ int main (int argc, char *argv[])  {
    TString out = in(0, pos);
    out.Append("_Out.root");
    
-   Bool_t ntu = false;
+   Bool_t ntu = true;
    Bool_t his = false;
    Bool_t hit = false;
-   Bool_t trk = false;
-   Bool_t isMC = false;
+   Bool_t trk = true;
 
    Int_t nTotEv = 1e7;
    

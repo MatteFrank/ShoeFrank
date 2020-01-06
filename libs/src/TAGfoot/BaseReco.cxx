@@ -524,7 +524,6 @@ void BaseReco::SetTreeBranches()
    if (GlobalPar::GetPar()->IncludeTOE()) {
       if (fFlagTrack)
          fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
-      if (TAGactNtuGlbTrack::GetStdAloneFlag()) return;
    }
    
   if (GlobalPar::GetPar()->IncludeBM()) {

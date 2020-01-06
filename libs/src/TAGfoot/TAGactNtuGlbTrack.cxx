@@ -37,6 +37,7 @@
  */
 
 Bool_t  TAGactNtuGlbTrack::fgStdAloneFlag = false;
+Bool_t  TAGactNtuGlbTrack::fgMacStdAloneFlag = false;
 
 ClassImp(TAGactNtuGlbTrack)
 
@@ -72,7 +73,7 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, 
    if(GlobalPar::GetPar()->IncludeTW())
       AddDataIn(p_twpoint, "TATWntuPoint");
    
-   if (fgStdAloneFlag)
+   if (fgMacStdAloneFlag)
       SetupBranches();
    
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
@@ -89,7 +90,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
 // ! Get Tree
 TTree* TAGactNtuGlbTrack::GetTree()
 {
-   if (fgStdAloneFlag)
+   if (fgMacStdAloneFlag)
       return fActEvtReader->GetTree();
    else
       return 0x0;
@@ -118,7 +119,7 @@ void TAGactNtuGlbTrack::SetupBranches()
 // ! Open file
 void TAGactNtuGlbTrack::Open(TString name)
 {
-   if (fgStdAloneFlag)
+   if (fgMacStdAloneFlag)
       fActEvtReader->Open(name.Data());
    else
       Error("OpenFile", "Not in stand alone mode");
