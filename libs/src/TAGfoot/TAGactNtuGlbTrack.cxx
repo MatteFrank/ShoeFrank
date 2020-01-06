@@ -38,7 +38,6 @@
  */
 
 Bool_t  TAGactNtuGlbTrack::fgStdAloneFlag = false;
-Bool_t  TAGactNtuGlbTrack::fgMacStdAloneFlag = false;
 
 ClassImp(TAGactNtuGlbTrack)
 
@@ -74,7 +73,7 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, 
    if(GlobalPar::GetPar()->IncludeTW())
       AddDataIn(p_twpoint, "TATWntuPoint");
    
-   if (fgMacStdAloneFlag)
+   if (fgStdAloneFlag)
       SetupBranches();
    
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
@@ -91,7 +90,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
 // ! Get Tree
 TTree* TAGactNtuGlbTrack::GetTree()
 {
-   if (fgMacStdAloneFlag)
+   if (fgStdAloneFlag)
       return fActEvtReader->GetTree();
    else
       return 0x0;
@@ -116,30 +115,11 @@ void TAGactNtuGlbTrack::SetupBranches()
       fActEvtReader->SetupBranch(fpTwPoint,   TATWntuPoint::GetBranchName());
 }
 
-//------------------------------------------+-----------------------------------
-//! Setup all branches.
-void TAGactNtuGlbTrack::SetupBranches(TTree* tree)
-{
-   
-   if (GlobalPar::GetPar()->IncludeVertex()) {
-       tree->SetBranchAddress(TAVTntuVertex::GetBranchName(), fpVtxVertex);
-   }
-   
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
-       tree->SetBranchAddress(TAITntuCluster::GetBranchName(), fpItrClus);
-   
-   if (GlobalPar::GetPar()->IncludeMSD())
-       tree->SetBranchAddress(TAMSDntuCluster::GetBranchName(), fpMsdClus);
-   
-   if(GlobalPar::GetPar()->IncludeTW())
-       tree->SetBranchAddress(TATWntuPoint::GetBranchName(), fpTwPoint);
-}
-
 //__________________________________________________________
 // ! Open file
 void TAGactNtuGlbTrack::Open(TString name)
 {
-   if (fgMacStdAloneFlag)
+   if (fgStdAloneFlag)
       fActEvtReader->Open(name.Data());
    else
       Error("OpenFile", "Not in stand alone mode");

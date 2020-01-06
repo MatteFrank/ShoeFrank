@@ -137,13 +137,13 @@ void LocalRecoMC::CreateRawAction()
 //__________________________________________________________
 void LocalRecoMC::OpenFileIn()
 {
-   fActEvtReader = new TFile(GetName());
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      fTree = (TTree*)fActEvtReader->Get("tree");
-      fActGlbTrack->SetupBranches(fTree);
+      fActGlbTrack->Open(GetName());
+      fTree = fActGlbTrack->GetTree();
       return;
    }
-
+   
+   fActEvtReader = new TFile(GetName());
    fTree = (TTree*)fActEvtReader->Get("EventTree");
    
    Evento *ev  = new Evento();
@@ -186,6 +186,11 @@ void LocalRecoMC::SetRawHistogramDir()
 //__________________________________________________________
 void LocalRecoMC::CloseFileIn()
 {
+   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
+      fActGlbTrack->Close();
+      return;
+   }
+
    fActEvtReader->Close();
 }
 
