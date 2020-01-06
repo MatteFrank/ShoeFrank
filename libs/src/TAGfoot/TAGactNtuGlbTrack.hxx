@@ -14,6 +14,7 @@
 #include "TAGdataDsc.hxx"
 
 class TH1F;
+class TTree;
 class TAGactTreeReader;
 
 class TAGntuPoint;
@@ -44,6 +45,9 @@ public:
    
    //! Set up branches
    void      SetupBranches();
+   
+   //! Set up branches
+   void      SetupBranches(TTree* tree);
 
    //! Open File
    void      Open(TString name);
@@ -67,7 +71,7 @@ private:
    TAGparaDsc*       fpMsdGeoMap;      // par geo for MSD
    TAGparaDsc*       fpTofGeoMap;      // par geo for ToF
    
-   TAGntuPoint*       fpNtuPoint;      // tmp containers of all points
+   TAGntuPoint*      fpNtuPoint;       // tmp containers of all points
    TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
    
    TH1F*             fpHisMass;
@@ -90,7 +94,6 @@ private:
    void FillVtxPoint();
    void FillItrPoint();
    void FillMsdPoint();
-   
    
    ClassDef(TAGactNtuGlbTrack,0)
 };

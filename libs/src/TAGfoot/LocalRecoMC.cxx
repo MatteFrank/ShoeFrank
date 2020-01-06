@@ -140,6 +140,7 @@ void LocalRecoMC::OpenFileIn()
    fActEvtReader = new TFile(GetName());
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fTree = (TTree*)fActEvtReader->Get("tree");
+      fActGlbTrack->SetupBranches(fTree);
       return;
    }
 

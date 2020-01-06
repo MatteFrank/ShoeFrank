@@ -5,6 +5,7 @@
  */
 
 #include "TH1F.h"
+#include "TTree.h"
 #include "TVector3.h"
 
 #include "TAITparGeo.hxx"
@@ -113,6 +114,25 @@ void TAGactNtuGlbTrack::SetupBranches()
    
    if(GlobalPar::GetPar()->IncludeTW())
       fActEvtReader->SetupBranch(fpTwPoint,   TATWntuPoint::GetBranchName());
+}
+
+//------------------------------------------+-----------------------------------
+//! Setup all branches.
+void TAGactNtuGlbTrack::SetupBranches(TTree* tree)
+{
+   
+   if (GlobalPar::GetPar()->IncludeVertex()) {
+       tree->SetBranchAddress(TAVTntuVertex::GetBranchName(), fpVtxVertex);
+   }
+   
+   if (GlobalPar::GetPar()->IncludeInnerTracker())
+       tree->SetBranchAddress(TAITntuCluster::GetBranchName(), fpItrClus);
+   
+   if (GlobalPar::GetPar()->IncludeMSD())
+       tree->SetBranchAddress(TAMSDntuCluster::GetBranchName(), fpMsdClus);
+   
+   if(GlobalPar::GetPar()->IncludeTW())
+       tree->SetBranchAddress(TATWntuPoint::GetBranchName(), fpTwPoint);
 }
 
 //__________________________________________________________
