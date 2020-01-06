@@ -138,7 +138,6 @@ void LocalRecoMC::CreateRawAction()
 void LocalRecoMC::OpenFileIn()
 {
    fActEvtReader = new TFile(GetName());
-   printf("file %s\n", GetName());
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fTree = (TTree*)fActEvtReader->Get("tree");
       return;
