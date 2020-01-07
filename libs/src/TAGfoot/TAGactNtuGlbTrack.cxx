@@ -83,7 +83,8 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack(const char* name, TAGdataDsc* p_vtxvertex, 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
-{  
+{
+    delete fActTOE;
 }
 
 //__________________________________________________________
@@ -165,6 +166,10 @@ Bool_t TAGactNtuGlbTrack::Action()
    
    fpGlbTrack->SetBit(kValid);
    
+    std::cout << "TAGactNtuGlbTrack::Action\n";
+    fActTOE->Action();
+    
+    
    return kTRUE;
 }
 

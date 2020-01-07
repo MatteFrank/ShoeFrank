@@ -137,14 +137,22 @@ void BaseReco::BeforeEventLoop()
    CreateRawAction();
    CreateRecAction();
 
+    std::cout << "BaseReco::BeforeEventLoop - pre-OpenFileIn\n";
+    
    OpenFileIn();
 
+    std::cout << "BaseReco::BeforeEventLoop - post-OpenFileIn\n";
+    
    AddRawRequiredItem();
    AddRecRequiredItem();
    
+    std::cout << "BaseReco::BeforeEventLoop - pre-OpenFileOut\n";
+    
    if (fFlagOut)
       OpenFileOut();
    
+    std::cout << "BaseReco::BeforeEventLoop - post-OpenFileOut\n";
+    
    fTAGroot->BeginEventLoop();
    fTAGroot->Print();
 }
@@ -366,6 +374,8 @@ void BaseReco::CreateRecAction()
    if (GlobalPar::GetPar()->IncludeVertex())
       CreateRecActionVtx();
    
+    std::cout << "BaseReco::CreateRecAction() - VTX\n";
+    
    if (GlobalPar::GetPar()->IncludeInnerTracker())
       CreateRecActionIt();
    
@@ -378,6 +388,8 @@ void BaseReco::CreateRecAction()
    if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
       CreateRecActionGlb();
    
+    std::cout << "BaseReco::CreateRecAction() - TOE\n";
+    
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
        GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
@@ -487,6 +499,7 @@ void BaseReco::CreateRecActionGlb()
       fActGlbTrack->CreateHistogram();
   }
     
+    std::cout << "BaseReco::CreateRecActionGlb() - Pre-List\n";
     
     using state_vector = state_vector_impl< Matrix<4,1> >;
     using state_covariance = state_covariance_impl< Matrix<4, 4> >;
@@ -496,13 +509,24 @@ void BaseReco::CreateRecActionGlb()
     auto list = start_list( detector_properties<details::vertex_tag>(clusterVTX_hc, 5.5) ).finish();
 //    auto list = start_list( 5.8 ).finish();
     
+    std::cout << "BaseReco::CreateRecActionGlb() - Post-List\n";
+    
     auto ode = make_ode< Matrix<2,1>, 2>( model{} );
     auto stepper = make_stepper<data_grkn56>( std::move(ode) );
     auto ukf = make_ukf<state>( std::move(stepper) );
     
+    std::cout << "BaseReco::CreateRecActionGlb() - Post-UKF\n";
+    
     TATOEbaseAct * action = make_new_TATOEactGlb(std::move(ukf), std::move(list));
+    
+   
     action->Action();
-    delete action;
+    
+     std::cout << "BaseReco::CreateRecActionGlb() - Post-Action\n";
+    //delete action;
+    fActGlbTrack->SetAction( action );
+    
+    std::cout << "BaseReco::CreateRecActionGlb() - Post-Setter\n";
     
 }
 

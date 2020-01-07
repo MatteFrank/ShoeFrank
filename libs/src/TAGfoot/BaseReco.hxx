@@ -274,7 +274,7 @@ protected:
    void CreateRecActionIt();
    void CreateRecActionMsd();
    void CreateRecActionTw();
-   void CreateRecActionGlb();
+   void CreateRecActionGlb() ;
    void CreateRecActionIr();
 
    ClassDef(BaseReco, 1); // Base class for event display

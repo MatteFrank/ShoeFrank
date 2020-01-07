@@ -13,6 +13,8 @@
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
 
+#include "TATOEact.hxx"
+
 class TH1F;
 class TTree;
 class TAGactTreeReader;
@@ -57,6 +59,8 @@ public:
    
    //! Get tree in standalone mode
    TTree*    GetTree();
+    
+    void      SetAction(TATOEbaseAct* actTOE){ fActTOE = actTOE; }
 
 private:
    TAGgeoTrafo*      fpFootGeo;        // geo trafo
@@ -74,6 +78,8 @@ private:
    TAGntuPoint*      fpNtuPoint;       // tmp containers of all points
    TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
    
+   TATOEbaseAct*     fActTOE;
+    
    TH1F*             fpHisMass;
 
 public:

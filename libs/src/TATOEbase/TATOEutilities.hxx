@@ -30,13 +30,13 @@ namespace details{
         using measurement_matrix = measurement_matrix_impl< Matrix<2,4> >;
         using candidate = candidate_impl<measurement_vector, measurement_covariance, measurement_matrix>;
     };
-    struct msd_tag{
+    struct it_tag{
         using measurement_vector = state_vector_impl< Matrix<2, 1> >;
         using measurement_covariance = state_covariance_impl< Matrix<2, 2> >;
         using measurement_matrix = measurement_matrix_impl< Matrix<2,4> >;
         using candidate = candidate_impl<measurement_vector, measurement_covariance, measurement_matrix>;
     };
-    struct it_tag{
+    struct msd_tag{
         using measurement_vector = state_vector_impl< Matrix<2, 1> >;
         using measurement_covariance = state_covariance_impl< Matrix<2, 2> >;
         using measurement_matrix = measurement_matrix_impl< Matrix<2,4> >;
@@ -98,18 +98,18 @@ private:
     
     
     template< class T,
-    typename std::enable_if_t< !std::is_same< typename details::detector_traits<T>::tag,
-    details::vertex_tag>::value,
-    std::nullptr_t  > = nullptr         >
+              typename std::enable_if_t< !std::is_same< typename details::detector_traits<T>::tag,
+                                                        details::vertex_tag>::value,
+                                          std::nullptr_t  > = nullptr         >
     auto make_begin_iterator(T& t_p ) -> iterator<T>
     {
         return {t_p, 0};
     }
     
     template< class T,
-    typename std::enable_if_t< std::is_same< typename details::detector_traits<T>::tag,
-    details::vertex_tag>::value,
-    std::nullptr_t  > = nullptr               >
+              typename std::enable_if_t< std::is_same< typename details::detector_traits<T>::tag,
+                                                        details::vertex_tag>::value,
+                                         std::nullptr_t  > = nullptr               >
     auto make_begin_iterator(T& t_p ) -> iterator<T>
     {
         return {t_p, 1};
@@ -159,6 +159,8 @@ public:
     :  cluster_mhc{cluster_phc} , cut_m{cut_p}, layer_m{ layer_p } {}
     
     
+    std::size_t layer_count() const { return layer_m; }
+    
     std::vector<candidate> generate_candidate(std::size_t index_p) const
     {
         std::vector<candidate> candidate_c;
@@ -174,9 +176,9 @@ public:
             auto error = cluster->GetPosError();
             
             candidate_c.emplace_back( measurement_vector{{ position.X(), position.Y() }},
-                                     measurement_covariance{{ error.X(),         0,
-                0, error.Y()    }},
-                                     measurement_matrix{matrix_m} );
+                                      measurement_covariance{{ error.X(),         0,
+                                                                       0, error.Y()    }},
+                                      measurement_matrix{matrix_m} );
         }
         
         return candidate_c;
@@ -203,7 +205,7 @@ struct model
     //auto operator()(const operating_state_t& os_p)
     Matrix<2,1> operator()(const int& os_p) const
     {
-        std::cout << particle_h->charge <<  "  " << particle_h->momentum << '\n';
+        std::cout << particle_h->charge <<  "  " << particle_h->momentum << " with entry int: " << os_p << '\n';
         return {};
         //return particle_h->charge/particle_h->momentum * compute_R(os_p) * compute_change(os_p);
     }

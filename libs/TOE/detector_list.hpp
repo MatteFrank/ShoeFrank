@@ -77,8 +77,8 @@ private:
     }
     
     template< std::size_t Index, class F,
-              typename std::enable_if_t< (Index == std::tuple_size<tuple_type>::value), std::nullptr_t > = nullptr >
-    constexpr void apply_for_each_impl(F&& f_p){}
+              typename std::enable_if_t< (Index >= std::tuple_size<tuple_type>::value), std::nullptr_t > = nullptr >
+    constexpr void apply_for_each_impl(F&& /*f_p*/){}
     
 public:
     template<class F>
