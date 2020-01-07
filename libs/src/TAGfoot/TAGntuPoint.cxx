@@ -11,6 +11,9 @@ ClassImp(TAGpoint) // Description of Single Detector TAGpoint
 TAGpoint::TAGpoint()
  : TAGobject(),
    fPosition(0,0,0),
+   fPosError(0,0,0),
+   fMomentum(0,0,0),
+   fMomError(0,0,0),
    fTime(0.),
    fChargeZ(-99),
    fChargeProbaZ(-1)
@@ -20,14 +23,32 @@ TAGpoint::TAGpoint()
 //______________________________________________________________________________
 //  build a point
 TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, Double_t time, Double_t chargeZ, Double_t probaZ)
- : TAGobject(),
+: TAGobject(),
    fPosition(pos),
    fPosError(posErr),
+   fMomentum(0,0,0),
+   fMomError(0,0,0),
    fTime(time),
    fChargeZ(chargeZ),
    fChargeProbaZ(probaZ)
 {
 }
+
+//______________________________________________________________________________
+//  build a point
+TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Double_t time, Double_t chargeZ, Double_t probaZ)
+ : TAGobject(),
+   fPosition(pos),
+   fPosError(posErr),
+   fMomentum(mom),
+   fMomError(momErr),
+   fTime(time),
+   fChargeZ(chargeZ),
+   fChargeProbaZ(probaZ)
+{
+}
+
+
 
 //______________________________________________________________________________
 // Clear
@@ -59,11 +80,21 @@ TAGntuPoint::~TAGntuPoint()
 }
 
 //______________________________________________________________________________
-//  standard 
+//  standard
 TAGpoint* TAGntuPoint::NewPoint(TVector3 pos, TVector3 posErr, Double_t time, Double_t chargeZ, Double_t probaZ)
 {
+   TClonesArray &pixelArray = *fListOfPoints;
+   TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(pos, posErr, time, chargeZ, probaZ);
+   
+   return pixel;
+}
+
+//______________________________________________________________________________
+//  standard + momentum
+TAGpoint* TAGntuPoint::NewPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Double_t time, Double_t chargeZ, Double_t probaZ)
+{
 	TClonesArray &pixelArray = *fListOfPoints;
-	TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(pos, posErr, time, chargeZ, probaZ);
+	TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, time, chargeZ, probaZ);
 
 	return pixel;
 }
