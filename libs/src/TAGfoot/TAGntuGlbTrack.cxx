@@ -17,7 +17,7 @@ using namespace std;
 
 /*!
   \class TAGntuGlbTrack TAGntuGlbTrack.hxx "TAGntuGlbTrack.hxx"
-  \brief Mapping and Geometry parameters for IR detectors. **
+  \brief container for global tracks **
 */
 
 ClassImp(TAGtrack);
@@ -32,61 +32,66 @@ TAGtrack::TAGtrack()
    fCharge(0.),
    fTof(0.),
    fEnergy(0.),
-   fId(-1),
-   fTrkID(-1),
+   fTrkId(-1),
    fTgtDir(0,0,0),
    fTgtPos(0,0,0),
    fTofPos(0,0,0),
    fTofDir(0,0,0),
-   fListOfPoints(0x0)
+   fListOfMeasPoints(0x0),
+   fListOfCorrPoints(0x0)
 {
    SetupClones();
 }
 
 //------------------------------------------+-----------------------------------
 //! Constructor.
-TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t id, Int_t trkID)
+TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t trkId)
  : TAGobject(),
    fMass(mass),
    fMom(mom),
    fCharge(charge),
    fTof(tof),
    fEnergy(energy),
-   fId(id),
-   fTrkID(trkID),
+   fTrkId(trkId),
    fTgtDir(0,0,0),
    fTgtPos(0,0,0),
    fTofPos(0,0,0),
    fTofDir(0,0,0),
-   fListOfPoints(0x0)
+   fListOfMeasPoints(0x0),
+   fListOfCorrPoints(0x0)
 {
    SetupClones();
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGtrack::~TAGtrack()
 {
-  delete fListOfPoints;
+   delete fListOfMeasPoints;
+   delete fListOfCorrPoints;
 }
-
-
 
 //______________________________________________________________________________
 //
 void TAGtrack::SetupClones()
 {
-  if (!fListOfPoints) fListOfPoints = new TClonesArray("TAGpoint");
-  return;
+   if (!fListOfMeasPoints) fListOfMeasPoints = new TClonesArray("TAGpoint");
+   if (!fListOfCorrPoints) fListOfCorrPoints = new TClonesArray("TAGpoint");
 }
-
 
 // __________________________________________________________________________
 //
-void TAGtrack::AddPoint(TAGpoint* point)
+void TAGtrack::AddMeasPoint(TAGpoint* point)
 {
-   TClonesArray &pointArray = *fListOfPoints;
+   TClonesArray &pointArray = *fListOfMeasPoints;
+   new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
+}
+
+// __________________________________________________________________________
+//
+void TAGtrack::AddCorrPoint(TAGpoint* point)
+{
+   TClonesArray &pointArray = *fListOfCorrPoints;
    new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
 }
 
@@ -95,7 +100,8 @@ void TAGtrack::AddPoint(TAGpoint* point)
 
 void TAGtrack::Clear(Option_t*)
 {
-  fListOfPoints->Delete();
+   fListOfMeasPoints->Delete();
+   fListOfCorrPoints->Delete();
 }
 
 //##############################################################################
@@ -166,10 +172,10 @@ void TAGntuGlbTrack::Clear(Option_t*)
 
 //______________________________________________________________________________
 //
-TAGtrack* TAGntuGlbTrack::NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t id, Int_t trkID)
+TAGtrack* TAGntuGlbTrack::NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t trkId)
 {
    TClonesArray &trackArray = *fListOfTracks;
-   TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(mass, mom, charge, tof, energy, id, trkID);
+   TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(mass, mom, charge, tof, energy, trkId);
    return track;
 }
 
@@ -182,7 +188,6 @@ TAGtrack* TAGntuGlbTrack::NewTrack()
    return track;
 }
 
-
 //______________________________________________________________________________
 //
 TAGtrack* TAGntuGlbTrack::NewTrack(TAGtrack& trk)
@@ -192,21 +197,19 @@ TAGtrack* TAGntuGlbTrack::NewTrack(TAGtrack& trk)
    return track;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
 void TAGntuGlbTrack::ToStream(ostream& os, Option_t* option) const
 {
-	  
    os << "TAGntuGlbTrack " << GetName()
    << Form("  nPixels=%3d", GetTracksN())
    << endl;
    
    //TODO properly
-   //os << "slat stat    adct    adcb    tdct    tdcb" << endl;
    for (Int_t j = 0; j < GetTracksN(); j++) {
       const TAGtrack*  track = GetTrack(j);
       if (track)
-         os << Form("%4d", track->GetId());
+         os << Form("%4d", track->GetTrackId());
       os << endl;
    }
 }
