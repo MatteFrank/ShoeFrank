@@ -24,54 +24,64 @@ class TAGtrack : public TAGobject {
 public:
    
    TAGtrack();
-   TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t id, Int_t trkID);
+   TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t trkId);
 
    virtual         ~TAGtrack();
    
-   void             SetMass(Double_t amass)    { fMass = amass; }
-   Double_t         GetMass()     const { return fMass; }
+   void             SetMass(Double_t amass)       { fMass = amass;     }
+   Double_t         GetMass()               const { return fMass;      }
    
-   void             SetMomentum(Double_t amom) { fMom = amom; }
-   Double_t         GetMomentum() const { return fMom;}
+   void             SetMomentum(Double_t amom)    { fMom = amom;       }
+   Double_t         GetMomentum()           const { return fMom;       }
    
-   void             SetCharge(Double_t acharge) { fCharge = acharge; }
-   Double_t         GetCharge()   const { return fCharge; }
+   void             SetCharge(Double_t acharge)   { fCharge = acharge; }
+   Double_t         GetCharge()             const { return fCharge;    }
    
-   void             SetTof(Double_t atoff)     { fTof = atoff; }
-   Double_t         GetTof()     const { return fTof; }
+   void             SetTof(Double_t atoff)        { fTof = atoff;      }
+   Double_t         GetTof()                const { return fTof;       }
    
-   void             SetId(Int_t id)             { fId = id; }
-   Int_t            GetId()       const { return fId; }
+   void             SetTrackId(Int_t trid)        { fTrkId = trid;     }
+   Int_t            GetTrackId()            const { return fTrkId;     }
    
-   void             SetTgtDirection(TVector3 dir) { fTgtDir = dir; }
-   TVector3         GetTgtDirection() { return fTgtDir; }
+   void             SetEnergy(Double_t e)         { fEnergy = e;       }
+   Double_t         GetEnergy()             const { return fEnergy;    }
    
-   void             SetTgtPosition(TVector3 pos) { fTgtPos = pos; }
-   TVector3         GetTgtPosition() { return fTgtPos; }
+   void             SetTgtDirection(TVector3 dir) { fTgtDir = dir;     }
+   TVector3         GetTgtDirection()             { return fTgtDir;    }
    
-   void             SetTofPosition(TVector3 pos) { fTofPos = pos; }
-   TVector3         GetTofPosition() { return fTofPos; }
+   void             SetTgtPosition(TVector3 pos)  { fTgtPos = pos;     }
+   TVector3         GetTgtPosition()              { return fTgtPos;    }
    
-   void             SetTofDirection(TVector3 dir) { fTofDir = dir; }
-   TVector3         GetTofDirection() { return fTofDir; }
-      
-   void             SetTrackId(Int_t trid) { fTrkID = trid; }
-   Int_t            GetTrackId() const { return fTrkID; }
+   void             SetTofPosition(TVector3 pos)  { fTofPos = pos;     }
+   TVector3         GetTofPosition()              { return fTofPos;    }
    
-   void             SetEnergy(Double_t e) { fEnergy = e; }
-   Double_t         GetEnergy() const { return fEnergy; }
+   void             SetTofDirection(TVector3 dir) { fTofDir = dir;     }
+   TVector3         GetTofDirection()             { return fTofDir;    }
    
-   //! Get list of points
-   TClonesArray*    GetListOfPoints()       const { return   fListOfPoints;   }
    
-   //! Get number of points
-   Int_t            GetPointsN()            const { return   fListOfPoints->GetEntries(); }
+   //! Get list of measured points
+   TClonesArray*    GetListOfMeasPoints()   const { return fListOfMeasPoints;                       }
    
-   //! Get point
-   TAGpoint*        GetPoint(Int_t index)  { return (TAGpoint*)fListOfPoints->At(index); }
+   //! Get list of corrected points
+   TClonesArray*    GetListOfCorrPoints()   const { return fListOfCorrPoints;                       }
    
-   //! Add point
-   void             AddPoint(TAGpoint* point);
+   //! Get number of measured points
+   Int_t            GetMeasPointsN()        const { return fListOfMeasPoints->GetEntries();         }
+   
+   //! Get number of corrected points
+   Int_t            GetCorrPointsN()        const { return fListOfCorrPoints->GetEntries();         }
+   
+   //! Get measured point
+   TAGpoint*        GetMeasPoint(Int_t index)     { return (TAGpoint*)fListOfMeasPoints->At(index); }
+   
+   //! Get corrected point
+   TAGpoint*        GetCorrPoint(Int_t index)     { return (TAGpoint*)fListOfCorrPoints->At(index); }
+   
+   //! Add measured point
+   void             AddMeasPoint(TAGpoint* point);
+   
+   //! Add corrected point
+   void             AddCorrPoint(TAGpoint* point);
 
    void             Clear(Option_t* opt="");
    
@@ -83,10 +93,9 @@ private:
    Double32_t       fCharge;
    Double32_t       fTof;
    Double32_t       fEnergy;
-   Int_t            fId;
-   Int_t            fTrkID;
+   Int_t            fTrkId;
    
-   //Particle directions and positions computed on ToF Wall
+   //Particle directions and positions computed on target middle
    TVector3         fTgtDir;
    TVector3         fTgtPos;
    
@@ -94,9 +103,10 @@ private:
    TVector3         fTofPos;
    TVector3         fTofDir;
    
-   TClonesArray*    fListOfPoints;		    // Attached points
-   
-   ClassDef(TAGtrack,1)
+   TClonesArray*    fListOfMeasPoints;          // Attached measured points
+   TClonesArray*    fListOfCorrPoints;          // Attached corrected points
+
+   ClassDef(TAGtrack,2)
    
 };
 
@@ -121,7 +131,7 @@ public:
    TClonesArray*    GetListOfTracks() { return fListOfTracks; }
    
    TAGtrack*        NewTrack();
-   TAGtrack*        NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t id, Int_t trkID);
+   TAGtrack*        NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t trkId);
    TAGtrack*        NewTrack(TAGtrack& track);
    
    virtual void     SetupClones();
