@@ -23,7 +23,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/macros/  DESTINATION ${CMAKE_BINARY_DIR}/R
 #----------------------------------------------------------------------------
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADAQ} ${TAAPI} ${TAST} ${TADI} ${TAVT} ${TAIT} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${TAFO})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADAQ} ${TAAPI} ${TAST} ${TADI} ${TAVT} ${TAIT} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${TATOE} ${TAFO})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES} ${GENFIT_LIBRARIES})
 
 # add includes : root + current + dependencies
@@ -46,6 +46,7 @@ include_directories(${TATW_INCLUDE_DIR})
 include_directories(${TACA_INCLUDE_DIR})
 include_directories(${TAED_INCLUDE_DIR})
 include_directories(${TAFO_INCLUDE_DIR})
+include_directories(${TATOE_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
