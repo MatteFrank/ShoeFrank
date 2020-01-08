@@ -10,6 +10,7 @@
 */
 class TEveRGBAPalette;
 class TADIeveTrackPropagator;
+class TEveTrack;
 
 class TAEDglbTrack : public TEveTrackList {
 
@@ -29,6 +30,10 @@ public:
    //! Add Track
    void AddTrack(TVector3& vertex, TVector3& momentum, Int_t charge);
   
+   //! Add track Marker
+   void AddTrackMarker(TVector3& point, TVector3& mom);
+
+
    //! Reset tracks
    void ResetTracks();
    
@@ -37,6 +42,7 @@ public:
    
 private:
    TEveRGBAPalette* fPalette;     // color palette
+   TEveTrack*       fCurrentTrack; // current track
    Int_t            fNofTracks;   // number of tracks
    Int_t            fMaxMomentum; // max momentum
 

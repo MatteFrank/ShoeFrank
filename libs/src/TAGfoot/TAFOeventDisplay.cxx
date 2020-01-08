@@ -1186,11 +1186,30 @@ void TAFOeventDisplay::UpdateLayerElements()
 void TAFOeventDisplay::UpdateGlbTrackElements()
 {
    fGlbTrackDisplay->ResetTracks();
+   
+   TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
+   
+   if( pNtuTrack->GetTracksN() > 0 ) {
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         TAGtrack* track = pNtuTrack->GetTrack(iTrack);
+         
+         // vertex
+         TAGpoint* point = track->GetMeasPoint(0);
+         TVector3 vtx    = point->GetPosition();
+         TVector3 mom0   = point->GetMomentum();;
+         Int_t charge    = point->GetChargeZ();
+         
+         fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
 
-   TVector3 vtx(0,0,0);
-   TVector3 momentum(0,0,3);
-   Int_t charge = 6;
-   fGlbTrackDisplay->AddTrack(vtx, momentum, charge);
+         for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
+            TAGpoint* point = track->GetMeasPoint(iPoint);
+            TVector3 pos    = point->GetPosition();
+            TVector3 mom    = point->GetMomentum();
+            
+            fGlbTrackDisplay->AddTrackMarker(pos, mom);
+         } // end loop on points
+      } // end loop on tracks
+   } // nTracks > 0
    
    fGlbTrackDisplay->MakeTracks();
 }
