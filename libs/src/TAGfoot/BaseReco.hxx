@@ -168,8 +168,8 @@ public:
    
    TACAntuRaw*          GetNtuHitCa()       const { return (TACAntuRaw*) fpNtuRawCa->Object();       }
 
-   TAGactNtuGlbTrack*   GetNtuGlbTrack()    const { return (TAGactNtuGlbTrack*)fpNtuGlbTrack->Object();}
-   TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();     }
+   TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
+   TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
 
    
    //! MC container Getter (virtual)
