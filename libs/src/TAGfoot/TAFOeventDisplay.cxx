@@ -181,7 +181,6 @@ TAFOeventDisplay::~TAFOeventDisplay()
    if (fIrTrackDisplay)       delete fIrTrackDisplay;
 
    if (fField)                delete fField;
-   if (fFieldImpl)            delete fFieldImpl;
    if (fGlbTrackProp)         delete fGlbTrackProp;
    
    delete fReco;
@@ -219,7 +218,7 @@ void TAFOeventDisplay::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeDI()) {
       TADIparGeo* parGeo = fReco->GetParGeoDi();
       
-      fFieldImpl = new FootField("", parGeo);
+      fFieldImpl = fReco->GetFootField();
       fField     = new TADIeveField(fFieldImpl);
       
       if (GlobalPar::GetPar()->IncludeTOE()) {
@@ -966,16 +965,6 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
 //__________________________________________________________
 void TAFOeventDisplay::UpdateGlbTrackElements()
 {
-//   TVector3 vtx(0,0,0);
-//   TVector3 mom0(-1, 2, 3);
-//   Int_t charge = 6;
-//
-//   TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
-//   TAGtrack* track0 = new TAGtrack(0.938, 1.3, charge, 1.1, 0.200, -1);
-//   glbTrack->TrackId(track0);
-//
-//   return;
-   
    fGlbTrackDisplay->ResetTracks();
 
    TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
