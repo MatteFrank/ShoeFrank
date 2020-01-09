@@ -22,6 +22,11 @@
 
 #pragma link C++ class TAGdataDsc+;
 
+#pragma link C++ class  TAGpoint;
+#pragma link C++ class  TAGntuPoint;
+#pragma link C++ class  TAGtrack;
+#pragma link C++ class  TAGntuGlbTrack;
+
 #pragma link C++ class TAGpadGroup+;
 #pragma link C++ class TAGview+;
 
