@@ -9,7 +9,6 @@
  
 */
 class TEveTrackPropagator;
-class TAGtrack;
 
 class TAEDglbTrack : public TEveTrack {
 
@@ -17,17 +16,20 @@ public:
    TAEDglbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop);
    virtual ~TAEDglbTrack();
     
-   //! Add Track Marker
+   //! Add track marker
    void AddTrackMarker(TVector3& point, TVector3& mom);
 
-   //! Set Track Id Object
-   void TrackId(TAGtrack* obj);
+   //! Set track id object
+   void TrackId(TObject* obj);
    
    //! Reset tracks
    void ResetTrack();
    
+   //! Secondary selection
+   void SecSelected(TEveTrack* track);
+
 private:
-   TAGtrack* fTrackId;
+   TObject* fTrackId;
    
   ClassDef(TAEDglbTrack, 0);  
 };

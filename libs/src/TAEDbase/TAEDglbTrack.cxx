@@ -5,7 +5,6 @@
 #include "TColor.h"
 
 #include "TAEDglbTrack.hxx"
-#include "TAGntuGlbTrack.hxx"
 
 //
 ClassImp(TAEDglbTrack)
@@ -37,7 +36,14 @@ void TAEDglbTrack::ResetTrack()
 }
 
 //__________________________________________________________
-void TAEDglbTrack::TrackId(TAGtrack* obj)
+void TAEDglbTrack::TrackId(TObject* obj)
 {
    fTrackId = obj;
+}
+
+//__________________________________________________________
+void TAEDglbTrack::SecSelected(TEveTrack* track)
+{
+   printf("toto\n");
+ //  Emit("SecSelected(TEveTrack*)", (Long_t)track);
 }
