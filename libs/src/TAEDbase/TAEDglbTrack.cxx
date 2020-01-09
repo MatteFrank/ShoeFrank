@@ -5,6 +5,7 @@
 #include "TColor.h"
 
 #include "TAEDglbTrack.hxx"
+#include "TAGntuGlbTrack.hxx"
 
 //
 ClassImp(TAEDglbTrack)
@@ -36,7 +37,7 @@ void TAEDglbTrack::ResetTrack()
 }
 
 //__________________________________________________________
-void TAEDglbTrack::TrackId(TObject* obj)
+void TAEDglbTrack::TrackId(TAGtrack* obj)
 {
    fTrackId = obj;
 }
