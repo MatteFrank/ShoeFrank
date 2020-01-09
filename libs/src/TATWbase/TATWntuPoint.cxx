@@ -20,6 +20,7 @@ ClassImp(TATWpoint) // Description of Single Detector TATWpoint
 TATWpoint::TATWpoint()
 : TAGobject(),
    m_position(),
+   m_posErr(),
    m_column(0),
    m_row(0),
    m_columnHit(0x0),
@@ -34,9 +35,10 @@ TATWpoint::TATWpoint()
 
 //______________________________________________________________________________
 //  build a point
-TATWpoint::TATWpoint( double x, TATWntuHit* colHit, double y, TATWntuHit* rowHit )
+TATWpoint::TATWpoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit )
 : TAGobject(),
    m_position(x, y, 0),
+   m_posErr(dx, dy, 0),
    m_columnHit(new TATWntuHit(*colHit)),
    m_rowHit(new TATWntuHit(*rowHit)),
    m_chargeZ(0),
@@ -89,11 +91,11 @@ TATWntuPoint::~TATWntuPoint()
 
 //______________________________________________________________________________
 //  standard 
-TATWpoint* TATWntuPoint::NewPoint(double x, TATWntuHit* colHit, double y, TATWntuHit* rowHit ) {
+TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit ) {
 
 	// check on aorigin
 	TClonesArray &pixelArray = *m_listOfPoints;
-	TATWpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TATWpoint( x, colHit, y, rowHit );
+	TATWpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TATWpoint( x, dx, colHit, y, dy, rowHit );
 
 	return pixel;
 }

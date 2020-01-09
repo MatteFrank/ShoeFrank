@@ -20,7 +20,7 @@
 
 /*!
  \class TATWactNtuPoint 
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for TW reconstructed points. **
  */
 
 ClassImp(TATWactNtuPoint);
@@ -33,10 +33,15 @@ TATWactNtuPoint::TATWactNtuPoint(const char* name,
    fpNtuRaw(pNtuRaw),
    fpNtuPoint(pNtuPoint),
    fpGeoMap(pGeoMap),
-   fpCalMap(pCalMap)
+   fpCalMap(pCalMap),
+   fDefPosErr(0)
 {
    AddDataIn(pNtuRaw,   "TATWntuRaw");
    AddDataOut(pNtuPoint, "TATWntuPoint");
+   
+   TATWparGeo* pGeo = (TATWparGeo*) fpGeoMap->Object();
+   Float_t barWidth = pGeo->GetBarWidth();
+   fDefPosErr = barWidth/TMath::Sqrt(12.);
 }
 
 //------------------------------------------+-----------------------------------
@@ -141,7 +146,7 @@ Bool_t TATWactNtuPoint::FindPoints()
          Float_t xmin = pGeoMap->GetBarPosition(0, bar1)[0];
          Float_t ymin = pGeoMap->GetBarPosition(1, bar2)[1];
       
-         TATWpoint* point = pNtuPoint->NewPoint(xmin, hit1, ymin, hitmin);
+         TATWpoint* point = pNtuPoint->NewPoint(xmin, fDefPosErr, hit1, ymin, fDefPosErr, hitmin);
          
          Int_t Z = hit1->GetChargeZ(); // taking MC Z from hit since no reconstruction available
          point->SetChargeZ(Z);

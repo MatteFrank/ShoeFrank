@@ -36,14 +36,17 @@ public:
    
 private:
    TAGdataDsc*     fpNtuRaw;		 // input data dsc
-   TAGdataDsc*     fpNtuPoint;	 	// output data dsc
+   TAGdataDsc*     fpNtuPoint;    // output data dsc
    TAGparaDsc*     fpGeoMap;		 // geometry para dsc
    TAGparaDsc*     fpCalMap;		 // calibration Z para dsc
+
+   Float_t         fDefPosErr;    // default position error
 
    TH1F*           fpHisDist;
    TH1F*           fpHisCharge1;
    TH1F*           fpHisCharge2;
    TH1F*           fpHisChargeTot;
+   
 
    ClassDef(TATWactNtuPoint,0)
 };

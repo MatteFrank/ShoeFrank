@@ -36,6 +36,7 @@ class TATWpoint : public TAGobject {
    
 private:
    TVector3    m_position;      // position in detector framework
+   TVector3    m_posErr;        // position error in detector framework
    int         m_column;        // column number
    int         m_row;           // row number
    
@@ -52,12 +53,13 @@ private:
 public:
    
    TATWpoint();
-   TATWpoint( double x, TATWntuHit* colHit, double y, TATWntuHit* rowHit );
+   TATWpoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit );
    ~TATWpoint() {};
    
    //    All the Get methods
    TVector3  GetPosition()    const  { return m_position;            }
-   
+   TVector3  GetError()       const  { return m_posErr;              }
+
    int       GetColumnID()    const  { return m_column;              }
    int       GetRowID()       const  { return m_row;                 }
    
@@ -74,8 +76,10 @@ public:
    int       GetChargeZ()     const  { return m_chargeZ;             }
    double    GetChargeZProba() const  { return m_chargeZProba;       }
 
+   
    void      SetChargeZ(int z)       { m_chargeZ = z;                }
    void      SetChargeZProba(double p){ m_chargeZProba = p;          }
+   
 
    void      Clear(Option_t* opt);
    
@@ -87,7 +91,7 @@ public:
 class TATWntuPoint : public TAGdata {
    
 private:
-   
+
    TClonesArray*        m_listOfPoints;
    
 public:
@@ -95,10 +99,10 @@ public:
 	TATWntuPoint();
 	virtual ~TATWntuPoint();
 	
-	TATWpoint*         NewPoint( double x, TATWntuHit* colHit, double y, TATWntuHit* rowHit );
+	TATWpoint*          NewPoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit );
 
 	int                 GetPointN();
-	TATWpoint*         GetPoint( int iPoint );
+	TATWpoint*          GetPoint( int iPoint );
 
 
 	virtual void        Clear(Option_t* opt="");
