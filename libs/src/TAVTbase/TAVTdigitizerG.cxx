@@ -10,7 +10,7 @@ using namespace std;
 Float_t TAVTdigitizerG::fgkFWTH     = 2*TMath::Sqrt(2*TMath::Log(10));
 Float_t TAVTdigitizerG::fgThreshold = 0.1;
 Float_t TAVTdigitizerG::fgGain      = 280.;
-Int_t   TAVTdigitizerG::fgAdcDepth  = 1024;
+Int_t   TAVTdigitizerG::fgAdcDepth  = 16;
 Float_t TAVTdigitizerG::fgChargeMax = 1e4;
 
 
@@ -104,5 +104,6 @@ void TAVTdigitizerG::SetFunctions()
 // --------------------------------------------------------------------------------------
 Int_t TAVTdigitizerG::GetAdcValue(Float_t charge)
 {
+   fgThreshold = 0.;
    return int(fgAdcDepth/fgChargeMax*(charge-fgThreshold));
 }

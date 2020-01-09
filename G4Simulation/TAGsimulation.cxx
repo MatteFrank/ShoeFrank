@@ -66,7 +66,7 @@ int main(int argc,char** argv)
     TString physListName("BIC");
 
     // select the output type (Evento tree or TAMCevent tree)
-    G4bool kEvento(0);
+    G4bool kEvento(1);
 
     // expriment name
     TString exp("");
