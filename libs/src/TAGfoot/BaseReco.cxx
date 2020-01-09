@@ -54,6 +54,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fpParGeoIt(0x0),
    fpParGeoMsd(0x0),
    fpParGeoTw(0x0),
+   fField(0x0),
    fpParCalTw(0x0),
    fpParGeoCa(0x0),
    fpParConfBm(0x0),
@@ -290,6 +291,9 @@ void BaseReco::ReadParFiles()
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
       TString parFileName = "./geomaps/TADIdetector.map";
       parGeo->FromFile(parFileName.Data());
+      
+      if (GlobalPar::GetPar()->IncludeTOE())
+         fField = new FootField("", parGeo);
    }
    
    // initialise par files for vertex
