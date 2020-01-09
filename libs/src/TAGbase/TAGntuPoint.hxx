@@ -14,14 +14,12 @@
 #include "TVector3.h"
 
 #include "TAGobject.hxx"
-#include "TATWntuRaw.hxx"
-
 
 /** TAGpoint class is the global point for global reconstruction
  
  */
 /*------------------------------------------+---------------------------------*/
-
+class TClonesArray;
 class TAGpoint : public TAGobject {
    
 private:
