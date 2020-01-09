@@ -146,7 +146,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    
    if (GlobalPar::GetPar()->IncludeTOE()) {
       fGlbTrackProp    = new TADIeveTrackPropagator();
-      fGlbTrackDisplay = new TAEDglbTrack("Global Tracks", fGlbTrackProp);
+      fGlbTrackDisplay = new TAEDglbTrackList("Global Tracks", fGlbTrackProp);
       fGlbTrackDisplay->SetMaxMomentum(fMaxMomentum);
    }
    
@@ -475,6 +475,11 @@ void TAFOeventDisplay::ConnectElements()
       fIrTrackDisplay->SetEmitSignals(true);
       fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
+   
+//   if (GlobalPar::GetPar()->IncludeTOE()) {
+//      fGlbTrackDisplay->SetEmitSignals(true);
+//      fGlbTrackDisplay->Connect("SecSelected(TEveTrack*)", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
+//   }
 }
 
 //__________________________________________________________
@@ -564,7 +569,22 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
    }
 }
 
+//__________________________________________________________
+void TAFOeventDisplay::UpdateTrackInfo(TEveTrack* ts)
+{
+   TAEDglbTrack* lineTracks = dynamic_cast<TAEDglbTrack*> (ts);
+   TObject* obj = lineTracks->GetPointId(0);
 
+   if (obj->InheritsFrom("TAGtrack")) {
+      
+      TAGtrack* track =  (TAGtrack*)obj;
+      if (track == 0x0) return;
+
+      fInfoView->AddLine( Form("Track # %2d:", track->GetTrackId()) );
+      fInfoView->AddLine( Form("Charge: %g Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass()) );
+      fInfoView->AddLine( Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof()) );
+   }
+}
 
 //__________________________________________________________
 void TAFOeventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
@@ -1199,19 +1219,18 @@ void TAFOeventDisplay::UpdateGlbTrackElements()
          TVector3 mom0   = point->GetMomentum();;
          Int_t charge    = point->GetChargeZ();
          
-         fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
-
+         TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
+         glbTrack->TrackId(track);
+         
          for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
             TAGpoint* point = track->GetMeasPoint(iPoint);
             TVector3 pos    = point->GetPosition();
             TVector3 mom    = point->GetMomentum();
             
-            fGlbTrackDisplay->AddTrackMarker(pos, mom);
+            glbTrack->AddTrackMarker(pos, mom);
          } // end loop on points
       } // end loop on tracks
-   } // nTracks > 0
-   
-   fGlbTrackDisplay->MakeTracks();
+   } // nTracks > 0   
 }
 
 //__________________________________________________________

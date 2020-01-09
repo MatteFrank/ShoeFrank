@@ -11,6 +11,7 @@
 #include "TAEDtrack.hxx"
 #include "TAEDwire.hxx"
 #include "TAEDglbTrack.hxx"
+#include "TAEDglbTrackList.hxx"
 #include "TAEDbaseInterface.hxx"
 #include "TADIeveTrackPropagator.hxx"
 
@@ -83,7 +84,8 @@ public:
    
    void UpdateHitInfo(TEveDigitSet* qs, Int_t idx);
    void UpdateTrackInfo(TEveDigitSet* qs, Int_t idx);
-    void UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx);
+   void UpdateTrackInfo(TEveTrack* ts);
+   void UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx);
    
 protected:
    void CreateRecActionBm();
@@ -163,7 +165,7 @@ protected:
    TAEDtrack*      fBmTrackDisplay; // list of line to display tracks
    TEveBoxSet*     fBmDriftCircleDisplay;
 
-   TAEDglbTrack*   fGlbTrackDisplay;  // list of global tracks to display
+   TAEDglbTrackList* fGlbTrackDisplay;  // list of global tracks to display
    TAEDtrack*      fIrTrackDisplay;   // list of line to display tracks
    Bool_t          fIrFlag;
 
