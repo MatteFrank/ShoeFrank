@@ -25,6 +25,9 @@ public:
    //! Reset tracks
    void ResetTrack();
    
+   //! Get track id object
+   TObject* GetTrackId() const { return fTrackId; }
+   
 private:
    TObject* fTrackId;
    
