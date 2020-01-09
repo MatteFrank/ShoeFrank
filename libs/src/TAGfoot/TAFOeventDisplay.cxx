@@ -476,10 +476,9 @@ void TAFOeventDisplay::ConnectElements()
       fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
    
-//   if (GlobalPar::GetPar()->IncludeTOE()) {
-//      fGlbTrackDisplay->SetEmitSignals(true);
-//      fGlbTrackDisplay->Connect("SecSelected(TEveTrack*)", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
-//   }
+   if (GlobalPar::GetPar()->IncludeTOE()) {
+      TQObject::Connect("TAEDglbTrack", "SecSelected(TEveTrack*)", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
+   }
 }
 
 //__________________________________________________________
@@ -573,8 +572,8 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
 void TAFOeventDisplay::UpdateTrackInfo(TEveTrack* ts)
 {
    TAEDglbTrack* lineTracks = dynamic_cast<TAEDglbTrack*> (ts);
-   TObject* obj = lineTracks->GetPointId(0);
-
+   TObject* obj = lineTracks->GetTrackId();
+   
    if (obj->InheritsFrom("TAGtrack")) {
       
       TAGtrack* track =  (TAGtrack*)obj;
@@ -965,6 +964,47 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
 }
 
 //__________________________________________________________
+void TAFOeventDisplay::UpdateGlbTrackElements()
+{
+//   TVector3 vtx(0,0,0);
+//   TVector3 mom0(-1, 2, 3);
+//   Int_t charge = 6;
+//
+//   TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
+//   TAGtrack* track0 = new TAGtrack(0.938, 1.3, charge, 1.1, 0.200, -1);
+//   glbTrack->TrackId(track0);
+//
+//   return;
+   
+   fGlbTrackDisplay->ResetTracks();
+
+   TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
+   
+   if( pNtuTrack->GetTracksN() > 0 ) {
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         TAGtrack* track = pNtuTrack->GetTrack(iTrack);
+         
+         // vertex
+         TAGpoint* point = track->GetMeasPoint(0);
+         TVector3 vtx    = point->GetPosition();
+         TVector3 mom0   = point->GetMomentum();
+         Int_t charge    = point->GetChargeZ();
+         
+         TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
+         glbTrack->TrackId(track);
+         
+         for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
+            TAGpoint* point = track->GetMeasPoint(iPoint);
+            TVector3 pos    = point->GetPosition();
+            TVector3 mom    = point->GetMomentum();
+            
+            glbTrack->AddTrackMarker(pos, mom);
+         } // end loop on points
+      } // end loop on tracks
+   } // nTracks > 0
+}
+
+//__________________________________________________________
 void TAFOeventDisplay::UpdateBarElements()
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
@@ -1200,37 +1240,6 @@ void TAFOeventDisplay::UpdateLayerElements()
    }
    
    fBmClusDisplay->RefitPlex();
-}
-
-//__________________________________________________________
-void TAFOeventDisplay::UpdateGlbTrackElements()
-{
-   fGlbTrackDisplay->ResetTracks();
-   
-   TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
-   
-   if( pNtuTrack->GetTracksN() > 0 ) {
-      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
-         TAGtrack* track = pNtuTrack->GetTrack(iTrack);
-         
-         // vertex
-         TAGpoint* point = track->GetMeasPoint(0);
-         TVector3 vtx    = point->GetPosition();
-         TVector3 mom0   = point->GetMomentum();;
-         Int_t charge    = point->GetChargeZ();
-         
-         TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
-         glbTrack->TrackId(track);
-         
-         for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
-            TAGpoint* point = track->GetMeasPoint(iPoint);
-            TVector3 pos    = point->GetPosition();
-            TVector3 mom    = point->GetMomentum();
-            
-            glbTrack->AddTrackMarker(pos, mom);
-         } // end loop on points
-      } // end loop on tracks
-   } // nTracks > 0   
 }
 
 //__________________________________________________________
