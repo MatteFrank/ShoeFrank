@@ -29,8 +29,6 @@ set( with_dictionnaries
    TAGconfigFile
    TAGdata
    TAGdataDsc
-   TAGntuPoint
-   TAGntuGlbTrack
    TAGeventId
    TAGgeoTrafo
    TAGnamed
