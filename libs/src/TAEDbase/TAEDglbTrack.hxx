@@ -25,9 +25,6 @@ public:
    //! Reset tracks
    void ResetTrack();
    
-   //! Secondary selection
-   void SecSelected(TEveTrack* track);
-
 private:
    TObject* fTrackId;
    

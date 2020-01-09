@@ -40,10 +40,3 @@ void TAEDglbTrack::TrackId(TObject* obj)
 {
    fTrackId = obj;
 }
-
-//__________________________________________________________
-void TAEDglbTrack::SecSelected(TEveTrack* track)
-{
-   printf("toto\n");
- //  Emit("SecSelected(TEveTrack*)", (Long_t)track);
-}
