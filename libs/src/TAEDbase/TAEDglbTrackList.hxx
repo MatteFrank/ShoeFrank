@@ -15,7 +15,7 @@ class TAEDglbTrack;
 class TAEDglbTrackList : public TEveTrackList {
 
 public:
-   TAEDglbTrackList(const Char_t* name, TADIeveTrackPropagator* prop);
+   TAEDglbTrackList(const Char_t* name = "", TADIeveTrackPropagator* prop = 0x0);
    virtual ~TAEDglbTrackList();
   
    //! return number of tracks
