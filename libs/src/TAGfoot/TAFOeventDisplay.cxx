@@ -965,9 +965,9 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
 //__________________________________________________________
 void TAFOeventDisplay::UpdateGlbTrackElements()
 {
-   TVector3 vtx(0,0,0);
-   TVector3 mom0(0, 0, 20);
-   Int_t charge = 1;
+//   TVector3 vtx(0.2,-0.03,0.9);
+//   TVector3 mom0(0.119, -0.017, 2.39);
+//   Int_t charge = 2;
 
    TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
    TAGtrack* track0 = new TAGtrack(0.938, mom0.Mag(), charge, 1.1, 0.200, -1);
