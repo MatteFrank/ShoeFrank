@@ -10,7 +10,7 @@
 
 ClassImp(TADIeveField);
 
-const Float_t TADIeveField::Tesla = 1e-4;
+const Float_t TADIeveField::Tesla = 1e-1;
 
 //______________________________________________________________________________
 TADIeveField::TADIeveField(FootField* field)
@@ -33,5 +33,5 @@ TEveVectorD TADIeveField::GetFieldD(Double_t x, Double_t y, Double_t z) const
    
    fieldB = fField->get(pos);
    
-   return TEveVectorD(fieldB[0]*Tesla, fieldB[1]*Tesla, fieldB[2]*Tesla);
+   return TEveVectorD(-fieldB[0]*Tesla, -fieldB[1]*Tesla, fieldB[2]*Tesla);
 }
