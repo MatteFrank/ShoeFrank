@@ -858,7 +858,7 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
             
             x = posG(0); y = posG(1); z = posG(2);
             
-            if (GlobalPar::GetPar()->IncludeTW()) {
+            if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->IncludeDI()) {
                Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
                posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
                pos = track->Intersection(posZtw);
@@ -965,6 +965,16 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
 //__________________________________________________________
 void TAFOeventDisplay::UpdateGlbTrackElements()
 {
+   TVector3 vtx(0,0,0);
+   TVector3 mom0(0, 0, 20);
+   Int_t charge = 1;
+
+   TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
+   TAGtrack* track0 = new TAGtrack(0.938, mom0.Mag(), charge, 1.1, 0.200, -1);
+   glbTrack->TrackId(track0);
+
+   return;
+   
    fGlbTrackDisplay->ResetTracks();
 
    TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
