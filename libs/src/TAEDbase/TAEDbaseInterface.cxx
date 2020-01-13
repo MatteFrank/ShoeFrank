@@ -349,10 +349,10 @@ void TAEDbaseInterface::MakeGUI()
       fQuadMcButton->SetToolTipText("Toggle MC hits display");
       fQuadMcButton->Connect("Clicked()", "TAEDbaseInterface", this, "ToggleMcDisplay()");
       displayFrame->AddFrame(fQuadMcButton, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
-   
-      frmMain->AddFrame(displayFrame, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
    }
-   
+
+   frmMain->AddFrame(displayFrame, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
+
    // info frame
    TGVerticalFrame *infoFrameView = new TGVerticalFrame(frmMain);
    
