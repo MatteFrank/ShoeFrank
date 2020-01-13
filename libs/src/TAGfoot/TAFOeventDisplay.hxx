@@ -144,8 +144,6 @@ public:
 
 protected:
    BaseReco*       fReco;    // local reco
-
-   Int_t           fType;         // type of sensor
    
    //Display
    TAEDcluster*    fStClusDisplay;  // list of quad to display hits

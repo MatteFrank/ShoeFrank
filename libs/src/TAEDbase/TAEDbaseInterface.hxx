@@ -62,7 +62,7 @@ class TAGgeoTrafo;
 class TAEDbaseInterface : public TEveEventManager
 {
 public:
-   TAEDbaseInterface(const TString expName = "");
+   TAEDbaseInterface(Int_t type, const TString expName = "");
    virtual ~TAEDbaseInterface();
    
 public:
@@ -118,6 +118,13 @@ public:
    
    virtual void NextEvent(); //*MENU*
    
+   virtual void ToggleDisplay(Int_t id);
+   
+   void         ToggleQuadDisplay();
+   void         ToggleLineDisplay();
+   void         ToggleGlbDisplay();
+   void         ToggleMcDisplay();
+   
    void         ClearInfoView();
    void         HistoSelected(Int_t id);
    void         ResetHisto();
@@ -162,7 +169,7 @@ public:
 protected:
    void         DefineMaterial();
    void         UpdateEventBar();
-  
+   
 public:
    //! Disable GUI
    static void  DisableGUI()                { fgGUIFlag = false;      }
@@ -175,6 +182,7 @@ public:
 
 protected:
    TString            fExpName;
+   Int_t              fType;       
    Float_t            fWorldSizeZ;
    Float_t            fWorldSizeXY;
    TGeoMedium*        fWorldMedium;
@@ -198,10 +206,14 @@ protected:
    TGTextEntry*       fEventEntry;       // text entry for event number
    TGNumberEntry*     fNumberEvent;      // number of events to loop
    TGCheckButton*     fRefreshButton;    // refresh display for each event otherwise superimpose events
+   TGCheckButton*     fQuadButton;       // Toggle on/off clusters/hits
+   TGCheckButton*     fQuadMcButton;     // Toggle on/off MC clusters/hits
+   TGCheckButton*     fLineButton;       // Toggle on/off tracks
+   TGCheckButton*     fGlbButton;        // Toggle on/off global tracks
    TGHProgressBar*    fEventProgress;    // progress event bar
    TGListBox*         fHistoListBox;     // list of histograms
-   TList*             fSelecHistoList;   // list of slected histograms
-   TList*             fHistoList;        // list of slected histograms
+   TList*             fSelecHistoList;   // list of selected histograms
+   TList*             fHistoList;        // list of histograms
    
    //histos
    TList*             fListOfCanvases;   // list of canvases
@@ -214,7 +226,7 @@ protected:
    static Bool_t      fgGUIFlag;           // flag to disable or enable gui interface
    static Bool_t      fgDisplayFlag;       // do not display event and do not make clustering/tracking, define before running
 
-   static Int_t       fgMaxHistosN;       // Maximum number per canvas;
+   static Int_t       fgMaxHistosN;        // Maximum number per canvas;
    
    ClassDef(TAEDbaseInterface, 1); // Base class for event display
 

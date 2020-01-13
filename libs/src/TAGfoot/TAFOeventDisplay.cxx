@@ -50,8 +50,7 @@ TAFOeventDisplay* TAFOeventDisplay::Instance(Int_t type, const TString name)
 
 //__________________________________________________________
 TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
- : TAEDbaseInterface(expName),
-   fType(type),
+ : TAEDbaseInterface(type, expName),
    fStClusDisplay(0x0),
    fBmClusDisplay(0x0),
    fBmTrackDisplay(0x0),
@@ -965,15 +964,15 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
 //__________________________________________________________
 void TAFOeventDisplay::UpdateGlbTrackElements()
 {
-//   TVector3 vtx(0.2,-0.03,0.9);
-//   TVector3 mom0(0.119, -0.017, 2.39);
-//   Int_t charge = 2;
+   TVector3 vtx(0.2,-0.03,0.9);
+   TVector3 mom0(0.119, -0.017, 2.39);
+   Int_t charge = 2;
 
-//   TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
-//   TAGtrack* track0 = new TAGtrack(0.938, mom0.Mag(), charge, 1.1, 0.200, -1);
-//   glbTrack->TrackId(track0);
-//
-//   return;
+   TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
+   TAGtrack* track0 = new TAGtrack(0.938, mom0.Mag(), charge, 1.1, 0.200, -1);
+   glbTrack->TrackId(track0);
+
+   return;
    
    fGlbTrackDisplay->ResetTracks();
 
