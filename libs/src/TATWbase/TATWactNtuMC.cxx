@@ -108,9 +108,7 @@ bool TATWactNtuMC::Action() {
        
 
         // layer, bar, de, time, ntupID, parentID
-       // int view = ( m_eventStruct->SCNiview[i] == -1 ? 0 : 1 );    // in ntuple layers are -1 and 1
-        int view = ( m_eventStruct->SCNiview[i] == -1 ? 1 : 0 );    // in ntuple layers are -1 and 1
-       
+       int view = m_eventStruct->SCNiview[i];    // in ntuple now layers are 0 and 1
        if ( fDebugLevel> 0 )
           printf("%d %d\n", view,  m_eventStruct->SCNibar[i]);
 
