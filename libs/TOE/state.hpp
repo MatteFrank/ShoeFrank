@@ -77,14 +77,32 @@ using state_impl = aggregator< evaluation_point,
                                StateCovariance   >;
 
 
+template<class T>
+struct data_handle
+{
+    const T* data;
+};
+
 template< class Vector,
           class Covariance,
-          class Matrix >
+          class Matrix,
+          class Data>
 using candidate_impl = aggregator< Vector,
                                    Covariance,
-                                   Matrix  >;
+                                   Matrix,
+                                   data_handle<Data> >;
 
 
+struct chisquared{
+    double chisquared;
+};
+
+template< class Vector,
+          class Covariance>
+using corrected_state_impl = aggregator< evaluation_point,
+                                         Vector,
+                                         Covariance,
+                                         chisquared >;
 
 
 namespace details{
@@ -172,6 +190,18 @@ auto make_state_vector( operating_state<Type, Order> os_p )
     return details::state_vector_maker<Order, Type>{}( std::move(os_p) );
 }
 
+
+
+template<class Vector, class Covariance>
+auto make_corrected_state( state_impl<Vector, Covariance> s_p, chisquared c_p ) -> corrected_state_impl<Vector, Covariance>
+{
+    return {
+                std::move(s_p.evaluation_point),
+                std::move(s_p.state_vector),
+                std::move(s_p.state_covariance),
+                std::move(c_p)
+            };
+}
 
 //template<std::size_t N, class T>
 //auto make_state_vector( std::array<T, N> array_p )

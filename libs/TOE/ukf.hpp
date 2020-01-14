@@ -219,19 +219,17 @@ namespace details{
         using state_vector = typename state::state_vector_impl;
         using state_covariance = typename state::state_covariance_impl;
         
-        struct chisquared{
-            double chisquared;
-        };
         
-        template<class Vector, class Covariance, class T>
-        using candidate = candidate_impl< Vector, Covariance, measurement_matrix_impl<T> >;
-
+        template<class Vector, class Covariance, class T, class Data>
+        using candidate = candidate_impl< Vector, Covariance, measurement_matrix_impl<T>, data_handle<T> >;
+        
         
         
     public:
         template< class Vector,
                   class Covariance,
                   class T,
+                  class Data,
                   class Enabler = std::enable_if_t< has_correct_dimension<
                                                              T,
                                                              column_tag,
@@ -240,7 +238,7 @@ namespace details{
                                                   >
                 >
         chisquared compute_chisquared( const state& s_p,
-                                       const candidate<Vector, Covariance, T>& candidate_p )
+                                       const candidate<Vector, Covariance, T, Data>& candidate_p )
         {
             auto residual_vector = candidate_p.vector - candidate_p.measurement_matrix * s_p.vector;
             auto residual_covariance = candidate_p.covariance + candidate_p.measurement_matrix * s_p.covariance * make_transpose(candidate_p.measurement_matrix);
@@ -253,10 +251,10 @@ namespace details{
         
         
         //should probably check everything or nothing, but state to measurement dimensionality error is the most probable
-        template< class MeasurementVector, class MeasurementCovariance, class T,
+        template< class MeasurementVector, class MeasurementCovariance, class T, class Data,
                   class Enabler = std::enable_if_t< has_correct_dimension<T, column_tag, state_vector::vector_dimension>::value >  >
         state correct_state( state s_p,
-                             candidate<MeasurementVector, MeasurementCovariance, T> candidate_p )
+                                             candidate<MeasurementVector, MeasurementCovariance, T, Data> candidate_p )
         {
             //residual propagated state
             auto residual_vector = candidate_p.vector - candidate_p.measurement_matrix * s_p.vector;
@@ -268,9 +266,11 @@ namespace details{
             auto csc = make_state_covariance( s_p.covariance - gain * candidate_p.measurement_matrix * s_p.covariance ); //room for optimization
         
         
-            return { evaluation_point{s_p.evaluation_point} ,
+            return {
+                     evaluation_point{s_p.evaluation_point} ,
                      std::move(csv),
-                     std::move(csc) };
+                     std::move(csc),
+                    };
         }
         
 
@@ -358,7 +358,7 @@ public:
     template< class Stepper_,
               class StateChecker = std::enable_if_t< details::is_state_coherent< State >::value >,
               class CoherenceChecker = std::enable_if_t< details::is_dimension_coherent< State, Stepper_>::value >   >
-    ukf(Stepper_&& stepper_p) : stepper_m{std::move(stepper_p)} {}
+    constexpr ukf(Stepper_&& stepper_p) : stepper_m{std::move(stepper_p)} {}
     
 };
 
