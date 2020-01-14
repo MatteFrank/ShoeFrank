@@ -14,14 +14,18 @@ TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
 {
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    
-   fMagHistoX = new TH3F("MagHistoX", "Magnetic Field", 20, -5, 5, 20, -5, 5, 200, -33.5, 66.5);
-   fMagHistoY = new TH3F("MagHistoY", "Magnetic Field", 20, -5, 5, 20, -5, 5, 200, -33.5, 66.5);
-   fMagHistoZ = new TH3F("MagHistoZ", "Magnetic Field", 20, -5, 5, 20, -5, 5, 200, -33.5, 66.5);
+   Float_t mesh   = fpDiGeoMap->GetMapMesh();
+   TVector3 limLo = fpFootGeo->FromDILocalToGlobal(fpDiGeoMap->GetMapLimLo());
+   TVector3 limUp = fpFootGeo->FromDILocalToGlobal(fpDiGeoMap->GetMapLimUp());
    
-   fMaxBinX = fMagHistoX->GetXaxis()->GetNbins();
-   fMaxBinY = fMagHistoX->GetYaxis()->GetNbins();
-   fMaxBinZ = fMagHistoX->GetZaxis()->GetNbins();
+   fMaxBinX = (limUp[0]-limLo[0])/float(mesh);
+   fMaxBinY = (limUp[1]-limLo[1])/float(mesh);
+   fMaxBinZ = (limUp[2]-limLo[2])/float(mesh);
 
+   fMagHistoX = new TH3F("MagHistoX", "Magnetic Field", fMaxBinX, limLo[0], limUp[0], fMaxBinY, limLo[1], limUp[1], fMaxBinZ, limLo[2], limUp[2]);
+   fMagHistoY = new TH3F("MagHistoY", "Magnetic Field", fMaxBinX, limLo[0], limUp[0], fMaxBinY, limLo[1], limUp[1], fMaxBinZ, limLo[2], limUp[2]);
+   fMagHistoZ = new TH3F("MagHistoZ", "Magnetic Field", fMaxBinX, limLo[0], limUp[0], fMaxBinY, limLo[1], limUp[1], fMaxBinZ, limLo[2], limUp[2]);
+   
    TString fullFileName = fpDiGeoMap->GetMapName();
    FromFile(fullFileName);
 }
