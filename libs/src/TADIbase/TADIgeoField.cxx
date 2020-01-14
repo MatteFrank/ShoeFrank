@@ -12,7 +12,6 @@ TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
    fpDiGeoMap(diGeo),
    fpFootGeo(0x0)
 {
-   
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    
    fMagHistoX = new TH3F("MagHistoX", "Magnetic Field", 20, -5, 5, 20, -5, 5, 200, -33.5, 66.5);
@@ -23,10 +22,16 @@ TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
    fMaxBinY = fMagHistoX->GetYaxis()->GetNbins();
    fMaxBinZ = fMagHistoX->GetZaxis()->GetNbins();
 
-   TString fullFileName = fpDiGeoMap->GetMapName().Data();
-   
+   TString fullFileName = fpDiGeoMap->GetMapName();
    FromFile(fullFileName);
+}
 
+//______________________________________________________________________________
+TADIgeoField::~TADIgeoField()
+{
+   delete fMagHistoX;
+   delete fMagHistoY;
+   delete fMagHistoZ;
 }
 
 //______________________________________________________________________________
@@ -89,7 +94,7 @@ void TADIgeoField::FromFile(TString& fullFileName)
 
 //______________________________________________________________________________
 // return B as a vector, given vector position
-TVector3 TADIgeoField::GetField(const TVector3& position)
+TVector3 TADIgeoField::GetField(const TVector3& position) const
 {
    return Interpolate(position);
 }
@@ -108,7 +113,7 @@ void TADIgeoField::Field(const Double_t* pos, Double_t* fieldB)
 
 //______________________________________________________________________________
 // same for real and const field
-TVector3 TADIgeoField::Interpolate(const TVector3& position)
+TVector3 TADIgeoField::Interpolate(const TVector3& position) const
 {
    //   https://en.wikipedia.org/wiki/Trilinear_interpolation
    //	  Output in  10^4 Gauss (or 10^-1 T )

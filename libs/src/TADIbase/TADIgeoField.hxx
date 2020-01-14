@@ -22,13 +22,13 @@ public:
 
 	TADIgeoField(TADIparGeo* diGeo);
 
-	~TADIgeoField() {};
+   ~TADIgeoField();
 
-   TVector3 GetField(const TVector3& position);
+   TVector3 GetField(const TVector3& position)    const;
+   TVector3 Interpolate(const TVector3& position) const;
+   
    void     Field(const Double_t* pos, Double_t* fieldB);
-
- 	TVector3 Interpolate( const TVector3 &position );
-
+   
    void     FromFile(TString& name);
 
 private:
