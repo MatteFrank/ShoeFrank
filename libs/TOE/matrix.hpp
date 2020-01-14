@@ -29,7 +29,7 @@ public:
     //quick hack
     const std::array<double, NRows * NCols>& data() const { return underlyingArray_mc; }
     
-    Matrix(std::initializer_list<double> initializerList_p)
+    constexpr Matrix(std::initializer_list<double> initializerList_p)
     //precondition : intializerList_p.size() == NRows * NCols
     {
         auto filler{ underlyingArray_mc.begin() };

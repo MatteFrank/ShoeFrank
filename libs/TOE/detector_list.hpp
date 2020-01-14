@@ -18,7 +18,7 @@ struct detector_list
 {
     using tuple_type = std::tuple<Ts...>;
     
-    detector_list(Ts&& ... t_p) : tuple_m{std::make_tuple(std::forward<Ts>(t_p)...)} {}
+    constexpr detector_list(Ts&& ... t_p) : tuple_m{std::make_tuple(std::forward<Ts>(t_p)...)} {}
     
 private:
     template<class T, std::size_t ... Indices>
@@ -65,12 +65,12 @@ struct detector_list<details::finished_tag, Ts...>
 {
     using tuple_type = std::tuple<Ts...>;
     
-    detector_list(Ts&& ... t_p) : tuple_m{std::make_tuple(std::forward<Ts>(t_p)...)} { }
+    constexpr detector_list(Ts&& ... t_p) : tuple_m{std::make_tuple(std::forward<Ts>(t_p)...)} { }
     
 private:
     template< std::size_t Index, class F,
               typename std::enable_if_t< (Index < std::tuple_size<tuple_type>::value), std::nullptr_t > = nullptr >
-    constexpr void apply_for_each_impl(F&& f_p)
+    constexpr void apply_for_each_impl(F&& f_p) const
     {
         f_p( std::get<Index>(tuple_m) );
         apply_for_each_impl<Index+1>(std::forward<F>(f_p));
@@ -78,13 +78,24 @@ private:
     
     template< std::size_t Index, class F,
               typename std::enable_if_t< (Index >= std::tuple_size<tuple_type>::value), std::nullptr_t > = nullptr >
-    constexpr void apply_for_each_impl(F&& /*f_p*/){}
+    constexpr void apply_for_each_impl(F&& /*f_p*/) const {}
     
 public:
     template<class F>
-    constexpr void apply_for_each(F&& f_p)
+    constexpr void apply_for_each(F&& f_p) const
     {
         apply_for_each_impl<0>( std::forward<F>(f_p) );
+    }
+    
+    
+    constexpr auto first() const
+    {
+        return std::get<0>(tuple_m);
+    }
+    
+    constexpr auto last() const
+    {
+        return std::get<std::tuple_size<tuple_type>::value -1 >(tuple_m);
     }
     
 private:
@@ -94,7 +105,7 @@ private:
 
 
 template<class ... Ts>
-auto start_list(Ts... t_p) -> detector_list<Ts...> { return {std::move(t_p)... }; }
+constexpr auto start_list(Ts... t_p) -> detector_list<Ts...> { return {std::move(t_p)... }; }
 
 
 #endif /* DETECTOR_LIST_HPP */

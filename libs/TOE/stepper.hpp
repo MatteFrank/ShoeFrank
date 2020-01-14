@@ -240,10 +240,7 @@ namespace details {
         {
         public:
             
-            explicit error_checker(double value_p)
-            {
-                value_m = ( (value_p < 1e-15) ? 1e-15 : value_p ) ;
-            }
+            explicit error_checker(double value_p) : value_m{ (value_p < 1e-15) ? 1e-15 : value_p }{}
             
             operator double() const { return value_m; }
             
@@ -284,7 +281,7 @@ namespace details {
                     eos.step = optimize_step_length(eos.step, local_error_estimate) ;
                 }
                 else{
-                    error = error_checker{local_error_estimate};
+                    error = error_checker{ local_error_estimate };
                     std::cout << "Step length:" << eos.step << ", error: "<< error <<'\n';
                     eos.state(order_tag<0>{}) = correction;
                 }
@@ -379,7 +376,7 @@ public:
     template< class Callable_ = Callable,
               class MoveAllower = std::enable_if_t< !std::is_same<std::decay_t<Callable_>, stepper>::value >,
               class OrderChecker = std::enable_if_t< details::is_order_coherent<Callable_, Data>::value >>
-    stepper(Callable&& f_p) : ode{ std::forward<Callable>(f_p) } {}
+    constexpr stepper(Callable&& f_p) : ode{ std::forward<Callable>(f_p) } {}
 };
 
 
