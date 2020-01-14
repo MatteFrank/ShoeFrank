@@ -76,7 +76,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
 
    // default constructon
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM()) {
-      fStClusDisplay = new TAEDcluster("Start counter hit");
+      fStClusDisplay = new TAEDcluster("Start counter Hit");
       fStClusDisplay->SetMaxEnergy(fMaxEnergy);
       fStClusDisplay->SetDefWidth(fQuadDefWidth/2.);
       fStClusDisplay->SetDefHeight(fQuadDefHeight/2.);
@@ -112,7 +112,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
    
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
-      fItClusDisplay = new TAEDcluster("Inner tracker Cluster");
+      fItClusDisplay = new TAEDcluster("Inner Tracker Cluster");
       fItClusDisplay->SetMaxEnergy(fMaxEnergy);
       fItClusDisplay->SetDefWidth(fQuadDefWidth*2.);
       fItClusDisplay->SetDefHeight(fQuadDefHeight*2.);
@@ -128,7 +128,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
    
    if (GlobalPar::GetPar()->IncludeTW()) {
-      fTwClusDisplay = new TAEDcluster("Tof Wall hit");
+      fTwClusDisplay = new TAEDcluster("Tof Wall Hit");
       fTwClusDisplay->SetMaxEnergy(fMaxEnergy);
       fTwClusDisplay->SetDefWidth(fQuadDefWidth*8);
       fTwClusDisplay->SetDefHeight(fQuadDefHeight*8);
@@ -136,7 +136,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
    
    if (GlobalPar::GetPar()->IncludeCA()) {
-      fCaClusDisplay = new TAEDcluster("Calorimeter hit");
+      fCaClusDisplay = new TAEDcluster("Calorimeter Hit");
       fCaClusDisplay->SetMaxEnergy(fMaxEnergy);
       fCaClusDisplay->SetDefWidth(fQuadDefWidth*4);
       fCaClusDisplay->SetDefHeight(fQuadDefHeight*4);

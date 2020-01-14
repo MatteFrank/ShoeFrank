@@ -23,7 +23,7 @@
 #include "TVirtualMagField.h"
 
 #include "TADIeveField.hxx"
-#include "FootField.hxx"
+#include "TADIgeoField.hxx"
 
 #include "LocalReco.hxx"
 
@@ -168,7 +168,7 @@ protected:
    Bool_t          fIrFlag;
 
    // Magnet
-   FootField*            fFieldImpl;       // magnetic field implementation
+   TADIgeoField*         fFieldImpl;       // magnetic field implementation
    TADIeveField*         fField;           // Eve magnetic field
    TADIeveTrackPropagator* fGlbTrackProp;  // global track propagator
    

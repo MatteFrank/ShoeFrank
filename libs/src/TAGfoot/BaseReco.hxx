@@ -27,7 +27,7 @@
 #include "TATWparGeo.hxx"
 #include "TACAparGeo.hxx"
 
-#include "FootField.hxx"
+#include "TADIgeoField.hxx"
 
 #include "TATWparCal.hxx"
 #include "TATWparMap.hxx"
@@ -172,7 +172,7 @@ public:
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
    TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
-   FootField*           GetFootField()      const { return fField;                                   }
+   TADIgeoField*        GetFootField()      const { return fField;                                   }
    
    //! MC container Getter (virtual)
    virtual TAMCntuEve*  GetNtuMcEve()       const { return 0x0; }
@@ -234,7 +234,7 @@ protected:
    TAGdataDsc*           fpNtuClusMsd;     // input cluster data dsc
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
 
-   FootField*            fField;       // magnetic field
+   TADIgeoField*         fField;       // magnetic field
 
   //   TAGdataDsc*           fpWdRawTw;     // input data dsc
    TAGdataDsc*           fpNtuTrackBm;  // input track data dsc
