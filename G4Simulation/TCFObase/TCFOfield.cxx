@@ -66,7 +66,6 @@ void TCFOfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
    
    TVector3 field = fMagField->GetField(pos);
 
-
    for (Int_t i = 0; i < 3; ++i) {
       field[i] *= CLHEP::gauss;
    }
@@ -77,5 +76,6 @@ void TCFOfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
    
    if (fDebugLevel)
       printf("[%.3e,%.3e,%.3e] \t %.3e %.3e %.3e\n", pos[0],pos[1],pos[2], field[0],field[1],field[2]);
+   
   return;
 }
