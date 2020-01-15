@@ -41,7 +41,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-TCFOfield::TCFOfield(FootField* magField)
+TCFOfield::TCFOfield(TADIgeoField* magField)
 : TCEMfield(),
   fMagField(magField),
   fDebugLevel(0)
@@ -64,7 +64,7 @@ void TCFOfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
       pos[i] = point[i]/10.; // mmn -> cm
    }
    
-   TVector3 field = fMagField->get(pos);
+   TVector3 field = fMagField->GetField(pos);
 //    printf("[%.3e,%.3e,%.3e] \t %.3e %.3e %.3e\n", pos[0],pos[1],pos[2], field[0],field[1],field[2]);
 
    for (Int_t i = 0; i < 3; ++i) {

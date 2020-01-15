@@ -57,7 +57,7 @@ class TCMSDgeometryConstructor;
 class TCTWgeometryConstructor;
 class TCCAgeometryConstructor;
 class TCFOfield;
-class FootField;
+class TADIgeoField;
 class TCEMfieldSetup;
 
 
@@ -93,7 +93,7 @@ private:
    TCEMgeometryConstructor*  fMagnet;
    
    TCFOfield*                fField;
-   FootField*                fFieldImpl;
+   TADIgeoField*             fFieldImpl;
    TCEMfieldSetup*           fFieldSetup;
 
    TASTparGeo*               fpParGeoSt;
