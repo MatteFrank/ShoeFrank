@@ -10,7 +10,7 @@
 
 #include "Riostream.h"
 
-#include "FootField.hxx"
+#include "TADIgeoField.hxx"
 #include "TEveTrackPropagator.h"
 #include "TEveVector.h"
 
@@ -20,10 +20,10 @@
 class TADIeveField : public TEveMagField {
    
 private:
-   FootField* fField;
+   TADIgeoField* fField;
    
 public:
-   TADIeveField(FootField* field);
+   TADIeveField(TADIgeoField* field);
    virtual ~TADIeveField();
    
    virtual TEveVectorD GetFieldD(Double_t x, Double_t y, Double_t z) const;

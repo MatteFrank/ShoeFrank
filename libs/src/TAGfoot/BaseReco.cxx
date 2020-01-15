@@ -289,7 +289,7 @@ void BaseReco::ReadParFiles()
       parGeo->FromFile(parFileName.Data());
       
       if (GlobalPar::GetPar()->IncludeTOE())
-         fField = new FootField("", parGeo);
+         fField = new TADIgeoField(parGeo);
    }
    
    // initialise par files for vertex

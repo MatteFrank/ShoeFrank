@@ -31,9 +31,6 @@ public:
    //! Set local reconstruction
    void SetLocalReco();
    
-   //! Add required items
-   void AddRequiredItem();
-
    //! Tree entry
    Bool_t GetEntry(Int_t entry);
    

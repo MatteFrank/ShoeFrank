@@ -66,9 +66,10 @@ Int_t  TAEDbaseInterface::fgMaxHistosN   =  4;
 ClassImp(TAEDbaseInterface)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-TAEDbaseInterface::TAEDbaseInterface(const TString expName)
+TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
 : TEveEventManager(),
   fExpName(expName),
+  fType(type),
   fWorldSizeZ(120),
   fWorldSizeXY(25),
   fWorldMedium(0x0),
@@ -83,6 +84,13 @@ TAEDbaseInterface::TAEDbaseInterface(const TString expName)
   fQuadDefHeight(0.1),
   fInfoView(0x0),
   fEventEntry(0x0),
+  fRefreshButton(0),
+  fQuadButton(0),
+  fQuadMcButton(0),
+  fLineButton(0),
+  fGlbButton(0),
+  fEventProgress(0),
+  fHistoListBox(0),
   fListOfCanvases(new TList())
 { 
   // default constructor
@@ -121,6 +129,15 @@ TAEDbaseInterface::~TAEDbaseInterface()
       fNumberEvent->Delete();
    if (frmMain)
       frmMain->Delete();
+ 
+   if (fQuadButton)
+      fQuadButton->Delete();
+   if (fQuadMcButton)
+      fQuadMcButton->Delete();
+   if (fLineButton)
+      fLineButton->Delete();
+   if (fGlbButton)
+      fGlbButton->Delete();
    
    gTAGroot->EndEventLoop();
    delete fTopVolume;
@@ -301,6 +318,41 @@ void TAEDbaseInterface::MakeGUI()
    
    frmMain->AddFrame(eventFrame, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
    
+   // display frame
+   TGHorizontalFrame *displayFrame = new TGHorizontalFrame(frmMain);
+   
+   // check Quad
+   fQuadButton = new TGCheckButton(displayFrame, "Hits", 1);
+   fQuadButton->SetState(kButtonDown);
+   fQuadButton->SetToolTipText("Toggle hits display");
+   fQuadButton->Connect("Clicked()", "TAEDbaseInterface", this, "ToggleQuadDisplay()");
+   displayFrame->AddFrame(fQuadButton, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
+   
+   // check Line
+   fLineButton = new TGCheckButton(displayFrame, "Tracks", 1);
+   fLineButton->SetState(kButtonDown);
+   fLineButton->SetToolTipText("Toggle track display");
+   fLineButton->Connect("Clicked()", "TAEDbaseInterface", this, "ToggleLineDisplay()");
+   displayFrame->AddFrame(fLineButton, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
+   
+   // check global Line
+   fGlbButton = new TGCheckButton(displayFrame, "Glb", 1);
+   fGlbButton->SetState(kButtonDown);
+   fGlbButton->SetToolTipText("Toggle global track display");
+   fGlbButton->Connect("Clicked()", "TAEDbaseInterface", this, "ToggleGlbDisplay()");
+   displayFrame->AddFrame(fGlbButton, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
+
+   // check MC quad
+   if (fType == 1) { // MC
+      fQuadMcButton = new TGCheckButton(displayFrame, "MC", 1);
+      fQuadMcButton->SetState(kButtonDown);
+      fQuadMcButton->SetToolTipText("Toggle MC hits display");
+      fQuadMcButton->Connect("Clicked()", "TAEDbaseInterface", this, "ToggleMcDisplay()");
+      displayFrame->AddFrame(fQuadMcButton, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
+   }
+
+   frmMain->AddFrame(displayFrame, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
+
    // info frame
    TGVerticalFrame *infoFrameView = new TGVerticalFrame(frmMain);
    
@@ -320,7 +372,7 @@ void TAEDbaseInterface::MakeGUI()
    TGLabel*  infoName = new TGLabel(infoFrameView, "Selection:");
    infoFrameView->AddFrame(infoName, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2, 0, 5, 5));
    
-   fInfoView = new TGTextView(infoFrameView, 300, 350);
+   fInfoView = new TGTextView(infoFrameView, 300, 320);
    fInfoView->ShowBottom();
    infoFrameView->AddFrame(fInfoView, new TGLayoutHints(kLHintsLeft | kLHintsCenterY  |
                                                         kLHintsExpandX, 2, 10, 0, 0));
@@ -437,6 +489,74 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
 void TAEDbaseInterface::NextEvent()
 {   
    LoopEvent(1);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::ToggleQuadDisplay()
+{
+   ToggleDisplay(1);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::ToggleLineDisplay()
+{
+   ToggleDisplay(2);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::ToggleGlbDisplay()
+{
+   ToggleDisplay(3);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::ToggleMcDisplay()
+{
+   if (fType != 1) return;
+   ToggleDisplay(0);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::ToggleDisplay(Int_t flag)
+{
+   TEveEventManager *mgr = gEve->GetCurrentEvent();
+
+   for (TEveElement::List_i i=mgr->BeginChildren(); i!=mgr->EndChildren(); ++i) {
+      TEveElement* el = ((TEveElement*)(*i));
+      TString ename   = el->GetElementName();
+      
+      if ((ename.Contains("Cluster") || ename.Contains("Hit")) && !ename.Contains("MC") && flag == 1) {
+         if (!fQuadButton->IsOn())
+            el->SetRnrState(false);
+         else
+            el->SetRnrState(true);
+         el->ElementChanged(true, true);
+      }
+      
+      if (ename.Contains("Tracks") && !ename.Contains("Global") && flag == 2) {
+         if (!fLineButton->IsOn())
+            el->SetRnrState(false);
+         else
+            el->SetRnrState(true);
+         el->ElementChanged(true, true);
+      }
+      
+      if (ename.Contains("Global") && flag == 3) {
+         if (!fGlbButton->IsOn())
+            el->SetRnrState(false);
+         else
+            el->SetRnrState(true);
+         el->ElementChanged(true, true);
+      }
+      
+      if (ename.Contains("MC") && flag == 0) {
+         if (!fQuadMcButton->IsOn())
+            el->SetRnrState(false);
+         else
+            el->SetRnrState(true);
+         el->ElementChanged(true, true);
+      }
+   }
 }
 
 //__________________________________________________________

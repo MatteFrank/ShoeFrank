@@ -73,6 +73,20 @@ Bool_t TADIparGeo::FromFile(const TString& name)
       ReadStrings(fMapName);
       if(FootDebugLevel(1))
          cout  << "   Map File Name:  "<< fMapName.Data() << endl;
+      
+      ReadItem(fMapMesh);
+      if(FootDebugLevel(1))
+         cout  << "   Map mesh size:  "<< fMapMesh << endl;
+      
+      ReadVector3(fMapLimLo);
+      if(FootDebugLevel(1))
+         cout << "   Field map lower bound: "
+         << Form("%f %f %f", fMapLimLo[0], fMapLimLo[1], fMapLimLo[2]) << endl;
+      
+      ReadVector3(fMapLimUp);
+      if(FootDebugLevel(1))
+         cout << "   Field map upper bound: "
+         << Form("%f %f %f", fMapLimUp[0], fMapLimUp[1], fMapLimUp[2]) << endl;
    }
    
    // Read cover thickness

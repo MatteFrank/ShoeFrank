@@ -46,7 +46,8 @@ public:
    Int_t          GetBarId(Int_t layer, Float_t xGlob, Float_t yGlob);
    TVector3       GetBarPosition(Int_t layer, Int_t barId);
    TVector3       Detector2Sensor(Int_t layer, TVector3 vec);
-
+   Float_t        GetLayerPosZ(Int_t layer);
+   
    //! Get matrix transformation
    TGeoCombiTrans* GetTransfo(Int_t layer, Int_t barId);
 

@@ -84,17 +84,6 @@ void TAFOeventDisplayMC::CreateRawAction()
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::AddRequiredItem()
-{
-   fReco->AddRawRequiredItem();
-   fReco->AddRecRequiredItem();
-   
-   gTAGroot->BeginEventLoop();
-   gTAGroot->Print();
-}
-
-
-//__________________________________________________________
 void TAFOeventDisplayMC::AddElements()
 {
    TAFOeventDisplay::AddElements();

@@ -296,7 +296,7 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
 
         if (fTwCollId >= 0 && fDetName==TCTWgeometryConstructor::GetSDname()) {
             Int_t barId  = sensorId % TATWparGeo::GetLayerOffset();
-            Int_t view  = -sensorId / TATWparGeo::GetLayerOffset();
+            Int_t view  =  sensorId / TATWparGeo::GetLayerOffset();
             hit->AddSCN(trackId, barId, view,
                         vin[0], vin[1], vin[2], vou[0], vou[1], vou[2], pin[0], pin[1], pin[2], pou[0], pou[1], pou[2],
                         edep, al, time);

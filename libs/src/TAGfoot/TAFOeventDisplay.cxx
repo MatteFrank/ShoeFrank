@@ -50,8 +50,7 @@ TAFOeventDisplay* TAFOeventDisplay::Instance(Int_t type, const TString name)
 
 //__________________________________________________________
 TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
- : TAEDbaseInterface(expName),
-   fType(type),
+ : TAEDbaseInterface(type, expName),
    fStClusDisplay(0x0),
    fBmClusDisplay(0x0),
    fBmTrackDisplay(0x0),
@@ -77,7 +76,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
 
    // default constructon
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM()) {
-      fStClusDisplay = new TAEDcluster("Start counter hit");
+      fStClusDisplay = new TAEDcluster("Start counter Hit");
       fStClusDisplay->SetMaxEnergy(fMaxEnergy);
       fStClusDisplay->SetDefWidth(fQuadDefWidth/2.);
       fStClusDisplay->SetDefHeight(fQuadDefHeight/2.);
@@ -113,7 +112,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
    
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
-      fItClusDisplay = new TAEDcluster("Inner tracker Cluster");
+      fItClusDisplay = new TAEDcluster("Inner Tracker Cluster");
       fItClusDisplay->SetMaxEnergy(fMaxEnergy);
       fItClusDisplay->SetDefWidth(fQuadDefWidth*2.);
       fItClusDisplay->SetDefHeight(fQuadDefHeight*2.);
@@ -129,7 +128,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
    
    if (GlobalPar::GetPar()->IncludeTW()) {
-      fTwClusDisplay = new TAEDcluster("Tof Wall hit");
+      fTwClusDisplay = new TAEDcluster("Tof Wall Hit");
       fTwClusDisplay->SetMaxEnergy(fMaxEnergy);
       fTwClusDisplay->SetDefWidth(fQuadDefWidth*8);
       fTwClusDisplay->SetDefHeight(fQuadDefHeight*8);
@@ -137,7 +136,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
    
    if (GlobalPar::GetPar()->IncludeCA()) {
-      fCaClusDisplay = new TAEDcluster("Calorimeter hit");
+      fCaClusDisplay = new TAEDcluster("Calorimeter Hit");
       fCaClusDisplay->SetMaxEnergy(fMaxEnergy);
       fCaClusDisplay->SetDefWidth(fQuadDefWidth*4);
       fCaClusDisplay->SetDefHeight(fQuadDefHeight*4);
@@ -965,15 +964,15 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
 //__________________________________________________________
 void TAFOeventDisplay::UpdateGlbTrackElements()
 {
-//   TVector3 vtx(0.2,-0.03,0.9);
-//   TVector3 mom0(0.119, -0.017, 2.39);
-//   Int_t charge = 2;
+   TVector3 vtx(0.2,-0.03,0.9);
+   TVector3 mom0(0.119, -0.017, 2.39);
+   Int_t charge = 2;
 
-//   TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
-//   TAGtrack* track0 = new TAGtrack(0.938, mom0.Mag(), charge, 1.1, 0.200, -1);
-//   glbTrack->TrackId(track0);
-//
-//   return;
+   TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
+   TAGtrack* track0 = new TAGtrack(0.938, mom0.Mag(), charge, 1.1, 0.200, -1);
+   glbTrack->TrackId(track0);
+
+   return;
    
    fGlbTrackDisplay->ResetTracks();
 
