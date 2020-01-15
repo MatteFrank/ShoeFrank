@@ -55,8 +55,6 @@ void TCMSDgeometryConstructor::DefineMaxMinDimension()
    TVector3 size = fpParGeo->GetTotalSize();
    Int_t nSens   = fpParGeo->GetSensorsN();
 
-    printf("MSD %d \t %.3e \t %.3e \t %.3e \n",nSens,size[0],size[1],size[2]);
-
    TVector3 minPosition( 10e10,  10e10,  10e10);
    TVector3 maxPosition(-10e10, -10e10, -10e10);
    TVector3 posAct(0, 0, 0);
@@ -74,9 +72,6 @@ void TCMSDgeometryConstructor::DefineMaxMinDimension()
    minPosition[1] -= size[1]/2.;  maxPosition[1] += size[1]/2.;
    minPosition[2] -= size[2]/2.;  maxPosition[2] += size[2]/2.;
    
-   printf("Min \t %.3e \t %.3e \t %.3e \n",minPosition[0],minPosition[1],minPosition[2]);
-   printf("Max \t %.3e \t %.3e \t %.3e \n",maxPosition[0],maxPosition[1],maxPosition[2]);
-
    fMinPosition = minPosition*cm;
    fMaxPosition = maxPosition*cm;
 }
