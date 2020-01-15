@@ -120,8 +120,7 @@ void TADIgeoField::Field(const Double_t* pos, Double_t* fieldB)
 TVector3 TADIgeoField::Interpolate(const TVector3& position) const
 {
    //   https://en.wikipedia.org/wiki/Trilinear_interpolation
-   //	  Output in  10^4 Gauss (or 10^-1 T )
-   //   10^4 Gauss = 1 T
+   //	  Output in Gauss
    
    TVector3 outField = TVector3(0,0,0);
    
