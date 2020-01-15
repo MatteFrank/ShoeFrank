@@ -7,7 +7,7 @@
 #include "TGeoManager.h"
 
 #include "GlobalPar.hxx"
-#include "GlobalRecoMC.hxx"
+#include "LocalRecoMC.hxx"
 
 ClassImp(TAFOeventDisplay)
 
@@ -75,12 +75,6 @@ Bool_t TAFOeventDisplayMC::GetEntry(Int_t entry)
    if (!fReco->GetTree()->GetEntry(entry)) return false;
    
    return true;
-}
-
-//__________________________________________________________
-void TAFOeventDisplayMC::CreateRawAction()
-{
-   fReco->CreateRawAction();
 }
 
 //__________________________________________________________

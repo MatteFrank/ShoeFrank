@@ -24,9 +24,6 @@ public:
    static TAFOeventDisplay* Instance(Int_t type = 0, const TString name = "");
    
    virtual ~TAFOeventDisplayMC();
-   
-    //! Create raw data action
-   void CreateRawAction();
 
    //! Set local reconstruction
    void SetLocalReco();
@@ -34,7 +31,7 @@ public:
    //! Tree entry
    Bool_t GetEntry(Int_t entry);
    
-   // Update elements
+   //! Update elements
    void UpdateElements();
 
    //! Add elements

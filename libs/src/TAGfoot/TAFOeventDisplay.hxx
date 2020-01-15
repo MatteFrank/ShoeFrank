@@ -57,9 +57,6 @@ public:
    
    //! Update normal Canvases
    virtual void UpdateDefCanvases();
-
-   //! Set local reconstruction
-   virtual void SetLocalReco();
    
    //! Add required items
    virtual void AddRequiredItem();
@@ -75,6 +72,9 @@ public:
    
    //! Open File
    virtual void OpenFile();
+   
+   //! Set local reconstruction
+   virtual void SetLocalReco();
    
    //! Add elements
    virtual void AddElements();
