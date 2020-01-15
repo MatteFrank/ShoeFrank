@@ -169,9 +169,16 @@ TVector3 TATWparGeo::GetBarPosition(Int_t iLayer, Int_t iBar)
    TGeoHMatrix* hm = TAGparTools::GetTransfo(idx);
    if (hm) {
       TVector3 local(0,0,0);
-      fCurrentPosition =  Sensor2Detector(iLayer, iBar,local);
+      fCurrentPosition =  Sensor2Detector(iLayer, iBar, local);
    }
    return fCurrentPosition;
+}
+
+//_____________________________________________________________________________
+Float_t TATWparGeo::GetLayerPosZ(Int_t iLayer)
+{
+   Int_t iBar = 0;
+   return GetZ_sensorFrame(iLayer, iBar);
 }
 
 //_____________________________________________________________________________
@@ -182,7 +189,7 @@ Float_t TATWparGeo::GetCoordiante_sensorFrame(Int_t iLayer, Int_t iBar)
    TGeoHMatrix* hm = TAGparTools::GetTransfo(idx);
    if (hm) {
       TVector3 local(0,0,0);
-      fCurrentPosition =  Sensor2Detector(iLayer, iBar,local);
+      fCurrentPosition =  Sensor2Detector(iLayer, iBar, local);
    }
    if (iLayer == 0)
       return fCurrentPosition.X();
@@ -198,7 +205,7 @@ Float_t TATWparGeo::GetZ_sensorFrame(Int_t iLayer, Int_t iBar)
    TGeoHMatrix* hm = TAGparTools::GetTransfo(idx);
    if (hm) {
       TVector3 local(0,0,0);
-      fCurrentPosition =  Sensor2Detector(iLayer, iBar,local);
+      fCurrentPosition =  Sensor2Detector(iLayer, iBar, local);
    }
       return fCurrentPosition.Z();
 }
