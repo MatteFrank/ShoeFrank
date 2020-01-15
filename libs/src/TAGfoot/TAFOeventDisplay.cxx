@@ -35,7 +35,7 @@ ClassImp(TAFOeventDisplay)
 Bool_t  TAFOeventDisplay::fgTrackFlag       = true;
 TString TAFOeventDisplay::fgVtxTrackingAlgo = "Std";
 Bool_t  TAFOeventDisplay::fgStdAloneFlag    = false;
-Bool_t  TAFOeventDisplay::fgBmSelectHt      = false;
+Bool_t  TAFOeventDisplay::fgBmSelectHit      = false;
 
 TAFOeventDisplay* TAFOeventDisplay::fgInstance = 0x0;
 
@@ -1179,7 +1179,7 @@ void TAFOeventDisplay::UpdateLayerElements()
    for (Int_t i = 0; i < nHits; i++) {
       TABMntuHit* hit = pBMntu->Hit(i);
       
-      if (!hit->GetIsSelected() && fgBmSelectHt) continue;
+      if (!hit->GetIsSelected() && fgBmSelectHit) continue;
 
       Int_t view  = hit->View();
       Int_t lay  = hit->Plane();
