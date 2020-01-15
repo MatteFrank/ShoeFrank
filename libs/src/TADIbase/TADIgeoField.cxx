@@ -214,6 +214,6 @@ TVector3 TADIgeoField::Interpolate(const TVector3& position) const
    double B_1z = B_01z * (1 - yDiff) + B_11z * yDiff;
    
    outField.SetZ(B_0z * (1 - zDiff) + B_1z * zDiff);
-   
-   return outField*1e-3;    // 10^3 Gauss, 10^-1 T
+
+   return outField;    // Gauss
 }
