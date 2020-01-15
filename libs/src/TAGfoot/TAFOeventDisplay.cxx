@@ -35,7 +35,7 @@ ClassImp(TAFOeventDisplay)
 Bool_t  TAFOeventDisplay::fgTrackFlag       = true;
 TString TAFOeventDisplay::fgVtxTrackingAlgo = "Std";
 Bool_t  TAFOeventDisplay::fgStdAloneFlag    = false;
-Bool_t  TAFOeventDisplay::fgBmSelectHit      = false;
+Bool_t  TAFOeventDisplay::fgBmSelectHit     = false;
 
 TAFOeventDisplay* TAFOeventDisplay::fgInstance = 0x0;
 
