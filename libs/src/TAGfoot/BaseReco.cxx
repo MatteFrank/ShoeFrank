@@ -138,21 +138,17 @@ void BaseReco::BeforeEventLoop()
    CreateRawAction();
    CreateRecAction();
 
-    std::cout << "BaseReco::BeforeEventLoop - pre-OpenFileIn\n";
     
    OpenFileIn();
 
-    std::cout << "BaseReco::BeforeEventLoop - post-OpenFileIn\n";
-    
+
    AddRawRequiredItem();
    AddRecRequiredItem();
    
-    std::cout << "BaseReco::BeforeEventLoop - pre-OpenFileOut\n";
     
    if (fFlagOut)
       OpenFileOut();
    
-    std::cout << "BaseReco::BeforeEventLoop - post-OpenFileOut\n";
     
    fTAGroot->BeginEventLoop();
    fTAGroot->Print();
@@ -378,7 +374,6 @@ void BaseReco::CreateRecAction()
    if (GlobalPar::GetPar()->IncludeVertex())
       CreateRecActionVtx();
    
-    std::cout << "BaseReco::CreateRecAction() - VTX\n";
     
    if (GlobalPar::GetPar()->IncludeInnerTracker())
       CreateRecActionIt();
@@ -389,10 +384,10 @@ void BaseReco::CreateRecAction()
    if (GlobalPar::GetPar()->IncludeTW())
       CreateRecActionTw();
    
+    
    if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
       CreateRecActionGlb();
    
-    std::cout << "BaseReco::CreateRecAction() - TOE\n";
     
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
@@ -503,35 +498,37 @@ void BaseReco::CreateRecActionGlb()
       fActGlbTrack->CreateHistogram();
   }
     
-    std::cout << "BaseReco::CreateRecActionGlb() - Pre-List\n";
-    
-    using state_vector = state_vector_impl< Matrix<4,1> >;
-    using state_covariance = state_covariance_impl< Matrix<4, 4> >;
+
+    using state_vector =  Matrix<4,1> ;
+    using state_covariance =  Matrix<4, 4> ;
     using state = state_impl< state_vector, state_covariance  >;
     
-    auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpNtuClusVtx->Object() );
-    auto list = start_list( detector_properties<details::vertex_tag>(clusterVTX_hc, 5.5) ).finish();
-//    auto list = start_list( 5.8 ).finish();
     
-    std::cout << "BaseReco::CreateRecActionGlb() - Post-List\n";
+    
+    auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpNtuClusVtx->Object() );
+    auto * vertex_hc = static_cast<TAVTntuVertex*>( fpNtuVtx->Object() );
+    auto * geoVTX_h = static_cast<TAVTparGeo*>( fpParGeoVtx->Object() );
+    
+    auto * clusterTW_hc = static_cast<TATWntuPoint*>( fpNtuRecTw->Object() );
+    auto * geoTW_h = static_cast<TATWparGeo*>( fpParGeoTw->Object() );
+    
+    
+    auto list = start_list( detector_properties<details::vertex_tag>(clusterVTX_hc, vertex_hc, geoVTX_h, 5.5) )
+                      .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 5.5) )
+                      .finish();
+
+    
     
     auto ode = make_ode< Matrix<2,1>, 2>( model{} );
     auto stepper = make_stepper<data_grkn56>( std::move(ode) );
     auto ukf = make_ukf<state>( std::move(stepper) );
+ 
     
-    std::cout << "BaseReco::CreateRecActionGlb() - Post-UKF\n";
     
     TATOEbaseAct * action = make_new_TATOEactGlb(std::move(ukf), std::move(list));
-    
-   
-    action->Action();
-    
-     std::cout << "BaseReco::CreateRecActionGlb() - Post-Action\n";
-    //delete action;
+
     fActGlbTrack->SetAction( action );
-    
-    std::cout << "BaseReco::CreateRecActionGlb() - Post-Setter\n";
-    
+
 }
 
 //__________________________________________________________
