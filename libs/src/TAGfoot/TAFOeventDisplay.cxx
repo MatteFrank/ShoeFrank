@@ -636,9 +636,6 @@ void TAFOeventDisplay::UpdateElements()
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
        GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
       UpdateElements("ir");
-
-
-   gEve->FullRedraw3D(kFALSE);
 }
 
 //__________________________________________________________

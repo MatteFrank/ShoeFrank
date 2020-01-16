@@ -56,10 +56,8 @@ Bool_t TAFOeventDisplayMC::GetEntry(Int_t entry)
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::AddElements()
+void TAFOeventDisplayMC::AddMcElements()
 {
-   TAFOeventDisplay::AddElements();
-
    if (GlobalPar::GetPar()->IncludeCA()) {
       fCaMcDisplay->ResetPoints();
       gEve->AddElement(fCaMcDisplay);
@@ -97,10 +95,8 @@ void TAFOeventDisplayMC::AddElements()
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::ConnectElements()
+void TAFOeventDisplayMC::ConnectMcElements()
 {
-   TAFOeventDisplay::ConnectElements();
-   
    fCaMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateCaInfo(Int_t)");
    fTwMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateTwInfo(Int_t)");
    fMsdMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateMsInfo(Int_t)");
@@ -212,7 +208,7 @@ void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateElements()
+void TAFOeventDisplayMC::UpdateMcElements()
 {
    if (GlobalPar::GetPar()->IncludeST())
       UpdateMcElements("st");
@@ -234,8 +230,6 @@ void TAFOeventDisplayMC::UpdateElements()
    
    if (GlobalPar::GetPar()->IncludeCA())
       UpdateMcElements("ca");
-   
-   TAFOeventDisplay::UpdateElements();
 }
 
 //__________________________________________________________

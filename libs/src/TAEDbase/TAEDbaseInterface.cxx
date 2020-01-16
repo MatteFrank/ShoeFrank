@@ -277,6 +277,7 @@ void TAEDbaseInterface::ShowDisplay(const TString fileName)
    fgIsDisplayed = true;
    
    AddElements();
+   AddMcElements();
 }
 
 //__________________________________________________________
@@ -420,6 +421,7 @@ void TAEDbaseInterface::MakeGUI()
    browser->SetTabTitle("Info", 0);
    
    ConnectElements();
+   ConnectMcElements();
    CreateCanvases();
 }
 
@@ -471,12 +473,17 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
       fCurrentEventId++;
       UpdateEventBar();
       
-      if (!fRefreshButton->IsOn())
+      if (!fRefreshButton->IsOn()) {
+         UpdateMcElements();
          UpdateElements();
+      }
    }
    
+   UpdateMcElements();
    UpdateElements();
    
+   gEve->FullRedraw3D(kFALSE);
+
    fEventProgress->Reset();
    fEventProgress->SetPosition(0.);
    
