@@ -32,8 +32,6 @@ TAFOeventDisplayMC::TAFOeventDisplayMC(Int_t type, const TString expName)
    fBmMcDisplay(new TAEDpoint("STC MC hit")),
    fStMcDisplay(new TAEDpoint("STC MC hit"))
 {
-   // local reco
-   SetLocalReco();
 }
 
 //__________________________________________________________
@@ -47,26 +45,6 @@ TAFOeventDisplayMC::~TAFOeventDisplayMC()
    delete fVtMcDisplay;
    delete fBmMcDisplay;
    delete fStMcDisplay;
-}
-
-//__________________________________________________________
-void TAFOeventDisplayMC::SetLocalReco()
-{
-   if (fType != 1) return;
-   
-   // local reco
-   fReco = new LocalRecoMC(fExpName);
-   
-   fReco->DisableTree();
-   fReco->DisableSaveHits();
-   fReco->EnableHisto();
-
-   if (fgTrackFlag) {
-      fReco->SetTrackingAlgo(fgVtxTrackingAlgo[0]);
-      fReco->EnableTracking();
-   }
-   
-   fpFootGeo = fReco->GetGeoTrafo();
 }
 
 //__________________________________________________________

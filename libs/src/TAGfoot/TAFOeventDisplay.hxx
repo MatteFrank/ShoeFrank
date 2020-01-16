@@ -25,7 +25,7 @@
 #include "TADIeveField.hxx"
 #include "TADIgeoField.hxx"
 
-#include "LocalReco.hxx"
+#include "BaseReco.hxx"
 
 class TEveDigitSet;
 class TGCheckButton;

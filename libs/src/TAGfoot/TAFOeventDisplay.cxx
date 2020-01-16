@@ -30,6 +30,9 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
+#include "LocalReco.hxx"
+#include "LocalRecoMC.hxx"
+
 ClassImp(TAFOeventDisplay)
 
 Bool_t  TAFOeventDisplay::fgTrackFlag       = true;
@@ -188,11 +191,13 @@ TAFOeventDisplay::~TAFOeventDisplay()
 //__________________________________________________________
 void TAFOeventDisplay::SetLocalReco()
 {
-   if (fType != 0) return;
-   
-   // local reco
-   fReco = new LocalReco(fExpName);
-   
+   if (fType == 0)
+      fReco = new LocalReco(fExpName);
+   else if (fType == 1)
+      fReco = new LocalRecoMC(fExpName);
+   else
+      Error("SetLocalReco()", "Unknown type %d", fType);
+      
    fReco->DisableTree();
    fReco->DisableSaveHits();
    fReco->EnableHisto();
