@@ -42,6 +42,9 @@ private:
    Int_t        fMaxBinX;
    Int_t        fMaxBinY;
    Int_t        fMaxBinZ;
+   
+   
+   ClassDef(TADIgeoField,1)
 };
 
 
