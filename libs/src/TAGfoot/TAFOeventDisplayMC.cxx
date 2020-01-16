@@ -24,27 +24,54 @@ TAFOeventDisplay* TAFOeventDisplayMC::Instance(Int_t type, const TString name)
 //__________________________________________________________
 TAFOeventDisplayMC::TAFOeventDisplayMC(Int_t type, const TString expName)
  : TAFOeventDisplay(type, expName),
-   fCaMcDisplay(new TAEDpoint("Cal MC hit")),
-   fTwMcDisplay(new TAEDpoint("ToF MC hit")),
-   fMsdMcDisplay(new TAEDpoint("MSD MC hit")),
-   fItMcDisplay(new TAEDpoint("IT MC hit")),
-   fVtMcDisplay(new TAEDpoint("VTX MC hit")),
-   fBmMcDisplay(new TAEDpoint("STC MC hit")),
-   fStMcDisplay(new TAEDpoint("STC MC hit"))
+   fCaMcDisplay(0x0),
+   fTwMcDisplay(0x0),
+   fMsdMcDisplay(0x0),
+   fItMcDisplay(0x0),
+   fVtMcDisplay(0x0),
+   fBmMcDisplay(0x0),
+   fStMcDisplay(0x0)
 {
+   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
+      fStMcDisplay = new TAEDpoint("STC MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeBM())
+      fBmMcDisplay = new TAEDpoint("STC MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeVertex())
+      fVtMcDisplay = new TAEDpoint("VTX MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeInnerTracker())
+      fItMcDisplay = new TAEDpoint("IT MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeMSD())
+      fMsdMcDisplay = new TAEDpoint("MSD MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeTW())
+      fTwMcDisplay = new TAEDpoint("ToF MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeCA())
+      fCaMcDisplay = new TAEDpoint("Cal MC hit");
 }
 
 //__________________________________________________________
 TAFOeventDisplayMC::~TAFOeventDisplayMC()
 {
-   // default destructor   
-   delete fCaMcDisplay;
-   delete fTwMcDisplay;
-   delete fMsdMcDisplay;
-   delete fItMcDisplay;
-   delete fVtMcDisplay;
-   delete fBmMcDisplay;
-   delete fStMcDisplay;
+   // default destructor
+   if (fStMcDisplay)
+      delete fStMcDisplay;
+   if (fBmMcDisplay)
+      delete fBmMcDisplay;
+   if (fVtMcDisplay)
+      delete fVtMcDisplay;
+   if (fItMcDisplay)
+      delete fItMcDisplay;
+   if(fMsdMcDisplay)
+      delete fMsdMcDisplay;
+   if(fTwMcDisplay)
+      delete fTwMcDisplay;
+   if(fCaMcDisplay)
+      delete fCaMcDisplay;
 }
 
 //__________________________________________________________
@@ -97,13 +124,26 @@ void TAFOeventDisplayMC::AddMcElements()
 //__________________________________________________________
 void TAFOeventDisplayMC::ConnectMcElements()
 {
-   fCaMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateCaInfo(Int_t)");
-   fTwMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateTwInfo(Int_t)");
-   fMsdMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateMsInfo(Int_t)");
-   fItMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateItInfo(Int_t)");
-   fVtMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateVtInfo(Int_t)");
-   fBmMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateBmInfo(Int_t)");
-   fStMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateStInfo(Int_t)");
+   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
+      fStMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateStInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeBM())
+      fBmMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateBmInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeVertex())
+      fVtMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateVtInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeInnerTracker())
+      fItMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateItInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeMSD())
+      fMsdMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateMsInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeTW())
+      fTwMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateTwInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeCA())
+      fCaMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateCaInfo(Int_t)");
 }
 
 //__________________________________________________________
