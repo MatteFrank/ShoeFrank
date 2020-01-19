@@ -28,6 +28,5 @@
 #pragma link C++ class  GlobalReco;
 #pragma link C++ class  GlobalRecoMC;
 #pragma link C++ class  GlobalToeReco;
-#pragma link C++ class  GlobalToeRecoMC;
 
 #endif
