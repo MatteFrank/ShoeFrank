@@ -175,10 +175,18 @@ TVector3 TATWparGeo::GetBarPosition(Int_t iLayer, Int_t iBar)
 }
 
 //_____________________________________________________________________________
-Float_t TATWparGeo::GetLayerPosZ(Int_t iLayer)
+TVector3 TATWparGeo::GetLayerPosition(Int_t iLayer)
 {
    Int_t iBar = 0;
-   return GetZ_sensorFrame(iLayer, iBar);
+   Int_t idx = iLayer*fBarsN + iBar;
+   
+   TGeoHMatrix* hm = TAGparTools::GetTransfo(idx);
+   if (hm) {
+      TVector3 local(0,0,0);
+      fCurrentPosition =  Sensor2Detector(iLayer, iBar, local);
+   }
+   
+   return fCurrentPosition;
 }
 
 //_____________________________________________________________________________
