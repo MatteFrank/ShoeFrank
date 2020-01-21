@@ -15,7 +15,9 @@ TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
    fpFootGeo(0x0)
 {
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   
+   if (fpFootGeo)
+      Error("TADIgeoField()", "cannot find TAGgeoTrafo pointer");
+
    Float_t mesh   = fpDiGeoMap->GetMapMesh();
    TVector3 limLo = fpFootGeo->FromDILocalToGlobal(fpDiGeoMap->GetMapLimLo());
    TVector3 limUp = fpFootGeo->FromDILocalToGlobal(fpDiGeoMap->GetMapLimUp());
@@ -51,7 +53,7 @@ void TADIgeoField::FromFile(TString& fullFileName)
    ifile.open( fullFileName.Data() );
 
    if ( !ifile.is_open() ) {
-      Error("TADIgeoField::TADIgeoField", "cannot open magnetic map for file %s\n", fullFileName.Data());
+      Error("FromFile()", "cannot open magnetic map for file %s\n", fullFileName.Data());
       exit(0);
    }
    
