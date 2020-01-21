@@ -14,6 +14,9 @@
 #include <math.h>
 
 #include "utility_types.hpp"
+template<class T>
+class TD1;
+
 
 namespace details{
     
@@ -24,7 +27,7 @@ namespace details{
         using stepper = typename filter_traits<Derived>::stepping_operator;
         using type = typename stepper_traits<stepper>::operating_type;
         static constexpr std::size_t order = stepper_traits<stepper>::order;
-        static constexpr std::size_t sigma_dimension = 2 * filter_traits< Derived >::state::vector_dimension +1;
+        static constexpr std::size_t sigma_dimension = 2 * filter_traits< Derived >::state::vector_dimension + 1;
         
         
         struct weight{
@@ -49,41 +52,66 @@ namespace details{
     private:
         template< std::size_t Index,
                   typename std::enable_if_t< (Index == 0 ), std::nullptr_t> = nullptr >
-        operating_state<type, order> generate_single_sigma(const state& state_p)
+        operating_state<type, order> generate_single_sigma(const state& state_p) const
         {
+//            std::cout << "single_sigma::indice " << Index << '\n';
+         //   std::cout << "single_sigma::vector (" << state_p.vector(0,0) << ", " << state_p.vector(1,0) << ") -- (" << state_p.vector(0,0) << ", " << state_p.vector(1,0) << ")\n";
             return make_operating_state<order>(state_p);
         }
         
         template< std::size_t Index,
                   typename std::enable_if_t< (Index != 0 && Index <= state_vector::vector_dimension), std::nullptr_t > = nullptr >
-        operating_state<type, order> generate_single_sigma(const state& state_p)
+        operating_state<type, order> generate_single_sigma(const state& state_p) const
         {
-            auto vector = state_p.vector + factor_m * make_cholesky_triangle(state_p.covariance).column(Index-1);
-           // std::cout << "Positive sigma:" << Index << '\n' << vector;
+           
+//            std::cout << "single_sigma::starting_vector \n" << state_p.vector;
+//            std::cout << "single_sigma::indice " << Index << '\n';
+//            std::cout << "single_sigma::cholesky \n " << make_cholesky_triangle(state_p.covariance);
+//            std::cout << "single_sigma::cholesky_factor \n " << factor_m * make_cholesky_triangle(state_p.covariance);
+            
+            
+            auto vector = state_p.vector + factor_m * make_cholesky_triangle(state_p.covariance).column(Index -1);
+//            std::cout << "Positive sigma:" << Index << '\n' << vector;
+//            std::cout << "single_sigme::vector_calculation :\n" << vector ;
+            
             auto halves = split_half(std::move(vector), row_tag{});
+            
+//            std::cout << "single_sigma::vector (" << halves.first(0,0) << ", " << halves.first(1,0) << ") -- (" << halves.second(0,0) << ", " << halves.second(1,0) << ")\n";
+            
             return { state_p.evaluation_point,
                      {std::move(halves.first), std::move(halves.second)}    };
         }
         
         template< std::size_t Index,
                   typename std::enable_if_t< (Index > state_vector::vector_dimension), std::nullptr_t > = nullptr >
-        operating_state<type, order> generate_single_sigma(const state& state_p)
+        operating_state<type, order> generate_single_sigma(const state& state_p) const
         {
+//           std::cout << "single_sigma::starting_vector \n" << state_p.vector;
+//            std::cout << "single_sigma::indice " << Index << '\n';
+//            std::cout << "single_sigma::cholesky \n " << make_cholesky_triangle(state_p.covariance);
+//            std::cout << "single_sigma::cholesky_factor \n " << factor_m * make_cholesky_triangle(state_p.covariance);
             auto vector = state_p.vector - factor_m * make_cholesky_triangle(state_p.covariance).column(Index -1 -state_p.vector_dimension );
-           // std::cout << "Negative sigma:" << Index << '\n' << vector;
+            
+//            std::cout << "single_sigme::vector_calculation :\n" << vector ;
+            
+//             std::cout << "Negative sigma:" << Index << '\n' << vector;
+            
             auto halves = split_half(std::move(vector), row_tag{});
+            
+//            std::cout << "single_sigma::vector (" << halves.first(0,0) << ", " << halves.first(1,0) << ") -- (" << halves.second(0,0) << ", " << halves.second(1,0) << ")\n";
+            
             return { state_p.evaluation_point,
                      {std::move(halves.first), std::move(halves.second)}    };
         }
         
         template<std::size_t ... Indices>
-        auto generate_sigma_points_impl(const state& state_p , std::index_sequence<Indices...>)
+        auto generate_sigma_points_impl(const state& state_p , std::index_sequence<Indices...>) const
         {
             return std::vector<operating_state<type, order>>{ generate_single_sigma<Indices>(state_p)... };
         }
         
     public:
-        std::vector<operating_state<type, order>> generate_sigma_points(const state& state_p)
+        std::vector<operating_state<type, order>> generate_sigma_points(const state& state_p) const
         {
             return generate_sigma_points_impl(state_p, std::make_index_sequence<sigma_dimension>{});
         }
@@ -96,27 +124,35 @@ namespace details{
         
     private:
         template<std::size_t Index, typename std::enable_if_t< (Index == 0 ), std::nullptr_t> = nullptr >
-        weighted_state generate_single_weighted_state(operating_state<type, order> os_p)
+        weighted_state generate_single_weighted_state(operating_state<type, order> os_p) const
         {
+           // std::cout << "generate_single_weighted_state_mean::indice : " << Index << '\n';
+          //  std::cout << "state : (" << os_p.state( details::order_tag<0>{} )(0,0) << ", " << os_p.state( details::order_tag<0>{} )(1,0) << ") + ("
+           //                          << os_p.state( details::order_tag<1>{} )(0,0) << ", " << os_p.state( details::order_tag<1>{} )(1,0) << ")\n";
             return {make_state_vector(std::move(os_p)), weight{weightMean_m} };
         }
         
         template<std::size_t Index, typename std::enable_if_t< (Index > 0 ), std::nullptr_t > = nullptr >
-        weighted_state generate_single_weighted_state(operating_state<type, order> os_p)
+        weighted_state generate_single_weighted_state(operating_state<type, order> os_p) const
         {
+         //   std::cout << "generate_single_weighted_state::indice : " << Index << '\n';
+          //  std::cout << "state : (" << os_p.state( details::order_tag<0>{} )(0,0) << ", " << os_p.state( details::order_tag<0>{} )(1,0) << ") + ("
+        //    << os_p.state( details::order_tag<1>{} )(0,0) << ", " << os_p.state( details::order_tag<1>{} )(1,0) << ")\n";
             return {make_state_vector(std::move(os_p)), weight{weightSigma_m} };
         }
         
         template<std::size_t ... Indices>
-        std::vector<weighted_state> generate_weighted_state(std::vector<operating_state<type, order>>&& os_pc , std::index_sequence<Indices...>)
+        std::vector<weighted_state> generate_weighted_state(std::vector<operating_state<type, order>>&& os_pc , std::index_sequence<Indices...>) const
         {
             return std::vector<weighted_state>{ generate_single_weighted_state<Indices>(os_pc[Indices])... };
         }
         
         
     public:
-        state generate_propagated_state(std::vector<operating_state<type, order>>&& os_pc)
+        state generate_propagated_state(std::vector<operating_state<type, order>>&& os_pc) const
         {
+//            std::cout << "sigma_dimensions : " << sigma_dimension << '\n';
+            
             auto ws_c = generate_weighted_state(std::move(os_pc), std::make_index_sequence<sigma_dimension>{});
             auto debug_vector = [](decltype(state_vector::vector) v_p, weighted_state ws_p){
                 std::cout << "Debug lambda:\nstate_vector : \n";
@@ -127,7 +163,7 @@ namespace details{
             };
             state_vector sv = make_state_vector( std::accumulate( ws_c.begin(), ws_c.end(),
                                                                   matrix_vector{},
-                                                                 [&debug_vector](matrix_vector v_p, const weighted_state& ws_p){ /*debug_vector(v_p, ws_p)*/; return std::move(v_p) + ws_p.vector * ws_p.weight; }    ) );
+                                                                 [&debug_vector](matrix_vector v_p, const weighted_state& ws_p){ /*debug_vector(v_p, ws_p);*/ return std::move(v_p) + ws_p.vector * ws_p.weight; }    ) );
             
             auto debug_covariance = [&sv](matrix_covariance c_p, weighted_state ws_p){
                 std::cout << "Debug lambda:\nstate_covariance : \n";
@@ -146,7 +182,7 @@ namespace details{
                                                                           matrix_covariance{},
                                                                           [&sv, &debug_covariance]( matrix_covariance c_p,
                                                                                  const weighted_state& ws_p  )
-                                                                         { /*debug_covariance(c_p, ws_p)*/ ;return std::move(c_p) + ws_p.weight * (ws_p.vector - sv.vector) * make_transpose(ws_p.vector - sv.vector); }             ) );
+                                                                         {/* debug_covariance(c_p, ws_p) ;*/return std::move(c_p) + ws_p.weight * (ws_p.vector - sv.vector) * make_transpose(ws_p.vector - sv.vector); }             ) );
             return state{evaluation_point{os_pc.front().evaluation_point}, std::move(sv), std::move(sc)};
         }
     };
@@ -164,7 +200,7 @@ namespace details{
         //first time go past, will see in the future about going right after what we need
         //probably simple ref here -> but structure imply consommation but it imply a move too ..
         auto force_propagation( std::vector< operating_state<type, order> >&& os_pc,
-                                double step_p  )
+                                double step_p  ) const
              -> std::vector< operating_state<type, order> >
         {
             for(auto& os : os_pc){
@@ -174,11 +210,11 @@ namespace details{
         }
         
         template<class Predicate>
-        auto propagate_until( std::vector< operating_state<type, order> >&& os_pc,
+        auto propagate_while( std::vector< operating_state<type, order> >&& os_pc,
                               Predicate&& predicate_p  )
              -> std::vector< operating_state<type, order> >
         {
-            while( !predicate_p( os_pc.front() ) ){
+            while( predicate_p( os_pc.front() ) ){
                 os_pc = propagate_once(std::move(os_pc));
                 //std::cout << "order1:\n" << os_pc.front().state(order_tag<1>{}) ;
             }
@@ -198,6 +234,8 @@ namespace details{
                 *iterator = derived().call_stepper().force_step( std::move(*iterator), step);
             }
             
+            std::cout << "propagate_once::step : " << step << '\n';
+            
             //optimize next step
             derived().step_length() = derived().call_stepper().optimize_step_length(step, step_result.second);
             
@@ -216,29 +254,23 @@ namespace details{
     struct kalman_filter{
         
         using state = typename filter_traits<Derived>::state;
-        using state_vector = typename state::state_vector_impl;
-        using state_covariance = typename state::state_covariance_impl;
-        
-        
-        template<class Vector, class Covariance, class T, class Data>
-        using candidate = candidate_impl< Vector, Covariance, measurement_matrix_impl<T>, data_handle<T> >;
+        using state_vector = typename underlying<state>::vector;
+        using state_covariance = typename underlying<state>::covariance;
         
         
         
     public:
-        template< class Vector,
-                  class Covariance,
-                  class T,
-                  class Data,
-                  class Enabler = std::enable_if_t< has_correct_dimension<
-                                                             T,
+        //template around candidate + enbale if goes deeper ?
+        template< class Candidate,
+                  class Enabler = std::enable_if_t< is_given_dimension_correct<
+                                                             typename underlying<std::decay_t<Candidate>>::measurement_matrix::type,
                                                              column_tag,
                                                              state_vector::vector_dimension
                                                                           >::value
                                                   >
                 >
         chisquared compute_chisquared( const state& s_p,
-                                       const candidate<Vector, Covariance, T, Data>& candidate_p )
+                                       const Candidate& candidate_p ) const
         {
             auto residual_vector = candidate_p.vector - candidate_p.measurement_matrix * s_p.vector;
             auto residual_covariance = candidate_p.covariance + candidate_p.measurement_matrix * s_p.covariance * make_transpose(candidate_p.measurement_matrix);
@@ -251,10 +283,14 @@ namespace details{
         
         
         //should probably check everything or nothing, but state to measurement dimensionality error is the most probable
-        template< class MeasurementVector, class MeasurementCovariance, class T, class Data,
-                  class Enabler = std::enable_if_t< has_correct_dimension<T, column_tag, state_vector::vector_dimension>::value >  >
+        template< class Candidate,
+                  class Enabler = std::enable_if_t< is_given_dimension_correct< typename underlying<std::decay_t<Candidate>>::measurement_matrix::type,
+                                                                           column_tag,
+                                                                           state_vector::vector_dimension >::value
+                                                  >
+                >
         state correct_state( state s_p,
-                                             candidate<MeasurementVector, MeasurementCovariance, T, Data> candidate_p )
+                             Candidate&& candidate_p ) const
         {
             //residual propagated state
             auto residual_vector = candidate_p.vector - candidate_p.measurement_matrix * s_p.vector;
@@ -285,31 +321,9 @@ namespace details{
 }//namespace details
     
 
-template<class StateVector, class StateCovariance, class EvaluationPoint, class Chisquared>
-state_impl<StateVector, StateCovariance> make_state(aggregator<EvaluationPoint, StateVector, StateCovariance, Chisquared> cs_p)
-{
-    return { evaluation_point{cs_p.evaluation_point},
-             make_state_vector(cs_p.vector),
-             make_state_covariance(cs_p.covariance)  };
-}
-
-
 namespace details{
     
-    template<class State, class Enabler>
-    struct is_state_coherent_impl : std::false_type{};
-    
-    template<class State>
-    struct is_state_coherent_impl< State,
-                                   std::enable_if_t< State::vector_dimension *
-                                                     State::vector_dimension ==
-                                                     State::covariance_dimension >   >
-                                  : std::true_type{};
-    
-    template<class State>
-    using is_state_coherent = is_state_coherent_impl<State, void>;
-    
-    
+
     
     template<class State, class Stepper, class Enabler>
     struct is_dimension_coherent_impl : std::false_type {};
@@ -338,7 +352,7 @@ struct ukf : public details::sigma_handler< ukf<State, Stepper> >,
 
 {
     using details::sigma_handler< ukf >::generate_sigma_points;
-    using details::ukf_propagator< ukf >::propagate_until;
+    using details::ukf_propagator< ukf >::propagate_while;
     using details::ukf_propagator< ukf >::propagate_once;
     using details::sigma_handler< ukf >::generate_propagated_state;
     using details::kalman_filter< ukf >::correct_state;
@@ -356,7 +370,6 @@ public:
     
 public:
     template< class Stepper_,
-              class StateChecker = std::enable_if_t< details::is_state_coherent< State >::value >,
               class CoherenceChecker = std::enable_if_t< details::is_dimension_coherent< State, Stepper_>::value >   >
     constexpr ukf(Stepper_&& stepper_p) : stepper_m{std::move(stepper_p)} {}
     

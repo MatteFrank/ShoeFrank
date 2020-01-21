@@ -389,6 +389,30 @@ namespace details {
     {
         return Matrix<NRows1 + NRows2, 1>{m1_p(Indices1,0)... , m2_p(Indices2,0)... };
     }
+    
+
+    
+    //will only work for square matrices then -> easier to implement and the rest is not really needed
+    template< std::size_t N1, std::size_t N2>
+    constexpr double diagonals_filler(std::size_t index_p, Matrix<N1, N1> m1_p, Matrix<N2, N2> m2_p)
+    {
+        std::size_t size = (N1 + N2) ;
+        std::size_t row = index_p / size;
+        std::size_t column = index_p % size;
+        
+        auto choose = [&m1_p, &m2_p](std::size_t index_p){ return (index_p < N1) ? m1_p(index_p, index_p) : m2_p(index_p-N1, index_p-N1); };
+        
+        return (row == column ) ? choose(row) : 0.;
+    }
+    
+    template<std::size_t N1, std::size_t N2, std::size_t... Indices>
+    constexpr auto combine_diagonals_impl( Matrix<N1, N1> m1_p, Matrix<N2, N2> m2_p,  std::index_sequence<Indices...>)
+        -> std::array<double, sizeof...(Indices)>
+    {
+        return {{ diagonals_filler(Indices, m1_p, m2_p)... }};
+    }
+    
+    
 }//namespace details
 
 
@@ -408,6 +432,15 @@ Matrix<NRows1 + NRows2, 1> combine( Matrix<NRows1, 1> m1_p,
                                     details::row_tag )
 {
     return details::combine_row_impl(std::move(m1_p), std::make_index_sequence<NRows1>{}, std::move(m2_p), std::make_index_sequence<NRows2>{});
+}
+
+
+
+template<std::size_t N1,  std::size_t N2 >
+constexpr Matrix<N1 + N2, N1 + N2> combine_diagonals( Matrix<N1, N1> m1_p,
+                                                      Matrix<N2, N2> m2_p )
+{
+    return details::combine_diagonals_impl( std::move(m1_p), std::move(m2_p), std::make_index_sequence< (N1+N2)*(N1+N2) >{} );
 }
 
 #endif /* Matrix_hpp */

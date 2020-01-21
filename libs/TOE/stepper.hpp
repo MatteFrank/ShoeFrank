@@ -250,7 +250,7 @@ namespace details {
         
         
     private:
-        double tolerance_m;
+        double tolerance_m{1e-10};
     public:
         void specify_tolerance(double tolerance_p){ tolerance_m = tolerance_p ;}
         
@@ -259,7 +259,7 @@ namespace details {
         auto step(operating_state<type, 2>&& os_p, double step_p) const
                 -> std::pair< operating_state<type, 2>, double >
         {
-            std::cout << "Stepper::step " << step_p << '\n';
+//            std::cout << "Stepper::step " << step_p << '\n';
             
             bool isToleranceReached = false;
             auto eos = make_extended_operating_state( std::move(os_p),
@@ -272,7 +272,7 @@ namespace details {
                 eos.evaluation = derived().compute_evaluation(eos, step_p);
                 auto estimate = derived().compute_solution(eos, details::order_tag<0>{}, estimation_tag{});
                 auto correction = derived().compute_solution(eos, details::order_tag<0>{}, correction_tag{});
-                std::cout << "Estimate: \n" << estimate << " - Correction: \n" << correction << '\n';
+//                std::cout << "Estimate: \n" << estimate << " - Correction: \n" << correction << '\n';
                 auto local_error_estimate = details::error( estimate, correction );
                
                 
@@ -282,7 +282,7 @@ namespace details {
                 }
                 else{
                     error = error_checker{ local_error_estimate };
-                    std::cout << "Step length:" << eos.step << ", error: "<< error <<'\n';
+//                    std::cout << "Step length:" << eos.step << ", error: "<< error <<'\n';
                     eos.state(order_tag<0>{}) = correction;
                 }
                 
@@ -304,7 +304,8 @@ namespace details {
             eos.state( order_tag<0>{} ) = derived().compute_solution(eos, details::order_tag<0>{}, correction_tag{});
             eos.state( order_tag<1>{} ) = derived().compute_solution(eos, details::order_tag<1>{});
             eos.evaluation_point += step_p;
-            return  std::move(eos);
+            
+            return  eos;
         }
         
         double optimize_step_length(double step_p, double local_error) const

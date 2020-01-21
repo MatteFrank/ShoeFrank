@@ -104,8 +104,15 @@ public:
 
    virtual void LoopEvent(Int_t nEvts = 0);
    
+   //! MC virtual methods
    virtual Bool_t GetEntry(Int_t /*entry*/) { return true; }
    
+   virtual void UpdateMcElements()          { return;      }
+   
+   virtual void ConnectMcElements()         { return;      }
+   
+   virtual void AddMcElements()             { return ;     }
+
    virtual void SetTransparency(Char_t transparency = 50); //*MENU*
    
    virtual void ShowDisplay(const TString fileName);

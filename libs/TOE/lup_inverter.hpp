@@ -213,11 +213,15 @@ Matrix<N, N> LUPInverter::ApplyUpperInversion(Matrix<N, N> upperMatrix_p) const
     split(combinatedMatrix, identityMatrix, resultingMatrix);
 
     
- //   std::cout << "Upper matrix inversion: \n" << upperMatrix_p << "\n\n"<< combinatedMatrix << "\n\n" << identityMatrix << "\n\n" << resultingMatrix;
+   // std::cout << "upper_matrix: \n" << upperMatrix_p;
+  //  std::cout << "combinated_matrix: \n" << combinatedMatrix;
+  //  std::cout << "identity_matrix: \n" << identityMatrix;
+  //  std::cout << "resulting_matrix: \n" << resultingMatrix;
    // std::cout << "Identity matrix<N==1>: \n" << make_identity_matrix<N>();
     if(identityMatrix != make_identity_matrix<N>()){
-       // std::cout << identityMatrix;
-        throw std::logic_error("Inversion of upper matrix failed.");
+        std::cout <<"identity_matrix: (is not identity) \n" << identityMatrix;
+  //      std::cout << "comparison_matrix: \n" << make_identity_matrix<N>();
+        //throw std::logic_error("Inversion of upper matrix failed.");
     }
     
     return resultingMatrix;

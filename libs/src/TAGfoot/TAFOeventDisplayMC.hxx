@@ -25,23 +25,17 @@ public:
    
    virtual ~TAFOeventDisplayMC();
    
-    //! Create raw data action
-   void CreateRawAction();
-
-   //! Set local reconstruction
-   void SetLocalReco();
-   
    //! Tree entry
    Bool_t GetEntry(Int_t entry);
    
-   // Update elements
-   void UpdateElements();
+   //! Update elements
+   void UpdateMcElements();
 
    //! Add elements
-   void AddElements();
+   void AddMcElements();
 
    //! Connect elements
-   void ConnectElements();
+   void ConnectMcElements();
 
    //! Update MC info
    void UpdateStInfo(Int_t idx);

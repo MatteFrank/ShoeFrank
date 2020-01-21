@@ -30,12 +30,15 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
+#include "LocalReco.hxx"
+#include "LocalRecoMC.hxx"
+
 ClassImp(TAFOeventDisplay)
 
 Bool_t  TAFOeventDisplay::fgTrackFlag       = true;
 TString TAFOeventDisplay::fgVtxTrackingAlgo = "Std";
 Bool_t  TAFOeventDisplay::fgStdAloneFlag    = false;
-Bool_t  TAFOeventDisplay::fgBmSelectHt      = false;
+Bool_t  TAFOeventDisplay::fgBmSelectHit     = false;
 
 TAFOeventDisplay* TAFOeventDisplay::fgInstance = 0x0;
 
@@ -188,11 +191,13 @@ TAFOeventDisplay::~TAFOeventDisplay()
 //__________________________________________________________
 void TAFOeventDisplay::SetLocalReco()
 {
-   if (fType != 0) return;
-   
-   // local reco
-   fReco = new LocalReco(fExpName);
-   
+   if (fType == 0)
+      fReco = new LocalReco(fExpName);
+   else if (fType == 1)
+      fReco = new LocalRecoMC(fExpName);
+   else
+      Error("SetLocalReco()", "Unknown type %d", fType);
+      
    fReco->DisableTree();
    fReco->DisableSaveHits();
    fReco->EnableHisto();
@@ -631,9 +636,6 @@ void TAFOeventDisplay::UpdateElements()
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
        GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
       UpdateElements("ir");
-
-
-   gEve->FullRedraw3D(kFALSE);
 }
 
 //__________________________________________________________
@@ -1179,7 +1181,7 @@ void TAFOeventDisplay::UpdateLayerElements()
    for (Int_t i = 0; i < nHits; i++) {
       TABMntuHit* hit = pBMntu->Hit(i);
       
-      if (!hit->GetIsSelected() && fgBmSelectHt) continue;
+      if (!hit->GetIsSelected() && fgBmSelectHit) continue;
 
       Int_t view  = hit->View();
       Int_t lay  = hit->Plane();

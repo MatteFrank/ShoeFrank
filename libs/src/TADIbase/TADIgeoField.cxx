@@ -6,6 +6,8 @@
 #include "GlobalPar.hxx"
 
 
+ClassImp(TADIgeoField);
+
 //______________________________________________________________________________
 TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
  : TVirtualMagField(),

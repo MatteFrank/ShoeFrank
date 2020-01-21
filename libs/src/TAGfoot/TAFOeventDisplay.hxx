@@ -25,7 +25,7 @@
 #include "TADIeveField.hxx"
 #include "TADIgeoField.hxx"
 
-#include "LocalReco.hxx"
+#include "BaseReco.hxx"
 
 class TEveDigitSet;
 class TGCheckButton;
@@ -57,9 +57,6 @@ public:
    
    //! Update normal Canvases
    virtual void UpdateDefCanvases();
-
-   //! Set local reconstruction
-   virtual void SetLocalReco();
    
    //! Add required items
    virtual void AddRequiredItem();
@@ -75,6 +72,9 @@ public:
    
    //! Open File
    virtual void OpenFile();
+   
+   //! Set local reconstruction
+   virtual void SetLocalReco();
    
    //! Add elements
    virtual void AddElements();
@@ -131,16 +131,16 @@ public:
    }
    
    //! Disable/Enable tracking
-   static void DisableTracking()   { fgTrackFlag = false;     }
-   static void EnableTracking()    { fgTrackFlag = true;      }
+   static void DisableTracking()    { fgTrackFlag = false;    }
+   static void EnableTracking()     { fgTrackFlag = true;     }
 
    //! Disable/Enable stand alone DAQ
-   static void DisableStdAlone()   { fgStdAloneFlag = false;  }
-   static void EnableStdAlone()    { fgStdAloneFlag = true;   }
+   static void DisableStdAlone()    { fgStdAloneFlag = false; }
+   static void EnableStdAlone()     { fgStdAloneFlag = true;  }
 
    //! Disable/Enable stand alone DAQ
-   static void DisableBmSelectHit()   { fgBmSelectHt = false;  }
-   static void EnableBmSelectHit()    { fgBmSelectHt = true;   }
+   static void DisableBmSelectHit() { fgBmSelectHit = false;  }
+   static void EnableBmSelectHit()  { fgBmSelectHit = true;   }
 
 protected:
    BaseReco*       fReco;    // local reco
@@ -187,7 +187,7 @@ protected:
    static Bool_t         fgTrackFlag;       // flag for tracking
    static Bool_t         fgStdAloneFlag;    // flag for standalone DAQ
    static TString        fgVtxTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory and "Hough" Hough transformation)
-   static Bool_t         fgBmSelectHt;      // flag BM selected hit
+   static Bool_t         fgBmSelectHit;     // flag BM selected hit
 
    ClassDef(TAFOeventDisplay, 1); // Base class for event display
 };

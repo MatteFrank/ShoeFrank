@@ -14,8 +14,6 @@
 
 using namespace std;
 
-typedef map<tuple<double, double, double>, tuple<double, double, double>> point3D;
-
 class TADIgeoField : public TVirtualMagField {
 
 public:
@@ -42,6 +40,8 @@ private:
    Int_t        fMaxBinX;
    Int_t        fMaxBinY;
    Int_t        fMaxBinZ;
+   
+   ClassDef(TADIgeoField,1)
 };
 
 
