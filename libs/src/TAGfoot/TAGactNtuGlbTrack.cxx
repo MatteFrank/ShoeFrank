@@ -149,25 +149,34 @@ void TAGactNtuGlbTrack::CreateHistogram()
 //! Action.
 Bool_t TAGactNtuGlbTrack::Action()
 {
-   if (fgStdAloneFlag)
+
+    
+    if (fgStdAloneFlag)
       fActEvtReader->Process();
    
-   if(GlobalPar::GetPar()->IncludeVertex())
-      FillVtxPoint();
-   
-   if(GlobalPar::GetPar()->IncludeInnerTracker())
-      FillItrPoint();
+//   if(GlobalPar::GetPar()->IncludeVertex())
+//      FillVtxPoint();
+//
+//   if(GlobalPar::GetPar()->IncludeInnerTracker())
+//      FillItrPoint();
+//
+//   if(GlobalPar::GetPar()->IncludeMSD())
+//      FillMsdPoint();
+//
+//   if(GlobalPar::GetPar()->IncludeTW())
+//      FillTofPoint();
+//
+  
+    
 
-   if(GlobalPar::GetPar()->IncludeMSD())
-      FillMsdPoint();
-   
-   if(GlobalPar::GetPar()->IncludeTW())
-      FillTofPoint();
-   
+    
+    
+        fActTOE->Action();
+    
    fpGlbTrack->SetBit(kValid);
    
-    std::cout << "TAGactNtuGlbTrack::Action\n";
-    fActTOE->Action();
+    
+
     
     
    return kTRUE;

@@ -519,10 +519,11 @@ void BaseReco::CreateRecActionGlb()
 
     
     
-    auto ode = make_ode< Matrix<2,1>, 2>( model{} );
+    auto ode = make_ode< Matrix<2,1>, 2>( model{GetFootField()} );
     auto stepper = make_stepper<data_grkn56>( std::move(ode) );
     auto ukf = make_ukf<state>( std::move(stepper) );
- 
+    
+    ukf.call_stepper().specify_tolerance(1e-12);
     
     
     TATOEbaseAct * action = make_new_TATOEactGlb(std::move(ukf), std::move(list));
