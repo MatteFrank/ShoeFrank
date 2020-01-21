@@ -175,10 +175,14 @@ TVector3 TATWparGeo::GetBarPosition(Int_t iLayer, Int_t iBar)
 }
 
 //_____________________________________________________________________________
-Float_t TATWparGeo::GetLayerPosZ(Int_t iLayer)
+TVector3 TATWparGeo::GetLayerPosition(Int_t iLayer)
 {
    Int_t iBar = 0;
-   return GetZ_sensorFrame(iLayer, iBar);
+   fCurrentPosition = GetBarPosition(iLayer, iBar);
+   fCurrentPosition.SetX(0.);
+   fCurrentPosition.SetY(0.);
+   
+   return fCurrentPosition;
 }
 
 //_____________________________________________________________________________

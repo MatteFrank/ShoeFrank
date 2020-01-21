@@ -15,7 +15,9 @@ TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
    fpFootGeo(0x0)
 {
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   
+   if (fpFootGeo)
+      Error("TADIgeoField()", "cannot find TAGgeoTrafo pointer");
+
    Float_t mesh   = fpDiGeoMap->GetMapMesh();
    TVector3 limLo = fpFootGeo->FromDILocalToGlobal(fpDiGeoMap->GetMapLimLo());
    TVector3 limUp = fpFootGeo->FromDILocalToGlobal(fpDiGeoMap->GetMapLimUp());
@@ -41,7 +43,7 @@ TADIgeoField::~TADIgeoField()
 }
 
 //______________________________________________________________________________
-// first 3 variables are the input position components, last 3 var are the output b components
+// read from file
 void TADIgeoField::FromFile(TString& fullFileName)
 {
    ifstream ifile;
@@ -51,11 +53,11 @@ void TADIgeoField::FromFile(TString& fullFileName)
    ifile.open( fullFileName.Data() );
 
    if ( !ifile.is_open() ) {
-      Error("TADIgeoField::TADIgeoField", "cannot open magnetic map for file %s\n", fullFileName.Data());
+      Error("FromFile()", "cannot open magnetic map for file %s\n", fullFileName.Data());
       exit(0);
    }
    
-   // read position and field  -->	 fill a multidimensional map called point3D = map< double, map< double, map< double, TVector3 > > >
+   // read position and field
    string line = "";
    
    //HACK
@@ -65,7 +67,6 @@ void TADIgeoField::FromFile(TString& fullFileName)
       if (line == "")  continue;
       if ( line.find("#") != string::npos || line.find("*") != string::npos )
          continue;
-      // if ( line.find("#") != string::npos || line.find("//") != string::npos )     continue;
       
       double x = -1;
       double y = -1;
@@ -93,9 +94,7 @@ void TADIgeoField::FromFile(TString& fullFileName)
    
    ifile.close();
    
-   if ( GlobalPar::GetPar()->Debug() > 0 ){
-      std::cout << "TADIgeoField::TADIgeoField: exiting" << std::endl;
-   }
+   FootDebug(1, "FromFile()", "exiting");
 }
 
 //______________________________________________________________________________
