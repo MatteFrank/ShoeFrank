@@ -178,7 +178,11 @@ TVector3 TATWparGeo::GetBarPosition(Int_t iLayer, Int_t iBar)
 TVector3 TATWparGeo::GetLayerPosition(Int_t iLayer)
 {
    Int_t iBar = 0;
-   return GetBarPosition(iLayer, iBar);
+   fCurrentPosition = GetBarPosition(iLayer, iBar);
+   fCurrentPosition.SetX(0.);
+   fCurrentPosition.SetY(0.);
+   
+   return fCurrentPosition;
 }
 
 //_____________________________________________________________________________
