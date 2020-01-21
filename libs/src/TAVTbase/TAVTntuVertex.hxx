@@ -42,7 +42,11 @@ public:
     void           AddTrack(TAVTtrack* track);
    
     //!Get Vertex Position
+    const TVector3&      GetVertexPosition()     const       { return fVertexPosition; }
+    
+    //!Get Vertex Position
     TVector3&      GetVertexPosition()            { return fVertexPosition; }
+    
     //!Set Vertex Position
     void SetVertexPosition(TVector3& xyz)         { fVertexPosition = xyz;}
     

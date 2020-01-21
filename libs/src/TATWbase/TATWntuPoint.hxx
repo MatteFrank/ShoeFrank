@@ -101,8 +101,8 @@ public:
 	
 	TATWpoint*          NewPoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit );
 
-	int                 GetPointN();
-	TATWpoint*          GetPoint( int iPoint );
+	int                 GetPointN() const;
+	TATWpoint*          GetPoint( int iPoint ) const;
 
 
 	virtual void        Clear(Option_t* opt="");

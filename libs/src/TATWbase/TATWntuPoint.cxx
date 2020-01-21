@@ -101,7 +101,7 @@ TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWntuHit* colHit, doubl
 }
 
 //------------------------------------------+-----------------------------------
-int TATWntuPoint::GetPointN()
+int TATWntuPoint::GetPointN() const
 {
 	return m_listOfPoints->GetEntries();
 }
@@ -110,7 +110,7 @@ int TATWntuPoint::GetPointN()
 
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TATWpoint* TATWntuPoint::GetPoint(int iPoint) {
+TATWpoint* TATWntuPoint::GetPoint(int iPoint) const {
 
 	if ( iPoint < 0  || iPoint >= GetPointN() ) {
 		cout << "ERROR >> TATWntuPoint::GetPoint_includingDuplicates  -->  number of point "<<iPoint<<" required is wrong. Max num  " << GetPointN() << endl;
