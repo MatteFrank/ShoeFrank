@@ -1,10 +1,6 @@
 #ifndef TADIgeoField_H
 #define TADIgeoField_H
 
-
-#include <map>
-#include <tuple>
-
 #include <TVector3.h>
 #include <TH3F.h>
 #include "TVirtualMagField.h"
