@@ -81,4 +81,66 @@ public:
     
 };
 
+
+
+struct data_grkn4{
+public:
+    static constexpr std::size_t evaluation_stage = 4;
+    static constexpr std::size_t order = 2;
+    using stepping_policy = details::fixed_step_tag;
+    
+public:
+    const std::array<double, evaluation_stage>  global_delay{
+        0., 1./2, 1./2, 1.
+    };
+
+    
+    using partial_delay_t =  details::lower_triangular_array<double, 6>;
+    
+private:
+    const partial_delay_t partialDelayDerivedState_mc{
+        1./2,
+        0, 1./2,
+        0,    0, 1.
+    };
+    const partial_delay_t partialDelayState_mc{
+        0,
+        1./2, 0,
+        0, 1./2, 0
+    };
+
+    
+public:
+    constexpr const partial_delay_t& partial_delay(details::order_tag<0>) const
+    { return partialDelayState_mc; }
+    constexpr const partial_delay_t& partial_delay(details::order_tag<1>) const
+    { return partialDelayDerivedState_mc; }
+    
+    
+    
+    
+    
+     using weight_t = std::array<double, evaluation_stage>;
+    
+    
+private:
+    const weight_t weightDerivedState_mc{
+        1./6, 1./3, 1./3, 1./6
+    };
+    
+    const weight_t weightState_mc{
+        1./6, 1./6, 1./3, 0
+    };
+    
+    
+    
+public:
+
+    constexpr const weight_t& weight(details::order_tag<0>) const
+    { return weightState_mc; }
+    constexpr const weight_t& weight(details::order_tag<1>) const
+    { return weightDerivedState_mc; }
+    
+};
+
 #endif /* grkn_data_hpp */

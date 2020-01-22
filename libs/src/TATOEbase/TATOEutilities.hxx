@@ -278,9 +278,8 @@ private:
     {
         auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
         
-        return 100;
         
-        //return transformation_h->FromTWLocalToGlobal(geo_ph->GetLayerPosZ(1)); //1 ? 2 ? 0 ?
+        return transformation_h->FromTWLocalToGlobal(geo_ph->GetLayerPosition(1)).Z(); //1 ? 2 ? 0 ?
     }
     
     
@@ -341,8 +340,8 @@ struct particle_properties
     int charge;
     int mass;
     double momentum;
-    double track_slope_x;
-    double track_slope_y;
+    double track_slope;
+    double track_slope_error;
 };
 
 
@@ -407,6 +406,11 @@ private:
             os_p.evaluation_point
         };
         
+//        auto value = field_mh->GetField(position).X();
+//        if(value != 0){
+//            std::cout << "field_x:: z " << os_p.evaluation_point << '\n';
+//            std::cout << "field_x:: value " << value << '\n';
+//        }
         return field_mh->GetField(position).X();
     }
     
@@ -418,6 +422,11 @@ private:
             os_p.evaluation_point
         };
         
+//        auto value = field_mh->GetField(position).Y();
+//        if(value != 0){
+//            std::cout << "field_y:: z " << os_p.evaluation_point << '\n';
+//            std::cout << "field_y:: value " << value << '\n';
+//        }
         return field_mh->GetField(position).Y();
     }
     
@@ -428,7 +437,12 @@ private:
             os_p.state( details::order_tag<0>{} )(1,0),
             os_p.evaluation_point
         };
-        
+//
+//        auto value = field_mh->GetField(position).Z();
+//        if(value != 0){
+//            std::cout << "field_z:: z " << os_p.evaluation_point << '\n';
+//            std::cout << "field_z:: value " << value << '\n';
+//        }
         return field_mh->GetField(position).Z();
     }
     

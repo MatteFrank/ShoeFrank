@@ -182,7 +182,8 @@ Matrix<N, N> LUPInverter::ApplyLowerInversion(Matrix<N, N> lowerMatrix_p) const
     split(combinatedMatrix, identityMatrix, resultingMatrix);
 
     if(identityMatrix != make_identity_matrix<N>()){
-        throw std::logic_error("Inversion of lower matrix failed.");
+//        throw std::logic_error("Inversion of lower matrix failed.");
+         std::cout <<"identity_matrix: (is not identity) \n" << identityMatrix;
     }
     
     return resultingMatrix;
