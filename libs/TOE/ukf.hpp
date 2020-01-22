@@ -68,7 +68,7 @@ namespace details{
 //            std::cout << "single_sigma::indice " << Index << '\n';
 //            std::cout << "single_sigma::cholesky \n " << make_cholesky_triangle(state_p.covariance);
 //            std::cout << "single_sigma::cholesky_factor \n " << factor_m * make_cholesky_triangle(state_p.covariance);
-            
+//            
             
             auto vector = state_p.vector + factor_m * make_cholesky_triangle(state_p.covariance).column(Index -1);
 //            std::cout << "Positive sigma:" << Index << '\n' << vector;
@@ -223,7 +223,7 @@ namespace details{
         
         std::vector< operating_state<type, order> > propagate_once( std::vector< operating_state<type, order> >&& os_pc  )
         {
-            double step = derived().step_length();
+            double step = derived().step_length() > derived().max_step_length() ? derived().max_step_length() : derived().step_length();
             const double evaluation_point = os_pc.front().evaluation_point;
             const auto step_result = derived().call_stepper().step( std::move( os_pc.front() ), step );
             os_pc.front() = step_result.first;
@@ -235,9 +235,16 @@ namespace details{
             }
             
             std::cout << "propagate_once::step : " << step << '\n';
+            for(auto & sigma : os_pc){
+                std::cout << "sigma : (";
+                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
+                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
+                std::cout << sigma.evaluation_point << '\n';
+            }
+            //std::cout << "propagate_once::error : " << std::setprecision(16) << step_result.second << '\n';
             
             //optimize next step
-            derived().step_length() = derived().call_stepper().optimize_step_length(step, step_result.second);
+            if(step_result.second != 0){ derived().step_length() = derived().call_stepper().optimize_step_length(step, step_result.second); }
             
             return std::move(os_pc);
         }
@@ -361,12 +368,14 @@ struct ukf : public details::sigma_handler< ukf<State, Stepper> >,
 private:
     Stepper stepper_m;
     double step_m = 1e-3;
+    const double maxStepLength_m{1.};
     
 public:
     const Stepper& call_stepper() const {return stepper_m;}
     Stepper& call_stepper() {return stepper_m;}
     double& step_length() {return step_m;}
     const double& step_length() const {return step_m;}
+    const double max_step_length() const {return maxStepLength_m;}
     
 public:
     template< class Stepper_,
