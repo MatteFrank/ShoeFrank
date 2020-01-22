@@ -34,8 +34,8 @@ std::vector<typename details::vertex_tag::candidate> detector_properties< detail
         
         
         candidate_c.emplace_back( measurement_vector{{ position.X(), position.Y() }},
-                                 measurement_covariance{{ error.X(),         0,
-                                                                    0, error.Y()    }},
+                                 measurement_covariance{{ pow(error.X(), 2),         0,
+                                                                    0, pow(error.Y(), 2)    }},
                                  measurement_matrix{matrix_m},
                                  data_handle<data_type>{cluster_h} );
         
@@ -75,8 +75,8 @@ std::vector<typename details::it_tag::candidate> detector_properties< details::i
         
         
         candidate_c.emplace_back( measurement_vector{{ position.X(), position.Y() }},
-                                 measurement_covariance{{ error.X(),         0,
-                                                                  0, error.Y()    }},
+                                 measurement_covariance{{ pow(error.X(), 2),         0,
+                                                                  0, pow(error.Y(), 2 )    }},
                                  measurement_matrix{matrix_m},
                                  data_handle<data_type>{cluster_h} );
         

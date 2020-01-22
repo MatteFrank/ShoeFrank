@@ -123,14 +123,14 @@ private:
             auto endPosition = transformation_h->FromTWLocalToGlobal( candidate.data->GetPosition() );
             
             auto charge = candidate.data->GetChargeZ();
-            auto mass = (charge == 1 ? charge : charge * 2);
+            auto mass = (charge > 1 ? charge*2 : charge );
             
             auto beam_energy = 200.; //MeV/u
             auto momentum = sqrt( (beam_energy * mass) * (beam_energy * mass) + 2 *  (beam_energy * mass) * (938 * mass)  );
             
             //auto track_slope_x = ( endPosition.X() - vertexPosition.X() )/( endPosition.Z() - vertexPosition.Z() );
-            auto lengthY = endPosition.Y() - vertexPosition.Y();
-            auto lengthZ = endPosition.Z() - vertexPosition.Z();
+            auto lengthY = abs(endPosition.Y() - vertexPosition.Y());
+            auto lengthZ = abs(endPosition.Z() - vertexPosition.Z());
             
             auto track_slope = lengthY/lengthZ;
             //deviation in x, use y twice.
@@ -174,8 +174,8 @@ private:
                                         make_state_vector( vector{std::move(candidate_p.vector)},
                                                        vector_matrix{{  particle_m.track_slope, particle_m.track_slope }} ),
                                         make_state_covariance( covariance{ std::move(candidate_p.covariance) },
-                                                           covariance_matrix{{ particle_m.track_slope_error,                            0,
-                                                                                                          0, particle_m.track_slope_error  }} )
+                                                            covariance_matrix{{ pow(particle_m.track_slope_error, 2),                            0,
+                                                                                                          0, pow(particle_m.track_slope_error, 2)  }} )
                                     },
                                     chisquared{0}
                                 }

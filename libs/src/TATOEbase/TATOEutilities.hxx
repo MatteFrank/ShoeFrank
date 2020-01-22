@@ -378,13 +378,13 @@ public:
             
             auto cluster_h = cluster_mhc->GetPoint(i);
             auto position =  transformation_h->FromTWLocalToGlobal(cluster_h->GetPosition());
-          //  auto error = cluster->GetPosError();
+            auto error = cluster_h->GetError();
             
 
             
             candidate_c.emplace_back( measurement_vector{{ position.X(), position.Y() }},
-                                      measurement_covariance{{ 1,         0,
-                                                                      0, 1   }},
+                                      measurement_covariance{{ pow(error.X(), 2),         0,
+                                                                      0, pow( error.Y(), 2)   }},
                                       measurement_matrix{matrix_m},
                                       data_handle<data_type>{cluster_h} );
 
