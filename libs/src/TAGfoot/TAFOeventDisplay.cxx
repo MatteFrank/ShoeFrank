@@ -499,6 +499,13 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form("Cluster # %3d\n", idx) );
       fInfoView->AddLine( Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetPlaneNumber()) );
       fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
+      
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Cluster # %3d\n", idx);
+         cout << Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetPlaneNumber());
+         cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
+      }
+      
     
    } else if (obj->InheritsFrom("TAMSDcluster")) {
          TAMSDcluster* clus = (TAMSDcluster*)obj;
@@ -508,6 +515,12 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
          fInfoView->AddLine( Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetPlaneNumber()) );
          fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
       
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Cluster # %3d\n", idx);
+         cout << Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetPlaneNumber());
+         cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
+      }
+      
    } else if (obj->InheritsFrom("TAVTvertex")) {
       TAVTvertex* vtx = (TAVTvertex*)obj;
       if (vtx == 0x0) return;
@@ -516,11 +529,22 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z()) );
       fInfoView->AddLine( Form(" BM Matched %d\n", vtx->IsBmMatched()) );
       
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Vertex# %d at position:\n", idx) << endl;
+         cout << Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z());
+         cout << Form(" BM Matched %d\n", vtx->IsBmMatched());
+      }
+
    } else if (obj->InheritsFrom("TASTntuHit")) {
       TASTntuHit* hit = (TASTntuHit*)obj;
       if (hit == 0x0) return;
       fInfoView->AddLine( Form("Charge: %.3g u.a.\n", hit->GetCharge()) );
       fInfoView->AddLine( Form("Time: %.3g ps \n", hit->GetTime()) );
+      
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Charge: %.3g u.a.\n", hit->GetCharge());
+         cout << Form("Time: %.3g ps \n", hit->GetTime());
+      }
 
    } else if (obj->InheritsFrom("TATWpoint")) {
       TATWpoint* point = (TATWpoint*)obj;
@@ -532,6 +556,13 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form("Time: %.3g ps \n", point->GetTime()) );
       fInfoView->AddLine( Form("Charge Z: %d \n", point->GetChargeZ()) );
 
+      if (fConsoleButton->IsOn()) {
+         cout <<  Form("Point# %d at position:\n", idx);
+         cout <<  Form(" (%.1f %.1f %.1f) cm\n", pos.X(), pos.Y(), pos.Z());
+         cout <<  Form("Charge: %.3e u.a.\n", point->GetEnergyLoss());
+         cout <<  Form("Time: %.3g ps \n", point->GetTime());
+         cout <<  Form("Charge Z: %d \n", point->GetChargeZ());
+      }
    } else {
       return;
    }
@@ -549,8 +580,12 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       TAVTbaseTrack* track =  (TAVTbaseTrack*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track # %2d:", track->GetNumber()) );
+      fInfoView->AddLine( Form("Track # %2d:\n", track->GetNumber()) );
       fInfoView->AddLine( Form(" with %3d clusters\n", track->GetClustersN()) );
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Track # %2d:\n", track->GetNumber());
+         cout << Form(" with %3d clusters\n", track->GetClustersN());
+      }
       
       for (Int_t i = 0; i < track->GetClustersN(); i++) {
          TAVTbaseCluster* clus = track->GetCluster(i);
@@ -558,16 +593,29 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
          fInfoView->AddLine( Form(" for plane %d\n", clus->GetPlaneNumber()));
          fInfoView->AddLine( Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y()) );
          fInfoView->AddLine( Form(" with %d pixels\n", clus->GetPixelsN()));
+         
+         if (fConsoleButton->IsOn()) {
+            cout <<  Form(" for plane %d\n", clus->GetPlaneNumber());
+            cout <<  Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y());
+            cout <<  Form(" with %d pixels\n", clus->GetPixelsN());
+         }
       }
       
    } else if (obj->InheritsFrom("TABMntuTrackTr")) {
       TABMntuTrackTr* track =  (TABMntuTrackTr*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track:") );
+      fInfoView->AddLine( Form("Track:\n") );
       fInfoView->AddLine( Form(" with %3d hit\n", track->GetNhit()) );
       fInfoView->AddLine( Form(" at Pvers: (%.3g %.3g) \n", track->GetPvers()[0], track->GetPvers()[1]) );
       fInfoView->AddLine( Form(" and R0 (%.3g %.3g)\n",  track->GetR0()[0], track->GetR0()[1]));
+      
+      if (fConsoleButton->IsOn()) {
+         cout <<  Form("Track:\n");
+         cout <<  Form(" with %3d hit\n", track->GetNhit());
+         cout <<  Form(" at Pvers: (%.3g %.3g) \n", track->GetPvers()[0], track->GetPvers()[1]);
+         cout <<  Form(" and R0 (%.3g %.3g)\n",  track->GetR0()[0], track->GetR0()[1]);
+      }
    }
 }
 
@@ -585,6 +633,12 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveTrack* ts)
       fInfoView->AddLine( Form("Track # %2d:", track->GetTrackId()) );
       fInfoView->AddLine( Form("Charge: %g Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass()) );
       fInfoView->AddLine( Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof()) );
+      
+      if (fConsoleButton->IsOn()) {
+         cout <<  Form("Track # %2d:", track->GetTrackId());
+         cout <<  Form("Charge: %g Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass());
+         cout <<  Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof());
+      }
    }
 }
 
@@ -598,11 +652,18 @@ void TAFOeventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
     
     TABMparGeo* pbmGeo = fReco->GetParGeoBm();;
     if(!pbmGeo){return;}
-    
+   
     fInfoView->AddLine( Form("In layer: %d, view: %d\n", hit->Plane(), hit->View()) );
     fInfoView->AddLine( Form("Wire is: %d\n", pbmGeo->GetSenseId( hit->Cell() )) );
     fInfoView->AddLine( Form("Drift radius is: %g (cm)\n", hit->Dist()) );
     fInfoView->AddLine( Form("Chi2 is: %g \n", hit->GetChi2()) );
+   
+   if (fConsoleButton->IsOn()) {
+      cout << Form("In layer: %d, view: %d\n", hit->Plane(), hit->View());
+      cout <<  Form("Wire is: %d\n", pbmGeo->GetSenseId( hit->Cell() ));
+      cout <<  Form("Drift radius is: %g (cm)\n", hit->Dist());
+      cout <<  Form("Chi2 is: %g \n", hit->GetChi2());
+   }
 }
 
 //__________________________________________________________

@@ -217,6 +217,7 @@ protected:
    TGCheckButton*     fQuadMcButton;     // Toggle on/off MC clusters/hits
    TGCheckButton*     fLineButton;       // Toggle on/off tracks
    TGCheckButton*     fGlbButton;        // Toggle on/off global tracks
+   TGCheckButton*     fConsoleButton;    // Toggle on/off selection also on console
    TGHProgressBar*    fEventProgress;    // progress event bar
    TGListBox*         fHistoListBox;     // list of histograms
    TList*             fSelecHistoList;   // list of selected histograms

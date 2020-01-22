@@ -89,6 +89,7 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
   fQuadMcButton(0),
   fLineButton(0),
   fGlbButton(0),
+  fConsoleButton(0),
   fEventProgress(0),
   fHistoListBox(0),
   fListOfCanvases(new TList())
@@ -138,6 +139,8 @@ TAEDbaseInterface::~TAEDbaseInterface()
       fLineButton->Delete();
    if (fGlbButton)
       fGlbButton->Delete();
+   if (fConsoleButton)
+      fConsoleButton->Delete();
    
    gTAGroot->EndEventLoop();
    delete fTopVolume;
@@ -373,6 +376,10 @@ void TAEDbaseInterface::MakeGUI()
    TGLabel*  infoName = new TGLabel(infoFrameView, "Selection:");
    infoFrameView->AddFrame(infoName, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2, 0, 5, 5));
    
+   fConsoleButton =  new TGCheckButton(infoFrameView, "Console", 1);
+   fConsoleButton->SetState(kButtonUp);
+   infoFrameView->AddFrame(fConsoleButton, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2, 0, 5, 5));
+
    fInfoView = new TGTextView(infoFrameView, 300, 320);
    fInfoView->ShowBottom();
    infoFrameView->AddFrame(fInfoView, new TGLayoutHints(kLHintsLeft | kLHintsCenterY  |

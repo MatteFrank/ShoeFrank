@@ -239,12 +239,24 @@ void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
    fInfoView->AddLine( Form("with momentum: (%.3g %.3g %.3g) GeV/c\n", mom[0], mom[1], mom[2]) );
    fInfoView->AddLine( Form("eLoss: %.3g MeV time: %.3g ns\n", point->GetDeltaE()*TAGgeoTrafo::GevToMev(), point->GetTof()*TAGgeoTrafo::SecToNs()) );
    
+   if (fConsoleButton->IsOn()) {
+      cout << Form("%s sensor id: %d, Hit:\n", name.Data(), point->GetID());
+      cout << Form("at position:   (%.3g %.3g %.3g) cm\n", pos[0], pos[1], pos[2]);
+      cout << Form("with momentum: (%.3g %.3g %.3g) GeV/c\n", mom[0], mom[1], mom[2]);
+      cout << Form("eLoss: %.3g MeV time: %.3g ns\n", point->GetDeltaE()*TAGgeoTrafo::GevToMev(), point->GetTof()*TAGgeoTrafo::SecToNs());
+   }
+   
    Int_t trackId       = point->GetTrackId();
    TAMCntuEve* pNtuHit = fReco->GetNtuMcEve();
    TAMCeveTrack* track = pNtuHit->GetHit(trackId);
    
    fInfoView->AddLine( Form("Generated from track with index: %d\n", trackId) );
    fInfoView->AddLine( Form("Charge: %d Mass: %.3g GeV/c2\n", track->GetCharge(), track->GetMass()) );
+   
+   if (fConsoleButton->IsOn()) {
+      cout << Form("Generated from track with index: %d\n", trackId);
+      cout << Form("Charge: %d Mass: %.3g GeV/c2\n", track->GetCharge(), track->GetMass());
+   }
 }
 
 //__________________________________________________________
