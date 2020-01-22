@@ -22,7 +22,7 @@
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
 
-#include "TAITntuCluster.hxx"
+
 #include "TAMSDntuCluster.hxx"
 #include "TATWntuPoint.hxx"
 
@@ -33,8 +33,11 @@ class TAVTcluster;
 class TAVTntuVertex;
 class TAVTvertex;
 
-#include "TAVTparGeo.hxx"
+class TAITntuCluster;
+class TAITcluster;
 
+#include "TAVTparGeo.hxx"
+#include "TAITparGeo.hxx"
 
 
 #include "TADIgeoField.hxx"
@@ -249,7 +252,70 @@ public:
             
 };
 
+//______________________________________________________________________________
+//                      IT
 
+
+
+template<>
+struct detector_properties< details::it_tag > :
+    range_generator< detector_properties< details::it_tag > >
+{
+    using candidate = details::it_tag::candidate;
+    using measurement_vector = underlying<candidate>::vector;
+    using measurement_covariance = underlying<candidate>::covariance;
+    using measurement_matrix = underlying<candidate>::measurement_matrix;
+    using data_type = underlying<candidate>::data_type;
+    
+    
+private:
+    
+    const TAITntuCluster* cluster_mhc;
+    const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
+                                           0, 1, 0, 0  }};
+    const double cut_m;
+    constexpr static std::size_t layer{4};
+    const std::array<double, layer> depth_mc;
+    
+    
+public:
+    //might go to intermediate struc holding the data ?
+    constexpr detector_properties( TAITntuCluster* cluster_phc,
+                                   TAITparGeo* geo_ph,
+                                   double cut_p)  :
+    cluster_mhc{cluster_phc},
+    cut_m{cut_p},
+    depth_mc{ retrieve_depth(geo_ph) } {}
+    
+    
+private:
+    template<std::size_t ... Indices>
+    constexpr auto retrieve_depth_impl( TAITparGeo* geo_ph,
+                                        std::index_sequence<Indices...> ) const
+        -> std::array<double, layer>
+    {
+        auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+        
+        return {{transformation_h->FromITLocalToGlobal(geo_ph->GetSensorPosition(Indices)).Z()...}};
+    }
+    
+    
+    constexpr auto retrieve_depth( TAITparGeo* geo_ph ) const
+        -> std::array<double, layer>
+    {
+        return retrieve_depth_impl( geo_ph, std::make_index_sequence<layer>{} );
+    }
+    
+    
+public:
+    
+    constexpr std::size_t layer_count() const { return layer; }
+    constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
+    constexpr double cut_value() const { return cut_m; }
+    
+    std::vector<candidate> generate_candidates(std::size_t index_p) const ;
+    
+};
 
 //______________________________________________________________________________
 //                      TOF
@@ -350,7 +416,7 @@ struct model
     using operating_state_t = operating_state<Matrix<2,1>, 2>;
     
     particle_properties* particle_h = nullptr;
-    static constexpr double conversion_factor = 0.0299792458;
+    static constexpr double conversion_factor = 0.000299792458;
     TADIgeoField* field_mh;
     
     constexpr model(TADIgeoField* field_ph) : field_mh{field_ph} {}

@@ -277,6 +277,9 @@ private:
             using enriched_candidate = enriched_candidate_impl<typename decltype(candidate_c)::value_type>;
             std::vector< enriched_candidate > enriched_c;
             enriched_c.reserve( candidate_c.size() );
+            
+            std::cout << "for_each \n";
+            
             std::for_each( candidate_c.begin(), candidate_c.end(),
                             [this, &ps, &enriched_c]( const auto& candidate_p )
                             {
@@ -289,6 +292,9 @@ private:
                             }
                           );
 //
+            
+            std::cout << "sort \n";
+            
             std::sort( enriched_c.begin(), enriched_c.end(),
                         [](const enriched_candidate& ec1_p, const enriched_candidate& ec2_p )
                         {
@@ -296,7 +302,7 @@ private:
                         }
                       );
 
-            auto end = enriched_c.begin() + 1 ;
+            auto end = enriched_c.begin() == enriched_c.end() ? enriched_c.end() : enriched_c.begin() + 1 ;
             
 //            auto end = std::partition(
 //                                enriched_c.begin(), enriched_c.end(),
@@ -315,7 +321,7 @@ private:
 //                                      );
             
             
-            
+            std::cout << "correction \n";
             
             
             for(auto iterator = enriched_c.begin() ; iterator != end ; ++iterator ){
@@ -329,7 +335,7 @@ private:
             }
             
             
-            if( end == enriched_c.begin() ){ leaf.MarkAsInvalid(); }
+       //     if( end == enriched_c.begin() ){ leaf.MarkAsInvalid(); }
             
             std::cout << "-- end_leaf --\n";
             

@@ -223,7 +223,7 @@ namespace details{
         
         std::vector< operating_state<type, order> > propagate_once( std::vector< operating_state<type, order> >&& os_pc  )
         {
-            double step = derived().step_length() > derived().max_step_length() ? derived().max_step_length() : derived().step_length();
+            double step = derived().step_length();
             const double evaluation_point = os_pc.front().evaluation_point;
             const auto step_result = derived().call_stepper().step( std::move( os_pc.front() ), step );
             os_pc.front() = step_result.first;
@@ -235,16 +235,20 @@ namespace details{
             }
             
             std::cout << "propagate_once::step : " << step << '\n';
-            for(auto & sigma : os_pc){
-                std::cout << "sigma : (";
-                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
-                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
-                std::cout << sigma.evaluation_point << '\n';
-            }
+//            for(auto & sigma : os_pc){
+//                std::cout << "sigma : (";
+//                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
+//                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
+//                std::cout << sigma.evaluation_point << '\n';
+//            }
             //std::cout << "propagate_once::error : " << std::setprecision(16) << step_result.second << '\n';
             
             //optimize next step
-            if(step_result.second != 0){ derived().step_length() = derived().call_stepper().optimize_step_length(step, step_result.second); }
+            if( step_result.second != 0 ){
+                auto new_step_length = derived().call_stepper().optimize_step_length(step, step_result.second);
+                derived().step_length() = ( new_step_length > derived().max_step_length() ) ? derived().max_step_length() : new_step_length ;
+                std::cout << "propagate_once::next_step_length : " << derived().step_length() << '\n';
+            }
             
             return std::move(os_pc);
         }
@@ -368,7 +372,7 @@ struct ukf : public details::sigma_handler< ukf<State, Stepper> >,
 private:
     Stepper stepper_m;
     double step_m = 1e-3;
-    const double maxStepLength_m{1.};
+    const double maxStepLength_m{150};
     
 public:
     const Stepper& call_stepper() const {return stepper_m;}

@@ -509,11 +509,16 @@ void BaseReco::CreateRecActionGlb()
     auto * vertex_hc = static_cast<TAVTntuVertex*>( fpNtuVtx->Object() );
     auto * geoVTX_h = static_cast<TAVTparGeo*>( fpParGeoVtx->Object() );
     
+    
+    auto * clusterIT_hc = GetNtuClusterIt();
+    auto * geoIT_h = GetParGeoIt();
+    
     auto * clusterTW_hc = static_cast<TATWntuPoint*>( fpNtuRecTw->Object() );
     auto * geoTW_h = static_cast<TATWparGeo*>( fpParGeoTw->Object() );
     
     
     auto list = start_list( detector_properties<details::vertex_tag>(clusterVTX_hc, vertex_hc, geoVTX_h, 5.5) )
+                      .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, 5.5) )
                       .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 5.5) )
                       .finish();
 
@@ -523,7 +528,7 @@ void BaseReco::CreateRecActionGlb()
     auto stepper = make_stepper<data_grkn56>( std::move(ode) );
     auto ukf = make_ukf<state>( std::move(stepper) );
     
-    ukf.call_stepper().specify_tolerance(1e-12);
+    //ukf.call_stepper().specify_tolerance(1e-12);
     
     
     TATOEbaseAct * action = make_new_TATOEactGlb(std::move(ukf), std::move(list));
