@@ -134,7 +134,7 @@ namespace details{
 namespace details {
     
     
-    //evaluator
+    // ------------------- evaluator ------------------------
     
     template<class Derived, std::size_t Order> struct evaluator{};
     
@@ -179,7 +179,7 @@ namespace details {
     
     
     
-    //Solver
+    // -------------------------- Solver -------------------------------
 
     template<class Derived, std::size_t Order, class SteppingPolicyTag> struct solver{};
     
@@ -219,10 +219,40 @@ namespace details {
     };
     
     
+    template<class Derived>
+    struct solver<Derived, 2, details::fixed_step_tag>
+    {
+        constexpr static std::size_t dimension = stepper_traits<Derived>::evaluation_stage;
+        using type = typename stepper_traits<Derived>::operating_type;
+        
+    public:
+        type compute_solution( const extended_operating_state<type, 2, dimension>& eos_p,
+                               order_tag<0>) const
+        {
+            return eos_p.state(order_tag<0>{}) +
+                       eos_p.step * eos_p.state(order_tag<1>{}) +
+                           eos_p.step * eos_p.step * inner_product( eos_p.evaluation,
+                                                                    derived().data().weight( order_tag<0>{} )      );
+        }
+        
+        type compute_solution( const extended_operating_state<type, 2, dimension>& eos_p,
+                               order_tag<1> ) const
+        {
+            return eos_p.state(order_tag<1>{}) +
+                      eos_p.step * inner_product( eos_p.evaluation,
+                                                  derived().data().weight( order_tag<1>{} )   );
+        }
+        
+        
+    private:
+        Derived& derived(){ return static_cast<Derived&>(*this); }
+        const Derived& derived() const { return static_cast<const Derived&>(*this); }
+    };
     
     
     
-    //Stepping policy
+    
+    //  ----------------- Stepping policy -------------------
 
     template<class Derived, std::size_t Order, class StepTag> struct stepping_policy_impl{};
     
@@ -232,7 +262,7 @@ namespace details {
         
         static constexpr std::size_t dimension = stepper_traits<Derived>::evaluation_stage;
         using type = typename stepper_traits<Derived>::operating_type;
-        static constexpr std::size_t degree = stepper_traits<Derived>::higher_degree + 1;
+        static constexpr std::size_t degree = stepper_traits<Derived>::data::higher_degree + 1;
 
         
 
@@ -250,7 +280,8 @@ namespace details {
         
         
     private:
-        double tolerance_m{1e-10};
+        double tolerance_m{1e-8};
+        
     public:
         void specify_tolerance(double tolerance_p){ tolerance_m = tolerance_p ;}
         
@@ -291,7 +322,7 @@ namespace details {
             eos.state( order_tag<1>{} ) = derived().compute_solution(eos, details::order_tag<1>{});
 
             eos.evaluation_point += step_p;
-            return std::make_pair(eos, error);
+            return std::make_pair(std::move(eos), error);
         }
         
         operating_state<type, 2> force_step(operating_state<type, 2>&& os_p, double step_p) const
@@ -319,6 +350,55 @@ namespace details {
     };
     
     
+    
+    template<class Derived>
+    struct stepping_policy_impl< Derived, 2, details::fixed_step_tag >{
+        
+        static constexpr std::size_t dimension = stepper_traits<Derived>::evaluation_stage;
+        using type = typename stepper_traits<Derived>::operating_type;
+        
+
+    public:
+        
+        auto step(operating_state<type, 2>&& os_p, double step_p) const
+            -> std::pair< operating_state<type, 2>, double >
+        {
+            auto os = force_step( std::move(os_p), step_p );
+            return {std::move(os), 0};
+        }
+        
+        operating_state<type, 2> force_step(operating_state<type, 2>&& os_p, double step_p) const
+        {
+            //std::cout << "stepper::force_step";
+            auto eos = make_extended_operating_state( std::move(os_p),
+                                                      operating_state_extension<type, dimension>{step_p, {}} );
+            
+            eos.evaluation = derived().compute_evaluation(eos, step_p);
+            eos.state( order_tag<0>{} ) = derived().compute_solution( eos, details::order_tag<0>{} );
+            eos.state( order_tag<1>{} ) = derived().compute_solution( eos, details::order_tag<1>{} );
+            eos.evaluation_point += step_p;
+            
+            return  eos;
+        }
+        
+        void step()
+        {
+            auto evaluation_c = derived().compute_evaluation();
+            update_state(evaluation_c);
+        }
+        
+        
+        //for compatibility reasons + no constexpr if
+        double optimize_step_length(double /*step_p*/, double /*local_error*/) const
+        {
+            return 0;
+        }
+
+        
+    private:
+        Derived& derived(){ return static_cast<Derived&>(*this); }
+        const Derived& derived() const { return static_cast<const Derived&>(*this); }
+    };
     
 } //namespace details
 
@@ -407,8 +487,7 @@ namespace details{
     struct stepper_traits< stepper<Callback, Data> >
     {
         static constexpr std::size_t evaluation_stage = Data::evaluation_stage;
-        static constexpr std::size_t higher_degree = Data::higher_degree;
-        static constexpr std::size_t lower_degree = Data::lower_degree;
+        using data = Data;
         static constexpr std::size_t order = Data::order;
         
         using stepping_policy = typename Data::stepping_policy;
