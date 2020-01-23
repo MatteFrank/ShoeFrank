@@ -58,7 +58,7 @@ public:
    
    //    All the Get methods
    TVector3  GetPosition()    const  { return m_position;            }
-   TVector3  GetError()       const  { return m_posErr;              }
+   TVector3  GetPosError()    const  { return m_posErr;              }
 
    int       GetColumnID()    const  { return m_column;              }
    int       GetRowID()       const  { return m_row;                 }
