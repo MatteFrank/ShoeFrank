@@ -22,6 +22,7 @@
 
 const TString TAITparGeo::fgkBaseNameIt      = "IT";
 const TString TAITparGeo::fgkDefParaNameIt   = "itGeo";
+const Int_t   TAITparGeo::fgkDefSensPerLayer = 8;
 
 //_____________________________________________________________________________
 TAITparGeo::TAITparGeo()
@@ -331,7 +332,7 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
 }
 
 //_____________________________________________________________________________
-Float_t TAITparGeo:: GetlayerPosZ(Int_t layer)
+Float_t TAITparGeo::GetlayerPosZ(Int_t layer)
 {
    
    Float_t posZ = 0;
@@ -402,6 +403,28 @@ Float_t TAITparGeo::Get3rdKaptonLayer()
 Float_t TAITparGeo::GetEpoxyLayer()
 {
    return GetlayerPosZ(6);
+}
+//_____________________________________________________________________________
+void TAITparGeo::FillSensorMap()
+{
+   map<float, vector<UChar_t> >::iterator itr = fSensorMap.begin();
+   vector<UChar_t> v;
+   Int_t iLayer = 0;
+   
+   while (itr != fSensorMap.end()) {
+      if (FootDebugLevel(2))
+         cout << itr->first << endl;
+      v = itr->second;
+      std::copy(v.begin(), v.end(), &fSensorArray[iLayer*fgkDefSensPerLayer]);
+      iLayer++;
+      itr++;
+   }
+}
+
+//_____________________________________________________________________________
+UChar_t* TAITparGeo::GetSensorsPerLayer(Int_t iLayer)
+{
+   return &fSensorArray[iLayer*fgkDefSensPerLayer];
 }
 
 //_____________________________________________________________________________

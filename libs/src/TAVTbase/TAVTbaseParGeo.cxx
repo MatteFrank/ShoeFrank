@@ -18,6 +18,8 @@
 
 #include "TAVTbaseParGeo.hxx"
 
+using namespace std;
+
 //##############################################################################
 
 /*!
@@ -37,7 +39,8 @@ TAVTbaseParGeo::TAVTbaseParGeo()
    fkDefaultGeoName(""),
    fLayersN(fSensorsN),
    fFlagMC(false),
-   fFlagIt(false)
+   fFlagIt(false),
+   fSensorArray(0x0)
 {
    // Standard constructor
 }
@@ -47,6 +50,7 @@ TAVTbaseParGeo::~TAVTbaseParGeo()
 {
    // Destructor
    delete fIonisation;
+   delete [] fSensorArray;
 }
 
 //_____________________________________________________________________________
@@ -94,6 +98,8 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
    ReadItem(fSensorsN);
    if(FootDebugLevel(1))
       cout << endl << "Sensors number "<< fSensorsN << endl;
+   
+   fSensorArray = new UChar_t[fSensorsN];
    
    ReadStrings(fTypeName);
    if(FootDebugLevel(1))
@@ -199,6 +205,9 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
       if(FootDebugLevel(1))
          cout << "   Position: " << fSensorParameter[p].Position[0] << " " << fSensorParameter[p].Position[1] << " " << fSensorParameter[p].Position[2] << endl;
       
+      // fill map
+      fSensorMap[fSensorParameter[p].Position[2]].push_back(fSensorParameter[p].SensorIdx);
+      
       // read sensor angles
       ReadVector3(fSensorParameter[p].Tilt);
       if(FootDebugLevel(1))
@@ -263,6 +272,9 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
    
    // Define materials
    DefineMaterial();
+   
+   // fill sensor map
+   FillSensorMap();
    
    return true;
 }
@@ -400,6 +412,14 @@ TVector3 TAVTbaseParGeo::Sensor2DetectorVect(Int_t detID, TVector3& loc) const
    }
 
    return LocalToMasterVect(detID, loc);
+}
+
+//_____________________________________________________________________________
+UChar_t* TAVTbaseParGeo::GetSensorsPerLayer(Int_t /*iLayer*/)
+{
+   Error("GetSensorsPerLayer()", "Function not available");
+   
+   return 0x0;
 }
 
 //_____________________________________________________________________________
