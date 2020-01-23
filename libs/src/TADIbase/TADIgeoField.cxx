@@ -15,7 +15,7 @@ TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
    fpFootGeo(0x0)
 {
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   if (fpFootGeo)
+   if (fpFootGeo == 0x0)
       Error("TADIgeoField()", "cannot find TAGgeoTrafo pointer");
 
    Float_t mesh   = fpDiGeoMap->GetMapMesh();
