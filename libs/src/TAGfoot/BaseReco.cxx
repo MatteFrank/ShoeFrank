@@ -510,16 +510,16 @@ void BaseReco::CreateRecActionGlb()
     auto * geoVTX_h = static_cast<TAVTparGeo*>( fpParGeoVtx->Object() );
     
     
-    auto * clusterIT_hc = GetNtuClusterIt();
-    auto * geoIT_h = GetParGeoIt();
+    auto * clusterIT_hc = static_cast<TAITntuCluster*>( fpNtuClusIt->Object() );//GetNtuClusterIt();
+    auto * geoIT_h = static_cast<TAITparGeo*>( fpParGeoIt->Object() );//GetParGeoIt();
     
     auto * clusterTW_hc = static_cast<TATWntuPoint*>( fpNtuRecTw->Object() );
     auto * geoTW_h = static_cast<TATWparGeo*>( fpParGeoTw->Object() );
     
     
-    auto list = start_list( detector_properties<details::vertex_tag>(clusterVTX_hc, vertex_hc, geoVTX_h, 5.5) )
-                      .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, 5.5) )
-                      .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 5.5) )
+    auto list = start_list( detector_properties<details::vertex_tag>(clusterVTX_hc, vertex_hc, geoVTX_h, 25) )
+                      .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, 100) )
+                      .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 1) )
                       .finish();
 
     

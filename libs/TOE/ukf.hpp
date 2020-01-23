@@ -234,7 +234,7 @@ namespace details{
                 *iterator = derived().call_stepper().force_step( std::move(*iterator), step);
             }
             
-            std::cout << "propagate_once::step : " << step << '\n';
+//            std::cout << "propagate_once::step : " << step << '\n';
 //            for(auto & sigma : os_pc){
 //                std::cout << "sigma : (";
 //                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
@@ -247,7 +247,7 @@ namespace details{
             if( step_result.second != 0 ){
                 auto new_step_length = derived().call_stepper().optimize_step_length(step, step_result.second);
                 derived().step_length() = ( new_step_length > derived().max_step_length() ) ? derived().max_step_length() : new_step_length ;
-                std::cout << "propagate_once::next_step_length : " << derived().step_length() << '\n';
+//                std::cout << "propagate_once::next_step_length : " << derived().step_length() << '\n';
             }
             
             return std::move(os_pc);

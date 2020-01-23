@@ -37,7 +37,7 @@ struct aggregator : Components...
 };
 
 
-template<class T> struct underlying{};
+template<class T> struct underlying{ using type = std::decay_t<T>; };
 
 
 // ----------------- state_vector_impl ---------------------------
@@ -149,9 +149,9 @@ template< class Vector,
           class Matrix,
           class Data>
 struct candidate_impl : aggregator< state_vector_impl<Vector>,
-                                   state_covariance_impl<Covariance>,
-                                   measurement_matrix_impl<Matrix>,
-                                   data_handle<Data> >
+                                    state_covariance_impl<Covariance>,
+                                    measurement_matrix_impl<Matrix>,
+                                    data_handle<Data> >
 {
     static_assert( details::are_dimensions_coherent< state_vector_impl<Vector>,
                                                      state_covariance_impl<Covariance> >::value , "cannot create candidate_impl if dimension of Vector and Covariance do not match"  );
@@ -200,6 +200,7 @@ template< class Vector,
           class Data>
 struct underlying< enriched_candidate_impl< candidate_impl<Vector, Covariance, Matrix, Data> > >
 {
+    using candidate =  candidate_impl<Vector, Covariance, Matrix, Data>;
     using measurement_matrix = measurement_matrix_impl<Matrix>;
     using vector = state_vector_impl<Vector>;
     using covariance = state_covariance_impl<Covariance>;

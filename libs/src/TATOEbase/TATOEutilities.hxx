@@ -275,8 +275,17 @@ private:
                                            0, 1, 0, 0  }};
     const double cut_m;
     constexpr static std::size_t layer{4};
-    const std::array<double, layer> depth_mc;
     
+    
+    using sensor_container_t = std::array<std::size_t, 8>;
+    const std::array<sensor_container_t, 4> plane_mc{
+        sensor_container_t{  0,  1,  2,  3,  8,  9, 10, 11 },
+        sensor_container_t{ 16, 17, 18, 19, 24, 25, 26, 27 },
+        sensor_container_t{ 4,  5,  6,  7,  12, 13, 14, 15 },
+        sensor_container_t{ 20, 21, 22, 23, 28, 29, 30, 31 }
+           }; //moche
+    
+    const std::array<double, layer> depth_mc;
     
 public:
     //might go to intermediate struc holding the data ?
@@ -285,7 +294,8 @@ public:
                                    double cut_p)  :
     cluster_mhc{cluster_phc},
     cut_m{cut_p},
-    depth_mc{ retrieve_depth(geo_ph) } {}
+    depth_mc{ retrieve_depth(geo_ph) }
+    { }
     
     
 private:
@@ -296,7 +306,8 @@ private:
     {
         auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
         
-        return {{transformation_h->FromITLocalToGlobal(geo_ph->GetSensorPosition(Indices)).Z()...}};
+        
+        return {{transformation_h->FromITLocalToGlobal(geo_ph->GetSensorPosition(plane_mc[Indices][0])).Z()...}};
     }
     
     
@@ -378,7 +389,7 @@ public:
             
             auto cluster_h = cluster_mhc->GetPoint(i);
             auto position =  transformation_h->FromTWLocalToGlobal(cluster_h->GetPosition());
-            auto error = cluster_h->GetError();
+            auto error = cluster_h->GetPosError();
             
 
             

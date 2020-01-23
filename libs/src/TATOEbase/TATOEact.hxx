@@ -64,12 +64,14 @@ public:
         for(auto & hypothesis : hypothesis_c){
             particle_m = hypothesis;
             
-            std::cout << " -- Particle -- \n";
+            std::cout << std::scientific << " -- Particle -- \n";
             std::cout << "charge = " << particle_m.charge << '\n';
             std::cout << "mass = " << particle_m.mass << '\n';
             std::cout << "momentum = " << particle_m.momentum << '\n';
             std::cout << "track_slope = " << particle_m.track_slope << '\n';
             std::cout << "track_slope_error = " << particle_m.track_slope_error << '\n';
+            
+            if(particle_m.charge == 0){ continue; }
             
             reconstruct();
         }
@@ -80,15 +82,16 @@ public:
         //for each
         // - set particle_m
         // - reconstruct: either consume the arborescence and release global tracks -> better
-        //
-        //control tracks
-        //fill
+
+     
         
         
         //reconstruct
         // - create arborescence from first layer of vertex
         // - iterate over the list to retrieve each detector properties
         // - advance_reconstruction for each
+        //-- control tracks
+           // -- fill
         
         // advance_reconstruction
         // - retrieve handler for arborescence -> arborscence is a parameter
@@ -186,10 +189,6 @@ private:
         
         
     
-        for( auto& root : root_c){
-            std::cout << "root::vector \n" << root.vector;
-            std::cout << "root::covariance \n" << root.covariance;
-        }
         
         auto arborescence = make_arborescence( std::move(root_c) );
 
@@ -204,6 +203,20 @@ private:
                                        advance_reconstruction( arborescence, layer );
                                    }
                                } );
+        
+        
+        
+        auto& handler = arborescence.GetHandler();
+        for(auto& node : handler){
+            auto value_c = node.GetBranchValues();
+            std::cout << " --- final_track --- " << '\n';
+            for(auto& value : value_c){
+                std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
+            }
+            
+        }
+        
+        
     }
     
     
@@ -219,7 +232,6 @@ private:
         auto& leaf_c = arborescence_p.GetHandler();
         
         
-        std::cout << " leaf_c::size : " << leaf_c.size() << '\n';
         
         for(auto& leaf : leaf_c){
             
@@ -230,12 +242,12 @@ private:
             
             auto sigma_c = ukf_m.generate_sigma_points( make_state(leaf.GetValue()) );
             
-            for(auto & sigma : sigma_c){
-                std::cout << "sigma : (";
-                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
-                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
-                std::cout << sigma.evaluation_point << '\n';
-            }
+//            for(auto & sigma : sigma_c){
+//                std::cout << "sigma : (";
+//                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
+//                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
+//                std::cout << sigma.evaluation_point << '\n';
+//            }
 //
             sigma_c = ukf_m.propagate_while(
                                              std::move(sigma_c),
@@ -243,29 +255,29 @@ private:
                                              { return os_p.evaluation_point + ukf_m.step_length() < layer_p.depth ; }
                                             );
             
-            std::cout << "after_while_propagation:\n";
+//            std::cout << "after_while_propagation:\n";
             
-            for(auto & sigma : sigma_c){
-                std::cout << "sigma : (";
-                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
-                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
-                std::cout << sigma.evaluation_point << '\n';
-            }
-            
+//            for(auto & sigma : sigma_c){
+//                std::cout << "sigma : (";
+//                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
+//                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
+//                std::cout << sigma.evaluation_point << '\n';
+//            }
+//
             auto step = layer_p.depth - sigma_c.front().evaluation_point;
-            std::cout << "layer::depth : " << layer_p.depth << '\n';
-            std::cout << "force_propagation::step_length : " << step << '\n';
-            std::cout << "ukf::step_length : " << ukf_m.step_length() << '\n';
-
-            
+//            std::cout << "layer::depth : " << layer_p.depth << '\n';
+//            std::cout << "force_propagation::step_length : " << step << '\n';
+//            std::cout << "ukf::step_length : " << ukf_m.step_length() << '\n';
+//
+//
             sigma_c = ukf_m.force_propagation( std::move(sigma_c), step );
 
-            for(auto & sigma : sigma_c){
-                std::cout << "sigma : (";
-                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
-                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
-                std::cout << sigma.evaluation_point << '\n';
-            }
+//            for(auto & sigma : sigma_c){
+//                std::cout << "sigma : (";
+//                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
+//                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
+//                std::cout << sigma.evaluation_point << '\n';
+//            }
 
             
             auto ps = ukf_m.generate_propagated_state( std::move(sigma_c) );
@@ -278,7 +290,7 @@ private:
             std::vector< enriched_candidate > enriched_c;
             enriched_c.reserve( candidate_c.size() );
             
-            std::cout << "for_each \n";
+//            std::cout << "for_each \n";
             
             std::for_each( candidate_c.begin(), candidate_c.end(),
                             [this, &ps, &enriched_c]( const auto& candidate_p )
@@ -293,16 +305,16 @@ private:
                           );
 //
             
-            std::cout << "sort \n";
+//            std::cout << "sort \n";
             
-            std::sort( enriched_c.begin(), enriched_c.end(),
-                        [](const enriched_candidate& ec1_p, const enriched_candidate& ec2_p )
-                        {
-                            return ec1_p.chisquared < ec2_p.chisquared;
-                        }
-                      );
-
-            auto end = enriched_c.begin() == enriched_c.end() ? enriched_c.end() : enriched_c.begin() + 1 ;
+//            std::sort( enriched_c.begin(), enriched_c.end(),
+//                        [](const enriched_candidate& ec1_p, const enriched_candidate& ec2_p )
+//                        {
+//                            return ec1_p.chisquared < ec2_p.chisquared;
+//                        }
+//                      );
+//
+//            auto end = enriched_c.begin() == enriched_c.end() ? enriched_c.end() : enriched_c.begin() + 1 ;
             
 //            auto end = std::partition(
 //                                enriched_c.begin(), enriched_c.end(),
@@ -319,9 +331,40 @@ private:
 //                                    return ec_p.chisquared < layer_p.cut;
 //                                }
 //                                      );
+            auto end = std::partition(
+                                enriched_c.begin(), enriched_c.end(),
+                                [this, &ps, &layer_p ]( const auto & ec_p )
+                                {
+                                    auto error = ec_p.data->GetPosError();
+                                    
+                                    auto mps = split_half( ps.vector , details::row_tag{});
+                                    mps.first.get(0,0) += layer_p.cut * error.X();
+                                    mps.first.get(1,0) += layer_p.cut * error.Y();
+                                   // TD<decltype(mps)>x;
+                                    
+                                    using ec = typename underlying<decltype(ec_p)>::type;
+                                    using candidate = typename underlying<ec>::candidate;
+                                    using vector = typename underlying<candidate>::vector;
+                                    using covariance = typename underlying<candidate>::covariance;
+                                    using measurement_matrix = typename underlying<candidate>::measurement_matrix;
+                                    using data = typename underlying<candidate>::data_type;
+                                    
+                                    auto nc = candidate{
+                                                vector{ std::move(mps.first) },
+                                                covariance{ ec_p.covariance },
+                                                measurement_matrix{ ec_p.measurement_matrix },
+                                                data_handle<data>{ ec_p.data }
+                                                        } ;
+                                    
+                                    auto cut = ukf_m.compute_chisquared(ps, nc);
+                                    
+                                    std::cout << "partition::cut : " << cut.chisquared << '\n';
+                                    
+                                    return ec_p.chisquared < cut.chisquared;
+                                }
+                                      );
             
-            
-            std::cout << "correction \n";
+//            std::cout << "correction \n";
             
             
             for(auto iterator = enriched_c.begin() ; iterator != end ; ++iterator ){
