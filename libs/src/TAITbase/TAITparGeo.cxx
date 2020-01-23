@@ -399,11 +399,13 @@ Float_t TAITparGeo::Get3rdKaptonLayer()
 {
    return GetlayerPosZ(5);
 }
+
 //_____________________________________________________________________________
 Float_t TAITparGeo::GetEpoxyLayer()
 {
    return GetlayerPosZ(6);
 }
+
 //_____________________________________________________________________________
 void TAITparGeo::FillSensorMap()
 {
