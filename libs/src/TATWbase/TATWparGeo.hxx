@@ -83,7 +83,6 @@ public:
     virtual string PrintRotations();
 
     TGeoVolume*     BuildTofWall(const char *twName = "TW");
-    TGeoVolume*     BuildTofWallXY(const char *twName = "TW", Int_t iLayer = 0);
     TGeoVolume*     BuildModule(Int_t iMod, Int_t iLayer);
    
     void            SetBarColorOn(Int_t slat,  Int_t view);
