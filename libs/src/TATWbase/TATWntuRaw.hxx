@@ -9,7 +9,7 @@
 /*------------------------------------------+---------------------------------*/
 
 // ROOT classes
-#include "TArrayC.h"
+#include "TArrayI.h"
 #include "TObjArray.h"
 #include "TClonesArray.h"
 #include "TVector3.h"
@@ -34,8 +34,8 @@ private:
     Double_t m_z;                      // z coordinate in the local detector frame
     Int_t    m_chargeZ;                // atomic charge Z (tmp solution)
     Double_t m_chargeCOM;              // Center of Mass evaluated with the charge
-    TArrayC  m_MCindex;                // Id of the hit created in the simulation
-    TArrayC  m_McTrackId;              // Id of the track created in the simulation
+    TArrayI  m_MCindex;                // Id of the hit created in the simulation
+    TArrayI  m_McTrackId;              // Id of the track created in the simulation
     Double_t m_ChargeA;
     Double_t m_ChargeB;
     Double_t m_TimeA;
