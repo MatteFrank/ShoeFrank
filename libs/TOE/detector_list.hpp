@@ -80,11 +80,34 @@ private:
               typename std::enable_if_t< (Index >= std::tuple_size<tuple_type>::value), std::nullptr_t > = nullptr >
     constexpr void apply_for_each_impl(F&& /*f_p*/) const {}
     
+    
+    template< std::size_t Index, class F,
+    typename std::enable_if_t< (Index < std::tuple_size<tuple_type>::value - 1 ), std::nullptr_t > = nullptr >
+    constexpr void apply_except_last_impl(F&& f_p) const
+    {
+        f_p( std::get<Index>(tuple_m) );
+        apply_except_last_impl<Index+1>(std::forward<F>(f_p));
+    }
+    
+    template< std::size_t Index, class F,
+    typename std::enable_if_t< (Index > std::tuple_size<tuple_type>::value - 2), std::nullptr_t > = nullptr >
+    constexpr void apply_except_last_impl(F&& /*f_p*/) const {}
+    
+    
+    
+    
 public:
     template<class F>
     constexpr void apply_for_each(F&& f_p) const
     {
         apply_for_each_impl<0>( std::forward<F>(f_p) );
+    }
+    
+    
+    template<class F>
+    constexpr void apply_except_last(F&& f_p) const
+    {
+        apply_except_last_impl<0>( std::forward<F>(f_p) );
     }
     
     
