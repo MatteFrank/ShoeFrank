@@ -33,7 +33,6 @@ TATWntuHit::TATWntuHit( TATWrawHit* hit )
   m_ChargeB(0),
   m_TimeA(0),
   m_TimeB(0)
-
 {
 }
 
@@ -49,16 +48,14 @@ TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
    m_z(aHit.m_z),
    m_chargeZ(aHit.m_chargeZ),
    m_chargeCOM(aHit.m_chargeCOM),
+   m_MCindex(aHit.m_MCindex),
+   m_McTrackId(aHit.m_McTrackId),
    m_ChargeA(aHit.m_ChargeA),
    m_ChargeB(aHit.m_ChargeB),
    m_TimeA(aHit.m_TimeA),
    m_TimeB(aHit.m_TimeB)
-
-
 {
-
 }
-
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
