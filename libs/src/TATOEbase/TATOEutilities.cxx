@@ -20,7 +20,7 @@ std::vector<typename details::vertex_tag::candidate> detector_properties< detail
     std::vector<candidate> candidate_c;
     std::size_t entries = cluster_mhc->GetClustersN(index_p);
     candidate_c.reserve( entries );
-    std::cout << "detector_properties<details::vertex_tag>::generate_candidate : " << entries << '\n';
+//    std::cout << "detector_properties<details::vertex_tag>::generate_candidate : " << entries << '\n';
     
     for(std::size_t i{0}; i < entries ; ++i)
     {
@@ -65,11 +65,11 @@ std::vector<typename details::it_tag::candidate> detector_properties< details::i
     for( auto id : sensorID_c ) {
        
         
-        std::cout << "detector_properties<details::it_tag>::generate_candidate : sensor " << id << '\n';
+//        std::cout << "detector_properties<details::it_tag>::generate_candidate : sensor " << id << '\n';
         std::size_t entries = cluster_mhc->GetClustersN(id);
        
         
-        std::cout << "detector_properties<details::it_tag>::generate_candidate : entries " << entries << '\n';
+//        std::cout << "detector_properties<details::it_tag>::generate_candidate : entries " << entries << '\n';
         
         for(std::size_t i{0}; i < entries ; ++i)
         {

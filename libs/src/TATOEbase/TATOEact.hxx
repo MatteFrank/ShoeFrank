@@ -39,6 +39,7 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
     using vector = typename underlying< typename details::filter_traits<UKF>::state >::vector::type ;
     using covariance = typename underlying< typename details::filter_traits<UKF>::state >::covariance::type ;
     using corrected_state = corrected_state_impl<vector, covariance>;
+    using state = state_impl<vector, covariance>;
     
 private:
     particle_properties particle_m{};
@@ -118,7 +119,7 @@ private:
         
         auto vertexPosition = transformation_h->FromVTLocalToGlobal(vertex.vertex_handle()->GetVertexPosition());
         
-        auto candidate_c = tof.generate_candidates(0);
+        auto candidate_c = tof.generate_candidates();
         std::vector<particle_properties> hypothesis_c;
         hypothesis_c.reserve(candidate_c.size());
         
@@ -140,7 +141,7 @@ private:
             auto track_slope_error = track_slope * sqrt( (0.1/lengthY * 0.1/lengthY) + (1./lengthZ * 1./lengthZ) );
             
             hypothesis_c.push_back(
-                particle_properties{ charge, mass, momentum, track_slope, track_slope_error }
+                particle_properties{ charge, mass, momentum, track_slope, track_slope_error, candidate.data }
             );
         }
         
@@ -177,8 +178,8 @@ private:
                                         make_state_vector( vector{std::move(candidate_p.vector)},
                                                        vector_matrix{{  particle_m.track_slope, particle_m.track_slope }} ),
                                         make_state_covariance( covariance{ std::move(candidate_p.covariance) },
-                                                            covariance_matrix{{ pow(particle_m.track_slope_error, 2),                            0,
-                                                                                                          0, pow(particle_m.track_slope_error, 2)  }} )
+                                                            covariance_matrix{{ pow(particle_m.track_slope_error, 2),                                   0,
+                                                                                                                   0, pow(particle_m.track_slope_error, 2)  }} )
                                     },
                                     chisquared{0}
                                 }
@@ -193,17 +194,16 @@ private:
         auto arborescence = make_arborescence( std::move(root_c) );
 
         
-        list_m.apply_for_each( [this, &arborescence]( const auto& layer_pc )
+        list_m.apply_except_last( [this, &arborescence]( const auto& layer_pc )
                                {
                                    std::cout << " ---- DETECTOR --- \n";
                                    for( const auto& layer : layer_pc ){
-                                       
-                                       std::cout << "--- layer ---\n";
-                                       
                                        advance_reconstruction( arborescence, layer );
                                    }
                                } );
         
+        auto tof = list_m.last();
+        advance_reconstruction( arborescence, tof.form_layer() );
         
         
         auto& handler = arborescence.GetHandler();
@@ -221,7 +221,28 @@ private:
     
     
     
-    template<class T>
+    template< class T >
+    std::vector<corrected_state> advance_reconstruction_impl( state s_p,
+                                                              const T& layer_p )
+    {
+        auto sigma_c = ukf_m.generate_sigma_points( s_p );
+        
+        sigma_c = ukf_m.propagate_while(
+                                        std::move(sigma_c),
+                                        [this, &layer_p](const auto& os_p)
+                                        { return os_p.evaluation_point + ukf_m.step_length() < layer_p.depth ; }
+                                        );
+        auto step = layer_p.depth - sigma_c.front().evaluation_point;
+        sigma_c = ukf_m.force_propagation( std::move(sigma_c), step );
+        auto ps = ukf_m.generate_propagated_state( std::move(sigma_c) );
+        
+        
+        return confront(ps, layer_p);
+    }
+    
+    
+    template< class T, typename std::enable_if_t< !std::is_same< T,  detector_properties< details::tof_tag >::layer >::value,
+                                                  std::nullptr_t  > = nullptr  >
     void advance_reconstruction( TAGTOEArborescence<corrected_state>& arborescence_p,
                                  const T& layer_p )
     {
@@ -232,159 +253,170 @@ private:
         auto& leaf_c = arborescence_p.GetHandler();
         
         
+        for(auto& leaf : leaf_c){
+            
+            ukf_m.step_length() = 1e-3;
+            
+            auto s = make_state(leaf.GetValue());
+            auto cs_c = advance_reconstruction_impl( s, layer_p );
+            
+            for( auto & cs : cs_c ){
+                leaf.AddChild( std::move(cs) );
+            }
+
+        }
+        
+    }
+    
+    
+
+    void advance_reconstruction( TAGTOEArborescence<corrected_state>& arborescence_p,
+                                 const detector_properties<details::tof_tag>::layer& layer_p )
+    {
+        
+        std::cout << " ---- FINALISE_RECONSTRUCTION --- \n";
+        
+        
+        auto& leaf_c = arborescence_p.GetHandler();
+        
         
         for(auto& leaf : leaf_c){
             
             ukf_m.step_length() = 1e-3;
             
             auto s = make_state(leaf.GetValue());
-            std::cout << "starting_state : " <<  s.vector(0,0) << ", " << s.vector(1,0) << ", " << s.evaluation_point << '\n';
+            auto cs_c = advance_reconstruction_impl( s, layer_p );
             
-            auto sigma_c = ukf_m.generate_sigma_points( make_state(leaf.GetValue()) );
-            
-//            for(auto & sigma : sigma_c){
-//                std::cout << "sigma : (";
-//                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
-//                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
-//                std::cout << sigma.evaluation_point << '\n';
-//            }
-//
-            sigma_c = ukf_m.propagate_while(
-                                             std::move(sigma_c),
-                                             [this, &layer_p](const auto& os_p)
-                                             { return os_p.evaluation_point + ukf_m.step_length() < layer_p.depth ; }
-                                            );
-            
-//            std::cout << "after_while_propagation:\n";
-            
-//            for(auto & sigma : sigma_c){
-//                std::cout << "sigma : (";
-//                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
-//                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
-//                std::cout << sigma.evaluation_point << '\n';
-//            }
-//
-            auto step = layer_p.depth - sigma_c.front().evaluation_point;
-//            std::cout << "layer::depth : " << layer_p.depth << '\n';
-//            std::cout << "force_propagation::step_length : " << step << '\n';
-//            std::cout << "ukf::step_length : " << ukf_m.step_length() << '\n';
-//
-//
-            sigma_c = ukf_m.force_propagation( std::move(sigma_c), step );
-
-//            for(auto & sigma : sigma_c){
-//                std::cout << "sigma : (";
-//                std::cout << sigma.state( details::order_tag<0>{} )(0,0) << ", " << sigma.state( details::order_tag<0>{} )(1,0) << ") -- (";
-//                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
-//                std::cout << sigma.evaluation_point << '\n';
-//            }
-
-            
-            auto ps = ukf_m.generate_propagated_state( std::move(sigma_c) );
-            
-            std::cout << "propagated_state::vector : (" <<  ps.vector(0,0) << ", " << ps.vector(1,0) << ") -- (" <<  ps.vector(2,0) << ", " << ps.vector(3,0) << ") --  " << ps.evaluation_point << "\n";
-//            std::cout << "propagated_state::covariance : \n" <<  ps.covariance;
-            
-            auto candidate_c = layer_p.get_candidates();
-            using enriched_candidate = enriched_candidate_impl<typename decltype(candidate_c)::value_type>;
-            std::vector< enriched_candidate > enriched_c;
-            enriched_c.reserve( candidate_c.size() );
-            
-//            std::cout << "for_each \n";
-            
-            std::for_each( candidate_c.begin(), candidate_c.end(),
-                            [this, &ps, &enriched_c]( const auto& candidate_p )
-                            {
-                                enriched_c.push_back( make_enriched_candidate( candidate_p ,
-                                                                               ukf_m.compute_chisquared(ps, candidate_p) ) );
-                                
-                                std::cout << "candidate::vector : (" <<  candidate_p.vector(0,0) << ", " << candidate_p.vector(1,0) << ")\n";
-                               // std::cout << "candidate::covariance : \n " <<  candidate_p.covariance ;
-                                std::cout << "chisquared : " <<  enriched_c.back().chisquared  << '\n';
-                            }
-                          );
-//
-            
-//            std::cout << "sort \n";
-            
-//            std::sort( enriched_c.begin(), enriched_c.end(),
-//                        [](const enriched_candidate& ec1_p, const enriched_candidate& ec2_p )
-//                        {
-//                            return ec1_p.chisquared < ec2_p.chisquared;
-//                        }
-//                      );
-//
-//            auto end = enriched_c.begin() == enriched_c.end() ? enriched_c.end() : enriched_c.begin() + 1 ;
-            
-//            auto end = std::partition(
-//                                enriched_c.begin(), enriched_c.end(),
-//                                [ &enriched_c ]( const auto& ec_p )
-//                                {
-//                                    return ec_p.chisquared/enriched_c.back().chisquared < 0.1;
-//                                }
-//                                    );
-////
-//            auto end = std::partition(
-//                                enriched_c.begin(), enriched_c.end(),
-//                                [ &layer_p ]( const auto& ec_p )
-//                                {
-//                                    return ec_p.chisquared < layer_p.cut;
-//                                }
-//                                      );
-            auto end = std::partition(
-                                enriched_c.begin(), enriched_c.end(),
-                                [this, &ps, &layer_p ]( const auto & ec_p )
-                                {
-                                    auto error = ec_p.data->GetPosError();
-                                    
-                                    auto mps = split_half( ps.vector , details::row_tag{});
-                                    mps.first.get(0,0) += layer_p.cut * error.X();
-                                    mps.first.get(1,0) += layer_p.cut * error.Y();
-                                   // TD<decltype(mps)>x;
-                                    
-                                    using ec = typename underlying<decltype(ec_p)>::type;
-                                    using candidate = typename underlying<ec>::candidate;
-                                    using vector = typename underlying<candidate>::vector;
-                                    using covariance = typename underlying<candidate>::covariance;
-                                    using measurement_matrix = typename underlying<candidate>::measurement_matrix;
-                                    using data = typename underlying<candidate>::data_type;
-                                    
-                                    auto nc = candidate{
-                                                vector{ std::move(mps.first) },
-                                                covariance{ ec_p.covariance },
-                                                measurement_matrix{ ec_p.measurement_matrix },
-                                                data_handle<data>{ ec_p.data }
-                                                        } ;
-                                    
-                                    auto cut = ukf_m.compute_chisquared(ps, nc);
-                                    
-                                    std::cout << "partition::cut : " << cut.chisquared << '\n';
-                                    
-                                    return ec_p.chisquared < cut.chisquared;
-                                }
-                                      );
-            
-//            std::cout << "correction \n";
-            
-            
-            for(auto iterator = enriched_c.begin() ; iterator != end ; ++iterator ){
-                auto state = ukf_m.correct_state( ps, *iterator ); //should be sliced properly
-                auto cs = make_corrected_state( std::move(state),
-                                                chisquared{std::move(iterator->chisquared)} );
-                std::cout << "good_candidates : (" <<  iterator->vector(0,0) << ", " << iterator->vector(1,0) << ", " << layer_p.depth << ")\n";
-                std::cout << "corrected_state : (" <<  cs.vector(0,0) << ", " << cs.vector(1,0)  << ") -- (" <<  cs.vector(2,0) << ", " << cs.vector(3,0) << ") --  " << cs.evaluation_point << "\n";
-                
-                leaf.AddChild(std::move(cs));
-            }
-            
-            
-       //     if( end == enriched_c.begin() ){ leaf.MarkAsInvalid(); }
-            
-            std::cout << "-- end_leaf --\n";
-            
+            if( cs_c.empty() ){ leaf.MarkAsInvalid(); }
+            else{ leaf.AddChild( std::move(cs_c.front()) ); }
         }
         
     }
+    
+    
+    
+    
+    template<class T, typename std::enable_if_t< !std::is_same< T,  detector_properties< details::tof_tag >::layer >::value,
+                                                 std::nullptr_t  > = nullptr >
+    std::vector<corrected_state> confront(const state& ps_p, const T& layer_p)
+    {
+        
+        auto candidate_c = layer_p.get_candidates();
+        
+        std::vector<corrected_state> cs_c;
+        cs_c.reserve( candidate_c.size() );
+        
+        using enriched_candidate = enriched_candidate_impl<typename decltype(candidate_c)::value_type>;
+        std::vector< enriched_candidate > enriched_c;
+        enriched_c.reserve( candidate_c.size() );
+    
+        
+        std::for_each( candidate_c.begin(), candidate_c.end(),
+                      [this, &ps_p, &enriched_c]( const auto& candidate_p )
+                      {
+                          enriched_c.push_back( make_enriched_candidate( candidate_p ,
+                                                                        ukf_m.compute_chisquared(ps_p, candidate_p) ) );
+                      }
+                     );
+    
+        auto end = std::partition(
+                                  enriched_c.begin(), enriched_c.end(),
+                                  [this, &ps_p, &layer_p ]( const auto & ec_p )
+                                  {
+                                      auto error = ec_p.data->GetPosError();
+                                      
+                                      auto mps = split_half( ps_p.vector , details::row_tag{});
+                                      mps.first.get(0,0) += layer_p.cut * error.X();
+                                      mps.first.get(1,0) += layer_p.cut * error.Y();
+                                      // TD<decltype(mps)>x;
+                                      
+                                      using ec = typename underlying<decltype(ec_p)>::type;
+                                      using candidate = typename underlying<ec>::candidate;
+                                      using vector = typename underlying<candidate>::vector;
+                                      using covariance = typename underlying<candidate>::covariance;
+                                      using measurement_matrix = typename underlying<candidate>::measurement_matrix;
+                                      using data = typename underlying<candidate>::data_type;
+                                      
+                                      auto nc = candidate{
+                                          vector{ std::move(mps.first) },
+                                          covariance{ ec_p.covariance },
+                                          measurement_matrix{ ec_p.measurement_matrix },
+                                          data_handle<data>{ ec_p.data }
+                                      } ;
+                                      
+                                      auto cut = ukf_m.compute_chisquared(ps_p, nc);
+                                      
+                                      return ec_p.chisquared < cut.chisquared;
+                                  }
+                                  );
+        
+        
+        for(auto iterator = enriched_c.begin() ; iterator != end ; ++iterator ){
+            auto state = ukf_m.correct_state( ps_p, *iterator ); //should be sliced properly
+            auto cs = make_corrected_state( std::move(state),
+                                           chisquared{std::move(iterator->chisquared)} );
+            
+            cs_c.push_back( std::move(cs) );
+        }
+    
+    
+        return cs_c;
+    }
+    
+    
+    
+    
+    std::vector<corrected_state> confront(const state& ps_p, const detector_properties<details::tof_tag>::layer& layer_p) //optionnal is more relevant here
+    {
+        using candidate = typename detector_properties< details::tof_tag >::candidate;
+        using enriched_candidate = enriched_candidate_impl< candidate >;
+        
+        
+        auto candidate_c = layer_p.get_candidates();
+        auto proper_candidate = std::find_if( candidate_c.begin(), candidate_c.end(),
+                                              [this](const candidate& c_p){ return c_p.data == particle_m.data;  } );
+        enriched_candidate ec = make_enriched_candidate( *proper_candidate ,
+                                                         ukf_m.compute_chisquared(ps_p, *proper_candidate) );
+        
+        std::vector<corrected_state> cs_c;
+    
+        auto selection = [this, &ps_p, &layer_p ]( const auto & ec_p )
+                         {
+                            auto error = ec_p.data->GetPosError();
+            
+                            auto mps = split_half( ps_p.vector , details::row_tag{});
+                            mps.first.get(0,0) += layer_p.cut * error.X();
+                            mps.first.get(1,0) += layer_p.cut * error.Y();
+            
+                             using ec = typename underlying<decltype(ec_p)>::type;
+                             using candidate = typename underlying<ec>::candidate;
+                             using vector = typename underlying<candidate>::vector;
+                             using covariance = typename underlying<candidate>::covariance;
+                             using measurement_matrix = typename underlying<candidate>::measurement_matrix;
+                             using data = typename underlying<candidate>::data_type;
+            
+                             auto nc = candidate{
+                                 vector{ std::move(mps.first) },
+                                 covariance{ ec_p.covariance },
+                                 measurement_matrix{ ec_p.measurement_matrix },
+                                 data_handle<data>{ ec_p.data }
+                             } ;
+            
+                             auto cut = ukf_m.compute_chisquared(ps_p, nc);
+            
+                             return ec_p.chisquared < cut.chisquared;
+                         };
+        
+        if( selection(ec) ){
+            auto state = ukf_m.correct_state( ps_p, ec ); //should be sliced properly
+            auto cs = make_corrected_state( std::move(state),
+                                            chisquared{std::move(ec.chisquared)} );
+            cs_c.push_back( std::move(cs) );
+        }
+        
+        return cs_c;
+    }
+    
 };
 
 

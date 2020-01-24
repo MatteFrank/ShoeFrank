@@ -332,14 +332,26 @@ public:
 //                      TOF
 
 template<>
-struct detector_properties< details::tof_tag > :
-    range_generator< detector_properties< details::tof_tag > >
+struct detector_properties< details::tof_tag >
 {
     using candidate = details::tof_tag::candidate;
     using measurement_vector = underlying<candidate>::vector;
     using measurement_covariance = underlying<candidate>::covariance;
     using measurement_matrix = underlying<candidate>::measurement_matrix;
     using data_type = underlying<candidate>::data_type;
+    
+    
+    struct layer{
+        std::vector<candidate> candidate_c;
+        double depth;
+        double cut;
+        
+        std::vector<candidate>& get_candidates(){ return candidate_c; }
+        std::vector<candidate> const & get_candidates() const { return candidate_c; }
+    };
+    
+    
+    
     
 private:
     
@@ -348,7 +360,7 @@ private:
                                            0, 1, 0, 0  }};
     const double cut_m;
     const double depth_m;
-    constexpr static std::size_t layer{1};
+
     
 private:
     double retrieve_depth( TATWparGeo* geo_ph ) const
@@ -370,18 +382,17 @@ public:
         depth_m{ retrieve_depth(geo_ph) } {}
     
     
-    std::size_t layer_count() const { return layer; }
-    constexpr double layer_depth( std::size_t /*index_p*/) const { return depth_m; }
+    constexpr double layer_depth() const { return depth_m; }
     constexpr double cut_value() const { return cut_m; }
     
     //remove with sfinae inside of range generator ?
-    std::vector<candidate> generate_candidates(std::size_t /*index_p*/) const
+    std::vector<candidate> generate_candidates() const
     {
         std::vector<candidate> candidate_c;
         std::size_t entries = cluster_mhc->GetPointN();
         candidate_c.reserve( entries );
         
-        std::cout << "detector_properties<details::tof_tag>::generate_candidate : " << entries << '\n';
+//        std::cout << "detector_properties<details::tof_tag>::generate_candidate : " << entries << '\n';
         
         for(std::size_t i{0}; i < entries ; ++i)
         {
@@ -405,6 +416,15 @@ public:
     }
     
     
+    layer form_layer() const
+    {
+        return {
+            generate_candidates(),
+            layer_depth(),
+            cut_value()
+        };
+    }
+    
 
 
 };
@@ -419,6 +439,7 @@ struct particle_properties
     double momentum;
     double track_slope;
     double track_slope_error;
+    TATWpoint const * data;
 };
 
 
