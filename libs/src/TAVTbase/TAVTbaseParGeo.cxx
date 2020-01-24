@@ -40,6 +40,7 @@ TAVTbaseParGeo::TAVTbaseParGeo()
    fLayersN(fSensorsN),
    fFlagMC(false),
    fFlagIt(false),
+   fSensPerLayer(0),
    fSensorArray(0x0)
 {
    // Standard constructor
@@ -415,11 +416,44 @@ TVector3 TAVTbaseParGeo::Sensor2DetectorVect(Int_t detID, TVector3& loc) const
 }
 
 //_____________________________________________________________________________
-UChar_t* TAVTbaseParGeo::GetSensorsPerLayer(Int_t /*iLayer*/)
+void TAVTbaseParGeo::FillSensorMap()
 {
-   Error("GetSensorsPerLayer()", "Function not available");
+   map<float, vector<UChar_t> >::iterator itr = fSensorMap.begin();
+   vector<UChar_t> v;
+   Int_t iLayer = 0;
    
-   return 0x0;
+   while (itr != fSensorMap.end()) {
+      if (FootDebugLevel(2))
+         cout << itr->first << endl;
+      v = itr->second;
+      std::copy(v.begin(), v.end(), &fSensorArray[iLayer*fSensPerLayer]);
+      iLayer++;
+      itr++;
+   }
+}
+
+//_____________________________________________________________________________
+UChar_t* TAVTbaseParGeo::GetSensorsPerLayer(Int_t iLayer)
+{
+   return &fSensorArray[iLayer*fSensPerLayer];
+}
+
+//_____________________________________________________________________________
+Float_t TAVTbaseParGeo::GetLayerPosZ(Int_t layer)
+{
+   map<float, vector<UChar_t> >::iterator itr = fSensorMap.begin();
+   Int_t iLayer = 0;
+   
+   while (itr != fSensorMap.end()) {
+      if (FootDebugLevel(2))
+         cout << itr->first << endl;
+      
+      if (iLayer++ == layer)
+         return itr->first;
+      itr++;
+   }
+   
+   return -99;
 }
 
 //_____________________________________________________________________________

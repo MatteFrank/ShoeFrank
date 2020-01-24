@@ -55,8 +55,7 @@ protected:
    static const Int_t   fgkDefSensPerLayer; // number of sensor per layer
    
 private:
-   Float_t GetlayerPosZ(Int_t layer);
-   void    FillSensorMap();
+   Float_t GetPassiveLayerPosZ(Int_t layer);
 
 public:
    TAITparGeo();
@@ -99,9 +98,6 @@ public:
    TString GetAlMaterial()              const { return fAlMat;            }
    //! Get Al density
    Float_t GetAlMatDensity()            const { return fAlMatDensity;     }
-   
-   //! Returns array of M28 chip per layer
-   UChar_t* GetSensorsPerLayer(Int_t iLayer);
    
    // return local Z positon of the layers
    Float_t GetFoamLayer();

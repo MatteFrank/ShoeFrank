@@ -31,6 +31,7 @@ TAITparGeo::TAITparGeo()
    // Constructor
    fFlagIt = true;
    fLayersN = 2;
+   fSensPerLayer = fgkDefSensPerLayer;
    fkDefaultGeoName = "./geomaps/TAITdetector.map";
 }
 
@@ -332,7 +333,7 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
 }
 
 //_____________________________________________________________________________
-Float_t TAITparGeo::GetlayerPosZ(Int_t layer)
+Float_t TAITparGeo::GetPassiveLayerPosZ(Int_t layer)
 {
    
    Float_t posZ = 0;
@@ -367,66 +368,43 @@ Float_t TAITparGeo::GetlayerPosZ(Int_t layer)
 //_____________________________________________________________________________
 Float_t TAITparGeo::GetFoamLayer()
 {
-   return GetlayerPosZ(0);
+   return GetPassiveLayerPosZ(0);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::Get1stKaptonLayer()
 {
-   return GetlayerPosZ(1);
+   return GetPassiveLayerPosZ(1);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::Get1stAlLayer()
 {
-   return GetlayerPosZ(2);
+   return GetPassiveLayerPosZ(2);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::Get2ndKaptonLayer()
 {
-   return GetlayerPosZ(3);
+   return GetPassiveLayerPosZ(3);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::Get2ndAlLayer()
 {
-   return GetlayerPosZ(4);
+   return GetPassiveLayerPosZ(4);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::Get3rdKaptonLayer()
 {
-   return GetlayerPosZ(5);
+   return GetPassiveLayerPosZ(5);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::GetEpoxyLayer()
 {
-   return GetlayerPosZ(6);
-}
-
-//_____________________________________________________________________________
-void TAITparGeo::FillSensorMap()
-{
-   map<float, vector<UChar_t> >::iterator itr = fSensorMap.begin();
-   vector<UChar_t> v;
-   Int_t iLayer = 0;
-   
-   while (itr != fSensorMap.end()) {
-      if (FootDebugLevel(2))
-         cout << itr->first << endl;
-      v = itr->second;
-      std::copy(v.begin(), v.end(), &fSensorArray[iLayer*fgkDefSensPerLayer]);
-      iLayer++;
-      itr++;
-   }
-}
-
-//_____________________________________________________________________________
-UChar_t* TAITparGeo::GetSensorsPerLayer(Int_t iLayer)
-{
-   return &fSensorArray[iLayer*fgkDefSensPerLayer];
+   return GetPassiveLayerPosZ(6);
 }
 
 //_____________________________________________________________________________
