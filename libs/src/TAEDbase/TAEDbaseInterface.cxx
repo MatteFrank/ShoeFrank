@@ -401,11 +401,12 @@ void TAEDbaseInterface::MakeGUI()
                                                              kLHintsExpandX, 2, 10, 0, 10));
    // selection
    TGLabel*  infoName = new TGLabel(infoFrameView, "Selection:");
-   infoFrameView->AddFrame(infoName,  new TGLayoutHints(kLHintsLeft | kLHintsTop, 2, 0, 5, 5));
+   infoFrameView->AddFrame(infoName,  new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
    
+   // console
    fConsoleButton =  new TGCheckButton(infoFrameView, "Console", 1);
    fConsoleButton->SetState(kButtonUp);
-   infoFrameView->AddFrame(fConsoleButton,  new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
+   infoFrameView->AddFrame(fConsoleButton,  new TGLayoutHints(kLHintsTop | kLHintsLeft, 85, 0, -15, 0));
    
    fInfoView = new TGTextView(infoFrameView, 300, 300);
    fInfoView->ShowBottom();
