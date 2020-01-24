@@ -50,6 +50,7 @@
 
 class TEveDigitSet;
 class TGCheckButton;
+class TGComboBox;
 class TGMainFrame;
 class TList;
 class TGeoVolume;
@@ -62,10 +63,14 @@ class TAGgeoTrafo;
 class TAEDbaseInterface : public TEveEventManager
 {
 public:
+   enum Detectors {
+      kAll, kNone, kSTC, kBMN, kTGT, kVTX, kDIP, kITR, kMSD, kTOF, kCAL
+   };
+   
+public:
    TAEDbaseInterface(Int_t type, const TString expName = "");
    virtual ~TAEDbaseInterface();
    
-public:
    //! reset list of histograms
    virtual void ResetHistogram() = 0;
    
@@ -131,6 +136,7 @@ public:
    void         ToggleLineDisplay();
    void         ToggleGlbDisplay();
    void         ToggleMcDisplay();
+   void         ToggleDetector(Int_t id);
    
    void         ClearInfoView();
    void         HistoSelected(Int_t id);
@@ -176,7 +182,8 @@ public:
 protected:
    void         DefineMaterial();
    void         UpdateEventBar();
-   
+   void         FillDetectorNames();
+
 public:
    //! Disable GUI
    static void  DisableGUI()                { fgGUIFlag = false;      }
@@ -219,12 +226,19 @@ protected:
    TGCheckButton*     fGlbButton;        // Toggle on/off global tracks
    TGCheckButton*     fConsoleButton;    // Toggle on/off selection also on console
    TGHProgressBar*    fEventProgress;    // progress event bar
+   TGComboBox*        fDetectorMenu;     // list of detector drawn
    TGListBox*         fHistoListBox;     // list of histograms
    TList*             fSelecHistoList;   // list of selected histograms
    TList*             fHistoList;        // list of histograms
    
    //histos
    TList*             fListOfCanvases;   // list of canvases
+
+   // list of detector volume names
+   std::map<TString, int> fVolumeNames;
+   
+   // status detectors
+   Bool_t             fDetectorStatus[20];
 
 protected:
    static Bool_t      fgIsGeoLoaded;       // flag if geometry loaded

@@ -4,6 +4,7 @@
 
 // root include
 #include "Riostream.h"
+#include "TGComboBox.h"
 #include "TRootEmbeddedCanvas.h"
 #include "TEveManager.h"
 #include "TEveWindow.h"
@@ -244,7 +245,9 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeST()) {
       TASTparGeo* parGeo = fReco->GetParGeoSt();
       TGeoVolume* irVol  = parGeo->BuildStartCounter();
-   
+      fVolumeNames[irVol->GetName()] = kSTC;
+
+      
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TASTparGeo::GetBaseName());
       AddGeometry(irVol, transfo);
    }
@@ -253,7 +256,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeBM()) {
       TABMparGeo* parGeo = fReco->GetParGeoBm();;
       TGeoVolume* bmVol  = parGeo->BuildBeamMonitor();
-      
+      fVolumeNames[bmVol->GetName()] = kBMN;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TABMparGeo::GetBaseName());
       AddGeometry(bmVol, transfo);
    }
@@ -262,7 +266,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeTG()) {
       TAGparGeo* parGeo = fReco->GetParGeoG();;
       TGeoVolume* tgVol = parGeo->BuildTarget();
-      
+      fVolumeNames[tgVol->GetName()] = kTGT;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAGparGeo::GetBaseName());
       AddGeometry(tgVol, transfo);
    }
@@ -271,7 +276,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeVertex()) {
       TAVTparGeo* parGeo = fReco->GetParGeoVtx();
       TGeoVolume* vtVol  = parGeo->BuildVertex();
-      
+      fVolumeNames[vtVol->GetName()] = kVTX;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAVTparGeo::GetBaseName());
       AddGeometry(vtVol, transfo);
    }
@@ -279,17 +285,19 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    // Magnet
    if (GlobalPar::GetPar()->IncludeDI()) {
       TADIparGeo* parGeo = fReco->GetParGeoDi();
-      TGeoVolume* vtVol = parGeo->BuildMagnet();
-      
+      TGeoVolume* mgVol = parGeo->BuildMagnet();
+      fVolumeNames[mgVol->GetName()] = kDIP;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TADIparGeo::GetBaseName());
-      AddGeometry(vtVol, transfo);
+      AddGeometry(mgVol, transfo);
    }
 
    // IT
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       TAITparGeo* parGeo = fReco->GetParGeoIt();
       TGeoVolume* itVol  = parGeo->BuildInnerTracker();
-      
+      fVolumeNames[itVol->GetName()] = kITR;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAITparGeo::GetItBaseName());
       AddGeometry(itVol, transfo);
    }
@@ -298,7 +306,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeMSD()) {
       TAMSDparGeo* parGeo = fReco->GetParGeoMsd();
       TGeoVolume* msdVol = parGeo->BuildMultiStripDetector();
-      
+      fVolumeNames[msdVol->GetName()] = kMSD;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAMSDparGeo::GetBaseName());
       AddGeometry(msdVol, transfo);
    }
@@ -307,7 +316,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeTW()) {
       TATWparGeo* parGeo = fReco->GetParGeoTw();;
       TGeoVolume* twVol = parGeo->BuildTofWall();
-      
+      fVolumeNames[twVol->GetName()] = kTOF;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TATWparGeo::GetBaseName());
       AddGeometry(twVol, transfo);
    }
@@ -316,7 +326,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeCA()) {
       TACAparGeo* parGeo = fReco->GetParGeoCa();
       TGeoVolume* caVol = parGeo->BuildCalorimeter();
-      
+     fVolumeNames[caVol->GetName()] = kCAL;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TACAparGeo::GetBaseName());
       AddGeometry(caVol, transfo);
    }

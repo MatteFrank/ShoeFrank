@@ -38,6 +38,7 @@
 #include "TGeoNode.h"
 #include "TGeoVolume.h"
 #include "TGButton.h"
+#include "TGComboBox.h"
 #include "TGLViewer.h"
 #include "TGLabel.h"
 #include "TList.h"
@@ -157,6 +158,17 @@ void TAEDbaseInterface::BuildDefaultGeometry()
    gGeoManager->SetTopVolume(fTopVolume);
 }
 
+//__________________________________________________________
+void TAEDbaseInterface::FillDetectorNames()
+{
+   std::map<TString, int>::iterator itr = fVolumeNames.begin();
+   
+   while (itr != fVolumeNames.end()) {
+      fDetectorMenu->AddEntry(itr->first.Data(), itr->second);
+      fDetectorStatus[itr->second] = true;
+      itr++;
+   }
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TAEDbaseInterface::DefineMaterial()
@@ -357,6 +369,23 @@ void TAEDbaseInterface::MakeGUI()
 
    frmMain->AddFrame(displayFrame, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
 
+   // detector menu
+   TGHorizontalFrame *detectorFrame = new TGHorizontalFrame(frmMain);
+   TGLabel*  detectorName = new TGLabel(detectorFrame, "Detector:");
+   detectorFrame->AddFrame(detectorName, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2, 0, 5, 5));
+
+   fDetectorMenu = new TGComboBox(detectorFrame, 10);
+   fDetectorMenu->Resize(80, 20);
+   fDetectorMenu->AddEntry("All", kAll);
+   fDetectorMenu->AddEntry("None", kNone);
+   fDetectorMenu->Select(0);
+   fDetectorMenu->Connect("Selected(Int_t)", "TAEDbaseInterface", this, "ToggleDetector(Int_t)");
+   FillDetectorNames();
+   detectorFrame->AddFrame(fDetectorMenu, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
+   
+   frmMain->AddFrame(detectorFrame, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
+
+
    // info frame
    TGVerticalFrame *infoFrameView = new TGVerticalFrame(frmMain);
    
@@ -374,13 +403,13 @@ void TAEDbaseInterface::MakeGUI()
                                                              kLHintsExpandX, 2, 10, 0, 10));
    // selection
    TGLabel*  infoName = new TGLabel(infoFrameView, "Selection:");
-   infoFrameView->AddFrame(infoName, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2, 0, 5, 5));
+   infoFrameView->AddFrame(infoName,  new TGLayoutHints(kLHintsLeft | kLHintsTop, 2, 0, 5, 5));
    
    fConsoleButton =  new TGCheckButton(infoFrameView, "Console", 1);
    fConsoleButton->SetState(kButtonUp);
-   infoFrameView->AddFrame(fConsoleButton, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2, 0, 5, 5));
-
-   fInfoView = new TGTextView(infoFrameView, 300, 320);
+   infoFrameView->AddFrame(fConsoleButton,  new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
+   
+   fInfoView = new TGTextView(infoFrameView, 300, 300);
    fInfoView->ShowBottom();
    infoFrameView->AddFrame(fInfoView, new TGLayoutHints(kLHintsLeft | kLHintsCenterY  |
                                                         kLHintsExpandX, 2, 10, 0, 0));
@@ -503,6 +532,24 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
 void TAEDbaseInterface::NextEvent()
 {   
    LoopEvent(1);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::ToggleDetector(Int_t id)
+{
+   const Char_t* name = fDetectorMenu->GetSelectedEntry()->GetTitle();   
+   TGeoVolume* vol =  gGeoManager->FindVolumeFast(name);
+   
+   if (fDetectorStatus[id] ) {
+      vol->InvisibleAll();
+      fDetectorStatus[id] = false;
+   } else {
+      vol->InvisibleAll(false);
+      vol->SetVisibility(false);
+      fDetectorStatus[id] = true;
+   }
+   
+   gEve->FullRedraw3D(kFALSE);
 }
 
 //__________________________________________________________
