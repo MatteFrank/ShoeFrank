@@ -545,7 +545,8 @@ void TAEDbaseInterface::ToggleDetector(Int_t id)
       fDetectorStatus[id] = false;
    } else {
       vol->InvisibleAll(false);
-      vol->SetVisibility(false);
+      if (vol->GetNdaughters() != 0)
+         vol->SetVisibility(false);
       fDetectorStatus[id] = true;
    }
    
