@@ -376,11 +376,9 @@ void TAEDbaseInterface::MakeGUI()
 
    fDetectorMenu = new TGComboBox(detectorFrame, 10);
    fDetectorMenu->Resize(80, 20);
-   fDetectorMenu->AddEntry("All", kAll);
-   fDetectorMenu->AddEntry("None", kNone);
-   fDetectorMenu->Select(0);
    fDetectorMenu->Connect("Selected(Int_t)", "TAEDbaseInterface", this, "ToggleDetector(Int_t)");
    FillDetectorNames();
+   fDetectorMenu->Select(0);
    detectorFrame->AddFrame(fDetectorMenu, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
    
    frmMain->AddFrame(detectorFrame, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
@@ -540,14 +538,16 @@ void TAEDbaseInterface::ToggleDetector(Int_t id)
    const Char_t* name = fDetectorMenu->GetSelectedEntry()->GetTitle();   
    TGeoVolume* vol =  gGeoManager->FindVolumeFast(name);
    
-   if (fDetectorStatus[id] ) {
-      vol->InvisibleAll();
-      fDetectorStatus[id] = false;
-   } else {
-      vol->InvisibleAll(false);
-      if (vol->GetNdaughters() != 0)
-         vol->SetVisibility(false);
-      fDetectorStatus[id] = true;
+   if (vol) {
+      if (fDetectorStatus[id] ) {
+         vol->InvisibleAll();
+         fDetectorStatus[id] = false;
+      } else {
+         vol->InvisibleAll(false);
+         if (vol->GetNdaughters() != 0)
+            vol->SetVisibility(false);
+         fDetectorStatus[id] = true;
+      }
    }
    
    gEve->FullRedraw3D(kFALSE);

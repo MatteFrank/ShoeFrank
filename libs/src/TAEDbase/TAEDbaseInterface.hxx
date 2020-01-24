@@ -64,7 +64,7 @@ class TAEDbaseInterface : public TEveEventManager
 {
 public:
    enum Detectors {
-      kAll, kNone, kSTC, kBMN, kTGT, kVTX, kDIP, kITR, kMSD, kTOF, kCAL
+      kSTC, kBMN, kTGT, kVTX, kDIP, kITR, kMSD, kTOF, kCAL
    };
    
 public:
