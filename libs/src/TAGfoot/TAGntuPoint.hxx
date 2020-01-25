@@ -27,14 +27,12 @@ private:
    TVector3    fPosError;      // position error in FOOT framework
    TVector3    fMomentum;      // momentum in FOOT framework
    TVector3    fMomError;      // momentum error in FOOT framework
-   Double32_t  fTime;          // Time information
-   Double32_t  fChargeZ;       // Charge Z
-   Double32_t  fChargeProbaZ;  // Probability of charge Z
-   
+   Int_t       fChargeZ;       // Charge Z
+
 public:
    TAGpoint();
-   TAGpoint(TVector3 pos, TVector3 posErr, Double_t time, Double_t chargeZ, Double_t probaZ);
-   TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Double_t time, Double_t chargeZ, Double_t probaZ);
+   TAGpoint(TVector3 pos, TVector3 posErr);
+   TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ = 0);
    ~TAGpoint() {};
    
    //    All the Get methods
@@ -42,22 +40,16 @@ public:
    TVector3    GetPosError()         const  { return fPosError;   }
    TVector3    GetMomentum()         const  { return fMomentum;   }
    TVector3    GetMomError()         const  { return fMomError;   }
-
-   Double32_t  GetTime()             const  { return fTime;       }
    Int_t       GetChargeZ()          const  { return fChargeZ;    }
-   Double32_t  GetChargeProbaZ()     const  { return fChargeZ;    }
-   
-   void        SetTime(Double_t time)       { fTime = time;       }
+      
    void        SetPosition(TVector3 pos)    { fPosition = pos;    }
    void        SetPosError(TVector3 pos)    { fPosError = pos;    }
    void        SetMomentum(TVector3 mom)    { fMomentum = mom;    }
    void        SetMomError(TVector3 mom)    { fMomError = mom;    }
    void        SetChargeZ(Int_t z)          { fChargeZ = z;       }
-   void        SetChargeProbaZ(Double_t z)  { fChargeProbaZ = z;  }
-   
    void        Clear(Option_t* opt);
    
-   ClassDef(TAGpoint,2)
+   ClassDef(TAGpoint,3)
 };
 
 //##############################################################################
@@ -71,8 +63,8 @@ public:
 	TAGntuPoint();
 	virtual ~TAGntuPoint();
 	
-   TAGpoint*         NewPoint(TVector3 pos, TVector3 posErr, Double_t time, Double_t chargeZ, Double_t probaZ);
-   TAGpoint*         NewPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Double_t time, Double_t chargeZ, Double_t probaZ);
+   TAGpoint*         NewPoint(TVector3 pos, TVector3 posErr);
+   TAGpoint*         NewPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ = 0);
 
 	Int_t             GetPointsN();
 	TAGpoint*         GetPoint(Int_t iPoint );

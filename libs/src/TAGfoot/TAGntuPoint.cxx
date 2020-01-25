@@ -14,37 +14,30 @@ TAGpoint::TAGpoint()
    fPosError(0,0,0),
    fMomentum(0,0,0),
    fMomError(0,0,0),
-   fTime(0.),
-   fChargeZ(-99),
-   fChargeProbaZ(-1)
+   fChargeZ(-99)
 {
 }
 
 //______________________________________________________________________________
 //  build a point
-TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, Double_t time, Double_t chargeZ, Double_t probaZ)
+TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr)
 : TAGobject(),
    fPosition(pos),
    fPosError(posErr),
    fMomentum(0,0,0),
-   fMomError(0,0,0),
-   fTime(time),
-   fChargeZ(chargeZ),
-   fChargeProbaZ(probaZ)
+   fMomError(0,0,0)
 {
 }
 
 //______________________________________________________________________________
 //  build a point
-TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Double_t time, Double_t chargeZ, Double_t probaZ)
+TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ)
  : TAGobject(),
    fPosition(pos),
    fPosError(posErr),
    fMomentum(mom),
    fMomError(momErr),
-   fTime(time),
-   fChargeZ(chargeZ),
-   fChargeProbaZ(probaZ)
+   fChargeZ(chargeZ)
 {
 }
 
@@ -81,20 +74,20 @@ TAGntuPoint::~TAGntuPoint()
 
 //______________________________________________________________________________
 //  standard
-TAGpoint* TAGntuPoint::NewPoint(TVector3 pos, TVector3 posErr, Double_t time, Double_t chargeZ, Double_t probaZ)
+TAGpoint* TAGntuPoint::NewPoint(TVector3 pos, TVector3 posErr)
 {
    TClonesArray &pixelArray = *fListOfPoints;
-   TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(pos, posErr, time, chargeZ, probaZ);
+   TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(pos, posErr);
    
    return pixel;
 }
 
 //______________________________________________________________________________
 //  standard + momentum
-TAGpoint* TAGntuPoint::NewPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Double_t time, Double_t chargeZ, Double_t probaZ)
+TAGpoint* TAGntuPoint::NewPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ)
 {
 	TClonesArray &pixelArray = *fListOfPoints;
-	TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, time, chargeZ, probaZ);
+	TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, chargeZ);
 
 	return pixel;
 }

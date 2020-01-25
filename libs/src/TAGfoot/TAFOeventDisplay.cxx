@@ -642,12 +642,12 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveTrack* ts)
       if (track == 0x0) return;
 
       fInfoView->AddLine( Form("Track # %2d:", track->GetTrackId()) );
-      fInfoView->AddLine( Form("Charge: %g Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass()) );
+      fInfoView->AddLine( Form("Charge: %d Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass()) );
       fInfoView->AddLine( Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof()) );
       
       if (fConsoleButton->IsOn()) {
          cout <<  Form("Track # %2d:", track->GetTrackId());
-         cout <<  Form("Charge: %g Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass());
+         cout <<  Form("Charge: %d Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass());
          cout <<  Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof());
       }
    }
@@ -1038,19 +1038,21 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
 //__________________________________________________________
 void TAFOeventDisplay::UpdateGlbTrackElements()
 {
+   TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
+   
+   //example begin
    TVector3 vtx(0.2,-0.03,0.9);
    TVector3 mom0(0.119, -0.017, 2.39);
+   TVector3 vtxErr(0.01,0.01,0.01);
+   TVector3 mom0Err(0.01, 0.01, 0.01);
    Int_t charge = 2;
 
-   TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
-   TAGtrack* track0 = new TAGtrack(0.938, mom0.Mag(), charge, 1.1, 0.200, -1);
-   glbTrack->TrackId(track0);
-
-   return;
+   pNtuTrack->Clear();
+   TAGtrack* track0 = pNtuTrack->NewTrack(0.938, mom0.Mag(), charge, 1.1, 0.200, -1);
+   track0->AddMeasPoint(vtx, vtxErr, mom0, mom0Err);
+   // example end
    
    fGlbTrackDisplay->ResetTracks();
-
-   TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
    
    if( pNtuTrack->GetTracksN() > 0 ) {
       for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {

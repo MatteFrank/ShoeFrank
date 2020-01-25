@@ -4,14 +4,8 @@
   \brief   Implementation of TAGntuGlbTrack.
 */
 
-#include <string.h>
-
-#include <fstream>
-#include <bitset>
-using namespace std;
-#include <algorithm>
-
 #include "TString.h"
+#include "TVector3.h"
 
 #include "TAGntuGlbTrack.hxx"
 
@@ -93,6 +87,22 @@ void TAGtrack::AddCorrPoint(TAGpoint* point)
 {
    TClonesArray &pointArray = *fListOfCorrPoints;
    new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
+}
+
+// __________________________________________________________________________
+//
+void TAGtrack::AddMeasPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
+{
+   TClonesArray &pointArray = *fListOfMeasPoints;
+   new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, fCharge);
+}
+
+// __________________________________________________________________________
+//
+void TAGtrack::AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
+{
+   TClonesArray &pointArray = *fListOfCorrPoints;
+   new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, fCharge);
 }
 
 //------------------------------------------+-----------------------------------

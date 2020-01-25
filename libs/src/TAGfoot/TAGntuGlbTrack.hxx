@@ -34,8 +34,8 @@ public:
    void             SetMomentum(Double_t amom)    { fMom = amom;       }
    Double_t         GetMomentum()           const { return fMom;       }
    
-   void             SetCharge(Double_t acharge)   { fCharge = acharge; }
-   Double_t         GetCharge()             const { return fCharge;    }
+   void             SetCharge(Int_t acharge)      { fCharge = acharge; }
+   Int_t            GetCharge()             const { return fCharge;    }
    
    void             SetTof(Double_t atoff)        { fTof = atoff;      }
    Double_t         GetTof()                const { return fTof;       }
@@ -79,9 +79,11 @@ public:
    
    //! Add measured point
    void             AddMeasPoint(TAGpoint* point);
+   void             AddMeasPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
    
    //! Add corrected point
    void             AddCorrPoint(TAGpoint* point);
+   void             AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
 
    void             Clear(Option_t* opt="");
    
@@ -90,7 +92,7 @@ public:
 private:
    Double32_t       fMass;
    Double32_t       fMom;
-   Double32_t       fCharge;
+   Int_t            fCharge;
    Double32_t       fTof;
    Double32_t       fEnergy;
    Int_t            fTrkId;
