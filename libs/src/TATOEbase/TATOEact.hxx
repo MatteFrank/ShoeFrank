@@ -14,6 +14,7 @@
 //______________________________________________________________________________
 //
 
+#include "TAMCntuEve.hxx"
 
 
 template<class T>
@@ -123,6 +124,10 @@ private:
         std::vector<particle_properties> hypothesis_c;
         hypothesis_c.reserve(candidate_c.size());
         
+        
+        auto * data_hc = static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" )->Object() );
+        
+        
         for( const auto& candidate : candidate_c ) {
             auto endPosition = transformation_h->FromTWLocalToGlobal( candidate.data->GetPosition() );
             
@@ -131,6 +136,18 @@ private:
             
             auto beam_energy = 200.; //MeV/u
             auto momentum = sqrt( (beam_energy * mass) * (beam_energy * mass) + 2 *  (beam_energy * mass) * (938 * mass)  );
+            
+            auto id = candidate.data->GetColumnHit()->GetMcTrackIdx(0);
+            
+            std::cout << "computed_momentum : " << momentum << '\n';
+            std::cout << "initial_momentum : " << data_hc->GetHit(id)->GetInitP().Mag() * 1e3 << '\n';
+//            std::cout << "final_momentum : " << data_hc->GetHit(id)->GetFinalP().Mag2() << '\n';
+//             id = candidate.data->GetRowHit()->GetMcTrackIdx(0);
+//            std::cout << "initial_momentum : " << data_hc->GetHit(id)->GetInitP().Mag2() << '\n';
+//            std::cout << "final_momentum : " << data_hc->GetHit(id)->GetFinalP().Mag2() << '\n';
+            
+            momentum = data_hc->GetHit(id)->GetInitP().Mag() * 1000;
+            
             
             //auto track_slope_x = ( endPosition.X() - vertexPosition.X() )/( endPosition.Z() - vertexPosition.Z() );
             auto lengthY = abs(endPosition.Y() - vertexPosition.Y());
@@ -214,7 +231,9 @@ private:
                 std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
             }
             
+            
         }
+        
         
         
     }
