@@ -27,6 +27,7 @@ set( with_dictionnaries
    TAGactionFile
    TAGbaseDigitizer
    TAGconfigFile
+   TAGcluster
    TAGdata
    TAGdataDsc
    TAGeventId

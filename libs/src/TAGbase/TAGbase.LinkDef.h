@@ -20,6 +20,8 @@
 #pragma link C++ class TAGdata;
 #pragma link C++ function operator<<(ostream&,const TAGdata&);
 
+#pragma link C++ class TAGcluster;
+
 #pragma link C++ class TAGdataDsc+;
 
 #pragma link C++ class TAGpadGroup+;
