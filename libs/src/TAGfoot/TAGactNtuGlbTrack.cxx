@@ -258,9 +258,8 @@ void TAGactNtuGlbTrack::FillMsdPoint()
          
          TVector3 pos       = clus->GetPositionG();
          TVector3 posG      = fpFootGeo->FromMSDLocalToGlobal(pos);
-         Float_t err        = clus->GetPosError();
-         TVector3 posErr(err, err, 0); // temporary
-         TVector3 posErrG  = fpFootGeo->FromMSDLocalToGlobal(posErr);
+         TVector3 posErr    = clus->GetPosError();
+         TVector3 posErrG   = fpFootGeo->FromMSDLocalToGlobal(posErr);
 
          fpNtuPoint->NewPoint(posG, posErrG);
       }
