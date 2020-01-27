@@ -214,7 +214,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
               fpHisStripTot->Fill(cluster->GetStripsN());
               fpHisStrip[iSensor]->Fill(cluster->GetStripsN());
               if (TAMSDparConf::IsMapHistOn()) {
-                 fpHisClusMap[iSensor]->Fill(cluster->GetPosition());
+                 fpHisClusMap[iSensor]->Fill(cluster->GetPositionF());
               }
            }
         }
