@@ -12,9 +12,10 @@ ClassImp(TAMSDcluster) // Description of a cluster
 //______________________________________________________________________________
 //  
 TAMSDcluster::TAMSDcluster()
-:  TAGobject(),
+:  TAGcluster(),
    fPosition(0.),
    fPosError(0),
+   fCurPosition(0,0,0),
    fPositionG(new TVector3(0., 0., 0.)),
    fPlaneNumber(10),
    fPlaneView(-1),
@@ -37,9 +38,10 @@ void TAMSDcluster::SetupClones()
 //______________________________________________________________________________
 //  
 TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
-:  TAGobject(),
+:  TAGcluster(),
    fPosition(cluster.fPosition),
    fPosError(cluster.fPosError),
+   fCurPosition(cluster.fCurPosition),
    fPositionG(new TVector3(*cluster.fPositionG)),
    fPlaneNumber(cluster.fPlaneNumber),
    fPlaneView(cluster.fPlaneView),
@@ -88,6 +90,30 @@ TAMSDntuHit* TAMSDcluster::GetStrip(Int_t idx)
    else
       return 0x0;
 }
+
+//______________________________________________________________________________
+//
+void TAMSDcluster::SetPosition(Float_t pos)
+{
+   fPosition = pos;
+   if (fPlaneView == 0)
+      fCurPosition.SetXYZ(fPosition, 0, 0);
+   else
+      fCurPosition.SetXYZ(0, fPosition, 0);
+}
+
+//______________________________________________________________________________
+//
+void TAMSDcluster::SetPosError(Float_t pos)
+{
+   fPosError = pos;
+   if (fPlaneView == 0)
+    fCurPosition.SetXYZ(fPosError, 0, 0);
+   else
+     fCurPosition.SetXYZ(0, fPosError, 0);
+}
+
+
 //______________________________________________________________________________
 //
 Float_t TAMSDcluster::Distance(TAMSDcluster *aClus) {

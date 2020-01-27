@@ -6,7 +6,7 @@
 #include "TVector3.h"
 #include "TClonesArray.h"
 #include "TArrayI.h"
-#include "TAGobject.hxx"
+#include "TAGcluster.hxx"
 
 
 /** TAMSDcluster class, simple container class for tracks with the associated clusters                    
@@ -16,11 +16,12 @@
 
 class TAMSDntuHit;
 
-class TAMSDcluster : public TAGobject {
+class TAMSDcluster : public TAGcluster {
    
 private:
    Float_t            fPosition;                 // position of the cluster in plane frame
    Float_t            fPosError;                 // position's errors of the cluster in plane frame
+   TVector3           fCurPosition;              // current position of the cluster in plane frame
    TVector3*          fPositionG;                // position of the clus in tracker frame
    TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
    
@@ -37,9 +38,9 @@ public:
    ~TAMSDcluster();
    
    //! Set position in local frame
-   void               SetPosition(Float_t pos)               { fPosition = pos; }
+   void               SetPosition(Float_t pos);
    //! Set position error in local frame
-   void               SetPosError(Float_t pos)               { fPosError = pos; }
+   void               SetPosError(Float_t pos);
    //! Set position in global tracker frame
    void               SetPositionG(TVector3* pos);
    //! Set plane number
@@ -50,11 +51,17 @@ public:
    void               SetValid(Bool_t v = true)              { fIsValid = v;           }
    
    //! Get position in local frame
-   Float_t           GetPosition()                     const { return fPosition;       }
+   Float_t            GetPositionF()                   const { return fPosition;       }
    //! Get position error in local frame
-   Float_t           GetPosError()                     const { return fPosError;       }
+   Float_t            GetPosErrorF()                   const { return fPosError;       }
+   
+   //! Get vector position in local frame
+   const TVector3&          GetPosition()              const { return fCurPosition;    }
+   //! Get vector position error in local frame
+   const TVector3&          GetPosError()              const { return fCurPosition;    }
+   
    //! Get position in global tracker frame
-   TVector3&           GetPositionG()                  const { return *fPositionG ;    }
+   TVector3&          GetPositionG()                   const { return *fPositionG ;    }
    //! Get Pixel list
    TClonesArray*      GetListOfStrips()                const { return fListOfStrips;   }
    //! Get cluster number

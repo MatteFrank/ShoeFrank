@@ -18,7 +18,7 @@ ClassImp(TATWpoint) // Description of Single Detector TATWpoint
 //______________________________________________________________________________
 //  default constructor
 TATWpoint::TATWpoint()
-: TAGobject(),
+: TAGcluster(),
    m_position(),
    m_posErr(),
    m_column(0),
@@ -36,7 +36,7 @@ TATWpoint::TATWpoint()
 //______________________________________________________________________________
 //  build a point
 TATWpoint::TATWpoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit )
-: TAGobject(),
+: TAGcluster(),
    m_position(x, y, 0),
    m_posErr(dx, dy, 0),
    m_columnHit(new TATWntuHit(*colHit)),

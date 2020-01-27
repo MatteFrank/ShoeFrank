@@ -13,7 +13,7 @@ ClassImp(TAVTbaseCluster) // Description of a cluster
 //______________________________________________________________________________
 //  
 TAVTbaseCluster::TAVTbaseCluster()
-:  TAGobject(),
+:  TAGcluster(),
    fPosition(new TVector3(0., 0., 0.)),
    fPosError(new TVector3(0., 0., 0.)),
    fPositionG(new TVector3(0., 0., 0.)),
@@ -32,7 +32,7 @@ TAVTbaseCluster::TAVTbaseCluster()
 //______________________________________________________________________________
 //  
 TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
-:  TAGobject(),
+:  TAGcluster(),
    fPosition(new TVector3(*cluster.fPosition)),
    fPosError(new TVector3(*cluster.fPosError)),
    fPositionG(new TVector3(*cluster.fPositionG)),

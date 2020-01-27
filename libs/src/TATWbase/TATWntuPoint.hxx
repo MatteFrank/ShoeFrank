@@ -13,7 +13,7 @@
 // ROOT classes
 #include "TVector3.h"
 
-#include "TAGobject.hxx"
+#include "TAGcluster.hxx"
 #include "TATWntuRaw.hxx"
 
 
@@ -32,7 +32,7 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-class TATWpoint : public TAGobject {
+class TATWpoint : public TAGcluster {
    
 private:
    TVector3    m_position;      // position in detector framework
@@ -57,8 +57,8 @@ public:
    ~TATWpoint() {};
    
    //    All the Get methods
-   TVector3  GetPosition()    const  { return m_position;            }
-   TVector3  GetPosError()    const  { return m_posErr;              }
+   const TVector3&  GetPosition() const  { return m_position;        }
+   const TVector3&  GetPosError() const  { return m_posErr;          }
 
    int       GetColumnID()    const  { return m_column;              }
    int       GetRowID()       const  { return m_row;                 }
