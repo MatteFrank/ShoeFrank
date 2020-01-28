@@ -363,7 +363,7 @@ private:
 
     
 private:
-    constexpr double retrieve_depth( TATWparGeo* geo_ph ) const
+    double retrieve_depth( TATWparGeo* geo_ph ) const
     {
         auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
         
@@ -374,7 +374,7 @@ private:
     
 public:
     
-    constexpr detector_properties( TATWntuPoint* cluster_phc,
+    detector_properties( TATWntuPoint* cluster_phc,
                                    TATWparGeo* geo_ph,
                                    double cut_p) :
         cluster_mhc{cluster_phc},
