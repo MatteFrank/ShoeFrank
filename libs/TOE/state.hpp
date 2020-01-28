@@ -289,8 +289,8 @@ namespace details{
         auto operator()(state_impl<StateVector, StateCovariance> state_p)
         {
             auto halves = split_half( std::move(state_p.vector), details::row_tag{});
-            return operating_state<decltype(halves.first), 2>{ {std::move(state_p).evaluation_point},
-                {std::move(halves.first), std::move(halves.second)}     };
+            return operating_state<decltype(halves.first), 2>{ std::move(state_p).evaluation_point,
+                                                               { std::move(halves.first), std::move(halves.second)}     };
         }
     };
     
