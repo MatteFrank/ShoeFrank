@@ -119,7 +119,7 @@ public:
    Int_t              GetMcTrackIdx(Int_t index)      const   { return fMcTrackIdx[index];    }
    Int_t              GetMcTracksN()                  const   { return fMcTrackIdx.GetSize(); }
 
-   ClassDef(TAVTbaseCluster,2)                          // Describes TAVTbaseCluster
+   ClassDef(TAVTbaseCluster,3)                          // Describes TAVTbaseCluster
 };
 
 

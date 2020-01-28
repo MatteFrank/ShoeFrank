@@ -185,6 +185,12 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
    Bool_t isGood = false;
    for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
 	  TAVTvertex* vtx      = pNtuVertex->GetVertex(i);
+      
+      if (!fgCheckBmMatching) {
+         vtx->SetBmMatched();
+         continue;
+      }
+      
 	  TVector3 vtxPosition = vtx->GetVertexPosition();
 	  vtxPosition  = pFootGeo->FromVTLocalToGlobal(vtxPosition);
 	  
@@ -210,12 +216,12 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 	  if (bestIdx != -1) {
 		 TAVTvertex* vtx  = pNtuVertex->GetVertex(bestIdx);
 		 vtx->SetBmMatched();
-	  }
-	  
-	  if (ValidHistogram()) {
-		 fpHisBmMatchX->Fill(bestRes.X());
-		 fpHisBmMatchY->Fill(bestRes.Y());
-	  }
+
+        if (ValidHistogram()) {
+           fpHisBmMatchX->Fill(bestRes.X());
+           fpHisBmMatchY->Fill(bestRes.Y());
+        }
+     }
    }
    
    return true;

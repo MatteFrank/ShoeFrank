@@ -7,13 +7,14 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include <vector>
+#include <map>
 #include "TVector3.h"
 
 using namespace std;
 
 
 #include "TClonesArray.h"
+#include "TArrayI.h"
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
@@ -24,7 +25,7 @@ class TAGtrack : public TAGobject {
 public:
    
    TAGtrack();
-   TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t trkId);
+   TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof);
 
    virtual         ~TAGtrack();
    
@@ -57,6 +58,13 @@ public:
    
    void             SetTofDirection(TVector3 dir) { fTofDir = dir;     }
    TVector3         GetTofDirection()             { return fTofDir;    }
+   
+   // Get MC info
+   Int_t            GetMcTrackIdx(Int_t idx) const { return fMcTrackIdx[idx];      }
+   Int_t            GetMcTracksN()           const { return fMcTrackIdx.GetSize(); }
+
+   // Add MC track Idx
+   void             AddMcTrackIdx(Int_t trackIdx);
    
    
    //! Get list of measured points
@@ -96,7 +104,10 @@ private:
    Double32_t       fTof;
    Double32_t       fEnergy;
    Int_t            fTrkId;
-   
+
+   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
+   std::map<int, int> fMcTrackMap;               //! Map of MC track Id
+
    //Particle directions and positions computed on target middle
    TVector3         fTgtDir;
    TVector3         fTgtPos;
@@ -133,7 +144,7 @@ public:
    TClonesArray*    GetListOfTracks() { return fListOfTracks; }
    
    TAGtrack*        NewTrack();
-   TAGtrack*        NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t trkId);
+   TAGtrack*        NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof);
    TAGtrack*        NewTrack(TAGtrack& track);
    
    virtual void     SetupClones();

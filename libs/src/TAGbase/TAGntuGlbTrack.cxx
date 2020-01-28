@@ -25,7 +25,6 @@ TAGtrack::TAGtrack()
    fMom(0.),
    fCharge(0.),
    fTof(0.),
-   fEnergy(0.),
    fTrkId(-1),
    fTgtDir(0,0,0),
    fTgtPos(0,0,0),
@@ -35,18 +34,19 @@ TAGtrack::TAGtrack()
    fListOfCorrPoints(0x0)
 {
    SetupClones();
+   fMcTrackIdx.Reset();
+   fMcTrackMap.clear();
 }
 
 //------------------------------------------+-----------------------------------
 //! Constructor.
-TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t trkId)
+TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
  : TAGobject(),
    fMass(mass),
    fMom(mom),
    fCharge(charge),
    fTof(tof),
-   fEnergy(energy),
-   fTrkId(trkId),
+   fTrkId(-1),
    fTgtDir(0,0,0),
    fTgtPos(0,0,0),
    fTofPos(0,0,0),
@@ -55,6 +55,10 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, D
    fListOfCorrPoints(0x0)
 {
    SetupClones();
+   fMcTrackIdx.Reset();
+   fMcTrackMap.clear();
+   
+   fEnergy = TMath::Sqrt(mass*mass + mom*mom) - mass;
 }
 
 //------------------------------------------+-----------------------------------
@@ -107,11 +111,21 @@ void TAGtrack::AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
-
 void TAGtrack::Clear(Option_t*)
 {
    fListOfMeasPoints->Delete();
    fListOfCorrPoints->Delete();
+}
+
+//______________________________________________________________________________
+//
+void TAGtrack::AddMcTrackIdx(Int_t trackIdx)
+{
+   if (fMcTrackMap[trackIdx] == 0) {
+      fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
+      fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
+      fMcTrackMap[trackIdx] = 1;
+   }
 }
 
 //##############################################################################
@@ -182,10 +196,13 @@ void TAGntuGlbTrack::Clear(Option_t*)
 
 //______________________________________________________________________________
 //
-TAGtrack* TAGntuGlbTrack::NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof, Double_t energy, Int_t trkId)
+TAGtrack* TAGntuGlbTrack::NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
 {
+   Int_t trkId = fListOfTracks->GetEntries();
    TClonesArray &trackArray = *fListOfTracks;
-   TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(mass, mom, charge, tof, energy, trkId);
+   TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(mass, mom, charge, tof);
+   track->SetTrackId(trkId);
+   
    return track;
 }
 

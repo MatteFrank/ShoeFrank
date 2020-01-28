@@ -283,7 +283,7 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    }
 
    // Magnet
-   if (GlobalPar::GetPar()->IncludeDI()) {
+   if (GlobalPar::GetPar()->IncludeDI() || GlobalPar::GetPar()->IncludeTOE()) {
       TADIparGeo* parGeo = fReco->GetParGeoDi();
       TGeoVolume* mgVol = parGeo->BuildMagnet();
       fVolumeNames[mgVol->GetName()] = kDIP;
@@ -1048,7 +1048,7 @@ void TAFOeventDisplay::UpdateGlbTrackElements()
    Int_t charge = 2;
 
    pNtuTrack->Clear();
-   TAGtrack* track0 = pNtuTrack->NewTrack(0.938, mom0.Mag(), charge, 1.1, 0.200, -1);
+   TAGtrack* track0 = pNtuTrack->NewTrack(0.938, mom0.Mag(), charge, 1.1);
    track0->AddMeasPoint(vtx, vtxErr, mom0, mom0Err);
    // example end
    

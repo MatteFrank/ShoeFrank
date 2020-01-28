@@ -282,7 +282,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files dipole
-   if (GlobalPar::GetPar()->IncludeDI() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
+   if (GlobalPar::GetPar()->IncludeDI() || TAGactNtuGlbTrack::GetStdAloneFlag() || GlobalPar::GetPar()->IncludeTOE()) {
       fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
       TString parFileName = "./geomaps/TADIdetector.map";
