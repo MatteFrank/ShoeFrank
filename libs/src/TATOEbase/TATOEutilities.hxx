@@ -363,7 +363,7 @@ private:
 
     
 private:
-    double retrieve_depth( TATWparGeo* geo_ph ) const
+    constexpr double retrieve_depth( TATWparGeo* geo_ph ) const
     {
         auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
         
