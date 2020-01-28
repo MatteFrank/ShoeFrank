@@ -29,7 +29,8 @@ public:
 
     //! Get cluster
    TAVTbaseCluster* GetCluster(Int_t index)  { return (TAVTcluster*)fListOfClusters->At(index); }
- 
+   TAVTbaseCluster const * GetCluster(Int_t index) const { return (TAVTcluster*)fListOfClusters->At(index); }
+    
    //! Add cluster
    void             AddCluster(TAVTcluster* cluster);
    
