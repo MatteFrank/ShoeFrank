@@ -27,6 +27,7 @@ protected:
    TVector3*          fPosition;                 // position of the cluster in plane frame
    TVector3*          fPosError;                 // position's errors of the cluster in plane frame 
    TVector3*          fPositionG;                // position of the clus in tracker frame
+   TVector3*          fPosErrorG;                // position's errors of the clus in tracker frame
    TClonesArray*      fListOfPixels;             // list of pixel attached to this cluster
    
    Int_t              fNumber;                   // number
@@ -71,7 +72,11 @@ public:
    //! Get position error in local frame
    const TVector3&     GetPosError()                   const { return *fPosError;      }
    //! Get position in global tracker frame
-   TVector3&           GetPositionG()                  const { return *fPositionG ;    }
+   const TVector3&     GetPositionG()                  const { return *fPositionG ;    }
+   //! Get position in global tracker frame
+   const TVector3&     GetPosErrorG()                  const { return *fPositionG ;    }
+
+   
    //! Get U position in local frame
    Float_t            GetPositionU()                   const { return (*fPosition)(0); }
    //! Get V position in local frame
