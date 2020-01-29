@@ -22,6 +22,7 @@ set( with_dictionnaries
    FootField
    TADIgeoField
    TADIeveField
+   TADIgenField
    TADIparGeo
    TADItrackPropagator
    TADIeveTrackPropagator
