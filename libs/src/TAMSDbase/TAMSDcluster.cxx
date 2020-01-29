@@ -16,7 +16,8 @@ TAMSDcluster::TAMSDcluster()
    fPosition(0.),
    fPosError(0),
    fCurPosition(0,0,0),
-   fPositionG(new TVector3(0., 0., 0.)),
+fPositionG(0., 0., 0.),
+fPosErrorG(0., 0., 0.),
    fPlaneNumber(10),
    fPlaneView(-1),
    fIsValid(false)
@@ -42,7 +43,8 @@ TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
    fPosition(cluster.fPosition),
    fPosError(cluster.fPosError),
    fCurPosition(cluster.fCurPosition),
-   fPositionG(new TVector3(*cluster.fPositionG)),
+   fPositionG(cluster.fPositionG),
+   fPosErrorG(cluster.fPosErrorG),
    fPlaneNumber(cluster.fPlaneNumber),
    fPlaneView(cluster.fPlaneView),
    fIsValid(cluster.fIsValid),
@@ -56,7 +58,6 @@ TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
 TAMSDcluster::~TAMSDcluster()
 { 
    // TAMSDcluster default destructor
-   delete fPositionG;
    delete fListOfStrips;
 }
 
@@ -76,9 +77,14 @@ void TAMSDcluster::AddStrip(TAMSDntuHit* strip)
 
 //______________________________________________________________________________
 //
-void TAMSDcluster::SetPositionG(TVector3* posGlo)
+void TAMSDcluster::SetPositionG(TVector3& posGlo)
 {
-   fPositionG->SetXYZ(posGlo->Px(), posGlo->Py(), posGlo->Pz());
+   fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   
+   if (fPlaneView == 0)
+      fPosErrorG.SetXYZ(fPosition, 0, 0.01);
+   else
+      fPosErrorG.SetXYZ(0, fPosition, 0.01);   
 }
 
 //______________________________________________________________________________

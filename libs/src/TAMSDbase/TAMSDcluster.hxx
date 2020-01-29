@@ -22,7 +22,8 @@ private:
    Float_t            fPosition;                 // position of the cluster in plane frame
    Float_t            fPosError;                 // position's errors of the cluster in plane frame
    TVector3           fCurPosition;              // current position of the cluster in plane frame
-   TVector3*          fPositionG;                // position of the clus in tracker frame
+   TVector3           fPositionG;                // position of the clus in tracker frame
+   TVector3           fPosErrorG;                // position error of the clus in tracker frame
    TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
    
    Int_t              fPlaneNumber;              // plane number
@@ -42,7 +43,7 @@ public:
    //! Set position error in local frame
    void               SetPosError(Float_t pos);
    //! Set position in global tracker frame
-   void               SetPositionG(TVector3* pos);
+   void               SetPositionG(TVector3& pos);
    //! Set plane number
    void               SetPlaneNumber(Int_t nb)               { fPlaneNumber = nb;      }
    //! Set view
@@ -61,7 +62,10 @@ public:
    const TVector3&          GetPosError()              const { return fCurPosition;    }
    
    //! Get position in global tracker frame
-   TVector3&          GetPositionG()                   const { return *fPositionG ;    }
+   const TVector3&          GetPositionG()             const { return fPositionG ;     }
+   //! Get position in global tracker frame
+   const TVector3&          GetPosErrorG()             const { return fPosErrorG ;     }
+   
    //! Get Pixel list
    TClonesArray*      GetListOfStrips()                const { return fListOfStrips;   }
    //! Get cluster number

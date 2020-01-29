@@ -35,8 +35,11 @@
 class TATWpoint : public TAGcluster {
    
 private:
-   TVector3    m_position;      // position in detector framework
-   TVector3    m_posErr;        // position error in detector framework
+   TVector3    m_position;      // position in local framework
+   TVector3    m_posErr;        // position error in local framework
+   TVector3    m_positionG;     // position in detector framework
+   TVector3    m_posErrG;       // position error in detector framework
+
    int         m_column;        // column number
    int         m_row;           // row number
    
@@ -57,8 +60,11 @@ public:
    ~TATWpoint() {};
    
    //    All the Get methods
-   const TVector3&  GetPosition() const  { return m_position;        }
-   const TVector3&  GetPosError() const  { return m_posErr;          }
+   const TVector3&  GetPosition()  const  { return m_position;       }
+   const TVector3&  GetPosError()  const  { return m_posErr;         }
+
+   const TVector3&  GetPositionG() const  { return m_positionG;      }
+   const TVector3&  GetPosErrorG() const  { return m_posErrG;        }
 
    int       GetColumnID()    const  { return m_column;              }
    int       GetRowID()       const  { return m_row;                 }
@@ -77,6 +83,7 @@ public:
    double    GetChargeZProba() const  { return m_chargeZProba;       }
 
    
+   void      SetPositionG(TVector3& pos);
    void      SetChargeZ(int z)       { m_chargeZ = z;                }
    void      SetChargeZProba(double p){ m_chargeZProba = p;          }
    

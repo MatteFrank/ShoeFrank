@@ -31,8 +31,6 @@
 
 #include "Evento.hxx"
 
-#include "FootField.hxx"
-
 class TTree;
 
 class LocalRecoMC : public BaseReco

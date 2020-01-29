@@ -24,6 +24,12 @@ class TAGcluster : public TAGobject {
    //! Get position error in local frame
    virtual const TVector3&  GetPosError() const = 0;
    
+   //! Get position in detector frame
+   virtual const TVector3&  GetPositionG() const = 0;
+   
+   //! Get position error in detector frame
+   virtual const TVector3&  GetPosErrorG() const = 0;
+   
     ClassDef(TAGcluster,1)
 };
 

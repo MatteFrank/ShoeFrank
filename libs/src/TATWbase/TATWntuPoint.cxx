@@ -21,6 +21,8 @@ TATWpoint::TATWpoint()
 : TAGcluster(),
    m_position(),
    m_posErr(),
+   m_positionG(),
+   m_posErrG(),
    m_column(0),
    m_row(0),
    m_columnHit(0x0),
@@ -51,6 +53,15 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* colHit, double y, double 
    m_de2    = m_rowHit->GetEnergyLoss();
    m_time   = m_columnHit->GetTime();
 }
+
+//______________________________________________________________________________
+//
+void TATWpoint::SetPositionG(TVector3& posGlo)
+{
+   m_positionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   m_posErrG.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.1);
+}
+
 
 //______________________________________________________________________________
 // Clear

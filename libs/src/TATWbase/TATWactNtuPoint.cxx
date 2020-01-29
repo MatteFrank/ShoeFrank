@@ -145,9 +145,12 @@ Bool_t TATWactNtuPoint::FindPoints()
          Int_t bar2   = hitmin->GetBar();
          Float_t xmin = pGeoMap->GetBarPosition(0, bar1)[0];
          Float_t ymin = pGeoMap->GetBarPosition(1, bar2)[1];
-      
+         Float_t zmin = (pGeoMap->GetBarPosition(0, bar1)[2] + pGeoMap->GetBarPosition(1, bar2)[2])/2.;
+
          TATWpoint* point = pNtuPoint->NewPoint(xmin, fDefPosErr, hit1, ymin, fDefPosErr, hitmin);
-         
+         TVector3 posG(xmin, ymin, zmin);
+         point->SetPositionG(posG);
+
          Int_t Z = hit1->GetChargeZ(); // taking MC Z from hit since no reconstruction available
          point->SetChargeZ(Z);
 	 

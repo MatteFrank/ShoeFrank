@@ -28,9 +28,6 @@ public:
    
    virtual TEveVectorD GetFieldD(Double_t x, Double_t y, Double_t z) const;
    
-private:
-   static const Float_t Tesla;
-   
    ClassDef(TADIeveField,1)
 };
 
