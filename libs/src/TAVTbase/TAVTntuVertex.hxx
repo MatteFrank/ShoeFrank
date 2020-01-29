@@ -23,6 +23,7 @@ class TAVTvertex : public TAGobject {
 private:
     TClonesArray*   fListOfTracks;      // list of track associated to the vertex 
     TVector3        fVertexPosition;    // vertex position
+    TVector3        fVertexPosError;    // vertex position error
     Int_t           fIsValid;           // is zero if not valid 1 if it has almost two tracks
     Bool_t          fIsBmMatched;       // Matched flag with BM
     Double_t        fDistanceMin;       // distance value between the vertex point and the track. Sum of distance of all tracks
@@ -43,14 +44,17 @@ public:
     void           AddTrack(TAVTtrack* track);
    
     //!Get Vertex Position
-    const TVector3&      GetVertexPosition()     const       { return fVertexPosition; }
-    
-    //!Get Vertex Position
-    TVector3&      GetVertexPosition()            { return fVertexPosition; }
-    
+    const TVector3& GetVertexPosition()     const { return fVertexPosition; }
+
+   //!Get Vertex Position Error
+   const TVector3&  GetVertexPosError()     const { return fVertexPosError; }
+   
     //!Set Vertex Position
     void SetVertexPosition(TVector3& xyz)         { fVertexPosition = xyz;}
-    
+
+   //!Set Vertex Position Error
+   void SetVertexPosError(TVector3& xyz)          { fVertexPosError = xyz;}
+
     //! Set flag isValid
     void  SetVertexValidity(Int_t q)              { fIsValid = q;        }
     //Get flag Validity
@@ -59,12 +63,12 @@ public:
     //! Set Distance Min
     void SetDistanceMin(Double_t q)               { fDistanceMin = q;    }
     //! Getdistance Min
-    Double_t GetDistanceMin()              const  { return fDistanceMin; }
+    Double_t GetDistanceMin()               const { return fDistanceMin; }
     
     //! Set BM matched flag
     void SetBmMatched(Bool_t flag = true)         { fIsBmMatched = flag; }
     //! Get BM matched flag
-    Bool_t IsBmMatched()                   const  { return fIsBmMatched; }
+    Bool_t IsBmMatched()                    const { return fIsBmMatched; }
    
     //! Reset
     void Reset();

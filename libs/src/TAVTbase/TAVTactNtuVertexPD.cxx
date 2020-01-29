@@ -255,18 +255,28 @@ Bool_t TAVTactNtuVertexPD::SetVertex()
 	  fpHisPosXY->Fill(fVtxPos.X(), fVtxPos.Y());
    }
    
+    TVector3 err(0,0,0);
+
     TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
     Int_t nTracks = ntuTrack->GetTracksN();
     for(Int_t q = 0; q < nTracks; ++q ) {
        if(fNotValidTrack[q] == 1) continue;
         TAVTtrack* track0 = ntuTrack->GetTrack(q);
-        track0->SetValidity(1);
-       track0->SetVertexZ(fVtxPos.Z());
-        vtx->AddTrack(track0);
+       track0->SetValidity(1);
+       track0->SetPosVertex(fVtxPos);
+       vtx->AddTrack(track0);
+       TVector3 pos = track0->Intersection(fVtxPos.Z());
+       pos -= fVtxPos;
+       pos.SetXYZ(pos[0]*pos[0], pos[1]*pos[1], 0);
+       err += pos;
     }
     
-   if (vtx->GetTracksN() > 0) 
-	  ntuVertex->NewVertex(*vtx);
+    if (vtx->GetTracksN() > 0) {
+      err.SetXYZ(TMath::Sqrt(err[0]), TMath::Sqrt(err[1]), 0);
+      err *= 1/float(vtx->GetTracksN());
+      vtx->SetVertexPosError(err);
+      ntuVertex->NewVertex(*vtx);
+    }
    
     delete vtx;
     return true;
