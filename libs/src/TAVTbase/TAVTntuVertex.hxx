@@ -38,6 +38,7 @@ public:
     Int_t          GetTracksN()             const { return   fListOfTracks->GetEntries();        }
    //! Get Tracks
     TAVTtrack*     GetTrack(Int_t index)          { return (TAVTtrack*)fListOfTracks->At(index); }
+    TAVTtrack const *     GetTrack(Int_t index)    const      { return (TAVTtrack*)fListOfTracks->At(index); }
     //! Add track
     void           AddTrack(TAVTtrack* track);
    

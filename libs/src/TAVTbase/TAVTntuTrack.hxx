@@ -33,7 +33,7 @@ public:
    virtual         ~TAVTntuTrack();
    
    TAVTtrack*       GetTrack(Int_t i);
-   const TAVTtrack* GetTrack(Int_t i) const;
+   TAVTtrack const * GetTrack(Int_t i) const;
    Int_t            GetTracksN()      const; 
    
    TVector3         GetBeamPosition() const         { return fBeamPosition; }
