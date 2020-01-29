@@ -30,8 +30,8 @@
 
 class TAVTntuCluster;
 class TAVTcluster;
-class TAVTntuVertex;
-class TAVTvertex;
+#include "TAVTtrack.hxx"
+#include "TAVTntuVertex.hxx"
 
 class TAITntuCluster;
 class TAITcluster;
@@ -50,7 +50,7 @@ namespace details{
         using vector_matrix =  Matrix<2, 1>;
         using covariance_matrix =  Matrix<2, 2> ;
         using measurement_matrix =  Matrix<2,4> ;
-        using data_type = TAVTcluster;
+        using data_type = TAVTbaseCluster; //to be noted
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     };
     struct it_tag{
@@ -102,7 +102,8 @@ namespace details{
 
 
 template<class Derived>
-struct range_generator{
+struct range_generator
+{
     using candidate = typename details::detector_traits<Derived>::candidate;
     
     struct layer{
@@ -143,22 +144,11 @@ private:
     };
     
     
-    template< class T,
-              typename std::enable_if_t< !std::is_same< typename details::detector_traits<T>::tag,
-                                                        details::vertex_tag >::value,
-                                          std::nullptr_t  > = nullptr         >
+    
+    template< class T >
     auto make_begin_iterator(const T& t_p ) const -> iterator
     {
         return {t_p, 0};
-    }
-    
-    template< class T,
-              typename std::enable_if_t< std::is_same< typename details::detector_traits<T>::tag,
-                                                        details::vertex_tag >::value,
-                                         std::nullptr_t  > = nullptr               >
-    auto make_begin_iterator(const T& t_p ) const -> iterator
-    {
-        return {t_p, 1};
     }
     
     
@@ -180,14 +170,16 @@ private:
 };
 
 
+
+
+
 //______________________________________________________________________________
 //                              VTX
 
 
 
 template<>
-struct detector_properties< details::vertex_tag > :
-    range_generator< detector_properties< details::vertex_tag > >
+struct detector_properties< details::vertex_tag >
 {
     using candidate = details::vertex_tag::candidate;
     using measurement_vector = underlying<candidate>::vector;
@@ -196,9 +188,86 @@ struct detector_properties< details::vertex_tag > :
     using data_type = underlying<candidate>::data_type;
     
     
+    struct track_list
+    {
+        struct pseudo_layer{
+            candidate candidate_m;
+            double depth;
+            double cut;
+            
+            candidate& get_candidate(){ return candidate_m; }
+            candidate const & get_candidate() const { return candidate_m; }
+        };
+        
+        struct iterable_track{
+            
+            struct iterator{
+                
+                using value_type = pseudo_layer;
+                
+                iterator( const detector_properties& detector_p,
+                          const iterable_track& track_p,
+                          std::size_t index_p ) :
+                    detector_m{detector_p},
+                    track_m{track_p},
+                    index_m{index_p} {}
+                
+                iterator& operator++(){ ++index_m ; return *this; }
+                value_type operator*()
+                {
+                    return track_m.form_layer(index_m);
+                }
+                friend bool operator!=(const iterator& lhs, const iterator& rhs){ return lhs.index_m != rhs.index_m; }
+                
+                
+            private:
+                const detector_properties& detector_m;
+                const iterable_track& track_m;
+                std::size_t index_m;
+            };
+            
+        public:
+            
+            iterable_track( detector_properties const & detector_p,
+                            TAVTtrack const * track_ph ) :
+                detector_m{ detector_p },
+                track_mh{track_ph} {}
+            iterator begin() { return iterator( detector_m, *this, 0 ); }
+            iterator end()   { return iterator( detector_m, *this, track_mh->GetClustersN() ); }
+            TAVTbaseCluster const * first_cluster() const { return track_mh->GetCluster(0); }
+            
+            
+        private:
+            pseudo_layer form_layer( std::size_t index_p ) const ;
+            
+        private:
+            detector_properties const & detector_m;
+            TAVTtrack const * track_mh;
+        };
+        
+        using iterator = std::vector<iterable_track>::iterator;
+        
+    public:
+        track_list( detector_properties const & detector_p,
+                    TAVTvertex const * vertex_ph ) :
+            detector_m{ detector_p },
+            track_c{ form_tracks( vertex_ph) } {}
+        iterator begin() { return track_c.begin(); }
+        iterator end() { return track_c.end(); }
+        
+    private:
+        std::vector< iterable_track > form_tracks( TAVTvertex const * vertex_ph ) const ;
+        
+    private:
+        detector_properties const & detector_m;
+        std::vector<iterable_track> track_c;
+    };
+    
+    
+    
 private:
     
-    const TAVTntuCluster* cluster_mhc;
+   // const TAVTntuCluster* cluster_mhc;
     const TAVTntuVertex* vertex_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
@@ -209,19 +278,17 @@ private:
     
 public:
     //might go to intermediate struc holding the data ?
-    constexpr detector_properties( TAVTntuCluster* cluster_phc,
-                                   TAVTntuVertex* vertex_phc,
-                                   TAVTparGeo* geo_ph,
-                                   double cut_p)  :
-        cluster_mhc{cluster_phc},
-        vertex_mhc{vertex_phc},
+    detector_properties( TAVTntuVertex* vertex_phc,
+                         TAVTparGeo* geo_ph,
+                         double cut_p ) :
+        vertex_mhc{ vertex_phc },
         cut_m{cut_p},
         depth_mc{ retrieve_depth(geo_ph) } {}
     
     
 private:
     template<std::size_t ... Indices>
-    constexpr auto retrieve_depth_impl( TAVTparGeo* geo_ph,
+    auto retrieve_depth_impl( TAVTparGeo* geo_ph,
                                          std::index_sequence<Indices...> ) const
             -> std::array<double, layer>
     {
@@ -231,11 +298,13 @@ private:
     }
 
             
-    constexpr auto retrieve_depth( TAVTparGeo* geo_ph ) const
+    auto retrieve_depth( TAVTparGeo* geo_ph ) const
             -> std::array<double, layer>
     {
         return retrieve_depth_impl( geo_ph, std::make_index_sequence<layer>{} );
     }
+    
+    
     
     
 public:
@@ -243,14 +312,56 @@ public:
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
     constexpr double cut_value() const { return cut_m; }
+//    const TAVTvertex * vertex_handle() const { return vertex_mh; }
+    TAVTvertex const * retrieve_vertex( ) const;
+    candidate generate_candidate( TAVTbaseCluster const * cluster_h  ) const ;
     
-    std::vector<candidate> generate_candidates(std::size_t index_p) const ;
-    const TAVTvertex * vertex_handle() const ;
-            
-            
-
-            
+    template<class T> //no easy way to retrieve type of corrected state in question, except give it as template arg
+    T generate_corrected_state( TAVTvertex const * vertex_ph,
+                                TAVTbaseCluster const * cluster_ph ) const
+    {
+        auto * transformation_h =
+        static_cast<TAGgeoTrafo*>(                                                        gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data() )
+                                  );
+        
+        auto start = transformation_h->FromVTLocalToGlobal( vertex_ph->GetVertexPosition() );
+        auto end = transformation_h->FromVTLocalToGlobal( cluster_ph->GetPositionG() );
+        
+        auto length = end - start;
+        
+        auto track_slope_x = length.X()/length.Z();
+        auto track_slope_y = length.Y()/length.Z();
+        
+        std::cout << "track_slope_x: " << track_slope_x << '\n';
+        std::cout << "track_slope_y: " << track_slope_y << '\n';
+        
+        auto track_slope_error_x = abs( track_slope_x ) * sqrt( pow( 1e-1/length.X(), 2) + pow( 0.05/length.Z(), 2) );
+        auto track_slope_error_y = abs( track_slope_y ) * sqrt( pow( 1e-1/length.Y(), 2) + pow( 0.05/length.Z(), 2) );
+        
+        
+        
+        using state = typename underlying<T>::state;
+        using vector = typename underlying<state>::vector;
+        using covariance = typename underlying<state>::covariance;
+        
+        return T{
+            state{
+                evaluation_point{ start.Z() },
+                vector{{ start.X(), start.Y(), track_slope_x, track_slope_y }},
+                covariance{{ 1e-1,    0, 0, 0,
+                               0, 1e-1, 0, 0,
+                               0,    0, pow(track_slope_error_x, 2), 0,
+                               0,    0, 0, pow( track_slope_error_y, 2)  }}
+                 },
+            chisquared{0}
+               };
+    }
+    
+    track_list get_track_list( TAVTvertex const * vertex_ph ) const ;
 };
+
+
+                                
 
 //______________________________________________________________________________
 //                      IT
@@ -289,7 +400,7 @@ private:
     
 public:
     //might go to intermediate struc holding the data ?
-    constexpr detector_properties( TAITntuCluster* cluster_phc,
+    detector_properties( TAITntuCluster* cluster_phc,
                                    TAITparGeo* geo_ph,
                                    double cut_p)  :
     cluster_mhc{cluster_phc},
@@ -300,7 +411,7 @@ public:
     
 private:
     template<std::size_t ... Indices>
-    constexpr auto retrieve_depth_impl( TAITparGeo* geo_ph,
+    auto retrieve_depth_impl( TAITparGeo* geo_ph,
                                         std::index_sequence<Indices...> ) const
         -> std::array<double, layer>
     {
@@ -311,7 +422,7 @@ private:
     }
     
     
-    constexpr auto retrieve_depth( TAITparGeo* geo_ph ) const
+    auto retrieve_depth( TAITparGeo* geo_ph ) const
         -> std::array<double, layer>
     {
         return retrieve_depth_impl( geo_ph, std::make_index_sequence<layer>{} );
@@ -437,8 +548,8 @@ struct particle_properties
     int charge;
     int mass;
     double momentum;
-    double track_slope;
-    double track_slope_error;
+   // double track_slope;
+   // double track_slope_error;
     TATWpoint const * data;
 };
 
@@ -448,7 +559,7 @@ struct model
     using operating_state_t = operating_state<Matrix<2,1>, 2>;
     
     particle_properties* particle_h = nullptr;
-    static constexpr double conversion_factor = 0.000299792458;
+    static constexpr double conversion_factor = 0.000299792458; //[MeV/c . G^{-1} . cm^{-1} ]
     TADIgeoField* field_mh;
     
     constexpr model(TADIgeoField* field_ph) : field_mh{field_ph} {}
