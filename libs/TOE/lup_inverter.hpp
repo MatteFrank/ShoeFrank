@@ -183,7 +183,7 @@ Matrix<N, N> LUPInverter::ApplyLowerInversion(Matrix<N, N> lowerMatrix_p) const
 
     if(identityMatrix != make_identity_matrix<N>()){
 //        throw std::logic_error("Inversion of lower matrix failed.");
-         std::cout <<"identity_matrix: (is not identity) \n" << identityMatrix;
+//         std::cout <<"identity_matrix: (is not identity) \n" << identityMatrix;
     }
     
     return resultingMatrix;
@@ -220,7 +220,7 @@ Matrix<N, N> LUPInverter::ApplyUpperInversion(Matrix<N, N> upperMatrix_p) const
   //  std::cout << "resulting_matrix: \n" << resultingMatrix;
    // std::cout << "Identity matrix<N==1>: \n" << make_identity_matrix<N>();
     if(identityMatrix != make_identity_matrix<N>()){
-        std::cout <<"identity_matrix: (is not identity) \n" << identityMatrix;
+//        std::cout <<"identity_matrix: (is not identity) \n" << identityMatrix;
   //      std::cout << "comparison_matrix: \n" << make_identity_matrix<N>();
         //throw std::logic_error("Inversion of upper matrix failed.");
     }
