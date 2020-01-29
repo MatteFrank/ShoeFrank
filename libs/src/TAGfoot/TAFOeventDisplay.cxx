@@ -536,8 +536,10 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       TAVTvertex* vtx = (TAVTvertex*)obj;
       if (vtx == 0x0) return;
       TVector3 pos = vtx->GetVertexPosition();
+      TVector3 err = vtx->GetVertexPosError();
       fInfoView->AddLine( Form("Vertex# %d at position:\n", idx) );
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z()) );
+      fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", err.X(), err.Y(), err.Z()) );
       fInfoView->AddLine( Form(" BM Matched %d\n", vtx->IsBmMatched()) );
       
       if (fConsoleButton->IsOn()) {
@@ -923,7 +925,7 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
             TVector3 posG;
             
             if (GlobalPar::GetPar()->IncludeTG() && track->GetValidity() == 1)
-               pos = track->Intersection(track->GetVertexZ());
+               pos = track->Intersection(track->GetPosVertex().Z());
             else
                pos = track->Intersection(posfirstPlane);
             
