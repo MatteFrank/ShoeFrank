@@ -6,7 +6,7 @@
 
 #include "TATOEutilities.hxx"
 
-#include "TAVTntuCluster.hxx"
+
 #include "TAVTntuVertex.hxx"
 
 
@@ -15,42 +15,71 @@
 //______________________________________________________________________________
 //                          VTX
 
-std::vector<typename details::vertex_tag::candidate> detector_properties< details::vertex_tag >::generate_candidates(std::size_t index_p) const
+typename details::vertex_tag::candidate detector_properties< details::vertex_tag >::generate_candidate( TAVTbaseCluster const * cluster_ph) const
 {
-    std::vector<candidate> candidate_c;
-    std::size_t entries = cluster_mhc->GetClustersN(index_p);
-    candidate_c.reserve( entries );
-//    std::cout << "detector_properties<details::vertex_tag>::generate_candidate : " << entries << '\n';
+    auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data()) );
+    auto position  = transformation_h->FromVTLocalToGlobal( cluster_ph->GetPositionG() );
+    auto error     = cluster_ph->GetPosError();
     
-    for(std::size_t i{0}; i < entries ; ++i)
-    {
-        auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
-        
-        
-        
-        auto cluster_h = cluster_mhc->GetCluster(index_p, i);
-        auto position =  transformation_h->FromVTLocalToGlobal(cluster_h->GetPositionG());
-        auto error = cluster_h->GetPosError();
-        
-        
-        candidate_c.emplace_back( measurement_vector{{ position.X(), position.Y() }},
-                                 measurement_covariance{{ pow(error.X(), 2),         0,
-                                                                    0, pow(error.Y(), 2)    }},
-                                 measurement_matrix{matrix_m},
-                                 data_handle<data_type>{cluster_h} );
-        
-        
-    }
     
-    return candidate_c;
+    return candidate{
+        measurement_vector{{ position.X(), position.Y() }},
+        measurement_covariance{{ pow(error.X(), 2),                0,
+                                                 0, pow(error.Y(), 2)    }},
+        measurement_matrix{matrix_m},
+        data_handle<data_type>{ cluster_ph }
+    };
 }
 
-const TAVTvertex * detector_properties< details::vertex_tag >::vertex_handle() const
+
+
+const TAVTvertex * detector_properties< details::vertex_tag >::retrieve_vertex( ) const
 {
-    //if(vertex_mhc->GetVertexN()>1){std::cout << "More than one vertex: "<< vertex_mhc->GetVertexN() <<'\n';}
+    for( std::size_t i{0} ; i < vertex_mhc->GetVertexN() ; ++i ){
+        auto vertex_h = vertex_mhc->GetVertex(i);
+        
+        if( vertex_h->IsBmMatched() ){ return vertex_h; }
+    }
     
-    return vertex_mhc->GetVertex(0);
+    return nullptr;
 }
+
+
+detector_properties< details::vertex_tag >::track_list::pseudo_layer
+detector_properties< details::vertex_tag >::track_list::iterable_track::form_layer( std::size_t index_p ) const
+{
+    //cluster are in inverse order
+    std::size_t real_index = track_mh->GetClustersN() -1 -index_p;
+    
+    auto* cluster_h = track_mh->GetCluster( real_index );
+    auto c = detector_m.generate_candidate( cluster_h );
+    
+    return pseudo_layer{
+                std::move(c),
+                detector_m.layer_depth( cluster_h->GetPlaneNumber() ),
+                detector_m.cut_value()
+                        };
+}
+
+    
+std::vector< detector_properties< details::vertex_tag >::track_list::iterable_track >
+detector_properties< details::vertex_tag >::track_list::form_tracks( TAVTvertex const * vertex_ph ) const
+{
+    using track = detector_properties< details::vertex_tag >::track_list::iterable_track;
+    std::vector< track > track_c;
+    track_c.reserve( vertex_ph->GetTracksN() );
+    for( auto i = 0 ; i < vertex_ph->GetTracksN() ; ++i ){
+        track_c.emplace_back( detector_m, vertex_ph->GetTrack(i) );
+    }
+    return track_c;
+}
+
+
+detector_properties< details::vertex_tag >::track_list detector_properties< details::vertex_tag >::get_track_list( TAVTvertex const * vertex_ph ) const
+{
+    return { *this, vertex_ph };
+}
+
 
 
 //______________________________________________________________________________

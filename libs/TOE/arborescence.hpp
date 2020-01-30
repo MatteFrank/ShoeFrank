@@ -130,11 +130,11 @@ class TAGTOEArborescence{
         
         
     public:
-        const Node& AddChild(T&& t_p)
+        Node * AddChild(T&& t_p)
         // requires : isValid_m == true
         {
             children_mc.emplace_back( new Node{std::move(t_p) , this} );
-            return *children_mc.back();
+            return children_mc.back().get();
         }
        
         const T& GetValue() const { return t_m; }
@@ -209,6 +209,8 @@ public:
    
     
 public:
+    TAGTOEArborescence() = default;
+    
     explicit TAGTOEArborescence( std::vector<T>&& t_pc )
     {
         roots_mc.reserve( t_pc.size() );
@@ -239,7 +241,23 @@ public:
         return *arborescenceHandler_mhc;
     }
     
+    
+    Node * add_root( T&& t_p )
+    {
+        roots_mc.emplace_back( new Node{ std::move(t_p), nullptr }  );
+        return roots_mc.back().get();
+    }
+    
+    
+    
 };
+
+
+template<class T>
+TAGTOEArborescence<T> make_arborescence()
+{
+    return { };
+}
 
 
 template<class T>
