@@ -18,13 +18,18 @@
 #include "TAVTcluster.hxx"
 #include "TAVTntuVertex.hxx"
 
+#include "TAGntuGlbTrack.hxx"
+
 template<class T>
 class TD;
+
 
 struct TATOEbaseAct {
     virtual void Action()  = 0;
     virtual ~TATOEbaseAct() = default;
 };
+
+
 
 
 template<class UKF, class DetectorList>
@@ -47,18 +52,24 @@ private:
     particle_properties particle_m{};
     UKF ukf_m;
     detector_list_t list_m;
+    TAGntuGlbTrack* track_mhc;
     
 public:
     
-    TATOEactGlb(UKF&& ukf_p, detector_list_t&& list_p ) : ukf_m{std::move(ukf_p)}, list_m{std::move(list_p)} {
+    TATOEactGlb( UKF&& ukf_p,
+                 detector_list_t&& list_p,
+                 TAGntuGlbTrack* track_phc ) :
+        ukf_m{ std::move(ukf_p) },
+        list_m{ std::move(list_p) },
+        track_mhc{ track_phc }
+    {
         ukf_m.call_stepper().ode.model().particle_h = &particle_m;
     }
     
     void Action() override {
 
-        std::cout << " ---- ACTION --- \n";
+        std::cout << " ---- GLOBAL_RECONSTRUCTION --- \n";
         
-
         auto hypothesis_c = form_hypothesis();
         
         for(auto & hypothesis : hypothesis_c){
@@ -70,7 +81,6 @@ public:
             std::cout << "momentum = " << particle_m.momentum << '\n';
             
             if(particle_m.charge == 0){ continue; }
-            
             reconstruct();
         }
         
@@ -96,8 +106,6 @@ public:
         // - propagate from the nodes
         // - retrieve the list of candidates, sort them according to the cut value
         // - correct the good ones and add to the arborescence
-        
-        
         
         
     };
@@ -130,9 +138,10 @@ private:
             auto id = candidate.data->GetColumnHit()->GetMcTrackIdx(0);
 
             std::cout << "initial_momentum : " << data_hc->GetHit(id)->GetInitP().Mag() * 1e3 << '\n';
-            std::cout << "track_slope_x : " << data_hc->GetHit(id)->GetInitP().X() / data_hc->GetHit(id)->GetInitP().Z() << '\n';
-            std::cout << "track_slope_y : " << data_hc->GetHit(id)->GetInitP().Y()/ data_hc->GetHit(id)->GetInitP().Z() << '\n';
- 
+
+            std::cout << "real_track_slope_x : " << data_hc->GetHit(id)->GetInitP().X()/data_hc->GetHit(id)->GetInitP().Z() << '\n';
+            std::cout << "real_track_slope_y : " << data_hc->GetHit(id)->GetInitP().Y()/data_hc->GetHit(id)->GetInitP().Z() << '\n';
+
             hypothesis_c.push_back(
                 particle_properties{ charge, mass, momentum, candidate.data }
             );
@@ -149,26 +158,22 @@ private:
         
         auto arborescence = make_arborescence< corrected_state >();
         
-    
-        
-        
+
         list_m.apply_for_each( [this, &arborescence ]( const auto& detector_p )
                                {
                                    cross_check_origin( arborescence, detector_p );
                                    advance_reconstruction( arborescence, detector_p );
                                } );
         
-        auto& handler = arborescence.GetHandler();
-        for(auto& node : handler){
-            auto value_c = node.GetBranchValues();
-            std::cout << " --- final_track --- " << '\n';
-            for(auto& value : value_c){
-                std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
-            }
-            
-            
-        }
         
+        auto& node_c = arborescence.GetHandler();
+        std::cout << "----- reconstructed_track : "<< node_c.size() << " -----\n";
+        
+        for(auto& node : node_c){
+            register_track(node);
+            
+            if(node_c.size() > 1){ std::cout << "WARNING : several tracks reconstructed for the same end point ..."; }
+        }
     }
     
     //-------------------------------------------------------------------------------------
@@ -561,25 +566,74 @@ std::vector<corrected_state> confront(const state& ps_p, const detector_properti
         return cs_c;
     }
 
+    
+    
+    void register_track( typename TAGTOEArborescence<corrected_state>::node& node_p ) const
+    {
+        auto * track_h = track_mhc->NewTrack( particle_m.mass * 0.938 , particle_m.momentum / 1000., static_cast<double>(particle_m.charge), 1.1   ); //tof value is wrong
+        
+        
+        auto value_c = node_p.GetBranchValues();
+        std::cout << " --- final_track --- " << '\n';
+        for(auto& value : value_c){
+            std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
+        
+            
+            
+            
+//            TVector3 position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
+//
+//            auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) / particle_m.momentum ;
+//            momentum_z /= 1000.;
+//            auto momentum_x = value.vector(2,0) * momentum_z;
+//            auto momentum_y = value.vector(3,0) * momentum_z;
+//
+//            TVector3 momentum{ momentum_x , momentum_y, momentum_z };
+//            TVector3 position_error{ 0.01,0.01,0.01 };
+//            TVector3 momentum_error{ 0.01, 0.01, 0.01 };
+//
+//            track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
+        
+        }
+        
+        TVector3 position{ value_c.front().vector(0,0), value_c.front().vector(1,0), value_c.front().evaluation_point };
+        
+        auto momentum_z = sqrt( pow( value_c.front().vector(2,0), 2) + pow( value_c.front().vector(3,0), 2) + 1 ) / particle_m.momentum ;
+        momentum_z /= 1000.;
+        auto momentum_x = value_c.front().vector(2,0) * momentum_z;
+        auto momentum_y = value_c.front().vector(3,0) * momentum_z;
+        
+        TVector3 momentum{ momentum_x , momentum_y, momentum_z };
+        TVector3 position_error{ 0.01,0.01,0.01 };
+        TVector3 momentum_error{ 0.01, 0.01, 0.01 };
+        
+        track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
+
+    }
+    
+    
+    
+
+    
 };
 
 
 
 
 template<class UKF, class DetectorList>
-auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p)
+auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc)
         ->TATOEactGlb<UKF, DetectorList>
 {
-    return {std::move(ukf_p), std::move(list_p)};
+    return {std::move(ukf_p), std::move(list_p), track_phc};
 }
 
 
 
 template<class UKF, class DetectorList>
-auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p)
+auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc)
         -> TATOEactGlb<UKF, DetectorList> *
 {
-    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p)};
+    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc};
 }
 
 
