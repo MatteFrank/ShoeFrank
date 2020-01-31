@@ -80,6 +80,9 @@ namespace details{
 template<class T, class HandlingPolicy = details::default_policy >
 class TAGTOEArborescence{
  
+
+private:
+    
     //SFINAE out invalid parameters ?
     template<class HandlingPolicy_, class Enabler = void>
     struct NodeEnhancer;
@@ -186,7 +189,10 @@ class TAGTOEArborescence{
     
     template< class T_, class Node_, class HandlingPolicy_ >
     friend class TAGTOEArborescenceHandler;
-
+    
+public:
+    using node = Node;
+    
     
 private:
     std::vector< std::unique_ptr<Node> > roots_mc;
