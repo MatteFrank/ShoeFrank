@@ -332,11 +332,22 @@ public:
         auto track_slope_x = length.X()/length.Z();
         auto track_slope_y = length.Y()/length.Z();
         
-        std::cout << "track_slope_x: " << track_slope_x << '\n';
+        std::cout << "\n\ntrack_slope_x: " << track_slope_x << '\n';
         std::cout << "track_slope_y: " << track_slope_y << '\n';
         
-        auto track_slope_error_x = abs( track_slope_x ) * sqrt( pow( 1e-1/length.X(), 2) + pow( 0.05/length.Z(), 2) );
-        auto track_slope_error_y = abs( track_slope_y ) * sqrt( pow( 1e-1/length.Y(), 2) + pow( 0.05/length.Z(), 2) );
+        
+        auto length_error_x = sqrt( pow( vertex_ph->GetVertexPosError().X(), 2 ) +
+                                    pow( cluster_ph->GetPosErrorG().X(), 2) );
+        auto length_error_y = sqrt( pow( vertex_ph->GetVertexPosError().Y(), 2 ) +
+                                    pow( cluster_ph->GetPosErrorG().Y(), 2) );
+        
+        
+        auto track_slope_error_x = abs( track_slope_x ) *
+                                      sqrt( pow( length_error_x/length.X(), 2) +
+                                            pow( 0.05/length.Z(), 2) );
+        auto track_slope_error_y = abs( track_slope_y ) *
+                                      sqrt( pow( length_error_y/length.Y(), 2) +
+                                            pow( 0.05/length.Z(), 2) );
         
         
         
@@ -348,10 +359,10 @@ public:
             state{
                 evaluation_point{ start.Z() },
                 vector{{ start.X(), start.Y(), track_slope_x, track_slope_y }},
-                covariance{{ 1e-1,    0, 0, 0,
-                               0, 1e-1, 0, 0,
-                               0,    0, pow(track_slope_error_x, 2), 0,
-                               0,    0, 0, pow( track_slope_error_y, 2)  }}
+                covariance{{   pow(length_error_x, 2  ),     0,    0,    0,
+                               0,     pow(length_error_y, 2),      0,    0,
+                               0,    0,   pow(track_slope_error_x, 2),   0,
+                               0,    0,    0,   pow( track_slope_error_y, 2)  }}
                  },
             chisquared{0}
                };

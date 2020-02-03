@@ -35,7 +35,8 @@ public:
                                TAGparaDsc* p_geoVtx   = 0,
                                TAGparaDsc* p_geoItr   = 0,
                                TAGparaDsc* p_geoMsd   = 0,
-                               TAGparaDsc* p_geoTof   = 0);
+                               TAGparaDsc* p_geoTof   = 0,
+                               TADIgeoField* field = nullptr);
    
    virtual  ~TAGactNtuGlbTrack();
    
@@ -60,8 +61,10 @@ public:
    //! Get tree in standalone mode
    TTree*    GetTree();
     
-    void      SetAction(TATOEbaseAct* actTOE){ fActTOE = actTOE; }
-
+private:
+    TATOEbaseAct* SetupAction() const;
+    TADIgeoField*        GetFootField()      const { return fField;  }
+    
 private:
    TAGgeoTrafo*      fpFootGeo;        // geo trafo
    TAGdataDsc*       fpVtxVertex;		// Vertex
@@ -74,8 +77,9 @@ private:
    TAGparaDsc*       fpItrGeoMap;      // par geo for inner tracker
    TAGparaDsc*       fpMsdGeoMap;      // par geo for MSD
    TAGparaDsc*       fpTofGeoMap;      // par geo for ToF
+   TADIgeoField*     fField;
    
-   TAGntuPoint*      fpNtuPoint;       // tmp containers of all points
+//   TAGntuPoint*      fpNtuPoint;       // tmp containers of all points
    TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
    
    TATOEbaseAct*     fActTOE;
@@ -90,12 +94,6 @@ public:
    
 private:
    static Bool_t     fgStdAloneFlag;    // flag for standalone (read from root file using MC interface)
-
-private:
-   void FillTofPoint();
-   void FillVtxPoint();
-   void FillItrPoint();
-   void FillMsdPoint();
    
    ClassDef(TAGactNtuGlbTrack,0)
 };

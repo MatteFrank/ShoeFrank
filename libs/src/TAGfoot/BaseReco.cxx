@@ -24,12 +24,6 @@
 
 
 
-#include "TATOEact.hxx"
-#include "TATOEutilities.hxx"
-
-#include "grkn_data.hpp"
-#include "stepper.hpp"
-#include "ukf.hpp"
 
 #include "GlobalPar.hxx"
 
@@ -492,49 +486,21 @@ void BaseReco::CreateRecActionGlb()
 {
   if(fFlagTrack) {
     fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-    fActGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoDi,
-                      fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw);
+    fActGlbTrack  = new TAGactNtuGlbTrack( "glbActTrack",
+                                           fpNtuVtx,
+                                           fpNtuClusIt,
+                                           fpNtuClusMsd,
+                                           fpNtuRecTw,
+                                           fpNtuGlbTrack,
+                                           fpParGeoDi,
+                                           fpParGeoVtx,
+                                           fpParGeoIt,
+                                           fpParGeoMsd,
+                                           fpParGeoTw,
+                                           fField );
     if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
   }
-    
-
-    using state_vector =  Matrix<4,1> ;
-    using state_covariance =  Matrix<4, 4> ;
-    using state = state_impl< state_vector, state_covariance  >;
-    
-    
-    
-    auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpNtuClusVtx->Object() );
-    auto * vertex_hc = static_cast<TAVTntuVertex*>( fpNtuVtx->Object() );
-    auto * geoVTX_h = static_cast<TAVTparGeo*>( fpParGeoVtx->Object() );
-    
-    
-    auto * clusterIT_hc = static_cast<TAITntuCluster*>( fpNtuClusIt->Object() );//GetNtuClusterIt();
-    auto * geoIT_h = static_cast<TAITparGeo*>( fpParGeoIt->Object() );//GetParGeoIt();
-    
-    auto * clusterTW_hc = static_cast<TATWntuPoint*>( fpNtuRecTw->Object() );
-    auto * geoTW_h = static_cast<TATWparGeo*>( fpParGeoTw->Object() );
-    
-    
-    auto list = start_list( detector_properties<details::vertex_tag>(clusterVTX_hc, vertex_hc, geoVTX_h, 25) )
-                      .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, 100) )
-                      .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 1) )
-                      .finish();
-
-    
-    
-    auto ode = make_ode< Matrix<2,1>, 2>( model{GetFootField()} );
-    auto stepper = make_stepper<data_grkn56>( std::move(ode) );
-    auto ukf = make_ukf<state>( std::move(stepper) );
-    
-    //ukf.call_stepper().specify_tolerance(1e-12);
-    
-    
-    TATOEbaseAct * action = make_new_TATOEactGlb(std::move(ukf), std::move(list));
-
-    fActGlbTrack->SetAction( action );
-
 }
 
 //__________________________________________________________

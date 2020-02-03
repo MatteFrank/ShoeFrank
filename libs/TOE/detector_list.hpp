@@ -94,7 +94,22 @@ private:
     constexpr void apply_except_last_impl(F&& /*f_p*/) const {}
     
     
+    template< std::size_t Index, class T,
+    typename std::enable_if_t< std::is_same< T, typename std::tuple_element< Index, tuple_type>::type >::value ,
+                                         std::nullptr_t > = nullptr >
+    constexpr auto const& before_impl( T const & /*t_p*/ ) const
+    {
+        return std::get<Index - 1>(tuple_m);
+    }
     
+    template< std::size_t Index, class T,
+    typename std::enable_if_t< !std::is_same< T, typename  std::tuple_element< Index, tuple_type>::type >::value ,
+                                          std::nullptr_t > = nullptr >
+    constexpr auto const& before_impl( T const & t_p ) const
+    {
+        static_assert(Index < std::tuple_size<tuple_type>::value - 1, "The element required is not a part of this list");
+        return before_impl<Index+1>( t_p );
+    }
     
 public:
     template<class F>
@@ -111,14 +126,21 @@ public:
     }
     
     
-    constexpr auto first() const
+    constexpr auto const & first() const
     {
         return std::get<0>(tuple_m);
     }
     
-    constexpr auto last() const
+    constexpr auto const & last() const
     {
         return std::get<std::tuple_size<tuple_type>::value -1 >(tuple_m);
+    }
+    
+    
+    template<class T>
+    constexpr auto const & before( T const& t_p ) const
+    {
+        return before_impl<1>(t_p);
     }
     
 private:

@@ -18,13 +18,18 @@
 #include "TAVTcluster.hxx"
 #include "TAVTntuVertex.hxx"
 
+#include "TAGntuGlbTrack.hxx"
+
 template<class T>
 class TD;
+
 
 struct TATOEbaseAct {
     virtual void Action()  = 0;
     virtual ~TATOEbaseAct() = default;
 };
+
+
 
 
 template<class UKF, class DetectorList>
@@ -47,18 +52,24 @@ private:
     particle_properties particle_m{};
     UKF ukf_m;
     detector_list_t list_m;
+    TAGntuGlbTrack* track_mhc;
     
 public:
     
-    TATOEactGlb(UKF&& ukf_p, detector_list_t&& list_p ) : ukf_m{std::move(ukf_p)}, list_m{std::move(list_p)} {
+    TATOEactGlb( UKF&& ukf_p,
+                 detector_list_t&& list_p,
+                 TAGntuGlbTrack* track_phc ) :
+        ukf_m{ std::move(ukf_p) },
+        list_m{ std::move(list_p) },
+        track_mhc{ track_phc }
+    {
         ukf_m.call_stepper().ode.model().particle_h = &particle_m;
     }
     
     void Action() override {
 
-        std::cout << " ---- ACTION --- \n";
+        std::cout << " ---- GLOBAL_RECONSTRUCTION --- \n";
         
-
         auto hypothesis_c = form_hypothesis();
         
         for(auto & hypothesis : hypothesis_c){
@@ -70,7 +81,6 @@ public:
             std::cout << "momentum = " << particle_m.momentum << '\n';
             
             if(particle_m.charge == 0){ continue; }
-            
             reconstruct();
         }
         
@@ -96,8 +106,6 @@ public:
         // - propagate from the nodes
         // - retrieve the list of candidates, sort them according to the cut value
         // - correct the good ones and add to the arborescence
-        
-        
         
         
     };
@@ -130,9 +138,10 @@ private:
             auto id = candidate.data->GetColumnHit()->GetMcTrackIdx(0);
 
             std::cout << "initial_momentum : " << data_hc->GetHit(id)->GetInitP().Mag() * 1e3 << '\n';
-            std::cout << "track_slope_x : " << data_hc->GetHit(id)->GetInitP().X() / data_hc->GetHit(id)->GetInitP().Z() << '\n';
-            std::cout << "track_slope_y : " << data_hc->GetHit(id)->GetInitP().Y()/ data_hc->GetHit(id)->GetInitP().Z() << '\n';
- 
+
+            std::cout << "real_track_slope_x : " << data_hc->GetHit(id)->GetInitP().X()/data_hc->GetHit(id)->GetInitP().Z() << '\n';
+            std::cout << "real_track_slope_y : " << data_hc->GetHit(id)->GetInitP().Y()/data_hc->GetHit(id)->GetInitP().Z() << '\n';
+
             hypothesis_c.push_back(
                 particle_properties{ charge, mass, momentum, candidate.data }
             );
@@ -141,32 +150,56 @@ private:
         return hypothesis_c;
     }
     
+
     
     void reconstruct()
     {
         std::cout << " ---- RECONSTRUCT --- \n";
         
         auto arborescence = make_arborescence< corrected_state >();
-
         
-        list_m.apply_for_each( [this, &arborescence]( const auto& detector_p )
+
+        list_m.apply_for_each( [this, &arborescence ]( const auto& detector_p )
                                {
+                                   cross_check_origin( arborescence, detector_p );
                                    advance_reconstruction( arborescence, detector_p );
                                } );
         
-        auto& handler = arborescence.GetHandler();
-        for(auto& node : handler){
-            auto value_c = node.GetBranchValues();
-            std::cout << " --- final_track --- " << '\n';
-            for(auto& value : value_c){
-                std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
-            }
-            
-            
-        }
         
+        auto& node_c = arborescence.GetHandler();
+        std::cout << "----- reconstructed_track : "<< node_c.size() << " -----\n";
+        
+        for(auto& node : node_c){
+            register_track(node);
+            
+            if(node_c.size() > 1){ std::cout << "WARNING : several tracks reconstructed for the same end point ..."; }
+        }
     }
     
+    //-------------------------------------------------------------------------------------
+    //                           cross_check_origin
+    //
+    
+    template< class T,
+              typename std::enable_if_t< !std::is_same< T,  detector_properties< details::vertex_tag > >::value ,
+                                          std::nullptr_t  > = nullptr    >
+    void cross_check_origin( TAGTOEArborescence<corrected_state>& arborescence_p,
+                             const T& detector_p )
+    {
+        auto confirm_origin = [](typename TAGTOEArborescence<corrected_state>::node & node_p, auto const & detector_p)
+        {
+            return node_p.GetValue().evaluation_point >= detector_p.layer_depth(0);
+        };
+        
+        auto& node_c = arborescence_p.GetHandler();
+        for(auto & node : node_c ){
+            if( !confirm_origin( node, list_m.before( detector_p ) ) ){ node.MarkAsInvalid(); }
+        }
+    }
+    
+    void cross_check_origin( TAGTOEArborescence<corrected_state>& /*arborescence_p*/,
+                             const detector_properties<details::vertex_tag>& /*vertex_p*/ )
+    {}
     
     //-------------------------------------------------------------------------------------
     //                            advance_reconstruction_impl
@@ -177,9 +210,9 @@ private:
     std::vector<corrected_state> advance_reconstruction_impl( state s_p,
                                                               const T& layer_p )
     {
-//        std::cout << "\nstarting_state : ( " << s_p.vector(0,0) << ", " << s_p.vector(1,0) ;
-//        std::cout << ") -- (" << s_p.vector(2,0) << ", " << s_p.vector(3,0)  ;
-//        std::cout << ") -- " << s_p.evaluation_point << '\n';
+        std::cout << "\nstarting_state : ( " << s_p.vector(0,0) << ", " << s_p.vector(1,0) ;
+        std::cout << ") -- (" << s_p.vector(2,0) << ", " << s_p.vector(3,0)  ;
+        std::cout << ") -- " << s_p.evaluation_point << '\n';
 //
         auto sigma_c = ukf_m.generate_sigma_points( s_p );
         
@@ -196,9 +229,9 @@ private:
         sigma_c = ukf_m.force_propagation( std::move(sigma_c), step );
         auto ps = ukf_m.generate_propagated_state( std::move(sigma_c) );
 //
-//        std::cout << "propagated_state : ( " << ps.vector(0,0) << ", " << ps.vector(1,0) ;
-//        std::cout << ") -- (" << ps.vector(2,0) << ", " << ps.vector(3,0)  ;
-//        std::cout << ") -- " << ps.evaluation_point << '\n';
+        std::cout << "propagated_state : ( " << ps.vector(0,0) << ", " << ps.vector(1,0) ;
+        std::cout << ") -- (" << ps.vector(2,0) << ", " << ps.vector(3,0)  ;
+        std::cout << ") -- " << ps.evaluation_point << '\n';
         
         return confront(ps, layer_p);
     }
@@ -223,11 +256,11 @@ private:
         for(auto && layer : layer_pc ) {
         
             auto& leaf_c = arborescence_p.GetHandler();
-//            std::cout << " --- layer --- \n";
+            std::cout << " --- layer --- \n";
         
             for(auto& leaf : leaf_c){
                 
-//                std::cout << " --- leaf --- \n";
+                std::cout << " --- leaf --- \n";
             
                 ukf_m.step_length() = 1e-3;
             
@@ -236,9 +269,9 @@ private:
             
                 for( auto & cs : cs_c ){
 //
-//                    std::cout << "corrected_state : ( " << cs.vector(0,0) << ", " << cs.vector(1,0) ;
-//                    std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
-//                    std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
+                    std::cout << "corrected_state : ( " << cs.vector(0,0) << ", " << cs.vector(1,0) ;
+                    std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
+                    std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
 //
                     leaf.AddChild( std::move(cs) );
                 }
@@ -272,9 +305,9 @@ private:
             else{
                 auto cs = cs_c.front();
                 
-//                std::cout << "corrected_state : ( " << cs.vector(0,0) << ", " << cs.vector(1,0) ;
-//                std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
-//                std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
+                std::cout << "corrected_state : ( " << cs.vector(0,0) << ", " << cs.vector(1,0) ;
+                std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
+                std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
                 
                 leaf.AddChild( std::move(cs_c.front()) );
                 
@@ -309,7 +342,7 @@ private:
             auto cs = vertex_p.generate_corrected_state<corrected_state>( vertex_h, first_h );
             auto * leaf_h = arborescence_p.add_root( std::move(cs) );
             
-//            std::cout << " --- track --- \n";
+            std::cout << " --- track --- \n";
             
             
             for( auto layer : track ){
@@ -318,13 +351,16 @@ private:
                 auto s = make_state( leaf_h->GetValue() );
                 auto cs_c = advance_reconstruction_impl( s, layer );
                 
-                if( cs_c.empty() ){ leaf_h->MarkAsInvalid(); }
+                if( cs_c.empty() ){
+                    leaf_h->MarkAsInvalid();
+                 //   break;
+                }
                 else{
                     auto cs = cs_c.front();
-//
-//                    std::cout << "corrected_state : ( " << cs.vector(0,0) << ", " << cs.vector(1,0) ;
-//                    std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
-//                    std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
+
+                    std::cout << "corrected_state : ( " << cs.vector(0,0) << ", " << cs.vector(1,0) ;
+                    std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
+                    std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
 //
 //
                     
@@ -391,9 +427,9 @@ private:
                                       
                                       auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
                                       
-//                                      std::cout << "cutter_chisquared : " << cutter.chisquared << '\n';
-//                                      std::cout << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
-//                                      std::cout << "candidate_chisquared : " << ec_p.chisquared << '\n';
+                                      std::cout << "cutter_chisquared : " << cutter.chisquared << '\n';
+                                      std::cout << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
+                                      std::cout << "candidate_chisquared : " << ec_p.chisquared << '\n';
                                       
                                       return ec_p.chisquared < cutter.chisquared;
                                   }
@@ -456,9 +492,9 @@ private:
             
                              auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
                              
-//                             std::cout << "cutter_chisquared : " << cutter.chisquared << '\n';
-//                             std::cout << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
-//                             std::cout << "candidate_chisquared : " << ec_p.chisquared << '\n';
+                             std::cout << "cutter_chisquared : " << cutter.chisquared << '\n';
+                             std::cout << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
+                             std::cout << "candidate_chisquared : " << ec_p.chisquared << '\n';
             
                              return ec_p.chisquared < cutter.chisquared;
                          };
@@ -513,9 +549,9 @@ std::vector<corrected_state> confront(const state& ps_p, const detector_properti
         
                                 auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
 //
-//                                std::cout << "cutter_chisquared : " << cutter.chisquared << '\n';
-//                                std::cout << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
-//                                std::cout << "candidate_chisquared : " << ec_p.chisquared << '\n';
+                                std::cout << "cutter_chisquared : " << cutter.chisquared << '\n';
+                                std::cout << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
+                                std::cout << "candidate_chisquared : " << ec_p.chisquared << '\n';
                                 
                                 return ec_p.chisquared < cutter.chisquared;
                             };
@@ -530,25 +566,74 @@ std::vector<corrected_state> confront(const state& ps_p, const detector_properti
         return cs_c;
     }
 
+    
+    
+    void register_track( typename TAGTOEArborescence<corrected_state>::node& node_p ) const
+    {
+        auto * track_h = track_mhc->NewTrack( particle_m.mass * 0.938 , particle_m.momentum / 1000., static_cast<double>(particle_m.charge), 1.1   ); //tof value is wrong
+        
+        
+        auto value_c = node_p.GetBranchValues();
+        std::cout << " --- final_track --- " << '\n';
+        for(auto& value : value_c){
+            std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
+        
+            
+            
+            
+//            TVector3 position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
+//
+//            auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) / particle_m.momentum ;
+//            momentum_z /= 1000.;
+//            auto momentum_x = value.vector(2,0) * momentum_z;
+//            auto momentum_y = value.vector(3,0) * momentum_z;
+//
+//            TVector3 momentum{ momentum_x , momentum_y, momentum_z };
+//            TVector3 position_error{ 0.01,0.01,0.01 };
+//            TVector3 momentum_error{ 0.01, 0.01, 0.01 };
+//
+//            track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
+        
+        }
+        
+        TVector3 position{ value_c.front().vector(0,0), value_c.front().vector(1,0), value_c.front().evaluation_point };
+        
+        auto momentum_z = sqrt( pow( value_c.front().vector(2,0), 2) + pow( value_c.front().vector(3,0), 2) + 1 ) / particle_m.momentum ;
+        momentum_z /= 1000.;
+        auto momentum_x = value_c.front().vector(2,0) * momentum_z;
+        auto momentum_y = value_c.front().vector(3,0) * momentum_z;
+        
+        TVector3 momentum{ momentum_x , momentum_y, momentum_z };
+        TVector3 position_error{ 0.01,0.01,0.01 };
+        TVector3 momentum_error{ 0.01, 0.01, 0.01 };
+        
+        track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
+
+    }
+    
+    
+    
+
+    
 };
 
 
 
 
 template<class UKF, class DetectorList>
-auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p)
+auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc)
         ->TATOEactGlb<UKF, DetectorList>
 {
-    return {std::move(ukf_p), std::move(list_p)};
+    return {std::move(ukf_p), std::move(list_p), track_phc};
 }
 
 
 
 template<class UKF, class DetectorList>
-auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p)
+auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc)
         -> TATOEactGlb<UKF, DetectorList> *
 {
-    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p)};
+    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc};
 }
 
 
