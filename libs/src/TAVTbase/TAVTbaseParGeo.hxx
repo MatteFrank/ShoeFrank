@@ -70,10 +70,16 @@ protected:
    TVector3   fMinPosition;
    TVector3   fMaxPosition;
    TVector3   fSizeBox;
+   Int_t      fSensPerLayer;
+   UChar_t*   fSensorArray;
+   std::map<float, std::vector<UChar_t>> fSensorMap;
 
 protected:
    static const Int_t   fgkDefSensorsN;   // default number of sensors
    
+protected:
+   virtual void    FillSensorMap();
+
 public:
    TAVTbaseParGeo();
     virtual ~TAVTbaseParGeo();
@@ -96,8 +102,8 @@ public:
    
    //! Get position sensor
    TVector3        GetSensorPosition(Int_t iSensor);
- 
-   virtual int GetSensorID( int layer, int /*col*/, int /*row*/ )    { return layer; };
+   
+   virtual int     GetSensorID( int layer, int /*col*/, int /*row*/ )    { return layer; };
 
    //! Get Sensor idx for a given type and sensor in type
    Int_t GetSensorIdx(Int_t iSensor, Int_t type);
@@ -160,7 +166,12 @@ public:
    virtual Int_t   GetColumn(Float_t x) const;
    virtual Int_t   GetLine(Float_t y)   const;
 
-   
+   //! return aary of sensor id's for a given layer
+   virtual UChar_t* GetSensorsPerLayer(Int_t iLayer);
+
+   //! Get layer position in Z
+   virtual Float_t GetLayerPosZ(Int_t layer);
+
    //! Read parameters from file
    virtual Bool_t   FromFile(const TString& name = "");
 

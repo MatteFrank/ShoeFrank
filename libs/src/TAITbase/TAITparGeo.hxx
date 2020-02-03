@@ -52,9 +52,10 @@ private:
 protected:
    static const TString fgkBaseNameIt;   // IT base name
    static const TString fgkDefParaNameIt;
+   static const Int_t   fgkDefSensPerLayer; // number of sensor per layer
    
 private:
-   Float_t GetlayerPosZ(Int_t layer);
+   Float_t GetPassiveLayerPosZ(Int_t layer);
 
 public:
    TAITparGeo();

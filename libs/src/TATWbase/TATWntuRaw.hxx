@@ -9,7 +9,7 @@
 /*------------------------------------------+---------------------------------*/
 
 // ROOT classes
-#include "TArrayC.h"
+#include "TArrayI.h"
 #include "TObjArray.h"
 #include "TClonesArray.h"
 #include "TVector3.h"
@@ -25,16 +25,17 @@
 class TATWntuHit : public TAGobject {
    
 private:
-    Int_t m_layer;
-    Int_t m_bar;
+    Int_t    m_layer;
+    Int_t    m_bar;
     Double_t m_de;                     // energy loss in the scintillator bar
     Double_t m_time;                   // timestamp
     Double_t m_timeofflight;           // time of flight
     Double_t m_coordinate;             // x or y coordinate in the local detector frame, depending on the layer
-    Double_t m_z;                         // z coordinate in the local detector frame
-    Double_t m_chargeCOM;                  // Center of Mass evaluated with the charge
-    TArrayC   m_MCindex;                  // Id of the hit created in the simulation
-    TArrayC   m_McTrackId;                // Id of the track created in the simulation
+    Double_t m_z;                      // z coordinate in the local detector frame
+    Int_t    m_chargeZ;                // atomic charge Z (tmp solution)
+    Double_t m_chargeCOM;              // Center of Mass evaluated with the charge
+    TArrayI  m_MCindex;                // Id of the hit created in the simulation
+    TArrayI  m_McTrackId;              // Id of the track created in the simulation
     Double_t m_ChargeA;
     Double_t m_ChargeB;
     Double_t m_TimeA;
@@ -59,11 +60,12 @@ public:
    Double_t  GetTime()                 const   { return m_time;              }
    Double_t  GetToF()                  const   { return m_timeofflight;      }
    Double_t  GetPosition()             const   { return m_coordinate;        }
-   Double_t  GetCOM()const    { return m_chargeCOM; }
-   Double_t  GetChargeChA() const {return m_ChargeA;}
-   Double_t  GetChargeChB() const {return m_ChargeB;}
-   Double_t  GetChargeTimeA() const{return m_TimeA;}
-   Double_t  GetChargeTimeB() const {return m_TimeB;}
+   Int_t     GetChargeZ()              const   { return m_chargeZ;           }
+   Double_t  GetCOM()                  const   { return m_chargeCOM;         }
+   Double_t  GetChargeChA()            const   { return m_ChargeA;           }
+   Double_t  GetChargeChB()            const   { return m_ChargeB;           }
+   Double_t  GetChargeTimeA()          const   { return m_TimeA;             }
+   Double_t  GetChargeTimeB()          const   { return m_TimeB;             }
    Float_t   GetHitCoordinate_detectorFrame() const   { return m_coordinate; }
    Float_t   GetHitZ_detectorFrame()          const   { return m_z;          }
    // MC track id
@@ -72,11 +74,9 @@ public:
    Int_t     GetMcTracksN()             const   { return m_McTrackId.GetSize(); }
    // Add MC track Id
    void      AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
-   void      SetToF(Double_t time) { m_timeofflight = time; return; }
+   void      SetToF(Double_t time) { m_timeofflight = time; }
+   void      SetChargeZ(Int_t z)   { m_chargeZ = z;         }
 
-
-
-  
   ClassDef(TATWntuHit,1)                            // Pixel or Pixel of a Detector Plane
 };
 

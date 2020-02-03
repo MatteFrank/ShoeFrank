@@ -160,6 +160,11 @@ void LocalReco::CreateRawAction()
 //__________________________________________________________
 void LocalReco::OpenFileIn()
 {
+   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
+      fActGlbTrack->Open(GetName());
+      return;
+   }
+
    if (fgStdAloneFlag) {
       if (GlobalPar::GetPar()->IncludeVertex())
          fActVmeReaderVtx->Open(GetName());

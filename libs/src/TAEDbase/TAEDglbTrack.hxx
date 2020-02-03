@@ -8,38 +8,29 @@
 /** TAEDglbTrack a class to display global tracks on event
  
 */
-class TEveRGBAPalette;
-class TADIeveTrackPropagator;
+class TEveTrackPropagator;
 
-class TAEDglbTrack : public TEveTrackList {
+class TAEDglbTrack : public TEveTrack {
 
 public:
-   TAEDglbTrack(const Char_t* name, TADIeveTrackPropagator* prop);
+   TAEDglbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop);
    virtual ~TAEDglbTrack();
-  
-   //! return number of tracks
-   Int_t GetNofTracks()     const { return fNofTracks; }
-   
-   //! Get Max MaxMomentum
-   Float_t GetMaxMomentum() const { return fMaxMomentum; }
+    
+   //! Add track marker
+   void AddTrackMarker(TVector3& point, TVector3& mom);
 
-   //! Set Max MaxMomentum
-   void SetMaxMomentum(Float_t m);
+   //! Set track id object
+   void TrackId(TObject* obj);
    
-   //! Add Track
-   void AddTrack(TVector3& vertex, TVector3& momentum, Int_t charge);
-  
    //! Reset tracks
-   void ResetTracks();
+   void ResetTrack();
    
-   //! make glb tracks
-   void MakeGlbTracks();
+   //! Get track id object
+   TObject* GetTrackId() const { return fTrackId; }
    
 private:
-   TEveRGBAPalette* fPalette;     // color palette
-   Int_t            fNofTracks;   // number of tracks
-   Int_t            fMaxMomentum; // max momentum
-
+   TObject* fTrackId;
+   
   ClassDef(TAEDglbTrack, 0);  
 };
 

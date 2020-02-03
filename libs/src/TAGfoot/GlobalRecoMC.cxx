@@ -8,6 +8,9 @@ ClassImp(GlobalRecoMC)
 GlobalRecoMC::GlobalRecoMC(TString expName, TString fileNameIn, TString fileNameout)
  : LocalRecoMC(expName, fileNameIn, fileNameout)
 {
+
+	EnableTracking();
+
 }
 
 //__________________________________________________________
@@ -18,35 +21,38 @@ GlobalRecoMC::~GlobalRecoMC()
 //__________________________________________________________
 void GlobalRecoMC::BeforeEventLoop()
 {
-  LocalRecoMC::BeforeEventLoop();
+	LocalRecoMC::BeforeEventLoop();
 
-  TADIparGeo* fDipole = GetParGeoDi();
-  //if (!fDipole) std::cout << "WARNING NO MAG FIELD LOADED" << std::endl;
-  TString magFieldMapName = fDipole->GetMapName();
+	TADIparGeo* fDipole = GetParGeoDi();
+	//if (!fDipole) std::cout << "WARNING NO MAG FIELD LOADED" << std::endl;
+	TString magFieldMapName = fDipole->GetMapName();
 
-  genfit::FieldManager::getInstance()->init( new FootField(magFieldMapName.Data(), fDipole ) );
+	genfit::FieldManager::getInstance()->init( new FootField(magFieldMapName.Data(), fDipole ) );
 
-  // set material and geometry into genfit
-  MaterialEffects* materialEffects = MaterialEffects::getInstance();
-  materialEffects->init(new TGeoMaterialInterface());
+	// set material and geometry into genfit
+	MaterialEffects* materialEffects = MaterialEffects::getInstance();
+	materialEffects->init(new TGeoMaterialInterface());
 
-  // include the nucleon into the genfit pdg repository
-  if ( GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeKalman() )
-    UpdatePDG::Instance();
+	// include the nucleon into the genfit pdg repository
+	if ( GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeKalman() )
+	UpdatePDG::Instance();
+
+	// study for kalman Filter
+	m_globalTrackingStudies = new GlobalTrackingStudies();
+
+
+	// Initialisation of KFfitter
+	if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init!" << endl;
+	m_kFitter = new KFitter();
+	if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init done!" << endl;
   
-  // Initialisation of KFfitter
-  if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init!" << endl;
-  m_kFitter = new KFitter();
-  if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init done!" << endl;
-  
-
 
 }
 
 //____________________________________________________________
 void GlobalRecoMC::LoopEvent(Int_t nEvents)
 {
-   if (nEvents == 0)
+   if (nEvents <= 0)
       nEvents = fTree->GetEntries();
    
    if (nEvents > fTree->GetEntries())
@@ -61,6 +67,7 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents)
       
       if (!fTAGroot->NextEvent()) break;
 
+      m_globalTrackingStudies->Execute();
       m_kFitter->MakeFit(ientry);
 
    }
@@ -69,6 +76,32 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents)
 //______________________________________________________________
 void GlobalRecoMC::AfterEventLoop()
 {
+  
+  m_globalTrackingStudies->Finalize();
   m_kFitter->Finalize();
   LocalRecoMC::AfterEventLoop();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -20,10 +20,6 @@
 #pragma link C++ class  LocalRecoMC;
 #pragma link C++ class  LocalReco;
 
-#pragma link C++ class  TAGpoint;
-#pragma link C++ class  TAGntuPoint;
-#pragma link C++ class  TAGtrack;
-#pragma link C++ class  TAGntuGlbTrack;
 #pragma link C++ class  TAGactNtuGlbTrack;
 #pragma link C++ class  GlobalReco;
 #pragma link C++ class  GlobalRecoMC;

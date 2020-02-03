@@ -202,7 +202,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
     TVector3 posG(GetCurrentPosition(), 0, 0);
     posG = pGeoMap->Sensor2Detector(iSensor, posG);
     cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
-    cluster->SetPositionG(&posG);
+    cluster->SetPositionG(posG);
     cluster->SetPosition(GetCurrentPosition());
     cluster->SetPosError(GetCurrentPosError());
     
@@ -214,7 +214,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
               fpHisStripTot->Fill(cluster->GetStripsN());
               fpHisStrip[iSensor]->Fill(cluster->GetStripsN());
               if (TAMSDparConf::IsMapHistOn()) {
-                 fpHisClusMap[iSensor]->Fill(cluster->GetPosition());
+                 fpHisClusMap[iSensor]->Fill(cluster->GetPositionF());
               }
            }
         }

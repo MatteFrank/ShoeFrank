@@ -50,6 +50,7 @@
 
 class TEveDigitSet;
 class TGCheckButton;
+class TGComboBox;
 class TGMainFrame;
 class TList;
 class TGeoVolume;
@@ -62,10 +63,14 @@ class TAGgeoTrafo;
 class TAEDbaseInterface : public TEveEventManager
 {
 public:
-   TAEDbaseInterface(const TString expName = "");
-   virtual ~TAEDbaseInterface();
+   enum Detectors {
+      kSTC, kBMN, kTGT, kVTX, kDIP, kITR, kMSD, kTOF, kCAL
+   };
    
 public:
+   TAEDbaseInterface(Int_t type, const TString expName = "");
+   virtual ~TAEDbaseInterface();
+   
    //! reset list of histograms
    virtual void ResetHistogram() = 0;
    
@@ -104,8 +109,15 @@ public:
 
    virtual void LoopEvent(Int_t nEvts = 0);
    
+   //! MC virtual methods
    virtual Bool_t GetEntry(Int_t /*entry*/) { return true; }
    
+   virtual void UpdateMcElements()          { return;      }
+   
+   virtual void ConnectMcElements()         { return;      }
+   
+   virtual void AddMcElements()             { return ;     }
+
    virtual void SetTransparency(Char_t transparency = 50); //*MENU*
    
    virtual void ShowDisplay(const TString fileName);
@@ -117,6 +129,14 @@ public:
    virtual void BuildDefaultGeometry();
    
    virtual void NextEvent(); //*MENU*
+   
+   virtual void ToggleDisplay(Int_t id);
+   
+   void         ToggleQuadDisplay();
+   void         ToggleLineDisplay();
+   void         ToggleGlbDisplay();
+   void         ToggleMcDisplay();
+   void         ToggleDetector(Int_t id);
    
    void         ClearInfoView();
    void         HistoSelected(Int_t id);
@@ -162,7 +182,8 @@ public:
 protected:
    void         DefineMaterial();
    void         UpdateEventBar();
-  
+   void         FillDetectorNames();
+
 public:
    //! Disable GUI
    static void  DisableGUI()                { fgGUIFlag = false;      }
@@ -175,6 +196,7 @@ public:
 
 protected:
    TString            fExpName;
+   Int_t              fType;       
    Float_t            fWorldSizeZ;
    Float_t            fWorldSizeXY;
    TGeoMedium*        fWorldMedium;
@@ -198,13 +220,25 @@ protected:
    TGTextEntry*       fEventEntry;       // text entry for event number
    TGNumberEntry*     fNumberEvent;      // number of events to loop
    TGCheckButton*     fRefreshButton;    // refresh display for each event otherwise superimpose events
+   TGCheckButton*     fQuadButton;       // Toggle on/off clusters/hits
+   TGCheckButton*     fQuadMcButton;     // Toggle on/off MC clusters/hits
+   TGCheckButton*     fLineButton;       // Toggle on/off tracks
+   TGCheckButton*     fGlbButton;        // Toggle on/off global tracks
+   TGCheckButton*     fConsoleButton;    // Toggle on/off selection also on console
    TGHProgressBar*    fEventProgress;    // progress event bar
+   TGComboBox*        fDetectorMenu;     // list of detector drawn
    TGListBox*         fHistoListBox;     // list of histograms
-   TList*             fSelecHistoList;   // list of slected histograms
-   TList*             fHistoList;        // list of slected histograms
+   TList*             fSelecHistoList;   // list of selected histograms
+   TList*             fHistoList;        // list of histograms
    
    //histos
    TList*             fListOfCanvases;   // list of canvases
+
+   // list of detector volume names
+   std::map<TString, int> fVolumeNames;
+   
+   // status detectors
+   Bool_t             fDetectorStatus[20];
 
 protected:
    static Bool_t      fgIsGeoLoaded;       // flag if geometry loaded
@@ -214,7 +248,7 @@ protected:
    static Bool_t      fgGUIFlag;           // flag to disable or enable gui interface
    static Bool_t      fgDisplayFlag;       // do not display event and do not make clustering/tracking, define before running
 
-   static Int_t       fgMaxHistosN;       // Maximum number per canvas;
+   static Int_t       fgMaxHistosN;        // Maximum number per canvas;
    
    ClassDef(TAEDbaseInterface, 1); // Base class for event display
 

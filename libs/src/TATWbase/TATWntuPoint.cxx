@@ -18,8 +18,11 @@ ClassImp(TATWpoint) // Description of Single Detector TATWpoint
 //______________________________________________________________________________
 //  default constructor
 TATWpoint::TATWpoint()
-: TAGobject(),
+: TAGcluster(),
    m_position(),
+   m_posErr(),
+   m_positionG(),
+   m_posErrG(),
    m_column(0),
    m_row(0),
    m_columnHit(0x0),
@@ -34,9 +37,10 @@ TATWpoint::TATWpoint()
 
 //______________________________________________________________________________
 //  build a point
-TATWpoint::TATWpoint( double x, TATWntuHit* colHit, double y, TATWntuHit* rowHit )
-: TAGobject(),
+TATWpoint::TATWpoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit )
+: TAGcluster(),
    m_position(x, y, 0),
+   m_posErr(dx, dy, 0),
    m_columnHit(new TATWntuHit(*colHit)),
    m_rowHit(new TATWntuHit(*rowHit)),
    m_chargeZ(0),
@@ -49,6 +53,15 @@ TATWpoint::TATWpoint( double x, TATWntuHit* colHit, double y, TATWntuHit* rowHit
    m_de2    = m_rowHit->GetEnergyLoss();
    m_time   = m_columnHit->GetTime();
 }
+
+//______________________________________________________________________________
+//
+void TATWpoint::SetPositionG(TVector3& posGlo)
+{
+   m_positionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   m_posErrG.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.1);
+}
+
 
 //______________________________________________________________________________
 // Clear
@@ -89,17 +102,17 @@ TATWntuPoint::~TATWntuPoint()
 
 //______________________________________________________________________________
 //  standard 
-TATWpoint* TATWntuPoint::NewPoint(double x, TATWntuHit* colHit, double y, TATWntuHit* rowHit ) {
+TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit ) {
 
 	// check on aorigin
 	TClonesArray &pixelArray = *m_listOfPoints;
-	TATWpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TATWpoint( x, colHit, y, rowHit );
+	TATWpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TATWpoint( x, dx, colHit, y, dy, rowHit );
 
 	return pixel;
 }
 
 //------------------------------------------+-----------------------------------
-int TATWntuPoint::GetPointN()
+int TATWntuPoint::GetPointN() const
 {
 	return m_listOfPoints->GetEntries();
 }
@@ -108,7 +121,7 @@ int TATWntuPoint::GetPointN()
 
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TATWpoint* TATWntuPoint::GetPoint(int iPoint) {
+TATWpoint* TATWntuPoint::GetPoint(int iPoint) const {
 
 	if ( iPoint < 0  || iPoint >= GetPointN() ) {
 		cout << "ERROR >> TATWntuPoint::GetPoint_includingDuplicates  -->  number of point "<<iPoint<<" required is wrong. Max num  " << GetPointN() << endl;

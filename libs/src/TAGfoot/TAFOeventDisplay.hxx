@@ -11,6 +11,7 @@
 #include "TAEDtrack.hxx"
 #include "TAEDwire.hxx"
 #include "TAEDglbTrack.hxx"
+#include "TAEDglbTrackList.hxx"
 #include "TAEDbaseInterface.hxx"
 #include "TADIeveTrackPropagator.hxx"
 
@@ -22,9 +23,9 @@
 #include "TVirtualMagField.h"
 
 #include "TADIeveField.hxx"
-#include "FootField.hxx"
+#include "TADIgeoField.hxx"
 
-#include "GlobalReco.hxx"
+#include "BaseReco.hxx"
 
 class TEveDigitSet;
 class TGCheckButton;
@@ -56,9 +57,6 @@ public:
    
    //! Update normal Canvases
    virtual void UpdateDefCanvases();
-
-   //! Set local reconstruction
-   virtual void SetLocalReco();
    
    //! Add required items
    virtual void AddRequiredItem();
@@ -75,6 +73,9 @@ public:
    //! Open File
    virtual void OpenFile();
    
+   //! Set local reconstruction
+   virtual void SetLocalReco();
+   
    //! Add elements
    virtual void AddElements();
    
@@ -83,7 +84,8 @@ public:
    
    void UpdateHitInfo(TEveDigitSet* qs, Int_t idx);
    void UpdateTrackInfo(TEveDigitSet* qs, Int_t idx);
-    void UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx);
+   void UpdateTrackInfo(TEveTrack* ts);
+   void UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx);
    
 protected:
    void CreateRecActionBm();
@@ -103,6 +105,7 @@ protected:
    void UpdateLayerElements();
    void UpdateBarElements();
    void UpdateCrystalElements();
+   void UpdateStripElements();
    void UpdateQuadElements(const TString prefix);
    void UpdateTrackElements(const TString prefix);
    void UpdateGlbTrackElements();
@@ -128,21 +131,19 @@ public:
    }
    
    //! Disable/Enable tracking
-   static void DisableTracking()   { fgTrackFlag = false;     }
-   static void EnableTracking()    { fgTrackFlag = true;      }
+   static void DisableTracking()    { fgTrackFlag = false;    }
+   static void EnableTracking()     { fgTrackFlag = true;     }
 
    //! Disable/Enable stand alone DAQ
-   static void DisableStdAlone()   { fgStdAloneFlag = false;  }
-   static void EnableStdAlone()    { fgStdAloneFlag = true;   }
+   static void DisableStdAlone()    { fgStdAloneFlag = false; }
+   static void EnableStdAlone()     { fgStdAloneFlag = true;  }
 
    //! Disable/Enable stand alone DAQ
-   static void DisableBmSelectHit()   { fgBmSelectHt = false;  }
-   static void EnableBmSelectHit()    { fgBmSelectHt = true;   }
+   static void DisableBmSelectHit() { fgBmSelectHit = false;  }
+   static void EnableBmSelectHit()  { fgBmSelectHit = true;   }
 
 protected:
    BaseReco*       fReco;    // local reco
-
-   Int_t           fType;         // type of sensor
    
    //Display
    TAEDcluster*    fStClusDisplay;  // list of quad to display hits
@@ -152,7 +153,7 @@ protected:
    
    TAEDcluster*    fItClusDisplay;  // list of quad to display hits
    
-   TAEDcluster*    fMsdClusDisplay;  // list of quad to display hits
+   TAEDcluster*    fMsdClusDisplay;  // list of strip to display hits
    
    TAEDcluster*    fTwClusDisplay;  // list of quad to display hits
    
@@ -162,12 +163,12 @@ protected:
    TAEDtrack*      fBmTrackDisplay; // list of line to display tracks
    TEveBoxSet*     fBmDriftCircleDisplay;
 
-   TAEDglbTrack*   fGlbTrackDisplay;  // list of global tracks to display
+   TAEDglbTrackList* fGlbTrackDisplay;  // list of global tracks to display
    TAEDtrack*      fIrTrackDisplay;   // list of line to display tracks
    Bool_t          fIrFlag;
 
    // Magnet
-   FootField*            fFieldImpl;       // magnetic field implementation
+   TADIgeoField*         fFieldImpl;       // magnetic field implementation
    TADIeveField*         fField;           // Eve magnetic field
    TADIeveTrackPropagator* fGlbTrackProp;  // global track propagator
    
@@ -186,7 +187,7 @@ protected:
    static Bool_t         fgTrackFlag;       // flag for tracking
    static Bool_t         fgStdAloneFlag;    // flag for standalone DAQ
    static TString        fgVtxTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory and "Hough" Hough transformation)
-   static Bool_t         fgBmSelectHt;      // flag BM selected hit
+   static Bool_t         fgBmSelectHit;     // flag BM selected hit
 
    ClassDef(TAFOeventDisplay, 1); // Base class for event display
 };

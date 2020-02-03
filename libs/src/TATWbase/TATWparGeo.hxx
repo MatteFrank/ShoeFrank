@@ -46,7 +46,8 @@ public:
    Int_t          GetBarId(Int_t layer, Float_t xGlob, Float_t yGlob);
    TVector3       GetBarPosition(Int_t layer, Int_t barId);
    TVector3       Detector2Sensor(Int_t layer, TVector3 vec);
-
+   TVector3       GetLayerPosition(Int_t layer);
+   
    //! Get matrix transformation
    TGeoCombiTrans* GetTransfo(Int_t layer, Int_t barId);
 
@@ -82,7 +83,6 @@ public:
     virtual string PrintRotations();
 
     TGeoVolume*     BuildTofWall(const char *twName = "TW");
-    TGeoVolume*     BuildTofWallXY(const char *twName = "TW", Int_t iLayer = 0);
     TGeoVolume*     BuildModule(Int_t iMod, Int_t iLayer);
    
     void            SetBarColorOn(Int_t slat,  Int_t view);

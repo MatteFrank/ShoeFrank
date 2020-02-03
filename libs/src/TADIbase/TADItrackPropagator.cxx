@@ -1,7 +1,7 @@
 
 #include "TMath.h"
 
-#include "FootField.hxx"
+#include "TADIgeoField.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TADItrackPropagator.hxx"
@@ -19,9 +19,9 @@ ClassImp(TADItrackPropagator);
 const  Double_t TADItrackPropagator::fgkConvFactor = 0.299792458;
 
 //______________________________________________________________________________
-TADItrackPropagator::TADItrackPropagator(FootField* field)
+TADItrackPropagator::TADItrackPropagator(TADIgeoField* field)
  : TAGobject(),
-   fField(0x0),
+   fField(field),
    fTrackLength(0.),
    fNormP(0.),
    fDerivative(0,0,0),

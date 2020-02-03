@@ -20,6 +20,12 @@
 #pragma link C++ class TAGdata;
 #pragma link C++ function operator<<(ostream&,const TAGdata&);
 
+#pragma link C++ class TAGcluster;
+#pragma link C++ class TAGpoint;
+#pragma link C++ class TAGntuPoint;
+#pragma link C++ class TAGtrack;
+#pragma link C++ class TAGntuGlbTrack;
+
 #pragma link C++ class TAGdataDsc+;
 
 #pragma link C++ class TAGpadGroup+;
@@ -58,7 +64,7 @@
 #pragma link C++ class TAGmaterials+;
 #pragma link C++ class TAGionisMaterials+;
 
-#pragma link C++ class TAGlineFit.hxx+;
+#pragma link C++ class TAGlineFit+;
 #pragma link C++ class TAGconfigFile+;
 
 #pragma link C++ class ControlPlotsRepository+;

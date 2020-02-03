@@ -71,7 +71,7 @@ void FillGlb(TString expName)
    TAGdataDsc* twPoint = new TAGdataDsc("twPoint",  new TATWntuPoint());
    
    TAGdataDsc* glbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-   actGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", vtVtx, itClus, msClus, twPoint, glbTrack, pParGeoDi);
+   actGlbTrack  = new TAGactNtuGlbTrack("glbActTrack", vtVtx, itClus, msClus, twPoint, glbTrack, pParGeoDi, pParGeoVtx, pParGeoIt, pParGeoMsd, pParGeoTw);
    actGlbTrack->CreateHistogram();
 }
 

@@ -7,15 +7,14 @@
  */
 
 #include "TADIeveField.hxx"
+#include "TAGgeoTrafo.hxx"
 
 ClassImp(TADIeveField);
 
-const Float_t TADIeveField::Tesla = 1e-4;
-
 //______________________________________________________________________________
-TADIeveField::TADIeveField(FootField* field)
+TADIeveField::TADIeveField(TADIgeoField* field)
 : TEveMagField(),
-fField(field)
+  fField(field)
 {
 }
 
@@ -31,7 +30,7 @@ TEveVectorD TADIeveField::GetFieldD(Double_t x, Double_t y, Double_t z) const
    TVector3 pos(x, y, z);
    TVector3 fieldB(0, 0, 0);
    
-   fieldB = fField->get(pos);
+   fieldB = fField->GetField(pos)*TAGgeoTrafo::GausToTesla();
    
-   return TEveVectorD(fieldB[0]*Tesla, fieldB[1]*Tesla, fieldB[2]*Tesla);
+   return TEveVectorD(-fieldB[0], -fieldB[1], fieldB[2]);
 }

@@ -22,6 +22,7 @@
 
 const TString TAITparGeo::fgkBaseNameIt      = "IT";
 const TString TAITparGeo::fgkDefParaNameIt   = "itGeo";
+const Int_t   TAITparGeo::fgkDefSensPerLayer = 8;
 
 //_____________________________________________________________________________
 TAITparGeo::TAITparGeo()
@@ -30,6 +31,7 @@ TAITparGeo::TAITparGeo()
    // Constructor
    fFlagIt = true;
    fLayersN = 2;
+   fSensPerLayer = fgkDefSensPerLayer;
    fkDefaultGeoName = "./geomaps/TAITdetector.map";
 }
 
@@ -331,7 +333,7 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
 }
 
 //_____________________________________________________________________________
-Float_t TAITparGeo:: GetlayerPosZ(Int_t layer)
+Float_t TAITparGeo::GetPassiveLayerPosZ(Int_t layer)
 {
    
    Float_t posZ = 0;
@@ -366,42 +368,43 @@ Float_t TAITparGeo:: GetlayerPosZ(Int_t layer)
 //_____________________________________________________________________________
 Float_t TAITparGeo::GetFoamLayer()
 {
-   return GetlayerPosZ(0);
+   return GetPassiveLayerPosZ(0);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::Get1stKaptonLayer()
 {
-   return GetlayerPosZ(1);
+   return GetPassiveLayerPosZ(1);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::Get1stAlLayer()
 {
-   return GetlayerPosZ(2);
+   return GetPassiveLayerPosZ(2);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::Get2ndKaptonLayer()
 {
-   return GetlayerPosZ(3);
+   return GetPassiveLayerPosZ(3);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::Get2ndAlLayer()
 {
-   return GetlayerPosZ(4);
+   return GetPassiveLayerPosZ(4);
 }
 
 //_____________________________________________________________________________
 Float_t TAITparGeo::Get3rdKaptonLayer()
 {
-   return GetlayerPosZ(5);
+   return GetPassiveLayerPosZ(5);
 }
+
 //_____________________________________________________________________________
 Float_t TAITparGeo::GetEpoxyLayer()
 {
-   return GetlayerPosZ(6);
+   return GetPassiveLayerPosZ(6);
 }
 
 //_____________________________________________________________________________

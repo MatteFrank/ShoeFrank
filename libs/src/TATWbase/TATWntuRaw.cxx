@@ -27,12 +27,12 @@ TATWntuHit::TATWntuHit( TATWrawHit* hit )
   m_time(0),
   m_coordinate(0),
   m_z(0),
+  m_chargeZ(0),
   m_chargeCOM(0),
   m_ChargeA(0),
   m_ChargeB(0),
   m_TimeA(0),
   m_TimeB(0)
-
 {
 }
 
@@ -46,17 +46,16 @@ TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
    m_time(aHit.m_time),
    m_coordinate(aHit.m_coordinate),
    m_z(aHit.m_z),
+   m_chargeZ(aHit.m_chargeZ),
    m_chargeCOM(aHit.m_chargeCOM),
+   m_MCindex(aHit.m_MCindex),
+   m_McTrackId(aHit.m_McTrackId),
    m_ChargeA(aHit.m_ChargeA),
    m_ChargeB(aHit.m_ChargeB),
    m_TimeA(aHit.m_TimeA),
    m_TimeB(aHit.m_TimeB)
-
-
 {
-
 }
-
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -79,6 +78,7 @@ TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime,
   m_time(aTime),
   m_coordinate(pos),
   m_z(0),
+  m_chargeZ(0),
   m_chargeCOM(chargeCOM),
   m_ChargeA(ChargeA),
   m_ChargeB(ChargeB),
@@ -111,6 +111,7 @@ void TATWntuHit::Clear(Option_t* /*option*/)
 	m_time=0;
 	m_coordinate=0;
 	m_z=0;
+   m_chargeZ = 0;
 	m_chargeCOM=0;
 	m_ChargeA=0;
 	m_ChargeB=0;

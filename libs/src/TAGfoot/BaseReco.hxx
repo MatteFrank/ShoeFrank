@@ -27,6 +27,8 @@
 #include "TATWparGeo.hxx"
 #include "TACAparGeo.hxx"
 
+#include "TADIgeoField.hxx"
+
 #include "TATWparCal.hxx"
 #include "TATWparMap.hxx"
 #include "TATWparTime.hxx"
@@ -168,9 +170,9 @@ public:
    
    TACAntuRaw*          GetNtuHitCa()       const { return (TACAntuRaw*) fpNtuRawCa->Object();       }
 
-   TAGactNtuGlbTrack*   GetNtuGlbTrack()    const { return (TAGactNtuGlbTrack*)fpNtuGlbTrack->Object();}
-   TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();     }
-
+   TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
+   TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
+   TADIgeoField*        GetFootField()      const { return fField;                                   }
    
    //! MC container Getter (virtual)
    virtual TAMCntuEve*  GetNtuMcEve()       const { return 0x0; }
@@ -232,7 +234,8 @@ protected:
    TAGdataDsc*           fpNtuClusMsd;     // input cluster data dsc
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
 
-   
+   TADIgeoField*         fField;       // magnetic field
+
   //   TAGdataDsc*           fpWdRawTw;     // input data dsc
    TAGdataDsc*           fpNtuTrackBm;  // input track data dsc
    TAGdataDsc*           fpNtuTrackVtx;  // input track data dsc
@@ -274,7 +277,7 @@ protected:
    void CreateRecActionIt();
    void CreateRecActionMsd();
    void CreateRecActionTw();
-   void CreateRecActionGlb();
+   void CreateRecActionGlb() ;
    void CreateRecActionIr();
 
    ClassDef(BaseReco, 1); // Base class for event display

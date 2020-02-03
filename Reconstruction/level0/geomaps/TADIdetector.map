@@ -12,6 +12,10 @@ Magnets:     2
 Type:        2
 MapName:     "./data/AsymmetricDipoles.table"
 
+MapMeshSize: 0.5
+MagLimLoX:  -5.0     MagLimLoY:    -5.0   MagLimLoZ:    -50.0
+MagLimUpX:   5.0     MagLimUpY:     5.0   MagLimUpZ:     50.0
+
 ShieldThickness:  0.5
 ShieldMat:        "Al"
 ShieldDensity:    2.6989

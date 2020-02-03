@@ -57,7 +57,7 @@ protected:
    Float_t        fChiSquare;                    // chisquare/ndf of track fit in 2D
    Float_t        fChiSquareU;                   // chisquare/ndf of track fit, U dim
    Float_t        fChiSquareV;                   // chisquare/ndf of track fit, V dim
-   Float_t        fVertexZ;                      // vertex z-position
+   TVector3       fPosVertex;                    // vertex position
   
    Int_t          fValidity;                     // if = 1 track attached to vertex,
    TArrayF*       fChargeProba;                  //! charge probability array
@@ -130,8 +130,8 @@ public:
    void           SetPileUp(Bool_t pileup = true)    { fPileup = pileup;            }
    //Set Validity of track in vertex reconstruction
    void           SetValidity(Int_t q)               { fValidity = q;               }
-   //! Set Z vertex
-   void           SetVertexZ(Float_t z)              { fVertexZ = z;                }
+   //! Set pos vertex
+   void           SetPosVertex(TVector3& pos)        { fPosVertex = pos;            }
    //! Set values of line track
    void           SetLineValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength = 0.);
    //! Make chi square 
@@ -151,17 +151,17 @@ public:
 
  
     //! Get chi square 
-   Float_t        GetChi2()           const { return   fChiSquare;     }
+   Float_t        GetChi2()           const { return fChiSquare;     }
    //! Get chi squareU 
-   Float_t        GetChi2U()          const { return   fChiSquareU;    }   
+   Float_t        GetChi2U()          const { return fChiSquareU;    }
    //! Get chi squareV 
-   Float_t        GetChi2V()          const { return   fChiSquareV;    }
-   //! Get Z vertex
-   Float_t       GetVertexZ()         const { return fVertexZ;         }
+   Float_t        GetChi2V()          const { return fChiSquareV;    }
+   //! Get pos vertex
+   const TVector3& GetPosVertex()     const { return fPosVertex;     }
    //Get Validity
-   Int_t         GetValidity()        const { return fValidity;        }
+   Int_t         GetValidity()        const { return fValidity;      }
    //Get charge proba
-   TArrayF*      GetChargeProba()     const { return fChargeProba; }
+   TArrayF*      GetChargeProba()     const { return fChargeProba;   }
    //Get charge with max proba
    Int_t         GetChargeWithMaxProba() const { return fChargeWithMaxProba; }
    //Get charge max proba

@@ -169,8 +169,19 @@ TVector3 TATWparGeo::GetBarPosition(Int_t iLayer, Int_t iBar)
    TGeoHMatrix* hm = TAGparTools::GetTransfo(idx);
    if (hm) {
       TVector3 local(0,0,0);
-      fCurrentPosition =  Sensor2Detector(iLayer, iBar,local);
+      fCurrentPosition =  Sensor2Detector(iLayer, iBar, local);
    }
+   return fCurrentPosition;
+}
+
+//_____________________________________________________________________________
+TVector3 TATWparGeo::GetLayerPosition(Int_t iLayer)
+{
+   Int_t iBar = 0;
+   fCurrentPosition = GetBarPosition(iLayer, iBar);
+   fCurrentPosition.SetX(0.);
+   fCurrentPosition.SetY(0.);
+   
    return fCurrentPosition;
 }
 
@@ -182,7 +193,7 @@ Float_t TATWparGeo::GetCoordiante_sensorFrame(Int_t iLayer, Int_t iBar)
    TGeoHMatrix* hm = TAGparTools::GetTransfo(idx);
    if (hm) {
       TVector3 local(0,0,0);
-      fCurrentPosition =  Sensor2Detector(iLayer, iBar,local);
+      fCurrentPosition =  Sensor2Detector(iLayer, iBar, local);
    }
    if (iLayer == 0)
       return fCurrentPosition.X();
@@ -198,7 +209,7 @@ Float_t TATWparGeo::GetZ_sensorFrame(Int_t iLayer, Int_t iBar)
    TGeoHMatrix* hm = TAGparTools::GetTransfo(idx);
    if (hm) {
       TVector3 local(0,0,0);
-      fCurrentPosition =  Sensor2Detector(iLayer, iBar,local);
+      fCurrentPosition =  Sensor2Detector(iLayer, iBar, local);
    }
       return fCurrentPosition.Z();
 }
@@ -305,34 +316,15 @@ TGeoVolume* TATWparGeo::BuildTofWall(const char *wallName)
    
    for (Int_t i = 0; i < 2; ++i) {
       
-      TGeoVolume* wallXY = BuildTofWallXY(Form("%s%d", wallName, i+1), i);
-      wall->AddNode(wallXY, i);
-   }
-   
-   return wall;
-}
-
-
-//_____________________________________________________________________________
-TGeoVolume* TATWparGeo::BuildTofWallXY(const char *wallName, Int_t iLayer)
-{
-   
-   TGeoVolume* wall = gGeoManager->FindVolumeFast(wallName);
-   
-   if ( wall == 0x0 ) {
-      TGeoMedium*  med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject("AIR");
-      wall = gGeoManager->MakeBox(wallName, med,  fBarSize[1]/2.,  fBarSize[1]/2., GetBarThick()/2.);
-   }
-   
-   for (Int_t i = 0; i < fBarsN; ++i) {
-
-      TGeoCombiTrans* hm = GetTransfo(iLayer, i);
-      
-      TGeoVolume* module = BuildModule(i, iLayer);
-      
-      module->SetLineColor(fgkDefaultModCol);
-      module->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
-      wall->AddNode(module, i, hm);
+      for (Int_t j = 0; j < fBarsN; ++j) {
+         
+         TGeoVolume* module = BuildModule(j, i);
+         module->SetLineColor(fgkDefaultModCol);
+         module->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
+         
+         TGeoCombiTrans* hm = GetTransfo(i, j);
+         wall->AddNode(module, i*fBarsN+j, hm);
+      }
    }
    
    return wall;

@@ -7,7 +7,7 @@
 #include "TGeoManager.h"
 
 #include "GlobalPar.hxx"
-#include "GlobalRecoMC.hxx"
+#include "LocalRecoMC.hxx"
 
 ClassImp(TAFOeventDisplay)
 
@@ -24,49 +24,54 @@ TAFOeventDisplay* TAFOeventDisplayMC::Instance(Int_t type, const TString name)
 //__________________________________________________________
 TAFOeventDisplayMC::TAFOeventDisplayMC(Int_t type, const TString expName)
  : TAFOeventDisplay(type, expName),
-   fCaMcDisplay(new TAEDpoint("Cal MC hit")),
-   fTwMcDisplay(new TAEDpoint("ToF MC hit")),
-   fMsdMcDisplay(new TAEDpoint("MSD MC hit")),
-   fItMcDisplay(new TAEDpoint("IT MC hit")),
-   fVtMcDisplay(new TAEDpoint("VTX MC hit")),
-   fBmMcDisplay(new TAEDpoint("STC MC hit")),
-   fStMcDisplay(new TAEDpoint("STC MC hit"))
+   fCaMcDisplay(0x0),
+   fTwMcDisplay(0x0),
+   fMsdMcDisplay(0x0),
+   fItMcDisplay(0x0),
+   fVtMcDisplay(0x0),
+   fBmMcDisplay(0x0),
+   fStMcDisplay(0x0)
 {
-   // local reco
-   SetLocalReco();
+   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
+      fStMcDisplay = new TAEDpoint("STC MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeBM())
+      fBmMcDisplay = new TAEDpoint("STC MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeVertex())
+      fVtMcDisplay = new TAEDpoint("VTX MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeInnerTracker())
+      fItMcDisplay = new TAEDpoint("IT MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeMSD())
+      fMsdMcDisplay = new TAEDpoint("MSD MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeTW())
+      fTwMcDisplay = new TAEDpoint("ToF MC hit");
+   
+   if (GlobalPar::GetPar()->IncludeCA())
+      fCaMcDisplay = new TAEDpoint("Cal MC hit");
 }
 
 //__________________________________________________________
 TAFOeventDisplayMC::~TAFOeventDisplayMC()
 {
-   // default destructor   
-   delete fCaMcDisplay;
-   delete fTwMcDisplay;
-   delete fMsdMcDisplay;
-   delete fItMcDisplay;
-   delete fVtMcDisplay;
-   delete fBmMcDisplay;
-   delete fStMcDisplay;
-}
-
-//__________________________________________________________
-void TAFOeventDisplayMC::SetLocalReco()
-{
-   if (fType != 1) return;
-   
-   // local reco
-   fReco = new GlobalRecoMC(fExpName);
-   
-   fReco->DisableTree();
-   fReco->DisableSaveHits();
-   fReco->EnableHisto();
-
-   if (fgTrackFlag) {
-      fReco->SetTrackingAlgo(fgVtxTrackingAlgo[0]);
-      fReco->EnableTracking();
-   }
-   
-   fpFootGeo = fReco->GetGeoTrafo();
+   // default destructor
+   if (fStMcDisplay)
+      delete fStMcDisplay;
+   if (fBmMcDisplay)
+      delete fBmMcDisplay;
+   if (fVtMcDisplay)
+      delete fVtMcDisplay;
+   if (fItMcDisplay)
+      delete fItMcDisplay;
+   if(fMsdMcDisplay)
+      delete fMsdMcDisplay;
+   if(fTwMcDisplay)
+      delete fTwMcDisplay;
+   if(fCaMcDisplay)
+      delete fCaMcDisplay;
 }
 
 //__________________________________________________________
@@ -78,27 +83,8 @@ Bool_t TAFOeventDisplayMC::GetEntry(Int_t entry)
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::CreateRawAction()
+void TAFOeventDisplayMC::AddMcElements()
 {
-   fReco->CreateRawAction();
-}
-
-//__________________________________________________________
-void TAFOeventDisplayMC::AddRequiredItem()
-{
-   fReco->AddRawRequiredItem();
-   fReco->AddRecRequiredItem();
-   
-   gTAGroot->BeginEventLoop();
-   gTAGroot->Print();
-}
-
-
-//__________________________________________________________
-void TAFOeventDisplayMC::AddElements()
-{
-   TAFOeventDisplay::AddElements();
-
    if (GlobalPar::GetPar()->IncludeCA()) {
       fCaMcDisplay->ResetPoints();
       gEve->AddElement(fCaMcDisplay);
@@ -136,17 +122,28 @@ void TAFOeventDisplayMC::AddElements()
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::ConnectElements()
+void TAFOeventDisplayMC::ConnectMcElements()
 {
-   TAFOeventDisplay::ConnectElements();
+   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
+      fStMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateStInfo(Int_t)");
    
-   fCaMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateCaInfo(Int_t)");
-   fTwMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateTwInfo(Int_t)");
-   fMsdMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateMsInfo(Int_t)");
-   fItMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateItInfo(Int_t)");
-   fVtMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateVtInfo(Int_t)");
-   fBmMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateBmInfo(Int_t)");
-   fStMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateStInfo(Int_t)");
+   if (GlobalPar::GetPar()->IncludeBM())
+      fBmMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateBmInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeVertex())
+      fVtMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateVtInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeInnerTracker())
+      fItMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateItInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeMSD())
+      fMsdMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateMsInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeTW())
+      fTwMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateTwInfo(Int_t)");
+   
+   if (GlobalPar::GetPar()->IncludeCA())
+      fCaMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateCaInfo(Int_t)");
 }
 
 //__________________________________________________________
@@ -242,16 +239,28 @@ void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
    fInfoView->AddLine( Form("with momentum: (%.3g %.3g %.3g) GeV/c\n", mom[0], mom[1], mom[2]) );
    fInfoView->AddLine( Form("eLoss: %.3g MeV time: %.3g ns\n", point->GetDeltaE()*TAGgeoTrafo::GevToMev(), point->GetTof()*TAGgeoTrafo::SecToNs()) );
    
+   if (fConsoleButton->IsOn()) {
+      cout << Form("%s sensor id: %d, Hit:\n", name.Data(), point->GetID());
+      cout << Form("at position:   (%.3g %.3g %.3g) cm\n", pos[0], pos[1], pos[2]);
+      cout << Form("with momentum: (%.3g %.3g %.3g) GeV/c\n", mom[0], mom[1], mom[2]);
+      cout << Form("eLoss: %.3g MeV time: %.3g ns\n", point->GetDeltaE()*TAGgeoTrafo::GevToMev(), point->GetTof()*TAGgeoTrafo::SecToNs());
+   }
+   
    Int_t trackId       = point->GetTrackId();
    TAMCntuEve* pNtuHit = fReco->GetNtuMcEve();
    TAMCeveTrack* track = pNtuHit->GetHit(trackId);
    
    fInfoView->AddLine( Form("Generated from track with index: %d\n", trackId) );
    fInfoView->AddLine( Form("Charge: %d Mass: %.3g GeV/c2\n", track->GetCharge(), track->GetMass()) );
+   
+   if (fConsoleButton->IsOn()) {
+      cout << Form("Generated from track with index: %d\n", trackId);
+      cout << Form("Charge: %d Mass: %.3g GeV/c2\n", track->GetCharge(), track->GetMass());
+   }
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateElements()
+void TAFOeventDisplayMC::UpdateMcElements()
 {
    if (GlobalPar::GetPar()->IncludeST())
       UpdateMcElements("st");
@@ -273,8 +282,6 @@ void TAFOeventDisplayMC::UpdateElements()
    
    if (GlobalPar::GetPar()->IncludeCA())
       UpdateMcElements("ca");
-   
-   TAFOeventDisplay::UpdateElements();
 }
 
 //__________________________________________________________

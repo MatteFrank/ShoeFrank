@@ -11,7 +11,7 @@ class GlobalToeReco : public TAGobject
 {
 public:
    //! default constructor
-   GlobalToeReco(TString expName, TString fileNameIn = "", TString fileNameout = "", Bool_t isMC = false);
+   GlobalToeReco(TString expName, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~GlobalToeReco();
 
@@ -29,9 +29,9 @@ public:
    void DisableTracking() { fReco->DisableTracking(); }
    
    
-   void BeforeEventLoop()       {  fReco->BeforeEventLoop(); }
-   void LoopEvent(Int_t nTotEv) { fReco->LoopEvent(nTotEv);  }
-   void AfterEventLoop()        { fReco->AfterEventLoop();   }
+   void BeforeEventLoop()       { fReco->BeforeEventLoop(); }
+   void LoopEvent(Int_t nTotEv) { fReco->LoopEvent(nTotEv); }
+   void AfterEventLoop()        { fReco->AfterEventLoop();  }
    
 private:
    BaseReco*       fReco;    // local reco

@@ -22,6 +22,7 @@ TAVTvertex::TAVTvertex()
 {
     fListOfTracks->SetOwner(true);
     fVertexPosition.SetXYZ(0,0,0);
+    fVertexPosError.SetXYZ(0,0,0);
 }
 
 //______________________________________________________________________________
@@ -29,6 +30,7 @@ TAVTvertex::TAVTvertex()
 TAVTvertex::TAVTvertex(const TAVTvertex& aVertex)
 :  TAGobject(aVertex),
    fVertexPosition(aVertex.fVertexPosition),
+   fVertexPosError(aVertex.fVertexPosError),
    fIsValid(aVertex.fIsValid),
    fIsBmMatched(aVertex.fIsBmMatched),
    fDistanceMin(aVertex.fDistanceMin)

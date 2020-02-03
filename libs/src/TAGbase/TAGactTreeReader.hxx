@@ -53,6 +53,8 @@ class TAGactTreeReader : public TAGactionFile {
     virtual Bool_t  Process();
 
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
+   
+    virtual TTree*  GetTree() { return fpTree; }
 
     ClassDef(TAGactTreeReader,0)
 

@@ -8,7 +8,7 @@
 #include <TStopwatch.h>
 
 #include "GlobalPar.hxx"
-#include "GlobalReco.h"
+#include "GlobalToeReco.h"
 
 #endif
 
@@ -22,7 +22,7 @@ void DecodeGlbToe(TString name = "data/data_built.2211.physics_foot.daq.VTX.1.da
    TString nameOut = name(0, pos);
    nameOut.Append("_Out.root");
    
-   GlobalReco* glbRec = new GlobalReco(name, nameOut);
+   GlobalToeReco* glbRec = new GlobalToeReco(name, nameOut);
    
    // global setting
    glbRec->EnableTree();

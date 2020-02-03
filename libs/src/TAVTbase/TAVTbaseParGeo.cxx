@@ -18,6 +18,8 @@
 
 #include "TAVTbaseParGeo.hxx"
 
+using namespace std;
+
 //##############################################################################
 
 /*!
@@ -37,7 +39,9 @@ TAVTbaseParGeo::TAVTbaseParGeo()
    fkDefaultGeoName(""),
    fLayersN(fSensorsN),
    fFlagMC(false),
-   fFlagIt(false)
+   fFlagIt(false),
+   fSensPerLayer(0),
+   fSensorArray(0x0)
 {
    // Standard constructor
 }
@@ -47,6 +51,7 @@ TAVTbaseParGeo::~TAVTbaseParGeo()
 {
    // Destructor
    delete fIonisation;
+   delete [] fSensorArray;
 }
 
 //_____________________________________________________________________________
@@ -94,6 +99,8 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
    ReadItem(fSensorsN);
    if(FootDebugLevel(1))
       cout << endl << "Sensors number "<< fSensorsN << endl;
+   
+   fSensorArray = new UChar_t[fSensorsN];
    
    ReadStrings(fTypeName);
    if(FootDebugLevel(1))
@@ -199,6 +206,9 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
       if(FootDebugLevel(1))
          cout << "   Position: " << fSensorParameter[p].Position[0] << " " << fSensorParameter[p].Position[1] << " " << fSensorParameter[p].Position[2] << endl;
       
+      // fill map
+      fSensorMap[fSensorParameter[p].Position[2]].push_back(fSensorParameter[p].SensorIdx);
+      
       // read sensor angles
       ReadVector3(fSensorParameter[p].Tilt);
       if(FootDebugLevel(1))
@@ -263,6 +273,9 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
    
    // Define materials
    DefineMaterial();
+   
+   // fill sensor map
+   FillSensorMap();
    
    return true;
 }
@@ -400,6 +413,47 @@ TVector3 TAVTbaseParGeo::Sensor2DetectorVect(Int_t detID, TVector3& loc) const
    }
 
    return LocalToMasterVect(detID, loc);
+}
+
+//_____________________________________________________________________________
+void TAVTbaseParGeo::FillSensorMap()
+{
+   map<float, vector<UChar_t> >::iterator itr = fSensorMap.begin();
+   vector<UChar_t> v;
+   Int_t iLayer = 0;
+   
+   while (itr != fSensorMap.end()) {
+      if (FootDebugLevel(2))
+         cout << itr->first << endl;
+      v = itr->second;
+      std::copy(v.begin(), v.end(), &fSensorArray[iLayer*fSensPerLayer]);
+      iLayer++;
+      itr++;
+   }
+}
+
+//_____________________________________________________________________________
+UChar_t* TAVTbaseParGeo::GetSensorsPerLayer(Int_t iLayer)
+{
+   return &fSensorArray[iLayer*fSensPerLayer];
+}
+
+//_____________________________________________________________________________
+Float_t TAVTbaseParGeo::GetLayerPosZ(Int_t layer)
+{
+   map<float, vector<UChar_t> >::iterator itr = fSensorMap.begin();
+   Int_t iLayer = 0;
+   
+   while (itr != fSensorMap.end()) {
+      if (FootDebugLevel(2))
+         cout << itr->first << endl;
+      
+      if (iLayer++ == layer)
+         return itr->first;
+      itr++;
+   }
+   
+   return -99;
 }
 
 //_____________________________________________________________________________

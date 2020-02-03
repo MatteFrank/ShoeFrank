@@ -13,7 +13,10 @@
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
 
+#include "TATOEact.hxx"
+
 class TH1F;
+class TTree;
 class TAGactTreeReader;
 
 class TAGntuPoint;
@@ -32,7 +35,8 @@ public:
                                TAGparaDsc* p_geoVtx   = 0,
                                TAGparaDsc* p_geoItr   = 0,
                                TAGparaDsc* p_geoMsd   = 0,
-                               TAGparaDsc* p_geoTof   = 0);
+                               TAGparaDsc* p_geoTof   = 0,
+                               TADIgeoField* field = nullptr);
    
    virtual  ~TAGactNtuGlbTrack();
    
@@ -44,13 +48,23 @@ public:
    
    //! Set up branches
    void      SetupBranches();
+   
+   //! Set up branches
+   void      SetupBranches(TTree* tree);
 
    //! Open File
    void      Open(TString name);
    
    //! Close File
    void      Close();
-
+   
+   //! Get tree in standalone mode
+   TTree*    GetTree();
+    
+private:
+    TATOEbaseAct* SetupAction() const;
+    TADIgeoField*        GetFootField()      const { return fField;  }
+    
 private:
    TAGgeoTrafo*      fpFootGeo;        // geo trafo
    TAGdataDsc*       fpVtxVertex;		// Vertex
@@ -63,26 +77,23 @@ private:
    TAGparaDsc*       fpItrGeoMap;      // par geo for inner tracker
    TAGparaDsc*       fpMsdGeoMap;      // par geo for MSD
    TAGparaDsc*       fpTofGeoMap;      // par geo for ToF
+   TADIgeoField*     fField;
    
-   TAGntuPoint*       fpNtuPoint;      // tmp containers of all points
+//   TAGntuPoint*      fpNtuPoint;       // tmp containers of all points
    TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
    
+   TATOEbaseAct*     fActTOE;
+    
    TH1F*             fpHisMass;
 
 public:
-   //! Disable/Enable stand alone DAQ
+   //! Disable/Enable stand alone reading
    static void DisableStdAlone()   { fgStdAloneFlag = false;  }
    static void EnableStdAlone()    { fgStdAloneFlag = true;   }
-
-private:
-   static Bool_t     fgStdAloneFlag;   // flag for standalone (read from root file)
-
-private:
-   void FillTofPoint();
-   void FillVtxPoint();
-   void FillItrPoint();
-   void FillMsdPoint();
+   static Bool_t GetStdAloneFlag() { return fgStdAloneFlag;   }
    
+private:
+   static Bool_t     fgStdAloneFlag;    // flag for standalone (read from root file using MC interface)
    
    ClassDef(TAGactNtuGlbTrack,0)
 };

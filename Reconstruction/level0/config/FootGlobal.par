@@ -20,7 +20,7 @@ IncludeKalman:   n
 IncludeTOE:      n
 
 Kalman Mode: 		ON
-Tracking Systems Considered:		all
+Tracking Systems Considered:		VT IT MSD
 Reverse Tracking:	false
 
 VT  Reso: 0.0006

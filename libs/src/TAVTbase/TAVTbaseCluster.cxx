@@ -13,10 +13,11 @@ ClassImp(TAVTbaseCluster) // Description of a cluster
 //______________________________________________________________________________
 //  
 TAVTbaseCluster::TAVTbaseCluster()
-:  TAGobject(),
+:  TAGcluster(),
    fPosition(new TVector3(0., 0., 0.)),
    fPosError(new TVector3(0., 0., 0.)),
    fPositionG(new TVector3(0., 0., 0.)),
+   fPosErrorG(new TVector3(0., 0., 0.)),
    fListOfPixels(0x0),
    fNumber(0),
    fPlaneNumber(0),
@@ -32,10 +33,11 @@ TAVTbaseCluster::TAVTbaseCluster()
 //______________________________________________________________________________
 //  
 TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
-:  TAGobject(),
+:  TAGcluster(),
    fPosition(new TVector3(*cluster.fPosition)),
    fPosError(new TVector3(*cluster.fPosError)),
    fPositionG(new TVector3(*cluster.fPositionG)),
+   fPosErrorG(new TVector3(*cluster.fPosErrorG)),
    fNumber(cluster.fNumber),
    fPlaneNumber(cluster.fPlaneNumber),
    fCharge(cluster.fCharge),
@@ -57,6 +59,7 @@ TAVTbaseCluster::~TAVTbaseCluster()
    
    delete fPosition;
    delete fPositionG;
+   delete fPosErrorG;
    delete fPosError;
    delete fListOfPixels;
 }
@@ -108,6 +111,7 @@ void TAVTbaseCluster::SetPosError(TVector3* pos)
 void TAVTbaseCluster::SetPositionG(TVector3* posGlo)
 {
    fPositionG->SetXYZ(posGlo->Px(), posGlo->Py(), posGlo->Pz());
+   fPosErrorG->SetXYZ(fPosError->Px(), fPosError->Py(), 0.01);
 }
 
 //______________________________________________________________________________

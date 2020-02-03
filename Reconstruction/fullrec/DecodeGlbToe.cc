@@ -5,6 +5,10 @@
 #include "GlobalPar.hxx"
 #include "GlobalToeReco.hxx"
 
+// executabel to read back from local reconstruction tree
+// author: Ch. Finck
+
+
 int main (int argc, char *argv[])  {
 
    TString in("");
@@ -14,11 +18,10 @@ int main (int argc, char *argv[])  {
    TString out = in(0, pos);
    out.Append("_Out.root");
    
-   Bool_t ntu = false;
+   Bool_t ntu = true;
    Bool_t his = false;
    Bool_t hit = false;
-   Bool_t trk = false;
-   Bool_t isMC = false;
+   Bool_t trk = true;
 
    Int_t nTotEv = 1e7;
    
@@ -32,7 +35,6 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
       if(strcmp(argv[i],"-trk") == 0)   { trk = true;   } // enable tracking action
-      if(strcmp(argv[i],"-mc") == 0)    { isMC = true;  } // MC local reco
 
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
@@ -55,7 +57,7 @@ int main (int argc, char *argv[])  {
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
    
-   GlobalToeReco* glbRec = new GlobalToeReco(exp, in, out, isMC);
+   GlobalToeReco* glbRec = new GlobalToeReco(exp, in, out);
 
    // global setting
    if (ntu)

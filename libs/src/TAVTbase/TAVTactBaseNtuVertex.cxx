@@ -122,7 +122,8 @@ Bool_t TAVTactBaseNtuVertex::Action()
    Bool_t ok = true;
   
    TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-   
+   TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
+
    Bool_t check = false;
    
    if (fgCheckPileUp)
@@ -148,6 +149,13 @@ Bool_t TAVTactBaseNtuVertex::Action()
    
    if (fgCheckBmMatching)
 	  CheckBmMatching();
+   else {
+      for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
+         TAVTvertex* vtx      = pNtuVertex->GetVertex(i);
+         vtx->SetBmMatched();
+      }
+
+   }
 
     return ok;
 }
@@ -185,6 +193,7 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
    Bool_t isGood = false;
    for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
 	  TAVTvertex* vtx      = pNtuVertex->GetVertex(i);
+      
 	  TVector3 vtxPosition = vtx->GetVertexPosition();
 	  vtxPosition  = pFootGeo->FromVTLocalToGlobal(vtxPosition);
 	  
@@ -210,12 +219,12 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 	  if (bestIdx != -1) {
 		 TAVTvertex* vtx  = pNtuVertex->GetVertex(bestIdx);
 		 vtx->SetBmMatched();
-	  }
-	  
-	  if (ValidHistogram()) {
-		 fpHisBmMatchX->Fill(bestRes.X());
-		 fpHisBmMatchY->Fill(bestRes.Y());
-	  }
+
+        if (ValidHistogram()) {
+           fpHisBmMatchX->Fill(bestRes.X());
+           fpHisBmMatchY->Fill(bestRes.Y());
+        }
+     }
    }
    
    return true;
@@ -260,8 +269,7 @@ void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtra
    
    fVtxPos = (P+Q)*0.5;
    // Again in local frame of VTX
-   fVtxPos = pFirstGeo->FromGlobalToVTLocal(fVtxPos*TAGgeoTrafo::MuToCm());
-   fVtxPos *= TAGgeoTrafo::CmToMu();
+   fVtxPos = pFirstGeo->FromGlobalToVTLocal(fVtxPos);
    
    if(FootDebugLevel(1))
 	  fVtxPos.Print();
@@ -284,7 +292,7 @@ Bool_t TAVTactBaseNtuVertex::SetNotValidVertex(Int_t idTk)
    vtxPos = track0->Intersection(0);//Target center
    vtx->SetVertexPosition(vtxPos);
    track0->SetValidity(-1);
-   track0->SetVertexZ(vtxPos.Z());
+   track0->SetPosVertex(vtxPos);
    vtx->AddTrack(track0);
    pNtuVertex->NewVertex(*vtx);
    
@@ -310,7 +318,7 @@ void TAVTactBaseNtuVertex::SetValidVertex()
    for(Int_t q = 0; q<nTracks; ++q ){
 	  TAVTtrack* track0 = ntuTrack->GetTrack(q);
 	  track0->SetValidity(1);
-	  track0->SetVertexZ(fVtxPos.Z());
+	  track0->SetPosVertex(fVtxPos);
 	  vtx->AddTrack(track0);
    }
    

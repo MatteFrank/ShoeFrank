@@ -17,15 +17,15 @@
 
 //##############################################################################
 
-class FootField;
+class TADIgeoField;
 class TADItrackPropagator : public TAGobject {
    
 public:
-   TADItrackPropagator(FootField* field);
+   TADItrackPropagator(TADIgeoField* field);
    
    Bool_t	ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, TVector3& vOut, TVector3& pOut);
    
-   TVector3 GetFieldB(TVector3 vertex) const { return fField->get(vertex); }
+   TVector3 GetFieldB(TVector3 vertex) const { return fField->GetField(vertex); }
 
    // Getter
    Double_t GetTrackLength()           const { return fTrackLength;        }
@@ -39,7 +39,7 @@ public:
    void SetStep(Double_t step)               { fStep = step;               }
    
 private:
-   FootField* fField;
+   TADIgeoField* fField;
    Double_t   fTrackLength;
    Double_t   fNormP;
    TVector3   fDerivative;

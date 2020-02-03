@@ -20,7 +20,7 @@
 
 /*!
  \class TATWactNtuPoint 
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for TW reconstructed points. **
  */
 
 ClassImp(TATWactNtuPoint);
@@ -33,10 +33,15 @@ TATWactNtuPoint::TATWactNtuPoint(const char* name,
    fpNtuRaw(pNtuRaw),
    fpNtuPoint(pNtuPoint),
    fpGeoMap(pGeoMap),
-   fpCalMap(pCalMap)
+   fpCalMap(pCalMap),
+   fDefPosErr(0)
 {
    AddDataIn(pNtuRaw,   "TATWntuRaw");
    AddDataOut(pNtuPoint, "TATWntuPoint");
+   
+   TATWparGeo* pGeo = (TATWparGeo*) fpGeoMap->Object();
+   Float_t barWidth = pGeo->GetBarWidth();
+   fDefPosErr = barWidth/TMath::Sqrt(12.);
 }
 
 //------------------------------------------+-----------------------------------
@@ -135,23 +140,26 @@ Bool_t TATWactNtuPoint::FindPoints()
       if (best) {
          TATWntuHit* hitmin = pNtuHit->GetHit(minId, 1);
 
-	 if(!hitmin) continue;
+         if(!hitmin) continue;
 	 
          Int_t bar2   = hitmin->GetBar();
          Float_t xmin = pGeoMap->GetBarPosition(0, bar1)[0];
          Float_t ymin = pGeoMap->GetBarPosition(1, bar2)[1];
-      
-         TATWpoint* point = pNtuPoint->NewPoint(xmin, hit1, ymin, hitmin);
-         
-//         Int_t Z = pCalMap->GetChargeZ(point->GetEnergyLoss1());
-//         point->SetChargeZ(Z);
+         Float_t zmin = (pGeoMap->GetBarPosition(0, bar1)[2] + pGeoMap->GetBarPosition(1, bar2)[2])/2.;
+
+         TATWpoint* point = pNtuPoint->NewPoint(xmin, fDefPosErr, hit1, ymin, fDefPosErr, hitmin);
+         TVector3 posG(xmin, ymin, zmin);
+         point->SetPositionG(posG);
+
+         Int_t Z = hit1->GetChargeZ(); // taking MC Z from hit since no reconstruction available
+         point->SetChargeZ(Z);
 	 
-	 if (ValidHistogram()) {
-	   fpHisDist->Fill(minDist);
-	   fpHisCharge1->Fill(point->GetEnergyLoss1());
-	   fpHisCharge2->Fill(point->GetEnergyLoss2());
-	   fpHisChargeTot->Fill(point->GetEnergyLoss());
-	 }
+         if (ValidHistogram()) {
+            fpHisDist->Fill(minDist);
+            fpHisCharge1->Fill(point->GetEnergyLoss1());
+            fpHisCharge2->Fill(point->GetEnergyLoss2());
+            fpHisChargeTot->Fill(point->GetEnergyLoss());
+         }
       }
    }
 

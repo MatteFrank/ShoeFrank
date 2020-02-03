@@ -4,6 +4,7 @@
 
 // root include
 #include "Riostream.h"
+#include "TGComboBox.h"
 #include "TRootEmbeddedCanvas.h"
 #include "TEveManager.h"
 #include "TEveWindow.h"
@@ -30,12 +31,15 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
+#include "LocalReco.hxx"
+#include "LocalRecoMC.hxx"
+
 ClassImp(TAFOeventDisplay)
 
 Bool_t  TAFOeventDisplay::fgTrackFlag       = true;
 TString TAFOeventDisplay::fgVtxTrackingAlgo = "Std";
 Bool_t  TAFOeventDisplay::fgStdAloneFlag    = false;
-Bool_t  TAFOeventDisplay::fgBmSelectHt      = false;
+Bool_t  TAFOeventDisplay::fgBmSelectHit     = false;
 
 TAFOeventDisplay* TAFOeventDisplay::fgInstance = 0x0;
 
@@ -50,8 +54,7 @@ TAFOeventDisplay* TAFOeventDisplay::Instance(Int_t type, const TString name)
 
 //__________________________________________________________
 TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
- : TAEDbaseInterface(expName),
-   fType(type),
+ : TAEDbaseInterface(type, expName),
    fStClusDisplay(0x0),
    fBmClusDisplay(0x0),
    fBmTrackDisplay(0x0),
@@ -77,7 +80,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
 
    // default constructon
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM()) {
-      fStClusDisplay = new TAEDcluster("Start counter hit");
+      fStClusDisplay = new TAEDcluster("Start counter Hit");
       fStClusDisplay->SetMaxEnergy(fMaxEnergy);
       fStClusDisplay->SetDefWidth(fQuadDefWidth/2.);
       fStClusDisplay->SetDefHeight(fQuadDefHeight/2.);
@@ -113,7 +116,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
    
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
-      fItClusDisplay = new TAEDcluster("Inner tracker Cluster");
+      fItClusDisplay = new TAEDcluster("Inner Tracker Cluster");
       fItClusDisplay->SetMaxEnergy(fMaxEnergy);
       fItClusDisplay->SetDefWidth(fQuadDefWidth*2.);
       fItClusDisplay->SetDefHeight(fQuadDefHeight*2.);
@@ -129,7 +132,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
    
    if (GlobalPar::GetPar()->IncludeTW()) {
-      fTwClusDisplay = new TAEDcluster("Tof Wall hit");
+      fTwClusDisplay = new TAEDcluster("Tof Wall Hit");
       fTwClusDisplay->SetMaxEnergy(fMaxEnergy);
       fTwClusDisplay->SetDefWidth(fQuadDefWidth*8);
       fTwClusDisplay->SetDefHeight(fQuadDefHeight*8);
@@ -137,7 +140,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
    
    if (GlobalPar::GetPar()->IncludeCA()) {
-      fCaClusDisplay = new TAEDcluster("Calorimeter hit");
+      fCaClusDisplay = new TAEDcluster("Calorimeter Hit");
       fCaClusDisplay->SetMaxEnergy(fMaxEnergy);
       fCaClusDisplay->SetDefWidth(fQuadDefWidth*4);
       fCaClusDisplay->SetDefHeight(fQuadDefHeight*4);
@@ -146,7 +149,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    
    if (GlobalPar::GetPar()->IncludeTOE()) {
       fGlbTrackProp    = new TADIeveTrackPropagator();
-      fGlbTrackDisplay = new TAEDglbTrack("Global Tracks", fGlbTrackProp);
+      fGlbTrackDisplay = new TAEDglbTrackList("Global Tracks", fGlbTrackProp);
       fGlbTrackDisplay->SetMaxMomentum(fMaxMomentum);
    }
    
@@ -181,7 +184,6 @@ TAFOeventDisplay::~TAFOeventDisplay()
    if (fIrTrackDisplay)       delete fIrTrackDisplay;
 
    if (fField)                delete fField;
-   if (fFieldImpl)            delete fFieldImpl;
    if (fGlbTrackProp)         delete fGlbTrackProp;
    
    delete fReco;
@@ -190,11 +192,13 @@ TAFOeventDisplay::~TAFOeventDisplay()
 //__________________________________________________________
 void TAFOeventDisplay::SetLocalReco()
 {
-   if (fType != 0) return;
-   
-   // local reco
-   fReco = new GlobalReco(fExpName);
-   
+   if (fType == 0)
+      fReco = new LocalReco(fExpName);
+   else if (fType == 1)
+      fReco = new LocalRecoMC(fExpName);
+   else
+      Error("SetLocalReco()", "Unknown type %d", fType);
+      
    fReco->DisableTree();
    fReco->DisableSaveHits();
    fReco->EnableHisto();
@@ -219,7 +223,7 @@ void TAFOeventDisplay::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeDI()) {
       TADIparGeo* parGeo = fReco->GetParGeoDi();
       
-      fFieldImpl = new FootField("", parGeo);
+      fFieldImpl = fReco->GetFootField();
       fField     = new TADIeveField(fFieldImpl);
       
       if (GlobalPar::GetPar()->IncludeTOE()) {
@@ -241,7 +245,9 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeST()) {
       TASTparGeo* parGeo = fReco->GetParGeoSt();
       TGeoVolume* irVol  = parGeo->BuildStartCounter();
-   
+      fVolumeNames[irVol->GetName()] = kSTC;
+
+      
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TASTparGeo::GetBaseName());
       AddGeometry(irVol, transfo);
    }
@@ -250,7 +256,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeBM()) {
       TABMparGeo* parGeo = fReco->GetParGeoBm();;
       TGeoVolume* bmVol  = parGeo->BuildBeamMonitor();
-      
+      fVolumeNames[bmVol->GetName()] = kBMN;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TABMparGeo::GetBaseName());
       AddGeometry(bmVol, transfo);
    }
@@ -259,7 +266,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeTG()) {
       TAGparGeo* parGeo = fReco->GetParGeoG();;
       TGeoVolume* tgVol = parGeo->BuildTarget();
-      
+      fVolumeNames[tgVol->GetName()] = kTGT;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAGparGeo::GetBaseName());
       AddGeometry(tgVol, transfo);
    }
@@ -268,25 +276,28 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeVertex()) {
       TAVTparGeo* parGeo = fReco->GetParGeoVtx();
       TGeoVolume* vtVol  = parGeo->BuildVertex();
-      
+      fVolumeNames[vtVol->GetName()] = kVTX;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAVTparGeo::GetBaseName());
       AddGeometry(vtVol, transfo);
    }
 
    // Magnet
-   if (GlobalPar::GetPar()->IncludeDI()) {
+   if (GlobalPar::GetPar()->IncludeDI() || GlobalPar::GetPar()->IncludeTOE()) {
       TADIparGeo* parGeo = fReco->GetParGeoDi();
-      TGeoVolume* vtVol = parGeo->BuildMagnet();
-      
+      TGeoVolume* mgVol = parGeo->BuildMagnet();
+      fVolumeNames[mgVol->GetName()] = kDIP;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TADIparGeo::GetBaseName());
-      AddGeometry(vtVol, transfo);
+      AddGeometry(mgVol, transfo);
    }
 
    // IT
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       TAITparGeo* parGeo = fReco->GetParGeoIt();
       TGeoVolume* itVol  = parGeo->BuildInnerTracker();
-      
+      fVolumeNames[itVol->GetName()] = kITR;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAITparGeo::GetItBaseName());
       AddGeometry(itVol, transfo);
    }
@@ -295,7 +306,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeMSD()) {
       TAMSDparGeo* parGeo = fReco->GetParGeoMsd();
       TGeoVolume* msdVol = parGeo->BuildMultiStripDetector();
-      
+      fVolumeNames[msdVol->GetName()] = kMSD;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAMSDparGeo::GetBaseName());
       AddGeometry(msdVol, transfo);
    }
@@ -304,7 +316,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeTW()) {
       TATWparGeo* parGeo = fReco->GetParGeoTw();;
       TGeoVolume* twVol = parGeo->BuildTofWall();
-      
+      fVolumeNames[twVol->GetName()] = kTOF;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TATWparGeo::GetBaseName());
       AddGeometry(twVol, transfo);
    }
@@ -313,7 +326,8 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeCA()) {
       TACAparGeo* parGeo = fReco->GetParGeoCa();
       TGeoVolume* caVol = parGeo->BuildCalorimeter();
-      
+     fVolumeNames[caVol->GetName()] = kCAL;
+
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TACAparGeo::GetBaseName());
       AddGeometry(caVol, transfo);
    }
@@ -475,6 +489,10 @@ void TAFOeventDisplay::ConnectElements()
       fIrTrackDisplay->SetEmitSignals(true);
       fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
+   
+   if (GlobalPar::GetPar()->IncludeTOE()) {
+      TQObject::Connect("TAEDglbTrack", "SecSelected(TEveTrack*)", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
+   }
 }
 
 //__________________________________________________________
@@ -493,19 +511,53 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetPlaneNumber()) );
       fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
       
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Cluster # %3d\n", idx);
+         cout << Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetPlaneNumber());
+         cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
+      }
+      
+    
+   } else if (obj->InheritsFrom("TAMSDcluster")) {
+         TAMSDcluster* clus = (TAMSDcluster*)obj;
+         if (clus == 0x0) return;
+         TVector3 pos = clus->GetPositionG();
+         fInfoView->AddLine( Form("Cluster # %3d\n", idx) );
+         fInfoView->AddLine( Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetPlaneNumber()) );
+         fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
+      
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Cluster # %3d\n", idx);
+         cout << Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetPlaneNumber());
+         cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
+      }
+      
    } else if (obj->InheritsFrom("TAVTvertex")) {
       TAVTvertex* vtx = (TAVTvertex*)obj;
       if (vtx == 0x0) return;
       TVector3 pos = vtx->GetVertexPosition();
+      TVector3 err = vtx->GetVertexPosError();
       fInfoView->AddLine( Form("Vertex# %d at position:\n", idx) );
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z()) );
+      fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", err.X(), err.Y(), err.Z()) );
       fInfoView->AddLine( Form(" BM Matched %d\n", vtx->IsBmMatched()) );
       
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Vertex# %d at position:\n", idx) << endl;
+         cout << Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z());
+         cout << Form(" BM Matched %d\n", vtx->IsBmMatched());
+      }
+
    } else if (obj->InheritsFrom("TASTntuHit")) {
       TASTntuHit* hit = (TASTntuHit*)obj;
       if (hit == 0x0) return;
       fInfoView->AddLine( Form("Charge: %.3g u.a.\n", hit->GetCharge()) );
       fInfoView->AddLine( Form("Time: %.3g ps \n", hit->GetTime()) );
+      
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Charge: %.3g u.a.\n", hit->GetCharge());
+         cout << Form("Time: %.3g ps \n", hit->GetTime());
+      }
 
    } else if (obj->InheritsFrom("TATWpoint")) {
       TATWpoint* point = (TATWpoint*)obj;
@@ -517,6 +569,13 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form("Time: %.3g ps \n", point->GetTime()) );
       fInfoView->AddLine( Form("Charge Z: %d \n", point->GetChargeZ()) );
 
+      if (fConsoleButton->IsOn()) {
+         cout <<  Form("Point# %d at position:\n", idx);
+         cout <<  Form(" (%.1f %.1f %.1f) cm\n", pos.X(), pos.Y(), pos.Z());
+         cout <<  Form("Charge: %.3e u.a.\n", point->GetEnergyLoss());
+         cout <<  Form("Time: %.3g ps \n", point->GetTime());
+         cout <<  Form("Charge Z: %d \n", point->GetChargeZ());
+      }
    } else {
       return;
    }
@@ -534,8 +593,12 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       TAVTbaseTrack* track =  (TAVTbaseTrack*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track # %2d:", track->GetNumber()) );
+      fInfoView->AddLine( Form("Track # %2d:\n", track->GetNumber()) );
       fInfoView->AddLine( Form(" with %3d clusters\n", track->GetClustersN()) );
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Track # %2d:\n", track->GetNumber());
+         cout << Form(" with %3d clusters\n", track->GetClustersN());
+      }
       
       for (Int_t i = 0; i < track->GetClustersN(); i++) {
          TAVTbaseCluster* clus = track->GetCluster(i);
@@ -543,20 +606,54 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
          fInfoView->AddLine( Form(" for plane %d\n", clus->GetPlaneNumber()));
          fInfoView->AddLine( Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y()) );
          fInfoView->AddLine( Form(" with %d pixels\n", clus->GetPixelsN()));
+         
+         if (fConsoleButton->IsOn()) {
+            cout <<  Form(" for plane %d\n", clus->GetPlaneNumber());
+            cout <<  Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y());
+            cout <<  Form(" with %d pixels\n", clus->GetPixelsN());
+         }
       }
       
    } else if (obj->InheritsFrom("TABMntuTrackTr")) {
       TABMntuTrackTr* track =  (TABMntuTrackTr*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track:") );
+      fInfoView->AddLine( Form("Track:\n") );
       fInfoView->AddLine( Form(" with %3d hit\n", track->GetNhit()) );
       fInfoView->AddLine( Form(" at Pvers: (%.3g %.3g) \n", track->GetPvers()[0], track->GetPvers()[1]) );
       fInfoView->AddLine( Form(" and R0 (%.3g %.3g)\n",  track->GetR0()[0], track->GetR0()[1]));
+      
+      if (fConsoleButton->IsOn()) {
+         cout <<  Form("Track:\n");
+         cout <<  Form(" with %3d hit\n", track->GetNhit());
+         cout <<  Form(" at Pvers: (%.3g %.3g) \n", track->GetPvers()[0], track->GetPvers()[1]);
+         cout <<  Form(" and R0 (%.3g %.3g)\n",  track->GetR0()[0], track->GetR0()[1]);
+      }
    }
 }
 
+//__________________________________________________________
+void TAFOeventDisplay::UpdateTrackInfo(TEveTrack* ts)
+{
+   TAEDglbTrack* lineTracks = dynamic_cast<TAEDglbTrack*> (ts);
+   TObject* obj = lineTracks->GetTrackId();
+   
+   if (obj->InheritsFrom("TAGtrack")) {
+      
+      TAGtrack* track =  (TAGtrack*)obj;
+      if (track == 0x0) return;
 
+      fInfoView->AddLine( Form("Track # %2d:", track->GetTrackId()) );
+      fInfoView->AddLine( Form("Charge: %d Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass()) );
+      fInfoView->AddLine( Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof()) );
+      
+      if (fConsoleButton->IsOn()) {
+         cout <<  Form("Track # %2d:", track->GetTrackId());
+         cout <<  Form("Charge: %d Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass());
+         cout <<  Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof());
+      }
+   }
+}
 
 //__________________________________________________________
 void TAFOeventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
@@ -568,11 +665,18 @@ void TAFOeventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
     
     TABMparGeo* pbmGeo = fReco->GetParGeoBm();;
     if(!pbmGeo){return;}
-    
+   
     fInfoView->AddLine( Form("In layer: %d, view: %d\n", hit->Plane(), hit->View()) );
     fInfoView->AddLine( Form("Wire is: %d\n", pbmGeo->GetSenseId( hit->Cell() )) );
     fInfoView->AddLine( Form("Drift radius is: %g (cm)\n", hit->Dist()) );
     fInfoView->AddLine( Form("Chi2 is: %g \n", hit->GetChi2()) );
+   
+   if (fConsoleButton->IsOn()) {
+      cout << Form("In layer: %d, view: %d\n", hit->Plane(), hit->View());
+      cout <<  Form("Wire is: %d\n", pbmGeo->GetSenseId( hit->Cell() ));
+      cout <<  Form("Drift radius is: %g (cm)\n", hit->Dist());
+      cout <<  Form("Chi2 is: %g \n", hit->GetChi2());
+   }
 }
 
 //__________________________________________________________
@@ -606,9 +710,6 @@ void TAFOeventDisplay::UpdateElements()
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
        GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
       UpdateElements("ir");
-
-
-   gEve->FullRedraw3D(kFALSE);
 }
 
 //__________________________________________________________
@@ -624,6 +725,8 @@ void TAFOeventDisplay::UpdateElements(const TString prefix)
       UpdateLayerElements();
       if (fgTrackFlag)
          UpdateTrackElements(prefix);
+   } else if (prefix == "ms") {
+      UpdateStripElements();
    } else {
       UpdateQuadElements(prefix);
       if (fgTrackFlag) {
@@ -642,8 +745,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
          fVtxClusDisplay->ResetHits();
       }  else if (prefix == "it") {
          fItClusDisplay->ResetHits();
-      }  else if (prefix == "ms") {
-         fMsdClusDisplay->ResetHits();
       } else
          return;
    }
@@ -660,8 +761,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
       parGeo = fReco->GetParGeoVtx();
    else if (prefix == "it")
       parGeo = fReco->GetParGeoIt();
-   else if (prefix == "ms")
-      parGeo = fReco->GetParGeoMsd();
 
    // known bug if first event is empty
    if (fVtxClusDisplay)
@@ -699,8 +798,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
       pNtuClus = fReco->GetNtuClusterVtx();
    else if (prefix == "it")
       pNtuClus = (TAVTntuCluster*)fReco->GetNtuClusterIt();
-   else if (prefix == "ms")
-      pNtuClus = (TAVTntuCluster*)fReco->GetNtuClusterMsd();
 
    for( Int_t iPlane = 0; iPlane < nPlanes; iPlane++) {
       
@@ -718,10 +815,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
             posG = fpFootGeo->FromVTLocalToGlobal(posG);
          else if (prefix == "it")
             posG = fpFootGeo->FromITLocalToGlobal(posG);
-         else if (prefix == "ms")
-            posG = fpFootGeo->FromMSDLocalToGlobal(posG);
-
-
          x = posG(0);
          y = posG(1);
          z = posG(2);
@@ -732,9 +825,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
          } else if (prefix == "it") {
             fItClusDisplay->AddHit(nPix*10, x, y, z);
             fItClusDisplay->QuadId(clus);
-         } else if (prefix == "ms") {
-            fMsdClusDisplay->AddHit(nPix*10, x, y, z);
-            fMsdClusDisplay->QuadId(clus);
          }
 
       } //end loop on hits
@@ -745,8 +835,55 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
       fVtxClusDisplay->RefitPlex();
    else if (prefix == "it")
       fItClusDisplay->RefitPlex();
-   else if (prefix == "ms")
-      fMsdClusDisplay->RefitPlex();
+}
+
+//__________________________________________________________
+void TAFOeventDisplay::UpdateStripElements()
+{
+   if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn()))
+      fMsdClusDisplay->ResetHits();
+   
+   if (!fgDisplayFlag) // do not update event display
+      return;
+   
+   Float_t  x = 0.,  y = 0.,  z = 0.;
+   
+   TAMSDparGeo* parGeo = fReco->GetParGeoMsd();
+   Float_t pitch = parGeo->GetPitch()*5;
+   TVector3 epi  = parGeo->GetEpiSize();
+   Int_t nPlanes = parGeo->GetSensorsN();
+   
+   TAMSDntuCluster* pNtuClus  = (TAMSDntuCluster*)fReco->GetNtuClusterMsd();
+   
+   for( Int_t iPlane = 0; iPlane < nPlanes; iPlane++) {
+      
+      Int_t nclus = pNtuClus->GetClustersN(iPlane);
+      
+      if (nclus == 0) continue;
+      
+      for (Int_t iClus = 0; iClus < nclus; ++iClus) {
+         TAMSDcluster *clus = pNtuClus->GetCluster(iPlane, iClus);
+         if (!clus->IsValid()) continue;
+         TVector3 pos = clus->GetPositionG();
+         TVector3 posG = fpFootGeo->FromMSDLocalToGlobal(pos);
+         Int_t nStrip = clus->GetListOfStrips()->GetEntries();
+         
+         x = posG(0);
+         y = posG(1);
+         z = posG(2);
+
+         if (clus->GetPlaneView() == 0)
+            fMsdClusDisplay->AddHit(nStrip*10, x, y, z, pitch, epi[1]);
+         else
+            fMsdClusDisplay->AddHit(nStrip*10, x, y, z, epi[0], pitch);
+
+         fMsdClusDisplay->QuadId(clus);
+      
+      } //end loop on hits
+   
+   } //end loop on planes
+
+   fMsdClusDisplay->RefitPlex();
 }
 
 //__________________________________________________________
@@ -788,7 +925,7 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
             TVector3 posG;
             
             if (GlobalPar::GetPar()->IncludeTG() && track->GetValidity() == 1)
-               pos = track->Intersection(track->GetVertexZ());
+               pos = track->Intersection(track->GetPosVertex().Z());
             else
                pos = track->Intersection(posfirstPlane);
             
@@ -796,7 +933,7 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
             
             x = posG(0); y = posG(1); z = posG(2);
             
-            if (GlobalPar::GetPar()->IncludeTW()) {
+            if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->IncludeDI()) {
                Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
                posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
                pos = track->Intersection(posZtw);
@@ -898,6 +1035,52 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       } // nTracks > 0
       fIrTrackDisplay->RefitPlex();
    }
+}
+
+//__________________________________________________________
+void TAFOeventDisplay::UpdateGlbTrackElements()
+{
+   TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
+   
+   //example begin
+
+   TVector3 vtx(0.2,-0.03,0.9);
+   TVector3 mom0(0.119, -0.017, 2.39);
+   TVector3 vtxErr(0.01,0.01,0.01);
+   TVector3 mom0Err(0.01, 0.01, 0.01);
+   Int_t charge = 2;
+
+//   pNtuTrack->Clear();
+   TAGtrack* track0 = pNtuTrack->NewTrack(0.938, mom0.Mag(), charge, 1.1);
+   track0->AddMeasPoint(vtx, vtxErr, mom0, mom0Err);
+
+   // example end
+   
+   fGlbTrackDisplay->ResetTracks();
+//
+   if( pNtuTrack->GetTracksN() > 0 ) {
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+          std::cout << "--- drawing new track --- \n";
+          TAGtrack* track = pNtuTrack->GetTrack(iTrack);
+
+         // vertex
+         TAGpoint* point = track->GetMeasPoint(0);
+         TVector3 vtx    = point->GetPosition();
+         TVector3 mom0   = point->GetMomentum();
+         Int_t charge    = point->GetChargeZ();
+
+         TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
+         glbTrack->TrackId(track);
+
+         for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
+            TAGpoint* point = track->GetMeasPoint(iPoint);
+            TVector3 pos    = point->GetPosition();
+            TVector3 mom    = point->GetMomentum();
+
+            glbTrack->AddTrackMarker(pos, mom);
+         } // end loop on points
+      } // end loop on tracks
+   } // nTracks > 0
 }
 
 //__________________________________________________________
@@ -1077,7 +1260,7 @@ void TAFOeventDisplay::UpdateLayerElements()
    for (Int_t i = 0; i < nHits; i++) {
       TABMntuHit* hit = pBMntu->Hit(i);
       
-      if (!hit->GetIsSelected() && fgBmSelectHt) continue;
+      if (!hit->GetIsSelected() && fgBmSelectHit) continue;
 
       Int_t view  = hit->View();
       Int_t lay  = hit->Plane();
@@ -1136,17 +1319,6 @@ void TAFOeventDisplay::UpdateLayerElements()
    }
    
    fBmClusDisplay->RefitPlex();
-}
-
-//__________________________________________________________
-void TAFOeventDisplay::UpdateGlbTrackElements()
-{
-   TVector3 vtx(0,0,0);
-   TVector3 momentum(0,0,3);
-   Int_t charge = 6;
-   fGlbTrackDisplay->AddTrack(vtx, momentum, charge);
-   
-   fGlbTrackDisplay->MakeTracks();
 }
 
 //__________________________________________________________

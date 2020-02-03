@@ -6,7 +6,9 @@
 
 
 #pragma link C++ class FootField;
+#pragma link C++ class TADIgeoField;
 #pragma link C++ class TADIeveField;
+#pragma link C++ class TADIgenField;
 #pragma link C++ class TADIparGeo;
 
 #pragma link C++ class TADItrackPropagator;
