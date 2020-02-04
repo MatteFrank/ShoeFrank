@@ -57,7 +57,8 @@ private:
    TH1F*           fpHisStripTot;     // total number pixels per cluster MC
    TH1F*           fpHisDeTot;        // Total energy loss
    TH1F*           fpHisDeSensor[32];  // Energy loss per sensor
-
+   TH1F*           fpHisAdc[32];     // charge per strip
+   
 private:
    static Float_t  fgSigmaNoiseLevel;
    static Int_t    fgMcNoiseId;

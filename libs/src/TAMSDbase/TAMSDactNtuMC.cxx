@@ -79,6 +79,12 @@ void TAMSDactNtuMC::CreateHistogram()
     AddHistogram(fpHisDeSensor[i]);
   }
   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisAdc[i] = new TH1F(Form("%sStripAdc%d", prefix.Data(), i+1), Form("%s - Charge value per cluster for sensor %d", titleDev.Data(), i+1),
+                             pGeoMap->GetNStrip(), 0, pGeoMap->GetNStrip());
+      AddHistogram(fpHisAdc[i]);
+   }
+   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fpHisStripMap[i]  = new TH1F(Form("%sMcStripMap%d", prefix.Data(), i+1) , Form("%s - MC strip map for sensor %d", titleDev.Data(), i+1),
 				 pGeoMap->GetNStrip(), 0, pGeoMap->GetNStrip());
@@ -183,6 +189,7 @@ void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
       if (ValidHistogram()) {
          fpHisStripMap[sensorId]->Fill(stripId);
          fpHisPosMap[sensorId]->Fill(pos);
+         fpHisAdc[sensorId]->Fill(stripId, digiMap[it->first]);
       }
     }
   }
