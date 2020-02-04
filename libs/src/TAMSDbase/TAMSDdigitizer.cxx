@@ -66,7 +66,7 @@ Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double
   Double_t value    = 0.;
   Int_t    strip    = GetStrip(pos);
   Double_t posStrip = fpParGeo->GetPosition(strip);
-  Double_t eta      = GetEta((pos-posStrip)*1e4);
+  Double_t eta      = GetEta((pos-posStrip)*TAGgeoTrafo::CmToMu());
    
   if (eta > 0.5) { // fill 3 strip around seed
      if (strip-1 >= 0) {
