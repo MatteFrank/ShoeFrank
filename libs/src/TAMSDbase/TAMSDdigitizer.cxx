@@ -12,7 +12,9 @@ ClassImp(TAMSDdigitizer);
 
 using namespace std;
 
-Float_t TAMSDdigitizer::fgChargeGain = 20;
+Float_t TAMSDdigitizer::fgChargeGain  = 20;
+Bool_t  TAMSDdigitizer::fgSmearFlag   = false;
+Float_t TAMSDdigitizer::fgDefSmearPos =  70;    // in micron
 
 // --------------------------------------------------------------------------------------
 TAMSDdigitizer::TAMSDdigitizer(TAMSDparGeo* parGeo)
@@ -42,12 +44,12 @@ TAMSDdigitizer::~TAMSDdigitizer()
 //! fill pixel signal
 Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double_t zin, Double_t zout,  Double_t /*time*/, Int_t sensorId, Int_t /*Z*/)
 {
-  //   if (fgSmearFlag) {
-  //      Float_t dx = gRandom->Gaus(0, fPitchX/2.);
-  //      Float_t dy = gRandom->Gaus(0, fPitchX/2.);
-  //      x0 += dx;
-  //      y0 += dy;
-  //   }
+  if (fgSmearFlag) {
+     Float_t dx = gRandom->Gaus(0, fgDefSmearPos*TAGgeoTrafo::MuToCm());
+     Float_t dy = gRandom->Gaus(0, fgDefSmearPos*TAGgeoTrafo::MuToCm());
+     x0 += dx;
+     y0 += dy;
+  }
   
   Int_t view = fpParGeo->GetSensorPar(sensorId).TypeIdx;
   

@@ -44,7 +44,9 @@ private:
 
 private:
    static Float_t  fgChargeGain;      // gain factor for despoted charge
-   
+   static Float_t  fgDefSmearPos;
+   static Bool_t   fgSmearFlag;
+
 public:
    Int_t                  GetStripsN() const { return fStripsN; }
    Int_t                  GetPitch()   const { return fPitch;   }
@@ -55,6 +57,11 @@ public:
 public:
    static Float_t GetChargeGain()                   { return fgChargeGain;       }
    static void    SetChargeGain(Float_t gain)       { fgChargeGain = gain;       }
+   static Bool_t  GetSmearFlag()                    { return fgSmearFlag;        }
+   static void    SetSmearFlag(Bool_t flag)         { fgSmearFlag = flag;        }
+   
+   static Float_t GetDefSmearPos()                  { return fgDefSmearPos;      }
+   static void    SetDefSmearPos(Float_t pos)       { fgDefSmearPos = pos;       }
    
    ClassDef(TAMSDdigitizer,0)
 };
