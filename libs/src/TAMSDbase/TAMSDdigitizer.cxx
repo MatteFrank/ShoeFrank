@@ -68,7 +68,7 @@ Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double
   Double_t posStrip = fpParGeo->GetPosition(strip);
   Double_t eta      = GetEta((pos-posStrip)*TAGgeoTrafo::CmToMu());
    
-  if (eta > 0.5) { // fill 3 strip around seed
+  if (eta > 0.6 && eta < 0.9) { // fill 3 strip around seed
      if (strip-1 >= 0) {
         value = edep*fgChargeGain*(1-eta/2.);
         FillMap(strip-1, value);
@@ -81,6 +81,26 @@ Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double
         value = edep*fgChargeGain*(1-eta/2.);
         FillMap(strip+1, value);
      }
+  } else if (eta > 0.4 && eta <= 0.6) { // fill only 2 strips
+     
+     value = edep*fgChargeGain*eta;
+     FillMap(strip, value);
+     
+     if (strip-1 >= 0) {
+        value = edep*fgChargeGain*(1-eta);
+        FillMap(strip-1, value);
+     }
+     
+  } else if (eta >= 0.9) { // only one strip
+     value = edep*fgChargeGain*eta;
+     FillMap(strip, value);
+     
+  } else if (eta <= 0.1) { // only one strip-1
+     if (strip-1 >= 0) {
+        value = edep*fgChargeGain*(1-eta);
+        FillMap(strip-1, value);
+     }
+     
   } else { // fill 3 strip around seed -1
      if (strip-2 >= 0) {
         value = edep*fgChargeGain*eta/2.;
