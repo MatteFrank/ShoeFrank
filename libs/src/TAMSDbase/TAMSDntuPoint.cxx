@@ -144,7 +144,7 @@ void TAMSDpoint::SetGeneratedParticle ( int colGenPart, int rowGenPart, int colM
   }
   else 	{
     m_isTrueGhost = true;
-    m_ParticleID = 0;
+    m_ParticleID = -1;
   }
 
 }

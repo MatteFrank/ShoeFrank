@@ -22,12 +22,6 @@ class TAMSDparGeo;
 /** TAMSDpoint class is the MSD hit reconstructed by the intersection of 2 hits on a
 	column and a row strip respectively
 
-	Created in 2018 by Matteo Franchini franchinim@bo.infn.it
-
- Complete revised to be compliant with foot framework and raw data.
- Copy hits in point not just assigning pointers
- by Ch. Finck cfinck@iphc.cnrs.fr
-
 	All the coordinates are in cm and in the detector reference frame, i.e. the center
 	is the center of the detector.
 
@@ -64,7 +58,7 @@ private:
    //generic methods
    Double32_t  m_de1;           // energy loss in 1st strip
    Double32_t  m_de2;           // energy loss in 2nd strip
-   Double32_t  m_time;          // for the moment I take the column time
+   Double32_t  m_time;
 
    int         m_chargeZ;       // raw guess of charge Z
    Double32_t  m_chargeZProba;  // raw guess of charge Z probability
@@ -84,6 +78,8 @@ public:
 
    int       GetColumnHitID()    const  { return m_columnHitID;}
    int       GetRowHitID()       const  { return m_rowHitID;   }
+
+   int       GetLayer()  const  {return m_layer;}
 
    bool      IsMC()             { return m_isMC; };
    bool      IsTrueGhost()      { return m_isTrueGhost; };
