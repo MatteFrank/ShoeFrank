@@ -106,7 +106,7 @@ Bool_t TAVTactBaseNtuRaw::GetSensorHeader(Int_t iSensor)
          fTimeStamp     = fData[++fIndex];
          
          if(FootDebugLevel(3))
-            printf("sensor %d: %d %d\n", iSensor, fTriggerNumber, fEventNumber);
+            printf("sensor %d: trig: %d evt: %d\n", iSensor, fTriggerNumber, fEventNumber);
          
          if(ValidHistogram())
             FillHistoEvt(iSensor);
