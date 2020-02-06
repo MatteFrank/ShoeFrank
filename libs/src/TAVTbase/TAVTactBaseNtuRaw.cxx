@@ -108,7 +108,8 @@ Bool_t TAVTactBaseNtuRaw::GetSensorHeader(Int_t iSensor)
          if(FootDebugLevel(3))
             printf("sensor %d: %d %d\n", iSensor, fTriggerNumber, fEventNumber);
          
-         FillHistoEvt(iSensor);
+         if(ValidHistogram())
+            FillHistoEvt(iSensor);
 
          return true;
       }
@@ -124,7 +125,8 @@ Bool_t TAVTactBaseNtuRaw::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
    // check frame header
    if (fData[++fIndex] ==  GetFrameHeader()) {
       memcpy(data, &fData[fIndex], sizeof(MI26_FrameRaw));
-      FillHistoFrame(iSensor, data);
+      if (ValidHistogram())
+         FillHistoFrame(iSensor, data);
       
    } else
       return false;

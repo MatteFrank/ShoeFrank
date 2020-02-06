@@ -224,8 +224,11 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
    TAVTparMap*  pParMap = (TAVTparMap*) fpParMap->Object();
    
    Int_t dataLength    = ((frame->DataLength & 0xFFFF0000)>>16);
+   if (ValidHistogram()) {
    if (dataLength != fDataSize)
       fpHisFrameErrors[iSensor]->Fill(3);
+   }
+   
    if (dataLength > MI26__FFRAME_RAW_MAX_W16) return false;
    
    Int_t dataSize = fDataSize*2;

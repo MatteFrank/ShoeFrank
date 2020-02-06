@@ -135,7 +135,8 @@ Bool_t TAITactNtuRaw::GetSensorHeader(Int_t iSensor)
          fTriggerNumber = fData[++fIndex];
          fTimeStamp     = fData[++fIndex];
          
-         FillHistoEvt(iSensor);
+         if (ValidHistogram())
+            FillHistoEvt(iSensor);
 
          return true;
       }
@@ -151,7 +152,8 @@ Bool_t TAITactNtuRaw::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
    // check frame header
    if ((fData[++fIndex] & 0xFFF) ==  (GetFrameHeader() & 0xFFF)) { // protection against wrong header !!!
       memcpy(data, &fData[fIndex], sizeof(MI26_FrameRaw));
-      FillHistoFrame(iSensor, data);
+      if (ValidHistogram())
+         FillHistoFrame(iSensor, data);
       
    } else
       return false;

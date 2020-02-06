@@ -258,7 +258,8 @@ Bool_t TAVTactVmeReader::GetSensorEvent(Int_t iSensor)
          sscanf(tmp, "%x", &timestamp);
          fDataEvent[fIndex++] = timestamp;
          
-         FillHistoEvt(iSensor);
+         if(ValidHistogram())
+            FillHistoEvt(iSensor);
          
          fPrevEventNumber[iSensor]   = fEventNumber;
          fPrevTriggerNumber[iSensor] = fTriggerNumber;
