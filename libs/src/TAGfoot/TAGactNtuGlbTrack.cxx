@@ -209,15 +209,10 @@ Bool_t TAGactNtuGlbTrack::Action()
    
 
     auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
-    std::cout << "----- before_clear :"<< pNtuTrack->GetTracksN() <<" ----- \n";
 
     fpGlbTrack->Clear();
-    
-    std::cout << "----- before_action :"<< pNtuTrack->GetTracksN() <<" ----- \n";
+
     fActTOE->Action();
-    
-    
-    std::cout << "----- after_action :"<< pNtuTrack->GetTracksN() <<" ----- \n";
     
    fpGlbTrack->SetBit(kValid);
     
