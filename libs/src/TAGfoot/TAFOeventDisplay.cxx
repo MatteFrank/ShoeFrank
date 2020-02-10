@@ -710,6 +710,10 @@ void TAFOeventDisplay::UpdateElements()
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
        GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
       UpdateElements("ir");
+   
+   if (GlobalPar::GetPar()->IncludeTOE() && fgTrackFlag)
+      UpdateGlbTrackElements();
+
 }
 
 //__________________________________________________________
@@ -729,11 +733,8 @@ void TAFOeventDisplay::UpdateElements(const TString prefix)
       UpdateStripElements();
    } else {
       UpdateQuadElements(prefix);
-      if (fgTrackFlag) {
+      if (fgTrackFlag)
          UpdateTrackElements(prefix);
-         if (GlobalPar::GetPar()->IncludeTOE())
-            UpdateGlbTrackElements();
-      }
    }
 }
 
@@ -1044,15 +1045,15 @@ void TAFOeventDisplay::UpdateGlbTrackElements()
    
    //example begin
 
-   TVector3 vtx(0.2,-0.03,0.9);
-   TVector3 mom0(0.119, -0.017, 2.39);
-   TVector3 vtxErr(0.01,0.01,0.01);
-   TVector3 mom0Err(0.01, 0.01, 0.01);
-   Int_t charge = 2;
-
-//   pNtuTrack->Clear();
-   TAGtrack* track0 = pNtuTrack->NewTrack(0.938, mom0.Mag(), charge, 1.1);
-   track0->AddMeasPoint(vtx, vtxErr, mom0, mom0Err);
+//   TVector3 vtx(0.2,-0.03,0.9);
+//   TVector3 mom0(0.119, -0.017, 2.39);
+//   TVector3 vtxErr(0.01,0.01,0.01);
+//   TVector3 mom0Err(0.01, 0.01, 0.01);
+//   Int_t charge = 2;
+//
+////   pNtuTrack->Clear();
+//   TAGtrack* track0 = pNtuTrack->NewTrack(0.938, mom0.Mag(), charge, 1.1);
+//   track0->AddMeasPoint(vtx, vtxErr, mom0, mom0Err);
 
    // example end
    
