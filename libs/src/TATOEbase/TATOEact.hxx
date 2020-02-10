@@ -570,7 +570,7 @@ std::vector<corrected_state> confront(const state& ps_p, const detector_properti
     
     void register_track( typename TAGTOEArborescence<corrected_state>::node& node_p ) const
     {
-        auto * track_h = track_mhc->NewTrack( particle_m.mass * 0.938 , particle_m.momentum / 1000., static_cast<double>(particle_m.charge), 1.1   ); //tof value is wrong
+        auto * track_h = track_mhc->NewTrack( particle_m.mass /** 0.938*/ , particle_m.momentum / 1000., static_cast<double>(particle_m.charge), 1.1   ); //tof value is wrong
         
         
         auto value_c = node_p.GetBranchValues();
@@ -595,17 +595,27 @@ std::vector<corrected_state> confront(const state& ps_p, const detector_properti
 //            track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
         
         }
-        
+//        std::cout << "starting_point : \n";
         TVector3 position{ value_c.front().vector(0,0), value_c.front().vector(1,0), value_c.front().evaluation_point };
         
-        auto momentum_z = sqrt( pow( value_c.front().vector(2,0), 2) + pow( value_c.front().vector(3,0), 2) + 1 ) / particle_m.momentum ;
+        auto momentum_z = sqrt( pow( value_c.front().vector(2,0), 2) + pow( value_c.front().vector(3,0), 2) + 1 ) * particle_m.momentum ;
+//        std::cout << "sqrt :" << sqrt( pow( value_c.front().vector(2,0), 2) + pow( value_c.front().vector(3,0), 2) + 1 ) << '\n';
         momentum_z /= 1000.;
+//        std::cout << "momentum_z : " <<  momentum_z << '\n';
         auto momentum_x = value_c.front().vector(2,0) * momentum_z;
         auto momentum_y = value_c.front().vector(3,0) * momentum_z;
+//        std::cout << "track_slope_x: " << value_c.front().vector(2,0) << '\n';
+//        std::cout << "momentum_x : " <<  momentum_x << '\n';
+//        std::cout << "track_slope_x: " << value_c.front().vector(3,0) << '\n';
+//        std::cout << "momentum_y : " <<  momentum_y << '\n';
         
         TVector3 momentum{ momentum_x , momentum_y, momentum_z };
-        TVector3 position_error{ 0.01,0.01,0.01 };
+        TVector3 position_error{ 0.01, 0.01, 0.01 };
         TVector3 momentum_error{ 0.01, 0.01, 0.01 };
+        
+        
+        //position.Print();
+        momentum.Print();
         
         track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
 

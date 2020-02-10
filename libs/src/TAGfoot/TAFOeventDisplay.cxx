@@ -1043,20 +1043,25 @@ void TAFOeventDisplay::UpdateGlbTrackElements()
    TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
    
    //example begin
-
-   TVector3 vtx(0.2,-0.03,0.9);
-   TVector3 mom0(0.119, -0.017, 2.39);
-   TVector3 vtxErr(0.01,0.01,0.01);
-   TVector3 mom0Err(0.01, 0.01, 0.01);
-   Int_t charge = 2;
-
-//   pNtuTrack->Clear();
-   TAGtrack* track0 = pNtuTrack->NewTrack(0.938, mom0.Mag(), charge, 1.1);
-   track0->AddMeasPoint(vtx, vtxErr, mom0, mom0Err);
+//
+//   TVector3 vtx(0.2,-0.03,0.9);
+//   TVector3 mom0(0.119, -0.017, 2.39);
+//   TVector3 vtxErr(0.01,0.01,0.01);
+//   TVector3 mom0Err(0.01, 0.01, 0.01);
+//   Int_t charge = 2;
+//
+////   pNtuTrack->Clear();
+//   TAGtrack* track0 = pNtuTrack->NewTrack(0.938, mom0.Mag(), charge, 1.1);
+//   track0->AddMeasPoint(vtx, vtxErr, mom0, mom0Err);
 
    // example end
+    std::cout << "----- before_reset :"<< pNtuTrack->GetTracksN() <<" ----- \n";
+
    
    fGlbTrackDisplay->ResetTracks();
+    
+    std::cout << "----- after_reset :"<< pNtuTrack->GetTracksN() <<" ----- \n";
+
 //
    if( pNtuTrack->GetTracksN() > 0 ) {
       for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
