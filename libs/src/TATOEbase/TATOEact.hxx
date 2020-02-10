@@ -19,6 +19,7 @@
 #include "TAVTntuVertex.hxx"
 
 #include "TAGntuGlbTrack.hxx"
+#include "TAGcluster.hxx"
 
 template<class T>
 class TD;
@@ -43,10 +44,13 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
 {
     using detector_list_t = detector_list< details::finished_tag, DetectorProperties...  >;
     
-    using vector = typename underlying< typename details::filter_traits<UKF>::state >::vector::type ;
-    using covariance = typename underlying< typename details::filter_traits<UKF>::state >::covariance::type ;
-    using corrected_state = corrected_state_impl<vector, covariance>;
-    using state = state_impl<vector, covariance>;
+    using vector_matrix = typename underlying< typename details::filter_traits<UKF>::state >::vector::type ;
+    using covariance_matrix = typename underlying< typename details::filter_traits<UKF>::state >::covariance::type ;
+    using corrected_state = corrected_state_impl<vector_matrix, covariance_matrix>;
+    using state = state_impl<vector_matrix, covariance_matrix>;
+    using full_state = aggregator< corrected_state, data_handle<TAGcluster> >;
+    
+    using node_type = node<corrected_state>;
     
 private:
     particle_properties particle_m{};
@@ -166,7 +170,7 @@ private:
                                } );
         
         
-        auto& node_c = arborescence.GetHandler();
+        auto& node_c = arborescence.get_handler();
         std::cout << "----- reconstructed_track : "<< node_c.size() << " -----\n";
         
         for(auto& node : node_c){
@@ -183,21 +187,21 @@ private:
     template< class T,
               typename std::enable_if_t< !std::is_same< T,  detector_properties< details::vertex_tag > >::value ,
                                           std::nullptr_t  > = nullptr    >
-    void cross_check_origin( TAGTOEArborescence<corrected_state>& arborescence_p,
+    void cross_check_origin( arborescence< node_type >& arborescence_p,
                              const T& detector_p )
     {
-        auto confirm_origin = [](typename TAGTOEArborescence<corrected_state>::node & node_p, auto const & detector_p)
+        auto confirm_origin = []( node_type & node_p, auto const & detector_p)
         {
-            return node_p.GetValue().evaluation_point >= detector_p.layer_depth(0);
+            return node_p.get_value().evaluation_point >= detector_p.layer_depth(0);
         };
         
-        auto& node_c = arborescence_p.GetHandler();
+        auto& node_c = arborescence_p.get_handler();
         for(auto & node : node_c ){
-            if( !confirm_origin( node, list_m.before( detector_p ) ) ){ node.MarkAsInvalid(); }
+            if( !confirm_origin( node, list_m.before( detector_p ) ) ){ node.mark_invalid(); }
         }
     }
     
-    void cross_check_origin( TAGTOEArborescence<corrected_state>& /*arborescence_p*/,
+    void cross_check_origin( arborescence< node_type >& /*arborescence_p*/,
                              const detector_properties<details::vertex_tag>& /*vertex_p*/ )
     {}
     
@@ -246,7 +250,7 @@ private:
                                           std::nullptr_t  > = nullptr,
               typename std::enable_if_t< !std::is_same< T,  detector_properties< details::vertex_tag > >::value ,
                                           std::nullptr_t  > = nullptr    >
-    void advance_reconstruction( TAGTOEArborescence<corrected_state>& arborescence_p,
+    void advance_reconstruction( arborescence<node_type>& arborescence_p,
                                  const T& layer_pc )
     {
         
@@ -255,7 +259,7 @@ private:
         
         for(auto && layer : layer_pc ) {
         
-            auto& leaf_c = arborescence_p.GetHandler();
+            auto& leaf_c = arborescence_p.get_handler();
             std::cout << " --- layer --- \n";
         
             for(auto& leaf : leaf_c){
@@ -264,7 +268,7 @@ private:
             
                 ukf_m.step_length() = 1e-3;
             
-                auto s = make_state(leaf.GetValue());
+                auto s = make_state( leaf.get_value() );
                 auto cs_c = advance_reconstruction_impl( s, layer );
             
                 for( auto & cs : cs_c ){
@@ -273,7 +277,7 @@ private:
                     std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
                     std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
 //
-                    leaf.AddChild( std::move(cs) );
+                    leaf.add_child( std::move(cs) );
                 }
 
             }
@@ -284,24 +288,24 @@ private:
     
     
 
-    void advance_reconstruction( TAGTOEArborescence<corrected_state>& arborescence_p,
+    void advance_reconstruction( arborescence<node_type>& arborescence_p,
                                  const detector_properties<details::tof_tag>& tof_p )
     {
         
         std::cout << " ---- FINALISE_RECONSTRUCTION --- \n";
         
         
-        auto& leaf_c = arborescence_p.GetHandler();
+        auto& leaf_c = arborescence_p.get_handler();
         
         
         for(auto& leaf : leaf_c){
             
             ukf_m.step_length() = 1e-3;
             
-            auto s = make_state(leaf.GetValue());
+            auto s = make_state(leaf.get_value());
             auto cs_c = advance_reconstruction_impl( s, tof_p.form_layer() );
             
-            if( cs_c.empty() ){ leaf.MarkAsInvalid(); }
+            if( cs_c.empty() ){ leaf.mark_invalid(); }
             else{
                 auto cs = cs_c.front();
                 
@@ -309,8 +313,7 @@ private:
                 std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
                 std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
                 
-                leaf.AddChild( std::move(cs_c.front()) );
-                
+                leaf.add_child( std::move(cs_c.front()) );
             }
         }
         
@@ -319,7 +322,7 @@ private:
     
     
 //    
-    void advance_reconstruction( TAGTOEArborescence<corrected_state>& arborescence_p,
+    void advance_reconstruction( arborescence<node_type>& arborescence_p,
                                  const detector_properties<details::vertex_tag>& vertex_p )
     {
         
@@ -348,11 +351,11 @@ private:
             for( auto layer : track ){
                 ukf_m.step_length() = 1e-3;
                 
-                auto s = make_state( leaf_h->GetValue() );
+                auto s = make_state( leaf_h->get_value() );
                 auto cs_c = advance_reconstruction_impl( s, layer );
                 
                 if( cs_c.empty() ){
-                    leaf_h->MarkAsInvalid();
+                    leaf_h->mark_invalid();
                  //   break;
                 }
                 else{
@@ -364,7 +367,7 @@ private:
 //
 //
                     
-                    leaf_h = leaf_h->AddChild( std::move(cs_c.front()) );
+                    leaf_h = leaf_h->add_child( std::move(cs_c.front()) );
                     
                 }
             }
@@ -568,12 +571,12 @@ std::vector<corrected_state> confront(const state& ps_p, const detector_properti
 
     
     
-    void register_track( typename TAGTOEArborescence<corrected_state>::node& node_p ) const
+    void register_track( node_type& node_p ) const
     {
-        auto * track_h = track_mhc->NewTrack( particle_m.mass /** 0.938*/ , particle_m.momentum / 1000., static_cast<double>(particle_m.charge), 1.1   ); //tof value is wrong
+        auto * track_h = track_mhc->NewTrack( particle_m.mass * 0.938 , particle_m.momentum / 1000., static_cast<double>(particle_m.charge), 1.1   ); //tof value is wrong
         
         
-        auto value_c = node_p.GetBranchValues();
+        auto value_c = node_p.get_branch_values();
         std::cout << " --- final_track --- " << '\n';
         for(auto& value : value_c){
             std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
@@ -581,43 +584,43 @@ std::vector<corrected_state> confront(const state& ps_p, const detector_properti
             
             
             
-//            TVector3 position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
-//
-//            auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) / particle_m.momentum ;
-//            momentum_z /= 1000.;
-//            auto momentum_x = value.vector(2,0) * momentum_z;
-//            auto momentum_y = value.vector(3,0) * momentum_z;
-//
-//            TVector3 momentum{ momentum_x , momentum_y, momentum_z };
-//            TVector3 position_error{ 0.01,0.01,0.01 };
-//            TVector3 momentum_error{ 0.01, 0.01, 0.01 };
-//
-//            track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
+            TVector3 position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
+
+            auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * particle_m.momentum ;
+            momentum_z /= 1000.;
+            auto momentum_x = value.vector(2,0) * momentum_z;
+            auto momentum_y = value.vector(3,0) * momentum_z;
+
+            TVector3 momentum{ momentum_x , momentum_y, momentum_z };
+            TVector3 position_error{ 0.01,0.01,0.01 };
+            TVector3 momentum_error{ 0.01, 0.01, 0.01 };
+
+            track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
         
         }
 //        std::cout << "starting_point : \n";
-        TVector3 position{ value_c.front().vector(0,0), value_c.front().vector(1,0), value_c.front().evaluation_point };
+//        TVector3 position{ value_c.front().vector(0,0), value_c.front().vector(1,0), value_c.front().evaluation_point };
         
-        auto momentum_z = sqrt( pow( value_c.front().vector(2,0), 2) + pow( value_c.front().vector(3,0), 2) + 1 ) * particle_m.momentum ;
+//        auto momentum_z = sqrt( pow( value_c.front().vector(2,0), 2) + pow( value_c.front().vector(3,0), 2) + 1 ) * particle_m.momentum ;
 //        std::cout << "sqrt :" << sqrt( pow( value_c.front().vector(2,0), 2) + pow( value_c.front().vector(3,0), 2) + 1 ) << '\n';
-        momentum_z /= 1000.;
+//        momentum_z /= 1000.;
 //        std::cout << "momentum_z : " <<  momentum_z << '\n';
-        auto momentum_x = value_c.front().vector(2,0) * momentum_z;
-        auto momentum_y = value_c.front().vector(3,0) * momentum_z;
+//        auto momentum_x = value_c.front().vector(2,0) * momentum_z;
+//        auto momentum_y = value_c.front().vector(3,0) * momentum_z;
 //        std::cout << "track_slope_x: " << value_c.front().vector(2,0) << '\n';
 //        std::cout << "momentum_x : " <<  momentum_x << '\n';
 //        std::cout << "track_slope_x: " << value_c.front().vector(3,0) << '\n';
 //        std::cout << "momentum_y : " <<  momentum_y << '\n';
         
-        TVector3 momentum{ momentum_x , momentum_y, momentum_z };
-        TVector3 position_error{ 0.01, 0.01, 0.01 };
-        TVector3 momentum_error{ 0.01, 0.01, 0.01 };
+//        TVector3 momentum{ momentum_x , momentum_y, momentum_z };
+//        TVector3 position_error{ 0.01, 0.01, 0.01 };
+//        TVector3 momentum_error{ 0.01, 0.01, 0.01 };
         
         
         //position.Print();
-        momentum.Print();
+//        momentum.Print();
         
-        track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
+//        track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
 
     }
     
