@@ -48,9 +48,11 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
     using covariance_matrix = typename underlying< typename details::filter_traits<UKF>::state >::covariance::type ;
     using corrected_state = corrected_state_impl<vector_matrix, covariance_matrix>;
     using state = state_impl<vector_matrix, covariance_matrix>;
-    using full_state = aggregator< corrected_state, data_handle<TAGcluster> >;
     
-    using node_type = node<corrected_state>;
+    using data_type = TAGcluster;
+    using full_state = aggregator< corrected_state, data_handle<data_type> >;
+    
+    using node_type = node<full_state>;
     
 private:
     particle_properties particle_m{};
@@ -160,7 +162,7 @@ private:
     {
         std::cout << " ---- RECONSTRUCT --- \n";
         
-        auto arborescence = make_arborescence< corrected_state >();
+        auto arborescence = make_arborescence< full_state >();
         
 
         list_m.apply_for_each( [this, &arborescence ]( const auto& detector_p )
@@ -211,7 +213,7 @@ private:
     
     
     template< class T >
-    std::vector<corrected_state> advance_reconstruction_impl( state s_p,
+    std::vector<full_state> advance_reconstruction_impl( state s_p,
                                                               const T& layer_p )
     {
         std::cout << "\nstarting_state : ( " << s_p.vector(0,0) << ", " << s_p.vector(1,0) ;
@@ -269,15 +271,15 @@ private:
                 ukf_m.step_length() = 1e-3;
             
                 auto s = make_state( leaf.get_value() );
-                auto cs_c = advance_reconstruction_impl( s, layer );
+                auto fs_c = advance_reconstruction_impl( s, layer );
             
-                for( auto & cs : cs_c ){
+                for( auto & fs : fs_c ){
 //
-                    std::cout << "corrected_state : ( " << cs.vector(0,0) << ", " << cs.vector(1,0) ;
-                    std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
-                    std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
+                    std::cout << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
+                    std::cout << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
+                    std::cout << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
 //
-                    leaf.add_child( std::move(cs) );
+                    leaf.add_child( std::move(fs) );
                 }
 
             }
@@ -303,17 +305,17 @@ private:
             ukf_m.step_length() = 1e-3;
             
             auto s = make_state(leaf.get_value());
-            auto cs_c = advance_reconstruction_impl( s, tof_p.form_layer() );
+            auto fs_c = advance_reconstruction_impl( s, tof_p.form_layer() );
             
-            if( cs_c.empty() ){ leaf.mark_invalid(); }
+            if( fs_c.empty() ){ leaf.mark_invalid(); }
             else{
-                auto cs = cs_c.front();
+                auto fs = fs_c.front();
                 
-                std::cout << "corrected_state : ( " << cs.vector(0,0) << ", " << cs.vector(1,0) ;
-                std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
-                std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
+                std::cout << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
+                std::cout << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
+                std::cout << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
                 
-                leaf.add_child( std::move(cs_c.front()) );
+                leaf.add_child( std::move(fs_c.front()) );
             }
         }
         
@@ -343,7 +345,12 @@ private:
             auto first_h = track.first_cluster();
             
             auto cs = vertex_p.generate_corrected_state<corrected_state>( vertex_h, first_h );
-            auto * leaf_h = arborescence_p.add_root( std::move(cs) );
+            auto fs = full_state{
+                std::move(cs),
+                data_handle<data_type>{nullptr}
+            };
+            
+            auto * leaf_h = arborescence_p.add_root( std::move(fs) );
             
             std::cout << " --- track --- \n";
             
@@ -352,22 +359,22 @@ private:
                 ukf_m.step_length() = 1e-3;
                 
                 auto s = make_state( leaf_h->get_value() );
-                auto cs_c = advance_reconstruction_impl( s, layer );
+                auto fs_c = advance_reconstruction_impl( s, layer );
                 
-                if( cs_c.empty() ){
+                if( fs_c.empty() ){
                     leaf_h->mark_invalid();
                  //   break;
                 }
                 else{
-                    auto cs = cs_c.front();
+                    auto fs = fs_c.front();
 
-                    std::cout << "corrected_state : ( " << cs.vector(0,0) << ", " << cs.vector(1,0) ;
-                    std::cout << ") -- (" << cs.vector(2,0) << ", " << cs.vector(3,0)  ;
-                    std::cout << ") -- " << cs.evaluation_point << " -- " << cs.chisquared << '\n';
+                    std::cout << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
+                    std::cout << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
+                    std::cout << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
 //
 //
                     
-                    leaf_h = leaf_h->add_child( std::move(cs_c.front()) );
+                    leaf_h = leaf_h->add_child( std::move(fs_c.front()) );
                     
                 }
             }
@@ -381,13 +388,13 @@ private:
     
     template<class T, typename std::enable_if_t< !std::is_same< T,  detector_properties< details::tof_tag >::layer >::value,
                                                  std::nullptr_t  > = nullptr >
-    std::vector<corrected_state> confront(const state& ps_p, const T& layer_p)
+    std::vector<full_state> confront(const state& ps_p, const T& layer_p)
     {
         
         auto candidate_c = layer_p.get_candidates();
         
-        std::vector<corrected_state> cs_c;
-        cs_c.reserve( candidate_c.size() );
+        std::vector<full_state> fs_c;
+        fs_c.reserve( candidate_c.size() );
         
         using enriched_candidate = enriched_candidate_impl<typename decltype(candidate_c)::value_type>;
         std::vector< enriched_candidate > enriched_c;
@@ -444,17 +451,19 @@ private:
             auto cs = make_corrected_state( std::move(state),
                                            chisquared{std::move(iterator->chisquared)} );
             
-            cs_c.push_back( std::move(cs) );
+            auto fs = full_state{ std::move(cs),
+                                  data_handle<data_type>{ iterator->data }  };
+            fs_c.push_back( std::move(fs) );
         }
     
     
-        return cs_c;
+        return fs_c;
     }
     
     
     
     
-    std::vector<corrected_state> confront(const state& ps_p, const detector_properties<details::tof_tag>::layer& layer_p) //optionnal is more relevant here
+    std::vector<full_state> confront(const state& ps_p, const detector_properties<details::tof_tag>::layer& layer_p) //optionnal is more relevant here
     {
         using candidate = typename detector_properties< details::tof_tag >::candidate;
         using enriched_candidate = enriched_candidate_impl< candidate >;
@@ -469,7 +478,7 @@ private:
         
         
         
-        std::vector<corrected_state> cs_c;
+        std::vector<full_state> fs_c;
     
         auto selection = [this, &ps_p, &layer_p ]( const auto & ec_p )
                          {
@@ -506,15 +515,17 @@ private:
             auto state = ukf_m.correct_state( ps_p, ec ); //should be sliced properly
             auto cs = make_corrected_state( std::move(state),
                                             chisquared{ ec.chisquared } );
-            cs_c.push_back( std::move(cs) );
+            auto fs = full_state{ std::move(cs),
+                                  data_handle<data_type>{ ec.data }  };
+            fs_c.push_back( std::move(fs) );
         }
         
-        return cs_c;
+        return fs_c;
     }
     
 
 
-std::vector<corrected_state> confront(const state& ps_p, const detector_properties<details::vertex_tag>::track_list::pseudo_layer& layer_p) //optionnal is more relevant here
+std::vector<full_state> confront(const state& ps_p, const detector_properties<details::vertex_tag>::track_list::pseudo_layer& layer_p) //optionnal is more relevant here
 {
         using candidate = typename detector_properties< details::vertex_tag >::candidate;
         using enriched_candidate = enriched_candidate_impl< candidate >;
@@ -526,7 +537,7 @@ std::vector<corrected_state> confront(const state& ps_p, const detector_properti
                                                          std::move( chi2 )   );
     
     
-        std::vector<corrected_state> cs_c;
+        std::vector<full_state> fs_c;
     
         auto selection = [this, &ps_p, &layer_p ]( const auto & ec_p )
                             {
@@ -563,10 +574,14 @@ std::vector<corrected_state> confront(const state& ps_p, const detector_properti
             auto state = ukf_m.correct_state( ps_p, ec ); //should be sliced properly
             auto cs = make_corrected_state( std::move(state),
                                             chisquared{std::move(ec.chisquared)} );
-            cs_c.push_back( std::move(cs) );
+            
+            auto fs = full_state{ std::move(cs),
+                                   data_handle<data_type>{ ec.data }  };
+            
+            fs_c.push_back( std::move(fs) );
         }
     
-        return cs_c;
+        return fs_c;
     }
 
     
@@ -581,22 +596,25 @@ std::vector<corrected_state> confront(const state& ps_p, const detector_properti
         for(auto& value : value_c){
             std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
         
+            TVector3 corrected_position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
             
             
-            
-            TVector3 position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
-
             auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * particle_m.momentum ;
             momentum_z /= 1000.;
             auto momentum_x = value.vector(2,0) * momentum_z;
             auto momentum_y = value.vector(3,0) * momentum_z;
 
             TVector3 momentum{ momentum_x , momentum_y, momentum_z };
-            TVector3 position_error{ 0.01,0.01,0.01 };
+            TVector3 position_error{ 0.01 ,0.01, 0.01 };
             TVector3 momentum_error{ 0.01, 0.01, 0.01 };
 
-            track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
-        
+            
+            track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
+            
+            if( value.data ){
+                TVector3 measured_position{ value.data->GetPosition().X(), value.data->GetPosition().Y(), corrected_position.Z() };
+                track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+            }
         }
 //        std::cout << "starting_point : \n";
 //        TVector3 position{ value_c.front().vector(0,0), value_c.front().vector(1,0), value_c.front().evaluation_point };
