@@ -710,6 +710,10 @@ void TAFOeventDisplay::UpdateElements()
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
        GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
       UpdateElements("ir");
+   
+   if (GlobalPar::GetPar()->IncludeTOE() && fgTrackFlag)
+      UpdateGlbTrackElements();
+
 }
 
 //__________________________________________________________
@@ -729,11 +733,8 @@ void TAFOeventDisplay::UpdateElements(const TString prefix)
       UpdateStripElements();
    } else {
       UpdateQuadElements(prefix);
-      if (fgTrackFlag) {
+      if (fgTrackFlag)
          UpdateTrackElements(prefix);
-         if (GlobalPar::GetPar()->IncludeTOE())
-            UpdateGlbTrackElements();
-      }
    }
 }
 
@@ -1043,7 +1044,7 @@ void TAFOeventDisplay::UpdateGlbTrackElements()
    TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
    
    //example begin
-//
+
 //   TVector3 vtx(0.2,-0.03,0.9);
 //   TVector3 mom0(0.119, -0.017, 2.39);
 //   TVector3 vtxErr(0.01,0.01,0.01);

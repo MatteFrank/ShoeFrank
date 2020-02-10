@@ -1,6 +1,7 @@
 
 
 #include "TAGactDaqReader.hxx"
+#include "GlobalPar.hxx"
 
 ClassImp(TAGactDaqReader);
 
@@ -77,6 +78,9 @@ Bool_t TAGactDaqReader::Process()
    // Trigger data
    TrgEvent*  evTrg  = fDaqFileReader->getTriggerEvent();
    datDaq->SetTrgEvent(evTrg);
+   
+   if(FootDebugLevel(1))
+      printf("DAQ trigger %u\n", evTrg->triggerCounter);
 
    // TDC # 0 and # 1 for BM
    const TDCEvent* evTDC0 = static_cast<const TDCEvent*>(fDaqFileReader->getFragmentID(dataV1190 | 0x30));
