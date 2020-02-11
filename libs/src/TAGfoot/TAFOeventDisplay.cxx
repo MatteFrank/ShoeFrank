@@ -643,14 +643,25 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveTrack* ts)
       TAGtrack* track =  (TAGtrack*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track # %2d:", track->GetTrackId()) );
-      fInfoView->AddLine( Form("Charge: %d Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass()) );
+      fInfoView->AddLine( Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN()) );
+      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %g GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass()) );
       fInfoView->AddLine( Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof()) );
       
       if (fConsoleButton->IsOn()) {
-         cout <<  Form("Track # %2d:", track->GetTrackId());
-         cout <<  Form("Charge: %d Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass());
+         cout <<  Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN());
+         cout <<  Form("Charge: %d A: %d Mass: %g GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass());
          cout <<  Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof());
+         
+         for( Int_t iPoint = 0; iPoint < track->GetMeasPointsN(); ++iPoint ) {
+            TAGpoint* point = track->GetMeasPoint(iPoint);
+            cout << Form("Point # %2d", iPoint);
+            
+            for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
+               Int_t idx = point->GetMcTrackIdx(k);
+               cout << Form("Track index %d ", idx);
+            }
+            cout << endl;
+         }
       }
    }
 }
@@ -1054,6 +1065,7 @@ void TAFOeventDisplay::UpdateGlbTrackElements()
          TVector3 mom0   = point->GetMomentum();
          Int_t charge    = point->GetChargeZ();
 
+         printf("track %d points %d\n", iTrack, track->GetMeasPointsN());
          TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
          glbTrack->TrackId(track);
 
