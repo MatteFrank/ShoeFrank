@@ -16,16 +16,14 @@ TAMSDcluster::TAMSDcluster()
    fPosition(0.),
    fPosError(0),
    fCurPosition(0,0,0),
-fPositionG(0., 0., 0.),
-fPosErrorG(0., 0., 0.),
+   fPositionG(0., 0., 0.),
+   fPosErrorG(0., 0., 0.),
    fPlaneNumber(10),
    fPlaneView(-1),
    fIsValid(false)
 {
    // TAMSDcluster constructor
    SetupClones();
-   fMcTrackIdx.Reset();
-   fMcTrackMap.clear();
 }
 
 //______________________________________________________________________________
@@ -39,7 +37,7 @@ void TAMSDcluster::SetupClones()
 //______________________________________________________________________________
 //  
 TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
-:  TAGcluster(),
+:  TAGcluster(cluster),
    fPosition(cluster.fPosition),
    fPosError(cluster.fPosError),
    fCurPosition(cluster.fCurPosition),
@@ -47,8 +45,7 @@ TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
    fPosErrorG(cluster.fPosErrorG),
    fPlaneNumber(cluster.fPlaneNumber),
    fPlaneView(cluster.fPlaneView),
-   fIsValid(cluster.fIsValid),
-   fMcTrackIdx(cluster.fMcTrackIdx)
+   fIsValid(cluster.fIsValid)
 {
    fListOfStrips = (TClonesArray*)cluster.fListOfStrips->Clone();
 }
@@ -137,13 +134,3 @@ Float_t TAMSDcluster::Distance(TAMSDcluster *aClus) {
    return clusPosition.Mag();
 }
 
-//______________________________________________________________________________
-//
-void TAMSDcluster::AddMcTrackIdx(Int_t trackIdx)
-{
-   if (fMcTrackMap[trackIdx] == 0) {
-      fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
-      fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
-      fMcTrackMap[trackIdx] = 1;
-   }
-}
