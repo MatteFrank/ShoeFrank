@@ -7,12 +7,13 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "TAGdata.hxx"
 #include <map>
 
 // ROOT classes
 #include "TVector3.h"
+#include "TArrayI.h"
 
+#include "TAGdata.hxx"
 #include "TAGobject.hxx"
 
 /** TAGpoint class is the global point for global reconstruction
@@ -28,6 +29,9 @@ private:
    TVector3    fMomentum;      // momentum in FOOT framework
    TVector3    fMomError;      // momentum error in FOOT framework
    Int_t       fChargeZ;       // Charge Z
+
+   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
+   std::map<int, int> fMcTrackMap;               //! Map of MC track Id
 
 public:
    TAGpoint();
@@ -48,6 +52,11 @@ public:
    void        SetMomError(TVector3 mom)    { fMomError = mom;    }
    void        SetChargeZ(Int_t z)          { fChargeZ = z;       }
    void        Clear(Option_t* opt);
+   
+   Int_t       GetMcTrackIdx(Int_t idx) const { return fMcTrackIdx[idx];      }
+   Int_t       GetMcTracksN()           const { return fMcTrackIdx.GetSize(); }
+   
+   void        AddMcTrackIdx(Int_t trackIdx);
    
    ClassDef(TAGpoint,3)
 };

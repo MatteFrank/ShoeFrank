@@ -16,6 +16,8 @@ TAGpoint::TAGpoint()
    fMomError(0,0,0),
    fChargeZ(-99)
 {
+   fMcTrackIdx.Reset();
+   fMcTrackMap.clear();
 }
 
 //______________________________________________________________________________
@@ -27,6 +29,8 @@ TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr)
    fMomentum(0,0,0),
    fMomError(0,0,0)
 {
+   fMcTrackIdx.Reset();
+   fMcTrackMap.clear();
 }
 
 //______________________________________________________________________________
@@ -39,9 +43,9 @@ TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr,
    fMomError(momErr),
    fChargeZ(chargeZ)
 {
+   fMcTrackIdx.Reset();
+   fMcTrackMap.clear();
 }
-
-
 
 //______________________________________________________________________________
 // Clear
@@ -49,6 +53,16 @@ void TAGpoint::Clear(Option_t*)
 {
 }
 
+//______________________________________________________________________________
+//
+void TAGpoint::AddMcTrackIdx(Int_t trackIdx)
+{
+   if (fMcTrackMap[trackIdx] == 0) {
+      fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
+      fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
+      fMcTrackMap[trackIdx] = 1;
+   }
+}
 
 //##############################################################################
 ClassImp(TAGntuPoint);

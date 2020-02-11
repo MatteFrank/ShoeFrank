@@ -34,8 +34,6 @@ TAGtrack::TAGtrack()
    fListOfCorrPoints(0x0)
 {
    SetupClones();
-   fMcTrackIdx.Reset();
-   fMcTrackMap.clear();
 }
 
 //------------------------------------------+-----------------------------------
@@ -55,9 +53,6 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
    fListOfCorrPoints(0x0)
 {
    SetupClones();
-   fMcTrackIdx.Reset();
-   fMcTrackMap.clear();
-   
    fEnergy = TMath::Sqrt(mass*mass + mom*mom) - mass;
 }
 
@@ -79,34 +74,34 @@ void TAGtrack::SetupClones()
 
 // __________________________________________________________________________
 //
-void TAGtrack::AddMeasPoint(TAGpoint* point)
+TAGpoint* TAGtrack::AddMeasPoint(TAGpoint* point)
 {
    TClonesArray &pointArray = *fListOfMeasPoints;
-   new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
+   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
 }
 
 // __________________________________________________________________________
 //
-void TAGtrack::AddCorrPoint(TAGpoint* point)
+TAGpoint* TAGtrack::AddCorrPoint(TAGpoint* point)
 {
    TClonesArray &pointArray = *fListOfCorrPoints;
-   new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
+   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
 }
 
 // __________________________________________________________________________
 //
-void TAGtrack::AddMeasPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
+TAGpoint* TAGtrack::AddMeasPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
 {
    TClonesArray &pointArray = *fListOfMeasPoints;
-   new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, fCharge);
+   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, fCharge);
 }
 
 // __________________________________________________________________________
 //
-void TAGtrack::AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
+TAGpoint* TAGtrack::AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
 {
    TClonesArray &pointArray = *fListOfCorrPoints;
-   new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, fCharge);
+   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, fCharge);
 }
 
 //------------------------------------------+-----------------------------------
@@ -115,17 +110,6 @@ void TAGtrack::Clear(Option_t*)
 {
    fListOfMeasPoints->Delete();
    fListOfCorrPoints->Delete();
-}
-
-//______________________________________________________________________________
-//
-void TAGtrack::AddMcTrackIdx(Int_t trackIdx)
-{
-   if (fMcTrackMap[trackIdx] == 0) {
-      fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
-      fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
-      fMcTrackMap[trackIdx] = 1;
-   }
 }
 
 //##############################################################################
