@@ -59,7 +59,7 @@ public:
     }
     
     T const & get_value() const { return t_m; }
-    std::size_t get_depth() const { return depth_m; }
+    std::size_t depth() const { return depth_m; }
     void mark_invalid() { valid_m = false; }
     bool is_childless() const { return children_mc.empty(); }
     bool is_valid() const { return valid_m; }
@@ -71,7 +71,7 @@ public:
     std::vector<T> get_branch_values() const
     {
         std::vector<T> value_c;
-        value_c.reserve( get_depth() );
+        value_c.reserve( depth() );
         
         auto * node_h{ this };
         while( node_h->get_parent() ){

@@ -113,6 +113,7 @@ struct range_generator
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }
+        bool empty(){ return candidate_c.empty(); }
     };
     
     
@@ -235,7 +236,7 @@ struct detector_properties< details::vertex_tag >
             iterator begin() { return iterator( detector_m, *this, 0 ); }
             iterator end()   { return iterator( detector_m, *this, track_mh->GetClustersN() ); }
             TAVTbaseCluster const * first_cluster() const { return track_mh->GetCluster(0); }
-            
+            std::size_t size() const { return track_mh->GetClustersN(); }
             
         private:
             pseudo_layer form_layer( std::size_t index_p ) const ;
@@ -316,57 +317,7 @@ public:
     TAVTvertex const * retrieve_vertex( ) const;
     candidate generate_candidate( TAVTbaseCluster const * cluster_h  ) const ;
     
-    template<class T> //no easy way to retrieve type of corrected state in question, except give it as template arg
-    T generate_corrected_state( TAVTvertex const * vertex_ph,
-                                TAVTbaseCluster const * cluster_ph ) const
-    {
-        auto * transformation_h =
-        static_cast<TAGgeoTrafo*>(                                                        gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data() )
-                                  );
-        
-        auto start = transformation_h->FromVTLocalToGlobal( vertex_ph->GetVertexPosition() );
-        auto end = transformation_h->FromVTLocalToGlobal( cluster_ph->GetPositionG() );
-        
-        auto length = end - start;
-        
-        auto track_slope_x = length.X()/length.Z();
-        auto track_slope_y = length.Y()/length.Z();
-        
-        std::cout << "\n\ntrack_slope_x: " << track_slope_x << '\n';
-        std::cout << "track_slope_y: " << track_slope_y << '\n';
-        
-        
-        auto length_error_x = sqrt( pow( vertex_ph->GetVertexPosError().X(), 2 ) +
-                                    pow( cluster_ph->GetPosErrorG().X(), 2) );
-        auto length_error_y = sqrt( pow( vertex_ph->GetVertexPosError().Y(), 2 ) +
-                                    pow( cluster_ph->GetPosErrorG().Y(), 2) );
-        
-        
-        auto track_slope_error_x = abs( track_slope_x ) *
-                                      sqrt( pow( length_error_x/length.X(), 2) +
-                                            pow( 0.05/length.Z(), 2) );
-        auto track_slope_error_y = abs( track_slope_y ) *
-                                      sqrt( pow( length_error_y/length.Y(), 2) +
-                                            pow( 0.05/length.Z(), 2) );
-        
-        
-        
-        using state = typename underlying<T>::state;
-        using vector = typename underlying<state>::vector;
-        using covariance = typename underlying<state>::covariance;
-        
-        return T{
-            state{
-                evaluation_point{ start.Z() },
-                vector{{ start.X(), start.Y(), track_slope_x, track_slope_y }},
-                covariance{{   pow(length_error_x, 2  ),     0,    0,    0,
-                               0,     pow(length_error_y, 2),      0,    0,
-                               0,    0,   pow(track_slope_error_x, 2),   0,
-                               0,    0,    0,   pow( track_slope_error_y, 2)  }}
-                 },
-            chisquared{0}
-               };
-    }
+    
     
     track_list get_track_list( TAVTvertex const * vertex_ph ) const ;
 };
@@ -470,6 +421,7 @@ struct detector_properties< details::tof_tag >
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }
+        bool empty(){ return candidate_c.empty(); }
     };
     
     

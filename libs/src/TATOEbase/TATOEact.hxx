@@ -157,6 +157,54 @@ private:
     }
     
 
+    corrected_state generate_corrected_state( TAVTvertex const * vertex_ph,
+                                              TAVTbaseCluster const * cluster_ph ) const
+    {
+        auto * transformation_h = static_cast<TAGgeoTrafo*>(
+                                     gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data() )
+                                                            );
+        
+        auto start = transformation_h->FromVTLocalToGlobal( vertex_ph->GetVertexPosition() );
+        auto end = transformation_h->FromVTLocalToGlobal( cluster_ph->GetPositionG() );
+        
+        auto length = end - start;
+        
+        auto track_slope_x = length.X()/length.Z();
+        auto track_slope_y = length.Y()/length.Z();
+        
+        std::cout << "track_slope_x: " << track_slope_x << '\n';
+        std::cout << "track_slope_y: " << track_slope_y << '\n';
+        
+        
+        auto length_error_x = sqrt( pow( vertex_ph->GetVertexPosError().X(), 2 ) +
+                                    pow( cluster_ph->GetPosErrorG().X(), 2)             );
+        auto length_error_y = sqrt( pow( vertex_ph->GetVertexPosError().Y(), 2 ) +
+                                    pow( cluster_ph->GetPosErrorG().Y(), 2)           );
+        
+        
+        auto track_slope_error_x = abs( track_slope_x ) *
+                                   sqrt( pow( length_error_x/length.X(), 2) +
+                                         pow( 0.05/length.Z(), 2)              );
+        auto track_slope_error_y = abs( track_slope_y ) *
+                                   sqrt( pow( length_error_y/length.Y(), 2) +
+                                         pow( 0.05/length.Z(), 2)               );
+        
+        
+        using vector = typename underlying<state>::vector;
+        using covariance = typename underlying<state>::covariance;
+        
+        return corrected_state{
+            state{
+                evaluation_point{ start.Z() },
+                vector{{ start.X(), start.Y(), track_slope_x, track_slope_y }},
+                covariance{{   pow(length_error_x, 2  ),     0,    0,    0,
+                               0,     pow(length_error_y, 2),      0,    0,
+                               0,    0,   pow(track_slope_error_x, 2),   0,
+                               0,    0,    0,   pow( track_slope_error_y, 2)  }}
+            },
+            chisquared{0}
+        };
+    }
     
     void reconstruct()
     {
@@ -264,6 +312,9 @@ private:
             auto& leaf_c = arborescence_p.get_handler();
             std::cout << " --- layer --- \n";
         
+            if( layer.get_candidates().empty() ){ continue; }
+            
+            
             for(auto& leaf : leaf_c){
                 
                 std::cout << " --- leaf --- \n";
@@ -338,13 +389,13 @@ private:
         
         
         auto * vertex_h = vertex_p.retrieve_vertex();
-        if( !vertex_h ){ std::cout << "no vertex found\n"; }
+        if( !vertex_h ){ std::cout << "WARNING : no vertex found\n"; }
         
         auto track_c = vertex_p.get_track_list( vertex_h );
         for( auto& track : track_c ){
             auto first_h = track.first_cluster();
             
-            auto cs = vertex_p.generate_corrected_state<corrected_state>( vertex_h, first_h );
+            auto cs = generate_corrected_state( vertex_h, first_h );
             auto fs = full_state{
                 std::move(cs),
                 data_handle<data_type>{nullptr}
@@ -356,16 +407,13 @@ private:
             
             
             for( auto layer : track ){
+                
                 ukf_m.step_length() = 1e-3;
                 
                 auto s = make_state( leaf_h->get_value() );
                 auto fs_c = advance_reconstruction_impl( s, layer );
                 
-                if( fs_c.empty() ){
-                    leaf_h->mark_invalid();
-                 //   break;
-                }
-                else{
+                if( !fs_c.empty() ){
                     auto fs = fs_c.front();
 
                     std::cout << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
@@ -373,11 +421,16 @@ private:
                     std::cout << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
 //
 //
-                    
                     leaf_h = leaf_h->add_child( std::move(fs_c.front()) );
                     
                 }
+                
             }
+            
+//            std::cout << "cluster_added: " << leaf_h->depth()-1 << '\n';
+//            std::cout << "cluster_intrack: " << track.size() << '\n';
+            if( leaf_h->depth()-1 < track.size()-1 ){ leaf_h->mark_invalid(); }
+            
         }
         
     }
@@ -616,30 +669,6 @@ std::vector<full_state> confront(const state& ps_p, const detector_properties<de
                 track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
             }
         }
-//        std::cout << "starting_point : \n";
-//        TVector3 position{ value_c.front().vector(0,0), value_c.front().vector(1,0), value_c.front().evaluation_point };
-        
-//        auto momentum_z = sqrt( pow( value_c.front().vector(2,0), 2) + pow( value_c.front().vector(3,0), 2) + 1 ) * particle_m.momentum ;
-//        std::cout << "sqrt :" << sqrt( pow( value_c.front().vector(2,0), 2) + pow( value_c.front().vector(3,0), 2) + 1 ) << '\n';
-//        momentum_z /= 1000.;
-//        std::cout << "momentum_z : " <<  momentum_z << '\n';
-//        auto momentum_x = value_c.front().vector(2,0) * momentum_z;
-//        auto momentum_y = value_c.front().vector(3,0) * momentum_z;
-//        std::cout << "track_slope_x: " << value_c.front().vector(2,0) << '\n';
-//        std::cout << "momentum_x : " <<  momentum_x << '\n';
-//        std::cout << "track_slope_x: " << value_c.front().vector(3,0) << '\n';
-//        std::cout << "momentum_y : " <<  momentum_y << '\n';
-        
-//        TVector3 momentum{ momentum_x , momentum_y, momentum_z };
-//        TVector3 position_error{ 0.01, 0.01, 0.01 };
-//        TVector3 momentum_error{ 0.01, 0.01, 0.01 };
-        
-        
-        //position.Print();
-//        momentum.Print();
-        
-//        track_h->AddMeasPoint( position, position_error, momentum, momentum_error ); //corr point not really meas
-
     }
     
     
