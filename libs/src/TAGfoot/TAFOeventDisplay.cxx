@@ -1065,7 +1065,6 @@ void TAFOeventDisplay::UpdateGlbTrackElements()
          TVector3 mom0   = point->GetMomentum();
          Int_t charge    = point->GetChargeZ();
 
-         printf("track %d points %d\n", iTrack, track->GetMeasPointsN());
          TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
          glbTrack->TrackId(track);
 
