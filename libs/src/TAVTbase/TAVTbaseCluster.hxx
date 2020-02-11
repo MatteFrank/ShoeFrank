@@ -37,8 +37,6 @@ protected:
    Bool_t             fFoundYZ;					    //! kTRUE is associated to a track in YZ Projection
    Bool_t             fIsValid;                  // validity flag
    
-   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
-   std::map<int, int> fMcTrackMap;               // Map of MC track Id
    
 public:
    TAVTbaseCluster(); 
@@ -117,13 +115,6 @@ public:
    //! reset pixels
    void               ResetPixels();
    
-   // Add MC track Idx
-   void               AddMcTrackIdx(Int_t trackIdx);
-
-   // Get MC info
-   Int_t              GetMcTrackIdx(Int_t index)      const   { return fMcTrackIdx[index];    }
-   Int_t              GetMcTracksN()                  const   { return fMcTrackIdx.GetSize(); }
-
    ClassDef(TAVTbaseCluster,3)                          // Describes TAVTbaseCluster
 };
 
