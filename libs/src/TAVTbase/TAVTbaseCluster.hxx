@@ -115,7 +115,7 @@ public:
    //! reset pixels
    void               ResetPixels();
    
-   ClassDef(TAVTbaseCluster,3)                          // Describes TAVTbaseCluster
+   ClassDef(TAVTbaseCluster,4)                          // Describes TAVTbaseCluster
 };
 
 
