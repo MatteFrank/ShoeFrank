@@ -205,15 +205,18 @@ Double_t TADItrackEmProperties::SigmaTheta(Double_t *x, Double_t *par)
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProperties::GetSigmaTheta(const TString& mat, Float_t x, Float_t energy, Float_t A, Float_t Z )
+Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, const TString& beam, Float_t x, Float_t energy)
 {
-   Double_t pc   = GetPCC(energy, A);
+   energy       *= TAGgeoTrafo::GevToMev();
+   Double_t bA   = GetA(beam);
+   Double_t bZ   = GetZ(beam);
+   Double_t pc   = GetPCC(energy, bA);
    Double_t beta = GetBeta(energy);
-   Double_t radL = GetRadLength(mat);  // Radiation length for material
+   Double_t radL = GetRadLength(matTarget);  // Radiation length for material
 
    fFuncSigTheta->SetParameter(0, beta);
    fFuncSigTheta->SetParameter(1, pc);
-   fFuncSigTheta->SetParameter(2, Z);
+   fFuncSigTheta->SetParameter(2, bZ);
    fFuncSigTheta->SetParameter(3, radL);
    
    return  fFuncSigTheta->Eval(x);
