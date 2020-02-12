@@ -22,7 +22,7 @@ TAEDglbTrack::~TAEDglbTrack()
 }
 
 //__________________________________________________________
-void TAEDglbTrack::AddTrackMarker(TVector3& point, TVector3& mom)
+void TAEDglbTrack::AddTrackPoint(TVector3& point, TVector3& mom)
 {
    AddPathMark(TEvePathMarkD(TEvePathMarkD::kReference,
                              TEveVectorD(point[0], point[1], point[2]),
