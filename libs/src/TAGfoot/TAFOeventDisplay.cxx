@@ -1073,7 +1073,7 @@ void TAFOeventDisplay::UpdateGlbTrackElements()
             TVector3 pos    = point->GetPosition();
             TVector3 mom    = point->GetMomentum();
 
-            glbTrack->AddTrackMarker(pos, mom);
+            glbTrack->AddTrackPoint(pos, mom);
          } // end loop on points
       } // end loop on tracks
    } // nTracks > 0
