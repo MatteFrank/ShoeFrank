@@ -110,9 +110,9 @@ Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor, TAITntuCluster* pNtuClu
       ComputePosition();
       TVector3 posG = *GetCurrentPosition();
       posG = pGeoMap->Sensor2Detector(iSensor, posG);
-      cluster->SetPositionG(&posG);
-      cluster->SetPosition(GetCurrentPosition());
-      cluster->SetPosError(GetCurrentPosError());
+      cluster->SetPositionG(posG);
+      cluster->SetPosition(*GetCurrentPosition());
+      cluster->SetPosError(*GetCurrentPosError());
       cluster->SetCharge(GetClusterPulseSum());
 
       if (ApplyCuts(cluster)) {

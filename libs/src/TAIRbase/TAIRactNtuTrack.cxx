@@ -173,7 +173,7 @@ TAIRtrack* TAIRactNtuTrack::FillTracks(TAVTtrack* vtTrack)
       
       // from VT local to FOOT global
       posG = fpFootGeo->FromVTLocalToGlobal(posG);
-      cluster->SetPositionG(&posG);
+      cluster->SetPositionG(posG);
       
       track->AddCluster(cluster);
    }
@@ -254,7 +254,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
             TVector3 posG = bestCluster->GetPositionG();
             posG = fpFootGeo->FromITLocalToGlobal(posG);
             TAIRcluster* last = track->GetLastCluster();
-            last->SetPositionG(&posG);
+            last->SetPositionG(posG);
             last->SetPlaneNumber(last->GetPlaneNumber()+pGeoMapVt->GetSensorsN());
 
             if (fgRefit)
