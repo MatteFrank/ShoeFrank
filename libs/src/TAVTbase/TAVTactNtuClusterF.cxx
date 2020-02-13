@@ -111,11 +111,11 @@ Bool_t TAVTactNtuClusterF::CreateClusters(Int_t iSensor, TAVTntuCluster* pNtuClu
       cluster->SetPlaneNumber(iSensor);
       fCurListOfPixels = cluster->GetListOfPixels();
       ComputePosition();
-      TVector3 posG = *GetCurrentPosition();
+      TVector3 posG = GetCurrentPosition();
       posG = pGeoMap->Sensor2Detector(iSensor, posG);
       cluster->SetPositionG(posG);
-      cluster->SetPosition(*GetCurrentPosition());
-      cluster->SetPosError(*GetCurrentPosError());
+      cluster->SetPosition(GetCurrentPosition());
+      cluster->SetPosError(GetCurrentPosError());
       cluster->SetCharge(GetClusterPulseSum());
       
       if (ApplyCuts(cluster)) {

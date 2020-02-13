@@ -29,8 +29,8 @@ TAVTactBaseNtuCluster::TAVTactBaseNtuCluster(const char* name,
  : TAGactNtuCluster2D(name, "TAVTactNtuCluster - NTuplize cluster"),
    fpConfig(pConfig),
    fpGeoMap(pGeoMap),
-   fCurrentPosition(new TVector3(0., 0., 0.)),
-   fCurrentPosError(new TVector3(0., 0., 0.)),
+   fCurrentPosition(0., 0., 0.),
+   fCurrentPosError(0., 0., 0.),
    fListOfPixels(0x0),
    fClustersN(0)
 
@@ -59,8 +59,6 @@ TAVTactBaseNtuCluster::TAVTactBaseNtuCluster(const char* name,
 //! Destructor.
 TAVTactBaseNtuCluster::~TAVTactBaseNtuCluster()
 {
-   delete fCurrentPosition;
-   delete fCurrentPosError;
 }
 
 //------------------------------------------+-----------------------------------
@@ -182,7 +180,7 @@ void TAVTactBaseNtuCluster::ComputePosition()
 //
 void TAVTactBaseNtuCluster::ComputeSeedPosition()
 {
-   GetCurrentPosition()->SetXYZ((fPSeed->GetPosition())(0), (fPSeed->GetPosition())(1), 0);   
+   fCurrentPosition.SetXYZ((fPSeed->GetPosition())(0), (fPSeed->GetPosition())(1), 0);   
 }
 
 //______________________________________________________________________________
@@ -223,7 +221,7 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    if (posErr(0) < lim) posErr(0) = lim; //(20/Sqrt(12)^2
    if (posErr(1) < lim) posErr(1) = lim; //(20/Sqrt(12)^2
    
-   GetCurrentPosition()->SetXYZ((pos)(0), (pos)(1), 0);  
-   GetCurrentPosError()->SetXYZ(TMath::Sqrt((posErr)(0)), TMath::Sqrt((posErr)(1)), 0);
+   fCurrentPosition.SetXYZ((pos)(0), (pos)(1), 0);
+   fCurrentPosError.SetXYZ(TMath::Sqrt((posErr)(0)), TMath::Sqrt((posErr)(1)), 0);
 }
 
