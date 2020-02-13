@@ -1,5 +1,12 @@
 
 
+//
+//File      : TATOEact.hpp
+//Author    : Alexandre Sécher (alexandre.secher@iphc.cnrs.fr)
+//Date      : 10/02/2020
+//Framework : PhD thesis, CNRS/IPHC/DRHIM/Hadrontherapy, Strasbourg, France
+//
+
 #ifndef _TATOEact_HXX
 #define _TATOEact_HXX
 
@@ -20,6 +27,7 @@
 
 #include "TAGntuGlbTrack.hxx"
 #include "TAGcluster.hxx"
+#include "TAGparGeo.hxx"
 
 template<class T>
 class TD;
@@ -59,15 +67,18 @@ private:
     UKF ukf_m;
     detector_list_t list_m;
     TAGntuGlbTrack* track_mhc;
+    double beam_energy_m;
     
 public:
     
     TATOEactGlb( UKF&& ukf_p,
                  detector_list_t&& list_p,
-                 TAGntuGlbTrack* track_phc ) :
+                 TAGntuGlbTrack* track_phc,
+                 TAGparGeo* global_parameters_ph) :
         ukf_m{ std::move(ukf_p) },
         list_m{ std::move(list_p) },
-        track_mhc{ track_phc }
+        track_mhc{ track_phc },
+        beam_energy_m{ global_parameters_ph->GetBeamPar().Energy * 1000 } //Mev/u
     {
         ukf_m.call_stepper().ode.model().particle_h = &particle_m;
     }
@@ -132,9 +143,20 @@ private:
         
         auto * data_hc = static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" )->Object() );
         
+//        std::cout << "---- list_of_tracks ----\n";
+//        for( int id{0} ; id < data_hc->GetHitsN() ; ++id){
+//            std::cout << "\ntrack_index: " << id << '\n';
+//            std::cout << "initial_position: (" << data_hc->GetHit(id)->GetInitPos().X() << ", " << data_hc->GetHit(id)->GetInitPos().Y() << ", " << data_hc->GetHit(id)->GetInitPos().Z() << ")\n";
+//            std::cout << "charge: " << data_hc->GetHit(id)->GetCharge() << '\n';
+//            std::cout << "mass: " << data_hc->GetHit(id)->GetMass() << '\n';
+//            std::cout << "track_id: " << data_hc->GetHit(id)->GetFlukaID() << '\n';
+//            std::cout << "mother_id: " << data_hc->GetHit(id)->GetMotherID() << '\n';
+//        }
+//
+        
         for( const auto& candidate : candidate_c ) {
 
-            std::cout << "---- candidate ----\n";
+            std::cout << "\n---- candidate ----\n";
             for( int i{0}; i < candidate.data->GetColumnHit()->GetMcTracksN() ; ++i  ){
                 auto id = candidate.data->GetColumnHit()->GetMcTrackIdx(i);
                 std::cout << "A/Z :" << data_hc->GetHit(id)->GetMass() << "/" << data_hc->GetHit(id)->GetCharge() << '\n';
@@ -160,10 +182,9 @@ private:
                                                           [&charge]( particle_properties const & h_p ){ return h_p.charge == charge; } );
             
             if( first_matching_hypothesis == hypothesis_c.end() ){
-                auto beam_energy = 200.; //MeV/u
             
                 auto add_hypothesis = [&]( int mass_number_p, double light_ion_boost_p = 1 ){
-                    auto momentum = sqrt( (beam_energy * mass_number_p) * (beam_energy * mass_number_p) + 2 *  (beam_energy * mass_number_p) * (938 * mass_number_p)  );
+                    auto momentum = sqrt( (beam_energy_m * mass_number_p) * (beam_energy_m * mass_number_p) + 2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  );
                     hypothesis_c.push_back( particle_properties{ charge, mass_number_p, momentum, light_ion_boost_p } );
                     add_current_end_point( hypothesis_c.back() );
                 };
@@ -253,6 +274,10 @@ private:
             chisquared{0}
         };
     }
+    
+    
+    
+    
     
     void reconstruct()
     {
@@ -749,19 +774,19 @@ private:
 
 
 template<class UKF, class DetectorList>
-auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc)
+auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph)
         ->TATOEactGlb<UKF, DetectorList>
 {
-    return {std::move(ukf_p), std::move(list_p), track_phc};
+    return {std::move(ukf_p), std::move(list_p), track_phc, global_parameters_ph};
 }
 
 
 
 template<class UKF, class DetectorList>
-auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc)
+auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph)
         -> TATOEactGlb<UKF, DetectorList> *
 {
-    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc};
+    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc, global_parameters_ph};
 }
 
 

@@ -56,6 +56,7 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
                                       TAGdataDsc* p_msdclus,
                                       TAGdataDsc* p_twpoint,
                                       TAGdataDsc* p_glbtrack,
+                                      TAGparaDsc* p_geoG,
                                       TAGparaDsc* p_geodi,
                                       TAGparaDsc* p_geoVtx,
                                       TAGparaDsc* p_geoItr,
@@ -68,6 +69,7 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    fpMsdClus(p_msdclus),
    fpTwPoint(p_twpoint),
    fpGlbTrack(p_glbtrack),
+   fpGGeoMap(p_geoG),
    fpDiGeoMap(p_geodi),
    fpVtxGeoMap(p_geoVtx),
    fpItrGeoMap(p_geoItr),
@@ -164,10 +166,12 @@ void TAGactNtuGlbTrack::SetupBranches()
     auto stepper = make_stepper<data_grkn56>( std::move(ode) );
     auto ukf = make_ukf<state>( std::move(stepper) );
     
-    
-    return make_new_TATOEactGlb( std::move(ukf),
-                                 std::move(list),
-                                 static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() )   );
+    return make_new_TATOEactGlb(
+                                std::move(ukf),
+                                std::move(list),
+                                static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                                static_cast<TAGparGeo*>( fpGGeoMap->Object() )
+                               );
 }
 
 

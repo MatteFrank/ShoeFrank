@@ -89,7 +89,8 @@ public:
    void               Print(Option_t* opt = "") const;
 
    //! Get target parameter
-   TargetParameter_t& GetTargetPar()          { return fTargetParameter;      }
+   TargetParameter_t&        GetTargetPar()           { return fTargetParameter;      }
+   TargetParameter_t const & GetTargetPar()     const { return fTargetParameter;      }
 
    //! Get inert number
    Int_t              GetInsertsN()     const { return fInsertsN;             }
@@ -98,8 +99,9 @@ public:
    InsertParameter_t& GetInsertPar(Int_t idx) { return fInsertParameter[idx]; }
 
    //! Get beam parameter
-   BeamParameter_t&   GetBeamPar()        { return fBeamParameter;   }
-   
+   BeamParameter_t&          GetBeamPar()         { return fBeamParameter;   }
+   BeamParameter_t const &   GetBeamPar()   const { return fBeamParameter;   }
+    
    //! Add Target
    TGeoVolume*        AddTarget(const char *targetName = "Target");
    
