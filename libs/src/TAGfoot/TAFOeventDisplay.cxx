@@ -1055,28 +1055,26 @@ void TAFOeventDisplay::UpdateGlbTrackElements()
    TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
    fGlbTrackDisplay->ResetTracks();
     
-   if( pNtuTrack->GetTracksN() > 0 ) {
-      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
-          TAGtrack* track = pNtuTrack->GetTrack(iTrack);
-
-         // vertex
-         TAGpoint* point = track->GetMeasPoint(0);
-         TVector3 vtx    = point->GetPosition();
-         TVector3 mom0   = point->GetMomentum();
-         Int_t charge    = point->GetChargeZ();
-
-         TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
-         glbTrack->TrackId(track);
-
-         for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
-            TAGpoint* point = track->GetMeasPoint(iPoint);
-            TVector3 pos    = point->GetPosition();
-            TVector3 mom    = point->GetMomentum();
-
-            glbTrack->AddTrackPoint(pos, mom);
-         } // end loop on points
-      } // end loop on tracks
-   } // nTracks > 0
+   for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+      TAGtrack* track = pNtuTrack->GetTrack(iTrack);
+      
+      // vertex
+      TAGpoint* point = track->GetMeasPoint(0);
+      TVector3 vtx    = point->GetPosition();
+      TVector3 mom0   = point->GetMomentum();
+      Int_t charge    = point->GetChargeZ();
+      
+      TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
+      glbTrack->TrackId(track);
+      
+      for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
+         TAGpoint* point = track->GetMeasPoint(iPoint);
+         TVector3 pos    = point->GetPosition();
+         TVector3 mom    = point->GetMomentum();
+         
+         glbTrack->AddTrackPoint(pos, mom);
+      } // end loop on points
+   } // end loop on tracks
 }
 
 //__________________________________________________________
