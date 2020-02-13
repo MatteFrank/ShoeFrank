@@ -273,8 +273,7 @@ private:
         
         for(auto& node : node_c){
             register_track(node);
-            
-            if(node_c.size() > 1){ std::cout << "WARNING : several tracks reconstructed for the same end point ..."; }
+
         }
     }
     

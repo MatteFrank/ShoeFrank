@@ -154,8 +154,8 @@ void TAGactNtuGlbTrack::SetupBranches()
     auto * geoTW_h = static_cast<TATWparGeo*>( fpTofGeoMap->Object() );
     
     
-    auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, geoVTX_h, 10) )
-                    .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, 15) )
+    auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, geoVTX_h, 12) )
+                    .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, 21) )
                     .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 1.5) )
                     .finish();
     
