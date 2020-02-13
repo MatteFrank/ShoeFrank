@@ -64,7 +64,7 @@ class TAEDbaseInterface : public TEveEventManager
 {
 public:
    enum Detectors {
-      kSTC, kBMN, kTGT, kVTX, kDIP, kITR, kMSD, kTOF, kCAL
+      kSTC, kBMN, kTGT, kVTX, kDIP, kITR, kMSD, kTOF, kCAL, kWorld
    };
    
 public:
@@ -137,7 +137,8 @@ public:
    void         ToggleGlbDisplay();
    void         ToggleMcDisplay();
    void         ToggleDetector(Int_t id);
-   
+   void         ToggleCamera(Int_t id);
+
    void         ClearInfoView();
    void         HistoSelected(Int_t id);
    void         ResetHisto();
@@ -199,6 +200,7 @@ protected:
    Int_t              fType;       
    Float_t            fWorldSizeZ;
    Float_t            fWorldSizeXY;
+   TString            fWorldName;
    TGeoMedium*        fWorldMedium;
    
    TGeoVolume*        fTopVolume;          // top volume of geometry
@@ -227,6 +229,7 @@ protected:
    TGCheckButton*     fConsoleButton;    // Toggle on/off selection also on console
    TGHProgressBar*    fEventProgress;    // progress event bar
    TGComboBox*        fDetectorMenu;     // list of detector drawn
+   TGComboBox*        fCameraMenu;       // list of camera centers
    TGListBox*         fHistoListBox;     // list of histograms
    TList*             fSelecHistoList;   // list of selected histograms
    TList*             fHistoList;        // list of histograms
