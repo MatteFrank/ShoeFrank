@@ -928,42 +928,40 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       
       TAVTntuTrack* pNtuTrack = fReco->GetNtuTrackVtx();
       
-      if( pNtuTrack->GetTracksN() > 0 ) {
-         for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
-            fVtxTrackDisplay->AddNewTrack();
-            
-            TAVTtrack* track = pNtuTrack->GetTrack(iTrack);
-            TVector3 pos;
-            TVector3 posG;
-            
-            if (GlobalPar::GetPar()->IncludeTG() && track->GetValidity() == 1)
-               pos = track->Intersection(track->GetPosVertex().Z());
-            else
-               pos = track->Intersection(posfirstPlane);
-            
-            posG = fpFootGeo->FromVTLocalToGlobal(pos);
-            
-            x = posG(0); y = posG(1); z = posG(2);
-            
-            if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->IncludeDI()) {
-               Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
-               posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
-               pos = track->Intersection(posZtw);
-            } else {
-               pos  = track->Intersection(posLastPlane);
-            }
-            
-            posG = fpFootGeo->FromVTLocalToGlobal(pos);
-
-            x1 = posG(0); y1 = posG(1); z1 = posG(2);
-            
-            Float_t nPix = track->GetMeanPixelsN();
-            fVtxTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
-            fVtxTrackDisplay->TrackId(track);
-            
-         } // end loop on tracks
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         fVtxTrackDisplay->AddNewTrack();
          
-      } // nTracks > 0
+         TAVTtrack* track = pNtuTrack->GetTrack(iTrack);
+         TVector3 pos;
+         TVector3 posG;
+         
+         if (GlobalPar::GetPar()->IncludeTG() && track->GetValidity() == 1)
+            pos = track->Intersection(track->GetPosVertex().Z());
+         else
+            pos = track->Intersection(posfirstPlane);
+         
+         posG = fpFootGeo->FromVTLocalToGlobal(pos);
+         
+         x = posG(0); y = posG(1); z = posG(2);
+         
+         if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->IncludeDI()) {
+            Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+            posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
+            pos = track->Intersection(posZtw);
+         } else {
+            pos  = track->Intersection(posLastPlane);
+         }
+         
+         posG = fpFootGeo->FromVTLocalToGlobal(pos);
+         
+         x1 = posG(0); y1 = posG(1); z1 = posG(2);
+         
+         Float_t nPix = track->GetMeanPixelsN();
+         fVtxTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
+         fVtxTrackDisplay->TrackId(track);
+         
+      } // end loop on tracks
+         
       fVtxTrackDisplay->RefitPlex();
    }
    
@@ -971,36 +969,33 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       TABMparGeo*   parGeo    = fReco->GetParGeoBm();
       TABMntuTrack* pNtuTrack = fReco->GetNtuTrackBm();
       
-      if( pNtuTrack->GetTracksN() > 0 ) {
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         fBmTrackDisplay->AddNewTrack();
          
-         for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
-            fBmTrackDisplay->AddNewTrack();
-            
-            TABMntuTrackTr* track = pNtuTrack->Track(iTrack);
+         TABMntuTrackTr* track = pNtuTrack->Track(iTrack);
+         
+         TVector3 A0 = track->PointAtLocalZ(parGeo->GetMylar1().Z());
+         TVector3 A1 = track->PointAtLocalZ(parGeo->GetMylar2().Z());
+         
+         if (GlobalPar::GetPar()->IncludeTG()) {
+            Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
+            posZtg = fpFootGeo->FromGlobalToBMLocal(TVector3(0, 0, posZtg)).Z();
+            A1 = track->PointAtLocalZ(posZtg);
+         }
+         
+         TVector3 A0G = fpFootGeo->FromBMLocalToGlobal(A0);
+         TVector3 A1G = fpFootGeo->FromBMLocalToGlobal(A1);
+         
+         x  = A0G(0); y  = A0G(1); z  = A0G(2);
+         x1 = A1G(0); y1 = A1G(1); z1 = A1G(2);
+         
+         Int_t nHits = track->GetNhit();
+         // inverse view ??
+         fBmTrackDisplay->AddTracklet(nHits*100, y, x, z, y1, x1, z1);
+         fBmTrackDisplay->TrackId(track);
+         
+      } // end loop on tracks
 
-            TVector3 A0 = track->PointAtLocalZ(parGeo->GetMylar1().Z());
-            TVector3 A1 = track->PointAtLocalZ(parGeo->GetMylar2().Z());
-            
-            if (GlobalPar::GetPar()->IncludeTG()) {
-               Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
-               posZtg = fpFootGeo->FromGlobalToBMLocal(TVector3(0, 0, posZtg)).Z();
-               A1 = track->PointAtLocalZ(posZtg);
-            }
-            
-            TVector3 A0G = fpFootGeo->FromBMLocalToGlobal(A0);
-            TVector3 A1G = fpFootGeo->FromBMLocalToGlobal(A1);
-            
-            x  = A0G(0); y  = A0G(1); z  = A0G(2);
-            x1 = A1G(0); y1 = A1G(1); z1 = A1G(2);
-            
-            Int_t nHits = track->GetNhit();
-            // inverse view ??
-            fBmTrackDisplay->AddTracklet(nHits*100, y, x, z, y1, x1, z1);
-            fBmTrackDisplay->TrackId(track);
-            
-         } // end loop on tracks
-         
-      } // nTracks > 0
       fBmTrackDisplay->RefitPlex();
    }
    
@@ -1018,33 +1013,32 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       
       TAIRntuTrack* pNtuTrack = fReco->GetNtuTrackIr();
       
-      if( pNtuTrack->GetTracksN() > 0 ) {
-         for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
-            fIrTrackDisplay->AddNewTrack();
-            
-            TAIRtrack* track = pNtuTrack->GetTrack(iTrack);
-            TVector3 posG(0, 0, 0);
-            
-            posG  = track->Intersection(0);
-            x = posG(0); y = posG(1); z = posG(2);
-            
-            
-            if (GlobalPar::GetPar()->IncludeTW()) {
-               Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
-               posG = track->Intersection(posZtw);
-            } else {
-               posG  = track->Intersection(posLastPlane);
-            }
-            
-            x1 = posG(0); y1 = posG(1); z1 = posG(2);
-            
-            Float_t nPix = track->GetMeanPixelsN();
-            fIrTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
-            fIrTrackDisplay->TrackId(track);
-            
-         } // end loop on tracks
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         fIrTrackDisplay->AddNewTrack();
          
-      } // nTracks > 0
+         TAIRtrack* track = pNtuTrack->GetTrack(iTrack);
+         TVector3 posG(0, 0, 0);
+         
+         posG  = track->Intersection(0);
+         x = posG(0); y = posG(1); z = posG(2);
+         
+         
+         if (GlobalPar::GetPar()->IncludeTW()) {
+            Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+            posG = track->Intersection(posZtw);
+         } else {
+            posG  = track->Intersection(posLastPlane);
+         }
+         
+         x1 = posG(0); y1 = posG(1); z1 = posG(2);
+         
+         Float_t nPix = track->GetMeanPixelsN();
+         fIrTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
+         fIrTrackDisplay->TrackId(track);
+         
+      } // end loop on tracks
+         
+
       fIrTrackDisplay->RefitPlex();
    }
 }
