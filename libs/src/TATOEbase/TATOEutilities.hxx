@@ -513,7 +513,11 @@ struct particle_properties
     double momentum;
    // double track_slope;
    // double track_slope_error;
-    TATWpoint const * data;
+    double light_ion_boost{1};
+    
+    std::vector<TATWpoint const * > end_point_ch;
+    std::vector<TATWpoint const * > const & get_end_points() const { return end_point_ch; }
+    std::vector<TATWpoint const * > & get_end_points() { return end_point_ch; }
 };
 
 
