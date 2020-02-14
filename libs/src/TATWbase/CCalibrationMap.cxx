@@ -20,9 +20,9 @@ void CCalibrationMap::LoadCalibrationMap(std::string FileName, int verbose)
 	x.ReadFile(FileName);
 	std::vector<XMLNodePointer_t> BarVector;
 	BarVector=x.GetChildNodesByName(x.GetMainNode(),"BAR");
-	Message::DisplayMessageWithEmphasys(" Calibration ");
-	Message::DisplayMessage(" Description: "+x.GetContentAsString("DESCRIPTION",x.GetMainNode()));
-	Message::DisplayMessage(" Creation date: "+x.GetContentAsString("DATE",x.GetMainNode()));
+	Message::DisplayMessageWithEmphasys(" Calibration ", std::cout,verbose);
+	Message::DisplayMessage(" Description: "+x.GetContentAsString("DESCRIPTION",x.GetMainNode()), std::cout,verbose);
+	Message::DisplayMessage(" Creation date: "+x.GetContentAsString("DATE",x.GetMainNode()), std::cout,verbose);
 	for (std::vector<XMLNodePointer_t>::iterator it=BarVector.begin();it!=BarVector.end();++it)
 	{
 		TBarId BarId=x.GetContentAsInt("BAR_ID",*it);
