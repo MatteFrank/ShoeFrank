@@ -555,9 +555,26 @@ void TAEDbaseInterface::NextEvent()
 void TAEDbaseInterface::ToggleDetector(Int_t id)
 {
    const Char_t* name = fDetectorMenu->GetSelectedEntry()->GetTitle();   
-   TGeoVolume* vol =  gGeoManager->FindVolumeFast(name);
+   TGeoVolume* vol    = gGeoManager->FindVolumeFast(name);
    
-   if (vol) {
+   TString wName(name);
+   if (wName.Contains("ALL")) {
+      vol =  gGeoManager->FindVolumeFast(fWorldName.Data());
+      
+      Int_t nd = vol->GetNdaughters();
+      for (Int_t i = 0; i < nd; ++i) {
+         TGeoNode* node = vol->GetNode(i);
+         TGeoVolume* volD = node->GetVolume();
+         
+         volD->InvisibleAll(false);
+         if (volD->GetNdaughters() != 0)
+            volD->SetVisibility(false);
+      }
+      
+      for (Int_t i = 0; i < fDetectorMenu->GetNumberOfEntries(); ++i)
+         fDetectorStatus[i] = true;
+      
+   } else if (vol) {
       if (fDetectorStatus[id] ) {
          vol->InvisibleAll();
          fDetectorStatus[id] = false;
