@@ -9,7 +9,7 @@ CCalibrationMap::CCalibrationMap(): _CalibrationMapIsOk(false)
 
 }
 
-void CCalibrationMap::LoadCalibrationMap(std::string FileName)
+void CCalibrationMap::LoadCalibrationMap(std::string FileName, int verbose)
 {
 	if (gSystem->AccessPathName(FileName.c_str()))
 	{
@@ -35,7 +35,7 @@ void CCalibrationMap::LoadCalibrationMap(std::string FileName)
 		}
 		_CalibrationMap[BarId].push_back(p0);
 		_CalibrationMap[BarId].push_back(p1);
-		Message::DisplayMessage(TString::Format("BAR_ID %d  par0 %f par1 %f ",BarId,p0,p1));
+		Message::DisplayMessage(TString::Format("BAR_ID %d  par0 %f par1 %f ",BarId,p0,p1),std::cout,verbose);
 	}
 }
 

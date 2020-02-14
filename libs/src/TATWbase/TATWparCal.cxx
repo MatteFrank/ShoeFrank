@@ -5,7 +5,7 @@
  */
 
 #include <Riostream.h>
-
+#include "GlobalPar.hxx"
 #include "TATWparCal.hxx"
 
 //##############################################################################
@@ -40,13 +40,16 @@ TATWparCal::~TATWparCal()
 //------------------------------------------+-----------------------------------
 Bool_t TATWparCal::FromFile(const TString& name) 
 {
-
-
 	Clear();
 
 	TString name_exp = name;
 	gSystem->ExpandPathName(name_exp);
-	cMapCal->LoadCalibrationMap(name_exp.Data());
+   int verbose = 0;
+   
+   if (FootDebugLevel(1))
+      verbose = 1;
+   
+	cMapCal->LoadCalibrationMap(name_exp.Data(), verbose);
 	//   // Reading calibration file
 	//   TString nameExp;
 	//

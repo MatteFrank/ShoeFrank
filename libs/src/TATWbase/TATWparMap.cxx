@@ -11,6 +11,7 @@
 #include "TSystem.h"
 #include "TString.h"
 
+#include "GlobalPar.hxx"
 #include "TATWparMap.hxx"
 
 //##############################################################################
@@ -60,7 +61,11 @@ Bool_t TATWparMap::FromFile(const TString& name) {
   
   TString name_exp = name;
   gSystem->ExpandPathName(name_exp);
-  cMap->LoadChannelMap(name_exp.Data(),1);
+   Int_t verbose = 0;
+   
+   if (FootDebugLevel(1))
+      verbose = 1;
+  cMap->LoadChannelMap(name_exp.Data(),verbose);
   /*
   char bufConf[1024];
   int myArg1(0), myArg2(0), myArg3(0), myArg4(0), myArg5(0), myArg6(0); 
