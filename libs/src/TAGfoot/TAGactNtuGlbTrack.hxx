@@ -31,6 +31,7 @@ public:
                                TAGdataDsc* p_msdclus  = 0,
                                TAGdataDsc* p_twpoint  = 0,
                                TAGdataDsc* p_glbtrack = 0,
+                               TAGparaDsc* p_geoG     = 0,
                                TAGparaDsc* p_geodi    = 0,
                                TAGparaDsc* p_geoVtx   = 0,
                                TAGparaDsc* p_geoItr   = 0,
@@ -72,6 +73,7 @@ private:
    TAGdataDsc*       fpMsdClus;		   // MSD clusters
    TAGdataDsc*       fpTwPoint;		   // TOF points, should be cluster
    TAGdataDsc*       fpGlbTrack;		   // global tracks
+   TAGparaDsc*       fpGGeoMap;
    TAGparaDsc*       fpDiGeoMap;       // par geo for dipole
    TAGparaDsc*       fpVtxGeoMap;      // par geo for vertex
    TAGparaDsc*       fpItrGeoMap;      // par geo for inner tracker

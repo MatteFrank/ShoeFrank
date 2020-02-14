@@ -492,6 +492,7 @@ void BaseReco::CreateRecActionGlb()
                                            fpNtuClusMsd,
                                            fpNtuRecTw,
                                            fpNtuGlbTrack,
+                                           fpParGeoG,
                                            fpParGeoDi,
                                            fpParGeoVtx,
                                            fpParGeoIt,
