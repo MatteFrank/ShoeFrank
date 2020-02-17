@@ -1,6 +1,7 @@
 #ifndef _TATWdigitizer_HXX
 #define _TATWdigitizer_HXX
 
+#include <map>
 #include "TAGbaseDigitizer.hxx"
 
 #include "TATWntuRaw.hxx"
@@ -14,6 +15,7 @@
  */
 /*------------------------------------------+---------------------------------*/
 
+using namespace std;
 
 class TF1;
 // --------------------------------------------------------------------------------------
@@ -43,13 +45,14 @@ public:
    Float_t        GetTofLeft(Float_t pos, Float_t time, Float_t edep);
    Float_t        GetTofRight(Float_t pos, Float_t time, Float_t edep);
    
-   void           SetGain(Float_t g)   { fGain = g; }
+   void           SetGain(Float_t g)   { fGain = g;          }
    TATWntuHit*    GetCurrentHit()      { return fCurrentHit; }
-
+ 
+   void           ClearMap()           { fMap.clear();       }
    
 private:
    TATWntuRaw*   fpNtuRaw;
-   TATWntuHit*     fCurrentHit;
+   TATWntuHit*   fCurrentHit;
    TATWparGeo*   fpParGeo;
    
    // deltaE
@@ -91,6 +94,9 @@ private:
    // misc
    Float_t       fSlatLength;
    Float_t       fGain;
+   
+   map<int, TATWntuHit*> fMap; //! map for pilepup
+   
    
 private:
    static       Float_t fgHfactor; // happy factor for edep

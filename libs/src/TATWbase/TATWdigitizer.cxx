@@ -41,6 +41,7 @@ Float_t TATWdigitizer::fgHfactor = 1.45;
 TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
+   fCurrentHit(0x0),
    fDeResECst(680e4),
    fDeErrResCst(1e4),
    fDeResEC(9.9),
@@ -72,6 +73,8 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
    fpParGeo = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
 
    fSlatLength = fpParGeo->GetBarDimension().Z();
+   
+   fMap.clear();
 }
 
 // --------------------------------------------------------------------------------------
@@ -224,7 +227,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
       printf("asym %4.2f\n", fDeAttAsymSmear);
       printf("edep %f\n", edep);
    }
-   
+   Int_t idA = id;
    Int_t view = -1;
    if (id < TATWparGeo::GetLayerOffset()) {
       pos = y0;
@@ -236,45 +239,72 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    }
 
    /*
-   Float_t energyL = GetDeAttLeft(pos, edep);
-   Float_t energyR = GetDeAttRight(pos, edep);
+   Float_t chargeA = GetDeAttLeft(pos, edep);
+   Float_t chargeB = GetDeAttRight(pos, edep);
    */
-   Float_t energyL = edep;
-   Float_t energyR = edep;
+   Float_t chargeA = edep;
+   Float_t chargeB = edep;
    
-   Float_t resEnergyL = GetResEnergy(energyL);
-   //   energyL += energyL*gRandom->Gaus(0, resEnergyL);
-   energyL += gRandom->Gaus(0, resEnergyL);
+   Float_t resChargeA = GetResEnergy(chargeA);
+   chargeA += gRandom->Gaus(0, resChargeA);
    
-   Float_t resEnergyR = GetResEnergy(energyR);
-   energyR += gRandom->Gaus(0, resEnergyR);
+   Float_t resChargeB = GetResEnergy(chargeB);
+   chargeB += gRandom->Gaus(0, resChargeB);
 
    if (fDebugLevel) {
       printf("pos %.1f\n", pos);
-      printf("energy %.1f %.1f\n", energyL, energyR);
-      printf("Res %.3f %.3f\n", resEnergyL*100, resEnergyR*100);
+      printf("energy %.1f %.1f\n", chargeA, chargeB);
+      printf("Res %.3f %.3f\n", resChargeA*100, resChargeB*100);
    }
    
    // time resolution
-   Float_t timeL = GetTofLeft(pos, time, edep);
-   Float_t timeR = GetTofRight(pos, time, edep);
+   Float_t timeA = GetTofLeft(pos, time, edep);
+   Float_t timeB = GetTofRight(pos, time, edep);
    
    if (fDebugLevel) {
       printf("time %.1f\n", time);
-      printf("time %.1f %.1f\n", timeL, timeR);
+      printf("time %.1f %.1f\n", timeA, timeB);
    }
    
-   Double_t tof = (timeL+timeR)/2.;
-   Double_t energy = (energyL+energyR)/2.;
+   Double_t tof = (timeA+timeB)/2.;
+   Double_t energy = TMath::Sqrt(chargeA*chargeB);
    if(energy<0) 
      cout<<"--> "<<energy<<endl;
-   pos = (timeR-timeL)/fTofPropAlpha;
+   pos = (timeB-timeA)/fTofPropAlpha;
    
+   Double_t chargeCOM = TMath::Log(chargeA/chargeB);
+
    // no threshold ??
    //Time should be stored in ns
-   tof /= 1000.;
-   fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, pos, 0 ,0 ,0 ,0 ,0); // save time in ns, Class TATW_Hit not compatible with real data)
-   fCurrentHit->SetChargeZ(Z);
+   tof /= 1000.; // to be changed
+   if (fMap[idA] == 0) {
+      fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeB); // timeA/B is ps, and tof in ns !
+      fCurrentHit->SetChargeZ(Z);
+      fMap[idA] = fCurrentHit;
+   } else {
+      fCurrentHit =  fMap[idA];
+      //Add charge to current hit
+      fCurrentHit->SetChargeChA(fCurrentHit->GetChargeChA()+chargeA);
+      fCurrentHit->SetChargeChB(fCurrentHit->GetChargeChB()+chargeB);
+
+      // take the shortest time
+      if (timeA < fCurrentHit->GetChargeTimeA())
+         fCurrentHit->SetChargeTimeA(timeA);
+         
+      if (timeB < fCurrentHit->GetChargeTimeB())
+         fCurrentHit->SetChargeTimeB(timeB);
+      
+      // recompute 
+      energy    = TMath::Sqrt(fCurrentHit->GetChargeChA()*fCurrentHit->GetChargeChB());
+      tof       = (fCurrentHit->GetChargeTimeA()+fCurrentHit->GetChargeTimeB())/2000.;
+      pos       = (fCurrentHit->GetChargeTimeB()-fCurrentHit->GetChargeTimeA())/fTofPropAlpha;
+      chargeCOM = TMath::Log(fCurrentHit->GetChargeChA()/fCurrentHit->GetChargeChB());
+      
+      fCurrentHit->SetEnergyLoss(energy);
+      fCurrentHit->SetTime(tof);
+      fCurrentHit->SetPosition(pos);
+      fCurrentHit->SetCOM(chargeCOM);
+   }
    
    return true;
 }
