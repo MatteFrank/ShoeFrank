@@ -27,7 +27,7 @@ void GlobalTrackingStudies::Execute() {
 
 	vector<int> genParticleID_vec;
 	vector<int> nPixels_vec;
-	TVector3 lastVTclust_pos(0,0,0); 
+	TVector3 lastVTclust_pos(0,0,0);
 	float mass;
 	float charge;
 
@@ -47,7 +47,7 @@ void GlobalTrackingStudies::Execute() {
 
 			TAVTcluster* clus = (TAVTcluster*) track->GetCluster( i );
 			if (!clus->IsValid()) continue;
-			
+
 			TAMCeveTrack* genParticle;
 
 			// if just one particle producing clusters
@@ -68,7 +68,7 @@ void GlobalTrackingStudies::Execute() {
 			mass = genParticle->GetMass();
 			charge = genParticle->GetCharge();
 			if ( lastVTclust_pos.z() < geoTrafo->FromVTLocalToGlobal( clus->GetPositionG() ).z() )
-				lastVTclust_pos = geoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
+			lastVTclust_pos = geoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
 
 			nPixels_vec.push_back( clus->GetPixelsN() );
 			meanPixPerCluster += clus->GetPixelsN();
@@ -84,8 +84,8 @@ void GlobalTrackingStudies::Execute() {
 			nPixels_vec.clear();
 			continue;
 		}
-		
-		// Evaluating MC cluster status code flag 
+
+		// Evaluating MC cluster status code flag
 		int even=0; int odd=0;
 		for (auto j=0; j<genParticleID_vec.size()-1; j++ ) {
 			if ( genParticleID_vec.at(j) != genParticleID_vec.at(j+1) ) 	odd++;
@@ -98,7 +98,7 @@ void GlobalTrackingStudies::Execute() {
 		else 									cout << "Error" << endl, exit(0);
 		m_histo_mcGoodTrk->Fill( mcStustFlag );
 
-		// evaluating mean cluster size 
+		// evaluating mean cluster size
 		meanPixPerCluster = meanPixPerCluster * (1./ncluster);
 		if ( m_histo_MeanNPix_inClusPerTrk.find( charge ) == m_histo_MeanNPix_inClusPerTrk.end() ) {
 			string name = "MeanNPix_ch" + build_string( charge );
@@ -106,44 +106,44 @@ void GlobalTrackingStudies::Execute() {
 		}
 		m_histo_MeanNPix_inClusPerTrk[ charge ]->Fill( meanPixPerCluster );
 
-		// find the maximum difference in number of clusters 
+		// find the maximum difference in number of clusters
 		int maxDeltaPix = 0;
 		for (auto j=0; j<nPixels_vec.size(); j++ ) {
 			for (auto k=0; k<nPixels_vec.size(); k++ ) {
 				if ( maxDeltaPix < abs(nPixels_vec[j] - nPixels_vec[k]) )	maxDeltaPix = abs(nPixels_vec[j] - nPixels_vec[k]);
 			}
 		}
-		
+
 		if ( m_histo_MaxDeltaNPix_inClusPerTrk.find( charge ) == m_histo_MaxDeltaNPix_inClusPerTrk.end() ) {
 			string name = "MaxDeltaNPix" + build_string( charge );
 			m_histo_MaxDeltaNPix_inClusPerTrk[ charge ] = new TH1F( name.c_str(), name.c_str(), 40 , -0.5, 39.5 );
 		}
 		m_histo_MaxDeltaNPix_inClusPerTrk[ charge ]->Fill( maxDeltaPix );
 
-		
+
 
 
 
 		// propagating the track
 		if (mcStustFlag) {
 
-			TVector3 extrapPos_front( 
-								track->GetSlopeZ().X() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(0) ).Z() + lastVTclust_pos.X(),
-								track->GetSlopeZ().Y() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(0) ).Z() + lastVTclust_pos.Y(),
-								geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(0) ).z()
-								 );
-			TVector3 extrapPos_rear( 
-								track->GetSlopeZ().X() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(4) ).Z() + lastVTclust_pos.X(),
-								track->GetSlopeZ().Y() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(4) ).Z() + lastVTclust_pos.Y(),
-								geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(4) ).Z()
-								 );
+			TVector3 extrapPos_front(
+				track->GetSlopeZ().X() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(0) ).Z() + lastVTclust_pos.X(),
+				track->GetSlopeZ().Y() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(0) ).Z() + lastVTclust_pos.Y(),
+				geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(0) ).z()
+			);
+			TVector3 extrapPos_rear(
+				track->GetSlopeZ().X() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(4) ).Z() + lastVTclust_pos.X(),
+				track->GetSlopeZ().Y() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(4) ).Z() + lastVTclust_pos.Y(),
+				geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(4) ).Z()
+			);
 			// newX_retro = track->GetSlopeZ.X() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(0) ).Print(); + lastVT.X();
 			// newX = track->GetSlopeZ.X() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(0) ).Print(); + lastVT.X();
 			// newY = track->GetSlopeZ.Y() * 16.88 + lastVT.Y();
 
 			TAITntuCluster* itclus = (TAITntuCluster*) gTAGroot->FindDataDsc("itClus","TAITntuCluster")->Object();
 			TAMCntuHit* itMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("itMc", "TAMCntuHit")->Object();
-			
+
 			TVector3 sameParticleHitPos (0,0,0);
 			TVector3 deltaPos (0,0,0);
 			Int_t nPlanes = itGeo->GetSensorsN();
@@ -152,21 +152,21 @@ void GlobalTrackingStudies::Execute() {
 				for(Int_t iClus = 0; iClus < nclus; ++iClus){
 					TAITcluster* clus = itclus->GetCluster(iPlane, iClus);
 					// TVector3 itCluster = geoTrafo->FromITLocalToGlobal( clus->GetPositionG() );
-					
+
 					// TAMCeveTrack* genParticle = eve->GetHit( clus->GetMcTrackIdx(0) );
 					if ( clus->GetMcTrackIdx(0) != genParticleID_vec[0] )	continue;
 
 					int nHits = clus->GetPixelsN();
 					for (Int_t jHit = 0; jHit < nHits; ++jHit) {
-				      	TAITntuHit* hit = (TAITntuHit*)clus->GetPixel(jHit);
-				      	for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
+						TAITntuHit* hit = (TAITntuHit*)clus->GetPixel(jHit);
+						for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
 							Int_t idx = hit->GetMcIndex(k);
 							TAMChit* mcHit = itMc->GetHit(idx);
 							sameParticleHitPos = ( mcHit->GetInPosition() + mcHit->GetOutPosition() ) * 0.5 ;
-							if ( fabs(sameParticleHitPos.z() - extrapPos_front.z()) < fabs(sameParticleHitPos.z() - extrapPos_rear.z()) )	
-								deltaPos = sameParticleHitPos - extrapPos_front;
-							else 
-								deltaPos = sameParticleHitPos - extrapPos_rear;
+							if ( fabs(sameParticleHitPos.z() - extrapPos_front.z()) < fabs(sameParticleHitPos.z() - extrapPos_rear.z()) )
+							deltaPos = sameParticleHitPos - extrapPos_front;
+							else
+							deltaPos = sameParticleHitPos - extrapPos_rear;
 						}
 					}
 
@@ -211,7 +211,7 @@ void GlobalTrackingStudies::InitHistos() {
 
 	m_histo_nClusXTrk = new TH1F( "nClusXTrk", "nClusXTrk", 7, -1.5, 5.5 );
 	m_histo_mcGoodTrk = new TH1F( "mcGoodTrk", "mcGoodTrk", 4, -0.5, 3.5 );
-	
+
 }
 
 
@@ -222,7 +222,7 @@ void GlobalTrackingStudies::Finalize() {
 	system(("mkdir "+pathName).c_str());
 
 	TCanvas* mirror = new TCanvas("GTstudy", "GTstudy", 800, 800);
-	
+
 	m_histo_nClusXTrk->GetXaxis()->SetTitle("nCluster");
 	m_histo_nClusXTrk->Draw();
 	mirror->SaveAs(( pathName+"/"+"nClusXTrk.png").c_str());
@@ -276,31 +276,3 @@ void GlobalTrackingStudies::Finalize() {
 	cout << "-------------------------------------------------------------" << endl << endl << endl;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

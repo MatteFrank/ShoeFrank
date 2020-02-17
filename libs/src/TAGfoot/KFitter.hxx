@@ -40,6 +40,7 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TF1.h>
+#include <TGraphErrors.h>
 
 #include <TRandom3.h>
 
@@ -176,6 +177,14 @@ public:
   int UploadClusIT();
   int UploadClusMSD();
 
+  void NaiveTrackFinding();
+  vector< vector<int> > MSDTrackFinding( vector<TAMSDpoint*> MSDcollection );
+  vector<bool> MSDTrackFindingNew(vector<TAMSDpoint*> MSDcollection);
+  void Prepare4MSDTrackFinding(vector<TAMSDpoint*> MSDcollection);
+  void EvaluateTrueTrackParameters(vector<AbsMeasurement*> MSDtrue);
+
+  void CreateDetectorPlanes();
+
 
   void Finalize();	// save control plot and calculate resolutions
 
@@ -255,13 +264,11 @@ private:
 
   vector<TAMSDpoint*> m_MSD_pointCollection;
 
-  vector<TVector3> m_MSD_posVectorSmearedHit;
-  vector<TVector3> m_MSD_momVectorSmearedHit;
-  vector<double> m_MSD_mass;
+  // vector<TVector3> m_MSD_posVectorSmearedHit;
+  // vector<TVector3> m_MSD_momVectorSmearedHit;
+  // vector<double> m_MSD_mass;
 
-  // kept as std pointer just to remember how to correctely delete and free resources iwth them
-  // correctely freed
-  // vector<AbsMeasurement*> m_hitCollectionToFit;
+
   map <string, vector<AbsMeasurement*> > m_hitCollectionToFit;
   map <int, vector<AbsMeasurement*> > m_hitCollectionToFit_dataLike;
   vector<AbsMeasurement*> m_allHitsInMeasurementFormat;
@@ -299,6 +306,18 @@ private:
   bool m_recolike1;
 
   TAGgeoTrafo* m_GeoTrafo;
+
+  map<int, genfit::SharedPlanePtr> m_detectorPlanes;
+
+  //temporary placeholder for trackfinding histos and graphs
+  vector<TGraph*> zxGraph;
+  vector<TGraph*> zyGraph;
+  TGraphErrors* graphErrorX;
+  vector<TH2F*> houghH;
+  TGraphErrors* graphErrorY;
+  TH2D* histoTrackParamX;
+  TH2D* histoTrackParamY;
+
 
 
 };
