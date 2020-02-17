@@ -123,6 +123,7 @@ void TAVTactNtuMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
    TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
    
    RawMcHit_t mcHit;
+   fMap.clear();
    
    if(FootDebugLevel(1))
    Info("TAVTactNtuMC::Action()", "start  -->  VTn : %d  ", fpEvtStr->VTXn);
@@ -131,8 +132,11 @@ void TAVTactNtuMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
    for (Int_t i = 0; i < fpEvtStr->VTXn; i++) {
       if(FootDebugLevel(1))    cout<< endl << "FLUKA id =   " << fpEvtStr->TRfx[i] << "  "<< fpEvtStr->TRfy[i] << "  "<< fpEvtStr->TRfz[i] << endl;
       
-      Int_t sensorId = fpEvtStr->VTXilay[i];
-      
+      TVector3 posIn(fpEvtStr->VTXxin[i], fpEvtStr->VTXyin[i], fpEvtStr->VTXzin[i]);
+      TVector3 posOut(fpEvtStr->VTXxout[i], fpEvtStr->VTXyout[i], fpEvtStr->VTXzout[i]);
+      Int_t sensorId   = fpEvtStr->VTXilay[i];
+      Int_t genPartIdx = fpEvtStr->VTXid[i] - 1;
+
       // used for pileup ...
       if (fgPileup && storedEvents <= fgPileupEventsN) {
          mcHit.id  = sensorId;
@@ -145,14 +149,9 @@ void TAVTactNtuMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
       }
       
       // Digitizing
-      //      don't change anything ?
-      //      Int_t genPartID = fpEvtStr->VTXid[i] - 1;
-      //      if (fpEvtStr->TRcha[genPartID] < 1) continue;
-      TVector3 posIn(fpEvtStr->VTXxin[i], fpEvtStr->VTXyin[i], fpEvtStr->VTXzin[i]);
-      TVector3 posOut(fpEvtStr->VTXxout[i], fpEvtStr->VTXyout[i], fpEvtStr->VTXzout[i]);
       posIn = pGeoMap->Detector2Sensor(sensorId, posIn);
       posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
-      Int_t genPartIdx = fpEvtStr->VTXid[i] - 1;      
+      
       DigitizeHit(sensorId, fpEvtStr->VTXde[i], posIn, posOut, i, genPartIdx);
    }
 }
@@ -164,6 +163,7 @@ void TAVTactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents
    TAMCntuHit* pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
 
    RawMcHit_t mcHit;
+   fMap.clear();
    
    if(FootDebugLevel(1))
       Info("TAVTactNtuMC::Action()", "start  -->  VTn : %d  ", pNtuMC->GetHitsN());
@@ -232,7 +232,14 @@ void TAVTactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
 			int col  = it->first % nPixelX;
          
          Double_t value = digiMap[it->first];
-			TAVTntuHit* pixel = (TAVTntuHit*)pNtuRaw->NewPixel(sensorId, value, line, col);
+         TAVTntuHit* pixel = 0x0;
+         pair<int, int> p(sensorId, it->first);
+         
+         if (fMap[p] == 0x0) {
+            pixel = (TAVTntuHit*)pNtuRaw->NewPixel(sensorId, value, line, col);
+            fMap[p] = pixel;
+         } else
+            pixel = fMap[p];
 
          pixel->AddMcTrackIdx(trackIdx, hitId);
 

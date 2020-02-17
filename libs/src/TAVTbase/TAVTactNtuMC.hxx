@@ -6,7 +6,7 @@
  \brief   Declaration of TAVTactNtuMC.
  */
 /*------------------------------------------+---------------------------------*/
-
+#include <map>
 #include "TVector3.h"
 
 #include "Evento.hxx"
@@ -42,7 +42,8 @@ public:
 
 private:
    TAGdataDsc*    fpNtuMC;          // input data dsc
-   TAGdataDsc*    fpNtuRaw;          // output data dsc
+   TAGdataDsc*    fpNtuRaw;         // output data dsc
+   map<pair<int, int>, TAVTntuHit*> fMap;     //! map for pilepup
 
 private:
    void           FillNoise(Int_t sensorId) ;

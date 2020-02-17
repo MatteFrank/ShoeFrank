@@ -22,9 +22,6 @@ class TAITntuRaw;
 
 class TAITactNtuMC : public TAVTactBaseNtuMC {
 
-// class TAVTbaseDigitizerg;
-// class TAVTntuHit;
-
 public:
    explicit TAITactNtuMC(const char* name=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap = 0, EVENT_STRUCT* evtStr=0);
    explicit TAITactNtuMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0);
@@ -40,7 +37,8 @@ public:
    
 private:
    TAGdataDsc*    fpNtuMC;          // input data dsc
-   TAGdataDsc*    fpNtuRaw;		    // output data dsc
+   TAGdataDsc*    fpNtuRaw;		   // output data dsc
+   map<pair<int,int>, TAITntuHit*> fMap;      //! map for pilepup
 
 private:
    void           FillNoise(Int_t sensorId) ;
