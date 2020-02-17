@@ -1,6 +1,7 @@
 #ifndef _TACAdigitizer_HXX
 #define _TACAdigitizer_HXX
 
+#include <map>
 #include "TAGbaseDigitizer.hxx"
 
 #include "TACAntuRaw.hxx"
@@ -8,7 +9,7 @@
 class TF1;
 class TACAntuRaw;
 class TACAntuHit;
-
+using namespace std;
 // --------------------------------------------------------------------------------------
 class TACAdigitizer : public TAGbaseDigitizer {
    
@@ -29,12 +30,15 @@ public:
    void           SetGain(Float_t g)   { fGain = g;          }
 
    TACAntuHit*    GetCurrentHit()      { return fCurrentHit; }
-   
+   void           ClearMap()           { fMap.clear();       }
+
 private:
    TACAntuRaw*   fpNtuRaw;
    TF1*          fFuncBirks;
    Float_t       fGain;
    TACAntuHit*   fCurrentHit;
+
+   map<int, TACAntuHit*> fMap; //! map for pilepup
 
 };
 #endif
