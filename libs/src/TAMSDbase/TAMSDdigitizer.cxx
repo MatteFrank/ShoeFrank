@@ -174,7 +174,10 @@ void TAMSDdigitizer::FillMap(Int_t strip, Double_t value)
 {
   if (strip < 0) return;
   
-  fMap[strip] = value;
+   if (fMap[strip] < 0.0001)
+      fMap[strip] = value;
+   else
+      fMap[strip] = fMap[strip]+value;
 }
 
 //_____________________________________________________________________________

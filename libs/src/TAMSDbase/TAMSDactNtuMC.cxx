@@ -122,6 +122,7 @@ bool TAMSDactNtuMC::Action()
    TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
 	TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
 	pNtuRaw->Clear();
+   fMap.clear();
    
 	// Loop over all MC hits
 	for (Int_t i = 0; i < fpEvtStr->MSDn; i++) {
@@ -174,8 +175,14 @@ void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
       count++;
       int stripId = it->first;
       
-      TAMSDntuHit* strip = (TAMSDntuHit*)pNtuRaw->NewStrip(sensorId, digiMap[it->first], view, stripId);
-      
+       TAMSDntuHit* strip  = 0x0;
+       
+       if (fMap[stripId] == 0) {
+          strip = (TAMSDntuHit*)pNtuRaw->NewStrip(sensorId, digiMap[stripId], view, stripId);
+          fMap[stripId] = strip;
+       } else
+          strip = fMap[stripId];
+       
       Int_t genPartID = fpEvtStr->MSDid[hitId] - 1;
       strip->AddMcTrackIdx(genPartID, hitId);
       
@@ -189,7 +196,7 @@ void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
       if (ValidHistogram()) {
          fpHisStripMap[sensorId]->Fill(stripId);
          fpHisPosMap[sensorId]->Fill(pos);
-         fpHisAdc[sensorId]->Fill(stripId, digiMap[it->first]);
+         fpHisAdc[sensorId]->Fill(stripId, digiMap[stripId]);
       }
     }
   }
