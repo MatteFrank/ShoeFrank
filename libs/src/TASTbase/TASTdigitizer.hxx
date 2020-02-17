@@ -1,12 +1,13 @@
 #ifndef _TASTdigitizer_HXX
 #define _TASTdigitizer_HXX
 
+#include <map>
 #include "TAGbaseDigitizer.hxx"
 
 #include "TASTntuRaw.hxx"
 
 class TF1;
-
+using namespace std;
 // --------------------------------------------------------------------------------------
 class TASTdigitizer : public TAGbaseDigitizer {
    
@@ -29,9 +30,9 @@ public:
    void           SetResTime(Float_t r) { fResTime = r;       }
 
    TASTntuHit*    GetCurrentHit()       { return fCurrentHit; }
+   void           ClearMap()            { fMap.clear();       }
 
-
-  ClassDef(TASTdigitizer,1)
+  ClassDef(TASTdigitizer,2)
   
 private:
    TASTntuRaw*   fpNtuRaw;
@@ -39,6 +40,8 @@ private:
    Float_t       fGain;
    Float_t       fResTime;
    TASTntuHit*   fCurrentHit;
+
+   map<int, TASTntuHit*> fMap; //! map for pilepup
 
 };
 #endif
