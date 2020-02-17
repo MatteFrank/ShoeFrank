@@ -176,12 +176,13 @@ void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
       int stripId = it->first;
       
        TAMSDntuHit* strip  = 0x0;
-       
-       if (fMap[stripId] == 0) {
+       pair<int, int> p(sensorId, stripId);
+
+       if (fMap[p] == 0) {
           strip = (TAMSDntuHit*)pNtuRaw->NewStrip(sensorId, digiMap[stripId], view, stripId);
-          fMap[stripId] = strip;
+          fMap[p] = strip;
        } else
-          strip = fMap[stripId];
+          strip = fMap[p];
        
       Int_t genPartID = fpEvtStr->MSDid[hitId] - 1;
       strip->AddMcTrackIdx(genPartID, hitId);
