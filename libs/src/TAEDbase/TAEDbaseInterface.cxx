@@ -597,11 +597,10 @@ void TAEDbaseInterface::ToggleCamera(Int_t id)
 
    TEveViewer *ev = gEve->GetDefaultViewer();
    TGLViewer  *gv = ev->GetGLViewer();
-   gv->CurrentCamera().SetExternalCenter(true);
-
+   
    TString wName(name);
    if (wName.Contains(fWorldName.Data())) {
-      gv->CurrentCamera().SetCenterVec(0, 0, fWorldSizeZ/2.);
+      gv->ResetCurrentCamera();
       return;
    }
       
