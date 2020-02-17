@@ -138,8 +138,7 @@ Bool_t TATWactNtuPoint::FindPoints()
       }
       
       if (best) {
-         TATWntuHit* hitmin = pNtuHit->GetHit(minId, 1);
-
+         TATWntuHit* hitmin = pNtuHit->GetHit(minId, layer2);
          if(!hitmin) continue;
 	 
          Int_t bar2   = hitmin->GetBar();
