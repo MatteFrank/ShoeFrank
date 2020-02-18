@@ -63,9 +63,9 @@ TAVTactBaseNtuVertex::TAVTactBaseNtuVertex(const char* name,
    TVector3 posMin(0,0, fMinZ);
    TVector3 posMax(0,0, fMaxZ);
    
-   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   posMin = geoTrafo->FromGlobalToVTLocal(posMin);
-   posMax = geoTrafo->FromGlobalToVTLocal(posMax);
+   fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   posMin = fpFootGeo->FromGlobalToVTLocal(posMin);
+   posMax = fpFootGeo->FromGlobalToVTLocal(posMax);
    
    fMinZ = posMin[2];
    fMaxZ = posMax[2];
@@ -84,11 +84,10 @@ void TAVTactBaseNtuVertex::CreateHistogram()
    DeleteHistogram();   
    TAVTparGeo* pGeoMap   = (TAVTparGeo*) fpGeoMap->Object();
    TAGparGeo* pGeoMapG   = (TAGparGeo*) fpGeoMapG->Object();
-   TAGgeoTrafo* pFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
    
-   Float_t liml = -pGeoMapG->GetTargetPar().Size[2] - pFootGeo->GetVTCenter()[2];
-   Float_t limu =  pGeoMapG->GetTargetPar().Size[2] - pFootGeo->GetVTCenter()[2];
+   Float_t liml = -pGeoMapG->GetTargetPar().Size[2] - fpFootGeo->GetVTCenter()[2];
+   Float_t limu =  pGeoMapG->GetTargetPar().Size[2] - fpFootGeo->GetVTCenter()[2];
    
    fpHisPosZ = new TH1F("vtVtxPosZ", "Vertex position at Z", 100, liml, limu);
    AddHistogram(fpHisPosZ);
@@ -184,9 +183,8 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
    TABMntuTrackTr* bmTrack = pBMtrack->Track(0);
    if (!bmTrack) return false;
    
-   TAGgeoTrafo* pFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-   if (!pFootGeo) return false;
+   if (!fpFootGeo) return false;
 	   
    TVector3 bestRes;
    Int_t    bestIdx = -1;
@@ -195,13 +193,13 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 	  TAVTvertex* vtx      = pNtuVertex->GetVertex(i);
       
 	  TVector3 vtxPosition = vtx->GetVertexPosition();
-	  vtxPosition  = pFootGeo->FromVTLocalToGlobal(vtxPosition);
+	  vtxPosition  = fpFootGeo->FromVTLocalToGlobal(vtxPosition);
 	  
-	  TVector3 bmPosition = pFootGeo->FromGlobalToBMLocal(vtxPosition);
+	  TVector3 bmPosition = fpFootGeo->FromGlobalToBMLocal(vtxPosition);
 	  vtxPosition *= TAGgeoTrafo::CmToMu();
 
 	  bmPosition  = bmTrack->PointAtLocalZ(bmPosition.Z());
-	  bmPosition  = pFootGeo->FromBMLocalToGlobal(bmPosition);
+	  bmPosition  = fpFootGeo->FromBMLocalToGlobal(bmPosition);
 	  bmPosition *= TAGgeoTrafo::CmToMu();
 	  
 	  TVector3 res = vtxPosition - bmPosition;
@@ -232,34 +230,29 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 
 
 //--------------------------------------------------------------
-//!Compute the point interaction of diffusion
+//!Compute the point interaction of diffusion (not used anymore)
 void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtrack lvtx)
 {
-   // retrieve trafo
-   TAGgeoTrafo* pFirstGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   
-   //prendiamo il punto A della retta del bm
+   //taking point A of the straight line of bm
    Double_t z = 0;
    Double_t DZ = 1;
-   TVector3 Apoint (lbm->PointAtLocalZ(z).X(), lbm->PointAtLocalZ(z).Y(),z); //coordinate del punto A appartenente alla retta del bm in Z = 0
-   Apoint  = pFirstGeo->FromBMLocalToGlobal(Apoint);
-   Apoint *= TAGgeoTrafo::CmToMu();
-   TVector3 Bpoint (lvtx.GetPoint(z).X(),lvtx.GetPoint(z).Y(),z); //coordinate del punto B appartenente alla retta del vtx in Z = 0
-   Bpoint  = pFirstGeo->FromVTLocalToGlobal(Bpoint*TAGgeoTrafo::MuToCm());
-   Bpoint *= TAGgeoTrafo::CmToMu();
-   
+   TVector3 Apoint (lbm->PointAtLocalZ(z).X(), lbm->PointAtLocalZ(z).Y(),z); //coordinates of point A belonging to the straight line of bm in Z = 0
+   Apoint  = fpFootGeo->FromBMLocalToGlobal(Apoint);
+
+   TVector3 Bpoint (lvtx.GetPoint(z).X(),lvtx.GetPoint(z).Y(),z); //coordinate of point B belonging to the straight line of vtx in Z = 0
+   Bpoint  = fpFootGeo->FromVTLocalToGlobal(Bpoint);
+
    TVector3 AmB = Apoint-Bpoint;
    
    TVector3 pSlopebm(lbm->GetPvers()[0]/lbm->GetPvers()[2], lbm->GetPvers()[1]/lbm->GetPvers()[2], 1);
-   TVector3 pDirbm  = pFirstGeo->VecFromBMLocalToGlobal(pSlopebm*DZ); //director parameter of bm line
-   TVector3 pDirvtx = pFirstGeo->VecFromVTLocalToGlobal(lvtx.GetSlopeZ()*DZ); //director parameter of vtx line
+   TVector3 pDirbm  = fpFootGeo->VecFromBMLocalToGlobal(pSlopebm*DZ); //director parameter of bm line
+   TVector3 pDirvtx = fpFootGeo->VecFromVTLocalToGlobal(lvtx.GetSlopeZ()*DZ); //director parameter of vtx line
    
    Double_t etaBm = pDirbm*pDirbm;
-   Double_t eta = pDirvtx*pDirvtx;
-   Double_t mix = pDirbm*pDirvtx;
-   Double_t Apar = AmB*pDirbm;
-   Double_t Bpar = AmB*pDirvtx;
-   
+   Double_t eta   = pDirvtx*pDirvtx;
+   Double_t mix   = pDirbm*pDirvtx;
+   Double_t Apar  = AmB*pDirbm;
+   Double_t Bpar  = AmB*pDirvtx;
    
    Double_t q = (Apar*mix-etaBm*Bpar)/(mix*mix - eta*etaBm);
    Double_t p = (-Apar+q*mix)/etaBm;
@@ -269,7 +262,7 @@ void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtra
    
    fVtxPos = (P+Q)*0.5;
    // Again in local frame of VTX
-   fVtxPos = pFirstGeo->FromGlobalToVTLocal(fVtxPos);
+   fVtxPos = fpFootGeo->FromGlobalToVTLocal(fVtxPos);
    
    if(FootDebugLevel(1))
 	  fVtxPos.Print();
@@ -282,14 +275,17 @@ Bool_t TAVTactBaseNtuVertex::SetNotValidVertex(Int_t idTk)
    TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
    //Crete a vertex
    TVector3 vtxPos(0,0,0);
+   TVector3 tgtPos(0,0,0);
    TAVTvertex* vtx = new TAVTvertex();
    vtx->SetVertexValidity(0);
    
-   //Attacchiamo la traccia idTk al vertice 
+   //Attached track idTk to vertex
    TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
    TAVTtrack*    track0    = pNtuTrack->GetTrack(idTk);
    
-   vtxPos = track0->Intersection(0);//Target center
+   tgtPos = fpFootGeo->FromGlobalToVTLocal(tgtPos);
+   
+   vtxPos = track0->Intersection(tgtPos.Z());//Target center
    vtx->SetVertexPosition(vtxPos);
    track0->SetValidity(-1);
    track0->SetPosVertex(vtxPos);

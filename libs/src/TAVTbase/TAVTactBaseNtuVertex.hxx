@@ -19,6 +19,7 @@
 class TH2F;
 class TH1F;
 class TABMntuTrackTr;
+class TAGgeoTrafo;
 class TAVTactBaseNtuVertex : public TAGaction {
     
 public:
@@ -41,6 +42,7 @@ public:
     void     SetBMntuTrack(TAGdataDsc* bmTrack) { fpBMntuTrack = bmTrack; }
       
 protected:
+    TAGgeoTrafo*    fpFootGeo;       // geo trafo
     TAGdataDsc*     fpNtuTrack;		 // input data dsc
     TAGdataDsc*     fpNtuVertex;		 // output data dsc
     TAGparaDsc*     fpConfig;		    // configuration dsc
