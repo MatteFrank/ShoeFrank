@@ -6,7 +6,7 @@
   \brief   Declaration of TABMactNtuMC.
 */
 /*------------------------------------------+---------------------------------*/
-
+#include <map>
 #include "Evento.hxx"
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
@@ -20,6 +20,7 @@
 #include "TVector3.h"
 #include "TRandom3.h"
 
+using namespace std;
 class TABMactNtuMC : public TAGaction {
   public:
     explicit        TABMactNtuMC(const char* name=0,
@@ -33,6 +34,8 @@ class TABMactNtuMC : public TAGaction {
     virtual  void   CreateHistogram();
     void CreateFakeHits(Int_t nfake, Int_t &nhits);
     void SmearRdrift(Int_t smear_type, Double_t &tobesmeared, Double_t sigma); //to smear rdrift with resolution
+   
+    void ClearMap() { fMap.clear(); }
 
     ClassDef(TABMactNtuMC,0)
 
@@ -42,7 +45,8 @@ class TABMactNtuMC : public TAGaction {
     TAGparaDsc*     fpParGeo;		    // BM geo params.
     EVENT_STRUCT*   fpEvtStr;
     Double_t        rdrift_err;      //default error value of the rdrfit
-    
+    map<pair<int, int>, TABMntuHit*> fMap; //! map for pilepup
+
     //histos
 
     TH1I*            fpHisCell;    //hits cell

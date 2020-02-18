@@ -127,6 +127,7 @@ Bool_t TABMactNtuMC::Action()
   } // smear number of hit
    
   Double_t realrdrift, time;
+  Int_t nLayers = p_bmgeo->GetLayersN();
    
   //charge the hits:
   for (Int_t i = 0; i < fpEvtStr->BMNn; i++) {
@@ -144,7 +145,15 @@ Bool_t TABMactNtuMC::Action()
         cout<<"TABMactNtuMC::Action::In the charging hits loop: I'm going to charge hit number:"<<i<<"/"<<fpEvtStr->BMNn<<"  tobecharged="<<tobecharged[i]<<"  view="<<view<<"  lay="<<lay<<"  cell="<<cell<<"  rdriftxcell[i]="<<rdriftxcell[i]<<"  realrdrift="<<realrdrift<<"  time="<<time<<"  resolution="<<p_bmcon->ResoEval(rdriftxcell[i])<<endl;
       
       //create hit
-      TABMntuHit *mytmp = p_nturaw->NewHit(view, lay, cell,p_bmgeo->GetBMNcell(lay,view,cell), rdriftxcell[i], time, p_bmcon->ResoEval(rdriftxcell[i]));
+       TABMntuHit *mytmp = 0x0;
+       pair<int, int> p(nLayers*view+lay, cell);
+
+       if (fMap[p] == 0) {
+          mytmp = p_nturaw->NewHit(view, lay, cell,p_bmgeo->GetBMNcell(lay,view,cell), rdriftxcell[i], time, p_bmcon->ResoEval(rdriftxcell[i]));
+          fMap[p] = mytmp;
+       } else
+          mytmp = fMap[p];
+       
       mytmp->AddMcTrackIdx(ipoint, i);
 
       mytmp->SetRealRdrift(realrdrift);
