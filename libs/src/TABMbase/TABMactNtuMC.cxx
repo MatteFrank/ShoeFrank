@@ -62,6 +62,7 @@ Bool_t TABMactNtuMC::Action()
   if (FootDebugLevel(1))
     cout<<"TABMactNtuMC::Processing "<<fpEvtStr->BMNn<<" hits"<<endl;
    
+   fMap.clear();
   //loop for double hits and hits with energy less than enxcell_cut:
   for (Int_t i = 0; i < fpEvtStr->BMNn; ++i) {
     if(fpEvtStr->TRcha[fpEvtStr->BMNid[i]-1]!=0 && fpEvtStr->TRtrlen[fpEvtStr->BMNid[i]-1]>0.1){//selection criteria: no neutral particles, at least 0,1 mm
