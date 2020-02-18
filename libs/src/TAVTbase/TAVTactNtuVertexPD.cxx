@@ -50,7 +50,7 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
 {
     TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
     Int_t nTracks          = ntuTrack->GetTracksN();
-    fTrack = nTracks;
+    fTracksN = nTracks;
     
     fProbValuesMax.Set(nTracks*nTracks);
     fVvalues.Set(nTracks*nTracks);
@@ -73,13 +73,13 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
             TAVTtrack* track1 = ntuTrack->GetTrack(j);
             SearchMaxProduct (track0, track1, i, j);
             
-            if(fProbValuesMax[i*fTrack + j] < fProbabilityCut){
-                fFlagValidity[i*fTrack + j] = 0;
-                fFlagValidity[j*fTrack + i] = 0; //symmetric
+            if(fProbValuesMax[i*fTracksN + j] < fProbabilityCut){
+                fFlagValidity[i*fTracksN + j] = 0;
+                fFlagValidity[j*fTracksN + i] = 0; //symmetric
 
             } else {
-                fFlagValidity[i*fTrack + j] = 1;
-                fFlagValidity[j*fTrack + i] = 1;
+                fFlagValidity[i*fTracksN + j] = 1;
+                fFlagValidity[j*fTracksN + i] = 1;
             } 
         }
                        
@@ -93,7 +93,7 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
         countTrki = 0;
         for(Int_t jj = 0; jj < nTracks; ++jj){
                        
-            if(fFlagValidity[ii*fTrack + jj] == 0){
+            if(fFlagValidity[ii*fTracksN + jj] == 0){
                countTrki++;
                if(countTrki == nTracks-1){ 
                     fNotValidTrack[ii] = 1;
@@ -112,7 +112,7 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
         maxVij = ComputeMaxVMaxIMaxJ();
     
      for(Int_t z =0; z<3; ++z)
-        fVtxPos[z] = fRValuesMax[maxVij[1]*fTrack + maxVij[2]][z];
+        fVtxPos[z] = fRValuesMax[maxVij[1]*fTracksN + maxVij[2]][z];
     
     if(fgCheckPileUp == false)
         ImpactParameterAdjustement();
@@ -136,9 +136,9 @@ void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, In
     
     Double_t actualProb = 0;
     Double_t maxProb = -10e+10;
-    //loop su z per trovare il massimo 
+    //loop over Z to find the maximum
     for(Double_t iz = fMinZ; iz < fMaxZ; iz += fStepZ){
-        vertexPoint = ComputeVertexPoint(linei, linej, iz); //Gli passo le tracce
+        vertexPoint = ComputeVertexPoint(linei, linej, iz); // pass the track
         fi = ComputeProbabilityForSingleTrack(linei, vertexPoint);
         fj = ComputeProbabilityForSingleTrack(linej, vertexPoint);
         actualProb = fi*fj;
@@ -149,18 +149,18 @@ void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, In
        
     }
    
-   //ritornare i valori messi in una struttura
-    fProbValuesMax[i*fTrack + j] = maxProb;
-    fRValuesMax[i*fTrack + j] = maxPosition;
+    //save the values into a structure
+    fProbValuesMax[i*fTracksN + j] = maxProb;
+    fRValuesMax[i*fTracksN + j] = maxPosition;
 }
 
 
 //----------------------------------------------
-//!Calcola il punto di vertice
+//! Compute vertex point
 
 TVector3 TAVTactNtuVertexPD::ComputeVertexPoint(TAVTtrack* line0, TAVTtrack* line1, Double_t zVal)
 {
-    //Calcolare la media delle due tracce
+    //Calculate the average of the two tracks
     TVector3 result;
     Double_t x = (line0->GetPoint(zVal).X() + line1->GetPoint(zVal).X())/2;
     Double_t y = (line0->GetPoint(zVal).Y() + line1->GetPoint(zVal).Y())/2;
@@ -170,11 +170,11 @@ TVector3 TAVTactNtuVertexPD::ComputeVertexPoint(TAVTtrack* line0, TAVTtrack* lin
 }
 
 //----------------------------------------------
-//!Calcola il probabilitá
+//! Compute probability
 
 Double_t TAVTactNtuVertexPD::ComputeProbabilityForSingleTrack(TAVTtrack* lin0, TVector3 v)
 {
-    //prendo le posizioni della tracia in esame
+    //take the positions of the given tracks
    
     TVector3 r = ComputeMinimumPointDistance(lin0, v);
     Double_t result = 0;
@@ -188,7 +188,7 @@ Double_t TAVTactNtuVertexPD::ComputeProbabilityForSingleTrack(TAVTtrack* lin0, T
 }
 
 //______________________________________________________
-//!Routin che calcola la minima distanza della retta dal punto
+//! Computes the minimum distance of the straight line from a given point
 
 TVector3 TAVTactNtuVertexPD::ComputeMinimumPointDistance(TAVTtrack* l, TVector3 vt)
 {
@@ -197,9 +197,9 @@ TVector3 TAVTactNtuVertexPD::ComputeMinimumPointDistance(TAVTtrack* l, TVector3 
     TVector3 A  (l->GetPoint(z).X(), l->GetPoint(z).Y(),z);
     
     Double_t DZ = 1;
-    TVector3 cosDir = l->GetSlopeZ()*DZ;//Direzione della retta
+    TVector3 cosDir = l->GetSlopeZ()*DZ;//Direction of line
     Double_t cosDirMod = cosDir.Mag();
-    cosDir *= 1/cosDirMod; //ho normalizzato quindi dovrebbe essere 1
+    cosDir *= 1/cosDirMod; //normalized to one
     TVector3 AP = vt-A;
     TVector3 result;
     Double_t tPar = cosDir.Dot(AP);
@@ -216,18 +216,17 @@ TVector3 TAVTactNtuVertexPD::ComputeMinimumPointDistance(TAVTtrack* l, TVector3 
 
 Double_t TAVTactNtuVertexPD::ComputeV (TVector3 rpos)
 {
-    //Calcolo V sono com le Valide
     Double_t firstMember =0;
     Double_t secondMember = 0;
     
     TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
    // Int_t nTracks          = ntuTrack->GetTracksN();
    
-    //Loop sulle tracce 
-    for (Int_t i = 0; i<fTrack; ++i){
+    //Loop over tracks
+    for (Int_t i = 0; i<fTracksN; ++i){
         TAVTtrack* track1 = ntuTrack->GetTrack(i);
-        if (fNotValidTrack[i] == -1){ //se sono valide
-           // cout<<"Metto la traccia "<<i<<endl;
+        if (fNotValidTrack[i] == -1){ // check validity
+
             Double_t fi = ComputeProbabilityForSingleTrack(track1, rpos);
             firstMember += fi;
             secondMember += fi*fi;
@@ -293,7 +292,7 @@ void TAVTactNtuVertexPD::ImpactParameterAdjustement()
     TVector3 minPoint(0,0,0);
    
     Bool_t res;
-    for(Int_t q= 0; q<fTrack; ++q) {
+    for(Int_t q= 0; q<fTracksN; ++q) {
         distance = 0;
         if(fNotValidTrack[q] == 1) continue;
         TAVTtrack* track1 = ntuTrack->GetTrack(q);
@@ -304,7 +303,7 @@ void TAVTactNtuVertexPD::ImpactParameterAdjustement()
         
         distance = TMath::Sqrt(distance);
 
-        if(distance>fImpactParameterCut) {//500 micron - Setto la traccia non valid
+        if(distance>fImpactParameterCut) {//500 micron - invalid tracks
             fNotValidTrack[q] = 1;
             res = SetNotValidVertex(q);
         }
@@ -320,11 +319,11 @@ TVector3 TAVTactNtuVertexPD::ComputeMaxVMaxIMaxJ()
     TVector3 returnValue (-10e-10,-1,-1);
     Double_t actualVvalues =0;
     
-    for(Int_t  p = 0; p< fTrack-1; ++p){//loop sulle tracce per trovare il max V
+    for(Int_t  p = 0; p< fTracksN-1; ++p){//loop of tracks to find max V
         
-        for(Int_t q = p+1; q<fTrack; ++q ) {
+        for(Int_t q = p+1; q<fTracksN; ++q ) {
             if (fNotValidTrack[q] == 1 || fNotValidTrack[p] == 1) continue;
-            actualVvalues = ComputeV(fRValuesMax[p*fTrack + q]); //GLi passo la lista delle non valide 
+            actualVvalues = ComputeV(fRValuesMax[p*fTracksN + q]);
             if(actualVvalues>returnValue[0]){
                 returnValue[0] = actualVvalues;
                 returnValue[1] = p;
