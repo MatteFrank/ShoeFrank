@@ -14,7 +14,6 @@ using namespace std;
 
 
 #include "TClonesArray.h"
-#include "TArrayI.h"
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
@@ -58,14 +57,7 @@ public:
    
    void             SetTofDirection(TVector3 dir) { fTofDir = dir;     }
    TVector3         GetTofDirection()             { return fTofDir;    }
-   
-   // Get MC info
-   Int_t            GetMcTrackIdx(Int_t idx) const { return fMcTrackIdx[idx];      }
-   Int_t            GetMcTracksN()           const { return fMcTrackIdx.GetSize(); }
 
-   // Add MC track Idx
-   void             AddMcTrackIdx(Int_t trackIdx);
-   
    
    //! Get list of measured points
    TClonesArray*    GetListOfMeasPoints()   const { return fListOfMeasPoints;                       }
@@ -86,12 +78,12 @@ public:
    TAGpoint*        GetCorrPoint(Int_t index)     { return (TAGpoint*)fListOfCorrPoints->At(index); }
    
    //! Add measured point
-   void             AddMeasPoint(TAGpoint* point);
-   void             AddMeasPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
+   TAGpoint*        AddMeasPoint(TAGpoint* point);
+   TAGpoint*        AddMeasPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
    
    //! Add corrected point
-   void             AddCorrPoint(TAGpoint* point);
-   void             AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
+   TAGpoint*        AddCorrPoint(TAGpoint* point);
+   TAGpoint*        AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
 
    void             Clear(Option_t* opt="");
    
@@ -104,9 +96,6 @@ private:
    Double32_t       fTof;
    Double32_t       fEnergy;
    Int_t            fTrkId;
-
-   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
-   std::map<int, int> fMcTrackMap;               //! Map of MC track Id
 
    //Particle directions and positions computed on target middle
    TVector3         fTgtDir;

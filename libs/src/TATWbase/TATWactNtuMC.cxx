@@ -94,6 +94,9 @@ bool TATWactNtuMC::Action() {
     //The number of hits inside the Start Counter is stn
     if ( fDebugLevel> 0 )     cout << "Processing n Scint " << m_eventStruct->SCNn << endl;
 
+    // clear map
+    m_Digitizer->ClearMap();
+   
     // fill the container of hits, divided by layer, i.e. the column at 0 and row at 1
     for (int i=0; i < m_eventStruct->SCNn; i++) { 
     

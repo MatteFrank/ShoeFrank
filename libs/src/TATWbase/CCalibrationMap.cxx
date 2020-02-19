@@ -9,7 +9,7 @@ CCalibrationMap::CCalibrationMap(): _CalibrationMapIsOk(false)
 
 }
 
-void CCalibrationMap::LoadCalibrationMap(std::string FileName)
+void CCalibrationMap::LoadCalibrationMap(std::string FileName, int verbose)
 {
 	if (gSystem->AccessPathName(FileName.c_str()))
 	{
@@ -20,9 +20,9 @@ void CCalibrationMap::LoadCalibrationMap(std::string FileName)
 	x.ReadFile(FileName);
 	std::vector<XMLNodePointer_t> BarVector;
 	BarVector=x.GetChildNodesByName(x.GetMainNode(),"BAR");
-	Message::DisplayMessageWithEmphasys(" Calibration ");
-	Message::DisplayMessage(" Description: "+x.GetContentAsString("DESCRIPTION",x.GetMainNode()));
-	Message::DisplayMessage(" Creation date: "+x.GetContentAsString("DATE",x.GetMainNode()));
+	Message::DisplayMessageWithEmphasys(" Calibration ", std::cout,verbose);
+	Message::DisplayMessage(" Description: "+x.GetContentAsString("DESCRIPTION",x.GetMainNode()), std::cout,verbose);
+	Message::DisplayMessage(" Creation date: "+x.GetContentAsString("DATE",x.GetMainNode()), std::cout,verbose);
 	for (std::vector<XMLNodePointer_t>::iterator it=BarVector.begin();it!=BarVector.end();++it)
 	{
 		TBarId BarId=x.GetContentAsInt("BAR_ID",*it);
@@ -35,7 +35,7 @@ void CCalibrationMap::LoadCalibrationMap(std::string FileName)
 		}
 		_CalibrationMap[BarId].push_back(p0);
 		_CalibrationMap[BarId].push_back(p1);
-		Message::DisplayMessage(TString::Format("BAR_ID %d  par0 %f par1 %f ",BarId,p0,p1));
+		Message::DisplayMessage(TString::Format("BAR_ID %d  par0 %f par1 %f ",BarId,p0,p1),std::cout,verbose);
 	}
 }
 

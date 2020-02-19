@@ -53,6 +53,7 @@ public:
    void   Clear(Option_t* option = "C");
    bool IsColumn() { return ( m_layer == 0 ? true : false ); };
    bool IsRow()    { return ( m_layer == 1 ? true : false ); };
+   
    //    All the Get methods
    Int_t     GetBar()                  const   { return  m_bar;              }
    Int_t     GetLayer()                const   { return  m_layer;            }
@@ -68,14 +69,25 @@ public:
    Double_t  GetChargeTimeB()          const   { return m_TimeB;             }
    Float_t   GetHitCoordinate_detectorFrame() const   { return m_coordinate; }
    Float_t   GetHitZ_detectorFrame()          const   { return m_z;          }
+   
    // MC track id
    Int_t     GetMcIndex(Int_t index)    const   { return m_MCindex[index];      }
    Int_t     GetMcTrackIdx(Int_t index) const   { return m_McTrackId[index];    }
    Int_t     GetMcTracksN()             const   { return m_McTrackId.GetSize(); }
    // Add MC track Id
    void      AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
-   void      SetToF(Double_t time) { m_timeofflight = time; }
-   void      SetChargeZ(Int_t z)   { m_chargeZ = z;         }
+   
+   //    All the Set Methods
+   void      SetEnergyLoss(Double_t e)          { m_de = e;                  }
+   void      SetTime(Double_t t)                { m_time = t;                }
+   void      SetToF(Double_t time)              { m_timeofflight = time;     }
+   void      SetPosition(Double_t p)            { m_coordinate = p;          }
+   void      SetChargeZ(Int_t z)                { m_chargeZ = z;             }
+   void      SetCOM(Double_t c)                 { m_chargeCOM = c;           }
+   void      SetChargeChA(Double_t chg)         { m_ChargeA = chg;           }
+   void      SetChargeChB(Double_t chg)         { m_ChargeB = chg;           }
+   void      SetChargeTimeA(Double_t t)         { m_TimeA   = t;             }
+   void      SetChargeTimeB(Double_t t)         { m_TimeB   = t;             }
 
   ClassDef(TATWntuHit,1)                            // Pixel or Pixel of a Detector Plane
 };

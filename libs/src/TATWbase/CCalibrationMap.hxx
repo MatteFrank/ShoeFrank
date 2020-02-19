@@ -19,7 +19,7 @@ class CCalibrationMap
 	bool _CalibrationMapIsOk;
 public:
 	CCalibrationMap();
-	void LoadCalibrationMap(std::string Filename);
+	void LoadCalibrationMap(std::string Filename, int verbose);
 	bool Exists(TBarId BarId);
 	TCalibrationMapType::iterator begin();
 	TCalibrationMapType::iterator end();

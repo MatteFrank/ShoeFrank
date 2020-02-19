@@ -52,6 +52,15 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* colHit, double y, double 
    m_de1    = m_columnHit->GetEnergyLoss();
    m_de2    = m_rowHit->GetEnergyLoss();
    m_time   = m_columnHit->GetTime();
+   
+   for (Int_t j = 0; j < m_rowHit->GetMcTracksN(); ++j) {
+      Int_t idr = m_rowHit->GetMcTrackIdx(j);
+      for (Int_t k = 0; k < m_columnHit->GetMcTracksN(); ++k) {
+         Int_t idc = m_columnHit->GetMcTrackIdx(k);
+         if (idr == idc)
+            AddMcTrackIdx(idr);
+      }
+   }
 }
 
 //______________________________________________________________________________
