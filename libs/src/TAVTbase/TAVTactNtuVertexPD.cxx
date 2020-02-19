@@ -126,13 +126,12 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
 
 void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, Int_t i, Int_t j)
 {
-   TVector3 vertexPoint(0.,0.,0.);
-   TVector3 maxPosition(0.,0.,0.);
+   TVector3 vertexPointA(0.,0.,0.);
+   TVector3 vertexPointB(0.,0.,0.);
    
    Double_t slope    = 0.;
    Double_t probaA   = 0.;
    Double_t probaB   = 0.;
-   Double_t maxProba = 0.;
    Double_t fi       = 0.;
    Double_t fj       = 0.;
    Double_t a        = fMinZ;
@@ -141,14 +140,14 @@ void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, In
    // Binary search for maximum of probability
    while (TMath::Abs(a - b) > fEps ) {
       
-      vertexPoint = ComputeVertexPoint(linei, linej, a);
-      fi = ComputeProbabilityForSingleTrack(linei, vertexPoint);
-      fj = ComputeProbabilityForSingleTrack(linej, vertexPoint);
+      vertexPointA = ComputeVertexPoint(linei, linej, a);
+      fi = ComputeProbabilityForSingleTrack(linei, vertexPointA);
+      fj = ComputeProbabilityForSingleTrack(linej, vertexPointA);
       probaA = fi*fj;
       
-      vertexPoint = ComputeVertexPoint(linei, linej, b);
-      fi = ComputeProbabilityForSingleTrack(linei, vertexPoint);
-      fj = ComputeProbabilityForSingleTrack(linej, vertexPoint);
+      vertexPointB = ComputeVertexPoint(linei, linej, b);
+      fi = ComputeProbabilityForSingleTrack(linei, vertexPointB);
+      fj = ComputeProbabilityForSingleTrack(linej, vertexPointB);
       probaB = fi*fj;
       
       slope = (probaB - probaA)/(b-a);
@@ -159,12 +158,9 @@ void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, In
          b = (a+b)/2.;
    }
    
-   maxProba    = probaA;
-   maxPosition = vertexPoint;
-   
    //save the values into a structure
-   fProbValuesMax[i*fTracksN + j] = maxProba;
-   fRValuesMax[i*fTracksN + j]    = maxPosition;
+   fProbValuesMax[i*fTracksN + j] = (probaA+probaB)/2.;
+   fRValuesMax[i*fTracksN + j]    = (vertexPointA+vertexPointB)*0.5;
 }
 
 
