@@ -58,7 +58,7 @@ public:
     //! Set flag isValid
     void  SetVertexValidity(Int_t q)              { fIsValid = q;        }
     //Get flag Validity
-    Int_t GetVertexValidity()               const { return fIsValid;     }
+    Int_t GetValidity()                     const { return fIsValid;     }
     
     //! Set Distance Min
     void SetDistanceMin(Double_t q)               { fDistanceMin = q;    }

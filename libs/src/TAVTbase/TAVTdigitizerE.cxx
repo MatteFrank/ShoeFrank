@@ -68,6 +68,7 @@ Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    
    // define radii
    Int_t rpixels      = fPixelsN;
+   if (fPixelsN <= 0) fPixelsN = 1;
   // printf("pixels %d\n", fPixelsN);
    Int_t lastTurn     = GetLastShell(fShel, fgkMaxTurn);
    Int_t shellPixels  = fShel[lastTurn];
@@ -133,7 +134,7 @@ Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    
    // remove randomly pixels from outer shell
    Int_t r = 0;
-   if (rpixels != 0) {
+   if (rpixels != 1) {
       
       std::random_shuffle(rarray.begin(), rarray.end(), GetRandom);
       

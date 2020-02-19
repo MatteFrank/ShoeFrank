@@ -628,8 +628,8 @@ Bool_t TAIRalignC::FillHistograms()
       fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
       TVector3 posG (fPosUClusters[i]*TAGgeoTrafo::MmToCm(), fPosVClusters[i]*TAGgeoTrafo::MmToCm(), fZposition[i]*TAGgeoTrafo::MmToCm());
       TVector3 pos (fPosUClusters[i]*TAGgeoTrafo::MmToCm(), fPosVClusters[i]*TAGgeoTrafo::MmToCm(), 0.);
-      cluster->SetPositionG(&posG);
-      cluster->SetPosition(&pos);
+      cluster->SetPositionG(posG);
+      cluster->SetPosition(pos);
       fErrUClusters[i] = cluster->GetPosError()(0)*TAGgeoTrafo::CmToMm();
       fErrVClusters[i] = cluster->GetPosError()(1)*TAGgeoTrafo::CmToMm();
       cluster->ComputeSize();

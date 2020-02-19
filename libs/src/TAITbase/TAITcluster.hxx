@@ -30,7 +30,7 @@ public:
    //! Add pixel to the list
    void               AddPixel(TAITntuHit* pixel);
    
-   ClassDef(TAITcluster,2)                          // Describes TAITcluster
+   ClassDef(TAITcluster,3)                          // Describes TAITcluster
 };
 
 

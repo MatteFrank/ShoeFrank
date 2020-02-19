@@ -89,7 +89,7 @@ Bool_t TAVTactNtuPostTrack::FindTiltedTracks()
    Bool_t isVtxFound = false;
    for (Int_t i = 0; i < nVertice; ++i) {
 	  vertex = pNtuVertex->GetVertex(i);
-	  if (vertex->GetVertexValidity() && vertex->GetTracksN() > 1) {
+	  if (vertex->GetValidity() && vertex->GetTracksN() > 1) {
 		 isVtxFound = true;
 		 break;
 	  }

@@ -58,13 +58,27 @@ void TAGparGeo::DefineMaterial()
       new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
    }
    
-   // Epitaxial material
+   // target material
    TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fTargetParameter.Material, fTargetParameter.Density);
    if(FootDebugLevel(1)) {
       printf("Target material:\n");
       mat->Print();
    }
    
+   TGeoElementTable tab(0);
+   TGeoElement*  elem = tab.GetElement(fBeamParameter.AtomicNumber);
+   TGeoMaterial* beam = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(elem->GetName());
+   
+   if (beam == 0x0)
+      beam =  new TGeoMaterial(elem->GetName(), elem->A(), elem->Z(), 0.1); // add beam materials for scattering angle computing purpose
+
+   fBeamParameter.Material = elem->GetName();
+   
+   if(FootDebugLevel(1)) {
+      printf("Beam material:\n");
+      beam->Print();
+   }
+
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
    fIonisation->SetMaterial(mat);
    fIonisation->AddMeanExcitationEnergy(fTargetParameter.ExcEnergy);

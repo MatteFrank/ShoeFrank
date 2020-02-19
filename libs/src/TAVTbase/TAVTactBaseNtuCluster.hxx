@@ -49,15 +49,15 @@ public:
    Float_t GetClusterPulseSum()        const { return fClusterPulseSum; }
    
    //! Get position of current cluster
-   TVector3*       GetCurrentPosition()      { return fCurrentPosition; }
+   TVector3&       GetCurrentPosition()      { return fCurrentPosition; }
    //! Get position error of current cluster
-   TVector3*       GetCurrentPosError()      { return fCurrentPosError; }
+   TVector3&       GetCurrentPosError()      { return fCurrentPosError; }
 
    
    //! Set list of pixels
    void SetListOfPixels(TClonesArray* list)                 { fListOfPixels = list;            }
    //! Set position of current cluster
-   void SetCurrentPosition(Float_t u, Float_t v, Float_t z) { fCurrentPosition->SetXYZ(u,v,z); }
+   void SetCurrentPosition(Float_t u, Float_t v, Float_t z) { fCurrentPosition.SetXYZ(u,v,z);  }
    
    //! Compute position
    virtual void ComputePosition();
@@ -70,8 +70,8 @@ protected:
    TAGparaDsc*     fpGeoMap;		  // geometry para dsc
    
    TAVTntuHit*    fPSeed;             // seed pixel
-   TVector3*      fCurrentPosition;   // pointer to current position
-   TVector3*      fCurrentPosError ;  // pointer to current position error
+   TVector3       fCurrentPosition;   // pointer to current position
+   TVector3       fCurrentPosError ;  // pointer to current position error
    TClonesArray*  fListOfPixels;      // list of pixels 
    TClonesArray*  fCurListOfPixels;   // list of pixels in current cluster
    Float_t        fClusterPulseSum;   // total charge of cluster

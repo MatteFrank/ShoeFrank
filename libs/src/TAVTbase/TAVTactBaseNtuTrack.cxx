@@ -78,10 +78,10 @@ void TAVTactBaseNtuTrack::CreateHistogram()
    fpHisBmBeamProf->SetStats(kFALSE);
    AddHistogram(fpHisBmBeamProf);
    
-   fpHisVtxResX = new TH1F(Form("%sBmResX", fPrefix.Data()), Form("%s - Vertex position resisdualX BM/VT", fTitleDev.Data()), 500, -0.5, 0.5);
+   fpHisVtxResX = new TH1F(Form("%sBmResX", fPrefix.Data()), Form("%s - Vertex position resisdualX BM/VT", fTitleDev.Data()), 500, -5, 5);
    AddHistogram(fpHisVtxResX);
    
-   fpHisVtxResY = new TH1F(Form("%sBmResY", fPrefix.Data()), Form("%s - Vertex position resisdualY BM/VT", fTitleDev.Data()), 500, -0.5, 0.5);
+   fpHisVtxResY = new TH1F(Form("%sBmResY", fPrefix.Data()), Form("%s - Vertex position resisdualY BM/VT", fTitleDev.Data()), 500, -5, 5);
    AddHistogram(fpHisVtxResY);
    
    fpHisBmChi2 = new TH1F(Form("%sbmChi2", fPrefix.Data()), Form("%s - BM Chi2 of tracks", fTitleDev.Data()), 200, 0, 1000);

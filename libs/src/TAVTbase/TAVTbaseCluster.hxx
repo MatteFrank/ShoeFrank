@@ -24,10 +24,10 @@ class TAVTparGeo;
 class TAVTbaseCluster : public TAGcluster {
    
 protected:
-   TVector3*          fPosition;                 // position of the cluster in plane frame
-   TVector3*          fPosError;                 // position's errors of the cluster in plane frame 
-   TVector3*          fPositionG;                // position of the clus in tracker frame
-   TVector3*          fPosErrorG;                // position's errors of the clus in tracker frame
+   TVector3           fPosition;                 // position of the cluster in plane frame
+   TVector3           fPosError;                 // position's errors of the cluster in plane frame
+   TVector3           fPositionG;                // position of the clus in tracker frame
+   TVector3           fPosErrorG;                // position's errors of the clus in tracker frame
    TClonesArray*      fListOfPixels;             // list of pixel attached to this cluster
    
    Int_t              fNumber;                   // number
@@ -37,8 +37,6 @@ protected:
    Bool_t             fFoundYZ;					    //! kTRUE is associated to a track in YZ Projection
    Bool_t             fIsValid;                  // validity flag
    
-   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
-   std::map<int, int> fMcTrackMap;               // Map of MC track Id
    
 public:
    TAVTbaseCluster(); 
@@ -46,12 +44,12 @@ public:
    ~TAVTbaseCluster();
    
    //! Set position in local frame
-   void               SetPosition(TVector3* pos); 
+   void               SetPosition(TVector3& pos);
    //! Set position error in local frame
-   void               SetPosError(TVector3* pos); 
-   void               SetPosition(Float_t u, Float_t v, Float_t z) { fPosition->SetXYZ(u,v,z); }
+   void               SetPosError(TVector3& pos);
+   void               SetPosition(Float_t u, Float_t v, Float_t z) { fPosition.SetXYZ(u,v,z); }
    //! Set position in global tracker frame
-   void               SetPositionG(TVector3* pos); 
+   void               SetPositionG(TVector3& pos); 
    //! Found flag for this cluster (Hough Transform XZ)
    void               SetFoundXZ(Bool_t flag = true)         { fFoundXZ = flag;        }
    //! Found flag for this cluster ((Hough Transform YZ)
@@ -68,19 +66,19 @@ public:
    TVector2           ComputeSize();
    
    //! Get position in local frame
-   const TVector3&     GetPosition()                   const { return *fPosition;      }
+   const TVector3&     GetPosition()                   const { return fPosition;       }
    //! Get position error in local frame
-   const TVector3&     GetPosError()                   const { return *fPosError;      }
+   const TVector3&     GetPosError()                   const { return fPosError;       }
    //! Get position in global tracker frame
-   const TVector3&     GetPositionG()                  const { return *fPositionG ;    }
+   const TVector3&     GetPositionG()                  const { return fPositionG ;     }
    //! Get position in global tracker frame
-   const TVector3&     GetPosErrorG()                  const { return *fPositionG ;    }
+   const TVector3&     GetPosErrorG()                  const { return fPositionG ;     }
 
    
    //! Get U position in local frame
-   Float_t            GetPositionU()                   const { return (*fPosition)(0); }
+   Float_t            GetPositionU()                   const { return fPosition[0];    }
    //! Get V position in local frame
-   Float_t            GetPositionV()                   const { return (*fPosition)(1); }
+   Float_t            GetPositionV()                   const { return fPosition[1];    }
    //! Get Pixel list
    TClonesArray*      GetListOfPixels()                const { return fListOfPixels;   }
    //! Get cluster number
@@ -117,14 +115,7 @@ public:
    //! reset pixels
    void               ResetPixels();
    
-   // Add MC track Idx
-   void               AddMcTrackIdx(Int_t trackIdx);
-
-   // Get MC info
-   Int_t              GetMcTrackIdx(Int_t index)      const   { return fMcTrackIdx[index];    }
-   Int_t              GetMcTracksN()                  const   { return fMcTrackIdx.GetSize(); }
-
-   ClassDef(TAVTbaseCluster,3)                          // Describes TAVTbaseCluster
+   ClassDef(TAVTbaseCluster,5)                          // Describes TAVTbaseCluster
 };
 
 

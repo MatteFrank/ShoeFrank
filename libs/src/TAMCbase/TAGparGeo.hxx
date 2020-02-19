@@ -63,6 +63,7 @@ private:
      Float_t   Energy;        // Beam energy
      Int_t     AtomicNumber;  // Z of the beam
      Float_t   AtomicMass;    // A of the beam
+     TString   Material;      // Beam material
      Int_t     PartNumber;    // Number of particles in beam
    };
    BeamParameter_t  fBeamParameter;
@@ -89,7 +90,8 @@ public:
    void               Print(Option_t* opt = "") const;
 
    //! Get target parameter
-   TargetParameter_t& GetTargetPar()          { return fTargetParameter;      }
+   TargetParameter_t&        GetTargetPar()           { return fTargetParameter;      }
+   TargetParameter_t const & GetTargetPar()     const { return fTargetParameter;      }
 
    //! Get inert number
    Int_t              GetInsertsN()     const { return fInsertsN;             }
@@ -98,8 +100,9 @@ public:
    InsertParameter_t& GetInsertPar(Int_t idx) { return fInsertParameter[idx]; }
 
    //! Get beam parameter
-   BeamParameter_t&   GetBeamPar()        { return fBeamParameter;   }
-   
+   BeamParameter_t&          GetBeamPar()         { return fBeamParameter;   }
+   BeamParameter_t const &   GetBeamPar()   const { return fBeamParameter;   }
+    
    //! Add Target
    TGeoVolume*        AddTarget(const char *targetName = "Target");
    
@@ -129,7 +132,7 @@ public:
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
    static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
 
-   ClassDef(TAGparGeo,1)
+   ClassDef(TAGparGeo,2)
 };
 
 #endif

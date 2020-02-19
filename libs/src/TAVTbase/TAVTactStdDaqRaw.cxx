@@ -83,7 +83,7 @@ Bool_t TAVTactStdDaqRaw::GetEvent()
 
 //------------------------------------------+-----------------------------------
 //! Open ascii data sources.
-Int_t TAVTactStdDaqRaw::Open(const TString& name, Option_t* opt)
+Int_t TAVTactStdDaqRaw::Open(const TString& name, Option_t* opt, const TString /*treeName*/)
 {
    TString inputFileName;
    

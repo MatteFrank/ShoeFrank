@@ -14,10 +14,10 @@ ClassImp(TAVTbaseCluster) // Description of a cluster
 //  
 TAVTbaseCluster::TAVTbaseCluster()
 :  TAGcluster(),
-   fPosition(new TVector3(0., 0., 0.)),
-   fPosError(new TVector3(0., 0., 0.)),
-   fPositionG(new TVector3(0., 0., 0.)),
-   fPosErrorG(new TVector3(0., 0., 0.)),
+   fPosition(0., 0., 0.),
+   fPosError(0., 0., 0.),
+   fPositionG(0., 0., 0.),
+   fPosErrorG(0., 0., 0.),
    fListOfPixels(0x0),
    fNumber(0),
    fPlaneNumber(0),
@@ -26,25 +26,22 @@ TAVTbaseCluster::TAVTbaseCluster()
 	fFoundYZ(kFALSE),
    fIsValid(kFALSE)
 {
-   fMcTrackIdx.Reset();
-   fMcTrackMap.clear();
 }
 
 //______________________________________________________________________________
 //  
 TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
-:  TAGcluster(),
-   fPosition(new TVector3(*cluster.fPosition)),
-   fPosError(new TVector3(*cluster.fPosError)),
-   fPositionG(new TVector3(*cluster.fPositionG)),
-   fPosErrorG(new TVector3(*cluster.fPosErrorG)),
+:  TAGcluster(cluster),
+   fPosition(cluster.fPosition),
+   fPosError(cluster.fPosError),
+   fPositionG(cluster.fPositionG),
+   fPosErrorG(cluster.fPosErrorG),
    fNumber(cluster.fNumber),
    fPlaneNumber(cluster.fPlaneNumber),
    fCharge(cluster.fCharge),
    fFoundXZ(cluster.fFoundXZ),
    fFoundYZ(cluster.fFoundYZ),
-   fIsValid(cluster.fIsValid),
-   fMcTrackIdx(cluster.fMcTrackIdx)
+   fIsValid(cluster.fIsValid)
 {
    // TAVTbaseCluster constructor
    if (cluster.fListOfPixels)
@@ -57,10 +54,6 @@ TAVTbaseCluster::~TAVTbaseCluster()
 { 
    // TAVTbaseCluster default destructor 
    
-   delete fPosition;
-   delete fPositionG;
-   delete fPosErrorG;
-   delete fPosError;
    delete fListOfPixels;
 }
 
@@ -94,24 +87,24 @@ TVector2 TAVTbaseCluster::ComputeSize()
 
 //______________________________________________________________________________
 //  
-void TAVTbaseCluster::SetPosition(TVector3* pos)
+void TAVTbaseCluster::SetPosition(TVector3& pos)
 {
-   fPosition->SetXYZ(pos->Px(), pos->Py(), pos->Pz());
+   fPosition.SetXYZ(pos.X(), pos.Y(), pos.Z());
 }
 
 //______________________________________________________________________________
 //  
-void TAVTbaseCluster::SetPosError(TVector3* pos)
+void TAVTbaseCluster::SetPosError(TVector3& pos)
 {
-   fPosError->SetXYZ(pos->Px(), pos->Py(), pos->Pz());
+   fPosError.SetXYZ(pos.X(), pos.Y(), pos.Z());
 }
 
 //______________________________________________________________________________
 //  
-void TAVTbaseCluster::SetPositionG(TVector3* posGlo)
+void TAVTbaseCluster::SetPositionG(TVector3& posGlo)
 {
-   fPositionG->SetXYZ(posGlo->Px(), posGlo->Py(), posGlo->Pz());
-   fPosErrorG->SetXYZ(fPosError->Px(), fPosError->Py(), 0.01);
+   fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   fPosErrorG.SetXYZ(fPosError.X(), fPosError.Y(), 0.01);
 }
 
 //______________________________________________________________________________
@@ -190,15 +183,4 @@ Float_t TAVTbaseCluster::Distance(TAVTbaseCluster *aClus) {
 void TAVTbaseCluster::ResetPixels()
 {
    fListOfPixels->Delete();
-}
-
-//______________________________________________________________________________
-//
-void TAVTbaseCluster::AddMcTrackIdx(Int_t trackIdx)
-{
-   if (fMcTrackMap[trackIdx] == 0) {
-      fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
-      fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
-      fMcTrackMap[trackIdx] = 1;
-   }
 }

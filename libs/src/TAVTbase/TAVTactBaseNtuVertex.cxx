@@ -21,6 +21,7 @@
 #include "TAVTtrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
+#include "TADItrackEmProperties.hxx"
 #include "TAVTactBaseNtuVertex.hxx"
 
 /*!
@@ -30,7 +31,6 @@
 
 ClassImp(TAVTactBaseNtuVertex);
 Bool_t  TAVTactBaseNtuVertex::fgCheckBmMatching = false;
-Bool_t  TAVTactBaseNtuVertex::fgCheckPileUp     = false;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -43,13 +43,14 @@ TAVTactBaseNtuVertex::TAVTactBaseNtuVertex(const char* name,
   fpConfig(pConfig),
   fpGeoMap(pGeoMap),
   fpGeoMapG(pGeoMapG),
-  fpBMntuTrack(pBmTrack)
+  fpBMntuTrack(pBmTrack),
+  fEmProp(new TADItrackEmProperties())
 {
     AddDataIn(pNtuTrack,   "TAVTntuTrack");
     AddDataOut(pNtuVertex, "TAVTntuVertex");
     AddPara(pGeoMap, "TAVTparGeo");
     AddPara(pConfig, "TAVTparConf");
-   AddPara(pGeoMapG, "TAGparGeo");
+    AddPara(pGeoMapG, "TAGparGeo");
 
    TAVTparConf* config = (TAVTparConf*) fpConfig->Object();
    fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
@@ -59,22 +60,27 @@ TAVTactBaseNtuVertex::TAVTactBaseNtuVertex(const char* name,
    
    fMinZ = -geoMapG->GetTargetPar().Size[2]*2;
    fMaxZ =  geoMapG->GetTargetPar().Size[2]*2;
-
+   fEps = 1e-4; // 1 microns precision
+   
    TVector3 posMin(0,0, fMinZ);
    TVector3 posMax(0,0, fMaxZ);
    
-   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   posMin = geoTrafo->FromGlobalToVTLocal(posMin);
-   posMax = geoTrafo->FromGlobalToVTLocal(posMax);
+   fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   posMin = fpFootGeo->FromGlobalToVTLocal(posMin);
+   posMax = fpFootGeo->FromGlobalToVTLocal(posMax);
    
    fMinZ = posMin[2];
    fMaxZ = posMax[2];
+   
+   // scattering angle in rad (at 2 sigma)
+   fScatterAng = ComputeScatterAngle()*2.;
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAVTactBaseNtuVertex::~TAVTactBaseNtuVertex()
-{   
+{
+   delete fEmProp;
 }
 
 //------------------------------------------+-----------------------------------
@@ -84,11 +90,10 @@ void TAVTactBaseNtuVertex::CreateHistogram()
    DeleteHistogram();   
    TAVTparGeo* pGeoMap   = (TAVTparGeo*) fpGeoMap->Object();
    TAGparGeo* pGeoMapG   = (TAGparGeo*) fpGeoMapG->Object();
-   TAGgeoTrafo* pFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
    
-   Float_t liml = -pGeoMapG->GetTargetPar().Size[2] - pFootGeo->GetVTCenter()[2];
-   Float_t limu =  pGeoMapG->GetTargetPar().Size[2] - pFootGeo->GetVTCenter()[2];
+   Float_t liml = -pGeoMapG->GetTargetPar().Size[2] - fpFootGeo->GetVTCenter()[2];
+   Float_t limu =  pGeoMapG->GetTargetPar().Size[2] - fpFootGeo->GetVTCenter()[2];
    
    fpHisPosZ = new TH1F("vtVtxPosZ", "Vertex position at Z", 100, liml, limu);
    AddHistogram(fpHisPosZ);
@@ -121,26 +126,19 @@ Bool_t TAVTactBaseNtuVertex::Action()
 {
    Bool_t ok = true;
   
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   TAVTntuTrack*  pNtuTrack  = (TAVTntuTrack*) fpNtuTrack->Object();
    TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
-
-   Bool_t check = false;
-   
-   if (fgCheckPileUp)
-     check = CheckPileUp();
 
    Int_t nTrack = pNtuTrack->GetTracksN();
 
    if( nTrack == 0) {
-        fpNtuVertex->SetBit(kValid);
-        return true;
+      fpNtuVertex->SetBit(kValid);
+      return true;
    }
 
    if (nTrack == 1) {
 		 SetNotValidVertex(0);
-   } else if (nTrack >= 2 && check) { 
-	  for(Int_t q =0; q< nTrack; ++q) 
-		 SetNotValidVertex(q);
+      
    } else
 	  ok = ComputeVertex();
 
@@ -149,25 +147,15 @@ Bool_t TAVTactBaseNtuVertex::Action()
    
    if (fgCheckBmMatching)
 	  CheckBmMatching();
+   
    else {
       for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
-         TAVTvertex* vtx      = pNtuVertex->GetVertex(i);
+         TAVTvertex* vtx  = pNtuVertex->GetVertex(i);
          vtx->SetBmMatched();
       }
-
    }
 
     return ok;
-}
-
-
-//-------------------------------------------------------------------------------------
-//!Check Pile Up
-Bool_t TAVTactBaseNtuVertex::CheckPileUp()
-{
-	   ComputePileUp();
-	   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-	   return pNtuTrack->IsPileUp();
 }
 
 //-------------------------------------------------------------------------------------
@@ -184,9 +172,8 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
    TABMntuTrackTr* bmTrack = pBMtrack->Track(0);
    if (!bmTrack) return false;
    
-   TAGgeoTrafo* pFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-   if (!pFootGeo) return false;
+   if (!fpFootGeo) return false;
 	   
    TVector3 bestRes;
    Int_t    bestIdx = -1;
@@ -195,13 +182,13 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 	  TAVTvertex* vtx      = pNtuVertex->GetVertex(i);
       
 	  TVector3 vtxPosition = vtx->GetVertexPosition();
-	  vtxPosition  = pFootGeo->FromVTLocalToGlobal(vtxPosition);
+	  vtxPosition  = fpFootGeo->FromVTLocalToGlobal(vtxPosition);
 	  
-	  TVector3 bmPosition = pFootGeo->FromGlobalToBMLocal(vtxPosition);
+	  TVector3 bmPosition = fpFootGeo->FromGlobalToBMLocal(vtxPosition);
 	  vtxPosition *= TAGgeoTrafo::CmToMu();
 
 	  bmPosition  = bmTrack->PointAtLocalZ(bmPosition.Z());
-	  bmPosition  = pFootGeo->FromBMLocalToGlobal(bmPosition);
+	  bmPosition  = fpFootGeo->FromBMLocalToGlobal(bmPosition);
 	  bmPosition *= TAGgeoTrafo::CmToMu();
 	  
 	  TVector3 res = vtxPosition - bmPosition;
@@ -232,34 +219,29 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 
 
 //--------------------------------------------------------------
-//!Compute the point interaction of diffusion
+//!Compute the point interaction of diffusion (not used anymore)
 void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtrack lvtx)
 {
-   // retrieve trafo
-   TAGgeoTrafo* pFirstGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   
-   //prendiamo il punto A della retta del bm
+   //taking point A of the straight line of bm
    Double_t z = 0;
    Double_t DZ = 1;
-   TVector3 Apoint (lbm->PointAtLocalZ(z).X(), lbm->PointAtLocalZ(z).Y(),z); //coordinate del punto A appartenente alla retta del bm in Z = 0
-   Apoint  = pFirstGeo->FromBMLocalToGlobal(Apoint);
-   Apoint *= TAGgeoTrafo::CmToMu();
-   TVector3 Bpoint (lvtx.GetPoint(z).X(),lvtx.GetPoint(z).Y(),z); //coordinate del punto B appartenente alla retta del vtx in Z = 0
-   Bpoint  = pFirstGeo->FromVTLocalToGlobal(Bpoint*TAGgeoTrafo::MuToCm());
-   Bpoint *= TAGgeoTrafo::CmToMu();
-   
+   TVector3 Apoint (lbm->PointAtLocalZ(z).X(), lbm->PointAtLocalZ(z).Y(),z); //coordinates of point A belonging to the straight line of bm in Z = 0
+   Apoint  = fpFootGeo->FromBMLocalToGlobal(Apoint);
+
+   TVector3 Bpoint (lvtx.GetPoint(z).X(),lvtx.GetPoint(z).Y(),z); //coordinate of point B belonging to the straight line of vtx in Z = 0
+   Bpoint  = fpFootGeo->FromVTLocalToGlobal(Bpoint);
+
    TVector3 AmB = Apoint-Bpoint;
    
    TVector3 pSlopebm(lbm->GetPvers()[0]/lbm->GetPvers()[2], lbm->GetPvers()[1]/lbm->GetPvers()[2], 1);
-   TVector3 pDirbm  = pFirstGeo->VecFromBMLocalToGlobal(pSlopebm*DZ); //director parameter of bm line
-   TVector3 pDirvtx = pFirstGeo->VecFromVTLocalToGlobal(lvtx.GetSlopeZ()*DZ); //director parameter of vtx line
+   TVector3 pDirbm  = fpFootGeo->VecFromBMLocalToGlobal(pSlopebm*DZ); //director parameter of bm line
+   TVector3 pDirvtx = fpFootGeo->VecFromVTLocalToGlobal(lvtx.GetSlopeZ()*DZ); //director parameter of vtx line
    
    Double_t etaBm = pDirbm*pDirbm;
-   Double_t eta = pDirvtx*pDirvtx;
-   Double_t mix = pDirbm*pDirvtx;
-   Double_t Apar = AmB*pDirbm;
-   Double_t Bpar = AmB*pDirvtx;
-   
+   Double_t eta   = pDirvtx*pDirvtx;
+   Double_t mix   = pDirbm*pDirvtx;
+   Double_t Apar  = AmB*pDirbm;
+   Double_t Bpar  = AmB*pDirvtx;
    
    Double_t q = (Apar*mix-etaBm*Bpar)/(mix*mix - eta*etaBm);
    Double_t p = (-Apar+q*mix)/etaBm;
@@ -269,7 +251,7 @@ void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtra
    
    fVtxPos = (P+Q)*0.5;
    // Again in local frame of VTX
-   fVtxPos = pFirstGeo->FromGlobalToVTLocal(fVtxPos);
+   fVtxPos = fpFootGeo->FromGlobalToVTLocal(fVtxPos);
    
    if(FootDebugLevel(1))
 	  fVtxPos.Print();
@@ -282,16 +264,22 @@ Bool_t TAVTactBaseNtuVertex::SetNotValidVertex(Int_t idTk)
    TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
    //Crete a vertex
    TVector3 vtxPos(0,0,0);
+   TVector3 tgtPos(0,0,0);
    TAVTvertex* vtx = new TAVTvertex();
-   vtx->SetVertexValidity(0);
    
-   //Attacchiamo la traccia idTk al vertice 
+   //Attached track idTk to vertex
    TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
    TAVTtrack*    track0    = pNtuTrack->GetTrack(idTk);
    
-   vtxPos = track0->Intersection(0);//Target center
+   tgtPos = fpFootGeo->FromGlobalToVTLocal(tgtPos);
+   
+   vtxPos = track0->Intersection(tgtPos.Z());//Target center
    vtx->SetVertexPosition(vtxPos);
-   track0->SetValidity(-1);
+   
+   Int_t nucReacFlag = SearchNucReac(track0);
+   track0->SetValidity(nucReacFlag);
+   vtx->SetVertexValidity(nucReacFlag);
+   
    track0->SetPosVertex(vtxPos);
    vtx->AddTrack(track0);
    pNtuVertex->NewVertex(*vtx);
@@ -312,7 +300,6 @@ void TAVTactBaseNtuVertex::SetValidVertex()
    vtx->SetVertexValidity(1);
    vtx->SetVertexPosition(fVtxPos);
    
-   
    TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
    Int_t nTracks = ntuTrack->GetTracksN();
    for(Int_t q = 0; q<nTracks; ++q ){
@@ -328,29 +315,59 @@ void TAVTactBaseNtuVertex::SetValidVertex()
 }
 
 //--------------------------------------------
-//!compute pileup
-void TAVTactBaseNtuVertex::ComputePileUp()
+//!compute scattering angle after target
+Double_t TAVTactBaseNtuVertex::ComputeScatterAngle()
 {
-   TAVTparGeo*  pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
-   Float_t width         = pGeoMap->GetEpiSize()[0];
+   TAGparGeo* geoMapG = (TAGparGeo*) fpGeoMapG->Object();
+
+   TString matTarget  = geoMapG->GetTargetPar().Material;
+   Float_t depth      = geoMapG->GetTargetPar().Size[2];
+
+   TString matBeam   = geoMapG->GetBeamPar().Material;
+   Float_t energy    = geoMapG->GetBeamPar().Energy * geoMapG->GetBeamPar().AtomicMass;
    
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-   Int_t nTracks = pNtuTrack->GetTracksN();
-   Bool_t pileup = false;
-   pNtuTrack->SetPileUp(false);
-   for (Int_t i = 0; i < nTracks; ++i) {
-	  for (Int_t j = i+1; j < nTracks; ++j) {
-		 TAVTtrack* track0 = pNtuTrack->GetTrack(i);
-		 TAVTtrack* track1 = pNtuTrack->GetTrack(j);
-		 TVector2 pos = track0->DistanceMin(track1);
-		 if (TMath::Abs(pos.X()) > width/2. || pos.Y() > fSearchClusDistance) {
-			track0->SetPileUp();
-			track1->SetPileUp();
-			pileup = true;
-		 }
-	  }
+   return fEmProp->GetSigmaTheta(matTarget, matBeam, depth,  energy);
+}
+
+//--------------------------------------------
+//! Check scattering of track
+Int_t TAVTactBaseNtuVertex::SearchNucReac(TAVTtrack* track0)
+{
+   // returns -1 no BM, 2 nuclear reaction, 0, diffusion
+   TABMntuTrack* pBMntuTrack = 0x0;
+   TVector3 lineBM(0,0,0);
+   Int_t nTrackBM = 0;
+   
+   if (fpBMntuTrack) {
+      pBMntuTrack = (TABMntuTrack*) fpBMntuTrack->Object();
+      nTrackBM    = pBMntuTrack->GetTracksN();
+      
+      if(nTrackBM > 0)
+         lineBM = pBMntuTrack->Track(0)->GetPvers();
+      
+   } else {
+      return -1;
    }
    
-   if (pileup) 
-	  pNtuTrack->SetPileUp();
+   Int_t result = 0;
+   
+   // retrieve trafo
+   TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   TVector3 direction = lineBM.Unit();
+   direction = fpFootGeo->VecFromBMLocalToGlobal(direction);
+   Double_t angleBm   = direction.Theta();
+   
+   //Track from vtx
+   direction = track0->GetSlopeZ().Unit();
+   direction = fpFootGeo->VecFromVTLocalToGlobal(direction);
+   Double_t angleTk = direction.Theta();
+   
+
+   if(TMath::Abs(angleBm-angleTk) > fScatterAng)
+      result = 2; //No diffusion
+   else
+      result = 0;
+   
+   return result;
 }
+
