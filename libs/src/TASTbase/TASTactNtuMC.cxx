@@ -64,6 +64,8 @@ Bool_t TASTactNtuMC::Action()
    if (fDebugLevel > 0)
       Info("Action()","Processing n Onion :: %2d hits", fpEvtStr->STCn);
    Float_t edep, trigtime;
+   
+   fDigitizer->ClearMap();
    for (Int_t i = 0; i < fpEvtStr->STCn; i++) {
      Int_t id      = fpEvtStr->STCid[i];
      Int_t trackId = fpEvtStr->STCid[i] - 1;
