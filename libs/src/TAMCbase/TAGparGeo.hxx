@@ -63,6 +63,7 @@ private:
      Float_t   Energy;        // Beam energy
      Int_t     AtomicNumber;  // Z of the beam
      Float_t   AtomicMass;    // A of the beam
+     TString   Material;      // Beam material
      Int_t     PartNumber;    // Number of particles in beam
    };
    BeamParameter_t  fBeamParameter;
@@ -131,7 +132,7 @@ public:
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
    static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
 
-   ClassDef(TAGparGeo,1)
+   ClassDef(TAGparGeo,2)
 };
 
 #endif
