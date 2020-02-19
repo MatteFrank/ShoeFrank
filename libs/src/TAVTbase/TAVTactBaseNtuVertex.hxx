@@ -20,6 +20,7 @@ class TH2F;
 class TH1F;
 class TABMntuTrackTr;
 class TAGgeoTrafo;
+class TADItrackEmProperties;
 class TAVTactBaseNtuVertex : public TAGaction {
     
 public:
@@ -49,13 +50,16 @@ protected:
     TAGparaDsc*     fpGeoMap;		    // geometry para dsc
     TAGparaDsc*     fpGeoMapG;       // Global geometry para dsc
     TAGdataDsc*     fpBMntuTrack;	 // bm track data dsc
+   
+    TADItrackEmProperties* fEmProp;   // EM properties
 
     Float_t         fSearchClusDistance; // distance for pileup
     TVector3        fVtxPos;             // vertex pos
 
-   Double_t fEps; //tolleranza
-   Double_t fMinZ; //minimum value of Z
-   Double_t fMaxZ; //Maximum value of Z
+    Double_t        fEps; //tolleranza
+    Double_t        fMinZ; //minimum value of Z
+    Double_t        fMaxZ; //Maximum value of Z
+    Double_t        fScatterAng; //Scattering angle
 
     TH1F*           fpHisPosZ;
     TH2F*           fpHisPosXY;
@@ -64,22 +68,18 @@ protected:
     
 protected:
    static Bool_t    fgCheckBmMatching;
-   static Bool_t    fgCheckPileUp;
 
 protected:
    static void    EnableBmMatching()        { fgCheckBmMatching = true;  }
    static void    DisableBmMatching()       { fgCheckBmMatching = false; }
    
-   static void    EnablePileUp()            { fgCheckPileUp = true;      }
-   static void    DisablePileUp()           { fgCheckPileUp = false;     }
-   
 protected:
-    Bool_t SetNotValidVertex(Int_t idTk);
-    void   SetValidVertex();
-    Bool_t CheckBmMatching();
-    Bool_t CheckPileUp();
-    void   ComputePileUp();
-    void   ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtrack lvtx);
+    Bool_t   SetNotValidVertex(Int_t idTk);
+    void     SetValidVertex();
+    Bool_t   CheckBmMatching();
+    void     ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtrack lvtx);
+    Double_t ComputeScatterAngle();
+    Int_t    SearchNucReac(TAVTtrack* track0);
 
     ClassDef(TAVTactBaseNtuVertex,0)
 };

@@ -21,6 +21,7 @@
 #include "TAVTtrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
+#include "TADItrackEmProperties.hxx"
 #include "TAVTactBaseNtuVertex.hxx"
 
 /*!
@@ -30,7 +31,6 @@
 
 ClassImp(TAVTactBaseNtuVertex);
 Bool_t  TAVTactBaseNtuVertex::fgCheckBmMatching = false;
-Bool_t  TAVTactBaseNtuVertex::fgCheckPileUp     = false;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -43,13 +43,14 @@ TAVTactBaseNtuVertex::TAVTactBaseNtuVertex(const char* name,
   fpConfig(pConfig),
   fpGeoMap(pGeoMap),
   fpGeoMapG(pGeoMapG),
-  fpBMntuTrack(pBmTrack)
+  fpBMntuTrack(pBmTrack),
+  fEmProp(new TADItrackEmProperties())
 {
     AddDataIn(pNtuTrack,   "TAVTntuTrack");
     AddDataOut(pNtuVertex, "TAVTntuVertex");
     AddPara(pGeoMap, "TAVTparGeo");
     AddPara(pConfig, "TAVTparConf");
-   AddPara(pGeoMapG, "TAGparGeo");
+    AddPara(pGeoMapG, "TAGparGeo");
 
    TAVTparConf* config = (TAVTparConf*) fpConfig->Object();
    fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
@@ -59,7 +60,8 @@ TAVTactBaseNtuVertex::TAVTactBaseNtuVertex(const char* name,
    
    fMinZ = -geoMapG->GetTargetPar().Size[2]*2;
    fMaxZ =  geoMapG->GetTargetPar().Size[2]*2;
-
+   fEps = 1e-4; // 1 microns precision
+   
    TVector3 posMin(0,0, fMinZ);
    TVector3 posMax(0,0, fMaxZ);
    
@@ -69,12 +71,16 @@ TAVTactBaseNtuVertex::TAVTactBaseNtuVertex(const char* name,
    
    fMinZ = posMin[2];
    fMaxZ = posMax[2];
+   
+   // scattering angle in rad (at 2 sigma)
+   fScatterAng = ComputeScatterAngle()*2.;
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAVTactBaseNtuVertex::~TAVTactBaseNtuVertex()
-{   
+{
+   delete fEmProp;
 }
 
 //------------------------------------------+-----------------------------------
@@ -120,26 +126,19 @@ Bool_t TAVTactBaseNtuVertex::Action()
 {
    Bool_t ok = true;
   
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   TAVTntuTrack*  pNtuTrack  = (TAVTntuTrack*) fpNtuTrack->Object();
    TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
-
-   Bool_t check = false;
-   
-   if (fgCheckPileUp)
-     check = CheckPileUp();
 
    Int_t nTrack = pNtuTrack->GetTracksN();
 
    if( nTrack == 0) {
-        fpNtuVertex->SetBit(kValid);
-        return true;
+      fpNtuVertex->SetBit(kValid);
+      return true;
    }
 
    if (nTrack == 1) {
 		 SetNotValidVertex(0);
-   } else if (nTrack >= 2 && check) { 
-	  for(Int_t q =0; q< nTrack; ++q) 
-		 SetNotValidVertex(q);
+      
    } else
 	  ok = ComputeVertex();
 
@@ -148,25 +147,15 @@ Bool_t TAVTactBaseNtuVertex::Action()
    
    if (fgCheckBmMatching)
 	  CheckBmMatching();
+   
    else {
       for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
-         TAVTvertex* vtx      = pNtuVertex->GetVertex(i);
+         TAVTvertex* vtx  = pNtuVertex->GetVertex(i);
          vtx->SetBmMatched();
       }
-
    }
 
     return ok;
-}
-
-
-//-------------------------------------------------------------------------------------
-//!Check Pile Up
-Bool_t TAVTactBaseNtuVertex::CheckPileUp()
-{
-	   ComputePileUp();
-	   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-	   return pNtuTrack->IsPileUp();
 }
 
 //-------------------------------------------------------------------------------------
@@ -277,7 +266,6 @@ Bool_t TAVTactBaseNtuVertex::SetNotValidVertex(Int_t idTk)
    TVector3 vtxPos(0,0,0);
    TVector3 tgtPos(0,0,0);
    TAVTvertex* vtx = new TAVTvertex();
-   vtx->SetVertexValidity(0);
    
    //Attached track idTk to vertex
    TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
@@ -287,7 +275,11 @@ Bool_t TAVTactBaseNtuVertex::SetNotValidVertex(Int_t idTk)
    
    vtxPos = track0->Intersection(tgtPos.Z());//Target center
    vtx->SetVertexPosition(vtxPos);
-   track0->SetValidity(-1);
+   
+   Int_t nucReacFlag = SearchNucReac(track0);
+   track0->SetValidity(nucReacFlag);
+   vtx->SetVertexValidity(nucReacFlag);
+   
    track0->SetPosVertex(vtxPos);
    vtx->AddTrack(track0);
    pNtuVertex->NewVertex(*vtx);
@@ -308,7 +300,6 @@ void TAVTactBaseNtuVertex::SetValidVertex()
    vtx->SetVertexValidity(1);
    vtx->SetVertexPosition(fVtxPos);
    
-   
    TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
    Int_t nTracks = ntuTrack->GetTracksN();
    for(Int_t q = 0; q<nTracks; ++q ){
@@ -324,29 +315,62 @@ void TAVTactBaseNtuVertex::SetValidVertex()
 }
 
 //--------------------------------------------
-//!compute pileup
-void TAVTactBaseNtuVertex::ComputePileUp()
+//!compute scattering angle after target
+Double_t TAVTactBaseNtuVertex::ComputeScatterAngle()
 {
-   TAVTparGeo*  pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
-   Float_t width         = pGeoMap->GetEpiSize()[0];
+   TAGparGeo* geoMapG = (TAGparGeo*) fpGeoMapG->Object();
+
+   TString matTarget  = geoMapG->GetTargetPar().Material;
+   Float_t depth      = geoMapG->GetTargetPar().Size[2];
+
+   TString matBeam   = geoMapG->GetBeamPar().Material;
+   Float_t energy    = geoMapG->GetBeamPar().Energy * geoMapG->GetBeamPar().AtomicMass;
    
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-   Int_t nTracks = pNtuTrack->GetTracksN();
-   Bool_t pileup = false;
-   pNtuTrack->SetPileUp(false);
-   for (Int_t i = 0; i < nTracks; ++i) {
-	  for (Int_t j = i+1; j < nTracks; ++j) {
-		 TAVTtrack* track0 = pNtuTrack->GetTrack(i);
-		 TAVTtrack* track1 = pNtuTrack->GetTrack(j);
-		 TVector2 pos = track0->DistanceMin(track1);
-		 if (TMath::Abs(pos.X()) > width/2. || pos.Y() > fSearchClusDistance) {
-			track0->SetPileUp();
-			track1->SetPileUp();
-			pileup = true;
-		 }
-	  }
+   return fEmProp->GetSigmaTheta(matTarget, matBeam, depth,  energy);
+}
+
+//--------------------------------------------
+//! Check scattering of track
+Int_t TAVTactBaseNtuVertex::SearchNucReac(TAVTtrack* track0)
+{
+   // returns -1 no BM, 2 nuclear reaction, 0, diffusion
+   TABMntuTrack* pBMntuTrack = 0x0;
+   TVector3 lineBM(0,0,0);
+   Int_t nTrackBM = 0;
+   
+   if (fpBMntuTrack) {
+      pBMntuTrack = (TABMntuTrack*) fpBMntuTrack->Object();
+      nTrackBM    = pBMntuTrack->GetTracksN();
+      
+      if(nTrackBM > 0)
+         lineBM = pBMntuTrack->Track(0)->GetPvers();
+      
+   } else {
+      return -1;
    }
    
-   if (pileup) 
-	  pNtuTrack->SetPileUp();
+   Int_t result = 0;
+   
+   // retrieve trafo
+   TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   TVector3 direction = lineBM.Unit();
+   direction = fpFootGeo->VecFromBMLocalToGlobal(direction);
+   Double_t angleBm   = direction.Theta();
+   
+   //Track from vtx
+   direction = track0->GetSlopeZ().Unit();
+   direction = fpFootGeo->VecFromVTLocalToGlobal(direction);
+   Double_t angleTk = direction.Theta();
+   
+   printf("%g %g %g\n", angleBm*TMath::RadToDeg(), angleTk*TMath::RadToDeg(), fScatterAng*TMath::RadToDeg());
+
+   if(TMath::Abs(angleBm-angleTk) > fScatterAng) {
+      result = 2; //No diffusion
+      printf("no diff\n");
+   } else {
+      result = 0;
+   }
+   
+   return result;
 }
+
