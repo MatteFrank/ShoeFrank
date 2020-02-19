@@ -362,14 +362,11 @@ Int_t TAVTactBaseNtuVertex::SearchNucReac(TAVTtrack* track0)
    direction = fpFootGeo->VecFromVTLocalToGlobal(direction);
    Double_t angleTk = direction.Theta();
    
-   printf("%g %g %g\n", angleBm*TMath::RadToDeg(), angleTk*TMath::RadToDeg(), fScatterAng*TMath::RadToDeg());
 
-   if(TMath::Abs(angleBm-angleTk) > fScatterAng) {
+   if(TMath::Abs(angleBm-angleTk) > fScatterAng)
       result = 2; //No diffusion
-      printf("no diff\n");
-   } else {
+   else
       result = 0;
-   }
    
    return result;
 }
