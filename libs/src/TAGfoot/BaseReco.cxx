@@ -435,15 +435,14 @@ void BaseReco::CreateRecActionVtx()
          fActTrackVtx->CreateHistogram();
       
       if (GlobalPar::GetPar()->IncludeTG()) {
-	  if(GlobalPar::GetPar()->IncludeBM()) {
-	    fActVtx    = new TAVTactNtuVertexPD("vtActVtx", fpNtuTrackVtx, fpNtuVtx, fpParConfVtx, fpParGeoVtx, fpParGeoG);
-	    if (fFlagHisto)
-	      fActVtx->CreateHistogram();
-	  } else {
-	    fActVtx    = new TAVTactNtuVertexPD("vtActVtx", fpNtuTrackVtx, fpNtuVtx, fpParConfVtx, fpParGeoVtx, fpParGeoG, fpNtuTrackBm);
-	    if (fFlagHisto)
-	      fActVtx->CreateHistogram();
-	  }
+         if(GlobalPar::GetPar()->IncludeBM()) {
+            fActVtx = new TAVTactNtuVertexPD("vtActVtx", fpNtuTrackVtx, fpNtuVtx, fpParConfVtx, fpParGeoVtx, fpParGeoG, fpNtuTrackBm);
+            
+         } else
+            fActVtx = new TAVTactNtuVertexPD("vtActVtx", fpNtuTrackVtx, fpNtuVtx, fpParConfVtx, fpParGeoVtx, fpParGeoG);
+         
+         if (fFlagHisto)
+            fActVtx->CreateHistogram();
       }
    }
 }
