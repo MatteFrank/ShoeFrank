@@ -935,7 +935,7 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
          TVector3 pos;
          TVector3 posG;
          
-         if (GlobalPar::GetPar()->IncludeTG() && track->GetValidity() == 1)
+         if (GlobalPar::GetPar()->IncludeTG())
             pos = track->Intersection(track->GetPosVertex().Z());
          else
             pos = track->Intersection(posfirstPlane);
