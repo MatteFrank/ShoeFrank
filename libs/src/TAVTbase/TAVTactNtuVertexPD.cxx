@@ -30,7 +30,6 @@ TAVTactNtuVertexPD::TAVTactNtuVertexPD(const char* name,
                                        TAGdataDsc* pNtuTrack, TAGdataDsc* pNtuVertex,
                                        TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pGeoMapG, TAGdataDsc* pBmTrack)
 : TAVTactBaseNtuVertex(name, pNtuTrack, pNtuVertex, pConfig, pGeoMap, pGeoMapG, pBmTrack),
-  fStepZ(0.0010),
   fImpactParameterCut(0.025),
   fProbabilityCut(0.1)
 {
@@ -114,8 +113,7 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
      for(Int_t z =0; z<3; ++z)
         fVtxPos[z] = fRValuesMax[maxVij[1]*fTracksN + maxVij[2]][z];
     
-    if(fgCheckPileUp == false)
-        ImpactParameterAdjustement();
+   ImpactParameterAdjustement();
     
     OK = SetVertex();
    
@@ -128,30 +126,45 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
 
 void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, Int_t i, Int_t j)
 {
-    Double_t fi = 0;
-    Double_t fj = 0;    
-    TVector3 vertexPoint (0,0,0);
-    
-    TVector3 maxPosition (0,0,0);
-    
-    Double_t actualProb = 0;
-    Double_t maxProb = -10e+10;
-    //loop over Z to find the maximum
-    for(Double_t iz = fMinZ; iz < fMaxZ; iz += fStepZ){
-        vertexPoint = ComputeVertexPoint(linei, linej, iz); // pass the track
-        fi = ComputeProbabilityForSingleTrack(linei, vertexPoint);
-        fj = ComputeProbabilityForSingleTrack(linej, vertexPoint);
-        actualProb = fi*fj;
-        if(actualProb > maxProb){
-            maxProb = actualProb;
-            maxPosition = vertexPoint;
-        }
-       
-    }
+   TVector3 vertexPoint(0.,0.,0.);
+   TVector3 maxPosition(0.,0.,0.);
    
-    //save the values into a structure
-    fProbValuesMax[i*fTracksN + j] = maxProb;
-    fRValuesMax[i*fTracksN + j] = maxPosition;
+   Double_t slope    = 0.;
+   Double_t probaA   = 0.;
+   Double_t probaB   = 0.;
+   Double_t maxProba = 0.;
+   Double_t fi       = 0.;
+   Double_t fj       = 0.;
+   Double_t a        = fMinZ;
+   Double_t b        = fMaxZ;
+   
+   // Binary search for maximum of probability
+   while (TMath::Abs(a - b) > fEps ) {
+      
+      vertexPoint = ComputeVertexPoint(linei, linej, a);
+      fi = ComputeProbabilityForSingleTrack(linei, vertexPoint);
+      fj = ComputeProbabilityForSingleTrack(linej, vertexPoint);
+      probaA = fi*fj;
+      
+      vertexPoint = ComputeVertexPoint(linei, linej, b);
+      fi = ComputeProbabilityForSingleTrack(linei, vertexPoint);
+      fj = ComputeProbabilityForSingleTrack(linej, vertexPoint);
+      probaB = fi*fj;
+      
+      slope = (probaB - probaA)/(b-a);
+      
+      if (slope > 0)
+         a = (a+b)/2.;
+      else
+         b = (a+b)/2.;
+   }
+   
+   maxProba    = probaA;
+   maxPosition = vertexPoint;
+   
+   //save the values into a structure
+   fProbValuesMax[i*fTracksN + j] = maxProba;
+   fRValuesMax[i*fTracksN + j]    = maxPosition;
 }
 
 
@@ -258,12 +271,16 @@ Bool_t TAVTactNtuVertexPD::SetVertex()
 
     TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
     Int_t nTracks = ntuTrack->GetTracksN();
+   
     for(Int_t q = 0; q < nTracks; ++q ) {
        if(fNotValidTrack[q] == 1) continue;
-        TAVTtrack* track0 = ntuTrack->GetTrack(q);
+       
+       TAVTtrack* track0 = ntuTrack->GetTrack(q);
        track0->SetValidity(1);
        track0->SetPosVertex(fVtxPos);
        vtx->AddTrack(track0);
+       
+       // Compute error on VTX
        TVector3 pos = track0->Intersection(fVtxPos.Z());
        pos -= fVtxPos;
        pos.SetXYZ(pos[0]*pos[0], pos[1]*pos[1], 0);

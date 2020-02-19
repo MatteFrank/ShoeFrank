@@ -4,7 +4,7 @@
  \file
  \brief   Declaration of TAVTactNtuVertexPD
  
- \author R. Rescigno
+ \author R. Rescigno, optimized and cleanup Ch. Finck
  */
 
 #include "TAVTactBaseNtuVertex.hxx"
@@ -28,8 +28,6 @@ public:
     
     virtual ~TAVTactNtuVertexPD();
     
-    void     SetStepZ(Double_t q)      { fStepZ = q;    }
-    Double_t GetStepZ()          const { return fStepZ; }
     void     SetMinimumZ(Double_t min) { fMinZ = min;   }
     Double_t GetMinimumZ()       const { return fMinZ;  }
     void     SetMaximumZ(Double_t max) { fMaxZ = max;   }
@@ -47,8 +45,6 @@ private:
     TVector3 ComputeMaxVMaxIMaxJ(); 
 
 private:
-    Double_t fStepZ; //Tolerance Z 
-    Double_t fStepXY; //Tolerance XY
     Double_t fTracksN;
     Double_t fImpactParameterCut;
     Double_t fProbabilityCut;
@@ -59,7 +55,7 @@ private:
     TArrayD  fFlagValidity;
     TArrayD  fVvalues;
     TArrayI  fNotValidTrack;
-     map <Int_t, TVector3> fRValuesMax;
+    map <Int_t, TVector3> fRValuesMax;
         
     ClassDef(TAVTactNtuVertexPD,0)
 };
