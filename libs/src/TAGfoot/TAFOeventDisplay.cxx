@@ -540,12 +540,12 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form("Vertex# %d at position:\n", idx) );
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z()) );
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", err.X(), err.Y(), err.Z()) );
-      fInfoView->AddLine( Form(" BM Matched %d\n", vtx->IsBmMatched()) );
+      fInfoView->AddLine( Form(" BM Matched %d (valid: %d)\n", vtx->IsBmMatched(), vtx->GetValidity()) );
       
       if (fConsoleButton->IsOn()) {
          cout << Form("Vertex# %d at position:\n", idx) << endl;
          cout << Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z());
-         cout << Form(" BM Matched %d\n", vtx->IsBmMatched());
+         cout << Form(" BM Matched %d (valid: %d)\n", vtx->IsBmMatched(), vtx->GetValidity());
       }
 
    } else if (obj->InheritsFrom("TASTntuHit")) {
@@ -593,10 +593,10 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       TAVTbaseTrack* track =  (TAVTbaseTrack*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track # %2d:\n", track->GetNumber()) );
+      fInfoView->AddLine( Form("Track # %2d (valid: %d): \n", track->GetNumber(), track->GetValidity()) );
       fInfoView->AddLine( Form(" with %3d clusters\n", track->GetClustersN()) );
       if (fConsoleButton->IsOn()) {
-         cout << Form("Track # %2d:\n", track->GetNumber());
+         cout << Form("Track # %2d (valid: %d): \n", track->GetNumber(), track->GetValidity());
          cout << Form(" with %3d clusters\n", track->GetClustersN());
       }
       
@@ -774,11 +774,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
    else if (prefix == "it")
       parGeo = fReco->GetParGeoIt();
 
-   // known bug if first event is empty
-   if (fVtxClusDisplay)
-      fVtxClusDisplay->AddHit(-1, 0, 0, 0);
-   
-   
    Int_t nPlanes = parGeo->GetSensorsN();
    
    TAVTntuTrack*  pNtuTrack = 0x0;
