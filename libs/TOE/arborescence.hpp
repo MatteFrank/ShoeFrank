@@ -85,6 +85,7 @@ public:
     }
     
     node const * const get_parent() const { return parent_mh; }
+    node * const get_parent()  { return parent_mh; }
 };
 
 
