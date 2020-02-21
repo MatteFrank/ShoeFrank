@@ -26,6 +26,7 @@ class TAGactNtuGlbTrack : public TAGaction {
 public:
    
    explicit  TAGactNtuGlbTrack(const char* name       = 0,
+                               TAGdataDsc* p_vtxclus  = 0,
                                TAGdataDsc* p_vtxtrack = 0,
                                TAGdataDsc* p_itrclus  = 0,
                                TAGdataDsc* p_msdclus  = 0,
@@ -69,6 +70,7 @@ private:
 private:
    TAGgeoTrafo*      fpFootGeo;        // geo trafo
    TAGdataDsc*       fpVtxVertex;		// Vertex
+    TAGdataDsc*      fpVtxClus;
    TAGdataDsc*       fpItrClus;		   // ITR clusters
    TAGdataDsc*       fpMsdClus;		   // MSD clusters
    TAGdataDsc*       fpTwPoint;		   // TOF points, should be cluster

@@ -486,6 +486,7 @@ void BaseReco::CreateRecActionGlb()
   if(fFlagTrack) {
     fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
     fActGlbTrack  = new TAGactNtuGlbTrack( "glbActTrack",
+                                           fpNtuClusVtx,
                                            fpNtuVtx,
                                            fpNtuClusIt,
                                            fpNtuClusMsd,

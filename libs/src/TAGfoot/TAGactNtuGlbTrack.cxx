@@ -17,6 +17,7 @@
 #include "TAGactTreeReader.hxx"
 #include "TAGntuGlbTrack.hxx"
 
+#include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTtrack.hxx"
 #include "TAITntuCluster.hxx"
@@ -51,6 +52,7 @@ ClassImp(TAGactNtuGlbTrack)
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
+                                      TAGdataDsc* p_vtxclus,
                                       TAGdataDsc* p_vtxvertex,
                                       TAGdataDsc* p_itrclus,
                                       TAGdataDsc* p_msdclus,
@@ -64,7 +66,8 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
                                       TAGparaDsc* p_geoTof,
                                       TADIgeoField* field)
  : TAGaction(name, "TAGactNtuGlbTrack - Global Tracker"),
-   fpVtxVertex(p_vtxvertex),
+    fpVtxClus(p_vtxclus),
+    fpVtxVertex(p_vtxvertex),
    fpItrClus(p_itrclus),
    fpMsdClus(p_msdclus),
    fpTwPoint(p_twpoint),
@@ -83,8 +86,10 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
    
     if (GlobalPar::GetPar()->IncludeVertex()) //should not be if
-      AddDataIn(p_vtxvertex, "TAVTntuVertex");
-   
+    {
+        AddDataIn(p_vtxclus, "TAVTntuCluster");
+        AddDataIn(p_vtxvertex, "TAVTntuVertex");
+    }
    if (GlobalPar::GetPar()->IncludeInnerTracker())
       AddDataIn(p_itrclus, "TAITntuCluster");
    
@@ -144,7 +149,7 @@ void TAGactNtuGlbTrack::SetupBranches()
     using state_covariance =  Matrix<4, 4> ;
     using state = state_impl< state_vector, state_covariance  >;
     
-    
+    auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
     auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
     auto * geoVTX_h = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
     
@@ -156,8 +161,10 @@ void TAGactNtuGlbTrack::SetupBranches()
     auto * geoTW_h = static_cast<TATWparGeo*>( fpTofGeoMap->Object() );
     
     
-    auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, geoVTX_h, 12) )
-                    .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, 21) )
+    auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
+                                                                     geoVTX_h,
+                                                                     6, 12) )
+                    .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, std::make_pair(22, 22) ) )
                     .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 1.5) )
                     .finish();
     

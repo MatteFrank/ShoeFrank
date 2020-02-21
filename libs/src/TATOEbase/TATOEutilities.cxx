@@ -4,6 +4,14 @@
 //                                                        //
 ////////////////////////////////////////////////////////////
 
+//
+//File      : TATOEutilities.cpp
+//Author    : Alexandre Sécher (alexandre.secher@iphc.cnrs.fr)
+//Date      : 10/02/2020
+//Framework : PhD thesis, CNRS/IPHC/DRHIM/Hadrontherapy, Strasbourg, France
+//
+
+
 #include "TATOEutilities.hxx"
 
 
@@ -45,42 +53,19 @@ const TAVTvertex * detector_properties< details::vertex_tag >::retrieve_vertex( 
 }
 
 
-detector_properties< details::vertex_tag >::track_list::pseudo_layer
-detector_properties< details::vertex_tag >::track_list::iterable_track::form_layer( std::size_t index_p ) const
-{
-    //cluster are in inverse order
-    std::size_t real_index = track_mh->GetClustersN() -1 -index_p;
-    
-    auto* cluster_h = track_mh->GetCluster( real_index );
-    auto c = detector_m.generate_candidate( cluster_h );
-    
-    return pseudo_layer{
-                std::move(c),
-                detector_m.layer_depth( cluster_h->GetPlaneNumber() ),
-                detector_m.cut_value()
-                        };
-}
 
-    
-std::vector< detector_properties< details::vertex_tag >::track_list::iterable_track >
-detector_properties< details::vertex_tag >::track_list::form_tracks( TAVTvertex const * vertex_ph ) const
+std::vector<typename details::vertex_tag::candidate> detector_properties< details::vertex_tag >::generate_candidates(std::size_t index_p) const
 {
-    using track = detector_properties< details::vertex_tag >::track_list::iterable_track;
-    std::vector< track > track_c;
-    track_c.reserve( vertex_ph->GetTracksN() );
-    for( auto i = 0 ; i < vertex_ph->GetTracksN() ; ++i ){
-        track_c.emplace_back( detector_m, vertex_ph->GetTrack(i) );
+    std::vector<candidate> candidate_c;
+    std::size_t entries = cluster_mhc->GetClustersN( index_p );
+    candidate_c.reserve( entries );
+    for(std::size_t i{0}; i < entries ; ++i)
+    {
+        auto cluster_h = cluster_mhc->GetCluster(index_p, i);
+        candidate_c.push_back( generate_candidate( cluster_h ) );
     }
-    return track_c;
+    return candidate_c;
 }
-
-
-detector_properties< details::vertex_tag >::track_list detector_properties< details::vertex_tag >::get_track_list( TAVTvertex const * vertex_ph ) const
-{
-    return { *this, vertex_ph };
-}
-
-
 
 //______________________________________________________________________________
 //                     IT
