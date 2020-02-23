@@ -365,6 +365,8 @@ int KFitter::UploadClusVT(){
     }
   }
   m_MCInfo[m_detectorID_map["VT"]] = MCVTInfo;
+   
+  return 0;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -487,6 +489,8 @@ int KFitter::UploadClusIT(){
     }
   }
   m_MCInfo[m_detectorID_map["IT"]] = MCITInfo;
+   
+  return 0;
 }
 
 
@@ -581,6 +585,8 @@ int KFitter::UploadClusMSD() {
     }
   }
   m_MCInfo[m_detectorID_map["MSD"]] = MCMSDInfo;
+   
+  return 0;
 }
 
 
@@ -675,6 +681,7 @@ int KFitter::UploadHitsMSD() {
 //     }
 //   }
 //   m_MCInfo[m_detectorID_map["MSD"]] = MCMSDInfo;
+   return 0;
 }
 
 
@@ -876,7 +883,7 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
 	// 		// 	push back 
 
 	// }
-
+   return 0;
 }
 
 
