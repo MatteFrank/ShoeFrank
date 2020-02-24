@@ -34,6 +34,10 @@ public:
    Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
    Int_t          GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
    
+   void           SetChannel(Int_t ch)               {  fChannel = ch;               }
+   void           SetTime(Double_t time)             {  fTime    = time;             }
+   void           SetCharge(Double_t chg)            {  fCharge = chg;               }
+   
    void           Clear(Option_t* option = "C");
    void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
    
