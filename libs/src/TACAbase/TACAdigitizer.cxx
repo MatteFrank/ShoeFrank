@@ -61,9 +61,13 @@ Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    if (fMap[id] == 0) {
       fCurrentHit = (TACAntuHit*)fpNtuRaw->NewHit(id, photonsN, time);
       fMap[id] = fCurrentHit;
-   } else
+   } else {
       fCurrentHit = fMap[id];
-
+      
+      //Add charge to current hit
+      fCurrentHit->SetCharge(fCurrentHit->GetCharge()+photonsN);
+   }
+   
    return true;
 }
 
