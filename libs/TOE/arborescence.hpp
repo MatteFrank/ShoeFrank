@@ -85,7 +85,20 @@ public:
     }
     
     node const * const get_parent() const { return parent_mh; }
-    node * const get_parent()  { return parent_mh; }
+    node * get_parent()  { return parent_mh; }
+    
+    node const * const get_ancestor() const
+    {
+        node const * current_node_h = this;
+        while( current_node_h->get_parent() ){ current_node_h = current_node_h->get_parent(); }
+        return current_node_h;
+    };
+    node * get_ancestor()
+    {
+        node * current_node_h = this;
+        while( current_node_h->get_parent() ){ current_node_h = current_node_h->get_parent(); }
+        return current_node_h;
+    };
 };
 
 
