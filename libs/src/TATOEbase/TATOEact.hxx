@@ -13,11 +13,14 @@
 
 #include <utility>
 #include <iostream>
+#include <sstream>
 
 #include "detector_list.hpp"
 #include "arborescence.hpp"
 
 #include "TATOEutilities.hxx"
+#include "TATOEchecker.hxx"
+#include "TATOElogger.hxx"
 //______________________________________________________________________________
 //
 
@@ -50,6 +53,8 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
                                         DetectorProperties...  >   >
             : TATOEbaseAct
 {
+    friend TATOEchecker<TATOEactGlb>;
+    
     using detector_list_t = detector_list< details::finished_tag, DetectorProperties...  >;
     
     using vector_matrix = typename underlying< typename details::filter_traits<UKF>::state >::vector::type ;
@@ -68,38 +73,45 @@ private:
     detector_list_t list_m;
     TAGntuGlbTrack* track_mhc;
     double beam_energy_m;
+    TATOEchecker<TATOEactGlb> checker_m;
+    TATOElogger logger_m;
+
+
     
+
 public:
     
     TATOEactGlb( UKF&& ukf_p,
                  detector_list_t&& list_p,
                  TAGntuGlbTrack* track_phc,
-                 TAGparGeo* global_parameters_ph) :
+                 TAGparGeo const * global_parameters_ph) :
         ukf_m{ std::move(ukf_p) },
         list_m{ std::move(list_p) },
         track_mhc{ track_phc },
-        beam_energy_m{ global_parameters_ph->GetBeamPar().Energy * 1000 } //Mev/u
+        beam_energy_m{ global_parameters_ph->GetBeamPar().Energy * 1000 }, //Mev/u
+        checker_m{ global_parameters_ph, *this}
     {
         ukf_m.call_stepper().ode.model().particle_h = &particle_m;
     }
     
     void Action() override {
-
-        std::cout << " ---- GLOBAL_RECONSTRUCTION --- \n";
+        
+        logger_m.clear();
+        checker_m.reset_local_data();
+        
+        logger_m.add_header( "GLOBAL_RECONSTRUCTION" );
         
         auto hypothesis_c = form_hypothesis();
         
         for(auto & hypothesis : hypothesis_c){
             particle_m = hypothesis;
-            
-            std::cout << std::scientific << " -- Particle -- \n";
-            std::cout << "charge = " << particle_m.charge << '\n';
-            std::cout << "mass = " << particle_m.mass << '\n';
-            std::cout << "momentum = " << particle_m.momentum << '\n';
-            
-            if(particle_m.charge == 0){ continue; }
             reconstruct();
         }
+        
+        checker_m.compute_efficiency();
+        checker_m.output();
+        logger_m.output();
+        
         
         
         //form list of hypothesis
@@ -132,7 +144,7 @@ private:
     std::vector<particle_properties> form_hypothesis()
     {
         
-        std::cout << " ---- FORM_HYPOTHESIS --- \n";
+        logger_m.add_header( "FORM_HYPOTHESIS" );
         
         auto tof = list_m.last();
 
@@ -142,31 +154,13 @@ private:
         
         
         auto * data_hc = static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" )->Object() );
-        
-//        std::cout << "---- list_of_tracks ----\n";
-//        for( int id{0} ; id < data_hc->GetHitsN() ; ++id){
-//            std::cout << "\ntrack_index: " << id << '\n';
-//            std::cout << "initial_position: (" << data_hc->GetHit(id)->GetInitPos().X() << ", " << data_hc->GetHit(id)->GetInitPos().Y() << ", " << data_hc->GetHit(id)->GetInitPos().Z() << ")\n";
-//            std::cout << "charge: " << data_hc->GetHit(id)->GetCharge() << '\n';
-//            std::cout << "mass: " << data_hc->GetHit(id)->GetMass() << '\n';
-//            std::cout << "track_id: " << data_hc->GetHit(id)->GetFlukaID() << '\n';
-//            std::cout << "mother_id: " << data_hc->GetHit(id)->GetMotherID() << '\n';
-//        }
-//
+
         
         for( const auto& candidate : candidate_c ) {
-
-            std::cout << "\n---- candidate ----\n";
-            for( int i{0}; i < candidate.data->GetColumnHit()->GetMcTracksN() ; ++i  ){
-                auto id = candidate.data->GetColumnHit()->GetMcTrackIdx(i);
-                std::cout << "A/Z :" << data_hc->GetHit(id)->GetMass() << "/" << data_hc->GetHit(id)->GetCharge() << '\n';
-                std::cout << "initial_momentum : " << data_hc->GetHit(id)->GetInitP().Mag() * 1e3 << '\n';
-                std::cout << "real_track_slope_x : " << data_hc->GetHit(id)->GetInitP().X()/data_hc->GetHit(id)->GetInitP().Z() << '\n';
-                std::cout << "real_track_slope_y : " << data_hc->GetHit(id)->GetInitP().Y()/data_hc->GetHit(id)->GetInitP().Z() << '\n';
-            }
-            
+            checker_m.register_reconstructible_track( candidate );
             
             auto charge = candidate.data->GetChargeZ();
+            if(charge == 0) {continue;}
             
             auto add_current_end_point = [&candidate]( particle_properties & hypothesis_p  )
                                  { hypothesis_p.get_end_points().push_back( candidate.data ); };
@@ -227,7 +221,7 @@ private:
     
 
     corrected_state generate_corrected_state( TAVTvertex const * vertex_ph,
-                                              TAVTbaseCluster const * cluster_ph ) const
+                                              TAVTbaseCluster const * cluster_ph )
     {
         auto * transformation_h = static_cast<TAGgeoTrafo*>(
                                      gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data() )
@@ -240,9 +234,6 @@ private:
         
         auto track_slope_x = length.X()/length.Z();
         auto track_slope_y = length.Y()/length.Z();
-        
-        std::cout << "track_slope_x: " << track_slope_x << '\n';
-        std::cout << "track_slope_y: " << track_slope_y << '\n';
         
         
         auto length_error_x = sqrt( pow( vertex_ph->GetVertexPosError().X(), 2 ) +
@@ -281,7 +272,7 @@ private:
     
     void reconstruct()
     {
-        std::cout << " ---- RECONSTRUCT --- \n";
+        logger_m.add_header("RECONSTRUCT");
         
         auto arborescence = make_arborescence< full_state >();
         
@@ -294,12 +285,15 @@ private:
         
         
         auto& node_c = arborescence.get_handler();
-        std::cout << "----- reconstructed_track : "<< node_c.size() << " -----\n";
+//        std::cout << "----- reconstructed_track : "<< node_c.size() << " -----\n";
         
         for(auto& node : node_c){
             register_track(node);
-
+            //check if some are in common -> only keep the better one ? -> lowest chi2 for now ?
+            
         }
+        
+       
     }
     
     //-------------------------------------------------------------------------------------
@@ -336,10 +330,10 @@ private:
     std::vector<full_state> advance_reconstruction_impl( state s_p,
                                                          const T& layer_p )
     {
-        std::cout << "\nstarting_state : ( " << s_p.vector(0,0) << ", " << s_p.vector(1,0) ;
-        std::cout << ") -- (" << s_p.vector(2,0) << ", " << s_p.vector(3,0)  ;
-        std::cout << ") -- " << s_p.evaluation_point << '\n';
-//
+//        std::cout << "\nstarting_state : ( " << s_p.vector(0,0) << ", " << s_p.vector(1,0) ;
+//        std::cout << ") -- (" << s_p.vector(2,0) << ", " << s_p.vector(3,0)  ;
+//        std::cout << ") -- " << s_p.evaluation_point << '\n';
+
         auto sigma_c = ukf_m.generate_sigma_points( s_p );
         
         sigma_c = ukf_m.propagate_while(
@@ -350,14 +344,15 @@ private:
         
         auto step = layer_p.depth - sigma_c.front().evaluation_point;
         
-        if(step<0){ std::cout << "WARNING : going backwards !\n"; }
+        if(step<0){ std::cout << "WARNING : going backwards !" << std::endl; }
         
         sigma_c = ukf_m.force_propagation( std::move(sigma_c), step );
         auto ps = ukf_m.generate_propagated_state( std::move(sigma_c) );
 //
-        std::cout << "propagated_state : ( " << ps.vector(0,0) << ", " << ps.vector(1,0) ;
-        std::cout << ") -- (" << ps.vector(2,0) << ", " << ps.vector(3,0)  ;
-        std::cout << ") -- " << ps.evaluation_point << '\n';
+        logger_m.add_sub_header<3>("advance_reconstruction_impl");
+        logger_m << "propagated_state : ( " << ps.vector(0,0) << ", " << ps.vector(1,0) ;
+        logger_m << ") -- (" << ps.vector(2,0) << ", " << ps.vector(3,0)  ;
+        logger_m << ") -- " << ps.evaluation_point << '\n';
         
         return confront(ps, layer_p);
     }
@@ -373,23 +368,26 @@ private:
               typename std::enable_if_t< !std::is_same< T,  detector_properties< details::vertex_tag > >::value ,
                                           std::nullptr_t  > = nullptr    >
     void advance_reconstruction( arborescence<node_type>& arborescence_p,
-                                 const T& layer_pc )
+                                 const T& detector_p )
     {
         
-        std::cout << " ---- ADVANCE_RECONSTRUCTION --- \n";
+        logger_m.add_header("ADVANCE_RECONSTRUCTION");
         
+        auto layer_c = detector_p.form_layers();
         
-        for(auto && layer : layer_pc ) {
+        for(auto && layer : layer_c ) {
         
             auto& leaf_c = arborescence_p.get_handler();
-            std::cout << " --- layer --- \n";
+            logger_m.add_sub_header<1>("layer");
         
             if( layer.get_candidates().empty() ){ continue; }
             
             
             for(auto& leaf : leaf_c){
                 
-                std::cout << " --- leaf --- \n";
+                logger_m.add_sub_header<2>( "leaf" );
+                checker_m.update_current_node( &leaf );
+                
             
                 ukf_m.step_length() = 1e-3;
             
@@ -398,9 +396,10 @@ private:
             
                 for( auto & fs : fs_c ){
 //
-                    std::cout << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
-                    std::cout << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
-                    std::cout << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
+                    
+                    logger_m << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
+                    logger_m << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
+                    logger_m << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
 //
                     leaf.add_child( std::move(fs) );
                 }
@@ -417,13 +416,17 @@ private:
                                  const detector_properties<details::tof_tag>& tof_p )
     {
         
-        std::cout << " ---- FINALISE_RECONSTRUCTION --- \n";
+        logger_m.add_header( "FINALISE_RECONSTRUCTION" );
         
         
         auto& leaf_c = arborescence_p.get_handler();
         
         
+        
         for(auto& leaf : leaf_c){
+        
+            logger_m.add_sub_header<1>("leaf");
+            checker_m.update_current_node( &leaf );
             
             ukf_m.step_length() = 1e-3;
             
@@ -434,10 +437,10 @@ private:
             else{
                 auto fs = fs_c.front();
                 
-                std::cout << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
-                std::cout << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
-                std::cout << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
-                
+                logger_m << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
+                logger_m << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
+                logger_m << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
+////
                 leaf.add_child( std::move(fs_c.front()) );
             }
         }
@@ -451,17 +454,11 @@ private:
                                  const detector_properties<details::vertex_tag>& vertex_p )
     {
         
-        std::cout << " ---- START_RECONSTRUCTION --- \n";
+        logger_m.add_header("START_RECONSTRUCTION");
         
-        //need to retrieve vertex
-        //need to retrieve each track
-        //for each track
-        //compute track_slope and track_slope error
-        //start propagation but feed only following cluster in track
-        
-        
+
         auto * vertex_h = vertex_p.retrieve_vertex();
-        if( !vertex_h ){ std::cout << "WARNING : no vertex found\n"; }
+        if( !vertex_h ){ std::cout << "WARNING : no vertex found" << std::endl; }
         
         auto track_c = vertex_p.get_track_list( vertex_h );
         for( auto& track : track_c ){
@@ -475,10 +472,12 @@ private:
             
             auto * leaf_h = arborescence_p.add_root( std::move(fs) );
             
-            std::cout << " --- track --- \n";
+            logger_m.add_sub_header<1>( "vertex_track_reconstruction" );
             
             
             for( auto layer : track ){
+                
+                checker_m.update_current_node( leaf_h );
                 
                 ukf_m.step_length() = 1e-3;
                 
@@ -487,11 +486,11 @@ private:
                 
                 if( !fs_c.empty() ){
                     auto fs = fs_c.front();
-
-                    std::cout << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
-                    std::cout << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
-                    std::cout << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
 //
+                    logger_m << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
+                    logger_m << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
+                    logger_m << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
+
 //
                     leaf_h = leaf_h->add_child( std::move(fs_c.front()) );
                     
@@ -529,7 +528,7 @@ private:
         std::vector< enriched_candidate > enriched_c;
         enriched_c.reserve( candidate_c.size() );
     
-        
+        logger_m.add_sub_header<4>(  "confront" );
         std::for_each( candidate_c.begin(), candidate_c.end(),
                       [this, &ps_p, &enriched_c]( const auto& candidate_p )
                       {
@@ -543,11 +542,12 @@ private:
                                   enriched_c.begin(), enriched_c.end(),
                                   [this, &ps_p, &layer_p ]( const auto & ec_p )
                                   {
+                                      logger_m.add_sub_header<5>( "select" );
                                       auto error = ec_p.data->GetPosError();
                                       
                                       auto mps = split_half( ps_p.vector , details::row_tag{});
-                                      mps.first.get(0,0) += layer_p.cut * particle_m.light_ion_boost * error.X();
-                                      mps.first.get(1,0) += layer_p.cut * particle_m.light_ion_boost * error.Y();
+                                      mps.first.get(0,0) += layer_p.cut_value_x() * particle_m.light_ion_boost * error.X();
+                                      mps.first.get(1,0) += layer_p.cut_value_y() * particle_m.light_ion_boost * error.Y();
                                       // TD<decltype(mps)>x;
                                       
                                       using ec = typename underlying<decltype(ec_p)>::type;
@@ -566,9 +566,12 @@ private:
                                       
                                       auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
                                       
-                                      std::cout << "cutter_chisquared : " << cutter.chisquared << '\n';
-                                      std::cout << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
-                                      std::cout << "candidate_chisquared : " << ec_p.chisquared << '\n';
+                                      logger_m << "cutter : (" << cutter_candidate.vector(0, 0) << ", " << cutter_candidate.vector(1,0) << ")\n";
+                                      logger_m << "cutter_chisquared : " << cutter.chisquared << '\n';
+                                      logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
+                                      logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
+                                      
+                                      checker_m.check_validity( ec_p,  ec_p.chisquared < cutter.chisquared );
                                       
                                       return ec_p.chisquared < cutter.chisquared;
                                   }
@@ -592,9 +595,11 @@ private:
     
     
     
-    std::vector<full_state> confront(const state& ps_p, const detector_properties<details::tof_tag>::layer& layer_p) //optionnal is more relevant here
+    std::vector<full_state> confront(const state& ps_p, const detector_properties<details::tof_tag>::layer& layer_p)  //optionnal is more relevant here
     {
         using candidate = typename detector_properties< details::tof_tag >::candidate;
+        
+        
         
         auto candidate_c = layer_p.get_candidates();
         auto candidate_end = std::partition( candidate_c.begin(), candidate_c.end(),
@@ -604,7 +609,7 @@ private:
                                        return std::any_of( end_point_ch.begin(), end_point_ch.end(),
                                                            [&c_p](auto const & ep_ph ){ return c_p.data == ep_ph;  } );
                                    } );
-        
+        logger_m.add_sub_header<4>(  "confront" );
 
         using enriched_candidate = enriched_candidate_impl<typename decltype(candidate_c)::value_type>;
         std::vector< enriched_candidate > enriched_c;
@@ -626,6 +631,7 @@ private:
     
         auto select = [this, &ps_p, &layer_p ]( const auto & ec_p )
                          {
+                             logger_m.add_sub_header<5>( "select" );
                             auto error = ec_p.data->GetPosError();
             
                             auto mps = split_half( ps_p.vector , details::row_tag{});
@@ -647,11 +653,14 @@ private:
                              } ;
             
                              auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
+//
+                             logger_m << "cutter : (" << cutter_candidate.vector(0, 0) << ", " << cutter_candidate.vector(1,0) << ")\n";
+                             logger_m << "cutter_chisquared : " << cutter.chisquared << '\n';
+                             logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
+                             logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
                              
-                             std::cout << "cutter_chisquared : " << cutter.chisquared << '\n';
-                             std::cout << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
-                             std::cout << "candidate_chisquared : " << ec_p.chisquared << '\n';
-            
+                             checker_m.check_validity( ec_p, ec_p.chisquared < cutter.chisquared );
+                             
                              return ec_p.chisquared < cutter.chisquared;
                          };
         
@@ -671,12 +680,14 @@ private:
     
 
 
-    std::vector<full_state> confront(const state& ps_p, const detector_properties<details::vertex_tag>::track_list::pseudo_layer& layer_p) //optionnal is more relevant here
+    std::vector<full_state> confront( const state& ps_p,
+                                      const track_list< detector_properties<details::vertex_tag> >::pseudo_layer& layer_p )//optionnal is more relevant here
     {
         using candidate = typename detector_properties< details::vertex_tag >::candidate;
         using enriched_candidate = enriched_candidate_impl< candidate >;
     
-    
+        logger_m.add_sub_header<4>(  "confront" );
+        
         auto c = layer_p.get_candidate();
         auto chi2 = ukf_m.compute_chisquared(ps_p, c);
         enriched_candidate ec = make_enriched_candidate( std::move( c) ,
@@ -685,13 +696,15 @@ private:
     
         std::vector<full_state> fs_c;
     
-        auto selection = [this, &ps_p, &layer_p ]( const auto & ec_p )
+        auto select = [this, &ps_p, &layer_p ]( const auto & ec_p, double cut_p )
                             {
+                                logger_m.add_sub_header<5>( "select" );
+                                
                                 auto error = ec_p.data->GetPosError();
         
                                 auto mps = split_half( ps_p.vector , details::row_tag{});
-                                mps.first.get(0,0) += layer_p.cut * particle_m.light_ion_boost * error.X();
-                                mps.first.get(1,0) += layer_p.cut * particle_m.light_ion_boost * error.Y();
+                                mps.first.get(0,0) += cut_p * particle_m.light_ion_boost * error.X();
+                                mps.first.get(1,0) += cut_p * particle_m.light_ion_boost * error.Y();
         
                                 using ec = typename underlying<decltype(ec_p)>::type;
                                 using candidate = typename underlying<ec>::candidate;
@@ -709,22 +722,31 @@ private:
         
                                 auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
 //
-                                std::cout << "cutter_chisquared : " << cutter.chisquared << '\n';
-                                std::cout << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
-                                std::cout << "candidate_chisquared : " << ec_p.chisquared << '\n';
+                                logger_m << "cutter : (" << cutter_candidate.vector(0, 0) << ", " << cutter_candidate.vector(1,0) << ")\n";
+                                logger_m << "cutter_chisquared : " << cutter.chisquared << '\n';
+                                logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
+                                logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
+                                
+                                checker_m.check_validity( ec_p, ec_p.chisquared < cutter.chisquared, details::should_pass_tag{} );
                                 
                                 return ec_p.chisquared < cutter.chisquared;
                             };
     
-        if( selection(ec) ){
+        if( select(ec, layer_p.minimal_cut) ){
             auto state = ukf_m.correct_state( ps_p, ec ); //should be sliced properly
             auto cs = make_corrected_state( std::move(state),
                                             chisquared{std::move(ec.chisquared)} );
             
             auto fs = full_state{ std::move(cs),
-                                   data_handle<data_type>{ ec.data }  };
+                                      data_handle<data_type>{ ec.data }  };
             
             fs_c.push_back( std::move(fs) );
+            
+            if( !select(ec, layer_p.optimal_cut) ){
+               // logger_m.freeze();
+                //std::cout << "WARNING : does not go through the optimal_cut" << std::endl;
+            }
+            
         }
     
         return fs_c;
@@ -732,16 +754,19 @@ private:
 
     
     
-    void register_track( node_type& node_p ) const
+    void register_track( node_type& node_p )
     {
         auto * track_h = track_mhc->NewTrack( particle_m.mass * 0.938 , particle_m.momentum / 1000., static_cast<double>(particle_m.charge), 1.1   ); //tof value is wrong
         
         
         auto value_c = node_p.get_branch_values();
-        std::cout << " --- final_track --- " << '\n';
-        for(auto& value : value_c){
-            std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
+        checker_m.register_reconstructed_track( value_c );
         
+//        std::cout << " --- final_track --- " << '\n';
+        for(auto& value : value_c){
+//
+//            std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
+////
             TVector3 corrected_position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
             
             

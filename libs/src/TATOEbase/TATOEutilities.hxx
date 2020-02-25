@@ -474,13 +474,13 @@ private:
 public:
     
     detector_properties( TATWntuPoint* cluster_phc,
-                                   TATWparGeo* geo_ph,
-                                   double cut_p) :
+                         TATWparGeo* geo_ph,
+                         double cut_p) :
         cluster_mhc{cluster_phc},
         cut_m{cut_p},
         depth_m{ retrieve_depth(geo_ph) } {}
     
-    
+    constexpr std::size_t layer_count() const { return 1; }
     constexpr double layer_depth() const { return depth_m; }
     constexpr double cut_value() const { return cut_m; }
     
@@ -512,6 +512,12 @@ public:
         }
         
         return candidate_c;
+    }
+    
+    
+    std::vector<candidate> generate_candidates( std::size_t /**/) const
+    {
+        return generate_candidates();
     }
     
     

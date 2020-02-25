@@ -23,6 +23,13 @@
 #include <vector>
 #include <utility>
 
+
+namespace details{
+    struct immutable_tag{};
+    struct fleeting_tag{};
+    struct normal_tag{};
+}// namespace details
+
 struct TATOElogger{
     
     struct header{
@@ -30,72 +37,220 @@ struct TATOElogger{
     };
     
     struct sub_header{
-        std::size_t order;
+        long start_cursor;
         long cursor;
+        int status;
+        std::size_t order;
     };
     
 private:
     std::stringstream buffer_m;
-    std::vector< header > header_mc;
+    std::vector< header > header_mc; //poor optional
     std::vector< sub_header > sub_header_mc;
     long end_cursor_m{0};
+    // std::size_t last_immutable_order{0};
     
 public:
-    template<std::size_t Order, typename std::enable_if_t< (Order > 0) , std::nullptr_t > = nullptr>
+    template< std::size_t Order, class T = details:: normal_tag,
+    typename std::enable_if_t< (Order > 0), std::nullptr_t> = nullptr,
+    typename std::enable_if_t< std::is_same<T, details::immutable_tag>::value ||
+    std::is_same<T, details::fleeting_tag>::value ||
+    std::is_same<T, details::normal_tag>::value , std::nullptr_t > = nullptr >
     TATOElogger& add_sub_header( char const * input_ph )
     {
-        if( !sub_header_mc.empty() && !(Order > sub_header_mc.back().order ) )
+        
+        auto reverse_find = [this](auto predicate_p)
         {
-            auto find_last_sub_header = [this](std::size_t order_p)
-            {
-                return ( std::find_if( sub_header_mc.rbegin(), sub_header_mc.rend(), [&order_p](sub_header const& sh_p){ return order_p == sh_p.order;  }  ) + 1 ).base();
-            };
+            auto reversed_iterator = std::find_if( sub_header_mc.rbegin(), sub_header_mc.rend(),
+                                                  [&predicate_p](sub_header const& sh_p)
+                                                  { return predicate_p(sh_p);  } );
             
-            auto is_order_found = [this](std::size_t order_p)
-            {
-                return std::any_of( sub_header_mc.rbegin(), sub_header_mc.rend(), [&order_p](sub_header const& h_p){ return order_p == h_p.order ; } );
-            };
+            return ( reversed_iterator + 1 ).base();
+        };
+        
+        
+        int status = status_value(T{});
+        
+        if( !sub_header_mc.empty() )
+        {
+            auto previous_iterator = sub_header_mc.end() - 1 ;
+            int path_order = ( previous_iterator->order > Order ) ?  10 :
+            ( previous_iterator->order < Order ? -10 : 0 );
+            int path_status = previous_iterator->status;
+            int path = path_order + path_status;
             
-            auto reset_to = [this, &find_last_sub_header]( std::size_t order_p )
-            {
-                auto last_sub_header_h = find_last_sub_header( order_p );
-                
-                buffer_m.seekp( last_sub_header_h->cursor );
-                end_cursor_m = last_sub_header_h->cursor ;
-                sub_header_mc.erase( last_sub_header_h, sub_header_mc.end() );
-            };
-            
-            is_order_found(Order) ?  reset_to( Order ) : clear() ;
+            switch(path){
+                case -11:
+                {
+                    //case -11 -- previous_sub_header is of lower order and fleeting
+                    break;
+                }
+                case -10:
+                {
+                    //case : -10 -- previous_sub_header is of lower order and immutable
+                    status = status_value(details::immutable_tag{});
+                    break;
+                }
+                case -9:
+                {
+                    //case : -9 -- previous_sub_header is of lower order and normal
+                    break;
+                }
+                case -1:
+                {
+                    //case : -1 -- previous_sub_header is of same order and fleeting
+                    buffer_m.seekp( previous_iterator->start_cursor );
+                    break;
+                }
+                case 0:
+                {
+                    //case : 0 -- previous_sub_header is of same order and immutable
+                    auto iterator = reverse_find(  [](sub_header const& sh_p){ return sh_p.order < Order ; } );
+                    if( iterator != sub_header_mc.begin()-1 && iterator->status == 0 ){ status = 0; }
+                    break;
+                }
+                case 1:
+                {
+                    //case 1: previous_sub_header is of same order and normal"
+                    buffer_m.seekp( previous_iterator->cursor );
+                    break;
+                }
+                case 9:
+                {
+                    //case 9: previous_sub_header is of higher order and fleeting
+                    auto same_order_iterator = reverse_find( [](sub_header const& sh_p){ return (sh_p.order == Order) ;} );
+                    if( same_order_iterator == sub_header_mc.begin()-1 ){
+                        same_order_iterator = sub_header_mc.begin();
+                    }
+                    
+                    auto immutable_iterator = std::find_if( same_order_iterator, sub_header_mc.end(),
+                                                           [](sub_header const & sh_p){ return sh_p.status == 0 ; } );
+                    auto last_immutable_iterator = immutable_iterator;
+                    while(  immutable_iterator != sub_header_mc.end()  )
+                    {
+                        last_immutable_iterator = immutable_iterator;
+                        auto immutable_order = last_immutable_iterator->order;
+                        immutable_iterator = std::find_if( last_immutable_iterator + 1, sub_header_mc.end(),
+                                                          [&immutable_order](sub_header const & sh_p){ return (sh_p.order == immutable_order) && (sh_p.status == 0) ; } );
+                    }
+                    
+                    if( last_immutable_iterator != sub_header_mc.end() ) {
+                        auto immutable_order = last_immutable_iterator->order;
+                        auto iterator = reverse_find( [&immutable_order](sub_header const& sh_p){ return (sh_p.order == immutable_order) ;} );
+                        
+                        if( iterator->status == -1 ){
+                            buffer_m.seekp( iterator->start_cursor );
+                            sub_header_mc.erase( iterator, sub_header_mc.end() );
+                        }
+                        else{
+                            buffer_m.seekp( iterator->cursor );
+                            sub_header_mc.erase( iterator + 1, sub_header_mc.end() );
+                        }
+                    }
+                    else{
+                        if( same_order_iterator->status == -1 ){
+                            buffer_m.seekp( same_order_iterator->start_cursor );
+                            sub_header_mc.erase( same_order_iterator , sub_header_mc.end() );
+                        }
+                        else{
+                            buffer_m.seekp( same_order_iterator->cursor );
+                            sub_header_mc.erase( same_order_iterator + 1 , sub_header_mc.end() );
+                        }
+                    }
+                    
+                    break;
+                }
+                case 10:
+                {
+                    //case :  10 -- previous_sub_header is of higher order and immutable
+                    auto iterator = reverse_find(  [](sub_header const& sh_p){ return sh_p.order == Order ; } );
+                    if( iterator != sub_header_mc.begin()-1 ){
+                        auto lower_iterator = reverse_find(  [](sub_header const& sh_p){ return sh_p.order < Order ; } );
+                        if( lower_iterator != sub_header_mc.begin()-1 && lower_iterator->status == 0 ){ status = 0; }
+                    }
+                    break;
+                }
+                case 11:
+                {
+                    // case : 11 -- previous_sub_header is of higher order and normal ;
+                    auto same_order_iterator = reverse_find( [](sub_header const& sh_p){ return (sh_p.order == Order) ;} );
+                    if( same_order_iterator == sub_header_mc.begin()-1 ){
+                        same_order_iterator = sub_header_mc.begin();
+                    }
+                    
+                    auto immutable_iterator = std::find_if( same_order_iterator, sub_header_mc.end(),
+                                                           [](sub_header const & sh_p){ return sh_p.status == 0 ; } );
+                    auto last_immutable_iterator = immutable_iterator;
+                    while(  immutable_iterator != sub_header_mc.end()  )
+                    {
+                        last_immutable_iterator = immutable_iterator;
+                        auto immutable_order = last_immutable_iterator->order;
+                        immutable_iterator = std::find_if( last_immutable_iterator + 1, sub_header_mc.end(),
+                                                          [&immutable_order](sub_header const & sh_p){ return (sh_p.order == immutable_order) && (sh_p.status == 0) ; } );
+                    }
+                    
+                    if( last_immutable_iterator != sub_header_mc.end() ) {
+                        auto immutable_order = last_immutable_iterator->order;
+                        auto iterator = reverse_find( [&immutable_order](sub_header const& sh_p){ return (sh_p.order == immutable_order) ;} );
+                        
+                        if( iterator->status == -1 ){
+                            buffer_m.seekp( iterator->start_cursor );
+                            sub_header_mc.erase( iterator, sub_header_mc.end() );
+                        }
+                        else{
+                            buffer_m.seekp( iterator->cursor );
+                            sub_header_mc.erase( iterator + 1, sub_header_mc.end() );
+                        }
+                    }
+                    else{
+                        if( same_order_iterator->status == -1 ){
+                            buffer_m.seekp( same_order_iterator->start_cursor );
+                            sub_header_mc.erase( same_order_iterator , sub_header_mc.end() );
+                        }
+                        else{
+                            buffer_m.seekp( same_order_iterator->cursor );
+                            sub_header_mc.erase( same_order_iterator + 1 , sub_header_mc.end() );
+                        }
+                    }
+                    
+                    break;
+                }
+                default: break;
+            }
         }
         
+        long start_cursor = buffer_m.tellp();
         buffer_m << "---- " << input_ph << " ----\n";
-        sub_header_mc.push_back( sub_header{Order, static_cast<long>( buffer_m.tellp() )} );
+        sub_header_mc.push_back( sub_header{start_cursor, buffer_m.tellp(), status, Order} );
         end_cursor_m = buffer_m.tellp();
         
         return *this;
     }
     
-    //    template<class T, typename std::enable_if_t< std::is_same<T, details::immutable>::value , std::nullptr_t > = nullptr >
-    //     TATOElogger& add_sub_header( char const * input_ph )
-    //     {
-    //         buffer_m << "---- " << input_ph << " ----\n";
-    //         sub_header_mc.push_back( sub_header{ 0, buffer_m.tellp()}  );
-    //         end_cursor_m = buffer_m.tellp();
-    //         return *this;
-    //     }
+private:
+    int status_value(details::normal_tag) const { return 1;}
+    int status_value(details::immutable_tag) const { return 0;}
+    int status_value(details::fleeting_tag) const { return -1;}
     
     
+public:
     TATOElogger& add_header( char const * input_ph )
     {
-        auto frozen_sub_header = [this](){ return std::any_of( sub_header_mc.begin(), sub_header_mc.end(),
-                                                              [](sub_header const & sh_p){ return sh_p.order == 0; } );   };
+        auto frozen_sub_header = [this]()
+        {
+            return std::any_of( sub_header_mc.begin(), sub_header_mc.end(),
+                               [](sub_header const & sh_p)
+                               { return sh_p.status == 0; } );
+        };
         
         if( !sub_header_mc.empty() ) {
-            auto cursor = frozen_sub_header() ? ( sub_header_mc.back().cursor ) :
+            auto cursor = frozen_sub_header() ?
+            ( sub_header_mc.back().status == 0 ? end_cursor_m : sub_header_mc.back().cursor ) :
             ( header_mc.empty() ? 0 : header_mc.back().cursor ) ;
             buffer_m.seekp( cursor );
         }
         buffer_m << "==== " << input_ph << " ====\n";
+        header_mc.clear();
         header_mc.push_back( header{ buffer_m.tellp() }  );
         
         end_cursor_m = buffer_m.tellp();
@@ -114,7 +269,9 @@ public:
     
     void freeze()
     {
-        sub_header_mc.empty() ? sub_header_mc.push_back( sub_header{ 0, end_cursor_m } ) : void(sub_header_mc.back().order = 0);
+        if ( !sub_header_mc.empty() ) {
+            sub_header_mc.back().status = 0;
+        }
     }
     
     void clear()
@@ -129,12 +286,12 @@ public:
     {
         auto output = buffer_m.str();
         auto frozen_sub_header = [this](){ return std::any_of( sub_header_mc.begin(), sub_header_mc.end(),
-                                                              [](sub_header const & sh_p){ return sh_p.order == 0; } );   };
+                                                              [](sub_header const & sh_p){ return sh_p.status == 0; } );   };
         
         long cursor;
         if( !sub_header_mc.empty() ) {
-            cursor = frozen_sub_header() ? ( sub_header_mc.back().order == 0 ? end_cursor_m : sub_header_mc.back().cursor ) :
-            ( header_mc.empty() ? 0 : header_mc.back().cursor ) ;
+            cursor = frozen_sub_header() ? ( sub_header_mc.back().status == 0 ? end_cursor_m : sub_header_mc.back().cursor ) :
+            ( header_mc.empty() ? sub_header_mc.back().cursor : header_mc.back().cursor ) ;
         }
         else{
             cursor = header_mc.empty() ? end_cursor_m : header_mc.back().cursor ;
@@ -144,8 +301,6 @@ public:
     }
     
 };
-
-
 
 
 
