@@ -6,6 +6,12 @@
  \author A. Sécher
  */
 
+//
+//File      : TATOEutilities.hpp
+//Author    : Alexandre Sécher (alexandre.secher@iphc.cnrs.fr)
+//Date      : 10/02/2020
+//Framework : PhD thesis, CNRS/IPHC/DRHIM/Hadrontherapy, Strasbourg, France
+//
 
 
 #ifndef _TATOEutilities_HXX
@@ -101,77 +107,163 @@ namespace details{
 
 
 
-template<class Derived>
-struct range_generator
+template<class DetectorProperties>
+struct layer_generator
 {
-    using candidate = typename details::detector_traits<Derived>::candidate;
+    using candidate = typename details::detector_traits<DetectorProperties>::candidate;
     
     struct layer{
         std::vector<candidate> candidate_c;
-        double depth;
-        double cut;
+        const double depth;
+        const std::pair<double, double> cut;
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }
+        
+        double cut_value_x() const { return cut.first; }
+        double cut_value_y() const { return cut.second; }
+        
+        bool empty(){ return candidate_c.empty(); }
     };
     
     
-    
-private:
-    //change that to only ref to Derived ?
-   // template<class T>
     struct iterator{
         
         using value_type = layer;
         
-        iterator(const Derived& derived_p, std::size_t index_p ) : derived_m{derived_p}, index_m{index_p} {}
+        iterator(const DetectorProperties& detector_p, std::size_t index_p ) : detector_m{detector_p}, index_m{index_p} {}
         
         iterator& operator++(){ ++index_m ; return *this; }
         value_type operator*()
         {
             return {
-                derived_m.generate_candidates(index_m),
-                derived_m.layer_depth(index_m),
-                derived_m.cut_value()
+                detector_m.generate_candidates(index_m),
+                detector_m.layer_depth(index_m),
+                std::make_pair( detector_m.cut_value_x(), detector_m.cut_value_y())
             };
         }
         friend bool operator!=(const iterator& lhs, const iterator& rhs){ return lhs.index_m != rhs.index_m; }
         
         
     private:
-        const Derived& derived_m;
+        const DetectorProperties& detector_m;
         std::size_t index_m;
     };
-    
-    
-    
-    template< class T >
-    auto make_begin_iterator(const T& t_p ) const -> iterator
-    {
-        return {t_p, 0};
-    }
-    
-    
-    
-    template<class T>
-    auto make_end_iterator(const T& t_p) const -> iterator
-    {
-        return {t_p, derived().layer_count()};
-    }
+
     
 public:
-    iterator begin() const {return make_begin_iterator( derived() );}
-    iterator end() const {return make_end_iterator( derived() );;}
+    layer_generator( DetectorProperties const & detector_p) :
+        detector_m{detector_p} {}
+    iterator begin() const { return {detector_m, 0}; }
+    iterator end() const { return {detector_m, detector_m.layer_count()}; }
     
 private:
-    Derived& derived(){ return static_cast<Derived&>(*this); }
-    const Derived& derived() const { return static_cast<const Derived&>(*this); }
-    
+    DetectorProperties const & detector_m;
 };
 
 
-
-
+template<class DetectorProperties >
+struct track_list
+{
+    using track = typename DetectorProperties::track;
+    using candidate = typename DetectorProperties::candidate;
+    
+    struct pseudo_layer{
+        candidate candidate_m;
+        double depth;
+        double optimal_cut;
+        double minimal_cut;
+        
+        candidate& get_candidate(){ return candidate_m; }
+        candidate const & get_candidate() const { return candidate_m; }
+    };
+    
+    struct iterable_track{
+        
+        struct iterator{
+            
+            using value_type = pseudo_layer;
+            
+            iterator( const DetectorProperties& detector_p,
+                     const iterable_track& track_p,
+                     std::size_t index_p ) :
+            detector_m{detector_p},
+            track_m{track_p},
+            index_m{index_p} {}
+            
+            iterator& operator++(){ ++index_m ; return *this; }
+            value_type operator*()
+            {
+                return track_m.form_layer(index_m);
+            }
+            friend bool operator!=(const iterator& lhs, const iterator& rhs){ return lhs.index_m != rhs.index_m; }
+            
+            
+        private:
+            const DetectorProperties& detector_m;
+            const iterable_track& track_m;
+            std::size_t index_m;
+        };
+        
+    public:
+        
+        iterable_track( DetectorProperties const & detector_p,
+                        track const * track_ph ) :
+            detector_m{ detector_p },
+            track_mh{track_ph} {}
+        iterator begin() { return iterator( detector_m, *this, 0 ); }
+        iterator end()   { return iterator( detector_m, *this, track_mh->GetClustersN() ); }
+        auto const * first_cluster() const { return track_mh->GetCluster(0); }
+        std::size_t size() const { return track_mh->GetClustersN(); }
+        
+    private:
+        pseudo_layer form_layer( std::size_t index_p ) const
+        {
+            //cluster are in inverse order
+            std::size_t real_index = track_mh->GetClustersN() -1 -index_p;
+            
+            auto* cluster_h = track_mh->GetCluster( real_index );
+            auto c = detector_m.generate_candidate( cluster_h );
+            
+            return pseudo_layer{
+                std::move(c),
+                detector_m.layer_depth( cluster_h->GetPlaneNumber() ),
+                detector_m.optimal_cut_value(),
+                detector_m.minimal_cut_value()
+            };
+        }
+        
+    private:
+        DetectorProperties const & detector_m;
+        track const * track_mh;
+    };
+    
+    using iterator = typename std::vector<iterable_track>::iterator;
+    
+public:
+    template<class Vertex>
+    track_list( DetectorProperties const & detector_p,
+                Vertex const * vertex_ph ) :
+        detector_m{ detector_p },
+        track_c{ form_tracks( vertex_ph) } {}
+    iterator begin() { return track_c.begin(); }
+    iterator end() { return track_c.end(); }
+    
+private:
+    template<class Vertex>
+    std::vector< iterable_track > form_tracks( Vertex const * vertex_ph ) const{
+        std::vector< iterable_track > track_c;
+        track_c.reserve( vertex_ph->GetTracksN() );
+        for( auto i = 0 ; i < vertex_ph->GetTracksN() ; ++i ){
+            track_c.emplace_back( detector_m, vertex_ph->GetTrack(i) );
+        }
+        return track_c;
+    }
+    
+private:
+    DetectorProperties const & detector_m;
+    std::vector<iterable_track> track_c;
+};
 
 //______________________________________________________________________________
 //                              VTX
@@ -187,91 +279,16 @@ struct detector_properties< details::vertex_tag >
     using measurement_matrix = underlying<candidate>::measurement_matrix;
     using data_type = underlying<candidate>::data_type;
     
-    
-    struct track_list
-    {
-        struct pseudo_layer{
-            candidate candidate_m;
-            double depth;
-            double cut;
-            
-            candidate& get_candidate(){ return candidate_m; }
-            candidate const & get_candidate() const { return candidate_m; }
-        };
-        
-        struct iterable_track{
-            
-            struct iterator{
-                
-                using value_type = pseudo_layer;
-                
-                iterator( const detector_properties& detector_p,
-                          const iterable_track& track_p,
-                          std::size_t index_p ) :
-                    detector_m{detector_p},
-                    track_m{track_p},
-                    index_m{index_p} {}
-                
-                iterator& operator++(){ ++index_m ; return *this; }
-                value_type operator*()
-                {
-                    return track_m.form_layer(index_m);
-                }
-                friend bool operator!=(const iterator& lhs, const iterator& rhs){ return lhs.index_m != rhs.index_m; }
-                
-                
-            private:
-                const detector_properties& detector_m;
-                const iterable_track& track_m;
-                std::size_t index_m;
-            };
-            
-        public:
-            
-            iterable_track( detector_properties const & detector_p,
-                            TAVTtrack const * track_ph ) :
-                detector_m{ detector_p },
-                track_mh{track_ph} {}
-            iterator begin() { return iterator( detector_m, *this, 0 ); }
-            iterator end()   { return iterator( detector_m, *this, track_mh->GetClustersN() ); }
-            TAVTbaseCluster const * first_cluster() const { return track_mh->GetCluster(0); }
-            
-            
-        private:
-            pseudo_layer form_layer( std::size_t index_p ) const ;
-            
-        private:
-            detector_properties const & detector_m;
-            TAVTtrack const * track_mh;
-        };
-        
-        using iterator = std::vector<iterable_track>::iterator;
-        
-    public:
-        track_list( detector_properties const & detector_p,
-                    TAVTvertex const * vertex_ph ) :
-            detector_m{ detector_p },
-            track_c{ form_tracks( vertex_ph) } {}
-        iterator begin() { return track_c.begin(); }
-        iterator end() { return track_c.end(); }
-        
-    private:
-        std::vector< iterable_track > form_tracks( TAVTvertex const * vertex_ph ) const ;
-        
-    private:
-        detector_properties const & detector_m;
-        std::vector<iterable_track> track_c;
-    };
-    
-    
+    using track = TAVTtrack;
     
 private:
     
-   // const TAVTntuCluster* cluster_mhc;
     const TAVTntuVertex* vertex_mhc;
+    const TAVTntuCluster* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const double cut_m;
+    const double optimal_cut_m;
+    const double minimal_cut_m;
     constexpr static std::size_t layer{4};
     const std::array<double, layer> depth_mc;
     
@@ -279,10 +296,14 @@ private:
 public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAVTntuVertex* vertex_phc,
+                         TAVTntuCluster* cluster_phc,
                          TAVTparGeo* geo_ph,
-                         double cut_p ) :
+                         double optimal_cut_p,
+                         double minimal_cut_p ) :
         vertex_mhc{ vertex_phc },
-        cut_m{cut_p},
+        cluster_mhc{ cluster_phc },
+        optimal_cut_m{optimal_cut_p},
+        minimal_cut_m{minimal_cut_p},
         depth_mc{ retrieve_depth(geo_ph) } {}
     
     
@@ -311,64 +332,18 @@ public:
     
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
-    constexpr double cut_value() const { return cut_m; }
-//    const TAVTvertex * vertex_handle() const { return vertex_mh; }
+    constexpr double minimal_cut_value() const { return minimal_cut_m; }
+    constexpr double optimal_cut_value() const { return optimal_cut_m; }
+
     TAVTvertex const * retrieve_vertex( ) const;
     candidate generate_candidate( TAVTbaseCluster const * cluster_h  ) const ;
-    
-    template<class T> //no easy way to retrieve type of corrected state in question, except give it as template arg
-    T generate_corrected_state( TAVTvertex const * vertex_ph,
-                                TAVTbaseCluster const * cluster_ph ) const
+  
+    track_list<detector_properties> get_track_list( TAVTvertex const * vertex_ph ) const
     {
-        auto * transformation_h =
-        static_cast<TAGgeoTrafo*>(                                                        gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data() )
-                                  );
-        
-        auto start = transformation_h->FromVTLocalToGlobal( vertex_ph->GetVertexPosition() );
-        auto end = transformation_h->FromVTLocalToGlobal( cluster_ph->GetPositionG() );
-        
-        auto length = end - start;
-        
-        auto track_slope_x = length.X()/length.Z();
-        auto track_slope_y = length.Y()/length.Z();
-        
-        std::cout << "\n\ntrack_slope_x: " << track_slope_x << '\n';
-        std::cout << "track_slope_y: " << track_slope_y << '\n';
-        
-        
-        auto length_error_x = sqrt( pow( vertex_ph->GetVertexPosError().X(), 2 ) +
-                                    pow( cluster_ph->GetPosErrorG().X(), 2) );
-        auto length_error_y = sqrt( pow( vertex_ph->GetVertexPosError().Y(), 2 ) +
-                                    pow( cluster_ph->GetPosErrorG().Y(), 2) );
-        
-        
-        auto track_slope_error_x = abs( track_slope_x ) *
-                                      sqrt( pow( length_error_x/length.X(), 2) +
-                                            pow( 0.05/length.Z(), 2) );
-        auto track_slope_error_y = abs( track_slope_y ) *
-                                      sqrt( pow( length_error_y/length.Y(), 2) +
-                                            pow( 0.05/length.Z(), 2) );
-        
-        
-        
-        using state = typename underlying<T>::state;
-        using vector = typename underlying<state>::vector;
-        using covariance = typename underlying<state>::covariance;
-        
-        return T{
-            state{
-                evaluation_point{ start.Z() },
-                vector{{ start.X(), start.Y(), track_slope_x, track_slope_y }},
-                covariance{{   pow(length_error_x, 2  ),     0,    0,    0,
-                               0,     pow(length_error_y, 2),      0,    0,
-                               0,    0,   pow(track_slope_error_x, 2),   0,
-                               0,    0,    0,   pow( track_slope_error_y, 2)  }}
-                 },
-            chisquared{0}
-               };
+        return { *this, vertex_ph };
     }
     
-    track_list get_track_list( TAVTvertex const * vertex_ph ) const ;
+    std::vector<candidate> generate_candidates(std::size_t index_p) const ;
 };
 
 
@@ -380,8 +355,7 @@ public:
 
 
 template<>
-struct detector_properties< details::it_tag > :
-    range_generator< detector_properties< details::it_tag > >
+struct detector_properties< details::it_tag >
 {
     using candidate = details::it_tag::candidate;
     using measurement_vector = underlying<candidate>::vector;
@@ -395,7 +369,7 @@ private:
     const TAITntuCluster* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const double cut_m;
+    const std::pair<double, double> cut_m;
     constexpr static std::size_t layer{4};
     
     
@@ -412,11 +386,11 @@ private:
 public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAITntuCluster* cluster_phc,
-                                   TAITparGeo* geo_ph,
-                                   double cut_p)  :
-    cluster_mhc{cluster_phc},
-    cut_m{cut_p},
-    depth_mc{ retrieve_depth(geo_ph) }
+                         TAITparGeo* geo_ph,
+                         std::pair<double, double> cut_p)  :
+        cluster_mhc{cluster_phc},
+        cut_m{cut_p},
+        depth_mc{ retrieve_depth(geo_ph) }
     { }
     
     
@@ -444,10 +418,15 @@ public:
     
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
-    constexpr double cut_value() const { return cut_m; }
+    constexpr double cut_value_x() const { return cut_m.first; }
+    constexpr double cut_value_y() const { return cut_m.second; }
+    
+    layer_generator<detector_properties> form_layers() const
+    {
+        return {*this};
+    }
     
     std::vector<candidate> generate_candidates(std::size_t index_p) const ;
-    
 };
 
 //______________________________________________________________________________
@@ -470,10 +449,8 @@ struct detector_properties< details::tof_tag >
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }
+        bool empty(){ return candidate_c.empty(); }
     };
-    
-    
-    
     
 private:
     
@@ -497,13 +474,13 @@ private:
 public:
     
     detector_properties( TATWntuPoint* cluster_phc,
-                                   TATWparGeo* geo_ph,
-                                   double cut_p) :
+                         TATWparGeo* geo_ph,
+                         double cut_p) :
         cluster_mhc{cluster_phc},
         cut_m{cut_p},
         depth_m{ retrieve_depth(geo_ph) } {}
     
-    
+    constexpr std::size_t layer_count() const { return 1; }
     constexpr double layer_depth() const { return depth_m; }
     constexpr double cut_value() const { return cut_m; }
     
@@ -538,6 +515,12 @@ public:
     }
     
     
+    std::vector<candidate> generate_candidates( std::size_t /**/) const
+    {
+        return generate_candidates();
+    }
+    
+    
     layer form_layer() const
     {
         return {
@@ -546,9 +529,6 @@ public:
             cut_value()
         };
     }
-    
-
-
 };
 
 //______________________________________________________________________________
@@ -561,7 +541,11 @@ struct particle_properties
     double momentum;
    // double track_slope;
    // double track_slope_error;
-    TATWpoint const * data;
+    double light_ion_boost{1};
+    
+    std::vector<TATWpoint const * > end_point_ch;
+    std::vector<TATWpoint const * > const & get_end_points() const { return end_point_ch; }
+    std::vector<TATWpoint const * > & get_end_points() { return end_point_ch; }
 };
 
 

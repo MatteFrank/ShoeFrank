@@ -16,8 +16,8 @@ public:
    TAEDglbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop);
    virtual ~TAEDglbTrack();
     
-   //! Add track marker
-   void AddTrackMarker(TVector3& point, TVector3& mom);
+   //! Add track point
+   void AddTrackPoint(TVector3& point, TVector3& mom);
 
    //! Set track id object
    void TrackId(TObject* obj);

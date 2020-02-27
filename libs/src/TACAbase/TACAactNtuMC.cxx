@@ -232,6 +232,8 @@ Bool_t TACAactNtuMC::Action()
 
    /////// Fill Hit tree (Digitizer)
    npart = dep.GetEntriesFast();
+   fDigitizer->ClearMap();
+   
    for (int i=0; i<npart; ++i) {
       energyDep* endep = (energyDep*)dep.At(i);
       int index = endep->index;

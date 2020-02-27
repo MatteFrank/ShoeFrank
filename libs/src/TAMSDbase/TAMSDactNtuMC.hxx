@@ -6,6 +6,7 @@
  \brief   Declaration of TAMSDactNtuMC.
  */
 /*------------------------------------------+---------------------------------*/
+#include <map>
 
 #include "Evento.hxx"
 
@@ -21,6 +22,7 @@
 class TAMSDntuRaw;
 class TAMSDparGeo;
 
+using namespace  std;
 class TAMSDactNtuMC : public TAGaction {
    
 public:
@@ -51,13 +53,16 @@ private:
    TAMSDdigitizer* fDigitizer;       // cluster size digitizer
    Int_t           fNoisyStripsN;
 
+   map<pair<int, int>, TAMSDntuHit*> fMap; //! map for pilepup
+
    TH1F*           fpHisStripMap[32];  // pixel map per sensor
    TH1F*           fpHisPosMap[32];    // pixel map per sensor
    TH1F*           fpHisStrip[32];     // number pixels per cluster MC
    TH1F*           fpHisStripTot;     // total number pixels per cluster MC
    TH1F*           fpHisDeTot;        // Total energy loss
    TH1F*           fpHisDeSensor[32];  // Energy loss per sensor
-
+   TH1F*           fpHisAdc[32];     // charge per strip
+   
 private:
    static Float_t  fgSigmaNoiseLevel;
    static Int_t    fgMcNoiseId;

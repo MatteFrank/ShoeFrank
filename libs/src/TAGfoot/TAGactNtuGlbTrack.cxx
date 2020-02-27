@@ -17,6 +17,7 @@
 #include "TAGactTreeReader.hxx"
 #include "TAGntuGlbTrack.hxx"
 
+#include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTtrack.hxx"
 #include "TAITntuCluster.hxx"
@@ -51,11 +52,13 @@ ClassImp(TAGactNtuGlbTrack)
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
+                                      TAGdataDsc* p_vtxclus,
                                       TAGdataDsc* p_vtxvertex,
                                       TAGdataDsc* p_itrclus,
                                       TAGdataDsc* p_msdclus,
                                       TAGdataDsc* p_twpoint,
                                       TAGdataDsc* p_glbtrack,
+                                      TAGparaDsc* p_geoG,
                                       TAGparaDsc* p_geodi,
                                       TAGparaDsc* p_geoVtx,
                                       TAGparaDsc* p_geoItr,
@@ -63,11 +66,13 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
                                       TAGparaDsc* p_geoTof,
                                       TADIgeoField* field)
  : TAGaction(name, "TAGactNtuGlbTrack - Global Tracker"),
-   fpVtxVertex(p_vtxvertex),
+    fpVtxClus(p_vtxclus),
+    fpVtxVertex(p_vtxvertex),
    fpItrClus(p_itrclus),
    fpMsdClus(p_msdclus),
    fpTwPoint(p_twpoint),
    fpGlbTrack(p_glbtrack),
+   fpGGeoMap(p_geoG),
    fpDiGeoMap(p_geodi),
    fpVtxGeoMap(p_geoVtx),
    fpItrGeoMap(p_geoItr),
@@ -81,8 +86,10 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
    
     if (GlobalPar::GetPar()->IncludeVertex()) //should not be if
-      AddDataIn(p_vtxvertex, "TAVTntuVertex");
-   
+    {
+        AddDataIn(p_vtxclus, "TAVTntuCluster");
+        AddDataIn(p_vtxvertex, "TAVTntuVertex");
+    }
    if (GlobalPar::GetPar()->IncludeInnerTracker())
       AddDataIn(p_itrclus, "TAITntuCluster");
    
@@ -142,7 +149,7 @@ void TAGactNtuGlbTrack::SetupBranches()
     using state_covariance =  Matrix<4, 4> ;
     using state = state_impl< state_vector, state_covariance  >;
     
-    
+    auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
     auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
     auto * geoVTX_h = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
     
@@ -154,8 +161,10 @@ void TAGactNtuGlbTrack::SetupBranches()
     auto * geoTW_h = static_cast<TATWparGeo*>( fpTofGeoMap->Object() );
     
     
-    auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, geoVTX_h, 10) )
-                    .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, 30) )
+    auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
+                                                                     geoVTX_h,
+                                                                     6, 12) )
+                    .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, std::make_pair(22, 22) ) )
                     .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 1.5) )
                     .finish();
     
@@ -164,10 +173,12 @@ void TAGactNtuGlbTrack::SetupBranches()
     auto stepper = make_stepper<data_grkn56>( std::move(ode) );
     auto ukf = make_ukf<state>( std::move(stepper) );
     
-    
-    return make_new_TATOEactGlb( std::move(ukf),
-                                 std::move(list),
-                                 static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() )   );
+    return make_new_TATOEactGlb(
+                                std::move(ukf),
+                                std::move(list),
+                                static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                                static_cast<TAGparGeo*>( fpGGeoMap->Object() )
+                               );
 }
 
 
@@ -209,15 +220,10 @@ Bool_t TAGactNtuGlbTrack::Action()
    
 
     auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
-    std::cout << "----- before_clear :"<< pNtuTrack->GetTracksN() <<" ----- ";
 
     fpGlbTrack->Clear();
-    
-    std::cout << "----- before_action :"<< pNtuTrack->GetTracksN() <<" ----- ";
+
     fActTOE->Action();
-    
-    
-    std::cout << "----- after_action :"<< pNtuTrack->GetTracksN() <<" ----- ";
     
    fpGlbTrack->SetBit(kValid);
     

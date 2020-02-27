@@ -79,6 +79,12 @@ void TAMSDactNtuMC::CreateHistogram()
     AddHistogram(fpHisDeSensor[i]);
   }
   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisAdc[i] = new TH1F(Form("%sStripAdc%d", prefix.Data(), i+1), Form("%s - Charge value per cluster for sensor %d", titleDev.Data(), i+1),
+                             pGeoMap->GetNStrip(), 0, pGeoMap->GetNStrip());
+      AddHistogram(fpHisAdc[i]);
+   }
+   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fpHisStripMap[i]  = new TH1F(Form("%sMcStripMap%d", prefix.Data(), i+1) , Form("%s - MC strip map for sensor %d", titleDev.Data(), i+1),
 				 pGeoMap->GetNStrip(), 0, pGeoMap->GetNStrip());
@@ -116,6 +122,7 @@ bool TAMSDactNtuMC::Action()
    TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
 	TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
 	pNtuRaw->Clear();
+   fMap.clear();
    
 	// Loop over all MC hits
 	for (Int_t i = 0; i < fpEvtStr->MSDn; i++) {
@@ -168,8 +175,17 @@ void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
       count++;
       int stripId = it->first;
       
-      TAMSDntuHit* strip = (TAMSDntuHit*)pNtuRaw->NewStrip(sensorId, digiMap[it->first], view, stripId);
-      
+       TAMSDntuHit* strip  = 0x0;
+       pair<int, int> p(sensorId, stripId);
+
+       if (fMap[p] == 0) {
+          strip = (TAMSDntuHit*)pNtuRaw->NewStrip(sensorId, digiMap[stripId], view, stripId);
+          fMap[p] = strip;
+       } else {
+          strip = fMap[p];
+          strip->SetValue(strip->GetValue()+digiMap[stripId]);
+       }
+       
       Int_t genPartID = fpEvtStr->MSDid[hitId] - 1;
       strip->AddMcTrackIdx(genPartID, hitId);
       
@@ -183,6 +199,7 @@ void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
       if (ValidHistogram()) {
          fpHisStripMap[sensorId]->Fill(stripId);
          fpHisPosMap[sensorId]->Fill(pos);
+         fpHisAdc[sensorId]->Fill(stripId, digiMap[stripId]);
       }
     }
   }

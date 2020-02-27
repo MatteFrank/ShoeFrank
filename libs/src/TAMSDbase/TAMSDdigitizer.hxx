@@ -8,6 +8,7 @@
 
 // --------------------------------------------------------------------------------------
 class TAMSDparGeo;
+class TF1;
 class TAMSDdigitizer : public TAGbaseDigitizer {
    
    // Class to digitize the energy into pixel based on given patterns
@@ -20,18 +21,32 @@ public:
    
    Int_t GetStrip(Float_t pos) const;
 
+   Double_t       EtaX0(Double_t* x, Double_t* par);
+   Double_t       GetEta(Double_t pos);
+
+   void           SetFunctions();
+   void           SetParFunction();
+
+   
 private:
    TAMSDparGeo*    fpParGeo;
+   TF1*            fFuncEta;
    Int_t           fStripsN;         // number of strips for a given eloss
    Float_t         fPitch;
    Int_t           fView;
+   
+   Double_t        fEtaLimLo;
+   Double_t        fEtaLimUp;
+   Float_t         fEtaCst;
+   Float_t         fEtaErrCst;
    
    std::map<int, double> fMap;      // map of found strips
 
 private:
    static Float_t  fgChargeGain;      // gain factor for despoted charge
-   static Float_t  fgChargeFac;       // sharing factor between strips
-   
+   static Float_t  fgDefSmearPos;
+   static Bool_t   fgSmearFlag;
+
 public:
    Int_t                  GetStripsN() const { return fStripsN; }
    Int_t                  GetPitch()   const { return fPitch;   }
@@ -42,10 +57,11 @@ public:
 public:
    static Float_t GetChargeGain()                   { return fgChargeGain;       }
    static void    SetChargeGain(Float_t gain)       { fgChargeGain = gain;       }
+   static Bool_t  GetSmearFlag()                    { return fgSmearFlag;        }
+   static void    SetSmearFlag(Bool_t flag)         { fgSmearFlag = flag;        }
    
-   static Float_t GetChargeFac()                    { return fgChargeFac;        }
-   static void    SetChargeFac(Float_t fac)         { fgChargeFac = fac;         }
-   
+   static Float_t GetDefSmearPos()                  { return fgDefSmearPos;      }
+   static void    SetDefSmearPos(Float_t pos)       { fgDefSmearPos = pos;       }
    
    ClassDef(TAMSDdigitizer,0)
 };

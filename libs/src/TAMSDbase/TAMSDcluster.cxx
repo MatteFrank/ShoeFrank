@@ -39,7 +39,7 @@ void TAMSDcluster::SetupClones()
 //______________________________________________________________________________
 //  
 TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
-:  TAGcluster(),
+:  TAGcluster(cluster),
    fPosition(cluster.fPosition),
    fPosError(cluster.fPosError),
    fCurPosition(cluster.fCurPosition),

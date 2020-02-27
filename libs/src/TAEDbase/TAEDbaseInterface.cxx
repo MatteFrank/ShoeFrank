@@ -33,6 +33,7 @@
 #include "TEveGeoNode.h"
 #include "TEveManager.h"
 #include "TEveBrowser.h"
+#include "TEveViewer.h"
 #include "TEveWindow.h"
 #include "TGeoManager.h"
 #include "TGeoNode.h"
@@ -73,6 +74,7 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
   fType(type),
   fWorldSizeZ(120),
   fWorldSizeXY(25),
+  fWorldName("World"),
   fWorldMedium(0x0),
   fTopVolume(0x0),
   fCurrentEventId(0),
@@ -153,7 +155,7 @@ void TAEDbaseInterface::BuildDefaultGeometry()
 {
    // World
    TGeoMedium* med = gGeoManager->GetMedium("AIR");
-   fTopVolume = gGeoManager->MakeBox("World",med,fWorldSizeZ, fWorldSizeXY, fWorldSizeXY);
+   fTopVolume = gGeoManager->MakeBox(fWorldName.Data(),med,fWorldSizeZ, fWorldSizeXY, fWorldSizeXY);
    fTopVolume->SetInvisible();
    gGeoManager->SetTopVolume(fTopVolume);
 }
@@ -165,9 +167,13 @@ void TAEDbaseInterface::FillDetectorNames()
    
    while (itr != fVolumeNames.end()) {
       fDetectorMenu->AddEntry(itr->first.Data(), itr->second);
+      fCameraMenu->AddEntry(itr->first.Data(), itr->second);
       fDetectorStatus[itr->second] = true;
       itr++;
    }
+   
+   fCameraMenu->AddEntry(fWorldName.Data(), kWorld);
+   fDetectorMenu->AddEntry("ALL", kWorld);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -371,18 +377,30 @@ void TAEDbaseInterface::MakeGUI()
 
    // detector menu
    TGHorizontalFrame *detectorFrame = new TGHorizontalFrame(frmMain);
-   TGLabel*  detectorName = new TGLabel(detectorFrame, "Detector:");
+   TGLabel*  detectorName = new TGLabel(detectorFrame, "Detector drawn:");
    detectorFrame->AddFrame(detectorName, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2, 0, 5, 5));
 
    fDetectorMenu = new TGComboBox(detectorFrame, 10);
    fDetectorMenu->Resize(80, 20);
    fDetectorMenu->Connect("Selected(Int_t)", "TAEDbaseInterface", this, "ToggleDetector(Int_t)");
-   FillDetectorNames();
-   fDetectorMenu->Select(0);
    detectorFrame->AddFrame(fDetectorMenu, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
    
    frmMain->AddFrame(detectorFrame, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
 
+   // camera center menu
+   TGHorizontalFrame *cameraFrame = new TGHorizontalFrame(frmMain);
+   TGLabel*  cameraName = new TGLabel(cameraFrame, "Camera center:");
+   cameraFrame->AddFrame(cameraName, new TGLayoutHints(kLHintsLeft | kLHintsTop, 2, 0, 5, 5));
+   
+   fCameraMenu = new TGComboBox(cameraFrame, 10);
+   fCameraMenu->Resize(80, 20);
+   fCameraMenu->Connect("Selected(Int_t)", "TAEDbaseInterface", this, "ToggleCamera(Int_t)");
+   FillDetectorNames();
+   fCameraMenu->Select(kWorld);
+   fDetectorMenu->Select(kWorld);
+   cameraFrame->AddFrame(fCameraMenu, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
+   
+   frmMain->AddFrame(cameraFrame, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
 
    // info frame
    TGVerticalFrame *infoFrameView = new TGVerticalFrame(frmMain);
@@ -537,9 +555,26 @@ void TAEDbaseInterface::NextEvent()
 void TAEDbaseInterface::ToggleDetector(Int_t id)
 {
    const Char_t* name = fDetectorMenu->GetSelectedEntry()->GetTitle();   
-   TGeoVolume* vol =  gGeoManager->FindVolumeFast(name);
+   TGeoVolume* vol    = gGeoManager->FindVolumeFast(name);
    
-   if (vol) {
+   TString wName(name);
+   if (wName.Contains("ALL")) {
+      vol =  gGeoManager->FindVolumeFast(fWorldName.Data());
+      
+      Int_t nd = vol->GetNdaughters();
+      for (Int_t i = 0; i < nd; ++i) {
+         TGeoNode* node = vol->GetNode(i);
+         TGeoVolume* volD = node->GetVolume();
+         
+         volD->InvisibleAll(false);
+         if (volD->GetNdaughters() != 0)
+            volD->SetVisibility(false);
+      }
+      
+      for (Int_t i = 0; i < fDetectorMenu->GetNumberOfEntries(); ++i)
+         fDetectorStatus[i] = true;
+      
+   } else if (vol) {
       if (fDetectorStatus[id] ) {
          vol->InvisibleAll();
          fDetectorStatus[id] = false;
@@ -552,6 +587,39 @@ void TAEDbaseInterface::ToggleDetector(Int_t id)
    }
    
    gEve->FullRedraw3D(kFALSE);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::ToggleCamera(Int_t id)
+{
+   const Char_t* name = fCameraMenu->GetSelectedEntry()->GetTitle();
+   TGeoVolume* vol    = gGeoManager->FindVolumeFast(fWorldName.Data());
+
+   TEveViewer *ev = gEve->GetDefaultViewer();
+   TGLViewer  *gv = ev->GetGLViewer();
+   
+   TString wName(name);
+   if (wName.Contains(fWorldName.Data())) {
+      gv->ResetCurrentCamera();
+      return;
+   }
+      
+   Int_t nd = vol->GetNdaughters();
+   TGeoNode* node = 0x0;
+   
+   for (Int_t i = 0; i < nd; ++i) {
+      node = vol->GetNode(i);
+      TString volName(node->GetName());
+      if (volName.Contains(name)) {
+         id = i;
+         break;
+      }
+   }
+   
+   TGeoMatrix* mat     = node->GetMatrix();
+   const Double_t *pos = mat->GetTranslation();
+   
+   gv->CurrentCamera().SetCenterVec(pos[0], pos[1], pos[2]);
 }
 
 //__________________________________________________________

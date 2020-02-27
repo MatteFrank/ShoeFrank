@@ -540,12 +540,12 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form("Vertex# %d at position:\n", idx) );
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z()) );
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", err.X(), err.Y(), err.Z()) );
-      fInfoView->AddLine( Form(" BM Matched %d\n", vtx->IsBmMatched()) );
+      fInfoView->AddLine( Form(" BM Matched %d (valid: %d)\n", vtx->IsBmMatched(), vtx->GetValidity()) );
       
       if (fConsoleButton->IsOn()) {
          cout << Form("Vertex# %d at position:\n", idx) << endl;
          cout << Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z());
-         cout << Form(" BM Matched %d\n", vtx->IsBmMatched());
+         cout << Form(" BM Matched %d (valid: %d)\n", vtx->IsBmMatched(), vtx->GetValidity());
       }
 
    } else if (obj->InheritsFrom("TASTntuHit")) {
@@ -593,10 +593,10 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       TAVTbaseTrack* track =  (TAVTbaseTrack*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track # %2d:\n", track->GetNumber()) );
+      fInfoView->AddLine( Form("Track # %2d (valid: %d): \n", track->GetNumber(), track->GetValidity()) );
       fInfoView->AddLine( Form(" with %3d clusters\n", track->GetClustersN()) );
       if (fConsoleButton->IsOn()) {
-         cout << Form("Track # %2d:\n", track->GetNumber());
+         cout << Form("Track # %2d (valid: %d): \n", track->GetNumber(), track->GetValidity());
          cout << Form(" with %3d clusters\n", track->GetClustersN());
       }
       
@@ -643,14 +643,25 @@ void TAFOeventDisplay::UpdateTrackInfo(TEveTrack* ts)
       TAGtrack* track =  (TAGtrack*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track # %2d:", track->GetTrackId()) );
-      fInfoView->AddLine( Form("Charge: %d Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass()) );
+      fInfoView->AddLine( Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN()) );
+      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %g GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass()) );
       fInfoView->AddLine( Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof()) );
       
       if (fConsoleButton->IsOn()) {
-         cout <<  Form("Track # %2d:", track->GetTrackId());
-         cout <<  Form("Charge: %d Mass: %g GeV/c2\n", track->GetCharge(), track->GetMass());
+         cout <<  Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN());
+         cout <<  Form("Charge: %d A: %d Mass: %g GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass());
          cout <<  Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof());
+         
+         for( Int_t iPoint = 0; iPoint < track->GetMeasPointsN(); ++iPoint ) {
+            TAGpoint* point = track->GetMeasPoint(iPoint);
+            cout << Form("Point # %2d", iPoint);
+            
+            for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
+               Int_t idx = point->GetMcTrackIdx(k);
+               cout << Form("Track index %d ", idx);
+            }
+            cout << endl;
+         }
       }
    }
 }
@@ -710,6 +721,10 @@ void TAFOeventDisplay::UpdateElements()
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
        GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
       UpdateElements("ir");
+   
+   if (GlobalPar::GetPar()->IncludeTOE() && fgTrackFlag)
+      UpdateGlbTrackElements();
+
 }
 
 //__________________________________________________________
@@ -729,11 +744,8 @@ void TAFOeventDisplay::UpdateElements(const TString prefix)
       UpdateStripElements();
    } else {
       UpdateQuadElements(prefix);
-      if (fgTrackFlag) {
+      if (fgTrackFlag)
          UpdateTrackElements(prefix);
-         if (GlobalPar::GetPar()->IncludeTOE())
-            UpdateGlbTrackElements();
-      }
    }
 }
 
@@ -762,11 +774,6 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
    else if (prefix == "it")
       parGeo = fReco->GetParGeoIt();
 
-   // known bug if first event is empty
-   if (fVtxClusDisplay)
-      fVtxClusDisplay->AddHit(-1, 0, 0, 0);
-   
-   
    Int_t nPlanes = parGeo->GetSensorsN();
    
    TAVTntuTrack*  pNtuTrack = 0x0;
@@ -916,42 +923,40 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       
       TAVTntuTrack* pNtuTrack = fReco->GetNtuTrackVtx();
       
-      if( pNtuTrack->GetTracksN() > 0 ) {
-         for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
-            fVtxTrackDisplay->AddNewTrack();
-            
-            TAVTtrack* track = pNtuTrack->GetTrack(iTrack);
-            TVector3 pos;
-            TVector3 posG;
-            
-            if (GlobalPar::GetPar()->IncludeTG() && track->GetValidity() == 1)
-               pos = track->Intersection(track->GetPosVertex().Z());
-            else
-               pos = track->Intersection(posfirstPlane);
-            
-            posG = fpFootGeo->FromVTLocalToGlobal(pos);
-            
-            x = posG(0); y = posG(1); z = posG(2);
-            
-            if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->IncludeDI()) {
-               Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
-               posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
-               pos = track->Intersection(posZtw);
-            } else {
-               pos  = track->Intersection(posLastPlane);
-            }
-            
-            posG = fpFootGeo->FromVTLocalToGlobal(pos);
-
-            x1 = posG(0); y1 = posG(1); z1 = posG(2);
-            
-            Float_t nPix = track->GetMeanPixelsN();
-            fVtxTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
-            fVtxTrackDisplay->TrackId(track);
-            
-         } // end loop on tracks
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         fVtxTrackDisplay->AddNewTrack();
          
-      } // nTracks > 0
+         TAVTtrack* track = pNtuTrack->GetTrack(iTrack);
+         TVector3 pos;
+         TVector3 posG;
+         
+         if (GlobalPar::GetPar()->IncludeTG())
+            pos = track->Intersection(track->GetPosVertex().Z());
+         else
+            pos = track->Intersection(posfirstPlane);
+         
+         posG = fpFootGeo->FromVTLocalToGlobal(pos);
+         
+         x = posG(0); y = posG(1); z = posG(2);
+         
+         if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->IncludeDI()) {
+            Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+            posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
+            pos = track->Intersection(posZtw);
+         } else {
+            pos  = track->Intersection(posLastPlane);
+         }
+         
+         posG = fpFootGeo->FromVTLocalToGlobal(pos);
+         
+         x1 = posG(0); y1 = posG(1); z1 = posG(2);
+         
+         Float_t nPix = track->GetMeanPixelsN();
+         fVtxTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
+         fVtxTrackDisplay->TrackId(track);
+         
+      } // end loop on tracks
+         
       fVtxTrackDisplay->RefitPlex();
    }
    
@@ -959,36 +964,33 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       TABMparGeo*   parGeo    = fReco->GetParGeoBm();
       TABMntuTrack* pNtuTrack = fReco->GetNtuTrackBm();
       
-      if( pNtuTrack->GetTracksN() > 0 ) {
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         fBmTrackDisplay->AddNewTrack();
          
-         for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
-            fBmTrackDisplay->AddNewTrack();
-            
-            TABMntuTrackTr* track = pNtuTrack->Track(iTrack);
+         TABMntuTrackTr* track = pNtuTrack->Track(iTrack);
+         
+         TVector3 A0 = track->PointAtLocalZ(parGeo->GetMylar1().Z());
+         TVector3 A1 = track->PointAtLocalZ(parGeo->GetMylar2().Z());
+         
+         if (GlobalPar::GetPar()->IncludeTG()) {
+            Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
+            posZtg = fpFootGeo->FromGlobalToBMLocal(TVector3(0, 0, posZtg)).Z();
+            A1 = track->PointAtLocalZ(posZtg);
+         }
+         
+         TVector3 A0G = fpFootGeo->FromBMLocalToGlobal(A0);
+         TVector3 A1G = fpFootGeo->FromBMLocalToGlobal(A1);
+         
+         x  = A0G(0); y  = A0G(1); z  = A0G(2);
+         x1 = A1G(0); y1 = A1G(1); z1 = A1G(2);
+         
+         Int_t nHits = track->GetNhit();
+         // inverse view ??
+         fBmTrackDisplay->AddTracklet(nHits*100, y, x, z, y1, x1, z1);
+         fBmTrackDisplay->TrackId(track);
+         
+      } // end loop on tracks
 
-            TVector3 A0 = track->PointAtLocalZ(parGeo->GetMylar1().Z());
-            TVector3 A1 = track->PointAtLocalZ(parGeo->GetMylar2().Z());
-            
-            if (GlobalPar::GetPar()->IncludeTG()) {
-               Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
-               posZtg = fpFootGeo->FromGlobalToBMLocal(TVector3(0, 0, posZtg)).Z();
-               A1 = track->PointAtLocalZ(posZtg);
-            }
-            
-            TVector3 A0G = fpFootGeo->FromBMLocalToGlobal(A0);
-            TVector3 A1G = fpFootGeo->FromBMLocalToGlobal(A1);
-            
-            x  = A0G(0); y  = A0G(1); z  = A0G(2);
-            x1 = A1G(0); y1 = A1G(1); z1 = A1G(2);
-            
-            Int_t nHits = track->GetNhit();
-            // inverse view ??
-            fBmTrackDisplay->AddTracklet(nHits*100, y, x, z, y1, x1, z1);
-            fBmTrackDisplay->TrackId(track);
-            
-         } // end loop on tracks
-         
-      } // nTracks > 0
       fBmTrackDisplay->RefitPlex();
    }
    
@@ -1006,33 +1008,32 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       
       TAIRntuTrack* pNtuTrack = fReco->GetNtuTrackIr();
       
-      if( pNtuTrack->GetTracksN() > 0 ) {
-         for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
-            fIrTrackDisplay->AddNewTrack();
-            
-            TAIRtrack* track = pNtuTrack->GetTrack(iTrack);
-            TVector3 posG(0, 0, 0);
-            
-            posG  = track->Intersection(0);
-            x = posG(0); y = posG(1); z = posG(2);
-            
-            
-            if (GlobalPar::GetPar()->IncludeTW()) {
-               Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
-               posG = track->Intersection(posZtw);
-            } else {
-               posG  = track->Intersection(posLastPlane);
-            }
-            
-            x1 = posG(0); y1 = posG(1); z1 = posG(2);
-            
-            Float_t nPix = track->GetMeanPixelsN();
-            fIrTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
-            fIrTrackDisplay->TrackId(track);
-            
-         } // end loop on tracks
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         fIrTrackDisplay->AddNewTrack();
          
-      } // nTracks > 0
+         TAIRtrack* track = pNtuTrack->GetTrack(iTrack);
+         TVector3 posG(0, 0, 0);
+         
+         posG  = track->Intersection(0);
+         x = posG(0); y = posG(1); z = posG(2);
+         
+         
+         if (GlobalPar::GetPar()->IncludeTW()) {
+            Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+            posG = track->Intersection(posZtw);
+         } else {
+            posG  = track->Intersection(posLastPlane);
+         }
+         
+         x1 = posG(0); y1 = posG(1); z1 = posG(2);
+         
+         Float_t nPix = track->GetMeanPixelsN();
+         fIrTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
+         fIrTrackDisplay->TrackId(track);
+         
+      } // end loop on tracks
+         
+
       fIrTrackDisplay->RefitPlex();
    }
 }
@@ -1041,46 +1042,28 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
 void TAFOeventDisplay::UpdateGlbTrackElements()
 {
    TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
-   
-   //example begin
-
-   TVector3 vtx(0.2,-0.03,0.9);
-   TVector3 mom0(0.119, -0.017, 2.39);
-   TVector3 vtxErr(0.01,0.01,0.01);
-   TVector3 mom0Err(0.01, 0.01, 0.01);
-   Int_t charge = 2;
-
-//   pNtuTrack->Clear();
-   TAGtrack* track0 = pNtuTrack->NewTrack(0.938, mom0.Mag(), charge, 1.1);
-   track0->AddMeasPoint(vtx, vtxErr, mom0, mom0Err);
-
-   // example end
-   
    fGlbTrackDisplay->ResetTracks();
-//
-   if( pNtuTrack->GetTracksN() > 0 ) {
-      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
-          std::cout << "--- drawing new track --- \n";
-          TAGtrack* track = pNtuTrack->GetTrack(iTrack);
-
-         // vertex
-         TAGpoint* point = track->GetMeasPoint(0);
-         TVector3 vtx    = point->GetPosition();
-         TVector3 mom0   = point->GetMomentum();
-         Int_t charge    = point->GetChargeZ();
-
-         TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
-         glbTrack->TrackId(track);
-
-         for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
-            TAGpoint* point = track->GetMeasPoint(iPoint);
-            TVector3 pos    = point->GetPosition();
-            TVector3 mom    = point->GetMomentum();
-
-            glbTrack->AddTrackMarker(pos, mom);
-         } // end loop on points
-      } // end loop on tracks
-   } // nTracks > 0
+    
+   for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+      TAGtrack* track = pNtuTrack->GetTrack(iTrack);
+      
+      // vertex
+      TAGpoint* point = track->GetMeasPoint(0);
+      TVector3 vtx    = point->GetPosition();
+      TVector3 mom0   = point->GetMomentum();
+      Int_t charge    = point->GetChargeZ();
+      
+      TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
+      glbTrack->TrackId(track);
+      
+      for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
+         TAGpoint* point = track->GetMeasPoint(iPoint);
+         TVector3 pos    = point->GetPosition();
+         TVector3 mom    = point->GetMomentum();
+         
+         glbTrack->AddTrackPoint(pos, mom);
+      } // end loop on points
+   } // end loop on tracks
 }
 
 //__________________________________________________________
