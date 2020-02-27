@@ -90,9 +90,17 @@ Bool_t TASTdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    if (fMap[id] == 0) {
       fCurrentHit = (TASTntuHit*)fpNtuRaw->NewHit(id, charge, time);
       fMap[id] = fCurrentHit;
-   } else 
+   } else {
       fCurrentHit = fMap[id];
       
+      //Add charge to current hit
+      fCurrentHit->SetCharge(fCurrentHit->GetCharge()+charge);
+      
+      // take the shortest time
+      if (time < fCurrentHit->GetTime())
+         fCurrentHit->SetTime(time);
+   }
+   
    return true;
 }
 
