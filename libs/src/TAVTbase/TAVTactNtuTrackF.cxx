@@ -24,7 +24,6 @@
 #include "TAVTparGeo.hxx"
 #include "TAVTtrack.hxx"
 #include "TAVTntuTrack.hxx"
-#include "TAVTntuCluster.hxx"
 #include "TAVTactNtuTrackF.hxx"
 
 
@@ -72,7 +71,9 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
    Int_t nPlane   = pGeoMap->GetSensorsN()-1;
    Int_t curPlane = nPlane;
    
-   while (curPlane >= fRequiredClusters-1) {
+   fMapClus.clear();
+   
+   while (curPlane >= fRequiredClusters) {
 	  
 	  // Get the last plane
 	  curPlane = nPlane--;
@@ -95,7 +96,8 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
 			for( Int_t iNextClus = 0; iNextClus < nNextClusters; ++iNextClus) { // loop on cluster of next plane
 			   TAVTcluster* nextCluster = (TAVTcluster*)nextList->At(iNextClus);
 			   if (nextCluster->Found()) continue;
-            
+            if (fMapClus[lastCluster] == 1) continue;
+
 			   track = new TAVTtrack();
 			   track->AddCluster(lastCluster);
 			   nextCluster->SetFound();
@@ -105,6 +107,12 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
 
 			   if (!IsGoodCandidate(track)) {
 				  nextCluster->SetFound(false);
+               for (Int_t i = 0; i < track->GetClustersN(); i++) {
+                 TAVTcluster* clus = (TAVTcluster*)track->GetCluster(i);
+                 fMapClus[clus] = 0;
+              }
+               if (curPlane == pGeoMap->GetSensorsN()-1)
+                  fMapClus[lastCluster] = 1;
 				  delete track;
 				  continue;
 			   }
@@ -179,6 +187,11 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
 //  
 Bool_t TAVTactNtuTrackF::IsGoodCandidate(TAVTtrack* track)
 {
+   for (Int_t i = 0; i < track->GetClustersN(); i++) {
+      TAVTcluster* clus = (TAVTcluster*)track->GetCluster(i);
+      fMapClus[clus] = 1;
+   }
+   
    TAVTbaseParGeo*  pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
    TAGgeoTrafo* pFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
