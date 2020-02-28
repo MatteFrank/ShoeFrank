@@ -341,27 +341,17 @@ public:
         return *this;
     }
     
-    template< class T,
-              typename std::enable_if_t< !details::need_formatting<T>::value, std::nullptr_t> = nullptr>
+    template< class T >
     TATOElogger& operator<<(T && t_p)
     {
-        // puts(__PRETTY_FUNCTION__);
         if( current_node_mh ) {
-            current_node_mh->get_value().data += std::forward<T>(t_p);
+            ostringstream buffer;
+            buffer << t_p;
+            current_node_mh->get_value().data += buffer.str();
         }
         return *this;
     }
-    
-    template< class T,
-              typename std::enable_if_t< details::need_formatting<T>::value, std::nullptr_t > = nullptr>
-    TATOElogger& operator<<(T&& t_p)
-    {
-        // puts(__PRETTY_FUNCTION__);
-        if( current_node_mh ) {
-            current_node_mh->get_value().data += std::to_string(t_p) ;
-        }
-        return *this;
-    }
+
     
     void freeze()
     {
