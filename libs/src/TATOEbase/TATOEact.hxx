@@ -76,7 +76,8 @@ private:
     TATOEchecker<TATOEactGlb> checker_m;
     TATOElogger logger_m;
 
-
+    node_type const * current_node_mh;
+    std::size_t event{0};
     
 
 public:
@@ -96,10 +97,12 @@ public:
     
     void Action() override {
         
+        ++event;
         logger_m.clear();
         checker_m.reset_local_data();
         
-        logger_m.add_header( "GLOBAL_RECONSTRUCTION" );
+        logger_m.add_root_header( "GLOBAL_RECONSTRUCTION" );
+        logger_m << "event: "<< event << '\n';
         
         auto hypothesis_c = form_hypothesis();
         
@@ -109,7 +112,6 @@ public:
         }
         
         checker_m.compute_efficiency();
-        checker_m.output();
         logger_m.output();
         
         
@@ -144,7 +146,7 @@ private:
     std::vector<particle_properties> form_hypothesis()
     {
         
-        logger_m.add_header( "FORM_HYPOTHESIS" );
+        logger_m.add_root_header( "FORM_HYPOTHESIS" );
         
         auto tof = list_m.last();
 
@@ -161,6 +163,7 @@ private:
             
             auto charge = candidate.data->GetChargeZ();
             if(charge == 0) {continue;}
+            
             
             auto add_current_end_point = [&candidate]( particle_properties & hypothesis_p  )
                                  { hypothesis_p.get_end_points().push_back( candidate.data ); };
@@ -272,7 +275,7 @@ private:
     
     void reconstruct()
     {
-        logger_m.add_header("RECONSTRUCT");
+        logger_m.add_root_header("RECONSTRUCT");
         
         auto arborescence = make_arborescence< full_state >();
         
@@ -349,7 +352,7 @@ private:
         sigma_c = ukf_m.force_propagation( std::move(sigma_c), step );
         auto ps = ukf_m.generate_propagated_state( std::move(sigma_c) );
 //
-        logger_m.add_sub_header<3>("advance_reconstruction_impl");
+        logger_m.add_header<3>("advance_reconstruction_impl");
         logger_m << "propagated_state : ( " << ps.vector(0,0) << ", " << ps.vector(1,0) ;
         logger_m << ") -- (" << ps.vector(2,0) << ", " << ps.vector(3,0)  ;
         logger_m << ") -- " << ps.evaluation_point << '\n';
@@ -371,21 +374,21 @@ private:
                                  const T& detector_p )
     {
         
-        logger_m.add_header("ADVANCE_RECONSTRUCTION");
+        logger_m.add_root_header("ADVANCE_RECONSTRUCTION");
         
         auto layer_c = detector_p.form_layers();
         
         for(auto && layer : layer_c ) {
         
             auto& leaf_c = arborescence_p.get_handler();
-            logger_m.add_sub_header<1>("layer");
+            logger_m.add_header<1>("layer");
         
             if( layer.get_candidates().empty() ){ continue; }
             
             
             for(auto& leaf : leaf_c){
                 
-                logger_m.add_sub_header<2>( "leaf" );
+                logger_m.add_header<2>( "leaf" );
                 checker_m.update_current_node( &leaf );
                 
             
@@ -416,7 +419,7 @@ private:
                                  const detector_properties<details::tof_tag>& tof_p )
     {
         
-        logger_m.add_header( "FINALISE_RECONSTRUCTION" );
+        logger_m.add_root_header( "FINALISE_RECONSTRUCTION" );
         
         
         auto& leaf_c = arborescence_p.get_handler();
@@ -425,7 +428,7 @@ private:
         
         for(auto& leaf : leaf_c){
         
-            logger_m.add_sub_header<1>("leaf");
+            logger_m.add_header<1>("leaf");
             checker_m.update_current_node( &leaf );
             
             ukf_m.step_length() = 1e-3;
@@ -454,7 +457,7 @@ private:
                                  const detector_properties<details::vertex_tag>& vertex_p )
     {
         
-        logger_m.add_header("START_RECONSTRUCTION");
+        logger_m.add_root_header("START_RECONSTRUCTION");
         
 
         auto * vertex_h = vertex_p.retrieve_vertex();
@@ -472,7 +475,7 @@ private:
             
             auto * leaf_h = arborescence_p.add_root( std::move(fs) );
             
-            logger_m.add_sub_header<1>( "vertex_track_reconstruction" );
+            logger_m.add_header<1>( "vertex_track_reconstruction" );
             
             
             for( auto layer : track ){
@@ -528,7 +531,7 @@ private:
         std::vector< enriched_candidate > enriched_c;
         enriched_c.reserve( candidate_c.size() );
     
-        logger_m.add_sub_header<4>(  "confront" );
+        logger_m.add_header<4>(  "confront" );
         std::for_each( candidate_c.begin(), candidate_c.end(),
                       [this, &ps_p, &enriched_c]( const auto& candidate_p )
                       {
@@ -542,7 +545,7 @@ private:
                                   enriched_c.begin(), enriched_c.end(),
                                   [this, &ps_p, &layer_p ]( const auto & ec_p )
                                   {
-                                      logger_m.add_sub_header<5>( "select" );
+                                      logger_m.add_header<5>( "select" );
                                       auto error = ec_p.data->GetPosError();
                                       
                                       auto mps = split_half( ps_p.vector , details::row_tag{});
@@ -571,7 +574,7 @@ private:
                                       logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
                                       logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
                                       
-                                      checker_m.check_validity( ec_p,  ec_p.chisquared < cutter.chisquared );
+                                      checker_m.check_validity( ec_p,  ec_p.chisquared , cutter.chisquared, details::should_pass_tag{} );
                                       
                                       return ec_p.chisquared < cutter.chisquared;
                                   }
@@ -609,7 +612,7 @@ private:
                                        return std::any_of( end_point_ch.begin(), end_point_ch.end(),
                                                            [&c_p](auto const & ep_ph ){ return c_p.data == ep_ph;  } );
                                    } );
-        logger_m.add_sub_header<4>(  "confront" );
+        logger_m.add_header<4>(  "confront" );
 
         using enriched_candidate = enriched_candidate_impl<typename decltype(candidate_c)::value_type>;
         std::vector< enriched_candidate > enriched_c;
@@ -631,7 +634,7 @@ private:
     
         auto select = [this, &ps_p, &layer_p ]( const auto & ec_p )
                          {
-                             logger_m.add_sub_header<5>( "select" );
+                             logger_m.add_header<5>( "select" );
                             auto error = ec_p.data->GetPosError();
             
                             auto mps = split_half( ps_p.vector , details::row_tag{});
@@ -686,7 +689,7 @@ private:
         using candidate = typename detector_properties< details::vertex_tag >::candidate;
         using enriched_candidate = enriched_candidate_impl< candidate >;
     
-        logger_m.add_sub_header<4>(  "confront" );
+        logger_m.add_header<4>(  "confront" );
         
         auto c = layer_p.get_candidate();
         auto chi2 = ukf_m.compute_chisquared(ps_p, c);
@@ -698,7 +701,7 @@ private:
     
         auto select = [this, &ps_p, &layer_p ]( const auto & ec_p, double cut_p )
                             {
-                                logger_m.add_sub_header<5>( "select" );
+                                logger_m.add_header<5>( "select" );
                                 
                                 auto error = ec_p.data->GetPosError();
         
@@ -727,7 +730,7 @@ private:
                                 logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
                                 logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
                                 
-                                checker_m.check_validity( ec_p, ec_p.chisquared < cutter.chisquared, details::should_pass_tag{} );
+                                checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared, details::should_pass_tag{} );
                                 
                                 return ec_p.chisquared < cutter.chisquared;
                             };

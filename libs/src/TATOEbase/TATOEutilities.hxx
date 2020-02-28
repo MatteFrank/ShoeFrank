@@ -85,7 +85,10 @@ namespace details{
     template<class T>
     struct detector_traits{};
     
-    
+    struct immutable_tag{};
+    struct fleeting_tag{};
+    struct normal_tag{};
+    struct non_removable_tag{};
     
 } //namespace details
 

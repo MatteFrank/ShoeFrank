@@ -24,7 +24,6 @@
 #include "TAGdataDsc.hxx"
 #include "TAGcluster.hxx"
 #include "TATOEutilities.hxx"
-#include "TATOElogger.hxx"
 
 class TATWpoint;
 
@@ -68,7 +67,6 @@ private:
     
     std::vector< track > reconstructible_track_mc;
     
-    TATOElogger logger_m;
     Action& action_m;
     
 public:
@@ -91,11 +89,10 @@ private:
 public:
     
     void update_current_node( node_type const * current_node_ph ){ current_node_mh = current_node_ph; }
-    void output(){ logger_m.output(); }
     
     void register_reconstructible_track(candidate const& candidate_p)
     {
-        logger_m.add_header("REGISTER_RECONSTRUCTIBLE_TRACK");
+        action_m.logger_m.template add_sub_header< details::immutable_tag >("reconstructible_track");
         
         auto find_index = [this, &candidate_p]( TAMCeveTrack const * mc_track_ph )
                           {
@@ -118,20 +115,20 @@ public:
         
         
         if( iterator != mc_track_ch.end() ){
-            logger_m.add_sub_header<1,  details::immutable_tag >("track_registered");
+            action_m.logger_m.add_sub_header("track_registered");
             
             auto reconstructible_track_h = *iterator;
             
             auto index = find_index( reconstructible_track_h );
             reconstructible_track_mc.push_back( form_track( index, action_m.list_m ) );
             
-            logger_m << "mc_track_index: " << index << '\n';
+            action_m.logger_m << "mc_track_index: " << index << '\n';
             auto& real_particle = reconstructible_track_mc.back().real_particle;
-            logger_m << "charge: " << real_particle.charge << '\n';
-            logger_m << "mass: " << real_particle.mass << '\n';
-            logger_m << "momentum: " << real_particle.momentum << '\n';
-            logger_m << "track_slope_x: " << real_particle.track_slope_x << '\n';
-            logger_m << "track_slope_y: " << real_particle.track_slope_y << '\n';
+            action_m.logger_m << "charge: " << real_particle.charge << '\n';
+            action_m.logger_m << "mass: " << real_particle.mass << '\n';
+            action_m.logger_m << "momentum: " << real_particle.momentum << '\n';
+            action_m.logger_m << "track_slope_x: " << real_particle.track_slope_x << '\n';
+            action_m.logger_m << "track_slope_y: " << real_particle.track_slope_y << '\n';
             
             ++reconstructible_number_m;
             ++local_reconstructible_number_m;
@@ -214,35 +211,37 @@ public:
     
     template<class EnrichedCandidate>
     void check_validity( EnrichedCandidate const & ec_p,
-                         bool went_through_p,
+                         double ec_chisquared_p,
+                         double cutter_chisquared_p,
                          details::should_pass_tag )
     {
-        logger_m.add_sub_header<1, details::fleeting_tag>("check_validity");
-        logger_m.add_sub_header<2>("should_pass");
+        if( abs( (cutter_chisquared_p - ec_chisquared_p)/cutter_chisquared_p ) > 10 ){ return; }
         
-        logger_m.add_sub_header<3>("current_hypothesis");
-        logger_m << "charge: " << action_m.particle_m.charge << '\n';
-        logger_m << "mass: " << action_m.particle_m.mass << '\n';
-        logger_m << "momentum: " << action_m.particle_m.momentum << '\n';
+        action_m.logger_m.template add_sub_header<details::fleeting_tag>("check_validity");
+        action_m.logger_m.add_sub_header("should_pass");
+        
+        action_m.logger_m.add_sub_header("current_hypothesis");
+        action_m.logger_m << "charge: " << action_m.particle_m.charge << '\n';
+        action_m.logger_m << "mass: " << action_m.particle_m.mass << '\n';
+        action_m.logger_m << "momentum: " << action_m.particle_m.momentum << '\n';
         
         auto * root_h = current_node_mh->get_ancestor();
-        logger_m << "track_slope_x: " << root_h->get_value().vector(2, 0) << '\n';
-        logger_m << "track_slope_y: " << root_h->get_value().vector(3, 0) << '\n';
+        action_m.logger_m << "track_slope_x: " << root_h->get_value().vector(2, 0) << '\n';
+        action_m.logger_m << "track_slope_y: " << root_h->get_value().vector(3, 0) << '\n';
         
         
-        logger_m.add_sub_header<4>("cluster");
-        logger_m << "mc_id: " ;
+        action_m.logger_m.add_sub_header("cluster");
+        action_m.logger_m << "mc_id: " ;
         std::vector<int> track_id_c;
         track_id_c.reserve( ec_p.data->GetMcTracksN() );
         for( int i{0} ; i < ec_p.data->GetMcTracksN() ; ++ i){
             track_id_c.push_back( ec_p.data->GetMcTrackIdx(i) );
-            logger_m << ec_p.data->GetMcTrackIdx(i) << " ";
+            action_m.logger_m << ec_p.data->GetMcTrackIdx(i) << " ";
         }
-        logger_m << '\n';
+        action_m.logger_m << '\n';
         
-        
-        if( should_pass( track_id_c ) && !went_through_p ){
-            logger_m.freeze();
+        bool went_through = ec_chisquared_p < cutter_chisquared_p;
+        if( should_pass( track_id_c ) && !went_through ){
             action_m.logger_m.freeze();
         }
     }
@@ -293,18 +292,17 @@ public:
     
 
     void compute_efficiency(){
-        logger_m.add_header("EFFICIENCY");
-        logger_m.add_sub_header<1, details::immutable_tag>("computation");
-        logger_m << "reconstructible_tracks: " << local_reconstructible_number_m << '\n';
-        logger_m << "local_efficiency: " << local_reconstructed_number_m * 100./local_reconstructible_number_m << '\n';
-        logger_m << "global_efficiency: " << reconstructed_number_m * 100./reconstructible_number_m << '\n';
+        action_m.logger_m.add_root_header("EFFICIENCY");
+        action_m.logger_m.template add_header<1, details::immutable_tag>("computation");
+        action_m.logger_m << "reconstructible_tracks: " << local_reconstructible_number_m << '\n';
+        action_m.logger_m << "local_efficiency: " << local_reconstructed_number_m * 100./local_reconstructible_number_m << '\n';
+        action_m.logger_m << "global_efficiency: " << reconstructed_number_m * 100./reconstructible_number_m << '\n';
 
     }
     
     void reset_local_data(){
         local_reconstructed_number_m = 0;
         local_reconstructible_number_m = 0;
-        logger_m.clear();
         reconstructible_track_mc.clear();
     }
     
