@@ -98,6 +98,8 @@ protected:
    Double_t    fRsParErr;        // parameter r_s for the cluster size function
    Double_t    fThresPar;        // parameter threshold for cluster size function
    Double_t    fThresParErr;     // parameter threshold for cluster size function
+   Double_t    fLinPar;          // parameter linear for cluster size function
+   Double_t    fLinParErr;       // parameter linear for cluster size function
 
    Double_t    fClusterHeight;   // height of the cluster for a given eloss
    Double_t    fLogHeightPar;    // Log parameter for the cluster height function
