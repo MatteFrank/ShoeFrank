@@ -111,6 +111,15 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fpFootGeo = new TAGgeoTrafo();
    TString parFileName = Form("./geomaps/%sFOOT_geo.map", fExpName.Data());
    fpFootGeo->FromFile(parFileName);
+   
+   // activate per default Dipole, TGT, VTX, IT and TW if TOE on
+   if (GlobalPar::GetPar()->IncludeTOE()) {
+      GlobalPar::GetPar()->IncludeDI(true);
+      GlobalPar::GetPar()->IncludeTG(true);
+      GlobalPar::GetPar()->IncludeVertex(true);
+      GlobalPar::GetPar()->IncludeInnerTracker(true);
+      GlobalPar::GetPar()->IncludeTW(true);
+   }
 }
 
 //__________________________________________________________
@@ -276,7 +285,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files dipole
-   if (GlobalPar::GetPar()->IncludeDI() || TAGactNtuGlbTrack::GetStdAloneFlag() || GlobalPar::GetPar()->IncludeTOE()) {
+   if (GlobalPar::GetPar()->IncludeDI() || TAGactNtuGlbTrack::GetStdAloneFlag() ) {
       fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
       TString parFileName = "./geomaps/TADIdetector.map";
