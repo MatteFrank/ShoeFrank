@@ -24,52 +24,62 @@ using namespace std;
 class GlobalPar {
 
 public:
-
 	static GlobalPar* Instance( string aparFileName = "FootGlobal.par" );
 	static GlobalPar* GetPar();
+   
+public:
 	~GlobalPar();
 
 	void ReadParamFile();
 	void Print();
 
-	int Debug() { return m_debug; };
+	int  Debug()                const { return m_debug;               }
 
-	int KalMode() { return m_kalmanMode; };
-	bool IsKalReverse() { return m_kalReverse; };
-	bool geoROOT() { return m_geoROOT; };
-	bool geoFLUKA() { return m_geoFLUKA; };
-	bool verFLUKA() { return m_verFLUKA; };
-	vector<string> KalSystems() { return m_trackingSystems; };
-	vector<string> KalParticles() { return m_kalParticles; };
-	vector<string> MCParticles() { return m_mcParticles; };
+	int  KalMode()              const { return m_kalmanMode;          }
+	bool IsKalReverse()         const { return m_kalReverse;          }
+	bool geoROOT()              const { return m_geoROOT;             }
+	bool geoFLUKA()             const { return m_geoFLUKA;            }
+	bool verFLUKA()             const { return m_verFLUKA;            }
+   
+	vector<string> KalSystems()       { return m_trackingSystems;     }
+	vector<string> KalParticles()     { return m_kalParticles;        }
+	vector<string> MCParticles()      { return m_mcParticles;         }
 
-	double VTReso() 	{return m_VTreso; };
-    double ITReso() 	{return m_ITreso; };
-    double MSDReso()        {return m_MSDreso; };
-    double TWReso()        {return m_TWreso; };
+	 double VTReso() 	          const { return m_VTreso;              }
+    double ITReso() 	          const { return m_ITreso;              }
+    double MSDReso()           const { return m_MSDreso;             }
+    double TWReso()            const { return m_TWreso;              }
 
-    bool IsPrintOutputFile() { return m_printoutfile; };
-    string OutputFile() { return m_outputfilename; };
+    bool IsPrintOutputFile()   const { return m_printoutfile;        }
+    string OutputFile()        const { return m_outputfilename;      }
  
-    bool IsPrintOutputNtuple() { return m_printoutntuple; };
-    string OutputNtuple() { return m_outputntuplename; };
+    bool IsPrintOutputNtuple() const { return m_printoutntuple;      }
+    string OutputNtuple()      const { return m_outputntuplename;    }
 	
-    bool IncludeDI() { return m_includeDI; };
-    bool IncludeST() { return m_includeST; };
-    bool IncludeBM() { return m_includeBM; };
-    bool IncludeTW() { return m_includeTW; };
-    bool IncludeMSD() { return m_includeMSD; };
-    bool IncludeCA() { return m_includeCA; };
-    bool IncludeTG() { return m_includeTG; };
-    bool IncludeVertex() { return m_includeVertex; };
-    bool IncludeInnerTracker() { return m_includeInnerTracker; };
-    
-    bool IncludeTOE() { return m_includeTOE; };
-    bool IncludeKalman() { return m_includeKalman; };
-    bool IncludeEvent() { return m_includeEvent; };
+    bool IncludeDI()           const { return m_includeDI;           }
+    bool IncludeST()           const { return m_includeST;           }
+    bool IncludeBM()           const { return m_includeBM;           }
+    bool IncludeTW()           const { return m_includeTW;           }
+    bool IncludeMSD()          const { return m_includeMSD;          }
+    bool IncludeCA()           const { return m_includeCA;           }
+    bool IncludeTG()           const { return m_includeTG;           }
+    bool IncludeVertex()       const { return m_includeVertex;       }
+    bool IncludeInnerTracker() const { return m_includeInnerTracker; }
+   
+    bool IncludeTOE()          const { return m_includeTOE;          }
+    bool IncludeKalman()       const { return m_includeKalman;       }
+    bool IncludeEvent()        const { return m_includeEvent;        }
 
-
-  //    string MagFieldInputMapName() { return m_magFieldMap; };
+    void IncludeDI(bool t)           {  m_includeDI = t;             }
+    void IncludeST(bool t)           {  m_includeST = t;             }
+    void IncludeBM(bool t)           {  m_includeBM = t;             }
+    void IncludeTW(bool t)           {  m_includeTW = t;             }
+    void IncludeMSD(bool t)          {  m_includeMSD = t;            }
+    void IncludeCA(bool t)           {  m_includeCA = t;             }
+    void IncludeTG(bool t)           {  m_includeTG = t;             }
+    void IncludeVertex(bool t)       {  m_includeVertex = t;         }
+    void IncludeInnerTracker(bool t) {  m_includeInnerTracker = t;   }
+   
     void RemoveSpace( string* s );
     bool IEquals(const string& a, const string& b);
     bool frankFind( string what, string where );
@@ -127,8 +137,11 @@ public:
 private:
 	GlobalPar();
 	GlobalPar( string aparFileName );
+   
+private:
 	static GlobalPar* m_pInstance;
 
+private:
 	vector<string> m_copyInputFile;
 
 	vector<string> m_originAllowed;
@@ -155,36 +168,33 @@ private:
 	vector<string> m_kalParticles;
 
 	double m_VTreso;
-    double m_ITreso;
-    double m_MSDreso; 
-    double m_TWreso; 
+   double m_ITreso;
+   double m_MSDreso;
+   double m_TWreso;
 
-    string  m_outputfilename;
-    bool m_printoutfile;
+   string  m_outputfilename;
+   bool m_printoutfile;
        
-    string  m_outputntuplename;
-    bool m_printoutntuple;
-
-  //    string m_magFieldMap;
+   string  m_outputntuplename;
+   bool m_printoutntuple;
 
    bool m_includeST;
    bool m_includeBM;
    bool m_includeTG;
    bool m_includeDI;
 
-    bool m_includeTW;
-    bool m_includeMSD;
-    bool m_includeCA;
-    bool m_includeInnerTracker;
-    bool m_includeVertex;
+   bool m_includeTW;
+   bool m_includeMSD;
+   bool m_includeCA;
+   bool m_includeInnerTracker;
+   bool m_includeVertex;
     
-    bool m_includeEvent;
-    bool m_includeKalman;
-    bool m_includeTOE;
+   bool m_includeEvent;
+   bool m_includeKalman;
+   bool m_includeTOE;
 
    TObjArray  m_ClassDebugLevels;          // debug levels for classes
 
-   
 public:
    static void   Debug(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", const char* file = "", Int_t line = -1);
    static Int_t  GetDebugLevel(const char* className);
