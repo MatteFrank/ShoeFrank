@@ -168,7 +168,7 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
    TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
 
    TAVTbaseParConf* config   = (TAVTbaseParConf*) fpConfig->Object();
-   Float_t min               = config->GetAnalysisPar().PlanesForTrackMinimum/2.;
+   Float_t min               = config->GetAnalysisPar().PlanesForTrackMinimum; // to be tuned (sigma ~ 200)
 
    TABMntuTrackTr* bmTrack = pBMtrack->Track(0);
    if (!bmTrack) return false;
