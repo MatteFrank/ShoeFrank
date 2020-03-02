@@ -118,7 +118,7 @@ TASTrawHit* TASTdatRaw::Hit(Int_t i)
 }
 
 //------------------------------------------+-----------------------------------
-//! Read-only access \a i 'th hit
+//! Read-only access i 'th hit
 
 const TASTrawHit* TASTdatRaw::Hit(Int_t i) const
 {
