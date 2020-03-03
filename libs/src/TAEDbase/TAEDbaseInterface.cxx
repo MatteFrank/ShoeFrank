@@ -1,30 +1,3 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
-//
-//
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "TMath.h"
 #include "TGeoMedium.h"
@@ -67,7 +40,7 @@ Int_t  TAEDbaseInterface::fgMaxHistosN   =  4;
 
 ClassImp(TAEDbaseInterface)
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
 : TEveEventManager(),
   fExpName(expName),
@@ -113,7 +86,7 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
 	if (med) fWorldMedium = med;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 TAEDbaseInterface::~TAEDbaseInterface()
 {
    // default destructor
@@ -150,7 +123,7 @@ TAEDbaseInterface::~TAEDbaseInterface()
 }
 
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 void TAEDbaseInterface::BuildDefaultGeometry()
 {
    // World
@@ -176,7 +149,7 @@ void TAEDbaseInterface::FillDetectorNames()
    fDetectorMenu->AddEntry("ALL", kWorld);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 void TAEDbaseInterface::DefineMaterial()
 {
    //hall: fill with vacuum
@@ -185,7 +158,7 @@ void TAEDbaseInterface::DefineMaterial()
 }
 
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 void TAEDbaseInterface::SetWordMedium(TString materialChoice)
 {
    // search the material by its name
@@ -193,13 +166,13 @@ void TAEDbaseInterface::SetWordMedium(TString materialChoice)
    if (med) fWorldMedium = med;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 void TAEDbaseInterface::SetWorldSizeZ(Float_t sizeZ)
 {
    fWorldSizeZ  = sizeZ;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 void TAEDbaseInterface::SetWorldSizeXY(Float_t sizeXY)
 {
    fWorldSizeXY = sizeXY;
