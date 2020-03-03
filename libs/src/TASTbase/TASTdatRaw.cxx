@@ -110,7 +110,7 @@ void TASTdatRaw::ToStream(ostream& os, Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Access \a i 'th hit
+//! Access i 'th hit
 
 TASTrawHit* TASTdatRaw::Hit(Int_t i)
 {
