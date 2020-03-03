@@ -203,7 +203,7 @@ public:
     
     
     template<class T>
-    void register_reconstructed_track( std::vector< T > const & full_state_pc )
+    void register_reconstructed_track( std::vector< T > const & /*full_state_pc*/ )
     {
         ++reconstructed_number_m ;
         ++local_reconstructed_number_m;
@@ -215,23 +215,17 @@ public:
                          double cutter_chisquared_p,
                          details::should_pass_tag )
     {
+        bool went_through = ec_chisquared_p < cutter_chisquared_p; //this should be tested before ...
+        if( went_through ){ return ; }
         if( abs( (cutter_chisquared_p - ec_chisquared_p)/cutter_chisquared_p ) > 10 ){ return; }
         
         action_m.logger_m.template add_sub_header<details::fleeting_tag>("check_validity");
         action_m.logger_m.add_sub_header("should_pass");
         
-        action_m.logger_m.add_sub_header("current_hypothesis");
-        action_m.logger_m << "charge: " << action_m.particle_m.charge << '\n';
-        action_m.logger_m << "mass: " << action_m.particle_m.mass << '\n';
-        action_m.logger_m << "momentum: " << action_m.particle_m.momentum << '\n';
-        
-        auto * root_h = current_node_mh->get_ancestor();
-        action_m.logger_m << "track_slope_x: " << root_h->get_value().vector(2, 0) << '\n';
-        action_m.logger_m << "track_slope_y: " << root_h->get_value().vector(3, 0) << '\n';
-        
+        output_current_hypothesis();
         
         action_m.logger_m.add_sub_header("cluster");
-        action_m.logger_m << "mc_id: " ;
+        action_m.logger_m << "mc_id: ";
         std::vector<int> track_id_c;
         track_id_c.reserve( ec_p.data->GetMcTracksN() );
         for( int i{0} ; i < ec_p.data->GetMcTracksN() ; ++ i){
@@ -240,8 +234,8 @@ public:
         }
         action_m.logger_m << '\n';
         
-        bool went_through = ec_chisquared_p < cutter_chisquared_p;
-        if( should_pass( track_id_c ) && !went_through ){
+        
+        if( should_pass( track_id_c ) ){
             action_m.logger_m.freeze();
         }
     }
@@ -265,39 +259,73 @@ private:
         return std::any_of( reconstructible_track_mc.begin(), end_iterator, predicate_particle );
     }
     
-//    template<class EnrichedCandidate>
-//    void check_validity( EnrichedCandidate const & ec_p,
-//                         particle_properties const & current_hypothesis_p,
-//                         bool went_through_p,
-//                         details::should_not_pass_tag )
-//    {
-//        logger_m.add_sub_header<1>("check_validity");
-//        logger_m.add_sub_header<2>("should_not_pass");
-//
-//
-//        if( !should_pass && went_through_p ){
-//            logger_m.freeze();
-//            action_logger_m.freeze();
-//        }
-//    }
+    
+    public:
+    void output_current_hypothesis()
+    {
+        action_m.logger_m.add_sub_header("current_hypothesis");
+        action_m.logger_m << "charge: " << action_m.particle_m.charge << '\n';
+        action_m.logger_m << "mass: " << action_m.particle_m.mass << '\n';
+        action_m.logger_m << "momentum: " << action_m.particle_m.momentum << '\n';
+        
+        auto * root_h = current_node_mh->get_ancestor();
+        action_m.logger_m << "track_slope_x: " << root_h->get_value().vector(2, 0) << '\n';
+        action_m.logger_m << "track_slope_y: " << root_h->get_value().vector(3, 0) << '\n';
+    }
+    
+
+    template<class EnrichedCandidate>
+    void check_validity( EnrichedCandidate const & ec_p,
+                         double ec_chisquared_p,
+                         double cutter_chisquared_p,
+                         details::should_not_pass_tag )
+    {
+        bool went_through = ec_chisquared_p < cutter_chisquared_p;
+        if( !went_through ){ return; }
+        
+        action_m.logger_m.template add_sub_header<details::fleeting_tag>("check_validity");
+        action_m.logger_m.add_sub_header("should_not_pass");
+        
+        output_current_hypothesis();
+        
+        action_m.logger_m.add_sub_header("cluster");
+        action_m.logger_m << "mc_id: ";
+        std::vector<int> track_id_c;
+        track_id_c.reserve( ec_p.data->GetMcTracksN() );
+        for( int i{0} ; i < ec_p.data->GetMcTracksN() ; ++ i){
+            track_id_c.push_back( ec_p.data->GetMcTrackIdx(i) );
+            action_m.logger_m << ec_p.data->GetMcTrackIdx(i) << " ";
+        }
+        action_m.logger_m << '\n';
+        
+        
+        if( !should_pass(track_id_c) ){
+            action_m.logger_m.freeze();
+        }
+    }
     
 public:
     template<class EnrichedCandidate>
     void check_validity( EnrichedCandidate const & ec_p,
-                         bool went_through_p )
+                         double ec_chisquared_p,
+                         double cutter_chisquared_p )
     {
-       // check_validity(ec_p, went_through_p, details::should_pass_tag{} );
-       // check_validity(ec_p, current_hypothesis_p, went_through_p, should_not_pass_tag{});
+        check_validity(ec_p, ec_chisquared_p, cutter_chisquared_p, details::should_pass_tag{} );
+        check_validity(ec_p, ec_chisquared_p, cutter_chisquared_p, details::should_not_pass_tag{});
     }
     
 
     void compute_efficiency(){
         action_m.logger_m.add_root_header("EFFICIENCY");
         action_m.logger_m.template add_header<1, details::immutable_tag>("computation");
+        action_m.logger_m << "reconstructed_tracks: " << local_reconstructed_number_m << '\n';
         action_m.logger_m << "reconstructible_tracks: " << local_reconstructible_number_m << '\n';
         action_m.logger_m << "local_efficiency: " << local_reconstructed_number_m * 100./local_reconstructible_number_m << '\n';
         action_m.logger_m << "global_efficiency: " << reconstructed_number_m * 100./reconstructible_number_m << '\n';
-
+        
+        if( local_reconstructed_number_m > local_reconstructible_number_m ){
+            action_m.logger_m.freeze_everything();
+        }
     }
     
     void reset_local_data(){

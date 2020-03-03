@@ -162,9 +162,8 @@ void TAGactNtuGlbTrack::SetupBranches()
     
     
     auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
-                                                                     geoVTX_h,
-                                                                     6, 12) )
-                    .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, std::make_pair(22, 22) ) )
+                                                                     geoVTX_h, 15) )
+                    .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, {30, 35}) )
                     .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 1.5) )
                     .finish();
     

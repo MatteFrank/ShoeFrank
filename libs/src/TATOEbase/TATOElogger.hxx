@@ -360,6 +360,11 @@ public:
         }
     }
     
+    void freeze_everything()
+    {
+        for(auto & root : root_mc){ root->get_value().status = 1 ;}
+    }
+    
     void clear()
     {
         root_mc.clear();
@@ -371,13 +376,16 @@ public:
         
         auto process_immutable = [](node_type & node_p)
         {
-            if(node_p.get_value().status == 1 && node_p.get_parent()->get_value().status != 1){
+            if(node_p.get_value().status == 1 ){
                 node_p.walk_and_apply( [](node_type & node_p)
                                       { node_p.get_value().status = 1; } );
-                node_p.reverse_walk_and_apply( [](node_type & node_p)
+            
+                if( node_p.get_parent() && node_p.get_parent()->get_value().status != 1){
+                   node_p.reverse_walk_and_apply( [](node_type & node_p)
                                               { if(node_p.get_value().status == 0) {node_p.get_value().status = 2; } });
-                node_p.lineage_walk( [](node_type & node_p)
+                   node_p.lineage_walk( [](node_type & node_p)
                                     { node_p.get_value().status = 1; } );
+                }
             }
         };
         auto process_fleeting = [](node_type & node_p)

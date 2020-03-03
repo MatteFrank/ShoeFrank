@@ -118,13 +118,12 @@ struct layer_generator
     struct layer{
         std::vector<candidate> candidate_c;
         const double depth;
-        const std::pair<double, double> cut;
+        const double cut;
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }
         
-        double cut_value_x() const { return cut.first; }
-        double cut_value_y() const { return cut.second; }
+        double cut_value() const { return cut; }
         
         bool empty(){ return candidate_c.empty(); }
     };
@@ -142,7 +141,7 @@ struct layer_generator
             return {
                 detector_m.generate_candidates(index_m),
                 detector_m.layer_depth(index_m),
-                std::make_pair( detector_m.cut_value_x(), detector_m.cut_value_y())
+                detector_m.get_cut_values(index_m/2)
             };
         }
         friend bool operator!=(const iterator& lhs, const iterator& rhs){ return lhs.index_m != rhs.index_m; }
@@ -174,7 +173,6 @@ struct track_list
     struct pseudo_layer{
         candidate candidate_m;
         double depth;
-        double optimal_cut;
         double minimal_cut;
         
         candidate& get_candidate(){ return candidate_m; }
@@ -231,7 +229,6 @@ struct track_list
             return pseudo_layer{
                 std::move(c),
                 detector_m.layer_depth( cluster_h->GetPlaneNumber() ),
-                detector_m.optimal_cut_value(),
                 detector_m.minimal_cut_value()
             };
         }
@@ -290,7 +287,6 @@ private:
     const TAVTntuCluster* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const double optimal_cut_m;
     const double minimal_cut_m;
     constexpr static std::size_t layer{4};
     const std::array<double, layer> depth_mc;
@@ -301,11 +297,9 @@ public:
     detector_properties( TAVTntuVertex* vertex_phc,
                          TAVTntuCluster* cluster_phc,
                          TAVTparGeo* geo_ph,
-                         double optimal_cut_p,
                          double minimal_cut_p ) :
         vertex_mhc{ vertex_phc },
         cluster_mhc{ cluster_phc },
-        optimal_cut_m{optimal_cut_p},
         minimal_cut_m{minimal_cut_p},
         depth_mc{ retrieve_depth(geo_ph) } {}
     
@@ -336,7 +330,6 @@ public:
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
     constexpr double minimal_cut_value() const { return minimal_cut_m; }
-    constexpr double optimal_cut_value() const { return optimal_cut_m; }
 
     TAVTvertex const * retrieve_vertex( ) const;
     candidate generate_candidate( TAVTbaseCluster const * cluster_h  ) const ;
@@ -372,9 +365,8 @@ private:
     const TAITntuCluster* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const std::pair<double, double> cut_m;
+    const std::array<double, 2> cut_mc;
     constexpr static std::size_t layer{4};
-    
     
     using sensor_container_t = std::array<std::size_t, 8>;
     const std::array<sensor_container_t, 4> plane_mc{
@@ -390,9 +382,9 @@ public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAITntuCluster* cluster_phc,
                          TAITparGeo* geo_ph,
-                         std::pair<double, double> cut_p)  :
+                         std::array<double, 2> cut_pc)  :
         cluster_mhc{cluster_phc},
-        cut_m{cut_p},
+        cut_mc{cut_pc},
         depth_mc{ retrieve_depth(geo_ph) }
     { }
     
@@ -421,8 +413,7 @@ public:
     
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
-    constexpr double cut_value_x() const { return cut_m.first; }
-    constexpr double cut_value_y() const { return cut_m.second; }
+    constexpr double get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
     
     layer_generator<detector_properties> form_layers() const
     {

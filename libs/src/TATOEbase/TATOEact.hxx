@@ -101,9 +101,7 @@ public:
         logger_m.clear();
         checker_m.reset_local_data();
         
-        logger_m.add_root_header( "GLOBAL_RECONSTRUCTION" );
-        logger_m << "event: "<< event << '\n';
-        
+    
         auto hypothesis_c = form_hypothesis();
         
         for(auto & hypothesis : hypothesis_c){
@@ -147,6 +145,7 @@ private:
     {
         
         logger_m.add_root_header( "FORM_HYPOTHESIS" );
+        logger_m << "event: "<< event << '\n';
         
         auto tof = list_m.last();
 
@@ -431,6 +430,9 @@ private:
             logger_m.add_header<1>("leaf");
             checker_m.update_current_node( &leaf );
             
+            checker_m.output_current_hypothesis();
+            
+            
             ukf_m.step_length() = 1e-3;
             
             auto s = make_state(leaf.get_value());
@@ -549,8 +551,8 @@ private:
                                       auto error = ec_p.data->GetPosError();
                                       
                                       auto mps = split_half( ps_p.vector , details::row_tag{});
-                                      mps.first.get(0,0) += layer_p.cut_value_x() * particle_m.light_ion_boost * error.X();
-                                      mps.first.get(1,0) += layer_p.cut_value_y() * particle_m.light_ion_boost * error.Y();
+                                      mps.first.get(0,0) += layer_p.cut_value() * particle_m.light_ion_boost * error.X();
+                                      mps.first.get(1,0) += layer_p.cut_value() * particle_m.light_ion_boost * error.Y();
                                       // TD<decltype(mps)>x;
                                       
                                       using ec = typename underlying<decltype(ec_p)>::type;
@@ -574,7 +576,7 @@ private:
                                       logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
                                       logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
                                       
-                                      checker_m.check_validity( ec_p,  ec_p.chisquared , cutter.chisquared, details::should_pass_tag{} );
+                                     // checker_m.check_validity( ec_p,  ec_p.chisquared , cutter.chisquared, details::should_pass_tag{} );
                                       
                                       return ec_p.chisquared < cutter.chisquared;
                                   }
@@ -662,7 +664,7 @@ private:
                              logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
                              logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
                              
-                             checker_m.check_validity( ec_p, ec_p.chisquared < cutter.chisquared );
+                            // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared );
                              
                              return ec_p.chisquared < cutter.chisquared;
                          };
@@ -730,7 +732,7 @@ private:
                                 logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
                                 logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
                                 
-                                checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared, details::should_pass_tag{} );
+                               // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared, details::should_pass_tag{} );
                                 
                                 return ec_p.chisquared < cutter.chisquared;
                             };
@@ -744,11 +746,6 @@ private:
                                       data_handle<data_type>{ ec.data }  };
             
             fs_c.push_back( std::move(fs) );
-            
-            if( !select(ec, layer_p.optimal_cut) ){
-               // logger_m.freeze();
-                //std::cout << "WARNING : does not go through the optimal_cut" << std::endl;
-            }
             
         }
     
