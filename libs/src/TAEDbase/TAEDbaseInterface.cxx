@@ -490,7 +490,7 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
    fEventProgress->SetRange(0, nEvts);
    
    if (fRefreshButton->IsOn())
-      ResetHistogram();
+      ResetAllHisto();
       
    for (Int_t i = 0; i < nEvts; ++i) {
       if (! GetEntry(fCurrentEventId)) return;
@@ -730,7 +730,7 @@ void TAEDbaseInterface::ResetHisto()
 }
 
 //__________________________________________________________
-void TAEDbaseInterface::ResetHistogram()
+void TAEDbaseInterface::ResetAllHisto()
 {
    TList* list = gTAGroot->ListOfAction();
    Int_t hCnt = 0;

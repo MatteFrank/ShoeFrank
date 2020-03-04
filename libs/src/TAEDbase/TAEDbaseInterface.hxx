@@ -77,7 +77,7 @@ public:
    virtual void UpdateDefCanvases();
    
    //! reset list of histograms
-   virtual void ResetHistogram();
+   virtual void ResetAllHisto();
    
    //! MC virtual methods
    virtual Bool_t GetEntry(Int_t /*entry*/) { return true; }
