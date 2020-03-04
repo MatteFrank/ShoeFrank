@@ -120,11 +120,11 @@ public:
             reconstruct();
         }
         
-        
+        logger_m.add_root_header( "END_RECONSTRUCTION" );
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
         register_tracks_upward( std::move( track_c ) );
         
-        checker_m.compute_efficiency();
+        checker_m.output();
         logger_m.output();
         
         

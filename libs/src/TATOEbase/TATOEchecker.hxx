@@ -67,6 +67,12 @@ private:
     
     std::vector< track > reconstructible_track_mc;
     
+    
+    std::size_t correct_cluster_number_m{0};
+    std::size_t total_cluster_number_m{0};
+    std::size_t local_correct_cluster_number_m{0};
+    std::size_t local_total_cluster_number_m{0};
+    
     Action& action_m;
     
 public:
@@ -106,6 +112,7 @@ public:
                           };
         
         auto mc_track_ch = retrieve_tracks(candidate_p);
+        
         auto iterator = std::find_if( mc_track_ch.begin(),
                                       mc_track_ch.end(),
                                       [this](TAMCeveTrack const * const track_h )
@@ -140,6 +147,8 @@ private:
         std::vector< TAMCeveTrack const * > track_ch;
         track_ch.reserve( candidate_p.data->GetMcTracksN() );
         
+        action_m.logger_m << "retrieve_tracks: " << candidate_p.data->GetMcTracksN() << '\n';
+        
         for( int i{0}; i < candidate_p.data->GetMcTracksN() ; ++i  ){
             auto id = candidate_p.data->GetMcTrackIdx(i);
             track_ch.push_back( data_mhc->GetHit(id) );
@@ -159,8 +168,18 @@ private:
     bool check_scattering( TAMCeveTrack const * const track_ph ) const
     //only if origin returns false -> short-circuiting
     {
-        std::cout << "check_scattering: " << track_ph->GetMotherID() << std::endl;
-
+        action_m.logger_m.add_sub_header("check_scattering: ");
+        action_m.logger_m << "mother_id: "<< track_ph->GetMotherID() << '\n';
+        action_m.logger_m << "fluka_id: "<< track_ph->GetFlukaID() << '\n';
+        action_m.logger_m << "start_point: " << track_ph->GetInitPos().Z() << '\n';
+        
+        
+        auto const * mother_track_h =  data_mhc->GetHit( track_ph->GetMotherID() );
+        if( mother_track_h ){
+            action_m.logger_m << "mother_end_point: "<< mother_track_h->GetFinalPos().Z() << '\n';
+            
+            return ( mother_track_h->GetCharge() != 0 ) ? check_origin(mother_track_h) : false ;
+        }
         return false;
     }
     
@@ -215,11 +234,60 @@ public:
     
     
     template<class T>
-    void register_reconstructed_track( std::vector< T > const & /*full_state_pc*/ )
+    void register_reconstructed_track( std::vector< T > const & full_state_pc )
     {
+        action_m.logger_m.template add_sub_header< details::immutable_tag >("reconstructed_track");
+        
+        std::vector< T > full_state_c{ full_state_pc.begin()+ 1 , full_state_pc.end() }; //remove vertex
+        
         ++reconstructed_number_m ;
         ++local_reconstructed_number_m;
+        
+        auto retrieve_track_ids = [this]( TAGcluster const * data_ph ) -> std::vector<int>
+                                  {
+                                      std::vector<int> track_id_c;
+                                      track_id_c.reserve( data_ph->GetMcTracksN() );
+                                      for( int i{0} ; i < data_ph->GetMcTracksN() ; ++ i){
+                                          action_m.logger_m << data_ph->GetMcTrackIdx(i) << " ";
+                                          track_id_c.push_back( data_ph->GetMcTrackIdx(i) );
+                                      }
+                                      return track_id_c;
+                                  };
+        
+        
+        auto const * end_point_h = full_state_c.back().data;
+        action_m.logger_m << "targeted_track_id: ";
+        auto track_id_c = retrieve_track_ids( end_point_h );
+        action_m.logger_m << '\n';
+        
+        total_cluster_number_m += full_state_c.size();
+        local_total_cluster_number_m += full_state_c.size();
+        
+        
+        for( auto const & full_state : full_state_c ){
+            action_m.logger_m << "current_track_id: ";
+            auto current_track_id_c = retrieve_track_ids( full_state.data );
+
+            if( std::any_of( track_id_c.begin(),
+                             track_id_c.end(),
+                             [&current_track_id_c](int id_p)
+                             {
+                                 return std::any_of( current_track_id_c.begin(),
+                                                     current_track_id_c.end(),
+                                                     [&id_p](int current_id_p){ return current_id_p == id_p; } );
+                             }   ) )
+            {
+                ++correct_cluster_number_m;
+                ++local_correct_cluster_number_m;
+            }
+            action_m.logger_m << '\n';
+        }
+        
+        
     }
+    
+    
+public:
     
     template<class EnrichedCandidate>
     void check_validity( EnrichedCandidate const & ec_p,
@@ -326,10 +394,16 @@ public:
         check_validity(ec_p, ec_chisquared_p, cutter_chisquared_p, details::should_not_pass_tag{});
     }
     
-
-    void compute_efficiency(){
-        action_m.logger_m.add_root_header("EFFICIENCY");
-        action_m.logger_m.template add_header<1, details::immutable_tag>("computation");
+public:
+    void output(){
+        action_m.logger_m.add_root_header("RESULTS");
+        output_efficiency();
+        output_purity();
+    }
+    
+private:
+    void output_efficiency(){
+        action_m.logger_m.template add_header<1, details::immutable_tag>("efficiency");
         action_m.logger_m << "reconstructed_tracks: " << local_reconstructed_number_m << '\n';
         action_m.logger_m << "reconstructible_tracks: " << local_reconstructible_number_m << '\n';
         action_m.logger_m << "local_efficiency: " << local_reconstructed_number_m * 100./local_reconstructible_number_m << '\n';
@@ -340,10 +414,27 @@ public:
         }
     }
     
+    
+    void output_purity(){
+        action_m.logger_m.template add_header<1, details::immutable_tag>("purity");
+        action_m.logger_m << "correct_cluster: " << local_correct_cluster_number_m << '\n';
+        action_m.logger_m << "total_cluster: " << local_total_cluster_number_m << '\n';
+        action_m.logger_m << "local_purity: " << local_correct_cluster_number_m * 100./local_total_cluster_number_m << '\n';
+        action_m.logger_m << "global_purity: " << correct_cluster_number_m * 100./total_cluster_number_m << '\n';
+        
+        if( 2 * local_correct_cluster_number_m < local_total_cluster_number_m ){
+            action_m.logger_m.freeze_everything();
+        }
+    }
+    
+    
+public:
     void reset_local_data(){
         local_reconstructed_number_m = 0;
         local_reconstructible_number_m = 0;
         reconstructible_track_mc.clear();
+        local_correct_cluster_number_m = 0;
+        local_total_cluster_number_m = 0;
     }
     
 
