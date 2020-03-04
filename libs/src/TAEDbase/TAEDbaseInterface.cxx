@@ -90,8 +90,8 @@ TAEDbaseInterface::~TAEDbaseInterface()
 {
    // default destructor
    delete fListOfCanvases;
-   delete fSelecHistoList;
-   delete fHistoList;
+   delete fSelHistoListBox;
+   delete fSelHistoList;
    
    if (fHistoListBox)
       delete fHistoListBox;
@@ -420,7 +420,7 @@ void TAEDbaseInterface::MakeGUI()
 
    infoFrameView->AddFrame(fHistoListBox, new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 15, 5, 10, 4));
    
-   fSelecHistoList = new TList();
+   fSelHistoListBox = new TList();
    TList* list = gTAGroot->ListOfAction();
    Int_t hCnt = 0;
    for (Int_t i = 0; i < list->GetEntries(); ++i) {
@@ -434,8 +434,8 @@ void TAEDbaseInterface::MakeGUI()
    }
    fHistoListBox->Resize(200, 130);
 
-   fHistoList = new TList();
-   fHistoList->SetOwner(false);
+   fSelHistoList = new TList();
+   fSelHistoList->SetOwner(false);
    
    frmMain->AddFrame(infoFrameView, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
    
@@ -664,10 +664,10 @@ void TAEDbaseInterface::ToggleDisplay(Int_t flag)
 void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
 {
    // Fill histo list from selection
-   fSelecHistoList->Clear();
-   fHistoList->Clear();
-   fHistoListBox->GetSelectedEntries(fSelecHistoList);
-   Int_t nHisto = fSelecHistoList->GetEntries();
+   fSelHistoListBox->Clear();
+   fSelHistoList->Clear();
+   fHistoListBox->GetSelectedEntries(fSelHistoListBox);
+   Int_t nHisto = fSelHistoListBox->GetEntries();
    
    TList* list = gTAGroot->ListOfAction();
    Int_t hCnt = 0;
@@ -678,13 +678,13 @@ void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
       for (Int_t j = 0; j < hlist->GetEntries(); ++j) {
          TH1* h = (TH1*)hlist->At(j);
          
-         for (Int_t k = 0; k < fSelecHistoList->GetEntries(); ++k) {
+         for (Int_t k = 0; k < fSelHistoListBox->GetEntries(); ++k) {
             
-            TGTextLBEntry* t = (TGTextLBEntry*)fSelecHistoList->At(k);
+            TGTextLBEntry* t = (TGTextLBEntry*)fSelHistoListBox->At(k);
             if (t == 0x0) continue;
             TString s(t->GetText()->GetString());
             if (s == h->GetName()) {
-               fHistoList->Add(h);
+               fSelHistoList->Add(h);
             }
          }
       }
@@ -721,10 +721,10 @@ void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
 //__________________________________________________________
 void TAEDbaseInterface::ResetHisto()
 {
-   Int_t nHisto = fHistoList->GetEntries();
+   Int_t nHisto = fSelHistoList->GetEntries();
    
    for (Int_t k = 0; k < nHisto; ++k) {
-      TH1* h = (TH1*)fHistoList->At(k);
+      TH1* h = (TH1*)fSelHistoList->At(k);
       h->Reset();
    }
 }
@@ -749,7 +749,7 @@ void TAEDbaseInterface::ResetAllHisto()
 void TAEDbaseInterface::UpdateDefCanvases()
 {
    Int_t nCanvas = fListOfCanvases->GetEntries();
-   Int_t nHisto = fHistoList->GetEntries();
+   Int_t nHisto = fSelHistoList->GetEntries();
    
    for (Int_t k = 0; k < nHisto; ++k) {
       
@@ -758,7 +758,7 @@ void TAEDbaseInterface::UpdateDefCanvases()
       TCanvas* canvas = (TCanvas*)fListOfCanvases->At(iCanvas);
       if (!canvas) continue;
       
-      TH1* h = (TH1*)fHistoList->At(k);
+      TH1* h = (TH1*)fSelHistoList->At(k);
       Int_t iCd = k % fgMaxHistosN + 1;
       
       if (nHisto == 1)

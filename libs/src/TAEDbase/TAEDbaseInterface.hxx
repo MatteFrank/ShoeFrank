@@ -200,8 +200,8 @@ protected:
    TGComboBox*        fDetectorMenu;     // list of detector drawn
    TGComboBox*        fCameraMenu;       // list of camera centers
    TGListBox*         fHistoListBox;     // list of histograms
-   TList*             fSelecHistoList;   // list of selected histograms
-   TList*             fHistoList;        // list of histograms
+   TList*             fSelHistoListBox;  // list of selected histograms list in the box menu
+   TList*             fSelHistoList;     // list of selected histograms
    
    //histos
    TList*             fListOfCanvases;   // list of canvases
