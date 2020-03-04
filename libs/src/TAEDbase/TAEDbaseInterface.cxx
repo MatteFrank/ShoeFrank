@@ -51,7 +51,6 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
   fWorldMedium(0x0),
   fTopVolume(0x0),
   fCurrentEventId(0),
-  fFirstEventDone(false),
   fMaxEnergy(1024),
   fMaxMomentum(30),
   fBoxDefWidth(0.02),
@@ -91,8 +90,8 @@ TAEDbaseInterface::~TAEDbaseInterface()
 {
    // default destructor
    delete fListOfCanvases;
-   delete fSelecHistoList;
-   delete fHistoList;
+   delete fSelHistoListBox;
+   delete fSelHistoList;
    
    if (fHistoListBox)
       delete fHistoListBox;
@@ -421,7 +420,7 @@ void TAEDbaseInterface::MakeGUI()
 
    infoFrameView->AddFrame(fHistoListBox, new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 15, 5, 10, 4));
    
-   fSelecHistoList = new TList();
+   fSelHistoListBox = new TList();
    TList* list = gTAGroot->ListOfAction();
    Int_t hCnt = 0;
    for (Int_t i = 0; i < list->GetEntries(); ++i) {
@@ -435,8 +434,8 @@ void TAEDbaseInterface::MakeGUI()
    }
    fHistoListBox->Resize(200, 130);
 
-   fHistoList = new TList();
-   fHistoList->SetOwner(false);
+   fSelHistoList = new TList();
+   fSelHistoList->SetOwner(false);
    
    frmMain->AddFrame(infoFrameView, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
    
@@ -491,7 +490,7 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
    fEventProgress->SetRange(0, nEvts);
    
    if (fRefreshButton->IsOn())
-      ResetHistogram();
+      ResetAllHisto();
       
    for (Int_t i = 0; i < nEvts; ++i) {
       if (! GetEntry(fCurrentEventId)) return;
@@ -514,8 +513,6 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
    fEventProgress->SetPosition(0.);
    
    UpdateDefCanvases();
-   
-   fFirstEventDone = true;     
 }
 
 //__________________________________________________________
@@ -667,10 +664,10 @@ void TAEDbaseInterface::ToggleDisplay(Int_t flag)
 void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
 {
    // Fill histo list from selection
-   fSelecHistoList->Clear();
-   fHistoList->Clear();
-   fHistoListBox->GetSelectedEntries(fSelecHistoList);
-   Int_t nHisto = fSelecHistoList->GetEntries();
+   fSelHistoListBox->Clear();
+   fSelHistoList->Clear();
+   fHistoListBox->GetSelectedEntries(fSelHistoListBox);
+   Int_t nHisto = fSelHistoListBox->GetEntries();
    
    TList* list = gTAGroot->ListOfAction();
    Int_t hCnt = 0;
@@ -681,13 +678,13 @@ void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
       for (Int_t j = 0; j < hlist->GetEntries(); ++j) {
          TH1* h = (TH1*)hlist->At(j);
          
-         for (Int_t k = 0; k < fSelecHistoList->GetEntries(); ++k) {
+         for (Int_t k = 0; k < fSelHistoListBox->GetEntries(); ++k) {
             
-            TGTextLBEntry* t = (TGTextLBEntry*)fSelecHistoList->At(k);
+            TGTextLBEntry* t = (TGTextLBEntry*)fSelHistoListBox->At(k);
             if (t == 0x0) continue;
             TString s(t->GetText()->GetString());
             if (s == h->GetName()) {
-               fHistoList->Add(h);
+               fSelHistoList->Add(h);
             }
          }
       }
@@ -724,13 +721,98 @@ void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
 //__________________________________________________________
 void TAEDbaseInterface::ResetHisto()
 {
-   Int_t nHisto = fHistoList->GetEntries();
+   Int_t nHisto = fSelHistoList->GetEntries();
    
    for (Int_t k = 0; k < nHisto; ++k) {
-      TH1* h = (TH1*)fHistoList->At(k);
+      TH1* h = (TH1*)fSelHistoList->At(k);
       h->Reset();
    }
 }
 
+//__________________________________________________________
+void TAEDbaseInterface::ResetAllHisto()
+{
+   TList* list = gTAGroot->ListOfAction();
+   Int_t hCnt = 0;
+   for (Int_t i = 0; i < list->GetEntries(); ++i) {
+      TAGaction* action = (TAGaction*)list->At(i);
+      TList* hlist = action->GetHistogrammList();
+      if (hlist == 0x0) continue;
+      for (Int_t j = 0; j < hlist->GetEntries(); ++j) {
+         TH1* h = (TH1*)hlist->At(j);
+         if (h) h->Reset();
+      }
+   }
+}
 
+//__________________________________________________________
+void TAEDbaseInterface::UpdateDefCanvases()
+{
+   Int_t nCanvas = fListOfCanvases->GetEntries();
+   Int_t nHisto = fSelHistoList->GetEntries();
+   
+   for (Int_t k = 0; k < nHisto; ++k) {
+      
+      Int_t iCanvas = k / fgMaxHistosN;
+      if (iCanvas > 2) continue;
+      TCanvas* canvas = (TCanvas*)fListOfCanvases->At(iCanvas);
+      if (!canvas) continue;
+      
+      TH1* h = (TH1*)fSelHistoList->At(k);
+      Int_t iCd = k % fgMaxHistosN + 1;
+      
+      if (nHisto == 1)
+         canvas->cd();
+      else
+         canvas->cd(iCd);
+      h->Draw();
+      
+      canvas->Update();
+   }
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::CreateCanvases()
+{
+   // GUI
+   // histo
+   TCanvas* canvas = 0x0;
+   TVirtualPad* pad    = 0x0;
+   TEveWindowSlot* slot0 = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
+   TEveWindowTab*  tab0 = slot0->MakeTab();
+   tab0->SetElementName("Histograms");
+   tab0->SetShowTitleBar(kFALSE);
+   
+   // canvas tab
+   slot0 = tab0->NewSlot();
+   TRootEmbeddedCanvas* eCanvas00 = new TRootEmbeddedCanvas();
+   TEveWindowFrame* frame00 = slot0->MakeFrame(eCanvas00);
+   frame00->SetElementName("Histograms 1");
+   canvas = eCanvas00->GetCanvas();
+   canvas->SetName("HistoCanvas 1");
+   canvas->Resize();
+   fListOfCanvases->Add(canvas);
+   
+   slot0 = tab0->NewSlot();
+   TRootEmbeddedCanvas* eCanvas01 = new TRootEmbeddedCanvas();
+   TEveWindowFrame* frame01 = slot0->MakeFrame(eCanvas01);
+   frame01->SetElementName("Histograms 2");
+   canvas = eCanvas01->GetCanvas();
+   canvas->SetName("HistoCanvas 2");
+   canvas->Resize();
+   fListOfCanvases->Add(canvas);
+   
+   slot0 = tab0->NewSlot();
+   TRootEmbeddedCanvas* eCanvas02 = new TRootEmbeddedCanvas();
+   TEveWindowFrame* frame02 = slot0->MakeFrame(eCanvas02);
+   frame02->SetElementName("Histograms 3");
+   canvas = eCanvas02->GetCanvas();
+   canvas->SetName("HistoCanvas 3");
+   canvas->Resize();
+   fListOfCanvases->Add(canvas);
+   
+   frmMain->MapSubwindows();
+   frmMain->Resize();
+   frmMain->MapWindow();
+}
 

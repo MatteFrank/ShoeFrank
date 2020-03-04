@@ -68,7 +68,7 @@ private:
    void AddRequiredMcItemTw();
    void AddRequiredMcItemCa();
 
-   ClassDef(TAFOeventDisplayMC, 1); // Base class for event display
+   ClassDef(TAFOeventDisplayMC, 2); // Class for MC event display
 };
 
 

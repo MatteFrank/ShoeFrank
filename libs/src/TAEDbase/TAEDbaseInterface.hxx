@@ -40,17 +40,8 @@ public:
    TAEDbaseInterface(Int_t type, const TString expName = "");
    virtual ~TAEDbaseInterface();
    
-   //! reset list of histograms
-   virtual void ResetHistogram() = 0;
-   
    //! update elements
    virtual void UpdateElements() = 0;
-   
-   //! Create canvases
-   virtual void CreateCanvases() = 0;
-   
-   //! Update normal Canvases
-   virtual void UpdateDefCanvases() = 0;
    
    //! Add required items
    virtual void AddRequiredItem() = 0;
@@ -73,10 +64,20 @@ public:
    //! Add elements
    virtual void AddElements() = 0;
    
-   //! Add elements
+   //! Connect elements
    virtual void ConnectElements() = 0;
 
+   //! Loop over event
    virtual void LoopEvent(Int_t nEvts = 0);
+   
+   //! Create canvases
+   virtual void CreateCanvases();
+   
+   //! Update normal Canvases
+   virtual void UpdateDefCanvases();
+   
+   //! reset list of histograms
+   virtual void ResetAllHisto();
    
    //! MC virtual methods
    virtual Bool_t GetEntry(Int_t /*entry*/) { return true; }
@@ -175,7 +176,6 @@ protected:
    TGeoVolume*        fTopVolume;          // top volume of geometry
    TAGgeoTrafo*       fpFootGeo;           // trafo prointer
    Int_t              fCurrentEventId;     // Current event id
-   Bool_t             fFirstEventDone;     // flag for first event processed
    Float_t            fMaxEnergy;          // maximum energy fo palette
    Float_t            fMaxMomentum;        // maximum energy fo palette
    
@@ -200,8 +200,8 @@ protected:
    TGComboBox*        fDetectorMenu;     // list of detector drawn
    TGComboBox*        fCameraMenu;       // list of camera centers
    TGListBox*         fHistoListBox;     // list of histograms
-   TList*             fSelecHistoList;   // list of selected histograms
-   TList*             fHistoList;        // list of histograms
+   TList*             fSelHistoListBox;  // list of selected histograms list in the box menu
+   TList*             fSelHistoList;     // list of selected histograms
    
    //histos
    TList*             fListOfCanvases;   // list of canvases
@@ -222,7 +222,7 @@ protected:
 
    static Int_t       fgMaxHistosN;        // Maximum number per canvas;
    
-   ClassDef(TAEDbaseInterface, 1); // Base class for event display
+   ClassDef(TAEDbaseInterface, 2); // Base class for event display
 
 };
 
