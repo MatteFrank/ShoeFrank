@@ -107,11 +107,11 @@ public:
         
         auto mc_track_ch = retrieve_tracks(candidate_p);
         auto iterator = std::find_if( mc_track_ch.begin(),
-                                                     mc_track_ch.end(),
-                                                     [this](TAMCeveTrack const * const track_h )
-                                                     {
-                                                         return check_origin( track_h  );
-                                                     } );
+                                      mc_track_ch.end(),
+                                      [this](TAMCeveTrack const * const track_h )
+                                      {
+                                         return check_origin( track_h  ) || check_scattering( track_h );
+                                      } );
         
         
         if( iterator != mc_track_ch.end() ){
@@ -154,6 +154,18 @@ private:
         return ( track_ph->GetInitPos().Z() >= target_limits_m.first ) &&
         ( track_ph->GetInitPos().Z() <= target_limits_m.second );
     }
+    
+    
+    bool check_scattering( TAMCeveTrack const * const track_ph ) const
+    //only if origin returns false -> short-circuiting
+    {
+        std::cout << "check_scattering: " << track_ph->GetMotherID() << std::endl;
+
+        return false;
+    }
+    
+    
+    
     
     
     track form_track( int index_p,

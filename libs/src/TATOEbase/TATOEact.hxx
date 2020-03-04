@@ -67,11 +67,22 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
     
     using node_type = node<full_state>;
     
+    
+    struct track{
+        particle_properties particle;
+        
+        double total_chisquared;
+        
+        std::vector<full_state> cluster_c;
+        std::vector<full_state>& get_clusters() { return cluster_c; }
+        std::vector<full_state> const & get_clusters() const { return cluster_c; }
+    };
+    
 private:
     particle_properties particle_m{};
     UKF ukf_m;
     detector_list_t list_m;
-    TAGntuGlbTrack* track_mhc;
+    TAGntuGlbTrack* reconstructed_track_mhc;
     double beam_energy_m;
     TATOEchecker<TATOEactGlb> checker_m;
     TATOElogger logger_m;
@@ -79,7 +90,7 @@ private:
     node_type const * current_node_mh;
     std::size_t event{0};
     
-
+    std::vector<track> track_mc;
 public:
     
     TATOEactGlb( UKF&& ukf_p,
@@ -88,7 +99,7 @@ public:
                  TAGparGeo const * global_parameters_ph) :
         ukf_m{ std::move(ukf_p) },
         list_m{ std::move(list_p) },
-        track_mhc{ track_phc },
+        reconstructed_track_mhc{ track_phc },
         beam_energy_m{ global_parameters_ph->GetBeamPar().Energy * 1000 }, //Mev/u
         checker_m{ global_parameters_ph, *this}
     {
@@ -108,6 +119,10 @@ public:
             particle_m = hypothesis;
             reconstruct();
         }
+        
+        
+        auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
+        register_tracks_upward( std::move( track_c ) );
         
         checker_m.compute_efficiency();
         logger_m.output();
@@ -289,10 +304,10 @@ private:
         auto& node_c = arborescence.get_handler();
 //        std::cout << "----- reconstructed_track : "<< node_c.size() << " -----\n";
         
+        
+        
         for(auto& node : node_c){
             register_track(node);
-            //check if some are in common -> only keep the better one ? -> lowest chi2 for now ?
-            
         }
         
        
@@ -753,40 +768,133 @@ private:
     }
 
     
+    //----------------------------------------------------------------------------------------
+    //final cross-check and registering
     
     void register_track( node_type& node_p )
     {
-        auto * track_h = track_mhc->NewTrack( particle_m.mass * 0.938 , particle_m.momentum / 1000., static_cast<double>(particle_m.charge), 1.1   ); //tof value is wrong
+        auto && value_c = node_p.get_branch_values();
         
+        double total_chisquared{0};
+        for( auto && value : value_c ){
+            total_chisquared += value.chisquared;
+        }
+        total_chisquared /= value_c.size();
         
-        auto value_c = node_p.get_branch_values();
-        checker_m.register_reconstructed_track( value_c );
-        
-//        std::cout << " --- final_track --- " << '\n';
-        for(auto& value : value_c){
+//        std::cout << "register_track: " << total_chisquared << '\n';
 //
-//            std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
-////
-            TVector3 corrected_position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
-            
-            
-            auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * particle_m.momentum ;
-            momentum_z /= 1000.;
-            auto momentum_x = value.vector(2,0) * momentum_z;
-            auto momentum_y = value.vector(3,0) * momentum_z;
-
-            TVector3 momentum{ momentum_x , momentum_y, momentum_z };
-            TVector3 position_error{ 0.01 ,0.01, 0.01 };
-            TVector3 momentum_error{ 0.01, 0.01, 0.01 };
-
-            
-            track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
-            
-            if( value.data ){
-                TVector3 measured_position{ value.data->GetPosition().X(), value.data->GetPosition().Y(), corrected_position.Z() };
-                track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+//        std::cout << "z/a: " << particle_m.charge << " / " << particle_m.mass << '\n';
+//
+//        for(auto& value : value_c){
+//            std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( ";
+//            std::cout << value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- ";
+//            std::cout << value.evaluation_point << " -- " <<  value.chisquared;
+//            printf(" -- %p", value.data);
+//            std::cout << std::endl;
+//        }
+        
+        track_mc.push_back( track{ particle_m, total_chisquared, std::move(value_c)} );
+    }
+    
+    std::vector< track > shear_suboptimal_tracks( std::vector<track>&& track_pc )
+    {
+//        std::cout << "shear_suboptimal_tracks: " << track_pc.size() << '\n';
+        
+        std::vector< track > final_track_c;
+        final_track_c.reserve( track_pc.size() );
+        
+        std::vector<data_type const *> end_point_ch;
+        end_point_ch.reserve( track_pc.size() );
+        
+        for( auto & track : track_pc ){
+            auto const * end_point_h = track.get_clusters().back().data;
+            if( std::none_of( end_point_ch.begin(), end_point_ch.end(),
+                             [&end_point_h]( data_type const * data_ph)
+                             { return data_ph == end_point_h; }           ) )
+            {
+                end_point_ch.push_back( end_point_h );
             }
         }
+        
+//        std::cout << "end_point: " << end_point_ch.size() << '\n';
+        
+        for( auto const * end_point_h : end_point_ch ){
+//            printf("looking_at: %p \n", end_point_h);
+            
+            auto end_iterator = std::partition( track_pc.begin(), track_pc.end(),
+                                                [&end_point_h](track const & track_p)
+                                                { return track_p.get_clusters().back().data == end_point_h; } );
+            
+            std::sort( track_pc.begin(), end_iterator,
+                       [](track const & track1_p, track const & track2_p)
+                      { return track1_p.total_chisquared < track2_p.total_chisquared ; } );
+            
+//            std::cout << "track_selected \n";
+//            auto& track = track_pc.front();
+//            for( auto const & cluster : track.get_clusters() ){
+//                std::cout << "( " << cluster.vector(0,0) <<  ", " << cluster.vector(1,0) <<  " ) -- ( ";
+//                std::cout << cluster.vector(2,0) << ", " << cluster.vector(3,0) <<  " ) -- ";
+//                std::cout << cluster.evaluation_point << " -- " <<  cluster.chisquared << '\n';
+//            }
+            
+            final_track_c.push_back( track_pc.front() );
+            
+            track_pc.erase(track_pc.begin(), end_iterator);
+        }
+        
+//        std::cout << "final_track: " << final_track_c.size() << std::endl;
+        
+        return final_track_c;
+    }
+    
+    
+    void register_tracks_upward( std::vector<track> track_pc )
+    {
+//        std::cout << "register_tracks_upward: " << track_pc.size() << std::endl;
+        
+        
+        for( auto & track : track_pc  ) {
+            
+//            std::cout << "particle_mass: " << track.particle.mass << std::endl;
+            
+            auto * track_h = reconstructed_track_mhc->NewTrack( track.particle.mass * 0.938 ,
+                                                  track.particle.momentum / 1000.,
+                                                  static_cast<double>(track.particle.charge),
+                                                  1.1   ); //tof value is wrong
+            
+
+            auto & value_c = track.get_clusters();
+            checker_m.register_reconstructed_track( value_c );
+            
+//                    std::cout << " --- final_track --- " << '\n';
+            for(auto& value : value_c){
+                //
+//                std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << std::endl;
+//                ////
+                TVector3 corrected_position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
+                
+                
+                auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * particle_m.momentum ;
+                momentum_z /= 1000.;
+                auto momentum_x = value.vector(2,0) * momentum_z;
+                auto momentum_y = value.vector(3,0) * momentum_z;
+                
+                TVector3 momentum{ momentum_x , momentum_y, momentum_z };
+                TVector3 position_error{ 0.01 ,0.01, 0.01 };
+                TVector3 momentum_error{ 0.01, 0.01, 0.01 };
+                
+                
+                track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
+                
+                if( value.data ){
+                    TVector3 measured_position{ value.data->GetPosition().X(), value.data->GetPosition().Y(), corrected_position.Z() };
+                    track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                }
+            }
+            
+        }
+            
+        
     }
     
     
