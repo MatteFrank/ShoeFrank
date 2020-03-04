@@ -51,7 +51,6 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
   fWorldMedium(0x0),
   fTopVolume(0x0),
   fCurrentEventId(0),
-  fFirstEventDone(false),
   fMaxEnergy(1024),
   fMaxMomentum(30),
   fBoxDefWidth(0.02),
@@ -514,8 +513,6 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
    fEventProgress->SetPosition(0.);
    
    UpdateDefCanvases();
-   
-   fFirstEventDone = true;     
 }
 
 //__________________________________________________________

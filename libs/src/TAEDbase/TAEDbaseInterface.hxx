@@ -175,7 +175,6 @@ protected:
    TGeoVolume*        fTopVolume;          // top volume of geometry
    TAGgeoTrafo*       fpFootGeo;           // trafo prointer
    Int_t              fCurrentEventId;     // Current event id
-   Bool_t             fFirstEventDone;     // flag for first event processed
    Float_t            fMaxEnergy;          // maximum energy fo palette
    Float_t            fMaxMomentum;        // maximum energy fo palette
    
@@ -222,7 +221,7 @@ protected:
 
    static Int_t       fgMaxHistosN;        // Maximum number per canvas;
    
-   ClassDef(TAEDbaseInterface, 1); // Base class for event display
+   ClassDef(TAEDbaseInterface, 2); // Base class for event display
 
 };
 
