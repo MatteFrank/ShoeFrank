@@ -45,18 +45,10 @@ public:
    static TAFOeventDisplay* Instance(Int_t type = 0, const TString name = "");
    
    virtual ~TAFOeventDisplay();
-      
-   virtual void ResetHistogram();
-   
+         
    virtual void BuildDefaultGeometry();
    
    virtual void UpdateElements(); 
-
-   //! Create canvases
-   virtual void CreateCanvases();
-   
-   //! Update normal Canvases
-   virtual void UpdateDefCanvases();
    
    //! Add required items
    virtual void AddRequiredItem();

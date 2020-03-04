@@ -359,22 +359,6 @@ void TAFOeventDisplay::OpenFile()
 }
 
 //__________________________________________________________
-void TAFOeventDisplay::ResetHistogram()
-{
-   TList* list = gTAGroot->ListOfAction();
-   Int_t hCnt = 0;
-   for (Int_t i = 0; i < list->GetEntries(); ++i) {
-      TAGaction* action = (TAGaction*)list->At(i);
-      TList* hlist = action->GetHistogrammList();
-      if (hlist == 0x0) continue;
-      for (Int_t j = 0; j < hlist->GetEntries(); ++j) {
-         TH1* h = (TH1*)hlist->At(j);
-         if (h) h->Reset();
-      }
-   }
-}
-
-//__________________________________________________________
 void TAFOeventDisplay::AddRequiredItem()
 {
    fReco->AddRawRequiredItem();
@@ -1302,75 +1286,4 @@ void TAFOeventDisplay::UpdateLayerElements()
    }
    
    fBmClusDisplay->RefitPlex();
-}
-
-//__________________________________________________________
-void TAFOeventDisplay::UpdateDefCanvases()
-{
-   Int_t nCanvas = fListOfCanvases->GetEntries();
-   Int_t nHisto = fHistoList->GetEntries();
-
-   for (Int_t k = 0; k < nHisto; ++k) {
-      
-      Int_t iCanvas = k / fgMaxHistosN;
-      if (iCanvas > 2) continue;
-      TCanvas* canvas = (TCanvas*)fListOfCanvases->At(iCanvas);
-      if (!canvas) continue;
-         
-      TH1* h = (TH1*)fHistoList->At(k);
-      Int_t iCd = k % fgMaxHistosN + 1;
-
-      if (nHisto == 1)
-         canvas->cd();
-      else
-         canvas->cd(iCd);
-      h->Draw();
-      
-      canvas->Update();
-   }
-}
-
-//__________________________________________________________
-void TAFOeventDisplay::CreateCanvases()
-{
-   // GUI
-   // histo
-   TCanvas* canvas = 0x0;
-   TVirtualPad* pad    = 0x0;
-   TEveWindowSlot* slot0 = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
-   TEveWindowTab*  tab0 = slot0->MakeTab();
-   tab0->SetElementName("Histograms");
-   tab0->SetShowTitleBar(kFALSE);
-   
-   // canvas tab
-   slot0 = tab0->NewSlot();
-   TRootEmbeddedCanvas* eCanvas00 = new TRootEmbeddedCanvas();
-   TEveWindowFrame* frame00 = slot0->MakeFrame(eCanvas00);
-   frame00->SetElementName("Histograms 1");
-   canvas = eCanvas00->GetCanvas();
-   canvas->SetName("HistoCanvas 1");
-   canvas->Resize();
-   fListOfCanvases->Add(canvas);
-   
-   slot0 = tab0->NewSlot();
-   TRootEmbeddedCanvas* eCanvas01 = new TRootEmbeddedCanvas();
-   TEveWindowFrame* frame01 = slot0->MakeFrame(eCanvas01);
-   frame01->SetElementName("Histograms 2");
-   canvas = eCanvas01->GetCanvas();
-   canvas->SetName("HistoCanvas 2");
-   canvas->Resize();
-   fListOfCanvases->Add(canvas);
-   
-   slot0 = tab0->NewSlot();
-   TRootEmbeddedCanvas* eCanvas02 = new TRootEmbeddedCanvas();
-   TEveWindowFrame* frame02 = slot0->MakeFrame(eCanvas02);
-   frame02->SetElementName("Histograms 3");
-   canvas = eCanvas02->GetCanvas();
-   canvas->SetName("HistoCanvas 3");
-   canvas->Resize();
-   fListOfCanvases->Add(canvas);
-   
-   frmMain->MapSubwindows();
-   frmMain->Resize();
-   frmMain->MapWindow();
 }

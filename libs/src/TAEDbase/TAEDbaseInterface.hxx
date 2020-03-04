@@ -40,17 +40,8 @@ public:
    TAEDbaseInterface(Int_t type, const TString expName = "");
    virtual ~TAEDbaseInterface();
    
-   //! reset list of histograms
-   virtual void ResetHistogram() = 0;
-   
    //! update elements
    virtual void UpdateElements() = 0;
-   
-   //! Create canvases
-   virtual void CreateCanvases() = 0;
-   
-   //! Update normal Canvases
-   virtual void UpdateDefCanvases() = 0;
    
    //! Add required items
    virtual void AddRequiredItem() = 0;
@@ -73,10 +64,20 @@ public:
    //! Add elements
    virtual void AddElements() = 0;
    
-   //! Add elements
+   //! Connect elements
    virtual void ConnectElements() = 0;
 
+   //! Loop over event
    virtual void LoopEvent(Int_t nEvts = 0);
+   
+   //! Create canvases
+   virtual void CreateCanvases();
+   
+   //! Update normal Canvases
+   virtual void UpdateDefCanvases();
+   
+   //! reset list of histograms
+   virtual void ResetHistogram();
    
    //! MC virtual methods
    virtual Bool_t GetEntry(Int_t /*entry*/) { return true; }
