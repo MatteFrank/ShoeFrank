@@ -31,16 +31,12 @@ public:
    //! Find cluster charge, noise & position
    virtual Bool_t  FindClusters(Int_t iSensor);
    
-   //! Compute position
-   void    ComputePosition();
-
 private:
    TAGdataDsc*     fpNtuRaw;		  // input data dsc
    TAGdataDsc*     fpNtuClus;		  // output data dsc
    
 private:
-   Bool_t  CreateClusters(Int_t iSensor, TAVTntuCluster* pNtuClus);
-
+   Bool_t  CreateClusters(Int_t iSensor);
 
    ClassDef(TAVTactNtuClusterF,0)
 };

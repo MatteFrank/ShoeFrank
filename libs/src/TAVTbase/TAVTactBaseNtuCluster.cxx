@@ -225,3 +225,36 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    fCurrentPosError.SetXYZ(TMath::Sqrt((posErr)(0)), TMath::Sqrt((posErr)(1)), 0);
 }
 
+//______________________________________________________________________________
+//
+void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster)
+{
+   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
+   
+   cluster->SetPlaneNumber(iSensor);
+   fCurListOfPixels = cluster->GetListOfPixels();
+   ComputePosition();
+   TVector3 posG = GetCurrentPosition();
+   posG = pGeoMap->Sensor2Detector(iSensor, posG);
+   cluster->SetPositionG(posG);
+   cluster->SetPosition(GetCurrentPosition());
+   cluster->SetPosError(GetCurrentPosError());
+   cluster->SetCharge(GetClusterPulseSum());
+   
+   if (ApplyCuts(cluster)) {
+      // histogramms
+      if (ValidHistogram()) {
+         if (cluster->GetPixelsN() > 0) {
+            fpHisPixelTot->Fill(cluster->GetPixelsN());
+            fpHisPixel[iSensor]->Fill(cluster->GetPixelsN());
+            // printf("sensor %d %d\n", iSensor, cluster->GetPixelsN());
+            if (TAVTparConf::IsMapHistOn()) {
+               fpHisClusMap[iSensor]->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
+            }
+         }
+      }
+      cluster->SetValid(true);
+   } else {
+      cluster->SetValid(false);
+   }
+}
