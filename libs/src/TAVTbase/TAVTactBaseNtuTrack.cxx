@@ -87,13 +87,6 @@ void TAVTactBaseNtuTrack::CreateHistogram()
    fpHisBmChi2 = new TH1F(Form("%sbmChi2", fPrefix.Data()), Form("%s - BM Chi2 of tracks", fTitleDev.Data()), 200, 0, 1000);
    AddHistogram(fpHisBmChi2);
    
-   fpHisClusLeft = new TH1F(Form("%sClusLeft", fPrefix.Data()), Form("%s - Clusters left per sensor", fTitleDev.Data()), 8, 1, 8);
-   AddHistogram(fpHisClusLeft);
-   
-   fpHisClusLeftPix = new TH2F(Form("%sClusLeftPix", fPrefix.Data()), Form("%s - Number of pixels for left clusters vs sensor", fTitleDev.Data()),
-							   10, 0, 9, 50, 1, 50);
-   fpHisClusLeftPix->SetStats(kFALSE);
-   AddHistogram(fpHisClusLeftPix);
    
    SetValidHistogram(kTRUE);
    return;
