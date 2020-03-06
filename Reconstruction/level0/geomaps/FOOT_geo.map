@@ -1,11 +1,11 @@
 // X,Y,Z and angles
 StartBaseName: "ST"
 StartPosX: 0. StartPosY: 0. StartPosZ: -29.
-StartAngX: 0. StartAngX: 0. StartAngX: 0.
+StartAngX: 0. StartAngY: 0. StartAngX: 0.
 
 TargetBaseName: "TG"
 TargetPosX: 0. TargetPosY: 0. TargetPosZ: 0.
-TargetAngX: 0. TargetAngX: 0. TargetAngX: 0.
+TargetAngX: 0. TargetAngY: 0. TargetAngX: 0.
 
 BmBaseName: "BM"
 BmPosX: 0. BmPosY: 0. BmPosZ: -14.
