@@ -234,7 +234,7 @@ void BaseReco::CloseFileOut()
 void BaseReco::ReadParFiles()
 {
    // initialise par files for target
-   if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM()) {
+   if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || IsItrTracking()) {
       fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
       TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
       TString parFileName = Form("./geomaps/%sTAGdetector.map", fExpName.Data());
@@ -473,7 +473,7 @@ void BaseReco::CreateRecActionIt()
    if (fgItrTrackFlag) {
       fpNtuTrackIt  = new TAGdataDsc("itTrack", new TAITntuTrack());
 
-      fActTrackIt  = new TAITactNtuTrackF("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt);
+      fActTrackIt  = new TAITactNtuTrackF("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpParGeoG);
       if (fFlagHisto)
          fActTrackIt->CreateHistogram();
    }
