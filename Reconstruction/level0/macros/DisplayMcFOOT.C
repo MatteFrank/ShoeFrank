@@ -9,10 +9,10 @@
 #include "TAFOeventDisplayMC.hxx"
 #endif
 
-//void DisplayMcFOOT(TString file = "12C_400_vtx.root")
-void DisplayMcFOOT(TString file = "16O_C2H4_200_1.root")
+void DisplayMcFOOT(TString file = "12C_C_200_1.root")
 {
    TAFOeventDisplay::SetVtxTrackingAlgo('F');
+//   TAFOeventDisplay::EnableItrTracking();
 //   TAFOeventDisplay::DisableTracking();
    
    TAFOeventDisplayMC::Instance(1)->ShowDisplay(file);
