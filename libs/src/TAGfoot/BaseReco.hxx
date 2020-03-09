@@ -58,6 +58,7 @@
 
 #include "TABMactNtuTrack.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
+#include "TAITactNtuTrack.hxx"
 #include "TAITactNtuTrackF.hxx"
 #include "TAVTactNtuVertex.hxx"
 

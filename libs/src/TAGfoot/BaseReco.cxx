@@ -473,7 +473,16 @@ void BaseReco::CreateRecActionIt()
    if (fgItrTrackFlag) {
       fpNtuTrackIt  = new TAGdataDsc("itTrack", new TAITntuTrack());
 
-      fActTrackIt  = new TAITactNtuTrackF("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpParGeoG);
+      if (fgTrackingAlgo.Contains("Std") ) {
+         if (GlobalPar::GetPar()->IncludeBM())
+            fActTrackIt  = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpNtuTrackBm);
+         else
+            fActTrackIt  = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt);
+         
+      }  else if (fgTrackingAlgo.Contains("Full")) {
+         fActTrackIt  = new TAITactNtuTrackF("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpParGeoG);
+      }
+      
       if (fFlagHisto)
          fActTrackIt->CreateHistogram();
    }

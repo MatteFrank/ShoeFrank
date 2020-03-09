@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAVT} ${TADAQ} ${TAAPI} ${TABM} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TABM} ${TAVT} ${TADAQ} ${TAAPI} ${TABM} ${GENFIT_LIBRARIES})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -50,6 +50,7 @@ include_directories(${TAG_INCLUDE_DIR})
 include_directories(${TADAQ_INCLUDE_DIR})
 include_directories(${TAAPI_INCLUDE_DIR})
 include_directories(${TAMC_INCLUDE_DIR})
+include_directories(${TABM_INCLUDE_DIR})
 include_directories(${TAVT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
