@@ -983,7 +983,13 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
          TVector3 pos;
          TVector3 posG;
          
-         pos  = track->Intersection(posfirstPlane);
+         if (GlobalPar::GetPar()->IncludeTG() ) {
+            Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
+            posZtg = fpFootGeo->FromGlobalToITLocal(TVector3(0, 0, posZtg)).Z();
+            pos = track->Intersection(posZtg);
+         } else
+            pos  = track->Intersection(posfirstPlane);
+         
          posG = fpFootGeo->FromITLocalToGlobal(pos);
          x = posG(0); y = posG(1); z = posG(2);
          
