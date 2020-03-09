@@ -27,7 +27,7 @@
 const TString TATWparGeo::fgkBaseName        = "TW";
       Int_t   TATWparGeo::fgkLayerOffset     = 100;
 const Color_t TATWparGeo::fgkDefaultModCol   = kGray+1;
-const Color_t TATWparGeo::fgkDefaultModColOn = kRed-8;
+const Color_t TATWparGeo::fgkDefaultModColOn = kRed-6;
 const TString TATWparGeo::fgkDefaultBarName = "twBar";
 
 
