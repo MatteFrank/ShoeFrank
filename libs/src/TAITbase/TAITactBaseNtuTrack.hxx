@@ -50,9 +50,10 @@ protected:
    void   FillBmHistogramm(TVector3 bmTrackPos);
    
    virtual Bool_t FindStraightTracks();
+   virtual Bool_t IsGoodCandidate(TAITtrack* /*track*/) { return true; }
    virtual Bool_t FindTiltedTracks() { return true; }
    virtual Bool_t FindVertices()     { return false; }
-   
+
    TAVTbaseTrack* GetTrack(Int_t idx);
    Int_t          GetTracksN() const;
    

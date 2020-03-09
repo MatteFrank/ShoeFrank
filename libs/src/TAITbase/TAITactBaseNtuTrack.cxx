@@ -261,7 +261,7 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
 		 } // end loop on planes
 		 
 		 // Apply cuts
-		 if (AppyCuts(track)) {
+		 if (AppyCuts(track) && IsGoodCandidate(track)) {
 			track->SetNumber(pNtuTrack->GetTracksN());
 			track->MakeChiSquare();
 			track->SetType(0);
