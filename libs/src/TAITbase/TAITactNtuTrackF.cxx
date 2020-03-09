@@ -68,107 +68,107 @@ Bool_t TAITactNtuTrackF::FindTiltedTracks()
    array.Clear();
    
    TAITtrack* track = 0x0;
-   Int_t nLayer   = pGeoMap->GetNLayers();
+   Int_t nPlane   = pGeoMap->GetSensorsN()-1;
+   Int_t curPlane = nPlane;
    
-   for (Int_t curLayer = nLayer-1; curLayer >= fRequiredClusters-1; --curLayer) {
-      
-      // Get the last layer (loop over sensors)
-      UChar_t* plane = pGeoMap->GetSensorsPerLayer(curLayer);
-      for (Int_t iSensor = 0; iSensor < nLayer; ++iSensor) {
-         
-         TClonesArray* lastList = pNtuClus->GetListOfClusters(plane[iSensor]);
-         Int_t nLastClusters    = pNtuClus->GetClustersN(plane[iSensor]);
-         
-         if ( nLastClusters == 0) continue;
-         
-         for( Int_t iLastClus = 0; iLastClus < nLastClusters; ++iLastClus) { // loop on cluster of last plane
-            TAITcluster* lastCluster = (TAITcluster*)lastList->At(iLastClus);
-            if (lastCluster->Found()) continue;
-            if (lastCluster->GetPixelsN() <= 1) continue;
-            lastCluster->SetFound();
-            
-            for( Int_t iPlane = curLayer-1; iPlane >= 0; --iPlane) { // loop on next planes
-               
-               TClonesArray* nextList = pNtuClus->GetListOfClusters(iPlane);
-               Int_t nNextClusters    = pNtuClus->GetClustersN(iPlane);
-               
-               for( Int_t iNextClus = 0; iNextClus < nNextClusters; ++iNextClus) { // loop on cluster of next plane
-                  TAITcluster* nextCluster = (TAITcluster*)nextList->At(iNextClus);
-                  if (nextCluster->Found()) continue;
-                  if (nextCluster->GetPixelsN() <= 1) continue;
-                  
-                  track = new TAITtrack();
-                  track->AddCluster(lastCluster);
-                  nextCluster->SetFound();
-                  track->AddCluster(nextCluster);
-                  
-                  UpdateParam(track);
-                  
-                  if (!IsGoodCandidate(track)) {
-                     nextCluster->SetFound(false);
-                     delete track;
-                     continue;
-                  }
-                  
-                  array.Clear();
-                  for( Int_t iFirstPlane = iPlane-1; iFirstPlane >= 0; --iFirstPlane) { // loop on first planes
-                     
-                     //				  if (track->GetClustersN() + iFirstPlane < fRequiredClusters-1)
-                     //					  break;
-                     
-                     TClonesArray* firstList = pNtuClus->GetListOfClusters(iFirstPlane);
-                     Int_t nFirstClusters    = pNtuClus->GetClustersN(iFirstPlane);
-                     
-                     minDistance = fSearchClusDistance;
-                     TAITcluster* bestCluster = 0x0;
-                     for( Int_t iFirstClus = 0; iFirstClus < nFirstClusters; ++iFirstClus) { // loop on cluster of first planes
-                        TAITcluster* firstCluster = (TAITcluster*)firstList->At(iFirstClus);
-                        if (firstCluster->GetPixelsN() <= 1) continue;
-                        if( firstCluster->Found()) continue; // skip cluster already found
-                        
-                        aDistance = firstCluster->Distance(track);
-                        if( aDistance < minDistance ) {
-                           minDistance = aDistance;
-                           bestCluster = firstCluster;
-                        }
-                     } // end loop on cluster of first planes
-                     
-                     // if a cluster has been found, add the cluster
-                     if( bestCluster ) {
-                        bestCluster->SetFound();
-                        track->AddCluster(bestCluster);
-                        array.Add(bestCluster);
-                        UpdateParam(track);
-                     }
-                     
-                  } // end loop on first planes
-                  
-                  // apply cut
-                  if (AppyCuts(track)) {
-                     track->SetNumber(pNtuTrack->GetTracksN());
-                     track->MakeChiSquare();
-                     track->SetType(1);
-                     pNtuTrack->NewTrack(*track);
-                     
-                     if (ValidHistogram())
-                        FillHistogramm(track);
-                     
-                     delete track;
-                  } else { // reset clusters
-                     nextCluster->SetFound(false);
-                     for (Int_t i = 0; i < array.GetEntries(); ++i) {
-                        TAITcluster*  cluster1 = (TAITcluster*)array.At(i);
-                        cluster1->SetFound(false);
-                     }
-                     delete track;
-                     array.Clear();
-                  }
-                  
-               } // end cluster of next plane
-            } // end last-1 plane
-         } // end loop on last clusters
-      } // end loop M28 in layer
-   } // end loop over layer
+   while (curPlane >= fRequiredClusters-1) {
+	  
+	  // Get the last plane
+	  curPlane = nPlane--;
+	  
+	  TClonesArray* lastList = pNtuClus->GetListOfClusters(curPlane);
+	  Int_t nLastClusters    = pNtuClus->GetClustersN(curPlane);
+	  
+	  if ( nLastClusters == 0) continue;
+
+	  for( Int_t iLastClus = 0; iLastClus < nLastClusters; ++iLastClus) { // loop on cluster of last plane
+		 TAITcluster* lastCluster = (TAITcluster*)lastList->At(iLastClus);
+		 if (lastCluster->Found()) continue;
+		 if (lastCluster->GetPixelsN() <= 1) continue;
+		 lastCluster->SetFound();
+
+		 for( Int_t iPlane = curPlane-1; iPlane >= 0; --iPlane) { // loop on next planes
+			 
+			TClonesArray* nextList = pNtuClus->GetListOfClusters(iPlane);
+			Int_t nNextClusters    = pNtuClus->GetClustersN(iPlane);
+			
+			for( Int_t iNextClus = 0; iNextClus < nNextClusters; ++iNextClus) { // loop on cluster of next plane
+			   TAITcluster* nextCluster = (TAITcluster*)nextList->At(iNextClus);
+			   if (nextCluster->Found()) continue;
+			   if (nextCluster->GetPixelsN() <= 1) continue;
+			   
+			   track = new TAITtrack();
+			   track->AddCluster(lastCluster);
+			   nextCluster->SetFound();
+			   track->AddCluster(nextCluster);
+
+			   UpdateParam(track);
+
+			   if (!IsGoodCandidate(track)) {
+				  nextCluster->SetFound(false);
+				  delete track;
+				  continue;
+			   }
+
+			   array.Clear();
+			   for( Int_t iFirstPlane = iPlane-1; iFirstPlane >= 0; --iFirstPlane) { // loop on first planes
+				  
+//				  if (track->GetClustersN() + iFirstPlane < fRequiredClusters-1)
+//					  break;
+				   
+				  TClonesArray* firstList = pNtuClus->GetListOfClusters(iFirstPlane);
+				  Int_t nFirstClusters    = pNtuClus->GetClustersN(iFirstPlane);
+				  
+				  minDistance = fSearchClusDistance;
+				  TAITcluster* bestCluster = 0x0;
+				  for( Int_t iFirstClus = 0; iFirstClus < nFirstClusters; ++iFirstClus) { // loop on cluster of first planes
+					 TAITcluster* firstCluster = (TAITcluster*)firstList->At(iFirstClus);
+					 if (firstCluster->GetPixelsN() <= 1) continue;
+					 if( firstCluster->Found()) continue; // skip cluster already found
+					 
+					 aDistance = firstCluster->Distance(track);
+					 if( aDistance < minDistance ) {
+						minDistance = aDistance;
+						bestCluster = firstCluster;
+					 }
+				  } // end loop on cluster of first planes
+				  
+				  // if a cluster has been found, add the cluster
+				  if( bestCluster ) {
+					 bestCluster->SetFound();
+					 track->AddCluster(bestCluster);
+					 array.Add(bestCluster);
+					 UpdateParam(track);
+				  }
+				  
+			   } // end loop on first planes
+
+			   // apply cut
+			   if (AppyCuts(track)) {
+				  track->SetNumber(pNtuTrack->GetTracksN());
+				  track->MakeChiSquare();
+				  track->SetType(1);
+				  pNtuTrack->NewTrack(*track);
+				  
+				  if (ValidHistogram())
+					 FillHistogramm(track);
+   
+				  delete track;
+			   } else { // reset clusters
+				  nextCluster->SetFound(false);
+				  for (Int_t i = 0; i < array.GetEntries(); ++i) {
+					 TAITcluster*  cluster1 = (TAITcluster*)array.At(i);
+					 cluster1->SetFound(false);
+				  }
+				  delete track;
+				  array.Clear();
+			   }
+			   
+			} // end cluster of next plane
+		 } // end last-1 plane
+	  } // end loop on last clusters
+	  
+   } // while
    
    return true;
 }
