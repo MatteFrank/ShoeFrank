@@ -173,11 +173,12 @@ private:
 
         
         for( const auto& candidate : candidate_c ) {
-            checker_m.register_reconstructible_track( candidate );
-            
             auto charge = candidate.data->GetChargeZ();
             if(charge == 0) {continue;}
             
+            logger_m.add_header<1>("candidate");
+            logger_m << "charge: " << charge << '\n';
+            checker_m.register_reconstructible_track( candidate );
             
             auto add_current_end_point = [&candidate]( particle_properties & hypothesis_p  )
                                  { hypothesis_p.get_end_points().push_back( candidate.data ); };
@@ -371,6 +372,7 @@ private:
         logger_m << ") -- (" << ps.vector(2,0) << ", " << ps.vector(3,0)  ;
         logger_m << ") -- " << ps.evaluation_point << '\n';
         
+        
         return confront(ps, layer_p);
     }
     
@@ -404,7 +406,7 @@ private:
                 
                 logger_m.add_header<2>( "leaf" );
                 checker_m.update_current_node( &leaf );
-                
+                checker_m.output_current_hypothesis();
             
                 ukf_m.step_length() = 1e-3;
             
@@ -475,13 +477,10 @@ private:
     {
         
         logger_m.add_root_header("START_RECONSTRUCTION");
-        
-
-        auto * vertex_h = vertex_p.retrieve_vertex();
-        if( !vertex_h ){ std::cout << "WARNING : no vertex found" << std::endl; }
-        
-        auto track_c = vertex_p.get_track_list( vertex_h );
+    
+        auto track_c = vertex_p.get_track_list( );
         for( auto& track : track_c ){
+            auto vertex_h = track.vertex();
             auto first_h = track.first_cluster();
             
             auto cs = generate_corrected_state( vertex_h, first_h );
@@ -491,13 +490,12 @@ private:
             };
             
             auto * leaf_h = arborescence_p.add_root( std::move(fs) );
-            
+            checker_m.update_current_node( leaf_h );
+            checker_m.output_current_hypothesis();
             logger_m.add_header<1>( "vertex_track_reconstruction" );
             
             
             for( auto layer : track ){
-                
-                checker_m.update_current_node( leaf_h );
                 
                 ukf_m.step_length() = 1e-3;
                 
@@ -513,7 +511,7 @@ private:
 
 //
                     leaf_h = leaf_h->add_child( std::move(fs_c.front()) );
-                    
+                    checker_m.update_current_node( leaf_h );
                 }
                 
             }
@@ -591,6 +589,11 @@ private:
                                       logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
                                       logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
                                       
+                                      logger_m << "candidate_id: ";
+                                      for(auto i =0 ; i < ec_p.data->GetMcTracksN() ; ++ i){
+                                          logger_m << ec_p.data->GetMcTrackIdx(i);
+                                      }
+                                      logger_m << '\n';
                                      // checker_m.check_validity( ec_p,  ec_p.chisquared , cutter.chisquared, details::should_pass_tag{} );
                                       
                                       return ec_p.chisquared < cutter.chisquared;
@@ -678,7 +681,11 @@ private:
                              logger_m << "cutter_chisquared : " << cutter.chisquared << '\n';
                              logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
                              logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
-                             
+                             logger_m << "candidate_id: ";
+                             for(auto i =0 ; i < ec_p.data->GetMcTracksN() ; ++ i){
+                                 logger_m << ec_p.data->GetMcTrackIdx(i);
+                             }
+                             logger_m << '\n';
                             // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared );
                              
                              return ec_p.chisquared < cutter.chisquared;

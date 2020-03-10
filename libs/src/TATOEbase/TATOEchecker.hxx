@@ -40,12 +40,15 @@ struct TATOEchecker{
     using node_type = typename Action::node_type;
     
     struct particle{
-        int charge;
-        int mass;
+        std::vector<int> const & get_indices() const { return index_c; }
+        std::vector<int>& get_indices() { return index_c; }
+        
+        std::vector<int> index_c;
         double momentum;
-        int index{0};
         double track_slope_x{0};
         double track_slope_y{0};
+        int charge;
+        int mass;
     };
     
     struct track{
@@ -73,6 +76,10 @@ private:
     std::size_t local_correct_cluster_number_m{0};
     std::size_t local_total_cluster_number_m{0};
     
+    
+    std::size_t local_fake_number_m{0};
+    std::size_t fake_number_m{0};
+    
     Action& action_m;
     
 public:
@@ -98,104 +105,121 @@ public:
     
     void register_reconstructible_track(candidate const& candidate_p)
     {
+        
+        auto output_real_particle = [this]( particle& real_particle_p )
+                                    {
+                                        action_m.logger_m << "charge: " << real_particle_p.charge << '\n';
+                                        action_m.logger_m << "mass: " << real_particle_p.mass << '\n';
+                                        action_m.logger_m << "momentum: " << real_particle_p.momentum << '\n';
+                                        action_m.logger_m << "track_slope_x: " << real_particle_p.track_slope_x << '\n';
+                                        action_m.logger_m << "track_slope_y: " << real_particle_p.track_slope_y << '\n';
+                                        action_m.logger_m << "mc_track_index: " ;
+                                        for( auto index : real_particle_p.get_indices() ){
+                                            action_m.logger_m << index << " ";
+                                        }
+                                        action_m.logger_m << '\n';
+                                    };
+        
+        
+        auto find_indices = [this]( candidate const& candidate_p )
+                            {
+                                std::vector<int> index_c;
+                                index_c.reserve( candidate_p.data->GetMcTracksN() );
+                                for( int i{0}; i < candidate_p.data->GetMcTracksN() ; ++i  ){
+                                    auto id = candidate_p.data->GetMcTrackIdx(i);
+                                    index_c.emplace_back( id );
+                                }
+                                return index_c;
+                            };
+        
+        
+        
+        auto find_and_register = [this, &output_real_particle]( std::vector<int> track_index_pc,
+                                                                auto predicate_p,
+                                                                auto filler_p )
+                                 {
+                                     auto found_i = std::find_if( track_index_pc.begin(),
+                                                                  track_index_pc.end(),
+                                                                  predicate_p );
+                                     
+                                     if( found_i != track_index_pc.end() ){
+                                         action_m.logger_m.add_sub_header("track_registered");
+                                         
+                                         std::vector<int> index_c{ filler_p( *found_i) };
+                                         reconstructible_track_mc.push_back( form_track( index_c, action_m.list_m ) );
+                                         
+                                         output_real_particle( reconstructible_track_mc.back().real_particle );
+                                         
+                                         ++reconstructible_number_m;
+                                         ++local_reconstructible_number_m;
+                                         
+                                         return true;
+                                     }
+                                     
+                                     return false;
+                                 };
+        
+        
+        
+        auto check_origin = [this]( int index_p )
+                            {
+                                auto const * track_h = data_mhc->GetHit(index_p);
+            
+                                return track_h->GetCharge() > 0 ?
+                                    ( track_h->GetInitPos().Z() >= target_limits_m.first ) &&
+                                    ( track_h->GetInitPos().Z() <= target_limits_m.second )    :
+                                    false;
+                            };
+        
+        
+        auto check_scattering = [this, &check_origin]( int index_p )
+                                {
+                                    auto const * track_h = data_mhc->GetHit(index_p);
+                                    auto const * mother_track_h = track_h->GetCharge() > 0 ?
+                                                        data_mhc->GetHit( track_h->GetMotherID() ) :
+                                                        nullptr;
+                                    if( mother_track_h ){
+                                        return (  (mother_track_h->GetCharge() == track_h->GetCharge() ) &&
+                                                  (mother_track_h->GetMass() == track_h->GetMass() )         ) ?
+                                               check_origin( track_h->GetMotherID() ) : false ;
+                                    }
+                                    return false;
+                                };
+        
+        
         action_m.logger_m.template add_sub_header< details::immutable_tag >("reconstructible_track");
         
-        auto find_index = [this, &candidate_p]( TAMCeveTrack const * mc_track_ph )
-                          {
-                              int index;
-                              for( int i{0}; i < candidate_p.data->GetMcTracksN() ; ++i  ){
-                                  auto id = candidate_p.data->GetMcTrackIdx(i);
-                                  auto * mc_track_h = data_mhc->GetHit(id) ;
-                                  if(  mc_track_h == mc_track_ph ){ index = id; }
-                              }
-                              return index;
-                          };
+        auto track_index_c = find_indices( candidate_p );
         
-        auto mc_track_ch = retrieve_tracks(candidate_p);
-        
-        auto iterator = std::find_if( mc_track_ch.begin(),
-                                      mc_track_ch.end(),
-                                      [this](TAMCeveTrack const * const track_h )
-                                      {
-                                         return check_origin( track_h  ) || check_scattering( track_h );
-                                      } );
-        
-        
-        if( iterator != mc_track_ch.end() ){
-            action_m.logger_m.add_sub_header("track_registered");
-            
-            auto reconstructible_track_h = *iterator;
-            
-            auto index = find_index( reconstructible_track_h );
-            reconstructible_track_mc.push_back( form_track( index, action_m.list_m ) );
-            
-            action_m.logger_m << "mc_track_index: " << index << '\n';
-            auto& real_particle = reconstructible_track_mc.back().real_particle;
-            action_m.logger_m << "charge: " << real_particle.charge << '\n';
-            action_m.logger_m << "mass: " << real_particle.mass << '\n';
-            action_m.logger_m << "momentum: " << real_particle.momentum << '\n';
-            action_m.logger_m << "track_slope_x: " << real_particle.track_slope_x << '\n';
-            action_m.logger_m << "track_slope_y: " << real_particle.track_slope_y << '\n';
-            
-            ++reconstructible_number_m;
-            ++local_reconstructible_number_m;
-        }
+
+        find_and_register( track_index_c,
+                           check_origin,
+                           [](int index_p){ return std::vector<int>{index_p}; } ) ||
+        find_and_register( track_index_c,
+                           check_scattering,
+                           [this](int index_p)
+                           {
+                               std::vector<int> index_c{index_p};
+                               auto const * track_h = data_mhc->GetHit(index_p);
+                               index_c.push_back( track_h->GetMotherID() );
+                               return index_c;
+                           } );
     }
     
 private:
-    std::vector< TAMCeveTrack const * > retrieve_tracks(candidate const & candidate_p ) const {
-        std::vector< TAMCeveTrack const * > track_ch;
-        track_ch.reserve( candidate_p.data->GetMcTracksN() );
-        
-        action_m.logger_m << "retrieve_tracks: " << candidate_p.data->GetMcTracksN() << '\n';
-        
-        for( int i{0}; i < candidate_p.data->GetMcTracksN() ; ++i  ){
-            auto id = candidate_p.data->GetMcTrackIdx(i);
-            track_ch.push_back( data_mhc->GetHit(id) );
-        }
-        
-        return track_ch;
-    }
     
     
-    bool check_origin( TAMCeveTrack const * const track_ph ) const
-    {
-        return ( track_ph->GetInitPos().Z() >= target_limits_m.first ) &&
-        ( track_ph->GetInitPos().Z() <= target_limits_m.second );
-    }
-    
-    
-    bool check_scattering( TAMCeveTrack const * const track_ph ) const
-    //only if origin returns false -> short-circuiting
-    {
-        action_m.logger_m.add_sub_header("check_scattering: ");
-        action_m.logger_m << "mother_id: "<< track_ph->GetMotherID() << '\n';
-        action_m.logger_m << "fluka_id: "<< track_ph->GetFlukaID() << '\n';
-        action_m.logger_m << "start_point: " << track_ph->GetInitPos().Z() << '\n';
-        
-        
-        auto const * mother_track_h =  data_mhc->GetHit( track_ph->GetMotherID() );
-        if( mother_track_h ){
-            action_m.logger_m << "mother_end_point: "<< mother_track_h->GetFinalPos().Z() << '\n';
-            
-            return ( mother_track_h->GetCharge() != 0 ) ? check_origin(mother_track_h) : false ;
-        }
-        return false;
-    }
-    
-    
-    
-    
-    
-    track form_track( int index_p,
+    track form_track( std::vector<int> index_pc,
                       detector_list_t const & list_p ) const
     {
-        auto index_found = [this, &index_p](auto const & candidate_p)
+        auto index_found = [this, &index_pc](auto const & candidate_p)
                             {
                                 bool is_index_found = false;
                                 for( auto j{0} ; j < candidate_p.data->GetMcTracksN() ; ++j ){
                                     is_index_found = is_index_found ||
-                                    ( candidate_p.data->GetMcTrackIdx(j) == index_p );
+                                                     ( std::any_of( index_pc.begin(), index_pc.end(),
+                                                                    [&candidate_p, &j](int index_p)
+                                                                    { return index_p == candidate_p.data->GetMcTrackIdx(j); } ) );
                                 }
                                 return is_index_found;
                             };
@@ -209,23 +233,23 @@ private:
                     {
                         for( std::size_t i{0} ; i < detector_p.layer_count() ; ++i  ){
                             auto candidate_c = detector_p.generate_candidates( i );
-                                       
-                            if( std::any_of( candidate_c.begin(), candidate_c.end() , index_found) ){
-                                auto proper_candidate = *std::find_if( candidate_c.begin(), candidate_c.end(), index_found );
-                                        
-                                data_ch.push_back( proper_candidate.data );
-                            }
+                            
+                            auto candidate_i = std::find_if( candidate_c.begin(), candidate_c.end(), index_found );
+                            if( candidate_i != candidate_c.end() ){ data_ch.push_back( candidate_i->data ); }
                         }
                     }
                               );
         
-        auto mc_track_h = data_mhc->GetHit(index_p);
-        auto real_particle = particle{ mc_track_h->GetCharge(),
-                                       static_cast<int>( mc_track_h->GetMass() * 1.1 ),
-                                       mc_track_h->GetInitP().Mag() * 1000,
-                                       index_p,
-                                       mc_track_h->GetInitP().X()/mc_track_h->GetInitP().Z(),
-                                       mc_track_h->GetInitP().Y()/mc_track_h->GetInitP().Z()
+        
+        auto mc_track_h = index_pc.size() > 1 ? data_mhc->GetHit(index_pc[1]) : data_mhc->GetHit(index_pc[0]) ;
+        //if size > 1, then the particle has been scattered, therefore need to retrieve mother parameters
+        auto real_particle = particle{
+                                index_pc,
+                                mc_track_h->GetInitP().Mag() * 1000,
+                                mc_track_h->GetInitP().X()/mc_track_h->GetInitP().Z(),
+                                mc_track_h->GetInitP().Y()/mc_track_h->GetInitP().Z(),
+                                mc_track_h->GetCharge(),
+                                static_cast<int>( mc_track_h->GetMass() * 1.1 )
                                        };
         return track{ std::move(data_ch), std::move(real_particle) };
     }
@@ -238,51 +262,90 @@ public:
     {
         action_m.logger_m.template add_sub_header< details::immutable_tag >("reconstructed_track");
         
-        std::vector< T > full_state_c{ full_state_pc.begin()+ 1 , full_state_pc.end() }; //remove vertex
+//        output_current_hypothesis();
         
-        ++reconstructed_number_m ;
-        ++local_reconstructed_number_m;
+        std::vector< T > full_state_c{ full_state_pc.begin()+ 1 , full_state_pc.end() }; //remove vertex
         
         auto retrieve_track_ids = [this]( TAGcluster const * data_ph ) -> std::vector<int>
                                   {
                                       std::vector<int> track_id_c;
                                       track_id_c.reserve( data_ph->GetMcTracksN() );
                                       for( int i{0} ; i < data_ph->GetMcTracksN() ; ++ i){
-                                          action_m.logger_m << data_ph->GetMcTrackIdx(i) << " ";
                                           track_id_c.push_back( data_ph->GetMcTrackIdx(i) );
                                       }
                                       return track_id_c;
                                   };
         
+        auto retrieve_reconstructible = [this](std::vector<int> const& id_pc)
+                                        {
+                                            for( auto const & id : id_pc){
+                                                auto reconstructible_i =
+                                                        std::find_if( reconstructible_track_mc.begin(),
+                                                                      reconstructible_track_mc.end(),
+                                                                      [&id](track const & track_p)
+                                                                      {
+                                                                          auto const & reconstructible_id_c = track_p.real_particle.get_indices();
+                                                                          return std::any_of( reconstructible_id_c.begin(),
+                                                                                              reconstructible_id_c.end(),
+                                                                                              [&id](int id_p){ return id_p == id; } );
+                                                                      });
+                                                if( reconstructible_i != reconstructible_track_mc.end() ){ return reconstructible_i; }
+                                            }
+                                            return reconstructible_track_mc.end();
+                                        };
         
         auto const * end_point_h = full_state_c.back().data;
-        action_m.logger_m << "targeted_track_id: ";
-        auto track_id_c = retrieve_track_ids( end_point_h );
-        action_m.logger_m << '\n';
+        auto const& id_c = retrieve_track_ids(end_point_h);
         
-        total_cluster_number_m += full_state_c.size();
-        local_total_cluster_number_m += full_state_c.size();
+        auto reconstructible_i = retrieve_reconstructible( id_c );
         
-        
-        for( auto const & full_state : full_state_c ){
-            action_m.logger_m << "current_track_id: ";
-            auto current_track_id_c = retrieve_track_ids( full_state.data );
-
-            if( std::any_of( track_id_c.begin(),
-                             track_id_c.end(),
-                             [&current_track_id_c](int id_p)
-                             {
-                                 return std::any_of( current_track_id_c.begin(),
-                                                     current_track_id_c.end(),
-                                                     [&id_p](int current_id_p){ return current_id_p == id_p; } );
-                             }   ) )
-            {
-                ++correct_cluster_number_m;
-                ++local_correct_cluster_number_m;
-            }
+        if( reconstructible_i !=  reconstructible_track_mc.end() ){
+            ++reconstructed_number_m ;
+            ++local_reconstructed_number_m;
+            
+            
+            action_m.logger_m << "targeted_track_id: ";
+            auto const & reconstructible_id_c = reconstructible_i->real_particle.get_indices();
+            for(auto const& id : reconstructible_id_c){ action_m.logger_m << id << " "; }
             action_m.logger_m << '\n';
+            
+            total_cluster_number_m += full_state_c.size();
+            local_total_cluster_number_m += full_state_c.size();
+            
+            
+            for( auto const & full_state : full_state_c ){
+                action_m.logger_m << "current_track_id: ";
+                auto current_track_id_c = retrieve_track_ids( full_state.data );
+                for(auto const& id : current_track_id_c){ action_m.logger_m << id << " "; }
+                action_m.logger_m << '\n';
+                
+                if( std::any_of( reconstructible_id_c.begin(),
+                                 reconstructible_id_c.end(),
+                                 [&current_track_id_c](int id_p)
+                                 {
+                                    return std::any_of( current_track_id_c.begin(),
+                                                        current_track_id_c.end(),
+                                                        [&id_p](int current_id_p){ return current_id_p == id_p; } );
+                                 }   ) )
+                {
+                    ++correct_cluster_number_m;
+                    ++local_correct_cluster_number_m;
+                }
+            }
+            
+            
         }
-        
+        else{
+            ++local_fake_number_m;
+            ++fake_number_m;
+            action_m.logger_m.add_sub_header("fake_track");
+            for( auto const & full_state : full_state_c ){
+                action_m.logger_m << "current_track_id: ";
+                auto current_track_id_c = retrieve_track_ids( full_state.data );
+                for(auto const& id : current_track_id_c){ action_m.logger_m << id << " "; }
+                action_m.logger_m << '\n';
+            }
+        }
         
     }
     
@@ -396,6 +459,7 @@ public:
     
 public:
     void output(){
+//        action_m.logger_m.freeze_everything();
         action_m.logger_m.add_root_header("RESULTS");
         output_efficiency();
         output_purity();
@@ -408,8 +472,8 @@ private:
         action_m.logger_m << "reconstructible_tracks: " << local_reconstructible_number_m << '\n';
         action_m.logger_m << "local_efficiency: " << local_reconstructed_number_m * 100./local_reconstructible_number_m << '\n';
         action_m.logger_m << "global_efficiency: " << reconstructed_number_m * 100./reconstructible_number_m << '\n';
-        
-        if( local_reconstructed_number_m > local_reconstructible_number_m ){
+        action_m.logger_m << "fake_rate: " << fake_number_m * 100./reconstructed_number_m << '\n';
+        if( local_fake_number_m >  0){
             action_m.logger_m.freeze_everything();
         }
     }
@@ -422,9 +486,9 @@ private:
         action_m.logger_m << "local_purity: " << local_correct_cluster_number_m * 100./local_total_cluster_number_m << '\n';
         action_m.logger_m << "global_purity: " << correct_cluster_number_m * 100./total_cluster_number_m << '\n';
         
-        if( 2 * local_correct_cluster_number_m < local_total_cluster_number_m ){
-            action_m.logger_m.freeze_everything();
-        }
+//        if( 2 * local_correct_cluster_number_m < local_total_cluster_number_m ){
+//            action_m.logger_m.freeze_everything();
+//        }
     }
     
     
@@ -435,6 +499,7 @@ public:
         reconstructible_track_mc.clear();
         local_correct_cluster_number_m = 0;
         local_total_cluster_number_m = 0;
+        local_fake_number_m = 0;
     }
     
 

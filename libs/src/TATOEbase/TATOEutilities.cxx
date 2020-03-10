@@ -40,21 +40,8 @@ typename details::vertex_tag::candidate detector_properties< details::vertex_tag
 }
 
 
-
-const TAVTvertex * detector_properties< details::vertex_tag >::retrieve_vertex( ) const
-{
-    for( std::size_t i{0} ; i < vertex_mhc->GetVertexN() ; ++i ){
-        auto vertex_h = vertex_mhc->GetVertex(i);
-        
-        if( vertex_h->IsBmMatched() ){ return vertex_h; }
-    }
-    
-    return nullptr;
-}
-
-
-
-std::vector<typename details::vertex_tag::candidate> detector_properties< details::vertex_tag >::generate_candidates(std::size_t index_p) const
+std::vector<typename details::vertex_tag::candidate>
+    detector_properties< details::vertex_tag >::generate_candidates(std::size_t index_p) const
 {
     std::vector<candidate> candidate_c;
     std::size_t entries = cluster_mhc->GetClustersN( index_p );
@@ -66,6 +53,53 @@ std::vector<typename details::vertex_tag::candidate> detector_properties< detail
     }
     return candidate_c;
 }
+
+
+std::vector< TAVTvertex const *>
+    detector_properties< details::vertex_tag >::retrieve_vertices( ) const
+
+{
+    std::vector< TAVTvertex const * > vertex_ch;
+    vertex_ch.reserve( vertex_mhc->GetVertexN() );
+    
+    for( std::size_t i{0} ; i < vertex_mhc->GetVertexN() ; ++i ){
+        vertex_ch.push_back( vertex_mhc->GetVertex(i) );
+    }
+    
+    return vertex_ch;
+}
+
+
+
+std::vector< track_list< detector_properties< details::vertex_tag> >::iterable_track >
+    detector_properties< details::vertex_tag >::form_tracks( std::vector< TAVTvertex const * > vertex_pch ) const
+{
+    using iterable_track = typename track_list< detector_properties >::iterable_track;
+    
+    std::vector< iterable_track > track_c;
+    
+    std::size_t size{0};
+    for( auto const * vertex_h : vertex_pch ){
+        size += vertex_h->GetTracksN();
+    }
+    track_c.reserve( size );
+
+    
+    auto fill = [this]( std::vector< iterable_track >& track_pc,
+                    TAVTvertex const * vertex_h )
+                {
+                    for( auto i =0 ; i < vertex_h->GetTracksN() ; ++i ){
+                        track_pc.emplace_back( *this, vertex_h, vertex_h->GetTrack(i) );
+                    }
+                };
+    
+    for( auto const * vertex_h : vertex_pch ){
+        fill(track_c, vertex_h);
+    }
+    
+    return track_c;
+}
+
 
 //______________________________________________________________________________
 //                     IT
