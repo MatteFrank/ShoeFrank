@@ -133,13 +133,15 @@ public:
    void EnableSaveHits()  { fFlagHits = true;    }
    void DisableSaveHits() { fFlagHits = false;   }
 
-   
    void EnableHisto()     { fFlagHisto = true;   }
    void DisableHisto()    { fFlagHisto = false;  }
    
-   void EnableTracking()  { fFlagTrack = true;  }
-   void DisableTracking() { fFlagTrack = false; }
+   void EnableTracking()  { fFlagTrack = true;   }
+   void DisableTracking() { fFlagTrack = false;  }
 
+   // Flag for MC data
+   Bool_t IsMcData()      { return fFlagMC;      }
+   
    //! Set Tracking algorithm
    void SetTrackingAlgo(char c);
   
