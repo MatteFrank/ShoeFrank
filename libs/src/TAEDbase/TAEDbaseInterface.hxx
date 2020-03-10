@@ -99,7 +99,11 @@ public:
    virtual void BuildDefaultGeometry();
    
    virtual void NextEvent(); //*MENU*
-   
+
+   virtual void PrevEvent(); //*MENU*
+
+   virtual void SetEvent(); //*MENU*
+
    virtual void ToggleDisplay(Int_t id);
    
    void         ToggleQuadDisplay();

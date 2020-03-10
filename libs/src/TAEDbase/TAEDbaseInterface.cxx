@@ -294,10 +294,24 @@ void TAEDbaseInterface::MakeGUI()
    b->SetToolTipText("Next Event");
    b->Connect("Clicked()", "TAEDbaseInterface", this, "NextEvent()");
    
+   if (fType == 1) {
+      b = new TGPictureButton(eventFrame, gClient->GetPicture(icondir + "GoBack.gif"));
+      eventFrame->AddFrame(b);
+      b->SetToolTipText("Prevoius Event");
+      b->Connect("Clicked()", "TAEDbaseInterface", this, "PrevEvent()");
+   }
+   
    b = new TGPictureButton(eventFrame, gClient->GetPicture(icondir + "ReloadPage.gif"));
    eventFrame->AddFrame(b);
    b->SetToolTipText("Loop Event");
    b->Connect("Clicked()", "TAEDbaseInterface", this, "LoopEvent()");
+   
+   if (fType == 1) {
+      b = new TGPictureButton(eventFrame, gClient->GetPicture(icondir + "GoHome.gif"));
+      eventFrame->AddFrame(b);
+      b->SetToolTipText("Go To Event");
+      b->Connect("Clicked()", "TAEDbaseInterface", this, "SetEvent()");
+   }
    
    fNumberEvent  = new TGNumberEntry(eventFrame, 0, 4, -1,
                                      TGNumberFormat::kNESInteger, TGNumberFormat::kNEANonNegative,
@@ -518,6 +532,26 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
 //__________________________________________________________
 void TAEDbaseInterface::NextEvent()
 {   
+   LoopEvent(1);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::SetEvent()
+{
+   Int_t nEvts = fNumberEvent->GetIntNumber();
+   fCurrentEventId = nEvts;
+   gTAGroot->SetEventNumber(nEvts-1);
+   
+   LoopEvent(1);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::PrevEvent()
+{
+   fCurrentEventId -= 2;
+   if (fCurrentEventId <= 0) fCurrentEventId = 0;
+   gTAGroot->SetEventNumber(fCurrentEventId-1);
+   
    LoopEvent(1);
 }
 
