@@ -42,6 +42,7 @@
 #include "TABMntuRaw.hxx"
 #include "TAVTntuRaw.hxx"
 #include "TAITntuRaw.hxx"
+#include "TAITntuTrack.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
@@ -57,6 +58,8 @@
 
 #include "TABMactNtuTrack.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
+#include "TAITactNtuTrack.hxx"
+#include "TAITactNtuTrackF.hxx"
 #include "TAVTactNtuVertex.hxx"
 
 #include "TAIRactNtuTrack.hxx"
@@ -163,6 +166,8 @@ public:
    TAGdataDsc*          GetDscVertexVtx()   const { return fpNtuVtx;                                 }
    
    TAITntuCluster*      GetNtuClusterIt()   const { return (TAITntuCluster*)fpNtuClusIt->Object();   }
+   TAITntuTrack*        GetNtuTrackIt()     const { return (TAITntuTrack*)fpNtuTrackIt->Object();   }
+
    TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
    
    TATWntuRaw*          GetNtuHitTw()       const { return (TATWntuRaw*) fpNtuRawTw->Object();       }
@@ -185,6 +190,12 @@ public:
    virtual TAMCntuHit*  GetNtuMcCa()        const { return 0x0; }
    virtual TTree*       GetTree()                 { return 0x0; }
 
+public:
+   //! Disable/Enable ITR tracking
+   static void DisableItrTracking() { fgItrTrackFlag = false; }
+   static void EnableItrTracking()  { fgItrTrackFlag = true;  }
+   static Bool_t IsItrTracking()    { return fgItrTrackFlag;  }
+   
 protected:
    TString               fExpName;
    TAGroot*              fTAGroot;             // pointer to TAGroot
@@ -236,9 +247,9 @@ protected:
 
    TADIgeoField*         fField;       // magnetic field
 
-  //   TAGdataDsc*           fpWdRawTw;     // input data dsc
    TAGdataDsc*           fpNtuTrackBm;  // input track data dsc
    TAGdataDsc*           fpNtuTrackVtx;  // input track data dsc
+   TAGdataDsc*           fpNtuTrackIt;  // input track data dsc
    TAGdataDsc*           fpNtuVtx;        // input Vtx data dsc
 
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
@@ -254,7 +265,8 @@ protected:
    TAVTactBaseNtuVertex* fActVtx;        // action for vertex
    
    TAITactNtuClusterF*   fActClusIt;     // action for clusters
-   
+   TAITactBaseNtuTrack*  fActTrackIt;   // action for tracks
+
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
    
    // TATWactNtuRaw*        fActNtuRawTw;  // action for ntu data
@@ -280,6 +292,9 @@ protected:
    void CreateRecActionGlb() ;
    void CreateRecActionIr();
 
+protected:
+   static Bool_t fgItrTrackFlag;
+   
    ClassDef(BaseReco, 1); // Base class for event display
 };
 

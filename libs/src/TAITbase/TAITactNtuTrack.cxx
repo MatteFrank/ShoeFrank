@@ -9,20 +9,22 @@
 
 //TAGroot
 #include "TAGroot.hxx"
+
+// Foot trafo
 #include "TAGgeoTrafo.hxx"
 
-//VTX
-#include "TAVTntuVertex.hxx"
+//BM
+#include "TABMntuTrack.hxx"
 
-#include "TAITparGeo.hxx"
-#include "TAITparConf.hxx"
-#include "TAITparMap.hxx"
+#include "TAVTparGeo.hxx"
+#include "TAVTparConf.hxx"
+#include "TAITtrack.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAITactNtuTrack.hxx"
 
 /*!
- \class TAITactNtuTrack 
+ \class TAITactNtuTrack
  \brief NTuplizer for Inner tracker tracks. **
  */
 
@@ -30,15 +32,13 @@ ClassImp(TAITactNtuTrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAITactNtuTrack::TAITactNtuTrack(const char* name, 
+TAITactNtuTrack::TAITactNtuTrack(const char* name,
 								 TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
-								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pVtVertex)
- : TAITactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
-   fpVtVertex(pVtVertex),
-   fVtVertex(0x0),
-   fVtVertexPos(),
-   fVtVertexOk(false)
+								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
+: TAITactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib, pBMntuTrack)
 {
+   AddDataIn(pNtuClus,   "TAITntuCluster");
+   AddDataOut(pNtuTrack, "TAITntuTrack");
 }
 
 //------------------------------------------+-----------------------------------
@@ -49,33 +49,9 @@ TAITactNtuTrack::~TAITactNtuTrack()
 }
 
 //_____________________________________________________________________________
-//
-void TAITactNtuTrack::CheckVtx()
-{
-   // VTX info
-   fVtVertexOk = false;
-   TAVTntuVertex* pNtuVertex  = (TAVTntuVertex*) fpVtVertex->Object();
-   
-   Int_t nVertex = pNtuVertex->GetVertexN();
-   
-   for (Int_t i = 0; i < nVertex; ++i) {
-      
-      TAVTvertex* vtx = pNtuVertex->GetVertex(i);
-      if (vtx->IsBmMatched()) {
-         fVtVertexPos.SetXYZ(vtx->GetVertexPosition().X(), vtx->GetVertexPosition().Y(), vtx->GetVertexPosition().Z());
-         TVector3 posVtG = fpFootGeo->FromVTLocalToGlobal(fVtVertexPos);
-         fVtVertexPos    = fpFootGeo->FromGlobalToITLocal(posVtG);
-         fVtVertexOk     = true;
-      }
-   }
-}
-
-//_____________________________________________________________________________
 //  
 Bool_t TAITactNtuTrack::FindTiltedTracks()
 {
-   CheckVtx();
-   
    Double_t minDistance  = 1.e9;
    Double_t aDistance;
    
@@ -87,10 +63,10 @@ Bool_t TAITactNtuTrack::FindTiltedTracks()
    lineOrigin.SetXYZ(0.,0.,0.);
    lineSlope.SetXYZ(0.,0.,1.);
    
-   TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpNtuClus->Object();
-   TAITntuTrack*   pNtuTrack = (TAITntuTrack*)   fpNtuTrack->Object();
-   TAITparGeo*     pGeoMap   = (TAITparGeo*)     fpGeoMap->Object();
-   TAITparConf*    pConfig   = (TAITparConf*)    fpConfig->Object();
+   TAITntuCluster*  pNtuClus  = (TAITntuCluster*)  fpNtuClus->Object();
+   TAITntuTrack*    pNtuTrack = (TAITntuTrack*)    fpNtuTrack->Object();
+   TAVTbaseParGeo*  pGeoMap   = (TAVTbaseParGeo*)  fpGeoMap->Object();
+   TAVTbaseParConf* pConfig   = (TAVTbaseParConf*) fpConfig->Object();
    
    TList array;
    array.SetOwner(false);
@@ -119,22 +95,27 @@ Bool_t TAITactNtuTrack::FindTiltedTracks()
 		 track->AddCluster(cluster);
 		 array.Add(cluster);
 		 
-		 if (fpVtVertex == 0x0 || fpFootGeo == 0x0) { // no vertex info available
-			lineOrigin.SetXYZ(0, 0, 0);  
+       lineOrigin[2] = 0;
+
+		 if (fpBMntuTrack == 0x0 || fpFootGeo == 0x0) { // no BM info available
+          lineOrigin.SetXYZ(0, 0, 0);
 		 } else {
-			if (fpVtVertex) {
-			   if (fVtVertexOk)
-				  lineOrigin.SetXYZ(fVtVertexPos.X(), fVtVertexPos.Y(), fVtVertexPos.Z());
-			   else 
+			if (fBmTrack) {
+            if (fBmTrackOk) {
+               lineOrigin.SetXYZ(fBmTrackPos.X(), fBmTrackPos.Y(), 0);
+               lineOrigin = fpFootGeo->FromBMLocalToGlobal(lineOrigin);// go to FOOT global
+            } else
 				  lineOrigin.SetXYZ(0, 0, 0); 
 			} else {
 			   return true;  // think about it !
 			}
 		 }
-		 lineOrigin[2] = 0;
-		 lineSlope     = cluster->GetPositionG() - lineOrigin;
-		 lineSlope    *= 1/(lineSlope)(2);
-		 
+        
+       lineOrigin = fpFootGeo->FromGlobalToVTLocal(lineOrigin); // back to vertex frame
+
+		 lineSlope  = cluster->GetPositionG() - lineOrigin;
+		 lineSlope *= 1/(lineSlope)(2);
+      
 		 track->SetLineValue(lineOrigin, lineSlope);
 		 
 		 // Loop on all planes to find a matching cluster in them
@@ -144,7 +125,7 @@ Bool_t TAITactNtuTrack::FindTiltedTracks()
 			if (nClusters1 == 0) continue; //empty planes
 			
 			// loop on all clusters of this plane and keep the nearest one
-			minDistance = fSearchClusDistance*(1 + 2.*TMath::Tan(track->GetTheta()*TMath::DegToRad()));
+			minDistance = fSearchClusDistance*(1 + 3.*TMath::Tan(track->GetTheta()*TMath::DegToRad()));
 			TAITcluster* bestCluster = 0x0;
 			
 			for( Int_t iClus = 0; iClus < nClusters1; ++iClus ) { // loop on plane clusters
@@ -177,8 +158,14 @@ Bool_t TAITactNtuTrack::FindTiltedTracks()
 			track->SetNumber(pNtuTrack->GetTracksN());
 			track->MakeChiSquare();
 			track->SetType(1);
-         pNtuTrack->NewTrack(*track);
-          
+			pNtuTrack->NewTrack(*track);
+			if (fBmTrack && fBmTrackOk) {
+			   pNtuTrack->SetBeamPosition(fBmTrackPos);
+			} else {
+			   TVector3 orig(0,0,0);
+			   pNtuTrack->SetBeamPosition(orig);
+			}
+			
 			if (ValidHistogram()) 
 			   FillHistogramm(track);
 				  
@@ -196,7 +183,11 @@ Bool_t TAITactNtuTrack::FindTiltedTracks()
 	  } // end loop on first clusters
 	  
    } // while
-      
+   
+   if (ValidHistogram()) 
+	  if (fBmTrackOk) 
+		 FillBmHistogramm(fBmTrackPos);
+   
    return true;
 }
 

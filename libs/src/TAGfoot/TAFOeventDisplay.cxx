@@ -62,6 +62,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    fVtxClusDisplay(0x0),
    fVtxTrackDisplay(0x0),
    fItClusDisplay(0x0),
+   fItTrackDisplay(0x0),
    fMsdClusDisplay(0x0),
    fTwClusDisplay(0x0),
    fCaClusDisplay(0x0),
@@ -121,6 +122,14 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
       fItClusDisplay->SetDefWidth(fQuadDefWidth*2.);
       fItClusDisplay->SetDefHeight(fQuadDefHeight*2.);
       fItClusDisplay->SetPickable(true);
+      
+      if (IsItrTracking()) {
+         fItTrackDisplay = new TAEDtrack("Inner Tracker Track");
+         fItTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+         fItTrackDisplay->SetDefWidth(fBoxDefWidth);
+         fItTrackDisplay->SetDefHeight(fBoxDefHeight);
+         fItTrackDisplay->SetPickable(true);
+      }
    }
    
    if (GlobalPar::GetPar()->IncludeMSD()) {
@@ -182,6 +191,7 @@ TAFOeventDisplay::~TAFOeventDisplay()
    if (fCaClusDisplay)        delete fCaClusDisplay;
    if (fGlbTrackDisplay)      delete fGlbTrackDisplay;
    if (fIrTrackDisplay)       delete fIrTrackDisplay;
+   if (fItTrackDisplay)       delete fItTrackDisplay;
 
    if (fField)                delete fField;
    if (fGlbTrackProp)         delete fGlbTrackProp;
@@ -399,6 +409,11 @@ void TAFOeventDisplay::AddElements()
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       fItClusDisplay->ResetHits();
       gEve->AddElement(fItClusDisplay);
+      
+      if (IsItrTracking()) {
+         fItTrackDisplay->ResetTracks();
+         gEve->AddElement(fItTrackDisplay);
+      }
    }
    
    if (GlobalPar::GetPar()->IncludeMSD()) {
@@ -455,6 +470,11 @@ void TAFOeventDisplay::ConnectElements()
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       fItClusDisplay->SetEmitSignals(true);
       fItClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      
+      if (IsItrTracking()) {
+         fItTrackDisplay->SetEmitSignals(true);
+         fItTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
+      }
    }
    
    if (GlobalPar::GetPar()->IncludeMSD()) {
@@ -889,6 +909,9 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       
       if (prefix == "ir")
          fIrTrackDisplay->ResetTracks();
+      
+      if (prefix == "it" && IsItrTracking())
+         fItTrackDisplay->ResetTracks();
    }
    
    if (!fgDisplayFlag) // do not update event display
@@ -942,6 +965,45 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       } // end loop on tracks
          
       fVtxTrackDisplay->RefitPlex();
+   }
+   
+   if (prefix == "it" && !fIrFlag && IsItrTracking()) {
+      
+      TAITparGeo*  parGeo   = fReco->GetParGeoIt();
+      Int_t nPlanes         = parGeo->GetSensorsN();
+      Float_t posfirstPlane = parGeo->GetSensorPosition(0)[2]*1.1;
+      Float_t posLastPlane  = parGeo->GetSensorPosition(nPlanes-1)[2]*1.1;
+      
+      TAITntuTrack* pNtuTrack = fReco->GetNtuTrackIt();
+      
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         fItTrackDisplay->AddNewTrack();
+         
+         TAITtrack* track = pNtuTrack->GetTrack(iTrack);
+         TVector3 pos;
+         TVector3 posG;
+         
+         if (GlobalPar::GetPar()->IncludeTG() ) {
+            Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
+            posZtg = fpFootGeo->FromGlobalToITLocal(TVector3(0, 0, posZtg)).Z();
+            pos = track->Intersection(posZtg);
+         } else
+            pos  = track->Intersection(posfirstPlane);
+         
+         posG = fpFootGeo->FromITLocalToGlobal(pos);
+         x = posG(0); y = posG(1); z = posG(2);
+         
+         pos  = track->Intersection(posLastPlane);
+         posG = fpFootGeo->FromITLocalToGlobal(pos);
+         x1 = posG(0); y1 = posG(1); z1 = posG(2);
+
+         Float_t nPix = track->GetMeanPixelsN();
+         fItTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
+         fItTrackDisplay->TrackId(track);
+         
+      } // end loop on tracks
+      
+      fItTrackDisplay->RefitPlex();
    }
    
    if (prefix == "bm") {
