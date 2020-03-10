@@ -457,13 +457,14 @@ private:
             
             if( fs_c.empty() ){ leaf.mark_invalid(); }
             else{
-                auto fs = fs_c.front();
+                for( auto&& fs : fs_c ){
                 
-                logger_m << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
-                logger_m << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
-                logger_m << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
+                    logger_m << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
+                    logger_m << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
+                    logger_m << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
 ////
-                leaf.add_child( std::move(fs_c.front()) );
+                    leaf.add_child( std::move(fs) );
+                }
             }
         }
         
@@ -591,7 +592,7 @@ private:
                                       
                                       logger_m << "candidate_id: ";
                                       for(auto i =0 ; i < ec_p.data->GetMcTracksN() ; ++ i){
-                                          logger_m << ec_p.data->GetMcTrackIdx(i);
+                                          logger_m << ec_p.data->GetMcTrackIdx(i)<< " ";
                                       }
                                       logger_m << '\n';
                                      // checker_m.check_validity( ec_p,  ec_p.chisquared , cutter.chisquared, details::should_pass_tag{} );
@@ -683,7 +684,7 @@ private:
                              logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
                              logger_m << "candidate_id: ";
                              for(auto i =0 ; i < ec_p.data->GetMcTracksN() ; ++ i){
-                                 logger_m << ec_p.data->GetMcTrackIdx(i);
+                                 logger_m << ec_p.data->GetMcTrackIdx(i)<< " ";
                              }
                              logger_m << '\n';
                             // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared );
