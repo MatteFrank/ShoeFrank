@@ -31,6 +31,7 @@
 #include "TATWdigitizer.hxx"
 
 #include "TAGroot.hxx"
+#include "TAGgeoTrafo.hxx"
 
 ClassImp(TATWdigitizer)
 
@@ -270,13 +271,13 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Double_t energy = TMath::Sqrt(chargeA*chargeB);
    if(energy<0) 
      cout<<"--> "<<energy<<endl;
-   pos = (timeB-timeA)/fTofPropAlpha;
+   pos = (timeB-timeA)/(2*fTofPropAlpha);
    
    Double_t chargeCOM = TMath::Log(chargeA/chargeB);
 
    // no threshold ??
    //Time should be stored in ns
-   tof /= 1000.; // to be changed
+   tof *= TAGgeoTrafo::PsToNs(); 
    if (fMap[idA] == 0) {
       fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeB); // timeA/B is ps, and tof in ns !
       fCurrentHit->SetChargeZ(Z);
@@ -296,8 +297,8 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
       
       // recompute 
       energy    = TMath::Sqrt(fCurrentHit->GetChargeChA()*fCurrentHit->GetChargeChB());
-      tof       = (fCurrentHit->GetChargeTimeA()+fCurrentHit->GetChargeTimeB())/2000.;
-      pos       = (fCurrentHit->GetChargeTimeB()-fCurrentHit->GetChargeTimeA())/fTofPropAlpha;
+      tof       = (fCurrentHit->GetChargeTimeA()+fCurrentHit->GetChargeTimeB())/2 * TAGgeoTrafo::PsToNs();
+      pos       = (fCurrentHit->GetChargeTimeB()-fCurrentHit->GetChargeTimeA())/(2*fTofPropAlpha);
       chargeCOM = TMath::Log(fCurrentHit->GetChargeChA()/fCurrentHit->GetChargeChB());
       
       fCurrentHit->SetEnergyLoss(energy);
