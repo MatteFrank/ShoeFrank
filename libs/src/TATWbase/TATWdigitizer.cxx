@@ -270,7 +270,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Double_t energy = TMath::Sqrt(chargeA*chargeB);
    if(energy<0) 
      cout<<"--> "<<energy<<endl;
-   pos = (timeB-timeA)/fTofPropAlpha;
+   pos = (timeB-timeA)/(2*fTofPropAlpha);
    
    Double_t chargeCOM = TMath::Log(chargeA/chargeB);
 
@@ -297,7 +297,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
       // recompute 
       energy    = TMath::Sqrt(fCurrentHit->GetChargeChA()*fCurrentHit->GetChargeChB());
       tof       = (fCurrentHit->GetChargeTimeA()+fCurrentHit->GetChargeTimeB())/2000.;
-      pos       = (fCurrentHit->GetChargeTimeB()-fCurrentHit->GetChargeTimeA())/fTofPropAlpha;
+      pos       = (fCurrentHit->GetChargeTimeB()-fCurrentHit->GetChargeTimeA())/(2*fTofPropAlpha);
       chargeCOM = TMath::Log(fCurrentHit->GetChargeChA()/fCurrentHit->GetChargeChB());
       
       fCurrentHit->SetEnergyLoss(energy);
