@@ -17,6 +17,8 @@
 //First
 #include "TAGgeoTrafo.hxx"
 
+#include "TAGparGeo.hxx"
+
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
 #include "TAITparMap.hxx"
@@ -35,8 +37,9 @@ ClassImp(TAITactNtuTrackF);
 //! Default constructor.
 TAITactNtuTrackF::TAITactNtuTrackF(const char* name, 
 								   TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
-								   TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
-: TAITactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib)
+								   TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGparaDsc* p_geo_g)
+: TAITactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
+  fpGeoMapG(p_geo_g)
 {
    AddDataIn(pNtuClus,   "TAITntuCluster");
    AddDataOut(pNtuTrack, "TAITntuTrack");
@@ -131,12 +134,12 @@ Bool_t TAITactNtuTrackF::FindTiltedTracks()
 				  } // end loop on cluster of first planes
 				  
 				  // if a cluster has been found, add the cluster
-				  if( bestCluster ) {	
+				  if( bestCluster ) {
 					 bestCluster->SetFound();
 					 track->AddCluster(bestCluster);
 					 array.Add(bestCluster);
 					 UpdateParam(track);
-				  } 
+				  }
 				  
 			   } // end loop on first planes
 
@@ -147,10 +150,10 @@ Bool_t TAITactNtuTrackF::FindTiltedTracks()
 				  track->SetType(1);
 				  pNtuTrack->NewTrack(*track);
 				  
-				  if (ValidHistogram()) 
+				  if (ValidHistogram())
 					 FillHistogramm(track);
    
-				  delete track;		 				  
+				  delete track;
 			   } else { // reset clusters
 				  nextCluster->SetFound(false);
 				  for (Int_t i = 0; i < array.GetEntries(); ++i) {
@@ -174,13 +177,13 @@ Bool_t TAITactNtuTrackF::FindTiltedTracks()
 //  
 Bool_t TAITactNtuTrackF::IsGoodCandidate(TAITtrack* track)
 {
-   TAITparGeo* pGeoMap = (TAITparGeo*)fpGeoMap->Object();
+   TAGparGeo* pGeoMap = (TAGparGeo*)fpGeoMapG->Object();
 
-   Float_t width  = pGeoMap->GetEpiSize()[0];//VTX_WIDTH/2.;
-   Float_t height = pGeoMap->GetEpiSize()[1];//VTX_HEIGHT/2.;
-   TVector3 vec = track->Intersection(-fpFootGeo->GetVTCenter()[2]);
+   Float_t width  = pGeoMap->GetTargetPar().Size[0];
+   Float_t height = pGeoMap->GetTargetPar().Size[1];
+   TVector3 vec = track->Intersection(-fpFootGeo->GetITCenter()[2]);
 
-   if (TMath::Abs(vec.X()) > width || TMath::Abs(vec.Y()) > width)
+   if (TMath::Abs(vec.X()) > width || TMath::Abs(vec.Y()) > height)
 	  return false;
    
    return true;

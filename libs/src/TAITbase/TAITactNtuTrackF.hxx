@@ -14,18 +14,20 @@
 class TAITactNtuTrackF : public TAITactBaseNtuTrack {
    
 public:
-   
    explicit  TAITactNtuTrackF(const char* name      = 0,
                               TAGdataDsc* p_ntuclus  = 0,
                               TAGdataDsc* p_ntutrack = 0,
                               TAGparaDsc* p_config   = 0,
                               TAGparaDsc* p_geomap   = 0,
-                              TAGparaDsc* p_calib    = 0);
+                              TAGparaDsc* p_calib    = 0,
+                              TAGparaDsc* p_geo_g    = 0);
    
    virtual ~TAITactNtuTrackF();
    
-private:    
+private:
+   TAGparaDsc*     fpGeoMapG;       // Global geometry para dsc
    
+private:
    Bool_t FindTiltedTracks();
    Bool_t IsGoodCandidate(TAITtrack* track);
    

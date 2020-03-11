@@ -1,32 +1,3 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
-//
-//
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 #ifndef TAEDbaseInterface_h
 #define TAEDbaseInterface_h 1
 
@@ -58,8 +29,6 @@ class TGeoVolume;
 class TGeoMedium;
 class TAGgeoTrafo;
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 class TAEDbaseInterface : public TEveEventManager
 {
 public:
@@ -71,17 +40,8 @@ public:
    TAEDbaseInterface(Int_t type, const TString expName = "");
    virtual ~TAEDbaseInterface();
    
-   //! reset list of histograms
-   virtual void ResetHistogram() = 0;
-   
    //! update elements
    virtual void UpdateElements() = 0;
-   
-   //! Create canvases
-   virtual void CreateCanvases() = 0;
-   
-   //! Update normal Canvases
-   virtual void UpdateDefCanvases() = 0;
    
    //! Add required items
    virtual void AddRequiredItem() = 0;
@@ -104,10 +64,20 @@ public:
    //! Add elements
    virtual void AddElements() = 0;
    
-   //! Add elements
+   //! Connect elements
    virtual void ConnectElements() = 0;
 
+   //! Loop over event
    virtual void LoopEvent(Int_t nEvts = 0);
+   
+   //! Create canvases
+   virtual void CreateCanvases();
+   
+   //! Update normal Canvases
+   virtual void UpdateDefCanvases();
+   
+   //! reset list of histograms
+   virtual void ResetAllHisto();
    
    //! MC virtual methods
    virtual Bool_t GetEntry(Int_t /*entry*/) { return true; }
@@ -129,7 +99,11 @@ public:
    virtual void BuildDefaultGeometry();
    
    virtual void NextEvent(); //*MENU*
-   
+
+   virtual void PrevEvent(); //*MENU*
+
+   virtual void SetEvent(); //*MENU*
+
    virtual void ToggleDisplay(Int_t id);
    
    void         ToggleQuadDisplay();
@@ -206,7 +180,6 @@ protected:
    TGeoVolume*        fTopVolume;          // top volume of geometry
    TAGgeoTrafo*       fpFootGeo;           // trafo prointer
    Int_t              fCurrentEventId;     // Current event id
-   Bool_t             fFirstEventDone;     // flag for first event processed
    Float_t            fMaxEnergy;          // maximum energy fo palette
    Float_t            fMaxMomentum;        // maximum energy fo palette
    
@@ -231,8 +204,8 @@ protected:
    TGComboBox*        fDetectorMenu;     // list of detector drawn
    TGComboBox*        fCameraMenu;       // list of camera centers
    TGListBox*         fHistoListBox;     // list of histograms
-   TList*             fSelecHistoList;   // list of selected histograms
-   TList*             fHistoList;        // list of histograms
+   TList*             fSelHistoListBox;  // list of selected histograms list in the box menu
+   TList*             fSelHistoList;     // list of selected histograms
    
    //histos
    TList*             fListOfCanvases;   // list of canvases
@@ -253,11 +226,10 @@ protected:
 
    static Int_t       fgMaxHistosN;        // Maximum number per canvas;
    
-   ClassDef(TAEDbaseInterface, 1); // Base class for event display
+   ClassDef(TAEDbaseInterface, 2); // Base class for event display
 
 };
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 

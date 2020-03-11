@@ -31,11 +31,12 @@ public:
 
 class TATWdatRaw : public TAGdata {
   public:
-                    TATWdatRaw();
+                     TATWdatRaw();
     virtual         ~TATWdatRaw();
-    TATWrawHit*       Hit(Int_t i_ind);
-    const TATWrawHit* Hit(Int_t i_ind) const;
-  void       NewHit(TWaveformContainer &W);
+    Int_t             GetHitsN() const;
+    TATWrawHit*       GetHit(Int_t i_ind);
+    const TATWrawHit* GetHit(Int_t i_ind) const;
+    void              NewHit(TWaveformContainer &W);
 
   virtual void    Clear(Option_t* opt="");
     void SetupClones();
@@ -44,9 +45,9 @@ class TATWdatRaw : public TAGdata {
 
     static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
-  public:
-    Int_t           nirhit;		    // 
-    TClonesArray*   hir;			// hits
+  private:
+    Int_t           fHitsN;		    // 
+    TClonesArray*   fListOfHits;			// hits
   private:
     static TString fgkBranchName;    // Branch name in TTree
 

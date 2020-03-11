@@ -1,30 +1,3 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
-//
-//
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "TMath.h"
 #include "TGeoMedium.h"
@@ -67,7 +40,7 @@ Int_t  TAEDbaseInterface::fgMaxHistosN   =  4;
 
 ClassImp(TAEDbaseInterface)
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
 : TEveEventManager(),
   fExpName(expName),
@@ -78,7 +51,6 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
   fWorldMedium(0x0),
   fTopVolume(0x0),
   fCurrentEventId(0),
-  fFirstEventDone(false),
   fMaxEnergy(1024),
   fMaxMomentum(30),
   fBoxDefWidth(0.02),
@@ -113,13 +85,13 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
 	if (med) fWorldMedium = med;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 TAEDbaseInterface::~TAEDbaseInterface()
 {
    // default destructor
    delete fListOfCanvases;
-   delete fSelecHistoList;
-   delete fHistoList;
+   delete fSelHistoListBox;
+   delete fSelHistoList;
    
    if (fHistoListBox)
       delete fHistoListBox;
@@ -150,7 +122,7 @@ TAEDbaseInterface::~TAEDbaseInterface()
 }
 
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 void TAEDbaseInterface::BuildDefaultGeometry()
 {
    // World
@@ -176,7 +148,7 @@ void TAEDbaseInterface::FillDetectorNames()
    fDetectorMenu->AddEntry("ALL", kWorld);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 void TAEDbaseInterface::DefineMaterial()
 {
    //hall: fill with vacuum
@@ -185,7 +157,7 @@ void TAEDbaseInterface::DefineMaterial()
 }
 
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 void TAEDbaseInterface::SetWordMedium(TString materialChoice)
 {
    // search the material by its name
@@ -193,13 +165,13 @@ void TAEDbaseInterface::SetWordMedium(TString materialChoice)
    if (med) fWorldMedium = med;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 void TAEDbaseInterface::SetWorldSizeZ(Float_t sizeZ)
 {
    fWorldSizeZ  = sizeZ;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//__________________________________________________________
 void TAEDbaseInterface::SetWorldSizeXY(Float_t sizeXY)
 {
    fWorldSizeXY = sizeXY;
@@ -322,10 +294,24 @@ void TAEDbaseInterface::MakeGUI()
    b->SetToolTipText("Next Event");
    b->Connect("Clicked()", "TAEDbaseInterface", this, "NextEvent()");
    
+   if (fType == 1) {
+      b = new TGPictureButton(eventFrame, gClient->GetPicture(icondir + "GoBack.gif"));
+      eventFrame->AddFrame(b);
+      b->SetToolTipText("Prevoius Event");
+      b->Connect("Clicked()", "TAEDbaseInterface", this, "PrevEvent()");
+   }
+   
    b = new TGPictureButton(eventFrame, gClient->GetPicture(icondir + "ReloadPage.gif"));
    eventFrame->AddFrame(b);
    b->SetToolTipText("Loop Event");
    b->Connect("Clicked()", "TAEDbaseInterface", this, "LoopEvent()");
+   
+   if (fType == 1) {
+      b = new TGPictureButton(eventFrame, gClient->GetPicture(icondir + "GoHome.gif"));
+      eventFrame->AddFrame(b);
+      b->SetToolTipText("Go To Event");
+      b->Connect("Clicked()", "TAEDbaseInterface", this, "SetEvent()");
+   }
    
    fNumberEvent  = new TGNumberEntry(eventFrame, 0, 4, -1,
                                      TGNumberFormat::kNESInteger, TGNumberFormat::kNEANonNegative,
@@ -448,7 +434,7 @@ void TAEDbaseInterface::MakeGUI()
 
    infoFrameView->AddFrame(fHistoListBox, new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 15, 5, 10, 4));
    
-   fSelecHistoList = new TList();
+   fSelHistoListBox = new TList();
    TList* list = gTAGroot->ListOfAction();
    Int_t hCnt = 0;
    for (Int_t i = 0; i < list->GetEntries(); ++i) {
@@ -462,8 +448,8 @@ void TAEDbaseInterface::MakeGUI()
    }
    fHistoListBox->Resize(200, 130);
 
-   fHistoList = new TList();
-   fHistoList->SetOwner(false);
+   fSelHistoList = new TList();
+   fSelHistoList->SetOwner(false);
    
    frmMain->AddFrame(infoFrameView, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 0, 5, 5));
    
@@ -518,7 +504,7 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
    fEventProgress->SetRange(0, nEvts);
    
    if (fRefreshButton->IsOn())
-      ResetHistogram();
+      ResetAllHisto();
       
    for (Int_t i = 0; i < nEvts; ++i) {
       if (! GetEntry(fCurrentEventId)) return;
@@ -541,13 +527,31 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
    fEventProgress->SetPosition(0.);
    
    UpdateDefCanvases();
-   
-   fFirstEventDone = true;     
 }
 
 //__________________________________________________________
 void TAEDbaseInterface::NextEvent()
 {   
+   LoopEvent(1);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::SetEvent()
+{
+   Int_t nEvts = fNumberEvent->GetIntNumber();
+   fCurrentEventId = nEvts;
+   gTAGroot->SetEventNumber(nEvts-1);
+   
+   LoopEvent(1);
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::PrevEvent()
+{
+   fCurrentEventId -= 2;
+   if (fCurrentEventId <= 0) fCurrentEventId = 0;
+   gTAGroot->SetEventNumber(fCurrentEventId-1);
+   
    LoopEvent(1);
 }
 
@@ -694,10 +698,10 @@ void TAEDbaseInterface::ToggleDisplay(Int_t flag)
 void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
 {
    // Fill histo list from selection
-   fSelecHistoList->Clear();
-   fHistoList->Clear();
-   fHistoListBox->GetSelectedEntries(fSelecHistoList);
-   Int_t nHisto = fSelecHistoList->GetEntries();
+   fSelHistoListBox->Clear();
+   fSelHistoList->Clear();
+   fHistoListBox->GetSelectedEntries(fSelHistoListBox);
+   Int_t nHisto = fSelHistoListBox->GetEntries();
    
    TList* list = gTAGroot->ListOfAction();
    Int_t hCnt = 0;
@@ -708,13 +712,13 @@ void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
       for (Int_t j = 0; j < hlist->GetEntries(); ++j) {
          TH1* h = (TH1*)hlist->At(j);
          
-         for (Int_t k = 0; k < fSelecHistoList->GetEntries(); ++k) {
+         for (Int_t k = 0; k < fSelHistoListBox->GetEntries(); ++k) {
             
-            TGTextLBEntry* t = (TGTextLBEntry*)fSelecHistoList->At(k);
+            TGTextLBEntry* t = (TGTextLBEntry*)fSelHistoListBox->At(k);
             if (t == 0x0) continue;
             TString s(t->GetText()->GetString());
             if (s == h->GetName()) {
-               fHistoList->Add(h);
+               fSelHistoList->Add(h);
             }
          }
       }
@@ -751,13 +755,98 @@ void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
 //__________________________________________________________
 void TAEDbaseInterface::ResetHisto()
 {
-   Int_t nHisto = fHistoList->GetEntries();
+   Int_t nHisto = fSelHistoList->GetEntries();
    
    for (Int_t k = 0; k < nHisto; ++k) {
-      TH1* h = (TH1*)fHistoList->At(k);
+      TH1* h = (TH1*)fSelHistoList->At(k);
       h->Reset();
    }
 }
 
+//__________________________________________________________
+void TAEDbaseInterface::ResetAllHisto()
+{
+   TList* list = gTAGroot->ListOfAction();
+   Int_t hCnt = 0;
+   for (Int_t i = 0; i < list->GetEntries(); ++i) {
+      TAGaction* action = (TAGaction*)list->At(i);
+      TList* hlist = action->GetHistogrammList();
+      if (hlist == 0x0) continue;
+      for (Int_t j = 0; j < hlist->GetEntries(); ++j) {
+         TH1* h = (TH1*)hlist->At(j);
+         if (h) h->Reset();
+      }
+   }
+}
 
+//__________________________________________________________
+void TAEDbaseInterface::UpdateDefCanvases()
+{
+   Int_t nCanvas = fListOfCanvases->GetEntries();
+   Int_t nHisto = fSelHistoList->GetEntries();
+   
+   for (Int_t k = 0; k < nHisto; ++k) {
+      
+      Int_t iCanvas = k / fgMaxHistosN;
+      if (iCanvas > 2) continue;
+      TCanvas* canvas = (TCanvas*)fListOfCanvases->At(iCanvas);
+      if (!canvas) continue;
+      
+      TH1* h = (TH1*)fSelHistoList->At(k);
+      Int_t iCd = k % fgMaxHistosN + 1;
+      
+      if (nHisto == 1)
+         canvas->cd();
+      else
+         canvas->cd(iCd);
+      h->Draw();
+      
+      canvas->Update();
+   }
+}
+
+//__________________________________________________________
+void TAEDbaseInterface::CreateCanvases()
+{
+   // GUI
+   // histo
+   TCanvas* canvas = 0x0;
+   TVirtualPad* pad    = 0x0;
+   TEveWindowSlot* slot0 = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
+   TEveWindowTab*  tab0 = slot0->MakeTab();
+   tab0->SetElementName("Histograms");
+   tab0->SetShowTitleBar(kFALSE);
+   
+   // canvas tab
+   slot0 = tab0->NewSlot();
+   TRootEmbeddedCanvas* eCanvas00 = new TRootEmbeddedCanvas();
+   TEveWindowFrame* frame00 = slot0->MakeFrame(eCanvas00);
+   frame00->SetElementName("Histograms 1");
+   canvas = eCanvas00->GetCanvas();
+   canvas->SetName("HistoCanvas 1");
+   canvas->Resize();
+   fListOfCanvases->Add(canvas);
+   
+   slot0 = tab0->NewSlot();
+   TRootEmbeddedCanvas* eCanvas01 = new TRootEmbeddedCanvas();
+   TEveWindowFrame* frame01 = slot0->MakeFrame(eCanvas01);
+   frame01->SetElementName("Histograms 2");
+   canvas = eCanvas01->GetCanvas();
+   canvas->SetName("HistoCanvas 2");
+   canvas->Resize();
+   fListOfCanvases->Add(canvas);
+   
+   slot0 = tab0->NewSlot();
+   TRootEmbeddedCanvas* eCanvas02 = new TRootEmbeddedCanvas();
+   TEveWindowFrame* frame02 = slot0->MakeFrame(eCanvas02);
+   frame02->SetElementName("Histograms 3");
+   canvas = eCanvas02->GetCanvas();
+   canvas->SetName("HistoCanvas 3");
+   canvas->Resize();
+   fListOfCanvases->Add(canvas);
+   
+   frmMain->MapSubwindows();
+   frmMain->Resize();
+   frmMain->MapWindow();
+}
 

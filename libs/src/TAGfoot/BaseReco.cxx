@@ -29,6 +29,8 @@
 
 ClassImp(BaseReco)
 
+Bool_t  BaseReco::fgItrTrackFlag = false;
+
 //__________________________________________________________
 BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
@@ -72,6 +74,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fpNtuRecTw(0x0),
    fpNtuTrackBm(0x0),
    fpNtuTrackVtx(0x0),
+   fpNtuTrackIt(0x0),
    fpNtuVtx(0x0),
    fpNtuGlbTrack(0x0),
    fpNtuTrackIr(0x0),
@@ -82,6 +85,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fActTrackVtx(0x0),
    fActVtx(0x0),
    fActClusIt(0x0),
+   fActTrackIt(0x0),
    fActClusMsd(0x0),
    fActPointTw(0x0),
    fActGlbTrack(0x0),
@@ -111,6 +115,15 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fpFootGeo = new TAGgeoTrafo();
    TString parFileName = Form("./geomaps/%sFOOT_geo.map", fExpName.Data());
    fpFootGeo->FromFile(parFileName);
+   
+   // activate per default Dipole, TGT, VTX, IT and TW if TOE on
+   if (GlobalPar::GetPar()->IncludeTOE()) {
+      GlobalPar::GetPar()->IncludeDI(true);
+      GlobalPar::GetPar()->IncludeTG(true);
+      GlobalPar::GetPar()->IncludeVertex(true);
+      GlobalPar::GetPar()->IncludeInnerTracker(true);
+      GlobalPar::GetPar()->IncludeTW(true);
+   }
 }
 
 //__________________________________________________________
@@ -221,7 +234,7 @@ void BaseReco::CloseFileOut()
 void BaseReco::ReadParFiles()
 {
    // initialise par files for target
-   if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM()) {
+   if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || IsItrTracking()) {
       fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
       TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
       TString parFileName = Form("./geomaps/%sTAGdetector.map", fExpName.Data());
@@ -276,7 +289,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files dipole
-   if (GlobalPar::GetPar()->IncludeDI() || TAGactNtuGlbTrack::GetStdAloneFlag() || GlobalPar::GetPar()->IncludeTOE()) {
+   if (GlobalPar::GetPar()->IncludeDI() || TAGactNtuGlbTrack::GetStdAloneFlag() ) {
       fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
       TString parFileName = "./geomaps/TADIdetector.map";
@@ -456,6 +469,23 @@ void BaseReco::CreateRecActionIt()
    fActClusIt   = new TAITactNtuClusterF("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
    if (fFlagHisto)
      fActClusIt->CreateHistogram();
+   
+   if (fgItrTrackFlag) {
+      fpNtuTrackIt  = new TAGdataDsc("itTrack", new TAITntuTrack());
+
+      if (fgTrackingAlgo.Contains("Std") ) {
+         if (GlobalPar::GetPar()->IncludeBM())
+            fActTrackIt  = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpNtuTrackBm);
+         else
+            fActTrackIt  = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt);
+         
+      }  else if (fgTrackingAlgo.Contains("Full")) {
+         fActTrackIt  = new TAITactNtuTrackF("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpParGeoG);
+      }
+      
+      if (fFlagHisto)
+         fActTrackIt->CreateHistogram();
+   }
 }
 
 //__________________________________________________________
@@ -586,6 +616,8 @@ void BaseReco::AddRecRequiredItem()
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       gTAGroot->AddRequiredItem("itActNtu");
       gTAGroot->AddRequiredItem("itActClus");
+      if (fgItrTrackFlag)
+         gTAGroot->AddRequiredItem("itActTrack");
    }
    
    if (GlobalPar::GetPar()->IncludeMSD()) {

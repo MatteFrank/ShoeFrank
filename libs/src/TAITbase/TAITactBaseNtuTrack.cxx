@@ -3,31 +3,50 @@
  \version $Id: TAITactBaseNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
  \brief   Implementation of TAITactBaseNtuTrack.
  */
+#include "TClonesArray.h"
+#include "TMath.h"
+#include "TF1.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TGraphErrors.h"
+#include "TMath.h"
+#include "TVector3.h"
+#include "TVector2.h"
 
-#include "GlobalPar.hxx"
+//BM
+#include "TABMntuTrack.hxx"
 
-#include "TAITparGeo.hxx"
-#include "TAITparConf.hxx"
-#include "TAITparCal.hxx"
+// First
+#include "TAGgeoTrafo.hxx"
+
+//TAG
+#include "TAGroot.hxx"
+
+#include "TAVTparGeo.hxx"
+#include "TAVTparConf.hxx"
+#include "TAVTparCal.hxx"
 #include "TAITtrack.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAITntuCluster.hxx"
-
 #include "TAITactBaseNtuTrack.hxx"
 
 /*!
- \class TAITactBaseNtuTrack 
- \brief NTuplizer for Inner Tracker tracking **
+ \class TAITactBaseNtuTrack
+ \brief NTuplizer for vertex raw hits. **
  */
 
 ClassImp(TAITactBaseNtuTrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAITactBaseNtuTrack::TAITactBaseNtuTrack(const char* name, 
+TAITactBaseNtuTrack::TAITactBaseNtuTrack(const char* name,
 										 TAGdataDsc* pNtuClus,TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig,  
-										 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
-: TAVTactBaseTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib)
+										 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
+: TAVTactBaseTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
+  fpBMntuTrack(pBMntuTrack),
+  fBmTrackOk(false),
+  fBmTrack(0x0),
+  fBmTrackPos(0,0,0)
 {
 }
 
@@ -37,11 +56,53 @@ TAITactBaseNtuTrack::~TAITactBaseNtuTrack()
 {   
 }
 
+//------------------------------------------+-----------------------------------
+//! Setup all histograms.
+void TAITactBaseNtuTrack::CreateHistogram()
+{   
+   TAVTactBaseTrack::CreateHistogram();
+   
+   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
+
+   // TG
+   fpHiVtxTgResX = new TH1F(Form("%sTgResX", fPrefix.Data()), Form("%s - Resolution at target in X", fTitleDev.Data()), 500, -0.02, 0.02);
+   AddHistogram(fpHiVtxTgResX);
+   
+   fpHiVtxTgResY = new TH1F(Form("%sTgResY", fPrefix.Data()), Form("%s - Resolution at target in Y", fTitleDev.Data()), 500, -0.02, 0.02);
+   AddHistogram(fpHiVtxTgResY);
+
+   // BM
+   fpHisBmBeamProf = new TH2F(Form("%sbmBeamProf", fPrefix.Data()), Form("%s - BM Beam Profile", fTitleDev.Data()),
+							  100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., 
+							  100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2.);
+   fpHisBmBeamProf->SetStats(kFALSE);
+   AddHistogram(fpHisBmBeamProf);
+   
+   fpHisVtxResX = new TH1F(Form("%sBmResX", fPrefix.Data()), Form("%s - Vertex position resisdualX BM/VT", fTitleDev.Data()), 500, -5, 5);
+   AddHistogram(fpHisVtxResX);
+   
+   fpHisVtxResY = new TH1F(Form("%sBmResY", fPrefix.Data()), Form("%s - Vertex position resisdualY BM/VT", fTitleDev.Data()), 500, -5, 5);
+   AddHistogram(fpHisVtxResY);
+   
+   fpHisBmChi2 = new TH1F(Form("%sbmChi2", fPrefix.Data()), Form("%s - BM Chi2 of tracks", fTitleDev.Data()), 200, 0, 1000);
+   AddHistogram(fpHisBmChi2);
+   
+   
+   SetValidHistogram(kTRUE);
+   return;
+}
+
 //_____________________________________________________________________________
 //  
 Bool_t TAITactBaseNtuTrack::Action()
 {
-   // IT
+   
+   // BM tracks
+   if (fpBMntuTrack) 
+	  CheckBM();
+   
+   
+   // VTX
    TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
    pNtuTrack->Clear();
    
@@ -76,6 +137,39 @@ Bool_t TAITactBaseNtuTrack::Action()
    
    fpNtuTrack->SetBit(kValid);
    return true;
+}
+
+
+//_____________________________________________________________________________
+//  
+void TAITactBaseNtuTrack::CheckBM()
+{   
+   // BM info
+   TAVTbaseParConf*  pConfig  = (TAVTbaseParConf*) fpConfig->Object();
+   
+   Float_t zDiff = 0;
+   
+   if (fpFootGeo) {
+	  TVector3 bmPos = fpFootGeo->GetBMCenter();
+	  TVector3 vtPos = fpFootGeo->GetVTCenter();
+	  zDiff  = vtPos.Z() - bmPos.Z();	  
+   }
+   
+   TABMntuTrack* pBMtrack = 0x0;
+   fBmTrackOk    = false;
+   pBMtrack = (TABMntuTrack*) fpBMntuTrack->Object();
+   if (pBMtrack->GetTracksN() > 0)
+	  fBmTrack = pBMtrack->Track(0);
+   
+   if (fBmTrack) {
+	  fBmTrackPos  = fBmTrack->PointAtLocalZ(zDiff);
+	  Float_t chi2 = fBmTrack->GetChi2Red();
+	  if (ValidHistogram())
+		 fpHisBmChi2->Fill(chi2);
+	  
+	//  if (chi2 < pConfig->GetAnalysisPar().BmTrackChi2Limit && chi2 > 0) // for the moment
+		 fBmTrackOk = true;
+   }   
 }
 
 //_____________________________________________________________________________
@@ -167,7 +261,7 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
 		 } // end loop on planes
 		 
 		 // Apply cuts
-		 if (AppyCuts(track)) {
+		 if (AppyCuts(track) && IsGoodCandidate(track)) {
 			track->SetNumber(pNtuTrack->GetTracksN());
 			track->MakeChiSquare();
 			track->SetType(0);
@@ -196,6 +290,30 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
    
    return true;
 }
+
+
+//_____________________________________________________________________________
+//  
+void TAITactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
+{
+   TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
+   bmTrackPos  = fpFootGeo->FromBMLocalToGlobal(bmTrackPos);
+   fpHisBmBeamProf->Fill(bmTrackPos.X(), bmTrackPos.Y());
+   
+   Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
+   posZtg = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtg)).Z();
+
+   for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
+	  TAITtrack* track  = pNtuTrack->GetTrack(i);
+     TVector3   origin = track->Intersection(posZtg);
+	  
+	  origin  = fpFootGeo->FromVTLocalToGlobal(origin);
+	  TVector3 res = origin - bmTrackPos;
+	  fpHisVtxResX->Fill(res.X());
+	  fpHisVtxResY->Fill(res.Y());
+   }   
+}
+
 
 //_____________________________________________________________________________
 //

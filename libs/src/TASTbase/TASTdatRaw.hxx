@@ -33,18 +33,20 @@ class TASTdatRaw : public TAGdata {
 public:
   TASTdatRaw();
   virtual         ~TASTdatRaw();
-  TASTrawHit*       Hit(Int_t i_ind);
-  const TASTrawHit* Hit(Int_t i_ind) const;
-  void       NewHit(TWaveformContainer &W);
-  virtual void    Clear(Option_t* opt="");
-  void SetupClones();
-  virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
+  Int_t             GetHitsN() const;
+  TASTrawHit*       GetHit(Int_t i_ind);
+  const TASTrawHit* GetHit(Int_t i_ind) const;
+  void              NewHit(TWaveformContainer &W);
+  virtual void      Clear(Option_t* opt="");
+  void              SetupClones();
+  virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
 
   inline void UpdateRunTime(int value){m_run_time+=value;}
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
-  Int_t           nirhit;		    // 
-  TClonesArray*   hir;			// hits
+private:
+  Int_t           fHitsN;		    // 
+  TClonesArray*   fListOfHits;			// hits
 
   ClassDef(TASTdatRaw,3);
 

@@ -159,7 +159,14 @@ void TAVTactBaseTrack::CreateHistogram()
    fpHisMeanCharge = new TH1F(Form("%sMeanClusChg", fPrefix.Data()), Form("%s - mean charge per tracked clusters", fTitleDev.Data()), 500, 0, 1000);
    AddHistogram(fpHisMeanCharge);
 
-
+   fpHisClusLeft = new TH1F(Form("%sClusLeft", fPrefix.Data()), Form("%s - Clusters left per sensor", fTitleDev.Data()), 8, 1, 8);
+   AddHistogram(fpHisClusLeft);
+   
+   fpHisClusLeftPix = new TH2F(Form("%sClusLeftPix", fPrefix.Data()), Form("%s - Number of pixels for left clusters vs sensor", fTitleDev.Data()),
+                               10, 0, 9, 50, 1, 50);
+   fpHisClusLeftPix->SetStats(kFALSE);
+   AddHistogram(fpHisClusLeftPix);
+   
    SetValidHistogram(kTRUE);
    
    return;
@@ -324,7 +331,7 @@ void TAVTactBaseTrack::FillHistogramm()
 			left++;
 		 }
 	  }
-	  static Float_t mean[8];
+	  static Float_t mean[36];
 	  Int_t evtNumber = gTAGroot->CurrentEventNumber();
 	  mean[iPlane] = evtNumber/(evtNumber+1.)*mean[iPlane] + 1./(evtNumber+1.)*(left/nClusters);
 	  fpHisClusLeft->SetBinContent(iPlane+1, mean[iPlane]*100);

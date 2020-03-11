@@ -62,6 +62,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    fVtxClusDisplay(0x0),
    fVtxTrackDisplay(0x0),
    fItClusDisplay(0x0),
+   fItTrackDisplay(0x0),
    fMsdClusDisplay(0x0),
    fTwClusDisplay(0x0),
    fCaClusDisplay(0x0),
@@ -121,6 +122,14 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
       fItClusDisplay->SetDefWidth(fQuadDefWidth*2.);
       fItClusDisplay->SetDefHeight(fQuadDefHeight*2.);
       fItClusDisplay->SetPickable(true);
+      
+      if (IsItrTracking()) {
+         fItTrackDisplay = new TAEDtrack("Inner Tracker Track");
+         fItTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+         fItTrackDisplay->SetDefWidth(fBoxDefWidth);
+         fItTrackDisplay->SetDefHeight(fBoxDefHeight);
+         fItTrackDisplay->SetPickable(true);
+      }
    }
    
    if (GlobalPar::GetPar()->IncludeMSD()) {
@@ -182,6 +191,7 @@ TAFOeventDisplay::~TAFOeventDisplay()
    if (fCaClusDisplay)        delete fCaClusDisplay;
    if (fGlbTrackDisplay)      delete fGlbTrackDisplay;
    if (fIrTrackDisplay)       delete fIrTrackDisplay;
+   if (fItTrackDisplay)       delete fItTrackDisplay;
 
    if (fField)                delete fField;
    if (fGlbTrackProp)         delete fGlbTrackProp;
@@ -359,22 +369,6 @@ void TAFOeventDisplay::OpenFile()
 }
 
 //__________________________________________________________
-void TAFOeventDisplay::ResetHistogram()
-{
-   TList* list = gTAGroot->ListOfAction();
-   Int_t hCnt = 0;
-   for (Int_t i = 0; i < list->GetEntries(); ++i) {
-      TAGaction* action = (TAGaction*)list->At(i);
-      TList* hlist = action->GetHistogrammList();
-      if (hlist == 0x0) continue;
-      for (Int_t j = 0; j < hlist->GetEntries(); ++j) {
-         TH1* h = (TH1*)hlist->At(j);
-         if (h) h->Reset();
-      }
-   }
-}
-
-//__________________________________________________________
 void TAFOeventDisplay::AddRequiredItem()
 {
    fReco->AddRawRequiredItem();
@@ -415,6 +409,11 @@ void TAFOeventDisplay::AddElements()
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       fItClusDisplay->ResetHits();
       gEve->AddElement(fItClusDisplay);
+      
+      if (IsItrTracking()) {
+         fItTrackDisplay->ResetTracks();
+         gEve->AddElement(fItTrackDisplay);
+      }
    }
    
    if (GlobalPar::GetPar()->IncludeMSD()) {
@@ -471,6 +470,11 @@ void TAFOeventDisplay::ConnectElements()
    if (GlobalPar::GetPar()->IncludeInnerTracker()) {
       fItClusDisplay->SetEmitSignals(true);
       fItClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      
+      if (IsItrTracking()) {
+         fItTrackDisplay->SetEmitSignals(true);
+         fItTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
+      }
    }
    
    if (GlobalPar::GetPar()->IncludeMSD()) {
@@ -905,6 +909,9 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       
       if (prefix == "ir")
          fIrTrackDisplay->ResetTracks();
+      
+      if (prefix == "it" && IsItrTracking())
+         fItTrackDisplay->ResetTracks();
    }
    
    if (!fgDisplayFlag) // do not update event display
@@ -958,6 +965,45 @@ void TAFOeventDisplay::UpdateTrackElements(const TString prefix)
       } // end loop on tracks
          
       fVtxTrackDisplay->RefitPlex();
+   }
+   
+   if (prefix == "it" && !fIrFlag && IsItrTracking()) {
+      
+      TAITparGeo*  parGeo   = fReco->GetParGeoIt();
+      Int_t nPlanes         = parGeo->GetSensorsN();
+      Float_t posfirstPlane = parGeo->GetSensorPosition(0)[2]*1.1;
+      Float_t posLastPlane  = parGeo->GetSensorPosition(nPlanes-1)[2]*1.1;
+      
+      TAITntuTrack* pNtuTrack = fReco->GetNtuTrackIt();
+      
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         fItTrackDisplay->AddNewTrack();
+         
+         TAITtrack* track = pNtuTrack->GetTrack(iTrack);
+         TVector3 pos;
+         TVector3 posG;
+         
+         if (GlobalPar::GetPar()->IncludeTG() ) {
+            Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
+            posZtg = fpFootGeo->FromGlobalToITLocal(TVector3(0, 0, posZtg)).Z();
+            pos = track->Intersection(posZtg);
+         } else
+            pos  = track->Intersection(posfirstPlane);
+         
+         posG = fpFootGeo->FromITLocalToGlobal(pos);
+         x = posG(0); y = posG(1); z = posG(2);
+         
+         pos  = track->Intersection(posLastPlane);
+         posG = fpFootGeo->FromITLocalToGlobal(pos);
+         x1 = posG(0); y1 = posG(1); z1 = posG(2);
+
+         Float_t nPix = track->GetMeanPixelsN();
+         fItTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
+         fItTrackDisplay->TrackId(track);
+         
+      } // end loop on tracks
+      
+      fItTrackDisplay->RefitPlex();
    }
    
    if (prefix == "bm") {
@@ -1302,75 +1348,4 @@ void TAFOeventDisplay::UpdateLayerElements()
    }
    
    fBmClusDisplay->RefitPlex();
-}
-
-//__________________________________________________________
-void TAFOeventDisplay::UpdateDefCanvases()
-{
-   Int_t nCanvas = fListOfCanvases->GetEntries();
-   Int_t nHisto = fHistoList->GetEntries();
-
-   for (Int_t k = 0; k < nHisto; ++k) {
-      
-      Int_t iCanvas = k / fgMaxHistosN;
-      if (iCanvas > 2) continue;
-      TCanvas* canvas = (TCanvas*)fListOfCanvases->At(iCanvas);
-      if (!canvas) continue;
-         
-      TH1* h = (TH1*)fHistoList->At(k);
-      Int_t iCd = k % fgMaxHistosN + 1;
-
-      if (nHisto == 1)
-         canvas->cd();
-      else
-         canvas->cd(iCd);
-      h->Draw();
-      
-      canvas->Update();
-   }
-}
-
-//__________________________________________________________
-void TAFOeventDisplay::CreateCanvases()
-{
-   // GUI
-   // histo
-   TCanvas* canvas = 0x0;
-   TVirtualPad* pad    = 0x0;
-   TEveWindowSlot* slot0 = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
-   TEveWindowTab*  tab0 = slot0->MakeTab();
-   tab0->SetElementName("Histograms");
-   tab0->SetShowTitleBar(kFALSE);
-   
-   // canvas tab
-   slot0 = tab0->NewSlot();
-   TRootEmbeddedCanvas* eCanvas00 = new TRootEmbeddedCanvas();
-   TEveWindowFrame* frame00 = slot0->MakeFrame(eCanvas00);
-   frame00->SetElementName("Histograms 1");
-   canvas = eCanvas00->GetCanvas();
-   canvas->SetName("HistoCanvas 1");
-   canvas->Resize();
-   fListOfCanvases->Add(canvas);
-   
-   slot0 = tab0->NewSlot();
-   TRootEmbeddedCanvas* eCanvas01 = new TRootEmbeddedCanvas();
-   TEveWindowFrame* frame01 = slot0->MakeFrame(eCanvas01);
-   frame01->SetElementName("Histograms 2");
-   canvas = eCanvas01->GetCanvas();
-   canvas->SetName("HistoCanvas 2");
-   canvas->Resize();
-   fListOfCanvases->Add(canvas);
-   
-   slot0 = tab0->NewSlot();
-   TRootEmbeddedCanvas* eCanvas02 = new TRootEmbeddedCanvas();
-   TEveWindowFrame* frame02 = slot0->MakeFrame(eCanvas02);
-   frame02->SetElementName("Histograms 3");
-   canvas = eCanvas02->GetCanvas();
-   canvas->SetName("HistoCanvas 3");
-   canvas->Resize();
-   fListOfCanvases->Add(canvas);
-   
-   frmMain->MapSubwindows();
-   frmMain->Resize();
-   frmMain->MapWindow();
 }

@@ -50,7 +50,7 @@ ClassImp(TATWdatRaw);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TATWdatRaw::TATWdatRaw() :
-  nirhit(0), hir(0)
+  fHitsN(0), fListOfHits(0)
 {
    SetupClones();
 }
@@ -59,8 +59,9 @@ TATWdatRaw::TATWdatRaw() :
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TATWdatRaw::~TATWdatRaw() {
-  delete hir;
+TATWdatRaw::~TATWdatRaw()
+{
+  delete fListOfHits;
 }
 
 //------------------------------------------+-----------------------------------
@@ -68,10 +69,14 @@ TATWdatRaw::~TATWdatRaw() {
 
 void TATWdatRaw::SetupClones()
 {
-  if (!hir) hir = new TClonesArray("TATWrawHit");
-  return;
+  if (!fListOfHits) fListOfHits = new TClonesArray("TATWrawHit");
 }
 
+//------------------------------------------+-----------------------------------
+Int_t TATWdatRaw::GetHitsN() const
+{
+   return fListOfHits->GetEntries();
+}
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
@@ -79,27 +84,22 @@ void TATWdatRaw::SetupClones()
 void TATWdatRaw::Clear(Option_t*)
 {
   TAGdata::Clear();
-  nirhit = 0;
+  fHitsN = 0;
 
-  if (hir) hir->Clear();
-  return;
+  if (fListOfHits) fListOfHits->Clear();
 }
 
+//------------------------------------------+-----------------------------------
+//! New hit.
 
 void TATWdatRaw::NewHit(TWaveformContainer &W)
 {
-
   W.SanitizeWaveform(); 
 
-  TClonesArray &pixelArray = *hir;
+  TClonesArray &pixelArray = *fListOfHits;
   TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(W);
-  nirhit++;
-  return;
+  fHitsN++;
 }
-
-
-
-
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
@@ -107,23 +107,22 @@ void TATWdatRaw::NewHit(TWaveformContainer &W)
 void TATWdatRaw::ToStream(ostream& os, Option_t* option) const
 {
   os << "TATWdatRaw " << GetName()
-	 << " nirhit"    << nirhit
+	 << " fHitsN"    << fHitsN
      << endl;
-  return;
 }
 
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th hit
 
-TATWrawHit* TATWdatRaw::Hit(Int_t i)
+TATWrawHit* TATWdatRaw::GetHit(Int_t i)
 {
-  return (TATWrawHit*) ((*hir)[i]);;
+  return (TATWrawHit*) ((*fListOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 
-const TATWrawHit* TATWdatRaw::Hit(Int_t i) const
+const TATWrawHit* TATWdatRaw::GetHit(Int_t i) const
 {
-  return (const TATWrawHit*) ((*hir)[i]);;
+  return (const TATWrawHit*) ((*fListOfHits)[i]);;
 }

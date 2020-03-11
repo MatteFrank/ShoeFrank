@@ -7,10 +7,11 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-
+#include <map>
+#include "TAVTntuCluster.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
 
-
+using namespace std;
 class TAVTactNtuTrackF : public TAVTactBaseNtuTrack {
    
 public:
@@ -29,6 +30,9 @@ private:
    Bool_t FindTiltedTracks();
    Bool_t IsGoodCandidate(TAVTtrack* track);
    
+private:
+   map<TAVTcluster*,  int> fMapClus;
+
    ClassDef(TAVTactNtuTrackF,0)
 };
 

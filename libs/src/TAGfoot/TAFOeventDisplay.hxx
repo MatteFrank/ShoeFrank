@@ -45,18 +45,10 @@ public:
    static TAFOeventDisplay* Instance(Int_t type = 0, const TString name = "");
    
    virtual ~TAFOeventDisplay();
-      
-   virtual void ResetHistogram();
-   
+         
    virtual void BuildDefaultGeometry();
    
    virtual void UpdateElements(); 
-
-   //! Create canvases
-   virtual void CreateCanvases();
-   
-   //! Update normal Canvases
-   virtual void UpdateDefCanvases();
    
    //! Add required items
    virtual void AddRequiredItem();
@@ -137,10 +129,17 @@ public:
    //! Disable/Enable stand alone DAQ
    static void DisableStdAlone()    { fgStdAloneFlag = false; }
    static void EnableStdAlone()     { fgStdAloneFlag = true;  }
-
+   
    //! Disable/Enable stand alone DAQ
    static void DisableBmSelectHit() { fgBmSelectHit = false;  }
    static void EnableBmSelectHit()  { fgBmSelectHit = true;   }
+   
+   // ITR tracking flag
+   static Bool_t IsItrTracking()    { return BaseReco::IsItrTracking(); }
+
+   //! Disable/Enable ITR tracking
+   static void DisableItrTracking() { BaseReco::DisableItrTracking();   }
+   static void EnableItrTracking()  { BaseReco::EnableItrTracking();    }
 
 protected:
    BaseReco*       fReco;    // local reco
@@ -152,7 +151,8 @@ protected:
    TAEDtrack*      fVtxTrackDisplay; // list of line to display tracks
    
    TAEDcluster*    fItClusDisplay;  // list of quad to display hits
-   
+   TAEDtrack*      fItTrackDisplay; // list of line to display tracks
+
    TAEDcluster*    fMsdClusDisplay;  // list of strip to display hits
    
    TAEDcluster*    fTwClusDisplay;  // list of quad to display hits
@@ -188,6 +188,7 @@ protected:
    static Bool_t         fgStdAloneFlag;    // flag for standalone DAQ
    static TString        fgVtxTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory and "Hough" Hough transformation)
    static Bool_t         fgBmSelectHit;     // flag BM selected hit
+   static Bool_t         fgItrTrackFlag;    // flag for ITR tracking
 
    ClassDef(TAFOeventDisplay, 1); // Base class for event display
 };

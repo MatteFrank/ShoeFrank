@@ -67,18 +67,30 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
     
     using node_type = node<full_state>;
     
+    
+    struct track{
+        particle_properties particle;
+        
+        double total_chisquared;
+        
+        std::vector<full_state> cluster_c;
+        std::vector<full_state>& get_clusters() { return cluster_c; }
+        std::vector<full_state> const & get_clusters() const { return cluster_c; }
+    };
+    
 private:
     particle_properties particle_m{};
     UKF ukf_m;
     detector_list_t list_m;
-    TAGntuGlbTrack* track_mhc;
+    TAGntuGlbTrack* reconstructed_track_mhc;
     double beam_energy_m;
     TATOEchecker<TATOEactGlb> checker_m;
     TATOElogger logger_m;
 
-
+    node_type const * current_node_mh;
+    std::size_t event{0};
     
-
+    std::vector<track> track_mc;
 public:
     
     TATOEactGlb( UKF&& ukf_p,
@@ -87,7 +99,7 @@ public:
                  TAGparGeo const * global_parameters_ph) :
         ukf_m{ std::move(ukf_p) },
         list_m{ std::move(list_p) },
-        track_mhc{ track_phc },
+        reconstructed_track_mhc{ track_phc },
         beam_energy_m{ global_parameters_ph->GetBeamPar().Energy * 1000 }, //Mev/u
         checker_m{ global_parameters_ph, *this}
     {
@@ -96,11 +108,11 @@ public:
     
     void Action() override {
         
+        ++event;
         logger_m.clear();
         checker_m.reset_local_data();
         
-        logger_m.add_header( "GLOBAL_RECONSTRUCTION" );
-        
+    
         auto hypothesis_c = form_hypothesis();
         
         for(auto & hypothesis : hypothesis_c){
@@ -108,7 +120,10 @@ public:
             reconstruct();
         }
         
-        checker_m.compute_efficiency();
+        logger_m.add_root_header( "END_RECONSTRUCTION" );
+        auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
+        register_tracks_upward( std::move( track_c ) );
+        
         checker_m.output();
         logger_m.output();
         
@@ -144,7 +159,8 @@ private:
     std::vector<particle_properties> form_hypothesis()
     {
         
-        logger_m.add_header( "FORM_HYPOTHESIS" );
+        logger_m.add_root_header( "FORM_HYPOTHESIS" );
+        logger_m << "event: "<< event << '\n';
         
         auto tof = list_m.last();
 
@@ -157,10 +173,12 @@ private:
 
         
         for( const auto& candidate : candidate_c ) {
-            checker_m.register_reconstructible_track( candidate );
-            
             auto charge = candidate.data->GetChargeZ();
             if(charge == 0) {continue;}
+            
+            logger_m.add_header<1>("candidate");
+            logger_m << "charge: " << charge << '\n';
+            checker_m.register_reconstructible_track( candidate );
             
             auto add_current_end_point = [&candidate]( particle_properties & hypothesis_p  )
                                  { hypothesis_p.get_end_points().push_back( candidate.data ); };
@@ -272,7 +290,7 @@ private:
     
     void reconstruct()
     {
-        logger_m.add_header("RECONSTRUCT");
+        logger_m.add_root_header("RECONSTRUCT");
         
         auto arborescence = make_arborescence< full_state >();
         
@@ -287,10 +305,10 @@ private:
         auto& node_c = arborescence.get_handler();
 //        std::cout << "----- reconstructed_track : "<< node_c.size() << " -----\n";
         
+        
+        
         for(auto& node : node_c){
             register_track(node);
-            //check if some are in common -> only keep the better one ? -> lowest chi2 for now ?
-            
         }
         
        
@@ -349,10 +367,11 @@ private:
         sigma_c = ukf_m.force_propagation( std::move(sigma_c), step );
         auto ps = ukf_m.generate_propagated_state( std::move(sigma_c) );
 //
-        logger_m.add_sub_header<3>("advance_reconstruction_impl");
+        logger_m.add_header<3>("advance_reconstruction_impl");
         logger_m << "propagated_state : ( " << ps.vector(0,0) << ", " << ps.vector(1,0) ;
         logger_m << ") -- (" << ps.vector(2,0) << ", " << ps.vector(3,0)  ;
         logger_m << ") -- " << ps.evaluation_point << '\n';
+        
         
         return confront(ps, layer_p);
     }
@@ -371,23 +390,23 @@ private:
                                  const T& detector_p )
     {
         
-        logger_m.add_header("ADVANCE_RECONSTRUCTION");
+        logger_m.add_root_header("ADVANCE_RECONSTRUCTION");
         
         auto layer_c = detector_p.form_layers();
         
         for(auto && layer : layer_c ) {
         
             auto& leaf_c = arborescence_p.get_handler();
-            logger_m.add_sub_header<1>("layer");
+            logger_m.add_header<1>("layer");
         
             if( layer.get_candidates().empty() ){ continue; }
             
             
             for(auto& leaf : leaf_c){
                 
-                logger_m.add_sub_header<2>( "leaf" );
+                logger_m.add_header<2>( "leaf" );
                 checker_m.update_current_node( &leaf );
-                
+                checker_m.output_current_hypothesis();
             
                 ukf_m.step_length() = 1e-3;
             
@@ -416,7 +435,7 @@ private:
                                  const detector_properties<details::tof_tag>& tof_p )
     {
         
-        logger_m.add_header( "FINALISE_RECONSTRUCTION" );
+        logger_m.add_root_header( "FINALISE_RECONSTRUCTION" );
         
         
         auto& leaf_c = arborescence_p.get_handler();
@@ -425,8 +444,11 @@ private:
         
         for(auto& leaf : leaf_c){
         
-            logger_m.add_sub_header<1>("leaf");
+            logger_m.add_header<1>("leaf");
             checker_m.update_current_node( &leaf );
+            
+            checker_m.output_current_hypothesis();
+            
             
             ukf_m.step_length() = 1e-3;
             
@@ -435,13 +457,14 @@ private:
             
             if( fs_c.empty() ){ leaf.mark_invalid(); }
             else{
-                auto fs = fs_c.front();
+                for( auto&& fs : fs_c ){
                 
-                logger_m << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
-                logger_m << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
-                logger_m << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
+                    logger_m << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
+                    logger_m << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
+                    logger_m << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
 ////
-                leaf.add_child( std::move(fs_c.front()) );
+                    leaf.add_child( std::move(fs) );
+                }
             }
         }
         
@@ -454,14 +477,11 @@ private:
                                  const detector_properties<details::vertex_tag>& vertex_p )
     {
         
-        logger_m.add_header("START_RECONSTRUCTION");
-        
-
-        auto * vertex_h = vertex_p.retrieve_vertex();
-        if( !vertex_h ){ std::cout << "WARNING : no vertex found" << std::endl; }
-        
-        auto track_c = vertex_p.get_track_list( vertex_h );
+        logger_m.add_root_header("START_RECONSTRUCTION");
+    
+        auto track_c = vertex_p.get_track_list( );
         for( auto& track : track_c ){
+            auto vertex_h = track.vertex();
             auto first_h = track.first_cluster();
             
             auto cs = generate_corrected_state( vertex_h, first_h );
@@ -471,13 +491,12 @@ private:
             };
             
             auto * leaf_h = arborescence_p.add_root( std::move(fs) );
-            
-            logger_m.add_sub_header<1>( "vertex_track_reconstruction" );
+            checker_m.update_current_node( leaf_h );
+            checker_m.output_current_hypothesis();
+            logger_m.add_header<1>( "vertex_track_reconstruction" );
             
             
             for( auto layer : track ){
-                
-                checker_m.update_current_node( leaf_h );
                 
                 ukf_m.step_length() = 1e-3;
                 
@@ -493,7 +512,7 @@ private:
 
 //
                     leaf_h = leaf_h->add_child( std::move(fs_c.front()) );
-                    
+                    checker_m.update_current_node( leaf_h );
                 }
                 
             }
@@ -528,7 +547,7 @@ private:
         std::vector< enriched_candidate > enriched_c;
         enriched_c.reserve( candidate_c.size() );
     
-        logger_m.add_sub_header<4>(  "confront" );
+        logger_m.add_header<4>(  "confront" );
         std::for_each( candidate_c.begin(), candidate_c.end(),
                       [this, &ps_p, &enriched_c]( const auto& candidate_p )
                       {
@@ -542,12 +561,12 @@ private:
                                   enriched_c.begin(), enriched_c.end(),
                                   [this, &ps_p, &layer_p ]( const auto & ec_p )
                                   {
-                                      logger_m.add_sub_header<5>( "select" );
+                                      logger_m.add_header<5>( "select" );
                                       auto error = ec_p.data->GetPosError();
                                       
                                       auto mps = split_half( ps_p.vector , details::row_tag{});
-                                      mps.first.get(0,0) += layer_p.cut_value_x() * particle_m.light_ion_boost * error.X();
-                                      mps.first.get(1,0) += layer_p.cut_value_y() * particle_m.light_ion_boost * error.Y();
+                                      mps.first.get(0,0) += layer_p.cut_value() * particle_m.light_ion_boost * error.X();
+                                      mps.first.get(1,0) += layer_p.cut_value() * particle_m.light_ion_boost * error.Y();
                                       // TD<decltype(mps)>x;
                                       
                                       using ec = typename underlying<decltype(ec_p)>::type;
@@ -571,7 +590,12 @@ private:
                                       logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
                                       logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
                                       
-                                      checker_m.check_validity( ec_p,  ec_p.chisquared < cutter.chisquared );
+                                      logger_m << "candidate_id: ";
+                                      for(auto i =0 ; i < ec_p.data->GetMcTracksN() ; ++ i){
+                                          logger_m << ec_p.data->GetMcTrackIdx(i)<< " ";
+                                      }
+                                      logger_m << '\n';
+                                     // checker_m.check_validity( ec_p,  ec_p.chisquared , cutter.chisquared, details::should_pass_tag{} );
                                       
                                       return ec_p.chisquared < cutter.chisquared;
                                   }
@@ -609,7 +633,7 @@ private:
                                        return std::any_of( end_point_ch.begin(), end_point_ch.end(),
                                                            [&c_p](auto const & ep_ph ){ return c_p.data == ep_ph;  } );
                                    } );
-        logger_m.add_sub_header<4>(  "confront" );
+        logger_m.add_header<4>(  "confront" );
 
         using enriched_candidate = enriched_candidate_impl<typename decltype(candidate_c)::value_type>;
         std::vector< enriched_candidate > enriched_c;
@@ -631,7 +655,7 @@ private:
     
         auto select = [this, &ps_p, &layer_p ]( const auto & ec_p )
                          {
-                             logger_m.add_sub_header<5>( "select" );
+                             logger_m.add_header<5>( "select" );
                             auto error = ec_p.data->GetPosError();
             
                             auto mps = split_half( ps_p.vector , details::row_tag{});
@@ -658,8 +682,12 @@ private:
                              logger_m << "cutter_chisquared : " << cutter.chisquared << '\n';
                              logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
                              logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
-                             
-                             checker_m.check_validity( ec_p, ec_p.chisquared < cutter.chisquared );
+                             logger_m << "candidate_id: ";
+                             for(auto i =0 ; i < ec_p.data->GetMcTracksN() ; ++ i){
+                                 logger_m << ec_p.data->GetMcTrackIdx(i)<< " ";
+                             }
+                             logger_m << '\n';
+                            // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared );
                              
                              return ec_p.chisquared < cutter.chisquared;
                          };
@@ -686,7 +714,7 @@ private:
         using candidate = typename detector_properties< details::vertex_tag >::candidate;
         using enriched_candidate = enriched_candidate_impl< candidate >;
     
-        logger_m.add_sub_header<4>(  "confront" );
+        logger_m.add_header<4>(  "confront" );
         
         auto c = layer_p.get_candidate();
         auto chi2 = ukf_m.compute_chisquared(ps_p, c);
@@ -698,7 +726,7 @@ private:
     
         auto select = [this, &ps_p, &layer_p ]( const auto & ec_p, double cut_p )
                             {
-                                logger_m.add_sub_header<5>( "select" );
+                                logger_m.add_header<5>( "select" );
                                 
                                 auto error = ec_p.data->GetPosError();
         
@@ -727,7 +755,7 @@ private:
                                 logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
                                 logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
                                 
-                                checker_m.check_validity( ec_p, ec_p.chisquared < cutter.chisquared, details::should_pass_tag{} );
+                               // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared, details::should_pass_tag{} );
                                 
                                 return ec_p.chisquared < cutter.chisquared;
                             };
@@ -742,51 +770,139 @@ private:
             
             fs_c.push_back( std::move(fs) );
             
-            if( !select(ec, layer_p.optimal_cut) ){
-               // logger_m.freeze();
-                //std::cout << "WARNING : does not go through the optimal_cut" << std::endl;
-            }
-            
         }
     
         return fs_c;
     }
 
     
+    //----------------------------------------------------------------------------------------
+    //final cross-check and registering
     
     void register_track( node_type& node_p )
     {
-        auto * track_h = track_mhc->NewTrack( particle_m.mass * 0.938 , particle_m.momentum / 1000., static_cast<double>(particle_m.charge), 1.1   ); //tof value is wrong
+        auto && value_c = node_p.get_branch_values();
         
+        double total_chisquared{0};
+        for( auto && value : value_c ){
+            total_chisquared += value.chisquared;
+        }
+        total_chisquared /= value_c.size();
         
-        auto value_c = node_p.get_branch_values();
-        checker_m.register_reconstructed_track( value_c );
-        
-//        std::cout << " --- final_track --- " << '\n';
-        for(auto& value : value_c){
+//        std::cout << "register_track: " << total_chisquared << '\n';
 //
-//            std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << '\n';
-////
-            TVector3 corrected_position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
-            
-            
-            auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * particle_m.momentum ;
-            momentum_z /= 1000.;
-            auto momentum_x = value.vector(2,0) * momentum_z;
-            auto momentum_y = value.vector(3,0) * momentum_z;
-
-            TVector3 momentum{ momentum_x , momentum_y, momentum_z };
-            TVector3 position_error{ 0.01 ,0.01, 0.01 };
-            TVector3 momentum_error{ 0.01, 0.01, 0.01 };
-
-            
-            track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
-            
-            if( value.data ){
-                TVector3 measured_position{ value.data->GetPosition().X(), value.data->GetPosition().Y(), corrected_position.Z() };
-                track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+//        std::cout << "z/a: " << particle_m.charge << " / " << particle_m.mass << '\n';
+//
+//        for(auto& value : value_c){
+//            std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( ";
+//            std::cout << value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- ";
+//            std::cout << value.evaluation_point << " -- " <<  value.chisquared;
+//            printf(" -- %p", value.data);
+//            std::cout << std::endl;
+//        }
+        
+        track_mc.push_back( track{ particle_m, total_chisquared, std::move(value_c)} );
+    }
+    
+    std::vector< track > shear_suboptimal_tracks( std::vector<track>&& track_pc )
+    {
+//        std::cout << "shear_suboptimal_tracks: " << track_pc.size() << '\n';
+        
+        std::vector< track > final_track_c;
+        final_track_c.reserve( track_pc.size() );
+        
+        std::vector<data_type const *> end_point_ch;
+        end_point_ch.reserve( track_pc.size() );
+        
+        for( auto & track : track_pc ){
+            auto const * end_point_h = track.get_clusters().back().data;
+            if( std::none_of( end_point_ch.begin(), end_point_ch.end(),
+                             [&end_point_h]( data_type const * data_ph)
+                             { return data_ph == end_point_h; }           ) )
+            {
+                end_point_ch.push_back( end_point_h );
             }
         }
+        
+//        std::cout << "end_point: " << end_point_ch.size() << '\n';
+        
+        for( auto const * end_point_h : end_point_ch ){
+//            printf("looking_at: %p \n", end_point_h);
+            
+            auto end_iterator = std::partition( track_pc.begin(), track_pc.end(),
+                                                [&end_point_h](track const & track_p)
+                                                { return track_p.get_clusters().back().data == end_point_h; } );
+            
+            std::sort( track_pc.begin(), end_iterator,
+                       [](track const & track1_p, track const & track2_p)
+                      { return track1_p.total_chisquared < track2_p.total_chisquared ; } );
+            
+//            std::cout << "track_selected \n";
+//            auto& track = track_pc.front();
+//            for( auto const & cluster : track.get_clusters() ){
+//                std::cout << "( " << cluster.vector(0,0) <<  ", " << cluster.vector(1,0) <<  " ) -- ( ";
+//                std::cout << cluster.vector(2,0) << ", " << cluster.vector(3,0) <<  " ) -- ";
+//                std::cout << cluster.evaluation_point << " -- " <<  cluster.chisquared << '\n';
+//            }
+            
+            final_track_c.push_back( track_pc.front() );
+            
+            track_pc.erase(track_pc.begin(), end_iterator);
+        }
+        
+//        std::cout << "final_track: " << final_track_c.size() << std::endl;
+        
+        return final_track_c;
+    }
+    
+    
+    void register_tracks_upward( std::vector<track> track_pc )
+    {
+//        std::cout << "register_tracks_upward: " << track_pc.size() << std::endl;
+        
+        
+        for( auto & track : track_pc  ) {
+            
+//            std::cout << "particle_mass: " << track.particle.mass << std::endl;
+            
+            auto * track_h = reconstructed_track_mhc->NewTrack( track.particle.mass * 0.938 ,
+                                                  track.particle.momentum / 1000.,
+                                                  static_cast<double>(track.particle.charge),
+                                                  1.1   ); //tof value is wrong
+            
+
+            auto & value_c = track.get_clusters();
+            checker_m.register_reconstructed_track( value_c );
+            
+//                    std::cout << " --- final_track --- " << '\n';
+            for(auto& value : value_c){
+                //
+//                std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << std::endl;
+//                ////
+                TVector3 corrected_position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
+                
+                
+                auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * particle_m.momentum ;
+                momentum_z /= 1000.;
+                auto momentum_x = value.vector(2,0) * momentum_z;
+                auto momentum_y = value.vector(3,0) * momentum_z;
+                
+                TVector3 momentum{ momentum_x , momentum_y, momentum_z };
+                TVector3 position_error{ 0.01 ,0.01, 0.01 };
+                TVector3 momentum_error{ 0.01, 0.01, 0.01 };
+                
+                
+                track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
+                
+                if( value.data ){
+                    TVector3 measured_position{ value.data->GetPosition().X(), value.data->GetPosition().Y(), corrected_position.Z() };
+                    track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                }
+            }
+            
+        }
+            
+        
     }
     
     

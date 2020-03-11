@@ -167,51 +167,33 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
    TABMntuTrack* pBMtrack    = (TABMntuTrack*) fpBMntuTrack->Object();
    TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
 
-   Float_t min = 999999;
+   TAVTbaseParConf* config   = (TAVTbaseParConf*) fpConfig->Object();
+   Float_t min               = config->GetAnalysisPar().PlanesForTrackMinimum; // to be tuned (sigma ~ 200)
 
    TABMntuTrackTr* bmTrack = pBMtrack->Track(0);
    if (!bmTrack) return false;
-   
 
    if (!fpFootGeo) return false;
-	   
-   TVector3 bestRes;
-   Int_t    bestIdx = -1;
-   Bool_t isGood = false;
+   
    for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
-	  TAVTvertex* vtx      = pNtuVertex->GetVertex(i);
+	  TAVTvertex* vtx = pNtuVertex->GetVertex(i);
       
 	  TVector3 vtxPosition = vtx->GetVertexPosition();
-	  vtxPosition  = fpFootGeo->FromVTLocalToGlobal(vtxPosition);
-	  
-	  TVector3 bmPosition = fpFootGeo->FromGlobalToBMLocal(vtxPosition);
-	  vtxPosition *= TAGgeoTrafo::CmToMu();
+	  vtxPosition          = fpFootGeo->FromVTLocalToGlobal(vtxPosition);
+	  TVector3 bmPosition  = fpFootGeo->FromGlobalToBMLocal(vtxPosition);
 
-	  bmPosition  = bmTrack->PointAtLocalZ(bmPosition.Z());
-	  bmPosition  = fpFootGeo->FromBMLocalToGlobal(bmPosition);
-	  bmPosition *= TAGgeoTrafo::CmToMu();
-	  
+	  bmPosition   = bmTrack->PointAtLocalZ(bmPosition.Z());
+	  bmPosition   = fpFootGeo->FromBMLocalToGlobal(bmPosition);
 	  TVector3 res = vtxPosition - bmPosition;
+      
 	  if (res.Perp() < min) {
-		 min = res.Perp();
-		 bestRes = res;
-		 isGood = true;
-		 bestIdx = i;
-	  }
-   }
-   
-   if (!isGood) return false;
-
-   if (fgCheckBmMatching) {
-	  if (bestIdx != -1) {
-		 TAVTvertex* vtx  = pNtuVertex->GetVertex(bestIdx);
-		 vtx->SetBmMatched();
-
+        vtx->SetBmMatched();
+        
         if (ValidHistogram()) {
-           fpHisBmMatchX->Fill(bestRes.X());
-           fpHisBmMatchY->Fill(bestRes.Y());
+           fpHisBmMatchX->Fill(res.X());
+           fpHisBmMatchY->Fill(res.Y());
         }
-     }
+	  }
    }
    
    return true;

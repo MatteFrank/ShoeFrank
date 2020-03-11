@@ -19,19 +19,13 @@ public:
 							 TAGparaDsc* p_config   = 0,
 							 TAGparaDsc* p_geomap   = 0,
 							 TAGparaDsc* p_calib    = 0,
-							 TAGdataDsc* p_vtvertex = 0);
+							 TAGdataDsc* p_bmtrack  = 0);
    virtual ~TAITactNtuTrack();
    
 protected:
    virtual Bool_t FindTiltedTracks();
-   void    CheckVtx();
-
-protected:
-   TAGdataDsc*  fpVtVertex;        // VT vertex container
-   TAVTvertex*  fVtVertex;         // VT vertex pointer
-   TVector3     fVtVertexPos;      // VT vertex position
-   Bool_t       fVtVertexOk;       // VT vertex bool
-
+      
+ 
    ClassDef(TAITactNtuTrack,0)
 };
 

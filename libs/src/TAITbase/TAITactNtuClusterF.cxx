@@ -69,20 +69,18 @@ Bool_t TAITactNtuClusterF::FindClusters(Int_t iSensor)
    // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
    // Look in a iterative way to next neighbour
    
-   TAITntuCluster* pNtuClus = (TAITntuCluster*) fpNtuClus->Object();
-
    FillMaps();
    SearchCluster();
  
-   return CreateClusters(iSensor, pNtuClus);
+   return CreateClusters(iSensor);
 }
 
 //______________________________________________________________________________
 //
-Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor, TAITntuCluster* pNtuClus)
+Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor)
 {
-   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*)     fpGeoMap->Object();
-   TAITcluster* cluster = 0x0;
+   TAITntuCluster* pNtuClus = (TAITntuCluster*) fpNtuClus->Object();
+   TAITcluster* cluster1    = 0x0;
 
    // create clusters
    for (Int_t i = 0; i< fClustersN; ++i)
@@ -97,42 +95,20 @@ Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor, TAITntuCluster* pNtuClu
       
       Int_t clusterN = GetClusterNumber(line,col);
       if ( clusterN != -1 ) {
-         cluster = pNtuClus->GetCluster(iSensor, clusterN);
-         cluster->AddPixel(pixel);
+         cluster1 = pNtuClus->GetCluster(iSensor, clusterN);
+         cluster1->AddPixel(pixel);
       }
    }
    
    // Compute position and fill clusters info
+   TAVTbaseCluster* cluster = 0x0;
+   
    for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
       cluster = pNtuClus->GetCluster(iSensor, i);
-      cluster->SetPlaneNumber(iSensor);
-      fCurListOfPixels = cluster->GetListOfPixels();
-      ComputePosition();
-      TVector3 posG = GetCurrentPosition();
-      posG = pGeoMap->Sensor2Detector(iSensor, posG);
-      cluster->SetPositionG(posG);
-      cluster->SetPosition(GetCurrentPosition());
-      cluster->SetPosError(GetCurrentPosError());
-      cluster->SetCharge(GetClusterPulseSum());
-
-      if (ApplyCuts(cluster)) {
-         // histogramms
-         if (ValidHistogram()) {
-            if (cluster->GetPixelsN() > 0) {
-               fpHisPixelTot->Fill(cluster->GetPixelsN());
-               fpHisPixel[iSensor]->Fill(cluster->GetPixelsN());
-               // printf("sensor %d %d\n", iSensor, cluster->GetPixelsN());
-               if (TAVTparConf::IsMapHistOn()) {
-                  fpHisClusMap[iSensor]->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
-               }
-            }
-         }
-         cluster->SetValid(true);
-      } else {
-         cluster->SetValid(false);
-      }
+      FillClusterInfo(iSensor, cluster);
    }
    
+   // Remove no valid cluster
    for (Int_t i = pNtuClus->GetClustersN(iSensor)-1; i >= 0; --i) {
       cluster = pNtuClus->GetCluster(iSensor, i);
       if (!cluster->IsValid())
@@ -143,11 +119,4 @@ Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor, TAITntuCluster* pNtuClu
       return true;
    
    return false;
-}
-
-//______________________________________________________________________________
-//
-void TAITactNtuClusterF::ComputePosition()
-{
-   TAVTactBaseNtuCluster::ComputePosition();
 }

@@ -85,8 +85,12 @@ namespace details{
     template<class T>
     struct detector_traits{};
     
+    struct immutable_tag{};
+    struct fleeting_tag{};
+    struct normal_tag{};
+    struct non_removable_tag{};
     
-    
+
 } //namespace details
 
 
@@ -115,13 +119,12 @@ struct layer_generator
     struct layer{
         std::vector<candidate> candidate_c;
         const double depth;
-        const std::pair<double, double> cut;
+        const double cut;
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }
         
-        double cut_value_x() const { return cut.first; }
-        double cut_value_y() const { return cut.second; }
+        double cut_value() const { return cut; }
         
         bool empty(){ return candidate_c.empty(); }
     };
@@ -139,7 +142,7 @@ struct layer_generator
             return {
                 detector_m.generate_candidates(index_m),
                 detector_m.layer_depth(index_m),
-                std::make_pair( detector_m.cut_value_x(), detector_m.cut_value_y())
+                detector_m.get_cut_values(index_m/2)
             };
         }
         friend bool operator!=(const iterator& lhs, const iterator& rhs){ return lhs.index_m != rhs.index_m; }
@@ -162,20 +165,20 @@ private:
 };
 
 
-template<class DetectorProperties >
+template<class Detector >
 struct track_list
 {
-    using track = typename DetectorProperties::track;
-    using candidate = typename DetectorProperties::candidate;
+    using track_type = typename Detector::track;
+    using vertex_type = typename Detector::vertex;
+    using candidate_type = typename Detector::candidate;
     
     struct pseudo_layer{
-        candidate candidate_m;
+        candidate_type candidate_m;
         double depth;
-        double optimal_cut;
         double minimal_cut;
         
-        candidate& get_candidate(){ return candidate_m; }
-        candidate const & get_candidate() const { return candidate_m; }
+        candidate_type& get_candidate(){ return candidate_m; }
+        candidate_type const & get_candidate() const { return candidate_m; }
     };
     
     struct iterable_track{
@@ -184,10 +187,8 @@ struct track_list
             
             using value_type = pseudo_layer;
             
-            iterator( const DetectorProperties& detector_p,
-                     const iterable_track& track_p,
-                     std::size_t index_p ) :
-            detector_m{detector_p},
+            iterator( const iterable_track& track_p,
+                      std::size_t index_p ) :
             track_m{track_p},
             index_m{index_p} {}
             
@@ -200,20 +201,24 @@ struct track_list
             
             
         private:
-            const DetectorProperties& detector_m;
             const iterable_track& track_m;
             std::size_t index_m;
         };
         
     public:
         
-        iterable_track( DetectorProperties const & detector_p,
-                        track const * track_ph ) :
+        iterable_track( Detector const & detector_p,
+                        vertex_type const * vertex_ph,
+                        track_type const * track_ph ) :
             detector_m{ detector_p },
+            vertex_mh{ vertex_ph },
             track_mh{track_ph} {}
-        iterator begin() { return iterator( detector_m, *this, 0 ); }
-        iterator end()   { return iterator( detector_m, *this, track_mh->GetClustersN() ); }
-        auto const * first_cluster() const { return track_mh->GetCluster(0); }
+        iterator begin() { return iterator( *this, 0 ); }
+        iterator end()   { return iterator( *this, track_mh->GetClustersN() ); }
+        auto const * first_cluster() const {
+            return track_mh->GetCluster( track_mh->GetClustersN() -1 );
+        }
+        vertex_type const * vertex() const { return vertex_mh; }
         std::size_t size() const { return track_mh->GetClustersN(); }
         
     private:
@@ -228,42 +233,33 @@ struct track_list
             return pseudo_layer{
                 std::move(c),
                 detector_m.layer_depth( cluster_h->GetPlaneNumber() ),
-                detector_m.optimal_cut_value(),
                 detector_m.minimal_cut_value()
             };
         }
         
     private:
-        DetectorProperties const & detector_m;
-        track const * track_mh;
+        Detector const & detector_m;
+        vertex_type const * vertex_mh;
+        track_type const * track_mh;
     };
     
     using iterator = typename std::vector<iterable_track>::iterator;
     
 public:
-    template<class Vertex>
-    track_list( DetectorProperties const & detector_p,
-                Vertex const * vertex_ph ) :
+    track_list( Detector const & detector_p,
+                std::vector<iterable_track> track_pc ) :
         detector_m{ detector_p },
-        track_c{ form_tracks( vertex_ph) } {}
+        track_c{ std::move(track_pc) } {}
     iterator begin() { return track_c.begin(); }
     iterator end() { return track_c.end(); }
     
 private:
-    template<class Vertex>
-    std::vector< iterable_track > form_tracks( Vertex const * vertex_ph ) const{
-        std::vector< iterable_track > track_c;
-        track_c.reserve( vertex_ph->GetTracksN() );
-        for( auto i = 0 ; i < vertex_ph->GetTracksN() ; ++i ){
-            track_c.emplace_back( detector_m, vertex_ph->GetTrack(i) );
-        }
-        return track_c;
-    }
-    
-private:
-    DetectorProperties const & detector_m;
+    Detector const & detector_m;
     std::vector<iterable_track> track_c;
 };
+
+
+
 
 //______________________________________________________________________________
 //                              VTX
@@ -280,6 +276,7 @@ struct detector_properties< details::vertex_tag >
     using data_type = underlying<candidate>::data_type;
     
     using track = TAVTtrack;
+    using vertex = TAVTvertex;
     
 private:
     
@@ -287,7 +284,6 @@ private:
     const TAVTntuCluster* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const double optimal_cut_m;
     const double minimal_cut_m;
     constexpr static std::size_t layer{4};
     const std::array<double, layer> depth_mc;
@@ -298,11 +294,9 @@ public:
     detector_properties( TAVTntuVertex* vertex_phc,
                          TAVTntuCluster* cluster_phc,
                          TAVTparGeo* geo_ph,
-                         double optimal_cut_p,
                          double minimal_cut_p ) :
         vertex_mhc{ vertex_phc },
         cluster_mhc{ cluster_phc },
-        optimal_cut_m{optimal_cut_p},
         minimal_cut_m{minimal_cut_p},
         depth_mc{ retrieve_depth(geo_ph) } {}
     
@@ -333,17 +327,25 @@ public:
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
     constexpr double minimal_cut_value() const { return minimal_cut_m; }
-    constexpr double optimal_cut_value() const { return optimal_cut_m; }
 
-    TAVTvertex const * retrieve_vertex( ) const;
+    
     candidate generate_candidate( TAVTbaseCluster const * cluster_h  ) const ;
   
-    track_list<detector_properties> get_track_list( TAVTvertex const * vertex_ph ) const
+    track_list<detector_properties> get_track_list( ) const
     {
-        return { *this, vertex_ph };
+        auto vertex_c = retrieve_vertices();
+        return { *this, form_tracks( std::move(vertex_c) ) };
     }
     
     std::vector<candidate> generate_candidates(std::size_t index_p) const ;
+    
+    
+private:
+    std::vector< TAVTvertex const *> retrieve_vertices( ) const;
+    
+    std::vector< track_list< detector_properties >::iterable_track >
+        form_tracks( std::vector< TAVTvertex const * > vertex_pc ) const ;
+
 };
 
 
@@ -369,9 +371,8 @@ private:
     const TAITntuCluster* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const std::pair<double, double> cut_m;
+    const std::array<double, 2> cut_mc;
     constexpr static std::size_t layer{4};
-    
     
     using sensor_container_t = std::array<std::size_t, 8>;
     const std::array<sensor_container_t, 4> plane_mc{
@@ -387,9 +388,9 @@ public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAITntuCluster* cluster_phc,
                          TAITparGeo* geo_ph,
-                         std::pair<double, double> cut_p)  :
+                         std::array<double, 2> cut_pc)  :
         cluster_mhc{cluster_phc},
-        cut_m{cut_p},
+        cut_mc{cut_pc},
         depth_mc{ retrieve_depth(geo_ph) }
     { }
     
@@ -418,8 +419,7 @@ public:
     
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
-    constexpr double cut_value_x() const { return cut_m.first; }
-    constexpr double cut_value_y() const { return cut_m.second; }
+    constexpr double get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
     
     layer_generator<detector_properties> form_layers() const
     {

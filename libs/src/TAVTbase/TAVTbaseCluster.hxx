@@ -82,7 +82,7 @@ public:
    //! Get Pixel list
    TClonesArray*      GetListOfPixels()                const { return fListOfPixels;   }
    //! Get cluster number
- //  Int_t              GetNumber()                      const { return fNumber;         }
+   Int_t              GetNumber()                      const { return fNumber;         }
    //! Get cluster number
    Int_t              GetPlaneNumber()                 const { return fPlaneNumber;    }
    //! Get found flag this cluster

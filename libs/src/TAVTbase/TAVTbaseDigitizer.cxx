@@ -34,12 +34,14 @@ TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
  : TAGbaseDigitizer(),
    fpParGeo(parGeo),
    fPixelsN(-1),
-   fDe0Par(0),
-   fDe0ParErr(0),
-   fRsPar(0.9),
-   fRsParErr(0.04),
-   fThresPar(885),
-   fThresParErr(250),
+   fDe0Par(-8.7),
+   fDe0ParErr(0.2),
+   fRsPar(1.39),
+   fRsParErr(0.03),
+   fThresPar(503),
+   fThresParErr(66),
+   fLinPar(1.59e-2),
+   fLinParErr(0.07e-2),
    fClusterHeight(0.),
    fLogHeightPar(665),
    fLogHeightParErr(46),
@@ -83,18 +85,26 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
    Double_t  smear = 0;
 
    // cluster size
-   smear = gRandom->Gaus(0, fDe0Par);
-   Double_t deltaE = edep*TAGgeoTrafo::GevToKev()+ fDe0Par + fDe0ParErr;
-   
+   Double_t deltaE = edep*TAGgeoTrafo::GevToKev();
+
    smear = gRandom->Gaus(0, fRsParErr);
    fFuncClusterSize->SetParameter(0, fRsPar+smear);
 
    smear = gRandom->Gaus(0, fThresParErr);
    fFuncClusterSize->SetParameter(1, fThresPar+smear);
    
+   smear = gRandom->Gaus(0, fDe0Par);
+   fFuncClusterSize->SetParameter(2, fDe0Par+smear);
+   
+   smear = gRandom->Gaus(0, fLinParErr);
+   fFuncClusterSize->SetParameter(3, fLinPar+smear);
+   
    fPixelsN = TMath::Nint(fFuncClusterSize->Eval(deltaE));
    if (fPixelsN <= 0) fPixelsN = 1;
 
+   if(FootDebugLevel(1))
+      printf("edep: %g PixelsN: %d\n", deltaE, fPixelsN);
+   
    if (fpParGeo->GetType() == 1) {
       // cluster height
       smear = gRandom->Gaus(0, fCstHeightParErr);
@@ -149,7 +159,7 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
 void  TAVTbaseDigitizer::SetFunctions()
 {
    // compute cluster size for a given Edep, x and y
-   fFuncClusterSize   = new TF1("ClusterSize",   this, &TAVTbaseDigitizer::FuncClusterSize,   0, 2000, 2, "TAVTbaseDigitizer", "FuncClusterSize");
+   fFuncClusterSize   = new TF1("ClusterSize",   this, &TAVTbaseDigitizer::FuncClusterSize,   0, 2000, 4, "TAVTbaseDigitizer", "FuncClusterSize");
    if (fpParGeo->GetType() == 1) {
       fFuncClusterHeight = new TF1("ClusterHeight", this, &TAVTbaseDigitizer::FuncClusterHeight, 0, 2000, 4, "TAVTbaseDigitizer", "FuncClusterHeight");
       fFuncClusterWidth  = new TF1("ClusterWidth",  this, &TAVTbaseDigitizer::FuncClusterWidth,  0, 2000, 4, "TAVTbaseDigitizer", "FuncClusterWidth");
@@ -159,9 +169,9 @@ void  TAVTbaseDigitizer::SetFunctions()
 // --------------------------------------------------------------------------------------
 Double_t TAVTbaseDigitizer::FuncClusterSize(Double_t* x, Double_t* par)
 {
-   Float_t xx = x[0];
+   Float_t xx = x[0]-par[2];
    
-   Float_t f = 2*TMath::Pi()*par[0]*TMath::Log(xx/(2*TMath::Pi()*3.6e-3*par[1]));
+   Float_t f = 2*TMath::Pi()*par[0]*TMath::Log(xx/(2*TMath::Pi()*3.6e-3*par[1])) + par[3]*xx;
    
    return f;
 }
