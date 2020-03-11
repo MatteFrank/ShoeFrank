@@ -57,16 +57,16 @@ Bool_t TASTactNtuRaw::Action() {
 
    clktime_map.clear();
  
-   int nHit = p_datraw->nirhit;
+   int nHit = p_datraw->GetHitsN();
    double TrigTime, Charge, time, q, clktime=0;
    int nvalid(0), ch_num, bo_num;
    for(int ih = 0; ih< nHit; ih++) {
      //Find out the deltas
-     ch_num = p_datraw->Hit(ih)->ChID();
-     bo_num = p_datraw->Hit(ih)->BoardId();
-     time = p_datraw->Hit(ih)->Time();
+     ch_num = p_datraw->GetHit(ih)->ChID();
+     bo_num = p_datraw->GetHit(ih)->BoardId();
+     time = p_datraw->GetHit(ih)->Time();
      if(ch_num == 16 || ch_num == 17) {
-       clktime_map[make_pair(bo_num, ch_num)] = p_datraw->Hit(ih)->Clocktime();
+       clktime_map[make_pair(bo_num, ch_num)] = p_datraw->GetHit(ih)->Clocktime();
      }
    }
 
@@ -83,10 +83,10 @@ Bool_t TASTactNtuRaw::Action() {
    double deltaclk=0;
    double norm=0;
    for(int ih = 0; ih< nHit; ih++) {
-     ch_num = p_datraw->Hit(ih)->ChID();
-     bo_num = p_datraw->Hit(ih)->BoardId();
-     q =  p_datraw->Hit(ih)->Charge();
-     time = p_datraw->Hit(ih)->Time();
+     ch_num = p_datraw->GetHit(ih)->ChID();
+     bo_num = p_datraw->GetHit(ih)->BoardId();
+     q =  p_datraw->GetHit(ih)->Charge();
+     time = p_datraw->GetHit(ih)->Time();
 
      if(ch_num != 16 && ch_num != 17) {
 
@@ -100,7 +100,7 @@ Bool_t TASTactNtuRaw::Action() {
        time -= clktime + deltaclk;
        
        //here I select only waveforms with signals above a threshold, and with a correct chisquare
-       if(p_datraw->Hit(ih)->GetChiSquare()< CHISQUARE_THRESHOLD && p_datraw->Hit(ih)->Amplitude() > AMPLITUDE_THRESHOLD){
+       if(p_datraw->GetHit(ih)->GetChiSquare()< CHISQUARE_THRESHOLD && p_datraw->GetHit(ih)->Amplitude() > AMPLITUDE_THRESHOLD){
 
 	 double weight = p_parmap->GetChannelWeight(ch_num, bo_num);
 	 TrigTime+= time*weight;
@@ -119,7 +119,7 @@ Bool_t TASTactNtuRaw::Action() {
 
    p_nturaw->SetTriggerTime(TrigTime);
    p_nturaw->SetDeltaClk(deltaclk);
-   if(nHit>0) p_nturaw->SetTrigType(p_datraw->Hit(0)->TriggerType());
+   if(nHit>0) p_nturaw->SetTrigType(p_datraw->GetHit(0)->TriggerType());
    p_nturaw->SetCharge(Charge);
 
 
@@ -127,10 +127,10 @@ Bool_t TASTactNtuRaw::Action() {
      hTrigTime->Fill(TrigTime);
      hTotCharge->Fill(Charge);
      for(int iHit=0;iHit<nHit;iHit++){
-       ch_num = p_datraw->Hit(iHit)->ChID();
-       if(ch_num>=0 && ch_num<8) hArrivalTime[ch_num]->Fill(TrigTime-p_datraw->Hit(iHit)->Time());
-       if(ch_num>=0 && ch_num<8) hAmplitude[ch_num]->Fill(p_datraw->Hit(iHit)->Amplitude());
-       if(ch_num>=0 && ch_num<8) hCharge[ch_num]->Fill(p_datraw->Hit(iHit)->Charge());
+       ch_num = p_datraw->GetHit(iHit)->ChID();
+       if(ch_num>=0 && ch_num<8) hArrivalTime[ch_num]->Fill(TrigTime-p_datraw->GetHit(iHit)->Time());
+       if(ch_num>=0 && ch_num<8) hAmplitude[ch_num]->Fill(p_datraw->GetHit(iHit)->Amplitude());
+       if(ch_num>=0 && ch_num<8) hCharge[ch_num]->Fill(p_datraw->GetHit(iHit)->Charge());
      }
    }
 

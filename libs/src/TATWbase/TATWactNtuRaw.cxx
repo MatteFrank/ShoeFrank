@@ -84,7 +84,7 @@ Bool_t TATWactNtuRaw::Action() {
 
    p_nturaw->SetupClones();
    CChannelMap *c=p_parmap->getChannelMap();
-   int nhit = p_datraw->nirhit;
+   int nhit = p_datraw->GetHitsN();
 
 
    clktime_map.clear();
@@ -94,11 +94,11 @@ Bool_t TATWactNtuRaw::Action() {
    map<int, vector<TATWrawHit*> > PMap;
    // loop over the hits to populate a map with key boardid and value std::vector of TATWrawHit  pointer
    for(int ih = 0; ih< nhit; ih++){
-       TATWrawHit *aHi = p_datraw->Hit(ih);
+       TATWrawHit *aHi = p_datraw->GetHit(ih);
        ch_num = aHi->ChID();
        bo_num = aHi->BoardId();
        if(ch_num == 16 || ch_num == 17) {
-	 clktime_map[make_pair(bo_num, ch_num)] = p_datraw->Hit(ih)->Clocktime();
+	 clktime_map[make_pair(bo_num, ch_num)] = p_datraw->GetHit(ih)->Clocktime();
        }
    }
 
@@ -106,7 +106,7 @@ Bool_t TATWactNtuRaw::Action() {
    double clktime=0;
    for(int ih = 0; ih< nhit; ih++)
      {
-       TATWrawHit *aHi = p_datraw->Hit(ih);
+       TATWrawHit *aHi = p_datraw->GetHit(ih);
        ch_num = aHi->ChID();
        bo_num = aHi->BoardId();
        //delta time correction

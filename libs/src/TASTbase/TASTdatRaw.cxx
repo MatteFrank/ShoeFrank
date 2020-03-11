@@ -51,7 +51,7 @@ ClassImp(TASTdatRaw);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TASTdatRaw::TASTdatRaw() :
-  nirhit(0), hir(0), m_run_time(0x0)
+  fHitsN(0), fListOfHits(0), m_run_time(0x0)
 {
    SetupClones();
 }
@@ -60,8 +60,9 @@ TASTdatRaw::TASTdatRaw() :
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TASTdatRaw::~TASTdatRaw() {
-  delete hir;
+TASTdatRaw::~TASTdatRaw()
+{
+  delete fListOfHits;
 }
 
 //------------------------------------------+-----------------------------------
@@ -69,7 +70,7 @@ TASTdatRaw::~TASTdatRaw() {
 
 void TASTdatRaw::SetupClones()
 {
-  if (!hir) hir = new TClonesArray("TASTrawHit");
+  if (!fListOfHits) fListOfHits = new TClonesArray("TASTrawHit");
   return;
 }
 
@@ -80,23 +81,27 @@ void TASTdatRaw::SetupClones()
 void TASTdatRaw::Clear(Option_t*)
 {
   TAGdata::Clear();
-  nirhit = 0;
+  fHitsN = 0;
 
-  if (hir) hir->Clear();
-  return;
+  if (fListOfHits) fListOfHits->Clear();
 }
 
+//------------------------------------------+-----------------------------------
+//! New hit.
 
 void TASTdatRaw::NewHit(TWaveformContainer &W)
 {
   
-  TClonesArray &pixelArray = *hir;
+  TClonesArray &pixelArray = *fListOfHits;
   TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W);
-  nirhit++;
-  return;
+  fHitsN++;
 }
 
-
+//------------------------------------------+-----------------------------------
+Int_t TASTdatRaw::GetHitsN() const
+{
+   return fListOfHits->GetEntries();
+}
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
@@ -104,23 +109,22 @@ void TASTdatRaw::NewHit(TWaveformContainer &W)
 void TASTdatRaw::ToStream(ostream& os, Option_t* option) const
 {
   os << "TASTdatRaw " << GetName()
-	 << " nirhit"    << nirhit
+	 << " fHitsN"    << fHitsN
      << endl;
-  return;
 }
 
 //------------------------------------------+-----------------------------------
 //! Access i 'th hit
 
-TASTrawHit* TASTdatRaw::Hit(Int_t i)
+TASTrawHit* TASTdatRaw::GetHit(Int_t i)
 {
-  return (TASTrawHit*) ((*hir)[i]);;
+  return (TASTrawHit*) ((*fListOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 
-const TASTrawHit* TASTdatRaw::Hit(Int_t i) const
+const TASTrawHit* TASTdatRaw::GetHit(Int_t i) const
 {
-  return (const TASTrawHit*) ((*hir)[i]);;
+  return (const TASTrawHit*) ((*fListOfHits)[i]);;
 }
