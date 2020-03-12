@@ -124,7 +124,7 @@ public:
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
         register_tracks_upward( std::move( track_c ) );
         
-        checker_m.output();
+        checker_m.output( details::all_separated_tag{} );
         logger_m.output();
         
         
