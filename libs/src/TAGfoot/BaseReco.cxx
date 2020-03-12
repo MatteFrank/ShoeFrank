@@ -590,7 +590,8 @@ void BaseReco::AddRecRequiredItem()
       gTAGroot->AddRequiredItem("locRecFile");
    
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      gTAGroot->AddRequiredItem("glbActTrack");
+      if (fFlagTrack)
+         gTAGroot->AddRequiredItem("glbActTrack");
       return;
    }
    
@@ -634,8 +635,10 @@ void BaseReco::AddRecRequiredItem()
       gTAGroot->AddRequiredItem("caActNtu");
    }
    
-   if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
-      gTAGroot->AddRequiredItem("glbActTrack");
+   if (fFlagTrack) {
+      if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
+         gTAGroot->AddRequiredItem("glbActTrack");
+   }
    
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
