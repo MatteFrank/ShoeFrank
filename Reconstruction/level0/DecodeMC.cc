@@ -7,7 +7,7 @@
 
 int main (int argc, char *argv[])  {
 
-   TString in("12C_400_vtx.root");
+   TString in("12C_C_200_1.root");
    TString exp("");
    
    Int_t pos = in.Last('.');
@@ -36,8 +36,8 @@ int main (int argc, char *argv[])  {
          cout<<" Decoder help:"<<endl;
          cout<<" Ex: Decoder [opts] "<<endl;
          cout<<" possible opts are:"<<endl;
-         cout<<"      -in path/file  : [def=16O_C2H4_200_1.root] ROOT input file"<<endl;
-         cout<<"      -out path/file : [def=6O_C2H4_200_1_Out.root] Root output file"<<endl;
+         cout<<"      -in path/file  : [def= 12C_C_200_1.root] ROOT input file"<<endl;
+         cout<<"      -out path/file : [def= 12C_C_200_1_Out.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -trk           : enable tracking actions"<<endl;
