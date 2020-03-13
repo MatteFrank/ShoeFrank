@@ -29,8 +29,6 @@ class TACAactNtuMC : public TAGaction {
 
     void           CreateHistogram();
 
-    ClassDef(TACAactNtuMC,0)
-
   private:
     TAGparaDsc*     fpGeoMap;		    // geometry para dsc
     TAGdataDsc*     fpNtuMC;		    // output data dsc
