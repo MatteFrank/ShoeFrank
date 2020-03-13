@@ -100,8 +100,6 @@ private:
    
 private:
    static       Float_t fgHfactor; // happy factor for edep
-   
-   ClassDef(TATWdigitizer,0)
 
 };
 #endif

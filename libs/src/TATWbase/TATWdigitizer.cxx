@@ -33,9 +33,6 @@
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
 
-ClassImp(TATWdigitizer)
-
-
 Float_t TATWdigitizer::fgHfactor = 1.45;
 
 // --------------------------------------------------------------------------------------
