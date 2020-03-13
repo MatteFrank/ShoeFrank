@@ -31,8 +31,6 @@ public:
   virtual Bool_t  Action();
 
   virtual void CreateHistogram();
-
-  ClassDef(TASTactNtuRaw,0)
     
   private:
     
