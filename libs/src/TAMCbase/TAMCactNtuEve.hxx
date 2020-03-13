@@ -23,8 +23,6 @@ class TAMCactNtuEve : public TAGaction {
 
     virtual Bool_t  Action();
 
-    ClassDef(TAMCactNtuEve,0)
-
   private:
     TAGdataDsc*     fpNtuMC;		    // output data dsc
     EVENT_STRUCT*   fpEvtStr;

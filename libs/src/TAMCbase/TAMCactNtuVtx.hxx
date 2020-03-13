@@ -26,7 +26,6 @@ private:
    TAGdataDsc*     fpNtuMC;		    // output data dsc
    EVENT_STRUCT*   fpEvtStr;
    
-   ClassDef(TAMCactNtuVtx,0)
 };
 
 #endif
