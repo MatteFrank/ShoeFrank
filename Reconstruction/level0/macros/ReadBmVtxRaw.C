@@ -300,17 +300,16 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
       if(vtx_bestchi2<1000.){//select the vtx and bm tracks performing some cuts (to be studied)
         pvtxtrack=pvtxntutrack->GetTrack(vtx_best_chi2_index);
         ((TH1D*)(f_out->Get("Combo_vtx_tracknum")))->Fill(pvtxntutrack->GetTracksN());
-        TAVTline pvtxline=pvtxtrack->GetTrackLine();
-        ((TH2D*)(f_out->Get("Combo_vtx_bm_r0x")))->Fill(pbmntutracktr->GetR0().X(),pvtxline.GetOrigin().X());
-        ((TH2D*)(f_out->Get("Combo_vtx_bm_r0y")))->Fill(pbmntutracktr->GetR0().Y(),pvtxline.GetOrigin().Y());
-        ((TH2D*)(f_out->Get("Combo_vtx_bm_mx")))->Fill(pbmntutracktr->GetPvers().X()/pbmntutracktr->GetPvers().Z(),pvtxline.GetSlopeZ().X()/pvtxline.GetSlopeZ().Z());
-        ((TH2D*)(f_out->Get("Combo_vtx_bm_my")))->Fill(pbmntutracktr->GetPvers().Y()/pbmntutracktr->GetPvers().Z(),pvtxline.GetSlopeZ().Y()/pvtxline.GetSlopeZ().Z());
-        ((TH2D*)(f_out->Get("Combo_VTX_r0xy")))->Fill(pvtxline.GetOrigin().X(),pvtxline.GetOrigin().Y());
+        ((TH2D*)(f_out->Get("Combo_vtx_bm_r0x")))->Fill(pbmntutracktr->GetR0().X(),pvtxtrack->GetOrigin().X());
+        ((TH2D*)(f_out->Get("Combo_vtx_bm_r0y")))->Fill(pbmntutracktr->GetR0().Y(),pvtxtrack->GetOrigin().Y());
+        ((TH2D*)(f_out->Get("Combo_vtx_bm_mx")))->Fill(pbmntutracktr->GetPvers().X()/pbmntutracktr->GetPvers().Z(),pvtxtrack->.GetSlopeZ().X()/pvtxtrack->.GetSlopeZ().Z());
+        ((TH2D*)(f_out->Get("Combo_vtx_bm_my")))->Fill(pbmntutracktr->GetPvers().Y()/pbmntutracktr->GetPvers().Z(),pvtxtrack->.GetSlopeZ().Y()/pvtxtrack->.GetSlopeZ().Z());
+        ((TH2D*)(f_out->Get("Combo_VTX_r0xy")))->Fill(pvtxtrack->.GetOrigin().X(),pvtxtrack->.GetOrigin().Y());
         if(ientry<((TH1D*)(f_out->Get("Combo_vtx_bm_r0x_xevt")))->GetXaxis()->GetXmax()){
-          ((TH1D*)(f_out->Get("Combo_vtx_bm_r0x_xevt")))->SetBinContent(ientry, pbmntutracktr->GetR0().X()-pvtxline.GetOrigin().X());
-          ((TH1D*)(f_out->Get("Combo_vtx_bm_r0y_xevt")))->SetBinContent(ientry, pbmntutracktr->GetR0().Y()-pvtxline.GetOrigin().Y());
-          ((TH1D*)(f_out->Get("Combo_vtx_bm_mx_xevt")))->SetBinContent(ientry, pbmntutracktr->GetPvers().X()/pbmntutracktr->GetPvers().Z()-pvtxline.GetSlopeZ().X()/pvtxline.GetSlopeZ().Z());
-          ((TH1D*)(f_out->Get("Combo_vtx_bm_my_xevt")))->SetBinContent(ientry,pbmntutracktr->GetPvers().Y()/pbmntutracktr->GetPvers().Z()-pvtxline.GetSlopeZ().Y()/pvtxline.GetSlopeZ().Z());
+          ((TH1D*)(f_out->Get("Combo_vtx_bm_r0x_xevt")))->SetBinContent(ientry, pbmntutracktr->GetR0().X()-pvtxtrack->.GetOrigin().X());
+          ((TH1D*)(f_out->Get("Combo_vtx_bm_r0y_xevt")))->SetBinContent(ientry, pbmntutracktr->GetR0().Y()-pvtxtrack->.GetOrigin().Y());
+          ((TH1D*)(f_out->Get("Combo_vtx_bm_mx_xevt")))->SetBinContent(ientry, pbmntutracktr->GetPvers().X()/pbmntutracktr->GetPvers().Z()-pvtxtrack->.GetSlopeZ().X()/pvtxtrack->.GetSlopeZ().Z());
+          ((TH1D*)(f_out->Get("Combo_vtx_bm_my_xevt")))->SetBinContent(ientry,pbmntutracktr->GetPvers().Y()/pbmntutracktr->GetPvers().Z()-pvtxtrack->.GetSlopeZ().Y()/pvtxtrack->.GetSlopeZ().Z());
         }
       }//end of bm+vtx combo events
       bm_project=bmgeo->ProjectFromPversR0(pbmntutracktr->GetPvers(), pbmntutracktr->GetR0(),bmgeo->GetMylar1().Z());
