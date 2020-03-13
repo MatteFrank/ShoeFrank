@@ -44,7 +44,9 @@ public:
   virtual         ~TAGactWDreader();
   void CreateHistogram();
   virtual Bool_t  Action();
-      
+  
+  ClassDef(TAGactWDreader,0)
+    
   private:
     
   TAGdataDsc*     fpDatDaq;		    // input data dsc

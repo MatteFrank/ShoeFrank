@@ -23,6 +23,8 @@
   \brief Get Beam Monitor raw data from WD. **
 */
 
+ClassImp(TAGactWDreader);
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

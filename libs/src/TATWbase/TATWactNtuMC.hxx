@@ -47,6 +47,7 @@ private:
 private:
     void          CreateDigitizer();
 
+   ClassDef(TATWactNtuMC,0)
 };
 
 #endif
