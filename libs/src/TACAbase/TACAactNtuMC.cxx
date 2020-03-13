@@ -21,6 +21,8 @@ const char* getPartNamefromID(int id);
   \brief NTuplizer for Calo raw hits. **
 */
 
+ClassImp(TACAactNtuMC);
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
