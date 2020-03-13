@@ -54,7 +54,6 @@ private:
    void           DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
    void           Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
 
-   ClassDef(TAVTactNtuMC,0)
 };
 
 #endif

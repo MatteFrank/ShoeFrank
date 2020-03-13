@@ -33,7 +33,6 @@ private:
    Bool_t IsGoodCandidate(TAVTtrack* track);
    Bool_t FindVertices();
 
-   ClassDef(TAVTactNtuTrackH,0)
 };
 
 #endif

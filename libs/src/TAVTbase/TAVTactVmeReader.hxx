@@ -66,7 +66,6 @@ protected:
    //! Set run number
    void             SetRunNumber(const TString& name);
    
-   ClassDef(TAVTactVmeReader,0)
 };
 
 #endif

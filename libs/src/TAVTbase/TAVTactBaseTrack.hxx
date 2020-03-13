@@ -112,7 +112,6 @@ protected:
 protected:
    static Bool_t    fgRefit;            // flag to update parameter during tracking
       
-   ClassDef(TAVTactBaseTrack,1)
 };
 
 #endif

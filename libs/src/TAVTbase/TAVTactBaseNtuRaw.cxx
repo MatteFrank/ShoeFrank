@@ -17,8 +17,6 @@
  \brief Base to decode raw data from single file **
  */
 
-ClassImp(TAVTactBaseNtuRaw);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

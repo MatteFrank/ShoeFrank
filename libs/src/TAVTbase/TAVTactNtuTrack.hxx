@@ -24,9 +24,7 @@ public:
    
 protected:
    virtual Bool_t FindTiltedTracks();
-      
- 
-   ClassDef(TAVTactNtuTrack,0)
+       
 };
 
 #endif

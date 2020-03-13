@@ -18,7 +18,6 @@
  \brief Read raw data from single VTX file ()ascii format) from new firmware **
  */
 
-ClassImp(TAVTactStdRaw);
 
 TString TAVTactStdRaw::fgDefaultFolderName = "run_";
 TString TAVTactStdRaw::fgDefaultExtName    = ".ZS";

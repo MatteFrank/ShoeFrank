@@ -17,8 +17,6 @@
  \brief Get vertex raw data from DAQ (binary format) **
  */
 
-ClassImp(TAVTactNtuRaw);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

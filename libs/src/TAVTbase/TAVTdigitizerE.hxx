@@ -44,9 +44,7 @@ private:
    static Int_t    fgkShel55[];
    static Int_t    fgkShel50[];
    static Int_t    fgkMeshWidth;
-
-   ClassDef(TAVTdigitizerE,0)
-
+   
 };
         
 

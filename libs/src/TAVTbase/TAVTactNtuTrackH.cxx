@@ -26,9 +26,6 @@
 #include "TAVTactNtuTrackH.hxx"
 
 
-
-ClassImp(TAVTactNtuTrackH);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAVTactNtuTrackH::TAVTactNtuTrackH(const char* name, 

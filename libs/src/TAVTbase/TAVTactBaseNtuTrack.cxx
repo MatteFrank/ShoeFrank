@@ -35,8 +35,6 @@
  \brief NTuplizer for vertex raw hits. **
  */
 
-ClassImp(TAVTactBaseNtuTrack);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAVTactBaseNtuTrack::TAVTactBaseNtuTrack(const char* name, 

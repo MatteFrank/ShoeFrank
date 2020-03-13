@@ -22,8 +22,6 @@
  \brief NTuplizer for vertex raw hits. **
  */
 
-ClassImp(TAVTactNtuVertex);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAVTactNtuVertex::TAVTactNtuVertex(const char* name, 

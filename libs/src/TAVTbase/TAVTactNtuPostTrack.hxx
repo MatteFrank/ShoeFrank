@@ -33,11 +33,9 @@ public:
 private:
    TAGdataDsc* fpNtuVertex;		 // input data dsc
 
-private:    
-   
+private:       
    Bool_t FindTiltedTracks();
    
-   ClassDef(TAVTactNtuPostTrack,0)
 };
 
 #endif

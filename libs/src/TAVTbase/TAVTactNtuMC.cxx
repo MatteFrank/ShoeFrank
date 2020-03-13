@@ -31,8 +31,6 @@
 
 using namespace std;
 
-ClassImp(TAVTactNtuMC);
-
 //------------------------------------------+-----------------------------------
 //
 TAVTactNtuMC::TAVTactNtuMC(const char* name, TAGdataDsc* pNtuRaw,  TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)

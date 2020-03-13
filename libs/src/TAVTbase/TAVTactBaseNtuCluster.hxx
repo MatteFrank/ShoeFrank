@@ -93,7 +93,6 @@ protected:
    void   ComputeCoGPosition();
    void   FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster);
 
-   ClassDef(TAVTactBaseNtuCluster,0)
 };
 
 #endif

@@ -18,7 +18,6 @@
   \brief Read stand alone files (ascii format) and write them in a single DAQ file (binary format) **
 */
 
-ClassImp(TAVTactVmeWriter);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

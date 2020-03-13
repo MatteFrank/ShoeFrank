@@ -42,7 +42,6 @@ private:
    //! Set run number
    void   SetRunNumber(const TString& name);
 
-   ClassDef(TAVTactStdDaqRaw,0)
 };
 
 #endif

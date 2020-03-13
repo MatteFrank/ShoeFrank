@@ -28,8 +28,6 @@
  \brief NTuplizer for vertex tracks. **
  */
 
-ClassImp(TAVTactNtuTrack);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAVTactNtuTrack::TAVTactNtuTrack(const char* name, 

@@ -19,8 +19,6 @@
   \brief Reader action for ascii files **
 */
 
-ClassImp(TAVTactVmeReader);
-
 TString TAVTactVmeReader::fgDefaultFolderName = "run_";
 TString TAVTactVmeReader::fgDefaultExtName    = ".ZS";
  Bool_t TAVTactVmeReader::fgTrigJumpAuto      = true;

@@ -81,7 +81,6 @@ protected:
     Double_t ComputeScatterAngle();
     Int_t    SearchNucReac(TAVTtrack* track0);
 
-    ClassDef(TAVTactBaseNtuVertex,0)
 };
 
 #endif

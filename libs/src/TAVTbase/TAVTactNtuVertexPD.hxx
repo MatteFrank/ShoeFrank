@@ -57,7 +57,6 @@ private:
     TArrayI  fNotValidTrack;
     map <Int_t, TVector3> fRValuesMax;
         
-    ClassDef(TAVTactNtuVertexPD,0)
 };
 
 #endif
