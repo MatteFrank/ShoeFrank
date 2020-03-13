@@ -189,9 +189,11 @@ void BaseReco::OpenFileOut()
 void BaseReco::SetRecHistogramDir()
 {
    //Global track
-   if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman()) {
-      fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-      if (TAGactNtuGlbTrack::GetStdAloneFlag()) return;
+   if (fFlagTrack) {
+      if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman()) {
+         fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+         if (TAGactNtuGlbTrack::GetStdAloneFlag()) return;
+      }
    }
    
    //BMN
