@@ -27,7 +27,6 @@ public:
    
    Bool_t   IntersectPlaneZ(const TEveVectorD& p,  const TEveVectorD& point, TEveVectorD& pOut, TEveVectorD& itsect);
    
-   ClassDef(TADIeveTrackPropagator,1)
 };
 
 #endif
