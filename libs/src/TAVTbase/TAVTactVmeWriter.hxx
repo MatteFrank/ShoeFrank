@@ -41,6 +41,7 @@ private:
    //! Write DAQ event
    void             WriteDaqEvent();
    
+   ClassDef(TAVTactVmeWriter,0)
 };
 
 #endif

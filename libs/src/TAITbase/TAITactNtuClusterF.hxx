@@ -37,6 +37,8 @@ private:
 private:
    Bool_t  CreateClusters(Int_t iSensor);
 
+
+   ClassDef(TAITactNtuClusterF,0)
 };
 
 #endif

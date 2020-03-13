@@ -19,6 +19,7 @@
  \brief NTuplizer for vertex raw hits. **
  */
 
+ClassImp(TAVTactBaseNtuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

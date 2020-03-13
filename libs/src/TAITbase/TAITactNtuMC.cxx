@@ -29,6 +29,9 @@
 
 using namespace std;
 
+ClassImp(TAITactNtuMC);
+
+
 //------------------------------------------+-----------------------------------
 //
 TAITactNtuMC::TAITactNtuMC(const char* name, TAGdataDsc* pNtuRaw,  TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)

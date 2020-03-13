@@ -28,6 +28,8 @@
  \brief NTuplizer for Inner tracker tracks. **
  */
 
+ClassImp(TAITactNtuTrack);
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAITactNtuTrack::TAITactNtuTrack(const char* name,

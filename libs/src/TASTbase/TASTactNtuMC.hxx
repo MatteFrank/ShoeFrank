@@ -23,6 +23,8 @@ class TASTactNtuMC : public TAGaction {
 
     virtual Bool_t  Action();
 
+    ClassDef(TASTactNtuMC,0)
+
   private:
     TAGdataDsc*     fpNtuMC;		    // output data dsc
     EVENT_STRUCT*   fpEvtStr;
@@ -31,6 +33,7 @@ class TASTactNtuMC : public TAGaction {
   private:
     void            CreateDigitizer();
    
+
 };
 
 #endif

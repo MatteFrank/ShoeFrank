@@ -14,6 +14,7 @@
 #pragma link C++ class TAIRntuCluster+;
 #pragma link C++ class TAIRtrack+;
 #pragma link C++ class TAIRntuTrack+;
+#pragma link C++ class TAIRactNtuTrack+;
 
 
 #endif

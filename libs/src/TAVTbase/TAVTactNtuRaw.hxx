@@ -25,6 +25,8 @@ public:
 protected:
    TAGdataDsc*     fpDatDaq;		    // input data dsc
    
+   
+   ClassDef(TAVTactNtuRaw,0)
 };
 
 #endif

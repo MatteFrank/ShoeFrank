@@ -38,6 +38,7 @@ private:
     Double_t ComputeFinalCoordinate(Int_t a, Double_t zVal);
     void     SetVertex(TVector3& xyz, Double_t mind);
    
+    ClassDef(TAVTactNtuVertex,0)
 };
 
 #endif

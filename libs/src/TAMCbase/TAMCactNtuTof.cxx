@@ -16,6 +16,8 @@
  \brief NTuplizer for MC events. **
  */
 
+ClassImp(TAMCactNtuTof);
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

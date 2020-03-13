@@ -19,6 +19,8 @@
  \brief Get vertex raw data from MBS. **
  */
 
+ClassImp(TAITactNtuRaw);
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

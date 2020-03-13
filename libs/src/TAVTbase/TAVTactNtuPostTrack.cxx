@@ -33,6 +33,7 @@
  \brief NTuplizer for vertex tracks. **
  */
 
+ClassImp(TAVTactNtuPostTrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

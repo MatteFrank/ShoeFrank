@@ -31,6 +31,8 @@
 
 using namespace std;
 
+ClassImp(TAVTactBaseNtuMC);
+
 
 Bool_t  TAVTactBaseNtuMC::fgPileup          = false;
 Float_t TAVTactBaseNtuMC::fgPoissonPar      = 0.736; // ajust for FIRST

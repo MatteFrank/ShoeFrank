@@ -29,6 +29,7 @@
  \brief NTuplizer for vertex raw hits. **
  */
 
+ClassImp(TAVTactBaseNtuVertex);
 Bool_t  TAVTactBaseNtuVertex::fgCheckBmMatching = false;
 
 //------------------------------------------+-----------------------------------

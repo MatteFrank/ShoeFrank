@@ -33,6 +33,7 @@ private:
 private:
    map<TAVTcluster*,  int> fMapClus;
 
+   ClassDef(TAVTactNtuTrackF,0)
 };
 
 #endif

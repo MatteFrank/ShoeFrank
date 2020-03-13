@@ -35,6 +35,7 @@
  \brief NTuplizer for vertex raw hits. **
  */
 
+ClassImp(TAITactBaseNtuTrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

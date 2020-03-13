@@ -22,6 +22,7 @@
  \brief Base class to get vertex raw data. **
  */
 
+ClassImp(TAITactBaseRaw);
 
 const UInt_t TAITactBaseRaw::fgkKeyHeader[]      = {0x80008000, 0x80018001, 0x80028002, 0x80038003};
 const Int_t  TAITactBaseRaw::fgkFrameHeaderSize  = 5;

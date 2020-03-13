@@ -36,6 +36,8 @@
  \brief NTuplizer for vertex raw hits. **
  */
 
+ClassImp(TAVTactBaseTrack);
+
 Bool_t TAVTactBaseTrack::fgRefit = true;
 //------------------------------------------+-----------------------------------
 //! Default constructor.

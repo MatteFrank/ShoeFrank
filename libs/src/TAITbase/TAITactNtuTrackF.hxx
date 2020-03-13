@@ -31,6 +31,7 @@ private:
    Bool_t FindTiltedTracks();
    Bool_t IsGoodCandidate(TAITtrack* track);
    
+   ClassDef(TAITactNtuTrackF,0)
 };
 
 #endif

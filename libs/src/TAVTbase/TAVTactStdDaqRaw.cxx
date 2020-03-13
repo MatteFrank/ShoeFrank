@@ -18,6 +18,8 @@
  \brief Get vertex raw data from re-synchronized sensors in single file (binary format)**
  */
 
+ClassImp(TAVTactStdDaqRaw);
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

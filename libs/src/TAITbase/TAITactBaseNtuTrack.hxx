@@ -72,6 +72,7 @@ protected:
    TH1F*            fpHiVtxTgResX;       // Vertex resolution at Target X
    TH1F*            fpHiVtxTgResY;       // Vertex resolution at Target Y
    
+   ClassDef(TAITactBaseNtuTrack,0)
 };
 
 #endif

@@ -109,6 +109,8 @@ protected:
    //! Fill histogram frame
    void FillHistoEvt(Int_t iSensor);
 
+   ClassDef(TAITactBaseRaw,0)
+
 };
 
 #endif

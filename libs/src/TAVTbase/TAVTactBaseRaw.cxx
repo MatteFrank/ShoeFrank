@@ -22,6 +22,8 @@
  \brief Base class to decode vertex raw data. **
  */
 
+ClassImp(TAVTactBaseRaw);
+
 const UInt_t TAVTactBaseRaw::fgkKeyHeader[]      = {0x80008000, 0x80018001, 0x80028002, 0x80038003};
 const Int_t  TAVTactBaseRaw::fgkFrameHeaderSize  = 6;
 const Int_t  TAVTactBaseRaw::fgkLineWidth        = 9;

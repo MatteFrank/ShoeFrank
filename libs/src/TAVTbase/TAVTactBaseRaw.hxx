@@ -120,6 +120,8 @@ protected:
    //! Fill DAQ event
    virtual void FillDaqEvent() { return; }
 
+   ClassDef(TAVTactBaseRaw,0)
+
 };
 
 #endif

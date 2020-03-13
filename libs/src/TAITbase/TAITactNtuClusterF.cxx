@@ -20,6 +20,8 @@
  \brief NTuplizer for vertex raw hits. **
  */
 
+ClassImp(TAITactNtuClusterF);
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAITactNtuClusterF::TAITactNtuClusterF(const char* name, 

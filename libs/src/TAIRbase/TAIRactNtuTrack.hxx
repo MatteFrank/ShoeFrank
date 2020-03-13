@@ -50,6 +50,7 @@ private:
 private:
    static Bool_t fgBmMatched;      // vertex matched with BM flag
 
+   ClassDef(TAIRactNtuTrack,0)
 };
 
 #endif

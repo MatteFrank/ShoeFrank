@@ -110,6 +110,7 @@ protected:
    static Float_t  fgSigmaNoiseLevel;
    static Int_t    fgMcNoiseId;
 
+   ClassDef(TAVTactBaseNtuMC,0)
 };
 
 #endif
