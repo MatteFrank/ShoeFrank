@@ -32,8 +32,6 @@
  Combining VTX tracks with IT clusters
  */
 
-ClassImp(TAIRactNtuTrack);
-
 Bool_t  TAIRactNtuTrack::fgBmMatched = false;
 
 //------------------------------------------+-----------------------------------
