@@ -10,6 +10,7 @@
 #pragma link C++ class TACAntuRaw+;
 #pragma link C++ class TACAntuHit+;
 #pragma link C++ class TACAparMap+;
+#pragma link C++ class TACAactNtuMC+;
 #pragma link C++ class TACAparGeo+;
 
 #endif
