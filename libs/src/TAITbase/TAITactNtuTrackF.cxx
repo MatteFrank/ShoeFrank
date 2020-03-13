@@ -31,8 +31,6 @@
  \brief NTuplizer for vertex tracks. **
  */
 
-ClassImp(TAITactNtuTrackF);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAITactNtuTrackF::TAITactNtuTrackF(const char* name, 

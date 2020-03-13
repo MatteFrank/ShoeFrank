@@ -21,9 +21,7 @@ class TAITdigitizerE : public TAVTdigitizerE {
 public:
    TAITdigitizerE(TAVTbaseParGeo* parGeo);
    virtual ~TAITdigitizerE();
-
-   ClassDef(TAITdigitizerE,0)
-
+   
 };
         
 
