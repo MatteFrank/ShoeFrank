@@ -17,6 +17,4 @@
 #pragma link C++ class TATWparCal+;
 #pragma link C++ class TATWparGeo+;
 
-#pragma link C++ class TATWdigitizer+;
-
 #endif
