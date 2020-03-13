@@ -19,6 +19,8 @@
  \brief NTuplizer for vertex raw hits. **
  */
 
+ClassImp(TAMSDactNtuCluster);
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)

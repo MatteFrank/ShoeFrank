@@ -74,6 +74,7 @@ private:
    void            FillStrips( Int_t sensorId, Int_t mcId );
    void            ComputeNoiseLevel();
 
+   ClassDef(TAMSDactNtuMC,0)
 };
 
 #endif
