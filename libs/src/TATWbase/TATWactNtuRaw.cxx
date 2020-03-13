@@ -19,8 +19,6 @@
   \brief Get Beam Monitor raw data from WD. **
 */
 
-ClassImp(TATWactNtuRaw);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

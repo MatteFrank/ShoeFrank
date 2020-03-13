@@ -47,8 +47,6 @@ private:
    TH1F*           fpHisCharge2;
    TH1F*           fpHisChargeTot;
    
-
-   ClassDef(TATWactNtuPoint,0)
 };
 
 #endif

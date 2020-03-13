@@ -23,8 +23,6 @@
  \brief NTuplizer for TW reconstructed points. **
  */
 
-ClassImp(TATWactNtuPoint);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TATWactNtuPoint::TATWactNtuPoint(const char* name, 

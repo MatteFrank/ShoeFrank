@@ -15,8 +15,6 @@
   \brief NTuplizer for BM raw hits. **
 */
 
-ClassImp(TATWactNtuMC);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

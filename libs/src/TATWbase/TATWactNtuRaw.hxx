@@ -31,9 +31,6 @@ public:
   virtual Bool_t  Action();
 
   virtual void    CreateHistogram();
-   
-  ClassDef(TATWactNtuRaw,0);
-
 
   private:
   double find_deltaclock(int ch_num, int bo_num);
