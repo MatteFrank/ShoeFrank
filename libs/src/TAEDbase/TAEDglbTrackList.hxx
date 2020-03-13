@@ -38,7 +38,6 @@ private:
    Int_t            fNofTracks;   // number of tracks
    Int_t            fMaxMomentum; // max momentum
 
-  ClassDef(TAEDglbTrackList, 0);
 };
 
 
