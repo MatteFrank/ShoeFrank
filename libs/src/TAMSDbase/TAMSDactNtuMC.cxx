@@ -30,8 +30,6 @@
 
 using namespace std;
 
-ClassImp(TAMSDactNtuMC);
-
 Float_t TAMSDactNtuMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAMSDactNtuMC::fgMcNoiseId       = -99;
 

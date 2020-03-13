@@ -79,8 +79,6 @@ private:
    Bool_t  FindClusters(Int_t iSensor, TAMSDntuCluster* pNtuClus);
    Bool_t  CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuClus, TAMSDparGeo* pGeoMap);
 
-
-   ClassDef(TAMSDactNtuCluster,0)
 };
 
 #endif
