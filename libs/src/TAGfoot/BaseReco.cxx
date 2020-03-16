@@ -35,8 +35,8 @@ Bool_t  BaseReco::fgItrTrackFlag = false;
 BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
-   fpParTimeSt(0x0),
-   fpParTimeTw(0x0),
+   fpParTimeWD(0x0),
+   fpParMapWD(0x0),
    fpParMapSt(0x0),
    fpParMapBm(0x0),
    fpParMapVtx(0x0),
@@ -255,19 +255,21 @@ void BaseReco::ReadParFiles()
      TASTparMap* parMapSt = (TASTparMap*) fpParMapSt->Object();
      parFileName = Form("./config/%sTASTdetector.cfg", fExpName.Data());
      parMapSt->FromFile(parFileName);
-     
-     fpParTimeSt = new TAGparaDsc("stTime", new TASTparTime()); // need the file
-     TASTparTime* parTimeSt = (TASTparTime*) fpParTimeSt->Object();
-     parTimeSt->FromFile(fExpName.Data(), 2190);
-     
+        
      fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
      TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
      parFileName = Form("./config/%sTATWChannelMap.xml", fExpName.Data());
      parMap->FromFile(parFileName.Data());
-     
-     fpParTimeTw = new TAGparaDsc("twTim", new TATWparTime());
-     TATWparTime* parTimeTw = (TATWparTime*) fpParTimeTw->Object();
-     parTimeTw->FromFile(fExpName.Data(), 2190);
+
+     fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
+     TAGbaseWDparMap* parMapWD = (TAGbaseWDparMap*)fpParMapWD->Object();
+     parFileName = Form("./config/%sWDChannelMap.txt", fExpName.Data());
+     parMapWD->FromFile(parFileName.Data());
+       
+     fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
+     TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+     parTimeWD->FromFile(fExpName.Data(), 0);
+
    }
    
    // initialise par files for Beam Monitor

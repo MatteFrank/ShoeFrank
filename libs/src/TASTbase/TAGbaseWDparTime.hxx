@@ -1,9 +1,9 @@
-#ifndef _TATWparTime_HXX
-#define _TATWparTime_HXX
+#ifndef _TAGbaseWDparTime_HXX
+#define _TAGbaseWDparTime_HXX
 /*!
   \file
-  \version $Id: TATWparTime.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
-  \brief   Declaration of TATWparTime.
+  \version $Id: TAGbaseWDparTime.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+  \brief   Declaration of TAGbaseWDparTime.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -13,7 +13,7 @@ using namespace std;
 
 #include "TString.h"
 #include "TAGpara.hxx"
-#include "TATWparMap.hxx"
+#include "TWaveformContainer.hxx"
 
 
 #define NMAX_BO_ID 100
@@ -21,28 +21,29 @@ using namespace std;
 
 //##############################################################################
 
-class TATWparTime : public TAGpara {
+class TAGbaseWDparTime : public TAGpara {
   public:
 
   
-  TATWparTime();
-  virtual         ~TATWparTime();
+  TAGbaseWDparTime();
+  virtual         ~TAGbaseWDparTime();
 
   virtual void    Clear(Option_t* opt="");
   virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
   
-  bool GetTimeArray(int iBo, int iCha, int TrigCell,  vector<double> *time);
+  vector<double> GetRawTimeArray(int iBo, int iCha, int TrigCell);
   void InitMap();
   bool FromFile(string expName = "", int iRunNumber = 0);
   void SetTimeCal(int iBo, int iCha, vector<float> tvec);
-  ClassDef(TATWparTime,1)
+
+  ClassDef(TAGbaseWDparTime,1)
 
   const double sec2Nano = 1E9;
   
-  private:
+private:
 
-    map<int, vector<double>> time_parcal;
-    map<int, bool> m_GotCalib;
+  map<pair<int,int>, vector<double>> time_parcal;
+
   bool m_debug;
 };
 

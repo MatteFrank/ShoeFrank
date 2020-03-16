@@ -20,20 +20,20 @@ ClassImp(TASTntuHit);
 
 TASTntuHit::TASTntuHit()
  : TAGobject(),
-   fChannel(0),
    fCharge(0.),
-   fTime(0.)
+   fTime(0.),
+   fDe(0.)
 {
-   
+  Clear();
 }
 
 //------------------------------------------+-----------------------------------
 //! Constructor
-TASTntuHit::TASTntuHit(Int_t channel, Double_t charge, Double_t time)
+TASTntuHit::TASTntuHit(Double_t charge, Double_t De, Double_t time)
  : TAGobject(),
-   fChannel(channel),
    fCharge(charge),
-   fTime(time)
+   fTime(time),
+   fDe(De)
 {
    
 }
@@ -78,6 +78,7 @@ TASTntuRaw::TASTntuRaw()
 {
   m_Charge=-1000;
   m_TrigTime=-1000;
+  m_TrigTime_oth=-1000;
   m_TrigType=-1000;
   SetupClones();
 }
@@ -99,11 +100,10 @@ Int_t TASTntuRaw::GetHitsN() const
 
 //______________________________________________________________________________
 //
-TASTntuHit* TASTntuRaw::NewHit(int channel, double charge, double time)
+TASTntuHit* TASTntuRaw::NewHit(double charge, double de, double time)
 {
    TClonesArray &pixelArray = *fListOfHits;
-   
-   TASTntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTntuHit(channel, charge, time);
+   TASTntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTntuHit(charge, de, time);
    
    return hit;
    

@@ -22,35 +22,49 @@ class TATWrawHit : public TAGbaseWD {
 public:
   TATWrawHit();
   virtual         ~TATWrawHit();
-  TATWrawHit( TWaveformContainer &w);
+
+  virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
+  virtual double ComputeCharge( TWaveformContainer *w);
+  virtual double ComputeAmplitude( TWaveformContainer *w);
+  virtual double ComputePedestal( TWaveformContainer *w);
+  virtual double ComputeBaseline( TWaveformContainer *w);
+  
+  TATWrawHit( TWaveformContainer *w);
+
   ClassDef(TATWrawHit,2);
-    //
+  //
 };
 
 //##############################################################################
 
 class TATWdatRaw : public TAGdata {
-  public:
-                     TATWdatRaw();
-    virtual         ~TATWdatRaw();
-    Int_t             GetHitsN() const;
-    TATWrawHit*       GetHit(Int_t i_ind);
-    const TATWrawHit* GetHit(Int_t i_ind) const;
-    void              NewHit(TWaveformContainer &W);
+public:
+
+  TATWdatRaw();
+  virtual         ~TATWdatRaw();
+  Int_t             GetHitsN() const;
+  TATWrawHit*       GetHit(Int_t i_ind);
+  const TATWrawHit* GetHit(Int_t i_ind) const;
+  void       NewHit(TWaveformContainer *w);
+
 
   virtual void    Clear(Option_t* opt="");
-    void SetupClones();
-    virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-    ClassDef(TATWdatRaw,3);
+  void SetupClones();
+  virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
+  inline void UpdateRunTime(int value){m_run_time+=value;}
 
-    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+  ClassDef(TATWdatRaw,3);
+
+
   
-  private:
-    Int_t           fHitsN;		    // 
-    TClonesArray*   fListOfHits;			// hits
-  private:
-    static TString fgkBranchName;    // Branch name in TTree
-
+  static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+  
+  
+private:
+  static TString fgkBranchName;    // Branch name in TTree
+  Int_t           fHitsN;		    // 
+  TClonesArray*   fListOfHits;
+  int m_run_time;
 };
 
 #endif

@@ -276,7 +276,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    //Time should be stored in ns
    tof *= TAGgeoTrafo::PsToNs(); 
    if (fMap[idA] == 0) {
-      fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeB); // timeA/B is ps, and tof in ns !
+     fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeA, timeB, timeB); // timeA/B is ps, and tof in ns !
       fCurrentHit->SetChargeZ(Z);
       fMap[idA] = fCurrentHit;
    } else {

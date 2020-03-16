@@ -5,16 +5,19 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
+
+#pragma link C++ class  TAGbaseWD+;
+#pragma link C++ class  TAGbaseWDparMap+;
+#pragma link C++ class  TAGbaseWDparTime+;
 #pragma link C++ class  TASTactNtuMC+;
 #pragma link C++ class  TASTactNtuRaw+;
 #pragma link C++ class  TASTdatRaw+;
-#pragma link C++ class  TASTparTime+;
 #pragma link C++ class  TASTntuRaw+;
 #pragma link C++ class  TASTrawHit+;
 #pragma link C++ class  TASTntuHit+;
 #pragma link C++ class  TASTparGeo+;
 #pragma link C++ class  TASTparMap+;
-#pragma link C++ class  TAGbaseWD+;
+#pragma link C++ class  TASTdigitizer+;
 
 
 #endif

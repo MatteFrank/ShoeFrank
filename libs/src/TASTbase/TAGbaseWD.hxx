@@ -19,54 +19,63 @@ using namespace std;
 /**
  * This class stores the params of a single channel waveform
  */
-class TAGbaseWD : public TAGobject {
-  public:
-    TAGbaseWD();
-    virtual         ~TAGbaseWD();
-    TAGbaseWD( TWaveformContainer &w);
-   
-    void  SetData(Int_t cha ,Int_t board, Double_t charge,
-		  Double_t ampl, Double_t apedestal,
-		  Double_t atime, Int_t iscl,Double_t clock_t,Int_t TriggerType);
-    //
 
-  Double_t 		Clocktime();
-  Int_t 			IsClock();
-  //
-  inline Int_t ChID() const {  return chid; }
-  inline Int_t BoardId() const { return boardid; }
-  inline Double_t Pedestal() const { return pedestal; }
-  inline Double_t Amplitude() const { return amplitude; }
-  inline Int_t TriggerType() const { return triggertype; }
-  inline Double_t GetChiSquare(){return chisquare;}
+class TAGbaseWD : public TAGobject {
+
+public:
+  TAGbaseWD();
+  TAGbaseWD(TWaveformContainer *w);
+  virtual         ~TAGbaseWD();
   
-  inline void SetAmplitdue(double amplitude) { amplitude=amplitude; }
-  inline void SetPedestal(double pedestal) { pedestal=pedestal; }
-  inline void SetBoardId(Int_t boardid) { boardid=boardid; }
-  inline Int_t IDMC() const {  return mcid; }
-  inline Double_t Time() const {  return time; }
-  inline Double_t Charge() const {  return chg; }
+  virtual double ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright);
+  virtual double ComputeTimeSimpleCFD(TWaveformContainer *w, double frac);
+  virtual double ComputePedestal( TWaveformContainer *w);
+  virtual double ComputeBaseline( TWaveformContainer *w);
+  virtual double ComputeCharge(TWaveformContainer *w);
+  virtual double ComputeAmplitude(TWaveformContainer *w);
+
+
+  inline Int_t GetChID() const {  return chid; }
+  inline Int_t GetBoardId() const { return boardid; }
+  inline Int_t GetTriggerType() const { return triggertypeId; }
+  inline Int_t GetTriggerCellID() const { return triggercellId; }
+  inline Double_t GetTime() const {  return time; }
+  inline Double_t GetTimeOth() const {  return time_oth; }
+  inline Double_t GetCharge() const {  return chg; }
+  inline Double_t GetAmplitude() const { return amplitude; }
+  inline Double_t GetPedestal() const { return pedestal; }
+  inline Double_t GetBaseline() const { return baseline; }
+  inline Int_t GetIDMC() const {  return mcid; }
+   
   inline void SetChID(int id) {  chid = id;  return; }
-  inline void SetMCID(int id) {  mcid = id;  return; }
+  inline void SetBoardId(Int_t boardid) { boardid=boardid; }
+  inline void SetTriggerType(int value){ triggertypeId = value; }
+  inline void SetTriggerCellID(int value){ triggercellId = value; }
   inline void SetTime(double atime) {  time = atime;  return; }
+  inline void SetTimeOth(double atime) {  time_oth = atime;  return; }
   inline void SetCharge(double achg) {  chg = achg;  return; }
-  inline void SetChiSquare(double achisq) {  chisquare = achisq;  return; }
-    
+  inline void SetMCID(int id) {  mcid = id;  return; }
+  inline void SetAmplitude(double value) { amplitude=value; }
+  inline void SetPedestal(double value) { pedestal=value; }
+
+   
   ClassDef(TAGbaseWD,4);
     //
-  private:
-    Double_t time;    
-    Double_t chg;
-    Double_t pedestal;
-    Double_t amplitude;
-    Int_t chid;
-    Int_t boardid;
-    Int_t mcid;
-    Int_t isclock;
-    Int_t triggertype;
-    Double_t clock_time;
-    Double_t chisquare;
+  protected:
 
+  Double_t time;
+  Double_t time_oth;
+  Double_t chg;
+  Double_t amplitude;
+  Double_t baseline;
+  Double_t pedestal;
+  Int_t chid;
+  Int_t boardid;
+  Int_t mcid;
+  Int_t triggertypeId;
+  Int_t triggercellId;
+  
+   
 };
 
 #endif
