@@ -8,9 +8,6 @@
 #include "TAEDglbTrack.hxx"
 #include "TAEDglbTrackList.hxx"
 
-//
-ClassImp(TAEDglbTrackList)
-
 //__________________________________________________________
 TAEDglbTrackList::TAEDglbTrackList(const Char_t* name, TADIeveTrackPropagator* prop)
  : TEveTrackList(name, prop),

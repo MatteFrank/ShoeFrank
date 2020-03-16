@@ -9,7 +9,6 @@
 #endif
 
 //
-ClassImp(TAEDwire)
 
 //__________________________________________________________
 TAEDwire::TAEDwire(const Text_t* name) 

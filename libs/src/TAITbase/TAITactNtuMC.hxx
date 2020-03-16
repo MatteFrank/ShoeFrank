@@ -48,7 +48,6 @@ private:
    void           DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackId);
    void           DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
    void           Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
-
    
    ClassDef(TAITactNtuMC,0)
 };

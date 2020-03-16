@@ -8,8 +8,6 @@
 
 #include "GlobalPar.hxx"
 
-ClassImp(TAVTdigitizerE);
-
 using namespace std;
 
 Int_t   TAVTdigitizerE::fgkMaxTurn   = 16;

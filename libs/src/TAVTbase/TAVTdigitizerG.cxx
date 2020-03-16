@@ -3,8 +3,6 @@
 
 #include "GlobalPar.hxx"
 
-ClassImp(TAVTdigitizerG);
-
 using namespace std;
 
 Float_t TAVTdigitizerG::fgkFWTH     = 2*TMath::Sqrt(2*TMath::Log(10));

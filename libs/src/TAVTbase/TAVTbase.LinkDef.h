@@ -33,10 +33,6 @@
 #pragma link C++ class TAVTactBaseNtuMC+;
 #pragma link C++ class TAVTactNtuMC+;
 
-#pragma link C++ class TAVTbaseDigitizer+;
-#pragma link C++ class TAVTdigitizerE+;
-#pragma link C++ class TAVTdigitizerG+;
-
 #pragma link C++ class TAVTntuCluster+;
 #pragma link C++ class TAVTcluster+;
 #pragma link C++ class TAVTbaseCluster+;
@@ -45,7 +41,6 @@
 #pragma link C++ class TAVTactNtuClusterF+;
 
 #pragma link C++ class TAVTntuTrack+;
-#pragma link C++ class TAVTline+;
 #pragma link C++ class TAVTbaseTrack+;
 #pragma link C++ class TAVTtrack+;
 #pragma link C++ class TAVTactBaseTrack+;

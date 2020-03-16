@@ -53,6 +53,9 @@ Bool_t TAMCactNtuEve::Action() {
   p_nturaw->Clear();
 
   for (Int_t i = 0; i < fpEvtStr->TRn; i++) {
+      
+
+      
     Double_t i_mass = fpEvtStr->TRmass[i];
     Int_t i_id = fpEvtStr->TRfid[i];
     Int_t i_mid = fpEvtStr->TRpaid[i];  //mother id

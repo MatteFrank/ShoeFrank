@@ -105,7 +105,6 @@ protected:
   //! Make track size
   void MakeSize(Float_t e);
   
-  ClassDef(TAEDtrack, 0);  
 };
 
 

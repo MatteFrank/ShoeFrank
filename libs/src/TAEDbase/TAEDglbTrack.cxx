@@ -6,9 +6,6 @@
 
 #include "TAEDglbTrack.hxx"
 
-//
-ClassImp(TAEDglbTrack)
-
 //__________________________________________________________
 TAEDglbTrack::TAEDglbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop)
  : TEveTrack(track, prop)

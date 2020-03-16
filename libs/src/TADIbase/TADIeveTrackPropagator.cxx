@@ -10,9 +10,6 @@
    units: B (Testla), pos (cm), momentum (GeV/c)
 */
 
-ClassImp(TADIeveTrackPropagator);
-
-
 //______________________________________________________________________________
 TADIeveTrackPropagator::TADIeveTrackPropagator()
 : TEveTrackPropagator()

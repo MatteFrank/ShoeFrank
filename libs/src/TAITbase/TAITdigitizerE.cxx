@@ -2,10 +2,6 @@
 #include "TAITparGeo.hxx"
 
 
-ClassImp(TAITdigitizerE);
-
-
-
 // --------------------------------------------------------------------------------------
 TAITdigitizerE::TAITdigitizerE(TAVTbaseParGeo* parGeo)
 : TAVTdigitizerE(parGeo)

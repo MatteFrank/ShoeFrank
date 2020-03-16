@@ -31,7 +31,6 @@ public:
 private:
    TObject* fTrackId;
    
-  ClassDef(TAEDglbTrack, 0);  
 };
 
 

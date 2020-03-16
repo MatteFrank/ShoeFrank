@@ -63,7 +63,6 @@ public:
    static Float_t GetDefSmearPos()                  { return fgDefSmearPos;      }
    static void    SetDefSmearPos(Float_t pos)       { fgDefSmearPos = pos;       }
    
-   ClassDef(TAMSDdigitizer,0)
 };
         
 

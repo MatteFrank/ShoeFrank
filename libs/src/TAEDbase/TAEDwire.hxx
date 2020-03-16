@@ -24,10 +24,7 @@ public:
    
   //! Refit plex
   void RefitPlex();
-    
-private:
-  
-  ClassDef(TAEDwire, 0);  
+
 };
 
 

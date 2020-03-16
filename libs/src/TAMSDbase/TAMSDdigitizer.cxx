@@ -8,8 +8,6 @@
 #include "TList.h"
 #include "TF1.h"
 
-ClassImp(TAMSDdigitizer);
-
 using namespace std;
 
 Float_t TAMSDdigitizer::fgChargeGain  = 20;
