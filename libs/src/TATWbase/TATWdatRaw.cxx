@@ -56,7 +56,18 @@ double TATWrawHit::ComputeTime(TWaveformContainer *w, double frac, double del, d
 
 
 double TATWrawHit::ComputeCharge(TWaveformContainer *w){
-  return  TAGbaseWD::ComputeCharge(w);
+
+  double chg=0;
+  vector<double> tmp_amp = w->m_vectA;
+  vector<double> tmp_time = w->m_vectT;
+
+  for(int i=0; i<tmp_time.size();i++){
+    chg+=(tmp_amp.at(i)-baseline);
+  }
+
+  chg = -chg;
+  
+  return  chg;
 }
 
 
