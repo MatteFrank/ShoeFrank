@@ -17,7 +17,5 @@
 #pragma link C++ class  TASTntuHit+;
 #pragma link C++ class  TASTparGeo+;
 #pragma link C++ class  TASTparMap+;
-#pragma link C++ class  TASTdigitizer+;
-
 
 #endif
