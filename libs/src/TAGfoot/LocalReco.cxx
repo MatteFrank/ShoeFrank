@@ -72,7 +72,7 @@ void LocalReco::CreateRawAction()
       fpDatRawSt   = new TAGdataDsc("stDat", new TASTdatRaw());
       fpDatRawTw   = new TAGdataDsc("twdDat", new TATWdatRaw());
 
-      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpParMapSt, fpParMapTw, fpParTimeSt, fpParTimeTw);
+      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpParMapWD, fpParTimeWD);
       if (fFlagHisto)
          fActWdRaw->CreateHistogram();
    }

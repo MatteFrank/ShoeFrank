@@ -32,7 +32,10 @@ TATWntuHit::TATWntuHit( TATWrawHit* hit )
   m_ChargeA(0),
   m_ChargeB(0),
   m_TimeA(0),
-  m_TimeB(0)
+  m_TimeB(0),
+  m_time_oth(0),
+  m_TimeA_oth(0),
+  m_TimeB_oth(0)
 {
 }
 
@@ -53,7 +56,11 @@ TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
    m_ChargeA(aHit.m_ChargeA),
    m_ChargeB(aHit.m_ChargeB),
    m_TimeA(aHit.m_TimeA),
-   m_TimeB(aHit.m_TimeB)
+   m_TimeB(aHit.m_TimeB),
+   m_time_oth(aHit.m_time_oth),
+   m_TimeA_oth(aHit.m_TimeA_oth),
+   m_TimeB_oth(aHit.m_TimeB_oth)
+
 {
 }
 
@@ -61,16 +68,17 @@ TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
 //! Default constructor.
 
 TATWntuHit::TATWntuHit()
-: m_layer(-1), m_bar(-1), m_de(0.),m_time(0.),m_coordinate(0.),m_z(0.)
+  : m_layer(-1), m_bar(-1), m_de(0.),m_time(0.),m_time_oth(0.),m_coordinate(0.),m_z(0.)
 {
 }
 
 
 //______________________________________________________________________________
 // Build the hit from its sensor, line and column// constructor of a Pixel with column and line 
-TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime,
-		  	   Double_t pos,Double_t chargeCOM,Double_t ChargeA,
-			   Double_t ChargeB,Double_t TimeA,Double_t TimeB ):
+TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
+			Double_t pos,Double_t chargeCOM,Double_t ChargeA,
+			Double_t ChargeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth):
+  
   TAGobject(),
   m_layer(aView),
   m_bar(aBar),
@@ -83,8 +91,10 @@ TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime,
   m_ChargeA(ChargeA),
   m_ChargeB(ChargeB),
   m_TimeA(TimeA),
-  m_TimeB(TimeB)
-
+  m_TimeB(TimeB),
+  m_time_oth(aTime_oth),
+  m_TimeA_oth(TimeA_oth),
+  m_TimeB_oth(TimeB_oth)
 
 {
 }
@@ -117,6 +127,9 @@ void TATWntuHit::Clear(Option_t* /*option*/)
 	m_ChargeB=0;
 	m_TimeA=0;
 	m_TimeB=0;
+	m_time_oth=0;
+	m_TimeA_oth=0;
+	m_TimeB_oth=0;
 }
 
 //##############################################################################
@@ -144,15 +157,15 @@ TATWntuRaw::~TATWntuRaw()
 }
 
 //______________________________________________________________________________
-//  standard 
-TATWntuHit* TATWntuRaw::NewHit( int layer, int bar, double energyLoss, double atime, double pos,double chargeCOM,
-		                       double ChargeA, double ChargeB, double TimeA, double TimeB) {
+//  standard
+TATWntuHit* TATWntuRaw::NewHit( int layer, int bar, double energyLoss, double atime, double atime_oth, double pos,double chargeCOM,
+				double ChargeA, double ChargeB, double TimeA, double TimeB,  double TimeA_oth, double TimeB_oth) {
 
 	TClonesArray &pixelArray = *m_listOfHits;
 	if(layer == 0) m_hitlay1++;
 	else   if(layer == 1) m_hitlay2++;
-	TATWntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWntuHit( layer, bar, energyLoss, atime, pos,
-																	chargeCOM,ChargeA, ChargeB, TimeA, TimeB);
+	TATWntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWntuHit( layer, bar, energyLoss, atime, atime_oth, pos,
+										   chargeCOM,ChargeA, ChargeB, TimeA, TimeB,  TimeA_oth, TimeB_oth);
 	return hit;
 }
 

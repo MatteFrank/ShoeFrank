@@ -23,7 +23,6 @@ set( with_dictionnaries
    TATWdatRaw
    TATWntuRaw
    TATWntuPoint
-   TATWparTime
    TATWparMap
    TATWparCal
    TATWactNtuMC

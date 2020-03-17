@@ -50,15 +50,10 @@ public:
   TH1F *hEventTime;
 
   int m_nev;
-  map<pair<int,int>, double> clktime_map;
   
 
 private:
-  double find_clocktime(int ch_num, int bo_num);
-  bool clocktimeIsSet(int ch_num, int bo_num);
-  //  bool ComputeArrivalTime(TASTrawHit *hit, double *tarr, double *ampl, double *charge);
-  //  double ComputeCharge(TASTrawHit *hit);
-  //  double ComputeMaxAmplitude(TASTrawHit *hit);
+ 
   void   SavePlot(TGraph g,TF1 f1, TF1 f2, TASTrawHit *hit);
 
 };

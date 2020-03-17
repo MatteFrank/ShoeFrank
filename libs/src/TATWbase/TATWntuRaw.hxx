@@ -28,7 +28,8 @@ private:
     Int_t    m_layer;
     Int_t    m_bar;
     Double_t m_de;                     // energy loss in the scintillator bar
-    Double_t m_time;                   // timestamp
+    Double_t m_time;
+    Double_t m_time_oth;                   // timestamp // timestamp
     Double_t m_timeofflight;           // time of flight
     Double_t m_coordinate;             // x or y coordinate in the local detector frame, depending on the layer
     Double_t m_z;                      // z coordinate in the local detector frame
@@ -40,14 +41,15 @@ private:
     Double_t m_ChargeB;
     Double_t m_TimeA;
     Double_t m_TimeB;
-
+   Double_t m_TimeA_oth;
+    Double_t m_TimeB_oth;
 
 public:
   TATWntuHit();
   TATWntuHit( TATWrawHit* hit );
-  TATWntuHit ( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime,
+  TATWntuHit ( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTimeOth,
 		  	   Double_t pos,Double_t chargeCOM,Double_t ChargeA,
-			   Double_t ChargeB,Double_t TimeA,Double_t TimeB );
+	       Double_t ChargeB,Double_t TimeA,Double_t TimeB, Double_t TimeAOth,Double_t TimeBOth);
    TATWntuHit(const TATWntuHit& aHit);
   ~TATWntuHit() {};
    void   Clear(Option_t* option = "C");
@@ -59,6 +61,7 @@ public:
    Int_t     GetLayer()                const   { return  m_layer;            }
    Double_t  GetEnergyLoss()           const   { return m_de;                }
    Double_t  GetTime()                 const   { return m_time;              }
+  Double_t  GetTimeOth()                 const   { return m_time_oth;              }
    Double_t  GetToF()                  const   { return m_timeofflight;      }
    Double_t  GetPosition()             const   { return m_coordinate;        }
    Int_t     GetChargeZ()              const   { return m_chargeZ;           }
@@ -106,10 +109,12 @@ public:
     TATWntuRaw();
     virtual          ~TATWntuRaw();
   TATWntuHit* Hit(Int_t i_ind);
-  
-    TATWntuHit*       NewHit( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime,
+
+
+   TATWntuHit*       NewHit( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
 		  	   	   	   	      Double_t pos,Double_t chargeCOM,Double_t ChargeA,
-			                  Double_t ChargeB,Double_t TimeA,Double_t TimeB );
+			     Double_t ChargeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth);
+  
     int               GetHitN(int layer); 
     int 			  GetHitN();
     TATWntuHit*       GetHit( int hitID , int layer);

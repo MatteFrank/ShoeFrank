@@ -22,9 +22,16 @@ ClassImp(TATWrawHit);
 
 TString TATWdatRaw::fgkBranchName   = "twdat.";
 
-TATWrawHit::TATWrawHit(TWaveformContainer &W)
-  : TAGbaseWD(W)
-{
+TATWrawHit::TATWrawHit(TWaveformContainer *W)
+  : TAGbaseWD(W){
+
+  baseline = ComputeBaseline(W);
+  pedestal = ComputePedestal(W);
+  chg = ComputeCharge(W);
+  amplitude = ComputeAmplitude(W);
+  time = ComputeTime(W,0.3,10.0,-30,20);
+  time_oth = ComputeTimeSimpleCFD(W,0.3);
+
 }
 
 //______________________________________________________________________________
@@ -43,14 +50,51 @@ TATWrawHit::TATWrawHit()
 
 
 
+double TATWrawHit::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
+  return  TAGbaseWD::ComputeTime(w, frac, del, tleft, tright);
+}
+
+
+double TATWrawHit::ComputeCharge(TWaveformContainer *w){
+
+  double chg=0;
+  vector<double> tmp_amp = w->m_vectA;
+  vector<double> tmp_time = w->m_vectT;
+
+  for(int i=0; i<tmp_time.size();i++){
+    chg+=(tmp_amp.at(i)-baseline);
+  }
+
+  chg = -chg;
+  
+  return  chg;
+}
+
+
+double TATWrawHit::ComputeAmplitude(TWaveformContainer *w){
+  return  TAGbaseWD::ComputeAmplitude(w);
+}
+
+
+double TATWrawHit::ComputeBaseline(TWaveformContainer *w){
+  return TAGbaseWD::ComputeBaseline(w);
+}
+
+
+double TATWrawHit::ComputePedestal(TWaveformContainer *w){
+  return  TAGbaseWD::ComputePedestal(w);
+}
+
+
+
 //##############################################################################
 
 ClassImp(TATWdatRaw);
 
-//------------------------------------------+-----------------------------------
+
 //! Default constructor.
 TATWdatRaw::TATWdatRaw() :
-  fHitsN(0), fListOfHits(0)
+  fHitsN(0), fListOfHits(0), m_run_time(0x0)
 {
    SetupClones();
 }
@@ -64,15 +108,17 @@ TATWdatRaw::~TATWdatRaw()
   delete fListOfHits;
 }
 
+
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 
 void TATWdatRaw::SetupClones()
 {
   if (!fListOfHits) fListOfHits = new TClonesArray("TATWrawHit");
+  return;
 }
 
-//------------------------------------------+-----------------------------------
+
 Int_t TATWdatRaw::GetHitsN() const
 {
    return fListOfHits->GetEntries();
@@ -87,19 +133,25 @@ void TATWdatRaw::Clear(Option_t*)
   fHitsN = 0;
 
   if (fListOfHits) fListOfHits->Clear();
+  return;
 }
 
-//------------------------------------------+-----------------------------------
-//! New hit.
 
-void TATWdatRaw::NewHit(TWaveformContainer &W)
+void TATWdatRaw::NewHit(TWaveformContainer *W)
 {
-  W.SanitizeWaveform(); 
+
+  //  W->SanitizeWaveform(); 
 
   TClonesArray &pixelArray = *fListOfHits;
   TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(W);
   fHitsN++;
+
+  return;
 }
+
+
+
+
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.

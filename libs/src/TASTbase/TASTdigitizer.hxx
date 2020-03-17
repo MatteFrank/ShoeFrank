@@ -31,8 +31,6 @@ public:
 
    TASTntuHit*    GetCurrentHit()       { return fCurrentHit; }
    void           ClearMap()            { fMap.clear();       }
-
-  ClassDef(TASTdigitizer,2)
   
 private:
    TASTntuRaw*   fpNtuRaw;

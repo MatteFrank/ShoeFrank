@@ -19,38 +19,39 @@ using namespace std;
 class TASTntuHit : public TAGobject {
 public:
    
-   TASTntuHit();
+  TASTntuHit();
+  TASTntuHit(Double_t charge, Double_t de, Double_t time);
+  virtual         ~TASTntuHit();
+  
+  
+  Double_t       GetTime()                  const   { return fTime;                 }
+  Double_t       GetCharge()                const   { return fCharge;               }
+  Double_t       GetDe()                const   { return fCharge;               }
+  
+  inline void SetTime(double value){ fTime = value;}
+  inline void SetCharge(double value){ fCharge = value;}
+  inline void SetDe(double value){ fDe = value;}
+  
+
+  Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
+  Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+  Int_t          GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
    
-   TASTntuHit(Int_t channel, Double_t charge, Double_t time);
-   
-   virtual         ~TASTntuHit();
-   
-   
-   Int_t          GetChannel()               const   { return fChannel;              }
-   Double_t       GetTime()                  const   { return fTime;                 }
-   Double_t       GetCharge()                const   { return fCharge;               }
-   
-   Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
-   Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
-   Int_t          GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
-   
-   void           SetChannel(Int_t ch)               {  fChannel = ch;               }
-   void           SetTime(Double_t time)             {  fTime    = time;             }
-   void           SetCharge(Double_t chg)            {  fCharge = chg;               }
-   
-   void           Clear(Option_t* option = "C");
-   void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
+  void           Clear(Option_t* option = "C");
+  void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
    
    
-   ClassDef(TASTntuHit,1)
+  ClassDef(TASTntuHit,1)
    
-private:
-   Int_t           fChannel;
-   Double32_t      fCharge;
-   Double32_t      fTime;
+  private:
+ 
+  Double32_t      fCharge;
+  Double32_t      fDe;
+  Double32_t      fTime;
+  
    
-   TArrayI         fMCindex;                  // Id of the hit created in the simulation
-   TArrayI         fMcTrackIdx;               // Index of the track created in the simulation
+  TArrayI         fMCindex;                  // Id of the hit created in the simulation
+  TArrayI         fMcTrackIdx;               // Index of the track created in the simulation
    
 };
 
@@ -66,17 +67,17 @@ public:
    
    TASTntuHit*       Hit(Int_t i_ind);
    const TASTntuHit* Hit(Int_t i_ind) const;
-   TASTntuHit*        NewHit(int channel, double charge, double time);
+  TASTntuHit*        NewHit(double charge, double de, double time);
    virtual void      Clear(Option_t* opt="");
    void              SetupClones();
    inline void SetCharge(double value){m_Charge = value;}
    inline void SetTriggerTime(double value){m_TrigTime = value;}
+   inline void SetTriggerTimeOth(double value){m_TrigTime_oth = value;}
    inline double GetCharge(){return m_Charge;}
    inline double GetTriggerTime(){return m_TrigTime;}
+   inline double GetTriggerTimeOth(){return m_TrigTime_oth;}
    inline int GetTrigType(){return m_TrigType;}
    inline void SetTrigType(int value){m_TrigType=value;}
-   inline int GetDeltaClk(){return m_deltaclk;}
-   inline void SetDeltaClk(double value){m_deltaclk=value;}
   
 
   
@@ -86,9 +87,11 @@ public:
 private:
   TClonesArray*     fListOfHits;			    // hits
   double m_TrigTime;
+  double m_TrigTime_oth;
   double m_Charge;
-  double m_deltaclk;
   int m_TrigType;
+
+
 private:
    static TString fgkBranchName;    // Branch name in TTree
    

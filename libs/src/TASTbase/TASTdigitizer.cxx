@@ -86,15 +86,16 @@ Bool_t TASTdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Float_t charge = GetPhotonsN(x0, y0, edep)*fGain;
    //time should be stored in the hit in ns:
    time /= 1000.;
-   
+     
    if (fMap[id] == 0) {
-      fCurrentHit = (TASTntuHit*)fpNtuRaw->NewHit(id, charge, time);
+     fCurrentHit = (TASTntuHit*)fpNtuRaw->NewHit(charge, edep, time);
       fMap[id] = fCurrentHit;
    } else {
       fCurrentHit = fMap[id];
       
       //Add charge to current hit
       fCurrentHit->SetCharge(fCurrentHit->GetCharge()+charge);
+      fCurrentHit->SetCharge(fCurrentHit->GetDe()+edep);
       
       // take the shortest time
       if (time < fCurrentHit->GetTime())
