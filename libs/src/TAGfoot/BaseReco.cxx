@@ -268,7 +268,7 @@ void BaseReco::ReadParFiles()
        
      fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
      TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
-     parTimeWD->FromFile(fExpName.Data(), 0);
+     if(!fFlagMC)parTimeWD->FromFile(fExpName.Data(), 0);
 
    }
    
