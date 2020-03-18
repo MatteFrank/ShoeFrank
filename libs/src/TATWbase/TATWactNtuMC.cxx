@@ -6,6 +6,7 @@
 #include "TAGgeoTrafo.hxx"
 
 #include "TATWdatRaw.hxx"
+#include "TATWparCal.hxx"
 #include "TATWactNtuMC.hxx"
 
 #include "TATWdigitizer.hxx"
@@ -22,12 +23,16 @@ ClassImp(TATWactNtuMC);
 
 TATWactNtuMC::TATWactNtuMC(const char* name,
                            TAGdataDsc* p_hitraw,
+			   TAGparaDsc* p_parcal,
                            EVENT_STRUCT* evStr)
   : TAGaction(name, "TATWactNtuMC - NTuplize ToF raw data"),
-   m_hitContainer(p_hitraw),
+    m_hitContainer(p_hitraw),
+    fpCalPar(p_parcal),
     m_eventStruct(evStr)
 {
   AddDataOut(p_hitraw, "TATWntuRaw");
+  AddPara(p_parcal,"TATWparCal");
+
   CreateDigitizer();
 }
 
@@ -67,6 +72,39 @@ void TATWactNtuMC::CreateHistogram()
    fpHisTimeTotMc = new TH1F("twMcTimeTot", "ToF wall - MC Total time", 1000, 0., 200e3);
    AddHistogram(fpHisTimeTotMc);
    
+   fpHisZID = new TH2I("twZID", "twZID", 10,-1.5,8.5, 10,-1.5,8.5);
+   AddHistogram(fpHisZID);
+   
+   if(m_Digitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
+     fpHisZID_MCtrue = new TH2I("twZID_MCtrue", "twZID_MCtrue", 10,-1.5,8.5, 10,-1.5,8.5);
+     AddHistogram(fpHisZID_MCtrue);
+
+     for(int ilayer=0; ilayer<TATWparCal::kLayers; ilayer++) {
+       fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d_MCtrue",ilayer),Form("dE_vs_Tof_ilayer%d_MCtrue",ilayer),400,0.,40.,480,0.,120.);
+       AddHistogram(fpHisElossTof_MCtrue[ilayer]);
+     }
+     
+     for(int iZ=1; iZ<TATWparCal::kCharges+1; iZ++) {
+       fpHisElossTof_MC[iZ-1] = new TH2D(Form("dE_vs_Tof_Z%d_MCtrue",iZ),Form("dE_vs_Tof_%d",iZ),400,0.,40.,480,0.,120.);
+       AddHistogram(fpHisElossTof_MC[iZ-1]);
+     }
+   }
+   
+   for(int ilayer=0; ilayer<TATWparCal::kLayers; ilayer++) {
+     fpHisElossTof_MCrec[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),400,0.,40.,480,0.,120.);
+     AddHistogram(fpHisElossTof_MCrec[ilayer]);
+   }
+   
+   for(int iZ=1; iZ<TATWparCal::kCharges+1; iZ++) {
+     
+     fpHisElossTof[iZ-1] = new TH2D(Form("dE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),400,0.,40.,480,0.,120.);
+     AddHistogram(fpHisElossTof[iZ-1]);
+     
+     fpHisDistZ[iZ-1] = new TH1F(Form("dist_Z%d",iZ),Form("dist_Z%d",iZ),800,-40.,40.);
+     AddHistogram(fpHisDistZ[iZ-1]);
+     
+   }
+
    SetValidHistogram(kTRUE);
 }
 
@@ -89,6 +127,7 @@ bool TATWactNtuMC::Action() {
    TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
    TATWntuRaw* containerHit = (TATWntuRaw*) m_hitContainer->Object();
+   TATWparCal* m_parcal = (TATWparCal*) fpCalPar->Object();
    TATWparGeo* geoMap = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
 
     //The number of hits inside the Start Counter is stn
@@ -119,16 +158,103 @@ bool TATWactNtuMC::Action() {
        TVector3 posInLoc = geoTrafo->FromGlobalToTWLocal(posIn);
 
        Int_t Z = m_eventStruct->TRcha[trackId];
+
+
+       Int_t Zrec_MCtrue = -2;
+       if(m_Digitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
+
+	 Int_t mothId = (m_eventStruct->TRpaid[trackId])-1;
+
+	 // test algorithm in MC in a clean situation
+	 if( mothId>0 || !(m_Digitizer->IsOverEnergyThreshold(edep)) ) 
+	 // if( mothId>0 || Z == 0 ) 
+	   Zrec_MCtrue=-1.; //set Z to nonsense value
+	 else {
+	   Zrec_MCtrue = m_parcal->GetChargeZ(edep,time*TAGgeoTrafo::PsToNs(),view);
+	 }
+	 
+	 if (ValidHistogram()) {
+	   fpHisZID_MCtrue->Fill(Zrec_MCtrue,Z);
+
+	   fpHisElossTof_MCtrue[view]->Fill(time*TAGgeoTrafo::PsToNs(),edep);
+
+	   if( Zrec_MCtrue>0 && Zrec_MCtrue<TATWparCal::kCharges+1 )
+	     fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(time*TAGgeoTrafo::PsToNs(),edep);
+
+	 }
+	   
+	 if(fDebugLevel > 0) {
+	   if(Zrec_MCtrue>0) {	   
+	     cnt++;	   
+	     if(Zrec_MCtrue!=Z) {
+	       cout<<"Hit MC n::"<<cnt<<endl;
+	       printf("layer::%d bar::%d\n", view,  m_eventStruct->SCNibar[i]);
+	       cntWrong++;
+	       cout<<"edep::"<<edep<<"  time::"<<time*TAGgeoTrafo::PsToNs()<<endl;
+	       cout<<"Zrec::"<<Zrec_MCtrue<<"  Z_MC::"<<Z<<endl;
+	       printf("Z wrong/(Zrec>0) :: %d/%d\n",cntWrong,cnt);
+	     }
+	   }
+	 }
+       }
+       
+
        m_Digitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, id+TATWparGeo::GetLayerOffset()*view, Z);
+       
        TATWntuHit* hit = m_Digitizer->GetCurrentHit();
        hit->AddMcTrackIdx(trackId, i);
 
+       Double_t recEloss = hit->GetEnergyLoss();
+       Double_t recTof = hit->GetTime();
+       
+       // set an energy threshold --> TODO: to be tuned on data
+       if(!m_Digitizer->IsOverEnergyThreshold(recEloss)) {
+	 if(fDebugLevel > 0)
+	   printf("the energy released (%f) is under the set threshold (%.1f)\n",recEloss,m_Digitizer->GetEnergyThreshold());     
+	 
+	 recEloss=-99.; //set energy to nonsense value
+
+       }
+       
+       Int_t Zrec = m_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
+       hit->SetChargeZ(Zrec);
+       
+       Float_t distZ[TATWparCal::kCharges];
+       for(int iZ=1; iZ<TATWparCal::kCharges+1; iZ++)
+	 distZ[iZ-1]= m_parcal->GetDistBB(iZ);
+
+       if(fDebugLevel > 0) {
+	 if(!m_Digitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
+	   if(Zrec>0) {
+	     cnt++;	     
+	     if(Zrec!=Z) {
+	       cout<<"Hit n::"<<cnt<<endl;
+	       cntWrong++;
+	       cout<<"edep::"<<recEloss<<"  time::"<<recTof<<endl;
+	       cout<<"Zrec::"<<Zrec<<"  Z_MC::"<<Z<<endl;
+	       printf("Z wrong/(Zrec>0) :: %d/%d\n",cntWrong,cnt);
+	     }
+	   }
+	 }
+       }
+
        if (ValidHistogram()) {
-          fpHisDeTotMc->Fill(edep);
-          fpHisDeTot->Fill(hit->GetEnergyLoss());
+
+	 fpHisElossTof_MCrec[hit->GetLayer()]->Fill(recTof,recEloss);
+	 
+	 if( Zrec>0 && Zrec<TATWparCal::kCharges+1 )
+	   fpHisElossTof[Zrec-1]->Fill(recTof,recEloss);
+	 
+	 for(int iZ=1; iZ<TATWparCal::kCharges+1; iZ++)
+	   fpHisDistZ[iZ-1]->Fill(distZ[iZ-1]);
+	 	 
+	 fpHisZID->Fill(Zrec,Z);
+
+	 fpHisDeTotMc->Fill(edep);
+          fpHisDeTot->Fill(recEloss);
           
-          fpHisTimeTotMc->Fill(time);
-          fpHisTimeTot->Fill(hit->GetTime());
+          fpHisTimeTotMc->Fill(time*TAGgeoTrafo::PsToNs());
+          fpHisTimeTot->Fill(recTof);
           
           if (hit->IsColumn())
              fpHisHitCol->Fill(hit->GetBar());

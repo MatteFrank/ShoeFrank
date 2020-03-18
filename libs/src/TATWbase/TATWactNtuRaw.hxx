@@ -7,14 +7,16 @@
 */
 /*------------------------------------------+---------------------------------*/
 
+#include "TH1.h"
+#include "TH2.h"
+
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
 #include "TATWparGeo.hxx"
+#include "TATWparCal.hxx"
 #include "TATWdatRaw.hxx"
 #include "TATWntuRaw.hxx"
-
-class TH1F;
 
 class TATWactNtuRaw : public TAGaction {
 
@@ -35,7 +37,7 @@ public:
   ClassDef(TATWactNtuRaw,0);
 
 
-  private:
+private:
   double find_deltaclock(int ch_num, int bo_num);
   
   TAGdataDsc*     fpDatRaw;		    // input data dsc
@@ -44,18 +46,23 @@ public:
   TAGparaDsc*     fpParMap;
   TAGparaDsc*     fpCalPar;
 
-   Float_t        fTofPropAlpha;    // inverse of light propagation velocity
-   Float_t        fTofErrPropAlpha;
+  Float_t        fTofPropAlpha;    // inverse of light propagation velocity
+  Float_t        fTofErrPropAlpha;
 
-   TH1F*          fpHisDeTot;       // Total energy loss
-   TH1F*          fpHisTimeTot;     // Total time of flight
+  TH1F*          fpHisDeTot;       // Total energy loss
+  TH1F*          fpHisTimeTot;     // Total time of flight
    
+  TH2D*          fpHisElossTof_layer[TATWparCal::kLayers];
+  TH2D*          fpHisElossTof_Z[TATWparCal::kCharges];
+
   bool m_debug;
 
   map<pair<int,int>, double> clktime_map;
 
 
- private:
+private:
+  //
+  TATWntuHit* fCurrentHit;
   //
   Double_t GetRawEnergy(TATWrawHit*a,TATWrawHit*b);
   Double_t GetRawTime(TATWrawHit*a,TATWrawHit*b);

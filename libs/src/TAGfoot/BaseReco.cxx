@@ -358,7 +358,11 @@ void BaseReco::ReadParFiles()
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       parFileName = Form("./config/%sTATWCalibrationMap.xml", fExpName.Data());
-      parCal->FromFile(parFileName.Data());
+      // parCal->FromFile(parFileName.Data());
+      parCal->FromFile(parFileName.Data(),0);
+      parFileName = Form("./config/%sTATW_BBparameters_16O.cfg", fExpName.Data());
+      parCal->FromFile(parFileName.Data(),1);
+
    }
    
    // initialise par files for caloriomter

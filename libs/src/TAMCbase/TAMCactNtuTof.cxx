@@ -51,13 +51,15 @@ Bool_t TAMCactNtuTof::Action() {
       Int_t trackId = fpEvtStr->SCNid[i] - 1;
       Int_t barId   = fpEvtStr->SCNibar[i];
       Int_t view    = fpEvtStr->SCNiview[i];
+      Float_t edep  = fpEvtStr->SCNde[i]*TAGgeoTrafo::GevToMev();
+      Float_t time  = fpEvtStr->SCNtim[i]*TAGgeoTrafo::SecToNs();
 
       TVector3 ipos( fpEvtStr->SCNxin[i], fpEvtStr->SCNyin[i], fpEvtStr->SCNzin[i]);
       TVector3 fpos( fpEvtStr->SCNxout[i], fpEvtStr->SCNyout[i], fpEvtStr->SCNzout[i]);
       TVector3 imom( fpEvtStr->SCNpxin[i], fpEvtStr->SCNpyin[i], fpEvtStr->SCNpzin[i]);
       TVector3 fmom( fpEvtStr->SCNpxout[i], fpEvtStr->SCNpyout[i], fpEvtStr->SCNpzout[i]);
 
-      p_nturaw->NewHit(viewId, barId, view, -99, ipos, fpos, imom, fmom, fpEvtStr->SCNde[i], fpEvtStr->SCNtim[i], trackId);
+      p_nturaw->NewHit(viewId, barId, view, -99, ipos, fpos, imom, fmom, edep, time, trackId);
    }
    
    fpNtuMC->SetBit(kValid);

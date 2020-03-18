@@ -23,7 +23,7 @@ class TATWdigitizer;
 
 class TATWactNtuMC : public TAGaction {
 public:
-    explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, EVENT_STRUCT* evStr=0);
+  explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, TAGparaDsc* p_parcal=0, EVENT_STRUCT* evStr=0);
     virtual  ~TATWactNtuMC();
 
     virtual bool  Action();
@@ -32,9 +32,12 @@ public:
 
 private:
     TAGdataDsc*     m_hitContainer;		// output data dsc
+    TAGparaDsc*     fpCalPar;           // parameter dsc
     EVENT_STRUCT*   m_eventStruct;
     TATWdigitizer*  m_Digitizer;       // digitizer
 
+    int cnt = 0;
+    int cntWrong = 0;
    
     TH1F* fpHisHitCol;
     TH1F* fpHisHitLine;
@@ -43,6 +46,13 @@ private:
     TH1F* fpHisDeTotMc;
     TH1F* fpHisTimeTot;
     TH1F* fpHisTimeTotMc;
+    TH2I* fpHisZID;
+    TH2I* fpHisZID_MCtrue;
+    TH2D* fpHisElossTof_MCrec[TATWparCal::kLayers];
+    TH2D* fpHisElossTof_MCtrue[TATWparCal::kLayers];
+    TH2D* fpHisElossTof_MC[TATWparCal::kCharges];
+    TH2D* fpHisElossTof[TATWparCal::kCharges];
+    TH1F* fpHisDistZ[TATWparCal::kCharges];
    
 private:
     void          CreateDigitizer();

@@ -73,6 +73,7 @@
 //Tof Wall (scintillator)
 #include "TATWparGeo.hxx"
 #include "TATWparMap.hxx"
+#include "TATWparCal.hxx"
 #include "TATWdatRaw.hxx"
 #include "TATWntuRaw.hxx"
 #include "TATWactNtuMC.hxx"
@@ -645,9 +646,9 @@ void Booter::FillMCTofWall(EVENT_STRUCT *myStr) {
 
     /*Ntupling the MC Tof Wall information*/
     containerHit    = new TAGdataDsc("containerHit", new TATWntuRaw());
-   
+    myp_parcal = new TAGparaDsc("twCal", new TATWparCal());
 
-    new TATWactNtuMC("an_twraw", containerHit, myStr);
+    new TATWactNtuMC("an_twraw", containerHit, myp_parcal, myStr);
 
     // gTAGroot->AddRequiredItem("myn_twraw");
     gTAGroot->AddRequiredItem("containerHit");

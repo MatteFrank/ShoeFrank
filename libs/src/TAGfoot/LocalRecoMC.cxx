@@ -116,8 +116,9 @@ void LocalRecoMC::CreateRawAction()
    if(GlobalPar::GetPar()->IncludeTW()) {
 
       fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
-      fActNtuRawTw = new TATWactNtuMC("twActNtu", fpNtuRawTw, fEvtStruct);
-      fActNtuRawTw->CreateHistogram();
+      fActNtuRawTw = new TATWactNtuMC("twActNtu", fpNtuRawTw,  fpParCalTw, fEvtStruct);
+      if (fFlagHisto)
+	fActNtuRawTw->CreateHistogram();
       
       fpNtuMcTw   = new TAGdataDsc("twMc", new TAMCntuHit());
       fActNtuMcTw = new TAMCactNtuTof("twActNtuMc", fpNtuMcTw, fEvtStruct);
@@ -175,7 +176,7 @@ void LocalRecoMC::SetRawHistogramDir()
    
    // TOF
    if (GlobalPar::GetPar()->IncludeTW())
-      // fActNtuRawTw->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+      fActNtuRawTw->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    
    // CAL
    if (GlobalPar::GetPar()->IncludeCA())

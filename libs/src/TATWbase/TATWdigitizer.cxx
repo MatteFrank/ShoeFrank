@@ -66,7 +66,8 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
    fTofPropAlpha(280/2.), // velocity of the difference need to divide by 2 (ps/cm)
    fTofErrPropAlpha(2.5), // old 5 ?
    fSlatLength(0),
-   fGain(1)
+   fGain(1),
+   fEnergyThreshold(0.7) // MeV
 {
    SetFunctions();
    SetInitParFunction();
@@ -217,6 +218,15 @@ Float_t TATWdigitizer::GetTofRight(Float_t pos, Float_t time, Float_t edep)
    return timeR;
 }
 
+//___________________________________________________//
+Bool_t TATWdigitizer::IsOverEnergyThreshold(double edep) {
+  
+  if(edep>fEnergyThreshold)
+    return true;
+  else
+    return false;
+  
+}
 //___________________________________________________________________________________________
 Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t Z)
 {
@@ -272,15 +282,14 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    if(energy<0) 
      cout<<"--> "<<energy<<endl;
    pos = (timeB-timeA)/(2*fTofPropAlpha);
-   
+
    Double_t chargeCOM = TMath::Log(chargeA/chargeB);
 
-   // no threshold ??
    //Time should be stored in ns
    tof *= TAGgeoTrafo::PsToNs(); 
    if (fMap[idA] == 0) {
       fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeB); // timeA/B is ps, and tof in ns !
-      fCurrentHit->SetChargeZ(Z);
+      // fCurrentHit->SetChargeZ(Z);
       fMap[idA] = fCurrentHit;
    } else {
       fCurrentHit =  fMap[idA];
