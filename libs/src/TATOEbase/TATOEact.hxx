@@ -38,6 +38,8 @@ class TD;
 
 struct TATOEbaseAct {
     virtual void Action()  = 0;
+    virtual void Output() = 0 ;
+    virtual void RegisterHistograms() = 0;
     virtual ~TATOEbaseAct() = default;
 };
 
@@ -106,13 +108,21 @@ public:
         ukf_m.call_stepper().ode.model().particle_h = &particle_m;
     }
     
+    void Output() override {
+        checker_m.compute_results( details::all_separated_tag{} );
+        logger_m.output();
+    }
+    
+    void RegisterHistograms() override {
+        checker_m.register_histograms( details::all_separated_tag{} );
+    }
+    
     void Action() override {
         
         ++event;
         logger_m.clear();
         checker_m.reset_local_data();
         
-    
         auto hypothesis_c = form_hypothesis();
         
         for(auto & hypothesis : hypothesis_c){
@@ -124,8 +134,8 @@ public:
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
         register_tracks_upward( std::move( track_c ) );
         
-        checker_m.output( details::all_separated_tag{} );
-        logger_m.output();
+        
+
         
         
         
