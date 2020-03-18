@@ -15,6 +15,7 @@
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGactTreeReader.hxx"
+#include "TAGactTreeWriter.hxx"
 #include "TAGntuGlbTrack.hxx"
 
 #include "TAVTntuCluster.hxx"
@@ -221,6 +222,9 @@ void TAGactNtuGlbTrack::RegisterHistograms()
         AddHistogram(histogram_h);
     }
     SetValidHistogram(kTRUE);
+    
+    auto writer_h = static_cast<TAGactTreeWriter*>( gTAGroot->FindAction("locRecFile") );
+    SetHistogramDir( (TDirectory*)writer_h->File() );
 }
 
 
