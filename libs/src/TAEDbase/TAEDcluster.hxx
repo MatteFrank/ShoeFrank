@@ -63,7 +63,6 @@ private:
   Int_t fSelectedIdx;        // selected digit index
   Int_t fSelectedValue;      // selected digit value
   
-  ClassDef(TAEDcluster, 1);   
 };
 
 

@@ -22,75 +22,197 @@ using namespace std;
 
 ClassImp(TAGbaseWD);
 
-TAGbaseWD::~TAGbaseWD()
-{
-
-  
-}
-
-
-TAGbaseWD::TAGbaseWD(TWaveformContainer &W)
-{
-  // set channel/board id
-  chid=W.ChannelId;
-  boardid=W.BoardId;
-
-  // do not change the order of these methods
-  pedestal=W.ComputePedestal();
-  amplitude=W.ComputeAmplitude();
-  chg= W.ComputeCharge();
-  time= W.ComputeArrivalTime();
-  triggertype=W.TrigType;
-  clock_time = -9999.;
-  if (W.IsAClock())clock_time=W.FindFirstRaisingEdgeTime();
-  isclock = W.IsAClock();
-  mcid = -999;
-  chisquare = W.GetChiSquare();
-  
-}
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
-TAGbaseWD::TAGbaseWD()
-  : time(999999.), chg(0.), chid(0),pedestal(0),
-    amplitude(0),boardid(0), isclock(-1),clock_time(-9999.),triggertype(0), mcid(-999), chisquare(-999)
-{
+TAGbaseWD::TAGbaseWD(): time(999999.), chg(0.), chid(0),pedestal(0), baseline(0),
+			amplitude(0),boardid(0),triggertypeId(0), triggercellId(-1000),  mcid(-999){
 }
 
 
+TAGbaseWD::TAGbaseWD(TWaveformContainer *W){
 
-void TAGbaseWD::SetData(Int_t cha ,Int_t board, Double_t charge,
-			Double_t ampl, Double_t apedestal, Double_t atime,
-			Int_t iscl,Double_t clock_t,
-			Int_t TriggerType) {
+  chid=W->ChannelId;
+  boardid=W->BoardId;
+  triggertypeId = W->TrigType;
+  triggercellId = W->TriggerCellId;
+  time = -9999;
+  chg = -99999;
+  amplitude = -9999;
+  pedestal = -9999999999;
+  baseline = -9999999999;
+  mcid = -999;
   
-  time = atime;
-  chg  = charge;
-  pedestal=apedestal;
-  amplitude=ampl;
-  chid   = cha;
-  boardid=board;
-  isclock=iscl;
-  clock_time=clock_t;
-  triggertype=TriggerType;
-
-  return;
 
 }
 
-Int_t  TAGbaseWD::IsClock()
-{
-  return isclock;
+TAGbaseWD::~TAGbaseWD(){
+
+  
 }
 
 
 
-Double_t TAGbaseWD::Clocktime()
-{
-  if (IsClock())
-    {
-      return clock_time;
+
+double TAGbaseWD::ComputeBaseline(TWaveformContainer *w){
+
+  return TMath::Mean(w->m_vectA.begin()+2, w->m_vectA.begin()+27);
+
+}
+
+
+double TAGbaseWD::ComputePedestal(TWaveformContainer *w){
+
+  return baseline*(w->m_vectT.at(w->m_vectT.size()-1)- w->m_vectT.at(0));
+
+}
+
+
+double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w){
+
+  return  -((TMath::MinElement(w->m_vectA.size()-5, &w->m_vectA[5])) - baseline);
+
+}
+
+
+
+double TAGbaseWD::ComputeCharge(TWaveformContainer *w){
+
+  vector<double> tmp_amp = w->m_vectA;
+  vector<double> tmp_time = w->m_vectT;
+  
+  double charge = 0.;
+  double prod=1;
+  
+  double deltat=0.; //trapezi
+  double b1=0, b2=0;
+  double a1, a2;
+  double m,q,t1,t2,thalf;
+  for (int j = 0; j<tmp_amp.size()-1; j++){
+    a1 = tmp_amp.at(j);
+    a2 = tmp_amp.at(j+1);
+    t1 = tmp_time.at(j);
+    t2 = tmp_time.at(j+1);
+    prod=a1*a2;
+    if(prod<0){
+      m = (a2-a1)/(t2-t1);
+      q = a2-m*t2;
+      thalf = -q/m;
+      charge+=0.5*a1*(thalf-t1);
+      charge+=0.5*a2*(t2-thalf);
+    }else{
+      charge += 0.5*(a1+a2)*(t2-t1);
     }
-  return -1;
+  }
+
+  return -(charge - pedestal);
+
 }
+
+
+
+
+double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
+  
+  vector<double> time = w->m_vectT;
+  vector<double> amp = w->m_vectA;
+
+  //I create the waveform graph
+  TGraph wgr(time.size(),&time[0], &amp[0]);
+
+
+  //I select the time window in which applying the cfd 
+  int peak_bin= TMath::LocMin(amp.size(), &amp[0]);
+  if(peak_bin<0 || peak_bin>time.size()-1){
+    return -10000;
+  }
+  double timepeak = time.at(peak_bin);
+  double tmin= timepeak+tleft;
+  double tmax = timepeak+tright;
+
+  
+  // I build the bi-polar function 
+  double a=0;
+  double t = tmin;
+  vector<double> time_cfd, amp_sum_cfd;
+  while(t<tmax){
+    a=(frac*(wgr.Eval(t)-baseline)-(wgr.Eval(t-del)-baseline));
+    amp_sum_cfd.push_back(a);
+    time_cfd.push_back(t);
+    t+=0.2;
+  }
+
+  // //i find the zero crossing
+  TGraph wsum_cfd(time_cfd.size(), &time_cfd[0], &amp_sum_cfd[0]);
+
+  
+  int minimum_bin= TMath::LocMin(amp_sum_cfd.size()-2, &amp_sum_cfd[2]);
+  int bin_zero_crossing=minimum_bin;
+  bool foundZeroCrossing=false;
+  double tmp_a=amp_sum_cfd.at(minimum_bin);
+  while(!foundZeroCrossing){
+    tmp_a=amp_sum_cfd.at(bin_zero_crossing);
+    if(tmp_a>0)foundZeroCrossing=true;
+    if(bin_zero_crossing == amp_sum_cfd.size()-1 || bin_zero_crossing==1){
+      break;
+    }
+    bin_zero_crossing++;
+  }
+
+
+  // I compute the zero-crossing time
+  double tarr=0;
+  double m,q;
+  double t1,t2,a1,a2;
+  if(foundZeroCrossing){
+    t1 = time_cfd.at(bin_zero_crossing-1);
+    t2 = time_cfd.at(bin_zero_crossing);
+    a1 = amp_sum_cfd.at(bin_zero_crossing-1);
+    a2 = amp_sum_cfd.at(bin_zero_crossing);
+    m = (a2-a1)/(t2-t1);
+    q = a2 - m*t2;
+    tarr = -q/m;
+  }else{
+    tarr=-1000;
+  }
+  
+  return tarr;
+
+  
+}
+
+
+double TAGbaseWD::ComputeTimeSimpleCFD(TWaveformContainer *w, double frac){
+
+
+  // evaluate the absolute threshold
+  Double_t AbsoluteThreshold=-frac*amplitude+baseline;
+
+  
+  int i_ampmin = TMath::LocMin(w->m_vectA.size(),&(w->m_vectA)[0]);
+  Int_t i_thr = i_ampmin;
+
+  double t_arr=-1000;
+  bool foundthreshold = false;
+  while(!foundthreshold && i_thr<w->m_vectA.size()-1 && i_thr>1){
+    double a1 = w->m_vectA.at(i_thr);
+    double a2 = w->m_vectA.at(i_thr+1);
+    double t1 = w->m_vectT.at(i_thr);
+    double t2 = w->m_vectT.at(i_thr+1);
+    double m = (a2-a1)/(t2-t1);
+    double q = a1 - m*t1;
+    t_arr = (AbsoluteThreshold-q)/m;
+    if(AbsoluteThreshold>a2 && AbsoluteThreshold<=a1)foundthreshold =true;
+    i_thr--;
+  }
+  
+
+  return t_arr;
+
+
+
+
+}
+
+
+

@@ -143,7 +143,6 @@ protected:
    static Float_t  fgDefSmearPos;
    static Bool_t   fgSmearFlag;
 
-   ClassDef(TAVTbaseDigitizer,0)
 };
 
 #endif

@@ -25,9 +25,10 @@ set( with_dictionnaries
    TASTntuRaw
    TASTparGeo
    TASTparMap
-   TASTparTime	
    TASTdigitizer
    TAGbaseWD
+   TAGbaseWDparTime
+   TAGbaseWDparMap
    TWaveformContainer
 )
 

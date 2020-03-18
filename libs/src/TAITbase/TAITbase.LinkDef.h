@@ -9,7 +9,6 @@
 #pragma link C++ class TAITparGeo+;
 #pragma link C++ class TAITparConf+;
 
-#pragma link C++ class TAITdigitizerE+;
 #pragma link C++ class TAITntuRaw+;
 #pragma link C++ class TAITntuHit+;
 #pragma link C++ class TAITactBaseRaw+;

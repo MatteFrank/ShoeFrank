@@ -45,7 +45,6 @@ private:
    static Int_t    fgAdcDepth;
    static Float_t  fgChargeMax;
 
-   ClassDef(TAVTdigitizerG,0)
 };
         
 

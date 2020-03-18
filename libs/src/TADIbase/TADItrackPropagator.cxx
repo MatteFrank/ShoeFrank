@@ -14,8 +14,6 @@
    units: B (Gaus), pos (cm), momentum (MeV/c)
 */
 
-ClassImp(TADItrackPropagator);
-
 const  Double_t TADItrackPropagator::fgkConvFactor = 0.299792458;
 
 //______________________________________________________________________________

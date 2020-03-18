@@ -57,7 +57,6 @@ private:
 private:
    static const Double_t fgkConvFactor;
    
-   ClassDef(TADItrackPropagator,1)
 };
 
 #endif

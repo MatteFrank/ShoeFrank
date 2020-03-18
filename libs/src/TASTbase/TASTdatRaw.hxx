@@ -21,39 +21,57 @@ class TASTrawHit : public TAGbaseWD {
 
 public:
   TASTrawHit();
+  TASTrawHit(TWaveformContainer *w);
   virtual         ~TASTrawHit();
-  TASTrawHit(TWaveformContainer &w);
+  
+  virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
+  virtual double ComputeCharge( TWaveformContainer *w);
+  virtual double ComputeAmplitude( TWaveformContainer *w);
+  virtual double ComputePedestal( TWaveformContainer *w);
+  virtual double ComputeBaseline( TWaveformContainer *w);
+  
   ClassDef(TASTrawHit,2);
-    //
+  //
 };
 
 //##############################################################################
 
 class TASTdatRaw : public TAGdata {
 public:
+
   TASTdatRaw();
   virtual         ~TASTdatRaw();
-  Int_t             GetHitsN() const;
-  TASTrawHit*       GetHit(Int_t i_ind);
-  const TASTrawHit* GetHit(Int_t i_ind) const;
-  void              NewHit(TWaveformContainer &W);
-  virtual void      Clear(Option_t* opt="");
-  void              SetupClones();
-  virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
+
+  TASTrawHit*       Hit(Int_t i_ind);
+  const TASTrawHit* Hit(Int_t i_ind) const;
+
+  TASTrawHit*       SuperHit(){return superhit;}  
+  
+  void NewHit(TWaveformContainer *W);
+  void NewSuperHit(vector<TWaveformContainer*>);
+  void SetupClones();
+
+   
+  virtual void    Clear(Option_t* opt="");
+  virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
 
   inline void UpdateRunTime(int value){m_run_time+=value;}
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
-private:
-  Int_t           fHitsN;		    // 
-  TClonesArray*   fListOfHits;			// hits
+  Int_t           nirhit;		    //
+  TClonesArray*   hir;			// hits
+  TASTrawHit* superhit;  //sum
 
+  
   ClassDef(TASTdatRaw,3);
-
+  
+  
 private:
+
   static TString fgkBranchName;    // Branch name in TTree
   int m_run_time;
 
+  
 };
 
 #endif

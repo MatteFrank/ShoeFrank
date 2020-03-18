@@ -333,8 +333,7 @@ Bool_t TAVTactNtuTrackH::FindVertices()
 			TVector2 pos = track0->DistanceMin(track1);
 			if (TMath::Abs(pos.X()) < TAVTbaseParGeo::GetTargetWidth()/2. && pos.Y() < fSearchClusDistance) {
 			   TVector3* vec = new TVector3(0.,0.,0.);
-			   TAVTline line  = track0->GetTrackLine();
-			   vec->SetXYZ(line.GetSlopeZ()(0)*pos.X() + line.GetOrigin()(0),line.GetSlopeZ()(1)*pos.X() + line.GetOrigin()(1),pos.X());
+			   vec->SetXYZ(line.GetSlopeZ()(0)*pos.X() + line.GetOrigin()(0),track0->GetSlopeZ()(1)*pos.X() + track0->GetOrigin()(1),pos.X());
 			   TVector3* veclast = (TVector3*)ListVertex->Last();
 			   if (!veclast){
 				  ListVertex->Add(vec);

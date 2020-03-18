@@ -3,9 +3,6 @@
 #include "TAEDcluster.hxx"
 #endif
 
-//
-ClassImp(TAEDcluster)
-
 //__________________________________________________________
 TAEDcluster::TAEDcluster(const Text_t* name) 
   : TEveQuadSet(name),

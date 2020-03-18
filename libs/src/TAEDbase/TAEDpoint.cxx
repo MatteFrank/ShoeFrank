@@ -3,9 +3,6 @@
 
 #include "TAEDpoint.hxx"
 
-//
-ClassImp(TAEDpoint)
-
 //__________________________________________________________
 TAEDpoint::TAEDpoint(const Text_t* name) 
   : TEvePointSet(name)

@@ -14,9 +14,6 @@
 
 #include <Riostream.h>
 
-//
-ClassImp(TAEDtrack)
-
 using namespace std;
 
 //__________________________________________________________

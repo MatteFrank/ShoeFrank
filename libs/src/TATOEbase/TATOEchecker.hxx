@@ -30,6 +30,15 @@ class TATWpoint;
 namespace details{
     struct should_pass_tag{};
     struct should_not_pass_tag{};
+    
+    
+    struct base_charge_tag{};
+    
+    template<std::size_t Charge>
+    struct charge_tag : base_charge_tag{};
+    
+    struct all_mixed_tag{};
+    struct all_separated_tag{};
 } // namespace details
 
 template<class Action>
@@ -56,6 +65,28 @@ struct TATOEchecker{
         particle real_particle;
     };
     
+    struct computation_module{
+        int charge;
+        
+        std::size_t reconstructed_number{0};
+        std::size_t reconstructible_number{0};
+        std::size_t local_reconstructed_number{0};
+        std::size_t local_reconstructible_number{0};
+        
+        std::size_t correct_cluster_number{0};
+        std::size_t total_cluster_number{0};
+        std::size_t local_correct_cluster_number{0};
+        std::size_t local_total_cluster_number{0};
+        
+        void reset_local()
+        {
+            local_correct_cluster_number = 0;
+            local_total_cluster_number = 0;
+            local_reconstructible_number = 0;
+            local_reconstructed_number = 0;
+        }
+    };
+    
 private:
     TAMCntuEve* data_mhc;
    
@@ -63,22 +94,10 @@ private:
 
     node_type const * current_node_mh = nullptr;
     
-    std::size_t reconstructed_number_m{0};
-    std::size_t reconstructible_number_m{0};
-    std::size_t local_reconstructed_number_m{0};
-    std::size_t local_reconstructible_number_m{0};
-    
     std::vector< track > reconstructible_track_mc;
-    
-    
-    std::size_t correct_cluster_number_m{0};
-    std::size_t total_cluster_number_m{0};
-    std::size_t local_correct_cluster_number_m{0};
-    std::size_t local_total_cluster_number_m{0};
-    
-    
-    std::size_t local_fake_number_m{0};
+    std::vector< computation_module > module_c;
     std::size_t fake_number_m{0};
+    std::size_t local_fake_number_m{0};
     
     Action& action_m;
     
@@ -87,7 +106,10 @@ public:
                   Action& action_p ) :
         data_mhc{ static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" )->Object() ) },
         target_limits_m{ retrieve_target_limits( global_parameters_ph ) },
-        action_m{action_p} {}
+        action_m{action_p}
+    {
+        module_c.reserve(20);
+    }
     
 private:
     std::pair<double, double> retrieve_target_limits( TAGparGeo const * global_parameters_ph ) const
@@ -150,8 +172,9 @@ public:
                                          
                                          output_real_particle( reconstructible_track_mc.back().real_particle );
                                          
-                                         ++reconstructible_number_m;
-                                         ++local_reconstructible_number_m;
+                                         auto & module = find_module( reconstructible_track_mc.back().real_particle.charge );
+                                         ++module.reconstructible_number;
+                                         ++module.local_reconstructible_number;
                                          
                                          return true;
                                      }
@@ -254,6 +277,19 @@ private:
         return track{ std::move(data_ch), std::move(real_particle) };
     }
 
+    
+    computation_module& find_module(int charge_p)
+    {
+        auto module_i = std::find_if( module_c.begin(), module_c.end(),
+                                      [&charge_p](computation_module const & module_p){ return charge_p == module_p.charge; });
+        if( module_i == module_c.end() ){
+            module_c.push_back( computation_module{charge_p} ) ;
+            return module_c.back();
+        }
+        return *module_i;
+    }
+    
+    
 public:
     
     
@@ -300,8 +336,10 @@ public:
         auto reconstructible_i = retrieve_reconstructible( id_c );
         
         if( reconstructible_i !=  reconstructible_track_mc.end() ){
-            ++reconstructed_number_m ;
-            ++local_reconstructed_number_m;
+            
+            auto & module = find_module( reconstructible_i->real_particle.charge );
+            ++module.reconstructed_number ;
+            ++module.local_reconstructed_number;
             
             
             action_m.logger_m << "targeted_track_id: ";
@@ -309,8 +347,8 @@ public:
             for(auto const& id : reconstructible_id_c){ action_m.logger_m << id << " "; }
             action_m.logger_m << '\n';
             
-            total_cluster_number_m += full_state_c.size();
-            local_total_cluster_number_m += full_state_c.size();
+            module.total_cluster_number += full_state_c.size();
+            module.local_total_cluster_number += full_state_c.size();
             
             
             for( auto const & full_state : full_state_c ){
@@ -328,16 +366,16 @@ public:
                                                         [&id_p](int current_id_p){ return current_id_p == id_p; } );
                                  }   ) )
                 {
-                    ++correct_cluster_number_m;
-                    ++local_correct_cluster_number_m;
+                    ++module.correct_cluster_number;
+                    ++module.local_correct_cluster_number;
                 }
             }
             
             
         }
         else{
-            ++local_fake_number_m;
             ++fake_number_m;
+            ++local_fake_number_m;
             action_m.logger_m.add_sub_header("fake_track");
             for( auto const & full_state : full_state_c ){
                 action_m.logger_m << "current_track_id: ";
@@ -458,33 +496,82 @@ public:
     }
     
 public:
-    void output(){
+    template< int Charge, class Enabler = std::enable_if_t< (Charge > 0) > >
+    void output( details::charge_tag<Charge> ){
 //        action_m.logger_m.freeze_everything();
         action_m.logger_m.add_root_header("RESULTS");
-        output_efficiency();
-        output_purity();
+        action_m.logger_m.template add_header<1, details::immutable_tag>("one_charge_only");
+        action_m.logger_m << "charge: " << Charge << '\n';
+        auto & module = find_module( Charge );
+        output_efficiency( module );
+        output_purity( module );
     }
     
-private:
-    void output_efficiency(){
+    void output( details::all_mixed_tag ){
+        //        action_m.logger_m.freeze_everything();
+        action_m.logger_m.add_root_header("RESULTS");
+        action_m.logger_m.template add_header<1, details::immutable_tag>("mixed");
+        
+        std::size_t reconstructed_number{0};
+        std::size_t reconstructible_number{0};
+        std::size_t local_reconstructed_number{0};
+        std::size_t local_reconstructible_number{0};
+        
+        std::size_t correct_cluster_number{0};
+        std::size_t total_cluster_number{0};
+        std::size_t local_correct_cluster_number{0};
+        std::size_t local_total_cluster_number{0};
+        
+        for(auto const & module : module_c){
+            reconstructed_number += module.reconstructed_number;
+            reconstructible_number += module.reconstructible_number;
+            local_reconstructed_number += module.local_reconstructed_number;
+            local_reconstructible_number += module.local_reconstructible_number;
+            
+            correct_cluster_number += module.correct_cluster_number;
+            total_cluster_number += module.total_cluster_number;
+            local_correct_cluster_number += module.local_correct_cluster_number;
+            local_total_cluster_number += module.local_total_cluster_number;
+        }
+        
         action_m.logger_m.template add_header<1, details::immutable_tag>("efficiency");
-        action_m.logger_m << "reconstructed_tracks: " << local_reconstructed_number_m << '\n';
-        action_m.logger_m << "reconstructible_tracks: " << local_reconstructible_number_m << '\n';
-        action_m.logger_m << "local_efficiency: " << local_reconstructed_number_m * 100./local_reconstructible_number_m << '\n';
-        action_m.logger_m << "global_efficiency: " << reconstructed_number_m * 100./reconstructible_number_m << '\n';
-        action_m.logger_m << "fake_rate: " << fake_number_m * 100./reconstructed_number_m << '\n';
-        if( local_fake_number_m >  0){
-            action_m.logger_m.freeze_everything();
+        action_m.logger_m << "reconstructed_tracks: " << local_reconstructed_number << '\n';
+        action_m.logger_m << "reconstructible_tracks: " << local_reconstructible_number << '\n';
+        action_m.logger_m << "local_efficiency: " << local_reconstructed_number * 100./local_reconstructible_number << '\n';
+        action_m.logger_m << "global_efficiency: " << reconstructed_number * 100./reconstructible_number << '\n';
+        action_m.logger_m << "fake_rate: " << fake_number_m * 100. /reconstructed_number  << '\n';
+        
+        action_m.logger_m.template add_header<1, details::immutable_tag>("purity");
+        action_m.logger_m << "correct_cluster: " << local_correct_cluster_number<< '\n';
+        action_m.logger_m << "total_cluster: " << local_total_cluster_number << '\n';
+        action_m.logger_m << "local_purity: " << local_correct_cluster_number * 100./local_total_cluster_number << '\n';
+        action_m.logger_m << "global_purity: " << correct_cluster_number * 100./total_cluster_number << '\n';
+    }
+    
+    void output( details::all_separated_tag ){
+        //        action_m.logger_m.freeze_everything();
+        action_m.logger_m.add_root_header("RESULTS");
+        action_m.logger_m.template add_header<1, details::immutable_tag>("separated");
+        for(auto const & module : module_c){
+            action_m.logger_m << "charge: " << module.charge << '\n';
+            output_efficiency( module );
+            output_purity( module );
         }
     }
     
     
-    void output_purity(){
-        action_m.logger_m.template add_header<1, details::immutable_tag>("purity");
-        action_m.logger_m << "correct_cluster: " << local_correct_cluster_number_m << '\n';
-        action_m.logger_m << "total_cluster: " << local_total_cluster_number_m << '\n';
-        action_m.logger_m << "local_purity: " << local_correct_cluster_number_m * 100./local_total_cluster_number_m << '\n';
-        action_m.logger_m << "global_purity: " << correct_cluster_number_m * 100./total_cluster_number_m << '\n';
+private:
+    void output_efficiency( computation_module const & module_p ){
+        auto efficiency = module_p.reconstructed_number * 1./module_p.reconstructible_number;
+        action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
+        action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1- efficiency))/sqrt(module_p.reconstructible_number) * 100<< '\n';
+    }
+    
+    
+    void output_purity( computation_module const & module_p ){
+        auto purity = module_p.correct_cluster_number * 1./module_p.total_cluster_number;
+        action_m.logger_m << "global_purity: " << purity * 100 << '\n';
+        action_m.logger_m << "global_purity_error: " << sqrt(purity* (1-purity))/sqrt(module_p.reconstructible_number)  * 100<< '\n';
         
 //        if( 2 * local_correct_cluster_number_m < local_total_cluster_number_m ){
 //            action_m.logger_m.freeze_everything();
@@ -494,11 +581,8 @@ private:
     
 public:
     void reset_local_data(){
-        local_reconstructed_number_m = 0;
-        local_reconstructible_number_m = 0;
+        for(auto& module : module_c){ module.reset_local(); }
         reconstructible_track_mc.clear();
-        local_correct_cluster_number_m = 0;
-        local_total_cluster_number_m = 0;
         local_fake_number_m = 0;
     }
     

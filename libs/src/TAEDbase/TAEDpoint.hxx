@@ -35,7 +35,6 @@ public:
 private:
    Int_t fSelectedIdx;        // selected digit index
 
-  ClassDef(TAEDpoint, 1);
 };
 
 

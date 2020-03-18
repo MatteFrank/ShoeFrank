@@ -38,7 +38,6 @@ public:
 
 
 private:
-  double find_deltaclock(int ch_num, int bo_num);
   
   TAGdataDsc*     fpDatRaw;		    // input data dsc
   TAGdataDsc*     fpNtuRaw;		    // output data dsc
@@ -57,7 +56,7 @@ private:
 
   bool m_debug;
 
-  map<pair<int,int>, double> clktime_map;
+ 
 
 
 private:
@@ -66,15 +65,14 @@ private:
   //
   Double_t GetRawEnergy(TATWrawHit*a,TATWrawHit*b);
   Double_t GetRawTime(TATWrawHit*a,TATWrawHit*b);
-  //
+  Double_t GetRawTimeOth(TATWrawHit*a,TATWrawHit*b);
   Double_t GetTime(Double_t Time,Int_t BarId);
+  Double_t GetTimeOth(Double_t Time,Int_t BarId);
   Double_t GetEnergy(Double_t RawEnergy,Int_t BarId);
   Double_t GetPosition(TATWrawHit*a,TATWrawHit*b);
   Double_t GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b);
 
 
-  double find_clocktime(int ch_num, int bo_num);
-  bool clocktimeIsSet(int ch_num, int bo_num);
 };
 
 #endif

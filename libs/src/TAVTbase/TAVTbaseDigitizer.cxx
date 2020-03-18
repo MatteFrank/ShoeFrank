@@ -22,9 +22,6 @@
  \brief digitizer for pixel **
  */
 
-ClassImp(TAVTbaseDigitizer);
-
-
 Bool_t   TAVTbaseDigitizer::fgSmearFlag       = true;
 Float_t  TAVTbaseDigitizer::fgDefSmearPos     =  10.35;    // in micron
 

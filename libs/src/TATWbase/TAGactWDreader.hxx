@@ -12,10 +12,9 @@
 #include "TAGdataDsc.hxx"
 #include "TASTdatRaw.hxx"
 #include "TATWdatRaw.hxx"
-#include "TASTparMap.hxx"
-#include "TATWparMap.hxx"
-#include "TASTparTime.hxx"
-#include "TATWparTime.hxx"
+#include "TAGbaseWDparTime.hxx"
+#include "TAGbaseWDparMap.hxx"
+
 
 class WDEvent;
 
@@ -36,10 +35,8 @@ public:
 				 TAGdataDsc* p_datdaq,
 				 TAGdataDsc* p_stwd, 
 				 TAGdataDsc* p_twwd, 
-				 TAGparaDsc* p_stmap, 
-				 TAGparaDsc* p_twmap, 
-				 TAGparaDsc* p_sttim, 
-				 TAGparaDsc* p_twtim);
+				 TAGparaDsc* p_WDmap,
+                                 TAGparaDsc* p_WDtim);
 
   virtual         ~TAGactWDreader();
   void CreateHistogram();
@@ -52,10 +49,8 @@ public:
   TAGdataDsc*     fpDatDaq;		    // input data dsc
   TAGdataDsc*     fpStWd;		    // output data dsc
   TAGdataDsc*     fpTwWd;		    // output data dsc
-  TAGparaDsc*     fpStMap;		    // parameter dsc
-  TAGparaDsc*     fpTwMap;		    // parameter dsc
-  TAGparaDsc*     fpStTim;		    // parameter dsc
-  TAGparaDsc*     fpTwTim;		    // parameter dsc
+  TAGparaDsc*     fpWDTim;		    // parameter dsc
+  TAGparaDsc*     fpWDMap;		    // parameter dsc
 
   //vector<TH1F *> wv0;
 
@@ -63,7 +58,21 @@ public:
   int m_nev;
   
  private:
-  Bool_t DecodeHits(const WDEvent* evt, TASTdatRaw *p_straw, TASTparMap *p_stMap, TASTparTime *p_stTim, TATWdatRaw *p_twraw, TATWparMap *p_twMap, TATWparTime *p_twTim);
+
+  Int_t DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
+  Bool_t WaveformsTimeCalibration();
+  Bool_t CreateHits(TASTdatRaw *p_straw, TATWdatRaw *p_twraw);
+  void Clear();
+
+  vector<double> ADC2Volt(vector<int>, double);
+  vector<double> ADC2Volt_CLK(vector<int>);
+  double ComputeJitter(TWaveformContainer*);
+  
+  vector<TWaveformContainer*> st_waves;
+  vector<TWaveformContainer*> tw_waves;
+  map<pair<int,int>, TWaveformContainer*> clk_waves;
+
+  
 };
 
 #endif
