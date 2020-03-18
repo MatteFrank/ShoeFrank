@@ -8,7 +8,7 @@
 #include <TStopwatch.h>
 
 #include "GlobalPar.hxx"
-#include "LocalRecoMC.h"
+#include "LocalRecoMC.hxx"
 
 #endif
 
@@ -16,7 +16,7 @@
 //void ReadVtxRawMC(TString name = "16O_C2H4_200_1.root")
 //void ReadVtxRawMC(TString name = "p_80_vtx.root")
 //void ReadVtxRawMC(TString name = "12C_80_vtx.root")
-void DecodeMC(TString name = "12C_400_vtx.root")
+void DecodeMC(TString name = "12C_C_200_1.root", TString exp = "")
 {
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
@@ -25,12 +25,14 @@ void DecodeMC(TString name = "12C_400_vtx.root")
    TString nameOut = name(0, pos);
    nameOut.Append("_Out.root");
    
-   LocalRecoMC* locRec = new LocalRecoMC(name, nameOut);
+   
+   LocalRecoMC* locRec = new LocalRecoMC(exp, name, nameOut);
    
    // global setting
    //locRec->EnableTree();
    locRec->EnableHisto();
-   
+   locRec->EnableTracking();
+
    
    TStopwatch watch;
    watch.Start();
