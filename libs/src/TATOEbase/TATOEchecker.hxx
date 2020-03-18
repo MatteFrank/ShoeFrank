@@ -25,6 +25,7 @@
 #include "TAGcluster.hxx"
 #include "TATOEutilities.hxx"
 
+
 class TATWpoint;
 
 namespace details{
@@ -32,10 +33,9 @@ namespace details{
     struct should_not_pass_tag{};
     
     
-    struct base_charge_tag{};
     
     template<std::size_t Charge>
-    struct charge_tag : base_charge_tag{};
+    struct charge_tag {};
     
     struct all_mixed_tag{};
     struct all_separated_tag{};
@@ -66,6 +66,12 @@ struct TATOEchecker{
     };
     
     struct computation_module{
+        
+        struct histogram_bundle {
+            TH1D* reconstructible_h{nullptr};
+            TH1D* reconstructed_h{nullptr};
+        } efficiency_histogram_bundle;
+        
         int charge;
         
         std::size_t reconstructed_number{0};
@@ -77,6 +83,24 @@ struct TATOEchecker{
         std::size_t total_cluster_number{0};
         std::size_t local_correct_cluster_number{0};
         std::size_t local_total_cluster_number{0};
+                                                                               
+        
+        computation_module(int charge_p, double beam_energy_p) : charge{charge_p}
+        {
+            efficiency_histogram_bundle.reconstructible_h = new TH1D{ Form("reconstructible_charge:%d", charge),
+                                                                      ";Momentum(Gev/c);Count", 100, 0,
+                                                                      beam_energy_p/1000 };
+            efficiency_histogram_bundle.reconstructed_h = new TH1D{ Form("reconstructed_charge:%d", charge),
+                                                                    ";Momentum(Gev/c);Count", 100, 0,
+                                                                    beam_energy_p/1000 };
+        }
+                                                                               
+        
+        TH1D const * get_reconstructed_histogram() const { return efficiency_histogram_bundle.reconstructed_h; }
+        TH1D * get_reconstructed_histogram() { return efficiency_histogram_bundle.reconstructed_h; }
+        
+        TH1D const * get_reconstructible_histogram() const { return efficiency_histogram_bundle.reconstructible_h; }
+        TH1D * get_reconstructible_histogram() { return efficiency_histogram_bundle.reconstructible_h; }
         
         void reset_local()
         {
@@ -175,6 +199,8 @@ public:
                                          auto & module = find_module( reconstructible_track_mc.back().real_particle.charge );
                                          ++module.reconstructible_number;
                                          ++module.local_reconstructible_number;
+                                         module.get_reconstructible_histogram()->Fill( reconstructible_track_mc.back().real_particle.momentum/1000 );
+                                         
                                          
                                          return true;
                                      }
@@ -283,7 +309,7 @@ private:
         auto module_i = std::find_if( module_c.begin(), module_c.end(),
                                       [&charge_p](computation_module const & module_p){ return charge_p == module_p.charge; });
         if( module_i == module_c.end() ){
-            module_c.push_back( computation_module{charge_p} ) ;
+            module_c.push_back( computation_module{charge_p, action_m.beam_energy_m} ) ;
             return module_c.back();
         }
         return *module_i;
@@ -340,7 +366,7 @@ public:
             auto & module = find_module( reconstructible_i->real_particle.charge );
             ++module.reconstructed_number ;
             ++module.local_reconstructed_number;
-            
+            module.get_reconstructed_histogram()->Fill( reconstructible_i->real_particle.momentum/1000 );
             
             action_m.logger_m << "targeted_track_id: ";
             auto const & reconstructible_id_c = reconstructible_i->real_particle.get_indices();
@@ -497,7 +523,7 @@ public:
     
 public:
     template< int Charge, class Enabler = std::enable_if_t< (Charge > 0) > >
-    void output( details::charge_tag<Charge> ){
+    void compute_results( details::charge_tag<Charge> ){
 //        action_m.logger_m.freeze_everything();
         action_m.logger_m.add_root_header("RESULTS");
         action_m.logger_m.template add_header<1, details::immutable_tag>("one_charge_only");
@@ -507,7 +533,7 @@ public:
         output_purity( module );
     }
     
-    void output( details::all_mixed_tag ){
+    void compute_results( details::all_mixed_tag ){
         //        action_m.logger_m.freeze_everything();
         action_m.logger_m.add_root_header("RESULTS");
         action_m.logger_m.template add_header<1, details::immutable_tag>("mixed");
@@ -548,27 +574,37 @@ public:
         action_m.logger_m << "global_purity: " << correct_cluster_number * 100./total_cluster_number << '\n';
     }
     
-    void output( details::all_separated_tag ){
+    void compute_results( details::all_separated_tag ){
         //        action_m.logger_m.freeze_everything();
         action_m.logger_m.add_root_header("RESULTS");
         action_m.logger_m.template add_header<1, details::immutable_tag>("separated");
         for(auto const & module : module_c){
             action_m.logger_m << "charge: " << module.charge << '\n';
-            output_efficiency( module );
-            output_purity( module );
+            compute_efficiency( module );
+            compute_purity( module );
         }
     }
     
+    void register_histograms( details::all_separated_tag )
+    {
+        for(auto const & module : module_c){
+            TH1D* efficiency_histogram_h = new TH1D{ *module.get_reconstructed_histogram() };
+            efficiency_histogram_h->Divide( module.get_reconstructible_histogram() );
+            action_m.reconstructed_track_mhc->AddHistogram( efficiency_histogram_h );
+        }
+    }
     
 private:
-    void output_efficiency( computation_module const & module_p ){
+    void compute_efficiency( computation_module const & module_p ){
         auto efficiency = module_p.reconstructed_number * 1./module_p.reconstructible_number;
         action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
         action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1- efficiency))/sqrt(module_p.reconstructible_number) * 100<< '\n';
+    
+        
     }
     
     
-    void output_purity( computation_module const & module_p ){
+    void compute_purity( computation_module const & module_p ){
         auto purity = module_p.correct_cluster_number * 1./module_p.total_cluster_number;
         action_m.logger_m << "global_purity: " << purity * 100 << '\n';
         action_m.logger_m << "global_purity_error: " << sqrt(purity* (1-purity))/sqrt(module_p.reconstructible_number)  * 100<< '\n';

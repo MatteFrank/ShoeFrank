@@ -222,7 +222,11 @@ void BaseReco::SetRecHistogramDir()
    if (GlobalPar::GetPar()->IncludeMSD()) 
       fActClusMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    
-  
+   if (GlobalPar::GetPar()->IncludeTOE())
+   {
+       fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   }
+    
 }
 
 //__________________________________________________________

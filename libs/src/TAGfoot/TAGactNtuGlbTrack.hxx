@@ -63,6 +63,11 @@ public:
    //! Get tree in standalone mode
    TTree*    GetTree();
     
+    TAGntuGlbTrack* GetTrackContainer() {return static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() );}
+    
+    void Output(){ fActTOE->Output(); }
+    void RegisterHistograms();
+    
 private:
     TATOEbaseAct* SetupAction() const;
     TADIgeoField*        GetFootField()      const { return fField;  }
