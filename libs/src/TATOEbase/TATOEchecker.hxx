@@ -87,10 +87,10 @@ struct TATOEchecker{
         
         computation_module(int charge_p, double beam_energy_p) : charge{charge_p}
         {
-            efficiency_histogram_bundle.reconstructible_h = new TH1D{ Form("reconstructible_charge:%d", charge),
+            efficiency_histogram_bundle.reconstructible_h = new TH1D{ Form("reconstructible_charge%d", charge),
                                                                       ";Momentum(Gev/c);Count", 100, 0,
                                                                       beam_energy_p/1000 };
-            efficiency_histogram_bundle.reconstructed_h = new TH1D{ Form("reconstructed_charge:%d", charge),
+            efficiency_histogram_bundle.reconstructed_h = new TH1D{ Form("reconstructed_charge%d", charge),
                                                                     ";Momentum(Gev/c);Count", 100, 0,
                                                                     beam_energy_p/1000 };
         }
@@ -199,7 +199,7 @@ public:
                                          auto & module = find_module( reconstructible_track_mc.back().real_particle.charge );
                                          ++module.reconstructible_number;
                                          ++module.local_reconstructible_number;
-                                         module.get_reconstructible_histogram()->Fill( reconstructible_track_mc.back().real_particle.momentum/1000 );
+                                         module.get_reconstructible_histogram()->Fill( reconstructible_track_mc.back().real_particle.momentum );
                                          
                                          
                                          return true;
@@ -366,7 +366,7 @@ public:
             auto & module = find_module( reconstructible_i->real_particle.charge );
             ++module.reconstructed_number ;
             ++module.local_reconstructed_number;
-            module.get_reconstructed_histogram()->Fill( reconstructible_i->real_particle.momentum/1000 );
+            module.get_reconstructed_histogram()->Fill( reconstructible_i->real_particle.momentum );
             
             action_m.logger_m << "targeted_track_id: ";
             auto const & reconstructible_id_c = reconstructible_i->real_particle.get_indices();
@@ -590,6 +590,8 @@ public:
         for(auto const & module : module_c){
             TH1D* efficiency_histogram_h = new TH1D{ *module.get_reconstructed_histogram() };
             efficiency_histogram_h->Divide( module.get_reconstructible_histogram() );
+            efficiency_histogram_h->SetName( Form("efficiency_charge%d", module.charge) );
+            std::cout << "charge: " << module.charge << " -> " << efficiency_histogram_h->GetEntries() << std::endl;
             action_m.reconstructed_track_mhc->AddHistogram( efficiency_histogram_h );
         }
     }
