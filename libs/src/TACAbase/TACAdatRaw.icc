@@ -10,7 +10,7 @@
 
 inline Int_t TACArawHit::Type() const
 {
-  return ir_typ;
+  return fType;
 }
 
 //------------------------------------------+-----------------------------------
@@ -18,7 +18,7 @@ inline Int_t TACArawHit::Type() const
 
 inline Int_t TACArawHit::ChID() const
 {
-  return ir_chid;
+  return fChannelID;
 }
 
 //------------------------------------------+-----------------------------------
@@ -26,7 +26,7 @@ inline Int_t TACArawHit::ChID() const
 
 inline Double_t TACArawHit::Time() const
 {
-  return ir_time;
+  return fTime;
 }
 
 //------------------------------------------+-----------------------------------
@@ -34,7 +34,7 @@ inline Double_t TACArawHit::Time() const
 
 inline Double_t TACArawHit::Charge() const
 {
-  return ir_chg;
+  return fCharge;
 }
 
 //------------------------------------------+-----------------------------------
@@ -42,8 +42,7 @@ inline Double_t TACArawHit::Charge() const
 
 inline void TACArawHit::SetType(int typ)
 {
-  ir_typ = typ;
-  return;	
+  fType = typ;
 }
 
 //------------------------------------------+-----------------------------------
@@ -51,8 +50,7 @@ inline void TACArawHit::SetType(int typ)
 
 inline void TACArawHit::SetChID(int id)
 {
-  ir_chid = id;
-  return;
+  fChannelID = id;
 }
 
 //------------------------------------------+-----------------------------------
@@ -60,8 +58,7 @@ inline void TACArawHit::SetChID(int id)
 
 inline void TACArawHit::SetTime(double time)
 {
-  ir_time = time;
-  return;
+  fTime = time;
 }
 
 //------------------------------------------+-----------------------------------
@@ -69,8 +66,7 @@ inline void TACArawHit::SetTime(double time)
 
 inline void TACArawHit::SetCharge(double chg)
 {
-  ir_chg = chg;
-  return;
+  fCharge = chg;
 }
 
 //##############################################################################
@@ -80,7 +76,7 @@ inline void TACArawHit::SetCharge(double chg)
 
 inline Double_t TACAdatRaw::TrigTime() const
 {
-  return trg_time;
+  return fTrigTime;
 }
 
 
@@ -89,25 +85,24 @@ inline Double_t TACAdatRaw::TrigTime() const
 
 inline void TACAdatRaw::SetTrigTime(double time)
 {
-  trg_time = time;
-  return;
+  fTrigTime = time;
 }
 
 
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th hit
 
-inline TACArawHit* TACAdatRaw::Hit(Int_t i)
+inline TACArawHit* TACAdatRaw::GetHit(Int_t i)
 {
-  return (TACArawHit*) ((*hir)[i]);;
+  return (TACArawHit*) ((*fListOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 
-inline const TACArawHit* TACAdatRaw::Hit(Int_t i) const
+inline const TACArawHit* TACAdatRaw::GetHit(Int_t i) const
 {
-  return (const TACArawHit*) ((*hir)[i]);;
+  return (const TACArawHit*) ((*fListOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------

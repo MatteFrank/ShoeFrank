@@ -35,10 +35,10 @@ class TACArawHit : public TObject {
     ClassDef(TACArawHit,1)
 
   private:
-    Double_t ir_time;    
-    Double_t ir_chg;    
-    Int_t ir_typ;
-    Int_t ir_chid;
+    Double_t fTime;    
+    Double_t fCharge;    
+    Int_t    fType;
+    Int_t    fChannelID;
 };
 
 //##############################################################################
@@ -51,8 +51,9 @@ class TACAdatRaw : public TAGdata {
 
     void            SetCounter(Int_t i_ntdc, Int_t i_nadc, Int_t i_ndrop);
 
-    TACArawHit*       Hit(Int_t i_ind);
-    const TACArawHit* Hit(Int_t i_ind) const;
+    Int_t             GetHitsN() const;
+    TACArawHit*       GetHit(Int_t i_ind);
+    const TACArawHit* GetHit(Int_t i_ind) const;
 
     void            SetTrigTime(double time);
     Double_t        TrigTime() const;
@@ -69,13 +70,10 @@ class TACAdatRaw : public TAGdata {
 
     ClassDef(TACAdatRaw,1)
 
-  public:
-    Int_t           nirhit;		    // 
-    TClonesArray*   hir;			    // hits
-
   private:
-
-    double          trg_time;               //SC trigger time
+    Int_t           fHitsN;		    // 
+    TClonesArray*   fListOfHits;	    // hits
+    Double_t        fTrigTime;       // SC trigger time
     Int_t           fiNAdc;		    // 
     Int_t           fiNTdc;		    // 
     Int_t           fiNDrop;		    // 
