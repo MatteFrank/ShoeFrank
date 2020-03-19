@@ -50,13 +50,13 @@ class TABMactVmeReader : public TAGaction {
     BM_struct*      fpEvtStruct;    
     ifstream        fbmfile;      //bm raw file
 
-    Int_t track_ok;  //-2=maxnhit_cut; -1=minhit_cut; otherwise=track_status     
-    Long64_t data_num_ev; //current number of events
-    Long64_t data_sync_num_ev; //current number of events + number of sync
+    Int_t           fTrackOk;  //-2=maxnhit_cut; -1=minhit_cut; otherwise=track_status
+    Long64_t        fDataNumEv; //current number of events
+    Long64_t        fDataSyncNumEv; //current number of events + number of sync
     
-        //histos
-    TH2I*            fpRawMapX;  //raw hit map    
-    TH2I*            fpRawMapY;  //raw hit map    
+    //histos
+    TH2I*           fpRawMapX;  //raw hit map
+    TH2I*           fpRawMapY;  //raw hit map    
 
 };
 

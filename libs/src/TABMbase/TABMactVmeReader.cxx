@@ -42,8 +42,8 @@ TABMactVmeReader::TABMactVmeReader(const char* name,
   AddDataOut(p_timraw, "TASTntuRaw");  
   fpEvtStruct=new BM_struct;
   clear_bmstruct(kTRUE);
-  data_num_ev=-1000;
-  data_sync_num_ev=0;
+  fDataNumEv=-1000;
+  fDataSyncNumEv=0;
 }
 
 //------------------------------------------+-----------------------------------
@@ -86,31 +86,31 @@ Bool_t TABMactVmeReader::Process() {
   read_event(kFALSE);
   //some check on bm_struct
   if(fpEvtStruct->tot_status!=0 || fpEvtStruct->tdc_status!=-1000){
-    data_num_ev++;
-    data_sync_num_ev+=fpEvtStruct->tdc_numsync;
+    fDataNumEv++;
+    fDataSyncNumEv+=fpEvtStruct->tdc_numsync;
     cout<<"ERROR in TABMactVmeReader process: return ktrue; tot_status="<<fpEvtStruct->tot_status<<"  tdc_status="<<fpEvtStruct->tdc_status<<endl;
     fpDatRaw->SetBit(kValid);
     fpTimRaw->SetBit(kValid);
     return kTRUE;
   }
   if(fpEvtStruct->tdc_sync[0] == -10000) {
-    data_num_ev++;
-    data_sync_num_ev+=fpEvtStruct->tdc_numsync;    
+    fDataNumEv++;
+    fDataSyncNumEv+=fpEvtStruct->tdc_numsync;
     Info("Action()","ERROR in TABMactVmeReader process: return ktrue; Trigger time is missing");
     fpDatRaw->SetBit(kValid);
     fpTimRaw->SetBit(kValid);
     return kTRUE;
   }
   if(fpEvtStruct->tdc_numsync>2) {
-    data_num_ev++;
-    data_sync_num_ev+=fpEvtStruct->tdc_numsync;    
+    fDataNumEv++;
+    fDataSyncNumEv+=fpEvtStruct->tdc_numsync;
     Info("Action()","ERROR in TABMactVmeReader process: return ktrue; too many trigger time!");
     fpDatRaw->SetBit(kValid);
     fpTimRaw->SetBit(kValid);
     return kTRUE;
   }
   if (FootDebugLevel(1))
-    cout<<"I'm in TABMactVmeReader::Process, data_num_ev="<<data_num_ev<<"   fpEvtStruct->evnum="<<fpEvtStruct->evnum<<"   tdcev="<<fpEvtStruct->tdcev<<"   tdc_numsync="<<fpEvtStruct->tdc_numsync<<"  data_sync_num_ev="<<data_sync_num_ev<<endl;   
+    cout<<"I'm in TABMactVmeReader::Process, fDataNumEv="<<fDataNumEv<<"   fpEvtStruct->evnum="<<fpEvtStruct->evnum<<"   tdcev="<<fpEvtStruct->tdcev<<"   tdc_numsync="<<fpEvtStruct->tdc_numsync<<"  fDataSyncNumEv="<<fDataSyncNumEv<<endl;
     
   Double_t i_time, i_rdrift, synctime;
   Int_t lay, view, cell, up, cellid;
@@ -145,8 +145,8 @@ Bool_t TABMactVmeReader::Process() {
   p_timraw->SetTriggerTime(synctime);  
   p_datraw->SetTrigtime(synctime);
     
-  data_num_ev++;
-  data_sync_num_ev+=fpEvtStruct->tdc_numsync;
+  fDataNumEv++;
+  fDataSyncNumEv+=fpEvtStruct->tdc_numsync;
   
   fpDatRaw->SetBit(kValid);
   fpTimRaw->SetBit(kValid);
@@ -203,10 +203,10 @@ Bool_t TABMactVmeReader::read_event(Bool_t evt0) {
   }
   //some check on the event words:
   fpEvtStruct->evnum=ev_words[0];
-  if(data_num_ev<0){
-    data_num_ev=fpEvtStruct->evnum;
-  } else if(data_num_ev!=fpEvtStruct->evnum){
-    cout<<"ERROR in TABMactVmeReader:read_event: data_num_ev="<<data_num_ev<<"  fpEvtStruct->evnum="<<fpEvtStruct->evnum<<endl; 
+  if(fDataNumEv<0){
+    fDataNumEv=fpEvtStruct->evnum;
+  } else if(fDataNumEv!=fpEvtStruct->evnum){
+    cout<<"ERROR in TABMactVmeReader:read_event: fDataNumEv="<<fDataNumEv<<"  fpEvtStruct->evnum="<<fpEvtStruct->evnum<<endl;
     fpEvtStruct->tot_status=-1;
   } 
   if(ev_words[1]!=bmmap->GetBoardNum()){
@@ -247,7 +247,7 @@ Bool_t TABMactVmeReader::read_event(Bool_t evt0) {
   
   //~ if((fpEvtStruct->tot_status!=0 && FootDebugLevel(1)>0) || FootDebugLevel(1)>11)
     //~ for(Int_t i=0;i<fpEvtStruct->words;i++)
-      //~ cout<<"data_num_ev="<<data_num_ev<<"   ev_words["<<i<<"]="<<ev_words[i]<<endl;
+      //~ cout<<"fDataNumEv="<<fDataNumEv<<"   ev_words["<<i<<"]="<<ev_words[i]<<endl;
   
   //board reading
   windex++;
@@ -298,7 +298,7 @@ Bool_t TABMactVmeReader::read_event(Bool_t evt0) {
       //~ }        
       if(read_meas && (fpEvtStruct->tdc_status==0 || fpEvtStruct->tdc_status==-1000)){//read measure  
         if(ev_words[windex++]!=fpEvtStruct->tdc_evnum[fpEvtStruct->tdcev-1]){
-          cout<<"ERROR in TABMactVmeReader:read_event: tdc_evnum="<<fpEvtStruct->tdc_evnum[fpEvtStruct->tdcev-1]<<"  measured event number="<<ev_words[windex-1]<<"  windex="<<windex<<"  data_num_ev="<<data_num_ev<<endl;
+          cout<<"ERROR in TABMactVmeReader:read_event: tdc_evnum="<<fpEvtStruct->tdc_evnum[fpEvtStruct->tdcev-1]<<"  measured event number="<<ev_words[windex-1]<<"  windex="<<windex<<"  fDataNumEv="<<fDataNumEv<<endl;
           fpEvtStruct->tdc_status=1;
         }
         if(ev_words[windex]>-1 && ev_words[windex]<bmmap->GetTdcMaxcha()){//measure found
@@ -355,7 +355,7 @@ Bool_t TABMactVmeReader::read_event(Bool_t evt0) {
     cout<<"TABMactVmeReader::read_event::fpEvtStruct->tdc_status="<<fpEvtStruct->tdc_status<<" fpEvtStruct->tot_status="<<fpEvtStruct->tot_status<<" fpEvtStruct->adc_status="<<fpEvtStruct->adc_status<<" fpEvtStruct->sca_status="<<fpEvtStruct->sca_status<<endl;
     if(fpEvtStruct->tdc_status!=-1000 || fpEvtStruct->tot_status!=0 || fpEvtStruct->adc_status!=0 || fpEvtStruct->sca_status!=0)
       cout<<"Error detected previously; ";
-    cout<<"The whole event read is:    data_num_ev="<<data_num_ev<<endl;
+    cout<<"The whole event read is:    fDataNumEv="<<fDataNumEv<<endl;
     for(Int_t i=0;i<fpEvtStruct->words;i++)
       cout<<"ev_words["<<i<<"]="<<ev_words[i]<<endl;
   }
@@ -372,7 +372,7 @@ Bool_t TABMactVmeReader::read_event(Bool_t evt0) {
   //~ }
   
   //~ else{//read tdc words if    
-    //~ cout<<"data_num_ev="<<data_num_ev<<endl;
+    //~ cout<<"fDataNumEv="<<fDataNumEv<<endl;
     //~ for(Int_t i=0;i<fpEvtStruct->words;i++)
         //~ cout<<"ev_words["<<i<<"]="<<ev_words[i]<<endl;
   //~ }
