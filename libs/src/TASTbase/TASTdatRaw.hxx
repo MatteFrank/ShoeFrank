@@ -42,36 +42,32 @@ public:
   TASTdatRaw();
   virtual         ~TASTdatRaw();
 
-  TASTrawHit*       Hit(Int_t i_ind);
-  const TASTrawHit* Hit(Int_t i_ind) const;
+  TASTrawHit*       GetHit(Int_t i_ind);
+  const TASTrawHit* GetHit(Int_t i_ind) const;
 
-  TASTrawHit*       SuperHit(){return superhit;}  
+  TASTrawHit*       GetSuperHit(){return fSuperHit;}
   
-  void NewHit(TWaveformContainer *W);
-  void NewSuperHit(vector<TWaveformContainer*>);
-  void SetupClones();
+  void              NewHit(TWaveformContainer *W);
+  void              NewSuperHit(vector<TWaveformContainer*>);
+  void              SetupClones();
 
    
-  virtual void    Clear(Option_t* opt="");
-  virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
+  virtual void      Clear(Option_t* opt="");
+  virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
 
-  inline void UpdateRunTime(int value){m_run_time+=value;}
+  void              UpdateRunTime(int value){fRunTime+=value;}
+   
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-  
-  Int_t           nirhit;		    //
-  TClonesArray*   hir;			// hits
-  TASTrawHit* superhit;  //sum
-
   
   ClassDef(TASTdatRaw,3);
   
-  
 private:
+   Int_t           fHistN;          //
+   TClonesArray*   fListOfHits;         // hits
+   TASTrawHit*     fSuperHit;  //sum
+   Int_t           fRunTime;
 
-  static TString fgkBranchName;    // Branch name in TTree
-  int m_run_time;
-
-  
+   static TString fgkBranchName;    // Branch name in TTree
 };
 
 #endif

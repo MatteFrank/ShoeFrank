@@ -36,7 +36,8 @@ TASTrawHit::TASTrawHit()
   time =-1000;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! constructor.
 TASTrawHit::TASTrawHit(TWaveformContainer *W)
   : TAGbaseWD(W){
 
@@ -49,13 +50,14 @@ TASTrawHit::TASTrawHit(TWaveformContainer *W)
 
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Destructor.
 TASTrawHit::~TASTrawHit(){
 
 }
 
 
-
+// do not need these interfaces, done by compilator
 double TASTrawHit::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
   return  TAGbaseWD::ComputeTime(w, frac, del, tleft, tright);
 }
@@ -89,7 +91,7 @@ ClassImp(TASTdatRaw);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TASTdatRaw::TASTdatRaw() :
-  nirhit(0), hir(0), superhit(0), m_run_time(0x0){
+  fHistN(0), fListOfHits(0), fSuperHit(0), fRunTime(0x0){
 
   SetupClones();
 }
@@ -100,8 +102,8 @@ TASTdatRaw::TASTdatRaw() :
 //! Destructor.
 
 TASTdatRaw::~TASTdatRaw() {
-  if(hir)delete hir;
-  if(superhit) delete superhit;
+  if(fListOfHits)delete fListOfHits;
+  if(fSuperHit) delete fSuperHit;
 }
 
 //------------------------------------------+-----------------------------------
@@ -109,8 +111,7 @@ TASTdatRaw::~TASTdatRaw() {
 
 void TASTdatRaw::SetupClones()
 {
-  if (!hir) hir = new TClonesArray("TASTrawHit");
-  return;
+  if (!fListOfHits) fListOfHits = new TClonesArray("TASTrawHit");
 }
 
 
@@ -119,43 +120,37 @@ void TASTdatRaw::SetupClones()
 
 void TASTdatRaw::Clear(Option_t*){
   TAGdata::Clear();
-  nirhit = 0;
+  fHistN = 0;
 
   
-  if (hir) hir->Clear();
-
-
-  return;
+  if (fListOfHits) fListOfHits->Clear();
 }
 
 
 //-----------------------------------------------------------------------------
 //! access to the hit
-TASTrawHit* TASTdatRaw::Hit(Int_t i){
-  return (TASTrawHit*) ((*hir)[i]);;
+TASTrawHit* TASTdatRaw::GetHit(Int_t i){
+  return (TASTrawHit*) ((*fListOfHits)[i]);;
 }
 
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
-const TASTrawHit* TASTdatRaw::Hit(Int_t i) const{
-  return (const TASTrawHit*) ((*hir)[i]);;
+const TASTrawHit* TASTdatRaw::GetHit(Int_t i) const{
+  return (const TASTrawHit*) ((*fListOfHits)[i]);;
 }
 
-
-
-
+//------------------------------------------+-----------------------------------
+//! New hit
 void TASTdatRaw::NewHit(TWaveformContainer *W){
   
-  TClonesArray &pixelArray = *hir;
+  TClonesArray &pixelArray = *fListOfHits;
   TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W);
-  nirhit++;
-
-  return;
+  fHistN++;
 }
 
-
-
+//------------------------------------------+-----------------------------------
+//! new super hit
 void TASTdatRaw::NewSuperHit(vector<TWaveformContainer*> vW){
 
 
@@ -204,30 +199,20 @@ void TASTdatRaw::NewSuperHit(vector<TWaveformContainer*> vW){
   wsum->m_vectRawT = time;
   wsum->m_nEvent = vW.at(0)->m_nEvent;
   
-  superhit = new TASTrawHit(wsum);
+  fSuperHit = new TASTrawHit(wsum);
 
   delete wsum;
   
-  return;
 }
-
-
-
-
-
-
-
 
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
-
 void TASTdatRaw::ToStream(ostream& os, Option_t* option) const
 {
   os << "TASTdatRaw " << GetName()
-	 << " nirhit"    << nirhit
+	 << " fHistN"    << fHistN
      << endl;
-  return;
 }
 
 
