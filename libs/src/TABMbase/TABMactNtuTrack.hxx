@@ -70,68 +70,61 @@ public:
   virtual  void   CreateHistogram();
 
   //tracking
-  void ChargeLegendrePoly();
-  Int_t FindLegendreBestValues();
-  void CheckAssHits(const Int_t asshitx, const Int_t asshity);
-  void CheckPossibleHits(const Int_t cellplane, Int_t wireplane[], TH2D* legpolsum, Double_t yvalue, const Int_t best_rbin, Double_t diff, Double_t res, Int_t &selview, const Int_t hitnum);
+  void     ChargeLegendrePoly();
+  Int_t    FindLegendreBestValues();
+  void     CheckAssHits(const Int_t asshitx, const Int_t asshity);
+  void     CheckPossibleHits(const Int_t cellplane, Int_t wireplane[], TH2D* legpolsum, Double_t yvalue,
+                             const Int_t best_rbin, Double_t diff, Double_t res, Int_t &selview,
+                             const Int_t hitnum);
   Double_t EvaluateChi2(const double *params);
   Double_t EvaluateChi2Xview(const double *params);
   Double_t EvaluateChi2Yview(const double *params);
   Double_t EvaluateChi2GSIx(const double *params);
   Double_t EvaluateChi2GSIy(const double *params);
-  Int_t NumericalMinimizationDouble();
-  Int_t NumericalMinimizationGSI();//same as NumericalMinimizationDouble, but specific for the first FOOT GSI run 2019, with t0 passed as free par
-  Bool_t ComputeDataAll();
+  Int_t    NumericalMinimizationDouble();
+  Int_t    NumericalMinimizationGSI();//same as NumericalMinimizationDouble, but specific for the first FOOT GSI run 2019, with t0 passed as free par
+  Bool_t   ComputeDataAll();
 
   ClassDef(TABMactNtuTrack,0)
 
   private:
-
-  TGeoManager*      f_BMgeoMan;
   TAGdataDsc*       fpNtuTrk;		    // output data dsc
   TAGdataDsc*       fpNtuHit;		    // input data dsc
   TAGparaDsc*       fpBMGeo;		    // input data dsc
   TAGparaDsc*       fpBMCon;		    // input data dsc
   TAGparaDsc*       fpTGgeo;		    // input data dsc
 
-  TABMntuTrackTr *tmp_trackTr;
-  //ntu objects
-  TABMntuRaw*   p_nturaw;
-  TABMntuHit*   p_hit;
-  //par objects
-  TABMparCon* p_bmcon;
-  TABMparGeo* p_bmgeo;
-  TAGparGeo*  p_tggeo;
+  TABMntuTrackTr*   fTmpTrackTr;
+  TABMntuHit*       fpHit;
 
   //Legendre:
-  TH2D*    legpolxsum;
-  TH2D*    legpolysum;
-  Int_t    best_mxbin;
-  Int_t    best_mybin;
-  Int_t    best_rxbin;
-  Int_t    best_rybin;
+  TH2D*             fLegpolxsum;
+  TH2D*             fLegpolysum;
+  Int_t             fBestMxbin;
+  Int_t             fBestMybin;
+  Int_t             fBestRxbin;
+  Int_t             fBestRybin;
 
   //new chi2 ROOT based
-  ROOT::Math::Minimizer* minx;
-  ROOT::Math::Minimizer* miny;
-  ROOT::Math::Functor* functorx;
-  ROOT::Math::Functor* functory;
-  ROOT::Math::Functor* functorGSIx;
-  ROOT::Math::Functor* functorGSIy;
+  ROOT::Math::Minimizer* fMinx;
+  ROOT::Math::Minimizer* fMiny;
+  ROOT::Math::Functor*   fFunctorx;
+  ROOT::Math::Functor*   fFunctory;
+  ROOT::Math::Functor*   fFunctorGSIx;
+  ROOT::Math::Functor*   fFunctorGSIy;
 
   //histos
-  //~ TH2F*            fpHisR02d;
-  TH2F*            fpResTot;//
-  TH2F*            fpHisMap;
-  TH2F*            fpHisMylar12d;
-  TH2F*            fpHisMylar22d;
-  TH1F*            fpHisChi2Red;
-  TH1I*            fpHisNhitTrack;
-  TH1I*            fpHisNrejhitTrack;
-  TH1I*            fpHisTrackStatus;
-  TH1I*            fpHisTrackFakeHit;
-  TH1F*            fpHisTrackEff;
-  TH1I*            fpHisTrigTime;
+  TH2F*             fpResTot;
+  TH2F*             fpHisMap;
+  TH2F*             fpHisMylar12d;
+  TH2F*             fpHisMylar22d;
+  TH1F*             fpHisChi2Red;
+  TH1I*             fpHisNhitTrack;
+  TH1I*             fpHisNrejhitTrack;
+  TH1I*             fpHisTrackStatus;
+  TH1I*             fpHisTrackFakeHit;
+  TH1F*             fpHisTrackEff;
+  TH1I*             fpHisTrigTime;
 
 };
 
