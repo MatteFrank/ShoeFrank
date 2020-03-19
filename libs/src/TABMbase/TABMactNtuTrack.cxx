@@ -143,7 +143,7 @@ Bool_t TABMactNtuTrack::Action()
 
   //check the number of hits for each view
   for(Int_t i_h = 0; i_h < i_nhit; i_h++) {
-    p_hit = p_nturaw->Hit(i_h);
+    p_hit = p_nturaw->GetHit(i_h);
     if(FootDebugLevel(3))
       cout<<"hit="<<i_h<<" plane="<<p_hit->Plane()<<"  view="<<p_hit->View()<<"  cell="<<p_hit->Cell()<<"  wireplane="<<p_bmgeo->GetWirePlane(p_hit->Plane(),p_hit->View())<<"  rdrift="<<p_hit->Dist()<<"  isfake="<<p_hit->GetIsFake()<<endl;
     if(p_hit->View()==1)
@@ -286,7 +286,7 @@ void TABMactNtuTrack::ChargeLegendrePoly(){
 
   Double_t tmp_double;
   for(Int_t i_h = 0; i_h < p_nturaw->GetHitsN(); ++i_h) {
-    p_hit = p_nturaw->Hit(i_h);
+    p_hit = p_nturaw->GetHit(i_h);
     if(p_hit->View()==1){ //on xz view
       for(Int_t k=1;k<legpolxsum->GetXaxis()->GetNbins();++k){
         tmp_double=legpolxsum->GetXaxis()->GetBinCenter(k);
@@ -421,7 +421,7 @@ void TABMactNtuTrack::CheckAssHits(const Int_t asshitx, const Int_t asshity) {
   Int_t selx=0, sely=0, cellplane;
   Double_t xvalue, yvalue, res, diff, tmp_double;
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i) {
-    p_hit = p_nturaw->Hit(i);
+    p_hit = p_nturaw->GetHit(i);
     if(p_hit->View()==0){//yz plane
       xvalue=legpolysum->GetXaxis()->GetBinCenter(best_mybin);
       yvalue=p_hit->GetA0().Y()-xvalue*p_hit->GetA0().Z()+p_hit->Dist()*sqrt(xvalue*xvalue+1.);
@@ -491,7 +491,7 @@ void TABMactNtuTrack::CheckPossibleHits(const Int_t cellplane, Int_t wireplane[]
     p_nturaw->AddCellOccupyHit(p_hit->GetCellid());
     selview++;
   }else{
-    p_doublehit=p_nturaw->Hit(wireplane[cellplane]);
+    p_doublehit=p_nturaw->GetHit(wireplane[cellplane]);
     if(p_doublehit->GetResidual()> diff/res){
       if(FootDebugLevel(4))
         cout<<"TABMactNtuTrack::CheckAssHits: hit replaced! selected= hitnum="<<hitnum<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<p_hit->View()<<"  cellid="<<p_hit->GetCellid()<<"  yvalue="<<yvalue<<"  bestvalue="<<legpolsum->GetYaxis()->GetBinCenter(best_rbin)<<"  diff="<<diff<<"   residual="<<diff/res<<"  replace the hit num="<<wireplane[cellplane]<<endl;
@@ -526,7 +526,7 @@ Double_t TABMactNtuTrack::EvaluateChi2(const double *params){
     r0.SetXYZ(params[1], 0., 0.);
   }
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-    p_hit = p_nturaw->Hit(i);
+    p_hit = p_nturaw->GetHit(i);
     if( (p_hit->GetIsSelected()==1 && myview==2) || (myview==p_hit->View() && p_hit->GetIsSelected()==1) ){
       res=p_hit->Dist()-p_bmgeo->FindRdrift(r0, vers, p_hit->GetA0(), p_hit->GetWvers(), true);
       chi2+=res*res/p_hit->GetSigma()/p_hit->GetSigma();
@@ -543,7 +543,7 @@ Double_t TABMactNtuTrack::EvaluateChi2Xview(const double *params){
   vers.SetXYZ(params[0], 0., 1.);
   r0.SetXYZ(params[1], 0., 0.);
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-    p_hit = p_nturaw->Hit(i);
+    p_hit = p_nturaw->GetHit(i);
     if( p_hit->View()==1 && p_hit->GetIsSelected()==1 ){
       res=p_hit->Dist()-p_bmgeo->FindRdrift(r0, vers, p_hit->GetA0(), p_hit->GetWvers(), true);
       chi2+=res*res/p_hit->GetSigma()/p_hit->GetSigma();
@@ -560,7 +560,7 @@ Double_t TABMactNtuTrack::EvaluateChi2Yview(const double *params){
   vers.SetXYZ(0., params[0], 1.);
   r0.SetXYZ(0., params[1], 0.);
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-    p_hit = p_nturaw->Hit(i);
+    p_hit = p_nturaw->GetHit(i);
     if( p_hit->View()==0 && p_hit->GetIsSelected()==1 ){
       res=p_hit->Dist()-p_bmgeo->FindRdrift(r0, vers, p_hit->GetA0(), p_hit->GetWvers(), true);
       chi2+=res*res/p_hit->GetSigma()/p_hit->GetSigma();
@@ -630,7 +630,7 @@ Double_t TABMactNtuTrack::EvaluateChi2GSIx(const double *params){
   r0.SetXYZ(params[1], 0., 0.);
 
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-    p_hit = p_nturaw->Hit(i);
+    p_hit = p_nturaw->GetHit(i);
     if(p_hit->GetIsSelected()==1 && p_hit->View()==1){
       newrdrift=p_bmcon->FirstSTrel(p_hit->Tdrift()+params[2]);
       newresolution=p_bmcon->ResoEval(newrdrift);
@@ -650,7 +650,7 @@ Double_t TABMactNtuTrack::EvaluateChi2GSIy(const double *params){
   r0.SetXYZ(0., params[1], 0.);
 
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-    p_hit = p_nturaw->Hit(i);
+    p_hit = p_nturaw->GetHit(i);
     if(p_hit->GetIsSelected()==1 && p_hit->View()==0){
       newrdrift=p_bmcon->FirstSTrel(p_hit->Tdrift()+params[2]);
       newresolution=p_bmcon->ResoEval(newrdrift);
@@ -725,7 +725,7 @@ Int_t TABMactNtuTrack::NumericalMinimizationGSI(){
     tmp_trackTr->SetR0(bestr0);
     tmp_trackTr->SetPvers(bestpvers);
     for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-        p_hit=p_nturaw->Hit(i);
+        p_hit=p_nturaw->GetHit(i);
         p_hit->SetTdrift(p_hit->Tdrift()+bestt0);
         p_hit->SetRdrift(p_bmcon->FirstSTrel(p_hit->Tdrift()));
         p_hit->SetSigma(p_bmcon->ResoEval(p_hit->Dist()));
@@ -759,7 +759,7 @@ Bool_t TABMactNtuTrack::ComputeDataAll(){
   }
   Double_t res, chi2red=0.;
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-    p_hit=p_nturaw->Hit(i);
+    p_hit=p_nturaw->GetHit(i);
     if(p_hit->GetIsSelected()==1){
       res=p_hit->Dist()-p_bmgeo->FindRdrift(tmp_trackTr->GetR0(), tmp_trackTr->GetPvers(), p_hit->GetA0(), p_hit->GetWvers(),true);
       p_hit->SetResidual(res);

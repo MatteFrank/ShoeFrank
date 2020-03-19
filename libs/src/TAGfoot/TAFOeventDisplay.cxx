@@ -1287,13 +1287,13 @@ void TAFOeventDisplay::UpdateLayerElements()
    
    //hits
    for (Int_t i = 0; i < nHits; i++) {
-      TABMntuHit* hit = pBMntu->Hit(i);
+      TABMntuHit* hit = pBMntu->GetHit(i);
       
       if (!hit->GetIsSelected() && fgBmSelectHit) continue;
 
-      Int_t view  = hit->View();
+      Int_t view = hit->View();
       Int_t lay  = hit->Plane();
-      Int_t cell  = hit->Cell();
+      Int_t cell = hit->Cell();
        
       //layer
        pbmGeo->SetLayerColorOn(lay + view * pbmGeo->GetLayersN());
