@@ -1252,7 +1252,7 @@ void TAFOeventDisplay::UpdateStcElements()
    
    for (Int_t i = 0; i < nHits; i++) {
 
-      TASTntuHit* hit = pSTntu->Hit(i);
+      TASTntuHit* hit = pSTntu->GetHit(i);
       Float_t charge = hit->GetCharge();
    
       TVector3 posHit(0,0,0); // center
