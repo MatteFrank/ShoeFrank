@@ -62,7 +62,7 @@ void TABMdatRaw::Clear(Option_t*)
 
   fHitList.clear();
   fiNDrop=0;
-  trigtime=-1000;
+  fTrigTime=-1000;
   return;
 }
 
