@@ -94,7 +94,7 @@ ClassImp(TATWdatRaw);
 
 //! Default constructor.
 TATWdatRaw::TATWdatRaw() :
-  fHitsN(0), fListOfHits(0), m_run_time(0x0)
+  fHitsN(0), fListOfHits(0), fRunTime(0x0)
 {
    SetupClones();
 }
