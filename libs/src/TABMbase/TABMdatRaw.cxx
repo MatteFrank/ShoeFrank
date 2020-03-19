@@ -89,8 +89,8 @@ void TABMdatRaw::ToStream(ostream& os, Option_t* option) const
   os << "slat stat    adct    adcb    tdct    tdcb" << endl;
   for (Int_t i = 0; i < NHit(); i++) {
     const TABMrawHit& hit = Hit(i);
-    os << Form("%4d", hit.Cell());
-    os << "  "; print_value(os, hit.Plane());
+    os << Form("%4d", hit.GetCell());
+    os << "  "; print_value(os, hit.GetPlane());
     os << endl;
   }
   return;
