@@ -28,11 +28,11 @@ class TABMrawHit {
     ClassDef(TABMrawHit,1)
 
   private:
-    Int_t iview;    
-    Int_t ilayer;    
-    Int_t icell;
-    Int_t idcell;
-    Double_t tdctime;//ns
+    Int_t    fiView;    
+    Int_t    fiLayer;
+    Int_t    fiCell;
+    Int_t    fidCell;
+    Double_t ftdTtime;//ns
 };
 
 #include "TABMrawHit.icc"

@@ -2,7 +2,7 @@
 
 inline Int_t TABMrawHit::Cell() const
 {
-  return icell;
+  return fiCell;
 }
 
 //------------------------------------------+-----------------------------------
@@ -10,7 +10,7 @@ inline Int_t TABMrawHit::Cell() const
 
 inline Int_t TABMrawHit::Idcell() const
 {
-  return idcell;
+  return fidCell;
 }
 
 
@@ -19,7 +19,7 @@ inline Int_t TABMrawHit::Idcell() const
 
 inline Int_t TABMrawHit::Plane() const
 {
-  return ilayer;
+  return fiLayer;
 }
 
 //------------------------------------------+-----------------------------------
@@ -27,7 +27,7 @@ inline Int_t TABMrawHit::Plane() const
 
 inline Double_t TABMrawHit::Time() const
 {
-  return tdctime;
+  return ftdTtime;
 }
 
 //------------------------------------------+-----------------------------------
@@ -35,7 +35,7 @@ inline Double_t TABMrawHit::Time() const
 
 inline Int_t TABMrawHit::View() const
 {
-  return iview;
+  return fiView;
 }
 
 
