@@ -161,17 +161,17 @@ void TASTdatRaw::NewSuperHit(vector<TWaveformContainer*> vW){
 
   TWaveformContainer *wsum = new TWaveformContainer;
   int ChannelId=-1;
-  int BoardId = vW.at(0)->BoardId;
-  int TrigType = vW.at(0)->TrigType;
-  int TriggerCellId = vW.at(0)->TriggerCellId;
+  int BoardId = vW.at(0)->GetBoardId();
+  int TrigType = vW.at(0)->GetTrigType();
+  int TriggerCellId = vW.at(0)->GetTriggerCellId();
 
   
 
   //I define the time window
-  int i_ampmin = TMath::LocMin(vW.at(0)->m_vectA.size(),&(vW.at(0)->m_vectA)[0]);
-  double t_ampmin = vW.at(0)->m_vectT.at(i_ampmin);
-  double tmin = (t_ampmin-20 > vW.at(0)->m_vectT.at(0)) ? t_ampmin-20 : vW.at(0)->m_vectT.at(0);
-  double tmax = (t_ampmin+5 < vW.at(0)->m_vectT.at(vW.at(0)->m_vectT.size()-1)) ? t_ampmin+5 : vW.at(0)->m_vectT.at(vW.at(0)->m_vectT.size()-1);
+  int i_ampmin = TMath::LocMin(vW.at(0)->GetVectA().size(),&(vW.at(0)->GetVectA())[0]);
+  double t_ampmin = vW.at(0)->GetVectT().at(i_ampmin);
+  double tmin = (t_ampmin-20 > vW.at(0)->GetVectT().at(0)) ? t_ampmin-20 : vW.at(0)->GetVectT().at(0);
+  double tmax = (t_ampmin+5 < vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1)) ? t_ampmin+5 : vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1);
   vector<double> time,amp;
   double tmpt=tmin;
   while(tmpt<tmax){
@@ -182,22 +182,22 @@ void TASTdatRaw::NewSuperHit(vector<TWaveformContainer*> vW){
 
   //I sum the signals
     for(int i=0;i<vW.size();i++){
-    vector<double> tmpamp = vW.at(i)->m_vectA;
-    vector<double> tmptime = vW.at(i)->m_vectT;
+    vector<double> tmpamp = vW.at(i)->GetVectA();
+    vector<double> tmptime = vW.at(i)->GetVectT();
     TGraph tmpgr(tmptime.size(), &tmptime[0], &tmpamp[0]);
     for(int isa=0;isa<time.size();isa++){
       amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
     }
   }
 
-  wsum->ChannelId = ChannelId;
-  wsum->BoardId = BoardId;
-  wsum->TrigType = TrigType;  
-  wsum->TriggerCellId = TriggerCellId;
-  wsum->m_vectA = amp;
-  wsum->m_vectT = time;
-  wsum->m_vectRawT = time;
-  wsum->m_nEvent = vW.at(0)->m_nEvent;
+  wsum->SetChannelId(ChannelId);
+  wsum->SetBoardId(BoardId);
+  wsum->SetTrigType(TrigType);
+  wsum->SetTriggerCellId(TriggerCellId);
+  wsum->GetVectA() = amp;
+  wsum->GetVectT() = time;
+  wsum->GetVectRawT() = time;
+  wsum->SetNEvent(vW.at(0)->GetNEvent());
   
   fSuperHit = new TASTrawHit(wsum);
 
