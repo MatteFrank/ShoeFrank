@@ -28,27 +28,26 @@ class TATWparMap : public TAGpara {
 
     virtual void    Clear(Option_t* opt="");
 
-    inline int getTDID(int add) { return TDchaID.at(add); }
-    inline int getTDboaID(int add) { return TDboaID.at(add); }
-    inline int getDetID(int add) { return DetID.at(add); }
-  
-  Bool_t IsTWChannel(int iCha);
-  Bool_t IsTWBoard(int iBo);
-  pair<int,int> GetClockChannel(int ch_num, int bo_num);
+    Int_t GetTDID(int add)    const { return fTDchaID.at(add); }
+    Int_t GetTDboaID(int add) const { return fTDboaID.at(add); }
+    Int_t GetDetID(int add)   const { return fDetID.at(add);   }
+    CChannelMap* GetChannelMap()    { return fcMap;            }
 
-  
-  
-    inline CChannelMap* getChannelMap() { return cMap; }
-  
+    Bool_t IsTWChannel(int iCha);
+    Bool_t IsTWBoard(int iBo);
+    pair<int,int> GetClockChannel(int ch_num, int bo_num);
+   
     ClassDef(TATWparMap,1)
 
   private:
-    Bool_t          CheckAddr(Int_t i_c) const;
-    CChannelMap *cMap;
-    int trefCh;
-    vector<int> TDchaID;
-    vector<int> TDboaID;
-    vector<int> DetID;
+    Bool_t  CheckAddr(Int_t i_c) const;
+   
+  private:
+    CChannelMap* fcMap;
+    Int_t        fTrefCh;
+    vector<int>  fTDchaID;
+    vector<int>  fTDboaID;
+    vector<int>  fDetID;
 };
 
 #endif

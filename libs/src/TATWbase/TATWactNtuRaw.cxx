@@ -83,7 +83,7 @@ Bool_t TATWactNtuRaw::Action() {
    TATWparMap*   p_parmap = (TATWparMap*)  fpParMap->Object();
 
    p_nturaw->SetupClones();
-   CChannelMap *c=p_parmap->getChannelMap();
+   CChannelMap *c=p_parmap->GetChannelMap();
    int nhit = p_datraw->GetHitsN();
 
    int ch_num, bo_num;

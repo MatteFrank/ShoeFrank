@@ -28,15 +28,16 @@ ClassImp(TATWparMap);
 
 TATWparMap::TATWparMap() {
 
-  cMap = new CChannelMap();
+  fcMap = new CChannelMap();
 
+   // what that's good for ?
   vector<int> tdchaID;             tdchaID.clear();   
   vector<int> tdboaID;             tdboaID.clear();   
   vector<int> deID;                deID.clear();   
 
-  TDchaID =    tdchaID;   
-  TDboaID =    tdboaID;   
-  DetID    =   deID;   
+  fTDchaID =    tdchaID;   
+  fTDboaID =    tdboaID;   
+  fDetID    =   deID;   
   
 }
 
@@ -45,10 +46,8 @@ TATWparMap::TATWparMap() {
 
 TATWparMap::~TATWparMap()
 {
-	if (cMap!=nullptr)
-	{
-		free(cMap);
-	}
+	if (!fcMap)
+		delete fcMap;
 }
 
 
@@ -65,7 +64,7 @@ Bool_t TATWparMap::FromFile(const TString& name) {
    
    if (FootDebugLevel(1))
       verbose = 1;
-  cMap->LoadChannelMap(name_exp.Data(),verbose);
+  fcMap->LoadChannelMap(name_exp.Data(),verbose);
   /*
   char bufConf[1024];
   int myArg1(0), myArg2(0), myArg3(0), myArg4(0), myArg5(0), myArg6(0); 
@@ -84,10 +83,10 @@ Bool_t TATWparMap::FromFile(const TString& name) {
       //Det id, Det channel, tdc, adc, adc board.
       sscanf(bufConf, "#%d %d %d %d %d %d",&myArg1,&myArg2,&myArg3,&myArg4,&myArg5,&myArg6);
       if((myArg1>-1 && myArg1<2) && (myArg2>-1 && myArg2<4) && (myArg3>-1 && myArg3<128) && (myArg4>-1 && myArg4<32) && (myArg5>-1 && myArg5<32)) {
-	DetID.push_back(myArg1);
+	fDetID.push_back(myArg1);
 	DetchaID.push_back(myArg2);
-	TDchaID.push_back(myArg3);
-	TDboaID.push_back(myArg4);
+	fTDchaID.push_back(myArg3);
+	fTDboaID.push_back(myArg4);
 	ADchaID.push_back(myArg5);
 	ADboaID.push_back(myArg6);
       } else {
@@ -106,9 +105,9 @@ Bool_t TATWparMap::FromFile(const TString& name) {
 void TATWparMap::Clear(Option_t*)
 {
   TAGpara::Clear();
-  TDchaID.clear();   
-  TDboaID.clear();   
-  DetID.clear();   
+  fTDchaID.clear();
+  fTDboaID.clear();
+  fDetID.clear();
   return;
 }
 
@@ -116,10 +115,10 @@ void TATWparMap::Clear(Option_t*)
 bool TATWparMap::GetIDFromTDC(int channel, int board, int &detID, int &chaID) {
 
   bool found = kFALSE;
-  for(int iw=0; iw<(int)TDchaID.size(); iw++) {
-    if(getTDID(iw) == channel && getTDboaID(iw) == board)  { 
+  for(int iw=0; iw<(int)fTDchaID.size(); iw++) {
+    if(getTDID(iw) == channel && getfTDboaID(iw) == board)  {
       chaID = getDetChaID(iw);	
-      detID = getDetID(iw);    
+      detID = getfDetID(iw);
       found = kTRUE;
       break;
     }
@@ -134,7 +133,7 @@ bool TATWparMap::GetIDFromTDC(int channel, int board, int &detID, int &chaID) {
 
 Bool_t TATWparMap::IsTWChannel(int iCha){
 
-  if(std::find(TDchaID.begin(),TDchaID.end(),iCha) == TDchaID.end()){
+  if(std::find(fTDchaID.begin(),fTDchaID.end(),iCha) == fTDchaID.end()){
     return false;
   }
   return true;
@@ -146,7 +145,7 @@ Bool_t TATWparMap::IsTWChannel(int iCha){
 
 Bool_t TATWparMap::IsTWBoard(int iBo){
 
-  if(std::find(TDboaID.begin(),TDboaID.end(),iBo) == TDboaID.end()){
+  if(std::find(fTDboaID.begin(),fTDboaID.end(),iBo) == fTDboaID.end()){
     return false;
   }
   return true;
