@@ -31,33 +31,33 @@ ClassImp(TABMparCon);
 //! Default constructor.
 TABMparCon::TABMparCon()
   :  TAGparTools(),
-  rdrift_err(0.015),
-  planehit_cut(3),
+  m_rdrift_err(0.015),
+  m_planehit_cut(3),
   m_isMC (false),
-  rdrift_cut (2.),
-  chi2red_cut (5.),
-  fitter_index (0),
-  minnhit_cut(6),
-  maxnhit_cut(20),
-  rejmax_cut(36),
-  num_ite(0),
-  par_move(0.0001),
-  fakehits_mean(5.57),
-  fakehits_sigmaleft(1.8),
-  fakehits_sigmaright(2.3),
-  mceff_mean(1),
-  mceff_sigma(0.2),
-  legmbin(40),
-  legmrange(0.1),
-  legrbin(75),
-  legrrange(2.),
-  asshitratio(3.)
+  m_rdrift_cut (2.),
+  m_chi2red_cut (5.),
+  m_fitter_index (0),
+  m_minnhit_cut(6),
+  m_maxnhit_cut(20),
+  m_rejmax_cut(36),
+  m_num_ite(0),
+  m_par_move(0.0001),
+  m_fakehits_mean(5.57),
+  m_fakehits_sigmaleft(1.8),
+  m_fakehits_sigmaright(2.3),
+  m_mceff_mean(1),
+  m_mceff_sigma(0.2),
+  m_legmbin(40),
+  m_legmrange(0.1),
+  m_legrbin(75),
+  m_legrrange(2.),
+  m_asshit_ratio(3.)
 {
   fkDefaultParName = "./config/TABMdetector.cfg";
   vector<Float_t> myt0s(36,-10000);
-  v_t0s = myt0s;
-  my_hreso=new TF1("poly","pol10",0.,0.95);
-  my_hreso->SetParameters(832.013,-9483.35,42697.4,-57369.7,-53877.2,96272.6,145773.,-67990.3,-284751.,-5173.99,234058.);
+  m_v_t0s = myt0s;
+  m_hreso=new TF1("poly","pol10",0.,0.95);
+  m_hreso->SetParameters(832.013,-9483.35,42697.4,-57369.7,-53877.2,96272.6,145773.,-67990.3,-284751.,-5173.99,234058.);
 }
 
 //------------------------------------------+-----------------------------------
@@ -85,45 +85,45 @@ Bool_t TABMparCon::FromFile(const TString& name) {
      cout<<"TABMparCon::FromFile:: read config file from "<<nameExp.Data()<<endl<<"Now I'll printout the BM FromFile read parameters"<<endl;
 
   //cuts
-  ReadItem(minnhit_cut);
+  ReadItem(m_minnhit_cut);
   if(FootDebugLevel(1))
-     cout<<"minnhit_cut="<<minnhit_cut<<endl;
-  ReadItem(maxnhit_cut);
+     cout<<"m_minnhit_cut="<<m_minnhit_cut<<endl;
+  ReadItem(m_maxnhit_cut);
   if(FootDebugLevel(1))
-     cout<<"maxnhit_cut="<<maxnhit_cut<<endl;
-  ReadItem(rejmax_cut);
+     cout<<"m_maxnhit_cut="<<m_maxnhit_cut<<endl;
+  ReadItem(m_rejmax_cut);
   if(FootDebugLevel(1))
-     cout<<"rejmax_cut="<<rejmax_cut<<endl;
-  ReadItem(chi2red_cut);
+     cout<<"m_rejmax_cut="<<m_rejmax_cut<<endl;
+  ReadItem(m_chi2red_cut);
   if(FootDebugLevel(1))
-     cout<<"chi2red_cut="<<chi2red_cut<<endl;
+     cout<<"m_chi2red_cut="<<m_chi2red_cut<<endl;
 
   //track reco
-  ReadItem(fitter_index);
+  ReadItem(m_fitter_index);
   if(FootDebugLevel(1))
-     cout<<"fitter_index="<<fitter_index<<endl;
-  ReadItem(num_ite);
+     cout<<"m_fitter_index="<<m_fitter_index<<endl;
+  ReadItem(m_num_ite);
   if(FootDebugLevel(1))
-     cout<<"num_ite="<<num_ite<<endl;
-  ReadItem(par_move);
+     cout<<"m_num_ite="<<m_num_ite<<endl;
+  ReadItem(m_par_move);
   if(FootDebugLevel(1))
-     cout<<"par_move="<<par_move<<endl;
+     cout<<"m_par_move="<<m_par_move<<endl;
   ReadItem(strel_switch);
   if(FootDebugLevel(1))
      cout<<"strel_switch="<<strel_switch<<endl;
 
   //other parameters
-  ReadItem(hit_timecut);
+  ReadItem(m_hit_timecut);
   if(FootDebugLevel(1))
-     cout<<"hit_timecut="<<hit_timecut<<endl;
+     cout<<"m_hit_timecut="<<m_hit_timecut<<endl;
 
   //MC parameters
-  ReadItem(smearrdrift);
+  ReadItem(m_smear_rdrift);
   if(FootDebugLevel(1))
-     cout<<"smearrdrift="<<smearrdrift<<endl;
-  ReadItem(smearhits);
+     cout<<"m_smear_rdrift="<<m_smear_rdrift<<endl;
+  ReadItem(m_smear_hits);
   if(FootDebugLevel(1))
-     cout<<"smearhits="<<smearhits<<endl;
+     cout<<"m_smear_hits="<<m_smear_hits<<endl;
 
 return false;
 }
@@ -153,7 +153,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
     }else if(strchr(bufConf,'R')) {
       sscanf(bufConf, "R %f",&myArg1);
       if(myArg1>0)
-        rdrift_cut = myArg1;
+        m_rdrift_cut = myArg1;
       else {
 	      Error(""," Plane Map Error:: check config file!! (R)");
 	      return kTRUE;
@@ -161,9 +161,9 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
     }else if(strchr(bufConf,'H')) {
       sscanf(bufConf, "H %d %d %d", &myArgInt, &myArgIntmin, &myArgIntmax);
       if( myArgInt>0 && myArgInt<7 && myArgIntmin>=0 && myArgIntmax>0 && myArgIntmax>=myArgInt){
-        planehit_cut= myArgInt;
-        minnhit_cut = myArgIntmin;
-        maxnhit_cut = myArgIntmax;
+        m_planehit_cut= myArgInt;
+        m_minnhit_cut = myArgIntmin;
+        m_maxnhit_cut = myArgIntmax;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (H)");
 	      return kTRUE;
@@ -171,8 +171,8 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
     }else if(strchr(bufConf,'Z')) {
       sscanf(bufConf, "Z  %f %f", &myArg1, &myArg2);
       if(myArg1>=0 && myArg2>=0){
-        t0_sigma=myArg1;
-        hit_timecut=myArg2;
+        m_t0_sigma=myArg1;
+        m_hit_timecut=myArg2;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (Z)");
 	      return kTRUE;
@@ -180,13 +180,13 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
     }else if(strchr(bufConf,'M')) {
       sscanf(bufConf, "M %d %f %f %f %f %f %d",&myArgInt, &myArg1, &myArg2, &myArg3, &myArg4, &myArg5, &myArgIntmax);
       if((myArgInt==0 || myArgInt==1) && myArg1>=0 && myArg2>=0 && myArg3>=0 && myArg4>=0 && myArg5>=0 && myArgIntmax>=0 && myArgIntmax<6){
-        smearhits = myArgInt;
-        fakehits_mean=myArg1;
-        fakehits_sigmaleft=myArg2;
-        fakehits_sigmaright=myArg3;
-        mceff_mean=myArg4;
-        mceff_sigma=myArg5;
-        smearrdrift=myArgIntmax;
+        m_smear_hits = myArgInt;
+        m_fakehits_mean=myArg1;
+        m_fakehits_sigmaleft=myArg2;
+        m_fakehits_sigmaright=myArg3;
+        m_mceff_mean=myArg4;
+        m_mceff_sigma=myArg5;
+        m_smear_rdrift=myArgIntmax;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (M)");
 	      return kTRUE;
@@ -197,8 +197,8 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
     }else if(strchr(bufConf,'J')) {
       sscanf(bufConf, "J %d %f ",&myArgInt, &myArg1);
       if(myArgInt>=0 && myArg1>0){
-        rejmax_cut = myArgInt;
-        chi2red_cut=myArg1;
+        m_rejmax_cut = myArgInt;
+        m_chi2red_cut=myArg1;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (J)");
 	      return kTRUE;
@@ -206,9 +206,9 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
     }else if(strchr(bufConf,'F')) {
       sscanf(bufConf, "F %d %d %f",&myArgInt, &myArgIntmin, &myArg1);
       if(myArgInt>=0 && myArgIntmin>=0 && myArg1>=0.){
-        fitter_index = myArgInt;
-        num_ite=myArgIntmin;
-        par_move=myArg1;
+        m_fitter_index = myArgInt;
+        m_num_ite=myArgIntmin;
+        m_par_move=myArg1;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (F)");
 	      return kTRUE;
@@ -225,9 +225,9 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
 void TABMparCon::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
   ofstream outfile;
   outfile.open(output_filename.Data(),ios::out);
-  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<"     t0_switch= "<<t0_switch<<endl;
+  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<"     m_t0_switch= "<<m_t0_switch<<endl;
   for(Int_t i=0;i<36;i++)
-    outfile<<"cellid= "<<i<<"  T0_time= "<<v_t0s[i]<<endl;
+    outfile<<"cellid= "<<i<<"  T0_time= "<<m_v_t0s[i]<<endl;
   outfile.close();
   return;
 }
@@ -249,7 +249,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
   char tmp_char[200];
   vector<Float_t> fileT0(36,-10000.);
   Int_t tmp_int=-1, status=0;
-  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>t0_switch>>tmp_char>>t0_choice;
+  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>m_t0_switch>>tmp_char>>m_t0_choice;
 
   for(Int_t i=0;i<36;i++)
     if(!infile.eof() && tmp_int==i-1)
@@ -260,15 +260,15 @@ Bool_t TABMparCon::loadT0s(TString filename) {
       return kTRUE;
       }
   infile.close();
-  v_t0s=fileT0;
+  m_v_t0s=fileT0;
 
   //check if the T0 are ok
   if(FootDebugLevel(1)) {
      for(Int_t i=0;i<36;i++) {
-        cout<<"BM T0: "<<v_t0s[i]<<endl;
-        if(v_t0s[i]==-10000)
+        cout<<"BM T0: "<<m_v_t0s[i]<<endl;
+        if(m_v_t0s[i]==-10000)
            cout<<"WARNING IN TABMparCon::loadT0s: channel not considered in tdc map tdc_cha=i="<<i<<" T0 for this channel is set to -10000"<<endl;
-        else if(v_t0s[i]==-20000)
+        else if(m_v_t0s[i]==-20000)
            cout<<"WARNING IN TABMparCon::loadT0s! channel with too few elements to evaluate T0: tdc_cha=i="<<i<<" T0 for this channel is set to -20000"<<endl;
      }
   }
@@ -280,7 +280,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
 void TABMparCon::SetT0s(vector<Float_t> t0s) {
 
   if(t0s.size() == 36) {
-    v_t0s = t0s;
+    m_v_t0s = t0s;
   } else {
     Error("Parameter()","Vectors size mismatch:: fix the t0 vector inmput size!!! %d ",(int) t0s.size());
   }
@@ -292,7 +292,7 @@ void TABMparCon::SetT0s(vector<Float_t> t0s) {
 void TABMparCon::SetT0(Int_t cha, Float_t t0in){
 
 if(cha<36 && cha>=0)
-  v_t0s[cha]=t0in;
+  m_v_t0s[cha]=t0in;
 else {
     Error("Parameter()","Channel out of Range!!! cha=%d",cha);
   }
@@ -302,8 +302,8 @@ else {
 
 void TABMparCon::CoutT0(){
   cout<<"Print BM T0 time:"<<endl;
-  for(Int_t i=0;i<v_t0s.size();i++)
-    cout<<"cell_id="<<i<<"  T0="<<v_t0s[i]<<endl;
+  for(Int_t i=0;i<m_v_t0s.size();i++)
+    cout<<"cell_id="<<i<<"  T0="<<m_v_t0s[i]<<endl;
   cout<<endl;
 }
 
@@ -313,32 +313,32 @@ void TABMparCon::CoutT0(){
 
 void TABMparCon::Clear(Option_t*)
 {
-  rdrift_err=0.015;
-  planehit_cut=3;
+  m_rdrift_err=0.015;
+  m_planehit_cut=3;
   m_isMC = false;
-  rdrift_cut = 0.11;
-  chi2red_cut = 5.;
-  fitter_index = 0;
-  minnhit_cut=6;
-  maxnhit_cut=20;
-  rejmax_cut=36;
-  num_ite=0;
-  par_move=0.0001;
-  legmbin=40;
-  legmrange=0.1;
-  legrbin=75;
-  legrrange=2.;
-  asshitratio=3.;
+  m_rdrift_cut = 0.11;
+  m_chi2red_cut = 5.;
+  m_fitter_index = 0;
+  m_minnhit_cut=6;
+  m_maxnhit_cut=20;
+  m_rejmax_cut=36;
+  m_num_ite=0;
+  m_par_move=0.0001;
+  m_legmbin=40;
+  m_legmrange=0.1;
+  m_legrbin=75;
+  m_legrrange=2.;
+  m_asshit_ratio=3.;
 
   //The following parameters for MC are set from the measurements with protons at Trento
-  fakehits_mean=5.57;
-  fakehits_sigmaleft=1.8;
-  fakehits_sigmaright=2.3;
-  mceff_mean=1;
-  mceff_sigma=0.2;
+  m_fakehits_mean=5.57;
+  m_fakehits_sigmaleft=1.8;
+  m_fakehits_sigmaright=2.3;
+  m_mceff_mean=1;
+  m_mceff_sigma=0.2;
 
   vector<Float_t> myt0s(36,-10000);
-  v_t0s = myt0s;
+  m_v_t0s = myt0s;
 
   return;
 }
@@ -358,7 +358,7 @@ void TABMparCon::ToStream(ostream& os, Option_t*) const
 
 Float_t TABMparCon::FirstSTrel(Float_t tdrift){
 
-  if(tdrift<0 && t0_switch==2)
+  if(tdrift<0 && m_t0_switch==2)
     return 0.03289 + 0.008*tdrift;
 
   Float_t rdrift;
@@ -399,7 +399,7 @@ Float_t TABMparCon::InverseStrel(Float_t rdrift){
 
 Float_t TABMparCon::FirstSTrelMC(Float_t tdrift, Int_t mc_switch){
 
-  if(tdrift<0 && t0_switch==2)
+  if(tdrift<0 && m_t0_switch==2)
       return 0.03289 + 0.008*tdrift;
 
   if(mc_switch==1){ //garfield strel
@@ -423,9 +423,9 @@ Float_t TABMparCon::FirstSTrelMC(Float_t tdrift, Int_t mc_switch){
 //~ Float_t TABMparCon::ResoEval(Float_t dist) {
   //~ Float_t sigma;
   //~ Int_t mybin(-1);
-  //~ if(my_hreso) {
-    //~ mybin = my_hreso->FindBin(dist);
-    //~ sigma = my_hreso->GetBinContent(mybin)/10000;
+  //~ if(m_hreso) {
+    //~ mybin = m_hreso->FindBin(dist);
+    //~ sigma = m_hreso->GetBinContent(mybin)/10000;
   //~ }
   //~ return sigma>0 ? sigma:0.12;
 
