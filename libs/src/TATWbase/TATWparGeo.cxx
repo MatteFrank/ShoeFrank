@@ -126,9 +126,9 @@ Bool_t TATWparGeo::FromFile(const TString& name)
             cout  << "   Tilt: "
             << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
 
-	 mytilt.push_back(tilt);
+         mytilt.push_back(tilt);
 
-	 // vTilt[iLayer][iBar].SetXYZ(tilt[0], tilt[1], tilt[2]);
+	 // fvTilt[iLayer][iBar].SetXYZ(tilt[0], tilt[1], tilt[2]);
 	 
 	 
          TGeoRotation rot;
@@ -145,7 +145,7 @@ Bool_t TATWparGeo::FromFile(const TString& name)
          AddTransMatrix(new TGeoHMatrix(transfo), idx);
       }
       
-      vTilt.push_back(mytilt);
+      fvTilt.push_back(mytilt);
    }
    
    Close();
@@ -425,7 +425,7 @@ string TATWparGeo::PrintRotations()
 		     GetBarPosition(i,j).Z());
 	  
 	//check if bars or detector have a tilt
-	if(vTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0){
+	if(fvTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0){
 
 	  //put the bars in local coord before the rotation
 	  ss << PrintCard("ROT-DEFI", "", "", "",
@@ -435,28 +435,28 @@ string TATWparGeo::PrintRotations()
 			  Form("tw_%d%02d",i,j) ) << endl;
 
 	  //check if bar has a tilt
-	  if (vTilt.at(i).at(j).Mag()!=0){
+	  if (fvTilt.at(i).at(j).Mag()!=0){
 	  
 	    // put the bar in 0,0,0 before the bar's rot
 	    ss << PrintCard("ROT-DEFI", "", "", "",
 			    Form("%f",-pos.X()), Form("%f",-pos.Y()), Form("%f",-pos.Z()),
 			    Form("tw_%d%02d",i,j) ) << endl;
 	    //rot around x
-	    if(vTilt.at(i).at(j)[0]!=0){
+	    if(fvTilt.at(i).at(j)[0]!=0){
 	      ss << PrintCard("ROT-DEFI", "100.", "",
-			      Form("%f",vTilt.at(i).at(j)[0]),
+			      Form("%f",fvTilt.at(i).at(j)[0]),
 			      "", "", "", Form("tw_%d%02d",i,j) ) << endl;
 	    }
 	    //rot around y      
-	    if(vTilt.at(i).at(j)[1]!=0){
+	    if(fvTilt.at(i).at(j)[1]!=0){
 	      ss << PrintCard("ROT-DEFI", "200.", "",
-			      Form("%f",vTilt.at(i).at(j)[1]),
+			      Form("%f",fvTilt.at(i).at(j)[1]),
 			      "", "", "", Form("tw_%d%02d",i,j) ) << endl;
 	    }
 	    //rot around z
-	    if(vTilt.at(i).at(j)[2]!=0){
+	    if(fvTilt.at(i).at(j)[2]!=0){
 	      ss << PrintCard("ROT-DEFI", "300.", "",
-			      Form("%f",vTilt.at(i).at(j)[2]),
+			      Form("%f",fvTilt.at(i).at(j)[2]),
 			      "", "", "", Form("tw_%d%02d",i,j) ) << endl;
 	    }
 	  
@@ -519,7 +519,7 @@ string TATWparGeo::PrintBodies()
     for (int i=0; i<GetNLayers(); i++){
       for (int j=0; j<GetNBars(); j++){
 	
- 	if (vTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0)
+ 	if (fvTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0)
 	  ss << "$start_transform " << Form("tw_%d%02d",i,j) << endl;
       	
 	bodyname = Form("scn%d%02d",i,j);
@@ -534,10 +534,10 @@ string TATWparGeo::PrintBodies()
 	   << pos.y() + fBarSize.Y()/2. << " "
 	   << pos.z() - fBarSize.Z()/2. << " "
 	   << pos.z() + fBarSize.Z()/2. << endl;
-	vBody.push_back(bodyname);
-	vRegion.push_back(regionname);
+	fvBody.push_back(bodyname);
+	fvRegion.push_back(regionname);
 
- 	if (vTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0)
+ 	if (fvTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0)
 	  ss << "$end_transform " << endl;
 	
       } 
@@ -560,8 +560,8 @@ string TATWparGeo::PrintRegions()
 
     ss << "* ***Scintillator regions" << endl;
 
-    for(int i=0; i<vRegion.size(); i++) 
-      ss << setw(13) << setfill( ' ' )  << std::left << vRegion.at(i) << "5 " << vBody.at(i) << endl;
+    for(int i=0; i<fvRegion.size(); i++)
+      ss << setw(13) << setfill( ' ' )  << std::left << fvRegion.at(i) << "5 " << fvBody.at(i) << endl;
     
   }
   return ss.str();
@@ -575,8 +575,8 @@ string TATWparGeo::PrintSubtractBodiesFromAir() {
 
   if(GlobalPar::GetPar()->IncludeTW()){
 
-    for (int i=0; i<vBody.size(); i++) {
-      ss << " -" << vBody.at(i);
+    for (int i=0; i<fvBody.size(); i++) {
+      ss << " -" << fvBody.at(i);
       if ((i+1)%10==0 && (i+1)<(GetNLayers()*GetNBars())) ss << endl;
     }
     ss << endl;
@@ -609,10 +609,10 @@ string TATWparGeo::PrintAssignMaterial(TAGmaterials *Material)
     if(GlobalPar::GetPar()->IncludeDI())
       magnetic = true;
 
-    if (vRegion.size()==0 )
+    if (fvRegion.size()==0 )
       cout << "Error: TW regions vector not correctly filled!"<<endl;
 
-    ss << PrintCard("ASSIGNMA", flkmat, vRegion.at(0), vRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmat, fvRegion.at(0), fvRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
     
   }
