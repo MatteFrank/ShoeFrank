@@ -35,47 +35,44 @@ public:
   virtual double ComputeAmplitude(TWaveformContainer *w);
 
 
-  inline Int_t GetChID() const {  return chid; }
-  inline Int_t GetBoardId() const { return boardid; }
-  inline Int_t GetTriggerType() const { return triggertypeId; }
-  inline Int_t GetTriggerCellID() const { return triggercellId; }
-  inline Double_t GetTime() const {  return time; }
-  inline Double_t GetTimeOth() const {  return time_oth; }
-  inline Double_t GetCharge() const {  return chg; }
-  inline Double_t GetAmplitude() const { return amplitude; }
-  inline Double_t GetPedestal() const { return pedestal; }
-  inline Double_t GetBaseline() const { return baseline; }
-  inline Int_t GetIDMC() const {  return mcid; }
+   Int_t    GetChID()          const {  return fChId;          }
+   Int_t    GetBoardId()       const { return fBoardId;        }
+   Int_t    GetTriggerType()   const { return fTriggerTypeId;  }
+   Int_t    GetTriggerCellID() const { return fTriggerCellId;  }
+   Double_t GetTime()          const { return fTime;           }
+   Double_t GetTimeOth()       const { return fTimeOth;        }
+   Double_t GetCharge()        const { return fChg;            }
+   Double_t GetAmplitude()     const { return fAmplitude;      }
+   Double_t GetPedestal()      const { return fPedestal;       }
+   Double_t GetBaseline()      const { return fBaseline;       }
+   Int_t    GetIDMC()          const { return fMcId;           }
    
-  inline void SetChID(int id) {  chid = id;  return; }
-  inline void SetBoardId(Int_t boardid) { boardid=boardid; }
-  inline void SetTriggerType(int value){ triggertypeId = value; }
-  inline void SetTriggerCellID(int value){ triggercellId = value; }
-  inline void SetTime(double atime) {  time = atime;  return; }
-  inline void SetTimeOth(double atime) {  time_oth = atime;  return; }
-  inline void SetCharge(double achg) {  chg = achg;  return; }
-  inline void SetMCID(int id) {  mcid = id;  return; }
-  inline void SetAmplitude(double value) { amplitude=value; }
-  inline void SetPedestal(double value) { pedestal=value; }
+   void SetChID(int id)              {  fChId = id;            }
+   void SetBoardId(Int_t boardid)    { fBoardId=boardid;       }
+   void SetTriggerType(int value)    { fTriggerTypeId = value; }
+   void SetTriggerCellID(int value)  { fTriggerCellId = value; }
+   void SetTime(double atime)        { fTime = atime;          }
+   void SetTimeOth(double atime)     { fTimeOth = atime;       }
+   void SetCharge(double achg)       { fChg = achg;            }
+   void SetMCID(int id)              { fMcId = id;             }
+   void SetAmplitude(double value)   { fAmplitude=value;       }
+   void SetPedestal(double value)    { fPedestal=value;        }
 
-   
   ClassDef(TAGbaseWD,4);
     //
   protected:
+  Double32_t fTime;
+  Double32_t fTimeOth;
+  Double32_t fChg;
+  Double32_t fAmplitude;
+  Double32_t fBaseline;
+  Double32_t fPedestal;
+  Int_t      fChId;
+  Int_t      fBoardId;
+  Int_t      fMcId;
+  Int_t      fTriggerTypeId;
+  Int_t      fTriggerCellId;
 
-  Double_t time;
-  Double_t time_oth;
-  Double_t chg;
-  Double_t amplitude;
-  Double_t baseline;
-  Double_t pedestal;
-  Int_t chid;
-  Int_t boardid;
-  Int_t mcid;
-  Int_t triggertypeId;
-  Int_t triggercellId;
-  
-   
 };
 
 #endif

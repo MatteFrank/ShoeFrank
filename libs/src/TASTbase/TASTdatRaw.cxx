@@ -29,11 +29,11 @@ TString TASTdatRaw::fgkBranchName   = "stdat.";
 TASTrawHit::TASTrawHit()
   : TAGbaseWD(){
    
-  baseline = -1000;
-  pedestal = -1000;
-  chg = -1000;
-  amplitude = -1000;
-  time =-1000;
+  fBaseline = -1000;
+  fPedestal = -1000;
+  fChg = -1000;
+  fAmplitude = -1000;
+  fTime =-1000;
 }
 
 //------------------------------------------+-----------------------------------
@@ -41,12 +41,12 @@ TASTrawHit::TASTrawHit()
 TASTrawHit::TASTrawHit(TWaveformContainer *W)
   : TAGbaseWD(W){
 
-  baseline = ComputeBaseline(W);
-  pedestal = ComputePedestal(W);
-  chg = ComputeCharge(W);
-  amplitude = ComputeAmplitude(W);
-  time = ComputeTime(W,0.3,2.0,-5,2);
-  time_oth = TAGbaseWD::ComputeTimeSimpleCFD(W,0.3);
+  fBaseline = ComputeBaseline(W);
+  fPedestal = ComputePedestal(W);
+  fChg = ComputeCharge(W);
+  fAmplitude = ComputeAmplitude(W);
+  fTime = ComputeTime(W,0.3,2.0,-5,2);
+  fTimeOth = TAGbaseWD::ComputeTimeSimpleCFD(W,0.3);
 
 }
 
