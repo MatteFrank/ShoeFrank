@@ -1,4 +1,5 @@
 
+
 #include <TROOT.h>
 #include <TMath.h>
 
@@ -56,7 +57,7 @@ int main (int argc, char *argv[]) {
 
     // real coding starts here!
 
-    GlobalPar::Instance("FootGlobal.par");
+    GlobalPar::Instance(Form("%sFootGlobal.par",exp.Data()));
     GlobalPar::GetPar()->Print();
 
     TAGroot* fTAGroot = new TAGroot();
@@ -75,19 +76,19 @@ int main (int argc, char *argv[]) {
     TAGparGeo* generalGeo = new TAGparGeo();
 
     // read geomap files
-    generalGeo->FromFile();
-    stcGeo->FromFile();
-    bmGeo->FromFile();
+    generalGeo->FromFile(Form("./geomaps/%sTAGdetector.map",exp.Data()));
+    stcGeo->FromFile(Form("./geomaps/%sTASTdetector.map",exp.Data()));
+    bmGeo->FromFile(Form("./geomaps/%sTABMdetector.map",exp.Data()));
     vtxGeo->SetMcFlag();
-    vtxGeo->FromFile();
-    itrGeo->FromFile();
-    msdGeo->FromFile();
-    diGeo->FromFile();
-    twGeo->FromFile();
-    caGeo->FromFile();
+    vtxGeo->FromFile(Form("./geomaps/%sTAVTdetector.map", exp.Data()));
+    itrGeo->FromFile(Form("./geomaps/%sTAITdetector.map", exp.Data()));
+    msdGeo->FromFile(Form("./geomaps/%sTAMSDdetector.map", exp.Data()));
+    diGeo->FromFile(Form("./geomaps/%sTATWdetector.map", exp.Data()));
+    twGeo->FromFile(Form("./geomaps/%sTATWdetector.map", exp.Data()));
+    caGeo->FromFile(Form("./geomaps/%sTACAdetector.map", exp.Data()));
 
     TString parFileName;
-    geoTrafo.FromFile("./geomaps/FOOT_geo.map");
+    geoTrafo.FromFile(Form("./geomaps/%sFOOT_geo.map",exp.Data()));
 
     ifstream file;
     string fileName = Form("foot.inp");
