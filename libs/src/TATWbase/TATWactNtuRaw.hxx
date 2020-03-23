@@ -7,12 +7,15 @@
 */
 /*------------------------------------------+---------------------------------*/
 
+#include <vector>
+
 #include "TH1.h"
 #include "TH2.h"
 
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
+#include "TAGgeoTrafo.hxx"
 #include "TATWparGeo.hxx"
 #include "TATWparCal.hxx"
 #include "TATWdatRaw.hxx"
@@ -27,7 +30,8 @@ public:
 				TAGdataDsc* p_datdaq=0,
 				TAGparaDsc* p_pargeo=0,
 				TAGparaDsc* p_parmap=0,
-				TAGparaDsc* p_calmap=0);
+				TAGparaDsc* p_calmap=0,
+				TAGparaDsc* p_pargeo_gl=0);
   virtual         ~TATWactNtuRaw();
 
   virtual Bool_t  Action();
@@ -44,6 +48,7 @@ private:
   TAGparaDsc*     fpParGeo;		    // parameter dsc
   TAGparaDsc*     fpParMap;
   TAGparaDsc*     fpCalPar;
+  TAGparaDsc*     fpParGeo_Gl;            // beam parameter dsc
 
   Float_t        fTofPropAlpha;    // inverse of light propagation velocity
   Float_t        fTofErrPropAlpha;
@@ -52,7 +57,7 @@ private:
   TH1F*          fpHisTimeTot;     // Total time of flight
    
   TH2D*          fpHisElossTof_layer[TATWparCal::kLayers];
-  TH2D*          fpHisElossTof_Z[TATWparCal::kCharges];
+  vector<TH2D*>  fpHisElossTof_Z;
 
   bool m_debug;
 

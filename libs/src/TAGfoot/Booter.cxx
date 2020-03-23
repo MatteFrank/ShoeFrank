@@ -647,8 +647,10 @@ void Booter::FillMCTofWall(EVENT_STRUCT *myStr) {
     /*Ntupling the MC Tof Wall information*/
     containerHit    = new TAGdataDsc("containerHit", new TATWntuRaw());
     myp_parcal = new TAGparaDsc("twCal", new TATWparCal());
+    myp_pargeo = new TAGparaDsc("parGeo", new TAGparGeo());
 
-    new TATWactNtuMC("an_twraw", containerHit, myp_parcal, myStr);
+    // new TATWactNtuMC("an_twraw", containerHit, myp_parcal, myStr);
+    new TATWactNtuMC("an_twraw", containerHit, myp_parcal, myp_pargeo, myStr);
 
     // gTAGroot->AddRequiredItem("myn_twraw");
     gTAGroot->AddRequiredItem("containerHit");

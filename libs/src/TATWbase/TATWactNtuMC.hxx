@@ -6,6 +6,7 @@
   \brief   Declaration of TATWactNtuMC.
 */
 /*------------------------------------------+---------------------------------*/
+ #include <vector>
 
 #include "TVector3.h"
 #include "TH1F.h"
@@ -23,7 +24,7 @@ class TATWdigitizer;
 
 class TATWactNtuMC : public TAGaction {
 public:
-  explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, TAGparaDsc* p_parcal=0, EVENT_STRUCT* evStr=0);
+  explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, TAGparaDsc* p_parcal=0, TAGparaDsc *p_pargeo=0, EVENT_STRUCT* evStr=0);
     virtual  ~TATWactNtuMC();
 
     virtual bool  Action();
@@ -31,11 +32,12 @@ public:
     void          CreateHistogram();
 
 private:
-    TAGdataDsc*     m_hitContainer;		// output data dsc
-    TAGparaDsc*     fpCalPar;           // parameter dsc
+    TAGdataDsc*     m_hitContainer;	// output data dsc
+    TAGparaDsc*     fpCalPar;           // calibration parameter dsc
+    TAGparaDsc*     fParGeo;            // beam parameter dsc
     EVENT_STRUCT*   m_eventStruct;
-    TATWdigitizer*  m_Digitizer;       // digitizer
-
+    TATWdigitizer*  m_Digitizer;        // digitizer
+  
     int cnt = 0;
     int cntWrong = 0;
    
@@ -50,9 +52,10 @@ private:
     TH2I* fpHisZID_MCtrue;
     TH2D* fpHisElossTof_MCrec[TATWparCal::kLayers];
     TH2D* fpHisElossTof_MCtrue[TATWparCal::kLayers];
-    TH2D* fpHisElossTof_MC[TATWparCal::kCharges];
-    TH2D* fpHisElossTof[TATWparCal::kCharges];
-    TH1F* fpHisDistZ[TATWparCal::kCharges];
+    // vector of histo with the same size of the ion beam atomic number
+    vector<TH2D*> fpHisElossTof_MC;
+    vector<TH2D*> fpHisElossTof;
+    vector<TH1F*> fpHisDistZ;
    
 private:
     void          CreateDigitizer();

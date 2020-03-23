@@ -2,6 +2,7 @@
 #define _TATWdigitizer_HXX
 
 #include <map>
+
 #include "TAGbaseDigitizer.hxx"
 
 #include "TATWntuRaw.hxx"

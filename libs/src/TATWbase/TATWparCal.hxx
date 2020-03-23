@@ -6,6 +6,7 @@
   \brief   Declaration of TATWparCal.
 */
 /*------------------------------------------+---------------------------------*/
+#include <vector>
 
 #include "Riostream.h"
 
@@ -13,7 +14,10 @@
 #include "TArrayF.h"
 #include "TF1.h"
 #include "TAGparTools.hxx"
+#include "TAGparGeo.hxx"
 #include "CCalibrationMap.hxx"
+
+#include "TAGgeoTrafo.hxx"
 
 //##############################################################################
 
@@ -21,20 +25,21 @@ class TATWparCal : public TAGparTools {
       
 public:
 
-  enum{kCharges=8,kLayers=2,kSlats=20};  // TW quantities
+  enum{kLayers=2,kSlats=20};  // TW quantities
   
 private:
 
   struct ChargeParameter_t : public  TObject {
-    Int_t   Layer;     // TW layer
-    Int_t   Charge;    // charge
-    Float_t Norm_BB;   // par0 BB
-    Float_t Const_BB;  // par1 BB
-    Float_t CutLow;    // Lower Tof cut
-    Float_t CutUp;     // Upper Tof cut
+    vector<Int_t>   Layer;     // TW layer
+    vector<Int_t>   Charge;    // charge
+    vector<Float_t> Norm_BB;   // par0 BB
+    vector<Float_t> Const_BB;  // par1 BB
+    vector<Float_t> CutLow;    // Lower Tof cut
+    vector<Float_t> CutUp;     // Upper Tof cut
   };
    
-  ChargeParameter_t  fChargeParameter[kCharges];
+
+  ChargeParameter_t fChargeParameter;
   
   static TString fgkBBparamName;    // default BBparameters for Z identification with TW
   static TString fgkDefaultCalName; // default detector charge calibration file
@@ -42,8 +47,8 @@ private:
   
   int   Zraw;
   float dist_min_Z;
-  float dist_Z[kCharges];
-
+  vector<float> dist_Z;
+  
   Double_t   fBBparametrized(double tof, int chg, double par0, double par1);
   Double_t   fBB_prime_parametrized(double tof, int chg, double par0, double par1);
   Float_t    fDist(double tof, double eloss, double x, double fBB);
@@ -55,19 +60,21 @@ public:
   virtual ~TATWparCal();
   
   //! Read from file
-  Bool_t             FromFile(const TString& name = "", Bool_t isBBparam = true);
+  Bool_t             FromFile(const TString& name = "");
+  Bool_t             FromFile( Int_t isZbeam, const TString& name = "");
+  // Bool_t             FromFile(const TString& name = "", Bool_t isBBparam = true);
   inline CCalibrationMap* getCalibrationMap() {return cMapCal;}
   //
-  void             ComputeBBDistance(double edep, double tof, int tw_layer);
+  void             ComputeBBDistance(double edep, double tof, int tw_layer, TAGparGeo *pargeo, TAGgeoTrafo * geoTrafo);
   //
   //! Get Methods
-  Int_t            GetChargeZ(Float_t edep, Float_t tof, Int_t layer); //const;
+  Int_t            GetChargeZ(Float_t edep, Float_t tof, Int_t layer, TAGparGeo *pargeo, TAGgeoTrafo *geoTrafo); //const;
   Int_t            GetBisecChargeZ() const {return Zraw;}
-  Float_t          GetDistBB(int ichg) const { if(ichg>0 && ichg<kCharges+1) {return dist_Z[ichg-1];} else { printf("ERROR: charge index (%d) out of range\n",ichg); return -1000;} }
+  Float_t          GetDistBB(int ichg) const { return dist_Z[ichg-1];}
   //
   //! Set Methods
   void            SetBisecChargeZ(int chg) {Zraw = chg;}
-  void            SetDistBB(int ichg, float dist) { if(ichg>0 && ichg<kCharges+1) {dist_Z[ichg-1] = dist;}  else { printf("ERROR: charge index (%d) out of range\n",ichg);} }
+  void            SetDistBB(int ichg, float dist) {dist_Z[ichg-1] = dist;}
   //
   //! Clear
   virtual void       Clear(Option_t* opt="");

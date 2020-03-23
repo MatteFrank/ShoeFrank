@@ -192,6 +192,12 @@ public:
    virtual TAMCntuHit*  GetNtuMcCa()        const { return 0x0; }
    virtual TTree*       GetTree()                 { return 0x0; }
 
+  // beam parameters
+   Int_t Z_beam;
+   Int_t A_beam;
+   TString ion_name;
+   Float_t kinE_beam;
+
 public:
    //! Disable/Enable ITR tracking
    static void DisableItrTracking() { fgItrTrackFlag = false; }
