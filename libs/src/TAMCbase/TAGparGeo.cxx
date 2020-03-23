@@ -127,6 +127,10 @@ Bool_t TAGparGeo::FromFile(const TString& name)
    if(FootDebugLevel(1))
       cout  << "  Beam atomic number:  "<< fBeamParameter.AtomicNumber << endl;
    
+   ReadStrings(fBeamParameter.Material);
+   if(FootDebugLevel(1))
+      cout  << "  Beam material:  "<< fBeamParameter.Material.Data() << endl;
+
    ReadItem(fBeamParameter.PartNumber);
    if(FootDebugLevel(1))
       cout  << "   Number of particles:  "<< fBeamParameter.PartNumber << endl;

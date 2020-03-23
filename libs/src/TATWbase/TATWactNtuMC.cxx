@@ -24,14 +24,17 @@ ClassImp(TATWactNtuMC);
 TATWactNtuMC::TATWactNtuMC(const char* name,
                            TAGdataDsc* p_hitraw,
 			   TAGparaDsc* p_parcal,
+			   TAGparaDsc* p_parGeo,
                            EVENT_STRUCT* evStr)
   : TAGaction(name, "TATWactNtuMC - NTuplize ToF raw data"),
     m_hitContainer(p_hitraw),
     fpCalPar(p_parcal),
+    fParGeo(p_parGeo),
     m_eventStruct(evStr)
 {
   AddDataOut(p_hitraw, "TATWntuRaw");
   AddPara(p_parcal,"TATWparCal");
+  AddPara(p_parGeo,"TAGparGeo");
 
   CreateDigitizer();
 }
@@ -48,6 +51,9 @@ TATWactNtuMC::~TATWactNtuMC()
 //! Setup all histograms.
 void TATWactNtuMC::CreateHistogram()
 {
+   
+   TAGparGeo*  m_parGeo = (TAGparGeo*) fParGeo->Object();
+   const Int_t Z_beam = m_parGeo->GetBeamPar().AtomicNumber;
    
    DeleteHistogram();
    
@@ -80,27 +86,28 @@ void TATWactNtuMC::CreateHistogram()
      AddHistogram(fpHisZID_MCtrue);
 
      for(int ilayer=0; ilayer<TATWparCal::kLayers; ilayer++) {
-       fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d_MCtrue",ilayer),Form("dE_vs_Tof_ilayer%d_MCtrue",ilayer),400,0.,40.,480,0.,120.);
+       fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d_MCtrue",ilayer),Form("dE_vs_Tof_ilayer%d_MCtrue",ilayer),500,0.,50.,480,0.,120.);
        AddHistogram(fpHisElossTof_MCtrue[ilayer]);
      }
      
-     for(int iZ=1; iZ<TATWparCal::kCharges+1; iZ++) {
-       fpHisElossTof_MC[iZ-1] = new TH2D(Form("dE_vs_Tof_Z%d_MCtrue",iZ),Form("dE_vs_Tof_%d",iZ),400,0.,40.,480,0.,120.);
+     for(int iZ=1; iZ < Z_beam+1; iZ++) {
+       fpHisElossTof_MC.push_back(new TH2D(Form("dE_vs_Tof_Z%d_MCtrue",iZ),Form("dE_vs_Tof_%d",iZ),500,0.,50.,480,0.,120.));
+
        AddHistogram(fpHisElossTof_MC[iZ-1]);
      }
    }
    
    for(int ilayer=0; ilayer<TATWparCal::kLayers; ilayer++) {
-     fpHisElossTof_MCrec[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),400,0.,40.,480,0.,120.);
+     fpHisElossTof_MCrec[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),500,0.,50.,480,0.,120.);
      AddHistogram(fpHisElossTof_MCrec[ilayer]);
    }
    
-   for(int iZ=1; iZ<TATWparCal::kCharges+1; iZ++) {
-     
-     fpHisElossTof[iZ-1] = new TH2D(Form("dE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),400,0.,40.,480,0.,120.);
+   for(int iZ=1; iZ < Z_beam+1; iZ++) {
+
+     fpHisElossTof.push_back(new TH2D(Form("dE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),500,0.,50.,480,0.,120.));
      AddHistogram(fpHisElossTof[iZ-1]);
      
-     fpHisDistZ[iZ-1] = new TH1F(Form("dist_Z%d",iZ),Form("dist_Z%d",iZ),800,-40.,40.);
+     fpHisDistZ.push_back( new TH1F(Form("dist_Z%d",iZ),Form("dist_Z%d",iZ),1000,-20.,80) );
      AddHistogram(fpHisDistZ[iZ-1]);
      
    }
@@ -128,8 +135,11 @@ bool TATWactNtuMC::Action() {
 
    TATWntuRaw* containerHit = (TATWntuRaw*) m_hitContainer->Object();
    TATWparCal* m_parcal = (TATWparCal*) fpCalPar->Object();
+   TAGparGeo*  m_parGeo = (TAGparGeo*) fParGeo->Object();
    TATWparGeo* geoMap = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
 
+   const Int_t Z_beam = m_parGeo->GetBeamPar().AtomicNumber;
+   
     //The number of hits inside the Start Counter is stn
     if ( fDebugLevel> 0 )     cout << "Processing n Scint " << m_eventStruct->SCNn << endl;
 
@@ -159,8 +169,7 @@ bool TATWactNtuMC::Action() {
 
        Int_t Z = m_eventStruct->TRcha[trackId];
 
-
-       Int_t Zrec_MCtrue = -2;
+       Int_t Zrec_MCtrue = 0;
        if(m_Digitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
 
 	 Int_t mothId = (m_eventStruct->TRpaid[trackId])-1;
@@ -170,15 +179,16 @@ bool TATWactNtuMC::Action() {
 	 // if( mothId>0 || Z == 0 ) 
 	   Zrec_MCtrue=-1.; //set Z to nonsense value
 	 else {
-	   Zrec_MCtrue = m_parcal->GetChargeZ(edep,time*TAGgeoTrafo::PsToNs(),view);
+	   Zrec_MCtrue = m_parcal->GetChargeZ(edep,time*TAGgeoTrafo::PsToNs(),view,m_parGeo,geoTrafo);
 	 }
 	 
 	 if (ValidHistogram()) {
 	   fpHisZID_MCtrue->Fill(Zrec_MCtrue,Z);
 
-	   fpHisElossTof_MCtrue[view]->Fill(time*TAGgeoTrafo::PsToNs(),edep);
+	   fpHisElossTof_MCtrue[view]->Fill(time*TAGgeoTrafo::PsToNs(),edep)
+	     ;
 
-	   if( Zrec_MCtrue>0 && Zrec_MCtrue<TATWparCal::kCharges+1 )
+	   if( Zrec_MCtrue>0 && Zrec_MCtrue < Z_beam+1 )
 	     fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(time*TAGgeoTrafo::PsToNs(),edep);
 
 	 }
@@ -216,11 +226,11 @@ bool TATWactNtuMC::Action() {
 
        }
        
-       Int_t Zrec = m_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
+       Int_t Zrec = m_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer(),m_parGeo,geoTrafo);
        hit->SetChargeZ(Zrec);
        
-       Float_t distZ[TATWparCal::kCharges];
-       for(int iZ=1; iZ<TATWparCal::kCharges+1; iZ++)
+       Float_t distZ[Z_beam];
+       for(int iZ=1; iZ<Z_beam+1; iZ++)
 	 distZ[iZ-1]= m_parcal->GetDistBB(iZ);
 
        if(fDebugLevel > 0) {
@@ -242,10 +252,10 @@ bool TATWactNtuMC::Action() {
 
 	 fpHisElossTof_MCrec[hit->GetLayer()]->Fill(recTof,recEloss);
 	 
-	 if( Zrec>0 && Zrec<TATWparCal::kCharges+1 )
+	 if( Zrec>0 && Zrec < Z_beam+1 )
 	   fpHisElossTof[Zrec-1]->Fill(recTof,recEloss);
 	 
-	 for(int iZ=1; iZ<TATWparCal::kCharges+1; iZ++)
+	 for(int iZ=1; iZ < Z_beam+1; iZ++)
 	   fpHisDistZ[iZ-1]->Fill(distZ[iZ-1]);
 	 	 
 	 fpHisZID->Fill(Zrec,Z);

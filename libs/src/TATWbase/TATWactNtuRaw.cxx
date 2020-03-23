@@ -28,13 +28,15 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
 			     TAGdataDsc* p_nturaw,
 			     TAGparaDsc* p_pargeom,
 			     TAGparaDsc* p_parmap,
-			     TAGparaDsc* p_calmap)
+			     TAGparaDsc* p_calmap,
+			     TAGparaDsc* p_pargeoG)
   : TAGaction(name, "TATWactNtuRaw - Unpack TW raw data"),
     fpDatRaw(p_datraw),
     fpNtuRaw(p_nturaw),
     fpParGeo(p_pargeom),
     fpParMap(p_parmap),
     fpCalPar(p_calmap),
+    fpParGeo_Gl(p_pargeoG),
     fTofPropAlpha(0.280/2.), // velocity of the difference need to divide by 2 (ns/cm)
     fTofErrPropAlpha(2.5)
 {
@@ -43,6 +45,7 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
   AddPara(p_pargeom, "TATWparGeo");
   AddPara(p_parmap,"TATWparMap");
   AddPara(p_calmap,"TATWparCal");
+  AddPara(p_pargeoG, "TAGparGeo");
 
 
   m_debug = GetDebugLevel();
@@ -59,6 +62,10 @@ TATWactNtuRaw::~TATWactNtuRaw()
 //! Setup all histograms.
 void TATWactNtuRaw::CreateHistogram()
 {
+
+  TAGparGeo*  m_parGeo = (TAGparGeo*) fpParGeo_Gl->Object();
+  const Int_t Z_beam = m_parGeo->GetBeamPar().AtomicNumber;
+
   DeleteHistogram();
    
   fpHisDeTot = new TH1F("twDeTot", "TW - Total Energy Loss", 500, 0., 300.);
@@ -68,13 +75,14 @@ void TATWactNtuRaw::CreateHistogram()
   AddHistogram(fpHisTimeTot);
    
   for(int ilayer=0; ilayer<TATWparCal::kLayers; ilayer++) {
-    fpHisElossTof_layer[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),400,0.,40.,480,0.,120.);
+    fpHisElossTof_layer[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),500,0.,50.,480,0.,120.);
     AddHistogram(fpHisElossTof_layer[ilayer]);
   }
   
-  for(int iZ=1; iZ<TATWparCal::kCharges+1; iZ++) {
+  for(int iZ=1; iZ < Z_beam; iZ++) {
     
-    fpHisElossTof_Z[iZ-1] = new TH2D(Form("dE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),400,0.,40.,480,0.,120.);
+    fpHisElossTof_Z.push_back( new TH2D(Form("dE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),500,0.,50.,480,0.,120.) );
+
     AddHistogram(fpHisElossTof_Z[iZ-1]);
   }
   
@@ -92,7 +100,12 @@ Bool_t TATWactNtuRaw::Action() {
   TATWparGeo*   p_pargeo = (TATWparGeo*)  fpParGeo->Object();
   TATWparMap*   p_parmap = (TATWparMap*)  fpParMap->Object();
   TATWparCal*   p_parcal = (TATWparCal*)    fpCalPar->Object();
+  TAGparGeo*    p_pargeo_gl = (TAGparGeo*)  fpParGeo_Gl->Object();
 
+  TAGgeoTrafo* p_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  
+  const Int_t Z_beam = p_pargeo_gl->GetBeamPar().AtomicNumber;
+  
   p_nturaw->SetupClones();
   CChannelMap *chmap=p_parmap->getChannelMap();
   int nhit = p_datraw->GetHitsN();
@@ -161,14 +174,15 @@ Bool_t TATWactNtuRaw::Action() {
 	      int Layer = (int)chmap->GetBarLayer(BarId);
 	      fCurrentHit = (TATWntuHit*)p_nturaw->NewHit(Layer,ShoeBarId, Energy,Time,TimeOth,rawPos,chargeCOM,
 							  ChargeA,ChargeB,TimeA,TimeB,TimeAOth,TimeBOth);
-	      Int_t Zrec = p_parcal->GetChargeZ(Energy,Time,Layer);
+	      Int_t Zrec = p_parcal->GetChargeZ(Energy,Time,Layer,p_pargeo_gl,p_geoTrafo);
 	      fCurrentHit->SetChargeZ(Zrec);
 	      
 	      if (ValidHistogram()) {
 		fpHisDeTot->Fill(Energy);
 		fpHisTimeTot->Fill(Time);
 		fpHisElossTof_layer[Layer]->Fill(Time,Energy);
-		if(Zrec>0 && Zrec<TATWparCal::kCharges+1)
+
+		if(Zrec>0 && Zrec<Z_beam+1)
 		  fpHisElossTof_Z[Zrec-1]->Fill(Time,Energy);
 	      }
 	      

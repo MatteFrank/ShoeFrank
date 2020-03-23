@@ -149,6 +149,7 @@ class Booter {
   TAGparaDsc* myp_twgeo;
   TAGparaDsc* myp_cageo;
   TAGparaDsc* myp_parcal;
+  TAGparaDsc* myp_pargeo;
   TAGdataDsc* myn_caraw;
 
    //Actions
