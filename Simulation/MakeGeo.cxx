@@ -78,13 +78,17 @@ int main (int argc, char *argv[]) {
     // read geomap files
     generalGeo->FromFile(Form("./geomaps/%sTAGdetector.map",exp.Data()));
     stcGeo->FromFile(Form("./geomaps/%sTASTdetector.map",exp.Data()));
-    cout<<"  Lloading:: "<<Form("./geomaps/%sTABMdetector.map",exp.Data())<<endl;
+    cout<<"  Loading:: "<<Form("./geomaps/%sTABMdetector.map",exp.Data())<<endl;
     bmGeo->FromFile(Form("geomaps/%sTABMdetector.map",exp.Data()));
     vtxGeo->SetMcFlag();
+        cout<<"  Loading:: "<<Form("./geomaps/%sTAVTdetector.map",exp.Data())<<endl;
     vtxGeo->FromFile(Form("./geomaps/%sTAVTdetector.map", exp.Data()));
+    cout<<"  Loading:: "<<Form("./geomaps/%sTAITdetector.map",exp.Data())<<endl;
     itrGeo->FromFile(Form("./geomaps/%sTAITdetector.map", exp.Data()));
+    cout<<"  Loading:: "<<Form("./geomaps/%sTAMSDdetector.map",exp.Data())<<endl;
     msdGeo->FromFile(Form("./geomaps/%sTAMSDdetector.map", exp.Data()));
-    diGeo->FromFile(Form("./geomaps/%sTATWdetector.map", exp.Data()));
+    cout<<"  Loading:: "<<Form("./geomaps/%sTATWdetector.map",exp.Data())<<endl;
+    diGeo->FromFile(Form("./geomaps/%sTADIdetector.map", exp.Data()));
     twGeo->FromFile(Form("./geomaps/%sTATWdetector.map", exp.Data()));
     caGeo->FromFile(Form("./geomaps/%sTACAdetector.map", exp.Data()));
 
