@@ -37,7 +37,8 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
     fpParMap(p_parmap),
     fpCalPar(p_calmap),
     fpParGeo_Gl(p_pargeoG),
-    fTofPropAlpha(0.280/2.), // velocity of the difference need to divide by 2 (ns/cm)
+    fTofPropAlpha(0.65), // velocity^-1 of light propagation in the TW bar (ns/cm)
+    // fTofPropAlpha(0.280/2.), // velocity of the difference need to divide by 2 (ns/cm)
     fTofErrPropAlpha(2.5)
 {
   AddDataIn(p_datraw, "TATWdatRaw");
@@ -47,7 +48,11 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
   AddPara(p_calmap,"TATWparCal");
   AddPara(p_pargeoG, "TAGparGeo");
 
+ 
+  f_pargeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
 
+  Z_beam = f_pargeo->GetBeamPar().AtomicNumber;
+ 
   m_debug = GetDebugLevel();
   
 }
@@ -62,9 +67,6 @@ TATWactNtuRaw::~TATWactNtuRaw()
 //! Setup all histograms.
 void TATWactNtuRaw::CreateHistogram()
 {
-
-  TAGparGeo*  m_parGeo = (TAGparGeo*) fpParGeo_Gl->Object();
-  const Int_t Z_beam = m_parGeo->GetBeamPar().AtomicNumber;
 
   DeleteHistogram();
    
@@ -103,8 +105,6 @@ Bool_t TATWactNtuRaw::Action() {
   TAGparGeo*    p_pargeo_gl = (TAGparGeo*)  fpParGeo_Gl->Object();
 
   TAGgeoTrafo* p_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-  
-  const Int_t Z_beam = p_pargeo_gl->GetBeamPar().AtomicNumber;
   
   p_nturaw->SetupClones();
   CChannelMap *chmap=p_parmap->getChannelMap();
@@ -174,7 +174,7 @@ Bool_t TATWactNtuRaw::Action() {
 	      int Layer = (int)chmap->GetBarLayer(BarId);
 	      fCurrentHit = (TATWntuHit*)p_nturaw->NewHit(Layer,ShoeBarId, Energy,Time,TimeOth,rawPos,chargeCOM,
 							  ChargeA,ChargeB,TimeA,TimeB,TimeAOth,TimeBOth);
-	      Int_t Zrec = p_parcal->GetChargeZ(Energy,Time,Layer,p_pargeo_gl,p_geoTrafo);
+	      Int_t Zrec = p_parcal->GetChargeZ(Energy,Time,Layer);
 	      fCurrentHit->SetChargeZ(Zrec);
 	      
 	      if (ValidHistogram()) {
@@ -249,7 +249,7 @@ Double_t TATWactNtuRaw::GetRawTimeOth(TATWrawHit*a,TATWrawHit*b)
 
 Double_t TATWactNtuRaw::GetPosition(TATWrawHit*a,TATWrawHit*b)
 {
-  return (a->GetTime()-b->GetTime())/fTofPropAlpha;
+  return (a->GetTime()-b->GetTime())/(2*fTofPropAlpha);
 }
 //________________________________________________________________
 

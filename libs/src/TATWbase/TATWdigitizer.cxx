@@ -60,7 +60,8 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
    fTofErrLambdaE(0.1),
    fTofk0E(140),
    fTofErrk0E(18),
-   fTofPropAlpha(280/2.), // velocity of the difference need to divide by 2 (ps/cm)
+   fTofPropAlpha(65.), // velocity^-1 of propagation of light in TW bar (ps/cm)
+   // fTofPropAlpha(280/2.), // velocity of the difference need to divide by 2 (ps/cm)
    fTofErrPropAlpha(2.5), // old 5 ?
    fSlatLength(0),
    fGain(1),
@@ -71,8 +72,10 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
    
    fpParGeo = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
 
-   fSlatLength = fpParGeo->GetBarDimension().Z();
-   
+   fSlatLength = fpParGeo->GetBarDimension().Y();
+
+   // cout<<"slatLength::"<<fSlatLength<<endl;   
+
    fMap.clear();
 }
 
@@ -195,9 +198,10 @@ Float_t TATWdigitizer::GetTofLeft(Float_t pos, Float_t time, Float_t edep)
 {
    // figure 11 assuming same as right
    Float_t alpha  = gRandom->Gaus(fTofPropAlpha, fTofErrPropAlpha);
-   Float_t timeL  = time + (fSlatLength/2. - pos)*alpha;
+   Float_t timeL  = time - pos*alpha;
+   // Float_t timeL  = time + (fSlatLength/2. - pos)*alpha;
    Float_t resToF = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R
-   timeL += gRandom->Gaus(0, resToF);
+   timeL += gRandom->Gaus(0, resToF);  // TODO::check more updated ToF resolutions
    
    return timeL;
 }
@@ -207,9 +211,9 @@ Float_t TATWdigitizer::GetTofRight(Float_t pos, Float_t time, Float_t edep)
 {
    // figure 11
    Float_t alpha  = gRandom->Gaus(fTofPropAlpha, fTofErrPropAlpha);
-   Float_t timeR  = time + (fSlatLength/2. + pos)*alpha;
-   Float_t resToF = GetResToF(edep)*TMath::Sqrt(2.);
-   
+   Float_t timeR  = time + pos*alpha;
+   // Float_t timeR  = time + (fSlatLength/2. + pos)*alpha;
+   Float_t resToF = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R
    timeR += gRandom->Gaus(0, resToF);
    
    return timeR;
@@ -260,7 +264,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    chargeB += gRandom->Gaus(0, resChargeB);
 
    if (fDebugLevel) {
-      printf("pos %.1f\n", pos);
+      printf("pos %f\n", pos);
       printf("energy %.1f %.1f\n", chargeA, chargeB);
       printf("Res %.3f %.3f\n", resChargeA*100, resChargeB*100);
    }
@@ -270,8 +274,8 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Float_t timeB = GetTofRight(pos, time, edep);
 
    if (fDebugLevel) {
-      printf("time %.1f\n", time);
-      printf("time %.1f %.1f\n", timeA, timeB);
+     printf("time %.1f\n", time);
+     printf("time %.1f %.1f\n", timeA, timeB);
    }
    
    Double_t tof = (timeA+timeB)/2.;
@@ -285,7 +289,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    //Time should be stored in ns
    tof *= TAGgeoTrafo::PsToNs(); 
    if (fMap[idA] == 0) {
-     fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeA, timeB, timeB); // timeA/B is ps, and tof in ns !
+     fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !
      // fCurrentHit->SetChargeZ(Z);     
 
       fMap[idA] = fCurrentHit;

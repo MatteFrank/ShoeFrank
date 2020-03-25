@@ -16,6 +16,8 @@
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAGparGeo.hxx"
+
 #include "TATWparGeo.hxx"
 #include "TATWparCal.hxx"
 #include "TATWdatRaw.hxx"
@@ -50,6 +52,10 @@ private:
   TAGparaDsc*     fpCalPar;
   TAGparaDsc*     fpParGeo_Gl;            // beam parameter dsc
 
+  TAGparGeo*      f_pargeo;
+
+  Int_t          Z_beam;
+  
   Float_t        fTofPropAlpha;    // inverse of light propagation velocity
   Float_t        fTofErrPropAlpha;
 

@@ -57,11 +57,11 @@ public:
    bool IsRow()    { return ( m_layer == 1 ? true : false ); };
    
    //    All the Get methods
-   Int_t     GetBar()                  const   { return  m_bar;              }
-   Int_t     GetLayer()                const   { return  m_layer;            }
+   Int_t     GetBar()                  const   { return m_bar;               }
+   Int_t     GetLayer()                const   { return m_layer;             }
    Double_t  GetEnergyLoss()           const   { return m_de;                }
    Double_t  GetTime()                 const   { return m_time;              }
-  Double_t  GetTimeOth()                 const   { return m_time_oth;              }
+   Double_t  GetTimeOth()              const   { return m_time_oth;          }
    Double_t  GetToF()                  const   { return m_timeofflight;      }
    Double_t  GetPosition()             const   { return m_coordinate;        }
    Int_t     GetChargeZ()              const   { return m_chargeZ;           }

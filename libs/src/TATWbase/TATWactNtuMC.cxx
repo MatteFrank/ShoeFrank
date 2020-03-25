@@ -30,13 +30,20 @@ TATWactNtuMC::TATWactNtuMC(const char* name,
     m_hitContainer(p_hitraw),
     fpCalPar(p_parcal),
     fParGeo(p_parGeo),
-    m_eventStruct(evStr)
+    m_eventStruct(evStr),
+    cnt(0),
+    cntWrong(0)
 {
   AddDataOut(p_hitraw, "TATWntuRaw");
   AddPara(p_parcal,"TATWparCal");
   AddPara(p_parGeo,"TAGparGeo");
 
   CreateDigitizer();
+
+  f_pargeo = (TAGparGeo*)(TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+  
+  Z_beam = f_pargeo->GetBeamPar().AtomicNumber;
+   
 }
 
 //------------------------------------------+-----------------------------------
@@ -52,9 +59,6 @@ TATWactNtuMC::~TATWactNtuMC()
 void TATWactNtuMC::CreateHistogram()
 {
    
-   TAGparGeo*  m_parGeo = (TAGparGeo*) fParGeo->Object();
-   const Int_t Z_beam = m_parGeo->GetBeamPar().AtomicNumber;
-   
    DeleteHistogram();
    
    fpHisHitCol = new TH1F("twHitCol", "ToF Wall - Column hits", 22, 0., 22);
@@ -63,19 +67,19 @@ void TATWactNtuMC::CreateHistogram()
    fpHisHitLine = new TH1F("twHitLine", "ToF Wall - Line hits", 22, 0., 22);
    AddHistogram(fpHisHitLine);
 
-   fpHisHitMap = new TH2F("twHitMap", "ToF Wall - Hit Map", 22, 0., 22, 22, 0, 22);
+   fpHisHitMap = new TH1F("twHitMap", "ToF Wall - Hit Map", 1000,-50,50);
    AddHistogram(fpHisHitMap);
 
-   fpHisDeTot = new TH1F("twDeTot", "ToF Wall - Total energy loss", 1000, 0., 200*3e4);
+   fpHisDeTot = new TH1F("twDeTot", "ToF Wall - Total energy loss", 1000,-50,50);
    AddHistogram(fpHisDeTot);
 
-   fpHisDeTotMc = new TH1F("twMcDeTot", "ToF wall - MC Total energy loss", 1000, 0., 200);
+   fpHisDeTotMc = new TH1F("twMcDeTot", "ToF wall - MC Total energy loss", 1000,-50,50);
    AddHistogram(fpHisDeTotMc);
    
-   fpHisTimeTot = new TH1F("twTimeTot", "ToF Wall - Total time", 1000, 0., 200e3);
+   fpHisTimeTot = new TH1F("twTimeTot", "ToF Wall - Total time", 500, 0., 50.);
    AddHistogram(fpHisTimeTot);
    
-   fpHisTimeTotMc = new TH1F("twMcTimeTot", "ToF wall - MC Total time", 1000, 0., 200e3);
+   fpHisTimeTotMc = new TH1F("twMcTimeTot", "ToF wall - MC Total time", 500, 0., 50.);
    AddHistogram(fpHisTimeTotMc);
    
    fpHisZID = new TH2I("twZID", "twZID", 10,-1.5,8.5, 10,-1.5,8.5);
@@ -138,14 +142,15 @@ bool TATWactNtuMC::Action() {
    TAGparGeo*  m_parGeo = (TAGparGeo*) fParGeo->Object();
    TATWparGeo* geoMap = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
 
-   const Int_t Z_beam = m_parGeo->GetBeamPar().AtomicNumber;
-   
     //The number of hits inside the Start Counter is stn
     if ( fDebugLevel> 0 )     cout << "Processing n Scint " << m_eventStruct->SCNn << endl;
 
     // clear map
     m_Digitizer->ClearMap();
    
+    // taking the tof for each TW hit with respect to the first hit of ST...for the moment not considered the possibility of multiple Hit in the ST, if any
+    Float_t timeST  = m_eventStruct->STCtim[0]*TAGgeoTrafo::SecToPs();
+    
     // fill the container of hits, divided by layer, i.e. the column at 0 and row at 1
     for (int i=0; i < m_eventStruct->SCNn; i++) { 
     
@@ -157,15 +162,26 @@ bool TATWactNtuMC::Action() {
        Float_t z1    = m_eventStruct->SCNzout[i];
        Float_t edep  = m_eventStruct->SCNde[i]*TAGgeoTrafo::GevToMev();
        Float_t time  = m_eventStruct->SCNtim[i]*TAGgeoTrafo::SecToPs();
-       
 
-        // layer, bar, de, time, ntupID, parentID
+       Float_t trueTof = (time - timeST)*TAGgeoTrafo::PsToNs();  //ns
+       if(fDebugLevel>0)
+	 printf("\n timeTW::%f timeST::%f tof::%f\n",time,timeST,trueTof);
+
+       time -= timeST;  // tof TW-SC to be digitized in ps
+
+       // layer, bar, de, time, ntupID, parentID
        int view = m_eventStruct->SCNiview[i];    // in ntuple now layers are 0 and 1
        if ( fDebugLevel> 0 )
           printf("%d %d\n", view,  m_eventStruct->SCNibar[i]);
 
        TVector3 posIn(x0, y0, z0);
        TVector3 posInLoc = geoTrafo->FromGlobalToTWLocal(posIn);
+       
+       double truePos = 0;
+       if(view==0) //layer 0 (rear) --> vertical bar
+	 truePos = posInLoc.Y(); 
+       else if(view==1)  //layer 1 (front) --> horizontal bar
+	 truePos = posInLoc.X();
 
        Int_t Z = m_eventStruct->TRcha[trackId];
 
@@ -179,17 +195,16 @@ bool TATWactNtuMC::Action() {
 	 // if( mothId>0 || Z == 0 ) 
 	   Zrec_MCtrue=-1.; //set Z to nonsense value
 	 else {
-	   Zrec_MCtrue = m_parcal->GetChargeZ(edep,time*TAGgeoTrafo::PsToNs(),view,m_parGeo,geoTrafo);
+	   Zrec_MCtrue = m_parcal->GetChargeZ(edep,trueTof,view);
 	 }
 	 
 	 if (ValidHistogram()) {
 	   fpHisZID_MCtrue->Fill(Zrec_MCtrue,Z);
 
-	   fpHisElossTof_MCtrue[view]->Fill(time*TAGgeoTrafo::PsToNs(),edep)
-	     ;
+	   fpHisElossTof_MCtrue[view]->Fill(trueTof,edep);
 
 	   if( Zrec_MCtrue>0 && Zrec_MCtrue < Z_beam+1 )
-	     fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(time*TAGgeoTrafo::PsToNs(),edep);
+	     fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(trueTof,edep);
 
 	 }
 	   
@@ -200,22 +215,28 @@ bool TATWactNtuMC::Action() {
 	       cout<<"Hit MC n::"<<cnt<<endl;
 	       printf("layer::%d bar::%d\n", view,  m_eventStruct->SCNibar[i]);
 	       cntWrong++;
-	       cout<<"edep::"<<edep<<"  time::"<<time*TAGgeoTrafo::PsToNs()<<endl;
+	       cout<<"edep::"<<edep<<"  trueTof::"<<endl;
 	       cout<<"Zrec::"<<Zrec_MCtrue<<"  Z_MC::"<<Z<<endl;
 	       printf("Z wrong/(Zrec>0) :: %d/%d\n",cntWrong,cnt);
 	     }
 	   }
 	 }
        }
-       
 
+       
        m_Digitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, id+TATWparGeo::GetLayerOffset()*view, Z);
        
        TATWntuHit* hit = m_Digitizer->GetCurrentHit();
        hit->AddMcTrackIdx(trackId, i);
 
-       Double_t recEloss = hit->GetEnergyLoss();
-       Double_t recTof = hit->GetTime();
+       Double_t recEloss = hit->GetEnergyLoss();  // MeV
+       Double_t recTof = hit->GetTime();  // ns
+       Double_t recPos=hit->GetPosition();  // cm
+
+       if(fDebugLevel>0) {
+	 cout<<"recTof::"<<recTof<<" trueTof::"<<trueTof<<endl;
+	 cout<<"recPos::"<<recPos<<" truePos::"<<truePos<<endl;
+       }
        
        // set an energy threshold --> TODO: to be tuned on data
        if(!m_Digitizer->IsOverEnergyThreshold(recEloss)) {
@@ -226,7 +247,7 @@ bool TATWactNtuMC::Action() {
 
        }
        
-       Int_t Zrec = m_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer(),m_parGeo,geoTrafo);
+       Int_t Zrec = m_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
        hit->SetChargeZ(Zrec);
        
        Float_t distZ[Z_beam];
@@ -260,16 +281,18 @@ bool TATWactNtuMC::Action() {
 	 	 
 	 fpHisZID->Fill(Zrec,Z);
 
-	 fpHisDeTotMc->Fill(edep);
-          fpHisDeTot->Fill(recEloss);
-          
-          fpHisTimeTotMc->Fill(time*TAGgeoTrafo::PsToNs());
-          fpHisTimeTot->Fill(recTof);
+	 fpHisDeTotMc->Fill(truePos);
+	 fpHisDeTot->Fill(recPos);
+	 fpHisHitMap->Fill(truePos-recPos);
+	 
+	 fpHisTimeTotMc->Fill(trueTof);
+	 fpHisTimeTot->Fill(recTof);
           
           if (hit->IsColumn())
              fpHisHitCol->Fill(hit->GetBar());
           else
              fpHisHitLine->Fill(hit->GetBar());
+
        }
     }
 
@@ -277,38 +300,3 @@ bool TATWactNtuMC::Action() {
 
    return true;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

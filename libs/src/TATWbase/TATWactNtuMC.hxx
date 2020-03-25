@@ -37,13 +37,17 @@ private:
     TAGparaDsc*     fParGeo;            // beam parameter dsc
     EVENT_STRUCT*   m_eventStruct;
     TATWdigitizer*  m_Digitizer;        // digitizer
+
+    TAGparGeo*  f_pargeo;
+
+    Int_t Z_beam;
   
-    int cnt = 0;
-    int cntWrong = 0;
+    int cnt;
+    int cntWrong;
    
     TH1F* fpHisHitCol;
     TH1F* fpHisHitLine;
-    TH2F* fpHisHitMap;
+    TH1F* fpHisHitMap;
     TH1F* fpHisDeTot;
     TH1F* fpHisDeTotMc;
     TH1F* fpHisTimeTot;

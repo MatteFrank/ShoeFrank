@@ -6,11 +6,12 @@
 
 #include <Riostream.h>
 #include <limits>
+
 #include "GlobalPar.hxx"
+#include "TAGroot.hxx"
+
 #include "TATWparCal.hxx"
 
-#include "TDatabasePDG.h"
-#include "TParticlePDG.h"
 
 //##############################################################################
 
@@ -28,10 +29,17 @@ TString TATWparCal::fgkBBparamName = "./config/TATW_BBparameters.cfg";
 TATWparCal::TATWparCal()
 : TAGparTools()
 {
-	cMapCal=new CCalibrationMap();
-	// Standard constructor
-}
 
+  // Standard constructor
+  cMapCal=new CCalibrationMap();
+
+  m_parGeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+
+  m_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+
+  RetrieveBeamQuantities();
+
+}
 //------------------------------------------+-----------------------------------
 TATWparCal::~TATWparCal()
 {
@@ -40,7 +48,54 @@ TATWparCal::~TATWparCal()
 		free (cMapCal);
 	}
 }
+//------------------------------------------+-----------------------------------
+void TATWparCal::RetrieveBeamQuantities() {
 
+  Z_beam = m_parGeo->GetBeamPar().AtomicNumber;
+  ion_name = m_parGeo->GetBeamPar().Material;
+  A_beam = m_parGeo->GetBeamPar().AtomicMass;
+  kinE_beam = m_parGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev()*A_beam; //MeV
+  
+  if(fDebugLevel)
+    printf("ion::%s Z::%d A::%d E::%d\n",ion_name.Data(),Z_beam,A_beam,(int)(kinE_beam/A_beam));
+  
+  z_SC = ((TVector3)m_geoTrafo->GetSTCenter()).Z();    // cm
+  z_TW = ((TVector3)m_geoTrafo->GetTWCenter()).Z();    // cm
+  Lmin = z_TW-z_SC; // roughly particles shorter path length
+  
+  C_speed = TMath::C()*TAGgeoTrafo::MToCm()/TAGgeoTrafo::SecToNs(); //~30 cm/ns
+  Tof_min = Lmin/C_speed; // for Beta==1
+  
+  mass_p = (Double_t)((TParticlePDG*)db.GetParticle(2212))->Mass();
+  mass_n = (Double_t)((TParticlePDG*)db.GetParticle(2112))->Mass();
+  
+  switch(A_beam) {
+  case H:   // p
+    binding_energy = 0;
+    break;
+  case He4:   // 4He
+    binding_energy = 7.0739185;
+    break;
+  case C12:  // 12C
+    binding_energy = 7.6801458;
+    break;
+  case O16:  // 16O
+    binding_energy = 7.9762085;
+    break;
+  default:  // others
+    binding_energy = 8;
+  }  
+  
+  Mass_beam = Z_beam*(mass_p+mass_n)*TAGgeoTrafo::GevToMev()-binding_energy*A_beam; //MeV
+  Energy_beam = kinE_beam+Mass_beam;  //MeV
+  Beta_beam = sqrt(pow(Energy_beam,2)-pow(Mass_beam,2))/Energy_beam;
+  Tof_beam = Lmin/(C_speed*Beta_beam);
+  Tof_max = 5*Tof_beam;
+  
+  if(fDebugLevel)
+    cout<<"L::"<<Lmin<<"  Tof_min::"<<Tof_min<<"  Tof_max::"<<Tof_max<<"  <Tof>::"<<Tof_beam<<"  Beta::"<<Beta_beam<<"  Mass::"<<Mass_beam<<"  Energy::"<<Energy_beam<<"  B::"<<binding_energy<<endl;
+
+}
 //------------------------------------------+-----------------------------------
 Bool_t TATWparCal::FromFile(const TString& name) 
 {
@@ -62,7 +117,7 @@ Bool_t TATWparCal::FromFile(const TString& name)
 
 //
 ////------------------------------------------+-----------------------------------
-Bool_t TATWparCal::FromFile(Int_t Z_beam, const TString& name) {
+Bool_t TATWparCal::FromFile(Int_t Zbeam, const TString& name) {
  
     
   TString nameExp;
@@ -81,7 +136,7 @@ Bool_t TATWparCal::FromFile(Int_t Z_beam, const TString& name) {
   (fChargeParameter.CutLow).clear();
   (fChargeParameter.CutUp).clear();
 
-  for (Int_t iZ = 0; iZ < Z_beam; iZ++) { // Loop on each charge
+  for (Int_t iZ = 0; iZ < Zbeam; iZ++) { // Loop on each charge
 
     // read parameters
     ReadItem(tmp, 4, ' ');
@@ -106,14 +161,14 @@ Bool_t TATWparCal::FromFile(Int_t Z_beam, const TString& name) {
 
 //
 ////------------------------------------------+-----------------------------------
-Int_t TATWparCal::GetChargeZ(Float_t edep, Float_t tof, Int_t layer, TAGparGeo *m_parGeo, TAGgeoTrafo *m_geoTrafo)
+Int_t TATWparCal::GetChargeZ(Float_t edep, Float_t tof, Int_t layer)
 {
   if(edep<0) {
     Zraw=-1;
     if (fDebugLevel) printf("the energy released is %.f so Zraw is set to %d\n",edep,Zraw);
   }
   else
-    ComputeBBDistance(edep,tof,layer,m_parGeo,m_geoTrafo);       
+    ComputeBBDistance(edep,tof,layer);       
   
   return Zraw;
   
@@ -153,53 +208,9 @@ Double_t TATWparCal::fDistPrime(double tof, double dE, double x, double fBB, dou
 //
 //------------------------------------------+-----------------------------------
 //! Compute distance from BB with bisection method
-void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer, TAGparGeo *m_parGeo, TAGgeoTrafo *m_geoTrafo)
+void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 {
   
-  TString ion_name = m_parGeo->GetBeamPar().Material;
-  const Int_t Z_beam = m_parGeo->GetBeamPar().AtomicNumber;
-  const Int_t A_beam = m_parGeo->GetBeamPar().AtomicMass;
-  Float_t kinE_beam = m_parGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev()*A_beam; //MeV
-  // Float_t kinE_beam = m_parGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev()*2*Z_beam;
-  if(fDebugLevel) printf("ion::%s Z::%d A::%d E::%d\n",ion_name.Data(),Z_beam,A_beam,(int)(kinE_beam/A_beam));
-  
-  float z_SC = ((TVector3)m_geoTrafo->GetSTCenter()).Z();    // cm
-  float z_TW = ((TVector3)m_geoTrafo->GetTWCenter()).Z();    // cm
-  float Lmin = z_TW-z_SC; // roughly particles shorter path length
-  const Double_t C_speed = TMath::C()*TAGgeoTrafo::MToCm()/TAGgeoTrafo::SecToNs(); //~30 cm/ns
-  double Tof_min = Lmin/C_speed; // for Beta==1
-  TDatabasePDG db;
-  const Double_t mp=(Double_t)((TParticlePDG*)db.GetParticle(2212))->Mass();
-  const Double_t mn=(Double_t)((TParticlePDG*)db.GetParticle(2112))->Mass();
-  
-  double binding_energy; //MeV/u
-  enum {H=1,He4=4,C12=12,O16=16};
-  switch(A_beam) {
-  case H:   // p
-    binding_energy = 0;
-    break;
-  case He4:   // 4He
-    binding_energy = 7.0739185;
-    break;
-  case C12:  // 12C
-    binding_energy = 7.6801458;
-    break;
-  case O16:  // 16O
-    binding_energy = 7.9762085;
-    break;
-  default:  // others
-    binding_energy = 8;
-  }
-  
-  double Mass_beam = Z_beam*(mp+mn)*TAGgeoTrafo::GevToMev()-binding_energy*A_beam; //MeV
-  double Energy_beam = kinE_beam+Mass_beam;  //MeV
-  double Beta_beam = sqrt(pow(Energy_beam,2)-pow(Mass_beam,2))/Energy_beam;
-  double Tof_beam = Lmin/(C_speed*Beta_beam);
-  double Tof_max = 5*Tof_beam;
-
-  if(fDebugLevel) cout<<"L::"<<Lmin<<"  Tof_min::"<<Tof_min<<"  Tof_max::"<<Tof_max<<"  <Tof>::"<<Tof_beam<<"  Beta::"<<Beta_beam<<"  Mass::"<<Mass_beam<<"  Energy::"<<Energy_beam<<"  B::"<<binding_energy<<endl;
-  
-  fDebugLevel=false;
   Zraw = 0;  //nonsense intialization: charge must be > 0
   dist_min_Z = std::numeric_limits<double>::max(); //inf
 
@@ -207,7 +218,8 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer, TAGpar
 
   dist_Z.clear();
 
-  if(fDebugLevel) cout<<"edep::"<<edep<<"  tof::"<<tof<<endl;
+  if(fDebugLevel)
+    cout<<"edep::"<<edep<<"  tof::"<<tof<<endl;
   
   for (int iZ=1; iZ<Z_beam+1; iZ++) {
 

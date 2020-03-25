@@ -51,7 +51,7 @@ Bool_t TATWparGeo::FromFile(const TString& name)
    cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
    TString nameExp;
-   
+
    if (name.IsNull())
       nameExp = fkDefaultGeoName;
    else
