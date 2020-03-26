@@ -385,9 +385,7 @@ void BaseReco::ReadParFiles()
     parCal->FromFile(parFileName.Data());
     TString exp_name = fExpName.IsNull() ? "" : "_" + fExpName(0,fExpName.First('/'));
     parFileName = Form("./config/%sTATW_BBparameters_%d%s_%d%s.cfg", fExpName.Data(),A_beam,ion_name.Data(),(int)(kinE_beam*TAGgeoTrafo::GevToMev()),exp_name.Data());
-    // parFileName = Form("./config/%sTATW_BBparameters_16O_%d%s.cfg", fExpName.Data(),(int)(kinE_beam*TAGgeoTrafo::GevToMev()),exp_name.Data());
     parCal->FromFile(Z_beam,parFileName.Data());
-    cout<<parFileName<<endl;
   }
    
   // initialise par files for caloriomter

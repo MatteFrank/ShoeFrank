@@ -65,7 +65,7 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
    fTofErrPropAlpha(2.5), // old 5 ?
    fSlatLength(0),
    fGain(1),
-   fEnergyThreshold(0.7) // MeV
+   fEnergyThreshold(0.) // MeV
 {
    SetFunctions();
    SetInitParFunction();
