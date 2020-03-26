@@ -3,30 +3,26 @@
 #include <string>
 #include <map>
 #include <TSystem.h>
+#include "Parameters.h"
 
-#define NUMBEROFCALIBRATIONPARAMETERS 2
-
-typedef Int_t TChannelId;
-typedef Int_t TBarId;
-typedef Int_t TBoardId;
-
-typedef Double_t CalibrationParType;
-typedef std::map<TBarId,std::vector<CalibrationParType> > TCalibrationMapType;
+typedef std::map<Int_t,std::vector<Double_t> > TCalibrationMapType;
 
 class CCalibrationMap
 {
-	TCalibrationMapType _CalibrationMap;
-	bool _CalibrationMapIsOk;
+private:
+	TCalibrationMapType fCalibrationMap;
+	bool fCalibrationMapIsOk;
+   
 public:
 	CCalibrationMap();
-	void LoadCalibrationMap(std::string Filename, int verbose);
-	bool Exists(TBarId BarId);
+	void LoadCalibrationMap(std::string Filename, Int_t verbose);
+	bool Exists(Int_t BarId);
 	TCalibrationMapType::iterator begin();
 	TCalibrationMapType::iterator end();
 	Int_t GetNumberOfBars();
-	CalibrationParType GetBarParameter(TBarId,unsigned int ParameterNumber);
-	void SetBarParameter(TBarId,unsigned int ParameterNumber,CalibrationParType p);
-	void AddBar(TBarId BarId);
+	Double_t GetBarParameter(Int_t BarId, UInt_t ParameterNumber);
+	void SetBarParameter(Int_t BarId, UInt_t ParameterNumber, Double_t p);
+	void AddBar(Int_t BarId);
 	void ExportToFile(std::string FileName);
 
 };
