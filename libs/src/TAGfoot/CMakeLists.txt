@@ -22,8 +22,7 @@ set( with_dictionnaries
    KFitter
    GlobalTrackRepostory
    GlobalTrackKalman
-   Materials
-   Booter
+#   Booter
    UpdatePDG
    MultiTrackCheck
    TAFOeventDisplay
