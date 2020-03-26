@@ -1,6 +1,8 @@
+#include "TError.h"
+
 #include "CCalibrationMap.hxx"
-#include "Message.hxx"
 #include "XmlParser.hxx"
+#include "GlobalPar.hxx"
 
 
 CCalibrationMap::CCalibrationMap(): _CalibrationMapIsOk(false)
@@ -13,16 +15,17 @@ void CCalibrationMap::LoadCalibrationMap(std::string FileName, int verbose)
 {
 	if (gSystem->AccessPathName(FileName.c_str()))
 	{
-		Message::DisplayFatalError(TString::Format("File %s doesn't exist",FileName.c_str()));
+      Error("LoadCalibrationMap()","File %s doesn't exist",FileName.c_str());
 	}
 	// reset channel map
 	XmlParser x;
 	x.ReadFile(FileName);
 	std::vector<XMLNodePointer_t> BarVector;
 	BarVector=x.GetChildNodesByName(x.GetMainNode(),"BAR");
-	Message::DisplayMessageWithEmphasys(" Calibration ", std::cout,verbose);
-	Message::DisplayMessage(" Description: "+x.GetContentAsString("DESCRIPTION",x.GetMainNode()), std::cout,verbose);
-	Message::DisplayMessage(" Creation date: "+x.GetContentAsString("DATE",x.GetMainNode()), std::cout,verbose);
+   Info("LoadCalibrationMap()", " => Calibration ");
+   Info("LoadCalibrationMap()", " Description: %s", x.GetContentAsString("DESCRIPTION",x.GetMainNode()).data());
+   Info("LoadCalibrationMap()", " Creation date: %s", x.GetContentAsString("DATE",x.GetMainNode()).data());
+   
 	for (std::vector<XMLNodePointer_t>::iterator it=BarVector.begin();it!=BarVector.end();++it)
 	{
 		TBarId BarId=x.GetContentAsInt("BAR_ID",*it);
@@ -31,11 +34,11 @@ void CCalibrationMap::LoadCalibrationMap(std::string FileName, int verbose)
 		// the same bar should not appear twice
 		if (_CalibrationMap.count(BarId)!=0)
 		{
-			Message::DisplayFatalError(TString::Format("Calibration Map is malformed: BAR %d appear twice",BarId));
+			Error("LoadCalibrationMap()","Calibration Map is malformed: BAR %d appear twice",BarId);
 		}
 		_CalibrationMap[BarId].push_back(p0);
 		_CalibrationMap[BarId].push_back(p1);
-		Message::DisplayMessage(TString::Format("BAR_ID %d  par0 %f par1 %f ",BarId,p0,p1),std::cout,verbose);
+		Info("LoadCalibrationMap()", "BAR_ID %d  par0 %f par1 %f ",BarId,p0,p1);
 	}
 }
 

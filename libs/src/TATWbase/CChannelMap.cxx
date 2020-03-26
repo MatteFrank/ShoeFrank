@@ -1,6 +1,7 @@
+#include "TError.h"
+
 #include "CChannelMap.hxx"
 #include "XmlParser.hxx"
-#include "Message.hxx"
 
 CChannelMap::CChannelMap():_ChannelMapIsOk(false)
 {
@@ -21,7 +22,7 @@ void CChannelMap::LoadChannelMap(std::string FileName,int verbose)
 {
 	if (gSystem->AccessPathName(FileName.c_str()))
 	{
-		Message::DisplayFatalError(TString::Format("File %s doesn't exist",FileName.c_str()));
+		Error("LoadChannelMap()", "File %s doesn't exist",FileName.c_str());
 	}
 	// reset channel map
 	_ChannelBarMap.clear();
@@ -31,9 +32,9 @@ void CChannelMap::LoadChannelMap(std::string FileName,int verbose)
 	// create a verctor containing the "BAR" nodes
 	std::vector<XMLNodePointer_t> BarVector=x.GetChildNodesByName(x.GetMainNode(),"BAR");
 	// print some info about the channel map
-	Message::DisplayMessageWithEmphasys(" Channel map ",std::cout,verbose);
-	Message::DisplayMessage(" Description: "+x.GetContentAsString("DESCRIPTION",x.GetMainNode()),std::cout,verbose);
-	Message::DisplayMessage(" Creation date: "+x.GetContentAsString("DATE",x.GetMainNode()),std::cout,verbose);
+	Info("LoadChannelMap()"," => Channel map ");
+	Info("LoadChannelMap()"," Description: %s", x.GetContentAsString("DESCRIPTION",x.GetMainNode()).data());
+   Info("LoadChannelMap()"," Creation date: %s", x.GetContentAsString("DATE",x.GetMainNode()).data());
 	//
 	for (std::vector<XMLNodePointer_t>::iterator it=BarVector.begin();it!=BarVector.end();++it)
 	{
@@ -45,11 +46,11 @@ void CChannelMap::LoadChannelMap(std::string FileName,int verbose)
 		// the same bar should not appear twice
 		if (_ChannelBarMap.count(BarId)!=0)
 		{
-			Message::DisplayFatalError(TString::Format("Channel Map is malformed: BAR %d appear twice",BarId));
+			Error("LoadChannelMap()", "Channel Map is malformed: BAR %d appear twice",BarId);
 		}
 		_ChannelBarMap[BarId]=TChannelBoardTuple(BoardId,ChannelA,ChannelB);
 		_BarLayer[BarId]=Layer;
-		Message::DisplayMessage(TString::Format("BAR_ID %d BOARD ID %d Channel A %d Channel B %d Layer Id %d",BarId,BoardId,ChannelA,ChannelB,Layer),std::cout,verbose);
+		Info("LoadChannelMap()","BAR_ID %d BOARD ID %d Channel A %d Channel B %d Layer Id %d",BarId,BoardId,ChannelA,ChannelB,Layer);
 	}
 	// check if the same combination board,channel appears twice in the map
 	std::map<std::pair<Int_t,Int_t>, Int_t> ChannelOccurrenceMap;
@@ -63,12 +64,12 @@ void CChannelMap::LoadChannelMap(std::string FileName,int verbose)
 
 		if (ChannelOccurrenceMap.count(pair1)!=0)
 		{
-			Message::DisplayFatalError(TString::Format("Combination Board %d Channel %d appears twice in the channel map",BoardId,ChannelA));
+			Error("LoadChannelMap()", "Combination Board %d Channel %d appears twice in the channel map",BoardId,ChannelA);
 		}
 		ChannelOccurrenceMap[pair1]=1;
 		if (ChannelOccurrenceMap.count(pair2)!=0)
 		{
-			Message::DisplayFatalError(TString::Format("Combination Board %d Channel %d appears twice in the channel map",BoardId,ChannelB));
+			Error("LoadChannelMap()", "Combination Board %d Channel %d appears twice in the channel map",BoardId,ChannelB);
 		}
 		ChannelOccurrenceMap[pair2]=1;
 	}
@@ -76,7 +77,7 @@ void CChannelMap::LoadChannelMap(std::string FileName,int verbose)
 	Int_t ActualNumberOfBars=_ChannelBarMap.size();
 	if (ActualNumberOfBars>NUMBEROFBARS)
 	{
-		Message::DisplayFatalError(TString::Format("Too many bars in channel map. Found %d expected %d",ActualNumberOfBars,NUMBEROFBARS));
+		Error("LoadChannelMap()", "Too many bars in channel map. Found %d expected %d",ActualNumberOfBars,NUMBEROFBARS);
 	}
 	_ChannelMapIsOk=true;
 }
