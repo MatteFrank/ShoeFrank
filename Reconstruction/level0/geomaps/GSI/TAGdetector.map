@@ -25,6 +25,7 @@ TargetShape:       "cubic"
 TargetSizeX:        2.0   TargetSizeY:    2.0    TargetSizeZ:  0.5
 TargetMaterial:     "C"
 TargetDensity:      1.83
+TargetExc:         78.0e-6
 
 //TargetMaterial:   "Polyethy"
 //TargetDensity:      0.94
