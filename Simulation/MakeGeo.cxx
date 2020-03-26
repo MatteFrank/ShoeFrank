@@ -83,7 +83,7 @@ int main (int argc, char *argv[]) {
     vtxGeo->FromFile(Form("./geomaps/%sTAVTdetector.map", exp.Data()));
     itrGeo->FromFile(Form("./geomaps/%sTAITdetector.map", exp.Data()));
     msdGeo->FromFile(Form("./geomaps/%sTAMSDdetector.map", exp.Data()));
-    diGeo->FromFile(Form("./geomaps/%sTATWdetector.map", exp.Data()));
+    diGeo->FromFile(Form("./geomaps/%sTADIdetector.map", exp.Data()));
     twGeo->FromFile(Form("./geomaps/%sTATWdetector.map", exp.Data()));
     caGeo->FromFile(Form("./geomaps/%sTACAdetector.map", exp.Data()));
 
