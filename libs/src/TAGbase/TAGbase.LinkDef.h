@@ -64,8 +64,6 @@
 #pragma link C++ class TAGmaterials+;
 #pragma link C++ class TAGionisMaterials+;
 
-#pragma link C++ class TAGconfigFile+;
-
 #pragma link C++ class ControlPlotsRepository+;
 #pragma link C++ class ControlPlotInfo+;
 #pragma link C++ class GlobalPar+;
