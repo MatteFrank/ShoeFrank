@@ -9,42 +9,36 @@ ClassImp(TAGpoint) // Description of Single Detector TAGpoint
 //______________________________________________________________________________
 //  default constructor
 TAGpoint::TAGpoint()
- : TAGobject(),
+ : TAGcluster(),
    fPosition(0,0,0),
    fPosError(0,0,0),
    fMomentum(0,0,0),
    fMomError(0,0,0),
    fChargeZ(-99)
 {
-   fMcTrackIdx.Reset();
-   fMcTrackMap.clear();
 }
 
 //______________________________________________________________________________
 //  build a point
 TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr)
-: TAGobject(),
+: TAGcluster(),
    fPosition(pos),
    fPosError(posErr),
    fMomentum(0,0,0),
    fMomError(0,0,0)
 {
-   fMcTrackIdx.Reset();
-   fMcTrackMap.clear();
 }
 
 //______________________________________________________________________________
 //  build a point
 TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ)
- : TAGobject(),
+ : TAGcluster(),
    fPosition(pos),
    fPosError(posErr),
    fMomentum(mom),
    fMomError(momErr),
    fChargeZ(chargeZ)
 {
-   fMcTrackIdx.Reset();
-   fMcTrackMap.clear();
 }
 
 //______________________________________________________________________________
@@ -53,16 +47,6 @@ void TAGpoint::Clear(Option_t*)
 {
 }
 
-//______________________________________________________________________________
-//
-void TAGpoint::AddMcTrackIdx(Int_t trackIdx)
-{
-   if (fMcTrackMap[trackIdx] == 0) {
-      fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
-      fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
-      fMcTrackMap[trackIdx] = 1;
-   }
-}
 
 //##############################################################################
 ClassImp(TAGntuPoint);
