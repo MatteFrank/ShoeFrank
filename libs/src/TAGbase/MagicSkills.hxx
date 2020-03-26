@@ -6,43 +6,13 @@
 #include "TFile.h"
 #include <TSystem.h> 
 
-// #include <TTree.h>
-// #include "TH1.h"
-// #include "TH1D.h"
 #include "TH1F.h"
-// #include <TF1.h>
-// #include "TH2.h"
 #include "TH2F.h"
-// #include "TF2.h"
-// #include <TGraph.h>
-// #include <TGraphErrors.h>
 #include "TGraphAsymmErrors.h"
-// #include <TGraphPainter.h>
-// #include <TAxis.h>
-// #include "TProfile.h"
-// #include "THStack.h"
-// #include "TBox.h"
 
 #include <TStyle.h>
 #include <TLegend.h>
-// #include <TCanvas.h>
-// #include <TPaveStats.h>
-// #include "TPaveText.h"
-// #include "TArrayI.h"
 
-// #include "TObject.h"
-// #include "TKey.h"
-// #include <TString.h>
-// #include <TClass.h>
-// #include "TVector3.h"
-// #include "TRotation.h" 
-// #include "TString.h"
-// #include "TFormula.h"
-// #include "TLorentzVector.h"
-// #include "TRandom3.h"
-// #include "TRandom.h"
-// #include "TChain.h" 
-// #include "TGenPhaseSpace.h"
 
 #include <iomanip>
 #include <iostream>
