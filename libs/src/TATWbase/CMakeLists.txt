@@ -32,7 +32,6 @@ set( with_dictionnaries
    TATWdigitizer
    CChannelMap
    CCalibrationMap
-   Message
    XmlParser
    TAGactWDreader
 )
