@@ -1,0 +1,56 @@
+
+
+################################################################
+############	MC selection Control Parameters	################
+################################################################
+
+
+Debug:	0
+
+
+
+############	MC selection Control Parameters	################
+#MC Particle Types:	C10	C11	C12	Li6	Li7	B7	B8	B9	Be9	Be10	N12	N14	O15
+MC Particle Types:	C11	C12	C13 C14	Li6	Li7	B7	B9	B10	Be10	Be11	N14	N15	O16 O15
+
+
+############	Kalman Filter Control Parameters	################
+
+IncludeKalman:   n
+IncludeTOE:      n
+
+Kalman Mode: 		ON
+Tracking Systems Considered:		VT IT MSD
+Reverse Tracking:	false
+
+VT  Reso: 0.0006
+IT  Reso: 0.0006
+MSD Reso: 0.003
+TW  Reso: 0.57
+
+Kalman Particle Types:	C
+
+############	END - Kalman Filter Control Parameters	################
+
+IncludeDI:			   n
+IncludeST:				y
+IncludeBM:				y
+IncludeTG:			   y
+IncludeVertex:			y
+IncludeInnerTracker:	n
+IncludeMSD:				n
+IncludeTW:				y
+IncludeCA:				n
+
+IncludeEvent:			n
+
+Print OutputFile: true
+Output Filename: RecoHistos.root
+
+Print OutputNtuple: false
+Output Ntuplename: RecoTree.root
+
+Create Reconstruction Geo: y
+Print FLUKA Geo input files: n
+
+FLUKA version: pro
