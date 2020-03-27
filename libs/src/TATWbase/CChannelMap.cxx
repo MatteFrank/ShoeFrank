@@ -2,23 +2,17 @@
 
 #include "CChannelMap.hxx"
 #include "XmlParser.hxx"
+#include "GlobalPar.hxx"
 
-CChannelMap::CChannelMap():fChannelMapIsOk(false)
+ClassImp(CChannelMap)
+
+CChannelMap::CChannelMap()
+: TAGobject(),
+  fChannelMapIsOk(false)
 {
-
 }
 
-TLayer CChannelMap::GetBarLayer(Int_t BarId)
-{
-	return fBarLayer[BarId];
-}
-
-TChannelBoardTuple CChannelMap::GetChannelABar(Int_t BarId)
-{
-	return fChannelBarMap[BarId];
-}
-
-void CChannelMap::LoadChannelMap(std::string FileName, Int_t verbose)
+void CChannelMap::LoadChannelMap(std::string FileName)
 {
 	if (gSystem->AccessPathName(FileName.c_str()))
 	{
@@ -32,7 +26,7 @@ void CChannelMap::LoadChannelMap(std::string FileName, Int_t verbose)
 	// create a verctor containing the "BAR" nodes
 	std::vector<XMLNodePointer_t> BarVector=x.GetChildNodesByName(x.GetMainNode(),"BAR");
 	// print some info about the channel map
-   if (verbose > 0) {
+   if (FootDebugLevel(1)) {
       Info("LoadChannelMap()"," => Channel map ");
       Info("LoadChannelMap()"," Description: %s", x.GetContentAsString("DESCRIPTION",x.GetMainNode()).data());
       Info("LoadChannelMap()"," Creation date: %s", x.GetContentAsString("DATE",x.GetMainNode()).data());
@@ -52,8 +46,8 @@ void CChannelMap::LoadChannelMap(std::string FileName, Int_t verbose)
 		}
 		fChannelBarMap[BarId]=TChannelBoardTuple(BoardId,ChannelA,ChannelB);
 		fBarLayer[BarId]=Layer;
-      if (verbose > 0)
-		Info("LoadChannelMap()","BAR_ID %d BOARD ID %d Channel A %d Channel B %d Layer Id %d",BarId,BoardId,ChannelA,ChannelB,Layer);
+      if (FootDebugLevel(1))
+         Info("LoadChannelMap()","BAR_ID %d BOARD ID %d Channel A %d Channel B %d Layer Id %d",BarId,BoardId,ChannelA,ChannelB,Layer);
 	}
 	// check if the same combination board,channel appears twice in the map
 	std::map<std::pair<Int_t,Int_t>, Int_t> ChannelOccurrenceMap;
@@ -92,22 +86,6 @@ bool CChannelMap::Exists(Int_t BarId)
 		return false;
 	}
 	return true;
-}
-
-TChannelPairMapType::iterator CChannelMap::begin()
-{
-	return fChannelBarMap.begin();
-}
-
-
-TChannelPairMapType::iterator CChannelMap::end()
-{
-	return fChannelBarMap.end();
-}
-
-Int_t CChannelMap::GetNumberOfBars()
-{
-	return fChannelBarMap.size();
 }
 
 std::vector<Int_t> CChannelMap::GetBarIds()

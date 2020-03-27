@@ -44,12 +44,8 @@ Bool_t TATWparCal::FromFile(const TString& name)
 
 	TString name_exp = name;
 	gSystem->ExpandPathName(name_exp);
-   int verbose = 0;
    
-   if (FootDebugLevel(1))
-      verbose = 1;
-   
-	cMapCal->LoadCalibrationMap(name_exp.Data(), verbose);
+	cMapCal->LoadCalibrationMap(name_exp.Data());
 	//   // Reading calibration file
 	//   TString nameExp;
 	//

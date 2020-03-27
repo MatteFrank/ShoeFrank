@@ -1,6 +1,6 @@
 #include <iostream>
 #include "XmlParser.hxx"
-#include "Message.hxx"
+#include "TError.h"
 
 
 
@@ -29,7 +29,7 @@ void XmlParser::ReadFile(std::string FileName)
    _xmldoc = _XMLEngine->ParseFile(FileName.c_str());
    if (_xmldoc==0)
    {
-     Message::DisplayFatalError("Cannot open file "+FileName);
+    Error("ReadFile()", "Cannot open file %s", FileName.data());
      return;
    }
 }

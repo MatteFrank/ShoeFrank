@@ -4,14 +4,15 @@
 #include "XmlParser.hxx"
 #include "GlobalPar.hxx"
 
+ClassImp(CCalibrationMap)
 
-CCalibrationMap::CCalibrationMap(): fCalibrationMapIsOk(false)
+CCalibrationMap::CCalibrationMap()
+: TAGobject(),
+  fCalibrationMapIsOk(false)
 {
-
-
 }
 
-void CCalibrationMap::LoadCalibrationMap(std::string FileName, int verbose)
+void CCalibrationMap::LoadCalibrationMap(std::string FileName)
 {
 	if (gSystem->AccessPathName(FileName.c_str()))
 	{
@@ -22,7 +23,7 @@ void CCalibrationMap::LoadCalibrationMap(std::string FileName, int verbose)
 	x.ReadFile(FileName);
 	std::vector<XMLNodePointer_t> BarVector;
 	BarVector=x.GetChildNodesByName(x.GetMainNode(),"BAR");
-   if (verbose > 0) {
+   if (FootDebugLevel(1)) {
       Info("LoadCalibrationMap()", " => Calibration ");
       Info("LoadCalibrationMap()", " Description: %s", x.GetContentAsString("DESCRIPTION",x.GetMainNode()).data());
       Info("LoadCalibrationMap()", " Creation date: %s", x.GetContentAsString("DATE",x.GetMainNode()).data());
@@ -39,8 +40,8 @@ void CCalibrationMap::LoadCalibrationMap(std::string FileName, int verbose)
 		}
 		fCalibrationMap[BarId].push_back(p0);
 		fCalibrationMap[BarId].push_back(p1);
-      if (verbose > 0)
-         Info("LoadCalibrationMap()", "BAR_ID %d  par0 %f par1 %f ",BarId,p0,p1);
+      if (FootDebugLevel(1))
+          Info("LoadCalibrationMap()", "BAR_ID %d  par0 %f par1 %f ",BarId,p0,p1);
 	}
 }
 
@@ -68,35 +69,4 @@ bool CCalibrationMap::Exists(Int_t BarId)
 		return false;
 	}
 	return true;
-}
-
-TCalibrationMapType::iterator CCalibrationMap::begin()
-{
-	return fCalibrationMap.begin();
-}
-
-TCalibrationMapType::iterator CCalibrationMap::end()
-{
-	return fCalibrationMap.end();
-}
-
-
-Int_t CCalibrationMap::GetNumberOfBars()
-{
-	return fCalibrationMap.size();
-}
-
-Double_t CCalibrationMap::GetBarParameter(Int_t BarId, UInt_t ParameterNumber)
-{
-	return fCalibrationMap[BarId][ParameterNumber];
-}
-void CCalibrationMap::AddBar(Int_t BarId)
-{
-
-	fCalibrationMap[BarId].resize(NUMBEROFCALIBRATIONPARAMETERS);
-}
-
-void CCalibrationMap::SetBarParameter(Int_t BarId, UInt_t ParameterNumber, Double_t p)
-{
-	fCalibrationMap[BarId][ParameterNumber]=p;
 }
