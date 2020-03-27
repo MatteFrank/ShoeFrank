@@ -6,19 +6,19 @@
 
 XmlParser::XmlParser()
 {
-  _xmldoc=nullptr;
+  fXMLDoc=nullptr;
   //  create engine
-  _XMLEngine= new TXMLEngine;
+  fXMLEngine= new TXMLEngine;
 }
 
 XmlParser::~XmlParser()
 {
   // take care of the document
-  if (_xmldoc!=nullptr)
+  if (fXMLDoc!=nullptr)
   {
-    _XMLEngine->FreeDoc(_xmldoc);
+    fXMLEngine->FreeDoc(fXMLDoc);
   }
-  delete _XMLEngine;
+  delete fXMLEngine;
 }
 /**
 * open the xml file
@@ -26,10 +26,10 @@ XmlParser::~XmlParser()
 void XmlParser::ReadFile(std::string FileName)
 {
    // Only file with restricted xml syntax are supported
-   _xmldoc = _XMLEngine->ParseFile(FileName.c_str());
-   if (_xmldoc==0)
+   fXMLDoc = fXMLEngine->ParseFile(FileName.c_str());
+   if (fXMLDoc==0)
    {
-    Error("ReadFile()", "Cannot open file %s", FileName.data());
+     Error("ReadFile()", "Cannot open file %s", FileName.data());
      return;
    }
 }
@@ -41,17 +41,17 @@ std::vector<XMLNodePointer_t> XmlParser::GetChildNodesByName(
                                                 std::string NodeName)
 {
   // get first child
-  XMLNodePointer_t child = _XMLEngine->GetChild(StartingNode);
+  XMLNodePointer_t child = fXMLEngine->GetChild(StartingNode);
   std::vector<XMLNodePointer_t> NodeVec;
   // navigate all the first generation node
   while (child!=0)
   {
     // if current node name is equal to
-    if (strcmp(_XMLEngine->GetNodeName(child), NodeName.c_str())==0)
+    if (strcmp(fXMLEngine->GetNodeName(child), NodeName.c_str())==0)
     {
       NodeVec.push_back(child);
     }
-    child = _XMLEngine->GetNext(child);
+    child = fXMLEngine->GetNext(child);
   }
   // return a vector containing all the selected nodes
   return NodeVec;
@@ -69,7 +69,7 @@ Int_t XmlParser::GetContentAsInt(std::string Name,
       {
         throw -1;
       }
-      const char* content=_XMLEngine->GetNodeContent(tmp[0]);
+      const char* content=fXMLEngine->GetNodeContent(tmp[0]);
       if (content!=0)
       {
         return TString(content).Atoi();
@@ -87,7 +87,7 @@ std::string XmlParser::GetContentAsString(std::string Name,XMLNodePointer_t Node
       {
         throw -1;
       }
-      const char* content=_XMLEngine->GetNodeContent(tmp[0]);
+      const char* content=fXMLEngine->GetNodeContent(tmp[0]);
       if (content!=0)
       {
         return std::string(content);
@@ -105,42 +105,20 @@ Double_t XmlParser::GetContentAsDouble(std::string Name,XMLNodePointer_t Node)
   {
     throw -1;
   }
-  const char* content=_XMLEngine->GetNodeContent(tmp[0]);
+  const char* content=fXMLEngine->GetNodeContent(tmp[0]);
   if (content!=0)
   {
     return TString(content).Atof();
   }
   throw -1;
 }
-/**
-* Get the document main node
-*/
-XMLNodePointer_t XmlParser::GetMainNode()
-{
-  return _XMLEngine->DocGetRootElement(_xmldoc);
-}
-
-XMLNodePointer_t XmlParser::AddElement(std::string Name, XMLNodePointer_t ParentNode)
-{
-	return _XMLEngine->NewChild(ParentNode, 0, Name.c_str(),0);
-}
-void XmlParser::AddElementWithContent(std::string Name, XMLNodePointer_t ParentNode, std::string Content)
-{
-	_XMLEngine->NewChild(ParentNode, 0, Name.c_str(),Content.c_str());
-}
-
-XMLNodePointer_t XmlParser::CreateMainNode(std::string Name)
-{
-	return _XMLEngine->NewChild(0, 0, Name.c_str());
-}
-
 
 void XmlParser::ExportToFile(std::string Filename,XMLDocPointer_t mainnode)
 {
-	XMLDocPointer_t xmldoc = _XMLEngine->NewDoc();
-	_XMLEngine->DocSetRootElement(xmldoc, mainnode);
+	XMLDocPointer_t xmldoc = fXMLEngine->NewDoc();
+	fXMLEngine->DocSetRootElement(xmldoc, mainnode);
 	 // Save document to file
-	_XMLEngine->SaveDoc(xmldoc, Filename.c_str());
-	_XMLEngine->FreeDoc(xmldoc);
+	fXMLEngine->SaveDoc(xmldoc, Filename.c_str());
+	fXMLEngine->FreeDoc(xmldoc);
 }
 

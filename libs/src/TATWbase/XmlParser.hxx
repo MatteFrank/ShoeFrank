@@ -11,60 +11,49 @@ content
 */
 class XmlParser
 {
-  /**
-  * Object to handle xml parsing engine
-  */
-  TXMLEngine *_XMLEngine;
-  /**
-  * Pointer to the actual xmlfile
-  */
-  XMLDocPointer_t _xmldoc;
+private:
+  // Object to handle xml parsing engine
+  TXMLEngine* fXMLEngine;
+  // Pointer to the actual xmlfile
+  XMLDocPointer_t fXMLDoc;
+   
 public:
-  /**
-  * Create the TXMLEngine
-  */
+  // Create the TXMLEngine
   XmlParser();
-  /**
-  * Desctructor takes care of destroying the _XMLEngine and _xmldoc
-  */
+  
+  // Desctructor takes care of destroying the fXMLEngine and fXMLDoc
   ~XmlParser();
-  /*
-  * Load xml file
-  */
+   
+  // Load xml file
   void ReadFile(std::string FileName);
-  /**
-   * Show the content of the xml file
-   */
+
+  // Show the content of the xml file
   void PrintXmlContent();
-  /*
-  * Get all the first generation child  of a node (StartingNode) whose name is (NodeName)
-  */
+
+  // Get all the first generation child  of a node (StartingNode) whose name is (NodeName)
   std::vector<XMLNodePointer_t> GetChildNodesByName(
                                 XMLNodePointer_t StartingNode,
                                 std::string NodeName);
-  /*
-  * Return the content of a node as Int_t
-  */
+
+  // Return the content of a node as Int_t
   Int_t GetContentAsInt(std::string Name,XMLNodePointer_t Node);
-  /*
-  * Return the content of a node as std::string
-  */
+  
+  // Return the content of a node as std::string
   std::string GetContentAsString(std::string Name,XMLNodePointer_t Node);
-  /**
-  * Return the content of a node as a double
-  */
+
+  // Return the content of a node as a double
   Double_t GetContentAsDouble(std::string Name,XMLNodePointer_t Node);
-  /**
-  * Return the pointer to the document main node
-  */
-  XMLNodePointer_t GetMainNode();
-  /**
-   * export to file
-   */
-  XMLNodePointer_t AddElement(std::string Name, XMLNodePointer_t ParentNode);
-  XMLNodePointer_t CreateMainNode(std::string Name);
-  void AddElementWithContent(std::string Name, XMLNodePointer_t ParentNode, std::string Value);
+  
+  // Return the pointer to the document main node
+   XMLNodePointer_t GetMainNode() { return fXMLEngine->DocGetRootElement(fXMLDoc);}
+   
+  // export to file
+  XMLNodePointer_t AddElement(std::string Name, XMLNodePointer_t ParentNode) { return fXMLEngine->NewChild(ParentNode, 0, Name.c_str(),0);}
+  XMLNodePointer_t CreateMainNode(std::string Name) { return fXMLEngine->NewChild(0, 0, Name.c_str());}
+  void AddElementWithContent(std::string Name, XMLNodePointer_t ParentNode, std::string Content) { fXMLEngine->NewChild(ParentNode, 0,
+                                                                                                                     Name.c_str(),Content.c_str());}
   void ExportToFile(std::string Filename,XMLDocPointer_t mainnode);
 
 };
 #endif
+
