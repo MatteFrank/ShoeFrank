@@ -205,20 +205,29 @@ private:
             
             if( first_matching_hypothesis == hypothesis_c.end() ){
             
-                auto add_hypothesis = [&]( int mass_number_p, double light_ion_boost_p = 1 ){
-                    auto momentum = sqrt( (beam_energy_m * mass_number_p) * (beam_energy_m * mass_number_p) + 2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  );
+                auto add_hypothesis = [&]( int mass_number_p,
+                                           double light_ion_boost_p = 1,
+                                           double energy_modifier_p = 1 )
+                                      {
+                    auto momentum = sqrt( pow(beam_energy_m * mass_number_p, 2)  +
+                                          2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  ) *
+                                    energy_modifier_p;
                     hypothesis_c.push_back( particle_properties{ charge, mass_number_p, momentum, light_ion_boost_p } );
                     add_current_end_point( hypothesis_c.back() );
-                };
+                                      };
             
                 switch(charge){
                     case 1:
                     {
                         auto light_ion_boost = 2;
                         add_hypothesis(1, light_ion_boost);
+                        add_hypothesis(1, light_ion_boost, 1.5);
+                        add_hypothesis(1, light_ion_boost, 0.5);
                     
 //                      light_ion_boost = 1.3;
                         add_hypothesis(2, light_ion_boost);
+                        add_hypothesis(2, light_ion_boost, 1.5);
+                        add_hypothesis(2, light_ion_boost, 0.5);
                     
                         add_hypothesis(3);
                         break;
