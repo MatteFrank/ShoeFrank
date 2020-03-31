@@ -88,9 +88,9 @@ struct TATOEchecker{
         computation_module(int charge_p, double beam_energy_p) : charge{charge_p}
         {
             efficiency_histogram_bundle.reconstructible_h = new TH1D{ Form("reconstructible_charge%d", charge),
-                                                                      ";Momentum(Gev/c);Count", 50, 0, 1 };
+                                                                      ";Momentum(Gev/c);Count", 50, 0, 1.3 };
             efficiency_histogram_bundle.reconstructed_h = new TH1D{ Form("reconstructed_charge%d", charge),
-                                                                    ";Momentum(Gev/c);Count", 50, 0, 1 };
+                                                                    ";Momentum(Gev/c);Count", 50, 0, 1.3 };
         }
                                                                                
         
@@ -116,7 +116,7 @@ private:
 
     node_type const * current_node_mh = nullptr;
     
-    std::vector< track > reconstructible_track_mc;
+    std::vector< particle > reconstructible_track_mc;
     std::vector< computation_module > module_c;
     std::size_t fake_number_m{0};
     std::size_t local_fake_number_m{0};
@@ -190,9 +190,10 @@ public:
                                          action_m.logger_m.add_sub_header("track_registered");
                                          
                                          std::vector<int> index_c{ filler_p( *found_i) };
-                                         reconstructible_track_mc.push_back( form_track( index_c, action_m.list_m ) );
+                                         reconstructible_track_mc.push_back( form_particle( index_c ) );
+                                         //reconstructible_track_mc.push_back( form_track( index_c, action_m.list_m ) );
                                          
-                                         auto & particle = reconstructible_track_mc.back().real_particle;
+                                         auto & particle = reconstructible_track_mc.back();
                                          output_real_particle( particle );
                                          
                                          auto & module = find_module( particle.charge );
@@ -301,6 +302,20 @@ private:
                                        };
         return track{ std::move(data_ch), std::move(real_particle) };
     }
+    
+    particle form_particle( std::vector<int> index_pc ) const
+    {
+        auto mc_track_h = index_pc.size() > 1 ? data_mhc->GetHit(index_pc[1]) : data_mhc->GetHit(index_pc[0]) ;
+        //if size > 1, then the particle has been scattered, therefore need to retrieve mother parameters
+        return particle{
+            index_pc,
+            mc_track_h->GetInitP().Mag() * 1000,
+            mc_track_h->GetInitP().X()/mc_track_h->GetInitP().Z(),
+            mc_track_h->GetInitP().Y()/mc_track_h->GetInitP().Z(),
+            mc_track_h->GetCharge(),
+            static_cast<int>( mc_track_h->GetMass() * 1.1 ) //bad hack to get number of nucleons
+        };
+    }
 
     
     computation_module& find_module(int charge_p)
@@ -343,9 +358,9 @@ public:
                                                 auto reconstructible_i =
                                                         std::find_if( reconstructible_track_mc.begin(),
                                                                       reconstructible_track_mc.end(),
-                                                                      [&id](track const & track_p)
+                                                                      [&id](particle const & particle_p)
                                                                       {
-                                                                          auto const & reconstructible_id_c = track_p.real_particle.get_indices();
+                                                                          auto const & reconstructible_id_c = particle_p.get_indices();
                                                                           return std::any_of( reconstructible_id_c.begin(),
                                                                                               reconstructible_id_c.end(),
                                                                                               [&id](int id_p){ return id_p == id; } );
@@ -362,13 +377,13 @@ public:
         
         if( reconstructible_i !=  reconstructible_track_mc.end() ){
             
-            auto & module = find_module( reconstructible_i->real_particle.charge );
+            auto & module = find_module( reconstructible_i->charge );
             ++module.reconstructed_number ;
             ++module.local_reconstructed_number;
-            module.get_reconstructed_histogram()->Fill( reconstructible_i->real_particle.momentum/(1000 * reconstructible_i->real_particle.mass)  );
+            module.get_reconstructed_histogram()->Fill( reconstructible_i->momentum/(1000 * reconstructible_i->mass)  );
             
             action_m.logger_m << "targeted_track_id: ";
-            auto const & reconstructible_id_c = reconstructible_i->real_particle.get_indices();
+            auto const & reconstructible_id_c = reconstructible_i->get_indices();
             for(auto const& id : reconstructible_id_c){ action_m.logger_m << id << " "; }
             action_m.logger_m << '\n';
             
@@ -588,19 +603,29 @@ public:
     {
         for(auto const & module : module_c){
             TH1D* efficiency_histogram_h = new TH1D{ Form("efficiency_charge%d", module.charge),
-                                                     ";Momentum (Gev/c/n);#eta", 50, 0, 1 };
+                                                     ";Momentum (Gev/c/n);Efficiency #epsilon", 50, 0, 1.3 };
             TH1D const * reconstructed_h = module.get_reconstructed_histogram() ;
             TH1D const * reconstructible_h = module.get_reconstructible_histogram() ;
     
             for(auto i{0} ; i < reconstructible_h->GetNbinsX() ; ++i)
             {
-                std::cout << "bin: " << i << '\n';
-                std::cout << "value: " << reconstructible_h->GetBinCenter(i) << '\n';
-                std::cout << "reconstructible: " << reconstructible_h->GetBinContent(i) << '\n';
-                std::cout << "reconstructed: " << reconstructed_h->GetBinContent(i) << '\n';
-                (reconstructible_h->GetBinContent(i) != 0) ?
-                    efficiency_histogram_h->SetBinContent(i,  reconstructed_h->GetBinContent(i) * 1./ reconstructible_h->GetBinContent(i) ) :
+//                std::cout << "bin: " << i << '\n';
+//                std::cout << "value: " << reconstructible_h->GetBinCenter(i) << '\n';
+//                std::cout << "reconstructible: " << reconstructible_h->GetBinContent(i) << '\n';
+//                std::cout << "reconstructed: " << reconstructed_h->GetBinContent(i) << '\n';
+                if(reconstructible_h->GetBinContent(i) != 0){
+                    auto reconstructed = reconstructed_h->GetBinContent(i);
+                    auto reconstructible = reconstructible_h->GetBinContent(i);
+                    auto efficiency = reconstructed * 1./reconstructible;
+                    efficiency_histogram_h->SetBinContent( i, efficiency );
+                    
+                    auto error = sqrt( efficiency * ( 1 + efficiency) / reconstructible );
+                    efficiency_histogram_h->SetBinError( i, error );
+                }
+                else {
                     efficiency_histogram_h->SetBinContent(i, 0 );
+                    efficiency_histogram_h->SetBinError( i, 0);
+                }
             }
     
             action_m.reconstructed_track_mhc->AddHistogram( efficiency_histogram_h );
@@ -612,7 +637,7 @@ private:
     void compute_efficiency( computation_module const & module_p ){
         auto efficiency = module_p.reconstructed_number * 1./module_p.reconstructible_number;
         action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-        action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1- efficiency))/sqrt(module_p.reconstructible_number) * 100<< '\n';
+        action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1+ efficiency))/sqrt(module_p.reconstructible_number) * 100<< '\n';
     
         
     }
@@ -621,7 +646,7 @@ private:
     void compute_purity( computation_module const & module_p ){
         auto purity = module_p.correct_cluster_number * 1./module_p.total_cluster_number;
         action_m.logger_m << "global_purity: " << purity * 100 << '\n';
-        action_m.logger_m << "global_purity_error: " << sqrt(purity* (1-purity))/sqrt(module_p.reconstructible_number)  * 100<< '\n';
+        action_m.logger_m << "global_purity_error: " << sqrt(purity* (1+purity))/sqrt(module_p.reconstructible_number)  * 100<< '\n';
         
 //        if( 2 * local_correct_cluster_number_m < local_total_cluster_number_m ){
 //            action_m.logger_m.freeze_everything();
