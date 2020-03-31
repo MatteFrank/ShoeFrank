@@ -227,6 +227,15 @@ void TAGactNtuGlbTrack::RegisterHistograms()
     SetHistogramDir( (TDirectory*)writer_h->File() );
 }
 
+//------------------------------------------+-----------------------------------
+void TAGactNtuGlbTrack::WriteHistogram()
+{
+    Output();
+    RegisterHistograms();
+    TAGaction::WriteHistogram();
+}
+
+
 
 //------------------------------------------+-----------------------------------
 //! Action.

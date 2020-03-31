@@ -36,7 +36,7 @@ class TAGaction : public TAGnamed {
     virtual void    CreateHistogram();
     void            DeleteHistogram();
     void            ClearHistogram();
-    void            WriteHistogram();
+    virtual void    WriteHistogram();
     void            SetHistogramDir(TDirectory* dir);
     TList*          GetHistogrammList() const;
 

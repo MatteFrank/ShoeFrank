@@ -74,9 +74,6 @@ int main (int argc, char *argv[])  {
    
    locRec->BeforeEventLoop();
    locRec->LoopEvent(nTotEv);
-    auto * global_action_h = static_cast<TAGactNtuGlbTrack*>( gTAGroot->FindAction("glbActTrack"));
-    global_action_h->Output();
-    global_action_h->RegisterHistograms();
    locRec->AfterEventLoop();
    
    watch.Print();
