@@ -71,6 +71,8 @@ void TAGparGeo::DefineMaterial()
    
    if (beam == 0x0)
       beam =  new TGeoMaterial(elem->GetName(), elem->A(), elem->Z(), 0.1); // add beam materials for scattering angle computing purpose
+
+   fBeamParameter.Material = elem->GetName();
    
    if(FootDebugLevel(1)) {
       printf("Beam material:\n");
