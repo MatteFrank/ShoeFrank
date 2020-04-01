@@ -173,7 +173,7 @@ Bool_t TATWparCal::FromFile(Int_t Zbeam, const TString& name) {
 Int_t TATWparCal::GetChargeZ(Float_t edep, Float_t tof, Int_t layer)
 {
   if(edep<0) {
-    Zraw=-2;
+    Zraw=-1;
     if (fDebugLevel)
       printf("the energy released is %.f so Zraw is set to %d\n",edep,Zraw);
   }
@@ -239,7 +239,6 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 
   const float deltaToFmin = 1.e-04;  // 0.1 ps
   // const float deltaToFmin = 0.001;  // 1 ps
-   // const float deltaToFmin = 0.01;  // 10 ps
 
   dist_Z.clear();
 
@@ -322,18 +321,12 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 	  
 	  if(edep<fBB_x) {
 	    dist_Z.push_back( -dist );
-	    if(iZ==1&&Zraw==1) { // remove neutrons from proton selection
+	    if(iZ==1&&Zraw==1) // remove neutrons from proton selection
 	      Zraw = SelectProtonsFromNeutrons(dist);
-	      // Zraw = abs(dist-mean)<5*sigma ? 1 : 0;
-	      // if(fDebugLevel) cout<<"check::Z==1 assignment...nSigma is < 5 ?  nSigma::"<<abs(dist-mean)/sigma<<" ...so...  Zraw::"<<Zraw<<endl;
-	    }
 	  }
 	  else dist_Z.push_back( dist );
 
 	  
-	  // if(fDebugLevel) printf("the selected Z is:: %d\n\n",Zraw);
-	  
-	// } else if (f_prime_dist_min*f_prime_dist_max>0) {
 	} else {  // if (f_prime_dist_min*f_prime_dist_max>0)
 	  if(fDebugLevel) printf("no bisection algorithm is possible to assign Z = %d to the TW hit with (tof,eloss) = (%f,%f)\n",iZ,tof,edep);
 	  dist=std::numeric_limits<float>::max(); //inf

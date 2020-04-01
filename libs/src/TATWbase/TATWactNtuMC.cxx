@@ -72,23 +72,23 @@ void TATWactNtuMC::CreateHistogram()
    fpHisHitMap = new TH1F("twHitMap", "ToF Wall - Hit Map", 1000,-50,50);
    AddHistogram(fpHisHitMap);
 
-   fpHisDeTot = new TH1F("twDeTot", "ToF Wall - Total energy loss", 1000,-50,50);
-   AddHistogram(fpHisDeTot);
+   fpHisRecPos = new TH1F("RecPos", "RecPos", 1000,-50,50);
+   AddHistogram(fpHisRecPos);
 
-   fpHisDeTotMc = new TH1F("twMcDeTot", "ToF wall - MC Total energy loss", 1000,-50,50);
-   AddHistogram(fpHisDeTotMc);
+   fpHisRecPosMc = new TH1F("TruePos", "TruePos", 1000,-50,50);
+   AddHistogram(fpHisRecPosMc);
    
-   fpHisTimeTot = new TH1F("twTimeTot", "ToF Wall - Total time", 500, 0., 50.);
-   AddHistogram(fpHisTimeTot);
+   fpHisRecTof = new TH1F("RecTof", "RecTof", 500, 0., 50.);
+   AddHistogram(fpHisRecTof);
    
-   fpHisTimeTotMc = new TH1F("twMcTimeTot", "ToF wall - MC Total time", 500, 0., 50.);
-   AddHistogram(fpHisTimeTotMc);
+   fpHisRecTofMc = new TH1F("TrueTof", "TrueTof", 500, 0., 50.);
+   AddHistogram(fpHisRecTofMc);
    
-   fpHisZID = new TH2I("twZID", "twZID", 10,-1.5,8.5, 10,-1.5,8.5);
+   fpHisZID = new TH2I("twZID", "twZID", 11,-2.5,8.5, 10,-1.5,8.5);
    AddHistogram(fpHisZID);
    
    if(m_Digitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
-     fpHisZID_MCtrue = new TH2I("twZID_MCtrue", "twZID_MCtrue", 10,-1.5,8.5, 10,-1.5,8.5);
+     fpHisZID_MCtrue = new TH2I("twZID_MCtrue", "twZID_MCtrue", 11,-2.5,8.5, 10,-1.5,8.5);
      AddHistogram(fpHisZID_MCtrue);
 
      for(int ilayer=0; ilayer<TATWparCal::kLayers; ilayer++) {
@@ -113,10 +113,10 @@ void TATWactNtuMC::CreateHistogram()
      fpHisElossTof.push_back(new TH2D(Form("dE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),500,0.,50.,480,0.,120.));
      AddHistogram(fpHisElossTof[iZ-1]);
      
-     fpHisDistZ.push_back( new TH1F(Form("dist_Z%d",iZ),Form("dist_Z%d",iZ),1000,-20.,80) );
+     fpHisDistZ.push_back( new TH1F(Form("dist_Z%d",iZ),Form("dist_Z%d",iZ),2000,-20.,80) );
      AddHistogram(fpHisDistZ[iZ-1]);
 
-     fpHisDistZ_MC.push_back( new TH1F(Form("distMC_Z_%d",iZ),Form("distMC_Z%d",iZ),1000,-20.,80) );
+     fpHisDistZ_MC.push_back( new TH1F(Form("distMC_Z_%d",iZ),Form("distMC_Z%d",iZ),2000,-20.,80) );
      AddHistogram(fpHisDistZ_MC[iZ-1]);
 
    }
@@ -220,8 +220,8 @@ bool TATWactNtuMC::Action() {
 	   if( Zrec_MCtrue>0 && Zrec_MCtrue < Z_beam+1 )
 	     fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(trueTof,edep);
 
-	   fpHisDeTotMc->Fill(truePos);
-	   fpHisTimeTotMc->Fill(trueTof);
+	   fpHisRecPosMc->Fill(truePos);
+	   fpHisRecTofMc->Fill(trueTof);
 	   
 	   for(int iZ=1; iZ < Z_beam+1; iZ++) {
 
@@ -324,8 +324,8 @@ bool TATWactNtuMC::Action() {
 	
 	fpHisZID->Fill(Zrec,Z);
 	 
-	fpHisDeTot->Fill(recPos);
-	fpHisTimeTot->Fill(recTof);
+	fpHisRecPos->Fill(recPos);
+	fpHisRecTof->Fill(recTof);
 	 
 	if (hit->IsColumn())
 	  fpHisHitCol->Fill(hit->GetBar());

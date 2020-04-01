@@ -49,10 +49,10 @@ private:
     TH1F* fpHisHitCol;
     TH1F* fpHisHitLine;
     TH1F* fpHisHitMap;
-    TH1F* fpHisDeTot;
-    TH1F* fpHisDeTotMc;
-    TH1F* fpHisTimeTot;
-    TH1F* fpHisTimeTotMc;
+    TH1F* fpHisRecPos;
+    TH1F* fpHisRecPosMc;
+    TH1F* fpHisRecTof;
+    TH1F* fpHisRecTofMc;
     TH2I* fpHisZID;
     TH2I* fpHisZID_MCtrue;
     TH2D* fpHisElossTof_MCrec[TATWparCal::kLayers];
