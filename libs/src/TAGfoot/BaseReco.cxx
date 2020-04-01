@@ -96,7 +96,11 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fFlagHisto(false),
    fFlagTrack(false),
    fgTrackingAlgo("Full"),
-   fFlagMC(false)
+   fFlagMC(false),
+   Z_beam(-1),
+   A_beam(-1),
+   ion_name("Pb"),
+   kinE_beam(0.)
 {
 
    // check folder
@@ -240,11 +244,25 @@ void BaseReco::CloseFileOut()
 void BaseReco::ReadParFiles()
 {
    // initialise par files for target
-   if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || IsItrTracking()) {
+   if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeTW() || IsItrTracking()) {
       fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
       TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
       TString parFileName = Form("./geomaps/%sTAGdetector.map", fExpName.Data());
       parGeo->FromFile(parFileName.Data());
+
+      Z_beam = parGeo->GetBeamPar().AtomicNumber;
+      A_beam = parGeo->GetBeamPar().AtomicMass;
+      ion_name = parGeo->GetBeamPar().Material;
+      kinE_beam = parGeo->GetBeamPar().Energy; //GeV/u
+      
+      cout<<"\n!!!!  ATTENTION ATTENTION ATTENTION !!!"<<endl;
+      printf("In file %s the following beam parameters for a %d%s beam have been set:\n",parFileName.Data(),A_beam,ion_name.Data());
+      printf("BeamEnergy:          %.3f GeV/u\n",kinE_beam);
+      printf("BeamAtomicMass:      %d\n",A_beam);
+      printf("BeamAtomicNumber:    %d\n",Z_beam);
+      printf("BeamMaterial:       \"%s\"\n",ion_name.Data());
+      printf("Change such parameters in %s accordingly to the input file\n\n",parFileName.Data());
+
    }
    
    // initialise par files for start counter
@@ -365,8 +383,12 @@ void BaseReco::ReadParFiles()
       
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
-      parFileName = Form("./config/%sTATWCalibrationMap.xml", fExpName.Data());
+      //      parFileName = Form("./config/%sTATWCalibrationMap.xml", fExpName.Data());
       parCal->FromFile(parFileName.Data());
+
+      TString exp_name = fExpName.IsNull() ? "" : "_" + fExpName(0,fExpName.First('/'));
+      parFileName = Form("./config/%sTATW_BBparameters_%d%s_%d%s.cfg", fExpName.Data(),A_beam,ion_name.Data(),(int)(kinE_beam*TAGgeoTrafo::GevToMev()),exp_name.Data());
+      parCal->FromFile(Z_beam,parFileName.Data());
    }
    
    // initialise par files for caloriomter
