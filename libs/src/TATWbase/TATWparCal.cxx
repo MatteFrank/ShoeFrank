@@ -1,3 +1,4 @@
+
 /*!
   \file
   \version $Id: TATWparCal.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
@@ -110,9 +111,6 @@ Bool_t TATWparCal::FromFile(const TString& name)
   TString name_exp = name;
   gSystem->ExpandPathName(name_exp);
   int verbose = 0;
-  
-  if (FootDebugLevel(1))
-    verbose = 1;
   
   cMapCal->LoadCalibrationMap(name_exp.Data());
   
