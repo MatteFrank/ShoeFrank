@@ -99,8 +99,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
     Z_beam(-1),
     A_beam(-1),
     ion_name("Pb"),
-    kinE_beam(0.)
-    
+    kinE_beam(0.)    
 {
 
   // check folder
@@ -226,6 +225,11 @@ void BaseReco::SetRecHistogramDir()
   if (GlobalPar::GetPar()->IncludeMSD()) 
     fActClusMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    
+   if (GlobalPar::GetPar()->IncludeTOE())
+   {
+       fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   }
+    
   
 }
 
@@ -239,8 +243,7 @@ void BaseReco::CloseFileOut()
 //__________________________________________________________
 void BaseReco::ReadParFiles()
 {
-
-  
+  // initialise par files for target
   if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeTW() || IsItrTracking()) {
     fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
     TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
