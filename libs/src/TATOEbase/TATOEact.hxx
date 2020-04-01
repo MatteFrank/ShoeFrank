@@ -38,6 +38,8 @@ class TD;
 
 struct TATOEbaseAct {
     virtual void Action()  = 0;
+    virtual void Output() = 0 ;
+    virtual void RegisterHistograms() = 0;
     virtual ~TATOEbaseAct() = default;
 };
 
@@ -106,13 +108,21 @@ public:
         ukf_m.call_stepper().ode.model().particle_h = &particle_m;
     }
     
+    void Output() override {
+        checker_m.compute_results( details::all_separated_tag{} );
+        logger_m.output();
+    }
+    
+    void RegisterHistograms() override {
+        checker_m.register_histograms( details::all_separated_tag{} );
+    }
+    
     void Action() override {
         
         ++event;
         logger_m.clear();
         checker_m.reset_local_data();
         
-    
         auto hypothesis_c = form_hypothesis();
         
         for(auto & hypothesis : hypothesis_c){
@@ -124,8 +134,8 @@ public:
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
         register_tracks_upward( std::move( track_c ) );
         
-        checker_m.output( details::all_separated_tag{} );
-        logger_m.output();
+        
+
         
         
         
@@ -195,20 +205,29 @@ private:
             
             if( first_matching_hypothesis == hypothesis_c.end() ){
             
-                auto add_hypothesis = [&]( int mass_number_p, double light_ion_boost_p = 1 ){
-                    auto momentum = sqrt( (beam_energy_m * mass_number_p) * (beam_energy_m * mass_number_p) + 2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  );
+                auto add_hypothesis = [&]( int mass_number_p,
+                                           double light_ion_boost_p = 1,
+                                           double energy_modifier_p = 1 )
+                                      {
+                    auto momentum = sqrt( pow(beam_energy_m * mass_number_p, 2)  +
+                                          2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  ) *
+                                    energy_modifier_p;
                     hypothesis_c.push_back( particle_properties{ charge, mass_number_p, momentum, light_ion_boost_p } );
                     add_current_end_point( hypothesis_c.back() );
-                };
+                                      };
             
                 switch(charge){
                     case 1:
                     {
                         auto light_ion_boost = 2;
                         add_hypothesis(1, light_ion_boost);
+                        add_hypothesis(1, light_ion_boost, 1.5);
+                        add_hypothesis(1, light_ion_boost, 0.5);
                     
 //                      light_ion_boost = 1.3;
                         add_hypothesis(2, light_ion_boost);
+                        add_hypothesis(2, light_ion_boost, 1.5);
+                        add_hypothesis(2, light_ion_boost, 0.5);
                     
                         add_hypothesis(3);
                         break;

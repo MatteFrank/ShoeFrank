@@ -27,10 +27,9 @@ class TABMdatRaw : public TAGdata {
 
     void            SetHitData(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t time);
     void            AddDischarged();
-    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-    Double_t        GetTrigtime(){return trigtime;};
-    void            SetTrigtime(Double_t trigin){trigtime=trigin;};
+    void            SetTrigtime(Double_t trigin){fTrigTime=trigin;};
   
+    Double_t        GetTrigtime()  const { return fTrigTime;};
     Int_t           NHit() const;
     const TABMrawHit& Hit(Int_t i_ind) const;
 
@@ -41,14 +40,15 @@ class TABMdatRaw : public TAGdata {
 
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
 
+   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+
     ClassDef(TABMdatRaw,1)
 
   private:
      static TString fgkBranchName;    // Branch name in TTree
-    //~ Int_t           fiNTdc;		      //number of accepted tdc values
     Int_t           fiNDrop;		    //number of discharged tdc values
     vector<TABMrawHit> fHitList;		//list of TABMrawHit ATTENZIONE!! NON È UN TCLONESARRAY COME GLI ALTRI!!!
-    Double_t        trigtime;
+    Double_t        fTrigTime;
 };
 
 #include "TABMdatRaw.icc"

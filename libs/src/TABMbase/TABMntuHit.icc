@@ -10,7 +10,7 @@
 
 inline Int_t TABMntuHit::Cell() const
 {
-  return icell;
+  return fiCell;
 }
 
 //------------------------------------------+-----------------------------------
@@ -18,12 +18,12 @@ inline Int_t TABMntuHit::Cell() const
 
 inline Double_t TABMntuHit::Dist() const
 {
-  return rdrift;
+  return frDrift;
 }
 
 inline Double_t TABMntuHit::Tdrift() const
 {
-  return tdrift;
+  return ftDrift;
 }
 
 //------------------------------------------+-----------------------------------
@@ -31,7 +31,7 @@ inline Double_t TABMntuHit::Tdrift() const
 
 inline Int_t TABMntuHit::Plane() const
 {
-  return ilayer;
+  return fiLayer;
 }
 
 //------------------------------------------+-----------------------------------
@@ -39,5 +39,5 @@ inline Int_t TABMntuHit::Plane() const
 
 inline Int_t TABMntuHit::View() const
 {
-  return iview;
+  return fiView;
 }

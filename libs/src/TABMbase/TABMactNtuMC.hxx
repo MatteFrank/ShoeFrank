@@ -44,7 +44,7 @@ class TABMactNtuMC : public TAGaction {
     TAGparaDsc*     fpParCon;		    // BM config params.
     TAGparaDsc*     fpParGeo;		    // BM geo params.
     EVENT_STRUCT*   fpEvtStr;
-    Double_t        rdrift_err;      //default error value of the rdrfit
+    Double_t        fRdriftErr;      //default error value of the rdrfit
     map<pair<int, int>, TABMntuHit*> fMap; //! map for pilepup
 
     //histos

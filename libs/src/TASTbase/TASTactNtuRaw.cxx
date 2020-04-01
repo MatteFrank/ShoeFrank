@@ -57,18 +57,18 @@ Bool_t TASTactNtuRaw::Action() {
 
    double timestamp=0, charge_dep=0, de_dep=0; 
    
-   if(p_datraw->SuperHit()){
+   if(p_datraw->GetSuperHit()){
 
-     timestamp = p_datraw->SuperHit()->GetTime();
-     charge_dep =  p_datraw->SuperHit()->GetCharge();
+     timestamp = p_datraw->GetSuperHit()->GetTime();
+     charge_dep =  p_datraw->GetSuperHit()->GetCharge();
      de_dep = -1000.; //calibration missing
 
      p_nturaw->NewHit(charge_dep, de_dep, timestamp);
 
      p_nturaw->SetTriggerTime(timestamp);
-     p_nturaw->SetTriggerTimeOth(p_datraw->SuperHit()->GetTimeOth());
+     p_nturaw->SetTriggerTimeOth(p_datraw->GetSuperHit()->GetTimeOth());
      p_nturaw->SetCharge(charge_dep);
-     p_nturaw->SetTrigType(p_datraw->SuperHit()->GetTriggerType());
+     p_nturaw->SetTrigType(p_datraw->GetSuperHit()->GetTriggerType());
    }
    
    fpNtuRaw->SetBit(kValid);

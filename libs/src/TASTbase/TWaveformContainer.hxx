@@ -27,21 +27,38 @@ public:
   pair<double,double> ComputeClockParameters();
   bool IsAClock();
 
-  inline bool IsEmpty(){return IsEmptyFlag;}
-  inline void SetEmptyFlag(bool value){IsEmptyFlag = value;}
-  // inline void SetNEvent(int value){ m_nEvent = value;}
+  void SetTrigType(Int_t t)       { fTrigType = t;          }
+  void SetTriggerCellId(Int_t t)  { fTriggerCellId = t;     }
+  void SetChannelId(Int_t c)      { fChannelId = c;         }
+  void SetBoardId(Int_t b)        { fBoardId = b;           }
+  void SetNEvent(int value)       { fNEvent = value;        }
+  void SetEmptyFlag(bool value)   { fIsEmptyFlag = value;   }
+  void SetHighlevelDebug(bool b)  { fHighlevelDebug = b;    }
+
+  Int_t GetTrigType()       const { return fTrigType;       }
+  Int_t GetTriggerCellId()  const { return fTriggerCellId;  }
+  Int_t GetChannelId()      const { return fChannelId;      }
+  Int_t GetBoardId()        const { return fBoardId;        }
+  Int_t GetNEvent()         const { return fNEvent;         }
+  Bool_t IsEmpty()          const { return fIsEmptyFlag;    }
+  Bool_t IsHighlevelDebug() const { return fHighlevelDebug; }
+
+  vector<double>& GetVectT()      { return fVectT;          }
+  vector<double>& GetVectRawT()   { return fVectRawT;       }
+  vector<double>& GetVectA()      { return fVectA;          }
+
+private:
+  Int_t  fTrigType;
+  Int_t  fTriggerCellId;
+  Int_t  fChannelId;
+  Int_t  fBoardId;
+  Int_t  fNEvent;
+  Bool_t fHighlevelDebug;
+  Bool_t fIsEmptyFlag;
   
-  int TrigType;
-  int TriggerCellId;
-  Int_t ChannelId;
-  Int_t BoardId;
-  vector<double> m_vectT;
-  vector<double> m_vectRawT;
-  vector<double> m_vectA;
-  Int_t m_nEvent;
-  bool high_level_debug;
-  bool IsEmptyFlag;
-  
+  vector<double> fVectT;
+  vector<double> fVectRawT;
+  vector<double> fVectA;
 };
 
 #endif

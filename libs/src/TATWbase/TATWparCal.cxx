@@ -114,7 +114,7 @@ Bool_t TATWparCal::FromFile(const TString& name)
   if (FootDebugLevel(1))
     verbose = 1;
   
-  cMapCal->LoadCalibrationMap(name_exp.Data(), verbose);
+  cMapCal->LoadCalibrationMap(name_exp.Data());
   
   return kFALSE;
   

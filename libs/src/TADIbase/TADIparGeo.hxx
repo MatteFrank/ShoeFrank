@@ -55,9 +55,11 @@ private:
   TVector3   fMaxPosition;
   TVector3   fSizeBox;
   
-  vector<string> vReg, vRegShield;
-  vector<string> vBodyOut, vBodyIn;
-  
+  vector<string> fvReg;
+  vector<string> fvRegShield;
+  vector<string> fvBodyOut;
+  vector<string> fvBodyIn;
+
 private:
   static const TString fgkDefParaName;
   static       TString fgDefaultGeoName; // default detector geomap file

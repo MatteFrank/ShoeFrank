@@ -4,29 +4,36 @@
 #include <string>
 #include <map>
 #include <TSystem.h>
+#include "TAGobject.hxx"
 #include "Parameters.h"
 
 enum TLayer {NoLayer=-1,Front=0,Rear=1};
 
-typedef std::map<TBarId,TLayer> TMapBarIdLayerId;
-typedef std::tuple <TBoardId,TChannelId,TChannelId> TChannelBoardTuple;
-typedef std::map<TBarId,TChannelBoardTuple> TChannelPairMapType;
+typedef std::map<Int_t,TLayer> TMapBarIdLayerId;
+typedef std::tuple <Int_t,Int_t,Int_t> TChannelBoardTuple;
+typedef std::map<Int_t,TChannelBoardTuple> TChannelPairMapType;
 
 
-class CChannelMap
+class CChannelMap : public TAGobject
 {
-	TMapBarIdLayerId _BarLayer;
-    TChannelPairMapType _ChannelBarMap;
-    bool _ChannelMapIsOk;
+private:
+	TMapBarIdLayerId fBarLayer;
+   TChannelPairMapType fChannelBarMap;
+   bool fChannelMapIsOk;
+   
 public:
-    CChannelMap();
-    bool Exists(TBarId BarId);
-	void LoadChannelMap(std::string Filename,int verbose=0);
-	TLayer GetBarLayer(TBarId BarId);
-	TChannelBoardTuple GetChannelABar(TBarId BarId);
-	TChannelPairMapType::iterator begin();
-	TChannelPairMapType::iterator end();
-	Int_t GetNumberOfBars();
-	std::vector<TBarId> GetBarIds();
+   CChannelMap();
+   bool Exists(Int_t BarId);
+	void LoadChannelMap(std::string Filename);
+   std::vector<Int_t> GetBarIds();
+
+   TLayer             GetBarLayer(Int_t BarId)    { return fBarLayer[BarId];       }
+   TChannelBoardTuple GetChannelABar(Int_t BarId) { return fChannelBarMap[BarId];  }
+   TChannelPairMapType::iterator begin()          { return fChannelBarMap.begin(); }
+   TChannelPairMapType::iterator end()            { return fChannelBarMap.end();   }
+   Int_t GetNumberOfBars()                  const { return fChannelBarMap.size();  }
+   
+   ClassDef(CChannelMap, 0)
 };
+
 #endif

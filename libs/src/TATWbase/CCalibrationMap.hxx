@@ -3,32 +3,32 @@
 #include <string>
 #include <map>
 #include <TSystem.h>
+#include "TAGobject.hxx"
+#include "Parameters.h"
 
-#define NUMBEROFCALIBRATIONPARAMETERS 2
+typedef std::map<Int_t,std::vector<Double_t> > TCalibrationMapType;
 
-typedef Int_t TChannelId;
-typedef Int_t TBarId;
-typedef Int_t TBoardId;
-
-typedef Double_t CalibrationParType;
-typedef std::map<TBarId,std::vector<CalibrationParType> > TCalibrationMapType;
-
-class CCalibrationMap
+class CCalibrationMap : public TAGobject
 {
-	TCalibrationMapType _CalibrationMap;
-	bool _CalibrationMapIsOk;
+private:
+	TCalibrationMapType fCalibrationMap;
+	bool fCalibrationMapIsOk;
+   
 public:
 	CCalibrationMap();
-	void LoadCalibrationMap(std::string Filename, int verbose);
-	bool Exists(TBarId BarId);
-	TCalibrationMapType::iterator begin();
-	TCalibrationMapType::iterator end();
-	Int_t GetNumberOfBars();
-	CalibrationParType GetBarParameter(TBarId,unsigned int ParameterNumber);
-	void SetBarParameter(TBarId,unsigned int ParameterNumber,CalibrationParType p);
-	void AddBar(TBarId BarId);
-	void ExportToFile(std::string FileName);
+	void LoadCalibrationMap(std::string Filename);
+	bool Exists(Int_t BarId);
+   void ExportToFile(std::string FileName);
 
+   TCalibrationMapType::iterator begin() { return fCalibrationMap.begin(); }
+   TCalibrationMapType::iterator end()   { return fCalibrationMap.end();   }
+   Int_t GetNumberOfBars() const         { return fCalibrationMap.size();  }
+   Double_t GetBarParameter(Int_t BarId, UInt_t ParameterNumber) { return fCalibrationMap[BarId][ParameterNumber];}
+   
+   void SetBarParameter(Int_t BarId, UInt_t ParameterNumber, Double_t p) { fCalibrationMap[BarId][ParameterNumber]=p;}
+   void AddBar(Int_t BarId) { fCalibrationMap[BarId].resize(NUMBEROFCALIBRATIONPARAMETERS);}
+
+   ClassDef(CCalibrationMap, 0)
 };
 
 #endif

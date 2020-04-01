@@ -25,23 +25,23 @@ ClassImp(TAGbaseWD);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAGbaseWD::TAGbaseWD(): time(999999.), chg(0.), chid(0),pedestal(0), baseline(0),
-			amplitude(0),boardid(0),triggertypeId(0), triggercellId(-1000),  mcid(-999){
+TAGbaseWD::TAGbaseWD(): fTime(999999.), fChg(0.), fChId(0),fPedestal(0), fBaseline(0),
+			fAmplitude(0),fBoardId(0),fTriggerTypeId(0), fTriggerCellId(-1000),  fMcId(-999){
 }
 
 
 TAGbaseWD::TAGbaseWD(TWaveformContainer *W){
 
-  chid=W->ChannelId;
-  boardid=W->BoardId;
-  triggertypeId = W->TrigType;
-  triggercellId = W->TriggerCellId;
-  time = -9999;
-  chg = -99999;
-  amplitude = -9999;
-  pedestal = -9999999999;
-  baseline = -9999999999;
-  mcid = -999;
+  fChId=W->GetChannelId();
+  fBoardId=W->GetBoardId();
+  fTriggerTypeId = W->GetTrigType();
+  fTriggerCellId = W->GetTriggerCellId();
+  fTime = -9999;
+  fChg = -99999;
+  fAmplitude = -9999;
+  fPedestal = -9999999999;
+  fBaseline = -9999999999;
+  fMcId = -999;
   
 
 }
@@ -56,21 +56,21 @@ TAGbaseWD::~TAGbaseWD(){
 
 double TAGbaseWD::ComputeBaseline(TWaveformContainer *w){
 
-  return TMath::Mean(w->m_vectA.begin()+2, w->m_vectA.begin()+27);
+  return TMath::Mean(w->GetVectA().begin()+2, w->GetVectA().begin()+27);
 
 }
 
 
 double TAGbaseWD::ComputePedestal(TWaveformContainer *w){
 
-  return baseline*(w->m_vectT.at(w->m_vectT.size()-1)- w->m_vectT.at(0));
+  return fBaseline*(w->GetVectT().at(w->GetVectT().size()-1)- w->GetVectT().at(0));
 
 }
 
 
 double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w){
 
-  return  -((TMath::MinElement(w->m_vectA.size()-5, &w->m_vectA[5])) - baseline);
+  return  -((TMath::MinElement(w->GetVectA().size()-5, &w->GetVectA()[5])) - fBaseline);
 
 }
 
@@ -78,8 +78,8 @@ double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w){
 
 double TAGbaseWD::ComputeCharge(TWaveformContainer *w){
 
-  vector<double> tmp_amp = w->m_vectA;
-  vector<double> tmp_time = w->m_vectT;
+  vector<double> tmp_amp = w->GetVectA();
+  vector<double> tmp_time = w->GetVectT();
   
   double charge = 0.;
   double prod=1;
@@ -105,7 +105,7 @@ double TAGbaseWD::ComputeCharge(TWaveformContainer *w){
     }
   }
 
-  return -(charge - pedestal);
+  return -(charge - fPedestal);
 
 }
 
@@ -114,8 +114,8 @@ double TAGbaseWD::ComputeCharge(TWaveformContainer *w){
 
 double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
   
-  vector<double> time = w->m_vectT;
-  vector<double> amp = w->m_vectA;
+  vector<double> time = w->GetVectT();
+  vector<double> amp = w->GetVectA();
 
   //I create the waveform graph
   TGraph wgr(time.size(),&time[0], &amp[0]);
@@ -136,7 +136,7 @@ double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, do
   double t = tmin;
   vector<double> time_cfd, amp_sum_cfd;
   while(t<tmax){
-    a=(frac*(wgr.Eval(t)-baseline)-(wgr.Eval(t-del)-baseline));
+    a=(frac*(wgr.Eval(t)-fBaseline)-(wgr.Eval(t-del)-fBaseline));
     amp_sum_cfd.push_back(a);
     time_cfd.push_back(t);
     t+=0.2;
@@ -186,19 +186,19 @@ double TAGbaseWD::ComputeTimeSimpleCFD(TWaveformContainer *w, double frac){
 
 
   // evaluate the absolute threshold
-  Double_t AbsoluteThreshold=-frac*amplitude+baseline;
+  Double_t AbsoluteThreshold=-frac*fAmplitude+fBaseline;
 
   
-  int i_ampmin = TMath::LocMin(w->m_vectA.size(),&(w->m_vectA)[0]);
+  int i_ampmin = TMath::LocMin(w->GetVectA().size(),&(w->GetVectA())[0]);
   Int_t i_thr = i_ampmin;
 
   double t_arr=-1000;
   bool foundthreshold = false;
-  while(!foundthreshold && i_thr<w->m_vectA.size()-1 && i_thr>1){
-    double a1 = w->m_vectA.at(i_thr);
-    double a2 = w->m_vectA.at(i_thr+1);
-    double t1 = w->m_vectT.at(i_thr);
-    double t2 = w->m_vectT.at(i_thr+1);
+  while(!foundthreshold && i_thr<w->GetVectA().size()-1 && i_thr>1){
+    double a1 = w->GetVectA().at(i_thr);
+    double a2 = w->GetVectA().at(i_thr+1);
+    double t1 = w->GetVectT().at(i_thr);
+    double t2 = w->GetVectT().at(i_thr+1);
     double m = (a2-a1)/(t2-t1);
     double q = a1 - m*t1;
     t_arr = (AbsoluteThreshold-q)/m;

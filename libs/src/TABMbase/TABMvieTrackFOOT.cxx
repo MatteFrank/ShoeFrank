@@ -149,7 +149,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
     for (Int_t i=3; i<36;) {
       tmp_int=0;
       for (Int_t k=cell_occupy->at(i).size()-1; k>=0; k--) {
-        TABMntuHit* hit = p_nturaw->Hit(cell_occupy->at(i)[k]);
+        TABMntuHit* hit = p_nturaw->GetHit(cell_occupy->at(i)[k]);
         if(hit->View()==1 && hit->GetIsSelected()) {
           //Top view, V view, (X,Z)
           p_bmgeo->GetCellInfo(1, hit->Plane(), hit->Cell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);//charge the wire position and direction in h_x.. and h_cx...
@@ -230,7 +230,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
     for (Int_t i=0; i<33;) {
       tmp_int=0;
       for (Int_t k=cell_occupy->at(i).size()-1; k>=0; k--) {
-        TABMntuHit* hit = p_nturaw->Hit(cell_occupy->at(i)[k]);
+        TABMntuHit* hit = p_nturaw->GetHit(cell_occupy->at(i)[k]);
         //View  == 0 (Side view, U view)
         if(hit->View()==0 && hit->GetIsSelected()) {
           //Side view, U view, (Y,Z)

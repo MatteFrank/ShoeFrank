@@ -14,14 +14,14 @@
 #include "TArrayI.h"
 
 #include "TAGdata.hxx"
-#include "TAGobject.hxx"
+#include "TAGcluster.hxx"
 
 /** TAGpoint class is the global point for global reconstruction
  
  */
 /*------------------------------------------+---------------------------------*/
 class TClonesArray;
-class TAGpoint : public TAGobject {
+class TAGpoint : public TAGcluster {
    
 private:
    TVector3    fPosition;      // position in FOOT framework
@@ -30,21 +30,23 @@ private:
    TVector3    fMomError;      // momentum error in FOOT framework
    Int_t       fChargeZ;       // Charge Z
 
-   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
-   std::map<int, int> fMcTrackMap;               //! Map of MC track Id
-
 public:
    TAGpoint();
    TAGpoint(TVector3 pos, TVector3 posErr);
    TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ = 0);
    ~TAGpoint() {};
    
-   //    All the Get methods
-   TVector3    GetPosition()         const  { return fPosition;   }
-   TVector3    GetPosError()         const  { return fPosError;   }
-   TVector3    GetMomentum()         const  { return fMomentum;   }
-   TVector3    GetMomError()         const  { return fMomError;   }
-   Int_t       GetChargeZ()          const  { return fChargeZ;    }
+   // All the Get methods
+   const TVector3&  GetPosition()    const  { return fPosition;   }
+   const TVector3&  GetPosError()    const  { return fPosError;   }
+   
+   // return in the same framework of FOOT
+   const TVector3&  GetPositionG()   const  { return fPosition;   }
+   const TVector3&  GetPosErrorG()   const  { return fPosError;   }
+
+   TVector3         GetMomentum()    const  { return fMomentum;   }
+   TVector3         GetMomError()    const  { return fMomError;   }
+   Int_t            GetChargeZ()     const  { return fChargeZ;    }
       
    void        SetPosition(TVector3 pos)    { fPosition = pos;    }
    void        SetPosError(TVector3 pos)    { fPosError = pos;    }
@@ -53,12 +55,8 @@ public:
    void        SetChargeZ(Int_t z)          { fChargeZ = z;       }
    void        Clear(Option_t* opt);
    
-   Int_t       GetMcTrackIdx(Int_t idx) const { return fMcTrackIdx[idx];      }
-   Int_t       GetMcTracksN()           const { return fMcTrackIdx.GetSize(); }
    
-   void        AddMcTrackIdx(Int_t trackIdx);
-   
-   ClassDef(TAGpoint,3)
+   ClassDef(TAGpoint,4)
 };
 
 //##############################################################################

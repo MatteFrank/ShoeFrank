@@ -265,7 +265,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    chargeB += gRandom->Gaus(0, resChargeB);
 
    if (fDebugLevel) {
-      printf("pos %f\n", pos);
+      printf("pos %.1f\n", pos);
       printf("energy %.1f %.1f\n", chargeA, chargeB);
       printf("Res %.3f %.3f\n", resChargeA*100, resChargeB*100);
    }

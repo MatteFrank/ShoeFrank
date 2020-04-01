@@ -74,7 +74,7 @@ TString TASTntuRaw::fgkBranchName   = "strh.";
 
 TASTntuRaw::TASTntuRaw()
 : TAGdata(),
- fListOfHits(0)
+ m_ListOfHits(0)
 {
   m_Charge=-1000;
   m_TrigTime=-1000;
@@ -89,40 +89,39 @@ TASTntuRaw::TASTntuRaw()
 
 TASTntuRaw::~TASTntuRaw()
 {
-  delete fListOfHits;
+  delete m_ListOfHits;
 }
 
 //------------------------------------------+-----------------------------------
 Int_t TASTntuRaw::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return m_ListOfHits->GetEntries();
 }
 
 //______________________________________________________________________________
 //
 TASTntuHit* TASTntuRaw::NewHit(double charge, double de, double time)
 {
-   TClonesArray &pixelArray = *fListOfHits;
+   TClonesArray &pixelArray = *m_ListOfHits;
    TASTntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTntuHit(charge, de, time);
    
    return hit;
-   
 }
 
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th hit
 
-TASTntuHit* TASTntuRaw::Hit(Int_t i)
+TASTntuHit* TASTntuRaw::GetHit(Int_t i)
 {
-   return (TASTntuHit*) ((*fListOfHits)[i]);;
+   return (TASTntuHit*) ((*m_ListOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 
-const TASTntuHit* TASTntuRaw::Hit(Int_t i) const
+const TASTntuHit* TASTntuRaw::GetHit(Int_t i) const
 {
-   return (const TASTntuHit*) ((*fListOfHits)[i]);;
+   return (const TASTntuHit*) ((*m_ListOfHits)[i]);;
 }
 
    
@@ -131,7 +130,7 @@ const TASTntuHit* TASTntuRaw::Hit(Int_t i) const
 
 void TASTntuRaw::SetupClones()
 {
-  if (!fListOfHits) fListOfHits = new TClonesArray("TASTntuHit");
+  if (!m_ListOfHits) m_ListOfHits = new TClonesArray("TASTntuHit");
    
   return;
 }
@@ -143,7 +142,7 @@ void TASTntuRaw::SetupClones()
 void TASTntuRaw::Clear(Option_t*)
 {
   TAGdata::Clear();
-  if (fListOfHits) fListOfHits->Clear("C");
+  if (m_ListOfHits) m_ListOfHits->Clear("C");
 
   return;
 }
