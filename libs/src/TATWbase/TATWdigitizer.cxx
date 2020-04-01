@@ -65,7 +65,7 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
    fTofErrPropAlpha(2.5), // old 5 ?
    fSlatLength(0),
    fGain(1),
-   fEnergyThreshold(0.7) // MeV
+   fEnergyThreshold(0.1) // MeV
 {
    SetFunctions();
    SetInitParFunction();
@@ -290,7 +290,9 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    tof *= TAGgeoTrafo::PsToNs(); 
    if (fMap[idA] == 0) {
      fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !
-     // fCurrentHit->SetChargeZ(Z);     
+
+     //here set true Z charge: the rec charge is set after in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
+     fCurrentHit->SetChargeZ(Z);     
 
       fMap[idA] = fCurrentHit;
    } else {
@@ -316,6 +318,9 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
       fCurrentHit->SetTime(tof);
       fCurrentHit->SetPosition(pos);
       fCurrentHit->SetCOM(chargeCOM);
+
+      //here set true Z charge: the rec charge is set after in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
+      fCurrentHit->SetChargeZ(Z);     
    }
    
    return true;

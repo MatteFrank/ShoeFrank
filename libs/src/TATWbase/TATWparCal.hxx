@@ -23,6 +23,8 @@
 
 #include "CCalibrationMap.hxx"
 
+#include "Parameters.h"
+
 
 //##############################################################################
 
@@ -35,12 +37,14 @@ public:
 private:
 
   struct ChargeParameter_t : public  TObject {
-    vector<Int_t>   Layer;     // TW layer
-    vector<Int_t>   Charge;    // charge
-    vector<Float_t> Norm_BB;   // par0 BB
-    vector<Float_t> Const_BB;  // par1 BB
-    vector<Float_t> CutLow;    // Lower Tof cut
-    vector<Float_t> CutUp;     // Upper Tof cut
+    vector<Int_t>   Layer;      // TW layer
+    vector<Int_t>   Charge;     // charge
+    vector<Float_t> Norm_BB;    // par0 BB
+    vector<Float_t> Const_BB;   // par1 BB
+    vector<Float_t> CutLow;     // Lower Tof cut
+    vector<Float_t> CutUp;      // Upper Tof cut
+    vector<Float_t> distMean;   // <E_meas - E_BB>
+    vector<Float_t> distSigma;  // sigma(E_meas - E_BB)
   };
    
 
@@ -54,28 +58,9 @@ private:
   TAGgeoTrafo*    m_geoTrafo;
   
   Int_t      Z_beam;
-  TString    ion_name;
-  Int_t      A_beam;
-  Float_t    kinE_beam;
-  
-  Float_t    z_SC;
-  Float_t    z_TW;
-  Float_t    Lmin;  
-  Double_t   C_speed;
+  Double_t   Tof_beam;
   Double_t   Tof_min;
-  
-  TDatabasePDG db;
-  Double_t     mass_p;
-  Double_t     mass_n;
-  
-  Double_t binding_energy; //MeV/u
-  enum {H=1,He4=4,C12=12,O16=16};
-  
-  Double_t Mass_beam;
-  Double_t Energy_beam;
-  Double_t Beta_beam;
-  Double_t Tof_beam;
-  Double_t Tof_max;
+  Double_t   Tof_max;
   
   void       RetrieveBeamQuantities();
 
@@ -84,11 +69,14 @@ private:
   Float_t    fDist(double tof, double eloss, double x, double fBB);
   Double_t   fDistPrime(double tof, double eloss, double x, double fBB, double fBB_prime, double dist);
   
+  Int_t      SelectProtonsFromNeutrons(float distance_Z1);
+  void       ComputeBBDistance(double edep, double tof, int tw_layer);
+
   int     Zraw;
   float   dist_min_Z;
 
   vector<float> dist_Z;
-
+  
 public:
 
   TATWparCal();
@@ -100,8 +88,6 @@ public:
   //! Read from file
   Bool_t          FromFile(const TString& name = "");
   Bool_t          FromFile( Int_t isZbeam, const TString& name = "");
-
-  void            ComputeBBDistance(double edep, double tof, int tw_layer);
   //
   //! Get Methods
   Int_t           GetChargeZ(Float_t edep, Float_t tof, Int_t layer); //const;

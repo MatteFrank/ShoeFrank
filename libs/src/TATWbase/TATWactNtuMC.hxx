@@ -7,6 +7,7 @@
 */
 /*------------------------------------------+---------------------------------*/
  #include <vector>
+ #include <map>
 
 #include "TVector3.h"
 #include "TH1F.h"
@@ -59,8 +60,11 @@ private:
     // vector of histo with the same size of the ion beam atomic number
     vector<TH2D*> fpHisElossTof_MC;
     vector<TH2D*> fpHisElossTof;
+    vector<TH1F*> fpHisDistZ_MC;
     vector<TH1F*> fpHisDistZ;
    
+   map<int, TATWntuHit*> fMapPU; //! map for pilepup
+
 private:
     void          CreateDigitizer();
 
