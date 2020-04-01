@@ -199,7 +199,7 @@ bool TATWactNtuMC::Action() {
 
 	 Int_t mothId = (m_eventStruct->TRpaid[trackId])-1;
 	 
-	 Float_t distZ_MC[Z_beam] = {std::numeric_limits<float>::max()}; //inf
+	 Float_t distZ_MC[Z_beam];
 
 	 Int_t Zrec_MCtrue;	 
 	 // test algorithm in MC in a clean situation: only primary fragmentation
