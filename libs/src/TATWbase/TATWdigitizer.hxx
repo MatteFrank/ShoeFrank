@@ -2,6 +2,7 @@
 #define _TATWdigitizer_HXX
 
 #include <map>
+
 #include "TAGbaseDigitizer.hxx"
 
 #include "TATWntuRaw.hxx"
@@ -33,6 +34,10 @@ public:
    Float_t        GetResEnergy(Float_t energy);
    Double_t       ResEnergy(Double_t* x, Double_t* par);
    
+   Bool_t         IsOverEnergyThreshold(double ene);
+   Bool_t         SetMCtrue() {return true;}
+   Double_t       GetEnergyThreshold() {return fEnergyThreshold;}
+
    Float_t        GetResToF(Float_t edep);
    Double_t       ResToF(Double_t* x, Double_t* par);
    
@@ -76,6 +81,8 @@ private:
    
    Float_t       fDeAttAsym;
    Float_t       fDeAttAsymSmear;
+
+   Double_t      fEnergyThreshold;
 
    // TOF
    TF1*          fTofResE;

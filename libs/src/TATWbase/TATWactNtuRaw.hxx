@@ -7,14 +7,21 @@
 */
 /*------------------------------------------+---------------------------------*/
 
+#include <vector>
+
+#include "TH1.h"
+#include "TH2.h"
+
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
+#include "TAGgeoTrafo.hxx"
+#include "TAGparGeo.hxx"
+
 #include "TATWparGeo.hxx"
+#include "TATWparCal.hxx"
 #include "TATWdatRaw.hxx"
 #include "TATWntuRaw.hxx"
-
-class TH1F;
 
 class TATWactNtuRaw : public TAGaction {
 
@@ -25,7 +32,8 @@ public:
 				TAGdataDsc* p_datdaq=0,
 				TAGparaDsc* p_pargeo=0,
 				TAGparaDsc* p_parmap=0,
-				TAGparaDsc* p_calmap=0);
+				TAGparaDsc* p_calmap=0,
+				TAGparaDsc* p_pargeo_gl=0);
   virtual         ~TATWactNtuRaw();
 
   virtual Bool_t  Action();
@@ -35,27 +43,36 @@ public:
   ClassDef(TATWactNtuRaw,0);
 
 
-  private:
-
+private:
   
   TAGdataDsc*     fpDatRaw;		    // input data dsc
   TAGdataDsc*     fpNtuRaw;		    // output data dsc
   TAGparaDsc*     fpParGeo;		    // parameter dsc
   TAGparaDsc*     fpParMap;
   TAGparaDsc*     fpCalPar;
+  TAGparaDsc*     fpParGeo_Gl;            // beam parameter dsc
 
-   Float_t        fTofPropAlpha;    // inverse of light propagation velocity
-   Float_t        fTofErrPropAlpha;
+  TAGparGeo*      f_pargeo;
 
-   TH1F*          fpHisDeTot;       // Total energy loss
-   TH1F*          fpHisTimeTot;     // Total time of flight
+  Int_t          Z_beam;
+  
+  Float_t        fTofPropAlpha;    // inverse of light propagation velocity
+  Float_t        fTofErrPropAlpha;
+
+  TH1F*          fpHisDeTot;       // Total energy loss
+  TH1F*          fpHisTimeTot;     // Total time of flight
    
+  TH2D*          fpHisElossTof_layer[TATWparCal::kLayers];
+  vector<TH2D*>  fpHisElossTof_Z;
+
   bool m_debug;
 
  
 
 
- private:
+private:
+  //
+  TATWntuHit* fCurrentHit;
   //
   Double_t GetRawEnergy(TATWrawHit*a,TATWrawHit*b);
   Double_t GetRawTime(TATWrawHit*a,TATWrawHit*b);

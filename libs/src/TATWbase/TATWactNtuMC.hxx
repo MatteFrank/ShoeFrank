@@ -6,6 +6,8 @@
   \brief   Declaration of TATWactNtuMC.
 */
 /*------------------------------------------+---------------------------------*/
+ #include <vector>
+ #include <map>
 
 #include "TVector3.h"
 #include "TH1F.h"
@@ -23,7 +25,7 @@ class TATWdigitizer;
 
 class TATWactNtuMC : public TAGaction {
 public:
-    explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, EVENT_STRUCT* evStr=0);
+  explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, TAGparaDsc* p_parcal=0, TAGparaDsc *p_pargeo=0, EVENT_STRUCT* evStr=0);
     virtual  ~TATWactNtuMC();
 
     virtual bool  Action();
@@ -31,19 +33,38 @@ public:
     void          CreateHistogram();
 
 private:
-    TAGdataDsc*     m_hitContainer;		// output data dsc
+    TAGdataDsc*     m_hitContainer;	// output data dsc
+    TAGparaDsc*     fpCalPar;           // calibration parameter dsc
+    TAGparaDsc*     fParGeo;            // beam parameter dsc
     EVENT_STRUCT*   m_eventStruct;
-    TATWdigitizer*  m_Digitizer;       // digitizer
+    TATWdigitizer*  m_Digitizer;        // digitizer
 
+    TAGparGeo*  f_pargeo;
+
+    Int_t Z_beam;
+  
+    int cnt;
+    int cntWrong;
    
     TH1F* fpHisHitCol;
     TH1F* fpHisHitLine;
-    TH2F* fpHisHitMap;
-    TH1F* fpHisDeTot;
-    TH1F* fpHisDeTotMc;
-    TH1F* fpHisTimeTot;
-    TH1F* fpHisTimeTotMc;
+    TH1F* fpHisHitMap;
+    TH1F* fpHisRecPos;
+    TH1F* fpHisRecPosMc;
+    TH1F* fpHisRecTof;
+    TH1F* fpHisRecTofMc;
+    TH2I* fpHisZID;
+    TH2I* fpHisZID_MCtrue;
+    TH2D* fpHisElossTof_MCrec[TATWparCal::kLayers];
+    TH2D* fpHisElossTof_MCtrue[TATWparCal::kLayers];
+    // vector of histo with the same size of the ion beam atomic number
+    vector<TH2D*> fpHisElossTof_MC;
+    vector<TH2D*> fpHisElossTof;
+    vector<TH1F*> fpHisDistZ_MC;
+    vector<TH1F*> fpHisDistZ;
    
+   map<int, TATWntuHit*> fMapPU; //! map for pilepup
+
 private:
     void          CreateDigitizer();
 

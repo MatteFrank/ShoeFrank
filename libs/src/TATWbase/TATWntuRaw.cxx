@@ -121,7 +121,7 @@ void TATWntuHit::Clear(Option_t* /*option*/)
 	m_time=0;
 	m_coordinate=0;
 	m_z=0;
-   m_chargeZ = 0;
+        m_chargeZ = 0;
 	m_chargeCOM=0;
 	m_ChargeA=0;
 	m_ChargeB=0;
