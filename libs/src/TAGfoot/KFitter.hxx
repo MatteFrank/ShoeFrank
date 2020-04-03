@@ -33,6 +33,7 @@
 #include "PlanarMeasurement.h"
 #include "SpacepointMeasurement.h"
 #include "SharedPlanePtr.h"
+#include "RectangularFinitePlane.h"
 
 #include <TROOT.h>
 #include <TStyle.h>
@@ -50,6 +51,8 @@
 #include <TMath.h>
 
 #include "TAGparGeo.hxx"
+
+#include "TADIparGeo.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTntuRaw.hxx"
@@ -91,6 +94,8 @@
 #include "TAVTactNtuTrackF.hxx"
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
+
+#include "TAVTtrack.hxx"
 
 
 
@@ -182,6 +187,8 @@ public:
   vector<bool> MSDTrackFindingNew(vector<TAMSDpoint*> MSDcollection);
   void Prepare4MSDTrackFinding(vector<TAMSDpoint*> MSDcollection);
   void EvaluateTrueTrackParameters(vector<AbsMeasurement*> MSDtrue);
+  void TestExtrapolation(vector<AbsMeasurement*> extrapTest, string particleHypo);
+
 
   void CreateDetectorPlanes();
 
@@ -276,6 +283,7 @@ private:
   map <int, map<int, MCTruthInfo> > m_MCInfo;
 
   shared_ptr<TAGparGeo> m_TG_geo;
+  shared_ptr<TADIparGeo> m_DI_geo;
   shared_ptr<TAVTparGeo> m_VT_geo;
   shared_ptr<TAITparGeo> m_IT_geo;
   shared_ptr<TAMSDparGeo> m_MSD_geo;
@@ -318,6 +326,9 @@ private:
   TH2D* histoTrackParamX;
   TH2D* histoTrackParamY;
 
+  TH2D* MSDresidualOfPrediction;
+  TH2D* ITresidualOfPrediction;
+  int MSDforwardcounter;
 
 
 };
