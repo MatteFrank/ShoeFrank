@@ -119,6 +119,7 @@ public:
     
     void Action() override {
         
+        
         ++event;
         logger_m.clear();
         checker_m.reset_local_data();
@@ -371,6 +372,7 @@ private:
 //        std::cout << ") -- (" << s_p.vector(2,0) << ", " << s_p.vector(3,0)  ;
 //        std::cout << ") -- " << s_p.evaluation_point << '\n';
 
+        
         auto sigma_c = ukf_m.generate_sigma_points( s_p );
         
         sigma_c = ukf_m.propagate_while(
@@ -386,6 +388,12 @@ private:
         sigma_c = ukf_m.force_propagation( std::move(sigma_c), step );
         auto ps = ukf_m.generate_propagated_state( std::move(sigma_c) );
 //
+        
+//        std::cout << "propagated_state : ( " << ps.vector(0,0) << ", " << ps.vector(1,0) ;
+//        std::cout << ") -- (" << ps.vector(2,0) << ", " << ps.vector(3,0)  ;
+//        std::cout << ") -- " << ps.evaluation_point << '\n';
+//
+        
         logger_m.add_header<3>("advance_reconstruction_impl");
         logger_m << "propagated_state : ( " << ps.vector(0,0) << ", " << ps.vector(1,0) ;
         logger_m << ") -- (" << ps.vector(2,0) << ", " << ps.vector(3,0)  ;
@@ -584,8 +592,8 @@ private:
                                       auto error = ec_p.data->GetPosError();
                                       
                                       auto mps = split_half( ps_p.vector , details::row_tag{});
-                                      mps.first.get(0,0) += layer_p.cut_value() * particle_m.light_ion_boost * error.X();
-                                      mps.first.get(1,0) += layer_p.cut_value() * particle_m.light_ion_boost * error.Y();
+                                      mps.first(0,0) += layer_p.cut_value() * particle_m.light_ion_boost * error.X();
+                                      mps.first(1,0) += layer_p.cut_value() * particle_m.light_ion_boost * error.Y();
                                       // TD<decltype(mps)>x;
                                       
                                       using ec = typename underlying<decltype(ec_p)>::type;
@@ -678,8 +686,8 @@ private:
                             auto error = ec_p.data->GetPosError();
             
                             auto mps = split_half( ps_p.vector , details::row_tag{});
-                            mps.first.get(0,0) += layer_p.cut * particle_m.light_ion_boost * error.X();
-                            mps.first.get(1,0) += layer_p.cut * particle_m.light_ion_boost * error.Y();
+                            mps.first(0,0) += layer_p.cut * particle_m.light_ion_boost * error.X();
+                            mps.first(1,0) += layer_p.cut * particle_m.light_ion_boost * error.Y();
             
                              using ec = typename underlying<decltype(ec_p)>::type;
                              using candidate = typename underlying<ec>::candidate;
@@ -750,8 +758,8 @@ private:
                                 auto error = ec_p.data->GetPosError();
         
                                 auto mps = split_half( ps_p.vector , details::row_tag{});
-                                mps.first.get(0,0) += cut_p * particle_m.light_ion_boost * error.X();
-                                mps.first.get(1,0) += cut_p * particle_m.light_ion_boost * error.Y();
+                                mps.first(0,0) += cut_p * particle_m.light_ion_boost * error.X();
+                                mps.first(1,0) += cut_p * particle_m.light_ion_boost * error.Y();
         
                                 using ec = typename underlying<decltype(ec_p)>::type;
                                 using candidate = typename underlying<ec>::candidate;

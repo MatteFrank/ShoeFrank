@@ -22,7 +22,8 @@
 #include <iostream>
 
 #include "state.hpp"
-#include "matrix.hpp"
+#include "matrix_new.hpp"
+#include "expr.hpp"
 
 
 #include "TAGroot.hxx"
@@ -53,30 +54,30 @@ class TAITcluster;
 
 namespace details{
     struct vertex_tag{
-        using vector_matrix =  Matrix<2, 1>;
-        using covariance_matrix =  Matrix<2, 2> ;
-        using measurement_matrix =  Matrix<2,4> ;
+        using vector_matrix =  matrix<2, 1>;
+        using covariance_matrix =  matrix<2, 2> ;
+        using measurement_matrix =  matrix<2,4> ;
         using data_type = TAVTbaseCluster; //to be noted
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     };
     struct it_tag{
-        using vector_matrix =  Matrix<2, 1>;
-        using covariance_matrix =  Matrix<2, 2> ;
-        using measurement_matrix =  Matrix<2,4> ;
+        using vector_matrix =  matrix<2, 1>;
+        using covariance_matrix =  matrix<2, 2> ;
+        using measurement_matrix =  matrix<2,4> ;
         using data_type = TAITcluster;
        using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     };
     struct msd_tag{
-        using vector_matrix =  Matrix<1, 1> ;
-        using covariance_matrix = Matrix<1, 1> ;
-        using measurement_matrix =  Matrix<1,4> ;
+        using vector_matrix =  matrix<1, 1> ;
+        using covariance_matrix = matrix<1, 1> ;
+        using measurement_matrix =  matrix<1,4> ;
         using data_type = TAMSDcluster;
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     };
     struct tof_tag{
-        using vector_matrix =  Matrix<2, 1>;
-        using covariance_matrix =  Matrix<2, 2> ;
-        using measurement_matrix =  Matrix<2,4> ;
+        using vector_matrix =  matrix<2, 1>;
+        using covariance_matrix =  matrix<2, 2> ;
+        using measurement_matrix =  matrix<2,4> ;
         using data_type = TATWpoint;
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     };
@@ -551,7 +552,7 @@ struct particle_properties
 
 struct model
 {
-    using operating_state_t = operating_state<Matrix<2,1>, 2>;
+    using operating_state_t = operating_state<matrix<2,1>, 2>;
     
     particle_properties* particle_h = nullptr;
     static constexpr double conversion_factor = 0.000299792458; //[MeV/c . G^{-1} . cm^{-1} ]
@@ -561,7 +562,7 @@ struct model
     
     
     auto operator()(const operating_state_t& os_p) const
-   // Matrix<2,1> operator()(const int& os_p) const
+   // matrix<2,1> operator()(const int& os_p) const
     {
       //  std::cout << "------ LET'S GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO --------\n";
         //return {};
@@ -576,7 +577,7 @@ private:
                      1 );
     }
     
-    Matrix<2,1> compute_change(const operating_state_t& os_p) const
+    matrix<2,1> compute_change(const operating_state_t& os_p) const
     {
         return {compute_change_x(os_p), compute_change_y(os_p)};
     }

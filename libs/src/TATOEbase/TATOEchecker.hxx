@@ -85,7 +85,7 @@ struct TATOEchecker{
         std::size_t local_total_cluster_number{0};
                                                                                
         
-        computation_module(int charge_p, double beam_energy_p) : charge{charge_p}
+        computation_module(int charge_p, double /*beam_energy_p*/) : charge{charge_p}
         {
             efficiency_histogram_bundle.reconstructible_h = new TH1D{ Form("reconstructible_charge%d", charge),
                                                                       ";Momentum(Gev/c);Count", 50, 0, 1.3 };

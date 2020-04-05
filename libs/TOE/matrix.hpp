@@ -387,7 +387,7 @@ namespace details {
                            Matrix<NRows2, 1> m2_p,
                            std::index_sequence<Indices2...> )
     {
-        return Matrix<NRows1 + NRows2, 1>{m1_p(Indices1,0)... , m2_p(Indices2,0)... };
+        return Matrix<NRows1 + NRows2, 1>{m1_p(Indices1, 0)... , m2_p(Indices2, 0)... };
     }
     
 

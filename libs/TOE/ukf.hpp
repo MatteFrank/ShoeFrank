@@ -14,6 +14,8 @@
 #include <math.h>
 
 #include "utility_types.hpp"
+#include "expr.hpp"
+
 template<class T>
 class TD1;
 
@@ -55,7 +57,7 @@ namespace details{
         operating_state<type, order> generate_single_sigma(const state& state_p) const
         {
 //            std::cout << "single_sigma::indice " << Index << '\n';
-         //   std::cout << "single_sigma::vector (" << state_p.vector(0,0) << ", " << state_p.vector(1,0) << ") -- (" << state_p.vector(0,0) << ", " << state_p.vector(1,0) << ")\n";
+//            std::cout << "single_sigma::vector (" << state_p.vector(0,0) << ", " << state_p.vector(1,0) << ") -- (" << state_p.vector(2,0) << ", " << state_p.vector(3,0) << ")\n";
             return make_operating_state<order>(state_p);
         }
         
@@ -63,45 +65,54 @@ namespace details{
                   typename std::enable_if_t< (Index != 0 && Index <= state_vector::vector_dimension), std::nullptr_t > = nullptr >
         operating_state<type, order> generate_single_sigma(const state& state_p) const
         {
-           
+//           std::cout << "Positive sigma:" << Index << '\n';
 //            std::cout << "single_sigma::starting_vector \n" << state_p.vector;
 //            std::cout << "single_sigma::indice " << Index << '\n';
 //            std::cout << "single_sigma::cholesky \n " << make_cholesky_triangle(state_p.covariance);
 //            std::cout << "single_sigma::cholesky_factor \n " << factor_m * make_cholesky_triangle(state_p.covariance);
 //            
             
-            auto vector = state_p.vector + factor_m * make_cholesky_triangle(state_p.covariance).column(Index -1);
-//            std::cout << "Positive sigma:" << Index << '\n' << vector;
-//            std::cout << "single_sigme::vector_calculation :\n" << vector ;
+            auto vector1 = expr::compute( state_p.vector + factor_m * column<Index-1>( form_cholesky_triangle(state_p.covariance)) );
+//            auto vector2 = expr::compute( state_p.vector + factor_m * form_column( form_cholesky_triangle(state_p.covariance), Index-1 ) );
             
-            auto halves = split_half(std::move(vector), row_tag{});
+//            std::cout << "single_sigme::vector_calculation1 :\n" << vector1 ;
+//            std::cout << "single_sigme::vector_calculation2 :\n" << vector2 ;
             
-//            std::cout << "single_sigma::vector (" << halves.first(0,0) << ", " << halves.first(1,0) << ") -- (" << halves.second(0,0) << ", " << halves.second(1,0) << ")\n";
+            auto halves1 = split_half( std::move(vector1) , row_tag{});
+//            auto halves2 = split_half( std::move(vector2) , row_tag{});
+            
+//            std::cout << "single_sigma::vector (" << halves1.first(0,0) << ", " << halves1.first(1,0) << ") -- (" << halves1.second(0,0) << ", " << halves1.second(1,0) << ")\n";
+//            std::cout << "single_sigma::vector (" << halves2.first(0,0) << ", " << halves2.first(1,0) << ") -- (" << halves2.second(0,0) << ", " << halves2.second(1,0) << ")\n";
             
             return { state_p.evaluation_point,
-                     {std::move(halves.first), std::move(halves.second)}    };
+                     {std::move(halves1.first), std::move(halves1.second)}    };
         }
         
         template< std::size_t Index,
                   typename std::enable_if_t< (Index > state_vector::vector_dimension), std::nullptr_t > = nullptr >
         operating_state<type, order> generate_single_sigma(const state& state_p) const
         {
+//            std::cout << "Negative sigma:" << Index << '\n';
 //           std::cout << "single_sigma::starting_vector \n" << state_p.vector;
 //            std::cout << "single_sigma::indice " << Index << '\n';
 //            std::cout << "single_sigma::cholesky \n " << make_cholesky_triangle(state_p.covariance);
 //            std::cout << "single_sigma::cholesky_factor \n " << factor_m * make_cholesky_triangle(state_p.covariance);
-            auto vector = state_p.vector - factor_m * make_cholesky_triangle(state_p.covariance).column(Index -1 -state_p.vector_dimension );
+//            std::cout << Index -1 - state_vector::vector_dimension << " - " << Index-1 -state_p.vector_dimension << '\n';
+//            auto vector1 = expr::compute( state_p.vector - factor_m * form_column( form_cholesky_triangle(state_p.covariance), Index -1 - state_vector::vector_dimension ) );
+            auto vector2 = expr::compute( state_p.vector - factor_m * column<Index -1 - state_vector::vector_dimension>( form_cholesky_triangle(state_p.covariance) ) );
+//
             
-//            std::cout << "single_sigme::vector_calculation :\n" << vector ;
+//            std::cout << "single_sigme::vector_calculation1 :\n" << vector1 ;
+//            std::cout << "single_sigme::vector_calculation2 :\n" << vector2 ;
             
-//             std::cout << "Negative sigma:" << Index << '\n' << vector;
+//            auto halves1 = split_half(  std::move(vector1) , row_tag{});
+            auto halves2 = split_half(  std::move(vector2) , row_tag{});
             
-            auto halves = split_half(std::move(vector), row_tag{});
-            
-//            std::cout << "single_sigma::vector (" << halves.first(0,0) << ", " << halves.first(1,0) << ") -- (" << halves.second(0,0) << ", " << halves.second(1,0) << ")\n";
+//            std::cout << "single_sigma::vector (" << halves1.first(0,0) << ", " << halves1.first(1,0) << ") -- (" << halves1.second(0,0) << ", " << halves1.second(1,0) << ")\n";
+//            std::cout << "single_sigma::vector (" << halves2.first(0,0) << ", " << halves2.first(1,0) << ") -- (" << halves2.second(0,0) << ", " << halves2.second(1,0) << ")\n";
             
             return { state_p.evaluation_point,
-                     {std::move(halves.first), std::move(halves.second)}    };
+                     {std::move(halves2.first), std::move(halves2.second)}    };
         }
         
         template<std::size_t ... Indices>
@@ -154,35 +165,21 @@ namespace details{
 //            std::cout << "sigma_dimensions : " << sigma_dimension << '\n';
             
             auto ws_c = generate_weighted_state(std::move(os_pc), std::make_index_sequence<sigma_dimension>{});
-            auto debug_vector = [](decltype(state_vector::vector) v_p, weighted_state ws_p){
-                std::cout << "Debug lambda:\nstate_vector : \n";
-                std::cout << v_p ;
-                std::cout << "\nweighted_state:\n";
-                std::cout << ws_p.vector ;
-                std::cout << " -> " << ws_p.weight << "\n\n";
-            };
+
+
             state_vector sv = make_state_vector( std::accumulate( ws_c.begin(), ws_c.end(),
                                                                   matrix_vector{},
-                                                                 [&debug_vector](matrix_vector v_p, const weighted_state& ws_p){ /*debug_vector(v_p, ws_p);*/ return std::move(v_p) + ws_p.vector * ws_p.weight; }    ) );
+                                                                 [](matrix_vector v_p, const weighted_state& ws_p)
+                                                                 -> matrix_vector
+                                                                    { return std::move(v_p) + ws_p.vector * ws_p.weight; }    ) );
             
-            auto debug_covariance = [&sv](matrix_covariance c_p, weighted_state ws_p){
-                std::cout << "Debug lambda:\nstate_covariance : \n";
-                std::cout << c_p ;
-                std::cout << "state_vector: \n";
-                std::cout << sv.vector ;
-                std::cout << "weighted_state_vector: \n";
-                std::cout << ws_p.vector;
-                std::cout << "resulting vector used:\n";
-                std::cout << (ws_p.vector - sv.vector);
-                std::cout << "\nadded matrix ::\n";
-                std::cout << (ws_p.vector - sv.vector) * make_transpose(ws_p.vector - sv.vector) ;
-                std::cout << " -> " << ws_p.weight << "\n\n";
-            };
+
             state_covariance sc = make_state_covariance( std::accumulate( ws_c.begin(), ws_c.end(),
                                                                           matrix_covariance{},
-                                                                          [&sv, &debug_covariance]( matrix_covariance c_p,
+                                                                          [&sv]( matrix_covariance c_p,
                                                                                  const weighted_state& ws_p  )
-                                                                         {/* debug_covariance(c_p, ws_p) ;*/return std::move(c_p) + ws_p.weight * (ws_p.vector - sv.vector) * make_transpose(ws_p.vector - sv.vector); }             ) );
+                                                                         -> matrix_covariance
+                                                                         {return std::move(c_p) + ws_p.weight * (ws_p.vector - sv.vector) * transpose(ws_p.vector - sv.vector); }             ) );
             return state{evaluation_point{os_pc.front().evaluation_point}, std::move(sv), std::move(sc)};
         }
     };
@@ -214,6 +211,7 @@ namespace details{
                               Predicate&& predicate_p  )
              -> std::vector< operating_state<type, order> >
         {
+           // std::cout << "propagate_while():\n";
             while( predicate_p( os_pc.front() ) ){
                 os_pc = propagate_once(std::move(os_pc));
                 //std::cout << "order1:\n" << os_pc.front().state(order_tag<1>{}) ;
@@ -225,6 +223,7 @@ namespace details{
         {
             double step = derived().step_length();
             const double evaluation_point = os_pc.front().evaluation_point;
+            //std::cout << "propagate_once::pre-step :\n";
             const auto step_result = derived().call_stepper().step( std::move( os_pc.front() ), step );
             os_pc.front() = step_result.first;
             
@@ -241,13 +240,13 @@ namespace details{
 //                std::cout << sigma.state( details::order_tag<1>{} )(0,0) << ", " << sigma.state( details::order_tag<1>{} )(1,0) << ") -- ";
 //                std::cout << sigma.evaluation_point << '\n';
 //            }
-            //std::cout << "propagate_once::error : " << std::setprecision(16) << step_result.second << '\n';
+//            std::cout << "propagate_once::error : " << std::setprecision(16) << step_result.second << '\n';
             
             //optimize next step
             if( step_result.second != 0 ){
                 auto new_step_length = derived().call_stepper().optimize_step_length(step, step_result.second);
                 derived().step_length() = ( new_step_length > derived().max_step_length() ) ? derived().max_step_length() : new_step_length ;
-//                std::cout << "propagate_once::next_step_length : " << derived().step_length() << '\n';
+               // std::cout << "propagate_once::next_step_length : " << derived().step_length() << '\n';
             }
             
             return std::move(os_pc);
@@ -285,13 +284,13 @@ namespace details{
         {
             auto residual_vector = candidate_p.vector - candidate_p.measurement_matrix * s_p.vector;
             
-            auto residual_covariance = candidate_p.covariance + candidate_p.measurement_matrix * s_p.covariance * make_transpose(candidate_p.measurement_matrix);
+            auto residual_covariance = candidate_p.covariance + candidate_p.measurement_matrix * s_p.covariance * transpose(candidate_p.measurement_matrix);
             //std::cout << "---- state_covariance ----\n" << s_p.covariance;
             //std::cout << "---- candidate_covariance ----\n" << candidate_p.covariance;
            // std::cout << "---- residual_covariance ----\n" << residual_covariance;
             
 //            std::cout << "---- final_chisquared: "<< (make_transpose(residual_vector) * residual_covariance * residual_vector)(0,0) <<" ----\n";
-            return {(make_transpose(residual_vector) * residual_covariance * residual_vector)(0,0)}; //not pretty
+            return {expr::compute( transpose( std::move(residual_vector) ) * std::move(residual_covariance) * std::move(residual_vector))}; //not pretty
         }
         
         
@@ -309,13 +308,15 @@ namespace details{
                              Candidate&& candidate_p ) const
         {
             //residual propagated state
-            auto residual_vector = candidate_p.vector - candidate_p.measurement_matrix * s_p.vector;
-            auto residual_covariance = candidate_p.covariance + candidate_p.measurement_matrix * s_p.covariance * make_transpose(candidate_p.measurement_matrix);
-            auto gain = s_p.covariance * make_transpose(candidate_p.measurement_matrix) * make_inverse(residual_covariance);
+
+            
+            auto residual_vector = expr::compute( candidate_p.vector - candidate_p.measurement_matrix * s_p.vector );
+            auto residual_covariance = expr::compute( candidate_p.covariance + candidate_p.measurement_matrix * s_p.covariance * transpose(candidate_p.measurement_matrix) );
+            auto gain = expr::compute( s_p.covariance * transpose(candidate_p.measurement_matrix) * form_inverse(residual_covariance) );
             
             //corrected state vector/covariance
-            auto csv = make_state_vector( s_p.vector + gain * residual_vector );
-            auto csc = make_state_covariance( s_p.covariance - gain * candidate_p.measurement_matrix * s_p.covariance ); //room for optimization
+            auto csv = make_state_vector( expr::compute( s_p.vector + gain * residual_vector ) );
+            auto csc = make_state_covariance( expr::compute( s_p.covariance - gain * candidate_p.measurement_matrix * s_p.covariance ) ); //room for optimization
         
         
             return {

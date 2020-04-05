@@ -146,8 +146,8 @@ void TAGactNtuGlbTrack::SetupBranches()
 //! Setup action.
  TATOEbaseAct* TAGactNtuGlbTrack::SetupAction() const
 {
-    using state_vector =  Matrix<4,1> ;
-    using state_covariance =  Matrix<4, 4> ;
+    using state_vector =  matrix<4,1> ;
+    using state_covariance =  matrix<4, 4> ;
     using state = state_impl< state_vector, state_covariance  >;
     
     auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
@@ -169,7 +169,7 @@ void TAGactNtuGlbTrack::SetupBranches()
                     .finish();
     
     
-    auto ode = make_ode< Matrix<2,1>, 2>( model{ GetFootField() } );
+    auto ode = make_ode< matrix<2,1>, 2>( model{ GetFootField() } );
     auto stepper = make_stepper<data_grkn56>( std::move(ode) );
     auto ukf = make_ukf<state>( std::move(stepper) );
     

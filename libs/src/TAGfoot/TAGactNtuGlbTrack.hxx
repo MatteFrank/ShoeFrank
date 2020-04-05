@@ -67,7 +67,7 @@ public:
     
     void Output(){ fActTOE->Output(); }
     void RegisterHistograms();
-    void WriteHistogram() override;
+    void WriteHistogram();
     
 private:
     TATOEbaseAct* SetupAction() const;
