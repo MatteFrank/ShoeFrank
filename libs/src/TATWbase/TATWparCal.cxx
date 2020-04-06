@@ -174,8 +174,13 @@ Int_t TATWparCal::GetChargeZ(Float_t edep, Float_t tof, Int_t layer)
 {
   if(edep<0) {
     Zraw=-1;
+    dist_Z.clear();
+    for(int iZ=0; iZ<Z_beam; iZ++)
+      dist_Z.push_back( std::numeric_limits<float>::max() ); //inf
+
     if (fDebugLevel)
-      printf("the energy released is %.f so Zraw is set to %d\n",edep,Zraw);
+      printf("the energy released is %.f so Zraw is set to %d and dist to inf\n",edep,Zraw);
+
   }
   else
     ComputeBBDistance(edep,tof,layer);       
@@ -232,8 +237,6 @@ Double_t TATWparCal::fDistPrime(double tof, double dE, double x, double fBB, dou
 void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 {
 
-  fDebugLevel=false;
-  
   Zraw = -2;  //nonsense intialization: charge must be > 0
   dist_min_Z = std::numeric_limits<float>::max(); //inf
 

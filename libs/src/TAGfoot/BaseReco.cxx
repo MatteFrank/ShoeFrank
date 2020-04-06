@@ -381,7 +381,6 @@ void BaseReco::ReadParFiles()
     fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
     TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
     parFileName = Form("./config/%sTATWCalibrationMap.xml", fExpName.Data());
-    // parCal->FromFile(parFileName.Data());
     parCal->FromFile(parFileName.Data());
     TString exp_name = fExpName.IsNull() ? "" : "_" + fExpName(0,fExpName.First('/'));
     parFileName = Form("./config/%sTATW_BBparameters_%d%s_%d%s.cfg", fExpName.Data(),A_beam,ion_name.Data(),(int)(kinE_beam*TAGgeoTrafo::GevToMev()),exp_name.Data());

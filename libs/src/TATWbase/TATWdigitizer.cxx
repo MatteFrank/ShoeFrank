@@ -40,6 +40,8 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
    fCurrentHit(0x0),
+   fMCtrue(true),
+   fPileUpOff(false),
    fDeResECst(680e4),
    fDeErrResCst(1e4),
    fDeResEC(9.9),
@@ -184,7 +186,7 @@ Float_t TATWdigitizer::GetResEnergy(Float_t energy)
    fDeResE->SetParameter(1, C);
    
    //   return fDeResE->Eval(energy);
-   return energy*0.1;
+   return energy*0.05;  // 5% energy loss resolution flat for each fragment
 }
 
 //___________________________________________________________________________________________
@@ -289,41 +291,55 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 
    //Time should be stored in ns
    tof *= TAGgeoTrafo::PsToNs(); 
-   if (fMap[idA] == 0) {
+
+   if( SetPileUpOff() ) {     
      fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !
-
      //here set true Z charge: the rec charge is set after in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
-     fCurrentHit->SetChargeZ(Z);     
+     fCurrentHit->SetChargeZ(Z);
 
-      fMap[idA] = fCurrentHit;
-   } else {
-      fCurrentHit =  fMap[idA];
-      //Add charge to current hit
-      fCurrentHit->SetChargeChA(fCurrentHit->GetChargeChA()+chargeA);
-      fCurrentHit->SetChargeChB(fCurrentHit->GetChargeChB()+chargeB);
-
-      // take the shortest time
-      if (timeA < fCurrentHit->GetChargeTimeA())
-         fCurrentHit->SetChargeTimeA(timeA);
-         
-      if (timeB < fCurrentHit->GetChargeTimeB())
-         fCurrentHit->SetChargeTimeB(timeB);
-      
-      // recompute 
-      energy    = TMath::Sqrt(fCurrentHit->GetChargeChA()*fCurrentHit->GetChargeChB());
-      tof       = (fCurrentHit->GetChargeTimeA()+fCurrentHit->GetChargeTimeB())/2 * TAGgeoTrafo::PsToNs();
-      pos       = (fCurrentHit->GetChargeTimeB()-fCurrentHit->GetChargeTimeA())/(2*fTofPropAlpha);
-      chargeCOM = TMath::Log(fCurrentHit->GetChargeChA()/fCurrentHit->GetChargeChB());
-      
-      fCurrentHit->SetEnergyLoss(energy);
-      fCurrentHit->SetTime(tof);
-      fCurrentHit->SetPosition(pos);
-      fCurrentHit->SetCOM(chargeCOM);
-
-      //here set true Z charge: the rec charge is set after in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
-      fCurrentHit->SetChargeZ(Z);     
    }
-   
+   else {
+     if (fMap[idA] == 0) {
+       fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !
+       
+       //here set true Z charge: the rec charge is set after in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
+       fCurrentHit->SetChargeZ(Z);     
+       
+      fMap[idA] = fCurrentHit;
+     } else {
+       fCurrentHit =  fMap[idA];
+       //Add charge to current hit
+       fCurrentHit->SetChargeChA(fCurrentHit->GetChargeChA()+chargeA);
+       fCurrentHit->SetChargeChB(fCurrentHit->GetChargeChB()+chargeB);
+       
+       // take the shortest time
+       if (timeA < fCurrentHit->GetChargeTimeA())
+         fCurrentHit->SetChargeTimeA(timeA);
+       
+       if (timeB < fCurrentHit->GetChargeTimeB())
+         fCurrentHit->SetChargeTimeB(timeB);
+       
+       // recompute 
+       energy    = TMath::Sqrt(fCurrentHit->GetChargeChA()*fCurrentHit->GetChargeChB());
+       tof       = (fCurrentHit->GetChargeTimeA()+fCurrentHit->GetChargeTimeB())/2 * TAGgeoTrafo::PsToNs();
+       pos       = (fCurrentHit->GetChargeTimeB()-fCurrentHit->GetChargeTimeA())/(2*fTofPropAlpha);
+       chargeCOM = TMath::Log(fCurrentHit->GetChargeChA()/fCurrentHit->GetChargeChB());
+       
+       fCurrentHit->SetEnergyLoss(energy);
+       fCurrentHit->SetTime(tof);
+       fCurrentHit->SetPosition(pos);
+       fCurrentHit->SetCOM(chargeCOM);
+       
+       // rough: set the "true" Z charge of the PU hit as the charge of the fragment with higher Z (it doesn't work for multiple light ions)
+       // The rec charge is set later in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
+       
+       if(Z > fCurrentHit->GetChargeZ())  // case of fragmentation inside TW
+	 fCurrentHit->SetChargeZ(Z);
+       
+     }
+   }
+     
    return true;
+
 }
 

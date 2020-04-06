@@ -34,9 +34,10 @@ public:
    Float_t        GetResEnergy(Float_t energy);
    Double_t       ResEnergy(Double_t* x, Double_t* par);
    
-   Bool_t         IsOverEnergyThreshold(double ene);
-   Bool_t         SetMCtrue() {return true;}
+   Bool_t         IsOverEnergyThreshold(double ene);  
    Double_t       GetEnergyThreshold() {return fEnergyThreshold;}
+   Bool_t         SetMCtrue() {return fMCtrue;}
+   Bool_t         SetPileUpOff() {return fPileUpOff;}
 
    Float_t        GetResToF(Float_t edep);
    Double_t       ResToF(Double_t* x, Double_t* par);
@@ -60,6 +61,10 @@ private:
    TATWntuHit*   fCurrentHit;
    TATWparGeo*   fpParGeo;
    
+   // flags
+   Bool_t         fMCtrue;
+   Bool_t         fPileUpOff;
+
    // deltaE
    TF1*          fDeResE;
    Float_t       fDeResECst;
