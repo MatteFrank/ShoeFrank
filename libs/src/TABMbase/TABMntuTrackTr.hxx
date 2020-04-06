@@ -38,37 +38,26 @@ class TABMntuTrackTr : public TObject {
 
     //~ Int_t SetNew(int nhi, double chi);
     //~ TABMntuTrackTr& operator=(TABMntuTrackTr const& in);
-    TABMntuTrackTr& operator=(TABMntuTrackTr const& in){
-      if(this!=&in){
-        this->nhit=in.nhit;
-        this->chi2Red=in.chi2Red;
-        this->isConverged=in.isConverged;
-        this->Pvers=in.Pvers;
-        this->R0=in.R0;
-        this->eff_fittedplane=in.eff_fittedplane;
-      }
-      return *this;
-    }
-
-
+    TABMntuTrackTr& operator=(TABMntuTrackTr const& in);
+   
     //Setters
-    void SetNhit (Int_t nhi) { nhit = nhi;};
-    void SetIsConverged(Int_t conv) {isConverged = conv;};
-    void SetR0(Double_t x,Double_t y, Double_t z){R0.SetXYZ(x,y,z);};
-    void SetR0(TVector3 r0in){R0=r0in;};
-    void SetPvers(Double_t x,Double_t y, Double_t z){Pvers.SetXYZ(x,y,z);};
-    void SetPvers(TVector3 pin){Pvers=pin;};
-    void SetChi2Red(Double_t chi2red_in){chi2Red=chi2red_in;};
-    void NewSet(TVectorD ftrackpar);//set Pvers and R0, used for the FIRST tracking
-    void SetEffFittedPlane(Double_t eff_in){eff_fittedplane=eff_in;};
+    void SetNhit (Int_t nhi) { fHitsN = nhi;};
+    void SetIsConverged(Int_t conv) {fIsConverged = conv;};
+    void SetR0(Double_t x,Double_t y, Double_t z){fR0.SetXYZ(x,y,z);};
+    void SetR0(TVector3 r0in){fR0=r0in;};
+    void SetPvers(Double_t x,Double_t y, Double_t z){fPvers.SetXYZ(x,y,z);};
+    void SetPvers(TVector3 pin){fPvers=pin;};
+    void SetChi2Red(Double_t chi2Red_in){fChi2Red=chi2Red_in;};
+    void NewSet(TVectorD ftrackpar);//set fPvers and R0, used for the FIRST tracking
+    void SetEffFittedPlane(Double_t eff_in){fEffFittedPlane=eff_in;};
 
     //Getters
-    Int_t  GetNhit() {return nhit;};
-    Double_t GetChi2Red() {return chi2Red;};
-    Int_t GetIsConverged(){return isConverged;};
-    TVector3 GetPvers(){return Pvers;};
-    TVector3 GetR0(){return R0;};
-    Double_t GetEffFittedPlane(){return eff_fittedplane;};
+    Int_t    GetNhit()           const { return fHitsN;          }
+    Double_t GetChi2Red()        const { return fChi2Red;        }
+    Int_t    GetIsConverged()    const { return fIsConverged;    }
+    TVector3 GetPvers()          const { return fPvers;          }
+    TVector3 GetR0()             const { return fR0;             }
+    Double_t GetEffFittedPlane() const { return fEffFittedPlane; }
 
     void PrintR0Pvers();
 
@@ -76,12 +65,12 @@ class TABMntuTrackTr : public TObject {
 
 private:
     //parameters
-    Int_t         nhit;	          //number of associated hits (different from nwire because of hits in the same cell)
-    Double_t      chi2Red;      //mychi2 reduced
-    Int_t         isConverged;    //fit converged flag: 0=not set, 1=converged, 2=not converged
-    TVector3      Pvers;           //direction of the track from mylar1_pos to mylar2_pos
-    TVector3      R0;              //position of the track on the xy plane at z=0
-    Double_t      eff_fittedplane;//efficiency with the Paoloni's hit detection method only with the hits from the fitted tracks with chi2<chi2cut
+    Int_t         fHitsN;	         //number of associated hits (different from nwire because of hits in the same cell)
+    Double_t      fChi2Red;         //mychi2 reduced
+    Int_t         fIsConverged;     //fit converged flag: 0=not set, 1=converged, 2=not converged
+    TVector3      fPvers;           //direction of the track from mylar1_pos to mylar2_pos
+    TVector3      fR0;              //position of the track on the xy plane at z=0
+    Double_t      fEffFittedPlane;  //efficiency with the Paoloni's hit detection method only with the hits from the fitted tracks with chi2<chi2cut
 
     ClassDef(TABMntuTrackTr,2)
 

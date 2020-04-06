@@ -15,6 +15,7 @@
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGactTreeReader.hxx"
+#include "TAGactTreeWriter.hxx"
 #include "TAGntuGlbTrack.hxx"
 
 #include "TAVTntuCluster.hxx"
@@ -202,13 +203,39 @@ void TAGactNtuGlbTrack::Close()
 //! Setup all histograms.
 void TAGactNtuGlbTrack::CreateHistogram()
 {
-   DeleteHistogram();
+   //DeleteHistogram();
    fpHisMass = new TH1F("glbMass", "Mass Distribution", 200, 0, 16);
    
    AddHistogram(fpHisMass);
    
    SetValidHistogram(kTRUE);
 }
+
+//------------------------------------------+-----------------------------------
+//! Register histograms stored in TAGntuGlbTrack.
+void TAGactNtuGlbTrack::RegisterHistograms()
+{
+    fActTOE->RegisterHistograms();
+    
+    auto histogram_ch = GetTrackContainer()->GetEfficiencyHistograms();
+    for(auto * histogram_h : histogram_ch){
+        AddHistogram(histogram_h);
+    }
+    SetValidHistogram(kTRUE);
+    
+    auto writer_h = static_cast<TAGactTreeWriter*>( gTAGroot->FindAction("locRecFile") );
+    SetHistogramDir( (TDirectory*)writer_h->File() );
+}
+
+//------------------------------------------+-----------------------------------
+void TAGactNtuGlbTrack::WriteHistogram()
+{
+    Output();
+    RegisterHistograms();
+    TAGaction::WriteHistogram();
+}
+
+
 
 //------------------------------------------+-----------------------------------
 //! Action.
@@ -218,7 +245,7 @@ Bool_t TAGactNtuGlbTrack::Action()
       fActEvtReader->Process();
    
 
-    auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
+//    auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
 
     fpGlbTrack->Clear();
 

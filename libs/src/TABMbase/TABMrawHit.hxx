@@ -19,20 +19,20 @@ class TABMrawHit {
     virtual         ~TABMrawHit();
 
     void            SetData(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t time);
-    Int_t           Cell() const;
-    Int_t           Plane() const;
-    Int_t           View() const;
-    Double_t        Time() const;
-    Int_t           Idcell() const;
+    Int_t           GetCell() const;
+    Int_t           GetPlane() const;
+    Int_t           GetView() const;
+    Double_t        GetTime() const;
+    Int_t           GetIdcell() const;
 
     ClassDef(TABMrawHit,1)
 
   private:
-    Int_t iview;    
-    Int_t ilayer;    
-    Int_t icell;
-    Int_t idcell;
-    Double_t tdctime;//ns
+    Int_t    fiView;    
+    Int_t    fiLayer;
+    Int_t    fiCell;
+    Int_t    fidCell;
+    Double_t ftdTtime;//ns
 };
 
 #include "TABMrawHit.icc"

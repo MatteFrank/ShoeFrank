@@ -29,33 +29,35 @@ TString TASTdatRaw::fgkBranchName   = "stdat.";
 TASTrawHit::TASTrawHit()
   : TAGbaseWD(){
    
-  baseline = -1000;
-  pedestal = -1000;
-  chg = -1000;
-  amplitude = -1000;
-  time =-1000;
+  fBaseline = -1000;
+  fPedestal = -1000;
+  fChg = -1000;
+  fAmplitude = -1000;
+  fTime =-1000;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! constructor.
 TASTrawHit::TASTrawHit(TWaveformContainer *W)
   : TAGbaseWD(W){
 
-  baseline = ComputeBaseline(W);
-  pedestal = ComputePedestal(W);
-  chg = ComputeCharge(W);
-  amplitude = ComputeAmplitude(W);
-  time = ComputeTime(W,0.3,2.0,-5,2);
-  time_oth = TAGbaseWD::ComputeTimeSimpleCFD(W,0.3);
+  fBaseline = ComputeBaseline(W);
+  fPedestal = ComputePedestal(W);
+  fChg = ComputeCharge(W);
+  fAmplitude = ComputeAmplitude(W);
+  fTime = ComputeTime(W,0.3,2.0,-5,2);
+  fTimeOth = TAGbaseWD::ComputeTimeSimpleCFD(W,0.3);
 
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Destructor.
 TASTrawHit::~TASTrawHit(){
 
 }
 
 
-
+// do not need these interfaces, done by compilator
 double TASTrawHit::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
   return  TAGbaseWD::ComputeTime(w, frac, del, tleft, tright);
 }
@@ -89,7 +91,7 @@ ClassImp(TASTdatRaw);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TASTdatRaw::TASTdatRaw() :
-  nirhit(0), hir(0), superhit(0), m_run_time(0x0){
+  fHistN(0), fListOfHits(0), fSuperHit(0), fRunTime(0x0){
 
   SetupClones();
 }
@@ -100,8 +102,8 @@ TASTdatRaw::TASTdatRaw() :
 //! Destructor.
 
 TASTdatRaw::~TASTdatRaw() {
-  if(hir)delete hir;
-  if(superhit) delete superhit;
+  if(fListOfHits)delete fListOfHits;
+  if(fSuperHit) delete fSuperHit;
 }
 
 //------------------------------------------+-----------------------------------
@@ -109,8 +111,7 @@ TASTdatRaw::~TASTdatRaw() {
 
 void TASTdatRaw::SetupClones()
 {
-  if (!hir) hir = new TClonesArray("TASTrawHit");
-  return;
+  if (!fListOfHits) fListOfHits = new TClonesArray("TASTrawHit");
 }
 
 
@@ -119,43 +120,37 @@ void TASTdatRaw::SetupClones()
 
 void TASTdatRaw::Clear(Option_t*){
   TAGdata::Clear();
-  nirhit = 0;
+  fHistN = 0;
 
   
-  if (hir) hir->Clear();
-
-
-  return;
+  if (fListOfHits) fListOfHits->Clear();
 }
 
 
 //-----------------------------------------------------------------------------
 //! access to the hit
-TASTrawHit* TASTdatRaw::Hit(Int_t i){
-  return (TASTrawHit*) ((*hir)[i]);;
+TASTrawHit* TASTdatRaw::GetHit(Int_t i){
+  return (TASTrawHit*) ((*fListOfHits)[i]);;
 }
 
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
-const TASTrawHit* TASTdatRaw::Hit(Int_t i) const{
-  return (const TASTrawHit*) ((*hir)[i]);;
+const TASTrawHit* TASTdatRaw::GetHit(Int_t i) const{
+  return (const TASTrawHit*) ((*fListOfHits)[i]);;
 }
 
-
-
-
+//------------------------------------------+-----------------------------------
+//! New hit
 void TASTdatRaw::NewHit(TWaveformContainer *W){
   
-  TClonesArray &pixelArray = *hir;
+  TClonesArray &pixelArray = *fListOfHits;
   TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W);
-  nirhit++;
-
-  return;
+  fHistN++;
 }
 
-
-
+//------------------------------------------+-----------------------------------
+//! new super hit
 void TASTdatRaw::NewSuperHit(vector<TWaveformContainer*> vW){
 
 
@@ -166,17 +161,17 @@ void TASTdatRaw::NewSuperHit(vector<TWaveformContainer*> vW){
 
   TWaveformContainer *wsum = new TWaveformContainer;
   int ChannelId=-1;
-  int BoardId = vW.at(0)->BoardId;
-  int TrigType = vW.at(0)->TrigType;
-  int TriggerCellId = vW.at(0)->TriggerCellId;
+  int BoardId = vW.at(0)->GetBoardId();
+  int TrigType = vW.at(0)->GetTrigType();
+  int TriggerCellId = vW.at(0)->GetTriggerCellId();
 
   
 
   //I define the time window
-  int i_ampmin = TMath::LocMin(vW.at(0)->m_vectA.size(),&(vW.at(0)->m_vectA)[0]);
-  double t_ampmin = vW.at(0)->m_vectT.at(i_ampmin);
-  double tmin = (t_ampmin-20 > vW.at(0)->m_vectT.at(0)) ? t_ampmin-20 : vW.at(0)->m_vectT.at(0);
-  double tmax = (t_ampmin+5 < vW.at(0)->m_vectT.at(vW.at(0)->m_vectT.size()-1)) ? t_ampmin+5 : vW.at(0)->m_vectT.at(vW.at(0)->m_vectT.size()-1);
+  int i_ampmin = TMath::LocMin(vW.at(0)->GetVectA().size(),&(vW.at(0)->GetVectA())[0]);
+  double t_ampmin = vW.at(0)->GetVectT().at(i_ampmin);
+  double tmin = (t_ampmin-20 > vW.at(0)->GetVectT().at(0)) ? t_ampmin-20 : vW.at(0)->GetVectT().at(0);
+  double tmax = (t_ampmin+5 < vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1)) ? t_ampmin+5 : vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1);
   vector<double> time,amp;
   double tmpt=tmin;
   while(tmpt<tmax){
@@ -187,47 +182,37 @@ void TASTdatRaw::NewSuperHit(vector<TWaveformContainer*> vW){
 
   //I sum the signals
     for(int i=0;i<vW.size();i++){
-    vector<double> tmpamp = vW.at(i)->m_vectA;
-    vector<double> tmptime = vW.at(i)->m_vectT;
+    vector<double> tmpamp = vW.at(i)->GetVectA();
+    vector<double> tmptime = vW.at(i)->GetVectT();
     TGraph tmpgr(tmptime.size(), &tmptime[0], &tmpamp[0]);
     for(int isa=0;isa<time.size();isa++){
       amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
     }
   }
 
-  wsum->ChannelId = ChannelId;
-  wsum->BoardId = BoardId;
-  wsum->TrigType = TrigType;  
-  wsum->TriggerCellId = TriggerCellId;
-  wsum->m_vectA = amp;
-  wsum->m_vectT = time;
-  wsum->m_vectRawT = time;
-  wsum->m_nEvent = vW.at(0)->m_nEvent;
+  wsum->SetChannelId(ChannelId);
+  wsum->SetBoardId(BoardId);
+  wsum->SetTrigType(TrigType);
+  wsum->SetTriggerCellId(TriggerCellId);
+  wsum->GetVectA() = amp;
+  wsum->GetVectT() = time;
+  wsum->GetVectRawT() = time;
+  wsum->SetNEvent(vW.at(0)->GetNEvent());
   
-  superhit = new TASTrawHit(wsum);
+  fSuperHit = new TASTrawHit(wsum);
 
   delete wsum;
   
-  return;
 }
-
-
-
-
-
-
-
 
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
-
 void TASTdatRaw::ToStream(ostream& os, Option_t* option) const
 {
   os << "TASTdatRaw " << GetName()
-	 << " nirhit"    << nirhit
+	 << " fHistN"    << fHistN
      << endl;
-  return;
 }
 
 

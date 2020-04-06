@@ -107,7 +107,7 @@ Bool_t TATWactNtuRaw::Action() {
   TAGgeoTrafo* p_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
   p_nturaw->SetupClones();
-  CChannelMap *chmap=p_parmap->getChannelMap();
+  CChannelMap *chmap=p_parmap->GetChannelMap();
   int nhit = p_datraw->GetHitsN();
 
   int ch_num, bo_num;

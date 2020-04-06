@@ -25,11 +25,11 @@ TString TABMntuRaw::fgkBranchName   = "bmrh.";
 
 TABMntuRaw::TABMntuRaw() :
   fListOfHits(0x0) {
-    eff_paoloni=-3;  
-    eff_paolonixview=-3;  
-    eff_paoloniyview=-3;
-    nselhitx=0;
-    nselhity=0;  
+    fEffPaoloni=-3;
+    fEffPaolonixview=-3;
+    fEffPaoloniyview=-3;
+    fNselhitx=0;
+    fNselhity=0;  
   }
 
 //------------------------------------------+-----------------------------------
@@ -77,11 +77,11 @@ void TABMntuRaw::Clear(Option_t*)
   if (fListOfHits)
     fListOfHits->Clear("C");
     
-    eff_paoloni=-3;  
-    eff_paolonixview=-3;  
-    eff_paoloniyview=-3;
-    nselhitx=0;
-    nselhity=0;    
+    fEffPaoloni=-3;
+    fEffPaolonixview=-3;
+    fEffPaoloniyview=-3;
+    fNselhitx=0;
+    fNselhity=0;
   return;
 }
 
@@ -106,7 +106,7 @@ void TABMntuRaw::ToStream(ostream& os, Option_t* option) const
   
   os << "slat stat    adct    adcb    tdct    tdcb" << endl;
   for (Int_t i = 0; i < fListOfHits->GetEntries(); i++) {
-    const TABMntuHit*  hit = Hit(i);
+    const TABMntuHit*  hit = GetHit(i);
     os << Form("%4d", hit->Cell());
     os << "  "; print_value(os, hit->Plane());
     os << endl;
@@ -115,13 +115,13 @@ void TABMntuRaw::ToStream(ostream& os, Option_t* option) const
 }
 
 void TABMntuRaw::ClearCellOccupy(){
-  memset(cell_occupy, 0, sizeof(cell_occupy));
+  memset(fCellOccupy, 0, sizeof(fCellOccupy));
 return;
 }
 
 Bool_t TABMntuRaw::AddCellOccupyHit(Int_t pos){
   if(pos<36 && pos>=0){  
-    cell_occupy[pos]++;
+    fCellOccupy[pos]++;
     return kTRUE;
   }else
     cout<<"ERROR in TABMntuRaw::AddCellOccupyHit: cellid of the hit is wrong: pos="<<pos<<endl;
@@ -130,8 +130,8 @@ Bool_t TABMntuRaw::AddCellOccupyHit(Int_t pos){
 
 Bool_t TABMntuRaw::RemoveCellOccupyHit(Int_t pos){
   if(pos<36 && pos>=0){
-    if(cell_occupy[pos]>0){  
-      cell_occupy[pos]--;
+    if(fCellOccupy[pos]>0){
+      fCellOccupy[pos]--;
       return kTRUE;
     }else
       cout<<"ERROR in TABMntuRaw::RemoveCellOccupyHit: remove an empty hit! pos="<<pos<<endl;
@@ -147,46 +147,46 @@ return kFALSE;
 void TABMntuRaw::Efficiency_paoloni(Int_t pivot[], Int_t probe[], Double_t &efftot, Double_t &effxview, Double_t &effyview){
 
   //xview
-  if(cell_occupy[0]>0 && cell_occupy[12]>0 && cell_occupy[24]>0){
+  if(fCellOccupy[0]>0 && fCellOccupy[12]>0 && fCellOccupy[24]>0){
     pivot[0]++;
-    if((cell_occupy[7]>0 || cell_occupy[6]>0) && (cell_occupy[19]>0 || cell_occupy[18]>0))
+    if((fCellOccupy[7]>0 || fCellOccupy[6]>0) && (fCellOccupy[19]>0 || fCellOccupy[18]>0))
       probe[0]++;
   }
-  if(cell_occupy[1]>0 && cell_occupy[13]>0 && cell_occupy[25]>0){
+  if(fCellOccupy[1]>0 && fCellOccupy[13]>0 && fCellOccupy[25]>0){
     pivot[1]++;
-    if((cell_occupy[8]>0 || cell_occupy[7]>0) && (cell_occupy[19]>0 || cell_occupy[20]>0))
+    if((fCellOccupy[8]>0 || fCellOccupy[7]>0) && (fCellOccupy[19]>0 || fCellOccupy[20]>0))
       probe[1]++;
   }
-  if(cell_occupy[7]>0 && cell_occupy[19]>0 && cell_occupy[31]>0){
+  if(fCellOccupy[7]>0 && fCellOccupy[19]>0 && fCellOccupy[31]>0){
     pivot[2]++;
-    if((cell_occupy[12]>0 || cell_occupy[13]>0) && (cell_occupy[24]>0 || cell_occupy[25]>0))
+    if((fCellOccupy[12]>0 || fCellOccupy[13]>0) && (fCellOccupy[24]>0 || fCellOccupy[25]>0))
       probe[2]++;
   }
-  if(cell_occupy[8]>0 && cell_occupy[20]>0 && cell_occupy[32]>0){
+  if(fCellOccupy[8]>0 && fCellOccupy[20]>0 && fCellOccupy[32]>0){
     pivot[3]++;
-    if((cell_occupy[13]>0 || cell_occupy[14]>0) && (cell_occupy[25]>0 || cell_occupy[26]>0))
+    if((fCellOccupy[13]>0 || fCellOccupy[14]>0) && (fCellOccupy[25]>0 || fCellOccupy[26]>0))
       probe[3]++;
   }
   
   //yview
-  if(cell_occupy[4]>0 && cell_occupy[16]>0 && cell_occupy[28]>0){
+  if(fCellOccupy[4]>0 && fCellOccupy[16]>0 && fCellOccupy[28]>0){
     pivot[4]++;
-    if((cell_occupy[10]>0 || cell_occupy[19]>0) && (cell_occupy[22]>0 || cell_occupy[21]>0))
+    if((fCellOccupy[10]>0 || fCellOccupy[19]>0) && (fCellOccupy[22]>0 || fCellOccupy[21]>0))
       probe[4]++;
   }
-  if(cell_occupy[5]>0 && cell_occupy[17]>0 && cell_occupy[29]>0){
+  if(fCellOccupy[5]>0 && fCellOccupy[17]>0 && fCellOccupy[29]>0){
     pivot[5]++;
-    if((cell_occupy[10]>0 || cell_occupy[11]>0) && (cell_occupy[22]>0 || cell_occupy[23]>0))
+    if((fCellOccupy[10]>0 || fCellOccupy[11]>0) && (fCellOccupy[22]>0 || fCellOccupy[23]>0))
       probe[5]++;
   }
-  if(cell_occupy[9]>0 && cell_occupy[21]>0 && cell_occupy[33]>0){
+  if(fCellOccupy[9]>0 && fCellOccupy[21]>0 && fCellOccupy[33]>0){
     pivot[6]++;
-    if((cell_occupy[15]>0 || cell_occupy[16]>0) && (cell_occupy[27]>0 || cell_occupy[28]>0))
+    if((fCellOccupy[15]>0 || fCellOccupy[16]>0) && (fCellOccupy[27]>0 || fCellOccupy[28]>0))
       probe[6]++;
   }
-  if(cell_occupy[10]>0 && cell_occupy[22]>0 && cell_occupy[34]>0){
+  if(fCellOccupy[10]>0 && fCellOccupy[22]>0 && fCellOccupy[34]>0){
     pivot[7]++;
-    if((cell_occupy[16]>0 || cell_occupy[17]>0) && (cell_occupy[28]>0 || cell_occupy[29]>0))
+    if((fCellOccupy[16]>0 || fCellOccupy[17]>0) && (fCellOccupy[28]>0 || fCellOccupy[29]>0))
       probe[7]++;
   }
   
@@ -205,17 +205,17 @@ return;
 }
 
 void TABMntuRaw::SetEfficiency(Double_t efftot, Double_t effxview, Double_t effyview){
-  eff_paoloni=efftot;
-  eff_paolonixview=effxview;
-  eff_paoloniyview=effyview;
+  fEffPaoloni=efftot;
+  fEffPaolonixview=effxview;
+  fEffPaoloniyview=effyview;
 return;
 }
 
 void TABMntuRaw::PrintCellOccupy(){
   
-  cout<<"TABMactNtuRaw::evaluate_cell_occupy: print cell_occupy"<<endl;
+  cout<<"TABMactNtuRaw::evaluate_fCellOccupy: print fCellOccupy"<<endl;
   for(Int_t i=0;i<36;i++)
-    cout<<cell_occupy[i]<<" ";
+    cout<<fCellOccupy[i]<<" ";
   cout<<endl;
 
 return;  

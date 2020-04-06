@@ -19,35 +19,35 @@ TABMntuHit::~TABMntuHit()
 //! Default constructor.
 
 TABMntuHit::TABMntuHit()
-: iview(0),    ilayer(0),    icell(0), cellid(-1),
-  rdrift(0.),    tdrift(0.), sigma(0)
+: fiView(0),    fiLayer(0),    fiCell(0), fiCellid(-1),
+  frDrift(0.),    ftDrift(0.), fSigma(0)
 {
-  ichi2=999;
-  A0.SetXYZ(0,0,0);
-  Wvers.SetXYZ(0,0,0);
-  realRdrift=100.;
-  residual=100.;
-  isSelected=false;
-  isFake=-1;  
-  cellid=-1;
+  fChi2=999;
+  fA0.SetXYZ(0,0,0);
+  fWvers.SetXYZ(0,0,0);
+  fRealrDrift=100.;
+  fResidual=100.;
+  fIsSelected=false;
+  fIsFake=-1;  
+  fiCellid=-1;
 }
 
 TABMntuHit::TABMntuHit(Int_t iv, Int_t il, Int_t ic, Int_t id, Double_t r, Double_t t, Double_t s) {
 
-  iview = iv;  
-  ilayer = il;   
-  icell = ic;
-  cellid=id;  
-  rdrift = r;   
-  tdrift = t; 
-  ichi2 = 999;
-  A0.SetXYZ(0,0,0);
-  Wvers.SetXYZ(0,0,0);
-  realRdrift=100.;
-  residual=100.;
-  isSelected=false;
-  isFake=-1;
-  sigma=s;
+  fiView = iv;
+  fiLayer = il;
+  fiCell = ic;
+  fiCellid=id;
+  frDrift = r;
+  ftDrift = t;
+  fChi2 = 999;
+  fA0.SetXYZ(0,0,0);
+  fWvers.SetXYZ(0,0,0);
+  fRealrDrift=100.;
+  fResidual=100.;
+  fIsSelected=false;
+  fIsFake=-1;
+  fSigma=s;
   SetAW();
 }
 
@@ -73,13 +73,13 @@ void TABMntuHit::SetAW() {
 
   Int_t idfilo = f_bmgeo->GetSenseId(Cell());
 
-   A0.SetXYZ(f_bmgeo->GetWireX(idfilo,Plane(),iview), f_bmgeo->GetWireY(idfilo,Plane(),iview), f_bmgeo->GetWireZ(idfilo,Plane(),iview));
-   Wvers.SetXYZ(f_bmgeo->GetWireCX(idfilo,Plane(),iview), f_bmgeo->GetWireCY(idfilo,Plane(),iview), f_bmgeo->GetWireCZ(idfilo,Plane(),iview));
+   fA0.SetXYZ(f_bmgeo->GetWireX(idfilo,Plane(),fiView), f_bmgeo->GetWireY(idfilo,Plane(),fiView), f_bmgeo->GetWireZ(idfilo,Plane(),fiView));
+   fWvers.SetXYZ(f_bmgeo->GetWireCX(idfilo,Plane(),fiView), f_bmgeo->GetWireCY(idfilo,Plane(),fiView), f_bmgeo->GetWireCZ(idfilo,Plane(),fiView));
   
-   if(Wvers.Mag()!=0.)
-      Wvers.SetMag(1.);
+   if(fWvers.Mag()!=0.)
+      fWvers.SetMag(1.);
    else{
-      cout<<"Error in TABMntuHit constructor::AddWire-> ERROR Wvers.Mag()==0!!!"<<endl;
+      cout<<"Error in TABMntuHit constructor::AddWire-> ERROR fWvers.Mag()==0!!!"<<endl;
       return;
    }
   return;

@@ -216,15 +216,15 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	    }
 
 	    w = new TWaveformContainer();
-	    w->ChannelId = ch_num;
-	    w->BoardId = board_id;
-	    w->m_vectA = w_amp;
-	    w->m_vectRawT = p_WDTim->GetRawTimeArray(board_id, ch_num, trig_cell);
-	    w->m_vectT = w->m_vectRawT;
-	    w->m_nEvent = m_nev;
-	    w->IsEmptyFlag = false;
-	    w->TrigType=trig_type;
-	    w->TriggerCellId=trig_cell;
+	    w->SetChannelId(ch_num);
+	    w->SetBoardId(board_id);
+	    w->GetVectA() = w_amp;
+	    w->GetVectRawT() = p_WDTim->GetRawTimeArray(board_id, ch_num, trig_cell);
+	    w->GetVectT() = w->GetVectRawT();
+	    w->SetNEvent(m_nev);
+	    w->SetEmptyFlag(false);
+	    w->SetTrigType(trig_type);
+	    w->SetTriggerCellId(trig_cell);
 
 	    string ch_type;
 	    ch_type = p_WDMap->GetChannelType(board_id, ch_num);
@@ -340,22 +340,22 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration(){
   }
   
   wclk_ref = clk_waves.find(make_pair(27,16))->second;
-  t_trig_ref = wclk_ref->m_vectRawT.at((1024-wclk_ref->TriggerCellId)%1024);
+  t_trig_ref = wclk_ref->GetVectRawT().at((1024-wclk_ref->GetTriggerCellId())%1024);
 
   //clocks alignment and jitter calculation
   map<pair<int,int>, double> clk_jitter;
   map<pair<int,int>, TWaveformContainer*>::iterator it;
   for(it=clk_waves.begin(); it != clk_waves.end(); it++){
     TWaveformContainer *wclk = it->second;
-    t_trig = wclk->m_vectRawT.at((1024-wclk->TriggerCellId)%1024);
+    t_trig = wclk->GetVectRawT().at((1024-wclk->GetTriggerCellId())%1024);
     dt = t_trig_ref - t_trig;
     vector<double> calib_time;
-    for(int i=0;i<wclk->m_vectRawT.size();i++){
-      calib_time.push_back(wclk->m_vectRawT.at(i)+dt);
+    for(int i=0;i<wclk->GetVectRawT().size();i++){
+      calib_time.push_back(wclk->GetVectRawT().at(i)+dt);
     }
-    wclk->m_vectT = calib_time;
+    wclk->GetVectT() = calib_time;
     double jitter = ComputeJitter(wclk);
-    clk_jitter[make_pair(wclk->BoardId, wclk->ChannelId)] = jitter;
+    clk_jitter[make_pair(wclk->GetBoardId(), wclk->GetChannelId())] = jitter;
 
   }
 
@@ -363,18 +363,18 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration(){
   //st time calibration
   for(int i=0; i<(int)st_waves.size();i++){
     TWaveformContainer *wst = st_waves.at(i);
-    int ch_clk = (wst->ChannelId<8) ? 16 : 17;
-    double jitter = clk_jitter.find(make_pair(wst->BoardId,ch_clk))->second; 
-    t_trig = wst->m_vectRawT.at((1024-wst->TriggerCellId)%1024);
+    int ch_clk = (wst->GetChannelId()<8) ? 16 : 17;
+    double jitter = clk_jitter.find(make_pair(wst->GetBoardId(),ch_clk))->second;
+    t_trig = wst->GetVectRawT().at((1024-wst->GetTriggerCellId())%1024);
     dt = t_trig_ref - t_trig - jitter;
     vector<double> calib_time;
-    for(int i=0;i<wst->m_vectRawT.size();i++){
-      calib_time.push_back(wst->m_vectRawT.at(i)+dt);
-      if(wst->ChannelId==0){
+    for(int i=0;i<wst->GetVectRawT().size();i++){
+      calib_time.push_back(wst->GetVectRawT().at(i)+dt);
+      if(wst->GetChannelId()==0){
 	//	cout << "ST isa::" << i << "   time::" << wst->m_vectRawT.at(i)+ t_trig_ref - t_trig << endl;
       }
     }
-    st_waves.at(i)->m_vectT = calib_time;
+    st_waves.at(i)->GetVectT() = calib_time;
   }
   
 
@@ -383,18 +383,18 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration(){
   //tw time calibration
   for(int i=0; i<(int)tw_waves.size();i++){
     TWaveformContainer *wtw = tw_waves.at(i);
-    int ch_clk = (wtw->ChannelId<8) ? 16 : 17;
-    double jitter = clk_jitter.find(make_pair(wtw->BoardId,ch_clk))->second; 
-    t_trig = wtw->m_vectRawT.at((1024-wtw->TriggerCellId)%1024);
+    int ch_clk = (wtw->GetChannelId()<8) ? 16 : 17;
+    double jitter = clk_jitter.find(make_pair(wtw->GetBoardId(),ch_clk))->second;
+    t_trig = wtw->GetVectRawT().at((1024-wtw->GetTriggerCellId())%1024);
     dt = t_trig_ref - t_trig - jitter;
     vector<double> calib_time;
-    for(int i=0;i<wtw->m_vectRawT.size();i++){
-      calib_time.push_back(wtw->m_vectRawT.at(i)+dt);
-      if(wtw->ChannelId==0){
+    for(int i=0;i<wtw->GetVectRawT().size();i++){
+      calib_time.push_back(wtw->GetVectRawT().at(i)+dt);
+      if(wtw->GetChannelId()==0){
 	//	cout << "TW isa::" << i << "   time::" << wtw->m_vectRawT.at(i)+ t_trig_ref - t_trig << endl;
       }
     }
-    tw_waves.at(i)->m_vectT = calib_time;
+    tw_waves.at(i)->GetVectT() = calib_time;
   }
 
   
@@ -414,8 +414,8 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk){
   double tzerocrossing;
 
   vector<double> vtime, vamp;
-  vtime = wclk->m_vectT;
-  vamp = wclk->m_vectA;
+  vtime = wclk->GetVectT();
+  vamp = wclk->GetVectA();
 
 
   //Get the max and min of the CLK to find its "zero"

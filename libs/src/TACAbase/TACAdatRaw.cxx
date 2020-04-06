@@ -32,25 +32,25 @@ TACArawHit::~TACArawHit()
 //! Default constructor.
 
 TACArawHit::TACArawHit()
-  : ir_time(999999.), ir_chg(0.), ir_typ(0), ir_chid(0)
+  : fTime(999999.), fCharge(0.), fType(0), fChannelID(0)
 {
 }
 
 TACArawHit::TACArawHit(int typ, int cha, double charge, double time) {
 
-  ir_time = time;
-  ir_chg  = charge;
-  ir_typ  = typ;
-  ir_chid   = cha;
+  fTime = time;
+  fCharge  = charge;
+  fType  = typ;
+  fChannelID   = cha;
 
 }
 
 void TACArawHit::SetData(Int_t type, Int_t id, Double_t time, Double_t charge) {
 
-  ir_time = time;
-  ir_chg  = charge;
-  ir_typ  = type;
-  ir_chid   = id;
+  fTime = time;
+  fCharge  = charge;
+  fType  = type;
+  fChannelID   = id;
   return;
 }
 //##############################################################################
@@ -61,7 +61,7 @@ ClassImp(TACAdatRaw);
 //! Default constructor.
 
 TACAdatRaw::TACAdatRaw() :
-  nirhit(0), hir(0) {
+  fHitsN(0), fListOfHits(0) {
 }
 
 
@@ -69,7 +69,7 @@ TACAdatRaw::TACAdatRaw() :
 //! Destructor.
 
 TACAdatRaw::~TACAdatRaw() {
-  delete hir;
+  delete fListOfHits;
 }
 
 //------------------------------------------+-----------------------------------
@@ -77,7 +77,7 @@ TACAdatRaw::~TACAdatRaw() {
 
 void TACAdatRaw::SetupClones()
 {
-  if (!hir) hir = new TClonesArray("TACArawHit");
+  if (!fListOfHits) fListOfHits = new TClonesArray("TACArawHit");
   return;
 }
 
@@ -100,8 +100,8 @@ void TACAdatRaw::Clear(Option_t*)
 {
   TAGdata::Clear();
 
-  nirhit = 0;
-  if (hir) hir->Clear();
+  fHitsN = 0;
+  if (fListOfHits) fListOfHits->Clear();
 
   return;
 }

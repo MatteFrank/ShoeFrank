@@ -65,32 +65,32 @@ public:
    
    Int_t             GetHitsN() const;
    
-   TASTntuHit*       Hit(Int_t i_ind);
-   const TASTntuHit* Hit(Int_t i_ind) const;
-  TASTntuHit*        NewHit(double charge, double de, double time);
+   TASTntuHit*       GetHit(Int_t i_ind);
+   const TASTntuHit* GetHit(Int_t i_ind) const;
+   TASTntuHit*       NewHit(double charge, double de, double time);
    virtual void      Clear(Option_t* opt="");
    void              SetupClones();
-   inline void SetCharge(double value){m_Charge = value;}
-   inline void SetTriggerTime(double value){m_TrigTime = value;}
-   inline void SetTriggerTimeOth(double value){m_TrigTime_oth = value;}
-   inline double GetCharge(){return m_Charge;}
-   inline double GetTriggerTime(){return m_TrigTime;}
-   inline double GetTriggerTimeOth(){return m_TrigTime_oth;}
-   inline int GetTrigType(){return m_TrigType;}
-   inline void SetTrigType(int value){m_TrigType=value;}
+   
+   void SetCharge(double value){m_Charge = value;}
+   void SetTriggerTime(double value){m_TrigTime = value;}
+   void SetTriggerTimeOth(double value){m_TrigTime_oth = value;}
+   void SetTrigType(int value){m_TrigType=value;}
   
+   double GetCharge()         const { return m_Charge;}
+   double GetTriggerTime()    const { return m_TrigTime;}
+   double GetTriggerTimeOth() const { return m_TrigTime_oth;}
+   int    GetTrigType()       const { return m_TrigType;}
 
   
 public:
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
 private:
-  TClonesArray*     fListOfHits;			    // hits
-  double m_TrigTime;
-  double m_TrigTime_oth;
-  double m_Charge;
-  int m_TrigType;
-
+  TClonesArray* m_ListOfHits;			    // hits
+  Double32_t    m_TrigTime;
+  Double32_t    m_TrigTime_oth;
+  Double32_t    m_Charge;
+  int           m_TrigType;
 
 private:
    static TString fgkBranchName;    // Branch name in TTree

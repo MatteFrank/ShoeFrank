@@ -100,13 +100,14 @@ private:
    Float_t   fBarIonisMat;
    Float_t   fBarBirkMat;
 
-   int fLayersN;
-   int fBarsN;
+   Int_t     fLayersN;
+   Int_t     fBarsN;
 
    TString    fkDefaultGeoName;  // default par geo file name
 
-  vector<string> vBody, vRegion;
-  vector< vector<TVector3> > vTilt;
+   vector<string> fvBody;
+   vector<string> fvRegion;
+   vector< vector<TVector3> > fvTilt;
    
 private:
    static TString       fgkDefParaName;

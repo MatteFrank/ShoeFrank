@@ -1,41 +1,41 @@
 //! Returns cell number.
 
-inline Int_t TABMrawHit::Cell() const
+inline Int_t TABMrawHit::GetCell() const
 {
-  return icell;
+  return fiCell;
 }
 
 //------------------------------------------+-----------------------------------
 //! Returns Cell id number [0-35]
 
-inline Int_t TABMrawHit::Idcell() const
+inline Int_t TABMrawHit::GetIdcell() const
 {
-  return idcell;
+  return fidCell;
 }
 
 
 //------------------------------------------+-----------------------------------
 //! Returns plane number.
 
-inline Int_t TABMrawHit::Plane() const
+inline Int_t TABMrawHit::GetPlane() const
 {
-  return ilayer;
+  return fiLayer;
 }
 
 //------------------------------------------+-----------------------------------
 //! Returns time.
 
-inline Double_t TABMrawHit::Time() const
+inline Double_t TABMrawHit::GetTime() const
 {
-  return tdctime;
+  return ftdTtime;
 }
 
 //------------------------------------------+-----------------------------------
 //! Returns plane number.
 
-inline Int_t TABMrawHit::View() const
+inline Int_t TABMrawHit::GetView() const
 {
-  return iview;
+  return fiView;
 }
 
 

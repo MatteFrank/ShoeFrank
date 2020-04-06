@@ -25,12 +25,12 @@ TString TATWdatRaw::fgkBranchName   = "twdat.";
 TATWrawHit::TATWrawHit(TWaveformContainer *W)
   : TAGbaseWD(W){
 
-  baseline = ComputeBaseline(W);
-  pedestal = ComputePedestal(W);
-  chg = ComputeCharge(W);
-  amplitude = ComputeAmplitude(W);
-  time = ComputeTime(W,0.3,10.0,-30,20);
-  time_oth = ComputeTimeSimpleCFD(W,0.3);
+  fBaseline = ComputeBaseline(W);
+  fPedestal = ComputePedestal(W);
+  fChg = ComputeCharge(W);
+  fAmplitude = ComputeAmplitude(W);
+  fTime = ComputeTime(W,0.3,10.0,-30,20);
+  fTimeOth = ComputeTimeSimpleCFD(W,0.3);
 
 }
 
@@ -58,11 +58,11 @@ double TATWrawHit::ComputeTime(TWaveformContainer *w, double frac, double del, d
 double TATWrawHit::ComputeCharge(TWaveformContainer *w){
 
   double chg=0;
-  vector<double> tmp_amp = w->m_vectA;
-  vector<double> tmp_time = w->m_vectT;
+  vector<double> tmp_amp = w->GetVectA();
+  vector<double> tmp_time = w->GetVectT();
 
   for(int i=0; i<tmp_time.size();i++){
-    chg+=(tmp_amp.at(i)-baseline);
+    chg+=(tmp_amp.at(i)-fBaseline);
   }
 
   chg = -chg;
@@ -94,7 +94,7 @@ ClassImp(TATWdatRaw);
 
 //! Default constructor.
 TATWdatRaw::TATWdatRaw() :
-  fHitsN(0), fListOfHits(0), m_run_time(0x0)
+  fHitsN(0), fListOfHits(0), fRunTime(0x0)
 {
    SetupClones();
 }

@@ -26,7 +26,6 @@ set( with_dictionnaries
    TAGaction
    TAGactionFile
    TAGbaseDigitizer
-   TAGconfigFile
    TAGcluster
    TAGntuPoint
    TAGntuGlbTrack

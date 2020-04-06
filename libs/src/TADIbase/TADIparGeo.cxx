@@ -473,11 +473,11 @@ string TADIparGeo::PrintBodies(){
 	 ss << "$start_transform " << Form("di_%d",iMag) << endl; 
        
        regionname = Form("MAG_SH%d",iMag);
-       vRegShield.push_back(regionname);
+       fvRegShield.push_back(regionname);
        
        //shield outer body
        bodyname = Form("MagShOu%d",iMag);
-       vBodyOut.push_back(bodyname);
+       fvBodyOut.push_back(bodyname);
        ss << "RCC " << bodyname <<  "     " 
 	  << fCenter.X() + GetMagnetPar(iMag).Position.X() << " "	
 	  << fCenter.Y() + GetMagnetPar(iMag).Position.Y() << " "
@@ -487,14 +487,14 @@ string TADIparGeo::PrintBodies(){
 
        //shield inner body
        bodyname = Form("MagShIn%d",iMag);
-       vBodyIn.push_back(bodyname);
+       fvBodyIn.push_back(bodyname);
        ss << "ZCC " << bodyname <<  "     " 
 	  << fCenter.X() + GetMagnetPar(iMag).Position.X() << " "	
 	  << fCenter.Y() + GetMagnetPar(iMag).Position.Y() << " "
 	  << GetMagnetPar(iMag).ShieldSize.X() << endl;
 
        regionname = Form("MAG%d",iMag);
-       vReg.push_back(regionname);
+       fvReg.push_back(regionname);
 
        //magnet outer body
        ss << "RCC MagOu" << iMag <<  "     " 
@@ -536,16 +536,16 @@ string TADIparGeo::PrintRegions(){
     ss << "* ***Dipoles regions" << endl;
    
 
-    if (vReg.size()==0 || vRegShield.size()==0)
+    if (fvReg.size()==0 || fvRegShield.size()==0)
       cout << "Error: DI regions vectors not correctly filled!" << endl;
        
-    for (int iMag=0; iMag<vReg.size(); iMag++)              
-      ss << vReg.at(iMag) << "         5 MagOu" << iMag << " -MagIn" << iMag << endl;
+    for (int iMag=0; iMag<fvReg.size(); iMag++)
+      ss << fvReg.at(iMag) << "         5 MagOu" << iMag << " -MagIn" << iMag << endl;
        
        
-    for (int iMag=0; iMag<vRegShield.size(); iMag++){
-      ss << vRegShield.at(iMag) << "      5 " << vBodyOut.at(iMag) << " -(MagOu" << iMag
-	 << " -MagIn" << iMag << ") -" << vBodyIn.at(iMag) << endl;
+    for (int iMag=0; iMag<fvRegShield.size(); iMag++){
+      ss << fvRegShield.at(iMag) << "      5 " << fvBodyOut.at(iMag) << " -(MagOu" << iMag
+	 << " -MagIn" << iMag << ") -" << fvBodyIn.at(iMag) << endl;
     }
 
   }
@@ -573,12 +573,12 @@ string TADIparGeo::PrintAssignMaterial(TAGmaterials *Material) {
       flkmatShi = Material->GetFlukaMatName(GetShieldMat().Data());
     }
       
-    if (vReg.size()==0 || vRegShield.size()==0)
+    if (fvReg.size()==0 || fvRegShield.size()==0)
       cout << "Error: DI regions vectors not correctly filled!" << endl;
 
-    ss << PrintCard("ASSIGNMA", flkmatMag, vReg.at(0), vReg.back(),
+    ss << PrintCard("ASSIGNMA", flkmatMag, fvReg.at(0), fvReg.back(),
     		    "1.", "1.", "", "") << endl;
-    ss << PrintCard("ASSIGNMA", flkmatShi, vRegShield.at(0), vRegShield.back(),
+    ss << PrintCard("ASSIGNMA", flkmatShi, fvRegShield.at(0), fvRegShield.back(),
     		    "1.", "1.", "", "") << endl;
     
   }
@@ -596,11 +596,11 @@ string TADIparGeo::PrintSubtractBodiesFromAir() {
 
   if(GlobalPar::GetPar()->IncludeDI()){
 
-    if (vBodyOut.size()==0 || vBodyIn.size()==0 || vBodyOut.size()!=vBodyIn.size())
+    if (fvBodyOut.size()==0 || fvBodyIn.size()==0 || fvBodyOut.size()!=fvBodyIn.size())
       cout << "Error: DI body vectors not correctly filled!" << endl;
     
-    for(int i=0; i<vBodyOut.size(); i++) {
-      ss << " -(" << vBodyOut.at(i) << " -" << vBodyIn.at(i) << ")" ;
+    for(int i=0; i<fvBodyOut.size(); i++) {
+      ss << " -(" << fvBodyOut.at(i) << " -" << fvBodyIn.at(i) << ")" ;
     }
     ss << endl;
 
