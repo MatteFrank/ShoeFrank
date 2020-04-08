@@ -111,7 +111,6 @@ Bool_t TATWparCal::FromFile(const TString& name)
   TString name_exp = name;
   gSystem->ExpandPathName(name_exp);
   int verbose = 0;
-  
   cMapCal->LoadCalibrationMap(name_exp.Data());
   
   return kFALSE;
@@ -120,7 +119,7 @@ Bool_t TATWparCal::FromFile(const TString& name)
 
 //
 ////------------------------------------------+-----------------------------------
-Bool_t TATWparCal::FromFile(Int_t Zbeam, const TString& name) {
+Bool_t TATWparCal::FromFileZID(Int_t Zbeam, const TString& name) {
  
     
   TString nameExp;
