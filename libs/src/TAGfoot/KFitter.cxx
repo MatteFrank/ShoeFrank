@@ -409,12 +409,7 @@ int KFitter::UploadClusVT(){
       TAVTcluster* clus = vtclus->GetCluster(iPlane, iClus);
       if (!clus->IsValid()) continue;
 
-      //TVector3 prova = clus->GetPositionG();
-      TVector3 prova = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
-
-      if (m_debug > 1)
-      prova.Print();
-
+      //TVector3 prova = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
       m_VT_clusCollection.push_back(clus);
 
 
@@ -808,7 +803,6 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
 
 
   m_allHitsInMeasurementFormat.clear();
-  cout << "first check of m_allHitsInMeasurementFormat.size() " << m_allHitsInMeasurementFormat.size() <<endl;
   // Inner Tracker -  fill fitter collections
   if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() ) {
     //UploadHitsIT();
@@ -816,9 +810,6 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
     if ( m_debug > 0 )		cout <<endl<<endl << "Filling inner detector hit collection = " << m_IT_clusCollection.size() << endl;
     Prepare4InnerTracker(fitTrack);
   }
-
-  cout << "second check of m_allHitsInMeasurementFormat.size() " << m_allHitsInMeasurementFormat.size() <<endl;
-
 
   // MSD -  fill fitter collections
   if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() ) {
@@ -828,9 +819,6 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
     Prepare4Strip(fitTrack);
   }
 
-  cout << "third check of m_allHitsInMeasurementFormat.size() " << m_allHitsInMeasurementFormat.size() <<endl;
-
-
   // Tof Wall-  fill fitter collections
   if ( ( m_systemsON.find( "TW" ) != string::npos) && GlobalPar::GetPar()->IncludeTW() ) {
     UploadHitsTW();
@@ -838,12 +826,8 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
     Prepare4TofWall(fitTrack);
   }
 
-  cout << "fourth check of m_allHitsInMeasurementFormat.size() " << m_allHitsInMeasurementFormat.size() <<endl;
-
 	// if ( m_systemsON != "all" || !( m_systemsON.find( "VT" ) != string::npos && m_systemsON.find( "VT" ) != string::npos && m_systemsON.find( "VT" ) != string::npos ) )
 	// 	return 0;
-
-	//TAVTntuTrack* vtTrk_container = (TAVTntuTrack*) gTAGroot->FindDataDsc("vtTrack","TAVTntuTrack")->Object();
 
   TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object();
   int vertexNumber = vertexContainer->GetVertexN();
@@ -890,18 +874,6 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
       fitTrack_->addTrackRep( rep );
       fitTrack_->setStateSeed(pos_, mom_);
 
-      bool isPlane0 = false;
-      bool isPlane1 = false;
-      bool isPlane2 = false;
-      bool isPlane3 = false;
-
-      cout << "fifth check of m_allHitsInMeasurementFormat.size() " << m_allHitsInMeasurementFormat.size() <<endl;
-
-      cout << " number of points before vertex filling is " << fitTrack_->getNumPointsWithMeasurement() << endl;
-      cout << " size of collection after track filling is " << m_hitCollectionToFit_dataLike[iTrack].size() << endl;
-
-
-
       for (unsigned int g = 0; g < m_hitCollectionToFit_dataLike[iTrack].size(); ++g){
 
         fitTrack_->insertMeasurement( m_hitCollectionToFit_dataLike[iTrack].at(g) );
@@ -909,16 +881,12 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
       }
 
 
-      cout << " check of fitTrack_ filling after vertex" << endl;
-      for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
-        fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement()->getRawHitCoords().Print();
-        int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
-        cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
-
-      }
-
-
-      //now line extrap from VTX to IT
+      // cout << " check of fitTrack_ filling after vertex" << endl;
+      // for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
+      //   fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement()->getRawHitCoords().Print();
+      //   int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
+      //   cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
+      //}
 
       // ExtrapFromVTXtoIT
       // calculate slope on-the-fly
@@ -964,14 +932,12 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
       //cout << polyY->GetParameter(0) << "    " << polyY->GetParameter(1) << " " << polyY->GetChisquare() << endl;
       //cout << polyX->GetParameter(0) << "    " << polyX->GetParameter(1) << " " << polyX->GetChisquare() << endl;
 
-      double firstGuessXOnIT = polyX->Eval(m_detectorPlanes[4]->getO().Z());
       double firstGuessYOnIT = polyY->Eval(m_detectorPlanes[4]->getO().Z());
-      double secondGuessXOnIT = polyX->Eval(m_detectorPlanes[8]->getO().Z());
       double secondGuessYOnIT = polyY->Eval(m_detectorPlanes[8]->getO().Z());
-      double thirdGuessXOnIT = polyX->Eval(m_detectorPlanes[5]->getO().Z());
       double thirdGuessYOnIT = polyY->Eval(m_detectorPlanes[5]->getO().Z());
-      double fourthGuessXOnIT = polyX->Eval(m_detectorPlanes[9]->getO().Z());
       double fourthGuessYOnIT = polyY->Eval(m_detectorPlanes[9]->getO().Z());
+
+      double firstGuessXOnIT = polyX->Eval(m_detectorPlanes[4]->getO().Z());
 
       cout << "firstGuessXOnIT " << firstGuessXOnIT << " firstGuessYOnIT " << firstGuessYOnIT << endl;
       delete graphErrorX;
@@ -984,10 +950,10 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
         continue;
       }
 
-      // if ( firstGuessXOnIT < -4.5 || firstGuessXOnIT > 4.5){
-      //   cout << "MyTrackFinding: track" << iTrack << "exits in X from spectrometer, go to next track" << endl;
-      //   continue;
-      // }
+      if ( firstGuessXOnIT < -4.5 || firstGuessXOnIT > 4.5){
+        cout << "MyTrackFinding: track" << iTrack << "exits in X from spectrometer, go to next track" << endl;
+        continue;
+      }
 
       if ( !m_detectorPlanes[4]->isInActiveX(firstGuessXOnIT) ){
         cout << "MyTrackFinding: track" << iTrack << "exits in X from spectrometer, go to next track" << endl;
@@ -995,83 +961,68 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
         continue;
       }
 
-      //track probably intercepts first layer, try to find hits
-      //if ( ( firstGuessYOnIT < -1.47 && firstGuessYOnIT > -3.39 ) || (firstGuessYOnIT < 1.77 && firstGuessYOnIT > -0.14 ) ){
       bool isInPlane4 = m_detectorPlanes[4]->isInActiveY(firstGuessYOnIT);
-      bool isInPlane6 = m_detectorPlanes[6]->isInActiveY(firstGuessYOnIT);
       bool isInPlane5 = m_detectorPlanes[5]->isInActiveY(thirdGuessYOnIT);
+      bool isInPlane6 = m_detectorPlanes[6]->isInActiveY(firstGuessYOnIT);
       bool isInPlane7 = m_detectorPlanes[7]->isInActiveY(thirdGuessYOnIT);
+      bool isInPlane8 = m_detectorPlanes[8]->isInActiveY(secondGuessYOnIT);
+      bool isInPlane9 = m_detectorPlanes[9]->isInActiveY(fourthGuessYOnIT);
+      bool isInPlane10 = m_detectorPlanes[10]->isInActiveY(secondGuessYOnIT);
+      bool isInPlane11 = m_detectorPlanes[11]->isInActiveY(fourthGuessYOnIT);
 
-      if ( isInPlane4 || isInPlane6 ){
-        //and so on
-        //cout << "first if " << endl;
-        int searchingPlane = 0;
-        if (isInPlane4) searchingPlane = 4;
-        else if (isInPlane6) searchingPlane = 6;
-        int indexOfMinY = -1.;
-        double distanceInY = 60.;
-        AbsMeasurement* hitToAdd = 0x0;
-        for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
-          PlanarMeasurement* hitHit = 0x0;
-          hitHit = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
-          if (hitHit == 0x0) continue;
-          cout << "prova" <<endl;
-          //cout << "hitHit->getDetId() == " <<hitHit->getDetId() << "hitHit->getHitId()" << hitHit->getHitId() << endl;
-          hitHit->getRawHitCoords().Print();
-          int indexOfPlane = hitHit->getPlaneId();
-          cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
+      vector<bool> crossPlane;
+      map <unsigned int, double> guessOnPlane;
 
-          if (hitHit->getPlaneId() == searchingPlane){
-            cout << "hitHit->getPlaneId() == " << searchingPlane << endl;
-            if ( (firstGuessYOnIT - hitHit->getRawHitCoords()(1) ) < distanceInY ){
-              distanceInY = firstGuessYOnIT - hitHit->getRawHitCoords()(1);
-              indexOfMinY = jMeas;
+      guessOnPlane.clear();
+      crossPlane.clear();
+
+      crossPlane.push_back(isInPlane4);
+      crossPlane.push_back(isInPlane5);
+      crossPlane.push_back(isInPlane6);
+      crossPlane.push_back(isInPlane7);
+      crossPlane.push_back(isInPlane8);
+      crossPlane.push_back(isInPlane9);
+      crossPlane.push_back(isInPlane10);
+      crossPlane.push_back(isInPlane11);
+
+      guessOnPlane[0] = firstGuessYOnIT;
+      guessOnPlane[1] = thirdGuessYOnIT;
+      guessOnPlane[2] = firstGuessYOnIT;
+      guessOnPlane[3] = thirdGuessYOnIT;
+      guessOnPlane[4] = secondGuessYOnIT;
+      guessOnPlane[5] = fourthGuessYOnIT;
+      guessOnPlane[6] = secondGuessYOnIT;
+      guessOnPlane[7] = fourthGuessYOnIT;
+
+
+
+      for (unsigned int iPlaneBool = 0; iPlaneBool < crossPlane.size(); ++iPlaneBool){
+        if ( crossPlane.at(iPlaneBool) ){
+          int searchingPlane = iPlaneBool + 4;
+          int indexOfMinY = -1.;
+          double distanceInY = 60.;
+          AbsMeasurement* hitToAdd = 0x0;
+          for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
+            PlanarMeasurement* hitHit = 0x0;
+            hitHit = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
+            if (hitHit == 0x0) continue;
+            //cout << "hitHit->getDetId() == " <<hitHit->getDetId() << "hitHit->getHitId()" << hitHit->getHitId() << endl;
+            int indexOfPlane = hitHit->getPlaneId();
+            if (hitHit->getPlaneId() == searchingPlane){
+              //cout << "hitHit->getPlaneId() == " << searchingPlane << endl;
+              if ( fabs(firstGuessYOnIT - hitHit->getRawHitCoords()(1) ) < distanceInY ){
+                distanceInY = fabs(guessOnPlane[iPlaneBool] - hitHit->getRawHitCoords()(1));
+                indexOfMinY = jMeas;
+              }
             }
+            //cout << " distanceInY " << distanceInY << " indexOfMinY " << indexOfMinY <<endl;
           }
-          cout << " distanceInY " << distanceInY << " indexOfMinY " << indexOfMinY <<endl;
-        }
-        if (indexOfMinY != -1){
-          hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY)))->clone();
-          //hitToAdd = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY));
-          fitTrack_->insertMeasurement( hitToAdd );
-        }
-      }
-
-      //track probably intercepts second layers, try to find hits
-      if ( isInPlane5 || isInPlane7 ) {
-        //and so on
-        cout << "second if" << endl;
-        int searchingPlane = 0;
-        if (isInPlane5) searchingPlane = 5;
-        else if (isInPlane7) searchingPlane = 7;
-        int indexOfMinY = -1.;
-        double distanceInY = 60.;
-        AbsMeasurement* hitToAdd = 0x0;
-        for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
-          PlanarMeasurement* hitHit = 0x0;
-          hitHit = dynamic_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
-          if (hitHit == 0x0) continue;
-          cout << "prova2" <<endl;
-          //cout << "hitHit->getDetId() == " <<hitHit->getDetId() << "hitHit->getHitId()" << hitHit->getHitId() << endl;
-          hitHit->getRawHitCoords().Print();
-
-          int indexOfPlane = hitHit->getPlaneId();
-
-          cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
-
-          if (hitHit->getPlaneId() == searchingPlane){
-            cout << "hitHit->getPlaneId() == " << searchingPlane << endl;
-            if ( (firstGuessYOnIT - hitHit->getRawHitCoords()(1) ) < distanceInY ){
-              distanceInY = thirdGuessYOnIT - hitHit->getRawHitCoords()(1);
-              indexOfMinY = jMeas;
-            }
+          if (indexOfMinY != -1){
+            hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY)))->clone();
+            //hitToAdd = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY));
+            fitTrack_->insertMeasurement( hitToAdd );
           }
-          cout << " distanceInY " << distanceInY << " indexOfMinY " << indexOfMinY <<endl;
-        }
-        if (indexOfMinY != -1){
-          hitToAdd = ( static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY)))->clone();
-          //hitToAdd = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY));
-          fitTrack_->insertMeasurement( hitToAdd );
+
         }
       }
 
@@ -1080,8 +1031,66 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
         fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement()->getRawHitCoords().Print();
         int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
         cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
-
       }
+
+      //now call function to extrapolate to MSD
+
+      
+      int whichMSDPlane = 12;
+      TVector3 guessOnMSD;
+      guessOnMSD =  ExtrapolateToOuterTracker( fitTrack_, whichMSDPlane );
+
+      cout << "guessOnMSD" << endl;
+      guessOnMSD.Print();
+
+      //delete fake point
+      for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
+        int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
+        if (indexOfPlane == whichMSDPlane) fitTrack_->deletePoint(jTracking);
+      }
+
+      //calculate distance
+      double MSDdistance = 2.;
+      int indexOfMinY = -1.;
+      AbsMeasurement* hitToAdd = 0x0;
+      for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
+        PlanarMeasurement* hitHit = 0x0;
+        hitHit = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
+        if (hitHit == 0x0) continue;
+        //cout << "hitHit->getDetId() == " <<hitHit->getDetId() << "hitHit->getHitId()" << hitHit->getHitId() << endl;
+        int indexOfPlane = hitHit->getPlaneId();
+        if (indexOfPlane == 12){
+          hitHit->getRawHitCoords().Print();
+          cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
+        }
+
+        if (hitHit->getPlaneId() == whichMSDPlane){
+          //cout << "hitHit->getPlaneId() == " << searchingPlane << endl;
+          double distanceFromHit = sqrt( ( guessOnMSD.X() - hitHit->getRawHitCoords()(0) )*( guessOnMSD.X() - hitHit->getRawHitCoords()(0) ) + ( guessOnMSD.Y() - hitHit->getRawHitCoords()(1) )*( guessOnMSD.Y() - hitHit->getRawHitCoords()(1) ) );
+          if ( distanceFromHit < MSDdistance ){
+            MSDdistance = distanceFromHit;
+            indexOfMinY = jMeas;
+          }
+        }
+        //cout << " distanceInY " << distanceInY << " indexOfMinY " << indexOfMinY <<endl;
+      }
+      if (indexOfMinY != -1){
+        hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY)))->clone();
+        //hitToAdd = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY));
+        fitTrack_->insertMeasurement( hitToAdd );
+      }
+
+
+
+      cout << " check of fitTrack_ filling after deleting fakeMSD and inserting one" << endl;
+      for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
+        fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement()->getRawHitCoords().Print();
+        int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
+        cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
+      }
+
+
+
 
       cout << "deleting fitTrack_" << endl;
       delete fitTrack_;
@@ -1092,7 +1101,48 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
 }
 
 
+TVector3 KFitter::ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane ){
 
+  TMatrixDSym planarCov(2);
+  TVectorD planarCoords(2);
+  planarCoords(0)=5.;
+  planarCoords(1)=5.;
+  double pixReso = GlobalPar::GetPar()->MSDReso();
+  planarCov.UnitMatrix();
+  for (int k = 0; k < 2; k++){
+    planarCov[k][k] = pixReso*pixReso;
+  }
+
+  int i = 0;
+  if (whichPlane == 12) i = 0;
+  else if (whichPlane == 13) i = 1;
+  else if (whichPlane == 14) i = 2;
+
+
+  PlanarMeasurement* fakeMSD = new PlanarMeasurement(planarCoords, planarCov, m_detectorID_map["MSD"], i, nullptr );
+  fakeMSD->setPlane(m_detectorPlanes[whichPlane], whichPlane);
+
+  trackToFit->insertMeasurement(fakeMSD);
+  m_fitter->setMaxIterations(2);
+  m_fitter->processTrack(trackToFit);
+
+  double tracklenn = 0.;
+  TVector3 posi, momi;
+  TMatrixDSym covi;
+  int numberplane = 0;
+  unsigned int sTracking = 0;
+  for (unsigned int jTracking = 0; jTracking < trackToFit->getNumPointsWithMeasurement(); ++jTracking){
+    sTracking = jTracking;
+    numberplane = static_cast<genfit::PlanarMeasurement*>(trackToFit->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
+    if (numberplane == 8) break;
+  }
+  if (static_cast<genfit::KalmanFitterInfo*>(trackToFit->getPointWithMeasurement(sTracking)->getFitterInfo(nullptr))->hasForwardPrediction()){
+    static_cast<genfit::KalmanFitterInfo*>(trackToFit->getPointWithMeasurement(sTracking)->getFitterInfo(nullptr))->getForwardPrediction()->getPosMomCov(posi, momi, covi);
+  }
+
+  return posi;
+
+}
 
 //----------------------------------------------------------------------------------------------------
 // pack together the hits to be fitted, from all the detectors, selct different preselecion m_systemsONs
@@ -1957,350 +2007,6 @@ int KFitter::MakeFit( long evNum ) {
 
   return isConverged;
 }
-
-
-void KFitter::NaiveTrackFinding(){
-  vector<double> x, y, z;
-  Int_t n = m_allHitsInMeasurementFormat.size();
-  for (unsigned int i = 0; i < n; i++ ){
-    if (m_allHitsInMeasurementFormat.at(i)->getDetId() != m_detectorID_map["MSD"]) continue;
-    x.push_back( m_allHitsInMeasurementFormat.at(i)->getRawHitCoords()(0) );
-    y.push_back( m_allHitsInMeasurementFormat.at(i)->getRawHitCoords()(1) );
-    z.push_back( m_allHitsInMeasurementFormat.at(i)->getRawHitCoords()(2) );
-  }
-  // TCanvas *c1 = new TCanvas("pippo","z-y",200,10,500,300);
-  // TCanvas *c2 = new TCanvas("pippo2","z-x",200,10,500,300);
-
-  //  c1->cd();
-  TGraph* gr = new TGraph(z.size(),&z[0],&y[0]);
-  zxGraph.push_back(gr);
-  gr->SaveAs(Form("zyGraph%d.root", m_evNum),"RECREATE");
-
-  //  gr->Draw("AP*");
-  //c2->cd();
-  TGraph* gr_ = new TGraph(z.size(),&z[0],&x[0]);
-  zyGraph.push_back(gr_);
-  gr_->SaveAs(Form("zxGraph%d.root", m_evNum),"RECREATE");}
-  //  gr_->Draw("AP*");
-  //
-  //   vector<double> xvalues;
-  //   vector<double> alpha;
-  //   vector<double> houghtransfo;
-  //
-  //
-  //   // //fill vector for function A evaluation
-  //   // for(int j = 0; j < 1000; ++j){
-  //   //   xvalues.push_back(j*0.01 - 5.);
-  //   // }
-  //
-  //   //fill vector for function B evaluation
-//   for(int j = 0; j < 1500; ++j){
-//     alpha.push_back(j*0.0021 -1.57);
-//   }
-//
-//   // //equation A is x_hit = \tan \theta (z_hit - z_0) + x_0
-//   // //z_0 is arbitrarily chosen (34. for MSD)
-//   // for ( unsigned int i = 0; i < z.size(); i++ ){
-//   //   for ( int k = 0; k < 1000; ++k){
-//   //     houghtransfo.push_back((y.at(i) - xvalues.at(k))/(z[i] - 34.));
-//   //   }
-//   // }
-//
-//
-//   //equation B is x_hit = \tan \theta z + d_0/cos \theta
-//   for ( unsigned int i = 0; i < z.size(); i++ ){
-//     for ( int k = 0; k < 1500; ++k ){
-//       houghtransfo.push_back( cos( alpha.at(k) ) * y.at(i) - sin( alpha.at(k))  * ( z.at(i) - 34. ));
-//       //houghtransfo.push_back( cos( alpha.at(k) * TMath::DegToRad() ) * z.at(i) + sin( alpha.at(k) * TMath::DegToRad())  * y.at(i));
-//     }
-//   }
-//
-//   double ylow = *min_element(houghtransfo.begin(),houghtransfo.end());
-//   double yup = *max_element(houghtransfo.begin(),houghtransfo.end());
-//
-//   Int_t xbins = 500;
-//   Int_t ybins = 900;
-//   Float_t xmin = -1.3;
-//   Float_t ymin = -20.;
-//   Float_t xmax = 1.3;
-//   Float_t ymax = 20.;
-//   TH2F* houghHist = new TH2F("houghHist" + m_evNum, "Hough Hist", xbins, xmin, xmax, ybins, ymin, ymax);
-//
-//   // //fill TH2 with function A
-//   // for (int j = 0; j < houghtransfo.size(); ++j){
-//   //   houghHist->Fill(xvalues[j%xvalues.size()], houghtransfo[j]);
-//   // }
-//
-//   //fill TH2 with function B
-//   for (int j = 0; j < houghtransfo.size(); ++j){
-//     houghHist->Fill(alpha[j%alpha.size()], houghtransfo[j]);
-//   }
-//
-//
-//   //houghH.push_back(houghHist);
-//   //  TCanvas * c3 = new TCanvas("c3","c3",505,0,1000,1000);
-//   //  c3->cd();
-//   houghHist->SaveAs(Form("houghhisto_%d.root", m_evNum),"RECREATE");
-//   //trackfile->Write();
-//
-//   //here I try to find peaks, i.e. tracks
-//   //proof of concept iterative method
-//   bool isAnotherPeak = true;
-//   Int_t maxBininHisto = houghHist->GetMaximumBin();
-//   Double_t maxBinInHistoContent = houghHist->GetBinContent(maxBininHisto);
-//   while( isAnotherPeak ){
-//
-//     //cout << " a " << endl;
-//     //search for maximum peak
-//     Int_t maxBin = houghHist->GetMaximumBin();
-//     Double_t maxBinContent = houghHist->GetBinContent(maxBin);
-//     Int_t x_,y_,z_;
-//     houghHist->GetBinXYZ(maxBin, x_, y_, z_);
-//     //check if it is a real peak by looking in neighbourhood
-//     Int_t binsOverThreshold = 0;
-//     for (  int iBin = x_ - 1; iBin < x_ + 2; ++iBin){
-//       for (  int jBin = y_ - 1; jBin < y_ + 2; ++jBin){
-//       //  cout << " b " << endl;
-//         if ( iBin == x_ && jBin == y_ ) continue;
-//         if ( houghHist->GetBinContent(iBin, jBin) > 0.3 * maxBinContent )
-//         ++binsOverThreshold;
-//       }
-//     }
-//     if ( binsOverThreshold < 1 ) {
-//     //  cout << " c " << endl;
-//     houghHist->SetBinContent(x_, y_, 0.);
-//       continue;
-//     }
-//     cout << "bins over threshold " << binsOverThreshold << endl;
-//     Double_t most_probable_x = ((TAxis*)houghHist->GetXaxis())->GetBinCenter(x_);
-//     Double_t most_probable_y = ((TAxis*)houghHist->GetYaxis())->GetBinCenter(y_);
-//     cout << "bin " << most_probable_x << "  " << most_probable_y << endl;
-//     printf("The bin having the maximum value is (%d,%d)\n",x_,y_);
-//
-//     //set zero to 1st peak and neighbourhood
-//     //houghHist->SetBinContent(x_,y_, 0.);
-//     Int_t nrShellToDelete = 2;
-//     Int_t nrIteration= (nrShellToDelete * 2) + 1;
-//     for ( int i = x_ - nrShellToDelete; i < x_ - nrShellToDelete + nrIteration; ++i ){
-//       for ( int j = y_ - nrShellToDelete; j < y_ - nrShellToDelete + nrIteration; ++j ){
-//         houghHist->SetBinContent(i, j, 0.);
-//         //cout << "deleting bin " << i << " " << j << endl;
-//       }
-//     }
-//     maxBin = houghHist->GetMaximumBin();
-//     if ( houghHist->GetBinContent(maxBin) < 0.7 * maxBinInHistoContent )
-//     isAnotherPeak = false;
-//   }
-//
-//   delete houghHist;
-// }
-
-vector< vector<int> > KFitter::MSDTrackFinding(vector<TAMSDpoint*> MSDcollection){
-  //loop over points and catch first station
-  double thirdLayer = ( m_MSD_geo->GetSensorPosition(4).Z() + m_MSD_geo->GetSensorPosition(5).Z() )/2;
-  vector< vector<int> > MSDTrackCandidate;
-  vector<int> oneCandidate;
-  MSDTrackCandidate.clear();
-  oneCandidate.clear();
-  for (unsigned int iPoint = 0; iPoint < MSDcollection.size(); ++iPoint){
-    if ( MSDcollection.at(iPoint)->GetLayer() != 0 ) continue;
-    TAMSDpoint* firstPoint = MSDcollection.at(iPoint);
-    for (unsigned int jPoint = 0; jPoint < MSDcollection.size(); ++jPoint){
-      if ( MSDcollection.at(jPoint)->GetLayer() == 1 ){
-        TAMSDpoint* secondPoint = MSDcollection.at(jPoint);
-        double YZslope = (secondPoint->GetPosition().Y() - firstPoint->GetPosition().Y() ) / (secondPoint->GetPosition().Z() - firstPoint->GetPosition().Z() ); //dx/dz
-        double XZslope = (secondPoint->GetPosition().X() - firstPoint->GetPosition().X() ) / (secondPoint->GetPosition().Z() - firstPoint->GetPosition().Z() ); //dx/dz
-        TVector3 slope( XZslope, YZslope, 1. );
-        //extrapolate line of two points to the third station
-        double extrapolationYZToStation = slope.Y() * ( thirdLayer - firstPoint->GetPosition().Z() ) + firstPoint->GetPosition().Y();
-        double extrapolationXZToStation = slope.X() * ( thirdLayer - firstPoint->GetPosition().Z() ) + firstPoint->GetPosition().X();
-        TVector3 extrapolationToStation( extrapolationXZToStation, extrapolationYZToStation, 0. );
-        double residualOnThirdX = 100.;
-        double residualOnThirdY = 100.;
-        unsigned int hitMinimumX = 99;
-        unsigned int hitMinimumY = 99;
-        for (unsigned int kPoint = 0; kPoint < MSDcollection.size(); ++kPoint){
-          if ( MSDcollection.at(kPoint)->GetLayer() == 2 ){
-            TAMSDpoint* thirdPoint = MSDcollection.at(kPoint);
-            TVector3 projectedPoint( abs( thirdPoint->GetPosition().X() - extrapolationToStation.X() ), abs( thirdPoint->GetPosition().Y() - extrapolationToStation.Y() ), 0. );
-            if ( projectedPoint.X() < residualOnThirdX){
-              residualOnThirdX = projectedPoint.X();
-              hitMinimumX = kPoint;
-            }
-            if ( projectedPoint.Y() < residualOnThirdY){
-              residualOnThirdY = projectedPoint.Y();
-              hitMinimumY = kPoint;
-            }
-            //cout << "hitMinimum is " << iPoint << " "  << jPoint << " " << hitMinimum << " and residualOnThird is " << residualOnThird <<endl;
-          }
-        }
-        oneCandidate.push_back(iPoint);
-        oneCandidate.push_back(jPoint);
-        oneCandidate.push_back(hitMinimumX);
-        oneCandidate.push_back(hitMinimumY);
-        MSDTrackCandidate.push_back(oneCandidate);
-        oneCandidate.clear();
-      }
-    }
-  }
-
-  for ( int h = 0; h < MSDTrackCandidate.size(); ++h ){
-    if ( MSDTrackCandidate.at(h).at(2) == MSDTrackCandidate.at(h).at(3) ){
-      cout << "yes" << endl;
-      TAMSDpoint* stPoint = MSDcollection.at(MSDTrackCandidate.at(h).at(0));
-      TAMSDpoint* ndPoint = MSDcollection.at(MSDTrackCandidate.at(h).at(1));
-      TAMSDpoint* rdPoint = MSDcollection.at(MSDTrackCandidate.at(h).at(2));
-
-      cout << stPoint->GetGenPartID() << " " << ndPoint->GetGenPartID() << " " << rdPoint->GetGenPartID() << endl;
-
-    }
-  }
-
-
-  return MSDTrackCandidate;
-}
-
-void KFitter::Prepare4MSDTrackFinding( vector<TAMSDpoint*> MSDcollection ){
-  cout << "calling Prepare4MSDTrackFinding" << endl;
-  vector<TAMSDpoint*> MSDreduced;
-  MSDreduced.clear();
-  vector< vector<int> > MSDXTrackCandidate, MSDYTrackCandidate;
-  vector<int> XCandidate, YCandidate;
-  MSDXTrackCandidate.clear();
-  MSDYTrackCandidate.clear();
-  XCandidate.clear();
-  YCandidate.clear();
-  for (unsigned int iPoint = 0; iPoint < MSDcollection.size(); ++iPoint){
-    if ( MSDcollection.at(iPoint)->GetLayer() == 0 ){
-      for (unsigned int jPoint = 0; jPoint < MSDcollection.size(); ++jPoint){
-        if ( MSDcollection.at(jPoint)->GetLayer() == 1 ){
-          for (unsigned int kPoint = 0; kPoint < MSDcollection.size(); ++kPoint){
-            if ( MSDcollection.at(kPoint)->GetLayer() == 2 ){
-              MSDreduced.push_back(MSDcollection.at(iPoint));
-              MSDreduced.push_back(MSDcollection.at(jPoint));
-              MSDreduced.push_back(MSDcollection.at(kPoint));
-              vector<bool> minChiSquareXY;
-              minChiSquareXY = MSDTrackFindingNew(MSDreduced);
-              MSDreduced.clear();
-              XCandidate.clear();
-              YCandidate.clear();
-              if (minChiSquareXY.at(0) == true){
-                XCandidate.push_back(iPoint);
-                XCandidate.push_back(jPoint);
-                XCandidate.push_back(kPoint);
-                MSDXTrackCandidate.push_back(XCandidate);
-              }
-              if (minChiSquareXY.at(1) == true){
-                YCandidate.push_back(iPoint);
-                YCandidate.push_back(jPoint);
-                YCandidate.push_back(kPoint);
-                MSDYTrackCandidate.push_back(YCandidate);
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  //temporary test to compare X and Y track candidate
-
-  for ( int i = 0; i < MSDXTrackCandidate.size(); i++ ){
-    for ( int j = 0; j < MSDYTrackCandidate.size(); j++){
-      if (MSDXTrackCandidate.at(i) == MSDYTrackCandidate.at(j)){
-        cout << " we we we " << endl;
-        TAMSDpoint* stPoint = MSDcollection.at(MSDXTrackCandidate.at(i).at(0));
-        TAMSDpoint* ndPoint = MSDcollection.at(MSDXTrackCandidate.at(i).at(1));
-        TAMSDpoint* rdPoint = MSDcollection.at(MSDXTrackCandidate.at(i).at(2));
-        cout << stPoint->GetGenPartID() << " " << ndPoint->GetGenPartID() << " " << rdPoint->GetGenPartID() << endl;
-
-      }
-    }
-  }
-
-
-
-
-}
-
-
-vector <bool> KFitter::MSDTrackFindingNew(vector<TAMSDpoint*> MSDcollection){
-
-  Double_t x, dx;
-  Double_t y, dy;
-  Double_t z, dz;
-
-  bool Xbool = false;
-  bool Ybool = false;
-
-  graphErrorX = new TGraphErrors();
-  graphErrorY = new TGraphErrors();
-
-
-  graphErrorX->Set(MSDcollection.size());
-  graphErrorY->Set(MSDcollection.size());
-
-  double pixReso = GlobalPar::GetPar()->MSDReso();
-  int howmanyGhost = 0;
-
-  for (Int_t i = 0; i < MSDcollection.size(); ++i) {
-    TAMSDpoint* cluster = MSDcollection.at(i);
-    if (cluster->IsTrueGhost()) howmanyGhost++;
-    x  = cluster->GetPosition()(0);
-    y  = cluster->GetPosition()(1);
-    z  = cluster->GetPosition()(2);
-    dx = pixReso;
-    dy = pixReso;
-    dz = 0.0002;
-    graphErrorX->SetPoint(i, z, x);
-    graphErrorX->SetPointError(i, dz, dx);
-
-    graphErrorY->SetPoint(i, z, y);
-    graphErrorY->SetPointError(i, dz, dy);
-  }
-
-  graphErrorX->Fit("pol1", "Q");
-  TF1* polyX = graphErrorX->GetFunction("pol1");
-  double chichiX = polyX->GetChisquare();
-  //condition on chi square and on p[1] from true tracks -0.6 < p[1] < 0.6
-  if ( chichiX < 10. && abs(polyX->GetParameter(1)) < 0.6 ){
-    //cout << polyX->GetParameter(0) << "    " << polyX->GetParameter(1) << " " << polyX->GetChisquare() << " " << howmanyGhost << endl;
-    Xbool = true;
-  }
-
-  //histoTrackParamX->Fill(polyX->GetParameter(0), polyX->GetParameter(1));
-
-  graphErrorY->Fit("pol1", "Q");
-  TF1* polyY = graphErrorY->GetFunction("pol1");
-  double chichiY = polyY->GetChisquare();
-  if ( chichiY < 10. && abs(polyY->GetParameter(1)) < 0.6){
-    //cout << polyY->GetParameter(0) << "    " << polyY->GetParameter(1) << " " << polyY->GetChisquare() << endl;
-    Ybool = true;
-  }
-
-  //histoTrackParamY->Fill(polyY->GetParameter(0), polyY->GetParameter(1));
-
-  delete graphErrorX;
-  delete graphErrorY;
-
-  vector<bool> XYbool;
-  XYbool.push_back(Xbool);
-  XYbool.push_back(Ybool);
-
-  return XYbool;
-}
-
-
-void KFitter::EvaluateTrueTrackParameters(vector<AbsMeasurement*> MSDtrue){
-  vector<TAMSDpoint*> MSDcoll;
-  MSDcoll.clear();
-  for (unsigned int iMSD = 0; iMSD< MSDtrue.size(); ++iMSD){
-    if ( MSDtrue.at(iMSD)->getDetId() != m_detectorID_map["MSD"] ) continue;
-    MSDcoll.push_back(m_MSD_pointCollection.at(MSDtrue.at(iMSD)->getHitId()));
-  }
-  MSDTrackFindingNew(MSDcoll);
-}
-
 
 void KFitter::TestExtrapolation(vector<AbsMeasurement*> extrapTest, string particleHypo){
 

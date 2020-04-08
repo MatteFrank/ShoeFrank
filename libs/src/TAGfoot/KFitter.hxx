@@ -182,11 +182,6 @@ public:
   int UploadClusIT();
   int UploadClusMSD();
 
-  void NaiveTrackFinding();
-  vector< vector<int> > MSDTrackFinding( vector<TAMSDpoint*> MSDcollection );
-  vector<bool> MSDTrackFindingNew(vector<TAMSDpoint*> MSDcollection);
-  void Prepare4MSDTrackFinding(vector<TAMSDpoint*> MSDcollection);
-  void EvaluateTrueTrackParameters(vector<AbsMeasurement*> MSDtrue);
   void TestExtrapolation(vector<AbsMeasurement*> extrapTest, string particleHypo);
 
 
@@ -216,27 +211,7 @@ public:
   double EvalError( TVector3 mom, TMatrixD cov );
   void MatrixToZero( TMatrixD *matrix );
 
-  // bool frankFind( string what, string where )	{
-
-  //   int wildcard_pos = what.find("*");
-
-  //   if ( wildcard_pos == 0 )    {
-  //     if( where.find( what.substr( wildcard_pos+1 ) ) != string::npos )
-  // 	return true;
-  //   }
-  //   else if( wildcard_pos == what.size()-1 )    {
-  //     if( where.find( what.substr( 0, wildcard_pos ) ) != string::npos )
-  // 	return true;
-  //   }
-  //   else if ( wildcard_pos != string::npos )    {
-  //     int pre = where.find( what.substr( 0, wildcard_pos ) );
-  //     int post = where.find( what.substr( wildcard_pos+1 ) );
-  //     if( pre!=string::npos && post!=string::npos )
-  // 	return true;
-  //   }
-
-  //   return false;
-  // }
+  TVector3 ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane );
 
 
 
