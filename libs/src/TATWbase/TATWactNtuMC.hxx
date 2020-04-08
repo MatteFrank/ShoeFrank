@@ -41,10 +41,9 @@ private:
 
     TAGparGeo*  f_pargeo;
 
-    Int_t Z_beam;
-  
-    int cnt;
-    int cntWrong;
+    Int_t fZbeam;  
+    Int_t fCnt;
+    Int_t fCntWrong;
    
     TH1F* fpHisHitCol;
     TH1F* fpHisHitLine;
@@ -63,7 +62,8 @@ private:
     vector<TH1F*> fpHisDistZ_MC;
     vector<TH1F*> fpHisDistZ;
    
-   map<int, TATWntuHit*> fMapPU; //! map for pilepup
+    map<int, TATWntuHit*> fMapPU; //! map for pilepup
+    vector<TATWntuHit*> fVecPuOff; //! vector for pilepup Off
 
 private:
     void          CreateDigitizer();

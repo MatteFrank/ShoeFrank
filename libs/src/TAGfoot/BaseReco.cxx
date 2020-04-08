@@ -378,17 +378,15 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeTW() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
       TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
-      TString parFileName = "./geomaps/TATWdetector.map";
-      parGeo->FromFile(parFileName);
+      parGeo->FromFile(Form("./geomaps/%sTATWdetector.map", fExpName.Data()));
       
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
-      //      parFileName = Form("./config/%sTATWCalibrationMap.xml", fExpName.Data());
-      parCal->FromFile(parFileName.Data());
+      parCal->FromFile(Form("./config/%sTATWCalibrationMap.xml", fExpName.Data()));
 
       TString exp_name = fExpName.IsNull() ? "" : "_" + fExpName(0,fExpName.First('/'));
-      parFileName = Form("./config/%sTATW_BBparameters_%d%s_%d%s.cfg", fExpName.Data(),A_beam,ion_name.Data(),(int)(kinE_beam*TAGgeoTrafo::GevToMev()),exp_name.Data());
-      parCal->FromFile(Z_beam,parFileName.Data());
+      TString parFileName = Form("./config/%sTATW_BBparameters_%d%s_%d%s.cfg", fExpName.Data(),A_beam,ion_name.Data(),(int)(kinE_beam*TAGgeoTrafo::GevToMev()),exp_name.Data());
+      parCal->FromFileZID(Z_beam,parFileName.Data());
    }
    
    // initialise par files for caloriomter
@@ -400,6 +398,7 @@ void BaseReco::ReadParFiles()
    }
 
    TAVTparConf::SetHistoMap();
+
 }
 
 //__________________________________________________________

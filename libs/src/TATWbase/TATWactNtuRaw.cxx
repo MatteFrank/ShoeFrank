@@ -215,6 +215,7 @@ Double_t TATWactNtuRaw::GetEnergy(Double_t RawEnergy,Int_t BarId)
     {
       return -1;
     }
+
   TATWparCal*   p_calmap = (TATWparCal*)    fpCalPar->Object();
   Double_t p0=p_calmap->getCalibrationMap()->GetBarParameter(BarId,0);
   Double_t p1=p_calmap->getCalibrationMap()->GetBarParameter(BarId,1);

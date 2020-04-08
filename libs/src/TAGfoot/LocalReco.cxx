@@ -1,5 +1,6 @@
 
 
+
 #include "LocalReco.hxx"
 
 #include "TASTntuRaw.hxx"
@@ -138,11 +139,9 @@ void LocalReco::CreateRawAction()
 //         fActNtuRawMsd->CreateHistogram();
 //   }
 
-   cout<<"Is TW included??  "<<GlobalPar::GetPar()->IncludeTW()<<endl;
-   
    if(GlobalPar::GetPar()->IncludeTW()) {
       fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
-      fActNtuRawTw = new TATWactNtuRaw("twActNtu", fpDatRawTw, fpNtuRawTw, fpParGeoTw, fpParMapTw, fpParCalTw);
+      fActNtuRawTw = new TATWactNtuRaw("twActNtu", fpDatRawTw, fpNtuRawTw, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
       if(GlobalPar::GetPar()->Debug()) fActNtuRawTw->SetDebugLevel(1);
       if (fFlagHisto)
          fActNtuRawTw->CreateHistogram();
