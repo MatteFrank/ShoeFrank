@@ -187,13 +187,7 @@ KFitter::KFitter () {
   //MSDresidualOfPrediction = new TH2D("MSDresidual","MSDresidual",100, -1., 1., 100, -1. ,1.);
   //MSDforwardcounter = 0;
   //ITresidualOfPrediction = new TH2D("ITresidual","ITresidual",100, -1., 1., 100, -1. ,1.);
-
-  //print m_detectorID_map
-  for (map<string,int>::iterator it = m_detectorID_map.begin(); it != m_detectorID_map.end(); it++ ){
-    cout << "Printing m_detectorID_map " << endl;
-    cout << (*it).first << "   " <<  (*it).second << endl;
-  }
-
+  percentageOfMCTracksVTX = new TH1D("mean number of tracks","mean number of tracks", 10, 0., 5.);
 }
 
 
@@ -848,20 +842,27 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
     for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {
 
       TAVTtrack* track = vtxPD->GetTrack( iTrack );
+      int montecarloTrackIndex = -1;
       // N clusters per track
       int ncluster = track->GetClustersN();
       cout << "Track number " << iTrack << " has this number of clusters " << ncluster << endl;
+      int MCindexInTrack = 0;
 
       // loop over clusters in the track  get clusters in track
       for (int iCluster = 0; iCluster < ncluster; iCluster++) {
 
         TAVTcluster* clus = (TAVTcluster*) track->GetCluster( iCluster );
         if (!clus->IsValid()) continue;
+        if (iCluster == 0) montecarloTrackIndex = clus->GetMcIndex(0);
+
+        MCindexInTrack+=clus->GetMcTracksN();
 
         //UploadClusVT();
         Prepare4Vertex( clus, iTrack, iCluster );				//fill map m_hitCollectionToFit_dataLike
 
       }
+
+      percentageOfMCTracksVTX->Fill(MCindexInTrack/ncluster);
 
       // SET PARTICLE HYPOTHESIS  --> set repository
 
@@ -874,10 +875,10 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
       fitTrack_->addTrackRep( rep );
       fitTrack_->setStateSeed(pos_, mom_);
 
-      for (unsigned int g = 0; g < m_hitCollectionToFit_dataLike[iTrack].size(); ++g){
+      fitTrack_->setMcTrackId(montecarloTrackIndex);
 
+      for (unsigned int g = 0; g < m_hitCollectionToFit_dataLike[iTrack].size(); ++g){
         fitTrack_->insertMeasurement( m_hitCollectionToFit_dataLike[iTrack].at(g) );
-        cout << "fitTrack_->getNumPointsWithMeasurement() " << fitTrack_->getNumPointsWithMeasurement() << "  g  " << g <<endl;
       }
 
 
@@ -1035,52 +1036,52 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
 
       //now call function to extrapolate to MSD
 
-      
-      int whichMSDPlane = 12;
-      TVector3 guessOnMSD;
-      guessOnMSD =  ExtrapolateToOuterTracker( fitTrack_, whichMSDPlane );
+      for (int iMSDPlane = 12; iMSDPlane < 15; ++iMSDPlane){
+        int whichMSDPlane = iMSDPlane;
+        TVector3 guessOnMSD;
+        guessOnMSD =  ExtrapolateToOuterTracker( fitTrack_, whichMSDPlane );
 
-      cout << "guessOnMSD" << endl;
-      guessOnMSD.Print();
+        cout << "guessOnMSD" << endl;
+        guessOnMSD.Print();
 
-      //delete fake point
-      for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
-        int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
-        if (indexOfPlane == whichMSDPlane) fitTrack_->deletePoint(jTracking);
-      }
-
-      //calculate distance
-      double MSDdistance = 2.;
-      int indexOfMinY = -1.;
-      AbsMeasurement* hitToAdd = 0x0;
-      for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
-        PlanarMeasurement* hitHit = 0x0;
-        hitHit = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
-        if (hitHit == 0x0) continue;
-        //cout << "hitHit->getDetId() == " <<hitHit->getDetId() << "hitHit->getHitId()" << hitHit->getHitId() << endl;
-        int indexOfPlane = hitHit->getPlaneId();
-        if (indexOfPlane == 12){
-          hitHit->getRawHitCoords().Print();
-          cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
+        //delete fake point
+        for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
+          int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
+          if (indexOfPlane == whichMSDPlane) fitTrack_->deletePoint(jTracking);
         }
 
-        if (hitHit->getPlaneId() == whichMSDPlane){
-          //cout << "hitHit->getPlaneId() == " << searchingPlane << endl;
-          double distanceFromHit = sqrt( ( guessOnMSD.X() - hitHit->getRawHitCoords()(0) )*( guessOnMSD.X() - hitHit->getRawHitCoords()(0) ) + ( guessOnMSD.Y() - hitHit->getRawHitCoords()(1) )*( guessOnMSD.Y() - hitHit->getRawHitCoords()(1) ) );
-          if ( distanceFromHit < MSDdistance ){
-            MSDdistance = distanceFromHit;
-            indexOfMinY = jMeas;
+        //calculate distance
+        double MSDdistance = 2.;
+        int indexOfMinY = -1.;
+        AbsMeasurement* hitToAdd = 0x0;
+        for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
+          PlanarMeasurement* hitHit = 0x0;
+          hitHit = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
+          if (hitHit == 0x0) continue;
+          //cout << "hitHit->getDetId() == " <<hitHit->getDetId() << "hitHit->getHitId()" << hitHit->getHitId() << endl;
+          int indexOfPlane = hitHit->getPlaneId();
+          // if (indexOfPlane == 12){
+          //   hitHit->getRawHitCoords().Print();
+          //   cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
+          // }
+
+          if (hitHit->getPlaneId() == whichMSDPlane){
+            //cout << "hitHit->getPlaneId() == " << searchingPlane << endl;
+            double distanceFromHit = sqrt( ( guessOnMSD.X() - hitHit->getRawHitCoords()(0) )*( guessOnMSD.X() - hitHit->getRawHitCoords()(0) ) + ( guessOnMSD.Y() - hitHit->getRawHitCoords()(1) )*( guessOnMSD.Y() - hitHit->getRawHitCoords()(1) ) );
+            if ( distanceFromHit < MSDdistance ){
+              MSDdistance = distanceFromHit;
+              indexOfMinY = jMeas;
+            }
           }
+          //cout << " distanceInY " << distanceInY << " indexOfMinY " << indexOfMinY <<endl;
         }
-        //cout << " distanceInY " << distanceInY << " indexOfMinY " << indexOfMinY <<endl;
-      }
-      if (indexOfMinY != -1){
-        hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY)))->clone();
-        //hitToAdd = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY));
-        fitTrack_->insertMeasurement( hitToAdd );
-      }
+        if (indexOfMinY != -1){
+          hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY)))->clone();
+          //hitToAdd = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY));
+          fitTrack_->insertMeasurement( hitToAdd );
+        }
 
-
+      }
 
       cout << " check of fitTrack_ filling after deleting fakeMSD and inserting one" << endl;
       for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
@@ -1105,25 +1106,19 @@ TVector3 KFitter::ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane )
 
   TMatrixDSym planarCov(2);
   TVectorD planarCoords(2);
-  planarCoords(0)=5.;
-  planarCoords(1)=5.;
+  planarCoords(0) = 5.;
+  planarCoords(1) = 5.;
   double pixReso = GlobalPar::GetPar()->MSDReso();
   planarCov.UnitMatrix();
   for (int k = 0; k < 2; k++){
     planarCov[k][k] = pixReso*pixReso;
   }
 
-  int i = 0;
-  if (whichPlane == 12) i = 0;
-  else if (whichPlane == 13) i = 1;
-  else if (whichPlane == 14) i = 2;
-
-
-  PlanarMeasurement* fakeMSD = new PlanarMeasurement(planarCoords, planarCov, m_detectorID_map["MSD"], i, nullptr );
+  PlanarMeasurement* fakeMSD = new PlanarMeasurement(planarCoords, planarCov, m_detectorID_map["MSD"], whichPlane-12, nullptr );
   fakeMSD->setPlane(m_detectorPlanes[whichPlane], whichPlane);
 
   trackToFit->insertMeasurement(fakeMSD);
-  m_fitter->setMaxIterations(2);
+  m_fitter->setMaxIterations(1);
   m_fitter->processTrack(trackToFit);
 
   double tracklenn = 0.;
@@ -1134,7 +1129,7 @@ TVector3 KFitter::ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane )
   for (unsigned int jTracking = 0; jTracking < trackToFit->getNumPointsWithMeasurement(); ++jTracking){
     sTracking = jTracking;
     numberplane = static_cast<genfit::PlanarMeasurement*>(trackToFit->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
-    if (numberplane == 8) break;
+    if (numberplane == whichPlane) break;
   }
   if (static_cast<genfit::KalmanFitterInfo*>(trackToFit->getPointWithMeasurement(sTracking)->getFitterInfo(nullptr))->hasForwardPrediction()){
     static_cast<genfit::KalmanFitterInfo*>(trackToFit->getPointWithMeasurement(sTracking)->getFitterInfo(nullptr))->getForwardPrediction()->getPosMomCov(posi, momi, covi);
@@ -2477,6 +2472,7 @@ void KFitter::Finalize() {
   //histoTrackParamY->SaveAs("trackparamY.root", "RECREATE");
   //MSDresidualOfPrediction->SaveAs("MSDresidual.root", "RECREATE");
   //ITresidualOfPrediction->SaveAs("ITresidual.root", "RECREATE");
+  percentageOfMCTracksVTX->SaveAs("percentageOfMCTracksVTX.root", "RECREATE");
 
   //delete histoTrackParamX;
   //delete histoTrackParamY;

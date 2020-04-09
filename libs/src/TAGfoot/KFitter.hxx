@@ -303,6 +303,7 @@ private:
 
   TH2D* MSDresidualOfPrediction;
   TH2D* ITresidualOfPrediction;
+  TH1D* percentageOfMCTracksVTX;
   int MSDforwardcounter;
 
 
