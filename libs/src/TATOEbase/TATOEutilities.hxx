@@ -430,6 +430,100 @@ public:
     std::vector<candidate> generate_candidates(std::size_t index_p) const ;
 };
 
+
+
+
+
+//______________________________________________________________________________
+//                      MSD
+
+
+
+template<>
+struct detector_properties< details::msd_tag >
+{
+    using candidate = details::msd_tag::candidate;
+    using measurement_vector = underlying<candidate>::vector;
+    using measurement_covariance = underlying<candidate>::covariance;
+    using measurement_matrix = underlying<candidate>::measurement_matrix;
+    using data_type = underlying<candidate>::data_type;
+    
+    
+private:
+    
+    const TAMSDntuCluster* cluster_mhc;
+    std::array<measurement_matrix, 2> const matrix_mc{
+                measurement_matrix{ 1, 0, 0, 0 },
+                measurement_matrix{ 0, 1, 0, 0 }
+                                                      };
+    
+    const std::array<double, 3> cut_mc;
+    constexpr static std::size_t layer{6};
+    
+    const std::array<std::size_t, layer> view_mc;
+    const std::array<double, layer> depth_mc;
+    
+public:
+    //might go to intermediate struc holding the data ?
+    detector_properties( TAMSDntuCluster* cluster_phc,
+                         TAMSDparGeo* geo_ph,
+                         std::array<double, 3> cut_pc)  :
+    cluster_mhc{cluster_phc},
+    cut_mc{cut_pc},
+    view_mc{ retrieve_view(geo_ph) },
+    depth_mc{ retrieve_depth(geo_ph) }
+    { }
+    
+    
+private:
+    template<std::size_t ... Indices>
+    auto retrieve_depth_impl( TAMSDparGeo* geo_ph,
+                             std::index_sequence<Indices...> ) const
+    -> std::array<double, layer>
+    {
+        auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+        
+        
+        return {transformation_h->FromMSDLocalToGlobal(geo_ph->GetSensorPosition(Indices)).Z()...};
+    }
+    
+    
+    auto retrieve_depth( TAMSDparGeo* geo_ph ) const
+    -> std::array<double, layer>
+    {
+        return retrieve_depth_impl( geo_ph, std::make_index_sequence<layer>{} );
+    }
+                                                        
+    template<std::size_t ... Indices>
+    auto retrieve_view_impl( TAMSDparGeo* geo_ph,
+                              std::index_sequence<Indices...> ) const
+    -> std::array<std::size_t, layer>
+    {
+        return { static_cast<std::size_t>(geo_ph->GetSensorPar(Indices).TypeIdx)...};
+    }
+                                                        
+    auto retrieve_view( TAMSDparGeo* geo_ph ) const
+    -> std::array<std::size_t, layer>
+    {
+        return retrieve_view_impl( geo_ph, std::make_index_sequence<layer>{} );
+    }
+    
+    
+public:
+    
+    constexpr std::size_t layer_count() const { return layer; }
+    constexpr double layer_depth( std::size_t index_p ) const { return depth_mc[index_p]; }
+    constexpr double get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
+    
+    layer_generator<detector_properties> form_layers() const
+    {
+        return {*this};
+    }
+    
+    std::vector<candidate> generate_candidates(std::size_t index_p) const ;
+};
+
+
 //______________________________________________________________________________
 //                      TOF
 
