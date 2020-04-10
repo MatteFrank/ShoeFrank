@@ -188,6 +188,7 @@ KFitter::KFitter () {
   //MSDforwardcounter = 0;
   //ITresidualOfPrediction = new TH2D("ITresidual","ITresidual",100, -1., 1., 100, -1. ,1.);
   percentageOfMCTracksVTX = new TH1D("mean number of tracks","mean number of tracks", 10, 0., 5.);
+  tempPurity = new TH1D("purity", "purity", 20, 0., 1.5);
 }
 
 
@@ -853,9 +854,9 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
 
         TAVTcluster* clus = (TAVTcluster*) track->GetCluster( iCluster );
         if (!clus->IsValid()) continue;
-        if (iCluster == 0) montecarloTrackIndex = clus->GetMcIndex(0);
+        if (iCluster == 0) montecarloTrackIndex = clus->GetMcTrackIdx(0);
 
-        MCindexInTrack+=clus->GetMcTracksN();
+        MCindexInTrack += clus->GetMcTracksN();
 
         //UploadClusVT();
         Prepare4Vertex( clus, iTrack, iCluster );				//fill map m_hitCollectionToFit_dataLike
@@ -1058,26 +1059,17 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
           PlanarMeasurement* hitHit = 0x0;
           hitHit = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
           if (hitHit == 0x0) continue;
-          //cout << "hitHit->getDetId() == " <<hitHit->getDetId() << "hitHit->getHitId()" << hitHit->getHitId() << endl;
           int indexOfPlane = hitHit->getPlaneId();
-          // if (indexOfPlane == 12){
-          //   hitHit->getRawHitCoords().Print();
-          //   cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
-          // }
-
           if (hitHit->getPlaneId() == whichMSDPlane){
-            //cout << "hitHit->getPlaneId() == " << searchingPlane << endl;
             double distanceFromHit = sqrt( ( guessOnMSD.X() - hitHit->getRawHitCoords()(0) )*( guessOnMSD.X() - hitHit->getRawHitCoords()(0) ) + ( guessOnMSD.Y() - hitHit->getRawHitCoords()(1) )*( guessOnMSD.Y() - hitHit->getRawHitCoords()(1) ) );
             if ( distanceFromHit < MSDdistance ){
               MSDdistance = distanceFromHit;
               indexOfMinY = jMeas;
             }
           }
-          //cout << " distanceInY " << distanceInY << " indexOfMinY " << indexOfMinY <<endl;
         }
         if (indexOfMinY != -1){
           hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY)))->clone();
-          //hitToAdd = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY));
           fitTrack_->insertMeasurement( hitToAdd );
         }
 
@@ -1090,6 +1082,8 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
         cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
       }
 
+      //now call check on track finding
+      CheckTrackFinding(fitTrack_);
 
 
 
@@ -1099,6 +1093,23 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
     m_hitCollectionToFit_dataLike.clear();
   } //end vertex loop
 
+}
+
+void KFitter::CheckTrackFinding(Track* trackToCheck){
+  double numeratorForPurity = 0.;
+  int hitsNotVT = 0;
+  bool calcPurity = false;
+  for (unsigned int jTracking = 0; jTracking < trackToCheck->getNumPointsWithMeasurement(); ++jTracking){
+    int trackHitID = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
+    int trackDetID = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getDetId();
+    if(trackDetID != m_detectorID_map["VT"]) hitsNotVT++;
+    int trackIDFromMontecarlo = m_MCInfo[trackDetID][trackHitID].MCTrackId;
+    if (trackToCheck->getMcTrackId() == trackIDFromMontecarlo) numeratorForPurity+=1;
+    if(trackDetID == m_detectorID_map["MSD"]) calcPurity = true;
+
+  }
+  if (calcPurity)
+  tempPurity->Fill(numeratorForPurity/hitsNotVT);
 }
 
 
@@ -2473,6 +2484,7 @@ void KFitter::Finalize() {
   //MSDresidualOfPrediction->SaveAs("MSDresidual.root", "RECREATE");
   //ITresidualOfPrediction->SaveAs("ITresidual.root", "RECREATE");
   percentageOfMCTracksVTX->SaveAs("percentageOfMCTracksVTX.root", "RECREATE");
+  tempPurity->SaveAs("purity.root","RECREATE");
 
   //delete histoTrackParamX;
   //delete histoTrackParamY;

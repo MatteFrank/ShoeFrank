@@ -212,6 +212,7 @@ public:
   void MatrixToZero( TMatrixD *matrix );
 
   TVector3 ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane );
+  void CheckTrackFinding( Track* trackToCheck );
 
 
 
@@ -304,6 +305,7 @@ private:
   TH2D* MSDresidualOfPrediction;
   TH2D* ITresidualOfPrediction;
   TH1D* percentageOfMCTracksVTX;
+  TH1D* tempPurity;
   int MSDforwardcounter;
 
 
