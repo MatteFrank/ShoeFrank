@@ -37,7 +37,7 @@ enum ParticleType {None=-1,Proton=0, Carbon=1};
 
 static std::map<int,std::string> ParticleName={{-1,"None"},{0,"Proton"},{1,"Carbon"}};
 
-static std::map<int,std::string> LayerName={{0,"Front"},{1,"Rear"}};
+static std::map<int,std::string> LayerName={{1,"Front"},{0,"Rear"}};
 
 
 #endif

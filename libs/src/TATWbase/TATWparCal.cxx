@@ -1,3 +1,4 @@
+
 /*!
   \file
   \version $Id: TATWparCal.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
@@ -110,7 +111,6 @@ Bool_t TATWparCal::FromFile(const TString& name)
   TString name_exp = name;
   gSystem->ExpandPathName(name_exp);
   int verbose = 0;
-  
   cMapCal->LoadCalibrationMap(name_exp.Data());
   
   return kFALSE;
@@ -119,7 +119,7 @@ Bool_t TATWparCal::FromFile(const TString& name)
 
 //
 ////------------------------------------------+-----------------------------------
-Bool_t TATWparCal::FromFile(Int_t Zbeam, const TString& name) {
+Bool_t TATWparCal::FromFileZID(Int_t Zbeam, const TString& name) {
  
     
   TString nameExp;
@@ -171,8 +171,13 @@ Int_t TATWparCal::GetChargeZ(Float_t edep, Float_t tof, Int_t layer)
 {
   if(edep<0) {
     Zraw=-1;
+    dist_Z.clear();
+    for(int iZ=0; iZ<Z_beam; iZ++)
+      dist_Z.push_back( std::numeric_limits<float>::max() ); //inf
+
     if (fDebugLevel)
-      printf("the energy released is %.f so Zraw is set to %d\n",edep,Zraw);
+      printf("the energy released is %.f so Zraw is set to %d and dist to inf\n",edep,Zraw);
+
   }
   else
     ComputeBBDistance(edep,tof,layer);       
@@ -229,8 +234,6 @@ Double_t TATWparCal::fDistPrime(double tof, double dE, double x, double fBB, dou
 void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 {
 
-  fDebugLevel=false;
-  
   Zraw = -2;  //nonsense intialization: charge must be > 0
   dist_min_Z = std::numeric_limits<float>::max(); //inf
 

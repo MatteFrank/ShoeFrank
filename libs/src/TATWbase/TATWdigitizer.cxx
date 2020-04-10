@@ -40,6 +40,8 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
    fCurrentHit(0x0),
+   fMCtrue(true),
+   fPileUpOff(false),
    fDeResECst(680e4),
    fDeErrResCst(1e4),
    fDeResEC(9.9),
@@ -54,12 +56,18 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
    fDeErrAttLambdaRight(0.3),
    fDeAttAsym(0.09),
    fDeAttAsymSmear(0.),
-   fTofCstE(1000),
-   fTofErrCstE(0.1),
-   fTofLambdaE(2.50),
-   fTofErrLambdaE(0.1),
-   fTofk0E(140),
-   fTofErrk0E(18),
+   fTofCstE(241),
+   fTofErrCstE(3),
+   // fTofCstE(1000),
+   // fTofErrCstE(0.1),
+   fTofLambdaE(0.08),
+   fTofErrLambdaE(0.001),
+   // fTofLambdaE(2.50),
+   // fTofErrLambdaE(0.1),
+   fTofk0E(60.2),
+   fTofErrk0E(0.3),
+   // fTofk0E(140),
+   // fTofErrk0E(18),
    fTofPropAlpha(65.), // velocity^-1 of propagation of light in TW bar (ps/cm)
    // fTofPropAlpha(280/2.), // velocity of the difference need to divide by 2 (ps/cm)
    fTofErrPropAlpha(2.5), // old 5 ?
@@ -83,8 +91,10 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
 // --------------------------------------------------------------------------------------
 void  TATWdigitizer::SetFunctions()
 {
-   fDeResE     = new TF1("ResEnergy", this, &TATWdigitizer::ResEnergy, 0, 10, 2, "TATWdigitizer", "ResEnergy");
-   fTofResE    = new TF1("ResDiffTime", this, &TATWdigitizer::ResToF, 0, 2.5, 3, "TATWdigitizer", "ResToF");
+   fDeResE     = new TF1("ResEnergy", this, &TATWdigitizer::ResEnergy, 0, 200, 2, "TATWdigitizer", "ResEnergy");
+   fTofResE    = new TF1("ResDiffTime", this, &TATWdigitizer::ResToF, 0, 200, 3, "TATWdigitizer", "ResToF");  // 0-200 MeV range in energy loss
+   // fDeResE     = new TF1("ResEnergy", this, &TATWdigitizer::ResEnergy, 0, 10, 2, "TATWdigitizer", "ResEnergy");
+   // fTofResE    = new TF1("ResDiffTime", this, &TATWdigitizer::ResToF, 0, 2.5, 3, "TATWdigitizer", "ResToF");
    
    fDeAttLeft  = new TF1("DeAttLeft", this, &TATWdigitizer::DeAttLeft,   -fSlatLength/2, fSlatLength/2., 3, "TATWdigitizer", "DeAttLeft");
    fDeAttRight = new TF1("DeAttRight", this, &TATWdigitizer::DeAttRight, -fSlatLength/2, fSlatLength/2., 3, "TATWdigitizer", "DeAttRight");
@@ -183,8 +193,9 @@ Float_t TATWdigitizer::GetResEnergy(Float_t energy)
    Float_t C = gRandom->Gaus(fDeResEC, fDeErrResEC);
    fDeResE->SetParameter(1, C);
    
-   //   return fDeResE->Eval(energy);
-   return energy*0.1;
+   // return fDeResE->Eval(energy);
+   // return energy*0.1;  // 10 % energy loss resolution flat for each fragment
+   return energy*0.047;  // 4.7 % energy loss resolution flat for each fragment
 }
 
 //___________________________________________________________________________________________
@@ -201,8 +212,10 @@ Float_t TATWdigitizer::GetTofLeft(Float_t pos, Float_t time, Float_t edep)
    Float_t alpha  = gRandom->Gaus(fTofPropAlpha, fTofErrPropAlpha);
    Float_t timeL  = time - pos*alpha;
    // Float_t timeL  = time + (fSlatLength/2. - pos)*alpha;
-   Float_t resToF = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R
-   timeL += gRandom->Gaus(0, resToF);  // TODO::check more updated ToF resolutions
+   Float_t resTofL = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R: resTofL=resTofR --> resTof=sqrt(resTofL^2 + resTofR^2)/2
+   if(fDebugLevel && edep>1 && time<9000)
+     cout<<"edep::"<<edep<<"  time::"<<time/1000.<<"  res::"<<resTofL<<"  rel::"<<resTofL/timeL*100<<" %"<<endl;
+   timeL += gRandom->Gaus(0, resTofL);  // TODO::check more updated ToF resolutions
    
    return timeL;
 }
@@ -214,8 +227,8 @@ Float_t TATWdigitizer::GetTofRight(Float_t pos, Float_t time, Float_t edep)
    Float_t alpha  = gRandom->Gaus(fTofPropAlpha, fTofErrPropAlpha);
    Float_t timeR  = time + pos*alpha;
    // Float_t timeR  = time + (fSlatLength/2. + pos)*alpha;
-   Float_t resToF = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R
-   timeR += gRandom->Gaus(0, resToF);
+   Float_t resTofR = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R: resTofL=resTofR --> resTof=sqrt(resTofL^2 + resTofR^2)/2
+   timeR += gRandom->Gaus(0, resTofR);
    
    return timeR;
 }
@@ -289,41 +302,55 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 
    //Time should be stored in ns
    tof *= TAGgeoTrafo::PsToNs(); 
-   if (fMap[idA] == 0) {
+
+   if( SetPileUpOff() ) {     
      fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !
-
      //here set true Z charge: the rec charge is set after in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
-     fCurrentHit->SetChargeZ(Z);     
+     fCurrentHit->SetChargeZ(Z);
 
-      fMap[idA] = fCurrentHit;
-   } else {
-      fCurrentHit =  fMap[idA];
-      //Add charge to current hit
-      fCurrentHit->SetChargeChA(fCurrentHit->GetChargeChA()+chargeA);
-      fCurrentHit->SetChargeChB(fCurrentHit->GetChargeChB()+chargeB);
-
-      // take the shortest time
-      if (timeA < fCurrentHit->GetChargeTimeA())
-         fCurrentHit->SetChargeTimeA(timeA);
-         
-      if (timeB < fCurrentHit->GetChargeTimeB())
-         fCurrentHit->SetChargeTimeB(timeB);
-      
-      // recompute 
-      energy    = TMath::Sqrt(fCurrentHit->GetChargeChA()*fCurrentHit->GetChargeChB());
-      tof       = (fCurrentHit->GetChargeTimeA()+fCurrentHit->GetChargeTimeB())/2 * TAGgeoTrafo::PsToNs();
-      pos       = (fCurrentHit->GetChargeTimeB()-fCurrentHit->GetChargeTimeA())/(2*fTofPropAlpha);
-      chargeCOM = TMath::Log(fCurrentHit->GetChargeChA()/fCurrentHit->GetChargeChB());
-      
-      fCurrentHit->SetEnergyLoss(energy);
-      fCurrentHit->SetTime(tof);
-      fCurrentHit->SetPosition(pos);
-      fCurrentHit->SetCOM(chargeCOM);
-
-      //here set true Z charge: the rec charge is set after in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
-      fCurrentHit->SetChargeZ(Z);     
    }
-   
+   else {
+     if (fMap[idA] == 0) {
+       fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(view, id, energy, tof, tof, pos, chargeCOM, chargeA ,chargeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !
+       
+       //here set true Z charge: the rec charge is set after in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
+       fCurrentHit->SetChargeZ(Z);     
+       
+      fMap[idA] = fCurrentHit;
+     } else {
+       fCurrentHit =  fMap[idA];
+       //Add charge to current hit
+       fCurrentHit->SetChargeChA(fCurrentHit->GetChargeChA()+chargeA);
+       fCurrentHit->SetChargeChB(fCurrentHit->GetChargeChB()+chargeB);
+       
+       // take the shortest time
+       if (timeA < fCurrentHit->GetChargeTimeA())
+         fCurrentHit->SetChargeTimeA(timeA);
+       
+       if (timeB < fCurrentHit->GetChargeTimeB())
+         fCurrentHit->SetChargeTimeB(timeB);
+       
+       // recompute 
+       energy    = TMath::Sqrt(fCurrentHit->GetChargeChA()*fCurrentHit->GetChargeChB());
+       tof       = (fCurrentHit->GetChargeTimeA()+fCurrentHit->GetChargeTimeB())/2 * TAGgeoTrafo::PsToNs();
+       pos       = (fCurrentHit->GetChargeTimeB()-fCurrentHit->GetChargeTimeA())/(2*fTofPropAlpha);
+       chargeCOM = TMath::Log(fCurrentHit->GetChargeChA()/fCurrentHit->GetChargeChB());
+       
+       fCurrentHit->SetEnergyLoss(energy);
+       fCurrentHit->SetTime(tof);
+       fCurrentHit->SetPosition(pos);
+       fCurrentHit->SetCOM(chargeCOM);
+       
+       // rough: set the "true" Z charge of the PU hit as the charge of the fragment with higher Z (it doesn't work for multiple light ions)
+       // The rec charge is set later in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
+       
+       if(Z > fCurrentHit->GetChargeZ())  // case of fragmentation inside TW
+	 fCurrentHit->SetChargeZ(Z);
+       
+     }
+   }
+     
    return true;
+
 }
 

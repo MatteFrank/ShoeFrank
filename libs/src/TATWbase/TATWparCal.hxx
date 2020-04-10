@@ -87,7 +87,7 @@ public:
   //
   //! Read from file
   Bool_t          FromFile(const TString& name = "");
-  Bool_t          FromFile( Int_t isZbeam, const TString& name = "");
+  Bool_t          FromFileZID( Int_t isZbeam, const TString& name = "");
   //
   //! Get Methods
   Int_t           GetChargeZ(Float_t edep, Float_t tof, Int_t layer); //const;
