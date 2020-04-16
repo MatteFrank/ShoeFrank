@@ -170,8 +170,8 @@ template<>
 struct matrix<1, 1>
 {
     double data;
-    operator double() { return data;}
-    operator double() const { return data;}
+    constexpr operator double() { return data;}
+    constexpr operator double() const { return data;}
     
     constexpr double  operator()(std::size_t, std::size_t) const { return data; }
     constexpr double& operator()(std::size_t, std::size_t)       { return data; }
