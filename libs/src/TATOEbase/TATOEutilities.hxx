@@ -176,7 +176,7 @@ struct track_list
     struct pseudo_layer{
         candidate_type candidate_m;
         double depth;
-        double minimal_cut;
+        double cut;
         
         candidate_type& get_candidate(){ return candidate_m; }
         candidate_type const & get_candidate() const { return candidate_m; }

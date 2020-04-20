@@ -135,8 +135,8 @@ public:
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
         register_tracks_upward( std::move( track_c ) );
         
-        
-
+        logger_m.freeze_everything();
+        logger_m.output();
         
         
         
@@ -557,11 +557,11 @@ private:
     //                            confront overload set
     
     //SFINAE might not be needed
-    template<class T,
-             typename std::enable_if_t< !std::is_same< T,  detector_properties< details::tof_tag > >::value ,
-                                        std::nullptr_t  > = nullptr,
-             typename std::enable_if_t< !std::is_same< T,  detector_properties< details::vertex_tag > >::value ,
-                                        std::nullptr_t  > = nullptr    >
+    template<class T >//,
+//             typename std::enable_if_t< !std::is_same< T,  detector_properties< details::tof_tag > >::value ,
+//                                        std::nullptr_t  > = nullptr,
+//             typename std::enable_if_t< !std::is_same< T,  detector_properties< details::vertex_tag > >::value ,
+//                                        std::nullptr_t  > = nullptr    >
     std::vector<full_state> confront(const state& ps_p, const T& layer_p)
     {
         
@@ -584,50 +584,9 @@ private:
                       }
                      );
     
-        auto end = std::partition(
-                                  enriched_c.begin(), enriched_c.end(),
-                                  [this, &ps_p, &layer_p ]( const auto & ec_p )
-                                  {
-                                      logger_m.add_header<5>( "select" );
-                                      auto error = ec_p.data->GetPosError();
-                                      
-                                      auto mps = split_half( ps_p.vector , details::row_tag{});
-                                      mps.first(0,0) += layer_p.cut_value() * particle_m.light_ion_boost * error.X();
-                                      mps.first(1,0) += layer_p.cut_value() * particle_m.light_ion_boost * error.Y();
-                                      // TD<decltype(mps)>x;
-                                      
-                                      using ec = typename underlying<decltype(ec_p)>::type;
-                                      using candidate = typename underlying<ec>::candidate;
-                                      using vector = typename underlying<candidate>::vector;
-                                      using covariance = typename underlying<candidate>::covariance;
-                                      using measurement_matrix = typename underlying<candidate>::measurement_matrix;
-                                      using data = typename underlying<candidate>::data_type;
-                                      
-                                      auto cutter_candidate = candidate{
-                                          vector{ std::move(mps.first) },
-                                          covariance{ ec_p.covariance },
-                                          measurement_matrix{ ec_p.measurement_matrix },
-                                          data_handle<data>{ ec_p.data }
-                                      } ;
-                                      
-                                      auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
-                                      
-                                      logger_m << "cutter : (" << cutter_candidate.vector(0, 0) << ", " << cutter_candidate.vector(1,0) << ")\n";
-                                      logger_m << "cutter_chisquared : " << cutter.chisquared << '\n';
-                                      logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
-                                      logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
-                                      
-                                      logger_m << "candidate_id: ";
-                                      for(auto i =0 ; i < ec_p.data->GetMcTracksN() ; ++ i){
-                                          logger_m << ec_p.data->GetMcTrackIdx(i)<< " ";
-                                      }
-                                      logger_m << '\n';
-                                     // checker_m.check_validity( ec_p,  ec_p.chisquared , cutter.chisquared, details::should_pass_tag{} );
-                                      
-                                      return ec_p.chisquared < cutter.chisquared;
-                                  }
-                                  );
+        auto select = [this, &ps_p, &layer_p ]( const auto & ec_p ){ return pass_selection( ec_p, ps_p, layer_p); };
         
+        auto end = std::partition( enriched_c.begin(), enriched_c.end(), select);
         
         for(auto iterator = enriched_c.begin() ; iterator != end ; ++iterator ){
             auto state = ukf_m.correct_state( ps_p, *iterator ); //should be sliced properly
@@ -679,45 +638,7 @@ private:
         std::vector<full_state> fs_c;
         fs_c.reserve( std::distance( candidate_c.begin(), candidate_end ) );
         
-    
-        auto select = [this, &ps_p, &layer_p ]( const auto & ec_p )
-                         {
-                             logger_m.add_header<5>( "select" );
-                            auto error = ec_p.data->GetPosError();
-            
-                            auto mps = split_half( ps_p.vector , details::row_tag{});
-                            mps.first(0,0) += layer_p.cut * particle_m.light_ion_boost * error.X();
-                            mps.first(1,0) += layer_p.cut * particle_m.light_ion_boost * error.Y();
-            
-                             using ec = typename underlying<decltype(ec_p)>::type;
-                             using candidate = typename underlying<ec>::candidate;
-                             using vector = typename underlying<candidate>::vector;
-                             using covariance = typename underlying<candidate>::covariance;
-                             using measurement_matrix = typename underlying<candidate>::measurement_matrix;
-                             using data = typename underlying<candidate>::data_type;
-            
-                             auto cutter_candidate = candidate{
-                                 vector{ std::move(mps.first) },
-                                 covariance{ ec_p.covariance },
-                                 measurement_matrix{ ec_p.measurement_matrix },
-                                 data_handle<data>{ ec_p.data }
-                             } ;
-            
-                             auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
-//
-                             logger_m << "cutter : (" << cutter_candidate.vector(0, 0) << ", " << cutter_candidate.vector(1,0) << ")\n";
-                             logger_m << "cutter_chisquared : " << cutter.chisquared << '\n';
-                             logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
-                             logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
-                             logger_m << "candidate_id: ";
-                             for(auto i =0 ; i < ec_p.data->GetMcTracksN() ; ++ i){
-                                 logger_m << ec_p.data->GetMcTrackIdx(i)<< " ";
-                             }
-                             logger_m << '\n';
-                            // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared );
-                             
-                             return ec_p.chisquared < cutter.chisquared;
-                         };
+        auto select = [this, &ps_p, &layer_p ]( const auto & ec_p ){ return pass_selection( ec_p, ps_p, layer_p); };
         
         auto enriched_end = std::partition( enriched_c.begin(), enriched_c.end(), select );
         for(auto iterator = enriched_c.begin() ; iterator != enriched_end ; ++iterator ){
@@ -751,43 +672,7 @@ private:
     
         std::vector<full_state> fs_c;
     
-        auto select = [this, &ps_p, &layer_p ]( const auto & ec_p, double cut_p )
-                            {
-                                logger_m.add_header<5>( "select" );
-                                
-                                auto error = ec_p.data->GetPosError();
-        
-                                auto mps = split_half( ps_p.vector , details::row_tag{});
-                                mps.first(0,0) += cut_p * particle_m.light_ion_boost * error.X();
-                                mps.first(1,0) += cut_p * particle_m.light_ion_boost * error.Y();
-        
-                                using ec = typename underlying<decltype(ec_p)>::type;
-                                using candidate = typename underlying<ec>::candidate;
-                                using vector = typename underlying<candidate>::vector;
-                                using covariance = typename underlying<candidate>::covariance;
-                                using measurement_matrix = typename underlying<candidate>::measurement_matrix;
-                                using data = typename underlying<candidate>::data_type;
-                            
-                                auto cutter_candidate = candidate{
-                                    vector{ std::move(mps.first) },
-                                    covariance{ ec_p.covariance },
-                                    measurement_matrix{ ec_p.measurement_matrix },
-                                    data_handle<data>{ ec_p.data }
-                                } ;
-        
-                                auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
-//
-                                logger_m << "cutter : (" << cutter_candidate.vector(0, 0) << ", " << cutter_candidate.vector(1,0) << ")\n";
-                                logger_m << "cutter_chisquared : " << cutter.chisquared << '\n';
-                                logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
-                                logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
-                                
-                               // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared, details::should_pass_tag{} );
-                                
-                                return ec_p.chisquared < cutter.chisquared;
-                            };
-    
-        if( select(ec, layer_p.minimal_cut) ){
+        if( pass_selection(ec, ps_p, layer_p) ){
             auto state = ukf_m.correct_state( ps_p, ec ); //should be sliced properly
             auto cs = make_corrected_state( std::move(state),
                                             chisquared{std::move(ec.chisquared)} );
@@ -801,7 +686,85 @@ private:
     
         return fs_c;
     }
+           
+           
 
+    template<class Enriched, class T>
+    bool pass_selection( Enriched const& ec_p, const state& ps_p, T const& layer_p )
+    {
+        logger_m.add_header<5>( "pass_selection" );
+        
+        auto error = ec_p.data->GetPosError();
+        
+        auto mps = split_half( ps_p.vector , details::row_tag{});
+        mps.first(0,0) += layer_p.cut * particle_m.light_ion_boost * error.X();
+        mps.first(1,0) += layer_p.cut * particle_m.light_ion_boost * error.Y();
+        
+        using candidate = typename underlying<Enriched>::candidate;
+        using vector = typename underlying<candidate>::vector;
+        using covariance = typename underlying<candidate>::covariance;
+        using measurement_matrix = typename underlying<candidate>::measurement_matrix;
+        using data = typename underlying<candidate>::data_type;
+        
+        auto cutter_candidate = candidate{
+            vector{ std::move(mps.first) },
+            covariance{ ec_p.covariance },
+            measurement_matrix{ ec_p.measurement_matrix },
+            data_handle<data>{ ec_p.data }
+        } ;
+        
+        auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
+        //
+        logger_m << "cutter : (" << cutter_candidate.vector(0, 0) << ", " << cutter_candidate.vector(1,0) << ")\n";
+        logger_m << "cutter_chisquared : " << cutter.chisquared << '\n';
+        logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
+        logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
+        
+        // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared, details::should_pass_tag{} );
+        
+        return ec_p.chisquared < cutter.chisquared;
+    }
+    
+    template<class Enriched>
+    bool pass_selection( Enriched const& ec_p,
+                         state const& ps_p,
+                         layer_generator<detector_properties<details::msd_tag>>::layer const& layer_p )
+    {
+        logger_m.add_header<5>( "pass_selection" );
+        
+        auto error = ec_p.data->GetPosError();
+        matrix<1,1> v = ec_p.measurement_matrix * ps_p.vector;
+        if( ec_p.measurement_matrix(0,0) != 0 ) { v(0,0) += layer_p.cut * particle_m.light_ion_boost * error.X(); }
+        else { v(0,0) += layer_p.cut * particle_m.light_ion_boost * error.Y(); }
+        
+        using candidate = typename underlying<Enriched>::candidate;
+        using vector = typename underlying<candidate>::vector;
+        using covariance = typename underlying<candidate>::covariance;
+        using measurement_matrix = typename underlying<candidate>::measurement_matrix;
+        using data = typename underlying<candidate>::data_type;
+        
+        auto cutter_candidate = candidate{
+            vector{ std::move(v) },
+            covariance{ ec_p.covariance },
+            measurement_matrix{ ec_p.measurement_matrix },
+            data_handle<data>{ ec_p.data }
+        } ;
+        
+        auto cutter = ukf_m.compute_chisquared(ps_p, cutter_candidate);
+        //
+        logger_m << "cutter : (" << cutter_candidate.vector(0, 0) << ", " << cutter_candidate.vector(1,0) << ")\n";
+        logger_m << "cutter_chisquared : " << cutter.chisquared << '\n';
+        logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
+        logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
+        
+        // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared, details::should_pass_tag{} );
+        
+        return ec_p.chisquared < cutter.chisquared;
+    }
+        
+    
+    
+    
     
     //----------------------------------------------------------------------------------------
     //final cross-check and registering
