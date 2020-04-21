@@ -258,9 +258,9 @@ void TAMSDactNtuCluster::ComputePosition()
   posErr *= 1./tClusterPulseSum;
   
   // for cluster with a single strip
-  Float_t lim = 2.5e-7; // in cm !
+  Float_t lim = 9e-6; // in cm !
   if (posErr < lim) posErr = lim; //(20/Sqrt(12)^2
   
   fCurrentPosition = pos;
-  fCurrentPosError = posErr;
+  fCurrentPosError = TMath::Sqrt(posErr);
 }
