@@ -17,7 +17,7 @@ int main (int argc, char *argv[])  {
    Bool_t ntu = false;
    Bool_t his = false;
    Bool_t hit = false;
-   Bool_t trk = true;
+   Bool_t trk = false;
    
    Int_t nTotEv = 1e7;
    
@@ -26,7 +26,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
-      if(strcmp(argv[i],"-trk") == 0)   { trk = atoi(argv[++i]);    }   // disable/enable tracking action
+      if(strcmp(argv[i],"-trk") == 0)   { trk = true;    }   // disable/enable tracking action
 
       if(strcmp(argv[i],"-ntu") == 0)   { ntu = true;   } // enable tree filling
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
