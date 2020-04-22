@@ -109,8 +109,6 @@ void TAMSDcluster::SetPosition(Float_t pos)
 //
 void TAMSDcluster::SetPosError(Float_t pos)
 {
-    std::cout << "TAMSDcluster::SetPosError\n";
-    std::cout << "error: " << pos << std::endl;
    fPosError = pos;
 }
 
