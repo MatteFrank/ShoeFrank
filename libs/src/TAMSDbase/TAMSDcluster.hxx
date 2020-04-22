@@ -55,7 +55,7 @@ public:
    //! Get vector position in local frame
    const TVector3&          GetPosition()              const { return fCurPosition;    }
    //! Get vector position error in local frame
-   const TVector3&          GetPosError()              const { return fCurPosition;    }
+   const TVector3&          GetPosError()              const { return fPosErrorG;    }
    
    //! Get position in global tracker frame
    const TVector3&          GetPositionG()             const { return fPositionG ;     }

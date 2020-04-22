@@ -191,6 +191,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
       cluster->AddStrip(strip);
     }
   }
+
   
   // Compute position and fill clusters info
   for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
@@ -202,9 +203,9 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
     TVector3 posG(GetCurrentPosition(), 0, 0);
     posG = pGeoMap->Sensor2Detector(iSensor, posG);
     cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
-    cluster->SetPositionG(posG);
-    cluster->SetPosition(GetCurrentPosition());
     cluster->SetPosError(GetCurrentPosError());
+    cluster->SetPosition(GetCurrentPosition());
+    cluster->SetPositionG(posG);
     
      if (ApplyCuts(cluster)) {
         // histogramms
@@ -232,9 +233,9 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
 void TAMSDactNtuCluster::ComputePosition()
 {
   if (!fCurListOfStrips) return;
-  
+    
   Float_t tCorrection, tCorrection2, tCorTemp;
-  Float_t pos, posErr;
+  Float_t pos, posErr = 0;
   tCorrection = 0.;
   tCorrection2 = 0.;
    
@@ -263,4 +264,6 @@ void TAMSDactNtuCluster::ComputePosition()
   
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
+    
+    
 }
