@@ -7,7 +7,7 @@
 
 int main (int argc, char *argv[])  {
 
-   TString in("12C_400_vtx.root");
+   TString in("12C_C_200_1.root");
    TString exp("");
    
    Int_t pos = in.Last('.');
@@ -17,7 +17,7 @@ int main (int argc, char *argv[])  {
    Bool_t ntu = false;
    Bool_t his = false;
    Bool_t hit = false;
-   Bool_t trk = false;
+   Bool_t trk = true;
    
    Int_t nTotEv = 1e7;
    
@@ -26,18 +26,18 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
-  
+      if(strcmp(argv[i],"-trk") == 0)   { trk = atoi(argv[++i]);    }   // disable/enable tracking action
+
       if(strcmp(argv[i],"-ntu") == 0)   { ntu = true;   } // enable tree filling
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
-      if(strcmp(argv[i],"-trk") == 0)   { trk = true;   } // enable tracking action
       
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
          cout<<" Ex: Decoder [opts] "<<endl;
          cout<<" possible opts are:"<<endl;
-         cout<<"      -in path/file  : [def=16O_C2H4_200_1.root] ROOT input file"<<endl;
-         cout<<"      -out path/file : [def=6O_C2H4_200_1_Out.root] Root output file"<<endl;
+         cout<<"      -in path/file  : [def= 12C_C_200_1.root] ROOT input file"<<endl;
+         cout<<"      -out path/file : [def= 12C_C_200_1_Out.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -trk           : enable tracking actions"<<endl;
