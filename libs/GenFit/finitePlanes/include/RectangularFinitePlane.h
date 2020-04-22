@@ -42,6 +42,8 @@ class RectangularFinitePlane : public AbsFinitePlane {
 
   //override inActive & Print methods
   bool isInActive(double u, double v) const;
+  bool isInActiveX(double u) const;
+  bool isInActiveY(double v) const;
   void Print(const Option_t* = "") const;
 
   RectangularFinitePlane* clone() const {

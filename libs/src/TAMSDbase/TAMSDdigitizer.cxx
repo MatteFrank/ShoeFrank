@@ -34,8 +34,8 @@ TAMSDdigitizer::TAMSDdigitizer(TAMSDparGeo* parGeo)
 }
 
 // --------------------------------------------------------------------------------------
-TAMSDdigitizer::~TAMSDdigitizer() 
-{   
+TAMSDdigitizer::~TAMSDdigitizer()
+{
 }
 
 //------------------------------------------+-----------------------------------
@@ -48,59 +48,60 @@ Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double
      x0 += dx;
      y0 += dy;
   }
-  
+
   Int_t view = fpParGeo->GetSensorPar(sensorId).TypeIdx;
-  
+
   Float_t pos = 0.;
-  
+
   if (view == 0)
     pos = x0;
   else
     pos = y0;
-  
+
   fMap.clear();
-  
+
   SetParFunction();
-   
+
   edep *= TAGgeoTrafo::GevToKev();
   Double_t value    = 0.;
   Int_t    strip    = GetStrip(pos);
   Double_t posStrip = fpParGeo->GetPosition(strip);
   Double_t eta      = GetEta((pos-posStrip)*TAGgeoTrafo::CmToMu());
-   
+  //Double_t eta = 0.95;
+
   if (eta > 0.6 && eta < 0.9) { // fill 3 strip around seed
      if (strip-1 >= 0) {
         value = edep*fgChargeGain*(1-eta/2.);
         FillMap(strip-1, value);
      }
-     
+
      value = edep*fgChargeGain*eta;
      FillMap(strip, value);
-     
+
      if (strip+1 < fStripsN) {
         value = edep*fgChargeGain*(1-eta/2.);
         FillMap(strip+1, value);
      }
   } else if (eta > 0.4 && eta <= 0.6) { // fill only 2 strips
-     
+
      value = edep*fgChargeGain*eta;
      FillMap(strip, value);
-     
+
      if (strip-1 >= 0) {
         value = edep*fgChargeGain*(1-eta);
         FillMap(strip-1, value);
      }
-     
+
   } else if (eta >= 0.9) { // only one strip
      value = edep*fgChargeGain*eta;
      FillMap(strip, value);
-     
+
   } else if (eta <= 0.1) { // only one strip-1
      if (strip-1 >= 0) {
         value = edep*fgChargeGain*(1-eta);
         FillMap(strip-1, value);
      }
-     
+
   } else { // fill 3 strip around seed -1
      if (strip-2 >= 0) {
         value = edep*fgChargeGain*eta/2.;
@@ -115,7 +116,7 @@ Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double
         FillMap(strip, value);
      }
   }
-   
+
   return true;
 }
 
@@ -127,19 +128,19 @@ Double_t TAMSDdigitizer::GetEta(Double_t pos)
    Double_t b   = fEtaLimUp;
    Double_t eta = (b+a)/2. ;
    Double_t fm  = fFuncEta->Eval(eta) ;
-   
+
    static Double_t eps = 1e-2;
-   
+
    while (TMath::Abs(a - b) > eps ) {
      eta = (b+a)/2. ;
      fm  = fFuncEta->Eval(eta);
-      
+
       if (fm > pos )
          b = eta;
       else
          a = eta;
    }
-   
+
    return eta;
 }
 
@@ -163,7 +164,7 @@ Double_t TAMSDdigitizer::EtaX0(Double_t* x, Double_t* par)
 {
    Float_t xx = x[0];
    Float_t X0 = -par[0]*TMath::Log(1./xx-1.);
-   
+
    return X0;
 }
 
@@ -171,7 +172,7 @@ Double_t TAMSDdigitizer::EtaX0(Double_t* x, Double_t* par)
 void TAMSDdigitizer::FillMap(Int_t strip, Double_t value)
 {
   if (strip < 0) return;
-  
+
    if (fMap[strip] < 0.0001)
       fMap[strip] = value;
    else
@@ -183,15 +184,14 @@ Int_t TAMSDdigitizer::GetStrip(Float_t pos) const
 {
   // equivalent to  floor((-y-ymin)/fPitchV)-1
   Float_t min = -fStripsN*fPitch/2.;
-  
+
   if (pos < min || pos > -min) {
     if (fDebugLevel)
       Warning("GetLine()", "Value of Y: %f out of range +/- %f\n", pos, min);
     return -1;
   }
-  
+
   Int_t strip = floor((pos-min)/fPitch);
-  
+
   return strip;
 }
-

@@ -135,9 +135,9 @@ TrackPoint::~TrackPoint() {
   // FIXME: We definitely need some smart containers or smart pointers that
   // take care of this, but so far we haven't found a convincing
   // option (2013-07-05).
-  
-  for (size_t i = 0; i < rawMeasurements_.size(); ++i)
-    delete rawMeasurements_[i];
+
+  for (unsigned int i = 0; i < rawMeasurements_.size(); ++i)
+  delete rawMeasurements_.at(i);
 
   std::map< const AbsTrackRep*, AbsFitterInfo* >::iterator it;
   for (it = fitterInfos_.begin(); it != fitterInfos_.end(); ++it)

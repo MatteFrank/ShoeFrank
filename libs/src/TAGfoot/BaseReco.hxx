@@ -44,10 +44,14 @@
 #include "TAITntuRaw.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAMSDntuRaw.hxx"
+#include "TAMSDntuPoint.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
 #include "TAIRntuTrack.hxx"
 #include "TAGntuGlbTrack.hxx"
+
+#include "TAMSDactNtuPoint.hxx"
+
 
 #include "TAGactionFile.hxx"
 
@@ -72,79 +76,79 @@ class BaseReco : public TNamed // using TNamed for the in/out files
 public:
    //! default constructor
    BaseReco(TString expName, TString fileNameIn, TString fileNameout);
-   
+
    virtual ~BaseReco();
-   
+
    //! Read parameters
    void ReadParFiles();
 
    //! Create raw action
    virtual void CreateRecAction();
-   
+
    //! Create rec action
    virtual void CreateRawAction()      { return; }
-   
+
    //! Add required items
    virtual void AddRawRequiredItem()   { return; }
-   
+
    //! Add required items
    virtual void AddRecRequiredItem();
-   
+
    //! Set raw histogram directory
    virtual void SetRawHistogramDir()   { return; }
-   
+
    //! Set rec histogram directory
    virtual void SetRecHistogramDir();
-   
+
    //! Loop events
    virtual void LoopEvent(Int_t /*nEvents*/) { return; }
-   
+
    //! Begin loop
    virtual void BeforeEventLoop();
 
    //! End loop
    virtual void AfterEventLoop();
-   
+
    //! Open File In
    virtual void OpenFileIn()  { return; }
-   
+
    //! Close File in
    virtual void CloseFileIn() { return; }
-   
+
    //! Set Run number
    virtual void SetRunNumber() { return; }
 
    //! Open File Out
    virtual void OpenFileOut();
-   
+
    //! Close File Out
    virtual void CloseFileOut();
-   
+
    //! Create branch in tree
    virtual void SetTreeBranches();
-   
+
    //! Set experiment name
    virtual void SetExpName(const Char_t* name) { fExpName = name; }
-   
+
    // Enable global
    void EnableTree()      { fFlagTree = true;    }
    void DisableTree()     { fFlagTree = false;   }
-   
+
    void EnableSaveHits()  { fFlagHits = true;    }
    void DisableSaveHits() { fFlagHits = false;   }
 
    void EnableHisto()     { fFlagHisto = true;   }
    void DisableHisto()    { fFlagHisto = false;  }
-   
+
    void EnableTracking()  { fFlagTrack = true;   }
    void DisableTracking() { fFlagTrack = false;  }
 
    // Flag for MC data
    Bool_t IsMcData()      { return fFlagMC;      }
-   
+
    //! Set Tracking algorithm
    void SetTrackingAlgo(char c);
-  
+
    //! Par geo getters
    TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }
    TADIparGeo*          GetParGeoDi()       const { return (TADIparGeo*)fpParGeoDi->Object();        }
@@ -156,31 +160,32 @@ public:
    TAMSDparGeo*         GetParGeoMsd()      const { return (TAMSDparGeo*)fpParGeoMsd->Object();      }
    TATWparGeo*          GetParGeoTw()       const { return (TATWparGeo*)fpParGeoTw->Object();        }
    TACAparGeo*          GetParGeoCa()       const { return (TACAparGeo*)fpParGeoCa->Object();        }
-   
+
    //! Containers getters
    TASTntuRaw*          GetNtuHitSt()       const { return (TASTntuRaw*) fpNtuRawSt->Object();       }
    TABMntuRaw*          GetNtuRawBm()       const { return (TABMntuRaw*)fpNtuRawBm->Object();        }
    TABMntuTrack*        GetNtuTrackBm()     const { return (TABMntuTrack*)fpNtuTrackBm->Object();    }
-   
+
    TAVTntuCluster*      GetNtuClusterVtx()  const { return (TAVTntuCluster*)fpNtuClusVtx->Object();  }
    TAVTntuTrack*        GetNtuTrackVtx()    const { return (TAVTntuTrack*)fpNtuTrackVtx->Object();   }
    TAVTntuVertex*       GetNtuVertexVtx()   const { return (TAVTntuVertex*)fpNtuVtx->Object();       }
    TAGdataDsc*          GetDscVertexVtx()   const { return fpNtuVtx;                                 }
-   
+
    TAITntuCluster*      GetNtuClusterIt()   const { return (TAITntuCluster*)fpNtuClusIt->Object();   }
    TAITntuTrack*        GetNtuTrackIt()     const { return (TAITntuTrack*)fpNtuTrackIt->Object();   }
 
    TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
-   
+
+
    TATWntuRaw*          GetNtuHitTw()       const { return (TATWntuRaw*) fpNtuRawTw->Object();       }
    TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
-   
+
    TACAntuRaw*          GetNtuHitCa()       const { return (TACAntuRaw*) fpNtuRawCa->Object();       }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
    TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
    TADIgeoField*        GetFootField()      const { return fField;                                   }
-   
+
    //! MC container Getter (virtual)
    virtual TAMCntuEve*  GetNtuMcEve()       const { return 0x0; }
    virtual TAMCntuHit*  GetNtuMcSt()        const { return 0x0; }
@@ -203,7 +208,7 @@ public:
    static void DisableItrTracking() { fgItrTrackFlag = false; }
    static void EnableItrTracking()  { fgItrTrackFlag = true;  }
    static Bool_t IsItrTracking()    { return fgItrTrackFlag;  }
-   
+
 protected:
    TString               fExpName;
    TAGroot*              fTAGroot;             // pointer to TAGroot
@@ -227,14 +232,14 @@ protected:
    TAGparaDsc*           fpParGeoMsd;
    TAGparaDsc*           fpParGeoTw;
    TAGparaDsc*           fpParGeoCa;
-   
+
    TAGparaDsc*           fpParCalTw;
-   
+
    TAGparaDsc*           fpParConfBm;
    TAGparaDsc*           fpParConfVtx;
    TAGparaDsc*           fpParConfIt;
    TAGparaDsc*           fpParConfMsd;
-   
+
    TAGdataDsc*           fpDatRawSt;    // input data dsc
    TAGdataDsc*           fpNtuRawSt;    // input data dsc
    TAGdataDsc*           fpDatRawBm;    // input data dsc
@@ -247,11 +252,14 @@ protected:
    TAGdataDsc*           fpNtuRawTw;     // input data dsc
    TAGdataDsc*           fpNtuRawCa;     // input data dsc
 
-   
+
    TAGdataDsc*           fpNtuClusVtx;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusIt;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusMsd;     // input cluster data dsc
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
+
+   TAGdataDsc*           fpNtuRecMsd;
+
 
    TADIgeoField*         fField;       // magnetic field
 
@@ -267,19 +275,20 @@ protected:
    TAGactTreeWriter*     fActEvtWriter;  // write histo and tree
 
    TABMactNtuTrack*      fActTrackBm;    // action for tracks
-   
+
    TAVTactNtuClusterF*   fActClusVtx;    // action for clusters
    TAVTactBaseNtuTrack*  fActTrackVtx;   // action for tracks
    TAVTactBaseNtuVertex* fActVtx;        // action for vertex
-   
+
    TAITactNtuClusterF*   fActClusIt;     // action for clusters
    TAITactBaseNtuTrack*  fActTrackIt;   // action for tracks
 
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
-   
+   TAMSDactNtuPoint*     fActPointMsd;   // action for point in MSD
+
    // TATWactNtuRaw*        fActNtuRawTw;  // action for ntu data
    TATWactNtuPoint*      fActPointTw;    // action for clusters
-   
+
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
 
@@ -302,7 +311,7 @@ protected:
 
 protected:
    static Bool_t fgItrTrackFlag;
-   
+
    ClassDef(BaseReco, 1); // Base class for event display
 };
 

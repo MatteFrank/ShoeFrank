@@ -161,6 +161,18 @@ class DetPlane : public TObject {
     return finitePlane_->isInActive(u,v);
   }
 
+  bool isInActiveX(double u) const{
+    if(finitePlane_.get() == nullptr) return true;
+    return finitePlane_->isInActiveX(u);
+  }
+
+
+  bool isInActiveY(double v) const{
+    if(finitePlane_.get() == nullptr) return true;
+    return finitePlane_->isInActiveY(v);
+  }
+
+
   //! isInActive methods refer to finite plane. C.f. AbsFinitePlane
   bool isInActive(const TVector2& v) const{
     return isInActive(v.X(),v.Y());
