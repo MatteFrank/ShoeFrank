@@ -13,7 +13,7 @@
 class TAGrunInfo : public TAGobject {
   public:
                     TAGrunInfo();
-                    TAGrunInfo(Short_t i_cam, Short_t i_run);
+                    TAGrunInfo(Short_t i_cam, Short_t i_run, TString s_cam);
     virtual         ~TAGrunInfo();
 
     void            SetCampaignName(TString s_cam);

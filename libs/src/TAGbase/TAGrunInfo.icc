@@ -16,9 +16,10 @@ inline TAGrunInfo::TAGrunInfo()
 //------------------------------------------+-----------------------------------
 //! Construct with campaign and run number.
 
-inline TAGrunInfo::TAGrunInfo(Short_t i_cam, Short_t i_run)
+inline TAGrunInfo::TAGrunInfo(Short_t i_cam, Short_t i_run, TString s_cam)
   : fiCam(i_cam),
-    fiRun(i_run)
+    fiRun(i_run),
+    fsCam(s_cam)
 {}
 
 //------------------------------------------+-----------------------------------
