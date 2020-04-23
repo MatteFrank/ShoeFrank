@@ -79,9 +79,9 @@ void TAMSDcluster::SetPositionG(TVector3& posGlo)
    fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
    
    if (fPlaneView == 0)
-      fPosErrorG.SetXYZ(fPosition, 0, 0.01);
+      fPosErrorG.SetXYZ(fPosError, 0, 0.01);
    else
-      fPosErrorG.SetXYZ(0, fPosition, 0.01);   
+      fPosErrorG.SetXYZ(0, fPosError, 0.01);
 }
 
 //______________________________________________________________________________
@@ -110,10 +110,6 @@ void TAMSDcluster::SetPosition(Float_t pos)
 void TAMSDcluster::SetPosError(Float_t pos)
 {
    fPosError = pos;
-   if (fPlaneView == 0)
-    fCurPosition.SetXYZ(fPosError, 0, 0);
-   else
-     fCurPosition.SetXYZ(0, fPosError, 0);
 }
 
 
