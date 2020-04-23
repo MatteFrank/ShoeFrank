@@ -1,32 +1,19 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <time.h>
-#include <math.h>
-#include <sys/time.h>
 
 #include <TROOT.h>
-#include <TTree.h>
 #include <TFile.h>
-#include <TDirectory.h>
 #include <TString.h>
-#include <TH1D.h>
-#include <TH2D.h>
-#include <TProfile.h>
-
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <ostream>
-#include <sstream>
 
 #include "Evento.hxx"
 #include "TAMCevent.hxx"
+#include "GlobalPar.hxx"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+   
+   // Par instance
+   GlobalPar::Instance();
    
    int status = 0, iL=0, NumProcessed=0, numfiles = 0, nread=0;
    TString outname("Out.root"), inname("In.txt");
@@ -59,7 +46,7 @@ int main(int argc, char *argv[])
       }
       if(strcmp(argv[i],"-iL") == 0) { iL = 1; }
       if(strcmp(argv[i],"-help") == 0) {
-         cout<<"Conversion of fluka TXT file : usage -> Txt2Root [opts] "<<endl;
+         cout<<"Conversion of fluka TXT file : usage -> Txt2NtuRoot [opts] "<<endl;
          cout<<" possible opts are:"<<endl;
          cout<<"   -in  file    : [def=In.txt] Root input file"<<endl;
          cout<<"   -out  file   : [def=Out.root] Root output file"<<endl;
