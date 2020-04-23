@@ -941,7 +941,7 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
       graphErrorX->Fit("pol1", "Q");
       graphErrorY->Fit("pol1", "Q");
 
-      TF1* polyX = graphErrorY->GetFunction("pol1");
+      TF1* polyX = graphErrorX->GetFunction("pol1");
       TF1* polyY = graphErrorY->GetFunction("pol1");
 
       //double chichiY = polyY->GetChisquare();
@@ -957,7 +957,7 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
 
 
 
-      cout << "firstGuessXOnIT " << firstGuessXOnIT << " firstGuessYOnIT " << firstGuessYOnIT << endl;
+      //cout << "firstGuessXOnIT " << firstGuessXOnIT << " firstGuessYOnIT " << firstGuessYOnIT << endl;
       delete graphErrorX;
       delete graphErrorY;
 
@@ -1018,7 +1018,7 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
         if ( crossPlane.at(iPlaneBool) ){
           int searchingPlane = iPlaneBool + 4;
           int indexOfMinY = -1.;
-          double distanceInY = .1;
+          double distanceInY = .05;
           AbsMeasurement* hitToAdd = 0x0;
           for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
             PlanarMeasurement* hitHit = 0x0;
@@ -1050,17 +1050,17 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
       //        cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << endl;
       //      }
 
-      cout << "check of MSD allHitsInMeasurement " << endl;
-      for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
-        PlanarMeasurement* hitHit = 0x0;
-        hitHit = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
-        if (hitHit == 0x0) continue;
-        int indexOfPlane = hitHit->getPlaneId();
-        if (indexOfPlane > 11){
-          hitHit->getRawHitCoords().Print();
-          cout << " indexOfPlane " << indexOfPlane << " isStripV " << hitHit->getStripV() << endl;
-        }
-      }
+      // cout << "check of MSD allHitsInMeasurement " << endl;
+      // for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
+      //   PlanarMeasurement* hitHit = 0x0;
+      //   hitHit = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
+      //   if (hitHit == 0x0) continue;
+      //   int indexOfPlane = hitHit->getPlaneId();
+      //   if (indexOfPlane > 11){
+      //     hitHit->getRawHitCoords().Print();
+      //     cout << " indexOfPlane " << indexOfPlane << " isStripV " << hitHit->getStripV() << endl;
+      //   }
+      // }
 
 
 
@@ -1071,8 +1071,8 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
         TVector3 guessOnMSD;
         guessOnMSD =  ExtrapolateToOuterTracker( fitTrack_, whichMSDPlane );
 
-        cout << "guessOnMSD" << endl;
-        guessOnMSD.Print();
+        // cout << "guessOnMSD" << endl;
+        // guessOnMSD.Print();
 
         //delete fake point
         for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
@@ -1108,13 +1108,13 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
 
       }
 
-      cout << " check of fitTrack_ filling after deleting fakeMSD and inserting one" << endl;
-      for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
-        fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement()->getRawHitCoords().Print();
-        int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
-        bool isStripV = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getStripV();
-        cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << " isStripV " << isStripV << endl;
-      }
+      // cout << " check of fitTrack_ filling after deleting fakeMSD and inserting one" << endl;
+      // for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
+      //   fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement()->getRawHitCoords().Print();
+      //   int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
+      //   bool isStripV = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getStripV();
+      //   cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << " isStripV " << isStripV << endl;
+      // }
 
       //now call check on track finding
       CheckTrackFinding(fitTrack_, montecarloCharge, montecarloMomentum);
