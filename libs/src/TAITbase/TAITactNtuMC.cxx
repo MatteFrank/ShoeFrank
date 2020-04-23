@@ -20,6 +20,9 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
+#include "TAMCntuHit.hxx"
+#include "TAMCntuEve.hxx"
+
 #include "GlobalPar.hxx"
 
 /*!
@@ -46,12 +49,14 @@ TAITactNtuMC::TAITactNtuMC(const char* name, TAGdataDsc* pNtuRaw,  TAGparaDsc* p
 
 //------------------------------------------+-----------------------------------
 //
-TAITactNtuMC::TAITactNtuMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
+TAITactNtuMC::TAITactNtuMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
 : TAVTactBaseNtuMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
+   fpNtuEve(pNtuEve),
    fpNtuRaw(pNtuRaw)
 {
    AddDataIn(pNtuMC, "TAMCntuHit");
+   AddDataIn(pNtuEve, "TAMCntuEve");
    AddDataOut(pNtuRaw, "TAVTntuRaw");
    AddPara(pGeoMap, "TAVTparGeo");
    
