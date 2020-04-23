@@ -22,6 +22,9 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
+#include "TAMCntuHit.hxx"
+#include "TAMCntuEve.hxx"
+
 #include "GlobalPar.hxx"
 
 /*!
@@ -48,12 +51,14 @@ TAVTactNtuMC::TAVTactNtuMC(const char* name, TAGdataDsc* pNtuRaw,  TAGparaDsc* p
 
 //------------------------------------------+-----------------------------------
 //
-TAVTactNtuMC::TAVTactNtuMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
+TAVTactNtuMC::TAVTactNtuMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
 : TAVTactBaseNtuMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
+   fpNtuEve(pNtuEve),
    fpNtuRaw(pNtuRaw)
 {
    AddDataIn(pNtuMC, "TAMCntuHit");
+   AddDataIn(pNtuEve, "TAMCntuEve");
    AddDataOut(pNtuRaw, "TAVTntuRaw");
    AddPara(pGeoMap, "TAVTparGeo");
    
@@ -199,7 +204,16 @@ void TAVTactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents
 //------------------------------------------+-----------------------------------
 void TAVTactNtuMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
 {
-   Int_t Z = fpEvtStr->TRcha[trackIdx];
+   Int_t Z = 0;
+   
+   if (fpEvtStr)
+      Z = fpEvtStr->TRcha[trackIdx];
+   else {
+      TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
+      TAMCeveTrack*  track = pNtuEve->GetHit(trackIdx);
+      Z = track->GetCharge();
+   }
+   
    if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2], 0, 0, Z)) return;
    FillPixels(sensorId, idx, trackIdx);
    

@@ -31,7 +31,7 @@ class TAVTactNtuMC : public TAVTactBaseNtuMC {
 
 public:
    explicit TAVTactNtuMC(const char* name=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap = 0, EVENT_STRUCT* evtStr=0);
-   explicit TAVTactNtuMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0);
+   explicit TAVTactNtuMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0);
    virtual ~TAVTactNtuMC() {};
    
    //! Base action 
@@ -41,7 +41,8 @@ public:
    void           FillNoise();
 
 private:
-   TAGdataDsc*    fpNtuMC;          // input data dsc
+   TAGdataDsc*    fpNtuMC;          // input mc hit
+   TAGdataDsc*    fpNtuEve;         // input eve track dsc
    TAGdataDsc*    fpNtuRaw;         // output data dsc
    map<pair<int, int>, TAVTntuHit*> fMap;     //! map for pilepup
 
