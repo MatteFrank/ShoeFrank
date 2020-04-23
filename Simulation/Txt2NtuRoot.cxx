@@ -5,6 +5,9 @@
 
 #include "Evento.hxx"
 #include "TAMCevent.hxx"
+
+#include "TAGrunInfo.hxx"
+
 #include "GlobalPar.hxx"
 
 using namespace std;
@@ -74,6 +77,13 @@ int main(int argc, char *argv[])
    
    TFile *f_out = new TFile(outname,"RECREATE");
    f_out->cd();
+   
+   Int_t campaign = 0;
+   Int_t run = 0;
+   TString camName = "Ntu";
+   TAGrunInfo* info = new TAGrunInfo(campaign, run, camName);
+   info->Write("runinfo");
+
    rootTree = new TTree("EventTree","gsimay");
    
    // Event
