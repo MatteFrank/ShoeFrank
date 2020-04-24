@@ -45,8 +45,8 @@ TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
 {
    AddDataIn(pNtuMC, "TAMCntuHit");
    AddDataIn(pNtuEve, "TAMCntuEve");
-   AddDataOut(pNtuRaw, "TAVTntuRaw");
-   AddPara(pGeoMap, "TAVTparGeo");
+   AddDataOut(pNtuRaw, "TAITntuRaw");
+   AddPara(pGeoMap, "TAITparGeo");
    
    CreateDigitizer();
 }
