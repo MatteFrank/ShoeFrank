@@ -68,9 +68,8 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
    fTofErrk0E(0.3),
    // fTofk0E(140),
    // fTofErrk0E(18),
-   fTofPropAlpha(65.), // velocity^-1 of propagation of light in TW bar (ps/cm)
-   // fTofPropAlpha(280/2.), // velocity of the difference need to divide by 2 (ps/cm)
-   fTofErrPropAlpha(2.5), // old 5 ?
+   fTofPropAlpha(66.), // velocity^-1 of propagation of light in TW bar (ps/cm)
+   fTofErrPropAlpha(2),
    fSlatLength(0),
    fGain(1),
    fEnergyThreshold(0.1) // MeV
