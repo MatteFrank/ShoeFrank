@@ -8,13 +8,13 @@
 
 #include "TAGdataDsc.hxx"
 #include "TAGactTreeReader.hxx"
-#include "TASTactNtuMC.hxx"
-#include "TABMactNtuMC.hxx"
-#include "TAVTactNtuMC.hxx"
-#include "TAITactNtuMC.hxx"
-#include "TAMSDactNtuMC.hxx"
-#include "TATWactNtuMC.hxx"
-#include "TACAactNtuMC.hxx"
+#include "TASTactNtuHitMC.hxx"
+#include "TABMactNtuHitMC.hxx"
+#include "TAVTactNtuHitMC.hxx"
+#include "TAITactNtuHitMC.hxx"
+#include "TAMSDactNtuHitMC.hxx"
+#include "TATWactNtuHitMC.hxx"
+#include "TACAactNtuHitMC.hxx"
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
@@ -85,13 +85,13 @@ private:
 protected:
    EVENT_STRUCT*         fEvtStruct;
    
-   TASTactNtuMC*         fActNtuRawSt;  // action for ntu data
-   TABMactNtuMC*         fActNtuRawBm;  // action for ntu data
-   TAVTactNtuMC*         fActNtuRawVtx;  // action for ntu data
-   TAITactNtuMC*         fActNtuRawIt;  // action for ntu data
-   TAMSDactNtuMC*        fActNtuRawMsd;  // action for ntu data
-   TATWactNtuMC*         fActNtuRawTw;  // action for ntu data
-   TACAactNtuMC*         fActNtuRawCa;  // action for ntu data
+   TASTactNtuHitMC*      fActNtuRawSt;  // action for ntu data
+   TABMactNtuHitMC*      fActNtuRawBm;  // action for ntu data
+   TAVTactNtuHitMC*      fActNtuRawVtx;  // action for ntu data
+   TAITactNtuHitMC*      fActNtuRawIt;  // action for ntu data
+   TAMSDactNtuHitMC*     fActNtuRawMsd;  // action for ntu data
+   TATWactNtuHitMC*      fActNtuRawTw;  // action for ntu data
+   TACAactNtuHitMC*      fActNtuRawCa;  // action for ntu data
    
    TAGdataDsc*           fpNtuMcEve;    // input data dsc
    TAGdataDsc*           fpNtuMcSt;    // input data dsc
