@@ -122,7 +122,7 @@ void TAITactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
       TVector3 posOut(hit->GetOutPosition());
       Int_t sensorId = hit->GetLayer(); // sensorId
       Float_t de     = hit->GetDeltaE();
-      Int_t  trackIdx = hit->GetTrackId()-1;
+      Int_t  trackIdx = hit->GetTrackId();
       
       // used for pileup ...
       if (fgPileup && storedEvents <= fgPileupEventsN) {

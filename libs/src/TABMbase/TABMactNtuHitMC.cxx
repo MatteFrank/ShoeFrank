@@ -78,7 +78,7 @@ Bool_t TABMactNtuHitMC::Action()
   //loop for double hits and hits with energy less than enxcell_cut:
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
       TAMChit* hitMC = pNtuMC->GetHit(i);
-      Int_t trackId  = hitMC->GetTrackId()-1;
+      Int_t trackId  = hitMC->GetTrackId();
 
       TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
       TAMCeveTrack*  track = pNtuEve->GetHit(trackId);
@@ -186,7 +186,7 @@ Bool_t TABMactNtuHitMC::Action()
       mytmp->AddMcTrackIdx(ipoint, i);
       mytmp->SetRealRdrift(realrdrift);
       TAMCeveTrack*  track = pNtuEve->GetHit(ipoint);
-      Int_t mothId = track->GetMotherID()-1;
+      Int_t mothId = track->GetMotherID();
 
       mytmp->SetIsFake( (mothId ==0) ? 0 : 1);
       nhits++;

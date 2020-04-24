@@ -187,7 +187,7 @@ Bool_t TACAactNtuHitMC::Action()
 
       // Get particle index
       Int_t id      = hitMC->GetLayer();
-      Int_t trackId = hitMC->GetTrackId()-1;  // id della particella nel Calo
+      Int_t trackId = hitMC->GetTrackId();  // id della particella nel Calo
       double ener   =  hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();;
       energyEvent  +=  hitMC->GetDeltaE();
       
@@ -245,7 +245,7 @@ Bool_t TACAactNtuHitMC::Action()
       TVector3 posIn(hitMC_f->GetInPosition());
       TVector3 posOut(hitMC_f->GetOutPosition());
 
-      Int_t trackId =  hitMC->GetTrackId()-1;
+      Int_t trackId =  hitMC->GetTrackId();
       Float_t z0_i  =  posIn.Z();
       Float_t z0_f  =  posOut.Z();
       Float_t time  = hitMC_f->GetTof()*TAGgeoTrafo::SecToNs();
