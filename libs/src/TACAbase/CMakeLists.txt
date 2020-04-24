@@ -24,6 +24,7 @@ set( with_dictionnaries
    TACAparMap
    TACAdigitizer
    TACAactNtuMC
+   TACAactNtuHitMC
    TACAparGeo
 )
 
