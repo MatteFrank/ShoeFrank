@@ -37,19 +37,6 @@ ClassImp(TAITactNtuHitMC);
 
 //------------------------------------------+-----------------------------------
 //
-TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuRaw,  TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
- : TAVTactBaseNtuMC(name, pGeoMap),
-   fpEvtStr(evStr),
-   fpNtuRaw(pNtuRaw)
-{
-	AddDataOut(pNtuRaw, "TAITntuRaw");
-	AddPara(pGeoMap, "TAITparGeo");
-
-   CreateDigitizer();
-}
-
-//------------------------------------------+-----------------------------------
-//
 TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
 : TAVTactBaseNtuMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
@@ -86,10 +73,7 @@ bool TAITactNtuHitMC::Action()
    static Int_t storedEvents = 0;
    std::vector<RawMcHit_t> storedEvtInfo;
    
-   if (fpEvtStr == 0x0)
-      Digitize(storedEvtInfo, storedEvents);
-   else
-      DigitizeOld(storedEvtInfo, storedEvents);
+   Digitize(storedEvtInfo, storedEvents);
    
    // Pileup
    if (fgPileup && storedEvents <= fgPileupEventsN) {
@@ -116,45 +100,6 @@ bool TAITactNtuHitMC::Action()
    
    fpNtuRaw->SetBit(kValid);
    return kTRUE;
-}
-
-//------------------------------------------+-----------------------------------
-void TAITactNtuHitMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
-{
-   TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
-   
-   RawMcHit_t mcHit;
-   fMap.clear();
-   
-   if(FootDebugLevel(1))
-      Info("TAITactNtuHitMC::Action()", "start  -->  ITn : %d  ", fpEvtStr->ITRn);
-   
-   // Loop over all MC hits
-   for (Int_t i = 0; i < fpEvtStr->ITRn; i++) {
-      if(FootDebugLevel(1))    cout<< endl << "FLUKA id =   " << fpEvtStr->TRfx[i] << "  "<< fpEvtStr->TRfy[i] << "  "<< fpEvtStr->TRfz[i] << endl;
-      
-      TVector3 posIn(fpEvtStr->ITRxin[i], fpEvtStr->ITRyin[i], fpEvtStr->ITRzin[i]);
-      TVector3 posOut(fpEvtStr->ITRxout[i], fpEvtStr->ITRyout[i], fpEvtStr->ITRzout[i]);
-      Int_t sensorId   = fpEvtStr->ITRisens[i];
-      Int_t genPartIdx = fpEvtStr->ITRid[i] - 1;
-
-      // used for pileup ...
-      if (fgPileup && storedEvents <= fgPileupEventsN) {
-         mcHit.id  = sensorId;
-         mcHit.de  = fpEvtStr->ITRde[i];
-         mcHit.x   = fpEvtStr->ITRxin[i];
-         mcHit.y   = fpEvtStr->ITRyin[i];
-         mcHit.zi  = fpEvtStr->ITRzin[i];
-         mcHit.zo  = fpEvtStr->ITRzout[i];
-         storedEvtInfo.push_back(mcHit);
-      }
-      
-      // Digitizing
-      posIn = pGeoMap->Detector2Sensor(sensorId, posIn);
-      posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
-      
-      DigitizeHit(sensorId, fpEvtStr->ITRde[i], posIn, posOut, i, genPartIdx);
-   }
 }
 
 //------------------------------------------+-----------------------------------

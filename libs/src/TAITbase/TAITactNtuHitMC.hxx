@@ -7,7 +7,6 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "Evento.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
@@ -23,7 +22,6 @@ class TAITntuRaw;
 class TAITactNtuHitMC : public TAVTactBaseNtuMC {
 
 public:
-   explicit TAITactNtuHitMC(const char* name=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap = 0, EVENT_STRUCT* evtStr=0);
    explicit TAITactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0);
 
    virtual ~TAITactNtuHitMC() {};
@@ -36,7 +34,6 @@ public:
 
    
 private:
-   EVENT_STRUCT*  fpEvtStr;
    TAGdataDsc*    fpNtuMC;          // input data dsc
    TAGdataDsc*    fpNtuEve;         // input eve track dsc
    TAGdataDsc*    fpNtuRaw;		   // output data dsc
@@ -48,7 +45,6 @@ private:
    void           CreateDigitizer();
    void           FillPixels( Int_t sensorId, Int_t mcId, Int_t trackId);
    void           DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackId);
-   void           DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
    void           Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
    
    ClassDef(TAITactNtuHitMC,0)
