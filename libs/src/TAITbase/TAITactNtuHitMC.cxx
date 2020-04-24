@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TAITactNtuMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
-  \brief   Implementation of TAITactNtuMC.
+  \version $Id: TAITactNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+  \brief   Implementation of TAITactNtuHitMC.
 */
 
 #include "TH2F.h"
@@ -16,7 +16,7 @@
 #include "TAMCntuHit.hxx"
 #include "TAITntuRaw.hxx"
 
-#include "TAITactNtuMC.hxx"
+#include "TAITactNtuHitMC.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
@@ -26,18 +26,18 @@
 #include "GlobalPar.hxx"
 
 /*!
-  \class TAITactNtuMC"
+  \class TAITactNtuHitMC"
   \brief NTuplizer for vertex raw hits. **
 */
 
 using namespace std;
 
-ClassImp(TAITactNtuMC);
+ClassImp(TAITactNtuHitMC);
 
 
 //------------------------------------------+-----------------------------------
 //
-TAITactNtuMC::TAITactNtuMC(const char* name, TAGdataDsc* pNtuRaw,  TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
+TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuRaw,  TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
  : TAVTactBaseNtuMC(name, pGeoMap),
    fpEvtStr(evStr),
    fpNtuRaw(pNtuRaw)
@@ -49,8 +49,24 @@ TAITactNtuMC::TAITactNtuMC(const char* name, TAGdataDsc* pNtuRaw,  TAGparaDsc* p
 }
 
 //------------------------------------------+-----------------------------------
+//
+TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
+: TAVTactBaseNtuMC(name, pGeoMap),
+   fpNtuMC(pNtuMC),
+   fpNtuEve(pNtuEve),
+   fpNtuRaw(pNtuRaw)
+{
+   AddDataIn(pNtuMC, "TAMCntuHit");
+   AddDataIn(pNtuEve, "TAMCntuEve");
+   AddDataOut(pNtuRaw, "TAVTntuRaw");
+   AddPara(pGeoMap, "TAVTparGeo");
+   
+   CreateDigitizer();
+}
+
+//------------------------------------------+-----------------------------------
 //! Create histogram
-void TAITactNtuMC::CreateDigitizer()
+void TAITactNtuHitMC::CreateDigitizer()
 {
    TAITparGeo* pGeoMap  = (TAITparGeo*) fpGeoMap->Object();
    fDigitizer = new TAITdigitizerE(pGeoMap);
@@ -61,7 +77,7 @@ void TAITactNtuMC::CreateDigitizer()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-bool TAITactNtuMC::Action()
+bool TAITactNtuHitMC::Action()
 {
 	
 	TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
@@ -70,7 +86,10 @@ bool TAITactNtuMC::Action()
    static Int_t storedEvents = 0;
    std::vector<RawMcHit_t> storedEvtInfo;
    
-   Digitize(storedEvtInfo, storedEvents);
+   if (fpEvtStr == 0x0)
+      Digitize(storedEvtInfo, storedEvents);
+   else
+      DigitizeOld(storedEvtInfo, storedEvents);
    
    // Pileup
    if (fgPileup && storedEvents <= fgPileupEventsN) {
@@ -100,7 +119,7 @@ bool TAITactNtuMC::Action()
 }
 
 //------------------------------------------+-----------------------------------
-void TAITactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
+void TAITactNtuHitMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
 {
    TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
    
@@ -108,7 +127,7 @@ void TAITactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents
    fMap.clear();
    
    if(FootDebugLevel(1))
-      Info("TAITactNtuMC::Action()", "start  -->  ITn : %d  ", fpEvtStr->ITRn);
+      Info("TAITactNtuHitMC::Action()", "start  -->  ITn : %d  ", fpEvtStr->ITRn);
    
    // Loop over all MC hits
    for (Int_t i = 0; i < fpEvtStr->ITRn; i++) {
@@ -138,10 +157,49 @@ void TAITactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents
    }
 }
 
-
+//------------------------------------------+-----------------------------------
+void TAITactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
+{
+   TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
+   TAMCntuHit* pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
+   
+   RawMcHit_t mcHit;
+   fMap.clear();
+   
+   if(FootDebugLevel(1))
+   Info("TAVTactNtuMC::Action()", "start  -->  ITRn : %d  ", pNtuMC->GetHitsN());
+   
+   // Loop over all MC hits
+   for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
+      TAMChit* hit = pNtuMC->GetHit(i);
+      
+      TVector3 posIn(hit->GetInPosition());
+      TVector3 posOut(hit->GetOutPosition());
+      Int_t sensorId = hit->GetLayer(); // sensorId
+      Float_t de     = hit->GetDeltaE();
+      Int_t  trackIdx = hit->GetTrackId();
+      
+      // used for pileup ...
+      if (fgPileup && storedEvents <= fgPileupEventsN) {
+         mcHit.id  = sensorId;
+         mcHit.de  = de;
+         mcHit.x   = posIn.X();
+         mcHit.y   = posIn.Y();
+         mcHit.zi  = posIn.Z();
+         mcHit.zo  = posOut.Z();
+         storedEvtInfo.push_back(mcHit);
+      }
+      
+      // Digitizing
+      posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);
+      posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
+      
+      DigitizeHit(sensorId, de, posIn, posOut, i, trackIdx);
+   }
+}
 
 //------------------------------------------+-----------------------------------
-void TAITactNtuMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
+void TAITactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
 {
    if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2])) return;
    FillPixels(sensorId, idx, trackIdx);
@@ -157,7 +215,7 @@ void TAITactNtuMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVec
 }
 
 //------------------------------------------+-----------------------------------
-void TAITactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx )
+void TAITactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx )
 {
 	TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
 	TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
@@ -204,7 +262,7 @@ void TAITactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx )
 }
 
 //___________________________________
-void TAITactNtuMC::FillNoise()
+void TAITactNtuHitMC::FillNoise()
 {
 	TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
 	for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
@@ -213,7 +271,7 @@ void TAITactNtuMC::FillNoise()
 }
 
 //___________________________________
-void TAITactNtuMC::FillNoise(Int_t sensorId)
+void TAITactNtuHitMC::FillNoise(Int_t sensorId)
 {
 	TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
 
