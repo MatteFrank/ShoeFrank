@@ -79,7 +79,7 @@ Bool_t TASTactNtuHitMC::Action()
       TVector3 posOut(hitMC->GetOutPosition());
 
      Int_t id      = hitMC->GetLayer();
-     Int_t trackId = hitMC->GetTrackId();
+     Int_t trackId = hitMC->GetTrackId()-1;
      Float_t z0    = posIn.Z();
      Float_t z1    = posOut.Z();
              edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();
