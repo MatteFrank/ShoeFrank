@@ -8,7 +8,6 @@
 /*------------------------------------------+---------------------------------*/
 
 #include "TString.h"
-#include "Evento.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
@@ -35,7 +34,7 @@ protected:
    
 
 public:
-   explicit TAVTactBaseNtuMC(const char* name=0, TAGparaDsc* p_geomap = 0,EVENT_STRUCT* evtStr=0);
+   explicit TAVTactBaseNtuMC(const char* name=0, TAGparaDsc* p_geomap = 0);
    virtual ~TAVTactBaseNtuMC() {};
    
    //! Base action 
@@ -76,7 +75,6 @@ public:
       
 protected:
    TAGparaDsc*     fpGeoMap;		    // geometry para dsc
-   EVENT_STRUCT*   fpEvtStr;
 
    TAVTbaseDigitizer*  fDigitizer;       // cluster size digitizer
    Int_t           fNoisyPixelsN;

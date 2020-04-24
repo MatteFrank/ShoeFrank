@@ -1,9 +1,9 @@
-#ifndef _TAVTactNtuMC_HXX
-#define _TAVTactNtuMC_HXX
+#ifndef _TAVTactNtuHitMC_HXX
+#define _TAVTactNtuHitMC_HXX
 /*!
  \file
- \version $Id: TAVTactNtuMC.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
- \brief   Declaration of TAVTactNtuMC.
+ \version $Id: TAVTactNtuHitMC.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \brief   Declaration of TAVTactNtuHitMC.
  */
 /*------------------------------------------+---------------------------------*/
 #include <map>
@@ -27,11 +27,11 @@ class TAVTparGeo;
 
 using namespace std;
 
-class TAVTactNtuMC : public TAVTactBaseNtuMC {
+class TAVTactNtuHitMC : public TAVTactBaseNtuMC {
 
 public:
-   explicit TAVTactNtuMC(const char* name=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap = 0, EVENT_STRUCT* evtStr=0);
-   virtual ~TAVTactNtuMC() {};
+   explicit TAVTactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0);
+   virtual ~TAVTactNtuHitMC() {};
    
    //! Base action 
    virtual bool   Action();
@@ -40,7 +40,8 @@ public:
    void           FillNoise();
 
 private:
-   EVENT_STRUCT*  fpEvtStr;
+   TAGdataDsc*    fpNtuMC;          // input mc hit
+   TAGdataDsc*    fpNtuEve;         // input eve track dsc
    TAGdataDsc*    fpNtuRaw;         // output data dsc
    map<pair<int, int>, TAVTntuHit*> fMap;     //! map for pilepup
 
@@ -52,7 +53,7 @@ private:
    void           DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackId);
    void           Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
 
-   ClassDef(TAVTactNtuMC,0)
+   ClassDef(TAVTactNtuHitMC,0)
 };
 
 #endif
