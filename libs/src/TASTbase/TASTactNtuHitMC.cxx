@@ -78,7 +78,7 @@ Bool_t TASTactNtuHitMC::Action()
       TVector3 posIn(hitMC->GetInPosition());
       TVector3 posOut(hitMC->GetOutPosition());
 
-     Int_t id      = hitMC->GetLayer();
+     Int_t id      = hitMC->GetSensorId();
      Int_t trackId = hitMC->GetTrackId();
      Float_t z0    = posIn.Z();
      Float_t z1    = posOut.Z();

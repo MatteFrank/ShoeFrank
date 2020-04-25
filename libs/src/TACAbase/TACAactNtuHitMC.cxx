@@ -186,7 +186,7 @@ Bool_t TACAactNtuHitMC::Action()
       TAMChit* hitMC = pNtuMC->GetHit(i);
 
       // Get particle index
-      Int_t id      = hitMC->GetLayer();
+      Int_t id      = hitMC->GetCrystalId();
       Int_t trackId = hitMC->GetTrackId();  // id della particella nel Calo
       double ener   =  hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();;
       energyEvent  +=  hitMC->GetDeltaE();

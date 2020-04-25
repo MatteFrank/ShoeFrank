@@ -124,7 +124,7 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
       
       TVector3 posIn(hit->GetInPosition());
       TVector3 posOut(hit->GetOutPosition());
-      Int_t sensorId = hit->GetLayer(); // sensorId
+      Int_t sensorId = hit->GetSensorId(); // sensorId
       Float_t de     = hit->GetDeltaE();
       Int_t trackIdx = hit->GetTrackId();
       

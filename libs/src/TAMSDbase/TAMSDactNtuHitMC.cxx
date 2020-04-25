@@ -136,7 +136,7 @@ bool TAMSDactNtuHitMC::Action()
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
       TAMChit* hit = pNtuMC->GetHit(i);
 
-		Int_t sensorId = hit->GetLayer();
+		Int_t sensorId = hit->GetSensorId();
       Int_t trackIdx = hit->GetTrackId();
 
 		// Digitizing

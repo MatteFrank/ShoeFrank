@@ -180,7 +180,7 @@ bool TATWactNtuHitMC::Action() {
       TVector3 posIn(hitMC->GetInPosition());
       TVector3 posOut(hitMC->GetOutPosition());
       
-      Int_t id      = hitMC->GetLayer();
+      Int_t id      = hitMC->GetBarId();
       Int_t trackId = hitMC->GetTrackId();
       Float_t z0    = posIn.Z();
       Float_t z1    = posOut.Z();
@@ -200,7 +200,7 @@ bool TATWactNtuHitMC::Action() {
       // layer, bar, de, time, ntupID, parentID
       int view = hitMC->GetView();    // in ntuple now layers are 0 and 1
       if ( fDebugLevel> 0 )
-         printf("%d %d\n", view,  hitMC->GetLayer());
+         printf("%d %d\n", view,  hitMC->GetBarId());
       
       TVector3 posInLoc = geoTrafo->FromGlobalToTWLocal(posIn);
       
@@ -263,7 +263,7 @@ bool TATWactNtuHitMC::Action() {
                fCnt++;
                if(Zrec_MCtrue!=Z) {
                   cout<<"Hit MC n::"<<fCnt<<endl;
-                  printf("layer::%d bar::%d\n", view,  hitMC->GetLayer());
+                  printf("layer::%d bar::%d\n", view,  hitMC->GetBarId());
                   fCntWrong++;
                   cout<<"edep::"<<edep<<"  trueTof::"<<trueTof<<endl;
                   cout<<"Zrec::"<<Zrec_MCtrue<<"  Z_MC::"<<Z<<endl;
