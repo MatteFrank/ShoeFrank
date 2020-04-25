@@ -327,57 +327,63 @@ Bool_t TACAactNtuHitMC::Action()
       hCA_EnergyReleasePosZY_in->Fill(posInLoc.Z(), posInLoc.Y());
       hCA_EnergyReleasePosZY_out->Fill(posOutLoc.Z(), posOutLoc.Y());
      
-      // Reconstruction is NOT analysis moreover incompatible with Geant4 !!!
+      // Reconstruction should contain analysis
       
-//      int fluID = fpEvtStr->TRfid[endep->fid];
-//
-//      int z = fpEvtStr->TRcha[endep->fid];
-//      float zf    = fpEvtStr->CALzout[endep->fid];
-//      double mass = fpEvtStr->TRmass[endep->fid];
-//
-//      // Select Neutrons
-//      if ( fluID == 8 ) {
-//         hCA_EnergyNeutron->Fill(endep->fDE);
-//      }
-//
-//      // Select Heavy-ions
-//      if ( fluID <= -2 || fluID == 1 ) {
-//
-//         // select heavy ion with charge from 2 to 8 and protons (z=1)
-//         if ( (z > 1 && z <= 8) || fluID == 1 ) {
-//
-//            double eDep = endep->fDE;
-//            double tof = 0.;
-//
-//            double p = sqrt( fpEvtStr->TRipx[endep->fid]*fpEvtStr->TRipx[endep->fid] +
-//                         fpEvtStr->TRipy[endep->fid]*fpEvtStr->TRipy[endep->fid] +
-//                         fpEvtStr->TRipz[endep->fid]*fpEvtStr->TRipz[endep->fid] );
-//            double ek = sqrt( p*p + mass*mass ) - mass;
-//
-//            double eRatio = eDep/ek;
-//
-//            if (z == 1 && fluID != 1) continue; // skip triton, deuteron
-//            if (z == 2 && fluID == -5) continue; // skip He3
-//            hCA_EnergyIon[z-1]->Fill( eRatio );
-//            hCA_EnergyDep[z-1]->Fill( eDep );
-//            hCA_EnergyIonSpect[z-1]->Fill( ek );
-//            hCA_P_vs_EDepIon[z-1]->Fill( eDep, p );
-//            hCA_timeFirstHit->Fill(endep->fTimeFirstHit);
-//         }
-//
-//         const char* flukaName = getPartNamefromID(fluID);
-//         if( fluID == -2 ) { // shift HEAVYION by z
-//            fluID = -40 - z;
-//            // check out of range
-//            if( fluID < -200 ) cout << "fluID " << fluID <<endl;
-//         }
-//
-//      }
-//
-//      hCA_typeParticleVsRegion->Fill( fluID, endep->fCryid, 1 );
-//      hCA_FinalPositionVsMass->Fill(zf, mass);
-//      hCA_Mass->Fill(mass);
-//      hCA_ChargeVsMass->Fill(z, mass);
+      TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
+      TAMCeveTrack*  track = pNtuEve->GetTrack(endep->fid);
+      
+      int fluID   = track->GetFlukaID();
+      int z       =  track->GetCharge();
+      double mass = track->GetMass();
+      double px   = track->GetInitP().X();
+      double py   = track->GetInitP().Y();
+      double pz   = track->GetInitP().Z();
+
+      TAMChit* hitMC = pNtuMC->GetHit(endep->fid);
+
+      float zf    = hitMC->GetOutPosition().Z();
+
+      // Select Neutrons
+      if ( fluID == 8 ) {
+         hCA_EnergyNeutron->Fill(endep->fDE);
+      }
+
+      // Select Heavy-ions
+      if ( fluID <= -2 || fluID == 1 ) {
+
+         // select heavy ion with charge from 2 to 8 and protons (z=1)
+         if ( (z > 1 && z <= 8) || fluID == 1 ) {
+
+            double eDep = endep->fDE;
+            double tof = 0.;
+
+            double p = sqrt( px*px + py*py + pz*pz);
+            double ek = sqrt( p*p + mass*mass ) - mass;
+
+            double eRatio = eDep/ek;
+
+            if (z == 1 && fluID != 1) continue; // skip triton, deuteron
+            if (z == 2 && fluID == -5) continue; // skip He3
+            hCA_EnergyIon[z-1]->Fill( eRatio );
+            hCA_EnergyDep[z-1]->Fill( eDep );
+            hCA_EnergyIonSpect[z-1]->Fill( ek );
+            hCA_P_vs_EDepIon[z-1]->Fill( eDep, p );
+            hCA_timeFirstHit->Fill(endep->fTimeFirstHit);
+         }
+
+         const char* flukaName = getPartNamefromID(fluID);
+         if( fluID == -2 ) { // shift HEAVYION by z
+            fluID = -40 - z;
+            // check out of range
+            if( fluID < -200 ) cout << "fluID " << fluID <<endl;
+         }
+
+      }
+
+      hCA_typeParticleVsRegion->Fill( fluID, endep->fCryid, 1 );
+      hCA_FinalPositionVsMass->Fill(zf, mass);
+      hCA_Mass->Fill(mass);
+      hCA_ChargeVsMass->Fill(z, mass);
    }
 
    return kTRUE;
