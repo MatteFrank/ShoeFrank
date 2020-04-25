@@ -86,11 +86,11 @@ Bool_t TAMCactNtuEve::Action() {
      if (fDebugLevel > 0)
         Info("Action()","MCeve : %d %d %lf ",i_id,i_chg,i_mass);
      
-     p_nturaw->NewHit(i_id,i_chg,i_type,i_reg,i_bar,i_dead,i_mass,i_moth,i_time,i_tof,i_trlen,ipos,fpos,ip,fp,mothip,mothfp,i_pileup);
+     p_nturaw->NewTrack(i_id,i_chg,i_type,i_reg,i_bar,i_dead,i_mass,i_moth,i_time,i_tof,i_trlen,ipos,fpos,ip,fp,mothip,mothfp,i_pileup);
     
   }
 
-   if ( fDebugLevel> 1 )  cout << "TRn = " << fpEvtStr->TRn << "  MChit = "<< p_nturaw->GetHitsN() << endl;
+   if ( fDebugLevel> 1 )  cout << "TRn = " << fpEvtStr->TRn << "  MChit = "<< p_nturaw->GetTracksN() << endl;
 
   fpNtuMC->SetBit(kValid);
   return kTRUE;

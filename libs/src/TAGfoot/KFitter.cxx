@@ -329,7 +329,7 @@ int KFitter::UploadClusVT(){
           TVector3 posin = mcHit->GetInPosition();
           TVector3 posout = mcHit->GetOutPosition();
           if (idx > -1 ){
-            TAMCeveTrack* track = eve->GetHit(idx);
+            TAMCeveTrack* track = eve->GetTrack(idx);
             if (m_debug > 1)
             printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
             //if ( checkTrackId != idx ) { cout << "WARNING: TRACKID DOES NOT MATCH!" << endl; continue; }
@@ -454,7 +454,7 @@ int KFitter::UploadClusIT(){
           TVector3 posin = mcHit->GetInPosition();
           TVector3 posout = mcHit->GetOutPosition();
           if (idx > -1 ){
-            TAMCeveTrack* track = eve->GetHit(idx);
+            TAMCeveTrack* track = eve->GetTrack(idx);
             if (m_debug > 1)
             printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
             TVector3 momin = mcHit->GetInMomentum();
@@ -550,7 +550,7 @@ int KFitter::UploadClusMSD() {
           TVector3 posin = mcHit->GetInPosition();
           TVector3 posout = mcHit->GetOutPosition();
           if (idx > -1 ){
-            TAMCeveTrack* track = eve->GetHit(idx);
+            TAMCeveTrack* track = eve->GetTrack(idx);
             if (m_debug > 1)
             printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
             TVector3 momin = mcHit->GetInMomentum();
@@ -1298,7 +1298,7 @@ void KFitter::Prepare4Strip( Track* fitTrack ) {
     TVector3 posin = mcHit->GetInPosition();
     TVector3 posout = mcHit->GetOutPosition();
     if (idx > -1 ){
-      TAMCeveTrack* track = eve->GetHit(idx);
+      TAMCeveTrack* track = eve->GetTrack(idx);
     }
     // if (m_debug > 1)
     // printf("charge %d mass %g \n", track->GetCharge(), track->GetMass());

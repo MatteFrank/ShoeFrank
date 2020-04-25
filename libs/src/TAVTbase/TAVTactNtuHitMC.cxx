@@ -150,7 +150,7 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
 void TAVTactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
 {
    TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
-   TAMCeveTrack*  track = pNtuEve->GetHit(trackIdx);
+   TAMCeveTrack*  track = pNtuEve->GetTrack(trackIdx);
    Int_t  Z = track->GetCharge();
    
    if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2], 0, 0, Z)) return;

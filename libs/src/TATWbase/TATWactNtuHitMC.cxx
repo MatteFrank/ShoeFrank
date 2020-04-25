@@ -188,7 +188,7 @@ bool TATWactNtuHitMC::Action() {
       Float_t time  = hitMC->GetTof()*TAGgeoTrafo::SecToPs();
       // get true charge
       TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
-      TAMCeveTrack*  track = pNtuEve->GetHit(trackId);
+      TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
       Int_t  Z = track->GetCharge();
       
       Float_t trueTof = (time - timeST)*TAGgeoTrafo::PsToNs();  //ns
@@ -216,7 +216,7 @@ bool TATWactNtuHitMC::Action() {
       if(fDigitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
          
          TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
-         TAMCeveTrack*  track = pNtuEve->GetHit(trackId);
+         TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
          Int_t mothId = track->GetMotherID()-1;
          
          Float_t distZ_MC[fZbeam]; //inf

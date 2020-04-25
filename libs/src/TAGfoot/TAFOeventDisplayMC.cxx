@@ -248,7 +248,7 @@ void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
    
    Int_t trackId       = point->GetTrackId();
    TAMCntuEve* pNtuHit = fReco->GetNtuMcEve();
-   TAMCeveTrack* track = pNtuHit->GetHit(trackId);
+   TAMCeveTrack* track = pNtuHit->GetTrack(trackId);
    
    fInfoView->AddLine( Form("Generated from track with index: %d\n", trackId) );
    fInfoView->AddLine( Form("Charge: %d Mass: %d\n", track->GetCharge(),  TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor())) );

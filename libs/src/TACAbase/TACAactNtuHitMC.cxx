@@ -180,7 +180,7 @@ Bool_t TACAactNtuHitMC::Action()
    // Sum all energy dep. of the same particle
    TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
 
-   TObjArray dep(pNtuEve->GetHitsN());
+   TObjArray dep(pNtuEve->GetTracksN());
    double energyEvent = 0;     // Total Energy deposition on the Event
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
       TAMChit* hitMC = pNtuMC->GetHit(i);
@@ -214,7 +214,7 @@ Bool_t TACAactNtuHitMC::Action()
   
       // Get particle mother
       TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
-      TAMCeveTrack*  track = pNtuEve->GetHit(endep->fid);
+      TAMCeveTrack*  track = pNtuEve->GetTrack(endep->fid);
       Int_t ipart_mother = track->GetMotherID();
 
       energyDep* endepM = (energyDep*)dep.At(ipart_mother);

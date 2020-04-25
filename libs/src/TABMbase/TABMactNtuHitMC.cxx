@@ -81,7 +81,7 @@ Bool_t TABMactNtuHitMC::Action()
       Int_t trackId  = hitMC->GetTrackId();
 
       TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
-      TAMCeveTrack*  track = pNtuEve->GetHit(trackId);
+      TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
 
       
       if(trackId!=0){// fpEvtStr->TRtrlen[fpEvtStr->BMNid[i]-1]>0.1selection criteria: no neutral particles, at least 0,1 mm
@@ -185,7 +185,7 @@ Bool_t TABMactNtuHitMC::Action()
        
       mytmp->AddMcTrackIdx(ipoint, i);
       mytmp->SetRealRdrift(realrdrift);
-      TAMCeveTrack*  track = pNtuEve->GetHit(ipoint);
+      TAMCeveTrack*  track = pNtuEve->GetTrack(ipoint);
       Int_t mothId = track->GetMotherID();
 
       mytmp->SetIsFake( (mothId ==0) ? 0 : 1);

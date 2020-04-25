@@ -86,7 +86,8 @@ void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack){
         finmom.SetZ(aTrack->GetMomentum().getZ()/GeV);
     }
     TVector3 xposparent(0,0,0);  /// position of the parent particle - not needed, so initialized to zero
-    fEventAction->GetTrackMc()->NewHit(flukaID,charge,trackID,regId,baryon,deadId,mass,parentID,time,tof,length,vtxpos,finpos,vtxmom,finmom,xposparent,xposparent,-1);
+    fEventAction->GetTrackMc()->NewTrack(flukaID,charge,trackID,regId,baryon,deadId,mass,parentID,time,tof,
+                                       length,vtxpos,finpos,vtxmom,finmom,xposparent,xposparent,-1);
 }
 
 

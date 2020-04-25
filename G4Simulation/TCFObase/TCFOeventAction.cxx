@@ -188,7 +188,7 @@ void TCFOeventAction::FillTrack()
 {
     TAMCevent* hit = fRunAction->GetEventMC();
 
-    Int_t nTracks = fMcTrack->GetHitsN();
+    Int_t nTracks = fMcTrack->GetTracksN();
 
     TVector3 initpos ;
     TVector3 initmom ;
@@ -207,21 +207,21 @@ void TCFOeventAction::FillTrack()
     Double_t length ;
 
     for(Int_t i=0 ; i<nTracks ; ++i){
-        flukaID = fMcTrack->GetHit(i)->GetFlukaID();
-        trackID = fMcTrack->GetHit(i)->GetType();
-        parentID = fMcTrack->GetHit(i)->GetMotherID();
-        mass = fMcTrack->GetHit(i)->GetMass();
-        charge = fMcTrack->GetHit(i)->GetCharge();
-        nbaryon = fMcTrack->GetHit(i)->GetBaryon();
-        tof = fMcTrack->GetHit(i)->GetTof();
-        time = fMcTrack->GetHit(i)->GetTime();
-        length = fMcTrack->GetHit(i)->GetTrkLength();
-        initpos = fMcTrack->GetHit(i)->GetInitPos();
-        initmom = fMcTrack->GetHit(i)->GetInitP();
-        finalpos = fMcTrack->GetHit(i)->GetFinalPos();
-        finalmom = fMcTrack->GetHit(i)->GetFinalP();
-        dead = fMcTrack->GetHit(i)->GetDead() ;
-        region = fMcTrack->GetHit(i)->GetRegion() ;
+        flukaID = fMcTrack->GetTrack(i)->GetFlukaID();
+        trackID = fMcTrack->GetTrack(i)->GetType();
+        parentID = fMcTrack->GetTrack(i)->GetMotherID();
+        mass = fMcTrack->GetTrack(i)->GetMass();
+        charge = fMcTrack->GetTrack(i)->GetCharge();
+        nbaryon = fMcTrack->GetTrack(i)->GetBaryon();
+        tof = fMcTrack->GetTrack(i)->GetTof();
+        time = fMcTrack->GetTrack(i)->GetTime();
+        length = fMcTrack->GetTrack(i)->GetTrkLength();
+        initpos = fMcTrack->GetTrack(i)->GetInitPos();
+        initmom = fMcTrack->GetTrack(i)->GetInitP();
+        finalpos = fMcTrack->GetTrack(i)->GetFinalPos();
+        finalmom = fMcTrack->GetTrack(i)->GetFinalP();
+        dead = fMcTrack->GetTrack(i)->GetDead() ;
+        region = fMcTrack->GetTrack(i)->GetRegion() ;
         fMapTrackIdx[trackID] = i;
         hit->AddPart(parentID,trackID,charge,region,nbaryon,dead,flukaID,
                                     initpos,finalpos,initmom,finalmom,mass,time,tof,length);

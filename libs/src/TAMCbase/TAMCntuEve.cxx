@@ -118,15 +118,15 @@ TAMCntuEve::~TAMCntuEve()
 
 //------------------------------------------+-----------------------------------
 //! new track
-TAMCeveTrack* TAMCntuEve::NewHit(Int_t i_id, Int_t i_chg, Int_t i_type,
-                                 Int_t i_reg, Int_t i_bar, Int_t i_dead,
-                                 Double_t i_mass, Int_t i_moth,
-                                 Double_t i_time,
-                                 Double_t i_tof, Double_t i_trlen,
-                                 TVector3 i_ipos, TVector3 i_fpos,
-                                 TVector3 i_ip,TVector3 i_fp,
-                                 TVector3 i_mothip,
-                                 TVector3 i_mothfp,Int_t i_pileup ) {
+TAMCeveTrack* TAMCntuEve::NewTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
+                                   Int_t i_reg, Int_t i_bar, Int_t i_dead,
+                                   Double_t i_mass, Int_t i_moth,
+                                   Double_t i_time,
+                                   Double_t i_tof, Double_t i_trlen,
+                                   TVector3 i_ipos, TVector3 i_fpos,
+                                   TVector3 i_ip,TVector3 i_fp,
+                                   TVector3 i_mothip,
+                                   TVector3 i_mothfp,Int_t i_pileup ) {
 
     TClonesArray &trackCollection = *fListOfTracks;
     TAMCeveTrack* track = new( trackCollection[trackCollection.GetEntriesFast()] ) TAMCeveTrack(
@@ -152,7 +152,7 @@ void TAMCntuEve::Clear(Option_t*)
 
 //------------------------------------------+-----------------------------------
 //! return n tracks
-Int_t TAMCntuEve::GetHitsN() const
+Int_t TAMCntuEve::GetTracksN() const
 {
    return fListOfTracks->GetEntries();
 }
@@ -160,14 +160,14 @@ Int_t TAMCntuEve::GetHitsN() const
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th track
 
-TAMCeveTrack* TAMCntuEve::GetHit(Int_t i)
+TAMCeveTrack* TAMCntuEve::GetTrack(Int_t i)
 {
    return (TAMCeveTrack*) ((*fListOfTracks)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th track
-const TAMCeveTrack* TAMCntuEve::GetHit(Int_t i) const
+const TAMCeveTrack* TAMCntuEve::GetTrack(Int_t i) const
 {
    return (const TAMCeveTrack*) ((*fListOfTracks)[i]);;
 }
