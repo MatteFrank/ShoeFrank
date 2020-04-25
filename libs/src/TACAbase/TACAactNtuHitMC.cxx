@@ -327,7 +327,7 @@ Bool_t TACAactNtuHitMC::Action()
       hCA_EnergyReleasePosZY_in->Fill(posInLoc.Z(), posInLoc.Y());
       hCA_EnergyReleasePosZY_out->Fill(posOutLoc.Z(), posOutLoc.Y());
      
-      // Reconstruction should contain analysis
+      // Reconstruction should not contain analysis
       
       TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
       TAMCeveTrack*  track = pNtuEve->GetTrack(endep->fid);
