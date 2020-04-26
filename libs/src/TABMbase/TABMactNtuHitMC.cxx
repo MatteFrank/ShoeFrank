@@ -83,8 +83,7 @@ Bool_t TABMactNtuHitMC::Action()
       TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
       TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
 
-      
-      if(trackId!=0){// fpEvtStr->TRtrlen[fpEvtStr->BMNid[i]-1]>0.1selection criteria: no neutral particles, at least 0,1 mm
+      if(track->GetCharge() != 0 && track->GetTrkLength() > 0.1){//selection criteria: no neutral particles, at least 0,1 mm
          
       cell = hitMC->GetCell();
       lay = hitMC->GetLayer();
@@ -161,7 +160,7 @@ Bool_t TABMactNtuHitMC::Action()
       
     if(tobecharged[i]!=-1) {
    
-      ipoint = hitMC->GetTrackId()-1;
+      ipoint = hitMC->GetTrackId();
       cell   = hitMC->GetCell();
       lay    = hitMC->GetLayer();
       view   = hitMC->GetView()==-1 ? 1:0;
