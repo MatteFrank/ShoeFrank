@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
    int fragtrig=0;
    double Ethreshold = 0;
    
+   bool regFlag = false;
+   
    static TTree *rootTree = 0;
    
    EVENT_STRUCT eve;
@@ -47,15 +49,19 @@ int main(int argc, char *argv[])
       if(strcmp(argv[i],"-nev") == 0) {
          maxevpro = atoi(argv[++i]);
       }
+      if(strcmp(argv[i],"-reg") == 0) {
+         regFlag = atoi(argv[++i]);
+      }
       if(strcmp(argv[i],"-iL") == 0) { iL = 1; }
       if(strcmp(argv[i],"-help") == 0) {
          cout<<"Conversion of fluka TXT file : usage -> Txt2NtuRoot [opts] "<<endl;
          cout<<" possible opts are:"<<endl;
-         cout<<"   -in  file    : [def=In.txt] Root input file"<<endl;
-         cout<<"   -out  file   : [def=Out.root] Root output file"<<endl;
-         cout<<"   -sel selw    : [def=0] select ev: 1*dc + 10*lyso "<<endl;
-         cout<<"   -iL        : [def=none] input file is a list of files"<<endl;
+         cout<<"   -in  file   : [def=In.txt] Root input file"<<endl;
+         cout<<"   -out  file  : [def=Out.root] Root output file"<<endl;
+         cout<<"   -sel selw   : [def=0] select ev: 1*dc + 10*lyso "<<endl;
+         cout<<"   -iL         : [def=none] input file is a list of files"<<endl;
          cout<<"   -nev        : [def=Inf] Max no. of events to process"<<endl;
+         cout<<"   -reg        : [def=0] save crossing region info"<<endl;
          return 1;
       }
    }
@@ -89,20 +95,6 @@ int main(int argc, char *argv[])
    // Event
    TAMCevent* event = new TAMCevent();
    event->SetBranches(rootTree);
-   
-   //  rootTree->Branch("CROSSn",&eve.CROSSn,"CROSSn/I");
-   //  rootTree->Branch("CROSSid",&eve.CROSSid,"CROSSid[CROSSn]/I");
-   //  rootTree->Branch("CROSSnreg",&eve.CROSSnreg,"CROSSnreg[CROSSn]/I");
-   //  rootTree->Branch("CROSSnregold",&eve.CROSSnregold,"CROSSnregold[CROSSn]/I");
-   //  rootTree->Branch("CROSSx",&eve.CROSSx,"CROSSx[CROSSn]/D");
-   //  rootTree->Branch("CROSSy",&eve.CROSSy,"CROSSy[CROSSn]/D");
-   //  rootTree->Branch("CROSSz",&eve.CROSSz,"CROSSz[CROSSn]/D");
-   //  rootTree->Branch("CROSSpx",&eve.CROSSpx,"CROSSpx[CROSSn]/D");
-   //  rootTree->Branch("CROSSpy",&eve.CROSSpy,"CROSSpy[CROSSn]/D");
-   //  rootTree->Branch("CROSSpz",&eve.CROSSpz,"CROSSpz[CROSSn]/D");
-   //  rootTree->Branch("CROSSm",&eve.CROSSm,"CROSSm[CROSSn]/D");
-   //  rootTree->Branch("CROSSch",&eve.CROSSch,"CROSSch[CROSSn]/D");
-   //  rootTree->Branch("CROSSt",&eve.CROSSt,"CROSSt[CROSSn]/D");
    
    //    loop sui file della lista ( if any)
    
@@ -405,11 +397,12 @@ int main(int argc, char *argv[])
                               &eve.CROSSy[jj],&eve.CROSSz[jj],&eve.CROSSpx[jj],
                               &eve.CROSSpy[jj],&eve.CROSSpz[jj],&eve.CROSSm[jj],
                               &eve.CROSSch[jj],&eve.CROSSt[jj]);
-               
-               event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
-                               TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
-                               TVector3(eve.CROSSy[jj],eve.CROSSz[jj],eve.CROSSpx[jj]),
-                               eve.CROSSm[jj],eve.CROSSch[jj],eve.CROSSt[jj]);
+               if (regFlag) {
+                  event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
+                                  TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
+                                  TVector3(eve.CROSSy[jj],eve.CROSSz[jj],eve.CROSSpx[jj]),
+                                  eve.CROSSm[jj],eve.CROSSch[jj],eve.CROSSt[jj]);
+               }
                
                if(nread!=12){
                   cout<<"ReadError in CROSS section: nread = "<<nread<<
