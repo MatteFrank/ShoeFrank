@@ -187,9 +187,9 @@ Bool_t TACAactNtuHitMC::Action()
 
       // Get particle index
       Int_t id      = hitMC->GetCrystalId();
-      Int_t trackId = hitMC->GetTrackId();  // id della particella nel Calo
-      double ener   =  hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();;
-      energyEvent  +=  hitMC->GetDeltaE();
+      Int_t trackId = hitMC->GetTrackIdx();  // id della particella nel Calo
+      double ener   = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();;
+      energyEvent  += hitMC->GetDeltaE();
       
       // Returns the object at position trackId. Returns 0 if trackId is out of range.
       energyDep* endep = (energyDep*)dep.At(trackId);   
@@ -245,9 +245,9 @@ Bool_t TACAactNtuHitMC::Action()
       TVector3 posIn(hitMC_f->GetInPosition());
       TVector3 posOut(hitMC_f->GetOutPosition());
 
-      Int_t trackId =  hitMC->GetTrackId();
-      Float_t z0_i  =  posIn.Z();
-      Float_t z0_f  =  posOut.Z();
+      Int_t trackId = hitMC->GetTrackIdx();
+      Float_t z0_i  = posIn.Z();
+      Float_t z0_f  = posOut.Z();
       Float_t time  = hitMC_f->GetTof()*TAGgeoTrafo::SecToNs();
 
       TVector3 posInLoc = geoTrafo->FromGlobalToCALocal(posIn);
@@ -333,14 +333,15 @@ Bool_t TACAactNtuHitMC::Action()
       TAMCeveTrack*  track = pNtuEve->GetTrack(endep->fid);
       
       int fluID   = track->GetFlukaID();
-      int z       =  track->GetCharge();
+      int z       = track->GetCharge();
       double mass = track->GetMass();
       double px   = track->GetInitP().X();
       double py   = track->GetInitP().Y();
       double pz   = track->GetInitP().Z();
 
-      TAMChit* hitMC = pNtuMC->GetHit(endep->fid);
+     // TAMChit* hitMC = pNtuMC->GetHit(endep->fid); could not be endep->fid, index of tracks not hits !
 
+      TAMChit* hitMC = pNtuMC->GetHit(index);
       float zf    = hitMC->GetOutPosition().Z();
 
       // Select Neutrons
