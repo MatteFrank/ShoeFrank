@@ -47,18 +47,15 @@ Bool_t TAMCactNtuMsd::Action() {
    
    for (Int_t i = 0; i < fpEvtStr->MSDn; i++) {
       
-      Int_t sensorId = fpEvtStr->MSDilay[i];
-      Int_t trackId  = fpEvtStr->MSDid[i] - 1;
-       Int_t layer = fpEvtStr->MSDilay[i];
-       Int_t stripx = fpEvtStr->MSDistripx[i];
-       Int_t stripy = fpEvtStr->MSDistripy[i];
+      Int_t layer    = fpEvtStr->MSDilay[i];
+      Int_t trackIdx = fpEvtStr->MSDid[i];
 
       TVector3 ipos( fpEvtStr->MSDxin[i], fpEvtStr->MSDyin[i], fpEvtStr->MSDzin[i]);
       TVector3 fpos( fpEvtStr->MSDxout[i], fpEvtStr->MSDyout[i], fpEvtStr->MSDzout[i]);
       TVector3 imom( fpEvtStr->MSDpxin[i], fpEvtStr->MSDpyin[i], fpEvtStr->MSDpzin[i]);
       TVector3 fmom( fpEvtStr->MSDpxout[i], fpEvtStr->MSDpyout[i], fpEvtStr->MSDpzout[i]);
 
-      p_nturaw->NewHit(sensorId, layer, stripx, stripy, ipos, fpos, imom, fmom, fpEvtStr->MSDde[i], fpEvtStr->MSDtim[i], trackId);
+      p_nturaw->NewHit(trackIdx, layer, -99, -99, ipos, fpos, imom, fmom, fpEvtStr->MSDde[i], fpEvtStr->MSDtim[i], 0);
    }
     
    fpNtuMC->SetBit(kValid);

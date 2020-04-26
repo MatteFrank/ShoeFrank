@@ -48,9 +48,7 @@ Bool_t TAMCactNtuVtx::Action() {
    for (Int_t i = 0; i < fpEvtStr->VTXn; i++) {
       
       Int_t sensorId = fpEvtStr->VTXilay[i];
-      Int_t trackId  = fpEvtStr->VTXid[i] - 1;
-      Int_t row = fpEvtStr->VTXirow[i];
-      Int_t col = fpEvtStr->VTXicol[i];
+      Int_t trackIdx = fpEvtStr->VTXid[i];
 
       TVector3 ipos( fpEvtStr->VTXxin[i], fpEvtStr->VTXyin[i], fpEvtStr->VTXzin[i]);
       TVector3 imom( fpEvtStr->VTXpxin[i], fpEvtStr->VTXpyin[i], fpEvtStr->VTXpzin[i]);
@@ -58,7 +56,7 @@ Bool_t TAMCactNtuVtx::Action() {
       TVector3 fmom( fpEvtStr->VTXpxout[i], fpEvtStr->VTXpyout[i], fpEvtStr->VTXpzout[i]);
 
 //      p_nturaw->NewHit(sensorId, pos, mom, fpEvtStr->VTXde[i], fpEvtStr->VTXtim[i], trackId);
-       p_nturaw->NewHit(sensorId, row, col, -99,ipos, fpos, imom, fmom, fpEvtStr->VTXde[i], fpEvtStr->VTXtim[i], trackId);
+       p_nturaw->NewHit(trackIdx, sensorId, -99, -99,ipos, fpos, imom, fmom, fpEvtStr->VTXde[i], fpEvtStr->VTXtim[i], 0);
    }
 
    fpNtuMC->SetBit(kValid);
