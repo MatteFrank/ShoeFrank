@@ -4,6 +4,7 @@
 #include "TAMCevent.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
+#include "TAMCntuRegion.hxx"
 
 #include "GlobalPar.hxx"
 
@@ -15,6 +16,7 @@ ClassImp(TAMCevent);
 TAMCevent::TAMCevent()
  : fEventNumber(-1),
    fTrack(new TAMCntuEve()),
+   fRegion(new TAMCntuRegion),
    fHitSTC(0x0),
    fHitBMN(0x0),
    fHitVTX(0x0),
@@ -49,7 +51,8 @@ TAMCevent::TAMCevent()
 Int_t TAMCevent::Clean()
 {
     fTrack->Clear();
-   
+    fRegion->Clear();
+
     if (fHitSTC)
        fHitSTC->Clear();
    
@@ -145,14 +148,13 @@ void TAMCevent::AddCAL(Int_t aCALid, Int_t aCALicry,
     fHitCAL->NewHit(aCALid,aCALicry,-99,-99,aCALinpos,aCALoutpos,aCALpin,aCALpout,aCALde,aCALtof,atrId);
 }
 
-///*-----------------------------------------------------------------*/
-///// NB : crossing particles should be TAMCntuEve !
-//Int_t TAMCevent::AddCROSS(Int_t aCROSSid, Int_t aCROSSnreg, Int_t aCROSSnregold,
-//                          TVector3 aCROSSpos,TVector3 aCROSSp, Double_t aCROSSm,
-//                          Double_t aCROSSch, Double_t aCROSSt)
-//{
-//    fHitCROSS->NewHit(aCROSSid,aCROSSnreg,aCROSSnregold,-99,aCROSSpos,0,aCROSSp,0,aCROSSm,aCROSSch,-99);
-//}
+/*-----------------------------------------------------------------*/
+void TAMCevent::AddCROSS(Int_t aCROSSid, Int_t aCROSSnreg, Int_t aCROSSnregold,
+                          TVector3 aCROSSpos,TVector3 aCROSSp, Double_t aCROSSm,
+                          Double_t aCROSSch, Double_t aCROSSt)
+{
+    fRegion->NewRegion(aCROSSid, aCROSSnreg, aCROSSnregold, aCROSSpos, aCROSSp, aCROSSm, aCROSSch, aCROSSt);
+}
 
 /*-----------------------------------------------------------------*/
 void TAMCevent::SetBranches(TTree *RootTree){
@@ -160,7 +162,8 @@ void TAMCevent::SetBranches(TTree *RootTree){
     RootTree->Branch("EventNumber",&fEventNumber,"EventNumber/I");
    
     RootTree->Branch(fTrack->GetBranchName(),&fTrack);
-   
+    RootTree->Branch(fRegion->GetBranchName(),&fRegion);
+
     if (GlobalPar::GetPar()->IncludeST())
        RootTree->Branch(fHitSTC->GetStcBranchName(),&fHitSTC);
    
@@ -224,7 +227,8 @@ void TAMCevent::Dump() const
 TAMCevent::~TAMCevent()
 {
     delete fTrack;
-   
+    delete fRegion;
+
     if (fHitCAL)
        delete fHitSTC;
    

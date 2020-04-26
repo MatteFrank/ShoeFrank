@@ -9,7 +9,7 @@
 
 class TAMCntuHit ;
 class TAMCntuEve ;
-
+class TAMCntuRegion;
 using namespace std;
 
 class TAMCevent : public TObject {
@@ -67,27 +67,28 @@ class TAMCevent : public TObject {
 
 public:
    // Getters
-   TAMCntuEve* GetNtuEve() const { return fTrack;  }
-   TAMCntuHit* GetHitSTC() const { return fHitSTC; }
-   TAMCntuHit* GetHitBMN() const { return fHitBMN; }
-   TAMCntuHit* GetHitVTX() const { return fHitVTX; }
-   TAMCntuHit* GetHitITR() const { return fHitITR; }
-   TAMCntuHit* GetHitMSD() const { return fHitMSD; }
-   TAMCntuHit* GetHitTW()  const { return fHitTW;  }
-   TAMCntuHit* GetHitCAL() const { return fHitCAL; }
+   TAMCntuEve*    GetNtuEve() const { return fTrack;  }
+   TAMCntuRegion* GetNtuReg() const { return fRegion; }
+   TAMCntuHit*    GetHitSTC() const { return fHitSTC; }
+   TAMCntuHit*    GetHitBMN() const { return fHitBMN; }
+   TAMCntuHit*    GetHitVTX() const { return fHitVTX; }
+   TAMCntuHit*    GetHitITR() const { return fHitITR; }
+   TAMCntuHit*    GetHitMSD() const { return fHitMSD; }
+   TAMCntuHit*    GetHitTW()  const { return fHitTW;  }
+   TAMCntuHit*    GetHitCAL() const { return fHitCAL; }
 
  private:
 
-    Int_t fEventNumber;
-
-    TAMCntuEve* fTrack;
-    TAMCntuHit *fHitSTC;
-    TAMCntuHit *fHitBMN;
-    TAMCntuHit *fHitVTX;
-    TAMCntuHit *fHitITR;
-    TAMCntuHit *fHitMSD;
-    TAMCntuHit *fHitTW;
-    TAMCntuHit *fHitCAL;
+   Int_t          fEventNumber;
+   TAMCntuEve*    fTrack;
+   TAMCntuRegion* fRegion;
+   TAMCntuHit*    fHitSTC;
+   TAMCntuHit*    fHitBMN;
+   TAMCntuHit*    fHitVTX;
+   TAMCntuHit*    fHitITR;
+   TAMCntuHit*    fHitMSD;
+   TAMCntuHit*    fHitTW;
+   TAMCntuHit*    fHitCAL;
 
  protected:
 
