@@ -137,7 +137,7 @@ bool TAMSDactNtuHitMC::Action()
       TAMChit* hit = pNtuMC->GetHit(i);
 
 		Int_t sensorId = hit->GetSensorId();
-      Int_t trackIdx = hit->GetTrackId();
+      Int_t trackIdx = hit->GetTrackIdx();
 
 		// Digitizing
       if (ValidHistogram()) {
