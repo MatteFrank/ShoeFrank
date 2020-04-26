@@ -13,10 +13,11 @@ using namespace std;
 ClassImp(TAMCevent);
 
 /*-----------------------------------------------------------------*/
-TAMCevent::TAMCevent()
- : fEventNumber(-1),
+TAMCevent::TAMCevent(Bool_t regionFlag)
+ : fRegionFlag(regionFlag),
+   fEventNumber(-1),
    fTrack(new TAMCntuEve()),
-   fRegion(new TAMCntuRegion),
+   fRegion(0x0),
    fHitSTC(0x0),
    fHitBMN(0x0),
    fHitVTX(0x0),
@@ -25,6 +26,9 @@ TAMCevent::TAMCevent()
    fHitTW(0x0),
    fHitCAL(0x0)
 {
+   if (fRegionFlag)
+      fRegion = new TAMCntuRegion();
+
     if (GlobalPar::GetPar()->IncludeST())
       fHitSTC = new TAMCntuHit();
    
@@ -51,7 +55,8 @@ TAMCevent::TAMCevent()
 Int_t TAMCevent::Clean()
 {
     fTrack->Clear();
-    fRegion->Clear();
+   if (fRegionFlag)
+      fRegion->Clear();
 
     if (fHitSTC)
        fHitSTC->Clear();
@@ -153,7 +158,8 @@ void TAMCevent::AddCROSS(Int_t aCROSSid, Int_t aCROSSnreg, Int_t aCROSSnregold,
                           TVector3 aCROSSpos,TVector3 aCROSSp, Double_t aCROSSm,
                           Double_t aCROSSch, Double_t aCROSSt)
 {
-    fRegion->NewRegion(aCROSSid, aCROSSnreg, aCROSSnregold, aCROSSpos, aCROSSp, aCROSSm, aCROSSch, aCROSSt);
+   if (fRegionFlag)
+      fRegion->NewRegion(aCROSSid, aCROSSnreg, aCROSSnregold, aCROSSpos, aCROSSp, aCROSSm, aCROSSch, aCROSSt);
 }
 
 /*-----------------------------------------------------------------*/
@@ -162,7 +168,8 @@ void TAMCevent::SetBranches(TTree *RootTree){
     RootTree->Branch("EventNumber",&fEventNumber,"EventNumber/I");
    
     RootTree->Branch(fTrack->GetBranchName(),&fTrack);
-    RootTree->Branch(fRegion->GetBranchName(),&fRegion);
+    if (fRegionFlag)
+       RootTree->Branch(fRegion->GetBranchName(),&fRegion);
 
     if (GlobalPar::GetPar()->IncludeST())
        RootTree->Branch(fHitSTC->GetStcBranchName(),&fHitSTC);
@@ -227,7 +234,8 @@ void TAMCevent::Dump() const
 TAMCevent::~TAMCevent()
 {
     delete fTrack;
-    delete fRegion;
+   if (fRegionFlag)
+      delete fRegion;
 
     if (fHitCAL)
        delete fHitSTC;

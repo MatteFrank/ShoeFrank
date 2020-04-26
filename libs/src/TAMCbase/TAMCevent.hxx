@@ -16,7 +16,7 @@ class TAMCevent : public TObject {
 
  public:
 
-  TAMCevent();
+  TAMCevent(Bool_t regionFlag = false);
   virtual ~TAMCevent();
 
   Int_t Clean();
@@ -62,7 +62,7 @@ class TAMCevent : public TObject {
 
   void FindBranches(TTree *RootTree);
   void SetBranches(TTree *RootTree);
-
+   
   void Dump() const;
 
 public:
@@ -78,7 +78,7 @@ public:
    TAMCntuHit*    GetHitCAL() const { return fHitCAL; }
 
  private:
-
+   Bool_t         fRegionFlag;
    Int_t          fEventNumber;
    TAMCntuEve*    fTrack;
    TAMCntuRegion* fRegion;

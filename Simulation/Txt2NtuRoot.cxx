@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
    rootTree = new TTree("EventTree","gsimay");
    
    // Event
-   TAMCevent* event = new TAMCevent();
+   TAMCevent* event = new TAMCevent(regFlag);
    event->SetBranches(rootTree);
    
    //    loop sui file della lista ( if any)
