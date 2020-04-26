@@ -26,12 +26,14 @@ ClassImp(TATWactNtuHitMC);
 
 TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
                                  TAGdataDsc* p_ntuMC,
+                                 TAGdataDsc* p_ntuStMC,
                                  TAGdataDsc* p_ntuEve,
                                  TAGdataDsc* p_hitraw,
                                  TAGparaDsc* p_parcal,
                                  TAGparaDsc* p_parGeoG)
  : TAGaction(name, "TATWactNtuHitMC - NTuplize ToF raw data"),
    fpNtuMC(p_ntuMC),
+   fpNtuStMC(p_ntuStMC),
    fpNtuEve(p_ntuEve),
    fpNtuRaw(p_hitraw),
    fpCalPar(p_parcal),
@@ -40,6 +42,7 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    fCntWrong(0)
 {
    AddDataIn(p_ntuMC, "TAMCntuHit");
+   AddDataIn(p_ntuStMC, "TAMCntuHit");
    AddDataIn(p_ntuEve, "TAMCntuEve");
    
    AddDataOut(p_hitraw, "TATWntuRaw");
@@ -155,8 +158,9 @@ bool TATWactNtuHitMC::Action() {
    TATWntuRaw* containerHit = (TATWntuRaw*) fpNtuRaw->Object();
    TATWparCal* parcal = (TATWparCal*) fpCalPar->Object();
       
-   TAMCntuHit* pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
-   
+   TAMCntuHit* pNtuMC   = (TAMCntuHit*) fpNtuMC->Object();
+   TAMCntuHit* pNtuStMC = (TAMCntuHit*) fpNtuStMC->Object();
+
    //The number of hits inside the Start Counter is stn
    if ( fDebugLevel> 0 )     cout << "Processing n Scint " << pNtuMC->GetHitsN() << endl;
    
@@ -170,8 +174,8 @@ bool TATWactNtuHitMC::Action() {
       cout<<" WARNING!!! Pile Up Off only for ZID algorithm debug purposes...in TATWdigitizer.cxx constructor set fPileUpOff(false)"<<endl;
    
    // taking the tof for each TW hit with respect to the first hit of ST...for the moment not considered the possibility of multiple Hit in the ST, if any
-   TAMChit* hitMC = pNtuMC->GetHit(0);
-   Float_t timeST  = hitMC->GetTof()*TAGgeoTrafo::SecToPs();
+   TAMChit* hitStMC = pNtuStMC->GetHit(0);
+   Float_t  timeST  = hitStMC->GetTof()*TAGgeoTrafo::SecToPs();
    
    // fill the container of hits, divided by layer, i.e. the column at 0 and row at 1
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
@@ -181,7 +185,7 @@ bool TATWactNtuHitMC::Action() {
       TVector3 posOut(hitMC->GetOutPosition());
       
       Int_t id      = hitMC->GetBarId();
-      Int_t trackId = hitMC->GetTrackId();
+      Int_t trackId = hitMC->GetTrackIdx();
       Float_t z0    = posIn.Z();
       Float_t z1    = posOut.Z();
       Float_t edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();

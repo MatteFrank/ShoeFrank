@@ -25,6 +25,7 @@ class TATWactNtuHitMC : public TAGaction {
 public:
    explicit TATWactNtuHitMC(const char* name=0,
                             TAGdataDsc* p_ntuMC=0,
+                            TAGdataDsc* p_ntuStMC=0,
                             TAGdataDsc* p_ntuEve=0,
                             TAGdataDsc* p_hitraw=0,
                             TAGparaDsc* p_parcal=0,
@@ -36,7 +37,8 @@ public:
    void          CreateHistogram();
    
 private:
-   TAGdataDsc*     fpNtuMC;     // input mc hit
+   TAGdataDsc*     fpNtuMC;     // input mc hit TW
+   TAGdataDsc*     fpNtuStMC;   // input mc hit ST
    TAGdataDsc*     fpNtuEve;    // input eve track dsc
    TAGdataDsc*     fpNtuRaw;	  // output data dsc
    TAGparaDsc*     fpCalPar;    // calibration parameter dsc
