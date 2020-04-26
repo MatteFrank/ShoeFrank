@@ -73,15 +73,6 @@ public:
    TAMCntuHit*  GetNtuMcTw()  const { return (TAMCntuHit*)fpNtuMcTw->Object(); }
    TAMCntuHit*  GetNtuMcCa()  const { return (TAMCntuHit*)fpNtuMcCa->Object(); }
 
-private:
-   void AddRequiredMcItemSt();
-   void AddRequiredMcItemBm();
-   void AddRequiredMcItemVt();
-   void AddRequiredMcItemIt();
-   void AddRequiredMcItemMs();
-   void AddRequiredMcItemTw();
-   void AddRequiredMcItemCa();
-
 protected:
    EVENT_STRUCT*         fEvtStruct;
    

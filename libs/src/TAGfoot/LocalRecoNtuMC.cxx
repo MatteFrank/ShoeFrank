@@ -54,7 +54,7 @@ void LocalRecoNtuMC::CreateRawAction()
    fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
 
    
-   if (GlobalPar::GetPar()->IncludeST()) {
+   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()) {
       fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
       fActEvtReader->SetupBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
       
@@ -62,8 +62,6 @@ void LocalRecoNtuMC::CreateRawAction()
       fActNtuRawSt = new TASTactNtuHitMC("stActNtu", fpNtuMcSt, fpNtuMcEve, fpNtuRawSt);
       if (fFlagHisto)
          fActNtuRawSt->CreateHistogram();
-      
-     
    }
    
    if (GlobalPar::GetPar()->IncludeBM()) {
@@ -111,7 +109,7 @@ void LocalRecoNtuMC::CreateRawAction()
       fActEvtReader->SetupBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
       
       fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
-      fActNtuRawTw = new TATWactNtuHitMC("twActNtu", fpNtuMcTw, fpNtuMcEve, fpNtuRawTw,  fpParCalTw, fpParGeoG);
+      fActNtuRawTw = new TATWactNtuHitMC("twActNtu", fpNtuMcTw, fpNtuMcSt, fpNtuMcEve, fpNtuRawTw,  fpParCalTw, fpParGeoG);
       if (fFlagHisto)
          fActNtuRawTw->CreateHistogram();
    }
@@ -186,69 +184,8 @@ void LocalRecoNtuMC::CloseFileIn()
 void LocalRecoNtuMC::AddRawRequiredItem()
 {
    fTAGroot->AddRequiredItem("actEvtReader");
-   
-   if (GlobalPar::GetPar()->IncludeST())
-      AddRequiredMcItemSt();
-   
-   if (GlobalPar::GetPar()->IncludeBM())
-      AddRequiredMcItemBm();
-   
-   if (GlobalPar::GetPar()->IncludeVertex())
-      AddRequiredMcItemVt();
-   
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
-      AddRequiredMcItemIt();
-   
-   if (GlobalPar::GetPar()->IncludeMSD())
-      AddRequiredMcItemMs();
-   
-   if (GlobalPar::GetPar()->IncludeTW())
-      AddRequiredMcItemTw();
-   
-   if (GlobalPar::GetPar()->IncludeCA())
-      AddRequiredMcItemCa();
-}
-//__________________________________________________________
-void LocalRecoNtuMC::AddRequiredMcItemSt()
-{
-   fTAGroot->AddRequiredItem("stActNtuMc");
 }
 
-//__________________________________________________________
-void LocalRecoNtuMC::AddRequiredMcItemBm()
-{
-   fTAGroot->AddRequiredItem("bmActNtuMc");
-}
-
-//__________________________________________________________
-void LocalRecoNtuMC::AddRequiredMcItemVt()
-{
-   fTAGroot->AddRequiredItem("vtActNtuMc");
-}
-
-//__________________________________________________________
-void LocalRecoNtuMC::AddRequiredMcItemIt()
-{
-   fTAGroot->AddRequiredItem("itActNtuMc");
-}
-
-//__________________________________________________________
-void LocalRecoNtuMC::AddRequiredMcItemMs()
-{
-   fTAGroot->AddRequiredItem("msdActNtuMc");
-}
-
-//__________________________________________________________
-void LocalRecoNtuMC::AddRequiredMcItemTw()
-{
-   fTAGroot->AddRequiredItem("twActNtuMc");
-}
-
-//__________________________________________________________
-void LocalRecoNtuMC::AddRequiredMcItemCa()
-{
-   fTAGroot->AddRequiredItem("caActNtuMc");
-}
 //__________________________________________________________
 void LocalRecoNtuMC::SetTreeBranches()
 {
