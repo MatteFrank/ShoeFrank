@@ -405,6 +405,12 @@ int main(int argc, char *argv[])
                               &eve.CROSSy[jj],&eve.CROSSz[jj],&eve.CROSSpx[jj],
                               &eve.CROSSpy[jj],&eve.CROSSpz[jj],&eve.CROSSm[jj],
                               &eve.CROSSch[jj],&eve.CROSSt[jj]);
+               
+               event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
+                               TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
+                               TVector3(eve.CROSSy[jj],eve.CROSSz[jj],eve.CROSSpx[jj]),
+                               eve.CROSSm[jj],eve.CROSSch[jj],eve.CROSSt[jj]);
+               
                if(nread!=12){
                   cout<<"ReadError in CROSS section: nread = "<<nread<<
                   " instead of 12; ev= "<<NumProcessed<<endl;
