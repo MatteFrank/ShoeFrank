@@ -283,7 +283,7 @@ int main(int argc, char *argv[])
                               &eve.ITRpxout[jj],&eve.ITRpyout[jj],&eve.ITRpzout[jj],
                               &eve.ITRde[jj],&eve.ITRal[jj],&eve.ITRtim[jj]);
                
-               event->AddITR(eve.ITRid[jj], eve.ITRisens[jj], -1, -1,
+               event->AddITR(eve.ITRid[jj], eve.ITRisens[jj],
                              TVector3(eve.ITRxin[jj], eve.ITRyin[jj], eve.ITRzin[jj]),
                              TVector3(eve.ITRxout[jj], eve.ITRyout[jj], eve.ITRzout[jj]),
                              TVector3(eve.ITRpxin[jj], eve.ITRpyin[jj], eve.ITRpzin[jj]),
@@ -314,7 +314,7 @@ int main(int argc, char *argv[])
                               &eve.MSDpxout[jj],&eve.MSDpyout[jj],&eve.MSDpzout[jj],
                               &eve.MSDde[jj],&eve.MSDal[jj],&eve.MSDtim[jj]);
                
-               event->AddMSD(eve.MSDid[jj], eve.MSDilay[jj], -1, -1,
+               event->AddMSD(eve.MSDid[jj], eve.MSDilay[jj],
                              TVector3(eve.MSDxin[jj], eve.MSDyin[jj], eve.MSDzin[jj]),
                              TVector3(eve.MSDxout[jj], eve.MSDyout[jj], eve.MSDzout[jj]),
                              TVector3(eve.MSDpxin[jj], eve.MSDpyin[jj], eve.MSDpzin[jj]),
