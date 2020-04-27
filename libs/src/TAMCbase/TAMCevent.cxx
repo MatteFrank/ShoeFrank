@@ -126,12 +126,11 @@ void TAMCevent::AddITR(Int_t aITRid, Int_t aITRilay,
 }
 
 /*-----------------------------------------------------------------*/
-void TAMCevent::AddMSD(Int_t aMSDid, Int_t aMSDilay, Int_t aMSDistripx,
-                        Int_t aMSDistripy, TVector3 aMSDinpos, TVector3 aMSDoutpos,
+void TAMCevent::AddMSD(Int_t aMSDid, Int_t aMSDilay, TVector3 aMSDinpos, TVector3 aMSDoutpos,
                         TVector3 aMSDpin, TVector3 aMSDpout,
                         Double_t aMSDde, Double_t aMSDal, Double_t aMSDtof, Int_t atrId)
 {
-    fHitMSD->NewHit(aMSDid,aMSDilay,aMSDistripx,aMSDistripy,aMSDinpos,aMSDoutpos,aMSDpin,aMSDpout,aMSDde,aMSDtof,atrId);
+    fHitMSD->NewHit(aMSDid,aMSDilay,-99,-99,aMSDinpos,aMSDoutpos,aMSDpin,aMSDpout,aMSDde,aMSDtof,atrId);
 }
 
 /*-----------------------------------------------------------------*/

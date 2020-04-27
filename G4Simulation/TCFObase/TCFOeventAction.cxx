@@ -272,9 +272,7 @@ void TCFOeventAction::FillHits(TAMCevent* hit, TCGmcHit* mcHit)
 
     if (fMsdCollId >= 0 && fDetName==TCMSDgeometryConstructor::GetSDname()) {
         Int_t layer  = sensorId;
-        Int_t stripx = -1;
-        Int_t stripy = -1;
-        hit->AddMSD(trackId, layer, stripx, stripy, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackIdx);
+        hit->AddMSD(trackId, layer, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackIdx);
     }
 
     if (fTwCollId >= 0 && fDetName==TCTWgeometryConstructor::GetSDname()) {

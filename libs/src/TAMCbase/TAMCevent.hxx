@@ -45,7 +45,7 @@ class TAMCevent : public TObject {
                TVector3 aITRinpos, TVector3 aITRoutpos, TVector3 aITRpin,
                TVector3 aITRpout, Double_t aITRde, Double_t aITRal, Double_t aITRtof, Int_t atrId=-99);
 
-  void AddMSD(Int_t aMSDid, Int_t aMSDilay, Int_t aMSDistripx, Int_t aMSDistripy,
+  void AddMSD(Int_t aMSDid, Int_t aMSDilay, 
                TVector3 aMSDinpos, TVector3 aMSDout, TVector3 aMSDpin,
                TVector3 aMSDpout, Double_t aMSDde, Double_t aMSDal, Double_t aMSDtof, Int_t atrId=-99);
  
