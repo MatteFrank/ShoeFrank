@@ -185,7 +185,7 @@ bool TATWactNtuHitMC::Action() {
       TVector3 posOut(hitMC->GetOutPosition());
       
       Int_t id      = hitMC->GetBarId();
-      Int_t trackId = hitMC->GetTrackIdx();
+      Int_t trackId = hitMC->GetTrackIdx()-1;
       Float_t z0    = posIn.Z();
       Float_t z1    = posOut.Z();
       Float_t edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();

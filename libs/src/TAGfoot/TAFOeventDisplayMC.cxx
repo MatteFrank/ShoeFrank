@@ -234,7 +234,7 @@ void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
 
    TVector3 pos   = point->GetInPosition();
    TVector3 mom   = point->GetInMomentum();
-   Int_t trackIdx = point->GetTrackIdx();
+   Int_t trackIdx = point->GetTrackIdx()-1;
 
    fInfoView->AddLine( Form("%s sensor id: %d, Hit:\n", name.Data(), trackIdx) );
    fInfoView->AddLine( Form("at position:   (%.3g %.3g %.3g) cm\n", pos[0], pos[1], pos[2]) );

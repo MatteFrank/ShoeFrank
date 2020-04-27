@@ -78,7 +78,7 @@ Bool_t TABMactNtuHitMC::Action()
   //loop for double hits and hits with energy less than enxcell_cut:
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
       TAMChit* hitMC = pNtuMC->GetHit(i);
-      Int_t trackId  = hitMC->GetTrackIdx();
+      Int_t trackId  = hitMC->GetTrackIdx()-1;
 
       TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
       TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
@@ -160,7 +160,7 @@ Bool_t TABMactNtuHitMC::Action()
       
     if(tobecharged[i]!=-1) {
    
-      ipoint = hitMC->GetTrackIdx();
+      ipoint = hitMC->GetTrackIdx()-1;
       cell   = hitMC->GetCell();
       lay    = hitMC->GetLayer();
       view   = hitMC->GetView()==-1 ? 1:0;
