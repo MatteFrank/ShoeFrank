@@ -95,7 +95,7 @@ void TAMCevent::AddSTC(Int_t aSTCid,
                         TVector3 aSTCpin, TVector3 aSTCpout,
                         Double_t aSTCde, Double_t aSTCal, Double_t aSTCtof, Int_t atrId)
 {
-    fHitSTC->NewHit(aSTCid,-99,-99,-99,aSTCinpos,aSTCoutpos,aSTCpin,aSTCpout,aSTCde,aSTCtof,atrId);
+    fHitSTC->NewHit(aSTCid,0,-99,-99,aSTCinpos,aSTCoutpos,aSTCpin,aSTCpout,aSTCde,aSTCtof,atrId);
 }
 
 /*-----------------------------------------------------------------*/
