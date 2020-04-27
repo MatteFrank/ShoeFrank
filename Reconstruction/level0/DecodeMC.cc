@@ -5,6 +5,7 @@
 
 #include "GlobalPar.hxx"
 #include "LocalRecoMC.hxx"
+#include "LocalRecoNtuMC.hxx"
 
 int main (int argc, char *argv[])  {
 
@@ -19,7 +20,8 @@ int main (int argc, char *argv[])  {
    Bool_t his = false;
    Bool_t hit = false;
    Bool_t trk = false;
-   
+   Bool_t obj = false;
+
    Int_t nTotEv = 1e7;
    
    for (int i = 0; i < argc; i++){
@@ -32,7 +34,8 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-ntu") == 0)   { ntu = true;   } // enable tree filling
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
-      
+      if(strcmp(argv[i],"-obj") == 0)   { obj = true;   } // enable reading from root object
+
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
          cout<<" Ex: Decoder [opts] "<<endl;
@@ -45,6 +48,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
          cout<<"      -ntu           : enable tree filling"<<endl;
          cout<<"      -his           : enable crtl histograming"<<endl;
+         cout<<"      -obj           : enable eading from root object"<<endl;
          return 1;
       }
    }
@@ -53,9 +57,12 @@ int main (int argc, char *argv[])  {
    
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
-   
-   LocalRecoMC* locRec = new LocalRecoMC(exp, in, out);
-   
+   BaseReco* locRec = 0x0;
+   if (!obj)
+      locRec = new LocalRecoMC(exp, in, out);
+   else
+      locRec = new LocalRecoNtuMC(exp, in, out);
+
    // global setting
    if (ntu)
       locRec->EnableTree();
