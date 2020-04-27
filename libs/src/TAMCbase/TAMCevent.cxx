@@ -118,12 +118,11 @@ void TAMCevent::AddVTX(Int_t aVTXid, Int_t aVTXilay,
 
 /*-----------------------------------------------------------------*/
 void TAMCevent::AddITR(Int_t aITRid, Int_t aITRilay,
-                        Int_t aITRiplume, Int_t aITRimimo,
                         TVector3 aITRinpos, TVector3 aITRoutpos, TVector3 aITRpin,
                         TVector3 aITRpout, Double_t aITRde, Double_t aITRal,
                         Double_t aITRtof, Int_t atrId)
 {
-    fHitITR->NewHit(aITRid,aITRilay,aITRiplume,aITRimimo,aITRinpos,aITRoutpos,aITRpin,aITRpout,aITRde,aITRtof,atrId);
+    fHitITR->NewHit(aITRid,aITRilay,-99,-99,aITRinpos,aITRoutpos,aITRpin,aITRpout,aITRde,aITRtof,atrId);
 }
 
 /*-----------------------------------------------------------------*/

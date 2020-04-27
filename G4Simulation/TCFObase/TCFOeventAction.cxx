@@ -267,9 +267,7 @@ void TCFOeventAction::FillHits(TAMCevent* hit, TCGmcHit* mcHit)
 
     if (fItCollId >= 0 && fDetName==TCITgeometryConstructor::GetSDname()) {
         Int_t layer = sensorId;
-        Int_t plume = -1;
-        Int_t mimo  = -1;
-        hit->AddITR(trackId, layer, plume, mimo, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackIdx);
+        hit->AddITR(trackId, layer, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackIdx);
     }
 
     if (fMsdCollId >= 0 && fDetName==TCMSDgeometryConstructor::GetSDname()) {

@@ -41,7 +41,7 @@ class TAMCevent : public TObject {
                TVector3 aVTXpin, TVector3 aVTXpout, Double_t aVTXde, Double_t aVTXal,
                Double_t aVTXtof, Int_t atrId=-99);
 
-  void AddITR(Int_t aITRid, Int_t aITRilay, Int_t aITRiplume, Int_t aITRimimo,
+  void AddITR(Int_t aITRid, Int_t aITRilay,
                TVector3 aITRinpos, TVector3 aITRoutpos, TVector3 aITRpin,
                TVector3 aITRpout, Double_t aITRde, Double_t aITRal, Double_t aITRtof, Int_t atrId=-99);
 
