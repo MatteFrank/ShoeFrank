@@ -240,8 +240,8 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
 {
    G4ThreeVector vin = mcHit->GetPosIn()*TAGgeoTrafo::MmToCm();
    G4ThreeVector vou = mcHit->GetPosOut()*TAGgeoTrafo::MmToCm();
-   G4ThreeVector pin = mcHit->GetMomIn()*TAGgeoTrafo::MmToCm();
-   G4ThreeVector pou = mcHit->GetMomOut()*TAGgeoTrafo::MmToCm();
+   G4ThreeVector pin = mcHit->GetMomIn()*TAGgeoTrafo::MevToGev();
+   G4ThreeVector pou = mcHit->GetMomOut()*TAGgeoTrafo::MevToGev();
 
    Int_t    sensorId = mcHit->GetSensorId();
    Int_t    al       = mcHit->GetTrackId();
