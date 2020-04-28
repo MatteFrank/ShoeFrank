@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
    Int_t run = 0;
    TString camName = "Ntu";
    TAGrunInfo* info = new TAGrunInfo(campaign, run, camName);
-   info->Write("runinfo");
+   info->Write(TAGrunInfo::GetObjectName());
 
    rootTree = new TTree("EventTree","gsimay");
    
