@@ -24,7 +24,6 @@ class TACAactNtuHitMC : public TAGaction {
 private:
    // Helper class to sum MC hit of the same particle
    struct EnergyDep_t : public TObject {
-   public:
       EnergyDep_t( int iEvn, int icry, int idpart, float ti, double de ) :
       index(iEvn), fn(1), fCryid(icry), fid(idpart), fTimeFirstHit(ti), fDE(de) {}
       int index;             // index in EvnStr
