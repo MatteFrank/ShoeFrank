@@ -13,7 +13,6 @@
 #include "TACAntuRaw.hxx"
 #include "TACAactNtuMC.hxx"
 #include "TACAdigitizer.hxx"
-#include "TACAactNtuHitMC.hxx"
 
 
 const char* getPartNamefromID(int id);
