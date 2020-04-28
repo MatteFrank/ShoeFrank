@@ -81,8 +81,8 @@ void TCFOeventoAction::EndOfEventAction(const G4Event* evt)
 void TCFOeventoAction::Collect(const G4Event* evt)
 {
    
-   if (fIrCollId >= 0)
-      GetHitPerPlane(evt, fIrCollId);
+   if (fStCollId >= 0)
+      GetHitPerPlane(evt, fStCollId);
    
     if (fBmCollId >= 0){
       GetHitPerPlane(evt, fBmCollId);
@@ -255,7 +255,7 @@ void TCFOeventoAction::FillHits(Evento* hit, TCGmcHit* mcHit)
    G4bool kElectron  = false; // do not cut on e-
 
     if(!kElectron){
-        if (fIrCollId >= 0 && fDetName==TCSTgeometryConstructor::GetSDname())
+        if (fStCollId >= 0 && fDetName==TCSTgeometryConstructor::GetSDname())
             hit->AddSTC(trackId, vin[0], vin[1], vin[2], vou[0], vou[1], vou[2], pin[0], pin[1], pin[2], pou[0], pou[1], pou[2],edep, al, time);
 
         if (fBmCollId >= 0  && fDetName==TCBMgeometryConstructor::GetSDname()) {

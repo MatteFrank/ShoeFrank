@@ -67,7 +67,7 @@ TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeomet
 : G4UserEventAction(),
   fDebugLevel(0),
   fEventNumber(-1),
-  fIrCollId(-1),
+  fStCollId(-1),
   fBmCollId(-1),
   fVtxCollId(-1),
   fItCollId(-1),
@@ -142,7 +142,7 @@ void TCFObaseEventAction::ConstructCollection()
    G4SDManager * SDman = G4SDManager::GetSDMpointer();
 
    if (GlobalPar::GetPar()->IncludeST()) {
-      fIrCollId = SDman->GetCollectionID(TCSTgeometryConstructor::GetSDname());
+      fStCollId = SDman->GetCollectionID(TCSTgeometryConstructor::GetSDname());
    }
    
    if (GlobalPar::GetPar()->IncludeBM()) {

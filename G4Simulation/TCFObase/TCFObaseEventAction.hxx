@@ -45,7 +45,7 @@ class TCFObaseEventAction : public G4UserEventAction
     TCFOgeometryConstructor* fFootGeomConstructor; // geometry for FOOT
     Int_t                    fDebugLevel;
     Int_t                    fEventNumber;         // event number
-    Int_t                    fIrCollId;            // Id of SC collection
+    Int_t                    fStCollId;            // Id of ST collection
     Int_t                    fBmCollId;            // Id of BM collection
     Int_t                    fVtxCollId;           // Id of Vtx collection
     Int_t                    fItCollId;            // Id of IT collection
