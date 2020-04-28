@@ -181,6 +181,7 @@ Bool_t TACAactNtuHitMC::Action()
    TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
 
    TObjArray dep(pNtuEve->GetTracksN());
+   dep.SetOwner(true);
    double energyEvent = 0;     // Total Energy deposition on the Event
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
       TAMChit* hitMC = pNtuMC->GetHit(i);
@@ -192,14 +193,14 @@ Bool_t TACAactNtuHitMC::Action()
       energyEvent  += hitMC->GetDeltaE();
       
       // Returns the object at position trackId. Returns 0 if trackId is out of range.
-      energyDep* endep = (energyDep*)dep.At(trackId);   
+      EnergyDep_t* endep = (EnergyDep_t*)dep.At(trackId);
       
       if( !endep ) {
          Float_t timeFirstHit  = hitMC->GetTof()*TAGgeoTrafo::SecToNs();
-         dep.AddAt( new energyDep(i, id, trackId, timeFirstHit, ener), trackId );   //Add object at position trackId.
+         dep.AddAt( new EnergyDep_t(i, id, trackId, timeFirstHit, ener), trackId );   //Add object at position trackId.
       } 
       else {
-         endep->fDE += ener;    //con l'espressione endep -> accedo ai vari membri della classe energyDep
+         endep->fDE += ener;    //con l'espressione endep -> accedo ai vari membri della classe EnergyDep_t
          endep->fn++;
       }
 
@@ -209,7 +210,7 @@ Bool_t TACAactNtuHitMC::Action()
    // Sum all dauthers energy dep. with their mother
    int npart = dep.GetEntriesFast();
    for ( int i=npart-1; i>0; --i ) { // assume that particles are sort by creation
-      energyDep* endep = (energyDep*)dep.At(i);
+      EnergyDep_t* endep = (EnergyDep_t*)dep.At(i);
       if ( !endep ) continue;
   
       // Get particle mother
@@ -217,7 +218,7 @@ Bool_t TACAactNtuHitMC::Action()
       TAMCeveTrack*  track = pNtuEve->GetTrack(endep->fid);
       Int_t ipart_mother = track->GetMotherID();
 
-      energyDep* endepM = (energyDep*)dep.At(ipart_mother);
+      EnergyDep_t* endepM = (EnergyDep_t*)dep.At(ipart_mother);
       if ( !endepM ) { // Not mother found in CAL (entering particle)
          continue;
       }
@@ -237,7 +238,7 @@ Bool_t TACAactNtuHitMC::Action()
    fDigitizer->ClearMap();
    
    for (int i=0; i<npart; ++i) {
-      energyDep* endep = (energyDep*)dep.At(i);
+      EnergyDep_t* endep = (EnergyDep_t*)dep.At(i);
       int index = endep->index;
       TAMChit* hitMC = pNtuMC->GetHit(i);
       TAMChit* hitMC_f = pNtuMC->GetHit(index);
@@ -310,7 +311,7 @@ Bool_t TACAactNtuHitMC::Action()
 
    for (int i=0; i<npart; ++i) {
 
-      energyDep* endep = (energyDep*)dep.At(i);
+      EnergyDep_t* endep = (EnergyDep_t*)dep.At(i);
       int index = endep->index;
       TAMChit* hitMC_f = pNtuMC->GetHit(index);
 

@@ -17,23 +17,25 @@
 
 class TACAdigitizer;
 
-// Helper class to sum MC hit of the same particle
-class energyDep : public TObject {
-public:
-   energyDep( int iEvn, int icry, int idpart, float ti, double de ) :
-   index(iEvn), fn(1), fCryid(icry), fid(idpart), fTimeFirstHit(ti), fDE(de) {}
-   int index;             // index in EvnStr
-   int fn;                // number of Edep
-   int fCryid;            // crystal index hit
-   int fid;               // index in the particle block
-   float fTimeFirstHit;   // dep. time at FIRST hit
-   double fDE;            // sum Edep
-   
-   ClassDef(energyDep,0)
 
-};
 
 class TACAactNtuHitMC : public TAGaction {
+   
+private:
+   // Helper class to sum MC hit of the same particle
+   struct EnergyDep_t : public TObject {
+   public:
+      EnergyDep_t( int iEvn, int icry, int idpart, float ti, double de ) :
+      index(iEvn), fn(1), fCryid(icry), fid(idpart), fTimeFirstHit(ti), fDE(de) {}
+      int index;             // index in EvnStr
+      int fn;                // number of Edep
+      int fCryid;            // crystal index hit
+      int fid;               // index in the particle block
+      float fTimeFirstHit;   // dep. time at FIRST hit
+      double fDE;            // sum Edep
+      
+   };
+   
   public:
     explicit        TACAactNtuHitMC(const char* name     = 0,
                                     TAGdataDsc* p_ntuMC  = 0,
