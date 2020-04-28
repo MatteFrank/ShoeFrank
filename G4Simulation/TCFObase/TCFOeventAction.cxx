@@ -257,33 +257,33 @@ void TCFOeventAction::FillHits(TAMCevent* hit, TCGmcHit* mcHit)
         layer = (int)sensorId/2;
         view = -sensorId%2;
         Int_t cell = fFootGeomConstructor->GetParGeoBm()->GetCell(pos,sensorId,view);
-        hit->AddBMN(trackId,layer,TMath::Abs(view), cell, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackIdx);
+        hit->AddBMN(trackIdx,layer,TMath::Abs(view), cell, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackId);
     }
 
     if (fVtxCollId >= 0 && fDetName==TCVTgeometryConstructor::GetSDname()) {
         Int_t layer = sensorId;
-        hit->AddVTX(trackId, layer,TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackIdx);
+        hit->AddVTX(trackIdx, layer,TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackId);
     }
 
     if (fItCollId >= 0 && fDetName==TCITgeometryConstructor::GetSDname()) {
         Int_t layer = sensorId;
-        hit->AddITR(trackId, layer, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackIdx);
+        hit->AddITR(trackIdx, layer, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackId);
     }
 
     if (fMsdCollId >= 0 && fDetName==TCMSDgeometryConstructor::GetSDname()) {
         Int_t layer  = sensorId;
-        hit->AddMSD(trackId, layer, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackIdx);
+        hit->AddMSD(trackIdx, layer, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackId);
     }
 
     if (fTwCollId >= 0 && fDetName==TCTWgeometryConstructor::GetSDname()) {
         Int_t barId  = sensorId % TATWparGeo::GetLayerOffset();
         Int_t view  = sensorId /  TATWparGeo::GetLayerOffset();
-        hit->AddTW(trackId, barId, view,TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackIdx);
+        hit->AddTW(trackIdx, barId, view,TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackId);
     }
 
     if (fCaCollId >= 0 && fDetName==TCCAgeometryConstructor::GetSDname()) {
         Int_t crystalId  = sensorId;
-        hit->AddCAL(trackId, crystalId,TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackIdx);
+        hit->AddCAL(trackIdx, crystalId,TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackId);
     }
 
 
