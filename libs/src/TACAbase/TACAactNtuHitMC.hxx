@@ -12,6 +12,7 @@
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
 
+#include "TH2I.h"
 #include "TH1F.h"
 #include "TH2F.h"
 
@@ -36,15 +37,15 @@ private:
    };
    
   public:
-    explicit        TACAactNtuHitMC(const char* name     = 0,
+    explicit       TACAactNtuHitMC(const char* name     = 0,
                                     TAGdataDsc* p_ntuMC  = 0,
                                     TAGdataDsc* p_ntuEve = 0,
                                     TAGdataDsc* p_nturaw = 0,
                                     TAGparaDsc* p_geomap = 0);
    
-    virtual         ~TACAactNtuHitMC();
+    virtual        ~TACAactNtuHitMC();
 
-    virtual Bool_t  Action();
+    virtual Bool_t Action();
 
     void           CreateHistogram();
 
@@ -56,16 +57,23 @@ private:
    TAGdataDsc*     fpNtuRaw;		    // output data dsc
    TAGparaDsc*     fpGeoMap;          // geometry para dsc
 
-   TACAdigitizer*   fDigitizer;       // cluster size digitizer
-
-   TH1F* fpHisDeTot;
-   TH1F* fpHisMass;
-   TH1F* fpHisTimeTot;
-   TH1F* fpHisDeTotMc;
-   TH1F* fpHisTimeTotMc;
-   TH2F* fpHisHitMapXY;
-   TH2F* fpHisHitMapZY;
+   TACAdigitizer*  fDigitizer;       // cluster size digitizer
    
+   TH1F*           fpHisMass;
+   TH1F*           fpHisEnergy;
+   TH2F*           fpHisEnergyReleasePosXY;
+   TH2F*           fpHisEnergyReleasePosZY_in;
+   TH2F*           fpHisEnergyReleasePosZY_out;
+   TH2F*           fpHisFinalPositionVsMass;
+   TH2F*           fpHisChargeVsMass;
+   TH2I*           fpHistypeParticleVsRegion;
+   TH1F*           fpHisEnergyNeutron;
+   TH1F*           fpHistimeFirstHit;
+   TH1F*           fpHisEnergyIon[8];
+   TH1F*           fpHisEnergyIonSpect[8];
+   TH1F*           fpHisEnergyDep[8];
+   TH2F*           fpHisP_vs_EDepIon[8];
+
 private:
    void           CreateDigitizer();
 
