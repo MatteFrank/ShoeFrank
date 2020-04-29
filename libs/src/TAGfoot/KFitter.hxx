@@ -213,10 +213,14 @@ public:
 
   TVector3 ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane );
   void CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum);
+  TVector3 ExtrapolateToTofWall( Track* trackToFit );
+
 
 
 
 private:
+
+  KalmanFitter* m_fitter_extrapolation;
 
   KalmanFitter* m_fitter;
   AbsKalmanFitter*  m_refFitter;    		 //KalmanFitterRefTrack()
@@ -308,8 +312,10 @@ private:
   TH1D* tempPurity;
   TH1D* qoverp;
   TH1D* qoverpsel;
-  
+
   int MSDforwardcounter;
+
+  std::ofstream ofs;
 
 
 };
