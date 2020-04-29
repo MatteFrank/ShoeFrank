@@ -26,7 +26,7 @@ class TCFOrunAction : public G4UserRunAction
 
     void BeginOfRunAction(const G4Run* aRun);
     void EndOfRunAction(const G4Run* aRun);
-    void FillAndClear();
+    void FillAndClear(Bool_t fill = true);
 
     TFile* GetOutFile()                const { return fpOutFile;    }
     Int_t  GetEventsNToBeProcessed()   const { return fEventsNToBeProcessed;}

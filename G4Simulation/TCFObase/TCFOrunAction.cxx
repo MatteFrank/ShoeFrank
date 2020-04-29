@@ -82,9 +82,10 @@ void TCFOrunAction::EndOfRunAction(const G4Run* aRun)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void TCFOrunAction::FillAndClear()
+void TCFOrunAction::FillAndClear(Bool_t fill)
 {
-    fpTree->Fill();
+    if (fill)
+       fpTree->Fill();
     ClearContainers();
 }
 
