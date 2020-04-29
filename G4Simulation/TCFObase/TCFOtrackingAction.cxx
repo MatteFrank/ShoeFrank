@@ -61,7 +61,7 @@ void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack){
     Int_t baryon = aTrack->GetDefinition()->GetBaryonNumber() ;
     Int_t deadId = fgkVolumeToRegion[detName] ;
     Int_t regId = fgkVolumeToRegion[regName] ;
-    Double_t mass = aTrack->GetDefinition()->GetPDGMass() ;
+    Double_t mass = aTrack->GetDefinition()->GetPDGMass()/GeV ;
     Double_t tof = aTrack->GetLocalTime()/s ;
     Double_t time = aTrack->GetGlobalTime()/s ;
     Double_t length = aTrack->GetTrackLength()/cm ;

@@ -210,16 +210,16 @@ void TCFOeventAction::FillTrack()
         flukaID  = fMcTrack->GetTrack(i)->GetFlukaID();
         trackID  = fMcTrack->GetTrack(i)->GetType();
         parentID = fMcTrack->GetTrack(i)->GetMotherID();
-        mass     = fMcTrack->GetTrack(i)->GetMass()*TAGgeoTrafo::MevToGev();
+        mass     = fMcTrack->GetTrack(i)->GetMass();
         charge   = fMcTrack->GetTrack(i)->GetCharge();
         nbaryon  = fMcTrack->GetTrack(i)->GetBaryon();
-        tof      = fMcTrack->GetTrack(i)->GetTof()*TAGgeoTrafo::NsToSec();
-        time     = fMcTrack->GetTrack(i)->GetTime()*TAGgeoTrafo::NsToSec();
-        length   = fMcTrack->GetTrack(i)->GetTrkLength()*TAGgeoTrafo::MmToCm();
-        initpos  = fMcTrack->GetTrack(i)->GetInitPos()*TAGgeoTrafo::MmToCm();
-        initmom  = fMcTrack->GetTrack(i)->GetInitP()*TAGgeoTrafo::MevToGev();
-        finalpos = fMcTrack->GetTrack(i)->GetFinalPos()*TAGgeoTrafo::MmToCm();
-        finalmom = fMcTrack->GetTrack(i)->GetFinalP()*TAGgeoTrafo::MevToGev();
+        tof      = fMcTrack->GetTrack(i)->GetTof();
+        time     = fMcTrack->GetTrack(i)->GetTime();
+        length   = fMcTrack->GetTrack(i)->GetTrkLength();
+        initpos  = fMcTrack->GetTrack(i)->GetInitPos();
+        initmom  = fMcTrack->GetTrack(i)->GetInitP();
+        finalpos = fMcTrack->GetTrack(i)->GetFinalPos();
+        finalmom = fMcTrack->GetTrack(i)->GetFinalP();
         dead     = fMcTrack->GetTrack(i)->GetDead() ;
         region   = fMcTrack->GetTrack(i)->GetRegion();
        
