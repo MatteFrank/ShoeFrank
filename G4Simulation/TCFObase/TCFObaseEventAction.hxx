@@ -38,7 +38,8 @@ class TCFObaseEventAction : public G4UserEventAction
     virtual void   EndOfEventAction(const G4Event*);
     void   ConstructCollection();
 
-    TAMCntuEve* GetTrackMc(){ return fMcTrack ; };
+    void SetFillTree(Bool_t fill) { fFillTree = fill; }
+    TAMCntuEve* GetTrackMc()      { return fMcTrack;  }
 
     protected:
     TCFOrunAction*           fRunAction;           // run action for FOOT
@@ -55,7 +56,7 @@ class TCFObaseEventAction : public G4UserEventAction
     TString                  fDetName;
     TSignalHandler*          fEventInterruptHandler;
     TAMCntuEve*              fMcTrack;
-
+    Bool_t                   fFillTree;
     TAGgeoTrafo*             fpGeoTrafo;           // trafo pointer
 
     protected:
