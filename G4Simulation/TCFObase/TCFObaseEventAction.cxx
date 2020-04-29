@@ -74,7 +74,8 @@ TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeomet
   fMsdCollId(-1),
   fTwCollId(-1),
   fCaCollId(-1),
-  fDetName("")
+  fDetName(""),
+  fFillTree(true)
 {
     fEventInterruptHandler = new TAGeventInterruptHandler();
     fEventInterruptHandler->Add();
@@ -180,7 +181,7 @@ Int_t TCFObaseEventAction::GetEventsNToBeProcessed()
 void TCFObaseEventAction::FillAndClear()
 {
    fMcTrack->Clear();
-   return fRunAction->FillAndClear();
+   return fRunAction->FillAndClear(fFillTree);
 }
 
 
