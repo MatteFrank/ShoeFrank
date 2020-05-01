@@ -61,7 +61,7 @@ void TCFOfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
    // point[4] := time
    TVector3 pos;
    for (Int_t i = 0; i < 3; ++i) {
-      pos[i] = point[i]/10.; // mmn -> cm
+      pos[i] = point[i]/CLHEP::cm; // mmn -> cm
    }
    
    TVector3 field = fMagField->GetField(pos);
