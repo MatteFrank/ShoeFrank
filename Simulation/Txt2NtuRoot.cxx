@@ -57,8 +57,7 @@ int main(int argc, char *argv[])
          cout<<"Conversion of fluka TXT file : usage -> Txt2NtuRoot [opts] "<<endl;
          cout<<" possible opts are:"<<endl;
          cout<<"   -in  file   : [def=In.txt] Root input file"<<endl;
-         cout<<"   -out  file  : [def=Out.root] Root output file"<<endl;
-         cout<<"   -sel selw   : [def=0] select ev: 1*dc + 10*lyso "<<endl;
+         cout<<"   -out file   : [def=Out.root] Root output file"<<endl;
          cout<<"   -iL         : [def=none] input file is a list of files"<<endl;
          cout<<"   -nev        : [def=Inf] Max no. of events to process"<<endl;
          cout<<"   -reg        : [def=0] save crossing region info"<<endl;
