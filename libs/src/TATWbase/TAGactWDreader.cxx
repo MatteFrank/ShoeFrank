@@ -4,6 +4,7 @@
   \brief   Implementation of TAGactWDreader.
 */
 
+#include "GlobalPar.hxx"
 #include "TASTparMap.hxx"
 #include "TATWparMap.hxx"
 #include "TAGbaseWDparTime.hxx"
@@ -48,7 +49,6 @@ TAGactWDreader::TAGactWDreader(const char* name,
   AddPara(p_WDmap, "TAGbaseWDparMap");
   AddPara(p_WDtim, "TAGbaseWDparTime");
 
-  m_debug = GetDebugLevel();
   m_nev=0;
 }
 
@@ -136,7 +136,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
   while(iW < evt->evtSize && !foundFooter){
 
     if(evt->values.at(iW) == GLB_EVT_HEADER){
-      if(m_debug)printf("found glb header::%08x %08x\n", evt->values.at(iW), evt->values.at(iW+1));
+      if(FootDebugLevel(1))printf("found glb header::%08x %08x\n", evt->values.at(iW), evt->values.at(iW+1));
 
       iW+=5;
       nmicro = evt->values.at(iW);
@@ -146,7 +146,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
       
       //found evt_header
       if(evt->values.at(iW) == EVT_HEADER){
-	if(m_debug)printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
+	if(FootDebugLevel(1))printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
       
 	iW++;
 	trig_type = (evt->values.at(iW)>>16) & 0xffff;
@@ -158,16 +158,16 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	iW++;
 	while((evt->values.at(iW) & 0xffff)== BOARD_HEADER){
 	  board_id = (evt->values.at(iW)>>16)  & 0xffff;
-	  if(m_debug)printf("found board header::%08x num%d\n", evt->values.at(iW), board_id);
+	  if(FootDebugLevel(1))printf("found board header::%08x num%d\n", evt->values.at(iW), board_id);
 	  iW++;
 	  temperature = *((float*)&evt->values.at(iW));
-	  if(m_debug)printf("temperatrue::%08x num%d\n", evt->values.at(iW), board_id);
+	  if(FootDebugLevel(1))printf("temperatrue::%08x num%d\n", evt->values.at(iW), board_id);
 
 	
 	  iW++;
 	  range = *((float*)&evt->values.at(iW));
 	
-	  if(m_debug)
+	  if(FootDebugLevel(1))
 	    printf("range::%08x num%d\n", evt->values.at(iW), board_id);
 		
 	  iW++;
@@ -175,7 +175,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 
 	  sampling_freq =  (evt->values.at(iW) >>16)& 0xffff;
 	  flags = evt->values.at(iW) & 0xffff;
-	  if(m_debug)printf("sampling::%08x    %08x   %08x    num%d\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2), board_id);
+	  if(FootDebugLevel(1))printf("sampling::%08x    %08x   %08x    num%d\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2), board_id);
 	 	
 	  iW++;
 	
@@ -185,7 +185,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	    tmp_chstr[1] = (evt->values.at(iW)>>24)  & 0xff;
 	    tmp_chstr[0] = (evt->values.at(iW)>>16)  & 0xff;
 	    ch_num = atoi(tmp_chstr);
-	    if(m_debug)
+	    if(FootDebugLevel(1))
 	      printf("found channel header::%08x num%d\n", evt->values.at(iW), ch_num);
 	  
 	    iW++;
@@ -245,7 +245,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
       
       
       if(evt->values.at(iW) == EVT_FOOTER){
-	if(m_debug)printf("found footer\n");
+	if(FootDebugLevel(1))printf("found footer\n");
 	iW++;
 	foundFooter = true;
       }else{
