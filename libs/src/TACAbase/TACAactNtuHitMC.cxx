@@ -8,6 +8,7 @@
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
 
+#include "TAMCparTools.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
 
@@ -101,9 +102,9 @@ void TACAactNtuHitMC::CreateHistogram()
                                           
    TAxis* xaxis = fpHistypeParticleVsRegion->GetXaxis();
    for( int i=-6; i<0; ++i )
-     xaxis->SetBinLabel( xaxis->FindFixBin(i), getPartNamefromID(i));
+     xaxis->SetBinLabel( xaxis->FindFixBin(i), TAMCparTools::GetFlukaPartName(i));
    for( int i=1; i<17; ++i )
-     xaxis->SetBinLabel( xaxis->FindFixBin(i), getPartNamefromID(i));
+     xaxis->SetBinLabel( xaxis->FindFixBin(i), TAMCparTools::GetFlukaPartName(i));
    xaxis->LabelsOption("v"); // "v" draw labels vertical
    xaxis->SetLabelSize(0.02);
    TAxis* yaxis = fpHistypeParticleVsRegion->GetYaxis();
@@ -343,7 +344,7 @@ Bool_t TACAactNtuHitMC::Action()
             fpHistimeFirstHit->Fill(endep->fTimeFirstHit);
          }
 
-         const char* flukaName = getPartNamefromID(fluID);
+         const char* flukaName = TAMCparTools::GetFlukaPartName(fluID);
          if( fluID == -2 ) { // shift HEAVYION by z
             fluID = -40 - z;
             // check out of range

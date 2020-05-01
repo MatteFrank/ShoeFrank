@@ -9,6 +9,8 @@
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
 
+#include "TAMCparTools.hxx"
+
 #include "TACAparGeo.hxx"
 #include "TACAntuRaw.hxx"
 #include "TACAactNtuMC.hxx"
@@ -89,9 +91,9 @@ void TACAactNtuMC::CreateHistogram()
                                           
    TAxis* xaxis = hCA_typeParticleVsRegion->GetXaxis();
    for( int i=-6; i<0; ++i )
-     xaxis->SetBinLabel( xaxis->FindFixBin(i), getPartNamefromID(i));
+      xaxis->SetBinLabel( xaxis->FindFixBin(i), TAMCparTools::GetFlukaPartName(i));
    for( int i=1; i<17; ++i )
-     xaxis->SetBinLabel( xaxis->FindFixBin(i), getPartNamefromID(i));
+     xaxis->SetBinLabel( xaxis->FindFixBin(i), TAMCparTools::GetFlukaPartName(i));
    xaxis->LabelsOption("v"); // "v" draw labels vertical
    xaxis->SetLabelSize(0.02);
    TAxis* yaxis = hCA_typeParticleVsRegion->GetYaxis();
@@ -354,7 +356,7 @@ Bool_t TACAactNtuMC::Action()
             hCA_timeFirstHit->Fill(endep->fTimeFirstHit);
          }
 
-         const char* flukaName = getPartNamefromID(fluID);
+         const char* flukaName = TAMCparTools::GetFlukaPartName(fluID);
          if( fluID == -2 ) { // shift HEAVYION by z
             fluID = -40 - z; 
             // check out of range
@@ -371,93 +373,3 @@ Bool_t TACAactNtuMC::Action()
 
    return kTRUE;
 }
-
-
-//------------------------------------------+-----------------------------------
-
-const char* getPartNamefromID(int id)
-{
-   //Fluka number  Fluka name       
-
-   const char* negPartNames[] = {
-      "",
-      "OPTIPHOT",       //[-1]
-      "HEAVYION",       //[-2]
-      "DEUTERON",       //[-3]
-      "TRITON  ",       //[-4]
-      "3-HELIUM",       //[-5]
-      "4-HELIUM"        //[-6]
-   };
-
-   const char* partNames[] = {
-      "RAY     ",        //[ 0]
-      "PROTON  ",        //[ 1]
-      "APROTON ",        //[ 2]
-      "ELECTRON",        //[ 3]
-      "POSITRON",        //[ 4]
-      "NEUTRIE ",        //[ 5]
-      "ANEUTRIE",        //[ 6]
-      "PHOTON  ",        //[ 7]
-      "NEUTRON ",        //[ 8]
-      "ANEUTRON",        //[ 9]
-      "MUON+   ",        //[10]
-      "MUON-   ",        //[11]
-      "KAONLONG",        //[12]
-      "PION+   ",        //[13]
-      "PION-   ",        //[14]
-      "KAON+   ",        //[15]
-      "KAON-   ",        //[16]
-      "LAMBDA  ",        //[17]
-      "ALAMBDA ",        //[18]
-      "KAONSHRT",        //[19]
-      "SIGMA-  ",        //[20]
-      "SIGMA+  ",        //[21]
-      "SIGMAZER",        //[22]
-      "PIZERO  ",        //[23]
-      "KAONZERO",        //[24]
-      "AKAONZER",        //[25]
-      "Reserved",        //[26]
-      "NEUTRIM ",        //[27]
-      "ANEUTRIM",        //[28]
-      "Blank   ",        //[29]
-      "Reserved",        //[30]
-      "ASIGMA- ",        //[31]
-      "ASIGMAZE",        //[32]
-      "ASIGMA+ ",        //[33]
-      "XSIZERO ",        //[34]
-      "AXSIZERO",        //[35]
-      "XSI-    ",        //[36]
-      "AXSI+   ",        //[37]
-      "OMEGA-  ",        //[38]
-      "AOMEGA+ ",        //[39]
-      "Reserved",        //[40]
-      "TAU+    ",        //[41]
-      "TAU-    ",        //[42]
-      "NEUTRIT ",        //[43]
-      "ANEUTRIT",        //[44]
-      "D+      ",        //[45]
-      "D-      ",        //[46]
-      "D0      ",        //[47]
-      "D0BAR   ",        //[48]
-      "DS+     ",        //[49]
-      "DS-     ",        //[50]
-      "LAMBDAC+",        //[51]
-      "XSIC+   ",        //[52]
-      "XSIC0   ",        //[53]
-      "XSIPC+  ",        //[54]
-      "XSIPC0  ",        //[55]
-      "OMEGAC0 ",        //[56]
-      "ALAMBDC-",        //[57]
-      "AXSIC-  ",        //[58]
-      "AXSIC0  ",        //[59]
-      "AXSIPC- ",        //[60]
-      "AXSIPC0 ",        //[61]
-      "AOMEGAC0"         //[62]
-   };
-
-   if( id < -40 || id >   63 ) { return Form("Invalid Particle ID %d", id); }
-   if( id <  -6 && id >= -40 ) { return "NUC-EVAP"; }
-
-   return ((id < 0) ? negPartNames[-id] : partNames[id]);
-}
-
