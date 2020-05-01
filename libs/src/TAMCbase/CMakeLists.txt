@@ -32,6 +32,7 @@ set( with_dictionnaries
    TAMCntuRegion
    TAMCevent
    TAGparGeo
+   TAMCparTools
    Evento
 )
 

@@ -5,6 +5,7 @@
 #pragma link off all functions;
 
 #pragma link C++ class TAGparGeo+;
+#pragma link C++ class TAMCparTools+;
 #pragma link C++ class TAMCeveTrack+;
 #pragma link C++ class TAMCntuEve+;
 #pragma link C++ class TAMCntuRegion+;
