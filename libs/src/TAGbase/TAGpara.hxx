@@ -28,12 +28,6 @@ class TAGpara : public TObject {
 
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
     virtual void    Print(Option_t* option="") const;
-
-    Int_t           GetDebugLevel() const;
-    void            SetDebugLevel(Int_t d);
-
-  protected:
-   Int_t   fDebugLevel;
    
    ClassDef(TAGpara,2)
 };

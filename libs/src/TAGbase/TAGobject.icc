@@ -8,8 +8,7 @@
 //! Default constructor.
 
 inline TAGobject::TAGobject()
-: fDebugLevel(0),
-  fFound(false)
+: fFound(false)
 {}
 
 //------------------------------------------+-----------------------------------
@@ -18,21 +17,6 @@ inline TAGobject::TAGobject()
 inline Bool_t TAGobject::Fail() const
 {
   return TestBit(kFail);
-}
-
-//------------------------------------------+-----------------------------------
-//! Returns debug level
-
-inline Int_t TAGobject::GetDebugLevel() const
-{
-   return fDebugLevel;
-}
-
-//------------------------------------------+-----------------------------------
-//! Set debug level
-inline void  TAGobject::SetDebugLevel(Int_t d)
-{
-   fDebugLevel = d;
 }
 
 //------------------------------------------+-----------------------------------
