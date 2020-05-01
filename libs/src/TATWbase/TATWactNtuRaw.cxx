@@ -51,9 +51,6 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
   f_pargeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
 
   Z_beam = f_pargeo->GetBeamPar().AtomicNumber;
- 
-  m_debug = GetDebugLevel();
-  
 }
 
 //------------------------------------------+-----------------------------------

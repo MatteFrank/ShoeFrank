@@ -65,11 +65,6 @@ private:
   TH2D*          fpHisElossTof_layer[TATWparCal::kLayers];
   vector<TH2D*>  fpHisElossTof_Z;
 
-  bool m_debug;
-
- 
-
-
 private:
   //
   TATWntuHit* fCurrentHit;
