@@ -95,7 +95,8 @@ void TAMCevent::AddSTC(Int_t aSTCid,
                         TVector3 aSTCpin, TVector3 aSTCpout,
                         Double_t aSTCde, Double_t aSTCal, Double_t aSTCtof, Int_t atrId)
 {
-    fHitSTC->NewHit(aSTCid,0,-99,-99,aSTCinpos,aSTCoutpos,aSTCpin,aSTCpout,aSTCde,aSTCtof,atrId);
+   if (fHitSTC)
+      fHitSTC->NewHit(aSTCid,0,-99,-99,aSTCinpos,aSTCoutpos,aSTCpin,aSTCpout,aSTCde,aSTCtof,atrId);
 }
 
 /*-----------------------------------------------------------------*/
@@ -104,7 +105,8 @@ void TAMCevent::AddBMN(Int_t aBMNid, Int_t aBMNilay, Int_t aBMNiview,
                         TVector3 aBMNpin, TVector3 aBMNpout, Double_t aBMNde,
                         Double_t aBMNal, Double_t aBMNtof, Int_t atrId)
 {
-    fHitBMN->NewHit(aBMNid,aBMNilay,aBMNiview,aBMNicell,aBMNinpos,aBMNoutpos,aBMNpin,aBMNpout,aBMNde,aBMNtof,atrId);
+   if (fHitBMN)
+      fHitBMN->NewHit(aBMNid,aBMNilay,aBMNiview,aBMNicell,aBMNinpos,aBMNoutpos,aBMNpin,aBMNpout,aBMNde,aBMNtof,atrId);
 }
 
 /*-----------------------------------------------------------------*/
@@ -113,7 +115,8 @@ void TAMCevent::AddVTX(Int_t aVTXid, Int_t aVTXilay,
                         TVector3 aVTXpout, Double_t aVTXde, Double_t aVTXal,
                         Double_t aVTXtof, Int_t atrId)
 {
-    fHitVTX->NewHit(aVTXid,aVTXilay,-99,-99,aVTXinpos,aVTXoutpos,aVTXpin,aVTXpout,aVTXde,aVTXtof,atrId);
+   if (fHitVTX)
+      fHitVTX->NewHit(aVTXid,aVTXilay,-99,-99,aVTXinpos,aVTXoutpos,aVTXpin,aVTXpout,aVTXde,aVTXtof,atrId);
 }
 
 /*-----------------------------------------------------------------*/
@@ -122,7 +125,8 @@ void TAMCevent::AddITR(Int_t aITRid, Int_t aITRilay,
                         TVector3 aITRpout, Double_t aITRde, Double_t aITRal,
                         Double_t aITRtof, Int_t atrId)
 {
-    fHitITR->NewHit(aITRid,aITRilay,-99,-99,aITRinpos,aITRoutpos,aITRpin,aITRpout,aITRde,aITRtof,atrId);
+   if (fHitITR)
+      fHitITR->NewHit(aITRid,aITRilay,-99,-99,aITRinpos,aITRoutpos,aITRpin,aITRpout,aITRde,aITRtof,atrId);
 }
 
 /*-----------------------------------------------------------------*/
@@ -130,7 +134,8 @@ void TAMCevent::AddMSD(Int_t aMSDid, Int_t aMSDilay, TVector3 aMSDinpos, TVector
                         TVector3 aMSDpin, TVector3 aMSDpout,
                         Double_t aMSDde, Double_t aMSDal, Double_t aMSDtof, Int_t atrId)
 {
-    fHitMSD->NewHit(aMSDid,aMSDilay,-99,-99,aMSDinpos,aMSDoutpos,aMSDpin,aMSDpout,aMSDde,aMSDtof,atrId);
+   if (fHitMSD)
+      fHitMSD->NewHit(aMSDid,aMSDilay,-99,-99,aMSDinpos,aMSDoutpos,aMSDpin,aMSDpout,aMSDde,aMSDtof,atrId);
 }
 
 /*-----------------------------------------------------------------*/
@@ -139,7 +144,8 @@ void TAMCevent::AddTW(Int_t aTWid, Int_t aTWibar, Int_t aTWiview,
                        TVector3 aTWinpos, TVector3 aTWoutpos, TVector3 aTWpin,
                        TVector3 aTWpout, Double_t aTWde, Double_t aTWal, Double_t aTWtof, Int_t atrId)
 {
-    fHitTW->NewHit(aTWid,aTWibar,aTWiview,-99,aTWinpos,aTWoutpos,aTWpin,aTWpout,aTWde,aTWtof,atrId);
+   if (fHitTW)
+      fHitTW->NewHit(aTWid,aTWibar,aTWiview,-99,aTWinpos,aTWoutpos,aTWpin,aTWpout,aTWde,aTWtof,atrId);
 }
 
 /*-----------------------------------------------------------------*/
@@ -148,7 +154,8 @@ void TAMCevent::AddCAL(Int_t aCALid, Int_t aCALicry,
                         TVector3 aCALpout, Double_t aCALde, Double_t aCALal,
                         Double_t aCALtof, Int_t atrId)
 {
-    fHitCAL->NewHit(aCALid,aCALicry,-99,-99,aCALinpos,aCALoutpos,aCALpin,aCALpout,aCALde,aCALtof,atrId);
+   if (fHitCAL)
+      fHitCAL->NewHit(aCALid,aCALicry,-99,-99,aCALinpos,aCALoutpos,aCALpin,aCALpout,aCALde,aCALtof,atrId);
 }
 
 /*-----------------------------------------------------------------*/
