@@ -116,7 +116,7 @@ void TAMSDactNtuMC::CreateDigitizer()
 //! Action.
 bool TAMSDactNtuMC::Action()
 {
-	if ( fDebugLevel> 0 )     
+	if(FootDebugLevel(1))
 	  Info("TAMSDactNtuMC::Action()", "start  -->  VTn : %d  ", fpEvtStr->MSDn);
 
    TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
@@ -126,7 +126,7 @@ bool TAMSDactNtuMC::Action()
    
 	// Loop over all MC hits
 	for (Int_t i = 0; i < fpEvtStr->MSDn; i++) {
-		if ( fDebugLevel> 0 )     cout<< endl << "FLUKA id =   " << fpEvtStr->TRfx[i] << "  "<< fpEvtStr->TRfy[i] << "  "<< fpEvtStr->TRfz[i] << endl;
+		if(FootDebugLevel(1))    cout<< endl << "FLUKA id =   " << fpEvtStr->TRfx[i] << "  "<< fpEvtStr->TRfy[i] << "  "<< fpEvtStr->TRfz[i] << endl;
 
 		Int_t sensorId = fpEvtStr->MSDilay[i];
 
@@ -189,7 +189,7 @@ void TAMSDactNtuMC::FillStrips(Int_t sensorId, Int_t hitId )
       Int_t genPartID = fpEvtStr->MSDid[hitId] - 1;
       strip->AddMcTrackIdx(genPartID, hitId);
       
-       if ( fDebugLevel> 0 )
+       if(FootDebugLevel(1))
          printf("strip %d\n", stripId);
       
       double pos = pGeoMap->GetPosition(stripId);
@@ -243,7 +243,7 @@ void TAMSDactNtuMC::ComputeNoiseLevel()
     fNoisyStripsN = TMath::Nint(fDigitizer->GetStripsN()*(1.-fraction));
   }
   
-  if (fDebugLevel)
+   if(FootDebugLevel(1))
       printf("Number of noise pixels %d\n", fNoisyStripsN);
   
   delete f;

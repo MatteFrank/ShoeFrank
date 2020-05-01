@@ -113,7 +113,7 @@ void TASTactNtuRaw::CreateHistogram(){
   DeleteHistogram();
 
   char histoname[100]="";
-  if (fDebugLevel > 0)
+  if(FootDebugLevel(1))
      cout<<"I have created the ST histo. "<<endl;
 
   // sprintf(histoname,"stEvtTime");

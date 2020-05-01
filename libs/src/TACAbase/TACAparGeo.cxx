@@ -16,6 +16,7 @@
 #include "TROOT.h"
 #include "TSystem.h"
 
+#include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGionisMaterials.hxx"
 
@@ -57,45 +58,43 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
    TString nameExp;
-
-   fDebugLevel = GlobalPar::GetDebugLevel(ClassName());
    
    if (name.IsNull())
       nameExp = fkDefaultGeoName;
    else
       nameExp = name;
 
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout << "\nCalorimeter Config File: " << fkDefaultGeoName.Data() << endl; 
    
    if (!Open(nameExp)) return false;
 
    ReadStrings(fConfigTypeGeo);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout << "   Geometry Type: " << fConfigTypeGeo << endl;
 
    // BGO crystals
    ReadStrings(fCrystalMat);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout << "   Crystals material : " <<  fCrystalMat << endl;
    
    ReadItem(fCrystalDensity);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout << "   Crystals density : " <<  fCrystalDensity << endl;
 
    ReadItem(fCrystalIonisMat);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout << "   Crystals mean exciation energy : " <<  fCrystalIonisMat << endl;
       
    TVector3 crystalFront;
    ReadVector3(crystalFront);
-   if (fDebugLevel) 
+    if(FootDebugLevel(1))
       cout << "   Crystal front size: "
            <<  crystalFront[0]  << " " <<  crystalFront[1] << " " << crystalFront[2] << endl;
 
    TVector3 crystalBack;
    ReadVector3(crystalBack);
-   if (fDebugLevel) 
+    if(FootDebugLevel(1))
       cout << "   Crystal back size: "
            << crystalBack[0] << " " << crystalBack[1] << " " << crystalBack[2] << endl;
 
@@ -106,26 +105,26 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    fCrystalSize[4] = crystalBack[2];
 
    ReadItem(fCrystalDelta);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout << "   Crystals in-between distance : " <<  fCrystalDelta << endl;
 
    ReadStrings(fSupportMat);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout << "   Support material : " <<  fSupportMat << endl;
    
    ReadItem(fSupportDensity);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout << "   Support density : " <<  fSupportDensity << endl;
 
    // Support    
    TVector3 supportFront;
    ReadVector3(supportFront);
-   if (fDebugLevel) 
+    if(FootDebugLevel(1))
       cout << "   Support front size: "
            << supportFront[0] << " " << supportFront[1] << " " << supportFront[2] << endl;
    TVector3 supportBack;
    ReadVector3(supportBack);
-   if (fDebugLevel) 
+    if(FootDebugLevel(1))
       cout << "   Support back size: "
            << supportBack[0] << " " << supportBack[1] << " " << supportBack[2] << endl;
    fSupportSize[0] = supportFront[0];
@@ -135,7 +134,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    fSupportSize[4] = supportBack[2];
 
    ReadItem(fSupportPositionZ);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout  << "   Support PositionZ : " <<  fSupportPositionZ << endl;
 
    // define material
@@ -145,12 +144,12 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    // it will be remove if a truncate piramid body is implemented in FLUKA    
    TVector3 airModflukaFront;
    ReadVector3(airModflukaFront);
-   if (fDebugLevel) 
+    if(FootDebugLevel(1))
       cout << "   AIR region around module front size: "
            << airModflukaFront[0] << " " << airModflukaFront[1] << " " << airModflukaFront[2] << endl;
    TVector3 airModflukaBack;
    ReadVector3(airModflukaBack);
-   if (fDebugLevel) 
+    if(FootDebugLevel(1))
       cout << "   AIR region around module back size: "
            << airModflukaBack[0] << " " << airModflukaBack[1] << " " << airModflukaBack[2] << endl;
    fModAirFlukaSize[0] = airModflukaFront[0];
@@ -160,16 +159,16 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    fModAirFlukaSize[4] = airModflukaBack[2];
 
    ReadItem(fModAirFlukaPositionZ);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout  << "   AIR region around module PositionZ : " <<  fModAirFlukaPositionZ << endl;
 
    // Calorimeter dimensions and position of box around
    ReadVector3(fCaloSize);
-   if(fDebugLevel)
+  if(FootDebugLevel(1))
       cout << "   Calorimeter size: "
       << fCaloSize[0] << " " << fCaloSize[1] << " " << fCaloSize[2] << endl;
    ReadItem(fCaloBoxPositionZ);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout  << "   AIR region around detector PositionZ : " <<  fCaloBoxPositionZ << endl;
 
    TVector3 position;
@@ -177,10 +176,10 @@ Bool_t TACAparGeo::FromFile(const TString& name)
 
    // Crystals
    ReadItem(fCrystalsN);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout  << "Number of crystals: " <<  fCrystalsN << endl;
    ReadItem(fModulesN);
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
       cout  << "Number of modules: " <<  fModulesN << endl;  
 
    // Set number of matrices
@@ -192,17 +191,17 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    for (Int_t iCry = 0; iCry < fCrystalsN; ++iCry) {
       
       ReadItem(idCry);
-      if(fDebugLevel)
+     if(FootDebugLevel(1))
          cout  << "Crystal id " << idCry << endl;
       
       // read  position
       ReadVector3(position);
-      if(fDebugLevel)
+     if(FootDebugLevel(1))
          cout << "   Position: "
          << position[0] << " " << position[1] << " " << position[2] << endl;
       
       ReadVector3(tilt);
-      if(fDebugLevel)
+     if(FootDebugLevel(1))
          cout  << "   tilt: " << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
 
       fListOfCrysAng[idCry] = tilt;
@@ -227,17 +226,17 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    for (Int_t imod = 0; imod < fModulesN; ++imod) {
       
       ReadItem(nModule);
-      if(fDebugLevel)
+     if(FootDebugLevel(1))
          cout  << "Module id "<< nModule << endl;
       
       // read  position
       ReadVector3(position);
-      if(fDebugLevel)
+     if(FootDebugLevel(1))
          cout << "   Position: "
          << position[0] << " " << position[1] << " " << position[2] << endl;
 
       ReadVector3(tilt);
-      if(fDebugLevel)
+     if(FootDebugLevel(1))
          cout  << "   tilt: " << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
 
       fListOfModAng[nModule] = tilt;
@@ -261,7 +260,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
 //_____________________________________________________________________________
 TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)  
 {
-   if (fDebugLevel) {
+    if(FootDebugLevel(1)) {
       cout << "\n\nTACAparGeo::BuildCalorimeter" << endl << endl;
    }
 
@@ -435,7 +434,7 @@ void TACAparGeo::DefineMaterial()
    
    // CA material
    TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fCrystalMat, fCrystalDensity);
-   if (fDebugLevel) {
+    if(FootDebugLevel(1)) {
       printf("Calorimeter material:\n");
       mat->Print();
    }

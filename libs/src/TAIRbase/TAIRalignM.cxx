@@ -15,6 +15,7 @@
 #include "TObjArray.h"
 #include "TCanvas.h"
 
+#include "GlobalPar.hxx"
 #include "TAGactTreeReader.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -62,8 +63,7 @@ TAIRalignM::TAIRalignM(const TString name)
    fNStdDev(3),
    fPhi(0.),
    fCosPhi(1.),
-   fSinPhi(0.),
-   fDebugLevel(0)
+   fSinPhi(0.)
 {
    fAGRoot        = new TAGroot();
    fInfile        = new TAGactTreeReader("inFile");
@@ -371,7 +371,7 @@ void TAIRalignM::FixParameter(Int_t iPar, Double_t value)
    /// Parameter iPar is encourage to vary in [-value;value].
    /// If value == 0, parameter is fixed
    fMillepede->SetParSigma(iPar, value);
-   if (fDebugLevel> 1)
+   if(FootDebugLevel(2))
       if (value==0) printf("Parameter %i Fixed\n", iPar);
 }
 
@@ -394,7 +394,7 @@ void TAIRalignM::AllowVariations(Bool_t *bSensorOnOff)
    for (Int_t iSensor = 0; iSensor < fNSensors; iSensor++) {
       if (bSensorOnOff[iSensor]) {
          for (int i=0; i<fNParSensor; i++) {
-            if (fDebugLevel)
+            if(FootDebugLevel(1))
                printf("fDoF[%d]= %d",i,fDoF[i]);
             if (fDoF[i]) {
                FixParameter(iSensor*fNParSensor+i, fAllowVar[i]);
@@ -419,7 +419,7 @@ void TAIRalignM::ProcessTrack(TAIRtrack* track, Double_t* param)
    // get size of arrays
    Int_t nClusters = track->GetClustersN();
    
-   if (fDebugLevel)
+   if(FootDebugLevel(1))
       printf("Number of track param entries : %i ", nClusters);
    
    fCosTheta = TMath::Cos(track->GetTheta()*TMath::DegToRad());
@@ -447,7 +447,7 @@ void TAIRalignM::ProcessTrack(TAIRtrack* track, Double_t* param)
       fSigma[0] =  cluster->GetPosError()(0);
       fSigma[1] =  cluster->GetPosError()(1);
       
-      if (fDebugLevel > 0)
+       if(FootDebugLevel(1))
          printf("fMeas[0]: %f\t fMeas[1]: %f\t fSigma[0]: %f\t fSigma[1]: %f\n", fMeas[0], fMeas[1], fSigma[0], fSigma[1]);
       
       // Set local equations

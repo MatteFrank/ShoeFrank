@@ -39,7 +39,8 @@ TCGmaterials* TCGmaterials::fgInstance = 0;
 
 //______________________________________________________________________________
 TCGmaterials::TCGmaterials()
- : TAGbaseMaterials()
+ : TAGbaseMaterials(),
+   fDebugLevel(0)
 {
    CreateDefaultMaterials();
 }

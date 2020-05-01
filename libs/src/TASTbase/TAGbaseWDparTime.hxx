@@ -44,7 +44,6 @@ private:
 
   map<pair<int,int>, vector<double>> time_parcal;
 
-  bool m_debug;
 };
 
 #endif

@@ -60,31 +60,31 @@ Bool_t TATWparGeo::FromFile(const TString& name)
    if (!Open(nameExp)) return false;
    
    ReadItem(fLayersN);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout << endl << "Number of layers "<< fLayersN << endl;
    
    ReadItem(fBarsN);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "   Number of bars: " <<  fBarsN << endl;
    
    ReadStrings(fBarMat);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "   Bars material : " <<  fBarMat << endl;
    
    ReadItem(fBarDensity);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "   Bars density : " <<  fBarDensity << endl;
    
    ReadItem(fBarIonisMat);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "   Bars material mean excitation energy : " <<  fBarIonisMat << endl;
    
    ReadItem(fBarBirkMat);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "   Bars material Birk factor : " <<  fBarBirkMat << endl;
    
    ReadVector3(fBarSize);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout << "   Bar size: "
       << fBarSize[0] << " " << fBarSize[1] << " " << fBarSize[2] << endl;
    
@@ -108,21 +108,21 @@ Bool_t TATWparGeo::FromFile(const TString& name)
       for (Int_t iBar = 0; iBar < fBarsN; ++iBar) {
 
          ReadItem(layerId);
-         if(fDebugLevel)
+         if(FootDebugLevel(1))
             cout  << "Layer id "<< layerId << endl;
          
          ReadItem(barId);
-         if(fDebugLevel)
+         if(FootDebugLevel(1))
             cout  << "Bar id "<< barId << endl;
          
          // read  position
          ReadVector3(position);
-         if(fDebugLevel)
+         if(FootDebugLevel(1))
             cout << "   Position: "
             << position[0] << " " << position[1] << " " << position[2] << endl;
          
          ReadVector3(tilt);
-         if(fDebugLevel)
+         if(FootDebugLevel(1))
             cout  << "   Tilt: "
             << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
 
@@ -280,7 +280,7 @@ void TATWparGeo::DefineMaterial()
    
    // TW material
    TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fBarMat, fBarDensity);
-   if (fDebugLevel) {
+    if(FootDebugLevel(1)) {
       printf("ToF Wall material:\n");
       mat->Print();
    }

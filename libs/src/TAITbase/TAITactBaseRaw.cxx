@@ -239,7 +239,7 @@ Bool_t TAITactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
          state = (MI26__TState*)frameData;
          frameData += 1; // goto next word
          index++;
-         if(fDebugLevel > 3)
+         if(FootDebugLevel(3))
             printf("                  number of states %d, number of hits %d,\n", lineStatus->F.StateNb, state->F.HitNb+1);
          
          fNStatesInLine++;

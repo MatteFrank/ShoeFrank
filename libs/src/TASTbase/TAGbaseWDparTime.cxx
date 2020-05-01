@@ -11,6 +11,7 @@
 #include "TSystem.h"
 #include "TString.h"
 
+#include "GlobalPar.hxx"
 #include "TAGroot.hxx"
 #include "TAGbaseWDparTime.hxx"
 #include "TAGactWDreader.hxx"
@@ -27,26 +28,19 @@ ClassImp(TAGbaseWDparTime);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAGbaseWDparTime::TAGbaseWDparTime() {
-
-
+TAGbaseWDparTime::TAGbaseWDparTime()
+{
   InitMap();
-  m_debug=GetDebugLevel();
-
-
-
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TAGbaseWDparTime::~TAGbaseWDparTime(){}
+TAGbaseWDparTime::~TAGbaseWDparTime()
+{
+}
 
-
-
-
-
-
+//------------------------------------------+-----------------------------------
 bool TAGbaseWDparTime::FromFile(string expName, int iRunNumber){
 
   string runnumber;
@@ -70,7 +64,7 @@ bool TAGbaseWDparTime::FromFile(string expName, int iRunNumber){
     printf("\n\n WARNING:: ST WD time calibration file %s not found\n\n", tcal_filename.c_str());
     return false;
   }else{
-    // if (fDebugLevel > 1)
+    // if (FootDebugLevel(1) > 1)
     printf("\n\nLoading ST WD time calibration from file::%s \n\n", tcal_filename.c_str());
   }
 
@@ -83,12 +77,12 @@ bool TAGbaseWDparTime::FromFile(string expName, int iRunNumber){
 
   ret = fread(&word, 4,1,stream);
   if(word == FILE_HEADER){
-    if(m_debug)printf("found time calibration header::%08x %08x\n", word, word);
+    if(FootDebugLevel(1))printf("found time calibration header::%08x %08x\n", word, word);
     
     ret = fread(&word, 4,1,stream);
     while(fread(&word, 4,1,stream) !=0 && (word & 0xffff)== BOARD_HEADER){
       
-      if(m_debug)printf("found board header::%08x num%d\n", word, board_id);
+      if(FootDebugLevel(1))printf("found board header::%08x num%d\n", word, board_id);
       board_id = (word>>16)  & 0xffff;
       
       while(fread(&word, 4,1,stream) !=0 && (word & 0xffff)== CH_HEADER){
@@ -96,7 +90,7 @@ bool TAGbaseWDparTime::FromFile(string expName, int iRunNumber){
 	tmp_chstr[1] = (word>>24)  & 0xff;
 	tmp_chstr[0] = (word>>16)  & 0xff;
 	ch_num = atoi(tmp_chstr);
-	if(m_debug)printf("found channel header::%08x num%d\n",word, ch_num);
+	if(FootDebugLevel(1))printf("found channel header::%08x num%d\n",word, ch_num);
 	
 	w_tcal.clear();
 	for(int iCal=0;iCal<1024;iCal++){

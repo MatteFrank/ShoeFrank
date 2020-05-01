@@ -212,7 +212,7 @@ Float_t TATWdigitizer::GetTofLeft(Float_t pos, Float_t time, Float_t edep)
    Float_t timeL  = time - pos*alpha;
    // Float_t timeL  = time + (fSlatLength/2. - pos)*alpha;
    Float_t resTofL = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R: resTofL=resTofR --> resTof=sqrt(resTofL^2 + resTofR^2)/2
-   if(fDebugLevel && edep>1 && time<9000)
+   if(FootDebugLevel(1) && edep>1 && time<9000)
      cout<<"edep::"<<edep<<"  time::"<<time/1000.<<"  res::"<<resTofL<<"  rel::"<<resTofL/timeL*100<<" %"<<endl;
    timeL += gRandom->Gaus(0, resTofL);  // TODO::check more updated ToF resolutions
    
@@ -248,7 +248,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    fDeAttAsymSmear = gRandom->Uniform(-fDeAttAsym, +fDeAttAsym); // asymmetry btw left/right ends
    Double_t pos     = 0;
 
-   if (fDebugLevel) {
+    if(FootDebugLevel(1)) {
       printf("asym %4.2f\n", fDeAttAsymSmear);
       printf("edep %f\n", edep);
    }
@@ -276,7 +276,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Float_t resChargeB = GetResEnergy(chargeB);
    chargeB += gRandom->Gaus(0, resChargeB);
 
-   if (fDebugLevel) {
+    if(FootDebugLevel(1)) {
       printf("pos %.1f\n", pos);
       printf("energy %.1f %.1f\n", chargeA, chargeB);
       printf("Res %.3f %.3f\n", resChargeA*100, resChargeB*100);
@@ -286,7 +286,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Float_t timeA = GetTofLeft(pos, time, edep);
    Float_t timeB = GetTofRight(pos, time, edep);
 
-   if (fDebugLevel) {
+    if(FootDebugLevel(1)) {
      printf("time %.1f\n", time);
      printf("time %.1f %.1f\n", timeA, timeB);
    }

@@ -131,7 +131,6 @@ private:
    Double_t             fPhi;            // Azimuthal tilt of detection element
    Double_t             fCosPhi;         // Cosine of fPhi
    Double_t             fSinPhi;         // Sine of fPhi
-   Int_t                fDebugLevel;     // debug level
 
    TH1F*                fpResXC[50];        // Residual in X
    TH1F*                fpResYC[50];        // Residual in Y

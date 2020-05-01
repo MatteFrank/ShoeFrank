@@ -151,7 +151,7 @@ void TATWactNtuHitMC::CreateDigitizer()
 
 bool TATWactNtuHitMC::Action() {
    
-   if ( fDebugLevel> 0 )     cout << "TATWactNtuHitMC::Action() start" << endl;
+   if(FootDebugLevel(1))     cout << "TATWactNtuHitMC::Action() start" << endl;
    
    TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    
@@ -162,7 +162,7 @@ bool TATWactNtuHitMC::Action() {
    TAMCntuHit* pNtuStMC = (TAMCntuHit*) fpNtuStMC->Object();
 
    //The number of hits inside the Start Counter is stn
-   if ( fDebugLevel> 0 )     cout << "Processing n Scint " << pNtuMC->GetHitsN() << endl;
+   if(FootDebugLevel(1))    cout << "Processing n Scint " << pNtuMC->GetHitsN() << endl;
    
    // clear maps
    fDigitizer->ClearMap();
@@ -196,14 +196,14 @@ bool TATWactNtuHitMC::Action() {
       Int_t  Z = track->GetCharge();
       
       Float_t trueTof = (time - timeST)*TAGgeoTrafo::PsToNs();  //ns
-      if(fDebugLevel>0)
+      if(FootDebugLevel(1))
          printf("\n timeTW::%f timeST::%f tof::%f\n",time,timeST,trueTof);
       
       time -= timeST;  // tof TW-SC to be digitized in ps
       
       // layer, bar, de, time, ntupID, parentID
       int view = hitMC->GetView();    // in ntuple now layers are 0 and 1
-      if ( fDebugLevel> 0 )
+      if(FootDebugLevel(1))
          printf("%d %d\n", view,  hitMC->GetBarId());
       
       TVector3 posInLoc = geoTrafo->FromGlobalToTWLocal(posIn);
@@ -214,7 +214,7 @@ bool TATWactNtuHitMC::Action() {
       else if(view==1)  //layer 1 (front) --> horizontal bar
          truePos = posInLoc.X();
       
-      if(fDebugLevel>0)
+      if(FootDebugLevel(1))
          cout<<"trueEloss::"<<edep<<" trueTof::"<<trueTof<<" truePos::"<<truePos<<endl;
       
       if(fDigitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
@@ -229,7 +229,7 @@ bool TATWactNtuHitMC::Action() {
          // test algorithm in MC in a clean situation: only primary fragmentation
          if( mothId>0) {
             Zrec_MCtrue=-1.; //set Z to nonsense value
-            if(fDebugLevel > 0) printf("the energy released is %f MeV (tof %.f ns) so Zraw is set to %d\n",edep,trueTof,Zrec_MCtrue);
+            if(FootDebugLevel(1)) printf("the energy released is %f MeV (tof %.f ns) so Zraw is set to %d\n",edep,trueTof,Zrec_MCtrue);
          } else
             Zrec_MCtrue = parcal->GetChargeZ(edep,trueTof,view);
          
@@ -262,7 +262,7 @@ bool TATWactNtuHitMC::Action() {
             
          }
          
-         if(fDebugLevel > 0) {
+         if(FootDebugLevel(1)) {
             if(Zrec_MCtrue>0 && Z>0) {
                fCnt++;
                if(Zrec_MCtrue!=Z) {
@@ -305,7 +305,7 @@ bool TATWactNtuHitMC::Action() {
          
          Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
          
-         if(fDebugLevel>0)
+         if(FootDebugLevel(1))
             cout<<"recEloss::"<<recEloss<<" recTof::"<<recTof<<" recPos::"<<recPos<<endl;
          
          Int_t Zrec = parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
@@ -315,7 +315,7 @@ bool TATWactNtuHitMC::Action() {
          for(int iZ=1; iZ<fZbeam+1; iZ++)
             distZ[iZ-1]= parcal->GetDistBB(iZ);
          
-         if(fDebugLevel > 0) {
+         if(FootDebugLevel(1)) {
             
             if(!fDigitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
                if(Zrec>0 && Z>0) {
@@ -368,12 +368,12 @@ bool TATWactNtuHitMC::Action() {
          
          Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
          
-         if(fDebugLevel>0)
+         if(FootDebugLevel(1))
             cout<<"recEloss::"<<recEloss<<" recTof::"<<recTof<<" recPos::"<<recPos<<endl;
          
          // set an energy threshold --> TODO: to be tuned on data. On GSI data 50mV over all the bars but the central ones. To be set for different energy campaigns
          if(!fDigitizer->IsOverEnergyThreshold(recEloss)) {
-            if(fDebugLevel > 0)
+            if(FootDebugLevel(1))
                printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());
             
             recEloss=-99.; //set energy to nonsense value

@@ -128,7 +128,7 @@ bool TAMSDactNtuHitMC::Action()
 	pNtuRaw->Clear();
    fMap.clear();
  
-   if ( fDebugLevel> 0 )
+   if(FootDebugLevel(1))
       Info("TAMSDactNtuHitMC::Action()", "start  -->  VTn : %d  ", pNtuMC->GetHitsN());
 
    
@@ -198,7 +198,7 @@ void TAMSDactNtuHitMC::FillStrips(Int_t sensorId, Int_t hitId,  Int_t trackIdx)
       Int_t genPartID = trackIdx;
       strip->AddMcTrackIdx(genPartID, hitId);
       
-       if ( fDebugLevel> 0 )
+       if(FootDebugLevel(1))
          printf("strip %d\n", stripId);
       
       double pos = pGeoMap->GetPosition(stripId);
@@ -252,7 +252,7 @@ void TAMSDactNtuHitMC::ComputeNoiseLevel()
     fNoisyStripsN = TMath::Nint(fDigitizer->GetStripsN()*(1.-fraction));
   }
   
-  if (fDebugLevel)
+   if(FootDebugLevel(1))
       printf("Number of noise pixels %d\n", fNoisyStripsN);
   
   delete f;

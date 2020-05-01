@@ -27,6 +27,9 @@ public:
     G4Material* ConvertGeoMaterial(const TGeoMaterial *mat);
     void CreateG4DefaultMaterials();
 
+private:
+   Int_t   fDebugLevel;
+   
 public:
    static TCGmaterials* Instance();
    
