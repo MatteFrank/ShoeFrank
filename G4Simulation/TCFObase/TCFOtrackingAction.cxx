@@ -17,8 +17,6 @@
 
 using namespace CLHEP;
 
-map<TString, Int_t> TCFOtrackingAction::fgkGeantToFlukaID = {{"alpha",-6}, {"He3",-5}, {"triton",-4}, {"deuteron", -3},{"GenericIon",-2},{"opticalphoton",-1},{"proton",1},{"anti_proton",2}, {"e-",3}, {"e+",4}, {"gamma",7}, {"neutron",8},{"anti_neutron",9},{"mu+",10}, {"mu-",11}, {"Li6",-2},{"Li7",-2},{"B7",-2},{"B8",-2},{"B9",-2},{"B10",-2},{"Be9",-2},{"Be10",-2},{"Be11",-2},{"C10",-2},{"C11",-2},{"C12",-2},{"C13",-2},{"C14",-2},{"O14",-2},{"O15",-2},{"O16",-2},{"O17",-2},{"N13",-2},{"N14",-2},{"N15",-2}};
-
 map<TString, Int_t> TCFOtrackingAction::fgkVolumeToRegion = {{"World",0}, {"StartCounter",10}, {"BM",20}, {"BeamMonitor",20}, {"Gaz",21}, {"Foil", 22},{"targetPhy",30},{"Vertex",40},{"vtxEpiPhy",40},{"Magnets",50}, {"itEpiPhy",60}, {"msdEpiPhy",70}, {"Tof",80}, {"Calo",90}};
 
 //
