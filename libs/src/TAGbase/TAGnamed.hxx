@@ -29,7 +29,7 @@ class TAGnamed : public TNamed {
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
     virtual void    Print(Option_t* option="") const;
 
-   ClassDef(TAGnamed,2)
+   ClassDef(TAGnamed,3)
 
 };
 
