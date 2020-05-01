@@ -75,7 +75,8 @@ TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeomet
   fTwCollId(-1),
   fCaCollId(-1),
   fDetName(""),
-  fFillTree(true)
+  fFillTree(true),
+  fInelasticOnly(false)
 {
     fEventInterruptHandler = new TAGeventInterruptHandler();
     fEventInterruptHandler->Add();
@@ -106,6 +107,9 @@ TCFObaseEventAction::~TCFObaseEventAction()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCFObaseEventAction::BeginOfEventAction(const G4Event* evt)
 {
+   if (fInelasticOnly)
+      SetFillTree(false);
+
     fEventNumber = evt->GetEventID()+1;
     if(fDebugLevel > 0)
     G4cout<<"********************************************************************Begin event actions "<<evt->GetEventID()<<G4endl;

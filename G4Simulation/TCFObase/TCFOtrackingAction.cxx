@@ -24,6 +24,8 @@ map<TString, Int_t> TCFOtrackingAction::fgkVolumeToRegion = {{"World",0}, {"Star
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 TCFOtrackingAction::TCFOtrackingAction(TCFObaseEventAction* aEventAction)
+ : G4UserTrackingAction(),
+   fDebugLevel(0)
 {
     fEventAction = aEventAction ;
 }
@@ -84,6 +86,24 @@ void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack){
         finmom.SetY(aTrack->GetMomentum().getY()/GeV);
         finmom.SetZ(aTrack->GetMomentum().getZ()/GeV);
     }
+   
+   if (fEventAction->IsInelasticOnly()) {
+      G4bool inelastic = false;
+      const G4VProcess* process = aTrack->GetCreatorProcess();
+      if (process) {
+         G4String name = process->GetProcessName();
+         if ((name.contains("ionInelastic")) && charge > 0 && regId == 30) {
+            if (fDebugLevel > 0)
+               printf("track %d process %s charge %d\n", trackID, name.data(), charge);
+            inelastic = true;
+         }
+      }
+      if (inelastic)
+         fEventAction->SetFillTree(true);
+   } else
+      fEventAction->SetFillTree(true);
+
+   
     TVector3 xposparent(0,0,0);  /// position of the parent particle - not needed, so initialized to zero
     fEventAction->GetTrackMc()->NewTrack(flukaID,charge,trackID,regId,baryon,deadId,mass,parentID,time,tof,
                                        length,vtxpos,finpos,vtxmom,finmom,xposparent,xposparent,-1);

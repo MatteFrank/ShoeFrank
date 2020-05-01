@@ -69,6 +69,9 @@ int main(int argc,char** argv)
     G4bool obj =  false;;
     G4bool kEvento;
 
+    // Fill only fragmented events
+    G4bool frag = false;
+   
     // number of events to process
     G4int eventsNToBeProcessed = -1;
    
@@ -95,6 +98,9 @@ int main(int argc,char** argv)
 
         if(strcmp(argv[i],"-b") == 0)
             batchMode  = true;
+       
+       if(strcmp(argv[i],"-frag") == 0)
+          frag  = true;
 
         if(strcmp(argv[i],"-r") == 0)
             runMode  = true;
@@ -111,13 +117,14 @@ int main(int argc,char** argv)
         if(strcmp(argv[i],"-help") == 0) {
             printf("Possible arguments are:\n");
             printf("  -b batch mode active \n");
-            printf("  -r run.mac is lauched \n");
+            printf("  -r run.mac is launched \n");
             printf("  -nev nevent: number of events");
             printf("  -out rootFileName: root output file name \n");
             printf("  -phys physList: physics list: BIC, BERT or INCL \n");
-            printf("  -seed seedNb: seed number for random initialisation  \n");
-            printf("  -exp name: [def=""] experient name for config/geomap extention");
+            printf("  -seed seedNb: seed number for random initialization  \n");
+            printf("  -exp name: [def=""] experiment name for config/geomap extension");
             printf("  -obj save MC data in root object");
+            printf("  -frag save only when ion inelastic process occurs in target");
 
             return 1;
         }
@@ -184,6 +191,8 @@ int main(int argc,char** argv)
     TCFObaseEventAction* event = 0 ;
     if(kEvento) event = new TCFOeventoAction(run, theDetector);
     else event  = new TCFOeventAction(run, theDetector);
+    event->SetInelasticOnly(frag);
+
    
     TCFOtrackingAction *tracking = new TCFOtrackingAction(event) ;
 
