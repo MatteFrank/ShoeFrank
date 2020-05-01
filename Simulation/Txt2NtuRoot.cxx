@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 {
    
    // Par instance
-   GlobalPar::Instance();
+   GlobalPar::Instance()->Print();
    
    int status = 0, iL=0, NumProcessed=0, numfiles = 0, nread=0;
    TString outname("Out.root"), inname("In.txt");
@@ -191,13 +191,14 @@ int main(int argc, char *argv[])
                              &eve.STCpxin[jj],&eve.STCpyin[jj],&eve.STCpzin[jj],
                              &eve.STCpxout[jj],&eve.STCpyout[jj],&eve.STCpzout[jj],
                              &eve.STCde[jj],&eve.STCal[jj],&eve.STCtim[jj]);
-               
-               event->AddSTC(eve.STCid[jj],
-                             TVector3(eve.STCxin[jj], eve.STCyin[jj], eve.STCzin[jj]),
-                             TVector3(eve.STCxout[jj], eve.STCyout[jj], eve.STCzout[jj]),
-                             TVector3(eve.STCpxin[jj], eve.STCpyin[jj], eve.STCpzin[jj]),
-                             TVector3(eve.STCpxout[jj], eve.STCpyout[jj], eve.STCpzout[jj]),
-                             eve.STCde[jj], eve.STCal[jj], eve.STCtim[jj], 0);
+    
+               if (GlobalPar::GetPar()->IncludeST())
+                  event->AddSTC(eve.STCid[jj],
+                                TVector3(eve.STCxin[jj], eve.STCyin[jj], eve.STCzin[jj]),
+                                TVector3(eve.STCxout[jj], eve.STCyout[jj], eve.STCzout[jj]),
+                                TVector3(eve.STCpxin[jj], eve.STCpyin[jj], eve.STCpzin[jj]),
+                                TVector3(eve.STCpxout[jj], eve.STCpyout[jj], eve.STCpzout[jj]),
+                                eve.STCde[jj], eve.STCal[jj], eve.STCtim[jj], 0);
                
                if(nread!=16){
                   ReadError= true;
@@ -223,12 +224,13 @@ int main(int argc, char *argv[])
                               &eve.BMNpxout[jj],&eve.BMNpyout[jj],&eve.BMNpzout[jj],
                               &eve.BMNde[jj],&eve.BMNal[jj],&eve.BMNtim[jj]);
                
-                event->AddBMN(eve.BMNid[jj], eve.BMNilay[jj], eve.BMNiview[jj], eve.BMNicell[jj],
-                              TVector3(eve.BMNxin[jj], eve.BMNyin[jj], eve.BMNzin[jj]),
-                              TVector3(eve.BMNxout[jj], eve.BMNyout[jj], eve.BMNzout[jj]),
-                              TVector3(eve.BMNpxin[jj], eve.BMNpyin[jj], eve.BMNpzin[jj]),
-                              TVector3(eve.BMNpxout[jj], eve.BMNpyout[jj], eve.BMNpzout[jj]),
-                              eve.BMNde[jj], eve.BMNal[jj], eve.BMNtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeBM())
+                  event->AddBMN(eve.BMNid[jj], eve.BMNilay[jj], eve.BMNiview[jj], eve.BMNicell[jj],
+                                TVector3(eve.BMNxin[jj], eve.BMNyin[jj], eve.BMNzin[jj]),
+                                TVector3(eve.BMNxout[jj], eve.BMNyout[jj], eve.BMNzout[jj]),
+                                TVector3(eve.BMNpxin[jj], eve.BMNpyin[jj], eve.BMNpzin[jj]),
+                                TVector3(eve.BMNpxout[jj], eve.BMNpyout[jj], eve.BMNpzout[jj]),
+                                eve.BMNde[jj], eve.BMNal[jj], eve.BMNtim[jj], 0);
                
                if(nread!=19){
                   ReadError = true;
@@ -253,12 +255,13 @@ int main(int argc, char *argv[])
                               &eve.VTXpxout[jj],&eve.VTXpyout[jj],&eve.VTXpzout[jj],
                               &eve.VTXde[jj],&eve.VTXal[jj],&eve.VTXtim[jj]);
                
-               event->AddVTX(eve.VTXid[jj], eve.VTXilay[jj],
-                             TVector3(eve.VTXxin[jj], eve.VTXyin[jj], eve.VTXzin[jj]),
-                             TVector3(eve.VTXxout[jj], eve.VTXyout[jj], eve.VTXzout[jj]),
-                             TVector3(eve.VTXpxin[jj], eve.VTXpyin[jj], eve.VTXpzin[jj]),
-                             TVector3(eve.VTXpxout[jj], eve.VTXpyout[jj], eve.VTXpzout[jj]),
-                             eve.VTXde[jj], eve.VTXal[jj], eve.VTXtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeVertex())
+                  event->AddVTX(eve.VTXid[jj], eve.VTXilay[jj],
+                                TVector3(eve.VTXxin[jj], eve.VTXyin[jj], eve.VTXzin[jj]),
+                                TVector3(eve.VTXxout[jj], eve.VTXyout[jj], eve.VTXzout[jj]),
+                                TVector3(eve.VTXpxin[jj], eve.VTXpyin[jj], eve.VTXpzin[jj]),
+                                TVector3(eve.VTXpxout[jj], eve.VTXpyout[jj], eve.VTXpzout[jj]),
+                                eve.VTXde[jj], eve.VTXal[jj], eve.VTXtim[jj], 0);
 
                if(nread!=17){
                   ReadError = true;
@@ -283,12 +286,13 @@ int main(int argc, char *argv[])
                               &eve.ITRpxout[jj],&eve.ITRpyout[jj],&eve.ITRpzout[jj],
                               &eve.ITRde[jj],&eve.ITRal[jj],&eve.ITRtim[jj]);
                
-               event->AddITR(eve.ITRid[jj], eve.ITRisens[jj],
-                             TVector3(eve.ITRxin[jj], eve.ITRyin[jj], eve.ITRzin[jj]),
-                             TVector3(eve.ITRxout[jj], eve.ITRyout[jj], eve.ITRzout[jj]),
-                             TVector3(eve.ITRpxin[jj], eve.ITRpyin[jj], eve.ITRpzin[jj]),
-                             TVector3(eve.ITRpxout[jj], eve.ITRpyout[jj], eve.ITRpzout[jj]),
-                             eve.ITRde[jj], eve.ITRal[jj], eve.ITRtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeInnerTracker())
+                  event->AddITR(eve.ITRid[jj], eve.ITRisens[jj],
+                                TVector3(eve.ITRxin[jj], eve.ITRyin[jj], eve.ITRzin[jj]),
+                                TVector3(eve.ITRxout[jj], eve.ITRyout[jj], eve.ITRzout[jj]),
+                                TVector3(eve.ITRpxin[jj], eve.ITRpyin[jj], eve.ITRpzin[jj]),
+                                TVector3(eve.ITRpxout[jj], eve.ITRpyout[jj], eve.ITRpzout[jj]),
+                                eve.ITRde[jj], eve.ITRal[jj], eve.ITRtim[jj], 0);
                
                if(nread!=17){
                   ReadError = true;
@@ -314,12 +318,13 @@ int main(int argc, char *argv[])
                               &eve.MSDpxout[jj],&eve.MSDpyout[jj],&eve.MSDpzout[jj],
                               &eve.MSDde[jj],&eve.MSDal[jj],&eve.MSDtim[jj]);
                
-               event->AddMSD(eve.MSDid[jj], eve.MSDilay[jj],
-                             TVector3(eve.MSDxin[jj], eve.MSDyin[jj], eve.MSDzin[jj]),
-                             TVector3(eve.MSDxout[jj], eve.MSDyout[jj], eve.MSDzout[jj]),
-                             TVector3(eve.MSDpxin[jj], eve.MSDpyin[jj], eve.MSDpzin[jj]),
-                             TVector3(eve.MSDpxout[jj], eve.MSDpyout[jj], eve.MSDpzout[jj]),
-                             eve.MSDde[jj], eve.MSDal[jj], eve.MSDtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeMSD())
+                  event->AddMSD(eve.MSDid[jj], eve.MSDilay[jj],
+                                TVector3(eve.MSDxin[jj], eve.MSDyin[jj], eve.MSDzin[jj]),
+                                TVector3(eve.MSDxout[jj], eve.MSDyout[jj], eve.MSDzout[jj]),
+                                TVector3(eve.MSDpxin[jj], eve.MSDpyin[jj], eve.MSDpzin[jj]),
+                                TVector3(eve.MSDpxout[jj], eve.MSDpyout[jj], eve.MSDpzout[jj]),
+                                eve.MSDde[jj], eve.MSDal[jj], eve.MSDtim[jj], 0);
                
                if(nread!=17){
                   ReadError = true;
@@ -343,12 +348,13 @@ int main(int argc, char *argv[])
                              &eve.SCNpyout[jj],&eve.SCNpzout[jj],&eve.SCNde[jj],
                              &eve.SCNal[jj],&eve.SCNtim[jj]);
                
-               event->AddTW(eve.SCNid[jj], eve.SCNibar[jj], eve.SCNiview[jj],
-                            TVector3(eve.SCNxin[jj], eve.SCNyin[jj], eve.SCNzin[jj]),
-                            TVector3(eve.SCNxout[jj], eve.SCNyout[jj], eve.SCNzout[jj]),
-                            TVector3(eve.SCNpxin[jj], eve.SCNpyin[jj], eve.SCNpzin[jj]),
-                            TVector3(eve.SCNpxout[jj], eve.SCNpyout[jj], eve.SCNpzout[jj]),
-                            eve.SCNde[jj], eve.SCNal[jj], eve.SCNtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeTW())
+                  event->AddTW(eve.SCNid[jj], eve.SCNibar[jj], eve.SCNiview[jj],
+                               TVector3(eve.SCNxin[jj], eve.SCNyin[jj], eve.SCNzin[jj]),
+                               TVector3(eve.SCNxout[jj], eve.SCNyout[jj], eve.SCNzout[jj]),
+                               TVector3(eve.SCNpxin[jj], eve.SCNpyin[jj], eve.SCNpzin[jj]),
+                               TVector3(eve.SCNpxout[jj], eve.SCNpyout[jj], eve.SCNpzout[jj]),
+                               eve.SCNde[jj], eve.SCNal[jj], eve.SCNtim[jj], 0);
                
                if(nread!=18){
                   ReadError= true;
@@ -372,12 +378,13 @@ int main(int argc, char *argv[])
                              &eve.CALpxout[jj],&eve.CALpyout[jj],&eve.CALpzout[jj],
                              &eve.CALde[jj],&eve.CALal[jj],&eve.CALtim[jj]);
                
-               event->AddCAL(eve.CALid[jj], eve.CALicry[jj],
-                             TVector3(eve.CALxin[jj], eve.CALyin[jj], eve.CALzin[jj]),
-                             TVector3(eve.CALxout[jj], eve.CALyout[jj], eve.CALzout[jj]),
-                             TVector3(eve.CALpxin[jj], eve.CALpyin[jj], eve.CALpzin[jj]),
-                             TVector3(eve.CALpxout[jj], eve.CALpyout[jj], eve.CALpzout[jj]),
-                             eve.CALde[jj], eve.CALal[jj], eve.CALtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeCA())
+                  event->AddCAL(eve.CALid[jj], eve.CALicry[jj],
+                                TVector3(eve.CALxin[jj], eve.CALyin[jj], eve.CALzin[jj]),
+                                TVector3(eve.CALxout[jj], eve.CALyout[jj], eve.CALzout[jj]),
+                                TVector3(eve.CALpxin[jj], eve.CALpyin[jj], eve.CALpzin[jj]),
+                                TVector3(eve.CALpxout[jj], eve.CALpyout[jj], eve.CALpzout[jj]),
+                                eve.CALde[jj], eve.CALal[jj], eve.CALtim[jj], 0);
                
                if(nread!=17){
                   ReadError= true;
