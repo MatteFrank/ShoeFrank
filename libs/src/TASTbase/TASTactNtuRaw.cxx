@@ -33,9 +33,6 @@ TASTactNtuRaw::TASTactNtuRaw(const char* name,
   AddDataIn(p_datraw, "TASTdatRaw");
   AddDataOut(p_nturaw, "TASTntuRaw");
 
-  m_debug = GetDebugLevel();
-  
-
 }
 
 //------------------------------------------+-----------------------------------
