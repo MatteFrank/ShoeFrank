@@ -34,7 +34,7 @@ class TAGobject : public TObject {
   protected:
    Bool_t  fFound;                    // flag, that pixel/strip/bar is found in hit
    
-   ClassDef(TAGobject,3)
+   ClassDef(TAGobject,4)
 
 };
 
