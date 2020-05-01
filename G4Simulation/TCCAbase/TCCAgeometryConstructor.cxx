@@ -139,7 +139,7 @@ G4LogicalVolume* TCCAgeometryConstructor::Construct()
        }
    }
    
-   printf("PosZ %g\n", fpParGeo->GetSupportPositionZ());
+   //printf("PosZ %g\n", fpParGeo->GetSupportPositionZ());
    DefineSensitive();
 
    return fBoxLog;
