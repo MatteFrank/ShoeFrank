@@ -41,6 +41,13 @@ TAGparTools::~TAGparTools()
 }
 
 //_____________________________________________________________________________
+void TAGparTools::ReadItem(Char_t& item)
+{
+   if (fFileStream.eof()) return;
+   fFileStream.get(item);
+}
+
+//_____________________________________________________________________________
 void TAGparTools::ReadItem(TString& item)
 {
    Int_t pos = -1;
