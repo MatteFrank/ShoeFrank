@@ -14,6 +14,7 @@
 #include "TObject.h"
 #include "TString.h"
 #include "TArrayC.h"
+#include "TArrayI.h"
 #include "TVector3.h"
 #include "TObjArray.h"
 
@@ -45,13 +46,16 @@ public:
    void    ReadItem(Int_t &arg);
    void    ReadItem(Float_t &arg);
    void    ReadItem(TArrayC& array, const Char_t delimiter = ';');
+   void    ReadItem(TArrayI& array, const Char_t delimiter = ';');
+   void    ReadStringsInts(TString& aString, TArrayI& array,  const Char_t delimiter1 = ':', const Char_t delimiter2 = ';');
    void    ReadItem(Double_t* coeff, Int_t size, const Char_t delimiter = ' ');
    void    ReadItem(map< pair<int, int>, int>& map, const Char_t delimiter1 = ',', const Char_t delimiter2 = ';');
    void    ReadVector3(TVector3 &arg);
    void    ReadStrings(TString& aString);
    void    GetRange(const char* str, Int_t& begin, Int_t& end, Int_t& incr, Int_t& n);
    void    FillArray(TString& s, TArrayC& array);
-   
+   void    FillArray(TString& s, TArrayI& array);
+
    TString Normalize(const char* line);
    
    void    SetupMatrices(Int_t size);
