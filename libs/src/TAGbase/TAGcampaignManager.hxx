@@ -101,8 +101,8 @@ private:
    static const TString fgkDefaultCamName;
    static const TString fgkDefaultFolder;
    static const TString fgkDefaultExt;
+   static const TString fgkStandardCamName;
 
-   
 public:
    static TString       GetDefaultActName() { return fgkDefaultActName;        }
    static const Char_t* GetDefCamName()     { return fgkDefaultCamName.Data(); }

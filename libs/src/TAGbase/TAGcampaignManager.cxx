@@ -12,6 +12,7 @@ ClassImp(TAGcampaignManager);
 const TString TAGcampaignManager::fgkDefaultActName = "actCamMan";
 const TString TAGcampaignManager::fgkDefaultFolder  = "./cammaps/";
 const TString TAGcampaignManager::fgkDefaultExt     = ".cam";
+const TString TAGcampaignManager::fgkStandardCamName = "STD";
 const TString TAGcampaignManager::fgkDefaultCamName = "FOOT_cam.map";
 
 
@@ -92,6 +93,9 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
    fCurCampaignNumber =  number;
    if(FootDebugLevel(1))
       cout  << "  Current Campaign number:  "<< fCurCampaignNumber << endl;
+
+   if (fCamParameter[number].Name.IsNull())
+      fCamParameter[number].Name = fgkStandardCamName;
    
    TString curCampaignName =  fgkDefaultFolder + fCamParameter[number].Name + fgkDefaultExt;
 
@@ -273,6 +277,9 @@ const Char_t* TAGcampaign::GetCalFile(const TString& detName, Int_t runNumber)
 //_____________________________________________________________________________
 const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, const TString& nameFile, TArrayI array)
 {
+   if (array.GetSize() == 0)
+      return Form("%s", nameFile.Data());
+
    if (array[0] == -1 || runNumber == -1)
       return Form("%s", nameFile.Data());
    
