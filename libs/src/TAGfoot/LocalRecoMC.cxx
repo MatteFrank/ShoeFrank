@@ -310,3 +310,27 @@ void LocalRecoMC::SetTreeBranches()
    }
 }
 
+// --------------------------------------------------------------------------------------
+void LocalRecoMC::SetRunNumber()
+{
+   if (fRunNumber != -1)  // if set from outside return, else take from name
+      return;
+   
+   // Done by hand shoud be given by DAQ header
+   TString name = GetName();
+   if (name.IsNull()) return;
+   
+   // protection about file name starting with .
+   if (name[0] == '.')
+      name.Remove(0,1);
+   
+   // assuming name XXX_run.root
+   Int_t pos1   = name.Last('_');
+   Int_t len    = name.Length();
+   
+   TString tmp1 = name(pos1+1, len);
+   Int_t pos2   = tmp1.First(".");
+   TString tmp  = tmp1(0, pos2);
+   
+   gTAGroot->SetRunNumber(tmp.Atoi());
+}
