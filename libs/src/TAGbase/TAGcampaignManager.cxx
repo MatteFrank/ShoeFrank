@@ -277,6 +277,9 @@ const Char_t* TAGcampaign::GetCalFile(const TString& detName, Int_t runNumber)
 //_____________________________________________________________________________
 const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, const TString& nameFile, TArrayI array)
 {
+   if (nameFile.IsNull())
+      return Form("");
+   
    if (array.GetSize() == 0)
       return Form("%s", nameFile.Data());
 
