@@ -35,6 +35,7 @@ Bool_t  BaseReco::fgItrTrackFlag = false;
 BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
+   fRunNumber(-1),
    fpParTimeWD(0x0),
    fpParMapWD(0x0),
    fpParMapSt(0x0),
@@ -96,11 +97,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fFlagHisto(false),
    fFlagTrack(false),
    fgTrackingAlgo("Full"),
-   fFlagMC(false),
-   Z_beam(-1),
-   A_beam(-1),
-   ion_name("Pb"),
-   kinE_beam(0.)
+   fFlagMC(false)
 {
 
    // check folder
@@ -243,6 +240,11 @@ void BaseReco::CloseFileOut()
 //__________________________________________________________
 void BaseReco::ReadParFiles()
 {
+   Int_t Z_beam = 0;
+   Int_t A_beam = 0;
+   TString ion_name;
+   Float_t kinE_beam = 0.;
+   
    // initialise par files for target
    if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeTW() || IsItrTracking()) {
       fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
@@ -689,4 +691,11 @@ void BaseReco::SetTrackingAlgo(char c)
       default:
          printf("SetTrackingAlgo: Wrongly set tracking algorithm");
    }
+}
+
+// --------------------------------------------------------------------------------------
+void BaseReco::SetRunNumber()
+{
+   if (fRunNumber != -1)  // if set from outside
+      gTAGroot->SetRunNumber(fRunNumber);
 }
