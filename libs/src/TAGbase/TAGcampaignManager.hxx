@@ -31,7 +31,12 @@ public:
    Bool_t            IsDetectorOn(const TString& detName);
    void              Print(Option_t* opt = "") const;
 
+   const vector<TString>& GetDetVector() const { return fDetectorVec; }
+
 private:
+   // detector vector using std
+   vector<TString>        fDetectorVec;
+   
    // geometry file
    map<TString, TString> fFileGeoMap;
    map<TString, TArrayI> fRunsGeoMap;

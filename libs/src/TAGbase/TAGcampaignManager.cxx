@@ -204,6 +204,9 @@ bool TAGcampaign::FromFile(TString ifile)
       if(FootDebugLevel(1))
          cout << "Detector: " << detName << " with " <<  fileNumber << " files" <<endl;
 
+      // fill det vector
+      fDetectorVec.push_back(detName);
+      
       for (Int_t f = 0; f < fileNumber; ++f) {
          TArrayI array;
          TString fileName;
