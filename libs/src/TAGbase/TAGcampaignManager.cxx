@@ -128,6 +128,9 @@ void TAGcampaignManager::Print(Option_t* opt) const
          cout  << "  Campaign summary: " << fCamParameter[i].Summary.Data() << endl;
          cout  << endl;
       }
+      cout << "  Current campaign number: " << fCurCampaignNumber << endl;
+      cout  << endl;
+
    } else {
       Int_t i = fCurCampaignNumber;
       cout << "Current campaign number: " << fCurCampaignNumber << endl;
