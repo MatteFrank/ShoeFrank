@@ -148,6 +148,9 @@ public:
    //! Set Tracking algorithm
    void SetTrackingAlgo(char c);
   
+   // Set detector to be on respect to the given list
+   void SetIncludes(const vector<TString>& list);
+
    //! Par geo getters
    TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }
    TADIparGeo*          GetParGeoDi()       const { return (TADIparGeo*)fpParGeoDi->Object();        }

@@ -138,6 +138,37 @@ BaseReco::~BaseReco()
    delete fpFootGeo;
 }
 
+//_____________________________________________________________________________
+void BaseReco::SetIncludes(const vector<TString>& list)
+{
+   for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
+      TString str = *it;
+      
+      if (str.Contains(TADIparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeDI(true);
+    
+      if (str.Contains(TASTparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeST(true);
+      
+      if (str.Contains(TABMparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeBM(true);
+      
+      if (str.Contains(TAVTparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeVertex(true);
+      
+      if (str.Contains(TAITparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeInnerTracker(true);
+      
+      if (str.Contains(TAMSDparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeMSD(true);
+      
+      if (str.Contains(TATWparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeTW(true);
+      
+      if (str.Contains(TACAparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeCA(true);
+   }
+}
 
 //__________________________________________________________
 void BaseReco::BeforeEventLoop()
