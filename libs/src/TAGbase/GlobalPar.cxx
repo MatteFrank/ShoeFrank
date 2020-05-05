@@ -52,7 +52,6 @@ GlobalPar::GlobalPar( string aparFileName ) {
     m_kalmanMode = -1;
 
     m_kalReverse = false;
-    m_geoROOT = true;
     m_geoFLUKA = false;
     m_verFLUKA = false;
 
@@ -123,18 +122,6 @@ void GlobalPar::ReadParamFile () {
             else
                 m_kalReverse = false;
         } 
-
-
-
-        else if ( line.find("Create Reconstruction Geo:") != string::npos ) {
-            string rev =StrReplace( line, "Create Reconstruction Geo:", "" );
-            RemoveSpace( &rev );
-            if ( rev == "y" )
-                m_geoROOT = true;
-            else
-                m_geoROOT = false;
-        } 
-
 
         else if ( line.find("Print FLUKA Geo input files:") != string::npos ) {
             string rev =StrReplace( line, "Print FLUKA Geo input files:", "" );
@@ -376,25 +363,6 @@ void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, 
    }
 }
 
-//________________________________________________________________________________________
-bool GlobalPar::CheckAllowedHitOrigin( string origin ) {
-   if ( find( m_originAllowed.begin(), m_originAllowed.end(), origin ) == m_originAllowed.end() )
-      return false;
-   
-   return true;
-}
-
-
-//________________________________________________________________________________________
-void GlobalPar::PrintAllowedHitOrigin() {
-   cout << "m_originAllowed = ";
-   for ( unsigned int i=0; i < m_originAllowed.size(); i++ ) {
-      cout << m_originAllowed.at(i);
-      if ( i == m_originAllowed.size()-1 )        cout << ".";
-      else                                        cout << ", ";
-   }
-   cout << endl;
-}
 
 //________________________________________________________________________________________
 void GlobalPar::Print() {

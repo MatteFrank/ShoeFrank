@@ -37,7 +37,6 @@ public:
 
 	int  KalMode()              const { return m_kalmanMode;          }
 	bool IsKalReverse()         const { return m_kalReverse;          }
-	bool geoROOT()              const { return m_geoROOT;             }
 	bool geoFLUKA()             const { return m_geoFLUKA;            }
 	bool verFLUKA()             const { return m_verFLUKA;            }
    
@@ -85,10 +84,7 @@ public:
     bool frankFind( string what, string where );
     string StrReplace(string original, string erase, string add);
 
-    bool CheckAllowedHitOrigin( string origin );
-    void PrintAllowedHitOrigin();
-
-	bool Find_MCParticle( string villain ) 
+	bool Find_MCParticle( string villain )
 		{ return ( find( m_mcParticles.begin(), m_mcParticles.end(), villain ) == m_mcParticles.end() ? false : true ); };
 	
 	double GetLowBinHisto( string villain ) 	{ 
@@ -144,8 +140,6 @@ private:
 private:
 	vector<string> m_copyInputFile;
 
-	vector<string> m_originAllowed;
-
 	map< string, pair< double, double > > m_map_range;
 	map< string, int > m_nBin_map;
 	map< string, string > m_map_saveDir;
@@ -161,7 +155,6 @@ private:
 	
 	int m_kalmanMode;
 	bool m_kalReverse;
-	bool m_geoROOT;
 	bool m_geoFLUKA;
 	bool m_verFLUKA;
 	vector<string> m_trackingSystems;
