@@ -190,6 +190,7 @@ public:
    static           Float_t GetElectronMass()        { return fgkElectronMass*fgkMevToGev; }
 
    
+   static     const Char_t* GetBaseName()            { return fgkGeomName;      }
    static     const Char_t* GetDefaultGeomName()     { return fgkGeomName;      }
    static     const Char_t* GetDefaultGeomTitle()    { return fgkGeomTitle;     }
    
