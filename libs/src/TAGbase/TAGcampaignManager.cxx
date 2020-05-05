@@ -51,12 +51,14 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
    Int_t     number;
    while(!fFileStream->Eof()) {
       TString   name;
+      Int_t     sync;
       Int_t     flag;
       TString   date;
       TString   summary;
 
       fFileStream->ReadItem(number);
       fFileStream->ReadStrings(name);
+      fFileStream->ReadItem(sync);
       fFileStream->ReadItem(flag);
       fFileStream->ReadStrings(date);
       fFileStream->ReadStrings(summary);
@@ -71,6 +73,10 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
       fCamParameter[number].Name = name;
       if(FootDebugLevel(1))
          cout  << "  Campaign name:  "<< fCamParameter[number].Name.Data() << endl;
+      
+      fCamParameter[number].ForceSync = sync;
+      if(FootDebugLevel(1))
+         cout  << "  Force synchonization flag:  "<< fCamParameter[number].ForceSync << endl;
       
       fCamParameter[number].McFlag = flag;
       if(FootDebugLevel(1))
@@ -114,21 +120,23 @@ void TAGcampaignManager::Print(Option_t* opt) const
       cout << "Number of campaigns: " << fCampaignsN << endl;
       
       for (Int_t i = 0; i < fCampaignsN; ++i) {
-         cout  << "  Campaign number:  "<< fCamParameter[i].Number << endl;
-         cout  << "  Campaign name:  "<< fCamParameter[i].Name.Data() << endl;
-         cout  << "  MC data flag:  "<< fCamParameter[i].McFlag << endl;
-         cout  << "  Campaign period:  "<< fCamParameter[i].Date.Data() << endl;
-         cout  << "  Campaign summary:  "<< fCamParameter[i].Summary.Data() << endl;
+         cout  << "  Campaign number:  " << fCamParameter[i].Number << endl;
+         cout  << "  Campaign name:    " << fCamParameter[i].Name.Data() << endl;
+         cout  << "  Force sync flag:  " << fCamParameter[i].ForceSync << endl;
+         cout  << "  MC data flag:     " << fCamParameter[i].McFlag << endl;
+         cout  << "  Campaign period:  " << fCamParameter[i].Date.Data() << endl;
+         cout  << "  Campaign summary: " << fCamParameter[i].Summary.Data() << endl;
          cout  << endl;
       }
    } else {
       Int_t i = fCurCampaignNumber;
       cout << "Current campaign number: " << fCurCampaignNumber << endl;
-      cout  << "  Campaign number:  "<< fCamParameter[i].Number << endl;
-      cout  << "  Campaign name:  "<< fCamParameter[i].Name.Data() << endl;
-      cout  << "  MC data flag:  "<< fCamParameter[i].McFlag << endl;
-      cout  << "  Campaign period:  "<< fCamParameter[i].Date.Data() << endl;
-      cout  << "  Campaign summary:  "<< fCamParameter[i].Summary.Data() << endl;
+      cout  << "  Campaign number:      " << fCamParameter[i].Number << endl;
+      cout  << "  Campaign name:        " << fCamParameter[i].Name.Data() << endl;
+      cout  << "  Force sync flag:      " << fCamParameter[i].ForceSync << endl;
+      cout  << "  MC data flag:         " << fCamParameter[i].McFlag << endl;
+      cout  << "  Campaign period:      " << fCamParameter[i].Date.Data() << endl;
+      cout  << "  Campaign summary:     " << fCamParameter[i].Summary.Data() << endl;
       cout  << endl;
    }
    
