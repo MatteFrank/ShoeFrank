@@ -102,7 +102,6 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
    
    for (Int_t i = 0; i < fCampaignsN; ++i) {
       TString name = fCamParameter[i].Name;
-      cout << name << " " << fCurCampaignName << endl;
       if (name.CompareTo(fCurCampaignName) == 0)
          fCurCampaignNumber = i;
    }
