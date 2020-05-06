@@ -107,7 +107,7 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
    }
 
    if (fCurCampaignNumber == -1)
-      Error("FromFile()", "No campaign with name %s found in database !", fCamParameter[number].Name.Data());
+      Error("FromFile()", "No campaign with name %s found in database !", fCurCampaignName.Data());
       
    if(FootDebugLevel(1))
       cout  << "  Current Campaign number:  "<< fCurCampaignNumber << endl;
