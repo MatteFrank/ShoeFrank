@@ -1,3 +1,5 @@
+#include "cxxabi.h"
+
 #include "Varargs.h"
 #include "TNamed.h"
 #include "TArrayC.h"
@@ -295,6 +297,18 @@ void GlobalPar::ClearClassDebugLevel(const char* className)
 }
 
 //_____________________________________________________________________________
+Bool_t GlobalPar::GetMcDebugLevel(Int_t level, const char* className)
+{
+   // get the logging level for the given MC class
+   // need to remove compiler index
+   
+   Int_t status;
+   const char* name = abi::__cxa_demangle(className,0,0,&status);
+
+   return GetDebugLevel(level, name);
+}
+
+//_____________________________________________________________________________
 Bool_t GlobalPar::GetDebugLevel(Int_t level, const char* className)
 {
    // get the logging level for the given module and class
@@ -424,25 +438,3 @@ bool GlobalPar::frankFind( string what, string where )	{
    
    return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

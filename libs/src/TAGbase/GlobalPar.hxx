@@ -190,6 +190,7 @@ public:
    static void   Debug(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", const char* file = "", Int_t line = -1);
    static Int_t  GetDebugLevel(const char* className);
    static Bool_t GetDebugLevel(Int_t level, const char* className);
+   static Bool_t GetMcDebugLevel(Int_t level, const char* className);
 
    static void   SetClassDebugLevel(const char* className, Int_t level);
    static void   ClearClassDebugLevel(const char* className);
@@ -199,10 +200,7 @@ public:
 
 #define FootDebug(level, func, message ) GlobalPar::Debug(level, ClassName(), func, message, __FILE__, __LINE__)
 #define FootDebugLevel(level) GlobalPar::GetDebugLevel(level, ClassName())
-
-// extern GlobalPar* gPar; 
-// R__EXTERN GlobalPar  *gPar; 
-
+#define FootMcDebugLevel(level) GlobalPar::GetMcDebugLevel(level, typeid(*this).name())
 
 #endif
 
