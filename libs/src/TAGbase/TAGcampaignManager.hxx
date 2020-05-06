@@ -79,12 +79,13 @@ private:
    TAGparTools*   fFileStream;
    Int_t          fCampaignsN;
    TAGcampaign*   fCurCampaign;
+   TString        fCurCampaignName;
    Int_t          fCurCampaignNumber;
-   
+
    CamParameter_t fCamParameter[128];
    
 public:
-   TAGcampaignManager();
+   TAGcampaignManager(const TString exp = "");
    virtual ~TAGcampaignManager();
    
    Bool_t FromFile(TString ifile = "");

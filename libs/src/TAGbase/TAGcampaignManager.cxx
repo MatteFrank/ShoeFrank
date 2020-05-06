@@ -17,13 +17,16 @@ const TString TAGcampaignManager::fgkDefaultCamName = "FOOT_cam.map";
 
 
 //_____________________________________________________________________________
-TAGcampaignManager::TAGcampaignManager()
+TAGcampaignManager::TAGcampaignManager(const TString exp)
  : TAGaction(fgkDefaultActName.Data(), "TAGcampaignManager - Campaign Manager"),
    fFileStream(new TAGparTools()),
    fCampaignsN(0),
    fCurCampaign(new TAGcampaign()),
+   fCurCampaignName(exp),
    fCurCampaignNumber(-1)
 {
+   if (fCurCampaignName.IsNull())
+      fCurCampaignName = fgkStandardCamName;
 }
 
 //_____________________________________________________________________________
@@ -96,14 +99,22 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
    }
    fFileStream->Close();
 
-   fCurCampaignNumber =  number;
+   
+   for (Int_t i = 0; i < fCampaignsN; ++i) {
+      TString name = fCamParameter[i].Name;
+      cout << name << " " << fCurCampaignName << endl;
+      if (name.CompareTo(fCurCampaignName) == 0)
+         fCurCampaignNumber = i;
+   }
+
+   if (fCurCampaignNumber == -1)
+      Error("FromFile()", "No campaign with name %s found in database !", fCamParameter[number].Name.Data());
+      
    if(FootDebugLevel(1))
       cout  << "  Current Campaign number:  "<< fCurCampaignNumber << endl;
 
-   if (fCamParameter[number].Name.IsNull())
-      fCamParameter[number].Name = fgkStandardCamName;
    
-   TString curCampaignName =  fgkDefaultFolder + fCamParameter[number].Name + fgkDefaultExt;
+   TString curCampaignName =  fgkDefaultFolder + fCurCampaignName + fgkDefaultExt;
 
    if (!fCurCampaign->FromFile(curCampaignName))
       return false;
