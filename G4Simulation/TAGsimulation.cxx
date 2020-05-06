@@ -137,6 +137,7 @@ int main(int argc,char** argv)
 
     // Global Par
     GlobalPar::Instance();
+    GlobalPar::GetPar()->SetDebugLevels();
 
     // initialise geo trafo file
     TString geoFileName = Form("./geomaps/%sFOOT_geo.map", exp.Data());
