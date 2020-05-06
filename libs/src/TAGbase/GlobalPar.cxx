@@ -52,7 +52,6 @@ GlobalPar::GlobalPar( string aparFileName ) {
     m_kalmanMode = -1;
 
     m_kalReverse = false;
-    m_geoFLUKA = false;
     m_verFLUKA = false;
 
     ReadParamFile();
@@ -122,16 +121,6 @@ void GlobalPar::ReadParamFile () {
             else
                 m_kalReverse = false;
         } 
-
-        else if ( line.find("Print FLUKA Geo input files:") != string::npos ) {
-            string rev =StrReplace( line, "Print FLUKA Geo input files:", "" );
-            RemoveSpace( &rev );
-            if ( rev == "y" )
-                m_geoFLUKA = true;
-            else
-                m_geoFLUKA = false;
-        } 
-
 
         else if ( line.find("FLUKA version:") != string::npos ) {
             string rev =StrReplace( line, "FLUKA version:", "" );

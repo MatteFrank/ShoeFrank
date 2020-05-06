@@ -37,7 +37,6 @@ public:
 
 	int  KalMode()              const { return m_kalmanMode;          }
 	bool IsKalReverse()         const { return m_kalReverse;          }
-	bool geoFLUKA()             const { return m_geoFLUKA;            }
 	bool verFLUKA()             const { return m_verFLUKA;            }
    
 	vector<string> KalSystems()       { return m_trackingSystems;     }
@@ -155,7 +154,6 @@ private:
 	
 	int m_kalmanMode;
 	bool m_kalReverse;
-	bool m_geoFLUKA;
 	bool m_verFLUKA;
 	vector<string> m_trackingSystems;
 	vector<string> m_kalParticles;
