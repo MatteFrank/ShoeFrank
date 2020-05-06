@@ -78,6 +78,7 @@ public:
     void IncludeVertex(bool t)       {  m_includeVertex = t;         }
     void IncludeInnerTracker(bool t) {  m_includeInnerTracker = t;   }
    
+    void SetDebugLevels();
     void RemoveSpace( string* s );
     bool IEquals(const string& a, const string& b);
     bool frankFind( string what, string where );
@@ -144,7 +145,7 @@ private:
 	map< string, string > m_map_saveDir;
 	map< string, string > m_map_xTitles;
 	map< string, string > m_map_yTitles;
-
+   map< string, int >    m_map_debug;
 	string m_parFileName;
 
 	int m_debug;

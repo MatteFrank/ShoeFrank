@@ -87,8 +87,16 @@ void GlobalPar::ReadParamFile () {
             string tmpString = "";
             while ( formulasStream >> tmpString )
                 m_mcParticles.push_back(tmpString);
-        } 
-
+        } else if ( line.find("ClassDebugLevel:") != string::npos ) {
+           string formulasString = StrReplace( line, "ClassDebugLevel:", "" );
+           istringstream formulasStream( formulasString );
+           string className = "";
+          int    classLevel = -1;
+           formulasStream >> className;
+           formulasStream >> classLevel;
+           m_map_debug[className] = classLevel;
+       }
+       
         if ( line.find("Kalman Mode:") != string::npos ) {
             vector<string> tmp_Modes = { "OFF", "ON", "ref", "daf", "dafsimple" };
             istringstream sss(  StrReplace( line, "Kalman Mode:", "" ) );
@@ -269,6 +277,15 @@ void GlobalPar::ReadParamFile () {
 
 }
 
+//_____________________________________________________________________________
+void GlobalPar::SetDebugLevels()
+{
+   for ( map< string, int >::iterator it = m_map_debug.begin(); it != m_map_debug.end(); ++it) {
+      string name = it->first;
+      int level   = m_map_debug[it->first];
+      SetClassDebugLevel(name.c_str(), level);
+   }
+}
 
 //_____________________________________________________________________________
 void GlobalPar::SetClassDebugLevel(const char* className, Int_t level)
