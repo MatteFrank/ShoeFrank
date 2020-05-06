@@ -47,7 +47,6 @@ class TCFOfield : public TCEMfield
    
 private:
    TADIgeoField* fMagField;
-   G4int         fDebugLevel;
    
 public:
 

@@ -42,7 +42,6 @@ class TCFOtrackingAction : public G4UserTrackingAction
 {
    private :
     TCFObaseEventAction* fEventAction;
-    Int_t                fDebugLevel;
 
    private:
     static map<TString, Int_t> fgkVolumeToRegion;

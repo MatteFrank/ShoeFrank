@@ -65,7 +65,6 @@ Bool_t TAGeventInterruptHandler::Notify()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeometryConstructor* footGeomConstructor)
 : G4UserEventAction(),
-  fDebugLevel(0),
   fEventNumber(-1),
   fStCollId(-1),
   fBmCollId(-1),
@@ -83,8 +82,8 @@ TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeomet
 
     fMcTrack = new TAMCntuEve();
 
-    if (fDebugLevel >0 )
-    G4cout<<"Construct event action "<<G4endl;
+   if (FootMcDebugLevel(1))
+      G4cout<<"Construct event action "<<G4endl;
 
    fFootGeomConstructor = (TCFOgeometryConstructor*)footGeomConstructor;
    fRunAction           = (TCFOrunAction*)runAction;
@@ -94,14 +93,14 @@ TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeomet
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 TCFObaseEventAction::~TCFObaseEventAction()
 {
-    if(fDebugLevel > 0)
-    G4cout<<"Distructor Event Action "<<G4endl;
+    if (FootMcDebugLevel(1))
+      G4cout<<"Distructor Event Action "<<G4endl;
 
     delete fEventInterruptHandler;
     delete fMcTrack;
 
-    if(fDebugLevel > 0)
-    G4cout<<"Out Destructor Event Action "<<G4endl;
+    if (FootMcDebugLevel(1))
+       G4cout<<"Out Destructor Event Action "<<G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -111,8 +110,8 @@ void TCFObaseEventAction::BeginOfEventAction(const G4Event* evt)
       SetFillTree(false);
 
     fEventNumber = evt->GetEventID()+1;
-    if(fDebugLevel > 0)
-    G4cout<<"********************************************************************Begin event actions "<<evt->GetEventID()<<G4endl;
+   if (FootMcDebugLevel(1))
+      G4cout<<"********************************************************************Begin event actions "<<evt->GetEventID()<<G4endl;
 
     static Int_t frequency = 1;
     static Int_t max       = 0;

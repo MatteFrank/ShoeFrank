@@ -5,6 +5,8 @@
 // Help          : http://www.lcsim.org/software/geant4/doxygen/html/classes.html
 //
 
+#include "GlobalPar.hxx"
+
 #include "TAMCparTools.hxx"
 
 #include "TCFOtrackingAction.hxx"
@@ -24,8 +26,7 @@ map<TString, Int_t> TCFOtrackingAction::fgkVolumeToRegion = {{"World",0}, {"Star
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 TCFOtrackingAction::TCFOtrackingAction(TCFObaseEventAction* aEventAction)
- : G4UserTrackingAction(),
-   fDebugLevel(0)
+ : G4UserTrackingAction()
 {
     fEventAction = aEventAction ;
 }
@@ -93,7 +94,7 @@ void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack){
       if (process) {
          G4String name = process->GetProcessName();
          if ((name.contains("ionInelastic")) && charge > 0 && regId == 30) {
-            if (fDebugLevel > 0)
+            if (FootMcDebugLevel(1))
                printf("track %d process %s charge %d\n", trackID, name.data(), charge);
             inelastic = true;
          }

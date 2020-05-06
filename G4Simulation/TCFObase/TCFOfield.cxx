@@ -32,6 +32,8 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#include "GlobalPar.hxx"
+
 #include "TCFOfield.hxx"
 #include "globals.hh"
 
@@ -43,8 +45,7 @@
 
 TCFOfield::TCFOfield(TADIgeoField* magField)
 : TCEMfield(),
-  fMagField(magField),
-  fDebugLevel(0)
+  fMagField(magField)
 {
 }
 
@@ -74,7 +75,7 @@ void TCFOfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
    fieldB[1] = field[1];
    fieldB[2] = field[2];
    
-   if (fDebugLevel)
+   if (FootMcDebugLevel(1))
       printf("[%.3e,%.3e,%.3e] \t %.3e %.3e %.3e\n", pos[0],pos[1],pos[2], field[0],field[1],field[2]);
    
   return;

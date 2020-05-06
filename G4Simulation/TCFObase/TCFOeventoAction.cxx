@@ -116,7 +116,7 @@ void TCFOeventoAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
     Int_t entries =  hitList->entries();
     fDetName = hitList->GetName();
 
-    if (fDebugLevel)
+    if (FootMcDebugLevel(1))
         printf("IdColl %d entries %d\n", idColl, entries);
 
     Double_t edep = 0.;
@@ -129,7 +129,7 @@ void TCFOeventoAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
     Int_t sensorId1 = -100 ;
     Int_t sensorId2 = -200 ;
 
-    if(fDebugLevel) printf("%s \n",fDetName.Data());
+    if(FootMcDebugLevel(1)) printf("%s \n",fDetName.Data());
 
     for (Int_t i = 1; i < entries; ++i) {
         TCGmcHit* mcHit1 = (*hitList)[i-1];
@@ -154,7 +154,7 @@ void TCFOeventoAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
             mcHit1->SetMomIn(pin);
             FillHits(hit, mcHit1);
 
-            if(fDebugLevel) printf("[%d,%d] \t %.3e MeV \t posInit(%.3e,%.3e,%.3e) \t posOut(%.3e,%.3e,%.3e)\n",trackId1,sensorId1,edep,vin.getX(),vin.getY(),vin.getZ(),vou.getX(),vou.getY(),vou.getZ());
+            if(FootMcDebugLevel(1)) printf("[%d,%d] \t %.3e MeV \t posInit(%.3e,%.3e,%.3e) \t posOut(%.3e,%.3e,%.3e)\n",trackId1,sensorId1,edep,vin.getX(),vin.getY(),vin.getZ(),vou.getX(),vou.getY(),vou.getZ());
             edep = mcHit2->GetEdep();
             vin = mcHit2->GetPosIn();
             pin = mcHit2->GetMomIn();
@@ -168,7 +168,7 @@ void TCFOeventoAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
             mcHit2->SetPosIn(vin);
             mcHit2->SetMomIn(pin);
             FillHits(hit, mcHit2);
-            if(fDebugLevel) printf("[%d,%d] \t %.3e MeV \t posInit(%.3e,%.3e,%.3e) \t posOut(%.3e,%.3e,%.3e)\n",trackId2,sensorId2,edep,vin.getX(),vin.getY(),vin.getZ(),vou.getX(),vou.getY(),vou.getZ());
+            if(FootMcDebugLevel(1)) printf("[%d,%d] \t %.3e MeV \t posInit(%.3e,%.3e,%.3e) \t posOut(%.3e,%.3e,%.3e)\n",trackId2,sensorId2,edep,vin.getX(),vin.getY(),vin.getZ(),vou.getX(),vou.getY(),vou.getZ());
         }
     }
     /// For the last hit
@@ -181,7 +181,7 @@ void TCFOeventoAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
     //    mcHit2->SetPosIn(vin);
     //    mcHit2->SetMomIn(pin);
     //    FillHits(hit, mcHit2);
-    //    if(fDebugLevel) printf("[%d,%d] \t %.3e MeV \t posInit(%.3e,%.3e,%.3e) \t posOut(%.3e,%.3e,%.3e)\n",trackId2,sensorId2,edep,vin.getX(),vin.getY(),vin.getZ(),vou.getX(),vou.getY(),vou.getZ());
+    //    if(FootMcDebugLevel(1)) printf("[%d,%d] \t %.3e MeV \t posInit(%.3e,%.3e,%.3e) \t posOut(%.3e,%.3e,%.3e)\n",trackId2,sensorId2,edep,vin.getX(),vin.getY(),vin.getZ(),vou.getX(),vou.getY(),vou.getZ());
 }
 
 ////....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

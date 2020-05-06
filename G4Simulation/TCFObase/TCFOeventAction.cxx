@@ -46,6 +46,7 @@
 #include "TCFOrunAction.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "GlobalPar.hxx"
 
 #include "TClonesArray.h"
 #include "TRandom.h"
@@ -118,8 +119,8 @@ void TCFOeventAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
    Int_t entries =  hitList->entries();
     fDetName = hitList->GetName();
     
-   if (fDebugLevel)
-      printf("IdColl %d entries %d\n", idColl, entries);
+    if (FootMcDebugLevel(1))
+       printf("IdColl %d entries %d\n", idColl, entries);
 
     Double_t edep = 0.;
     G4ThreeVector vou(0.,0.,0.);
@@ -131,7 +132,7 @@ void TCFOeventAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
     Int_t sensorId1 = -100 ;
     Int_t sensorId2 = -200 ;
 
-    if(fDebugLevel) printf("%s \n",fDetName.Data());
+    if(FootMcDebugLevel(1)) printf("%s \n",fDetName.Data());
 
     /// If only 1 hit in the detector (e.g. in SC)
     if(entries==1){
@@ -162,7 +163,7 @@ void TCFOeventAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
             mcHit1->SetMomIn(pin);
             FillHits(hit, mcHit1);
 
-            if(fDebugLevel) printf("[%d,%d] \t %.3e MeV \t posInit(%.3e,%.3e,%.3e) \t posOut(%.3e,%.3e,%.3e)\n",trackId1,sensorId1,edep,vin.getX(),vin.getY(),vin.getZ(),vou.getX(),vou.getY(),vou.getZ());
+            if(FootMcDebugLevel(1)) printf("[%d,%d] \t %.3e MeV \t posInit(%.3e,%.3e,%.3e) \t posOut(%.3e,%.3e,%.3e)\n",trackId1,sensorId1,edep,vin.getX(),vin.getY(),vin.getZ(),vou.getX(),vou.getY(),vou.getZ());
             edep = mcHit2->GetEdep();
             vin = mcHit2->GetPosIn();
             pin = mcHit2->GetMomIn();
@@ -177,7 +178,7 @@ void TCFOeventAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
             mcHit2->SetPosIn(vin);
             mcHit2->SetMomIn(pin);
             FillHits(hit, mcHit2);
-            if(fDebugLevel) printf("[%d,%d] \t %.3e MeV \t posInit(%.3e,%.3e,%.3e) \t posOut(%.3e,%.3e,%.3e)\n",trackId2,sensorId2,edep,vin.getX(),vin.getY(),vin.getZ(),vou.getX(),vou.getY(),vou.getZ());
+            if(FootMcDebugLevel(1)) printf("[%d,%d] \t %.3e MeV \t posInit(%.3e,%.3e,%.3e) \t posOut(%.3e,%.3e,%.3e)\n",trackId2,sensorId2,edep,vin.getX(),vin.getY(),vin.getZ(),vou.getX(),vou.getY(),vou.getZ());
         }
     }
 
