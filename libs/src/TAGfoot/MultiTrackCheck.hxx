@@ -1,3 +1,4 @@
+
 #ifndef MultiTrackCheck_hxx
 #define MultiTrackCheck_hxx
 
@@ -8,11 +9,11 @@
 #include <fstream>
 #include <math.h>
 
-#include "Booter.hxx"
 #include "TGraphErrors.h"
 #include "TF1.h"
 
 //MC block
+#include "ControlPlotsRepository.hxx"
 #include "TAMCntuEve.hxx"
 #include "TAMCactNtuEve.hxx"
 
@@ -33,6 +34,9 @@
 #include "TAVTactNtuTrackH.hxx"
 #include "TAVTactNtuTrackF.hxx"
 
+#include "TAMSDntuRaw.hxx"
+#include "TAITntuRaw.hxx"
+#include "TAITparGeo.hxx"
 #include "TAITntuCluster.hxx"
 
 class MultiTrackCheck{
