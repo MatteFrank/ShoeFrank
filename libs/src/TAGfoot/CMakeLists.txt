@@ -23,7 +23,6 @@ set( with_dictionnaries
    GlobalTrackRepostory
    GlobalTrackKalman
    Materials
-   Booter
    UpdatePDG
    MultiTrackCheck
    TAFOeventDisplay
