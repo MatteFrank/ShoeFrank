@@ -68,7 +68,8 @@ TABMparGeo::TABMparGeo()
    fGasDensity(0.),
    fBmDeltaZ(0),
    fBmDeltaY(0),
-   fBmDeltaX(0)
+   fBmDeltaX(0),
+   fDrawWire(false)
 {
    fkDefaultGeoName = "./geomaps/TABMdetector.map";
 }
@@ -567,7 +568,7 @@ TGeoVolume* TABMparGeo::BuildBeamMonitor(const char *bmName )
         }
     }
     
-   if ( GlobalPar::GetPar()->geoFLUKA() ) {
+   if ( fDrawWire ) {
 
       matName = fFieldMat.Data();
       TGeoMedium *c_wire_med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);

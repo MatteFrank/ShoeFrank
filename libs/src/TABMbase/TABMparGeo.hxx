@@ -63,6 +63,9 @@ public:
    TVector3       GetTarget()     const { return fTarget;       }
    void           SetTarget(TVector3 v) { fTarget = v;          }
    
+   Bool_t         IsDrawWire()          { return fDrawWire;      }
+   void           SetDrawWire(Bool_t f) { fDrawWire = f;         }
+   
    //Id sense as function of cell
    Int_t          GetSenseId(int cell) { return fBmIdSense[cell]; }
    
@@ -194,6 +197,8 @@ private:
 
    TString         fkDefaultGeoName;  // default par geo file name
 
+   Bool_t          fDrawWire;
+   
 private:
    static const TString fgkDefParaName;
    static const TString fgkBaseName;    // device base name
