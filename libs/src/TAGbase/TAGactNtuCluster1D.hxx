@@ -35,7 +35,6 @@ protected:
    
 protected:
    void   FillMaps(Int_t IndX, Int_t idx);
-   void   FillMaps();
    Bool_t ShapeCluster(Int_t noClus, Int_t IndX);
    Bool_t CheckLine(Int_t idx);
    void   ClearMaps();
