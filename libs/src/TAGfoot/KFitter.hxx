@@ -211,6 +211,7 @@ public:
   double EvalError( TVector3 mom, TMatrixD cov );
   void MatrixToZero( TMatrixD *matrix );
 
+  int GetChargeFromTW(Track* trackToCheck);
   TVector3 ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane );
   void CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum);
   TVector3 ExtrapolateToTofWall( Track* trackToFit );
@@ -232,11 +233,12 @@ private:
   EventDisplay* display;
   bool m_IsEDOn;
 
-  // Track*  m_fitTrack;
   ControlPlotsRepository* m_controlPlotter;
   GlobalTrackRepostory* m_fitTrackCollection;
 
   // TRandom3* m_diceRoll;
+
+  bool m_workWithMC;
 
 
   //  delete non va fatto il delete perche APPARENTEMENTE gia fatto

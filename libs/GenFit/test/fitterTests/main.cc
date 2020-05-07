@@ -267,7 +267,6 @@ int main() {
   genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
 
   const double charge = TDatabasePDG::Instance()->GetParticle(pdg)->Charge()/(3.);
-
   // init event display
 #ifndef VALGRIND
   genfit::EventDisplay* display = genfit::EventDisplay::getInstance();

@@ -103,10 +103,10 @@ using namespace genfit;
 typedef vector<genfit::AbsMeasurement*> MeasurementVector;
 
 class GlobalTrackingStudies {
-  
+
 public:
-  
-  
+
+
 	GlobalTrackingStudies();
 	~GlobalTrackingStudies() {};
 
@@ -128,11 +128,6 @@ private:
 	map< int, TH1F* > m_histo_DeltaX_VtIt_straight;
 	map< int, TH1F* > m_histo_DeltaY_VtIt_straight;
 	map< int, TH2F* > m_histo_DeltaXDeltaY_VtIt_straight;
-
-	// TH1F* 
-	// TH1F* 
-	// TH2F* 
-
 	string m_kalmanOutputDir;
 
 	int m_moreThanOnePartPerCluster;
@@ -141,40 +136,3 @@ private:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
