@@ -117,6 +117,9 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    TString parFileName = Form("./geomaps/%sFOOT_geo.map", fExpName.Data());
    fpFootGeo->FromFile(parFileName);
    
+   // actvate debug level
+   GlobalPar::GetPar()->SetDebugLevels();
+
    // activate per default Dipole, TGT, VTX, IT and TW if TOE on
    if (GlobalPar::GetPar()->IncludeTOE()) {
       GlobalPar::GetPar()->IncludeDI(true);
