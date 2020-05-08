@@ -107,13 +107,10 @@ Bool_t TAMSDactNtuCluster::FindClusters(Int_t iSensor)
   // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
   // Look in a iterative way to next neighbour
   
-  TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpNtuClus->Object();
-  TAMSDparGeo* pGeoMap  = (TAMSDparGeo*)     fpGeoMap->Object();
-  
   FillMaps();
   SearchCluster();
   
-  return CreateClusters(iSensor, pNtuClus, pGeoMap);
+  return CreateClusters(iSensor);
 }
 
 //______________________________________________________________________________
@@ -172,8 +169,11 @@ void TAMSDactNtuCluster::FillMaps()
 
 //______________________________________________________________________________
 //
-Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuClus, TAMSDparGeo* pGeoMap)
+Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
 {
+   TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpNtuClus->Object();
+   TAMSDparGeo* pGeoMap  = (TAMSDparGeo*)     fpGeoMap->Object();
+
   TAMSDcluster* cluster = 0x0;
   
   // create clusters
