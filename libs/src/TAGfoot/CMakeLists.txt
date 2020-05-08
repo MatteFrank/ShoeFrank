@@ -22,7 +22,6 @@ set( with_dictionnaries
    KFitter
    GlobalTrackRepostory
    GlobalTrackKalman
-#   Booter
    UpdatePDG
    MultiTrackCheck
    TAFOeventDisplay
