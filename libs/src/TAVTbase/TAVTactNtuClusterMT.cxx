@@ -54,9 +54,9 @@ Bool_t TAVTactNtuClusterMT::Action()
    Int_t thr = 0;
    
    for (Int_t i = 0; i < pConfig->GetSensorsN(); ++i) {
-      fListOfPixels = pNtuHit->GetListOfPixels(i);
-      if (fListOfPixels->GetEntries() == 0) continue;
-      ok += FindClusters(i, fListOfPixels, thr);
+      TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(i);
+      if (listOfPixels->GetEntries() == 0) continue;
+      ok += FindClusters(i, listOfPixels, thr);
    }
    
    if(ok)

@@ -31,7 +31,7 @@ TAVTactBaseNtuClusterMT::TAVTactBaseNtuClusterMT(const char* name,
    fpGeoMap(pGeoMap),
    fCurrentPosition(0., 0., 0.),
    fCurrentPosError(0., 0., 0.),
-   fListOfPixels(0x0),
+   fCurListOfPixels(0x0),
    fClustersN(0)
 
 {
@@ -108,7 +108,7 @@ void TAVTactBaseNtuClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
    // fill maps for cluster
    for (Int_t i = 0; i < listOfPixels->GetEntries(); i++) { // loop over hit pixels
       
-      TAVTbaseNtuHit* pixel = (TAVTbaseNtuHit*)fListOfPixels->At(i);
+      TAVTbaseNtuHit* pixel = (TAVTbaseNtuHit*)listOfPixels->At(i);
       if (!pixel->IsValidFrames()) continue;
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
@@ -135,20 +135,20 @@ void TAVTactBaseNtuClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t th
       if (!CheckCol(col)) continue;
       
       // loop over lines & columns
-      if ( ShapeCluster(fClustersN, line, col, thr) )
+      if ( ShapeCluster(fClustersN, line, col, listOfPixels, thr) )
          fClustersN++;
    }
 }
 
 //______________________________________________________________________________
 // Get object in list
-TAGobject*  TAVTactBaseNtuClusterMT::GetHitObject(Int_t idx) const
+TAGobject*  TAVTactBaseNtuClusterMT::GetHitObject(Int_t idx, TClonesArray* listOfPixels) const
 {
-   if (idx >= 0 && idx < GetListOfPixels()->GetEntries() )
-      return (TAGobject*)GetListOfPixels()->At(idx);
+   if (idx >= 0 && idx < listOfPixels->GetEntries() )
+      return (TAGobject*)listOfPixels->At(idx);
    
    else {
-      Error("GetHitObject()", "Error in index %d (max: %d)", idx, GetListOfPixels()->GetEntries()-1);
+      Error("GetHitObject()", "Error in index %d (max: %d)", idx, listOfPixels->GetEntries()-1);
       return 0x0;
    }   
 }
