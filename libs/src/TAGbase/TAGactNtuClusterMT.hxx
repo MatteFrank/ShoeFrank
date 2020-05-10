@@ -29,7 +29,7 @@ public:
    virtual TAGobject*  GetHitObject(Int_t /*idx*/, TClonesArray* /*list*/) const { return 0x0;                      }
 
 public:
-   static void  SetMaxThread(Int_t thr) { fgMaxThread = 4;    }
+   static void  SetMaxThread(Int_t thr) { fgMaxThread = thr;  }
    static Int_t GetMaxThread()          { return fgMaxThread; }
 
    
