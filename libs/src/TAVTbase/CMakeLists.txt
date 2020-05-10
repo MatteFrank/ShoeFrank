@@ -48,6 +48,8 @@ set( with_dictionnaries
    TAVTbaseCluster
    TAVTactBaseNtuCluster
    TAVTactNtuClusterF
+   TAVTactBaseNtuClusterMT
+   TAVTactNtuClusterMT
    TAVTbaseTrack
    TAVTtrack
    TAVTntuTrack
