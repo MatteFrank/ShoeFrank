@@ -1,6 +1,7 @@
 #include "TAMSDdigitizer.hxx"
 #include "TAMSDparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "GlobalPar.hxx"
 
 #include <math.h>
 #include "TVector2.h"
@@ -185,7 +186,7 @@ Int_t TAMSDdigitizer::GetStrip(Float_t pos) const
   Float_t min = -fStripsN*fPitch/2.;
   
   if (pos < min || pos > -min) {
-    if (fDebugLevel)
+    if(FootDebugLevel(1))
       Warning("GetLine()", "Value of Y: %f out of range +/- %f\n", pos, min);
     return -1;
   }

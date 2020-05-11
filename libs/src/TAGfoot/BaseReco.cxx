@@ -35,6 +35,7 @@ Bool_t  BaseReco::fgItrTrackFlag = false;
 BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
+   fRunNumber(-1),
    fpParTimeWD(0x0),
    fpParMapWD(0x0),
    fpParMapSt(0x0),
@@ -96,11 +97,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fFlagHisto(false),
    fFlagTrack(false),
    fgTrackingAlgo("Full"),
-   fFlagMC(false),
-   Z_beam(-1),
-   A_beam(-1),
-   ion_name("Pb"),
-   kinE_beam(0.)
+   fFlagMC(false)
 {
 
    // check folder
@@ -120,6 +117,9 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    TString parFileName = Form("./geomaps/%sFOOT_geo.map", fExpName.Data());
    fpFootGeo->FromFile(parFileName);
    
+   // actvate debug level
+   GlobalPar::GetPar()->SetDebugLevels();
+
    // activate per default Dipole, TGT, VTX, IT and TW if TOE on
    if (GlobalPar::GetPar()->IncludeTOE()) {
       GlobalPar::GetPar()->IncludeDI(true);
@@ -141,6 +141,37 @@ BaseReco::~BaseReco()
    delete fpFootGeo;
 }
 
+//_____________________________________________________________________________
+void BaseReco::SetIncludes(const vector<TString>& list)
+{
+   for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
+      TString str = *it;
+      
+      if (str.Contains(TADIparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeDI(true);
+    
+      if (str.Contains(TASTparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeST(true);
+      
+      if (str.Contains(TABMparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeBM(true);
+      
+      if (str.Contains(TAVTparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeVertex(true);
+      
+      if (str.Contains(TAITparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeInnerTracker(true);
+      
+      if (str.Contains(TAMSDparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeMSD(true);
+      
+      if (str.Contains(TATWparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeTW(true);
+      
+      if (str.Contains(TACAparGeo::GetBaseName()))
+         GlobalPar::GetPar()->IncludeCA(true);
+   }
+}
 
 //__________________________________________________________
 void BaseReco::BeforeEventLoop()
@@ -243,6 +274,11 @@ void BaseReco::CloseFileOut()
 //__________________________________________________________
 void BaseReco::ReadParFiles()
 {
+   Int_t Z_beam = 0;
+   Int_t A_beam = 0;
+   TString ion_name;
+   Float_t kinE_beam = 0.;
+   
    // initialise par files for target
    if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeTW() || IsItrTracking()) {
       fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
@@ -689,4 +725,11 @@ void BaseReco::SetTrackingAlgo(char c)
       default:
          printf("SetTrackingAlgo: Wrongly set tracking algorithm");
    }
+}
+
+// --------------------------------------------------------------------------------------
+void BaseReco::SetRunNumber()
+{
+   if (fRunNumber != -1)  // if set from outside
+      gTAGroot->SetRunNumber(fRunNumber);
 }

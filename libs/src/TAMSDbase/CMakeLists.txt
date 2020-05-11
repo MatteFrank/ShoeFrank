@@ -28,6 +28,7 @@ set( with_dictionnaries
    TAMSDparConf
    TAMSDdigitizer
    TAMSDactNtuMC
+   TAMSDactNtuHitMC
    TAMSDntuCluster
    TAMSDcluster
    TAMSDactNtuCluster

@@ -1,3 +1,4 @@
+
 /*!
   \file
   \version $Id: TATWactNtuRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
@@ -53,8 +54,6 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
 
   Z_beam = f_pargeo->GetBeamPar().AtomicNumber;
  
-  m_debug = GetDebugLevel();
-  
 }
 
 //------------------------------------------+-----------------------------------

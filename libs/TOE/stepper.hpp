@@ -23,14 +23,15 @@ namespace details{
     
     
     //will need some adaptation for matrices
-    template<class Arg>
-    double error(const Arg& estimation_p, const Arg& correction_p)
+    template<std::size_t NRows, template<std::size_t, std::size_t > class Matrix>
+    double error( Matrix<NRows, 1 > const& estimation_p, Matrix<NRows, 1 > const& correction_p)
     {
-        auto difference = estimation_p - correction_p;
-        //std::cout << "\nestimation:\n" << estimation_p << "correction: \n" << correction_p;
+        auto difference = expr::compute(estimation_p - correction_p);
+       // std::cout << "\nestimation:\n" << estimation_p << "correction: \n" << correction_p;
+       // std::cout << "\ndifference:\n" << difference;
         auto temp = std::sqrt( std::inner_product(difference.data().begin(), difference.data().end(), difference.data().begin(), 0) );
-       // std::cout << "\nupon calculation error is: " << temp << '\n';
-        return (temp == 0 ? 1e-15 : temp );
+        //std::cout << "\nupon calculation error is: " << temp << '\n';
+        return (temp < 1e-15 ? 1e-15 : temp );
     }
     
     double error(double estimation_p, double correction_p)
@@ -308,6 +309,8 @@ namespace details {
                
                 
                 isToleranceReached = local_error_estimate <= tolerance_m;
+//                std::cout << "step_error: " << local_error_estimate << '\n';
+                
                 if(!isToleranceReached){
                     eos.step = optimize_step_length(eos.step, local_error_estimate) ;
                 }

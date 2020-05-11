@@ -29,8 +29,10 @@ set( with_dictionnaries
    TAMCactNtuTof
    TAMCactNtuCal
    TAMCntuHit
+   TAMCntuRegion
    TAMCevent
    TAGparGeo
+   TAMCparTools
    Evento
 )
 

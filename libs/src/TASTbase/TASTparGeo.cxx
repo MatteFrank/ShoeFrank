@@ -56,7 +56,7 @@ void TASTparGeo::DefineMaterial()
    
    // ST material
    TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fMaterial, fDensity);
-  if (fDebugLevel) {
+   if(FootDebugLevel(1)) {
       printf("Start counter material:\n");
       mat->Print();
    }
@@ -78,16 +78,16 @@ Bool_t TASTparGeo::FromFile(const TString& name)
 
    //The center is taken from the global setup of the experiment.
    ReadVector3(fSize);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Size: "
       << fSize[0] << " " << fSize[1]  << " " <<  fSize[2] << endl;
    
    ReadStrings(fMaterial);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "   ST material: " <<  fMaterial << endl;
    
    ReadItem(fDensity);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "   ST density: " <<  fDensity << endl;
 
    // Define material

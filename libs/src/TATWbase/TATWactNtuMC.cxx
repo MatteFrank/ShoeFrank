@@ -141,7 +141,7 @@ void TATWactNtuMC::CreateDigitizer()
 
 bool TATWactNtuMC::Action() {
 
-   if ( fDebugLevel> 0 )     cout << "TATWactNtuMC::Action() start" << endl;
+   if(FootDebugLevel(1))    cout << "TATWactNtuMC::Action() start" << endl;
 
    TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
@@ -151,7 +151,7 @@ bool TATWactNtuMC::Action() {
    TATWparGeo* geoMap = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
 
     //The number of hits inside the Start Counter is stn
-    if ( fDebugLevel> 0 )     cout << "Processing n Scint " << m_eventStruct->SCNn << endl;
+    if(FootDebugLevel(1))     cout << "Processing n Scint " << m_eventStruct->SCNn << endl;
 
     // clear maps
     m_Digitizer->ClearMap();
@@ -180,14 +180,14 @@ bool TATWactNtuMC::Action() {
        Int_t Z       = m_eventStruct->TRcha[trackId];
 
        Float_t trueTof = (time - timeST)*TAGgeoTrafo::PsToNs();  //ns
-       if(fDebugLevel>0)
-	 printf("\n timeTW::%f timeST::%f tof::%f\n",time,timeST,trueTof);
+       if(FootDebugLevel(1))
+          printf("\n timeTW::%f timeST::%f tof::%f\n",time,timeST,trueTof);
 
        time -= timeST;  // tof TW-SC to be digitized in ps
 
        // layer, bar, de, time, ntupID, parentID
        int view = m_eventStruct->SCNiview[i];    // in ntuple now layers are 0 and 1
-       if ( fDebugLevel> 0 )
+       if(FootDebugLevel(1))
           printf("%d %d\n", view,  m_eventStruct->SCNibar[i]);
 
        TVector3 posIn(x0, y0, z0);
@@ -199,8 +199,8 @@ bool TATWactNtuMC::Action() {
        else if(view==1)  //layer 1 (front) --> horizontal bar
 	 truePos = posInLoc.X();
 
-       if(fDebugLevel>0)
-	 cout<<"trueEloss::"<<edep<<" trueTof::"<<trueTof<<" truePos::"<<truePos<<endl;
+      if(FootDebugLevel(1))
+         cout<<"trueEloss::"<<edep<<" trueTof::"<<trueTof<<" truePos::"<<truePos<<endl;
               
        if(m_Digitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
 
@@ -212,7 +212,7 @@ bool TATWactNtuMC::Action() {
 	 // test algorithm in MC in a clean situation: only primary fragmentation
 	 if( mothId>0) {
 	   Zrec_MCtrue=-1.; //set Z to nonsense value
-	   if(fDebugLevel > 0) printf("the energy released is %f MeV (tof %.f ns) so Zraw is set to %d\n",edep,trueTof,Zrec_MCtrue);
+	   if(FootDebugLevel(1)) printf("the energy released is %f MeV (tof %.f ns) so Zraw is set to %d\n",edep,trueTof,Zrec_MCtrue);
 	 } else
 	   Zrec_MCtrue = m_parcal->GetChargeZ(edep,trueTof,view);
 	 
@@ -245,7 +245,7 @@ bool TATWactNtuMC::Action() {
 	   
 	 }
 	   
-	 if(fDebugLevel > 0) {
+	if(FootDebugLevel(1)) {
 	   if(Zrec_MCtrue>0 && Z>0) {	   
 	     fCnt++;	   
 	     if(Zrec_MCtrue!=Z) {
@@ -288,7 +288,7 @@ bool TATWactNtuMC::Action() {
 	
 	Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
       
-	if(fDebugLevel>0)
+	if(FootDebugLevel(1))
 	  cout<<"recEloss::"<<recEloss<<" recTof::"<<recTof<<" recPos::"<<recPos<<endl;
 	
 	Int_t Zrec = m_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
@@ -298,7 +298,7 @@ bool TATWactNtuMC::Action() {
 	for(int iZ=1; iZ<fZbeam+1; iZ++)
 	  distZ[iZ-1]= m_parcal->GetDistBB(iZ);
 	
-	if(fDebugLevel > 0) {
+	if(FootDebugLevel(1)) {
 
 	  if(!m_Digitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
 	    if(Zrec>0 && Z>0) {
@@ -351,12 +351,12 @@ bool TATWactNtuMC::Action() {
 	
 	Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
 	
-	if(fDebugLevel>0)
+	if(FootDebugLevel(1))
 	  cout<<"recEloss::"<<recEloss<<" recTof::"<<recTof<<" recPos::"<<recPos<<endl;
 	
 	// set an energy threshold --> TODO: to be tuned on data. On GSI data 50mV over all the bars but the central ones. To be set for different energy campaigns
 	if(!m_Digitizer->IsOverEnergyThreshold(recEloss)) {
-	  if(fDebugLevel > 0)
+	  if(FootDebugLevel(1))
 	    printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,m_Digitizer->GetEnergyThreshold());     
 	  
 	  recEloss=-99.; //set energy to nonsense value

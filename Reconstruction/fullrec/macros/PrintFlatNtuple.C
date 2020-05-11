@@ -498,8 +498,7 @@ void PrintFlatNtuple(TString nameFile = "", Int_t nentries = 0)
        Float_t Chi2 = track-> GetChi2();  
        trk_chi2.push_back(Chi2);
 
-       TAVTline trackline = track->GetTrackLine();
-       TVector3 slopez = trackline.GetSlopeZ();
+       TVector3 slopez = track->GetSlopeZ();
        trk_slopez.push_back(slopez);
        TVector3 origin = trackline.GetOrigin();
        trk_origin.push_back(origin);

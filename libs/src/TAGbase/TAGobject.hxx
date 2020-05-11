@@ -28,17 +28,13 @@ class TAGobject : public TObject {
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
     virtual void    Print(Option_t* option="") const;
    
-    Int_t           GetDebugLevel() const;
-    void            SetDebugLevel(Int_t d);
-
     Bool_t          Found()         const;
     void            SetFound(Bool_t b = true);
 
   protected:
-   Int_t   fDebugLevel;
    Bool_t  fFound;                    // flag, that pixel/strip/bar is found in hit
    
-   ClassDef(TAGobject,3)
+   ClassDef(TAGobject,4)
 
 };
 

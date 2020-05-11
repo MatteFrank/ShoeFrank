@@ -31,7 +31,6 @@ class TAVTactNtuMC : public TAVTactBaseNtuMC {
 
 public:
    explicit TAVTactNtuMC(const char* name=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap = 0, EVENT_STRUCT* evtStr=0);
-   explicit TAVTactNtuMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0);
    virtual ~TAVTactNtuMC() {};
    
    //! Base action 
@@ -41,7 +40,7 @@ public:
    void           FillNoise();
 
 private:
-   TAGdataDsc*    fpNtuMC;          // input data dsc
+   EVENT_STRUCT*  fpEvtStr;
    TAGdataDsc*    fpNtuRaw;         // output data dsc
    map<pair<int, int>, TAVTntuHit*> fMap;     //! map for pilepup
 
@@ -51,7 +50,6 @@ private:
    void           CreateDigitizer();
    void           FillPixels( Int_t sensorId, Int_t mcId, Int_t trackId);
    void           DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackId);
-   void           DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
    void           Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
 
    ClassDef(TAVTactNtuMC,0)

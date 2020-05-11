@@ -37,8 +37,6 @@ public:
 
 	int  KalMode()              const { return m_kalmanMode;          }
 	bool IsKalReverse()         const { return m_kalReverse;          }
-	bool geoROOT()              const { return m_geoROOT;             }
-	bool geoFLUKA()             const { return m_geoFLUKA;            }
 	bool verFLUKA()             const { return m_verFLUKA;            }
    
 	vector<string> KalSystems()       { return m_trackingSystems;     }
@@ -80,15 +78,13 @@ public:
     void IncludeVertex(bool t)       {  m_includeVertex = t;         }
     void IncludeInnerTracker(bool t) {  m_includeInnerTracker = t;   }
    
+    void SetDebugLevels();
     void RemoveSpace( string* s );
     bool IEquals(const string& a, const string& b);
     bool frankFind( string what, string where );
     string StrReplace(string original, string erase, string add);
 
-    bool CheckAllowedHitOrigin( string origin );
-    void PrintAllowedHitOrigin();
-
-	bool Find_MCParticle( string villain ) 
+	bool Find_MCParticle( string villain )
 		{ return ( find( m_mcParticles.begin(), m_mcParticles.end(), villain ) == m_mcParticles.end() ? false : true ); };
 	
 	double GetLowBinHisto( string villain ) 	{ 
@@ -144,14 +140,12 @@ private:
 private:
 	vector<string> m_copyInputFile;
 
-	vector<string> m_originAllowed;
-
 	map< string, pair< double, double > > m_map_range;
 	map< string, int > m_nBin_map;
 	map< string, string > m_map_saveDir;
 	map< string, string > m_map_xTitles;
 	map< string, string > m_map_yTitles;
-
+   map< string, int >    m_map_debug;
 	string m_parFileName;
 
 	int m_debug;
@@ -161,8 +155,6 @@ private:
 	
 	int m_kalmanMode;
 	bool m_kalReverse;
-	bool m_geoROOT;
-	bool m_geoFLUKA;
 	bool m_verFLUKA;
 	vector<string> m_trackingSystems;
 	vector<string> m_kalParticles;
@@ -199,6 +191,7 @@ public:
    static void   Debug(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", const char* file = "", Int_t line = -1);
    static Int_t  GetDebugLevel(const char* className);
    static Bool_t GetDebugLevel(Int_t level, const char* className);
+   static Bool_t GetMcDebugLevel(Int_t level, const char* className);
 
    static void   SetClassDebugLevel(const char* className, Int_t level);
    static void   ClearClassDebugLevel(const char* className);
@@ -208,10 +201,7 @@ public:
 
 #define FootDebug(level, func, message ) GlobalPar::Debug(level, ClassName(), func, message, __FILE__, __LINE__)
 #define FootDebugLevel(level) GlobalPar::GetDebugLevel(level, ClassName())
-
-// extern GlobalPar* gPar; 
-// R__EXTERN GlobalPar  *gPar; 
-
+#define FootMcDebugLevel(level) GlobalPar::GetMcDebugLevel(level, typeid(*this).name())
 
 #endif
 

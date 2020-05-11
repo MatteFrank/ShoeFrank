@@ -15,6 +15,8 @@
 
 ClassImp(TAGrunInfo);
 
+TString TAGrunInfo::fgkObjectName = "runinfo";
+
 //------------------------------------------+-----------------------------------
 //! Destructor.
 

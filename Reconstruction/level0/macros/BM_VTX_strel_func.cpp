@@ -544,12 +544,11 @@ void vtxreadevent(TAVTntuTrack *vtntutrack, vtx_evstruct &vtxevent, vector<vtx_e
   
   clean_vtxevstruct(vtxevent);
   TAVTtrack* vttrack = vtntutrack->GetTrack(0);
-  TAVTline  vtline=vttrack->GetTrackLine();    
   vtxevent.vtx_track_chi2tot=vttrack->GetChi2();
   vtxevent.vtx_track_chi2uview=vttrack->GetChi2U();
   vtxevent.vtx_track_chi2vview=vttrack->GetChi2V();
-  vtxevent.vtx_track_r0pos=vtline.GetOrigin();
-  vtxevent.vtx_track_pvers=vtline.GetSlopeZ();
+  vtxevent.vtx_track_r0pos=vttrack->GetOrigin();
+  vtxevent.vtx_track_pvers=vttrack->GetSlopeZ();
   vtxevent.status=0;  
   if(debug>2){
     cout<<"msdreadevent finished"<<endl;  

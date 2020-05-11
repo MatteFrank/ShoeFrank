@@ -22,7 +22,8 @@
 #include <iostream>
 
 #include "state.hpp"
-#include "matrix.hpp"
+#include "matrix_new.hpp"
+#include "expr.hpp"
 
 
 #include "TAGroot.hxx"
@@ -53,30 +54,30 @@ class TAITcluster;
 
 namespace details{
     struct vertex_tag{
-        using vector_matrix =  Matrix<2, 1>;
-        using covariance_matrix =  Matrix<2, 2> ;
-        using measurement_matrix =  Matrix<2,4> ;
+        using vector_matrix =  matrix<2, 1>;
+        using covariance_matrix =  matrix<2, 2> ;
+        using measurement_matrix =  matrix<2,4> ;
         using data_type = TAVTbaseCluster; //to be noted
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     };
     struct it_tag{
-        using vector_matrix =  Matrix<2, 1>;
-        using covariance_matrix =  Matrix<2, 2> ;
-        using measurement_matrix =  Matrix<2,4> ;
+        using vector_matrix =  matrix<2, 1>;
+        using covariance_matrix =  matrix<2, 2> ;
+        using measurement_matrix =  matrix<2,4> ;
         using data_type = TAITcluster;
        using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     };
     struct msd_tag{
-        using vector_matrix =  Matrix<1, 1> ;
-        using covariance_matrix = Matrix<1, 1> ;
-        using measurement_matrix =  Matrix<1,4> ;
+        using vector_matrix =  matrix<1, 1> ;
+        using covariance_matrix = matrix<1, 1> ;
+        using measurement_matrix =  matrix<1,4> ;
         using data_type = TAMSDcluster;
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     };
     struct tof_tag{
-        using vector_matrix =  Matrix<2, 1>;
-        using covariance_matrix =  Matrix<2, 2> ;
-        using measurement_matrix =  Matrix<2,4> ;
+        using vector_matrix =  matrix<2, 1>;
+        using covariance_matrix =  matrix<2, 2> ;
+        using measurement_matrix =  matrix<2,4> ;
         using data_type = TATWpoint;
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     };
@@ -175,7 +176,7 @@ struct track_list
     struct pseudo_layer{
         candidate_type candidate_m;
         double depth;
-        double minimal_cut;
+        double cut;
         
         candidate_type& get_candidate(){ return candidate_m; }
         candidate_type const & get_candidate() const { return candidate_m; }
@@ -429,6 +430,100 @@ public:
     std::vector<candidate> generate_candidates(std::size_t index_p) const ;
 };
 
+
+
+
+
+//______________________________________________________________________________
+//                      MSD
+
+
+
+template<>
+struct detector_properties< details::msd_tag >
+{
+    using candidate = details::msd_tag::candidate;
+    using measurement_vector = underlying<candidate>::vector;
+    using measurement_covariance = underlying<candidate>::covariance;
+    using measurement_matrix = underlying<candidate>::measurement_matrix;
+    using data_type = underlying<candidate>::data_type;
+    
+    
+private:
+    
+    const TAMSDntuCluster* cluster_mhc;
+    std::array<measurement_matrix, 2> const matrix_mc{
+                measurement_matrix{ 1, 0, 0, 0 },
+                measurement_matrix{ 0, 1, 0, 0 }
+                                                      };
+    
+    const std::array<double, 3> cut_mc;
+    constexpr static std::size_t layer{6};
+    
+    const std::array<std::size_t, layer> view_mc;
+    const std::array<double, layer> depth_mc;
+    
+public:
+    //might go to intermediate struc holding the data ?
+    detector_properties( TAMSDntuCluster* cluster_phc,
+                         TAMSDparGeo* geo_ph,
+                         std::array<double, 3> cut_pc)  :
+    cluster_mhc{cluster_phc},
+    cut_mc{cut_pc},
+    view_mc{ retrieve_view(geo_ph) },
+    depth_mc{ retrieve_depth(geo_ph) }
+    { }
+    
+    
+private:
+    template<std::size_t ... Indices>
+    auto retrieve_depth_impl( TAMSDparGeo* geo_ph,
+                             std::index_sequence<Indices...> ) const
+    -> std::array<double, layer>
+    {
+        auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+        
+        
+        return {transformation_h->FromMSDLocalToGlobal(geo_ph->GetSensorPosition(Indices)).Z()...};
+    }
+    
+    
+    auto retrieve_depth( TAMSDparGeo* geo_ph ) const
+    -> std::array<double, layer>
+    {
+        return retrieve_depth_impl( geo_ph, std::make_index_sequence<layer>{} );
+    }
+                                                        
+    template<std::size_t ... Indices>
+    auto retrieve_view_impl( TAMSDparGeo* geo_ph,
+                              std::index_sequence<Indices...> ) const
+    -> std::array<std::size_t, layer>
+    {
+        return { static_cast<std::size_t>(geo_ph->GetSensorPar(Indices).TypeIdx)...};
+    }
+                                                        
+    auto retrieve_view( TAMSDparGeo* geo_ph ) const
+    -> std::array<std::size_t, layer>
+    {
+        return retrieve_view_impl( geo_ph, std::make_index_sequence<layer>{} );
+    }
+    
+    
+public:
+    
+    constexpr std::size_t layer_count() const { return layer; }
+    constexpr double layer_depth( std::size_t index_p ) const { return depth_mc[index_p]; }
+    constexpr double get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
+    
+    layer_generator<detector_properties> form_layers() const
+    {
+        return {*this};
+    }
+    
+    std::vector<candidate> generate_candidates(std::size_t index_p) const ;
+};
+
+
 //______________________________________________________________________________
 //                      TOF
 
@@ -551,7 +646,7 @@ struct particle_properties
 
 struct model
 {
-    using operating_state_t = operating_state<Matrix<2,1>, 2>;
+    using operating_state_t = operating_state<matrix<2,1>, 2>;
     
     particle_properties* particle_h = nullptr;
     static constexpr double conversion_factor = 0.000299792458; //[MeV/c . G^{-1} . cm^{-1} ]
@@ -561,7 +656,7 @@ struct model
     
     
     auto operator()(const operating_state_t& os_p) const
-   // Matrix<2,1> operator()(const int& os_p) const
+   // matrix<2,1> operator()(const int& os_p) const
     {
       //  std::cout << "------ LET'S GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO --------\n";
         //return {};
@@ -576,7 +671,7 @@ private:
                      1 );
     }
     
-    Matrix<2,1> compute_change(const operating_state_t& os_p) const
+    matrix<2,1> compute_change(const operating_state_t& os_p) const
     {
         return {compute_change_x(os_p), compute_change_y(os_p)};
     }

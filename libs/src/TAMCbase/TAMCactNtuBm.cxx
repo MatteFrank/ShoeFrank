@@ -47,17 +47,17 @@ Bool_t TAMCactNtuBm::Action() {
    
    for (Int_t i = 0; i < fpEvtStr->BMNn; i++) {
       
-      Int_t cellId  = fpEvtStr->BMNicell[i];
-      Int_t trackId = fpEvtStr->BMNid[i] - 1;
-      Int_t layer = fpEvtStr->BMNilay[i];
-      Int_t view = fpEvtStr->BMNicell[i];
+      Int_t layer    = fpEvtStr->BMNilay[i];
+      Int_t view     = fpEvtStr->BMNicell[i];
+      Int_t cellId   = fpEvtStr->BMNicell[i];
+      Int_t trackIdx = fpEvtStr->BMNid[i] - 1;
 
       TVector3 ipos( fpEvtStr->BMNxin[i], fpEvtStr->BMNyin[i], fpEvtStr->BMNzin[i]);
       TVector3 fpos( fpEvtStr->BMNxout[i], fpEvtStr->BMNyout[i], fpEvtStr->BMNzout[i]);
       TVector3 imom( fpEvtStr->BMNpxin[i], fpEvtStr->BMNpyin[i], fpEvtStr->BMNpzin[i]);
       TVector3 fmom( fpEvtStr->BMNpxout[i],fpEvtStr->BMNpyout[i],fpEvtStr->BMNpzout[i]);
 
-      p_nturaw->NewHit(cellId, layer, view, -99, ipos, fpos, imom, fmom, fpEvtStr->BMNde[i], fpEvtStr->BMNtim[i], trackId);
+      p_nturaw->NewHit(trackIdx, layer, view, cellId, ipos, fpos, imom, fmom, fpEvtStr->BMNde[i], fpEvtStr->BMNtim[i], 0);
    }
 
    fpNtuMC->SetBit(kValid);

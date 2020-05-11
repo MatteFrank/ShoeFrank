@@ -14,6 +14,7 @@
 #pragma link C++ class TAITactBaseRaw+;
 #pragma link C++ class TAITactNtuRaw+;
 #pragma link C++ class TAITactNtuMC+;
+#pragma link C++ class TAITactNtuHitMC+;
 
 #pragma link C++ class TAITntuCluster+;
 #pragma link C++ class TAITcluster+;

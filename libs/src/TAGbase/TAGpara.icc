@@ -8,7 +8,7 @@
 //! Default constructor.
 
 inline TAGpara::TAGpara()
-: fDebugLevel(0)
+: TObject()
 {}
 
 //------------------------------------------+-----------------------------------
@@ -17,21 +17,6 @@ inline TAGpara::TAGpara()
 inline Bool_t TAGpara::Fail() const
 {
   return TestBit(kFail);
-}
-
-//------------------------------------------+-----------------------------------
-//! Returns debug level
-
-inline Int_t TAGpara::GetDebugLevel() const
-{
-   return fDebugLevel;
-}
-
-//------------------------------------------+-----------------------------------
-//! Set debug level
-inline void  TAGpara::SetDebugLevel(Int_t d)
-{
-   fDebugLevel = d;
 }
 
 //------------------------------------------+-----------------------------------

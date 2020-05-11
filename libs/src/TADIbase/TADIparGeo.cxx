@@ -199,7 +199,7 @@ void TADIparGeo::DefineMaterial()
    
    // Shield material
    TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fShieldMat, fShieldDensity);
-   if (fDebugLevel) {
+    if(FootDebugLevel(1)) {
       printf("Shield material:\n");
       mat->Print();
    }
@@ -207,7 +207,7 @@ void TADIparGeo::DefineMaterial()
    
    // Magnet material
    mat = TAGmaterials::Instance()->CreateMaterial(fMagMat, fMagDensity);
-   if (fDebugLevel) {
+   if(FootDebugLevel(1)) {
       printf("Magnet material:\n");
       mat->Print();
    }

@@ -22,13 +22,13 @@ set( with_dictionnaries
    KFitter
    GlobalTrackRepostory
    GlobalTrackKalman
-   Materials
    UpdatePDG
    MultiTrackCheck
    TAFOeventDisplay
    TAFOeventDisplayMC
    BaseReco
    LocalRecoMC
+   LocalRecoNtuMC
    LocalReco
    TAGactNtuGlbTrack
    GlobalReco

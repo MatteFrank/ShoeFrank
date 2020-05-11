@@ -13,7 +13,7 @@
 class TAGrunInfo : public TAGobject {
   public:
                     TAGrunInfo();
-                    TAGrunInfo(Short_t i_cam, Short_t i_run);
+                    TAGrunInfo(Short_t i_cam, Short_t i_run, TString s_cam);
     virtual         ~TAGrunInfo();
 
     void            SetCampaignName(TString s_cam);
@@ -37,6 +37,14 @@ class TAGrunInfo : public TAGobject {
     Short_t         fiCam;		    // campaign number
     Short_t         fiRun;        // run number
     TString         fsCam;        // campaign name
+   
+  private:
+    static TString    fgkObjectName;    // name in TFile
+   
+  public:
+    static const Char_t* GetObjectName()   { return fgkObjectName.Data();   }
+
+   
 };
 
 #include "TAGrunInfo.icc"

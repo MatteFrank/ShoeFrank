@@ -85,7 +85,7 @@ struct TATOEchecker{
         std::size_t local_total_cluster_number{0};
                                                                                
         
-        computation_module(int charge_p, double beam_energy_p) : charge{charge_p}
+        computation_module(int charge_p, double /*beam_energy_p*/) : charge{charge_p}
         {
             efficiency_histogram_bundle.reconstructible_h = new TH1D{ Form("reconstructible_charge%d", charge),
                                                                       ";Momentum(Gev/c);Count", 50, 0, 1.3 };
@@ -212,7 +212,7 @@ public:
         
         auto check_origin = [this]( int index_p )
                             {
-                                auto const * track_h = data_mhc->GetHit(index_p);
+                                auto const * track_h = data_mhc->GetTrack(index_p);
             
                                 return track_h->GetCharge() > 0 ?
                                     ( track_h->GetInitPos().Z() >= target_limits_m.first ) &&
@@ -223,9 +223,9 @@ public:
         
         auto check_scattering = [this, &check_origin]( int index_p )
                                 {
-                                    auto const * track_h = data_mhc->GetHit(index_p);
+                                    auto const * track_h = data_mhc->GetTrack(index_p);
                                     auto const * mother_track_h = track_h->GetCharge() > 0 ?
-                                                        data_mhc->GetHit( track_h->GetMotherID() ) :
+                                                        data_mhc->GetTrack( track_h->GetMotherID() ) :
                                                         nullptr;
                                     if( mother_track_h ){
                                         return (  (mother_track_h->GetCharge() == track_h->GetCharge() ) &&
@@ -249,7 +249,7 @@ public:
                            [this](int index_p)
                            {
                                std::vector<int> index_c{index_p};
-                               auto const * track_h = data_mhc->GetHit(index_p);
+                               auto const * track_h = data_mhc->GetTrack(index_p);
                                index_c.push_back( track_h->GetMotherID() );
                                return index_c;
                            } );
@@ -290,7 +290,7 @@ private:
                               );
         
         
-        auto mc_track_h = index_pc.size() > 1 ? data_mhc->GetHit(index_pc[1]) : data_mhc->GetHit(index_pc[0]) ;
+        auto mc_track_h = index_pc.size() > 1 ? data_mhc->GetTrack(index_pc[1]) : data_mhc->GetTrack(index_pc[0]) ;
         //if size > 1, then the particle has been scattered, therefore need to retrieve mother parameters
         auto real_particle = particle{
                                 index_pc,
@@ -305,7 +305,7 @@ private:
     
     particle form_particle( std::vector<int> index_pc ) const
     {
-        auto mc_track_h = index_pc.size() > 1 ? data_mhc->GetHit(index_pc[1]) : data_mhc->GetHit(index_pc[0]) ;
+        auto mc_track_h = index_pc.size() > 1 ? data_mhc->GetTrack(index_pc[1]) : data_mhc->GetTrack(index_pc[0]) ;
         //if size > 1, then the particle has been scattered, therefore need to retrieve mother parameters
         return particle{
             index_pc,

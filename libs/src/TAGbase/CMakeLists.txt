@@ -33,6 +33,7 @@ set( with_dictionnaries
    TAGdataDsc
    TAGeventId
    TAGgeoTrafo
+   TAGcampaignManager
    TAGnamed
    TAGobject
    TAGpadGroup

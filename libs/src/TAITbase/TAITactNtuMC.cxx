@@ -20,6 +20,9 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
+#include "TAMCntuHit.hxx"
+#include "TAMCntuEve.hxx"
+
 #include "GlobalPar.hxx"
 
 /*!
@@ -35,26 +38,13 @@ ClassImp(TAITactNtuMC);
 //------------------------------------------+-----------------------------------
 //
 TAITactNtuMC::TAITactNtuMC(const char* name, TAGdataDsc* pNtuRaw,  TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
- : TAVTactBaseNtuMC(name, pGeoMap, evStr),
+ : TAVTactBaseNtuMC(name, pGeoMap),
+   fpEvtStr(evStr),
    fpNtuRaw(pNtuRaw)
 {
 	AddDataOut(pNtuRaw, "TAITntuRaw");
 	AddPara(pGeoMap, "TAITparGeo");
 
-   CreateDigitizer();
-}
-
-//------------------------------------------+-----------------------------------
-//
-TAITactNtuMC::TAITactNtuMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
-: TAVTactBaseNtuMC(name, pGeoMap),
-   fpNtuMC(pNtuMC),
-   fpNtuRaw(pNtuRaw)
-{
-   AddDataIn(pNtuMC, "TAMCntuHit");
-   AddDataOut(pNtuRaw, "TAVTntuRaw");
-   AddPara(pGeoMap, "TAVTparGeo");
-   
    CreateDigitizer();
 }
 
@@ -80,10 +70,7 @@ bool TAITactNtuMC::Action()
    static Int_t storedEvents = 0;
    std::vector<RawMcHit_t> storedEvtInfo;
    
-   if (fpEvtStr == 0x0)
-      Digitize(storedEvtInfo, storedEvents);
-   else
-      DigitizeOld(storedEvtInfo, storedEvents);
+   Digitize(storedEvtInfo, storedEvents);
    
    // Pileup
    if (fgPileup && storedEvents <= fgPileupEventsN) {
@@ -113,7 +100,7 @@ bool TAITactNtuMC::Action()
 }
 
 //------------------------------------------+-----------------------------------
-void TAITactNtuMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
+void TAITactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
 {
    TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
    
@@ -151,46 +138,7 @@ void TAITactNtuMC::DigitizeOld(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
    }
 }
 
-//------------------------------------------+-----------------------------------
-void TAITactNtuMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
-{
-   TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
-   TAMCntuHit* pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
-   
-   RawMcHit_t mcHit;
-   fMap.clear();
-   
-   if(FootDebugLevel(1))
-   Info("TAVTactNtuMC::Action()", "start  -->  ITRn : %d  ", pNtuMC->GetHitsN());
-   
-   // Loop over all MC hits
-   for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
-      TAMChit* hit = pNtuMC->GetHit(i);
-      
-      TVector3 posIn(hit->GetInPosition());
-      TVector3 posOut(hit->GetOutPosition());
-      Int_t sensorId = hit->GetLayer(); // sensorId
-      Float_t de     = hit->GetDeltaE();
-      Int_t  trackIdx = hit->GetTrackId();
-      
-      // used for pileup ...
-      if (fgPileup && storedEvents <= fgPileupEventsN) {
-         mcHit.id  = sensorId;
-         mcHit.de  = de;
-         mcHit.x   = posIn.X();
-         mcHit.y   = posIn.Y();
-         mcHit.zi  = posIn.Z();
-         mcHit.zo  = posOut.Z();
-         storedEvtInfo.push_back(mcHit);
-      }
-      
-      // Digitizing
-      posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);
-      posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
-      
-      DigitizeHit(sensorId, de, posIn, posOut, i, trackIdx);
-   }
-}
+
 
 //------------------------------------------+-----------------------------------
 void TAITactNtuMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)

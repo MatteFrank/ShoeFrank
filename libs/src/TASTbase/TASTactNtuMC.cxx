@@ -4,6 +4,7 @@
   \brief   Implementation of TASTactNtuMC.
 */
 
+#include "GlobalPar.hxx"
 #include "TAGroot.hxx"
 #include "TASTntuRaw.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -28,7 +29,7 @@ TASTactNtuMC::TASTactNtuMC(const char* name,
     fpNtuMC(p_datraw),
     fpEvtStr(evStr)
 {
-   if (fDebugLevel > 0)
+   if(FootDebugLevel(1))
       Info("Action()"," Creating the Start Counter MC tuplizer action\n");
    AddDataOut(p_datraw, "TASTntuRaw");
    
@@ -61,7 +62,7 @@ Bool_t TASTactNtuMC::Action()
   TASTntuRaw* p_nturaw = (TASTntuRaw*) fpNtuMC->Object();
 
   //The number of hits inside the Start Counter is stn
-   if (fDebugLevel > 0)
+   if(FootDebugLevel(1))
       Info("Action()","Processing n Onion :: %2d hits", fpEvtStr->STCn);
    Float_t edep, trigtime;
    

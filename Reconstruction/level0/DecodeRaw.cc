@@ -19,6 +19,7 @@ int main (int argc, char *argv[])  {
    Bool_t hit = false;
    Bool_t trk = false;
    
+   Int_t runNb = -1;
    Int_t nTotEv = 1e7;
    
    for (int i = 0; i < argc; i++){
@@ -26,7 +27,8 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
-  
+      if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
+
       if(strcmp(argv[i],"-ntu") == 0)   { ntu = true;   } // enable tree filling
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
@@ -67,7 +69,8 @@ int main (int argc, char *argv[])  {
    if (trk) {
       locRec->EnableTracking();
    }
-
+   if (runNb != -1)
+      locRec->BaseReco::SetRunNumber(runNb);
    
    TStopwatch watch;
    watch.Start();

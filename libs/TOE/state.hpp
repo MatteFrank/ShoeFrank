@@ -257,7 +257,7 @@ namespace details{
     template<template<std::size_t, std::size_t> class Matrix, std::size_t N, std::size_t ... Indices>
     auto make_state_covariance_impl( Matrix<N, N> m_p, std::index_sequence<Indices...> ) -> state_covariance_impl< Matrix<N,N> >
     {
-        return {{ std::move( m_p.data()[Indices] )... }};
+        return {{ std::move( m_p.data_mc[Indices] )... }};
     }
 
     
@@ -271,7 +271,7 @@ namespace details{
     {
         auto operator()(operating_state< Matrix<NRows, 1>, 2 > os_p)
         {
-            return make_state_vector( combine( os_p.state(order_tag<0>{}),
+            return make_state_vector( form_combination( os_p.state(order_tag<0>{}),
                                                os_p.state(order_tag<1>{}),
                                                row_tag{}                     ) );
         }

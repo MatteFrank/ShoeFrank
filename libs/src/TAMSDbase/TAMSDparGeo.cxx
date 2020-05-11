@@ -72,81 +72,81 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
    if (!Open(nameExp)) return false;
 
    ReadItem(fSensorsN);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout << endl << "Sensors number "<< fSensorsN << endl;
 
    ReadStrings(fTypeName);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << endl << "  Type Name : "<< fTypeName.Data() << endl;
 
    ReadItem(fTypeNumber);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << endl << "  Type Number : "<< fTypeNumber << endl;
 
    ReadItem(fStripN);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Number of strip: "<< fStripN << endl;
 
    ReadItem(fPitch);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Pitch for strip: "<< fPitch << endl;
 
    ReadVector3(fTotalSize);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Total size of sensor:     "<< fTotalSize.X() << " " <<  fTotalSize.Y() << " "
       <<  fTotalSize.Z()  << endl;
 
    ReadVector3(fEpiSize);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << endl << "  Sensitive size of sensor: "<< fEpiSize.X() << " " <<  fEpiSize.Y() << " "
       <<  fEpiSize.Z()  << endl;
 
    ReadVector3(fEpiOffset);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << endl << "  Offset of sensitive area of sensor: "<< fEpiOffset.X() << " " <<  fEpiOffset.Y() << " "
       <<  fEpiOffset.Z()  << endl;
 
    ReadStrings(fEpiMat);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout   << "  Sensitive material: "<< fEpiMat.Data() << endl;
 
    ReadItem(fEpiMatDensity);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Sensitive material density:  "<< fEpiMatDensity << endl;
 
     ReadItem(fPixThickness);
-    if(fDebugLevel)
+    if(FootDebugLevel(1))
        cout  << endl << "  Pixel thickness: "<< fPixThickness << endl;
 
    ReadStrings(fPixMat);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout   << "  Pixel material: "<< fPixMat.Data() << endl;
 
    ReadItem(fPixMatDensity);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
      cout  << "  Pixel material density:  "<< fPixMatDensity << endl;
 
    ReadItem(fMetalThickness);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
      cout  << endl << "  Metal thickness: "<< fMetalThickness << endl;
 
    ReadStrings(fMetalMat);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
      cout   << "  Metal material: "<< fMetalMat.Data() << endl;
 
    ReadItem(fMetalDensity);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
      cout  << "  Metal density:  "<< fMetalDensity << endl;
 
    ReadItem(fSupportInfo);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "  Info flag for support:  "<< fSupportInfo << endl;
 
    // read info for support only for IT
    if (fSupportInfo)
       ReadSupportInfo();
 
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout << endl << "Reading Sensor Parameters " << endl;
 
    SetupMatrices(fSensorsN);
@@ -155,35 +155,35 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
 
       // read sensor index
       ReadItem(fSensorParameter[p].SensorIdx);
-      if(fDebugLevel)
+      if(FootDebugLevel(1))
          cout << endl << " - Parameters of Sensor " <<  fSensorParameter[p].SensorIdx << endl;
 
       // read sensor index
       ReadItem(fSensorParameter[p].TypeIdx);
-      if(fDebugLevel)
+      if(FootDebugLevel(1))
          cout  << "   Type of Sensor: " <<  fSensorParameter[p].TypeIdx << endl;
 
       // read sensor position
       ReadVector3(fSensorParameter[p].Position);
-      if(fDebugLevel)
+      if(FootDebugLevel(1))
          cout << "   Position: "
          << fSensorParameter[p].Position[0] << " " << fSensorParameter[p].Position[1] << " " << fSensorParameter[p].Position[2] << endl;
 
       // read sensor angles
       ReadVector3(fSensorParameter[p].Tilt);
-      if(fDebugLevel)
+      if(FootDebugLevel(1))
          cout  << "   Tilt: "
 		       << fSensorParameter[p].Tilt[0] << " " << fSensorParameter[p].Tilt[1] << " " << fSensorParameter[p].Tilt[2] << endl;
 
       // read alignment
       ReadItem(fSensorParameter[p].AlignmentU);
       ReadItem(fSensorParameter[p].AlignmentV);
-      if(fDebugLevel)
+      if(FootDebugLevel(1))
          cout  << "   Alignment: " <<  fSensorParameter[p].AlignmentU << " " << fSensorParameter[p].AlignmentV << endl;
 
       // read tiltW
       ReadItem(fSensorParameter[p].TiltW);
-      if(fDebugLevel)
+      if(FootDebugLevel(1))
          cout  << "   Rotation tiltW: " << fSensorParameter[p].TiltW << endl;
 
       Float_t thetaX = fSensorParameter[p].Tilt[0];

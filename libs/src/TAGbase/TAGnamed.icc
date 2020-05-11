@@ -8,7 +8,7 @@
 //! Default constructor.
 
 inline TAGnamed::TAGnamed()
-: fDebugLevel(0)
+: TNamed()
 {}
 
 //------------------------------------------+-----------------------------------
@@ -31,21 +31,6 @@ inline TAGnamed::TAGnamed(const TString& name, const TString& title)
 inline Bool_t TAGnamed::Fail() const
 {
   return TestBit(kFail);
-}
-
-//------------------------------------------+-----------------------------------
-//! Returns debug level
-
-inline Int_t TAGnamed::GetDebugLevel() const
-{
-   return fDebugLevel;
-}
-
-//------------------------------------------+-----------------------------------
-//! Set debug level
-inline void  TAGnamed::SetDebugLevel(Int_t d)
-{
-   fDebugLevel = d;
 }
 
 //------------------------------------------+-----------------------------------

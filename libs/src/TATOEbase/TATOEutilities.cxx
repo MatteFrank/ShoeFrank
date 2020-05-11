@@ -142,3 +142,35 @@ std::vector<typename details::it_tag::candidate> detector_properties< details::i
     
     return candidate_c;
 }
+
+
+//______________________________________________________________________________
+//                     MSD
+
+std::vector<typename details::msd_tag::candidate> detector_properties< details::msd_tag >::generate_candidates(std::size_t index_p) const
+{
+    std::vector<candidate> candidate_c;
+    candidate_c.reserve( 5 );
+    
+    std::size_t entries = cluster_mhc->GetClustersN(index_p);
+    
+    std::size_t view = view_mc[index_p];
+    
+    for(std::size_t i{0}; i < entries ; ++i) {
+        auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+        
+        auto cluster_h = cluster_mhc->GetCluster(index_p, i);
+        auto position =  transformation_h->FromMSDLocalToGlobal(cluster_h->GetPositionG());
+        auto error = cluster_h->GetPosError();
+            
+        
+        candidate_c.emplace_back(
+            measurement_vector{{ position( view ) }},
+            measurement_covariance{{ pow(error( view ), 2) }},
+            measurement_matrix{matrix_mc[view]},
+            data_handle<data_type>{cluster_h}
+                                );
+    }
+    
+    return candidate_c;
+}

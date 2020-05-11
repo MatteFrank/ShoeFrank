@@ -112,8 +112,8 @@ public:
    virtual void CloseFileIn() { return; }
    
    //! Set Run number
-   virtual void SetRunNumber() { return; }
-
+   virtual void SetRunNumber();
+   
    //! Open File Out
    virtual void OpenFileOut();
    
@@ -124,8 +124,11 @@ public:
    virtual void SetTreeBranches();
    
    //! Set experiment name
-   virtual void SetExpName(const Char_t* name) { fExpName = name; }
+   virtual void SetExpName(const Char_t* name) { fExpName = name;  }
    
+   // Set run number
+   void SetRunNumber(Int_t run)                { fRunNumber = run; }
+
    // Enable global
    void EnableTree()      { fFlagTree = true;    }
    void DisableTree()     { fFlagTree = false;   }
@@ -145,6 +148,9 @@ public:
    //! Set Tracking algorithm
    void SetTrackingAlgo(char c);
   
+   // Set detector to be on respect to the given list
+   void SetIncludes(const vector<TString>& list);
+
    //! Par geo getters
    TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }
    TADIparGeo*          GetParGeoDi()       const { return (TADIparGeo*)fpParGeoDi->Object();        }
@@ -192,12 +198,6 @@ public:
    virtual TAMCntuHit*  GetNtuMcCa()        const { return 0x0; }
    virtual TTree*       GetTree()                 { return 0x0; }
 
-  // beam parameters
-   Int_t Z_beam;
-   Int_t A_beam;
-   TString ion_name;
-   Float_t kinE_beam;
-
 public:
    //! Disable/Enable ITR tracking
    static void DisableItrTracking() { fgItrTrackFlag = false; }
@@ -206,6 +206,7 @@ public:
    
 protected:
    TString               fExpName;
+   Int_t                 fRunNumber;
    TAGroot*              fTAGroot;             // pointer to TAGroot
    TAGgeoTrafo*          fpFootGeo;           // trafo prointer
 

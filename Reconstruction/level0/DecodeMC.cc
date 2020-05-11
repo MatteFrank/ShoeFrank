@@ -1,9 +1,11 @@
+
 #include <TString.h>
 #include <TStopwatch.h>
 #include <TApplication.h>
 
 #include "GlobalPar.hxx"
 #include "LocalRecoMC.hxx"
+#include "LocalRecoNtuMC.hxx"
 
 int main (int argc, char *argv[])  {
 
@@ -18,7 +20,9 @@ int main (int argc, char *argv[])  {
    Bool_t his = false;
    Bool_t hit = false;
    Bool_t trk = false;
-   
+   Bool_t obj = false;
+
+   Int_t runNb = -1;
    Int_t nTotEv = 1e7;
    
    for (int i = 0; i < argc; i++){
@@ -26,12 +30,14 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
+      if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
+      
       if(strcmp(argv[i],"-trk") == 0)   { trk = true;    }   // disable/enable tracking action
-
       if(strcmp(argv[i],"-ntu") == 0)   { ntu = true;   } // enable tree filling
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
-      
+      if(strcmp(argv[i],"-obj") == 0)   { obj = true;   } // enable reading from root object
+
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
          cout<<" Ex: Decoder [opts] "<<endl;
@@ -44,6 +50,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
          cout<<"      -ntu           : enable tree filling"<<endl;
          cout<<"      -his           : enable crtl histograming"<<endl;
+         cout<<"      -obj           : enable eading from root object"<<endl;
          return 1;
       }
    }
@@ -52,9 +59,12 @@ int main (int argc, char *argv[])  {
    
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
-   
-   LocalRecoMC* locRec = new LocalRecoMC(exp, in, out);
-   
+   BaseReco* locRec = 0x0;
+   if (!obj)
+      locRec = new LocalRecoMC(exp, in, out);
+   else
+      locRec = new LocalRecoNtuMC(exp, in, out);
+
    // global setting
    if (ntu)
       locRec->EnableTree();
@@ -67,7 +77,8 @@ int main (int argc, char *argv[])  {
    if (trk) {
       locRec->EnableTracking();
    }
-
+   if (runNb != -1)
+      locRec->BaseReco::SetRunNumber(runNb);
    
    TStopwatch watch;
    watch.Start();

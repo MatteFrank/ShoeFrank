@@ -62,6 +62,9 @@ public:
    //! Loop events
    virtual void LoopEvent(Int_t nEvents);
    
+   //! Set run number
+   void   SetRunNumber();
+
    //! MC container Getter
    TAMCntuEve*  GetNtuMcEve() const { return (TAMCntuEve*)fpNtuMcEve->Object();}
    TAMCntuHit*  GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object(); }
@@ -101,9 +104,6 @@ protected:
    TAGdataDsc*           fpNtuMcMsd;    // input data dsc
    TAGdataDsc*           fpNtuMcTw;    // input data dsc
    TAGdataDsc*           fpNtuMcCa;    // input data dsc
-
-   // TAGdataDsc*           containerHit;    // input data dsc
-   TAGdataDsc*           containerPoint;    // input data dsc
    
    TAMCactNtuEve*        fActNtuMcEve;
    TAMCactNtuStc*        fActNtuMcSt;

@@ -27,6 +27,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "GlobalPar.hxx"
 #include "TAGmaterials.hxx"
 
 #include "TGeoManager.h"
@@ -94,7 +95,7 @@ TGeoMaterial* TAGmaterials::CreateMaterial(TString name, Float_t density,
    
    // mixture
    for (Int_t i = 0; i < fIsotope.size(); ++i) {
-      if (fDebugLevel > 0)
+      if(FootDebugLevel(1))
          printf("%s %g\n", fIsotope[i].Data(), fIsotopeWeight[i]);
       TGeoElement* element = fTable->FindElement(fIsotope[i].Data());
       if (element == 0x0) {
@@ -140,7 +141,7 @@ TGeoMixture* TAGmaterials::CreateMixture(TString formula, const TString densitie
    mix = new TGeoMixture(formula.Data(), listMat.size(), density);
    
    for (Int_t i = 0; i < listMat.size(); ++i) {
-      if (fDebugLevel > 0)
+      if(FootDebugLevel(1))
          printf("%s %f %f\n", listMat[i].Data(), compDensity[i], compProp[i]);
       
       TString name;

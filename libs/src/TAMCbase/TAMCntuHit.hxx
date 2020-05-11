@@ -20,6 +20,10 @@ public:
    virtual      ~TAMChit();
    
    Int_t         GetID()            const  { return fID;       }
+   Int_t         GetTrackIdx()      const  { return fID;       }
+   Int_t         GetSensorId()      const  { return fLayer;    }
+   Int_t         GetBarId()         const  { return fLayer;    }
+   Int_t         GetCrystalId()     const  { return fLayer;    }
    Int_t         GetLayer()         const  { return fLayer;    }
    Int_t         GetView()          const  { return fView;     }
    Int_t         GetCell()          const  { return fCell;     }

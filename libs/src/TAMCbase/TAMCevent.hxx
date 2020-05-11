@@ -9,14 +9,14 @@
 
 class TAMCntuHit ;
 class TAMCntuEve ;
-
+class TAMCntuRegion;
 using namespace std;
 
 class TAMCevent : public TObject {
 
  public:
 
-  TAMCevent();
+  TAMCevent(Bool_t regionFlag = false);
   virtual ~TAMCevent();
 
   Int_t Clean();
@@ -41,11 +41,11 @@ class TAMCevent : public TObject {
                TVector3 aVTXpin, TVector3 aVTXpout, Double_t aVTXde, Double_t aVTXal,
                Double_t aVTXtof, Int_t atrId=-99);
 
-  void AddITR(Int_t aITRid, Int_t aITRilay, Int_t aITRiplume, Int_t aITRimimo,
+  void AddITR(Int_t aITRid, Int_t aITRilay,
                TVector3 aITRinpos, TVector3 aITRoutpos, TVector3 aITRpin,
                TVector3 aITRpout, Double_t aITRde, Double_t aITRal, Double_t aITRtof, Int_t atrId=-99);
 
-  void AddMSD(Int_t aMSDid, Int_t aMSDilay, Int_t aMSDistripx, Int_t aMSDistripy,
+  void AddMSD(Int_t aMSDid, Int_t aMSDilay, 
                TVector3 aMSDinpos, TVector3 aMSDout, TVector3 aMSDpin,
                TVector3 aMSDpout, Double_t aMSDde, Double_t aMSDal, Double_t aMSDtof, Int_t atrId=-99);
  
@@ -62,32 +62,33 @@ class TAMCevent : public TObject {
 
   void FindBranches(TTree *RootTree);
   void SetBranches(TTree *RootTree);
-
+   
   void Dump() const;
 
 public:
    // Getters
-   TAMCntuEve* GetNtuEve() const { return fTrack;  }
-   TAMCntuHit* GetHitSTC() const { return fHitSTC; }
-   TAMCntuHit* GetHitBMN() const { return fHitBMN; }
-   TAMCntuHit* GetHitVTX() const { return fHitVTX; }
-   TAMCntuHit* GetHitITR() const { return fHitITR; }
-   TAMCntuHit* GetHitMSD() const { return fHitMSD; }
-   TAMCntuHit* GetHitTW()  const { return fHitTW;  }
-   TAMCntuHit* GetHitCAL() const { return fHitCAL; }
+   TAMCntuEve*    GetNtuEve() const { return fTrack;  }
+   TAMCntuRegion* GetNtuReg() const { return fRegion; }
+   TAMCntuHit*    GetHitSTC() const { return fHitSTC; }
+   TAMCntuHit*    GetHitBMN() const { return fHitBMN; }
+   TAMCntuHit*    GetHitVTX() const { return fHitVTX; }
+   TAMCntuHit*    GetHitITR() const { return fHitITR; }
+   TAMCntuHit*    GetHitMSD() const { return fHitMSD; }
+   TAMCntuHit*    GetHitTW()  const { return fHitTW;  }
+   TAMCntuHit*    GetHitCAL() const { return fHitCAL; }
 
  private:
-
-    Int_t fEventNumber;
-
-    TAMCntuEve* fTrack;
-    TAMCntuHit *fHitSTC;
-    TAMCntuHit *fHitBMN;
-    TAMCntuHit *fHitVTX;
-    TAMCntuHit *fHitITR;
-    TAMCntuHit *fHitMSD;
-    TAMCntuHit *fHitTW;
-    TAMCntuHit *fHitCAL;
+   Bool_t         fRegionFlag;
+   Int_t          fEventNumber;
+   TAMCntuEve*    fTrack;
+   TAMCntuRegion* fRegion;
+   TAMCntuHit*    fHitSTC;
+   TAMCntuHit*    fHitBMN;
+   TAMCntuHit*    fHitVTX;
+   TAMCntuHit*    fHitITR;
+   TAMCntuHit*    fHitMSD;
+   TAMCntuHit*    fHitTW;
+   TAMCntuHit*    fHitCAL;
 
  protected:
 

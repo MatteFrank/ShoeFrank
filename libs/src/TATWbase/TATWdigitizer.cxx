@@ -238,7 +238,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    fDeAttAsymSmear = gRandom->Uniform(-fDeAttAsym, +fDeAttAsym); // asymmetry btw left/right ends
    Double_t pos     = 0;
 
-   if (fDebugLevel) {
+   if (FootDebugLevel(1)) {
       printf("asym %4.2f\n", fDeAttAsymSmear);
       printf("edep %f\n", edep);
    }
@@ -266,7 +266,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Float_t resChargeB = GetResEnergy(chargeB);
    chargeB += gRandom->Gaus(0, resChargeB);
 
-   if (fDebugLevel) {
+   if (FootDebugLevel(1)) {
       printf("pos %.1f\n", pos);
       printf("energy %.1f %.1f\n", chargeA, chargeB);
       printf("Res %.3f %.3f\n", resChargeA*100, resChargeB*100);
@@ -276,7 +276,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Float_t timeA = GetTofLeft(pos, time, edep);
    Float_t timeB = GetTofRight(pos, time, edep);
 
-   if (fDebugLevel) {
+   if (FootDebugLevel(1)) {
      printf("time %.1f\n", time);
      printf("time %.1f %.1f\n", timeA, timeB);
    }

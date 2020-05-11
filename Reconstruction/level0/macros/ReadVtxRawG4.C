@@ -24,9 +24,10 @@
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAMCntuHit.hxx"
+#include "TAMCntuEve.hxx"
 
 #include "TAGactTreeReader.hxx"
-#include "TAVTactNtuMC.hxx"
+#include "TAVTactNtuHitMC.hxx"
 
 #include "TAVTactNtuClusterF.hxx"
 #include "TAVTactNtuTrackF.hxx"
@@ -36,7 +37,7 @@
 // main
 TAGactTreeWriter*   outFile     = 0x0;
 TAGactTreeReader*   vtActReader = 0x0;
-TAVTactNtuMC*       vtActRaw    = 0x0;
+TAVTactNtuHitMC*    vtActRaw    = 0x0;
 TAVTactNtuClusterF* vtActClus   = 0x0;
 TAVTactNtuTrackF*   vtActTrck   = 0x0;
 
@@ -55,6 +56,7 @@ void FillVertex()
    parconf->FromFile("./config/GSI/TAVTdetector.cfg");
 
    TAVTparConf::SetHistoMap();
+   TAGdataDsc* vtEve  = new TAGdataDsc("vtEve", new TAMCntuEve());
    TAGdataDsc* vtMc   = new TAGdataDsc("vtMc", new TAMCntuHit());
    TAGdataDsc* vtNtu  = new TAGdataDsc("vtNtu", new TAVTntuRaw());
    TAGdataDsc* vtClus = new TAGdataDsc("vtClus", new TAVTntuCluster());
@@ -62,8 +64,9 @@ void FillVertex()
 
    vtActReader  = new TAGactTreeReader("vtActEvtReader");
    vtActReader->SetupBranch(vtMc, TAMCntuHit::GetVtxBranchName());
-   
-   vtActRaw= new TAVTactNtuMC("vtActNtu", vtMc, vtNtu, vtGeo);
+   vtActReader->SetupBranch(vtEve,TAMCntuEve::GetBranchName());
+
+   vtActRaw= new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
    vtActRaw->CreateHistogram();
 
    vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);

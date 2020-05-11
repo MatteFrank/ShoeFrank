@@ -29,6 +29,7 @@ set( with_dictionnaries
    TAITactBaseRaw
    TAITactNtuRaw
    TAITactNtuMC
+   TAITactNtuHitMC
    TAITntuCluster
    TAITcluster
    TAITactNtuClusterF

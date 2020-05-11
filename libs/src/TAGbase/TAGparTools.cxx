@@ -41,6 +41,13 @@ TAGparTools::~TAGparTools()
 }
 
 //_____________________________________________________________________________
+void TAGparTools::ReadItem(Char_t& item)
+{
+   if (fFileStream.eof()) return;
+   fFileStream.get(item);
+}
+
+//_____________________________________________________________________________
 void TAGparTools::ReadItem(TString& item)
 {
    Int_t pos = -1;
@@ -118,6 +125,51 @@ void TAGparTools::FillArray(TString& s, TArrayC& array)
    Int_t m = m1;
    while ( n > 0 ) {
       array[m] = 1;
+      m += incr;
+      --n;
+   }
+}
+
+//_____________________________________________________________________________
+void TAGparTools::ReadItem(TArrayI& array, const Char_t delimiter)
+{
+   // From a string of the form "i-j;k;l;m-n" returns an integer array
+   // containing all the integers from i to j, then k, l and then from m to n.
+   
+   TString key;
+   ReadItem(key);
+   key = Normalize(key.Data());
+   if (key.Atoi() == -1)
+      return;
+   
+   // Get substrings separated by 'delimiter'
+   TObjArray* ranges = key.Tokenize(delimiter);
+   
+   // Finally takes each substring (which ought to be a range of the form
+   // x-y), and decode it into the theList integer vector.
+   for (Int_t i = 0; i < ranges->GetEntriesFast(); ++i ) {
+      
+      TString& s = ((TObjString*)ranges->At(i))->String();
+      FillArray(s, array);
+   }
+   
+   delete ranges;
+}
+
+//_____________________________________________________________________________
+void TAGparTools::FillArray(TString& s, TArrayI& array)
+{
+   Int_t m1;
+   Int_t m2;
+   Int_t n;
+   Int_t incr;
+   GetRange(s.Data(),m1,m2,incr,n);
+   
+   Int_t m = m1;
+   Int_t k = 0;
+   while ( n > 0 ) {
+      array.Set(array.GetSize()+1);
+      array[array.GetSize()-1] = m;
       m += incr;
       --n;
    }
@@ -242,6 +294,52 @@ void TAGparTools::ReadStrings(TString& aString)
    
    if(FootDebugLevel(3))
 	  cout << aString << endl;
+}
+
+//_____________________________________________________________________________
+void TAGparTools::ReadStringsInts(TString& aString, TArrayI& array, const Char_t delimiter1, const Char_t delimiter2)
+{
+   // reads a string between "" followed by integers separated by delimiter1
+   // Integers are separated by delimiter2
+   
+   Char_t buf[255];
+   TString key;
+   do {
+      if (fFileStream.eof()) return ;//break;
+      fFileStream.getline(buf, 255);
+      key = buf;
+   } while (buf[0] == '/');
+
+   if (key.IsNull()) return;
+   
+   Int_t len = key.Length();
+   Int_t pos = key.First('"');
+   Int_t end = key.Last('"');
+   
+   if (end == -1 || pos == -1 || end-pos-1 > 255) {
+      cout << "TAGparTools: totoproblem with reading file, missing \" or line too long" << endl;
+      return;
+   }
+   
+   aString = key(pos+1, end-pos-1);
+   pos = key.Last(delimiter1);
+   TString range = key(pos+1, len-pos);
+
+   TObjArray* ranges = range.Tokenize(delimiter2);
+   Int_t n = ranges->GetEntriesFast();;
+   array.Set(n);
+   
+   for (Int_t i = 0; i < n; ++i ) {
+      TString& s = ((TObjString*)ranges->At(i))->String();
+      Int_t r = s.Atoi();
+      array[i] = r;
+   }
+   
+   if(FootDebugLevel(3))
+      cout << range << endl;
+   
+   if(FootDebugLevel(3))
+      cout << aString << endl;
 }
 
 //_____________________________________________________________________________

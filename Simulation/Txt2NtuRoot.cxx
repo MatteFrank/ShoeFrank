@@ -1,32 +1,22 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <time.h>
-#include <math.h>
-#include <sys/time.h>
 
 #include <TROOT.h>
-#include <TTree.h>
 #include <TFile.h>
-#include <TDirectory.h>
 #include <TString.h>
-#include <TH1D.h>
-#include <TH2D.h>
-#include <TProfile.h>
-
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <ostream>
-#include <sstream>
 
 #include "Evento.hxx"
 #include "TAMCevent.hxx"
+
+#include "TAGrunInfo.hxx"
+
+#include "GlobalPar.hxx"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+   
+   // Par instance
+   GlobalPar::Instance()->Print();
    
    int status = 0, iL=0, NumProcessed=0, numfiles = 0, nread=0;
    TString outname("Out.root"), inname("In.txt");
@@ -39,6 +29,8 @@ int main(int argc, char *argv[])
    int maxevpro = 1000000000;
    int fragtrig=0;
    double Ethreshold = 0;
+   
+   bool regFlag = false;
    
    static TTree *rootTree = 0;
    
@@ -57,15 +49,18 @@ int main(int argc, char *argv[])
       if(strcmp(argv[i],"-nev") == 0) {
          maxevpro = atoi(argv[++i]);
       }
+      if(strcmp(argv[i],"-reg") == 0) {
+         regFlag = atoi(argv[++i]);
+      }
       if(strcmp(argv[i],"-iL") == 0) { iL = 1; }
       if(strcmp(argv[i],"-help") == 0) {
-         cout<<"Conversion of fluka TXT file : usage -> Txt2Root [opts] "<<endl;
+         cout<<"Conversion of fluka TXT file : usage -> Txt2NtuRoot [opts] "<<endl;
          cout<<" possible opts are:"<<endl;
-         cout<<"   -in  file    : [def=In.txt] Root input file"<<endl;
-         cout<<"   -out  file   : [def=Out.root] Root output file"<<endl;
-         cout<<"   -sel selw    : [def=0] select ev: 1*dc + 10*lyso "<<endl;
-         cout<<"   -iL        : [def=none] input file is a list of files"<<endl;
+         cout<<"   -in  file   : [def=In.txt] Root input file"<<endl;
+         cout<<"   -out file   : [def=Out.root] Root output file"<<endl;
+         cout<<"   -iL         : [def=none] input file is a list of files"<<endl;
          cout<<"   -nev        : [def=Inf] Max no. of events to process"<<endl;
+         cout<<"   -reg        : [def=0] save crossing region info"<<endl;
          return 1;
       }
    }
@@ -87,25 +82,18 @@ int main(int argc, char *argv[])
    
    TFile *f_out = new TFile(outname,"RECREATE");
    f_out->cd();
+   
+   Int_t campaign = 0;
+   Int_t run = 0;
+   TString camName = "Ntu";
+   TAGrunInfo* info = new TAGrunInfo(campaign, run, camName);
+   info->Write(TAGrunInfo::GetObjectName());
+
    rootTree = new TTree("EventTree","gsimay");
    
    // Event
-   TAMCevent* event = new TAMCevent();
+   TAMCevent* event = new TAMCevent(regFlag);
    event->SetBranches(rootTree);
-   
-   //  rootTree->Branch("CROSSn",&eve.CROSSn,"CROSSn/I");
-   //  rootTree->Branch("CROSSid",&eve.CROSSid,"CROSSid[CROSSn]/I");
-   //  rootTree->Branch("CROSSnreg",&eve.CROSSnreg,"CROSSnreg[CROSSn]/I");
-   //  rootTree->Branch("CROSSnregold",&eve.CROSSnregold,"CROSSnregold[CROSSn]/I");
-   //  rootTree->Branch("CROSSx",&eve.CROSSx,"CROSSx[CROSSn]/D");
-   //  rootTree->Branch("CROSSy",&eve.CROSSy,"CROSSy[CROSSn]/D");
-   //  rootTree->Branch("CROSSz",&eve.CROSSz,"CROSSz[CROSSn]/D");
-   //  rootTree->Branch("CROSSpx",&eve.CROSSpx,"CROSSpx[CROSSn]/D");
-   //  rootTree->Branch("CROSSpy",&eve.CROSSpy,"CROSSpy[CROSSn]/D");
-   //  rootTree->Branch("CROSSpz",&eve.CROSSpz,"CROSSpz[CROSSn]/D");
-   //  rootTree->Branch("CROSSm",&eve.CROSSm,"CROSSm[CROSSn]/D");
-   //  rootTree->Branch("CROSSch",&eve.CROSSch,"CROSSch[CROSSn]/D");
-   //  rootTree->Branch("CROSSt",&eve.CROSSt,"CROSSt[CROSSn]/D");
    
    //    loop sui file della lista ( if any)
    
@@ -202,13 +190,14 @@ int main(int argc, char *argv[])
                              &eve.STCpxin[jj],&eve.STCpyin[jj],&eve.STCpzin[jj],
                              &eve.STCpxout[jj],&eve.STCpyout[jj],&eve.STCpzout[jj],
                              &eve.STCde[jj],&eve.STCal[jj],&eve.STCtim[jj]);
-               
-               event->AddSTC(eve.STCid[jj],
-                             TVector3(eve.STCxin[jj], eve.STCyin[jj], eve.STCzin[jj]),
-                             TVector3(eve.STCxout[jj], eve.STCyout[jj], eve.STCzout[jj]),
-                             TVector3(eve.STCpxin[jj], eve.STCpyin[jj], eve.STCpzin[jj]),
-                             TVector3(eve.STCpxout[jj], eve.STCpyout[jj], eve.STCpzout[jj]),
-                             eve.STCde[jj], eve.STCal[jj], eve.STCtim[jj], 0);
+    
+               if (GlobalPar::GetPar()->IncludeST())
+                  event->AddSTC(eve.STCid[jj],
+                                TVector3(eve.STCxin[jj], eve.STCyin[jj], eve.STCzin[jj]),
+                                TVector3(eve.STCxout[jj], eve.STCyout[jj], eve.STCzout[jj]),
+                                TVector3(eve.STCpxin[jj], eve.STCpyin[jj], eve.STCpzin[jj]),
+                                TVector3(eve.STCpxout[jj], eve.STCpyout[jj], eve.STCpzout[jj]),
+                                eve.STCde[jj], eve.STCal[jj], eve.STCtim[jj], 0);
                
                if(nread!=16){
                   ReadError= true;
@@ -234,12 +223,13 @@ int main(int argc, char *argv[])
                               &eve.BMNpxout[jj],&eve.BMNpyout[jj],&eve.BMNpzout[jj],
                               &eve.BMNde[jj],&eve.BMNal[jj],&eve.BMNtim[jj]);
                
-                event->AddBMN(eve.BMNid[jj], eve.BMNilay[jj], eve.BMNiview[jj], eve.BMNicell[jj],
-                              TVector3(eve.BMNxin[jj], eve.BMNyin[jj], eve.BMNzin[jj]),
-                              TVector3(eve.BMNxout[jj], eve.BMNyout[jj], eve.BMNzout[jj]),
-                              TVector3(eve.BMNpxin[jj], eve.BMNpyin[jj], eve.BMNpzin[jj]),
-                              TVector3(eve.BMNpxout[jj], eve.BMNpyout[jj], eve.BMNpzout[jj]),
-                              eve.BMNde[jj], eve.BMNal[jj], eve.BMNtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeBM())
+                  event->AddBMN(eve.BMNid[jj], eve.BMNilay[jj], eve.BMNiview[jj], eve.BMNicell[jj],
+                                TVector3(eve.BMNxin[jj], eve.BMNyin[jj], eve.BMNzin[jj]),
+                                TVector3(eve.BMNxout[jj], eve.BMNyout[jj], eve.BMNzout[jj]),
+                                TVector3(eve.BMNpxin[jj], eve.BMNpyin[jj], eve.BMNpzin[jj]),
+                                TVector3(eve.BMNpxout[jj], eve.BMNpyout[jj], eve.BMNpzout[jj]),
+                                eve.BMNde[jj], eve.BMNal[jj], eve.BMNtim[jj], 0);
                
                if(nread!=19){
                   ReadError = true;
@@ -264,12 +254,13 @@ int main(int argc, char *argv[])
                               &eve.VTXpxout[jj],&eve.VTXpyout[jj],&eve.VTXpzout[jj],
                               &eve.VTXde[jj],&eve.VTXal[jj],&eve.VTXtim[jj]);
                
-               event->AddVTX(eve.VTXid[jj], eve.VTXilay[jj],
-                             TVector3(eve.VTXxin[jj], eve.VTXyin[jj], eve.VTXzin[jj]),
-                             TVector3(eve.VTXxout[jj], eve.VTXyout[jj], eve.VTXzout[jj]),
-                             TVector3(eve.VTXpxin[jj], eve.VTXpyin[jj], eve.VTXpzin[jj]),
-                             TVector3(eve.VTXpxout[jj], eve.VTXpyout[jj], eve.VTXpzout[jj]),
-                             eve.VTXde[jj], eve.VTXal[jj], eve.VTXtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeVertex())
+                  event->AddVTX(eve.VTXid[jj], eve.VTXilay[jj],
+                                TVector3(eve.VTXxin[jj], eve.VTXyin[jj], eve.VTXzin[jj]),
+                                TVector3(eve.VTXxout[jj], eve.VTXyout[jj], eve.VTXzout[jj]),
+                                TVector3(eve.VTXpxin[jj], eve.VTXpyin[jj], eve.VTXpzin[jj]),
+                                TVector3(eve.VTXpxout[jj], eve.VTXpyout[jj], eve.VTXpzout[jj]),
+                                eve.VTXde[jj], eve.VTXal[jj], eve.VTXtim[jj], 0);
 
                if(nread!=17){
                   ReadError = true;
@@ -294,12 +285,13 @@ int main(int argc, char *argv[])
                               &eve.ITRpxout[jj],&eve.ITRpyout[jj],&eve.ITRpzout[jj],
                               &eve.ITRde[jj],&eve.ITRal[jj],&eve.ITRtim[jj]);
                
-               event->AddITR(eve.ITRid[jj], eve.ITRisens[jj], -1, -1,
-                             TVector3(eve.ITRxin[jj], eve.ITRyin[jj], eve.ITRzin[jj]),
-                             TVector3(eve.ITRxout[jj], eve.ITRyout[jj], eve.ITRzout[jj]),
-                             TVector3(eve.ITRpxin[jj], eve.ITRpyin[jj], eve.ITRpzin[jj]),
-                             TVector3(eve.ITRpxout[jj], eve.ITRpyout[jj], eve.ITRpzout[jj]),
-                             eve.ITRde[jj], eve.ITRal[jj], eve.ITRtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeInnerTracker())
+                  event->AddITR(eve.ITRid[jj], eve.ITRisens[jj],
+                                TVector3(eve.ITRxin[jj], eve.ITRyin[jj], eve.ITRzin[jj]),
+                                TVector3(eve.ITRxout[jj], eve.ITRyout[jj], eve.ITRzout[jj]),
+                                TVector3(eve.ITRpxin[jj], eve.ITRpyin[jj], eve.ITRpzin[jj]),
+                                TVector3(eve.ITRpxout[jj], eve.ITRpyout[jj], eve.ITRpzout[jj]),
+                                eve.ITRde[jj], eve.ITRal[jj], eve.ITRtim[jj], 0);
                
                if(nread!=17){
                   ReadError = true;
@@ -325,12 +317,13 @@ int main(int argc, char *argv[])
                               &eve.MSDpxout[jj],&eve.MSDpyout[jj],&eve.MSDpzout[jj],
                               &eve.MSDde[jj],&eve.MSDal[jj],&eve.MSDtim[jj]);
                
-               event->AddMSD(eve.MSDid[jj], eve.MSDilay[jj], -1, -1,
-                             TVector3(eve.MSDxin[jj], eve.MSDyin[jj], eve.MSDzin[jj]),
-                             TVector3(eve.MSDxout[jj], eve.MSDyout[jj], eve.MSDzout[jj]),
-                             TVector3(eve.MSDpxin[jj], eve.MSDpyin[jj], eve.MSDpzin[jj]),
-                             TVector3(eve.MSDpxout[jj], eve.MSDpyout[jj], eve.MSDpzout[jj]),
-                             eve.MSDde[jj], eve.MSDal[jj], eve.MSDtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeMSD())
+                  event->AddMSD(eve.MSDid[jj], eve.MSDilay[jj],
+                                TVector3(eve.MSDxin[jj], eve.MSDyin[jj], eve.MSDzin[jj]),
+                                TVector3(eve.MSDxout[jj], eve.MSDyout[jj], eve.MSDzout[jj]),
+                                TVector3(eve.MSDpxin[jj], eve.MSDpyin[jj], eve.MSDpzin[jj]),
+                                TVector3(eve.MSDpxout[jj], eve.MSDpyout[jj], eve.MSDpzout[jj]),
+                                eve.MSDde[jj], eve.MSDal[jj], eve.MSDtim[jj], 0);
                
                if(nread!=17){
                   ReadError = true;
@@ -354,12 +347,13 @@ int main(int argc, char *argv[])
                              &eve.SCNpyout[jj],&eve.SCNpzout[jj],&eve.SCNde[jj],
                              &eve.SCNal[jj],&eve.SCNtim[jj]);
                
-               event->AddTW(eve.SCNid[jj], eve.SCNibar[jj], eve.SCNiview[jj],
-                            TVector3(eve.SCNxin[jj], eve.SCNyin[jj], eve.SCNzin[jj]),
-                            TVector3(eve.SCNxout[jj], eve.SCNyout[jj], eve.SCNzout[jj]),
-                            TVector3(eve.SCNpxin[jj], eve.SCNpyin[jj], eve.SCNpzin[jj]),
-                            TVector3(eve.SCNpxout[jj], eve.SCNpyout[jj], eve.SCNpzout[jj]),
-                            eve.SCNde[jj], eve.SCNal[jj], eve.SCNtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeTW())
+                  event->AddTW(eve.SCNid[jj], eve.SCNibar[jj], eve.SCNiview[jj],
+                               TVector3(eve.SCNxin[jj], eve.SCNyin[jj], eve.SCNzin[jj]),
+                               TVector3(eve.SCNxout[jj], eve.SCNyout[jj], eve.SCNzout[jj]),
+                               TVector3(eve.SCNpxin[jj], eve.SCNpyin[jj], eve.SCNpzin[jj]),
+                               TVector3(eve.SCNpxout[jj], eve.SCNpyout[jj], eve.SCNpzout[jj]),
+                               eve.SCNde[jj], eve.SCNal[jj], eve.SCNtim[jj], 0);
                
                if(nread!=18){
                   ReadError= true;
@@ -383,12 +377,13 @@ int main(int argc, char *argv[])
                              &eve.CALpxout[jj],&eve.CALpyout[jj],&eve.CALpzout[jj],
                              &eve.CALde[jj],&eve.CALal[jj],&eve.CALtim[jj]);
                
-               event->AddCAL(eve.CALid[jj], eve.CALicry[jj],
-                             TVector3(eve.CALxin[jj], eve.CALyin[jj], eve.CALzin[jj]),
-                             TVector3(eve.CALxout[jj], eve.CALyout[jj], eve.CALzout[jj]),
-                             TVector3(eve.CALpxin[jj], eve.CALpyin[jj], eve.CALpzin[jj]),
-                             TVector3(eve.CALpxout[jj], eve.CALpyout[jj], eve.CALpzout[jj]),
-                             eve.CALde[jj], eve.CALal[jj], eve.CALtim[jj], 0);
+               if (GlobalPar::GetPar()->IncludeCA())
+                  event->AddCAL(eve.CALid[jj], eve.CALicry[jj],
+                                TVector3(eve.CALxin[jj], eve.CALyin[jj], eve.CALzin[jj]),
+                                TVector3(eve.CALxout[jj], eve.CALyout[jj], eve.CALzout[jj]),
+                                TVector3(eve.CALpxin[jj], eve.CALpyin[jj], eve.CALpzin[jj]),
+                                TVector3(eve.CALpxout[jj], eve.CALpyout[jj], eve.CALpzout[jj]),
+                                eve.CALde[jj], eve.CALal[jj], eve.CALtim[jj], 0);
                
                if(nread!=17){
                   ReadError= true;
@@ -408,6 +403,13 @@ int main(int argc, char *argv[])
                               &eve.CROSSy[jj],&eve.CROSSz[jj],&eve.CROSSpx[jj],
                               &eve.CROSSpy[jj],&eve.CROSSpz[jj],&eve.CROSSm[jj],
                               &eve.CROSSch[jj],&eve.CROSSt[jj]);
+               if (regFlag) {
+                  event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
+                                  TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
+                                  TVector3(eve.CROSSy[jj],eve.CROSSz[jj],eve.CROSSpx[jj]),
+                                  eve.CROSSm[jj],eve.CROSSch[jj],eve.CROSSt[jj]);
+               }
+               
                if(nread!=12){
                   cout<<"ReadError in CROSS section: nread = "<<nread<<
                   " instead of 12; ev= "<<NumProcessed<<endl;

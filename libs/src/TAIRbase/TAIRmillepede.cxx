@@ -50,8 +50,7 @@ TAIRmillepede::TAIRmillepede()
    fNLocalFits(0),
    fNLocalFitsRejected(0),
    fNGlobalPar(0),
-   fNLocalPar(0),
-   fDebugLevel(0)
+   fNLocalPar(0)
 {
    /// Standard constructor
       
@@ -105,7 +104,7 @@ Int_t TAIRmillepede::InitMille(int nGlo, int nLoc, int lNStdDev,
    fNLocalPar  = nLoc;     // Number of local derivatives
    fNStdDev    = lNStdDev; // Number of StDev for local fit chisquare cut
    
-   if (fDebugLevel) {
+   if(FootDebugLevel(1)) {
 	  printf("Number of global parameters   : %d\n", fNGlobalPar);
 	  printf("Number of local parameters    : %d\n", fNLocalPar);
 	  printf("Number of standard deviations : %d\n", fNStdDev);
@@ -154,7 +153,7 @@ Int_t TAIRmillepede::InitMille(int nGlo, int nLoc, int lNStdDev,
    fDerivAllEqs.Reset();  fNDerivAllEqs=0;
    fLocEqPlace.Reset();  fNLocEqPlace=0;
    
-   if (fDebugLevel) {
+    if(FootDebugLevel(1)) {
 	  printf("\n");
 	  printf("----------------------------------------------------\n");
 	  printf("\n");
@@ -466,7 +465,7 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
    // Fill the track store at first pass
    
    if (fIter < 2 && !bSingleFit) { // Do it only once 
-	  if (fDebugLevel) 
+	   if(FootDebugLevel(1))
 		 printf("Store equation no: %d", iFit); 
 	  
 	  for (i=0; i<nEqTerms; i++) { // Store the track parameters
@@ -545,7 +544,7 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 			iGloLast = iEqTerm-1;
 			lMeas	= fDerivLocEq[iMeas];
 			lWeight 	= fDerivLocEq[iWeight];
-			if (fDebugLevel) {
+         if(FootDebugLevel(1)) {
 			   printf("lMeas = %f\n", lMeas);
 			   printf("lWeight = %f\n", lWeight);
 			}
@@ -589,7 +588,7 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
    Int_t nRank = TAIRmillepede::SpmInv(fMatCLoc, fVecBLoc, fNLocalPar);
    // nRank is the number of nonzero diagonal elements 
    
-   if (fDebugLevel) {
+    if(FootDebugLevel(1)) {
 	  printf("\n");
 	  printf(" __________________________________________________\n");
 	  printf(" Printout of local fit  (FITLOC)  with rank= %d\n", nRank);
@@ -698,7 +697,7 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
    nDoF = nEq-nRank;	
    lRedChi2 = 0.0;
    
-   if (fDebugLevel)
+    if(FootDebugLevel(1))
 	  printf("Final chi square / degrees of freedom %.2f / %d\n",lChi2, nDoF);
    
    if (nDoF > 0) lRedChi2 = lChi2/float(nDoF);  // Chi^2/dof
@@ -708,12 +707,12 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
    if (fNStdDev != 0 && nDoF > 0 && !bSingleFit) // Chisquare cut
    {
 	  lChi2Cut = TAIRmillepede::Chi2DoFLim(fNStdDev, nDoF)*fChi2CutFactor;
-	  if (fDebugLevel) 
+	   if(FootDebugLevel(1))
 		 printf("Reject if Chisq/Ndf = %.4f > %.4f\n",lRedChi2,lChi2Cut);
 	  
 	  if (lRedChi2 > lChi2Cut) // Reject the track if too much...
 	  {
-		 if (fDebugLevel) 
+		  if(FootDebugLevel(1))
 			printf("Rejected track !!!!!\n");
 		 fNLocalFitsRejected++;      
 		 fIndexLocEq.Reset();  fNIndexLocEq=0; // reset stores and go to the next track 
@@ -919,7 +918,7 @@ Int_t TAIRmillepede::GlobalFit(double par[], double error[], double pull[])
 	  if (fIter > 1) {    
 		 for (i=0; i<fNGlobalPar; i++) {	
 			for (j=0; j<fNGlobalPar; j++) {
-			   if (fDebugLevel) 
+			    if(FootDebugLevel(1))
 				  printf("%d, %d, %.6f  %.6f  %.6f\n",i,j,step[i],fMatCGlo[i][j],step[j]);
 			   lFinalCor += step[i]*fMatCGlo[i][j]*step[j]; 
 			   if (i == j && fSigmaPar[i] != 0) {
@@ -938,7 +937,7 @@ Int_t TAIRmillepede::GlobalFit(double par[], double error[], double pull[])
 	  
 	  for (i=0; i<fNGlobalPar; i++) {    
 		 fDeltaPar[i] += fVecBGlo[i];    // Update global parameters values (for iterations)
-		 if (fDebugLevel) {
+		 if(FootDebugLevel(1)) {
 			printf("fDeltaPar[%d] = %.6f\n", i, fDeltaPar[i]);
 			printf("fMatCGlo[%d][%d] = %.6f\n", i, i, fMatCGlo[i][i]);
 			printf("err = %.6f\n", TMath::Sqrt(TMath::Abs(fMatCGlo[i][i])));

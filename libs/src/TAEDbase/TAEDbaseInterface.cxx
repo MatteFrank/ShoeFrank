@@ -294,7 +294,7 @@ void TAEDbaseInterface::MakeGUI()
    b->SetToolTipText("Next Event");
    b->Connect("Clicked()", "TAEDbaseInterface", this, "NextEvent()");
    
-   if (fType == 1) {
+   if (fType == 1 || fType == 2) {
       b = new TGPictureButton(eventFrame, gClient->GetPicture(icondir + "GoBack.gif"));
       eventFrame->AddFrame(b);
       b->SetToolTipText("Prevoius Event");
@@ -306,7 +306,7 @@ void TAEDbaseInterface::MakeGUI()
    b->SetToolTipText("Loop Event");
    b->Connect("Clicked()", "TAEDbaseInterface", this, "LoopEvent()");
    
-   if (fType == 1) {
+   if (fType == 1 || fType == 2) {
       b = new TGPictureButton(eventFrame, gClient->GetPicture(icondir + "GoHome.gif"));
       eventFrame->AddFrame(b);
       b->SetToolTipText("Go To Event");

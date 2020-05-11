@@ -54,7 +54,6 @@ public:
 
   //vector<TH1F *> wv0;
 
-  bool m_debug;
   int m_nev;
   
  private:

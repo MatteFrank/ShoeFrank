@@ -39,8 +39,6 @@ public:
   TAGdataDsc*     fpDatRaw;		    // input data dsc
   TAGdataDsc*     fpNtuRaw;		    // output data dsc
   TAGparaDsc*      fpParMap;		    // output data dsc
-
-  bool m_debug;
   
   TH1F *hArrivalTime[8];
   TH1F *hCharge[8];

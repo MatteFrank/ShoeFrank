@@ -56,7 +56,7 @@ void GlobalTrackingStudies::Execute() {
 					// cout << "INFO << Noise cluster " << endl;
 					continue;
 				}
-				genParticle = eve->GetHit( clus->GetMcTrackIdx(0) );
+				genParticle = eve->GetTrack( clus->GetMcTrackIdx(0) );
 			}
 			else { // more than one partilcle associated to the cluster
 				// cout << "more than one partilcle associated to the cluster" << endl;

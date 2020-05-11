@@ -42,10 +42,9 @@ Int_t   TAVTactBaseNtuMC::fgMcNoiseId       = -99;
 
 //------------------------------------------+-----------------------------------
 //
-TAVTactBaseNtuMC::TAVTactBaseNtuMC(const char* name,  TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
+TAVTactBaseNtuMC::TAVTactBaseNtuMC(const char* name,  TAGparaDsc* pGeoMap)
  : TAGaction(name, "TAVTactBaseNtuMC - NTuplize Vertex MC data"),
    fpGeoMap(pGeoMap),
-	fpEvtStr(evStr),
 	fNoisyPixelsN(0)
 {   
 	fpHisPoisson = (TH1F*)gDirectory->FindObject("vtPoisson");

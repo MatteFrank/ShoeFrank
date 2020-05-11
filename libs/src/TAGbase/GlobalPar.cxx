@@ -1,3 +1,5 @@
+#include "cxxabi.h"
+
 #include "Varargs.h"
 #include "TNamed.h"
 #include "TArrayC.h"
@@ -52,8 +54,6 @@ GlobalPar::GlobalPar( string aparFileName ) {
     m_kalmanMode = -1;
 
     m_kalReverse = false;
-    m_geoROOT = true;
-    m_geoFLUKA = false;
     m_verFLUKA = false;
 
     ReadParamFile();
@@ -87,8 +87,16 @@ void GlobalPar::ReadParamFile () {
             string tmpString = "";
             while ( formulasStream >> tmpString )
                 m_mcParticles.push_back(tmpString);
-        } 
-
+        } else if ( line.find("ClassDebugLevel:") != string::npos ) {
+           string formulasString = StrReplace( line, "ClassDebugLevel:", "" );
+           istringstream formulasStream( formulasString );
+           string className = "";
+          int    classLevel = -1;
+           formulasStream >> className;
+           formulasStream >> classLevel;
+           m_map_debug[className] = classLevel;
+       }
+       
         if ( line.find("Kalman Mode:") != string::npos ) {
             vector<string> tmp_Modes = { "OFF", "ON", "ref", "daf", "dafsimple" };
             istringstream sss(  StrReplace( line, "Kalman Mode:", "" ) );
@@ -123,28 +131,6 @@ void GlobalPar::ReadParamFile () {
             else
                 m_kalReverse = false;
         } 
-
-
-
-        else if ( line.find("Create Reconstruction Geo:") != string::npos ) {
-            string rev =StrReplace( line, "Create Reconstruction Geo:", "" );
-            RemoveSpace( &rev );
-            if ( rev == "y" )
-                m_geoROOT = true;
-            else
-                m_geoROOT = false;
-        } 
-
-
-        else if ( line.find("Print FLUKA Geo input files:") != string::npos ) {
-            string rev =StrReplace( line, "Print FLUKA Geo input files:", "" );
-            RemoveSpace( &rev );
-            if ( rev == "y" )
-                m_geoFLUKA = true;
-            else
-                m_geoFLUKA = false;
-        } 
-
 
         else if ( line.find("FLUKA version:") != string::npos ) {
             string rev =StrReplace( line, "FLUKA version:", "" );
@@ -291,6 +277,15 @@ void GlobalPar::ReadParamFile () {
 
 }
 
+//_____________________________________________________________________________
+void GlobalPar::SetDebugLevels()
+{
+   for ( map< string, int >::iterator it = m_map_debug.begin(); it != m_map_debug.end(); ++it) {
+      string name = it->first;
+      int level   = m_map_debug[it->first];
+      SetClassDebugLevel(name.c_str(), level);
+   }
+}
 
 //_____________________________________________________________________________
 void GlobalPar::SetClassDebugLevel(const char* className, Int_t level)
@@ -316,6 +311,18 @@ void GlobalPar::ClearClassDebugLevel(const char* className)
    if (!className) return;
      TObject* obj = Instance()->m_ClassDebugLevels.FindObject(className);
    if (obj) delete Instance()->m_ClassDebugLevels.Remove(obj);
+}
+
+//_____________________________________________________________________________
+Bool_t GlobalPar::GetMcDebugLevel(Int_t level, const char* className)
+{
+   // get the logging level for the given MC class
+   // need to remove compiler index
+   
+   Int_t status;
+   const char* name = abi::__cxa_demangle(className,0,0,&status);
+
+   return GetDebugLevel(level, name);
 }
 
 //_____________________________________________________________________________
@@ -376,25 +383,6 @@ void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, 
    }
 }
 
-//________________________________________________________________________________________
-bool GlobalPar::CheckAllowedHitOrigin( string origin ) {
-   if ( find( m_originAllowed.begin(), m_originAllowed.end(), origin ) == m_originAllowed.end() )
-      return false;
-   
-   return true;
-}
-
-
-//________________________________________________________________________________________
-void GlobalPar::PrintAllowedHitOrigin() {
-   cout << "m_originAllowed = ";
-   for ( unsigned int i=0; i < m_originAllowed.size(); i++ ) {
-      cout << m_originAllowed.at(i);
-      if ( i == m_originAllowed.size()-1 )        cout << ".";
-      else                                        cout << ", ";
-   }
-   cout << endl;
-}
 
 //________________________________________________________________________________________
 void GlobalPar::Print() {
@@ -467,25 +455,3 @@ bool GlobalPar::frankFind( string what, string where )	{
    
    return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

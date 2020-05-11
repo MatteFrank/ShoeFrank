@@ -112,7 +112,6 @@ private:
    int fNLocalFitsRejected;     // Number of local fits rejected
    int fNGlobalPar;             // Number of global parameters
    int fNLocalPar;              // Number of local parameters
-   Int_t fDebugLevel;           // debug level
    
    ClassDef(TAIRmillepede, 0)  // Millepede Class
 };

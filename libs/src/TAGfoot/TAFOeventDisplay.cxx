@@ -33,6 +33,7 @@
 
 #include "LocalReco.hxx"
 #include "LocalRecoMC.hxx"
+#include "LocalRecoNtuMC.hxx"
 
 ClassImp(TAFOeventDisplay)
 
@@ -206,6 +207,8 @@ void TAFOeventDisplay::SetLocalReco()
       fReco = new LocalReco(fExpName);
    else if (fType == 1)
       fReco = new LocalRecoMC(fExpName);
+   else if (fType == 2)
+      fReco = new LocalRecoNtuMC(fExpName);
    else
       Error("SetLocalReco()", "Unknown type %d", fType);
       

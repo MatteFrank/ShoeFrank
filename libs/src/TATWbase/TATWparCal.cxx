@@ -58,7 +58,7 @@ void TATWparCal::RetrieveBeamQuantities() {
   Int_t    A_beam = m_parGeo->GetBeamPar().AtomicMass;
   Float_t  kinE_beam = m_parGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev()*A_beam; //MeV
   
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
     printf("ion::%s Z::%d A::%d E::%d\n",ion_name.Data(),Z_beam,A_beam,(int)(kinE_beam/A_beam));
   
   Float_t  z_SC = ((TVector3)m_geoTrafo->GetSTCenter()).Z();    // cm
@@ -98,7 +98,7 @@ void TATWparCal::RetrieveBeamQuantities() {
   Tof_beam = Lmin/(C_speed*Beta_beam);
   Tof_max = 5*Tof_beam;
   
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
     cout<<"L::"<<Lmin<<"  Tof_min::"<<Tof_min<<"  Tof_max::"<<Tof_max<<"  <Tof>::"<<Tof_beam<<"  Beta::"<<Beta_beam<<"  Mass::"<<Mass_beam<<"  Energy::"<<Energy_beam<<"  B::"<<binding_energy<<endl;
 
 }
@@ -154,7 +154,7 @@ Bool_t TATWparCal::FromFileZID(Int_t Zbeam, const TString& name) {
     // fChargeParameter[iZ].Layer    = tmp[4];
     // fChargeParameter[iZ].Charge   = tmp[5];
     
-    if(fDebugLevel)
+    if(FootDebugLevel(1))
       cout << endl << " TW Parameter: "<< Form("Z=%d %f %f %f %f", iZ+1, fChargeParameter.Norm_BB[iZ], fChargeParameter.Const_BB[iZ], fChargeParameter.CutLow[iZ], fChargeParameter.CutUp[iZ]) << endl;
     
   }
@@ -175,7 +175,7 @@ Int_t TATWparCal::GetChargeZ(Float_t edep, Float_t tof, Int_t layer)
     for(int iZ=0; iZ<Z_beam; iZ++)
       dist_Z.push_back( std::numeric_limits<float>::max() ); //inf
 
-    if (fDebugLevel)
+     if(FootDebugLevel(1))
       printf("the energy released is %.f so Zraw is set to %d and dist to inf\n",edep,Zraw);
 
   }
@@ -202,7 +202,7 @@ Int_t TATWparCal::SelectProtonsFromNeutrons(float distZ1) {
   float sigma = fChargeParameter.distSigma[0];
   Int_t Z = abs(distZ1-mean)<5*sigma ? 1 : 0;
   
-  if(fDebugLevel) cout<<"check::Z==1 assignment...nSigma is < 5 ?  nSigma::"<<abs(distZ1-mean)/sigma<<" ...so...  Zraw::"<<Z<<endl;
+  if(FootDebugLevel(1)) cout<<"check::Z==1 assignment...nSigma is < 5 ?  nSigma::"<<abs(distZ1-mean)/sigma<<" ...so...  Zraw::"<<Z<<endl;
   
   return Z;  
 }
@@ -242,7 +242,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 
   dist_Z.clear();
 
-  if(fDebugLevel)
+  if(FootDebugLevel(1))
     cout<<"edep::"<<edep<<"  tof::"<<tof<<endl;
   
   for (int iZ=1; iZ<Z_beam+1; iZ++) {
@@ -271,7 +271,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 	if(f_prime_dist_min>0)
 	  xmin+=deltaToFmin*100;
       }
-      if(fDebugLevel) {
+      if(FootDebugLevel(1)) {
 	cout<<"xmin::"<<xmin<</*" "<<fBB_x<<" "<<fBB_prime_x<<*/" dist::"<<dist<<" f_prime::"<<f_prime_dist_min<<endl;
       }
       
@@ -287,7 +287,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 	if(f_prime_dist_max<0)      
 	  xmax-=deltaToFmin*100;
       }
-      if(fDebugLevel) {
+      if(FootDebugLevel(1)) {
 	cout<<"xmax::"<<xmax<</*" "<<fBB_x<<" "<<fBB_prime_x<<*/" dist::"<<dist<<" f_prime::"<<f_prime_dist_max<<endl;
       }
       
@@ -311,12 +311,12 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 	      xmin = xhalf;
 	  }
 	  
-	  if(fDebugLevel) cout<<"dist::"<<dist<<"  distMIN::"<<dist_min_Z<<"  Zraw::"<<iZ<<endl;
+	  if(FootDebugLevel(1)) cout<<"dist::"<<dist<<"  distMIN::"<<dist_min_Z<<"  Zraw::"<<iZ<<endl;
 	  // assign Z value
 	  if(dist<dist_min_Z) {
 	    dist_min_Z=dist;
 	    Zraw = iZ;
-	    if(fDebugLevel) cout<<"selected:: dist::"<<dist<<"  distMIN::"<<dist_min_Z<<"  Zraw::"<<iZ<<endl;
+	    if(FootDebugLevel(1)) cout<<"selected:: dist::"<<dist<<"  distMIN::"<<dist_min_Z<<"  Zraw::"<<iZ<<endl;
 	  }
 	  
 	  if(edep<fBB_x) {
@@ -328,7 +328,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 
 	  
 	} else {  // if (f_prime_dist_min*f_prime_dist_max>0)
-	  if(fDebugLevel) printf("no bisection algorithm is possible to assign Z = %d to the TW hit with (tof,eloss) = (%f,%f)\n",iZ,tof,edep);
+	  if(FootDebugLevel(1)) printf("no bisection algorithm is possible to assign Z = %d to the TW hit with (tof,eloss) = (%f,%f)\n",iZ,tof,edep);
 	  dist=std::numeric_limits<float>::max(); //inf
 	  dist_Z.push_back( dist );
 
@@ -338,22 +338,22 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
       else {
 	dist=std::numeric_limits<float>::max(); //inf
 	dist_Z.push_back( dist );
-	if (fDebugLevel)
+	 if(FootDebugLevel(1))
 	  printf("xmin(%.5f) > xmax(%.5f) so no possible interval for bisection algorithm\n",xmin,xmax);      
       }
     } else {
       dist=std::numeric_limits<float>::max(); //inf
       dist_Z.push_back( dist );
-      if (fDebugLevel)
+       if(FootDebugLevel(1))
 	printf("tof (%.f) is outside the selected interval [%.f,%.f] so Zraw is set to %d\n",tof,xmin,xmax,Zraw);      
     }
 
-    if(fDebugLevel) printf("for loop over iZ::%d  with dist::%.5f\n\n",iZ,dist_Z.at(iZ-1));
-    if(fDebugLevel) printf("the selected Z is:: %d\n\n",Zraw);
+    if(FootDebugLevel(1)) printf("for loop over iZ::%d  with dist::%.5f\n\n",iZ,dist_Z.at(iZ-1));
+    if(FootDebugLevel(1)) printf("the selected Z is:: %d\n\n",Zraw);
 
   } // close for loop over Z
     
-  if(fDebugLevel && Zraw==0)
+  if(FootDebugLevel(1) && Zraw==0)
     printf("Z::%d  edep::%f  tof::%f \n",Zraw,edep,tof);
     
   return;

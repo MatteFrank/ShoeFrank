@@ -79,11 +79,12 @@ void TAGionisMaterials::AddMeanExcitationEnergy(Double_t value)
       Error("AddMeanExcitationEnergy()", "Material nor defined");
       return;
    }
-   
+   Bool_t error;
    TString ref = fgkMeanExcitationEnergy + fMaterial->GetName();
-   if (gGeoManager->GetProperty(ref.Data()) < 1e-10) {
+   gGeoManager->GetProperty(ref.Data(), &error);
+   
+   if (error == true) {
       gGeoManager->AddProperty(ref.Data(), value);
-
       fMaterial->AddConstProperty(GetMeanExcitationEnergyName(), ref.Data());
    }
    
