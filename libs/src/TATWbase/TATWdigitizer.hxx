@@ -13,6 +13,8 @@
  \brief   Declaration of TATWdigitizer.
  
  Parameters taken from M. Morrocchi, E. Ciarrocchi et al., NIM A 911 (2018) 0–8
+
+--> 09/04/2020 parameters changed by mtoppi using updated values provided by R.Zarrella (Eloss res and Tof res) and M.Morrocchi (velocity of prop of light in the bars)
  */
 /*------------------------------------------+---------------------------------*/
 

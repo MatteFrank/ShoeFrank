@@ -50,7 +50,7 @@ Bool_t TAMCactNtuBm::Action() {
       Int_t layer    = fpEvtStr->BMNilay[i];
       Int_t view     = fpEvtStr->BMNicell[i];
       Int_t cellId   = fpEvtStr->BMNicell[i];
-      Int_t trackIdx = fpEvtStr->BMNid[i] - 1;
+      Int_t trackIdx = fpEvtStr->BMNid[i];
 
       TVector3 ipos( fpEvtStr->BMNxin[i], fpEvtStr->BMNyin[i], fpEvtStr->BMNzin[i]);
       TVector3 fpos( fpEvtStr->BMNxout[i], fpEvtStr->BMNyout[i], fpEvtStr->BMNzout[i]);

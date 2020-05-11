@@ -1,4 +1,3 @@
-
 /*!
   \file
   \version $Id: TATWactNtuRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
@@ -38,9 +37,8 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
     fpParMap(p_parmap),
     fpCalPar(p_calmap),
     fpParGeo_Gl(p_pargeoG),
-    fTofPropAlpha(0.65), // velocity^-1 of light propagation in the TW bar (ns/cm)
-    // fTofPropAlpha(0.280/2.), // velocity of the difference need to divide by 2 (ns/cm)
-    fTofErrPropAlpha(2.5)
+    fTofPropAlpha(0.066), // velocity^-1 of light propagation in the TW bar (ns/cm)
+    fTofErrPropAlpha(2.e-03)
 {
   AddDataIn(p_datraw, "TATWdatRaw");
   AddDataOut(p_nturaw, "TATWntuRaw");
@@ -53,7 +51,6 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
   f_pargeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
 
   Z_beam = f_pargeo->GetBeamPar().AtomicNumber;
- 
 }
 
 //------------------------------------------+-----------------------------------

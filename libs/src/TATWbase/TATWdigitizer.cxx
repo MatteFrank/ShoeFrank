@@ -56,15 +56,20 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
    fDeErrAttLambdaRight(0.3),
    fDeAttAsym(0.09),
    fDeAttAsymSmear(0.),
-   fTofCstE(1000),
-   fTofErrCstE(0.1),
-   fTofLambdaE(2.50),
-   fTofErrLambdaE(0.1),
-   fTofk0E(140),
-   fTofErrk0E(18),
-   fTofPropAlpha(65.), // velocity^-1 of propagation of light in TW bar (ps/cm)
-   // fTofPropAlpha(280/2.), // velocity of the difference need to divide by 2 (ps/cm)
-   fTofErrPropAlpha(2.5), // old 5 ?
+   fTofCstE(241),
+   fTofErrCstE(3),
+   // fTofCstE(1000),
+   // fTofErrCstE(0.1),
+   fTofLambdaE(0.08),
+   fTofErrLambdaE(0.001),
+   // fTofLambdaE(2.50),
+   // fTofErrLambdaE(0.1),
+   fTofk0E(60.2),
+   fTofErrk0E(0.3),
+   // fTofk0E(140),
+   // fTofErrk0E(18),
+   fTofPropAlpha(66.), // velocity^-1 of propagation of light in TW bar (ps/cm)
+   fTofErrPropAlpha(2),
    fSlatLength(0),
    fGain(1),
    fEnergyThreshold(0.1) // MeV
@@ -85,8 +90,10 @@ TATWdigitizer::TATWdigitizer(TATWntuRaw* pNtuRaw)
 // --------------------------------------------------------------------------------------
 void  TATWdigitizer::SetFunctions()
 {
-   fDeResE     = new TF1("ResEnergy", this, &TATWdigitizer::ResEnergy, 0, 10, 2, "TATWdigitizer", "ResEnergy");
-   fTofResE    = new TF1("ResDiffTime", this, &TATWdigitizer::ResToF, 0, 2.5, 3, "TATWdigitizer", "ResToF");
+   fDeResE     = new TF1("ResEnergy", this, &TATWdigitizer::ResEnergy, 0, 200, 2, "TATWdigitizer", "ResEnergy");
+   fTofResE    = new TF1("ResDiffTime", this, &TATWdigitizer::ResToF, 0, 200, 3, "TATWdigitizer", "ResToF");  // 0-200 MeV range in energy loss
+   // fDeResE     = new TF1("ResEnergy", this, &TATWdigitizer::ResEnergy, 0, 10, 2, "TATWdigitizer", "ResEnergy");
+   // fTofResE    = new TF1("ResDiffTime", this, &TATWdigitizer::ResToF, 0, 2.5, 3, "TATWdigitizer", "ResToF");
    
    fDeAttLeft  = new TF1("DeAttLeft", this, &TATWdigitizer::DeAttLeft,   -fSlatLength/2, fSlatLength/2., 3, "TATWdigitizer", "DeAttLeft");
    fDeAttRight = new TF1("DeAttRight", this, &TATWdigitizer::DeAttRight, -fSlatLength/2, fSlatLength/2., 3, "TATWdigitizer", "DeAttRight");
@@ -185,8 +192,9 @@ Float_t TATWdigitizer::GetResEnergy(Float_t energy)
    Float_t C = gRandom->Gaus(fDeResEC, fDeErrResEC);
    fDeResE->SetParameter(1, C);
    
-   //   return fDeResE->Eval(energy);
-   return energy*0.05;  // 5% energy loss resolution flat for each fragment
+   // return fDeResE->Eval(energy);
+   // return energy*0.1;  // 10 % energy loss resolution flat for each fragment
+   return energy*0.047;  // 4.7 % energy loss resolution flat for each fragment
 }
 
 //___________________________________________________________________________________________
@@ -203,8 +211,10 @@ Float_t TATWdigitizer::GetTofLeft(Float_t pos, Float_t time, Float_t edep)
    Float_t alpha  = gRandom->Gaus(fTofPropAlpha, fTofErrPropAlpha);
    Float_t timeL  = time - pos*alpha;
    // Float_t timeL  = time + (fSlatLength/2. - pos)*alpha;
-   Float_t resToF = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R
-   timeL += gRandom->Gaus(0, resToF);  // TODO::check more updated ToF resolutions
+   Float_t resTofL = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R: resTofL=resTofR --> resTof=sqrt(resTofL^2 + resTofR^2)/2
+   if(FootDebugLevel(1) && edep>1 && time<9000)
+     cout<<"edep::"<<edep<<"  time::"<<time/1000.<<"  res::"<<resTofL<<"  rel::"<<resTofL/timeL*100<<" %"<<endl;
+   timeL += gRandom->Gaus(0, resTofL);  // TODO::check more updated ToF resolutions
    
    return timeL;
 }
@@ -216,8 +226,8 @@ Float_t TATWdigitizer::GetTofRight(Float_t pos, Float_t time, Float_t edep)
    Float_t alpha  = gRandom->Gaus(fTofPropAlpha, fTofErrPropAlpha);
    Float_t timeR  = time + pos*alpha;
    // Float_t timeR  = time + (fSlatLength/2. + pos)*alpha;
-   Float_t resToF = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R
-   timeR += gRandom->Gaus(0, resToF);
+   Float_t resTofR = GetResToF(edep)*TMath::Sqrt(2.); // share same way L/R: resTofL=resTofR --> resTof=sqrt(resTofL^2 + resTofR^2)/2
+   timeR += gRandom->Gaus(0, resTofR);
    
    return timeR;
 }
@@ -238,7 +248,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    fDeAttAsymSmear = gRandom->Uniform(-fDeAttAsym, +fDeAttAsym); // asymmetry btw left/right ends
    Double_t pos     = 0;
 
-   if (FootDebugLevel(1)) {
+    if(FootDebugLevel(1)) {
       printf("asym %4.2f\n", fDeAttAsymSmear);
       printf("edep %f\n", edep);
    }
@@ -266,7 +276,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Float_t resChargeB = GetResEnergy(chargeB);
    chargeB += gRandom->Gaus(0, resChargeB);
 
-   if (FootDebugLevel(1)) {
+    if(FootDebugLevel(1)) {
       printf("pos %.1f\n", pos);
       printf("energy %.1f %.1f\n", chargeA, chargeB);
       printf("Res %.3f %.3f\n", resChargeA*100, resChargeB*100);
@@ -276,7 +286,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Float_t timeA = GetTofLeft(pos, time, edep);
    Float_t timeB = GetTofRight(pos, time, edep);
 
-   if (FootDebugLevel(1)) {
+    if(FootDebugLevel(1)) {
      printf("time %.1f\n", time);
      printf("time %.1f %.1f\n", timeA, timeB);
    }
