@@ -15,8 +15,6 @@
 #include "TACAactNtuMC.hxx"
 #include "TGeoElement.h"
 
-const char* getPartNamefromID(int id);
-
 /*!
   \class TACAactNtuMC TACAactNtuMC.hxx "TACAactNtuMC.hxx"
   \brief NTuplizer for Calo raw hits. **

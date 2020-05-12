@@ -18,8 +18,6 @@
 #include "TACAdigitizer.hxx"
 #include "TGeoElement.h"
 
-const char* getPartNamefromID(int id);
-
 /*!
   \class TACAactNtuHitMC TACAactNtuHitMC.hxx "TACAactNtuHitMC.hxx"
   \brief NTuplizer for Calo raw hits. **
