@@ -23,7 +23,7 @@ public:
    virtual ~TAGactNtuClusterMT();
    
    //! Get Cluster number
-   Int_t               GetClusterNumber(Int_t line, Int_t col, Int_t thr)  const { return fFlagMap[thr][line*fDimX+col]; }
+   Int_t               GetClusterNumber(Int_t line, Int_t col, Int_t thr);
    
    // Get object in list
    virtual TAGobject*  GetHitObject(Int_t /*idx*/, TClonesArray* /*list*/) const { return 0x0;                      }
@@ -35,9 +35,21 @@ public:
    
 protected:
    
-   map<Int_t, Int_t> fPixelMap[4]; // pixel map;
-   map<Int_t, Int_t> fIndexMap[4]; // index map of the pixel;
-   TArrayI           fFlagMap[4];
+   map<Int_t, Int_t> fPixelMap0; // pixel map;
+   map<Int_t, Int_t> fIndexMap0; // index map of the pixel;
+   TArrayI           fFlagMap0;
+   
+   map<Int_t, Int_t> fPixelMap1; // pixel map;
+   map<Int_t, Int_t> fIndexMap1; // index map of the pixel;
+   TArrayI           fFlagMap1;
+   
+   map<Int_t, Int_t> fPixelMap2; // pixel map;
+   map<Int_t, Int_t> fIndexMap2; // index map of the pixel;
+   TArrayI           fFlagMap2;
+   
+   map<Int_t, Int_t> fPixelMap3; // pixel map;
+   map<Int_t, Int_t> fIndexMap3; // index map of the pixel;
+   TArrayI           fFlagMap3;
    
    Int_t             fDimX;     //  dimension X of map
    Int_t             fDimY;     //  dimension Y of map
@@ -50,6 +62,10 @@ protected:
    void   ClearMaps(Int_t thr);
    void   SetupMaps(Int_t size, Int_t thr);
 
+   map<Int_t, Int_t>& GetPixelMap(Int_t thr);
+   map<Int_t, Int_t>& GetIndexMap(Int_t thr);
+   TArrayI&           GetFlagMap(Int_t thr);
+   
 protected:
    static Int_t fgMaxThread;
    

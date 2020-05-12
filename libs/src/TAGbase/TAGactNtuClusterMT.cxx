@@ -32,10 +32,57 @@ TAGactNtuClusterMT::~TAGactNtuClusterMT()
 
 //______________________________________________________________________________
 //
+map<Int_t, Int_t>& TAGactNtuClusterMT::GetPixelMap(Int_t thr)
+{
+   if (thr == 0) return fPixelMap0;
+   else if (thr == 1) return fPixelMap1;
+   else if (thr == 2) return fPixelMap2;
+   else if (thr == 3) return fPixelMap3;
+
+   else
+      printf("No pixel map for %d thread, put thread 0\n", thr);
+   
+   return fPixelMap0;
+      
+}
+
+//______________________________________________________________________________
+//
+map<Int_t, Int_t>& TAGactNtuClusterMT::GetIndexMap(Int_t thr)
+{
+   if (thr == 0) return fIndexMap0;
+   else if (thr == 1) return fIndexMap1;
+   else if (thr == 2) return fIndexMap2;
+   else if (thr == 3) return fIndexMap3;
+   
+   else
+      printf("No index map for %d thread, put thread 0\n", thr);
+   
+   return fIndexMap0;
+}
+
+//______________________________________________________________________________
+//
+TArrayI&  TAGactNtuClusterMT::GetFlagMap(Int_t thr)
+{
+   if (thr == 0) return fFlagMap0;
+   else if (thr == 1) return fFlagMap1;
+   else if (thr == 2) return fFlagMap2;
+   else if (thr == 3) return fFlagMap3;
+   
+   else
+      printf("No index map for %d thread, put thread 0\n", thr);
+   
+   return fFlagMap0;
+}
+
+
+//______________________________________________________________________________
+//
 void TAGactNtuClusterMT::FillMaps(Int_t line, Int_t col, Int_t idx, Int_t thr)
 {
-   fPixelMap[thr][line*fDimX+col] = 1;
-   fIndexMap[thr][line*fDimX+col] = idx;
+   GetPixelMap(thr)[line*fDimX+col] = 1;
+   GetIndexMap(thr)[line*fDimX+col] = idx;
 }
 
 //______________________________________________________________________________
@@ -43,11 +90,11 @@ void TAGactNtuClusterMT::FillMaps(Int_t line, Int_t col, Int_t idx, Int_t thr)
 Bool_t TAGactNtuClusterMT::ShapeCluster(Int_t noClus, Int_t IndX, Int_t IndY, TClonesArray* listOfPixels, Int_t thr)
 {
    Int_t idx = IndX*fDimX+IndY;
-   if ( fPixelMap[thr][idx] <= 0 ) return false;
-   if ( fFlagMap[thr][idx] != -1 ) return false;
-   fFlagMap[thr][idx] = noClus;
+   if ( GetPixelMap(thr)[idx] <= 0 ) return false;
+   if ( GetFlagMap(thr)[idx] != -1 ) return false;
+   GetFlagMap(thr)[idx] = noClus;
    
-   TAGobject* pixel = GetHitObject(fIndexMap[thr][idx], listOfPixels);
+   TAGobject* pixel = GetHitObject(GetIndexMap(thr)[idx], listOfPixels);
    pixel->SetFound(true);
    
    for(Int_t i = -1; i <= 1 ; ++i)
@@ -59,6 +106,13 @@ Bool_t TAGactNtuClusterMT::ShapeCluster(Int_t noClus, Int_t IndX, Int_t IndY, TC
          ShapeCluster(noClus, IndX  , IndY+j, listOfPixels, thr);
    
    return true;
+}
+
+//______________________________________________________________________________
+//
+Int_t TAGactNtuClusterMT::GetClusterNumber(Int_t line, Int_t col, Int_t thr) 
+{
+   return GetFlagMap(thr)[line*fDimX+col];
 }
 
 //______________________________________________________________________________
@@ -87,15 +141,15 @@ Bool_t TAGactNtuClusterMT::CheckCol(Int_t idx)
 //
 void TAGactNtuClusterMT::SetupMaps(Int_t size, Int_t thr)
 {
-   fFlagMap[thr].Set(size);
+   GetFlagMap(thr).Set(size);
 }
 
 //______________________________________________________________________________
 //
 void TAGactNtuClusterMT::ClearMaps(Int_t thr)
 {
-   fPixelMap[thr].clear();
-   fIndexMap[thr].clear();
-   fFlagMap[thr].Reset(-1);
+   GetPixelMap(thr).clear();
+   GetIndexMap(thr).clear();
+   GetFlagMap(thr).Reset(-1);
 }
 
