@@ -107,6 +107,7 @@ class ParticleEnergyDep : public TObject {
     float getNCrystals() {
       return this->getUniqueCryIds().size();
     }
+    ClassDef(ParticleEnergyDep,0)
 };
 
 
