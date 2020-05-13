@@ -135,19 +135,19 @@ public:
 
 
   // int PrepareData4Fit( string option );
-  int PrepareData4Fit( Track* fitTrack );
-  int PrepareData4Fit_dataLike( Track* fitTrack );
+  int PrepareData4Fit();
+  int PrepareData4Fit_dataLike();
 
   void Prepare4Vertex( TAVTcluster* clus, int track_ID, int iHit );
-  void Prepare4Vertex( Track* fitTrack );
+  void Prepare4Vertex();
 
-  void Prepare4InnerTracker( Track* fitTrack );
+  void Prepare4InnerTracker();
   void Prepare4InnerTracker( TAITcluster* clus, int track_ID, int iHit );
 
-  void Prepare4Strip( Track* fitTrack );
+  void Prepare4Strip();
   void Prepare4Strip(TVector3 pos, int track_ID, int iHit );
 
-  void Prepare4TofWall( Track* fitTrack );
+  void Prepare4TofWall();
 
   bool PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element );
 
@@ -213,7 +213,7 @@ public:
 
   int GetChargeFromTW(Track* trackToCheck);
   TVector3 ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane );
-  void CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum);
+  bool CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum, int chargeFromTofWall);
   TVector3 ExtrapolateToTofWall( Track* trackToFit );
 
 
@@ -316,6 +316,8 @@ private:
   TH1D* qoverpsel;
 
   int MSDforwardcounter;
+
+  std::vector<Track*> m_vectorTrack;
 
   std::ofstream ofs;
 
