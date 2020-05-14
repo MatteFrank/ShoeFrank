@@ -52,6 +52,7 @@
 #include "TAGactionFile.hxx"
 
 #include "TAVTactNtuClusterF.hxx"
+#include "TAVTactNtuClusterMT.hxx"
 #include "TAITactNtuClusterF.hxx"
 #include "TAMSDactNtuCluster.hxx"
 #include "TATWactNtuPoint.hxx"
@@ -141,6 +142,10 @@ public:
    
    void EnableTracking()  { fFlagTrack = true;   }
    void DisableTracking() { fFlagTrack = false;  }
+   
+   void DisableM28ClusMT() { fM28ClusMtFlag = false; }
+   void EnableM28lusMT()   { fM28ClusMtFlag = true;  }
+   Bool_t IsM28ClusMT()    { return fM28ClusMtFlag;  }
 
    // Flag for MC data
    Bool_t IsMcData()      { return fFlagMC;      }
@@ -269,7 +274,7 @@ protected:
 
    TABMactNtuTrack*      fActTrackBm;    // action for tracks
    
-   TAVTactNtuClusterF*   fActClusVtx;    // action for clusters
+   TAGaction*            fActClusVtx;    // action for clusters
    TAVTactBaseNtuTrack*  fActTrackVtx;   // action for tracks
    TAVTactBaseNtuVertex* fActVtx;        // action for vertex
    
@@ -291,6 +296,7 @@ protected:
    Bool_t                fFlagTrack;     // flag for tracking
    TString               fgTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory)
    Bool_t                fFlagMC;        // MC flag
+   Bool_t                fM28ClusMtFlag; // flag for multi-threading clustering
 
  protected:
    void CreateRecActionBm();
@@ -303,7 +309,7 @@ protected:
 
 protected:
    static Bool_t fgItrTrackFlag;
-   
+
    ClassDef(BaseReco, 1); // Base class for event display
 };
 

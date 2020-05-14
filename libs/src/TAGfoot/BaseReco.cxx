@@ -29,7 +29,7 @@
 
 ClassImp(BaseReco)
 
-Bool_t  BaseReco::fgItrTrackFlag = false;
+Bool_t  BaseReco::fgItrTrackFlag  = false;
 
 //__________________________________________________________
 BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
@@ -97,7 +97,8 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fFlagHisto(false),
    fFlagTrack(false),
    fgTrackingAlgo("Full"),
-   fFlagMC(false)
+   fFlagMC(false),
+   fM28ClusMtFlag(false)
 {
 
    // check folder
@@ -490,7 +491,11 @@ void BaseReco::CreateRecActionVtx()
    fpNtuClusVtx  = new TAGdataDsc("vtClus", new TAVTntuCluster());
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
 
-   fActClusVtx   = new TAVTactNtuClusterF("vtActClus", fpNtuRawVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
+   if (fM28ClusMtFlag)
+      fActClusVtx   = new TAVTactNtuClusterMT("vtActClus", fpNtuRawVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
+   else
+      fActClusVtx   = new TAVTactNtuClusterF("vtActClus", fpNtuRawVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
+
    if (fFlagHisto)
       fActClusVtx->CreateHistogram();
    
