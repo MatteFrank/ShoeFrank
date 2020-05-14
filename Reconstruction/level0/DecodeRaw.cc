@@ -18,7 +18,8 @@ int main (int argc, char *argv[])  {
    Bool_t his = false;
    Bool_t hit = false;
    Bool_t trk = false;
-   
+   Bool_t mth = false;
+
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
    
@@ -33,7 +34,8 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
       if(strcmp(argv[i],"-trk") == 0)   { trk = true;   } // enable tracking action
-      
+      if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
+
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
          cout<<" Ex: Decoder [opts] "<<endl;
@@ -46,6 +48,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
          cout<<"      -ntu           : enable tree filling"<<endl;
          cout<<"      -his           : enable crtl histograming"<<endl;
+         cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
       }
    }
@@ -66,11 +69,14 @@ int main (int argc, char *argv[])  {
       locRec->EnableTree();
       locRec->EnableSaveHits();
    }
-   if (trk) {
+   if (trk)
       locRec->EnableTracking();
-   }
+   
    if (runNb != -1)
       locRec->BaseReco::SetRunNumber(runNb);
+   
+   if (mth)
+      locRec->EnableM28lusMT();
    
    TStopwatch watch;
    watch.Start();
