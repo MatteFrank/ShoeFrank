@@ -136,10 +136,6 @@ BaseReco::~BaseReco()
 {
    // default destructor
    delete fTAGroot; // should delete all data, para and actions
-   
-   if (fFlagOut)
-      delete fActEvtWriter;
-   delete fpFootGeo;
 }
 
 //_____________________________________________________________________________
