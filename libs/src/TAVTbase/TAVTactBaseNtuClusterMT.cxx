@@ -7,6 +7,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TMath.h"
+#include "TThread.h"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
@@ -115,7 +116,9 @@ void TAVTactBaseNtuClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
       if (!CheckLine(line)) continue;
       if (!CheckCol(col)) continue;
 
+      TThread::Lock();
       TAGactNtuClusterMT::FillMaps(line, col, i, thr);
+      TThread::UnLock();
    }
 }
 
