@@ -95,6 +95,7 @@ int main (int argc, char *argv[])  {
    
    watch.Print();
 
+   delete locRec;
    
    return 0;
 } 
