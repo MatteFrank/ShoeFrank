@@ -116,7 +116,7 @@ TGeoMaterial* TAGmaterials::CreateMaterial(TString name, Float_t density,
    
    // mixture
    for (Int_t i = 0; i < fIsotope.size(); ++i) {
-      if (fDebugLevel > 0)
+      if (FootMcDebugLevel(1))
          printf("%s %g\n", fIsotope[i].Data(), fIsotopeWeight[i]);
       TGeoElement* element = fTable->FindElement(fIsotope[i].Data());
       if (element == 0x0) {
@@ -162,7 +162,7 @@ TGeoMixture* TAGmaterials::CreateMixture(TString formula, const TString densitie
    mix = new TGeoMixture(formula.Data(), listMat.size(), density);
    
    for (Int_t i = 0; i < listMat.size(); ++i) {
-      if (fDebugLevel > 0)
+      if (FootMcDebugLevel(1))
          printf("%s %f %f\n", listMat[i].Data(), compDensity[i], compProp[i]);
       
       TString name;
@@ -202,7 +202,7 @@ vector<TString> TAGmaterials::GetStrings(TString key, const Char_t delimiter)
       coeff.push_back(TString(value));
    }
    
-   if (fDebugLevel > 1) {
+   if (FootMcDebugLevel(2)) {
       for (Int_t i = 0; i < list->GetEntries(); ++i) {
          cout << coeff[i] << " ";
       }
@@ -228,7 +228,7 @@ void TAGmaterials::GetCoeff(TString key, Float_t* coeff, Int_t size,  const Char
       coeff[k] = item.Atof();
    }
    
-   if (fDebugLevel > 1) {
+   if (FootMcDebugLevel(2)) {
       for (Int_t i = 0; i < list->GetEntries(); ++i) {
          cout << coeff[i] << " " ;
       }

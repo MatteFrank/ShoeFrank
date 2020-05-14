@@ -36,7 +36,7 @@
 #define TCFOfield_h 1
 
 #include "globals.hh"
-#include "FootField.hxx"
+#include "TADIgeoField.hxx"
 #include "TCEMfield.hxx"
 
 
@@ -46,12 +46,11 @@ class TCFOfield : public TCEMfield
 {
    
 private:
-   FootField* fMagField;
-   G4int      fDebugLevel;
+   TADIgeoField* fMagField;
    
 public:
 
-  TCFOfield(FootField* fMagField);
+  TCFOfield(TADIgeoField* fMagField);
   virtual ~TCFOfield();
 
   /// GetFieldValue() returns the field value at a given point[].

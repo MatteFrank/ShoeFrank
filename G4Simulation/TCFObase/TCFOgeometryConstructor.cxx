@@ -65,7 +65,7 @@
 #include "TCEMfieldSetup.hxx"
 
 #include "GlobalPar.hxx"
-#include "FootField.hxx"
+#include "TADIgeoField.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
@@ -140,7 +140,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName)
       TString mapFileName = "./geomaps/TADIdetector.map";
       fpParGeoEm->FromFile(mapFileName.Data());
       
-      fFieldImpl  = new FootField("", fpParGeoEm);
+      fFieldImpl  = new TADIgeoField(fpParGeoEm);
       fField      = new TCFOfield(fFieldImpl);
       fFieldSetup = new TCEMfieldSetup(fField);
       fMagnet     = new TCEMgeometryConstructor(fpParGeoEm);

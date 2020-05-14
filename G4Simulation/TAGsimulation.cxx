@@ -65,9 +65,16 @@ int main(int argc,char** argv)
     // initialise physics list
     TString physListName("BIC");
 
-    // select the output type (Evento tree or TAMCevent tree)
-    G4bool kEvento(0);
+    // select the output type (Evento tree or object TAMCevent tree)
+    G4bool obj =  false;;
+    G4bool kEvento;
 
+    // Fill only fragmented events
+    G4bool frag = false;
+   
+    // number of events to process
+    G4int eventsNToBeProcessed = -1;
+   
     // expriment name
     TString exp("");
 
@@ -81,14 +88,25 @@ int main(int argc,char** argv)
             seed = sSeed.Atoi();
         }
 
+        if(strcmp(argv[i],"-nev") == 0) {
+            TString sEvt = argv[++i];
+            eventsNToBeProcessed = sEvt.Atoi();
+        }
+       
         if(strcmp(argv[i],"-phys") == 0)
             physListName  = argv[++i];
 
         if(strcmp(argv[i],"-b") == 0)
             batchMode  = true;
+       
+       if(strcmp(argv[i],"-frag") == 0)
+          frag  = true;
 
         if(strcmp(argv[i],"-r") == 0)
             runMode  = true;
+       
+        if(strcmp(argv[i],"-obj") == 0)
+           obj  = true;
 
         if(strcmp(argv[i],"-out") == 0)
             rootFileName  = argv[++i];
@@ -99,22 +117,27 @@ int main(int argc,char** argv)
         if(strcmp(argv[i],"-help") == 0) {
             printf("Possible arguments are:\n");
             printf("  -b batch mode active \n");
-            printf("  -r run.mac is lauched \n");
+            printf("  -r run.mac is launched \n");
+            printf("  -nev nevent: number of events");
             printf("  -out rootFileName: root output file name \n");
             printf("  -phys physList: physics list: BIC, BERT or INCL \n");
-            printf("  -seed seedNb: seed number for random initialisation  \n");
-            printf("  -exp name: [def=""] experient name for config/geomap extention");
+            printf("  -seed seedNb: seed number for random initialization  \n");
+            printf("  -exp name: [def=""] experiment name for config/geomap extension");
+            printf("  -obj save MC data in root object");
+            printf("  -frag save only when ion inelastic process occurs in target");
 
             return 1;
         }
     }
 
+    kEvento = !obj;
     // check folder
     if (!exp.IsNull())
         exp += "/";
 
     // Global Par
     GlobalPar::Instance();
+    GlobalPar::GetPar()->SetDebugLevels();
 
     // initialise geo trafo file
     TString geoFileName = Form("./geomaps/%sFOOT_geo.map", exp.Data());
@@ -159,12 +182,19 @@ int main(int argc,char** argv)
     runManager->SetUserInitialization(physics);
 
     TCGprimaryGeneratorAction* kin = new TCGprimaryGeneratorAction(theDetector->GetParGeoG());
-    G4int eventsNToBeProcessed   = theDetector->GetParGeoG()->GetBeamPar().PartNumber;
-    TCFOrunAction*   run         = new TCFOrunAction();
+   
+   if (eventsNToBeProcessed == -1)
+      eventsNToBeProcessed = theDetector->GetParGeoG()->GetBeamPar().PartNumber;
+   
+    TCFOrunAction*  run = new TCFOrunAction();
     run->SetEvento(kEvento);
+   
     TCFObaseEventAction* event = 0 ;
     if(kEvento) event = new TCFOeventoAction(run, theDetector);
     else event  = new TCFOeventAction(run, theDetector);
+    event->SetInelasticOnly(frag);
+
+   
     TCFOtrackingAction *tracking = new TCFOtrackingAction(event) ;
 
     runManager->SetUserAction(kin);

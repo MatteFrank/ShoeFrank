@@ -33,6 +33,7 @@
 #include "PlanarMeasurement.h"
 #include "SpacepointMeasurement.h"
 #include "SharedPlanePtr.h"
+#include "RectangularFinitePlane.h"
 
 #include <TROOT.h>
 #include <TStyle.h>
@@ -40,6 +41,7 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TF1.h>
+#include <TGraphErrors.h>
 
 #include <TRandom3.h>
 
@@ -49,6 +51,8 @@
 #include <TMath.h>
 
 #include "TAGparGeo.hxx"
+
+#include "TADIparGeo.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTntuRaw.hxx"
@@ -62,6 +66,7 @@
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TAMSDntuCluster.hxx"
+#include "TAMSDntuPoint.hxx"
 
 #include "TATWparGeo.hxx"
 #include "TATWntuPoint.hxx"
@@ -89,6 +94,8 @@
 #include "TAVTactNtuTrackF.hxx"
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
+
+#include "TAVTtrack.hxx"
 
 
 
@@ -129,9 +136,17 @@ public:
 
   // int PrepareData4Fit( string option );
   int PrepareData4Fit( Track* fitTrack );
+  int PrepareData4Fit_dataLike( Track* fitTrack );
+
+  void Prepare4Vertex( TAVTcluster* clus, int track_ID, int iHit );
   void Prepare4Vertex( Track* fitTrack );
+
   void Prepare4InnerTracker( Track* fitTrack );
+  void Prepare4InnerTracker( TAITcluster* clus, int track_ID, int iHit );
+
   void Prepare4Strip( Track* fitTrack );
+  void Prepare4Strip(TVector3 pos, int track_ID, int iHit );
+
   void Prepare4TofWall( Track* fitTrack );
 
   bool PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element );
@@ -151,6 +166,8 @@ public:
   void MakePrefit();
 
   void CategoriseHitsToFit_withTrueInfo();
+  void CategoriseHitsToFit_fromVTX() {};
+
 
   void RecordTrackInfo( Track* track, string hitSampleName );
 
@@ -164,6 +181,11 @@ public:
   int UploadClusVT();
   int UploadClusIT();
   int UploadClusMSD();
+
+  void TestExtrapolation(vector<AbsMeasurement*> extrapTest, string particleHypo);
+
+
+  void CreateDetectorPlanes();
 
 
   void Finalize();	// save control plot and calculate resolutions
@@ -189,31 +211,17 @@ public:
   double EvalError( TVector3 mom, TMatrixD cov );
   void MatrixToZero( TMatrixD *matrix );
 
-  // bool frankFind( string what, string where )	{
+  int GetChargeFromTW(Track* trackToCheck);
+  TVector3 ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane );
+  void CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum);
+  TVector3 ExtrapolateToTofWall( Track* trackToFit );
 
-  //   int wildcard_pos = what.find("*");
-
-  //   if ( wildcard_pos == 0 )    {
-  //     if( where.find( what.substr( wildcard_pos+1 ) ) != string::npos )
-  // 	return true;
-  //   }
-  //   else if( wildcard_pos == what.size()-1 )    {
-  //     if( where.find( what.substr( 0, wildcard_pos ) ) != string::npos )
-  // 	return true;
-  //   }
-  //   else if ( wildcard_pos != string::npos )    {
-  //     int pre = where.find( what.substr( 0, wildcard_pos ) );
-  //     int post = where.find( what.substr( wildcard_pos+1 ) );
-  //     if( pre!=string::npos && post!=string::npos )
-  // 	return true;
-  //   }
-
-  //   return false;
-  // }
 
 
 
 private:
+
+  KalmanFitter* m_fitter_extrapolation;
 
   KalmanFitter* m_fitter;
   AbsKalmanFitter*  m_refFitter;    		 //KalmanFitterRefTrack()
@@ -223,12 +231,14 @@ private:
 
   // init event display
   EventDisplay* display;
+  bool m_IsEDOn;
 
-  // Track*  m_fitTrack;
   ControlPlotsRepository* m_controlPlotter;
   GlobalTrackRepostory* m_fitTrackCollection;
 
   // TRandom3* m_diceRoll;
+
+  bool m_workWithMC;
 
 
   //  delete non va fatto il delete perche APPARENTEMENTE gia fatto
@@ -241,19 +251,21 @@ private:
   vector<TAITcluster*> m_IT_clusCollection;
   vector<TAMSDcluster*> m_MSD_clusCollection;
 
-  vector<TVector3> m_MSD_posVectorSmearedHit;
-  vector<TVector3> m_MSD_momVectorSmearedHit;
-  vector<double> m_MSD_mass;
+  vector<TAMSDpoint*> m_MSD_pointCollection;
 
-  // kept as std pointer just to remember how to correctely delete and free resources iwth them
-  // correctely freed
-  // vector<AbsMeasurement*> m_hitCollectionToFit;
+  // vector<TVector3> m_MSD_posVectorSmearedHit;
+  // vector<TVector3> m_MSD_momVectorSmearedHit;
+  // vector<double> m_MSD_mass;
+
+
   map <string, vector<AbsMeasurement*> > m_hitCollectionToFit;
+  map <int, vector<AbsMeasurement*> > m_hitCollectionToFit_dataLike;
   vector<AbsMeasurement*> m_allHitsInMeasurementFormat;
 
   map <int, map<int, MCTruthInfo> > m_MCInfo;
 
   shared_ptr<TAGparGeo> m_TG_geo;
+  shared_ptr<TADIparGeo> m_DI_geo;
   shared_ptr<TAVTparGeo> m_VT_geo;
   shared_ptr<TAITparGeo> m_IT_geo;
   shared_ptr<TAMSDparGeo> m_MSD_geo;
@@ -281,8 +293,31 @@ private:
   long m_evNum;
 
   bool m_reverse;
+  bool m_recolike1;
 
   TAGgeoTrafo* m_GeoTrafo;
+
+  map<int, genfit::SharedPlanePtr> m_detectorPlanes;
+
+  //temporary placeholder for trackfinding histos and graphs
+  vector<TGraph*> zxGraph;
+  vector<TGraph*> zyGraph;
+  TGraphErrors* graphErrorX;
+  vector<TH2F*> houghH;
+  TGraphErrors* graphErrorY;
+  TH2D* histoTrackParamX;
+  TH2D* histoTrackParamY;
+
+  TH2D* MSDresidualOfPrediction;
+  TH2D* ITresidualOfPrediction;
+  TH1D* percentageOfMCTracksVTX;
+  TH1D* tempPurity;
+  TH1D* qoverp;
+  TH1D* qoverpsel;
+
+  int MSDforwardcounter;
+
+  std::ofstream ofs;
 
 
 };

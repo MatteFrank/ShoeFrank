@@ -32,6 +32,8 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#include "GlobalPar.hxx"
+
 #include "TCFOfield.hxx"
 #include "globals.hh"
 
@@ -41,10 +43,9 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-TCFOfield::TCFOfield(FootField* magField)
+TCFOfield::TCFOfield(TADIgeoField* magField)
 : TCEMfield(),
-  fMagField(magField),
-  fDebugLevel(0)
+  fMagField(magField)
 {
 }
 
@@ -61,23 +62,21 @@ void TCFOfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
    // point[4] := time
    TVector3 pos;
    for (Int_t i = 0; i < 3; ++i) {
-      pos[i] = point[i]/10.; // mmn -> cm
+      pos[i] = point[i]/CLHEP::cm; // mmn -> cm
    }
    
-   TVector3 field = fMagField->get(pos);
-//    printf("[%.3e,%.3e,%.3e] \t %.3e %.3e %.3e\n", pos[0],pos[1],pos[2], field[0],field[1],field[2]);
+   TVector3 field = fMagField->GetField(pos);
 
    for (Int_t i = 0; i < 3; ++i) {
-       field[i] *= 1e-4; // gauss -> to Tesla
+      field[i] *= CLHEP::gauss;
    }
 
    fieldB[0] = field[0];
    fieldB[1] = field[1];
    fieldB[2] = field[2];
    
-   if (fDebugLevel)
-//      printf("%f %f\n", pos[2], fieldB[0]);
-       printf("%f %.3e %.3e %.3e\n", pos[2], fieldB[0],fieldB[1],fieldB[2]);
-
+   if (FootMcDebugLevel(1))
+      printf("[%.3e,%.3e,%.3e] \t %.3e %.3e %.3e\n", pos[0],pos[1],pos[2], field[0],field[1],field[2]);
+   
   return;
 }

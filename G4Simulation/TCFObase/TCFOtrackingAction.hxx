@@ -29,7 +29,6 @@
 #ifndef TCFOtrackingAction_hh
 #define TCFOtrackingAction_hh
 
-
 #include "G4UserTrackingAction.hh"
 #include "G4Step.hh"
 #include "G4Track.hh"
@@ -41,23 +40,19 @@ using namespace std;
 
 class TCFOtrackingAction : public G4UserTrackingAction
 {
-
    private :
+    TCFObaseEventAction* fEventAction;
 
-    TCFObaseEventAction* fEventAction ;
-    static map<TString, Int_t> fgkGeantToFlukaID;
+   private:
     static map<TString, Int_t> fgkVolumeToRegion;
 
    public :
-   
-      TCFOtrackingAction (TCFObaseEventAction* aEventAction) ;
-      ~TCFOtrackingAction() ;
+   TCFOtrackingAction(TCFObaseEventAction* aEventAction);
+   ~TCFOtrackingAction();
 
-    virtual void PreUserTrackingAction(const G4Track*);
-    virtual void PostUserTrackingAction(const G4Track*);
-    
-} ;  
-
+   void PreUserTrackingAction(const G4Track*);
+   void PostUserTrackingAction(const G4Track*);   
+};
 
 #endif
 

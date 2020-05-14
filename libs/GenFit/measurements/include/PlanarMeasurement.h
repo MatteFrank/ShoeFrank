@@ -39,7 +39,7 @@ class AbsTrackRep;
  *  @author Johannes Rauch  (Technische Universit&auml;t M&uuml;nchen, original author)
  *
  * The main feature of this type of hit is, that the detector plane
- * is defined by the detector hardware. 
+ * is defined by the detector hardware.
  */
 class PlanarMeasurement : public AbsMeasurement {
 
@@ -68,6 +68,8 @@ class PlanarMeasurement : public AbsMeasurement {
    * This affects the outcoe of constructHMatrix().
    */
   void setStripV(bool v = true) {stripV_ = v;}
+
+  bool getStripV() {return stripV_;}
 
  protected:
   SharedPlanePtr physicalPlane_;   //! This is persistent, but '!' makes ROOT shut up.

@@ -25,6 +25,7 @@
 //
 //
 
+#include "GlobalPar.hxx"
 #include "TCGmaterials.hxx"
 
 #include "G4NistManager.hh"
@@ -79,7 +80,7 @@ G4Material* TCGmaterials::CreateG4Material(TString name, G4double density, G4Sta
 
     G4Material *g4mat = new G4Material((G4String)name,density*g/cm3,(G4int)fIsotope.size(),state,temperature,pressure);
     for (int i = 0; i < (int)fIsotope.size(); ++i) {
-        if (fDebugLevel > 0)
+        if (FootMcDebugLevel(1))
             printf("%s %g\n", fIsotope[i].Data(), fIsotopeWeight[i]);
         G4Element* g4element = G4NistManager::Instance()->FindOrBuildElement(fIsotope[0].Data());
         if(g4element) g4mat->AddElement(g4element,fIsotopeWeight[i]);
@@ -108,7 +109,7 @@ G4Material* TCGmaterials::CreateG4Mixture(TString formula, const TString densiti
 
     G4Material *g4mat = new G4Material((G4String)formula,density*g/cm3,(G4int)listMat.size());
     for (int i = 0; i < (int)listMat.size(); ++i) {
-        if (fDebugLevel > 0)
+        if (FootMcDebugLevel(1))
             printf("%s %.2e %.2e\n", listMat[i].Data(), compDensity[i], compProp[i]);
 
         TString name;
@@ -150,22 +151,26 @@ G4Material* TCGmaterials::ConvertGeoMaterial(const TGeoMaterial *mat)
             state = kStateGas;
             break;
     }
-    G4Material *g4mat = new G4Material(name,density*g/cm3,ncomponents,state,temp,press);
-    TGeoElement* element = new TGeoElement();
-    G4Element* g4element = 0x0;
-    if(mat->IsMixture()){
-        const TGeoMixture *mixt = (const TGeoMixture*)mat;
-        for(int i=0 ; i<ncomponents ; ++i){
+    G4NistManager* man = G4NistManager::Instance();
+    G4Material* g4mat  = man->FindOrBuildMaterial((G4String)name);
+   
+    if (g4mat == 0x0) {
+      g4mat = new G4Material(name,density*g/cm3,ncomponents,state,temp,press);
+      TGeoElement* element = new TGeoElement();
+      G4Element* g4element = 0x0;
+      if(mat->IsMixture()){
+         const TGeoMixture *mixt = (const TGeoMixture*)mat;
+         for(int i=0 ; i<ncomponents ; ++i){
             element = mixt->GetElement(i);
             g4element = new G4Element(element->GetTitle(),element->GetName(),G4double(mixt->GetZmixt()[i]),G4double(mixt->GetAmixt()[i])*g/mole);
             g4mat->AddElement(g4element,G4double(mixt->GetWmixt()[i]));
-            if(fDebugLevel) printf("===> %s \t %s \t %.2d \t %.2f \n",element->GetTitle(),element->GetName(),element->Z(),element->A());
-        }
-    }
-    else{
-        element = mat->GetElement();
-        g4element = new G4Element(element->GetTitle(),element->GetName(),G4double(element->Z()),G4double(element->A())*g/mole);
-        g4mat->AddElement(g4element,1);
+            if(FootMcDebugLevel(1)) printf("===> %s \t %s \t %.2d \t %.2f \n",element->GetTitle(),element->GetName(),element->Z(),element->A());
+         }
+      } else{
+         element = mat->GetElement();
+         g4element = new G4Element(element->GetTitle(),element->GetName(),G4double(element->Z()),G4double(element->A())*g/mole);
+         g4mat->AddElement(g4element,1);
+      }
     }
     return g4mat;
 }
