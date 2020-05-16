@@ -160,7 +160,8 @@ void TACAactNtuMC::CreateHistogram()
    AddHistogram(fpHisEnDepVsZ);
 
    // 12-20
-   for(int z=0; z<nNucleonBeam/2; z++) {
+   // for(int z=0; z<nNucleonBeam/2; z++) {
+   for(int z=0; z<nNucleonBeam; z++) {
       TGeoElement * elem = table.GetElement(z+1);
       fpHisDeIonSpectrum[z] = new TH1F(Form( "caDeIonSpectrum%d", z+1), 
                               Form( "^{%d}%s ; Ekin [GeV]; Events Norm", elem->N(), elem->GetName() ),
@@ -169,7 +170,8 @@ void TACAactNtuMC::CreateHistogram()
    }
 
    // 21-29
-   for(int z=0; z<nNucleonBeam/2; z++) {
+   for(int z=0; z<nNucleonBeam; z++) {
+   // for(int z=0; z<6; z++) {
       TGeoElement * elem = table.GetElement(z+1);
       fpHisDeIon[z] = new TH1F(Form( "caDeIon%d", z+1), 
                               Form( "^{%d}%s ; EDep [GeV]; Events Norm", elem->N(), elem->GetName() ),
@@ -182,7 +184,7 @@ void TACAactNtuMC::CreateHistogram()
    for (int i=0; i<nCrystal; i++){
       fpHisEnPerCry[i] = new TH1F(Form( "caEnPerCry%d", i), 
                               Form( "Cry %d ; Ekin [GeV]; Events Norm", i),
-                              1200, 0, 4);
+                              1200, 0., 4.);
       AddHistogram(fpHisEnPerCry[i]);
    }
 
@@ -205,7 +207,7 @@ void TACAactNtuMC::CreateDigitizer()
 //------------------------------------------+-----------------------------------
 //! Action.
 Bool_t TACAactNtuMC::Action(){  
-      
+   
    TGeoElementTable table;
    table.BuildDefaultElements();
 
@@ -215,20 +217,57 @@ Bool_t TACAactNtuMC::Action(){
    //TObject array of size of the particles created in one event
    fListOfParticles = new TObjArray(fpEvtStr->TRn); 
 
+   //clean the map
+   fDigitizer->ClearMap();
+
    //Fill TObjArr with partID, cryID and EnDep for each release in the calorimeter
    for (Int_t i = 0; i<fpEvtStr->CALn; i++) { 
 
       // Get particle index
       Int_t id      = fpEvtStr->CALicry[i];      //cry id
       Int_t trackId = fpEvtStr->CALid[i] - 1;    //particle id
+      Int_t fluID   = fpEvtStr->TRfid[trackId];  //fluka number
+      Int_t z       = fpEvtStr->TRcha[trackId];  //atomic number
       Float_t edep  = fpEvtStr->CALde[i];        //edep of the "i"-esimo release (GeV)
+
+      Float_t x0_i  = fpEvtStr->CALxin[i];       //initial x position
+      Float_t y0_i  = fpEvtStr->CALyin[i];       //initial y position
+      Float_t z0_i  = fpEvtStr->CALzin[i];       //initial z position
+      Float_t x0_f  = fpEvtStr->CALxout[i];      //final x position
+      Float_t y0_f  = fpEvtStr->CALyout[i];      //final y position
+      Float_t z0_f  = fpEvtStr->CALzout[i];      //final z position
       
+      TVector3 posIn(x0_i, y0_i, z0_i);
+      TVector3 posInLoc = geoTrafo->FromGlobalToCALocal(posIn);
+
+      TVector3 posOut(x0_f, y0_f, z0_f);
+      TVector3 posOutLoc = geoTrafo->FromGlobalToCALocal(posOut);
+
+      
+      fpHisHitMapXY    ->Fill(posInLoc.X(), posInLoc.Y());
+      fpHisHitMapZYin  ->Fill(posInLoc.Z(), posInLoc.Y());
+      fpHisHitMapZYout ->Fill(posOutLoc.Z(), posOutLoc.Y());
+
+      // Fill fDigitizer with energy in MeV
+      fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0_i, z0_f, 0, id);
+      TACAntuHit* hit = fDigitizer->GetCurrentHit();
+      hit->AddMcTrackIdx(trackId, i);
+      hit->SetPosition(posInLoc);
+
       //Returns the event(object) at position "trackId". Returns 0 if idx is out of range
       if (!fListOfParticles->At(trackId)) fListOfParticles->AddAt(new ParticleEnergyDep(trackId,i),trackId);
       ParticleEnergyDep* obj = (ParticleEnergyDep*) fListOfParticles->At(trackId);
       obj->addEnergyDep(id, edep);
 
    }
+
+   //Fill the energy distribution per each crystal
+   TACAntuRaw* p_nturaw = (TACAntuRaw*) fpNtuMC->Object();
+   for (int i=0; i<p_nturaw->GetHitsN(); i++){
+      TACAntuHit* gethit = p_nturaw->GetHit(i);
+      fpHisEnPerCry[gethit->GetCrystalId()]->Fill(gethit->GetEnDep());
+   }
+   
    fListOfParticles->SetOwner(true);
 
    int npart = fListOfParticles->GetEntriesFast();
@@ -266,7 +305,7 @@ Bool_t TACAactNtuMC::Action(){
 
    //new size of the TObj after compression
    npart = fListOfParticles->GetEntriesFast(); 
-   
+
    //Final loop
    for (int i=0; i<npart; ++i) {
       
@@ -274,48 +313,18 @@ Bool_t TACAactNtuMC::Action(){
 
       Int_t index           = obj->iRelease;
       Int_t trackId         = obj->partId;
-      Int_t cryid           = obj->energyDeps[0].crystalId;
+      Int_t cryid           = obj->energyDeps[0].crystalId;           //cryID of the mother --> [0]
       Float_t endep         = obj->getTotalEnergyDep();
+      Float_t ncryhit       = obj->getNCrystals();
       std::set<int> set_cry = obj->getUniqueCryIds();
-      float ncryhit         = obj->getNCrystals();
      
+      Int_t fluID   = fpEvtStr->TRfid[trackId];
+      Int_t z       = fpEvtStr->TRcha[trackId];
+      Float_t zf    = fpEvtStr->CALzout[trackId];
+      Float_t mass  = fpEvtStr->TRmass[trackId];
 
-      Float_t x0_i  = fpEvtStr->CALxin[index];
-      Float_t y0_i  = fpEvtStr->CALyin[index];
-      Float_t z0_i  = fpEvtStr->CALzin[index];
-      Float_t x0_f  = fpEvtStr->CALxout[index];
-      Float_t y0_f  = fpEvtStr->CALyout[index];
-      Float_t z0_f  = fpEvtStr->CALzout[index];
-
-      TVector3 posIn(x0_i, y0_i, z0_i);
-      TVector3 posInLoc = geoTrafo->FromGlobalToCALocal(posIn);
-
-      TVector3 posOut(x0_f, y0_f, z0_f);
-      TVector3 posOutLoc = geoTrafo->FromGlobalToCALocal(posOut);
-
-
-      // Fill fDigitizer with energy in MeV
-      fDigitizer->Process(endep, posInLoc[0], posInLoc[1], z0_i, z0_f, 0, cryid);
-      TACAntuHit* hit = fDigitizer->GetCurrentHit();
-      hit->AddMcTrackIdx(trackId, i);
-      hit->SetPosition(posInLoc);
-      //double chargeBGO = hit->GetCharge();
-
-
-      fpHisDeTot        ->Fill(hit->GetEnDep());
-      fpHisDeTotMc      ->Fill(endep);
-      fpHisHitMapXY     ->Fill(posInLoc.X(), posInLoc.Y());
-      fpHisHitMapZYin   ->Fill(posInLoc.Z(), posInLoc.Y());
-      fpHisHitMapZYout  ->Fill(posOutLoc.Z(), posOutLoc.Y());
-      // fpHisEnPerCry[cryid]->Fill(endep);
-
-
-      int fluID   = fpEvtStr->TRfid[trackId];
-      int z       = fpEvtStr->TRcha[trackId];
-      float zf    = fpEvtStr->CALzout[trackId];
-      double mass = fpEvtStr->TRmass[trackId];
-
-
+      fpHisDeTotMc->Fill(endep);
+      
       // Select Neutrons
       if ( fluID == 8 ) {
          fpHisDeNeutron->Fill(endep); 
@@ -330,7 +339,6 @@ Bool_t TACAactNtuMC::Action(){
          if ( (z > 1 && z <= 8) || fluID == 1 ) {  
                              
             double tof = 0.;
-
             double p = sqrt( fpEvtStr->TRipx[trackId]*fpEvtStr->TRipx[trackId] + 
                          fpEvtStr->TRipy[trackId]*fpEvtStr->TRipy[trackId] +
                          fpEvtStr->TRipz[trackId]*fpEvtStr->TRipz[trackId] );
@@ -338,14 +346,13 @@ Bool_t TACAactNtuMC::Action(){
 
             if (z == 1 && fluID != 1) continue;  // skip triton, deuteron
             if (z == 2 && fluID == -5) continue; // skip He3
-            
+
             fpHisDeIon[z-1]        ->Fill(endep);
             fpHisDeIonSpectrum[z-1]->Fill(ek);
             // fpHisTime              ->Fill(time);
             fpHisCryHitVsZ         ->Fill(ncryhit,z);
             fpHisCryHitVsEnDep     ->Fill(ncryhit,endep);
             fpHisEnDepVsZ          ->Fill(z,endep);
-            fpHisEnPerCry[cryid]   ->Fill(hit->GetEnDep());
          }
 
          const char* flukaName = TAMCparTools::GetFlukaPartName(fluID);

@@ -115,6 +115,7 @@ Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    } else {
      fCurrentHit = fMap[id];
      //AS:: need to fix the energy as well
+     fCurrentHit->SetEnDep(fCurrentHit->GetEnDep()+edep);
      
      //Add charge to current hit
      fCurrentHit->SetCharge(fCurrentHit->GetCharge()+photonsN);
