@@ -157,7 +157,7 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
     bmcellid=p_parmap->tdc2cell(channel);
     if(bmcellid!=-1 && bmcellid!=-1000){//-1000=syncTime, -1=not set
       p_pargeo->GetBMNlvc(bmcellid,plane,view,cell);
-      p_datraw->SetHitData(bmcellid, plane,view,cell,measurement);
+      p_datraw->NewHit(bmcellid, plane,view,cell,measurement);
       hitnum++;
       if (ValidHistogram()){
         fpRawDiscAccept->Fill(1);    

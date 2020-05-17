@@ -19,38 +19,39 @@
 
 using namespace std; 
 
+class TClonesArray;
 class TABMdatRaw : public TAGdata {
   public:
 
                     TABMdatRaw();
     virtual         ~TABMdatRaw();
 
-    void            SetHitData(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t time);
-    void            AddDischarged();
-    void            SetTrigtime(Double_t trigin){fTrigTime=trigin;};
-  
-    Double_t        GetTrigtime()  const { return fTrigTime;};
-    Int_t           NHit() const;
-    const TABMrawHit& Hit(Int_t i_ind) const;
+    TABMrawHit*       NewHit(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t time);
+    Int_t             GetHitsN() const;
+    const TABMrawHit* GetHit(Int_t i_ind) const;
+    TABMrawHit*       GetHit(Int_t i_ind);
+   
+    void              SetTrigtime(Double_t trigin) { fTrigTime=trigin;}
+    Double_t          GetTrigtime()  const { return fTrigTime; }
+    Int_t             NDrop()        const { return fiNDrop;   }
 
-    //~ Int_t           NTdc() const;
-    Int_t           NDrop() const;
-
-    virtual void    Clear(Option_t* opt="");
-
-    virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-
-    ClassDef(TABMdatRaw,1)
-
-  private:
-     static TString fgkBranchName;    // Branch name in TTree
+    void              AddDischarged();
+    virtual void      SetupClones();
+    virtual void      Clear(Option_t* opt="");
+    virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
+   
+private:
+    TClonesArray*   fListOfHits;      
     Int_t           fiNDrop;		    //number of discharged tdc values
-    vector<TABMrawHit> fHitList;		//list of TABMrawHit ATTENZIONE!! NON È UN TCLONESARRAY COME GLI ALTRI!!!
     Double_t        fTrigTime;
-};
 
-#include "TABMdatRaw.icc"
+public:
+   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+   
+private:
+   static TString fgkBranchName;    // Branch name in TTree
+
+   ClassDef(TABMdatRaw,1)
+};
 
 #endif

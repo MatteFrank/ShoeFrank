@@ -97,11 +97,11 @@ Bool_t TABMactNtuRaw::Action()
   //provv
   //~ p_parmap->tdc2cell(channel)>=0 && ((((Double_t) measurement)/10.) - p_parcon->GetT0(p_parmap->tdc2cell(channel))-used_trigger)<p_parcon->GetHitTimecut()
   
-  for (Int_t i = 0; i < p_datraw->NHit(); i++) {//loop on p_datrawhit
-    const TABMrawHit& hit = p_datraw->Hit(i);
+  for (Int_t i = 0; i < p_datraw->GetHitsN(); i++) {//loop on p_datrawhit
+    const TABMrawHit* hit = p_datraw->GetHit(i);
     
     //retrive hit parameters
-    i_time = hit.GetTime()- p_parcon->GetT0(hit.GetView(),hit.GetPlane(),hit.GetCell()) - p_datraw->GetTrigtime();
+    i_time = hit->GetTime()- p_parcon->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell()) - p_datraw->GetTrigtime();
     if(i_time<p_parcon->GetHitTimecut() && i_time>-40){//apply cut 
       //Temporary time cut set at -40; it should be few ns, but at the first GSI data taking there is a jitter of ~ tens of ns not measured 
       if(i_time<0){ 
@@ -109,21 +109,21 @@ Bool_t TABMactNtuRaw::Action()
           i_time=0.;
         else if(p_parcon->GetT0sigma()>0)
           while(i_time<0)
-            i_time=gRandom->Gaus(hit.GetTime()- p_parcon->GetT0(hit.GetView(),hit.GetPlane(),hit.GetCell()) - p_datraw->GetTrigtime(), p_parcon->GetT0sigma());
+            i_time=gRandom->Gaus(hit->GetTime()- p_parcon->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell()) - p_datraw->GetTrigtime(), p_parcon->GetT0sigma());
       }
       
       Double_t i_drift = p_parcon->FirstSTrel(i_time);
       if(FootDebugLevel(3))
-        cout<<"TABMactNtuRaw::Action:: charging hit i_time="<<i_time<<"  i_drift="<<i_drift<<"  cell="<<hit.GetCell()<<"  view="<<hit.GetView()<<"  Plane="<<hit.GetPlane()<<"   hit.time="<<hit.GetTime()<<"  T0="<<p_parcon->GetT0(hit.GetView(),hit.GetPlane(),hit.GetCell())<<"  trigtime="<<p_datraw->GetTrigtime()<<endl;
+        cout<<"TABMactNtuRaw::Action:: charging hit i_time="<<i_time<<"  i_drift="<<i_drift<<"  cell="<<hit->GetCell()<<"  view="<<hit->GetView()<<"  Plane="<<hit->GetPlane()<<"   hit->time="<<hit->GetTime()<<"  T0="<<p_parcon->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell())<<"  trigtime="<<p_datraw->GetTrigtime()<<endl;
       
       
       //create the hit (no selection of hit)
-      TABMntuHit *mytmp = p_nturaw->NewHit(hit.GetView(), hit.GetPlane(), hit.GetCell(),hit.GetIdcell(), i_drift, i_time, p_parcon->ResoEval(i_drift));
-      p_nturaw->AddCellOccupyHit(hit.GetIdcell());
+      TABMntuHit *mytmp = p_nturaw->NewHit(hit->GetView(), hit->GetPlane(), hit->GetCell(),hit->GetIdcell(), i_drift, i_time, p_parcon->ResoEval(i_drift));
+      p_nturaw->AddCellOccupyHit(hit->GetIdcell());
       if (ValidHistogram()){
-        fpHisCell->Fill(hit.GetCell());
-        fpHisView->Fill(hit.GetView());
-        fpHisPlane->Fill(hit.GetPlane());
+        fpHisCell->Fill(hit->GetCell());
+        fpHisView->Fill(hit->GetView());
+        fpHisPlane->Fill(hit->GetPlane());
         fpHisRdrift->Fill(i_drift);
         fpHisTdrift->Fill(i_time);
         fpHisDiscAccept->Fill(1);

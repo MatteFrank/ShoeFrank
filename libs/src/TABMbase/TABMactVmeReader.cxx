@@ -119,7 +119,7 @@ Bool_t TABMactVmeReader::Process() {
     cellid=bmmap->tdc2cell(fpEvtStruct->tdc_id[i]);
     if(fpEvtStruct->tdc_meas[i]!=-10000 && bmcon->GetT0(cellid)!=-1000 &&  cellid>=0 && ((Double_t)  fpEvtStruct->tdc_meas[i]/10. -  bmcon->GetT0(cellid) - synctime)<bmcon->GetHitTimecut()){
       bmgeo->GetBMNlvc(cellid, lay, view, cell);
-      p_datraw->SetHitData(cellid,lay,view,cell,fpEvtStruct->tdc_meas[i]/10.);
+      p_datraw->NewHit(cellid,lay,view,cell,fpEvtStruct->tdc_meas[i]/10.);
       if (ValidHistogram()){
         if(view==0){
           up=(lay%2==0) ? 1:0;
