@@ -80,7 +80,6 @@ TAVTactBaseNtuVertex::TAVTactBaseNtuVertex(const char* name,
 //! Destructor.
 TAVTactBaseNtuVertex::~TAVTactBaseNtuVertex()
 {
-   delete fEmProp;
 }
 
 //------------------------------------------+-----------------------------------
