@@ -11,6 +11,7 @@
 #include "TH2F.h"
 #include "TMath.h"
 
+#include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAVTparGeo.hxx"
@@ -62,7 +63,7 @@ void* TAVTactNtuClusterMT::Thread0(void* arg)
 
    TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
    if (listOfPixels->GetEntries() == 0) return 0x0;
-   printf("thread0, pixels: %d\n", listOfPixels->GetEntries());
+   //printf("thread0, pixels: %d\n", listOfPixels->GetEntries());
    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
 
    return 0x0;
@@ -81,7 +82,7 @@ void* TAVTactNtuClusterMT::Thread1(void* arg)
 
    TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
    if (listOfPixels->GetEntries() == 0) return 0x0;
-   printf("thread1, pixels: %d\n", listOfPixels->GetEntries());
+ //  printf("thread1, pixels: %d\n", listOfPixels->GetEntries());
    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
    
    return 0x0;
@@ -100,7 +101,7 @@ void* TAVTactNtuClusterMT::Thread2(void* arg)
 
    TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
    if (listOfPixels->GetEntries() == 0) return 0x0;
-   printf("thread2, pixels: %d\n", listOfPixels->GetEntries());
+  // printf("thread2, pixels: %d\n", listOfPixels->GetEntries());
    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
    
    return 0x0;
@@ -119,7 +120,7 @@ void* TAVTactNtuClusterMT::Thread3(void* arg)
 
    TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
    if (listOfPixels->GetEntries() == 0) return 0x0;
-   printf("thread3, pixels: %d\n", listOfPixels->GetEntries());
+  // printf("thread3, pixels: %d\n", listOfPixels->GetEntries());
    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
    
    return 0x0;
@@ -185,33 +186,8 @@ Bool_t TAVTactNtuClusterMT::Action()
    ThreadStart();
    ThreadJoin();
    ThreadStop();
-
-   TAVTntuCluster* pNtuClus = (TAVTntuCluster*) fpNtuClus->Object();
-   TAVTparConf*    pConfig  = (TAVTparConf*) fpConfig->Object();
    
-   Bool_t ok = true;
-   
-   for (Int_t iSensor = 0; iSensor < pConfig->GetSensorsN(); ++iSensor) {
-      // Compute position and fill clusters info
-      TAVTbaseCluster* cluster = 0x0;
-      
-      for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
-         cluster = pNtuClus->GetCluster(iSensor, i);
-         FillClusterInfo(iSensor, cluster);
-      }
-      
-      // Remove no valid cluster
-      for (Int_t i = pNtuClus->GetClustersN(iSensor)-1; i >= 0; --i) {
-         cluster = pNtuClus->GetCluster(iSensor, i);
-         if (!cluster->IsValid())
-            pNtuClus->GetListOfClusters(iSensor)->Remove(cluster);
-      }
-      
-      pNtuClus->GetListOfClusters(iSensor)->Compress();
-   }
-   
- //  if(fOk)
-      fpNtuClus->SetBit(kValid);
+   fpNtuClus->SetBit(kValid);
    
    return true;
 }
@@ -223,7 +199,8 @@ Bool_t TAVTactNtuClusterMT::FindClusters(Int_t iSensor, TClonesArray* listOfPixe
    // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
    // Look in a iterative way to next neighbour
    
-   printf("toto %d\n", listOfPixels->GetEntries());
+   if (FootDebugLevel(1))
+      printf("Thread %d with %d pixels\n", thr, listOfPixels->GetEntries());
    FillMaps(listOfPixels, thr);
    SearchCluster(listOfPixels, thr);
 
@@ -257,6 +234,28 @@ Bool_t TAVTactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
       }
    }
 
-   return true;
+   // Compute position and fill clusters info
+   TAVTbaseCluster* cluster = 0x0;
+
+   for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
+      pthread_mutex_lock(&fLock);
+      cluster = pNtuClus->GetCluster(iSensor, i);
+      FillClusterInfo(iSensor, cluster);
+      pthread_mutex_unlock(&fLock);
+   }
+
+   // Remove no valid cluster
+   for (Int_t i = pNtuClus->GetClustersN(iSensor)-1; i >= 0; --i) {
+      cluster = pNtuClus->GetCluster(iSensor, i);
+      if (!cluster->IsValid())
+         pNtuClus->GetListOfClusters(iSensor)->Remove(cluster);
+   }
+
+   pNtuClus->GetListOfClusters(iSensor)->Compress();
+
+   if (pNtuClus->GetClustersN(iSensor))
+      return true;
+   
+   return false;
 
 }
