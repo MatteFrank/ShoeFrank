@@ -22,6 +22,8 @@
 
 ClassImp(TAVTactBaseNtuClusterMT);
 
+pthread_mutex_t TAVTactBaseNtuClusterMT::fLock;
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
@@ -56,12 +58,17 @@ TAVTactBaseNtuClusterMT::TAVTactBaseNtuClusterMT(const char* name,
       SetupMaps(fDimY*fDimX, i);
       fClustersN[i] = 0;
    }
+   
+   if (pthread_mutex_init(&fLock, NULL) != 0)
+      Error("TAVTactNtuClusterMT()", "Mutex Init failed");
+   
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAVTactBaseNtuClusterMT::~TAVTactBaseNtuClusterMT()
 {
+   pthread_mutex_destroy(&fLock);
 }
 
 //------------------------------------------+-----------------------------------
@@ -116,9 +123,9 @@ void TAVTactBaseNtuClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
       if (!CheckLine(line)) continue;
       if (!CheckCol(col)) continue;
 
-      TThread::Lock();
+      pthread_mutex_lock(&fLock);
       TAGactNtuClusterMT::FillMaps(line, col, i, thr);
-      TThread::UnLock();
+      pthread_mutex_unlock(&fLock);
    }
 }
 
@@ -133,13 +140,12 @@ void TAVTactBaseNtuClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t th
    
    printf("titi %d\n", pixelsN);
 
-
    for (Int_t iPix = 0; iPix < pixelsN; ++iPix) { // loop over hit pixels
 
-      TThread::Lock();
+      pthread_mutex_lock(&fLock);
       TAVTbaseNtuHit* pixel = (TAVTbaseNtuHit*)listOfPixels->At(iPix);
-      TThread::UnLock();
-      
+      pthread_mutex_unlock(&fLock);
+
       if (pixel->Found()) continue;
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();

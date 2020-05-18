@@ -35,6 +35,9 @@ public:
    //! Thread start
    Bool_t   ThreadStart();
    
+   //! Thread join
+   Bool_t   ThreadJoin();
+   
    //! Thread stop
    Bool_t   ThreadStop();
    
@@ -44,16 +47,16 @@ private:
    TAGdataDsc*     fpNtuClus;		  // output data dsc
    Bool_t          fOk;
 
-   TThread*        fThread[4];
+   pthread_t*      fThread[4];
 
 private:
    Bool_t  CreateClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr);
 
 private:
-   static void Thread0(void* arg);
-   static void Thread1(void* arg);
-   static void Thread2(void* arg);
-   static void Thread3(void* arg);
+   static void* Thread0(void* arg);
+   static void* Thread1(void* arg);
+   static void* Thread2(void* arg);
+   static void* Thread3(void* arg);
 
    ClassDef(TAVTactNtuClusterMT,0)
 };

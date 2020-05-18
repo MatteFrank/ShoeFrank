@@ -3,11 +3,13 @@
  \version $Id: TAVTactNtuClusterMT.cxx $
  \brief   Implementation of TAVTactNtuClusterMT.
  */
+
+#include <pthread.h>
+
 #include "TClonesArray.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TMath.h"
-#include "TThread.h"
 
 #include "TAGgeoTrafo.hxx"
 
@@ -49,71 +51,78 @@ TAVTactNtuClusterMT::~TAVTactNtuClusterMT()
 
 //______________________________________________________________________________
 //
-void TAVTactNtuClusterMT::Thread0(void* arg)
+void* TAVTactNtuClusterMT::Thread0(void* arg)
 {
    Int_t thr = 0;
    Int_t sensorId = 0;
    TAVTactNtuClusterMT* action = (TAVTactNtuClusterMT*)arg;
-   TThread::Lock();
+   pthread_mutex_lock(&fLock);
    TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) action->fpNtuRaw->Object();
-   TThread::UnLock();
+   pthread_mutex_unlock(&fLock);
 
    TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
+   if (listOfPixels->GetEntries() == 0) return 0x0;
    printf("thread0, pixels: %d\n", listOfPixels->GetEntries());
-   if (listOfPixels->GetEntries() == 0) return;
    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
 
+   return 0x0;
 }
 
 //______________________________________________________________________________
 //
-void TAVTactNtuClusterMT::Thread1(void* arg)
+void* TAVTactNtuClusterMT::Thread1(void* arg)
 {
    Int_t thr = 1;
    Int_t sensorId = 1;
    TAVTactNtuClusterMT* action = (TAVTactNtuClusterMT*)arg;
-   TThread::Lock();
+   pthread_mutex_lock(&fLock);
    TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) action->fpNtuRaw->Object();
-   TThread::UnLock();
-   
+   pthread_mutex_unlock(&fLock);
+
    TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
+   if (listOfPixels->GetEntries() == 0) return 0x0;
    printf("thread1, pixels: %d\n", listOfPixels->GetEntries());
-   if (listOfPixels->GetEntries() == 0) return;
    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
+   
+   return 0x0;
 }
 
 //______________________________________________________________________________
 //
-void TAVTactNtuClusterMT::Thread2(void* arg)
+void* TAVTactNtuClusterMT::Thread2(void* arg)
 {
    Int_t thr = 2;
    Int_t sensorId = 2;
    TAVTactNtuClusterMT* action = (TAVTactNtuClusterMT*)arg;
-   TThread::Lock();
+   pthread_mutex_lock(&fLock);
    TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) action->fpNtuRaw->Object();
-   TThread::UnLock();
-   
+   pthread_mutex_unlock(&fLock);
+
    TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
+   if (listOfPixels->GetEntries() == 0) return 0x0;
    printf("thread2, pixels: %d\n", listOfPixels->GetEntries());
-   if (listOfPixels->GetEntries() == 0) return;
-    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
+   action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
+   
+   return 0x0;
 }
 
 //______________________________________________________________________________
 //
-void TAVTactNtuClusterMT::Thread3(void* arg)
+void* TAVTactNtuClusterMT::Thread3(void* arg)
 {
    Int_t thr = 3;
    Int_t sensorId = 3;
    TAVTactNtuClusterMT* action = (TAVTactNtuClusterMT*)arg;
-   TThread::Lock();
+   pthread_mutex_lock(&fLock);
    TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) action->fpNtuRaw->Object();
-   TThread::UnLock();
-   
+   pthread_mutex_unlock(&fLock);
+
    TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
+   if (listOfPixels->GetEntries() == 0) return 0x0;
    printf("thread3, pixels: %d\n", listOfPixels->GetEntries());
-   if (listOfPixels->GetEntries() == 0) return;
-    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
+   action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
+   
+   return 0x0;
 }
 
 //______________________________________________________________________________
@@ -122,22 +131,21 @@ Bool_t TAVTactNtuClusterMT::ThreadStart()
 {
    for (Int_t i = 0; i < fgMaxThread; ++i) {
       if (!fThread[i]) {
+         fThread[i] = new pthread_t;
          if (i == 0)
-            fThread[i] = new TThread(Form("thread%d", i), (void(*) (void *))&Thread0, (void*)this);
+            pthread_create(fThread[i], 0x0, Thread0, (void*)this);
          else if (i == 1)
-            fThread[i] = new TThread(Form("thread%d", i), (void(*) (void *))&Thread1, (void*)this);
+            pthread_create(fThread[i], 0x0, Thread1, (void*)this);
          else if (i == 2)
-            fThread[i] = new TThread(Form("thread%d", i), (void(*) (void *))&Thread2, (void*)this);
+            pthread_create(fThread[i], 0x0, Thread2, (void*)this);
          else if (i == 3)
-            fThread[i] = new TThread(Form("thread%d", i), (void(*) (void *))&Thread3, (void*)this);
+            pthread_create(fThread[i], 0x0, Thread3, (void*)this);
          else
             Error("ThreadStart", "No thread %d!", i);
-         fThread[i]->Run();
       } else
          return false;
    }
    
-//   TThread::Ps();
    return true;
 }
 
@@ -147,13 +155,26 @@ Bool_t TAVTactNtuClusterMT::ThreadStop()
 {
    for (Int_t i = 0; i < fgMaxThread; ++i) {
       if (fThread[i]) {
-        TThread::Delete(fThread[i]);
          delete fThread[i];
+         fThread[i] = 0x0;
       } else
          return false;
    }
    
-//   TThread::Ps();
+   return true;
+}
+
+//______________________________________________________________________________
+//
+Bool_t TAVTactNtuClusterMT::ThreadJoin()
+{
+   for (Int_t i = 0; i < fgMaxThread; ++i) {
+      if (fThread[i]) {
+            pthread_join(*fThread[i], 0x0);
+      } else
+         return false;
+   }
+   
    return true;
 }
 
@@ -162,9 +183,7 @@ Bool_t TAVTactNtuClusterMT::ThreadStop()
 Bool_t TAVTactNtuClusterMT::Action()
 {
    ThreadStart();
-   for (Int_t i = 0; i < fgMaxThread; ++i)
-      fThread[i]->Join();
-  
+   ThreadJoin();
    ThreadStop();
 
    TAVTntuCluster* pNtuClus = (TAVTntuCluster*) fpNtuClus->Object();
@@ -177,10 +196,10 @@ Bool_t TAVTactNtuClusterMT::Action()
       TAVTbaseCluster* cluster = 0x0;
       
       for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
-         TThread::Lock();
+         pthread_mutex_lock(&fLock);
          cluster = pNtuClus->GetCluster(iSensor, i);
          FillClusterInfo(iSensor, cluster);
-         TThread::UnLock();
+         pthread_mutex_unlock(&fLock);
       }
       
       // Remove no valid cluster
@@ -191,12 +210,9 @@ Bool_t TAVTactNtuClusterMT::Action()
       }
       
       pNtuClus->GetListOfClusters(iSensor)->Compress();
-      
-      if (pNtuClus->GetClustersN(iSensor))
-         return true;
    }
    
-   if(fOk)
+ //  if(fOk)
       fpNtuClus->SetBit(kValid);
    
    return true;
@@ -236,15 +252,13 @@ Bool_t TAVTactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
       
       Int_t clusterN = GetClusterNumber(line,col, thr);
       if ( clusterN != -1 ) {
-         TThread::Lock();
+         pthread_mutex_lock(&fLock);
          cluster1 = pNtuClus->GetCluster(iSensor, clusterN);
          cluster1->AddPixel(pixel);
-         TThread::UnLock();
+         pthread_mutex_unlock(&fLock);
       }
    }
 
-  
-   
    return true;
 
 }

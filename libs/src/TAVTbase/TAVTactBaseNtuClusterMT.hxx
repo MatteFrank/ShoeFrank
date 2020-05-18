@@ -7,6 +7,8 @@
  */
 /*------------------------------------------+---------------------------------*/
 
+#include <pthread.h>
+
 #include "TArrayI.h"
 #include "TClonesArray.h"
 #include "TVector3.h"
@@ -87,6 +89,9 @@ protected:
    void   ComputeSeedPosition();
    void   ComputeCoGPosition();
    void   FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster);
+   
+protected:
+   static   pthread_mutex_t fLock;
 
    ClassDef(TAVTactBaseNtuClusterMT,0)
 };
