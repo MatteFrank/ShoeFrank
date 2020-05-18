@@ -32,9 +32,7 @@ TAVTactBaseNtuClusterMT::TAVTactBaseNtuClusterMT(const char* name,
    fpGeoMap(pGeoMap),
    fCurrentPosition(0., 0., 0.),
    fCurrentPosError(0., 0., 0.),
-   fCurListOfPixels(0x0),
-   fClustersN(0)
-
+   fCurListOfPixels(0x0)
 {
    AddPara(pGeoMap, "TAVTbaseParGeo");
    AddPara(pConfig, "TAVTbaseParConf");
@@ -54,8 +52,10 @@ TAVTactBaseNtuClusterMT::TAVTactBaseNtuClusterMT(const char* name,
    fDimY = geoMap->GetNPixelY()+1;
    fDimX = geoMap->GetNPixelX()+1;
    
-   for (Int_t i = 0; i < fgMaxThread; ++i)
+   for (Int_t i = 0; i < fgMaxThread; ++i) {
       SetupMaps(fDimY*fDimX, i);
+      fClustersN[i] = 0;
+   }
 }
 
 //------------------------------------------+-----------------------------------
@@ -126,11 +126,20 @@ void TAVTactBaseNtuClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
 //
 void TAVTactBaseNtuClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t thr)
 {
-   fClustersN = 0;
+   fClustersN[thr] = 0;
    // Search for cluster
    
-   for (Int_t iPix = 0; iPix < listOfPixels->GetEntries(); ++iPix) { // loop over hit pixels
+   Int_t pixelsN =  listOfPixels->GetEntries();
+   
+   printf("titi %d\n", pixelsN);
+
+
+   for (Int_t iPix = 0; iPix < pixelsN; ++iPix) { // loop over hit pixels
+
+      TThread::Lock();
       TAVTbaseNtuHit* pixel = (TAVTbaseNtuHit*)listOfPixels->At(iPix);
+      TThread::UnLock();
+      
       if (pixel->Found()) continue;
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
@@ -138,8 +147,9 @@ void TAVTactBaseNtuClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t th
       if (!CheckCol(col)) continue;
       
       // loop over lines & columns
-      if ( ShapeCluster(fClustersN, line, col, listOfPixels, thr) )
-         fClustersN++;
+      if ( ShapeCluster(fClustersN[thr], line, col, listOfPixels, thr) )
+         fClustersN[thr]++;
+
    }
 }
 

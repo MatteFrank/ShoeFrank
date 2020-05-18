@@ -71,7 +71,7 @@ protected:
    TClonesArray*  fCurListOfPixels;   // list of pixels in current cluster
    Float_t        fClusterPulseSum;   // total charge of cluster
    
-   Int_t          fClustersN;     // number of cluster
+   Int_t          fClustersN[4];     // number of cluster
 
    TH1F*          fpHisPixelTot;	     // Total number of pixels per cluster
    TH1F*          fpHisPixel[32];	  // number of pixels per cluster per sensor
