@@ -138,8 +138,6 @@ void TAVTactBaseNtuClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t th
    
    Int_t pixelsN =  listOfPixels->GetEntries();
    
-   printf("titi %d\n", pixelsN);
-
    for (Int_t iPix = 0; iPix < pixelsN; ++iPix) { // loop over hit pixels
 
       pthread_mutex_lock(&fLock);
