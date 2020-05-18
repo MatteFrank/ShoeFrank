@@ -196,10 +196,8 @@ Bool_t TAVTactNtuClusterMT::Action()
       TAVTbaseCluster* cluster = 0x0;
       
       for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
-         pthread_mutex_lock(&fLock);
          cluster = pNtuClus->GetCluster(iSensor, i);
          FillClusterInfo(iSensor, cluster);
-         pthread_mutex_unlock(&fLock);
       }
       
       // Remove no valid cluster
