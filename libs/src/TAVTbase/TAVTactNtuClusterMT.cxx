@@ -123,13 +123,13 @@ Bool_t TAVTactNtuClusterMT::ThreadStart()
    for (Int_t i = 0; i < fgMaxThread; ++i) {
       if (!fThread[i]) {
          if (i == 0)
-            fThread[i] = new TThread(Form("thread%d", i), TAVTactNtuClusterMT::Thread0, (void*)this);
+            fThread[i] = new TThread(Form("thread%d", i), (void(*) (void *))&Thread0, (void*)this);
          else if (i == 1)
-            fThread[i] = new TThread(Form("thread%d", i), TAVTactNtuClusterMT::Thread1, (void*)this);
+            fThread[i] = new TThread(Form("thread%d", i), (void(*) (void *))&Thread1, (void*)this);
          else if (i == 2)
-            fThread[i] = new TThread(Form("thread%d", i), TAVTactNtuClusterMT::Thread2, (void*)this);
+            fThread[i] = new TThread(Form("thread%d", i), (void(*) (void *))&Thread2, (void*)this);
          else if (i == 3)
-            fThread[i] = new TThread(Form("thread%d", i), TAVTactNtuClusterMT::Thread3, (void*)this);
+            fThread[i] = new TThread(Form("thread%d", i), (void(*) (void *))&Thread3, (void*)this);
          else
             Error("ThreadStart", "No thread %d!", i);
          fThread[i]->Run();
@@ -162,11 +162,40 @@ Bool_t TAVTactNtuClusterMT::ThreadStop()
 Bool_t TAVTactNtuClusterMT::Action()
 {
    ThreadStart();
-//   for (Int_t i = 0; i < fgMaxThread; ++i)
-//      fThread[i]->Join();
+   for (Int_t i = 0; i < fgMaxThread; ++i)
+      fThread[i]->Join();
   
    ThreadStop();
 
+   TAVTntuCluster* pNtuClus = (TAVTntuCluster*) fpNtuClus->Object();
+   TAVTparConf*    pConfig  = (TAVTparConf*) fpConfig->Object();
+   
+   Bool_t ok = true;
+   
+   for (Int_t iSensor = 0; iSensor < pConfig->GetSensorsN(); ++iSensor) {
+      // Compute position and fill clusters info
+      TAVTbaseCluster* cluster = 0x0;
+      
+      for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
+         TThread::Lock();
+         cluster = pNtuClus->GetCluster(iSensor, i);
+         FillClusterInfo(iSensor, cluster);
+         TThread::UnLock();
+      }
+      
+      // Remove no valid cluster
+      for (Int_t i = pNtuClus->GetClustersN(iSensor)-1; i >= 0; --i) {
+         cluster = pNtuClus->GetCluster(iSensor, i);
+         if (!cluster->IsValid())
+            pNtuClus->GetListOfClusters(iSensor)->Remove(cluster);
+      }
+      
+      pNtuClus->GetListOfClusters(iSensor)->Compress();
+      
+      if (pNtuClus->GetClustersN(iSensor))
+         return true;
+   }
+   
    if(fOk)
       fpNtuClus->SetBit(kValid);
    
@@ -180,10 +209,10 @@ Bool_t TAVTactNtuClusterMT::FindClusters(Int_t iSensor, TClonesArray* listOfPixe
    // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
    // Look in a iterative way to next neighbour
    
-
+   printf("toto %d\n", listOfPixels->GetEntries());
    FillMaps(listOfPixels, thr);
    SearchCluster(listOfPixels, thr);
- 
+
    return CreateClusters(iSensor, listOfPixels, thr);
 }
 
@@ -195,7 +224,7 @@ Bool_t TAVTactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
    TAVTcluster* cluster1    = 0x0;
 
    // create clusters
-   for (Int_t i = 0; i< fClustersN; ++i)
+   for (Int_t i = 0; i< fClustersN[thr]; ++i)
       pNtuClus->NewCluster(iSensor);
    
    for (Int_t iPix = 0; iPix < listOfPixels->GetEntries(); ++iPix) {
@@ -214,28 +243,8 @@ Bool_t TAVTactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
       }
    }
 
-   // Compute position and fill clusters info
-   TAVTbaseCluster* cluster = 0x0;
-
-   for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
-      TThread::Lock();
-      cluster = pNtuClus->GetCluster(iSensor, i);
-      FillClusterInfo(iSensor, cluster);
-      TThread::UnLock();
-   }
-
-   // Remove no valid cluster
-   for (Int_t i = pNtuClus->GetClustersN(iSensor)-1; i >= 0; --i) {
-      cluster = pNtuClus->GetCluster(iSensor, i);
-      if (!cluster->IsValid())
-         pNtuClus->GetListOfClusters(iSensor)->Remove(cluster);
-   }
-
-   pNtuClus->GetListOfClusters(iSensor)->Compress();
-
-   if (pNtuClus->GetClustersN(iSensor))
-      return true;
+  
    
-   return false;
+   return true;
 
 }
