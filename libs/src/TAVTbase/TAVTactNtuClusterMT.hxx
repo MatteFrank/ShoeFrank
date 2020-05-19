@@ -31,6 +31,9 @@ public:
    //! Find cluster charge, noise & position
    virtual Bool_t  FindClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr);
    
+   //! Get list of pixels
+   virtual TClonesArray* GetListOfPixels(Int_t sensorId);
+
    //! Thread start
    Bool_t   ThreadStart();
    

@@ -58,12 +58,10 @@ void* TAVTactNtuClusterMT::Thread0(void* arg)
    Int_t sensorId = 0;
    TAVTactNtuClusterMT* action = (TAVTactNtuClusterMT*)arg;
    pthread_mutex_lock(&fLock);
-   TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) action->fpNtuRaw->Object();
+   TClonesArray* listOfPixels = action->GetListOfPixels(sensorId);
    pthread_mutex_unlock(&fLock);
 
-   TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
    if (listOfPixels->GetEntries() == 0) return 0x0;
-   //printf("thread0, pixels: %d\n", listOfPixels->GetEntries());
    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
 
    return 0x0;
@@ -77,12 +75,10 @@ void* TAVTactNtuClusterMT::Thread1(void* arg)
    Int_t sensorId = 1;
    TAVTactNtuClusterMT* action = (TAVTactNtuClusterMT*)arg;
    pthread_mutex_lock(&fLock);
-   TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) action->fpNtuRaw->Object();
+   TClonesArray* listOfPixels = action->GetListOfPixels(sensorId);
    pthread_mutex_unlock(&fLock);
 
-   TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
    if (listOfPixels->GetEntries() == 0) return 0x0;
- //  printf("thread1, pixels: %d\n", listOfPixels->GetEntries());
    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
    
    return 0x0;
@@ -96,12 +92,10 @@ void* TAVTactNtuClusterMT::Thread2(void* arg)
    Int_t sensorId = 2;
    TAVTactNtuClusterMT* action = (TAVTactNtuClusterMT*)arg;
    pthread_mutex_lock(&fLock);
-   TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) action->fpNtuRaw->Object();
+   TClonesArray* listOfPixels = action->GetListOfPixels(sensorId);
    pthread_mutex_unlock(&fLock);
 
-   TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
    if (listOfPixels->GetEntries() == 0) return 0x0;
-  // printf("thread2, pixels: %d\n", listOfPixels->GetEntries());
    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
    
    return 0x0;
@@ -115,12 +109,10 @@ void* TAVTactNtuClusterMT::Thread3(void* arg)
    Int_t sensorId = 3;
    TAVTactNtuClusterMT* action = (TAVTactNtuClusterMT*)arg;
    pthread_mutex_lock(&fLock);
-   TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) action->fpNtuRaw->Object();
+   TClonesArray* listOfPixels = action->GetListOfPixels(sensorId);
    pthread_mutex_unlock(&fLock);
 
-   TClonesArray* listOfPixels = pNtuHit->GetListOfPixels(sensorId);
    if (listOfPixels->GetEntries() == 0) return 0x0;
-  // printf("thread3, pixels: %d\n", listOfPixels->GetEntries());
    action->fOk += action->FindClusters(sensorId, listOfPixels, thr);
    
    return 0x0;
@@ -177,6 +169,14 @@ Bool_t TAVTactNtuClusterMT::ThreadJoin()
    }
    
    return true;
+}
+
+//______________________________________________________________________________
+//
+TClonesArray* TAVTactNtuClusterMT::GetListOfPixels(Int_t sensorId)
+{
+   TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) fpNtuRaw->Object();
+   return  pNtuHit->GetListOfPixels(sensorId);
 }
 
 //______________________________________________________________________________
