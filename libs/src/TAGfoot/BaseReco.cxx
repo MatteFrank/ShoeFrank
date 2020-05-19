@@ -532,7 +532,11 @@ void BaseReco::CreateRecActionIt()
    fpNtuClusIt  = new TAGdataDsc("itClus", new TAITntuCluster());
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
 
-   fActClusIt   = new TAITactNtuClusterF("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
+   if (fM28ClusMtFlag)
+      fActClusIt   = new TAITactNtuClusterMT("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
+   else
+      fActClusIt   = new TAITactNtuClusterF("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
+
    if (fFlagHisto)
      fActClusIt->CreateHistogram();
    

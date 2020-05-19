@@ -54,6 +54,7 @@
 #include "TAVTactNtuClusterF.hxx"
 #include "TAVTactNtuClusterMT.hxx"
 #include "TAITactNtuClusterF.hxx"
+#include "TAITactNtuClusterMT.hxx"
 #include "TAMSDactNtuCluster.hxx"
 #include "TATWactNtuPoint.hxx"
 
@@ -278,7 +279,7 @@ protected:
    TAVTactBaseNtuTrack*  fActTrackVtx;   // action for tracks
    TAVTactBaseNtuVertex* fActVtx;        // action for vertex
    
-   TAITactNtuClusterF*   fActClusIt;     // action for clusters
+   TAGaction*            fActClusIt;     // action for clusters
    TAITactBaseNtuTrack*  fActTrackIt;   // action for tracks
 
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
