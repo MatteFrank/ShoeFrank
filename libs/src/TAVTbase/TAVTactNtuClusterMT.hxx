@@ -7,13 +7,13 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "TAVTactBaseClusterMT.hxx"
+#include "TAVTactBaseNtuClusterMT.hxx"
 
 class TAVTntuCluster;
 class TAVTntuHit;
 class TAVTparGeo;
 
-class TAVTactNtuClusterMT : public TAVTactBaseClusterMT {
+class TAVTactNtuClusterMT : public TAVTactBaseNtuClusterMT {
    
 public:
    explicit  TAVTactNtuClusterMT(const char* name     = 0,
@@ -34,30 +34,13 @@ public:
    //! Get list of pixels
    virtual TClonesArray* GetListOfPixels(Int_t sensorId);
 
-   //! Thread start
-   Bool_t   ThreadStart();
-   
-   //! Thread join
-   Bool_t   ThreadJoin();
-   
-   //! Thread stop
-   Bool_t   ThreadStop();
-   
 private:
    TAGdataDsc*     fpNtuRaw;		  // input data dsc
    TAGdataDsc*     fpNtuClus;		  // output data dsc
    Bool_t          fOk;
 
-   pthread_t*      fThread[4];
-
 private:
    Bool_t  CreateClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr);
-
-private:
-   static void* Thread0(void* arg);
-   static void* Thread1(void* arg);
-   static void* Thread2(void* arg);
-   static void* Thread3(void* arg);
 
    ClassDef(TAVTactNtuClusterMT,0)
 };
