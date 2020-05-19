@@ -12,7 +12,6 @@
 class TAVTntuCluster;
 class TAVTntuHit;
 class TAVTparGeo;
-class TThread;
 
 class TAVTactNtuClusterMT : public TAVTactBaseNtuClusterMT {
    
@@ -40,7 +39,6 @@ public:
    
    //! Thread stop
    Bool_t   ThreadStop();
-   
    
 private:
    TAGdataDsc*     fpNtuRaw;		  // input data dsc

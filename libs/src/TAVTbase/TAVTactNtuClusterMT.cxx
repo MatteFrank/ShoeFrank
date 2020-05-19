@@ -201,6 +201,7 @@ Bool_t TAVTactNtuClusterMT::FindClusters(Int_t iSensor, TClonesArray* listOfPixe
    
    if (FootDebugLevel(1))
       printf("Thread %d with %d pixels\n", thr, listOfPixels->GetEntries());
+   
    FillMaps(listOfPixels, thr);
    SearchCluster(listOfPixels, thr);
 
@@ -225,7 +226,7 @@ Bool_t TAVTactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
       if(!CheckLine(line)) continue;
       if(!CheckCol(col)) continue;
       
-      Int_t clusterN = GetClusterNumber(line,col, thr);
+      Int_t clusterN = GetClusterNumber(line, col, thr);
       if ( clusterN != -1 ) {
          pthread_mutex_lock(&fLock);
          cluster1 = pNtuClus->GetCluster(iSensor, clusterN);
