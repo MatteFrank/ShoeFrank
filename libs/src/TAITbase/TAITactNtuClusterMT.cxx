@@ -179,6 +179,7 @@ Bool_t TAITactNtuClusterMT::ThreadJoin()
    
    return true;
 }
+
 //______________________________________________________________________________
 //
 Bool_t TAITactNtuClusterMT::Action()
