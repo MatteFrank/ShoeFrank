@@ -41,6 +41,7 @@ Bool_t  TAFOeventDisplay::fgTrackFlag       = true;
 TString TAFOeventDisplay::fgVtxTrackingAlgo = "Std";
 Bool_t  TAFOeventDisplay::fgStdAloneFlag    = false;
 Bool_t  TAFOeventDisplay::fgBmSelectHit     = false;
+Bool_t  TAFOeventDisplay::fgM28ClusMtFlag   = false;
 
 TAFOeventDisplay* TAFOeventDisplay::fgInstance = 0x0;
 
@@ -216,6 +217,9 @@ void TAFOeventDisplay::SetLocalReco()
    fReco->DisableSaveHits();
    fReco->EnableHisto();
    
+   if (fgM28ClusMtFlag)
+      fReco->EnableM28lusMT();
+
    if (fgTrackFlag) {
       fReco->SetTrackingAlgo(fgVtxTrackingAlgo[0]);
       fReco->EnableTracking();

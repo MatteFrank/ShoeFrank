@@ -134,6 +134,13 @@ public:
    static void DisableBmSelectHit() { fgBmSelectHit = false;  }
    static void EnableBmSelectHit()  { fgBmSelectHit = true;   }
    
+   // M28 MT clustering flag
+   static Bool_t IsM28ClusMT()      { return fgM28ClusMtFlag; }
+   
+   //! Disable/Enable M28 MT clustering
+   static void DisableM28ClusMT()   { fgM28ClusMtFlag = false; }
+   static void EnableM28lusMT()     { fgM28ClusMtFlag = true;  }
+   
    // ITR tracking flag
    static Bool_t IsItrTracking()    { return BaseReco::IsItrTracking(); }
 
@@ -189,6 +196,7 @@ protected:
    static TString        fgVtxTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory and "Hough" Hough transformation)
    static Bool_t         fgBmSelectHit;     // flag BM selected hit
    static Bool_t         fgItrTrackFlag;    // flag for ITR tracking
+   static Bool_t         fgM28ClusMtFlag;    // flag for MT clustering
 
    ClassDef(TAFOeventDisplay, 1); // Base class for event display
 };
