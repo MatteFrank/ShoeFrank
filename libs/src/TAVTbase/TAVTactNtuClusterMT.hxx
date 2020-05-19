@@ -7,13 +7,13 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "TAVTactBaseNtuClusterMT.hxx"
+#include "TAVTactBaseClusterMT.hxx"
 
 class TAVTntuCluster;
 class TAVTntuHit;
 class TAVTparGeo;
 
-class TAVTactNtuClusterMT : public TAVTactBaseNtuClusterMT {
+class TAVTactNtuClusterMT : public TAVTactBaseClusterMT {
    
 public:
    explicit  TAVTactNtuClusterMT(const char* name     = 0,

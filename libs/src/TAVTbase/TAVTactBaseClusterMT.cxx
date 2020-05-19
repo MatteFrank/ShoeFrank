@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAVTactBaseNtuClusterMT.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactBaseNtuClusterMT.
+ \version $Id: TAVTactBaseClusterMT.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \brief   Implementation of TAVTactBaseClusterMT.
  */
 #include "TClonesArray.h"
 #include "TH1F.h"
@@ -13,21 +13,21 @@
 #include "TAVTparConf.hxx"
 #include "TAVTntuRaw.hxx"
 #include "TAVTntuCluster.hxx"
-#include "TAVTactBaseNtuClusterMT.hxx"
+#include "TAVTactBaseClusterMT.hxx"
 
 /*!
- \class TAVTactBaseNtuClusterMT
+ \class TAVTactBaseClusterMT
  \brief NTuplizer for vertex raw hits. **
  */
 
-ClassImp(TAVTactBaseNtuClusterMT);
+ClassImp(TAVTactBaseClusterMT);
 
-pthread_mutex_t TAVTactBaseNtuClusterMT::fLock;
+pthread_mutex_t TAVTactBaseClusterMT::fLock;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAVTactBaseNtuClusterMT::TAVTactBaseNtuClusterMT(const char* name,
+TAVTactBaseClusterMT::TAVTactBaseClusterMT(const char* name,
 											 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
  : TAGactNtuClusterMT(name, "TAVTactNtuCluster - NTuplize cluster"),
    fpConfig(pConfig),
@@ -66,14 +66,14 @@ TAVTactBaseNtuClusterMT::TAVTactBaseNtuClusterMT(const char* name,
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAVTactBaseNtuClusterMT::~TAVTactBaseNtuClusterMT()
+TAVTactBaseClusterMT::~TAVTactBaseClusterMT()
 {
    pthread_mutex_destroy(&fLock);
 }
 
 //------------------------------------------+-----------------------------------
 //! Setup all histograms.
-void TAVTactBaseNtuClusterMT::CreateHistogram()
+void TAVTactBaseClusterMT::CreateHistogram()
 {
    DeleteHistogram();
    fpHisPixelTot = new TH1F(Form("%sClusPixelTot", fPrefix.Data()), Form("%s - Total # pixels per clusters", fTitleDev.Data()), 100, 0., 100.);
@@ -106,7 +106,7 @@ void TAVTactBaseNtuClusterMT::CreateHistogram()
 
 //______________________________________________________________________________
 //
-void TAVTactBaseNtuClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
+void TAVTactBaseClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
 {
    // Clear maps
    ClearMaps(thr);
@@ -131,7 +131,7 @@ void TAVTactBaseNtuClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
 
 //______________________________________________________________________________
 //
-void TAVTactBaseNtuClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t thr)
+void TAVTactBaseClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t thr)
 {
    fClustersN[thr] = 0;
    // Search for cluster
@@ -159,7 +159,7 @@ void TAVTactBaseNtuClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t th
 
 //______________________________________________________________________________
 // Get object in list
-TAGobject*  TAVTactBaseNtuClusterMT::GetHitObject(Int_t idx, TClonesArray* listOfPixels) const
+TAGobject*  TAVTactBaseClusterMT::GetHitObject(Int_t idx, TClonesArray* listOfPixels) const
 {
    if (idx >= 0 && idx < listOfPixels->GetEntries() )
       return (TAGobject*)listOfPixels->At(idx);
@@ -173,7 +173,7 @@ TAGobject*  TAVTactBaseNtuClusterMT::GetHitObject(Int_t idx, TClonesArray* listO
 
 //______________________________________________________________________________
 //
-Bool_t TAVTactBaseNtuClusterMT::ApplyCuts(TAVTbaseCluster* cluster)
+Bool_t TAVTactBaseClusterMT::ApplyCuts(TAVTbaseCluster* cluster)
 {
    TAVTbaseParConf* pConfig = (TAVTbaseParConf*) fpConfig->Object();
    
@@ -190,21 +190,21 @@ Bool_t TAVTactBaseNtuClusterMT::ApplyCuts(TAVTbaseCluster* cluster)
 
 //______________________________________________________________________________
 //
-void TAVTactBaseNtuClusterMT::ComputePosition()
+void TAVTactBaseClusterMT::ComputePosition()
 {
    ComputeCoGPosition();
 }
 
 //______________________________________________________________________________
 //
-void TAVTactBaseNtuClusterMT::ComputeSeedPosition()
+void TAVTactBaseClusterMT::ComputeSeedPosition()
 {
    fCurrentPosition.SetXYZ((fPSeed->GetPosition())(0), (fPSeed->GetPosition())(1), 0);   
 }
 
 //______________________________________________________________________________
 //
-void TAVTactBaseNtuClusterMT::ComputeCoGPosition()
+void TAVTactBaseClusterMT::ComputeCoGPosition()
 {
    if (!fCurListOfPixels) return;
    
@@ -246,7 +246,7 @@ void TAVTactBaseNtuClusterMT::ComputeCoGPosition()
 
 //______________________________________________________________________________
 //
-void TAVTactBaseNtuClusterMT::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster)
+void TAVTactBaseClusterMT::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster)
 {
    TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
    

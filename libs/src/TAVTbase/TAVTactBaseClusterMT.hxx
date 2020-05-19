@@ -1,9 +1,9 @@
-#ifndef _TAVTactBaseNtuClusterMT_HXX
-#define _TAVTactBaseNtuClusterMT_HXX
+#ifndef _TAVTactBaseClusterMT_HXX
+#define _TAVTactBaseClusterMT_HXX
 /*!
  \file
- \version $Id: TAVTactBaseNtuClusterMT.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
- \brief   Declaration of TAVTactBaseNtuClusterMT.
+ \version $Id: TAVTactBaseClusterMT.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \brief   Declaration of TAVTactBaseClusterMT.
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -25,14 +25,14 @@ class TAVTntuHit;
 class TAVTbaseParGeo;
 class TH1F;
 class TH2F;
-class TAVTactBaseNtuClusterMT : public TAGactNtuClusterMT {
+class TAVTactBaseClusterMT : public TAGactNtuClusterMT {
    
 public:
-   explicit  TAVTactBaseNtuClusterMT(const char* name     =  0,
+   explicit  TAVTactBaseClusterMT(const char* name     =  0,
 								           TAGparaDsc* p_config =  0,
 								           TAGparaDsc* p_geomap =  0);
    
-   virtual ~TAVTactBaseNtuClusterMT();
+   virtual ~TAVTactBaseClusterMT();
    
    //! Action
    virtual  Bool_t Action() { return false; }
@@ -93,7 +93,7 @@ protected:
 protected:
    static   pthread_mutex_t fLock;
 
-   ClassDef(TAVTactBaseNtuClusterMT,0)
+   ClassDef(TAVTactBaseClusterMT,0)
 };
 
 #endif

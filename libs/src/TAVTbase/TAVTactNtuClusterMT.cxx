@@ -32,7 +32,7 @@ ClassImp(TAVTactNtuClusterMT);
 TAVTactNtuClusterMT::TAVTactNtuClusterMT(const char* name,
 									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus,
 									 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
-: TAVTactBaseNtuClusterMT(name, pConfig, pGeoMap),
+: TAVTactBaseClusterMT(name, pConfig, pGeoMap),
   fpNtuRaw(pNtuRaw),
   fpNtuClus(pNtuClus),
   fOk(true)
