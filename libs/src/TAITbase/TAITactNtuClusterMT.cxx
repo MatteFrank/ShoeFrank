@@ -186,7 +186,7 @@ Bool_t TAITactNtuClusterMT::Action()
 {
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
-   for (Int_t i = 0; i < pConfig->GetSensorsN(); i+=4) {
+   for (Int_t i = 0; i < pConfig->GetSensorsN(); i+=fgMaxThread) {
       fgSensorOff = i;
       ThreadStart();
       ThreadJoin();
