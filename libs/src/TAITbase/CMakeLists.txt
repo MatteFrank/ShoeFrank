@@ -33,6 +33,7 @@ set( with_dictionnaries
    TAITntuCluster
    TAITcluster
    TAITactNtuClusterF
+   TAITactNtuClusterMT
    TAITtrack
    TAITntuTrack
    TAITactBaseNtuTrack
