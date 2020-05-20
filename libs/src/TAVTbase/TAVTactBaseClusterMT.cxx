@@ -123,9 +123,7 @@ void TAVTactBaseClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
       if (!CheckLine(line)) continue;
       if (!CheckCol(col)) continue;
 
-      pthread_mutex_lock(&fLock);
       TAGactNtuClusterMT::FillMaps(line, col, i, thr);
-      pthread_mutex_unlock(&fLock);
    }
 }
 
