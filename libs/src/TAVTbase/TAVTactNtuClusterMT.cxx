@@ -51,6 +51,8 @@ TAVTactNtuClusterMT::~TAVTactNtuClusterMT()
 //
 Bool_t TAVTactNtuClusterMT::Action()
 {
+   fgSensorOff = 0;
+   
    ThreadStart();
    ThreadJoin();
    ThreadStop();
