@@ -101,6 +101,9 @@ bool TAVTactNtuHitMC::Action()
       }
    }
    
+   if (fgSigmaNoiseLevel > 0)
+      FillNoise();
+   
    fpNtuRaw->SetBit(kValid);
    
    return kTRUE;
