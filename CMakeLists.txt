@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # Check cmake version is compatible
 #
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 set(CMAKE_MACOSX_RPATH 0)
 #------------------------------------------------------------------------------
 # Project Name 
