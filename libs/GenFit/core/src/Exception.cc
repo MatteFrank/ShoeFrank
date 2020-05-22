@@ -22,7 +22,7 @@
 
 namespace genfit {
 
-bool Exception::quiet_ = false;
+bool Exception::quiet_ = true;
 
 Exception::Exception(std::string excString, int line, std::string  file) :
     excString_(excString), line_(line), file_(file), fatal_(false) {
@@ -81,4 +81,3 @@ void Exception::info() {
 }
 
 } /* End of namespace genfit */
-

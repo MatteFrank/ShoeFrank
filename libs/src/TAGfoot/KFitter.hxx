@@ -213,8 +213,16 @@ public:
 
   int GetChargeFromTW(Track* trackToCheck);
   TVector3 ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane );
-  bool CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum, int chargeFromTofWall);
+  bool CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum, double MCEveMass, int chargeFromTofWall);
   TVector3 ExtrapolateToTofWall( Track* trackToFit );
+
+  int GetTWTrackFixed (TATWpoint* pointToCheck);
+
+  void RecordTrackInfoDataLike( Track* trackToRecord, int tCharge, string particlename );
+  void GetKalmanTrackInfoDataLike ( int indexOfState, Track* track,
+    const TVectorD* KalmanState, const TMatrixDSym* KalmanCov);
+
+  genfit::KalmanFittedStateOnPlane GetKalmanTrackInfoDataLike_ ( int indexOfState, Track* track );
 
 
 

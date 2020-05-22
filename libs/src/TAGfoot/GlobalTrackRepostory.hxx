@@ -34,7 +34,7 @@ using namespace std;
 using namespace genfit;
 
 class GlobalTrackRepostory {
-  
+
 public:
 
   GlobalTrackRepostory() {
@@ -44,59 +44,53 @@ public:
   };
 
   ~GlobalTrackRepostory() {};
-  
-  void AddTrack( string name, Track* track, long evNum, int stateID, 
-		 TVector3* mom, TVector3* pos,
-		 TVector3* mom_MC, TVector3* pos_MC, 
-		 TMatrixD* mom_cov 
-		 );
-  
+
+  void AddTrack( string name, Track* track, long evNum, int stateID,
+    TVector3* mom, TVector3* pos,
+    TVector3* mom_MC, TVector3* pos_MC,
+    TMatrixD* mom_cov
+	);
+
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  void AddTrack( string name, Track* track, long evNum, int stateID,
+    const TVectorD state, const TMatrixDSym covariance, TVector3* mom_MC, TVector3* pos_MC, int charge
+  );
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
   double EvalError( TVector3 mom, TVector3 err );
   double EvalError( TVector3 mom, TMatrixD cov );
-  
+
   void PrintPositionResidual( TVector3 pos, TVector3 expectedPos, string hitSampleName );
-  
+
   void PrintMomentumResidual( TVector3 meas, TVector3 expected, TVector3 cov, string hitSampleName );
   void PrintMomentumResidual( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName );
   void PrintMomentumResidual( TVector3 meas, TVector3 expected, double err, string hitSampleName );
-  
+  void PrintMomentumResidual( double meas, double expected, double err, string hitSampleName );
+
+
   void EvaluateMomentumResolution();
   void Save();
-  
+
   /***variables***/
-  
+
   int m_debug;
   string m_kalmanOutputDir;
-  
+
   vector<GlobalTrackKalman*> m_fitTrackCollection;
-  
+
   double m_resoP_step;
-  
+
   map<string, map<float, TH1F*> > h_dP_x_bin;
   map<string, map<float, TH1F*> > h_dPOverP_x_bin;
   map<string, map<float, TH1F*> > h_dPOverSigmaP_x_bin;
-  
+
   map< string, TH1F* > h_resoP_over_Pkf;
   map< string, TH1F* > h_biasP_over_Pkf;
-  
+
 private:
-  
-  
+
+
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

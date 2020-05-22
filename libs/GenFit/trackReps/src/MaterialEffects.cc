@@ -154,7 +154,7 @@ double MaterialEffects::effects(const std::vector<RKStep>& steps,
 
     if (debugLvl_ > 0) {
       debugOut << "     calculate matFX ";
-      if (doNoise) 
+      if (doNoise)
         debugOut << "and noise";
       debugOut << " for ";
       debugOut << "stepSize = " << it->matStep_.stepSize_ << "\t";
@@ -455,7 +455,8 @@ double MaterialEffects::dEdxBetheBloch(double betaSquare, double gamma, double g
 {
   static const double betaGammaMin(0.05);
   if (betaSquare*gammaSquare < betaGammaMin*betaGammaMin) {
-    Exception exc("MaterialEffects::dEdxBetheBloch ==> beta*gamma < 0.05, Bethe-Bloch implementation not valid anymore!",__LINE__,__FILE__);
+    //Exception exc("MaterialEffects::dEdxBetheBloch ==> beta*gamma < 0.05, Bethe-Bloch implementation not valid anymore!",__LINE__,__FILE__);
+    Exception exc("MaterialEffects::dEdxBetheBloch ==> beta*gamma < 0.05",__LINE__,__FILE__);
     exc.setFatal();
     throw exc;
   }
@@ -795,7 +796,7 @@ void MaterialEffects::noiseBrems(M7x7& noise, double momSquare, double betaSquar
   double minusXOverLn2  = -1.442695 * fabs(stepSize_) / radiationLength_;
   double sigma2E = 1.44*(pow(3., minusXOverLn2) - pow(4., minusXOverLn2)) * momSquare;
   sigma2E = std::max(sigma2E, 0.0); // must be positive
-  
+
   // update noise matrix, using linear error propagation from E to q/p
   noise[6 * 7 + 6] += charge_*charge_/betaSquare / pow(momSquare, 2) * sigma2E;
 }
@@ -869,5 +870,3 @@ void MaterialEffects::drawdEdx(int pdg) {
 }
 
 } /* End of namespace genfit */
-
-
