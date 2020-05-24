@@ -34,15 +34,12 @@ TAGactNtuClusterMT::~TAGactNtuClusterMT()
 //
 map<Int_t, Int_t>& TAGactNtuClusterMT::GetPixelMap(Int_t thr)
 {
-   if (thr == 0) return fPixelMap0;
-   else if (thr == 1) return fPixelMap1;
-   else if (thr == 2) return fPixelMap2;
-   else if (thr == 3) return fPixelMap3;
-
+   if (thr >= 0 && thr < fgMaxThread)
+      return fPixelMap[thr];
    else
       printf("No pixel map for %d thread, put thread 0\n", thr);
    
-   return fPixelMap0;
+   return fPixelMap[0];
       
 }
 
@@ -50,30 +47,24 @@ map<Int_t, Int_t>& TAGactNtuClusterMT::GetPixelMap(Int_t thr)
 //
 map<Int_t, Int_t>& TAGactNtuClusterMT::GetIndexMap(Int_t thr)
 {
-   if (thr == 0) return fIndexMap0;
-   else if (thr == 1) return fIndexMap1;
-   else if (thr == 2) return fIndexMap2;
-   else if (thr == 3) return fIndexMap3;
-   
+   if (thr >= 0 && thr < fgMaxThread)
+      return fIndexMap[thr];
    else
       printf("No index map for %d thread, put thread 0\n", thr);
    
-   return fIndexMap0;
+   return fIndexMap[0];
 }
 
 //______________________________________________________________________________
 //
 TArrayI&  TAGactNtuClusterMT::GetFlagMap(Int_t thr)
 {
-   if (thr == 0) return fFlagMap0;
-   else if (thr == 1) return fFlagMap1;
-   else if (thr == 2) return fFlagMap2;
-   else if (thr == 3) return fFlagMap3;
-   
+   if (thr >= 0 && thr < fgMaxThread)
+      return fFlagMap[thr];
    else
       printf("No index map for %d thread, put thread 0\n", thr);
    
-   return fFlagMap0;
+   return fFlagMap[0];
 }
 
 

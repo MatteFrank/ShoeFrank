@@ -35,21 +35,9 @@ public:
    
 protected:
    
-   map<Int_t, Int_t> fPixelMap0; // pixel map;
-   map<Int_t, Int_t> fIndexMap0; // index map of the pixel;
-   TArrayI           fFlagMap0;
-   
-   map<Int_t, Int_t> fPixelMap1; // pixel map;
-   map<Int_t, Int_t> fIndexMap1; // index map of the pixel;
-   TArrayI           fFlagMap1;
-   
-   map<Int_t, Int_t> fPixelMap2; // pixel map;
-   map<Int_t, Int_t> fIndexMap2; // index map of the pixel;
-   TArrayI           fFlagMap2;
-   
-   map<Int_t, Int_t> fPixelMap3; // pixel map;
-   map<Int_t, Int_t> fIndexMap3; // index map of the pixel;
-   TArrayI           fFlagMap3;
+   map<Int_t, Int_t> fPixelMap[4]; // pixel map;
+   map<Int_t, Int_t> fIndexMap[4]; // index map of the pixel;
+   TArrayI           fFlagMap[4];
    
    Int_t             fDimX;     //  dimension X of map
    Int_t             fDimY;     //  dimension Y of map
