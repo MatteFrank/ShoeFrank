@@ -26,15 +26,13 @@ public:
    Int_t               GetClusterNumber(Int_t line, Int_t col, Int_t thr);
    
    // Get object in list
-   virtual TAGobject*  GetHitObject(Int_t /*idx*/, TClonesArray* /*list*/) const { return 0x0;                      }
+   virtual TAGobject*  GetHitObject(Int_t /*idx*/, TClonesArray* /*list*/) const { return 0x0; }
 
 public:
    static void  SetMaxThread(Int_t thr) { fgMaxThread = thr;  }
    static Int_t GetMaxThread()          { return fgMaxThread; }
 
-   
 protected:
-   
    map<Int_t, Int_t> fPixelMap[4]; // pixel map;
    map<Int_t, Int_t> fIndexMap[4]; // index map of the pixel;
    TArrayI           fFlagMap[4];
