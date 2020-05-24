@@ -13,14 +13,17 @@
 
 ClassImp(TAGactNtuClusterMT);
 
-Int_t TAGactNtuClusterMT::fgMaxThread = 4;
+Int_t TAGactNtuClusterMT::fgMaxThreadsN  = 4;
+Int_t TAGactNtuClusterMT::fgkLimThreadsN = 8;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAGactNtuClusterMT::TAGactNtuClusterMT(const char* name,
-											 const char* title )
-: TAGaction(name, title)
+TAGactNtuClusterMT::TAGactNtuClusterMT(const char* name, const char* title )
+ : TAGaction(name, title),
+   fDimX(-1),
+   fDimY(-1),
+   fThreadsN(-1)
 {
 }
 
@@ -34,7 +37,7 @@ TAGactNtuClusterMT::~TAGactNtuClusterMT()
 //
 map<Int_t, Int_t>& TAGactNtuClusterMT::GetPixelMap(Int_t thr)
 {
-   if (thr >= 0 && thr < fgMaxThread)
+   if (thr >= 0 && thr < fThreadsN)
       return fPixelMap[thr];
    else
       printf("No pixel map for %d thread, put thread 0\n", thr);
@@ -47,7 +50,7 @@ map<Int_t, Int_t>& TAGactNtuClusterMT::GetPixelMap(Int_t thr)
 //
 map<Int_t, Int_t>& TAGactNtuClusterMT::GetIndexMap(Int_t thr)
 {
-   if (thr >= 0 && thr < fgMaxThread)
+   if (thr >= 0 && thr < fThreadsN)
       return fIndexMap[thr];
    else
       printf("No index map for %d thread, put thread 0\n", thr);
@@ -59,7 +62,7 @@ map<Int_t, Int_t>& TAGactNtuClusterMT::GetIndexMap(Int_t thr)
 //
 TArrayI&  TAGactNtuClusterMT::GetFlagMap(Int_t thr)
 {
-   if (thr >= 0 && thr < fgMaxThread)
+   if (thr >= 0 && thr < fThreadsN)
       return fFlagMap[thr];
    else
       printf("No index map for %d thread, put thread 0\n", thr);
