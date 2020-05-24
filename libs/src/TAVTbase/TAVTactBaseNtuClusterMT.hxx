@@ -41,13 +41,17 @@ public:
    
 protected:
    Bool_t          fOk;
-   pthread_t*      fThread[4];
+   pthread_t*      fThread[8];
 
 protected:
    static void* Thread0(void* arg);
    static void* Thread1(void* arg);
    static void* Thread2(void* arg);
    static void* Thread3(void* arg);
+   static void* Thread4(void* arg);
+   static void* Thread5(void* arg);
+   static void* Thread6(void* arg);
+   static void* Thread7(void* arg);
    static Int_t fgSensorOff;
 
    ClassDef(TAVTactBaseNtuClusterMT,0)

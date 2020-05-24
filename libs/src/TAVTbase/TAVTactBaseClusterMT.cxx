@@ -54,7 +54,12 @@ TAVTactBaseClusterMT::TAVTactBaseClusterMT(const char* name,
    fDimY = geoMap->GetNPixelY()+1;
    fDimX = geoMap->GetNPixelX()+1;
    
-   for (Int_t i = 0; i < fgMaxThread; ++i) {
+   // max threads
+   fThreadsN = fgMaxThreadsN;
+   if (fThreadsN > geoMap->GetSensorsN())
+      fThreadsN =  geoMap->GetSensorsN();
+   
+   for (Int_t i = 0; i < fThreadsN; ++i) {
       SetupMaps(fDimY*fDimX, i);
       fClustersN[i] = 0;
    }

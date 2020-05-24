@@ -35,6 +35,9 @@ TAITactNtuClusterMT::TAITactNtuClusterMT(const char* name,
 {
    AddDataIn(pNtuRaw,   "TAITntuRaw");
    AddDataOut(pNtuClus, "TAITntuCluster");
+   
+   if (fThreadsN > fgkLimThreadsN)
+      fThreadsN = fgkLimThreadsN;
 }
 
 //------------------------------------------+-----------------------------------
@@ -50,7 +53,7 @@ Bool_t TAITactNtuClusterMT::Action()
 {
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
-   for (Int_t i = 0; i < pConfig->GetSensorsN(); i+=fgMaxThread) {
+   for (Int_t i = 0; i < pConfig->GetSensorsN(); i+=fThreadsN) {
       fgSensorOff = i;
       ThreadStart();
       ThreadJoin();
