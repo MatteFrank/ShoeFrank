@@ -308,13 +308,8 @@ private:
   map<int, genfit::SharedPlanePtr> m_detectorPlanes;
 
   //temporary placeholder for trackfinding histos and graphs
-  vector<TGraph*> zxGraph;
-  vector<TGraph*> zyGraph;
   TGraphErrors* graphErrorX;
-  vector<TH2F*> houghH;
   TGraphErrors* graphErrorY;
-  TH2D* histoTrackParamX;
-  TH2D* histoTrackParamY;
 
   TH2D* MSDresidualOfPrediction;
   TH2D* ITresidualOfPrediction;
@@ -323,6 +318,11 @@ private:
   TH1D* qoverp;
   TH1D* qoverpsel;
 
+  vector<TH1D*> momentum_true;
+  vector<TH1D*> momentum_reco;
+  vector<TH1D*> ratio_reco_true;
+
+  TFile* outfile;
   int MSDforwardcounter;
 
   std::vector<Track*> m_vectorTrack;

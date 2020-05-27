@@ -198,10 +198,22 @@ KFitter::KFitter () {
   tempPurity = new TH1D("purity", "purity", 20, 0., 1.5);
   qoverp = new TH1D("qoverp_all", "qoverp_all", 100, 0., 2.);
   qoverpsel = new TH1D("qoverp_sel", "qoverp_sel", 100, 0., 2.);
+  outfile = TFile::Open("efficiency.root","RECREATE");
 
-  //ofs.open ("test.txt", std::ofstream::out | std::ofstream::app);
+  //ofs.open ("test.txt", std::ofstream::out);
+  ofs.open ("efficiency.txt", std::ofstream::out);
 
-  MSDforwardcounter++;
+  MSDforwardcounter=0;
+
+  for (unsigned int jCharge = 0; jCharge < 8; ++jCharge){
+    TH1D* h = new TH1D(Form("histoChargeTrue%d",jCharge+1), "test", 50, 0.,10.);
+    TH1D* h1 = new TH1D(Form("histoChargeReco%d",jCharge+1), "test", 50, 0.,10.);
+    TH1D* h2 = new TH1D(Form("histoRatio%d",jCharge+1), "test", 50, 0.,10.);
+
+    momentum_true.push_back(h);
+    momentum_reco.push_back(h1);
+    ratio_reco_true.push_back(h2);
+  }
 
 }
 
@@ -817,14 +829,14 @@ int KFitter::UploadHitsTW() {
 
     if ( GetTWTrackFixed(point) == -1 ) continue;
 
-    TVector3 prova = m_GeoTrafo->FromTWLocalToGlobal(point->GetPositionG());
+    //TVector3 prova = m_GeoTrafo->FromTWLocalToGlobal(point->GetPositionG());
     //ofs << "TVector prova " << prova.X() << " " << prova.Y() << " " << prova.Z() << endl;
     //ofs << " CHARGE from algo " << point->GetChargeZ() << endl;
 
-    m_TW_hitCollection.push_back(point);
+    m_TW_hitCollection.push_back( point );
 
     //get MC info without calling TAMChit
-    Int_t idx = GetTWTrackFixed(point);
+    Int_t idx = GetTWTrackFixed( point );
     //test access to rowhit of TW point to avoid -1
     //TATWntuHit* testRowHit = 0x0;
     //TATWntuHit* testColHit = 0x0;
@@ -981,6 +993,8 @@ int KFitter::PrepareData4Fit_dataLike() {
       if ( m_nTotTracks.find( nameParticle ) == m_nTotTracks.end() )	m_nTotTracks[ nameParticle ] = 0;
       m_nTotTracks[ nameParticle ]++;
 
+      momentum_true.at(pointTofWall->GetChargeZ() -1)->Fill(montecarlotrack->GetInitP().Mag());
+
     }
   }
 
@@ -1040,6 +1054,9 @@ int KFitter::PrepareData4Fit_dataLike() {
 
       for (std::set<int>::iterator it = partHypo.begin(); it != partHypo.end(); ++it){
         AbsTrackRep* rep = 0x0;
+        AbsTrackRep* rep1 = 0x0;
+        AbsTrackRep* rep2 = 0x0;
+
         string nameParticle_ = "NONE";
         if (*it == 1) {nameParticle_ = "H"; areLightFragments = true;}
         else if ( *it == 2 ) {nameParticle_ = "Alpha"; areLightFragments = true;}
@@ -1052,6 +1069,18 @@ int KFitter::PrepareData4Fit_dataLike() {
         if (nameParticle_ != "NONE"){
           rep = new RKTrackRep( (UpdatePDG::GetPDG()->GetPdgCode( nameParticle_ ) ) );
           fitTrack_->addTrackRep( rep );
+        }
+        if ( nameParticle_ == "H" ){
+          rep1 = new RKTrackRep( (UpdatePDG::GetPDG()->GetPdgCode( "H2" ) ) );
+          rep2 = new RKTrackRep( (UpdatePDG::GetPDG()->GetPdgCode( "H3" ) ) );
+          fitTrack_->addTrackRep( rep1 );
+          fitTrack_->addTrackRep( rep2 );
+
+        }
+        if ( nameParticle_ == "Alpha" ){
+          rep1 = new RKTrackRep( (UpdatePDG::GetPDG()->GetPdgCode( "He3" ) ) );
+          fitTrack_->addTrackRep( rep1 );
+
         }
 
       }
@@ -1339,7 +1368,7 @@ int KFitter::PrepareData4Fit_dataLike() {
         fitTrack_ = nullptr;
         continue;
       }
-      if (cardinal=="NONE") {
+      if ( cardinal == "NONE" ) {
         //ofs << "deleting fitTrack_ no valid point on TW found bis" << endl;
         delete fitTrack_;
         fitTrack_ = nullptr;
@@ -1347,13 +1376,17 @@ int KFitter::PrepareData4Fit_dataLike() {
       }
 
       //here I set cardinalrep by chargeFromTW
-      for (unsigned int iRep = 0; iRep < fitTrack_->getNumReps(); iRep++){
+      for ( unsigned int iRep = 0; iRep < fitTrack_->getNumReps(); iRep++ ){
         AbsTrackRep* tempTrackRep = 0x0;
         tempTrackRep = fitTrack_->getTrackRep(iRep);
         if (!tempTrackRep) continue;
-        if (tempTrackRep->getPDG() == UpdatePDG::GetPDG()->GetPdgCode( cardinal ) )
-        fitTrack_->setCardinalRep(iRep);
+        //if (tempTrackRep->getPDG() == UpdatePDG::GetPDG()->GetPdgCode( cardinal ) )
+        //if ( tempTrackRep->getPDGCharge() != chargeFromTW*3 ) fitTrack_->deleteTrackRep(iRep);
+        //fitTrack_->setCardinalRep(iRep);
+        cout << "PDG charge " << tempTrackRep->getPDGCharge() << " " << chargeFromTW <<endl;
       }
+      fitTrack_->determineCardinalRep();
+      cout << fitTrack_->getCardinalRep()->getPDGCharge() << endl;
       // cout << " check of fitTrack_ filling after deleting fakeMSD and inserting one" << endl;
       // for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
       //   fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement()->getRawHitCoords().Print();
@@ -1368,6 +1401,7 @@ int KFitter::PrepareData4Fit_dataLike() {
       if (checkTrack){
         //ofs << "adding fitTrack_ to vector track" << endl;
         m_vectorTrack.push_back(fitTrack_);
+        momentum_reco.at(chargeFromTW-1)->Fill(montecarloMomentum);
         RecordTrackInfoDataLike(fitTrack_, chargeFromTW, cardinal);
       }
       //delete fitTrack_;
@@ -1481,8 +1515,6 @@ int KFitter::GetChargeFromTW(Track* trackToCheck){
 bool KFitter::CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum, double MCEveMass, int chargeFromTofWall){
   double numeratorForPurity = 0.;
   int hitsNotVT = 0;
-  bool calcPurity = false;
-  bool isITinColl = false;
 
   //chisquare of tracks
   m_fitter->processTrack(trackToCheck);
@@ -1492,27 +1524,18 @@ bool KFitter::CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCE
     int trackHitID = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
     int trackDetID = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getDetId();
     AbsFitterInfo* afi = trackToCheck->getPointWithMeasurement(jTracking)->getFitterInfo(nullptr);
-
     KalmanFitterInfo* fi = dynamic_cast<KalmanFitterInfo*>(afi);
-    if(!fi) {MSDforwardcounter++; return false;}
+    if(!fi) {MSDforwardcounter++; cout << "NO UPDATE " << MCEveCharge << " " << MCEveMomentum << " " << MCEveMass << " " << chargeFromTofWall << endl; return false;}
     KalmanFittedStateOnPlane* fup = fi->getForwardUpdate();
-
     KalmanFittedStateOnPlane* bup = fi->getBackwardUpdate();
     if (fup == nullptr || bup == nullptr) {MSDforwardcounter++; return false;}
-
-    // if (!(trackToCheck->getPointWithMeasurement(jTracking)->hasFitterInfo(nullptr))) continue;
-    // trackHasBackUpdate = trackHasBackUpdate && static_cast<genfit::KalmanFitterInfo*>(trackToCheck->getPointWithMeasurement(jTracking)->getFitterInfo(nullptr))->hasBackwardUpdate();
-    // trackHasFwdUpdate = trackHasFwdUpdate && static_cast<genfit::KalmanFitterInfo*>(trackToCheck->getPointWithMeasurement(jTracking)->getFitterInfo(nullptr))->hasForwardUpdate();
-    if(trackDetID != m_detectorID_map["VT"]) hitsNotVT++;
-    int trackIDFromMontecarlo = m_MCInfo[trackDetID][trackHitID].MCTrackId;
-    if (trackToCheck->getMcTrackId() == trackIDFromMontecarlo) numeratorForPurity+=1;
+    if(trackDetID != m_detectorID_map["VT"]){
+      hitsNotVT++;
+      int trackIDFromMontecarlo = m_MCInfo[trackDetID][trackHitID].MCTrackId;
+      if (trackToCheck->getMcTrackId() == trackIDFromMontecarlo) numeratorForPurity+=1;
+    }
   }
 
-  cout << "xyz" << endl;
-  // if (!(trackHasBackUpdate && trackHasFwdUpdate)) {
-    // MSDforwardcounter++;
-    // return false;
-  // }
   double chisquare = m_fitter->getRedChiSqu(trackToCheck, trackToCheck->getCardinalRep());
   qoverp->Fill(MCEveCharge/MCEveMomentum);
   //if (numeratorForPurity/hitsNotVT == 0.) ofs << "OCCHIO ";//{
@@ -2819,13 +2842,21 @@ void KFitter::Finalize() {
   tempPurity->SaveAs("purity.root","RECREATE");
   qoverp->SaveAs("qoverpall.root","RECREATE");
   qoverpsel->SaveAs("qoverpsel.root","RECREATE");
-  //ofs.close();
-  //cout << "how many tracks have no update " << MSDforwardcounter << endl;
+  ofs.close();
+  cout << "how many tracks have no update " << MSDforwardcounter << endl;
 
   m_fitTrackCollection->EvaluateMomentumResolution();
 
   m_categoryFitted.clear();
-
+  //momentum_reco.Write();
+  //momentum_true.Write();
+  for (unsigned int iHisto = 0; iHisto < 8; ++iHisto){
+    momentum_reco.at(iHisto)->Write();
+    momentum_true.at(iHisto)->Write();
+    ratio_reco_true.at(iHisto)->Divide(momentum_reco.at(iHisto),momentum_true.at(iHisto));
+    ratio_reco_true.at(iHisto)->Write();
+  }
+  outfile->Close();
   //show event display
   if (m_IsEDOn)
   display->open();

@@ -344,7 +344,7 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 				cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<< "  binning problem! do not fill all the reso plot. " << endl, exit(0);
 			}
 
-			//if ( (*it).second->GetEntries() < 100 ) continue;
+			if ( (*it).second->GetEntries() < 70 ) continue;
 
 			// check if the binning produce even bounds for the bins, not irrational numbers for examples
 			float a = (h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinLowEdge(k) + h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinUpEdge(k)) /2;
@@ -373,8 +373,8 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 			// h_resoP_over_Pkf[ (*collIt).first ]->Fit("f1","R");
 			(*it).second->Fit("f1", "LQ");	// log likelihood fit, quiet mode
 
-			if ( m_debug <= 0 && (f1->GetParError(f1->GetParNumber("Sigma")) / f1->GetParameter(f1->GetParNumber("Sigma")) > 0.1) )
-			continue;
+			//if ( m_debug <= 0 && (f1->GetParError(f1->GetParNumber("Sigma")) / f1->GetParameter(f1->GetParNumber("Sigma")) > 0.1) )
+			//continue;
 
 			// GetNumberFreeParameters()
 			// h_resoP_over_Pkf[ (*collIt).first ]->SetBinContent( k, f1->GetParameter(1) );

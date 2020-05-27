@@ -38,7 +38,7 @@ void UpdatePDG::MakePdgDatabase() {
   // clean the particle datatbase. Important!
   TDatabasePDG::Instance()->~TDatabasePDG();
 
-  int nNewParticles = 17;
+  int nNewParticles = 20;
   int pdgCode = 66666600;
   // particle name
   vector<string> nameVector = { 	"C11", "C12", "C13", "C14",
@@ -46,7 +46,7 @@ void UpdatePDG::MakePdgDatabase() {
   "B7", "B9", "B10",
   "Be10", "Be11",
   "N14", "N15",
-  "Alpha", "H",
+  "Alpha", "He3", "H", "H2", "H3",
   "O15", "O16" };
   if ( (int)nameVector.size() != nNewParticles ) 	{
     cout << "ERROR::UpdatePDG::MakePdgDatabase  -->  particle collection name size not match "<< nameVector.size() <<endl;
@@ -59,16 +59,16 @@ void UpdatePDG::MakePdgDatabase() {
     6.563, 8.357, 9.293,
     9.32444, 10.2525,
     13.1, 13.97,
-    4, 1,
+    4, 3.016, 1, 2.014, 3.016,
     14, 14.88 };
 
   // particle charge x3
   double chargeV [] = { 	18, 18, 18, 18,
     9, 9,
-    12, 12, 12,
-    15, 15,
+    15, 15, 15,
+    12, 12,
     21, 21,
-    6, 3,
+    6, 6, 3, 3, 3,
     24, 24  };
 
   // check that every particle defined in the parameter file is defined in nameVector
