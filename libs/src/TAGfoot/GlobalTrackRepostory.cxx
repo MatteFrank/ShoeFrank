@@ -327,7 +327,8 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 		//if ( modf( (resoP_max-resoP_min)/m_resoP_step, &nfbin ) == 0.0 )
 
 		if ( fabs( nfbin-round(nfbin) ) > 0.001 )
-		cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl, exit(0);		// check correct binning
+		//cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl, exit(0);		// check correct binning
+		cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl;		// check correct binning
 		int nbin = round(nfbin);
 
 		string histoName = (string)"h_resoP_over_Pkf"+"__"+(*collIt).first;

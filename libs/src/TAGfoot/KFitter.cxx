@@ -1376,17 +1376,27 @@ int KFitter::PrepareData4Fit_dataLike() {
       }
 
       //here I set cardinalrep by chargeFromTW
+      int repId = -99;
       for ( unsigned int iRep = 0; iRep < fitTrack_->getNumReps(); iRep++ ){
         AbsTrackRep* tempTrackRep = 0x0;
         tempTrackRep = fitTrack_->getTrackRep(iRep);
+        double minChi2 = 99999999;
+        //cout << " temptrackrep " << tempTrackRep->getPDGCharge() <<endl;
         if (!tempTrackRep) continue;
         //if (tempTrackRep->getPDG() == UpdatePDG::GetPDG()->GetPdgCode( cardinal ) )
-        //if ( tempTrackRep->getPDGCharge() != chargeFromTW*3 ) fitTrack_->deleteTrackRep(iRep);
-        //fitTrack_->setCardinalRep(iRep);
-        cout << "PDG charge " << tempTrackRep->getPDGCharge() << " " << chargeFromTW <<endl;
+        if ( tempTrackRep->getPDGCharge() == (double)chargeFromTW ){
+          if (fitTrack_->hasFitStatus(tempTrackRep) ){
+            if (fitTrack_->getFitStatus(tempTrackRep)->getChi2() < minChi2){
+              repId = iRep;
+            }
+          }
+        }
       }
-      fitTrack_->determineCardinalRep();
-      cout << fitTrack_->getCardinalRep()->getPDGCharge() << endl;
+      fitTrack_->setCardinalRep(repId);
+      //cout << "PDG charge " << fitTrack_->getCardinalRep()->getPDGCharge() << " " << chargeFromTW <<endl;
+
+      //fitTrack_->determineCardinalRep();
+      //cout << fitTrack_->getCardinalRep()->getPDGCharge() << endl;
       // cout << " check of fitTrack_ filling after deleting fakeMSD and inserting one" << endl;
       // for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
       //   fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement()->getRawHitCoords().Print();
@@ -1413,7 +1423,7 @@ int KFitter::PrepareData4Fit_dataLike() {
 
   if (m_IsEDOn){
     display->addEvent(m_vectorTrack);
-    cout << "display->addEvent size  " << m_vectorTrack.size() << endl;
+    //cout << "display->addEvent size  " << m_vectorTrack.size() << endl;
   }
 
   m_vectorTrack.clear();
@@ -1447,7 +1457,7 @@ void KFitter::RecordTrackInfoDataLike( Track* trackToRecord, int tCharge, string
   int detID = trackToRecord->getPointWithMeasurement(iStation)->getRawMeasurement()->getDetId();
   int hitID = trackToRecord->getPointWithMeasurement(iStation)->getRawMeasurement()->getHitId();
 
-  cout << " Detector Type (in KFitter::GetTrueMCInfo)= " << detID << " HitID = " << hitID << endl;
+  //cout << " Detector Type (in KFitter::GetTrueMCInfo)= " << detID << " HitID = " << hitID << endl;
 
 
   // take kinematic variables to be plotted
@@ -2766,8 +2776,9 @@ void KFitter::PrintEfficiency() {
   h_trackEfficiency->SetStats(0);
   h_trackEfficiency->GetYaxis()->SetTitle("KF Efficiency");
   h_trackEfficiency->GetYaxis()->SetTitleOffset(1.1);
+  h_trackEfficiency->GetYaxis()->SetRange(0.,1);
   h_trackEfficiency->SetLineWidth(2); // take short ~ int
-  h_trackEfficiency->Draw();
+  h_trackEfficiency->Draw("E");
   mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
   mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.root").c_str() );
 
