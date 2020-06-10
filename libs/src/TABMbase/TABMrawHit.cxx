@@ -5,19 +5,37 @@ using namespace std;
 ClassImp(TABMrawHit);
 
 //------------------------------------------+-----------------------------------
-//! Destructor.
-
-TABMrawHit::~TABMrawHit()
-{}
-
-//------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TABMrawHit::TABMrawHit()
-  : fiView(0),    fiLayer(0),    fiCell(0),  ftdTtime(0.)
+  : TAGdata(),
+   fiView(0),
+   fiLayer(0),
+   fiCell(0),
+   fidCell(0),
+   ftdTtime(0.)
 {
 }
 
+//------------------------------------------+-----------------------------------
+//! constructor.
+TABMrawHit::TABMrawHit(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t time)
+: TAGdata(),
+   fiView(view),
+   fiLayer(lay),
+   fiCell(cell),
+   fidCell(id),
+   ftdTtime(time)
+{
+}
+
+//------------------------------------------+-----------------------------------
+//! Destructor.
+TABMrawHit::~TABMrawHit()
+{
+}
+
+//------------------------------------------+-----------------------------------
+//! set data
 void TABMrawHit::SetData(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t time)
 {
   fiView  = view;
@@ -25,5 +43,4 @@ void TABMrawHit::SetData(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t t
   fiCell   = cell;
   fidCell  = id;
   ftdTtime = time;
-  return;
 }

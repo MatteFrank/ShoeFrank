@@ -27,104 +27,83 @@ class TABMparCon : public TAGparTools {
     virtual         ~TABMparCon();
 
     //setters
-    void SetIsMC(Bool_t ism)               { m_isMC = ism;                 }
-    void SetT0choice(Int_t in)             { m_t0_choice = in;             }
-    void SetT0switch(Int_t in)             { m_t0_switch = in;             }
+    void SetT0choice(Int_t in)                {fT0Choice=in;};
 
     //getters
-    Bool_t   IsMC()                  const { return m_isMC;                }
-    Float_t  GetRdriftCut()          const { return m_rdrift_cut;          }
-    Float_t  GetChi2Redcut()         const { return m_chi2red_cut;         }
-    Int_t    GetPlanehitcut()        const { return m_planehit_cut;        }
-    Int_t    GetMinnhit_cut()        const { return m_minnhit_cut;         }
-    Int_t    GetMaxnhit_cut()        const { return m_maxnhit_cut;         }
-    Int_t    GetRejmaxcut()          const { return m_rejmax_cut;          }
-    Int_t    GetFitterIndex()        const { return m_fitter_index;        }
-    Int_t    GetT0switch()           const { return m_t0_switch;           }
-    Float_t  GetT0sigma()            const { return m_t0_sigma;            }
-    Float_t  GetHitTimecut()         const { return m_hit_timecut;         }
-    Int_t    GetNumIte()             const { return m_num_ite;             }
-    Float_t  GetParMove()            const { return m_par_move;            }
-    Int_t    GetSmearhits()          const { return m_smear_hits;          }
-    Float_t  GetFakehitsMean()       const { return m_fakehits_mean;       }
-    Float_t  GetFakehitsSigmaLeft()  const { return m_fakehits_sigmaleft;  }
-    Float_t  GetFakehitsSigmaRight() const { return m_fakehits_sigmaright; }
-    Float_t  GetMCEffMean()          const { return m_mceff_mean;          }
-    Float_t  GetMCEffSigma()         const { return m_mceff_sigma;         }
-    Int_t    GetSmearrdrift()        const { return m_smear_rdrift;        }
-    Float_t  GetRdrift_err()         const { return m_rdrift_err;          }
-    Int_t    GetT0choice()           const { return m_t0_choice;           }
-    Int_t    GetLegmbin()            const { return m_legmbin;             }
-    Int_t    GetLegrbin()            const { return m_legrbin;             }
-    Double_t GetLegmrange()          const { return m_legmrange;           }
-    Double_t GetLegrrange()          const { return m_legrrange;           }
-    Double_t GetAsshitratio()        const { return m_asshit_ratio;        }
+    Float_t GetChi2Cut()                const{return fChi2Cut;};
+    Int_t GetPlaneHitCut()              const{return fPlaneHitCut;};
+    Int_t GetMinHitCut()                const{return fMinHitCut;};
+    Int_t GetMaxHitCut()                const{return fMaxHitCut;};
+    Int_t GetRejmaxCut()                const{return fRejMaxCut;};
+    Float_t GetHitTimeCut()             const{return fHitTimeCut;};
+    Int_t GetNumIte()                   const{return fNumIte;};
+    Float_t GetParMove()                const{return fParMove;};
+    Int_t GetSmearHits()                const{return fSmearHits;};
+    Int_t GetSmearRDrift()              const{return fSmearRDrift;};
+    Float_t GetRdriftErr()              const{return fRDriftErr;};
+    Int_t GetT0Choice()                 const{return fT0Choice;};
+    Int_t GetLegMBin()                  const{return fLegMBin;};
+    Int_t GetLegRBin()                  const{return fLegRBin;};
+    Float_t GetLegMRange()              const{return fLegMRange;};
+    Float_t GetLegRRange()              const{return fLegRRange;};
+    Float_t GetAssHitErr()              const{return fAssHitErr;};
+    TF1*  GetResoFunc()                 const{return fpResoFunc;};
+    TF1*  GetSTrelFunc()                const{return fpSTrel;};
 
-    //T0 stuff
+    //T0
     void        PrintT0s(TString , TString, Long64_t);
     Bool_t      loadT0s(TString filename);
     void        SetT0s(vector<Float_t> t0s);
     void        SetT0(Int_t cha, Float_t t0in);
     Float_t     GetT0(Int_t view, Int_t plane, Int_t cell){return GetT0(cell+view*3+plane*6);};
-    Float_t     GetT0(Int_t index_in){return (index_in<36 && index_in>-1) ? m_v_t0s[index_in]:-1000;};
+    Float_t     GetT0(Int_t index_in){return (index_in<36 && index_in>-1) ? fT0Vec[index_in]:-1000;};
     void        CoutT0();
 
-    //strel
-    void LoadSTrel(TString sF);
-    Float_t FirstSTrel(Float_t tdrift);
-    Float_t InverseStrel(Float_t rdrift);
-    Float_t FirstSTrelMC(Float_t tdrift, Int_t mc_switch);
 
     //others
-    Float_t ResoEval(Float_t dist){return (dist>0 && dist<0.8) ? m_hreso->Eval(dist)/10000. : 0.15;};
-    Bool_t FromFile(const TString& name);
-    Bool_t FromFileOld(const TString& name);
-
+    Double_t  STrelEval(Float_t tdrift) {return (tdrift>fMaxSTrel) ? 0.79 : fpSTrel->Eval(tdrift);};
+    Float_t   ResoEval(Float_t dist){return (dist>0 && dist<0.8) ? fpResoFunc->Eval(dist)/10000. : 0.15;};
+    Bool_t    FromFile(const TString& name);//read the config file
+    Bool_t    FromFileOld(const TString& name);//read the old config file adopted in bm_calibration
+    Double_t  GetTimeFromRDrift(Double_t rdrift){return fpSTrel->GetX(rdrift);}
+    void      ResetStrelFunc();
+    //default
     virtual void    Clear(Option_t* opt="");
-
     virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
-
     TString         fkDefaultParName;  // default par file name
 
     ClassDef(TABMparCon,1)
 
   private:
-    Bool_t   m_isMC;
-    Float_t  m_rdrift_cut;
-    Float_t  m_chi2red_cut;
-    Int_t    m_planehit_cut;//minimum number of plane with at least 1 hit for each view (<=6 && >=3)
-    Int_t    m_minnhit_cut; //cut on the minimum number of hit for the reconstruction algorithm
-    Int_t    m_maxnhit_cut; //cut on the maximum number of hit for the reconstruction algorithm
-    Int_t    m_rejmax_cut; //maximum number of hit that can be rejected during the reconstruction
-    Int_t    m_fitter_index;
 
-    Int_t    strel_switch;//flag to choose the st relations (1=garfield, 0=FIRST embedded)
-    Int_t    m_t0_switch;//0=t0 from the beginning of the tdc signal, 1=peak/2, 2=peak, 3=negative T0 enabled
-    Float_t  m_t0_sigma;//t0 with the gaussian shift for the negative T0 hits
-    Int_t    m_t0_choice; //0=meas-internal, 1=meas-st, 2=meas-internal-st, 3=meas-internal+st
-    Float_t  m_hit_timecut;//timecut on the lenght of the signal (ns)
-    Int_t    m_num_ite;//number of iteration for the fit
-    Float_t  m_par_move;//change of parameters stepsize
-    Int_t    m_smear_hits;//0=no m_smear_hits on MC, 1=smear the number of hits
-    Int_t    m_smear_rdrift;//0=no smear rdrift, 1=gauss truncated 1sigma, 2=gaus 2sigma, 3=gaus 3sigma, 4=gaus no truncated, 5=uniform
-    Float_t  m_fakehits_mean;//ratio between the left and the right tail of the hit distribution(only MC)
-    Float_t  m_fakehits_sigmaleft;//sigma for the fake hits generator on the left tail(only MC)
-    Float_t  m_fakehits_sigmaright;//sigma for the fake hits generator on the right tail (only MC)
-    Float_t  m_mceff_mean;//mean for the number of primary hits (only MC)
-    Float_t  m_mceff_sigma;//sigma for the number of primary hits (only MC)
-    Float_t  m_rdrift_err;  //rdrift default error (used if from parcon file the error isn't loaded)
-    Int_t    m_legmbin;  //number of bin in the m th2d legendre tracking
-    Double_t m_legmrange; //half range for the m th2d in the legendre tracking
-    Int_t    m_legrbin;  //number of bin in the r th2d legendre tracking
-    Double_t m_legrrange; //half range for the r th2d in the legendre tracking
-    Double_t m_asshit_ratio; //ratio to select a hit for the reco in checkasshits (high value=more selected hits)
+    //cuts
+    Float_t   fChi2Cut;
+    Int_t     fPlaneHitCut;       //minimum number of plane with at least 1 hit for each view (<=6 && >=3)
+    Int_t     fMinHitCut;         //cut on the minimum number of hit for the reconstruction algorithm
+    Int_t     fMaxHitCut;         //cut on the maximum number of hit for the reconstruction algorithm
+    Int_t     fRejMaxCut;         //maximum number of hit that can be rejected during the reconstruction
+    Float_t   fHitTimeCut;        //timecut on the lenght of the signal (ns)
 
-    TF1*     m_hreso;
-    vector<Float_t> m_v_t0s;//T0 in ns
-    vector<Float_t> m_adc_ped_mean;//pedestals mean
-    vector<Float_t> m_adc_ped_rms;//pedestals rms
+    //fitter parameters
+    Int_t     fNumIte;            //number of iteration for the fit
+    Float_t   fParMove;           //change of parameters stepsize
+    Int_t     fLegMBin;           //number of bin in the m th2d legendre tracking
+    Float_t   fLegMRange;         //half range for the m th2d in the legendre tracking
+    Int_t     fLegRBin;           //number of bin in the r th2d legendre tracking
+    Float_t   fLegRRange;         //half range for the r th2d in the legendre tracking
+    Float_t   fAssHitErr;         //to select a hit for the reco in checkasshits (high value=more selected hits)
 
-   
+    //MC parameters
+    Int_t     fSmearHits;         //0=no fSmearHits on MC, 1=smear the number of hits
+    Int_t     fSmearRDrift;       //0=no smear rdrift, 1=gauss truncated 1sigma, 2=gaus 2sigma, 3=gaus 3sigma, 4=gaus no truncated, 5=uniform
+
+    //other parameters
+    Int_t     fT0Choice;          //0=meas-internal, 1=meas-st, 2=meas-internal-st, 3=meas-internal+st
+    Float_t   fMaxSTrel;          //time value in which fpSTrel reach the maximum
+    Float_t   fRDriftErr;         //rdrift default error (used if from parcon file the error isn't loaded)
+    vector<Float_t> fT0Vec;       //T0 in ns
+    TF1 *fpResoFunc;              //space resolution function
+    TF1 *fpSTrel;                 //Space time relation
 };
 
 #endif

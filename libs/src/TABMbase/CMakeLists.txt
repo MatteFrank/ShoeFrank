@@ -26,6 +26,7 @@ set( with_dictionnaries
    TABMdatRaw
    TABMrawHit
    TABMactNtuMC
+   TABMdigitizer   
    TABMactNtuHitMC
    TABMvieTrackFOOT
    TABMntuTrackTr

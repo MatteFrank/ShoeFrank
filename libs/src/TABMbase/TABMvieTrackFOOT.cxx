@@ -32,10 +32,10 @@ ClassImp(TABMvieTrackFOOT);
 
 //~ TABMvieTrackFOOT::TABMvieTrackFOOT(TABMparGeo* p_bmgeo_in)
   //~ : p_bmgeo(p_bmgeo_in)
-TABMvieTrackFOOT::TABMvieTrackFOOT(TABMntuTrack* p_ntutrk_in, TABMntuRaw* p_nturaw_in, TABMparGeo* p_bmgeo_in, Int_t track_ok_in, Int_t event_number_in)
-  : p_ntutrk(p_ntutrk_in), p_nturaw(p_nturaw_in), p_bmgeo(p_bmgeo_in), track_ok(track_ok_in), event_number(event_number_in)
+TABMvieTrackFOOT::TABMvieTrackFOOT(TABMntuTrack* p_ntutrk_in, TABMntuRaw* p_nturaw_in, TABMparGeo* p_bmgeo_in, Int_t trackok_in, Int_t event_number_in)
+  : p_ntutrk(p_ntutrk_in), p_nturaw(p_nturaw_in), p_bmgeo(p_bmgeo_in), fTrackOk(trackok_in), fEventNumber(event_number_in)
 {
-  cell_occupy=nullptr;
+  fCellOccupancy=nullptr;
   SetName("TABMvieTrackFOOT");
   SetTitle("TABMvieTrackFOOT");
 }
@@ -75,7 +75,7 @@ void TABMvieTrackFOOT::ExecuteEvent(Int_t i_event, Int_t i_px, Int_t i_py)
 
 void TABMvieTrackFOOT::Paint(Option_t* option)
 {
-  
+
   if (IsZombie() || !gPad) return;
 
   TAttFill attfill_box(0, 1);	    // (col,sty) = empty, solidline for box
@@ -105,12 +105,12 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
     Starting with Top View (XZ)       View  == 1 (Top view, V view)
   */
 
-  attline_black_soli_nor.Modify();  
+  attline_black_soli_nor.Modify();
   attfill_box.Modify();
   //~ atttext_small_hcvb.Modify();
   gPad->PaintBox(-p_bmgeo->GetWidth(), -0.5*p_bmgeo->GetLength(), 0., +0.5*p_bmgeo->GetLength());
-  sprintf(text,"V (XZ)     Evnum=%d     U (YZ)",event_number);
-  gPad->PaintText(-p_bmgeo->GetWidth()+0.2, p_bmgeo->GetLength()/2.-0.8,text); 
+  sprintf(text,"V (XZ)     Evnum=%d     U (YZ)",fEventNumber);
+  gPad->PaintText(-p_bmgeo->GetWidth()+0.2, p_bmgeo->GetLength()/2.-0.8,text);
 
   /* Drawing the cells */
   for(int il= 0; il<p_bmgeo->GetLayersN(); il++) {
@@ -118,16 +118,16 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
       //V view, (X,Z)
       p_bmgeo->GetCellInfo(1, il, ic, h_x, h_y, h_z, h_cx, h_cy, h_cz);//(view,plane,id,wirepos_xyz,wiredir_xyz)
       //~ cout<<"il="<<il<<"  ic="<<ic<<"  hx="<<h_x<<"  h_Y="<<h_y<<"  hz="<<h_z<<"  il="<<il<<"  ic="<<ic<<endl;
-      attline_black_soli_nor.Modify();  
+      attline_black_soli_nor.Modify();
       attfill_box.Modify();
-      gPad->PaintBox(-p_bmgeo->GetCellWidth()-h_x-0.5*p_bmgeo->GetWidth(), -p_bmgeo->GetCellHeight()+h_z , p_bmgeo->GetCellWidth()-h_x-0.5*p_bmgeo->GetWidth() , p_bmgeo->GetCellHeight()+h_z);      
+      gPad->PaintBox(-p_bmgeo->GetCellWidth()-h_x-0.5*p_bmgeo->GetWidth(), -p_bmgeo->GetCellHeight()+h_z , p_bmgeo->GetCellWidth()-h_x-0.5*p_bmgeo->GetWidth() , p_bmgeo->GetCellHeight()+h_z);
       //~ cout<<"x_min="<<-p_bmgeo->GetCellWidth()-h_x-0.5*p_bmgeo->GetWidth()<<"  ymin="<<-p_bmgeo->GetCellHeight()+h_z<<"  xmax="<<-h_x-0.5*p_bmgeo->GetWidth()+p_bmgeo->GetCellWidth()<<"  ymax"<<p_bmgeo->GetCellHeight()+h_z<<endl;
     }
   }
-  
-  //Beam Monitor tracks 
+
+  //Beam Monitor tracks
   TVector3 mylar1posTrack, mylar2posTrack;
-  if (track_ok==0 || track_ok==5) {
+  if (fTrackOk==0 || fTrackOk==5) {
     //Displays the fitted tracks
     Info("Viewer()","Displaying the BM Tracks");
 
@@ -141,32 +141,32 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
       gPad->PaintLine(-mylar1posTrack.X()-p_bmgeo->GetWidth()/2.,mylar1posTrack.Z(),-mylar2posTrack.X()-p_bmgeo->GetWidth()/2.,mylar2posTrack.Z());
     }
   }
-  
+
   if (p_nturaw) {
     //Displays the Reconstructed hits in the orizontal view
     Info("Viewer()","Displaying the BM Hits %2d ",p_nturaw->GetHitsN());
 
     for (Int_t i=3; i<36;) {
       tmp_int=0;
-      for (Int_t k=cell_occupy->at(i).size()-1; k>=0; k--) {
-        TABMntuHit* hit = p_nturaw->GetHit(cell_occupy->at(i)[k]);
-        if(hit->View()==1 && hit->GetIsSelected()) {
+      for (Int_t k=fCellOccupancy->at(i).size()-1; k>=0; k--) {
+        TABMntuHit* hit = p_nturaw->Hit(fCellOccupancy->at(i)[k]);
+        if(hit->GetView()==1 && hit->GetIsSelected()) {
           //Top view, V view, (X,Z)
-          p_bmgeo->GetCellInfo(1, hit->Plane(), hit->Cell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);//charge the wire position and direction in h_x.. and h_cx...
-          //X has a consistent view (x points to the top) 
-          attline_black_soli_nor.Modify();  
+          p_bmgeo->GetCellInfo(1, hit->GetPlane(), hit->GetCell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);//charge the wire position and direction in h_x.. and h_cx...
+          //X has a consistent view (x points to the top)
+          attline_black_soli_nor.Modify();
           attfill_hit_sel.Modify();
-          gPad->PaintBox(-(h_x-hit->Dist())-0.5*p_bmgeo->GetWidth(),h_z-hit->Dist(),-(h_x+hit->Dist())-0.5*p_bmgeo->GetWidth(),h_z+hit->Dist());
-          //~ gPad->PaintEllipse(-h_x,h_z,hit->Dist());
+          gPad->PaintBox(-(h_x-hit->GetRdrift())-0.5*p_bmgeo->GetWidth(),h_z-hit->GetRdrift(),-(h_x+hit->GetRdrift())-0.5*p_bmgeo->GetWidth(),h_z+hit->GetRdrift());
+          //~ gPad->PaintEllipse(-h_x,h_z,hit->GetRdrift());
           atttext_small_hlvc.Modify();
           sprintf(text,"chi2 :: %lf",hit->GetChi2());
           gPad->PaintText(-0.95*p_bmgeo->GetWidth(), h_z, text);
         }
-        else if(hit->View()==1 && !hit->GetIsSelected()) {
+        else if(hit->GetView()==1 && !hit->GetIsSelected()) {
           //Top view, V view, (X,Z)
-          p_bmgeo->GetCellInfo(1, hit->Plane(), hit->Cell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);
-          //X has a consistent view (x points to the top) 
-          attline_black_soli_nor.Modify();  
+          p_bmgeo->GetCellInfo(1, hit->GetPlane(), hit->GetCell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);
+          //X has a consistent view (x points to the top)
+          attline_black_soli_nor.Modify();
           if(tmp_int==0)
             attfill_hit_mis.Modify();
           else if(tmp_int==1)
@@ -175,12 +175,12 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
             attfill_hit_tmis.Modify();
           else
             attfill_hit_fmis.Modify();
-          gPad->PaintBox(-(h_x-hit->Dist())-0.5*p_bmgeo->GetWidth(),h_z-hit->Dist(),-(h_x+hit->Dist())-0.5*p_bmgeo->GetWidth(),h_z+hit->Dist());
+          gPad->PaintBox(-(h_x-hit->GetRdrift())-0.5*p_bmgeo->GetWidth(),h_z-hit->GetRdrift(),-(h_x+hit->GetRdrift())-0.5*p_bmgeo->GetWidth(),h_z+hit->GetRdrift());
           tmp_int++;
         }else
-          cout<<"in V view: hai sbagliato qualcosa  i="<<i<<"  hit="<<cell_occupy->at(i)[k]<<"  view="<<hit->View()<<endl;//provv
+          cout<<"in V view: hai sbagliato qualcosa  i="<<i<<"  hit="<<fCellOccupancy->at(i)[k]<<"  view="<<hit->GetView()<<endl;//provv
       }
-      i+= (i%6==5) ? 4:1; 
+      i+= (i%6==5) ? 4:1;
     }
   }
 
@@ -189,7 +189,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
     Proceeding with Side View  U view, view==0
   */
 
-  attline_black_soli_nor.Modify();  
+  attline_black_soli_nor.Modify();
   attfill_box.Modify();
   gPad->PaintBox(0., -0.5*p_bmgeo->GetLength(), p_bmgeo->GetWidth(), +0.5*p_bmgeo->GetLength());
   //~ gPad->PaintText(0, p_bmgeo->GetLength()/2.-1, "Top U view (YZ)");
@@ -203,21 +203,21 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
       //Reverse needed (once again y increase from left to right)... DA CAPIRE SE È VERO O NO...
       h_y *= -1;
 
-      attline_black_soli_nor.Modify();  
+      attline_black_soli_nor.Modify();
       attfill_box.Modify();
-      gPad->PaintBox(-p_bmgeo->GetCellWidth()+h_y+0.5*p_bmgeo->GetWidth(), -p_bmgeo->GetCellHeight()+h_z, +p_bmgeo->GetCellWidth()+h_y+0.5*p_bmgeo->GetWidth(), +p_bmgeo->GetCellHeight()+h_z);      
+      gPad->PaintBox(-p_bmgeo->GetCellWidth()+h_y+0.5*p_bmgeo->GetWidth(), -p_bmgeo->GetCellHeight()+h_z, +p_bmgeo->GetCellWidth()+h_y+0.5*p_bmgeo->GetWidth(), +p_bmgeo->GetCellHeight()+h_z);
     }
   }
-  
+
   //Beam Monitor tracks
-  if (track_ok==0 || track_ok==5) {
+  if (fTrackOk==0 || fTrackOk==5) {
     //Displays the fitted tracks
     Info("Viewer()","Displaying the BM Tracks");
 
     for (Int_t i_t = 0; i_t < p_ntutrk->GetTracksN(); i_t++) {
       p_trk = p_ntutrk->Track(i_t);
       attline_trk.Modify();
-      //Y,Z (view U, Side view)   
+      //Y,Z (view U, Side view)
       //~ gPad->PaintLine(-ych_i+0.5*p_bmgeo->GetWidth(),zmin,-ych_f+0.5*p_bmgeo->GetWidth(),zmax);
       gPad->PaintLine(-mylar1posTrack.Y()+p_bmgeo->GetWidth()/2.,mylar1posTrack.Z(),-mylar2posTrack.Y()+p_bmgeo->GetWidth()/2.,mylar2posTrack.Z());
     }
@@ -229,27 +229,27 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
 
     for (Int_t i=0; i<33;) {
       tmp_int=0;
-      for (Int_t k=cell_occupy->at(i).size()-1; k>=0; k--) {
-        TABMntuHit* hit = p_nturaw->GetHit(cell_occupy->at(i)[k]);
+      for (Int_t k=fCellOccupancy->at(i).size()-1; k>=0; k--) {
+        TABMntuHit* hit = p_nturaw->Hit(fCellOccupancy->at(i)[k]);
         //View  == 0 (Side view, U view)
-        if(hit->View()==0 && hit->GetIsSelected()) {
+        if(hit->GetView()==0 && hit->GetIsSelected()) {
           //Side view, U view, (Y,Z)
-          p_bmgeo->GetCellInfo(0, hit->Plane(), hit->Cell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);
-          //Y has a consistent view (Y points to the top) 
-          attline_black_soli_nor.Modify();  
+          p_bmgeo->GetCellInfo(0, hit->GetPlane(), hit->GetCell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);
+          //Y has a consistent view (Y points to the top)
+          attline_black_soli_nor.Modify();
           attfill_hit_sel.Modify();
-          gPad->PaintBox(-(h_y-hit->Dist())+0.5*p_bmgeo->GetWidth(),h_z-hit->Dist(),-(h_y+hit->Dist())+0.5*p_bmgeo->GetWidth(),h_z+hit->Dist());
-          //~ gPad->PaintEllipse(h_y,h_z,hit->Dist());
+          gPad->PaintBox(-(h_y-hit->GetRdrift())+0.5*p_bmgeo->GetWidth(),h_z-hit->GetRdrift(),-(h_y+hit->GetRdrift())+0.5*p_bmgeo->GetWidth(),h_z+hit->GetRdrift());
+          //~ gPad->PaintEllipse(h_y,h_z,hit->GetRdrift());
           atttext_small_hlvc.Modify();
           sprintf(text,"chi2 :: %lf",hit->GetChi2());
           gPad->PaintText(0.05*p_bmgeo->GetWidth(), h_z, text);
-  
+
         }
-        if(hit->View()==0 && !hit->GetIsSelected()) {
+        if(hit->GetView()==0 && !hit->GetIsSelected()) {
           //Side view, U view, (Y,Z)
-          p_bmgeo->GetCellInfo(0, hit->Plane(), hit->Cell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);
-          //Y has a consistent view (Y points to the top) 
-          attline_black_soli_nor.Modify();  
+          p_bmgeo->GetCellInfo(0, hit->GetPlane(), hit->GetCell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);
+          //Y has a consistent view (Y points to the top)
+          attline_black_soli_nor.Modify();
           if(tmp_int==0)
             attfill_hit_mis.Modify();
           else if(tmp_int==1)
@@ -258,12 +258,11 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
             attfill_hit_tmis.Modify();
           else
             attfill_hit_fmis.Modify();
-          gPad->PaintBox(-(h_y-hit->Dist())+0.5*p_bmgeo->GetWidth(),h_z-hit->Dist(),-(h_y+hit->Dist())+0.5*p_bmgeo->GetWidth(),h_z+hit->Dist());
+          gPad->PaintBox(-(h_y-hit->GetRdrift())+0.5*p_bmgeo->GetWidth(),h_z-hit->GetRdrift(),-(h_y+hit->GetRdrift())+0.5*p_bmgeo->GetWidth(),h_z+hit->GetRdrift());
         }
       }
-      i+= (i%6==2) ? 4:1; 
+      i+= (i%6==2) ? 4:1;
     }
   }
   return;
 }
-

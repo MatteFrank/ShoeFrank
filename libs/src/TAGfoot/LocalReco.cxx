@@ -90,7 +90,8 @@ void LocalReco::CreateRawAction()
       fpNtuRawBm = new TAGdataDsc("bmNtu", new TABMntuRaw());
       
       if (fgStdAloneFlag) {
-         fActVmeReaderBm  = new TABMactVmeReader("bmActNtu", fpDatRawBm, fpParMapBm, fpParConfBm, fpParGeoBm, fpNtuRawSt);
+         fActVmeReaderBm  = new TABMactVmeReader("bmActNtu", fpDatRawBm, fpParMapBm, fpParConfBm, fpParGeoBm);
+	 //         fActVmeReaderBm  = new TABMactVmeReader("bmActNtu", fpDatRawBm, fpParMapBm, fpParConfBm, fpParGeoBm, fpNtuRawSt);
          if (fFlagHisto)
             fActVmeReaderBm->CreateHistogram();
          

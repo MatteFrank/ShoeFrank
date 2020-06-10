@@ -99,3 +99,30 @@ void TABMntuTrackTr::PrintR0Pvers(){
   return;
 }
 
+
+Int_t TABMntuTrackTr::mergeTrack(const TABMntuTrackTr &otherview){
+  if((fChiSquareX>=0 && otherview.fChiSquareX>=0) || (fChiSquareY>=0 && otherview.fChiSquareY>=0)){
+    cout<<"TABMtrack::mergeTrack: ERROR!!!: current track fChiSquareX="<<fChiSquareX<<"  fChiSquareY="<<fChiSquareY<<endl<<"input track fChiSquareX="<<otherview.fChiSquareX<<"  fChiSquareY="<<otherview.fChiSquareY<<endl;
+    return -1;
+  }
+  if(otherview.fIsConverged!=1)
+    return 1;
+  if(fIsConverged!=1)
+    return 2;
+
+  if(fChiSquareX<0){
+    fChiSquareX=otherview.fChiSquareX;
+    fChiSquare=(fChiSquareY*(fNHitY-2.)+otherview.fChiSquareX*(otherview.fNHitX-2.))/(fNHitY+otherview.fNHitX-4.);
+    fSlope.SetX(otherview.fSlope.X());
+    fOrigin.SetX(otherview.fOrigin.X());
+    fNHitX=otherview.fNHitX;
+  }else{
+    fChiSquareY=otherview.fChiSquareY;
+    fChiSquare=(fChiSquareX*(fNHitX-2.)+otherview.fChiSquareY*(otherview.fNHitY-2.))/(fNHitX+otherview.fNHitY-4.);
+    fSlope.SetY(otherview.fSlope.Y());
+    fOrigin.SetY(otherview.fOrigin.Y());
+    fNHitY=otherview.fNHitY;
+  }
+
+  return 0;
+}

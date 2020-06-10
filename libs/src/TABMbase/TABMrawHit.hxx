@@ -13,28 +13,33 @@
 
 using namespace std;
 
-class TABMrawHit {
+class TABMrawHit : public TAGdata {
   public:
     TABMrawHit();
+    TABMrawHit(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t time);
     virtual         ~TABMrawHit();
 
     void            SetData(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t time);
-    Int_t           GetCell() const;
-    Int_t           GetPlane() const;
-    Int_t           GetView() const;
-    Double_t        GetTime() const;
-    Int_t           GetIdcell() const;
-
-    ClassDef(TABMrawHit,1)
-
+   
+    //! Returns cell number.
+    Int_t           GetCell()   const { return fiCell;   }
+    //! Returns plane number.
+    Int_t           GetPlane()  const { return fiLayer;  }
+    //! Returns view number.
+    Int_t           GetView()   const { return fiView;   }
+    //! Returns time.
+    Double_t        GetTime()   const { return ftdTtime; }
+    //! Returns Cell id number [0-35]
+    Int_t           GetIdcell() const { return fidCell;  }
+   
   private:
     Int_t    fiView;    
     Int_t    fiLayer;
     Int_t    fiCell;
     Int_t    fidCell;
     Double_t ftdTtime;//ns
+   
+   ClassDef(TABMrawHit,1)
 };
-
-#include "TABMrawHit.icc"
 
 #endif

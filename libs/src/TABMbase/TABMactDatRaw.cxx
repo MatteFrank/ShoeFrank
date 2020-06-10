@@ -135,13 +135,13 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
   Double_t used_trigger, measurement;
   for(Int_t i = 0; i < ((int)evt->measurement.size());++i) {
     if(((evt->measurement.at(i)>>19) & 0x7f) == p_parmap->GetTrefCh()){
-      if(p_parcon->GetT0choice()==0){
+      if(p_parcon->GetT0Choice()==0){
         used_trigger=(evt->measurement.at(i) & 0x7ffff)/10.;
-      }else if (p_parcon->GetT0choice()==1){
+      }else if (p_parcon->GetT0Choice()==1){
         used_trigger=sttrigger;
-      }else if (p_parcon->GetT0choice()==2){
+      }else if (p_parcon->GetT0Choice()==2){
         used_trigger=(evt->measurement.at(i) & 0x7ffff)/10. + sttrigger;
-      }else if (p_parcon->GetT0choice()==3){
+      }else if (p_parcon->GetT0Choice()==3){
         used_trigger=(evt->measurement.at(i) & 0x7ffff)/10. - sttrigger;
       }
       break;
@@ -157,7 +157,8 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
     bmcellid=p_parmap->tdc2cell(channel);
     if(bmcellid!=-1 && bmcellid!=-1000){//-1000=syncTime, -1=not set
       p_pargeo->GetBMNlvc(bmcellid,plane,view,cell);
-      p_datraw->SetHitData(bmcellid, plane,view,cell,measurement);
+      p_datraw->NewHit(bmcellid, plane,view,cell,measurement);
+
       hitnum++;
       if (ValidHistogram()){
         fpRawDiscAccept->Fill(1);    
@@ -174,7 +175,7 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
         }  
       }    
       if(FootDebugLevel(3))
-        cout<<"BM hit charged : channel="<<channel<<"  tdc2cell="<<bmcellid<<"  measurement="<<measurement<<"  T0="<<p_parcon->GetT0(bmcellid)<<"  triggertime="<<used_trigger<<"  hittime="<<measurement - p_parcon->GetT0(bmcellid)-used_trigger<<"  hittimecut="<<p_parcon->GetHitTimecut()<<endl;
+        cout<<"BM hit charged : channel="<<channel<<"  tdc2cell="<<bmcellid<<"  measurement="<<measurement<<"  T0="<<p_parcon->GetT0(bmcellid)<<"  triggertime="<<used_trigger<<"  hittime="<<measurement - p_parcon->GetT0(bmcellid)-used_trigger<<"  hittimecut="<<p_parcon->GetHitTimeCut()<<endl;
     }else if(channel!=p_parmap->GetTrefCh()){
       if (ValidHistogram()){
         fpRawDiscAccept->Fill(-1);

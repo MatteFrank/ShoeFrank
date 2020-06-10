@@ -684,15 +684,15 @@ void TAFOeventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
     TABMparGeo* pbmGeo = fReco->GetParGeoBm();;
     if(!pbmGeo){return;}
    
-    fInfoView->AddLine( Form("In layer: %d, view: %d\n", hit->Plane(), hit->View()) );
-    fInfoView->AddLine( Form("Wire is: %d\n", pbmGeo->GetSenseId( hit->Cell() )) );
-    fInfoView->AddLine( Form("Drift radius is: %g (cm)\n", hit->Dist()) );
+    fInfoView->AddLine( Form("In layer: %d, view: %d\n", hit->GetPlane(), hit->GetView()) );
+    fInfoView->AddLine( Form("Wire is: %d\n", pbmGeo->GetSenseId( hit->GetCell() )) );
+    fInfoView->AddLine( Form("Drift radius is: %g (cm)\n", hit->GetRdrift()) );
     fInfoView->AddLine( Form("Chi2 is: %g \n", hit->GetChi2()) );
    
    if (fConsoleButton->IsOn()) {
-      cout << Form("In layer: %d, view: %d\n", hit->Plane(), hit->View());
-      cout <<  Form("Wire is: %d\n", pbmGeo->GetSenseId( hit->Cell() ));
-      cout <<  Form("Drift radius is: %g (cm)\n", hit->Dist());
+      cout << Form("In layer: %d, view: %d\n", hit->GetPlane(), hit->GetView());
+      cout <<  Form("Wire is: %d\n", pbmGeo->GetSenseId( hit->GetCell() ));
+      cout <<  Form("Drift radius is: %g (cm)\n", hit->GetRdrift());
       cout <<  Form("Chi2 is: %g \n", hit->GetChi2());
    }
 }
@@ -1290,13 +1290,13 @@ void TAFOeventDisplay::UpdateLayerElements()
    
    //hits
    for (Int_t i = 0; i < nHits; i++) {
-      TABMntuHit* hit = pBMntu->GetHit(i);
+      TABMntuHit* hit = pBMntu->Hit(i);
       
       if (!hit->GetIsSelected() && fgBmSelectHit) continue;
 
-      Int_t view = hit->View();
-      Int_t lay  = hit->Plane();
-      Int_t cell = hit->Cell();
+      Int_t view = hit->GetView();
+      Int_t lay  = hit->GetPlane();
+      Int_t cell = hit->GetCell();
        
       //layer
        pbmGeo->SetLayerColorOn(lay + view * pbmGeo->GetLayersN());
@@ -1346,7 +1346,7 @@ void TAFOeventDisplay::UpdateLayerElements()
          tDir[0]=0.01;
       }
        
-       fBmDriftCircleDisplay->AddCone(tPosCWG, tDir, hit->Dist());
+       fBmDriftCircleDisplay->AddCone(tPosCWG, tDir, hit->GetRdrift());
        fBmDriftCircleDisplay->DigitId(hit);
    }
    
