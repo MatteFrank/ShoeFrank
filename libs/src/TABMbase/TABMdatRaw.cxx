@@ -27,7 +27,7 @@ TABMdatRaw::TABMdatRaw()
  : TAGdata(),
    fListOfHits(0x0),
    fiNDrop(0),
-   fTrigTime(0.)
+   fTrigTime(-1000)
 {
    SetupClones();
 }
@@ -47,7 +47,7 @@ TABMrawHit* TABMdatRaw::NewHit(Int_t id, Int_t lay, Int_t view, Int_t cell, Doub
 {
    TClonesArray &pixelArray = *fListOfHits;
    TABMrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TABMrawHit(id, lay, view, cell, time);
-   
+
    return hit;
 }
 
@@ -62,14 +62,14 @@ Int_t TABMdatRaw::GetHitsN() const
 //! Access \a i 'th hit
 TABMrawHit* TABMdatRaw::GetHit(Int_t i)
 {
-   return (TABMrawHit*) ((*fListOfHits)[i]);;
+   return (TABMrawHit*) ((*fListOfHits)[i]);
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 const TABMrawHit* TABMdatRaw::GetHit(Int_t i) const
 {
-   return (const TABMrawHit*) ((*fListOfHits)[i]);;
+   return (const TABMrawHit*) ((*fListOfHits)[i]);
 }
 //------------------------------------------+-----------------------------------
 //! Setup clones.
@@ -120,7 +120,7 @@ void TABMdatRaw::ToStream(ostream& os, Option_t* option) const
      << Form("  nhit=%3d", GetHitsN())
      << Form("  ndrop=%3d", NDrop())
      << endl;
-  
+
   os << "slat stat    adct    adcb    tdct    tdcb" << endl;
   for (Int_t i = 0; i < GetHitsN(); i++) {
     const TABMrawHit* hit = GetHit(i);

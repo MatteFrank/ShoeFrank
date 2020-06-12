@@ -61,11 +61,11 @@ class TABMparCon : public TAGparTools {
 
 
     //others
-    Double_t  STrelEval(Float_t tdrift) {return (tdrift>fMaxSTrel) ? 0.79 : fpSTrel->Eval(tdrift);};
-    Float_t   ResoEval(Float_t dist){return (dist>0 && dist<0.8) ? fpResoFunc->Eval(dist)/10000. : 0.15;};
+    Double_t  STrelEval(Float_t tdrift) {return (tdrift>fMaxSTrel) ? 0.8 : fpSTrel->Eval(tdrift);};
+    Float_t   ResoEval(Float_t dist){return (dist>0 && dist<0.8) ? fpResoFunc->Eval(dist) : 0.15;};
     Bool_t    FromFile(const TString& name);//read the config file
     Bool_t    FromFileOld(const TString& name);//read the old config file adopted in bm_calibration
-    Double_t  GetTimeFromRDrift(Double_t rdrift){return fpSTrel->GetX(rdrift);}
+    Double_t  GetTimeFromRDrift(Double_t rdrift);
     void      ResetStrelFunc();
     //default
     virtual void    Clear(Option_t* opt="");

@@ -45,10 +45,10 @@ TABMntuRaw::~TABMntuRaw() {
 //______________________________________________________________________________
 //! new hit
 
-TABMntuHit* TABMntuRaw::NewHit(Int_t iv, Int_t il, Int_t ic, Int_t id, Double_t r, Double_t t, Double_t s)
+TABMntuHit* TABMntuRaw::NewHit(Int_t id, Int_t il, Int_t iv, Int_t ic, Double_t r, Double_t t, Double_t s)
 {
   TClonesArray &pixelArray = *fListOfHits;
-  TABMntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TABMntuHit(iv, il, ic, id, r, t,  s);
+  TABMntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TABMntuHit(id, il, iv, ic, r, t,  s);
   if(iv==0)
     ++fNtothitY;
   else
@@ -106,7 +106,7 @@ void TABMntuRaw::ToStream(ostream& os, Option_t* option) const
 
   os << "slat stat    adct    adcb    tdct    tdcb" << endl;
   for (Int_t i = 0; i < fListOfHits->GetEntries(); i++) {
-    const TABMntuHit*  hit = Hit(i);
+    const TABMntuHit*  hit = GetHit(i);
     os << Form("%4d", hit->GetCell());
     os << "  "; print_value(os, hit->GetPlane());
     os << endl;
@@ -210,4 +210,17 @@ void TABMntuRaw::Efficiency_paoloni(Int_t pivot[], Int_t probe[]){
   fEffPaoloniYview=(total_pivotsyview==0) ? -1: ((Double_t) total_probesyview)/total_pivotsyview;
 
 return;
+}
+
+
+TABMntuHit* TABMntuRaw::GetHit(Int_t i)
+{
+   return (TABMntuHit*) ((*fListOfHits)[i]);
+}
+
+//------------------------------------------+-----------------------------------
+//! Read-only access \a i 'th hit
+const TABMntuHit* TABMntuRaw::GetHit(Int_t i) const
+{
+   return (const TABMntuHit*) ((*fListOfHits)[i]);
 }

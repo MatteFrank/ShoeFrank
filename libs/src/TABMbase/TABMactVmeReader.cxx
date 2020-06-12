@@ -60,18 +60,17 @@ TABMactVmeReader::~TABMactVmeReader()
 
 void TABMactVmeReader::CreateHistogram(){
 
-   DeleteHistogram();
+  TABMparMap* bmmap = (TABMparMap*) fpParMap->Object();
 
-   fpRawMapX=new TH2I( "cell_raw_occupancy_2d_x", "Cell occupancy for raw hits; z; x", 11, -5.5, 5.5,7, -3.5,3.5);
-   fpRawMapY=new TH2I( "cell_raw_occupancy_2d_y", "Cell occupancy for raw hits; z; y", 11, -5.5, 5.5,7, -3.5,3.5);
-   for(Int_t i=0;i<77;i++){//necessary to use addbincontent
-     fpRawMapX->SetBinContent(i,1);
-     fpRawMapY->SetBinContent(i,1);
-   }
-   AddHistogram(fpRawMapX);
-   AddHistogram(fpRawMapY);
+  DeleteHistogram();
+  fpRawError=new TH1I( "bmVmeDatHitAccDisc", "Number of Hits with errors in tdc; -1=Error 1=accepted; Hits", 3, -1, 2);
+  AddHistogram(fpRawError);
+  fpRawTdcChannel=new TH1I( "bmVmeDatTdcHitDistribution", "Number of hits in the tdc channels; tdc channel; Hits", bmmap->GetTdcMaxcha(), 0, bmmap->GetTdcMaxcha());
+  AddHistogram(fpRawTdcChannel);
+  fpRawTrigTime=new TH1I( "bmVmeDatTrigger", "Trigger time; Trigger time [ns]; Events", 200, 0, 0);
+  AddHistogram(fpRawTrigTime);
 
-   SetValidHistogram(kTRUE);
+  SetValidHistogram(kTRUE);
 }
 
 
@@ -116,25 +115,20 @@ Bool_t TABMactVmeReader::Process() {
   Int_t lay, view, cell, up, cellid;
   synctime=(fpEvtStruct->tdc_numsync==2) ? fpEvtStruct->tdc_sync[1]/10. : fpEvtStruct->tdc_sync[0]/10.;
   for (Int_t i = 0; i < fpEvtStruct->tdc_hitnum[0]; i++) {
+		if(ValidHistogram())
+			fpRawTdcChannel->Fill(fpEvtStruct->tdc_id[i]);
     cellid=bmmap->tdc2cell(fpEvtStruct->tdc_id[i]);
-    if(fpEvtStruct->tdc_meas[i]!=-10000 && bmcon->GetT0(cellid)!=-1000 &&  cellid>=0 && ((Double_t)  fpEvtStruct->tdc_meas[i]/10. -  bmcon->GetT0(cellid) - synctime)<bmcon->GetHitTimeCut()){
+    if(fpEvtStruct->tdc_meas[i]!=-10000 && bmcon->GetT0(cellid)!=-1000 &&  cellid>=0 ){
       bmgeo->GetBMNlvc(cellid, lay, view, cell);
       p_datraw->NewHit(cellid,lay,view,cell,fpEvtStruct->tdc_meas[i]/10.);
-      if (ValidHistogram()){
-        if(view==0){
-          up=(lay%2==0) ? 1:0;
-          fpRawMapY->AddBinContent(fpRawMapY->GetBin(lay*2+1,cell*2+up+1),1);
-          fpRawMapY->AddBinContent(fpRawMapY->GetBin(lay*2+1,cell*2+up+2),1);
-        }else{
-          up=(lay%2==0) ? 0:1;
-          fpRawMapX->AddBinContent(fpRawMapX->GetBin(lay*2+1,cell*2+up+1),1);
-          fpRawMapX->AddBinContent(fpRawMapX->GetBin(lay*2+1,cell*2+up+2));
-        }
-      }
       if(FootDebugLevel(3))
         cout<<"hit charged: i="<<i<<"  tdc_id="<<fpEvtStruct->tdc_id[i]<<"  tdc2cell="<<bmmap->tdc2cell(fpEvtStruct->tdc_id[i])<<"  tdc_meas/10.="<<fpEvtStruct->tdc_meas[i]/10.<<"  T0="<<bmcon->GetT0(bmmap->tdc2cell(fpEvtStruct->tdc_id[i]))<<"  trigtime="<<synctime<<"  timecut="<<bmcon->GetHitTimeCut()<<"  hittime="<<((Double_t)  fpEvtStruct->tdc_meas[i]/10. -  bmcon->GetT0(bmmap->tdc2cell(fpEvtStruct->tdc_id[i])) - synctime)<<endl;
-    }else{
+      if (ValidHistogram())
+        fpRawError->Fill(1);
+    }else if(cellid>=0){
       p_datraw->AddDischarged();
+      if (ValidHistogram())
+        fpRawError->Fill(-1);
       if(FootDebugLevel(3))
         cout<<"hit NOT charged: i="<<i<<"  tdc_id="<<fpEvtStruct->tdc_id[i]<<"  tdc2cell="<<bmmap->tdc2cell(fpEvtStruct->tdc_id[i])<<"  tdc_meas/10.="<<fpEvtStruct->tdc_meas[i]/10.<<"  T0="<<bmcon->GetT0(bmmap->tdc2cell(fpEvtStruct->tdc_id[i]))<<"  trigtime="<<synctime<<"  timecut="<<bmcon->GetHitTimeCut()<<"  hittime="<<((Double_t)  fpEvtStruct->tdc_meas[i]/10. -  bmcon->GetT0(bmmap->tdc2cell(fpEvtStruct->tdc_id[i])) - synctime)<<endl;
       continue;
@@ -144,6 +138,8 @@ Bool_t TABMactVmeReader::Process() {
   //set the trigger time
   // p_timraw->SetTriggerTime(synctime);
   p_datraw->SetTrigtime(synctime);
+  if (ValidHistogram())
+    fpRawTrigTime->Fill(synctime);
 
   fDataNumEv++;
   fDataSyncNumEv+=fpEvtStruct->tdc_numsync;

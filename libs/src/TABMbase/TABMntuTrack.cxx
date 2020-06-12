@@ -44,7 +44,7 @@ TABMntuTrack::~TABMntuTrack()
 void TABMntuTrack::SetupClones()
 {
   if (!fListOfTracks)
-    fListOfTracks = new TClonesArray("TABMntuTrackTr");
+    fListOfTracks = new TClonesArray("TABMtrack");
   return;
 }
 
@@ -52,13 +52,20 @@ void TABMntuTrack::SetupClones()
 //! Clear.
 
 void TABMntuTrack::Clear(Option_t*)
-{ 
+{
   TAGdata::Clear();
   fStatus=-1000;
-  if(fListOfTracks) 
+  if(fListOfTracks)
     fListOfTracks->Delete();
 
    return;
+}
+
+TABMtrack* TABMntuTrack::NewTrack(TABMtrack trk)
+{
+   TClonesArray &trackArray = *fListOfTracks;
+   TABMtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TABMtrack(trk);
+   return track;
 }
 
 //*************************************************** OLD TRACKING ********************************************************
@@ -72,21 +79,17 @@ void TABMntuTrack::ToStream(ostream& os, Option_t* option) const
 
   //~ if (ntrk == 0) return;
   //~ os << "ind nh "
-     //~ << "    x0     ux   y0     uy"<< endl;  
-                  
+     //~ << "    x0     ux   y0     uy"<< endl;
+
   //~ for (Int_t i = 0; i < ntrk; i++) {
-    //~ const TABMntuTrackTr* p_trk = Track(i);
+    //~ const TABMtrack* p_trk = GetTrack(i);
     //~ os << Form("%3d", i)
        //~ << Form(" %2d", p_trk->nwire);
     //~ os << Form(" %5.0f %6.3f", p_trk->x0, p_trk->ux)
        //~ << Form(" %4.0f %6.3f", p_trk->y0, p_trk->uy);
-    
+
     //~ os << endl;
   //~ }
 
   return;
 }
-
-
-
-

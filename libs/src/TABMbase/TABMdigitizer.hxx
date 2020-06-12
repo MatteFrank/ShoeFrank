@@ -26,8 +26,7 @@ public:
   Int_t GetMapSize(){return fMap.size();};
 
   //others
-  Bool_t         Process(Double_t rdrift, Int_t cellid, Int_t lay, Int_t view, Int_t cell,Int_t inhitindex,Int_t inipoint);
-  void           SmearHitNum();                                 //smear the number of hits cutting some hits and adding other randomly created hits
+  Bool_t         Process(Double_t rdrift, Int_t cellid, Int_t plane, Int_t view, Int_t cell,Int_t inhitindex,Int_t inipoint);
   Double_t       EffFunc(Double_t* x, Double_t* par);           //BM efficiency as a function of drift distance
   Double_t       SmearRdrift(const Double_t , const Double_t ); //to smear the drift distance
 

@@ -170,7 +170,7 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
    TAVTbaseParConf* config   = (TAVTbaseParConf*) fpConfig->Object();
    Float_t min               = config->GetAnalysisPar().PlanesForTrackMinimum; // to be tuned (sigma ~ 200)
 
-   TABMntuTrackTr* bmTrack = pBMtrack->Track(0);
+   TABMtrack* bmTrack = pBMtrack->GetTrack(0);
    if (!bmTrack) return false;
 
    if (!fpFootGeo) return false;
@@ -202,7 +202,7 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 
 //--------------------------------------------------------------
 //!Compute the point interaction of diffusion (not used anymore)
-void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtrack lvtx)
+void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMtrack* lbm, TAVTtrack lvtx)
 {
    //taking point A of the straight line of bm
    Double_t z = 0;
@@ -215,7 +215,7 @@ void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtra
 
    TVector3 AmB = Apoint-Bpoint;
    
-   TVector3 pSlopebm(lbm->GetPvers()[0]/lbm->GetPvers()[2], lbm->GetPvers()[1]/lbm->GetPvers()[2], 1);
+   TVector3 pSlopebm(lbm->GetSlope()[0]/lbm->GetSlope()[2], lbm->GetSlope()[1]/lbm->GetSlope()[2], 1);
    TVector3 pDirbm  = fpFootGeo->VecFromBMLocalToGlobal(pSlopebm*DZ); //director parameter of bm line
    TVector3 pDirvtx = fpFootGeo->VecFromVTLocalToGlobal(lvtx.GetSlopeZ()*DZ); //director parameter of vtx line
    
@@ -325,7 +325,7 @@ Int_t TAVTactBaseNtuVertex::SearchNucReac(TAVTtrack* track0)
       nTrackBM    = pBMntuTrack->GetTracksN();
       
       if(nTrackBM > 0)
-         lineBM = pBMntuTrack->Track(0)->GetPvers();
+         lineBM = pBMntuTrack->GetTrack(0)->GetSlope();
       
    } else {
       return -1;

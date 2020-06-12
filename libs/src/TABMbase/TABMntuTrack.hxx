@@ -10,7 +10,7 @@
 
 #include "TAGroot.hxx"
 #include "TAGdata.hxx"
-#include "TABMntuTrackTr.hxx"
+#include "TABMtrack.hxx"
 
 #include "TObject.h"
 #include "TClonesArray.h"
@@ -22,33 +22,30 @@ class TABMntuTrack : public TAGdata {
                     TABMntuTrack();
     virtual         ~TABMntuTrack();
 
-    Int_t                 GetTracksN()  const;
-    TABMntuTrackTr*       Track(Int_t i);
-    const TABMntuTrackTr* Track(Int_t i) const;
-    
-    //~ TABMntuTrackTr*       NewTrack(TABMntuTrackTr& track);//prova
+    Int_t            GetTracksN()  const{return fListOfTracks->GetEntries();};
+    TABMtrack*       GetTrack(Int_t i) {return (GetTracksN()) ? (TABMtrack*) ((*fListOfTracks)[i]) : 0x0;};
+    const TABMtrack* GetTrack(Int_t i) const{return (GetTracksN()) ? (const TABMtrack*) ((*fListOfTracks)[i]) : 0x0;};
+    Int_t            GetTrackStatus(){return fStatus;};
+
     virtual void    SetupClones();
     virtual void    Clear(Option_t* opt="");
-
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
 
-   TClonesArray*    GetListOfTracks() { return fListOfTracks; }
-   
-   Int_t&           GetTrackStatus();
-   
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+    TClonesArray*   GetListOfTracks() { return fListOfTracks; }
+    TABMtrack*      NewTrack(TABMtrack trk);
+    void            SetTrackStatus(Int_t instatus){fStatus=instatus;return;};
+
+    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
 
   private:
-    Int_t           fStatus; //-1000=notset, 0=ok, 1=firedUplane<plane_mincut, 2=firedVplane<plane_mincut, 3=hit rejected > rejmax_cut, 4=fit is not converged, 5=chi2red>chi2redcut
-    
+    Int_t           fStatus;                //-1000=notset, 0=ok, 1=firedUplane<plane_mincut, 2=firedVplane<plane_mincut, 3=hit rejected > rejmax_cut, 4=fit is not converged, 5=chi2red>chi2redcut, >6=error
+
     TClonesArray*   fListOfTracks;			    // list of tracks
-       
-   static TString fgkBranchName;    // Branch name in TTree
+
+   static TString fgkBranchName;            // Branch name in TTree
 
    ClassDef(TABMntuTrack,2)
 
 };
-
-#include "TABMntuTrack.icc"
 
 #endif

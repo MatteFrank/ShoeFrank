@@ -15,7 +15,7 @@
 
 
 class TAGgeoTrafo;
-class TABMntuTrackTr;
+class TABMtrack;
 class TGraphErrors;
 class TAVTbaseCluster;
 class TAVTntuHit;

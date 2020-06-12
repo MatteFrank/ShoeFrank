@@ -29,7 +29,7 @@ class TABMntuHit : public TAGdata {
     Int_t    GetCell()                  const {return fCell;};
     Int_t    GetPlane()                 const {return fPlane;};
     Int_t    GetView()                  const {return fView;};
-    Double_t GetRdrift()                  const {return fRdrift;};
+    Double_t GetRdrift()                const {return fRdrift;};
     Double_t GetTdrift()                const {return fTdrift;};
     Double_t GetChi2()                  const {return fChi2;};
     Double_t GetSigma()                 const {return fSigma;};
@@ -81,7 +81,6 @@ class TABMntuHit : public TAGdata {
     Int_t     fIsSelected;   //0=not set, 1=selected, -1=not selected
 
    //MC parameters
-    Double_t  fRealrDrift;  //real frDrift, not smeared, only for MC
     Int_t     fIsFake;       //-1=not set, 0=primary hit, 1=secondary hit, 2=fake creator hit
     TArrayI   fMCindex;      // Id of the hit created in the simulation
     TArrayI   fMcTrackIdx;   // Id of the track created in the simulation

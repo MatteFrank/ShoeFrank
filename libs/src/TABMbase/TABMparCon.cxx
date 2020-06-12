@@ -47,8 +47,8 @@ TABMparCon::TABMparCon()
   fkDefaultParName = "./config/TABMdetector.cfg";
   vector<Float_t> myt0s(36,-10000);
   fT0Vec = myt0s;
-  fpResoFunc=new TF1("BMResoFunc","0.032891770+0.0075746330*x-5.1692440e-05*x*x+1.8928600e-07*x*x*x-2.4652420e-10*x*x*x*x",0.,0.8);
-  fpSTrel=new TF1("McStrel","0.0097110679*x-(6.6272359e-05)*x*x+(2.4267436e-07)*x*x*x-(3.1605667e-10)*x*x*x*x", 0., 320.);
+  fpResoFunc=new TF1("bmResoFunc","0.0245237+0.106748*x+0.229201*x*x-24.0304*x*x*x+183.529*x*x*x*x-619.259*x*x*x*x*x+1080.97*x*x*x*x*x*x-952.989*x*x*x*x*x*x*x+335.937*x*x*x*x*x*x*x*x",0.,0.8);
+  fpSTrel=new TF1("McStrel","0.00773*x -5.1692440e-05*x*x + 1.8928600e-07*x*x*x -2.4652420e-10*x*x*x*x", 0., 350.);
   fAssHitErr=(gTAGroot->CurrentCampaignNumber()==1) ? 15. : 5.;
 }
 
@@ -271,7 +271,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
   //charge the strel function
   infile>>tmp_char>>tmp_char;
   delete fpSTrel;
-  fpSTrel=new TF1("BM_STrel",tmp_char,0.,400);
+  fpSTrel=new TF1("bmParSTrel",tmp_char,0.,400);
   infile>>tmp_char>>parnum;
   for(Int_t i=0;i<parnum;++i){
     infile>>par;
@@ -350,8 +350,7 @@ void TABMparCon::Clear(Option_t*)
   fLegMRange=0.1;
   fLegRBin=75;
   fLegRRange=2.;
-  // fAssHitErr=3.;
-  fAssHitErr=(gTAGroot->CurrentCampaignNumber()==1) ? 10. : 5.;
+  fAssHitErr=(gTAGroot->CurrentCampaignNumber()==1) ? 15. : 5.;
 
   vector<Float_t> myt0s(36,-10000);
   fT0Vec = myt0s;
@@ -363,7 +362,14 @@ void TABMparCon::Clear(Option_t*)
 
 void TABMparCon::ResetStrelFunc(){
   delete fpSTrel;
-  fpSTrel=new TF1("McStrel","0.0097110679*x-(6.6272359e-05)*x*x+(2.4267436e-07)*x*x*x-(3.1605667e-10)*x*x*x*x", 0., 320.);
+  fpSTrel=new TF1("McStrel","0.00773*x -5.169244e-05*x*x + 1.89286e-07*x*x*x -2.465242e-10*x*x*x*x", 0., 330.);
+  fMaxSTrel=330;
+  fHitTimeCut=350;
+}
+
+/*------------------------------------------+---------------------------------*/
+Double_t TABMparCon:: GetTimeFromRDrift(Double_t rdrift){
+  return (rdrift<=0.8) ? fpSTrel->GetX(rdrift) : (rdrift+1.156)/0.006;
 }
 
 /*------------------------------------------+---------------------------------*/

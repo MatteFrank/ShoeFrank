@@ -51,7 +51,7 @@ Double_t TABMdigitizer::EffFunc(Double_t* x, Double_t* par){
 
 //___________________________________________________________________________________________
 // Bool_t TABMdigitizer::AddHitInMap(Int_t cellid, Double_t inrdrift, Int_t inhitindex,Int_t inipoint)
-Bool_t TABMdigitizer::Process(Double_t rdrift, Int_t cellid, Int_t lay, Int_t view, Int_t cell, Int_t inhitindex,Int_t inipoint)
+Bool_t TABMdigitizer::Process(Double_t rdrift, Int_t cellid, Int_t plane, Int_t view, Int_t cell, Int_t inhitindex,Int_t inipoint)
 {
   if(fpParCon->GetSmearHits())
     if(gRandom->Uniform(0,1)>fpEffDist->Eval(rdrift))
@@ -63,7 +63,7 @@ Bool_t TABMdigitizer::Process(Double_t rdrift, Int_t cellid, Int_t lay, Int_t vi
 
   std::multimap<Int_t, TABMntuHit*>::iterator pos=fMap.find(cellid);
   if(pos==fMap.end()){//new hit in a new cellid
-    mytmp=fpNtuRaw->NewHit(view, lay, cell,cellid, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
+    mytmp=fpNtuRaw->NewHit(cellid, plane, view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
     mytmp->SetIsFake((inipoint==0) ? 0 : (inipoint>0 ? 1 : 2));
     mytmp->AddMcTrackIdx(inipoint, inhitindex);
     fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,mytmp));
@@ -80,7 +80,7 @@ Bool_t TABMdigitizer::Process(Double_t rdrift, Int_t cellid, Int_t lay, Int_t vi
           d->second->SetIdCell(cellid);
           d->second->SetCell(cell);
           d->second->SetView(view);
-          d->second->SetPlane(lay);
+          d->second->SetPlane(plane);
           d->second->SetRdrift(rdrift);
           d->second->SetTdrift(fpParCon->GetTimeFromRDrift(rdrift));
           d->second->SetIsFake((inipoint==0) ? 0 : (inipoint>0 ? 1 : 2));
@@ -92,7 +92,7 @@ Bool_t TABMdigitizer::Process(Double_t rdrift, Int_t cellid, Int_t lay, Int_t vi
       }else
         ++d;
     }
-    mytmp=fpNtuRaw->NewHit(view, lay, cell,cellid, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
+    mytmp=fpNtuRaw->NewHit(cellid, plane,view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
     mytmp->SetIsFake((inipoint==0) ? 0 : (inipoint>0 ? 1 : 2));
     mytmp->AddMcTrackIdx(inipoint, inhitindex);
     fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,mytmp));

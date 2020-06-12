@@ -14,7 +14,7 @@
 #include "TABMntuRaw.hxx"
 #include "TABMparGeo.hxx"
 #include "TABMntuTrack.hxx"
-#include "TABMntuTrackTr.hxx"
+#include "TABMtrack.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 #include "TABMparGeo.hxx"
@@ -54,7 +54,7 @@ class TABMvieTrackFOOT : public TAGview {
     Int_t         fTrackOk; //if !=0 the track is not set and it will not be drawn
     Int_t         fEventNumber;//number of the event
     TABMntuTrack* p_ntutrk;
-    TABMntuTrackTr* p_trk;
+    TABMtrack* p_trk;
     TABMntuRaw* p_nturaw;
     TABMparGeo* p_bmgeo;
 

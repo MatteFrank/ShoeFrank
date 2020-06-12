@@ -132,8 +132,8 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
     Info("Viewer()","Displaying the BM Tracks");
 
     for (Int_t i_t = 0; i_t < p_ntutrk->GetTracksN(); i_t++) {
-      p_trk = p_ntutrk->Track(i_t);
-      sprintf(text,"MyChi2Red: %lf",p_trk->GetChi2Red());
+      p_trk = p_ntutrk->GetTrack(i_t);
+      sprintf(text,"MyChi2Red: %lf",p_trk->GetChiSquare());
       gPad->PaintText(-0.6*p_bmgeo->GetWidth(), +0.40*p_bmgeo->GetLength(),text);
       attline_trk.Modify();
       mylar1posTrack=p_trk->PointAtLocalZ(p_bmgeo->GetMylar1().Z());
@@ -149,7 +149,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
     for (Int_t i=3; i<36;) {
       tmp_int=0;
       for (Int_t k=fCellOccupancy->at(i).size()-1; k>=0; k--) {
-        TABMntuHit* hit = p_nturaw->Hit(fCellOccupancy->at(i)[k]);
+        TABMntuHit* hit = p_nturaw->GetHit(fCellOccupancy->at(i)[k]);
         if(hit->GetView()==1 && hit->GetIsSelected()) {
           //Top view, V view, (X,Z)
           p_bmgeo->GetCellInfo(1, hit->GetPlane(), hit->GetCell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);//charge the wire position and direction in h_x.. and h_cx...
@@ -215,7 +215,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
     Info("Viewer()","Displaying the BM Tracks");
 
     for (Int_t i_t = 0; i_t < p_ntutrk->GetTracksN(); i_t++) {
-      p_trk = p_ntutrk->Track(i_t);
+      p_trk = p_ntutrk->GetTrack(i_t);
       attline_trk.Modify();
       //Y,Z (view U, Side view)
       //~ gPad->PaintLine(-ych_i+0.5*p_bmgeo->GetWidth(),zmin,-ych_f+0.5*p_bmgeo->GetWidth(),zmax);
@@ -230,7 +230,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
     for (Int_t i=0; i<33;) {
       tmp_int=0;
       for (Int_t k=fCellOccupancy->at(i).size()-1; k>=0; k--) {
-        TABMntuHit* hit = p_nturaw->Hit(fCellOccupancy->at(i)[k]);
+        TABMntuHit* hit = p_nturaw->GetHit(fCellOccupancy->at(i)[k]);
         //View  == 0 (Side view, U view)
         if(hit->GetView()==0 && hit->GetIsSelected()) {
           //Side view, U view, (Y,Z)

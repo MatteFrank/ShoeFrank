@@ -15,7 +15,7 @@
 #pragma link C++ class TABMdigitizer+;
 #pragma link C++ class TABMactNtuHitMC+;
 #pragma link C++ class TABMvieTrackFOOT+;
-#pragma link C++ class TABMntuTrackTr+;
+#pragma link C++ class TABMtrack+;
 #pragma link C++ class TABMntuTrack+;
 #pragma link C++ class TABMactNtuTrack+;
 #pragma link C++ class TABMparCon+;

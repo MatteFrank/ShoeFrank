@@ -29,7 +29,7 @@ set( with_dictionnaries
    TABMdigitizer   
    TABMactNtuHitMC
    TABMvieTrackFOOT
-   TABMntuTrackTr
+   TABMtrack
    TABMntuTrack
    TABMactNtuTrack
    TABMparCon

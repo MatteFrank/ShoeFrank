@@ -54,8 +54,9 @@ class TABMactVmeReader : public TAGaction {
     Long64_t fDataSyncNumEv;        //current number of events + number of sync
 
     //histos
-    TH2I*            fpRawMapX;  //raw hit map
-    TH2I*            fpRawMapY;  //raw hit map
+    TH1I*            fpRawError;        //BM hit channel error
+    TH1I*            fpRawTdcChannel;   //TDC signal distribution 
+    TH1I*            fpRawTrigTime;     //Trigger time
 
 };
 

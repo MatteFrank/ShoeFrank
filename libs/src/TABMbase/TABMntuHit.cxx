@@ -19,7 +19,7 @@ TABMntuHit::~TABMntuHit()
 //! Default constructor.
 
 TABMntuHit::TABMntuHit()
-: fView(0),    fPlane(0),    fCell(0), fIdCell(-1),
+: fIdCell(-1), fPlane(0), fView(0), fCell(0),
   fRdrift(0.),    fTdrift(0.), fSigma(0)
 {
   fChi2=999;
@@ -31,12 +31,12 @@ TABMntuHit::TABMntuHit()
   fIdCell=-1;
 }
 
-TABMntuHit::TABMntuHit(Int_t iv, Int_t il, Int_t ic, Int_t id, Double_t r, Double_t t, Double_t s) {
+TABMntuHit::TABMntuHit( Int_t id, Int_t il, Int_t iv, Int_t ic, Double_t r, Double_t t, Double_t s) {
 
-  fView = iv;
-  fPlane = il;
-  fCell = ic;
   fIdCell=id;
+  fPlane = il;
+  fView = iv;
+  fCell = ic;
   fRdrift = r;
   fTdrift = t;
   fChi2 = 999;
@@ -78,7 +78,7 @@ void TABMntuHit::SetAW() {
 
    fA0.SetXYZ(f_bmgeo->GetWireX(idfilo,Plane(),fiView), f_bmgeo->GetWireY(idfilo,Plane(),fiView), f_bmgeo->GetWireZ(idfilo,Plane(),fiView));
    fWvers.SetXYZ(f_bmgeo->GetWireCX(idfilo,Plane(),fiView), f_bmgeo->GetWireCY(idfilo,Plane(),fiView), f_bmgeo->GetWireCZ(idfilo,Plane(),fiView));
-  
+
    if(fWvers.Mag()!=0.)
       fWvers.SetMag(1.);
    else{
@@ -89,5 +89,3 @@ void TABMntuHit::SetAW() {
 }
 
 */
-
-

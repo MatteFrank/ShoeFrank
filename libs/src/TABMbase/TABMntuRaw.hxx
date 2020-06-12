@@ -52,9 +52,9 @@ class TABMntuRaw : public TAGdata {
     void              SetNselhity(Int_t selin){fNselhitY=selin; return;};
 
     //other
-    TABMntuHit*       Hit(Int_t i){  return (TABMntuHit*) ((*fListOfHits)[i]);};
-    const TABMntuHit* Hit(Int_t i) const{  return (const TABMntuHit*) ((*fListOfHits)[i]);};
-    TABMntuHit*       NewHit(Int_t iv, Int_t il, Int_t ic, Int_t id, Double_t r, Double_t t, Double_t s);
+    TABMntuHit*       GetHit(Int_t i);
+    const TABMntuHit*       GetHit(Int_t i) const;
+    TABMntuHit*       NewHit(Int_t id, Int_t il, Int_t iv, Int_t ic, Double_t r, Double_t t, Double_t s);
 
     //CellOccupy
     void ClearCellOccupy();
@@ -80,8 +80,8 @@ class TABMntuRaw : public TAGdata {
     //for the reconstructed track
     Int_t            fNselhitX;           //number of selected hits on x view for the reconstructed track
     Int_t            fNselhitY;           //number of selected hits on y view for the reconstructed track
-    Int_t            fNtothitX;           //Total number of  hits on x view
-    Int_t            fNtothitY;           //Total number of  hits on y view
+    Int_t            fNtothitX;           //Total number of  hits on xz view
+    Int_t            fNtothitY;           //Total number of  hits on yz view
 
     ClassDef(TABMntuRaw,1)
 };

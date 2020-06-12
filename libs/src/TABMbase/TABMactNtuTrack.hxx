@@ -15,7 +15,7 @@ using namespace std;
 #include "TAGparaDsc.hxx"
 #include "TAGroot.hxx"
 #include "TABMntuTrack.hxx"
-#include "TABMntuTrackTr.hxx"
+#include "TABMtrack.hxx"
 #include "TABMparCon.hxx"
 #include "TABMparGeo.hxx"
 #include "TAGparGeo.hxx"
@@ -67,16 +67,15 @@ public:
   //reco methods (ordered)
   void ChargeLegendrePoly();                        //fill the fLegPolSum for the legendre polynomy
   Int_t FindLegendreBestValues();                   //find in fLegPolSum the hghest bin with the first estimate of the track parameters
-  Int_t CheckAssHits(const Float_t asshiterror);    //fill the fSelMap with the associated hits
+  Int_t CheckAssHits(const Float_t asshiterror, const Float_t minMerr);    //fill the fSelMap with the associated hits
   void CheckPossibleHits(Int_t wireplane[], Float_t yvalue, Float_t diff, Float_t res, Int_t &selview, const Int_t hitnum, TABMntuHit* p_hit);//adopted inside checkasshits to check if a hit is associated to the track or not
   Int_t NumericalMinimizationDouble();              //use minuit2 to refine the track parameters
   Double_t EvaluateChi2(const double *params);      //adopted in minuit2 to calculate the track chi2 with the selected hits
   Bool_t ComputeDataAll();                          //after the reconstruction, calculate the residuals, chi2 for all the hits
-  void CombineTrack(vector<TABMntuTrackTr> &ytracktr, vector<TABMntuTrackTr> &xtracktr, TABMntuTrack* p_ntutrk); //combine the track of both views
+  void CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack> &xtracktr, TABMntuTrack* p_ntutrk); //combine the track of both views
 
   //not used methods
   void SaveLegpol();                                // extra method adopted to save fLegPolSum in a different file,
-  Double_t EvaluateChi2GSI(const double *params);   // a tentative to recover the 2019 GSI data, actually not very useful
 
   ClassDef(TABMactNtuTrack,0)
 
@@ -88,7 +87,7 @@ public:
   TAGparaDsc*       fpBMCon;		    // input data dsc
   TAGparaDsc*       fpTGgeo;		    // input data dsc
 
-  TABMntuTrackTr *       fpTmpTrack;     // adopted for reconstruction
+  TABMtrack *       fpTmpTrack;     // adopted for reconstruction
 
   //Legendre:
   TH2F*    fLegPolSum;

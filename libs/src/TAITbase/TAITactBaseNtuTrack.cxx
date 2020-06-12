@@ -159,11 +159,11 @@ void TAITactBaseNtuTrack::CheckBM()
    fBmTrackOk    = false;
    pBMtrack = (TABMntuTrack*) fpBMntuTrack->Object();
    if (pBMtrack->GetTracksN() > 0)
-	  fBmTrack = pBMtrack->Track(0);
+	  fBmTrack = pBMtrack->GetTrack(0);
    
    if (fBmTrack) {
 	  fBmTrackPos  = fBmTrack->PointAtLocalZ(zDiff);
-	  Float_t chi2 = fBmTrack->GetChi2Red();
+	  Float_t chi2 = fBmTrack->GetChiSquare();
 	  if (ValidHistogram())
 		 fpHisBmChi2->Fill(chi2);
 	  

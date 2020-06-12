@@ -55,6 +55,9 @@ class TABMactNtuRaw : public TAGaction {
     TH1I*              fpHisCell;                 //hits cell
     TH1I*              fpHisView;                 //hits view
     TH1I*              fpHisPlane;                //hits plane
+    TH1I*              fpHisHitTotDist;           //total hits distribution
+    TH1I*              fpHisHitXzviewDist;        //hits distribution XZ view
+    TH1I*              fpHisHitYzviewDist;        //hits distribution YZ view
     TH1F*              fpHisRdrift;               //hits rdrift
     TH1F*              fpHisTdrift;               //hits tdrift
     TH1I*              fpHisDiscAccept;           //discharged vs accepted number of hits
