@@ -1,0 +1,48 @@
+// Campaign file
+CamName: "HE_MC"
+RunNumber: 1-3
+NumberDevices: 10
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/FOOT_geo.map": -1
+
+DetectorName: "DI"
+NumberFiles: 1
+"./geomaps/TADIdetector.map": -1
+
+DetectorName: "ST"
+NumberFiles: 2
+"./geomaps/TASTdetector.map": -1
+"./config/TASTdetector.cfg": -1
+
+DetectorName: "BM"
+NumberFiles: 2
+"./geomaps/TABMdetector.map": -1
+"./config/TABMdetector.cfg": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/TAGdetector.map": -1
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/TAVTdetector.map": -1
+"./config/TAVTdetector.cfg": -1
+
+DetectorName: "IT"
+NumberFiles: 2
+"./geomaps/TAITdetector.map": -1
+"./config/TAITdetector.cfg": -1
+
+DetectorName: "MSD"
+NumberFiles: 1
+"./geomaps/TAMSDdetector.map": -1
+
+DetectorName: "TW"
+NumberFiles: 1
+"./geomaps/TATWdetector.map": -1
+
+DetectorName: "CA"
+NumberFiles: 1
+"./geomaps/TACAdetector.map": -1

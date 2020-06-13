@@ -1,0 +1,21 @@
+// List of Campaigns
+CamNumber:    0
+CamName:    "STD"
+CamForceSync: 0
+CamDataMC:    1
+CamDate:      ""
+CamSum: "Test using standard input files"
+
+CamNumber:    1
+CamName:    "GSI"
+CamForceSync: 1
+CamDataMC:    0
+CamDate: "5-8 April 2019"
+CamSum: "Test experiment with ST+BM+VTX+TW…"
+
+CamNumber:    2
+CamName:   "HE_MC"
+CamForceSync: 0
+CamDataMC:    1
+CamDate: "5-8 January 2020"
+CamSum: "MC data for HE reaction produced by FLUKA"
