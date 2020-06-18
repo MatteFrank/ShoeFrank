@@ -16,6 +16,7 @@
 
 #include "TString.h"
 
+#include <map>
 #include <string.h>
 #include <fstream>
 #include <bitset>
@@ -31,69 +32,60 @@ class TABMntuRaw : public TAGdata {
                     TABMntuRaw();
     virtual         ~TABMntuRaw();
 
-    TABMntuHit*       GetHit(Int_t i_ind);
-    const TABMntuHit* GetHit(Int_t i_ind) const;
-    TABMntuHit*       NewHit(Int_t iv, Int_t il, Int_t ic, Int_t id, Double_t r, Double_t t, Double_t s);
-    
+    //default
     virtual void      SetupClones();
     virtual void      Clear(Option_t* opt="");
     virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
     static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
 
-    Int_t             GetHitsN() const;
-    Int_t             GetNselhitx() const{return fNselhitx;}
-    Int_t             GetNselhity() const{return fNselhity;}
-    Int_t             GetNselhits() const{return fNselhitx + fNselhity;}
-    void              SetNselhitx(Int_t selin){fNselhitx=selin;}
-    void              SetNselhity(Int_t selin){fNselhity=selin;}
-    
-    //fCellOccupy
+
+    //getters
+    Int_t             GetHitsN()    const{return fListOfHits->GetEntries();};
+    Int_t             GetNselhitx() const{return fNselhitX;};
+    Int_t             GetNselhity() const{return fNselhitY;};
+    Int_t             GetNtothitx() const{return fNtothitX;};
+    Int_t             GetNtothity() const{return fNtothitY;};
+    Int_t             GetNselhits() const{return fNselhitX + fNselhitY;};
+
+    //setters
+    void              SetNselhitx(Int_t selin){fNselhitX=selin; return;};
+    void              SetNselhity(Int_t selin){fNselhitY=selin; return;};
+
+    //other
+    TABMntuHit*       GetHit(Int_t i);
+    const TABMntuHit*       GetHit(Int_t i) const;
+    TABMntuHit*       NewHit(Int_t id, Int_t il, Int_t iv, Int_t ic, Double_t r, Double_t t, Double_t s);
+
+    //CellOccupy
     void ClearCellOccupy();
-    Bool_t AddCellOccupyHit(Int_t pos);
-    Bool_t RemoveCellOccupyHit(Int_t pos);
-    Int_t GetCellOccupy(Int_t pos){return (pos<36 && pos>=0) ? fCellOccupy[pos] : -1;}
+    Int_t GetCellOccupy(Int_t pos);
     void PrintCellOccupy();
-    
+
     //efficieny
-    void Efficiency_paoloni(Int_t pivot[], Int_t probe[], Double_t &efftot, Double_t &effxview, Double_t &effyview);
-   void ResetEffPaoloni(){fEffPaoloni=-3;fEffPaolonixview=-3;fEffPaoloniyview=-3;}
-    void SetEfficiency(Double_t efftot, Double_t effxview, Double_t effyview);
-   
-    Double_t GetEffPaoloni()      const { return fEffPaoloni;      }
-    Double_t GetEffPaolonixview() const { return fEffPaolonixview; }
-    Double_t GetEffPaoloniyview() const { return fEffPaoloniyview; }
+    void Efficiency_paoloni(Int_t pivot[], Int_t probe[]);
+    void ResetEffPaoloni(){fEffPaoloni=-3;fEffPaoloniXview=-3;fEffPaoloniYview=-3;return;};
+    Float_t GetEffPaoloni(){return fEffPaoloni;};
+    Float_t GetEffPaolonixview(){return fEffPaoloniXview;};
+    Float_t GetEffPaoloniyview(){return fEffPaoloniYview;};
 
   private:
-    TClonesArray*   fListOfHits;			    // hits
-    static TString fgkBranchName;    // Branch name in TTree
-   
-    Int_t           fCellOccupy[36];    //occupancy of the BM cell
-    Double_t        fEffPaoloni;    //value of the efficiency calculated with the Paoloni's method
-    Double_t        fEffPaolonixview;    //value of the efficiency calculated with the Paoloni's method for the x view
-    Double_t        fEffPaoloniyview;    //value of the efficiency calculated with the Paoloni's method for the y view
-    
+    TClonesArray*   fListOfHits;		     // list of TABMntuHit
+    static TString fgkBranchName;        // Branch name in TTree
+
+    map<Int_t,Int_t> fCellOccMap;        //BM occupancy map<cellid, counter for number of hits>
+    Float_t          fEffPaoloni;        //value of the efficiency calculated with the Paoloni's method
+    Float_t          fEffPaoloniXview;   //value of the efficiency calculated with the Paoloni's method for the xz view
+    Float_t          fEffPaoloniYview;   //value of the efficiency calculated with the Paoloni's method for the yz view
+
     //for the reconstructed track
-    Int_t           fNselhitx;    //number of selected hits on x view for the reconstructed track
-    Int_t           fNselhity;    //number of selected hits on y view for the reconstructed track
-    
+    Int_t            fNselhitX;           //number of selected hits on x view for the reconstructed track
+    Int_t            fNselhitY;           //number of selected hits on y view for the reconstructed track
+    Int_t            fNtothitX;           //Total number of  hits on xz view
+    Int_t            fNtothitY;           //Total number of  hits on yz view
+
     ClassDef(TABMntuRaw,1)
 };
 
-//------------------------------------------+-----------------------------------
-//! Access \a i 'th hit
-
-inline TABMntuHit* TABMntuRaw::GetHit(Int_t i)
-{
-  return (TABMntuHit*) ((*fListOfHits)[i]);;
-}
-
-//------------------------------------------+-----------------------------------
-//! Read-only access \a i 'th hit
-
-inline const TABMntuHit* TABMntuRaw::GetHit(Int_t i) const
-{
-  return (const TABMntuHit*) ((*fListOfHits)[i]);;
-}
 
 
 #endif

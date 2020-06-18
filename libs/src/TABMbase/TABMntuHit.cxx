@@ -19,36 +19,40 @@ TABMntuHit::~TABMntuHit()
 //! Default constructor.
 
 TABMntuHit::TABMntuHit()
-: fiView(0),    fiLayer(0),    fiCell(0), fiCellid(-1),
-  frDrift(0.),    ftDrift(0.), fSigma(0)
+: fIdCell(-1), fPlane(0), fView(0), fCell(0),
+  fRdrift(0.),    fTdrift(0.), fSigma(0)
 {
   fChi2=999;
-  fA0.SetXYZ(0,0,0);
-  fWvers.SetXYZ(0,0,0);
-  fRealrDrift=100.;
+  fWirePos.SetXYZ(0,0,0);
+  fWireDir.SetXYZ(0,0,0);
   fResidual=100.;
-  fIsSelected=false;
-  fIsFake=-1;  
-  fiCellid=-1;
+  fIsSelected=0;
+  fIsFake=-1;
+  fIdCell=-1;
 }
 
-TABMntuHit::TABMntuHit(Int_t iv, Int_t il, Int_t ic, Int_t id, Double_t r, Double_t t, Double_t s) {
+TABMntuHit::TABMntuHit( Int_t id, Int_t il, Int_t iv, Int_t ic, Double_t r, Double_t t, Double_t s) {
 
-  fiView = iv;
-  fiLayer = il;
-  fiCell = ic;
-  fiCellid=id;
-  frDrift = r;
-  ftDrift = t;
+  fIdCell=id;
+  fPlane = il;
+  fView = iv;
+  fCell = ic;
+  fRdrift = r;
+  fTdrift = t;
   fChi2 = 999;
-  fA0.SetXYZ(0,0,0);
-  fWvers.SetXYZ(0,0,0);
-  fRealrDrift=100.;
   fResidual=100.;
-  fIsSelected=false;
+  fIsSelected=0;
   fIsFake=-1;
   fSigma=s;
-  SetAW();
+
+  TABMparGeo* f_bmgeo = (TABMparGeo*) gTAGroot->FindParaDsc(TABMparGeo::GetDefParaName(), "TABMparGeo")->Object();
+  Int_t idfilo = f_bmgeo->GetSenseId(fCell);
+  fWirePos.SetXYZ(f_bmgeo->GetWireX(idfilo,fPlane,fView), f_bmgeo->GetWireY(idfilo,fPlane,fView), f_bmgeo->GetWireZ(idfilo,fPlane,fView));
+  fWireDir.SetXYZ(f_bmgeo->GetWireCX(idfilo,fPlane,fView), f_bmgeo->GetWireCY(idfilo,fPlane,fView), f_bmgeo->GetWireCZ(idfilo,fPlane,fView));
+  if(fWireDir.Mag()!=0.)
+     fWireDir.SetMag(1.);
+  else
+     cout<<"Error in TABMntuHit constructor::AddWire-> ERROR fWireDir.Mag()==0!!!"<<endl;
 }
 
 void TABMntuHit::Clear(Option_t* /*option*/)
@@ -61,12 +65,11 @@ void TABMntuHit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
    fMCindex[fMCindex.GetSize()-1]   = mcId;
-   
+
    fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
    fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackId;
 }
-
-
+/*
 void TABMntuHit::SetAW() {
 
    TABMparGeo* f_bmgeo = (TABMparGeo*) gTAGroot->FindParaDsc(TABMparGeo::GetDefParaName(), "TABMparGeo")->Object();
@@ -75,7 +78,7 @@ void TABMntuHit::SetAW() {
 
    fA0.SetXYZ(f_bmgeo->GetWireX(idfilo,Plane(),fiView), f_bmgeo->GetWireY(idfilo,Plane(),fiView), f_bmgeo->GetWireZ(idfilo,Plane(),fiView));
    fWvers.SetXYZ(f_bmgeo->GetWireCX(idfilo,Plane(),fiView), f_bmgeo->GetWireCY(idfilo,Plane(),fiView), f_bmgeo->GetWireCZ(idfilo,Plane(),fiView));
-  
+
    if(fWvers.Mag()!=0.)
       fWvers.SetMag(1.);
    else{
@@ -85,6 +88,4 @@ void TABMntuHit::SetAW() {
   return;
 }
 
-
-
-
+*/

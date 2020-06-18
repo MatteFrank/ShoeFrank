@@ -31,39 +31,34 @@ ClassImp(TABMparCon);
 //! Default constructor.
 TABMparCon::TABMparCon()
   :  TAGparTools(),
-  m_rdrift_err(0.015),
-  m_planehit_cut(3),
-  m_isMC (false),
-  m_rdrift_cut (2.),
-  m_chi2red_cut (5.),
-  m_fitter_index (0),
-  m_minnhit_cut(6),
-  m_maxnhit_cut(20),
-  m_rejmax_cut(36),
-  m_num_ite(0),
-  m_par_move(0.0001),
-  m_fakehits_mean(5.57),
-  m_fakehits_sigmaleft(1.8),
-  m_fakehits_sigmaright(2.3),
-  m_mceff_mean(1),
-  m_mceff_sigma(0.2),
-  m_legmbin(40),
-  m_legmrange(0.1),
-  m_legrbin(75),
-  m_legrrange(2.),
-  m_asshit_ratio(3.)
+  fRDriftErr(0.015),
+  fPlaneHitCut(3),
+  fChi2Cut (5.),
+  fMinHitCut(6),
+  fMaxHitCut(20),
+  fRejMaxCut(36),
+  fNumIte(20),
+  fParMove(0.0001),
+  fLegMBin(40),
+  fLegMRange(0.1),
+  fLegRBin(75),
+  fLegRRange(2.)
 {
   fkDefaultParName = "./config/TABMdetector.cfg";
   vector<Float_t> myt0s(36,-10000);
-  m_v_t0s = myt0s;
-  m_hreso=new TF1("poly","pol10",0.,0.95);
-  m_hreso->SetParameters(832.013,-9483.35,42697.4,-57369.7,-53877.2,96272.6,145773.,-67990.3,-284751.,-5173.99,234058.);
+  fT0Vec = myt0s;
+  fpResoFunc=new TF1("bmResoFunc","0.0245237+0.106748*x+0.229201*x*x-24.0304*x*x*x+183.529*x*x*x*x-619.259*x*x*x*x*x+1080.97*x*x*x*x*x*x-952.989*x*x*x*x*x*x*x+335.937*x*x*x*x*x*x*x*x",0.,0.8);
+  fpSTrel=new TF1("McStrel","0.00773*x -5.1692440e-05*x*x + 1.8928600e-07*x*x*x -2.4652420e-10*x*x*x*x", 0., 350.);
+  fAssHitErr=(gTAGroot->CurrentCampaignNumber()==1) ? 15. : 5.;
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TABMparCon::~TABMparCon(){}
+TABMparCon::~TABMparCon(){
+  delete fpResoFunc;
+  delete fpSTrel;
+}
 
 
 //------------------------------------------+-----------------------------------
@@ -85,45 +80,51 @@ Bool_t TABMparCon::FromFile(const TString& name) {
      cout<<"TABMparCon::FromFile:: read config file from "<<nameExp.Data()<<endl<<"Now I'll printout the BM FromFile read parameters"<<endl;
 
   //cuts
-  ReadItem(m_minnhit_cut);
+  ReadItem(fMinHitCut);
   if(FootDebugLevel(1))
-     cout<<"m_minnhit_cut="<<m_minnhit_cut<<endl;
-  ReadItem(m_maxnhit_cut);
+     cout<<"fMinHitCut="<<fMinHitCut<<endl;
+  ReadItem(fMaxHitCut);
   if(FootDebugLevel(1))
-     cout<<"m_maxnhit_cut="<<m_maxnhit_cut<<endl;
-  ReadItem(m_rejmax_cut);
+     cout<<"fMaxHitCut="<<fMaxHitCut<<endl;
+  ReadItem(fRejMaxCut);
   if(FootDebugLevel(1))
-     cout<<"m_rejmax_cut="<<m_rejmax_cut<<endl;
-  ReadItem(m_chi2red_cut);
+     cout<<"fRejMaxCut="<<fRejMaxCut<<endl;
+  ReadItem(fChi2Cut);
   if(FootDebugLevel(1))
-     cout<<"m_chi2red_cut="<<m_chi2red_cut<<endl;
+     cout<<"fChi2Cut="<<fChi2Cut<<endl;
 
   //track reco
-  ReadItem(m_fitter_index);
+  ReadItem(fNumIte);
   if(FootDebugLevel(1))
-     cout<<"m_fitter_index="<<m_fitter_index<<endl;
-  ReadItem(m_num_ite);
+     cout<<"fNumIte="<<fNumIte<<endl;
+  ReadItem(fParMove);
   if(FootDebugLevel(1))
-     cout<<"m_num_ite="<<m_num_ite<<endl;
-  ReadItem(m_par_move);
+     cout<<"fParMove="<<fParMove<<endl;
+  ReadItem(fLegMBin);
   if(FootDebugLevel(1))
-     cout<<"m_par_move="<<m_par_move<<endl;
-  ReadItem(strel_switch);
+     cout<<"fLegMBin="<<fLegMBin<<endl;
+  ReadItem(fLegMRange);
   if(FootDebugLevel(1))
-     cout<<"strel_switch="<<strel_switch<<endl;
+     cout<<"fLegMRange="<<fLegMRange<<endl;
+  ReadItem(fLegRBin);
+  if(FootDebugLevel(1))
+     cout<<"fLegRBin="<<fLegRBin<<endl;
+  ReadItem(fLegRRange);
+  if(FootDebugLevel(1))
+     cout<<"fLegRRange="<<fLegRRange<<endl;
 
   //other parameters
-  ReadItem(m_hit_timecut);
+  ReadItem(fHitTimeCut);
   if(FootDebugLevel(1))
-     cout<<"m_hit_timecut="<<m_hit_timecut<<endl;
+     cout<<"fHitTimeCut="<<fHitTimeCut<<endl;
 
   //MC parameters
-  ReadItem(m_smear_rdrift);
+  ReadItem(fSmearRDrift);
   if(FootDebugLevel(1))
-     cout<<"m_smear_rdrift="<<m_smear_rdrift<<endl;
-  ReadItem(m_smear_hits);
+     cout<<"fSmearRDrift="<<fSmearRDrift<<endl;
+  ReadItem(fSmearHits);
   if(FootDebugLevel(1))
-     cout<<"m_smear_hits="<<m_smear_hits<<endl;
+     cout<<"fSmearHits="<<fSmearHits<<endl;
 
 return false;
 }
@@ -150,29 +151,20 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
   while (incF.getline(bufConf, 200, '\n')) {
     if(strchr(bufConf,'!')) {
       //      Info("FromFile()","Skip comment line:: %s",bufConf);
-    }else if(strchr(bufConf,'R')) {
-      sscanf(bufConf, "R %f",&myArg1);
-      if(myArg1>0)
-        m_rdrift_cut = myArg1;
-      else {
-	      Error(""," Plane Map Error:: check config file!! (R)");
-	      return kTRUE;
-        }
     }else if(strchr(bufConf,'H')) {
       sscanf(bufConf, "H %d %d %d", &myArgInt, &myArgIntmin, &myArgIntmax);
       if( myArgInt>0 && myArgInt<7 && myArgIntmin>=0 && myArgIntmax>0 && myArgIntmax>=myArgInt){
-        m_planehit_cut= myArgInt;
-        m_minnhit_cut = myArgIntmin;
-        m_maxnhit_cut = myArgIntmax;
+        fPlaneHitCut= myArgInt;
+        fMinHitCut = myArgIntmin;
+        fMaxHitCut = myArgIntmax;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (H)");
 	      return kTRUE;
         }
     }else if(strchr(bufConf,'Z')) {
-      sscanf(bufConf, "Z  %f %f", &myArg1, &myArg2);
-      if(myArg1>=0 && myArg2>=0){
-        m_t0_sigma=myArg1;
-        m_hit_timecut=myArg2;
+      sscanf(bufConf, "Z  %f", &myArg2);
+      if( myArg2>=0){
+        fHitTimeCut=myArg2;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (Z)");
 	      return kTRUE;
@@ -180,35 +172,26 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
     }else if(strchr(bufConf,'M')) {
       sscanf(bufConf, "M %d %f %f %f %f %f %d",&myArgInt, &myArg1, &myArg2, &myArg3, &myArg4, &myArg5, &myArgIntmax);
       if((myArgInt==0 || myArgInt==1) && myArg1>=0 && myArg2>=0 && myArg3>=0 && myArg4>=0 && myArg5>=0 && myArgIntmax>=0 && myArgIntmax<6){
-        m_smear_hits = myArgInt;
-        m_fakehits_mean=myArg1;
-        m_fakehits_sigmaleft=myArg2;
-        m_fakehits_sigmaright=myArg3;
-        m_mceff_mean=myArg4;
-        m_mceff_sigma=myArg5;
-        m_smear_rdrift=myArgIntmax;
+        fSmearHits = myArgInt;
+        fSmearRDrift=myArgIntmax;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (M)");
 	      return kTRUE;
         }
-    }else if(strchr(bufConf,'W')) {
-      sscanf(bufConf, "W %d",&myArgInt);
-      strel_switch = myArgInt;
     }else if(strchr(bufConf,'J')) {
       sscanf(bufConf, "J %d %f ",&myArgInt, &myArg1);
       if(myArgInt>=0 && myArg1>0){
-        m_rejmax_cut = myArgInt;
-        m_chi2red_cut=myArg1;
+        fRejMaxCut = myArgInt;
+        fChi2Cut=myArg1;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (J)");
 	      return kTRUE;
         }
     }else if(strchr(bufConf,'F')) {
-      sscanf(bufConf, "F %d %d %f",&myArgInt, &myArgIntmin, &myArg1);
-      if(myArgInt>=0 && myArgIntmin>=0 && myArg1>=0.){
-        m_fitter_index = myArgInt;
-        m_num_ite=myArgIntmin;
-        m_par_move=myArg1;
+      sscanf(bufConf, "F %d %f", &myArgIntmin, &myArg1);
+      if(myArgIntmin>=0 && myArg1>=0.){
+        fNumIte=myArgIntmin;
+        fParMove=myArg1;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (F)");
 	      return kTRUE;
@@ -225,9 +208,9 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
 void TABMparCon::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
   ofstream outfile;
   outfile.open(output_filename.Data(),ios::out);
-  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<"     m_t0_switch= "<<m_t0_switch<<endl;
+  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<"     fT0Choice= "<<fT0Choice<<endl;
   for(Int_t i=0;i<36;i++)
-    outfile<<"cellid= "<<i<<"  T0_time= "<<m_v_t0s[i]<<endl;
+    outfile<<"cellid= "<<i<<"  T0_time= "<<fT0Vec[i]<<endl;
   outfile.close();
   return;
 }
@@ -249,9 +232,9 @@ Bool_t TABMparCon::loadT0s(TString filename) {
   char tmp_char[200];
   vector<Float_t> fileT0(36,-10000.);
   Int_t tmp_int=-1, status=0;
-  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>m_t0_switch>>tmp_char>>m_t0_choice;
+  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>fT0Choice;
 
-  for(Int_t i=0;i<36;i++)
+  for(Int_t i=0;i<36;i++){
     if(!infile.eof() && tmp_int==i-1)
       infile>>tmp_char>>tmp_int>>tmp_char>>fileT0.at(i);
     else{
@@ -259,19 +242,61 @@ Bool_t TABMparCon::loadT0s(TString filename) {
       infile.close();
       return kTRUE;
       }
-  infile.close();
-  m_v_t0s=fileT0;
+  }
 
+  fT0Vec=fileT0;
   //check if the T0 are ok
   if(FootDebugLevel(1)) {
-     for(Int_t i=0;i<36;i++) {
-        cout<<"BM T0: "<<m_v_t0s[i]<<endl;
-        if(m_v_t0s[i]==-10000)
-           cout<<"WARNING IN TABMparCon::loadT0s: channel not considered in tdc map tdc_cha=i="<<i<<" T0 for this channel is set to -10000"<<endl;
-        else if(m_v_t0s[i]==-20000)
-           cout<<"WARNING IN TABMparCon::loadT0s! channel with too few elements to evaluate T0: tdc_cha=i="<<i<<" T0 for this channel is set to -20000"<<endl;
-     }
+    for(Int_t i=0;i<36;i++) {
+      cout<<"BM T0: "<<fT0Vec[i]<<endl;
+      if(fT0Vec[i]==-10000)
+      cout<<"WARNING IN TABMparCon::loadT0s: channel not considered in tdc map tdc_cha=i="<<i<<" T0 for this channel is set to -10000"<<endl;
+      else if(fT0Vec[i]==-20000)
+      cout<<"WARNING IN TABMparCon::loadT0s! channel with too few elements to evaluate T0: tdc_cha=i="<<i<<" T0 for this channel is set to -20000"<<endl;
+    }
   }
+
+  //charge the resolution function
+  Int_t parnum;
+  Double_t par;
+  infile>>tmp_char>>tmp_char;
+  delete fpResoFunc;
+  fpResoFunc=new TF1("BMResoFunc",tmp_char,0.,0.8);
+  infile>>tmp_char>>parnum;
+  for(Int_t i=0;i<parnum;++i){
+    infile>>par;
+    fpResoFunc->SetParameter(i,par);
+  }
+
+  //charge the strel function
+  infile>>tmp_char>>tmp_char;
+  delete fpSTrel;
+  fpSTrel=new TF1("bmParSTrel",tmp_char,0.,400);
+  infile>>tmp_char>>parnum;
+  for(Int_t i=0;i<parnum;++i){
+    infile>>par;
+    fpSTrel->SetParameter(i,par);
+  }
+  fMaxSTrel=fpSTrel->GetMaximumX();
+
+  if(FootDebugLevel(1)){
+    cout<<"BM resolution formula="<<fpResoFunc->GetFormula()->GetExpFormula().Data()<<endl;
+    cout<<"number of parameters="<<fpResoFunc->GetNpar()<<endl;
+    cout<<"parameters:  (";
+    for(Int_t i=0;i<fpResoFunc->GetNpar();++i)
+      cout<<fpResoFunc->GetParameter(i)<<" , ";
+    cout<<")"<<endl;
+    cout<<"BM space time relation formula="<<fpSTrel->GetFormula()->GetExpFormula().Data()<<endl;
+    cout<<"number of parameters="<<fpSTrel->GetNpar()<<endl;
+    cout<<"parameters:  (";
+    for(Int_t i=0;i<fpSTrel->GetNpar();++i)
+      cout<<fpSTrel->GetParameter(i)<<" , ";
+    cout<<")"<<endl;
+    cout<<"STrel maximum bin at "<<fMaxSTrel<<endl;
+  }
+
+  infile.close();
+
   return kFALSE;
 }
 
@@ -280,7 +305,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
 void TABMparCon::SetT0s(vector<Float_t> t0s) {
 
   if(t0s.size() == 36) {
-    m_v_t0s = t0s;
+    fT0Vec = t0s;
   } else {
     Error("Parameter()","Vectors size mismatch:: fix the t0 vector inmput size!!! %d ",(int) t0s.size());
   }
@@ -292,7 +317,7 @@ void TABMparCon::SetT0s(vector<Float_t> t0s) {
 void TABMparCon::SetT0(Int_t cha, Float_t t0in){
 
 if(cha<36 && cha>=0)
-  m_v_t0s[cha]=t0in;
+  fT0Vec[cha]=t0in;
 else {
     Error("Parameter()","Channel out of Range!!! cha=%d",cha);
   }
@@ -302,8 +327,8 @@ else {
 
 void TABMparCon::CoutT0(){
   cout<<"Print BM T0 time:"<<endl;
-  for(Int_t i=0;i<m_v_t0s.size();i++)
-    cout<<"cell_id="<<i<<"  T0="<<m_v_t0s[i]<<endl;
+  for(Int_t i=0;i<fT0Vec.size();i++)
+    cout<<"cell_id="<<i<<"  T0="<<fT0Vec[i]<<endl;
   cout<<endl;
 }
 
@@ -313,34 +338,38 @@ void TABMparCon::CoutT0(){
 
 void TABMparCon::Clear(Option_t*)
 {
-  m_rdrift_err=0.015;
-  m_planehit_cut=3;
-  m_isMC = false;
-  m_rdrift_cut = 0.11;
-  m_chi2red_cut = 5.;
-  m_fitter_index = 0;
-  m_minnhit_cut=6;
-  m_maxnhit_cut=20;
-  m_rejmax_cut=36;
-  m_num_ite=0;
-  m_par_move=0.0001;
-  m_legmbin=40;
-  m_legmrange=0.1;
-  m_legrbin=75;
-  m_legrrange=2.;
-  m_asshit_ratio=3.;
-
-  //The following parameters for MC are set from the measurements with protons at Trento
-  m_fakehits_mean=5.57;
-  m_fakehits_sigmaleft=1.8;
-  m_fakehits_sigmaright=2.3;
-  m_mceff_mean=1;
-  m_mceff_sigma=0.2;
+  fRDriftErr=0.015;
+  fPlaneHitCut=3;
+  fChi2Cut = 5.;
+  fMinHitCut=6;
+  fMaxHitCut=20;
+  fRejMaxCut=36;
+  fNumIte=20;
+  fParMove=0.0001;
+  fLegMBin=40;
+  fLegMRange=0.1;
+  fLegRBin=75;
+  fLegRRange=2.;
+  fAssHitErr=(gTAGroot->CurrentCampaignNumber()==1) ? 15. : 5.;
 
   vector<Float_t> myt0s(36,-10000);
-  m_v_t0s = myt0s;
+  fT0Vec = myt0s;
 
   return;
+}
+
+/*------------------------------------------+---------------------------------*/
+
+void TABMparCon::ResetStrelFunc(){
+  delete fpSTrel;
+  fpSTrel=new TF1("McStrel","0.00773*x -5.169244e-05*x*x + 1.89286e-07*x*x*x -2.465242e-10*x*x*x*x", 0., 330.);
+  fMaxSTrel=330;
+  fHitTimeCut=350;
+}
+
+/*------------------------------------------+---------------------------------*/
+Double_t TABMparCon:: GetTimeFromRDrift(Double_t rdrift){
+  return (rdrift<=0.8) ? fpSTrel->GetX(rdrift) : (rdrift+1.156)/0.006;
 }
 
 /*------------------------------------------+---------------------------------*/
@@ -349,215 +378,17 @@ void TABMparCon::Clear(Option_t*)
 void TABMparCon::ToStream(ostream& os, Option_t*) const
 {
   os << "TABMparCon " << GetName() << endl;
-
   return;
 }
-
-
- /*-------------------------------------------------*/
-
-Float_t TABMparCon::FirstSTrel(Float_t tdrift){
-
-  if(tdrift<0 && m_t0_switch==2)
-    return 0.03289 + 0.008*tdrift;
-
-  Float_t rdrift;
-
-  if(strel_switch==1){ //garfield strel
-    rdrift=0.00915267+0.00634507*tdrift+2.02527e-05*tdrift*tdrift-7.60133e-07*tdrift*tdrift*tdrift+5.55868e-09*tdrift*tdrift*tdrift*tdrift-1.68944e-11*tdrift*tdrift*tdrift*tdrift*tdrift+1.87124e-14*tdrift*tdrift*tdrift*tdrift*tdrift*tdrift;
-  }else if(strel_switch==2){//
-    rdrift= 0.00972903*tdrift-8.21676e-05*tdrift*tdrift+3.66446e-07*tdrift*tdrift*tdrift-5.85882e-10*tdrift*tdrift*tdrift*tdrift;
-  }else if(strel_switch==3){//
-    rdrift= 0.0087776*tdrift-6.41845e-05*tdrift*tdrift+2.4946e-07*tdrift*tdrift*tdrift-3.48422e-10*tdrift*tdrift*tdrift*tdrift;
-  }else if(strel_switch==4){//HIT 2014
-    rdrift= 0.0092254*tdrift-7.1192e-5*tdrift*tdrift+3.01951e-7*tdrift*tdrift*tdrift-4.66646e-10*tdrift*tdrift*tdrift*tdrift;
-  }else if (strel_switch==5){
-    rdrift= (0.032891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift)/0.78;
-  }else if (strel_switch==6){//from strel calibration
-    rdrift= -0.118715 + (0.0098028*tdrift) + (-0.000119206*tdrift*tdrift) + (8.75103e-07*tdrift*tdrift*tdrift) + (-3.16015e-09*tdrift*tdrift*tdrift*tdrift) + (4.37948e-12*tdrift*tdrift*tdrift*tdrift*tdrift);
-  }else if (strel_switch==7){//from strel calibration
-    tdrift+=43.7;
-    rdrift= 0.0201024 + (0.00408601*tdrift) + (-4.42738e-05*tdrift*tdrift) + (4.9932e-07*tdrift*tdrift*tdrift) + (-2.45383e-09*tdrift*tdrift*tdrift*tdrift) + (4.08383e-12*tdrift*tdrift*tdrift*tdrift*tdrift);
-  }else{
-    //FIRST strel embedded in old Framework
-    rdrift=(tdrift>320) ? 0.79 : 0.012891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift;
-  }
-
-  return rdrift<=0 ? 0.0001 : rdrift;
-
-}
-
-
-Float_t TABMparCon::InverseStrel(Float_t rdrift){
-  if(rdrift<0.959){
-    TF1 f1("f1","1./0.78*(0.0075746330*x-(5.1692440e-05)*x*x+(1.8928600e-07)*x*x*x-(2.4652420e-10)*x*x*x*x)", 0., 320.);
-    return f1.GetX(rdrift);
-  }
-  return 320;
-}
-
-
-Float_t TABMparCon::FirstSTrelMC(Float_t tdrift, Int_t mc_switch){
-
-  if(tdrift<0 && m_t0_switch==2)
-      return 0.03289 + 0.008*tdrift;
-
-  if(mc_switch==1){ //garfield strel
-    return 0.00915267+0.00634507*tdrift+2.02527e-05*tdrift*tdrift-7.60133e-07*tdrift*tdrift*tdrift+5.55868e-09*tdrift*tdrift*tdrift*tdrift-1.68944e-11*tdrift*tdrift*tdrift*tdrift*tdrift+1.87124e-14*tdrift*tdrift*tdrift*tdrift*tdrift*tdrift;
-  }else if(mc_switch==2){//
-    return 0.00972903*tdrift-8.21676e-05*tdrift*tdrift+3.66446e-07*tdrift*tdrift*tdrift-5.85882e-10*tdrift*tdrift*tdrift*tdrift;
-  }else if(mc_switch==3){//
-    return 0.0087776*tdrift-6.41845e-05*tdrift*tdrift+2.4946e-07*tdrift*tdrift*tdrift-3.48422e-10*tdrift*tdrift*tdrift*tdrift;
-  }else if(mc_switch==4){//HIT 2014
-    return 0.0092254*tdrift-7.1192e-5*tdrift*tdrift+3.01951e-7*tdrift*tdrift*tdrift-4.66646e-10*tdrift*tdrift*tdrift*tdrift;
-  }else if (mc_switch==5)
-    return (0.032891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift)/0.78;
-
-  //FIRST strel embedded in old Framework
-  return 0.032891770+0.0075746330*tdrift-(5.1692440e-05)*tdrift*tdrift+(1.8928600e-07)*tdrift*tdrift*tdrift-(2.4652420e-10)*tdrift*tdrift*tdrift*tdrift;
-
-}
-
 
 
 //~ Float_t TABMparCon::ResoEval(Float_t dist) {
   //~ Float_t sigma;
   //~ Int_t mybin(-1);
-  //~ if(m_hreso) {
-    //~ mybin = m_hreso->FindBin(dist);
-    //~ sigma = m_hreso->GetBinContent(mybin)/10000;
+  //~ if(fpResoFunc) {
+    //~ mybin = fpResoFunc->FindBin(dist);
+    //~ sigma = fpResoFunc->GetBinContent(mybin)/10000;
   //~ }
   //~ return sigma>0 ? sigma:0.12;
-
-//~ }
-
-//~ TF1* TABMparCon::GetCalibX() {
-
-  //~ return f_mypol;
-//~ }
-
-
-//~ TF1* TABMparCon::GetCalibY() {
-
-  //~ return f_mypol2;
-
-//~ }
-
-//~ void TABMparCon::ConfigureTrkCalib() {
-
-  //~ /* OLD setup
-   //~ 1  p0           1.69143e-02   1.78395e-05   1.25294e-08  -1.12766e-02
-   //~ 2  p1           2.21824e+01   4.37184e-03   1.05774e-05  -5.07310e-06
-   //~ 3  p2           8.09415e+03   6.11105e-01   3.85959e-03   5.18272e-08
-   //~ 4  p3           1.39385e+06   8.36591e+01   6.64637e-01  -3.42786e-10
-   //~ 5  p4           1.13567e+08   1.04695e+04   5.41532e+01   3.66862e-13
-   //~ 6  p5           3.53414e+09   9.05361e+05   1.68521e+03   3.57968e-14
-
-   //~ 1  p0          -1.15688e-02   2.02851e-05   1.00354e-08  -2.74132e+00
-   //~ 2  p1          -1.96039e+00   4.12901e-03   1.36445e-06  -5.52166e-02
-   //~ 3  p2          -1.16613e+02   5.45908e-01   1.77382e-04  -1.21665e-03
-   //~ 4  p3           2.46797e+04   6.95556e+01   2.22149e-02  -9.68817e-06
-   //~ 5  p4           2.01676e+06   8.23400e+03   2.67413e+00  -5.28596e-08
-   //~ 6  p5          -2.05344e+06   7.32900e+05   2.08980e+01  -3.10577e-11
-  //~ */
-
-  //~ //X correction
-  //~ if(m_isMC) {
-    //~ f_mypol->SetParameters(0.,1.,0.,0.,0.,0.);
-  //~ } else {
-    //~ f_mypol->SetName("mypol");
-    //~ f_mypol->SetParameters( 70.61e-05,
-			    //~ 2.685e-01,
-			    //~ 1.203e+01,
-			   //~ -2.421e+04,
-			    //~ 1.112e+04,
-			    //~ 4.325e+08);
-  //~ }
-
-  //~ /*
-   //~ 1  p0          -1.92457e-05   9.96755e-06   2.67768e-08   2.75109e-03
-   //~ 2  p1           3.65559e-01   1.37338e-02   1.88348e-05  -4.51475e-06
-   //~ 3  p2          -2.01191e+01   6.94988e+00   7.23064e-03   1.17480e-08
-   //~ 4  p3          -4.47220e+04   4.31045e+03   2.29598e+00   4.64828e-11
-   //~ 5  p4           2.79566e+05   5.85631e+05   2.16321e+01  -1.73594e-12
-   //~ 6  p5           1.90396e+09   2.74307e+08   9.07879e+02   1.93312e-15
-
-   //~ 1  p0          -1.01338e-04   9.87766e-06   2.56656e-08   5.76352e-02
-   //~ 2  p1           5.49605e-01   1.32980e-02   1.94777e-05  -4.83048e-04
-   //~ 3  p2          -2.40775e+01   7.04670e+00   8.12795e-03   3.90372e-07
-   //~ 4  p3          -4.67887e+04   4.61691e+03   2.69340e+00  -3.47984e-09
-   //~ 5  p4           1.98095e+06   6.33007e+05   2.08960e+01   3.79568e-12
-   //~ 6  p5           1.44651e+09   3.07455e+08   6.89752e+02  -2.36315e-14
-  //~ */
-
-  //~ //Y correction
-  //~ if(m_isMC) {
-    //~ f_mypol2->SetParameters(0.,1.,0.,0.,0.,0.);
-  //~ } else {
-    //~ f_mypol2->SetName("mypol2");
-    //~ f_mypol2->SetParameters(-21.95e-05,
-			     //~ 2.953e-01,
-			     //~ 17.41e+01,
-			    //~ -2.699e+04,
-			    //~ -1.061e+07,
-			     //~ 1.667e+09);
-  //~ }
-  //~ return;
-
-//~ }
-
-//~ double TABMparCon::STrel_Delta1(double time) {
-  //~ double p0=0.007471, p1=-0.005854, p2= 6.38379e-05, p3=-2.61452e-07, p4= 3.78368e-10;
-  //~ double res;
-  //~ res = p0 + p1*time + p2*time*time + p3*pow(time,3) + p4*pow(time,4);
-  //~ return res;
-//~ }
-
- //~ /*-------------------------------------------------*/
-
-//~ double TABMparCon::STrel_Delta2(double time) {
-  //~ double p0=-0.031722, p1=0.00055413, p2= -8.75471e-06, p3= 5.19529e-08, p4=-9.49872e-11 ;
-  //~ double res;
-  //~ res = p0 + p1*time + p2*time*time + p3*pow(time,3) + p4*pow(time,4);
-  //~ return res;
-//~ }
-
-//~ /*----------------------------------------*/
-
-//~ double TABMparCon::STrel_Delta3(double time) {
-  //~ double p0= -0.00864077, p1= 0.000225237, p2= -3.39075e-06, p3=  2.02131e-08, p4=  -3.68566e-11;
-  //~ double res;
-  //~ res = p0 + p1*time + p2*time*time + p3*pow(time,3) + p4*pow(time,4);
-  //~ return res;
-//~ }
-
-//~ //provv, da ottimizzare
-//~ double TABMparCon::STrelCorr(double time, int ic, int ip, int iv) {//per ora serve solo il tempo perchè per ogni cella le strel sono le stesse...
-
-  //~ double res = 0;
-  //~ bool ana = kTRUE;
-
-  //~ int t_ic, t_ip, t_iv;
-  //~ t_ic = ic; t_ip = ip; t_iv = iv;
-
-  //~ int howManyfiles(0);
-  //~ if(!ana) {
-    //~ howManyfiles = m_myVFunSpl.size();
-    //~ for(int ih =0; ih<howManyfiles; ih++) {
-      //~ Info("Action()","STrel:: %lf %d %lf %d ",time,ih,res,m_myVFunSpl.size());
-      //~ if(m_myVFunSpl.at(ih)) {
-        //~ res += (m_myVFunSpl.at(ih))->Eval(time);
-        //~ Info("Action()","STrel:: %d %lf ",ih,(m_myVFunSpl.at(ih))->Eval(time));
-      //~ }
-    //~ }
-
-    //~ //  res *= 0.3;
-  //~ } else {
-    //~ res -= STrel_Delta1(fabs(time));
-    //~ res -= STrel_Delta2(fabs(time));
-    //~ res -= STrel_Delta3(fabs(time));
-  //~ }
-
-  //~ return res;
 
 //~ }

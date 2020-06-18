@@ -16,7 +16,7 @@
 
 
 class TAGgeoTrafo;
-class TABMntuTrackTr;
+class TABMtrack;
 class TGraphErrors;
 class TAVTbaseCluster;
 class TAVTbaseTrack;
@@ -62,7 +62,7 @@ protected:
 	
    
    Bool_t           fBmTrackOk;          // flag for BM track chi2 cut
-   TABMntuTrackTr*  fBmTrack;            // BM track pointer 
+   TABMtrack*       fBmTrack;            // BM track pointer 
    TVector3         fBmTrackPos;         // BM track position 
    
    TH2F*            fpHisBmBeamProf;     // BM Beam profile extrapolated to target

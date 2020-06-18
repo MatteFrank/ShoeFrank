@@ -39,56 +39,67 @@ TABMactVmeReader* bmActVmeReader  = 0x0;
 TABMactNtuRaw* bmActNtuRaw  = 0x0;
 TABMactNtuTrack* bmActTrack = 0x0;
 
-void FillBmVME(TString name) {
+void FillBmVME(TString name, Int_t myexpcode) {
    
-   cout<<"start FillBmVME"<<endl;
-   
-   TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
-   TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
-   TString parFileName = "./geomaps/TABMdetector.map";
-   geomap->FromFile(parFileName.Data());
-            
-   TAGparaDsc* tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
-   TAGparGeo* parGeo = (TAGparGeo*)tgGeo->Object();
-   parGeo->FromFile();
-
-   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
-   TABMparCon* parConf = (TABMparCon*)bmConf->Object();
-   parFileName = "./config/TABMdetector.cfg";
-   parConf->FromFile(parFileName.Data());
-   parFileName = "./config/trento_marzo.cfg";
-   parConf->loadT0s(parFileName);
-   parConf->CoutT0();
-
-   TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
-   TABMparMap*  parMap = (TABMparMap*)bmMap->Object();
-   parFileName = "./config/TABMdetector.map";
-   parMap->FromFile(parFileName.Data(), geomap);
-
+  cout<<"start FillBmVME"<<endl;
   
-   TAGdataDsc* stDatRaw    = new TAGdataDsc("stDatRaw", new TASTdatRaw());
-   TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDatRaw", new TABMdatRaw());
-   bmActVmeReader  = new TABMactVmeReader("bmActVmeReader", bmDatRaw, bmMap, bmConf, bmGeo,stDatRaw);
-   bmActVmeReader->Open(name);
+  TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
+  TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
+  TString parFileName = "./geomaps/TABMdetector.map";
+  geomap->FromFile(parFileName.Data());
+           
+  TAGparaDsc* tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
+  TAGparGeo* parGeo = (TAGparGeo*)tgGeo->Object();
+  parGeo->FromFile();
+
+  TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
+  TABMparCon* parConf = (TABMparCon*)bmConf->Object();
+  parFileName = "./config/TABMdetector.cfg";
+  parConf->FromFile(parFileName.Data());
+  if(myexpcode==1){
+    parFileName = "./config/T0_trento_marzo.cfg";
+  }else if(myexpcode==0){
+    parFileName = "./config/T0_gsi2019.cfg";
+  }
+  parConf->loadT0s(parFileName);
+  parConf->CoutT0();
+
+  TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
+  TABMparMap*  parMap = (TABMparMap*)bmMap->Object();
+  if(myexpcode==1){
+    parFileName = "./config/TABMdetector_marzo2019.map";
+  }else if(myexpcode==0){
+    parFileName = "./config/TABMdetector_gsi2019.map";
+  }
+  parMap->FromFile(parFileName.Data(), geomap);
+
+ 
+  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDatRaw", new TABMdatRaw());
+  bmActVmeReader  = new TABMactVmeReader("bmActVmeReader", bmDatRaw, bmMap, bmConf, bmGeo);
+  bmActVmeReader->Open(name);
+  bmActVmeReader->CreateHistogram();
 
 
-   TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuRaw());
-   bmActNtuRaw  = new TABMactNtuRaw("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
-   bmActNtuRaw->CreateHistogram();   
-   
-   TAGdataDsc* bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
-   bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmNtuRaw, bmGeo, bmConf, tgGeo);
-   bmActTrack->CreateHistogram();
+  TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuRaw());
+  bmActNtuRaw  = new TABMactNtuRaw("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
+  bmActNtuRaw->CreateHistogram();   
+  
+  TAGdataDsc* bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
+  bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmNtuRaw, bmGeo, bmConf, tgGeo);
+  bmActTrack->CreateHistogram();
 
-   cout<<"end of FillBmVME"<<endl;
+  cout<<"end of FillBmVME"<<endl;
 
-   outFile->SetupElementBranch(bmNtuRaw, TABMntuRaw::GetBranchName());
-   outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
+  outFile->SetupElementBranch(bmNtuRaw, TABMntuRaw::GetBranchName());
+  outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
 }
 
-void ReadBmRawVME(TString name = "./data/msd_marzo/bmdata/6_March_2019/80MeV_HV2175_100kEv.dat")
+void ReadBmRawVME(TString name = "./data/msd_marzo/bmdata/6_March_2019/80MeV_HV2175_100kEv.dat", Int_t myexpcode=1)
+//~ void ReadBmRawVME(TString name = "./data/GSI_standalone/merged/merged_emulsion_400mev.dat", Int_t myexpcode=0)
+//~ void ReadBmRawVME(TString name = "./data/GSI_standalone/merged/gsi2019_400mevNoPatt.dat", Int_t myexpcode=0)
 {  
-  Int_t maxevt=1000;
+  //~ Int_t myexpcode=0;   //0=gsi2019, 1=trento msd-bm march 2019
+  Long64_t maxevt=10000;
   GlobalPar::Instance();
   GlobalPar::GetPar()->Print();
 
@@ -100,7 +111,7 @@ void ReadBmRawVME(TString name = "./data/msd_marzo/bmdata/6_March_2019/80MeV_HV2
   tagr.SetRunNumber(1);
 
   outFile = new TAGactTreeWriter("outFile");
-  FillBmVME(name);
+  FillBmVME(name, myexpcode);
   
   tagr.AddRequiredItem("bmActVmeReader");
   tagr.AddRequiredItem("bmActNtuRaw");
@@ -109,11 +120,12 @@ void ReadBmRawVME(TString name = "./data/msd_marzo/bmdata/6_March_2019/80MeV_HV2
   tagr.Print();
   
   TString nameOut = name(name.Last('/')+1, name.Last('.'));
-  nameOut.Append("_readbmrawvme_Out.root");
+  nameOut.Append("_readbmrawvme_Out_nolimits.root");
   
   if (outFile->Open(nameOut.Data(), "RECREATE")) return;
   bmActTrack->SetHistogramDir(outFile->File());
   bmActNtuRaw->SetHistogramDir(outFile->File());
+  bmActVmeReader->SetHistogramDir(outFile->File());
   
   cout<<" Beginning the Event Loop "<<endl;
   tagr.BeginEventLoop();
