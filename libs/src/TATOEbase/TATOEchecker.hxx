@@ -17,6 +17,7 @@
 #ifndef _TATOEchecker_HXX
 #define _TATOEchecker_HXX
 
+#include "TH2.h"
 
 #include "TAMCntuEve.hxx"
 #include "TAGparGeo.hxx"
@@ -29,17 +30,21 @@
 class TATWpoint;
 
 namespace details{
-    struct should_pass_tag{};
-    struct should_not_pass_tag{};
-    
-    
     
     template<std::size_t Charge>
     struct charge_tag {};
     
     struct all_mixed_tag{};
     struct all_separated_tag{};
+
+    
+    
+    
 } // namespace details
+
+
+
+
 
 template<class Action>
 struct TATOEchecker{
@@ -70,6 +75,9 @@ struct TATOEchecker{
         struct histogram_bundle {
             TH1D* reconstructible_h{nullptr};
             TH1D* reconstructed_h{nullptr};
+            TH2D* mass_identification_h{nullptr};
+            TH2D* charge_identification_h{nullptr};
+            TH1D* momentum_resolution_h{nullptr};
         } efficiency_histogram_bundle;
         
         int charge;
@@ -80,9 +88,14 @@ struct TATOEchecker{
         std::size_t local_reconstructible_number{0};
         
         std::size_t correct_cluster_number{0};
-        std::size_t total_cluster_number{0};
         std::size_t local_correct_cluster_number{0};
+        std::size_t recovered_cluster_number{0};
+        std::size_t local_recovered_cluster_number{0};
         std::size_t local_total_cluster_number{0};
+        std::size_t total_cluster_number{0};
+        
+        std::size_t clone_number{0};
+        std::size_t local_clone_number{0};
                                                                                
         
         computation_module(int charge_p, double /*beam_energy_p*/) : charge{charge_p}
@@ -91,6 +104,12 @@ struct TATOEchecker{
                                                                       ";Momentum(Gev/c);Count", 50, 0, 1.3 };
             efficiency_histogram_bundle.reconstructed_h = new TH1D{ Form("reconstructed_charge%d", charge),
                                                                     ";Momentum(Gev/c);Count", 50, 0, 1.3 };
+            efficiency_histogram_bundle.mass_identification_h = new TH2D{ Form("mass_identification_charge%d", charge),
+                ";A_{reconstructed};A_{real};Count", 20, 0, 20, 20, 0, 20 };
+            efficiency_histogram_bundle.charge_identification_h = new TH2D{ Form("charge_identification_charge%d", charge),
+                ";Z_{reconstructed};Z_{real};Count", 20, 0, 20, 20, 0, 20 };
+            efficiency_histogram_bundle.momentum_resolution_h = new TH1D{ Form("momentum_resolution_charge%d", charge),
+                ";p(Gev/c);#sigma p", 50, -1000, 1000 };
         }
                                                                                
         
@@ -100,12 +119,23 @@ struct TATOEchecker{
         TH1D const * get_reconstructible_histogram() const { return efficiency_histogram_bundle.reconstructible_h; }
         TH1D * get_reconstructible_histogram() { return efficiency_histogram_bundle.reconstructible_h; }
         
+        TH2D const * get_mass_identification_histogram() const { return efficiency_histogram_bundle.mass_identification_h; }
+        TH2D * get_mass_identification_histogram() { return efficiency_histogram_bundle.mass_identification_h; }
+        
+        TH2D const * get_charge_identification_histogram() const { return efficiency_histogram_bundle.charge_identification_h; }
+        TH2D * get_charge_identification_histogram() { return efficiency_histogram_bundle.charge_identification_h; }
+        
+        TH1D const * get_momentum_histogram() const { return efficiency_histogram_bundle.momentum_resolution_h; }
+        TH1D * get_momentum_histogram() { return efficiency_histogram_bundle.momentum_resolution_h; }
+        
         void reset_local()
         {
             local_correct_cluster_number = 0;
             local_total_cluster_number = 0;
             local_reconstructible_number = 0;
             local_reconstructed_number = 0;
+            local_recovered_cluster_number = 0;
+            local_clone_number = 0;
         }
     };
     
@@ -120,6 +150,7 @@ private:
     std::vector< computation_module > module_c;
     std::size_t fake_number_m{0};
     std::size_t local_fake_number_m{0};
+
     
     Action& action_m;
     
@@ -146,6 +177,47 @@ private:
 public:
     
     void update_current_node( node_type const * current_node_ph ){ current_node_mh = current_node_ph; }
+    
+    double retrieve_momentum( candidate const& candidate_p ) const {
+        std::cout << "retrieve_momentum: ";
+        
+        auto retrieve_track_ids = [this]( TAGcluster const * data_ph ) -> std::vector<int>
+        {
+            std::vector<int> track_id_c;
+            track_id_c.reserve( data_ph->GetMcTracksN() );
+            for( int i{0} ; i < data_ph->GetMcTracksN() ; ++ i){
+                track_id_c.push_back( data_ph->GetMcTrackIdx(i) );
+            }
+            return track_id_c;
+        };
+        
+        auto retrieve_reconstructible = [this](std::vector<int> const& id_pc)
+        {
+            for( auto const & id : id_pc){
+                auto reconstructible_i =
+                std::find_if( reconstructible_track_mc.begin(),
+                             reconstructible_track_mc.end(),
+                             [&id](particle const & particle_p)
+                             {
+                                 auto const & reconstructible_id_c = particle_p.get_indices();
+                                 return std::any_of( reconstructible_id_c.begin(),
+                                                    reconstructible_id_c.end(),
+                                                    [&id](int id_p){ return id_p == id; } );
+                             });
+                if( reconstructible_i != reconstructible_track_mc.end() ){ return reconstructible_i; }
+            }
+            return reconstructible_track_mc.end();
+        };
+        
+        auto const& id_c = retrieve_track_ids(candidate_p.data);
+        
+        auto reconstructible_i = retrieve_reconstructible( id_c );
+        
+        if( reconstructible_i !=  reconstructible_track_mc.end() ){ std::cout << reconstructible_i->momentum << "MeV\n"; return reconstructible_i->momentum; }
+        
+        std::cout << "0. MeV\n";
+        return 0;
+    }
     
     void register_reconstructible_track(candidate const& candidate_p)
     {
@@ -178,9 +250,48 @@ public:
         
         
         
-        auto find_and_register = [this, &output_real_particle]( std::vector<int> track_index_pc,
-                                                                auto predicate_p,
-                                                                auto filler_p )
+        auto check_validity = [this]( std::vector<int> const& index_pc )
+        {
+            bool is_valid = true;
+            
+            auto index_found = [&index_pc](auto const& candidate_p)
+            {
+                for( auto j{0} ; j < candidate_p.data->GetMcTracksN() ; ++j ){
+                    auto candidate_index = candidate_p.data->GetMcTrackIdx(j);
+                    if( std::any_of(index_pc.begin(),
+                                    index_pc.end(),
+                                    [&candidate_index](int index_p){ return candidate_index == index_p; } ) )
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            };
+            
+            action_m.list_m.apply_for_each(
+                                  [this, &index_found, &is_valid](auto const & detector_p)
+                                  {
+                                      if( !is_valid ){ return; }
+                                      bool is_valid_locally = false;
+                                      for( std::size_t i{0} ; i < detector_p.layer_count() ; ++i  ){
+                                          auto candidate_c = detector_p.generate_candidates( i );
+                                          if( std::any_of(candidate_c.begin(),
+                                                          candidate_c.end(),
+                                                          index_found ) ){
+                                              is_valid_locally = true;
+                                              break;
+                                          }
+                                      }
+                                      is_valid = is_valid_locally; //if is_valid is false, point is unreachable
+                                  }
+                                           );
+            return is_valid;
+        };
+        
+        
+        auto check_and_register = [this, &output_real_particle, &check_validity]( std::vector<int> track_index_pc,
+                                                                 auto predicate_p,
+                                                                 auto filler_p )
                                  {
                                      auto found_i = std::find_if( track_index_pc.begin(),
                                                                   track_index_pc.end(),
@@ -190,15 +301,23 @@ public:
                                          action_m.logger_m.add_sub_header("track_registered");
                                          
                                          std::vector<int> index_c{ filler_p( *found_i) };
+                                         if( !check_validity(index_c) ){ return false; }
+                                         
                                          reconstructible_track_mc.push_back( form_particle( index_c ) );
                                          //reconstructible_track_mc.push_back( form_track( index_c, action_m.list_m ) );
                                          
                                          auto & particle = reconstructible_track_mc.back();
                                          output_real_particle( particle );
                                          
+                                         
                                          auto & module = find_module( particle.charge );
                                          ++module.reconstructible_number;
                                          ++module.local_reconstructible_number;
+                                         
+                                         auto cluster_ch =  form_trajectory ( index_c, action_m.list_m );
+                                         module.total_cluster_number += cluster_ch.size();
+                                         module.local_total_cluster_number += cluster_ch.size();
+                                         
                                          module.get_reconstructible_histogram()->Fill( particle.momentum/(1000*particle.mass) );
 //                                         std::cout << "value: " << particle.momentum/(1000*particle.mass) << std::endl;
                                          
@@ -235,43 +354,53 @@ public:
                                     return false;
                                 };
         
+       
         
         action_m.logger_m.template add_sub_header< details::immutable_tag >("reconstructible_track");
         
         auto track_index_c = find_indices( candidate_p );
-        
 
-        find_and_register( track_index_c,
-                           check_origin,
-                           [](int index_p){ return std::vector<int>{index_p}; } ) ||
-        find_and_register( track_index_c,
-                           check_scattering,
-                           [this](int index_p)
-                           {
+        //only trying to form the track of one candidate, not all of them: ideally one match, so chaining should be fine
+        check_and_register( track_index_c,
+                            check_origin,
+                            [](int index_p){ return std::vector<int>{index_p}; } );
+        check_and_register( track_index_c,
+                            check_scattering,
+                            [this](int index_p)
+                            {
                                std::vector<int> index_c{index_p};
                                auto const * track_h = data_mhc->GetTrack(index_p);
                                index_c.push_back( track_h->GetMotherID() );
                                return index_c;
-                           } );
+                            } );
     }
     
 private:
     
     
-    track form_track( std::vector<int> index_pc,
+    track form_track( std::vector<int> const& index_pc,
                       detector_list_t const & list_p ) const
     {
-        auto index_found = [this, &index_pc](auto const & candidate_p)
-                            {
-                                bool is_index_found = false;
-                                for( auto j{0} ; j < candidate_p.data->GetMcTracksN() ; ++j ){
-                                    is_index_found = is_index_found ||
-                                                     ( std::any_of( index_pc.begin(), index_pc.end(),
-                                                                    [&candidate_p, &j](int index_p)
-                                                                    { return index_p == candidate_p.data->GetMcTrackIdx(j); } ) );
-                                }
-                                return is_index_found;
-                            };
+        auto data_ch = form_trajectory(index_pc, list_p);
+        return track{ std::move(data_ch), form_particle( index_pc) };
+    }
+    
+    std::vector<TAGcluster const *> form_trajectory( std::vector<int> const& index_pc,
+                                                     detector_list_t const & list_p ) const
+    {
+        auto index_found = [&index_pc](auto const& candidate_p)
+        {
+            for( auto j{0} ; j < candidate_p.data->GetMcTracksN() ; ++j ){
+                auto candidate_index = candidate_p.data->GetMcTrackIdx(j);
+                if( std::any_of(index_pc.begin(),
+                                index_pc.end(),
+                                [&candidate_index](int index_p){ return candidate_index == index_p; } ) )
+                {
+                    return true;
+                }
+            }
+            return false;
+        };
         
         
         std::vector<TAGcluster const *> data_ch;
@@ -288,22 +417,10 @@ private:
                         }
                     }
                               );
-        
-        
-        auto mc_track_h = index_pc.size() > 1 ? data_mhc->GetTrack(index_pc[1]) : data_mhc->GetTrack(index_pc[0]) ;
-        //if size > 1, then the particle has been scattered, therefore need to retrieve mother parameters
-        auto real_particle = particle{
-                                index_pc,
-                                mc_track_h->GetInitP().Mag() * 1000,
-                                mc_track_h->GetInitP().X()/mc_track_h->GetInitP().Z(),
-                                mc_track_h->GetInitP().Y()/mc_track_h->GetInitP().Z(),
-                                mc_track_h->GetCharge(),
-                                static_cast<int>( mc_track_h->GetMass() * 1.1 ) //bad hack to get number of nucleons
-                                       };
-        return track{ std::move(data_ch), std::move(real_particle) };
+        return data_ch;
     }
     
-    particle form_particle( std::vector<int> index_pc ) const
+    particle form_particle( std::vector<int> const& index_pc ) const
     {
         auto mc_track_h = index_pc.size() > 1 ? data_mhc->GetTrack(index_pc[1]) : data_mhc->GetTrack(index_pc[0]) ;
         //if size > 1, then the particle has been scattered, therefore need to retrieve mother parameters
@@ -334,13 +451,15 @@ public:
     
     
     template<class T>
-    void register_reconstructed_track( std::vector< T > const & full_state_pc )
+    void register_reconstructed_track( T const& track_p )
     {
         action_m.logger_m.template add_sub_header< details::immutable_tag >("reconstructed_track");
         
 //        output_current_hypothesis();
         
-        std::vector< T > full_state_c{ full_state_pc.begin()+ 1 , full_state_pc.end() }; //remove vertex
+        auto const& cluster_c = track_p.get_clusters();
+        using full_state = typename std::decay_t<decltype(cluster_c)>::value_type ;
+        std::vector<full_state> full_state_c{ cluster_c.begin()+ 1 , cluster_c.end() }; //remove vertex
         
         auto retrieve_track_ids = [this]( TAGcluster const * data_ph ) -> std::vector<int>
                                   {
@@ -381,14 +500,34 @@ public:
             ++module.reconstructed_number ;
             ++module.local_reconstructed_number;
             module.get_reconstructed_histogram()->Fill( reconstructible_i->momentum/(1000 * reconstructible_i->mass)  );
+            module.get_mass_identification_histogram()->Fill( track_p.particle.mass, reconstructible_i->mass );
+            module.get_charge_identification_histogram()->Fill( track_p.particle.charge, reconstructible_i->charge );
+            module.clone_number += track_p.clone;
+            
+            module.get_momentum_histogram()->Fill( reconstructible_i->momentum - track_p.momentum );
+            action_m.logger_m << "momentum_resolution: " << abs(reconstructible_i->momentum - track_p.momentum)/reconstructible_i->momentum * 100<< '\n';
+            action_m.logger_m << "true_momentum: " << reconstructible_i->momentum << "MeV\n";
+            action_m.logger_m << "reconstructed_momentum: " << track_p.momentum << "MeV\n";
+            
+            action_m.logger_m << "true_z/a: " << reconstructible_i->charge << '/'  << reconstructible_i->mass << '\n';
+            action_m.logger_m << "reconstructed_z/a: "<< track_p.particle.charge << '/' << track_p.particle.mass << '\n';
+            
+            action_m.logger_m << "clone_number: " << track_p.clone << '\n';
+            
+            if( reconstructible_i->mass != track_p.particle.mass ) {
+                action_m.logger_m.template add_sub_header< details::immutable_tag >("wrong_mass");
+            }
+            if( reconstructible_i->charge != track_p.particle.charge ) {
+                action_m.logger_m.template add_sub_header< details::immutable_tag >("wrong_charge");
+            }
             
             action_m.logger_m << "targeted_track_id: ";
             auto const & reconstructible_id_c = reconstructible_i->get_indices();
             for(auto const& id : reconstructible_id_c){ action_m.logger_m << id << " "; }
             action_m.logger_m << '\n';
             
-            module.total_cluster_number += full_state_c.size();
-            module.local_total_cluster_number += full_state_c.size();
+            module.recovered_cluster_number += full_state_c.size();
+            module.local_recovered_cluster_number += full_state_c.size();
             
             
             for( auto const & full_state : full_state_c ){
@@ -426,61 +565,7 @@ public:
         }
         
     }
-    
-    
-public:
-    
-    template<class EnrichedCandidate>
-    void check_validity( EnrichedCandidate const & ec_p,
-                         double ec_chisquared_p,
-                         double cutter_chisquared_p,
-                         details::should_pass_tag )
-    {
-        bool went_through = ec_chisquared_p < cutter_chisquared_p; //this should be tested before ...
-        if( went_through ){ return ; }
-        if( abs( (cutter_chisquared_p - ec_chisquared_p)/cutter_chisquared_p ) > 10 ){ return; }
-        
-        action_m.logger_m.template add_sub_header<details::fleeting_tag>("check_validity");
-        action_m.logger_m.add_sub_header("should_pass");
-        
-        output_current_hypothesis();
-        
-        action_m.logger_m.add_sub_header("cluster");
-        action_m.logger_m << "mc_id: ";
-        std::vector<int> track_id_c;
-        track_id_c.reserve( ec_p.data->GetMcTracksN() );
-        for( int i{0} ; i < ec_p.data->GetMcTracksN() ; ++ i){
-            track_id_c.push_back( ec_p.data->GetMcTrackIdx(i) );
-            action_m.logger_m << ec_p.data->GetMcTrackIdx(i) << " ";
-        }
-        action_m.logger_m << '\n';
-        
-        
-        if( should_pass( track_id_c ) ){
-            action_m.logger_m.freeze();
-        }
-    }
-    
-    
-private:
-    bool should_pass( std::vector<int> const & track_id_pc )
-    {
-        auto predicate_id = [this, track_id_pc](track const & track_p )
-                            {
-                                return std::any_of( track_id_pc.begin(), track_id_pc.end(),
-                                                     [&track_p](int id_p){ return track_p.real_particle.index == id_p;  } );
-                            };
-        auto predicate_particle = [this](track const & track_p )
-                                  { return (track_p.real_particle.charge == action_m.particle_m.charge) &&
-                                            (track_p.real_particle.mass == action_m.particle_m.mass);           };
-        
-        
-        auto end_iterator = std::partition( reconstructible_track_mc.begin(), reconstructible_track_mc.end(), predicate_id);
 
-        return std::any_of( reconstructible_track_mc.begin(), end_iterator, predicate_particle );
-    }
-    
-    
     public:
     void output_current_hypothesis()
     {
@@ -495,46 +580,6 @@ private:
     }
     
 
-    template<class EnrichedCandidate>
-    void check_validity( EnrichedCandidate const & ec_p,
-                         double ec_chisquared_p,
-                         double cutter_chisquared_p,
-                         details::should_not_pass_tag )
-    {
-        bool went_through = ec_chisquared_p < cutter_chisquared_p;
-        if( !went_through ){ return; }
-        
-        action_m.logger_m.template add_sub_header<details::fleeting_tag>("check_validity");
-        action_m.logger_m.add_sub_header("should_not_pass");
-        
-        output_current_hypothesis();
-        
-        action_m.logger_m.add_sub_header("cluster");
-        action_m.logger_m << "mc_id: ";
-        std::vector<int> track_id_c;
-        track_id_c.reserve( ec_p.data->GetMcTracksN() );
-        for( int i{0} ; i < ec_p.data->GetMcTracksN() ; ++ i){
-            track_id_c.push_back( ec_p.data->GetMcTrackIdx(i) );
-            action_m.logger_m << ec_p.data->GetMcTrackIdx(i) << " ";
-        }
-        action_m.logger_m << '\n';
-        
-        
-        if( !should_pass(track_id_c) ){
-            action_m.logger_m.freeze();
-        }
-    }
-    
-public:
-    template<class EnrichedCandidate>
-    void check_validity( EnrichedCandidate const & ec_p,
-                         double ec_chisquared_p,
-                         double cutter_chisquared_p )
-    {
-        check_validity(ec_p, ec_chisquared_p, cutter_chisquared_p, details::should_pass_tag{} );
-        check_validity(ec_p, ec_chisquared_p, cutter_chisquared_p, details::should_not_pass_tag{});
-    }
-    
 public:
     template< int Charge, class Enabler = std::enable_if_t< (Charge > 0) > >
     void compute_results( details::charge_tag<Charge> ){
@@ -558,9 +603,15 @@ public:
         std::size_t local_reconstructible_number{0};
         
         std::size_t correct_cluster_number{0};
-        std::size_t total_cluster_number{0};
+        std::size_t recovered_cluster_number{0};
         std::size_t local_correct_cluster_number{0};
+        std::size_t local_recovered_cluster_number{0};
+        
+        std::size_t total_cluster_number{0};
         std::size_t local_total_cluster_number{0};
+        
+        std::size_t clone_number{0};
+        std::size_t local_clone_number{0};
         
         for(auto const & module : module_c){
             reconstructed_number += module.reconstructed_number;
@@ -569,23 +620,41 @@ public:
             local_reconstructible_number += module.local_reconstructible_number;
             
             correct_cluster_number += module.correct_cluster_number;
-            total_cluster_number += module.total_cluster_number;
+            recovered_cluster_number += module.recovered_cluster_number;
             local_correct_cluster_number += module.local_correct_cluster_number;
+            local_recovered_cluster_number += module.local_recovered_cluster_number;
+            
+            total_cluster_number += module.total_cluster_number;
             local_total_cluster_number += module.local_total_cluster_number;
+            
+            clone_number += module.clone_number;
+            local_clone_number += module.local_clone_number;
         }
-        
+        //look at mass efficiency reconstruction ? because of the plage im momentum of protons !
         action_m.logger_m.template add_header<1, details::immutable_tag>("efficiency");
-        action_m.logger_m << "reconstructed_tracks: " << local_reconstructed_number << '\n';
-        action_m.logger_m << "reconstructible_tracks: " << local_reconstructible_number << '\n';
-        action_m.logger_m << "local_efficiency: " << local_reconstructed_number * 100./local_reconstructible_number << '\n';
-        action_m.logger_m << "global_efficiency: " << reconstructed_number * 100./reconstructible_number << '\n';
-        action_m.logger_m << "fake_rate: " << fake_number_m * 100. /reconstructed_number  << '\n';
+        double efficiency = reconstructed_number * 1./reconstructible_number;
+        action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
+        action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1+ efficiency)/reconstructible_number) * 100<< '\n';
         
         action_m.logger_m.template add_header<1, details::immutable_tag>("purity");
-        action_m.logger_m << "correct_cluster: " << local_correct_cluster_number<< '\n';
-        action_m.logger_m << "total_cluster: " << local_total_cluster_number << '\n';
-        action_m.logger_m << "local_purity: " << local_correct_cluster_number * 100./local_total_cluster_number << '\n';
-        action_m.logger_m << "global_purity: " << correct_cluster_number * 100./total_cluster_number << '\n';
+        auto purity = correct_cluster_number * 1./recovered_cluster_number;
+        action_m.logger_m << "global_purity: " << purity * 100 << '\n';
+        action_m.logger_m << "global_purity_error: " << sqrt(purity* (1+purity)/recovered_cluster_number) * 100<< '\n';
+        
+        action_m.logger_m.template add_header<1, details::immutable_tag>("coverage");
+        double coverage = recovered_cluster_number * 1./total_cluster_number;
+        action_m.logger_m << "global_coverage: " << coverage * 100 << '\n';
+        action_m.logger_m << "global_coverage_error: " << sqrt(coverage* (1+coverage)/total_cluster_number) * 100<< '\n';
+        
+        action_m.logger_m.template add_header<1, details::immutable_tag>("fake_rate");
+        double fake_rate = fake_number_m * 1./reconstructed_number;
+        action_m.logger_m << "fake_rate: " << fake_rate * 100 << '\n';
+        action_m.logger_m << "fake_rate_error: " << sqrt(fake_rate* (1+fake_rate)/reconstructed_number) * 100<< '\n';
+        
+        action_m.logger_m.template add_header<1, details::immutable_tag>("multiplicity");
+        double clone_ratio = clone_number * 1./reconstructed_number;
+        action_m.logger_m << "global_clone_ratio: " << clone_ratio << '\n';
+        action_m.logger_m << "global_clone_ratio_error: " << sqrt(clone_ratio* (1+clone_ratio)/reconstructed_number) << '\n';
     }
     
     void compute_results( details::all_separated_tag ){
@@ -606,6 +675,9 @@ public:
                                                      ";Momentum (Gev/c/n);Efficiency #epsilon", 50, 0, 1.3 };
             TH1D const * reconstructed_h = module.get_reconstructed_histogram() ;
             TH1D const * reconstructible_h = module.get_reconstructible_histogram() ;
+            TH2D const* mass_identification_h = module.get_mass_identification_histogram();
+            TH2D const* charge_identification_h = module.get_charge_identification_histogram();
+            TH1D const * momentum_h = module.get_momentum_histogram() ;
     
             for(auto i{0} ; i < reconstructible_h->GetNbinsX() ; ++i)
             {
@@ -629,7 +701,9 @@ public:
             }
     
             action_m.reconstructed_track_mhc->AddHistogram( efficiency_histogram_h );
-//            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH1D*>(reconstructed_h) );
+            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(mass_identification_h) );
+            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(charge_identification_h) );
+            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH1D*>( momentum_h ) );
         }
     }
     
@@ -637,20 +711,14 @@ private:
     void compute_efficiency( computation_module const & module_p ){
         auto efficiency = module_p.reconstructed_number * 1./module_p.reconstructible_number;
         action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-        action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1+ efficiency))/sqrt(module_p.reconstructible_number) * 100<< '\n';
-    
-        
+        action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1+ efficiency)/module_p.reconstructible_number) * 100<< '\n';
     }
     
     
     void compute_purity( computation_module const & module_p ){
-        auto purity = module_p.correct_cluster_number * 1./module_p.total_cluster_number;
+        auto purity = module_p.correct_cluster_number * 1./module_p.recovered_cluster_number;
         action_m.logger_m << "global_purity: " << purity * 100 << '\n';
-        action_m.logger_m << "global_purity_error: " << sqrt(purity* (1+purity))/sqrt(module_p.reconstructible_number)  * 100<< '\n';
-        
-//        if( 2 * local_correct_cluster_number_m < local_total_cluster_number_m ){
-//            action_m.logger_m.freeze_everything();
-//        }
+        action_m.logger_m << "global_purity_error: " << sqrt(purity* (1+purity)/module_p.recovered_cluster_number)  * 100<< '\n';
     }
     
     

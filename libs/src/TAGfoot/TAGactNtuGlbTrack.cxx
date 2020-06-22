@@ -168,7 +168,7 @@ void TAGactNtuGlbTrack::SetupBranches()
     auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
                                                                      geoVTX_h, 15) )
                     .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, {33, 38}) )
-//                    .add( detector_properties<details::msd_tag>(clusterMSD_hc, geoMSD_h, {40, 45, 48}) )
+                    .add( detector_properties<details::msd_tag>(clusterMSD_hc, geoMSD_h, {12, 17, 22}) )
                     .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 2) )
                     .finish();
     
@@ -221,10 +221,16 @@ void TAGactNtuGlbTrack::RegisterHistograms()
 {
     fActTOE->RegisterHistograms();
     
-    auto histogram_ch = GetTrackContainer()->GetEfficiencyHistograms();
-    for(auto * histogram_h : histogram_ch){
+    auto efficiency_histogram_ch = GetTrackContainer()->GetEfficiencyHistograms();
+    for(auto * histogram_h : efficiency_histogram_ch){
         AddHistogram(histogram_h);
     }
+    
+    auto id_histogram_ch = GetTrackContainer()->GetIdentificationHistograms();
+    for(auto * histogram_h : id_histogram_ch){
+        AddHistogram(histogram_h);
+    }
+    
     SetValidHistogram(kTRUE);
     
     auto writer_h = static_cast<TAGactTreeWriter*>( gTAGroot->FindAction("locRecFile") );

@@ -26,7 +26,7 @@ namespace details{
     template<std::size_t NRows, template<std::size_t, std::size_t > class Matrix>
     double error( Matrix<NRows, 1 > const& estimation_p, Matrix<NRows, 1 > const& correction_p)
     {
-        auto difference = expr::compute(estimation_p - correction_p);
+        Matrix<NRows, 1> difference = estimation_p - correction_p;
        // std::cout << "\nestimation:\n" << estimation_p << "correction: \n" << correction_p;
        // std::cout << "\ndifference:\n" << difference;
         auto temp = std::sqrt( std::inner_product(difference.data().begin(), difference.data().end(), difference.data().begin(), 0) );
@@ -502,9 +502,9 @@ namespace details{
 }
 
 template<class Data, class Callable>
-constexpr auto make_stepper(Callable&& c_p) -> stepper<Callable, Data>
+constexpr auto make_stepper(Callable c_p) -> stepper<Callable, Data>
 {
-    return {std::forward<Callable>(c_p)};
+    return {std::move(c_p)};
 }
 
 

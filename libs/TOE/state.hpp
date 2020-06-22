@@ -226,6 +226,14 @@ struct underlying< corrected_state_impl<Vector, Covariance> >
     using state = state_impl<Vector, Covariance>;
 };
 
+
+
+// ----------------- used_in_full_state? ---------------------------
+struct step_register
+{
+    double step_length;
+};
+
 // ----------------- makers ---------------------------
 
 namespace details{
