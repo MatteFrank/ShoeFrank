@@ -122,9 +122,9 @@ int main(int argc,char** argv)
             printf("  -out rootFileName: root output file name \n");
             printf("  -phys physList: physics list: BIC, BERT or INCL \n");
             printf("  -seed seedNb: seed number for random initialization  \n");
-            printf("  -exp name: [def=""] experiment name for config/geomap extension");
-            printf("  -obj save MC data in root object");
-            printf("  -frag save only when ion inelastic process occurs in target");
+            printf("  -exp name: [def=""] experiment name for config/geomap extension\n");
+            printf("  -obj save MC data in root object\n");
+            printf("  -frag save only when ion inelastic process occurs in target\n");
 
             return 1;
         }
