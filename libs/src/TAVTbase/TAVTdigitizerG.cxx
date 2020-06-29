@@ -6,10 +6,7 @@
 using namespace std;
 
 Float_t TAVTdigitizerG::fgkFWTH     = 2*TMath::Sqrt(2*TMath::Log(10));
-Float_t TAVTdigitizerG::fgThreshold = 0.1;
 Float_t TAVTdigitizerG::fgGain      = 280.;
-Int_t   TAVTdigitizerG::fgAdcDepth  = 16;
-Float_t TAVTdigitizerG::fgChargeMax = 1e4;
 
 
 // --------------------------------------------------------------------------------------
@@ -78,10 +75,10 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
       for (Int_t y = ymin; y <= ymax; ++y) {
          
          Float_t value = fFuncClusterDisX->Eval(x)*fFuncClusterDisY->Eval(y);
-         Float_t err = TMath::Sqrt(value*fgGain);
-         value += gRandom->Uniform(err);;
+         Float_t err = TMath::Sqrt(value*fgkFanoFactor);
+         value += gRandom->Uniform(err);
          
-         if (value > height*height*fgThreshold) {
+         if (value > height*height*0.1) { // to tune
             Int_t idx  = GetIndex(x, y);
             if (idx < 0) continue;
             fMap[idx] = GetAdcValue(value);
@@ -95,13 +92,12 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
 // --------------------------------------------------------------------------------------
 void TAVTdigitizerG::SetFunctions()
 {
-   fFuncClusterDisX = new TF1("fFuncClusterDisX", "gaus");
-   fFuncClusterDisY = new TF1("fFuncClusterDisY", "gaus");
+   fFuncClusterDisX = new TF1("ClusterDisX", "gaus");
+   fFuncClusterDisY = new TF1("ClusterDisY", "gaus");
 }
 
 // --------------------------------------------------------------------------------------
 Int_t TAVTdigitizerG::GetAdcValue(Float_t charge)
 {
-   fgThreshold = 0.;
-   return int(fgAdcDepth/fgChargeMax*(charge-fgThreshold));
+   return int(fFuncTotDigital->Eval(charge)+0.5);
 }
