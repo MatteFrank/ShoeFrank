@@ -5,9 +5,8 @@
 
 using namespace std;
 
-Float_t TAVTdigitizerG::fgkFWTH     = 2*TMath::Sqrt(2*TMath::Log(10));
-Float_t TAVTdigitizerG::fgGain      = 280.;
-
+Float_t TAVTdigitizerG::fgkThres    = 0.1;
+Float_t TAVTdigitizerG::fgkFWTH     = 2*TMath::Sqrt(2*TMath::Log(1./fgkThres));
 
 // --------------------------------------------------------------------------------------
 TAVTdigitizerG::TAVTdigitizerG(TAVTbaseParGeo* parGeo)
@@ -45,8 +44,8 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    Int_t regX  = GetColRegion(x0);
    Int_t regY  = GetLineRegion(y0);
    
-   Float_t sigmaX = fClusterWidth/TMath::Sqrt(2);// taking into account that M18 the pitch /= 2 compared to M28
-   Float_t sigmaY = fClusterWidth/TMath::Sqrt(2);
+   Float_t sigmaX = fClusterWidth/TMath::Sqrt(6);// taking into account that M18 the pitch /= 2 compared to M28
+   Float_t sigmaY = fClusterWidth/TMath::Sqrt(6);
 
    if(FootDebugLevel(1))
       printf("%g\n", fClusterWidth);
@@ -78,7 +77,7 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
          Float_t err = TMath::Sqrt(value*fgkFanoFactor);
          value += gRandom->Uniform(err);
          
-         if (value > height*height*0.1) { // to tune
+         if (value > height*height*fgkThres) { 
             Int_t idx  = GetIndex(x, y);
             if (idx < 0) continue;
             fMap[idx] = GetAdcValue(value);

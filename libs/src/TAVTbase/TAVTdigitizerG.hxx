@@ -33,8 +33,8 @@ private:
    Int_t    GetAdcValue(Float_t charge);
 
 private:
+   static Float_t  fgkThres;
    static Float_t  fgkFWTH;
-   static Float_t  fgGain;
 };
         
 
