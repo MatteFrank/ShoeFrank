@@ -23,19 +23,19 @@ class TABMactVmeReader : public TAGaction {
                                   TAGdataDsc* p_datraw=0,
                                   TAGparaDsc* p_parmap=0,
                                   TAGparaDsc* p_parcon=0,
-                                  TAGparaDsc* p_pargeo=0,
-                                  TAGdataDsc* p_timraw=0);
+                                  TAGparaDsc* p_pargeo=0);
+                                  // TAGdataDsc* p_timraw=0);
     virtual         ~TABMactVmeReader();
     virtual Int_t   Open(const TString& name);
     virtual void    Close();
     virtual Bool_t  Process();
     virtual  void   CreateHistogram();
     //~ virtual Bool_t  Action();
-    
-    void clear_bmstruct(Bool_t forced);
-    Bool_t read_event(Bool_t evt0);    
+
+    void ClearBmstruct(Bool_t forced);
+    Bool_t ReadEvent(Bool_t evt0);
     void PrintBMstruct();
-    void monitorQDC(vector<Int_t>& adc792_words);
+    void MonitorQDC(vector<Int_t>& adc792_words);
 
 
 
@@ -43,20 +43,20 @@ class TABMactVmeReader : public TAGaction {
 
   private:
     TAGdataDsc*     fpDatRaw;		    // output data dsc
-    TAGdataDsc*     fpTimRaw;		    // output data dsc
+    // TAGdataDsc*     fpTimRaw;		    // output data dsc
     TAGparaDsc*     fpParMap;		    // parameter dsc
     TAGparaDsc*     fpParCon;		    // parameter dsc
     TAGparaDsc*     fpParGeo;		    // parameter dsc
-    BM_struct*      fpEvtStruct;    
-    ifstream        fbmfile;      //bm raw file
+    BM_struct*      fpEvtStruct;
+    ifstream        fbmfile;        //bm raw file
 
-    Int_t           fTrackOk;  //-2=maxnhit_cut; -1=minhit_cut; otherwise=track_status
-    Long64_t        fDataNumEv; //current number of events
-    Long64_t        fDataSyncNumEv; //current number of events + number of sync
-    
+    Long64_t fDataNumEv;            //current number of events
+    Long64_t fDataSyncNumEv;        //current number of events + number of sync
+
     //histos
-    TH2I*           fpRawMapX;  //raw hit map
-    TH2I*           fpRawMapY;  //raw hit map    
+    TH1I*            fpRawError;        //BM hit channel error
+    TH1I*            fpRawTdcChannel;   //TDC signal distribution 
+    TH1I*            fpRawTrigTime;     //Trigger time
 
 };
 

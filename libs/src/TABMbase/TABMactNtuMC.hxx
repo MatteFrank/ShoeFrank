@@ -6,7 +6,7 @@
   \brief   Declaration of TABMactNtuMC.
 */
 /*------------------------------------------+---------------------------------*/
-#include <map>
+
 #include "Evento.hxx"
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
@@ -15,12 +15,12 @@
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 #include "TABMparCon.hxx"
+#include "TABMdigitizer.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TVector3.h"
 #include "TRandom3.h"
 
-using namespace std;
 class TABMactNtuMC : public TAGaction {
   public:
     explicit        TABMactNtuMC(const char* name=0,
@@ -30,31 +30,29 @@ class TABMactNtuMC : public TAGaction {
                                  EVENT_STRUCT* evStr=0);
     virtual         ~TABMactNtuMC();
 
-    virtual Bool_t  Action();
     virtual  void   CreateHistogram();
-    void CreateFakeHits(Int_t nfake, Int_t &nhits);
-    void SmearRdrift(Int_t smear_type, Double_t &tobesmeared, Double_t sigma); //to smear rdrift with resolution
-   
-    void ClearMap() { fMap.clear(); }
+    void            CreateDigitizer();
+    virtual Bool_t  Action();
+
+    void            CreateFakeHits();
 
     ClassDef(TABMactNtuMC,0)
 
   private:
-    TAGdataDsc*     fpNtuMC;		    // output data dsc
-    TAGparaDsc*     fpParCon;		    // BM config params.
     TAGparaDsc*     fpParGeo;		    // BM geo params.
+    TAGparaDsc*     fpParCon;		    // BM config params.
+
+    TAGdataDsc*     fpNtuMC;		    // output data dsc
     EVENT_STRUCT*   fpEvtStr;
-    Double_t        fRdriftErr;      //default error value of the rdrfit
-    map<pair<int, int>, TABMntuHit*> fMap; //! map for pilepup
+    TABMdigitizer*  fDigitizer;     // cluster size digitizer
 
     //histos
-
-    TH1I*            fpHisCell;    //hits cell
-    TH1I*            fpHisView;    //hits view
-    TH1I*            fpHisPlane;   //hits plane
-    TH1F*            fpHisRdrift;  //hits rdrift
-    TH1F*            fpHisSmearDiff;  //hits real rdrift - smeared rdrift
-    TH1I*            fpHisHitNum;  //raw hit map    
+    TH1I*            fpHisCell;       //hits cell
+    TH1I*            fpHisView;       //hits view
+    TH1I*            fpHisPlane;      //hits plane
+    TH1F*            fpHisRdrift;     //charged hits rdrift
+    TH1F*            fpDisRdrift;     //discharged hits rdrift
+    TH1I*            fpHisHitNum;     //raw hit map
     TH1I*            fpHisFakeIndex;  //hits fake index
 };
 

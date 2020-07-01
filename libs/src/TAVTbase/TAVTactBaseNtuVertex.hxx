@@ -18,7 +18,7 @@
 
 class TH2F;
 class TH1F;
-class TABMntuTrackTr;
+class TABMtrack;
 class TAGgeoTrafo;
 class TADItrackEmProperties;
 class TAVTactBaseNtuVertex : public TAGaction {
@@ -77,7 +77,7 @@ protected:
     Bool_t   SetNotValidVertex(Int_t idTk);
     void     SetValidVertex();
     Bool_t   CheckBmMatching();
-    void     ComputeInteractionVertex(TABMntuTrackTr* lbm, TAVTtrack lvtx);
+    void     ComputeInteractionVertex(TABMtrack* lbm, TAVTtrack lvtx);
     Double_t ComputeScatterAngle();
     Int_t    SearchNucReac(TAVTtrack* track0);
 

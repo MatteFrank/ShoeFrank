@@ -38,22 +38,18 @@ class TABMactDatRaw : public TAGaction {
     ClassDef(TABMactDatRaw,0)
 
   private:
-    TAGdataDsc*     fpDatRaw;		    // output data dsc
-    TAGdataDsc*     fpDatDaq;		    // input data dsc
-    TAGparaDsc*     fpParMap;		    // parameter dsc
-    TAGparaDsc*     fpParCon;		    // parameter dsc
-    TAGparaDsc*     fpParGeo;		    // parameter dsc
-    TAGdataDsc*     fpTimRaw;		    // input data dsc
+    TAGdataDsc*     fpDatRaw;		        // output data dsc
+    TAGdataDsc*     fpDatDaq;		        // input data dsc
+    TAGdataDsc*     fpTimRaw;		        // input data dsc
+    TAGparaDsc*     fpParMap;		        // parameter dsc
+    TAGparaDsc*     fpParCon;		        // parameter dsc
+    TAGparaDsc*     fpParGeo;		        // parameter dsc
 
     Bool_t DecodeHits(const TDCEvent* evt, const double sttrigger);
-    
+
     //histos
-    TH2I*            fpRawMapX;  //raw hit map X view    
-    TH2I*            fpRawMapY;  //raw hit map Y view
-    TH1I*            fpRawHitNum;  //raw hit number distribution    
-    TH1I*            fpRawDiscAccept;  //raw discharged vs accepted number of hits    
-    TH1I*            fpRawDiscChannel;  //raw discharged hit channel    
-    TH1I*            fpRawTrigTime;  //Trigger time    
+    TH1I*            fpRawTdcChannel;   //tdc channel distribution
+    TH1I*            fpRawTrigTime;     //Trigger time
 };
 
 #endif

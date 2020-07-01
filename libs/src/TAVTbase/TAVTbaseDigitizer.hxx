@@ -30,6 +30,10 @@ public:
    Double_t     FuncClusterSize(Double_t* x, Double_t* par);
    Double_t     FuncClusterHeight(Double_t* x, Double_t* par);
    Double_t     FuncClusterWidth(Double_t* x, Double_t* par);
+   Double_t     FuncTotAnalog(Double_t* qin, Double_t* par);
+   Double_t     FuncTotDigital(Double_t* qin, Double_t* par);
+   
+   Int_t        DigitizeAdc(Double_t value, Int_t nbits, Double_t maxValue);
 
    virtual Bool_t Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin = 0, Double_t zout = 0, Double_t time = 0, Int_t sensorId = 0, Int_t Z = -99);
 
@@ -88,6 +92,8 @@ protected:
    TF1*        fFuncClusterSize;   // cluster size function
    TF1*        fFuncClusterHeight; // cluster charge height function
    TF1*        fFuncClusterWidth;  // cluster charge width function
+   TF1*        fFuncTotAnalog;     // time over threshold analog function
+   TF1*        fFuncTotDigital;    // time over threshold digital function
 
    std::map<int, double> fMap;   // map of found pixels
    
@@ -117,7 +123,10 @@ protected:
    Double_t    fZcstWidthPar;    // z constant parameter for the cluster width function
    Double_t    fZgainWidthPar;   // z gain parameter for the cluster width function
 
-   
+   Double_t     fTotConversion; // conversion factor for Time over threshold
+   Double_t     fTotExponent;   // exponent factor for Time over threshold
+   Double_t     fTotThres;      // threshold factor for Time over threshold
+
    Int_t       fPixelsNx;        // number of pixels in X (colummn)
    Int_t       fPixelsNy;        // number of pixels in Y (line)
    
@@ -139,9 +148,20 @@ public:
    
    static Int_t   GetRandom (Int_t i)               { return std::rand() % i;    }
    
+   static Int_t   GetTotAdcDepth()                  { return fgTotAdcDepth;      }
+   static void    SetTotAdcDepth(Int_t adc)         { fgTotAdcDepth = adc;       }
+   
+   static Float_t GetTotMaxValue()                  { return fgTotMaxValue;      }
+   static void    SetTotMaxValue(Float_t value)     { fgTotMaxValue = value;     }
+   
 protected:
    static Float_t  fgDefSmearPos;
    static Bool_t   fgSmearFlag;
+   static Float_t  fgkPairCreation;
+   static Float_t  fgkFanoFactor;
+   static Float_t  fgkNormFactor;
+   static Float_t  fgTotMaxValue;
+   static Int_t    fgTotAdcDepth;
 
 };
 

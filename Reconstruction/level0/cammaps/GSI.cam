@@ -1,0 +1,36 @@
+// Campaign file
+CamName: "GSI"
+RunNumber: 2210-2212; 2238-2242; 2251-2254
+NumberDevices: 6
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/FOOT_geo.map": 2210; 2251
+
+DetectorName: "ST"
+NumberFiles: 4
+"./geomaps/TASTdetector.map": -1
+"./config/TASTdetector.cfg": -1
+"./config/WDChannelMap.txt": -1
+"./config/WDTimeCalibration/tcalib/": 2210; 2251
+
+DetectorName: "BM"
+NumberFiles: 4
+"./geomaps/TABMdetector.map": -1
+"./config/TABMdetector.cfg": -1
+"./config/TABMdetector.map": -1
+"./config/T0_beammonitor.cfg": 2210; 2251
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/TAGdetector.map": -1
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/TAVTdetector.map": -1
+"./config/TAVTdetector.cfg": -1
+
+DetectorName: "TW"
+NumberFiles: 2
+"./geomaps/TATWdetector.map": -1
+"./config/TATWChannelMap.xml": -1
