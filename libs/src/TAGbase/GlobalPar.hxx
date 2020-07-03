@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <memory>
 #include <map>
+#include "TString.h"
 
 #include "TObjArray.h"
 
@@ -41,7 +42,8 @@ public:
    
 	vector<string> KalSystems()       { return m_trackingSystems;     }
 	vector<string> KalParticles()     { return m_kalParticles;        }
-	vector<string> MCParticles()      { return m_mcParticles;         }
+   vector<string> MCParticles()      { return m_mcParticles;         }
+   vector<TString> DectIncluded()    { return m_dectInclude;         }
 
 	 double VTReso() 	          const { return m_VTreso;              }
     double ITReso() 	          const { return m_ITreso;              }
@@ -157,7 +159,8 @@ private:
 	bool m_kalReverse;
 	bool m_verFLUKA;
 	vector<string> m_trackingSystems;
-	vector<string> m_kalParticles;
+   vector<string> m_kalParticles;
+   vector<TString> m_dectInclude;
 
 	double m_VTreso;
    double m_ITreso;
