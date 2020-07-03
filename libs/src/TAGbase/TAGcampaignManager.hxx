@@ -70,7 +70,6 @@ private:
    struct CamParameter_t : public  TNamed {
       TString   Name;      // Campaign name
       Int_t     Number;    // Campaign number
-      Bool_t    ForceSync; // Flag to force detector synchronization btw manager and GlobalPar
       Bool_t    McFlag;    // Flag for MC data (0 for real data)
       TString   Date;      // Date of data taking or production
       TString   Summary;   // Summary of the campaign
@@ -88,7 +87,7 @@ public:
    TAGcampaignManager(const TString exp = "");
    virtual ~TAGcampaignManager();
    
-   Bool_t FromFile(TString ifile = "");
+   Bool_t               FromFile(TString ifile = "");
    
    Int_t                GetCampaignsN()             { return fCampaignsN;       }
    Int_t                GetCurrentCamNumber() const { return fCurCampaignNumber; }
