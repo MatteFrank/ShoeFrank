@@ -7,6 +7,7 @@
 
 #include "TAGaction.hxx"
 #include "TAGactTreeWriter.hxx"
+#include "TAGcampaignManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAGbaseWDparTime.hxx"
@@ -155,7 +156,7 @@ public:
    void SetTrackingAlgo(char c);
   
    // Set detector to be on respect to the given list
-   void SetIncludes(const vector<TString>& list);
+   void CheckIncludes();
 
    //! Par geo getters
    TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }
@@ -212,6 +213,7 @@ public:
    
 protected:
    TString               fExpName;
+   TAGcampaignManager*   fCampManager;
    Int_t                 fRunNumber;
    TAGroot*              fTAGroot;             // pointer to TAGroot
    TAGgeoTrafo*          fpFootGeo;           // trafo prointer
