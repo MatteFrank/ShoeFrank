@@ -43,6 +43,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -in path/file  : [def=""] raw input file"<<endl;
          cout<<"      -out path/file : [def=*_Out.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
+         cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -trk           : enable tracking actions"<<endl;
          cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
