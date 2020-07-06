@@ -363,7 +363,6 @@ void TAFOeventDisplay::CreateRawAction()
 void TAFOeventDisplay::SetFileName(const TString fileName)
 {
    fReco->SetName(fileName);
-   fReco->SetRunNumber();
 }
 
 //__________________________________________________________

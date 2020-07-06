@@ -174,13 +174,17 @@ void LocalReco::OpenFileIn()
       
    } else
       fActEvtReader->Open(GetName());
+   
+   SetRunNumber();
 }
 
 // --------------------------------------------------------------------------------------
 void LocalReco::SetRunNumber()
 {
-   if (fRunNumber != -1)  // if set from outside return, else take from name
+   if (fRunNumber != -1)  { // if set from outside return, else take from name
+      gTAGroot->SetRunNumber(fRunNumber);
       return;
+   }
       
    // Done by hand shoud be given by DAQ header
    TString name = GetName();

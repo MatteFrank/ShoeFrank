@@ -131,6 +131,8 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    }
    
    fCampManager = new TAGcampaignManager(expName);
+   // Check if detector in FootGlobal.par are also present in campaign file
+//   CheckIncludes();
 }
 
 //__________________________________________________________
@@ -138,13 +140,13 @@ BaseReco::~BaseReco()
 {
    // default destructor
    delete fTAGroot; // should delete all data, para and actions
-   delete fCampManager;
+  // delete fCampManager;
 }
 
 //_____________________________________________________________________________
 void BaseReco::CheckIncludes()
 {
-   vector<TString> list =GlobalPar::GetPar()->DectIncluded();
+   vector<TString> list = GlobalPar::GetPar()->DectIncluded();
    for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
       TString str = *it;
       
@@ -715,11 +717,4 @@ void BaseReco::SetTrackingAlgo(char c)
       default:
          printf("SetTrackingAlgo: Wrongly set tracking algorithm");
    }
-}
-
-// --------------------------------------------------------------------------------------
-void BaseReco::SetRunNumber()
-{
-   if (fRunNumber != -1)  // if set from outside
-      gTAGroot->SetRunNumber(fRunNumber);
 }

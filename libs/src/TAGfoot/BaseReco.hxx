@@ -115,7 +115,7 @@ public:
    virtual void CloseFileIn() { return; }
    
    //! Set Run number
-   virtual void SetRunNumber();
+   virtual void SetRunNumber() { return; }
    
    //! Open File Out
    virtual void OpenFileOut();
