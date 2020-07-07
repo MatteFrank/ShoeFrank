@@ -57,7 +57,8 @@ map<pair<int, int>, int > TAVTactVmeReader::fgTrigJumpMap = { {{0, 0}, 0}};
 TAVTactVmeReader::TAVTactVmeReader(const char* name, TAGdataDsc* pDatRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
  : TAVTactBaseRaw(name, pDatRaw, pGeoMap, pConfig, pParMap),
    fRunNumber(-1),
-   fTrigJumpStart(-1)
+   fTrigJumpStart(-1),
+   fTrigReset(0)
 {
    SetTitle("TAVTactVmeReader - reader for VME reader");
    fBaseName ="data_FPGA_Mouser993P0160_V1_ch";
@@ -220,18 +221,25 @@ Bool_t TAVTactVmeReader::GetSensorEvent(Int_t iSensor)
          
          fDataEvent[fIndex++] = GetKeyHeader(iSensor);
          
+         // event number
          fRawFileAscii[iSensor] >> tmp;
          sscanf(tmp, "%x", &fEventNumber);
-         fDataEvent[fIndex++] = fEventNumber;
          
-         // trigger
+         // trigger number
          fRawFileAscii[iSensor] >> tmp;
          sscanf(tmp, "%x", &fTriggerNumber);
-         fDataEvent[fIndex++] = fTriggerNumber;
+
+         if (fTriggerNumber == 1) {
+            fTrigReset = fPrevTriggerNumber[iSensor];
+         }
          
+         fDataEvent[fIndex++] = fEventNumber+fTrigReset;
+         fDataEvent[fIndex++] = fTriggerNumber+fTrigReset;
+
          pair<int, int> id(iSensor, fTriggerNumber);
 
          if (fPrevTriggerNumber[iSensor] != fTriggerNumber-1) {
+            
             if(FootDebugLevel(1))
                printf("Jump sensor %d %d %d\n", iSensor, fPrevTriggerNumber[iSensor], fTriggerNumber);
             if (fTrigJumpFirst[id] == 0 && fTriggerNumber > fTrigJumpStart) {
@@ -251,7 +259,7 @@ Bool_t TAVTactVmeReader::GetSensorEvent(Int_t iSensor)
 
 
          if(FootDebugLevel(3))
-            printf("sensor %d: %d %d\n", iSensor, fTriggerNumber, fEventNumber);
+            printf("sensor %d: %d %d\n", iSensor, fTriggerNumber+fTrigReset, fEventNumber+fTrigReset);
          
          // fake time stamp
          fRawFileAscii[iSensor] >> tmp;
