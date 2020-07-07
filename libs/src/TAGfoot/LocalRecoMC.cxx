@@ -335,5 +335,7 @@ void LocalRecoMC::SetRunNumber()
    TString tmp  = tmp1(0, pos2);
    fRunNumber = tmp.Atoi();
    
+   Warning("SetRunNumber()", "Run number not set !, taking number from file: %d", fRunNumber);
+
    gTAGroot->SetRunNumber(fRunNumber);
 }
