@@ -197,9 +197,10 @@ void LocalReco::SetRunNumber()
    
    TString tmp1 = name(pos1+1, len);
    Int_t pos2   = tmp1.First(".");
-      TString tmp  = tmp1(0, pos2);
+   TString tmp  = tmp1(0, pos2);
+   fRunNumber = tmp.Atoi();
    
-   gTAGroot->SetRunNumber(tmp.Atoi());
+   gTAGroot->SetRunNumber(fRunNumber);
 }
 
 //__________________________________________________________
