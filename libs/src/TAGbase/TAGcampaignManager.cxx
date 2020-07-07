@@ -327,8 +327,8 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
 //_____________________________________________________________________________
 Bool_t TAGcampaign::IsDetectorOn(const TString& detName)
 {
-   for ( map<TString, TString>::iterator it = fFileGeoMap.begin(); it != fFileGeoMap.end(); ++it) {
-      TString name = fFileGeoMap[it->first];
+   for ( vector<TString>::iterator it = fDetectorVec.begin(); it != fDetectorVec.end(); ++it) {
+      TString name = *it;
       if (name.Contains(detName))
          return true;
    }

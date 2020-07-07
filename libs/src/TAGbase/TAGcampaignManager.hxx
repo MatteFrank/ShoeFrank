@@ -93,7 +93,8 @@ public:
    Int_t                GetCurrentCamNumber() const { return fCurCampaignNumber; }
    CamParameter_t&      GetCampaignPar(Int_t idx)   { return fCamParameter[idx]; }
    const TAGcampaign*   GetCurCampaign()            { return fCurCampaign;       }
-
+   
+   const TArrayI&       GetCurRunArray() const                                       { return fCurCampaign->GetRunArray();                   }
    const Char_t*        GetCurGeoFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetGeoFile(detName, runNumber);  }
    const Char_t*        GetCurConfFile(const TString& detName, Int_t runNumber = -1) { return fCurCampaign->GetConfFile(detName, runNumber); }
    const Char_t*        GetCurMapFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetMapFile(detName, runNumber);  }
