@@ -131,6 +131,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    }
    
    fCampManager = new TAGcampaignManager(expName);
+   fCampManager->FromFile();
 }
 
 //__________________________________________________________
@@ -157,7 +158,7 @@ void BaseReco::CampaignChecks()
    TArrayI runArray = fCampManager->GetCurRunArray();
    Bool_t runOk = false;
    
-   for (Int_t i = 0; runArray.GetSize(); ++i) {
+   for (Int_t i = 0; i < runArray.GetSize(); ++i) {
       if (fRunNumber == runArray[i])
          runOk = true;
    }
