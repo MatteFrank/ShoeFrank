@@ -131,8 +131,6 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    }
    
    fCampManager = new TAGcampaignManager(expName);
-   // Check if detector in FootGlobal.par are also present in campaign file
-//   CheckIncludes();
 }
 
 //__________________________________________________________
@@ -140,20 +138,34 @@ BaseReco::~BaseReco()
 {
    // default destructor
    delete fTAGroot; // should delete all data, para and actions
-  // delete fCampManager;
 }
 
 //_____________________________________________________________________________
-void BaseReco::CheckIncludes()
+void BaseReco::CampaignChecks()
 {
+   // check detector include in FootGlobal.par vs current campaign
    vector<TString> list = GlobalPar::GetPar()->DectIncluded();
    for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
       TString str = *it;
       
       if (!fCampManager->IsDetectorOn(str)) {
-         Error("CheckIncludes()", "Error the detector %s is NOT referenced in campaign file", str.Data());
+         Error("CampaignChecks()", "the detector %s is NOT referenced in campaign file", str.Data());
          exit(0);
       }
+   }
+   
+   TArrayI runArray = fCampManager->GetCurRunArray();
+   Bool_t runOk = false;
+   
+   for (Int_t i = 0; runArray.GetSize(); ++i) {
+      if (fRunNumber == runArray[i])
+         runOk = true;
+   }
+   
+   if (!runOk) {
+      Error("CampaignChecks()", "run %d is NOT referenced in campaign file", fRunNumber);
+      exit(0);
+
    }
 }
 
@@ -166,7 +178,8 @@ void BaseReco::BeforeEventLoop()
 
     
    OpenFileIn();
-
+   SetRunNumber();
+   //   CampaignChecks();
 
    AddRawRequiredItem();
    AddRecRequiredItem();

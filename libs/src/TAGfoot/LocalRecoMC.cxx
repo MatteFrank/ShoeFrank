@@ -149,8 +149,6 @@ void LocalRecoMC::OpenFileIn()
    
    Evento *ev  = new Evento();
    ev->FindBranches(fTree, fEvtStruct);
-   
-   SetRunNumber();
 }
 
 //__________________________________________________________

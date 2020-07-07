@@ -155,8 +155,8 @@ public:
    //! Set Tracking algorithm
    void SetTrackingAlgo(char c);
   
-   // Set detector to be on respect to the given list
-   void CheckIncludes();
+   // Campaign checks
+   void CampaignChecks();
 
    //! Par geo getters
    TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }

@@ -174,8 +174,6 @@ void LocalReco::OpenFileIn()
       
    } else
       fActEvtReader->Open(GetName());
-   
-   SetRunNumber();
 }
 
 // --------------------------------------------------------------------------------------
