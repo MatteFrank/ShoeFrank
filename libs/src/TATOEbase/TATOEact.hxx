@@ -132,9 +132,11 @@ public:
         
         ++event;
         logger_m.clear();
-        checker_m.reset_local_data();
+        checker_m.start_event();
         
         auto hypothesis_c = form_hypothesis();
+        
+//        logger_m << "hypothesis: " << hypothesis_c.size() << '\n';
         
         for(auto & hypothesis : hypothesis_c){
             particle_m = hypothesis;
@@ -145,6 +147,7 @@ public:
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
         register_tracks_upward( std::move( track_c ) );
         
+        checker_m.end_event();
 //        logger_m.freeze_everything();
       //  logger_m.output();
         
@@ -182,7 +185,7 @@ private:
         
         logger_m.add_root_header( "FORM_HYPOTHESIS" );
         logger_m << "event: "<< event << '\n';
-        
+//        std::cout << "event: "<< event << '\n';
         auto tof = list_m.last();
 
         auto candidate_c = tof.generate_candidates();
@@ -196,22 +199,34 @@ private:
             
             logger_m.add_header<1>("candidate");
             logger_m << "charge: " << charge << '\n';
-            checker_m.register_reconstructible_track( candidate );
+            
+            auto* data_h =  static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" )->Object() );
+//            logger_m << "id_charge_couple: ";
+//            for( int i{0} ; i < candidate.data->GetMcTracksN() ; ++ i){
+//                auto index = candidate.data->GetMcTrackIdx(i);
+//                logger_m << "(" << index << ", ";
+//                logger_m << data_h->GetTrack( index )->GetCharge() << ")";
+//            }
+//            logger_m << '\n';
+//
+            // -----------------------------
+            checker_m.submit_reconstructible_track( candidate );
+            // -----------------------------
             
             auto add_current_end_point = [&candidate]( particle_properties & hypothesis_p  )
                                  { hypothesis_p.get_end_points().push_back( candidate.data ); };
-            
-            std::for_each( hypothesis_c.begin(), hypothesis_c.end(),
-                           [&charge, &candidate, &add_current_end_point]( particle_properties & h_p ){
-                               if( h_p.charge == charge ){ add_current_end_point( h_p ); }
-                           } );
-            
-            
-            
-            auto first_matching_hypothesis = std::find_if( hypothesis_c.begin(), hypothesis_c.end(),
-                                                          [&charge]( particle_properties const & h_p ){ return h_p.charge == charge; } );
-            
-            if( first_matching_hypothesis == hypothesis_c.end() ){
+//
+//            std::for_each( hypothesis_c.begin(), hypothesis_c.end(),
+//                           [&charge, &candidate, &add_current_end_point]( particle_properties & h_p ){
+//                               if( h_p.charge == charge ){ add_current_end_point( h_p ); }
+//                           } );
+//
+//
+//
+//            auto first_matching_hypothesis = std::find_if( hypothesis_c.begin(), hypothesis_c.end(),
+//                                                          [&charge]( particle_properties const & h_p ){ return h_p.charge == charge; } );
+//
+//            if( first_matching_hypothesis == hypothesis_c.end() ){
             
                 auto add_hypothesis = [&]( int mass_number_p,
                                            double light_ion_boost_p = 1,
@@ -221,8 +236,11 @@ private:
                                           2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  ) *
                                     energy_modifier_p;
                                           
-                    auto true_momentum = checker_m.retrieve_momentum( candidate );
-                    if( true_momentum > 0. ){ momentum = true_momentum;}
+                  //  auto true_momentum = checker_m.retrieve_momentum( candidate );
+                                          
+                  //  logger_m << "momentum: " << momentum <<  '\n';
+                  //  logger_m << "real_momentum: " << true_momentum << '\n';
+                  //  if( true_momentum > 0. ){ momentum = true_momentum;}
                                           
                     hypothesis_c.push_back( particle_properties{ charge, mass_number_p, momentum, light_ion_boost_p } );
                     add_current_end_point( hypothesis_c.back() );
@@ -234,7 +252,7 @@ private:
                         auto light_ion_boost = 2;
                         add_hypothesis(1, light_ion_boost);
                         //add_hypothesis(1, light_ion_boost, 1.5);
-                        //add_hypothesis(1, light_ion_boost, 0.5);
+                        add_hypothesis(1, light_ion_boost, 0.5);
                     
 //                      light_ion_boost = 1.3;
                         add_hypothesis(2, light_ion_boost);
@@ -250,10 +268,6 @@ private:
                         add_hypothesis(4);
                         break;
                     }
-                    case 4:
-                    {
-                        add_hypothesis(9);
-                    }
                     default:
                     {
                         auto mass_number = charge * 2;
@@ -262,7 +276,7 @@ private:
                     }
                         
                         
-                }
+//                }
                 
                 
             }
@@ -455,8 +469,11 @@ private:
             for(auto& leaf : leaf_c){
                 
                 logger_m.add_header<2>( "leaf" );
+                
+                // -----------------------------
                 checker_m.update_current_node( &leaf );
                 checker_m.output_current_hypothesis();
+                // -----------------------------
             
                 ukf_m.step_length() = 1e-3;
             
@@ -497,10 +514,11 @@ private:
         for(auto& leaf : leaf_c){
         
             logger_m.add_header<1>("leaf");
+            
+            // -----------------------------
             checker_m.update_current_node( &leaf );
-            
             checker_m.output_current_hypothesis();
-            
+            // -----------------------------
             
             ukf_m.step_length() = 1e-3;
             
@@ -546,8 +564,10 @@ private:
             };
             
             auto * leaf_h = arborescence_p.add_root( std::move(fs) );
+            // -----------------------------
             checker_m.update_current_node( leaf_h );
             checker_m.output_current_hypothesis();
+            // -----------------------------
             logger_m.add_header<1>( "vertex_track_reconstruction" );
             
             
@@ -569,7 +589,9 @@ private:
 
 //
                     leaf_h = leaf_h->add_child( std::move(fs_c.front()) );
+                    // -----------------------------
                     checker_m.update_current_node( leaf_h );
+                    // -----------------------------
                 }
                 
             }
@@ -757,7 +779,11 @@ private:
         logger_m << "candidate : (" << ec_p.vector(0, 0) << ", " << ec_p.vector(1,0) << ")\n";
         logger_m << "candidate_chisquared : " << ec_p.chisquared << '\n';
         
-        // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared, details::should_pass_tag{} );
+        logger_m << "cluster_mc_id: ";
+        for( int i{0} ; i < ec_p.data->GetMcTracksN() ; ++ i){
+            logger_m << ec_p.data->GetMcTrackIdx(i) << " ";
+        }
+        logger_m << '\n';
         
         return ec_p.chisquared < cutter.chisquared;
     }
@@ -804,19 +830,11 @@ private:
 
         
         logger_m << "cluster_mc_id: ";
-        std::vector<int> track_id_c;
-        track_id_c.reserve( ec_p.data->GetMcTracksN() );
         for( int i{0} ; i < ec_p.data->GetMcTracksN() ; ++ i){
-            track_id_c.push_back( ec_p.data->GetMcTrackIdx(i) );
             logger_m << ec_p.data->GetMcTrackIdx(i) << " ";
         }
         logger_m << '\n';
         
-        
-        //checker_m.output_current_hypothesis();
-        
-        //logger_m.freeze();
-        // checker_m.check_validity( ec_p, ec_p.chisquared, cutter.chisquared, details::should_pass_tag{} );
         
         return ec_p.chisquared < cutter.chisquared;
     }
@@ -854,7 +872,6 @@ private:
     
     std::vector< track > shear_suboptimal_tracks( std::vector<track>&& track_pc )
     {
-//        std::cout << "shear_suboptimal_tracks: " << track_pc.size() << '\n';
         
         std::vector< track > final_track_c;
         final_track_c.reserve( track_pc.size() );
@@ -871,11 +888,9 @@ private:
                 end_point_ch.push_back( end_point_h );
             }
         }
-        
-//        std::cout << "end_point: " << end_point_ch.size() << '\n';
+
         
         for( auto const * end_point_h : end_point_ch ){
-//            printf("looking_at: %p \n", end_point_h);
             
             auto end_iterator = std::partition( track_pc.begin(), track_pc.end(),
                                                 [&end_point_h](track const & track_p)
@@ -884,22 +899,12 @@ private:
             std::sort( track_pc.begin(), end_iterator,
                        [](track const & track1_p, track const & track2_p)
                       { return track1_p.total_chisquared < track2_p.total_chisquared ; } );
-            
-//            std::cout << "track_selected \n";
-//            auto& track = track_pc.front();
-//            for( auto const & cluster : track.get_clusters() ){
-//                std::cout << "( " << cluster.vector(0,0) <<  ", " << cluster.vector(1,0) <<  " ) -- ( ";
-//                std::cout << cluster.vector(2,0) << ", " << cluster.vector(3,0) <<  " ) -- ";
-//                std::cout << cluster.evaluation_point << " -- " <<  cluster.chisquared << '\n';
-//            }
-            
+
             final_track_c.push_back( track_pc.front() );
             final_track_c.back().clone = std::distance(track_pc.begin(), end_iterator);
             
             track_pc.erase(track_pc.begin(), end_iterator);
         }
-        
-//        std::cout << "final_track: " << final_track_c.size() << std::endl;
         
         return final_track_c;
     }
@@ -920,8 +925,10 @@ private:
                                                   1.1   ); //tof value is wrong
             
 
+            // -----------------------------
+            checker_m.submit_reconstructed_track( track );
+            // -----------------------------
             
-            checker_m.register_reconstructed_track( track );
             auto & value_c = track.get_clusters();
 //                    std::cout << " --- final_track --- " << '\n';
             for(auto& value : value_c){
@@ -938,8 +945,7 @@ private:
                 
                 TVector3 momentum{ momentum_x , momentum_y, momentum_z };
                 TVector3 position_error{ 0.01 ,0.01, 0.01 };
-                TVector3 momentum_error{ 0.01, 0.01, 0.01 };
-                
+                TVector3 momentum_error{ 10, 10, 10 };
                 
                 track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
                 
