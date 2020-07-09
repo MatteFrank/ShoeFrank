@@ -5,44 +5,44 @@ NumberDevices: 10
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/HE_MC/FOOT_geo.map": -1
+"./geomaps/HE_MC/FOOT.geo": -1
 
 DetectorName: "DI"
 NumberFiles: 1
-"./geomaps/HE_MC/TADIdetector.map": -1
+"./geomaps/HE_MC/TADIdetector.geo": -1
 
 DetectorName: "ST"
 NumberFiles: 2
-"./geomaps/HE_MC/TASTdetector.map": -1
+"./geomaps/HE_MC/TASTdetector.geo": -1
 "./config/HE_MC/TASTdetector.cfg": -1
 
 DetectorName: "BM"
 NumberFiles: 2
-"./geomaps/HE_MC/TABMdetector.map": -1
+"./geomaps/HE_MC/TABMdetector.geo": -1
 "./config/HE_MC/TABMdetector.cfg": -1
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/HE_MC/TAGdetector.map": -1
+"./geomaps/HE_MC/TAGdetector.geo": -1
 
 DetectorName: "VT"
 NumberFiles: 2
-"./geomaps/HE_MC/TAVTdetector.map": -1
+"./geomaps/HE_MC/TAVTdetector.geo": -1
 "./config/HE_MC/TAVTdetector.cfg": -1
 
 DetectorName: "IT"
 NumberFiles: 2
-"./geomaps/HE_MC/TAITdetector.map": -1
+"./geomaps/HE_MC/TAITdetector.geo": -1
 "./config/HE_MC/TAITdetector.cfg": -1
 
 DetectorName: "MSD"
 NumberFiles: 1
-"./geomaps/HE_MC/TAMSDdetector.map": -1
+"./geomaps/HE_MC/TAMSDdetector.geo": -1
 
 DetectorName: "TW"
 NumberFiles: 1
-"./geomaps/HE_MC/TATWdetector.map": -1
+"./geomaps/HE_MC/TATWdetector.geo": -1
 
 DetectorName: "CA"
 NumberFiles: 1
-"./geomaps/HE_MC/TACAdetector.map": -1
+"./geomaps/HE_MC/TACAdetector.geo": -1

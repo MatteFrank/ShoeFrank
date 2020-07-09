@@ -5,32 +5,32 @@ NumberDevices: 6
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/GSI/FOOT_geo.map": 2210; 2251
+"./geomaps/GSI/FOOT.geo": 2210; 2251
 
 DetectorName: "ST"
 NumberFiles: 4
-"./geomaps/GSI/TASTdetector.map": -1
+"./geomaps/GSI/TASTdetector.geo": -1
 "./config/GSI/TASTdetector.cfg": -1
 "./config/GSI/WDChannelMap.txt": -1
-"./config/GSI/WDTimeCalibration/tcalib/": 2210; 2251
+"./calib/GSI/WDTimeCalibration/tcalib/": 2210; 2251
 
 DetectorName: "BM"
 NumberFiles: 4
-"./geomaps/GSI/TABMdetector.map": -1
+"./geomaps/GSI/TABMdetector.geo": -1
 "./config/GSI/TABMdetector.cfg": -1
 "./config/GSI/TABMdetector.map": -1
-"./config/GSI/T0_beammonitor.cfg": 2210; 2251
+"./calib/GSI/T0_beammonitor.cfg": 2210; 2251
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/GSI/TAGdetector.map": -1
+"./geomaps/GSI/TAGdetector.geo": -1
 
 DetectorName: "VT"
 NumberFiles: 2
 "./geomaps/GSI/TAVTdetector.map": -1
-"./config/GSI/TAVTdetector.cfg": -1
+"./config/GSI/TAVTdetector.geo": -1
 
 DetectorName: "TW"
 NumberFiles: 2
-"./geomaps/GSI/TATWdetector.map": -1
+"./geomaps/GSI/TATWdetector.geo": -1
 "./config/GSI/TATWChannelMap.xml": -1
