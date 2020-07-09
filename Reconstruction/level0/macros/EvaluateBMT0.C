@@ -61,7 +61,7 @@ void FillStBm(TString expName) {
   
   TAGparaDsc* parGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
   TASTparGeo* stparGeo = (TASTparGeo*)parGeoSt->Object();
-  TString parFileName = "./geomaps/TASTdetector.map";
+  TString parFileName = "./geomaps/TASTdetector.geo";
   stparGeo->FromFile(parFileName.Data());
   
   TAGparaDsc* parMapSt = new TAGparaDsc("stMap", new TASTparMap()); // need the file
@@ -84,7 +84,7 @@ void FillStBm(TString expName) {
   
   TAGparaDsc* parGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
   TATWparGeo* parGeoT = (TATWparGeo*)parGeoTw->Object();
-  TString parFileNameT = "./geomaps/TATWdetector.map";
+  TString parFileNameT = "./geomaps/TATWdetector.geo";
   parGeoT->FromFile(parFileNameT);
   
   TAGparaDsc* parCalTw = new TAGparaDsc("twCal", new TATWparCal());
@@ -99,7 +99,7 @@ void FillStBm(TString expName) {
     
   TAGparaDsc* bmGeo    = new TAGparaDsc("bmGeo", new TABMparGeo());
   TABMparGeo* bmgeomap   = (TABMparGeo*) bmGeo->Object();
-  parFileName="./geomaps/TABMdetector.map";
+  parFileName="./geomaps/TABMdetector.geo";
   bmgeomap->FromFile(parFileName);
 
   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());

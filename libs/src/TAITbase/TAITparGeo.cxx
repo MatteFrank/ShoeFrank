@@ -32,7 +32,7 @@ TAITparGeo::TAITparGeo()
    fFlagIt = true;
    fLayersN = 2;
    fSensPerLayer = fgkDefSensPerLayer;
-   fkDefaultGeoName = "./geomaps/TAITdetector.map";
+   fkDefaultGeoName = "./geomaps/TAITdetector.geo";
 }
 
 //______________________________________________________________________________

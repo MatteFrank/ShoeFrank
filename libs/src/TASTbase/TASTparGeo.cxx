@@ -37,7 +37,7 @@ TASTparGeo::TASTparGeo()
    fMaterial(""),
    fDensity(0.)
 {
-  fkDefaultGeoName = "./geomaps/TASTdetector.map";
+  fkDefaultGeoName = "./geomaps/TASTdetector.geo";
 }
 
 //------------------------------------------+-----------------------------------

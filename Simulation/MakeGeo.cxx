@@ -76,19 +76,19 @@ int main (int argc, char *argv[]) {
     TAGparGeo* generalGeo = new TAGparGeo();
 
     // read geomap files
-    generalGeo->FromFile(Form("./geomaps/%sTAGdetector.map",exp.Data()));
-    stcGeo->FromFile(Form("./geomaps/%sTASTdetector.map",exp.Data()));
-    bmGeo->FromFile(Form("./geomaps/%sTABMdetector.map",exp.Data()));
+    generalGeo->FromFile(Form("./geomaps/%sTAGdetector.geo",exp.Data()));
+    stcGeo->FromFile(Form("./geomaps/%sTASTdetector.geo",exp.Data()));
+    bmGeo->FromFile(Form("./geomaps/%sTABMdetector.geo",exp.Data()));
     vtxGeo->SetMcFlag();
-    vtxGeo->FromFile(Form("./geomaps/%sTAVTdetector.map", exp.Data()));
-    itrGeo->FromFile(Form("./geomaps/%sTAITdetector.map", exp.Data()));
-    msdGeo->FromFile(Form("./geomaps/%sTAMSDdetector.map", exp.Data()));
-    diGeo->FromFile(Form("./geomaps/%sTADIdetector.map", exp.Data()));
-    twGeo->FromFile(Form("./geomaps/%sTATWdetector.map", exp.Data()));
-    caGeo->FromFile(Form("./geomaps/%sTACAdetector.map", exp.Data()));
+    vtxGeo->FromFile(Form("./geomaps/%sTAVTdetector.geo", exp.Data()));
+    itrGeo->FromFile(Form("./geomaps/%sTAITdetector.geo", exp.Data()));
+    msdGeo->FromFile(Form("./geomaps/%sTAMSDdetector.geo", exp.Data()));
+    diGeo->FromFile(Form("./geomaps/%sTADIdetector.geo", exp.Data()));
+    twGeo->FromFile(Form("./geomaps/%sTATWdetector.geo", exp.Data()));
+    caGeo->FromFile(Form("./geomaps/%sTACAdetector.geo", exp.Data()));
 
     TString parFileName;
-    geoTrafo.FromFile(Form("./geomaps/%sFOOT_geo.map",exp.Data()));
+    geoTrafo.FromFile(Form("./geomaps/%sFOOT.geo",exp.Data()));
 
     ifstream file;
     string fileName = Form("foot.inp");

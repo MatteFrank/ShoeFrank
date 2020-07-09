@@ -41,7 +41,7 @@ TACAparGeo::TACAparGeo()
 : TAGparTools(),
   fIonisation(new TAGionisMaterials())
 {  
-   fkDefaultGeoName = "./geomaps/TACAdetector.map";
+   fkDefaultGeoName = "./geomaps/TACAdetector.geo";
 }
 
 //______________________________________________________________________________

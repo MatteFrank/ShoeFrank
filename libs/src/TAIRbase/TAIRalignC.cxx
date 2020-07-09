@@ -101,7 +101,7 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    
    fpGeoMapG    = new TAGparaDsc("gGeo", new TAGparGeo());
    TAGparGeo* geomapG   = (TAGparGeo*) fpGeoMapG->Object();
-   TString parFile = "./geomaps/TAGdetector.map";
+   TString parFile = "./geomaps/TAGdetector.geo";
    geomapG->FromFile(parFile.Data());
    fpDiff         = new TADItrackEmProperties();
 
@@ -109,7 +109,7 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    if (fFlagVtx) {
       fpGeoMapVtx    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
-      TString parFile = "./geomaps/TAVTdetector.map";
+      TString parFile = "./geomaps/TAVTdetector.geo";
       geomapVtx->FromFile(parFile.Data());
       
       fpConfigVtx    = new TAGparaDsc("vtConf", new TAVTparConf());
@@ -127,7 +127,7 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    if (fFlagMsd) {
       fpGeoMapMsd    = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
       TAMSDparGeo* geomapMsd   = (TAMSDparGeo*) fpGeoMapMsd->Object();
-      TString parFile = "./geomaps/TAMSDdetector.map";
+      TString parFile = "./geomaps/TAMSDdetector.geo";
       geomapMsd->FromFile(parFile.Data());
    
       fpConfigMsd    = new TAGparaDsc("msdConf", new TAMSDparConf());

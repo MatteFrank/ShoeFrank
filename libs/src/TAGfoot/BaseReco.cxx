@@ -115,7 +115,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
 
    // Read Trafo file
    fpFootGeo = new TAGgeoTrafo();
-   TString parFileName = Form("./geomaps/%sFOOT_geo.map", fExpName.Data());
+   TString parFileName = Form("./geomaps/%sFOOT.geo", fExpName.Data());
    fpFootGeo->FromFile(parFileName);
    
    // actvate debug level
@@ -180,7 +180,7 @@ void BaseReco::BeforeEventLoop()
     
    OpenFileIn();
    SetRunNumber();
-   //   CampaignChecks();
+  // CampaignChecks();
 
    AddRawRequiredItem();
    AddRecRequiredItem();
@@ -281,7 +281,7 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeTW() || IsItrTracking()) {
       fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
       TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
-      TString parFileName = Form("./geomaps/%sTAGdetector.map", fExpName.Data());
+      TString parFileName = Form("./geomaps/%sTAGdetector.geo", fExpName.Data());
       parGeo->FromFile(parFileName.Data());
 
       Z_beam = parGeo->GetBeamPar().AtomicNumber;
@@ -304,7 +304,7 @@ void BaseReco::ReadParFiles()
 
      fpParGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
      TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
-     TString parFileName = "./geomaps/TASTdetector.map";
+     TString parFileName = "./geomaps/TASTdetector.geo";
      parGeo->FromFile(parFileName.Data());
      
      fpParMapSt = new TAGparaDsc("stMap", new TASTparMap()); // need the file
@@ -332,7 +332,7 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeBM()) {
       fpParGeoBm = new TAGparaDsc("bmGeo", new TABMparGeo());
       TABMparGeo* parGeo = (TABMparGeo*)fpParGeoBm->Object();
-      TString parFileName = "./geomaps/TABMdetector.map";
+      TString parFileName = "./geomaps/TABMdetector.geo";
       parGeo->FromFile(parFileName.Data());
       
       fpParConfBm = new TAGparaDsc("bmConf", new TABMparCon());
@@ -352,7 +352,7 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeDI() || TAGactNtuGlbTrack::GetStdAloneFlag() ) {
       fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
-      TString parFileName = "./geomaps/TADIdetector.map";
+      TString parFileName = "./geomaps/TADIdetector.geo";
       parGeo->FromFile(parFileName.Data());
       
       if (GlobalPar::GetPar()->IncludeTOE())
@@ -363,7 +363,7 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeVertex() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
-      TString parVtxFileName = Form("./geomaps/%sTAVTdetector.map", fExpName.Data());
+      TString parVtxFileName = Form("./geomaps/%sTAVTdetector.geo", fExpName.Data());
       parGeo->FromFile(parVtxFileName.Data());
       
       fpParConfVtx = new TAGparaDsc("vtConf", new TAVTparConf());
@@ -381,7 +381,7 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeInnerTracker() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoIt = new TAGparaDsc(TAITparGeo::GetItDefParaName(), new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
-      TString parItFileName = Form("./geomaps/%sTAITdetector.map", fExpName.Data());
+      TString parItFileName = Form("./geomaps/%sTAITdetector.geo", fExpName.Data());
       parGeo->FromFile(parItFileName.Data());
       
       fpParConfIt = new TAGparaDsc("itConf", new TAITparConf());
@@ -399,7 +399,7 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeMSD() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
       TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
-      TString parMsdFileName = Form("./geomaps/%sTAMSDdetector.map", fExpName.Data());
+      TString parMsdFileName = Form("./geomaps/%sTAMSDdetector.geo", fExpName.Data());
       parGeo->FromFile(parMsdFileName.Data());
       
       fpParConfMsd = new TAGparaDsc("msdConf", new TAMSDparConf());
@@ -412,7 +412,7 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeTW() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
       TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
-      parGeo->FromFile(Form("./geomaps/%sTATWdetector.map", fExpName.Data()));
+      parGeo->FromFile(Form("./geomaps/%sTATWdetector.geo", fExpName.Data()));
       
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
@@ -427,7 +427,7 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeCA()) {
       fpParGeoCa = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
       TACAparGeo* parGeo = (TACAparGeo*)fpParGeoCa->Object();
-      TString parFileName = Form("./geomaps/%sTACAdetector.map", fExpName.Data());
+      TString parFileName = Form("./geomaps/%sTACAdetector.geo", fExpName.Data());
       parGeo->FromFile(parFileName);
    }
 

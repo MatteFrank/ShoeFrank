@@ -45,7 +45,7 @@ void FillBmVME(TString name, Int_t myexpcode) {
   
   TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
   TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
-  TString parFileName = "./geomaps/TABMdetector.map";
+  TString parFileName = "./geomaps/TABMdetector.geo";
   geomap->FromFile(parFileName.Data());
            
   TAGparaDsc* tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());

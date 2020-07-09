@@ -216,7 +216,7 @@ bool TAGcampaign::FromFile(TString ifile)
 
          ReadStringsInts(fileName, array);
          // geomaps
-         if (fileName.Contains("geomaps") && fileName.EndsWith(".map")) {
+         if (fileName.Contains("geomaps") && fileName.EndsWith(".geo")) {
             fFileGeoMap[detName] = fileName;
             fRunsGeoMap[detName] = array;
             if(FootDebugLevel(1))

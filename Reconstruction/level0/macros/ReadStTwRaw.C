@@ -51,7 +51,7 @@ void FillStTw()
    
    TAGparaDsc* parGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
    TASTparGeo* parGeo = (TASTparGeo*)parGeoSt->Object();
-   TString parFileName = "./geomaps/TASTdetector.map";
+   TString parFileName = "./geomaps/TASTdetector.geo";
    parGeo->FromFile(parFileName.Data());
    
    TAGparaDsc* parMapSt = new TAGparaDsc("stMap", new TASTparMap()); // need the file
@@ -74,7 +74,7 @@ void FillStTw()
    
    TAGparaDsc* parGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
    TATWparGeo* parGeoT = (TATWparGeo*)parGeoTw->Object();
-   TString parFileNameT = "./geomaps/TATWdetector.map";
+   TString parFileNameT = "./geomaps/TATWdetector.geo";
    parGeoT->FromFile(parFileNameT);
    
    TAGparaDsc* parCalTw = new TAGparaDsc("twCal", new TATWparCal());
