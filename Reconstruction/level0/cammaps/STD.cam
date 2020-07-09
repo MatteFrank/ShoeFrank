@@ -14,7 +14,7 @@ NumberFiles: 1
 DetectorName: "ST"
 NumberFiles: 2
 "./geomaps/TASTdetector.geo": -1
-"./config/TASTdetector.geo": -1
+"./config/TASTdetector.cfg": -1
 
 DetectorName: "BM"
 NumberFiles: 2
