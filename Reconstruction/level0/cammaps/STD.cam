@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "STD"
-RunNumber: 0
+RunNumber: 1
 NumberDevices: 10
 
 DetectorName: "FOOT"
