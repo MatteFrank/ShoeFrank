@@ -317,6 +317,9 @@ private:
   TH1D* tempPurity;
   TH1D* qoverp;
   TH1D* qoverpsel;
+  TH1I* ITstudy;
+  TH1I* MSDstudy;
+
 
   vector<TH1D*> momentum_true;
   vector<TH1D*> momentum_reco;

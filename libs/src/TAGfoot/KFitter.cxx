@@ -56,7 +56,7 @@ KFitter::KFitter () {
     m_TG_geo = shared_ptr<TAGparGeo> ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() );
 
   if (GlobalPar::GetPar()->IncludeDI())
-    m_DI_geo = shared_ptr<TADIparGeo> ( (TADIparGeo*) gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object() );
+  m_DI_geo = shared_ptr<TADIparGeo> ( (TADIparGeo*) gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object() );
 
   if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVertex() )
     m_VT_geo = shared_ptr<TAVTparGeo> ( (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
@@ -196,6 +196,8 @@ KFitter::KFitter () {
 
   percentageOfMCTracksVTX = new TH1D("mean number of tracks","mean number of tracks", 10, 0., 5.);
   tempPurity = new TH1D("purity", "purity", 20, 0., 1.5);
+  ITstudy = new TH1I("it study on checktrack false", "it study", 10, 0, 10);
+  MSDstudy = new TH1I("msd study on checktrack false", "msd study", 7, 0, 7);
   qoverp = new TH1D("qoverp_all", "qoverp_all", 100, 0., 2.);
   qoverpsel = new TH1D("qoverp_sel", "qoverp_sel", 100, 0., 2.);
   outfile = TFile::Open("efficiency.root","RECREATE");
@@ -206,9 +208,9 @@ KFitter::KFitter () {
   MSDforwardcounter=0;
 
   for (unsigned int jCharge = 0; jCharge < 8; ++jCharge){
-    TH1D* h = new TH1D(Form("histoChargeTrue%d",jCharge+1), "test", 50, 0.,10.);
-    TH1D* h1 = new TH1D(Form("histoChargeReco%d",jCharge+1), "test", 50, 0.,10.);
-    TH1D* h2 = new TH1D(Form("histoRatio%d",jCharge+1), "test", 50, 0.,10.);
+    TH1D* h = new TH1D(Form("histoChargeTrue%d",jCharge+1), "test", 25, 0.,10.);
+    TH1D* h1 = new TH1D(Form("histoChargeReco%d",jCharge+1), "test", 25, 0.,10.);
+    TH1D* h2 = new TH1D(Form("histoRatio%d",jCharge+1), "test", 25, 0.,10.);
 
     momentum_true.push_back(h);
     momentum_reco.push_back(h1);
@@ -893,6 +895,8 @@ int KFitter::UploadHitsTW() {
   return totPoints;
 }
 
+
+//HACK FOR TW POINT HANDLING
 int KFitter::GetTWTrackFixed (TATWpoint* pointToCheck){
   int indexSize = pointToCheck->GetMcTracksN();
   if ( indexSize == 1 ){//in this case no pb
@@ -1188,14 +1192,24 @@ int KFitter::PrepareData4Fit_dataLike() {
         continue;
       }
 
-      bool isInPlane4 = m_detectorPlanes[4]->isInActiveY(firstGuessYOnIT);
-      bool isInPlane5 = m_detectorPlanes[5]->isInActiveY(thirdGuessYOnIT);
-      bool isInPlane6 = m_detectorPlanes[6]->isInActiveY(firstGuessYOnIT);
-      bool isInPlane7 = m_detectorPlanes[7]->isInActiveY(thirdGuessYOnIT);
-      bool isInPlane8 = m_detectorPlanes[8]->isInActiveY(secondGuessYOnIT);
-      bool isInPlane9 = m_detectorPlanes[9]->isInActiveY(fourthGuessYOnIT);
-      bool isInPlane10 = m_detectorPlanes[10]->isInActiveY(secondGuessYOnIT);
-      bool isInPlane11 = m_detectorPlanes[11]->isInActiveY(fourthGuessYOnIT);
+      bool isInPlane4 = m_detectorPlanes[4]->isInActiveY(firstGuessYOnIT + .1) || m_detectorPlanes[4]->isInActiveY(firstGuessYOnIT - .1);
+      bool isInPlane5 = m_detectorPlanes[5]->isInActiveY(thirdGuessYOnIT + .1) || m_detectorPlanes[5]->isInActiveY(thirdGuessYOnIT - .1);
+      bool isInPlane6 = m_detectorPlanes[6]->isInActiveY(firstGuessYOnIT + .1) || m_detectorPlanes[6]->isInActiveY(firstGuessYOnIT - .1);
+      bool isInPlane7 = m_detectorPlanes[7]->isInActiveY(thirdGuessYOnIT + .1) || m_detectorPlanes[7]->isInActiveY(thirdGuessYOnIT - .1);
+      bool isInPlane8 = m_detectorPlanes[8]->isInActiveY(secondGuessYOnIT + .1) || m_detectorPlanes[8]->isInActiveY(secondGuessYOnIT - .1);
+      bool isInPlane9 = m_detectorPlanes[9]->isInActiveY(fourthGuessYOnIT + .1) || m_detectorPlanes[9]->isInActiveY(fourthGuessYOnIT - .1);
+      bool isInPlane10 = m_detectorPlanes[10]->isInActiveY(secondGuessYOnIT + .1) || m_detectorPlanes[10]->isInActiveY(secondGuessYOnIT - .1);
+      bool isInPlane11 = m_detectorPlanes[11]->isInActiveY(fourthGuessYOnIT + .1) || m_detectorPlanes[11]->isInActiveY(fourthGuessYOnIT - .1);
+
+
+      // bool isInPlane4 = m_detectorPlanes[4]->isInActiveY(firstGuessYOnIT);
+      // bool isInPlane5 = m_detectorPlanes[5]->isInActiveY(thirdGuessYOnIT);
+      // bool isInPlane6 = m_detectorPlanes[6]->isInActiveY(firstGuessYOnIT);
+      // bool isInPlane7 = m_detectorPlanes[7]->isInActiveY(thirdGuessYOnIT);
+      // bool isInPlane8 = m_detectorPlanes[8]->isInActiveY(secondGuessYOnIT);
+      // bool isInPlane9 = m_detectorPlanes[9]->isInActiveY(fourthGuessYOnIT);
+      // bool isInPlane10 = m_detectorPlanes[10]->isInActiveY(secondGuessYOnIT);
+      // bool isInPlane11 = m_detectorPlanes[11]->isInActiveY(fourthGuessYOnIT);
 
       vector<bool> crossPlane;
       map <unsigned int, double> guessOnPlane;
@@ -1230,21 +1244,25 @@ int KFitter::PrepareData4Fit_dataLike() {
           double distanceInY = .05;
           if (areLightFragments) distanceInY = .5;
           AbsMeasurement* hitToAdd = 0x0;
-          for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
-            PlanarMeasurement* hitHit = 0x0;
-            hitHit = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
-            if (hitHit == 0x0) continue;
-            //cout << "hitHit->getDetId() == " <<hitHit->getDetId() << "hitHit->getHitId()" << hitHit->getHitId() << endl;
-            int indexOfPlane = hitHit->getPlaneId();
-            if (hitHit->getPlaneId() == searchingPlane){
-              //cout << "hitHit->getPlaneId() == " << searchingPlane << endl;
-              if ( fabs(firstGuessYOnIT - hitHit->getRawHitCoords()(1) ) < distanceInY ){
-                distanceInY = fabs(guessOnPlane[iPlaneBool] - hitHit->getRawHitCoords()(1));
-                indexOfMinY = jMeas;
+          do {
+            for ( unsigned int jMeas = 0; jMeas < m_allHitsInMeasurementFormat.size(); ++jMeas ){
+              PlanarMeasurement* hitHit = 0x0;
+              hitHit = static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(jMeas));
+              if (hitHit == 0x0) continue;
+              //cout << "hitHit->getDetId() == " <<hitHit->getDetId() << "hitHit->getHitId()" << hitHit->getHitId() << endl;
+              int indexOfPlane = hitHit->getPlaneId();
+              if (hitHit->getPlaneId() == searchingPlane){
+                //cout << "hitHit->getPlaneId() == " << searchingPlane << endl;
+                if ( fabs(firstGuessYOnIT - hitHit->getRawHitCoords()(1) ) < distanceInY ){
+                  distanceInY = fabs(guessOnPlane[iPlaneBool] - hitHit->getRawHitCoords()(1));
+                  indexOfMinY = jMeas;
+                }
               }
+              //cout << " distanceInY " << distanceInY << " indexOfMinY " << indexOfMinY <<endl;
             }
-            //cout << " distanceInY " << distanceInY << " indexOfMinY " << indexOfMinY <<endl;
+            distanceInY += .05;
           }
+          while (indexOfMinY == -1 && distanceInY < .7);
           if (indexOfMinY != -1){
             hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitsInMeasurementFormat.at(indexOfMinY)))->clone();
             fitTrack_->insertMeasurement( hitToAdd );
@@ -1395,15 +1413,16 @@ int KFitter::PrepareData4Fit_dataLike() {
       fitTrack_->setCardinalRep(repId);
       //cout << "PDG charge " << fitTrack_->getCardinalRep()->getPDGCharge() << " " << chargeFromTW <<endl;
 
+
+      //TRY TO SEE IF THERE IS INNER TRACKER MEASUREMENTS
       //fitTrack_->determineCardinalRep();
       //cout << fitTrack_->getCardinalRep()->getPDGCharge() << endl;
       // cout << " check of fitTrack_ filling after deleting fakeMSD and inserting one" << endl;
-      // for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
-      //   fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement()->getRawHitCoords().Print();
-      //   int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
-      //   bool isStripV = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getStripV();
-      //   cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << " isStripV " << isStripV << endl;
-      // }
+      for (unsigned int jTracking = 0; jTracking < fitTrack_->getNumPointsWithMeasurement(); ++jTracking){
+        fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement()->getRawHitCoords().Print();
+        int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId();
+        //   cout << " index of plane " << indexOfPlane << " " << m_detectorPlanes[indexOfPlane]->getO().Z() << " isStripV " << isStripV << endl;
+      }
 
       //now call check on track finding
       bool checkTrack = CheckTrackFinding(fitTrack_, montecarloCharge, montecarloMomentum, montecarloMass, chargeFromTW);
@@ -1413,6 +1432,21 @@ int KFitter::PrepareData4Fit_dataLike() {
         m_vectorTrack.push_back(fitTrack_);
         momentum_reco.at(chargeFromTW-1)->Fill(montecarloMomentum);
         RecordTrackInfoDataLike(fitTrack_, chargeFromTW, cardinal);
+      }
+
+      else{
+        int howManyWithIT = 0;
+        int howManyWithMSD = 0;
+        for (unsigned int jTrackin = 0; jTrackin < fitTrack_->getNumPointsWithMeasurement(); ++jTrackin){
+          int indexOfPlane = static_cast<genfit::PlanarMeasurement*>(fitTrack_->getPointWithMeasurement(jTrackin)->getRawMeasurement())->getPlaneId();
+          if (indexOfPlane > 3 && indexOfPlane < 12) howManyWithIT++;
+          if (indexOfPlane > 11 && indexOfPlane < 18) howManyWithMSD++;
+
+        }
+
+        ITstudy->Fill(howManyWithIT);
+        MSDstudy->Fill(howManyWithMSD);
+
       }
       //delete fitTrack_;
       //fitTrack_ = nullptr;
@@ -1426,7 +1460,11 @@ int KFitter::PrepareData4Fit_dataLike() {
     //cout << "display->addEvent size  " << m_vectorTrack.size() << endl;
   }
 
+  for (unsigned int iVectorTrack = 0; iVectorTrack < m_vectorTrack.size(); ++iVectorTrack){
+    delete m_vectorTrack.at(iVectorTrack);
+  }
   m_vectorTrack.clear();
+  //occhio che sfondo la memoria MEMORY LEAK
 
 
 }
@@ -1527,7 +1565,8 @@ bool KFitter::CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCE
   int hitsNotVT = 0;
 
   //chisquare of tracks
-  m_fitter->processTrack(trackToCheck);
+  //m_fitter->processTrack(trackToCheck);
+  m_refFitter->processTrackWithRep(trackToCheck, trackToCheck->getCardinalRep());
   bool trackHasBackUpdate = true;
   bool trackHasFwdUpdate = true;
   for (unsigned int jTracking = 0; jTracking < trackToCheck->getNumPointsWithMeasurement(); ++jTracking){
@@ -1546,7 +1585,9 @@ bool KFitter::CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCE
     }
   }
 
-  double chisquare = m_fitter->getRedChiSqu(trackToCheck, trackToCheck->getCardinalRep());
+  double chisquare = m_refFitter->getRedChiSqu(trackToCheck, trackToCheck->getCardinalRep());
+
+  //double chisquare = m_fitter->getRedChiSqu(trackToCheck, trackToCheck->getCardinalRep());
   qoverp->Fill(MCEveCharge/MCEveMomentum);
   //if (numeratorForPurity/hitsNotVT == 0.) ofs << "OCCHIO ";//{
     //ofs << "GUARDA QUI TRACK ID " << trackToCheck->getMcTrackId() << " CHARGE  " << MCEveCharge << " MOMENTUM  " << MCEveMomentum <<  " MASS " << MCEveMass << " CHI " << chisquare << endl;
@@ -2767,16 +2808,21 @@ void KFitter::PrintEfficiency() {
   for ( map<string, int>::iterator itTotNum = m_nTotTracks.begin(); itTotNum != m_nTotTracks.end(); itTotNum++ ) {
     k++;
     float eff = (float)m_nConvergedTracks[ (*itTotNum).first ] / (*itTotNum).second;
+    float kk = (float)m_nConvergedTracks[ (*itTotNum).first ];
+    float nn = (*itTotNum).second;
+    float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
     if ( m_debug > -1 )		cout << "Efficiency " << (*itTotNum).first << " = " << eff << "  " << m_nConvergedTracks[ (*itTotNum).first ]<< " " << (*itTotNum).second << endl;
     h_trackEfficiency->SetBinContent(k, eff);
+    h_trackEfficiency->SetBinError(k, sqrt(variance));
+
     h_trackEfficiency->GetXaxis()->SetBinLabel(k, (*itTotNum).first.c_str() );
   }
 
   h_trackEfficiency->SetTitle(0);
   h_trackEfficiency->SetStats(0);
-  h_trackEfficiency->GetYaxis()->SetTitle("KF Efficiency");
+  h_trackEfficiency->GetYaxis()->SetTitle("Reco Efficiency");
   h_trackEfficiency->GetYaxis()->SetTitleOffset(1.1);
-  h_trackEfficiency->GetYaxis()->SetRange(0.,1);
+  h_trackEfficiency->GetYaxis()->SetRange(0.,1.);
   h_trackEfficiency->SetLineWidth(2); // take short ~ int
   h_trackEfficiency->Draw("E");
   mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
@@ -2851,7 +2897,11 @@ void KFitter::Finalize() {
   //ITresidualOfPrediction->SaveAs("ITresidual.root", "RECREATE");
   percentageOfMCTracksVTX->SaveAs("percentageOfMCTracksVTX.root", "RECREATE");
   tempPurity->SaveAs("purity.root","RECREATE");
+  ITstudy->SaveAs("ITstudy.root","RECREATE");
+  MSDstudy->SaveAs("MSDstudy.root","RECREATE");
+
   qoverp->SaveAs("qoverpall.root","RECREATE");
+
   qoverpsel->SaveAs("qoverpsel.root","RECREATE");
   ofs.close();
   cout << "how many tracks have no update " << MSDforwardcounter << endl;
