@@ -100,8 +100,10 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
          fCurCampaignNumber = i;
    }
 
-   if (fCurCampaignNumber == -1)
+   if (fCurCampaignNumber == -1) {
       Error("FromFile()", "No campaign with name %s found in database !", fCurCampaignName.Data());
+      exit(0);
+   }
       
    if(FootDebugLevel(1))
       cout  << "  Current Campaign number:  "<< fCurCampaignNumber << endl;
@@ -171,6 +173,7 @@ bool TAGcampaign::FromFile(TString ifile)
 {
    if (!Open(ifile)) {
       Error("FromCamFile()", "failed to open file '%s'", ifile.Data());
+      exit(0);
       return false;
    }
    
