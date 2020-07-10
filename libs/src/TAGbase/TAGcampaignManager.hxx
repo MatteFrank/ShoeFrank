@@ -30,6 +30,7 @@ public:
 
    Bool_t            IsDetectorOn(const TString& detName);
    void              Print(Option_t* opt = "") const;
+   Bool_t            CheckFiles();
 
    const vector<TString>& GetDetVector() const { return fDetectorVec; }
 

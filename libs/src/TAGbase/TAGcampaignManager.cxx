@@ -1,6 +1,6 @@
 #include "TAGcampaignManager.hxx"
 #include <fstream>
-
+#include <unistd.h>
 #include "TObjArray.h"
 
 #include "GlobalPar.hxx"
@@ -114,6 +114,10 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
    if (!fCurCampaign->FromFile(curCampaignName))
       return false;
    
+   // Checking file presence
+//    if (!fCurCampaign->CheckFiles())
+//       return false;
+
    return true;
 }
 
@@ -325,6 +329,48 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
    name.Insert(pos, Form("_%d", run));
    
    return Form("%s", name.Data());
+}
+
+//_____________________________________________________________________________
+Bool_t TAGcampaign::CheckFiles()
+{
+   for ( map<TString, TString>::const_iterator it = fFileGeoMap.begin(); it != fFileGeoMap.end(); ++it) {
+      const Char_t* name = it->second;
+      
+      if( access(name, F_OK) == -1 ) {
+         Warning("CheckFiles()", "File %s not found !", name);
+         return false;
+      }
+   }
+   
+   for ( map<TString, TString>::const_iterator it = fFileConfMap.begin(); it != fFileConfMap.end(); ++it) {
+      const Char_t* name = it->second;
+
+      if( access(name, F_OK) == -1 ) {
+         Warning("CheckFiles()", "File %s not found !", name);
+         return false;
+      }
+   }
+
+   for ( map<TString, TString>::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it) {
+      const Char_t* name = it->second;
+   
+      if( access(name, F_OK) == -1 ) {
+         Warning("CheckFiles()", "File %s not found !", name);
+         return false;
+      }
+   }
+   
+   for ( map<TString, TString>::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it) {
+      const Char_t* name = it->second;
+      
+      if( access(name, F_OK) == -1 ) {
+         Warning("CheckFiles()", "File %s not found !", name);
+         return false;
+      }
+   }
+
+   return true;
 }
 
 //_____________________________________________________________________________
