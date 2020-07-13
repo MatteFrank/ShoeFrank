@@ -234,7 +234,7 @@
       TZFLK  (NPFLKA) = COSZ
 *     TZFLK  (NPFLKA) = SQRT ( ONEONE - TXFLK (NPFLKA)**2
 *    &                       - TYFLK (NPFLKA)**2 )
-*      WRITE(*,*) COSX,COSY,COSZ
+      WRITE(*,*) COSX,COSY,COSZ
 
 *     Polarization cosines:
       TXPOL  (NPFLKA) = -TWOTWO
