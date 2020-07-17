@@ -14,5 +14,5 @@ void DisplayFOOT(TString file = "data/data_built.2211.physics_foot.daq.VTX.1.dat
 {
    //TAFOeventDisplay::SetVtxTrackingAlgo('F');
    //TAFOeventDisplay::EnableStdAlone();
-   TAFOeventDisplay::Instance(0, "GSI")->ShowDisplay(file);
+   TAFOeventDisplay::Instance(0, "GSI")->ShowDisplay(file, 2211);
 }
