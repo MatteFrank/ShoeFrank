@@ -45,6 +45,7 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
 : TEveEventManager(),
   fExpName(expName),
   fType(type),
+  fRunNumber(-1),
   fWorldSizeZ(120),
   fWorldSizeXY(25),
   fWorldName("World"),
@@ -223,7 +224,7 @@ void TAEDbaseInterface::SetTransparency(Char_t  transparency)
 }
 
 //__________________________________________________________
-void TAEDbaseInterface::ShowDisplay(const TString fileName)
+void TAEDbaseInterface::ShowDisplay(const TString fileName, Int_t runNumber)
 {
    if (fgIsDisplayed) {
       gEve->FullRedraw3D(kTRUE);
@@ -231,6 +232,7 @@ void TAEDbaseInterface::ShowDisplay(const TString fileName)
       return;
    }
    
+   fRunNumber = runNumber;
    SetFileName(fileName);
    ReadParFiles();
    CreateRawAction();
