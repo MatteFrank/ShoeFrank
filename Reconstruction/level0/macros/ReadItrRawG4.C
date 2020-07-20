@@ -47,11 +47,11 @@ void FillInnerTracker()
 {
    TAGparaDsc* tgGeo = new TAGparaDsc("tgGeo", new TAGparGeo());
    TAGparGeo* geomapg = (TAGparGeo*)tgGeo->Object();
-   geomapg->FromFile("./geomaps/TAGdetector.map");
+   geomapg->FromFile("./geomaps/TAGdetector.geo");
 
    TAGparaDsc* itGeo    = new TAGparaDsc("itGeo", new TAITparGeo());
    TAITparGeo* geomap   = (TAITparGeo*) itGeo->Object();
-   geomap->FromFile("./geomaps/TAITdetector.map");
+   geomap->FromFile("./geomaps/TAITdetector.geo");
    
    TAGparaDsc*  itConf  = new TAGparaDsc("itConf", new TAITparConf());
    TAITparConf* parconf = (TAITparConf*) itConf->Object();

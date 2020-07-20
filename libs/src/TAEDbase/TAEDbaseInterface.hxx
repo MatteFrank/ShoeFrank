@@ -90,7 +90,7 @@ public:
 
    virtual void SetTransparency(Char_t transparency = 50); //*MENU*
    
-   virtual void ShowDisplay(const TString fileName);
+   virtual void ShowDisplay(const TString fileName, Int_t runNumber = -1);
    
    virtual void LoadGeometry(const Char_t* fileName);
    
@@ -171,7 +171,8 @@ public:
 
 protected:
    TString            fExpName;
-   Int_t              fType;       
+   Int_t              fType;
+   Int_t              fRunNumber;
    Float_t            fWorldSizeZ;
    Float_t            fWorldSizeXY;
    TString            fWorldName;

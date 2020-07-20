@@ -71,7 +71,7 @@ TABMparGeo::TABMparGeo()
    fBmDeltaX(0),
    fDrawWire(false)   
 {
-   fkDefaultGeoName = "./geomaps/TABMdetector.map";
+   fkDefaultGeoName = "./geomaps/TABMdetector.geo";
 }
 
 //------------------------------------------+-----------------------------------

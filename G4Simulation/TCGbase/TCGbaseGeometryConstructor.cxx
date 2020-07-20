@@ -81,7 +81,7 @@ TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName)
 	if (pttoMaterial) fWorldMaterial = pttoMaterial;
    
    // initialise map file for target/beam
-   TString mapFileName = Form("./geomaps/%sTAGdetector.map", fExpName.Data());
+   TString mapFileName = Form("./geomaps/%sTAGdetector.geo", fExpName.Data());
    fpParGeoG->FromFile(mapFileName.Data());
    
    // geometries

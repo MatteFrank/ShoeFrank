@@ -41,7 +41,7 @@ TAGparGeo::TAGparGeo()
   fIonisation(new TAGionisMaterials())
 {
    // Standard constructor
-   fkDefaultGeoName = "./geomaps/TAGdetector.map";
+   fkDefaultGeoName = "./geomaps/TAGdetector.geo";
 }
 
 //______________________________________________________________________________

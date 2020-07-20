@@ -363,6 +363,7 @@ void TAFOeventDisplay::CreateRawAction()
 void TAFOeventDisplay::SetFileName(const TString fileName)
 {
    fReco->SetName(fileName);
+   fReco->SetRunNumber(fRunNumber);
    fReco->SetRunNumber();
 }
 
@@ -782,6 +783,10 @@ void TAFOeventDisplay::UpdateQuadElements(const TString prefix)
    else if (prefix == "it")
       parGeo = fReco->GetParGeoIt();
 
+   // known bug if first event is empty
+   if (fVtxClusDisplay)
+      fVtxClusDisplay->AddHit(-1, 0, 0, 0);
+   
    Int_t nPlanes = parGeo->GetSensorsN();
 
    TAVTntuTrack*  pNtuTrack = 0x0;

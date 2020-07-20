@@ -179,9 +179,11 @@ void LocalReco::OpenFileIn()
 // --------------------------------------------------------------------------------------
 void LocalReco::SetRunNumber()
 {
-   if (fRunNumber != -1)  // if set from outside return, else take from name
+   if (fRunNumber != -1)  { // if set from outside return, else take from name
+      gTAGroot->SetRunNumber(fRunNumber);
       return;
-      
+   }
+   
    // Done by hand shoud be given by DAQ header
    TString name = GetName();
    if (name.IsNull()) return;
@@ -195,9 +197,12 @@ void LocalReco::SetRunNumber()
    
    TString tmp1 = name(pos1+1, len);
    Int_t pos2   = tmp1.First(".");
-      TString tmp  = tmp1(0, pos2);
+   TString tmp  = tmp1(0, pos2);
+   fRunNumber = tmp.Atoi();
    
-   gTAGroot->SetRunNumber(tmp.Atoi());
+   Warning("SetRunNumber()", "Run number not set !, taking number from file: %d", fRunNumber);
+
+   gTAGroot->SetRunNumber(fRunNumber);
 }
 
 //__________________________________________________________

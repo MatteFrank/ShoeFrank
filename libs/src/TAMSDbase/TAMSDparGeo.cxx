@@ -28,7 +28,7 @@ ClassImp(TAMSDparGeo);
 TAMSDparGeo::TAMSDparGeo()
 : TAVTbaseParGeo()
 {
-   fkDefaultGeoName = "./geomaps/TAMSDdetector.map";
+   fkDefaultGeoName = "./geomaps/TAMSDdetector.geo";
 }
 
 //_____________________________________________________________________________

@@ -74,7 +74,7 @@ void FillBm(TString fExpName) {
      
    TAGparaDsc* bmGeo    = new TAGparaDsc("bmGeo", new TABMparGeo());
    TABMparGeo* bmgeomap   = (TABMparGeo*) bmGeo->Object();
-   TString parFileName = "./geomaps/TABMdetector.map";
+   TString parFileName = "./geomaps/TABMdetector.geo";
    bmgeomap->FromFile(parFileName.Data());
 
    TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
@@ -151,7 +151,7 @@ void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242
 
    TAGroot tagr;
    TAGgeoTrafo geoTrafo;
-   TString parFileName = Form("./geomaps/%sFOOT_geo.map", fExpName.Data());
+   TString parFileName = Form("./geomaps/%sFOOT.geo", fExpName.Data());
    geoTrafo.FromFile(parFileName);
 
 

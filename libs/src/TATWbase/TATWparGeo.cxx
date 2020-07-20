@@ -36,7 +36,7 @@ TATWparGeo::TATWparGeo()
 : TAGparTools(),
   fIonisation(new TAGionisMaterials())
 {
-   fkDefaultGeoName = "./geomaps/TATWdetector.map";
+   fkDefaultGeoName = "./geomaps/TATWdetector.geo";
 }
 
 //______________________________________________________________________________

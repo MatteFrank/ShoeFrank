@@ -48,6 +48,7 @@ protected:
    TString         fBaseName;            // base file name
    
    Int_t            fTrigJumpStart;
+   Int_t            fTrigReset;
    map<pair<int,int>,  int>  fTrigJumpFirst;
    
 protected:

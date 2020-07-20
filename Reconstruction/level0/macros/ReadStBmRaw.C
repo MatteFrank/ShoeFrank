@@ -54,7 +54,7 @@ void FillBM()
 {
    TAGparaDsc* bmGeo    = new TAGparaDsc("bmGeo", new TABMparGeo());
    TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
-   geomap->FromFile("./geomaps/TABMdetector.map");
+   geomap->FromFile("./geomaps/TABMdetector.geo");
    
    TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
    TABMparCon* parconf = (TABMparCon*) bmConf->Object();

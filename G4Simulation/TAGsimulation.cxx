@@ -140,7 +140,7 @@ int main(int argc,char** argv)
     GlobalPar::GetPar()->SetDebugLevels();
 
     // initialise geo trafo file
-    TString geoFileName = Form("./geomaps/%sFOOT_geo.map", exp.Data());
+    TString geoFileName = Form("./geomaps/%sFOOT.geo", exp.Data());
 
     // TAG root
     TAGroot tagRoot;

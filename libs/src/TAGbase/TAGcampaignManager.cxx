@@ -1,6 +1,6 @@
 #include "TAGcampaignManager.hxx"
 #include <fstream>
-
+#include <unistd.h>
 #include "TObjArray.h"
 
 #include "GlobalPar.hxx"
@@ -54,14 +54,12 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
    Int_t     number;
    while(!fFileStream->Eof()) {
       TString   name;
-      Int_t     sync;
       Int_t     flag;
       TString   date;
       TString   summary;
 
       fFileStream->ReadItem(number);
       fFileStream->ReadStrings(name);
-      fFileStream->ReadItem(sync);
       fFileStream->ReadItem(flag);
       fFileStream->ReadStrings(date);
       fFileStream->ReadStrings(summary);
@@ -76,10 +74,6 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
       fCamParameter[number].Name = name;
       if(FootDebugLevel(1))
          cout  << "  Campaign name:  "<< fCamParameter[number].Name.Data() << endl;
-      
-      fCamParameter[number].ForceSync = sync;
-      if(FootDebugLevel(1))
-         cout  << "  Force synchonization flag:  "<< fCamParameter[number].ForceSync << endl;
       
       fCamParameter[number].McFlag = flag;
       if(FootDebugLevel(1))
@@ -106,8 +100,10 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
          fCurCampaignNumber = i;
    }
 
-   if (fCurCampaignNumber == -1)
+   if (fCurCampaignNumber == -1) {
       Error("FromFile()", "No campaign with name %s found in database !", fCurCampaignName.Data());
+      exit(0);
+   }
       
    if(FootDebugLevel(1))
       cout  << "  Current Campaign number:  "<< fCurCampaignNumber << endl;
@@ -118,6 +114,10 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
    if (!fCurCampaign->FromFile(curCampaignName))
       return false;
    
+   // Checking file presence
+//    if (!fCurCampaign->CheckFiles())
+//       return false;
+
    return true;
 }
 
@@ -132,7 +132,6 @@ void TAGcampaignManager::Print(Option_t* opt) const
       for (Int_t i = 0; i < fCampaignsN; ++i) {
          cout  << "  Campaign number:  " << fCamParameter[i].Number << endl;
          cout  << "  Campaign name:    " << fCamParameter[i].Name.Data() << endl;
-         cout  << "  Force sync flag:  " << fCamParameter[i].ForceSync << endl;
          cout  << "  MC data flag:     " << fCamParameter[i].McFlag << endl;
          cout  << "  Campaign period:  " << fCamParameter[i].Date.Data() << endl;
          cout  << "  Campaign summary: " << fCamParameter[i].Summary.Data() << endl;
@@ -146,7 +145,6 @@ void TAGcampaignManager::Print(Option_t* opt) const
       cout << "Current campaign number: " << fCurCampaignNumber << endl;
       cout  << "  Campaign number:      " << fCamParameter[i].Number << endl;
       cout  << "  Campaign name:        " << fCamParameter[i].Name.Data() << endl;
-      cout  << "  Force sync flag:      " << fCamParameter[i].ForceSync << endl;
       cout  << "  MC data flag:         " << fCamParameter[i].McFlag << endl;
       cout  << "  Campaign period:      " << fCamParameter[i].Date.Data() << endl;
       cout  << "  Campaign summary:     " << fCamParameter[i].Summary.Data() << endl;
@@ -179,6 +177,7 @@ bool TAGcampaign::FromFile(TString ifile)
 {
    if (!Open(ifile)) {
       Error("FromCamFile()", "failed to open file '%s'", ifile.Data());
+      exit(0);
       return false;
    }
    
@@ -224,7 +223,7 @@ bool TAGcampaign::FromFile(TString ifile)
 
          ReadStringsInts(fileName, array);
          // geomaps
-         if (fileName.Contains("geomaps") && fileName.EndsWith(".map")) {
+         if (fileName.Contains("geomaps") && fileName.EndsWith(".geo")) {
             fFileGeoMap[detName] = fileName;
             fRunsGeoMap[detName] = array;
             if(FootDebugLevel(1))
@@ -333,10 +332,52 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
 }
 
 //_____________________________________________________________________________
+Bool_t TAGcampaign::CheckFiles()
+{
+   for ( map<TString, TString>::const_iterator it = fFileGeoMap.begin(); it != fFileGeoMap.end(); ++it) {
+      const Char_t* name = it->second;
+      
+      if( access(name, F_OK) == -1 ) {
+         Warning("CheckFiles()", "File %s not found !", name);
+         return false;
+      }
+   }
+   
+   for ( map<TString, TString>::const_iterator it = fFileConfMap.begin(); it != fFileConfMap.end(); ++it) {
+      const Char_t* name = it->second;
+
+      if( access(name, F_OK) == -1 ) {
+         Warning("CheckFiles()", "File %s not found !", name);
+         return false;
+      }
+   }
+
+   for ( map<TString, TString>::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it) {
+      const Char_t* name = it->second;
+   
+      if( access(name, F_OK) == -1 ) {
+         Warning("CheckFiles()", "File %s not found !", name);
+         return false;
+      }
+   }
+   
+   for ( map<TString, TString>::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it) {
+      const Char_t* name = it->second;
+      
+      if( access(name, F_OK) == -1 ) {
+         Warning("CheckFiles()", "File %s not found !", name);
+         return false;
+      }
+   }
+
+   return true;
+}
+
+//_____________________________________________________________________________
 Bool_t TAGcampaign::IsDetectorOn(const TString& detName)
 {
-   for ( map<TString, TString>::iterator it = fFileGeoMap.begin(); it != fFileGeoMap.end(); ++it) {
-      TString name = fFileGeoMap[it->first];
+   for ( vector<TString>::iterator it = fDetectorVec.begin(); it != fDetectorVec.end(); ++it) {
+      TString name = *it;
       if (name.Contains(detName))
          return true;
    }

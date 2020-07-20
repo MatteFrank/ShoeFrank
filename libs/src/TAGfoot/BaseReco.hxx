@@ -7,6 +7,7 @@
 
 #include "TAGaction.hxx"
 #include "TAGactTreeWriter.hxx"
+#include "TAGcampaignManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAGbaseWDparTime.hxx"
@@ -114,7 +115,7 @@ public:
    virtual void CloseFileIn() { return; }
    
    //! Set Run number
-   virtual void SetRunNumber();
+   virtual void SetRunNumber() { return; }
    
    //! Open File Out
    virtual void OpenFileOut();
@@ -154,8 +155,8 @@ public:
    //! Set Tracking algorithm
    void SetTrackingAlgo(char c);
   
-   // Set detector to be on respect to the given list
-   void SetIncludes(const vector<TString>& list);
+   // Campaign checks
+   void CampaignChecks();
 
    //! Par geo getters
    TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }
@@ -212,6 +213,7 @@ public:
    
 protected:
    TString               fExpName;
+   TAGcampaignManager*   fCampManager;
    Int_t                 fRunNumber;
    TAGroot*              fTAGroot;             // pointer to TAGroot
    TAGgeoTrafo*          fpFootGeo;           // trafo prointer
