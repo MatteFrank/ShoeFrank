@@ -18,14 +18,17 @@ ClassImp(TAGactNtuCluster2D);
 
 TAGactNtuCluster2D::TAGactNtuCluster2D(const char* name, 
 											 const char* title )
-: TAGaction(name, title)
+: TAGaction(name, title),
+  fFlagSize(-1)
 {
+   
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGactNtuCluster2D::~TAGactNtuCluster2D()
 {
+   delete[] fFlagMap;
 }
 
 //______________________________________________________________________________
@@ -85,7 +88,8 @@ Bool_t TAGactNtuCluster2D::CheckCol(Int_t idx)
 //
 void TAGactNtuCluster2D::SetupMaps(Int_t size)
 {
-   fFlagMap.Set(size);
+   fFlagSize = size;
+   fFlagMap  = new Int_t[size];
 }
 
 //______________________________________________________________________________
@@ -94,6 +98,6 @@ void TAGactNtuCluster2D::ClearMaps()
 {
    fPixelMap.clear();
    fIndexMap.clear();
-   fFlagMap.Reset(-1);
+   memset(fFlagMap, -1, fFlagSize*sizeof(Int_t));
 }
 

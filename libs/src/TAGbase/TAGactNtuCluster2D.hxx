@@ -31,7 +31,8 @@ protected:
    
    map<Int_t, Int_t> fPixelMap; // pixel map;
    map<Int_t, Int_t> fIndexMap; // index map of the pixel;
-   TArrayI           fFlagMap;
+   Int_t*            fFlagMap;
+   Int_t             fFlagSize;
    
    Int_t             fDimX;     //  dimension X of map
    Int_t             fDimY;     //  dimension Y of map
