@@ -29,7 +29,7 @@ TAVTparCal::TAVTparCal()
 : TAVTbaseParCal()
 {
   // Standard constructor
-   fkDefaultCalName = "./config/TAVTdetector.cal";
+   fkDefaultCalName = "./calib/TAVTdetector.cal";
 
 }
 

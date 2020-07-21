@@ -29,7 +29,7 @@ TAITparCal::TAITparCal()
 : TAVTbaseParCal()
 {
   // Standard constructor
-   fkDefaultCalName = "./config/TAITdetector.cal";
+   fkDefaultCalName = "./calib/TAITdetector.cal";
 }
 
 //------------------------------------------+-----------------------------------
