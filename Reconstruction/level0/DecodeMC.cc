@@ -22,7 +22,8 @@ int main (int argc, char *argv[])  {
    Bool_t trk = false;
    Bool_t obj = false;
    Bool_t mth = false;
-
+   Bool_t zmc = false;
+   
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
    
@@ -37,6 +38,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-ntu") == 0)   { ntu = true;   } // enable tree filling
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
+      if(strcmp(argv[i],"-zmc") == 0)   { zmc = true;   } // set Z from MC: default is rec Z from ZID algorithm
       if(strcmp(argv[i],"-obj") == 0)   { obj = true;   } // enable reading from root object
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
 
@@ -53,6 +55,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
          cout<<"      -ntu           : enable tree filling"<<endl;
          cout<<"      -his           : enable crtl histograming"<<endl;
+         cout<<"      -zmc           : use Z from MC truth and not the one reconstructed with TW: set only for global algorithm debug purposes"<<endl;
          cout<<"      -obj           : enable eading from root object"<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
@@ -63,6 +66,14 @@ int main (int argc, char *argv[])  {
    
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
+
+   if (zmc) {
+     pos = out.Last('.');
+     out = out(0, pos);
+     out.Append("_noTWPileUp_Ztrue.root");
+     cout<<out.Data()<<endl;
+   }
+
    BaseReco* locRec = 0x0;
    if (!obj)
       locRec = new LocalRecoMC(exp, in, out);
@@ -86,6 +97,9 @@ int main (int argc, char *argv[])  {
    
    if (mth)
       locRec->EnableM28lusMT();
+
+   if(zmc)
+      locRec->EnableZfromMCtrue();
    
    TStopwatch watch;
    watch.Start();

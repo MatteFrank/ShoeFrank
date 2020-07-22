@@ -19,6 +19,7 @@ int main (int argc, char *argv[])  {
    Bool_t hit = false;
    Bool_t trk = false;
    Bool_t mth = false;
+   Bool_t tw_bar_cal = false;
 
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
@@ -34,6 +35,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
       if(strcmp(argv[i],"-trk") == 0)   { trk = true;   } // enable tracking action
+      if(strcmp(argv[i],"-twbarcal") == 0)   { tw_bar_cal = true;   } // enable tw calibration per bar
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
 
       if(strcmp(argv[i],"-help") == 0)  {
@@ -73,6 +75,10 @@ int main (int argc, char *argv[])  {
    if (trk)
       locRec->EnableTracking();
    
+   if (tw_bar_cal) {
+     locRec->EnableTWcalibPerBar();
+   }
+
    if (runNb != -1)
       locRec->BaseReco::SetRunNumber(runNb);
    
