@@ -31,8 +31,8 @@ set( with_dictionnaries
    TATWactNtuPoint
    TATWparGeo
    TATWdigitizer
-   CChannelMap
-   CCalibrationMap
+   TATWchannelMap
+   TATWcalibrationMap
    XmlParser
    TAGactWDreader
 )

@@ -11,7 +11,7 @@
 using namespace std;
 
 #include "TString.h"
-#include "CChannelMap.hxx"
+#include "TATWchannelMap.hxx"
 #include "TAGpara.hxx"
 
 //##############################################################################
@@ -31,7 +31,7 @@ class TATWparMap : public TAGpara {
     Int_t GetTDID(int add)    const { return fTDchaID.at(add); }
     Int_t GetTDboaID(int add) const { return fTDboaID.at(add); }
     Int_t GetDetID(int add)   const { return fDetID.at(add);   }
-    CChannelMap* GetChannelMap()    { return fcMap;            }
+    TATWchannelMap* GetChannelMap()    { return fcMap;            }
 
     Bool_t IsTWChannel(int iCha);
     Bool_t IsTWBoard(int iBo);
@@ -43,7 +43,7 @@ class TATWparMap : public TAGpara {
     Bool_t  CheckAddr(Int_t i_c) const;
    
   private:
-    CChannelMap* fcMap;
+    TATWchannelMap* fcMap;
     Int_t        fTrefCh;
     vector<int>  fTDchaID;
     vector<int>  fTDboaID;

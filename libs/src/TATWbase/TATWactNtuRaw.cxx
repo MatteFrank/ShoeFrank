@@ -11,7 +11,7 @@
 #include "TMath.h"
 #include "TH1F.h"
 #include <map>
-#include "CCalibrationMap.hxx"
+#include "TATWcalibrationMap.hxx"
 
 /*!
   \class TATWactNtuRaw TATWactNtuRaw.hxx "TATWactNtuRaw.hxx"
@@ -103,7 +103,7 @@ Bool_t TATWactNtuRaw::Action() {
   TAGgeoTrafo* p_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
   p_nturaw->SetupClones();
-  CChannelMap *chmap=p_parmap->GetChannelMap();
+  TATWchannelMap *chmap=p_parmap->GetChannelMap();
   int nhit = p_datraw->GetHitsN();
 
   int ch_num, bo_num;

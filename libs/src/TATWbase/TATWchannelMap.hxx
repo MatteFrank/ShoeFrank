@@ -14,7 +14,7 @@ typedef std::tuple <Int_t,Int_t,Int_t> TChannelBoardTuple;
 typedef std::map<Int_t,TChannelBoardTuple> TChannelPairMapType;
 
 
-class CChannelMap : public TAGobject
+class TATWchannelMap : public TAGobject
 {
 private:
 	TMapBarIdLayerId fBarLayer;
@@ -22,7 +22,7 @@ private:
    bool fChannelMapIsOk;
    
 public:
-   CChannelMap();
+   TATWchannelMap();
    bool Exists(Int_t BarId);
 	void LoadChannelMap(std::string Filename);
    std::vector<Int_t> GetBarIds();
@@ -33,7 +33,7 @@ public:
    TChannelPairMapType::iterator end()            { return fChannelBarMap.end();   }
    Int_t GetNumberOfBars()                  const { return fChannelBarMap.size();  }
    
-   ClassDef(CChannelMap, 0)
+   ClassDef(TATWchannelMap, 0)
 };
 
 #endif

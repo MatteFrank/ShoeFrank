@@ -32,7 +32,7 @@ TATWparCal::TATWparCal()
 {
 
   // Standard constructor
-  cMapCal=new CCalibrationMap();
+  cMapCal=new TATWcalibrationMap();
 
   m_parGeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
 

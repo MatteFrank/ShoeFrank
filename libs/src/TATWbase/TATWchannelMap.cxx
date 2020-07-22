@@ -1,18 +1,18 @@
 #include "TError.h"
 
-#include "CChannelMap.hxx"
+#include "TATWchannelMap.hxx"
 #include "XmlParser.hxx"
 #include "GlobalPar.hxx"
 
-ClassImp(CChannelMap)
+ClassImp(TATWchannelMap)
 
-CChannelMap::CChannelMap()
+TATWchannelMap::TATWchannelMap()
 : TAGobject(),
   fChannelMapIsOk(false)
 {
 }
 
-void CChannelMap::LoadChannelMap(std::string FileName)
+void TATWchannelMap::LoadChannelMap(std::string FileName)
 {
 	if (gSystem->AccessPathName(FileName.c_str()))
 	{
@@ -79,7 +79,7 @@ void CChannelMap::LoadChannelMap(std::string FileName)
 	fChannelMapIsOk=true;
 }
 
-bool CChannelMap::Exists(Int_t BarId)
+bool TATWchannelMap::Exists(Int_t BarId)
 {
 	if (fChannelBarMap.count(BarId)==0)
 	{
@@ -88,7 +88,7 @@ bool CChannelMap::Exists(Int_t BarId)
 	return true;
 }
 
-std::vector<Int_t> CChannelMap::GetBarIds()
+std::vector<Int_t> TATWchannelMap::GetBarIds()
 {
 	std::vector<Int_t> v;
 	for(auto it = fChannelBarMap.begin(); it != fChannelBarMap.end(); ++it)

@@ -21,7 +21,7 @@
 #include "TAGparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
 
-#include "CCalibrationMap.hxx"
+#include "TATWcalibrationMap.hxx"
 
 #include "Parameters.h"
 
@@ -52,7 +52,7 @@ private:
   
   static TString fgkBBparamName;    // default BBparameters for Z identification with TW
   static TString fgkDefaultCalName; // default detector charge calibration file
-  CCalibrationMap *cMapCal;
+  TATWcalibrationMap *cMapCal;
   
   TAGparGeo*      m_parGeo;
   TAGgeoTrafo*    m_geoTrafo;
@@ -83,7 +83,7 @@ public:
   virtual ~TATWparCal();
   
   // Calibration
-  inline CCalibrationMap* getCalibrationMap() {return cMapCal;}
+  inline TATWcalibrationMap* getCalibrationMap() {return cMapCal;}
   //
   //! Read from file
   Bool_t          FromFile(const TString& name = "");

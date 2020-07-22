@@ -5,8 +5,8 @@
 #pragma link off all functions;
 
 
-#pragma link C++ class CCalibrationMap+;
-#pragma link C++ class CChannelMap+;
+#pragma link C++ class TATWcalibrationMap+;
+#pragma link C++ class TATWchannelMap+;
 
 #pragma link C++ class TATWrawHit+;
 #pragma link C++ class TATWdatRaw+;

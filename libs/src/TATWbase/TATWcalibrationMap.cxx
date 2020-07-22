@@ -1,18 +1,18 @@
 #include "TError.h"
 
-#include "CCalibrationMap.hxx"
+#include "TATWcalibrationMap.hxx"
 #include "XmlParser.hxx"
 #include "GlobalPar.hxx"
 
-ClassImp(CCalibrationMap)
+ClassImp(TATWcalibrationMap)
 
-CCalibrationMap::CCalibrationMap()
+TATWcalibrationMap::TATWcalibrationMap()
 : TAGobject(),
   fCalibrationMapIsOk(false)
 {
 }
 
-void CCalibrationMap::LoadCalibrationMap(std::string FileName)
+void TATWcalibrationMap::LoadCalibrationMap(std::string FileName)
 {
 	if (gSystem->AccessPathName(FileName.c_str()))
 	{
@@ -45,7 +45,7 @@ void CCalibrationMap::LoadCalibrationMap(std::string FileName)
 	}
 }
 
-void CCalibrationMap::ExportToFile(std::string FileName)
+void TATWcalibrationMap::ExportToFile(std::string FileName)
 {
 	XmlParser x;
 	XMLNodePointer_t main=x.CreateMainNode("CALIBRATION");
@@ -62,7 +62,7 @@ void CCalibrationMap::ExportToFile(std::string FileName)
 	x.ExportToFile(FileName,main);
 }
 
-bool CCalibrationMap::Exists(Int_t BarId)
+bool TATWcalibrationMap::Exists(Int_t BarId)
 {
 	if (fCalibrationMap.count(BarId)==0)
 	{

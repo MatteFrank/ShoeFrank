@@ -1,5 +1,5 @@
-#ifndef CCALIBRATIONMAP_H
-#define CCALIBRATIONMAP_H
+#ifndef TATWCALIBRATIONMAP_H
+#define TATWCALIBRATIONMAP_H
 #include <string>
 #include <map>
 #include <TSystem.h>
@@ -8,14 +8,14 @@
 
 typedef std::map<Int_t,std::vector<Double_t> > TCalibrationMapType;
 
-class CCalibrationMap : public TAGobject
+class TATWcalibrationMap : public TAGobject
 {
 private:
 	TCalibrationMapType fCalibrationMap;
 	bool fCalibrationMapIsOk;
    
 public:
-	CCalibrationMap();
+	TATWcalibrationMap();
 	void LoadCalibrationMap(std::string Filename);
 	bool Exists(Int_t BarId);
    void ExportToFile(std::string FileName);
@@ -28,7 +28,7 @@ public:
    void SetBarParameter(Int_t BarId, UInt_t ParameterNumber, Double_t p) { fCalibrationMap[BarId][ParameterNumber]=p;}
    void AddBar(Int_t BarId) { fCalibrationMap[BarId].resize(NUMBEROFCALIBRATIONPARAMETERS);}
 
-   ClassDef(CCalibrationMap, 0)
+   ClassDef(TATWcalibrationMap, 0)
 };
 
 #endif
