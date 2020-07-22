@@ -1,7 +1,7 @@
 #include "TError.h"
 
 #include "TATWchannelMap.hxx"
-#include "XmlParser.hxx"
+#include "TAGxmlParser.hxx"
 #include "GlobalPar.hxx"
 
 ClassImp(TATWchannelMap)
@@ -21,7 +21,7 @@ void TATWchannelMap::LoadChannelMap(std::string FileName)
 	// reset channel map
 	fChannelBarMap.clear();
 	// parse xml
-	XmlParser x;
+	TAGxmlParser x;
 	x.ReadFile(FileName);
 	// create a verctor containing the "BAR" nodes
 	std::vector<XMLNodePointer_t> BarVector=x.GetChildNodesByName(x.GetMainNode(),"BAR");

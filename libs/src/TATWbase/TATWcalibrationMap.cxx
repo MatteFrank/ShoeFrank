@@ -1,7 +1,7 @@
 #include "TError.h"
 
 #include "TATWcalibrationMap.hxx"
-#include "XmlParser.hxx"
+#include "TAGxmlParser.hxx"
 #include "GlobalPar.hxx"
 
 ClassImp(TATWcalibrationMap)
@@ -19,7 +19,7 @@ void TATWcalibrationMap::LoadCalibrationMap(std::string FileName)
       Error("LoadCalibrationMap()","File %s doesn't exist",FileName.c_str());
 	}
 	// reset channel map
-	XmlParser x;
+	TAGxmlParser x;
 	x.ReadFile(FileName);
 	std::vector<XMLNodePointer_t> BarVector;
 	BarVector=x.GetChildNodesByName(x.GetMainNode(),"BAR");
@@ -47,7 +47,7 @@ void TATWcalibrationMap::LoadCalibrationMap(std::string FileName)
 
 void TATWcalibrationMap::ExportToFile(std::string FileName)
 {
-	XmlParser x;
+	TAGxmlParser x;
 	XMLNodePointer_t main=x.CreateMainNode("CALIBRATION");
 	x.AddElementWithContent(TString::Format("DATE").Data(),main," ");
 	x.AddElementWithContent(TString::Format("DESCRIPTION").Data(),main," ");

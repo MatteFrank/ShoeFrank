@@ -4,12 +4,7 @@
 #include "TString.h"
 
 
-/* naming
-<element attribute=1>
-content
-</element>
-*/
-class XmlParser
+class TAGxmlParser
 {
 private:
   // Object to handle xml parsing engine
@@ -19,10 +14,10 @@ private:
    
 public:
   // Create the TXMLEngine
-  XmlParser();
+  TAGxmlParser();
   
   // Desctructor takes care of destroying the fXMLEngine and fXMLDoc
-  ~XmlParser();
+  ~TAGxmlParser();
    
   // Load xml file
   void ReadFile(std::string FileName);
