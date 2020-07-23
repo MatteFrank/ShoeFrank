@@ -78,7 +78,8 @@ TGeoMaterial* TAGmaterials::CreateMaterial(TString name, Float_t density,
    
    if (fgkCommonName[name] != "") {
       formula = fgkCommonName[name];
-      Info("CreateMaterial()", "Using formula %s for material %s", formula.Data(), name.Data());
+      if(FootDebugLevel(1))
+	Info("CreateMaterial()", "Using formula %s for material %s", formula.Data(), name.Data());
    }
 
    GetIsotopes(formula);
@@ -146,7 +147,8 @@ TGeoMixture* TAGmaterials::CreateMixture(TString formula, const TString densitie
       
       TString name;
       if ((name = FindByValue(listMat[i])) != "") {
-         Info("CreateMaterial()", "Using formula %s for material %s", name.Data(), listMat[i].Data());
+	if(FootDebugLevel(1))
+	  Info("CreateMaterial()", "Using formula %s for material %s", name.Data(), listMat[i].Data());
          listMat[i] = name;
       }
 

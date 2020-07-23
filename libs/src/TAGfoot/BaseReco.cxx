@@ -461,11 +461,6 @@ void BaseReco::ReadParFiles()
          parFileName = Form("./config/%sTATWbarsMapStatus.map", fExpName.Data());
          parCal->FromBarStatusFile(parFileName.Data());
 
-	// fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
-	// TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
-	// parFileName = Form("./config/%sTATWChannelMap.xml", fExpName.Data());
-	// parMap->FromFile(parFileName.Data());
-	
       }
    }
    

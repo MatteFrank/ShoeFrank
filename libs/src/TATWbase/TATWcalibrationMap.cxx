@@ -171,8 +171,6 @@ void TATWcalibrationMap::LoadTofCalibrationMap(std::string FileName)
 
 //_____________________________________________________________________
 
-//_____________________________________________________________________
-
 void TATWcalibrationMap::LoadBarEnergyCalibrationMap(std::string FileName)
 {
   if (gSystem->AccessPathName(FileName.c_str()))

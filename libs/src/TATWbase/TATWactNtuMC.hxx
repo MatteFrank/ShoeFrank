@@ -43,12 +43,10 @@ private:
     EVENT_STRUCT*   fEventStruct;
     TATWdigitizer*  fDigitizer;        // digitizer
 
-    // TATWparGeo*     f_pargeo;
-    // TATWparMap*     f_parmap;
     TATWparCal*     f_parcal;
 
-    TAGparGeo*  f_pargeo;
-    TAGgeoTrafo* f_geoTrafo;
+    TAGparGeo*      f_pargeo;
+    TAGgeoTrafo*    f_geoTrafo;
   
     Int_t fZbeam;  
     Int_t fCnt;

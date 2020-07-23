@@ -57,7 +57,7 @@ TATWactNtuMC::TATWactNtuMC(const char* name,
 
   f_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-  f_pargeo = (TAGparGeo*)(TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+  f_pargeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
   
   fZbeam = f_pargeo->GetBeamPar().AtomicNumber;
   
@@ -111,7 +111,7 @@ void TATWactNtuMC::CreateHistogram()
      fpHisZID_MCtrue = new TH2I("twZID_MCtrue", "twZID_MCtrue", fZbeam+3,-2.5,(int)fZbeam+0.5, fZbeam+2,-1.5,(int)fZbeam+0.5);
      AddHistogram(fpHisZID_MCtrue);
 
-     for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
+     for(int ilayer=0; ilayer<(int)nLayers; ilayer++) {
        fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d_MCtrue",ilayer),Form("dE_vs_Tof_ilayer%d_MCtrue",ilayer),500,0.,50.,480,0.,120.);
        AddHistogram(fpHisElossTof_MCtrue[ilayer]);
      }
@@ -164,8 +164,6 @@ bool TATWactNtuMC::Action() {
 
    if ( FootDebugLevel(1)> 0 )
      cout << "TATWactNtuMC::Action() start" << endl;
-
-   // TATWparCal* m_parcal = (TATWparCal*) fpCalPar->Object();
 
     //The number of hits inside the TW
    if ( FootDebugLevel(1)> 0 )
