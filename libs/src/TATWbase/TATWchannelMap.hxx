@@ -7,7 +7,7 @@
 #include "TAGobject.hxx"
 #include "Parameters.h"
 
-enum TLayer {NoLayer=-1,Front=0,Rear=1};
+//enum TLayer {NoLayer=-1,Front=0,Rear=1};
 
 typedef std::map<Int_t,TLayer> TMapBarIdLayerId;
 typedef std::tuple <Int_t,Int_t,Int_t> TChannelBoardTuple;

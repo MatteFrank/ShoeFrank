@@ -58,8 +58,8 @@ private:
    TH1F* fpHisRecTofMc;
    TH2I* fpHisZID;
    TH2I* fpHisZID_MCtrue;
-   TH2D* fpHisElossTof_MCrec[TATWparCal::kLayers];
-   TH2D* fpHisElossTof_MCtrue[TATWparCal::kLayers];
+   TH2D* fpHisElossTof_MCrec[nLayers];
+   TH2D* fpHisElossTof_MCtrue[nLayers];
    // vector of histo with the same size of the ion beam atomic number
    vector<TH2D*> fpHisElossTof_MC;
    vector<TH2D*> fpHisElossTof;

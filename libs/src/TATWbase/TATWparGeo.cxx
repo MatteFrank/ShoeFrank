@@ -21,7 +21,7 @@
 
 #include "TATWparGeo.hxx"
 #include "TAGroot.hxx"
-
+#include "Parameters.h"
 
       TString TATWparGeo::fgkDefParaName     = "twGeo";
 const TString TATWparGeo::fgkBaseName        = "TW";
@@ -389,15 +389,31 @@ void TATWparGeo::SetBarColorOff(Int_t bar, Int_t view)
 //_____________________________________________________________________________
 Int_t TATWparGeo::GetBarId(Int_t layer, Float_t xGlob, Float_t yGlob)
 {
-   Int_t barId = -99;
+   Int_t barId = -1;
+
+   // TW acceptance btw (-20,20) in the bar crossing region
+   if(xGlob>fBarsN || xGlob<-fBarsN || yGlob>fBarsN || yGlob<-fBarsN) {
+     if(FootDebugLevel(1)) Error("GetBarId()", " Reconstructed position out of TW acceptance: (x,y)=(%.1f,%.1f)",xGlob, yGlob);
+     return -1;
+   }   // remove to take in the TW acceptance also the not crossed regions btw (-22,22)
+
+   if (layer == LayerY)
+      barId =  -xGlob/GetBarWidth() + fBarsN/2;
+
+   else if (layer == LayerX)
+      barId =  -yGlob/GetBarWidth() + fBarsN/2;
    
-   if (layer == 0)
-      barId =  xGlob/GetBarWidth() + fBarsN/2;
-   else if (layer == 1)
-      barId =  yGlob/GetBarWidth() + fBarsN/2;
+   if (barId < 0 || barId > fBarsN) {
+   // if (barId < 0 || barId >= fBarsN) {
+     if(FootDebugLevel(1)) Error("GetBarId()", " Wrong bar Id (%d) for global position (%.1f,%.1f)", barId, xGlob, yGlob);
+      
+      return -1;
+   }
+   else if(barId==fBarsN) {
+     barId--;
+      Info("GetBarId()", " bar Id (%d) for global position (%.1f,%.1f)", barId, xGlob, yGlob);
+   }
    
-   if (barId < 0 || barId >= fBarsN)
-      Error("GetBarId()", " Wrong bar Id (%d) for global position (%.1f,%.1f)", barId, xGlob, yGlob);
    
    barId += fgkLayerOffset*layer;
    

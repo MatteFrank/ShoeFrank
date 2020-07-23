@@ -98,11 +98,11 @@ void TATWactNtuHitMC::CreateHistogram()
    fpHisZID = new TH2I("twZID", "twZID", fZbeam+3,-2.5,(int)fZbeam+0.5, fZbeam+2,-1.5,(int)fZbeam+0.5);
    AddHistogram(fpHisZID);
    
-   if(fDigitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
+   if(fDigitizer->IsMCtrue()) {  // only for ZID algorithm debug purposes
       fpHisZID_MCtrue = new TH2I("twZID_MCtrue", "twZID_MCtrue", fZbeam+3,-2.5,(int)fZbeam+0.5, fZbeam+2,-1.5,(int)fZbeam+0.5);
       AddHistogram(fpHisZID_MCtrue);
       
-      for(int ilayer=0; ilayer<TATWparCal::kLayers; ilayer++) {
+      for(int ilayer=0; ilayer<nLayers; ilayer++) {
          fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d_MCtrue",ilayer),Form("dE_vs_Tof_ilayer%d_MCtrue",ilayer),500,0.,50.,480,0.,120.);
          AddHistogram(fpHisElossTof_MCtrue[ilayer]);
       }
@@ -119,7 +119,7 @@ void TATWactNtuHitMC::CreateHistogram()
    }
    
    
-   for(int ilayer=0; ilayer<TATWparCal::kLayers; ilayer++) {
+   for(int ilayer=0; ilayer<nLayers; ilayer++) {
       fpHisElossTof_MCrec[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),500,0.,50.,480,0.,120.);
       AddHistogram(fpHisElossTof_MCrec[ilayer]);
    }
@@ -170,7 +170,7 @@ bool TATWactNtuHitMC::Action() {
    //clear vectors
    fVecPuOff.clear();
    
-   if(fDigitizer->SetPileUpOff())
+   if(fDigitizer->IsPileUpOff())
       cout<<" WARNING!!! Pile Up Off only for ZID algorithm debug purposes...in TATWdigitizer.cxx constructor set fPileUpOff(false)"<<endl;
    
    // taking the tof for each TW hit with respect to the first hit of ST...for the moment not considered the possibility of multiple Hit in the ST, if any
@@ -217,7 +217,7 @@ bool TATWactNtuHitMC::Action() {
       if(FootDebugLevel(1))
          cout<<"trueEloss::"<<edep<<" trueTof::"<<trueTof<<" truePos::"<<truePos<<endl;
       
-      if(fDigitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
+      if(fDigitizer->IsMCtrue()) {  // only for ZID algorithm debug purposes
          
          TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
          TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
@@ -292,7 +292,7 @@ bool TATWactNtuHitMC::Action() {
    }
    
    
-   if( fDigitizer->SetPileUpOff() ) {
+   if( fDigitizer->IsPileUpOff() ) {
       
       
       for(auto it=fVecPuOff.begin(); it !=fVecPuOff.end(); ++it) {
@@ -317,7 +317,7 @@ bool TATWactNtuHitMC::Action() {
          
          if(FootDebugLevel(1)) {
             
-            if(!fDigitizer->SetMCtrue()) {  // only for ZID algorithm debug purposes
+            if(!fDigitizer->IsMCtrue()) {  // only for ZID algorithm debug purposes
                if(Zrec>0 && Z>0) {
                   fCnt++;
                   if(Zrec!=Z) {
@@ -372,7 +372,7 @@ bool TATWactNtuHitMC::Action() {
             cout<<"recEloss::"<<recEloss<<" recTof::"<<recTof<<" recPos::"<<recPos<<endl;
          
          // set an energy threshold --> TODO: to be tuned on data. On GSI data 50mV over all the bars but the central ones. To be set for different energy campaigns
-         if(!fDigitizer->IsOverEnergyThreshold(recEloss)) {
+         if(!fDigitizer->IsOverEnergyThreshold(0,recEloss)) {
             if(FootDebugLevel(1))
                printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());
             
