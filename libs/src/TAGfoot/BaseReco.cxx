@@ -130,6 +130,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
       GlobalPar::GetPar()->IncludeTW(true);
    }
    
+   // load campaign file (check if experiment name is in database
    fCampManager = new TAGcampaignManager(expName);
    fCampManager->FromFile();
 }
@@ -155,6 +156,7 @@ void BaseReco::CampaignChecks()
       }
    }
    
+   // check run number vs current campaign
    TArrayI runArray = fCampManager->GetCurRunArray();
    Bool_t runOk = false;
    
@@ -180,7 +182,7 @@ void BaseReco::BeforeEventLoop()
     
    OpenFileIn();
    SetRunNumber();
-  // CampaignChecks();
+ //  CampaignChecks();
 
    AddRawRequiredItem();
    AddRecRequiredItem();
