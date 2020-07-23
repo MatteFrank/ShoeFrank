@@ -96,7 +96,9 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fFlagHits(false),
    fFlagHisto(false),
    fFlagTrack(false),
+   fFlagTWbarCalib(false),
    fgTrackingAlgo("Full"),
+   fFlagZtrueMC(false),
    fFlagMC(false),
    fM28ClusMtFlag(false)
 {
@@ -314,7 +316,7 @@ void BaseReco::ReadParFiles()
         
      fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
      TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
-     parFileName = Form("./config/%sTATWChannelMap.xml", fExpName.Data());
+     parFileName = Form("./config/%sTATWChannelMapXML.map", fExpName.Data());
      parMap->FromFile(parFileName.Data());
 
      fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
@@ -416,11 +418,55 @@ void BaseReco::ReadParFiles()
       
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
-      parCal->FromFile(Form("./config/%sTATWCalibrationMap.xml", fExpName.Data()));
+      Bool_t isTof_calib = false;
+      TString parFileName;
+      if(fFlagTWbarCalib) {
+	parFileName = Form("./config/%sTATW_Energy_Calibration_perBar.cal", fExpName.Data());
+	parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
+      }
+      else {
+	parFileName = Form("./config/%sTATW_Energy_Calibration.cal", fExpName.Data());
+	parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
+
+	Bool_t elossTuning = false;
+
+	if(!fFlagMC)
+	  elossTuning = true;
+	
+	if(elossTuning) {
+	  if(FootDebugLevel(0))
+	    Info("ReadParFiles()","Eloss tuning for GSI data status:: ON");
+	  parFileName = Form("./config/%sTATWEnergyTuning.cal", fExpName.Data());
+	  parCal->FromElossTuningFile(parFileName.Data());
+	}
+      }
+      
+      isTof_calib = true;
+      if(fFlagTWbarCalib) {
+	parFileName = Form("./config/%sTATW_Tof_Calibration_perBar.cal", fExpName.Data());
+	parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
+      }
+      else {
+	parFileName = Form("./config/%sTATW_Tof_Calibration.cal", fExpName.Data());
+	parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
+      }
 
       TString exp_name = fExpName.IsNull() ? "" : "_" + fExpName(0,fExpName.First('/'));
-      TString parFileName = Form("./config/%sTATW_BBparameters_%d%s_%d%s.cfg", fExpName.Data(),A_beam,ion_name.Data(),(int)(kinE_beam*TAGgeoTrafo::GevToMev()),exp_name.Data());
-      parCal->FromFileZID(Z_beam,parFileName.Data());
+      parFileName = Form("./config/%sTATW_BBparameters_%d%s_%d%s.cfg", fExpName.Data(),A_beam,ion_name.Data(),(int)(kinE_beam*TAGgeoTrafo::GevToMev()),exp_name.Data());
+      parCal->FromFileZID(parFileName.Data(),Z_beam);
+
+
+      if(fFlagMC) { // set in MC threshold and active bars from data informations
+
+	parFileName = Form("./config/%sTATWbarsMapStatus.map", fExpName.Data());
+	parCal->FromBarStatusFile(parFileName.Data());
+
+	// fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
+	// TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
+	// parFileName = Form("./config/%sTATWChannelMap.xml", fExpName.Data());
+	// parMap->FromFile(parFileName.Data());
+	
+      }
    }
    
    // initialise par files for caloriomter

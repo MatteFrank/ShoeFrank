@@ -18,14 +18,18 @@
 #include "TATWntuRaw.hxx"
 #include "TATWparGeo.hxx"
 
+#include "TAGgeoTrafo.hxx"
+
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
+
+#include "Parameters.h"
 
 class TATWdigitizer;
 
 class TATWactNtuMC : public TAGaction {
 public:
-  explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, TAGparaDsc* p_parcal=0, TAGparaDsc *p_pargeo=0, EVENT_STRUCT* evStr=0);
+  explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, TAGparaDsc* p_parcal=0, TAGparaDsc *p_pargeo=0, EVENT_STRUCT* evStr=0, Bool_t isZmc = false);
     virtual  ~TATWactNtuMC();
 
     virtual bool  Action();
@@ -33,18 +37,25 @@ public:
     void          CreateHistogram();
 
 private:
-    TAGdataDsc*     m_hitContainer;	// output data dsc
+    TAGdataDsc*     fHitContainer;	// output data dsc
     TAGparaDsc*     fpCalPar;           // calibration parameter dsc
     TAGparaDsc*     fParGeo;            // beam parameter dsc
-    EVENT_STRUCT*   m_eventStruct;
-    TATWdigitizer*  m_Digitizer;        // digitizer
+    EVENT_STRUCT*   fEventStruct;
+    TATWdigitizer*  fDigitizer;        // digitizer
+
+    // TATWparGeo*     f_pargeo;
+    // TATWparMap*     f_parmap;
+    TATWparCal*     f_parcal;
 
     TAGparGeo*  f_pargeo;
-
+    TAGgeoTrafo* f_geoTrafo;
+  
     Int_t fZbeam;  
     Int_t fCnt;
     Int_t fCntWrong;
-   
+
+    Bool_t fIsZtrueMC;
+  
     TH1F* fpHisHitCol;
     TH1F* fpHisHitLine;
     TH1F* fpHisHitMap;
@@ -54,13 +65,14 @@ private:
     TH1F* fpHisRecTofMc;
     TH2I* fpHisZID;
     TH2I* fpHisZID_MCtrue;
-    TH2D* fpHisElossTof_MCrec[TATWparCal::kLayers];
-    TH2D* fpHisElossTof_MCtrue[TATWparCal::kLayers];
+    TH2D* fpHisElossTof_MCrec[nLayers];
+    TH2D* fpHisElossTof_MCtrue[nLayers];
     // vector of histo with the same size of the ion beam atomic number
     vector<TH2D*> fpHisElossTof_MC;
     vector<TH2D*> fpHisElossTof;
     vector<TH1F*> fpHisDistZ_MC;
     vector<TH1F*> fpHisDistZ;
+    vector<TH1D*> fpHisResPos;
    
     map<int, TATWntuHit*> fMapPU; //! map for pilepup
     vector<TATWntuHit*> fVecPuOff; //! vector for pilepup Off

@@ -9,8 +9,6 @@
 #define WAVEFORMBINS 1024
 #define NUMBEROFCHANNELS 18
 #define MAXNUMBEROFBOARDS 16
-#define NUMBEROFBARS 40
-#define NUMBEROFLAYERS 2
 #define PEDESTALSTARTBIN 10
 #define PEDESTALSTOPBIN 60
 
@@ -33,11 +31,22 @@
 #define NUMBEROFCALIBRATIONPARAMETERS 2
 #define NUMBEROFPARTICLES 2
 
-enum ParticleType {None=-1,Proton=0, Carbon=1};
+enum ParticleType {None=-1,Proton,Helium,Carbon,Oxygen};
 
-static std::map<int,std::string> ParticleName={{-1,"None"},{0,"Proton"},{1,"Carbon"}};
+static std::map<ParticleType,std::string> ParticleName={{None,"None"},{Proton,"Proton"},{Helium,"Helium"},{Carbon,"Carbon"},{Oxygen,"Oxygen"}};
 
-static std::map<int,std::string> LayerName={{1,"Front"},{0,"Rear"}};
+enum TLayer {NoLayer=-1,LayerX=1,LayerY=0};  // layer1--> horizontal bars, layer0--> vertical bars
+
+static std::map<TLayer,std::string> LayerName={{LayerX,"LayerX"},{LayerY,"LayerY"}};
+
+// TW parameters
+enum TWparam
+  {
+   nLayers = 2,
+   nSlats = 40,
+   nSlatsPerLayer = nSlats/nLayers,              // 20
+   nSlatCross = nSlatsPerLayer*nSlatsPerLayer    // 400
+  };
 
 
 #endif
