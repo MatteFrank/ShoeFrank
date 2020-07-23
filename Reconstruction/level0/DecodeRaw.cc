@@ -61,6 +61,13 @@ int main (int argc, char *argv[])  {
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
    
+   if (tw_bar_cal) {
+     pos = out.Last('.');
+     out = out(0, pos);
+     out.Append("_TWBarCalib.root");
+     cout<<out.Data()<<endl;
+   }
+   
    LocalReco* locRec = new LocalReco(exp, in, out);
 
    // global setting
