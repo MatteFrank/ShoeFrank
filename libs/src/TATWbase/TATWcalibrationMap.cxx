@@ -533,7 +533,7 @@ Int_t TATWcalibrationMap::GetNumberOfElossPos() const
   if(fCalibElossMapLayX.size() == fCalibElossMapLayX.size())
     return fCalibElossMapLayX.size();
   else {
-    Error("LoadTofCalibrationMap()","Different number of position btw LayerX (%d) and LayerY (%d)",fCalibElossMapLayX.size() , fCalibElossMapLayX.size());
+    Error("LoadTofCalibrationMap()","Different number of position btw LayerX (%lu) and LayerY (%lu)",fCalibElossMapLayX.size() , fCalibElossMapLayX.size());
     return -1;
   }
 }
@@ -543,7 +543,7 @@ Int_t TATWcalibrationMap::GetNumberOfTofPos() const
   if(fCalibTofMapLayX.size() == fCalibTofMapLayX.size())
     return fCalibTofMapLayX.size();
   else {
-    Error("LoadTofCalibrationMap()","Different number of position btw LayerX (%d) and LayerY (%d)",fCalibTofMapLayX.size() , fCalibTofMapLayX.size());
+    Error("LoadTofCalibrationMap()","Different number of position btw LayerX (%lu) and LayerY (%lu)",fCalibTofMapLayX.size() , fCalibTofMapLayX.size());
     return -1;
   }
 }

@@ -175,7 +175,7 @@ Bool_t TATWparCal::FromFileZID(const TString& name, Int_t Zbeam) {
   
   if (!Open(nameExp)) return false;
 
-  Info("FromFileZID()",Form("Open file %s for Bethe-Bloch parametrization"));
+  Info("FromFileZID()", "Open file %s for Bethe-Bloch parametrization", name.Data());
   
   Double_t* tmp = new Double_t[6];
   
@@ -228,8 +228,8 @@ Bool_t TATWparCal::FromBarStatusFile(const TString& name) {
 
   if (!Open(nameExp)) return false;
 
-  // if(FootDebugLevel(1))
-  Info("FromBarStatusFile()",Form("Open file %s"));
+ // if(FootDebugLevel(1))
+     Info("FromBarStatusFile()", "Open file %s", name.Data());
 
   Double_t* tmp = new Double_t[4];
   
@@ -286,7 +286,7 @@ Double_t TATWparCal::GetElossThreshold(Int_t layer, Int_t bar)
 
   else {
 
-    Error("GetElossThreshold",Form("No pair layer (%d), bar (%d) found!! Set Eloss Thresholt to -1",layer,bar));
+    Error("GetElossThreshold","No pair layer (%d), bar (%d) found!! Set Eloss Thresholt to -1",layer,bar);
     return -1;
   }
 }
@@ -305,7 +305,7 @@ Bool_t TATWparCal::IsTWbarActive(Int_t layer, Int_t bar)
 
   else{
 
-    Error("IsTWbarActive",Form("No pair layer (%d), bar (%d) found!!",layer,bar));
+    Error("IsTWbarActive", "No pair layer (%d), bar (%d) found!!",layer,bar);
     return 0;
 
   }
