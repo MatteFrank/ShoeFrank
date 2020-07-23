@@ -423,10 +423,10 @@ void BaseReco::ReadParFiles()
       Bool_t isTof_calib = false;
       TString parFileName;
       if(fFlagTWbarCalib) {
-         parFileName = Form("./config/%sTATW_Energy_Calibration_perBar.cal", fExpName.Data());
+         parFileName = Form("./calib/%sTATW_Energy_Calibration_perBar.cal", fExpName.Data());
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
       } else {
-         parFileName = Form("./config/%sTATW_Energy_Calibration.cal", fExpName.Data());
+         parFileName = Form("./calib/%sTATW_Energy_Calibration.cal", fExpName.Data());
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
 
          Bool_t elossTuning = false;
@@ -437,17 +437,17 @@ void BaseReco::ReadParFiles()
          if(elossTuning) {
             if(FootDebugLevel(0))
                Info("ReadParFiles()","Eloss tuning for GSI data status:: ON");
-            parFileName = Form("./config/%sTATWEnergyTuning.cal", fExpName.Data());
+            parFileName = Form("./calib/%sTATWEnergyTuning.cal", fExpName.Data());
             parCal->FromElossTuningFile(parFileName.Data());
          }
       }
       
       isTof_calib = true;
       if(fFlagTWbarCalib) {
-         parFileName = Form("./config/%sTATW_Tof_Calibration_perBar.cal", fExpName.Data());
+         parFileName = Form("./calib/%sTATW_Tof_Calibration_perBar.cal", fExpName.Data());
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
       } else {
-         parFileName = Form("./config/%sTATW_Tof_Calibration.cal", fExpName.Data());
+         parFileName = Form("./calib/%sTATW_Tof_Calibration.cal", fExpName.Data());
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
       }
 
