@@ -23,10 +23,10 @@ TATWpoint::TATWpoint()
    m_posErr(),
    m_positionG(),
    m_posErrG(),
-   m_column(0),
    m_row(0),
-   m_columnHit(0x0),
+   m_column(0),
    m_rowHit(0x0),
+   m_columnHit(0x0),
    m_de1(0.),
    m_de2(0.),
    m_time(0.),
@@ -37,26 +37,26 @@ TATWpoint::TATWpoint()
 
 //______________________________________________________________________________
 //  build a point
-TATWpoint::TATWpoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit )
+TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double dy, TATWntuHit* colHit )
 : TAGcluster(),
    m_position(x, y, 0),
    m_posErr(dx, dy, 0),
-   m_columnHit(new TATWntuHit(*colHit)),
    m_rowHit(new TATWntuHit(*rowHit)),
+   m_columnHit(new TATWntuHit(*colHit)),
    m_chargeZ(0),
    m_chargeZProba(0.)
 {
-   m_column = m_columnHit->GetBar();
-   m_row    = m_rowHit->GetBar();
+   m_row = m_rowHit->GetBar();
+   m_column    = m_columnHit->GetBar();
    
-   m_de1    = m_columnHit->GetEnergyLoss();
-   m_de2    = m_rowHit->GetEnergyLoss();
-   m_time   = m_columnHit->GetTime();
+   m_de1    = m_rowHit->GetEnergyLoss();
+   m_de2    = m_columnHit->GetEnergyLoss();
+   m_time   = m_rowHit->GetTime();
    
-   for (Int_t j = 0; j < m_rowHit->GetMcTracksN(); ++j) {
-      Int_t idr = m_rowHit->GetMcTrackIdx(j);
-      for (Int_t k = 0; k < m_columnHit->GetMcTracksN(); ++k) {
-         Int_t idc = m_columnHit->GetMcTrackIdx(k);
+   for (Int_t j = 0; j < m_columnHit->GetMcTracksN(); ++j) {
+      Int_t idr = m_columnHit->GetMcTrackIdx(j);
+      for (Int_t k = 0; k < m_rowHit->GetMcTracksN(); ++k) {
+         Int_t idc = m_rowHit->GetMcTrackIdx(k);
          if (idr == idc)
             AddMcTrackIdx(idr);
       }
@@ -76,8 +76,8 @@ void TATWpoint::SetPositionG(TVector3& posGlo)
 // Clear
 void TATWpoint::Clear(Option_t*)
 {
-   delete m_columnHit;
    delete m_rowHit;
+   delete m_columnHit;
 }
 
 
@@ -111,11 +111,11 @@ TATWntuPoint::~TATWntuPoint()
 
 //______________________________________________________________________________
 //  standard 
-TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit ) {
+TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWntuHit* rowHit, double y, double dy, TATWntuHit* colHit ) {
 
 	// check on aorigin
 	TClonesArray &pixelArray = *m_listOfPoints;
-	TATWpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TATWpoint( x, dx, colHit, y, dy, rowHit );
+	TATWpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TATWpoint( x, dx, rowHit, y, dy, colHit );
 
 	return pixel;
 }

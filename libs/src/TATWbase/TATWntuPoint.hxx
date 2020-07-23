@@ -41,15 +41,15 @@ private:
    TVector3    m_positionG;     // position in detector framework
    TVector3    m_posErrG;       // position error in detector framework
 
-   int         m_column;        // column number
-   int         m_row;           // row number
+   int         m_row;        // row number
+   int         m_column;           // column number
    
-   TATWntuHit*   m_columnHit;     // hit col
-   TATWntuHit*   m_rowHit;        // hit row
+   TATWntuHit*   m_rowHit;     // hit col
+   TATWntuHit*   m_columnHit;        // hit column
    
    Double32_t  m_de1;           // energy loss in the scintillator bars layer 1
    Double32_t  m_de2;           // energy loss in the scintillator bars layer 2
-   Double32_t  m_time;          // for the moment I take the column time
+   Double32_t  m_time;          // for the moment I take the row time
    
    int         m_chargeZ;       // raw guess of charge Z
    Double32_t  m_chargeZProba;  // raw guess of charge Z probability
@@ -57,7 +57,7 @@ private:
 public:
    
   TATWpoint();
-  TATWpoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit );
+  TATWpoint( double x, double dx, TATWntuHit* hitX, double y, double dy, TATWntuHit* hitY );
   ~TATWpoint() {};
   
   //    All the Get methods
@@ -67,14 +67,14 @@ public:
   const TVector3&  GetPositionG() const  { return m_positionG;      }
   const TVector3&  GetPosErrorG() const  { return m_posErrG;        }
   
-  int       GetColumnID()    const  { return m_column;              }
-  int       GetRowID()       const  { return m_row;                 }
+  int       GetRowID()    const  { return m_row;              }
+  int       GetColumnID()       const  { return m_column;                 }
   
-  int       GetColumn()      const  { return m_columnHit->GetBar(); }
-  int       GetRow()         const  { return m_rowHit->GetBar();    }
+  int       GetRow()      const  { return m_rowHit->GetBar(); }
+  int       GetColumn()         const  { return m_columnHit->GetBar();    }
   
-  TATWntuHit* GetColumnHit()	const	 { return m_columnHit;           }
-  TATWntuHit* GetRowHit()      const	 { return m_rowHit;              }
+  TATWntuHit* GetRowHit()	const	 { return m_rowHit;           }
+  TATWntuHit* GetColumnHit()      const	 { return m_columnHit;              }
   
   double    GetEnergyLoss1() const  { return m_de1;                 }
   double    GetEnergyLoss2() const  { return m_de2;                 }
@@ -108,7 +108,7 @@ public:
   TATWntuPoint();
   virtual ~TATWntuPoint();
 	
-  TATWpoint*          NewPoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit );
+  TATWpoint*          NewPoint( double x, double dx, TATWntuHit* hitX, double y, double dy, TATWntuHit* hitY );
 
   int                 GetPointN() const;
   TATWpoint*          GetPoint( int iPoint ) const;

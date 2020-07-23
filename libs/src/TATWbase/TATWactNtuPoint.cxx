@@ -115,6 +115,7 @@ Bool_t TATWactNtuPoint::FindPoints()
       TATWntuHit* hitX = pNtuHit->GetHit(i, LayerX);
 
       if(!hitX) continue;
+      if((Int_t)hitX->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge not assigned (automatically exclude hit with Eloss and ToF < 0)
       
       Int_t barX = hitX->GetBar();
       Float_t y  = fparGeo->GetBarPosition(LayerX, barX)[1];
@@ -132,6 +133,7 @@ Bool_t TATWactNtuPoint::FindPoints()
          TATWntuHit* hitY = pNtuHit->GetHit(j, LayerY);
 
          if(!hitY) continue;
+	 if((Int_t)hitY->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge not assigned (automatically exclude hit with Eloss and ToF < 0)
 	 
          Int_t barY = hitY->GetBar();
 	 Float_t x  = fparGeo->GetBarPosition(LayerY, barY)[0];
