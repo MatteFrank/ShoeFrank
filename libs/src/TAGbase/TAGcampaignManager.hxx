@@ -26,7 +26,8 @@ public:
    const Char_t*     GetGeoFile(const  TString& detName, Int_t runNumber);
    const Char_t*     GetConfFile(const TString& detName, Int_t runNumber);
    const Char_t*     GetMapFile(const  TString& detName, Int_t runNumber);
-   const Char_t*     GetCalFile(const  TString& detName, Int_t runNumber);
+   const Char_t*     GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib = false,
+                                Bool_t isTofBarCalib = false);
 
    Bool_t            IsDetectorOn(const TString& detName);
    void              Print(Option_t* opt = "") const;
@@ -51,8 +52,8 @@ private:
    map<TString, TArrayI> fRunsMap;
    
    // calibration file
-   map<TString, TString> fFileCalMap;
-   map<TString, TArrayI> fRunsCalMap;
+   map<TString, vector<TString> > fFileCalMap;
+   map<TString, vector<TArrayI> > fRunsCalMap;
    
    TString               fName;
    TArrayI               fRunArray;
@@ -60,6 +61,7 @@ private:
    
 private:
    const Char_t* GetFile(const TString& detName, Int_t runNumber, const TString& nameFile, TArrayI array);
+   const Char_t* GetCalItem(const  TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib = false);
 
    ClassDef(TAGcampaign,1)
 };
@@ -99,7 +101,7 @@ public:
    const Char_t*        GetCurGeoFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetGeoFile(detName, runNumber);  }
    const Char_t*        GetCurConfFile(const TString& detName, Int_t runNumber = -1) { return fCurCampaign->GetConfFile(detName, runNumber); }
    const Char_t*        GetCurMapFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetMapFile(detName, runNumber);  }
-   const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetCalFile(detName, runNumber);  }
+//   const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetCalFile(detName, runNumber);  }
    Bool_t               IsDetectorOn(const TString& detName)                         { return fCurCampaign->IsDetectorOn(detName);           }
 
    void                 Print(Option_t* opt = "") const;

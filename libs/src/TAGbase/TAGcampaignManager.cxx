@@ -249,9 +249,9 @@ bool TAGcampaign::FromFile(TString ifile)
          }
 
          // calib
-         if ((fileName.Contains("config") && (fileName.EndsWith(".cal") || fileName.EndsWith("/"))) || fileName.Contains("T0"))  { // needed for BM
-            fFileCalMap[detName] = fileName;
-            fRunsCalMap[detName] = array;
+         if ((fileName.Contains("calib") && (fileName.EndsWith(".cal") || fileName.EndsWith("/"))) || fileName.Contains("T0"))  { // needed for BM
+            fFileCalMap[detName].push_back(fileName);
+            fRunsCalMap[detName].push_back(array);
             if(FootDebugLevel(1))
                cout << "Device: " << detName << " calib file: " << fileName << endl;
          }
@@ -288,11 +288,33 @@ const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber)
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
+
 //_____________________________________________________________________________
-const Char_t* TAGcampaign::GetCalFile(const TString& detName, Int_t runNumber)
+const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib,
+                                      Bool_t isTofBarCalib)
 {
-   TString nameFile = fFileCalMap[detName];
-   TArrayI arrayRun = fRunsCalMap[detName];
+   Int_t item = -1;
+   if (!isTofCalib)
+      item = 0;
+   else if (isTofCalib)
+      item = 1;
+
+   return GetCalItem(detName, runNumber, item, isTofBarCalib);
+}
+
+//_____________________________________________________________________________
+const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib)
+{
+   vector<TString> vecFile = fFileCalMap[detName];
+   TString nameFile = vecFile[item];
+   
+   if (isTofBarCalib) {
+      Int_t pos = nameFile.Last('.');
+      nameFile.Insert(pos-1, "_perBar");
+   }
+   
+   vector<TArrayI> vecRun = fRunsCalMap[detName];
+   TArrayI arrayRun = vecRun[item];
    
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
@@ -361,15 +383,21 @@ Bool_t TAGcampaign::CheckFiles()
       }
    }
    
-   for ( map<TString, TString>::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it) {
-      const Char_t* name = it->second;
-      
-      if( access(name, F_OK) == -1 ) {
-         Warning("CheckFiles()", "File %s not found !", name);
-         return false;
+   for ( map<TString, vector<TString> >::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it) {
+    
+      vector<TString> vec = it->second;
+      vector<TString>::const_iterator iter;
+      for (iter = vec.begin(); iter != vec.end(); ++iter) {
+
+         const Char_t* name = iter->Data();
+         
+         if( access(name, F_OK) == -1 ) {
+            Warning("CheckFiles()", "File %s not found !", name);
+            return false;
+         }
       }
    }
-
+   
    return true;
 }
 
@@ -436,17 +464,29 @@ void TAGcampaign::Print(Option_t* opt) const
    }
    
    cout << "Calibration files for " << fName << ":" << endl;
-   for ( map<TString, TString>::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it)
-      cout << "  Device name: " << it->first << " with file: " << it->second << endl;
+   for ( map<TString, vector<TString> >::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it) {
    
-   if (option.Contains("all")) {
-      for ( map<TString, TArrayI>::const_iterator it = fRunsCalMap.begin(); it != fRunsCalMap.end(); ++it) {
-         const TArrayI array = it->second;
-         cout << "  Device name: " << it->first << "  Run number:";
-         for (Int_t i = 0; i <array.GetSize(); ++i) {
-            cout << array[i] << " ";
+      vector<TString> vec = it->second;
+      vector<TString>::const_iterator iter;
+      for (iter = vec.begin(); iter != vec.end(); ++iter)
+         cout << "  Device name: " << it->first << " with file: " << iter->Data() << endl;
+
+      if (option.Contains("all")) {
+         for ( map<TString, vector<TArrayI> >::const_iterator it = fRunsCalMap.begin(); it != fRunsCalMap.end(); ++it) {
+         
+            vector<TArrayI> vecRun = it->second;
+            vector<TArrayI>::const_iterator iterRun;
+            
+            for (iterRun = vecRun.begin(); iterRun != vecRun.end(); ++iterRun) {
+               
+               const TArrayI array = *iterRun;
+               cout << "  Device name: " << it->first << "  Run number:";
+               for (Int_t i = 0; i <array.GetSize(); ++i) {
+                  cout << array[i] << " ";
+               }
+               cout << endl;
+            }
          }
-         cout << endl;
       }
    }
 }
