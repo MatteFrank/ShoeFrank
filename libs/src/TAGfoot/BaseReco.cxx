@@ -323,7 +323,7 @@ void BaseReco::ReadParFiles()
 
      fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
      TAGbaseWDparMap* parMapWD = (TAGbaseWDparMap*)fpParMapWD->Object();
-     parFileName = Form("./config/%sWDChannelMap.txt", fExpName.Data());
+     parFileName = Form("./config/%sWDChannelMap.map", fExpName.Data());
      parMapWD->FromFile(parFileName.Data());
        
      fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
