@@ -5,6 +5,12 @@ CamDataMC:    1
 CamDate:      ""
 CamSum: "Test using standard input files"
 
+CamNumber:    0
+CamName:    "12C_200"
+CamDataMC:    1
+CamDate:      ""
+CamSum: "Simulation data for 12C on 12C @ 200MeV/u"
+
 CamNumber:    1
 CamName:    "GSI"
 CamDataMC:    0
