@@ -158,6 +158,9 @@ void TAGcampaignManager::Print(Option_t* opt) const
 
 ClassImp(TAGcampaign);
 
+map<Int_t, TString> TAGcampaign::fgTWcalFileType = {{0, "TATW_Energy"},{1, "TATW_Tof"}, {2, "TATWEnergy"} };
+map<Int_t, TString> TAGcampaign::fgTWmapFileType = {{0, "TATWChannel"},{1, "TATWbars"} };
+
 //_____________________________________________________________________________
 TAGcampaign::TAGcampaign()
  : TAGparTools(),
@@ -241,6 +244,18 @@ bool TAGcampaign::FromFile(TString ifile)
 
          // mapping
          if (fileName.Contains("config") && (fileName.EndsWith(".map"))) {
+            
+            // check order in TW mapping files
+            if (fileName.Contains(fgTWmapFileType[0]) && fFileMap[detName].size() != 0 ) {
+               Error("FromFile()", "File %s must appears in first position in TW mapping list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
+            if (fileName.Contains(fgTWmapFileType[1]) && fFileMap[detName].size() != 1 ) {
+               Error("FromFile()", "File %s must appears in first position in TW mapping list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
             fFileMap[detName].push_back(fileName);
             fRunsMap[detName].push_back(array);
             if(FootDebugLevel(1))
@@ -250,6 +265,23 @@ bool TAGcampaign::FromFile(TString ifile)
 
          // calib
          if ((fileName.Contains("calib") && (fileName.EndsWith(".cal") || fileName.EndsWith("/"))) || fileName.Contains("T0"))  { // needed for BM
+            
+            // check order in TW calibration files
+            if (fileName.Contains(fgTWcalFileType[0]) && fFileCalMap[detName].size() != 0 ) {
+               Error("FromFile()", "File %s must appears in first position in TW calibration list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
+            if (fileName.Contains(fgTWcalFileType[1]) && fFileCalMap[detName].size() != 1 ) {
+               Error("FromFile()", "File %s must appears in first position in TW calibration list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
+            if (fileName.Contains(fgTWcalFileType[2]) && fFileCalMap[detName].size() != 2 ) {
+               Error("FromFile()", "File %s must appears in first position in TW calibration list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
             fFileCalMap[detName].push_back(fileName);
             fRunsCalMap[detName].push_back(array);
             if(FootDebugLevel(1))
@@ -294,14 +326,18 @@ const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber, I
 
 //_____________________________________________________________________________
 const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib,
-                                      Bool_t isTofBarCalib)
+                                      Bool_t isTofBarCalib, Bool_t elossTuning)
 {
    Int_t item = -1;
    if (!isTofCalib)
       item = 0;
-   else if (isTofCalib)
+   
+   if (isTofCalib)
       item = 1;
 
+   if (elossTuning)
+      item = 2;
+   
    return GetCalItem(detName, runNumber, item, isTofBarCalib);
 }
 
@@ -313,7 +349,7 @@ const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, I
    
    if (isTofBarCalib) {
       Int_t pos = nameFile.Last('.');
-      nameFile.Insert(pos-1, "_perBar");
+      nameFile.Insert(pos, "_perBar");
    }
    
    vector<TArrayI> vecRun = fRunsCalMap[detName];

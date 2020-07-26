@@ -27,7 +27,7 @@ public:
    const Char_t*     GetConfFile(const TString& detName, Int_t runNumber);
    const Char_t*     GetMapFile(const  TString& detName, Int_t runNumber, Int_t item = 0);
    const Char_t*     GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib = false,
-                                Bool_t isTofBarCalib = false);
+                                Bool_t isTofBarCalib = false, Bool_t elossTuning = false);
 
    Bool_t            IsDetectorOn(const TString& detName);
    void              Print(Option_t* opt = "") const;
@@ -62,6 +62,10 @@ private:
 private:
    const Char_t* GetFile(const TString& detName, Int_t runNumber, const TString& nameFile, TArrayI array);
    const Char_t* GetCalItem(const  TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib = false);
+
+private:
+   static map<Int_t, TString> fgTWcalFileType;
+   static map<Int_t, TString> fgTWmapFileType;
 
    ClassDef(TAGcampaign,1)
 };
@@ -102,8 +106,9 @@ public:
    const Char_t*        GetCurConfFile(const TString& detName, Int_t runNumber = -1) { return fCurCampaign->GetConfFile(detName, runNumber); }
    const Char_t*        GetCurMapFile(const TString& detName, Int_t runNumber = -1, Int_t item = 0)  { return fCurCampaign->GetMapFile(detName, runNumber, item);  }
    const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1,
-                                      Bool_t isTofCalib = false, Bool_t isTofBarCalib = false)
-   { return fCurCampaign->GetCalFile(detName, runNumber, isTofCalib, isTofBarCalib);  }
+                                      Bool_t isTofCalib = false, Bool_t isTofBarCalib = false,
+                                      Bool_t elossTuning = false)
+   { return fCurCampaign->GetCalFile(detName, runNumber, isTofCalib, isTofBarCalib, elossTuning);  }
    Bool_t               IsDetectorOn(const TString& detName)                         { return fCurCampaign->IsDetectorOn(detName);           }
 
    void                 Print(Option_t* opt = "") const;
