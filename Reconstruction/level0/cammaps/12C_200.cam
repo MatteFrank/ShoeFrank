@@ -47,7 +47,6 @@ NumberFiles: 7
 "./config/12C_200/TATWbarsMapStatus.map": -1
 "./calib/12C_200/TATW_Energy_Calibration.cal": -1
 "./calib/12C_200/TATW_Tof_Calibration.cal": -1
-"./calib/12C_200/TATWEnergyTuning.cal": -1
 
 DetectorName: "CA"
 NumberFiles: 1
