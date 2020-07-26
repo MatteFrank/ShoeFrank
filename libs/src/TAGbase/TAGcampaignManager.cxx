@@ -240,9 +240,9 @@ bool TAGcampaign::FromFile(TString ifile)
          }
 
          // mapping
-         if (fileName.Contains("config") && (fileName.EndsWith(".map") || fileName.EndsWith(".xml"))) { // needed for TW
-            fFileMap[detName] = fileName;
-            fRunsMap[detName] = array;
+         if (fileName.Contains("config") && (fileName.EndsWith(".map"))) {
+            fFileMap[detName].push_back(fileName);
+            fRunsMap[detName].push_back(array);
             if(FootDebugLevel(1))
                cout << "Device: " << detName << " mapping file: " << fileName << endl;
 
@@ -280,10 +280,13 @@ const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber)
 }
 
 //_____________________________________________________________________________
-const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber)
+const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber, Int_t item)
 {
-   TString nameFile = fFileMap[detName];
-   TArrayI arrayRun = fRunsMap[detName];
+   vector<TString> vecFile = fFileMap[detName];
+   TString nameFile = vecFile[item];
+   
+   vector<TArrayI> vecRun = fRunsMap[detName];
+   TArrayI arrayRun = vecRun[item];
    
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
@@ -374,12 +377,18 @@ Bool_t TAGcampaign::CheckFiles()
       }
    }
 
-   for ( map<TString, TString>::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it) {
-      const Char_t* name = it->second;
-   
-      if( access(name, F_OK) == -1 ) {
-         Warning("CheckFiles()", "File %s not found !", name);
-         return false;
+   for ( map<TString, vector<TString> >::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it) {
+      
+      vector<TString> vec = it->second;
+      vector<TString>::const_iterator iter;
+      for (iter = vec.begin(); iter != vec.end(); ++iter) {
+         
+         const Char_t* name = iter->Data();
+         
+         if( access(name, F_OK) == -1 ) {
+            Warning("CheckFiles()", "File %s not found !", name);
+            return false;
+         }
       }
    }
    
@@ -449,17 +458,29 @@ void TAGcampaign::Print(Option_t* opt) const
    }
    
    cout << "Mapping files for " << fName << ":" << endl;
-   for ( map<TString, TString>::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it)
-      cout << "  Device name: " << it->first << " with file: " << it->second << endl;
-   
-   if (option.Contains("all")) {
-      for ( map<TString, TArrayI>::const_iterator it = fRunsMap.begin(); it != fRunsMap.end(); ++it) {
-         const TArrayI array = it->second;
-         cout << "  Device name: " << it->first << "  Run number:";
-         for (Int_t i = 0; i <array.GetSize(); ++i) {
-            cout << array[i] << " ";
+   for ( map<TString, vector<TString> >::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it) {
+      
+      vector<TString> vec = it->second;
+      vector<TString>::const_iterator iter;
+      for (iter = vec.begin(); iter != vec.end(); ++iter)
+         cout << "  Device name: " << it->first << " with file: " << iter->Data() << endl;
+      
+      if (option.Contains("all")) {
+         for ( map<TString, vector<TArrayI> >::const_iterator it = fRunsMap.begin(); it != fRunsMap.end(); ++it) {
+            
+            vector<TArrayI> vecRun = it->second;
+            vector<TArrayI>::const_iterator iterRun;
+            
+            for (iterRun = vecRun.begin(); iterRun != vecRun.end(); ++iterRun) {
+               
+               const TArrayI array = *iterRun;
+               cout << "  Device name: " << it->first << "  Run number:";
+               for (Int_t i = 0; i <array.GetSize(); ++i) {
+                  cout << array[i] << " ";
+               }
+               cout << endl;
+            }
          }
-         cout << endl;
       }
    }
    

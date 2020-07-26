@@ -25,7 +25,7 @@ public:
    
    const Char_t*     GetGeoFile(const  TString& detName, Int_t runNumber);
    const Char_t*     GetConfFile(const TString& detName, Int_t runNumber);
-   const Char_t*     GetMapFile(const  TString& detName, Int_t runNumber);
+   const Char_t*     GetMapFile(const  TString& detName, Int_t runNumber, Int_t item = 0);
    const Char_t*     GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib = false,
                                 Bool_t isTofBarCalib = false);
 
@@ -48,8 +48,8 @@ private:
    map<TString, TArrayI> fRunsConfMap;
    
    // mapping file
-   map<TString, TString> fFileMap;
-   map<TString, TArrayI> fRunsMap;
+   map<TString, vector<TString> > fFileMap;
+   map<TString, vector<TArrayI> > fRunsMap;
    
    // calibration file
    map<TString, vector<TString> > fFileCalMap;
@@ -100,8 +100,10 @@ public:
    const TArrayI&       GetCurRunArray() const                                       { return fCurCampaign->GetRunArray();                   }
    const Char_t*        GetCurGeoFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetGeoFile(detName, runNumber);  }
    const Char_t*        GetCurConfFile(const TString& detName, Int_t runNumber = -1) { return fCurCampaign->GetConfFile(detName, runNumber); }
-   const Char_t*        GetCurMapFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetMapFile(detName, runNumber);  }
-//   const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetCalFile(detName, runNumber);  }
+   const Char_t*        GetCurMapFile(const TString& detName, Int_t runNumber = -1, Int_t item = 0)  { return fCurCampaign->GetMapFile(detName, runNumber, item);  }
+   const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1,
+                                      Bool_t isTofCalib = false, Bool_t isTofBarCalib = false)
+   { return fCurCampaign->GetCalFile(detName, runNumber, isTofCalib, isTofBarCalib);  }
    Bool_t               IsDetectorOn(const TString& detName)                         { return fCurCampaign->IsDetectorOn(detName);           }
 
    void                 Print(Option_t* opt = "") const;
