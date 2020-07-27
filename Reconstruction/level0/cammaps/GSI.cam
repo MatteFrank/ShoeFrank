@@ -33,7 +33,7 @@ NumberFiles: 2
 DetectorName: "TW"
 NumberFiles: 7
 "./geomaps/GSI/TATWdetector.geo": -1
-"./config/GSI/TATW_BBparameters_12C_200.cfg": -1
+"./config/GSI/TATW_BBparameters_16O_400_GSI.cfg": -1
 "./config/GSI/TATWChannelMapXML.map": -1
 "./config/GSI/TATWbarsMapStatus.map": -1
 "./calib/GSI/TATW_Energy_Calibration.cal": -1
