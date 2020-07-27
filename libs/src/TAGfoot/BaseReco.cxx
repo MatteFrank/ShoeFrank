@@ -343,7 +343,7 @@ void BaseReco::ReadParFiles()
       TABMparCon* parConf = (TABMparCon*)fpParConfBm->Object();
       parFileName = "./config/TABMdetector.cfg";
       parConf->FromFile(parFileName.Data());
-      parFileName = Form("./config/%sT0_beammonitor.cfg", fExpName.Data());
+      parFileName = Form("./config/%sTABM_T0_Calibration.cal", fExpName.Data());
       parConf->loadT0s(parFileName);
             
       fpParMapBm = new TAGparaDsc("bmMap", new TABMparMap());
