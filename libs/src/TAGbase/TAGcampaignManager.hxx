@@ -24,14 +24,13 @@ public:
    Int_t             GetDevicesN() const { return fDevicesN;    }
    
    const Char_t*     GetGeoFile(const  TString& detName, Int_t runNumber);
-   const Char_t*     GetConfFile(const TString& detName, Int_t runNumber);
+   const Char_t*     GetConfFile(const TString& detName, Int_t runNumber, TString bName = "", Int_t bEnergy = -1);
    const Char_t*     GetMapFile(const  TString& detName, Int_t runNumber, Int_t item = 0);
    const Char_t*     GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib = false,
                                 Bool_t isTofBarCalib = false, Bool_t elossTuning = false);
 
    Bool_t            IsDetectorOn(const TString& detName);
    void              Print(Option_t* opt = "") const;
-   Bool_t            CheckFiles();
 
    const vector<TString>& GetDetVector() const { return fDetectorVec; }
 
@@ -103,7 +102,9 @@ public:
    
    const TArrayI&       GetCurRunArray() const                                       { return fCurCampaign->GetRunArray();                   }
    const Char_t*        GetCurGeoFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetGeoFile(detName, runNumber);  }
-   const Char_t*        GetCurConfFile(const TString& detName, Int_t runNumber = -1) { return fCurCampaign->GetConfFile(detName, runNumber); }
+   const Char_t*        GetCurConfFile(const TString& detName, Int_t runNumber = -1,
+                                       TString bName = "", Int_t bEnergy = -1)
+   { return fCurCampaign->GetConfFile(detName, runNumber, bName, bEnergy); }
    const Char_t*        GetCurMapFile(const TString& detName, Int_t runNumber = -1, Int_t item = 0)  { return fCurCampaign->GetMapFile(detName, runNumber, item);  }
    const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1,
                                       Bool_t isTofCalib = false, Bool_t isTofBarCalib = false,

@@ -113,10 +113,6 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
 
    if (!fCurCampaign->FromFile(curCampaignName))
       return false;
-   
-   // Checking file presence
-//    if (!fCurCampaign->CheckFiles())
-//       return false;
 
    return true;
 }
@@ -303,11 +299,16 @@ const Char_t* TAGcampaign::GetGeoFile(const TString& detName, Int_t runNumber)
 }
 
 //_____________________________________________________________________________
-const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber)
+const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, TString bName, Int_t bEnergy)
 {
    TString nameFile = fFileConfMap[detName];
    TArrayI arrayRun = fRunsConfMap[detName];
    
+   if (!bName.IsNull()) {
+      Int_t pos = nameFile.Last('.');
+      nameFile.Insert(pos, Form("_%s_%d", bName.Data(), bEnergy));
+   }
+
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
@@ -364,12 +365,22 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
    if (nameFile.IsNull())
       return Form("");
    
-   if (array.GetSize() == 0)
+   if (array.GetSize() == 0) {
+      if( access(nameFile.Data(), F_OK) == -1 ) {
+         Warning("GetFile()", "File %s not found !", nameFile.Data());
+         exit(0);
+      }
       return Form("%s", nameFile.Data());
-
-   if (array[0] == -1 || runNumber == -1)
-      return Form("%s", nameFile.Data());
+   }
    
+   if (array[0] == -1 || runNumber == -1) {
+      if( access(nameFile.Data(), F_OK) == -1 ) {
+         Warning("GetFile()", "File %s not found !", nameFile.Data());
+         exit(0);
+      }
+      return Form("%s", nameFile.Data());
+   }
+
    Int_t run = -1;
    Int_t n =  array.GetSize();
    for (Int_t i  = 0; i < n-1; ++i) {
@@ -389,61 +400,12 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
    TString name = nameFile;
    name.Insert(pos, Form("_%d", run));
    
+   if( access(name.Data(), F_OK) == -1 ) {
+      Warning("GetFile()", "File %s not found !", name.Data());
+      exit(0);
+   }
+   
    return Form("%s", name.Data());
-}
-
-//_____________________________________________________________________________
-Bool_t TAGcampaign::CheckFiles()
-{
-   for ( map<TString, TString>::const_iterator it = fFileGeoMap.begin(); it != fFileGeoMap.end(); ++it) {
-      const Char_t* name = it->second;
-      
-      if( access(name, F_OK) == -1 ) {
-         Warning("CheckFiles()", "File %s not found !", name);
-         return false;
-      }
-   }
-   
-   for ( map<TString, TString>::const_iterator it = fFileConfMap.begin(); it != fFileConfMap.end(); ++it) {
-      const Char_t* name = it->second;
-
-      if( access(name, F_OK) == -1 ) {
-         Warning("CheckFiles()", "File %s not found !", name);
-         return false;
-      }
-   }
-
-   for ( map<TString, vector<TString> >::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it) {
-      
-      vector<TString> vec = it->second;
-      vector<TString>::const_iterator iter;
-      for (iter = vec.begin(); iter != vec.end(); ++iter) {
-         
-         const Char_t* name = iter->Data();
-         
-         if( access(name, F_OK) == -1 ) {
-            Warning("CheckFiles()", "File %s not found !", name);
-            return false;
-         }
-      }
-   }
-   
-   for ( map<TString, vector<TString> >::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it) {
-    
-      vector<TString> vec = it->second;
-      vector<TString>::const_iterator iter;
-      for (iter = vec.begin(); iter != vec.end(); ++iter) {
-
-         const Char_t* name = iter->Data();
-         
-         if( access(name, F_OK) == -1 ) {
-            Warning("CheckFiles()", "File %s not found !", name);
-            return false;
-         }
-      }
-   }
-   
-   return true;
 }
 
 //_____________________________________________________________________________

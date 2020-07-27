@@ -1,11 +1,11 @@
 // Campaign file
 CamName: "GSI"
-RunNumber: 2210-2212; 2238-2242; 2251-2254
+RunNumber: 2187-2261
 NumberDevices: 6
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/GSI/FOOT.geo": 2210; 2251
+"./geomaps/GSI/FOOT.geo": 2210; 2239
 
 DetectorName: "ST"
 NumberFiles: 4
@@ -19,11 +19,11 @@ NumberFiles: 4
 "./geomaps/GSI/TABMdetector.geo": -1
 "./config/GSI/TABMdetector.cfg": -1
 "./config/GSI/TABMdetector.map": -1
-"./calib/GSI/TABM_T0_Calibration.cal": 2210; 2251
+"./calib/GSI/TABM_T0_Calibration.cal": 2210; 2239
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/GSI/TAGdetector.geo": -1
+"./geomaps/GSI/TAGdetector.geo": 2187; 2210
 
 DetectorName: "VT"
 NumberFiles: 2
@@ -33,7 +33,7 @@ NumberFiles: 2
 DetectorName: "TW"
 NumberFiles: 7
 "./geomaps/GSI/TATWdetector.geo": -1
-"./config/GSI/TATW_BBparameters_16O_400_GSI.cfg": -1
+"./config/GSI/TATW_BBparameters.cfg": 2187; 2210
 "./config/GSI/TATWChannelMapXML.map": -1
 "./config/GSI/TATWbarsMapStatus.map": -1
 "./calib/GSI/TATW_Energy_Calibration.cal": -1
