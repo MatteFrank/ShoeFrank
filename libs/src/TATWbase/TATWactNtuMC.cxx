@@ -195,7 +195,7 @@ bool TATWactNtuMC::Action() {
 
        Float_t trueTof = (time - timeST)*TAGgeoTrafo::PsToNs();  //ns
        if(FootDebugLevel(1)>0)
-	 printf("\n timeTW::%f timeST::%f tof::%f\n",time,timeST,trueTof);
+          printf("\n timeTW::%f timeST::%f tof::%f\n",time,timeST,trueTof);
 
        time -= timeST;  // ToF TW-SC to be digitized in ps
 
@@ -203,10 +203,10 @@ bool TATWactNtuMC::Action() {
        TVector3 posInLoc = f_geoTrafo->FromGlobalToTWLocal(posIn);
 
        if(FootDebugLevel(1)>0) {
-	 cout<<layer<<endl;
-	 cout<<posIn.x()<<" "<<posIn.y()<<" "<<posIn.z()<<" "<<endl;
-	 cout<<posInLoc.x()<<" "<<posInLoc.y()<<" "<<posInLoc.z()<<" "<<endl;
-	 cout<<""<<endl;
+          cout<<layer<<endl;
+          cout<<posIn.x()<<" "<<posIn.y()<<" "<<posIn.z()<<" "<<endl;
+          cout<<posInLoc.x()<<" "<<posInLoc.y()<<" "<<posInLoc.z()<<" "<<endl;
+          cout<<""<<endl;
        }
        
        double truePos = 0;
@@ -216,7 +216,7 @@ bool TATWactNtuMC::Action() {
 	 truePos = posInLoc.X();
 
        if(FootDebugLevel(1)>0)
-	 cout<<"trueEloss::"<<edep<<" trueTof::"<<trueTof<<" truePos::"<<truePos<<endl;
+          cout<<"trueEloss::"<<edep<<" trueTof::"<<trueTof<<" truePos::"<<truePos<<endl;
               
        if(fDigitizer->IsMCtrue()) {  // only for ZID algorithm debug purposes
 
@@ -250,9 +250,9 @@ bool TATWactNtuMC::Action() {
 	     
 	     if(iZ==1) {
 	       if(iZ==Zrec_MCtrue) 
-		 fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+             fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
 	       else
-		 fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
+             fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
 	     }
 	     else
 	       fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
@@ -277,7 +277,7 @@ bool TATWactNtuMC::Action() {
        }
 
        if ( FootDebugLevel(1)> 0 )
-	 printf("layer::%d bar::%d\n", layer, barId);
+          printf("layer::%d bar::%d\n", layer, barId);
 
        // if bar is dead in data skip it
        if(!f_parcal->IsTWbarActive(layer,barId)) continue;
@@ -293,9 +293,10 @@ bool TATWactNtuMC::Action() {
 
        fVecPuOff.push_back(hit);
 
-       if(hit->GetChargeZ()>0 && hit->GetChargeZ()<fZbeam+1)
-	 fpHisResPos[hit->GetChargeZ()-1]->Fill(hit->GetPosition()-truePos);
-
+       if (ValidHistogram()) {
+          if(hit->GetChargeZ()>0 && hit->GetChargeZ()<fZbeam+1)
+             fpHisResPos[hit->GetChargeZ()-1]->Fill(hit->GetPosition()-truePos);
+       }
     }
 
 
