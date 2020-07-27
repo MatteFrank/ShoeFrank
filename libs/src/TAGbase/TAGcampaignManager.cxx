@@ -365,17 +365,22 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
    if (nameFile.IsNull())
       return Form("");
    
-   if( access(nameFile.Data(), F_OK) == -1 ) {
-      Warning("GetFile()", "File %s not found !", nameFile.Data());
-      exit(0);
+   if (array.GetSize() == 0) {
+      if( access(nameFile.Data(), F_OK) == -1 ) {
+         Warning("GetFile()", "File %s not found !", nameFile.Data());
+         exit(0);
+      }
+      return Form("%s", nameFile.Data());
    }
    
-   if (array.GetSize() == 0)
+   if (array[0] == -1 || runNumber == -1) {
+      if( access(nameFile.Data(), F_OK) == -1 ) {
+         Warning("GetFile()", "File %s not found !", nameFile.Data());
+         exit(0);
+      }
       return Form("%s", nameFile.Data());
+   }
 
-   if (array[0] == -1 || runNumber == -1)
-      return Form("%s", nameFile.Data());
-   
    Int_t run = -1;
    Int_t n =  array.GetSize();
    for (Int_t i  = 0; i < n-1; ++i) {
