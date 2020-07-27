@@ -35,8 +35,9 @@ public:
 protected:
    map<Int_t, Int_t> fPixelMap[8]; // pixel map;
    map<Int_t, Int_t> fIndexMap[8]; // index map of the pixel;
-   TArrayI           fFlagMap[8];
-   
+   Int_t*            fFlagMap[8];
+   Int_t             fFlagSize[8];
+
    Int_t             fDimX;     //  dimension X of map
    Int_t             fDimY;     //  dimension Y of map
    Int_t             fThreadsN; // number of thread
@@ -51,7 +52,7 @@ protected:
 
    map<Int_t, Int_t>& GetPixelMap(Int_t thr);
    map<Int_t, Int_t>& GetIndexMap(Int_t thr);
-   TArrayI&           GetFlagMap(Int_t thr);
+   Int_t*             GetFlagMap(Int_t thr);
    
 protected:
    static Int_t fgMaxThreadsN;  // maximum number of thread

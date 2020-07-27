@@ -145,6 +145,12 @@ public:
    void EnableTracking()  { fFlagTrack = true;   }
    void DisableTracking() { fFlagTrack = false;  }
    
+   void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;   }
+   void DisableTWcalibPerBar() { fFlagTWbarCalib = false;  }
+
+   void EnableZfromMCtrue()  { fFlagZtrueMC = true;   }
+   void DisableZfromMCtrue() { fFlagZtrueMC = false;  }
+
    void DisableM28ClusMT() { fM28ClusMtFlag = false; }
    void EnableM28lusMT()   { fM28ClusMtFlag = true;  }
    Bool_t IsM28ClusMT()    { return fM28ClusMtFlag;  }
@@ -297,7 +303,9 @@ protected:
    Bool_t                fFlagHits;      // flag to save hits in tree
    Bool_t                fFlagHisto;     // flag for histo generatiom
    Bool_t                fFlagTrack;     // flag for tracking
+   Bool_t                fFlagTWbarCalib; // flag for TW calibration per Bar
    TString               fgTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory)
+   Bool_t                fFlagZtrueMC;    // Z true MC flag
    Bool_t                fFlagMC;        // MC flag
    Bool_t                fM28ClusMtFlag; // flag for multi-threading clustering
 

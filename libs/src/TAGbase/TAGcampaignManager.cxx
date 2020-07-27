@@ -158,6 +158,9 @@ void TAGcampaignManager::Print(Option_t* opt) const
 
 ClassImp(TAGcampaign);
 
+map<Int_t, TString> TAGcampaign::fgTWcalFileType = {{0, "TATW_Energy"},{1, "TATW_Tof"}, {2, "TATWEnergy"} };
+map<Int_t, TString> TAGcampaign::fgTWmapFileType = {{0, "TATWChannel"},{1, "TATWbars"} };
+
 //_____________________________________________________________________________
 TAGcampaign::TAGcampaign()
  : TAGparTools(),
@@ -240,18 +243,47 @@ bool TAGcampaign::FromFile(TString ifile)
          }
 
          // mapping
-         if (fileName.Contains("config") && (fileName.EndsWith(".map") || fileName.EndsWith(".xml"))) { // needed for TW
-            fFileMap[detName] = fileName;
-            fRunsMap[detName] = array;
+         if (fileName.Contains("config") && (fileName.EndsWith(".map"))) {
+            
+            // check order in TW mapping files
+            if (fileName.Contains(fgTWmapFileType[0]) && fFileMap[detName].size() != 0 ) {
+               Error("FromFile()", "File %s must appears in first position in TW mapping list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
+            if (fileName.Contains(fgTWmapFileType[1]) && fFileMap[detName].size() != 1 ) {
+               Error("FromFile()", "File %s must appears in first position in TW mapping list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
+            fFileMap[detName].push_back(fileName);
+            fRunsMap[detName].push_back(array);
             if(FootDebugLevel(1))
                cout << "Device: " << detName << " mapping file: " << fileName << endl;
 
          }
 
          // calib
-         if ((fileName.Contains("config") && (fileName.EndsWith(".cal") || fileName.EndsWith("/"))) || fileName.Contains("T0"))  { // needed for BM
-            fFileCalMap[detName] = fileName;
-            fRunsCalMap[detName] = array;
+         if ((fileName.Contains("calib") && (fileName.EndsWith(".cal") || fileName.EndsWith("/"))) || fileName.Contains("T0"))  { // needed for BM
+            
+            // check order in TW calibration files
+            if (fileName.Contains(fgTWcalFileType[0]) && fFileCalMap[detName].size() != 0 ) {
+               Error("FromFile()", "File %s must appears in first position in TW calibration list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
+            if (fileName.Contains(fgTWcalFileType[1]) && fFileCalMap[detName].size() != 1 ) {
+               Error("FromFile()", "File %s must appears in first position in TW calibration list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
+            if (fileName.Contains(fgTWcalFileType[2]) && fFileCalMap[detName].size() != 2 ) {
+               Error("FromFile()", "File %s must appears in first position in TW calibration list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
+            fFileCalMap[detName].push_back(fileName);
+            fRunsCalMap[detName].push_back(array);
             if(FootDebugLevel(1))
                cout << "Device: " << detName << " calib file: " << fileName << endl;
          }
@@ -280,19 +312,48 @@ const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber)
 }
 
 //_____________________________________________________________________________
-const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber)
+const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber, Int_t item)
 {
-   TString nameFile = fFileMap[detName];
-   TArrayI arrayRun = fRunsMap[detName];
+   vector<TString> vecFile = fFileMap[detName];
+   TString nameFile = vecFile[item];
+   
+   vector<TArrayI> vecRun = fRunsMap[detName];
+   TArrayI arrayRun = vecRun[item];
    
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
+
 //_____________________________________________________________________________
-const Char_t* TAGcampaign::GetCalFile(const TString& detName, Int_t runNumber)
+const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib,
+                                      Bool_t isTofBarCalib, Bool_t elossTuning)
 {
-   TString nameFile = fFileCalMap[detName];
-   TArrayI arrayRun = fRunsCalMap[detName];
+   Int_t item = -1;
+   if (!isTofCalib)
+      item = 0;
+   
+   if (isTofCalib)
+      item = 1;
+
+   if (elossTuning)
+      item = 2;
+   
+   return GetCalItem(detName, runNumber, item, isTofBarCalib);
+}
+
+//_____________________________________________________________________________
+const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib)
+{
+   vector<TString> vecFile = fFileCalMap[detName];
+   TString nameFile = vecFile[item];
+   
+   if (isTofBarCalib) {
+      Int_t pos = nameFile.Last('.');
+      nameFile.Insert(pos, "_perBar");
+   }
+   
+   vector<TArrayI> vecRun = fRunsCalMap[detName];
+   TArrayI arrayRun = vecRun[item];
    
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
@@ -352,24 +413,36 @@ Bool_t TAGcampaign::CheckFiles()
       }
    }
 
-   for ( map<TString, TString>::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it) {
-      const Char_t* name = it->second;
-   
-      if( access(name, F_OK) == -1 ) {
-         Warning("CheckFiles()", "File %s not found !", name);
-         return false;
-      }
-   }
-   
-   for ( map<TString, TString>::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it) {
-      const Char_t* name = it->second;
+   for ( map<TString, vector<TString> >::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it) {
       
-      if( access(name, F_OK) == -1 ) {
-         Warning("CheckFiles()", "File %s not found !", name);
-         return false;
+      vector<TString> vec = it->second;
+      vector<TString>::const_iterator iter;
+      for (iter = vec.begin(); iter != vec.end(); ++iter) {
+         
+         const Char_t* name = iter->Data();
+         
+         if( access(name, F_OK) == -1 ) {
+            Warning("CheckFiles()", "File %s not found !", name);
+            return false;
+         }
       }
    }
+   
+   for ( map<TString, vector<TString> >::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it) {
+    
+      vector<TString> vec = it->second;
+      vector<TString>::const_iterator iter;
+      for (iter = vec.begin(); iter != vec.end(); ++iter) {
 
+         const Char_t* name = iter->Data();
+         
+         if( access(name, F_OK) == -1 ) {
+            Warning("CheckFiles()", "File %s not found !", name);
+            return false;
+         }
+      }
+   }
+   
    return true;
 }
 
@@ -421,32 +494,56 @@ void TAGcampaign::Print(Option_t* opt) const
    }
    
    cout << "Mapping files for " << fName << ":" << endl;
-   for ( map<TString, TString>::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it)
-      cout << "  Device name: " << it->first << " with file: " << it->second << endl;
-   
-   if (option.Contains("all")) {
-      for ( map<TString, TArrayI>::const_iterator it = fRunsMap.begin(); it != fRunsMap.end(); ++it) {
-         const TArrayI array = it->second;
-         cout << "  Device name: " << it->first << "  Run number:";
-         for (Int_t i = 0; i <array.GetSize(); ++i) {
-            cout << array[i] << " ";
+   for ( map<TString, vector<TString> >::const_iterator it = fFileMap.begin(); it != fFileMap.end(); ++it) {
+      
+      vector<TString> vec = it->second;
+      vector<TString>::const_iterator iter;
+      for (iter = vec.begin(); iter != vec.end(); ++iter)
+         cout << "  Device name: " << it->first << " with file: " << iter->Data() << endl;
+      
+      if (option.Contains("all")) {
+         for ( map<TString, vector<TArrayI> >::const_iterator it = fRunsMap.begin(); it != fRunsMap.end(); ++it) {
+            
+            vector<TArrayI> vecRun = it->second;
+            vector<TArrayI>::const_iterator iterRun;
+            
+            for (iterRun = vecRun.begin(); iterRun != vecRun.end(); ++iterRun) {
+               
+               const TArrayI array = *iterRun;
+               cout << "  Device name: " << it->first << "  Run number:";
+               for (Int_t i = 0; i <array.GetSize(); ++i) {
+                  cout << array[i] << " ";
+               }
+               cout << endl;
+            }
          }
-         cout << endl;
       }
    }
    
    cout << "Calibration files for " << fName << ":" << endl;
-   for ( map<TString, TString>::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it)
-      cout << "  Device name: " << it->first << " with file: " << it->second << endl;
+   for ( map<TString, vector<TString> >::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it) {
    
-   if (option.Contains("all")) {
-      for ( map<TString, TArrayI>::const_iterator it = fRunsCalMap.begin(); it != fRunsCalMap.end(); ++it) {
-         const TArrayI array = it->second;
-         cout << "  Device name: " << it->first << "  Run number:";
-         for (Int_t i = 0; i <array.GetSize(); ++i) {
-            cout << array[i] << " ";
+      vector<TString> vec = it->second;
+      vector<TString>::const_iterator iter;
+      for (iter = vec.begin(); iter != vec.end(); ++iter)
+         cout << "  Device name: " << it->first << " with file: " << iter->Data() << endl;
+
+      if (option.Contains("all")) {
+         for ( map<TString, vector<TArrayI> >::const_iterator it = fRunsCalMap.begin(); it != fRunsCalMap.end(); ++it) {
+         
+            vector<TArrayI> vecRun = it->second;
+            vector<TArrayI>::const_iterator iterRun;
+            
+            for (iterRun = vecRun.begin(); iterRun != vecRun.end(); ++iterRun) {
+               
+               const TArrayI array = *iterRun;
+               cout << "  Device name: " << it->first << "  Run number:";
+               for (Int_t i = 0; i <array.GetSize(); ++i) {
+                  cout << array[i] << " ";
+               }
+               cout << endl;
+            }
          }
-         cout << endl;
       }
    }
 }

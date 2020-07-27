@@ -25,12 +25,18 @@ TAGactNtuClusterMT::TAGactNtuClusterMT(const char* name, const char* title )
    fDimY(-1),
    fThreadsN(-1)
 {
+   for (Int_t i = 0; i < fgkLimThreadsN; ++i) {
+      fFlagMap[i] = 0x0;
+      fFlagSize[i] = 0;
+   }
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGactNtuClusterMT::~TAGactNtuClusterMT()
 {
+   for (Int_t i = 0; i < fgkLimThreadsN; ++i)
+      delete[] fFlagMap[i];
 }
 
 //______________________________________________________________________________
@@ -60,7 +66,7 @@ map<Int_t, Int_t>& TAGactNtuClusterMT::GetIndexMap(Int_t thr)
 
 //______________________________________________________________________________
 //
-TArrayI&  TAGactNtuClusterMT::GetFlagMap(Int_t thr)
+Int_t*  TAGactNtuClusterMT::GetFlagMap(Int_t thr)
 {
    if (thr >= 0 && thr < fThreadsN)
       return fFlagMap[thr];
@@ -135,7 +141,12 @@ Bool_t TAGactNtuClusterMT::CheckCol(Int_t idx)
 //
 void TAGactNtuClusterMT::SetupMaps(Int_t size, Int_t thr)
 {
-   GetFlagMap(thr).Set(size);
+   if (fFlagMap[thr]  != 0x0)
+      delete[] fFlagMap[thr];
+   
+   fFlagSize[thr] = size;
+   fFlagMap[thr]  = new Int_t[size];
+
 }
 
 //______________________________________________________________________________
@@ -144,6 +155,8 @@ void TAGactNtuClusterMT::ClearMaps(Int_t thr)
 {
    GetPixelMap(thr).clear();
    GetIndexMap(thr).clear();
-   GetFlagMap(thr).Reset(-1);
+   
+   memset(GetFlagMap(thr), -1, fFlagSize[thr]*sizeof(Int_t));
+
 }
 

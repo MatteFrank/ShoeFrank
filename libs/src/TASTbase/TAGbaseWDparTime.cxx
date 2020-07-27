@@ -53,7 +53,7 @@ bool TAGbaseWDparTime::FromFile(string expName, int iRunNumber){
   string tcal_filename("");
   if (expName != "")
      expName += "/";
-  tcal_filename+=Form("./config/%sWDTimeCalibration/tcalib", expName.data());
+  tcal_filename+=Form("./calib/%sWDTimeCalibration/tcalib", expName.data());
   tcal_filename+=runnumber;
   tcal_filename+=".dat";
 

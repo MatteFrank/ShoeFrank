@@ -35,62 +35,64 @@
 class TATWpoint : public TAGcluster {
    
 private:
+
    TVector3    m_position;      // position in local framework
    TVector3    m_posErr;        // position error in local framework
    TVector3    m_positionG;     // position in detector framework
    TVector3    m_posErrG;       // position error in detector framework
 
-   int         m_column;        // column number
-   int         m_row;           // row number
+   int         m_row;        // row number
+   int         m_column;           // column number
    
-   TATWntuHit*   m_columnHit;     // hit col
-   TATWntuHit*   m_rowHit;        // hit row
+   TATWntuHit*   m_rowHit;     // hit col
+   TATWntuHit*   m_columnHit;        // hit column
    
    Double32_t  m_de1;           // energy loss in the scintillator bars layer 1
    Double32_t  m_de2;           // energy loss in the scintillator bars layer 2
-   Double32_t  m_time;          // for the moment I take the column time
+   Double32_t  m_time;          // for the moment I take the row time
    
    int         m_chargeZ;       // raw guess of charge Z
    Double32_t  m_chargeZProba;  // raw guess of charge Z probability
 
 public:
    
-   TATWpoint();
-   TATWpoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit );
-   ~TATWpoint() {};
-   
-   //    All the Get methods
-   const TVector3&  GetPosition()  const  { return m_position;       }
-   const TVector3&  GetPosError()  const  { return m_posErr;         }
+  TATWpoint();
+  TATWpoint( double x, double dx, TATWntuHit* hitX, double y, double dy, TATWntuHit* hitY );
+  ~TATWpoint() {};
+  
+  //    All the Get methods
+  const TVector3&  GetPosition()  const  { return m_position;       }
+  const TVector3&  GetPosError()  const  { return m_posErr;         }
+  
+  const TVector3&  GetPositionG() const  { return m_positionG;      }
+  const TVector3&  GetPosErrorG() const  { return m_posErrG;        }
+  
+  int       GetRowID()    const  { return m_row;              }
+  int       GetColumnID()       const  { return m_column;                 }
+  
+  int       GetRow()      const  { return m_rowHit->GetBar(); }
+  int       GetColumn()         const  { return m_columnHit->GetBar();    }
+  
+  TATWntuHit* GetRowHit()	const	 { return m_rowHit;           }
+  TATWntuHit* GetColumnHit()      const	 { return m_columnHit;              }
+  
+  double    GetEnergyLoss1() const  { return m_de1;                 }
+  double    GetEnergyLoss2() const  { return m_de2;                 }
+  double    GetEnergyLoss()  const  { return m_de1+m_de2;           }
+  double    GetTime()        const  { return m_time;                }
+  int       GetChargeZ()     const  { return m_chargeZ;             }
+  double    GetChargeZProba() const  { return m_chargeZProba;       }
+  
+  
+  void      SetPositionG(TVector3& pos);
+  void      SetChargeZ(int z)       { m_chargeZ = z;                }
+  void      SetChargeZProba(double p){ m_chargeZProba = p;          }
+  
+  
+  void      Clear(Option_t* opt);
+  
+  ClassDef(TATWpoint,4)
 
-   const TVector3&  GetPositionG() const  { return m_positionG;      }
-   const TVector3&  GetPosErrorG() const  { return m_posErrG;        }
-
-   int       GetColumnID()    const  { return m_column;              }
-   int       GetRowID()       const  { return m_row;                 }
-   
-   int       GetColumn()      const  { return m_columnHit->GetBar(); }
-   int       GetRow()         const  { return m_rowHit->GetBar();    }
-   
-   TATWntuHit* GetColumnHit()	const	 { return m_columnHit;           }
-   TATWntuHit* GetRowHit()	   const	 { return m_rowHit;              }
-   
-   double    GetEnergyLoss1() const  { return m_de1;                 }
-   double    GetEnergyLoss2() const  { return m_de2;                 }
-   double    GetEnergyLoss()  const  { return m_de1+m_de2;           }
-   double    GetTime()        const  { return m_time;                }
-   int       GetChargeZ()     const  { return m_chargeZ;             }
-   double    GetChargeZProba() const  { return m_chargeZProba;       }
-
-   
-   void      SetPositionG(TVector3& pos);
-   void      SetChargeZ(int z)       { m_chargeZ = z;                }
-   void      SetChargeZProba(double p){ m_chargeZProba = p;          }
-   
-
-   void      Clear(Option_t* opt);
-   
-   ClassDef(TATWpoint,4)
 };
 
 //##############################################################################
@@ -99,33 +101,36 @@ class TATWntuPoint : public TAGdata {
    
 private:
 
-   TClonesArray*        m_listOfPoints;
+  TClonesArray*        m_listOfPoints;
    
 public:
 
-	TATWntuPoint();
-	virtual ~TATWntuPoint();
+  TATWntuPoint();
+  virtual ~TATWntuPoint();
 	
-	TATWpoint*          NewPoint( double x, double dx, TATWntuHit* colHit, double y, double dy, TATWntuHit* rowHit );
+  TATWpoint*          NewPoint( double x, double dx, TATWntuHit* hitX, double y, double dy, TATWntuHit* hitY );
 
-	int                 GetPointN() const;
-	TATWpoint*          GetPoint( int iPoint ) const;
-
-
-	virtual void        Clear(Option_t* opt="");
-
-	// delete?
-	virtual void        ToStream(ostream& os=cout, Option_t* option="") const;
- 
-   virtual void        SetupClones();
-
+  int                 GetPointN() const;
+  TATWpoint*          GetPoint( int iPoint ) const;
+  
+  
+  virtual void        Clear(Option_t* opt="");
+  
+  // delete?
+  virtual void        ToStream(ostream& os=cout, Option_t* option="") const;
+  
+  virtual void        SetupClones();
+  
 public:
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+
+  static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
 private:
-   static TString fgkBranchName;    // Branch name in TTree
-   
-   ClassDef(TATWntuPoint,2)
+
+  static TString fgkBranchName;    // Branch name in TTree
+  
+  ClassDef(TATWntuPoint,2)
+
 };
 
 #endif

@@ -11,15 +11,15 @@ DetectorName: "ST"
 NumberFiles: 4
 "./geomaps/GSI/TASTdetector.geo": -1
 "./config/GSI/TASTdetector.cfg": -1
-"./config/GSI/WDChannelMap.txt": -1
-"./calib/GSI/WDTimeCalibration/tcalib/": 2210; 2251
+"./config/GSI/WDChannelMap.map": -1
+"./calib/GSI/WDTimeCalibration/tcalib.dat": 2187-2261
 
 DetectorName: "BM"
 NumberFiles: 4
 "./geomaps/GSI/TABMdetector.geo": -1
 "./config/GSI/TABMdetector.cfg": -1
 "./config/GSI/TABMdetector.map": -1
-"./calib/GSI/T0_beammonitor.cfg": 2210; 2251
+"./calib/GSI/TABM_T0_Calibration.cal": 2210; 2251
 
 DetectorName: "TG"
 NumberFiles: 1
@@ -31,6 +31,11 @@ NumberFiles: 2
 "./config/GSI/TAVTdetector.geo": -1
 
 DetectorName: "TW"
-NumberFiles: 2
+NumberFiles: 7
 "./geomaps/GSI/TATWdetector.geo": -1
-"./config/GSI/TATWChannelMap.xml": -1
+"./config/GSI/TATW_BBparameters_16O_400_GSI.cfg": -1
+"./config/GSI/TATWChannelMapXML.map": -1
+"./config/GSI/TATWbarsMapStatus.map": -1
+"./calib/GSI/TATW_Energy_Calibration.cal": -1
+"./calib/GSI/TATW_Tof_Calibration.cal": -1
+"./calib/GSI/TATWEnergyTuning.cal": -1

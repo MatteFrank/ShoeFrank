@@ -9,6 +9,9 @@
 
 #include "TAGaction.hxx"
 
+#include "TATWparGeo.hxx"
+#include "TATWparCal.hxx"
+
 class TAVTntuCluster;
 class TAVTntuHit;
 class TAVTparGeo;
@@ -36,9 +39,13 @@ public:
    
 private:
    TAGdataDsc*     fpNtuRaw;		 // input data dsc
-   TAGdataDsc*     fpNtuPoint;    // output data dsc
+   TAGdataDsc*     fpNtuPoint;           // output data dsc
    TAGparaDsc*     fpGeoMap;		 // geometry para dsc
    TAGparaDsc*     fpCalMap;		 // calibration Z para dsc
+
+
+   TATWparGeo*     fparGeo;
+   TATWparCal*     fparCal;
 
    Float_t         fDefPosErr;    // default position error
 

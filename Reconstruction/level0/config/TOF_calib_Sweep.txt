@@ -1,4 +1,0 @@
-T config/Cal_Sweep.root
-H config/Cal_CentralSlats.root
-Y config/SingleChannelCalib.root
-X config/TOFSlatSpeed.root

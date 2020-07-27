@@ -11,13 +11,12 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
-#include "TATWparGeo.hxx"
-#include "TATWparCal.hxx"
 #include "TATWntuRaw.hxx"
 #include "TATWntuPoint.hxx"
 
 #include "TATWactNtuPoint.hxx"
 
+#include "Parameters.h"
 /*!
  \class TATWactNtuPoint 
  \brief NTuplizer for TW reconstructed points. **
@@ -38,10 +37,15 @@ TATWactNtuPoint::TATWactNtuPoint(const char* name,
 {
    AddDataIn(pNtuRaw,   "TATWntuRaw");
    AddDataOut(pNtuPoint, "TATWntuPoint");
-   
-   TATWparGeo* pGeo = (TATWparGeo*) fpGeoMap->Object();
-   Float_t barWidth = pGeo->GetBarWidth();
+
+   AddPara(pGeoMap, "TATWparGeo");
+   AddPara(pCalMap, "TATWparCal");
+
+   fparGeo = (TATWparGeo*) fpGeoMap->Object();
+   Float_t barWidth = fparGeo->GetBarWidth();
    fDefPosErr = barWidth/TMath::Sqrt(12.);
+
+   fparCal = (TATWparCal*) fpCalMap->Object();
 }
 
 //------------------------------------------+-----------------------------------
@@ -89,45 +93,57 @@ Bool_t TATWactNtuPoint::FindPoints()
 {
    TATWntuRaw* pNtuHit      = (TATWntuRaw*) fpNtuRaw->Object();
    TATWntuPoint* pNtuPoint  = (TATWntuPoint*) fpNtuPoint->Object();
-   TATWparGeo* pGeoMap      = (TATWparGeo*) fpGeoMap->Object();
-   TATWparCal* pCalMap      = (TATWparCal*) fpCalMap->Object();
 
    Float_t minDist = 99999;
    Int_t minId = -1;
    Bool_t best = false;
    
-   Int_t layer1 = 0;
-   Int_t nHits1 = pNtuHit->GetHitN(layer1);
-   if (nHits1 == 0) return false;
+   Int_t nHitsX = pNtuHit->GetHitN(LayerX);
+   if (nHitsX == 0) return false;
    
-   Int_t layer2 = 1;
-   Int_t nHits2 = pNtuHit->GetHitN(layer2);
-   if (nHits2 == 0) return false;
+   Int_t nHitsY = pNtuHit->GetHitN(LayerY);
+   if (nHitsY == 0) return false;
 
-   for (Int_t i = 0; i < nHits1; ++i) {
-      minDist = pGeoMap->GetBarHeight() - pGeoMap->GetBarWidth(); // borders have no overlapp
+   if(FootDebugLevel(1)) {
+     cout<<""<<endl;
+     cout<<"Hits::  "<<nHitsX<<" "<<nHitsY<<endl;
+   }
+   
+   for (Int_t i = 0; i < nHitsX; ++i) {  // loop over front TW hits
+      minDist = fparGeo->GetBarHeight() - fparGeo->GetBarWidth(); // borders have no overlapp
       
-      TATWntuHit* hit1 = pNtuHit->GetHit(i, layer1);
+      TATWntuHit* hitX = pNtuHit->GetHit(i, LayerX);
 
-      if(!hit1) continue;
+      if(!hitX) continue;
+      if((Int_t)hitX->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge not assigned (automatically exclude hit with Eloss and ToF < 0)
       
-      Int_t bar1 = hit1->GetBar();
-      Float_t x  = pGeoMap->GetBarPosition(layer1, bar1)[0];
-      Float_t y  = hit1->GetPosition();
+      Int_t barX = hitX->GetBar();
+      Float_t y  = fparGeo->GetBarPosition(LayerX, barX)[1];
+      Float_t x  = hitX->GetPosition();
+      if(FootDebugLevel(1)) {
+	cout<<"posHitX::"<<x<<" "<<y<<endl;
+	cout<<"ToF::"<<hitX->GetToF()<<"  Z::"<<hitX->GetChargeZ()<<endl;
+      }
+
       TVector2 pos1(x, y);
-      
-      best = false;
-      for (Int_t j = 0; j < nHits2; ++j) {
-         
-         TATWntuHit* hit2 = pNtuHit->GetHit(j, layer2);
 
-         if(!hit2) continue;
-	 
-         Int_t bar2 = hit2->GetBar();
-         Float_t y  = pGeoMap->GetBarPosition(layer2, bar2)[1];
-         Float_t x  = hit2->GetPosition();
+      best = false;
+      for (Int_t j = 0; j < nHitsY; ++j) {  // loop over rear TW hits
          
-         TVector2 pos2(x, y);
+         TATWntuHit* hitY = pNtuHit->GetHit(j, LayerY);
+
+         if(!hitY) continue;
+	 if((Int_t)hitY->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge not assigned (automatically exclude hit with Eloss and ToF < 0)
+	 
+         Int_t barY = hitY->GetBar();
+	 Float_t x  = fparGeo->GetBarPosition(LayerY, barY)[0];
+	 Float_t y  = hitY->GetPosition();         
+	 if(FootDebugLevel(1)) {
+	   cout<<"posHitY::"<<x<<" "<<y<<endl;
+	   cout<<"ToF::"<<hitY->GetToF()<<"  Z::"<<hitY->GetChargeZ()<<endl;
+	 }
+	 
+	 TVector2 pos2(x, y);
          Float_t dist = (pos2 - pos1).Mod();
          
          if (dist < minDist) {
@@ -138,20 +154,27 @@ Bool_t TATWactNtuPoint::FindPoints()
       }
       
       if (best) {
-         TATWntuHit* hitmin = pNtuHit->GetHit(minId, layer2);
+         TATWntuHit* hitmin = pNtuHit->GetHit(minId, LayerY);
          if(!hitmin) continue;
 	 
-         Int_t bar2   = hitmin->GetBar();
-         Float_t xmin = pGeoMap->GetBarPosition(0, bar1)[0];
-         Float_t ymin = pGeoMap->GetBarPosition(1, bar2)[1];
-         Float_t zmin = (pGeoMap->GetBarPosition(0, bar1)[2] + pGeoMap->GetBarPosition(1, bar2)[2])/2.;
+         Int_t barY   = hitmin->GetBar();
+         Float_t xmin = fparGeo->GetBarPosition(LayerY, barY)[0];
+         Float_t ymin = fparGeo->GetBarPosition(LayerX, barX)[1];
+         Float_t zmin = (fparGeo->GetBarPosition(LayerX, barX)[2] + fparGeo->GetBarPosition(LayerY, barY)[2])/2.;
 
-         TATWpoint* point = pNtuPoint->NewPoint(xmin, fDefPosErr, hit1, ymin, fDefPosErr, hitmin);
+         TATWpoint* point = pNtuPoint->NewPoint(xmin, fDefPosErr, hitX, ymin, fDefPosErr, hitmin);
          TVector3 posG(xmin, ymin, zmin);
          point->SetPositionG(posG);
 
-         Int_t Z = hit1->GetChargeZ(); // taking MC Z from hit since no reconstruction available
+         Int_t Z = hitX->GetChargeZ();
          point->SetChargeZ(Z);
+
+	 if(FootDebugLevel(1)) {
+	   cout<<"Bars::  "<<barX<<"  "<<barY<<endl;
+	   cout<<"Z::"<<Z<<"  "<<hitmin->GetChargeZ()<<" "<<endl;
+	   cout<<"Posmin::"<<xmin<<"  "<<ymin<<" "<<zmin<<endl;
+	   cout<<"Posmin::"<<x<<"  "<<hitmin->GetPosition()<<endl;
+	 }
 	 
          if (ValidHistogram()) {
             fpHisDist->Fill(minDist);

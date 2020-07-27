@@ -18,10 +18,15 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGparGeo.hxx"
 
+#include "TATWparMap.hxx"
 #include "TATWparGeo.hxx"
 #include "TATWparCal.hxx"
 #include "TATWdatRaw.hxx"
 #include "TATWntuRaw.hxx"
+
+#include "TASTntuRaw.hxx"
+
+#include "Parameters.h"
 
 class TATWactNtuRaw : public TAGaction {
 
@@ -29,7 +34,8 @@ public:
 
   explicit        TATWactNtuRaw(const char* name=0,
 				TAGdataDsc* p_datraw=0,
-				TAGdataDsc* p_datdaq=0,
+				TAGdataDsc* p_nturaw=0,
+				TAGdataDsc* p_stnturaw=0,
 				TAGparaDsc* p_pargeo=0,
 				TAGparaDsc* p_parmap=0,
 				TAGparaDsc* p_calmap=0,
@@ -45,25 +51,40 @@ public:
 
 private:
   
-  TAGdataDsc*     fpDatRaw;		    // input data dsc
-  TAGdataDsc*     fpNtuRaw;		    // output data dsc
+  TAGdataDsc*     fpDatRaw;		    // input data dsc TW
+  TAGdataDsc*     fpNtuRaw;		    // output data dsc TW
+  TAGdataDsc*     fpSTNtuRaw;		    // output data dsc ST
   TAGparaDsc*     fpParGeo;		    // parameter dsc
   TAGparaDsc*     fpParMap;
   TAGparaDsc*     fpCalPar;
   TAGparaDsc*     fpParGeo_Gl;            // beam parameter dsc
 
-  TAGparGeo*      f_pargeo;
+  TAGparGeo*      f_pargeo_gl;
+  TAGgeoTrafo*    f_geoTrafo;
 
-  Int_t          Z_beam;
+  TATWparGeo*     f_pargeo;
+  TATWparMap*     f_parmap;
+  TATWparCal*     f_parcal;
+
+
+  Int_t           fZbeam;
+  Int_t           fEvtCnt;
   
-  Float_t        fTofPropAlpha;    // inverse of light propagation velocity
-  Float_t        fTofErrPropAlpha;
+  Float_t         fTofPropAlpha;    // inverse of light propagation velocity
+  Float_t         fTofErrPropAlpha;
 
-  TH1F*          fpHisDeTot;       // Total energy loss
-  TH1F*          fpHisTimeTot;     // Total time of flight
+  TH1F*           fpHisDeTot;       // Total energy loss
+  TH1F*           fpHisTimeTot;     // Total time of flight
    
-  TH2D*          fpHisElossTof_layer[TATWparCal::kLayers];
-  vector<TH2D*>  fpHisElossTof_Z;
+  TH2D*           fpHisElossTof_layer[nLayers];
+  vector<TH2D*>   fpHisElossTof_Z;
+  vector<TH1D*>   fpHisEloss_Z[nLayers];
+  vector<TH1D*>   fpHisTof_Z;
+
+  Bool_t          f_debug;
+
+ 
+
 
 private:
   //
@@ -72,11 +93,17 @@ private:
   Double_t GetRawEnergy(TATWrawHit*a,TATWrawHit*b);
   Double_t GetRawTime(TATWrawHit*a,TATWrawHit*b);
   Double_t GetRawTimeOth(TATWrawHit*a,TATWrawHit*b);
-  Double_t GetTime(Double_t Time,Int_t BarId);
-  Double_t GetTimeOth(Double_t Time,Int_t BarId);
-  Double_t GetEnergy(Double_t RawEnergy,Int_t BarId);
-  Double_t GetPosition(TATWrawHit*a,TATWrawHit*b);
+
+  Double_t GetEnergy(Double_t RawEnergy,Int_t layer,Int_t posId, Int_t barId);
+  Double_t GetTime(Double_t Time,Int_t layer, Int_t posId, Int_t barId);
+  Double_t GetTimeOth(Double_t Time,Int_t layer, Int_t posId, Int_t barId);
+
   Double_t GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b);
+
+  Double_t GetPosition(TATWrawHit*a,TATWrawHit*b);
+
+  Int_t    GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos);
+  Int_t    GetPerpBarId(Int_t layer, Int_t barId, Double_t rawPos);
 
 
 };

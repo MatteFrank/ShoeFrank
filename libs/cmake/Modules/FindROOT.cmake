@@ -47,7 +47,11 @@ else()
       OUTPUT_VARIABLE ROOT_LIBRARIES
       OUTPUT_STRIP_TRAILING_WHITESPACE)
   endif()
-  
+
+ # Add XML library
+ set( ROOT_LIBRARIES ${ROOT_LIBRARIES} -lXMLIO -lXMLParser)
+ string(REPLACE ";" " " ROOT_LIBRARIES "${ROOT_LIBRARIES}")
+
   set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)
   
   # Make variables changeble to the advanced user
