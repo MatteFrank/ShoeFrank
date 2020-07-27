@@ -365,6 +365,11 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
    if (nameFile.IsNull())
       return Form("");
    
+   if( access(nameFile.Data(), F_OK) == -1 ) {
+      Warning("GetFile()", "File %s not found !", nameFile.Data());
+      exit(0);
+   }
+   
    if (array.GetSize() == 0)
       return Form("%s", nameFile.Data());
 
