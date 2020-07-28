@@ -33,7 +33,7 @@ class TAGbaseWDparTime : public TAGpara {
   
   vector<double> GetRawTimeArray(int iBo, int iCha, int TrigCell);
   void InitMap();
-  bool FromFile(string expName = "", int iRunNumber = 0);
+  bool FromFile(TString fileName = "");
   void SetTimeCal(int iBo, int iCha, vector<float> tvec);
 
   ClassDef(TAGbaseWDparTime,1)
