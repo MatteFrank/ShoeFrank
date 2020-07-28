@@ -9,15 +9,21 @@ CamNumber:    1
 CamName:    "12C_200"
 CamDataMC:    1
 CamDate:      ""
-CamSum: "Simulation data for 12C on 12C @ 200MeV/u"
+CamSum: "Simulation data for 12C on 12C (5mm target) @ 200MeV/u"
 
 CamNumber:    2
+CamName:    "16O_200"
+CamDataMC:    1
+CamDate:      ""
+CamSum: "Simulation data for 16O on 12C (run 6) or C2H4 (run 1-5) for 5mm target thickness @ 200MeV/u"
+
+CamNumber:    3
 CamName:    "GSI"
 CamDataMC:    0
 CamDate: "5-8 April 2019"
 CamSum: "Test experiment with ST+BM+VTX+TW…"
 
-CamNumber:    3
+CamNumber:    4
 CamName:   "HE_MC"
 CamDataMC:    1
 CamDate: "5-8 January 2020"
