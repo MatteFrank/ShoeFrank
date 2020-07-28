@@ -304,7 +304,7 @@ const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, 
    TString nameFile = fFileConfMap[detName];
    TArrayI arrayRun = fRunsConfMap[detName];
    
-   if (!bName.IsNull()) {
+   if (!bName.IsNull() && !nameFile.IsNull()) {
       Int_t pos = nameFile.Last('.');
       nameFile.Insert(pos, Form("_%s_%d", bName.Data(), bEnergy));
    }
