@@ -20,6 +20,7 @@ DetectorName: "BM"
 NumberFiles: 2
 "./geomaps/12C_200/TABMdetector.geo": -1
 "./config/12C_200/TABMdetector.cfg": -1
+"./config/12C_200/TABMdetector.map": -1
 
 DetectorName: "TG"
 NumberFiles: 1
