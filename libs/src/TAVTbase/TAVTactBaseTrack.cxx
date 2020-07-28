@@ -431,7 +431,5 @@ void TAVTactBaseTrack::SetGeoTrafo(TString name)
 {
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(name.Data());
    if (!fpFootGeo)
-	  printf("No GeoTrafo action %s available yet\n", name.Data());
-   else 
-	  printf("GeoTrafo action %s found\n", name.Data());
+	  Error("SetGeoTrafo()", "No GeoTrafo action %s available yet\n", name.Data());
 }
