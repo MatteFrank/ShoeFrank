@@ -138,6 +138,8 @@ Bool_t TATWparCal::FromCalibFile(const TString& name, Bool_t isTof, Bool_t barCa
     else if (isTof==1)
       fMapCal->LoadTofCalibrationMap(name_exp.Data());
   }
+   Info("FromCalibFile()", "Open file %s for calibration\n", name_exp.Data());
+
 
   return kFALSE;
     
@@ -175,7 +177,7 @@ Bool_t TATWparCal::FromFileZID(const TString& name, Int_t Zbeam) {
   
   if (!Open(nameExp)) return false;
 
-  Info("FromFileZID()", "Open file %s for Bethe-Bloch parametrization", name.Data());
+  Info("FromFileZID()", "Open file %s for Bethe-Bloch parametrization\n", name.Data());
   
   Double_t* tmp = new Double_t[6];
   
