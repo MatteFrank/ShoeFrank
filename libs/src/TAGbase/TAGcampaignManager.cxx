@@ -346,6 +346,9 @@ const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, 
 const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib)
 {
    vector<TString> vecFile = fFileCalMap[detName];
+   if (vecFile.size() == 0)
+      return Form("");
+
    TString nameFile = vecFile[item];
    
    if (isTofBarCalib) {
