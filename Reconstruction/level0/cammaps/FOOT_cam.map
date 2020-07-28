@@ -27,4 +27,4 @@ CamNumber:    4
 CamName:   "HE_MC"
 CamDataMC:    1
 CamDate: "5-8 January 2020"
-CamSum: "MC data for HE reaction produced by FLUKA"
+CamSum: "Simulation data for 4He on 12C (5mm target) @ 700MeV/u"
