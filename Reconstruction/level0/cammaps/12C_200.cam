@@ -30,11 +30,13 @@ DetectorName: "VT"
 NumberFiles: 2
 "./geomaps/12C_200/TAVTdetector.geo": -1
 "./config/12C_200/TAVTdetector.cfg": -1
+"./config/12C_200/TAVTdetector.map": -1
 
 DetectorName: "IT"
 NumberFiles: 2
 "./geomaps/12C_200/TAITdetector.geo": -1
 "./config/12C_200/TAITdetector.cfg": -1
+"./config/12C_200/TAITdetector.map": -1
 
 DetectorName: "MSD"
 NumberFiles: 1
