@@ -285,9 +285,9 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeTW() || IsItrTracking()) {
       fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
       TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
-      TString parFileName = Form("./geomaps/%sTAGdetector.geo", fExpName.Data());
+      TString parFileName = fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
-
+      
       Z_beam = parGeo->GetBeamPar().AtomicNumber;
       A_beam = parGeo->GetBeamPar().AtomicMass;
       ion_name = parGeo->GetBeamPar().Material;
@@ -308,47 +308,50 @@ void BaseReco::ReadParFiles()
 
      fpParGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
      TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
-     TString parFileName = "./geomaps/TASTdetector.geo";
+     TString parFileName = fCampManager->GetCurGeoFile(TASTparGeo::GetBaseName(), fRunNumber);
      parGeo->FromFile(parFileName.Data());
      
      fpParMapSt = new TAGparaDsc("stMap", new TASTparMap()); // need the file
      TASTparMap* parMapSt = (TASTparMap*) fpParMapSt->Object();
-     parFileName = Form("./config/%sTASTdetector.cfg", fExpName.Data());
+     parFileName = fCampManager->GetCurConfFile(TASTparGeo::GetBaseName(), fRunNumber);
      parMapSt->FromFile(parFileName);
         
      fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
      TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
-     parFileName = Form("./config/%sTATWChannelMapXML.map", fExpName.Data());
+     parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber, 0);
      parMap->FromFile(parFileName.Data());
 
      fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
      TAGbaseWDparMap* parMapWD = (TAGbaseWDparMap*)fpParMapWD->Object();
-     parFileName = Form("./config/%sWDChannelMap.map", fExpName.Data());
+     parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
      parMapWD->FromFile(parFileName.Data());
-       
+      
      fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
      TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
-     if(!fFlagMC)parTimeWD->FromFile(fExpName.Data(), 0);
-
+      if(!fFlagMC) {
+         parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
+         parTimeWD->FromFile(parFileName.Data());
+      }
    }
    
    // initialise par files for Beam Monitor
    if (GlobalPar::GetPar()->IncludeBM()) {
       fpParGeoBm = new TAGparaDsc("bmGeo", new TABMparGeo());
       TABMparGeo* parGeo = (TABMparGeo*)fpParGeoBm->Object();
-      TString parFileName = "./geomaps/TABMdetector.geo";
+      TString parFileName = fCampManager->GetCurGeoFile(TABMparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
       fpParConfBm = new TAGparaDsc("bmConf", new TABMparCon());
       TABMparCon* parConf = (TABMparCon*)fpParConfBm->Object();
-      parFileName = "./config/TABMdetector.cfg";
+      parFileName = fCampManager->GetCurConfFile(TABMparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
-      parFileName = Form("./calib/%sTABM_T0_Calibration.cal", fExpName.Data());
+      
+      parFileName = fCampManager->GetCurCalFile(TABMparGeo::GetBaseName(), fRunNumber);
       parConf->loadT0s(parFileName);
-            
+      
       fpParMapBm = new TAGparaDsc("bmMap", new TABMparMap());
       TABMparMap*  parMapBm = (TABMparMap*)fpParMapBm->Object();
-      parFileName = Form("./config/%sTABMdetector.map", fExpName.Data());
+      parFileName = fCampManager->GetCurMapFile(TABMparGeo::GetBaseName(), fRunNumber);
       parMapBm->FromFile(parFileName.Data(), parGeo);
    }
    
@@ -356,7 +359,7 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeDI() || TAGactNtuGlbTrack::GetStdAloneFlag() ) {
       fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
-      TString parFileName = "./geomaps/TADIdetector.geo";
+      TString parFileName = fCampManager->GetCurGeoFile(TADIparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
       if (GlobalPar::GetPar()->IncludeTOE())
@@ -367,66 +370,69 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeVertex() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
-      TString parVtxFileName = Form("./geomaps/%sTAVTdetector.geo", fExpName.Data());
-      parGeo->FromFile(parVtxFileName.Data());
+      TString parFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
+      parGeo->FromFile(parFileName.Data());
       
       fpParConfVtx = new TAGparaDsc("vtConf", new TAVTparConf());
       TAVTparConf* parConf = (TAVTparConf*)fpParConfVtx->Object();
-      parVtxFileName = Form("./config/%sTAVTdetector.cfg", fExpName.Data());
-      parConf->FromFile(parVtxFileName.Data());
+      parFileName = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
       
       fpParMapVtx = new TAGparaDsc("vtMap", new TAVTparMap());
       TAVTparMap* parMap = (TAVTparMap*)fpParMapVtx->Object();
-      parVtxFileName = Form("./config/%sTAVTdetector.map", fExpName.Data());
-      parMap->FromFile(parVtxFileName.Data());
+      parFileName = fCampManager->GetCurMapFile(TAVTparGeo::GetBaseName(), fRunNumber);
+      parMap->FromFile(parFileName.Data());
    }
    
    // initialise par files for inner tracker
    if (GlobalPar::GetPar()->IncludeInnerTracker() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoIt = new TAGparaDsc(TAITparGeo::GetItDefParaName(), new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
-      TString parItFileName = Form("./geomaps/%sTAITdetector.geo", fExpName.Data());
-      parGeo->FromFile(parItFileName.Data());
+      TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
+      parGeo->FromFile(parFileName.Data());
       
       fpParConfIt = new TAGparaDsc("itConf", new TAITparConf());
       TAITparConf* parConf = (TAITparConf*)fpParConfIt->Object();
-      parItFileName = Form("./config/%sTAITdetector.cfg", fExpName.Data());
-      parConf->FromFile(parItFileName.Data());
+      parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
       
       fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
       TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
-      parItFileName = Form("./config/%sTAITdetector.map", fExpName.Data());
-     // parMap->FromFile(parItFileName.Data());
+      parFileName = fCampManager->GetCurMapFile(TAITparGeo::GetBaseName(), fRunNumber);
+     // parMap->FromFile(parFileName.Data());
    }
    
    // initialise par files for multi strip detector
    if (GlobalPar::GetPar()->IncludeMSD() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
       TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
-      TString parMsdFileName = Form("./geomaps/%sTAMSDdetector.geo", fExpName.Data());
-      parGeo->FromFile(parMsdFileName.Data());
+      TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
+      parGeo->FromFile(parFileName.Data());
       
       fpParConfMsd = new TAGparaDsc("msdConf", new TAMSDparConf());
       TAMSDparConf* parConf = (TAMSDparConf*)fpParConfMsd->Object();
-      parMsdFileName = Form("./config/%sTAMSDdetector.cfg", fExpName.Data());
-      // parConf->FromFile(parMsdFileName.Data());
+      parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+      // parConf->FromFile(parFileName.Data());
    }
    
    // initialise par files for Tof Wall
    if (GlobalPar::GetPar()->IncludeTW() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
       TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
-      parGeo->FromFile(Form("./geomaps/%sTATWdetector.geo", fExpName.Data()));
+      TString parFileName = fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
+      parGeo->FromFile(parFileName.Data());
       
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       Bool_t isTof_calib = false;
-      TString parFileName;
+
       if(fFlagTWbarCalib) {
-         parFileName = Form("./calib/%sTATW_Energy_Calibration_perBar.cal", fExpName.Data());
+         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+                                                   isTof_calib,fFlagTWbarCalib);
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
       } else {
-         parFileName = Form("./calib/%sTATW_Energy_Calibration.cal", fExpName.Data());
+         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+                                                   isTof_calib,fFlagTWbarCalib);
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
 
          Bool_t elossTuning = false;
@@ -435,32 +441,36 @@ void BaseReco::ReadParFiles()
             elossTuning = true;
 	
          if(elossTuning) {
-            if(FootDebugLevel(0))
-               Info("ReadParFiles()","Eloss tuning for GSI data status:: ON");
-            parFileName = Form("./calib/%sTATWEnergyTuning.cal", fExpName.Data());
+            Info("ReadParFiles()","Eloss tuning for GSI data status:: ON\n");
+            parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+                                                      false, false, true);
             parCal->FromElossTuningFile(parFileName.Data());
          }
       }
       
       isTof_calib = true;
       if(fFlagTWbarCalib) {
-         parFileName = Form("./calib/%sTATW_Tof_Calibration_perBar.cal", fExpName.Data());
+         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+                                                   isTof_calib,fFlagTWbarCalib);
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
       } else {
-         parFileName = Form("./calib/%sTATW_Tof_Calibration.cal", fExpName.Data());
+         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+                                                   isTof_calib,fFlagTWbarCalib);
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
       }
 
-      TString exp_name = fExpName.IsNull() ? "" : "_" + fExpName(0,fExpName.First('/'));
-      parFileName = Form("./config/%sTATW_BBparameters_%d%s_%d%s.cfg", fExpName.Data(),A_beam,ion_name.Data(),(int)(kinE_beam*TAGgeoTrafo::GevToMev()),exp_name.Data());
-      parCal->FromFileZID(parFileName.Data(),Z_beam);
-
+      parFileName = fCampManager->GetCurConfFile(TATWparGeo::GetBaseName(), fRunNumber,
+                                                 Form("%d%s", A_beam,ion_name.Data()),
+                                                 (int)(kinE_beam*TAGgeoTrafo::GevToMev()));
+      if (parFileName.IsNull() && fFlagMC) {
+         fFlagZtrueMC = true;
+         Warning("ReadParFiles()", "BB parametrization file does not exist for %d%s at %d MeV switch to true MC Z\n", A_beam, ion_name.Data(), (int)(kinE_beam*TAGgeoTrafo::GevToMev()));
+      } else
+         parCal->FromFileZID(parFileName.Data(),Z_beam);
 
       if(fFlagMC) { // set in MC threshold and active bars from data informations
-
-         parFileName = Form("./config/%sTATWbarsMapStatus.map", fExpName.Data());
+         parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber, 1);
          parCal->FromBarStatusFile(parFileName.Data());
-
       }
    }
    
@@ -468,12 +478,11 @@ void BaseReco::ReadParFiles()
    if (GlobalPar::GetPar()->IncludeCA()) {
       fpParGeoCa = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
       TACAparGeo* parGeo = (TACAparGeo*)fpParGeoCa->Object();
-      TString parFileName = Form("./geomaps/%sTACAdetector.geo", fExpName.Data());
+      TString parFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName);
    }
 
    TAVTparConf::SetHistoMap();
-
 }
 
 //__________________________________________________________
