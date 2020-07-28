@@ -260,7 +260,7 @@ bool TAGcampaign::FromFile(TString ifile)
          }
 
          // calib
-         if ((fileName.Contains("calib") && (fileName.EndsWith(".cal") || fileName.EndsWith("/"))) || fileName.Contains("T0"))  { // needed for BM
+         if ((fileName.Contains("calib") && (fileName.EndsWith(".cal") || fileName.EndsWith(".dat"))) || fileName.Contains("T0"))  { // needed for ST
             
             // check order in TW calibration files
             if (fileName.Contains(fgTWcalFileType[0]) && fFileCalMap[detName].size() != 0 ) {
