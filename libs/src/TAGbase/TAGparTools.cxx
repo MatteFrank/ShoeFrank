@@ -302,11 +302,11 @@ void TAGparTools::ReadStringsInts(TString& aString, TArrayI& array, const Char_t
    // reads a string between "" followed by integers separated by delimiter1
    // Integers are separated by delimiter2
    
-   Char_t buf[255];
+   Char_t buf[512];
    TString key;
    do {
       if (fFileStream.eof()) return ;//break;
-      fFileStream.getline(buf, 255);
+      fFileStream.getline(buf, 512);
       key = buf;
    } while (buf[0] == '/');
 
@@ -315,8 +315,7 @@ void TAGparTools::ReadStringsInts(TString& aString, TArrayI& array, const Char_t
    Int_t len = key.Length();
    Int_t pos = key.First('"');
    Int_t end = key.Last('"');
-   
-   if (end == -1 || pos == -1 || end-pos-1 > 255) {
+   if (end == -1 || pos == -1 || end-pos-1 > 512) {
       cout << "TAGparTools: totoproblem with reading file, missing \" or line too long" << endl;
       return;
    }
