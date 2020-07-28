@@ -10,7 +10,7 @@
 BeamSize:            0.48
 BeamShape:         "Gaussian"
 BeamEnergy:          0.2   //! GeV/u
-BeamAtomicMass:       12   //! A Beam
+BeamAtomicMass:       16   //! A Beam
 BeamAtomicNumber:     8    //! Z Beam
 BeamMaterial:        "O"   //! Beam Material
 BeamPartNumber:       1    // particles in Beam
