@@ -12,28 +12,30 @@ NumberFiles: 1
 "./geomaps/12C_200/TADIdetector.geo": -1
 
 DetectorName: "ST"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/12C_200/TASTdetector.geo": -1
 "./config/12C_200/TASTdetector.cfg": -1
+"./config/12C_200/WDChannelMap.map":-1
 
 DetectorName: "BM"
-NumberFiles: 2
+NumberFiles: 4
 "./geomaps/12C_200/TABMdetector.geo": -1
 "./config/12C_200/TABMdetector.cfg": -1
 "./config/12C_200/TABMdetector.map": -1
+"./calib/12C_200/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1
 "./geomaps/12C_200/TAGdetector.geo": -1
 
 DetectorName: "VT"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/12C_200/TAVTdetector.geo": -1
 "./config/12C_200/TAVTdetector.cfg": -1
 "./config/12C_200/TAVTdetector.map": -1
 
 DetectorName: "IT"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/12C_200/TAITdetector.geo": -1
 "./config/12C_200/TAITdetector.cfg": -1
 "./config/12C_200/TAITdetector.map": -1
