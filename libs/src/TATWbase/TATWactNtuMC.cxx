@@ -179,9 +179,9 @@ bool TATWactNtuMC::Action() {
     Float_t timeST  = fEventStruct->STCtim[0]*TAGgeoTrafo::SecToPs();
     
     // fill the container of hits, divided by layer, i.e. the column at 0 and row at 1
-    for (int i=0; i < fEventStruct->SCNn; i++) { 
+    for (int i=0; i < fEventStruct->SCNn; i++) {
     
-       Int_t layer = fEventStruct->SCNiview[i];    // layers 0 (y-bars) and 1 (x-bars)
+       Int_t layer   = fEventStruct->SCNiview[i];    // layers 0 (y-bars) and 1 (x-bars)
        Int_t barId   = fEventStruct->SCNibar[i];
        Int_t trackId = fEventStruct->SCNid[i] - 1;
        Float_t x0    = fEventStruct->SCNxin[i];
@@ -211,69 +211,71 @@ bool TATWactNtuMC::Action() {
        
        double truePos = 0;
        if( layer == (Int_t)LayerY )  // layer 0 --> vertical bar
-	 truePos = posInLoc.Y(); 
+          truePos = posInLoc.Y();
        else if( layer == (Int_t)LayerX )  // layer 1 --> horizontal bar
-	 truePos = posInLoc.X();
+          truePos = posInLoc.X();
 
        if(FootDebugLevel(1)>0)
           cout<<"trueEloss::"<<edep<<" trueTof::"<<trueTof<<" truePos::"<<truePos<<endl;
               
        if(fDigitizer->IsMCtrue()) {  // only for ZID algorithm debug purposes
 
-	 Int_t mothId = (fEventStruct->TRpaid[trackId])-1;
+          Int_t mothId = (fEventStruct->TRpaid[trackId])-1;
 	 
-	 Float_t distZ_MC[fZbeam]; //inf
+          Float_t distZ_MC[fZbeam]; //inf
 	 
-	 Int_t Zrec_MCtrue;	 
-	 // test algorithm in MC in a clean situation: only primary fragmentation
-	 if( mothId>0) {
-	   Zrec_MCtrue=-1.; //set Z to nonsense value
-	   if(FootDebugLevel(1) > 0) printf("the energy released is %f MeV (tof %.f ns) so Zraw is set to %d\n",edep,trueTof,Zrec_MCtrue);
-	 } else
-	   Zrec_MCtrue = f_parcal->GetChargeZ(edep,trueTof,layer);
-	 
-	 for(int iZ=1; iZ<fZbeam+1; iZ++)
-	   distZ_MC[iZ-1]= f_parcal->GetDistBB(iZ);
-	 
-	 if (ValidHistogram()) {
-	   fpHisZID_MCtrue->Fill(Zrec_MCtrue,Z);
-	   
-	   fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
-	   
-	   if( Zrec_MCtrue>0 && Zrec_MCtrue < fZbeam+1 )
-	     fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(trueTof,edep);
-	   
-	   fpHisRecPosMc->Fill(truePos);
-	   fpHisRecTofMc->Fill(trueTof);
-	   
-	   for(int iZ=1; iZ < fZbeam+1; iZ++) {
-	     
-	     if(iZ==1) {
-	       if(iZ==Zrec_MCtrue) 
-             fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
-	       else
-             fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
-	     }
-	     else
-	       fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
-	     
-	   }
-	   
-	 }
-	   
-	 if(FootDebugLevel(1) > 0) {
-	   if(Zrec_MCtrue>0 && Z>0) {	   
-	     fCnt++;	   
-	     if(Zrec_MCtrue!=Z) {
-	       cout<<"Hit MC n::"<<fCnt<<endl;
-	       printf("layer::%d bar::%d\n", layer,  fEventStruct->SCNibar[i]);
-	       fCntWrong++;
-	       cout<<"edep::"<<edep<<"  trueTof::"<<trueTof<<endl;
-	       cout<<"Zrec::"<<Zrec_MCtrue<<"  Z_MC::"<<Z<<endl;
-	       printf("Z wrong/(Zrec>0) :: %d/%d\n",fCntWrong,fCnt);
-	     }
-	   }
-	 }
+          if (!fIsZtrueMC) {
+             Int_t Zrec_MCtrue;
+             // test algorithm in MC in a clean situation: only primary fragmentation
+             if( mothId>0) {
+                Zrec_MCtrue=-1.; //set Z to nonsense value
+                if(FootDebugLevel(1) > 0) printf("the energy released is %f MeV (tof %.f ns) so Zraw is set to %d\n",edep,trueTof,Zrec_MCtrue);
+             } else
+                Zrec_MCtrue = f_parcal->GetChargeZ(edep,trueTof,layer);
+             
+             for(int iZ=1; iZ<fZbeam+1; iZ++)
+                distZ_MC[iZ-1]= f_parcal->GetDistBB(iZ);
+             
+             if (ValidHistogram()) {
+                fpHisZID_MCtrue->Fill(Zrec_MCtrue,Z);
+                
+                fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
+                
+                if( Zrec_MCtrue>0 && Zrec_MCtrue < fZbeam+1 )
+                   fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(trueTof,edep);
+                
+                fpHisRecPosMc->Fill(truePos);
+                fpHisRecTofMc->Fill(trueTof);
+                
+                for(int iZ=1; iZ < fZbeam+1; iZ++) {
+                   
+                   if(iZ==1) {
+                      if(iZ==Zrec_MCtrue)
+                         fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+                      else
+                         fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
+                   }
+                   else
+                      fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+                   
+                }
+                
+             }
+             
+             if(FootDebugLevel(1) > 0) {
+                if(Zrec_MCtrue>0 && Z>0) {
+                   fCnt++;
+                   if(Zrec_MCtrue!=Z) {
+                      cout<<"Hit MC n::"<<fCnt<<endl;
+                      printf("layer::%d bar::%d\n", layer,  fEventStruct->SCNibar[i]);
+                      fCntWrong++;
+                      cout<<"edep::"<<edep<<"  trueTof::"<<trueTof<<endl;
+                      cout<<"Zrec::"<<Zrec_MCtrue<<"  Z_MC::"<<Z<<endl;
+                      printf("Z wrong/(Zrec>0) :: %d/%d\n",fCntWrong,fCnt);
+                   }
+                }
+             }
+          }
        }
 
        if ( FootDebugLevel(1)> 0 )
@@ -300,154 +302,159 @@ bool TATWactNtuMC::Action() {
     }
 
 
-    if( fDigitizer->IsPileUpOff() ) {
-
-
+   if( fDigitizer->IsPileUpOff() ) {
+      
+      
       for(auto it=fVecPuOff.begin(); it !=fVecPuOff.end(); ++it) {
+         
+         TATWntuHit* hit = *it;
+         
+         Int_t layer = hit->GetLayer();
+         Int_t bar = hit->GetBar();
+         
+         // get Eloss threshold from configuration file
+         Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
+         
+         Double_t recEloss = hit->GetEnergyLoss(); // MeV
+         Double_t recTof   = hit->GetTime();       // ns
+         Double_t recPos   = hit->GetPosition();   // cm
+         
+         Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
+         
+         if(FootDebugLevel(1)>0)
+            cout<<"recEloss::"<<recEloss<<" recTof::"<<recTof<<" recPos::"<<recPos<<endl;
+         
+         if(!fDigitizer->IsOverEnergyThreshold(Ethr,recEloss)) {
+            if(FootDebugLevel(1) > 0)
+               printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());
+            
+            recEloss=-99.; //set energy to nonsense value
+            hit->SetEnergyLoss(recEloss);
+         }
+         
+         Int_t Zrec = -2;
+         Float_t distZ[fZbeam];
+         
+         if(fIsZtrueMC)
+            hit->SetChargeZ(Z);
+         else {
+            Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
+            hit->SetChargeZ(Zrec);
+            for(int iZ=1; iZ<fZbeam+1; iZ++)
+               distZ[iZ-1]= f_parcal->GetDistBB(iZ);
+            
+         }
+         
+         if(FootDebugLevel(1)>0 && Z!=Zrec)
+            cout<<"set Z::"<<hit->GetChargeZ()<<"  Ztrue::"<<Z<<"  Zrec::"<<Zrec<<endl;
+         
+         
+         if(FootDebugLevel(1) > 0) {
+            
+            if(!fDigitizer->IsMCtrue()) {  // only for ZID algorithm debug purposes
+               if(Zrec>0 && Z>0) {
+                  fCnt++;
+                  if(Zrec!=Z) {
+                     cout<<"Hit n::"<<fCnt<<endl;
+                     fCntWrong++;
+                     cout<<"edep::"<<recEloss<<"  time::"<<recTof<<endl;
+                     cout<<"Zrec::"<<Zrec<<"  Z_MC::"<<Z<<endl;
+                     printf("Z wrong/(Zrec>0) :: %d/%d\n",fCntWrong,fCnt);
+                  }
+               }
+            }
+         }
 
-	TATWntuHit* hit = *it;
 	
-	Int_t layer = hit->GetLayer();
-	Int_t bar = hit->GetBar();
-
-	// get Eloss threshold from configuration file
-	Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
-
-	Double_t recEloss = hit->GetEnergyLoss(); // MeV
-	Double_t recTof   = hit->GetTime();       // ns
-	Double_t recPos   = hit->GetPosition();   // cm
-	
-	Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
-      
-	if(FootDebugLevel(1)>0)
-	  cout<<"recEloss::"<<recEloss<<" recTof::"<<recTof<<" recPos::"<<recPos<<endl;
-	
-	if(!fDigitizer->IsOverEnergyThreshold(Ethr,recEloss)) {
-	  if(FootDebugLevel(1) > 0)
-	    printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());     
-	  
-	  recEloss=-99.; //set energy to nonsense value
-	  hit->SetEnergyLoss(recEloss);	
-	}       
-	
-	Int_t Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
-	hit->SetChargeZ(Zrec);
-	if(fIsZtrueMC)
-	  hit->SetChargeZ(Z);
-
-	if(FootDebugLevel(1)>0 && Z!=Zrec)
-	  cout<<"set Z::"<<hit->GetChargeZ()<<"  Ztrue::"<<Z<<"  Zrec::"<<Zrec<<endl;
-	
- 	Float_t distZ[fZbeam];
-	for(int iZ=1; iZ<fZbeam+1; iZ++)
-	  distZ[iZ-1]= f_parcal->GetDistBB(iZ);
-	
-	if(FootDebugLevel(1) > 0) {
-
-	  if(!fDigitizer->IsMCtrue()) {  // only for ZID algorithm debug purposes
-	    if(Zrec>0 && Z>0) {
-	      fCnt++;	     
-	      if(Zrec!=Z) {
-	    	cout<<"Hit n::"<<fCnt<<endl;
-	    	fCntWrong++;
-	    	cout<<"edep::"<<recEloss<<"  time::"<<recTof<<endl;
-	    	cout<<"Zrec::"<<Zrec<<"  Z_MC::"<<Z<<endl;
-	    	printf("Z wrong/(Zrec>0) :: %d/%d\n",fCntWrong,fCnt);
-	      }
-	    }
-	  }
-	}
-
-	
-	if (ValidHistogram()) {
-	  
-	  fpHisElossTof_MCrec[hit->GetLayer()]->Fill(recTof,recEloss);
-	  
-	  if( Zrec>0 && Zrec < fZbeam+1 )
-	    fpHisElossTof[Zrec-1]->Fill(recTof,recEloss);
-	  
-	  for(int iZ=1; iZ < fZbeam+1; iZ++)
-	    fpHisDistZ[iZ-1]->Fill(distZ[iZ-1]);
-	  
-	  fpHisZID->Fill(Zrec,Z);
-	  
-	  fpHisRecPos->Fill(recPos);
-	  fpHisRecTof->Fill(recTof);
-	  
-	  if (hit->IsColumn())
-	    fpHisHitCol->Fill(hit->GetBar());
-	  else
-	    fpHisHitLine->Fill(hit->GetBar());
-	  
-	}
+         if (ValidHistogram()) {
+            
+            fpHisElossTof_MCrec[hit->GetLayer()]->Fill(recTof,recEloss);
+            
+            if( Zrec>0 && Zrec < fZbeam+1 )
+               fpHisElossTof[Zrec-1]->Fill(recTof,recEloss);
+            
+            for(int iZ=1; iZ < fZbeam+1; iZ++)
+               fpHisDistZ[iZ-1]->Fill(distZ[iZ-1]);
+            
+            fpHisZID->Fill(Zrec,Z);
+            
+            fpHisRecPos->Fill(recPos);
+            fpHisRecTof->Fill(recTof);
+            
+            if (hit->IsColumn())
+               fpHisHitCol->Fill(hit->GetBar());
+            else
+               fpHisHitLine->Fill(hit->GetBar());
+            
+         }
       }
       
-    }  else {  // full MC reconstructed (pile-up included)
-    
-
+   }  else {  // full MC reconstructed (pile-up included)
+      
+      
       for(auto it=fMapPU.begin(); it !=fMapPU.end(); ++it) {
-
-	TATWntuHit* hit = it->second;
-	
-	Int_t layer = hit->GetLayer();
-	Int_t bar = hit->GetBar();
-
-	// get Eloss threshold from configuration file
-	Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
-
-	Double_t recEloss = hit->GetEnergyLoss(); // MeV
-	Double_t recTof   = hit->GetTime();       // ns
-	Double_t recPos   = hit->GetPosition();   // cm
-	
-	Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
-	
-	if(FootDebugLevel(1)>0)
-	  cout<<"Ethr::"<<Ethr<<" recEloss::"<<recEloss<<" recTof::"<<recTof<<" tof::"<<hit->GetToF()<<" recPos::"<<recPos<<endl;
-	
-	if(!fDigitizer->IsOverEnergyThreshold(Ethr,recEloss)) {
-	  if(FootDebugLevel(1) > 0)
-	    printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());     
-	  
-	  recEloss=-99.; //set energy to nonsense value
-	  hit->SetEnergyLoss(recEloss);	
-	}       
-	
-	Int_t Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
-	hit->SetChargeZ(Zrec);
-
-	if(FootDebugLevel(1)>0) cout<<"rec Z::"<<Zrec<<endl;
-
-	Float_t distZ[fZbeam];
-	for(int iZ=1; iZ<fZbeam+1; iZ++)
-	  distZ[iZ-1]= f_parcal->GetDistBB(iZ);	  
-
-
-	if (ValidHistogram()) {
-	  
-	  fpHisElossTof_MCrec[hit->GetLayer()]->Fill(recTof,recEloss);
-	  
-	  if( Zrec>0 && Zrec < fZbeam+1 )
-	    fpHisElossTof[Zrec-1]->Fill(recTof,recEloss);
-	  
-	  for(int iZ=1; iZ < fZbeam+1; iZ++)
-	    fpHisDistZ[iZ-1]->Fill(distZ[iZ-1]);
-	  
-	  fpHisZID->Fill(Zrec,Z);
-	  
-	  fpHisRecPos->Fill(recPos);
-	  fpHisRecTof->Fill(recTof);
-	  
-	  if (hit->IsColumn())
-	    fpHisHitCol->Fill(hit->GetBar());
-	  else
-	    fpHisHitLine->Fill(hit->GetBar());
-	  
-	}
+         
+         TATWntuHit* hit = it->second;
+         
+         Int_t layer = hit->GetLayer();
+         Int_t bar = hit->GetBar();
+         
+         // get Eloss threshold from configuration file
+         Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
+         
+         Double_t recEloss = hit->GetEnergyLoss(); // MeV
+         Double_t recTof   = hit->GetTime();       // ns
+         Double_t recPos   = hit->GetPosition();   // cm
+         
+         Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
+         
+         if(FootDebugLevel(1)>0)
+            cout<<"Ethr::"<<Ethr<<" recEloss::"<<recEloss<<" recTof::"<<recTof<<" tof::"<<hit->GetToF()<<" recPos::"<<recPos<<endl;
+         
+         if(!fDigitizer->IsOverEnergyThreshold(Ethr,recEloss)) {
+            if(FootDebugLevel(1) > 0)
+               printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());
+            
+            recEloss=-99.; //set energy to nonsense value
+            hit->SetEnergyLoss(recEloss);
+         }
+         
+         Int_t Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
+         hit->SetChargeZ(Zrec);
+         
+         if(FootDebugLevel(1)>0) cout<<"rec Z::"<<Zrec<<endl;
+         
+         Float_t distZ[fZbeam];
+         for(int iZ=1; iZ<fZbeam+1; iZ++)
+            distZ[iZ-1]= f_parcal->GetDistBB(iZ);
+         
+         
+         if (ValidHistogram()) {
+            
+            fpHisElossTof_MCrec[hit->GetLayer()]->Fill(recTof,recEloss);
+            
+            if( Zrec>0 && Zrec < fZbeam+1 )
+               fpHisElossTof[Zrec-1]->Fill(recTof,recEloss);
+            
+            for(int iZ=1; iZ < fZbeam+1; iZ++)
+               fpHisDistZ[iZ-1]->Fill(distZ[iZ-1]);
+            
+            fpHisZID->Fill(Zrec,Z);
+            
+            fpHisRecPos->Fill(recPos);
+            fpHisRecTof->Fill(recTof);
+            
+            if (hit->IsColumn())
+               fpHisHitCol->Fill(hit->GetBar());
+            else
+               fpHisHitLine->Fill(hit->GetBar());
+            
+         }
       }
-    }
-
-    
-    fHitContainer->SetBit(kValid);
+   }
+   
+   
+   fHitContainer->SetBit(kValid);
 
     
     return true;
