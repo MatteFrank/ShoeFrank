@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "GSI"
-RunNumber: 2187-2261
+RunNumber: 2187-2272
 NumberDevices: 6
 
 DetectorName: "FOOT"
@@ -34,7 +34,7 @@ NumberFiles: 3
 DetectorName: "TW"
 NumberFiles: 7
 "./geomaps/GSI/TATWdetector.geo": -1
-"./config/GSI/TATW_BBparameters.cfg": 2187; 2210
+"./config/GSI/TATW_BBparameters.cfg": -1
 "./config/GSI/TATWChannelMapXML.map": -1
 "./config/GSI/TATWbarsMapStatus.map": -1
 "./calib/GSI/TATW_Energy_Calibration.cal": -1
