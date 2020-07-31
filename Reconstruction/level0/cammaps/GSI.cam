@@ -23,7 +23,7 @@ NumberFiles: 4
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/GSI/TAGdetector.geo": 2187; 2210
+"./geomaps/GSI/TAGdetector.geo": -1
 
 DetectorName: "VT"
 NumberFiles: 3
