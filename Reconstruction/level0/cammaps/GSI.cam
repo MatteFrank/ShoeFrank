@@ -5,7 +5,7 @@ NumberDevices: 6
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/GSI/FOOT.geo": 2210; 2239
+"./geomaps/GSI/FOOT.geo": -1
 
 DetectorName: "ST"
 NumberFiles: 4
