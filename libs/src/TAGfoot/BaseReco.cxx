@@ -311,24 +311,24 @@ void BaseReco::ReadParFiles()
      TString parFileName = fCampManager->GetCurGeoFile(TASTparGeo::GetBaseName(), fRunNumber);
      parGeo->FromFile(parFileName.Data());
      
-     fpParMapSt = new TAGparaDsc("stMap", new TASTparMap()); // need the file
-     TASTparMap* parMapSt = (TASTparMap*) fpParMapSt->Object();
-     parFileName = fCampManager->GetCurConfFile(TASTparGeo::GetBaseName(), fRunNumber);
-     parMapSt->FromFile(parFileName);
-        
-     fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
-     TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
-     parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber, 0);
-     parMap->FromFile(parFileName.Data());
-
-     fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
-     TAGbaseWDparMap* parMapWD = (TAGbaseWDparMap*)fpParMapWD->Object();
-     parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
-     parMapWD->FromFile(parFileName.Data());
-      
-     fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
-     TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
       if(!fFlagMC) {
+         fpParMapSt = new TAGparaDsc("stMap", new TASTparMap()); 
+         TASTparMap* parMapSt = (TASTparMap*) fpParMapSt->Object();
+         parFileName = fCampManager->GetCurConfFile(TASTparGeo::GetBaseName(), fRunNumber);
+         parMapSt->FromFile(parFileName);
+         
+         fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
+         TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
+         parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber, 0);
+         parMap->FromFile(parFileName.Data());
+         
+         fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
+         TAGbaseWDparMap* parMapWD = (TAGbaseWDparMap*)fpParMapWD->Object();
+         parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
+         parMapWD->FromFile(parFileName.Data());
+         
+         fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
+         TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
          parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
          parTimeWD->FromFile(parFileName.Data());
       }
