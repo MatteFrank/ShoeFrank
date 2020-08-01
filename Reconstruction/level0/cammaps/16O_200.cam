@@ -18,11 +18,9 @@ NumberFiles: 3
 "./config/16O_200/WDChannelMap.map":-1
 
 DetectorName: "BM"
-NumberFiles: 4
+NumberFiles: 2
 "./geomaps/16O_200/TABMdetector.geo": -1
 "./config/16O_200/TABMdetector.cfg": -1
-"./config/16O_200/TABMdetector.map": -1
-"./calib/16O_200/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1
