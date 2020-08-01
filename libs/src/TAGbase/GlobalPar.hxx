@@ -68,7 +68,6 @@ public:
    
     bool IncludeTOE()          const { return m_includeTOE;          }
     bool IncludeKalman()       const { return m_includeKalman;       }
-    bool IncludeEvent()        const { return m_includeEvent;        }
 
     void IncludeDI(bool t)           {  m_includeDI = t;             }
     void IncludeST(bool t)           {  m_includeST = t;             }
@@ -183,7 +182,6 @@ private:
    bool m_includeIT;
    bool m_includeVT;
     
-   bool m_includeEvent;
    bool m_includeKalman;
    bool m_includeTOE;
 

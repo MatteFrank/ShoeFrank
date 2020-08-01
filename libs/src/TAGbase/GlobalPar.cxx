@@ -275,13 +275,6 @@ void GlobalPar::ReadParamFile () {
            if ( rev == "y" )        m_includeTOE = true;
            else                     m_includeTOE = false;
         }
-        else if ( line.find("IncludeEvent:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeEvent:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeEvent = true;
-            else                     m_includeEvent = false;
-        }
-
     }
 
 

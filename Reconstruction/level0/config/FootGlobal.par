@@ -42,8 +42,6 @@ IncludeMSD:				n
 IncludeTW:				y
 IncludeCA:				n
 
-IncludeEvent:			n
-
 Print OutputFile: true
 Output Filename: RecoHistos.root
 
