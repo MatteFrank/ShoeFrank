@@ -9,7 +9,7 @@ TargetAngX: 0. TargetAngY: 0. TargetAngZ: 0.
 
 BmBaseName: "BM"
 BmPosX: 0. BmPosY: 0. BmPosZ: -14.
-BmAngX: 0. BmAng:Y 0. BmAngZ:   0.
+BmAngX: 0. BmAngY: 0. BmAngZ:   0.
 
 VertexBaseName: "VT"
 VertexPosX: 0. VertexPosY:   0. VertexPosZ: 1.5
