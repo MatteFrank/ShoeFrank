@@ -127,8 +127,8 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    if (GlobalPar::GetPar()->IncludeTOE()) {
       GlobalPar::GetPar()->IncludeDI(true);
       GlobalPar::GetPar()->IncludeTG(true);
-      GlobalPar::GetPar()->IncludeVertex(true);
-      GlobalPar::GetPar()->IncludeInnerTracker(true);
+      GlobalPar::GetPar()->IncludeVT(true);
+      GlobalPar::GetPar()->IncludeIT(true);
       GlobalPar::GetPar()->IncludeTW(true);
    }
    
@@ -240,7 +240,7 @@ void BaseReco::SetRecHistogramDir()
    }
    
    // VTX
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fActClusVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
       
       if (fFlagTrack) {
@@ -251,7 +251,7 @@ void BaseReco::SetRecHistogramDir()
    }
    
    // IT
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       fActClusIt->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    
    
@@ -367,7 +367,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files for vertex
-   if (GlobalPar::GetPar()->IncludeVertex() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
+   if (GlobalPar::GetPar()->IncludeVT() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
@@ -385,7 +385,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files for inner tracker
-   if (GlobalPar::GetPar()->IncludeInnerTracker() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
+   if (GlobalPar::GetPar()->IncludeIT() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fpParGeoIt = new TAGparaDsc(TAITparGeo::GetItDefParaName(), new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
@@ -491,11 +491,11 @@ void BaseReco::CreateRecAction()
    if (GlobalPar::GetPar()->IncludeBM())
       CreateRecActionBm();
    
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       CreateRecActionVtx();
    
     
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       CreateRecActionIt();
    
    if (GlobalPar::GetPar()->IncludeMSD())
@@ -510,8 +510,8 @@ void BaseReco::CreateRecAction()
    
     
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
-       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
-       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
+       GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI())
        CreateRecActionIr();
 }
 
@@ -682,7 +682,7 @@ void BaseReco::SetTreeBranches()
       fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
   }
   
-  if (GlobalPar::GetPar()->IncludeVertex()) {
+  if (GlobalPar::GetPar()->IncludeVT()) {
     if (!fFlagTrack)
       fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
     else {
@@ -693,7 +693,7 @@ void BaseReco::SetTreeBranches()
     }
   }
   
-  if (GlobalPar::GetPar()->IncludeInnerTracker())
+  if (GlobalPar::GetPar()->IncludeIT())
     fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
   
   if (GlobalPar::GetPar()->IncludeMSD()) 
@@ -725,7 +725,7 @@ void BaseReco::AddRecRequiredItem()
          gTAGroot->AddRequiredItem("bmActTrack");
    }
    
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       gTAGroot->AddRequiredItem("vtActNtu");
       gTAGroot->AddRequiredItem("vtActClus");
       if (fFlagTrack) {
@@ -735,7 +735,7 @@ void BaseReco::AddRecRequiredItem()
       }
    }
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       gTAGroot->AddRequiredItem("itActNtu");
       gTAGroot->AddRequiredItem("itActClus");
       if (fgItrTrackFlag)
@@ -762,8 +762,8 @@ void BaseReco::AddRecRequiredItem()
    }
    
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
-       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
-       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
+       GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI())
       gTAGroot->AddRequiredItem("irActTrack");
 
 }

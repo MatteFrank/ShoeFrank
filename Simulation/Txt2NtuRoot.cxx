@@ -254,7 +254,7 @@ int main(int argc, char *argv[])
                               &eve.VTXpxout[jj],&eve.VTXpyout[jj],&eve.VTXpzout[jj],
                               &eve.VTXde[jj],&eve.VTXal[jj],&eve.VTXtim[jj]);
                
-               if (GlobalPar::GetPar()->IncludeVertex())
+               if (GlobalPar::GetPar()->IncludeVT())
                   event->AddVTX(eve.VTXid[jj], eve.VTXilay[jj],
                                 TVector3(eve.VTXxin[jj], eve.VTXyin[jj], eve.VTXzin[jj]),
                                 TVector3(eve.VTXxout[jj], eve.VTXyout[jj], eve.VTXzout[jj]),
@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
                               &eve.ITRpxout[jj],&eve.ITRpyout[jj],&eve.ITRpzout[jj],
                               &eve.ITRde[jj],&eve.ITRal[jj],&eve.ITRtim[jj]);
                
-               if (GlobalPar::GetPar()->IncludeInnerTracker())
+               if (GlobalPar::GetPar()->IncludeIT())
                   event->AddITR(eve.ITRid[jj], eve.ITRisens[jj],
                                 TVector3(eve.ITRxin[jj], eve.ITRyin[jj], eve.ITRzin[jj]),
                                 TVector3(eve.ITRxout[jj], eve.ITRyout[jj], eve.ITRzout[jj]),

@@ -104,7 +104,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
       fBmDriftCircleDisplay->SetPickable(true);
    }
 
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fVtxClusDisplay = new TAEDcluster("Vertex Cluster");
       fVtxClusDisplay->SetMaxEnergy(fMaxEnergy);
       fVtxClusDisplay->SetDefWidth(fQuadDefWidth/2.);
@@ -118,7 +118,7 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
       fVtxTrackDisplay->SetPickable(true);
    }
 
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       fItClusDisplay = new TAEDcluster("Inner Tracker Cluster");
       fItClusDisplay->SetMaxEnergy(fMaxEnergy);
       fItClusDisplay->SetDefWidth(fQuadDefWidth*2.);
@@ -165,8 +165,8 @@ TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
    }
 
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
-       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
-       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI()) {
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
+       GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI()) {
 
       fIrTrackDisplay = new TAEDtrack("Interaction Region Tracks");
       fIrTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
@@ -287,7 +287,7 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    }
 
    // Vertex
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       TAVTparGeo* parGeo = fReco->GetParGeoVtx();
       TGeoVolume* vtVol  = parGeo->BuildVertex();
       fVolumeNames[vtVol->GetName()] = kVTX;
@@ -307,7 +307,7 @@ void TAFOeventDisplay::BuildDefaultGeometry()
    }
 
    // IT
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       TAITparGeo* parGeo = fReco->GetParGeoIt();
       TGeoVolume* itVol  = parGeo->BuildInnerTracker();
       fVolumeNames[itVol->GetName()] = kITR;
@@ -403,7 +403,7 @@ void TAFOeventDisplay::AddElements()
        gEve->AddElement(fBmDriftCircleDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fVtxClusDisplay->ResetHits();
       gEve->AddElement(fVtxClusDisplay);
 
@@ -411,7 +411,7 @@ void TAFOeventDisplay::AddElements()
       gEve->AddElement(fVtxTrackDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       fItClusDisplay->ResetHits();
       gEve->AddElement(fItClusDisplay);
 
@@ -442,8 +442,8 @@ void TAFOeventDisplay::AddElements()
    }
 
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
-       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
-       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI()) {
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
+       GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI()) {
       fIrTrackDisplay->ResetTracks();
       gEve->AddElement(fIrTrackDisplay);
    }
@@ -464,7 +464,7 @@ void TAFOeventDisplay::ConnectElements()
       fBmDriftCircleDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateDriftCircleInfo(TEveDigitSet*, Int_t)");
    }
 
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fVtxClusDisplay->SetEmitSignals(true);
       fVtxClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
 
@@ -472,7 +472,7 @@ void TAFOeventDisplay::ConnectElements()
       fVtxTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
 
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       fItClusDisplay->SetEmitSignals(true);
       fItClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
 
@@ -493,8 +493,8 @@ void TAFOeventDisplay::ConnectElements()
    }
 
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
-       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
-       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI()) {
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
+       GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI()) {
       fIrTrackDisplay->SetEmitSignals(true);
       fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFOeventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
@@ -711,10 +711,10 @@ void TAFOeventDisplay::UpdateElements()
    if (GlobalPar::GetPar()->IncludeBM())
       UpdateElements("bm");
 
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       UpdateElements("vt");
 
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       UpdateElements("it");
 
    if (GlobalPar::GetPar()->IncludeMSD())
@@ -727,8 +727,8 @@ void TAFOeventDisplay::UpdateElements()
       UpdateElements("ca");
 
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
-       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVertex() &&
-       GlobalPar::GetPar()->IncludeInnerTracker() && !GlobalPar::GetPar()->IncludeDI())
+       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
+       GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI())
       UpdateElements("ir");
 
    if (GlobalPar::GetPar()->IncludeTOE() && fgTrackFlag)

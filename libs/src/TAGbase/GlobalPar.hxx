@@ -32,7 +32,7 @@ public:
 	~GlobalPar();
 
 	void ReadParamFile();
-	void Print();
+	void Print(Option_t* opt = "");
 
 	int  Debug()                const { return m_debug;               }
 
@@ -63,8 +63,8 @@ public:
     bool IncludeMSD()          const { return m_includeMSD;          }
     bool IncludeCA()           const { return m_includeCA;           }
     bool IncludeTG()           const { return m_includeTG;           }
-    bool IncludeVertex()       const { return m_includeVertex;       }
-    bool IncludeInnerTracker() const { return m_includeInnerTracker; }
+    bool IncludeVT()           const { return m_includeVT;           }
+    bool IncludeIT()           const { return m_includeIT;           }
    
     bool IncludeTOE()          const { return m_includeTOE;          }
     bool IncludeKalman()       const { return m_includeKalman;       }
@@ -77,8 +77,8 @@ public:
     void IncludeMSD(bool t)          {  m_includeMSD = t;            }
     void IncludeCA(bool t)           {  m_includeCA = t;             }
     void IncludeTG(bool t)           {  m_includeTG = t;             }
-    void IncludeVertex(bool t)       {  m_includeVertex = t;         }
-    void IncludeInnerTracker(bool t) {  m_includeInnerTracker = t;   }
+    void IncludeVT(bool t)           {  m_includeVT = t;             }
+    void IncludeIT(bool t)           {  m_includeIT = t;             }
    
     void SetDebugLevels();
     void RemoveSpace( string* s );
@@ -151,7 +151,6 @@ private:
 	string m_parFileName;
 
 	int m_debug;
-	int m_nLevelOfDebug;
 
 	vector<string> m_mcParticles;
 	
@@ -181,8 +180,8 @@ private:
    bool m_includeTW;
    bool m_includeMSD;
    bool m_includeCA;
-   bool m_includeInnerTracker;
-   bool m_includeVertex;
+   bool m_includeIT;
+   bool m_includeVT;
     
    bool m_includeEvent;
    bool m_includeKalman;

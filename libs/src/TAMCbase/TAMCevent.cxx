@@ -35,10 +35,10 @@ TAMCevent::TAMCevent(Bool_t regionFlag)
     if (GlobalPar::GetPar()->IncludeBM())
       fHitBMN = new TAMCntuHit();
    
-    if (GlobalPar::GetPar()->IncludeVertex())
+    if (GlobalPar::GetPar()->IncludeVT())
        fHitVTX = new TAMCntuHit();
    
-    if (GlobalPar::GetPar()->IncludeInnerTracker())
+    if (GlobalPar::GetPar()->IncludeIT())
        fHitITR = new TAMCntuHit();
    
     if (GlobalPar::GetPar()->IncludeMSD())
@@ -182,10 +182,10 @@ void TAMCevent::SetBranches(TTree *RootTree){
     if (GlobalPar::GetPar()->IncludeBM())
        RootTree->Branch(fHitBMN->GetBmBranchName(),&fHitBMN);
    
-    if (GlobalPar::GetPar()->IncludeVertex())
+    if (GlobalPar::GetPar()->IncludeVT())
        RootTree->Branch(fHitVTX->GetVtxBranchName(),&fHitVTX);
    
-    if (GlobalPar::GetPar()->IncludeInnerTracker())
+    if (GlobalPar::GetPar()->IncludeIT())
        RootTree->Branch(fHitITR->GetItrBranchName(),&fHitITR);
    
     if (GlobalPar::GetPar()->IncludeMSD())
@@ -211,10 +211,10 @@ void TAMCevent::FindBranches(TTree *RootTree)
     if (GlobalPar::GetPar()->IncludeBM())
        RootTree->SetBranchAddress(fHitBMN->GetBmBranchName(),&fHitBMN);
    
-    if (GlobalPar::GetPar()->IncludeVertex())
+    if (GlobalPar::GetPar()->IncludeVT())
        RootTree->SetBranchAddress(fHitVTX->GetVtxBranchName(),&fHitVTX);
    
-    if (GlobalPar::GetPar()->IncludeInnerTracker())
+    if (GlobalPar::GetPar()->IncludeIT())
        RootTree->SetBranchAddress(fHitITR->GetItrBranchName(),&fHitITR);
    
     if (GlobalPar::GetPar()->IncludeMSD())
