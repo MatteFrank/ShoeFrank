@@ -346,13 +346,15 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TABMparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
       
-      parFileName = fCampManager->GetCurCalFile(TABMparGeo::GetBaseName(), fRunNumber);
-      parConf->loadT0s(parFileName);
+      if(!fFlagMC){
+        parFileName = fCampManager->GetCurCalFile(TABMparGeo::GetBaseName(), fRunNumber);
+        parConf->loadT0s(parFileName);
       
-      fpParMapBm = new TAGparaDsc("bmMap", new TABMparMap());
-      TABMparMap*  parMapBm = (TABMparMap*)fpParMapBm->Object();
-      parFileName = fCampManager->GetCurMapFile(TABMparGeo::GetBaseName(), fRunNumber);
-      parMapBm->FromFile(parFileName.Data(), parGeo);
+        fpParMapBm = new TAGparaDsc("bmMap", new TABMparMap());
+        TABMparMap*  parMapBm = (TABMparMap*)fpParMapBm->Object();
+        parFileName = fCampManager->GetCurMapFile(TABMparGeo::GetBaseName(), fRunNumber);
+        parMapBm->FromFile(parFileName.Data(), parGeo);
+      }
    }
    
    // initialise par files dipole
