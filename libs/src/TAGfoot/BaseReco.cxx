@@ -378,10 +378,12 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
       
-      fpParMapVtx = new TAGparaDsc("vtMap", new TAVTparMap());
-      TAVTparMap* parMap = (TAVTparMap*)fpParMapVtx->Object();
-      parFileName = fCampManager->GetCurMapFile(TAVTparGeo::GetBaseName(), fRunNumber);
-      parMap->FromFile(parFileName.Data());
+      if(!fFlagMC) {
+         fpParMapVtx = new TAGparaDsc("vtMap", new TAVTparMap());
+         TAVTparMap* parMap = (TAVTparMap*)fpParMapVtx->Object();
+         parFileName = fCampManager->GetCurMapFile(TAVTparGeo::GetBaseName(), fRunNumber);
+         parMap->FromFile(parFileName.Data());
+      }
    }
    
    // initialise par files for inner tracker
@@ -396,10 +398,12 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
       
-      fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
-      TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
-      parFileName = fCampManager->GetCurMapFile(TAITparGeo::GetBaseName(), fRunNumber);
-     // parMap->FromFile(parFileName.Data());
+      if(!fFlagMC) {
+         fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
+         TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
+         parFileName = fCampManager->GetCurMapFile(TAITparGeo::GetBaseName(), fRunNumber);
+         // parMap->FromFile(parFileName.Data());
+      }
    }
    
    // initialise par files for multi strip detector
