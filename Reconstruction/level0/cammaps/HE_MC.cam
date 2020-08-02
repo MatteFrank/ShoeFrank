@@ -27,16 +27,14 @@ NumberFiles: 1
 "./geomaps/HE_MC/TAGdetector.geo": -1
 
 DetectorName: "VT"
-NumberFiles: 3
+NumberFiles: 2
 "./geomaps/HE_MC/TAVTdetector.geo": -1
 "./config/HE_MC/TAVTdetector.cfg": -1
-"./config/HE_MC/TAVTdetector.map": -1
 
 DetectorName: "IT"
-NumberFiles: 3
+NumberFiles: 2
 "./geomaps/HE_MC/TAITdetector.geo": -1
 "./config/HE_MC/TAITdetector.cfg": -1
-"./config/HE_MC/TAITdetector.map": -1
 
 DetectorName: "MSD"
 NumberFiles: 1
