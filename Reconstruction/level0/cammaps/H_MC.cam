@@ -1,0 +1,53 @@
+// Campaign file
+CamName: "H_MC"
+RunNumber: 1-2
+NumberDevices: 10
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/H_MC/FOOT.geo": 1;2
+
+DetectorName: "DI"
+NumberFiles: 1
+"./geomaps/H_MC/TADIdetector.geo": -1
+
+DetectorName: "ST"
+NumberFiles: 3
+"./geomaps/H_MC/TASTdetector.geo": -1
+"./config/H_MC/TASTdetector.cfg": -1
+"./config/H_MC/WDChannelMap.map":-1
+
+DetectorName: "BM"
+NumberFiles: 2
+"./geomaps/H_MC/TABMdetector.geo": -1
+"./config/H_MC/TABMdetector.cfg": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/H_MC/TAGdetector.geo": 1; 2;
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/H_MC/TAVTdetector.geo": -1
+"./config/H_MC/TAVTdetector.cfg": -1
+
+DetectorName: "IT"
+NumberFiles: 2
+"./geomaps/H_MC/TAITdetector.geo": -1
+"./config/H_MC/TAITdetector.cfg": -1
+
+DetectorName: "MSD"
+NumberFiles: 1
+"./geomaps/H_MC/TAMSDdetector.geo": -1
+
+DetectorName: "TW"
+NumberFiles: 5
+"./geomaps/H_MC/TATWdetector.geo": -1
+"./config/H_MC/TATWChannelMapXML.map": -1
+"./config/H_MC/TATWbarsMapStatus.map": -1
+"./calib/H_MC/TATW_Energy_Calibration.cal": -1
+"./calib/H_MC/TATW_Tof_Calibration.cal": -1
+
+DetectorName: "CA"
+NumberFiles: 1
+"./geomaps/H_MC/TACAdetector.geo": -1

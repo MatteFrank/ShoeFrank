@@ -28,3 +28,9 @@ CamName:   "HE_MC"
 CamDataMC:    1
 CamDate: "5-8 January 2020"
 CamSum: "Simulation data for 4He on 12C (5mm target) @ 700MeV/u"
+
+CamNumber:    5
+CamName:    "H_MC"
+CamDataMC:    1
+CamDate:      ""
+CamSum: "Simulation data for 1H on C2H4 for 5mm target thickness @ 200MeV/u (run 1) and @ 700MeV/u (run 2)"
