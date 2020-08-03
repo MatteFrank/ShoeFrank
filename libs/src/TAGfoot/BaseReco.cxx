@@ -319,7 +319,7 @@ void BaseReco::ReadParFiles()
          
          fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
          TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
-         parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber, 0);
+         parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber);
          parMap->FromFile(parFileName.Data());
          
          fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
@@ -475,7 +475,7 @@ void BaseReco::ReadParFiles()
          parCal->FromFileZID(parFileName.Data(),Z_beam);
 
       if(fFlagMC) { // set in MC threshold and active bars from data informations
-         parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber, 1);
+         parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber);
          parCal->FromBarStatusFile(parFileName.Data());
       }
    }
