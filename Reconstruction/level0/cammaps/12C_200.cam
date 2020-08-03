@@ -12,10 +12,9 @@ NumberFiles: 1
 "./geomaps/12C_200/TADIdetector.geo": -1
 
 DetectorName: "ST"
-NumberFiles: 3
+NumberFiles: 2
 "./geomaps/12C_200/TASTdetector.geo": -1
 "./config/12C_200/TASTdetector.cfg": -1
-"./config/12C_200/WDChannelMap.map":-1
 
 DetectorName: "BM"
 NumberFiles: 2
@@ -41,10 +40,9 @@ NumberFiles: 1
 "./geomaps/12C_200/TAMSDdetector.geo": -1
 
 DetectorName: "TW"
-NumberFiles: 7
+NumberFiles: 5
 "./geomaps/12C_200/TATWdetector.geo": -1
 "./config/12C_200/TATW_BBparameters.cfg": -1
-"./config/12C_200/TATWChannelMapXML.map": -1
 "./config/12C_200/TATWbarsMapStatus.map": -1
 "./calib/12C_200/TATW_Energy_Calibration.cal": -1
 "./calib/12C_200/TATW_Tof_Calibration.cal": -1
