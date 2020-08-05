@@ -13,7 +13,7 @@ const TString TAGcampaignManager::fgkDefaultActName = "actCamMan";
 const TString TAGcampaignManager::fgkDefaultFolder  = "./cammaps/";
 const TString TAGcampaignManager::fgkDefaultExt     = ".cam";
 const TString TAGcampaignManager::fgkStandardCamName = "STD";
-const TString TAGcampaignManager::fgkDefaultCamName = "FOOT_cam.map";
+const TString TAGcampaignManager::fgkDefaultCamName = "FOOT.cam";
 
 
 //_____________________________________________________________________________
