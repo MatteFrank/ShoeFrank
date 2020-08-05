@@ -25,8 +25,10 @@ TAGcampaignManager::TAGcampaignManager(const TString exp)
    fCurCampaignName(exp),
    fCurCampaignNumber(-1)
 {
-   if (fCurCampaignName.IsNull())
+   if (fCurCampaignName.IsNull()) {
       fCurCampaignName = fgkStandardCamName;
+      Warning("TAGcampaignManager()", "No campaign name set, using %s, should be used only be expert", fgkStandardCamName.Data());
+   }
 }
 
 //_____________________________________________________________________________
