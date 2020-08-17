@@ -119,7 +119,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName)
    }
 
    // initialise map file for Inner Tracker
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       fpParGeoIt = new TAITparGeo();
       TString mapFileName = Form("./geomaps/%sTAITdetector.geo", fExpName.Data());
       fpParGeoIt->FromFile(mapFileName.Data());
@@ -127,7 +127,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName)
    }
    
    // initialise map file for vertex
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fpParGeoVtx = new TAVTparGeo();
       TString mapFileName = Form("./geomaps/%sTAVTdetector.geo", fExpName.Data());
       fpParGeoVtx->FromFile(mapFileName.Data());
@@ -246,7 +246,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
 
 
    // Vertex
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       
       G4LogicalVolume* log  = fVertex->Construct();
       TVector3 ang          = geoTrafo->GetVTAngles()*TMath::DegToRad(); // in radians
@@ -298,7 +298,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
    }
 
    // Inner tracker
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       
       G4LogicalVolume* log  = fInnerTracker->Construct();
       TVector3 ang          = geoTrafo->GetITAngles()*TMath::DegToRad(); // in radians

@@ -53,10 +53,10 @@ KFitter::KFitter () {
   if (GlobalPar::GetPar()->IncludeTG())
     m_TG_geo = shared_ptr<TAGparGeo> ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() );
 
-  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVertex() )
+  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVT() )
     m_VT_geo = shared_ptr<TAVTparGeo> ( (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
 
-  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() )
+  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeIT() )
     m_IT_geo = shared_ptr<TAITparGeo> ( (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
 
   if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() )
@@ -100,7 +100,7 @@ KFitter::KFitter () {
   }
 
   // Vertex
-  if (GlobalPar::GetPar()->IncludeVertex()) {
+  if (GlobalPar::GetPar()->IncludeVT()) {
     TGeoVolume* vtVol  = m_VT_geo->BuildVertex();
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAVTparGeo::GetBaseName());
     m_TopVolume->AddNode(vtVol, 2, transfo);
@@ -113,7 +113,7 @@ KFitter::KFitter () {
   // }
 
   // IT
-  if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+  if (GlobalPar::GetPar()->IncludeIT()) {
     TGeoVolume* itVol  = m_IT_geo->BuildInnerTracker();
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAITparGeo::GetItBaseName());
     m_TopVolume->AddNode(itVol, 3, transfo);
@@ -897,7 +897,7 @@ int KFitter::PrepareData4Fit( Track* fitTrack ) {
 
   // Vertex -  fill fitter collections
 
-  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVertex() ) {
+  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVT() ) {
     UploadClusVT();
     //UploadHitsVT();
     if ( m_debug > 0 )		cout << endl<<endl << "Filling vertex hit collection  = " << m_VT_clusCollection.size() << endl;
@@ -905,7 +905,7 @@ int KFitter::PrepareData4Fit( Track* fitTrack ) {
   }
 
   // Inner Tracker -  fill fitter collections
-  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() ) {
+  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeIT() ) {
     //UploadHitsIT();
     UploadClusIT();
     if ( m_debug > 0 )		cout <<endl<<endl << "Filling inner detector hit collection = " << m_IT_clusCollection.size() << endl;

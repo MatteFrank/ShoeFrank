@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "HE_MC"
-RunNumber: 1-3
+RunNumber: 1-2
 NumberDevices: 10
 
 DetectorName: "FOOT"
@@ -40,8 +40,11 @@ NumberFiles: 1
 "./geomaps/HE_MC/TAMSDdetector.geo": -1
 
 DetectorName: "TW"
-NumberFiles: 1
+NumberFiles: 4
 "./geomaps/HE_MC/TATWdetector.geo": -1
+"./config/HE_MC/TATWbarsMapStatus.map": -1
+"./calib/HE_MC/TATW_Energy_Calibration.cal": -1
+"./calib/HE_MC/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
 NumberFiles: 1

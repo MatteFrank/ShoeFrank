@@ -8,17 +8,29 @@ CamSum: "Test using standard input files"
 CamNumber:    1
 CamName:    "12C_200"
 CamDataMC:    1
-CamDate:      ""
-CamSum: "Simulation data for 12C on 12C @ 200MeV/u"
+CamDate:  "16-17 February 2020"
+CamSum: "Simulation data for 12C on 12C (5mm target) @ 200MeV/u"
 
 CamNumber:    2
+CamName:    "16O_200"
+CamDataMC:    1
+CamDate: "16 April-4 May 2020"
+CamSum: "Simulation data for 16O on 12C (run 6) or C2H4 (run 1-5) for 5mm target thickness @ 200MeV/u"
+
+CamNumber:    3
 CamName:    "GSI"
 CamDataMC:    0
 CamDate: "5-8 April 2019"
 CamSum: "Test experiment with ST+BM+VTX+TW…"
 
-CamNumber:    3
+CamNumber:    4
 CamName:   "HE_MC"
 CamDataMC:    1
 CamDate: "5-8 January 2020"
-CamSum: "MC data for HE reaction produced by FLUKA"
+CamSum: "Simulation data for 4He on 12C (5mm target) @ 700MeV/u"
+
+CamNumber:    5
+CamName:    "H_MC"
+CamDataMC:    1
+CamDate: "16 & 24 May 2020"
+CamSum: "Simulation data for 1H on C2H4 for 5mm target thickness @ 200MeV/u (run 1) and @ 700MeV/u (run 2)"

@@ -16,7 +16,7 @@
 //void ReadVtxRawMC(TString name = "16O_C2H4_200_1.root")
 //void ReadVtxRawMC(TString name = "p_80_vtx.root")
 //void ReadVtxRawMC(TString name = "12C_80_vtx.root")
-void DecodeMC(TString name = "12C_C_200_1.root", TString exp = "")
+void DecodeMC(TString name = "12C_C_200_1.root", TString exp = "12C_200")
 {
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();

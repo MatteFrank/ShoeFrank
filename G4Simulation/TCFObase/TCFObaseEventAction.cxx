@@ -153,11 +153,11 @@ void TCFObaseEventAction::ConstructCollection()
       fBmCollId = SDman->GetCollectionID(TCBMgeometryConstructor::GetSDname());
    }
    
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fVtxCollId = SDman->GetCollectionID(TCVTgeometryConstructor::GetSDname());
    }
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       fItCollId = SDman->GetCollectionID(TCITgeometryConstructor::GetSDname());
    }
    

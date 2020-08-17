@@ -86,12 +86,12 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
 {
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
    
-    if (GlobalPar::GetPar()->IncludeVertex()) //should not be if
+    if (GlobalPar::GetPar()->IncludeVT()) //should not be if
     {
         AddDataIn(p_vtxclus, "TAVTntuCluster");
         AddDataIn(p_vtxvertex, "TAVTntuVertex");
     }
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       AddDataIn(p_itrclus, "TAITntuCluster");
    
    if (GlobalPar::GetPar()->IncludeMSD())
@@ -129,10 +129,10 @@ void TAGactNtuGlbTrack::SetupBranches()
 {
    fActEvtReader = new TAGactTreeReader("evtReader");
    
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       fActEvtReader->SetupBranch(fpVtxVertex, TAVTntuVertex::GetBranchName());
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       fActEvtReader->SetupBranch(fpItrClus,   TAITntuCluster::GetBranchName());
    
    if (GlobalPar::GetPar()->IncludeMSD())

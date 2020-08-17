@@ -38,10 +38,10 @@ TAFOeventDisplayMC::TAFOeventDisplayMC(Int_t type, const TString expName)
    if (GlobalPar::GetPar()->IncludeBM())
       fBmMcDisplay = new TAEDpoint("STC MC hit");
    
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       fVtMcDisplay = new TAEDpoint("VTX MC hit");
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       fItMcDisplay = new TAEDpoint("IT MC hit");
    
    if (GlobalPar::GetPar()->IncludeMSD())
@@ -101,12 +101,12 @@ void TAFOeventDisplayMC::AddMcElements()
       gEve->AddElement(fMsdMcDisplay);
    }
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       fItMcDisplay->ResetPoints();
       gEve->AddElement(fItMcDisplay);
    }
    
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fVtMcDisplay->ResetPoints();
       gEve->AddElement(fVtMcDisplay);
    }
@@ -131,10 +131,10 @@ void TAFOeventDisplayMC::ConnectMcElements()
    if (GlobalPar::GetPar()->IncludeBM())
       fBmMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateBmInfo(Int_t)");
    
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       fVtMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateVtInfo(Int_t)");
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       fItMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateItInfo(Int_t)");
    
    if (GlobalPar::GetPar()->IncludeMSD())
@@ -269,10 +269,10 @@ void TAFOeventDisplayMC::UpdateMcElements()
    if (GlobalPar::GetPar()->IncludeBM())
       UpdateMcElements("bm");
    
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       UpdateMcElements("vt");
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       UpdateMcElements("it");
    
    if (GlobalPar::GetPar()->IncludeMSD())

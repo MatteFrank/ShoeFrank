@@ -36,13 +36,11 @@ IncludeDI:			   n
 IncludeST:				y
 IncludeBM:				y
 IncludeTG:			   y
-IncludeVertex:			y
-IncludeInnerTracker:	n
+IncludeVT:			   y
+IncludeIT:	         n
 IncludeMSD:				n
 IncludeTW:				y
 IncludeCA:				n
-
-IncludeEvent:			n
 
 Print OutputFile: true
 Output Filename: RecoHistos.root

@@ -260,7 +260,7 @@ bool TAGcampaign::FromFile(TString ifile)
          }
 
          // calib
-         if ((fileName.Contains("calib") && (fileName.EndsWith(".cal") || fileName.EndsWith("/"))) || fileName.Contains("T0"))  { // needed for BM
+         if ((fileName.Contains("calib") && (fileName.EndsWith(".cal") || fileName.EndsWith(".dat"))) || fileName.Contains("T0"))  { // needed for ST
             
             // check order in TW calibration files
             if (fileName.Contains(fgTWcalFileType[0]) && fFileCalMap[detName].size() != 0 ) {
@@ -304,7 +304,7 @@ const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, 
    TString nameFile = fFileConfMap[detName];
    TArrayI arrayRun = fRunsConfMap[detName];
    
-   if (!bName.IsNull()) {
+   if (!bName.IsNull() && !nameFile.IsNull()) {
       Int_t pos = nameFile.Last('.');
       nameFile.Insert(pos, Form("_%s_%d", bName.Data(), bEnergy));
    }
@@ -346,6 +346,9 @@ const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, 
 const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib)
 {
    vector<TString> vecFile = fFileCalMap[detName];
+   if (vecFile.size() == 0)
+      return Form("");
+
    TString nameFile = vecFile[item];
    
    if (isTofBarCalib) {
