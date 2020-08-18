@@ -249,11 +249,6 @@ bool TAGcampaign::FromFile(TString ifile)
                exit(0);
             }
             
-            if (fileName.Contains(fgTWmapFileType[1]) && fFileMap[detName].size() != 1 ) {
-               Error("FromFile()", "File %s must appears in first position in TW mapping list in campaign file %s\n", fileName.Data(), fName.Data());
-               exit(0);
-            }
-            
             fFileMap[detName].push_back(fileName);
             fRunsMap[detName].push_back(array);
             if(FootDebugLevel(1))
