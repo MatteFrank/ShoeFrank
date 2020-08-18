@@ -312,7 +312,7 @@ void TAFOeventDisplay::BuildDefaultGeometry()
       TGeoVolume* itVol  = parGeo->BuildInnerTracker();
       fVolumeNames[itVol->GetName()] = kITR;
 
-      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAITparGeo::GetItBaseName());
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAITparGeo::GetBaseName());
       AddGeometry(itVol, transfo);
    }
 

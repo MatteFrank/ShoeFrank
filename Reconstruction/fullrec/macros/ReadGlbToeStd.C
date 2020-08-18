@@ -50,7 +50,7 @@ void FillGlb(TString expName)
    TString parVtxFileName = Form("./geomaps/%sTAVTdetector.geo", expName.Data());
    parGeoVtx->FromFile(parVtxFileName.Data());
 
-   TAGparaDsc* pParGeoIt = new TAGparaDsc(TAITparGeo::GetItDefParaName(), new TAITparGeo());
+   TAGparaDsc* pParGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
    TAITparGeo* parGeoIt = (TAITparGeo*)pParGeoIt->Object();
    TString parItFileName = Form("./geomaps/%sTAITdetector.geo", expName.Data());
    parGeoIt->FromFile(parItFileName.Data());
