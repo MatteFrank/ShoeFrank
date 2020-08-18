@@ -115,7 +115,7 @@ KFitter::KFitter () {
   // IT
   if (GlobalPar::GetPar()->IncludeIT()) {
     TGeoVolume* itVol  = m_IT_geo->BuildInnerTracker();
-    TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAITparGeo::GetItBaseName());
+    TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAITparGeo::GetBaseName());
     m_TopVolume->AddNode(itVol, 3, transfo);
 
   }
@@ -375,7 +375,7 @@ int KFitter::UploadHitsIT() {
 
   // take the ntuple object already filled
   TAITntuRaw* ntup = (TAITntuRaw*) gTAGroot->FindDataDsc("itRaw", "TAITntuRaw")->Object();
-  TAITparGeo* vtxGeo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetItDefParaName(), "TAITparGeo")->Object();
+  TAITparGeo* vtxGeo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
 
   if ( m_debug > 0 )		cout << "N IT sensors: " << vtxGeo->GetSensorsN() << endl;
 

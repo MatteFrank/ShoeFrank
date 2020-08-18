@@ -390,20 +390,20 @@ void BaseReco::ReadParFiles()
    
    // initialise par files for inner tracker
    if (GlobalPar::GetPar()->IncludeIT() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      fpParGeoIt = new TAGparaDsc(TAITparGeo::GetItDefParaName(), new TAITparGeo());
+      fpParGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetItBaseName(), fRunNumber);
+      TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
       fpParConfIt = new TAGparaDsc("itConf", new TAITparConf());
       TAITparConf* parConf = (TAITparConf*)fpParConfIt->Object();
-      parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetItBaseName(), fRunNumber);
+      parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
       if(!fFlagMC) {
          fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
          TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
-         parFileName = fCampManager->GetCurMapFile(TAITparGeo::GetItBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(TAITparGeo::GetBaseName(), fRunNumber);
          // parMap->FromFile(parFileName.Data());
       }
    }
