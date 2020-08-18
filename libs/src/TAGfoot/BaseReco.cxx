@@ -293,14 +293,7 @@ void BaseReco::ReadParFiles()
       ion_name = parGeo->GetBeamPar().Material;
       kinE_beam = parGeo->GetBeamPar().Energy; //GeV/u
       
-      cout<<"\n!!!!  ATTENTION ATTENTION ATTENTION !!!"<<endl;
-      printf("In file %s the following beam parameters for a %d%s beam have been set:\n",parFileName.Data(),A_beam,ion_name.Data());
-      printf("BeamEnergy:          %.3f GeV/u\n",kinE_beam);
-      printf("BeamAtomicMass:      %d\n",A_beam);
-      printf("BeamAtomicNumber:    %d\n",Z_beam);
-      printf("BeamMaterial:       \"%s\"\n",ion_name.Data());
-      printf("Change such parameters in %s accordingly to the input file\n\n",parFileName.Data());
-
+      parGeo->Print();
    }
    
    // initialise par files for start counter
