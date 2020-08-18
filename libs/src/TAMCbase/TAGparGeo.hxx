@@ -29,7 +29,8 @@ class TAGparGeo : public TAGparTools {
       
 private:
    TAGionisMaterials* fIonisation; //! pointer for ionisation property
-   TString    fkDefaultGeoName;  // default par geo file name
+   TString    fDefaultGeoName;  // default par geo file name
+   TString    fFileName;         // par geo file name
 
    // Target parameters
    struct TargetParameter_t : public  TObject {
