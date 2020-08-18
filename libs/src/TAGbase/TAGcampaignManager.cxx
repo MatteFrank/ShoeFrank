@@ -13,7 +13,7 @@ const TString TAGcampaignManager::fgkDefaultActName = "actCamMan";
 const TString TAGcampaignManager::fgkDefaultFolder  = "./cammaps/";
 const TString TAGcampaignManager::fgkDefaultExt     = ".cam";
 const TString TAGcampaignManager::fgkStandardCamName = "STD";
-const TString TAGcampaignManager::fgkDefaultCamName = "FOOT_cam.map";
+const TString TAGcampaignManager::fgkDefaultCamName = "FOOT.cam";
 
 
 //_____________________________________________________________________________
@@ -25,8 +25,10 @@ TAGcampaignManager::TAGcampaignManager(const TString exp)
    fCurCampaignName(exp),
    fCurCampaignNumber(-1)
 {
-   if (fCurCampaignName.IsNull())
+   if (fCurCampaignName.IsNull()) {
       fCurCampaignName = fgkStandardCamName;
+      Warning("TAGcampaignManager()", "No campaign name set, using %s, should be used only be expert", fgkStandardCamName.Data());
+   }
 }
 
 //_____________________________________________________________________________
@@ -243,11 +245,6 @@ bool TAGcampaign::FromFile(TString ifile)
             
             // check order in TW mapping files
             if (fileName.Contains(fgTWmapFileType[0]) && fFileMap[detName].size() != 0 ) {
-               Error("FromFile()", "File %s must appears in first position in TW mapping list in campaign file %s\n", fileName.Data(), fName.Data());
-               exit(0);
-            }
-            
-            if (fileName.Contains(fgTWmapFileType[1]) && fFileMap[detName].size() != 1 ) {
                Error("FromFile()", "File %s must appears in first position in TW mapping list in campaign file %s\n", fileName.Data(), fName.Data());
                exit(0);
             }
