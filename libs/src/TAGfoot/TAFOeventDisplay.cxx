@@ -550,11 +550,14 @@ void TAFOeventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z()) );
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", err.X(), err.Y(), err.Z()) );
       fInfoView->AddLine( Form(" BM Matched %d (valid: %d)\n", vtx->IsBmMatched(), vtx->GetValidity()) );
+      fInfoView->AddLine( Form(" With %d tracks\n",  vtx->GetTracksN()) );
 
       if (fConsoleButton->IsOn()) {
          cout << Form("Vertex# %d at position:\n", idx) << endl;
          cout << Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z());
+         cout << Form(" (%.3g %.3g %.3g) cm\n", err.X(), err.Y(), err.Z());
          cout << Form(" BM Matched %d (valid: %d)\n", vtx->IsBmMatched(), vtx->GetValidity());
+         cout << Form(" With %d tracks\n",  vtx->GetTracksN());
       }
 
    } else if (obj->InheritsFrom("TASTntuHit")) {
