@@ -115,10 +115,12 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    if (fFlagOut)
       fActEvtWriter = new TAGactTreeWriter("locRecFile");
 
-   // Read Trafo file
+   // global transformation
    fpFootGeo = new TAGgeoTrafo();
-   TString parFileName = Form("./geomaps/%sFOOT.geo", fExpName.Data());
-   fpFootGeo->FromFile(parFileName);
+
+   // load campaign file
+   fCampManager = new TAGcampaignManager(expName);
+   fCampManager->FromFile();
    
    // actvate debug level
    GlobalPar::GetPar()->SetDebugLevels();
@@ -131,10 +133,6 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
       GlobalPar::GetPar()->IncludeIT(true);
       GlobalPar::GetPar()->IncludeTW(true);
    }
-   
-   // load campaign file (check if experiment name is in database
-   fCampManager = new TAGcampaignManager(expName);
-   fCampManager->FromFile();
 }
 
 //__________________________________________________________
@@ -280,6 +278,10 @@ void BaseReco::ReadParFiles()
    Int_t A_beam = 0;
    TString ion_name;
    Float_t kinE_beam = 0.;
+   
+   // Read Trafo file
+   TString parFileName = fCampManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), fRunNumber);
+   fpFootGeo->FromFile(parFileName);
    
    // initialise par files for target
    if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeTW() || IsItrTracking()) {
