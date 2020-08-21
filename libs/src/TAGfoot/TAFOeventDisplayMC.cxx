@@ -405,14 +405,8 @@ void TAFOeventDisplayMC::UpdateMcElements(const TString prefix)
       }
       
       if (prefix == "ca") {
-         Int_t trackIdx = hit->GetTrackIdx()-1;
-         TAMCntuEve* pNtuHit = fReco->GetNtuMcEve();
-         TAMCeveTrack* track = pNtuHit->GetTrack(trackIdx);
-
-         if (track->GetCharge() > 0) {
-            fCaMcDisplay->AddPoint(x, y, z);
-            fCaMcDisplay->SetPointId(hit);
-         }
+         fCaMcDisplay->AddPoint(x, y, z);
+         fCaMcDisplay->SetPointId(hit);
       }
 
    } //end loop on hits
