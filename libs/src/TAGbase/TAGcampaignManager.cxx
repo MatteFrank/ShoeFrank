@@ -362,8 +362,10 @@ const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, I
 //_____________________________________________________________________________
 const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, const TString& nameFile, TArrayI array)
 {
-   if (nameFile.IsNull())
+   if (nameFile.IsNull()) {
+      Warning("GetFile()", "No file found for detector %s and run %d\n", detName.Data(), runNumber);
       return Form("");
+   }
    
    if (array.GetSize() == 0) {
       if( access(nameFile.Data(), F_OK) == -1 ) {
