@@ -10,9 +10,9 @@
 #endif
 
 void DisplayFOOT(TString file = "data/data_built.2211.physics_foot.daq.VTX.1.dat", TString expName = "GSI", Int_t runNumber = 2211)
-//void DisplayFOOT(TString file = "./run_2211", Int_t runNumber = 2211)
+//void DisplayFOOT(TString file = "./run_2211", TString expName = "GSI", Int_t runNumber = 2211)
 {
-   //TAFOeventDisplay::SetVtxTrackingAlgo('F');
-   //TAFOeventDisplay::EnableStdAlone();
+   //TAFObaseEventDisplay::SetVtxTrackingAlgo('F');
+   //TAFObaseEventDisplay::EnableStdAlone();
    TAFOeventDisplay::Instance(expName)->ShowDisplay(file, runNumber);
 }
