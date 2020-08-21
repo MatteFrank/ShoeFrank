@@ -12,18 +12,18 @@
 ClassImp(TAFOeventDisplay)
 
 //__________________________________________________________
-TAFOeventDisplay* TAFOeventDisplayMC::Instance(Int_t type, const TString name)
+TAFOeventDisplay* TAFOeventDisplayMC::Instance(const TString name, Int_t type)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAFOeventDisplayMC(type, name);
+      fgInstance = new TAFOeventDisplayMC(name, type);
    
    return fgInstance;
 }
 
 
 //__________________________________________________________
-TAFOeventDisplayMC::TAFOeventDisplayMC(Int_t type, const TString expName)
- : TAFOeventDisplay(type, expName),
+TAFOeventDisplayMC::TAFOeventDisplayMC(const TString expName, Int_t type)
+ : TAFOeventDisplay(expName, type),
    fCaMcDisplay(0x0),
    fTwMcDisplay(0x0),
    fMsdMcDisplay(0x0),
@@ -377,8 +377,14 @@ void TAFOeventDisplayMC::UpdateMcElements(const TString prefix)
       }
       
       if (prefix == "ca") {
-         fCaMcDisplay->AddPoint(x, y, z);
-         fCaMcDisplay->SetPointId(hit);
+         Int_t trackIdx = hit->GetTrackIdx()-1;
+         TAMCntuEve* pNtuHit = fReco->GetNtuMcEve();
+         TAMCeveTrack* track = pNtuHit->GetTrack(trackIdx);
+
+         if (track->GetCharge() > 0) {
+            fCaMcDisplay->AddPoint(x, y, z);
+            fCaMcDisplay->SetPointId(hit);
+         }
       }
 
    } //end loop on hits

@@ -35,14 +35,14 @@ class TAFOeventDisplay : public TAEDbaseInterface
    
 protected:
    //! default constructor
-   TAFOeventDisplay(Int_t type, const TString expName);
+   TAFOeventDisplay(const TString expName, Int_t type);
    
 protected:
    static TAFOeventDisplay* fgInstance; // static instance of class
 
 public:
    //! Instance of class
-   static TAFOeventDisplay* Instance(Int_t type = 0, const TString name = "");
+   static TAFOeventDisplay* Instance(const TString name = "", Int_t type = 0);
    
    virtual ~TAFOeventDisplay();
          

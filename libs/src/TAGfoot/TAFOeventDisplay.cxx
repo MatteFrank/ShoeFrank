@@ -46,16 +46,16 @@ Bool_t  TAFOeventDisplay::fgM28ClusMtFlag   = false;
 TAFOeventDisplay* TAFOeventDisplay::fgInstance = 0x0;
 
 //__________________________________________________________
-TAFOeventDisplay* TAFOeventDisplay::Instance(Int_t type, const TString name)
+TAFOeventDisplay* TAFOeventDisplay::Instance(const TString name, Int_t type)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAFOeventDisplay(type, name);
+      fgInstance = new TAFOeventDisplay(name, type);
 
    return fgInstance;
 }
 
 //__________________________________________________________
-TAFOeventDisplay::TAFOeventDisplay(Int_t type, const TString expName)
+TAFOeventDisplay::TAFOeventDisplay(const TString expName, Int_t type)
  : TAEDbaseInterface(type, expName),
    fStClusDisplay(0x0),
    fBmClusDisplay(0x0),
