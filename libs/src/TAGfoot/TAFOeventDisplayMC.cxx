@@ -8,11 +8,14 @@
 
 #include "GlobalPar.hxx"
 #include "LocalRecoMC.hxx"
+#include "LocalRecoNtuMC.hxx"
 
-ClassImp(TAFOeventDisplay)
+ClassImp(TAFOeventDisplayMC)
+
+TAFOeventDisplayMC* TAFOeventDisplayMC::fgInstance = 0x0;
 
 //__________________________________________________________
-TAFOeventDisplay* TAFOeventDisplayMC::Instance(const TString name, Int_t type)
+TAFOeventDisplayMC* TAFOeventDisplayMC::Instance(const TString name, Int_t type)
 {
    if (fgInstance == 0x0)
       fgInstance = new TAFOeventDisplayMC(name, type);
@@ -23,7 +26,7 @@ TAFOeventDisplay* TAFOeventDisplayMC::Instance(const TString name, Int_t type)
 
 //__________________________________________________________
 TAFOeventDisplayMC::TAFOeventDisplayMC(const TString expName, Int_t type)
- : TAFOeventDisplay(expName, type),
+ : TAFObaseEventDisplay(expName, type),
    fCaMcDisplay(0x0),
    fTwMcDisplay(0x0),
    fMsdMcDisplay(0x0),
@@ -32,6 +35,9 @@ TAFOeventDisplayMC::TAFOeventDisplayMC(const TString expName, Int_t type)
    fBmMcDisplay(0x0),
    fStMcDisplay(0x0)
 {
+   // local reco
+   SetLocalReco();
+   
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
       fStMcDisplay = new TAEDpoint("STC MC hit");
    
@@ -72,6 +78,28 @@ TAFOeventDisplayMC::~TAFOeventDisplayMC()
       delete fTwMcDisplay;
    if(fCaMcDisplay)
       delete fCaMcDisplay;
+}
+
+//__________________________________________________________
+void TAFOeventDisplayMC::SetLocalReco()
+{
+   if (fType == 1)
+      fReco = new LocalRecoMC(fExpName);
+   else if (fType == 2)
+      fReco = new LocalRecoNtuMC(fExpName);
+   else
+      Error("SetLocalReco()", "Unknown type %d", fType);
+   
+   fReco->DisableTree();
+   fReco->DisableSaveHits();
+   fReco->EnableHisto();
+   
+   if (fgTrackFlag) {
+      fReco->SetTrackingAlgo(fgVtxTrackingAlgo[0]);
+      fReco->EnableTracking();
+   }
+   
+   fpFootGeo = fReco->GetGeoTrafo();
 }
 
 //__________________________________________________________
