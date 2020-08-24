@@ -137,6 +137,7 @@ private:
    
 private:
 	static GlobalPar* m_pInstance;
+   static map<TString, TString> m_dectFullName; // full name
 
 private:
 	vector<string> m_copyInputFile;
@@ -159,7 +160,6 @@ private:
 	vector<string> m_trackingSystems;
    vector<string> m_kalParticles;
    vector<TString> m_dectInclude;
-   vector<TString> m_dectIncludeFN; // full name
 
 	double m_VTreso;
    double m_ITreso;
