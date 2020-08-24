@@ -130,7 +130,6 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
       GlobalPar::GetPar()->IncludeDI(true);
       GlobalPar::GetPar()->IncludeTG(true);
       GlobalPar::GetPar()->IncludeVT(true);
-      GlobalPar::GetPar()->IncludeIT(true);
       GlobalPar::GetPar()->IncludeTW(true);
    }
 }
