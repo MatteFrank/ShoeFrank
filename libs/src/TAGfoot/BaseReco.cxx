@@ -125,7 +125,7 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    // actvate debug level
    GlobalPar::GetPar()->SetDebugLevels();
 
-   // activate per default Dipole, TGT, VTX, IT and TW if TOE on
+   // activate per default Dipole, TGT, VTX and TW if TOE on
    if (GlobalPar::GetPar()->IncludeTOE()) {
       GlobalPar::GetPar()->IncludeDI(true);
       GlobalPar::GetPar()->IncludeTG(true);
