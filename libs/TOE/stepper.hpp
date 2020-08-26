@@ -18,17 +18,13 @@
 #include <iostream>
 namespace details{
     
-    
-    
-    
-    
     //will need some adaptation for matrices
     template<std::size_t NRows, template<std::size_t, std::size_t > class Matrix>
     double error( Matrix<NRows, 1 > const& estimation_p, Matrix<NRows, 1 > const& correction_p)
     {
         Matrix<NRows, 1> difference = estimation_p - correction_p;
-       // std::cout << "\nestimation:\n" << estimation_p << "correction: \n" << correction_p;
-       // std::cout << "\ndifference:\n" << difference;
+        // std::cout << "\nestimation:\n" << estimation_p << "correction: \n" << correction_p;
+        // std::cout << "\ndifference:\n" << difference;
         auto temp = std::sqrt( std::inner_product(difference.data().begin(), difference.data().end(), difference.data().begin(), 0) );
         //std::cout << "\nupon calculation error is: " << temp << '\n';
         return (temp < 1e-15 ? 1e-15 : temp );
@@ -38,8 +34,6 @@ namespace details{
     {
         return std::abs(estimation_p - correction_p);
     }
-    
-    
     
     
     template< class T,
@@ -178,9 +172,43 @@ namespace details {
     
     
     
+    template<class Derived>
+    struct evaluator< Derived, 1>
+    {
+        using type = typename stepper_traits<Derived>::operating_type;
+        using evaluation_t = std::array< type,
+                                         stepper_traits<Derived>::evaluation_stage   >;
+        
+        
+        public :
+        evaluation_t compute_evaluation( operating_state<type, 1> os_p, double step_p ) const
+        {
+            evaluation_t evaluation_c{};
+            
+            for(std::size_t index{0} ; index < evaluation_c.size() ; ++index ){
+                operating_state<type, 1> os;
+                os.evaluation_point = os_p.evaluation_point + step_p * derived().data().global_delay[index];
+                os.state(order_tag<0>{}) = os_p.state(order_tag<0>{}) +
+                                           step_p * inner_product( evaluation_c,
+                                                                   derived().data().partial_delay(order_tag<0>{}),
+                                                                   index );
+                evaluation_c[index] = derived().ode( os );
+            }
+            
+            return evaluation_c;
+        }
+        
+    private:
+        Derived& derived(){ return static_cast<Derived&>(*this); }
+        const Derived& derived() const { return static_cast<const Derived&>(*this); }
+        
+    };
     
     
-    // -------------------------- Solver -------------------------------
+    
+    
+    
+    // -------------------------- solver -------------------------------
 
     template<class Derived, std::size_t Order, class SteppingPolicyTag> struct solver{};
     
@@ -253,6 +281,37 @@ namespace details {
     
     
     
+    
+    template<class Derived>
+    struct solver<Derived, 1, details::adaptable_step_tag >
+    {
+        
+        constexpr static std::size_t dimension = stepper_traits<Derived>::evaluation_stage;
+        using type = typename stepper_traits<Derived>::operating_type;
+        
+        
+    public:
+        template<class PurposeTag>
+        type compute_solution( const extended_operating_state<type, 1, dimension>& eos_p,
+                               order_tag<0>,
+                               PurposeTag   ) const
+        {
+            return eos_p.state(order_tag<0>{}) +
+                   eos_p.step * inner_product( eos_p.evaluation,
+                                               derived().data().weight( order_tag<0>{},
+                                                                        PurposeTag{} )      );
+        }
+
+        
+    private:
+        Derived& derived(){ return static_cast<Derived&>(*this); }
+        const Derived& derived() const { return static_cast<const Derived&>(*this); }
+    };
+    
+    
+    
+    
+    
     //  ----------------- Stepping policy -------------------
 
     template<class Derived, std::size_t Order, class StepTag> struct stepping_policy_impl{};
@@ -281,7 +340,7 @@ namespace details {
         
         
     private:
-        double tolerance_m{1e-8};
+        double tolerance_m{1e-5};
         
     public:
         void specify_tolerance(double tolerance_p){ tolerance_m = tolerance_p ;}
@@ -297,7 +356,7 @@ namespace details {
             auto eos = make_extended_operating_state( std::move(os_p),
                                                      operating_state_extension<type, dimension>{step_p, {}} );
             
-            double error;
+            double error{0};
             
             while(!isToleranceReached){
                 
@@ -402,6 +461,108 @@ namespace details {
         Derived& derived(){ return static_cast<Derived&>(*this); }
         const Derived& derived() const { return static_cast<const Derived&>(*this); }
     };
+    
+    
+    
+    
+    
+    template<class Derived>
+    struct stepping_policy_impl< Derived, 1, adaptable_step_tag >
+    {
+        
+        static constexpr std::size_t dimension = stepper_traits<Derived>::evaluation_stage;
+        using type = typename stepper_traits<Derived>::operating_type;
+        static constexpr std::size_t degree = stepper_traits<Derived>::data::higher_degree + 1;
+
+        
+
+        class error_checker
+        {
+        public:
+            
+            explicit error_checker(double value_p) : value_m{ (value_p < 1e-15) ? 1e-15 : value_p }{}
+            
+            operator double() const { return value_m; }
+            
+        private:
+            double value_m;
+        };
+        
+        
+    private:
+        double tolerance_m{1e-5};
+        
+    public:
+        void specify_tolerance(double tolerance_p){ tolerance_m = tolerance_p ;}
+        
+        
+    public:
+        auto step(operating_state<type, 1>&& os_p, double step_p) const
+                -> std::pair< operating_state<type, 1>, double >
+        {
+//            std::cout << "Stepper::step " << step_p << '\n';
+            
+            bool isToleranceReached = false;
+            auto eos = make_extended_operating_state( std::move(os_p),
+                                                     operating_state_extension<type, dimension>{step_p, {}} );
+            
+            double error{0};
+            
+            while(!isToleranceReached){
+                
+                eos.evaluation = derived().compute_evaluation(eos, step_p);
+                auto estimate = derived().compute_solution(eos, details::order_tag<0>{}, estimation_tag{});
+                auto correction = derived().compute_solution(eos, details::order_tag<0>{}, correction_tag{});
+//                std::cout << "Estimate: \n" << estimate << " - Correction: \n" << correction << '\n';
+                auto local_error_estimate = details::error( estimate, correction );
+               
+                
+                isToleranceReached = local_error_estimate <= tolerance_m;
+//                std::cout << "step_error: " << local_error_estimate << '\n';
+                
+                if(!isToleranceReached){
+                    eos.step = optimize_step_length(eos.step, local_error_estimate) ;
+                }
+                else{
+                    error = error_checker{ local_error_estimate };
+//                    std::cout << "Step length:" << eos.step << ", error: "<< error <<'\n';
+                    eos.state(order_tag<0>{}) = correction;
+                }
+                
+            }
+
+            eos.evaluation_point += step_p;
+            return std::make_pair(std::move(eos), error);
+        }
+        
+        operating_state<type, 1> force_step(operating_state<type, 1>&& os_p, double step_p) const
+        {
+            //std::cout << "stepper::force_step";
+            auto eos = make_extended_operating_state( std::move(os_p),
+                                                      operating_state_extension<type, dimension>{step_p, {}} );
+            
+            eos.evaluation = derived().compute_evaluation(eos, step_p);
+            eos.state( order_tag<0>{} ) = derived().compute_solution(eos, details::order_tag<0>{}, correction_tag{});
+            eos.evaluation_point += step_p;
+            
+            return  eos;
+        }
+        
+        double optimize_step_length(double step_p, double local_error) const
+        {
+            return step_p * 0.9 * std::pow(tolerance_m/local_error, 1./degree);
+        }
+        
+    private:
+        Derived& derived(){ return static_cast<Derived&>(*this); }
+        const Derived& derived() const { return static_cast<const Derived&>(*this); }
+    };
+    
+    
+    
+    
+    
+    
     
 } //namespace details
 
