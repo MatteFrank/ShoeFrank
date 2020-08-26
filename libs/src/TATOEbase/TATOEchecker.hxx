@@ -202,7 +202,7 @@ namespace aftereffect {
     
     template<class Value>
     struct apply_impl< Value>{
-        static constexpr void apply( Value const& value_p ){ ; }
+        static constexpr void apply( Value const&  ){ ; }
     };
 
     template<class Value, class ... Fs>
@@ -299,7 +299,7 @@ struct TATOEchecker{
         struct bundle {
             TH1D* reconstructible_h{nullptr};
             TH1D* reconstructed_h{nullptr};
-           // TH2D* mass_identification_h{nullptr};
+            TH2D* mass_identification_h{nullptr};
             //TH2D* charge_identification_h{nullptr};
             std::map<int, TH1D*> momentum_resolution_c;
         } histogram_bundle;
@@ -316,11 +316,11 @@ struct TATOEchecker{
         computation_module(int charge_p) : charge{charge_p}
         {
             histogram_bundle.reconstructible_h = new TH1D{ Form("reconstructible_charge%d", charge),
-                                                                      ";Momentum(GeV/c);Count", 50, 0, 1.3 };
+                                                                      ";Momentum(GeV/c);Count", 100, 0, 1.3 };
             histogram_bundle.reconstructed_h = new TH1D{ Form("reconstructed_charge%d", charge),
-                                                                    ";Momentum(GeV/c);Count", 50, 0, 1.3 };
-//            histogram_bundle.mass_identification_h = new TH2D{ Form("mass_identification_charge%d", charge),
-//                ";A_{reconstructed};A_{real};Count", 20, 0, 20, 20, 0, 20 };
+                                                                    ";Momentum(GeV/c);Count", 100, 0, 1.3 };
+            histogram_bundle.mass_identification_h = new TH2D{ Form("mass_identification_charge%d", charge),
+                ";A_{reconstructed};A_{real};Count", 20, 0, 20, 20, 0, 20 };
 //            histogram_bundle.charge_identification_h = new TH2D{ Form("charge_identification_charge%d", charge),
 //                ";Z_{reconstructed};Z_{real};Count", 20, 0, 20, 20, 0, 20 };
         }
@@ -332,11 +332,11 @@ struct TATOEchecker{
         TH1D const * get_reconstructible_histogram() const { return histogram_bundle.reconstructible_h; }
         TH1D * get_reconstructible_histogram() { return histogram_bundle.reconstructible_h; }
         
-//        TH2D const * get_mass_identification_histogram() const { return histogram_bundle.mass_identification_h; }
-//        TH2D * get_mass_identification_histogram() { return histogram_bundle.mass_identification_h; }
+        TH2D const * get_mass_identification_histogram() const { return histogram_bundle.mass_identification_h; }
+        TH2D * get_mass_identification_histogram() { return histogram_bundle.mass_identification_h; }
 //
-        TH2D const * get_charge_identification_histogram() const { return histogram_bundle.charge_identification_h; }
-        TH2D * get_charge_identification_histogram() { return histogram_bundle.charge_identification_h; }
+//        TH2D const * get_charge_identification_histogram() const { return histogram_bundle.charge_identification_h; }
+//        TH2D * get_charge_identification_histogram() { return histogram_bundle.charge_identification_h; }
         
         TH1D const * get_momentum_histogram( double momentum_p ) const {
             auto key = static_cast<int>( momentum_p/0.2 );
@@ -357,7 +357,7 @@ struct TATOEchecker{
                 return histogram_i->second;
             }
             histogram_bundle.momentum_resolution_c[key] = new TH1D{ Form("momentum_resolution_%d_charge%d", key, charge),
-                Form("momentum_resolution_%.1fMeV/c_charge%d;p(GeV/c);p_{rec}(GeV/c)", (key+0.5)*0.2, charge), 500, 0, 10 };
+                Form("momentum_resolution_%.1fMeV/c_charge%d;p(GeV/c);p_{rec}(GeV/c)", (key+0.5)*0.2, charge), 300, 0, 15 };
             return histogram_bundle.momentum_resolution_c[key];
             
         }
@@ -546,7 +546,7 @@ public:
         
         auto momentum_resolution = aftereffect::make_aftereffect(
                            [](reconstruction_module const& module_p)
-                           { return module_p.reconstructible_o.has_value() && module_p.reconstructed_o.has_value(); },
+                           { return module_p.reconstructible_o.has_value() && module_p.reconstructed_o.has_value() && module_p.reconstructible_o.value().properties.mass == module_p.reconstructed_o.value().properties.mass; },
                            [this](reconstruction_module const& module_p)
                            {
                                auto reconstructible = module_p.reconstructible_o.value();
@@ -559,23 +559,56 @@ public:
                                                                           );
         
         
+        auto mass_identification = aftereffect::make_aftereffect(
+                           [](reconstruction_module const& module_p)
+                           { return module_p.reconstructible_o.has_value() &&
+                                    module_p.reconstructed_o.has_value() &&
+                                    module_p.reconstructible_o.value().properties.charge == module_p.reconstructed_o.value().properties.charge; },
+                           [this](reconstruction_module const& module_p)
+                           {
+                               auto reconstructible = module_p.reconstructible_o.value();
+                               auto reconstructed = module_p.reconstructed_o.value();
+                               auto & computation_module = find_computation_module( reconstructible.properties.charge );
+                               auto * mass_id_h = computation_module.get_mass_identification_histogram( );
+                               mass_id_h->Fill( reconstructed.properties.mass, reconstructible.properties.mass );
+                           }
+                                                                          );
+        
+        
         auto aftereffect_c = aftereffect::make_aftereffect_list(
-                                   // std::move(undiscerning_output),
+                               //     std::move(undiscerning_output),
                                     std::move(reconstructible_registration),
                                     std::move(successful_reconstruction),
                                     std::move(fake_reconstruction),
                                    // std::move(reconstruction_failure)
-                                    std::move(momentum_resolution)
+                                    std::move(momentum_resolution),
+                                    std::move( mass_identification )
                                                                 );
                     
         for( auto const& module : reconstruction_module_mc ){ aftereffect_c.evaluate( module ); }
         
-      //  action_m.logger_m.output();
+
+        //action_m.logger_m.output();
     };
     
     double retrieve_momentum( candidate const& candidate_p ) const {
         for( auto const& module : reconstruction_module_mc ) {
             if( module.end_point_h == candidate_p.data && module.reconstructible_o.has_value() ){ return module.reconstructible_o.value().properties.momentum; }
+        }
+        return 0;
+    }
+    
+    
+    int retrieve_mass( candidate const& candidate_p ) const {
+        for( auto const& module : reconstruction_module_mc ) {
+            if( module.end_point_h == candidate_p.data && module.reconstructible_o.has_value() ){ return module.reconstructible_o.value().properties.mass; }
+        }
+        return 0;
+    }
+    
+    int retrieve_charge( candidate const& candidate_p ) const {
+        for( auto const& module : reconstruction_module_mc ) {
+            if( module.end_point_h == candidate_p.data && module.reconstructible_o.has_value() ){ return module.reconstructible_o.value().properties.charge; }
         }
         return 0;
     }
@@ -781,36 +814,7 @@ public:
         
         auto reconstructed = reconstructed_track{ cluster_c, std::move(particle), track_p.clone };
         register_reconstructed_track( cluster_c.back(), std::move(reconstructed) );
-        
-//        auto const * end_point_h = full_state_c.back().data;
-//        auto const& id_c = retrieve_track_ids(end_point_h);
-//
-//        auto reconstructible_i = retrieve_reconstructible( id_c );
-//
-//        if( reconstructible_i !=  reconstructible_track_mc.end() ){
-//
-//            auto & module = find_module( reconstructible_i->charge );
-//            module.get_mass_identification_histogram()->Fill( track_p.particle.mass, reconstructible_i->mass );
-//            module.get_charge_identification_histogram()->Fill( track_p.particle.charge, reconstructible_i->charge );
 
-//
-//            module.get_momentum_histogram()->Fill( reconstructible_i->momentum - track_p.momentum );
-//            action_m.logger_m << "momentum_resolution: " << abs(reconstructible_i->momentum - track_p.momentum)/reconstructible_i->momentum * 100<< '\n';
-//            action_m.logger_m << "true_momentum: " << reconstructible_i->momentum << "MeV\n";
-//            action_m.logger_m << "reconstructed_momentum: " << track_p.momentum << "MeV\n";
-//
-//            action_m.logger_m << "true_z/a: " << reconstructible_i->charge << '/'  << reconstructible_i->mass << '\n';
-//            action_m.logger_m << "reconstructed_z/a: "<< track_p.particle.charge << '/' << track_p.particle.mass << '\n';
-//
-//            action_m.logger_m << "clone_number: " << track_p.clone << '\n';
-//
-//            if( reconstructible_i->mass != track_p.particle.mass ) {
-//                action_m.logger_m.template add_sub_header< details::immutable_tag >("wrong_mass");
-//            }
-//            if( reconstructible_i->charge != track_p.particle.charge ) {
-//                action_m.logger_m.template add_sub_header< details::immutable_tag >("wrong_charge");
-//            }
-//
 
     }
     
@@ -921,10 +925,10 @@ public:
     {
         for(auto const & module : computation_module_mc){
             TH1D* efficiency_histogram_h = new TH1D{ Form("efficiency_charge%d", module.charge),
-                                                     ";Momentum (Gev/c/n);Efficiency #epsilon", 50, 0, 1.3 };
+                                                     ";Momentum (Gev/c/n);Efficiency #varepsilon", 100, 0, 1.3 };
             TH1D const * reconstructed_h = module.get_reconstructed_histogram() ;
             TH1D const * reconstructible_h = module.get_reconstructible_histogram() ;
-          //  TH2D const* mass_identification_h = module.get_mass_identification_histogram();
+            TH2D const* mass_identification_h = module.get_mass_identification_histogram();
 //            TH2D const* charge_identification_h = module.get_charge_identification_histogram();
     
             for(auto i{0} ; i < reconstructible_h->GetNbinsX() ; ++i)
@@ -944,13 +948,23 @@ public:
                 }
             }
     
+            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH1D*>(reconstructible_h) );
             action_m.reconstructed_track_mhc->AddHistogram( efficiency_histogram_h );
-           // action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(mass_identification_h) );
+            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(mass_identification_h) );
 //            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(charge_identification_h) );
             
+            
+            TH1D* momentum_histogram_h = new TH1D{ Form("momentum_charge%d", module.charge),
+                ";Momentum (Gev/c/n);#frac{#sigma_p}{p}", 75, 0, 15 };
             for( auto& pair : module.histogram_bundle.momentum_resolution_c  ){
-                action_m.reconstructed_track_mhc->AddHistogram( pair.second );
+                action_m.reconstructed_track_mhc->AddHistogram( pair.second);
+                
+                auto momentum = (pair.first+0.5)*0.2;
+                auto rms = abs( pair.second->GetMean() - momentum ) ;
+                auto bin_index = momentum_histogram_h->FindBin(momentum);
+                if(pair.second->GetEntries()>50){ momentum_histogram_h->SetBinContent( bin_index, rms/momentum ); }
             }
+            action_m.reconstructed_track_mhc->AddHistogram( momentum_histogram_h );
             
             
         }

@@ -18,9 +18,26 @@
 #include "detector_list.hpp"
 #include "arborescence.hpp"
 
+
 #include "TATOEutilities.hxx"
 #include "TATOEchecker.hxx"
 #include "TATOElogger.hxx"
+
+#include "grkn_data.hpp"
+//#include "stepper.hpp"
+template< class Callable, class Data >
+struct stepper;
+template<class Data, class Callable>
+constexpr auto make_stepper(Callable c_p) -> stepper<Callable, Data>;
+
+
+template<class OperatingType, std::size_t Order, class Callable>
+struct ode;
+template<class OperatingType, std::size_t Order, class Callable>
+auto make_ode(Callable&& c_p) -> ode<OperatingType, Order, Callable>;
+
+
+
 //______________________________________________________________________________
 //
 
@@ -145,11 +162,13 @@ public:
         
         logger_m.add_root_header( "END_RECONSTRUCTION" );
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
+//        track_c = compute_momentum_old( std::move(track_c) );
+        track_c = compute_momentum_new( std::move(track_c) );
         register_tracks_upward( std::move( track_c ) );
         
         checker_m.end_event();
 //        logger_m.freeze_everything();
-      //  logger_m.output();
+       // logger_m.output();
         
         
         
@@ -232,15 +251,21 @@ private:
                                            double light_ion_boost_p = 1,
                                            double energy_modifier_p = 1 )
                                       {
-                    auto momentum = sqrt( pow(beam_energy_m * mass_number_p, 2)  +
-                                          2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  ) *
-                                    energy_modifier_p;
+                   
                                           
-                  //  auto true_momentum = checker_m.retrieve_momentum( candidate );
+                   // auto true_momentum = checker_m.retrieve_momentum( candidate );
+                   // auto true_mass = checker_m.retrieve_mass( candidate );
+                  //  auto true_charge = checker_m.retrieve_charge( candidate );
                                           
                   //  logger_m << "momentum: " << momentum <<  '\n';
                   //  logger_m << "real_momentum: " << true_momentum << '\n';
-                  //  if( true_momentum > 0. ){ momentum = true_momentum;}
+                 //   if( true_momentum > 0. ){ momentum = true_momentum;}
+                   // if( true_charge > 0. ){ charge = true_charge;}
+                 //   if( true_mass > 0. ){ mass_number_p = true_mass;}
+                                          
+                    auto momentum = sqrt( pow(beam_energy_m * mass_number_p, 2)  +
+                                          2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  ) *
+                                    energy_modifier_p;
                                           
                     hypothesis_c.push_back( particle_properties{ charge, mass_number_p, momentum, light_ion_boost_p } );
                     add_current_end_point( hypothesis_c.back() );
@@ -251,22 +276,45 @@ private:
                     {
                         auto light_ion_boost = 2;
                         add_hypothesis(1, light_ion_boost);
-                        //add_hypothesis(1, light_ion_boost, 1.5);
                         add_hypothesis(1, light_ion_boost, 0.5);
-                    
 //                      light_ion_boost = 1.3;
                         add_hypothesis(2, light_ion_boost);
-                        //add_hypothesis(2, light_ion_boost, 1.5);
-                        //add_hypothesis(2, light_ion_boost, 0.5);
-                    
                         add_hypothesis(3);
                         break;
                     }
                     case 2:
                     {
-                        add_hypothesis(3);
                         add_hypothesis(4);
+                        add_hypothesis(3);
                         break;
+                    }
+                    case 3 :
+                    {
+                        add_hypothesis(6);
+                        add_hypothesis(7);
+                        add_hypothesis(8);
+                    }
+                    case 4 :
+                    {
+                        add_hypothesis(7);
+                        add_hypothesis(9);
+                        add_hypothesis(10);
+                    }
+                    case 5 :
+                    {
+                        add_hypothesis(10);
+                        add_hypothesis(11);
+                    }
+                    case 6 :
+                    {
+                        add_hypothesis(11);
+                        add_hypothesis(12);
+                        add_hypothesis(13);
+                    }
+                    case 7:
+                    {
+                        add_hypothesis(14);
+                        add_hypothesis(15);
                     }
                     default:
                     {
@@ -397,9 +445,13 @@ private:
     std::vector<full_state> advance_reconstruction_impl( state s_p,
                                                          const T& layer_p )
     {
+        logger_m.add_sub_header("advance_reconstruction_impl");
 //        std::cout << "\nstarting_state : ( " << s_p.vector(0,0) << ", " << s_p.vector(1,0) ;
 //        std::cout << ") -- (" << s_p.vector(2,0) << ", " << s_p.vector(3,0)  ;
 //        std::cout << ") -- " << s_p.evaluation_point << '\n';
+        logger_m << "\nstarting_state : ( " << s_p.vector(0,0) << ", " << s_p.vector(1,0) ;
+        logger_m << ") -- (" << s_p.vector(2,0) << ", " << s_p.vector(3,0)  ;
+        logger_m << ") -- " << s_p.evaluation_point << '\n';
 
         
         auto sigma_c = ukf_m.generate_sigma_points( s_p );
@@ -412,7 +464,7 @@ private:
         
         auto step = layer_p.depth - sigma_c.front().evaluation_point;
         
-        if(step<0){ std::cout << "WARNING : going backwards !" << std::endl; }
+        if(step<0){ logger_m << "<Warning>::going_backwards\n"; logger_m.freeze() ; std::cout << "WARNING : going backwards !" << std::endl; }
         
         sigma_c = ukf_m.force_propagation( std::move(sigma_c), step );
         auto ps = ukf_m.generate_propagated_state( std::move(sigma_c) );
@@ -425,7 +477,7 @@ private:
 //        std::cout << ") -- " << ps.evaluation_point << '\n';
 //
         
-        logger_m.add_sub_header("advance_reconstruction_impl");
+
         logger_m << "propagated_state : ( " << ps.vector(0,0) << ", " << ps.vector(1,0) ;
         logger_m << ") -- (" << ps.vector(2,0) << ", " << ps.vector(3,0)  ;
         logger_m << ") -- " << ps.evaluation_point << '\n';
@@ -434,17 +486,7 @@ private:
         return confront(ps, layer_p);
     }
     
-    //-------------------------------------------------------------------------------------
-    //                           compute_step_length
-    
-    constexpr double compute_step_length( state const& s_p,
-                                                 full_state const& fs_p) const
-    {
-        double x = fs_p.vector(0,0) - s_p.vector(0,0);
-        double y = fs_p.vector(0,1) - s_p.vector(0,1);
-        double z = fs_p.evaluation_point - s_p.evaluation_point;
-        return sqrt( pow(x, 2) + pow(y, 2) + pow(z, 2) );
-    }
+
     
     //-------------------------------------------------------------------------------------
     //                            advance_reconstruction overload set
@@ -455,6 +497,7 @@ private:
     {
         
         logger_m.add_root_header("ADVANCE_RECONSTRUCTION");
+//        std::cout << "ADVANCE_RECONSTRUCTION\n";
         
         auto layer_c = detector_p.form_layers();
         
@@ -505,7 +548,7 @@ private:
     {
         
         logger_m.add_root_header( "FINALISE_RECONSTRUCTION" );
-        
+//        std::cout << "FINALISE_RECONSTRUCTION\n";
         
         auto& leaf_c = arborescence_p.get_handler();
         
@@ -550,7 +593,8 @@ private:
     {
         
         logger_m.add_root_header("START_RECONSTRUCTION");
-    
+//        std::cout << "START_RECONSTRUCTION\n";
+        
         auto track_c = vertex_p.get_track_list( );
         for( auto& track : track_c ){
             auto vertex_h = track.vertex();
@@ -851,23 +895,12 @@ private:
         auto && value_c = node_p.get_branch_values();
         
         double total_chisquared{0};
-        double total_step_length{0};
         for( auto && value : value_c ){
             total_chisquared += value.chisquared;
-            total_step_length += value.step_length;
         }
-        total_chisquared /= value_c.size();
+        double shearing_factor = total_chisquared / value_c.size();
         
-        double beam_speed = sqrt( pow(beam_energy_m*beam_mass_number_m, 2) + 2 * beam_mass_number_m * beam_mass_number_m * 938 * beam_energy_m )/(beam_mass_number_m * 938 + beam_mass_number_m * beam_energy_m) * 30;
-        double additional_time = (target_position_m - st_position_m)/beam_speed;
-        
-        
-        double speed = total_step_length/(static_cast<TATWpoint const *>(value_c.back().data)->GetTime() - additional_time);
-        double beta = speed/30;
-        double gamma = 1./sqrt(1 - pow(beta, 2));
-        double momentum = gamma * 938 * particle_m.mass * beta;
-//
-        track_mc.push_back( track{ particle_m, total_chisquared, momentum, std::move(value_c)} );
+        track_mc.push_back( track{ particle_m, shearing_factor, 0, std::move(value_c)} );
     }
     
     std::vector< track > shear_suboptimal_tracks( std::vector<track>&& track_pc )
@@ -908,6 +941,254 @@ private:
         
         return final_track_c;
     }
+    
+    
+    
+    
+    //-------------------------------------------------------------------------------------
+    //                           compute_step_length
+    
+    constexpr double compute_step_length( state const& s_p,
+                                         full_state const& fs_p) const
+    {
+        double x = fs_p.vector(0,0) - s_p.vector(0,0);
+        double y = fs_p.vector(0,1) - s_p.vector(0,1);
+        double z = fs_p.evaluation_point - s_p.evaluation_point;
+        return sqrt( pow(x, 2) + pow(y, 2) + pow(z, 2) );
+    }
+    
+    //-------------------------------------------------------------------------------------
+    //                      compute_momemtum
+    
+    constexpr std::vector< track > compute_momentum_old( std::vector<track>&& track_pc ) const {
+        for( auto& track : track_pc) {
+            auto && cluster_c = track.get_clusters();
+        
+            double total_step_length{0};
+            for( auto && cluster : cluster_c ){
+                total_step_length += cluster.step_length;
+            }
+        
+            double beam_speed = sqrt( pow(beam_energy_m*beam_mass_number_m, 2) + 2 * beam_mass_number_m * beam_mass_number_m * 938 * beam_energy_m )/(beam_mass_number_m * 938 + beam_mass_number_m * beam_energy_m) * 30;
+            double additional_time = (target_position_m - st_position_m)/beam_speed;
+        
+        
+            double speed = total_step_length/(static_cast<TATWpoint const *>(cluster_c.back().data)->GetTime() - additional_time);
+            double beta = speed/30;
+            double gamma = 1./sqrt(1 - pow(beta, 2));
+            double momentum = gamma * 938 * track.particle.mass * beta;
+        
+            track.momentum = momentum;
+            
+       //     std::cout << "arc_length: " << total_step_length << '\n';
+       //     std::cout << "momentum: " << momentum << '\n';
+        }
+        
+        return std::move( track_pc );
+    }
+    
+    
+    template<std::size_t N>
+    double compute_arc_length( std::vector<full_state> const& cluster_pc ) const {
+        
+        //fit in x/y
+        //retrieve fit parameters
+        //compute arc-length through integration
+        
+        std::array<double, N> z_c{};
+        
+        std::array<double, N> x_c{};
+        std::array<double, N * N> weight_x_c{};
+        
+        std::array<double, N> y_c{};
+        std::array<double, N * N> weight_y_c{};
+        
+        //zip !
+        for( std::size_t i{0}; i < N; ++i ) {
+            auto const& cluster = cluster_pc[i];
+            
+            z_c[i] = cluster.evaluation_point;
+            
+            
+            
+            x_c[i] = cluster.vector(0, 0);
+            y_c[i] = cluster.vector(1, 0);
+            
+        //    std::cout << "z: " << z_c[i] << " - x: " << x_c[i] << '\n';
+    
+            weight_x_c[i + i*N] = cluster.covariance(0, 0);
+            weight_y_c[i + N*i] = cluster.covariance(1, 1);
+        }
+        
+        
+        constexpr std::size_t const order_x = 4;
+        auto const regressor_x = make_custom_matrix<N, order_x>(
+                           [&z_c, &order_x]( std::size_t index_p ){
+                           std::size_t column_index = index_p % order_x;
+                           std::size_t row_index = index_p / order_x;
+                           return pow( z_c[row_index], column_index );
+                       }
+                                                          );
+        auto const observation_x = matrix<N, 1>{ std::move(x_c) };
+        auto const weight_x = matrix<N, N>{ std::move(weight_x_c)};
+        auto const parameter_x = expr::compute( form_inverse( expr::compute( transpose(regressor_x) * weight_x * regressor_x ) ) * transpose( regressor_x ) * weight_x * observation_x );
+        
+     //   std::cout << "parameter_x: \n" << parameter_x;
+        
+        
+        constexpr std::size_t const order_y = 2;
+        auto const regressor_y = make_custom_matrix<N, order_y>(
+                           [&z_c, &order_y]( std::size_t index_p ){
+                           std::size_t column_index = index_p % order_y;
+                           std::size_t row_index = index_p / order_y;
+                           return pow( z_c[row_index], column_index );
+                       }
+                                                          );
+        auto const observation_y = matrix<N, 1>{ std::move(y_c) };
+        auto const weight_y = matrix<N, N>{ std::move(weight_y_c)};
+        auto const parameter_y = expr::compute( form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) ) * transpose( regressor_y ) * weight_y * observation_y );
+        
+     //   std::cout << "parameter_y: \n" << parameter_y;
+        
+        
+        // ====================  arc length computation ===================
+        constexpr std::size_t const exponent = 5; //max exponent of z in derivatives
+
+        
+        // ------------ mixing_matrices ----------------
+        auto const mixing_x = make_custom_matrix<exponent, order_x>(
+                       [&order_x]( std::size_t index_p ){
+                           std::size_t column_index = index_p % order_x;
+                           std::size_t row_index = index_p / order_x;
+                           return static_cast<double>( ( column_index == row_index+1 ) ?  column_index : 0. );
+                       }
+                                                                    );
+//        std::cout << "mixing_x: \n" << mixing_x;
+        
+        auto const mixing_y = make_custom_matrix<exponent, order_y>(
+                       [&order_y]( std::size_t index_p ){
+                           std::size_t column_index = index_p % order_y;
+                           std::size_t row_index = index_p / order_y;
+                           return static_cast<double>( ( column_index == row_index+1 ) ?  column_index : 0. );
+                       }
+                                                                    );
+//        std::cout << "mixing_y: \n" << mixing_y;
+        
+        //------------ "ode" ----------------
+        auto ode = make_ode<double, 1>(
+              [&parameter_x, &mixing_x, &parameter_y, &mixing_y, exponent]
+              (operating_state<double, 1> const& os_p){
+                  auto const polynomial = make_custom_matrix<1, exponent>(
+                        [value = os_p.evaluation_point, &exponent]( std::size_t index_p ){
+                            std::size_t column_index = index_p % exponent;
+                            return pow( value, column_index );
+                        }
+                                                                          );
+                  double const dx_dz = expr::compute( polynomial * mixing_x * parameter_x );
+                  double const dy_dz = expr::compute( polynomial * mixing_y * parameter_y );
+                  
+                  return sqrt( pow(dx_dz, 2) + pow(dy_dz, 2) + 1 );
+              }
+                                       );
+        
+        //------------- numerical_integration -------------------
+        auto stepper = make_stepper<data_rkf45>( std::move(ode) );
+        auto os = operating_state<double, 1>{ z_c[0], 0 };
+        stepper.specify_tolerance(1e-5);
+        
+        auto step = 1e-3;
+        while( os.evaluation_point + step < z_c[N-1] ){
+            auto step_result = stepper.step( std::move(os), step );
+            if( step_result.second != 0 ){
+                step = stepper.optimize_step_length(step, step_result.second);
+            }
+            os = std::move(step_result.first);
+        }
+        step = z_c[N-1] - os.evaluation_point;
+        os = stepper.force_step( std::move(os), step );
+        
+        return os.state( details::order_tag<0>{} );
+//        return 0;
+    }
+    
+    constexpr std::vector< track > compute_momentum_new( std::vector<track>&& track_pc ) const {
+        for( auto& track : track_pc) {
+            
+            auto cluster_c = track.get_clusters();
+            double arc_length{0};
+            switch( cluster_c.size() ){
+                case 5:{
+                    arc_length = compute_arc_length<5>( cluster_c );
+                    break;
+                }
+                case 6:{
+                    arc_length = compute_arc_length<6>( cluster_c );
+                    break;
+                }
+                case 7:{
+                    arc_length = compute_arc_length<7>( cluster_c );
+                    break;
+                }
+                case 8:{
+                    arc_length = compute_arc_length<8>( cluster_c );
+                    break;
+                }
+                case 9:{
+                    arc_length = compute_arc_length<9>( cluster_c );
+                    break;
+                }
+                case 10:{
+                    arc_length = compute_arc_length<10>( cluster_c );
+                    break;
+                }
+                case 11:{
+                    arc_length = compute_arc_length<11>( cluster_c );
+                    break;
+                }
+                case 12:{
+                    arc_length = compute_arc_length<12>( cluster_c );
+                    break;
+                }
+                case 13:{
+                    arc_length = compute_arc_length<13>( cluster_c );
+                    break;
+                }
+                case 14:{
+                    arc_length = compute_arc_length<14>( cluster_c );
+                    break;
+                }
+                case 15:{
+                    arc_length = compute_arc_length<15>( cluster_c );
+                    break;
+                }
+                case 16:{
+                    arc_length = compute_arc_length<16>( cluster_c );
+                    break;
+                }
+                default:{
+                    std::cerr << "<Warning> in compute_momentum, size of vector was not a considered case " << cluster_c.size() << '\n';
+                }
+            }
+            
+
+            double beam_speed = sqrt( pow(beam_energy_m*beam_mass_number_m, 2) + 2 * beam_mass_number_m * beam_mass_number_m * 938 * beam_energy_m )/(beam_mass_number_m * 938 + beam_mass_number_m * beam_energy_m) * 30;
+            double additional_time = (target_position_m - st_position_m)/beam_speed;
+
+
+            double speed = arc_length/(static_cast<TATWpoint const *>(cluster_c.back().data)->GetTime() - additional_time);
+            double beta = speed/30;
+            double gamma = 1./sqrt(1 - pow(beta, 2));
+            double momentum = gamma * 938 * track.particle.mass * beta;
+            
+       //     std::cout << "arc_length: " << arc_length << '\n';
+       //     std::cout << "momentum: " << momentum << '\n';
+
+            track.momentum = momentum;
+        }
+
+        return std::move( track_pc );
+    }
+    
     
     
     void register_tracks_upward( std::vector<track> track_pc )

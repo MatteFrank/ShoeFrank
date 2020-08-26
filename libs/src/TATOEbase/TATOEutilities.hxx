@@ -648,11 +648,17 @@ struct model
 {
     using operating_state_t = operating_state<matrix<2,1>, 2>;
     
+    struct field_interpolation{
+        double x;
+        double y;
+        double z;
+    };
+    
     particle_properties* particle_h = nullptr;
     static constexpr double conversion_factor = 0.000299792458; //[MeV/c . G^{-1} . cm^{-1} ]
-    TADIgeoField* field_mh;
+    TADIgeoField const * field_mh;
     
-    constexpr model(TADIgeoField* field_ph) : field_mh{field_ph} {}
+    constexpr model(TADIgeoField const * field_ph) : field_mh{field_ph} {}
     
     
     auto operator()(const operating_state_t& os_p) const
@@ -673,77 +679,38 @@ private:
     
     matrix<2,1> compute_change(const operating_state_t& os_p) const
     {
-        return {compute_change_x(os_p), compute_change_y(os_p)};
+        TVector3 position{
+            os_p.state( details::order_tag<0>{} )(0,0),
+            os_p.state( details::order_tag<0>{} )(1,0),
+            os_p.evaluation_point
+        };
+        auto const temp_field = field_mh->GetField(position);
+        auto const field = field_interpolation{ temp_field.X(), temp_field.Y(), temp_field.Z() };
+        
+        return {compute_change_x(os_p, field), compute_change_y(os_p, field)};
     }
     
-    double compute_change_x(const operating_state_t& os_p) const
+    double compute_change_x(const operating_state_t& os_p, field_interpolation const& field_p) const
     {
         return os_p.state(details::order_tag<1>{})(0,0) *
                    os_p.state(details::order_tag<1>{})(1,0) *
-                        field_x(os_p) -
+                        field_p.x -
                ( 1 + os_p.state(details::order_tag<1>{})(0,0) * os_p.state(details::order_tag<1>{})(0,0) ) *
-                        field_y(os_p) +
-               os_p.state(details::order_tag<1>{})(1,0) * field_z(os_p) ;
+                        field_p.y +
+               os_p.state(details::order_tag<1>{})(1,0) * field_p.z ;
     }
     
-    double compute_change_y(const operating_state_t& os_p) const
+    double compute_change_y(const operating_state_t& os_p, field_interpolation const& field_p) const
     {
         return (1 + os_p.state(details::order_tag<1>{})(1,0) *
                     os_p.state(details::order_tag<1>{})(1,0) ) *
-                        field_x(os_p) -
+                        field_p.x -
                 os_p.state(details::order_tag<1>{})(0,0) *
                     os_p.state(details::order_tag<1>{})(1,0) *
-                        field_y(os_p) +
-                os_p.state(details::order_tag<1>{})(0,0) * field_z(os_p) ;
+                        field_p.y +
+                os_p.state(details::order_tag<1>{})(0,0) * field_p.z ;
     }
     
-    double field_x(const operating_state_t& os_p) const
-    {
-        TVector3 position{
-            os_p.state( details::order_tag<0>{} )(0,0),
-            os_p.state( details::order_tag<0>{} )(1,0),
-            os_p.evaluation_point
-        };
-        
-//        auto value = field_mh->GetField(position).X();
-//        if(value != 0){
-//            std::cout << "field_x:: z " << os_p.evaluation_point << '\n';
-//            std::cout << "field_x:: value " << value << '\n';
-//        }
-        return field_mh->GetField(position).X();
-    }
-    
-    double field_y(const operating_state_t& os_p) const
-    {
-        TVector3 position{
-            os_p.state( details::order_tag<0>{} )(0,0),
-            os_p.state( details::order_tag<0>{} )(1,0),
-            os_p.evaluation_point
-        };
-        
-//        auto value = field_mh->GetField(position).Y();
-//        if(value != 0){
-//            std::cout << "field_y:: z " << os_p.evaluation_point << '\n';
-//            std::cout << "field_y:: value " << value << '\n';
-//        }
-        return field_mh->GetField(position).Y();
-    }
-    
-    double field_z(const operating_state_t& os_p) const
-    {
-        TVector3 position{
-            os_p.state( details::order_tag<0>{} )(0,0),
-            os_p.state( details::order_tag<0>{} )(1,0),
-            os_p.evaluation_point
-        };
-//
-//        auto value = field_mh->GetField(position).Z();
-//        if(value != 0){
-//            std::cout << "field_z:: z " << os_p.evaluation_point << '\n';
-//            std::cout << "field_z:: value " << value << '\n';
-//        }
-        return field_mh->GetField(position).Z();
-    }
     
 };
 
