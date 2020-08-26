@@ -114,7 +114,11 @@ constexpr matrix<NRows, NCols> make_empty_matrix()
     return details::make_matrix_impl<NRows, NCols>(details::empty_filler<NRows, NCols>, std::make_index_sequence<NRows*NCols>{});
 }
 
-
+template<std::size_t NRows, std::size_t NCols, class Filler>
+constexpr matrix<NRows, NCols> make_custom_matrix( Filler f_p )
+{
+   return details::make_matrix_impl<NRows, NCols>( f_p, std::make_index_sequence< NRows * NCols>{} );
+}
 
 
 //__ooo000OOOOOO000ooo____ooo000OOOOOO000ooo____ooo000OOOOOO000ooo____ooo000OOOOOO000ooo__

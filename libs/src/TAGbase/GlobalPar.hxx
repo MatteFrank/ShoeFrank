@@ -159,6 +159,7 @@ private:
 	vector<string> m_trackingSystems;
    vector<string> m_kalParticles;
    vector<TString> m_dectInclude;
+   vector<TString> m_dectIncludeFN; // full name
 
 	double m_VTreso;
    double m_ITreso;

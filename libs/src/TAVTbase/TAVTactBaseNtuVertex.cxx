@@ -58,8 +58,8 @@ TAVTactBaseNtuVertex::TAVTactBaseNtuVertex(const char* name,
    
    TAGparGeo* geoMapG = (TAGparGeo*) fpGeoMapG->Object();
    
-   fMinZ = -geoMapG->GetTargetPar().Size[2]*2;
-   fMaxZ =  geoMapG->GetTargetPar().Size[2]*2;
+   fMinZ = -geoMapG->GetTargetPar().Size[2]/2.;
+   fMaxZ =  geoMapG->GetTargetPar().Size[2]/2.;
    fEps = 1e-4; // 1 microns precision
    
    TVector3 posMin(0,0, fMinZ);

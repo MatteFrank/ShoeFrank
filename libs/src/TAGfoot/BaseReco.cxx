@@ -115,10 +115,12 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    if (fFlagOut)
       fActEvtWriter = new TAGactTreeWriter("locRecFile");
 
-   // Read Trafo file
+   // global transformation
    fpFootGeo = new TAGgeoTrafo();
-   TString parFileName = Form("./geomaps/%sFOOT.geo", fExpName.Data());
-   fpFootGeo->FromFile(parFileName);
+
+   // load campaign file
+   fCampManager = new TAGcampaignManager(expName);
+   fCampManager->FromFile();
    
    // actvate debug level
    GlobalPar::GetPar()->SetDebugLevels();
@@ -131,10 +133,6 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
       GlobalPar::GetPar()->IncludeIT(true);
       GlobalPar::GetPar()->IncludeTW(true);
    }
-   
-   // load campaign file (check if experiment name is in database
-   fCampManager = new TAGcampaignManager(expName);
-   fCampManager->FromFile();
 }
 
 //__________________________________________________________
@@ -281,6 +279,10 @@ void BaseReco::ReadParFiles()
    TString ion_name;
    Float_t kinE_beam = 0.;
    
+   // Read Trafo file
+   TString parFileName = fCampManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), fRunNumber);
+   fpFootGeo->FromFile(parFileName);
+   
    // initialise par files for target
    if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeTW() || IsItrTracking()) {
       fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
@@ -293,14 +295,7 @@ void BaseReco::ReadParFiles()
       ion_name = parGeo->GetBeamPar().Material;
       kinE_beam = parGeo->GetBeamPar().Energy; //GeV/u
       
-      cout<<"\n!!!!  ATTENTION ATTENTION ATTENTION !!!"<<endl;
-      printf("In file %s the following beam parameters for a %d%s beam have been set:\n",parFileName.Data(),A_beam,ion_name.Data());
-      printf("BeamEnergy:          %.3f GeV/u\n",kinE_beam);
-      printf("BeamAtomicMass:      %d\n",A_beam);
-      printf("BeamAtomicNumber:    %d\n",Z_beam);
-      printf("BeamMaterial:       \"%s\"\n",ion_name.Data());
-      printf("Change such parameters in %s accordingly to the input file\n\n",parFileName.Data());
-
+      parGeo->Print();
    }
    
    // initialise par files for start counter

@@ -193,8 +193,10 @@ void GlobalPar::ReadParamFile () {
            RemoveSpace( &rev );
            if ( rev == "y" )        m_includeDI = true;
            else                     m_includeDI = false;
-           if (m_includeDI)
+           if (m_includeDI) {
               m_dectInclude.push_back("DI");
+              m_dectIncludeFN.push_back("Dipole");
+           }
         }
 
         else if ( line.find("IncludeST:") != string::npos ) {
@@ -202,8 +204,10 @@ void GlobalPar::ReadParamFile () {
            RemoveSpace( &rev );
            if ( rev == "y" )        m_includeST = true;
            else                     m_includeST = false;
-           if (m_includeST)
+           if (m_includeST) {
               m_dectInclude.push_back("ST");
+              m_dectIncludeFN.push_back("Start Counter");
+           }
         }
 
         else if ( line.find("IncludeBM:") != string::npos ) {
@@ -211,57 +215,71 @@ void GlobalPar::ReadParamFile () {
             RemoveSpace( &rev );
             if ( rev == "y" )        m_includeBM = true;
             else                     m_includeBM = false;
-           if (m_includeBM)
+           if (m_includeBM) {
               m_dectInclude.push_back("BM");
+              m_dectIncludeFN.push_back("Beam Monitor");
+           }
         }
         else if ( line.find("IncludeTW:") != string::npos ) {
             string rev =StrReplace( line, "IncludeTW:", "" );   
             RemoveSpace( &rev );
             if ( rev == "y" )        m_includeTW = true;
             else                     m_includeTW = false;
-           if (m_includeTW)
+           if (m_includeTW) {
               m_dectInclude.push_back("TW");
+              m_dectIncludeFN.push_back("ToF Wall");
+           }
         }
         else if ( line.find("IncludeMSD:") != string::npos ) {
             string rev =StrReplace( line, "IncludeMSD:", "" );   
             RemoveSpace( &rev );
             if ( rev == "y" )        m_includeMSD = true;
             else                     m_includeMSD = false;
-           if (m_includeMSD)
+           if (m_includeMSD) {
               m_dectInclude.push_back("MSD");
+              m_dectIncludeFN.push_back("Multi-Strip Detector");
+           }
         }
         else if ( line.find("IncludeCA:") != string::npos ) {
             string rev =StrReplace( line, "IncludeCA:", "" );   
             RemoveSpace( &rev );
             if ( rev == "y" )        m_includeCA = true;
             else                     m_includeCA = false;
-           if (m_includeCA)
+           if (m_includeCA) {
               m_dectInclude.push_back("CA");
+              m_dectIncludeFN.push_back("Calorimeter");
+           }
         }
         else if ( line.find("IncludeTG:") != string::npos ) {
            string rev =StrReplace( line, "IncludeTG:", "" );
            RemoveSpace( &rev );
            if ( rev == "y" )        m_includeTG = true;
            else                     m_includeTG = false;
-           if (m_includeTG)
+           if (m_includeTG) {
               m_dectInclude.push_back("TG");
+              m_dectIncludeFN.push_back("Target");
+           }
         }
 
         else if ( line.find("IncludeVT:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeVT:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeVT = true;
-            else                     m_includeVT = false;
-            if (m_includeVT)
-               m_dectInclude.push_back("VT");
+           string rev =StrReplace( line, "IncludeVT:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_includeVT = true;
+           else                     m_includeVT = false;
+           if (m_includeVT) {
+              m_dectInclude.push_back("VT");
+              m_dectIncludeFN.push_back("Vertex");
+           }
         }
         else if ( line.find("IncludeIT:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeIT:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeIT = true;
-            else                     m_includeIT = false;
-            if (m_includeIT)
+           string rev =StrReplace( line, "IncludeIT:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_includeIT = true;
+           else                     m_includeIT = false;
+           if (m_includeIT) {
                m_dectInclude.push_back("IT");
+              m_dectIncludeFN.push_back("Inner Tracker");
+           }
         }
         else if ( line.find("IncludeKalman:") != string::npos ) {
             string rev =StrReplace( line, "IncludeKalman:", "" );   
@@ -399,29 +417,35 @@ void GlobalPar::Print(Option_t* opt) {
    TString option(opt);
    
    cout << endl << "========================   Input Parameters  =============================" << endl<<endl;
-   
+
    if (option.Contains("all")) {
+
       for ( unsigned int cl=0; cl<m_copyInputFile.size(); cl++ )
          cout << m_copyInputFile[cl] << endl;
+      cout << endl <<  "===========================================================================" << endl<<endl;
+
    } else {
       cout << "Global debug level: " << m_debug << endl;
       cout << "Detectors included:" << endl;
       
-      vector<TString> list = m_dectInclude;
+      vector<TString> list = m_dectIncludeFN;
       for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
          TString str = *it;
-         printf(" %s\n", str.Data());
+         printf(" %s - ", str.Data());
       }
       
+      printf("\n");
+
       if (m_includeKalman)
          cout << "Using GenFit for Global Recontruction" << endl;
       
       if (m_includeTOE)
          cout << "Using TOE for Global Recontruction" << endl;
 
+      printf("\n\n");
+
    }
    
-   cout << endl <<  "===========================================================================" << endl<<endl;
    
 }
 
