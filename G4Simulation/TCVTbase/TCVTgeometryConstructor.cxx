@@ -246,8 +246,5 @@ void TCVTgeometryConstructor::DefineMaxMinDimension()
    
    if (TMath::Abs(fMaxPosition.Z()) > TMath::Abs(fMinPosition.Z()))
       fMinPosition[2] = -fMaxPosition[2];
-
-   fMinPosition.Print();
-   fMaxPosition.Print();
 }
 

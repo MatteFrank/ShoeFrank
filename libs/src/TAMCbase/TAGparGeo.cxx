@@ -352,7 +352,11 @@ void TAGparGeo::Print(Option_t* option) const
       printf("BeamEnergy:          %.3f GeV/u\n", fBeamParameter.Energy);
       printf("BeamAtomicMass:      %.0f\n",       fBeamParameter.AtomicMass);
       printf("BeamAtomicNumber:    %d\n",         fBeamParameter.AtomicNumber);
-      printf("BeamMaterial:       \"%s\"\n\n",    fTargetParameter.Material.Data());
+      printf("BeamMaterial:       \"%s\"\n\n",    fBeamParameter.Material.Data());
+      
+      printf("TargetMaterial:     \"%s\"\n",      fTargetParameter.Material.Data());
+      printf("TargetThickness:     %.3f cm\n\n",  fTargetParameter.Size[2]);
+
    }
 }
 

@@ -27,8 +27,8 @@ NumberFiles: 1
 
 DetectorName: "VT"
 NumberFiles: 3
-"./geomaps/GSI/TAVTdetector.map": -1
-"./config/GSI/TAVTdetector.geo": -1
+"./geomaps/GSI/TAVTdetector.geo": -1
+"./config/GSI/TAVTdetector.cgf": -1
 "./config/GSI/TAVTdetector.map": -1
 
 DetectorName: "TW"

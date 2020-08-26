@@ -76,7 +76,7 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
    
    // check geometry manager
    if ( gGeoManager == NULL )  // a new Geo Manager is created if needed
-      new TGeoManager(expName.Data(), "Creating Geometry");
+      new TGeoManager(expName.Data(), Form("for %s", TAGgeoTrafo::GetDefaultGeomName()));
    
    // define material
    DefineMaterial();

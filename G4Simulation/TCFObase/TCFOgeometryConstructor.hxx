@@ -66,7 +66,7 @@ class TCEMfieldSetup;
 class TCFOgeometryConstructor : public TCGbaseGeometryConstructor
 {
 public:
-   TCFOgeometryConstructor(const TString expName = "");
+   TCFOgeometryConstructor(const TString expName = "", Int_t runNumber = -1);
    ~TCFOgeometryConstructor();
    
 public:

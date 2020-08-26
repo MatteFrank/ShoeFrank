@@ -135,8 +135,8 @@ void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, In
    Double_t fi       = 0.;
    Double_t fj       = 0.;
    
-   Double_t b        = fMinZ*1.2;
-   Double_t a        = fMaxZ*0.8;
+   Double_t a        = fMinZ*1.2;
+   Double_t b        = fMaxZ*0.8;
 
    // Binary search for maximum of probability
    while (TMath::Abs(a - b) > fEps ) {
