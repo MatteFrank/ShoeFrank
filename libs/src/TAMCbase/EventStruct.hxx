@@ -2,7 +2,7 @@
 #define _EVENT_STRUCT_HH
 
 
-const int MAXTR    = 2000;  
+const int MAXTR    = 6000;  
 const int MAXSTC   = 200;   
 const int MAXBMN   = 1000;   
 const int MAXVTX   = 300;   
