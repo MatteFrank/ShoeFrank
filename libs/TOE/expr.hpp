@@ -617,7 +617,7 @@ template< std::size_t NRows, std::size_t NCols>
 constexpr auto transpose(matrix<NRows, NCols> const& m_p)
 {
     auto&& m_expr = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
-    return expr:: make_matrix_expr_impl<NCols, NRows>(
+    return expr::make_matrix_expr_impl<NCols, NRows>(
                             expr::transpose_filler<NRows, NCols, std::decay_t<decltype(m_expr)>>{ std::move(m_expr) },
                             std::make_index_sequence<NRows * NCols>()
                                                      );

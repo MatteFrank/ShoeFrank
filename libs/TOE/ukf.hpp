@@ -282,15 +282,15 @@ namespace details{
         chisquared compute_chisquared( const state& s_p,
                                        const Candidate& candidate_p ) const
         {
-            auto residual_vector = candidate_p.vector - candidate_p.measurement_matrix * s_p.vector;
+            auto residual_vector = expr::compute(candidate_p.vector - candidate_p.measurement_matrix * s_p.vector);
             
-            auto residual_covariance = candidate_p.covariance + candidate_p.measurement_matrix * s_p.covariance * transpose(candidate_p.measurement_matrix);
+            auto residual_covariance = expr::compute(candidate_p.covariance + candidate_p.measurement_matrix * s_p.covariance * transpose(candidate_p.measurement_matrix));
             //std::cout << "---- state_covariance ----\n" << s_p.covariance;
             //std::cout << "---- candidate_covariance ----\n" << candidate_p.covariance;
            // std::cout << "---- residual_covariance ----\n" << residual_covariance;
             
 //            std::cout << "---- final_chisquared: "<< (make_transpose(residual_vector) * residual_covariance * residual_vector)(0,0) <<" ----\n";
-            return {expr::compute( transpose( std::move(residual_vector) ) * std::move(residual_covariance) * std::move(residual_vector))}; //not pretty
+            return {expr::compute( transpose( residual_vector ) * form_inverse(std::move(residual_covariance)) * residual_vector)}; //not pretty
         }
         
         

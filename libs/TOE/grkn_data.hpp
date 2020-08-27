@@ -143,4 +143,53 @@ public:
     
 };
 
+
+
+
+struct data_rkf45{
+public:
+    static constexpr std::size_t order = 1;
+    static constexpr std::size_t evaluation_stage = 6;
+    using stepping_policy = details::adaptable_step_tag;
+    static constexpr std::size_t higher_degree = 5;
+    static constexpr std::size_t lower_degree = 4;
+    
+    
+public:
+    const std::array<double, evaluation_stage>  global_delay{
+        0., 1./4, 3./8, 12./13, 1., 1./2
+    };
+    
+    
+    
+    using partial_delay_t =  details::lower_triangular_array<double, 15>;
+private:
+    const partial_delay_t partial_delay_state_mc{
+              1./4,
+             3./32,       9./32,
+        1932./2197, -7200./2197,  7296./2196,
+          439./216,          -8,   3680./513, -845./4104,
+            -8./27,           2, -3544./2565, 1859./4104, -11./40
+    };
+public:
+    constexpr const partial_delay_t& partial_delay(details::order_tag<0>) const
+    { return partial_delay_state_mc; }
+    
+    
+    
+    using weight_t = std::array<double, evaluation_stage>;
+private:
+    const weight_t weight_state_estimation_mc{
+        25./216, 0, 1408./2565,    2197./4104,  -1./5, 0
+    };
+    const weight_t weight_state_correction_mc{
+        16./135, 0, 6656./12825, 28561./56430, -9./50, 2./55
+    };
+public:
+    constexpr const weight_t& weight(details::order_tag<0>, details::estimation_tag) const
+    { return weight_state_estimation_mc; }
+    constexpr const weight_t& weight(details::order_tag<0>, details::correction_tag) const
+    { return weight_state_correction_mc; }
+};
+
 #endif /* grkn_data_hpp */
