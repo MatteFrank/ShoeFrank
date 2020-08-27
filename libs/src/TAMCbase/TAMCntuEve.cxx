@@ -147,7 +147,7 @@ void TAMCntuEve::SetupClones()   {
 //! Clear.
 void TAMCntuEve::Clear(Option_t*)
 {
-   fListOfTracks->Clear("C");
+   fListOfTracks->Clear();
 }
 
 //------------------------------------------+-----------------------------------
