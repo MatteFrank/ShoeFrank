@@ -411,8 +411,8 @@ void BaseReco::ReadParFiles()
       
       fpParConfMsd = new TAGparaDsc("msdConf", new TAMSDparConf());
       TAMSDparConf* parConf = (TAMSDparConf*)fpParConfMsd->Object();
-      parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
-      // parConf->FromFile(parFileName.Data());
+//      parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+//      parConf->FromFile(parFileName.Data());
    }
    
    // initialise par files for Tof Wall
