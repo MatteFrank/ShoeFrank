@@ -224,7 +224,7 @@ void TCFOeventAction::FillTrack()
         dead     = fMcTrack->GetTrack(i)->GetDead() ;
         region   = fMcTrack->GetTrack(i)->GetRegion();
        
-        fMapTrackIdx[trackID] = i;
+        fMapTrackIdx[trackID] = i+1;
         hit->AddPart(parentID,trackID,charge,region,nbaryon,dead,flukaID,
                                     initpos,finalpos,initmom,finalmom,mass,time,tof,length);
     }
