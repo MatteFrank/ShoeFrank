@@ -57,87 +57,101 @@ void TACAactNtuMC::CreateHistogram()
    int nBinCry = calosize.X()/(2*heightback);
    int nCrystal = parGeo->GetCrystalsN();
    
-   // 0    
-   AddHistogram( new TH1F("hCA_Energy", "Energy Deposition per Event; Energy;", 1500, 0, 15 ) );
+   
+   // 0
+   fpHisEnergy = new TH1F("caEnergy", "Energy Deposition per Event; Energy;", 1500, 0, 15 );
+   AddHistogram(fpHisEnergy);
 
    // 1
-   AddHistogram( new TH2F("hCA_EnergyReleasePosXY", " Energy Deposition position; X; Y", 
-                        nBinCry, -calosize.X()/2., calosize.X()/2.,nBinCry, -calosize.Y()/2., calosize.Y()/2.) );
+   fpHisEnergyReleasePosXY = new TH2F("caEnergyReleasePosXY", " Energy Deposition position; X; Y",
+                                      nBinCry, -calosize.X()/2., calosize.X()/2.,nBinCry, -calosize.Y()/2., calosize.Y()/2.);
+   AddHistogram( fpHisEnergyReleasePosXY );
+   
    // 2
-   AddHistogram( new TH2F("hCA_EnergyReleasePosZY_in", " Energy Deposition position; Z; Y", 
-                         (int)calosize.Z(), -calosize.Z()/2., calosize.Z()/2,nBinCry*3, -calosize.Y()/2., calosize.Y()/2.) );
+   fpHisEnergyReleasePosZY_in = new TH2F("caEnergyReleasePosZY_in", " Energy Deposition position; Z; Y",
+                                         (int)calosize.Z(), -calosize.Z()/2., calosize.Z()/2,nBinCry*3, -calosize.Y()/2., calosize.Y()/2.);
+   AddHistogram( fpHisEnergyReleasePosZY_in );
 
-   AddHistogram( new TH2F("hCA_EnergyReleasePosZY_out", " Energy Deposition position; Z; Y", 
-                         (int)calosize.Z(), -calosize.Z()/2., calosize.Z()/2,nBinCry*3, -calosize.Y()/2., calosize.Y()/2.) );
+   fpHisEnergyReleasePosZY_out = new TH2F("caEnergyReleasePosZY_out", " Energy Deposition position; Z; Y",
+                                          (int)calosize.Z(), -calosize.Z()/2., calosize.Z()/2,nBinCry*3, -calosize.Y()/2., calosize.Y()/2.);
+   AddHistogram( fpHisEnergyReleasePosZY_out  );
 
-   // fpHisMass = new TH1F("caMass", "Calorimeter - Mass particles", 201 ,0. ,200);
-   // AddHistogram(fpHisMass);
+   fpHisMass = new TH1F("caMass", "Calorimeter - Mass particles; Mass [u]",211,-0.5,209.5);
+   AddHistogram(fpHisMass);
 
-   AddHistogram( new TH1F("hCA_Mass","Calorimeter - Mass particles; Mass [u]",211,-0.5,209.5));
+   fpHisChargeVsMass = new TH2F("caChargeVsMass", " Charge versus Mass; Z; Mass",
+                                101, 0, 100, 211, 0., 210.) ;
+   AddHistogram( fpHisChargeVsMass );
 
-   AddHistogram( new TH2F("hCA_ChargeVsMass", " Charge versus Mass; Z; Mass", 
-                         101, 0, 100, 211, 0., 210.) );
-
-   AddHistogram( new TH2F("hCA_FinalPositionVsMass", " Final position versus mass; zf; mass", 
-                         (int)calosize.Z(), -calosize.Z()/2., calosize.Z()/2, 211, 0., 210.) );
+   fpHisFinalPositionVsMass = new TH2F("caFinalPositionVsMass", " Final position versus mass; zf; mass",
+                                       (int)calosize.Z(), -calosize.Z()/2., calosize.Z()/2, 211, 0., 210.) ;
+   AddHistogram( fpHisFinalPositionVsMass );
 
    TGeoElementTable table;
    table.BuildDefaultElements();
    
-   TH2I* hCA_typeParticleVsRegion = new TH2I("hCA_typeParticleVsRegion", 
+  fpHistypeParticleVsRegion = new TH2I("caTypeParticleVsRegion",
                                               "Type of particles vs crystal ID; Particle ID; CAL crystal ID", 
                                               272, -200, 70, 
                                               nCrystal, 0, nCrystal-1);
                                           
-   TAxis* xaxis = hCA_typeParticleVsRegion->GetXaxis();
+   TAxis* xaxis = fpHistypeParticleVsRegion->GetXaxis();
    for( int i=-6; i<0; ++i )
       xaxis->SetBinLabel( xaxis->FindFixBin(i), TAMCparTools::GetFlukaPartName(i));
    for( int i=1; i<17; ++i )
      xaxis->SetBinLabel( xaxis->FindFixBin(i), TAMCparTools::GetFlukaPartName(i));
    xaxis->LabelsOption("v"); // "v" draw labels vertical
    xaxis->SetLabelSize(0.02);
-   TAxis* yaxis = hCA_typeParticleVsRegion->GetYaxis();
+   TAxis* yaxis = fpHistypeParticleVsRegion->GetYaxis();
    yaxis->SetLabelSize(0.02);
-   AddHistogram( hCA_typeParticleVsRegion );
+   AddHistogram( fpHistypeParticleVsRegion );
+   
+
    
    // 4-11   Energy release per ion fragment
    for (int z=1; z<=8; ++z) {
       TGeoElement * elem = table.GetElement( z );
-      AddHistogram( new TH1F(Form( "hCA_EnergyIon%d", z), 
-                           Form( "^{%d}%s ; EDep/Ek; Events Norm", elem->N(), elem->GetName() ),
-                           121, 0, 1.2) );
+      fpHisEnergyIon[z-1] = new TH1F(Form( "caEnergyIon%d", z),
+                                     Form( "^{%d}%s ; EDep/Ek; Events Norm", elem->N(), elem->GetName() ),
+                                     121, 0, 1.2) ;
+      AddHistogram( fpHisEnergyIon[z-1] );
    }
 
    // 12-19   Energy spectrum
    for(int z=1; z<=8; ++z) {
       TGeoElement * elem = table.GetElement( z );
-      AddHistogram( new TH1F(Form( "hCA_EnergyIonSpect%d", z), 
-                              Form( "^{%d}%s ; Ekin [GeV]; Events Norm", elem->N(), elem->GetName() ),
-                              600, 0, 12) );
+      fpHisEnergyIonSpect[z-1] = new TH1F(Form( "caEnergyIonSpect%d", z),
+                                          Form( "^{%d}%s ; Ekin [GeV]; Events Norm", elem->N(), elem->GetName() ),
+                                          600, 0, 12);
+      AddHistogram( fpHisEnergyIonSpect[z-1]  );
    }
 
    for(int z=1; z<=8; ++z) {
       TGeoElement * elem = table.GetElement( z );
-      AddHistogram( new TH1F(Form( "hCA_EnergyDep%d", z), 
-                              Form( "^{%d}%s ; EDep [GeV]; Events Norm", elem->N(), elem->GetName() ),
-                              400, 0, 14) );
+      fpHisEnergyDep[z-1] = new TH1F(Form( "caEnergyDep%d", z),
+                                     Form( "^{%d}%s ; EDep [GeV]; Events Norm", elem->N(), elem->GetName() ),
+                                     400, 0, 14) ;
+      AddHistogram( fpHisEnergyDep[z-1] );
    }
 
    // 20-27   Energy Dep vs p
    for(int z=1; z<=8; ++z) {
       TGeoElement * elem = table.GetElement( z );
-      AddHistogram( new TH2F( Form( "hCA_P_vs_EDepIon%d", z), 
-                              Form( "^{%d}%s; EDep; p", elem->N(), elem->GetName() ),
-                              400, 0, 14,
-                              400, 0, 22
-                           ) );
+      fpHisP_vs_EDepIon[z-1] = new TH2F( Form( "caP_vs_EDepIon%d", z),
+                                        Form( "^{%d}%s; EDep; p", elem->N(), elem->GetName() ),
+                                        400, 0, 14,
+                                        400, 0, 22
+                                        );
+      AddHistogram( fpHisP_vs_EDepIon[z-1] );
    }
 
-   AddHistogram( new TH1F("hCA_timeFirstHit", "Time of Calorimeter; Time [ns];",100, 0, 30) );
+   fpHistimeFirstHit =  new TH1F("catimeFirstHit", "Time of Calorimeter; Time [ns];",100, 0, 30) ;
+   AddHistogram( fpHistimeFirstHit );
 
-   AddHistogram( new TH1F("hCA_EnergyNeutron", "En Dep Neutron; En [GeV];",400, 0., 0.1) );
+   fpHisEnergyNeutron =  new TH1F("caEnergyNeutron", "En Dep Neutron; En [GeV];", 1000, 0., 1) ;
+   AddHistogram( fpHisEnergyNeutron );
 
-   // AddHistogram( new TH1F("hCA_Tof", "Time between first and last hit in the Calo; Tof [ns];",100, 0, 5) );
+   // AddHistogram( new TH1F("caTof", "Time between first and last hit in the Calo; Tof [ns];",100, 0, 5) );
 
 
    SetValidHistogram(kTRUE);
@@ -195,7 +209,6 @@ Bool_t TACAactNtuMC::Action()
       }
 
    } // end first loop
-
 
    // Sum all dauthers energy dep. with their mother
    int npart = dep.GetEntriesFast();
@@ -258,45 +271,8 @@ Bool_t TACAactNtuMC::Action()
 
    // ********************************************************************
    // **************           Histograming         **********************
-   const TList* histList = GetHistogrammList();
 
-   TH1F*  hCA_Mass                 = (TH1F*)histList->FindObject("hCA_Mass");
-   TH1F*  hCA_Energy               = (TH1F*)histList->FindObject("hCA_Energy");
-   TH2F*  hCA_EnergyReleasePosXY =  (TH2F*)histList->FindObject("hCA_EnergyReleasePosXY");
-   TH2F*  hCA_EnergyReleasePosZY_in  =  (TH2F*)histList->FindObject("hCA_EnergyReleasePosZY_in");
-   TH2F*  hCA_EnergyReleasePosZY_out =  (TH2F*)histList->FindObject("hCA_EnergyReleasePosZY_out");
-   TH2F*  hCA_FinalPositionVsMass  = (TH2F*)histList->FindObject("hCA_FinalPositionVsMass");
-   TH2F*  hCA_ChargeVsMass         = (TH2F*)histList->FindObject("hCA_ChargeVsMass");
-   TH2I*  hCA_typeParticleVsRegion = (TH2I*)histList->FindObject("hCA_typeParticleVsRegion");
-   TH1F*  hCA_EnergyNeutron        = (TH1F*)histList->FindObject("hCA_EnergyNeutron");
-   TH1F*  hCA_timeFirstHit         = (TH1F*)histList->FindObject("hCA_timeFirstHit");
-
-   TH1F* hCA_EnergyIon[8];
-   for (int z=1; z<=8; ++z) { 
-      hCA_EnergyIon[z-1] = (TH1F*)histList->FindObject(Form( "hCA_EnergyIon%d", z));
-   }
-
-   TH1F* hCA_EnergyIonSpect[8];
-   for (int z=1; z<=8; ++z) {
-      hCA_EnergyIonSpect[z-1] = (TH1F*)histList->FindObject(Form( "hCA_EnergyIonSpect%d", z)); 
-   }
-
-   TH1F* hCA_EnergyDep[8];
-   for (int z=1; z<=8; ++z) {
-      hCA_EnergyDep[z-1] = (TH1F*)histList->FindObject(Form( "hCA_EnergyDep%d", z)); 
-   }
-
-   TH2F* hCA_P_vs_EDepIon[8];
-   for (int z=1; z<=8; ++z) {
-      hCA_P_vs_EDepIon[z-1] = (TH2F*)histList->FindObject(Form( "hCA_P_vs_EDepIon%d", z));
-   }
-
-   TH2F* hCA_Edx_vs_EDepIon[8];
-   for (int z=1; z<=8; ++z) {
-      hCA_Edx_vs_EDepIon[z-1] = (TH2F*)histList->FindObject(Form( "hCA_Edx_vs_EDepIon%d", z));
-   }
-
-   hCA_Energy->Fill( energyEvent );
+   fpHisEnergy->Fill( energyEvent );
 
    for (int i=0; i<npart; ++i) {
 
@@ -316,19 +292,19 @@ Bool_t TACAactNtuMC::Action()
       TVector3 posOut(x0_f, y0_f, z0_f);
       TVector3 posOutLoc = geoTrafo->FromGlobalToCALocal(posOut);
 
-      hCA_EnergyReleasePosXY->Fill(posInLoc.X(), posInLoc.Y());
-      hCA_EnergyReleasePosZY_in->Fill(posInLoc.Z(), posInLoc.Y());
-      hCA_EnergyReleasePosZY_out->Fill(posOutLoc.Z(), posOutLoc.Y());
+      fpHisEnergyReleasePosXY->Fill(posInLoc.X(), posInLoc.Y());
+      fpHisEnergyReleasePosZY_in->Fill(posInLoc.Z(), posInLoc.Y());
+      fpHisEnergyReleasePosZY_out->Fill(posOutLoc.Z(), posOutLoc.Y());
      
       int fluID = fpEvtStr->TRfid[endep->fid];
 
       int z = fpEvtStr->TRcha[endep->fid];
-      float zf    = fpEvtStr->CALzout[endep->fid];
+      float zf    = fpEvtStr->CALzout[endep->index];
       double mass = fpEvtStr->TRmass[endep->fid];
 
       // Select Neutrons
       if ( fluID == 8 ) {
-         hCA_EnergyNeutron->Fill(endep->fDE); 
+         fpHisEnergyNeutron->Fill(endep->fDE);
       }
 
       // Select Heavy-ions
@@ -349,11 +325,11 @@ Bool_t TACAactNtuMC::Action()
 
             if (z == 1 && fluID != 1) continue; // skip triton, deuteron
             if (z == 2 && fluID == -5) continue; // skip He3
-            hCA_EnergyIon[z-1]->Fill( eRatio );
-            hCA_EnergyDep[z-1]->Fill( eDep );
-            hCA_EnergyIonSpect[z-1]->Fill( ek );
-            hCA_P_vs_EDepIon[z-1]->Fill( eDep, p );
-            hCA_timeFirstHit->Fill(endep->fTimeFirstHit);
+            fpHisEnergyIon[z-1]->Fill( eRatio );
+            fpHisEnergyDep[z-1]->Fill( eDep );
+            fpHisEnergyIonSpect[z-1]->Fill( ek );
+            fpHisP_vs_EDepIon[z-1]->Fill( eDep, p );
+            fpHistimeFirstHit->Fill(endep->fTimeFirstHit);
          }
 
          const char* flukaName = TAMCparTools::GetFlukaPartName(fluID);
@@ -365,10 +341,10 @@ Bool_t TACAactNtuMC::Action()
 
       }
 
-      hCA_typeParticleVsRegion->Fill( fluID, endep->fCryid, 1 );
-      hCA_FinalPositionVsMass->Fill(zf, mass);
-      hCA_Mass->Fill(mass);
-      hCA_ChargeVsMass->Fill(z, mass);
+      fpHistypeParticleVsRegion->Fill( fluID, endep->fCryid, 1 );
+      fpHisFinalPositionVsMass->Fill(zf, mass);
+      fpHisMass->Fill(mass);
+      fpHisChargeVsMass->Fill(z, mass);
    }
 
    return kTRUE;

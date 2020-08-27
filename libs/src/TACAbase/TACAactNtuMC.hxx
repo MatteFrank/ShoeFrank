@@ -53,13 +53,22 @@ class TACAactNtuMC : public TAGaction {
     EVENT_STRUCT*   fpEvtStr;
     TACAdigitizer*   fDigitizer;       // cluster size digitizer
 
-   TH1F* fpHisDeTot;
-   TH1F* fpHisMass;
-   TH1F* fpHisTimeTot;
-   TH1F* fpHisDeTotMc;
-   TH1F* fpHisTimeTotMc;
-   TH2F* fpHisHitMapXY;
-   TH2F* fpHisHitMapZY;
+    TH1F*  fpHisMass;
+    TH1F*  fpHisEnergy;
+    TH2F*  fpHisEnergyReleasePosXY;
+    TH2F*  fpHisEnergyReleasePosZY_in;
+    TH2F*  fpHisEnergyReleasePosZY_out;
+    TH2F*  fpHisFinalPositionVsMass;
+    TH2F*  fpHisChargeVsMass;
+    TH2I*  fpHistypeParticleVsRegion;
+    TH1F*  fpHisEnergyNeutron;
+    TH1F*  fpHistimeFirstHit;
+   
+    TH1F* fpHisEnergyIon[8];
+    TH1F* fpHisEnergyIonSpect[8];
+    TH1F* fpHisEnergyDep[8];
+    TH2F* fpHisP_vs_EDepIon[8];
+    TH2F* fpHisEdx_vs_EDepIon[8];
    
 private:
    void           CreateDigitizer();
