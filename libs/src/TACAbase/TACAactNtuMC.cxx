@@ -183,6 +183,7 @@ Bool_t TACAactNtuMC::Action()
    TGeoElementTable table;
    table.BuildDefaultElements();
 
+   TACAparGeo* parGeo    = (TACAparGeo*) fpGeoMap->Object();
    TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
    // Sum all energy dep. of the same particle
@@ -242,6 +243,7 @@ Bool_t TACAactNtuMC::Action()
       int index = endep->index;
 
       Int_t trackId = fpEvtStr->CALid[i] - 1;
+      Int_t id      = fpEvtStr->CALicry[index];
       Float_t x0_i  = fpEvtStr->CALxin[index];
       Float_t x0_f  = fpEvtStr->CALxout[index];
       Float_t y0_i  = fpEvtStr->CALyin[index];
@@ -260,6 +262,12 @@ Bool_t TACAactNtuMC::Action()
       fDigitizer->Process(endep->fDE, posInLoc[0], posInLoc[1], z0_i, z0_f, time, endep->fCryid);
       TACAntuHit* hit = fDigitizer->GetCurrentHit();
       hit->AddMcTrackIdx(trackId, i);
+      
+      Float_t thick = -parGeo->GetCrystalThick()/2.;
+      TVector3 positionCry(0, 0, thick);
+      
+      positionCry = parGeo->Crystal2Detector(id, positionCry);
+      hit->SetPosition(positionCry);
    }
 
    fpNtuMC->SetBit(kValid);
