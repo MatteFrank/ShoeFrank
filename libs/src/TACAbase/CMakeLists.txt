@@ -22,9 +22,11 @@ set( with_dictionnaries
    TACAdatRaw
    TACAntuRaw
    TACAparMap
+   TACAntuCluster
    TACAdigitizer
    TACAactNtuMC
    TACAactNtuHitMC
+   TACAactNtuCluster
    TACAparGeo
 )
 
