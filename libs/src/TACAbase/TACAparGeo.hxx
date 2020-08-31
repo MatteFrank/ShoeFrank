@@ -32,7 +32,7 @@ public:
    
    void            DefineMaterial(); 
    
-   TVector3        GetCaloSize();
+   TVector3        GetCaloSize()             const  { return fCaloSize;       }
    Int_t           GetModulesN()             const  { return fModulesN;       }
    Float_t         GetDelta()                const  { return fCrystalDelta;   }
    TString         GetConfigTypeGeo()        const  { return fConfigTypeGeo;  }
@@ -82,10 +82,15 @@ public:
    string          PrintAssignMaterial(TAGmaterials *Material);
    string          PrintSubtractBodiesFromAir();
    string          PrintParameters();
+   
+   Int_t           GetCrystalLine(Int_t iCrystal);
+   Int_t           GetCrystalCol(Int_t iCrystal);
+
 private:
    TString         SPrintCrystalBody(int id, TGeoCombiTrans * hm, TString bodyName, Double_t *trd2Size);
    TString         SPrintParallelPla(int id, TGeoCombiTrans * hm, TString bodyName, Double_t *trd2Size, int * dir);   
    TString         PrintModuleAirRegions();
+   void            ComputeCrystalIndexes();
    
 public:
    // Create ROOT geometry
@@ -141,8 +146,8 @@ private:
    
    vector<TVector3>    fListOfCrysAng;     // list of angles for crystal
    vector<TVector3>    fListOfModAng;      // list of angles for module
+   map<int, pair<int, int> > fMapIndexes;  // index map for line/column numbers
 
-  
    ClassDef(TACAparGeo, 2)
 };
 
