@@ -26,6 +26,7 @@
 #include "FootField.hxx"
 #include <FieldManager.h>
 
+#include "TAGcampaignManager.hxx"
 
 using namespace std;
 
@@ -33,13 +34,15 @@ using namespace std;
 int main (int argc, char *argv[]) {
 
     TString exp("");
-
+    Int_t runNumber = -1;
+   
     for (int i = 0; i < argc; i++) {
-       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
+       if(strcmp(argv[i],"-exp") == 0)
+          exp = TString(argv[++i]);  // experiment name
+       
+        if(strcmp(argv[i],"-run") == 0)
+           runNumber = TString(argv[++i]).Atoi();
     }
-
-    if (!exp.IsNull())
-       exp += "/";
 
     clock_t start_tot, end_tot;
 
@@ -75,21 +78,44 @@ int main (int argc, char *argv[]) {
     TACAparGeo* caGeo = new TACAparGeo();
     TAGparGeo* generalGeo = new TAGparGeo();
 
+    // load campaign file
+    TAGcampaignManager* campManager = new TAGcampaignManager(exp);
+    campManager->FromFile();
+   
     // read geomap files
-    generalGeo->FromFile(Form("./geomaps/%sTAGdetector.geo",exp.Data()));
-    stcGeo->FromFile(Form("./geomaps/%sTASTdetector.geo",exp.Data()));
-    bmGeo->FromFile(Form("./geomaps/%sTABMdetector.geo",exp.Data()));
-    vtxGeo->SetMcFlag();
-    vtxGeo->FromFile(Form("./geomaps/%sTAVTdetector.geo", exp.Data()));
-    itrGeo->FromFile(Form("./geomaps/%sTAITdetector.geo", exp.Data()));
-    msdGeo->FromFile(Form("./geomaps/%sTAMSDdetector.geo", exp.Data()));
-    diGeo->FromFile(Form("./geomaps/%sTADIdetector.geo", exp.Data()));
-    twGeo->FromFile(Form("./geomaps/%sTATWdetector.geo", exp.Data()));
-    caGeo->FromFile(Form("./geomaps/%sTACAdetector.geo", exp.Data()));
-
     TString parFileName;
-    geoTrafo.FromFile(Form("./geomaps/%sFOOT.geo",exp.Data()));
+    parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+    geoTrafo.FromFile(parFileName.Data());
 
+    parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
+    generalGeo->FromFile(parFileName.Data());
+   
+    parFileName = campManager->GetCurGeoFile(TASTparGeo::GetBaseName(), runNumber);
+    stcGeo->FromFile(parFileName.Data());
+
+    parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+    bmGeo->FromFile(parFileName.Data());
+   
+    vtxGeo->SetMcFlag();
+    parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+    vtxGeo->FromFile(parFileName.Data());
+   
+    parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+    itrGeo->FromFile(parFileName.Data());
+   
+    parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+    msdGeo->FromFile(parFileName.Data());
+   
+    parFileName = campManager->GetCurGeoFile(TADIparGeo::GetBaseName(), runNumber);
+    diGeo->FromFile(parFileName.Data());
+   
+    parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+    twGeo->FromFile(parFileName.Data());
+   
+    parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNumber);
+    caGeo->FromFile(parFileName.Data());
+   
+  
     ifstream file;
     string fileName = Form("foot.inp");
     file.open( fileName.c_str(), ios::in );
