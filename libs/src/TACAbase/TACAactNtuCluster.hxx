@@ -86,9 +86,6 @@ protected:
    Bool_t CreateClusters();
    void   SearchCluster();
    void   FillMaps();
-
-   void   ComputeSeedPosition();
-   void   ComputeCoGPosition();
    void   FillClusterInfo(TACAcluster* cluster);
 
    ClassDef(TACAactNtuCluster,0)

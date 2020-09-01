@@ -62,7 +62,7 @@ TACAactNtuCluster::~TACAactNtuCluster()
 void TACAactNtuCluster::CreateHistogram()
 {
    DeleteHistogram();
-   fpHisPixelTot = new TH1F(Form("%sClusHitsTot", fPrefix.Data()), Form("%s - Total # crystals per clusters", fTitleDev.Data()), 100, 0., 100.);
+   fpHisPixelTot = new TH1F(Form("%sClusHitsTot", fPrefix.Data()), Form("%s - Total # crystals per clusters", fTitleDev.Data()), 25, 0., 25);
    AddHistogram(fpHisPixelTot);
    
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
@@ -89,7 +89,10 @@ Bool_t TACAactNtuCluster::Action()
 {
    TACAntuRaw* pNtuHit  = (TACAntuRaw*) fpNtuRaw->Object();
 
-   if (pNtuHit->GetHitsN() == 0) return true;
+   if (pNtuHit->GetHitsN() == 0) {
+      fpNtuClus->SetBit(kValid);
+      return true;
+   }
    
    FillMaps();
    SearchCluster();
@@ -148,6 +151,7 @@ void TACAactNtuCluster::SearchCluster()
       // loop over lines & columns
       if ( ShapeCluster(fClustersN, line, col) )
          fClustersN++;
+      
    }
 }
 
@@ -217,7 +221,7 @@ Bool_t TACAactNtuCluster::CreateClusters()
    // Compute position and fill clusters info
    cluster = 0x0;
    
-   for (Int_t i = 0; i< pNtuClus->GetClustersN(); ++i) {
+   for (Int_t i = 0; i < pNtuClus->GetClustersN(); ++i) {
       cluster = pNtuClus->GetCluster(i);
       FillClusterInfo(cluster);
    }
@@ -242,17 +246,9 @@ Bool_t TACAactNtuCluster::CreateClusters()
 //
 void TACAactNtuCluster::ComputePosition()
 {
-   ComputeCoGPosition();
-}
-
-
-//______________________________________________________________________________
-//
-void TACAactNtuCluster::ComputeCoGPosition()
-{
    TACAntuRaw* pNtuHit  = (TACAntuRaw*) fpNtuRaw->Object();
 
-   if (!pNtuHit->GetHitsN()) return;
+   if (fListOfHits == 0) return;
    
    TVector3 tCorrection, tCorrection2, tCorTemp;
    TVector3 pos, posErr;
@@ -262,8 +258,8 @@ void TACAactNtuCluster::ComputeCoGPosition()
    fClusterPulseSum = 0.;
    
    
-   for (Int_t i = 0; i < pNtuHit->GetHitsN(); ++i) {
-      TACAntuHit* hit = pNtuHit->GetHit(i);
+   for (Int_t i = 0; i < fListOfHits->GetEntries(); ++i) {
+      TACAntuHit* hit = (TACAntuHit*)fListOfHits->At(i);
       tCorTemp.SetXYZ(hit->GetPosition()(0)*hit->GetCharge(), hit->GetPosition()(1)*hit->GetCharge(), hit->GetPosition()(2));
       tCorrection  += tCorTemp;
       fClusterPulseSum  += hit->GetCharge();
@@ -271,8 +267,8 @@ void TACAactNtuCluster::ComputeCoGPosition()
    
    pos = tCorrection*(1./fClusterPulseSum);
    
-   for (Int_t i = 0; i < pNtuHit->GetHitsN(); ++i) {
-	  TACAntuHit* hit = pNtuHit->GetHit(i);
+   for (Int_t i = 0; i < fListOfHits->GetEntries(); ++i) {
+      TACAntuHit* hit = (TACAntuHit*)fListOfHits->At(i);
 	  tCorrection2.SetXYZ(hit->GetCharge()*(hit->GetPosition()(0)-(pos)(0))*(hit->GetPosition()(0)-(pos)(0)),
 							hit->GetCharge()*(hit->GetPosition()(1)-(pos)(1))*(hit->GetPosition()(1)-(pos)(1)),
 							0);
