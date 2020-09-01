@@ -21,7 +21,15 @@ TACAcluster::TACAcluster()
    fCharge(0.),
    fIsValid(kFALSE)
 {
+   SetupClones();
+}
+
+//______________________________________________________________________________
+//
+void TACAcluster::SetupClones()
+{
    fListOfHits = new TClonesArray("TACAntuHit");
+   fListOfHits->SetOwner(true);
 }
 
 //______________________________________________________________________________
@@ -45,7 +53,6 @@ TACAcluster::TACAcluster(const TACAcluster& cluster)
 TACAcluster::~TACAcluster()
 { 
    // TACAcluster default destructor
-   
    delete fListOfHits;
 }
 

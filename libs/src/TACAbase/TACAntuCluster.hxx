@@ -72,6 +72,9 @@ public:
    //! reset pixels
    void               ResetHits();
    
+   //! setup clones
+   void               SetupClones();
+
    //! Add pixel to the list
    void               AddHit(TACAntuHit* hit);
    
