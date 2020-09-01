@@ -2,12 +2,8 @@
 #define _TACAcluster_HXX
 
 // ROOT classes
-#include "TList.h"
 #include "TVector3.h"
-#include "TVector2.h"
 #include "TClonesArray.h"
-#include "TObjArray.h"
-#include "TArrayI.h"
 
 #include "TAGcluster.hxx"
 #include "TACAntuRaw.hxx"
@@ -26,6 +22,7 @@ protected:
    TVector3           fPosErrorG;                // position's errors of the clus in tracker frame
    TClonesArray*      fListOfHits;               // list of hits attached to this cluster
    
+   Int_t              fNumber;                   // number
    Float_t            fCharge;                   // sum of pulseheight
    Bool_t             fIsValid;                  // validity flag
    
@@ -41,7 +38,9 @@ public:
    void               SetPosError(TVector3& pos);
    void               SetPosition(Float_t u, Float_t v, Float_t z) { fPosition.SetXYZ(u,v,z); }
    //! Set position in global tracker frame
-   void               SetPositionG(TVector3& pos); 
+   void               SetPositionG(TVector3& pos);
+   //! Set cluster number
+   void               SetNumber(Int_t nb)                    { fNumber = nb;           }
    //! Set sum of pulse height
    void               SetCharge(Float_t chg)                 { fCharge = chg;          }
    //! Set validy
@@ -58,6 +57,8 @@ public:
 
    //! Get validity
    Bool_t             IsValid()                        const { return fIsValid;        }
+   //! Get cluster number
+   Int_t              GetNumber()                      const { return fNumber;         }
    //! Get sum of pulse height
    Float_t            GetCharge()                      const { return fCharge;         }
    //! Get pixel
@@ -78,7 +79,7 @@ public:
    //! Add pixel to the list
    void               AddHit(TACAntuHit* hit);
    
-   ClassDef(TACAcluster,1)                          // Describes TACAcluster
+   ClassDef(TACAcluster,2)                          // Describes TACAcluster
 };
 
 
