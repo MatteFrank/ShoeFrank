@@ -32,6 +32,10 @@ public:
    TACAntuHit*    GetCurrentHit()      { return fCurrentHit; }
    void           ClearMap()           { fMap.clear();       }
 
+public:
+   static Float_t GetThreshold()          { return fgThreshold; }
+   static void    SetThreshold(Float_t t) { fgThreshold = t;    }
+
 private:
    TACAntuRaw*   fpNtuRaw;
    TF1*          fFuncBirks;
@@ -39,6 +43,9 @@ private:
    TACAntuHit*   fCurrentHit;
 
    map<int, TACAntuHit*> fMap; //! map for pilepup
+
+private:
+   static Float_t fgThreshold;
 
 };
 #endif
