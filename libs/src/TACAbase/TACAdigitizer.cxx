@@ -8,7 +8,7 @@
 #include "TACAdigitizer.hxx"
 
 
-Float_t TACAdigitizer::fgThreshold = 0.3; // GeV
+Float_t TACAdigitizer::fgThreshold = 0.1; // GeV
 
 // --------------------------------------------------------------------------------------
 TACAdigitizer::TACAdigitizer(TACAntuRaw* pNtuRaw)
@@ -60,7 +60,7 @@ Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 {
    if (edep < fgThreshold) return true;
    
-   Float_t photonsN = GetPhotonsN(x0, y0, edep)*fGain;
+   Float_t photonsN = edep; //GetPhotonsN(x0, y0, edep)*fGain;
    
    if (fMap[id] == 0) {
       fCurrentHit = (TACAntuHit*)fpNtuRaw->NewHit(id, photonsN, time);
