@@ -65,7 +65,7 @@ void TACAactNtuCluster::CreateHistogram()
    fpHisHitTot = new TH1F(Form("%sClusHitsTot", fPrefix.Data()), Form("%s - Total # hits per cluster", fTitleDev.Data()), 25, 0., 25);
    AddHistogram(fpHisHitTot);
 
-   fpHisChargeTot = new TH1F(Form("%sClusChargeTot", fPrefix.Data()), Form("%s - Total # charge per cluster", fTitleDev.Data()), 1000, 0., 4000);
+   fpHisChargeTot = new TH1F(Form("%sClusChargeTot", fPrefix.Data()), Form("%s - Total charge per cluster", fTitleDev.Data()), 1000, 0., 4000);
    AddHistogram(fpHisChargeTot);
 
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
