@@ -62,12 +62,13 @@ TACAactNtuCluster::~TACAactNtuCluster()
 void TACAactNtuCluster::CreateHistogram()
 {
    DeleteHistogram();
-   fpHisPixelTot = new TH1F(Form("%sClusHitsTot", fPrefix.Data()), Form("%s - Total # crystals per clusters", fTitleDev.Data()), 25, 0., 25);
-   AddHistogram(fpHisPixelTot);
-   
+   fpHisHitTot = new TH1F(Form("%sClusHitsTot", fPrefix.Data()), Form("%s - Total # hits per cluster", fTitleDev.Data()), 25, 0., 25);
+   AddHistogram(fpHisHitTot);
+
+   fpHisChargeTot = new TH1F(Form("%sClusChargeTot", fPrefix.Data()), Form("%s - Total # charge per cluster", fTitleDev.Data()), 1000, 0., 4000);
+   AddHistogram(fpHisChargeTot);
+
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
-   
-   
    fpHisClusMap = new TH2F(Form("%sClusMapTot", fPrefix.Data()), Form("%s - clusters map", fTitleDev.Data()),
                            100, -pGeoMap->GetCaloSize()[0]/2., pGeoMap->GetCaloSize()[0]/2.,
                            100, -pGeoMap->GetCaloSize()[1]/2., pGeoMap->GetCaloSize()[1]/2.);
@@ -81,7 +82,6 @@ void TACAactNtuCluster::CreateHistogram()
    
    return;
 }
-
 
 //______________________________________________________________________________
 //
@@ -304,8 +304,8 @@ void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
       // histogramms
       if (ValidHistogram()) {
          if (cluster->GetHitsN() > 0) {
-            fpHisPixelTot->Fill(cluster->GetHitsN());
-            // printf("sensor %d %d\n", iSensor, cluster->GetCrystalsN());
+            fpHisHitTot->Fill(cluster->GetHitsN());
+            fpHisChargeTot->Fill(cluster->GetCharge());
             fpHisClusMap->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
          
          }

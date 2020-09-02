@@ -63,24 +63,25 @@ public:
    TAGobject*  GetHitObject(Int_t idx) const;
    
 protected:
-   TAGdataDsc*     fpNtuRaw;        // input data dsc
+   TAGdataDsc*     fpNtuRaw;         // input data dsc
    TAGdataDsc*     fpNtuClus;        // output data dsc
    
-   TAGparaDsc*     fpConfig;		  // config para dsc
-   TAGparaDsc*     fpGeoMap;		  // geometry para dsc
+   TAGparaDsc*     fpConfig;		    // config para dsc
+   TAGparaDsc*     fpGeoMap;		    // geometry para dsc
    
-   TVector3       fCurrentPosition;   // pointer to current position
-   TVector3       fCurrentPosError ;  // pointer to current position error
-   TClonesArray*  fListOfHits;      // list of pixels
-   Float_t        fClusterPulseSum;   // total charge of cluster
+   TVector3       fCurrentPosition;  // pointer to current position
+   TVector3       fCurrentPosError ; // pointer to current position error
+   TClonesArray*  fListOfHits;       // list of pixels
+   Float_t        fClusterPulseSum;  // total charge of cluster
    
-   Int_t          fClustersN;     // number of cluster
+   Int_t          fClustersN;        // number of cluster
 
-   TH1F*          fpHisPixelTot;	     // Total number of pixels per cluster
-   TH2F*          fpHisClusMap;   // cluster map per sensor
+   TH1F*          fpHisHitTot;       // Total number of hits per cluster
+   TH1F*          fpHisChargeTot;    // Total charge per cluster
+   TH2F*          fpHisClusMap;      // cluster map per sensor
    
-   TString        fPrefix;            // prefix of histogram
-   TString        fTitleDev;          // device name for histogram title
+   TString        fPrefix;           // prefix of histogram
+   TString        fTitleDev;         // device name for histogram title
 
 protected:
    Bool_t CreateClusters();
