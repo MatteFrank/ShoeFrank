@@ -47,6 +47,7 @@
 #include "TAMSDntuRaw.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
+#include "TACAntuCluster.hxx"
 #include "TAIRntuTrack.hxx"
 #include "TAGntuGlbTrack.hxx"
 
@@ -57,6 +58,7 @@
 #include "TAITactNtuClusterF.hxx"
 #include "TAITactNtuClusterMT.hxx"
 #include "TAMSDactNtuCluster.hxx"
+#include "TACAactNtuCluster.hxx"
 #include "TATWactNtuPoint.hxx"
 
 #include "TABMactNtuTrack.hxx"
@@ -195,6 +197,7 @@ public:
    TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
    
    TACAntuRaw*          GetNtuHitCa()       const { return (TACAntuRaw*) fpNtuRawCa->Object();       }
+   TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
    TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
@@ -262,11 +265,11 @@ protected:
    TAGdataDsc*           fpNtuRawTw;     // input data dsc
    TAGdataDsc*           fpNtuRawCa;     // input data dsc
 
-   
    TAGdataDsc*           fpNtuClusVtx;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusIt;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusMsd;     // input cluster data dsc
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
+   TAGdataDsc*           fpNtuClusCa;     // input cluster data dsc
 
    TADIgeoField*         fField;       // magnetic field
 
@@ -295,6 +298,8 @@ protected:
    // TATWactNtuRaw*        fActNtuRawTw;  // action for ntu data
    TATWactNtuPoint*      fActPointTw;    // action for clusters
    
+   TACAactNtuCluster*    fActClusCa;    // action for clusters
+
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
 
@@ -315,6 +320,7 @@ protected:
    void CreateRecActionIt();
    void CreateRecActionMsd();
    void CreateRecActionTw();
+   void CreateRecActionCa();
    void CreateRecActionGlb() ;
    void CreateRecActionIr();
 

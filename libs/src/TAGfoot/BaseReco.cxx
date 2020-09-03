@@ -503,7 +503,9 @@ void BaseReco::CreateRecAction()
    
    if (GlobalPar::GetPar()->IncludeTW())
       CreateRecActionTw();
-   
+
+   if (GlobalPar::GetPar()->IncludeCA())
+      CreateRecActionCa();
     
    if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
       CreateRecActionGlb();
@@ -632,6 +634,17 @@ void BaseReco::CreateRecActionTw()
 }
 
 //__________________________________________________________
+void BaseReco::CreateRecActionCa()
+{
+   fpNtuClusCa  = new TAGdataDsc("caClus", new TACAntuCluster());
+   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
+   
+   fActClusCa   = new TACAactNtuCluster("caActClus", fpNtuRawCa, fpNtuClusCa, fpParGeoCa);
+   if (fFlagHisto)
+      fActClusCa->CreateHistogram();
+}
+
+//__________________________________________________________
 void BaseReco::CreateRecActionGlb()
 {
   if(fFlagTrack) {
@@ -754,6 +767,7 @@ void BaseReco::AddRecRequiredItem()
    
    if (GlobalPar::GetPar()->IncludeCA()) {
       gTAGroot->AddRequiredItem("caActNtu");
+      gTAGroot->AddRequiredItem("caActClus");
    }
    
    if (fFlagTrack) {
