@@ -138,7 +138,7 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t type)
    }
 
    if (GlobalPar::GetPar()->IncludeCA()) {
-      fCaClusDisplay = new TAEDcluster("Calorimeter Hit");
+      fCaClusDisplay = new TAEDcluster("Calorimeter Cluster");
       fCaClusDisplay->SetMaxEnergy(fMaxEnergy);
       fCaClusDisplay->SetDefWidth(fQuadDefWidth*4);
       fCaClusDisplay->SetDefHeight(fQuadDefHeight*4);
@@ -300,7 +300,7 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
    if (GlobalPar::GetPar()->IncludeCA()) {
       TACAparGeo* parGeo = fReco->GetParGeoCa();
       TGeoVolume* caVol = parGeo->BuildCalorimeter();
-     fVolumeNames[caVol->GetName()] = kCAL;
+      fVolumeNames[caVol->GetName()] = kCAL;
 
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TACAparGeo::GetBaseName());
       AddGeometry(caVol, transfo);
@@ -452,6 +452,11 @@ void TAFObaseEventDisplay::ConnectElements()
       fTwClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
 
+   if (GlobalPar::GetPar()->IncludeCA()) {
+      fCaClusDisplay->SetEmitSignals(true);
+      fCaClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+   }
+   
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
        GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI()) {
@@ -485,7 +490,6 @@ void TAFObaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
          cout << Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetPlaneNumber());
          cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
       }
-
 
    } else if (obj->InheritsFrom("TAMSDcluster")) {
          TAMSDcluster* clus = (TAMSDcluster*)obj;
@@ -548,6 +552,23 @@ void TAFObaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
          cout <<  Form("Time: %.3g ps \n", point->GetTime());
          cout <<  Form("Charge Z: %d \n", point->GetChargeZ());
       }
+      
+   } else if (obj->InheritsFrom("TACAcluster")) {
+      TACAcluster* clus = (TACAcluster*)obj;
+      if (clus == 0x0) return;
+      TVector3 pos = clus->GetPositionG();
+      fInfoView->AddLine( Form("Cluster # %3d\n", idx) );
+      fInfoView->AddLine( Form("with %3d hits\n", clus->GetHitsN()) );
+      fInfoView->AddLine( Form("Energy: %.3g (GeV) \n", clus->GetCharge()*TAGgeoTrafo::MevToGev()) );
+      fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
+      
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Cluster # %3d\n", idx);
+         cout << Form("with %3d hits\n", clus->GetHitsN());
+         cout << Form("Energy: %.3g (MeV) \n", clus->GetCharge()*TAGgeoTrafo::MevToGev());
+         cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
+      }
+
    } else {
       return;
    }
@@ -1200,7 +1221,27 @@ void TAFObaseEventDisplay::UpdateCrystalElements()
 
    } //end loop on hits
 
+   // clusters
+   TACAntuCluster* pNtuClus  = (TACAntuCluster*)fReco->GetNtuClusterCa();
+   
+   Int_t nclus = pNtuClus->GetClustersN();
+   for (Int_t iClus = 0; iClus < nclus; ++iClus) {
+      TACAcluster *clus = pNtuClus->GetCluster(iClus);
+      if (!clus->IsValid()) continue;
+      TVector3 pos = clus->GetPositionG();
 
+      TVector3 posG = fpFootGeo->FromCALocalToGlobal(pos);
+      Int_t nhits = clus->GetHitsN();
+      
+      x = posG(0);
+      y = posG(1);
+      z = posG(2);
+      
+      fCaClusDisplay->AddHit(nhits*10, x, y, z);
+      fCaClusDisplay->QuadId(clus);
+      
+   } //end loop on clusters
+      
    fCaClusDisplay->RefitPlex();
 }
 
