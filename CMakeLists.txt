@@ -18,6 +18,10 @@ MESSAGE("${PROJECT_NAME}:")
 option(Geant4_DIR "Include G4 simulation" OFF)
 
 #------------------------------------------------------------------------------
+# option copying files into build directory
+option(FILECOPY "Files copying" OFF)
+
+#------------------------------------------------------------------------------
 # Enforce an out-of-source builds before anything else
 #
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
