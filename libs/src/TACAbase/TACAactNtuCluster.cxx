@@ -82,7 +82,7 @@ void TACAactNtuCluster::CreateHistogram()
    fpHisClusMap->SetStats(kFALSE);
    AddHistogram(fpHisClusMap);
    
-   fpHisResTwMag = new TH1F(Form("%sResTwMag", fPrefix.Data()), Form("%s - Minimal distance in with TW", fTitleDev.Data()),
+   fpHisResTwMag = new TH1F(Form("%sResTwMag", fPrefix.Data()), Form("%s - Minimal distance with TW points", fTitleDev.Data()),
                           200, -pGeoMap->GetCrystalWidthFront()*2., pGeoMap->GetCrystalWidthFront()*4.);
    AddHistogram(fpHisResTwMag);
    
