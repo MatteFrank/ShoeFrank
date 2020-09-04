@@ -639,7 +639,7 @@ void BaseReco::CreateRecActionCa()
    fpNtuClusCa  = new TAGdataDsc("caClus", new TACAntuCluster());
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
    
-   fActClusCa   = new TACAactNtuCluster("caActClus", fpNtuRawCa, fpNtuClusCa, fpParGeoCa);
+   fActClusCa   = new TACAactNtuCluster("caActClus", fpNtuRawCa, fpNtuClusCa, fpParGeoCa, 0x0, fpNtuRecTw);
    if (fFlagHisto)
       fActClusCa->CreateHistogram();
 }
