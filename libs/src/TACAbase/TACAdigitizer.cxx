@@ -15,13 +15,17 @@ Float_t TACAdigitizer::fgThreshold = 25; // MeV
 TACAdigitizer::TACAdigitizer(TACAntuRaw* pNtuRaw)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
-   fGain(10/3.),
+   fGain(1e-4),
    fResPar0(1.21),
    fResErrPar0(7e-3),
    fResPar1(-1.37),
    fResErrPar1(0.58),
    fResPar2(5.07e-2),
-   fResErrPar2(2.12e-4)
+   fResErrPar2(2.12e-4),
+   fBirkPar0(9000),
+   fBirkPar1(3.679e-3),
+   fCalEPar0(- 28.42),
+   fCalEPar1(1.252)
 {
    SetFunctions();
    SetParFunction();
@@ -31,30 +35,34 @@ TACAdigitizer::TACAdigitizer(TACAntuRaw* pNtuRaw)
 void  TACAdigitizer::SetFunctions()
 {
    // compute birks law for a given Edep
-   fFuncBirks = new TF1("PhotonsN", this, &TACAdigitizer::RecPhotonsN, 0, 20, 3, "TACAdigitizer", "RecPhotonsN");
+   fFuncBirks = new TF1("PhotonsN", this, &TACAdigitizer::RecPhotonsN, 0, 20, 2, "TACAdigitizer", "RecPhotonsN");
    
+   // compute energy resolution
    fDeResE    = new TF1("ResEnergy", this, &TACAdigitizer::ResEnergy, 50, 5000, 3, "TACAdigitizer", "ResEnergy");
 }
 
 // --------------------------------------------------------------------------------------
 void  TACAdigitizer::SetParFunction()
 {
-   // photons yield (n/MeV), kB: birks (mm/MeV), collection efficiency (0.4%) for BGO
-   fFuncBirks->SetParameters(9000, 3.679e-3, 1./240.);
-   fDeResE   ->SetParameters(fResPar0, fResPar1, fResPar2);
+   // photons yield (n/MeV), kB: Birk (mm/MeV)
+   fFuncBirks->SetParameters(fBirkPar0, fBirkPar1);
+   
+   // Resolution parameter
+   fDeResE->SetParameters(fResPar0, fResPar1, fResPar2);
 }
 
 // --------------------------------------------------------------------------------------
 TACAdigitizer::~TACAdigitizer()
 {   
    delete fFuncBirks;
+   delete fDeResE;
 }
 
 // --------------------------------------------------------------------------------------
 Double_t TACAdigitizer::RecPhotonsN(Double_t* x, Double_t* par)
 {
    Float_t xx = x[0];
-   Float_t photonsN = par[0]*xx/(1+par[1]*xx)*par[2];
+   Float_t photonsN = par[0]*xx/(1+par[1]*xx);
 
    return photonsN;
 }
@@ -89,18 +97,18 @@ Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    
    Float_t resEnergy = GetResEnergy(edep);
    edep += gRandom->Gaus(0, resEnergy);
-   edep = 1.252*edep - 28.42; // rough calibration
+   edep  = fCalEPar1*edep + fCalEPar0; // rough calibration
    
-   Float_t photonsN = edep; //GetPhotonsN(x0, y0, edep)*fGain; // skip Birks law for the moment
+  // Float_t photonsN = GetPhotonsN(x0, y0, edep)*fGain; // skip Birks law should be included in resolution
 
    if (fMap[id] == 0) {
-      fCurrentHit = (TACAntuHit*)fpNtuRaw->NewHit(id, photonsN, time);
+      fCurrentHit = (TACAntuHit*)fpNtuRaw->NewHit(id, edep, time);
       fMap[id] = fCurrentHit;
    } else {
       fCurrentHit = fMap[id];
       
       //Add charge to current hit
-      fCurrentHit->SetCharge(fCurrentHit->GetCharge()+photonsN);
+      fCurrentHit->SetCharge(fCurrentHit->GetCharge()+edep);
    }
    
    return true;

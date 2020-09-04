@@ -28,13 +28,15 @@ public:
    Float_t        GetResEnergy(Float_t edep);
    Double_t       ResEnergy(Double_t* x, Double_t* par);
 
-   TF1*           GetFuncBirks() const { return fFuncBirks; }
-   TF1*           GetFuncResE()  const { return fDeResE; }
+   TF1*           GetFuncBirks()   const  { return fFuncBirks;  }
+   TF1*           GetFuncResE()    const  { return fDeResE;     }
+ 
+   void           SetGain(Float_t g)      { fGain = g;          }
+   void           SetCalEPar0(Float_t p)  { fCalEPar0 = p;      }
+   void           SetCalEPar1(Float_t p)  { fCalEPar1 = p;      }
 
-   void           SetGain(Float_t g)   { fGain = g;          }
-
-   TACAntuHit*    GetCurrentHit()      { return fCurrentHit; }
-   void           ClearMap()           { fMap.clear();       }
+   TACAntuHit*    GetCurrentHit()         { return fCurrentHit; }
+   void           ClearMap()              { fMap.clear();       }
 
 public:
    static Float_t GetThreshold()          { return fgThreshold; }
@@ -52,6 +54,12 @@ private:
    Float_t       fResErrPar1;
    Float_t       fResPar2;
    Float_t       fResErrPar2;
+   
+   Float_t       fBirkPar0;
+   Float_t       fBirkPar1;
+
+   Float_t       fCalEPar0;
+   Float_t       fCalEPar1;
 
    TACAntuHit*   fCurrentHit;
    map<int, TACAntuHit*> fMap; //! map for pilepup
