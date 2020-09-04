@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAMC})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAMC} ${TATW})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -39,6 +39,8 @@ include_directories(${ROOT_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${TAG_INCLUDE_DIR})
 include_directories(${TAMC_INCLUDE_DIR})
+include_directories(${TAST_INCLUDE_DIR})
+include_directories(${TATW_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 #

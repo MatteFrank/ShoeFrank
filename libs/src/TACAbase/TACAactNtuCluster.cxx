@@ -1,18 +1,21 @@
 /*!
  \file
- \version $Id: TACAactNtuCluster.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
  \brief   Implementation of TACAactNtuCluster.
  */
 #include "TClonesArray.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TMath.h"
+#include "TRandom3.h"
 
+#include "TAGgeoTrafo.hxx"
 #include "TACAparGeo.hxx"
 //#include "TACAparConf.hxx"
 #include "TACAntuRaw.hxx"
 #include "TACAntuCluster.hxx"
 #include "TACAactNtuCluster.hxx"
+
+#include "TATWntuPoint.hxx"
 
 /*!
  \class TACAactNtuCluster
@@ -24,12 +27,13 @@ ClassImp(TACAactNtuCluster);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig)
+TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGdataDsc* pTwPoint)
  : TAGactNtuCluster2D(name, "TACAactNtuCluster - NTuplize cluster"),
    fpNtuRaw(pNtuRaw),
    fpNtuClus(pNtuClus),
    fpConfig(pConfig),
    fpGeoMap(pGeoMap),
+   fpNtuTwPoint(pTwPoint),
    fCurrentPosition(0., 0., 0.),
    fCurrentPosError(0., 0., 0.),
    fListOfHits(0x0),
@@ -77,6 +81,10 @@ void TACAactNtuCluster::CreateHistogram()
    fpHisClusMap->SetMarkerColor(1);
    fpHisClusMap->SetStats(kFALSE);
    AddHistogram(fpHisClusMap);
+   
+   fpHisResTwMag = new TH1F(Form("%sResTwMag", fPrefix.Data()), Form("%s - Minimal distance in with TW", fTitleDev.Data()),
+                          200, -pGeoMap->GetCrystalWidthFront()*2., pGeoMap->GetCrystalWidthFront()*4.);
+   AddHistogram(fpHisResTwMag);
    
    SetValidHistogram(kTRUE);
    
@@ -290,8 +298,11 @@ void TACAactNtuCluster::ComputePosition()
 //
 void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
 {
-   TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
-   
+   TAGgeoTrafo* pFootGeo = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+
+   TACAparGeo* pGeoMap = (TACAparGeo*) fpGeoMap->Object();
+   Float_t width = pGeoMap->GetCrystalWidthFront()*2.;
+
    fListOfHits = cluster->GetListOfHits();
    ComputePosition();
    TVector3 posG = GetCurrentPosition();
@@ -307,11 +318,47 @@ void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
             fpHisHitTot->Fill(cluster->GetHitsN());
             fpHisChargeTot->Fill(cluster->GetCharge());
             fpHisClusMap->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
+         }
          
+         if (fpNtuTwPoint) {
+            Float_t min = width;
+            Int_t imin = -1;
+            TVector3 resMin;
+            
+            TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
+            Int_t nPoints = pNtuPoint->GetPointN();
+            
+            for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
+               
+               TATWpoint *point = pNtuPoint->GetPoint(iPoint);
+               
+               TVector3 posGtw = point->GetPosition();
+               posGtw = pFootGeo->FromTWLocalToGlobal(posGtw);
+               posG   = pFootGeo->FromCALocalToGlobal(posG);
+               posGtw[2] = posG[2] = 0.;
+               TVector3 res = posG-posGtw;
+               Float_t diff = res.Mag();
+               
+               if (diff < min) {
+                  min = diff;
+                  imin = iPoint;
+                  resMin = res;
+               }
+            } //end loop on points
+            
+            if(imin != -1) {
+               resMin[0]  += gRandom->Uniform(-1, 1);
+               resMin[1]  += gRandom->Uniform(-1, 1);
+
+               fpHisResTwMag->Fill(resMin.Mag());
+            }
          }
       }
+      
       cluster->SetValid(true);
    } else {
       cluster->SetValid(false);
    }
+   
+  
 }

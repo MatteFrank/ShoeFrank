@@ -26,9 +26,9 @@ class TH2F;
 class TACAactNtuCluster : public TAGactNtuCluster2D {
    
 public:
-   explicit  TACAactNtuCluster(const char* name     = 0, TAGdataDsc* p_nturaw  = 0,
+   explicit  TACAactNtuCluster(const char* name     = 0,  TAGdataDsc* p_nturaw  = 0,
                                TAGdataDsc* p_ntuclus = 0, TAGparaDsc* p_geomap = 0,
-                               TAGparaDsc*  p_config = 0);
+                               TAGparaDsc*  p_config = 0, TAGdataDsc* p_twpt = 0);
    
    virtual ~TACAactNtuCluster();
    
@@ -65,7 +65,8 @@ public:
 protected:
    TAGdataDsc*     fpNtuRaw;         // input data dsc
    TAGdataDsc*     fpNtuClus;        // output data dsc
-   
+   TAGdataDsc*     fpNtuTwPoint;     // input data dsc
+
    TAGparaDsc*     fpConfig;		    // config para dsc
    TAGparaDsc*     fpGeoMap;		    // geometry para dsc
    
@@ -80,6 +81,7 @@ protected:
    TH1F*          fpHisChargeTot;    // Total charge per cluster
    TH2F*          fpHisClusMap;      // cluster map per sensor
    
+   TH1F*          fpHisResTwMag;     // Minimal distance in position with TW
    TString        fPrefix;           // prefix of histogram
    TString        fTitleDev;         // device name for histogram title
 
