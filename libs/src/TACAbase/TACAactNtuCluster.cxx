@@ -265,7 +265,6 @@ void TACAactNtuCluster::ComputePosition()
    
    fClusterPulseSum = 0.;
    
-   
    for (Int_t i = 0; i < fListOfHits->GetEntries(); ++i) {
       TACAntuHit* hit = (TACAntuHit*)fListOfHits->At(i);
       tCorTemp.SetXYZ(hit->GetPosition()(0)*hit->GetCharge(), hit->GetPosition()(1)*hit->GetCharge(), hit->GetPosition()(2)*hit->GetCharge());
@@ -284,11 +283,6 @@ void TACAactNtuCluster::ComputePosition()
    }
    
    posErr *= 1./fClusterPulseSum;
-   
-   // for cluster with a single hit
-   Float_t lim = 2.5e-7; // in cm !
-   if (posErr(0) < lim) posErr(0) = lim; //(20/Sqrt(12)^2
-   if (posErr(1) < lim) posErr(1) = lim; //(20/Sqrt(12)^2
    
    fCurrentPosition.SetXYZ(pos[0], pos[1], pos[2]);
    fCurrentPosError.SetXYZ(TMath::Sqrt(posErr[0]), TMath::Sqrt(posErr[1]), 0);
