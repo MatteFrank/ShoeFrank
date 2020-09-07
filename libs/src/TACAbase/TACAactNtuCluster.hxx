@@ -41,9 +41,6 @@ public:
    //! Base creation of histogram
    virtual  void   CreateHistogram();
    
-    //! Get list of pixels for a given plane
-   TClonesArray*   GetListOfHits()       const { return fListOfHits;    }
-   
    //! Get total charge
    Float_t GetClusterPulseSum()          const { return fClusterPulseSum; }
    
@@ -57,7 +54,7 @@ public:
    void SetCurrentPosition(Float_t u, Float_t v, Float_t z) { fCurrentPosition.SetXYZ(u,v,z);  }
    
    //! Compute position
-   virtual void ComputePosition();
+   virtual void ComputePosition(TACAcluster* cluster);
    
    // Get object in list
    TAGobject*  GetHitObject(Int_t idx) const;
@@ -72,7 +69,6 @@ protected:
    
    TVector3       fCurrentPosition;  // pointer to current position
    TVector3       fCurrentPosError ; // pointer to current position error
-   TClonesArray*  fListOfHits;       // list of pixels
    Float_t        fClusterPulseSum;  // total charge of cluster
    
    Int_t          fClustersN;        // number of cluster

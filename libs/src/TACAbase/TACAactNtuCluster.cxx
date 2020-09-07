@@ -36,20 +36,13 @@ TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGd
    fpNtuTwPoint(pTwPoint),
    fCurrentPosition(0., 0., 0.),
    fCurrentPosError(0., 0., 0.),
-   fListOfHits(0x0),
    fClustersN(0)
-
 {
    AddDataIn(pNtuRaw,   "TACAntuRaw");
    AddDataOut(pNtuClus, "TACAntuCluster");
    AddPara(pGeoMap, "TACAparGeo");
   // AddPara(pConfig, "TACAparConf");
    
-   TString tmp(name);
-   fPrefix = tmp(0,2);
-   
-   fTitleDev = "Calorimeter";
-
    fDimY = 18;
    fDimX = 18;
    SetupMaps(fDimY*fDimX);
@@ -66,14 +59,14 @@ TACAactNtuCluster::~TACAactNtuCluster()
 void TACAactNtuCluster::CreateHistogram()
 {
    DeleteHistogram();
-   fpHisHitTot = new TH1F(Form("%sClusHitsTot", fPrefix.Data()), Form("%s - Total # hits per cluster", fTitleDev.Data()), 25, 0., 25);
+   fpHisHitTot = new TH1F("caClusHitsTot", "Calorimeter - Total # hits per cluster", 25, 0., 25);
    AddHistogram(fpHisHitTot);
 
-   fpHisChargeTot = new TH1F(Form("%sClusChargeTot", fPrefix.Data()), Form("%s - Total charge per cluster", fTitleDev.Data()), 1000, 0., 4000);
+   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per cluster", 1000, 0., 4000);
    AddHistogram(fpHisChargeTot);
 
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
-   fpHisClusMap = new TH2F(Form("%sClusMapTot", fPrefix.Data()), Form("%s - clusters map", fTitleDev.Data()),
+   fpHisClusMap = new TH2F("caClusMapTot", "Calorimeter - clusters map",
                            100, -pGeoMap->GetCaloSize()[0]/2., pGeoMap->GetCaloSize()[0]/2.,
                            100, -pGeoMap->GetCaloSize()[1]/2., pGeoMap->GetCaloSize()[1]/2.);
    fpHisClusMap->SetMarkerStyle(20);
@@ -82,7 +75,7 @@ void TACAactNtuCluster::CreateHistogram()
    fpHisClusMap->SetStats(kFALSE);
    AddHistogram(fpHisClusMap);
    
-   fpHisResTwMag = new TH1F(Form("%sResTwMag", fPrefix.Data()), Form("%s - Minimal distance with TW points", fTitleDev.Data()),
+   fpHisResTwMag = new TH1F("caResTwMag", "Calorimeter - Minimal distance with TW points",
                           200, -pGeoMap->GetCrystalWidthFront()*2., pGeoMap->GetCrystalWidthFront()*4.);
    AddHistogram(fpHisResTwMag);
    
@@ -252,11 +245,11 @@ Bool_t TACAactNtuCluster::CreateClusters()
 
 //______________________________________________________________________________
 //
-void TACAactNtuCluster::ComputePosition()
+void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
 {
    TACAntuRaw* pNtuHit  = (TACAntuRaw*) fpNtuRaw->Object();
-
-   if (fListOfHits == 0) return;
+   
+   if (cluster->GetListOfHits() == 0) return;
    
    TVector3 tCorrection, tCorrection2, tCorTemp;
    TVector3 pos, posErr;
@@ -265,8 +258,8 @@ void TACAactNtuCluster::ComputePosition()
    
    fClusterPulseSum = 0.;
    
-   for (Int_t i = 0; i < fListOfHits->GetEntries(); ++i) {
-      TACAntuHit* hit = (TACAntuHit*)fListOfHits->At(i);
+   for (Int_t i = 0; i < cluster->GetHitsN(); ++i) {
+      TACAntuHit* hit = cluster->GetHit(i);
       tCorTemp.SetXYZ(hit->GetPosition()(0)*hit->GetCharge(), hit->GetPosition()(1)*hit->GetCharge(), hit->GetPosition()(2)*hit->GetCharge());
       tCorrection  += tCorTemp;
       fClusterPulseSum  += hit->GetCharge();
@@ -274,8 +267,8 @@ void TACAactNtuCluster::ComputePosition()
    
    pos = tCorrection*(1./fClusterPulseSum);
    
-   for (Int_t i = 0; i < fListOfHits->GetEntries(); ++i) {
-      TACAntuHit* hit = (TACAntuHit*)fListOfHits->At(i);
+   for (Int_t i = 0; i < cluster->GetHitsN(); ++i) {
+      TACAntuHit* hit = cluster->GetHit(i);
 	  tCorrection2.SetXYZ(hit->GetCharge()*(hit->GetPosition()(0)-(pos)(0))*(hit->GetPosition()(0)-(pos)(0)),
 							hit->GetCharge()*(hit->GetPosition()(1)-(pos)(1))*(hit->GetPosition()(1)-(pos)(1)),
 							0);
@@ -297,8 +290,7 @@ void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
    TACAparGeo* pGeoMap = (TACAparGeo*) fpGeoMap->Object();
    Float_t width = pGeoMap->GetCrystalWidthFront()*2.;
 
-   fListOfHits = cluster->GetListOfHits();
-   ComputePosition();
+   ComputePosition(cluster);
    TVector3 posG = GetCurrentPosition();
    cluster->SetPositionG(posG);
    cluster->SetPosition(GetCurrentPosition());
