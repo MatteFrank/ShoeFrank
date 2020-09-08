@@ -257,14 +257,20 @@ void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
    tCorrection2.SetXYZ( 0., 0., 0.);
    
    fClusterPulseSum = 0.;
+   Float_t maxCharge = 0;
+   Int_t iMax = -1;
    
    for (Int_t i = 0; i < cluster->GetHitsN(); ++i) {
       TACAntuHit* hit = cluster->GetHit(i);
       tCorTemp.SetXYZ(hit->GetPosition()(0)*hit->GetCharge(), hit->GetPosition()(1)*hit->GetCharge(), hit->GetPosition()(2)*hit->GetCharge());
       tCorrection  += tCorTemp;
       fClusterPulseSum  += hit->GetCharge();
-	  }
-   
+      
+      if (hit->GetCharge() > maxCharge) {
+         maxCharge = hit->GetCharge();
+         iMax      = i;
+      }
+   }
    pos = tCorrection*(1./fClusterPulseSum);
    
    for (Int_t i = 0; i < cluster->GetHitsN(); ++i) {
@@ -279,6 +285,12 @@ void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
    
    fCurrentPosition.SetXYZ(pos[0], pos[1], pos[2]);
    fCurrentPosError.SetXYZ(TMath::Sqrt(posErr[0]), TMath::Sqrt(posErr[1]), 0);
+   
+   cluster->SetIndexSeed(iMax);
+   cluster->SetPosition(fCurrentPosition);
+   cluster->SetPosError(fCurrentPosError);
+   cluster->SetPositionG(fCurrentPosition);
+   cluster->SetCharge(fClusterPulseSum);
 }
 
 //______________________________________________________________________________
@@ -291,12 +303,7 @@ void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
    Float_t width = pGeoMap->GetCrystalWidthFront()*2.;
 
    ComputePosition(cluster);
-   TVector3 posG = GetCurrentPosition();
-   cluster->SetPositionG(posG);
-   cluster->SetPosition(GetCurrentPosition());
-   cluster->SetPosError(GetCurrentPosError());
-   cluster->SetCharge(GetClusterPulseSum());
-   
+  
    if (ApplyCuts(cluster)) {
       // histogramms
       if (ValidHistogram()) {
@@ -307,8 +314,9 @@ void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
          }
          
          if (fpNtuTwPoint) {
-            Float_t min = width;
-            Int_t imin = -1;
+            TVector3 posG = cluster->GetPositionG();
+            Float_t min   = width;
+            Int_t imin    = -1;
             TVector3 resMin;
             
             TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
