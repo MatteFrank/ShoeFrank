@@ -22,6 +22,7 @@ protected:
    TVector3           fPosErrorG;                // position's errors of the clus in tracker frame
    TClonesArray*      fListOfHits;               // list of hits attached to this cluster
    
+   Int_t              fIndexSeed;                // index of seed crystal
    Int_t              fNumber;                   // number
    Float_t            fCharge;                   // sum of pulseheight
    Bool_t             fIsValid;                  // validity flag
@@ -39,6 +40,8 @@ public:
    void               SetPosition(Float_t u, Float_t v, Float_t z) { fPosition.SetXYZ(u,v,z); }
    //! Set position in global tracker frame
    void               SetPositionG(TVector3& pos);
+   //! Set crystal seed index
+   void               SetIndexSeed(Int_t index)              { fIndexSeed = index;     }
    //! Set cluster number
    void               SetNumber(Int_t nb)                    { fNumber = nb;           }
    //! Set sum of pulse height
@@ -57,6 +60,8 @@ public:
 
    //! Get validity
    Bool_t             IsValid()                        const { return fIsValid;        }
+   //! Get index of seed crystal
+   Int_t              GetIndexSeed()                   const { return fIndexSeed;      }
    //! Get cluster number
    Int_t              GetNumber()                      const { return fNumber;         }
    //! Get sum of pulse height
@@ -79,7 +84,7 @@ public:
    //! Add pixel to the list
    void               AddHit(TACAntuHit* hit);
    
-   ClassDef(TACAcluster,2)                          // Describes TACAcluster
+   ClassDef(TACAcluster,3)                          // Describes TACAcluster
 };
 
 

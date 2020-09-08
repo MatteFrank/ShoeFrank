@@ -18,6 +18,7 @@ TACAcluster::TACAcluster()
    fPositionG(0., 0., 0.),
    fPosErrorG(0., 0., 0.),
    fListOfHits(0x0),
+   fIndexSeed(-1),
    fNumber(-1),
    fCharge(0.),
    fIsValid(kFALSE)
@@ -41,6 +42,7 @@ TACAcluster::TACAcluster(const TACAcluster& cluster)
    fPosError(cluster.fPosError),
    fPositionG(cluster.fPositionG),
    fPosErrorG(cluster.fPosErrorG),
+   fIndexSeed(cluster.fIndexSeed),
    fNumber(cluster.fNumber),
    fCharge(cluster.fCharge),
    fIsValid(cluster.fIsValid)
