@@ -24,7 +24,7 @@ TACAdigitizer::TACAdigitizer(TACAntuRaw* pNtuRaw)
    fResErrPar2(2.12e-4),
    fBirkPar0(9000),
    fBirkPar1(3.679e-3),
-   fCalEPar0(- 28.42),
+   fCalEPar0(-28.42),
    fCalEPar1(1.252)
 {
    SetFunctions();
