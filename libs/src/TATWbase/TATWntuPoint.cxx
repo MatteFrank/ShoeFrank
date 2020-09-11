@@ -30,6 +30,7 @@ TATWpoint::TATWpoint()
    m_de1(0.),
    m_de2(0.),
    m_time(0.),
+   m_matchCalIdx(-1),
    m_chargeZ(0),
    m_chargeZProba(0.)
 {
@@ -43,6 +44,7 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double 
    m_posErr(dx, dy, 0),
    m_rowHit(new TATWntuHit(*rowHit)),
    m_columnHit(new TATWntuHit(*colHit)),
+   m_matchCalIdx(-1),
    m_chargeZ(0),
    m_chargeZProba(0.)
 {

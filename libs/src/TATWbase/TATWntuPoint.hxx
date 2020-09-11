@@ -41,16 +41,17 @@ private:
    TVector3    m_positionG;     // position in detector framework
    TVector3    m_posErrG;       // position error in detector framework
 
-   int         m_row;        // row number
-   int         m_column;           // column number
+   int         m_row;           // row number
+   int         m_column;        // column number
    
-   TATWntuHit*   m_rowHit;     // hit col
-   TATWntuHit*   m_columnHit;        // hit column
+   TATWntuHit* m_rowHit;        // hit col
+   TATWntuHit* m_columnHit;     // hit column
    
    Double32_t  m_de1;           // energy loss in the scintillator bars layer 1
    Double32_t  m_de2;           // energy loss in the scintillator bars layer 2
    Double32_t  m_time;          // for the moment I take the row time
-   
+   Int_t       m_matchCalIdx;   // Index of Calorimeter cluster matched (-1 if not)
+
    int         m_chargeZ;       // raw guess of charge Z
    Double32_t  m_chargeZProba;  // raw guess of charge Z probability
 
@@ -67,26 +68,28 @@ public:
   const TVector3&  GetPositionG() const  { return m_positionG;      }
   const TVector3&  GetPosErrorG() const  { return m_posErrG;        }
   
-  int       GetRowID()    const  { return m_row;              }
-  int       GetColumnID()       const  { return m_column;                 }
+  int              GetRowID()     const  { return m_row;            }
+  int              GetColumnID()  const  { return m_column;         }
   
-  int       GetRow()      const  { return m_rowHit->GetBar(); }
-  int       GetColumn()         const  { return m_columnHit->GetBar();    }
+  int              GetRow()       const  { return m_rowHit->GetBar();    }
+  int              GetColumn()    const  { return m_columnHit->GetBar(); }
   
-  TATWntuHit* GetRowHit()	const	 { return m_rowHit;           }
-  TATWntuHit* GetColumnHit()      const	 { return m_columnHit;              }
+  TATWntuHit*      GetRowHit()	 const  { return m_rowHit;         }
+  TATWntuHit*      GetColumnHit() const  { return m_columnHit;      }
   
   double    GetEnergyLoss1() const  { return m_de1;                 }
   double    GetEnergyLoss2() const  { return m_de2;                 }
   double    GetEnergyLoss()  const  { return m_de1+m_de2;           }
   double    GetTime()        const  { return m_time;                }
+  int       GetMatchCalIdx() const  { return m_matchCalIdx;         }
   int       GetChargeZ()     const  { return m_chargeZ;             }
   double    GetChargeZProba() const  { return m_chargeZProba;       }
   
   
   void      SetPositionG(TVector3& pos);
-  void      SetChargeZ(int z)       { m_chargeZ = z;                }
-  void      SetChargeZProba(double p){ m_chargeZProba = p;          }
+  void      SetMatchCalIdx(int idx)   { m_matchCalIdx = idx;        }
+  void      SetChargeZ(int z)         { m_chargeZ = z;              }
+  void      SetChargeZProba(double p) { m_chargeZProba = p;         }
   
   
   void      Clear(Option_t* opt);
