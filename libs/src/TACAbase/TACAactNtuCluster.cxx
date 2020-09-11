@@ -79,6 +79,9 @@ void TACAactNtuCluster::CreateHistogram()
                           200, -pGeoMap->GetCrystalWidthFront()*2., pGeoMap->GetCrystalWidthFront()*4.);
    AddHistogram(fpHisResTwMag);
    
+   fpHisHitTwMatch = new TH1F("caTwMatch", "Calorimeter - Number of matched hits with TW points", 2, 0, 2);
+   AddHistogram(fpHisHitTwMatch);
+
    SetValidHistogram(kTRUE);
    
    return;
@@ -354,6 +357,7 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
    } //end loop on points
    
    if(imin != -1) {
+      fpHisHitTwMatch->Fill(1);
       resMin[0]  += gRandom->Uniform(-1, 1);
       resMin[1]  += gRandom->Uniform(-1, 1);
       TATWpoint *point = pNtuPoint->GetPoint(imin);
@@ -361,5 +365,7 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
       
       if (ValidHistogram())
          fpHisResTwMag->Fill(resMin.Mag());
-   }
+   } else
+      fpHisHitTwMatch->Fill(0);
+
 }
