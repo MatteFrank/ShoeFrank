@@ -297,14 +297,12 @@ void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
 //
 void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
 {
-   TAGgeoTrafo* pFootGeo = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
-
-   TACAparGeo* pGeoMap = (TACAparGeo*) fpGeoMap->Object();
-   Float_t width = pGeoMap->GetCrystalWidthFront()*2.;
-
    ComputePosition(cluster);
   
    if (ApplyCuts(cluster)) {
+      if (fpNtuTwPoint)
+         ComputeMinDist(cluster);
+      
       // histogramms
       if (ValidHistogram()) {
          if (cluster->GetHitsN() > 0) {
@@ -312,47 +310,56 @@ void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
             fpHisChargeTot->Fill(cluster->GetCharge());
             fpHisClusMap->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
          }
-         
-         if (fpNtuTwPoint) {
-            TVector3 posG = cluster->GetPositionG();
-            Float_t min   = width;
-            Int_t imin    = -1;
-            TVector3 resMin;
-            
-            TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
-            Int_t nPoints = pNtuPoint->GetPointN();
-            
-            for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
-               
-               TATWpoint *point = pNtuPoint->GetPoint(iPoint);
-               
-               TVector3 posGtw = point->GetPosition();
-               posGtw = pFootGeo->FromTWLocalToGlobal(posGtw);
-               posG   = pFootGeo->FromCALocalToGlobal(posG);
-               posGtw[2] = posG[2] = 0.;
-               TVector3 res = posG-posGtw;
-               Float_t diff = res.Mag();
-               
-               if (diff < min) {
-                  min = diff;
-                  imin = iPoint;
-                  resMin = res;
-               }
-            } //end loop on points
-            
-            if(imin != -1) {
-               resMin[0]  += gRandom->Uniform(-1, 1);
-               resMin[1]  += gRandom->Uniform(-1, 1);
-
-               fpHisResTwMag->Fill(resMin.Mag());
-            }
-         }
       }
       
       cluster->SetValid(true);
    } else {
       cluster->SetValid(false);
    }
+}
+
+//______________________________________________________________________________
+//
+void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
+{
+   TAGgeoTrafo* pFootGeo = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
    
-  
+   TACAparGeo* pGeoMap = (TACAparGeo*) fpGeoMap->Object();
+   Float_t width = pGeoMap->GetCrystalWidthFront()*2.;
+
+   TVector3 posG = cluster->GetPositionG();
+   Float_t min   = width;
+   Int_t imin    = -1;
+   TVector3 resMin;
+   
+   TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
+   Int_t nPoints = pNtuPoint->GetPointN();
+   
+   for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
+      
+      TATWpoint *point = pNtuPoint->GetPoint(iPoint);
+      TVector3 posGtw = point->GetPosition();
+      
+      posGtw = pFootGeo->FromTWLocalToGlobal(posGtw);
+      posG   = pFootGeo->FromCALocalToGlobal(posG);
+      posGtw[2] = posG[2] = 0.;
+      TVector3 res = posG-posGtw;
+      Float_t diff = res.Mag();
+      
+      if (diff < min) {
+         min = diff;
+         imin = iPoint;
+         resMin = res;
+      }
+   } //end loop on points
+   
+   if(imin != -1) {
+      resMin[0]  += gRandom->Uniform(-1, 1);
+      resMin[1]  += gRandom->Uniform(-1, 1);
+      TATWpoint *point = pNtuPoint->GetPoint(imin);
+      point->SetMatchCalIdx(cluster->GetNumber());
+      
+      if (ValidHistogram())
+         fpHisResTwMag->Fill(resMin.Mag());
+   }
 }

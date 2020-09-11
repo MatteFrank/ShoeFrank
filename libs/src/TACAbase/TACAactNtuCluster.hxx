@@ -86,6 +86,7 @@ protected:
    void   SearchCluster();
    void   FillMaps();
    void   FillClusterInfo(TACAcluster* cluster);
+   void   ComputeMinDist(TACAcluster* cluster);
 
    ClassDef(TACAactNtuCluster,0)
 };
