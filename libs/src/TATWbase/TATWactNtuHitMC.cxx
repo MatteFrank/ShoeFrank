@@ -102,16 +102,16 @@ void TATWactNtuHitMC::CreateHistogram()
    fpHisHitMap = new TH1F("twHitMap", "ToF Wall - Hit Map", 1000,-50,50);
    AddHistogram(fpHisHitMap);
    
-   fpHisRecPos = new TH1F("RecPos", "RecPos", 1000,-50,50);
+   fpHisRecPos = new TH1F("twRecPos", "RecPos", 1000,-50,50);
    AddHistogram(fpHisRecPos);
    
-   fpHisRecPosMc = new TH1F("TruePos", "TruePos", 1000,-50,50);
+   fpHisRecPosMc = new TH1F("twTruePos", "TruePos", 1000,-50,50);
    AddHistogram(fpHisRecPosMc);
    
-   fpHisRecTof = new TH1F("RecTof", "RecTof", 500, 0., 50.);
+   fpHisRecTof = new TH1F("twRecTof", "RecTof", 500, 0., 50.);
    AddHistogram(fpHisRecTof);
    
-   fpHisRecTofMc = new TH1F("TrueTof", "TrueTof", 500, 0., 50.);
+   fpHisRecTofMc = new TH1F("twTrueTof", "TrueTof", 500, 0., 50.);
    AddHistogram(fpHisRecTofMc);
    
    fpHisZID = new TH2I("twZID", "twZID", fZbeam+3,-2.5,(int)fZbeam+0.5, fZbeam+2,-1.5,(int)fZbeam+0.5);
@@ -122,19 +122,19 @@ void TATWactNtuHitMC::CreateHistogram()
       AddHistogram(fpHisZID_MCtrue);
       
       for(int ilayer=0; ilayer<(int)nLayers; ilayer++) {
-         fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d_MCtrue",ilayer),Form("dE_vs_Tof_ilayer%d_MCtrue",ilayer),500,0.,50.,480,0.,120.);
+         fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("twdE_vs_Tof_layer%d_MCtrue",ilayer),Form("dE_vs_Tof_ilayer%d_MCtrue",ilayer),500,0.,50.,480,0.,120.);
          AddHistogram(fpHisElossTof_MCtrue[ilayer]);
       }
       
       for(int iZ=1; iZ < fZbeam+1; iZ++) {
-         fpHisElossTof_MC.push_back(new TH2D(Form("dE_vs_Tof_Z%d_MCtrue",iZ),Form("dE_vs_Tof_%d",iZ),500,0.,50.,480,0.,120.));
+         fpHisElossTof_MC.push_back(new TH2D(Form("twdE_vs_Tof_Z%d_MCtrue",iZ),Form("dE_vs_Tof_%d",iZ),500,0.,50.,480,0.,120.));
          
          AddHistogram(fpHisElossTof_MC[iZ-1]);
          
-         fpHisDistZ_MC.push_back( new TH1F(Form("distMC_Z_%d",iZ),Form("distMC_Z%d",iZ),2000,-20.,80) );
+         fpHisDistZ_MC.push_back( new TH1F(Form("twDistMC_Z_%d",iZ),Form("distMC_Z%d",iZ),2000,-20.,80) );
          AddHistogram(fpHisDistZ_MC[iZ-1]);
          
-	 fpHisResPos.push_back( new TH1D(Form("ResPos_Z_%d",iZ), Form("ResPos_Z_%d",iZ), 1000,-50,50) );
+	 fpHisResPos.push_back( new TH1D(Form("twResPos_Z_%d",iZ), Form("ResPos_Z_%d",iZ), 1000,-50,50) );
 	 AddHistogram(fpHisResPos[iZ-1]);
 	 
       }
@@ -142,16 +142,16 @@ void TATWactNtuHitMC::CreateHistogram()
    
    
    for(int ilayer=0; ilayer<nLayers; ilayer++) {
-      fpHisElossTof_MCrec[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),500,0.,50.,480,0.,120.);
+      fpHisElossTof_MCrec[ilayer] = new TH2D(Form("twdE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),500,0.,50.,480,0.,120.);
       AddHistogram(fpHisElossTof_MCrec[ilayer]);
    }
    
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
       
-      fpHisElossTof.push_back(new TH2D(Form("dE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),500,0.,50.,480,0.,120.));
+      fpHisElossTof.push_back(new TH2D(Form("twdE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),500,0.,50.,480,0.,120.));
       AddHistogram(fpHisElossTof[iZ-1]);
       
-      fpHisDistZ.push_back( new TH1F(Form("dist_Z%d",iZ),Form("dist_Z%d",iZ),2000,-20.,80) );
+      fpHisDistZ.push_back( new TH1F(Form("twDist_Z%d",iZ),Form("dist_Z%d",iZ),2000,-20.,80) );
       AddHistogram(fpHisDistZ[iZ-1]);
       
    }
