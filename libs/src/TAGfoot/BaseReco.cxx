@@ -251,15 +251,21 @@ void BaseReco::SetRecHistogramDir()
    if (GlobalPar::GetPar()->IncludeIT())
       fActClusIt->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    
-   
    // MSD
    if (GlobalPar::GetPar()->IncludeMSD()) 
       fActClusMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    
+   // TW
+   if (GlobalPar::GetPar()->IncludeTW())
+      fActPointTw->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   
+   // CA
+   if (GlobalPar::GetPar()->IncludeCA())
+      fActClusCa->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+
+   // TOE
    if (GlobalPar::GetPar()->IncludeTOE())
-   {
        fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-   }
     
 }
 
