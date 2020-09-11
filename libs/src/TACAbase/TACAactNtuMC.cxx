@@ -148,7 +148,7 @@ void TACAactNtuMC::CreateHistogram()
    fpHistimeFirstHit =  new TH1F("catimeFirstHit", "Time of Calorimeter; Time [ns];",100, 0, 30) ;
    AddHistogram( fpHistimeFirstHit );
 
-   fpHisEnergyNeutron =  new TH1F("caEnergyNeutron", "En Dep Neutron; En [GeV];", 1000, 0., 1) ;
+   fpHisEnergyNeutron =  new TH1F("caEnergyNeutron", "En Dep Neutron; En [MeV];", 1000, 0., 10) ;
    AddHistogram( fpHisEnergyNeutron );
 
    // AddHistogram( new TH1F("caTof", "Time between first and last hit in the Calo; Tof [ns];",100, 0, 5) );
