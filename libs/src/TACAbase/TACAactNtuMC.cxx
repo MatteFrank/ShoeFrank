@@ -235,20 +235,22 @@ Bool_t TACAactNtuMC::Action()
 
 
    /////// Fill Hit tree (Digitizer)
+   npart = dep.GetEntriesFast();
    fDigitizer->ClearMap();
    
-   for (int i=0; i<fpEvtStr->CALn; ++i) {
-      
+   for (int i=0; i<npart; ++i) {
+      energyDep* endep = (energyDep*)dep.At(i);
+      int index = endep->index;
+
       Int_t trackId = fpEvtStr->CALid[i] - 1;
-      Int_t id      = fpEvtStr->CALicry[i];
-      Float_t x0_i  = fpEvtStr->CALxin[i];
-      Float_t x0_f  = fpEvtStr->CALxout[i];
-      Float_t y0_i  = fpEvtStr->CALyin[i];
-      Float_t y0_f  = fpEvtStr->CALyout[i];
-      Float_t z0_i  = fpEvtStr->CALzin[i];
-      Float_t z0_f  = fpEvtStr->CALzout[i];
-      Float_t time  = fpEvtStr->CALtim[i]*TAGgeoTrafo::SecToNs();
-      Float_t edep  = fpEvtStr->CALde[i]*TAGgeoTrafo::GevToMev();;
+      Int_t id      = fpEvtStr->CALicry[index];
+      Float_t x0_i  = fpEvtStr->CALxin[index];
+      Float_t x0_f  = fpEvtStr->CALxout[index];
+      Float_t y0_i  = fpEvtStr->CALyin[index];
+      Float_t y0_f  = fpEvtStr->CALyout[index];
+      Float_t z0_i  = fpEvtStr->CALzin[index];
+      Float_t z0_f  = fpEvtStr->CALzout[index];
+      Float_t time  = fpEvtStr->CALtim[index]*TAGgeoTrafo::SecToNs();
 
       TVector3 posIn(x0_i, y0_i, z0_i);
       TVector3 posInLoc = geoTrafo->FromGlobalToCALocal(posIn);
@@ -257,7 +259,7 @@ Bool_t TACAactNtuMC::Action()
       TVector3 posOutLoc = geoTrafo->FromGlobalToCALocal(posOut);
 
       // don't use z for the moment
-      fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0_i, z0_f, time, id);
+      fDigitizer->Process(endep->fDE, posInLoc[0], posInLoc[1], z0_i, z0_f, time, endep->fCryid);
       TACAntuHit* hit = fDigitizer->GetCurrentHit();
       
       if (hit) {
