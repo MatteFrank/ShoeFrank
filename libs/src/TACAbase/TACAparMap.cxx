@@ -25,36 +25,29 @@ ClassImp(TACAparMap);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TACAparMap::TACAparMap() {
-
-  vector<int> tdchaID;             tdchaID.clear();   
-  vector<int> tdboaID;             tdboaID.clear();   
-  vector<int> adchaID;             adchaID.clear();   
-  vector<int> adcboaID;             adcboaID.clear();   
-  vector<int> deID;                deID.clear();   
-  vector<int> dechaID;             dechaID.clear();   
-
-  TDchaID =    tdchaID;   
-  TDboaID =    tdboaID;   
-  ADchaID =    adchaID;   
-  ADboaID =    adcboaID;   
-  DetchaID =   dechaID;   
-  DetID    =   deID;   
-  
+TACAparMap::TACAparMap()
+{
+   fTDchaID.clear();
+   fTDboaID.clear();
+   fADchaID.clear();
+   fADboaID.clear();
+   fDetchaID.clear();
+   fDetID.clear();
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
 TACAparMap::~TACAparMap()
-{}
-
+{
+   
+}
 
 //------------------------------------------+-----------------------------------
 //! Read mapping data from file \a name .
 
-Bool_t TACAparMap::FromFile(const TString& name) {
-
+Bool_t TACAparMap::FromFile(const TString& name)
+{
   Clear();
   
   TString name_exp = name;
@@ -77,15 +70,15 @@ Bool_t TACAparMap::FromFile(const TString& name) {
       //Det id, Det channel, tdc, adc, adc board.
       sscanf(bufConf, "#%d %d %d %d %d %d",&myArg1,&myArg2,&myArg3,&myArg4,&myArg5,&myArg6);
       if((myArg1>-1 && myArg1<2) && (myArg2>-1 && myArg2<4) && (myArg3>-1 && myArg3<128) && (myArg4>-1 && myArg4<32) && (myArg5>-1 && myArg5<32)) {
-	DetID.push_back(myArg1);
-	DetchaID.push_back(myArg2);
-	TDchaID.push_back(myArg3);
-	TDboaID.push_back(myArg4);
-	ADchaID.push_back(myArg5);
-	ADboaID.push_back(myArg6);
+         fDetID.push_back(myArg1);
+         fDetchaID.push_back(myArg2);
+         fTDchaID.push_back(myArg3);
+         fTDboaID.push_back(myArg4);
+         fADchaID.push_back(myArg5);
+         fADboaID.push_back(myArg6);
       } else {
-	Error(""," Plane Map Error:: check config file!!");
-	return kTRUE;
+         Error(""," Plane Map Error:: check config file!!");
+         return kTRUE;
       }
     }
   }
@@ -99,23 +92,24 @@ Bool_t TACAparMap::FromFile(const TString& name) {
 void TACAparMap::Clear(Option_t*)
 {
   TAGpara::Clear();
-  TDchaID.clear();   
-  TDboaID.clear();   
-  ADchaID.clear();   
-  ADboaID.clear();   
-  DetchaID.clear();   
-  DetID.clear();   
+  fTDchaID.clear();
+  fTDboaID.clear();
+  fADchaID.clear();
+  fADboaID.clear();
+  fDetchaID.clear();
+  fDetID.clear();
+   
   return;
 }
 
 /*------------------------------------------+---------------------------------*/
-bool TACAparMap::GetIDFromTDC(int channel, int board, int &detID, int &chaID) {
-
+bool TACAparMap::GetIDFromTDC(int channel, int board, int &detID, int &chaID)
+{
   bool found = kFALSE;
-  for(int iw=0; iw<(int)TDchaID.size(); iw++) {
-    if(getTDID(iw) == channel && getTDboaID(iw) == board)  { 
+  for(int iw=0; iw<(int)fTDchaID.size(); iw++) {
+    if(getTDID(iw) == channel && getTDboaID(iw) == board)  {
       chaID = getDetChaID(iw);	
-      detID = getDetID(iw);    
+      detID = getDetID(iw);
       found = kTRUE;
       break;
     }
@@ -126,19 +120,18 @@ bool TACAparMap::GetIDFromTDC(int channel, int board, int &detID, int &chaID) {
 }
 
 /*------------------------------------------+---------------------------------*/
-bool TACAparMap::GetIDFromADC(int channel, int board, int &detID, int &chaID) {
-
+bool TACAparMap::GetIDFromADC(int channel, int board, int &detID, int &chaID)
+{
   bool found = kFALSE;
-  for(int iw=0; iw<(int)TDchaID.size(); iw++) {
-    if(getADID(iw) == channel && getADboaID(iw) == board)  { 
+  for(int iw=0; iw<(int)fTDchaID.size(); iw++) {
+    if(getADID(iw) == channel && getADboaID(iw) == board)  {
       chaID = getDetChaID(iw);	
-      detID = getDetID(iw);    
+      detID = getDetID(iw);
       found = kTRUE;
       break;
     }
   }
   
   return found;
-
 }
 

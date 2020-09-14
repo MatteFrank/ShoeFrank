@@ -17,7 +17,7 @@ using namespace std;
 //##############################################################################
 
 class TACAparMap : public TAGpara {
-  public:
+public:
 
   TACAparMap();
     virtual         ~TACAparMap();
@@ -29,25 +29,26 @@ class TACAparMap : public TAGpara {
 
     virtual void    Clear(Option_t* opt="");
 
-    inline int getTDID(int add) { return TDchaID.at(add); }
-    inline int getTDboaID(int add) { return TDboaID.at(add); }
-    inline int getADID(int add) { return ADchaID.at(add); }
-    inline int getADboaID(int add) { return ADboaID.at(add); }
-    inline int getDetChaID(int add) { return DetchaID.at(add); }
-    inline int getDetID(int add) { return DetID.at(add); }
+    int getTDID(int add)     const { return fTDchaID.at(add);  }
+    int getTDboaID(int add)  const { return fTDboaID.at(add);  }
+    int getADID(int add)     const { return fADchaID.at(add);  }
+    int getADboaID(int add)  const { return fADboaID.at(add);  }
+    int getDetChaID(int add) const { return fDetchaID.at(add); }
+    int getDetID(int add)    const { return fDetID.at(add);    }
 
     ClassDef(TACAparMap,1)
 
-  private:
+private:
     Bool_t          CheckAddr(Int_t i_c) const;
 
+private:
     int trefCh;
-    vector<int> TDchaID;
-    vector<int> TDboaID;
-    vector<int> ADchaID;
-    vector<int> ADboaID;
-    vector<int> DetchaID;
-    vector<int> DetID;
+    vector<int> fTDchaID;
+    vector<int> fTDboaID;
+    vector<int> fADchaID;
+    vector<int> fADboaID;
+    vector<int> fDetchaID;
+    vector<int> fDetID;
 };
 
 #endif
