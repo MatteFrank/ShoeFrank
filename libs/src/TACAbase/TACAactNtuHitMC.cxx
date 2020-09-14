@@ -258,10 +258,10 @@ Bool_t TACAactNtuHitMC::Action()
       TVector3 posIn(hitMC->GetInPosition());
       TVector3 posOut(hitMC->GetOutPosition());
 
-      Int_t trackId = hitMC->GetTrackIdx()-1;
-      Float_t z0_i  = posIn.Z();
-      Float_t z0_f  = posOut.Z();
-      Float_t time  = hitMC->GetTof()*TAGgeoTrafo::SecToNs();
+      Int_t trackIdx = hitMC->GetTrackIdx()-1;
+      Float_t z0_i   = posIn.Z();
+      Float_t z0_f   = posOut.Z();
+      Float_t time   = hitMC->GetTof()*TAGgeoTrafo::SecToNs();
 
       TVector3 posInLoc = geoTrafo->FromGlobalToCALocal(posIn);
       TVector3 posOutLoc = geoTrafo->FromGlobalToCALocal(posOut);
@@ -271,7 +271,7 @@ Bool_t TACAactNtuHitMC::Action()
       TACAntuHit* hit = fDigitizer->GetCurrentHit();
       
       if (hit) {
-         hit->AddMcTrackIdx(trackId, i);
+         hit->AddMcTrackIdx(trackIdx, index);
          
          Float_t thick = -parGeo->GetCrystalThick();
          TVector3 positionCry(0, 0, thick);

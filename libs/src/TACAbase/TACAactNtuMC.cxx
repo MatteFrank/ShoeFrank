@@ -242,15 +242,15 @@ Bool_t TACAactNtuMC::Action()
       energyDep* endep = (energyDep*)dep.At(i);
       int index = endep->index;
 
-      Int_t trackId = fpEvtStr->CALid[i] - 1;
-      Int_t id      = fpEvtStr->CALicry[index];
-      Float_t x0_i  = fpEvtStr->CALxin[index];
-      Float_t x0_f  = fpEvtStr->CALxout[index];
-      Float_t y0_i  = fpEvtStr->CALyin[index];
-      Float_t y0_f  = fpEvtStr->CALyout[index];
-      Float_t z0_i  = fpEvtStr->CALzin[index];
-      Float_t z0_f  = fpEvtStr->CALzout[index];
-      Float_t time  = fpEvtStr->CALtim[index]*TAGgeoTrafo::SecToNs();
+      Int_t trackIdx = fpEvtStr->CALid[index] - 1;
+      Int_t id       = fpEvtStr->CALicry[index];
+      Float_t x0_i   = fpEvtStr->CALxin[index];
+      Float_t x0_f   = fpEvtStr->CALxout[index];
+      Float_t y0_i   = fpEvtStr->CALyin[index];
+      Float_t y0_f   = fpEvtStr->CALyout[index];
+      Float_t z0_i   = fpEvtStr->CALzin[index];
+      Float_t z0_f   = fpEvtStr->CALzout[index];
+      Float_t time   = fpEvtStr->CALtim[index]*TAGgeoTrafo::SecToNs();
 
       TVector3 posIn(x0_i, y0_i, z0_i);
       TVector3 posInLoc = geoTrafo->FromGlobalToCALocal(posIn);
@@ -263,7 +263,7 @@ Bool_t TACAactNtuMC::Action()
       TACAntuHit* hit = fDigitizer->GetCurrentHit();
       
       if (hit) {
-         hit->AddMcTrackIdx(trackId, i);
+         hit->AddMcTrackIdx(trackIdx, index);
          
          Float_t thick = -parGeo->GetCrystalThick();
          TVector3 positionCry(0, 0, thick);
