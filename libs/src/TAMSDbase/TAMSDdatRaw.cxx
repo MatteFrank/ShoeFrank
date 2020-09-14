@@ -68,7 +68,7 @@ Int_t TAMSDrawHit::Compare(const TObject* obj) const
 
 ClassImp(TAMSDdatRaw) 
 
-TString TAMSDdatRaw::fgkBranchName   = "vtrd.";
+TString TAMSDdatRaw::fgkBranchName   = "msdrd.";
 
 //______________________________________________________________________________
 //

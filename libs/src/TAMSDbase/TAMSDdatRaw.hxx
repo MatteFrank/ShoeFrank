@@ -29,28 +29,28 @@ public:
    //! Comapre method
    Int_t      Compare(const TObject* obj) const;
    //! Get input type
-   Int_t      GetInput()        const    { return fInput;        }
+   Int_t      GetInput()        const    { return fInput;  }
    //! Get value (pulse height)
-   Int_t      GetValue()        const    { return fValue;        }
+   Int_t      GetValue()        const    { return fValue;  }
    //! Get line number
-   Int_t      GetView()   const    { return fView;   }
+   Int_t      GetView()         const    { return fView;   }
    //! Get column number
-   Int_t      GetStrip() const    { return fStrip; }
+   Int_t      GetStrip()        const    { return fStrip;  }
    //! Get index
-   Int_t      GetIndex()        const    { return fIndex;        }
+   Int_t      GetIndex()        const    { return fIndex;  }
    //! Is Sortable
-   Bool_t     IsSortable()      const    { return kTRUE;         }
+   Bool_t     IsSortable()      const    { return kTRUE;   }
 
    //! Set input type
-   void     SetInput(Int_t input)        { fInput = input;      }
+   void     SetInput(Int_t input)        { fInput = input; }
    //! Set value
-   void     SetValue(Int_t value)        { fValue = value;      }
+   void     SetValue(Int_t value)        { fValue = value; }
    //! Set line number
-   void     SetView(Int_t view)    { fView = view;  }
+   void     SetView(Int_t view)          { fView = view;   }
    //! Set column number
-   void     SetStrip(Int_t strip)   { fStrip = strip; }
+   void     SetStrip(Int_t strip)        { fStrip = strip; }
    //! Set index
-   void     SetIndex(Int_t index)        { fIndex = index;      }
+   void     SetIndex(Int_t index)        { fIndex = index; }
    
    ClassDef(TAMSDrawHit,1)
 };
