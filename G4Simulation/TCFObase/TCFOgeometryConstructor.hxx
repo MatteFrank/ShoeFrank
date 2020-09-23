@@ -47,7 +47,6 @@
 
 
 class G4Material;
-class TCFOfield;
 class TCSTgeometryConstructor;
 class TCBMgeometryConstructor;
 class TCVTgeometryConstructor;
@@ -56,9 +55,6 @@ class TCEMgeometryConstructor;
 class TCMSDgeometryConstructor;
 class TCTWgeometryConstructor;
 class TCCAgeometryConstructor;
-class TCFOfield;
-class TADIgeoField;
-class TCEMfieldSetup;
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -92,10 +88,6 @@ private:
    TCTWgeometryConstructor*  fTofWall;
    TCEMgeometryConstructor*  fMagnet;
    
-   TCFOfield*                fField;
-   TADIgeoField*             fFieldImpl;
-   TCEMfieldSetup*           fFieldSetup;
-
    TASTparGeo*               fpParGeoSt;
    TABMparGeo*               fpParGeoBm;
    TAVTparGeo*               fpParGeoVtx;

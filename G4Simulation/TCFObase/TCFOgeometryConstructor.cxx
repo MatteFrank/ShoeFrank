@@ -61,8 +61,6 @@
 #include "TCMSDgeometryConstructor.hxx"
 #include "TCCAgeometryConstructor.hxx"
 #include "TCTWgeometryConstructor.hxx"
-#include "TCFOfield.hxx"
-#include "TCEMfieldSetup.hxx"
 
 #include "GlobalPar.hxx"
 #include "TADIgeoField.hxx"
@@ -82,9 +80,6 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
   fCalorimeter(0x0),
   fTofWall(0x0),
   fMagnet(0x0),
-  fField(0x0),
-  fFieldImpl(0x0),
-  fFieldSetup(0x0),
   fpParGeoSt(0x0),
   fpParGeoBm(0x0),
   fpParGeoVtx(0x0),
@@ -139,11 +134,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
       fpParGeoEm = new TADIparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TADIparGeo::GetBaseName(), fRunNumber);
       fpParGeoEm->FromFile(mapFileName.Data());
-      
-      fFieldImpl  = new TADIgeoField(fpParGeoEm);
-      fField      = new TCFOfield(fFieldImpl);
-      fFieldSetup = new TCEMfieldSetup(fField);
-      fMagnet     = new TCEMgeometryConstructor(fpParGeoEm);
+      fMagnet = new TCEMgeometryConstructor(fpParGeoEm);
    }
    
    // initialise map file for beam monitor
@@ -174,9 +165,6 @@ TCFOgeometryConstructor::~TCFOgeometryConstructor()
    if (fCalorimeter)  delete fCalorimeter;
    if (fTofWall)      delete fTofWall;
    if (fMagnet)       delete fMagnet;
-   if (fField)        delete fField;
-   if (fFieldImpl)    delete fFieldImpl;
-   if (fFieldSetup)   delete fFieldSetup;
     
    if (fpParGeoSt)    delete fpParGeoSt;
    if (fpParGeoBm)    delete fpParGeoBm;
