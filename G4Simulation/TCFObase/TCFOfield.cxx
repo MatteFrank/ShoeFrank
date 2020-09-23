@@ -60,6 +60,8 @@ TCFOfield::~TCFOfield()
 void TCFOfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
 {
    // point[4] := time
+   fieldB[3] = fieldB[4] = fieldB[5] = 0.;
+   
    TVector3 pos;
    for (Int_t i = 0; i < 3; ++i) {
       pos[i] = point[i]/CLHEP::cm; // mmn -> cm
