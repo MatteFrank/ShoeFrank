@@ -16,7 +16,7 @@
 
 #include "TADIparGeo.hxx"
 #include "TADIgeoField.hxx"
-#include "TCFOfield.hxx"
+#include "TCEMfield.hxx"
 #include "TCEMfieldSetup.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -94,6 +94,7 @@ G4LogicalVolume* TCEMgeometryConstructor::Construct()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCEMgeometryConstructor::ConstructSDandField()
 {
+   printf("\n\ntoto\n\n");
    if (fField == 0x0) {
       fFieldImpl  = new TADIgeoField(fpParGeo);
       fField      = new TCEMfield(fFieldImpl);
