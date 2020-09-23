@@ -15,9 +15,6 @@
 #include "G4RunManager.hh"
 
 #include "TADIparGeo.hxx"
-#include "TADIgeoField.hxx"
-#include "TCEMfield.hxx"
-#include "TCEMfieldSetup.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
 
@@ -31,10 +28,7 @@ using namespace CLHEP;
 TCEMgeometryConstructor::TCEMgeometryConstructor(TADIparGeo* pParGeo)
 : TCGbaseConstructor("TCEMgeometryConstructor", "1.0"),
   fBoxLog(0x0),
-  fpParGeo(pParGeo),
-   fField(0x0),
-   fFieldImpl(0x0),
-   fFieldSetup(0x0)
+  fpParGeo(pParGeo)
 {
    DefineMaxMinDimension();
    DefineMaterial();
@@ -43,10 +37,8 @@ TCEMgeometryConstructor::TCEMgeometryConstructor(TADIparGeo* pParGeo)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 TCEMgeometryConstructor::~TCEMgeometryConstructor()
 {
-   if (fField)        delete fField;
-   if (fFieldImpl)    delete fFieldImpl;
-   if (fFieldSetup)   delete fFieldSetup;
 }
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void  TCEMgeometryConstructor::DefineSensitive()
@@ -88,18 +80,6 @@ G4LogicalVolume* TCEMgeometryConstructor::Construct()
    }
    
    return fBoxLog;
-}
-
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void TCEMgeometryConstructor::ConstructSDandField()
-{
-   printf("\n\ntoto\n\n");
-   if (fField == 0x0) {
-      fFieldImpl  = new TADIgeoField(fpParGeo);
-      fField      = new TCEMfield(fFieldImpl);
-      fFieldSetup = new TCEMfieldSetup(fField);
-   }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -34,6 +34,7 @@
 #include "TCGbaseGeometryConstructor.hxx"
 #include "globals.hh"
 #include "G4String.hh"
+#include "G4Cache.hh"
 
 #include "TASTparGeo.hxx"
 #include "TABMparGeo.hxx"
@@ -47,6 +48,7 @@
 
 
 class G4Material;
+class TCEMfield;
 class TCSTgeometryConstructor;
 class TCBMgeometryConstructor;
 class TCVTgeometryConstructor;
@@ -55,6 +57,9 @@ class TCEMgeometryConstructor;
 class TCMSDgeometryConstructor;
 class TCTWgeometryConstructor;
 class TCCAgeometryConstructor;
+class TCFOfield;
+class TADIgeoField;
+class TCEMfieldSetup;
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -78,6 +83,8 @@ public:
    TACAparGeo*  GetParGeoCa()              { return fpParGeoCa;       }
    TATWparGeo*  GetParGeoTw()              { return fpParGeoTw;       }
    
+   void ConstructSDandField();
+
 private:
    TCSTgeometryConstructor*  fStartCounter;
    TCBMgeometryConstructor*  fBeamMonitor;
@@ -88,6 +95,11 @@ private:
    TCTWgeometryConstructor*  fTofWall;
    TCEMgeometryConstructor*  fMagnet;
    
+   TCEMfield*                fField;
+   TADIgeoField*             fFieldImpl;
+   TCEMfieldSetup*           fFieldSetup;
+   G4Cache<TCEMfieldSetup*>  fEmFieldSetup;
+
    TASTparGeo*               fpParGeoSt;
    TABMparGeo*               fpParGeoBm;
    TAVTparGeo*               fpParGeoVtx;

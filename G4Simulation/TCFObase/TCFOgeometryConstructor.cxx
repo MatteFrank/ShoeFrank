@@ -36,6 +36,7 @@
 #include "G4Box.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
+#include "G4AutoDelete.hh"
 
 #include "G4GeometryManager.hh"
 #include "G4PhysicalVolumeStore.hh"
@@ -61,6 +62,8 @@
 #include "TCMSDgeometryConstructor.hxx"
 #include "TCCAgeometryConstructor.hxx"
 #include "TCTWgeometryConstructor.hxx"
+#include "TCEMfield.hxx"
+#include "TCEMfieldSetup.hxx"
 
 #include "GlobalPar.hxx"
 #include "TADIgeoField.hxx"
@@ -80,6 +83,9 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
   fCalorimeter(0x0),
   fTofWall(0x0),
   fMagnet(0x0),
+  fField(0x0),
+  fFieldImpl(0x0),
+  fFieldSetup(0x0),
   fpParGeoSt(0x0),
   fpParGeoBm(0x0),
   fpParGeoVtx(0x0),
@@ -165,7 +171,10 @@ TCFOgeometryConstructor::~TCFOgeometryConstructor()
    if (fCalorimeter)  delete fCalorimeter;
    if (fTofWall)      delete fTofWall;
    if (fMagnet)       delete fMagnet;
-    
+   
+   if (fField)        delete fField;
+   if (fFieldImpl)    delete fFieldImpl;
+   
    if (fpParGeoSt)    delete fpParGeoSt;
    if (fpParGeoBm)    delete fpParGeoBm;
    if (fpParGeoVtx)   delete fpParGeoVtx;
@@ -175,7 +184,6 @@ TCFOgeometryConstructor::~TCFOgeometryConstructor()
    if (fpParGeoCa)    delete fpParGeoCa;
    if (fpParGeoTw)    delete fpParGeoTw;
 }
-
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
@@ -390,4 +398,17 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
     return pWorld;
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void TCFOgeometryConstructor::ConstructSDandField()
+{
+   if (!fEmFieldSetup.Get()) {
+
+      fFieldImpl  = new TADIgeoField(fpParGeoEm);
+      fField      = new TCEMfield(fFieldImpl);
+      fFieldSetup = new TCEMfieldSetup(fField);
+      
+      G4AutoDelete::Register(fFieldSetup); //Kernel will delete the messenger
+      fEmFieldSetup.Put(fFieldSetup);
+   }
+}
 
