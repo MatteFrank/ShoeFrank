@@ -38,15 +38,19 @@
 #include "globals.hh"
 #include "G4MagneticField.hh"
 
+#include "TADIgeoField.hxx"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class TF1;
 class TCEMfield : public G4MagneticField
 {
 
+private:
+   TADIgeoField* fMagField;
+   
 public:
 
-  TCEMfield();
+  TCEMfield(TADIgeoField* fMagField);
   virtual ~TCEMfield();
 
   /// DoesFieldChangeEnergy() returns true.
@@ -55,7 +59,7 @@ public:
   /// GetFieldValue() returns the field value at a given point[].
   /// field is really field[6]: Bx,By,Bz.
   /// point[] is in global coordinates: x,y,z,t.
-  virtual void GetFieldValue(const G4double* /*Point[4]*/, G4double* /*Bfield*/) const { return; }
+   virtual void GetFieldValue(const G4double* /*Point[4]*/, G4double* /*Bfield*/) const;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

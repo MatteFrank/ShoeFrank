@@ -32,12 +32,16 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#include "GlobalPar.hxx"
+
 #include "TCEMfield.hxx"
+#include "G4SystemOfUnits.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-TCEMfield::TCEMfield()
-: G4MagneticField()
+TCEMfield::TCEMfield(TADIgeoField* magField)
+ : G4MagneticField(),
+   fMagField(magField)
 {
 }
 
@@ -45,4 +49,32 @@ TCEMfield::TCEMfield()
 
 TCEMfield::~TCEMfield()
 {
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void TCEMfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
+{
+   // point[4] := time
+   fieldB[3] = fieldB[4] = fieldB[5] = 0.;
+   
+   TVector3 pos;
+   for (Int_t i = 0; i < 3; ++i) {
+      pos[i] = point[i]/CLHEP::cm; // mmn -> cm
+   }
+   
+   TVector3 field = fMagField->GetField(pos);
+   
+   for (Int_t i = 0; i < 3; ++i) {
+      field[i] *= CLHEP::gauss;
+   }
+   
+   fieldB[0] = field[0];
+   fieldB[1] = field[1];
+   fieldB[2] = field[2];
+   
+   if (FootMcDebugLevel(1))
+      printf("[%.3e,%.3e,%.3e] \t %.3e %.3e %.3e\n", pos[0],pos[1],pos[2], field[0],field[1],field[2]);
+   
+   return;
 }
