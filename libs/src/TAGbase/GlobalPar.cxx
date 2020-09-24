@@ -332,7 +332,9 @@ Bool_t GlobalPar::GetMcDebugLevel(Int_t level, const char* className)
    // need to remove compiler index
    
    Int_t status;
-   const char* name = abi::__cxa_demangle(className,0,0,&status);
+   char output_buffer[255];
+
+   const char* name = abi::__cxa_demangle(className,  output_buffer, 0,&status);
 
    return GetDebugLevel(level, name);
 }
