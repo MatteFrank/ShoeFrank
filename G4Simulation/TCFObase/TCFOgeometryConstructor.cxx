@@ -173,6 +173,7 @@ TCFOgeometryConstructor::~TCFOgeometryConstructor()
    if (fMagnet)       delete fMagnet;
    
    if (fField)        delete fField;
+   if (fFieldSetup)   delete fFieldSetup;
    if (fFieldImpl)    delete fFieldImpl;
    
    if (fpParGeoSt)    delete fpParGeoSt;
@@ -401,14 +402,10 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCFOgeometryConstructor::ConstructSDandField()
 {
-   if (!fEmFieldSetup.Get()) {
-
+   if (!fField) {
       fFieldImpl  = new TADIgeoField(fpParGeoEm);
       fField      = new TCEMfield(fFieldImpl);
       fFieldSetup = new TCEMfieldSetup(fField);
-      
-      G4AutoDelete::Register(fFieldSetup); //Kernel will delete the messenger
-      fEmFieldSetup.Put(fFieldSetup);
    }
 }
 
