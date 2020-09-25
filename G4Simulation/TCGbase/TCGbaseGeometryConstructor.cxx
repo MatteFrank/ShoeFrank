@@ -107,6 +107,7 @@ TCGbaseGeometryConstructor::~TCGbaseGeometryConstructor()
 	 delete fTarget;
     delete fpParGeoG;
     delete fpMaterials;
+    delete fCampManager;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -143,9 +144,9 @@ G4VPhysicalVolume* TCGbaseGeometryConstructor::Construct()
       tgRot->rotateZ(-tgAng[2]);
       tgRot->invert(); // inversion ???
 
-       G4Region *regTgt = new G4Region("Target");
-       logTarget->SetRegion(regTgt);
-       regTgt->AddRootLogicalVolume(logTarget);
+      G4Region *regTgt = new G4Region("Target");
+      logTarget->SetRegion(regTgt);
+      regTgt->AddRootLogicalVolume(logTarget);
 
       new G4PVPlacement(tgRot, G4ThreeVector(tgCenter[0], tgCenter[1], tgCenter[2]), logTarget, "Target", fLogWorld, false, 0);
    }
