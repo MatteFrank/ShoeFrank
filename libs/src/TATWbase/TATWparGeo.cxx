@@ -314,7 +314,7 @@ TGeoVolume* TATWparGeo::BuildTofWall(const char *wallName)
       wall = gGeoManager->MakeBox(wallName, med,  fBarSize[1]/2.,  fBarSize[1]/2., GetBarThick()*2);
    }
    
-   for (Int_t i = 0; i < 2; ++i) {
+   for (Int_t i = 0; i < fLayersN; ++i) {
       
       for (Int_t j = 0; j < fBarsN; ++j) {
          
