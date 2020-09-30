@@ -162,8 +162,8 @@ public:
         
         logger_m.add_root_header( "END_RECONSTRUCTION" );
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
-//        track_c = compute_momentum_old( std::move(track_c) );
-        track_c = compute_momentum_new( std::move(track_c) );
+        track_c = compute_momentum_old( std::move(track_c) );
+//        track_c = compute_momentum_new( std::move(track_c) );
         register_tracks_upward( std::move( track_c ) );
         
         checker_m.end_event();
@@ -1053,9 +1053,9 @@ private:
         auto const weight_y = matrix<N, N>{ std::move(weight_y_c)};
         
         //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
-                auto const part1_y = form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) );
-                auto const part2_y = expr::compute( transpose( regressor_y ) * weight_y * observation_y );
-                auto const parameter_y = expr::compute( part1_y * part2_y );
+            auto const part1_y = form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) );
+            auto const part2_y = expr::compute( transpose( regressor_y ) * weight_y * observation_y );
+            auto const parameter_y = expr::compute( part1_y * part2_y );
 //        auto const parameter_y = expr::compute( form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) ) * transpose( regressor_y ) * weight_y * observation_y );
         
      //   std::cout << "parameter_y: \n" << parameter_y;
