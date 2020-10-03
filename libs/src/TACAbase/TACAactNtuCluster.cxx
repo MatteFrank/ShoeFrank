@@ -204,7 +204,7 @@ Bool_t TACAactNtuCluster::CreateClusters()
    
    // create clusters
    for (Int_t i = 0; i< fClustersN; ++i)
-      pNtuClus->NewCluster();
+      pNtuClus->NewCluster();  //create a TClonesArray of clusters
    
    for (Int_t i = 0; i < pNtuHit->GetHitsN(); ++i) {
       TACAntuHit* hit = pNtuHit->GetHit(i);
@@ -215,9 +215,9 @@ Bool_t TACAactNtuCluster::CreateClusters()
       if(!CheckLine(line)) continue;
       if(!CheckCol(col)) continue;
       
-      Int_t clusterN = GetClusterNumber(line,col);
-      if ( clusterN != -1 ) {
-         cluster = pNtuClus->GetCluster(clusterN);
+      Int_t clusterN = GetClusterNumber(line,col);  //cluster ID
+      if ( clusterN != -1 ) {  //if cluster exist do:
+         cluster = pNtuClus->GetCluster(clusterN);  //get cluster with "clusterN" ID
          cluster->AddHit(hit);
       }
    }

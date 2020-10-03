@@ -192,7 +192,7 @@ Bool_t TACAactNtuMC::Action()
    for (Int_t i = 0; i < fpEvtStr->CALn; i++) { 
 
       // Get particle index
-      Int_t id      = fpEvtStr->CALicry[i];
+      Int_t id      = fpEvtStr->CALicry[i];     //crystal ID
       Int_t trackId = fpEvtStr->CALid[i] - 1;  // id della particella nel Calo
       double ener   = fpEvtStr->CALde[i]*TAGgeoTrafo::GevToMev();;
       energyEvent  += fpEvtStr->CALde[i];
@@ -211,7 +211,7 @@ Bool_t TACAactNtuMC::Action()
 
    } // end first loop
 
-   // Sum all dauthers energy dep. with their mother
+   // Sum all daugthers energy dep. with their mother
    int npart = dep.GetEntriesFast();
    for ( int i=npart-1; i>0; --i ) { // assume that particles are sort by creation
       energyDep* endep = (energyDep*)dep.At(i);
@@ -229,7 +229,7 @@ Bool_t TACAactNtuMC::Action()
       endepM->fDE += endep->fDE;  // Merge with mother
       endepM->fn += endep->fn++;
 
-      dep.RemoveAt( endep->fid ); // remove thedauther  particle
+      dep.RemoveAt( endep->fid ); // remove the daugther particle
    }
    dep.Compress(); // Remove empty slots
 
