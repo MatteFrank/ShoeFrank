@@ -162,8 +162,8 @@ public:
         
         logger_m.add_root_header( "END_RECONSTRUCTION" );
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
-//        track_c = compute_momentum_old( std::move(track_c) );
-        track_c = compute_momentum_new( std::move(track_c) );
+        track_c = compute_momentum_old( std::move(track_c) );
+//        track_c = compute_momentum_new( std::move(track_c) );
         register_tracks_upward( std::move( track_c ) );
         
         checker_m.end_event();
@@ -970,8 +970,8 @@ private:
             }
         
             double beam_speed = sqrt( pow(beam_energy_m*beam_mass_number_m, 2) + 2 * beam_mass_number_m * beam_mass_number_m * 938 * beam_energy_m )/(beam_mass_number_m * 938 + beam_mass_number_m * beam_energy_m) * 30;
-            double additional_time = (target_position_m - st_position_m)/beam_speed;
-        
+//            double additional_time = (target_position_m - st_position_m)/beam_speed;
+            double additional_time = (cluster_c.front().evaluation_point - st_position_m)/beam_speed;
         
             double speed = total_step_length/(static_cast<TATWpoint const *>(cluster_c.back().data)->GetTime() - additional_time);
             double beta = speed/30;
@@ -1031,7 +1031,12 @@ private:
                                                           );
         auto const observation_x = matrix<N, 1>{ std::move(x_c) };
         auto const weight_x = matrix<N, N>{ std::move(weight_x_c)};
-        auto const parameter_x = expr::compute( form_inverse( expr::compute( transpose(regressor_x) * weight_x * regressor_x ) ) * transpose( regressor_x ) * weight_x * observation_x );
+        
+        //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
+        auto const part1_x = form_inverse( expr::compute( transpose(regressor_x) * weight_x * regressor_x ) );
+        auto const part2_x = expr::compute( transpose( regressor_x ) * weight_x * observation_x );
+        auto const parameter_x = expr::compute( part1_x * part2_x );
+//        auto const parameter_x = expr::compute( form_inverse( expr::compute( transpose(regressor_x) * weight_x * regressor_x ) ) * transpose( regressor_x ) * weight_x * observation_x );
         
      //   std::cout << "parameter_x: \n" << parameter_x;
         
@@ -1046,7 +1051,12 @@ private:
                                                           );
         auto const observation_y = matrix<N, 1>{ std::move(y_c) };
         auto const weight_y = matrix<N, N>{ std::move(weight_y_c)};
-        auto const parameter_y = expr::compute( form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) ) * transpose( regressor_y ) * weight_y * observation_y );
+        
+        //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
+            auto const part1_y = form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) );
+            auto const part2_y = expr::compute( transpose( regressor_y ) * weight_y * observation_y );
+            auto const parameter_y = expr::compute( part1_y * part2_y );
+//        auto const parameter_y = expr::compute( form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) ) * transpose( regressor_y ) * weight_y * observation_y );
         
      //   std::cout << "parameter_y: \n" << parameter_y;
         
@@ -1172,8 +1182,8 @@ private:
             
 
             double beam_speed = sqrt( pow(beam_energy_m*beam_mass_number_m, 2) + 2 * beam_mass_number_m * beam_mass_number_m * 938 * beam_energy_m )/(beam_mass_number_m * 938 + beam_mass_number_m * beam_energy_m) * 30;
-            double additional_time = (target_position_m - st_position_m)/beam_speed;
-
+//            double additional_time = (target_position_m - st_position_m)/beam_speed;
+            double additional_time = (cluster_c.front().evaluation_point - st_position_m)/beam_speed;
 
             double speed = arc_length/(static_cast<TATWpoint const *>(cluster_c.back().data)->GetTime() - additional_time);
             double beta = speed/30;

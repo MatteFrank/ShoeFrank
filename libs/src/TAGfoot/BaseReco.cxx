@@ -721,6 +721,8 @@ void BaseReco::SetTreeBranches()
   if (GlobalPar::GetPar()->IncludeTW())
     fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
 
+   if (GlobalPar::GetPar()->IncludeCA())
+      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
 }
 
 //__________________________________________________________
