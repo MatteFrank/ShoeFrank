@@ -217,14 +217,15 @@ Bool_t TACAactNtuCluster::CreateClusters()
       
       Int_t clusterN = GetClusterNumber(line,col);  //cluster ID
       if ( clusterN != -1 ) {  //if cluster exist do:
-         cluster = pNtuClus->GetCluster(clusterN);  //get cluster with "clusterN" ID
-         cluster->AddHit(hit);
+         cluster = pNtuClus->GetCluster(clusterN);  //get empty cluster from TClonesArray with "clusterN" ID
+         cluster->AddHit(hit); //fill that element of TClonesArray with "hit"
       }
    }
    
    // Compute position and fill clusters info
    cluster = 0x0;
    
+   //Fill histos
    for (Int_t i = 0; i < pNtuClus->GetClustersN(); ++i) {
       cluster = pNtuClus->GetCluster(i);
       FillClusterInfo(cluster);
