@@ -19,6 +19,7 @@ if (FILECOPY)
  execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/data/  ${CMAKE_BINARY_DIR}/Simulation)
  execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/level0/geomaps/  ${CMAKE_BINARY_DIR}/Simulation)
  execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/level0/config/  ${CMAKE_BINARY_DIR}/Simulation)
+ execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/level0/cammaps/  ${CMAKE_BINARY_DIR}/Simulation)
 endif(FILECOPY)
 
 

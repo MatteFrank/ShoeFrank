@@ -96,7 +96,7 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
             for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
                Int_t idx = hit->GetMcTrackIdx(k);
                printf("TrackMcId %d ", idx);
-               TAMCeveTrack* track = eve->GetHit(idx);
+               TAMCeveTrack* track = eve->GetTrack(idx);
                printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
                /*
                 TAMChit* mcHit = vtMc->GetHit(idx);

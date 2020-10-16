@@ -402,6 +402,8 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCFOgeometryConstructor::ConstructSDandField()
 {
+   if (!GlobalPar::GetPar()->IncludeDI()) return;
+
    if (!fField) {
       fFieldImpl  = new TADIgeoField(fpParGeoEm);
       fField      = new TCEMfield(fFieldImpl);
