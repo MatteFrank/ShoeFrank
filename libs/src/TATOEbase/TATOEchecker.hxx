@@ -395,6 +395,9 @@ private:
     node_type const * current_node_mh = nullptr;
     
     std::size_t fake_number_m{0};
+    
+    TH1D* real_momentum_distribution_h{nullptr};
+    TH1D* reconstructed_momentum_distribution_h{nullptr};
 
     std::vector< candidate_indices > candidate_index_mc;
     std::vector< reconstruction_module > reconstruction_module_mc;
@@ -410,6 +413,10 @@ public:
     {
         reconstruction_module_mc.reserve(20);
         computation_module_mc.reserve(20);
+        real_momentum_distribution_h = new TH1D{ "real_momentum" ,
+            ";Momentum(GeV/c);Count", 1000, 0, 9};
+        reconstructed_momentum_distribution_h = new TH1D{ "reconstructed_momentum",
+            ";Momentum(GeV/c);Count", 1000, 0, 9 };
     }
     
 private:
@@ -525,6 +532,10 @@ public:
                                 }
                             }
                         }
+                        
+                        real_momentum_distribution_h->Fill(reconstructible.properties.momentum/1000);
+                        reconstructed_momentum_distribution_h->Fill(reconstructed.properties.momentum/1000);
+                        
                     }
                                                                        );
         auto fake_reconstruction = aftereffect::make_aftereffect(
@@ -561,8 +572,8 @@ public:
         
         auto momentum_resolution = aftereffect::make_aftereffect(
                            [](reconstruction_module const& module_p)
-                           { return module_p.reconstructible_o.has_value() && module_p.reconstructed_o.has_value() && // ;},
-                               module_p.reconstructible_o.value().properties.charge == module_p.reconstructed_o.value().properties.charge;}, // &&
+                           { return module_p.reconstructible_o.has_value() && module_p.reconstructed_o.has_value() ;},
+//                               module_p.reconstructible_o.value().properties.charge == module_p.reconstructed_o.value().properties.charge;}, // &&
 //                                    module_p.reconstructible_o.value().properties.mass == module_p.reconstructed_o.value().properties.mass; },
                            [this](reconstruction_module const& module_p)
                            {
@@ -945,6 +956,10 @@ public:
     
     void register_histograms( details::all_separated_tag )
     {
+        
+        action_m.reconstructed_track_mhc->AddHistogram(real_momentum_distribution_h);
+        action_m.reconstructed_track_mhc->AddHistogram(reconstructed_momentum_distribution_h);
+        
         for(auto const & module : computation_module_mc){
             TH1D* efficiency_histogram_h = const_cast<TH1D*>( module.get_efficiency_histogram() );
 
