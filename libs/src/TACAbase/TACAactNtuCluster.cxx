@@ -179,15 +179,15 @@ TAGobject*  TACAactNtuCluster::GetHitObject(Int_t idx) const
 //
 Bool_t TACAactNtuCluster::ApplyCuts(TACAcluster* cluster)
 {
-//   TACAparConf* pConfig = (TACAparConf*) fpConfig->Object();
-//
-//   TClonesArray* list = cluster->GetListOfHits();
-//   Int_t  entries = list->GetEntries();
-//
-//   // cuts on crystals in cluster
-//   if(entries < pConfig->GetSensorPar(cluster->GetPlaneNumber()).MinNofCrystalsInCluster ||
-//      entries > pConfig->GetSensorPar(cluster->GetPlaneNumber()).MaxNofCrystalsInCluster)
-//      return kFALSE;
+  // TACAparConf* pConfig = (TACAparConf*) fpConfig->Object();
+
+  // TClonesArray* list = cluster->GetListOfHits();
+  // Int_t  entries = list->GetEntries();
+
+  // cuts on crystals in cluster
+  // if(entries < pConfig->GetSensorPar(cluster->GetPlaneNumber()).MinNofCrystalsInCluster ||
+  //    entries > pConfig->GetSensorPar(cluster->GetPlaneNumber()).MaxNofCrystalsInCluster)
+  //    return kFALSE;
    
    return kTRUE;
 }
