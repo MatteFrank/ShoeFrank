@@ -60,7 +60,9 @@ int main (int argc, char *argv[]) {
 
     // real coding starts here!
 
-    GlobalPar::Instance(Form("%sFootGlobal.par",exp.Data()));
+    cout<<" GlobalPar "<<Form("%s/FootGlobal.par",exp.Data())<<endl;
+    GlobalPar::Instance(Form("%s/FootGlobal.par",exp.Data()));
+
     GlobalPar::GetPar()->Print();
 
     TAGroot* fTAGroot = new TAGroot();
@@ -85,6 +87,8 @@ int main (int argc, char *argv[]) {
     // read geomap files
     TString parFileName;
     parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+
+    cout<<" From TCAmpaign manager! "<<parFileName.Data()<<endl;
     geoTrafo.FromFile(parFileName.Data());
 
     parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);

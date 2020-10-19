@@ -162,8 +162,8 @@ public:
         
         logger_m.add_root_header( "END_RECONSTRUCTION" );
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
-        track_c = compute_momentum_old( std::move(track_c) );
-//        track_c = compute_momentum_new( std::move(track_c) );
+//        track_c = compute_momentum_old( std::move(track_c) );
+        track_c = compute_momentum_new( std::move(track_c) );
         register_tracks_upward( std::move( track_c ) );
         
         checker_m.end_event();
@@ -293,28 +293,33 @@ private:
                         add_hypothesis(6);
                         add_hypothesis(7);
                         add_hypothesis(8);
+                        break;
                     }
                     case 4 :
                     {
                         add_hypothesis(7);
                         add_hypothesis(9);
                         add_hypothesis(10);
+                        break;
                     }
                     case 5 :
                     {
                         add_hypothesis(10);
                         add_hypothesis(11);
+                        break;
                     }
                     case 6 :
                     {
                         add_hypothesis(11);
                         add_hypothesis(12);
                         add_hypothesis(13);
+                        break;
                     }
                     case 7:
                     {
                         add_hypothesis(14);
                         add_hypothesis(15);
+                        break;
                     }
                     default:
                     {
