@@ -10,11 +10,13 @@ MESSAGE("  ${PROJECT_NAME}:")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/fullrec/rootlogon.C"  @ONLY)
 
 #----------------------------------------------------------------------------
-# Copy geomaps + config (tmp solution)
+# Copy geomaps + config + calib + cammaps (tmp solution)
 #
 if (FILECOPY)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../level0/geomaps/ DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/geomaps/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../level0/config/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/config/)
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../level0/cammaps/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/cammaps/)
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../level0/calib/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/calib/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/data/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/macros/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/)
 endif(FILECOPY)
