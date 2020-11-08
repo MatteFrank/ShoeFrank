@@ -15,22 +15,18 @@
 ClassImp(GlobalToeReco)
 
 //__________________________________________________________
-GlobalToeReco::GlobalToeReco(TString expName, TString fileNameIn, TString fileNameout)
- : BaseReco(expName, fileNameIn, fileNameout),
-   fActEvtReader(0x0)
+GlobalToeReco::GlobalToeReco(TString expName, TString fileNameIn, TString fileNameout, Bool_t isMC)
+ : BaseReco(expName, fileNameIn, fileNameout)
 {
    TAGactNtuGlbTrack::EnableStdAlone();
-   fFlagMC = true;
+   fFlagMC = isMC;
 }
 
 //__________________________________________________________
 GlobalToeReco::~GlobalToeReco()
 {
    // default destructor
-   if (fActEvtReader) delete fActEvtReader;
 }
-
-
 
 //__________________________________________________________
 void GlobalToeReco::LoopEvent(Int_t nEvents)
@@ -51,11 +47,13 @@ void GlobalToeReco::LoopEvent(Int_t nEvents)
       if (!fTAGroot->NextEvent()) break;
 
       
-      TAGntuGlbTrack *glbTrack = (TAGntuGlbTrack*) (fTAGroot->FindDataDsc("glbTrack", "TAGntuGlbTrack")->Object());
-      int nTrk = glbTrack->GetTracksN();
-      for(int iTr = 0; iTr< nTrk; iTr++) {
-	TAGtrack *aTr = glbTrack->GetTrack(iTr);
-	//	cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<endl;
+      if (FootDebugLevel(2)) {
+         TAGntuGlbTrack *glbTrack = (TAGntuGlbTrack*) (fTAGroot->FindDataDsc("glbTrack", "TAGntuGlbTrack")->Object());
+         int nTrk = glbTrack->GetTracksN();
+         for(int iTr = 0; iTr< nTrk; iTr++) {
+            TAGtrack *aTr = glbTrack->GetTrack(iTr);
+            cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<endl;
+         }
       }
    }
 }
@@ -66,12 +64,7 @@ void GlobalToeReco::OpenFileIn()
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fActGlbTrack->Open(GetName());
       fTree = fActGlbTrack->GetTree();
-      return;
    }
-   
-   fActEvtReader = new TFile(GetName());
-   fTree = (TTree*)fActEvtReader->Get("EventTree");
-   
 }
 
 //__________________________________________________________
@@ -79,10 +72,7 @@ void GlobalToeReco::CloseFileIn()
 {
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
       fActGlbTrack->Close();
-      return;
    }
-
-   fActEvtReader->Close();
 }
 
 // --------------------------------------------------------------------------------------
@@ -101,14 +91,26 @@ void GlobalToeReco::SetRunNumber()
    if (name[0] == '.')
       name.Remove(0,1);
    
-   // assuming name XXX_run.root
-   Int_t pos1   = name.Last('_');
-   Int_t len    = name.Length();
+   if (fFlagMC) {
+      // assuming name XXX_run.root
+      Int_t pos1   = name.Last('_');
+      Int_t len    = name.Length();
    
-   TString tmp1 = name(pos1+1, len);
-   Int_t pos2   = tmp1.First(".");
-   TString tmp  = tmp1(0, pos2);
-   fRunNumber = tmp.Atoi();
+      TString tmp1 = name(pos1+1, len);
+      Int_t pos2   = tmp1.First(".");
+      TString tmp  = tmp1(0, pos2);
+      fRunNumber = tmp.Atoi();
+      
+   } else {
+      // assuming XXX.run.XXX.dat
+      Int_t pos1   = name.First(".");
+      Int_t len    = name.Length();
+      
+      TString tmp1 = name(pos1+1, len);
+      Int_t pos2   = tmp1.First(".");
+      TString tmp  = tmp1(0, pos2);
+      fRunNumber = tmp.Atoi();
+   }
    
    Warning("SetRunNumber()", "Run number not set !, taking number from file: %d", fRunNumber);
 
@@ -118,18 +120,13 @@ void GlobalToeReco::SetRunNumber()
 //__________________________________________________________
 void GlobalToeReco::CreateRawAction()
 {
-
   //Disabled: you already have everything you need inside the root file
-   fpNtuMcEve = new TAGdataDsc("eveMc", new TAMCntuEve());
+   if (fFlagMC)
+      fpNtuMcEve = new TAGdataDsc("eveMc", new TAMCntuEve());
   
 }
 
+//__________________________________________________________
 void GlobalToeReco::AddRawRequiredItem()
 {
 }
-
-
-/*
-   AddRawRequiredItem();
-   AddRecRequiredItem();
-*/

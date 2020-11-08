@@ -160,11 +160,6 @@ void LocalReco::CreateRawAction()
 //__________________________________________________________
 void LocalReco::OpenFileIn()
 {
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      fActGlbTrack->Open(GetName());
-      return;
-   }
-
    if (fgStdAloneFlag) {
       if (GlobalPar::GetPar()->IncludeVT())
          fActVmeReaderVtx->Open(GetName());
@@ -192,6 +187,7 @@ void LocalReco::SetRunNumber()
    if (name[0] == '.')
       name.Remove(0,1);
    
+   // assuming XXX.run.XXX.dat
    Int_t pos1   = name.First(".");
    Int_t len    = name.Length();
    

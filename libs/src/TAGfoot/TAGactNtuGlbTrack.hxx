@@ -91,7 +91,6 @@ private:
    TAGparaDsc*       fpTofGeoMap;      // par geo for ToF
    TADIgeoField*     fField;
    
-//   TAGntuPoint*      fpNtuPoint;       // tmp containers of all points
    TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
    
    TATOEbaseAct*     fActTOE;

@@ -11,7 +11,7 @@ class GlobalToeReco  : public BaseReco
 {
 public:
    //! default constructor
-   GlobalToeReco(TString expName, TString fileNameIn = "", TString fileNameout = "");
+   GlobalToeReco(TString expName, TString fileNameIn = "", TString fileNameout = "", Bool_t isMc = true);
    
    virtual ~GlobalToeReco();
 
@@ -32,16 +32,12 @@ public:
    //! Set run number
    void   SetRunNumber();
 
-   
 private:
   
-
-protected:
-
    TAGdataDsc*           fpNtuMcEve;    // input data dsc
 
-   TTree*                fTree;         // tree for MC
-   TFile*                fActEvtReader; // file for MC
+   TTree*                fTree;         // tree for local reconstruction
+   TFile*                fActEvtReader; // file for local reconstruction
    
    ClassDef(GlobalToeReco, 1); 
 };

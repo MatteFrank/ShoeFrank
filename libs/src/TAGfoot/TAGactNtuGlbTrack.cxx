@@ -82,18 +82,18 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    fpItrGeoMap(p_geoItr),
    fpMsdGeoMap(p_geoMsd),
    fpTofGeoMap(p_geoTof),
-   //fpNtuPoint(new TAGntuPoint()),
    fField(field),
    fActEvtReader(nullptr),
    fActTOE( SetupAction() )
 {
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
    
-    if (GlobalPar::GetPar()->IncludeVT()) //should not be if
-    {
-        AddDataIn(p_vtxclus, "TAVTntuCluster");
-        AddDataIn(p_vtxvertex, "TAVTntuVertex");
-    }
+   if (GlobalPar::GetPar()->IncludeVT()) //should not be if
+   {
+      AddDataIn(p_vtxclus, "TAVTntuCluster");
+      AddDataIn(p_vtxvertex, "TAVTntuVertex");
+   }
+   
    if (GlobalPar::GetPar()->IncludeIT())
       AddDataIn(p_itrclus, "TAITntuCluster");
    
@@ -133,29 +133,19 @@ void TAGactNtuGlbTrack::SetupBranches()
    fActEvtReader = new TAGactTreeReader("evtReader");
    
    if (GlobalPar::GetPar()->IncludeVT()) {
-     fActEvtReader->SetupBranch(fpVtxTrack, TAVTntuTrack::GetBranchName());
-     fActEvtReader->SetupBranch(fpVtxClus, TAVTntuCluster::GetBranchName());
+     fActEvtReader->SetupBranch(fpVtxTrack,  TAVTntuTrack::GetBranchName());
+     fActEvtReader->SetupBranch(fpVtxClus,   TAVTntuCluster::GetBranchName());
      fActEvtReader->SetupBranch(fpVtxVertex, TAVTntuVertex::GetBranchName());
    }
-   gTAGroot->AddRequiredItem(fpVtxTrack);
-   gTAGroot->AddRequiredItem(fpVtxClus);
-   gTAGroot->AddRequiredItem(fpVtxVertex);
 
    if (GlobalPar::GetPar()->IncludeIT())
-      fActEvtReader->SetupBranch(fpItrClus,   TAITntuCluster::GetBranchName());
+      fActEvtReader->SetupBranch(fpItrClus,  TAITntuCluster::GetBranchName());
    
-   gTAGroot->AddRequiredItem(fpItrClus);
-
    if (GlobalPar::GetPar()->IncludeMSD())
-     fActEvtReader->SetupBranch(fpMsdClus,   TAMSDntuCluster::GetBranchName());
-
-   gTAGroot->AddRequiredItem(fpMsdClus);
+      fActEvtReader->SetupBranch(fpMsdClus,  TAMSDntuCluster::GetBranchName());
    
    if(GlobalPar::GetPar()->IncludeTW())
-      fActEvtReader->SetupBranch(fpTwPoint,   TATWntuPoint::GetBranchName());
-
-   gTAGroot->AddRequiredItem(fpTwPoint);
-
+      fActEvtReader->SetupBranch(fpTwPoint,  TATWntuPoint::GetBranchName());
 }
 
 //------------------------------------------+-----------------------------------
