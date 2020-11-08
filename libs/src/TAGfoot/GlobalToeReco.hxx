@@ -29,11 +29,13 @@ public:
    //! Loop events
    virtual void LoopEvent(Int_t nEvents);
 
+   //! Create branch in tree
+   virtual void SetTreeBranches();
+
    //! Set run number
    void   SetRunNumber();
 
 private:
-  
    TAGdataDsc*           fpNtuMcEve;    // input data dsc
 
    TTree*                fTree;         // tree for local reconstruction

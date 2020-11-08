@@ -123,10 +123,18 @@ void GlobalToeReco::CreateRawAction()
   //Disabled: you already have everything you need inside the root file
    if (fFlagMC)
       fpNtuMcEve = new TAGdataDsc("eveMc", new TAMCntuEve());
-  
 }
 
 //__________________________________________________________
 void GlobalToeReco::AddRawRequiredItem()
 {
+}
+
+//__________________________________________________________
+void GlobalToeReco::SetTreeBranches()
+{
+   BaseReco::SetTreeBranches();
+
+   if (fFlagMC)
+      fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
 }
