@@ -307,7 +307,7 @@ void LocalRecoMC::SetRunNumber()
       return;
    }
    
-   // Done by hand 
+   // Done by hand
    TString name = GetName();
    if (name.IsNull()) return;
    
