@@ -107,13 +107,10 @@ Bool_t TAMSDactNtuCluster::FindClusters(Int_t iSensor)
   // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
   // Look in a iterative way to next neighbour
   
-  TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpNtuClus->Object();
-  TAMSDparGeo* pGeoMap  = (TAMSDparGeo*)     fpGeoMap->Object();
-  
   FillMaps();
   SearchCluster();
   
-  return CreateClusters(iSensor, pNtuClus, pGeoMap);
+  return CreateClusters(iSensor);
 }
 
 //______________________________________________________________________________
@@ -172,8 +169,11 @@ void TAMSDactNtuCluster::FillMaps()
 
 //______________________________________________________________________________
 //
-Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuClus, TAMSDparGeo* pGeoMap)
+Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
 {
+   TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpNtuClus->Object();
+   TAMSDparGeo* pGeoMap  = (TAMSDparGeo*)     fpGeoMap->Object();
+
   TAMSDcluster* cluster = 0x0;
   
   // create clusters
@@ -191,6 +191,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
       cluster->AddStrip(strip);
     }
   }
+
   
   // Compute position and fill clusters info
   for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
@@ -202,9 +203,9 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
     TVector3 posG(GetCurrentPosition(), 0, 0);
     posG = pGeoMap->Sensor2Detector(iSensor, posG);
     cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
-    cluster->SetPositionG(posG);
-    cluster->SetPosition(GetCurrentPosition());
     cluster->SetPosError(GetCurrentPosError());
+    cluster->SetPosition(GetCurrentPosition());
+    cluster->SetPositionG(posG);
     
      if (ApplyCuts(cluster)) {
         // histogramms
@@ -232,9 +233,9 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor, TAMSDntuCluster* pNtuCl
 void TAMSDactNtuCluster::ComputePosition()
 {
   if (!fCurListOfStrips) return;
-  
+    
   Float_t tCorrection, tCorrection2, tCorTemp;
-  Float_t pos, posErr;
+  Float_t pos, posErr = 0;
   tCorrection = 0.;
   tCorrection2 = 0.;
    
@@ -258,9 +259,11 @@ void TAMSDactNtuCluster::ComputePosition()
   posErr *= 1./tClusterPulseSum;
   
   // for cluster with a single strip
-  Float_t lim = 2.5e-7; // in cm !
+  Float_t lim = 9e-6; // in cm !
   if (posErr < lim) posErr = lim; //(20/Sqrt(12)^2
   
   fCurrentPosition = pos;
-  fCurrentPosError = posErr;
+  fCurrentPosError = TMath::Sqrt(posErr);
+    
+    
 }

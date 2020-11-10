@@ -42,27 +42,27 @@ void FillGlb(TString expName)
    
    TAGparaDsc* pParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
    TADIparGeo* parGeoDi = (TADIparGeo*)pParGeoDi->Object();
-   TString parFileName = "./geomaps/TADIdetector.map";
+   TString parFileName = "./geomaps/TADIdetector.geo";
    parGeoDi->FromFile(parFileName.Data());
    
    TAGparaDsc* pParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
    TAVTparGeo* parGeoVtx = (TAVTparGeo*)pParGeoVtx->Object();
-   TString parVtxFileName = Form("./geomaps/%sTAVTdetector.map", expName.Data());
+   TString parVtxFileName = Form("./geomaps/%sTAVTdetector.geo", expName.Data());
    parGeoVtx->FromFile(parVtxFileName.Data());
 
-   TAGparaDsc* pParGeoIt = new TAGparaDsc(TAITparGeo::GetItDefParaName(), new TAITparGeo());
+   TAGparaDsc* pParGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
    TAITparGeo* parGeoIt = (TAITparGeo*)pParGeoIt->Object();
-   TString parItFileName = Form("./geomaps/%sTAITdetector.map", expName.Data());
+   TString parItFileName = Form("./geomaps/%sTAITdetector.geo", expName.Data());
    parGeoIt->FromFile(parItFileName.Data());
    
    TAGparaDsc* pParGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
    TAMSDparGeo* parGeoMsd = (TAMSDparGeo*)pParGeoMsd->Object();
-   TString parMsdFileName = Form("./geomaps/%sTAMSDdetector.map", expName.Data());
+   TString parMsdFileName = Form("./geomaps/%sTAMSDdetector.geo", expName.Data());
    parGeoMsd->FromFile(parMsdFileName.Data());
 
    TAGparaDsc* pParGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
    TATWparGeo* parGeoTw = (TATWparGeo*)pParGeoTw->Object();
-   TString parTwFileName = "./geomaps/TATWdetector.map";
+   TString parTwFileName = "./geomaps/TATWdetector.geo";
    parGeoTw->FromFile(parTwFileName);
    
    TAGdataDsc* vtVtx   = new TAGdataDsc("vtVertex", new TAVTntuVertex());
@@ -83,7 +83,7 @@ void ReadGlbToeStd(TString filename = "run_2211_GSI.root", Int_t nMaxEvts = 500)
    
    TString expName = "GSI/";
    TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-   TString parFileName = Form("./geomaps/%sFOOT_geo.map", expName.Data());
+   TString parFileName = Form("./geomaps/%sFOOT.geo", expName.Data());
    geoTrafo->FromFile(parFileName);
    
    outFile = new TAGactTreeWriter("outFile");

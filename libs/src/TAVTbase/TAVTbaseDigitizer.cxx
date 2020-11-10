@@ -22,8 +22,13 @@
  \brief digitizer for pixel **
  */
 
-Bool_t   TAVTbaseDigitizer::fgSmearFlag       = true;
-Float_t  TAVTbaseDigitizer::fgDefSmearPos     =  10.35;    // in micron
+Bool_t   TAVTbaseDigitizer::fgSmearFlag     = true;
+Float_t  TAVTbaseDigitizer::fgDefSmearPos   = 10.35;    // in micron
+Float_t  TAVTbaseDigitizer::fgkPairCreation = 3.6e-3; // keV
+Float_t  TAVTbaseDigitizer::fgkFanoFactor   = 0.115;
+Float_t  TAVTbaseDigitizer::fgkNormFactor   = TMath::Sqrt(2*TMath::Pi());
+Float_t  TAVTbaseDigitizer::fgTotMaxValue   = 300.;
+Int_t    TAVTbaseDigitizer::fgTotAdcDepth   = 10;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -52,7 +57,10 @@ TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
    fCstWidthPar(0.81),
    fCstWidthParErr(0.05),
    fZcstWidthPar(0.925),
-   fZgainWidthPar(0.0375)
+   fZgainWidthPar(0.0375),
+   fTotConversion(0.73),
+   fTotExponent(0.6),
+   fTotThres(0.5)
 {
    SetFunctions();
    fPitchX   = fpParGeo->GetPitchX()*TAGgeoTrafo::CmToMu();
@@ -98,26 +106,25 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
    
    fPixelsN = TMath::Nint(fFuncClusterSize->Eval(deltaE));
    if (fPixelsN <= 0) fPixelsN = 1;
-
-   if(FootDebugLevel(1))
-      printf("edep: %g PixelsN: %d\n", deltaE, fPixelsN);
    
    if (fpParGeo->GetType() == 1) {
+      Float_t electronsN = deltaE/fgkPairCreation;
+      
       // cluster height
-      smear = gRandom->Gaus(0, fCstHeightParErr);
-      fFuncClusterHeight->SetParameter(0, fCstHeightPar+smear);
-      
-      smear = gRandom->Gaus(0, fLogHeightParErr);
-      fFuncClusterHeight->SetParameter(1, fLogHeightPar+smear);
-      
-      smear = 0;
-      fFuncClusterHeight->SetParameter(2, fZcstHeightPar+smear);
-      
-      smear = 0;
-      fFuncClusterHeight->SetParameter(3, fZgainHeightPar+smear);
-
-      fClusterHeight = fFuncClusterHeight->Eval(deltaE, Z);
-      if (fClusterHeight <= 1) fClusterHeight = 1.;
+//      smear = gRandom->Gaus(0, fCstHeightParErr);
+//      fFuncClusterHeight->SetParameter(0, fCstHeightPar+smear);
+//
+//      smear = gRandom->Gaus(0, fLogHeightParErr);
+//      fFuncClusterHeight->SetParameter(1, fLogHeightPar+smear);
+//
+//      smear = 0;
+//      fFuncClusterHeight->SetParameter(2, fZcstHeightPar+smear);
+//
+//      smear = 0;
+//      fFuncClusterHeight->SetParameter(3, fZgainHeightPar+smear);
+//
+//      fClusterHeight = fFuncClusterHeight->Eval(deltaE, Z);
+//      if (fClusterHeight <= 1) fClusterHeight = 1.;
       
       // cluster width
       smear = gRandom->Gaus(0, fCstWidthParErr);
@@ -134,6 +141,33 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
 
       fClusterWidth = fFuncClusterWidth->Eval(deltaE, Z);
       if (fClusterWidth <= 0) fClusterWidth = 0.8;
+      
+      // conversion Tot
+      smear = 0;
+      fFuncTotAnalog->SetParameter(0, fTotConversion+smear);
+      fFuncTotDigital->SetParameter(0, fTotConversion+smear);
+
+      // Tot threshold
+      fFuncTotAnalog->SetParameter(1, fTotThres+smear);
+      fFuncTotDigital->SetParameter(1, fTotThres+smear);
+
+      //Tot exponent
+      fFuncTotAnalog->SetParameter(2, fTotExponent+smear);
+      fFuncTotDigital->SetParameter(2, fTotExponent+smear);
+      
+      //Tot Adc depth
+      fFuncTotDigital->SetParameter(3, fgTotAdcDepth);
+      
+      // Tot max value
+      fFuncTotDigital->SetParameter(4, fgTotMaxValue);
+      
+      Double_t value = fFuncTotAnalog->Eval(electronsN);
+      fClusterHeight = value/(fClusterWidth*fgkNormFactor);
+      if (fClusterHeight <= 1) fClusterHeight = 1.;
+      
+      if(FootDebugLevel(1))
+         printf("edep: %g PixelsN: %d elec %d value %g\n", deltaE, fPixelsN, int(electronsN), value);
+
    }
    
    if(FootDebugLevel(1)) {
@@ -160,6 +194,8 @@ void  TAVTbaseDigitizer::SetFunctions()
    if (fpParGeo->GetType() == 1) {
       fFuncClusterHeight = new TF1("ClusterHeight", this, &TAVTbaseDigitizer::FuncClusterHeight, 0, 2000, 4, "TAVTbaseDigitizer", "FuncClusterHeight");
       fFuncClusterWidth  = new TF1("ClusterWidth",  this, &TAVTbaseDigitizer::FuncClusterWidth,  0, 2000, 4, "TAVTbaseDigitizer", "FuncClusterWidth");
+      fFuncTotAnalog   = new TF1("TotAnalog", this, &TAVTbaseDigitizer::FuncTotAnalog, 0, 2000, 3, "TAVTbaseDigitizer", "FuncTotAnalog");
+      fFuncTotDigital  = new TF1("TotDigital", this, &TAVTbaseDigitizer::FuncTotDigital, 0, 2000, 5, "TAVTbaseDigitizer", "FuncTotDigital");
    }
 }
 
@@ -195,6 +231,55 @@ Double_t TAVTbaseDigitizer::FuncClusterWidth(Double_t* x, Double_t* par)
    return f;
 }
 
+//-----------------------------------------------------
+Double_t TAVTbaseDigitizer::FuncTotAnalog(Double_t *qin, Double_t *par) {
+   // Models the estimate of a the input charge qin (in ke-)
+   //  with the time-over-threshold (ToT) technique:
+   //  ToT = conversion-factor * (qin-threshold)^exponent
+   // Returns ToT
+   //
+   // Parameters:
+   //  par[0] = conversion factor e- -> arbitrary unit
+   //  par[1] = threshold in ke-
+   //  par[2] = exponent for the ToT model
+   double width = par[0]*pow(qin[0]-par[1],par[2]);
+   
+   return width;
+}
+
+
+//-----------------------------------------------------
+Double_t TAVTbaseDigitizer::FuncTotDigital(Double_t *qin, Double_t *par) {
+   // Models the estimate of a the input charge qin (in ke-)
+   //  with the time-over-threshold (ToT) technique:
+   //  ToT = conversion-factor * (qin-threshold)^exponent
+   // Returns a digital value of ToT
+   //
+   // Parameters:
+   //  par[0] = conversion factor e- -> arbitrary unit
+   //  par[1] = threshold in ke-
+   //  par[2] = exponent for the ToT model
+   //  par[3] = number of bits for digitization
+   //  par[4] = maximal value for digitization
+   
+   Double_t width = FuncTotAnalog(qin, par);
+   
+   return DigitizeAdc( width, (Int_t)par[3], par[4]);
+}
+
+//-----------------------------------------------------
+Int_t TAVTbaseDigitizer::DigitizeAdc( Double_t value, Int_t nbits, Double_t maxValue)
+{
+   // digitize value over nbits bits, whith maxValue as the maximum value
+   // note that any value>maxValue returns 0 (no clipping)
+   
+   Int_t nbDigitalValues = pow(2, nbits);
+   Double_t binWidth = maxValue / nbDigitalValues;
+   
+   if ( value < maxValue ) { return (Int_t)(value / binWidth); }
+   else { return 0;}
+   
+}
 //_____________________________________________________________________________
 Int_t TAVTbaseDigitizer::GetColumn(Float_t x) const
 {

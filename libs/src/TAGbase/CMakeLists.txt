@@ -11,7 +11,6 @@ set(LIBNAME ${PROJECT_NAME})
 #
 set( EXTRA_INTERNAL_LIBRARIES ${GENFIT_LIBRARIES})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
-
 #
 # headers / dictionnary / sources 
 # 
@@ -23,6 +22,7 @@ set( with_dictionnaries
    TAGactTreeWriter
    TAGactNtuCluster2D
    TAGactNtuCluster1D
+   TAGactNtuClusterMT
    TAGaction
    TAGactionFile
    TAGbaseDigitizer
@@ -47,6 +47,7 @@ set( with_dictionnaries
    TAGbaseMaterials
    TAGmaterials
    TAGionisMaterials
+   TAGxmlParser
    ControlPlotsRepository
    ControlPlotInfo
    MagicSkills

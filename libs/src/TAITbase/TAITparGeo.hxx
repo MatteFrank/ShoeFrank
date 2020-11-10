@@ -129,8 +129,8 @@ public:
    virtual string PrintSubtractBodiesFromAir();
    
 public:
-   static const Char_t* GetItBaseName()    { return fgkBaseNameIt.Data();    }
-   static const Char_t* GetItDefParaName() { return fgkDefParaNameIt.Data(); }
+   static const Char_t* GetBaseName()    { return fgkBaseNameIt.Data();    }
+   static const Char_t* GetDefParaName() { return fgkDefParaNameIt.Data(); }
 
    ClassDef(TAITparGeo,1)
 };

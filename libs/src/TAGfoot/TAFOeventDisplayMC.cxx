@@ -8,22 +8,25 @@
 
 #include "GlobalPar.hxx"
 #include "LocalRecoMC.hxx"
+#include "LocalRecoNtuMC.hxx"
 
-ClassImp(TAFOeventDisplay)
+ClassImp(TAFOeventDisplayMC)
+
+TAFOeventDisplayMC* TAFOeventDisplayMC::fgInstance = 0x0;
 
 //__________________________________________________________
-TAFOeventDisplay* TAFOeventDisplayMC::Instance(Int_t type, const TString name)
+TAFOeventDisplayMC* TAFOeventDisplayMC::Instance(const TString name, Int_t type)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAFOeventDisplayMC(type, name);
+      fgInstance = new TAFOeventDisplayMC(name, type);
    
    return fgInstance;
 }
 
 
 //__________________________________________________________
-TAFOeventDisplayMC::TAFOeventDisplayMC(Int_t type, const TString expName)
- : TAFOeventDisplay(type, expName),
+TAFOeventDisplayMC::TAFOeventDisplayMC(const TString expName, Int_t type)
+ : TAFObaseEventDisplay(expName, type),
    fCaMcDisplay(0x0),
    fTwMcDisplay(0x0),
    fMsdMcDisplay(0x0),
@@ -32,16 +35,19 @@ TAFOeventDisplayMC::TAFOeventDisplayMC(Int_t type, const TString expName)
    fBmMcDisplay(0x0),
    fStMcDisplay(0x0)
 {
+   // local reco
+   SetLocalReco();
+   
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
       fStMcDisplay = new TAEDpoint("STC MC hit");
    
    if (GlobalPar::GetPar()->IncludeBM())
       fBmMcDisplay = new TAEDpoint("STC MC hit");
    
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       fVtMcDisplay = new TAEDpoint("VTX MC hit");
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       fItMcDisplay = new TAEDpoint("IT MC hit");
    
    if (GlobalPar::GetPar()->IncludeMSD())
@@ -75,6 +81,28 @@ TAFOeventDisplayMC::~TAFOeventDisplayMC()
 }
 
 //__________________________________________________________
+void TAFOeventDisplayMC::SetLocalReco()
+{
+   if (fType == 1)
+      fReco = new LocalRecoMC(fExpName);
+   else if (fType == 2)
+      fReco = new LocalRecoNtuMC(fExpName);
+   else
+      Error("SetLocalReco()", "Unknown type %d", fType);
+   
+   fReco->DisableTree();
+   fReco->DisableSaveHits();
+   fReco->EnableHisto();
+   
+   if (fgTrackFlag) {
+      fReco->SetTrackingAlgo(fgVtxTrackingAlgo[0]);
+      fReco->EnableTracking();
+   }
+   
+   fpFootGeo = fReco->GetGeoTrafo();
+}
+
+//__________________________________________________________
 Bool_t TAFOeventDisplayMC::GetEntry(Int_t entry)
 {
    if (fType == 2) return true;
@@ -101,12 +129,12 @@ void TAFOeventDisplayMC::AddMcElements()
       gEve->AddElement(fMsdMcDisplay);
    }
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       fItMcDisplay->ResetPoints();
       gEve->AddElement(fItMcDisplay);
    }
    
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fVtMcDisplay->ResetPoints();
       gEve->AddElement(fVtMcDisplay);
    }
@@ -131,10 +159,10 @@ void TAFOeventDisplayMC::ConnectMcElements()
    if (GlobalPar::GetPar()->IncludeBM())
       fBmMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateBmInfo(Int_t)");
    
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       fVtMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateVtInfo(Int_t)");
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       fItMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateItInfo(Int_t)");
    
    if (GlobalPar::GetPar()->IncludeMSD())
@@ -269,10 +297,10 @@ void TAFOeventDisplayMC::UpdateMcElements()
    if (GlobalPar::GetPar()->IncludeBM())
       UpdateMcElements("bm");
    
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       UpdateMcElements("vt");
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       UpdateMcElements("it");
    
    if (GlobalPar::GetPar()->IncludeMSD())

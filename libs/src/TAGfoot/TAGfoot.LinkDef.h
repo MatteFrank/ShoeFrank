@@ -8,12 +8,13 @@
 #pragma link C++ class KFitter;
 #pragma link C++ class GlobalTrackRepostory;
 #pragma link C++ class GlobalTrackKalman;
-//#pragma link C++ class Booter;
+
 #pragma link C++ class UpdatePDG;
 #pragma link C++ class MultiTrackCheck;
 
 #pragma link C++ class TAFOeventDisplayMC;
 #pragma link C++ class TAFOeventDisplay;
+#pragma link C++ class TAFObaseEventDisplay;
 
 #pragma link C++ class  BaseReco;
 #pragma link C++ class  LocalRecoMC;

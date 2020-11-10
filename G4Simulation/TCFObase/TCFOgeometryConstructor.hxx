@@ -47,7 +47,7 @@
 
 
 class G4Material;
-class TCFOfield;
+class TCEMfield;
 class TCSTgeometryConstructor;
 class TCBMgeometryConstructor;
 class TCVTgeometryConstructor;
@@ -66,7 +66,7 @@ class TCEMfieldSetup;
 class TCFOgeometryConstructor : public TCGbaseGeometryConstructor
 {
 public:
-   TCFOgeometryConstructor(const TString expName = "");
+   TCFOgeometryConstructor(const TString expName = "", Int_t runNumber = -1);
    ~TCFOgeometryConstructor();
    
 public:
@@ -82,6 +82,8 @@ public:
    TACAparGeo*  GetParGeoCa()              { return fpParGeoCa;       }
    TATWparGeo*  GetParGeoTw()              { return fpParGeoTw;       }
    
+   void ConstructSDandField();
+
 private:
    TCSTgeometryConstructor*  fStartCounter;
    TCBMgeometryConstructor*  fBeamMonitor;
@@ -92,7 +94,7 @@ private:
    TCTWgeometryConstructor*  fTofWall;
    TCEMgeometryConstructor*  fMagnet;
    
-   TCFOfield*                fField;
+   TCEMfield*                fField;
    TADIgeoField*             fFieldImpl;
    TCEMfieldSetup*           fFieldSetup;
 

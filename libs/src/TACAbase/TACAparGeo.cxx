@@ -41,7 +41,7 @@ TACAparGeo::TACAparGeo()
 : TAGparTools(),
   fIonisation(new TAGionisMaterials())
 {  
-   fkDefaultGeoName = "./geomaps/TACAdetector.map";
+   fkDefaultGeoName = "./geomaps/TACAdetector.geo";
 }
 
 //______________________________________________________________________________
@@ -254,8 +254,62 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       AddTransMatrix(new TGeoHMatrix(transfo), fCrystalsN + nModule);
    }
    
+   ComputeCrystalIndexes();
+   
    return true;
 }
+
+
+//_____________________________________________________________________________
+void TACAparGeo::ComputeCrystalIndexes()
+{
+   Float_t zdim   = GetCrystalThick();
+   Float_t xdim1  = GetCrystalWidthFront();
+   Float_t xdim2  = GetCrystalWidthBack();
+   Float_t deltaX = (xdim2 - xdim1);
+   Float_t trp    = TMath::Sqrt( zdim * zdim * 4  + deltaX * deltaX );
+   Float_t alfa   = TMath::ASin (deltaX / trp);
+   
+   Float_t deltax = fCrystalDelta * TMath::Cos(alfa*2);
+   
+   Float_t piramid_hipot  = xdim2 / TMath::Sin(alfa);
+   Float_t piramid_base   = piramid_hipot * TMath::Cos(alfa);
+   Float_t piramid_base_c = piramid_base - zdim; // distance from center to the piramid vertex
+   
+   Float_t width = TMath::Sin(alfa*2) * piramid_base_c + deltax;
+   Int_t lines   = 18;
+   Int_t cols    = 18;
+   
+   for (Int_t iCry = 0; iCry < fCrystalsN; ++iCry) {
+      TVector3 pos = GetCrystalPosition(iCry);
+      
+      for (Int_t i = -lines/2; i < lines/2; ++i) {
+         for (Int_t j = -cols/2; j < cols/2; ++j) {
+            if ( (pos[0] > i*width && pos[0] <= (i+1)*width) && (pos[1] > j*width && pos[1] <= (j+1)*width)) {
+               pair<int, int> idx(i+lines/2, j+cols/2);
+               fMapIndexes[iCry] = idx;
+            }
+         }
+      }
+   }
+}
+
+//_____________________________________________________________________________
+Int_t TACAparGeo::GetCrystalLine(Int_t iCry)
+{
+   pair<int, int> idx = fMapIndexes[iCry];
+
+   return idx.first;
+}
+
+//_____________________________________________________________________________
+Int_t TACAparGeo::GetCrystalCol(Int_t iCry)
+{
+   pair<int, int> idx = fMapIndexes[iCry];
+   
+   return idx.second;
+}
+
 
 //_____________________________________________________________________________
 TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)  
@@ -302,20 +356,6 @@ TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)
          caloCristal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
          detector->AddNode(caloCristal, iCry, hm);
 
-	 /*
-	   AS:: Turned off the 'crystal per crystal construction'
-	   if (iCry % fgkCrystalsNperModule == 0) {
-	   TGeoVolume *support = gGeoManager->MakeTrd2("modSup", medSup, xdim1s, xdim2s, ydim1s, ydim2s, zdims);
-	   support->SetLineColor(fgkDefaultModCol);
-	   support->SetFillColor(fgkDefaultModCol);
-	   // support->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
-           
-	   // Add Z shift to the support
-	   TGeoCombiTrans* hms = new TGeoCombiTrans(*hm);
-	   *hms *=  TGeoTranslation(0, 0, fSupportPositionZ);
-	   detector->AddNode(support, iCry+fCrystalsN, hms);
-	   }
-	 */
       }
    }
 
@@ -325,7 +365,6 @@ TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)
        TGeoVolume *support = gGeoManager->MakeTrd2("modSup", medSup, xdim1s, xdim2s, ydim1s, ydim2s, zdims);
        support->SetLineColor(fgkDefaultModCol);
        support->SetFillColor(fgkDefaultModCol);
-       // support->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
        // Add Z shift to the support
        *hm *=  TGeoTranslation(0, 0, fSupportPositionZ);
        detector->AddNode(support, imod, hm);
@@ -1226,12 +1265,6 @@ void TACAparGeo::ToStream(ostream& os, Option_t*) const
    //     << "   ver_x   ver_y   ver_z  width" << endl;
 
    return;
-}
-
-//-----------------------------------------------------------------------------
-TVector3 TACAparGeo::GetCaloSize()
-{
-   return fCaloSize;
 }
 
 

@@ -30,6 +30,8 @@
 #ifndef TCGbaseGeometryConstructor_h
 #define TCGbaseGeometryConstructor_h 1
 
+#include "TAGcampaignManager.hxx"
+
 #include "TCGbaseConstructor.hxx"
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
@@ -43,13 +45,14 @@ class TCGtargetConstructor;
 class TCGmaterials;
 class TAGgeometryMessenger;
 class TAVTgeometryConstructor;
+class TAGgeoTrafo;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class TCGbaseGeometryConstructor : public G4VUserDetectorConstruction
 {
 public:
-   TCGbaseGeometryConstructor(const TString expName = "");
+   TCGbaseGeometryConstructor(const TString expName = "", Int_t runNumber = -1);
    virtual ~TCGbaseGeometryConstructor();
    
 public:
@@ -67,7 +70,10 @@ public:
    TAGparGeo*   GetParGeoG()               { return fpParGeoG;        }
 
 protected:
+   TAGcampaignManager*    fCampManager;
    TString                fExpName;
+   G4int                  fRunNumber;
+   TAGgeoTrafo*           fpFootGeo;           // trafo prointer
    G4double               fWorldSizeZ;
    G4double               fWorldSizeXY;
    G4Material*            fWorldMaterial;

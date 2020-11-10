@@ -22,7 +22,6 @@ set( with_dictionnaries
    TAMSDdatRaw
    TAMSDntuRaw
    TAMSDntuHit
-   TAMSDntuPoint
    TAMSDparMap
    TAMSDparGeo
    TAMSDparConf
@@ -32,7 +31,6 @@ set( with_dictionnaries
    TAMSDntuCluster
    TAMSDcluster
    TAMSDactNtuCluster
-   TAMSDactNtuPoint
 )
 
 set( without_dictionnaries

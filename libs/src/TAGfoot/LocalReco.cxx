@@ -108,7 +108,7 @@ void LocalReco::CreateRawAction()
       }
    }
 
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fpNtuRawVtx   = new TAGdataDsc("vtRaw", new TAVTntuRaw());
       
       if (fgStdAloneFlag) {
@@ -124,7 +124,7 @@ void LocalReco::CreateRawAction()
       }
    }
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       fpNtuRawIt   = new TAGdataDsc("itRaw", new TAITntuRaw());
       fActNtuRawIt = new TAITactNtuRaw("itActNtu", fpNtuRawIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
       if (fFlagHisto)
@@ -142,7 +142,7 @@ void LocalReco::CreateRawAction()
 
    if(GlobalPar::GetPar()->IncludeTW()) {
       fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
-      fActNtuRawTw = new TATWactNtuRaw("twActNtu", fpDatRawTw, fpNtuRawTw, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
+      fActNtuRawTw = new TATWactNtuRaw("twActNtu", fpDatRawTw, fpNtuRawTw, fpNtuRawSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
       if(GlobalPar::GetPar()->Debug()) fActNtuRawTw->SetDebugLevel(1);
       if (fFlagHisto)
          fActNtuRawTw->CreateHistogram();
@@ -160,13 +160,8 @@ void LocalReco::CreateRawAction()
 //__________________________________________________________
 void LocalReco::OpenFileIn()
 {
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      fActGlbTrack->Open(GetName());
-      return;
-   }
-
    if (fgStdAloneFlag) {
-      if (GlobalPar::GetPar()->IncludeVertex())
+      if (GlobalPar::GetPar()->IncludeVT())
          fActVmeReaderVtx->Open(GetName());
       
       if (GlobalPar::GetPar()->IncludeBM())
@@ -179,9 +174,11 @@ void LocalReco::OpenFileIn()
 // --------------------------------------------------------------------------------------
 void LocalReco::SetRunNumber()
 {
-   if (fRunNumber != -1)  // if set from outside return, else take from name
+   if (fRunNumber != -1)  { // if set from outside return, else take from name
+      gTAGroot->SetRunNumber(fRunNumber);
       return;
-      
+   }
+   
    // Done by hand shoud be given by DAQ header
    TString name = GetName();
    if (name.IsNull()) return;
@@ -190,14 +187,18 @@ void LocalReco::SetRunNumber()
    if (name[0] == '.')
       name.Remove(0,1);
    
+   // assuming XXX.run.XXX.dat
    Int_t pos1   = name.First(".");
    Int_t len    = name.Length();
    
    TString tmp1 = name(pos1+1, len);
    Int_t pos2   = tmp1.First(".");
-      TString tmp  = tmp1(0, pos2);
+   TString tmp  = tmp1(0, pos2);
+   fRunNumber = tmp.Atoi();
    
-   gTAGroot->SetRunNumber(tmp.Atoi());
+   Warning("SetRunNumber()", "Run number not set !, taking number from file: %d", fRunNumber);
+
+   gTAGroot->SetRunNumber(fRunNumber);
 }
 
 //__________________________________________________________
@@ -219,12 +220,12 @@ void LocalReco::SetRawHistogramDir()
    }
    
    // VTX
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fActNtuRawVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    }
    
    // IT
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       fActNtuRawIt->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    }
 
@@ -265,11 +266,11 @@ void LocalReco::AddRawRequiredItem()
       fTAGroot->AddRequiredItem("bmActNtu");
    }
 
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fTAGroot->AddRequiredItem("vtActNtu");
    }
    
-//   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+//   if (GlobalPar::GetPar()->IncludeIT()) {
 //      fTAGroot->AddRequiredItem("itActNtu");
 //   }
    
@@ -302,12 +303,12 @@ void LocalReco::SetTreeBranches()
      fActEvtWriter->SetupElementBranch(fpNtuRawBm, TABMntuRaw::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       if (fFlagHits)
          fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuRaw::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       if (fFlagHits)
          fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuRaw::GetBranchName());
    }

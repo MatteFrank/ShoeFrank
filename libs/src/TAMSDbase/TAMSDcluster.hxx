@@ -5,7 +5,6 @@
 // ROOT classes
 #include "TVector3.h"
 #include "TClonesArray.h"
-#include "TArrayI.h"
 #include "TAGcluster.hxx"
 
 
@@ -30,9 +29,6 @@ private:
    Int_t              fPlaneView;                // plane view = 0 for X and = 1 for Y plane
    Bool_t             fIsValid;                  // validity flag
    
-   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
-   std::map<int, int> fMcTrackMap;               // Map of MC track Id
-
 public:
    TAMSDcluster(); 
    TAMSDcluster(const TAMSDcluster& cluster);
@@ -59,7 +55,7 @@ public:
    //! Get vector position in local frame
    const TVector3&          GetPosition()              const { return fCurPosition;    }
    //! Get vector position error in local frame
-   const TVector3&          GetPosError()              const { return fCurPosition;    }
+   const TVector3&          GetPosError()              const { return fPosErrorG;    }
    
    //! Get position in global tracker frame
    const TVector3&          GetPositionG()             const { return fPositionG ;     }
@@ -91,8 +87,6 @@ public:
    //! Add pixel to the list
    void               AddStrip(TAMSDntuHit* strip);
 
-   // Add MC track Idx
-   void               AddMcTrackIdx(Int_t trackIdx);
 
    ClassDef(TAMSDcluster,2)                          // Describes TAMSDcluster
 };

@@ -24,12 +24,6 @@ public:
    
    Bool_t   MakeCluster(Double_t x0, Double_t y0, Double_t zin, Double_t zout);
    
-public:
-   static void    SetAdcDepth(Int_t b)    { fgAdcDepth = b;     }
-   static Int_t   GetAdcDepth()           { return fgAdcDepth;  }
-   static void    SetChargeMax(Float_t c) { fgChargeMax = c;    }
-   static Float_t GetChargeMax()          { return fgChargeMax; }
-
 private:
    TF1*     fFuncClusterDisX;   // cluster distribution function in X
    TF1*     fFuncClusterDisY;   // cluster distribution function in Y
@@ -39,12 +33,8 @@ private:
    Int_t    GetAdcValue(Float_t charge);
 
 private:
+   static Float_t  fgkThres;
    static Float_t  fgkFWTH;
-   static Float_t  fgThreshold;
-   static Float_t  fgGain;
-   static Int_t    fgAdcDepth;
-   static Float_t  fgChargeMax;
-
 };
         
 

@@ -103,7 +103,7 @@ void FillMCVertex(EVENT_STRUCT *myStr) {
 void FillMCInnerTracker(EVENT_STRUCT *myStr) {
    
    /*Ntupling the MC Inner tracker information*/
-   TAGparaDsc* itGeo    = new TAGparaDsc(TAITparGeo::GetItDefParaName(), new TAITparGeo());
+   TAGparaDsc* itGeo    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
    TAITparGeo* geomap   = (TAITparGeo*) itGeo->Object();
    geomap->FromFile();
    

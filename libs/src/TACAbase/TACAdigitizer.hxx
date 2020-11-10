@@ -6,8 +6,10 @@
 
 #include "TACAntuRaw.hxx"
 
+class TF1;
+class TACAntuRaw;
+class TACAntuHit;
 using namespace std;
-
 // --------------------------------------------------------------------------------------
 class TACAdigitizer : public TAGbaseDigitizer {
    
@@ -22,38 +24,49 @@ public:
 
    Float_t        GetPhotonsN(Float_t X, Float_t Y, Float_t edep);
    Double_t       RecPhotonsN(Double_t* x, Double_t* par);
-
+ 
    Float_t        GetResEnergy(Float_t edep);
    Double_t       ResEnergy(Double_t* x, Double_t* par);
- 
-   TF1*           GetFuncBirks() const { return fFuncBirks; }
-   
-   void           SetGain(Float_t g)   { fGain = g;          }
 
-   TACAntuHit*    GetCurrentHit()      { return fCurrentHit; }
-   void           ClearMap()           { fMap.clear();       }
-  
+   TF1*           GetFuncBirks()   const  { return fFuncBirks;  }
+   TF1*           GetFuncResE()    const  { return fDeResE;     }
+ 
+   void           SetGain(Float_t g)      { fGain = g;          }
+   void           SetCalEPar0(Float_t p)  { fCalEPar0 = p;      }
+   void           SetCalEPar1(Float_t p)  { fCalEPar1 = p;      }
+
+   TACAntuHit*    GetCurrentHit()         { return fCurrentHit; }
+   void           ClearMap()              { fMap.clear();       }
+
+public:
+   static Float_t GetThreshold()          { return fgThreshold; }
+   static void    SetThreshold(Float_t t) { fgThreshold = t;    }
+
 private:
    TACAntuRaw*   fpNtuRaw;
-   TACAntuHit*   fCurrentHit;
-
-   map<int, TACAntuHit*> fMap; //! map for pilepup
-  
    TF1*          fFuncBirks;
-
    TF1*          fDeResE;
+   Float_t       fGain;
+   
    Float_t       fResPar0;
    Float_t       fResErrPar0;
    Float_t       fResPar1;
    Float_t       fResErrPar1;
    Float_t       fResPar2;
    Float_t       fResErrPar2;
-
-   Float_t       fGain;
    
+   Float_t       fBirkPar0;
+   Float_t       fBirkPar1;
+
+   Float_t       fCalEPar0;
+   Float_t       fCalEPar1;
+
+   TACAntuHit*   fCurrentHit;
+   map<int, TACAntuHit*> fMap; //! map for pilepup
+
 private:
+   static Float_t fgThreshold;
 
-   
 };
 #endif
 

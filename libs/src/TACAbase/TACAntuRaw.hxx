@@ -13,19 +13,17 @@
 class TACAntuHit : public TAGobject {
 public:
    TACAntuHit();
-   TACAntuHit(int cha, double charge, double edep, double time, Int_t type = 0);
+   TACAntuHit(int cha, double charge, double time, Int_t type = 0);
    virtual         ~TACAntuHit();
    
    Double_t        GetTime()          const { return fTime;      }
    Double_t        GetCharge()        const { return fCharge;    }
-   Double_t        GetEnDep()         const { return fEnDep;     }
    Int_t           GetCrystalId()     const { return fCrystalId; }
    Int_t           GetType()          const { return fType;      }
    TVector3        GetPosition()      const { return fPosition;  }
    
    void            SetTime(double time)     { fTime = time;      }
    void            SetCharge(double charge) { fCharge = charge;  }
-   void            SetEnDep(double edep)    { fEnDep = edep;     }
    void            SetCrystalId(int id)     { fCrystalId = id;   }
    void            SetType(int type)        { fType = type;      }
    void            SetPosition(TVector3 pos){ fPosition = pos;   }
@@ -40,7 +38,6 @@ public:
 private:
    Double32_t      fTime;
    Double32_t      fCharge;
-   Double32_t      fEnDep;
    Int_t           fCrystalId;
    Int_t           fType;
    TVector3        fPosition;
@@ -62,7 +59,7 @@ public:
    TACAntuHit*        GetHit(Int_t i_ind);
    const TACAntuHit*  GetHit(Int_t i_ind) const;
    
-   TACAntuHit*        NewHit(int crys, double charge, double edep, double time, int type = 0);
+   TACAntuHit*        NewHit(int crys, double charge, double time, int type = 0);
    
    void               SetTrigTime(Double_t time) { fTrigTime = time; }
    Double_t           GetTrigTime()        const { return fTrigTime; }

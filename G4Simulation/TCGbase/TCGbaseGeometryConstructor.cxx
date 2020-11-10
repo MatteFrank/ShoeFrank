@@ -62,9 +62,10 @@
 using namespace CLHEP;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName)
+TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName, Int_t runNumber)
 : G4VUserDetectorConstruction(),
   fExpName(expName),
+  fRunNumber(runNumber),
   fWorldSizeZ(220*cm),
   fWorldSizeXY(30*cm),
   fWorldMaterial(0x0),
@@ -73,6 +74,10 @@ TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName)
   fpParGeoG(new TAGparGeo()),
   fpMaterials(new TCGmaterials())
 {
+   // load campaign file
+   fCampManager = new TAGcampaignManager(expName);
+   fCampManager->FromFile();
+   
    // define material
     fpMaterials->CreateG4DefaultMaterials();
 
@@ -80,22 +85,30 @@ TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName)
     G4Material* pttoMaterial = G4NistManager::Instance()->FindOrBuildMaterial("Air");
 	if (pttoMaterial) fWorldMaterial = pttoMaterial;
    
+   // initialise geo trafo file
+   // global transformation
+   fpFootGeo = new TAGgeoTrafo();
+   TString geoFileName = fCampManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), fRunNumber);
+   fpFootGeo->FromFile(geoFileName.Data());
+   
    // initialise map file for target/beam
-   TString mapFileName = Form("./geomaps/%sTAGdetector.map", fExpName.Data());
+   TString mapFileName =  fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
    fpParGeoG->FromFile(mapFileName.Data());
    
    // geometries
    fTarget = new TCGtargetConstructor(fpParGeoG);
+   
+   printf("Creating geometry for experiment %s with a run number of %d\n", expName.Data(), runNumber);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 TCGbaseGeometryConstructor::~TCGbaseGeometryConstructor()
 {
-	delete fTarget;
+	 delete fTarget;
     delete fpParGeoG;
     delete fpMaterials;
+    delete fCampManager;
 }
-
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4VPhysicalVolume* TCGbaseGeometryConstructor::Construct()
@@ -104,10 +117,7 @@ G4VPhysicalVolume* TCGbaseGeometryConstructor::Construct()
    G4PhysicalVolumeStore::GetInstance()->Clean();
    G4LogicalVolumeStore::GetInstance()->Clean();
    G4SolidStore::GetInstance()->Clean();
-   
-   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-
-   
+      
    // World
    Float_t posBeam = TMath::Abs(fpParGeoG->GetBeamPar().Position.Z()*cm);
    if (fWorldSizeZ <= posBeam*2)
@@ -126,17 +136,17 @@ G4VPhysicalVolume* TCGbaseGeometryConstructor::Construct()
       G4LogicalVolume* logTarget = fTarget->Construct();
    
       //placement
-      TVector3 tgAng          = geoTrafo->GetTGAngles()*TMath::DegToRad(); // in radians
-      TVector3 tgCenter       = geoTrafo->GetTGCenter()*cm;
+      TVector3 tgAng          = fpFootGeo->GetTGAngles()*TMath::DegToRad(); // in radians
+      TVector3 tgCenter       = fpFootGeo->GetTGCenter()*cm;
       G4RotationMatrix* tgRot = new G4RotationMatrix;
       tgRot->rotateX(-tgAng[0]);
       tgRot->rotateY(-tgAng[1]);
       tgRot->rotateZ(-tgAng[2]);
       tgRot->invert(); // inversion ???
 
-       G4Region *regTgt = new G4Region("Target");
-       logTarget->SetRegion(regTgt);
-       regTgt->AddRootLogicalVolume(logTarget);
+      G4Region *regTgt = new G4Region("Target");
+      logTarget->SetRegion(regTgt);
+      regTgt->AddRootLogicalVolume(logTarget);
 
       new G4PVPlacement(tgRot, G4ThreeVector(tgCenter[0], tgCenter[1], tgCenter[2]), logTarget, "Target", fLogWorld, false, 0);
    }

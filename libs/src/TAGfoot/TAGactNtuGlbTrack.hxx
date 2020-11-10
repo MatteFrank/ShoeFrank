@@ -27,7 +27,8 @@ public:
    
    explicit  TAGactNtuGlbTrack(const char* name       = 0,
                                TAGdataDsc* p_vtxclus  = 0,
-                               TAGdataDsc* p_vtxtrack = 0,
+                               TAGdataDsc* p_vtxtrack  = 0,
+                               TAGdataDsc* p_vtxvertex = 0,
                                TAGdataDsc* p_itrclus  = 0,
                                TAGdataDsc* p_msdclus  = 0,
                                TAGdataDsc* p_twpoint  = 0,
@@ -76,7 +77,8 @@ private:
 private:
    TAGgeoTrafo*      fpFootGeo;        // geo trafo
    TAGdataDsc*       fpVtxVertex;		// Vertex
-    TAGdataDsc*      fpVtxClus;
+   TAGdataDsc*       fpVtxTrack;
+   TAGdataDsc*       fpVtxClus;
    TAGdataDsc*       fpItrClus;		   // ITR clusters
    TAGdataDsc*       fpMsdClus;		   // MSD clusters
    TAGdataDsc*       fpTwPoint;		   // TOF points, should be cluster
@@ -89,7 +91,6 @@ private:
    TAGparaDsc*       fpTofGeoMap;      // par geo for ToF
    TADIgeoField*     fField;
    
-//   TAGntuPoint*      fpNtuPoint;       // tmp containers of all points
    TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
    
    TATOEbaseAct*     fActTOE;

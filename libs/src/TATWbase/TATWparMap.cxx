@@ -28,7 +28,7 @@ ClassImp(TATWparMap);
 
 TATWparMap::TATWparMap() {
 
-  fcMap = new CChannelMap();
+  fcMap = new TATWchannelMap();
 
    // what that's good for ?
   vector<int> tdchaID;             tdchaID.clear();   

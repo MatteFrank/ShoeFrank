@@ -11,8 +11,11 @@
 #pragma link C++ class TACAntuHit+;
 #pragma link C++ class TACAparMap+;
 #pragma link C++ class TACAactNtuMC+;
-#pragma link C++ class ParticleEnergyDep+;
+#pragma link C++ class energyDep+;
 #pragma link C++ class TACAactNtuHitMC+;
+#pragma link C++ class TACAactNtuCluster+;
+#pragma link C++ class TACAcluster+;
+#pragma link C++ class TACAntuCluster+;
 #pragma link C++ class TACAparGeo+;
 
 #endif

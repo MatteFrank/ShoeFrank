@@ -7,6 +7,7 @@
 
 #include "TAGaction.hxx"
 #include "TAGactTreeWriter.hxx"
+#include "TAGcampaignManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAGbaseWDparTime.hxx"
@@ -46,14 +47,18 @@
 #include "TAMSDntuRaw.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
+#include "TACAntuCluster.hxx"
 #include "TAIRntuTrack.hxx"
 #include "TAGntuGlbTrack.hxx"
 
 #include "TAGactionFile.hxx"
 
 #include "TAVTactNtuClusterF.hxx"
+#include "TAVTactNtuClusterMT.hxx"
 #include "TAITactNtuClusterF.hxx"
+#include "TAITactNtuClusterMT.hxx"
 #include "TAMSDactNtuCluster.hxx"
+#include "TACAactNtuCluster.hxx"
 #include "TATWactNtuPoint.hxx"
 
 #include "TABMactNtuTrack.hxx"
@@ -112,7 +117,7 @@ public:
    virtual void CloseFileIn() { return; }
    
    //! Set Run number
-   virtual void SetRunNumber();
+   virtual void SetRunNumber() { return; }
    
    //! Open File Out
    virtual void OpenFileOut();
@@ -141,6 +146,16 @@ public:
    
    void EnableTracking()  { fFlagTrack = true;   }
    void DisableTracking() { fFlagTrack = false;  }
+   
+   void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;   }
+   void DisableTWcalibPerBar() { fFlagTWbarCalib = false;  }
+
+   void EnableZfromMCtrue()  { fFlagZtrueMC = true;   }
+   void DisableZfromMCtrue() { fFlagZtrueMC = false;  }
+
+   void DisableM28ClusMT() { fM28ClusMtFlag = false; }
+   void EnableM28lusMT()   { fM28ClusMtFlag = true;  }
+   Bool_t IsM28ClusMT()    { return fM28ClusMtFlag;  }
 
    // Flag for MC data
    Bool_t IsMcData()      { return fFlagMC;      }
@@ -148,8 +163,8 @@ public:
    //! Set Tracking algorithm
    void SetTrackingAlgo(char c);
   
-   // Set detector to be on respect to the given list
-   void SetIncludes(const vector<TString>& list);
+   // Campaign checks
+   void CampaignChecks();
 
    //! Par geo getters
    TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }
@@ -182,6 +197,7 @@ public:
    TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
    
    TACAntuRaw*          GetNtuHitCa()       const { return (TACAntuRaw*) fpNtuRawCa->Object();       }
+   TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
    TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
@@ -206,6 +222,7 @@ public:
    
 protected:
    TString               fExpName;
+   TAGcampaignManager*   fCampManager;
    Int_t                 fRunNumber;
    TAGroot*              fTAGroot;             // pointer to TAGroot
    TAGgeoTrafo*          fpFootGeo;           // trafo prointer
@@ -248,11 +265,11 @@ protected:
    TAGdataDsc*           fpNtuRawTw;     // input data dsc
    TAGdataDsc*           fpNtuRawCa;     // input data dsc
 
-   
    TAGdataDsc*           fpNtuClusVtx;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusIt;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusMsd;     // input cluster data dsc
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
+   TAGdataDsc*           fpNtuClusCa;     // input cluster data dsc
 
    TADIgeoField*         fField;       // magnetic field
 
@@ -269,11 +286,11 @@ protected:
 
    TABMactNtuTrack*      fActTrackBm;    // action for tracks
    
-   TAVTactNtuClusterF*   fActClusVtx;    // action for clusters
+   TAGaction*            fActClusVtx;    // action for clusters
    TAVTactBaseNtuTrack*  fActTrackVtx;   // action for tracks
    TAVTactBaseNtuVertex* fActVtx;        // action for vertex
    
-   TAITactNtuClusterF*   fActClusIt;     // action for clusters
+   TAGaction*            fActClusIt;     // action for clusters
    TAITactBaseNtuTrack*  fActTrackIt;   // action for tracks
 
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
@@ -281,6 +298,8 @@ protected:
    // TATWactNtuRaw*        fActNtuRawTw;  // action for ntu data
    TATWactNtuPoint*      fActPointTw;    // action for clusters
    
+   TACAactNtuCluster*    fActClusCa;    // action for clusters
+
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
 
@@ -289,8 +308,11 @@ protected:
    Bool_t                fFlagHits;      // flag to save hits in tree
    Bool_t                fFlagHisto;     // flag for histo generatiom
    Bool_t                fFlagTrack;     // flag for tracking
+   Bool_t                fFlagTWbarCalib; // flag for TW calibration per Bar
    TString               fgTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory)
+   Bool_t                fFlagZtrueMC;    // Z true MC flag
    Bool_t                fFlagMC;        // MC flag
+   Bool_t                fM28ClusMtFlag; // flag for multi-threading clustering
 
  protected:
    void CreateRecActionBm();
@@ -298,12 +320,13 @@ protected:
    void CreateRecActionIt();
    void CreateRecActionMsd();
    void CreateRecActionTw();
+   void CreateRecActionCa();
    void CreateRecActionGlb() ;
    void CreateRecActionIr();
 
 protected:
    static Bool_t fgItrTrackFlag;
-   
+
    ClassDef(BaseReco, 1); // Base class for event display
 };
 

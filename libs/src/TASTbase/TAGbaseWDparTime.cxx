@@ -41,31 +41,16 @@ TAGbaseWDparTime::~TAGbaseWDparTime()
 }
 
 //------------------------------------------+-----------------------------------
-bool TAGbaseWDparTime::FromFile(string expName, int iRunNumber){
-
-  string runnumber;
-   
-  if (iRunNumber == 0)
-     runnumber = Form("%d", gTAGroot->CurrentRunNumber());
-   else
-      runnumber = Form("%d", iRunNumber);
-
-  string tcal_filename("");
-  if (expName != "")
-     expName += "/";
-  tcal_filename+=Form("./config/%sWDTimeCalibration/tcalib", expName.data());
-  tcal_filename+=runnumber;
-  tcal_filename+=".dat";
-
-  
-  FILE *stream = fopen(tcal_filename.c_str(), "r");
+bool TAGbaseWDparTime::FromFile(TString tcal_filename)
+{
+  FILE *stream = fopen(tcal_filename.Data(), "r");
   
   if(stream==NULL){
-    printf("\n\n WARNING:: ST WD time calibration file %s not found\n\n", tcal_filename.c_str());
+    printf("\n\n WARNING:: ST WD time calibration file %s not found\n\n", tcal_filename.Data());
     return false;
   }else{
     // if (FootDebugLevel(1) > 1)
-    printf("\n\nLoading ST WD time calibration from file::%s \n\n", tcal_filename.c_str());
+    Info("FromFile()", "Loading ST WD time calibration from file::%s \n", tcal_filename.Data());
   }
 
   

@@ -38,10 +38,11 @@ const TString TAGparGeo::fgkDefParaName = "tgGeo";
 //______________________________________________________________________________
 TAGparGeo::TAGparGeo()
 : TAGparTools(),
-  fIonisation(new TAGionisMaterials())
+  fIonisation(new TAGionisMaterials()),
+  fFileName("")
 {
    // Standard constructor
-   fkDefaultGeoName = "./geomaps/TAGdetector.map";
+   fDefaultGeoName = "./geomaps/TAGdetector.geo";
 }
 
 //______________________________________________________________________________
@@ -98,9 +99,11 @@ Bool_t TAGparGeo::FromFile(const TString& name)
    TString nameExp;
    
    if (name.IsNull())
-      nameExp = fkDefaultGeoName;
+      nameExp = fDefaultGeoName;
    else
       nameExp = name;
+   
+   fFileName = nameExp;
    
    if (!Open(nameExp)) return false;
    
@@ -289,56 +292,72 @@ TGeoVolume* TAGparGeo::AddCylindricTarget(const char *targetName)
 }
 
 //_____________________________________________________________________________
-void TAGparGeo::Print(Option_t* /*opt*/) const
+void TAGparGeo::Print(Option_t* option) const
 {
-   cout << endl << "Reading Beam Parameters " << endl;
+   TString opt(option);
    
-   cout << "  Beam size:  "<< fBeamParameter.Size << " cm (FWHM)" << endl;
+   if (opt.Contains("all")) {
    
-   cout  << "  Beam shape:  "<< fBeamParameter.Shape.Data() << endl;
-   
-   cout  << "  Beam energy:  "<< fBeamParameter.Energy << " MeV" <<endl;
-   
-   cout  << "  Beam atomic mass:  "<< fBeamParameter.AtomicMass << endl;
-   
-   cout  << "  Beam atomic number:  "<< fBeamParameter.AtomicNumber << endl;
-   
-   cout  << "  Number of particles:  "<< fBeamParameter.PartNumber << endl;
-	  
-   cout  << "  Position: "
-   << Form("%f %f %f", fBeamParameter.Position[0], fBeamParameter.Position[1], fBeamParameter.Position[2]) << " cm" << endl;
-   
-   cout  << "  Angular spread: "
-   << Form("%f %f %f", fBeamParameter.AngSpread[0], fBeamParameter.AngSpread[1], fBeamParameter.AngSpread[2]) << " degrees" <<  endl;
-   
-   cout << endl << "Reading target Parameters " << endl;
-   
-   cout  << "  Target shape:  "<< fTargetParameter.Shape.Data() << endl;
-	  
-   cout  << "  Size: "
-   << Form("%f %f %f", fTargetParameter.Size[0], fTargetParameter.Size[1], fTargetParameter.Size[2]) << " cm" << endl;
-	  
-   cout  << "  Target material:  "<< fTargetParameter.Material.Data() << endl;
-   
-   cout << endl;
-   cout  << "Number of inserts:  "<< fInsertsN << endl;
-   
-   for (Int_t p = 0; p < fInsertsN; p++) { // Loop on each plane
+      cout << endl << "Reading Beam Parameters " << endl;
       
-      cout << endl << " - Parameters of Sensor " <<  fInsertParameter[p].InsertIdx << endl;
+      cout << "  Beam size:  "<< fBeamParameter.Size << " cm (FWHM)" << endl;
       
-      cout  << "  Insert material:  "<< fInsertParameter[p].Material.Data() << endl;
+      cout  << "  Beam shape:  "<< fBeamParameter.Shape.Data() << endl;
       
-      cout  << "  Insert shape:  "<< fInsertParameter[p].Shape.Data() << endl;
+      cout  << "  Beam energy:  "<< fBeamParameter.Energy << " GeV/u" <<endl;
+      
+      cout  << "  Beam atomic mass:  "<< fBeamParameter.AtomicMass << endl;
+      
+      cout  << "  Beam atomic number:  "<< fBeamParameter.AtomicNumber << endl;
+      
+      cout  << "  Number of particles:  "<< fBeamParameter.PartNumber << endl;
+      
+      cout  << "  Position: "
+      << Form("%f %f %f", fBeamParameter.Position[0], fBeamParameter.Position[1], fBeamParameter.Position[2]) << " cm" << endl;
+      
+      cout  << "  Angular spread: "
+      << Form("%f %f %f", fBeamParameter.AngSpread[0], fBeamParameter.AngSpread[1], fBeamParameter.AngSpread[2]) << " degrees" <<  endl;
+      
+      cout << endl << "Reading target Parameters " << endl;
+      
+      cout  << "  Target shape:  "<< fTargetParameter.Shape.Data() << endl;
       
       cout  << "  Size: "
-      << Form("%f %f %f", fInsertParameter[p].Size[0], fInsertParameter[p].Size[1], fInsertParameter[p].Size[2]) << " cm" <<  endl;
+      << Form("%f %f %f", fTargetParameter.Size[0], fTargetParameter.Size[1], fTargetParameter.Size[2]) << " cm" << endl;
       
-      cout << "   Position: "
-      << Form("%f %f %f", fInsertParameter[p].Position[0], fInsertParameter[p].Position[1], fInsertParameter[p].Position[2]) << " cm" << endl;
-   }
-   cout << endl;
+      cout  << "  Target material:  "<< fTargetParameter.Material.Data() << endl;
+      
+      cout << endl;
+      cout  << "Number of inserts:  "<< fInsertsN << endl;
+      
+      for (Int_t p = 0; p < fInsertsN; p++) { // Loop on each plane
+         
+         cout << endl << " - Parameters of Sensor " <<  fInsertParameter[p].InsertIdx << endl;
+         
+         cout  << "  Insert material:  "<< fInsertParameter[p].Material.Data() << endl;
+         
+         cout  << "  Insert shape:  "<< fInsertParameter[p].Shape.Data() << endl;
+         
+         cout  << "  Size: "
+         << Form("%f %f %f", fInsertParameter[p].Size[0], fInsertParameter[p].Size[1], fInsertParameter[p].Size[2]) << " cm" <<  endl;
+         
+         cout << "   Position: "
+         << Form("%f %f %f", fInsertParameter[p].Position[0], fInsertParameter[p].Position[1], fInsertParameter[p].Position[2]) << " cm" << endl;
+      }
+      cout << endl;
+   } else {
+      printf("\nIn file %s the following beam parameters for a %.0f%s beam have been set:\n", fFileName.Data(), fBeamParameter.AtomicMass,
+             fTargetParameter.Material.Data());
 
+      printf("BeamEnergy:          %.3f GeV/u\n", fBeamParameter.Energy);
+      printf("BeamAtomicMass:      %.0f\n",       fBeamParameter.AtomicMass);
+      printf("BeamAtomicNumber:    %d\n",         fBeamParameter.AtomicNumber);
+      printf("BeamMaterial:       \"%s\"\n\n",    fBeamParameter.Material.Data());
+      
+      printf("TargetMaterial:     \"%s\"\n",      fTargetParameter.Material.Data());
+      printf("TargetThickness:     %.3f cm\n\n",  fTargetParameter.Size[2]);
+
+   }
 }
 
 

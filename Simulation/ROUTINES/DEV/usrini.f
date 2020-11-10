@@ -116,7 +116,7 @@ c
       do ii = 1,NREGS
          call GEOR2N ( ii, REGNAM, IERR )
          if(ierr.eq.0) then
-            if(REGNAM.eq.'AIR1') then
+            if(REGNAM.eq.'AIR') then
                nregaria=ii
             else if(REGNAM.eq.'MAG_AIR') then
                nregMagAir=ii
@@ -206,8 +206,7 @@ c
       write(*,*)'USRINI: =  ',ib, "  ", nsensITR
 c     
       if(((nregtarg*nregLastVTX*nregaria*nregLastSCN*nregSTC*nregLastITR
-*     &     *nregLastCAL*nregLastBMN*nregMagAir
-     &     *nregLastCAL*nregLastBMN
+     &     *nregLastCAL*nregLastBMN*nregMagAir
      &     *nregLastMSD).eq.0).or.(nregFirstVTX.eq.1000000).or.
      &     (nregFirstCAL.eq.1000000).or.(nregFirstSCN.eq.1000000).or.
      &     (nregFirstBMN.eq.1000000).or.
@@ -217,7 +216,7 @@ c
       endif
       write(*,*)'**************** Inizio Geometria *****************'
       write(*,*)'        nregaria           = ',nregaria
-*      write(*,*)'        nregMagAir         = ',nregMagAir
+      write(*,*)'        nregMagAir         = ',nregMagAir
       write(*,*)'        nregSTC            = ',nregSTC
       write(*,*)'        nregFirstBMN       = ',nregFirstBMN
       write(*,*)'        nregLastBMN        = ',nregLastBMN

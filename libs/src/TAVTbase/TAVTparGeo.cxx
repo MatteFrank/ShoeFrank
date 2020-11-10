@@ -54,7 +54,7 @@ TAVTparGeo::TAVTparGeo()
   : TAVTbaseParGeo()
 {
   // Standard constructor
-  fkDefaultGeoName = "./geomaps/TAVTdetector.map";
+  fkDefaultGeoName = "./geomaps/TAVTdetector.geo";
 }
 
 //______________________________________________________________________________
@@ -181,7 +181,7 @@ string TAVTparGeo::PrintParameters()
 {   
   stringstream outstr;
    
-  if(GlobalPar::GetPar()->IncludeVertex()){
+  if(GlobalPar::GetPar()->IncludeVT()){
     
     string precision = "D+00";
    
@@ -207,7 +207,7 @@ string TAVTparGeo::PrintRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeVertex()){
+  if(GlobalPar::GetPar()->IncludeVT()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
     
@@ -299,7 +299,7 @@ string TAVTparGeo::PrintBodies()
   stringstream ss;
    ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
-  if(GlobalPar::GetPar()->IncludeVertex()){
+  if(GlobalPar::GetPar()->IncludeVT()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
@@ -377,7 +377,7 @@ string TAVTparGeo::PrintRegions()
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeVertex()){
+  if(GlobalPar::GetPar()->IncludeVT()){
 
     string name;
 
@@ -411,7 +411,7 @@ string TAVTparGeo::PrintSubtractBodiesFromAir()
   
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeVertex()){
+  if(GlobalPar::GetPar()->IncludeVT()){
 
     for(int i=0; i<fvModBody.size(); i++) {
       ss << " -" << fvModBody.at(i);
@@ -429,7 +429,7 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials *Material)
 
   stringstream ss;
   
-  if(GlobalPar::GetPar()->IncludeVertex()){
+  if(GlobalPar::GetPar()->IncludeVT()){
 
     TString flkmatMod, flkmatPix;  
     

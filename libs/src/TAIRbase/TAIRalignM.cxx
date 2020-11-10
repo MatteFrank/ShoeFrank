@@ -71,7 +71,7 @@ TAIRalignM::TAIRalignM(const TString name)
    // VTX
    fpGeoMapVtx    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
    TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
-   TString parFile = "./geomaps/TAVTdetector.map";
+   TString parFile = "./geomaps/TAVTdetector.geo";
    geomapVtx->FromFile(parFile.Data());
       
    fpConfigVtx    = new TAGparaDsc("vtConf", new TAVTparConf());
@@ -80,9 +80,9 @@ TAIRalignM::TAIRalignM(const TString name)
    parConfVtx->FromFile(parFile.Data());
    
    // ITR
-   fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetItDefParaName(), new TAITparGeo());
+   fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
    TAITparGeo* geomapMsd   = (TAITparGeo*) fpGeoMapItr->Object();
-    parFile = "./geomaps/TAITdetector.map";
+    parFile = "./geomaps/TAITdetector.geo";
    geomapMsd->FromFile(parFile.Data());
    
    fpConfigItr    = new TAGparaDsc("itConf", new TAITparConf());

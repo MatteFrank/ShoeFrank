@@ -7,23 +7,32 @@
 */
 /*------------------------------------------+---------------------------------*/
 
-#include <set>
 #include "Evento.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
-#include "TACAdigitizer.hxx"
-#include "TACAparGeo.hxx"
-#include "TAGgeoTrafo.hxx"
 
 #include "TH1F.h"
 #include "TH2F.h"
 
+// Helper class to sum MC hit of the same particle
+class energyDep : public TObject {
+public:
+   energyDep( int iEvn, int icry, int idpart, float ti, double de ) :
+   index(iEvn), fn(1), fCryid(icry), fid(idpart), fTimeFirstHit(ti), fDE(de) {}
+   int index;             // index in EvnStr
+   int fn;                // number of Edep
+   int fCryid;            // crystal index hit
+   int fid;               // index in the particle block
+   float fTimeFirstHit;   // dep. time at FIRST hit
+   double fDE;            // sum Edep
+   
+   ClassDef(energyDep,0)
+   
+};
+
+class TACAdigitizer;
 class TACAactNtuMC : public TAGaction {
-
-  protected:
-    TObjArray*         fListOfParticles;
-
   public:
     explicit        TACAactNtuMC(const char* name     = 0,
                                  TAGdataDsc* p_datraw = 0,
@@ -32,7 +41,7 @@ class TACAactNtuMC : public TAGaction {
    
     virtual         ~TACAactNtuMC();
 
-    virtual         Bool_t  Action();
+    virtual Bool_t  Action();
 
     void           CreateHistogram();
 
@@ -41,75 +50,29 @@ class TACAactNtuMC : public TAGaction {
   private:
     TAGparaDsc*     fpGeoMap;		    // geometry para dsc
     TAGdataDsc*     fpNtuMC;		    // output data dsc
-    TACAparGeo*     parGeo;   
-    TAGgeoTrafo*    geoTrafo;
-    TACAdigitizer*  fDigitizer;     // cluster size digitizer
     EVENT_STRUCT*   fpEvtStr;
+    TACAdigitizer*   fDigitizer;       // cluster size digitizer
 
-    TH1F* fpHisDeTot;
-    TH1F* fpHisDeTotMc;
-    TH1F* fpHisDeNeutron;
-    TH1F* fpHisMass;
-    TH1F* fpHisTime;
-    TH1F* fpHisDeIonSpectrum[8];
-    TH1F* fpHisDeIon[8];
-    TH1F* fpHisEnPerCry[300];
-
-    TH2F* fpHisCryHitVsEnDep;
-    TH2F* fpHisCryHitVsZ;
-    TH2F* fpHisEnDepVsZ;
-    TH2F* fpHisHitMapXY;
-    TH2F* fpHisHitMapZYin;
-    TH2F* fpHisHitMapZYout;
-    TH2I* fpHisParticleVsRegion;
+    TH1F*  fpHisMass;
+    TH1F*  fpHisEnergy;
+    TH2F*  fpHisEnergyReleasePosXY;
+    TH2F*  fpHisEnergyReleasePosZY_in;
+    TH2F*  fpHisEnergyReleasePosZY_out;
+    TH2F*  fpHisFinalPositionVsMass;
+    TH2F*  fpHisChargeVsMass;
+    TH2I*  fpHistypeParticleVsRegion;
+    TH1F*  fpHisEnergyNeutron;
+    TH1F*  fpHistimeFirstHit;
+   
+    TH1F* fpHisEnergyIon[8];
+    TH1F* fpHisEnergyIonSpect[8];
+    TH1F* fpHisEnergyDep[8];
+    TH2F* fpHisP_vs_EDepIon[8];
+    TH2F* fpHisEdx_vs_EDepIon[8];
    
 private:
    void           CreateDigitizer();
 
 };
-
-
-struct EnergyDep {
-  EnergyDep(int crystalId, float energyDep) : crystalId(crystalId), energyDep(energyDep) {}
-  int crystalId;
-  float energyDep;
-};
-
-class ParticleEnergyDep : public TObject {
-  public:  
-
-    ParticleEnergyDep(int partId, int i) : 
-       partId(partId), iRelease(i) {}
-    int partId;                                  // particle ID
-    int iRelease;                                // index in EvnStr ---> i (the number of the energy deposition)
-    std::vector<EnergyDep> energyDeps;           // vector of pairs of: (cryID - endep)
-
-    void addEnergyDep(int cryId, float energyDep) {
-       this->energyDeps.push_back(EnergyDep(cryId, energyDep));
-    }
-
-    //Sum the energy blocks of one particle (trackID)
-    float getTotalEnergyDep() {
-       float totalEnergyDep(0);
-       for (std::vector<EnergyDep>::iterator it = this->energyDeps.begin(); it != this->energyDeps.end(); ++it) {
-          totalEnergyDep += (*it).energyDep;
-       }
-       return totalEnergyDep;
-    }
-
-    std::set<int> getUniqueCryIds() {
-       std::set<int> uniqueCryIds;
-       for (std::vector<EnergyDep>::const_iterator it = this->energyDeps.begin(); it != this->energyDeps.end(); it++) {
-          uniqueCryIds.insert((*it).crystalId);
-       }
-       return uniqueCryIds;
-    }
-
-    float getNCrystals() {
-      return this->getUniqueCryIds().size();
-    }
-    ClassDef(ParticleEnergyDep,0)
-};
-
 
 #endif

@@ -76,7 +76,10 @@ int main(int argc,char** argv)
     G4int eventsNToBeProcessed = -1;
    
     // expriment name
-    TString exp("");
+    TString expName("");
+   
+    // run number
+    G4int runNumber = -1;
 
     // looking for arguments
     for (int i = 0; i < argc; i++) {
@@ -92,6 +95,11 @@ int main(int argc,char** argv)
             TString sEvt = argv[++i];
             eventsNToBeProcessed = sEvt.Atoi();
         }
+       
+       if(strcmp(argv[i],"-run") == 0) {
+          TString sRun = argv[++i];
+          runNumber = sRun.Atoi();
+       }
        
         if(strcmp(argv[i],"-phys") == 0)
             physListName  = argv[++i];
@@ -112,7 +120,7 @@ int main(int argc,char** argv)
             rootFileName  = argv[++i];
 
         if(strcmp(argv[i],"-exp") == 0)
-            exp = TString(argv[++i]);
+            expName = TString(argv[++i]);
 
         if(strcmp(argv[i],"-help") == 0) {
             printf("Possible arguments are:\n");
@@ -122,40 +130,31 @@ int main(int argc,char** argv)
             printf("  -out rootFileName: root output file name \n");
             printf("  -phys physList: physics list: BIC, BERT or INCL \n");
             printf("  -seed seedNb: seed number for random initialization  \n");
-            printf("  -exp name: [def=""] experiment name for config/geomap extension");
-            printf("  -obj save MC data in root object");
-            printf("  -frag save only when ion inelastic process occurs in target");
+            printf("  -exp name: [def=""] experiment name for config/geomap extension\n");
+            printf("  -run #run [def=-1] run number\n");
+            printf("  -obj save MC data in root object\n");
+            printf("  -frag save only when ion inelastic process occurs in target\n");
 
             return 1;
         }
     }
 
     kEvento = !obj;
-    // check folder
-    if (!exp.IsNull())
-        exp += "/";
-
+   
     // Global Par
     GlobalPar::Instance();
     GlobalPar::GetPar()->SetDebugLevels();
-
-    // initialise geo trafo file
-    TString geoFileName = Form("./geomaps/%sFOOT_geo.map", exp.Data());
-
+   
     // TAG root
     TAGroot tagRoot;
     tagRoot.SetRunNumber(100);
-
-    // Read Trafo file
-    TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-    geoTrafo->FromFile(geoFileName.Data());
 
     // Set various flag
     TCVTgeometryConstructor::SetSmearFlag(false); // smearing due to the accurancy of the alignment (DeltaPos = 5mu, DeltaAng = 0.1º default)
     TCFOrunAction::SetRootFileName(rootFileName.Data());
 
     // Detector construction
-    TCGbaseGeometryConstructor* theDetector =  new TCFOgeometryConstructor(exp);
+    TCGbaseGeometryConstructor* theDetector =  new TCFOgeometryConstructor(expName, runNumber);
     runManager->SetUserInitialization(theDetector);
 
     // Physics list

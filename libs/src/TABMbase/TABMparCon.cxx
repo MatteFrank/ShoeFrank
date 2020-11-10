@@ -218,11 +218,9 @@ void TABMparCon::PrintT0s(TString output_filename, TString input_filename, Long6
 
 Bool_t TABMparCon::loadT0s(TString filename) {
   ifstream infile;
-  if(gTAGroot->CurrentRunNumber()==2210 || gTAGroot->CurrentRunNumber()==2211 || gTAGroot->CurrentRunNumber()==2212)
-    filename.Insert(filename.Last('.'),"_7April");
-  else if(gTAGroot->CurrentRunNumber()==2239 || gTAGroot->CurrentRunNumber()==2240 || gTAGroot->CurrentRunNumber()==2241 || gTAGroot->CurrentRunNumber()==2242 || gTAGroot->CurrentRunNumber()==2251)
-    filename.Insert(filename.Last('.'),"_8April");
 
+  Info("loadT0s", "Loading BM T0 calibration from file: %s\n", filename.Data());
+   
   gSystem->ExpandPathName(filename);
   infile.open(filename,ios::in);
   if(infile.is_open()==kFALSE){

@@ -238,8 +238,13 @@ void TCVTgeometryConstructor::DefineMaxMinDimension()
          maxPosition[i] = (maxPosition[i] >= posAct[i] + shift[i]) ? maxPosition[i] : posAct[i] + shift[i];
       }
    }
-   
    fMinPosition = minPosition*cm;
    fMaxPosition = maxPosition*cm;
+   
+   if (TMath::Abs(fMinPosition.Z()) > TMath::Abs(fMaxPosition.Z()))
+      fMaxPosition[2] = -fMinPosition[2];
+   
+   if (TMath::Abs(fMaxPosition.Z()) > TMath::Abs(fMinPosition.Z()))
+      fMinPosition[2] = -fMaxPosition[2];
 }
 

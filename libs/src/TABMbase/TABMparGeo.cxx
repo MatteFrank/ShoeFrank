@@ -71,7 +71,7 @@ TABMparGeo::TABMparGeo()
    fBmDeltaX(0),
    fDrawWire(false)   
 {
-   fkDefaultGeoName = "./geomaps/TABMdetector.map";
+   fkDefaultGeoName = "./geomaps/TABMdetector.geo";
 }
 
 //------------------------------------------+-----------------------------------
@@ -1006,8 +1006,27 @@ string TABMparGeo::PrintParameters() {
 
 }
 
+//______________________________________________________________________________
+/// Get cell id from position of the hit, layer and view
+Int_t TABMparGeo::GetCell(TVector3 pos, int layer, int view)
+{
+    Int_t cell = -1 ;
+    Float_t shift = fBmDeltaDch[1]-fSensesN*fBmCellWide ;
+    if(layer%2==0) shift = -shift;
+    Float_t limit = -fSensesN*fBmCellWide + shift;
 
+    int axis ;
+    if(view==0) axis = 1 ;  /// view 0 along y axis
+    else axis = 0 ;         /// view 1 along x axis
 
+    for(int i=0 ; i<fSensesN ; ++i){
+        if((pos[axis]>= limit) && (pos[axis]<(limit+2.0*fBmCellWide))){
+            cell = i ;
+        }
+        limit = limit+(2.0*fBmCellWide) ;
+    }
+    return cell ;
+}
 
 //______________________________________________________________________________
 

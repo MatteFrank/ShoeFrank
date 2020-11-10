@@ -52,7 +52,7 @@ namespace details {
     template<class T1, class T2> struct are_dimensions_coherent : are_dimensions_coherent_impl<T1, T2, void> {};
     
     
-    
+
     
     template<class T, std::size_t Size>
     struct lower_triangular_array{

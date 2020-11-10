@@ -50,7 +50,7 @@ void FillVertex()
    
    TAGparaDsc* vtGeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
-   geomap->FromFile("./geomaps/GSI/TAVTdetector.map");
+   geomap->FromFile("./geomaps/GSI/TAVTdetector.geo");
    
    TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();

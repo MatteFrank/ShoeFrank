@@ -18,6 +18,8 @@
 #include "TACAdigitizer.hxx"
 #include "TGeoElement.h"
 
+const char* getPartNamefromID(int id);
+
 /*!
   \class TACAactNtuHitMC TACAactNtuHitMC.hxx "TACAactNtuHitMC.hxx"
   \brief NTuplizer for Calo raw hits. **
@@ -147,7 +149,7 @@ void TACAactNtuHitMC::CreateHistogram()
    fpHistimeFirstHit = new TH1F("caMctimeFirstHit", "Time of Calorimeter; Time [ns];",100, 0, 30);
    AddHistogram( fpHistimeFirstHit );
 
-   fpHisEnergyNeutron = new TH1F("caMcEnergyNeutron", "En Dep Neutron; En [GeV];",400, 0., 0.1);
+   fpHisEnergyNeutron =  new TH1F("caEnergyNeutron", "En Dep Neutron; En [MeV];", 1000, 0., 10) ;
    AddHistogram( fpHisEnergyNeutron );
 
    // AddHistogram( new TH1F("caMcTof", "Time between first and last hit in the Calo; Tof [ns];",100, 0, 5) );
@@ -182,7 +184,8 @@ Bool_t TACAactNtuHitMC::Action()
 
    TGeoElementTable table;
    table.BuildDefaultElements();
-
+   
+   TACAparGeo* parGeo    = (TACAparGeo*) fpGeoMap->Object();
    TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
    // Sum all energy dep. of the same particle
@@ -248,16 +251,17 @@ Bool_t TACAactNtuHitMC::Action()
    for (int i=0; i<npart; ++i) {
       EnergyDep_t* endep = (EnergyDep_t*)dep.At(i);
       int index = endep->index;
-      TAMChit* hitMC = pNtuMC->GetHit(i);
-      TAMChit* hitMC_f = pNtuMC->GetHit(index);
+      
+      TAMChit* hitMC = pNtuMC->GetHit(index);
+      Int_t id       = hitMC->GetCrystalId();
+      
+      TVector3 posIn(hitMC->GetInPosition());
+      TVector3 posOut(hitMC->GetOutPosition());
 
-      TVector3 posIn(hitMC_f->GetInPosition());
-      TVector3 posOut(hitMC_f->GetOutPosition());
-
-      Int_t trackId = hitMC->GetTrackIdx()-1;
-      Float_t z0_i  = posIn.Z();
-      Float_t z0_f  = posOut.Z();
-      Float_t time  = hitMC_f->GetTof()*TAGgeoTrafo::SecToNs();
+      Int_t trackIdx = hitMC->GetTrackIdx()-1;
+      Float_t z0_i   = posIn.Z();
+      Float_t z0_f   = posOut.Z();
+      Float_t time   = hitMC->GetTof()*TAGgeoTrafo::SecToNs();
 
       TVector3 posInLoc = geoTrafo->FromGlobalToCALocal(posIn);
       TVector3 posOutLoc = geoTrafo->FromGlobalToCALocal(posOut);
@@ -265,8 +269,16 @@ Bool_t TACAactNtuHitMC::Action()
       // don't use z for the moment
       fDigitizer->Process(endep->fDE, posInLoc[0], posInLoc[1], z0_i, z0_f, time, endep->fCryid);
       TACAntuHit* hit = fDigitizer->GetCurrentHit();
-      hit->AddMcTrackIdx(trackId, i);
-      hit->SetPosition(posInLoc);   
+      
+      if (hit) {
+         hit->AddMcTrackIdx(trackIdx, index);
+         
+         Float_t thick = -parGeo->GetCrystalThick();
+         TVector3 positionCry(0, 0, thick);
+         
+         positionCry = parGeo->Crystal2Detector(id, positionCry);
+         hit->SetPosition(positionCry);
+      }
    }
 
    fpNtuRaw->SetBit(kValid);

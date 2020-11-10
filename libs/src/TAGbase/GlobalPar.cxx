@@ -7,6 +7,9 @@
 
 #include "GlobalPar.hxx"
 
+map<TString, TString> GlobalPar::m_dectFullName = {{"ST", "Start Counter"}, {"BM", "Beam Monitor"}, {"DI", "Dipole"}, {"TG", "Target"},
+                                                   {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "Multi-Strip Detector"}, {"TW", "ToF Wall"},
+                                                   {"CA", "Calorimeter"}};
 
 //_____________________________________________________________________________
 // Global static pointer used to ensure a single instance of the class.
@@ -49,7 +52,6 @@ GlobalPar::GlobalPar( string aparFileName ) {
 
     m_copyInputFile.clear();
     m_debug = 0;
-    m_nLevelOfDebug = 4;    // from 0 to 4
 
     m_kalmanMode = -1;
 
@@ -194,6 +196,8 @@ void GlobalPar::ReadParamFile () {
            RemoveSpace( &rev );
            if ( rev == "y" )        m_includeDI = true;
            else                     m_includeDI = false;
+           if (m_includeDI)
+              m_dectInclude.push_back("DI");
         }
 
         else if ( line.find("IncludeST:") != string::npos ) {
@@ -201,6 +205,8 @@ void GlobalPar::ReadParamFile () {
            RemoveSpace( &rev );
            if ( rev == "y" )        m_includeST = true;
            else                     m_includeST = false;
+           if (m_includeST)
+              m_dectInclude.push_back("ST");
         }
 
         else if ( line.find("IncludeBM:") != string::npos ) {
@@ -208,43 +214,57 @@ void GlobalPar::ReadParamFile () {
             RemoveSpace( &rev );
             if ( rev == "y" )        m_includeBM = true;
             else                     m_includeBM = false;
+           if (m_includeBM)
+              m_dectInclude.push_back("BM");
         }
         else if ( line.find("IncludeTW:") != string::npos ) {
             string rev =StrReplace( line, "IncludeTW:", "" );   
             RemoveSpace( &rev );
             if ( rev == "y" )        m_includeTW = true;
             else                     m_includeTW = false;
+           if (m_includeTW)
+              m_dectInclude.push_back("TW");
         }
         else if ( line.find("IncludeMSD:") != string::npos ) {
             string rev =StrReplace( line, "IncludeMSD:", "" );   
             RemoveSpace( &rev );
             if ( rev == "y" )        m_includeMSD = true;
             else                     m_includeMSD = false;
+           if (m_includeMSD)
+              m_dectInclude.push_back("MSD");
         }
         else if ( line.find("IncludeCA:") != string::npos ) {
             string rev =StrReplace( line, "IncludeCA:", "" );   
             RemoveSpace( &rev );
             if ( rev == "y" )        m_includeCA = true;
             else                     m_includeCA = false;
+           if (m_includeCA)
+              m_dectInclude.push_back("CA");
         }
         else if ( line.find("IncludeTG:") != string::npos ) {
            string rev =StrReplace( line, "IncludeTG:", "" );
            RemoveSpace( &rev );
            if ( rev == "y" )        m_includeTG = true;
            else                     m_includeTG = false;
+           if (m_includeTG)
+              m_dectInclude.push_back("TG");
         }
 
-        else if ( line.find("IncludeVertex:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeVertex:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeVertex = true;
-            else                     m_includeVertex = false;
+        else if ( line.find("IncludeVT:") != string::npos ) {
+           string rev =StrReplace( line, "IncludeVT:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_includeVT = true;
+           else                     m_includeVT = false;
+           if (m_includeVT)
+              m_dectInclude.push_back("VT");
         }
-        else if ( line.find("IncludeInnerTracker:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeInnerTracker:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeInnerTracker = true;
-            else                     m_includeInnerTracker = false;
+        else if ( line.find("IncludeIT:") != string::npos ) {
+           string rev =StrReplace( line, "IncludeIT:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_includeIT = true;
+           else                     m_includeIT = false;
+           if (m_includeIT)
+               m_dectInclude.push_back("IT");
         }
         else if ( line.find("IncludeKalman:") != string::npos ) {
             string rev =StrReplace( line, "IncludeKalman:", "" );   
@@ -258,18 +278,10 @@ void GlobalPar::ReadParamFile () {
            if ( rev == "y" )        m_includeTOE = true;
            else                     m_includeTOE = false;
         }
-        else if ( line.find("IncludeEvent:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeEvent:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeEvent = true;
-            else                     m_includeEvent = false;
-        }
-
     }
 
 
     // Check mandatory parameters set
-    if ( m_debug < 0 || m_debug > m_nLevelOfDebug )     cout<< "ERROR :: GlobalPar.cxx  -->  wrong parameters config setting: debug level = "<< m_debug <<endl, exit(0);
     if ( m_trackingSystems.size() < 1 )     cout<< "ERROR :: GlobalPar.cxx  -->  wrong parameters config setting: m_trackingSystems ize = 0"<<endl, exit(0);
 
  
@@ -320,7 +332,9 @@ Bool_t GlobalPar::GetMcDebugLevel(Int_t level, const char* className)
    // need to remove compiler index
    
    Int_t status;
-   const char* name = abi::__cxa_demangle(className,0,0,&status);
+   char output_buffer[255];
+
+   const char* name = abi::__cxa_demangle(className,  output_buffer, 0,&status);
 
    return GetDebugLevel(level, name);
 }
@@ -385,13 +399,41 @@ void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, 
 
 
 //________________________________________________________________________________________
-void GlobalPar::Print() {
+void GlobalPar::Print(Option_t* opt) {
+   
+   TString option(opt);
    
    cout << endl << "========================   Input Parameters  =============================" << endl<<endl;
-   for ( unsigned int cl=0; cl<m_copyInputFile.size(); cl++ ) {
-      cout << m_copyInputFile[cl] << endl;
+
+   if (option.Contains("all")) {
+
+      for ( unsigned int cl=0; cl<m_copyInputFile.size(); cl++ )
+         cout << m_copyInputFile[cl] << endl;
+      cout << endl <<  "===========================================================================" << endl<<endl;
+
+   } else {
+      cout << "Global debug level: " << m_debug << endl;
+      cout << "Detectors included:" << endl;
+      
+      printf(" -");
+      vector<TString> list = m_dectInclude;
+      for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
+         TString str = m_dectFullName[*it];
+         printf("%s - ", str.Data());
+      }
+      
+      printf("\n");
+
+      if (m_includeKalman)
+         cout << "Using GenFit for Global Recontruction" << endl;
+      
+      if (m_includeTOE)
+         cout << "Using TOE for Global Recontruction" << endl;
+
+      printf("\n\n");
+
    }
-   cout << endl <<  "===========================================================================" << endl<<endl;
+   
    
 }
 

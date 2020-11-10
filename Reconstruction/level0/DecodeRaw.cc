@@ -18,7 +18,9 @@ int main (int argc, char *argv[])  {
    Bool_t his = false;
    Bool_t hit = false;
    Bool_t trk = false;
-   
+   Bool_t mth = false;
+   Bool_t tw_bar_cal = false;
+
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
    
@@ -33,7 +35,9 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
       if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
       if(strcmp(argv[i],"-trk") == 0)   { trk = true;   } // enable tracking action
-      
+      if(strcmp(argv[i],"-twbarcal") == 0)   { tw_bar_cal = true;   } // enable tw calibration per bar
+      if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
+
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
          cout<<" Ex: Decoder [opts] "<<endl;
@@ -41,11 +45,13 @@ int main (int argc, char *argv[])  {
          cout<<"      -in path/file  : [def=""] raw input file"<<endl;
          cout<<"      -out path/file : [def=*_Out.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
+         cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -trk           : enable tracking actions"<<endl;
          cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
          cout<<"      -ntu           : enable tree filling"<<endl;
          cout<<"      -his           : enable crtl histograming"<<endl;
+         cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
       }
    }
@@ -54,6 +60,13 @@ int main (int argc, char *argv[])  {
    
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
+   
+   if (tw_bar_cal) {
+     pos = out.Last('.');
+     out = out(0, pos);
+     out.Append("_TWBarCalib.root");
+     cout<<out.Data()<<endl;
+   }
    
    LocalReco* locRec = new LocalReco(exp, in, out);
 
@@ -66,11 +79,18 @@ int main (int argc, char *argv[])  {
       locRec->EnableTree();
       locRec->EnableSaveHits();
    }
-   if (trk) {
+   if (trk)
       locRec->EnableTracking();
+   
+   if (tw_bar_cal) {
+     locRec->EnableTWcalibPerBar();
    }
+
    if (runNb != -1)
       locRec->BaseReco::SetRunNumber(runNb);
+   
+   if (mth)
+      locRec->EnableM28lusMT();
    
    TStopwatch watch;
    watch.Start();
@@ -81,6 +101,7 @@ int main (int argc, char *argv[])  {
    
    watch.Print();
 
+   delete locRec;
    
    return 0;
 } 

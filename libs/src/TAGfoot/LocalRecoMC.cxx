@@ -83,7 +83,7 @@ void LocalRecoMC::CreateRawAction()
       fActNtuMcBm = new TAMCactNtuBm("bmActNtuMc", fpNtuMcBm, fEvtStruct);
    }
    
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       fpNtuRawVtx = new TAGdataDsc("vtRaw", new TAVTntuRaw());
       fActNtuRawVtx = new TAVTactNtuMC("vtActNtu", fpNtuRawVtx, fpParGeoVtx, fEvtStruct);
       if (fFlagHisto)
@@ -93,7 +93,7 @@ void LocalRecoMC::CreateRawAction()
       fActNtuMcVt = new TAMCactNtuVtx("vtActNtuMc", fpNtuMcVt, fEvtStruct);
    }
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       fpNtuRawIt = new TAGdataDsc("itRaw", new TAITntuRaw());
       fActNtuRawIt = new TAITactNtuMC("itActNtu", fpNtuRawIt, fpParGeoIt, fEvtStruct);
       if (fFlagHisto)
@@ -116,7 +116,7 @@ void LocalRecoMC::CreateRawAction()
    if(GlobalPar::GetPar()->IncludeTW()) {
 
       fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
-      fActNtuRawTw = new TATWactNtuMC("twActNtu", fpNtuRawTw,  fpParCalTw, fpParGeoG, fEvtStruct);
+      fActNtuRawTw = new TATWactNtuMC("twActNtu", fpNtuRawTw,  fpParCalTw, fpParGeoG, fEvtStruct,fFlagZtrueMC);
       if (fFlagHisto)
 	fActNtuRawTw->CreateHistogram();
       
@@ -138,12 +138,6 @@ void LocalRecoMC::CreateRawAction()
 //__________________________________________________________
 void LocalRecoMC::OpenFileIn()
 {
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      fActGlbTrack->Open(GetName());
-      fTree = fActGlbTrack->GetTree();
-      return;
-   }
-   
    fActEvtReader = new TFile(GetName());
    fTree = (TTree*)fActEvtReader->Get("EventTree");
    
@@ -163,11 +157,11 @@ void LocalRecoMC::SetRawHistogramDir()
       fActNtuRawBm->SetHistogramDir((TDirectory*)fActEvtWriter->File());
 
    // VTX
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       fActNtuRawVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    
    // IT
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       fActNtuRawIt->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    
    // MSD
@@ -187,11 +181,6 @@ void LocalRecoMC::SetRawHistogramDir()
 //__________________________________________________________
 void LocalRecoMC::CloseFileIn()
 {
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      fActGlbTrack->Close();
-      return;
-   }
-
    fActEvtReader->Close();
 }
 
@@ -206,10 +195,10 @@ void LocalRecoMC::AddRawRequiredItem()
    if (GlobalPar::GetPar()->IncludeBM())
       AddRequiredMcItemBm();
    
-   if (GlobalPar::GetPar()->IncludeVertex())
+   if (GlobalPar::GetPar()->IncludeVT())
       AddRequiredMcItemVt();
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeIT())
       AddRequiredMcItemIt();
    
    if (GlobalPar::GetPar()->IncludeMSD())
@@ -279,13 +268,13 @@ void LocalRecoMC::SetTreeBranches()
       fActEvtWriter->SetupElementBranch(fpNtuMcBm, TAMCntuHit::GetBmBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeVertex()) {
+   if (GlobalPar::GetPar()->IncludeVT()) {
       if (fFlagHits)
          fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuRaw::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+   if (GlobalPar::GetPar()->IncludeIT()) {
       if (fFlagHits)
          fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuRaw::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcIt, TAMCntuHit::GetItrBranchName());
@@ -312,11 +301,13 @@ void LocalRecoMC::SetTreeBranches()
 
 // --------------------------------------------------------------------------------------
 void LocalRecoMC::SetRunNumber()
-{
-   if (fRunNumber != -1)  // if set from outside return, else take from name
+{   
+   if (fRunNumber != -1) { // if set from outside return, else take from name
+      gTAGroot->SetRunNumber(fRunNumber);
       return;
+   }
    
-   // Done by hand shoud be given by DAQ header
+   // Done by hand
    TString name = GetName();
    if (name.IsNull()) return;
    
@@ -331,6 +322,9 @@ void LocalRecoMC::SetRunNumber()
    TString tmp1 = name(pos1+1, len);
    Int_t pos2   = tmp1.First(".");
    TString tmp  = tmp1(0, pos2);
+   fRunNumber = tmp.Atoi();
    
-   gTAGroot->SetRunNumber(tmp.Atoi());
+   Warning("SetRunNumber()", "Run number not set !, taking number from file: %d", fRunNumber);
+
+   gTAGroot->SetRunNumber(fRunNumber);
 }

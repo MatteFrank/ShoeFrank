@@ -17,7 +17,6 @@ set( EXTRA_INTERNAL_LIBRARIES ${TCST} ${TCBM} ${TCVT} ${TCEM} ${TCIT} ${TCMSD} $
 # manual method : base file name separated in two lists with different treatment.
 #
 set( Qapivi_file
-    TCFOfield
     TCFOgeometryConstructor
     TCFObaseEventAction
     TCFOeventAction

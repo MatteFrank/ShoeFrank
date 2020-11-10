@@ -48,7 +48,7 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
    
    TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
    TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
-   TString  parFileName = "./geomaps/TABMdetector.map";  
+   TString  parFileName = "./geomaps/TABMdetector.geo";  
    geomap->FromFile(parFileName.Data());
 
    TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());

@@ -31,6 +31,8 @@
 #include "TAVTntuCluster.hxx"
 #include "TAVTactBaseTrack.hxx"
 
+#include "TAVTbaseDigitizer.hxx"
+
 /*!
  \class TAVTactBaseTrack 
  \brief NTuplizer for vertex raw hits. **
@@ -156,7 +158,9 @@ void TAVTactBaseTrack::CreateHistogram()
    fpHisMeanPixel = new TH1F(Form("%sMeanClusPix", fPrefix.Data()), Form("%s - mean pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
    AddHistogram(fpHisMeanPixel);
    
-   fpHisMeanCharge = new TH1F(Form("%sMeanClusChg", fPrefix.Data()), Form("%s - mean charge per tracked clusters", fTitleDev.Data()), 500, 0, 1000);
+   Int_t adc = TAVTbaseDigitizer::GetTotAdcDepth();
+   Int_t bin = TMath::Power(2, adc);
+   fpHisMeanCharge = new TH1F(Form("%sMeanClusChg", fPrefix.Data()), Form("%s - mean charge per tracked clusters", fTitleDev.Data()), bin/2., 0, bin);
    AddHistogram(fpHisMeanCharge);
 
    fpHisClusLeft = new TH1F(Form("%sClusLeft", fPrefix.Data()), Form("%s - Clusters left per sensor", fTitleDev.Data()), 8, 1, 8);
@@ -427,7 +431,5 @@ void TAVTactBaseTrack::SetGeoTrafo(TString name)
 {
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(name.Data());
    if (!fpFootGeo)
-	  printf("No GeoTrafo action %s available yet\n", name.Data());
-   else 
-	  printf("GeoTrafo action %s found\n", name.Data());
+	  Error("SetGeoTrafo()", "No GeoTrafo action %s available yet\n", name.Data());
 }

@@ -7,21 +7,24 @@
  
  */
 
-#include "TAFOeventDisplay.hxx"
+#include "TAFObaseEventDisplay.hxx"
 #include "TAEDpoint.hxx"
 
 class TTree;
 
-class TAFOeventDisplayMC : public TAFOeventDisplay
+class TAFOeventDisplayMC : public TAFObaseEventDisplay
 {
    
 protected:
    //! default constructor
-   TAFOeventDisplayMC(Int_t type, const TString expName);
+   TAFOeventDisplayMC(const TString expName, Int_t type);
+   
+protected:
+   static TAFOeventDisplayMC* fgInstance; // static instance of class
    
 public:
    //! Instance of class
-   static TAFOeventDisplay* Instance(Int_t type = 0, const TString name = "");
+   static TAFOeventDisplayMC* Instance(const TString name = "", Int_t type = 1);
    
    virtual ~TAFOeventDisplayMC();
    
@@ -36,6 +39,9 @@ public:
 
    //! Connect elements
    void ConnectMcElements();
+
+   //! Set local reconstruction
+   void SetLocalReco();
 
    //! Update MC info
    void UpdateStInfo(Int_t idx);

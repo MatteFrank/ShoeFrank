@@ -32,36 +32,105 @@ namespace expr {
         constexpr operator Output() const { return derived()(); }
     };
     
+    template<std::size_t Index, class Expr>
+    struct expr_tuple_leaf{
+        constexpr explicit expr_tuple_leaf( Expr e_p ) : expr{ std::move(e_p) } { }
+        Expr const expr;
+    };
+    
+    
+    template<class Sequence, class ... Exprs>
+    struct expr_tuple_impl;
+    template<std::size_t ... Indices, class ... Exprs>
+    struct expr_tuple_impl<std::index_sequence<Indices...>, Exprs...> : expr_tuple_leaf<Indices, Exprs>... {
+        constexpr expr_tuple_impl(Exprs const& ... exprs_p) : expr_tuple_leaf<Indices, Exprs>{ exprs_p }... {}
+        
+        constexpr expr_tuple_impl( expr_tuple_impl && ) = default;
+        constexpr expr_tuple_impl& operator=( expr_tuple_impl && ) = default;
+        
+        constexpr expr_tuple_impl( expr_tuple_impl const& ) = delete;
+        constexpr expr_tuple_impl& operator=( expr_tuple_impl const& ) = delete;
+    };
+    
+    
+    
+    
+    template<std::size_t Index, class T> struct expr_tuple_element;
+    template<class T> struct expr_tuple_size;
+    
+    
+    template<class ... Exprs>
+    struct expr_tuple{
+        
+        template<std::size_t Index, class ... Exprs_>
+        friend inline typename expr_tuple_element<Index, expr_tuple<Exprs_...> >::type const& get( expr_tuple<Exprs_...> const& t_p );
+        
+        constexpr expr_tuple(Exprs const& ... exprs_p) : impl{exprs_p...} {}
+        
+    private:
+        expr_tuple_impl<std::make_index_sequence<sizeof...(Exprs)>, Exprs...> impl;
+    };
+    
+    template<class ... Exprs> struct expr_tuple_size<expr_tuple<Exprs...>> : std::integral_constant<std::size_t, sizeof...(Exprs)> {};
+    
+    template<std::size_t Index, class T> struct indexer_leaf{ using type = T; };
+    template<class Sequence, class ... Ts> struct indexer;
+    template<std::size_t ... Indices, class ... Ts>
+    struct indexer<std::index_sequence<Indices...>, Ts...> : indexer_leaf<Indices, Ts>...{};
+    
+    template <std::size_t Index, class T>
+    constexpr static indexer_leaf<Index, T> select( indexer_leaf<Index, T> );
+    
+    template<std::size_t Index, class ... Exprs>
+    struct expr_tuple_element<Index, expr_tuple<Exprs...>>{
+        static_assert( (Index < expr_tuple_size< expr_tuple<Exprs...> >::value), "Index is out of range" );
+        using type = typename decltype( select<Index>( indexer< std::index_sequence_for<Exprs...>, Exprs... >{} ) )::type ;
+    };
+    
+    
+    template<std::size_t Index, class ... Exprs>
+    inline typename expr_tuple_element<Index, expr_tuple<Exprs...> >::type const& get( expr_tuple<Exprs...> const& t_p ) {
+        using type = typename expr_tuple_element<Index, expr_tuple<Exprs...> >::type;
+        return static_cast< expr_tuple_leaf<Index, type> const& >(t_p.impl).expr;
+    }
+    
+    
+    template<class ... Exprs>
+    constexpr auto make_expr_tuple( Exprs const& ... exprs_p ) -> expr_tuple<Exprs...> { return {exprs_p...}; }
+    
     template<std::size_t NRows, std::size_t NCols, class ... Exprs>
     struct matrix_expr : base_expr< matrix_expr<NRows, NCols, Exprs ...> >
     {
-        constexpr explicit matrix_expr( std::tuple<Exprs...> expr_pc ) : expr_mc{std::move(expr_pc)} {}
+        constexpr explicit matrix_expr( expr_tuple<Exprs...> expr_pc ) : expr_mc{std::move(expr_pc)} {}
+        
+        // template<class ... Exprs_>
+        // constexpr matrix_expr( Exprs&& ... exprs_p ) : expr_mc{std::make_tuple(std::move(exprs_p)...)} {}
         constexpr matrix<NRows, NCols> operator()() const
         {
             return compute_matrix( std::make_index_sequence<NRows * NCols>() );
         }
-        constexpr std::tuple<Exprs...> const& get_expressions() const { return expr_mc; }
+        constexpr expr_tuple<Exprs...> const& get_expressions() const { return expr_mc; }
         
     private:
         template<std::size_t ... Indices>
         constexpr matrix<NRows, NCols> compute_matrix( std::index_sequence<Indices...> ) const
         {
-            return { std::get<Indices>( expr_mc )()... };
+            return { get<Indices>( expr_mc )()... };
         }
         
-        std::tuple<Exprs...> expr_mc;
+        expr_tuple<Exprs...> expr_mc;
     };
     
     template<std::size_t NRows, std::size_t NCols, class ... Exprs>
-    constexpr auto make_matrix_expr( Exprs&& ... exprs )
+    constexpr auto make_matrix_expr( Exprs const& ... exprs )
     {
-        return matrix_expr<NRows, NCols, Exprs ...>{std::make_tuple(exprs...)};
+        return matrix_expr<NRows, NCols, Exprs ...>{make_expr_tuple(exprs...)};
     }
     
     template< std::size_t NRows, std::size_t NCols,
     class Filler, std::size_t... Indices>
-    constexpr auto make_matrix_expr_impl( Filler f_p,
-                                         std::index_sequence<Indices...>)
+    constexpr auto make_matrix_expr( Filler f_p,
+                                    std::index_sequence<Indices...>)
     {
         // puts(__PRETTY_FUNCTION__);
         return make_matrix_expr<NRows, NCols>( f_p.template call<Indices>()... );
@@ -71,7 +140,7 @@ namespace expr {
     std::size_t NRows, std::size_t NCols, class ... Exprs>
     constexpr auto get( matrix_expr<NRows, NCols, Exprs...> const&  m_p )
     {
-        return std::get< IRow * NCols + ICol >( m_p.get_expressions() );
+        return get< IRow * NCols + ICol >( m_p.get_expressions() );
     }
     
     
@@ -372,11 +441,11 @@ constexpr auto operator+( matrix<NRows, NCols> const& m1_p,
                           matrix<NRows, NCols> const& m2_p )
 {
     // puts(__PRETTY_FUNCTION__);
-    auto&& m_expr1 = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m1_p), std::make_index_sequence<NRows * NCols>() );
-    auto&& m_expr2 = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m2_p), std::make_index_sequence<NRows * NCols>() );
+    auto&& m_expr1 = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m1_p), std::make_index_sequence<NRows * NCols>() );
+    auto&& m_expr2 = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m2_p), std::make_index_sequence<NRows * NCols>() );
     using MExpr1 = typename std::decay_t<decltype(m_expr1)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr2)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::addition_filler<NRows, NCols, MExpr1, MExpr2>{ std::move(m_expr1), std::move(m_expr2)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -387,10 +456,10 @@ template< std::size_t NRows, std::size_t NCols, class... Exprs >
 constexpr auto operator+( expr::matrix_expr<NRows, NCols, Exprs...> && m_expr_p,
                           matrix<NRows, NCols> const& m_p )
 {
-    auto&& m_expr = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
+    auto&& m_expr = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
     using MExpr1 = typename std::decay_t<decltype(m_expr_p)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::addition_filler<NRows, NCols, MExpr1, MExpr2>{ std::move(m_expr_p), std::move(m_expr)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                     );
@@ -401,10 +470,10 @@ template< std::size_t NRows, std::size_t NCols, class... Exprs>
 constexpr auto operator+( matrix<NRows, NCols> const& m_p,
                           expr::matrix_expr<NRows, NCols, Exprs...> && m_expr_p )
 {
-    auto&& m_expr = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
+    auto&& m_expr = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
     using MExpr1 = typename std::decay_t<decltype(m_expr)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr_p)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                     expr::addition_filler<NRows, NCols, MExpr1, MExpr2>{ std::move(m_expr), std::move(m_expr_p)} ,
                                     std::make_index_sequence<NRows * NCols>()
                                                );
@@ -417,7 +486,7 @@ constexpr auto operator+( expr::matrix_expr<NRows, NCols, Exprs1...> && m_expr1_
 {
     using MExpr1 = typename std::decay_t<decltype(m_expr1_p)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr2_p)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::addition_filler<NRows, NCols, MExpr1, MExpr2>{ std::move(m_expr1_p), std::move(m_expr2_p)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -432,11 +501,11 @@ constexpr auto operator-( matrix<NRows, NCols> const& m1_p,
                           matrix<NRows, NCols> const& m2_p )
 {
     // puts(__PRETTY_FUNCTION__);
-    auto&& m_expr1 = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m1_p), std::make_index_sequence<NRows * NCols>() );
-    auto&& m_expr2 = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m2_p), std::make_index_sequence<NRows * NCols>() );
+    auto&& m_expr1 = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m1_p), std::make_index_sequence<NRows * NCols>() );
+    auto&& m_expr2 = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m2_p), std::make_index_sequence<NRows * NCols>() );
     using MExpr1 = typename std::decay_t<decltype(m_expr1)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr2)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::substraction_filler<NRows, NCols, MExpr1, MExpr2>{ std::move(m_expr1), std::move(m_expr2)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -447,10 +516,10 @@ template< std::size_t NRows, std::size_t NCols, class... Exprs >
 constexpr auto operator-( expr::matrix_expr<NRows, NCols, Exprs...> && m_expr_p,
                          matrix<NRows, NCols> const& m_p )
 {
-    auto&& m_expr = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
+    auto&& m_expr = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
     using MExpr1 = typename std::decay_t<decltype(m_expr_p)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::substraction_filler<NRows, NCols, MExpr1, MExpr2>{ std::move(m_expr_p), std::move(m_expr)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -461,10 +530,10 @@ template< std::size_t NRows, std::size_t NCols, class... Exprs>
 constexpr auto operator-( matrix<NRows, NCols> const& m_p,
                          expr::matrix_expr<NRows, NCols, Exprs...> && m_expr_p )
 {
-    auto&& m_expr = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
+    auto&& m_expr = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
     using MExpr1 = typename std::decay_t<decltype(m_expr)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr_p)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::substraction_filler<NRows, NCols, MExpr1, MExpr2>{ std::move(m_expr), std::move(m_expr_p)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -477,7 +546,7 @@ constexpr auto operator-( expr::matrix_expr<NRows, NCols, Exprs1...> && m_expr1_
 {
     using MExpr1 = typename std::decay_t<decltype(m_expr1_p)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr2_p)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::substraction_filler<NRows, NCols, MExpr1, MExpr2>{ std::move(m_expr1_p), std::move(m_expr2_p)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -495,10 +564,10 @@ constexpr auto operator*( T const& t_p,
 {
     // puts(__PRETTY_FUNCTION__);
     auto&& expr = expr::terminal_expr<T>( t_p );
-    auto&& m_expr = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
+    auto&& m_expr = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
     using Expr = typename std::decay_t<decltype(expr)>;
     using MExpr = typename std::decay_t<decltype(m_expr)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::mixed_multiplication_filler<NRows, NCols, Expr, MExpr>{ std::move(expr), std::move(m_expr)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -511,10 +580,10 @@ constexpr auto operator*( matrix<NRows, NCols> const& m_p,
 {
     // puts(__PRETTY_FUNCTION__);
     auto&& expr = expr::terminal_expr<T>( t_p );
-    auto&& m_expr = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
+    auto&& m_expr = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
     using Expr = typename std::decay_t<decltype(expr)>;
     using MExpr = typename std::decay_t<decltype(m_expr)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                                      expr::mixed_multiplication_filler<NRows, NCols, Expr, MExpr>{ std::move(expr), std::move(m_expr)} ,
                                                      std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -530,7 +599,7 @@ constexpr auto operator*( T const& t_p,
     auto&& expr = expr::terminal_expr<T>( t_p );
     using Expr = typename std::decay_t<decltype(expr)>;
     using MExpr = typename std::decay_t<decltype(m_expr_p)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::mixed_multiplication_filler<NRows, NCols, Expr, MExpr>{ std::move(expr), std::move(m_expr_p)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -545,7 +614,7 @@ constexpr auto operator*( expr::matrix_expr<NRows, NCols, Exprs ...> && m_expr_p
     auto&& expr = expr::terminal_expr<T>( t_p );
     using Expr = typename std::decay_t<decltype(expr)>;
     using MExpr = typename std::decay_t<decltype(m_expr_p)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::mixed_multiplication_filler<NRows, NCols, Expr, MExpr>{ std::move(expr), std::move(m_expr_p)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -557,11 +626,11 @@ constexpr auto operator*( matrix<NRows, N> const& m1_p,
                           matrix<N, NCols> const& m2_p )
 {
     // puts(__PRETTY_FUNCTION__);
-    auto&& m_expr1 = expr::make_matrix_expr_impl<NRows, N>( expr::terminal_filler<NRows, N>(m1_p), std::make_index_sequence<NRows * N>() );
-    auto&& m_expr2 = expr::make_matrix_expr_impl<N, NCols>( expr::terminal_filler<N, NCols>(m2_p), std::make_index_sequence<N * NCols>() );
+    auto&& m_expr1 = expr::make_matrix_expr<NRows, N>( expr::terminal_filler<NRows, N>(m1_p), std::make_index_sequence<NRows * N>() );
+    auto&& m_expr2 = expr::make_matrix_expr<N, NCols>( expr::terminal_filler<N, NCols>(m2_p), std::make_index_sequence<N * NCols>() );
     using MExpr1 = typename std::decay_t<decltype(m_expr1)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr2)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::matrix_multiplication_filler<NRows, N, NCols, MExpr1, MExpr2>{ std::move(m_expr1), std::move(m_expr2)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -572,10 +641,10 @@ template< std::size_t NRows, std::size_t N, std::size_t NCols, class... Exprs >
 constexpr auto operator*( expr::matrix_expr<NRows, N, Exprs...> && m_expr_p,
                           matrix<N, NCols> const& m_p )
 {
-    auto&& m_expr = expr::make_matrix_expr_impl<N, NCols>( expr::terminal_filler<N, NCols>(m_p), std::make_index_sequence<N * NCols>() );
+    auto&& m_expr = expr::make_matrix_expr<N, NCols>( expr::terminal_filler<N, NCols>(m_p), std::make_index_sequence<N * NCols>() );
     using MExpr1 = typename std::decay_t<decltype(m_expr_p)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::matrix_multiplication_filler<NRows, N, NCols, MExpr1, MExpr2>{ std::move(m_expr_p), std::move(m_expr)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -586,10 +655,10 @@ template< std::size_t NRows, std::size_t N, std::size_t NCols, class... Exprs>
 constexpr auto operator*( matrix<NRows, N> const& m_p,
                           expr::matrix_expr<N, NCols, Exprs...> && m_expr_p )
 {
-    auto&& m_expr = expr::make_matrix_expr_impl<NRows, N>( expr::terminal_filler<NRows, N>(m_p), std::make_index_sequence<NRows * N>() );
+    auto&& m_expr = expr::make_matrix_expr<NRows, N>( expr::terminal_filler<NRows, N>(m_p), std::make_index_sequence<NRows * N>() );
     using MExpr1 = typename std::decay_t<decltype(m_expr)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr_p)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                                 expr::matrix_multiplication_filler<NRows, N, NCols, MExpr1, MExpr2>{ std::move(m_expr), std::move(m_expr_p)} ,
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -602,7 +671,7 @@ constexpr auto operator*( expr::matrix_expr<NRows, N, Exprs1...> && m_expr1_p,
 {
     using MExpr1 = typename std::decay_t<decltype(m_expr1_p)>;
     using MExpr2 = typename std::decay_t<decltype(m_expr2_p)>;
-    return expr::make_matrix_expr_impl<NRows, NCols>(
+    return expr::make_matrix_expr<NRows, NCols>(
                             expr::matrix_multiplication_filler<NRows, N, NCols, MExpr1, MExpr2>{ std::move(m_expr1_p), std::move(m_expr2_p)} ,
                             std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -616,8 +685,8 @@ constexpr auto operator*( expr::matrix_expr<NRows, N, Exprs1...> && m_expr1_p,
 template< std::size_t NRows, std::size_t NCols>
 constexpr auto transpose(matrix<NRows, NCols> const& m_p)
 {
-    auto&& m_expr = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
-    return expr:: make_matrix_expr_impl<NCols, NRows>(
+    auto&& m_expr = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
+    return expr::make_matrix_expr<NCols, NRows>(
                             expr::transpose_filler<NRows, NCols, std::decay_t<decltype(m_expr)>>{ std::move(m_expr) },
                             std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -626,7 +695,7 @@ constexpr auto transpose(matrix<NRows, NCols> const& m_p)
 template< std::size_t NRows, std::size_t NCols, class ... Exprs>
 constexpr auto transpose( expr::matrix_expr<NRows, NCols, Exprs...>&& m_expr_p)
 {
-    return expr::make_matrix_expr_impl<NCols, NRows>(
+    return expr::make_matrix_expr<NCols, NRows>(
                                 expr::transpose_filler<NRows, NCols, std::decay_t<decltype(m_expr_p)>>{ std::move(m_expr_p) },
                                 std::make_index_sequence<NRows * NCols>()
                                                      );
@@ -639,8 +708,8 @@ template< std::size_t IRow, std::size_t NRows, std::size_t NCols>
 constexpr auto row(matrix<NRows, NCols> const& m_p)
 {
     //might need row_terminal_filler -> to skip unnecessary work ?
-    auto&& m_expr = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
-    return expr::make_matrix_expr_impl<1, NCols>(
+    auto&& m_expr = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
+    return expr::make_matrix_expr<1, NCols>(
                                 expr::row_filler<IRow, std::decay_t<decltype(m_expr)>>{ std::move(m_expr) },
                                 std::make_index_sequence< NCols>()
                                                  );
@@ -649,7 +718,7 @@ constexpr auto row(matrix<NRows, NCols> const& m_p)
 template< std::size_t IRow, std::size_t NRows, std::size_t NCols, class ... Exprs>
 constexpr auto row( expr::matrix_expr<NRows, NCols, Exprs...>&& m_expr_p)
 {
-    return expr::make_matrix_expr_impl<1, NCols>(
+    return expr::make_matrix_expr<1, NCols>(
                                 expr::row_filler<IRow, std::decay_t<decltype(m_expr_p)>>{ std::move(m_expr_p) },
                                 std::make_index_sequence< NCols >()
                                                  );
@@ -659,8 +728,8 @@ template< std::size_t ICol, std::size_t NRows, std::size_t NCols>
 constexpr auto column(matrix<NRows, NCols> const& m_p)
 {
     //might need row_terminal_filler -> to skip unnecessary work ?
-    auto&& m_expr = expr::make_matrix_expr_impl<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
-    return expr::make_matrix_expr_impl<NRows, 1>(
+    auto&& m_expr = expr::make_matrix_expr<NRows, NCols>( expr::terminal_filler<NRows, NCols>(m_p), std::make_index_sequence<NRows * NCols>() );
+    return expr::make_matrix_expr<NRows, 1>(
                                 expr::column_filler<ICol, std::decay_t<decltype(m_expr)>>{ std::move(m_expr) },
                                 std::make_index_sequence< NRows>()
                                                  );
@@ -669,7 +738,7 @@ constexpr auto column(matrix<NRows, NCols> const& m_p)
 template< std::size_t ICol, std::size_t NRows, std::size_t NCols, class ... Exprs>
 constexpr auto column(expr::matrix_expr<NRows, NCols, Exprs...>&& m_expr_p)
 {
-    return expr::make_matrix_expr_impl<NRows, 1>(
+    return expr::make_matrix_expr<NRows, 1>(
                                 expr::column_filler<ICol, std::decay_t<decltype(m_expr_p)>>{ std::move(m_expr_p) },
                                 std::make_index_sequence< NRows >()
                                                  );

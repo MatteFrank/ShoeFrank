@@ -93,7 +93,7 @@ void FillBm(TString fExpName) {
     
   TAGparaDsc* bmGeo    = new TAGparaDsc("bmGeo", new TABMparGeo());
   TABMparGeo* bmgeomap   = (TABMparGeo*) bmGeo->Object();
-  TString  parFileName = "./geomaps/TABMdetector.map";
+  TString  parFileName = "./geomaps/TABMdetector.geo";
   bmgeomap->FromFile(parFileName.Data());
 
   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
@@ -125,7 +125,7 @@ void FillBm(TString fExpName) {
   
   TAGparaDsc* vtGeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());
   TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
-  geomap->FromFile("./geomaps/TAVTdetector.map");
+  geomap->FromFile("./geomaps/TAVTdetector.geo");
   
   TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
   TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
@@ -212,7 +212,7 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
 
   TAGroot tagr;
   TAGgeoTrafo geoTrafo;
-  TString parFileName = Form("./geomaps/%sFOOT_geo.map", fExpName.Data());
+  TString parFileName = Form("./geomaps/%sFOOT.geo", fExpName.Data());
   geoTrafo.FromFile(parFileName);
 
   tagr.SetCampaignNumber(1);

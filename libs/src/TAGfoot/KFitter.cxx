@@ -56,10 +56,10 @@ KFitter::KFitter () {
   if (GlobalPar::GetPar()->IncludeDI())
     m_DI_geo = shared_ptr<TADIparGeo> ( (TADIparGeo*) gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object() );
 
-  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVertex() )
+  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVT() )
     m_VT_geo = shared_ptr<TAVTparGeo> ( (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
 
-  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() )
+  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeIT() )
     m_IT_geo = shared_ptr<TAITparGeo> ( (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
 
   if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() )
@@ -104,7 +104,7 @@ KFitter::KFitter () {
   }
 
   // Vertex
-  if (GlobalPar::GetPar()->IncludeVertex()) {
+  if (GlobalPar::GetPar()->IncludeVT()) {
     TGeoVolume* vtVol  = m_VT_geo->BuildVertex();
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAVTparGeo::GetBaseName());
     m_TopVolume->AddNode(vtVol, 2, transfo);
@@ -118,9 +118,9 @@ KFitter::KFitter () {
   }
 
   // IT
-  if (GlobalPar::GetPar()->IncludeInnerTracker()) {
+  if (GlobalPar::GetPar()->IncludeIT()) {
     TGeoVolume* itVol  = m_IT_geo->BuildInnerTracker();
-    TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAITparGeo::GetItBaseName());
+    TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAITparGeo::GetBaseName());
     m_TopVolume->AddNode(itVol, 4, transfo);
 
   }
@@ -483,7 +483,7 @@ int KFitter::UploadHitsIT() {
 
   // take the ntuple object already filled
   TAITntuRaw* ntup = (TAITntuRaw*) gTAGroot->FindDataDsc("itRaw", "TAITntuRaw")->Object();
-  TAITparGeo* vtxGeo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetItDefParaName(), "TAITparGeo")->Object();
+  TAITparGeo* vtxGeo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
 
   if ( m_debug > 0 )		cout << "N IT sensors: " << vtxGeo->GetSensorsN() << endl;
 
@@ -599,7 +599,7 @@ int KFitter::UploadClusIT(){
   m_MCInfo[m_detectorID_map["IT"]] = MCITInfo;
 }
 
-
+/*
 //-------------------------------------------------------------------------------
 // upload points from microstrip
 int KFitter::UploadHitsMSD() {
@@ -686,7 +686,7 @@ int KFitter::UploadHitsMSD() {
   m_MCInfo[m_detectorID_map["MSD"]] = MCMSDInfo;
 
 }
-
+*/
 //----------------------------------------------------------------------------------------------------
 // upload clusters from micro strip
 int KFitter::UploadClusMSD() {
@@ -853,7 +853,7 @@ int KFitter::PrepareData4Fit_dataLike( Track* fitTrack ) {
 
   m_allHitsInMeasurementFormat.clear();
   // Inner Tracker -  fill fitter collections
-  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() ) {
+  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeIT() ) {
     //UploadHitsIT();
     UploadClusIT();
     if ( m_debug > 0 )		cout <<endl<<endl << "Filling inner detector hit collection = " << m_IT_clusCollection.size() << endl;
@@ -1464,7 +1464,7 @@ int KFitter::PrepareData4Fit( Track* fitTrack ) {
 
   // Vertex -  fill fitter collections
 
-  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVertex() ) {
+  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVT() ) {
     UploadClusVT();
     //UploadHitsVT();
     if ( m_debug > 0 )		cout << endl<<endl << "Filling vertex hit collection  = " << m_VT_clusCollection.size() << endl;
@@ -1472,7 +1472,7 @@ int KFitter::PrepareData4Fit( Track* fitTrack ) {
   }
 
   // Inner Tracker -  fill fitter collections
-  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeInnerTracker() ) {
+  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeIT() ) {
     //UploadHitsIT();
     UploadClusIT();
     if ( m_debug > 0 )		cout <<endl<<endl << "Filling inner detector hit collection = " << m_IT_clusCollection.size() << endl;

@@ -70,7 +70,7 @@ void FillTG()
 {
    tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
    TAGparGeo* parGeo = (TAGparGeo*)tgGeo->Object();
-   TString parFileName = "./geomaps/TAGdetector%s.map";
+   TString parFileName = "./geomaps/TAGdetector%s.geo";
    parGeo->FromFile(parFileName.Data());
 }
 
@@ -89,7 +89,7 @@ void FillBM()
 {
    TAGparaDsc* bmGeo    = new TAGparaDsc("bmGeo", new TABMparGeo());
    TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
-   geomap->FromFile("./geomaps/TABMdetector.map");
+   geomap->FromFile("./geomaps/TABMdetector.geo");
    
    TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
    TABMparCon* parconf = (TABMparCon*) bmConf->Object();
@@ -120,7 +120,7 @@ void FillVertex()
 
    TAGparaDsc* vtGeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
-   geomap->FromFile("./geomaps/TAVTdetector.map");
+   geomap->FromFile("./geomaps/TAVTdetector.geo");
    
    TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();

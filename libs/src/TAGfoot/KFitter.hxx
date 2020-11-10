@@ -175,7 +175,7 @@ public:
 
   int UploadHitsVT();
   int UploadHitsIT();
-  int UploadHitsMSD();
+  //  int UploadHitsMSD();
   int UploadHitsTW();
 
   int UploadClusVT();

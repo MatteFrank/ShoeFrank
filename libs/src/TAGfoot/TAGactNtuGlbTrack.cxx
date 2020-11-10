@@ -21,10 +21,12 @@
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTtrack.hxx"
+#include "TABMntuTrack.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TATWntuPoint.hxx"
 #include "TAGntuPoint.hxx"
+#include "TAMCntuEve.hxx"
 
 #include <utility>
 #include <numeric>
@@ -54,6 +56,7 @@ ClassImp(TAGactNtuGlbTrack)
 //! Default constructor.
 TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
                                       TAGdataDsc* p_vtxclus,
+                                      TAGdataDsc* p_vtxtrack,
                                       TAGdataDsc* p_vtxvertex,
                                       TAGdataDsc* p_itrclus,
                                       TAGdataDsc* p_msdclus,
@@ -67,8 +70,9 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
                                       TAGparaDsc* p_geoTof,
                                       TADIgeoField* field)
  : TAGaction(name, "TAGactNtuGlbTrack - Global Tracker"),
-    fpVtxClus(p_vtxclus),
-    fpVtxVertex(p_vtxvertex),
+   fpVtxClus(p_vtxclus),
+   fpVtxTrack(p_vtxtrack),
+   fpVtxVertex(p_vtxvertex),
    fpItrClus(p_itrclus),
    fpMsdClus(p_msdclus),
    fpTwPoint(p_twpoint),
@@ -79,19 +83,19 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    fpItrGeoMap(p_geoItr),
    fpMsdGeoMap(p_geoMsd),
    fpTofGeoMap(p_geoTof),
-   //fpNtuPoint(new TAGntuPoint()),
    fField(field),
    fActEvtReader(nullptr),
    fActTOE( SetupAction() )
 {
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
    
-    if (GlobalPar::GetPar()->IncludeVertex()) //should not be if
-    {
-        AddDataIn(p_vtxclus, "TAVTntuCluster");
-        AddDataIn(p_vtxvertex, "TAVTntuVertex");
-    }
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
+   if (GlobalPar::GetPar()->IncludeVT()) //should not be if
+   {
+      AddDataIn(p_vtxclus, "TAVTntuCluster");
+      AddDataIn(p_vtxvertex, "TAVTntuVertex");
+   }
+   
+   if (GlobalPar::GetPar()->IncludeIT())
       AddDataIn(p_itrclus, "TAITntuCluster");
    
    if (GlobalPar::GetPar()->IncludeMSD())
@@ -129,17 +133,23 @@ void TAGactNtuGlbTrack::SetupBranches()
 {
    fActEvtReader = new TAGactTreeReader("evtReader");
    
-   if (GlobalPar::GetPar()->IncludeVertex())
-      fActEvtReader->SetupBranch(fpVtxVertex, TAVTntuVertex::GetBranchName());
-   
-   if (GlobalPar::GetPar()->IncludeInnerTracker())
-      fActEvtReader->SetupBranch(fpItrClus,   TAITntuCluster::GetBranchName());
+   if (GlobalPar::GetPar()->IncludeVT()) {
+     fActEvtReader->SetupBranch(fpVtxTrack,  TAVTntuTrack::GetBranchName());
+     fActEvtReader->SetupBranch(fpVtxClus,   TAVTntuCluster::GetBranchName());
+     fActEvtReader->SetupBranch(fpVtxVertex, TAVTntuVertex::GetBranchName());
+   }
+
+   if (GlobalPar::GetPar()->IncludeIT())
+      fActEvtReader->SetupBranch(fpItrClus,  TAITntuCluster::GetBranchName());
    
    if (GlobalPar::GetPar()->IncludeMSD())
-     fActEvtReader->SetupBranch(fpMsdClus,   TAMSDntuCluster::GetBranchName());
+      fActEvtReader->SetupBranch(fpMsdClus,  TAMSDntuCluster::GetBranchName());
    
    if(GlobalPar::GetPar()->IncludeTW())
-      fActEvtReader->SetupBranch(fpTwPoint,   TATWntuPoint::GetBranchName());
+      fActEvtReader->SetupBranch(fpTwPoint,  TATWntuPoint::GetBranchName());
+
+   //   gTAGroot->AddRequiredItem(fpTwPoint);
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -168,15 +178,15 @@ void TAGactNtuGlbTrack::SetupBranches()
     auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
                                                                      geoVTX_h, 15) )
                     .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h, {33, 38}) )
-//                    .add( detector_properties<details::msd_tag>(clusterMSD_hc, geoMSD_h, {40, 45, 48}) )
-                    .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 2) )
+                    .add( detector_properties<details::msd_tag>(clusterMSD_hc, geoMSD_h, {13, 18, 23}) )
+                    .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h, 2.2) )
                     .finish();
     
     
     auto ode = make_ode< matrix<2,1>, 2>( model{ GetFootField() } );
     auto stepper = make_stepper<data_grkn56>( std::move(ode) );
     auto ukf = make_ukf<state>( std::move(stepper) );
-    
+
     return make_new_TATOEactGlb(
                                 std::move(ukf),
                                 std::move(list),
@@ -221,10 +231,16 @@ void TAGactNtuGlbTrack::RegisterHistograms()
 {
     fActTOE->RegisterHistograms();
     
-    auto histogram_ch = GetTrackContainer()->GetEfficiencyHistograms();
-    for(auto * histogram_h : histogram_ch){
+    auto efficiency_histogram_ch = GetTrackContainer()->GetEfficiencyHistograms();
+    for(auto * histogram_h : efficiency_histogram_ch){
         AddHistogram(histogram_h);
     }
+    
+    auto id_histogram_ch = GetTrackContainer()->GetIdentificationHistograms();
+    for(auto * histogram_h : id_histogram_ch){
+        AddHistogram(histogram_h);
+    }
+    
     SetValidHistogram(kTRUE);
     
     auto writer_h = static_cast<TAGactTreeWriter*>( gTAGroot->FindAction("locRecFile") );
@@ -245,19 +261,20 @@ void TAGactNtuGlbTrack::WriteHistogram()
 //! Action.
 Bool_t TAGactNtuGlbTrack::Action()
 {
-    if (fgStdAloneFlag)
-      fActEvtReader->Process();
-   
 
-//    auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
-
-    fpGlbTrack->Clear();
-
-    fActTOE->Action();
-    
-   fpGlbTrack->SetBit(kValid);
-    
-   return kTRUE;
+  if (fgStdAloneFlag)
+    fActEvtReader->Process();
+  
+  
+  //    auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
+  
+  fpGlbTrack->Clear();
+  
+  fActTOE->Action();
+  
+  fpGlbTrack->SetBit(kValid);
+  
+  return kTRUE;
 }
 
 

@@ -24,9 +24,10 @@ public:
    Int_t             GetDevicesN() const { return fDevicesN;    }
    
    const Char_t*     GetGeoFile(const  TString& detName, Int_t runNumber);
-   const Char_t*     GetConfFile(const TString& detName, Int_t runNumber);
-   const Char_t*     GetMapFile(const  TString& detName, Int_t runNumber);
-   const Char_t*     GetCalFile(const  TString& detName, Int_t runNumber);
+   const Char_t*     GetConfFile(const TString& detName, Int_t runNumber, TString bName = "", Int_t bEnergy = -1);
+   const Char_t*     GetMapFile(const  TString& detName, Int_t runNumber, Int_t item = 0);
+   const Char_t*     GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib = false,
+                                Bool_t isTofBarCalib = false, Bool_t elossTuning = false);
 
    Bool_t            IsDetectorOn(const TString& detName);
    void              Print(Option_t* opt = "") const;
@@ -46,12 +47,12 @@ private:
    map<TString, TArrayI> fRunsConfMap;
    
    // mapping file
-   map<TString, TString> fFileMap;
-   map<TString, TArrayI> fRunsMap;
+   map<TString, vector<TString> > fFileMap;
+   map<TString, vector<TArrayI> > fRunsMap;
    
    // calibration file
-   map<TString, TString> fFileCalMap;
-   map<TString, TArrayI> fRunsCalMap;
+   map<TString, vector<TString> > fFileCalMap;
+   map<TString, vector<TArrayI> > fRunsCalMap;
    
    TString               fName;
    TArrayI               fRunArray;
@@ -59,6 +60,11 @@ private:
    
 private:
    const Char_t* GetFile(const TString& detName, Int_t runNumber, const TString& nameFile, TArrayI array);
+   const Char_t* GetCalItem(const  TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib = false);
+
+private:
+   static map<Int_t, TString> fgTWcalFileType;
+   static map<Int_t, TString> fgTWmapFileType;
 
    ClassDef(TAGcampaign,1)
 };
@@ -70,7 +76,6 @@ private:
    struct CamParameter_t : public  TNamed {
       TString   Name;      // Campaign name
       Int_t     Number;    // Campaign number
-      Bool_t    ForceSync; // Flag to force detector synchronization btw manager and GlobalPar
       Bool_t    McFlag;    // Flag for MC data (0 for real data)
       TString   Date;      // Date of data taking or production
       TString   Summary;   // Summary of the campaign
@@ -88,17 +93,23 @@ public:
    TAGcampaignManager(const TString exp = "");
    virtual ~TAGcampaignManager();
    
-   Bool_t FromFile(TString ifile = "");
+   Bool_t               FromFile(TString ifile = "");
    
    Int_t                GetCampaignsN()             { return fCampaignsN;       }
    Int_t                GetCurrentCamNumber() const { return fCurCampaignNumber; }
    CamParameter_t&      GetCampaignPar(Int_t idx)   { return fCamParameter[idx]; }
    const TAGcampaign*   GetCurCampaign()            { return fCurCampaign;       }
-
+   
+   const TArrayI&       GetCurRunArray() const                                       { return fCurCampaign->GetRunArray();                   }
    const Char_t*        GetCurGeoFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetGeoFile(detName, runNumber);  }
-   const Char_t*        GetCurConfFile(const TString& detName, Int_t runNumber = -1) { return fCurCampaign->GetConfFile(detName, runNumber); }
-   const Char_t*        GetCurMapFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetMapFile(detName, runNumber);  }
-   const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetCalFile(detName, runNumber);  }
+   const Char_t*        GetCurConfFile(const TString& detName, Int_t runNumber = -1,
+                                       TString bName = "", Int_t bEnergy = -1)
+   { return fCurCampaign->GetConfFile(detName, runNumber, bName, bEnergy); }
+   const Char_t*        GetCurMapFile(const TString& detName, Int_t runNumber = -1, Int_t item = 0)  { return fCurCampaign->GetMapFile(detName, runNumber, item);  }
+   const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1,
+                                      Bool_t isTofCalib = false, Bool_t isTofBarCalib = false,
+                                      Bool_t elossTuning = false)
+   { return fCurCampaign->GetCalFile(detName, runNumber, isTofCalib, isTofBarCalib, elossTuning);  }
    Bool_t               IsDetectorOn(const TString& detName)                         { return fCurCampaign->IsDetectorOn(detName);           }
 
    void                 Print(Option_t* opt = "") const;

@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <memory>
 #include <map>
+#include "TString.h"
 
 #include "TObjArray.h"
 
@@ -31,7 +32,7 @@ public:
 	~GlobalPar();
 
 	void ReadParamFile();
-	void Print();
+	void Print(Option_t* opt = "");
 
 	int  Debug()                const { return m_debug;               }
 
@@ -41,7 +42,8 @@ public:
    
 	vector<string> KalSystems()       { return m_trackingSystems;     }
 	vector<string> KalParticles()     { return m_kalParticles;        }
-	vector<string> MCParticles()      { return m_mcParticles;         }
+   vector<string> MCParticles()      { return m_mcParticles;         }
+   vector<TString> DectIncluded()    { return m_dectInclude;         }
 
 	 double VTReso() 	          const { return m_VTreso;              }
     double ITReso() 	          const { return m_ITreso;              }
@@ -61,12 +63,11 @@ public:
     bool IncludeMSD()          const { return m_includeMSD;          }
     bool IncludeCA()           const { return m_includeCA;           }
     bool IncludeTG()           const { return m_includeTG;           }
-    bool IncludeVertex()       const { return m_includeVertex;       }
-    bool IncludeInnerTracker() const { return m_includeInnerTracker; }
+    bool IncludeVT()           const { return m_includeVT;           }
+    bool IncludeIT()           const { return m_includeIT;           }
    
     bool IncludeTOE()          const { return m_includeTOE;          }
     bool IncludeKalman()       const { return m_includeKalman;       }
-    bool IncludeEvent()        const { return m_includeEvent;        }
 
     void IncludeDI(bool t)           {  m_includeDI = t;             }
     void IncludeST(bool t)           {  m_includeST = t;             }
@@ -75,8 +76,8 @@ public:
     void IncludeMSD(bool t)          {  m_includeMSD = t;            }
     void IncludeCA(bool t)           {  m_includeCA = t;             }
     void IncludeTG(bool t)           {  m_includeTG = t;             }
-    void IncludeVertex(bool t)       {  m_includeVertex = t;         }
-    void IncludeInnerTracker(bool t) {  m_includeInnerTracker = t;   }
+    void IncludeVT(bool t)           {  m_includeVT = t;             }
+    void IncludeIT(bool t)           {  m_includeIT = t;             }
    
     void SetDebugLevels();
     void RemoveSpace( string* s );
@@ -136,6 +137,7 @@ private:
    
 private:
 	static GlobalPar* m_pInstance;
+   static map<TString, TString> m_dectFullName; // full name
 
 private:
 	vector<string> m_copyInputFile;
@@ -149,7 +151,6 @@ private:
 	string m_parFileName;
 
 	int m_debug;
-	int m_nLevelOfDebug;
 
 	vector<string> m_mcParticles;
 	
@@ -157,7 +158,8 @@ private:
 	bool m_kalReverse;
 	bool m_verFLUKA;
 	vector<string> m_trackingSystems;
-	vector<string> m_kalParticles;
+   vector<string> m_kalParticles;
+   vector<TString> m_dectInclude;
 
 	double m_VTreso;
    double m_ITreso;
@@ -178,10 +180,9 @@ private:
    bool m_includeTW;
    bool m_includeMSD;
    bool m_includeCA;
-   bool m_includeInnerTracker;
-   bool m_includeVertex;
+   bool m_includeIT;
+   bool m_includeVT;
     
-   bool m_includeEvent;
    bool m_includeKalman;
    bool m_includeTOE;
 

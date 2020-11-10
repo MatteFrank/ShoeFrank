@@ -111,7 +111,7 @@ void TABMactNtuTrack::CreateHistogram()
    if(p_bmcon->GetResoFunc()!=nullptr){
      fpParRes=(TH1F*)p_bmcon->GetResoFunc()->GetHistogram()->Clone("bmParResolution");
      fpParRes->SetTitle("BM input resolution; Drift distance [cm]; Resolution [cm]");
-     fpParRes->GetXaxis()->SetRange(0,0.8);
+     fpParRes->SetAxisRange(0,0.8);
      AddHistogram(fpParRes);
    }
    if(p_bmcon->GetSTrelFunc()!=nullptr){

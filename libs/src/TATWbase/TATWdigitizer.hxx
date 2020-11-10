@@ -33,16 +33,25 @@ public:
    
    Bool_t         Process(Double_t edep, Double_t x0, Double_t y0, Double_t zin=0, Double_t zout=0, Double_t time = 0, Int_t sensorId = 0, Int_t Z =-99);
    
-   Float_t        GetResEnergy(Float_t energy);
-   Double_t       ResEnergy(Double_t* x, Double_t* par);
-   
-   Bool_t         IsOverEnergyThreshold(double ene);  
-   Double_t       GetEnergyThreshold() {return fEnergyThreshold;}
-   Bool_t         SetMCtrue() {return fMCtrue;}
-   Bool_t         SetPileUpOff() {return fPileUpOff;}
+   Float_t        GetResCharge(Float_t energy);
+   Float_t        GetResEnergyExp(Float_t energy);
+   Float_t        GetResEnergyMC(Float_t energy);
 
+   Double_t       ResLinear(Double_t* x, Double_t* par);
+   Double_t       ResFormula(Double_t* x, Double_t* par);
+   Double_t       ResExponential(Double_t* x, Double_t* par);
+   
+   Bool_t         IsOverEnergyThreshold(double ethr, double ene);  
+   Double_t       GetEnergyThreshold() {return fEnergyThreshold;}
+
+   Bool_t         IsMCtrue() {return fMCtrue;}
+   Bool_t         IsPileUpOff() {return fPileUpOff;}
+
+   void           SetMCtrue() {fMCtrue = true;}
+   void           SetPileUpOff() {fPileUpOff = true;}
+ 
+   Float_t        GetResPos(Float_t edep);
    Float_t        GetResToF(Float_t edep);
-   Double_t       ResToF(Double_t* x, Double_t* par);
    
    Float_t        GetDeAttLeft(Float_t pos, Float_t edep);
    Double_t       DeAttLeft(Double_t* pos, Double_t* par);
@@ -70,9 +79,17 @@ private:
    // deltaE
    TF1*          fDeResE;
    Float_t       fDeResECst;
-   Float_t       fDeErrResCst; // not used
+   Float_t       fDeErrResECst;
    Float_t       fDeResEC;
    Float_t       fDeErrResEC;
+
+   TF1*          fDeResE_MC;
+   Float_t       fEmcA;  // MeV
+   Float_t       fEmcErrA;  // MeV
+   Float_t       fEmcB;  // sqrt(MeV)
+   Float_t       fEmcErrB;  // sqrt(MeV)
+   Float_t       fEmcC;
+   Float_t       fEmcErrC;
 
    TF1*          fDeAttLeft;
    Float_t       fDeAttCstLeft;
@@ -90,6 +107,16 @@ private:
    Float_t       fDeAttAsymSmear;
 
    Double_t      fEnergyThreshold;
+   Double_t      fElossMeasLimit;
+
+   // position
+   TF1*          fPosResE;
+   Float_t       fPosCstE;
+   Float_t       fPosErrCstE;
+   Float_t       fPosLambdaE;
+   Float_t       fPosErrLambdaE;
+   Float_t       fPosk0E;
+   Float_t       fPosErrk0E;
 
    // TOF
    TF1*          fTofResE;
@@ -100,12 +127,10 @@ private:
    Float_t       fTofk0E;
    Float_t       fTofErrk0E;
    
-   Float_t       fTofResP;
-   Float_t       fTofErrResP;
    Float_t       fTofPropAlpha; // inverse of light propagation velocity
-   Float_t       fTofErrPropAlpha;
-   
-   // misc
+   Float_t       fTofErrPropAlpha; 
+
+  // misc
    Float_t       fSlatLength;
    Float_t       fGain;
    

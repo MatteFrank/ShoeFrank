@@ -28,8 +28,8 @@ private:
     Int_t    m_layer;
     Int_t    m_bar;
     Double_t m_de;                     // energy loss in the scintillator bar
-    Double_t m_time;
-    Double_t m_time_oth;                   // timestamp // timestamp
+    Double_t m_time;                   // timestamp
+    Double_t m_time_oth;               // timestamp
     Double_t m_timeofflight;           // time of flight
     Double_t m_coordinate;             // x or y coordinate in the local detector frame, depending on the layer
     Double_t m_z;                      // z coordinate in the local detector frame
@@ -41,7 +41,7 @@ private:
     Double_t m_ChargeB;
     Double_t m_TimeA;
     Double_t m_TimeB;
-   Double_t m_TimeA_oth;
+    Double_t m_TimeA_oth;
     Double_t m_TimeB_oth;
 
 public:
