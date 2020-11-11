@@ -49,7 +49,7 @@ void LocalRecoMC::LoopEvent(Int_t nEvents)
       
       fTree->GetEntry(ientry);
       
-      if(ientry % 100 == 0)
+      if(ientry % 10000 == 0)
          cout<<" Loaded Event:: " << ientry << endl;
       
       if (!fTAGroot->NextEvent()) break;

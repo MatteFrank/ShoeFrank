@@ -16,12 +16,12 @@ TACAdigitizer::TACAdigitizer(TACAntuRaw* pNtuRaw)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
    fGain(1e-4),
-   fResPar0(1.21),
-   fResErrPar0(7e-3),
-   fResPar1(-1.37),
-   fResErrPar1(0.58),
-   fResPar2(5.07e-2),
-   fResErrPar2(2.12e-4),
+   fResPar0(1.03978e+01),
+   fResErrPar0(3.28955e-01),
+   fResPar1(1.03392e+02),
+   fResErrPar1(4.27932e+00),
+   fResPar2(3.90060e-01),
+   fResErrPar2(4.94583e-03),
    fBirkPar0(9000),
    fBirkPar1(3.679e-3),
    fCalEPar0(-28.42),
@@ -38,7 +38,7 @@ void  TACAdigitizer::SetFunctions()
    fFuncBirks = new TF1("PhotonsN", this, &TACAdigitizer::RecPhotonsN, 0, 20, 2, "TACAdigitizer", "RecPhotonsN");
    
    // compute energy resolution
-   fDeResE    = new TF1("ResEnergy", this, &TACAdigitizer::ResEnergy, 50, 5000, 3, "TACAdigitizer", "ResEnergy");
+   fDeResE    = new TF1("ResEnergy", this, &TACAdigitizer::ResEnergy, 0, 5000, 3, "TACAdigitizer", "ResEnergy");
 }
 
 // --------------------------------------------------------------------------------------
@@ -71,9 +71,9 @@ Double_t TACAdigitizer::RecPhotonsN(Double_t* x, Double_t* par)
 Double_t TACAdigitizer::ResEnergy(Double_t* x, Double_t* par)
 {
    Float_t energy = x[0];
-   Float_t res = (par[0]*par[0]/energy + par[1]*par[1]/(energy*energy) + par[2]*par[2]);
+   Float_t res = TMath::Sqrt(par[0]*par[0]/energy + par[1]*par[1]/(energy*energy) + par[2]*par[2]);
    
-   return res;
+   return res/100.;
 }
 //___________________________________________________________________________________________
 Float_t TACAdigitizer::GetPhotonsN(Float_t /*X*/, Float_t /*Y*/, Float_t edep)
@@ -95,9 +95,14 @@ Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
       return true;
    }
    
+
+   // Float_t resEnergy = 0.02*edep;
    Float_t resEnergy = GetResEnergy(edep);
-   edep += gRandom->Gaus(0, resEnergy);
-   edep  = fCalEPar1*edep + fCalEPar0; // rough calibration
+   Float_t s = gRandom->Gaus(0, resEnergy);
+   edep+=s;
+   if ((edep<0.) || (TMath::Abs(edep - edep+s)>7.)) edep = 0.;
+
+   // edep  = fCalEPar1*edep + fCalEPar0; // rough calibration
    
   // Float_t photonsN = GetPhotonsN(x0, y0, edep)*fGain; // skip Birks law should be included in resolution
 
