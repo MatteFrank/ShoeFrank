@@ -21,6 +21,7 @@
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTtrack.hxx"
+#include "TABMntuTrack.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TATWntuPoint.hxx"
@@ -54,6 +55,7 @@ ClassImp(TAGactNtuGlbTrack)
 //! Default constructor.
 TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
                                       TAGdataDsc* p_vtxclus,
+                                      TAGdataDsc* p_vtxtrack,
                                       TAGdataDsc* p_vtxvertex,
                                       TAGdataDsc* p_itrclus,
                                       TAGdataDsc* p_msdclus,
@@ -67,8 +69,9 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
                                       TAGparaDsc* p_geoTof,
                                       TADIgeoField* field)
  : TAGaction(name, "TAGactNtuGlbTrack - Global Tracker"),
-    fpVtxClus(p_vtxclus),
-    fpVtxVertex(p_vtxvertex),
+   fpVtxClus(p_vtxclus),
+   fpVtxTrack(p_vtxtrack),
+   fpVtxVertex(p_vtxvertex),
    fpItrClus(p_itrclus),
    fpMsdClus(p_msdclus),
    fpTwPoint(p_twpoint),
@@ -79,18 +82,18 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    fpItrGeoMap(p_geoItr),
    fpMsdGeoMap(p_geoMsd),
    fpTofGeoMap(p_geoTof),
-   //fpNtuPoint(new TAGntuPoint()),
    fField(field),
    fActEvtReader(nullptr),
    fActTOE( SetupAction() )
 {
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
    
-    if (GlobalPar::GetPar()->IncludeVT()) //should not be if
-    {
-        AddDataIn(p_vtxclus, "TAVTntuCluster");
-        AddDataIn(p_vtxvertex, "TAVTntuVertex");
-    }
+   if (GlobalPar::GetPar()->IncludeVT()) //should not be if
+   {
+      AddDataIn(p_vtxclus, "TAVTntuCluster");
+      AddDataIn(p_vtxvertex, "TAVTntuVertex");
+   }
+   
    if (GlobalPar::GetPar()->IncludeIT())
       AddDataIn(p_itrclus, "TAITntuCluster");
    
@@ -129,17 +132,20 @@ void TAGactNtuGlbTrack::SetupBranches()
 {
    fActEvtReader = new TAGactTreeReader("evtReader");
    
-   if (GlobalPar::GetPar()->IncludeVT())
-      fActEvtReader->SetupBranch(fpVtxVertex, TAVTntuVertex::GetBranchName());
-   
+   if (GlobalPar::GetPar()->IncludeVT()) {
+     fActEvtReader->SetupBranch(fpVtxTrack,  TAVTntuTrack::GetBranchName());
+     fActEvtReader->SetupBranch(fpVtxClus,   TAVTntuCluster::GetBranchName());
+     fActEvtReader->SetupBranch(fpVtxVertex, TAVTntuVertex::GetBranchName());
+   }
+
    if (GlobalPar::GetPar()->IncludeIT())
-      fActEvtReader->SetupBranch(fpItrClus,   TAITntuCluster::GetBranchName());
+      fActEvtReader->SetupBranch(fpItrClus,  TAITntuCluster::GetBranchName());
    
    if (GlobalPar::GetPar()->IncludeMSD())
-     fActEvtReader->SetupBranch(fpMsdClus,   TAMSDntuCluster::GetBranchName());
+      fActEvtReader->SetupBranch(fpMsdClus,  TAMSDntuCluster::GetBranchName());
    
    if(GlobalPar::GetPar()->IncludeTW())
-      fActEvtReader->SetupBranch(fpTwPoint,   TATWntuPoint::GetBranchName());
+      fActEvtReader->SetupBranch(fpTwPoint,  TATWntuPoint::GetBranchName());
 }
 
 //------------------------------------------+-----------------------------------
@@ -176,7 +182,7 @@ void TAGactNtuGlbTrack::SetupBranches()
     auto ode = make_ode< matrix<2,1>, 2>( model{ GetFootField() } );
     auto stepper = make_stepper<data_grkn56>( std::move(ode) );
     auto ukf = make_ukf<state>( std::move(stepper) );
-    
+
     return make_new_TATOEactGlb(
                                 std::move(ukf),
                                 std::move(list),
@@ -251,19 +257,20 @@ void TAGactNtuGlbTrack::WriteHistogram()
 //! Action.
 Bool_t TAGactNtuGlbTrack::Action()
 {
-    if (fgStdAloneFlag)
-      fActEvtReader->Process();
-   
 
-//    auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
-
-    fpGlbTrack->Clear();
-
-    fActTOE->Action();
-    
-   fpGlbTrack->SetBit(kValid);
-    
-   return kTRUE;
+  if (fgStdAloneFlag)
+    fActEvtReader->Process();
+  
+  
+  //    auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
+  
+  fpGlbTrack->Clear();
+  
+  fActTOE->Action();
+  
+  fpGlbTrack->SetBit(kValid);
+  
+  return kTRUE;
 }
 
 

@@ -7,36 +7,41 @@
 #include "BaseReco.hxx"
 
 
-class GlobalToeReco : public TAGobject
+class GlobalToeReco  : public BaseReco
 {
 public:
    //! default constructor
-   GlobalToeReco(TString expName, TString fileNameIn = "", TString fileNameout = "");
+   GlobalToeReco(TString expName, TString fileNameIn = "", TString fileNameout = "", Bool_t isMc = true);
    
    virtual ~GlobalToeReco();
 
-   void EnableTree()      { fReco->EnableTree();      }
-   void DisableTree()     { fReco->DisableTree();     }
+   //! Create raw data action
+   virtual void CreateRawAction();
    
-   void EnableSaveHits()  { fReco->EnableSaveHits();  }
-   void DisableSaveHits() { fReco->DisableSaveHits(); }
+   virtual void AddRawRequiredItem();
    
+   //! Open File
+   virtual void OpenFileIn();
    
-   void EnableHisto()     { fReco->EnableHisto();     }
-   void DisableHisto()    { fReco->DisableHisto();    }
-   
-   void EnableTracking()  { fReco->EnableTracking();  }
-   void DisableTracking() { fReco->DisableTracking(); }
-   
-   
-   void BeforeEventLoop()       { fReco->BeforeEventLoop(); }
-   void LoopEvent(Int_t nTotEv) { fReco->LoopEvent(nTotEv); }
-   void AfterEventLoop()        { fReco->AfterEventLoop();  }
-   
-private:
-   BaseReco*       fReco;    // local reco
+   //! Close File in
+   virtual void CloseFileIn();
 
-   ClassDef(GlobalToeReco, 0); 
+   //! Loop events
+   virtual void LoopEvent(Int_t nEvents);
+
+   //! Create branch in tree
+   virtual void SetTreeBranches();
+
+   //! Set run number
+   void   SetRunNumber();
+
+private:
+   TAGdataDsc*           fpNtuMcEve;    // input data dsc
+
+   TTree*                fTree;         // tree for local reconstruction
+   TFile*                fActEvtReader; // file for local reconstruction
+   
+   ClassDef(GlobalToeReco, 1); 
 };
 
 
