@@ -59,6 +59,7 @@
 #pragma link C++ global gTAGroot;
 
 #pragma link C++ class TAGrunInfo+;
+#pragma link C++ struct GlobalParameter_t+;
 #pragma link C++ function operator==(const TAGrunInfo&,const TAGrunInfo&);
 
 #pragma link C++ class TAGtimestamp-;

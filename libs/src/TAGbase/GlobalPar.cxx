@@ -62,6 +62,68 @@ GlobalPar::GlobalPar( string aparFileName ) {
 }
 
 //_____________________________________________________________________________
+const TAGrunInfo GlobalPar::GetGlobalInfo()
+{
+   TAGrunInfo runInfo;
+   
+   if (IsLocalReco())
+      runInfo.GetGlobalPar().EnableLocalReco = true;
+   
+   if (IsSaveTree())
+      runInfo.GetGlobalPar().EnableTree = true;
+   
+   if (IsSaveHisto())
+      runInfo.GetGlobalPar().EnableHisto = true;
+   
+   if (IsSaveHits())
+      runInfo.GetGlobalPar().EnableSaveHits = true;
+   
+   if (IsTracking())
+      runInfo.GetGlobalPar().EnableTracking = true;
+
+   if (IsReadRootObj())
+      runInfo.GetGlobalPar().EnableRootObject = true;
+   
+   if (IsTofZmc())
+      runInfo.GetGlobalPar().EnableTofZmc = true;
+   
+   if (IncludeKalman())
+      runInfo.GetGlobalPar().IncludeKalman = true;
+   
+   if (IncludeTOE())
+      runInfo.GetGlobalPar().IncludeTOE = true;
+   
+   if (IncludeDI())
+      runInfo.GetGlobalPar().IncludeDI = true;
+   
+   if (IncludeST())
+      runInfo.GetGlobalPar().IncludeST = true;
+   
+   if (IncludeBM())
+      runInfo.GetGlobalPar().IncludeBM = true;
+   
+   if (IncludeTG())
+      runInfo.GetGlobalPar().IncludeTG = true;
+   
+   if (IncludeVT())
+      runInfo.GetGlobalPar().IncludeVT = true;
+   
+   if (IncludeIT())
+      runInfo.GetGlobalPar().IncludeIT = true;
+   
+   if (IncludeMSD())
+      runInfo.GetGlobalPar().IncludeMSD = true;
+   
+   if (IncludeTW())
+      runInfo.GetGlobalPar().IncludeTW = true;
+   
+   if (IncludeCA())
+      runInfo.GetGlobalPar().IncludeCA = true;
+   
+   return runInfo;
+}
+
+//_____________________________________________________________________________
 void GlobalPar::ReadParamFile () {
 
     ifstream ifile;
@@ -278,6 +340,48 @@ void GlobalPar::ReadParamFile () {
            if ( rev == "y" )        m_includeTOE = true;
            else                     m_includeTOE = false;
         }
+        else if ( line.find("EnableLocalReco:") != string::npos ) {
+           string rev =StrReplace( line, "EnableLocalReco:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableLocalReco = true;
+           else                     m_enableLocalReco = false;
+        }
+        else if ( line.find("EnableTree:") != string::npos ) {
+           string rev =StrReplace( line, "EnableTree:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableTree = true;
+           else                     m_enableTree = false;
+        }
+        else if ( line.find("EnableHisto:") != string::npos ) {
+           string rev =StrReplace( line, "EnableHisto:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableHisto = true;
+           else                     m_enableHisto = false;
+        }
+        else if ( line.find("EnableTracking:") != string::npos ) {
+           string rev =StrReplace( line, "EnableTracking:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableTracking = true;
+           else                     m_enableTracking = false;
+        }
+        else if ( line.find("EnableSaveHits:") != string::npos ) {
+           string rev =StrReplace( line, "EnableSaveHits:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableSaveHits = true;
+           else                     m_enableSaveHits = false;
+        }
+        else if ( line.find("EnableRootObject:") != string::npos ) {
+           string rev =StrReplace( line, "EnableRootObject:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableRootObject = true;
+           else                     m_enableRootObject = false;
+        }
+        else if ( line.find("EnableTofZmc:") != string::npos ) {
+           string rev =StrReplace( line, "EnableTofZmc:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableTofZmc = true;
+           else                     m_enableTofZmc = false;
+        }
     }
 
 
@@ -415,7 +519,7 @@ void GlobalPar::Print(Option_t* opt) {
       cout << "Global debug level: " << m_debug << endl;
       cout << "Detectors included:" << endl;
       
-      printf(" -");
+      printf(" - ");
       vector<TString> list = m_dectInclude;
       for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
          TString str = m_dectFullName[*it];

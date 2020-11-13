@@ -21,6 +21,15 @@ ClassImp(TAGeventId);
 TAGeventId::~TAGeventId()
 {}
 
+//------------------------------------------+-----------------------------------
+//! operator =
+const TAGeventId& TAGeventId::operator=(const TAGeventId &right)
+{
+   fiCam = right.fiCam;          // campaign number
+   fiRun = right.fiRun;          // run number
+   fiEvt = right.fiEvt;
+}
+
 /*------------------------------------------+---------------------------------*/
 //! Custom streamer.
 

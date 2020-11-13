@@ -19,6 +19,7 @@
 
 #include "TObjArray.h"
 
+#include "TAGrunInfo.hxx"
 using namespace std;
 
 // singleton class of global foot parameters
@@ -33,6 +34,7 @@ public:
 
 	void ReadParamFile();
 	void Print(Option_t* opt = "");
+   const TAGrunInfo GetGlobalInfo();
 
 	int  Debug()                const { return m_debug;               }
 
@@ -56,6 +58,14 @@ public:
     bool IsPrintOutputNtuple() const { return m_printoutntuple;      }
     string OutputNtuple()      const { return m_outputntuplename;    }
 	
+    bool IsLocalReco()         const { return m_enableLocalReco;     }
+    bool IsSaveTree()          const { return m_enableTree;          }
+    bool IsSaveHisto()         const { return m_enableHisto;         }
+    bool IsSaveHits()          const { return m_enableSaveHits;      }
+    bool IsTracking()          const { return m_enableTracking;      }
+    bool IsReadRootObj()       const { return m_enableRootObject;    }
+    bool IsTofZmc()            const { return m_enableTofZmc;        }
+   
     bool IncludeDI()           const { return m_includeDI;           }
     bool IncludeST()           const { return m_includeST;           }
     bool IncludeBM()           const { return m_includeBM;           }
@@ -68,7 +78,7 @@ public:
    
     bool IncludeTOE()          const { return m_includeTOE;          }
     bool IncludeKalman()       const { return m_includeKalman;       }
-
+   
     void IncludeDI(bool t)           {  m_includeDI = t;             }
     void IncludeST(bool t)           {  m_includeST = t;             }
     void IncludeBM(bool t)           {  m_includeBM = t;             }
@@ -171,7 +181,15 @@ private:
        
    string  m_outputntuplename;
    bool m_printoutntuple;
-
+   
+   Bool_t m_enableLocalReco;
+   Bool_t m_enableTree;
+   Bool_t m_enableHisto;
+   Bool_t m_enableSaveHits;
+   Bool_t m_enableTracking;
+   Bool_t m_enableRootObject;
+   Bool_t m_enableTofZmc;
+   
    bool m_includeST;
    bool m_includeBM;
    bool m_includeTG;
