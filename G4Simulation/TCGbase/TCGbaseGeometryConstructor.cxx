@@ -74,6 +74,10 @@ TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName, In
   fpParGeoG(new TAGparGeo()),
   fpMaterials(new TCGmaterials())
 {
+   // Set run info
+   gTAGroot->SetCampaignName(expName);
+   gTAGroot->SetRunNumber(runNumber); //number of run
+   
    // load campaign file
    fCampManager = new TAGcampaignManager(expName);
    fCampManager->FromFile();
