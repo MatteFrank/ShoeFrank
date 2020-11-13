@@ -126,7 +126,11 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    GlobalPar::GetPar()->SetDebugLevels();
    
    // Save run info
-
+   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
+   info.SetCampaignName(fExpName);
+   info.SetRunNumber(fRunNumber);
+   gTAGroot->SetRunInfo(info);
+   
    // activate per default Dipole, TGT, VTX and TW if TOE on
    if (GlobalPar::GetPar()->IncludeTOE()) {
       GlobalPar::GetPar()->IncludeDI(true);
