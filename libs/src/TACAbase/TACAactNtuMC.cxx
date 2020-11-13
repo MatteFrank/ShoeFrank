@@ -259,11 +259,13 @@ Bool_t TACAactNtuMC::Action(){
       TVector3 posOut(x0_f, y0_f, z0_f);
       TVector3 posOutLoc = geoTrafo->FromGlobalToCALocal(posOut);
 
-      fpHisHitMapXY    ->Fill(posInLoc.X(), posInLoc.Y());
-      fpHisHitMapZYin  ->Fill(posInLoc.Z(), posInLoc.Y());
-      fpHisHitMapZYout ->Fill(posOutLoc.Z(), posOutLoc.Y());
-      fpHisParticleVsRegion ->Fill(reg, z);
-   
+      if (ValidHistogram()) {
+         fpHisHitMapXY    ->Fill(posInLoc.X(), posInLoc.Y());
+         fpHisHitMapZYin  ->Fill(posInLoc.Z(), posInLoc.Y());
+         fpHisHitMapZYout ->Fill(posOutLoc.Z(), posOutLoc.Y());
+         fpHisParticleVsRegion ->Fill(reg, z);
+      }
+      
       // Fill fDigitizer with energy in MeV
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], posInLoc[2], posOutLoc[2], 0, cryId);
       TACAntuHit* hit = fDigitizer->GetCurrentHit();
@@ -281,6 +283,7 @@ Bool_t TACAactNtuMC::Action(){
 
       // Select Neutrons
       if (fluID == 8) {
+         if (ValidHistogram())
          fpHisNeutron_dE->Fill(edep); 
       }
 
@@ -299,12 +302,14 @@ Bool_t TACAactNtuMC::Action(){
             if (z == 1 && fluID != 1) continue;  // skip triton, deuteron
             if (z == 2 && fluID == -5) continue; // skip He3
 
-            fpHisIon_dE[z-1]        ->Fill(edep);
-            fpHisIon_Ek[z-1]        ->Fill(ek);
-            // // fpHisTime              ->Fill(time);
-            fpHisEnDepVsZ          ->Fill(z,edep);
-            fpHisRange             ->Fill(z0_f-z0_i);
-            fpHisRangeVsMass       ->Fill(z0_f-z0_i,mass);
+            if (ValidHistogram()) {
+               fpHisIon_dE[z-1]        ->Fill(edep);
+               fpHisIon_Ek[z-1]        ->Fill(ek);
+               // // fpHisTime              ->Fill(time);
+               fpHisEnDepVsZ          ->Fill(z,edep);
+               fpHisRange             ->Fill(z0_f-z0_i);
+               fpHisRangeVsMass       ->Fill(z0_f-z0_i,mass);
+            }
          }
 
          const char* flukaName = TAMCparTools::GetFlukaPartName(fluID);
