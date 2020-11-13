@@ -37,7 +37,7 @@ class LocalRecoMC : public BaseReco
 {
 public:
    //! default constructor
-   LocalRecoMC(TString expName = "", TString fileNameIn = "", TString fileNameout = "");
+   LocalRecoMC(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~LocalRecoMC();
    

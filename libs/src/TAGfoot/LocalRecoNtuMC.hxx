@@ -38,7 +38,7 @@ class LocalRecoNtuMC : public BaseReco
 {
 public:
    //! default constructor
-   LocalRecoNtuMC(TString expName = "", TString fileNameIn = "", TString fileNameout = "");
+   LocalRecoNtuMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~LocalRecoNtuMC();
    

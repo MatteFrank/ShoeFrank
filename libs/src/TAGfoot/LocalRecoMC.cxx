@@ -16,8 +16,8 @@
 ClassImp(LocalRecoMC)
 
 //__________________________________________________________
-LocalRecoMC::LocalRecoMC(TString expName, TString fileNameIn, TString fileNameout)
- : BaseReco(expName, fileNameIn, fileNameout),
+LocalRecoMC::LocalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
+ : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fActNtuRawVtx(0x0),
    fActNtuRawIt(0x0),
    fActNtuRawMsd(0x0),
@@ -49,7 +49,7 @@ void LocalRecoMC::LoopEvent(Int_t nEvents)
       
       fTree->GetEntry(ientry);
       
-      if(ientry % 10000 == 0)
+      if(ientry % 100 == 0)
          cout<<" Loaded Event:: " << ientry << endl;
       
       if (!fTAGroot->NextEvent()) break;

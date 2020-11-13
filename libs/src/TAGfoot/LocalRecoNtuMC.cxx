@@ -16,8 +16,8 @@
 ClassImp(LocalRecoNtuMC)
 
 //__________________________________________________________
-LocalRecoNtuMC::LocalRecoNtuMC(TString expName, TString fileNameIn, TString fileNameout)
- : BaseReco(expName, fileNameIn, fileNameout),
+LocalRecoNtuMC::LocalRecoNtuMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
+ : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fActNtuRawVtx(0x0),
    fActNtuRawIt(0x0),
    fActNtuRawMsd(0x0),

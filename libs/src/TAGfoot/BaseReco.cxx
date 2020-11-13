@@ -32,10 +32,10 @@ ClassImp(BaseReco)
 Bool_t  BaseReco::fgItrTrackFlag  = false;
 
 //__________________________________________________________
-BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
+BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
-   fRunNumber(-1),
+   fRunNumber(runNumber),
    fpParTimeWD(0x0),
    fpParMapWD(0x0),
    fpParMapSt(0x0),
@@ -122,8 +122,10 @@ BaseReco::BaseReco(TString expName, TString fileNameIn, TString fileNameout)
    fCampManager = new TAGcampaignManager(expName);
    fCampManager->FromFile();
    
-   // actvate debug level
+   // activate debug level
    GlobalPar::GetPar()->SetDebugLevels();
+   
+   // Save run info
 
    // activate per default Dipole, TGT, VTX and TW if TOE on
    if (GlobalPar::GetPar()->IncludeTOE()) {
