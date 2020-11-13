@@ -85,10 +85,9 @@ int main(int argc, char *argv[])
    
    Int_t run = 0;
    TString camName = "Ntu";
-   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
+   TAGrunInfo info; // = GlobalPar::Instance()->GetGlobalInfo(); // to discuss
    info.SetCampaignName(camName);
    info.SetRunNumber(run);
-
    info.Write(TAGrunInfo::GetObjectName());
 
    rootTree = new TTree("EventTree","gsimay");

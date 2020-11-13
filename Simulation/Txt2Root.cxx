@@ -21,6 +21,8 @@
 #include <sstream>
 
 #include "Evento.hxx"
+#include "TAGrunInfo.hxx"
+#include "GlobalPar.hxx"
 
 using namespace std;
 
@@ -88,7 +90,13 @@ int main(int argc, char *argv[])
   TFile *f_out = new TFile(outname,"RECREATE");
   f_out->cd();
 
-
+  Int_t run = 0;
+  TString camName = "Ntu";
+  TAGrunInfo info;// = GlobalPar::Instance()->GetGlobalInfo(); // to be discuss
+  info.SetCampaignName(camName);
+  info.SetRunNumber(run);
+  info.Write(TAGrunInfo::GetObjectName());
+   
   RootTree = new TTree("EventTree","gsimay");
 
   RootTree->Branch("EventNumber",&eve.EventNumber,"EventNumber/I");
