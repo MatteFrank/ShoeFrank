@@ -165,7 +165,7 @@ void TAGactTreeWriter::Close()
     fpFile->cd();
     fpTree->Write();
     TAGrunInfo runinfo(gTAGroot->CurrentRunInfo());
-    runinfo.Write("runinfo");
+    runinfo.Write(TAGrunInfo::GetObjectName());
   }
 
   delete fpFile;
