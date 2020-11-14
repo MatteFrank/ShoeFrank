@@ -39,6 +39,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
          cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
+         cout<<"      -twbarcal      : enable tw calibration per bar"<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
       }
