@@ -79,6 +79,9 @@ public:
     bool IncludeTOE()          const { return m_includeTOE;          }
     bool IncludeKalman()       const { return m_includeKalman;       }
    
+   void IncludeTOE(bool t)           {  m_includeTOE = t;            }
+   void IncludeKalman(bool t)        {  m_includeKalman = t;         }
+
     void IncludeDI(bool t)           {  m_includeDI = t;             }
     void IncludeST(bool t)           {  m_includeST = t;             }
     void IncludeBM(bool t)           {  m_includeBM = t;             }
