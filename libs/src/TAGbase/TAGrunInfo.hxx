@@ -13,9 +13,10 @@
 struct GlobalParameter_t : public  TObject {
    GlobalParameter_t() : TObject(),
    EnableLocalReco(false), EnableTree(false), EnableHisto(false), EnableSaveHits(false),
-   EnableTracking(false), EnableRootObject(false), EnableTofZmc(false), IncludeKalman(false), IncludeTOE(false),
-   IncludeDI(false), IncludeST(false), IncludeBM(false), IncludeTG(false), IncludeVT(false), IncludeIT(false),
-   IncludeMSD(false), IncludeTW(false), IncludeCA(false) { }
+   EnableTracking(false), EnableRootObject(false), EnableTofZmc(false), EnableTofCalBar(false),
+   IncludeKalman(false), IncludeTOE(false), IncludeDI(false), IncludeST(false), IncludeBM(false),
+   IncludeTG(false), IncludeVT(false), IncludeIT(false), IncludeMSD(false), IncludeTW(false),
+   IncludeCA(false) { }
    
    Bool_t EnableLocalReco;
    Bool_t EnableTree;
@@ -24,6 +25,7 @@ struct GlobalParameter_t : public  TObject {
    Bool_t EnableTracking;
    Bool_t EnableRootObject;
    Bool_t EnableTofZmc;
+   Bool_t EnableTofCalBar;
    Bool_t IncludeKalman;
    Bool_t IncludeTOE;
    Bool_t IncludeDI;

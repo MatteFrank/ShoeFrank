@@ -47,6 +47,7 @@ TAGrunInfo::TAGrunInfo(const TAGrunInfo& right)
    fGlobalParameter.EnableTracking   = right.fGlobalParameter.EnableTracking;
    fGlobalParameter.EnableRootObject = right.fGlobalParameter.EnableRootObject;
    fGlobalParameter.EnableTofZmc     = right.fGlobalParameter.EnableTofZmc;
+   fGlobalParameter.EnableTofCalBar  = right.fGlobalParameter.EnableTofCalBar;
    fGlobalParameter.IncludeKalman    = right.fGlobalParameter.IncludeKalman;
    fGlobalParameter.IncludeTOE       = right.fGlobalParameter.IncludeTOE;
    fGlobalParameter.IncludeDI        = right.fGlobalParameter.IncludeDI;
@@ -80,6 +81,7 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
    fGlobalParameter.EnableTracking   = right.fGlobalParameter.EnableTracking;
    fGlobalParameter.EnableRootObject = right.fGlobalParameter.EnableRootObject;
    fGlobalParameter.EnableTofZmc     = right.fGlobalParameter.EnableTofZmc;
+   fGlobalParameter.EnableTofCalBar  = right.fGlobalParameter.EnableTofCalBar;
    fGlobalParameter.IncludeKalman    = right.fGlobalParameter.IncludeKalman;
    fGlobalParameter.IncludeTOE       = right.fGlobalParameter.IncludeTOE;
    fGlobalParameter.IncludeDI        = right.fGlobalParameter.IncludeDI;
@@ -122,6 +124,7 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << Form("  EnableSaveHits: %d\n", fGlobalParameter.EnableSaveHits)
    << Form("  EnableRootObject: %d\n", fGlobalParameter.EnableRootObject)
    << Form("  EnableTofZmc: %d\n\n", fGlobalParameter.EnableTofZmc)
+   << Form("  EnableTofCalBar: %d\n\n", fGlobalParameter.EnableTofCalBar)
    << Form("  IncludeKalman: %d\n", fGlobalParameter.IncludeKalman)
    << Form("  IncludeTOE: %d\n\n", fGlobalParameter.IncludeTOE)
    << Form("  IncludeDI: %d\n", fGlobalParameter.IncludeDI)
@@ -137,10 +140,7 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-/*!
- \relates TAGrunInfo
- \brief Returns true of event id's \a lhs and \a rhs are equal
- */
+// Returns true of run info lhs and rhs are equal
 
 bool operator==(const TAGrunInfo& lhs, const TAGrunInfo& rhs)
 {
