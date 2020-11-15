@@ -8,7 +8,7 @@
 #include "LocalRecoNtuMC.hxx"
 #include "GlobalToeReco.hxx"
 
-// executabel to read back from local reconstruction tree
+// executabel to read back from local reconstruction tree or from MC/raw data
 // author: Ch. Finck
 
 
@@ -23,7 +23,6 @@ int main (int argc, char *argv[])  {
 
    Bool_t mc  = false;
    Bool_t mth = false;
-   Bool_t tw_bar_cal = false;
 
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
@@ -36,7 +35,6 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
   
       if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
-      if(strcmp(argv[i],"-twbarcal") == 0)   { tw_bar_cal = true;   } // enable tw calibration per bar
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
 
       if(strcmp(argv[i],"-help") == 0)  {
@@ -49,7 +47,6 @@ int main (int argc, char *argv[])  {
          cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -mc            : reco from MC local reco tree"<<endl;
-         cout<<"      -twbarcal      : enable tw calibration per bar"<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
       }
@@ -60,6 +57,7 @@ int main (int argc, char *argv[])  {
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
    
+   Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
    Bool_t lrc = GlobalPar::GetPar()->IsLocalReco();
    Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
    Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
@@ -82,8 +80,11 @@ int main (int argc, char *argv[])  {
          glbRec = new LocalRecoNtuMC(exp, runNb, in, out);
       if(zmc)
          glbRec->EnableZfromMCtrue();
-   } else
+   } else {
       glbRec = new LocalReco(exp, runNb, in, out);
+      if (tbc)
+         glbRec->EnableTWcalibPerBar();
+   }
 
 
    // global setting
@@ -97,10 +98,6 @@ int main (int argc, char *argv[])  {
    }
    if (trk)
       glbRec->EnableTracking();
-   
-   if (tw_bar_cal) {
-      glbRec->EnableTWcalibPerBar();
-   }
    
    if (mth)
       glbRec->EnableM28lusMT();
