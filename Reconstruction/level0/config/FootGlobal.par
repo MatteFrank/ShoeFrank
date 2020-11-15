@@ -42,6 +42,7 @@ EnableTracking:      y
 EnableSaveHits:      n
 EnableRootObject:    n
 EnableTofZmc:        n
+EnableTofCalBar:     n
 
 ############   END - Options for reconstruction   ################
 
