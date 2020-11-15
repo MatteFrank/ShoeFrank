@@ -601,3 +601,64 @@ bool GlobalPar::frankFind( string what, string where )	{
    
    return false;
 }
+
+//____________________________________________________________________________
+bool GlobalPar::Find_MCParticle( string villain )
+{
+   return ( find( m_mcParticles.begin(), m_mcParticles.end(), villain ) == m_mcParticles.end() ? false : true);
+}
+
+//____________________________________________________________________________
+double GlobalPar::GetLowBinHisto( string villain )    {
+   for ( map< string, pair< double, double > >::iterator it = m_map_range.begin(); it != m_map_range.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second.first;
+   }
+   return -666;
+}
+
+//____________________________________________________________________________
+double GlobalPar::GetUpBinHisto( string villain )    {
+   for ( map< string, pair< double, double > >::iterator it = m_map_range.begin(); it != m_map_range.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second.second;
+   }
+   return -666;
+}
+
+//____________________________________________________________________________
+int GlobalPar::GetNBinHisto( string villain )     {
+   for ( map< string, int >::iterator it = m_nBin_map.begin(); it != m_nBin_map.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second;
+   }
+   return -666;
+}
+
+//____________________________________________________________________________
+string GlobalPar::GetSaveDirHisto( string villain )     {
+   for ( map< string, string >::iterator it = m_map_saveDir.begin(); it != m_map_saveDir.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second;
+   }
+   return "default";
+}
+
+//____________________________________________________________________________
+string GlobalPar::GetXTitlesHisto( string villain )     {
+   for ( map< string, string >::iterator it = m_map_xTitles.begin(); it != m_map_xTitles.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second;
+   }
+   return "default";
+}
+
+//____________________________________________________________________________
+string GlobalPar::GetYTitlesHisto( string villain )     {
+   for ( map< string, string >::iterator it = m_map_yTitles.begin(); it != m_map_yTitles.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second;
+   }
+   return "default";
+};
+
