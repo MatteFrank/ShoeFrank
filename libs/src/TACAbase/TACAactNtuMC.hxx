@@ -45,10 +45,8 @@ class TACAactNtuMC : public TAGaction {
 
   private:
     TAGparaDsc*     fpGeoMap;		    // geometry para dsc
-    TAGparGeo*      tagParGeo;
     TAGdataDsc*     fpNtuMC;		    // output data dsc
-    TACAparGeo*     parGeo;   
-    TAGgeoTrafo*    geoTrafo;
+    TAGgeoTrafo*    fpGeoTrafo;
     TACAdigitizer*  fDigitizer;     // cluster size digitizer
     EVENT_STRUCT*   fpEvtStr;
 

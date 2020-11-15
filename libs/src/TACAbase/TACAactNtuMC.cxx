@@ -31,6 +31,9 @@ TACAactNtuMC::TACAactNtuMC(const char* name, TAGdataDsc* p_datraw, TAGparaDsc* p
     fListOfParticles(0x0)
 {
    AddDataOut(p_datraw, "TACAntuRaw");
+   
+   fpGeoTrafo  = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+
    CreateDigitizer();
 }
 
@@ -51,9 +54,8 @@ void TACAactNtuMC::CreateHistogram()
    
    DeleteHistogram();
    
-   geoTrafo              = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   parGeo                = (TACAparGeo*) fpGeoMap->Object();
-   tagParGeo             = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+   TACAparGeo* parGeo   = (TACAparGeo*) fpGeoMap->Object();
+   TAGparGeo* tagParGeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
 
    TGeoElementTable table;
    table.BuildDefaultElements();
@@ -203,7 +205,6 @@ void TACAactNtuMC::CreateHistogram()
 
 
    SetValidHistogram(kTRUE);
-
 }
 
 
@@ -219,12 +220,9 @@ void TACAactNtuMC::CreateDigitizer()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-Bool_t TACAactNtuMC::Action(){  
-   
-   TGeoElementTable table;
-   table.BuildDefaultElements();
-
-   geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+Bool_t TACAactNtuMC::Action()
+{
+   TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
 
    // Sum all energy dep. of the same particle
    //TObject array of size of the particles created in one event
@@ -254,10 +252,10 @@ Bool_t TACAactNtuMC::Action(){
       Float_t z0_f  = fpEvtStr->CALzout[i];      //final z position
       
       TVector3 posIn(x0_i, y0_i, z0_i);
-      TVector3 posInLoc = geoTrafo->FromGlobalToCALocal(posIn);
+      TVector3 posInLoc = fpGeoTrafo->FromGlobalToCALocal(posIn);
 
       TVector3 posOut(x0_f, y0_f, z0_f);
-      TVector3 posOutLoc = geoTrafo->FromGlobalToCALocal(posOut);
+      TVector3 posOutLoc = fpGeoTrafo->FromGlobalToCALocal(posOut);
 
       if (ValidHistogram()) {
          fpHisHitMapXY    ->Fill(posInLoc.X(), posInLoc.Y());
@@ -324,10 +322,6 @@ Bool_t TACAactNtuMC::Action(){
    }
 
    fpNtuMC->SetBit(kValid);
-
-   if (!ValidHistogram()) {
-      return kTRUE;
-   }
 
    return kTRUE;
 }
