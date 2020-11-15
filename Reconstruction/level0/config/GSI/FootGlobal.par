@@ -61,5 +61,3 @@ Output Filename: RecoHistos.root
 
 Print OutputNtuple: false
 Output Ntuplename: RecoTree.root
-
-FLUKA version: pro
