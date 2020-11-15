@@ -57,7 +57,6 @@ int main (int argc, char *argv[])  {
    GlobalPar::Instance();
    GlobalPar::GetPar()->Print();
    
-   Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
    Bool_t lrc = GlobalPar::GetPar()->IsLocalReco();
    Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
    Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
@@ -65,7 +64,8 @@ int main (int argc, char *argv[])  {
    Bool_t trk = GlobalPar::GetPar()->IsTracking();
    Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
    Bool_t zmc = GlobalPar::GetPar()->IsTofZmc();
-   
+   Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
+
    GlobalPar::GetPar()->IncludeTOE(true);
    GlobalPar::GetPar()->IncludeKalman(false);
 
