@@ -382,15 +382,18 @@ void GlobalPar::ReadParamFile () {
            if ( rev == "y" )        m_enableTofZmc = true;
            else                     m_enableTofZmc = false;
         }
+        else if ( line.find("EnableTofCalBar:") != string::npos ) {
+           string rev =StrReplace( line, "EnableTofZmc:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableTofCalBar = true;
+           else                     m_enableTofCalBar = false;
+        }
     }
-
-
+   
     // Check mandatory parameters set
     if ( m_trackingSystems.size() < 1 )     cout<< "ERROR :: GlobalPar.cxx  -->  wrong parameters config setting: m_trackingSystems ize = 0"<<endl, exit(0);
 
- 
     ifile.close();
-
 }
 
 //_____________________________________________________________________________
