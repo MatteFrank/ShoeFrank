@@ -15,6 +15,7 @@
 int main (int argc, char *argv[])  {
 
    TString in("");
+   TString out("");
    TString exp("");
 
    Bool_t mc  = false;
@@ -48,9 +49,11 @@ int main (int argc, char *argv[])  {
       }
    }
    
-   Int_t pos = in.Last('.');
-   TString out = in(0, pos);
-   out.Append("_Out.root");
+   if (out.IsNull()) {
+      Int_t pos = in.Last('.');
+      out = in(0, pos);
+      out.Append("_Out.root");
+   }
    
    TApplication::CreateApplication();
    

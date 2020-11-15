@@ -8,11 +8,8 @@
 int main (int argc, char *argv[])  {
 
    TString in("");
+   TString out("");
    TString exp("");
-
-   Int_t pos = in.Last('.');
-   TString out = in(0, pos);
-   out.Append("_Out.root");
    
    Bool_t ntu = false;
    Bool_t his = false;
@@ -46,6 +43,12 @@ int main (int argc, char *argv[])  {
          cout<<"      -his           : enable crtl histograming"<<endl;
          return 1;
       }
+   }
+   
+   if (out.IsNull()) {
+      Int_t pos = in.Last('.');
+      out = in(0, pos);
+      out.Append("_Out.root");
    }
    
    TApplication::CreateApplication();

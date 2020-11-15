@@ -8,11 +8,8 @@
 int main (int argc, char *argv[])  {
 
    TString in("");
+   TString out("");
    TString exp("");
-
-   Int_t pos = in.Last('.');
-   TString out = in(0, pos);
-   out.Append("_Out.root");
    
    Bool_t mth = false;
 
@@ -42,6 +39,12 @@ int main (int argc, char *argv[])  {
       }
    }
    
+   if (out.IsNull()) {
+      Int_t pos = in.Last('.');
+      out = in(0, pos);
+      out.Append("_Out.root");
+   }
+   
    TApplication::CreateApplication();
    
    GlobalPar::Instance();
@@ -55,7 +58,7 @@ int main (int argc, char *argv[])  {
    Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
 
    if (tbc) {
-     pos = out.Last('.');
+     Int_t pos = out.Last('.');
      out = out(0, pos);
      out.Append("_TWBarCalib.root");
      cout<<out.Data()<<endl;

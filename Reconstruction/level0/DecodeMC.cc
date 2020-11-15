@@ -10,11 +10,8 @@
 int main (int argc, char *argv[])  {
 
    TString in("12C_C_200_1.root");
+   TString out("");
    TString exp("");
-   
-   Int_t pos = in.Last('.');
-   TString out = in(0, pos);
-   out.Append("_Out.root");
    
    Bool_t mth = false;
    
@@ -44,6 +41,12 @@ int main (int argc, char *argv[])  {
       }
    }
    
+   if (out.IsNull()) {
+      Int_t pos = in.Last('.');
+      out = in(0, pos);
+      out.Append("_Out.root");
+   }
+   
    TApplication::CreateApplication();
    
    GlobalPar::Instance();
@@ -58,7 +61,7 @@ int main (int argc, char *argv[])  {
    
    
    if (zmc) {
-     pos = out.Last('.');
+     Int_t pos = out.Last('.');
      out = out(0, pos);
      out.Append("_noTWPileUp_Ztrue.root");
      cout<<out.Data()<<endl;
