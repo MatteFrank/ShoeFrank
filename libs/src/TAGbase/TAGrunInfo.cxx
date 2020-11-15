@@ -123,7 +123,7 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << Form("  EnableTracking: %d\n", fGlobalParameter.EnableTracking)
    << Form("  EnableSaveHits: %d\n", fGlobalParameter.EnableSaveHits)
    << Form("  EnableRootObject: %d\n", fGlobalParameter.EnableRootObject)
-   << Form("  EnableTofZmc: %d\n\n", fGlobalParameter.EnableTofZmc)
+   << Form("  EnableTofZmc: %d\n", fGlobalParameter.EnableTofZmc)
    << Form("  EnableTofCalBar: %d\n\n", fGlobalParameter.EnableTofCalBar)
    << Form("  IncludeKalman: %d\n", fGlobalParameter.IncludeKalman)
    << Form("  IncludeTOE: %d\n\n", fGlobalParameter.IncludeTOE)
