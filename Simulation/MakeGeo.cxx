@@ -87,8 +87,6 @@ int main (int argc, char *argv[]) {
     // read geomap files
     TString parFileName;
     parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
-
-    cout<<" From TCAmpaign manager! "<<parFileName.Data()<<endl;
     geoTrafo.FromFile(parFileName.Data());
 
     parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
