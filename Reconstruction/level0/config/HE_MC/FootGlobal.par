@@ -42,6 +42,7 @@ EnableTracking:      y
 EnableSaveHits:      n
 EnableRootObject:    n
 EnableTofZmc:        n
+EnableTofCalBar:     n
 
 ############   END - Options for reconstruction   ################
 
@@ -60,8 +61,5 @@ Output Filename: RecoHistos.root
 
 Print OutputNtuple: false
 Output Ntuplename: RecoTree.root
-
-Create Reconstruction Geo: y
-Print FLUKA Geo input files: n
 
 FLUKA version: pro
