@@ -34,3 +34,9 @@ CamName:    "H_MC"
 CamDataMC:    1
 CamDate: "16 & 24 May 2020"
 CamSum: "Simulation data for 1H on C2H4 for 5mm target thickness @ 200MeV/u (run 1) and @ 700MeV/u (run 2)"
+
+CamNumber:    6
+CamName:    "CNAO2020"
+CamDataMC:    1
+CamDate: "December 2020"
+CamSum: "Simulation data for data taking at CNAO with ST+BM+VTX+MSD+TW+CAL"

@@ -1,0 +1,40 @@
+// Campaign file
+CamName: "CNAO2020"
+RunNumber: 1-2
+NumberDevices: 10
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/CNAO2020/FOOT.geo": -1
+
+DetectorName: "ST"
+NumberFiles: 2
+"./geomaps/CNAO2020/TASTdetector.geo": -1
+
+DetectorName: "BM"
+NumberFiles: 2
+"./geomaps/CNAO2020/TABMdetector.geo": -1
+"./config/CNAO2020/TABMdetector.cfg": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/CNAO2020/TAGdetector.geo": -1
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/CNAO2020/TAVTdetector.geo": -1
+"./config/CNAO2020/TAVTdetector.cfg": -1
+
+DetectorName: "MSD"
+NumberFiles: 1
+"./geomaps/CNAO2020/TAMSDdetector.geo": -1
+
+DetectorName: "TW"
+NumberFiles: 3
+"./geomaps/CNAO2020/TATWdetector.geo": -1
+"./calib/CNAO2020/TATW_Energy_Calibration.cal": -1
+"./calib/CNAO2020/TATW_Tof_Calibration.cal": -1
+
+DetectorName: "CA"
+NumberFiles: 1
+"./geomaps/CNAO2020/TACAdetector.geo": -1

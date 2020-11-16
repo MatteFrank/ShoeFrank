@@ -32,24 +32,7 @@ Kalman Particle Types:	C
 
 ############	END - Kalman Filter Control Parameters	################
 
-<<<<<<< Updated upstream
-############   Options for reconstruction   ################
-
-EnableTree:          y
-EnableHisto:         y
-EnableTracking:      y
-
-EnableSaveHits:      n
-EnableRootObject:    n
-EnableTofZmc:        n
-EnableTofCalBar:     n
-
-############   END - Options for reconstruction   ################
-
-IncludeDI:			   y
-=======
 IncludeDI:			   n
->>>>>>> Stashed changes
 IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
@@ -66,5 +49,8 @@ Output Filename: RecoHistos.root
 
 Print OutputNtuple: false
 Output Ntuplename: RecoTree.root
+
+Create Reconstruction Geo: y
+Print FLUKA Geo input files: n
 
 FLUKA version: pro
