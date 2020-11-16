@@ -33,6 +33,7 @@ class TACAactNtuMC : public TAGaction {
     explicit        TACAactNtuMC(const char* name     = 0,
                                  TAGdataDsc* p_datraw = 0,
                                  TAGparaDsc* p_geomap = 0,
+                                 TAGparaDsc* g_geomap = 0,
                                  EVENT_STRUCT* evStr  = 0);
    
     virtual         ~TACAactNtuMC();
@@ -44,8 +45,9 @@ class TACAactNtuMC : public TAGaction {
     ClassDef(TACAactNtuMC,0)
 
   private:
-    TAGparaDsc*     fpGeoMap;		    // geometry para dsc
     TAGdataDsc*     fpNtuMC;		    // output data dsc
+    TAGparaDsc*     fpGeoMap;          // geometry para dsc
+    TAGparaDsc*     fpGeoMapG;       // geometry para dsc for beam
     TAGgeoTrafo*    fpGeoTrafo;
     TACAdigitizer*  fDigitizer;     // cluster size digitizer
     EVENT_STRUCT*   fpEvtStr;

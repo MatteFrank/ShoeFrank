@@ -23,10 +23,11 @@ ClassImp(TACAactNtuMC);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TACAactNtuMC::TACAactNtuMC(const char* name, TAGdataDsc* p_datraw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
+TACAactNtuMC::TACAactNtuMC(const char* name, TAGdataDsc* p_datraw, TAGparaDsc* pGeoMap, TAGparaDsc* pGeoMapG, EVENT_STRUCT* evStr)
   : TAGaction(name, "TACAactNtuMC - NTuplize CA raw data"),
-    fpGeoMap(pGeoMap),
     fpNtuMC(p_datraw),
+    fpGeoMap(pGeoMap),
+    fpGeoMapG(pGeoMapG),
     fpEvtStr(evStr),
     fListOfParticles(0x0)
 {
@@ -51,23 +52,14 @@ TACAactNtuMC::~TACAactNtuMC()
 //! Setup all histograms.
 void TACAactNtuMC::CreateHistogram()
 {
-   
    DeleteHistogram();
    
    TACAparGeo* parGeo   = (TACAparGeo*) fpGeoMap->Object();
-   TAGparGeo* tagParGeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+   TAGparGeo* tagParGeo = (TAGparGeo*)  fpGeoMapG->Object();;
 
    TGeoElementTable table;
    table.BuildDefaultElements();
    
-   //if you run only ReadCARawMC.C and not DecodeMC create a new TAGparaDsc
-   if(tagParGeo == NULL) {
-      TAGparaDsc *paradsc = new TAGparaDsc("gGeo", new TAGparGeo());
-      tagParGeo = (TAGparGeo*) paradsc->Object();
-      TString parFile = "./geomaps/TAGdetector.map";
-      tagParGeo->FromFile(parFile.Data());
-   }
-
    double energyBeam = tagParGeo->GetBeamPar().Energy; //*TAGgeoTrafo::GevToMev();
    int nNucleonBeam  = tagParGeo->GetBeamPar().AtomicMass;
 
