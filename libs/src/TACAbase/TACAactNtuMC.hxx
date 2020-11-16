@@ -26,9 +26,6 @@
 
 class TACAactNtuMC : public TAGaction {
 
-  protected:
-    TObjArray*         fListOfParticles;
-
   public:
     explicit        TACAactNtuMC(const char* name     = 0,
                                  TAGdataDsc* p_datraw = 0,
