@@ -73,12 +73,13 @@ void TACAactNtuMC::CreateHistogram()
    int nBinCry = calosize.X()/(2*heightback); 
 
    //printout
-   cout << "Number of crystals: " << nCrystal << endl;
-   cout << "nBinCry: " << nBinCry << endl;
-   cout << "x dim: " << -calosize.X()/2. << "  " << calosize.X()/2. << endl;
-   cout << "y dim: " << -calosize.Y()/2. << "  " << calosize.Y()/2. << endl;
-   cout << "Energy Beam: " << energyBeam << " GeV/n | "<< "  atomic number: " << nNucleonBeam << endl;
-
+   if (FootDebugLevel(1)) {
+      cout << "Number of crystals: " << nCrystal << endl;
+      cout << "nBinCry: " << nBinCry << endl;
+      cout << "x dim: " << -calosize.X()/2. << "  " << calosize.X()/2. << endl;
+      cout << "y dim: " << -calosize.Y()/2. << "  " << calosize.Y()/2. << endl;
+      cout << "Energy Beam: " << energyBeam << " GeV/n | "<< "  atomic number: " << nNucleonBeam << endl;
+   }
 
    // 0
    fpHisDeTotMc = new TH1F("caDeTotMc", "Energy deposition per event; Energy;", 1500, 0, energyBeam );
