@@ -18,6 +18,7 @@ MC Particle Types:	C11	C12	C13 C14	Li6	Li7	B7	B9	B10	Be10	Be11	N14	N15	O16 O15
 
 IncludeKalman:   n
 IncludeTOE:      n
+EnableLocalReco: n
 
 Kalman Mode: 		ON
 Tracking Systems Considered:		VT IT MSD
@@ -32,7 +33,6 @@ Kalman Particle Types:	C
 
 ############	END - Kalman Filter Control Parameters	################
 
-<<<<<<< Updated upstream
 ############   Options for reconstruction   ################
 
 EnableTree:          y
@@ -47,19 +47,14 @@ EnableTofCalBar:     n
 ############   END - Options for reconstruction   ################
 
 IncludeDI:			   y
-=======
-IncludeDI:			   n
->>>>>>> Stashed changes
 IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:			   n
+IncludeIT:	         y
 IncludeMSD:			   y
 IncludeTW:			   y
 IncludeCA:			   y
-
-IncludeEvent:			n
 
 Print OutputFile: true
 Output Filename: RecoHistos.root
