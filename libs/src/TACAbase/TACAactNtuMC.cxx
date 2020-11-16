@@ -28,8 +28,7 @@ TACAactNtuMC::TACAactNtuMC(const char* name, TAGdataDsc* p_datraw, TAGparaDsc* p
     fpNtuMC(p_datraw),
     fpGeoMap(pGeoMap),
     fpGeoMapG(pGeoMapG),
-    fpEvtStr(evStr),
-    fListOfParticles(0x0)
+    fpEvtStr(evStr)
 {
    AddDataOut(p_datraw, "TACAntuRaw");
    AddPara(pGeoMap,"TACAparGeo");
@@ -46,7 +45,6 @@ TACAactNtuMC::TACAactNtuMC(const char* name, TAGdataDsc* p_datraw, TAGparaDsc* p
 TACAactNtuMC::~TACAactNtuMC()
 {
    delete fDigitizer;
-   delete fListOfParticles;
 }
 
 
@@ -218,10 +216,6 @@ void TACAactNtuMC::CreateDigitizer()
 Bool_t TACAactNtuMC::Action()
 {
    TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
-
-   // Sum all energy dep. of the same particle
-   //TObject array of size of the particles created in one event
-   fListOfParticles = new TObjArray(fpEvtStr->TRn); 
 
    //clean the map
    fDigitizer->ClearMap();

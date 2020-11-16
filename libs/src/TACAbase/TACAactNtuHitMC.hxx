@@ -16,10 +16,11 @@
 #include "TH1F.h"
 #include "TH2F.h"
 
+
+#define MAX_NCRY 300      //max number of the crystals in the calorimeter
+#define MAX_ANUMBER 18     //max atomic number
+
 class TACAdigitizer;
-
-
-
 class TACAactNtuHitMC : public TAGaction {
    
 private:
@@ -37,11 +38,12 @@ private:
    };
    
   public:
-    explicit       TACAactNtuHitMC(const char* name     = 0,
-                                    TAGdataDsc* p_ntuMC  = 0,
-                                    TAGdataDsc* p_ntuEve = 0,
-                                    TAGdataDsc* p_nturaw = 0,
-                                    TAGparaDsc* p_geomap = 0);
+    explicit       TACAactNtuHitMC(const char* name       = 0,
+                                    TAGdataDsc* p_ntuMC   = 0,
+                                    TAGdataDsc* p_ntuEve  = 0,
+                                    TAGdataDsc* p_nturaw  = 0,
+                                    TAGparaDsc* p_geomap  = 0,
+                                    TAGparaDsc* p_geomapG = 0);
    
     virtual        ~TACAactNtuHitMC();
 
@@ -56,23 +58,29 @@ private:
    TAGdataDsc*     fpNtuEve;    // input eve track dsc
    TAGdataDsc*     fpNtuRaw;		    // output data dsc
    TAGparaDsc*     fpGeoMap;          // geometry para dsc
-
+   TAGparaDsc*     fpGeoMapG;       // geometry para dsc for beam
+   TAGgeoTrafo*    fpGeoTrafo;
    TACAdigitizer*  fDigitizer;       // cluster size digitizer
    
-   TH1F*           fpHisMass;
-   TH1F*           fpHisEnergy;
-   TH2F*           fpHisEnergyReleasePosXY;
-   TH2F*           fpHisEnergyReleasePosZY_in;
-   TH2F*           fpHisEnergyReleasePosZY_out;
-   TH2F*           fpHisFinalPositionVsMass;
-   TH2F*           fpHisChargeVsMass;
-   TH2I*           fpHistypeParticleVsRegion;
-   TH1F*           fpHisEnergyNeutron;
-   TH1F*           fpHistimeFirstHit;
-   TH1F*           fpHisEnergyIon[8];
-   TH1F*           fpHisEnergyIonSpect[8];
-   TH1F*           fpHisEnergyDep[8];
-   TH2F*           fpHisP_vs_EDepIon[8];
+   TH1F* fpHisDeTot;
+   TH1F* fpHisDeTotMc;
+   TH1F* fpHisNeutron_dE;
+   TH1F* fpHisMass;
+   TH1F* fpHisTime;
+   TH1F* fpHisRange;
+   TH1F* fpHisIon_Ek[MAX_ANUMBER];
+   TH1F* fpHisIon_dE[MAX_ANUMBER];
+   TH1F* fpHisEnPerCry[MAX_NCRY];
+   TH1F* fpHisEnVsPositionPerCry[MAX_NCRY];
+   
+   TH2F* fpHisCryHitVsEnDep;
+   TH2F* fpHisRangeVsMass;
+   TH2F* fpHisCryHitVsZ;
+   TH2F* fpHisEnDepVsZ;
+   TH2F* fpHisHitMapXY;
+   TH2F* fpHisHitMapZYin;
+   TH2F* fpHisHitMapZYout;
+   TH2I* fpHisParticleVsRegion;
 
 private:
    void           CreateDigitizer();
