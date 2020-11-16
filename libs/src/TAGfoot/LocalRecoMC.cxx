@@ -59,7 +59,7 @@ void LocalRecoMC::LoopEvent(Int_t nEvents)
 //__________________________________________________________
 void LocalRecoMC::CreateRawAction()
 {
-   fpNtuMcEve = new TAGdataDsc("eveMc", new TAMCntuEve());
+   fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
    fActNtuMcEve = new TAMCactNtuEve("eveActNtuMc", fpNtuMcEve, fEvtStruct);
    
    
