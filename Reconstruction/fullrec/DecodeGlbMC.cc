@@ -53,7 +53,7 @@ int main (int argc, char *argv[])  {
    
    TApplication::CreateApplication();
    
-   GlobalPar::Instance();
+   GlobalPar::Instance(exp);
    GlobalPar::GetPar()->Print();
    
    GlobalRecoMC* glbRec = new GlobalRecoMC(exp, in, out);

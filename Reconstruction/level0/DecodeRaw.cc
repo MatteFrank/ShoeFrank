@@ -47,7 +47,7 @@ int main (int argc, char *argv[])  {
    
    TApplication::CreateApplication();
    
-   GlobalPar::Instance();
+   GlobalPar::Instance(exp);
    GlobalPar::GetPar()->Print();
    
    Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();

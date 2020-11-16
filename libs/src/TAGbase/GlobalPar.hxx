@@ -26,7 +26,7 @@ using namespace std;
 class GlobalPar {
 
 public:
-	static GlobalPar* Instance( string aparFileName = "FootGlobal.par" );
+	static GlobalPar* Instance( const TString expName = "" );
 	static GlobalPar* GetPar();
    
 public:
@@ -109,11 +109,12 @@ public:
 
 private:
 	GlobalPar();
-	GlobalPar( string aparFileName );
+	GlobalPar( const TString expName );
    
 private:
 	static GlobalPar* m_pInstance;
    static map<TString, TString> m_dectFullName; // full name
+   static const TString m_defParName;
 
 private:
 	vector<string> m_copyInputFile;

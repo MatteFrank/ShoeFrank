@@ -11,16 +11,19 @@ map<TString, TString> GlobalPar::m_dectFullName = {{"ST", "Start Counter"}, {"BM
                                                    {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "Multi-Strip Detector"}, {"TW", "ToF Wall"},
                                                    {"CA", "Calorimeter"}};
 
+const TString GlobalPar::m_defParName = "FootGlobal.par";
+
+
 //_____________________________________________________________________________
 // Global static pointer used to ensure a single instance of the class.
 GlobalPar* GlobalPar::m_pInstance = NULL;
 
 
 //_____________________________________________________________________________
-GlobalPar* GlobalPar::Instance( string aparFileName )  {
+GlobalPar* GlobalPar::Instance( const TString expName )  {
 
     if (!m_pInstance)   // Only allow one instance of class to be generated, only true for multi-thread.
-        m_pInstance = new GlobalPar( aparFileName );
+        m_pInstance = new GlobalPar( expName );
 
    return m_pInstance;
 }
@@ -46,9 +49,10 @@ GlobalPar::~GlobalPar()
 
 //_____________________________________________________________________________
 // private constructor
-GlobalPar::GlobalPar( string aparFileName ) {
-
-    m_parFileName = aparFileName;
+GlobalPar::GlobalPar( const TString expName )
+{
+    TString absName = Form("./config/%s/%s", expName.Data(), m_defParName.Data());   
+    m_parFileName = absName.Data();
 
     m_copyInputFile.clear();
     m_debug = 0;
@@ -128,7 +132,7 @@ void GlobalPar::ReadParamFile () {
 
     ifstream ifile;
 
-    ifile.open( ((string)"./config/"+m_parFileName).c_str() );
+    ifile.open( m_parFileName.c_str() );
     if ( !ifile.is_open() )        cout<< "ERROR  -->  wrong input in GlobalPar::ReadParamFile file "<< endl, exit(0);
 
     string line = "";
