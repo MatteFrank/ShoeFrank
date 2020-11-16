@@ -32,7 +32,9 @@ TACAactNtuMC::TACAactNtuMC(const char* name, TAGdataDsc* p_datraw, TAGparaDsc* p
     fListOfParticles(0x0)
 {
    AddDataOut(p_datraw, "TACAntuRaw");
-   
+   AddPara(pGeoMap,"TACAparGeo");
+   AddPara(pGeoMapG,"TAGparGeo");
+
    fpGeoTrafo  = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
    CreateDigitizer();
