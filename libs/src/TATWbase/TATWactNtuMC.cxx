@@ -57,8 +57,8 @@ TATWactNtuMC::TATWactNtuMC(const char* name,
 
   f_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-  f_pargeo = (TAGparGeo*)fParGeoG->Object();
-
+  f_pargeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+  
   fZbeam = f_pargeo->GetBeamPar().AtomicNumber;
   
   fMapPU.clear();
