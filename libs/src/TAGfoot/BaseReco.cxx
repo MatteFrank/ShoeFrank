@@ -522,7 +522,9 @@ void BaseReco::CreateRecAction()
    if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
       CreateRecActionGlb();
    
-    
+   if (!GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IncludeKalman())
+      CreateRecActionGlbGF();
+   
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
        GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
        GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI())
@@ -634,6 +636,11 @@ void BaseReco::CreateRecActionMsd()
    fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuRawMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
    if (fFlagHisto)
       fActClusMsd->CreateHistogram();
+   
+   if (GlobalPar::GetPar()->IncludeKalman() ){
+      fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
+      fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuRawMsd, fpNtuRecMsd, fpParGeoMsd);
+   }
 }
 
 //__________________________________________________________
@@ -684,6 +691,35 @@ void BaseReco::CreateRecActionGlb()
 }
 
 //__________________________________________________________
+void BaseReco::CreateRecActionGlbGF()
+{
+   if(fFlagTrack) {
+      TADIparGeo* parGeoDi = (TADIparGeo*)fpParGeoDi->Object();
+      //if (!fDipole) std::cout << "WARNING NO MAG FIELD LOADED" << std::endl;
+      TString magFieldMapName = parGeoDi->GetMapName();
+      
+      genfit::FieldManager::getInstance()->init( new FootField(magFieldMapName.Data(), parGeoDi ) );
+      
+      // set material and geometry into genfit
+      MaterialEffects* materialEffects = MaterialEffects::getInstance();
+      materialEffects->init(new TGeoMaterialInterface());
+      
+      // include the nucleon into the genfit pdg repository
+      if ( GlobalPar::GetPar()->IncludeBM())
+         UpdatePDG::Instance();
+      
+      // study for kalman Filter
+      fActGlbTrackStudies = new GlobalTrackingStudies("glbActTrackStudyGF");
+      if (fFlagHisto)
+         fActGlbTrackStudies->CreateHistogram();
+      
+      // Initialisation of KFfitter
+      fActGlbkFitter = new KFitter("glbActTrackGF");
+
+   }
+}
+
+//__________________________________________________________
 void BaseReco::CreateRecActionIr()
 {
    if(fFlagTrack) {
@@ -725,8 +761,11 @@ void BaseReco::SetTreeBranches()
    if (GlobalPar::GetPar()->IncludeIT())
      fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
    
-   if (GlobalPar::GetPar()->IncludeMSD()) 
+   if (GlobalPar::GetPar()->IncludeMSD())  {
      fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
+     if (GlobalPar::GetPar()->IncludeKalman())
+        fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
+   }
    
    if (GlobalPar::GetPar()->IncludeTW())
      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
@@ -777,6 +816,8 @@ void BaseReco::AddRecRequiredItem()
    if (GlobalPar::GetPar()->IncludeMSD()) {
       gTAGroot->AddRequiredItem("msdActNtu");
       gTAGroot->AddRequiredItem("msdActClus");
+      if (GlobalPar::GetPar()->IncludeKalman())
+         gTAGroot->AddRequiredItem("msdActPoint");
    }
    
    if (GlobalPar::GetPar()->IncludeTW()) {
@@ -792,6 +833,11 @@ void BaseReco::AddRecRequiredItem()
    if (fFlagTrack) {
       if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
          gTAGroot->AddRequiredItem("glbActTrack");
+      
+      if (!GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IncludeKalman()) {
+         gTAGroot->AddRequiredItem("glbActTrackStudyGF");
+         gTAGroot->AddRequiredItem("glbActTrackGF");
+      }
    }
    
    if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&

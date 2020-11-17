@@ -1,7 +1,9 @@
 #include "KFitter.hxx"
 
 //----------------------------------------------------------------------------------------------------
-KFitter::KFitter () {
+KFitter::KFitter (const char* name)
+: TAGaction(name, "KFitter - Global GenFit Tracker")
+{
 
   int nIter = 20; // max number of iterations
   double dPVal = 1.E-3; // convergence criterion
@@ -2343,7 +2345,15 @@ void KFitter::GetTrueParticleType( AbsMeasurement* hit, int* flukaID, int* track
 
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Action.
+Bool_t KFitter::Action()
+{
+   long evNum  = (long)gTAGroot->CurrentEventId().EventNumber();
+   MakeFit(evNum);
+   
+   return true;
+}
 
 //----------------------------------------------------------------------------------------------------
 int KFitter::MakeFit( long evNum ) {

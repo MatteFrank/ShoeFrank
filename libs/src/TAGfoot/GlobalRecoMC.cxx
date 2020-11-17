@@ -38,12 +38,12 @@ void GlobalRecoMC::BeforeEventLoop()
 	UpdatePDG::Instance();
 
 	// study for kalman Filter
-	m_globalTrackingStudies = new GlobalTrackingStudies();
+	m_globalTrackingStudies = new GlobalTrackingStudies("glbActTrackStudy");
 
 
 	// Initialisation of KFfitter
 	if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init!" << endl;
-	m_kFitter = new KFitter();
+	m_kFitter = new KFitter("glbActTrackStudy");
 	if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init done!" << endl;
   
 
@@ -67,7 +67,7 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents)
       
       if (!fTAGroot->NextEvent()) break;
 
-      m_globalTrackingStudies->Execute();
+      m_globalTrackingStudies->Action();
       m_kFitter->MakeFit(ientry);
 
    }

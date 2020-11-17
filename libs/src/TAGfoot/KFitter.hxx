@@ -87,6 +87,7 @@
 #include <sys/stat.h>
 #include <limits>
 
+#include "TAGaction.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
@@ -110,12 +111,12 @@ using namespace genfit;
 
 typedef vector<genfit::AbsMeasurement*> MeasurementVector;
 
-class KFitter {
+class KFitter : public TAGaction {
 
 public:
 
 
-  KFitter();
+  KFitter(const char* name);
   ~KFitter() {
     delete m_fitter;
   };
@@ -133,7 +134,9 @@ public:
     TVector3 MCMomentum;
   };
 
-
+  //! Action
+  bool Action();
+   
   // int PrepareData4Fit( string option );
   int PrepareData4Fit();
   int PrepareData4Fit_dataLike();
