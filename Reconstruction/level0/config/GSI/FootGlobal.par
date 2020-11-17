@@ -46,15 +46,15 @@ EnableTofCalBar:     n
 
 ############   END - Options for reconstruction   ################
 
-IncludeDI:			   y
+IncludeDI:			   n
 IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:	         y
-IncludeMSD:			   y
+IncludeIT:	         n
+IncludeMSD:			   n
 IncludeTW:			   y
-IncludeCA:			   y
+IncludeCA:			   n
 
 Print OutputFile: true
 Output Filename: RecoHistos.root
