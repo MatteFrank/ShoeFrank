@@ -5,8 +5,8 @@
 ClassImp(GlobalReco)
 
 //__________________________________________________________
-GlobalReco::GlobalReco(TString expName, TString fileNameIn, TString fileNameout)
- : LocalReco(expName, -1, fileNameIn, fileNameout)
+GlobalReco::GlobalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
+ : LocalReco(expName, runNumber, fileNameIn, fileNameout)
 {
 }
 

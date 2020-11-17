@@ -5,8 +5,8 @@
 ClassImp(GlobalRecoMC)
 
 //__________________________________________________________
-GlobalRecoMC::GlobalRecoMC(TString expName, TString fileNameIn, TString fileNameout)
- : LocalRecoMC(expName, -1, fileNameIn, fileNameout)
+GlobalRecoMC::GlobalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
+ : LocalRecoMC(expName, runNumber, fileNameIn, fileNameout)
 {
 
 	EnableTracking();
