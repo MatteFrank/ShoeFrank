@@ -3,22 +3,40 @@
 
 
 void GlobalTrackRepostory::AddTrack( string name, Track* track, long evNum, int stateID,
-	       TVector3* mom, TVector3* pos,
-	       TVector3* mom_MC, TVector3* pos_MC,
-	       TMatrixD* mom_cov
-	       ) {
+	TVector3* mom, TVector3* pos,
+	TVector3* mom_MC, TVector3* pos_MC,
+	TMatrixD* mom_cov
+)
+{
 
-  m_fitTrackCollection.push_back( new GlobalTrackKalman( name, track, evNum, stateID,
-							 mom, pos,
-							 mom_MC, pos_MC,
-							 mom_cov ) );
+	m_fitTrackCollection.push_back( new GlobalTrackKalman( name, track, evNum, stateID,
+		mom, pos,
+		mom_MC, pos_MC,
+		mom_cov ) );
 
-  PrintPositionResidual( *pos, *pos_MC, name );
-  PrintMomentumResidual( *mom, *mom_MC, *mom_cov, name );
+	PrintPositionResidual( *pos, *pos_MC, name );
+	PrintMomentumResidual( *mom, *mom_MC, *mom_cov, name );
 
-};
+}
 
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void GlobalTrackRepostory::AddTrack( string name, Track* track, long evNum, int stateID,
+	const TVectorD state, const TMatrixDSym covariance, TVector3* mom_MC,
+	TVector3* pos_MC, int charge
+)
+{
+	//here I prepare to call
+	//void PrintMomentumResidual( double meas, double expected, double err, string hitSampleName ) {
+	double errorOnMomentum = sqrt(covariance[0][0]);
+	double expectedMomentum = mom_MC->Mag();
+	double measuredMomentum = charge/state[0];
+
+	PrintMomentumResidual( measuredMomentum, expectedMomentum, errorOnMomentum, name );
+}
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //----------------------------------------------------------------------------------------------------
 //  evaluate uncertainty from the diagonal of the covariance matrix ONLY. No correlation is considered!!!
 double GlobalTrackRepostory::EvalError( TVector3 mom, TVector3 err ) {
@@ -191,6 +209,105 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
   if ( m_debug > 1 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- End!!!!  " << endl;
 }
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void GlobalTrackRepostory::PrintMomentumResidual( double meas, double expected, double err, string hitSampleName ) {
+
+	if ( m_debug > -1 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- Start!!!!  " << endl;
+
+	double dP = meas - expected;
+
+	if ( m_debug > -1 )		cout << "dp = " << meas << "-"<< expected << "   err= " << err<< endl;
+	if ( m_debug > -1 )		cout << " residuo= "<< dP / err <<endl;
+
+	// h_deltaP[ hitSampleName ]->Fill( dP );
+	// h_sigmaP[ hitSampleName ]->Fill(err);
+	// h_momentumRes[ hitSampleName ]->Fill( dP /err);
+
+	// h_dP_over_Ptrue[ hitSampleName ]->Fill( dP / expected.Mag() );
+	// h_dP_over_Pkf[ hitSampleName ]->Fill( dP / meas.Mag() );
+	// h_sigmaP_over_Ptrue[ hitSampleName ]->Fill( err / expected.Mag() );
+	// h_sigmaP_over_Pkf[ hitSampleName ]->Fill( err / meas.Mag() );
+
+	//can ask for TH1::Print
+
+	// histos for momentum reso
+	if ( meas == 0 || expected == 0 )
+		cout<< "ERROR::GlobalTrackRepostory::PrintMomentumResidual  -->  track momentum - 0. "<< endl, exit(0);
+
+	// find the center of the momentum bin
+	int roundUp = ceil( (double)expected );
+	int roundDown = floor( (double)expected );
+	float binCenter = -666;
+	int nstep = ((float)(roundUp - roundDown)) / m_resoP_step;
+
+	for ( int i=0; i<nstep; i++ ) {
+		if ( expected > roundDown+(i*m_resoP_step) && expected <= roundDown+( (i+1)*m_resoP_step) ) {
+			binCenter = roundDown + m_resoP_step*i + 0.5*m_resoP_step;
+			break;
+		}
+	}
+
+	// fill the h_dP_x_bin
+	if ( h_dP_x_bin.find( hitSampleName ) == h_dP_x_bin.end() ) {
+		map<float, TH1F*> tmp_dP_x_bin;
+		string name = "dP_dist_" + hitSampleName + "_" + build_string( binCenter );
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -2, 2 );
+		tmp_dP_x_bin[ binCenter ] = h;
+
+		h_dP_x_bin[ hitSampleName ] = tmp_dP_x_bin;
+	}
+
+	else if ( h_dP_x_bin[ hitSampleName ].find( binCenter ) == h_dP_x_bin[ hitSampleName ].end() ) {
+		string name = "dP_dist_" + hitSampleName + "_" + build_string( binCenter );
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -2, 2 );
+		h_dP_x_bin[ hitSampleName ][ binCenter ] = h;
+	}
+
+
+	if ( m_debug > 0 ) cout << "Filling h_dP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP << endl;
+	h_dP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP );
+
+	// fill the h_dPOverP_x_bin
+	if ( h_dPOverP_x_bin.find( hitSampleName ) == h_dPOverP_x_bin.end() ) {
+		map<float, TH1F*> tmp_dPOverP_x_bin;
+		string name = "dPOverP_dist_" + hitSampleName + "_" + build_string( binCenter );
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -0.2, 0.2 );
+		tmp_dPOverP_x_bin[ binCenter ] = h;
+		h_dPOverP_x_bin[ hitSampleName ] = tmp_dPOverP_x_bin;
+	}
+
+	else if ( h_dPOverP_x_bin[ hitSampleName ].find( binCenter ) == h_dPOverP_x_bin[ hitSampleName ].end() ) {
+		string name = "dPOverP_dist_" + hitSampleName + "_" + build_string( binCenter );
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -0.2, 0.2 );
+		h_dPOverP_x_bin[ hitSampleName ][ binCenter ] = h;
+	}
+
+	if ( m_debug > 0 ) cout << "Filling h_dPOverP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP/expected << endl;
+	// h_dPOverP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP/expected.Mag() );
+	( (h_dPOverP_x_bin.at( hitSampleName )).at(binCenter) )->Fill( dP/expected );
+
+	// fill the h_dPOverSigmaP_x_bin
+	if ( h_dPOverSigmaP_x_bin.find( hitSampleName ) == h_dPOverSigmaP_x_bin.end() ) {
+		map<float, TH1F*> tmp_dPOverSigmaP_x_bin;
+		string name = "dPOverSigmaP_dist_" + hitSampleName + "_" + build_string( binCenter );
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -2, 2 );
+		tmp_dPOverSigmaP_x_bin[ binCenter ] = h;
+
+		h_dPOverSigmaP_x_bin[ hitSampleName ] = tmp_dPOverSigmaP_x_bin;
+	}
+
+	else if ( h_dPOverSigmaP_x_bin[ hitSampleName ].find( binCenter ) == h_dPOverSigmaP_x_bin[ hitSampleName ].end() ) {
+		string name = "dPOverSigmaP_dist_" + hitSampleName + "_" + build_string( binCenter );
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -4, 4 );
+		h_dPOverSigmaP_x_bin[ hitSampleName ][ binCenter ] = h;
+	}
+
+	h_dPOverSigmaP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP/err );
+
+	if ( m_debug > -1 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- End!!!!  " << endl;
+
+}
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 
@@ -200,79 +317,80 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
 void GlobalTrackRepostory::EvaluateMomentumResolution() {
 
 
-  //problem on iterator it not resolved
-  for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ ) {
-    //  initialize output resolution histos
-    float resoP_min = (*(*collIt).second.begin()).first - m_resoP_step*0.5;
-    float resoP_max = (*(*collIt).second.rbegin()).first + m_resoP_step*0.5;
-    float nfbin = (resoP_max-resoP_min)/m_resoP_step;
-    if ( m_debug > 0 ) cout << "in GlobalTrackRepostory::EvaluateMomentumResolution-> " << (*collIt).first << " resoP_min/max " << resoP_min << " " << resoP_max << " nfbin " << nfbin << endl;
-    //if ( modf( (resoP_max-resoP_min)/m_resoP_step, &nfbin ) == 0.0 )
+	//problem on iterator it not resolved
+	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ ) {
+		//  initialize output resolution histos
+		float resoP_min = (*(*collIt).second.begin()).first - m_resoP_step*0.5;
+		float resoP_max = (*(*collIt).second.rbegin()).first + m_resoP_step*0.5;
+		float nfbin = (resoP_max-resoP_min)/m_resoP_step;
+		if ( m_debug > 0 ) cout << "in GlobalTrackRepostory::EvaluateMomentumResolution-> " << (*collIt).first << " resoP_min/max " << resoP_min << " " << resoP_max << " nfbin " << nfbin << endl;
+		//if ( modf( (resoP_max-resoP_min)/m_resoP_step, &nfbin ) == 0.0 )
 
-    if ( fabs( nfbin-round(nfbin) ) > 0.001 )
-      cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl, exit(0);		// check correct binning
-    int nbin = round(nfbin);
+		if ( fabs( nfbin-round(nfbin) ) > 0.001 )
+		//cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl, exit(0);		// check correct binning
+		cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl;		// check correct binning
+		int nbin = round(nfbin);
 
-    string histoName = (string)"h_resoP_over_Pkf"+"__"+(*collIt).first;
-    h_resoP_over_Pkf[ (*collIt).first ] = new TH1F( histoName.c_str(), histoName.c_str(), nbin, resoP_min, resoP_max );
+		string histoName = (string)"h_resoP_over_Pkf"+"__"+(*collIt).first;
+		h_resoP_over_Pkf[ (*collIt).first ] = new TH1F( histoName.c_str(), histoName.c_str(), nbin, resoP_min, resoP_max );
 
-    histoName = (string)"h_biasP_over_Pkf"+"__"+(*collIt).first;
-    h_biasP_over_Pkf[ (*collIt).first ] = new TH1F( histoName.c_str(), histoName.c_str(), nbin, resoP_min, resoP_max );
+		histoName = (string)"h_biasP_over_Pkf"+"__"+(*collIt).first;
+		h_biasP_over_Pkf[ (*collIt).first ] = new TH1F( histoName.c_str(), histoName.c_str(), nbin, resoP_min, resoP_max );
 
-    int k=0;
-    for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
-      k++; //jump the underflow
-      if ( k > h_resoP_over_Pkf[ (*collIt).first ]->GetNbinsX() )
-	{
-	  cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<< "  binning problem! do not fill all the reso plot. " << endl, exit(0);
+		int k=0;
+		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
+			k++; //jump the underflow
+			if ( k > h_resoP_over_Pkf[ (*collIt).first ]->GetNbinsX() )
+			{
+				cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<< "  binning problem! do not fill all the reso plot. " << endl, exit(0);
+			}
+
+			if ( (*it).second->GetEntries() < 70 ) continue;
+
+			// check if the binning produce even bounds for the bins, not irrational numbers for examples
+			float a = (h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinLowEdge(k) + h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinUpEdge(k)) /2;
+			float b = (*it).first;
+			if ( fabs(a - b) > 0.00001 ) {
+				cout << "WARNING::GlobalTrackRepostory::EvaluateMomentumResolution \t >> \t chosen binning do not make bin's round bounds. Histo: "
+				<<(*it).second->GetName() << "  "
+				<<(*collIt).first<<": " << h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinLowEdge(k) << " + "
+				<< h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinUpEdge(k) <<" = " << a << " instead of " << b
+				<< ".\n\t\t Worry not too much, can be caused by bins not filled." << endl;
+				it--;
+				continue;
+			}
+
+			TF1 *f1 = new TF1("f1","gaus",-50 ,50);
+			//TF1* f1 = new TF1("gauss", "[0] / sqrt(2.0 * TMath::Pi()) / [2] * exp(-(x-[1])*(x-[1])/2./[2]/[2])", 0, 100);
+			f1->SetParNames("Constant","Mean","Sigma");
+			//      cout << " getmean is " << ((*it).second)->GetParameter(1) << " and getrms is " << ((*it).second)->GetParameter(2) << std::endl;
+			f1->SetParameters( 0., ((*it).second)->GetMean(), ((*it).second)->GetRMS() );
+			// f1->SetParameters( 0, h_resoP_over_Pkf[ (*collIt).first ]->GetMean(), h_resoP_over_Pkf[ (*collIt).first ]->GetStdDev() );
+			f1->SetParLimits(0.,  0.1, ((*it).second)->GetMaximum());
+			f1->SetParLimits(1., -0.18,  0.18);
+			f1->SetParLimits(2.,  0.001,  0.16);
+			f1->SetLineWidth(2);
+			f1->SetLineColor(2);
+			// h_resoP_over_Pkf[ (*collIt).first ]->Fit("f1","R");
+			(*it).second->Fit("f1", "LQ");	// log likelihood fit, quiet mode
+
+			//if ( m_debug <= 0 && (f1->GetParError(f1->GetParNumber("Sigma")) / f1->GetParameter(f1->GetParNumber("Sigma")) > 0.1) )
+			//continue;
+
+			// GetNumberFreeParameters()
+			// h_resoP_over_Pkf[ (*collIt).first ]->SetBinContent( k, f1->GetParameter(1) );
+			h_resoP_over_Pkf[ (*collIt).first ]->SetBinContent( k, f1->GetParameter(f1->GetParNumber("Sigma")) );
+			h_resoP_over_Pkf[ (*collIt).first ]->SetBinError( k, f1->GetParError (f1->GetParNumber("Sigma")) );
+			// h_resoP_over_Pkf[ (*collIt).first ]->SetBinContent( k, (*it).second->GetStdDev(1) );
+			// h_resoP_over_Pkf[ (*collIt).first ]->SetBinError( k, (*it).second->GetStdDev(1) );
+
+
+			h_biasP_over_Pkf[ (*collIt).first ]->SetBinContent( k, f1->GetParameter(f1->GetParNumber("Mean")) );
+			h_biasP_over_Pkf[ (*collIt).first ]->SetBinError( k, f1->GetParameter(f1->GetParNumber("Mean")) );
+    }
 	}
 
-      if ( (*it).second->GetEntries() < 100 ) continue;
-
-      // check if the binning produce even bounds for the bins, not irrational numbers for examples
-      float a = (h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinLowEdge(k) + h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinUpEdge(k)) /2;
-      float b = (*it).first;
-      if ( fabs(a - b) > 0.00001 ) {
-	cout << "WARNING::GlobalTrackRepostory::EvaluateMomentumResolution \t >> \t chosen binning do not make bin's round bounds. Histo: "
-	     <<(*it).second->GetName() << "  "
-	     <<(*collIt).first<<": " << h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinLowEdge(k) << " + "
-	     << h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinUpEdge(k) <<" = " << a << " instead of " << b
-	     << ".\n\t\t Worry not too much, can be caused by bins not filled." << endl;
-	it--;
-	continue;
-      }
-
-      TF1 *f1 = new TF1("f1","gaus",-50 ,50);
-      //TF1* f1 = new TF1("gauss", "[0] / sqrt(2.0 * TMath::Pi()) / [2] * exp(-(x-[1])*(x-[1])/2./[2]/[2])", 0, 100);
-      f1->SetParNames("Constant","Mean","Sigma");
-      //      cout << " getmean is " << ((*it).second)->GetParameter(1) << " and getrms is " << ((*it).second)->GetParameter(2) << std::endl;
-      f1->SetParameters( 0., ((*it).second)->GetMean(), ((*it).second)->GetRMS() );
-      // f1->SetParameters( 0, h_resoP_over_Pkf[ (*collIt).first ]->GetMean(), h_resoP_over_Pkf[ (*collIt).first ]->GetStdDev() );
-      f1->SetParLimits(0.,  0.1, ((*it).second)->GetMaximum());
-      f1->SetParLimits(1., -0.18,  0.18);
-      f1->SetParLimits(2.,  0.001,  0.16);
-      f1->SetLineWidth(2);
-      f1->SetLineColor(2);
-      // h_resoP_over_Pkf[ (*collIt).first ]->Fit("f1","R");
-      (*it).second->Fit("f1", "LQ");	// log likelihood fit, quiet mode
-
-      if ( m_debug <= 0 && (f1->GetParError(f1->GetParNumber("Sigma")) / f1->GetParameter(f1->GetParNumber("Sigma")) > 0.1) )
-	continue;
-
-      // GetNumberFreeParameters()
-      // h_resoP_over_Pkf[ (*collIt).first ]->SetBinContent( k, f1->GetParameter(1) );
-      h_resoP_over_Pkf[ (*collIt).first ]->SetBinContent( k, f1->GetParameter(f1->GetParNumber("Sigma")) );
-      h_resoP_over_Pkf[ (*collIt).first ]->SetBinError( k, f1->GetParError (f1->GetParNumber("Sigma")) );
-      // h_resoP_over_Pkf[ (*collIt).first ]->SetBinContent( k, (*it).second->GetStdDev(1) );
-      // h_resoP_over_Pkf[ (*collIt).first ]->SetBinError( k, (*it).second->GetStdDev(1) );
-
-
-      h_biasP_over_Pkf[ (*collIt).first ]->SetBinContent( k, f1->GetParameter(f1->GetParNumber("Mean")) );
-      h_biasP_over_Pkf[ (*collIt).first ]->SetBinError( k, f1->GetParameter(f1->GetParNumber("Mean")) );
-    }
-  }
-
-  Save();
+	Save();
 
 }
 
@@ -282,62 +400,62 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 //----------------------------------------------------------------------------------------------------
 void GlobalTrackRepostory::Save( ) {
 
-  struct stat info;
+	struct stat info;
 
-  TCanvas* mirror = new TCanvas("TrackChi2Plot", "TrackChi2Plot", 700, 700);
+	TCanvas* mirror = new TCanvas("TrackChi2Plot", "TrackChi2Plot", 700, 700);
 
-  for ( map<string, map<float, TH1F*> >::iterator collIt=h_dP_x_bin.begin(); collIt != h_dP_x_bin.end(); collIt++ ) {
-    string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dP_x_bin";
-    if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
-      system(("mkdir "+pathName).c_str());
-    for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
-      (*it).second->GetXaxis()->SetTitle("dP(GeV)");
-      (*it).second->Draw();
-      mirror->SaveAs(( pathName+"/"+"dP_x_bin__"+(*collIt).first+"__"+build_string( (*it).first )+".png").c_str());
-    }
-  }
-  gStyle->SetOptFit(111111);
-  for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ ) {
-    string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dPOverP_x_bin";
-    if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
-      system(("mkdir "+pathName).c_str());
-    for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
-      (*it).second->GetXaxis()->SetTitle("dP/P");
-      (*it).second->Draw();
-      mirror->SaveAs(( pathName+"/"+"dPOverP_x_bin__"+(*collIt).first+"__"+build_string( (*it).first )+".png").c_str());
-    }
-  }
-  gStyle->SetOptFit(111);
-  for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverSigmaP_x_bin.begin(); collIt != h_dPOverSigmaP_x_bin.end(); collIt++ ) {
-    string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dPOverSigmaP_x_bin";
-    if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
-      system(("mkdir "+pathName).c_str());
-    for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
-      (*it).second->GetXaxis()->SetTitle("dP/sigmaP");
-      (*it).second->Draw();
-      mirror->SaveAs(( pathName+"/"+"dPOverSigmaP_x_bin__"+(*collIt).first+"__"+build_string( (*it).first )+".png").c_str());
-    }
-  }
+	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dP_x_bin.begin(); collIt != h_dP_x_bin.end(); collIt++ ) {
+		string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dP_x_bin";
+		if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
+		system(("mkdir "+pathName).c_str());
+		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
+			(*it).second->GetXaxis()->SetTitle("dP(GeV)");
+			(*it).second->Draw();
+			mirror->SaveAs(( pathName+"/"+"dP_x_bin__"+(*collIt).first+"__"+build_string( (*it).first )+".png").c_str());
+		}
+	}
+	gStyle->SetOptFit(111111);
+	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ ) {
+		string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dPOverP_x_bin";
+		if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
+		system(("mkdir "+pathName).c_str());
+		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
+			(*it).second->GetXaxis()->SetTitle("dP/P");
+			(*it).second->Draw();
+			mirror->SaveAs(( pathName+"/"+"dPOverP_x_bin__"+(*collIt).first+"__"+build_string( (*it).first )+".png").c_str());
+		}
+	}
+	gStyle->SetOptFit(111);
+	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverSigmaP_x_bin.begin(); collIt != h_dPOverSigmaP_x_bin.end(); collIt++ ) {
+		string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dPOverSigmaP_x_bin";
+		if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
+		system(("mkdir "+pathName).c_str());
+		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
+			(*it).second->GetXaxis()->SetTitle("dP/sigmaP");
+			(*it).second->Draw();
+			mirror->SaveAs(( pathName+"/"+"dPOverSigmaP_x_bin__"+(*collIt).first+"__"+build_string( (*it).first )+".png").c_str());
+		}
+	}
 
-  for ( map< string, TH1F* >::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); it++ ) {
-    (*it).second->GetXaxis()->SetTitle("p(GeV)");
-    (*it).second->GetYaxis()->SetTitle("dp/p");
-    (*it).second->Draw();
+	for ( map< string, TH1F* >::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); it++ ) {
+		(*it).second->GetXaxis()->SetTitle("p(GeV)");
+		(*it).second->GetYaxis()->SetTitle("dp/p");
+		(*it).second->Draw();
 
-    mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialMomentumReso" + ".png").c_str() );
-    mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialMomentumReso" + ".root").c_str() );
-    // string aaa = mirror->GetName();
-    // mirror->SetName( (*it).second->GetName() );
+		mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialMomentumReso" + ".png").c_str() );
+		mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialMomentumReso" + ".root").c_str() );
+		// string aaa = mirror->GetName();
+		// mirror->SetName( (*it).second->GetName() );
     // mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialMomentumReso" + ".root").c_str() );
-    // mirror->SetName( aaa.c_str() );
-  }
+		// mirror->SetName( aaa.c_str() );
+	}
 
   for ( map< string, TH1F* >::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); it++ ) {
-    (*it).second->GetXaxis()->SetTitle("p(GeV)");
-    (*it).second->GetYaxis()->SetTitle("Bias(dp/p)");
-    (*it).second->Draw();
-    mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialResoBias" + ".png").c_str() );
-    mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialResoBias" + ".root").c_str() );
+		(*it).second->GetXaxis()->SetTitle("p(GeV)");
+		(*it).second->GetYaxis()->SetTitle("Bias(dp/p)");
+		(*it).second->Draw();
+		mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialResoBias" + ".png").c_str() );
+		mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialResoBias" + ".root").c_str() );
   }
 
 }

@@ -153,7 +153,7 @@ void GlobalTrackingStudies::Execute() {
 					TAITcluster* clus = itclus->GetCluster(iPlane, iClus);
 					// TVector3 itCluster = geoTrafo->FromITLocalToGlobal( clus->GetPositionG() );
 					
-					// TAMCeveTrack* genParticle = eve->GetHit( clus->GetMcTrackIdx(0) );
+					// TAMCeveTrack* genParticle = eve->GetTrack( clus->GetMcTrackIdx(0) );
 					if ( clus->GetMcTrackIdx(0) != genParticleID_vec[0] )	continue;
 
 					int nHits = clus->GetPixelsN();
