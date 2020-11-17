@@ -46,6 +46,15 @@ bool RectangularFinitePlane::isInActive(double u, double v) const{
   return (u>=uMin_ && u<=uMax_ && v>=vMin_ && v<=vMax_);
 }
 
+bool RectangularFinitePlane::isInActiveX(double u) const{
+  return (u>=uMin_ && u<=uMax_);
+}
+
+bool RectangularFinitePlane::isInActiveY(double v) const{
+  return (v>=vMin_ && v<=vMax_);
+}
+
+
 void RectangularFinitePlane::Print(const Option_t*) const{
   printOut << "Rectangular Finite Plane Umin=" << uMin_ << ", Umax="
       << uMax_ << ", Vmin=" << vMin_ << ", Vmax=" << vMax_ << std::endl;
