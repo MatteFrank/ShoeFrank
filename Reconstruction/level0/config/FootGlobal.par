@@ -20,8 +20,8 @@ IncludeKalman:   n
 IncludeTOE:      n
 EnableLocalReco: n
 
-Kalman Mode: 		ON
-Tracking Systems Considered:		VT IT MSD
+Kalman Mode:       ref
+Tracking Systems Considered:      VT IT MSD TW
 Reverse Tracking:	false
 
 VT  Reso: 0.0006
