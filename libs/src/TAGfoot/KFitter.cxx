@@ -194,35 +194,46 @@ KFitter::KFitter (const char* name)
   //  gGeoManager->Write();
   //  outfile->Close();
   //
-
-
-  percentageOfMCTracksVTX = new TH1D("mean number of tracks","mean number of tracks", 10, 0., 5.);
-  tempPurity = new TH1D("purity", "purity", 20, 0., 1.5);
-  ITstudy = new TH1I("it study on checktrack false", "it study", 10, 0, 10);
-  MSDstudy = new TH1I("msd study on checktrack false", "msd study", 7, 0, 7);
-  qoverp = new TH1D("qoverp_all", "qoverp_all", 100, 0., 2.);
-  qoverpsel = new TH1D("qoverp_sel", "qoverp_sel", 100, 0., 2.);
-  outfile = TFile::Open("efficiency.root","RECREATE");
-
-  //ofs.open ("test.txt", std::ofstream::out);
-  ofs.open ("efficiency.txt", std::ofstream::out);
-
-  MSDforwardcounter=0;
-
-  for (unsigned int jCharge = 0; jCharge < 8; ++jCharge){
-    TH1D* h = new TH1D(Form("histoChargeTrue%d",jCharge+1), "test", 25, 0.,10.);
-    TH1D* h1 = new TH1D(Form("histoChargeReco%d",jCharge+1), "test", 25, 0.,10.);
-    TH1D* h2 = new TH1D(Form("histoRatio%d",jCharge+1), "test", 25, 0.,10.);
-
-    momentum_true.push_back(h);
-    momentum_reco.push_back(h1);
-    ratio_reco_true.push_back(h2);
-  }
-
+   
+   outfile = TFile::Open("efficiency.root","RECREATE");
+   
+   //ofs.open ("test.txt", std::ofstream::out);
+   ofs.open ("efficiency.txt", std::ofstream::out);
+   
+   MSDforwardcounter=0;
 }
 
+void KFitter::CreateHistogram()
+{
+  percentageOfMCTracksVTX = new TH1D("mean number of tracks","mean number of tracks", 10, 0., 5.);
+  AddHistogram(percentageOfMCTracksVTX);
 
+  tempPurity = new TH1D("purity", "purity", 20, 0., 1.5);
+  AddHistogram(tempPurity);
 
+  ITstudy = new TH1I("it study on checktrack false", "it study", 10, 0, 10);
+  AddHistogram(ITstudy);
+
+  MSDstudy = new TH1I("msd study on checktrack false", "msd study", 7, 0, 7);
+  AddHistogram(MSDstudy);
+
+  qoverp = new TH1D("qoverp_all", "qoverp_all", 100, 0., 2.);
+  AddHistogram(qoverp);
+
+  qoverpsel = new TH1D("qoverp_sel", "qoverp_sel", 100, 0., 2.);
+  AddHistogram(qoverpsel);
+
+  for (int i = 0; i < 8; ++i){
+     momentum_true[i] = new TH1D(Form("histoChargeTrue%d",i+1), "test", 25, 0.,10.);
+     AddHistogram(momentum_true[i]);
+     
+     momentum_reco[i] = new TH1D(Form("histoChargeReco%d",i+1), "test", 25, 0.,10.);
+     AddHistogram(momentum_reco[i]);
+
+     ratio_reco_true[i] = new TH1D(Form("histoRatio%d",i+1), "test", 25, 0.,10.);
+     AddHistogram(ratio_reco_true[i]);
+  }
+}
 
 
 //----------------------------------------------------------------------------------------------------
@@ -1006,7 +1017,7 @@ int KFitter::PrepareData4Fit_dataLike() {
       if ( m_nTotTracks.find( nameParticle ) == m_nTotTracks.end() )	m_nTotTracks[ nameParticle ] = 0;
       m_nTotTracks[ nameParticle ]++;
 
-      momentum_true.at(pointTofWall->GetChargeZ() -1)->Fill(montecarlotrack->GetInitP().Mag());
+      momentum_true[pointTofWall->GetChargeZ() -1]->Fill(montecarlotrack->GetInitP().Mag());
 
     }
   }
@@ -1439,7 +1450,7 @@ int KFitter::PrepareData4Fit_dataLike() {
       if (checkTrack){
         //ofs << "adding fitTrack_ to vector track" << endl;
         m_vectorTrack.push_back(fitTrack_);
-        momentum_reco.at(chargeFromTW-1)->Fill(montecarloMomentum);
+        momentum_reco[chargeFromTW-1]->Fill(montecarloMomentum);
         RecordTrackInfoDataLike(fitTrack_, chargeFromTW, cardinal);
       }
 
@@ -2929,10 +2940,10 @@ void KFitter::Finalize() {
   //momentum_reco.Write();
   //momentum_true.Write();
   for (unsigned int iHisto = 0; iHisto < 8; ++iHisto){
-    momentum_reco.at(iHisto)->Write();
-    momentum_true.at(iHisto)->Write();
-    ratio_reco_true.at(iHisto)->Divide(momentum_reco.at(iHisto),momentum_true.at(iHisto));
-    ratio_reco_true.at(iHisto)->Write();
+    momentum_reco[iHisto]->Write();
+    momentum_true[iHisto]->Write();
+    ratio_reco_true[iHisto]->Divide(momentum_reco[iHisto],momentum_true[iHisto]);
+    ratio_reco_true[iHisto]->Write();
   }
   outfile->Close();
   //show event display

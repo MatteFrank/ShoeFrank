@@ -136,7 +136,10 @@ public:
 
   //! Action
   bool Action();
-   
+
+  //! create histogram
+  void   CreateHistogram();
+
   // int PrepareData4Fit( string option );
   int PrepareData4Fit();
   int PrepareData4Fit_dataLike();
@@ -324,9 +327,9 @@ private:
   TH1I* MSDstudy;
 
 
-  vector<TH1D*> momentum_true;
-  vector<TH1D*> momentum_reco;
-  vector<TH1D*> ratio_reco_true;
+  TH1D* momentum_true[8];
+  TH1D* momentum_reco[8];
+  TH1D* ratio_reco_true[8];
 
   TFile* outfile;
   int MSDforwardcounter;
