@@ -42,15 +42,14 @@ TABMparCon::TABMparCon()
   fLegMBin(40),
   fLegMRange(0.1),
   fLegRBin(75),
-  fLegRRange(2.)
+  fLegRRange(2.),
+  fAssHitErr(5.)
 {
   fkDefaultParName = "./config/TABMdetector.cfg";
   vector<Float_t> myt0s(36,-10000);
   fT0Vec = myt0s;
   fpResoFunc=new TF1("bmResoFunc","0.0245237+0.106748*x+0.229201*x*x-24.0304*x*x*x+183.529*x*x*x*x-619.259*x*x*x*x*x+1080.97*x*x*x*x*x*x-952.989*x*x*x*x*x*x*x+335.937*x*x*x*x*x*x*x*x",0.,0.8);
   fpSTrel=new TF1("McStrel","0.00773*x -5.1692440e-05*x*x + 1.8928600e-07*x*x*x -2.4652420e-10*x*x*x*x", 0., 350.);
-   fAssHitErr= 15;// interface with campaign manager
-  // (gTAGroot->CurrentCampaignNumber()==1) ? 15. : 5.;
 }
 
 //------------------------------------------+-----------------------------------
@@ -113,6 +112,9 @@ Bool_t TABMparCon::FromFile(const TString& name) {
   ReadItem(fLegRRange);
   if(FootDebugLevel(1))
      cout<<"fLegRRange="<<fLegRRange<<endl;
+  ReadItem(fAssHitErr);
+  if(FootDebugLevel(1))
+     cout<<"fAssHitErr="<<fAssHitErr<<endl;
 
   //other parameters
   ReadItem(fHitTimeCut);
@@ -349,8 +351,7 @@ void TABMparCon::Clear(Option_t*)
   fLegMRange=0.1;
   fLegRBin=75;
   fLegRRange=2.;
-  fAssHitErr= 15; // to interface with campaign manager
-   //(gTAGroot->CurrentCampaignNumber()==1) ? 15. : 5.;
+  fAssHitErr=5.;
 
   vector<Float_t> myt0s(36,-10000);
   fT0Vec = myt0s;
