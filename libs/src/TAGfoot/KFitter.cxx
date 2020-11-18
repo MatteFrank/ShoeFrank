@@ -46,9 +46,6 @@ KFitter::KFitter (const char* name)
   if( stat( m_kalmanOutputDir.c_str(), &info ) != 0 )		//cannot access
     system(("mkdir "+m_kalmanOutputDir).c_str());
 
-  // class for control plot dumping
-  ControlPlotsRepository::Instance();
-  m_controlPlotter = ControlPlotsRepository::GetControlObject( m_kalmanOutputDir );
 
   // checks for the detector to be used for kalman
   IncludeDetectors();
@@ -2669,9 +2666,6 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
     //! Get the accumulated X/X0 (path / radiation length) of the material crossed in the last extrapolation.
     // virtual double getRadiationLenght() const = 0;
 
-    ControlPlotsRepository::GetControlObject( m_kalmanOutputDir )->SetControlMom_4eachState( hitSampleName, i, &KalmanMom, &tmpMom, &tmp_genMom );
-    ControlPlotsRepository::GetControlObject( m_kalmanOutputDir )->SetControlPos_4eachState( hitSampleName, i, &KalmanPos, &tmpPos, &hitPos );
-
     // keep quantities to be plotted of the state CLOSER to the interaction point
     unsigned int measuredState = ( m_reverse ? m_hitCollectionToFit[ hitSampleName ].size()-1 : 0 );
 
@@ -2691,19 +2685,6 @@ void KFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
         &KalmanMom, &KalmanPos,
         &expectedMom, &expectedPos,
         &KalmanMom_cov );
-
-      //m_controlPlotter->SetMom_Gen( hitSampleName, &tmp_genMom );
-
-      //m_controlPlotter->SetMom_TrueMC( hitSampleName, &expectedMom, massMC );
-
-      //m_controlPlotter->SetMom_Kal( hitSampleName, &kalmanMom, &kalmanMom_err );
-
-      //m_controlPlotter->SetPos_Kal( hitSampleName, &kalmanPos, &KalmanPos_err );
-
-      //m_controlPlotter->SetTrackInfo( hitSampleName, track );
-
-      //if ( GlobalPar::GetPar()->IsPrintOutputNtuple() )
-      //m_controlPlotter->Set_Outputntuple(&kalmanMom, &kalmanPos, &tmp_genMom);
     }
   }
 }

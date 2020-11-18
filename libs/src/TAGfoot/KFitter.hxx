@@ -78,7 +78,6 @@
 #include "TAGparaDsc.hxx"
 
 #include "GlobalPar.hxx"
-#include "ControlPlotsRepository.hxx"
 #include "GlobalTrackRepostory.hxx"
 #include "MagicSkills.hxx"
 #include "UpdatePDG.hxx"
@@ -247,7 +246,6 @@ private:
   EventDisplay* display;
   bool m_IsEDOn;
 
-  ControlPlotsRepository* m_controlPlotter;
   GlobalTrackRepostory* m_fitTrackCollection;
 
   // TRandom3* m_diceRoll;
