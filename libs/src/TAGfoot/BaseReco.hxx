@@ -29,7 +29,7 @@
 #include "TATWparGeo.hxx"
 #include "TACAparGeo.hxx"
 
-#include "FootField.hxx"
+#include "TADIgenField.hxx"
 #include "TADIgeoField.hxx"
 
 #include "TATWparCal.hxx"

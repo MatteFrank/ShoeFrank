@@ -370,7 +370,7 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TADIparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
-      if (GlobalPar::GetPar()->IncludeTOE())
+      if (GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman())
          fField = new TADIgeoField(parGeo);
    }
    
@@ -694,11 +694,7 @@ void BaseReco::CreateRecActionGlb()
 void BaseReco::CreateRecActionGlbGF()
 {
    if(fFlagTrack) {
-      TADIparGeo* parGeoDi = (TADIparGeo*)fpParGeoDi->Object();
-      //if (!fDipole) std::cout << "WARNING NO MAG FIELD LOADED" << std::endl;
-      TString magFieldMapName = parGeoDi->GetMapName();
-      
-      genfit::FieldManager::getInstance()->init( new FootField(magFieldMapName.Data(), parGeoDi ) );
+      genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
       
       // set material and geometry into genfit
       MaterialEffects* materialEffects = MaterialEffects::getInstance();
@@ -715,6 +711,8 @@ void BaseReco::CreateRecActionGlbGF()
       
       // Initialisation of KFfitter
       fActGlbkFitter = new KFitter("glbActTrackGF");
+      if (fFlagHisto)
+         fActGlbkFitter->CreateHistogram();
 
    }
 }
