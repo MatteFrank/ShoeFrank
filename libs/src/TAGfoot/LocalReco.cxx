@@ -206,38 +206,45 @@ void LocalReco::SetRawHistogramDir()
 {
    // ST
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()) {
-      fActWdRaw->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TASTparGeo::GetBaseName());
+      fActWdRaw->SetHistogramDir(subfolder);
 
    }
    if (GlobalPar::GetPar()->IncludeST()) {
-      fActNtuRawSt->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TASTparGeo::GetBaseName());
+      fActNtuRawSt->SetHistogramDir(subfolder);
    }
    
    // BM
    if (GlobalPar::GetPar()->IncludeBM()) {
-      fActDatRawBm->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-      fActNtuRawBm->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TABMparGeo::GetBaseName());
+      fActDatRawBm->SetHistogramDir(subfolder);
+      fActNtuRawBm->SetHistogramDir(subfolder);
    }
    
    // VTX
    if (GlobalPar::GetPar()->IncludeVT()) {
-      fActNtuRawVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAVTparGeo::GetBaseName());
+      fActNtuRawVtx->SetHistogramDir(subfolder);
    }
    
    // IT
    if (GlobalPar::GetPar()->IncludeIT()) {
-      fActNtuRawIt->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAITparGeo::GetBaseName());
+      fActNtuRawIt->SetHistogramDir(subfolder);
    }
 
    // TW
    if (GlobalPar::GetPar()->IncludeTW()) {
-      fActNtuRawTw->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TATWparGeo::GetBaseName());
+      fActNtuRawTw->SetHistogramDir(subfolder);
    }
    
    // MSD
 //   if (GlobalPar::GetPar()->IncludeMSD()) {
-//      fActDatRawMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-//      fActNtuRawMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+//      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAMSDparGeo::GetBaseName());
+//      fActDatRawMsd->SetHistogramDir(subfolder);
+//      fActNtuRawMsd->SetHistogramDir(subfolder);
 //   }
 }
 

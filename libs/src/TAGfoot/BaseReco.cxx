@@ -238,41 +238,48 @@ void BaseReco::SetRecHistogramDir()
    
    //BMN
    if (GlobalPar::GetPar()->IncludeBM()) {
-     if (fFlagTrack) 
-       fActTrackBm->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+      if (fFlagTrack) {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TABMparGeo::GetBaseName());
+         fActTrackBm->SetHistogramDir(subfolder);
+      }
    }
    
    // VTX
    if (GlobalPar::GetPar()->IncludeVT()) {
-      fActClusVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAVTparGeo::GetBaseName());
+      fActClusVtx->SetHistogramDir(subfolder);
       
       if (fFlagTrack) {
-         fActTrackVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-         if (GlobalPar::GetPar()->IncludeTG()) 
-            fActVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+         fActTrackVtx->SetHistogramDir(subfolder);
+         if (GlobalPar::GetPar()->IncludeTG()) {
+            fActVtx->SetHistogramDir(subfolder);
+         }
       }
    }
    
    // IT
-   if (GlobalPar::GetPar()->IncludeIT())
-      fActClusIt->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   if (GlobalPar::GetPar()->IncludeIT()) {
+      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAITparGeo::GetBaseName());
+      fActClusIt->SetHistogramDir(subfolder);
+   }
    
    // MSD
-   if (GlobalPar::GetPar()->IncludeMSD()) 
-      fActClusMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   if (GlobalPar::GetPar()->IncludeMSD()) {
+      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAMSDparGeo::GetBaseName());
+      fActClusMsd->SetHistogramDir(subfolder);
+   }
    
    // TW
-   if (GlobalPar::GetPar()->IncludeTW())
-      fActPointTw->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   if (GlobalPar::GetPar()->IncludeTW()) {
+      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TATWparGeo::GetBaseName());
+      fActPointTw->SetHistogramDir(subfolder);
+   }
    
    // CA
-   if (GlobalPar::GetPar()->IncludeCA())
-      fActClusCa->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-
-   // TOE
-   if (GlobalPar::GetPar()->IncludeTOE())
-       fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-    
+   if (GlobalPar::GetPar()->IncludeCA()) {
+      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TACAparGeo::GetBaseName());
+      fActClusCa->SetHistogramDir(subfolder);
+   }
 }
 
 //__________________________________________________________
