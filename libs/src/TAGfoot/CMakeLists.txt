@@ -23,7 +23,6 @@ set( with_dictionnaries
    GlobalTrackRepostory
    GlobalTrackKalman
    UpdatePDG
-   MultiTrackCheck
    TAFObaseEventDisplay
    TAFOeventDisplay
    TAFOeventDisplayMC
