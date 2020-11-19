@@ -57,26 +57,26 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
-add_executable(DecodeGlob DecodeGlb.cc)
+add_executable(DecodeGlb DecodeGlb.cc)
 #
-target_link_libraries(DecodeGlob ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+target_link_libraries(DecodeGlb ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS DecodeGlob DESTINATION bin)
+install(TARGETS DecodeGlb DESTINATION bin)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
-add_executable(DecodeGlobMC DecodeGlbMC.cc)
+add_executable(DecodeGlbMC DecodeGlbMC.cc)
 #
-target_link_libraries(DecodeGlobMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+target_link_libraries(DecodeGlbMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS DecodeGlobMC DESTINATION bin)
+install(TARGETS DecodeGlbMC DESTINATION bin)
 
 
 #----------------------------------------------------------------------------
