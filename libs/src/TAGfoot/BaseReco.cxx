@@ -231,7 +231,8 @@ void BaseReco::SetRecHistogramDir()
    //Global track
    if (fFlagTrack) {
       if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman()) {
-         fActGlbTrack->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+         TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
+         fActGlbTrack->SetHistogramDir(subfolder);
          if (TAGactNtuGlbTrack::GetStdAloneFlag()) return;
       }
    }

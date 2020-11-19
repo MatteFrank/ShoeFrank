@@ -6,6 +6,7 @@
 
 #include "TH1F.h"
 #include "TTree.h"
+#include "TFile.h"
 #include "TVector3.h"
 
 #include "TAITparGeo.hxx"
@@ -274,7 +275,8 @@ void TAGactNtuGlbTrack::RegisterHistograms()
     SetValidHistogram(kTRUE);
     
     auto writer_h = static_cast<TAGactTreeWriter*>( gTAGroot->FindAction("locRecFile") );
-    SetHistogramDir( (TDirectory*)writer_h->File() );
+    TDirectory* subfolder  = (TDirectory*)(writer_h->File())->Get(TAGgeoTrafo::GetBaseName());
+    SetHistogramDir( subfolder );
 }
 
 //------------------------------------------+-----------------------------------
