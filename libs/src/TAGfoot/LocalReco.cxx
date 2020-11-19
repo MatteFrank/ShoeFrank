@@ -208,8 +208,8 @@ void LocalReco::SetRawHistogramDir()
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TASTparGeo::GetBaseName());
       fActWdRaw->SetHistogramDir(subfolder);
-
    }
+   
    if (GlobalPar::GetPar()->IncludeST()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TASTparGeo::GetBaseName());
       fActNtuRawSt->SetHistogramDir(subfolder);
