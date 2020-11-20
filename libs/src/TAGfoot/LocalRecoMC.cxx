@@ -217,8 +217,9 @@ void LocalRecoMC::AddRawRequiredItem()
    if (GlobalPar::GetPar()->IncludeMSD())
       AddRequiredMcItemMs();
    
-   if (GlobalPar::GetPar()->IncludeTW())
+   if (GlobalPar::GetPar()->IncludeTW()) {
       AddRequiredMcItemTw();
+   }
    
    if (GlobalPar::GetPar()->IncludeCA())
       AddRequiredMcItemCa();

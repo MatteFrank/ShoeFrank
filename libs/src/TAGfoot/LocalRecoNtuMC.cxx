@@ -112,6 +112,7 @@ void LocalRecoNtuMC::CreateRawAction()
       fActNtuRawTw = new TATWactNtuHitMC("twActNtu", fpNtuMcTw, fpNtuMcSt, fpNtuMcEve, fpNtuRawTw,  fpParCalTw, fpParGeoG, fFlagZtrueMC);
       if (fFlagHisto)
          fActNtuRawTw->CreateHistogram();
+
    }
    
    if(GlobalPar::GetPar()->IncludeCA()) {
@@ -160,8 +161,9 @@ void LocalRecoNtuMC::SetRawHistogramDir()
       fActNtuRawMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
    
    // TOF
-   if (GlobalPar::GetPar()->IncludeTW())
+   if (GlobalPar::GetPar()->IncludeTW()) {
       fActNtuRawTw->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   }
    
    // CAL
    if (GlobalPar::GetPar()->IncludeCA())

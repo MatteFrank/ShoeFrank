@@ -1,3 +1,4 @@
+
 #ifdef __CINT__
 
 #pragma link off all globals;
@@ -16,6 +17,7 @@
 #pragma link C++ class TATWntuPoint+;
 #pragma link C++ class TATWparMap+;
 #pragma link C++ class TATWparCal+;
+#pragma link C++ class TATWactCalibTW+;
 #pragma link C++ class TATWactNtuRaw+;
 #pragma link C++ class TATWactNtuMC+;
 #pragma link C++ class TATWactNtuHitMC+;

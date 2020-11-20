@@ -92,7 +92,10 @@ public:
     void IncludeTG(bool t)           {  m_includeTG = t;             }
     void IncludeVT(bool t)           {  m_includeVT = t;             }
     void IncludeIT(bool t)           {  m_includeIT = t;             }
-   
+
+    bool CalibTW()             const { return m_doCalibTW;       }
+    void CalibTW(bool t)             {  m_doCalibTW = t;             }
+  
     void SetDebugLevels();
     void RemoveSpace( string* s );
     bool IEquals(const string& a, const string& b);
@@ -171,7 +174,8 @@ private:
     
    bool m_includeKalman;
    bool m_includeTOE;
-
+   bool m_doCalibTW;
+  
    TObjArray  m_ClassDebugLevels;          // debug levels for classes
 
 public:
