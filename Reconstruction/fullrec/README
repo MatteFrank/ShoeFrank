@@ -1,1 +1,86 @@
-Folder containing the HighLevel reconstruction tools
+A) fullrec reconstruction tools with TOE
+
+1)Running from raw data:
+- activate TOE in FootGlobal.par
+   . . .
+   IncludeKalman:   n
+   IncludeTOE:      y
+   EnableLocalReco: n
+
+   Kalman Mode:       ON
+   Tracking Systems Considered:      VT IT MSD
+   Reverse Tracking:   false
+   . . .
+- command:
+DecodeGlbToe -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1
+
+2)Running from MC data:
+- activate TOE in FootGlobal.par
+   . . .
+   IncludeKalman:   n
+   IncludeTOE:      y
+   EnableLocalReco: n
+
+   Kalman Mode:       ON
+   Tracking Systems Considered:      VT IT MSD
+   Reverse Tracking:   false
+   . . .
+- command:
+DecodeGlbToe -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+
+3)Running from L0 reconstruction tree:
+- activate TOE in FootGlobal.par and local reco
+   . . .
+   IncludeKalman:   n
+   IncludeTOE:      y
+   EnableLocalReco: y
+
+   Kalman Mode:       ON
+   Tracking Systems Considered:      VT IT MSD
+   Reverse Tracking:   false
+   . . .
+- command:
+DecodeGlbToe -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+
+B) fullrec reconstruction tools with GenFit
+1)Running from raw data:
+ - activate Kalman in FootGlobal.par
+   . . .
+   IncludeKalman:   y
+   IncludeTOE:      n
+   EnableLocalReco: n
+
+   Kalman Mode:       ON
+   Tracking Systems Considered:      VT IT MSD
+   Reverse Tracking:   false
+   . . .
+- command:
+DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1
+
+2)Running from MC data:
+- activate Kalman in FootGlobal.par
+   . . .
+   IncludeKalman:   y
+   IncludeTOE:      n
+   EnableLocalReco: n
+
+   Kalman Mode:       ON
+   Tracking Systems Considered:      VT IT MSD
+   Reverse Tracking:   false
+   . . .
+- command:
+DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+
+3)Running from L0 reconstruction tree: (should come soon)
+- activate Kalman in FootGlobal.par and local reco
+. . .
+IncludeKalman:   y
+IncludeTOE:      n
+EnableLocalReco: y
+
+Kalman Mode:       ON
+Tracking Systems Considered:      VT IT MSD
+Reverse Tracking:   false
+. . .
+- command:
+DecodeGlb -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
