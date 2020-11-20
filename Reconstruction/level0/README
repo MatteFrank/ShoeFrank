@@ -1,0 +1,10 @@
+A) level0 reconstruction tools
+
+1)Running from raw data:
+- command:
+DecodeRaw -in data/data_built.2211.physics_foot.daq.VTX.1.dat -out run2211_Out.root -nev 10000
+          -exp GSI -run 2211
+
+2)Running from MC data:
+- command:
+DecodeMC -in 12C_C_200_1.root -out 12C_C_200_1_Out.root -nev 10000 -exp 12C_200 -run 1
