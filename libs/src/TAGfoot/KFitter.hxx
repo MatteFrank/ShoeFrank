@@ -33,6 +33,7 @@
 #include "PlanarMeasurement.h"
 #include "SpacepointMeasurement.h"
 #include "SharedPlanePtr.h"
+#include "RectangularFinitePlane.h"
 
 #include <TROOT.h>
 #include <TStyle.h>
@@ -40,6 +41,7 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TF1.h>
+#include <TGraphErrors.h>
 
 #include <TRandom3.h>
 
@@ -49,6 +51,8 @@
 #include <TMath.h>
 
 #include "TAGparGeo.hxx"
+
+#include "TADIparGeo.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTntuRaw.hxx"
@@ -62,6 +66,7 @@
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TAMSDntuCluster.hxx"
+#include "TAMSDntuPoint.hxx"
 
 #include "TATWparGeo.hxx"
 #include "TATWntuPoint.hxx"
@@ -73,7 +78,6 @@
 #include "TAGparaDsc.hxx"
 
 #include "GlobalPar.hxx"
-#include "ControlPlotsRepository.hxx"
 #include "GlobalTrackRepostory.hxx"
 #include "MagicSkills.hxx"
 #include "UpdatePDG.hxx"
@@ -82,6 +86,7 @@
 #include <sys/stat.h>
 #include <limits>
 
+#include "TAGaction.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
@@ -89,6 +94,8 @@
 #include "TAVTactNtuTrackF.hxx"
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
+
+#include "TAVTtrack.hxx"
 
 
 
@@ -103,12 +110,12 @@ using namespace genfit;
 
 typedef vector<genfit::AbsMeasurement*> MeasurementVector;
 
-class KFitter {
+class KFitter : public TAGaction {
 
 public:
 
 
-  KFitter();
+  KFitter(const char* name);
   ~KFitter() {
     delete m_fitter;
   };
@@ -126,21 +133,26 @@ public:
     TVector3 MCMomentum;
   };
 
+  //! Action
+  bool Action();
+
+  //! create histogram
+  void   CreateHistogram();
 
   // int PrepareData4Fit( string option );
-  int PrepareData4Fit( Track* fitTrack );
-  int PrepareData4Fit_dataLike( Track* fitTrack );
+  int PrepareData4Fit();
+  int PrepareData4Fit_dataLike();
 
   void Prepare4Vertex( TAVTcluster* clus, int track_ID, int iHit );
-  void Prepare4Vertex( Track* fitTrack );
+  void Prepare4Vertex();
 
-  void Prepare4InnerTracker( Track* fitTrack );
+  void Prepare4InnerTracker();
   void Prepare4InnerTracker( TAITcluster* clus, int track_ID, int iHit );
 
-  void Prepare4Strip( Track* fitTrack );
+  void Prepare4Strip();
   void Prepare4Strip(TVector3 pos, int track_ID, int iHit );
 
-  void Prepare4TofWall( Track* fitTrack );
+  void Prepare4TofWall();
 
   bool PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element );
 
@@ -175,6 +187,11 @@ public:
   int UploadClusIT();
   int UploadClusMSD();
 
+  void TestExtrapolation(vector<AbsMeasurement*> extrapTest, string particleHypo);
+
+
+  void CreateDetectorPlanes();
+
 
   void Finalize();	// save control plot and calculate resolutions
 
@@ -199,31 +216,25 @@ public:
   double EvalError( TVector3 mom, TMatrixD cov );
   void MatrixToZero( TMatrixD *matrix );
 
-  // bool frankFind( string what, string where )	{
+  int GetChargeFromTW(Track* trackToCheck);
+  TVector3 ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane );
+  bool CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum, double MCEveMass, int chargeFromTofWall);
+  TVector3 ExtrapolateToTofWall( Track* trackToFit );
 
-  //   int wildcard_pos = what.find("*");
+  int GetTWTrackFixed (TATWpoint* pointToCheck);
 
-  //   if ( wildcard_pos == 0 )    {
-  //     if( where.find( what.substr( wildcard_pos+1 ) ) != string::npos )
-  // 	return true;
-  //   }
-  //   else if( wildcard_pos == what.size()-1 )    {
-  //     if( where.find( what.substr( 0, wildcard_pos ) ) != string::npos )
-  // 	return true;
-  //   }
-  //   else if ( wildcard_pos != string::npos )    {
-  //     int pre = where.find( what.substr( 0, wildcard_pos ) );
-  //     int post = where.find( what.substr( wildcard_pos+1 ) );
-  //     if( pre!=string::npos && post!=string::npos )
-  // 	return true;
-  //   }
+  void RecordTrackInfoDataLike( Track* trackToRecord, int tCharge, string particlename );
+  void GetKalmanTrackInfoDataLike ( int indexOfState, Track* track,
+    const TVectorD* KalmanState, const TMatrixDSym* KalmanCov);
 
-  //   return false;
-  // }
+  genfit::KalmanFittedStateOnPlane GetKalmanTrackInfoDataLike_ ( int indexOfState, Track* track );
+
 
 
 
 private:
+
+  KalmanFitter* m_fitter_extrapolation;
 
   KalmanFitter* m_fitter;
   AbsKalmanFitter*  m_refFitter;    		 //KalmanFitterRefTrack()
@@ -233,12 +244,13 @@ private:
 
   // init event display
   EventDisplay* display;
+  bool m_IsEDOn;
 
-  // Track*  m_fitTrack;
-  ControlPlotsRepository* m_controlPlotter;
   GlobalTrackRepostory* m_fitTrackCollection;
 
   // TRandom3* m_diceRoll;
+
+  bool m_workWithMC;
 
 
   //  delete non va fatto il delete perche APPARENTEMENTE gia fatto
@@ -251,13 +263,13 @@ private:
   vector<TAITcluster*> m_IT_clusCollection;
   vector<TAMSDcluster*> m_MSD_clusCollection;
 
-  vector<TVector3> m_MSD_posVectorSmearedHit;
-  vector<TVector3> m_MSD_momVectorSmearedHit;
-  vector<double> m_MSD_mass;
+  vector<TAMSDpoint*> m_MSD_pointCollection;
 
-  // kept as std pointer just to remember how to correctely delete and free resources iwth them
-  // correctely freed
-  // vector<AbsMeasurement*> m_hitCollectionToFit;
+  // vector<TVector3> m_MSD_posVectorSmearedHit;
+  // vector<TVector3> m_MSD_momVectorSmearedHit;
+  // vector<double> m_MSD_mass;
+
+
   map <string, vector<AbsMeasurement*> > m_hitCollectionToFit;
   map <int, vector<AbsMeasurement*> > m_hitCollectionToFit_dataLike;
   vector<AbsMeasurement*> m_allHitsInMeasurementFormat;
@@ -265,6 +277,7 @@ private:
   map <int, map<int, MCTruthInfo> > m_MCInfo;
 
   shared_ptr<TAGparGeo> m_TG_geo;
+  shared_ptr<TADIparGeo> m_DI_geo;
   shared_ptr<TAVTparGeo> m_VT_geo;
   shared_ptr<TAITparGeo> m_IT_geo;
   shared_ptr<TAMSDparGeo> m_MSD_geo;
@@ -295,6 +308,33 @@ private:
   bool m_recolike1;
 
   TAGgeoTrafo* m_GeoTrafo;
+
+  map<int, genfit::SharedPlanePtr> m_detectorPlanes;
+
+  //temporary placeholder for trackfinding histos and graphs
+  TGraphErrors* graphErrorX;
+  TGraphErrors* graphErrorY;
+
+  TH2D* MSDresidualOfPrediction;
+  TH2D* ITresidualOfPrediction;
+  TH1D* percentageOfMCTracksVTX;
+  TH1D* tempPurity;
+  TH1D* qoverp;
+  TH1D* qoverpsel;
+  TH1I* ITstudy;
+  TH1I* MSDstudy;
+
+
+  TH1D* momentum_true[8];
+  TH1D* momentum_reco[8];
+  TH1D* ratio_reco_true[8];
+
+  TFile* outfile;
+  int MSDforwardcounter;
+
+  std::vector<Track*> m_vectorTrack;
+
+  std::ofstream ofs;
 
 
 };

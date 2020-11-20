@@ -57,16 +57,6 @@ void TCFOrunAction::BeginOfRunAction(const G4Run* aRun)
     }
 
     fWatch.Start();
-
-    // should be provide by outside
-    Int_t campaign = 100;
-    Int_t run = aRun->GetRunID();
-    TString camName = "G4Ntu";
-
-    gTAGroot->SetCampaignName(camName);
-    gTAGroot->SetCampaignNumber(campaign);
-    gTAGroot->SetRunNumber(run); //number of run
-
     SetContainers();
 }
 
@@ -97,12 +87,14 @@ void TCFOrunAction::SetContainers()
    if (!fpOutFile) return;
    fpOutFile->cd();
    
-   Int_t campaign     = gTAGroot->CurrentCampaignNumber();
    Int_t run          = gTAGroot->CurrentRunNumber();
-   const Char_t* name =  gTAGroot->CurrentCampaignName();
+   const Char_t* name = gTAGroot->CurrentCampaignName();
    
-   TAGrunInfo* info = new TAGrunInfo(campaign, run, name);
-   info->Write(TAGrunInfo::GetObjectName());
+   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
+   info.SetCampaignName(name);
+   info.SetRunNumber(run);
+   gTAGroot->SetRunInfo(info);
+   info.Write(TAGrunInfo::GetObjectName());
    
    fpTree      = new TTree("EventTree", "FOOT");
     if(fkEvento){

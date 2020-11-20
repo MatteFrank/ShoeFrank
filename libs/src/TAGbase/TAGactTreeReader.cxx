@@ -117,7 +117,7 @@ Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TStrin
   fiNEntry = (Int_t) fpTree->GetEntries();
   fiCurrentEntry = -1;
 
-  TAGrunInfo* p_ri = (TAGrunInfo*) fpFile->Get("runinfo");
+  TAGrunInfo* p_ri = (TAGrunInfo*) fpFile->Get(TAGrunInfo::GetObjectName());
 
   if (p_ri  && p_ri->InheritsFrom("TAGrunInfo")) {
     gTAGroot->SetRunInfo(*p_ri);

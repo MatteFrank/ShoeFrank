@@ -15,13 +15,12 @@ using namespace std;
 int main(int argc, char *argv[])
 {
    
-   // Par instance
-   GlobalPar::Instance()->Print();
-   
    int status = 0, iL=0, NumProcessed=0, numfiles = 0, nread=0;
    TString outname("Out.root"), inname("In.txt");
    vector<TString> infiles; TString tmpSin;
-   
+   TString exp("");
+   Int_t runNb = -1;
+
    ifstream lista_file;
    char fname[200],linea[200];
    FILE *pfile;
@@ -52,7 +51,16 @@ int main(int argc, char *argv[])
       if(strcmp(argv[i],"-reg") == 0) {
          regFlag = atoi(argv[++i]);
       }
-      if(strcmp(argv[i],"-iL") == 0) { iL = 1; }
+      if(strcmp(argv[i],"-iL") == 0) {
+         iL = 1;
+      }
+      if(strcmp(argv[i],"-exp") == 0) { // extention for config/geomap files
+         exp = TString(argv[++i]);
+      }
+      if(strcmp(argv[i],"-run") == 0) { // Run Number
+         runNb = atoi(argv[++i]);
+      }
+
       if(strcmp(argv[i],"-help") == 0) {
          cout<<"Conversion of fluka TXT file : usage -> Txt2NtuRoot [opts] "<<endl;
          cout<<" possible opts are:"<<endl;
@@ -61,6 +69,8 @@ int main(int argc, char *argv[])
          cout<<"   -iL         : [def=none] input file is a list of files"<<endl;
          cout<<"   -nev        : [def=Inf] Max no. of events to process"<<endl;
          cout<<"   -reg        : [def=0] save crossing region info"<<endl;
+         cout<<"   -run value   : [def=-1] Run number"<<endl;
+         cout<<"   -exp name    : [def=""] experient name for config/geomap extention"<<endl;
          return 1;
       }
    }
@@ -80,14 +90,16 @@ int main(int argc, char *argv[])
    }
    numfiles = infiles.size();
    
+   GlobalPar::Instance(exp);
+   GlobalPar::GetPar()->Print();
+   
    TFile *f_out = new TFile(outname,"RECREATE");
    f_out->cd();
    
-   Int_t campaign = 0;
-   Int_t run = 0;
-   TString camName = "Ntu";
-   TAGrunInfo* info = new TAGrunInfo(campaign, run, camName);
-   info->Write(TAGrunInfo::GetObjectName());
+   TAGrunInfo info = GlobalPar::Instance()->GetGlobalInfo();
+   info.SetCampaignName(exp);
+   info.SetRunNumber(runNb);
+   info.Write(TAGrunInfo::GetObjectName());
 
    rootTree = new TTree("EventTree","gsimay");
    

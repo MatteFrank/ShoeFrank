@@ -50,6 +50,9 @@ class AbsFinitePlane {
   //! Returns whether a u,v point is in the active plane or not. Needs to be implemented
   //! in child class.
   virtual bool isInActive(double u, double v) const = 0;
+  virtual bool isInActiveX(double u) const = 0;
+  virtual bool isInActiveY(double v) const = 0;
+
 
   //! Deep copy ctor for polymorphic class.
   virtual AbsFinitePlane* clone() const = 0;

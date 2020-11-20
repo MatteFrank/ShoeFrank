@@ -48,8 +48,12 @@ else()
       OUTPUT_STRIP_TRAILING_WHITESPACE)
   endif()
 
- # Add XML library
+ # Add XML library and /opt/lib if exits
  set( ROOT_LIBRARIES ${ROOT_LIBRARIES} -lXMLIO -lXMLParser)
+ if(EXISTS "/opt/lib/")
+   set( ROOT_LIBRARIES ${ROOT_LIBRARIES} -L/opt/lib/)
+ endif()
+
  string(REPLACE ";" " " ROOT_LIBRARIES "${ROOT_LIBRARIES}")
 
   set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)

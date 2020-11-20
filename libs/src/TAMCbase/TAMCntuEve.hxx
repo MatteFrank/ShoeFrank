@@ -123,12 +123,14 @@ class TAMCntuEve : public TAGdata {
 
 public:
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+   static const Char_t* GetDefDataName()  { return fgkDefDataName.Data(); }
 
 private:
    TClonesArray*   fListOfTracks; // ttracks
    
 private:
    static TString fgkBranchName;    // Branch name in TTree
+   static const TString fgkDefDataName;
 
    ClassDef(TAMCntuEve,1)
 };

@@ -21,6 +21,8 @@
 #include <sstream>
 
 #include "Evento.hxx"
+#include "TAGrunInfo.hxx"
+#include "GlobalPar.hxx"
 
 using namespace std;
 
@@ -29,6 +31,9 @@ int main(int argc, char *argv[])
 
   int status = 0, iL=0, NumProcessed=0, numfiles = 0, nread=0;
   TString outname("Out.root"), inname("In.txt");
+  TString exp("");
+  Int_t runNb = -1;
+   
   vector<TString> infiles; TString tmpSin;
 
   ifstream lista_file;
@@ -48,24 +53,25 @@ int main(int argc, char *argv[])
 
 
   for (int i = 0; i < argc; i++){
-    if(strcmp(argv[i],"-in") == 0) {
-      inname = TString(argv[++i]);
-    }
-    if(strcmp(argv[i],"-out") == 0) {
-      outname = TString(argv[++i]);
-    }
-    if(strcmp(argv[i],"-nev") == 0) {
-      maxevpro = atoi(argv[++i]);
-    }
-    if(strcmp(argv[i],"-iL") == 0) { iL = 1; }
+    if(strcmp(argv[i],"-in") == 0)  { inname = TString(argv[++i]); }
+    if(strcmp(argv[i],"-out") == 0) { outname = TString(argv[++i]); }
+    if(strcmp(argv[i],"-nev") == 0) { maxevpro = atoi(argv[++i]); }
+    if(strcmp(argv[i],"-iL") == 0)  { iL = 1; }
+     
+    if(strcmp(argv[i],"-exp") == 0) { exp = TString(argv[++i]); }   // extention for config/geomap files
+    if(strcmp(argv[i],"-run") == 0) { runNb = atoi(argv[++i]);  }   // Run Number
+
     if(strcmp(argv[i],"-help") == 0) {
       cout<<"Conversion of fluka TXT file : usage -> Txt2Root [opts] "<<endl;
       cout<<" possible opts are:"<<endl;
       cout<<"   -in  file    : [def=In.txt] Root input file"<<endl;
       cout<<"   -out  file   : [def=Out.root] Root output file"<<endl;
       cout<<"   -sel selw    : [def=0] select ev: 1*dc + 10*lyso "<<endl;
-      cout<<"   -iL        : [def=none] input file is a list of files"<<endl;
-      cout<<"   -nev        : [def=Inf] Max no. of events to process"<<endl;
+      cout<<"   -iL          : [def=none] input file is a list of files"<<endl;
+      cout<<"   -nev         : [def=Inf] Max no. of events to process"<<endl;
+      cout<<"   -run value   : [def=-1] Run number"<<endl;
+      cout<<"   -exp name    : [def=""] experient name for config/geomap extention"<<endl;
+
       return 1;
     }
   }
@@ -85,10 +91,17 @@ int main(int argc, char *argv[])
   }
   numfiles = infiles.size();
  
+  GlobalPar::Instance(exp);
+  GlobalPar::GetPar()->Print();
+   
   TFile *f_out = new TFile(outname,"RECREATE");
   f_out->cd();
 
-
+  TAGrunInfo info = GlobalPar::Instance()->GetGlobalInfo();
+  info.SetCampaignName(exp);
+  info.SetRunNumber(runNb);
+  info.Write(TAGrunInfo::GetObjectName());
+   
   RootTree = new TTree("EventTree","gsimay");
 
   RootTree->Branch("EventNumber",&eve.EventNumber,"EventNumber/I");

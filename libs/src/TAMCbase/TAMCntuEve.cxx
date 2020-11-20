@@ -96,7 +96,9 @@ TAMCeveTrack::~TAMCeveTrack()
 
 ClassImp(TAMCntuEve);
 
-TString TAMCntuEve::fgkBranchName   = "mctrack.";
+      TString TAMCntuEve::fgkBranchName   = "mctrack.";
+const TString TAMCntuEve::fgkDefDataName  = "eveMc";
+
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

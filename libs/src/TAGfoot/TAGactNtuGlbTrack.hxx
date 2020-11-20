@@ -54,6 +54,9 @@ public:
    
    //! Set up branches
    void      SetupBranches(TTree* tree);
+   
+   //! Check branches
+   void      CheckBranches();
 
    //! Open File
    void      Open(TString name);

@@ -16,8 +16,8 @@
 ClassImp(LocalRecoMC)
 
 //__________________________________________________________
-LocalRecoMC::LocalRecoMC(TString expName, TString fileNameIn, TString fileNameout)
- : BaseReco(expName, fileNameIn, fileNameout),
+LocalRecoMC::LocalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
+ : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fActNtuRawVtx(0x0),
    fActNtuRawIt(0x0),
    fActNtuRawMsd(0x0),
@@ -49,7 +49,7 @@ void LocalRecoMC::LoopEvent(Int_t nEvents)
       
       fTree->GetEntry(ientry);
       
-      if(ientry % 10000 == 0)
+      if(ientry % 100 == 0)
          cout<<" Loaded Event:: " << ientry << endl;
       
       if (!fTAGroot->NextEvent()) break;
@@ -59,7 +59,7 @@ void LocalRecoMC::LoopEvent(Int_t nEvents)
 //__________________________________________________________
 void LocalRecoMC::CreateRawAction()
 {
-   fpNtuMcEve = new TAGdataDsc("eveMc", new TAMCntuEve());
+   fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
    fActNtuMcEve = new TAMCactNtuEve("eveActNtuMc", fpNtuMcEve, fEvtStruct);
    
    
@@ -126,7 +126,7 @@ void LocalRecoMC::CreateRawAction()
    
    if(GlobalPar::GetPar()->IncludeCA()) {
       fpNtuRawCa   = new TAGdataDsc("caRaw", new TACAntuRaw());
-      fActNtuRawCa = new TACAactNtuMC("caActNtu", fpNtuRawCa, fpParGeoCa, fEvtStruct);
+      fActNtuRawCa = new TACAactNtuMC("caActNtu", fpNtuRawCa, fpParGeoCa, fpParGeoG, fEvtStruct);
       if (fFlagHisto)
          fActNtuRawCa->CreateHistogram();
       
@@ -149,33 +149,46 @@ void LocalRecoMC::OpenFileIn()
 void LocalRecoMC::SetRawHistogramDir()
 {
    // ST
-   if (GlobalPar::GetPar()->IncludeST())
-      fActNtuRawSt->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   if (GlobalPar::GetPar()->IncludeST()) {
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TASTparGeo::GetBaseName());
+      fActNtuRawSt->SetHistogramDir(subfolder);
+   }
    
    // BM
-   if (GlobalPar::GetPar()->IncludeBM())
-      fActNtuRawBm->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-
+   if (GlobalPar::GetPar()->IncludeBM()) {
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TABMparGeo::GetBaseName());
+      fActNtuRawBm->SetHistogramDir(subfolder);
+   }
+   
    // VTX
-   if (GlobalPar::GetPar()->IncludeVT())
-      fActNtuRawVtx->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   if (GlobalPar::GetPar()->IncludeVT()) {
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAVTparGeo::GetBaseName());
+      fActNtuRawVtx->SetHistogramDir(subfolder);
+   }
    
    // IT
-   if (GlobalPar::GetPar()->IncludeIT())
-      fActNtuRawIt->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   if (GlobalPar::GetPar()->IncludeIT()) {
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAITparGeo::GetBaseName());
+      fActNtuRawIt->SetHistogramDir(subfolder);
+   }
    
    // MSD
-   if (GlobalPar::GetPar()->IncludeMSD())
-      fActNtuRawMsd->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   if (GlobalPar::GetPar()->IncludeMSD()) {
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAMSDparGeo::GetBaseName());
+      fActNtuRawMsd->SetHistogramDir(subfolder);
+   }
    
    // TOF
-   if (GlobalPar::GetPar()->IncludeTW())
-      fActNtuRawTw->SetHistogramDir((TDirectory*)fActEvtWriter->File());
+   if (GlobalPar::GetPar()->IncludeTW()) {
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TATWparGeo::GetBaseName());
+      fActNtuRawTw->SetHistogramDir(subfolder);
+   }
    
    // CAL
-   if (GlobalPar::GetPar()->IncludeCA())
-      fActNtuRawCa->SetHistogramDir((TDirectory*)fActEvtWriter->File());
-
+   if (GlobalPar::GetPar()->IncludeCA()) {
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
+      fActNtuRawCa->SetHistogramDir(subfolder);
+   }
 }
 
 //__________________________________________________________

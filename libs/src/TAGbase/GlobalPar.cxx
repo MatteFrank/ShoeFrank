@@ -11,16 +11,19 @@ map<TString, TString> GlobalPar::m_dectFullName = {{"ST", "Start Counter"}, {"BM
                                                    {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "Multi-Strip Detector"}, {"TW", "ToF Wall"},
                                                    {"CA", "Calorimeter"}};
 
+const TString GlobalPar::m_defParName = "FootGlobal.par";
+
+
 //_____________________________________________________________________________
 // Global static pointer used to ensure a single instance of the class.
 GlobalPar* GlobalPar::m_pInstance = NULL;
 
 
 //_____________________________________________________________________________
-GlobalPar* GlobalPar::Instance( string aparFileName )  {
+GlobalPar* GlobalPar::Instance( const TString expName )  {
 
     if (!m_pInstance)   // Only allow one instance of class to be generated, only true for multi-thread.
-        m_pInstance = new GlobalPar( aparFileName );
+        m_pInstance = new GlobalPar( expName );
 
    return m_pInstance;
 }
@@ -46,9 +49,10 @@ GlobalPar::~GlobalPar()
 
 //_____________________________________________________________________________
 // private constructor
-GlobalPar::GlobalPar( string aparFileName ) {
-
-    m_parFileName = aparFileName;
+GlobalPar::GlobalPar( const TString expName )
+{
+    TString absName = Form("./config/%s/%s", expName.Data(), m_defParName.Data());   
+    m_parFileName = absName.Data();
 
     m_copyInputFile.clear();
     m_debug = 0;
@@ -62,11 +66,73 @@ GlobalPar::GlobalPar( string aparFileName ) {
 }
 
 //_____________________________________________________________________________
+const TAGrunInfo GlobalPar::GetGlobalInfo()
+{
+   TAGrunInfo runInfo;
+   
+   if (IsLocalReco())
+      runInfo.GetGlobalPar().EnableLocalReco = true;
+   
+   if (IsSaveTree())
+      runInfo.GetGlobalPar().EnableTree = true;
+   
+   if (IsSaveHisto())
+      runInfo.GetGlobalPar().EnableHisto = true;
+   
+   if (IsSaveHits())
+      runInfo.GetGlobalPar().EnableSaveHits = true;
+   
+   if (IsTracking())
+      runInfo.GetGlobalPar().EnableTracking = true;
+
+   if (IsReadRootObj())
+      runInfo.GetGlobalPar().EnableRootObject = true;
+   
+   if (IsTofZmc())
+      runInfo.GetGlobalPar().EnableTofZmc = true;
+   
+   if (IncludeKalman())
+      runInfo.GetGlobalPar().IncludeKalman = true;
+   
+   if (IncludeTOE())
+      runInfo.GetGlobalPar().IncludeTOE = true;
+   
+   if (IncludeDI())
+      runInfo.GetGlobalPar().IncludeDI = true;
+   
+   if (IncludeST())
+      runInfo.GetGlobalPar().IncludeST = true;
+   
+   if (IncludeBM())
+      runInfo.GetGlobalPar().IncludeBM = true;
+   
+   if (IncludeTG())
+      runInfo.GetGlobalPar().IncludeTG = true;
+   
+   if (IncludeVT())
+      runInfo.GetGlobalPar().IncludeVT = true;
+   
+   if (IncludeIT())
+      runInfo.GetGlobalPar().IncludeIT = true;
+   
+   if (IncludeMSD())
+      runInfo.GetGlobalPar().IncludeMSD = true;
+   
+   if (IncludeTW())
+      runInfo.GetGlobalPar().IncludeTW = true;
+   
+   if (IncludeCA())
+      runInfo.GetGlobalPar().IncludeCA = true;
+   
+   return runInfo;
+}
+
+//_____________________________________________________________________________
 void GlobalPar::ReadParamFile () {
 
     ifstream ifile;
 
-    ifile.open( ((string)"./config/"+m_parFileName).c_str() );
+    ifile.open( m_parFileName.c_str() );
     if ( !ifile.is_open() )        cout<< "ERROR  -->  wrong input in GlobalPar::ReadParamFile file "<< endl, exit(0);
 
     string line = "";
@@ -278,15 +344,60 @@ void GlobalPar::ReadParamFile () {
            if ( rev == "y" )        m_includeTOE = true;
            else                     m_includeTOE = false;
         }
+        else if ( line.find("EnableLocalReco:") != string::npos ) {
+           string rev =StrReplace( line, "EnableLocalReco:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableLocalReco = true;
+           else                     m_enableLocalReco = false;
+        }
+        else if ( line.find("EnableTree:") != string::npos ) {
+           string rev =StrReplace( line, "EnableTree:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableTree = true;
+           else                     m_enableTree = false;
+        }
+        else if ( line.find("EnableHisto:") != string::npos ) {
+           string rev =StrReplace( line, "EnableHisto:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableHisto = true;
+           else                     m_enableHisto = false;
+        }
+        else if ( line.find("EnableTracking:") != string::npos ) {
+           string rev =StrReplace( line, "EnableTracking:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableTracking = true;
+           else                     m_enableTracking = false;
+        }
+        else if ( line.find("EnableSaveHits:") != string::npos ) {
+           string rev =StrReplace( line, "EnableSaveHits:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableSaveHits = true;
+           else                     m_enableSaveHits = false;
+        }
+        else if ( line.find("EnableRootObject:") != string::npos ) {
+           string rev =StrReplace( line, "EnableRootObject:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableRootObject = true;
+           else                     m_enableRootObject = false;
+        }
+        else if ( line.find("EnableTofZmc:") != string::npos ) {
+           string rev =StrReplace( line, "EnableTofZmc:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableTofZmc = true;
+           else                     m_enableTofZmc = false;
+        }
+        else if ( line.find("EnableTofCalBar:") != string::npos ) {
+           string rev =StrReplace( line, "EnableTofZmc:", "" );
+           RemoveSpace( &rev );
+           if ( rev == "y" )        m_enableTofCalBar = true;
+           else                     m_enableTofCalBar = false;
+        }
     }
-
-
+   
     // Check mandatory parameters set
     if ( m_trackingSystems.size() < 1 )     cout<< "ERROR :: GlobalPar.cxx  -->  wrong parameters config setting: m_trackingSystems ize = 0"<<endl, exit(0);
 
- 
     ifile.close();
-
 }
 
 //_____________________________________________________________________________
@@ -415,7 +526,7 @@ void GlobalPar::Print(Option_t* opt) {
       cout << "Global debug level: " << m_debug << endl;
       cout << "Detectors included:" << endl;
       
-      printf(" -");
+      printf(" - ");
       vector<TString> list = m_dectInclude;
       for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
          TString str = m_dectFullName[*it];
@@ -497,3 +608,64 @@ bool GlobalPar::frankFind( string what, string where )	{
    
    return false;
 }
+
+//____________________________________________________________________________
+bool GlobalPar::Find_MCParticle( string villain )
+{
+   return ( find( m_mcParticles.begin(), m_mcParticles.end(), villain ) == m_mcParticles.end() ? false : true);
+}
+
+//____________________________________________________________________________
+double GlobalPar::GetLowBinHisto( string villain )    {
+   for ( map< string, pair< double, double > >::iterator it = m_map_range.begin(); it != m_map_range.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second.first;
+   }
+   return -666;
+}
+
+//____________________________________________________________________________
+double GlobalPar::GetUpBinHisto( string villain )    {
+   for ( map< string, pair< double, double > >::iterator it = m_map_range.begin(); it != m_map_range.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second.second;
+   }
+   return -666;
+}
+
+//____________________________________________________________________________
+int GlobalPar::GetNBinHisto( string villain )     {
+   for ( map< string, int >::iterator it = m_nBin_map.begin(); it != m_nBin_map.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second;
+   }
+   return -666;
+}
+
+//____________________________________________________________________________
+string GlobalPar::GetSaveDirHisto( string villain )     {
+   for ( map< string, string >::iterator it = m_map_saveDir.begin(); it != m_map_saveDir.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second;
+   }
+   return "default";
+}
+
+//____________________________________________________________________________
+string GlobalPar::GetXTitlesHisto( string villain )     {
+   for ( map< string, string >::iterator it = m_map_xTitles.begin(); it != m_map_xTitles.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second;
+   }
+   return "default";
+}
+
+//____________________________________________________________________________
+string GlobalPar::GetYTitlesHisto( string villain )     {
+   for ( map< string, string >::iterator it = m_map_yTitles.begin(); it != m_map_yTitles.end(); it++ ) {
+      if ( frankFind( (*it).first, villain ) )
+         return (*it).second;
+   }
+   return "default";
+};
+

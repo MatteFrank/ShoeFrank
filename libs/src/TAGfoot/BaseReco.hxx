@@ -29,6 +29,7 @@
 #include "TATWparGeo.hxx"
 #include "TACAparGeo.hxx"
 
+#include "TADIgenField.hxx"
 #include "TADIgeoField.hxx"
 
 #include "TATWparCal.hxx"
@@ -45,6 +46,7 @@
 #include "TAITntuRaw.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAMSDntuRaw.hxx"
+#include "TAMSDntuPoint.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
 #include "TACAntuCluster.hxx"
@@ -58,6 +60,7 @@
 #include "TAITactNtuClusterF.hxx"
 #include "TAITactNtuClusterMT.hxx"
 #include "TAMSDactNtuCluster.hxx"
+#include "TAMSDactNtuPoint.hxx"
 #include "TACAactNtuCluster.hxx"
 #include "TATWactNtuPoint.hxx"
 
@@ -70,13 +73,18 @@
 #include "TAIRactNtuTrack.hxx"
 #include "TAGactNtuGlbTrack.hxx"
 
+#include "KFitter.hxx"
+#include "UpdatePDG.hxx"
+
+#include "GlobalTrackingStudies.hxx"
+
 class TAMCntuHit;
 class TAMCntuEve;
 class BaseReco : public TNamed // using TNamed for the in/out files
 {
 public:
    //! default constructor
-   BaseReco(TString expName, TString fileNameIn, TString fileNameout);
+   BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout);
    
    virtual ~BaseReco();
    
@@ -268,6 +276,7 @@ protected:
    TAGdataDsc*           fpNtuClusVtx;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusIt;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusMsd;     // input cluster data dsc
+   TAGdataDsc*           fpNtuRecMsd;
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
    TAGdataDsc*           fpNtuClusCa;     // input cluster data dsc
 
@@ -294,7 +303,8 @@ protected:
    TAITactBaseNtuTrack*  fActTrackIt;   // action for tracks
 
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
-   
+   TAMSDactNtuPoint*     fActPointMsd;   // action for point in MSD
+
    // TATWactNtuRaw*        fActNtuRawTw;  // action for ntu data
    TATWactNtuPoint*      fActPointTw;    // action for clusters
    
@@ -303,6 +313,10 @@ protected:
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
 
+   GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
+   KFitter*               fActGlbkFitter;    // Global tracking kalman Fitter
+
+   
    Bool_t                fFlagOut;       // flag for output file
    Bool_t                fFlagTree;      // flag to save in tree
    Bool_t                fFlagHits;      // flag to save hits in tree
@@ -322,6 +336,7 @@ protected:
    void CreateRecActionTw();
    void CreateRecActionCa();
    void CreateRecActionGlb() ;
+   void CreateRecActionGlbGF() ;
    void CreateRecActionIr();
 
 protected:

@@ -3,26 +3,23 @@
 #include <TApplication.h>
 
 #include "GlobalPar.hxx"
+#include "LocalRecoMC.hxx"
+#include "LocalReco.hxx"
+#include "LocalRecoNtuMC.hxx"
 #include "GlobalToeReco.hxx"
 
-// executabel to read back from local reconstruction tree
+// executabel to read back from local reconstruction tree or from MC/raw data
 // author: Ch. Finck
 
 
 int main (int argc, char *argv[])  {
 
    TString in("");
+   TString out("");
    TString exp("");
 
-   Int_t pos = in.Last('.');
-   TString out = in(0, pos);
-   out.Append("_Out.root");
-   
-   Bool_t ntu = true;
-   Bool_t his = false;
-   Bool_t hit = false;
-   Bool_t trk = true;
    Bool_t mc  = false;
+   Bool_t mth = false;
 
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
@@ -34,11 +31,8 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
   
-      if(strcmp(argv[i],"-ntu") == 0)   { ntu = true;   } // enable tree filling
-      if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
-      if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
-      if(strcmp(argv[i],"-trk") == 0)   { trk = true;   } // enable tracking action
       if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
+      if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
 
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
@@ -49,22 +43,52 @@ int main (int argc, char *argv[])  {
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
          cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
-         cout<<"      -trk           : enable tracking actions"<<endl;
-         cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
-         cout<<"      -ntu           : enable tree filling"<<endl;
-         cout<<"      -his           : enable crtl histograming"<<endl;
          cout<<"      -mc            : reco from MC local reco tree"<<endl;
+         cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
       }
    }
    
+   if (out.IsNull()) {
+      Int_t pos = in.Last('.');
+      out = in(0, pos);
+      out.Append("_Out.root");
+   }
+   
    TApplication::CreateApplication();
    
-   GlobalPar::Instance();
+   GlobalPar::Instance(exp);
    GlobalPar::GetPar()->Print();
    
+   Bool_t lrc = GlobalPar::GetPar()->IsLocalReco();
+   Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
+   Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
+   Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
+   Bool_t trk = GlobalPar::GetPar()->IsTracking();
+   Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
+   Bool_t zmc = GlobalPar::GetPar()->IsTofZmc();
+   Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
+
+   GlobalPar::GetPar()->IncludeTOE(true);
+   GlobalPar::GetPar()->IncludeKalman(false);
+
    BaseReco* glbRec = 0x0;
-   glbRec = new GlobalToeReco(exp, in, out, mc);
+   
+   if (lrc)
+      glbRec = new GlobalToeReco(exp, runNb, in, out, mc);
+   else if (mc) {
+      if (!obj)
+         glbRec = new LocalRecoMC(exp, runNb, in, out);
+      else
+         glbRec = new LocalRecoNtuMC(exp, runNb, in, out);
+      if(zmc)
+         glbRec->EnableZfromMCtrue();
+   } else {
+      glbRec = new LocalReco(exp, runNb, in, out);
+      if (tbc)
+         glbRec->EnableTWcalibPerBar();
+   }
+
 
    // global setting
    if (ntu)
@@ -78,10 +102,8 @@ int main (int argc, char *argv[])  {
    if (trk)
       glbRec->EnableTracking();
    
-
-   if (runNb != -1)
-      glbRec->BaseReco::SetRunNumber(runNb);
-
+   if (mth)
+      glbRec->EnableM28lusMT();
    
    TStopwatch watch;
    watch.Start();

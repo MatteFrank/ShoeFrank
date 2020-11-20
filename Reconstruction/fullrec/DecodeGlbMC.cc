@@ -8,17 +8,10 @@
 int main (int argc, char *argv[])  {
 
    TString in("");
+   TString out("");
    TString exp("");
 
-   Int_t pos = in.Last('.');
-   TString out = in(0, pos);
-   out.Append("_Out.root");
-   
-   Bool_t ntu = false;
-   Bool_t his = false;
-   Bool_t hit = false;
-   Bool_t trk = false;
-   
+   Int_t runNb = -1;
    Int_t nTotEv = 1e7;
    
    for (int i = 0; i < argc; i++){
@@ -26,11 +19,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
-  
-      if(strcmp(argv[i],"-ntu") == 0)   { ntu = true;   } // enable tree filling
-      if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
-      if(strcmp(argv[i],"-hit") == 0)   { hit = true;   } // enable hits saving
-      if(strcmp(argv[i],"-trk") == 0)   { trk = true;   } // enable tracking action
+      if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
       
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
@@ -40,20 +29,35 @@ int main (int argc, char *argv[])  {
          cout<<"      -out path/file : [def=*_Out.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
-         cout<<"      -trk           : enable tracking actions"<<endl;
-         cout<<"      -hit           : enable saving hits in tree (activated ntu option)"<<endl;
-         cout<<"      -ntu           : enable tree filling"<<endl;
-         cout<<"      -his           : enable crtl histograming"<<endl;
+         cout<<"      -run value     : [def=-1] Run number"<<endl;
          return 1;
       }
    }
    
+   if (out.IsNull()) {
+      Int_t pos = in.Last('.');
+      out = in(0, pos);
+      out.Append("_Out.root");
+   }
+   
    TApplication::CreateApplication();
    
-   GlobalPar::Instance();
+   GlobalPar::Instance(exp);
    GlobalPar::GetPar()->Print();
    
-   GlobalRecoMC* glbRec = new GlobalRecoMC(exp, in, out);
+   Bool_t lrc = GlobalPar::GetPar()->IsLocalReco();
+   Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
+   Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
+   Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
+   Bool_t trk = GlobalPar::GetPar()->IsTracking();
+   Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
+   Bool_t zmc = GlobalPar::GetPar()->IsTofZmc();
+   Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
+   
+   GlobalPar::GetPar()->IncludeTOE(false);
+   GlobalPar::GetPar()->IncludeKalman(true);
+   
+   GlobalRecoMC* glbRec = new GlobalRecoMC(exp, runNb, in, out);
 
    // global setting
    if (ntu)

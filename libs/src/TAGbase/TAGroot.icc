@@ -39,16 +39,6 @@ inline void TAGroot::SetCampaignName(TString s_cam)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Set campaign number.
-
-inline void TAGroot::SetCampaignNumber(Short_t i_cam)
-{
-  fRunInfo.SetCampaignNumber(i_cam);
-  fEventId.SetCampaignNumber(i_cam);
-  return;
-}
-
-/*------------------------------------------+---------------------------------*/
 //! Set run number.
 
 inline void TAGroot::SetRunNumber(Short_t i_run)
@@ -73,14 +63,6 @@ inline void TAGroot::SetEventNumber(Int_t i_evt)
 inline const Char_t* TAGroot::CurrentCampaignName() const
 {
    return fRunInfo.CampaignName();
-}
-
-/*------------------------------------------+---------------------------------*/
-//! Returns current campaign number.
-
-inline Short_t TAGroot::CurrentCampaignNumber() const
-{
-  return fEventId.CampaignNumber();
 }
 
 /*------------------------------------------+---------------------------------*/

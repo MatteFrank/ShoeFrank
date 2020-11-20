@@ -28,6 +28,7 @@
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
 
+#include "TAGcampaignManager.hxx"
 #include "TAGactTreeReader.hxx"
 #include "TAITactNtuHitMC.hxx"
 
@@ -37,25 +38,29 @@
 #endif
 
 // main
+TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter*   outFile     = 0x0;
 TAGactTreeReader*   itActReader = 0x0;
 TAITactNtuHitMC*    itActRaw    = 0x0;
 TAITactNtuClusterF* itActClus   = 0x0;
 TAITactNtuTrackF*   itActTrck   = 0x0;
 
-void FillInnerTracker()
+void FillInnerTracker(Int_t runNumber)
 {
    TAGparaDsc* tgGeo = new TAGparaDsc("tgGeo", new TAGparGeo());
    TAGparGeo* geomapg = (TAGparGeo*)tgGeo->Object();
-   geomapg->FromFile("./geomaps/TAGdetector.geo");
+   TString parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
+   geomapg->FromFile(parFileName.Data());
 
    TAGparaDsc* itGeo    = new TAGparaDsc("itGeo", new TAITparGeo());
    TAITparGeo* geomap   = (TAITparGeo*) itGeo->Object();
-   geomap->FromFile("./geomaps/TAITdetector.geo");
+   parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+   geomap->FromFile(parFileName.Data());
    
    TAGparaDsc*  itConf  = new TAGparaDsc("itConf", new TAITparConf());
    TAITparConf* parconf = (TAITparConf*) itConf->Object();
-   parconf->FromFile("./config/TAITdetector.cfg");
+   parFileName = campManager->GetCurConfFile(TAITparGeo::GetBaseName(), runNumber);
+   parconf->FromFile(parFileName.Data());
 
    TAITparConf::SetHistoMap();
    TAGdataDsc* itEve  = new TAGdataDsc("itEve", new TAMCntuEve());
@@ -83,18 +88,24 @@ void FillInnerTracker()
 
 }
 
-void ReadItrRawG4(TString filename = "12C_C_200_ntu.root", Int_t nMaxEvts = 0)
+void ReadItrRawG4(TString filename = "12C_C_200_ntu.root", Int_t nMaxEvts = 0,
+                  TString expName = "12C_200", Int_t runNumber = 1)
 {
+   GlobalPar::Instance(expName);
+   GlobalPar::GetPar()->Print();
+   
    TAGroot tagr;
-   tagr.SetCampaignNumber(100);
-   tagr.SetRunNumber(1);
+   
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
    
    TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-   geoTrafo->FromFile();
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   geoTrafo->FromFile(parFileName);
    
    outFile = new TAGactTreeWriter("outFile");
 
-   FillInnerTracker();
+   FillInnerTracker(runNumber);
    itActReader->Open(filename, "READ", "EventTree");
    
    tagr.AddRequiredItem(itActReader);

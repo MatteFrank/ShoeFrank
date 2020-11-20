@@ -10,7 +10,7 @@ class GlobalReco : public LocalReco
 {
 public:
    //! default constructor
-   GlobalReco(TString expName, TString fileNameIn = "", TString fileNameout = "");
+   GlobalReco(TString expName, Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~GlobalReco();
    

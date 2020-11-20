@@ -15,8 +15,8 @@
 ClassImp(GlobalToeReco)
 
 //__________________________________________________________
-GlobalToeReco::GlobalToeReco(TString expName, TString fileNameIn, TString fileNameout, Bool_t isMC)
- : BaseReco(expName, fileNameIn, fileNameout)
+GlobalToeReco::GlobalToeReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
+ : BaseReco(expName, runNumber, fileNameIn, fileNameout)
 {
    TAGactNtuGlbTrack::EnableStdAlone();
    fFlagMC = isMC;

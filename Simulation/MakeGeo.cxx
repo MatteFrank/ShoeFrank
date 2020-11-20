@@ -61,7 +61,7 @@ int main (int argc, char *argv[]) {
     // real coding starts here!
 
     cout<<" GlobalPar "<<Form("%s/FootGlobal.par",exp.Data())<<endl;
-    GlobalPar::Instance(Form("%s/FootGlobal.par",exp.Data()));
+    GlobalPar::Instance(exp);
 
     GlobalPar::GetPar()->Print();
 

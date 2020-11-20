@@ -30,6 +30,7 @@
 #include "TAVTntuVertex.hxx"
 #include "TAMCntuEve.hxx"
 
+#include "TAGcampaignManager.hxx"
 #include "TAMCactNtuEve.hxx"
 #include "TAVTactNtuMC.hxx"
 #include "TAVTactNtuClusterF.hxx"
@@ -43,32 +44,37 @@
 #endif
 
 // main
-TAGactTreeWriter* outFile = 0x0;
-TAVTactNtuMC* vtActRaw = 0x0;
-TAVTactNtuClusterF* vtActClus = 0x0;
-TAVTactNtuTrackF*    vtActTrck = 0x0;
-TAVTactNtuVertex*    vtActVtx  = 0x0;
+TAGcampaignManager* campManager = 0x0;
+TAGactTreeWriter*   outFile     = 0x0;
+TAVTactNtuMC*       vtActRaw    = 0x0;
+TAVTactNtuClusterF* vtActClus   = 0x0;
+TAVTactNtuTrackF*   vtActTrck   = 0x0;
+TAVTactNtuVertex*   vtActVtx    = 0x0;
 
-void FillMCVertex(EVENT_STRUCT *myStr) {
-   
+void FillMCVertex(EVENT_STRUCT *myStr, Int_t runNumber)
+{
    /*Ntupling the MC Vertex information*/
    TAGparaDsc* tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
    TAGparGeo* parGeoG = (TAGparGeo*)tgGeo->Object();
-   parGeoG->FromFile();
+   TString parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
+   parGeoG->FromFile(parFileName.Data());
    
    TAGparaDsc* vtGeo    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
-   geomap->FromFile();
+   parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+   geomap->FromFile(parFileName.Data());
    
+   TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
+   TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
+   parFileName = campManager->GetCurConfFile(TAVTparGeo::GetBaseName(), runNumber);
+   parconf->FromFile(parFileName.Data());
+
    TAGdataDsc* vtRaw    = new TAGdataDsc("vtRaw", new TAVTntuRaw());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
    TAGdataDsc* vtVtx    = new TAGdataDsc("vtVtx", new TAVTntuVertex());
    TAGdataDsc* eveMc    = new TAGdataDsc("eveMc", new TAMCntuEve());
 
-   TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
-   TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
-   parconf->FromFile("./config/TAVTdetector.cfg");
 
    TAVTparConf::SetHistoMap();
    TAMCactNtuEve* actNtuMcEve = new TAMCactNtuEve("eveActNtuMc", eveMc, myStr);
@@ -92,21 +98,23 @@ void FillMCVertex(EVENT_STRUCT *myStr) {
 
 }
 
-//void ReadVtxRawMC(TString name = "16O_C2H4_200_1.root")
-//void ReadVtxRawMC(TString name = "p_80_vtx.root")
-void ReadVtxRawMC(TString name = "ionEventoC_IR_100k.root")
-//void ReadVtxRawMC(TString name = "4He_400_vtx_10k.root")
+//void ReadVtxRawMC(TString name = "16O_C2H4_200_1.root", Int_t nMaxEvts = 500, TString expName = "160_200", Int_t runNumber = 1)
+//void ReadVtxRawMC(TString name = "p_80_vtx.root", Int_t nMaxEvts = 500, TString expName = "H_200", Int_t runNumber = 1)
+void ReadVtxRawMC(TString name = "12C_C_200_1.root", Int_t nMaxEvts = 500,
+                  TString expName = "12C_200", Int_t runNumber = 1)
+//void ReadVtxRawMC(TString name = "4He_400_vtx_10k.root",Int_t nMaxEvts = 500, TString expName = "4He_400", Int_t runNumber = 1)
 {
-   GlobalPar::Instance();
+   GlobalPar::Instance(expName);
    GlobalPar::GetPar()->Print();
    
    TAGroot tagr;
-   TAGgeoTrafo geoTrafo;
-   geoTrafo.FromFile();
    
-   tagr.SetCampaignNumber(-1);
-   tagr.SetRunNumber(1);
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
    
+   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   geoTrafo->FromFile(parFileName);
    
    TFile* f = new TFile(name.Data());
    f->ls();
@@ -122,7 +130,7 @@ void ReadVtxRawMC(TString name = "ionEventoC_IR_100k.root")
    
    outFile = new TAGactTreeWriter("outFile");
    
-   FillMCVertex(&evStr);
+   FillMCVertex(&evStr, runNumber);
    tagr.AddRequiredItem("eveActNtuMc");
    tagr.AddRequiredItem("vtActRaw");
    tagr.AddRequiredItem("vtActCluster");
@@ -158,8 +166,7 @@ void ReadVtxRawMC(TString name = "ionEventoC_IR_100k.root")
       if(ientry % 100 == 0)
          cout<<" Loaded Event:: " << ientry << endl;
       
-//      if (ientry == 500)
-      if (ientry == 200000)
+      if (ientry == nMaxEvts)
          break;
       
       if (!tagr.NextEvent()) break;

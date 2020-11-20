@@ -6,6 +6,7 @@
 
 #include "TH1F.h"
 #include "TTree.h"
+#include "TFile.h"
 #include "TVector3.h"
 
 #include "TAITparGeo.hxx"
@@ -88,11 +89,9 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
 {
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
    
-   if (GlobalPar::GetPar()->IncludeVT()) //should not be if
-   {
-      AddDataIn(p_vtxclus, "TAVTntuCluster");
-      AddDataIn(p_vtxvertex, "TAVTntuVertex");
-   }
+   // VT mandatory
+   AddDataIn(p_vtxclus, "TAVTntuCluster");
+   AddDataIn(p_vtxvertex, "TAVTntuVertex");
    
    if (GlobalPar::GetPar()->IncludeIT())
       AddDataIn(p_itrclus, "TAITntuCluster");
@@ -100,8 +99,8 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    if (GlobalPar::GetPar()->IncludeMSD())
       AddDataIn(p_msdclus, "TAMSDntuCluster");
    
-   if(GlobalPar::GetPar()->IncludeTW()) //neither
-      AddDataIn(p_twpoint, "TATWntuPoint");
+   // TW mandatory
+   AddDataIn(p_twpoint, "TATWntuPoint");
    
    if (fgStdAloneFlag)
       SetupBranches();
@@ -146,6 +145,41 @@ void TAGactNtuGlbTrack::SetupBranches()
    
    if(GlobalPar::GetPar()->IncludeTW())
       fActEvtReader->SetupBranch(fpTwPoint,  TATWntuPoint::GetBranchName());
+}
+
+//------------------------------------------+-----------------------------------
+//! Check branches.
+void TAGactNtuGlbTrack::CheckBranches()
+{
+   TAGrunInfo info = gTAGroot->CurrentRunInfo();
+   TString camName = info.CampaignName();
+   Int_t runNumber = info.RunNumber();
+   
+   if (GlobalPar::GetPar()->IncludeVT()) {
+      if (!info.GetGlobalPar().IncludeVT)
+         Error("SetupBranches()", "No VTX branche available in this root file");
+   }
+   
+   if (GlobalPar::GetPar()->IncludeIT()) {
+      if (!info.GetGlobalPar().IncludeIT)
+         Error("SetupBranches()", "No IT branche available in this root file");
+   }
+   
+   if (GlobalPar::GetPar()->IncludeMSD()) {
+      if (!info.GetGlobalPar().IncludeMSD)
+         Error("SetupBranches()", "No MSD branche available in this root file");
+   }
+   
+   if(GlobalPar::GetPar()->IncludeTW()) {
+      if (!info.GetGlobalPar().IncludeTW)
+         Error("SetupBranches()", "No TW branche available in this root file");
+   }
+   
+   info = GlobalPar::GetPar()->GetGlobalInfo();
+   info.SetCampaignName(camName);
+   info.SetRunNumber(runNumber);
+   
+   gTAGroot->SetRunInfo(info);
 }
 
 //------------------------------------------+-----------------------------------
@@ -196,9 +230,10 @@ void TAGactNtuGlbTrack::SetupBranches()
 // ! Open file
 void TAGactNtuGlbTrack::Open(TString name)
 {
-   if (fgStdAloneFlag)
+   if (fgStdAloneFlag) {
       fActEvtReader->Open(name.Data());
-   else
+      CheckBranches();
+   } else
       Error("OpenFile", "Not in stand alone mode");
 }
 
@@ -240,7 +275,8 @@ void TAGactNtuGlbTrack::RegisterHistograms()
     SetValidHistogram(kTRUE);
     
     auto writer_h = static_cast<TAGactTreeWriter*>( gTAGroot->FindAction("locRecFile") );
-    SetHistogramDir( (TDirectory*)writer_h->File() );
+    TDirectory* subfolder  = (TDirectory*)(writer_h->File())->Get(TAGgeoTrafo::GetBaseName());
+    SetHistogramDir( subfolder );
 }
 
 //------------------------------------------+-----------------------------------

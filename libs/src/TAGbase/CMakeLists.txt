@@ -48,8 +48,6 @@ set( with_dictionnaries
    TAGmaterials
    TAGionisMaterials
    TAGxmlParser
-   ControlPlotsRepository
-   ControlPlotInfo
    MagicSkills
    GlobalPar
 )

@@ -18,7 +18,7 @@ class GlobalRecoMC : public LocalRecoMC
 {
 public:
   //! default constructor
-  GlobalRecoMC(TString expName, TString fileNameIn = "", TString fileNameout = "");
+  GlobalRecoMC(TString expName, Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "");
   
   virtual ~GlobalRecoMC();
   

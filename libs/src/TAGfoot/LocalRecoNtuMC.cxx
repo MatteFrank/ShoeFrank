@@ -16,8 +16,8 @@
 ClassImp(LocalRecoNtuMC)
 
 //__________________________________________________________
-LocalRecoNtuMC::LocalRecoNtuMC(TString expName, TString fileNameIn, TString fileNameout)
- : BaseReco(expName, fileNameIn, fileNameout),
+LocalRecoNtuMC::LocalRecoNtuMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
+ : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fActNtuRawVtx(0x0),
    fActNtuRawIt(0x0),
    fActNtuRawMsd(0x0),
@@ -119,7 +119,7 @@ void LocalRecoNtuMC::CreateRawAction()
       fActEvtReader->SetupBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
       
       fpNtuRawCa   = new TAGdataDsc("caRaw", new TACAntuRaw());
-      fActNtuRawCa = new TACAactNtuHitMC("caActNtu", fpNtuMcCa, fpNtuMcEve, fpNtuRawCa, fpParGeoCa);
+      fActNtuRawCa = new TACAactNtuHitMC("caActNtu", fpNtuMcCa, fpNtuMcEve, fpNtuRawCa, fpParGeoCa, fpParGeoG);
       if (fFlagHisto)
          fActNtuRawCa->CreateHistogram();
    }
