@@ -100,7 +100,7 @@ void FillMCVertex(EVENT_STRUCT *myStr, Int_t runNumber)
 
 //void ReadVtxRawMC(TString name = "16O_C2H4_200_1.root", Int_t nMaxEvts = 500, TString expName = "160_200", Int_t runNumber = 1)
 //void ReadVtxRawMC(TString name = "p_80_vtx.root", Int_t nMaxEvts = 500, TString expName = "H_200", Int_t runNumber = 1)
-void ReadVtxRawMC(TString name = "ionEventoC_IR_100k.root", Int_t nMaxEvts = 500,
+void ReadVtxRawMC(TString name = "12C_C_200_1.root", Int_t nMaxEvts = 500,
                   TString expName = "12C_200", Int_t runNumber = 1)
 //void ReadVtxRawMC(TString name = "4He_400_vtx_10k.root",Int_t nMaxEvts = 500, TString expName = "4He_400", Int_t runNumber = 1)
 {
