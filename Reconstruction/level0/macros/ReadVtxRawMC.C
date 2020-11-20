@@ -166,8 +166,7 @@ void ReadVtxRawMC(TString name = "12C_C_200_1.root", Int_t nMaxEvts = 500,
       if(ientry % 100 == 0)
          cout<<" Loaded Event:: " << ientry << endl;
       
-//      if (ientry == 500)
-      if (nEvents == nMaxEvts)
+      if (ientry == nMaxEvts)
          break;
       
       if (!tagr.NextEvent()) break;
