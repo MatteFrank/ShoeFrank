@@ -9,7 +9,7 @@
 #include "TACAdigitizer.hxx"
 
 
-Float_t TACAdigitizer::fgThreshold = 0; // MeV 
+Float_t TACAdigitizer::fgThreshold = 80; // MeV 
 
 // --------------------------------------------------------------------------------------
 TACAdigitizer::TACAdigitizer(TACAntuRaw* pNtuRaw)

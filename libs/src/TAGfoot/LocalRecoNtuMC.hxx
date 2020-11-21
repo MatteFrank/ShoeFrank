@@ -83,7 +83,7 @@ protected:
    TAMSDactNtuHitMC*     fActNtuRawMsd;  // action for ntu data
    TATWactNtuHitMC*      fActNtuRawTw;  // action for ntu data
    TACAactNtuHitMC*      fActNtuRawCa;  // action for ntu data
-   
+  
    TAGdataDsc*           fpNtuMcEve;    // input data dsc
    TAGdataDsc*           fpNtuMcSt;    // input data dsc
    TAGdataDsc*           fpNtuMcBm;    // input data dsc

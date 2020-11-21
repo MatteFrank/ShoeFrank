@@ -142,10 +142,20 @@ void LocalReco::CreateRawAction()
 
    if(GlobalPar::GetPar()->IncludeTW()) {
       fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
-      fActNtuRawTw = new TATWactNtuRaw("twActNtu", fpDatRawTw, fpNtuRawTw, fpNtuRawSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
-      if(GlobalPar::GetPar()->Debug()) fActNtuRawTw->SetDebugLevel(1);
-      if (fFlagHisto)
-         fActNtuRawTw->CreateHistogram();
+
+      if(GlobalPar::GetPar()->CalibTW()) {
+	fActCalibTw = new TATWactCalibTW("twActCalib", fpDatRawTw, fpNtuRawTw, fpNtuRawSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
+	if(GlobalPar::GetPar()->Debug()) fActCalibTw->SetDebugLevel(1);
+	fActCalibTw->CreateHistogram();
+	
+      } else {
+	
+	fActNtuRawTw = new TATWactNtuRaw("twActNtu", fpDatRawTw, fpNtuRawTw, fpNtuRawSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
+	if(GlobalPar::GetPar()->Debug()) fActNtuRawTw->SetDebugLevel(1);
+	if (fFlagHisto)
+	  fActNtuRawTw->CreateHistogram();
+	
+      }
    }
    
    //   if(GlobalPar::GetPar()->IncludeCA()) {
@@ -237,7 +247,11 @@ void LocalReco::SetRawHistogramDir()
    // TW
    if (GlobalPar::GetPar()->IncludeTW()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TATWparGeo::GetBaseName());
-      fActNtuRawTw->SetHistogramDir(subfolder);
+      if(GlobalPar::GetPar()->CalibTW()) {
+	fActCalibTw->SetHistogramDir(subfolder);
+      } else {
+	fActNtuRawTw->SetHistogramDir(subfolder);
+      }
    }
    
    // MSD
@@ -282,7 +296,11 @@ void LocalReco::AddRawRequiredItem()
 //   }
    
    if (GlobalPar::GetPar()->IncludeTW()) {
-      fTAGroot->AddRequiredItem("twActNtu");
+     if(GlobalPar::GetPar()->CalibTW()) {
+       fTAGroot->AddRequiredItem("twActCalib");
+     } else {
+       fTAGroot->AddRequiredItem("twActNtu");
+     }
    }
 
    

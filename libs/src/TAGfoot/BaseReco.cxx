@@ -271,7 +271,7 @@ void BaseReco::SetRecHistogramDir()
    }
    
    // TW
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->CalibTW()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TATWparGeo::GetBaseName());
       fActPointTw->SetHistogramDir(subfolder);
    }
@@ -521,7 +521,7 @@ void BaseReco::CreateRecAction()
    if (GlobalPar::GetPar()->IncludeMSD())
       CreateRecActionMsd();
    
-   if (GlobalPar::GetPar()->IncludeTW())
+   if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->CalibTW())
       CreateRecActionTw();
 
    if (GlobalPar::GetPar()->IncludeCA())
@@ -773,7 +773,7 @@ void BaseReco::SetTreeBranches()
         fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeTW())
+   if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->CalibTW())
      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
    
    if (GlobalPar::GetPar()->IncludeCA())
@@ -826,9 +826,9 @@ void BaseReco::AddRecRequiredItem()
          gTAGroot->AddRequiredItem("msdActPoint");
    }
    
-   if (GlobalPar::GetPar()->IncludeTW()) {
-      gTAGroot->AddRequiredItem("twActNtu");
-      gTAGroot->AddRequiredItem("twActPoint");
+   if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->CalibTW()) {
+     gTAGroot->AddRequiredItem("twActNtu");
+     gTAGroot->AddRequiredItem("twActPoint");
    }
    
    if (GlobalPar::GetPar()->IncludeCA()) {

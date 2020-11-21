@@ -63,6 +63,7 @@
 #include "TAMSDactNtuPoint.hxx"
 #include "TACAactNtuCluster.hxx"
 #include "TATWactNtuPoint.hxx"
+#include "TATWactCalibTW.hxx"
 
 #include "TABMactNtuTrack.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
@@ -307,12 +308,13 @@ protected:
 
    // TATWactNtuRaw*        fActNtuRawTw;  // action for ntu data
    TATWactNtuPoint*      fActPointTw;    // action for clusters
-   
+   TATWactCalibTW*       fActCalibTw;
+
    TACAactNtuCluster*    fActClusCa;    // action for clusters
 
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
-
+  
    GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
    KFitter*               fActGlbkFitter;    // Global tracking kalman Fitter
 
