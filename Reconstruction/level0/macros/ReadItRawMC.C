@@ -17,6 +17,7 @@
 
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
+#include "TAGcampaignManager.hxx"
 #include "TAGactTreeWriter.hxx"
 #include "TAGgeoTrafo.hxx"
 
@@ -35,16 +36,18 @@
 #endif
 
 // main
+TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter* outFile = 0x0;
 TAITactNtuMC* itActRaw = 0x0;
 TAITactNtuClusterF* itActClus = 0x0;
 
-void FillMCInner(EVENT_STRUCT *myStr) {
+void FillMCInner(EVENT_STRUCT *myStr, Int_t runNumber) {
    
    /*Ntupling the MC Vertex information*/
-   TAGparaDsc* itGeo    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
+   TAGparaDsc* itGeo    = new TAGparaDsc("itGeo", new TAITparGeo());
    TAITparGeo* geomap   = (TAITparGeo*) itGeo->Object();
-   geomap->FromFile();
+   TString parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+   geomap->FromFile(parFileName.Data());
    
    TAGdataDsc* itRaw    = new TAGdataDsc("itRaw", new TAITntuRaw());
    TAGdataDsc* itClus   = new TAGdataDsc("itClus", new TAITntuCluster());
@@ -68,34 +71,32 @@ void FillMCInner(EVENT_STRUCT *myStr) {
 //void ReadItRawMC(TString name = "16O_C2H4_200_1.root")
 //void ReadItRawMC(TString name = "p_80_vtx.root")
 //void ReadItRawMC(TString name = "12C_80_vtx.root")
-void ReadItRawMC(TString name = "12C_400_vtx.root")
+void ReadItRawMC(TString name = "16O_C2H4_200_1", TString expName = "16O_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance();
+   GlobalPar::Instance(expName);
    GlobalPar::GetPar()->Print();
    
    TAGroot tagr;
-   TAGgeoTrafo geoTrafo;
-   geoTrafo.FromFile();
-
-   tagr.SetCampaignNumber(-1);
-   tagr.SetRunNumber(1);
    
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
+   
+   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   geoTrafo->FromFile(parFileName);
    
    TFile* f = new TFile(name.Data());
    f->ls();
    
    TTree* tree = (TTree*)gDirectory->Get("EventTree");
-   
-   
    Evento *ev  = new Evento();
    
    EVENT_STRUCT evStr;
-   
    ev->FindBranches(tree,&evStr);
    
    outFile = new TAGactTreeWriter("outFile");
    
-   FillMCInner(&evStr);
+   FillMCInner(&evStr, runNumber);
    
    tagr.AddRequiredItem("itActRaw");
    tagr.AddRequiredItem("itActCluster");
