@@ -14,7 +14,7 @@
 #include "TAGroot.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TABMdigitizer.hxx"
 #include "TAGgeoTrafo.hxx"
 

@@ -25,7 +25,7 @@
 #include "TASTparTime.hxx"
 
 #include "TABMparGeo.hxx"
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TABMdatRaw.hxx"
 #include "TABMNtuRaw.hxx"
 
@@ -91,8 +91,8 @@ void FillBM()
    TABMparGeo* geomap   = (TABMparGeo*) bmGeo->Object();
    geomap->FromFile("./geomaps/TABMdetector.geo");
    
-   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
-   TABMparCon* parconf = (TABMparCon*) bmConf->Object();
+   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparConf());
+   TABMparConf* parconf = (TABMparConf*) bmConf->Object();
    parconf->FromFile("./config/TABMdetector.cfg");
 
    TAGparaDsc* bmMap   = new TAGparaDsc("bmMap", new TABMparMap());

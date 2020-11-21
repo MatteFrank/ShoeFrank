@@ -40,7 +40,7 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
    AddDataIn(fpNtuEve, "TAMCntuEve");
    AddDataOut(fpNtuRaw, "TABMntuRaw");
 
-   AddPara(fpParCon, "TABMparCon");
+   AddPara(fpParCon, "TABMparConf");
    AddPara(fpParGeo, "TABMparGeo");
 
    CreateDigitizer();
@@ -58,7 +58,7 @@ TABMactNtuHitMC::~TABMactNtuHitMC()
 void TABMactNtuHitMC::CreateDigitizer()
 {
    TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuRaw->Object();
-	 TABMparCon* p_bmcon  = (TABMparCon*) fpParCon->Object();
+	 TABMparConf* p_bmcon  = (TABMparConf*) fpParCon->Object();
 
    fDigitizer = new TABMdigitizer(p_nturaw, p_bmcon);
 }
@@ -70,7 +70,7 @@ Bool_t TABMactNtuHitMC::Action()
 {
   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   TABMntuRaw* p_nturaw  = (TABMntuRaw*) fpNtuRaw->Object();
-  TABMparCon* p_bmcon   = (TABMparCon*) fpParCon->Object();
+  TABMparConf* p_bmcon   = (TABMparConf*) fpParCon->Object();
   TABMparGeo* p_bmgeo   = (TABMparGeo*) fpParGeo->Object();
   TAMCntuHit* pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
   TAMCntuEve* pNtuEve   = (TAMCntuEve*) fpNtuEve->Object();

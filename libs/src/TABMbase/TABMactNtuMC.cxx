@@ -30,7 +30,7 @@ TABMactNtuMC::TABMactNtuMC(const char* name,
 {
  if (FootDebugLevel(1))
    cout<<"TABMactNtuMC::default constructor::Creating the Beam Monitor MC tuplizer action"<<endl;
- AddPara(fpParCon, "TABMparCon");
+ AddPara(fpParCon, "TABMparConf");
  AddPara(fpParGeo, "TABMparGeo");
  AddDataOut(fpNtuMC, "TABMntuRaw");
 
@@ -43,7 +43,7 @@ TABMactNtuMC::TABMactNtuMC(const char* name,
 void TABMactNtuMC::CreateDigitizer()
 {
    TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuMC->Object();
-	 TABMparCon* p_bmcon  = (TABMparCon*) fpParCon->Object();
+	 TABMparConf* p_bmcon  = (TABMparConf*) fpParCon->Object();
 
    fDigitizer = new TABMdigitizer(p_nturaw, p_bmcon);
 }
@@ -87,7 +87,7 @@ Bool_t TABMactNtuMC::Action()
 {
   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   TABMntuRaw* p_nturaw  = (TABMntuRaw*) fpNtuMC->Object();
-  TABMparCon* p_bmcon  = (TABMparCon*) fpParCon->Object();
+  TABMparConf* p_bmcon  = (TABMparConf*) fpParCon->Object();
   TABMparGeo* p_bmgeo   = (TABMparGeo*) fpParGeo->Object();
 
   Int_t cell, view, lay, ipoint, cellid;

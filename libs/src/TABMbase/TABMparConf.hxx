@@ -1,9 +1,9 @@
-#ifndef _TABMparCon_HXX
-#define _TABMparCon_HXX
+#ifndef _TABMparConf_HXX
+#define _TABMparConf_HXX
 /*!
   \file
-  \version $Id: TABMparCon.hxx,v 1.2 2003/06/22 19:33:36 mueller Exp $
-  \brief   Declaration of TABMparCon.
+  \version $Id: TABMparConf.hxx,v 1.2 2003/06/22 19:33:36 mueller Exp $
+  \brief   Declaration of TABMparConf.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -21,10 +21,10 @@
 
 
 //##############################################################################
-class TABMparCon : public TAGparTools {
+class TABMparConf : public TAGparTools {
   public:
-                    TABMparCon();
-    virtual         ~TABMparCon();
+                    TABMparConf();
+    virtual         ~TABMparConf();
 
     //setters
     void SetT0choice(Int_t in)                {fT0Choice=in;};
@@ -72,7 +72,7 @@ class TABMparCon : public TAGparTools {
     virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
     TString         fkDefaultParName;  // default par file name
 
-    ClassDef(TABMparCon,1)
+    ClassDef(TABMparConf,1)
 
   private:
 

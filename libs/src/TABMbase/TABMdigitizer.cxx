@@ -26,7 +26,7 @@
 #include "TABMdigitizer.hxx"
 
 // --------------------------------------------------------------------------------------
-TABMdigitizer::TABMdigitizer(TABMntuRaw* pNtuRaw, TABMparCon* parCon)
+TABMdigitizer::TABMdigitizer(TABMntuRaw* pNtuRaw, TABMparConf* parCon)
  : TAGobject(),
    fpNtuRaw(pNtuRaw),
    fpParCon(parCon),

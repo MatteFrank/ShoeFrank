@@ -34,7 +34,7 @@ TABMactNtuRaw::TABMactNtuRaw(const char* name,
   AddDataOut(p_nturaw, "TABMntuRaw");
   AddDataIn(p_datraw, "TABMdatRaw");
   AddPara(p_geomap, "TABMparGeo");
-  AddPara(p_parcon, "TABMparCon");
+  AddPara(p_parcon, "TABMparConf");
 
   //fill fDrawMap
   TABMparGeo* p_pargeo = (TABMparGeo*) fpGeoMap->Object();
@@ -117,7 +117,7 @@ Bool_t TABMactNtuRaw::Action()
   TABMdatRaw* p_datraw = (TABMdatRaw*) fpDatRaw->Object();
   TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuRaw->Object();
   TABMparGeo* p_pargeo = (TABMparGeo*) fpGeoMap->Object();
-  TABMparCon* p_parcon = (TABMparCon*) fpParCon->Object();
+  TABMparConf* p_parcon = (TABMparConf*) fpParCon->Object();
 
 
   p_nturaw->SetupClones();

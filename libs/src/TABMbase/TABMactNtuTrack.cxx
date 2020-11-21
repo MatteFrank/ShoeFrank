@@ -35,9 +35,9 @@ TABMactNtuTrack::TABMactNtuTrack(const char* name,
   AddDataOut(fpNtuTrk, "TABMntuTrack");
   AddDataIn(fpNtuHit,  "TABMntuRaw");
   AddPara(fpBMGeo,  "TABMparGeo");
-  AddPara(fpBMCon,  "TABMparCon");
+  AddPara(fpBMCon,  "TABMparConf");
 
-  TABMparCon* p_bmcon = (TABMparCon*) fpBMCon->Object();
+  TABMparConf* p_bmcon = (TABMparConf*) fpBMCon->Object();
 
   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   fpTmpTrack=new TABMtrack();
@@ -107,7 +107,7 @@ void TABMactNtuTrack::CreateHistogram()
    AddHistogram(fpTrackSep);
 
    //control graphs
-   TABMparCon* p_bmcon = (TABMparCon*) fpBMCon->Object();
+   TABMparConf* p_bmcon = (TABMparConf*) fpBMCon->Object();
    if(p_bmcon->GetResoFunc()!=nullptr){
      fpParRes=(TH1F*)p_bmcon->GetResoFunc()->GetHistogram()->Clone("bmParResolution");
      fpParRes->SetTitle("BM input resolution; Drift distance [cm]; Resolution [cm]");
@@ -131,7 +131,7 @@ Bool_t TABMactNtuTrack::Action()
   TABMntuTrack* p_ntutrk = (TABMntuTrack*) fpNtuTrk->Object();
   p_ntutrk->Clear();
   TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuHit->Object();
-  TABMparCon* p_bmcon = (TABMparCon*) fpBMCon->Object();
+  TABMparConf* p_bmcon = (TABMparConf*) fpBMCon->Object();
   TABMparGeo* p_bmgeo = (TABMparGeo*) fpBMGeo->Object();
 
   Int_t i_nhit = p_nturaw->GetHitsN();
@@ -333,7 +333,7 @@ void TABMactNtuTrack::ChargeLegendrePoly(){
     cout<<"TABMactNtuTrack:: start charge legendre pol graphs"<<endl;
 
   fLegPolSum->Reset("ICESM");
-  TABMparCon* p_bmcon = (TABMparCon*) fpBMCon->Object();
+  TABMparConf* p_bmcon = (TABMparConf*) fpBMCon->Object();
   TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuHit->Object();
   fLegPolSum->SetBins(p_bmcon->GetLegMBin(),-p_bmcon->GetLegMRange(),p_bmcon->GetLegMRange(), p_bmcon->GetLegRBin(),-p_bmcon->GetLegRRange(),p_bmcon->GetLegRRange());
 
@@ -538,7 +538,7 @@ Int_t TABMactNtuTrack::NumericalMinimizationDouble(){
   if(FootDebugLevel(2))
     cout<<"TABMactNtuTrack:: NumericalMinimizationDouble start, fNowView="<<fNowView<<"  fTrackNum="<<fTrackNum<<endl;
 
-  TABMparCon* p_bmcon = (TABMparCon*) fpBMCon->Object();
+  TABMparConf* p_bmcon = (TABMparConf*) fpBMCon->Object();
 
   // Set the variables to be minimized
   fpMinimizer->SetFunction(*fpFunctor);
@@ -620,7 +620,7 @@ void TABMactNtuTrack::CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack
   if (FootDebugLevel(2))
     cout<<"TABMactNtuTrack::CombineTrack: start; Number of tracks on yz="<<ytracktr.size()<<"  number of tracks on xz="<<xtracktr.size()<<endl;
 
-  TABMparCon* p_bmcon = (TABMparCon*) fpBMCon->Object();
+  TABMparConf* p_bmcon = (TABMparConf*) fpBMCon->Object();
   for(Int_t i=0;i<xtracktr.size();++i){
     for(Int_t k=0;k<ytracktr.size();++k){
       TABMtrack currtracktr=xtracktr.at(i);

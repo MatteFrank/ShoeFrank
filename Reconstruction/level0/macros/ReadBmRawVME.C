@@ -21,7 +21,7 @@
 #include "TAGparGeo.hxx"
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TASTdatRaw.hxx"
 #include "TABMdatRaw.hxx"
 #include "TABMntuRaw.hxx"
@@ -52,8 +52,8 @@ void FillBmVME(TString name, Int_t myexpcode) {
   TAGparGeo* parGeo = (TAGparGeo*)tgGeo->Object();
   parGeo->FromFile();
 
-  TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
-  TABMparCon* parConf = (TABMparCon*)bmConf->Object();
+  TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparConf());
+  TABMparConf* parConf = (TABMparConf*)bmConf->Object();
   parFileName = "./config/TABMdetector.cfg";
   parConf->FromFile(parFileName.Data());
   if(myexpcode==1){

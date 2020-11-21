@@ -30,8 +30,8 @@ void BM_VTX_strel_main(Int_t nentries=0){
   TABMparGeo* bmgeo   = (TABMparGeo*) bmGeoDsc->Object();
   bmgeo->FromFile();
 
-  TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
-  TABMparCon* bmcon = (TABMparCon*)bmConf->Object();
+  TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparConf());
+  TABMparConf* bmcon = (TABMparConf*)bmConf->Object();
   TString parFileName = "./config/beammonitor.cfg";
   bmcon->FromFile(parFileName.Data());
   parFileName = "./config/bmreso_vs_r.root";

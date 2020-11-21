@@ -35,7 +35,7 @@
 #include "TATWparCal.hxx"
 #include "TATWparMap.hxx"
 
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TAVTparConf.hxx"
 #include "TAITparConf.hxx"
 #include "TAMSDparConf.hxx"

@@ -7,7 +7,7 @@
 #include "TDCEvent.hh"
 
 #include "TABMparMap.hxx"
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TAGdaqEvent.hxx"
 #include "TABMdatRaw.hxx"
 #include "TABMrawHit.hxx"
@@ -45,7 +45,7 @@ TABMactDatRaw::TABMactDatRaw(const char* name,
     cout<<"TABMactDatRaw::default constructor::Creating the Beam Monitor hit Ntuplizer"<<endl;
   AddDataOut(p_datraw, "TABMdatRaw");
   AddPara(p_parmap, "TABMparMap");
-  AddPara(p_parcon, "TABMparCon");
+  AddPara(p_parcon, "TABMparConf");
   AddPara(p_pargeo, "TABMparGeo");
   AddDataIn(p_timraw, "TASTntuRaw");
   AddDataIn(p_datdaq, "TAGdaqEvent");
@@ -123,7 +123,7 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
 
    //From there we get the Mapping of the wires into the Chamber to the TDC channels
    TABMparMap*    p_parmap = (TABMparMap*)    fpParMap->Object();
-   TABMparCon*    p_parcon = (TABMparCon*)    fpParCon->Object();
+   TABMparConf*    p_parcon = (TABMparConf*)    fpParCon->Object();
    TABMparGeo*    p_pargeo = (TABMparGeo*)    fpParGeo->Object();
 
   Int_t view,plane,cell, channel,up, hitnum=0, discharged=0, bmcellid;

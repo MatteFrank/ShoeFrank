@@ -23,7 +23,7 @@
 #include "TAGparGeo.hxx"
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TABMdatRaw.hxx"
 #include "TABMntuRaw.hxx"
 
@@ -51,8 +51,8 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
    TString  parFileName = "./geomaps/TABMdetector.geo";  
    geomap->FromFile(parFileName.Data());
 
-   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
-   TABMparCon* parConf = (TABMparCon*)bmConf->Object();
+   TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparConf());
+   TABMparConf* parConf = (TABMparConf*)bmConf->Object();
    parFileName = "./config/TABMdetector.cfg";
    parConf->FromFile(parFileName.Data());
    

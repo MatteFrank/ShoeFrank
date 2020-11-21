@@ -355,8 +355,8 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TABMparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
-      fpParConfBm = new TAGparaDsc("bmConf", new TABMparCon());
-      TABMparCon* parConf = (TABMparCon*)fpParConfBm->Object();
+      fpParConfBm = new TAGparaDsc("bmConf", new TABMparConf());
+      TABMparConf* parConf = (TABMparConf*)fpParConfBm->Object();
       parFileName = fCampManager->GetCurConfFile(TABMparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
       
