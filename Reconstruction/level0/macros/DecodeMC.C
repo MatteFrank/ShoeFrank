@@ -16,9 +16,9 @@
 //void ReadVtxRawMC(TString name = "16O_C2H4_200_1.root")
 //void ReadVtxRawMC(TString name = "p_80_vtx.root")
 //void ReadVtxRawMC(TString name = "12C_80_vtx.root")
-void DecodeMC(TString name = "12C_C_200_1.root", TString exp = "12C_200")
+void DecodeMC(TString name = "12C_C_200_1.root", TString exp = "12C_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance();
+   GlobalPar::Instance(exp);
    GlobalPar::GetPar()->Print();
    
    Int_t pos = name.Last('.');
@@ -26,7 +26,7 @@ void DecodeMC(TString name = "12C_C_200_1.root", TString exp = "12C_200")
    nameOut.Append("_Out.root");
    
    
-   LocalRecoMC* locRec = new LocalRecoMC(exp, name, nameOut);
+   LocalRecoMC* locRec = new LocalRecoMC(exp, runNumber, name, nameOut);
    
    // global setting
    //locRec->EnableTree();
