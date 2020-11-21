@@ -20,11 +20,13 @@
 #include "TAGactTreeWriter.hxx"
 #include "TAGgeoTrafo.hxx"
 
+#include "TAGparGeo.hxx"
 #include "TATWparGeo.hxx"
 #include "TATWparCal.hxx"
 #include "TATWntuRaw.hxx"
 #include "TATWntuPoint.hxx"
 
+#include "TAGcampaignManager.hxx"
 #include "TATWactNtuMC.hxx"
 #include "TATWactNtuPoint.hxx"
 
@@ -33,25 +35,52 @@
 #endif
 
 // main
+TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter* outFile = 0x0;
 TATWactNtuMC* twActRaw = 0x0;
 TATWactNtuPoint* twActRec = 0x0;
 
-void FillMCTw(EVENT_STRUCT *myStr) {
+void FillMCTw(EVENT_STRUCT *myStr, Int_t runNumber) {
    
-   /*Ntupling the MC Vertex information*/
+   TAGparaDsc* gGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
+   TAGparGeo* parGeoG = (TAGparGeo*)gGeo->Object();
+   TString parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
+   parGeoG->FromFile(parFileName.Data());
+   
+   Int_t Z_beam = parGeoG->GetBeamPar().AtomicNumber;
+   Int_t A_beam = parGeoG->GetBeamPar().AtomicMass;
+   TString ion_name = parGeoG->GetBeamPar().Material;
+   Float_t kinE_beam = parGeoG->GetBeamPar().Energy; //GeV/u
+   
    TAGparaDsc* twGeo    = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
    TATWparGeo* geomap   = (TATWparGeo*) twGeo->Object();
-   geomap->FromFile();
+   parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+   geomap->FromFile(parFileName.Data());
    
    TAGparaDsc* twCal   = new TAGparaDsc("twCal", new TATWparCal());
-   TATWparCal* calmap   = (TATWparCal*) twCal->Object();
-   calmap->FromFile();
+   TATWparCal* parCal   = (TATWparCal*) twCal->Object();
+   parFileName = campManager->GetCurMapFile(TATWparGeo::GetBaseName(), runNumber);
+   parCal->FromBarStatusFile(parFileName.Data());
 
-   TAGdataDsc* twRec = new TAGdataDsc("containerPoint", new TATWntuPoint());
-   TAGdataDsc* twRaw = new TAGdataDsc("containerHit", new TATWntuRaw());
+   Bool_t isTof_calib = false;
+   parFileName = campManager->GetCurCalFile(TATWparGeo::GetBaseName(), runNumber,
+                                             isTof_calib,false);
+   parCal->FromCalibFile(parFileName.Data(),isTof_calib,false);
+
+   isTof_calib = true;
+   parFileName = campManager->GetCurCalFile(TATWparGeo::GetBaseName(), runNumber,
+                                             isTof_calib,false);
+   parCal->FromCalibFile(parFileName.Data(),isTof_calib,false);
+
+   parFileName = campManager->GetCurConfFile(TATWparGeo::GetBaseName(), runNumber,
+                                              Form("%d%s", A_beam,ion_name.Data()),
+                                              (int)(kinE_beam*TAGgeoTrafo::GevToMev()));
+   parCal->FromFileZID(parFileName.Data(),Z_beam);
    
-   twActRaw  = new TATWactNtuMC("twActRaw", twRaw, myStr);
+   TAGdataDsc* twRec = new TAGdataDsc("twPoint", new TATWntuPoint());
+   TAGdataDsc* twRaw = new TAGdataDsc("twRaw", new TATWntuRaw());
+   
+   twActRaw  = new TATWactNtuMC("twActRaw", twRaw, twCal, twGeo, myStr);
    twActRaw->CreateHistogram();
 
    twActRec  = new TATWactNtuPoint("twActRec", twRaw, twRec, twGeo, twCal);
@@ -61,21 +90,20 @@ void FillMCTw(EVENT_STRUCT *myStr) {
    //outFile->SetupElementBranch(twRaw, TATWntuRaw::GetBranchName());
 }
 
-void ReadTwRawMC(TString name = "16O_C2H4_200_15.root")
-//void ReadTwRawMC(TString name = "p_80_vtx.root")
-//void ReadTwRawMC(TString name = "12C_80_vtx.root")
-//void ReadTwRawMC(TString name = "12C_400_vtx.root")
+void ReadTwRawMC(TString name = "16O_C2H4_200_1.root", TString expName = "16O_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance();
+   GlobalPar::Instance(expName);
    GlobalPar::GetPar()->Print();
 
    TAGroot tagr;
-   TAGgeoTrafo geoTrafo;
-   geoTrafo.FromFile();
-
-   tagr.SetCampaignNumber(-1);
-   tagr.SetRunNumber(1);
    
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
+   
+   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   geoTrafo->FromFile(parFileName);
+
    
    TFile* f = new TFile(name.Data());
    f->ls();
@@ -90,7 +118,7 @@ void ReadTwRawMC(TString name = "16O_C2H4_200_15.root")
    
    outFile = new TAGactTreeWriter("outFile");
    
-   FillMCTw(&evStr);
+   FillMCTw(&evStr, runNumber);
    
    tagr.AddRequiredItem("twActRaw");
    tagr.AddRequiredItem("twActRec");
