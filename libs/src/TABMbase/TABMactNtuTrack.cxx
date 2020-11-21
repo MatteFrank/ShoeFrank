@@ -624,7 +624,7 @@ void TABMactNtuTrack::CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack
   for(Int_t i=0;i<xtracktr.size();++i){
     for(Int_t k=0;k<ytracktr.size();++k){
       TABMtrack currtracktr=xtracktr.at(i);
-      Bool_t status=currtracktr.mergeTrack(ytracktr.at(k));
+      Int_t status=currtracktr.mergeTrack(ytracktr.at(k));
       if(status==0){
         TABMtrack *trk=p_ntutrk->NewTrack(currtracktr);
         if(p_ntutrk->GetTrackStatus()!=0)
