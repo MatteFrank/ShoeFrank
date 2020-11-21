@@ -15,6 +15,7 @@
 
 #include "Evento.hxx"
 
+#include "TAGcampaignManager.hxx"
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
@@ -36,16 +37,18 @@
 #endif
 
 // main
+TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter* outFile = 0x0;
 TAMSDactNtuMC* msdActRaw = 0x0;
 TAMSDactNtuCluster* msdActClus = 0x0;
 
-void FillMCMsd(EVENT_STRUCT *myStr) {
+void FillMCMsd(EVENT_STRUCT *myStr, Int_t runNumber) {
    
    /*Ntupling the MC Vertex information*/
    TAGparaDsc* msdGeo    = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
    TAMSDparGeo* geomap   = (TAMSDparGeo*) msdGeo->Object();
-   geomap->FromFile();
+   TString parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+   geomap->FromFile(parFileName.Data());
    
    TAGdataDsc* msdRaw    = new TAGdataDsc("msdRaw", new TAMSDntuRaw());
    TAGdataDsc* msdClus   = new TAGdataDsc("msdClus", new TAMSDntuCluster());
@@ -68,21 +71,19 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
    
 }
 
-void ReadMsdRawMC(TString name = "16O_C2H4_200_1.root")
-//void ReadMsdRawMC(TString name = "p_80_vtx.root")
-//void ReadMsdRawMC(TString name = "12C_80_vtx.root")
-//void ReadMsdRawMC(TString name = "12C_400_vtx.root")
+void ReadMsdRawMC(TString name = "16O_C2H4_200_1.root", TString expName = "16O_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance();
+   GlobalPar::Instance(expName);
    GlobalPar::GetPar()->Print();
-
-   TAGroot tagr;
-   TAGgeoTrafo geoTrafo;
-   geoTrafo.FromFile();
-
-   tagr.SetCampaignNumber(-1);
-   tagr.SetRunNumber(1);
    
+   TAGroot tagr;
+   
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
+   
+   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   geoTrafo->FromFile(parFileName);
    
    TFile* f = new TFile(name.Data());
    f->ls();
@@ -97,7 +98,7 @@ void ReadMsdRawMC(TString name = "16O_C2H4_200_1.root")
    
    outFile = new TAGactTreeWriter("outFile");
    
-   FillMCMsd(&evStr);
+   FillMCMsd(&evStr, runNumber);
    
    tagr.AddRequiredItem("msdActRaw");
    tagr.AddRequiredItem("msdActCluster");
