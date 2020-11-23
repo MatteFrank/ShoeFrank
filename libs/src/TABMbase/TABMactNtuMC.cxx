@@ -43,9 +43,10 @@ TABMactNtuMC::TABMactNtuMC(const char* name,
 void TABMactNtuMC::CreateDigitizer()
 {
    TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuMC->Object();
-	 TABMparConf* p_bmcon  = (TABMparConf*) fpParCon->Object();
+   TABMparGeo* p_bmgeo  = (TABMparGeo*) fpParGeo->Object();
+   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
 
-   fDigitizer = new TABMdigitizer(p_nturaw, p_bmcon);
+   fDigitizer = new TABMdigitizer(p_nturaw, p_bmgeo, p_bmcon);
 }
 
 
@@ -90,14 +91,14 @@ Bool_t TABMactNtuMC::Action()
   TABMparConf* p_bmcon  = (TABMparConf*) fpParCon->Object();
   TABMparGeo* p_bmgeo   = (TABMparGeo*) fpParGeo->Object();
 
-  Int_t cell, view, lay, ipoint, cellid;
+  Int_t cell, view, lay, ipoint, wireid;
   Double_t rdrift;
 
   TVector3 loc, gmom, mom,  glo;
   p_nturaw->SetupClones();
   p_nturaw->ResetEffPaoloni();
-	p_nturaw->ClearCellOccupy();
-	fDigitizer->ClearMap();
+  p_nturaw->ClearCellOccupy();
+  fDigitizer->ClearMap();
 
   if (FootDebugLevel(1))
     cout<<"TABMactNtuMC::Processing event number="<<gTAGroot->CurrentEventNumber()<<"    number of hits="<<fpEvtStr->BMNn<<endl;
@@ -108,18 +109,28 @@ Bool_t TABMactNtuMC::Action()
       cell = fpEvtStr->BMNicell[i];
       lay = fpEvtStr->BMNilay[i];
       view = fpEvtStr->BMNiview[i]==-1 ? 1:0;
-			cellid=p_bmgeo->GetBMNcell(lay, view, cell);
-			ipoint=fpEvtStr->BMNid[i]-1;
+      ipoint = fpEvtStr->BMNid[i]-1;
+      wireid = p_bmgeo->GetAbsWireId(view, lay, cell);
 
       glo.SetXYZ(fpEvtStr->BMNxin[i],fpEvtStr->BMNyin[i],fpEvtStr->BMNzin[i]);
       loc = geoTrafo->FromGlobalToBMLocal(glo);
       gmom.SetXYZ(fpEvtStr->BMNpxin[i],fpEvtStr->BMNpyin[i],fpEvtStr->BMNpzin[i]);
+      Double_t edep = 0;
+      Double_t zout = 0;
+      Double_t time = 0;
+      Int_t    Z    = 0;
+
       if(gmom.Mag()!=0){
-				rdrift=p_bmgeo->FindRdrift(loc, gmom, p_bmgeo->GetWirePos(view, lay,p_bmgeo->GetSenseId(cell)),p_bmgeo->GetWireDir(view),false);
-				Bool_t added=fDigitizer->Process(rdrift,cellid,lay,view,cell, i, ipoint);
+        rdrift=p_bmgeo->FindRdrift(loc, gmom, p_bmgeo->GetWirePos(view, lay,p_bmgeo->GetSenseId(cell)),p_bmgeo->GetWireDir(view),false);
+        Bool_t added=fDigitizer->Process(edep, loc[0], loc[1], loc[2], zout, time, wireid, Z,
+                                         gmom[0], gmom[1], gmom[2]);
+        TABMntuHit* hit = fDigitizer->GetCurrentHit();
+        hit->SetIsFake((ipoint==0) ? 0 : (ipoint>0 ? 1 : 2));
+        hit->AddMcTrackIdx(ipoint, i);
+        
 	      if(ValidHistogram() && !added)
 						fpDisRdrift->Fill(rdrift);
-			}
+      }
     }
 	}
 
@@ -152,11 +163,25 @@ void TABMactNtuMC::CreateFakeHits()
 {
 	TABMparGeo* p_bmgeo   = (TABMparGeo*) fpParGeo->Object();
   Int_t nfake=(Int_t)fabs(gRandom->Gaus(0,4));
+  
   for(Int_t i=0;i<nfake;i++){
     Int_t cellid=(Int_t)gRandom->Uniform(0,35.9);
 		Int_t cell, lay, view;
 		p_bmgeo->GetBMNlvc(cellid,lay, view, cell);
-		fDigitizer->Process(gRandom->Uniform(0.,0.8),cellid,lay,view,cell ,-1,-1);
+    Int_t wireid = p_bmgeo->GetAbsWireId(view, lay, cell);
+
+    Double_t edep = 0;
+    Double_t zout = 0;
+    Double_t time = 0;
+    Int_t    Z    = 0;
+    TVector3 loc(0,0,0);
+    TVector3 gmom(0,0,0);
+    
+    Bool_t added=fDigitizer->Process(edep, loc[0], loc[1], loc[2], zout, time, wireid, Z,
+                                       gmom[0], gmom[1], gmom[2]);
+    
+    TABMntuHit* hit = fDigitizer->GetCurrentHit();
+    hit->AddMcTrackIdx(-99, -99);
 	}
 
   return ;

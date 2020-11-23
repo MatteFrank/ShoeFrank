@@ -58,9 +58,10 @@ TABMactNtuHitMC::~TABMactNtuHitMC()
 void TABMactNtuHitMC::CreateDigitizer()
 {
    TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuRaw->Object();
-	 TABMparConf* p_bmcon  = (TABMparConf*) fpParCon->Object();
+   TABMparGeo* p_bmgeo  = (TABMparGeo*) fpParGeo->Object();
+   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
 
-   fDigitizer = new TABMdigitizer(p_nturaw, p_bmcon);
+   fDigitizer = new TABMdigitizer(p_nturaw, p_bmgeo, p_bmcon);
 }
 
 //------------------------------------------+-----------------------------------
@@ -75,7 +76,7 @@ Bool_t TABMactNtuHitMC::Action()
   TAMCntuHit* pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
   TAMCntuEve* pNtuEve   = (TAMCntuEve*) fpNtuEve->Object();
 
-  Int_t cell, view, lay, ipoint, cellid;
+  Int_t cell, view, lay, ipoint, wireid;
   Double_t rdrift;
 
   TVector3 loc, gmom, mom,  glo;
@@ -99,17 +100,28 @@ Bool_t TABMactNtuHitMC::Action()
       cell = hitMC->GetCell();
       lay = hitMC->GetLayer();
       view = hitMC->GetView() == -1 ? 1:0;
-      cellid=p_bmgeo->GetBMNcell(lay, view, cell);
+      wireid = p_bmgeo->GetAbsWireId(view, lay, cell);
 
       glo.SetXYZ(hitMC->GetInPosition()[0], hitMC->GetInPosition()[1], hitMC->GetInPosition()[2]);
       loc = geoTrafo->FromGlobalToBMLocal(glo);
       gmom.SetXYZ(hitMC->GetInMomentum()[0], hitMC->GetInMomentum()[1], hitMC->GetInMomentum()[2]);
-
+      
+      Double_t edep = 0;
+      Double_t zout = 0;
+      Double_t time = 0;
+      Int_t    Z    = 0;
+      
       if(gmom.Mag()!=0){
         rdrift=p_bmgeo->FindRdrift(loc, gmom, p_bmgeo->GetWirePos(view, lay,p_bmgeo->GetSenseId(cell)),p_bmgeo->GetWireDir(view),false);
-        Bool_t added=fDigitizer->Process(rdrift,cellid,lay,view,cell, i, trackId);
+        Bool_t added=fDigitizer->Process(edep, loc[0], loc[1], loc[2], zout, time, wireid, Z,
+                                         gmom[0], gmom[1], gmom[2]);
+        
+        TABMntuHit* hit = fDigitizer->GetCurrentHit();
+        hit->SetIsFake((ipoint==0) ? 0 : (ipoint>0 ? 1 : 2));
+        hit->AddMcTrackIdx(ipoint, i);
+        
 	      if(ValidHistogram() && !added)
-						fpDisRdrift->Fill(rdrift);
+           fpDisRdrift->Fill(rdrift);
       }
     }
   }
@@ -170,8 +182,18 @@ void TABMactNtuHitMC::CreateFakeHits()
     Int_t cellid=(Int_t)gRandom->Uniform(0,35.9);
     Int_t cell, lay, view;
     p_bmgeo->GetBMNlvc(cellid,lay, view, cell);
-    fDigitizer->Process(gRandom->Uniform(0.,0.8),cellid,lay,view,cell ,-1,-1);
+    Int_t wireid = p_bmgeo->GetAbsWireId(view, lay, cellid);
+    
+    Double_t edep = 0;
+    Double_t zout = 0;
+    Double_t time = 0;
+    Int_t    Z    = 0;
+    TVector3 loc(0,0,0);
+    TVector3 gmom(0,0,0);
+    
+    Bool_t added=fDigitizer->Process(edep, loc[0], loc[1], loc[2], zout, time, wireid, Z,
+                                     gmom[0], gmom[1], gmom[2]);
+    TABMntuHit* hit = fDigitizer->GetCurrentHit();
+    hit->AddMcTrackIdx(-99, -99);
   }
-
-  return ;
 }

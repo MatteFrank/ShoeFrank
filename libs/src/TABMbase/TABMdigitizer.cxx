@@ -26,9 +26,10 @@
 #include "TABMdigitizer.hxx"
 
 // --------------------------------------------------------------------------------------
-TABMdigitizer::TABMdigitizer(TABMntuRaw* pNtuRaw, TABMparConf* parCon)
- : TAGobject(),
+TABMdigitizer::TABMdigitizer(TABMntuRaw* pNtuRaw, TABMparGeo* parGeo, TABMparConf* parCon)
+ : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
+   fpParGeo(parGeo),
    fpParCon(parCon),
    fTimeMinDiff(50)
 {
@@ -50,56 +51,68 @@ Double_t TABMdigitizer::EffFunc(Double_t* x, Double_t* par){
 }
 
 //___________________________________________________________________________________________
-// Bool_t TABMdigitizer::AddHitInMap(Int_t cellid, Double_t inrdrift, Int_t inhitindex,Int_t inipoint)
-Bool_t TABMdigitizer::Process(Double_t rdrift, Int_t cellid, Int_t plane, Int_t view, Int_t cell, Int_t inhitindex,Int_t inipoint)
+Bool_t TABMdigitizer::Process(Double_t /*edep*/, Double_t x0, Double_t y0, Double_t z0, Double_t /*zout*/,
+                              Double_t /*time*/, Int_t wireid, Int_t /*Z*/, Double_t px0, Double_t py0, Double_t pz0)
 {
+  
+  Int_t view   = fpParGeo->GetViewId(wireid);
+  Int_t lay    = fpParGeo->GetLayerId(wireid);
+  Int_t cell   = fpParGeo->GetCellId(wireid);
+  Int_t cellid = 0;
+  Double_t rdrift = 0.;
+  
+  TVector3 loc(x0, y0, z0);
+  TVector3 gmom(px0, py0, pz0);
+  
+  if (gmom.Mag() == 0) {
+    cellid = (Int_t)gRandom->Uniform(0,35.9);
+    rdrift = gRandom->Uniform(0.,0.8);
+  } else {
+    cellid = fpParGeo->GetBMNcell(lay, view, cell);
+    rdrift = fpParGeo->FindRdrift(loc, gmom, fpParGeo->GetWirePos(view, lay,                         fpParGeo->GetSenseId(cell)), fpParGeo->GetWireDir(view), false);
+  }
+  
   if(fpParCon->GetSmearHits())
     if(gRandom->Uniform(0,1)>fpEffDist->Eval(rdrift))
       return false;
-
+  
   TABMntuHit *mytmp = 0x0;
   if(fpParCon->GetSmearRDrift()>0)
     rdrift=SmearRdrift(rdrift,fpParCon->ResoEval(rdrift));
 
-  std::multimap<Int_t, TABMntuHit*>::iterator pos=fMap.find(cellid);
-  if(pos==fMap.end()){//new hit in a new cellid
-    mytmp=fpNtuRaw->NewHit(cellid, plane, view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
-    mytmp->SetIsFake((inipoint==0) ? 0 : (inipoint>0 ? 1 : 2));
-    mytmp->AddMcTrackIdx(inipoint, inhitindex);
-    fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,mytmp));
+  if (fMap[wireid] == 0) {//new hit in a new cellid
+    fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
+    fMap[wireid] = fCurrentHit;
     return true;
+    
   }else{//multihit in the same cellid
+    fCurrentHit = fMap[wireid];
+    
     Int_t currhittime=fpParCon->GetTimeFromRDrift(rdrift);
-    std::pair <std::multimap<Int_t, TABMntuHit*>::iterator, std::multimap<Int_t, TABMntuHit*>::iterator> rangeite;
-    rangeite=fMap.equal_range(pos->first);
-    for(auto d=rangeite.first;d!=rangeite.second;){//loop on all the hit with the same cellid
-      Double_t distance=d->second->GetTdrift()-currhittime;
+    Double_t distance=fCurrentHit->GetTdrift()-currhittime;
+    
       if(fabs(distance)<fTimeMinDiff){
         if( distance>0){//the previously saved hit have to be substituted by the present hit
-          d->second->Clear();
-          d->second->SetIdCell(cellid);
-          d->second->SetCell(cell);
-          d->second->SetView(view);
-          d->second->SetPlane(plane);
-          d->second->SetRdrift(rdrift);
-          d->second->SetTdrift(fpParCon->GetTimeFromRDrift(rdrift));
-          d->second->SetIsFake((inipoint==0) ? 0 : (inipoint>0 ? 1 : 2));
-          d->second->SetSigma(fpParCon->ResoEval(rdrift));
-          d->second->AddMcTrackIdx(inipoint, inhitindex);
+          fCurrentHit->Clear();
+          fCurrentHit->SetIdCell(cellid);
+          fCurrentHit->SetCell(cell);
+          fCurrentHit->SetView(view);
+          fCurrentHit->SetPlane(lay);
+          fCurrentHit->SetRdrift(rdrift);
+          fCurrentHit->SetTdrift(fpParCon->GetTimeFromRDrift(rdrift));
+          fCurrentHit->SetSigma(fpParCon->ResoEval(rdrift));
           return false;
         }else
           return false;// the present hit should not be charged
-      }else
-        ++d;
-    }
-    mytmp=fpNtuRaw->NewHit(cellid, plane,view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
-    mytmp->SetIsFake((inipoint==0) ? 0 : (inipoint>0 ? 1 : 2));
-    mytmp->AddMcTrackIdx(inipoint, inhitindex);
-    fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,mytmp));
+      }
+  
+    fCurrentHit=fpNtuRaw->NewHit(cellid, lay,view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
+    fMap[wireid] = fCurrentHit;
+  
     return true;
   }
 
-return false;
+  return false;
 }
 
 
