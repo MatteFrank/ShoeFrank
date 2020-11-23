@@ -356,7 +356,7 @@ Bool_t TATWdigitizer::IsOverEnergyThreshold(double edep_thr, double edep) {
   
 }
 //___________________________________________________________________________________________
-Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t barid, Int_t Z)
+Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t barid, Int_t Z, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
 
    // hit position, bars and layer

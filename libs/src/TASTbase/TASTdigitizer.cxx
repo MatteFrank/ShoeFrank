@@ -80,7 +80,7 @@ Float_t TASTdigitizer::GetPhotonsN(Float_t /*X*/, Float_t /*Y*/, Float_t edep)
 }
 
 //___________________________________________________________________________________________
-Bool_t TASTdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/)
+Bool_t TASTdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
    time += gRandom->Gaus(0, fResTime);
    Float_t charge = GetPhotonsN(x0, y0, edep)*fGain;
