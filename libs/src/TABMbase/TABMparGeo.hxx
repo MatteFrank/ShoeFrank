@@ -66,6 +66,12 @@ public:
    Bool_t         IsDrawWire()          { return fDrawWire;      }
    void           SetDrawWire(Bool_t f) { fDrawWire = f;         }
    
+   // Get view, layer, cell from absolute sense wire id [0,35]
+   Int_t          GetViewId(Int_t absId)  const { return absId/(fLayersN*fSensesN);             }
+   Int_t          GetLayerId(Int_t absId) const { return (absId%(fLayersN*fSensesN))/fSensesN;  }
+   Int_t          GetCellId(Int_t absId)  const { return (absId%(fLayersN*fSensesN))%fSensesN;  }
+   Int_t          GetAbsWireId(int view, int layer, int wire)  const { return view*fLayersN*fSensesN +
+                                                                             layer*fSensesN + wire; }
    //Id sense as function of cell
    Int_t          GetSenseId(int cell) { return fBmIdSense[cell]; }
 
@@ -84,8 +90,8 @@ public:
    TVector3       GetWirePos(Int_t view, Int_t layer, Int_t wire) const;
    TVector3       GetWireDir(Int_t view) const;
 
-   int         GetCell(TVector3 pos, int layer, int view) ;
-
+   Int_t          GetCell(TVector3 pos, int layer, int view) ;
+  
    // transformation from BM to wire and vice versa
    void           Wire2Detector(Double_t xl, Double_t yl, Double_t zl,
                                 Double_t& xg, Double_t& yg, Double_t& zg) const;
