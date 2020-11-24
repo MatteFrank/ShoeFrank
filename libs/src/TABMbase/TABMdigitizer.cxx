@@ -52,63 +52,63 @@ Double_t TABMdigitizer::EffFunc(Double_t* x, Double_t* par){
 
 //___________________________________________________________________________________________
 Bool_t TABMdigitizer::Process(Double_t /*edep*/, Double_t x0, Double_t y0, Double_t z0, Double_t /*zout*/,
-                              Double_t /*time*/, Int_t wireid, Int_t /*Z*/, Double_t px0, Double_t py0, Double_t pz0)
+                              Double_t /*time*/, Int_t cellid, Int_t /*Z*/, Double_t px0, Double_t py0, Double_t pz0)
 {
-  
-  Int_t view   = fpParGeo->GetViewId(wireid);
-  Int_t lay    = fpParGeo->GetLayerId(wireid);
-  Int_t cell   = fpParGeo->GetCellId(wireid);
-  Int_t cellid = 0;
-  Double_t rdrift = 0.;
-  
+
+
+  Int_t view, lay ,cell ;
+  Double_t rdrift;
+
   TVector3 loc(x0, y0, z0);
   TVector3 gmom(px0, py0, pz0);
-  
-  if (gmom.Mag() == 0) {
+
+  if (cellid < 0) {//it's a fake hit from CreateFakeHits
     cellid = (Int_t)gRandom->Uniform(0,35.9);
+    fpParGeo->GetBMNlvc(cellid, lay, view, cell);
     rdrift = gRandom->Uniform(0.,0.8);
   } else {
-    cellid = fpParGeo->GetBMNcell(lay, view, cell);
-    rdrift = fpParGeo->FindRdrift(loc, gmom, fpParGeo->GetWirePos(view, lay,                         fpParGeo->GetSenseId(cell)), fpParGeo->GetWireDir(view), false);
+    fpParGeo->GetBMNlvc(cellid, lay, view, cell);
+    rdrift = fpParGeo->FindRdrift(loc, gmom, fpParGeo->GetWirePos(view, lay, fpParGeo->GetSenseId(cell)), fpParGeo->GetWireDir(view), false);
   }
-  
+
   if(fpParCon->GetSmearHits())
     if(gRandom->Uniform(0,1)>fpEffDist->Eval(rdrift))
       return false;
-  
-  TABMntuHit *mytmp = 0x0;
+
   if(fpParCon->GetSmearRDrift()>0)
     rdrift=SmearRdrift(rdrift,fpParCon->ResoEval(rdrift));
 
-  if (fMap[wireid] == 0) {//new hit in a new cellid
+  //everything is computed, now I can check and add the hit
+  std::multimap<Int_t, TABMntuHit*>::iterator pos=fMap.find(cellid);
+  if(pos==fMap.end()){//new hit in a new cellid
     fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
-    fMap[wireid] = fCurrentHit;
+    fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,fCurrentHit));
     return true;
-    
   }else{//multihit in the same cellid
-    fCurrentHit = fMap[wireid];
-    
     Int_t currhittime=fpParCon->GetTimeFromRDrift(rdrift);
-    Double_t distance=fCurrentHit->GetTdrift()-currhittime;
-    
+    std::pair <std::multimap<Int_t, TABMntuHit*>::iterator, std::multimap<Int_t, TABMntuHit*>::iterator> rangeite;
+    rangeite=fMap.equal_range(pos->first);
+    for(auto d=rangeite.first;d!=rangeite.second;){//loop on all the hit with the same cellid
+      Double_t distance=d->second->GetTdrift()-currhittime;
       if(fabs(distance)<fTimeMinDiff){
         if( distance>0){//the previously saved hit have to be substituted by the present hit
-          fCurrentHit->Clear();
-          fCurrentHit->SetIdCell(cellid);
-          fCurrentHit->SetCell(cell);
-          fCurrentHit->SetView(view);
-          fCurrentHit->SetPlane(lay);
-          fCurrentHit->SetRdrift(rdrift);
-          fCurrentHit->SetTdrift(fpParCon->GetTimeFromRDrift(rdrift));
-          fCurrentHit->SetSigma(fpParCon->ResoEval(rdrift));
-          return false;
+          d->second->Clear();
+          d->second->SetIdCell(cellid);
+          d->second->SetCell(cell);
+          d->second->SetView(view);
+          d->second->SetPlane(lay);
+          d->second->SetRdrift(rdrift);
+          d->second->SetTdrift(fpParCon->GetTimeFromRDrift(rdrift));
+          d->second->SetSigma(fpParCon->ResoEval(rdrift));
+          return true;
         }else
           return false;// the present hit should not be charged
-      }
-  
-    fCurrentHit=fpNtuRaw->NewHit(cellid, lay,view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
-    fMap[wireid] = fCurrentHit;
-  
+      }else
+        ++d;
+    }
+    //if the time of the hit is > fTimeMinDiff, it can be added
+    fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
+    fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,fCurrentHit));
     return true;
   }
 

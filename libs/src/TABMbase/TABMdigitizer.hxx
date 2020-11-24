@@ -44,7 +44,7 @@ private:
   TF1*          fpEffDist;               //efficiency as a function of drift distance, measured from data taken @ Trento 2019
   TABMntuHit*   fCurrentHit;
 
-  map<Int_t, TABMntuHit*> fMap;     //map with cellid and the bm hits
+  multimap<Int_t, TABMntuHit*> fMap;     //multimap with cellid and the bm hits
 
   ClassDef(TAGobject,0)
 
