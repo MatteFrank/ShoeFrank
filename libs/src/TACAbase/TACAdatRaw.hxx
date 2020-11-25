@@ -24,13 +24,8 @@ public:
   TACArawHit(TWaveformContainer *w);
   virtual         ~TACArawHit();
   
-  virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
-  virtual double ComputeCharge( TWaveformContainer *w);
-  virtual double ComputeAmplitude( TWaveformContainer *w);
-  virtual double ComputePedestal( TWaveformContainer *w);
-  virtual double ComputeBaseline( TWaveformContainer *w);
-  
-  ClassDef(TACArawHit,2);
+
+  ClassDef(TACArawHit,1);
   //
 };
 
@@ -42,32 +37,28 @@ public:
   TACAdatRaw();
   virtual         ~TACAdatRaw();
 
+  Int_t             GetHitsN() const;
   TACArawHit*       GetHit(Int_t i_ind);
   const TACArawHit* GetHit(Int_t i_ind) const;
-
-  TACArawHit*       GetSuperHit(){return fSuperHit;}
   
   void              NewHit(TWaveformContainer *W);
-  void              NewSuperHit(vector<TWaveformContainer*>);
   void              SetupClones();
-
-   
+  
   virtual void      Clear(Option_t* opt="");
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
-
-  void              UpdateRunTime(int value){fRunTime+=value;}
-   
-  static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
-  ClassDef(TACAdatRaw,3);
+public:
+  static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
 private:
    Int_t           fHistN;          //
    TClonesArray*   fListOfHits;         // hits
-   TACArawHit*     fSuperHit;  //sum
-   Int_t           fRunTime;
 
+private:
    static TString fgkBranchName;    // Branch name in TTree
+  
+  ClassDef(TACAdatRaw,1);
+
 };
 
 #endif

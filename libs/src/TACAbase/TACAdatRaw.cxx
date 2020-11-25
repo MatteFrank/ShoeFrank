@@ -56,33 +56,10 @@ TACArawHit::~TACArawHit(){
 
 }
 
-
-// do not need these interfaces, done by compilator
-double TACArawHit::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
-  return  TAGbaseWD::ComputeTime(w, frac, del, tleft, tright);
+Int_t TACAdatRaw::GetHitsN() const
+{
+  return fListOfHits->GetEntries();
 }
-
-
-double TACArawHit::ComputeCharge(TWaveformContainer *w){
-  return TAGbaseWD::ComputeCharge(w);
-}
-
-
-double TACArawHit::ComputeAmplitude(TWaveformContainer *w){
-  return TAGbaseWD::ComputeAmplitude(w);
-}
-
-
-double TACArawHit::ComputeBaseline(TWaveformContainer *w){
-  return TAGbaseWD::ComputeBaseline(w);
-}
-
-
-double TACArawHit::ComputePedestal(TWaveformContainer *w){
-  return  TAGbaseWD::ComputePedestal(w);
-}
-
-
 
 //##############################################################################
 
@@ -90,20 +67,19 @@ ClassImp(TACAdatRaw);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TACAdatRaw::TACAdatRaw() :
-  fHistN(0), fListOfHits(0), fSuperHit(0), fRunTime(0x0){
-
+TACAdatRaw::TACAdatRaw()
+: TAGdata(),
+  fHistN(0),
+  fListOfHits(0)
+{
   SetupClones();
 }
-
-
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
 TACAdatRaw::~TACAdatRaw() {
   if(fListOfHits)delete fListOfHits;
-  if(fSuperHit) delete fSuperHit;
 }
 
 //------------------------------------------+-----------------------------------
@@ -148,63 +124,6 @@ void TACAdatRaw::NewHit(TWaveformContainer *W){
   TACArawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TACArawHit(W);
   fHistN++;
 }
-
-//------------------------------------------+-----------------------------------
-//! new super hit
-void TACAdatRaw::NewSuperHit(vector<TWaveformContainer*> vW){
-
-
-  if(!vW.size()){
-    printf("Warning, ST waveforms not found!!\n");
-    return;
-  }
-
-  TWaveformContainer *wsum = new TWaveformContainer;
-  int ChannelId=-1;
-  int BoardId = vW.at(0)->GetBoardId();
-  int TrigType = vW.at(0)->GetTrigType();
-  int TriggerCellId = vW.at(0)->GetTriggerCellId();
-
-  
-
-  //I define the time window
-  int i_ampmin = TMath::LocMin(vW.at(0)->GetVectA().size(),&(vW.at(0)->GetVectA())[0]);
-  double t_ampmin = vW.at(0)->GetVectT().at(i_ampmin);
-  double tmin = (t_ampmin-20 > vW.at(0)->GetVectT().at(0)) ? t_ampmin-20 : vW.at(0)->GetVectT().at(0);
-  double tmax = (t_ampmin+5 < vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1)) ? t_ampmin+5 : vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1);
-  vector<double> time,amp;
-  double tmpt=tmin;
-  while(tmpt<tmax){
-    time.push_back(tmpt);
-    tmpt+=0.2;
-  }
-  amp.assign(time.size(),0);
-
-  //I sum the signals
-    for(int i=0;i<vW.size();i++){
-    vector<double> tmpamp = vW.at(i)->GetVectA();
-    vector<double> tmptime = vW.at(i)->GetVectT();
-    TGraph tmpgr(tmptime.size(), &tmptime[0], &tmpamp[0]);
-    for(int isa=0;isa<time.size();isa++){
-      amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
-    }
-  }
-
-  wsum->SetChannelId(ChannelId);
-  wsum->SetBoardId(BoardId);
-  wsum->SetTrigType(TrigType);
-  wsum->SetTriggerCellId(TriggerCellId);
-  wsum->GetVectA() = amp;
-  wsum->GetVectT() = time;
-  wsum->GetVectRawT() = time;
-  wsum->SetNEvent(vW.at(0)->GetNEvent());
-  
-  fSuperHit = new TACArawHit(wsum);
-
-  delete wsum;
-  
-}
-
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
