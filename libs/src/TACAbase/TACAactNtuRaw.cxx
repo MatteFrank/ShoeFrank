@@ -62,7 +62,7 @@ Bool_t TACAactNtuRaw::Action() {
     Double_t charge  = aHi->GetCharge();
     
     // here needed mapping file
-    Int_t crysId = -1;
+    Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
     
     // here we need the calibration file
     Double_t energy = GetEnergy(charge, crysId);
