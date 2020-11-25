@@ -26,8 +26,10 @@ set( with_dictionnaries
    TACAdigitizer
    TACAactNtuMC
    TACAactNtuHitMC
+   TACAactNtuRaw
    TACAactNtuCluster
    TACAparGeo
+   TACAparCal
 )
 
 set( without_dictionnaries
