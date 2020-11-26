@@ -99,16 +99,9 @@ public:
     void SetDebugLevels();
     void RemoveSpace( string* s );
     bool IEquals(const string& a, const string& b);
-    bool frankFind( string what, string where );
     string StrReplace(string original, string erase, string add);
 
     bool Find_MCParticle( string villain );
-    double GetLowBinHisto( string villain );
-    double GetUpBinHisto( string villain );
-    int GetNBinHisto( string villain );
-    string GetSaveDirHisto( string villain );
-    string GetXTitlesHisto( string villain );
-    string GetYTitlesHisto( string villain );
 
 private:
 	GlobalPar();
@@ -122,11 +115,6 @@ private:
 private:
 	vector<string> m_copyInputFile;
 
-	map< string, pair< double, double > > m_map_range;
-	map< string, int > m_nBin_map;
-	map< string, string > m_map_saveDir;
-	map< string, string > m_map_xTitles;
-	map< string, string > m_map_yTitles;
    map< string, int >    m_map_debug;
 	string m_parFileName;
 
