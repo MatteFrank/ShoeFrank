@@ -4,13 +4,9 @@
   \brief   Implementation of TACAparMap.
 */
 
-#include <string.h>
 
-#include <fstream>
-
-#include "TSystem.h"
-#include "TString.h"
-
+#include "TAGroot.hxx"
+#include "TAGparaDsc.hxx"
 #include "TACAparMap.hxx"
 
 //##############################################################################
@@ -29,6 +25,7 @@ TACAparMap::TACAparMap()
 : TAGparTools()
 {
    fCrysId.clear();
+   fParGeo = (TACAparGeo*)gTAGroot->FindParaDsc(TACAparGeo::GetDefParaName(), "TACAparGeo")->Object();
 }
 
 //------------------------------------------+-----------------------------------
@@ -46,22 +43,28 @@ Bool_t TACAparMap::FromFile(const TString& name)
 {
   Clear();
   
-  if (Open(name)) return false;
+  if (!Open(name)) {
+    Error("FromFile()", "Cannot open file %s", name.Data());
+    return false;
+  }
   
   // read for parameter
   Double_t* para = new Double_t[3];
-  
+
+  for (Int_t i = 0; i < fParGeo->GetCrystalsN(); ++i) { // Loop over crystal
+
   // read parameters (boardId chId, crysId)
-  ReadItem(para, 3, ' ');
+  ReadItem(para, 3, ' ', false);
   
   // fill map
-  for (Int_t p = 0; p < 3; p++) { // Loop over parameters
     Int_t boardId   = TMath::Nint(para[0]);
     Int_t channelId = TMath::Nint(para[1]);
     Int_t crysId    = TMath::Nint(para[2]);
     
     pair<int, int> idx(boardId, channelId);
     fCrysId[idx] = crysId;
+    if (FootDebugLevel(1))
+      printf("%d %d %d\n", boardId, channelId, crysId);
   }
   
   
