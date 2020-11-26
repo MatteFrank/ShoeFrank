@@ -48,7 +48,6 @@ set( with_dictionnaries
    TAGmaterials
    TAGionisMaterials
    TAGxmlParser
-   MagicSkills
    GlobalPar
 )
 	
