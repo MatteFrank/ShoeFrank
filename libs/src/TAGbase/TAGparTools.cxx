@@ -65,6 +65,28 @@ void TAGparTools::ReadItem(TString& item)
 }
 
 //_____________________________________________________________________________
+void TAGparTools::ReadItem(TString& key, TString& item)
+{
+  Int_t pos = -1;
+  Char_t buf[255];
+  TString line;
+  while (pos == -1) {
+    if (fFileStream.eof()) break;
+    fFileStream.getline(buf, 255);
+    if (buf[0] == '/') continue;
+    if (buf[0] == '#') continue;
+    if (buf[0] == '\n') continue;
+    if (buf[0] == ' ') continue;
+    if (buf[0] == '\0') continue;
+    line = buf;
+    pos = line.First(":");
+  }
+  
+  key = line(0, pos+1);
+  item = line(pos+1, line.Length()-pos);
+  item = Normalize(item.Data());
+}
+//_____________________________________________________________________________
 void TAGparTools::ReadItem(Int_t &arg)
 {
    TString item;
@@ -386,17 +408,17 @@ TString TAGparTools::Normalize(const char* line)
    
    if ( rv.Length() <= 0 ) return TString();
    
-   while ( rv[0] == ' ' )
+   while ( rv[0] == ' ' || rv == '\t')
 	  rv.Remove(0,1);
    
-   while ( rv[rv.Length()-1] == ' ' )
+   while ( rv[rv.Length()-1] == ' ' || rv[rv.Length()-1] == '\t')
 	  rv.Remove(rv.Length()-1,1);
    
    Ssiz_t i(0);
    bool kill = false;
    
    for ( i = 0; i < rv.Length(); ++i ) {
-	  if ( rv[i] == ' ' ) {
+	  if ( rv[i] == ' ' || rv[i] == '\t') {
 		 if (kill) {
 			rv.Remove(i,1);
 			--i;
