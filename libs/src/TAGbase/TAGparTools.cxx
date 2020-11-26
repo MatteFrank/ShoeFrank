@@ -230,11 +230,20 @@ void TAGparTools::ReadItem(map<pair<int, int>, int>& map, const Char_t delimiter
 }
 
 //_____________________________________________________________________________
-void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter)
+void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter, Bool_t keyFlag)
 {
    TString key;
-   TAGparTools::ReadItem(key);
-   
+   if (keyFlag)
+     TAGparTools::ReadItem(key);
+   else {
+     Char_t buf[255];
+     do {
+       fFileStream.getline(buf, 255);
+       if (fFileStream.eof()) return;
+       key = buf;
+     } while (buf[0] == '/');
+   }
+  
    if (key.IsNull()) return;
    
    TObjArray* list = key.Tokenize(delimiter);
