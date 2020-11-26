@@ -49,6 +49,7 @@
 #include <vector>
 
 #include <TMath.h>
+#include <TFile.h>
 
 #include "TAGparGeo.hxx"
 
@@ -79,7 +80,6 @@
 
 #include "GlobalPar.hxx"
 #include "GlobalTrackRepostory.hxx"
-#include "MagicSkills.hxx"
 #include "UpdatePDG.hxx"
 
 #include <sys/types.h>
@@ -229,8 +229,8 @@ public:
 
   genfit::KalmanFittedStateOnPlane GetKalmanTrackInfoDataLike_ ( int indexOfState, Track* track );
 
-
-
+private:
+  vector<string> Tokenize(const string str, const string delimiters);
 
 private:
 

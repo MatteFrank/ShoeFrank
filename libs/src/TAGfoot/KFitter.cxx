@@ -232,6 +232,22 @@ void KFitter::CreateHistogram()
   }
 }
 
+//____________________________________________________________________________
+vector<string>  KFitter::Tokenize(const string str, const string delimiters)
+{
+  vector<string> tokens;
+  
+  // stringstream class check1
+  stringstream check1(str);
+  
+  string intermediate;
+  
+  // Tokenizing w.r.t. delimiters
+  while(getline(check1, intermediate, delimiters[0]))
+    tokens.push_back(intermediate);
+  
+  return tokens;
+}
 
 //----------------------------------------------------------------------------------------------------
 // check and print which detectors included and/or used in the kalman
