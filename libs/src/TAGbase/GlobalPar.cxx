@@ -388,7 +388,7 @@ void GlobalPar::ReadParamFile () {
            else                     m_enableTofZmc = false;
         }
         else if ( line.find("EnableTofCalBar:") != string::npos ) {
-           string rev =StrReplace( line, "EnableTofZmc:", "" );
+           string rev =StrReplace( line, "EnableTofCalBar:", "" );
            RemoveSpace( &rev );
            if ( rev == "y" )        m_enableTofCalBar = true;
            else                     m_enableTofCalBar = false;
