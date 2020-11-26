@@ -53,10 +53,10 @@ Bool_t TACAparMap::FromFile(const TString& name)
 
   for (Int_t i = 0; i < fParGeo->GetCrystalsN(); ++i) { // Loop over crystal
 
-  // read parameters (boardId chId, crysId)
-  ReadItem(para, 3, ' ', false);
+    // read parameters (boardId chId, crysId)
+    ReadItem(para, 3, ' ', false);
   
-  // fill map
+    // fill map
     Int_t boardId   = TMath::Nint(para[0]);
     Int_t channelId = TMath::Nint(para[1]);
     Int_t crysId    = TMath::Nint(para[2]);
@@ -66,7 +66,6 @@ Bool_t TACAparMap::FromFile(const TString& name)
     if (FootDebugLevel(1))
       printf("%d %d %d\n", boardId, channelId, crysId);
   }
-  
   
   delete [] para;
 
