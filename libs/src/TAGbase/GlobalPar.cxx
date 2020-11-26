@@ -142,6 +142,8 @@ void GlobalPar::ReadParamFile ()
   while (!parTools->Eof()) {
     parTools->ReadItem(key, item);
     
+    m_copyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
+
     if (key.Contains("Debug:")) {
       m_debug = item.Atoi();
       if (m_debug > 0)
