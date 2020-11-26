@@ -79,7 +79,9 @@ public:
    
     bool IncludeTOE()          const { return m_includeTOE;          }
     bool IncludeKalman()       const { return m_includeKalman;       }
-   
+  
+    bool CalibTW()             const { return m_doCalibTW;           }
+
     void IncludeTOE(bool t)          {  m_includeTOE = t;            }
     void IncludeKalman(bool t)       {  m_includeKalman = t;         }
 
@@ -93,13 +95,9 @@ public:
     void IncludeVT(bool t)           {  m_includeVT = t;             }
     void IncludeIT(bool t)           {  m_includeIT = t;             }
 
-    bool CalibTW()             const { return m_doCalibTW;       }
     void CalibTW(bool t)             {  m_doCalibTW = t;             }
   
     void SetDebugLevels();
-    void RemoveSpace( string* s );
-    bool IEquals(const string& a, const string& b);
-    string StrReplace(string original, string erase, string add);
 
     bool Find_MCParticle( string villain );
 

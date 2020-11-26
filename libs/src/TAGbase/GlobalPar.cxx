@@ -5,6 +5,7 @@
 #include "TArrayC.h"
 #include "Riostream.h"
 
+#include "TAGparTools.hxx"
 #include "GlobalPar.hxx"
 
 map<TString, TString> GlobalPar::m_dectFullName = {{"ST", "Start Counter"}, {"BM", "Beam Monitor"}, {"DI", "Dipole"}, {"TG", "Target"},
@@ -129,276 +130,344 @@ const TAGrunInfo GlobalPar::GetGlobalInfo()
 }
 
 //_____________________________________________________________________________
-void GlobalPar::ReadParamFile () {
-
-    ifstream ifile;
-
-    ifile.open( m_parFileName.c_str() );
-    if ( !ifile.is_open() )        cout<< "ERROR  -->  wrong input in GlobalPar::ReadParamFile file "<< endl, exit(0);
-
-    string line = "";
-    while( getline( ifile, line ) ) {  
-
-        if (line == "")  continue;
-        if ( line.find("#") != string::npos || line.find("//") != string::npos )
-            continue;
-
-        m_copyInputFile.push_back(line);
-
-        // remove spaces, not mandatory
-        if ( line.find("Debug:") != string::npos ) {
-            m_debug = atoi ( StrReplace( line, "Debug:", "" ).c_str() );
-           
-        } else if ( line.find("MC Particle Types:") != string::npos ) {
-            m_mcParticles.clear();
-            string formulasString = StrReplace( line, "MC Particle Types:", "" );
-            istringstream formulasStream( formulasString );
-            string tmpString = "";
-            while ( formulasStream >> tmpString )
-                m_mcParticles.push_back(tmpString);
-        } else if ( line.find("ClassDebugLevel:") != string::npos ) {
-           string formulasString = StrReplace( line, "ClassDebugLevel:", "" );
-           istringstream formulasStream( formulasString );
-           string className = "";
-          int    classLevel = -1;
-           formulasStream >> className;
-           formulasStream >> classLevel;
-           m_map_debug[className] = classLevel;
-       }
-       
-        if ( line.find("Kalman Mode:") != string::npos ) {
-            vector<string> tmp_Modes = { "OFF", "ON", "ref", "daf", "dafsimple" };
-            istringstream sss(  StrReplace( line, "Kalman Mode:", "" ) );
-            
-            string inputMode;
-            sss >> inputMode;
-            for (unsigned int i=0; i<tmp_Modes.size(); i++) {
-
-                if ( IEquals( inputMode, tmp_Modes[i] ) ) {
-                    m_kalmanMode = i;
-                    break;
-                }
-            }
-            if (m_kalmanMode == -1)         cout<< "ERROR  -->  Kalman Mode parameter "<< endl, exit(0);
-        } 
-
-        else if ( line.find("Tracking Systems Considered:") != string::npos ) {
-            m_trackingSystems.clear();
-            string formulasString = StrReplace( line, "Tracking Systems Considered:", "" );
-            istringstream formulasStream( formulasString );
-            string tmpString = "";
-            while ( formulasStream >> tmpString )
-                m_trackingSystems.push_back(tmpString);
-        } 
-
-
-        else if ( line.find("Reverse Tracking:") != string::npos ) {
-            string rev =StrReplace( line, "Reverse Tracking:", "" );
-            RemoveSpace( &rev );
-            if ( rev == "true" )
-                m_kalReverse = true;
-            else
-                m_kalReverse = false;
-        } 
-
-        else if ( line.find("FLUKA version:") != string::npos ) {
-            string rev =StrReplace( line, "FLUKA version:", "" );
-            RemoveSpace( &rev );
-            if ( rev == "pro" )
-                m_verFLUKA = true;
-            else if ( rev == "dev" )
-                m_verFLUKA = false;
-        } 
-
-
-        else if ( line.find("Kalman Particle Types:") != string::npos ) {
-            m_kalParticles.clear();
-            string formulasString = StrReplace( line, "Kalman Particle Types:", "" );
-            istringstream formulasStream( formulasString );
-            string tmpString = "";
-            while ( formulasStream >> tmpString )
-                m_kalParticles.push_back(tmpString);
-        } 
-         
-
-        else if ( line.find("VT  Reso") != string::npos ) {
-            m_VTreso = atof ( StrReplace( line, "VT  Reso:", "" ).c_str() );
-        } 
-        else if ( line.find("IT  Reso") != string::npos ) {
-            m_ITreso = atof ( StrReplace( line, "IT  Reso:", "" ).c_str() );
-        }
-        else if ( line.find("MSD Reso") != string::npos ) {
-            m_MSDreso = atof ( StrReplace( line, "MSD Reso:", "" ).c_str() );   
-        }
-        else if ( line.find("TW  Reso:") != string::npos ) {
-            m_TWreso = atof ( StrReplace( line, "TW  Reso:", "" ).c_str() );   
-        }
-        else if ( line.find("Print OutputFile") != string::npos ) {
-            string rev =StrReplace( line, "Print OutputFile:", "" );
-            RemoveSpace( &rev );
-            if ( rev == "true" )
-                m_printoutfile = true;
-             else
-                m_printoutfile = false;
-        }
-        else if ( line.find("Output Filename:") != string::npos ) {
-            m_outputfilename = StrReplace( line, "Output Filename:", "" );
-            RemoveSpace( &m_outputfilename );
-        }
-        else if ( line.find("Print OutputNtuple") != string::npos ) {
-            string rev =StrReplace( line, "Print OutputNtuple:", "" );
-            RemoveSpace( &rev );
-                if ( rev == "true" )
-                    m_printoutntuple = true;
-                else 
-                    m_printoutntuple = false;
-        }
-        else if ( line.find("Output Ntuplename:") != string::npos ) {
-            m_outputntuplename = StrReplace( line, "Output Ntuplename:", "" );
-            RemoveSpace( &m_outputntuplename );
-        }
-
-        else if ( line.find("IncludeDI:") != string::npos ) {
-           string rev =StrReplace( line, "IncludeDI:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_includeDI = true;
-           else                     m_includeDI = false;
-           if (m_includeDI)
-              m_dectInclude.push_back("DI");
-        }
-
-        else if ( line.find("IncludeST:") != string::npos ) {
-           string rev =StrReplace( line, "IncludeST:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_includeST = true;
-           else                     m_includeST = false;
-           if (m_includeST)
-              m_dectInclude.push_back("ST");
-        }
-
-        else if ( line.find("IncludeBM:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeBM:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeBM = true;
-            else                     m_includeBM = false;
-           if (m_includeBM)
-              m_dectInclude.push_back("BM");
-        }
-        else if ( line.find("IncludeTW:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeTW:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeTW = true;
-            else                     m_includeTW = false;
-           if (m_includeTW)
-              m_dectInclude.push_back("TW");
-        }
-        else if ( line.find("IncludeMSD:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeMSD:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeMSD = true;
-            else                     m_includeMSD = false;
-           if (m_includeMSD)
-              m_dectInclude.push_back("MSD");
-        }
-        else if ( line.find("IncludeCA:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeCA:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeCA = true;
-            else                     m_includeCA = false;
-           if (m_includeCA)
-              m_dectInclude.push_back("CA");
-        }
-        else if ( line.find("IncludeTG:") != string::npos ) {
-           string rev =StrReplace( line, "IncludeTG:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_includeTG = true;
-           else                     m_includeTG = false;
-           if (m_includeTG)
-              m_dectInclude.push_back("TG");
-        }
-
-        else if ( line.find("IncludeVT:") != string::npos ) {
-           string rev =StrReplace( line, "IncludeVT:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_includeVT = true;
-           else                     m_includeVT = false;
-           if (m_includeVT)
-              m_dectInclude.push_back("VT");
-        }
-        else if ( line.find("IncludeIT:") != string::npos ) {
-           string rev =StrReplace( line, "IncludeIT:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_includeIT = true;
-           else                     m_includeIT = false;
-           if (m_includeIT)
-               m_dectInclude.push_back("IT");
-        }
-        else if ( line.find("IncludeKalman:") != string::npos ) {
-            string rev =StrReplace( line, "IncludeKalman:", "" );   
-            RemoveSpace( &rev );
-            if ( rev == "y" )        m_includeKalman = true;
-            else                     m_includeKalman = false;
-        }
-        else if ( line.find("IncludeTOE:") != string::npos ) {
-           string rev =StrReplace( line, "IncludeTOE:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_includeTOE = true;
-           else                     m_includeTOE = false;
-        }
-        else if ( line.find("EnableLocalReco:") != string::npos ) {
-           string rev =StrReplace( line, "EnableLocalReco:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_enableLocalReco = true;
-           else                     m_enableLocalReco = false;
-        }
-        else if ( line.find("EnableTree:") != string::npos ) {
-           string rev =StrReplace( line, "EnableTree:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_enableTree = true;
-           else                     m_enableTree = false;
-        }
-        else if ( line.find("EnableHisto:") != string::npos ) {
-           string rev =StrReplace( line, "EnableHisto:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_enableHisto = true;
-           else                     m_enableHisto = false;
-        }
-        else if ( line.find("EnableTracking:") != string::npos ) {
-           string rev =StrReplace( line, "EnableTracking:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_enableTracking = true;
-           else                     m_enableTracking = false;
-        }
-        else if ( line.find("EnableSaveHits:") != string::npos ) {
-           string rev =StrReplace( line, "EnableSaveHits:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_enableSaveHits = true;
-           else                     m_enableSaveHits = false;
-        }
-        else if ( line.find("EnableRootObject:") != string::npos ) {
-           string rev =StrReplace( line, "EnableRootObject:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_enableRootObject = true;
-           else                     m_enableRootObject = false;
-        }
-        else if ( line.find("EnableTofZmc:") != string::npos ) {
-           string rev =StrReplace( line, "EnableTofZmc:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_enableTofZmc = true;
-           else                     m_enableTofZmc = false;
-        }
-        else if ( line.find("EnableTofCalBar:") != string::npos ) {
-           string rev =StrReplace( line, "EnableTofCalBar:", "" );
-           RemoveSpace( &rev );
-           if ( rev == "y" )        m_enableTofCalBar = true;
-           else                     m_enableTofCalBar = false;
-        }
+void GlobalPar::ReadParamFile ()
+{
+  TAGparTools* parTools = new TAGparTools();
+  if (!parTools->Open(m_parFileName.data())) {
+    Error("ReadParamFile()", "Cannot open file %s", m_parFileName.c_str());
+    exit(0);
+  }
+  
+  TString key, item;
+  while (!parTools->Eof()) {
+    parTools->ReadItem(key, item);
+    
+    if (key.Contains("Debug:")) {
+      m_debug = item.Atoi();
+      if (m_debug > 0)
+        printf("Debug: %d\n", m_debug);
     }
-   
-    // Check mandatory parameters set
-    if ( m_trackingSystems.size() < 1 )     cout<< "ERROR :: GlobalPar.cxx  -->  wrong parameters config setting: m_trackingSystems ize = 0"<<endl, exit(0);
-
-    ifile.close();
+    
+    if (key.Contains("MC Particle Types:")) {
+      m_mcParticles.clear();
+      string formulasString = item.Data();
+      istringstream formulasStream( formulasString );
+      string tmpString = "";
+      if (m_debug > 0)
+        printf("MC Particle Types: ");
+      while ( formulasStream >> tmpString ) {
+        m_mcParticles.push_back(tmpString);
+        if (m_debug > 0)
+          printf(" %s ", tmpString.data());
+      }
+      if (m_debug > 0)
+        printf("\n");
+    }
+    
+    if (key.Contains("ClassDebugLevel:")) {
+      string formulasString = item.Data();
+      istringstream formulasStream( formulasString );
+      string className = "";
+      int    classLevel = -1;
+      formulasStream >> className;
+      formulasStream >> classLevel;
+      m_map_debug[className] = classLevel;
+      if (m_debug > 0)
+        printf("ClassDebugLevel: %s %d\n", className.c_str(), classLevel);
+    }
+    
+    
+    if (key.Contains("IncludeKalman:")  ) {
+      if ( item.Contains("y")) m_includeKalman = true;
+      else                     m_includeKalman = false;
+      if (m_debug > 0)
+        printf("IncludeKalman: %d\n", m_includeKalman);
+      
+    }
+    if (key.Contains("IncludeTOE:")) {
+      if ( item.Contains("y")) m_includeTOE = true;
+      else                     m_includeTOE = false;
+      if (m_debug > 0)
+        printf("IncludeTOE: %d\n", m_includeTOE);
+    }
+    
+    if (key.Contains("EnableLocalReco:")  ) {
+      if ( item.Contains("y"))  m_enableLocalReco = true;
+      else                      m_enableLocalReco = false;
+      if (m_debug > 0)
+        printf("EnableLocalReco: %d\n", m_enableLocalReco);
+    }
+    
+    
+    if (key.Contains("Kalman Mode:")) {
+      vector<TString> tmp_Modes = { "off", "on", "ref", "daf", "dafsimple" };
+      istringstream sss(item.Data());
+      
+      TString inputMode;
+      sss >> inputMode;
+      
+      inputMode.ToLower();
+      for (unsigned int i=0; i<tmp_Modes.size(); i++) {
+        
+        if (inputMode.Contains(tmp_Modes[i]) ) {
+          m_kalmanMode = i;
+          break;
+        }
+      }
+      if (m_debug > 0)
+        printf("Kalman Mode: %d\n", m_kalmanMode);
+    }
+    
+    if (key.Contains("Tracking Systems Considered:")) {
+      m_trackingSystems.clear();
+      string formulasString = item.Data();
+      istringstream formulasStream( formulasString );
+      string tmpString = "";
+      if (m_debug > 0)
+        printf("Tracking Systems Considered: ");
+      while ( formulasStream >> tmpString ) {
+        m_trackingSystems.push_back(tmpString);
+        if (m_debug > 0)
+          printf(" %s ", tmpString.data());
+      }
+      if (m_debug > 0)
+        printf("\n");
+    }
+    
+    if (key.Contains("Reverse Tracking:")) {
+      if ( item == "true")
+        m_kalReverse = true;
+      else
+        m_kalReverse = false;
+      if (m_debug > 0)
+        printf("Reverse Tracking: %d\n", m_kalReverse);
+    }
+    
+    
+    if (key.Contains("VT  Reso:") ) {
+      m_VTreso = item.Atof();
+      if (m_debug > 0)
+        printf("VT  Reso: %g\n", m_VTreso);
+    }
+    
+    if (key.Contains("IT  Reso:") ) {
+      m_ITreso = item.Atof();
+      if (m_debug > 0)
+        printf("IT  Reso: %g\n", m_ITreso);
+    }
+    
+    if (key.Contains("MSD Reso:")  ) {
+      m_MSDreso = item.Atof();
+      if (m_debug > 0)
+        printf("MSD  Reso: %g\n", m_MSDreso);
+    }
+    
+    if (key.Contains("TW  Reso:") ) {
+      m_TWreso = item.Atof();
+      if (m_debug > 0)
+        printf("TW  Reso: %g\n", m_TWreso);
+    }
+    
+    if (key.Contains("Kalman Particle Types:")) {
+      m_kalParticles.clear();
+      string formulasString = item.Data();
+      istringstream formulasStream( formulasString );
+      string tmpString = "";
+      if (m_debug > 0)
+        printf("Kalman Particle Types:");
+      while ( formulasStream >> tmpString ) {
+        m_kalParticles.push_back(tmpString);
+        if (m_debug > 0)
+          printf(" %s ", tmpString.data());
+      }
+      if (m_debug > 0)
+        printf("\n");
+    }
+    
+    if (key.Contains("EnableTree:") ) {
+      if ( item.Contains("y"))  m_enableTree = true;
+      else                      m_enableTree = false;
+      if (m_debug > 0)
+        printf("EnableTree: %d\n", m_enableTree);
+    }
+    
+    if (key.Contains("EnableHisto:")) {
+      if ( item.Contains("y") ) m_enableHisto = true;
+      else                      m_enableHisto = false;
+      if (m_debug > 0)
+        printf("EnableHisto: %d\n", m_enableHisto);
+    }
+    
+    if (key.Contains("EnableTracking:")) {
+      if ( item.Contains("y") ) m_enableTracking = true;
+      else                      m_enableTracking = false;
+      if (m_debug > 0)
+        printf("EnableTracking: %d\n", m_enableTracking);
+    }
+    
+    if (key.Contains("EnableSaveHits:")  ) {
+      if ( item.Contains("y"))  m_enableSaveHits = true;
+      else                      m_enableSaveHits = false;
+      if (m_debug > 0)
+        printf("EnableSaveHits: %d\n", m_enableSaveHits);
+    }
+    
+    if (key.Contains("EnableRootObject:") ) {
+      if ( item.Contains("y"))  m_enableRootObject = true;
+      else                      m_enableRootObject = false;
+      if (m_debug > 0)
+        printf("EnableRootObject: %d\n", m_enableRootObject);
+    }
+    
+    if (key.Contains("EnableTofZmc:") ) {
+      if ( item.Contains("y"))  m_enableTofZmc = true;
+      else                      m_enableTofZmc = false;
+      if (m_debug > 0)
+        printf("EnableTofZmc: %d\n", m_enableTofZmc);
+    }
+    
+    if (key.Contains("EnableTofCalBar:")  ) {
+      if ( item.Contains("y"))  m_enableTofCalBar = true;
+      else                      m_enableTofCalBar = false;
+      if (m_debug > 0)
+        printf("EnableTofCalBar: %d\n", m_enableTofCalBar);
+    }
+    
+    if (key.Contains("IncludeDI:") ) {
+      if ( item.Contains("y"))  m_includeDI = true;
+      else                      m_includeDI = false;
+      if (m_debug > 0)
+        printf("IncludeDI: %d\n", m_includeDI);
+      
+      if (m_includeDI)
+        m_dectInclude.push_back("DI");
+    }
+    
+    if (key.Contains("IncludeST:")) {
+      if ( item.Contains("y"))  m_includeST = true;
+      else                      m_includeST = false;
+      if (m_debug > 0)
+        printf("IncludeST: %d\n", m_includeST);
+      
+      if (m_includeST)
+        m_dectInclude.push_back("ST");
+    }
+    
+    if (key.Contains("IncludeBM:") ) {
+      if ( item.Contains("y") )  m_includeBM = true;
+      else                      m_includeBM = false;
+      if (m_debug > 0)
+        printf("IncludeBM: %d\n", m_includeBM);
+      
+      if (m_includeBM)
+        m_dectInclude.push_back("BM");
+    }
+    
+    if (key.Contains("IncludeTG:")  ) {
+      if ( item.Contains("y"))  m_includeTG = true;
+      else                      m_includeTG = false;
+      if (m_debug > 0)
+        printf("IncludeTG: %d\n", m_includeTG);
+      
+      if (m_includeTG)
+        m_dectInclude.push_back("TG");
+    }
+    
+    if (key.Contains("IncludeVT:")  ) {
+      if ( item.Contains("y"))  m_includeVT = true;
+      else                      m_includeVT = false;
+      if (m_debug > 0)
+        printf("IncludeVT: %d\n", m_includeVT);
+      
+      if (m_includeVT)
+        m_dectInclude.push_back("VT");
+    }
+    
+    if (key.Contains("IncludeIT:") ) {
+      if ( item.Contains("y"))  m_includeIT = true;
+      else                      m_includeIT = false;
+      if (m_debug > 0)
+        printf("IncludeIT: %d\n", m_includeIT);
+      
+      if (m_includeIT)
+        m_dectInclude.push_back("IT");
+    }
+    
+    if (key.Contains("IncludeMSD:") ) {
+      if ( item.Contains("y"))  m_includeMSD = true;
+      else                      m_includeMSD = false;
+      if (m_debug > 0)
+        printf("IncludeMSD: %d\n", m_includeMSD);
+      
+      if (m_includeMSD)
+        m_dectInclude.push_back("MSD");
+    }
+    
+    if (key.Contains("IncludeTW:")  ) {
+      if ( item.Contains("y"))  m_includeTW = true;
+      else                      m_includeTW = false;
+      if (m_debug > 0)
+        printf("IncludeTW: %d\n", m_includeTW);
+      
+      if (m_includeTW)
+        m_dectInclude.push_back("TW");
+    }
+    
+    if (key.Contains("IncludeCA:") ) {
+      if ( item.Contains("y"))  m_includeCA = true;
+      else                      m_includeCA = false;
+      if (m_debug > 0)
+        printf("IncludeCA: %d\n", m_includeCA);
+      
+      if (m_includeCA)
+        m_dectInclude.push_back("CA");
+    }
+    
+    if (key.Contains("Print OutputFile:")) {
+      if ( item == "true" )
+        m_printoutfile = true;
+      else
+        m_printoutfile = false;
+      if (m_debug > 0)
+        printf("Print OutputFile: %d\n", m_printoutfile);
+    }
+    
+    if (key.Contains("Output Filename:") ) {
+      m_outputfilename = item.Data();
+      if (m_debug > 0)
+        printf("Output Filename: %s\n", m_outputfilename.data());
+    }
+    
+    if (key.Contains("Print OutputNtuple:") ) {
+      if ( item == "true" )
+        m_printoutntuple = true;
+      else
+        m_printoutntuple = false;
+      if (m_debug > 0)
+        printf("Print OutputNtuple: %d\n", m_printoutntuple);
+    }
+    
+    if (key.Contains("Output Ntuplename:") ) {
+      m_outputntuplename = item.Data();
+      if (m_debug > 0)
+        printf("Output Ntuplename: %s\n", m_outputntuplename.data());
+    }
+    
+    if (key.Contains("FLUKA version:")) {
+      if ( item == "pro")
+        m_verFLUKA = true;
+      else if ( item == "dev" )
+        m_verFLUKA = false;
+      else
+        m_verFLUKA = false;
+      if (m_debug > 0)
+        printf("FLUKA version: %d\n", m_verFLUKA);
+    }
+  }
+  
+  parTools->Close();
+  
+  delete parTools;
 }
 
 //_____________________________________________________________________________
@@ -545,46 +614,6 @@ void GlobalPar::Print(Option_t* opt) {
       printf("\n\n");
 
    }
-   
-   
-}
-
-//____________________________________________________________________________
-void GlobalPar::RemoveSpace( string* s )
-{
-	  s->erase( ::remove_if(s->begin(), s->end(), ::isspace), s->end() );
-}
-
-
-
-//____________________________________________________________________________
-//Replace part of "original" if it founds "erase" with "add". Otherwise return input string.
-string GlobalPar::StrReplace(string original, string erase, string add) {
-   
-   int found = original.find(erase);
-   if ( (size_t)found != string::npos ) {
-      int cutLength = erase.size();
-      original.replace( found, cutLength, add );
-      return original;
-   }
-   else {
-      cout<<"not found "<<erase<<" in "<<original<<endl;
-      return original;
-   }
-}
-
-//____________________________________________________________________________
-bool GlobalPar::IEquals(const string& a, const string& b)	{
-   
-   if (b.size() != a.size())
-      return false;
-   
-   for (unsigned int i = 0; i < a.size(); ++i) {
-      if (tolower(a[i]) != tolower(b[i])) {
-         return false;
-      }
-   }
-   return true;
 }
 
 //____________________________________________________________________________
