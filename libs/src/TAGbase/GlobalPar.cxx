@@ -2,7 +2,6 @@
 
 #include "Varargs.h"
 #include "TNamed.h"
-#include "TArrayC.h"
 #include "Riostream.h"
 
 #include "TAGparTools.hxx"
