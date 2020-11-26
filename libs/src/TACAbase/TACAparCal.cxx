@@ -12,9 +12,12 @@ TACAparCal::TACAparCal()
 
 //_____________________________________________________________________
 
-void TACAparCal::LoadEnergyCalibrationMap(TString FileName)
+Bool_t TACAparCal::LoadEnergyCalibrationMap(TString name)
 {
-  if (Open(FileName)) return;
+  if (!Open(name)) {
+    Error("FromFile()", "Cannot open file %s", name.Data());
+    return false;
+  }
   
   // read for parameter
   Double_t* parameters = new Double_t[4];
@@ -26,7 +29,7 @@ void TACAparCal::LoadEnergyCalibrationMap(TString FileName)
     ReadItem(crysId);
     
     // read parameters
-    ReadItem(parameters, 4, ' ');
+    ReadItem(parameters, 4, ' ', false);
     
     // fill map
     for (Int_t p = 0; p < 4; p++) { // Loop over parameters
@@ -37,13 +40,18 @@ void TACAparCal::LoadEnergyCalibrationMap(TString FileName)
   delete [] parameters;
   
   Close();
+  
+  return true;
 }
 
 //_____________________________________________________________________
 
-void TACAparCal::LoadTofCalibrationMap(TString FileName)
+Bool_t TACAparCal::LoadTofCalibrationMap(TString name)
 {
-  if (Open(FileName)) return;
+  if (!Open(name)) {
+    Error("FromFile()", "Cannot open file %s", name.Data());
+    return false;
+  }
   
   // read for parameter
   Double_t* parameters = new Double_t[4];
@@ -55,7 +63,7 @@ void TACAparCal::LoadTofCalibrationMap(TString FileName)
     ReadItem(crysId);
     
     // read parameters
-    ReadItem(parameters, 4, ' ');
+    ReadItem(parameters, 4, ' ', false);
     
     // fill map
     for (Int_t p = 0; p < 4; p++) { // Loop over parameters
@@ -66,6 +74,8 @@ void TACAparCal::LoadTofCalibrationMap(TString FileName)
   delete [] parameters;
   
   Close();
+  
+  return true;
 }
 
 //_____________________________________________________________________

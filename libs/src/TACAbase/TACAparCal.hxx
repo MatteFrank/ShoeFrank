@@ -20,8 +20,8 @@ private:
   
 public:
   TACAparCal();
-  void LoadEnergyCalibrationMap(TString Filename);
-  void LoadTofCalibrationMap(TString Filename);
+  Bool_t LoadEnergyCalibrationMap(TString Filename);
+  Bool_t LoadTofCalibrationMap(TString Filename);
   
   Double_t GetElossParameter(Int_t crystalId, UInt_t ParameterNumber);
   Double_t GetTofParameter(Int_t crystalId, UInt_t ParameterNumber);
