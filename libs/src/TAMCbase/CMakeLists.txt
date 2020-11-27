@@ -33,6 +33,7 @@ set( with_dictionnaries
    TAMCevent
    TAGparGeo
    TAMCparTools
+   TAMCflukaParser
    Evento
 )
 
