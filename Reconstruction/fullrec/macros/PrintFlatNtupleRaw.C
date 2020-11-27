@@ -24,7 +24,7 @@
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTntuTrack.hxx"
-#include "TAVTntuTrack.hxx"
+#include "TAVTtrack.hxx"
 #include "TAVTntuVertex.hxx"
 
 #include "TAITparGeo.hxx"
@@ -34,56 +34,65 @@
 #include "TAMSDntuCluster.hxx"
 
 #include "TATWparGeo.hxx"
-// #include "TATW_ContainerPoint.hxx"
-// #include "TATW_Point.hxx"
 #include "TATWdatRaw.hxx"
 #include "TATWntuRaw.hxx"
 
 
 #include "TAGgeoTrafo.hxx"
 
-//#include "KFitter.hxx"
+#include "TAGcampaignManager.hxx"
+#include "TAGgeoTrafo.hxx"
 
 #endif
 
 // main
-void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
+void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TString nameFile = "", Int_t nentries = 0)
 
 {
-
+  //  bool refittrack = false;
+  // bool  printntuple = true;
+  
   TAGroot gTAGroot;
   
-  TAGgeoTrafo *fGeoTrafo = new TAGgeoTrafo();   
-  fGeoTrafo->FromFile();
+  TAGcampaignManager* campManager = new TAGcampaignManager(expName);
+  campManager->FromFile();
   
-
- 
-   TAGparaDsc* parGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
-   TASTparGeo* stparGeo = (TASTparGeo*)parGeoSt->Object();
-   stparGeo->FromFile();
+  TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
+  TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+  geoTrafo->FromFile(parFileName);
   
-   
-   TAGparaDsc* parGeoBm = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
-   TABMparGeo* bmparGeo = (TABMparGeo*)parGeoBm->Object();
-   bmparGeo->FromFile();
-   
-   
-   TAGparaDsc* parGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
-   TAVTparGeo* vtparGeo = (TAVTparGeo*)parGeoVtx->Object();
-   vtparGeo->FromFile();
+  TAGparaDsc* parGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
+  TASTparGeo* stparGeo = (TASTparGeo*)parGeoSt->Object();
+  parFileName = campManager->GetCurGeoFile(TASTparGeo::GetBaseName(), runNumber);
+  stparGeo->FromFile(parFileName);
   
-
-//    TAGparaDsc* parGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
-//    TAITparGeo* itparGeo = (TAITparGeo*)parGeoIt->Object();
-//    itparGeo->FromFile();
-   
-//    TAGparaDsc* parGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
-//    TAMSDparGeo* msdparGeo = (TAMSDparGeo*)parGeoMsd->Object();
-//    msdparGeo->FromFile();
-   
-   TAGparaDsc* parGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
-   TATWparGeo* twparGeo = (TATWparGeo*)parGeoTw->Object();
-   twparGeo->FromFile();
+  
+  TAGparaDsc* parGeoBm = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
+  TABMparGeo* bmparGeo = (TABMparGeo*)parGeoBm->Object();
+  parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+  bmparGeo->FromFile(parFileName);
+  
+  
+  TAGparaDsc* parGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
+  TAVTparGeo* vtparGeo = (TAVTparGeo*)parGeoVtx->Object();
+  parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+  vtparGeo->FromFile(parFileName);
+  
+  
+  TAGparaDsc* parGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
+  TAITparGeo* itparGeo = (TAITparGeo*)parGeoIt->Object();
+  parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+  itparGeo->FromFile(parFileName);
+  
+  TAGparaDsc* parGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
+  TAMSDparGeo* msdparGeo = (TAMSDparGeo*)parGeoMsd->Object();
+  parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+  msdparGeo->FromFile(parFileName);
+  
+  TAGparaDsc* parGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
+  TATWparGeo* twparGeo = (TATWparGeo*)parGeoTw->Object();
+  parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+  twparGeo->FromFile(parFileName);
 
   
    TTree *tree = 0;
@@ -364,13 +373,13 @@ void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
      st_time.push_back(time);
      for (Int_t i = 0; i < nstHits; i++) {
        
-       TASTntuHit* hit  =stHit->Hit(i);
-       Float_t charge = hit->GetCharge();
-       Float_t time = hit->GetTime();
+       TASTntuHit* hit = stHit->GetHit(i);
+       Float_t charge  = hit->GetCharge();
+       Float_t time    = hit->GetTime();
        
        TVector3 posHit(0,0,0); // center
        
-       TVector3 posHitG = fGeoTrafo->FromSTLocalToGlobal(posHit);
+       TVector3 posHitG = geoTrafo->FromSTLocalToGlobal(posHit);
        
        //  cout << " time  " << time << endl;
        // cout << " charge  " << charge << endl;
@@ -385,69 +394,60 @@ void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
   
   
 
- 
-    Int_t       nbmHits  = bmHit->GetHitsN();
+     Int_t       nbmHits  = bmHit->GetHitsN();
 
-    //cout << " nbmHits   " << nbmHits  << endl;
-  //  // //hits
-  //   for (Int_t i = 0; i < nbmHits; i++) {
-  //     TABMntuHit* hit = bmHit->Hit(i);
-      
-  //     Int_t view  = hit->View();
-  //     Int_t lay  = hit->Plane();
-  //     Int_t cell  = hit->Cell();
-      
-  //     Float_t x = bmparGeo->GetWireX(bmparGeo->GetSenseId(cell),lay,view);
-  //     Float_t y = bmparGeo->GetWireY(bmparGeo->GetSenseId(cell),lay,view);
-  //     Float_t z = bmparGeo->GetWireZ(bmparGeo->GetSenseId(cell),lay,view);
-      
-  //     TVector3 posHit(x, y, z);
-      
-  //     // cout << "poshit0 " << posHit.X()  << endl;
-  //     // cout << "poshit1 " << posHit.Y()  << endl;
-  //     // cout << "poshit2 " << posHit.Z()  << endl;
-      
-      
-  //   }       
-
-   
-  
-   ///Track in BM
-  int  Nbmtrack = bmTrack->GetTracksN();
-  //cout << " ntrack  BM  " << Nbmtrack  << endl;
-  if( bmTrack->GetTracksN() > 0 ) {
-    for( Int_t iTrack = 0; iTrack < bmTrack->GetTracksN(); ++iTrack ) {
-      
-      bm_trkind.push_back(iTrack);
-      
-      TABMntuTrackTr* track = bmTrack->Track(iTrack);
-            
-      Int_t nHits = track->GetNhit();
-      // cout << " nHits  BM  " <<  nHits << endl;
-
-      TVector3 Pvers = track->GetPvers();  //direction of the track from mylar1_pos to mylar2_pos
-      TVector3 R0 = track->GetR0();              //position of the track on the xy plane at z=0
+     // cout << " nbmHits   " << nbmHits  << endl;
+     // //hits
+     for (Int_t i = 0; i < nbmHits; i++) {
+       TABMntuHit* hit = bmHit->GetHit(i);
+       
+       Int_t view  = hit->GetView();
+       Int_t lay   = hit->GetPlane();
+       Int_t cell  = hit->GetCell();
+       
+       Float_t x = bmparGeo->GetWireX(bmparGeo->GetSenseId(cell),lay,view);
+       Float_t y = bmparGeo->GetWireY(bmparGeo->GetSenseId(cell),lay,view);
+       Float_t z = bmparGeo->GetWireZ(bmparGeo->GetSenseId(cell),lay,view);
+       
+       TVector3 posHit(x, y, z);
+       
+       // cout << "poshit0 " << posHit.X()  << endl;
+       // cout << "poshit1 " << posHit.Y()  << endl;
+       // cout << "poshit2 " << posHit.Z()  << endl;
+       
+       
+     }
      
-
-
-      // Double_t chi2 = track->GetChi2New();
-      // cout << " chi2   " <<  chi2  << endl;
-      // Double_t chi2Red = track->GetChi2NewRed();
-      // cout << " chi2Red   " <<  chi2Red  << endl;
-      // Double_t mychi2 = track->GetMyChi2();
-      // cout << " mychi2   " <<   mychi2 << endl;
-      Double_t mychi2Red = track->GetMyChi2Red();
-      //      cout << " mychi2Red   " << mychi2Red  << endl;
-
-      bmtrk_chi2.push_back(mychi2Red);
-      
-
-      bm_Pvers.push_back(Pvers);
-      bm_R0.push_back(R0);
-
-    } // end loop on tracks
-    
-  } // nTracks > 0
+     
+     
+     ///Track in BM
+     int  Nbmtrack = bmTrack->GetTracksN();
+     // cout << " ntrack  BM  " << Nbmtrack  << endl;
+     if( bmTrack->GetTracksN() > 0 ) {
+       for( Int_t iTrack = 0; iTrack < bmTrack->GetTracksN(); ++iTrack ) {
+         
+         bm_trkind.push_back(iTrack);
+         
+         TABMtrack* track = bmTrack->GetTrack(iTrack);
+         
+         Int_t nHits = track->GetNhitTot();
+         // cout << " nHits  BM  " <<  nHits << endl;
+         
+         TVector3 Pvers = track->GetSlope();  //direction of the track from mylar1_pos to mylar2_pos
+         TVector3 R0 = track->GetOrigin();              //position of the track on the xy plane at z=0
+         
+         Double_t mychi2 = track->GetChiSquare();
+         //      cout << " mychi2Red   " << mychi2  << endl;
+         
+         bmtrk_chi2.push_back(mychi2);
+         
+         
+         bm_Pvers.push_back(Pvers);
+         bm_R0.push_back(R0);
+         
+       } // end loop on tracks
+       
+     } // nTracks > 0
 
 
 
@@ -463,7 +463,7 @@ void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
      	vtxPositionPD = vtxPD->GetVertexPosition();
 	
      	// cout << " vtxPositionPD  local " << vtxPositionPD[2]  << endl;
-     	vtxPositionPD = fGeoTrafo->FromVTLocalToGlobal(vtxPositionPD);
+     	vtxPositionPD = geoTrafo->FromVTLocalToGlobal(vtxPositionPD);
   	// cout << " vtxPositionPD  global " << vtxPositionPD[2]  << endl;
 	
   	vtx_coll.push_back(vtxPositionPD);
@@ -475,8 +475,8 @@ void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
   //  int  Nmctrack = eve->GetHitsN();
   //  mctrack = Nmctrack;
   //  // cout << " Nmctrack   " << Nmctrack  << endl;
-  //  for( Int_t iTrack = 0; iTrack < eve->GetHitsN(); ++iTrack ) {
-  //    TAMCeveTrack* track = eve->GetHit(iTrack);
+  //  for( Int_t iTrack = 0; iTrack < eve->GetTracksN(); ++iTrack ) {
+  //    TAMCeveTrack* track = eve->GetTrack(iTrack);
   //    //     printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
   //    Double_t Charge = track->GetCharge();
   //    Double_t Mass = track->GetMass();
@@ -527,14 +527,14 @@ void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
 
        TVector3 slopez = track->GetSlopeZ();
        trk_slopez.push_back(slopez);
-       TVector3 origin = trackline.GetOrigin();
+       TVector3 origin = track->GetOrigin();
        trk_origin.push_back(origin);
 
        Float_t nCluster =  track->GetClustersN();
        // cout << " n cluster of vertex tracks " <<  nCluster <<endl;
        Int_t TotHits = 0;
        for( Int_t iclus = 0; iclus < nCluster; ++iclus ) {
-  	 TAVTcluster* clus = track->GetCluster(iclus);
+  	 TAVTcluster* clus = (TAVTcluster*)track->GetCluster(iclus);
   	 TVector3 p_clus = clus->GetPositionG();
 	 
 	 
@@ -565,7 +565,7 @@ void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
 
 
   	 // cout << " p_clus.z() local   i  " << iclus <<  "  z  " << p_clus.z()<< endl;
-  	 p_clus = fGeoTrafo->FromVTLocalToGlobal(p_clus);
+  	 p_clus = geoTrafo->FromVTLocalToGlobal(p_clus);
   	 // cout << " p_clus.z() global  i  " << iclus <<  "  z  " << p_clus.z()<< endl;
 
   	 trk_vtx_clus.push_back(p_clus);
@@ -595,7 +595,7 @@ void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
        
    //     // posG = fpFootGeo->FromTWLocalToGlobal(posG);
 	  
-   //     posG = fGeoTrafo->FromTWLocalToGlobal(posG);
+   //     posG = geoTrafo->FromTWLocalToGlobal(posG);
    //     // cout << " posG  x  "<<  posG.X()  << endl;
    //     // cout << " posG  y  "<<  posG.Y()  << endl;
    //     // cout << " posG  z  "<<  posG.Z()  << endl;
@@ -616,7 +616,7 @@ void PrintFlatNtupleRaw(TString nameFile = "", Int_t nentries = 0)
 	Double_t twtime = hit->GetTime();       
 	Double_t pos = hit->GetPosition();
 	TVector3 postw(0,0,0);
-	TVector3 postwglob = fGeoTrafo->FromTWLocalToGlobal(postw);
+	TVector3 postwglob = geoTrafo->FromTWLocalToGlobal(postw);
 	
 	// cout << " eloss    "<<  eloss  << endl;
 	// cout << " timeTW  "<< twtime   << endl;
