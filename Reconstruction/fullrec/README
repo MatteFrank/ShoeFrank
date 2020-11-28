@@ -44,7 +44,7 @@ DecodeGlbToe -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 1
 DecodeGlbToe -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
 
 B) fullrec reconstruction tools with GenFit
-1)Running from raw data:
+1)Running from raw data: (DOES NOT WORK)
  - activate Kalman in FootGlobal.par
    . . .
    IncludeKalman:   y
