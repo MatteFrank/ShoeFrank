@@ -32,7 +32,8 @@ TAGactTreeReader::TAGactTreeReader(const char* name)
     fpFile(0),
     fpTree(0),
     fiNEntry(0),
-    fiCurrentEntry(-1)
+    fiCurrentEntry(-1),
+    fbDscBranch(true)
 {
   fpBranchList = new TList();
   fpBranchList->SetOwner(kTRUE);
@@ -69,8 +70,9 @@ Int_t TAGactTreeReader::NEvents()
 //------------------------------------------+-----------------------------------
 //! Open root file.
 
-Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TString treeName)
+Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TString treeName, Bool_t dscBranch)
 {
+  fbDscBranch = dscBranch;
   TDirectory* p_cwd = gDirectory;
   
   gTAGroot->SetEventNumber(-1);
@@ -102,18 +104,20 @@ Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TStrin
     return 3;
   }
 
-  for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
-    TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
-    TBranch* p_branch = fpTree->GetBranch(p_chan->fName);
-    if (p_branch) {
-      p_branch->SetAddress(p_chan->fpDataDsc->ObjectPointer());
-    } else {
-      Warning("Open()", "Failed to find branch '%s'", p_chan->fName.Data());
+  if (fbDscBranch) {
+    for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
+      TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
+      TBranch* p_branch = fpTree->GetBranch(p_chan->fName);
+      if (p_branch) {
+        p_branch->SetAddress(p_chan->fpDataDsc->ObjectPointer());
+      } else {
+        Warning("Open()", "Failed to find branch '%s'", p_chan->fName.Data());
+      }
+      p_chan->fpBranch = p_branch;
+      p_chan->fiNByte  = 0;
     }
-    p_chan->fpBranch = p_branch;
-    p_chan->fiNByte  = 0;
   }
-
+  
   fiNEntry = (Int_t) fpTree->GetEntries();
   fiCurrentEntry = -1;
 
@@ -186,14 +190,17 @@ Bool_t TAGactTreeReader::Process()
   }
   
   if (Valid()) {
-    for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
-      TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
-      if (p_chan->fpBranch) {
-	Int_t i_nbyte = p_chan->fpBranch->GetEntry(fiCurrentEntry);
-	p_chan->fiNByte += i_nbyte;
+    if (fbDscBranch) {
+      for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
+        TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
+        if (p_chan->fpBranch) {
+          Int_t i_nbyte = p_chan->fpBranch->GetEntry(fiCurrentEntry);
+          p_chan->fiNByte += i_nbyte;
+        }
+        p_chan->fpDataDsc->SetBit(kValid);
       }
-      p_chan->fpDataDsc->SetBit(kValid);
-    }
+    } else
+      fpTree->GetEntry(fiCurrentEntry);
   }
 
   return Valid();
