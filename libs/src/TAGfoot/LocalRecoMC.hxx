@@ -114,10 +114,8 @@ protected:
    TAMCactNtuTof*        fActNtuMcTw;
    TAMCactNtuCal*        fActNtuMcCa;
 
-   
    TTree*                fTree;         // tree for MC
-   TFile*                fActEvtReader; // file for MC
-   
+
    ClassDef(LocalRecoMC, 1); // Base class for event display
 };
 

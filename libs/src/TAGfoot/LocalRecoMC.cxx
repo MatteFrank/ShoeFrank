@@ -12,6 +12,7 @@
 #include "TATWntuRaw.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
+#include "TAGactTreeReader.hxx"
 
 ClassImp(LocalRecoMC)
 
@@ -21,8 +22,7 @@ LocalRecoMC::LocalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, T
    fActNtuRawVtx(0x0),
    fActNtuRawIt(0x0),
    fActNtuRawMsd(0x0),
-   fTree(0x0),
-   fActEvtReader(0x0)
+   fTree(0x0)
 {
    fEvtStruct = new EVENT_STRUCT;
    fFlagMC = true;
@@ -32,23 +32,13 @@ LocalRecoMC::LocalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, T
 LocalRecoMC::~LocalRecoMC()
 {
    // default destructor
-   if (fActEvtReader) delete fActEvtReader;
 }
-
 
 //__________________________________________________________
 void LocalRecoMC::LoopEvent(Int_t nEvents)
 {
-   if (nEvents == 0)
-      nEvents = fTree->GetEntries();
-   
-   if (nEvents > fTree->GetEntries())
-      nEvents = fTree->GetEntries();
-   
    for (Long64_t ientry = 0; ientry < nEvents; ientry++) {
-      
-      fTree->GetEntry(ientry);
-      
+
       if(ientry % 100 == 0)
          cout<<" Loaded Event:: " << ientry << endl;
       
@@ -59,6 +49,8 @@ void LocalRecoMC::LoopEvent(Int_t nEvents)
 //__________________________________________________________
 void LocalRecoMC::CreateRawAction()
 {
+   fActEvtReader = new TAGactTreeReader("actEvtReader");
+
    fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
    fActNtuMcEve = new TAMCactNtuEve("eveActNtuMc", fpNtuMcEve, fEvtStruct);
    
@@ -138,8 +130,8 @@ void LocalRecoMC::CreateRawAction()
 //__________________________________________________________
 void LocalRecoMC::OpenFileIn()
 {
-   fActEvtReader = new TFile(GetName());
-   fTree = (TTree*)fActEvtReader->Get("EventTree");
+   fActEvtReader->Open(GetName(), "READ", "EventTree", false);
+   fTree = ((TAGactTreeReader*)fActEvtReader)->GetTree();
    
    Evento *ev  = new Evento();
    ev->FindBranches(fTree, fEvtStruct);
@@ -200,6 +192,7 @@ void LocalRecoMC::CloseFileIn()
 //__________________________________________________________
 void LocalRecoMC::AddRawRequiredItem()
 {
+  fTAGroot->AddRequiredItem("actEvtReader");
    fTAGroot->AddRequiredItem("eveActNtuMc");
    
    if (GlobalPar::GetPar()->IncludeST())
