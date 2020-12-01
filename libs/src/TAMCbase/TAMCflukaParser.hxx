@@ -16,25 +16,19 @@
 
 class TAMCflukaParser : public TAGobject {
 public:
-  explicit       TAMCflukaParser(EVENT_STRUCT* evStr   = 0,
-                                 TAGdataDsc* p_ntutrck = 0,
-                                 TAGdataDsc* p_ntuhit  = 0);
+  explicit       TAMCflukaParser();
   
   virtual       ~TAMCflukaParser();
   
-  TAMCntuHit*    GetStcHits();
-  TAMCntuHit*    GetBmHits();
-  TAMCntuHit*    GetVtxHits();
-  TAMCntuHit*    GetItrHits();
-  TAMCntuHit*    GetMsdHits();
-  TAMCntuHit*    GetTofHits();
-  TAMCntuHit*    GetCalHits();
-  TAMCntuEve*    GetTracks();
-  
-private:
-  EVENT_STRUCT*   fpEvtStr;
-  TAGdataDsc*     fpNtuMCtrack;
-  TAGdataDsc*     fpNtuMChit;
+public:
+  static TAMCntuHit*  GetStcHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*  GetBmHits( EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*  GetVtxHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*  GetItrHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*  GetMsdHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*  GetTofHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*  GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuEve*  GetTracks( EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrck);
 };
 
 #endif

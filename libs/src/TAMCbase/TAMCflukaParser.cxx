@@ -13,17 +13,14 @@
 
 /*!
  \class TAMCflukaParser TAMCflukaParser.hxx "TAMCflukaParser.hxx"
- \brief NTuplizer for MC events. **
+ \brief Parser for Fluka MC events. **
  */
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAMCflukaParser::TAMCflukaParser(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrck , TAGdataDsc* p_ntuhit)
-: TAGobject(),
-  fpEvtStr(evStr),
-  fpNtuMCtrack(p_ntutrck),
-  fpNtuMChit(p_ntuhit)
+TAMCflukaParser::TAMCflukaParser()
+: TAGobject()
 {
 }
 
@@ -36,23 +33,23 @@ TAMCflukaParser::~TAMCflukaParser()
 
 //------------------------------------------+-----------------------------------
 //! ST hits
-TAMCntuHit* TAMCflukaParser::GetStcHits()
+TAMCntuHit* TAMCflukaParser::GetStcHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
-  TAMCntuHit* p_nturaw = (TAMCntuHit*) fpNtuMChit->Object();
+  TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
   
   p_nturaw->Clear();
   
-  for (Int_t i = 0; i < fpEvtStr->STCn; i++) {
+  for (Int_t i = 0; i < evStr->STCn; i++) {
     
     Int_t id       = 0;
-    Int_t trackIdx = fpEvtStr->STCid[i];
+    Int_t trackIdx = evStr->STCid[i];
     
-    TVector3 ipos( fpEvtStr->STCxin[i], fpEvtStr->STCyin[i], fpEvtStr->STCzin[i]);
-    TVector3 fpos( fpEvtStr->STCxout[i], fpEvtStr->STCyout[i], fpEvtStr->STCzout[i]);
-    TVector3 imom( fpEvtStr->STCpxin[i], fpEvtStr->STCpyin[i], fpEvtStr->STCpzin[i]);
-    TVector3 fmom( fpEvtStr->STCpxout[i], fpEvtStr->STCpyout[i], fpEvtStr->STCpzout[i]);
+    TVector3 ipos( evStr->STCxin[i], evStr->STCyin[i], evStr->STCzin[i]);
+    TVector3 fpos( evStr->STCxout[i], evStr->STCyout[i], evStr->STCzout[i]);
+    TVector3 imom( evStr->STCpxin[i], evStr->STCpyin[i], evStr->STCpzin[i]);
+    TVector3 fmom( evStr->STCpxout[i], evStr->STCpyout[i], evStr->STCpzout[i]);
     
-    p_nturaw->NewHit(trackIdx, id, -99, -99, ipos, fpos, imom, fmom, fpEvtStr->STCde[i], fpEvtStr->STCtim[i], 0);
+    p_nturaw->NewHit(trackIdx, id, -99, -99, ipos, fpos, imom, fmom, evStr->STCde[i], evStr->STCtim[i], 0);
   }
   
   return p_nturaw;
@@ -60,26 +57,26 @@ TAMCntuHit* TAMCflukaParser::GetStcHits()
 
 //------------------------------------------+-----------------------------------
 //! BM hits
-TAMCntuHit* TAMCflukaParser::GetBmHits()
+TAMCntuHit* TAMCflukaParser::GetBmHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   
-  TAMCntuHit* p_nturaw = (TAMCntuHit*) fpNtuMChit->Object();
+  TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
   
   p_nturaw->Clear();
   
-  for (Int_t i = 0; i < fpEvtStr->BMNn; i++) {
+  for (Int_t i = 0; i < evStr->BMNn; i++) {
     
-    Int_t layer    = fpEvtStr->BMNilay[i];
-    Int_t view     = fpEvtStr->BMNicell[i];
-    Int_t cellId   = fpEvtStr->BMNicell[i];
-    Int_t trackIdx = fpEvtStr->BMNid[i];
+    Int_t layer    = evStr->BMNilay[i];
+    Int_t view     = evStr->BMNicell[i];
+    Int_t cellId   = evStr->BMNicell[i];
+    Int_t trackIdx = evStr->BMNid[i];
     
-    TVector3 ipos( fpEvtStr->BMNxin[i], fpEvtStr->BMNyin[i], fpEvtStr->BMNzin[i]);
-    TVector3 fpos( fpEvtStr->BMNxout[i], fpEvtStr->BMNyout[i], fpEvtStr->BMNzout[i]);
-    TVector3 imom( fpEvtStr->BMNpxin[i], fpEvtStr->BMNpyin[i], fpEvtStr->BMNpzin[i]);
-    TVector3 fmom( fpEvtStr->BMNpxout[i],fpEvtStr->BMNpyout[i],fpEvtStr->BMNpzout[i]);
+    TVector3 ipos( evStr->BMNxin[i], evStr->BMNyin[i], evStr->BMNzin[i]);
+    TVector3 fpos( evStr->BMNxout[i], evStr->BMNyout[i], evStr->BMNzout[i]);
+    TVector3 imom( evStr->BMNpxin[i], evStr->BMNpyin[i], evStr->BMNpzin[i]);
+    TVector3 fmom( evStr->BMNpxout[i],evStr->BMNpyout[i],evStr->BMNpzout[i]);
     
-    p_nturaw->NewHit(trackIdx, layer, view, cellId, ipos, fpos, imom, fmom, fpEvtStr->BMNde[i], fpEvtStr->BMNtim[i], 0);
+    p_nturaw->NewHit(trackIdx, layer, view, cellId, ipos, fpos, imom, fmom, evStr->BMNde[i], evStr->BMNtim[i], 0);
   }
   
   return p_nturaw;
@@ -87,24 +84,24 @@ TAMCntuHit* TAMCflukaParser::GetBmHits()
 
 //------------------------------------------+-----------------------------------
 //! VTX hits
-TAMCntuHit* TAMCflukaParser::GetVtxHits()
+TAMCntuHit* TAMCflukaParser::GetVtxHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   
-  TAMCntuHit* p_nturaw = (TAMCntuHit*) fpNtuMChit->Object();
+  TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
   
   p_nturaw->Clear();
   
-  for (Int_t i = 0; i < fpEvtStr->VTXn; i++) {
+  for (Int_t i = 0; i < evStr->VTXn; i++) {
     
-    Int_t sensorId = fpEvtStr->VTXilay[i];
-    Int_t trackIdx = fpEvtStr->VTXid[i];
+    Int_t sensorId = evStr->VTXilay[i];
+    Int_t trackIdx = evStr->VTXid[i];
     
-    TVector3 ipos( fpEvtStr->VTXxin[i], fpEvtStr->VTXyin[i], fpEvtStr->VTXzin[i]);
-    TVector3 imom( fpEvtStr->VTXpxin[i], fpEvtStr->VTXpyin[i], fpEvtStr->VTXpzin[i]);
-    TVector3 fpos( fpEvtStr->VTXxout[i], fpEvtStr->VTXyout[i], fpEvtStr->VTXzout[i]);
-    TVector3 fmom( fpEvtStr->VTXpxout[i], fpEvtStr->VTXpyout[i], fpEvtStr->VTXpzout[i]);
+    TVector3 ipos( evStr->VTXxin[i], evStr->VTXyin[i], evStr->VTXzin[i]);
+    TVector3 imom( evStr->VTXpxin[i], evStr->VTXpyin[i], evStr->VTXpzin[i]);
+    TVector3 fpos( evStr->VTXxout[i], evStr->VTXyout[i], evStr->VTXzout[i]);
+    TVector3 fmom( evStr->VTXpxout[i], evStr->VTXpyout[i], evStr->VTXpzout[i]);
     
-    p_nturaw->NewHit(trackIdx, sensorId, -99, -99,ipos, fpos, imom, fmom, fpEvtStr->VTXde[i], fpEvtStr->VTXtim[i], 0);
+    p_nturaw->NewHit(trackIdx, sensorId, -99, -99,ipos, fpos, imom, fmom, evStr->VTXde[i], evStr->VTXtim[i], 0);
   }
   
   return p_nturaw;
@@ -112,24 +109,24 @@ TAMCntuHit* TAMCflukaParser::GetVtxHits()
 
 //------------------------------------------+-----------------------------------
 //! ITR hits
-TAMCntuHit* TAMCflukaParser::GetItrHits()
+TAMCntuHit* TAMCflukaParser::GetItrHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   
-  TAMCntuHit* p_nturaw = (TAMCntuHit*) fpNtuMChit->Object();
+  TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
   
   p_nturaw->Clear();
   
-  for (Int_t i = 0; i < fpEvtStr->ITRn; i++) {
+  for (Int_t i = 0; i < evStr->ITRn; i++) {
     
-    Int_t sensorId = fpEvtStr->ITRisens[i];
-    Int_t trackIdx = fpEvtStr->ITRid[i];
+    Int_t sensorId = evStr->ITRisens[i];
+    Int_t trackIdx = evStr->ITRid[i];
     
-    TVector3 ipos( fpEvtStr->ITRxin[i], fpEvtStr->ITRyin[i], fpEvtStr->ITRzin[i]);
-    TVector3 fpos( fpEvtStr->ITRxout[i], fpEvtStr->ITRyout[i], fpEvtStr->ITRzout[i]);
-    TVector3 imom( fpEvtStr->ITRpxin[i], fpEvtStr->ITRpyin[i], fpEvtStr->ITRpzin[i]);
-    TVector3 fmom( fpEvtStr->ITRpxout[i],fpEvtStr->ITRpyout[i],fpEvtStr->ITRpzout[i]);
+    TVector3 ipos( evStr->ITRxin[i], evStr->ITRyin[i], evStr->ITRzin[i]);
+    TVector3 fpos( evStr->ITRxout[i], evStr->ITRyout[i], evStr->ITRzout[i]);
+    TVector3 imom( evStr->ITRpxin[i], evStr->ITRpyin[i], evStr->ITRpzin[i]);
+    TVector3 fmom( evStr->ITRpxout[i],evStr->ITRpyout[i],evStr->ITRpzout[i]);
     
-    p_nturaw->NewHit(trackIdx, sensorId, -99, -99, ipos, fpos, imom, fmom, fpEvtStr->ITRde[i], fpEvtStr->ITRtim[i],0);
+    p_nturaw->NewHit(trackIdx, sensorId, -99, -99, ipos, fpos, imom, fmom, evStr->ITRde[i], evStr->ITRtim[i],0);
   }
   
   return p_nturaw;
@@ -137,24 +134,24 @@ TAMCntuHit* TAMCflukaParser::GetItrHits()
 
 //------------------------------------------+-----------------------------------
 //! MSD hits
-TAMCntuHit* TAMCflukaParser::GetMsdHits()
+TAMCntuHit* TAMCflukaParser::GetMsdHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   
-  TAMCntuHit* p_nturaw = (TAMCntuHit*) fpNtuMChit->Object();
+  TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
   
   p_nturaw->Clear();
   
-  for (Int_t i = 0; i < fpEvtStr->MSDn; i++) {
+  for (Int_t i = 0; i < evStr->MSDn; i++) {
     
-    Int_t layer    = fpEvtStr->MSDilay[i];
-    Int_t trackIdx = fpEvtStr->MSDid[i];
+    Int_t layer    = evStr->MSDilay[i];
+    Int_t trackIdx = evStr->MSDid[i];
     
-    TVector3 ipos( fpEvtStr->MSDxin[i], fpEvtStr->MSDyin[i], fpEvtStr->MSDzin[i]);
-    TVector3 fpos( fpEvtStr->MSDxout[i], fpEvtStr->MSDyout[i], fpEvtStr->MSDzout[i]);
-    TVector3 imom( fpEvtStr->MSDpxin[i], fpEvtStr->MSDpyin[i], fpEvtStr->MSDpzin[i]);
-    TVector3 fmom( fpEvtStr->MSDpxout[i], fpEvtStr->MSDpyout[i], fpEvtStr->MSDpzout[i]);
+    TVector3 ipos( evStr->MSDxin[i], evStr->MSDyin[i], evStr->MSDzin[i]);
+    TVector3 fpos( evStr->MSDxout[i], evStr->MSDyout[i], evStr->MSDzout[i]);
+    TVector3 imom( evStr->MSDpxin[i], evStr->MSDpyin[i], evStr->MSDpzin[i]);
+    TVector3 fmom( evStr->MSDpxout[i], evStr->MSDpyout[i], evStr->MSDpzout[i]);
     
-    p_nturaw->NewHit(trackIdx, layer, -99, -99, ipos, fpos, imom, fmom, fpEvtStr->MSDde[i], fpEvtStr->MSDtim[i], 0);
+    p_nturaw->NewHit(trackIdx, layer, -99, -99, ipos, fpos, imom, fmom, evStr->MSDde[i], evStr->MSDtim[i], 0);
   }
   
   return p_nturaw;
@@ -162,25 +159,25 @@ TAMCntuHit* TAMCflukaParser::GetMsdHits()
 
 //------------------------------------------+-----------------------------------
 //! TOF hits
-TAMCntuHit* TAMCflukaParser::GetTofHits()
+TAMCntuHit* TAMCflukaParser::GetTofHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   
-  TAMCntuHit* p_nturaw = (TAMCntuHit*) fpNtuMChit->Object();
+  TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
   
   p_nturaw->Clear();
   
-  for (Int_t i = 0; i < fpEvtStr->SCNn; i++) {
+  for (Int_t i = 0; i < evStr->SCNn; i++) {
     
-    Int_t trackIdx = fpEvtStr->SCNid[i];
-    Int_t barId    = fpEvtStr->SCNibar[i];
-    Int_t view     = fpEvtStr->SCNiview[i];
-    Float_t edep   = fpEvtStr->SCNde[i]*TAGgeoTrafo::GevToMev();
-    Float_t time   = fpEvtStr->SCNtim[i]*TAGgeoTrafo::SecToNs();
+    Int_t trackIdx = evStr->SCNid[i];
+    Int_t barId    = evStr->SCNibar[i];
+    Int_t view     = evStr->SCNiview[i];
+    Float_t edep   = evStr->SCNde[i]*TAGgeoTrafo::GevToMev();
+    Float_t time   = evStr->SCNtim[i]*TAGgeoTrafo::SecToNs();
     
-    TVector3 ipos( fpEvtStr->SCNxin[i], fpEvtStr->SCNyin[i], fpEvtStr->SCNzin[i]);
-    TVector3 fpos( fpEvtStr->SCNxout[i], fpEvtStr->SCNyout[i], fpEvtStr->SCNzout[i]);
-    TVector3 imom( fpEvtStr->SCNpxin[i], fpEvtStr->SCNpyin[i], fpEvtStr->SCNpzin[i]);
-    TVector3 fmom( fpEvtStr->SCNpxout[i], fpEvtStr->SCNpyout[i], fpEvtStr->SCNpzout[i]);
+    TVector3 ipos( evStr->SCNxin[i], evStr->SCNyin[i], evStr->SCNzin[i]);
+    TVector3 fpos( evStr->SCNxout[i], evStr->SCNyout[i], evStr->SCNzout[i]);
+    TVector3 imom( evStr->SCNpxin[i], evStr->SCNpyin[i], evStr->SCNpzin[i]);
+    TVector3 fmom( evStr->SCNpxout[i], evStr->SCNpyout[i], evStr->SCNpzout[i]);
     
     p_nturaw->NewHit(trackIdx, barId, view, -99, ipos, fpos, imom, fmom, edep, time, 0);
   }
@@ -190,23 +187,23 @@ TAMCntuHit* TAMCflukaParser::GetTofHits()
 
 //------------------------------------------+-----------------------------------
 //! CAL hits
-TAMCntuHit* TAMCflukaParser::GetCalHits()
+TAMCntuHit* TAMCflukaParser::GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
-  TAMCntuHit* p_nturaw = (TAMCntuHit*) fpNtuMChit->Object();
+  TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
   
   p_nturaw->Clear();
   
-  for (Int_t i = 0; i < fpEvtStr->CALn; i++) {
+  for (Int_t i = 0; i < evStr->CALn; i++) {
     
-    Int_t crystalId = fpEvtStr->CALicry[i];
-    Int_t trackIdx  = fpEvtStr->CALid[i];
+    Int_t crystalId = evStr->CALicry[i];
+    Int_t trackIdx  = evStr->CALid[i];
     
-    TVector3 ipos( fpEvtStr->CALxin[i], fpEvtStr->CALyin[i], fpEvtStr->CALzin[i]);
-    TVector3 fpos( fpEvtStr->CALxout[i], fpEvtStr->CALyout[i], fpEvtStr->CALzout[i]);
-    TVector3 imom( fpEvtStr->CALpxin[i], fpEvtStr->CALpyin[i], fpEvtStr->CALpzin[i]);
-    TVector3 fmom( fpEvtStr->CALpxout[i],fpEvtStr->CALpyout[i],fpEvtStr->CALpzout[i]);
+    TVector3 ipos( evStr->CALxin[i], evStr->CALyin[i], evStr->CALzin[i]);
+    TVector3 fpos( evStr->CALxout[i], evStr->CALyout[i], evStr->CALzout[i]);
+    TVector3 imom( evStr->CALpxin[i], evStr->CALpyin[i], evStr->CALpzin[i]);
+    TVector3 fmom( evStr->CALpxout[i],evStr->CALpyout[i],evStr->CALpzout[i]);
     
-    p_nturaw->NewHit(trackIdx, crystalId, -99, -99, ipos, fpos, imom, fmom, fpEvtStr->CALde[i], fpEvtStr->CALtim[i], 0);
+    p_nturaw->NewHit(trackIdx, crystalId, -99, -99, ipos, fpos, imom, fmom, evStr->CALde[i], evStr->CALtim[i], 0);
   }
   
   return p_nturaw;
@@ -214,37 +211,37 @@ TAMCntuHit* TAMCflukaParser::GetCalHits()
 
 //------------------------------------------+-----------------------------------
 //! CAL hits
-TAMCntuEve* TAMCflukaParser::GetTracks()
+TAMCntuEve* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrack)
 {
-  TAMCntuEve* p_nturaw = (TAMCntuEve*) fpNtuMCtrack->Object();
+  TAMCntuEve* p_nturaw = (TAMCntuEve*) p_ntutrack->Object();
   
   p_nturaw->Clear();
   
-  for (Int_t i = 0; i < fpEvtStr->TRn; i++) {
+  for (Int_t i = 0; i < evStr->TRn; i++) {
     
-    Double_t i_mass = fpEvtStr->TRmass[i];
-    Int_t i_id = fpEvtStr->TRfid[i];
-    Int_t i_mid = fpEvtStr->TRpaid[i];  //mother id
-    Int_t i_chg = fpEvtStr->TRcha[i];
-    Int_t i_reg = fpEvtStr->TRreg[i];
-    Int_t i_bar = fpEvtStr->TRbar[i];
-    Int_t i_dead = fpEvtStr->TRdead[i];
+    Double_t i_mass = evStr->TRmass[i];
+    Int_t i_id = evStr->TRfid[i];
+    Int_t i_mid = evStr->TRpaid[i];  //mother id
+    Int_t i_chg = evStr->TRcha[i];
+    Int_t i_reg = evStr->TRreg[i];
+    Int_t i_bar = evStr->TRbar[i];
+    Int_t i_dead = evStr->TRdead[i];
     Int_t i_moth = i_mid-1;
     Int_t i_type = -999;//useless for now
-    Double_t i_time = fpEvtStr->TRtime[i];
-    Double_t i_tof = fpEvtStr->TRtof[i];
-    Double_t i_trlen = fpEvtStr->TRtrlen[i];
+    Double_t i_time = evStr->TRtime[i];
+    Double_t i_tof = evStr->TRtof[i];
+    Double_t i_trlen = evStr->TRtrlen[i];
     
-    TVector3 ipos = TVector3(fpEvtStr->TRix[i],fpEvtStr->TRiy[i],fpEvtStr->TRiz[i]);
-    TVector3 fpos = TVector3(fpEvtStr->TRfx[i],fpEvtStr->TRfy[i],fpEvtStr->TRfz[i]);
-    TVector3 ip = TVector3(fpEvtStr->TRipx[i],fpEvtStr->TRipy[i],fpEvtStr->TRipz[i]);
-    TVector3 fp = TVector3(fpEvtStr->TRfpx[i],fpEvtStr->TRfpy[i],fpEvtStr->TRfpz[i]);
+    TVector3 ipos = TVector3(evStr->TRix[i],evStr->TRiy[i],evStr->TRiz[i]);
+    TVector3 fpos = TVector3(evStr->TRfx[i],evStr->TRfy[i],evStr->TRfz[i]);
+    TVector3 ip = TVector3(evStr->TRipx[i],evStr->TRipy[i],evStr->TRipz[i]);
+    TVector3 fp = TVector3(evStr->TRfpx[i],evStr->TRfpy[i],evStr->TRfpz[i]);
     //decide if propagate also final momentum
     
     TVector3 mothip = TVector3 (0,0,0);
-    if(i_moth>=0) mothip = TVector3(fpEvtStr->TRipx[i_moth],fpEvtStr->TRipy[i_moth],fpEvtStr->TRipz[i_moth]);
+    if(i_moth>=0) mothip = TVector3(evStr->TRipx[i_moth],evStr->TRipy[i_moth],evStr->TRipz[i_moth]);
     TVector3 mothfp = TVector3 (0,0,0);
-    if(i_moth>=0) mothfp = TVector3(fpEvtStr->TRfpx[i_moth],fpEvtStr->TRfpy[i_moth],fpEvtStr->TRfpz[i_moth]);
+    if(i_moth>=0) mothfp = TVector3(evStr->TRfpx[i_moth],evStr->TRfpy[i_moth],evStr->TRfpz[i_moth]);
     
     Int_t i_pileup = 0; // VM added 17/11/13 for pileup
     
