@@ -40,7 +40,8 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    fpCalPar(p_parcal),
    fParGeoG(p_parGeoG),
    fCnt(0),
-   fCntWrong(0)
+   fCntWrong(0),
+   fIsZtrueMC(isZmc)
 {
    AddDataIn(p_ntuMC, "TAMCntuHit");
    AddDataIn(p_ntuStMC, "TAMCntuHit");
@@ -196,7 +197,7 @@ bool TATWactNtuHitMC::Action() {
       TVector3 posIn(hitMC->GetInPosition());
       TVector3 posOut(hitMC->GetOutPosition());
       
-      Int_t layer   = hitMC->GetLayer();    // layers 0 (y-bars) and 1 (x-bars)
+      Int_t layer   = hitMC->GetView();    // layers 0 (y-bars) and 1 (x-bars)
       Int_t barId   = hitMC->GetBarId();
       Int_t trackId = hitMC->GetTrackIdx()-1;
       Float_t x0    = posIn.X();
@@ -251,34 +252,34 @@ bool TATWactNtuHitMC::Action() {
                Zrec_MCtrue = f_parcal->GetChargeZ(edep,trueTof,layer);
             
             for(int iZ=1; iZ<fZbeam+1; iZ++)
-               distZ_MC[iZ-1]= f_parcal->GetDistBB(iZ);
+              distZ_MC[iZ-1]= f_parcal->GetDistBB(iZ);
             
-            if (ValidHistogram()) {
+           if (ValidHistogram()) {
                fpHisZID_MCtrue->Fill(Zrec_MCtrue,Z);
-               
-               fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
-               
-               if( Zrec_MCtrue>0 && Zrec_MCtrue < fZbeam+1 )
-                  fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(trueTof,edep);
-               
-               fpHisRecPosMc->Fill(truePos);
-               fpHisRecTofMc->Fill(trueTof);
-               
-               for(int iZ=1; iZ < fZbeam+1; iZ++) {
-                  
-                  if(iZ==1) {
-                     if(iZ==Zrec_MCtrue)
-                        fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
-                     else
-                        fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
-                  }
-                  else
-                     fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
-                  
-               }
-               
+
+ //              fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
+//
+//               if( Zrec_MCtrue>0 && Zrec_MCtrue < fZbeam+1 )
+//                  fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(trueTof,edep);
+//
+//               fpHisRecPosMc->Fill(truePos);
+//               fpHisRecTofMc->Fill(trueTof);
+//
+//               for(int iZ=1; iZ < fZbeam+1; iZ++) {
+//
+//                  if(iZ==1) {
+//                     if(iZ==Zrec_MCtrue)
+//                        fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+//                     else
+//                        fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
+//                  }
+//                  else
+//                     fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+//
+//               }
+//
             }
-            
+           
             if(FootDebugLevel(1) > 0) {
                if(Zrec_MCtrue>0 && Z>0) {
                   fCnt++;
