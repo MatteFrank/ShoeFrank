@@ -30,7 +30,6 @@ LocalRecoNtuMC::LocalRecoNtuMC(TString expName, Int_t runNumber, TString fileNam
 LocalRecoNtuMC::~LocalRecoNtuMC()
 {
    // default destructor
-   if (fActEvtReader) delete fActEvtReader;
 }
 
 
