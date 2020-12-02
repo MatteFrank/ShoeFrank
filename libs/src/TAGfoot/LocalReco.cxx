@@ -43,7 +43,6 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
 LocalReco::~LocalReco()
 {
    // default destructor
-   if (fActEvtReader) delete fActEvtReader;
 }
 
 //__________________________________________________________
