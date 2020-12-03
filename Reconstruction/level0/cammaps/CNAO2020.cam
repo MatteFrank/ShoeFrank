@@ -1,7 +1,7 @@
 // Campaign file
 CamName: "CNAO2020"
 RunNumber: 1-2
-NumberDevices: 10
+NumberDevices: 8
 
 DetectorName: "FOOT"
 NumberFiles: 1
