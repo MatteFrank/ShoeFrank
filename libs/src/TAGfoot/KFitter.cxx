@@ -1,5 +1,7 @@
 #include "KFitter.hxx"
 
+ClassImp(KFitter)
+
 //----------------------------------------------------------------------------------------------------
 KFitter::KFitter (const char* name)
 : TAGaction(name, "KFitter - Global GenFit Tracker")

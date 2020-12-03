@@ -336,11 +336,7 @@ private:
 
   std::ofstream ofs;
 
-
+  ClassDef(KFitter, 0);
 };
-
-
-
-
 
 #endif
