@@ -34,8 +34,6 @@ void GlobalToeReco::OpenFileIn()
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
 
       fActEvtReader->Open(GetName());
-
-     // fTree = fActEvtReader->GetTree();
    }
 }
 
