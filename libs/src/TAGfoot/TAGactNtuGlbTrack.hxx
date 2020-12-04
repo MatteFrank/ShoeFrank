@@ -49,24 +49,9 @@ public:
    //! Base creation of histogram
    void      CreateHistogram();
    
-   //! Set up branches
-   void      SetupBranches();
-   
-   //! Set up branches
-   void      SetupBranches(TTree* tree);
-   
    //! Check branches
    void      CheckBranches();
 
-   //! Open File
-   void      Open(TString name);
-   
-   //! Close File
-   void      Close();
-   
-   //! Get tree in standalone mode
-   TTree*    GetTree();
-    
     TAGntuGlbTrack* GetTrackContainer() {return static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() );}
     
     void Output(){ fActTOE->Output(); }

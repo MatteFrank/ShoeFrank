@@ -219,7 +219,8 @@ private:
             logger_m.add_header<1>("candidate");
             logger_m << "charge: " << charge << '\n';
             
-            auto* data_h =  static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" )->Object() );
+//            auto* data_h =  static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" )->Object() );
+//            std::cout << "TAMCntuEve: " << data_h->GetBranchName() << "\n";
 //            logger_m << "id_charge_couple: ";
 //            for( int i{0} ; i < candidate.data->GetMcTracksN() ; ++ i){
 //                auto index = candidate.data->GetMcTrackIdx(i);

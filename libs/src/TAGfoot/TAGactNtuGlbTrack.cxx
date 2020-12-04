@@ -100,10 +100,8 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
       AddDataIn(p_msdclus, "TAMSDntuCluster");
    
    // TW mandatory
+
    AddDataIn(p_twpoint, "TATWntuPoint");
-   
-   if (fgStdAloneFlag)
-      SetupBranches();
    
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 }
@@ -113,38 +111,6 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
 TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
 {
     delete fActTOE;
-}
-
-//__________________________________________________________
-// ! Get Tree
-TTree* TAGactNtuGlbTrack::GetTree()
-{
-   if (fgStdAloneFlag)
-      return fActEvtReader->GetTree();
-   else
-      return 0x0;
-}
-
-//------------------------------------------+-----------------------------------
-//! Setup all branches.
-void TAGactNtuGlbTrack::SetupBranches()
-{
-   fActEvtReader = new TAGactTreeReader("evtReader");
-   
-   if (GlobalPar::GetPar()->IncludeVT()) {
-     fActEvtReader->SetupBranch(fpVtxTrack,  TAVTntuTrack::GetBranchName());
-     fActEvtReader->SetupBranch(fpVtxClus,   TAVTntuCluster::GetBranchName());
-     fActEvtReader->SetupBranch(fpVtxVertex, TAVTntuVertex::GetBranchName());
-   }
-
-   if (GlobalPar::GetPar()->IncludeIT())
-      fActEvtReader->SetupBranch(fpItrClus,  TAITntuCluster::GetBranchName());
-   
-   if (GlobalPar::GetPar()->IncludeMSD())
-      fActEvtReader->SetupBranch(fpMsdClus,  TAMSDntuCluster::GetBranchName());
-   
-   if(GlobalPar::GetPar()->IncludeTW())
-      fActEvtReader->SetupBranch(fpTwPoint,  TATWntuPoint::GetBranchName());
 }
 
 //------------------------------------------+-----------------------------------
@@ -226,24 +192,6 @@ void TAGactNtuGlbTrack::CheckBranches()
 }
 
 
-//__________________________________________________________
-// ! Open file
-void TAGactNtuGlbTrack::Open(TString name)
-{
-   if (fgStdAloneFlag) {
-      fActEvtReader->Open(name.Data());
-      CheckBranches();
-   } else
-      Error("OpenFile", "Not in stand alone mode");
-}
-
-//__________________________________________________________
-//! Close file
-void TAGactNtuGlbTrack::Close()
-{
-   fActEvtReader->Close();
-}
-
 //------------------------------------------+-----------------------------------
 //! Setup all histograms.
 void TAGactNtuGlbTrack::CreateHistogram()
@@ -294,15 +242,26 @@ void TAGactNtuGlbTrack::WriteHistogram()
 Bool_t TAGactNtuGlbTrack::Action()
 {
 
+  /*
   if (fgStdAloneFlag)
     fActEvtReader->Process();
-  
+  */
   
   //    auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
   
   fpGlbTrack->Clear();
   
   fActTOE->Action();
+
+  /*
+  auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
+  int nTrk = pNtuTrack->GetTracksN();
+  cout<<"--  "<<nTrk<<endl;
+  for(int iTr = 0; iTr< nTrk; iTr++) {
+    TAGtrack *aTr = pNtuTrack->GetTrack(iTr);
+    cout<<" --> Action -->  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
+  }
+  */
   
   fpGlbTrack->SetBit(kValid);
   

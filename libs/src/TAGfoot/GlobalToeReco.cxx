@@ -46,14 +46,25 @@ void GlobalToeReco::LoopEvent(Int_t nEvents)
 
       if (!fTAGroot->NextEvent()) break;
 
-      
-      if (FootDebugLevel(2)) {
-         TAGntuGlbTrack *glbTrack = (TAGntuGlbTrack*) (fTAGroot->FindDataDsc("glbTrack", "TAGntuGlbTrack")->Object());
-         int nTrk = glbTrack->GetTracksN();
-         for(int iTr = 0; iTr< nTrk; iTr++) {
-            TAGtrack *aTr = glbTrack->GetTrack(iTr);
-            cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<endl;
-         }
+      if (FootDebugLevel(1)) {
+      //MC block
+	TAMCntuEve*  p_ntuMcEve
+	  =  static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" ) ->Object() );
+	int nTrkMC = p_ntuMcEve->GetTracksN();
+	for(int iTr = 0; iTr< nTrkMC; iTr++) {
+	  TAMCeveTrack *aTr = p_ntuMcEve->GetTrack(iTr);
+	  //	cout<<"MCblock:  "<<aTr->GetMass()<<" "<<aTr->GetCharge()<<endl;
+	}
+	
+	
+	TAGntuGlbTrack *glbTrack =
+	  (TAGntuGlbTrack*) fpNtuGlbTrack->GenerateObject();
+	// (fTAGroot->FindDataDsc("glbTrack", "TAGntuGlbTrack")->Object());
+	int nTrk = glbTrack->GetTracksN();
+	for(int iTr = 0; iTr< nTrk; iTr++) {
+	  TAGtrack *aTr = glbTrack->GetTrack(iTr);
+	  cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
+	}
       }
    }
 }
@@ -62,17 +73,19 @@ void GlobalToeReco::LoopEvent(Int_t nEvents)
 void GlobalToeReco::OpenFileIn()
 {
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      fActGlbTrack->Open(GetName());
-      fTree = fActGlbTrack->GetTree();
+
+      fActEvtReaderFile->Open(GetName());
+
+      fTree = fActEvtReaderFile->GetTree();
+
+
    }
 }
 
 //__________________________________________________________
 void GlobalToeReco::CloseFileIn()
 {
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      fActGlbTrack->Close();
-   }
+  fActEvtReaderFile->Close();
 }
 
 // --------------------------------------------------------------------------------------
@@ -120,21 +133,31 @@ void GlobalToeReco::SetRunNumber()
 //__________________________________________________________
 void GlobalToeReco::CreateRawAction()
 {
-  //Disabled: you already have everything you need inside the root file
-   if (fFlagMC)
-      fpNtuMcEve = new TAGdataDsc("eveMc", new TAMCntuEve());
+
 }
 
 //__________________________________________________________
-void GlobalToeReco::AddRawRequiredItem()
+void GlobalToeReco::CreateRecAction()
 {
-}
 
-//__________________________________________________________
-void GlobalToeReco::SetTreeBranches()
-{
-   BaseReco::SetTreeBranches();
+  fActEvtReaderFile = new TAGactTreeReader("evtReader");
+  BaseReco::CreateRecAction();
 
-   if (fFlagMC)
-      fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
+  if (GlobalPar::GetPar()->IncludeVT()) {
+    fActEvtReaderFile->SetupBranch(fpNtuTrackVtx,  TAVTntuTrack::GetBranchName());
+    fActEvtReaderFile->SetupBranch(fpNtuClusVtx,   TAVTntuCluster::GetBranchName());
+    fActEvtReaderFile->SetupBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
+  }
+  
+  if (GlobalPar::GetPar()->IncludeIT())
+    fActEvtReaderFile->SetupBranch(fpNtuClusIt,  TAITntuCluster::GetBranchName());
+  
+  if (GlobalPar::GetPar()->IncludeMSD())
+    fActEvtReaderFile->SetupBranch(fpNtuClusMsd,  TAMSDntuCluster::GetBranchName());
+  
+  if(GlobalPar::GetPar()->IncludeTW())
+    fActEvtReaderFile->SetupBranch(fpNtuRecTw,  TATWntuPoint::GetBranchName());
+
+  fActEvtReaderFile->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
+
 }
