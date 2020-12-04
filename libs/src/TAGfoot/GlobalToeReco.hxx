@@ -4,6 +4,7 @@
 
 #include "TString.h"
 #include "TAGobject.hxx"
+#include "TAGactTreeReader.hxx"
 #include "BaseReco.hxx"
 
 
@@ -18,7 +19,8 @@ public:
    //! Create raw data action
    virtual void CreateRawAction();
    
-   virtual void AddRawRequiredItem();
+   //! Create rec data action
+   virtual void CreateRecAction();
    
    //! Open File
    virtual void OpenFileIn();
@@ -29,17 +31,12 @@ public:
    //! Loop events
    virtual void LoopEvent(Int_t nEvents);
 
-   //! Create branch in tree
-   virtual void SetTreeBranches();
-
    //! Set run number
    void   SetRunNumber();
 
 private:
-   TAGdataDsc*           fpNtuMcEve;    // input data dsc
-
    TTree*                fTree;         // tree for local reconstruction
-   TFile*                fActEvtReader; // file for local reconstruction
+   TAGactTreeReader*     fActEvtReaderFile; // file for local reconstruction
    
    ClassDef(GlobalToeReco, 1); 
 };

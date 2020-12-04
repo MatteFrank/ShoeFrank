@@ -73,6 +73,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuClusIt(0x0),
    fpNtuClusMsd(0x0),
    fpNtuRecTw(0x0),
+   fpNtuMcEve(0x0),
    fpNtuTrackBm(0x0),
    fpNtuTrackVtx(0x0),
    fpNtuTrackIt(0x0),
@@ -80,6 +81,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuGlbTrack(0x0),
    fpNtuTrackIr(0x0),
    fActEvtReader(0x0),
+   fActEvtReaderFile(0x0),
    fActEvtWriter(0x0),
    fActTrackBm(0x0),
    fActClusVtx(0x0),
@@ -181,17 +183,19 @@ void BaseReco::CampaignChecks()
 void BaseReco::BeforeEventLoop()
 {
    ReadParFiles();
+
    CreateRawAction();
    CreateRecAction();
 
     
-   OpenFileIn();
    SetRunNumber();
  //  CampaignChecks();
 
    AddRawRequiredItem();
    AddRecRequiredItem();
    
+   OpenFileIn();
+
     
    if (fFlagOut)
       OpenFileOut();
@@ -213,9 +217,8 @@ void BaseReco::AfterEventLoop()
 //__________________________________________________________
 void BaseReco::OpenFileOut()
 {
-   if (fFlagTree)
-      SetTreeBranches();
-   
+
+  if (fFlagTree)  SetTreeBranches();
    fActEvtWriter->Open(GetTitle(), "RECREATE");
    
    if (fFlagHisto) {
@@ -269,7 +272,7 @@ void BaseReco::SetRecHistogramDir()
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAMSDparGeo::GetBaseName());
       fActClusMsd->SetHistogramDir(subfolder);
    }
-   
+
    // TW
    if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->CalibTW()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TATWparGeo::GetBaseName());
@@ -334,6 +337,7 @@ void BaseReco::ReadParFiles()
          fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
          TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
          parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber);
+	 cout<<" Corr? "<<parFileName<<endl;
          parMap->FromFile(parFileName.Data());
          
          fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
@@ -562,7 +566,7 @@ void BaseReco::CreateRecActionVtx()
    }
    
    fpNtuClusVtx  = new TAGdataDsc("vtClus", new TAVTntuCluster());
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
+   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag())     return;
 
    if (fM28ClusMtFlag)
       fActClusVtx   = new TAVTactNtuClusterMT("vtActClus", fpNtuRawVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
@@ -607,7 +611,7 @@ void BaseReco::CreateRecActionVtx()
 void BaseReco::CreateRecActionIt()
 {
    fpNtuClusIt  = new TAGdataDsc("itClus", new TAITntuCluster());
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
+   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag())     return;
 
    if (fM28ClusMtFlag)
       fActClusIt   = new TAITactNtuClusterMT("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
@@ -676,26 +680,33 @@ void BaseReco::CreateRecActionCa()
 //__________________________________________________________
 void BaseReco::CreateRecActionGlb()
 {
+
   if(fFlagTrack) {
+
+   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag())
+     fpNtuMcEve  = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());    
+    
     fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
     fActGlbTrack  = new TAGactNtuGlbTrack( "glbActTrack",
-                                           fpNtuClusVtx,
-                                           fpNtuTrackVtx,
-                                           fpNtuVtx,
-                                           fpNtuClusIt,
-                                           fpNtuClusMsd,
-                                           fpNtuRecTw,
-                                           fpNtuGlbTrack,
-                                           fpParGeoG,
-                                           fpParGeoDi,
-                                           fpParGeoVtx,
-                                           fpParGeoIt,
-                                           fpParGeoMsd,
-                                           fpParGeoTw,
-                                           fField );
+					   fpNtuClusVtx,
+					   fpNtuTrackVtx,
+					   fpNtuVtx,
+					   fpNtuClusIt,
+					   fpNtuClusMsd,
+					   fpNtuRecTw,
+					   fpNtuGlbTrack,
+					   fpParGeoG,
+					   fpParGeoDi,
+					   fpParGeoVtx,
+					   fpParGeoIt,
+					   fpParGeoMsd,
+					   fpParGeoTw,
+					   fField );
     if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
+    fActGlbTrack->CheckBranches();
   }
+  
 }
 
 //__________________________________________________________
@@ -745,7 +756,11 @@ void BaseReco::SetTreeBranches()
        fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
      }
    }
-   
+   /*
+   if (fFlagTrack) {
+     fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
+   }
+   */
    if (GlobalPar::GetPar()->IncludeVT()) {
      if (!fFlagTrack)
        fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
@@ -755,13 +770,6 @@ void BaseReco::SetTreeBranches()
        if (GlobalPar::GetPar()->IncludeTG())
          fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
      }
-   }
-   
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
-   
-   if (GlobalPar::GetPar()->IncludeBM()) {
-     if (fFlagTrack)
-       fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeIT())
@@ -776,6 +784,13 @@ void BaseReco::SetTreeBranches()
    if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->CalibTW())
      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
    
+   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
+   
+   if (GlobalPar::GetPar()->IncludeBM()) {
+     if (fFlagTrack)
+       fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+   }
+   
    if (GlobalPar::GetPar()->IncludeCA())
      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
 }
@@ -785,14 +800,12 @@ void BaseReco::AddRecRequiredItem()
 {
    if (fFlagOut)
       gTAGroot->AddRequiredItem("locRecFile");
-   
    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
      if (fFlagTrack) {
        gTAGroot->AddRequiredItem("glbActTrack");
      }
      return;
    }
-   
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
       gTAGroot->AddRequiredItem("stActNtu");
    

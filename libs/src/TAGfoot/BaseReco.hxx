@@ -280,7 +280,8 @@ protected:
    TAGdataDsc*           fpNtuRecMsd;
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
    TAGdataDsc*           fpNtuClusCa;     // input cluster data dsc
-
+   TAGdataDsc*           fpNtuMcEve;
+  
    TADIgeoField*         fField;       // magnetic field
 
    TAGdataDsc*           fpNtuTrackBm;  // input track data dsc
@@ -293,6 +294,7 @@ protected:
 
    TAGactionFile*        fActEvtReader;
    TAGactTreeWriter*     fActEvtWriter;  // write histo and tree
+   TAGactTreeReader*     fActEvtReaderFile;  // ride from histo tree
 
    TABMactNtuTrack*      fActTrackBm;    // action for tracks
    
