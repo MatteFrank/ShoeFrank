@@ -8,6 +8,7 @@
 #include "TAGroot.hxx"
 #include "TASTntuRaw.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAMCflukaParser.hxx"
 #include "TASTdigitizer.hxx"
 
 #include "TAMCntuHit.hxx"
@@ -25,11 +26,12 @@ ClassImp(TASTactNtuHitMC);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TASTactNtuHitMC::TASTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNturaw)
+TASTactNtuHitMC::TASTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNturaw, EVENT_STRUCT* evStr)
   : TAGaction(name, "TASTactNtuHitMC - NTuplize ToF raw data"),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
-   fpNtuRaw(pNturaw)
+   fpNtuRaw(pNturaw),
+   fEventStruct(evStr)
 {
    if(FootDebugLevel(1))
       Info("Action()"," Creating the Start Counter MC tuplizer action\n");
@@ -63,9 +65,15 @@ TASTactNtuHitMC::~TASTactNtuHitMC()
 Bool_t TASTactNtuHitMC::Action()
 {
   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-  TAMCntuHit* pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
   TASTntuRaw* pNturaw   = (TASTntuRaw*) fpNtuRaw->Object();
+  
+  TAMCntuHit* pNtuMC    = 0;
 
+  if (fEventStruct == 0x0)
+    pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
+   else
+    pNtuMC    = TAMCflukaParser::GetStcHits(fEventStruct, fpNtuMC);
+  
   //The number of hits inside the Start Counter is stn
   if(FootDebugLevel(1))
       Info("Action()","Processing n Onion :: %2d hits", pNtuMC->GetHitsN());

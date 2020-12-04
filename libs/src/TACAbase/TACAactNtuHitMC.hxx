@@ -43,7 +43,8 @@ private:
                                     TAGdataDsc* p_ntuEve  = 0,
                                     TAGdataDsc* p_nturaw  = 0,
                                     TAGparaDsc* p_geomap  = 0,
-                                    TAGparaDsc* p_geomapG = 0);
+                                    TAGparaDsc* p_geomapG = 0,
+                                    EVENT_STRUCT* evStr   = 0);
    
     virtual        ~TACAactNtuHitMC();
 
@@ -61,6 +62,7 @@ private:
    TAGparaDsc*     fpGeoMapG;       // geometry para dsc for beam
    TAGgeoTrafo*    fpGeoTrafo;
    TACAdigitizer*  fDigitizer;       // cluster size digitizer
+   EVENT_STRUCT*   fEventStruct;
    
    TH1F* fpHisDeTot;
    TH1F* fpHisDeTotMc;

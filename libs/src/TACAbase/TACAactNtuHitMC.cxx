@@ -17,8 +17,8 @@
 #include "TACAntuRaw.hxx"
 #include "TACAactNtuHitMC.hxx"
 #include "TACAdigitizer.hxx"
-#include "TGeoElement.h"
 
+#include "TAMCflukaParser.hxx"
 
 /*!
   \class TACAactNtuHitMC TACAactNtuHitMC.hxx "TACAactNtuHitMC.hxx"
@@ -31,13 +31,14 @@ ClassImp(TACAactNtuHitMC);
 //! Default constructor.
 
 TACAactNtuHitMC::TACAactNtuHitMC(const char* name,  TAGdataDsc* p_ntuMC, TAGdataDsc* p_ntuEve,
-                                 TAGdataDsc* p_nturaw, TAGparaDsc* p_geomap, TAGparaDsc* p_geomapG)
+                                 TAGdataDsc* p_nturaw, TAGparaDsc* p_geomap, TAGparaDsc* p_geomapG, EVENT_STRUCT* evStr)
   : TAGaction(name, "TACAactNtuHitMC - NTuplize CA raw data"),
     fpNtuMC(p_ntuMC),
     fpNtuEve(p_ntuEve),
     fpNtuRaw(p_nturaw),
     fpGeoMap(p_geomap),
-    fpGeoMapG(p_geomapG)
+    fpGeoMapG(p_geomapG),
+    fEventStruct(evStr)
 {
    AddDataIn(p_ntuMC, "TAMCntuHit");
    AddDataIn(p_ntuEve, "TAMCntuEve");
@@ -224,9 +225,18 @@ TACAactNtuHitMC::~TACAactNtuHitMC()
 
 Bool_t TACAactNtuHitMC::Action()
 {  
-   TAMCntuHit* pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
-   TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
-   TACAparGeo* parGeo    = (TACAparGeo*) fpGeoMap->Object();
+   TAMCntuHit* pNtuMC   = 0x0;
+   TAMCntuEve* pNtuEve  = 0x0;
+  
+   if (fEventStruct == 0x0) {
+     pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
+     pNtuEve = (TAMCntuEve*) fpNtuEve->Object();
+   } else {
+     pNtuMC  = TAMCflukaParser::GetCalHits(fEventStruct, fpNtuMC);
+     pNtuEve = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
+   }
+  
+   TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
    
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
       TAMChit* hitMC = pNtuMC->GetHit(i);

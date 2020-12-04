@@ -8,6 +8,7 @@
 #include "TATWdatRaw.hxx"
 #include "TATWparCal.hxx"
 #include "TATWactNtuHitMC.hxx"
+#include "TAMCflukaParser.hxx"
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
@@ -31,7 +32,8 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
                                  TAGdataDsc* p_hitraw,
                                  TAGparaDsc* p_parcal,
                                  TAGparaDsc* p_parGeoG,
-				 Bool_t isZmc)
+                                 Bool_t isZmc,
+                                 EVENT_STRUCT* evStr)
  : TAGaction(name, "TATWactNtuHitMC - NTuplize ToF raw data"),
    fpNtuMC(p_ntuMC),
    fpNtuStMC(p_ntuStMC),
@@ -41,7 +43,8 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    fParGeoG(p_parGeoG),
    fCnt(0),
    fCntWrong(0),
-   fIsZtrueMC(isZmc)
+   fIsZtrueMC(isZmc),
+   fEventStruct(evStr)
 {
    AddDataIn(p_ntuMC, "TAMCntuHit");
    AddDataIn(p_ntuStMC, "TAMCntuHit");
@@ -71,8 +74,7 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    fMapPU.clear();
    fVecPuOff.clear();
    
-   f_parcal = (TATWparCal*)fpCalPar->Object();
-
+   f_parcal = (TATWparCal*)fpCalPar->Object();  
 }
 
 //------------------------------------------+-----------------------------------
@@ -172,10 +174,21 @@ bool TATWactNtuHitMC::Action() {
    
    if(FootDebugLevel(1))
      cout << "TATWactNtuHitMC::Action() start" << endl;
-   
-   TAMCntuHit* pNtuMC   = (TAMCntuHit*) fpNtuMC->Object();
-   TAMCntuHit* pNtuStMC = (TAMCntuHit*) fpNtuStMC->Object();
-
+  
+   TAMCntuHit* pNtuMC   = 0x0;
+   TAMCntuHit* pNtuStMC = 0x0;
+   TAMCntuEve* pNtuEve  = 0x0;
+  
+  if (fEventStruct == 0x0) {
+    pNtuMC   = (TAMCntuHit*) fpNtuMC->Object();
+    pNtuStMC = (TAMCntuHit*) fpNtuStMC->Object();
+    pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
+  } else {
+    pNtuMC   = TAMCflukaParser::GetTofHits(fEventStruct, fpNtuMC);
+    pNtuStMC = TAMCflukaParser::GetStcHits(fEventStruct, fpNtuStMC);
+    pNtuEve  = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
+  }
+  
    //The number of hits inside the Start Counter is stn
    if(FootDebugLevel(1))
      cout << "Processing n Scint " << pNtuMC->GetHitsN() << endl;
@@ -207,7 +220,6 @@ bool TATWactNtuHitMC::Action() {
       Float_t edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();
       Float_t time  = hitMC->GetTof()*TAGgeoTrafo::SecToPs();
       // get true charge
-      TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
       TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
       Int_t  Z = track->GetCharge();
       

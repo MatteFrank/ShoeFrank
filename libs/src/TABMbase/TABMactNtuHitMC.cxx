@@ -6,6 +6,7 @@
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
+#include "TAMCflukaParser.hxx"
 
 #include "TABMactNtuHitMC.hxx"
 
@@ -25,13 +26,15 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
                                  TAGdataDsc* dscntuEve,
                                  TAGdataDsc* dscnturaw,
                                  TAGparaDsc* dscbmcon,
-                                 TAGparaDsc* dscbmgeo)
+                                 TAGparaDsc* dscbmgeo,
+                                 EVENT_STRUCT* evStr)
   : TAGaction(name, "TABMactNtuHitMC - NTuplize ToF raw data"),
     fpNtuMC(dscntuMC),
     fpNtuEve(dscntuEve),
     fpNtuRaw(dscnturaw),
     fpParCon(dscbmcon),
-    fpParGeo(dscbmgeo)
+    fpParGeo(dscbmgeo),
+    fEventStruct(evStr)
 {
    if (FootDebugLevel(1))
       cout<<"TABMactNtuHitMC::default constructor::Creating the Beam Monitor MC tuplizer action"<<endl;
@@ -71,11 +74,20 @@ Bool_t TABMactNtuHitMC::Action()
 {
   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   TABMntuRaw* p_nturaw  = (TABMntuRaw*) fpNtuRaw->Object();
-  TABMparConf* p_bmcon   = (TABMparConf*) fpParCon->Object();
+  TABMparConf* p_bmcon  = (TABMparConf*) fpParCon->Object();
   TABMparGeo* p_bmgeo   = (TABMparGeo*) fpParGeo->Object();
-  TAMCntuHit* pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
-  TAMCntuEve* pNtuEve   = (TAMCntuEve*) fpNtuEve->Object();
+  
+  TAMCntuHit* pNtuMC    = 0;
+  TAMCntuEve* pNtuEve   = 0;
 
+  if (fEventStruct == 0x0) {
+    pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
+    pNtuEve   = (TAMCntuEve*) fpNtuEve->Object();
+  } else {
+    pNtuMC   = TAMCflukaParser::GetBmHits(fEventStruct, fpNtuMC);
+    pNtuEve  = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
+  }
+  
   Int_t cell, view, lay, ipoint, cellid;
   Double_t rdrift;
 

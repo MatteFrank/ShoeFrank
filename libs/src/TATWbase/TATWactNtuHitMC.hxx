@@ -17,12 +17,14 @@
 #include "TATWparGeo.hxx"
 
 #include "TAGgeoTrafo.hxx"
+#include "Evento.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
 
 #include "Parameters.h"
 
+class TAMCflukaParser;
 class TATWdigitizer;
 
 class TATWactNtuHitMC : public TAGaction {
@@ -34,7 +36,8 @@ public:
                             TAGdataDsc* p_hitraw=0,
                             TAGparaDsc* p_parcal=0,
                             TAGparaDsc *p_pargeoG=0,
-			    Bool_t isZmc = false);
+                            Bool_t isZmc = false,
+                            EVENT_STRUCT* evStr = 0);
   
    virtual  ~TATWactNtuHitMC();
    
@@ -55,6 +58,7 @@ private:
 
    TAGparGeo*      f_pargeo;
    TAGgeoTrafo*    f_geoTrafo;
+   EVENT_STRUCT*   fEventStruct;
 
    Int_t fZbeam;
    Int_t fCnt;
