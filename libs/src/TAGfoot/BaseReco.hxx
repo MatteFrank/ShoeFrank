@@ -111,7 +111,7 @@ public:
    virtual void SetRecHistogramDir();
    
    //! Loop events
-   virtual void LoopEvent(Int_t /*nEvents*/) { return; }
+  virtual void LoopEvent(Int_t nEvents);
    
    //! Begin loop
    virtual void BeforeEventLoop();

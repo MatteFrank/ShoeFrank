@@ -46,21 +46,6 @@ LocalReco::~LocalReco()
 }
 
 //__________________________________________________________
-void LocalReco::LoopEvent(Int_t nEvents)
-{
-   
-   for (Int_t ientry = 0; ientry < nEvents; ientry++) {
-      
-      if(ientry % 100 == 0)
-         cout<<" Loaded Event:: " << ientry << endl;
-      if(GlobalPar::GetPar()->Debug())
-         cout<<dec<<" Event:: "<<ientry<<endl;
-      
-      if (!fTAGroot->NextEvent()) break;;
-   }
-}
-
-//__________________________________________________________
 void LocalReco::CreateRawAction()
 {
    if (!fgStdAloneFlag) {

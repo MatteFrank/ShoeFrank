@@ -50,9 +50,6 @@ public:
    
    //! Close File in
    virtual void CloseFileIn();
-
-   //! Loop events
-   virtual void LoopEvent(Int_t nEvents);
    
    //! Set run number
    void   SetRunNumber();

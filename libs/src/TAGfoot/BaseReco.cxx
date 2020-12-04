@@ -187,22 +187,37 @@ void BaseReco::BeforeEventLoop()
    CreateRawAction();
    CreateRecAction();
 
-    
    SetRunNumber();
- //  CampaignChecks();
+   CampaignChecks();
 
    AddRawRequiredItem();
    AddRecRequiredItem();
    
    OpenFileIn();
-
-    
    if (fFlagOut)
       OpenFileOut();
    
-    
    fTAGroot->BeginEventLoop();
    fTAGroot->Print();
+}
+
+//__________________________________________________________
+void BaseReco::LoopEvent(Int_t nEvents)
+{
+  Int_t frequency = 1;
+  
+  if (nEvents >= 100000)      frequency = 10000;
+  else if (nEvents >= 10000)  frequency = 1000;
+  else if (nEvents >= 1000)   frequency = 100;
+  else if (nEvents >= 100)    frequency = 10;
+  
+  for (Int_t ientry = 0; ientry < nEvents; ientry++) {
+    
+    if(ientry % frequency == 0)
+      cout<<" Loaded Event:: " << ientry << endl;
+    
+    if (!fTAGroot->NextEvent()) break;;
+  }
 }
 
 //__________________________________________________________
@@ -337,7 +352,6 @@ void BaseReco::ReadParFiles()
          fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
          TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
          parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber);
-	 cout<<" Corr? "<<parFileName<<endl;
          parMap->FromFile(parFileName.Data());
          
          fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
@@ -683,8 +697,10 @@ void BaseReco::CreateRecActionGlb()
 
   if(fFlagTrack) {
 
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag())
-     fpNtuMcEve  = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());    
+    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
+      if (fFlagMC)
+        fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
+    }
     
     fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
     fActGlbTrack  = new TAGactNtuGlbTrack( "glbActTrack",
@@ -756,11 +772,7 @@ void BaseReco::SetTreeBranches()
        fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
      }
    }
-   /*
-   if (fFlagTrack) {
-     fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
-   }
-   */
+  
    if (GlobalPar::GetPar()->IncludeVT()) {
      if (!fFlagTrack)
        fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());

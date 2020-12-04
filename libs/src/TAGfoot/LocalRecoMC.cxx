@@ -35,18 +35,6 @@ LocalRecoMC::~LocalRecoMC()
 }
 
 //__________________________________________________________
-void LocalRecoMC::LoopEvent(Int_t nEvents)
-{
-   for (Long64_t ientry = 0; ientry < nEvents; ientry++) {
-
-      if(ientry % 100 == 0)
-         cout<<" Loaded Event:: " << ientry << endl;
-      
-      if (!fTAGroot->NextEvent()) break;
-   }
-}
-
-//__________________________________________________________
 void LocalRecoMC::CreateRawAction()
 {
    fActEvtReader = new TAGactTreeReader("actEvtReader");

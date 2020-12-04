@@ -60,9 +60,6 @@ public:
    //! Close File in
    virtual void CloseFileIn();
 
-   //! Loop events
-   virtual void LoopEvent(Int_t nEvents);
-   
    //! MC container Getter
    TAMCntuEve*  GetNtuMcEve() const { return (TAMCntuEve*)fpNtuMcEve->Object();}
    TAMCntuHit*  GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object(); }
