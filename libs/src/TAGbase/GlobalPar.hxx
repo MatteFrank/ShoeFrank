@@ -84,6 +84,8 @@ public:
 
     void IncludeTOE(bool t)          {  m_includeTOE = t;            }
     void IncludeKalman(bool t)       {  m_includeKalman = t;         }
+    void EnableLocalReco()           {  m_enableLocalReco = true;    }
+    void DisableLocalReco()          {  m_enableLocalReco = false;   }
 
     void IncludeDI(bool t)           {  m_includeDI = t;             }
     void IncludeST(bool t)           {  m_includeST = t;             }
