@@ -111,6 +111,7 @@ private:
     double st_position_m;
     TATOEchecker<TATOEactGlb> checker_m;
     TATOElogger logger_m;
+    bool flag_mc_m{false};
 
     node_type const * current_node_mh;
     std::size_t event{0};
@@ -133,7 +134,8 @@ public:
     {
         ukf_m.call_stepper().ode.model().particle_h = &particle_m;
     }
-    
+  
+    void SetMcFlag(bool f) {flag_mc_m = f; }
     void Output() override {
         checker_m.compute_results( details::all_mixed_tag{} );
         checker_m.compute_results( details::all_separated_tag{} );
