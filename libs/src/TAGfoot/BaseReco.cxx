@@ -248,10 +248,17 @@ void BaseReco::SetRecHistogramDir()
 {
    //Global track
    if (fFlagTrack) {
+     
+      if (!GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IncludeKalman()) {
+        TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
+        fActGlbkFitter->SetHistogramDir(subfolder);
+        if (GlobalPar::GetPar()->IsLocalReco()) return;
+      }
+     
       if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman()) {
          TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
          fActGlbTrack->SetHistogramDir(subfolder);
-         if (TAGactNtuGlbTrack::GetStdAloneFlag()) return;
+         if (GlobalPar::GetPar()->IsLocalReco()) return;
       }
    }
    
@@ -390,7 +397,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files dipole
-   if (GlobalPar::GetPar()->IncludeDI() || TAGactNtuGlbTrack::GetStdAloneFlag() ) {
+   if (GlobalPar::GetPar()->IncludeDI() || GlobalPar::GetPar()->IsLocalReco() ) {
       fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TADIparGeo::GetBaseName(), fRunNumber);
@@ -401,7 +408,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files for vertex
-   if (GlobalPar::GetPar()->IncludeVT() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
+   if (GlobalPar::GetPar()->IncludeVT() || GlobalPar::GetPar()->IsLocalReco()) {
       fpParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
@@ -421,7 +428,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files for inner tracker
-   if (GlobalPar::GetPar()->IncludeIT() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
+   if (GlobalPar::GetPar()->IncludeIT() || GlobalPar::GetPar()->IsLocalReco()) {
       fpParGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
@@ -441,7 +448,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for multi strip detector
-   if (GlobalPar::GetPar()->IncludeMSD() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
+   if (GlobalPar::GetPar()->IncludeMSD() || GlobalPar::GetPar()->IsLocalReco()) {
       fpParGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
       TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
@@ -454,7 +461,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for Tof Wall
-   if (GlobalPar::GetPar()->IncludeTW() || TAGactNtuGlbTrack::GetStdAloneFlag()) {
+   if (GlobalPar::GetPar()->IncludeTW() || GlobalPar::GetPar()->IsLocalReco()) {
       fpParGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
       TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
@@ -561,7 +568,7 @@ void BaseReco::CreateRecAction()
 void BaseReco::CreateRecActionBm()
 {
    if(fFlagTrack) {
-     if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
+     if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
      fpNtuTrackBm = new TAGdataDsc("bmTrack", new TABMntuTrack());
 
      fActTrackBm  = new TABMactNtuTrack("bmActTrack", fpNtuTrackBm, fpNtuRawBm, fpParGeoBm, fpParConfBm, fpParGeoG);
@@ -575,12 +582,12 @@ void BaseReco::CreateRecActionVtx()
 {
    if(fFlagTrack) {
       fpNtuTrackVtx = new TAGdataDsc("vtTrack", new TAVTntuTrack());
-      if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeTOE())
+      if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman())
          fpNtuVtx      = new TAGdataDsc("vtVtx",   new TAVTntuVertex());
    }
    
    fpNtuClusVtx  = new TAGdataDsc("vtClus", new TAVTntuCluster());
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag())     return;
+  if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
    if (fM28ClusMtFlag)
       fActClusVtx   = new TAVTactNtuClusterMT("vtActClus", fpNtuRawVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
@@ -625,7 +632,7 @@ void BaseReco::CreateRecActionVtx()
 void BaseReco::CreateRecActionIt()
 {
    fpNtuClusIt  = new TAGdataDsc("itClus", new TAITntuCluster());
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag())     return;
+  if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
    if (fM28ClusMtFlag)
       fActClusIt   = new TAITactNtuClusterMT("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
@@ -657,7 +664,7 @@ void BaseReco::CreateRecActionIt()
 void BaseReco::CreateRecActionMsd()
 {
    fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
+   if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
    fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuRawMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
    if (fFlagHisto)
@@ -673,7 +680,7 @@ void BaseReco::CreateRecActionMsd()
 void BaseReco::CreateRecActionTw()
 {
    fpNtuRecTw  = new TAGdataDsc("twPoint", new TATWntuPoint());
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
+   if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
    fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuRawTw, fpNtuRecTw, fpParGeoTw, fpParCalTw);
    if (fFlagHisto)
@@ -684,8 +691,8 @@ void BaseReco::CreateRecActionTw()
 void BaseReco::CreateRecActionCa()
 {
    fpNtuClusCa  = new TAGdataDsc("caClus", new TACAntuCluster());
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
-   
+   if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
+
    fActClusCa   = new TACAactNtuCluster("caActClus", fpNtuRawCa, fpNtuClusCa, fpParGeoCa, 0x0, fpNtuRecTw);
    if (fFlagHisto)
       fActClusCa->CreateHistogram();
@@ -696,12 +703,7 @@ void BaseReco::CreateRecActionGlb()
 {
 
   if(fFlagTrack) {
-
-    if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      if (fFlagMC)
-        fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
-    }
-    
+    SetL0TreeBranches();
     fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
     fActGlbTrack  = new TAGactNtuGlbTrack( "glbActTrack",
 					   fpNtuClusVtx,
@@ -729,6 +731,45 @@ void BaseReco::CreateRecActionGlb()
 void BaseReco::CreateRecActionGlbGF()
 {
    if(fFlagTrack) {
+      SetL0TreeBranches();
+     
+     if (fFlagMC) {
+       if (GlobalPar::GetPar()->IncludeST()) {
+         fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
+         fActEvtReader->SetupBranch(fpNtuMcSt,TAMCntuHit::GetStcBranchName());
+       }
+       
+       if (GlobalPar::GetPar()->IncludeBM()) {
+         fpNtuMcBm   = new TAGdataDsc("bmMc", new TAMCntuHit());
+         fActEvtReader->SetupBranch(fpNtuMcBm,TAMCntuHit::GetBmBranchName());
+       }
+       
+       if (GlobalPar::GetPar()->IncludeVT()) {
+         fpNtuMcVt   = new TAGdataDsc("vtMc", new TAMCntuHit());
+         fActEvtReader->SetupBranch(fpNtuMcVt,TAMCntuHit::GetVtxBranchName());
+       }
+       
+       if (GlobalPar::GetPar()->IncludeIT()) {
+         fpNtuMcIt   = new TAGdataDsc("itMc", new TAMCntuHit());
+         fActEvtReader->SetupBranch(fpNtuMcIt,TAMCntuHit::GetItrBranchName());
+       }
+       
+       if (GlobalPar::GetPar()->IncludeMSD()) {
+         fpNtuMcMsd   = new TAGdataDsc("msdMc", new TAMCntuHit());
+         fActEvtReader->SetupBranch(fpNtuMcMsd,TAMCntuHit::GetMsdBranchName());
+       }
+       
+       if(GlobalPar::GetPar()->IncludeTW()) {
+         fpNtuMcTw   = new TAGdataDsc("twMc", new TAMCntuHit());
+         fActEvtReader->SetupBranch(fpNtuMcTw,TAMCntuHit::GetTofBranchName());
+       }
+       
+       if(GlobalPar::GetPar()->IncludeCA()) {
+         fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
+         fActEvtReader->SetupBranch(fpNtuMcCa,TAMCntuHit::GetCalBranchName());
+       }
+     }
+     
       genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
       
       // set material and geometry into genfit
@@ -765,6 +806,35 @@ void BaseReco::CreateRecActionIr()
 }
 
 //__________________________________________________________
+void BaseReco::SetL0TreeBranches()
+{
+  if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) {
+    fActEvtReader = new TAGactTreeReader("evtReader");
+    
+    if (GlobalPar::GetPar()->IncludeVT()) {
+      fActEvtReader->SetupBranch(fpNtuTrackVtx,  TAVTntuTrack::GetBranchName());
+      fActEvtReader->SetupBranch(fpNtuClusVtx,   TAVTntuCluster::GetBranchName());
+      fActEvtReader->SetupBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
+    }
+    
+    if (GlobalPar::GetPar()->IncludeIT())
+      fActEvtReader->SetupBranch(fpNtuClusIt,  TAITntuCluster::GetBranchName());
+    
+    if (GlobalPar::GetPar()->IncludeMSD())
+      fActEvtReader->SetupBranch(fpNtuClusMsd,  TAMSDntuCluster::GetBranchName());
+    
+    if(GlobalPar::GetPar()->IncludeTW())
+      fActEvtReader->SetupBranch(fpNtuRecTw,  TATWntuPoint::GetBranchName());
+    
+    if (fFlagMC) {
+      fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
+      fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
+    }
+  }
+}
+
+
+//__________________________________________________________
 void BaseReco::SetTreeBranches()
 {
    if (GlobalPar::GetPar()->IncludeTOE()) {
@@ -787,17 +857,14 @@ void BaseReco::SetTreeBranches()
    if (GlobalPar::GetPar()->IncludeIT())
      fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
    
-   if (GlobalPar::GetPar()->IncludeMSD())  {
+   if (GlobalPar::GetPar()->IncludeMSD())
      fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
-     if (GlobalPar::GetPar()->IncludeKalman())
-        fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
-   }
    
    if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->CalibTW())
      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
    
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) return;
-   
+   if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
+
    if (GlobalPar::GetPar()->IncludeBM()) {
      if (fFlagTrack)
        fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
@@ -812,12 +879,20 @@ void BaseReco::AddRecRequiredItem()
 {
    if (fFlagOut)
       gTAGroot->AddRequiredItem("locRecFile");
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
+   if (GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
        gTAGroot->AddRequiredItem("glbActTrack");
      }
      return;
    }
+  
+   if (GlobalPar::GetPar()->IncludeKalman() && GlobalPar::GetPar()->IsLocalReco()) {
+     if (fFlagTrack) {
+       gTAGroot->AddRequiredItem("glbActTrackGF");
+     }
+     return;
+   }
+  
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
       gTAGroot->AddRequiredItem("stActNtu");
    

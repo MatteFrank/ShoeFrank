@@ -136,6 +136,9 @@ public:
    
    //! Create branch in tree
    virtual void SetTreeBranches();
+  
+  //! Create L0 branch in tree
+  virtual void SetL0TreeBranches();
    
    //! Set experiment name
    virtual void SetExpName(const Char_t* name) { fExpName = name;  }
@@ -280,7 +283,15 @@ protected:
    TAGdataDsc*           fpNtuRecMsd;
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
    TAGdataDsc*           fpNtuClusCa;     // input cluster data dsc
+  
    TAGdataDsc*           fpNtuMcEve;
+   TAGdataDsc*           fpNtuMcSt;    // input data dsc
+   TAGdataDsc*           fpNtuMcBm;    // input data dsc
+   TAGdataDsc*           fpNtuMcVt;    // input data dsc
+   TAGdataDsc*           fpNtuMcIt;    // input data dsc
+   TAGdataDsc*           fpNtuMcMsd;    // input data dsc
+   TAGdataDsc*           fpNtuMcTw;    // input data dsc
+   TAGdataDsc*           fpNtuMcCa;    // input data dsc
   
    TADIgeoField*         fField;       // magnetic field
 
