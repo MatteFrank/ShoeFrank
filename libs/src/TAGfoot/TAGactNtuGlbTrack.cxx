@@ -48,8 +48,6 @@
  \brief  Read back detector clusters to reconstruct global tracks**
  */
 
-Bool_t  TAGactNtuGlbTrack::fgStdAloneFlag = false;
-
 ClassImp(TAGactNtuGlbTrack)
 
 //------------------------------------------+-----------------------------------
@@ -235,33 +233,13 @@ void TAGactNtuGlbTrack::WriteHistogram()
     TAGaction::WriteHistogram();
 }
 
-
-
 //------------------------------------------+-----------------------------------
 //! Action.
 Bool_t TAGactNtuGlbTrack::Action()
 {
-
-  /*
-  if (fgStdAloneFlag)
-    fActEvtReader->Process();
-  */
-  
-  //    auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
-  
   fpGlbTrack->Clear();
   
   fActTOE->Action();
-
-  /*
-  auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
-  int nTrk = pNtuTrack->GetTracksN();
-  cout<<"--  "<<nTrk<<endl;
-  for(int iTr = 0; iTr< nTrk; iTr++) {
-    TAGtrack *aTr = pNtuTrack->GetTrack(iTr);
-    cout<<" --> Action -->  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
-  }
-  */
   
   fpGlbTrack->SetBit(kValid);
   

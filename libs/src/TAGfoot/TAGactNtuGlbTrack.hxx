@@ -84,15 +84,6 @@ private:
    TATOEbaseAct*     fActTOE;
     
    TH1F*             fpHisMass;
-
-public:
-   //! Disable/Enable stand alone reading
-   static void DisableStdAlone()   { fgStdAloneFlag = false;  }
-   static void EnableStdAlone()    { fgStdAloneFlag = true;   }
-   static Bool_t GetStdAloneFlag() { return fgStdAloneFlag;   }
-   
-private:
-   static Bool_t     fgStdAloneFlag;    // flag for standalone (read from root file using MC interface)
    
    ClassDef(TAGactNtuGlbTrack,0)
 };
