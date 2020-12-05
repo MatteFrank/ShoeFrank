@@ -71,8 +71,7 @@ int main (int argc, char *argv[])  {
    BaseReco* glbRec = 0x0;
    
    if (lrc)
-      //glbRec = new GlobalReco(exp, runNb, in, out, mc);
-      Error("DecodeGlb()", "No global reco from local reco tree available with GenFit");
+      glbRec = new GlobalReco(exp, runNb, in, out, mc);
    else if (mc) {
       if (!obj)
          glbRec = new LocalRecoMC(exp, runNb, in, out);
