@@ -91,7 +91,7 @@ protected:
    TAGdataDsc*           fpNtuMcCa;    // input data dsc
    
    TAGactTreeReader*     fActEvtReader; // file for MC
-   
+
    ClassDef(LocalRecoNtuMC, 1); // Base class for event display
 };
 
