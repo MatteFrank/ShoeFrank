@@ -18,10 +18,7 @@ public:
 
    //! Create raw data action
    virtual void CreateRawAction();
-   
-   //! Create rec data action
-   virtual void CreateRecAction();
-   
+  
    //! Open File
    virtual void OpenFileIn();
    

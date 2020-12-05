@@ -18,7 +18,7 @@ ClassImp(GlobalToeReco)
 GlobalToeReco::GlobalToeReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout)
 {
-   TAGactNtuGlbTrack::EnableStdAlone();
+   GlobalPar::GetPar()->EnableLocalReco();
    fFlagMC = isMC;
 }
 
@@ -31,16 +31,18 @@ GlobalToeReco::~GlobalToeReco()
 //__________________________________________________________
 void GlobalToeReco::OpenFileIn()
 {
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-
-      fActEvtReader->Open(GetName());
-   }
+  fActEvtReader->Open(GetName());
 }
 
 //__________________________________________________________
 void GlobalToeReco::CloseFileIn()
 {
   fActEvtReader->Close();
+}
+
+//__________________________________________________________
+void GlobalToeReco::CreateRawAction()
+{
 }
 
 // --------------------------------------------------------------------------------------
@@ -83,37 +85,4 @@ void GlobalToeReco::SetRunNumber()
    Warning("SetRunNumber()", "Run number not set !, taking number from file: %d", fRunNumber);
 
    gTAGroot->SetRunNumber(fRunNumber);
-}
-
-//__________________________________________________________
-void GlobalToeReco::CreateRawAction()
-{
-
-}
-
-//__________________________________________________________
-void GlobalToeReco::CreateRecAction()
-{
-
-  fActEvtReader = new TAGactTreeReader("evtReader");
-  BaseReco::CreateRecAction();
-
-  if (GlobalPar::GetPar()->IncludeVT()) {
-    fActEvtReader->SetupBranch(fpNtuTrackVtx,  TAVTntuTrack::GetBranchName());
-    fActEvtReader->SetupBranch(fpNtuClusVtx,   TAVTntuCluster::GetBranchName());
-    fActEvtReader->SetupBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
-  }
-  
-  if (GlobalPar::GetPar()->IncludeIT())
-    fActEvtReader->SetupBranch(fpNtuClusIt,  TAITntuCluster::GetBranchName());
-  
-  if (GlobalPar::GetPar()->IncludeMSD())
-    fActEvtReader->SetupBranch(fpNtuClusMsd,  TAMSDntuCluster::GetBranchName());
-  
-  if(GlobalPar::GetPar()->IncludeTW())
-    fActEvtReader->SetupBranch(fpNtuRecTw,  TATWntuPoint::GetBranchName());
-
-  if (fFlagMC)
-    fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
-
 }
