@@ -48,9 +48,11 @@ TAMSDactNtuHitMC::TAMSDactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdata
    fNoisyStripsN(0),
    fEventStruct(evStr)
 {
-   AddDataIn(pNtuMC, "TAMCntuHit");
-   AddDataIn(pNtuEve, "TAMCntuEve");
-	AddDataOut(pNtuRaw, "TAMSDntuRaw");
+   if (fEventStruct == 0x0) {
+     AddDataIn(pNtuMC, "TAMCntuHit");
+     AddDataIn(pNtuEve, "TAMCntuEve");
+   }
+   AddDataOut(pNtuRaw, "TAMSDntuRaw");
 	AddPara(pGeoMap, "TAMSDparGeo");
 
    CreateDigitizer();
@@ -168,6 +170,10 @@ bool TAMSDactNtuHitMC::Action()
 		}
    }
 
+   if (fEventStruct != 0x0) {
+     fpNtuMC->SetBit(kValid);
+     fpNtuEve->SetBit(kValid);
+   }
    fpNtuRaw->SetBit(kValid);
    return kTRUE;
 }

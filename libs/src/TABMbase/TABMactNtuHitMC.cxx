@@ -39,8 +39,10 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
    if (FootDebugLevel(1))
       cout<<"TABMactNtuHitMC::default constructor::Creating the Beam Monitor MC tuplizer action"<<endl;
 
-   AddDataIn(fpNtuMC, "TAMCntuHit");
-   AddDataIn(fpNtuEve, "TAMCntuEve");
+   if (fEventStruct == 0x0) {
+     AddDataIn(dscntuMC, "TAMCntuHit");
+     AddDataIn(dscntuEve, "TAMCntuEve");
+   } 
    AddDataOut(fpNtuRaw, "TABMntuRaw");
 
    AddPara(fpParCon, "TABMparConf");
@@ -150,6 +152,10 @@ Bool_t TABMactNtuHitMC::Action()
   }
 
 
+  if (fEventStruct != 0x0) {
+    fpNtuMC->SetBit(kValid);
+    fpNtuEve->SetBit(kValid);
+  }
   fpNtuRaw->SetBit(kValid);
   if(FootDebugLevel(2))
     cout<<"TABMactNtuHitMC::Action():: done without problems!"<<endl;

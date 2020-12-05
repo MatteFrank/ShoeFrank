@@ -46,10 +46,11 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    fIsZtrueMC(isZmc),
    fEventStruct(evStr)
 {
-   AddDataIn(p_ntuMC, "TAMCntuHit");
-   AddDataIn(p_ntuStMC, "TAMCntuHit");
-   AddDataIn(p_ntuEve, "TAMCntuEve");
-   
+   if (fEventStruct == 0x0) {
+     AddDataIn(p_ntuMC, "TAMCntuHit");
+     AddDataIn(p_ntuStMC, "TAMCntuHit");
+     AddDataIn(p_ntuEve, "TAMCntuEve");
+   } 
    AddDataOut(p_hitraw, "TATWntuRaw");
    AddPara(p_parcal,"TATWparCal");
    AddPara(p_parGeoG,"TAGparGeo");
@@ -483,7 +484,11 @@ bool TATWactNtuHitMC::Action() {
       }
    }
    
-   
+   if (fEventStruct != 0x0) {
+     fpNtuMC->SetBit(kValid);
+     fpNtuStMC->SetBit(kValid);
+     fpNtuEve->SetBit(kValid);
+   }
    fpNtuRaw->SetBit(kValid);
    
    return true;

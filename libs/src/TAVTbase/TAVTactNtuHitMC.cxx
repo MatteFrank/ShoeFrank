@@ -44,8 +44,10 @@ TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
    fpNtuRaw(pNtuRaw),
    fEventStruct(evStr)
 {
-   AddDataIn(pNtuMC, "TAMCntuHit");
-   AddDataIn(pNtuEve, "TAMCntuEve");
+   if (fEventStruct == 0x0) {
+     AddDataIn(pNtuMC, "TAMCntuHit");
+     AddDataIn(pNtuEve, "TAMCntuEve");
+   }
    AddDataOut(pNtuRaw, "TAVTntuRaw");
    AddPara(pGeoMap, "TAVTparGeo");
    
@@ -103,7 +105,11 @@ bool TAVTactNtuHitMC::Action()
    
    if (fgSigmaNoiseLevel > 0)
       FillNoise();
-   
+  
+   if (fEventStruct != 0x0) {
+     fpNtuMC->SetBit(kValid);
+     fpNtuEve->SetBit(kValid);
+   }
    fpNtuRaw->SetBit(kValid);
    
    return kTRUE;

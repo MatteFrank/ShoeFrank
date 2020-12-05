@@ -40,8 +40,10 @@ TACAactNtuHitMC::TACAactNtuHitMC(const char* name,  TAGdataDsc* p_ntuMC, TAGdata
     fpGeoMapG(p_geomapG),
     fEventStruct(evStr)
 {
-   AddDataIn(p_ntuMC, "TAMCntuHit");
-   AddDataIn(p_ntuEve, "TAMCntuEve");
+   if (fEventStruct == 0x0) {
+     AddDataIn(p_ntuMC, "TAMCntuHit");
+     AddDataIn(p_ntuEve, "TAMCntuEve");
+   } 
    AddDataOut(p_nturaw, "TACAntuRaw");
    AddPara(p_geomap,"TACAparGeo");
 
@@ -334,8 +336,12 @@ Bool_t TACAactNtuHitMC::Action()
       
    }
    
-   fpNtuMC->SetBit(kValid);
-
+   if (fEventStruct != 0x0) {
+     fpNtuMC->SetBit(kValid);
+     fpNtuEve->SetBit(kValid);
+   }
+   fpNtuRaw->SetBit(kValid);
+  
    return kTRUE;
 }
 

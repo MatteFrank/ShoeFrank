@@ -35,8 +35,11 @@ TASTactNtuHitMC::TASTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
 {
    if(FootDebugLevel(1))
       Info("Action()"," Creating the Start Counter MC tuplizer action\n");
-   AddDataIn(pNtuMC, "TAMCntuHit");
-   AddDataIn(pNtuEve, "TAMCntuEve");
+  
+   if (fEventStruct == 0x0) {
+     AddDataIn(pNtuMC, "TAMCntuHit");
+     AddDataIn(pNtuEve, "TAMCntuEve");
+   } 
    AddDataOut(pNturaw, "TASTntuRaw");
    
    CreateDigitizer();
@@ -107,6 +110,12 @@ Bool_t TASTactNtuHitMC::Action()
   
   pNturaw->SetCharge(edep);
   pNturaw->SetTriggerTime(trigtime);
+  
+  if (fEventStruct != 0x0) {
+    fpNtuMC->SetBit(kValid);
+    fpNtuEve->SetBit(kValid);
+  }
+
   fpNtuRaw->SetBit(kValid);
    
   return kTRUE;
