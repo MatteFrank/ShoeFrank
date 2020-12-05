@@ -115,14 +115,6 @@ void LocalRecoNtuMC::CreateRawAction()
 //__________________________________________________________
 void LocalRecoNtuMC::OpenFileIn()
 {
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      fActEvtReaderFile = new TAGactTreeReader("evtReader");
-      cout<<"-->  "<<GetName()<<endl;
-      fActEvtReaderFile->Open(GetName());
-
-      return;
-   }
-   
    fActEvtReader->Open(GetName(), "READ", "EventTree");
 }
 
@@ -175,11 +167,6 @@ void LocalRecoNtuMC::SetRawHistogramDir()
 //__________________________________________________________
 void LocalRecoNtuMC::CloseFileIn()
 {
-   if (GlobalPar::GetPar()->IncludeTOE() && TAGactNtuGlbTrack::GetStdAloneFlag()) {
-      fActEvtReader->Close();
-      return;
-   }
-
    fActEvtReader->Close();
 }
 
