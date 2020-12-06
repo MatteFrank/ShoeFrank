@@ -67,7 +67,7 @@ TAMCntuHit* TAMCflukaParser::GetBmHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit
   for (Int_t i = 0; i < evStr->BMNn; i++) {
     
     Int_t layer    = evStr->BMNilay[i];
-    Int_t view     = evStr->BMNicell[i];
+    Int_t view     = evStr->BMNiview[i];
     Int_t cellId   = evStr->BMNicell[i];
     Int_t trackIdx = evStr->BMNid[i];
     
