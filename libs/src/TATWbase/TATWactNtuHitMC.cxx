@@ -270,27 +270,27 @@ bool TATWactNtuHitMC::Action() {
            if (ValidHistogram()) {
                fpHisZID_MCtrue->Fill(Zrec_MCtrue,Z);
 
- //              fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
-//
-//               if( Zrec_MCtrue>0 && Zrec_MCtrue < fZbeam+1 )
-//                  fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(trueTof,edep);
-//
-//               fpHisRecPosMc->Fill(truePos);
-//               fpHisRecTofMc->Fill(trueTof);
-//
-//               for(int iZ=1; iZ < fZbeam+1; iZ++) {
-//
-//                  if(iZ==1) {
-//                     if(iZ==Zrec_MCtrue)
-//                        fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
-//                     else
-//                        fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
-//                  }
-//                  else
-//                     fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
-//
-//               }
-//
+               fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
+
+               if( Zrec_MCtrue>0 && Zrec_MCtrue < fZbeam+1 )
+                  fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(trueTof,edep);
+
+               fpHisRecPosMc->Fill(truePos);
+               fpHisRecTofMc->Fill(trueTof);
+
+               for(int iZ=1; iZ < fZbeam+1; iZ++) {
+
+                  if(iZ==1) {
+                     if(iZ==Zrec_MCtrue)
+                        fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+                     else
+                        fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
+                  }
+                  else
+                     fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+
+               }
+
             }
            
             if(FootDebugLevel(1) > 0) {
