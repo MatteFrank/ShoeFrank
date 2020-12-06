@@ -138,7 +138,7 @@ bool TAMSDactNtuHitMC::Action()
    fMap.clear();
  
    if(FootDebugLevel(1))
-      Info("TAMSDactNtuHitMC::Action()", "start  -->  VTn : %d  ", pNtuMC->GetHitsN());
+      Info("TAMSDactNtuHitMC::Action()", "start  -->  MSDn : %d  ", pNtuMC->GetHitsN());
 
    
 	// Loop over all MC hits

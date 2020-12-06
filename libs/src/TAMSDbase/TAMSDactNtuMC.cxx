@@ -116,8 +116,8 @@ void TAMSDactNtuMC::CreateDigitizer()
 //! Action.
 bool TAMSDactNtuMC::Action()
 {
-	if(FootDebugLevel(1))
-	  Info("TAMSDactNtuMC::Action()", "start  -->  VTn : %d  ", fpEvtStr->MSDn);
+  if(FootDebugLevel(1))
+	  Info("TAMSDactNtuMC::Action()", "start  -->  MSDn : %d  ", fpEvtStr->MSDn);
 
    TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
 	TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
@@ -126,7 +126,8 @@ bool TAMSDactNtuMC::Action()
    
 	// Loop over all MC hits
 	for (Int_t i = 0; i < fpEvtStr->MSDn; i++) {
-		if(FootDebugLevel(1))    cout<< endl << "FLUKA id =   " << fpEvtStr->TRfx[i] << "  "<< fpEvtStr->TRfy[i] << "  "<< fpEvtStr->TRfz[i] << endl;
+     if(FootDebugLevel(1))
+        cout<< endl << "FLUKA id =   " << fpEvtStr->TRfx[i] << "  "<< fpEvtStr->TRfy[i] << "  "<< fpEvtStr->TRfz[i] << endl;
 
 		Int_t sensorId = fpEvtStr->MSDilay[i];
 
