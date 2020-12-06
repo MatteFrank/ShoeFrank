@@ -171,8 +171,8 @@ TAMCntuHit* TAMCflukaParser::GetTofHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhi
     Int_t trackIdx = evStr->SCNid[i];
     Int_t barId    = evStr->SCNibar[i];
     Int_t view     = evStr->SCNiview[i];
-    Float_t edep   = evStr->SCNde[i]*TAGgeoTrafo::GevToMev();
-    Float_t time   = evStr->SCNtim[i]*TAGgeoTrafo::SecToNs();
+    Float_t edep   = evStr->SCNde[i];
+    Float_t time   = evStr->SCNtim[i];
     
     TVector3 ipos( evStr->SCNxin[i], evStr->SCNyin[i], evStr->SCNzin[i]);
     TVector3 fpos( evStr->SCNxout[i], evStr->SCNyout[i], evStr->SCNzout[i]);
