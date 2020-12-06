@@ -305,7 +305,6 @@ protected:
 
    TAGactionFile*        fActEvtReader;
    TAGactTreeWriter*     fActEvtWriter;  // write histo and tree
-   TAGactTreeReader*     fActEvtReaderFile;  // ride from histo tree
 
    TABMactNtuTrack*      fActTrackBm;    // action for tracks
    

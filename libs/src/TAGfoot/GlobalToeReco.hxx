@@ -30,7 +30,6 @@ public:
 
 private:
    TTree*                fTree;         // tree for local reconstruction
-   TAGactTreeReader*     fActEvtReaderFile; // file for local reconstruction
    
    ClassDef(GlobalToeReco, 1); 
 };

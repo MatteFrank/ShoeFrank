@@ -81,7 +81,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuGlbTrack(0x0),
    fpNtuTrackIr(0x0),
    fActEvtReader(0x0),
-   fActEvtReaderFile(0x0),
    fActEvtWriter(0x0),
    fActTrackBm(0x0),
    fActClusVtx(0x0),
