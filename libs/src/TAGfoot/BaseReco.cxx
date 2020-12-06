@@ -205,11 +205,12 @@ void BaseReco::LoopEvent(Int_t nEvents)
 {
   Int_t frequency = 1;
   
-  if (nEvents >= 100000)      frequency = 10000;
-  else if (nEvents >= 10000)  frequency = 1000;
-  else if (nEvents >= 1000)   frequency = 100;
-  else if (nEvents >= 100)    frequency = 10;
-  
+  if (nEvents > 100000)      frequency = 100000;
+  else if (nEvents > 10000)  frequency = 10000;
+  else if (nEvents > 1000)   frequency = 1000;
+  else if (nEvents > 100)    frequency = 100;
+  else if (nEvents > 10)     frequency = 10;
+
   for (Int_t ientry = 0; ientry < nEvents; ientry++) {
     
     if(ientry % frequency == 0)
