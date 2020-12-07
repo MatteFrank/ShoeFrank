@@ -888,6 +888,7 @@ void BaseReco::AddRecRequiredItem()
   
    if (GlobalPar::GetPar()->IncludeKalman() && GlobalPar::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
+       gTAGroot->AddRequiredItem("glbActTrackStudyGF");
        gTAGroot->AddRequiredItem("glbActTrackGF");
      }
      return;
