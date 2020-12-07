@@ -40,6 +40,9 @@ void DecodeMC(TString name = "12C_C_200_1.root", TString exp = "12C_200", Int_t 
    if (ntu)
      locRec->EnableTree();
   
+   if (trk)
+     locRec->EnableTracking();
+
    if (his)
      locRec->EnableHisto();
   
