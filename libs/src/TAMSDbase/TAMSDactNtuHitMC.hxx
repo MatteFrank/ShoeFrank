@@ -8,7 +8,7 @@
 /*------------------------------------------+---------------------------------*/
 #include <map>
 
-
+#include "Evento.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
@@ -30,7 +30,8 @@ public:
                              TAGdataDsc* p_ntuMC=0,
                              TAGdataDsc* p_ntuEve=0,
                              TAGdataDsc* p_nturaw=0,
-                             TAGparaDsc* p_geomap = 0);
+                             TAGparaDsc* p_geomap = 0,
+                             EVENT_STRUCT* evStr = 0);
    virtual ~TAMSDactNtuHitMC() {};
    
    //! Base action 
@@ -57,6 +58,7 @@ private:
    
    TAMSDdigitizer* fDigitizer;       // cluster size digitizer
    Int_t           fNoisyStripsN;
+   EVENT_STRUCT*   fEventStruct;
 
    map<pair<int, int>, TAMSDntuHit*> fMap; //! map for pilepup
 

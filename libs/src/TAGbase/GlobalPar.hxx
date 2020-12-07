@@ -19,13 +19,14 @@
 
 #include "TObjArray.h"
 
+#include "TAGrunInfo.hxx"
 using namespace std;
 
 // singleton class of global foot parameters
 class GlobalPar {
 
 public:
-	static GlobalPar* Instance( string aparFileName = "FootGlobal.par" );
+	static GlobalPar* Instance( const TString expName = "" );
 	static GlobalPar* GetPar();
    
 public:
@@ -33,6 +34,7 @@ public:
 
 	void ReadParamFile();
 	void Print(Option_t* opt = "");
+   const TAGrunInfo GetGlobalInfo();
 
 	int  Debug()                const { return m_debug;               }
 
@@ -56,6 +58,15 @@ public:
     bool IsPrintOutputNtuple() const { return m_printoutntuple;      }
     string OutputNtuple()      const { return m_outputntuplename;    }
 	
+    bool IsLocalReco()         const { return m_enableLocalReco;     }
+    bool IsSaveTree()          const { return m_enableTree;          }
+    bool IsSaveHisto()         const { return m_enableHisto;         }
+    bool IsSaveHits()          const { return m_enableSaveHits;      }
+    bool IsTracking()          const { return m_enableTracking;      }
+    bool IsReadRootObj()       const { return m_enableRootObject;    }
+    bool IsTofZmc()            const { return m_enableTofZmc;        }
+    bool IsTofCalBar()         const { return m_enableTofCalBar;     }
+
     bool IncludeDI()           const { return m_includeDI;           }
     bool IncludeST()           const { return m_includeST;           }
     bool IncludeBM()           const { return m_includeBM;           }
@@ -68,6 +79,13 @@ public:
    
     bool IncludeTOE()          const { return m_includeTOE;          }
     bool IncludeKalman()       const { return m_includeKalman;       }
+  
+    bool CalibTW()             const { return m_doCalibTW;           }
+
+    void IncludeTOE(bool t)          {  m_includeTOE = t;            }
+    void IncludeKalman(bool t)       {  m_includeKalman = t;         }
+    void EnableLocalReco()           {  m_enableLocalReco = true;    }
+    void DisableLocalReco()          {  m_enableLocalReco = false;   }
 
     void IncludeDI(bool t)           {  m_includeDI = t;             }
     void IncludeST(bool t)           {  m_includeST = t;             }
@@ -78,75 +96,25 @@ public:
     void IncludeTG(bool t)           {  m_includeTG = t;             }
     void IncludeVT(bool t)           {  m_includeVT = t;             }
     void IncludeIT(bool t)           {  m_includeIT = t;             }
-   
-    void SetDebugLevels();
-    void RemoveSpace( string* s );
-    bool IEquals(const string& a, const string& b);
-    bool frankFind( string what, string where );
-    string StrReplace(string original, string erase, string add);
 
-	bool Find_MCParticle( string villain )
-		{ return ( find( m_mcParticles.begin(), m_mcParticles.end(), villain ) == m_mcParticles.end() ? false : true ); };
-	
-	double GetLowBinHisto( string villain ) 	{ 
-		for ( map< string, pair< double, double > >::iterator it = m_map_range.begin(); it != m_map_range.end(); it++ ) {
-			if ( frankFind( (*it).first, villain ) )
-				return (*it).second.first; 
-		}
-		return -666;
-	};
-	double GetUpBinHisto( string villain ) 	{ 
-		for ( map< string, pair< double, double > >::iterator it = m_map_range.begin(); it != m_map_range.end(); it++ ) {
-			if ( frankFind( (*it).first, villain ) )
-				return (*it).second.second; 
-		}
-		return -666;
-	};
-	int GetNBinHisto( string villain )  	{ 
-		for ( map< string, int >::iterator it = m_nBin_map.begin(); it != m_nBin_map.end(); it++ ) {
-			if ( frankFind( (*it).first, villain ) )
-				return (*it).second; 
-		}
-		return -666;
-	};
-	string GetSaveDirHisto( string villain )  	{ 
-		for ( map< string, string >::iterator it = m_map_saveDir.begin(); it != m_map_saveDir.end(); it++ ) {
-			if ( frankFind( (*it).first, villain ) )
-				return (*it).second; 
-		}
-		return "default";
-	};
-	string GetXTitlesHisto( string villain )  	{ 
-		for ( map< string, string >::iterator it = m_map_xTitles.begin(); it != m_map_xTitles.end(); it++ ) {
-			if ( frankFind( (*it).first, villain ) )
-				return (*it).second; 
-		}
-		return "default";
-	};
-	string GetYTitlesHisto( string villain )  	{ 
-		for ( map< string, string >::iterator it = m_map_yTitles.begin(); it != m_map_yTitles.end(); it++ ) {
-			if ( frankFind( (*it).first, villain ) )
-				return (*it).second; 
-		}
-		return "default";
-	};
+    void CalibTW(bool t)             {  m_doCalibTW = t;             }
+  
+    void SetDebugLevels();
+
+    bool Find_MCParticle( string villain );
 
 private:
 	GlobalPar();
-	GlobalPar( string aparFileName );
+	GlobalPar( const TString expName );
    
 private:
 	static GlobalPar* m_pInstance;
    static map<TString, TString> m_dectFullName; // full name
+   static const TString m_defParName;
 
 private:
 	vector<string> m_copyInputFile;
 
-	map< string, pair< double, double > > m_map_range;
-	map< string, int > m_nBin_map;
-	map< string, string > m_map_saveDir;
-	map< string, string > m_map_xTitles;
-	map< string, string > m_map_yTitles;
    map< string, int >    m_map_debug;
 	string m_parFileName;
 
@@ -171,6 +139,15 @@ private:
        
    string  m_outputntuplename;
    bool m_printoutntuple;
+   
+   Bool_t m_enableLocalReco;
+   Bool_t m_enableTree;
+   Bool_t m_enableHisto;
+   Bool_t m_enableSaveHits;
+   Bool_t m_enableTracking;
+   Bool_t m_enableRootObject;
+   Bool_t m_enableTofZmc;
+   Bool_t m_enableTofCalBar;
 
    bool m_includeST;
    bool m_includeBM;
@@ -185,7 +162,8 @@ private:
     
    bool m_includeKalman;
    bool m_includeTOE;
-
+   bool m_doCalibTW;
+  
    TObjArray  m_ClassDebugLevels;          // debug levels for classes
 
 public:

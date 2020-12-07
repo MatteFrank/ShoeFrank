@@ -42,13 +42,14 @@ public:
    Bool_t  Eof();
    Bool_t  Close();
    void    ReadItem(TString& item);
+   void    ReadItem(TString& key, TString& item);
    void    ReadItem(Char_t& item);
    void    ReadItem(Int_t &arg);
    void    ReadItem(Float_t &arg);
    void    ReadItem(TArrayC& array, const Char_t delimiter = ';');
    void    ReadItem(TArrayI& array, const Char_t delimiter = ';');
    void    ReadStringsInts(TString& aString, TArrayI& array,  const Char_t delimiter1 = ':', const Char_t delimiter2 = ';');
-   void    ReadItem(Double_t* coeff, Int_t size, const Char_t delimiter = ' ');
+   void    ReadItem(Double_t* coeff, Int_t size, const Char_t delimiter = ' ', Bool_t keyFlag = true);
    void    ReadItem(map< pair<int, int>, int>& map, const Char_t delimiter1 = ',', const Char_t delimiter2 = ';');
    void    ReadVector3(TVector3 &arg);
    void    ReadStrings(TString& aString);

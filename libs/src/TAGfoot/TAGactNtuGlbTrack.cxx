@@ -6,6 +6,7 @@
 
 #include "TH1F.h"
 #include "TTree.h"
+#include "TFile.h"
 #include "TVector3.h"
 
 #include "TAITparGeo.hxx"
@@ -26,7 +27,6 @@
 #include "TAMSDntuCluster.hxx"
 #include "TATWntuPoint.hxx"
 #include "TAGntuPoint.hxx"
-#include "TAMCntuEve.hxx"
 
 #include <utility>
 #include <numeric>
@@ -47,8 +47,6 @@
  \class TAGactNtuGlbTrack TAGactNtuGlbTrack.hxx "TAGactNtuGlbTrack.hxx"
  \brief  Read back detector clusters to reconstruct global tracks**
  */
-
-Bool_t  TAGactNtuGlbTrack::fgStdAloneFlag = false;
 
 ClassImp(TAGactNtuGlbTrack)
 
@@ -89,11 +87,9 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
 {
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
    
-   if (GlobalPar::GetPar()->IncludeVT()) //should not be if
-   {
-      AddDataIn(p_vtxclus, "TAVTntuCluster");
-      AddDataIn(p_vtxvertex, "TAVTntuVertex");
-   }
+   // VT mandatory
+   AddDataIn(p_vtxclus, "TAVTntuCluster");
+   AddDataIn(p_vtxvertex, "TAVTntuVertex");
    
    if (GlobalPar::GetPar()->IncludeIT())
       AddDataIn(p_itrclus, "TAITntuCluster");
@@ -101,11 +97,9 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    if (GlobalPar::GetPar()->IncludeMSD())
       AddDataIn(p_msdclus, "TAMSDntuCluster");
    
-   if(GlobalPar::GetPar()->IncludeTW()) //neither
-      AddDataIn(p_twpoint, "TATWntuPoint");
-   
-   if (fgStdAloneFlag)
-      SetupBranches();
+   // TW mandatory
+
+   AddDataIn(p_twpoint, "TATWntuPoint");
    
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 }
@@ -117,39 +111,39 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     delete fActTOE;
 }
 
-//__________________________________________________________
-// ! Get Tree
-TTree* TAGactNtuGlbTrack::GetTree()
-{
-   if (fgStdAloneFlag)
-      return fActEvtReader->GetTree();
-   else
-      return 0x0;
-}
-
 //------------------------------------------+-----------------------------------
-//! Setup all branches.
-void TAGactNtuGlbTrack::SetupBranches()
+//! Check branches.
+void TAGactNtuGlbTrack::CheckBranches()
 {
-   fActEvtReader = new TAGactTreeReader("evtReader");
+   TAGrunInfo info = gTAGroot->CurrentRunInfo();
+   TString camName = info.CampaignName();
+   Int_t runNumber = info.RunNumber();
    
    if (GlobalPar::GetPar()->IncludeVT()) {
-     fActEvtReader->SetupBranch(fpVtxTrack,  TAVTntuTrack::GetBranchName());
-     fActEvtReader->SetupBranch(fpVtxClus,   TAVTntuCluster::GetBranchName());
-     fActEvtReader->SetupBranch(fpVtxVertex, TAVTntuVertex::GetBranchName());
+      if (!info.GetGlobalPar().IncludeVT)
+         Error("SetupBranches()", "No VTX branche available in this root file");
    }
-
-   if (GlobalPar::GetPar()->IncludeIT())
-      fActEvtReader->SetupBranch(fpItrClus,  TAITntuCluster::GetBranchName());
    
-   if (GlobalPar::GetPar()->IncludeMSD())
-      fActEvtReader->SetupBranch(fpMsdClus,  TAMSDntuCluster::GetBranchName());
+   if (GlobalPar::GetPar()->IncludeIT()) {
+      if (!info.GetGlobalPar().IncludeIT)
+         Error("SetupBranches()", "No IT branche available in this root file");
+   }
    
-   if(GlobalPar::GetPar()->IncludeTW())
-      fActEvtReader->SetupBranch(fpTwPoint,  TATWntuPoint::GetBranchName());
-
-   //   gTAGroot->AddRequiredItem(fpTwPoint);
-
+   if (GlobalPar::GetPar()->IncludeMSD()) {
+      if (!info.GetGlobalPar().IncludeMSD)
+         Error("SetupBranches()", "No MSD branche available in this root file");
+   }
+   
+   if(GlobalPar::GetPar()->IncludeTW()) {
+      if (!info.GetGlobalPar().IncludeTW)
+         Error("SetupBranches()", "No TW branche available in this root file");
+   }
+   
+   info = GlobalPar::GetPar()->GetGlobalInfo();
+   info.SetCampaignName(camName);
+   info.SetRunNumber(runNumber);
+   
+   gTAGroot->SetRunInfo(info);
 }
 
 //------------------------------------------+-----------------------------------
@@ -196,23 +190,6 @@ void TAGactNtuGlbTrack::SetupBranches()
 }
 
 
-//__________________________________________________________
-// ! Open file
-void TAGactNtuGlbTrack::Open(TString name)
-{
-   if (fgStdAloneFlag)
-      fActEvtReader->Open(name.Data());
-   else
-      Error("OpenFile", "Not in stand alone mode");
-}
-
-//__________________________________________________________
-//! Close file
-void TAGactNtuGlbTrack::Close()
-{
-   fActEvtReader->Close();
-}
-
 //------------------------------------------+-----------------------------------
 //! Setup all histograms.
 void TAGactNtuGlbTrack::CreateHistogram()
@@ -244,7 +221,8 @@ void TAGactNtuGlbTrack::RegisterHistograms()
     SetValidHistogram(kTRUE);
     
     auto writer_h = static_cast<TAGactTreeWriter*>( gTAGroot->FindAction("locRecFile") );
-    SetHistogramDir( (TDirectory*)writer_h->File() );
+    TDirectory* subfolder  = (TDirectory*)(writer_h->File())->Get(TAGgeoTrafo::GetBaseName());
+    SetHistogramDir( subfolder );
 }
 
 //------------------------------------------+-----------------------------------
@@ -255,19 +233,10 @@ void TAGactNtuGlbTrack::WriteHistogram()
     TAGaction::WriteHistogram();
 }
 
-
-
 //------------------------------------------+-----------------------------------
 //! Action.
 Bool_t TAGactNtuGlbTrack::Action()
 {
-
-  if (fgStdAloneFlag)
-    fActEvtReader->Process();
-  
-  
-  //    auto* pNtuTrack = static_cast<TAGntuGlbTrack*>(fpGlbTrack->Object() );
-  
   fpGlbTrack->Clear();
   
   fActTOE->Action();

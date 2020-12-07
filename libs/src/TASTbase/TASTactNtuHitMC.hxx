@@ -15,7 +15,7 @@
 class TASTdigitizer;
 class TASTactNtuHitMC : public TAGaction {
   public:
-    explicit        TASTactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0);
+    explicit        TASTactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, EVENT_STRUCT* evStr=0);
    
     virtual         ~TASTactNtuHitMC();
 
@@ -27,6 +27,7 @@ class TASTactNtuHitMC : public TAGaction {
     TAGdataDsc*     fpNtuEve;         // input eve track dsc
     TAGdataDsc*     fpNtuRaw;		    // output data dsc
     TASTdigitizer*  fDigitizer;       // cluster size digitizer
+    EVENT_STRUCT*   fEventStruct;
 
   private:
     void            CreateDigitizer();

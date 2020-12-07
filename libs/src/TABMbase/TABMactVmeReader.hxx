@@ -17,8 +17,6 @@
 class TABMactVmeReader : public TAGaction {
   public:
 
-    //~ Bool_t openFile(TABMparCon*);  //load in datastream the data file, provv da modificare cancellare
-
     explicit        TABMactVmeReader(const char* name=0,
                                   TAGdataDsc* p_datraw=0,
                                   TAGparaDsc* p_parmap=0,

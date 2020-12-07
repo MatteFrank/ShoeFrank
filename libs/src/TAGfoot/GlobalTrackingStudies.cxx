@@ -3,19 +3,19 @@
 #include "GlobalTrackingStudies.hxx"
 
 
-GlobalTrackingStudies::GlobalTrackingStudies() {
+GlobalTrackingStudies::GlobalTrackingStudies(const char* name)
+: TAGaction(name, "GlobalTrackingStudies - Global GenFit Tracking Studies")
+{
 
 	m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman";
 	// for (auto i=1; i<9; i++)	m_possibleCharges.push_back( i );
 	gStyle->SetPalette(1);
-	InitHistos();
 
 	m_moreThanOnePartPerCluster = 0;
 	m_allNoiseTrack = 0;
-
 }
 
-void GlobalTrackingStudies::Execute() {
+Bool_t GlobalTrackingStudies::Action() {
 
 	TAMCntuEve*  eve = (TAMCntuEve*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuEve")->Object();
 	TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
@@ -100,11 +100,8 @@ void GlobalTrackingStudies::Execute() {
 
 		// evaluating mean cluster size 
 		meanPixPerCluster = meanPixPerCluster * (1./ncluster);
-		if ( m_histo_MeanNPix_inClusPerTrk.find( charge ) == m_histo_MeanNPix_inClusPerTrk.end() ) {
-			string name = "MeanNPix_ch" + build_string( charge );
-			m_histo_MeanNPix_inClusPerTrk[ charge ] = new TH1F( name.c_str(), name.c_str(), 40 , -0.5, 39.5 );
-		}
-		m_histo_MeanNPix_inClusPerTrk[ charge ]->Fill( meanPixPerCluster );
+		
+		m_histo_MeanNPix_inClusPerTrk[ (int)charge ]->Fill( meanPixPerCluster );
 
 		// find the maximum difference in number of clusters 
 		int maxDeltaPix = 0;
@@ -114,15 +111,7 @@ void GlobalTrackingStudies::Execute() {
 			}
 		}
 		
-		if ( m_histo_MaxDeltaNPix_inClusPerTrk.find( charge ) == m_histo_MaxDeltaNPix_inClusPerTrk.end() ) {
-			string name = "MaxDeltaNPix" + build_string( charge );
-			m_histo_MaxDeltaNPix_inClusPerTrk[ charge ] = new TH1F( name.c_str(), name.c_str(), 40 , -0.5, 39.5 );
-		}
-		m_histo_MaxDeltaNPix_inClusPerTrk[ charge ]->Fill( maxDeltaPix );
-
-		
-
-
+		m_histo_MaxDeltaNPix_inClusPerTrk[ (int)charge ]->Fill( maxDeltaPix );
 
 		// propagating the track
 		if (mcStustFlag) {
@@ -153,7 +142,7 @@ void GlobalTrackingStudies::Execute() {
 					TAITcluster* clus = itclus->GetCluster(iPlane, iClus);
 					// TVector3 itCluster = geoTrafo->FromITLocalToGlobal( clus->GetPositionG() );
 					
-					// TAMCeveTrack* genParticle = eve->GetHit( clus->GetMcTrackIdx(0) );
+					// TAMCeveTrack* genParticle = eve->GetTrack( clus->GetMcTrackIdx(0) );
 					if ( clus->GetMcTrackIdx(0) != genParticleID_vec[0] )	continue;
 
 					int nHits = clus->GetPixelsN();
@@ -175,23 +164,9 @@ void GlobalTrackingStudies::Execute() {
 
 
 			// fill
-			if ( m_histo_DeltaX_VtIt_straight.find( charge ) == m_histo_DeltaX_VtIt_straight.end() ) {
-				string name = "DeltaX_VtIt_straight+ch=" + build_string( charge );
-				m_histo_DeltaX_VtIt_straight[ charge ] = new TH1F( name.c_str(), name.c_str(), 500 , -2.5, 2.5 );
-			}
-			m_histo_DeltaX_VtIt_straight[ charge ]->Fill( deltaPos.x() );
-
-			if ( m_histo_DeltaY_VtIt_straight.find( charge ) == m_histo_DeltaY_VtIt_straight.end() ) {
-				string name = "DeltaY_VtIt_straight+ch=" + build_string( charge );
-				m_histo_DeltaY_VtIt_straight[ charge ] = new TH1F( name.c_str(), name.c_str(), 500 , -2.5, 2.5 );
-			}
-			m_histo_DeltaY_VtIt_straight[ charge ]->Fill( deltaPos.y() );
-
-			if ( m_histo_DeltaXDeltaY_VtIt_straight.find( charge ) == m_histo_DeltaXDeltaY_VtIt_straight.end() ) {
-				string name = "DeltaXDeltaY_VtIt_straight+ch=" + build_string( charge );
-				m_histo_DeltaXDeltaY_VtIt_straight[ charge ] = new TH2F( name.c_str(), name.c_str(), 100 , -2.5, 2.5, 100 , -2.5, 2.5 );
-			}
-			m_histo_DeltaXDeltaY_VtIt_straight[ charge ]->Fill( deltaPos.x(), deltaPos.y() );
+			m_histo_DeltaX_VtIt_straight[ (int)charge ]->Fill( deltaPos.x() );
+			m_histo_DeltaY_VtIt_straight[ (int)charge ]->Fill( deltaPos.y() );
+			m_histo_DeltaXDeltaY_VtIt_straight[ (int)charge ]->Fill( deltaPos.x(), deltaPos.y() );
 
 		} // if ( MC status is good )
 
@@ -200,6 +175,8 @@ void GlobalTrackingStudies::Execute() {
 		nPixels_vec.clear();
 
 	}// end of tracks loop
+   
+   return true;
 
 }
 
@@ -207,74 +184,111 @@ void GlobalTrackingStudies::Execute() {
 
 
 
-void GlobalTrackingStudies::InitHistos() {
-
+void GlobalTrackingStudies::CreateHistogram()
+{
 	m_histo_nClusXTrk = new TH1F( "nClusXTrk", "nClusXTrk", 7, -1.5, 5.5 );
+   AddHistogram(m_histo_nClusXTrk);
+
 	m_histo_mcGoodTrk = new TH1F( "mcGoodTrk", "mcGoodTrk", 4, -0.5, 3.5 );
-	
+   AddHistogram(m_histo_mcGoodTrk);
+   
+   for(Int_t charge = 0; charge < 8; ++charge) {
+      string name = "MeanNPix_ch" + build_string( charge );
+      m_histo_MeanNPix_inClusPerTrk[ charge ] = new TH1F( name.c_str(), name.c_str(), 40 , -0.5, 39.5 );
+      AddHistogram(m_histo_MeanNPix_inClusPerTrk[charge]);
+   }
+   
+   for(Int_t charge = 0; charge < 8; ++charge) {
+      string name = "MaxDeltaNPix" + build_string( charge );
+      m_histo_MaxDeltaNPix_inClusPerTrk[ charge ] = new TH1F( name.c_str(), name.c_str(), 40 , -0.5, 39.5 );
+      AddHistogram(m_histo_MaxDeltaNPix_inClusPerTrk[charge]);
+   }
+   
+   for(Int_t charge = 0; charge < 8; ++charge) {
+      string name = "DeltaX_VtIt_straight+ch=" + build_string( charge );
+      m_histo_DeltaX_VtIt_straight[ charge ] = new TH1F( name.c_str(), name.c_str(), 500 , -2.5, 2.5 );
+      AddHistogram(m_histo_DeltaX_VtIt_straight[charge]);
+   }
+   
+   for(Int_t charge = 0; charge < 8; ++charge) {
+      string name = "DeltaY_VtIt_straight+ch=" + build_string( charge );
+      m_histo_DeltaY_VtIt_straight[ charge ] = new TH1F( name.c_str(), name.c_str(), 500 , -2.5, 2.5 );
+      AddHistogram(m_histo_DeltaY_VtIt_straight[charge]);
+   }
+   
+   for(Int_t charge = 0; charge < 8; ++charge) {
+      string name = "DeltaXDeltaY_VtIt_straight+ch=" + build_string( charge );
+      m_histo_DeltaXDeltaY_VtIt_straight[ charge ] = new TH2F( name.c_str(), name.c_str(), 100 , -2.5, 2.5, 100 , -2.5, 2.5 );
+      AddHistogram(m_histo_DeltaXDeltaY_VtIt_straight[charge]);
+   }
+   
+   SetValidHistogram(kTRUE);
 }
 
 
-void GlobalTrackingStudies::Finalize() {
+void GlobalTrackingStudies::Finalize()
+{
+    // no more
+   string pathName = m_kalmanOutputDir+"/TrackingStudies";
+   system(("mkdir "+pathName).c_str());
+
+   TCanvas* mirror = new TCanvas("GTstudy", "GTstudy", 800, 800);
+
+   m_histo_nClusXTrk->GetXaxis()->SetTitle("nCluster");
+   m_histo_nClusXTrk->Draw();
+   mirror->SaveAs(( pathName+"/"+"nClusXTrk.png").c_str());
+   mirror->SaveAs(( pathName+"/"+"nClusXTrk.root").c_str());
+
+   m_histo_mcGoodTrk->GetXaxis()->SetTitle("flagging");
+   m_histo_mcGoodTrk->Draw("hist text");
+   mirror->SaveAs(( pathName+"/"+"mcGoodTrk.png").c_str());
+   mirror->SaveAs(( pathName+"/"+"mcGoodTrk.root").c_str());
+
+   for (Int_t i = 0; i < 8; ++i) {
+      m_histo_MeanNPix_inClusPerTrk[i]->GetXaxis()->SetTitle("mean pix n");
+      m_histo_MeanNPix_inClusPerTrk[i]->GetYaxis()->SetTitle("Events");
+      m_histo_MeanNPix_inClusPerTrk[i]->Draw();
+      mirror->SaveAs( (pathName+"/MeanNPix_inClusPerTrk_ch"+build_string( i) + ".png").c_str() );
+      mirror->SaveAs( (pathName+"/MeanNPix_inClusPerTrk_ch"+build_string( i) + ".root").c_str() );
+   }
+   
+   for (Int_t i = 0; i < 8; ++i) {
+      m_histo_MaxDeltaNPix_inClusPerTrk[i]->GetXaxis()->SetTitle("Max deltaPix");
+      m_histo_MaxDeltaNPix_inClusPerTrk[i]->GetYaxis()->SetTitle("Events");
+      m_histo_MaxDeltaNPix_inClusPerTrk[i]->Draw();
+      mirror->SaveAs( (pathName+"/MaxDeltaNPix_inClusPerTrk_ch"+build_string( i) + ".png").c_str() );
+      mirror->SaveAs( (pathName+"/MaxDeltaNPix_inClusPerTrk_ch"+build_string( i) + ".root").c_str() );
+   }
+   
+   for (Int_t i = 0; i < 8; ++i) {
+      m_histo_DeltaX_VtIt_straight[i]->GetXaxis()->SetTitle("DeltaX");
+      m_histo_DeltaX_VtIt_straight[i]->GetYaxis()->SetTitle("Events");
+      m_histo_DeltaX_VtIt_straight[i]->Draw();
+      mirror->SaveAs( (pathName+"/DeltaX_VtIt_straight_ch"+build_string( i) + ".png").c_str() );
+      mirror->SaveAs( (pathName+"/DeltaX_VtIt_straight_ch"+build_string( i) + ".root").c_str() );
+   }
+   
+   for (Int_t i = 0; i < 8; ++i) {
+      m_histo_DeltaY_VtIt_straight[i]->GetXaxis()->SetTitle("DeltaY");
+      m_histo_DeltaY_VtIt_straight[i]->GetYaxis()->SetTitle("Events");
+      m_histo_DeltaY_VtIt_straight[i]->Draw();
+      mirror->SaveAs( (pathName+"/DeltaY_VtIt_straight_ch"+build_string( i) + ".png").c_str() );
+      mirror->SaveAs( (pathName+"/DeltaY_VtIt_straight_ch"+build_string( i) + ".root").c_str() );
+   }
+   
+   for (Int_t i = 0; i < 8; ++i) {
+      m_histo_DeltaXDeltaY_VtIt_straight[i]->GetXaxis()->SetTitle("DeltaX");
+      m_histo_DeltaXDeltaY_VtIt_straight[i]->GetYaxis()->SetTitle("DeltaY");
+      m_histo_DeltaXDeltaY_VtIt_straight[i]->Draw("colz");
+      mirror->SaveAs( (pathName+"/DeltaXDeltaY_VtIt_straight_ch"+build_string( i) + ".png").c_str() );
+      mirror->SaveAs( (pathName+"/DeltaXDeltaY_VtIt_straight_ch"+build_string( i) + ".root").c_str() );
+   }
 
 
-	string pathName = m_kalmanOutputDir+"/TrackingStudies";
-	system(("mkdir "+pathName).c_str());
-
-	TCanvas* mirror = new TCanvas("GTstudy", "GTstudy", 800, 800);
-	
-	m_histo_nClusXTrk->GetXaxis()->SetTitle("nCluster");
-	m_histo_nClusXTrk->Draw();
-	mirror->SaveAs(( pathName+"/"+"nClusXTrk.png").c_str());
-	mirror->SaveAs(( pathName+"/"+"nClusXTrk.root").c_str());
-
-	m_histo_mcGoodTrk->GetXaxis()->SetTitle("flagging");
-	m_histo_mcGoodTrk->Draw("hist text");
-	mirror->SaveAs(( pathName+"/"+"mcGoodTrk.png").c_str());
-	mirror->SaveAs(( pathName+"/"+"mcGoodTrk.root").c_str());
-
-	for ( map< int, TH1F* >::iterator it=m_histo_MeanNPix_inClusPerTrk.begin(); it != m_histo_MeanNPix_inClusPerTrk.end(); it++ ) {
-		(*it).second->GetXaxis()->SetTitle("mean pix n");
-		(*it).second->GetYaxis()->SetTitle("Events");
-		(*it).second->Draw();
-		mirror->SaveAs( (pathName+"/MeanNPix_inClusPerTrk_ch"+build_string( (*it).first ) + ".png").c_str() );
-		mirror->SaveAs( (pathName+"/MeanNPix_inClusPerTrk_ch"+build_string( (*it).first ) + ".root").c_str() );
-	}
-	for ( map< int, TH1F* >::iterator it=m_histo_MaxDeltaNPix_inClusPerTrk.begin(); it != m_histo_MaxDeltaNPix_inClusPerTrk.end(); it++ ) {
-		(*it).second->GetXaxis()->SetTitle("Max deltaPix");
-		(*it).second->GetYaxis()->SetTitle("Events");
-		(*it).second->Draw();
-		mirror->SaveAs( (pathName+"/MaxDeltaNPix_inClusPerTrk_ch"+build_string( (*it).first ) + ".png").c_str() );
-		mirror->SaveAs( (pathName+"/MaxDeltaNPix_inClusPerTrk_ch"+build_string( (*it).first ) + ".root").c_str() );
-	}
-	for ( map< int, TH1F* >::iterator it=m_histo_DeltaX_VtIt_straight.begin(); it != m_histo_DeltaX_VtIt_straight.end(); it++ ) {
-		(*it).second->GetXaxis()->SetTitle("DeltaX");
-		(*it).second->GetYaxis()->SetTitle("Events");
-		(*it).second->Draw();
-		mirror->SaveAs( (pathName+"/DeltaX_VtIt_straight_ch"+build_string( (*it).first ) + ".png").c_str() );
-		mirror->SaveAs( (pathName+"/DeltaX_VtIt_straight_ch"+build_string( (*it).first ) + ".root").c_str() );
-	}
-	for ( map< int, TH1F* >::iterator it=m_histo_DeltaY_VtIt_straight.begin(); it != m_histo_DeltaY_VtIt_straight.end(); it++ ) {
-		(*it).second->GetXaxis()->SetTitle("DeltaY");
-		(*it).second->GetYaxis()->SetTitle("Events");
-		(*it).second->Draw();
-		mirror->SaveAs( (pathName+"/DeltaY_VtIt_straight_ch"+build_string( (*it).first ) + ".png").c_str() );
-		mirror->SaveAs( (pathName+"/DeltaY_VtIt_straight_ch"+build_string( (*it).first ) + ".root").c_str() );
-	}
-	for ( map< int, TH2F* >::iterator it=m_histo_DeltaXDeltaY_VtIt_straight.begin(); it != m_histo_DeltaXDeltaY_VtIt_straight.end(); it++ ) {
-		(*it).second->GetXaxis()->SetTitle("DeltaX");
-		(*it).second->GetYaxis()->SetTitle("DeltaY");
-		(*it).second->Draw("colz");
-		mirror->SaveAs( (pathName+"/DeltaXDeltaY_VtIt_straight_ch"+build_string( (*it).first ) + ".png").c_str() );
-		mirror->SaveAs( (pathName+"/DeltaXDeltaY_VtIt_straight_ch"+build_string( (*it).first ) + ".root").c_str() );
-	}
-
-
-	cout << endl << endl << "-------------------------------------------------------------" << endl;
-	cout << "\t moreThanOnePartPerCluster = " << m_moreThanOnePartPerCluster << endl;
-	cout << "\t m_allNoiseTrack = " << m_allNoiseTrack << endl;
-	cout << "-------------------------------------------------------------" << endl << endl << endl;
-
+   cout << endl << endl << "-------------------------------------------------------------" << endl;
+   cout << "\t moreThanOnePartPerCluster = " << m_moreThanOnePartPerCluster << endl;
+   cout << "\t m_allNoiseTrack = " << m_allNoiseTrack << endl;
+   cout << "-------------------------------------------------------------" << endl << endl << endl;
 }
 
 

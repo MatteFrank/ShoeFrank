@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TABMparCon.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TABMparCon.
+  \version $Id: TABMparConf.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
+  \brief   Implementation of TABMparConf.
 */
 
 #include <string.h>
@@ -15,21 +15,21 @@ using namespace std;
 #include "TString.h"
 #include "TFile.h"
 
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TAGroot.hxx"
 
 //##############################################################################
 
 /*!
-  \class TABMparCon TABMparCon.hxx "TABMparCon.hxx"
+  \class TABMparConf TABMparConf.hxx "TABMparConf.hxx"
   \brief conf parameters for the beam monitor. **
 */
 
-ClassImp(TABMparCon);
+ClassImp(TABMparConf);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TABMparCon::TABMparCon()
+TABMparConf::TABMparConf()
   :  TAGparTools(),
   fRDriftErr(0.015),
   fPlaneHitCut(3),
@@ -42,20 +42,20 @@ TABMparCon::TABMparCon()
   fLegMBin(40),
   fLegMRange(0.1),
   fLegRBin(75),
-  fLegRRange(2.)
+  fLegRRange(2.),
+  fAssHitErr(5.)
 {
   fkDefaultParName = "./config/TABMdetector.cfg";
   vector<Float_t> myt0s(36,-10000);
   fT0Vec = myt0s;
   fpResoFunc=new TF1("bmResoFunc","0.0245237+0.106748*x+0.229201*x*x-24.0304*x*x*x+183.529*x*x*x*x-619.259*x*x*x*x*x+1080.97*x*x*x*x*x*x-952.989*x*x*x*x*x*x*x+335.937*x*x*x*x*x*x*x*x",0.,0.8);
   fpSTrel=new TF1("McStrel","0.00773*x -5.1692440e-05*x*x + 1.8928600e-07*x*x*x -2.4652420e-10*x*x*x*x", 0., 350.);
-  fAssHitErr=(gTAGroot->CurrentCampaignNumber()==1) ? 15. : 5.;
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TABMparCon::~TABMparCon(){
+TABMparConf::~TABMparConf(){
   delete fpResoFunc;
   delete fpSTrel;
 }
@@ -65,7 +65,7 @@ TABMparCon::~TABMparCon(){
 //! Read mapping data from file \a name .
 
 
-Bool_t TABMparCon::FromFile(const TString& name) {
+Bool_t TABMparConf::FromFile(const TString& name) {
   Clear();
   TString nameExp;
 
@@ -77,7 +77,7 @@ Bool_t TABMparCon::FromFile(const TString& name) {
   if (!Open(nameExp)) return false;
 
   if(FootDebugLevel(1))
-     cout<<"TABMparCon::FromFile:: read config file from "<<nameExp.Data()<<endl<<"Now I'll printout the BM FromFile read parameters"<<endl;
+     cout<<"TABMparConf::FromFile:: read config file from "<<nameExp.Data()<<endl<<"Now I'll printout the BM FromFile read parameters"<<endl;
 
   //cuts
   ReadItem(fMinHitCut);
@@ -112,6 +112,9 @@ Bool_t TABMparCon::FromFile(const TString& name) {
   ReadItem(fLegRRange);
   if(FootDebugLevel(1))
      cout<<"fLegRRange="<<fLegRRange<<endl;
+  ReadItem(fAssHitErr);
+  if(FootDebugLevel(1))
+     cout<<"fAssHitErr="<<fAssHitErr<<endl;
 
   //other parameters
   ReadItem(fHitTimeCut);
@@ -130,7 +133,7 @@ return false;
 }
 
 
-Bool_t TABMparCon::FromFileOld(const TString& name) {
+Bool_t TABMparConf::FromFileOld(const TString& name) {
 
   Clear();
 
@@ -205,7 +208,7 @@ Bool_t TABMparCon::FromFileOld(const TString& name) {
 
 
 
-void TABMparCon::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
+void TABMparConf::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
   ofstream outfile;
   outfile.open(output_filename.Data(),ios::out);
   outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<"     fT0Choice= "<<fT0Choice<<endl;
@@ -216,7 +219,7 @@ void TABMparCon::PrintT0s(TString output_filename, TString input_filename, Long6
 }
 
 
-Bool_t TABMparCon::loadT0s(TString filename) {
+Bool_t TABMparConf::loadT0s(TString filename) {
   ifstream infile;
 
   Info("loadT0s", "Loading BM T0 calibration from file: %s\n", filename.Data());
@@ -224,7 +227,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
   gSystem->ExpandPathName(filename);
   infile.open(filename,ios::in);
   if(infile.is_open()==kFALSE){
-    cout<<"TABMparCon::ERROR: Cannot open T0 file: "<<filename<<endl;
+    cout<<"TABMparConf::ERROR: Cannot open T0 file: "<<filename<<endl;
     return kTRUE;
   }
   char tmp_char[200];
@@ -236,7 +239,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
     if(!infile.eof() && tmp_int==i-1)
       infile>>tmp_char>>tmp_int>>tmp_char>>fileT0.at(i);
     else{
-      cout<<"TABMparCon::loadT0s::Error in the T0 file "<<filename<<"!!!!!! check if it is write properly"<<endl;
+      cout<<"TABMparConf::loadT0s::Error in the T0 file "<<filename<<"!!!!!! check if it is write properly"<<endl;
       infile.close();
       return kTRUE;
       }
@@ -248,9 +251,9 @@ Bool_t TABMparCon::loadT0s(TString filename) {
     for(Int_t i=0;i<36;i++) {
       cout<<"BM T0: "<<fT0Vec[i]<<endl;
       if(fT0Vec[i]==-10000)
-      cout<<"WARNING IN TABMparCon::loadT0s: channel not considered in tdc map tdc_cha=i="<<i<<" T0 for this channel is set to -10000"<<endl;
+      cout<<"WARNING IN TABMparConf::loadT0s: channel not considered in tdc map tdc_cha=i="<<i<<" T0 for this channel is set to -10000"<<endl;
       else if(fT0Vec[i]==-20000)
-      cout<<"WARNING IN TABMparCon::loadT0s! channel with too few elements to evaluate T0: tdc_cha=i="<<i<<" T0 for this channel is set to -20000"<<endl;
+      cout<<"WARNING IN TABMparConf::loadT0s! channel with too few elements to evaluate T0: tdc_cha=i="<<i<<" T0 for this channel is set to -20000"<<endl;
     }
   }
 
@@ -300,7 +303,7 @@ Bool_t TABMparCon::loadT0s(TString filename) {
 
 
 
-void TABMparCon::SetT0s(vector<Float_t> t0s) {
+void TABMparConf::SetT0s(vector<Float_t> t0s) {
 
   if(t0s.size() == 36) {
     fT0Vec = t0s;
@@ -312,7 +315,7 @@ void TABMparCon::SetT0s(vector<Float_t> t0s) {
 }
 
 
-void TABMparCon::SetT0(Int_t cha, Float_t t0in){
+void TABMparConf::SetT0(Int_t cha, Float_t t0in){
 
 if(cha<36 && cha>=0)
   fT0Vec[cha]=t0in;
@@ -323,7 +326,7 @@ else {
   return;
 }
 
-void TABMparCon::CoutT0(){
+void TABMparConf::CoutT0(){
   cout<<"Print BM T0 time:"<<endl;
   for(Int_t i=0;i<fT0Vec.size();i++)
     cout<<"cell_id="<<i<<"  T0="<<fT0Vec[i]<<endl;
@@ -334,7 +337,7 @@ void TABMparCon::CoutT0(){
 //------------------------------------------+-----------------------------------
 //! Clear geometry info.
 
-void TABMparCon::Clear(Option_t*)
+void TABMparConf::Clear(Option_t*)
 {
   fRDriftErr=0.015;
   fPlaneHitCut=3;
@@ -348,7 +351,7 @@ void TABMparCon::Clear(Option_t*)
   fLegMRange=0.1;
   fLegRBin=75;
   fLegRRange=2.;
-  fAssHitErr=(gTAGroot->CurrentCampaignNumber()==1) ? 15. : 5.;
+  fAssHitErr=5.;
 
   vector<Float_t> myt0s(36,-10000);
   fT0Vec = myt0s;
@@ -358,7 +361,7 @@ void TABMparCon::Clear(Option_t*)
 
 /*------------------------------------------+---------------------------------*/
 
-void TABMparCon::ResetStrelFunc(){
+void TABMparConf::ResetStrelFunc(){
   delete fpSTrel;
   fpSTrel=new TF1("McStrel","0.00773*x -5.169244e-05*x*x + 1.89286e-07*x*x*x -2.465242e-10*x*x*x*x", 0., 330.);
   fMaxSTrel=330;
@@ -366,21 +369,21 @@ void TABMparCon::ResetStrelFunc(){
 }
 
 /*------------------------------------------+---------------------------------*/
-Double_t TABMparCon:: GetTimeFromRDrift(Double_t rdrift){
+Double_t TABMparConf:: GetTimeFromRDrift(Double_t rdrift){
   return (rdrift<=0.8) ? fpSTrel->GetX(rdrift) : (rdrift+1.156)/0.006;
 }
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
 
-void TABMparCon::ToStream(ostream& os, Option_t*) const
+void TABMparConf::ToStream(ostream& os, Option_t*) const
 {
-  os << "TABMparCon " << GetName() << endl;
+  os << "TABMparConf " << GetName() << endl;
   return;
 }
 
 
-//~ Float_t TABMparCon::ResoEval(Float_t dist) {
+//~ Float_t TABMparConf::ResoEval(Float_t dist) {
   //~ Float_t sigma;
   //~ Int_t mybin(-1);
   //~ if(fpResoFunc) {

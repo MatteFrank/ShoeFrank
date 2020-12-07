@@ -111,6 +111,7 @@ private:
     double st_position_m;
     TATOEchecker<TATOEactGlb> checker_m;
     TATOElogger logger_m;
+    bool flag_mc_m{false};
 
     node_type const * current_node_mh;
     std::size_t event{0};
@@ -133,7 +134,8 @@ public:
     {
         ukf_m.call_stepper().ode.model().particle_h = &particle_m;
     }
-    
+  
+    void SetMcFlag(bool f) {flag_mc_m = f; }
     void Output() override {
         checker_m.compute_results( details::all_mixed_tag{} );
         checker_m.compute_results( details::all_separated_tag{} );
@@ -219,7 +221,8 @@ private:
             logger_m.add_header<1>("candidate");
             logger_m << "charge: " << charge << '\n';
             
-            auto* data_h =  static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc2" )->Object() );
+//            auto* data_h =  static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" )->Object() );
+//            std::cout << "TAMCntuEve: " << data_h->GetBranchName() << "\n";
 //            logger_m << "id_charge_couple: ";
 //            for( int i{0} ; i < candidate.data->GetMcTracksN() ; ++ i){
 //                auto index = candidate.data->GetMcTrackIdx(i);
@@ -1213,7 +1216,7 @@ private:
         
         for( auto & track : track_pc  ) {
             
-	  std::cout << "particle_mass: " << track.particle.mass << std::endl;
+//            std::cout << "particle_mass: " << track.particle.mass << std::endl;
             
             auto * track_h = reconstructed_track_mhc->NewTrack( track.particle.mass * 0.938 ,
                                                   track.particle.momentum / 1000.,

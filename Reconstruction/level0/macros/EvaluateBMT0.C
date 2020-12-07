@@ -36,7 +36,7 @@
 
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TABMdatRaw.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMactDatRaw.hxx"
@@ -102,8 +102,8 @@ void FillStBm(TString expName) {
   parFileName="./geomaps/TABMdetector.geo";
   bmgeomap->FromFile(parFileName);
 
-  TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparCon());
-  TABMparCon* bmcon = (TABMparCon*)bmConf->Object();
+  TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparConf());
+  TABMparConf* bmcon = (TABMparConf*)bmConf->Object();
   parFileName = "./config/TABMdetector.cfg";
   bmcon->FromFile(parFileName);
   
@@ -313,7 +313,7 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
    watch.Start();
    
    TABMparGeo* bmgeo = (TABMparGeo*)(tagr.FindParaDsc("bmGeo","TABMparGeo")->Object());
-   TABMparCon* bmcon = (TABMparCon*)(tagr.FindParaDsc("bmConf","TABMparCon")->Object());
+   TABMparConf* bmcon = (TABMparConf*)(tagr.FindParaDsc("bmConf","TABMparConf")->Object());
    TABMparMap* bmmap = (TABMparMap*)(tagr.FindParaDsc("bmMap","TABMparMap")->Object());
    TASTntuRaw* stnturaw;
    TABMdatRaw* pbmdatraw;

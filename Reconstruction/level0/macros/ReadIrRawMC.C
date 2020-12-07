@@ -31,6 +31,7 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
+#include "TAGcampaignManager.hxx"
 #include "TAVTactNtuMC.hxx"
 #include "TAVTactNtuClusterF.hxx"
 #include "TAVTactNtuTrackF.hxx"
@@ -56,6 +57,7 @@
 #endif
 
 // main
+TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter*   outFile   = 0x0;
 TAVTactNtuMC*       vtActRaw  = 0x0;
 TAVTactNtuClusterF* vtActClus = 0x0;
@@ -69,16 +71,18 @@ TAITactNtuClusterF* itActClus = 0x0;
 
 TAIRactNtuTrack*    irActTrck = 0x0;
 
-void FillMCVertex(EVENT_STRUCT *myStr) {
+void FillMCVertex(EVENT_STRUCT *myStr, Int_t runNumber) {
    
    /*Ntupling the MC Vertex information*/
-   TAGparaDsc* tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
-   TAGparGeo* parGeoG = (TAGparGeo*)tgGeo->Object();
-   parGeoG->FromFile();
+   TAGparaDsc* tgGeo = new TAGparaDsc("tgGeo", new TAGparGeo());
+   TAGparGeo* geomapg = (TAGparGeo*)tgGeo->Object();
+   TString parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
+   geomapg->FromFile(parFileName.Data());
    
-   vtGeo    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
-   TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
-   geomap->FromFile();
+   TAGparaDsc* itGeo    = new TAGparaDsc("itGeo", new TAVTparGeo());
+   TAVTparGeo* geomap   = (TAVTparGeo*) itGeo->Object();
+   parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+   geomap->FromFile(parFileName.Data());
    
    TAGdataDsc* vtRaw    = new TAGdataDsc("vtRaw", new TAVTntuRaw());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
@@ -100,12 +104,13 @@ void FillMCVertex(EVENT_STRUCT *myStr) {
    vtActVtx->CreateHistogram();
 }
 
-void FillMCInnerTracker(EVENT_STRUCT *myStr) {
+void FillMCInnerTracker(EVENT_STRUCT *myStr, Int_t runNumber) {
    
    /*Ntupling the MC Inner tracker information*/
-   TAGparaDsc* itGeo    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
+   TAGparaDsc* itGeo    = new TAGparaDsc("itGeo", new TAITparGeo());
    TAITparGeo* geomap   = (TAITparGeo*) itGeo->Object();
-   geomap->FromFile();
+   TString parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+   geomap->FromFile(parFileName.Data());
    
    TAGdataDsc* itRaw    = new TAGdataDsc("itRaw", new TAITntuRaw());
    TAGdataDsc* itClus   = new TAGdataDsc("itClus", new TAITntuCluster());
@@ -125,17 +130,20 @@ void FillMCInnerTracker(EVENT_STRUCT *myStr) {
    outFile->SetupElementBranch(irTrck, TAIRntuTrack::GetBranchName());
 }
 
-void ReadIrRawMC(TString name = "ionEventoC_All.root")
+void ReadIrRawMC(TString name = "ionEventoC_All.root", Int_t nMaxEvts = 20000,
+                 TString expName = "12C_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance();
+   GlobalPar::Instance(expName);
    GlobalPar::GetPar()->Print();
    
    TAGroot tagr;
-   TAGgeoTrafo geoTrafo;
-   geoTrafo.FromFile();
    
-   tagr.SetCampaignNumber(-1);
-   tagr.SetRunNumber(1);
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
+   
+   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   geoTrafo->FromFile(parFileName);
    
    TFile* f = new TFile(name.Data());
    f->ls();
@@ -147,8 +155,8 @@ void ReadIrRawMC(TString name = "ionEventoC_All.root")
    
    outFile = new TAGactTreeWriter("outFile");
    
-   FillMCVertex(&evStr);
-   FillMCInnerTracker(&evStr);
+   FillMCVertex(&evStr, runNumber);
+   FillMCInnerTracker(&evStr, runNumber);
 
    tagr.AddRequiredItem("vtActRaw");
    tagr.AddRequiredItem("vtActCluster");
@@ -196,8 +204,8 @@ void ReadIrRawMC(TString name = "ionEventoC_All.root")
          cout<<" Loaded Event:: " << ientry << endl;
       
      
-//      if (ientry == 200000)
-//         break;
+      if (ientry == nMaxEvts)
+         break;
       
       if (!tagr.NextEvent()) break;
    }

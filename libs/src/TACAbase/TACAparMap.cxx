@@ -4,20 +4,16 @@
   \brief   Implementation of TACAparMap.
 */
 
-#include <string.h>
 
-#include <fstream>
-
-#include "TSystem.h"
-#include "TString.h"
-
+#include "TAGroot.hxx"
+#include "TAGparaDsc.hxx"
 #include "TACAparMap.hxx"
 
 //##############################################################################
 
 /*!
   \class TACAparMap TACAparMap.hxx "TACAparMap.hxx"
-  \brief Map parameters for onion and daisy. **
+  \brief Map parameters for calorimeter. **
 */
 
 ClassImp(TACAparMap);
@@ -26,13 +22,10 @@ ClassImp(TACAparMap);
 //! Default constructor.
 
 TACAparMap::TACAparMap()
+: TAGparTools()
 {
-   fTDchaID.clear();
-   fTDboaID.clear();
-   fADchaID.clear();
-   fADboaID.clear();
-   fDetchaID.clear();
-   fDetID.clear();
+   fCrysId.clear();
+   fParGeo = (TACAparGeo*)gTAGroot->FindParaDsc(TACAparGeo::GetDefParaName(), "TACAparGeo")->Object();
 }
 
 //------------------------------------------+-----------------------------------
@@ -50,40 +43,33 @@ Bool_t TACAparMap::FromFile(const TString& name)
 {
   Clear();
   
-  TString name_exp = name;
-  gSystem->ExpandPathName(name_exp);
-
-  char bufConf[1024];
-  int myArg1(0), myArg2(0), myArg3(0), myArg4(0), myArg5(0), myArg6(0); 
- 
-  ifstream incF;
-  incF.open(name_exp.Data());
-  if (!incF) {
-    Error("FromFile()", "failed to open file '%s'", name_exp.Data());
-    return kTRUE;
+  if (!Open(name)) {
+    Error("FromFile()", "Cannot open file %s", name.Data());
+    return false;
   }
+  
+  // read for parameter
+  Double_t* para = new Double_t[3];
 
-  while (incF.getline(bufConf, 200, '\n')) {
-    if(strchr(bufConf,'!')) {
-      //      Info("FromFile()","Skip comment line:: %s",bufConf);
-    } else if(strchr(bufConf,'#')) {
-      //Det id, Det channel, tdc, adc, adc board.
-      sscanf(bufConf, "#%d %d %d %d %d %d",&myArg1,&myArg2,&myArg3,&myArg4,&myArg5,&myArg6);
-      if((myArg1>-1 && myArg1<2) && (myArg2>-1 && myArg2<4) && (myArg3>-1 && myArg3<128) && (myArg4>-1 && myArg4<32) && (myArg5>-1 && myArg5<32)) {
-         fDetID.push_back(myArg1);
-         fDetchaID.push_back(myArg2);
-         fTDchaID.push_back(myArg3);
-         fTDboaID.push_back(myArg4);
-         fADchaID.push_back(myArg5);
-         fADboaID.push_back(myArg6);
-      } else {
-         Error(""," Plane Map Error:: check config file!!");
-         return kTRUE;
-      }
-    }
+  for (Int_t i = 0; i < fParGeo->GetCrystalsN(); ++i) { // Loop over crystal
+
+    // read parameters (boardId chId, crysId)
+    ReadItem(para, 3, ' ', false);
+  
+    // fill map
+    Int_t boardId   = TMath::Nint(para[0]);
+    Int_t channelId = TMath::Nint(para[1]);
+    Int_t crysId    = TMath::Nint(para[2]);
+    
+    pair<int, int> idx(boardId, channelId);
+    fCrysId[idx] = crysId;
+    if (FootDebugLevel(1))
+      printf("%d %d %d\n", boardId, channelId, crysId);
   }
+  
+  delete [] para;
 
-  return kFALSE;
+  return true;
 }
 
 //------------------------------------------+-----------------------------------
@@ -91,47 +77,13 @@ Bool_t TACAparMap::FromFile(const TString& name)
 
 void TACAparMap::Clear(Option_t*)
 {
-  TAGpara::Clear();
-  fTDchaID.clear();
-  fTDboaID.clear();
-  fADchaID.clear();
-  fADboaID.clear();
-  fDetchaID.clear();
-  fDetID.clear();
-   
-  return;
+  fCrysId.clear();
 }
 
-/*------------------------------------------+---------------------------------*/
-bool TACAparMap::GetIDFromTDC(int channel, int board, int &detID, int &chaID)
+//------------------------------------------+-----------------------------------
+Int_t TACAparMap::GetCrystalId(Int_t boardId, Int_t channelId)
 {
-  bool found = kFALSE;
-  for(int iw=0; iw<(int)fTDchaID.size(); iw++) {
-    if(getTDID(iw) == channel && getTDboaID(iw) == board)  {
-      chaID = getDetChaID(iw);	
-      detID = getDetID(iw);
-      found = kTRUE;
-      break;
-    }
-  }
-
-  return found;
-
-}
-
-/*------------------------------------------+---------------------------------*/
-bool TACAparMap::GetIDFromADC(int channel, int board, int &detID, int &chaID)
-{
-  bool found = kFALSE;
-  for(int iw=0; iw<(int)fTDchaID.size(); iw++) {
-    if(getADID(iw) == channel && getADboaID(iw) == board)  {
-      chaID = getDetChaID(iw);	
-      detID = getDetID(iw);
-      found = kTRUE;
-      break;
-    }
-  }
+  pair<int, int> idx(boardId, channelId);
   
-  return found;
+  return fCrysId[idx];
 }
-

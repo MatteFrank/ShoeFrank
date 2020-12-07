@@ -51,7 +51,7 @@ class TAGactTreeWriter : public TAGactionFile {
 
     void            SetCompressionLevel(Int_t i_compress=1);
 
-    virtual Int_t   Open(const TString& name, Option_t* option="NEW", const TString treeName="tree");
+    virtual Int_t   Open(const TString& name, Option_t* option="NEW", const TString treeName="tree", Bool_t dscBranch = true);
     virtual void    Close();
 
     virtual Bool_t  IsOpen() const;

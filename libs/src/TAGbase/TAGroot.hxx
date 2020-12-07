@@ -53,14 +53,12 @@ class TAGroot : public TAGobject {
     const char*     DefaultParaDscName();
 
     void            SetCampaignName(TString s_cam);
-    void            SetCampaignNumber(Short_t i_cam);
     void            SetRunNumber(Short_t i_run);
     void            SetEventNumber(Int_t i_evt);
     void            SetRunInfo(const TAGrunInfo& info);
     void            SetEventId(const TAGeventId& info);
 
     const Char_t*   CurrentCampaignName() const;
-    Short_t         CurrentCampaignNumber() const;
     Short_t         CurrentRunNumber() const;
     Int_t           CurrentEventNumber() const;
 

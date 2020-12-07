@@ -7,16 +7,17 @@
 */
 /*------------------------------------------+---------------------------------*/
 
-#include <vector>
+#include <map>
 using namespace std;
 
 #include "TString.h"
 
-#include "TAGpara.hxx"
+#include "TAGparTools.hxx"
+#include "TACAparGeo.hxx"
 
 //##############################################################################
 
-class TACAparMap : public TAGpara {
+class TACAparMap : public TAGparTools {
 public:
 
   TACAparMap();
@@ -24,31 +25,16 @@ public:
 
     Bool_t          FromFile(const TString& name);
 
-    bool            GetIDFromTDC(int channel, int board, int &detID, int &chaID);
-    bool            GetIDFromADC(int channel, int board, int &detID, int &chaID);
+    void            Clear(Option_t* opt="");
 
-    virtual void    Clear(Option_t* opt="");
-
-    int getTDID(int add)     const { return fTDchaID.at(add);  }
-    int getTDboaID(int add)  const { return fTDboaID.at(add);  }
-    int getADID(int add)     const { return fADchaID.at(add);  }
-    int getADboaID(int add)  const { return fADboaID.at(add);  }
-    int getDetChaID(int add) const { return fDetchaID.at(add); }
-    int getDetID(int add)    const { return fDetID.at(add);    }
-
-    ClassDef(TACAparMap,1)
+    Int_t           GetCrystalId(Int_t boardId, Int_t channelId);
 
 private:
-    Bool_t          CheckAddr(Int_t i_c) const;
+   TACAparGeo* fParGeo;
+   map< pair<int, int>, int > fCrysId;
+  
+  ClassDef(TACAparMap,1)
 
-private:
-    int trefCh;
-    vector<int> fTDchaID;
-    vector<int> fTDboaID;
-    vector<int> fADchaID;
-    vector<int> fADboaID;
-    vector<int> fDetchaID;
-    vector<int> fDetID;
 };
 
 #endif

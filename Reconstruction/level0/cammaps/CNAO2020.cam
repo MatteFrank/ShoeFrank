@@ -1,7 +1,7 @@
 // Campaign file
 CamName: "CNAO2020"
 RunNumber: 1-2
-NumberDevices: 10
+NumberDevices: 8
 
 DetectorName: "FOOT"
 NumberFiles: 1
@@ -30,8 +30,10 @@ NumberFiles: 1
 "./geomaps/CNAO2020/TAMSDdetector.geo": -1
 
 DetectorName: "TW"
-NumberFiles: 3
+NumberFiles: 5
 "./geomaps/CNAO2020/TATWdetector.geo": -1
+"./config/CNAO2020/TATW_BBparameters.cfg": -1
+"./config/CNAO2020/TATWbarsMapStatus.map": -1
 "./calib/CNAO2020/TATW_Energy_Calibration.cal": -1
 "./calib/CNAO2020/TATW_Tof_Calibration.cal": -1
 

@@ -10,20 +10,19 @@
 #include "TMath.h"
 #include "TDirectory.h"
 
-
 #include "TAMCntuHit.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
 
 #include "TAVTntuRaw.hxx"
-
-
 #include "TAVTactNtuHitMC.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
+
+#include "TAMCflukaParser.hxx"
 
 #include "GlobalPar.hxx"
 
@@ -38,14 +37,17 @@ ClassImp(TAVTactNtuHitMC);
 
 //------------------------------------------+-----------------------------------
 //
-TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
+TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
 : TAVTactBaseNtuMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
-   fpNtuRaw(pNtuRaw)
+   fpNtuRaw(pNtuRaw),
+   fEventStruct(evStr)
 {
-   AddDataIn(pNtuMC, "TAMCntuHit");
-   AddDataIn(pNtuEve, "TAMCntuEve");
+   if (fEventStruct == 0x0) {
+     AddDataIn(pNtuMC, "TAMCntuHit");
+     AddDataIn(pNtuEve, "TAMCntuEve");
+   }
    AddDataOut(pNtuRaw, "TAVTntuRaw");
    AddPara(pGeoMap, "TAVTparGeo");
    
@@ -103,7 +105,11 @@ bool TAVTactNtuHitMC::Action()
    
    if (fgSigmaNoiseLevel > 0)
       FillNoise();
-   
+  
+   if (fEventStruct != 0x0) {
+     fpNtuMC->SetBit(kValid);
+     fpNtuEve->SetBit(kValid);
+   }
    fpNtuRaw->SetBit(kValid);
    
    return kTRUE;
@@ -113,7 +119,13 @@ bool TAVTactNtuHitMC::Action()
 void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
 {
    TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
-   TAMCntuHit* pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
+  
+   TAMCntuHit* pNtuMC  = 0;
+  
+   if (fEventStruct == 0x0)
+     pNtuMC = (TAMCntuHit*) fpNtuMC->Object();
+   else
+     pNtuMC = TAMCflukaParser::GetVtxHits(fEventStruct, fpNtuMC);
 
    RawMcHit_t mcHit;
    fMap.clear();
@@ -152,7 +164,13 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
 //------------------------------------------+-----------------------------------
 void TAVTactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
 {
-   TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
+  TAMCntuEve* pNtuEve  = 0;
+  
+  if (fEventStruct == 0x0)
+    pNtuEve = (TAMCntuEve*) fpNtuEve->Object();
+  else
+    pNtuEve = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
+      
    TAMCeveTrack*  track = pNtuEve->GetTrack(trackIdx);
    Int_t  Z = track->GetCharge();
    

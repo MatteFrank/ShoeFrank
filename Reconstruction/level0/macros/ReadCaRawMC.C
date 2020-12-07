@@ -15,11 +15,13 @@
 
 #include "Evento.hxx"
 
+#include "TAGcampaignManager.hxx"
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
 #include "TAGgeoTrafo.hxx"
 
+#include "TAGparGeo.hxx"
 #include "TACAparGeo.hxx"
 #include "TACAntuRaw.hxx"
 
@@ -30,39 +32,43 @@
 #endif
 
 // main
+TAGcampaignManager* campManager  = 0x0;
 TAGactTreeWriter* outFile = 0x0;
 TACAactNtuMC* caActRaw = 0x0;
 
-void FillMCMsd(EVENT_STRUCT *myStr) {
+void FillMCCa(EVENT_STRUCT *myStr, Int_t runNumber) {
    
-   /*Ntupling the MC Vertex information*/
+   TAGparaDsc* gGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
+   TAGparGeo* parGeoG = (TAGparGeo*)gGeo->Object();
+   TString parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
+   parGeoG->FromFile(parFileName.Data());
+
    TAGparaDsc* caGeo    = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
    TACAparGeo* geomap   = (TACAparGeo*) caGeo->Object();
-   geomap->FromFile();
+   parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNumber);
+   geomap->FromFile(parFileName);
    
    TAGdataDsc* caRaw    = new TAGdataDsc("caRaw", new TACAntuRaw());
    
-   caActRaw  = new TACAactNtuMC("caActRaw", caRaw, caGeo, myStr);
+   caActRaw  = new TACAactNtuMC("caActRaw", caRaw, caGeo, gGeo, myStr);
    caActRaw->CreateHistogram();
    
    outFile->SetupElementBranch(caRaw, TACAntuRaw::GetBranchName());
 }
 
-void ReadCaRawMC(TString name = "16O_C2H4_200_1.root")
-//void ReadCaRawMC(TString name = "p_80_vtx.root")
-//void ReadCaRawMC(TString name = "12C_80_vtx.root")
-//void ReadCaRawMC(TString name = "12C_400_vtx.root")
+void ReadCaRawMC(TString name = "16O_C2H4_200_1.root", TString expName = "16O_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance();
+   GlobalPar::Instance(expName);
    GlobalPar::GetPar()->Print();
-
-   TAGroot tagr;
-   TAGgeoTrafo geoTrafo;
-   geoTrafo.FromFile();
-
-   tagr.SetCampaignNumber(-1);
-   tagr.SetRunNumber(1);
    
+   TAGroot tagr;
+   
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
+   
+   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   geoTrafo->FromFile(parFileName);
    
    TFile* f = new TFile(name.Data());
    f->ls();
@@ -77,7 +83,7 @@ void ReadCaRawMC(TString name = "16O_C2H4_200_1.root")
    
    outFile = new TAGactTreeWriter("outFile");
    
-   FillMCMsd(&evStr);
+   FillMCCa(&evStr, runNumber);
    
    tagr.AddRequiredItem("caActRaw");
    tagr.AddRequiredItem("outFile");

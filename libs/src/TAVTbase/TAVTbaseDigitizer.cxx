@@ -27,8 +27,8 @@ Float_t  TAVTbaseDigitizer::fgDefSmearPos   = 10.35;    // in micron
 Float_t  TAVTbaseDigitizer::fgkPairCreation = 3.6e-3; // keV
 Float_t  TAVTbaseDigitizer::fgkFanoFactor   = 0.115;
 Float_t  TAVTbaseDigitizer::fgkNormFactor   = TMath::Sqrt(2*TMath::Pi());
-Float_t  TAVTbaseDigitizer::fgTotMaxValue   = 300.;
-Int_t    TAVTbaseDigitizer::fgTotAdcDepth   = 10;
+Float_t  TAVTbaseDigitizer::fgTotMaxValue   = 100;
+Int_t    TAVTbaseDigitizer::fgTotAdcDepth   = 7;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -82,7 +82,7 @@ TAVTbaseDigitizer::~TAVTbaseDigitizer()
 
 //------------------------------------------+-----------------------------------
 //! fill pixel signal
-Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin, Double_t zout, Double_t /*time*/, Int_t /*sensorId*/, Int_t Z)
+Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin, Double_t zout, Double_t /*time*/, Int_t /*sensorId*/, Int_t Z, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
    x0 *= TAGgeoTrafo::CmToMu();
    y0 *= TAGgeoTrafo::CmToMu();

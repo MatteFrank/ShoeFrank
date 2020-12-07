@@ -29,12 +29,13 @@
 #include "TATWparGeo.hxx"
 #include "TACAparGeo.hxx"
 
+#include "TADIgenField.hxx"
 #include "TADIgeoField.hxx"
 
 #include "TATWparCal.hxx"
 #include "TATWparMap.hxx"
 
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TAVTparConf.hxx"
 #include "TAITparConf.hxx"
 #include "TAMSDparConf.hxx"
@@ -45,6 +46,7 @@
 #include "TAITntuRaw.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAMSDntuRaw.hxx"
+#include "TAMSDntuPoint.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
 #include "TACAntuCluster.hxx"
@@ -58,8 +60,10 @@
 #include "TAITactNtuClusterF.hxx"
 #include "TAITactNtuClusterMT.hxx"
 #include "TAMSDactNtuCluster.hxx"
+#include "TAMSDactNtuPoint.hxx"
 #include "TACAactNtuCluster.hxx"
 #include "TATWactNtuPoint.hxx"
+#include "TATWactCalibTW.hxx"
 
 #include "TABMactNtuTrack.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
@@ -70,13 +74,18 @@
 #include "TAIRactNtuTrack.hxx"
 #include "TAGactNtuGlbTrack.hxx"
 
+#include "KFitter.hxx"
+#include "UpdatePDG.hxx"
+
+#include "GlobalTrackingStudies.hxx"
+
 class TAMCntuHit;
 class TAMCntuEve;
 class BaseReco : public TNamed // using TNamed for the in/out files
 {
 public:
    //! default constructor
-   BaseReco(TString expName, TString fileNameIn, TString fileNameout);
+   BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout);
    
    virtual ~BaseReco();
    
@@ -102,7 +111,7 @@ public:
    virtual void SetRecHistogramDir();
    
    //! Loop events
-   virtual void LoopEvent(Int_t /*nEvents*/) { return; }
+  virtual void LoopEvent(Int_t nEvents);
    
    //! Begin loop
    virtual void BeforeEventLoop();
@@ -127,6 +136,9 @@ public:
    
    //! Create branch in tree
    virtual void SetTreeBranches();
+  
+  //! Create L0 branch in tree
+  virtual void SetL0TreeBranches();
    
    //! Set experiment name
    virtual void SetExpName(const Char_t* name) { fExpName = name;  }
@@ -268,9 +280,19 @@ protected:
    TAGdataDsc*           fpNtuClusVtx;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusIt;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusMsd;     // input cluster data dsc
+   TAGdataDsc*           fpNtuRecMsd;
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
    TAGdataDsc*           fpNtuClusCa;     // input cluster data dsc
-
+  
+   TAGdataDsc*           fpNtuMcEve;
+   TAGdataDsc*           fpNtuMcSt;    // input data dsc
+   TAGdataDsc*           fpNtuMcBm;    // input data dsc
+   TAGdataDsc*           fpNtuMcVt;    // input data dsc
+   TAGdataDsc*           fpNtuMcIt;    // input data dsc
+   TAGdataDsc*           fpNtuMcMsd;    // input data dsc
+   TAGdataDsc*           fpNtuMcTw;    // input data dsc
+   TAGdataDsc*           fpNtuMcCa;    // input data dsc
+  
    TADIgeoField*         fField;       // magnetic field
 
    TAGdataDsc*           fpNtuTrackBm;  // input track data dsc
@@ -294,15 +316,21 @@ protected:
    TAITactBaseNtuTrack*  fActTrackIt;   // action for tracks
 
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
-   
+   TAMSDactNtuPoint*     fActPointMsd;   // action for point in MSD
+
    // TATWactNtuRaw*        fActNtuRawTw;  // action for ntu data
    TATWactNtuPoint*      fActPointTw;    // action for clusters
-   
+   TATWactCalibTW*       fActCalibTw;
+
    TACAactNtuCluster*    fActClusCa;    // action for clusters
 
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
+  
+   GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
+   KFitter*               fActGlbkFitter;    // Global tracking kalman Fitter
 
+   
    Bool_t                fFlagOut;       // flag for output file
    Bool_t                fFlagTree;      // flag to save in tree
    Bool_t                fFlagHits;      // flag to save hits in tree
@@ -322,6 +350,7 @@ protected:
    void CreateRecActionTw();
    void CreateRecActionCa();
    void CreateRecActionGlb() ;
+   void CreateRecActionGlbGF() ;
    void CreateRecActionIr();
 
 protected:

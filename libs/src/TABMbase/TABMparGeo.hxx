@@ -84,8 +84,8 @@ public:
    TVector3       GetWirePos(Int_t view, Int_t layer, Int_t wire) const;
    TVector3       GetWireDir(Int_t view) const;
 
-   int         GetCell(TVector3 pos, int layer, int view) ;
-
+   Int_t          GetCell(TVector3 pos, int layer, int view) ;
+  
    // transformation from BM to wire and vice versa
    void           Wire2Detector(Double_t xl, Double_t yl, Double_t zl,
                                 Double_t& xg, Double_t& yg, Double_t& zg) const;

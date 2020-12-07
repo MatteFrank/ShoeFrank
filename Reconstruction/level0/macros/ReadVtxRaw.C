@@ -16,6 +16,7 @@
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
+#include "TAGcampaignManager.hxx"
 
 #include "TAVTparMap.hxx"
 #include "TAVTparGeo.hxx"
@@ -34,27 +35,30 @@
 #endif
 
 // main
-TAGactTreeWriter*   outFile   = 0x0;
+TAGcampaignManager* campManager  = 0x0;
+TAGactTreeWriter*   outFile      = 0x0;
 TAGactDaqReader*    daqActReader = 0x0;
 
 TAVTactNtuRaw*      vtActRaw  = 0x0;
 TAVTactNtuClusterF* vtActClus = 0x0;
 TAVTactNtuTrackF*   vtActTrck = 0x0;
 
-void FillVertex()
+void FillVertex(Int_t runNumber)
 {
    TAGparaDsc* vtMap    = new TAGparaDsc("vtMap", new TAVTparMap());
    TAVTparMap* map   = (TAVTparMap*) vtMap->Object();
-   map->FromFile("./config/TAVTdetector.map");
-   
-   
+   TString parFileName = campManager->GetCurMapFile(TAVTparGeo::GetBaseName(), runNumber);
+   map->FromFile(parFileName.Data());
+
    TAGparaDsc* vtGeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
-   geomap->FromFile("./geomaps/GSI/TAVTdetector.geo");
+   parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+   geomap->FromFile(parFileName.Data());
    
    TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
-   parconf->FromFile("./config/GSI/TAVTdetector.cfg");
+   parFileName = campManager->GetCurConfFile(TAVTparGeo::GetBaseName(), runNumber);
+   parconf->FromFile(parFileName.Data());
 
    TAVTparConf::SetHistoMap();
    TAGdataDsc* vtDaq    = new TAGdataDsc("vtDaq", new TAGdaqEvent());
@@ -63,7 +67,6 @@ void FillVertex()
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
 
    daqActReader  = new TAGactDaqReader("daqActReader", vtDaq);
-   
    
    vtActRaw  = new TAVTactNtuRaw("vtActRaw", vtNtu, vtDaq, vtGeo, vtConf, vtMap);
    vtActRaw->CreateHistogram();
@@ -80,18 +83,24 @@ void FillVertex()
 
 }
 
-void ReadVtxRaw(TString filename = "data/data_built.2211.physics_foot.daq.VTX.1.dat", Int_t nMaxEvts = 0)
+void ReadVtxRaw(TString filename = "data/data_built.2211.physics_foot.daq.VTX.1.dat", Int_t nMaxEvts = 0,
+                TString expName = "GSI", Int_t runNumber = 2211)
 {
-   TAGroot tagr;
-   tagr.SetCampaignNumber(100);
-   tagr.SetRunNumber(1);
+   GlobalPar::Instance(expName);
+   GlobalPar::GetPar()->Print();
    
+   TAGroot tagr;
+   
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
+
    TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-   geoTrafo->FromFile();
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   geoTrafo->FromFile(parFileName);
    
    outFile = new TAGactTreeWriter("outFile");
 
-   FillVertex();
+   FillVertex(runNumber);
    daqActReader->Open(filename);
    
    tagr.AddRequiredItem(daqActReader);

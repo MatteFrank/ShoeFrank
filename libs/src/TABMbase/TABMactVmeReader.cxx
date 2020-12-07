@@ -5,7 +5,7 @@
 */
 
 #include "TABMparMap.hxx"
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TABMrawHit.hxx"
 #include "TABMdatRaw.hxx"
 #include "TASTntuRaw.hxx"
@@ -37,7 +37,7 @@ TABMactVmeReader::TABMactVmeReader(const char* name,
 {
   AddDataOut(p_datraw, "TABMdatRaw");
   AddPara(p_parmap, "TABMparMap");
-  AddPara(p_parcon, "TABMparCon");
+  AddPara(p_parcon, "TABMparConf");
   AddPara(p_pargeo, "TABMparGeo");
   // AddDataOut(p_timraw, "TASTntuRaw");
   fpEvtStruct=new BM_struct;
@@ -76,7 +76,7 @@ void TABMactVmeReader::CreateHistogram(){
 
 Bool_t TABMactVmeReader::Process() {
 
-  TABMparCon* bmcon = (TABMparCon*) fpParCon->Object();
+  TABMparConf* bmcon = (TABMparConf*) fpParCon->Object();
   TABMparMap* bmmap = (TABMparMap*) fpParMap->Object();
   TABMparGeo* bmgeo = (TABMparGeo*) fpParGeo->Object();
   TABMdatRaw* p_datraw= (TABMdatRaw*) fpDatRaw->Object();
@@ -170,7 +170,7 @@ fbmfile.close();
 }
 
 Bool_t TABMactVmeReader::ReadEvent(Bool_t evt0) {
-  TABMparCon* bmcon = (TABMparCon*) fpParCon->Object();
+  TABMparConf* bmcon = (TABMparConf*) fpParCon->Object();
   TABMparMap* bmmap = (TABMparMap*) fpParMap->Object();
 
   Int_t tmp_int; //dummy int variable to read and convert the input file
@@ -454,7 +454,7 @@ return;
 
 void TABMactVmeReader::MonitorQDC(vector<Int_t>& adc792_words) {
 
-  TABMparCon* bmcon = (TABMparCon*) fpParCon->Object();
+  TABMparConf* bmcon = (TABMparConf*) fpParCon->Object();
   TABMparMap* bmmap = (TABMparMap*) fpParMap->Object();
 
   Int_t qdc_cnt(0);

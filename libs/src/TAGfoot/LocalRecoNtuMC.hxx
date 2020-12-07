@@ -38,7 +38,7 @@ class LocalRecoNtuMC : public BaseReco
 {
 public:
    //! default constructor
-   LocalRecoNtuMC(TString expName = "", TString fileNameIn = "", TString fileNameout = "");
+   LocalRecoNtuMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~LocalRecoNtuMC();
    
@@ -60,9 +60,6 @@ public:
    //! Close File in
    virtual void CloseFileIn();
 
-   //! Loop events
-   virtual void LoopEvent(Int_t nEvents);
-   
    //! MC container Getter
    TAMCntuEve*  GetNtuMcEve() const { return (TAMCntuEve*)fpNtuMcEve->Object();}
    TAMCntuHit*  GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object(); }
@@ -83,7 +80,7 @@ protected:
    TAMSDactNtuHitMC*     fActNtuRawMsd;  // action for ntu data
    TATWactNtuHitMC*      fActNtuRawTw;  // action for ntu data
    TACAactNtuHitMC*      fActNtuRawCa;  // action for ntu data
-   
+  
    TAGdataDsc*           fpNtuMcEve;    // input data dsc
    TAGdataDsc*           fpNtuMcSt;    // input data dsc
    TAGdataDsc*           fpNtuMcBm;    // input data dsc
@@ -94,7 +91,7 @@ protected:
    TAGdataDsc*           fpNtuMcCa;    // input data dsc
    
    TAGactTreeReader*     fActEvtReader; // file for MC
-   
+
    ClassDef(LocalRecoNtuMC, 1); // Base class for event display
 };
 

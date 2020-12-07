@@ -48,7 +48,7 @@ Bool_t TAMCactNtuBm::Action() {
    for (Int_t i = 0; i < fpEvtStr->BMNn; i++) {
       
       Int_t layer    = fpEvtStr->BMNilay[i];
-      Int_t view     = fpEvtStr->BMNicell[i];
+      Int_t view     = fpEvtStr->BMNiview[i];
       Int_t cellId   = fpEvtStr->BMNicell[i];
       Int_t trackIdx = fpEvtStr->BMNid[i];
 

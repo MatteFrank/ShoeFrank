@@ -49,21 +49,9 @@ public:
    //! Base creation of histogram
    void      CreateHistogram();
    
-   //! Set up branches
-   void      SetupBranches();
-   
-   //! Set up branches
-   void      SetupBranches(TTree* tree);
+   //! Check branches
+   void      CheckBranches();
 
-   //! Open File
-   void      Open(TString name);
-   
-   //! Close File
-   void      Close();
-   
-   //! Get tree in standalone mode
-   TTree*    GetTree();
-    
     TAGntuGlbTrack* GetTrackContainer() {return static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() );}
     
     void Output(){ fActTOE->Output(); }
@@ -96,15 +84,6 @@ private:
    TATOEbaseAct*     fActTOE;
     
    TH1F*             fpHisMass;
-
-public:
-   //! Disable/Enable stand alone reading
-   static void DisableStdAlone()   { fgStdAloneFlag = false;  }
-   static void EnableStdAlone()    { fgStdAloneFlag = true;   }
-   static Bool_t GetStdAloneFlag() { return fgStdAloneFlag;   }
-   
-private:
-   static Bool_t     fgStdAloneFlag;    // flag for standalone (read from root file using MC interface)
    
    ClassDef(TAGactNtuGlbTrack,0)
 };

@@ -29,7 +29,7 @@ class LocalReco : public BaseReco
 {
 public:
    //! default constructor
-   LocalReco(TString expName = "", TString fileNameIn = "", TString fileNameout = "");
+   LocalReco(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~LocalReco();
    
@@ -50,9 +50,6 @@ public:
    
    //! Close File in
    virtual void CloseFileIn();
-
-   //! Loop events
-   virtual void LoopEvent(Int_t nEvents);
    
    //! Set run number
    void   SetRunNumber();

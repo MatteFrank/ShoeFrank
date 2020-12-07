@@ -10,19 +10,18 @@
 #include "TMath.h"
 #include "TRandom.h"
 
-
 #include "TAMSDparGeo.hxx"
 #include "TAMSDparConf.hxx"
 
 #include "TAMSDntuRaw.hxx"
-
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
-
 
 #include "TAMSDactNtuHitMC.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
+
+#include "TAMCflukaParser.hxx"
 
 #include "GlobalPar.hxx"
 
@@ -40,17 +39,20 @@ Int_t   TAMSDactNtuHitMC::fgMcNoiseId       = -99;
 
 //------------------------------------------+-----------------------------------
 //
-TAMSDactNtuHitMC::TAMSDactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve,TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
+TAMSDactNtuHitMC::TAMSDactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve,TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
 :  TAGaction(name, "TAMSDactNtuHitMC - NTuplize MSD MC data"),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
    fpNtuRaw(pNtuRaw),
    fpGeoMap(pGeoMap),
-   fNoisyStripsN(0)
+   fNoisyStripsN(0),
+   fEventStruct(evStr)
 {
-   AddDataIn(pNtuMC, "TAMCntuHit");
-   AddDataIn(pNtuEve, "TAMCntuEve");
-	AddDataOut(pNtuRaw, "TAMSDntuRaw");
+   if (fEventStruct == 0x0) {
+     AddDataIn(pNtuMC, "TAMCntuHit");
+     AddDataIn(pNtuEve, "TAMCntuEve");
+   }
+   AddDataOut(pNtuRaw, "TAMSDntuRaw");
 	AddPara(pGeoMap, "TAMSDparGeo");
 
    CreateDigitizer();
@@ -123,13 +125,20 @@ void TAMSDactNtuHitMC::CreateDigitizer()
 bool TAMSDactNtuHitMC::Action()
 {
    TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
-   TAMCntuHit* pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
-	TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
+   TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
+  
+   TAMCntuHit* pNtuMC  = 0;
+  
+   if (fEventStruct == 0x0)
+     pNtuMC = (TAMCntuHit*) fpNtuMC->Object();
+   else
+     pNtuMC = TAMCflukaParser::GetMsdHits(fEventStruct, fpNtuMC);
+  
 	pNtuRaw->Clear();
    fMap.clear();
  
    if(FootDebugLevel(1))
-      Info("TAMSDactNtuHitMC::Action()", "start  -->  VTn : %d  ", pNtuMC->GetHitsN());
+      Info("TAMSDactNtuHitMC::Action()", "start  -->  MSDn : %d  ", pNtuMC->GetHitsN());
 
    
 	// Loop over all MC hits
@@ -161,6 +170,10 @@ bool TAMSDactNtuHitMC::Action()
 		}
    }
 
+   if (fEventStruct != 0x0) {
+     fpNtuMC->SetBit(kValid);
+     fpNtuEve->SetBit(kValid);
+   }
    fpNtuRaw->SetBit(kValid);
    return kTRUE;
 }

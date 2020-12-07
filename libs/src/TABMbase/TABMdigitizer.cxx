@@ -26,9 +26,10 @@
 #include "TABMdigitizer.hxx"
 
 // --------------------------------------------------------------------------------------
-TABMdigitizer::TABMdigitizer(TABMntuRaw* pNtuRaw, TABMparCon* parCon)
- : TAGobject(),
+TABMdigitizer::TABMdigitizer(TABMntuRaw* pNtuRaw, TABMparGeo* parGeo, TABMparConf* parCon)
+ : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
+   fpParGeo(parGeo),
    fpParCon(parCon),
    fTimeMinDiff(50)
 {
@@ -50,23 +51,38 @@ Double_t TABMdigitizer::EffFunc(Double_t* x, Double_t* par){
 }
 
 //___________________________________________________________________________________________
-// Bool_t TABMdigitizer::AddHitInMap(Int_t cellid, Double_t inrdrift, Int_t inhitindex,Int_t inipoint)
-Bool_t TABMdigitizer::Process(Double_t rdrift, Int_t cellid, Int_t plane, Int_t view, Int_t cell, Int_t inhitindex,Int_t inipoint)
+Bool_t TABMdigitizer::Process(Double_t /*edep*/, Double_t x0, Double_t y0, Double_t z0, Double_t /*zout*/,
+                              Double_t /*time*/, Int_t cellid, Int_t /*Z*/, Double_t px0, Double_t py0, Double_t pz0)
 {
+
+
+  Int_t view, lay ,cell ;
+  Double_t rdrift;
+
+  TVector3 loc(x0, y0, z0);
+  TVector3 gmom(px0, py0, pz0);
+
+  if (cellid < 0) {//it's a fake hit from CreateFakeHits
+    cellid = (Int_t)gRandom->Uniform(0,35.9);
+    fpParGeo->GetBMNlvc(cellid, lay, view, cell);
+    rdrift = gRandom->Uniform(0.,0.8);
+  } else {
+    fpParGeo->GetBMNlvc(cellid, lay, view, cell);
+    rdrift = fpParGeo->FindRdrift(loc, gmom, fpParGeo->GetWirePos(view, lay, fpParGeo->GetSenseId(cell)), fpParGeo->GetWireDir(view), false);
+  }
+
   if(fpParCon->GetSmearHits())
     if(gRandom->Uniform(0,1)>fpEffDist->Eval(rdrift))
       return false;
 
-  TABMntuHit *mytmp = 0x0;
   if(fpParCon->GetSmearRDrift()>0)
     rdrift=SmearRdrift(rdrift,fpParCon->ResoEval(rdrift));
 
+  //everything is computed, now I can check and add the hit
   std::multimap<Int_t, TABMntuHit*>::iterator pos=fMap.find(cellid);
   if(pos==fMap.end()){//new hit in a new cellid
-    mytmp=fpNtuRaw->NewHit(cellid, plane, view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
-    mytmp->SetIsFake((inipoint==0) ? 0 : (inipoint>0 ? 1 : 2));
-    mytmp->AddMcTrackIdx(inipoint, inhitindex);
-    fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,mytmp));
+    fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
+    fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,fCurrentHit));
     return true;
   }else{//multihit in the same cellid
     Int_t currhittime=fpParCon->GetTimeFromRDrift(rdrift);
@@ -80,26 +96,23 @@ Bool_t TABMdigitizer::Process(Double_t rdrift, Int_t cellid, Int_t plane, Int_t 
           d->second->SetIdCell(cellid);
           d->second->SetCell(cell);
           d->second->SetView(view);
-          d->second->SetPlane(plane);
+          d->second->SetPlane(lay);
           d->second->SetRdrift(rdrift);
           d->second->SetTdrift(fpParCon->GetTimeFromRDrift(rdrift));
-          d->second->SetIsFake((inipoint==0) ? 0 : (inipoint>0 ? 1 : 2));
           d->second->SetSigma(fpParCon->ResoEval(rdrift));
-          d->second->AddMcTrackIdx(inipoint, inhitindex);
-          return false;
+          return true;
         }else
           return false;// the present hit should not be charged
       }else
         ++d;
     }
-    mytmp=fpNtuRaw->NewHit(cellid, plane,view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
-    mytmp->SetIsFake((inipoint==0) ? 0 : (inipoint>0 ? 1 : 2));
-    mytmp->AddMcTrackIdx(inipoint, inhitindex);
-    fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,mytmp));
+    //if the time of the hit is > fTimeMinDiff, it can be added
+    fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
+    fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,fCurrentHit));
     return true;
   }
 
-return false;
+  return false;
 }
 
 

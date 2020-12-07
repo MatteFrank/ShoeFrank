@@ -28,12 +28,14 @@ set( with_dictionnaries
    TATWactNtuMC
    TATWactNtuHitMC
    TATWactNtuRaw
+   TATWactCalibTW
    TATWactNtuPoint
    TATWparGeo
    TATWdigitizer
    TATWchannelMap
    TATWcalibrationMap
    TAGactWDreader
+#   TOFWallCalibration
 )
 
 set( without_dictionnaries

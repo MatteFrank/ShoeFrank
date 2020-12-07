@@ -18,7 +18,7 @@ class TAGactionFile : public TAGaction {
 				  const char* openopt=0);
     virtual         ~TAGactionFile();
 
-    virtual Int_t   Open(const TString& name, Option_t* option=0, const TString treeName="tree");
+    virtual Int_t   Open(const TString& name, Option_t* option=0, const TString treeName="tree", Bool_t dscBranch = true);
    
     virtual void    SetupChannel(TAGdataDsc* p_data, TAGnamed* p_filt);
    

@@ -375,11 +375,7 @@ TAGparaDsc* TAGroot::FindParaDsc(const char* name, const char* type) const
 
 void TAGroot::SetRunInfo(const TAGrunInfo& info)
 {
-  fRunInfo.SetCampaignNumber(info.CampaignNumber());
-  fRunInfo.SetRunNumber(info.RunNumber());
-  fEventId.SetCampaignNumber(info.CampaignNumber());
-  fEventId.SetRunNumber(info.RunNumber());
-  return;
+  fRunInfo = info;
 }
 
 /*------------------------------------------+---------------------------------*/
@@ -387,12 +383,7 @@ void TAGroot::SetRunInfo(const TAGrunInfo& info)
 
 void TAGroot::SetEventId(const TAGeventId& info)
 {
-  fRunInfo.SetCampaignNumber(info.CampaignNumber());
-  fRunInfo.SetRunNumber(info.RunNumber());
-  fEventId.SetCampaignNumber(info.CampaignNumber());
-  fEventId.SetRunNumber(info.RunNumber());
-  fEventId.SetEventNumber(info.EventNumber());
-  return;
+  fEventId= info;
 }
 
 /*------------------------------------------+---------------------------------*/

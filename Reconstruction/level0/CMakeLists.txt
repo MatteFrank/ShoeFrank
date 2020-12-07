@@ -21,6 +21,7 @@ if (FILECOPY)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/macros/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cammaps/ DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/cammaps/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/calib/   DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/calib/)
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/README   DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/)
 endif(FILECOPY)
 
 
@@ -81,3 +82,16 @@ target_link_libraries(DecodeMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBR
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS DecodeMC DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(CalibrateTof CalibrateTof.cc)
+#
+target_link_libraries(CalibrateTof ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS CalibrateTof DESTINATION bin)
+

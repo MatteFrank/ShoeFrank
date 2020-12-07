@@ -6,80 +6,59 @@
   \brief   Declaration of TACAdatRaw.
 */
 /*------------------------------------------+---------------------------------*/
-
 #include <vector>
 using namespace std;
-
 #include "TObject.h"
 #include "TClonesArray.h"
-
 #include "TAGdata.hxx"
+#include "TAGbaseWD.hxx"
+//
 
-class TACArawHit : public TObject {
-  public:
-    TACArawHit();
-    TACArawHit(int typ, int cha, double charge, double time);
-    virtual         ~TACArawHit();
+/**
+ * This class stores the params of a single channel waveform
+ */
+class TACArawHit : public TAGbaseWD {
 
-    void            SetData(Int_t type, Int_t id, Double_t time, Double_t charge);
-    Double_t        Time() const;
-    Double_t        Charge() const;
-    Int_t           ChID() const;
-    Int_t           Type() const;
+public:
+  TACArawHit();
+  TACArawHit(TWaveformContainer *w);
+  virtual         ~TACArawHit();
+  
 
-    void            SetTime(double time);
-    void            SetCharge(double charge);
-    void            SetChID(int id);  //SC channel ID
-    void            SetType(int typ); //meaningless for now.
-
-    ClassDef(TACArawHit,1)
-
-  private:
-    Double_t fTime;    
-    Double_t fCharge;    
-    Int_t    fType;
-    Int_t    fChannelID;
+  ClassDef(TACArawHit,1);
+  //
 };
 
 //##############################################################################
 
 class TACAdatRaw : public TAGdata {
-  public:
+public:
 
-                    TACAdatRaw();
-    virtual         ~TACAdatRaw();
+  TACAdatRaw();
+  virtual         ~TACAdatRaw();
 
-    void            SetCounter(Int_t i_ntdc, Int_t i_nadc, Int_t i_ndrop);
+  Int_t             GetHitsN() const;
+  TACArawHit*       GetHit(Int_t i_ind);
+  const TACArawHit* GetHit(Int_t i_ind) const;
+  
+  void              NewHit(TWaveformContainer *W);
+  void              SetupClones();
+  
+  virtual void      Clear(Option_t* opt="");
+  virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
+  
+public:
+  static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+  
+private:
+   Int_t           fHistN;          //
+   TClonesArray*   fListOfHits;         // hits
 
-    Int_t             GetHitsN() const;
-    TACArawHit*       GetHit(Int_t i_ind);
-    const TACArawHit* GetHit(Int_t i_ind) const;
-
-    void            SetTrigTime(double time);
-    Double_t        TrigTime() const;
-
-    Int_t           NTdc() const;
-    Int_t           NAdc() const;
-    Int_t           NDrop() const;
-
-    virtual void    Clear(Option_t* opt="");
-
-    void SetupClones();
-
-    virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-
-    ClassDef(TACAdatRaw,1)
-
-  private:
-    Int_t           fHitsN;		    // 
-    TClonesArray*   fListOfHits;	    // hits
-    Double_t        fTrigTime;       // SC trigger time
-    Int_t           fiNAdc;		    // 
-    Int_t           fiNTdc;		    // 
-    Int_t           fiNDrop;		    // 
+private:
+   static TString fgkBranchName;    // Branch name in TTree
+  
+  ClassDef(TACAdatRaw,1);
 
 };
-
-#include "TACAdatRaw.icc"
 
 #endif

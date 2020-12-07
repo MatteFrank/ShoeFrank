@@ -6,6 +6,7 @@
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
+#include "TAMCflukaParser.hxx"
 
 #include "TABMactNtuHitMC.hxx"
 
@@ -25,22 +26,26 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
                                  TAGdataDsc* dscntuEve,
                                  TAGdataDsc* dscnturaw,
                                  TAGparaDsc* dscbmcon,
-                                 TAGparaDsc* dscbmgeo)
+                                 TAGparaDsc* dscbmgeo,
+                                 EVENT_STRUCT* evStr)
   : TAGaction(name, "TABMactNtuHitMC - NTuplize ToF raw data"),
     fpNtuMC(dscntuMC),
     fpNtuEve(dscntuEve),
     fpNtuRaw(dscnturaw),
     fpParCon(dscbmcon),
-    fpParGeo(dscbmgeo)
+    fpParGeo(dscbmgeo),
+    fEventStruct(evStr)
 {
    if (FootDebugLevel(1))
       cout<<"TABMactNtuHitMC::default constructor::Creating the Beam Monitor MC tuplizer action"<<endl;
 
-   AddDataIn(fpNtuMC, "TAMCntuHit");
-   AddDataIn(fpNtuEve, "TAMCntuEve");
+   if (fEventStruct == 0x0) {
+     AddDataIn(dscntuMC, "TAMCntuHit");
+     AddDataIn(dscntuEve, "TAMCntuEve");
+   } 
    AddDataOut(fpNtuRaw, "TABMntuRaw");
 
-   AddPara(fpParCon, "TABMparCon");
+   AddPara(fpParCon, "TABMparConf");
    AddPara(fpParGeo, "TABMparGeo");
 
    CreateDigitizer();
@@ -58,9 +63,10 @@ TABMactNtuHitMC::~TABMactNtuHitMC()
 void TABMactNtuHitMC::CreateDigitizer()
 {
    TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuRaw->Object();
-	 TABMparCon* p_bmcon  = (TABMparCon*) fpParCon->Object();
+   TABMparGeo* p_bmgeo  = (TABMparGeo*) fpParGeo->Object();
+   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
 
-   fDigitizer = new TABMdigitizer(p_nturaw, p_bmcon);
+   fDigitizer = new TABMdigitizer(p_nturaw, p_bmgeo, p_bmcon);
 }
 
 //------------------------------------------+-----------------------------------
@@ -70,11 +76,20 @@ Bool_t TABMactNtuHitMC::Action()
 {
   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   TABMntuRaw* p_nturaw  = (TABMntuRaw*) fpNtuRaw->Object();
-  TABMparCon* p_bmcon   = (TABMparCon*) fpParCon->Object();
+  TABMparConf* p_bmcon  = (TABMparConf*) fpParCon->Object();
   TABMparGeo* p_bmgeo   = (TABMparGeo*) fpParGeo->Object();
-  TAMCntuHit* pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
-  TAMCntuEve* pNtuEve   = (TAMCntuEve*) fpNtuEve->Object();
+  
+  TAMCntuHit* pNtuMC    = 0;
+  TAMCntuEve* pNtuEve   = 0;
 
+  if (fEventStruct == 0x0) {
+    pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
+    pNtuEve   = (TAMCntuEve*) fpNtuEve->Object();
+  } else {
+    pNtuMC   = TAMCflukaParser::GetBmHits(fEventStruct, fpNtuMC);
+    pNtuEve  = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
+  }
+  
   Int_t cell, view, lay, ipoint, cellid;
   Double_t rdrift;
 
@@ -99,7 +114,7 @@ Bool_t TABMactNtuHitMC::Action()
       cell = hitMC->GetCell();
       lay = hitMC->GetLayer();
       view = hitMC->GetView() == -1 ? 1:0;
-      cellid=p_bmgeo->GetBMNcell(lay, view, cell);
+      cellid = p_bmgeo->GetBMNcell(lay, view, cell);
 
       glo.SetXYZ(hitMC->GetInPosition()[0], hitMC->GetInPosition()[1], hitMC->GetInPosition()[2]);
       loc = geoTrafo->FromGlobalToBMLocal(glo);
@@ -107,9 +122,15 @@ Bool_t TABMactNtuHitMC::Action()
 
       if(gmom.Mag()!=0){
         rdrift=p_bmgeo->FindRdrift(loc, gmom, p_bmgeo->GetWirePos(view, lay,p_bmgeo->GetSenseId(cell)),p_bmgeo->GetWireDir(view),false);
-        Bool_t added=fDigitizer->Process(rdrift,cellid,lay,view,cell, i, trackId);
+        Bool_t added=fDigitizer->Process(0, loc[0], loc[1], loc[2], 0, 0, p_bmgeo->GetBMNcell(lay, view, cell), 0,
+                                         gmom[0], gmom[1], gmom[2]);
+				if(added){
+					TABMntuHit* hit = fDigitizer->GetCurrentHit();
+	        hit->SetIsFake((ipoint==0) ? 0 : 1);
+	        hit->AddMcTrackIdx(ipoint, i);
+        }
 	      if(ValidHistogram() && !added)
-						fpDisRdrift->Fill(rdrift);
+					fpDisRdrift->Fill(rdrift);
       }
     }
   }
@@ -131,6 +152,10 @@ Bool_t TABMactNtuHitMC::Action()
   }
 
 
+  if (fEventStruct != 0x0) {
+    fpNtuMC->SetBit(kValid);
+    fpNtuEve->SetBit(kValid);
+  }
   fpNtuRaw->SetBit(kValid);
   if(FootDebugLevel(2))
     cout<<"TABMactNtuHitMC::Action():: done without problems!"<<endl;
@@ -164,14 +189,14 @@ void TABMactNtuHitMC::CreateHistogram(){
 //------------------------------------------+-----------------------------------
 void TABMactNtuHitMC::CreateFakeHits()
 {
-  TABMparGeo* p_bmgeo   = (TABMparGeo*) fpParGeo->Object();
   Int_t nfake=(Int_t)fabs(gRandom->Gaus(0,4));
+
   for(Int_t i=0;i<nfake;i++){
-    Int_t cellid=(Int_t)gRandom->Uniform(0,35.9);
-    Int_t cell, lay, view;
-    p_bmgeo->GetBMNlvc(cellid,lay, view, cell);
-    fDigitizer->Process(gRandom->Uniform(0.,0.8),cellid,lay,view,cell ,-1,-1);
-  }
+    Bool_t added=fDigitizer->Process(0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0); // the cellid=-1 will tell the digitizer to add a fake hit
+    TABMntuHit* hit = fDigitizer->GetCurrentHit();
+		hit->SetIsFake(2);
+    hit->AddMcTrackIdx(-99, -99);
+	}
 
   return ;
 }

@@ -32,7 +32,7 @@ set( with_dictionnaries
    TABMtrack
    TABMntuTrack
    TABMactNtuTrack
-   TABMparCon
+   TABMparConf
    TABMactDatRaw
    TABMactVmeReader
 )

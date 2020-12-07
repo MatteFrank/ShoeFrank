@@ -98,7 +98,7 @@ void TAGactTreeWriter::SetCompressionLevel(Int_t i_compress)
 //------------------------------------------+-----------------------------------
 //! Open root file.
 
-Int_t TAGactTreeWriter::Open(const TString& name, Option_t* option, const TString treeName)
+Int_t TAGactTreeWriter::Open(const TString& name, Option_t* option, const TString treeName, Bool_t dscBranch)
 {
   TDirectory* p_cwd = gDirectory;
 
@@ -165,7 +165,7 @@ void TAGactTreeWriter::Close()
     fpFile->cd();
     fpTree->Write();
     TAGrunInfo runinfo(gTAGroot->CurrentRunInfo());
-    runinfo.Write("runinfo");
+    runinfo.Write(TAGrunInfo::GetObjectName());
   }
 
   delete fpFile;

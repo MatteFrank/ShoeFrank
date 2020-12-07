@@ -23,7 +23,10 @@
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
 
+#include "TAMCflukaParser.hxx"
+
 #include "GlobalPar.hxx"
+
 
 /*!
   \class TAITactNtuHitMC"
@@ -37,14 +40,17 @@ ClassImp(TAITactNtuHitMC);
 
 //------------------------------------------+-----------------------------------
 //
-TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap)
+TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
 : TAVTactBaseNtuMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
-   fpNtuRaw(pNtuRaw)
+   fpNtuRaw(pNtuRaw),
+   fEventStruct(evStr)
 {
-   AddDataIn(pNtuMC, "TAMCntuHit");
-   AddDataIn(pNtuEve, "TAMCntuEve");
+   if (fEventStruct == 0x0) {
+     AddDataIn(pNtuMC, "TAMCntuHit");
+     AddDataIn(pNtuEve, "TAMCntuEve");
+   } 
    AddDataOut(pNtuRaw, "TAITntuRaw");
    AddPara(pGeoMap, "TAITparGeo");
    
@@ -100,7 +106,11 @@ bool TAITactNtuHitMC::Action()
    
    if (fgSigmaNoiseLevel > 0)
       FillNoise();
-   
+  
+   if (fEventStruct != 0x0) {
+     fpNtuMC->SetBit(kValid);
+     fpNtuEve->SetBit(kValid);
+   }
    fpNtuRaw->SetBit(kValid);
    return kTRUE;
 }
@@ -109,8 +119,14 @@ bool TAITactNtuHitMC::Action()
 void TAITactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
 {
    TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
-   TAMCntuHit* pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
-   
+
+   TAMCntuHit* pNtuMC  = 0;
+  
+   if (fEventStruct == 0x0)
+     pNtuMC = (TAMCntuHit*) fpNtuMC->Object();
+   else
+     pNtuMC = TAMCflukaParser::GetItrHits(fEventStruct, fpNtuMC);
+  
    RawMcHit_t mcHit;
    fMap.clear();
    
@@ -149,9 +165,19 @@ void TAITactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
 //------------------------------------------+-----------------------------------
 void TAITactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
 {
-   if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2])) return;
+  TAMCntuEve* pNtuEve  = 0;
+  
+  if (fEventStruct == 0x0)
+    pNtuEve = (TAMCntuEve*) fpNtuEve->Object();
+  else
+    pNtuEve = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
+  
+  TAMCeveTrack*  track = pNtuEve->GetTrack(trackIdx);
+  Int_t  Z = track->GetCharge();
+  
+   if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2], 0, 0, Z)) return;
    FillPixels(sensorId, idx, trackIdx);
-   
+  
    if (ValidHistogram()) {
       fpHisDeTot->Fill(de*TAGgeoTrafo::GevToKev());
       fpHisDeSensor[sensorId]->Fill(de*TAGgeoTrafo::GevToKev());

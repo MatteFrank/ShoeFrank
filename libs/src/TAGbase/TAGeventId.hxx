@@ -27,6 +27,9 @@ class TAGeventId {
 
     friend bool     operator==(const TAGeventId& lhs, 
 			       const TAGeventId& rhs);
+   
+   const TAGeventId& operator=(const TAGeventId &right);
+
 
     ClassDef(TAGeventId,1)
 

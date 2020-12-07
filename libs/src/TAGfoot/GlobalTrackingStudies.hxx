@@ -74,9 +74,6 @@
 #include "TAGparaDsc.hxx"
 
 #include "GlobalPar.hxx"
-#include "ControlPlotsRepository.hxx"
-#include "GlobalTrackRepostory.hxx"
-#include "MagicSkills.hxx"
 #include "UpdatePDG.hxx"
 
 #include <sys/types.h>
@@ -84,6 +81,7 @@
 #include <limits>
 
 #include "TAGgeoTrafo.hxx"
+#include "TAGaction.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
 #include "TAVTactNtuVertex.hxx"
@@ -102,17 +100,16 @@ using namespace genfit;
 
 typedef vector<genfit::AbsMeasurement*> MeasurementVector;
 
-class GlobalTrackingStudies {
-  
+class GlobalTrackingStudies : public TAGaction {
+
 public:
-  
-  
-	GlobalTrackingStudies();
+
+
+	GlobalTrackingStudies(const char* name);
 	~GlobalTrackingStudies() {};
 
-	void InitHistos();
-
-	void Execute();
+   void   CreateHistogram();
+	Bool_t Action();
 
 	void Finalize();
 
@@ -122,17 +119,12 @@ private:
 	TH1F* m_histo_nClusXTrk;
 	TH1F* m_histo_mcGoodTrk;
 
-	map< int, TH1F* > m_histo_MeanNPix_inClusPerTrk;
-	map< int, TH1F* > m_histo_MaxDeltaNPix_inClusPerTrk;
+	TH1F* m_histo_MeanNPix_inClusPerTrk[8];
+	TH1F* m_histo_MaxDeltaNPix_inClusPerTrk[8];
 
-	map< int, TH1F* > m_histo_DeltaX_VtIt_straight;
-	map< int, TH1F* > m_histo_DeltaY_VtIt_straight;
-	map< int, TH2F* > m_histo_DeltaXDeltaY_VtIt_straight;
-
-	// TH1F* 
-	// TH1F* 
-	// TH2F* 
-
+	TH1F* m_histo_DeltaX_VtIt_straight[8];
+	TH1F* m_histo_DeltaY_VtIt_straight[8];
+	TH2F* m_histo_DeltaXDeltaY_VtIt_straight[8];
 	string m_kalmanOutputDir;
 
 	int m_moreThanOnePartPerCluster;
@@ -141,40 +133,3 @@ private:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -218,9 +218,10 @@ bool EventReader::check(){
 	it!=m_fragments.end(); ++it){
       bool ok = it->second->check();
       if( !ok ){
-	std::cout<<" Fragment "<<(std::hex)<<it->second->channelID
-		 <<" failed simple check"<<std::endl;
-	rccheck = false;
+        if( m_debugLevel>0)
+          std::cout<<" Fragment "<<(std::hex)<<it->second->channelID
+          <<" failed simple check"<<std::endl;
+         rccheck = false;
       }
     }
   } else {

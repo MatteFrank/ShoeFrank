@@ -10,7 +10,7 @@
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "BM_struct.h"
 #include "TH2.h"
 #include <fstream>

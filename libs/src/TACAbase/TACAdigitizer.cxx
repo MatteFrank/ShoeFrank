@@ -9,7 +9,7 @@
 #include "TACAdigitizer.hxx"
 
 
-Float_t TACAdigitizer::fgThreshold = 0; // MeV 
+Float_t TACAdigitizer::fgThreshold = 80; // MeV 
 
 // --------------------------------------------------------------------------------------
 TACAdigitizer::TACAdigitizer(TACAntuRaw* pNtuRaw)
@@ -88,7 +88,7 @@ Float_t TACAdigitizer::GetResEnergy(Float_t edep)
 }
 
 //___________________________________________________________________________________________
-Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/)
+Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
    if (edep < fgThreshold) {
       fCurrentHit = 0x0;

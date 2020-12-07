@@ -41,7 +41,7 @@ TAMSDdigitizer::~TAMSDdigitizer()
 
 //------------------------------------------+-----------------------------------
 //! fill pixel signal
-Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double_t zin, Double_t zout,  Double_t /*time*/, Int_t sensorId, Int_t /*Z*/)
+Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double_t zin, Double_t zout,  Double_t /*time*/, Int_t sensorId, Int_t /*Z*/, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
   if (fgSmearFlag) {
      Float_t dx = gRandom->Gaus(0, fgDefSmearPos*TAGgeoTrafo::MuToCm());

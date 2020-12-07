@@ -14,7 +14,7 @@
 #include "TAGroot.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
-#include "TABMparCon.hxx"
+#include "TABMparConf.hxx"
 #include "TABMdigitizer.hxx"
 #include "TAGgeoTrafo.hxx"
 
@@ -29,7 +29,8 @@ class TABMactNtuHitMC : public TAGaction {
                                     TAGdataDsc* dscntuEve = 0,
                                     TAGdataDsc* dscnturaw = 0,
                                     TAGparaDsc* dscbmcon  = 0,
-                                    TAGparaDsc* dscbmgeo  = 0);
+                                    TAGparaDsc* dscbmgeo  = 0,
+                                    EVENT_STRUCT* evStr   = 0);
 
     virtual         ~TABMactNtuHitMC();
 
@@ -47,6 +48,7 @@ class TABMactNtuHitMC : public TAGaction {
     TAGparaDsc*     fpParCon;		    // BM config params.
     TAGparaDsc*     fpParGeo;		    // BM geo params.
     TABMdigitizer*  fDigitizer;     // cluster size digitizer
+    EVENT_STRUCT*   fEventStruct;
 
     //histos
 

@@ -23,14 +23,19 @@ ClassImp(TACAactNtuMC);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TACAactNtuMC::TACAactNtuMC(const char* name, TAGdataDsc* p_datraw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
+TACAactNtuMC::TACAactNtuMC(const char* name, TAGdataDsc* p_datraw, TAGparaDsc* pGeoMap, TAGparaDsc* pGeoMapG, EVENT_STRUCT* evStr)
   : TAGaction(name, "TACAactNtuMC - NTuplize CA raw data"),
-    fpGeoMap(pGeoMap),
     fpNtuMC(p_datraw),
-    fpEvtStr(evStr),
-    fListOfParticles(0x0)
+    fpGeoMap(pGeoMap),
+    fpGeoMapG(pGeoMapG),
+    fpEvtStr(evStr)
 {
    AddDataOut(p_datraw, "TACAntuRaw");
+   AddPara(pGeoMap,"TACAparGeo");
+   AddPara(pGeoMapG,"TAGparGeo");
+
+   fpGeoTrafo  = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+
    CreateDigitizer();
 }
 
@@ -40,7 +45,6 @@ TACAactNtuMC::TACAactNtuMC(const char* name, TAGdataDsc* p_datraw, TAGparaDsc* p
 TACAactNtuMC::~TACAactNtuMC()
 {
    delete fDigitizer;
-   delete fListOfParticles;
 }
 
 
@@ -48,24 +52,14 @@ TACAactNtuMC::~TACAactNtuMC()
 //! Setup all histograms.
 void TACAactNtuMC::CreateHistogram()
 {
-   
    DeleteHistogram();
    
-   geoTrafo              = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   parGeo                = (TACAparGeo*) fpGeoMap->Object();
-   tagParGeo             = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+   TACAparGeo* parGeo   = (TACAparGeo*) fpGeoMap->Object();
+   TAGparGeo* tagParGeo = (TAGparGeo*)  fpGeoMapG->Object();;
 
    TGeoElementTable table;
    table.BuildDefaultElements();
    
-   //if you run only ReadCARawMC.C and not DecodeMC create a new TAGparaDsc
-   if(tagParGeo == NULL) {
-      TAGparaDsc *paradsc = new TAGparaDsc("gGeo", new TAGparGeo());
-      tagParGeo = (TAGparGeo*) paradsc->Object();
-      TString parFile = "./geomaps/TAGdetector.map";
-      tagParGeo->FromFile(parFile.Data());
-   }
-
    double energyBeam = tagParGeo->GetBeamPar().Energy; //*TAGgeoTrafo::GevToMev();
    int nNucleonBeam  = tagParGeo->GetBeamPar().AtomicMass;
 
@@ -79,12 +73,13 @@ void TACAactNtuMC::CreateHistogram()
    int nBinCry = calosize.X()/(2*heightback); 
 
    //printout
-   cout << "Number of crystals: " << nCrystal << endl;
-   cout << "nBinCry: " << nBinCry << endl;
-   cout << "x dim: " << -calosize.X()/2. << "  " << calosize.X()/2. << endl;
-   cout << "y dim: " << -calosize.Y()/2. << "  " << calosize.Y()/2. << endl;
-   cout << "Energy Beam: " << energyBeam << " GeV/n | "<< "  atomic number: " << nNucleonBeam << endl;
-
+   if (FootDebugLevel(1)) {
+      cout << "Number of crystals: " << nCrystal << endl;
+      cout << "nBinCry: " << nBinCry << endl;
+      cout << "x dim: " << -calosize.X()/2. << "  " << calosize.X()/2. << endl;
+      cout << "y dim: " << -calosize.Y()/2. << "  " << calosize.Y()/2. << endl;
+      cout << "Energy Beam: " << energyBeam << " GeV/n | "<< "  atomic number: " << nNucleonBeam << endl;
+   }
 
    // 0
    fpHisDeTotMc = new TH1F("caDeTotMc", "Energy deposition per event; Energy;", 1500, 0, energyBeam );
@@ -203,7 +198,6 @@ void TACAactNtuMC::CreateHistogram()
 
 
    SetValidHistogram(kTRUE);
-
 }
 
 
@@ -219,16 +213,9 @@ void TACAactNtuMC::CreateDigitizer()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-Bool_t TACAactNtuMC::Action(){  
-   
-   TGeoElementTable table;
-   table.BuildDefaultElements();
-
-   geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-
-   // Sum all energy dep. of the same particle
-   //TObject array of size of the particles created in one event
-   fListOfParticles = new TObjArray(fpEvtStr->TRn); 
+Bool_t TACAactNtuMC::Action()
+{
+   TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
 
    //clean the map
    fDigitizer->ClearMap();
@@ -254,16 +241,18 @@ Bool_t TACAactNtuMC::Action(){
       Float_t z0_f  = fpEvtStr->CALzout[i];      //final z position
       
       TVector3 posIn(x0_i, y0_i, z0_i);
-      TVector3 posInLoc = geoTrafo->FromGlobalToCALocal(posIn);
+      TVector3 posInLoc = fpGeoTrafo->FromGlobalToCALocal(posIn);
 
       TVector3 posOut(x0_f, y0_f, z0_f);
-      TVector3 posOutLoc = geoTrafo->FromGlobalToCALocal(posOut);
+      TVector3 posOutLoc = fpGeoTrafo->FromGlobalToCALocal(posOut);
 
-      fpHisHitMapXY    ->Fill(posInLoc.X(), posInLoc.Y());
-      fpHisHitMapZYin  ->Fill(posInLoc.Z(), posInLoc.Y());
-      fpHisHitMapZYout ->Fill(posOutLoc.Z(), posOutLoc.Y());
-      fpHisParticleVsRegion ->Fill(reg, z);
-   
+      if (ValidHistogram()) {
+         fpHisHitMapXY    ->Fill(posInLoc.X(), posInLoc.Y());
+         fpHisHitMapZYin  ->Fill(posInLoc.Z(), posInLoc.Y());
+         fpHisHitMapZYout ->Fill(posOutLoc.Z(), posOutLoc.Y());
+         fpHisParticleVsRegion ->Fill(reg, z);
+      }
+      
       // Fill fDigitizer with energy in MeV
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], posInLoc[2], posOutLoc[2], 0, cryId);
       TACAntuHit* hit = fDigitizer->GetCurrentHit();
@@ -281,6 +270,7 @@ Bool_t TACAactNtuMC::Action(){
 
       // Select Neutrons
       if (fluID == 8) {
+         if (ValidHistogram())
          fpHisNeutron_dE->Fill(edep); 
       }
 
@@ -299,12 +289,14 @@ Bool_t TACAactNtuMC::Action(){
             if (z == 1 && fluID != 1) continue;  // skip triton, deuteron
             if (z == 2 && fluID == -5) continue; // skip He3
 
-            fpHisIon_dE[z-1]        ->Fill(edep);
-            fpHisIon_Ek[z-1]        ->Fill(ek);
-            // // fpHisTime              ->Fill(time);
-            fpHisEnDepVsZ          ->Fill(z,edep);
-            fpHisRange             ->Fill(z0_f-z0_i);
-            fpHisRangeVsMass       ->Fill(z0_f-z0_i,mass);
+            if (ValidHistogram()) {
+               fpHisIon_dE[z-1]        ->Fill(edep);
+               fpHisIon_Ek[z-1]        ->Fill(ek);
+               // // fpHisTime              ->Fill(time);
+               fpHisEnDepVsZ          ->Fill(z,edep);
+               fpHisRange             ->Fill(z0_f-z0_i);
+               fpHisRangeVsMass       ->Fill(z0_f-z0_i,mass);
+            }
          }
 
          const char* flukaName = TAMCparTools::GetFlukaPartName(fluID);
@@ -319,10 +311,6 @@ Bool_t TACAactNtuMC::Action(){
    }
 
    fpNtuMC->SetBit(kValid);
-
-   if (!ValidHistogram()) {
-      return kTRUE;
-   }
 
    return kTRUE;
 }

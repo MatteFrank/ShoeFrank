@@ -407,7 +407,7 @@ private:
 public:
     TATOEchecker( TAGparGeo const * global_parameters_ph,
                   Action& action_p ) :
-        data_mhc{ static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc2" )->Object() ) },
+    data_mhc{ static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( TAMCntuEve::GetDefDataName() )->Object() ) },
         target_limits_m{ retrieve_target_limits( global_parameters_ph ) },
         action_m{action_p}
     {

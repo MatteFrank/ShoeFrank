@@ -8,6 +8,7 @@
 #include "TATWdatRaw.hxx"
 #include "TATWparCal.hxx"
 #include "TATWactNtuHitMC.hxx"
+#include "TAMCflukaParser.hxx"
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
@@ -31,7 +32,8 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
                                  TAGdataDsc* p_hitraw,
                                  TAGparaDsc* p_parcal,
                                  TAGparaDsc* p_parGeoG,
-				 Bool_t isZmc)
+                                 Bool_t isZmc,
+                                 EVENT_STRUCT* evStr)
  : TAGaction(name, "TATWactNtuHitMC - NTuplize ToF raw data"),
    fpNtuMC(p_ntuMC),
    fpNtuStMC(p_ntuStMC),
@@ -40,42 +42,40 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    fpCalPar(p_parcal),
    fParGeoG(p_parGeoG),
    fCnt(0),
-   fCntWrong(0)
+   fCntWrong(0),
+   fIsZtrueMC(isZmc),
+   fEventStruct(evStr)
 {
-   AddDataIn(p_ntuMC, "TAMCntuHit");
-   AddDataIn(p_ntuStMC, "TAMCntuHit");
-   AddDataIn(p_ntuEve, "TAMCntuEve");
-   
+   if (fEventStruct == 0x0) {
+     AddDataIn(p_ntuMC, "TAMCntuHit");
+     AddDataIn(p_ntuStMC, "TAMCntuHit");
+     AddDataIn(p_ntuEve, "TAMCntuEve");
+   } 
    AddDataOut(p_hitraw, "TATWntuRaw");
    AddPara(p_parcal,"TATWparCal");
    AddPara(p_parGeoG,"TAGparGeo");
    
    CreateDigitizer();
-
+   
    if( fIsZtrueMC ) {
-     
-     fDigitizer->SetMCtrue();
-     fDigitizer->SetPileUpOff();
-     
+      fDigitizer->SetMCtrue();
+      fDigitizer->SetPileUpOff();
    }
-
+   
    if(fDigitizer->IsPileUpOff())
-     Warning("TATWactNtuMC","Pile Up Off only for gloabal and ZID algorithm debug purposes...if is not the case remove the flag -zmc or check in TATWdigitizer.cxx constructor and set fPileUpOff(false)");
+      Warning("TATWactNtuMC","Pile Up Off only for gloabal and ZID algorithm debug purposes...if is not the case remove the flag -zmc or check in TATWdigitizer.cxx constructor and set fPileUpOff(false)");
    
    
    f_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    
-   f_pargeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+   f_pargeo = (TAGparGeo*)fParGeoG->Object();
    
-   // TAGparGeo* pGeoMap  = (TAGparGeo*) fParGeoG->Object();
-   // fZbeam = pGeoMap->GetBeamPar().AtomicNumber;
    fZbeam = f_pargeo->GetBeamPar().AtomicNumber;
    
    fMapPU.clear();
    fVecPuOff.clear();
-
-   f_parcal = (TATWparCal*)fpCalPar->Object();
-
+   
+   f_parcal = (TATWparCal*)fpCalPar->Object();  
 }
 
 //------------------------------------------+-----------------------------------
@@ -175,10 +175,21 @@ bool TATWactNtuHitMC::Action() {
    
    if(FootDebugLevel(1))
      cout << "TATWactNtuHitMC::Action() start" << endl;
-   
-   TAMCntuHit* pNtuMC   = (TAMCntuHit*) fpNtuMC->Object();
-   TAMCntuHit* pNtuStMC = (TAMCntuHit*) fpNtuStMC->Object();
-
+  
+   TAMCntuHit* pNtuMC   = 0x0;
+   TAMCntuHit* pNtuStMC = 0x0;
+   TAMCntuEve* pNtuEve  = 0x0;
+  
+  if (fEventStruct == 0x0) {
+    pNtuMC   = (TAMCntuHit*) fpNtuMC->Object();
+    pNtuStMC = (TAMCntuHit*) fpNtuStMC->Object();
+    pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
+  } else {
+    pNtuMC   = TAMCflukaParser::GetTofHits(fEventStruct, fpNtuMC);
+    pNtuStMC = TAMCflukaParser::GetStcHits(fEventStruct, fpNtuStMC);
+    pNtuEve  = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
+  }
+  
    //The number of hits inside the Start Counter is stn
    if(FootDebugLevel(1))
      cout << "Processing n Scint " << pNtuMC->GetHitsN() << endl;
@@ -200,105 +211,106 @@ bool TATWactNtuHitMC::Action() {
       TVector3 posIn(hitMC->GetInPosition());
       TVector3 posOut(hitMC->GetOutPosition());
       
-      Int_t layer   = hitMC->GetLayer();    // layers 0 (y-bars) and 1 (x-bars)
+      Int_t layer   = hitMC->GetView();    // layers 0 (y-bars) and 1 (x-bars)
       Int_t barId   = hitMC->GetBarId();
       Int_t trackId = hitMC->GetTrackIdx()-1;
+      Float_t x0    = posIn.X();
+      Float_t y0    = posIn.Y();
       Float_t z0    = posIn.Z();
       Float_t z1    = posOut.Z();
       Float_t edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();
       Float_t time  = hitMC->GetTof()*TAGgeoTrafo::SecToPs();
       // get true charge
-      TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
       TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
       Int_t  Z = track->GetCharge();
       
       Float_t trueTof = (time - timeST)*TAGgeoTrafo::PsToNs();  //ns
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(1)>0)
          printf("\n timeTW::%f timeST::%f tof::%f\n",time,timeST,trueTof);
       
-      time -= timeST;  // tof TW-SC to be digitized in ps
+      time -= timeST;  // ToF TW-SC to be digitized in ps
       
-      TVector3 posInLoc = f_geoTrafo->FromGlobalToTWLocal(posIn);
+      TVector3 posInV(x0, y0, z0);
+      TVector3 posInLoc = f_geoTrafo->FromGlobalToTWLocal(posInV);
       
       if(FootDebugLevel(1)>0) {
-	cout<<layer<<endl;
-	cout<<posIn.x()<<" "<<posIn.y()<<" "<<posIn.z()<<" "<<endl;
-	cout<<posInLoc.x()<<" "<<posInLoc.y()<<" "<<posInLoc.z()<<" "<<endl;
-	cout<<""<<endl;
+         cout<<layer<<endl;
+         cout<<posIn.x()<<" "<<posIn.y()<<" "<<posIn.z()<<" "<<endl;
+         cout<<posInLoc.x()<<" "<<posInLoc.y()<<" "<<posInLoc.z()<<" "<<endl;
+         cout<<""<<endl;
       }
       
       double truePos = 0;
       if( layer == (Int_t)LayerY )  // layer 0 --> vertical bar
-	truePos = posInLoc.Y(); 
+         truePos = posInLoc.Y();
       else if( layer == (Int_t)LayerX )  // layer 1 --> horizontal bar
-	truePos = posInLoc.X();
+         truePos = posInLoc.X();
       
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(1)>0)
          cout<<"trueEloss::"<<edep<<" trueTof::"<<trueTof<<" truePos::"<<truePos<<endl;
       
       if(fDigitizer->IsMCtrue()) {  // only for ZID algorithm debug purposes
          
-         TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
-         TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
          Int_t mothId = track->GetMotherID()-1;
-         
+
          Float_t distZ_MC[fZbeam]; //inf
          
-         Int_t Zrec_MCtrue;
-         // test algorithm in MC in a clean situation: only primary fragmentation
-         if( mothId>0) {
-            Zrec_MCtrue=-1.; //set Z to nonsense value
-            if(FootDebugLevel(1)) printf("the energy released is %f MeV (tof %.f ns) so Zraw is set to %d\n",edep,trueTof,Zrec_MCtrue);
-         } else
-            Zrec_MCtrue = f_parcal->GetChargeZ(edep,trueTof,layer);
-         
-         for(int iZ=1; iZ<fZbeam+1; iZ++)
-            distZ_MC[iZ-1]= f_parcal->GetDistBB(iZ);
-         
-         if (ValidHistogram()) {
-            fpHisZID_MCtrue->Fill(Zrec_MCtrue,Z);
+         if (!fIsZtrueMC) {
+            Int_t Zrec_MCtrue;
+            // test algorithm in MC in a clean situation: only primary fragmentation
+            if( mothId>0) {
+               Zrec_MCtrue=-1.; //set Z to nonsense value
+               if(FootDebugLevel(1) > 0) printf("the energy released is %f MeV (tof %.f ns) so Zraw is set to %d\n",edep,trueTof,Zrec_MCtrue);
+            } else
+               Zrec_MCtrue = f_parcal->GetChargeZ(edep,trueTof,layer);
             
-            fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
+            for(int iZ=1; iZ<fZbeam+1; iZ++)
+              distZ_MC[iZ-1]= f_parcal->GetDistBB(iZ);
             
-            if( Zrec_MCtrue>0 && Zrec_MCtrue < fZbeam+1 )
-               fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(trueTof,edep);
-            
-            fpHisRecPosMc->Fill(truePos);
-            fpHisRecTofMc->Fill(trueTof);
-            
-            for(int iZ=1; iZ < fZbeam+1; iZ++) {
-               
-               if(iZ==1) {
-                  if(iZ==Zrec_MCtrue)
-                     fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+           if (ValidHistogram()) {
+               fpHisZID_MCtrue->Fill(Zrec_MCtrue,Z);
+
+               fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
+
+               if( Zrec_MCtrue>0 && Zrec_MCtrue < fZbeam+1 )
+                  fpHisElossTof_MC[Zrec_MCtrue-1]->Fill(trueTof,edep);
+
+               fpHisRecPosMc->Fill(truePos);
+               fpHisRecTofMc->Fill(trueTof);
+
+               for(int iZ=1; iZ < fZbeam+1; iZ++) {
+
+                  if(iZ==1) {
+                     if(iZ==Zrec_MCtrue)
+                        fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+                     else
+                        fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
+                  }
                   else
-                     fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
+                     fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+
                }
-               else
-                  fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
-               
+
             }
-            
-         }
-         
-         if(FootDebugLevel(1)) {
-            if(Zrec_MCtrue>0 && Z>0) {
-               fCnt++;
-               if(Zrec_MCtrue!=Z) {
-                  cout<<"Hit MC n::"<<fCnt<<endl;
-                  printf("layer::%d bar::%d\n", layer,  hitMC->GetBarId());
-                  fCntWrong++;
-                  cout<<"edep::"<<edep<<"  trueTof::"<<trueTof<<endl;
-                  cout<<"Zrec::"<<Zrec_MCtrue<<"  Z_MC::"<<Z<<endl;
-                  printf("Z wrong/(Zrec>0) :: %d/%d\n",fCntWrong,fCnt);
+           
+            if(FootDebugLevel(1) > 0) {
+               if(Zrec_MCtrue>0 && Z>0) {
+                  fCnt++;
+                  if(Zrec_MCtrue!=Z) {
+                     cout<<"Hit MC n::"<<fCnt<<endl;
+                     printf("layer::%d bar::%d\n", layer,  hitMC->GetBarId());
+                     fCntWrong++;
+                     cout<<"edep::"<<edep<<"  trueTof::"<<trueTof<<endl;
+                     cout<<"Zrec::"<<Zrec_MCtrue<<"  Z_MC::"<<Z<<endl;
+                     printf("Z wrong/(Zrec>0) :: %d/%d\n",fCntWrong,fCnt);
+                  }
                }
             }
          }
       }
       
-      
       if ( FootDebugLevel(1)> 0 )
-	printf("layer::%d bar::%d\n", layer, barId);
+         printf("layer::%d bar::%d\n", layer, barId);
       
       // if bar is dead in data skip it
       if(!f_parcal->IsTWbarActive(layer,barId)) continue;
@@ -313,11 +325,11 @@ bool TATWactNtuHitMC::Action() {
       fMapPU[barId] = hit;
       
       fVecPuOff.push_back(hit);
-
-      if(hit->GetChargeZ()>0 && hit->GetChargeZ()<fZbeam+1)
-	fpHisResPos[hit->GetChargeZ()-1]->Fill(hit->GetPosition()-truePos);
-
       
+      if (ValidHistogram()) {
+         if(hit->GetChargeZ()>0 && hit->GetChargeZ()<fZbeam+1)
+            fpHisResPos[hit->GetChargeZ()-1]->Fill(hit->GetPosition()-truePos);
+      }
    }
    
    
@@ -328,42 +340,47 @@ bool TATWactNtuHitMC::Action() {
          
          TATWntuHit* hit = *it;
          
-	 Int_t layer = hit->GetLayer();
-	 Int_t bar = hit->GetBar();
-	 
-	 // get Eloss threshold from configuration file
-	 Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
-	 
+         Int_t layer = hit->GetLayer();
+         Int_t bar = hit->GetBar();
+         
+         // get Eloss threshold from configuration file
+         Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
+         
          Double_t recEloss = hit->GetEnergyLoss(); // MeV
          Double_t recTof   = hit->GetTime();       // ns
          Double_t recPos   = hit->GetPosition();   // cm
          
          Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
          
-         if(FootDebugLevel(1))
+         if(FootDebugLevel(1)>0)
             cout<<"recEloss::"<<recEloss<<" recTof::"<<recTof<<" recPos::"<<recPos<<endl;
          
-	 if(!fDigitizer->IsOverEnergyThreshold(Ethr,recEloss)) {
-	   if(FootDebugLevel(1) > 0)
-	     printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());     
-	   
-	   recEloss=-99.; //set energy to nonsense value
-	   hit->SetEnergyLoss(recEloss);	
-	 }       
-	 
-	 Int_t Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
-         hit->SetChargeZ(Zrec);
-	 if(fIsZtrueMC)
-	   hit->SetChargeZ(Z);
+         if(!fDigitizer->IsOverEnergyThreshold(Ethr,recEloss)) {
+            if(FootDebugLevel(1) > 0)
+               printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());
+            
+            recEloss=-99.; //set energy to nonsense value
+            hit->SetEnergyLoss(recEloss);
+         }
          
-	 if(FootDebugLevel(1)>0 && Z!=Zrec)
-	   cout<<"set Z::"<<hit->GetChargeZ()<<"  Ztrue::"<<Z<<"  Zrec::"<<Zrec<<endl;
-	 
-	 Float_t distZ[fZbeam];
-         for(int iZ=1; iZ<fZbeam+1; iZ++)
-            distZ[iZ-1]= f_parcal->GetDistBB(iZ);
+         Int_t Zrec = -2;
+         Float_t distZ[fZbeam];
          
-         if(FootDebugLevel(1)) {
+         if(fIsZtrueMC)
+            hit->SetChargeZ(Z);
+         else {
+            Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
+            hit->SetChargeZ(Zrec);
+            for(int iZ=1; iZ<fZbeam+1; iZ++)
+               distZ[iZ-1]= f_parcal->GetDistBB(iZ);
+            
+         }
+         
+         if(FootDebugLevel(1)>0 && Z!=Zrec)
+            cout<<"set Z::"<<hit->GetChargeZ()<<"  Ztrue::"<<Z<<"  Zrec::"<<Zrec<<endl;
+         
+         
+         if(FootDebugLevel(1) > 0) {
             
             if(!fDigitizer->IsMCtrue()) {  // only for ZID algorithm debug purposes
                if(Zrec>0 && Z>0) {
@@ -403,42 +420,42 @@ bool TATWactNtuHitMC::Action() {
          }
       }
       
-   }  else {
+   }  else {  // full MC reconstructed (pile-up included)
       
       
       for(auto it=fMapPU.begin(); it !=fMapPU.end(); ++it) {
          
          TATWntuHit* hit = it->second;
          
-	 Int_t layer = hit->GetLayer();
-	 Int_t bar = hit->GetBar();
-	 
-	 // get Eloss threshold from configuration file
-	 Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
-	 
-	 Double_t recEloss = hit->GetEnergyLoss(); // MeV
+         Int_t layer = hit->GetLayer();
+         Int_t bar = hit->GetBar();
+         
+         // get Eloss threshold from configuration file
+         Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
+         
+         Double_t recEloss = hit->GetEnergyLoss(); // MeV
          Double_t recTof   = hit->GetTime();       // ns
          Double_t recPos   = hit->GetPosition();   // cm
          
          Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
          
-         if(FootDebugLevel(1))
-	   cout<<"Ethr::"<<Ethr<<" recEloss::"<<recEloss<<" recTof::"<<recTof<<" tof::"<<hit->GetToF()<<" recPos::"<<recPos<<endl;
-	 
-	 if(!fDigitizer->IsOverEnergyThreshold(Ethr,recEloss)) {
-	   if(FootDebugLevel(1) > 0)
-	     printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());     
-	   
-	   recEloss=-99.; //set energy to nonsense value
-	   hit->SetEnergyLoss(recEloss);	
-	 }       
+         if(FootDebugLevel(1)>0)
+            cout<<"Ethr::"<<Ethr<<" recEloss::"<<recEloss<<" recTof::"<<recTof<<" tof::"<<hit->GetToF()<<" recPos::"<<recPos<<endl;
+         
+         if(!fDigitizer->IsOverEnergyThreshold(Ethr,recEloss)) {
+            if(FootDebugLevel(1) > 0)
+               printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());
+            
+            recEloss=-99.; //set energy to nonsense value
+            hit->SetEnergyLoss(recEloss);
+         }
          
          Int_t Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
          hit->SetChargeZ(Zrec);
          
-	 if(FootDebugLevel(1)>0) cout<<"rec Z::"<<Zrec<<endl;
-	 
-	 Float_t distZ[fZbeam];
+         if(FootDebugLevel(1)>0) cout<<"rec Z::"<<Zrec<<endl;
+         
+         Float_t distZ[fZbeam];
          for(int iZ=1; iZ<fZbeam+1; iZ++)
             distZ[iZ-1]= f_parcal->GetDistBB(iZ);
          
@@ -467,10 +484,12 @@ bool TATWactNtuHitMC::Action() {
       }
    }
    
-   
+   if (fEventStruct != 0x0) {
+     fpNtuMC->SetBit(kValid);
+     fpNtuStMC->SetBit(kValid);
+     fpNtuEve->SetBit(kValid);
+   }
    fpNtuRaw->SetBit(kValid);
    
-   
    return true;
-   
 }

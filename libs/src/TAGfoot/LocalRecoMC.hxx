@@ -37,7 +37,7 @@ class LocalRecoMC : public BaseReco
 {
 public:
    //! default constructor
-   LocalRecoMC(TString expName = "", TString fileNameIn = "", TString fileNameout = "");
+   LocalRecoMC(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~LocalRecoMC();
    
@@ -58,9 +58,6 @@ public:
    
    //! Close File in
    virtual void CloseFileIn();
-
-   //! Loop events
-   virtual void LoopEvent(Int_t nEvents);
    
    //! Set run number
    void   SetRunNumber();
@@ -114,10 +111,8 @@ protected:
    TAMCactNtuTof*        fActNtuMcTw;
    TAMCactNtuCal*        fActNtuMcCa;
 
-   
    TTree*                fTree;         // tree for MC
-   TFile*                fActEvtReader; // file for MC
-   
+
    ClassDef(LocalRecoMC, 1); // Base class for event display
 };
 

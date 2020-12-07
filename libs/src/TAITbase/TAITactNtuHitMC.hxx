@@ -10,6 +10,7 @@
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
+#include "Evento.hxx"
 
 #include "TAITdigitizerE.hxx"
 
@@ -22,7 +23,7 @@ class TAITntuRaw;
 class TAITactNtuHitMC : public TAVTactBaseNtuMC {
 
 public:
-   explicit TAITactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0);
+   explicit TAITactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0, EVENT_STRUCT* evStr = 0);
 
    virtual ~TAITactNtuHitMC() {};
    
@@ -37,6 +38,7 @@ private:
    TAGdataDsc*    fpNtuMC;          // input data dsc
    TAGdataDsc*    fpNtuEve;         // input eve track dsc
    TAGdataDsc*    fpNtuRaw;		   // output data dsc
+   EVENT_STRUCT*  fEventStruct;
    map<pair<int,int>, TAITntuHit*> fMap;      //! map for pilepup
 
 private:

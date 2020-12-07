@@ -49,6 +49,7 @@
 #include <vector>
 
 #include <TMath.h>
+#include <TFile.h>
 
 #include "TAGparGeo.hxx"
 
@@ -78,15 +79,14 @@
 #include "TAGparaDsc.hxx"
 
 #include "GlobalPar.hxx"
-#include "ControlPlotsRepository.hxx"
 #include "GlobalTrackRepostory.hxx"
-#include "MagicSkills.hxx"
 #include "UpdatePDG.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <limits>
 
+#include "TAGaction.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
@@ -110,12 +110,12 @@ using namespace genfit;
 
 typedef vector<genfit::AbsMeasurement*> MeasurementVector;
 
-class KFitter {
+class KFitter : public TAGaction {
 
 public:
 
 
-  KFitter();
+  KFitter(const char* name);
   ~KFitter() {
     delete m_fitter;
   };
@@ -133,21 +133,26 @@ public:
     TVector3 MCMomentum;
   };
 
+  //! Action
+  bool Action();
+
+  //! create histogram
+  void   CreateHistogram();
 
   // int PrepareData4Fit( string option );
-  int PrepareData4Fit( Track* fitTrack );
-  int PrepareData4Fit_dataLike( Track* fitTrack );
+  int PrepareData4Fit();
+  int PrepareData4Fit_dataLike();
 
   void Prepare4Vertex( TAVTcluster* clus, int track_ID, int iHit );
-  void Prepare4Vertex( Track* fitTrack );
+  void Prepare4Vertex();
 
-  void Prepare4InnerTracker( Track* fitTrack );
+  void Prepare4InnerTracker();
   void Prepare4InnerTracker( TAITcluster* clus, int track_ID, int iHit );
 
-  void Prepare4Strip( Track* fitTrack );
+  void Prepare4Strip();
   void Prepare4Strip(TVector3 pos, int track_ID, int iHit );
 
-  void Prepare4TofWall( Track* fitTrack );
+  void Prepare4TofWall();
 
   bool PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element );
 
@@ -175,7 +180,7 @@ public:
 
   int UploadHitsVT();
   int UploadHitsIT();
-  //  int UploadHitsMSD();
+  int UploadHitsMSD();
   int UploadHitsTW();
 
   int UploadClusVT();
@@ -213,11 +218,19 @@ public:
 
   int GetChargeFromTW(Track* trackToCheck);
   TVector3 ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane );
-  void CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum);
+  bool CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum, double MCEveMass, int chargeFromTofWall);
   TVector3 ExtrapolateToTofWall( Track* trackToFit );
 
+  int GetTWTrackFixed (TATWpoint* pointToCheck);
 
+  void RecordTrackInfoDataLike( Track* trackToRecord, int tCharge, string particlename );
+  void GetKalmanTrackInfoDataLike ( int indexOfState, Track* track,
+    const TVectorD* KalmanState, const TMatrixDSym* KalmanCov);
 
+  genfit::KalmanFittedStateOnPlane GetKalmanTrackInfoDataLike_ ( int indexOfState, Track* track );
+
+private:
+  vector<string> Tokenize(const string str, const string delimiters);
 
 private:
 
@@ -233,7 +246,6 @@ private:
   EventDisplay* display;
   bool m_IsEDOn;
 
-  ControlPlotsRepository* m_controlPlotter;
   GlobalTrackRepostory* m_fitTrackCollection;
 
   // TRandom3* m_diceRoll;
@@ -300,13 +312,8 @@ private:
   map<int, genfit::SharedPlanePtr> m_detectorPlanes;
 
   //temporary placeholder for trackfinding histos and graphs
-  vector<TGraph*> zxGraph;
-  vector<TGraph*> zyGraph;
   TGraphErrors* graphErrorX;
-  vector<TH2F*> houghH;
   TGraphErrors* graphErrorY;
-  TH2D* histoTrackParamX;
-  TH2D* histoTrackParamY;
 
   TH2D* MSDresidualOfPrediction;
   TH2D* ITresidualOfPrediction;
@@ -314,16 +321,22 @@ private:
   TH1D* tempPurity;
   TH1D* qoverp;
   TH1D* qoverpsel;
+  TH1I* ITstudy;
+  TH1I* MSDstudy;
 
+
+  TH1D* momentum_true[8];
+  TH1D* momentum_reco[8];
+  TH1D* ratio_reco_true[8];
+
+  TFile* outfile;
   int MSDforwardcounter;
+
+  std::vector<Track*> m_vectorTrack;
 
   std::ofstream ofs;
 
-
+  ClassDef(KFitter, 0);
 };
-
-
-
-
 
 #endif

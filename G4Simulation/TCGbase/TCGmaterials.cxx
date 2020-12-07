@@ -101,8 +101,8 @@ G4Material* TCGmaterials::CreateG4Mixture(TString formula, const TString densiti
 
     /// If TGeoMixture not defined, create G4Material
     vector<TString> listMat = GetStrings(formula);
-    Float_t compDensity[listMat.size()];
-    Float_t compProp[listMat.size()];
+    Float_t* compDensity    = new Float_t[listMat.size()];
+    Float_t* compProp       = new Float_t[listMat.size()];
 
     GetCoeff(densities, compDensity, listMat.size());
     GetCoeff(prop, compProp, listMat.size());
@@ -125,6 +125,9 @@ G4Material* TCGmaterials::CreateG4Mixture(TString formula, const TString densiti
         g4mat->AddMaterial(g4subMat,compProp[i]);
     }
 
+    delete[] compDensity;
+    delete[] compProp;
+   
     return g4mat;
 }
 
