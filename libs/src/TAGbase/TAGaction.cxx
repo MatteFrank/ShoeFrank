@@ -355,9 +355,9 @@ Bool_t TAGaction::CheckDependencies()
       TAGdataDsc* p = (TAGdataDsc*) lnk->GetObject();
       if (!p->Valid()) p->Generate();
       if (!p->Valid()) {
-	if (p->Eof())  b_noeof  = kFALSE;
-	if (p->Fail()) b_nofail = kFALSE;
-	b_allvalid = kFALSE;
+        if (p->Eof())  b_noeof  = kFALSE;
+        if (p->Fail()) b_nofail = kFALSE;
+        b_allvalid = kFALSE;
       }
     }
 
