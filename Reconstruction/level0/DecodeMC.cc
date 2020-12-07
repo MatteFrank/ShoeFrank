@@ -39,6 +39,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
+         cout<<"      -test          : enable new readout of fluka structure (tmp flag)"<<endl;
          return 1;
       }
    }
