@@ -23,11 +23,7 @@ void GlobalRecoMC::BeforeEventLoop()
 {
 	LocalRecoMC::BeforeEventLoop();
 
-	TADIparGeo* fDipole = GetParGeoDi();
-	//if (!fDipole) std::cout << "WARNING NO MAG FIELD LOADED" << std::endl;
-	TString magFieldMapName = fDipole->GetMapName();
-
-	genfit::FieldManager::getInstance()->init( new FootField(magFieldMapName.Data(), fDipole ) );
+	genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
 
 	// set material and geometry into genfit
 	MaterialEffects* materialEffects = MaterialEffects::getInstance();
