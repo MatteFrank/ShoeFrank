@@ -23,7 +23,6 @@
 #include "TAGroot.hxx"
 
 #include "GlobalPar.hxx"
-#include "FootField.hxx"
 #include <FieldManager.h>
 
 #include "TAGcampaignManager.hxx"
