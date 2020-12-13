@@ -180,8 +180,9 @@ Float_t TADItrackEmProperties::GetPCC(Float_t energy, Float_t massNumber)
 Float_t TADItrackEmProperties::GetBeta(Float_t energy)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
-   Float_t beta    = TMath::Sqrt(1.0 - (1/(energy/massFac +1.0))*(1/(energy/massFac +1.0)));
-   
+   Float_t gamma   = 1.0 + energy/massFac;
+   Float_t beta    = TMath::Sqrt(1.0 - 1/(gamma*gamma));
+  
    return beta;
 }
 
