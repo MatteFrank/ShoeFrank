@@ -42,11 +42,10 @@ TADItrackEmProperties::~TADItrackEmProperties()
 //_____________________________________________________________________________
 //
 // Calculation of the WEPL of the material layer
-Float_t TADItrackEmProperties::GetWEPL(const TString& mat, Float_t thickness)
+Float_t TADItrackEmProperties::GetFacWEPL(const TString& mat)
 {
    Float_t factor = 0;
-   Float_t waterEq = 0;
-   
+  
    TString material(mat);
    
    material.ToUpper();
@@ -65,9 +64,8 @@ Float_t TADItrackEmProperties::GetWEPL(const TString& mat, Float_t thickness)
    	  factor = 3.136600294;
    } else Warning("GetWEPL()","Material is not in the list.... Candidates: Air, Si, C, PMMA, H2O, Ti");
    
-   waterEq = thickness * factor;
 
-   return waterEq;
+   return factor;
 }
 
 //_____________________________________________________________________________
@@ -108,7 +106,7 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
    // R = alpha*Energy^(pFactor)
-   Float_t WEPL    = GetWEPL(mat, thickness);
+   Float_t WEPL    = GetFacWEPL(mat)*thickness;
    Float_t alpha   = 0.0022;
    Float_t pfactor = 1.;
    
@@ -130,6 +128,32 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
    }
    
    return dE;
+}
+
+//_____________________________________________________________________________
+//
+// Calculation of the energy loss in the material layer (thickness in [cm])
+Float_t TADItrackEmProperties::GetRange(const TString& mat, Float_t energy, Float_t Abeam, Int_t Zbeam)
+{
+  // rage formula Bortfeld et al, PMB 41 (1996)
+  // R = alpha*Energy^(pFactor)
+  Float_t alpha   = 0.0022;
+  Float_t pfactor = 1.;
+  Float_t facWEPL = GetFacWEPL(mat);
+
+  
+  if (energy < 250){
+    pfactor = 1.77;
+  } else if ((energy >= 250) && (energy < 400)){
+    pfactor = 1.76;
+  } else {
+    pfactor = 1.75;
+  }
+  
+  Float_t rangeW = (Abeam / (Zbeam*Zbeam) * alpha * TMath::Power(energy, pfactor));
+
+  
+  return rangeW*facWEPL;
 }
 
 //_____________________________________________________________________________
