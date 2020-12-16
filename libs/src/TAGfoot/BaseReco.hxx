@@ -32,6 +32,7 @@
 #include "TADIgenField.hxx"
 #include "TADIgeoField.hxx"
 
+#include "TABMparCal.hxx"
 #include "TATWparCal.hxx"
 #include "TATWparMap.hxx"
 
@@ -259,6 +260,7 @@ protected:
    TAGparaDsc*           fpParGeoCa;
    
    TAGparaDsc*           fpParCalTw;
+   TAGparaDsc*           fpParCalBm;
    
    TAGparaDsc*           fpParConfBm;
    TAGparaDsc*           fpParConfVtx;

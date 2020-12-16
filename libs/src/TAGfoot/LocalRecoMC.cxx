@@ -55,7 +55,7 @@ void LocalRecoMC::CreateRawAction()
    
    if (GlobalPar::GetPar()->IncludeBM()) {
       fpNtuRawBm = new TAGdataDsc("bmRaw", new TABMntuRaw());
-      fActNtuRawBm = new TABMactNtuMC("bmActNtu", fpNtuRawBm, fpParConfBm, fpParGeoBm, fEvtStruct);
+      fActNtuRawBm = new TABMactNtuMC("bmActNtu", fpNtuRawBm, fpParConfBm, fpParCalBm, fpParGeoBm, fEvtStruct);
       if (fFlagHisto)
          fActNtuRawBm->CreateHistogram();
       

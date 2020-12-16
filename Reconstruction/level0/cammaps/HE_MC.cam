@@ -17,9 +17,10 @@ NumberFiles: 2
 "./config/HE_MC/TASTdetector.cfg": -1
 
 DetectorName: "BM"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/HE_MC/TABMdetector.geo": -1
 "./config/HE_MC/TABMdetector.cfg": -1
+"./calib/HE_MC/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1

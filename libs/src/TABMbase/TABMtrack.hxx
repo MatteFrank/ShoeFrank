@@ -5,7 +5,6 @@
 
 #include "TAGgeoTrafo.hxx"
 #include "TABMparGeo.hxx"
-#include "TABMparConf.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 

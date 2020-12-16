@@ -18,10 +18,10 @@ class TABMactVmeReader : public TAGaction {
   public:
 
     explicit        TABMactVmeReader(const char* name=0,
-                                  TAGdataDsc* p_datraw=0,
-                                  TAGparaDsc* p_parmap=0,
-                                  TAGparaDsc* p_parcon=0,
-                                  TAGparaDsc* p_pargeo=0);
+                                  TAGdataDsc* dscdatraw=0,
+                                  TAGparaDsc* dscbmmap=0,
+                                  TAGparaDsc* dscbmcal=0,
+                                  TAGparaDsc* dscbmgeo=0);
                                   // TAGdataDsc* p_timraw=0);
     virtual         ~TABMactVmeReader();
     virtual Int_t   Open(const TString& name);
@@ -43,7 +43,7 @@ class TABMactVmeReader : public TAGaction {
     TAGdataDsc*     fpDatRaw;		    // output data dsc
     // TAGdataDsc*     fpTimRaw;		    // output data dsc
     TAGparaDsc*     fpParMap;		    // parameter dsc
-    TAGparaDsc*     fpParCon;		    // parameter dsc
+    TAGparaDsc*     fpParCal;		    // parameter dsc
     TAGparaDsc*     fpParGeo;		    // parameter dsc
     BM_struct*      fpEvtStruct;
     ifstream        fbmfile;        //bm raw file

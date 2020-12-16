@@ -52,6 +52,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParGeoMsd(0x0),
    fpParGeoTw(0x0),
    fField(0x0),
+   fpParCalBm(0x0),
    fpParCalTw(0x0),
    fpParGeoCa(0x0),
    fpParConfBm(0x0),
@@ -385,10 +386,12 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TABMparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
       
-      if(!fFlagMC){
-        parFileName = fCampManager->GetCurCalFile(TABMparGeo::GetBaseName(), fRunNumber);
-        parConf->loadT0s(parFileName);
+      fpParCalBm = new TAGparaDsc("bmCal", new TABMparCal());
+      TABMparCal* parCal = (TABMparCal*)fpParCalBm->Object();
+      parFileName = fCampManager->GetCurCalFile(TABMparGeo::GetBaseName(), fRunNumber);
+      parCal->FromFile(parFileName.Data());
       
+      if(!fFlagMC){      
         fpParMapBm = new TAGparaDsc("bmMap", new TABMparMap());
         TABMparMap*  parMapBm = (TABMparMap*)fpParMapBm->Object();
         parFileName = fCampManager->GetCurMapFile(TABMparGeo::GetBaseName(), fRunNumber);
@@ -571,7 +574,7 @@ void BaseReco::CreateRecActionBm()
      if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
      fpNtuTrackBm = new TAGdataDsc("bmTrack", new TABMntuTrack());
 
-     fActTrackBm  = new TABMactNtuTrack("bmActTrack", fpNtuTrackBm, fpNtuRawBm, fpParGeoBm, fpParConfBm, fpParGeoG);
+     fActTrackBm  = new TABMactNtuTrack("bmActTrack", fpNtuTrackBm, fpNtuRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
       if (fFlagHisto)
          fActTrackBm->CreateHistogram();
    }

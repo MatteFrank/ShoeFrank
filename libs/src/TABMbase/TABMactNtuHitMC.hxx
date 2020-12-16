@@ -15,6 +15,7 @@
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 #include "TABMparConf.hxx"
+#include "TABMparCal.hxx"
 #include "TABMdigitizer.hxx"
 #include "TAGgeoTrafo.hxx"
 
@@ -29,6 +30,7 @@ class TABMactNtuHitMC : public TAGaction {
                                     TAGdataDsc* dscntuEve = 0,
                                     TAGdataDsc* dscnturaw = 0,
                                     TAGparaDsc* dscbmcon  = 0,
+                                    TAGparaDsc* dscbmcal  = 0,
                                     TAGparaDsc* dscbmgeo  = 0,
                                     EVENT_STRUCT* evStr   = 0);
 
@@ -46,6 +48,7 @@ class TABMactNtuHitMC : public TAGaction {
     TAGdataDsc*     fpNtuEve;       // input eve track dsc
     TAGdataDsc*     fpNtuRaw;		    // output data dsc
     TAGparaDsc*     fpParCon;		    // BM config params.
+    TAGparaDsc*     fpParCal;		    // BM calibration params.
     TAGparaDsc*     fpParGeo;		    // BM geo params.
     TABMdigitizer*  fDigitizer;     // cluster size digitizer
     EVENT_STRUCT*   fEventStruct;
