@@ -17,9 +17,10 @@ NumberFiles: 2
 "./config/TASTdetector.cfg": -1
 
 DetectorName: "BM"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/TABMdetector.geo": -1
 "./config/TABMdetector.cfg": -1
+"./calib/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1

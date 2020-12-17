@@ -20,17 +20,20 @@ ClassImp(TABMactNtuMC);
 TABMactNtuMC::TABMactNtuMC(const char* name,
 			   TAGdataDsc* dscnturaw,
 			   TAGparaDsc* dscbmcon,
+			   TAGparaDsc* dscbmcal,
 			   TAGparaDsc* dscbmgeo,
 			   EVENT_STRUCT* evStr)
   : TAGaction(name, "TABMactNtuMC - NTuplize BM raw data"),
     fpNtuMC(dscnturaw),
     fpParCon(dscbmcon),
+    fpParCal(dscbmcal),
     fpParGeo(dscbmgeo),
     fpEvtStr(evStr)
 {
  if (FootDebugLevel(1))
    cout<<"TABMactNtuMC::default constructor::Creating the Beam Monitor MC tuplizer action"<<endl;
  AddPara(fpParCon, "TABMparConf");
+ AddPara(fpParCal, "TABMparCal");
  AddPara(fpParGeo, "TABMparGeo");
  AddDataOut(fpNtuMC, "TABMntuRaw");
 
@@ -45,8 +48,9 @@ void TABMactNtuMC::CreateDigitizer()
    TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuMC->Object();
    TABMparGeo* p_bmgeo  = (TABMparGeo*) fpParGeo->Object();
    TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
+   TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
 
-   fDigitizer = new TABMdigitizer(p_nturaw, p_bmgeo, p_bmcon);
+   fDigitizer = new TABMdigitizer(p_nturaw, p_bmgeo, p_bmcon, p_bmcal);
 }
 
 

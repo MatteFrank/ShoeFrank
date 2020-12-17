@@ -26,16 +26,18 @@
 #include "TABMdigitizer.hxx"
 
 // --------------------------------------------------------------------------------------
-TABMdigitizer::TABMdigitizer(TABMntuRaw* pNtuRaw, TABMparGeo* parGeo, TABMparConf* parCon)
+TABMdigitizer::TABMdigitizer(TABMntuRaw* pNtuRaw, TABMparGeo* parGeo, TABMparConf* parCon, TABMparCal* parCal)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
    fpParGeo(parGeo),
    fpParCon(parCon),
+   fpParCal(parCal),
    fTimeMinDiff(50)
 {
   fpEffDist=new TF1("EffVsRdrift",this,&TABMdigitizer::EffFunc, 0., 0.78,3,"TABMdigitizer","EffFunc");
   fpEffDist->SetParameters(1.00072,-0.000162505,10.9375);
-  fpParCon->ResetStrelFunc();
+  fpParCal->ResetStrelFunc();
+  fpParCon->ResetHitTimeCutMC();
 }
 
 // --------------------------------------------------------------------------------------
@@ -76,16 +78,16 @@ Bool_t TABMdigitizer::Process(Double_t /*edep*/, Double_t x0, Double_t y0, Doubl
       return false;
 
   if(fpParCon->GetSmearRDrift()>0)
-    rdrift=SmearRdrift(rdrift,fpParCon->ResoEval(rdrift));
+    rdrift=SmearRdrift(rdrift,fpParCal->ResoEval(rdrift));
 
   //everything is computed, now I can check and add the hit
   std::multimap<Int_t, TABMntuHit*>::iterator pos=fMap.find(cellid);
   if(pos==fMap.end()){//new hit in a new cellid
-    fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
+    fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCal->GetTimeFromRDrift(rdrift), fpParCal->ResoEval(rdrift));
     fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,fCurrentHit));
     return true;
   }else{//multihit in the same cellid
-    Int_t currhittime=fpParCon->GetTimeFromRDrift(rdrift);
+    Int_t currhittime=fpParCal->GetTimeFromRDrift(rdrift);
     std::pair <std::multimap<Int_t, TABMntuHit*>::iterator, std::multimap<Int_t, TABMntuHit*>::iterator> rangeite;
     rangeite=fMap.equal_range(pos->first);
     for(auto d=rangeite.first;d!=rangeite.second;){//loop on all the hit with the same cellid
@@ -98,8 +100,8 @@ Bool_t TABMdigitizer::Process(Double_t /*edep*/, Double_t x0, Double_t y0, Doubl
           d->second->SetView(view);
           d->second->SetPlane(lay);
           d->second->SetRdrift(rdrift);
-          d->second->SetTdrift(fpParCon->GetTimeFromRDrift(rdrift));
-          d->second->SetSigma(fpParCon->ResoEval(rdrift));
+          d->second->SetTdrift(fpParCal->GetTimeFromRDrift(rdrift));
+          d->second->SetSigma(fpParCal->ResoEval(rdrift));
           return true;
         }else
           return false;// the present hit should not be charged
@@ -107,7 +109,7 @@ Bool_t TABMdigitizer::Process(Double_t /*edep*/, Double_t x0, Double_t y0, Doubl
         ++d;
     }
     //if the time of the hit is > fTimeMinDiff, it can be added
-    fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCon->GetTimeFromRDrift(rdrift), fpParCon->ResoEval(rdrift));
+    fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCal->GetTimeFromRDrift(rdrift), fpParCal->ResoEval(rdrift));
     fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,fCurrentHit));
     return true;
   }

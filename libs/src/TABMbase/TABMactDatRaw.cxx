@@ -4,17 +4,8 @@
   \brief   Implementation of TABMactDatRaw.
 */
 
-#include "TDCEvent.hh"
-
-#include "TABMparMap.hxx"
-#include "TABMparConf.hxx"
-#include "TAGdaqEvent.hxx"
-#include "TABMdatRaw.hxx"
-#include "TABMrawHit.hxx"
-#include "TASTntuRaw.hxx"
 
 #include "TABMactDatRaw.hxx"
-#include <iomanip>
 
 /*!
   \class TABMactDatRaw TABMactDatRaw.hxx "TABMactDatRaw.hxx"
@@ -27,28 +18,28 @@ ClassImp(TABMactDatRaw);
 //! Default constructor.
 
 TABMactDatRaw::TABMactDatRaw(const char* name,
-                             TAGdataDsc* p_datraw,
-                             TAGdataDsc* p_datdaq,
-                             TAGparaDsc* p_parmap,
-                             TAGparaDsc* p_parcon,
-                             TAGparaDsc* p_pargeo,
-                             TAGdataDsc* p_timraw)
+                             TAGdataDsc* dscdatraw,
+                             TAGdataDsc* dscdatdaq,
+                             TAGparaDsc* dscparmap,
+                             TAGparaDsc* dscparcal,
+                             TAGparaDsc* dscpargeo,
+                             TAGdataDsc* dsctimraw)
   : TAGaction(name, "TABMactDatRaw - Unpack BM raw data"),
-    fpDatRaw(p_datraw),
-    fpDatDaq(p_datdaq),
-    fpParMap(p_parmap),
-    fpParCon(p_parcon),
-    fpParGeo(p_pargeo),
-    fpTimRaw(p_timraw)
+    fpDatRaw(dscdatraw),
+    fpDatDaq(dscdatdaq),
+    fpParMap(dscparmap),
+    fpParCal(dscparcal),
+    fpParGeo(dscpargeo),
+    fpTimRaw(dsctimraw)
 {
   if (FootDebugLevel(1))
     cout<<"TABMactDatRaw::default constructor::Creating the Beam Monitor hit Ntuplizer"<<endl;
-  AddDataOut(p_datraw, "TABMdatRaw");
-  AddPara(p_parmap, "TABMparMap");
-  AddPara(p_parcon, "TABMparConf");
-  AddPara(p_pargeo, "TABMparGeo");
-  AddDataIn(p_timraw, "TASTntuRaw");
-  AddDataIn(p_datdaq, "TAGdaqEvent");
+  AddDataOut(dscdatraw, "TABMdatRaw");
+  AddPara(dscparmap, "TABMparMap");
+  AddPara(dscparcal, "TABMparCal");
+  AddPara(dscpargeo, "TABMparGeo");
+  AddDataIn(dsctimraw, "TASTntuRaw");
+  AddDataIn(dscdatdaq, "TAGdaqEvent");
 }
 
 //------------------------------------------+-----------------------------------
@@ -118,25 +109,23 @@ Bool_t TABMactDatRaw::Action() {
 //! Action.
 Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
 
-   // Fill BM_struct with TDCEvent output
    TABMdatRaw*    p_datraw = (TABMdatRaw*)    fpDatRaw->Object();
-
-   //From there we get the Mapping of the wires into the Chamber to the TDC channels
    TABMparMap*    p_parmap = (TABMparMap*)    fpParMap->Object();
-   TABMparConf*    p_parcon = (TABMparConf*)    fpParCon->Object();
+   TABMparCal*    p_parcal = (TABMparCal*)    fpParCal->Object();
    TABMparGeo*    p_pargeo = (TABMparGeo*)    fpParGeo->Object();
 
+   //From there we get the Mapping of the wires into the Chamber to the TDC channels
   Int_t view,plane,cell, channel,up, hitnum=0, discharged=0, bmcellid;
   Double_t used_trigger, measurement;
   for(Int_t i = 0; i < ((int)evt->measurement.size());++i) {
     if(((evt->measurement.at(i)>>19) & 0x7f) == p_parmap->GetTrefCh()){
-      if(p_parcon->GetT0Choice()==0){
+      if(p_parcal->GetT0Choice()==0){
         used_trigger=(evt->measurement.at(i) & 0x7ffff)/10.;
-      }else if (p_parcon->GetT0Choice()==1){
+      }else if (p_parcal->GetT0Choice()==1){
         used_trigger=sttrigger;
-      }else if (p_parcon->GetT0Choice()==2){
+      }else if (p_parcal->GetT0Choice()==2){
         used_trigger=(evt->measurement.at(i) & 0x7ffff)/10. + sttrigger;
-      }else if (p_parcon->GetT0Choice()==3){
+      }else if (p_parcal->GetT0Choice()==3){
         used_trigger=(evt->measurement.at(i) & 0x7ffff)/10. - sttrigger;
       }
       break;
@@ -157,7 +146,7 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
       p_datraw->NewHit(bmcellid, plane,view,cell,measurement);
       hitnum++;
       if(FootDebugLevel(3))
-        cout<<"BM hit charged : channel="<<channel<<"  tdc2cell="<<bmcellid<<"  measurement="<<measurement<<"  T0="<<p_parcon->GetT0(bmcellid)<<"  triggertime="<<used_trigger<<"  hittime="<<measurement - p_parcon->GetT0(bmcellid)-used_trigger<<"  hittimecut="<<p_parcon->GetHitTimeCut()<<endl;
+        cout<<"BM hit charged : channel="<<channel<<"  tdc2cell="<<bmcellid<<"  measurement="<<measurement<<"  T0="<<p_parcal->GetT0(bmcellid)<<"  triggertime="<<used_trigger<<"  hittime="<<measurement - p_parcal->GetT0(bmcellid)-used_trigger<<endl;
     }else if(channel!=p_parmap->GetTrefCh()){
       p_datraw->AddDischarged();
       if(FootDebugLevel(3))

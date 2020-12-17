@@ -12,9 +12,10 @@ NumberFiles: 2
 "./geomaps/CNAO2020/TASTdetector.geo": -1
 
 DetectorName: "BM"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/CNAO2020/TABMdetector.geo": -1
 "./config/CNAO2020/TABMdetector.cfg": -1
+"./calib/CNAO2020/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1
