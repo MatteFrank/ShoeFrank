@@ -45,12 +45,12 @@ public:
   virtual Bool_t  Action();
 
   virtual void    CreateHistogram();
-   
+
   ClassDef(TATWactCalibTW,0);
 
 
 private:
-  
+
   TAGdataDsc*     fpDatRaw;		    // input data dsc TW
   TAGdataDsc*     fpNtuRaw;		    // output data dsc TW
   TAGdataDsc*     fpSTNtuRaw;		    // output data dsc ST
@@ -66,25 +66,17 @@ private:
   TATWparMap*     f_parmap;
   TATWparCal*     f_parcal;
 
-
-  Int_t           fZbeam;
+  ParticleType    fParticleID;
   Int_t           fEvtCnt;
-  
+
   Float_t         fTofPropAlpha;    // inverse of light propagation velocity
   Float_t         fTofErrPropAlpha;
 
-  TH1F*           fpHisDeTot;       // Total energy loss
-  TH1F*           fpHisTimeTot;     // Total time of flight
-   
-  TH2D*           fpHisElossTof_layer[nLayers];
-  vector<TH2D*>   fpHisElossTof_Z;
-  vector<TH1D*>   fpHisEloss_Z[nLayers];
-  vector<TH1D*>   fpHisTof_Z;
-
-  Bool_t          f_debug;
-
- 
-
+  //Raw Q and TOF histograms
+  std::vector<TH1D*> _hQLayerX;
+  std::vector<TH1D*> _hQLayerY;
+  std::vector<TH1D*> _hTOFLayerX;
+  std::vector<TH1D*> _hTOFLayerY;
 
 private:
   //
@@ -92,20 +84,13 @@ private:
   //
   Double_t GetRawEnergy(TATWrawHit*a,TATWrawHit*b);
   Double_t GetRawTime(TATWrawHit*a,TATWrawHit*b);
-  Double_t GetRawTimeOth(TATWrawHit*a,TATWrawHit*b);
-
-  Double_t GetEnergy(Double_t RawEnergy,Int_t layer,Int_t posId, Int_t barId);
-  Double_t GetTime(Double_t Time,Int_t layer, Int_t posId, Int_t barId);
-  Double_t GetTimeOth(Double_t Time,Int_t layer, Int_t posId, Int_t barId);
-
-  Double_t GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b);
 
   Double_t GetPosition(TATWrawHit*a,TATWrawHit*b);
 
   Int_t    GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos);
   Int_t    GetPerpBarId(Int_t layer, Int_t barId, Double_t rawPos);
 
-
+  ParticleType  ZbeamToParticleID(Int_t Zbeam);
 };
 
 #endif

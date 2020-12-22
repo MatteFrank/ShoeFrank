@@ -31,6 +31,20 @@
 #define NUMBEROFCALIBRATIONPARAMETERS 2
 #define NUMBEROFPARTICLES 2
 
+//Parameters for dE-TOF calibration: ADJUST FOR EACH CAMPAIGN!!
+#define LAYERXBARMIN 20
+#define LAYERXBARMAX 39
+#define LAYERYBARMIN 0
+#define LAYERYBARMAX 19
+#define QMIN 0.
+#define QMAX 50. //[V*ns]
+#define QBINS 300
+#define TOFMIN 0. //[ns]
+#define TOFMAX 50. //[ns]
+#define TOFBINS 5000
+#define DEMIN 0. //[MeV]
+#define DEMAX 100. //[MeV]
+
 enum ParticleType {None=-1,Proton,Helium,Carbon,Oxygen};
 
 static std::map<ParticleType,std::string> ParticleName={{None,"None"},{Proton,"Proton"},{Helium,"Helium"},{Carbon,"Carbon"},{Oxygen,"Oxygen"}};
