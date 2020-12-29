@@ -74,18 +74,17 @@ void LocalReco::CreateRawAction()
       fpNtuRawBm = new TAGdataDsc("bmNtu", new TABMntuRaw());
       
       if (fgStdAloneFlag) {
-         fActVmeReaderBm  = new TABMactVmeReader("bmActNtu", fpDatRawBm, fpParMapBm, fpParConfBm, fpParGeoBm);
-	 //         fActVmeReaderBm  = new TABMactVmeReader("bmActNtu", fpDatRawBm, fpParMapBm, fpParConfBm, fpParGeoBm, fpNtuRawSt);
+         fActVmeReaderBm  = new TABMactVmeReader("bmActNtu", fpDatRawBm, fpParMapBm, fpParCalBm, fpParGeoBm);
          if (fFlagHisto)
             fActVmeReaderBm->CreateHistogram();
          
       } else {
-         fActDatRawBm = new TABMactDatRaw("bmActDat", fpDatRawBm, fpDaqEvent, fpParMapBm, fpParConfBm, fpParGeoBm, fpNtuRawSt);
+         fActDatRawBm = new TABMactDatRaw("bmActDat", fpDatRawBm, fpDaqEvent, fpParMapBm, fpParCalBm, fpParGeoBm, fpNtuRawSt);
          if (fFlagHisto)
             fActDatRawBm->CreateHistogram();
          if(GlobalPar::GetPar()->Debug()) fActDatRawBm->SetDebugLevel(1);
          
-         fActNtuRawBm = new TABMactNtuRaw("bmActNtu", fpNtuRawBm, fpDatRawBm, fpParGeoBm, fpParConfBm);
+         fActNtuRawBm = new TABMactNtuRaw("bmActNtu", fpNtuRawBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
          if (fFlagHisto)
             fActNtuRawBm->CreateHistogram();
          if(GlobalPar::GetPar()->Debug()) fActNtuRawBm->SetDebugLevel(1);

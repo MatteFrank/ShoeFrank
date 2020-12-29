@@ -5,7 +5,6 @@
 #pragma link off all functions;
 
 
-#pragma link C++ class FootField;
 #pragma link C++ class TADIgeoField;
 #pragma link C++ class TADIeveField;
 #pragma link C++ class TADIgenField;

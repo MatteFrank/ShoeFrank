@@ -91,11 +91,13 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
         particle_properties particle;
         
         double total_chisquared;
-        double momentum;
         
         std::vector<full_state> cluster_c;
         std::vector<full_state>& get_clusters() { return cluster_c; }
         std::vector<full_state> const & get_clusters() const { return cluster_c; }
+        
+        double momentum{0};
+        double tof{0};
         
         std::size_t clone{0};
     };
@@ -908,7 +910,8 @@ private:
         }
         double shearing_factor = total_chisquared / value_c.size();
         
-        track_mc.push_back( track{ particle_m, shearing_factor, 0, std::move(value_c)} );
+//        track_mc.push_back( track{ particle_m, shearing_factor, 0, 0, std::move(value_c)} );
+        track_mc.push_back( track{ particle_m, shearing_factor, std::move(value_c) } );
     }
     
     std::vector< track > shear_suboptimal_tracks( std::vector<track>&& track_pc )
@@ -1193,7 +1196,8 @@ private:
 //            double additional_time = (target_position_m - st_position_m)/beam_speed;
             double additional_time = (cluster_c.front().evaluation_point - st_position_m)/beam_speed;
 
-            double speed = arc_length/(static_cast<TATWpoint const *>(cluster_c.back().data)->GetTime() - additional_time);
+            double tof = (static_cast<TATWpoint const *>(cluster_c.back().data)->GetTime() - additional_time);
+            double speed = arc_length/tof;
             double beta = speed/30;
             double gamma = 1./sqrt(1 - pow(beta, 2));
             double momentum = gamma * 938 * track.particle.mass * beta;
@@ -1202,6 +1206,7 @@ private:
        //     std::cout << "momentum: " << momentum << '\n';
 
             track.momentum = momentum;
+            track.tof = tof;
         }
 
         return std::move( track_pc );
@@ -1217,12 +1222,12 @@ private:
         for( auto & track : track_pc  ) {
             
 //            std::cout << "particle_mass: " << track.particle.mass << std::endl;
-            
+//            std::cout << "reconstruction_momentum: "<< track.particle.momentum << "\n";
             auto * track_h = reconstructed_track_mhc->NewTrack( track.particle.mass * 0.938 ,
-                                                  track.particle.momentum / 1000.,
+                                                  track.momentum / 1000.,
                                                   static_cast<double>(track.particle.charge),
-                                                  1.1   ); //tof value is wrong
-            
+                                                  track.tof  ); //tof value is wrong
+//            std::cout << "registered_momentum: " << track_h->GetMomentum() << "\n";
 
             // -----------------------------
             checker_m.submit_reconstructed_track( track );

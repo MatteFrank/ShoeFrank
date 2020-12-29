@@ -6,8 +6,6 @@
 
 #include "LocalRecoMC.hxx"
 
-#include "FootField.hxx"
-
 #include "KFitter.hxx"
 #include "UpdatePDG.hxx"
 

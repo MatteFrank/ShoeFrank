@@ -15,6 +15,7 @@
 #include "TASTntuRaw.hxx"
 #include "TABMparGeo.hxx"
 #include "TABMparConf.hxx"
+#include "TABMparCal.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 
@@ -24,10 +25,11 @@
 class TABMactNtuRaw : public TAGaction {
   public:
     explicit         TABMactNtuRaw(const char* name=0,
-				 TAGdataDsc* p_nturaw=0,
-				 TAGdataDsc* p_datraw=0,
-				 TAGparaDsc* p_geomap=0,
-				 TAGparaDsc* p_parcon=0);
+				 TAGdataDsc* dscnturaw=0,
+				 TAGdataDsc* dscdatraw=0,
+				 TAGparaDsc* dscgeomap=0,
+				 TAGparaDsc* dscparcon=0,
+				 TAGparaDsc* dscparcal=0);
     virtual          ~TABMactNtuRaw();
 
     virtual  void   CreateHistogram();
@@ -39,7 +41,8 @@ class TABMactNtuRaw : public TAGaction {
     TAGdataDsc*       fpNtuRaw;		    // output data dsc
     TAGdataDsc*       fpDatRaw;		    // input data dsc
     TAGparaDsc*       fpGeoMap;		    // geometry para dsc
-    TAGparaDsc*       fpParCon;		    // BM config params.
+    TAGparaDsc*       fpParCon;		    // config para dsc
+    TAGparaDsc*       fpParCal;		    // calibration para dsc
 
     map<Int_t,Int_t>  fDrawMap;       //map to draw fpHisMapX and fpHisMapY <cellid,bin number>
 

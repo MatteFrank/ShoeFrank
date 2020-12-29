@@ -15,6 +15,7 @@
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 #include "TABMparConf.hxx"
+#include "TABMparCal.hxx"
 #include "TABMdigitizer.hxx"
 #include "TAGgeoTrafo.hxx"
 
@@ -26,6 +27,7 @@ class TABMactNtuMC : public TAGaction {
     explicit        TABMactNtuMC(const char* name=0,
                                  TAGdataDsc* dscnturaw=0,
                                  TAGparaDsc* dscbmcon=0,
+                                 TAGparaDsc* dscbmcal=0,
                                  TAGparaDsc* dscbmgeo=0,
                                  EVENT_STRUCT* evStr=0);
     virtual         ~TABMactNtuMC();
@@ -39,8 +41,9 @@ class TABMactNtuMC : public TAGaction {
     ClassDef(TABMactNtuMC,0)
 
   private:
-    TAGparaDsc*     fpParGeo;		    // BM geo params.
     TAGparaDsc*     fpParCon;		    // BM config params.
+    TAGparaDsc*     fpParCal;		    // BM calib params.
+    TAGparaDsc*     fpParGeo;		    // BM geo params.
 
     TAGdataDsc*     fpNtuMC;		    // output data dsc
     EVENT_STRUCT*   fpEvtStr;

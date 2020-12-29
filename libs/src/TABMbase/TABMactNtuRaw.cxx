@@ -19,29 +19,32 @@ ClassImp(TABMactNtuRaw);
 //! Default constructor.
 
 TABMactNtuRaw::TABMactNtuRaw(const char* name,
-			   TAGdataDsc* p_nturaw,
-			   TAGdataDsc* p_datraw,
-			   TAGparaDsc* p_geomap,
-			   TAGparaDsc* p_parcon)
+			   TAGdataDsc* dscnturaw,
+			   TAGdataDsc* dscdatraw,
+			   TAGparaDsc* dscgeomap,
+			   TAGparaDsc* dscparcon,
+			   TAGparaDsc* dscparcal)
   : TAGaction(name, "TABMactNtuRaw - NTuplize BM raw data"),
-    fpNtuRaw(p_nturaw),
-    fpDatRaw(p_datraw),
-    fpGeoMap(p_geomap),
-    fpParCon(p_parcon)
+    fpNtuRaw(dscnturaw),
+    fpDatRaw(dscdatraw),
+    fpGeoMap(dscgeomap),
+    fpParCon(dscparcon),
+    fpParCal(dscparcal)
 {
   if (FootDebugLevel(1))
    cout<<"TABMactNtuRaw::default constructor::Creating the Beam Monitor data Ntuplizer"<<endl;
-  AddDataOut(p_nturaw, "TABMntuRaw");
-  AddDataIn(p_datraw, "TABMdatRaw");
-  AddPara(p_geomap, "TABMparGeo");
-  AddPara(p_parcon, "TABMparConf");
+  AddDataOut(dscnturaw, "TABMntuRaw");
+  AddDataIn(dscdatraw, "TABMdatRaw");
+  AddPara(dscgeomap, "TABMparGeo");
+  AddPara(dscparcon, "TABMparConf");
+  AddPara(dscparcal, "TABMparCal");
 
   //fill fDrawMap
-  TABMparGeo* p_pargeo = (TABMparGeo*) fpGeoMap->Object();
+  TABMparGeo* p_bmgeo = (TABMparGeo*) fpGeoMap->Object();
 	fDrawMap.clear();
 	for(Int_t i=0;i<36;++i){
     Int_t cell, view, plane;
-		p_pargeo->GetBMNlvc(i, plane, view, cell);
+		p_bmgeo->GetBMNlvc(i, plane, view, cell);
 	  fDrawMap[i]=cell*26+plane*2+27+(((plane%2==0 && view==1) || (plane%2==1 && view==0)) ? -13:0);
 	}
 
@@ -116,8 +119,9 @@ Bool_t TABMactNtuRaw::Action()
 {
   TABMdatRaw* p_datraw = (TABMdatRaw*) fpDatRaw->Object();
   TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuRaw->Object();
-  TABMparGeo* p_pargeo = (TABMparGeo*) fpGeoMap->Object();
-  TABMparConf* p_parcon = (TABMparConf*) fpParCon->Object();
+  TABMparGeo* p_bmgeo = (TABMparGeo*) fpGeoMap->Object();
+  TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
+  TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
 
 
   p_nturaw->SetupClones();
@@ -140,19 +144,19 @@ Bool_t TABMactNtuRaw::Action()
 	  }
 
     //retrive hit parameters
-    i_time = hit->GetTime()- p_parcon->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell()) - p_datraw->GetTrigtime();
-    if(i_time<p_parcon->GetHitTimeCut() && i_time>-40){//apply cut
+    i_time = hit->GetTime()- p_bmcal->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell()) - p_datraw->GetTrigtime();
+    if(i_time<p_bmcon->GetHitTimeCut() && i_time>-40){//apply cut
       //Temporary time cut set at -40; it should be few ns, but at the first GSI data taking there is a jitter of ~ tens of ns not measured
       if(i_time<0)
           i_time=0.;
 
-      Double_t i_drift = p_parcon->STrelEval(i_time);
+      Double_t i_drift = p_bmcal->STrelEval(i_time);
       if(FootDebugLevel(3))
-        cout<<"TABMactNtuRaw::Action:: charging hit i_time="<<i_time<<"  i_drift="<<i_drift<<"  cell="<<hit->GetCell()<<"  view="<<hit->GetView()<<"  Plane="<<hit->GetPlane()<<"   hit->time="<<hit->GetTime()<<"  T0="<<p_parcon->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell())<<"  trigtime="<<p_datraw->GetTrigtime()<<endl;
+        cout<<"TABMactNtuRaw::Action:: charging hit i_time="<<i_time<<"  i_drift="<<i_drift<<"  cell="<<hit->GetCell()<<"  view="<<hit->GetView()<<"  Plane="<<hit->GetPlane()<<"   hit->time="<<hit->GetTime()<<"  T0="<<p_bmcal->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell())<<"  trigtime="<<p_datraw->GetTrigtime()<<endl;
 
 
       //create the hit (no selection of hit)
-      TABMntuHit *mytmp = p_nturaw->NewHit(hit->GetIdCell(), hit->GetPlane(), hit->GetView(), hit->GetCell(), i_drift, i_time, p_parcon->ResoEval(i_drift));
+      TABMntuHit *mytmp = p_nturaw->NewHit(hit->GetIdCell(), hit->GetPlane(), hit->GetView(), hit->GetCell(), i_drift, i_time, p_bmcal->ResoEval(i_drift));
       if (ValidHistogram()){
         fpHisCell->Fill(hit->GetCell());
         fpHisView->Fill(hit->GetView());
@@ -164,7 +168,7 @@ Bool_t TABMactNtuRaw::Action()
     }else{//hit discharged, it will not be saved in the TABMntuHit collection
       if (ValidHistogram()){
         fpHisDiscAccept->Fill(-1);
-        fpHisDiscTime->Fill( (i_time<-40) ? i_time-p_parcon->GetHitTimeCut() : i_time);
+        fpHisDiscTime->Fill( (i_time<-40) ? i_time-p_bmcon->GetHitTimeCut() : i_time);
       }
     }
   }

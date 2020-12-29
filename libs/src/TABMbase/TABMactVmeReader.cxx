@@ -5,7 +5,7 @@
 */
 
 #include "TABMparMap.hxx"
-#include "TABMparConf.hxx"
+#include "TABMparCal.hxx"
 #include "TABMrawHit.hxx"
 #include "TABMdatRaw.hxx"
 #include "TASTntuRaw.hxx"
@@ -23,22 +23,22 @@ ClassImp(TABMactVmeReader);
 //! Default constructor.
 
 TABMactVmeReader::TABMactVmeReader(const char* name,
-			     TAGdataDsc* p_datraw,
-			     TAGparaDsc* p_parmap,
-			     TAGparaDsc* p_parcon,
-			     TAGparaDsc* p_pargeo)
+			     TAGdataDsc* dscdatraw,
+			     TAGparaDsc* dscbmmap,
+			     TAGparaDsc* dscbmcal,
+			     TAGparaDsc* dscbmgeo)
            // TAGdataDsc* p_timraw)
   : TAGaction(name, "TABMactVmeReader - Unpack standalone BM raw data"),
-    fpDatRaw(p_datraw),
-    fpParMap(p_parmap),
-    fpParCon(p_parcon),
-    fpParGeo(p_pargeo)
+    fpDatRaw(dscdatraw),
+    fpParMap(dscbmmap),
+    fpParCal(dscbmcal),
+    fpParGeo(dscbmgeo)
     // fpTimRaw(p_timraw)
 {
-  AddDataOut(p_datraw, "TABMdatRaw");
-  AddPara(p_parmap, "TABMparMap");
-  AddPara(p_parcon, "TABMparConf");
-  AddPara(p_pargeo, "TABMparGeo");
+  AddDataOut(dscdatraw, "TABMdatRaw");
+  AddPara(dscbmmap, "TABMparMap");
+  AddPara(dscbmcal, "TABMparCal");
+  AddPara(dscbmgeo, "TABMparGeo");
   // AddDataOut(p_timraw, "TASTntuRaw");
   fpEvtStruct=new BM_struct;
   ClearBmstruct(kTRUE);
@@ -60,12 +60,12 @@ TABMactVmeReader::~TABMactVmeReader()
 
 void TABMactVmeReader::CreateHistogram(){
 
-  TABMparMap* bmmap = (TABMparMap*) fpParMap->Object();
+  TABMparMap* p_bmmap = (TABMparMap*) fpParMap->Object();
 
   DeleteHistogram();
   fpRawError=new TH1I( "bmVmeDatHitAccDisc", "Number of Hits with errors in tdc; -1=Error 1=accepted; Hits", 3, -1, 2);
   AddHistogram(fpRawError);
-  fpRawTdcChannel=new TH1I( "bmVmeDatTdcHitDistribution", "Number of hits in the tdc channels; tdc channel; Hits", bmmap->GetTdcMaxcha(), 0, bmmap->GetTdcMaxcha());
+  fpRawTdcChannel=new TH1I( "bmVmeDatTdcHitDistribution", "Number of hits in the tdc channels; tdc channel; Hits", p_bmmap->GetTdcMaxcha(), 0, p_bmmap->GetTdcMaxcha());
   AddHistogram(fpRawTdcChannel);
   fpRawTrigTime=new TH1I( "bmVmeDatTrigger", "Trigger time; Trigger time [ns]; Events", 200, 0, 0);
   AddHistogram(fpRawTrigTime);
@@ -76,9 +76,9 @@ void TABMactVmeReader::CreateHistogram(){
 
 Bool_t TABMactVmeReader::Process() {
 
-  TABMparConf* bmcon = (TABMparConf*) fpParCon->Object();
-  TABMparMap* bmmap = (TABMparMap*) fpParMap->Object();
-  TABMparGeo* bmgeo = (TABMparGeo*) fpParGeo->Object();
+  TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
+  TABMparMap* p_bmmap = (TABMparMap*) fpParMap->Object();
+  TABMparGeo* p_bmgeo = (TABMparGeo*) fpParGeo->Object();
   TABMdatRaw* p_datraw= (TABMdatRaw*) fpDatRaw->Object();
   // TASTntuRaw* p_timraw= (TASTntuRaw*) fpTimRaw->Object();
 
@@ -117,12 +117,12 @@ Bool_t TABMactVmeReader::Process() {
   for (Int_t i = 0; i < fpEvtStruct->tdc_hitnum[0]; i++) {
 		if(ValidHistogram())
 			fpRawTdcChannel->Fill(fpEvtStruct->tdc_id[i]);
-    cellid=bmmap->tdc2cell(fpEvtStruct->tdc_id[i]);
-    if(fpEvtStruct->tdc_meas[i]!=-10000 && bmcon->GetT0(cellid)!=-1000 &&  cellid>=0 ){
-      bmgeo->GetBMNlvc(cellid, lay, view, cell);
+    cellid=p_bmmap->tdc2cell(fpEvtStruct->tdc_id[i]);
+    if(fpEvtStruct->tdc_meas[i]!=-10000 && p_bmcal->GetT0(cellid)!=-1000 &&  cellid>=0 ){
+      p_bmgeo->GetBMNlvc(cellid, lay, view, cell);
       p_datraw->NewHit(cellid,lay,view,cell,fpEvtStruct->tdc_meas[i]/10.);
       if(FootDebugLevel(3))
-        cout<<"hit charged: i="<<i<<"  tdc_id="<<fpEvtStruct->tdc_id[i]<<"  tdc2cell="<<bmmap->tdc2cell(fpEvtStruct->tdc_id[i])<<"  tdc_meas/10.="<<fpEvtStruct->tdc_meas[i]/10.<<"  T0="<<bmcon->GetT0(bmmap->tdc2cell(fpEvtStruct->tdc_id[i]))<<"  trigtime="<<synctime<<"  timecut="<<bmcon->GetHitTimeCut()<<"  hittime="<<((Double_t)  fpEvtStruct->tdc_meas[i]/10. -  bmcon->GetT0(bmmap->tdc2cell(fpEvtStruct->tdc_id[i])) - synctime)<<endl;
+        cout<<"hit charged: i="<<i<<"  tdc_id="<<fpEvtStruct->tdc_id[i]<<"  tdc2cell="<<p_bmmap->tdc2cell(fpEvtStruct->tdc_id[i])<<"  tdc_meas/10.="<<fpEvtStruct->tdc_meas[i]/10.<<"  T0="<<p_bmcal->GetT0(p_bmmap->tdc2cell(fpEvtStruct->tdc_id[i]))<<"  trigtime="<<synctime<<"  hittime="<<((Double_t)  fpEvtStruct->tdc_meas[i]/10. -  p_bmcal->GetT0(p_bmmap->tdc2cell(fpEvtStruct->tdc_id[i])) - synctime)<<endl;
       if (ValidHistogram())
         fpRawError->Fill(1);
     }else if(cellid>=0){
@@ -130,7 +130,7 @@ Bool_t TABMactVmeReader::Process() {
       if (ValidHistogram())
         fpRawError->Fill(-1);
       if(FootDebugLevel(3))
-        cout<<"hit NOT charged: i="<<i<<"  tdc_id="<<fpEvtStruct->tdc_id[i]<<"  tdc2cell="<<bmmap->tdc2cell(fpEvtStruct->tdc_id[i])<<"  tdc_meas/10.="<<fpEvtStruct->tdc_meas[i]/10.<<"  T0="<<bmcon->GetT0(bmmap->tdc2cell(fpEvtStruct->tdc_id[i]))<<"  trigtime="<<synctime<<"  timecut="<<bmcon->GetHitTimeCut()<<"  hittime="<<((Double_t)  fpEvtStruct->tdc_meas[i]/10. -  bmcon->GetT0(bmmap->tdc2cell(fpEvtStruct->tdc_id[i])) - synctime)<<endl;
+        cout<<"hit NOT charged: i="<<i<<"  tdc_id="<<fpEvtStruct->tdc_id[i]<<"  tdc2cell="<<p_bmmap->tdc2cell(fpEvtStruct->tdc_id[i])<<"  tdc_meas/10.="<<fpEvtStruct->tdc_meas[i]/10.<<"  T0="<<p_bmcal->GetT0(p_bmmap->tdc2cell(fpEvtStruct->tdc_id[i]))<<"  trigtime="<<synctime<<"  hittime="<<((Double_t)  fpEvtStruct->tdc_meas[i]/10. -  p_bmcal->GetT0(p_bmmap->tdc2cell(fpEvtStruct->tdc_id[i])) - synctime)<<endl;
       continue;
     }
   }
@@ -170,8 +170,7 @@ fbmfile.close();
 }
 
 Bool_t TABMactVmeReader::ReadEvent(Bool_t evt0) {
-  TABMparConf* bmcon = (TABMparConf*) fpParCon->Object();
-  TABMparMap* bmmap = (TABMparMap*) fpParMap->Object();
+  TABMparMap* p_bmmap = (TABMparMap*) fpParMap->Object();
 
   Int_t tmp_int; //dummy int variable to read and convert the input file
   //~ vector<int> ev_words;//words of the event
@@ -205,8 +204,8 @@ Bool_t TABMactVmeReader::ReadEvent(Bool_t evt0) {
     cout<<"ERROR in TABMactVmeReader:ReadEvent: fDataNumEv="<<fDataNumEv<<"  fpEvtStruct->evnum="<<fpEvtStruct->evnum<<endl;
     fpEvtStruct->tot_status=-1;
   }
-  if(ev_words[1]!=bmmap->GetBoardNum()){
-    cout<<"ERROR in TABMactVmeReader:ReadEvent: board num != "<<bmmap->GetBoardNum()<<"  ev_words[1]="<<ev_words[1]<<endl;
+  if(ev_words[1]!=p_bmmap->GetBoardNum()){
+    cout<<"ERROR in TABMactVmeReader:ReadEvent: board num != "<<p_bmmap->GetBoardNum()<<"  ev_words[1]="<<ev_words[1]<<endl;
     fpEvtStruct->tot_status=1;
   }
 
@@ -214,19 +213,19 @@ Bool_t TABMactVmeReader::ReadEvent(Bool_t evt0) {
   if(tdc_wnum<=0)
     fpEvtStruct->tdc_status=3;
   windex=2;
-  if(bmmap->GetAdc792Ch()>=0){
+  if(p_bmmap->GetAdc792Ch()>=0){
     windex++;
     adc_wnum=ev_words[windex];
-    if(adc_wnum!=bmmap->GetAdc792Ch()+2 && adc_wnum!=0){
-      cout<<"ERROR in TABMactVmeReader:ReadEvent: adc_wnum="<<adc_wnum<<"  bmmap->GetAdc792Ch()+2="<<bmmap->GetAdc792Ch()+2<<endl;
+    if(adc_wnum!=p_bmmap->GetAdc792Ch()+2 && adc_wnum!=0){
+      cout<<"ERROR in TABMactVmeReader:ReadEvent: adc_wnum="<<adc_wnum<<"  p_bmmap->GetAdc792Ch()+2="<<p_bmmap->GetAdc792Ch()+2<<endl;
       fpEvtStruct->adc_status=1;
     }
   }
-  if(bmmap->GetSca830Ch()>=0){
+  if(p_bmmap->GetSca830Ch()>=0){
     windex++;
     sca_wnum=ev_words[windex];
-    if(sca_wnum!=bmmap->GetSca830Ch() && sca_wnum!=0){
-      cout<<"ERROR in TABMactVmeReader:ReadEvent: sca_wnum="<<sca_wnum<<"  bmmap->GetSca830Ch()="<<bmmap->GetSca830Ch()<<endl;
+    if(sca_wnum!=p_bmmap->GetSca830Ch() && sca_wnum!=0){
+      cout<<"ERROR in TABMactVmeReader:ReadEvent: sca_wnum="<<sca_wnum<<"  p_bmmap->GetSca830Ch()="<<p_bmmap->GetSca830Ch()<<endl;
       fpEvtStruct->sca_status=1;
     }
   }
@@ -297,8 +296,8 @@ Bool_t TABMactVmeReader::ReadEvent(Bool_t evt0) {
           cout<<"ERROR in TABMactVmeReader:ReadEvent: tdc_evnum="<<fpEvtStruct->tdc_evnum[fpEvtStruct->tdcev-1]<<"  measured event number="<<ev_words[windex-1]<<"  windex="<<windex<<"  fDataNumEv="<<fDataNumEv<<endl;
           fpEvtStruct->tdc_status=1;
         }
-        if(ev_words[windex]>-1 && ev_words[windex]<bmmap->GetTdcMaxcha()){//measure found
-          if(ev_words[windex]==bmmap->GetTrefCh()){
+        if(ev_words[windex]>-1 && ev_words[windex]<p_bmmap->GetTdcMaxcha()){//measure found
+          if(ev_words[windex]==p_bmmap->GetTrefCh()){
             fpEvtStruct->tdc_sync[sync_evnum]=ev_words[++windex];
             sync_evnum++;
           }else{
@@ -311,9 +310,9 @@ Bool_t TABMactVmeReader::ReadEvent(Bool_t evt0) {
           fpEvtStruct->tdc_status=2;
         }
         new_event=false;
-        if(FootDebugLevel(4) && ev_words[windex-1]!=bmmap->GetTrefCh())
-          cout<<"TABMactVmeReader::measure found: tdc_evnum="<<fpEvtStruct->tdc_evnum[fpEvtStruct->tdcev-1]<<" tdc_id="<<fpEvtStruct->tdc_id[fpEvtStruct->tdc_hitnum[fpEvtStruct->tdcev-1]-1]<<"  corresponding bm channel="<<bmmap->tdc2cell(fpEvtStruct->tdc_id[fpEvtStruct->tdc_hitnum[fpEvtStruct->tdcev-1]-1])<<" hit_meas="<<fpEvtStruct->tdc_meas[fpEvtStruct->tdc_hitnum[fpEvtStruct->tdcev-1]-1]<<endl;
-        else if(FootDebugLevel(4) && ev_words[windex-1]==bmmap->GetTrefCh())
+        if(FootDebugLevel(4) && ev_words[windex-1]!=p_bmmap->GetTrefCh())
+          cout<<"TABMactVmeReader::measure found: tdc_evnum="<<fpEvtStruct->tdc_evnum[fpEvtStruct->tdcev-1]<<" tdc_id="<<fpEvtStruct->tdc_id[fpEvtStruct->tdc_hitnum[fpEvtStruct->tdcev-1]-1]<<"  corresponding bm channel="<<p_bmmap->tdc2cell(fpEvtStruct->tdc_id[fpEvtStruct->tdc_hitnum[fpEvtStruct->tdcev-1]-1])<<" hit_meas="<<fpEvtStruct->tdc_meas[fpEvtStruct->tdc_hitnum[fpEvtStruct->tdcev-1]-1]<<endl;
+        else if(FootDebugLevel(4) && ev_words[windex-1]==p_bmmap->GetTrefCh())
           cout<<"TABMactVmeReader::trigger found: sync registered="<<sync_evnum<<"  time="<<fpEvtStruct->tdc_sync[sync_evnum-1]<<endl;
       }
     }//end of reading tdc words for loop
@@ -454,8 +453,7 @@ return;
 
 void TABMactVmeReader::MonitorQDC(vector<Int_t>& adc792_words) {
 
-  TABMparConf* bmcon = (TABMparConf*) fpParCon->Object();
-  TABMparMap* bmmap = (TABMparMap*) fpParMap->Object();
+  TABMparMap* p_bmmap = (TABMparMap*) fpParMap->Object();
 
   Int_t qdc_cnt(0);
   Int_t data, dt_type, evtnum, chan;
@@ -465,7 +463,7 @@ void TABMactVmeReader::MonitorQDC(vector<Int_t>& adc792_words) {
 
   //12 bit scale --> 400 pc
 
-  for(Int_t iac=0; iac<bmmap->GetAdc792Ch()+2; iac++) {
+  for(Int_t iac=0; iac<p_bmmap->GetAdc792Ch()+2; iac++) {
 
     qdc_cnt = 0;
     data = adc792_words.at(iac);
@@ -504,14 +502,14 @@ void TABMactVmeReader::MonitorQDC(vector<Int_t>& adc792_words) {
     if(!dt_type) {
       if(FootDebugLevel(3))
         cout<<"TABMactVmeReader::MonitorQDC::chan="<<chan<<" meas="<<qdc_cnt<<endl;
-      if(chan>=0 && chan<bmmap->GetAdc792Ch()){
+      if(chan>=0 && chan<p_bmmap->GetAdc792Ch()){
         fpEvtStruct->adc792_meas[chan] = qdc_cnt;
       }
     }
 
   }
 
-  for(Int_t i=0;i<bmmap->GetAdc792Ch();i++)
+  for(Int_t i=0;i<p_bmmap->GetAdc792Ch();i++)
     if(fpEvtStruct->adc792_over[i]==-10000)
       fpEvtStruct->adc_status=3;
 

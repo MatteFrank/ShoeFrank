@@ -18,6 +18,7 @@ using namespace std;
 #include "TABMtrack.hxx"
 #include "TABMparConf.hxx"
 #include "TABMparGeo.hxx"
+#include "TABMparCal.hxx"
 #include "TAGparGeo.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
@@ -59,7 +60,7 @@ public:
                                   TAGdataDsc* dscnturaw=0,
                                   TAGparaDsc* dscbmgeo=0,
                                   TAGparaDsc* dscbmcon=0,
-                                  TAGparaDsc* dsctggeo=0);
+                                  TAGparaDsc* dscbmcal=0);
   virtual         ~TABMactNtuTrack();
   virtual Bool_t  Action();
   virtual  void   CreateHistogram();
@@ -83,9 +84,9 @@ public:
 
   TAGdataDsc*       fpNtuTrk;		    // output data dsc
   TAGdataDsc*       fpNtuHit;		    // input data dsc
-  TAGparaDsc*       fpBMGeo;		    // input data dsc
-  TAGparaDsc*       fpBMCon;		    // input data dsc
-  TAGparaDsc*       fpTGgeo;		    // input data dsc
+  TAGparaDsc*       fpParGeo;		    // input data dsc
+  TAGparaDsc*       fpParCon;		    // input data dsc
+  TAGparaDsc*       fpParCal;		    // input data dsc
 
   TABMtrack *       fpTmpTrack;     // adopted for reconstruction
 
