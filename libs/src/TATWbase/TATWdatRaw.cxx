@@ -56,18 +56,7 @@ double TATWrawHit::ComputeTime(TWaveformContainer *w, double frac, double del, d
 
 
 double TATWrawHit::ComputeCharge(TWaveformContainer *w){
-
-  double chg=0;
-  vector<double> tmp_amp = w->GetVectA();
-  vector<double> tmp_time = w->GetVectT();
-
-  for(int i=0; i<tmp_time.size();i++){
-    chg+=(tmp_amp.at(i)-fBaseline);
-  }
-
-  chg = -chg;
-  
-  return  chg;
+  return  TAGbaseWD::ComputeCharge(w);
 }
 
 
@@ -140,7 +129,7 @@ void TATWdatRaw::Clear(Option_t*)
 void TATWdatRaw::NewHit(TWaveformContainer *W)
 {
 
-  //  W->SanitizeWaveform(); 
+  //  W->SanitizeWaveform();
 
   TClonesArray &pixelArray = *fListOfHits;
   TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(W);

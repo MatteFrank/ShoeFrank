@@ -10,13 +10,19 @@
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
-#include "TABMparConf.hxx"
-#include "BM_struct.h"
+#include "TDCEvent.hh"
+#include "TABMparMap.hxx"
+#include "TABMparCal.hxx"
+#include "TAGdaqEvent.hxx"
+#include "TABMdatRaw.hxx"
+#include "TABMrawHit.hxx"
+#include "TASTntuRaw.hxx"
+#include "TAGactDaqReader.hxx"
+
 #include "TH2.h"
 #include <fstream>
+#include <iomanip>
 
-
-#include "TAGactDaqReader.hxx"
 
 class TDCEvent;
 
@@ -24,12 +30,12 @@ class TABMactDatRaw : public TAGaction {
   public:
 
     explicit        TABMactDatRaw(const char* name=0,
-                                  TAGdataDsc* p_datraw=0,
-                                  TAGdataDsc* p_datdaq=0,
-                                  TAGparaDsc* p_parmap=0,
-                                  TAGparaDsc* p_parcon=0,
-                                  TAGparaDsc* p_pargeo=0,
-                                  TAGdataDsc* p_timraw=0);
+                                  TAGdataDsc* dscdatraw=0,
+                                  TAGdataDsc* dscdatdaq=0,
+                                  TAGparaDsc* dscparmap=0,
+                                  TAGparaDsc* dscparcal=0,
+                                  TAGparaDsc* dscpargeo=0,
+                                  TAGdataDsc* dsctimraw=0);
     virtual         ~TABMactDatRaw();
 
     virtual  void   CreateHistogram();
@@ -42,7 +48,7 @@ class TABMactDatRaw : public TAGaction {
     TAGdataDsc*     fpDatDaq;		        // input data dsc
     TAGdataDsc*     fpTimRaw;		        // input data dsc
     TAGparaDsc*     fpParMap;		        // parameter dsc
-    TAGparaDsc*     fpParCon;		        // parameter dsc
+    TAGparaDsc*     fpParCal;		        // parameter dsc
     TAGparaDsc*     fpParGeo;		        // parameter dsc
 
     Bool_t DecodeHits(const TDCEvent* evt, const double sttrigger);

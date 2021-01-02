@@ -7,6 +7,7 @@
 
 #include "TABMparGeo.hxx"
 #include "TABMparConf.hxx"
+#include "TABMparCal.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 
@@ -18,7 +19,7 @@ class TABMdigitizer : public TAGbaseDigitizer
  {
 
 public:
-  TABMdigitizer(TABMntuRaw* p_datraw, TABMparGeo* parGeo, TABMparConf* parCon);
+  TABMdigitizer(TABMntuRaw* p_datraw, TABMparGeo* parGeo, TABMparConf* parCon, TABMparCal* parCal);
   ~TABMdigitizer();
   void           ClearMap()            { fMap.clear(); }
 
@@ -38,6 +39,7 @@ private:
   TABMntuRaw*   fpNtuRaw;
   TABMparGeo*   fpParGeo;
   TABMparConf*  fpParCon;
+  TABMparCal*   fpParCal;
 
   Float_t       fTimeMinDiff;            //minimum time difference between two hits in the same cell to be detected
 

@@ -26,6 +26,7 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
                                  TAGdataDsc* dscntuEve,
                                  TAGdataDsc* dscnturaw,
                                  TAGparaDsc* dscbmcon,
+                                 TAGparaDsc* dscbmcal,
                                  TAGparaDsc* dscbmgeo,
                                  EVENT_STRUCT* evStr)
   : TAGaction(name, "TABMactNtuHitMC - NTuplize ToF raw data"),
@@ -33,6 +34,7 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
     fpNtuEve(dscntuEve),
     fpNtuRaw(dscnturaw),
     fpParCon(dscbmcon),
+    fpParCal(dscbmcal),
     fpParGeo(dscbmgeo),
     fEventStruct(evStr)
 {
@@ -44,8 +46,8 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
      AddDataIn(dscntuEve, "TAMCntuEve");
    } 
    AddDataOut(fpNtuRaw, "TABMntuRaw");
-
    AddPara(fpParCon, "TABMparConf");
+   AddPara(fpParCal, "TABMparCal");
    AddPara(fpParGeo, "TABMparGeo");
 
    CreateDigitizer();
@@ -65,8 +67,9 @@ void TABMactNtuHitMC::CreateDigitizer()
    TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuRaw->Object();
    TABMparGeo* p_bmgeo  = (TABMparGeo*) fpParGeo->Object();
    TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
-
-   fDigitizer = new TABMdigitizer(p_nturaw, p_bmgeo, p_bmcon);
+   TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
+   
+   fDigitizer = new TABMdigitizer(p_nturaw, p_bmgeo, p_bmcon, p_bmcal);
 }
 
 //------------------------------------------+-----------------------------------
