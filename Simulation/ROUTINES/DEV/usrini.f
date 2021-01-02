@@ -182,18 +182,20 @@ c               ireg2mimoITR(ii) = mimoITR
                ireg2stripSCN(ii) = strip
                if(ic.eq.1) then
                   nregFirstSCN=ii
-               elseif(ic.eq.nstripSCN*2) then
-                  nregLastSCN=ii
+C               elseif(ic.eq.nstripSCN*2) then
+C                  nregLastSCN=ii
                endif
+               nregLastSCN=ii
                ic = ic + 1
             elseif(REGNAM(1:3).eq.'CAL') then
                read(REGNAM(4:6),*) cry
                ireg2cryCAL(ii) = cry
                if(id.eq.1) then
                   nregFirstCAL=ii
-               elseif(id.eq.ncryCAL) then
-                  nregLastCAL=ii
+C               elseif(id.eq.ncryCAL) then
+C                  nregLastCAL=ii
                endif
+                  nregLastCAL=ii
                id = id + 1
             endif
          endif
