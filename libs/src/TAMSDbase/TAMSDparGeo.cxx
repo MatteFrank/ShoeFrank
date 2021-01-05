@@ -247,9 +247,6 @@ TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *verte
    msdMod->SetLineColor(kViolet-5);
    msdMod->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
 
-   // if (GlobalPar::GetPar()->geoFLUKA())
-   //    PrintFluka();
-
    return msdMod;
 }
 
