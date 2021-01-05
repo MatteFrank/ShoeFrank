@@ -66,7 +66,7 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t type)
    fGlbTrackProp(0x0)
 {
    // Par instance
-   GlobalPar::Instance();
+   GlobalPar::Instance(expName);
 
    // default constructon
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM()) {
