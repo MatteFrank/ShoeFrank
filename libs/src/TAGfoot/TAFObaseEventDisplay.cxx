@@ -1008,13 +1008,13 @@ void TAFObaseEventDisplay::UpdateTrackElements(const TString prefix)
 
          TABMtrack* track = pNtuTrack->GetTrack(iTrack);
 
-         TVector3 A0 = track->PointAtLocalZ(parGeo->GetMylar1().Z());
-         TVector3 A1 = track->PointAtLocalZ(parGeo->GetMylar2().Z());
+         TVector3 A0 = track->Intersection(parGeo->GetMylar1().Z());
+         TVector3 A1 = track->Intersection(parGeo->GetMylar2().Z());
 
          if (GlobalPar::GetPar()->IncludeTG()) {
             Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
             posZtg = fpFootGeo->FromGlobalToBMLocal(TVector3(0, 0, posZtg)).Z();
-            A1 = track->PointAtLocalZ(posZtg);
+            A1 = track->Intersection(posZtg);
          }
 
          TVector3 A0G = fpFootGeo->FromBMLocalToGlobal(A0);
