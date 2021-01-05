@@ -17,7 +17,7 @@ Int_t TAGbaseMaterials::fgkWhatWidth = 10;
 
 map<TString, TString> TAGbaseMaterials::fgkCommonName = {{"SmCo", "Sm2Co17"}, {"Polyethy", "C2H4"}, {"Kapton", "C22H10N2O5"}, {"Epoxy", "C18H19O3"},
                                                      {"BGO", "Bi4Ge3O12"}, {"SiCFoam", "SiC/AIR"}, {"TUNGSTEN", "W"}, {"Graphite", "C3"}, {"EJ232", "C9H10"},
-                                                     {"EJ228", "C9H10"}, {"Mylar", "C10H8O4"}  };
+                                                     {"EJ228", "C9H10"}, {"Mylar", "C10H8O4"}, {"PMMA", "C5H8O2"}   };
 
 map<TString, Int_t>   TAGbaseMaterials::fgkLowMat = {{"Graphite", 1}};
 

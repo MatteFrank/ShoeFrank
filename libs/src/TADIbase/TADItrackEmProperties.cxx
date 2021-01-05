@@ -42,11 +42,10 @@ TADItrackEmProperties::~TADItrackEmProperties()
 //_____________________________________________________________________________
 //
 // Calculation of the WEPL of the material layer
-Float_t TADItrackEmProperties::GetWEPL(const TString& mat, Float_t thickness)
+Float_t TADItrackEmProperties::GetFacWEPL(const TString& mat)
 {
    Float_t factor = 0;
-   Float_t waterEq = 0;
-   
+  
    TString material(mat);
    
    material.ToUpper();
@@ -55,7 +54,7 @@ Float_t TADItrackEmProperties::GetWEPL(const TString& mat, Float_t thickness)
       factor = 0.001045298;
    } else if (material == "SI"){
       factor = 1.833962703;
-   } else if (material == "12C"){
+   } else if (material == "C"){
       factor = 1.991445766;
    } else if (material == "PMMA"){
       factor = 0.925313636;
@@ -63,11 +62,10 @@ Float_t TADItrackEmProperties::GetWEPL(const TString& mat, Float_t thickness)
       factor = 1.;
    } else if (material == "TI"){
    	  factor = 3.136600294;
-   } else Warning("GetWEPL()","Material is not in the list.... Candidates: Air, Si, 12C, PMMA, H2O, Ti");
+   } else Warning("GetWEPL()","Material is not in the list.... Candidates: Air, Si, C, PMMA, H2O, Ti");
    
-   waterEq = thickness * factor;
 
-   return waterEq;
+   return factor;
 }
 
 //_____________________________________________________________________________
@@ -108,7 +106,7 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
    // R = alpha*Energy^(pFactor)
-   Float_t WEPL    = GetWEPL(mat, thickness);
+   Float_t WEPL    = GetFacWEPL(mat)*thickness;
    Float_t alpha   = 0.0022;
    Float_t pfactor = 1.;
    
@@ -134,6 +132,32 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 
 //_____________________________________________________________________________
 //
+// Calculation of the energy loss in the material layer (thickness in [cm])
+Float_t TADItrackEmProperties::GetRange(const TString& mat, Float_t energy, Float_t Abeam, Int_t Zbeam)
+{
+  // rage formula Bortfeld et al, PMB 41 (1996)
+  // R = alpha*Energy^(pFactor)
+  Float_t alpha   = 0.0022;
+  Float_t pfactor = 1.;
+  Float_t facWEPL = GetFacWEPL(mat);
+
+  
+  if (energy < 250){
+    pfactor = 1.77;
+  } else if ((energy >= 250) && (energy < 400)){
+    pfactor = 1.76;
+  } else {
+    pfactor = 1.75;
+  }
+  
+  Float_t rangeW = (Abeam / (Zbeam*Zbeam) * alpha * TMath::Power(energy, pfactor));
+
+  
+  return rangeW*facWEPL;
+}
+
+//_____________________________________________________________________________
+//
 // Calculation of the energy loss per range with Bethe-Bloch [MeV.cm^2/g]
 Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Double_t zBeam)
 {
@@ -146,7 +170,7 @@ Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Doubl
    
    Double_t I       = GetMeanExcitationEnergy(mat);
 
-   Double_t Q       = K*rho*(Zmed/Amed)*zBeam*zBeam;      //Kroz2Z/A
+   Double_t Q       = K*zBeam*zBeam*Zmed/Amed;      //Kz^2xZ/A
    Double_t me      = TAGgeoTrafo::GetElectronMassMeV();
    
    // calculating the gamma and Tmax
@@ -157,7 +181,7 @@ Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Doubl
    Double_t gamma   = TMath::Sqrt(1/(1-beta2));
    Double_t gamma2  = gamma*gamma;
    Double_t Tmax    = 2*gamma2*beta2*me/(1+(2*gamma*(me/mass))+me*me/(mass*mass));
-   Double_t logar   = (0.5*TMath::Log(2*me*beta2*gamma2*Tmax/(I*I))-beta2);
+   Double_t logar   = 0.5*TMath::Log(2*me*beta2*gamma2*Tmax/(I*I)) - beta2;
    Double_t dEdX    = Q/beta2*logar;
    
    return dEdX;
@@ -180,8 +204,9 @@ Float_t TADItrackEmProperties::GetPCC(Float_t energy, Float_t massNumber)
 Float_t TADItrackEmProperties::GetBeta(Float_t energy)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
-   Float_t beta    = TMath::Sqrt(1.0 - (1/(energy/massFac +1.0))*(1/(energy/massFac +1.0)));
-   
+   Float_t gamma   = 1.0 + energy/massFac;
+   Float_t beta    = TMath::Sqrt(1.0 - 1/(gamma*gamma));
+  
    return beta;
 }
 

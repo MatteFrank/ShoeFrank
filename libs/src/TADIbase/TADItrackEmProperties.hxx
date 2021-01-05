@@ -28,10 +28,11 @@ public:
    
    Float_t  GetEnergyLoss(const TString& mat, Float_t thickness, Float_t energy, Float_t massNumber, Int_t atomicNumber);
    Float_t  GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL);
+   Float_t  GetRange(const TString& mat, Float_t energy, Float_t Abeam, Int_t Zbeam);
    Float_t  GetdEdX(const TString& mat, Double_t beta,  Double_t zBeam);
    Float_t  GetPCC(Float_t energy, Float_t massNumber);
    Float_t  GetBeta(Float_t energy);
-   Float_t  GetWEPL(const TString& material, Float_t thickness);
+   Float_t  GetFacWEPL(const TString& material);
 
    Float_t  GetRadLength(TString name); 
    Float_t  GetDensity(TString name);

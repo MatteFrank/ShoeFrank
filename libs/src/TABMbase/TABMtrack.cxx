@@ -76,12 +76,17 @@ TABMtrack& TABMtrack::operator=(TABMtrack const& in){
 }
 
 
-TVector3 TABMtrack::PointAtLocalZ(double zloc)
+TVector3 TABMtrack::PointAtLocalZ(double zloc) const
 {
    TVector3 projected(fSlope.X()/fSlope.Z()*zloc+fOrigin.X() ,fSlope.Y()/fSlope.Z()*zloc+fOrigin.Y(), zloc);
    return projected;
 }
 
+
+TVector3 TABMtrack::Intersection(Float_t zloc) const
+{
+  return PointAtLocalZ(zloc);
+}
 
 
 void TABMtrack::PrintTrackPosDir(){
