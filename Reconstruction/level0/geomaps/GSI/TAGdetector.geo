@@ -9,7 +9,7 @@
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 BeamSize:            0.48
 BeamShape:         "Gaussian"
-BeamEnergy:          0.4   //! GeV
+BeamEnergy:          0.4   //! GeV/nucleon
 BeamAtomicMass:       16   //! A Beam
 BeamAtomicNumber:     8    //! Z Beam
 BeamMaterial:        "O"   //! Beam Material
@@ -22,7 +22,7 @@ BeamDiv:             0.0000
 // Target info (cm)
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 TargetShape:       "cubic"
-TargetSizeX:        2.0   TargetSizeY:    2.0    TargetSizeZ:  0.5
+TargetSizeX:        5.0   TargetSizeY:    5.0    TargetSizeZ:  0.5
 TargetMaterial:     "C"
 TargetDensity:      1.83
 TargetExc:         78.0e-6
