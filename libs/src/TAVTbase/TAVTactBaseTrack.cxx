@@ -106,8 +106,8 @@ void TAVTactBaseTrack::CreateHistogram()
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 	  if (TAVTbaseParConf::IsMapHistOn()) {
 		 fpHisTrackMap[i] = new TH2F(Form("%sTrackMap%d", fPrefix.Data(), i+1), Form("%s - Tracks map for sensor %d", fTitleDev.Data(), i+1),
-									 100, -pGeoMap->GetPitchY()*pGeoMap->GetNPixelY()/2., pGeoMap->GetPitchY()*pGeoMap->GetNPixelY()/2., 
-									 100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2.);
+									 100, -pGeoMap->GetPitchY()*pGeoMap->GetPixelsNy()/2., pGeoMap->GetPitchY()*pGeoMap->GetPixelsNy()/2., 
+									 100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2.);
 		 fpHisTrackMap[i]->SetMarkerStyle(24);
 		 fpHisTrackMap[i]->SetMarkerSize(1.);
 		 fpHisTrackMap[i]->SetMarkerColor(3);
@@ -150,8 +150,8 @@ void TAVTactBaseTrack::CreateHistogram()
    AddHistogram(fpHisPhi);
    
    fpHisBeamProf = new TH2F(Form("%sBeamProf", fPrefix.Data()), Form("%s -  Beam Profile", fTitleDev.Data()),
-							100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., 
-							100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2.);
+							100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., 
+							100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2.);
    fpHisBeamProf->SetStats(kFALSE);
    AddHistogram(fpHisBeamProf);
    

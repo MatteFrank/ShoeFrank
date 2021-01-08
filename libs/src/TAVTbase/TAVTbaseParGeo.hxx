@@ -111,7 +111,7 @@ public:
    //! Get number of Sensors
    Int_t GetSensorsN()                 const { return fSensorsN;       }
    //! Get number of layers
-   Int_t GetNLayers()                  const { return fLayersN;        }
+   Int_t GetLayersN()                  const { return fLayersN;        }
 
    //! Get type name of sensor
    const Char_t* GetTypeName()         const { return fTypeName.Data();}
@@ -119,9 +119,9 @@ public:
    Int_t GetType()                     const { return fTypeNumber;     }
    
    //! Get number of pixel in X
-   Int_t GetNPixelX()                  const { return fPixelsNx;       }
+   Int_t GetPixelsNx()                 const { return fPixelsNx;       }
    //! Get number of pixel in Y
-   Int_t GetNPixelY()                  const { return fPixelsNy;       }
+   Int_t GetPixelsNy()                 const { return fPixelsNy;       }
    //! Get pitch size in X
    Float_t GetPitchX()                 const { return fPitchX;         }
    //! Get pitch size in Y

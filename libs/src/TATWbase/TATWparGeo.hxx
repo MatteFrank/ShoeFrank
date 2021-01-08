@@ -73,7 +73,7 @@ public:
 
    
     int GetNBars() { return fBarsN; };
-    int GetNLayers() { return fLayersN; };
+    int GetLayersN() { return fLayersN; };
 
     virtual string PrintBodies();
     virtual string PrintRegions();

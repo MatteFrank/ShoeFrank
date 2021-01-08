@@ -98,7 +98,7 @@ void TAVTactBaseNtuVertex::CreateHistogram()
    fpHisPosZ = new TH1F("vtVtxPosZ", "Vertex position at Z", 100, liml, limu);
    AddHistogram(fpHisPosZ);
    
-   TVector3 size(pGeoMap->GetPitchX()*pGeoMap->GetNPixelX(), pGeoMap->GetPitchY()*pGeoMap->GetNPixelY(), 0);
+   TVector3 size(pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx(), pGeoMap->GetPitchY()*pGeoMap->GetPixelsNy(), 0);
    
    if (fgCheckBmMatching) {
 	  fpHisBmMatchX = new TH1F("vtBmMatchX", "Residual vertexing - BM in X", 500, -size[0]/2., size[0]/2.);

@@ -46,7 +46,7 @@ TCBMgeometryConstructor::~TCBMgeometryConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void TCBMgeometryConstructor::GetNlayers()
+void TCBMgeometryConstructor::GetLayersN()
 {
     fpParGeo->GetLayersN();
 }
