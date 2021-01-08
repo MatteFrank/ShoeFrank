@@ -239,11 +239,11 @@ Bool_t TABMactNtuTrack::Action()
     if(fNowView==0){
       fpTmpTrack->SetSlopeY(fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin));
       fpTmpTrack->SetOriginY(fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin));
-      fpTmpTrack->SetNhitY(nselhit);
+      fpTmpTrack->SethitsNy(nselhit);
     }else{
       fpTmpTrack->SetSlopeX(fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin));
       fpTmpTrack->SetOriginX(fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin));
-      fpTmpTrack->SetNhitX(nselhit);
+      fpTmpTrack->SethitsNx(nselhit);
     }
     tmp_int= NumericalMinimizationDouble();
     if(tmp_int!=0){
@@ -281,11 +281,11 @@ Bool_t TABMactNtuTrack::Action()
     fpHisTrackStatus->Fill(p_ntutrk->GetTrackStatus());
     for(Int_t i=0;i<xtracktr.size();++i){
       fpHisChi2XZ->Fill(xtracktr.at(i).GetChiSquareX());
-      fpHisNhitXTrack->Fill(xtracktr.at(i).GetNhitX());
+      fpHisNhitXTrack->Fill(xtracktr.at(i).GetHitsNx());
     }
     for(Int_t i=0;i<ytracktr.size();++i){
       fpHisChi2YZ->Fill(ytracktr.at(i).GetChiSquareY());
-      fpHisNhitYTrack->Fill(ytracktr.at(i).GetNhitY());
+      fpHisNhitYTrack->Fill(ytracktr.at(i).GetHitsNy());
     }
     for(Int_t i=0;i<p_ntutrk->GetTracksN();++i){
       TABMtrack *savedtracktr=p_ntutrk->GetTrack(i);
@@ -297,8 +297,8 @@ Bool_t TABMactNtuTrack::Action()
       fpHisAngleX->Fill(savedtracktr->GetSlope().X()/savedtracktr->GetSlope().Z());
       fpHisAngleY->Fill(savedtracktr->GetSlope().Y()/savedtracktr->GetSlope().Z());
       fpHisChi2Red->Fill(savedtracktr->GetChiSquare());
-      fpHisNhitTotTrack->Fill(savedtracktr->GetNhitTot());
-      fpHisNrejhitTrack->Fill(p_nturaw->GetHitsN()-savedtracktr->GetNhitTot());
+      fpHisNhitTotTrack->Fill(savedtracktr->GetHitsNtot());
+      fpHisNrejhitTrack->Fill(p_nturaw->GetHitsN()-savedtracktr->GetHitsNtot());
       for(Int_t k=0;k<i;++k){
         fpTrackAngles->Fill(p_ntutrk->GetTrack(i)->GetSlope().Angle(p_ntutrk->GetTrack(k)->GetSlope())*TMath::RadToDeg());
         fpTrackSep->Fill((p_ntutrk->GetTrack(i)->GetOrigin()-p_ntutrk->GetTrack(k)->GetOrigin()).Mag());
@@ -599,8 +599,8 @@ Bool_t TABMactNtuTrack::ComputeDataAll(){
     }
   }
 
-  if(nselhit<3 || nselhit!=fpTmpTrack->GetNhitTot() ){
-    cout<<"TABMactNtuTrack::ComputeDataAll::Error!!!  nselhit="<<nselhit<<"   fpTmpTrack->GetNhitX()="<<fpTmpTrack->GetNhitX()<<"   fpTmpTrack->GetNhitY()="<<fpTmpTrack->GetNhitY()<<endl;
+  if(nselhit<3 || nselhit!=fpTmpTrack->GetHitsNtot() ){
+    cout<<"TABMactNtuTrack::ComputeDataAll::Error!!!  nselhit="<<nselhit<<"   fpTmpTrack->GetHitsNx()="<<fpTmpTrack->GetHitsNx()<<"   fpTmpTrack->GetHitsNy()="<<fpTmpTrack->GetHitsNy()<<endl;
     return kTRUE;
   }
   if(fNowView==0)

@@ -35,34 +35,34 @@ class TABMtrack : public TObject {
     TABMtrack& operator=(TABMtrack const& in);
 
     //Setters
-    void SetNhitX (Int_t nhi)                           { fNHitX = nhi;};
-    void SetNhitY (Int_t nhi)                           { fNHitY = nhi;};
-    void SetIsConv(Int_t conv)                          { fIsConv = conv;};
-    void SetOrigin(Double_t x,Double_t y, Double_t z)   { fOrigin.SetXYZ(x,y,z);};
-    void SetOrigin(TVector3 r0in)                       { fOrigin=r0in;};
-    void SetOriginX(Double_t x)                         { fOrigin.SetX(x);};
-    void SetOriginY(Double_t y)                         { fOrigin.SetY(y);};
-    void SetSlope(Double_t x,Double_t y, Double_t z)    { fSlope.SetXYZ(x,y,z);};
-    void SetSlope(TVector3 pin)                         { fSlope=pin;};
-    void SetSlopeX(Double_t x)                          { fSlope.SetX(x);};
-    void SetSlopeY(Double_t y)                          { fSlope.SetY(y);};
-    void SetChiSquare(Double_t chi2_in)                 { fChiSquare=chi2_in;};
-    void SetChiSquareX(Double_t chi2x_in)               { fChiSquareX=chi2x_in;};
-    void SetChiSquareY(Double_t chi2y_in)               { fChiSquareY=chi2y_in;};
-    void SetGhost(Int_t gho_in)                         { fGhost=gho_in;};
+    void SethitsNx (Int_t nhi)                          { fNHitX = nhi;}
+    void SethitsNy (Int_t nhi)                          { fNHitY = nhi;}
+    void SetIsConv(Int_t conv)                          { fIsConv = conv;}
+    void SetOrigin(Double_t x,Double_t y, Double_t z)   { fOrigin.SetXYZ(x,y,z);}
+    void SetOrigin(TVector3 r0in)                       { fOrigin=r0in;}
+    void SetOriginX(Double_t x)                         { fOrigin.SetX(x);}
+    void SetOriginY(Double_t y)                         { fOrigin.SetY(y);}
+    void SetSlope(Double_t x,Double_t y, Double_t z)    { fSlope.SetXYZ(x,y,z);}
+    void SetSlope(TVector3 pin)                         { fSlope=pin;}
+    void SetSlopeX(Double_t x)                          { fSlope.SetX(x);}
+    void SetSlopeY(Double_t y)                          { fSlope.SetY(y);}
+    void SetChiSquare(Double_t chi2_in)                 { fChiSquare=chi2_in;}
+    void SetChiSquareX(Double_t chi2x_in)               { fChiSquareX=chi2x_in;}
+    void SetChiSquareY(Double_t chi2y_in)               { fChiSquareY=chi2y_in;}
+    void SetGhost(Int_t gho_in)                         { fGhost=gho_in;}
     // void NewSet(TVectorD ftrackpar);//set fSlope and fOrigin, used for the FIRST tracking
 
     //Getters
-    Int_t  GetNhitX()             const {return fNHitX;};
-    Int_t  GetNhitY()             const {return fNHitY;};
-    Int_t  GetNhitTot()           const {return fNHitX+fNHitY;};
-    Double_t GetChiSquare()       const {return fChiSquare;};
-    Double_t GetChiSquareX()      const {return fChiSquareX;};
-    Double_t GetChiSquareY()      const {return fChiSquareY;};
-    Int_t GetIsConv()             const {return fIsConv;};
-    TVector3 GetOrigin()          const {return fOrigin;};
-    TVector3 GetSlope()           const {return fSlope;};
-    Int_t GetIsGhost()            const {return fGhost;};
+    Int_t  GetHitsNx()            const {return fNHitX;}
+    Int_t  GetHitsNy()            const {return fNHitY;}
+    Int_t  GetHitsNtot()          const {return fNHitX+fNHitY;}
+    Double_t GetChiSquare()       const {return fChiSquare;}
+    Double_t GetChiSquareX()      const {return fChiSquareX;}
+    Double_t GetChiSquareY()      const {return fChiSquareY;}
+    Int_t GetIsConv()             const {return fIsConv;}
+    TVector3 GetOrigin()          const {return fOrigin;}
+    TVector3 GetSlope()           const {return fSlope;}
+    Int_t GetIsGhost()            const {return fGhost;}
 
     //others
     void PrintTrackPosDir();

@@ -63,7 +63,7 @@ G4LogicalVolume* TCTWgeometryConstructor::Construct()
    Float_t width  = fpParGeo->GetBarWidth()*cm;
    Float_t thick  = fpParGeo->GetBarThick()*cm;
    Int_t slatsN   = fpParGeo->GetNBars();
-   Int_t layersN  = fpParGeo->GetNLayers();
+   Int_t layersN  = fpParGeo->GetLayersN();
    
    //logical
    G4Box* tof     = new G4Box("Slat", width/2., height/2., thick/2.);

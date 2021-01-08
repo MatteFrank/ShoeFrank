@@ -107,8 +107,8 @@ void TAVTactBaseNtuMC::CreateHistogram()
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       if (TAVTparConf::IsMapHistOn()) {
          fpHisPixelMap[i]  = new TH2F(Form("%sMcPixelMap%d", fPrefix.Data(), i+1) , Form("%s - MC pixel map for sensor %d", fTitleDev.Data(), i+1),
-                                      pGeoMap->GetNPixelX(), 0, pGeoMap->GetNPixelX(),
-                                      pGeoMap->GetNPixelY(), 0, pGeoMap->GetNPixelY());
+                                      pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx(),
+                                      pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy());
          fpHisPixelMap[i]->SetStats(kFALSE);
          AddHistogram(fpHisPixelMap[i]);
       }
@@ -117,8 +117,8 @@ void TAVTactBaseNtuMC::CreateHistogram()
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       if (TAVTparConf::IsMapHistOn()) {
          fpHisPosMap[i] =  new TH2F(Form("%sMcPosMap%d", fPrefix.Data(), i+1), Form("%s - MC position map for sensor %d", fTitleDev.Data(), i+1),
-                                    100, -pGeoMap->GetPitchX()/2.*pGeoMap->GetNPixelX(), pGeoMap->GetPitchX()/2.*pGeoMap->GetNPixelX(),
-                                    100, -pGeoMap->GetPitchY()/2.*pGeoMap->GetNPixelY(), pGeoMap->GetPitchY()/2.*pGeoMap->GetNPixelY());
+                                    100, -pGeoMap->GetPitchX()/2.*pGeoMap->GetPixelsNx(), pGeoMap->GetPitchX()/2.*pGeoMap->GetPixelsNx(),
+                                    100, -pGeoMap->GetPitchY()/2.*pGeoMap->GetPixelsNy(), pGeoMap->GetPitchY()/2.*pGeoMap->GetPixelsNy());
          fpHisPosMap[i]->SetStats(kFALSE);
          AddHistogram(fpHisPosMap[i]);
       }
@@ -138,7 +138,7 @@ void TAVTactBaseNtuMC::ComputeNoiseLevel()
 	
 	if (fgSigmaNoiseLevel > 0) {
 	   fraction = f->Integral(-fgSigmaNoiseLevel, fgSigmaNoiseLevel)/TMath::Sqrt(2*TMath::Pi());
-	   fNoisyPixelsN = TMath::Nint(fDigitizer->GetNPixelX()*fDigitizer->GetNPixelY()*(1.-fraction));
+	   fNoisyPixelsN = TMath::Nint(fDigitizer->GetPixelsNx()*fDigitizer->GetPixelsNy()*(1.-fraction));
 	}
 	
    FootDebug(1, "ComputeNoiseLevel()", Form("Number of noise pixels %d\n", fNoisyPixelsN));
