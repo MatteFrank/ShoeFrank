@@ -102,8 +102,8 @@ void TAIRactNtuTrack::CreateHistogram()
    AddHistogram(fpHisPhi);
    
    fpHisBeamProf = new TH2F(Form("%sBeamProf", fPrefix.Data()), Form("%s -  Beam Profile", fTitleDev.Data()),
-                            100, -pGeoMapIt->GetPitchX()*pGeoMapIt->GetNPixelX()/2., pGeoMapIt->GetPitchX()*pGeoMapIt->GetNPixelX()/2.,
-                            100, -pGeoMapIt->GetPitchX()*pGeoMapIt->GetNPixelX()/2., pGeoMapIt->GetPitchX()*pGeoMapIt->GetNPixelX()/2.);
+                            100, -pGeoMapIt->GetPitchX()*pGeoMapIt->GetPixelsNx()/2., pGeoMapIt->GetPitchX()*pGeoMapIt->GetPixelsNx()/2.,
+                            100, -pGeoMapIt->GetPitchX()*pGeoMapIt->GetPixelsNx()/2., pGeoMapIt->GetPitchX()*pGeoMapIt->GetPixelsNx()/2.);
    fpHisBeamProf->SetStats(kFALSE);
    AddHistogram(fpHisBeamProf);
    

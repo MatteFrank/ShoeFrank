@@ -612,13 +612,13 @@ void TAFObaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       if (track == 0x0) return;
 
       fInfoView->AddLine( Form("Track:\n") );
-      fInfoView->AddLine( Form(" with %3d hit\n", track->GetNhitTot()) );
+      fInfoView->AddLine( Form(" with %3d hit\n", track->GetHitsNtot()) );
       fInfoView->AddLine( Form(" at Slope: (%.3g %.3g) \n", track->GetSlope()[0], track->GetSlope()[1]) );
       fInfoView->AddLine( Form(" and Origin (%.3g %.3g)\n",  track->GetOrigin()[0], track->GetOrigin()[1]));
 
       if (fConsoleButton->IsOn()) {
          cout <<  Form("Track:\n");
-         cout <<  Form(" with %3d hit\n", track->GetNhitTot());
+         cout <<  Form(" with %3d hit\n", track->GetHitsNtot());
          cout <<  Form(" at Slope: (%.3g %.3g) \n", track->GetSlope()[0], track->GetSlope()[1]);
          cout <<  Form(" and Origin (%.3g %.3g)\n",  track->GetOrigin()[0], track->GetOrigin()[1]);
       }
@@ -1023,7 +1023,7 @@ void TAFObaseEventDisplay::UpdateTrackElements(const TString prefix)
          x  = A0G(0); y  = A0G(1); z  = A0G(2);
          x1 = A1G(0); y1 = A1G(1); z1 = A1G(2);
 
-         Int_t nHits = track->GetNhitTot();
+         Int_t nHits = track->GetHitsNtot();
          // inverse view ??
          fBmTrackDisplay->AddTracklet(nHits*100, x, y, z, x1, y1, z1);
          fBmTrackDisplay->TrackId(track);
@@ -1135,7 +1135,7 @@ void TAFObaseEventDisplay::UpdateBarElements()
 
    TATWntuRaw* pNtuHit = fReco->GetNtuHitTw();
 
-   for( Int_t iLayer = 0; iLayer < parGeo->GetNLayers(); iLayer++) {
+   for( Int_t iLayer = 0; iLayer < parGeo->GetLayersN(); iLayer++) {
 
       Int_t nHits = pNtuHit->GetHitN(iLayer);
       if (nHits == 0) continue;
