@@ -352,7 +352,7 @@ private:
                                      gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data() )
                                                             );
         
-        auto start = transformation_h->FromVTLocalToGlobal( vertex_ph->GetVertexPosition() );
+        auto start = transformation_h->FromVTLocalToGlobal( vertex_ph->GetPosition() );
         auto end = transformation_h->FromVTLocalToGlobal( cluster_ph->GetPositionG() );
         
         auto length = end - start;
@@ -361,9 +361,9 @@ private:
         auto track_slope_y = length.Y()/length.Z();
         
         
-        auto length_error_x = sqrt( pow( vertex_ph->GetVertexPosError().X(), 2 ) +
+        auto length_error_x = sqrt( pow( vertex_ph->GetPosError().X(), 2 ) +
                                     pow( cluster_ph->GetPosErrorG().X(), 2)             );
-        auto length_error_y = sqrt( pow( vertex_ph->GetVertexPosError().Y(), 2 ) +
+        auto length_error_y = sqrt( pow( vertex_ph->GetPosError().Y(), 2 ) +
                                     pow( cluster_ph->GetPosErrorG().Y(), 2)           );
         
         
