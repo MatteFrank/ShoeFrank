@@ -46,14 +46,20 @@ public:
     //!Get Vertex Position
     const TVector3& GetVertexPosition()     const { return fVertexPosition; }
 
-   //!Get Vertex Position Error
-   const TVector3&  GetVertexPosError()     const { return fVertexPosError; }
+    //!Get Vertex Position Error
+    const TVector3&  GetVertexPosError()    const { return fVertexPosError; }
+  
+    //!Get Vertex Position
+    const TVector3& GetPosition()           const { return fVertexPosition; }
+  
+    //!Get Vertex Position Error
+    const TVector3&  GetPosError()          const { return fVertexPosError; }
    
     //!Set Vertex Position
     void SetVertexPosition(TVector3& xyz)         { fVertexPosition = xyz;}
 
-   //!Set Vertex Position Error
-   void SetVertexPosError(TVector3& xyz)          { fVertexPosError = xyz;}
+    //!Set Vertex Position Error
+    void SetVertexPosError(TVector3& xyz)          { fVertexPosError = xyz;}
 
     //! Set flag isValid
     void  SetVertexValidity(Int_t q)              { fIsValid = q;        }
