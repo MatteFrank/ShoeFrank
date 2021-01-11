@@ -165,7 +165,7 @@ void TAVTactNtuMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
 	TAVTntuRaw* pNtuRaw = (TAVTntuRaw*) fpNtuRaw->Object();
  
 	map<int, double> digiMap = fDigitizer->GetMap();
-	int nPixelX = fDigitizer->GetNPixelX();
+	int nPixelX = fDigitizer->GetPixelsNx();
  
 	// fill pixels from map
    int count = 0;
@@ -220,8 +220,8 @@ void TAVTactNtuMC::FillNoise(Int_t sensorId)
 
 	Int_t pixelsN = gRandom->Uniform(0, fNoisyPixelsN);
 	for (Int_t i = 0; i < pixelsN; ++i) {
-	   Int_t col  = gRandom->Uniform(0,fDigitizer->GetNPixelX());
-	   Int_t line = gRandom->Uniform(0,fDigitizer->GetNPixelY());
+	   Int_t col  = gRandom->Uniform(0,fDigitizer->GetPixelsNx());
+	   Int_t line = gRandom->Uniform(0,fDigitizer->GetPixelsNy());
 	   TAVTntuHit* pixel = pNtuRaw->NewPixel(sensorId, 1., line, col);
 	   pixel->AddMcTrackIdx(fgMcNoiseId);
 	}

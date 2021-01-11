@@ -248,6 +248,34 @@ bool TAGgeoTrafo::FromFile(TString ifile)
 }
 
 //_____________________________________________________________________________
+TVector3 TAGgeoTrafo::FromTGLocalToBMLocal(TVector3 apoi)
+{
+  TVector3 posTg = FromTGLocalToGlobal(apoi);
+  return FromGlobalToBMLocal(posTg);
+}
+
+//_____________________________________________________________________________
+TVector3 TAGgeoTrafo::FromTGLocalToVTLocal(TVector3 apoi)
+{
+  TVector3 posTg = FromTGLocalToGlobal(apoi);
+  return FromGlobalToVTLocal(posTg);
+}
+
+//_____________________________________________________________________________
+TVector3 TAGgeoTrafo::FromITLocalToVTLocal(TVector3 apoi)
+{
+  TVector3 posIt = FromITLocalToGlobal(apoi);
+  return FromGlobalToVTLocal(posIt);
+}
+
+//_____________________________________________________________________________
+TVector3 TAGgeoTrafo::FromTWLocalToVTLocal(TVector3 apoi)
+{
+  TVector3 posTw = FromTWLocalToGlobal(apoi);
+  return FromGlobalToVTLocal(posTw);
+}
+
+//_____________________________________________________________________________
 TVector3 TAGgeoTrafo::FromSTLocalToGlobal(TVector3 apoi)
 {
    TVector3 glb_poi = Local2Global("ST", apoi);

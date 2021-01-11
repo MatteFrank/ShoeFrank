@@ -57,8 +57,8 @@ public:
    void         SetCstWidthPar(Double_t par)    { fCstWidthPar = par;      }
    void         SetCstWidthParErr(Double_t par) { fCstWidthParErr = par;   }
    
-   Float_t      GetNPixelX()       const        { return fPixelsNx;        }
-   Float_t      GetNPixelY()       const        { return fPixelsNy;        }
+   Float_t      GetPixelsNx()       const        { return fPixelsNx;        }
+   Float_t      GetPixelsNy()       const        { return fPixelsNy;        }
    
    Float_t      GetPitchX()        const        { return fPitchX;          }
    Float_t      GetPitchY()        const        { return fPitchX;          }

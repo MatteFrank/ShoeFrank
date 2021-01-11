@@ -433,7 +433,7 @@ string TATWparGeo::PrintRotations()
     TVector3  fAngle = fpFootGeo->GetTWAngles();
     TVector3 pos;
     
-    for (int i=0; i<GetNLayers(); i++){
+    for (int i=0; i<GetLayersN(); i++){
       for (int j=0; j<GetNBars(); j++){      
   
 	pos.SetXYZ(  GetBarPosition(i,j).X(),
@@ -532,7 +532,7 @@ string TATWparGeo::PrintBodies()
   
     ss << "* ***Scintillator bodies" << endl;
             
-    for (int i=0; i<GetNLayers(); i++){
+    for (int i=0; i<GetLayersN(); i++){
       for (int j=0; j<GetNBars(); j++){
 	
  	if (fvTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0)
@@ -593,7 +593,7 @@ string TATWparGeo::PrintSubtractBodiesFromAir() {
 
     for (int i=0; i<fvBody.size(); i++) {
       ss << " -" << fvBody.at(i);
-      if ((i+1)%10==0 && (i+1)<(GetNLayers()*GetNBars())) ss << endl;
+      if ((i+1)%10==0 && (i+1)<(GetLayersN()*GetNBars())) ss << endl;
     }
     ss << endl;
 

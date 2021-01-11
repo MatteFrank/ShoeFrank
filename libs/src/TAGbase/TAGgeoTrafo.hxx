@@ -139,7 +139,11 @@ public:
    TVector3 VecFromGlobalToTWLocal(TVector3 avec);
    TVector3 VecFromGlobalToCALocal(TVector3 avec);
 
-   
+   TVector3 FromTGLocalToBMLocal(TVector3 apoi);
+   TVector3 FromTGLocalToVTLocal(TVector3 apoi);
+   TVector3 FromITLocalToVTLocal(TVector3 apoi);
+   TVector3 FromTWLocalToVTLocal(TVector3 apoi);
+
    const TGeoHMatrix*   GetTrafo(const char* name) const;
    TGeoCombiTrans*      GetCombiTrafo(const char* name) const;
    void                 AddTrafo(TGeoHMatrix* mat);

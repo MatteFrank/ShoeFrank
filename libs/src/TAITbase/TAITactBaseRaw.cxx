@@ -86,14 +86,14 @@ void TAITactBaseRaw::CreateHistogram()
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 	  if (TAITparConf::IsMapHistOn()) {
 		 fpHisPixelMap[i] = new TH2F(Form("itPixelMap%d", i+1), Form("Vertex - pixel map for sensor %d", i+1), 
-									 pGeoMap->GetNPixelY(), 0, pGeoMap->GetNPixelY(), 
-									 pGeoMap->GetNPixelX(), 0, pGeoMap->GetNPixelX());
+									 pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy(), 
+									 pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
 		 fpHisPixelMap[i]->SetStats(kFALSE);
 		 AddHistogram(fpHisPixelMap[i]);
 	  }
       
 	  fpHisRateMap[i] = new TH1F(Form("itRateMap%d", i+1), Form("Vertex - rate per line for sensor %d", i+1), 
-								 pGeoMap->GetNPixelX(), 0, pGeoMap->GetNPixelX());
+								 pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
 	  AddHistogram(fpHisRateMap[i]);
 
 	  fpHisRateMapQ[i] = new TH1F(Form("itRateMapQ%d", i+1), Form("Vertex - rate per quadrant for sensor %d", i+1), 10, 0, 5);

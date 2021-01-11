@@ -430,7 +430,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
         
         TABMtrack* track = bmTrack->GetTrack(iTrack);
         
-        Int_t nHits = track->GetNhitTot();
+        Int_t nHits = track->GetHitsNtot();
         // cout << " nHits  BM  " <<  nHits << endl;
         
         TVector3 Pvers = track->GetSlope();  //direction of the track from mylar1_pos to mylar2_pos

@@ -64,9 +64,9 @@ TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
 {
    SetFunctions();
    fPitchX   = fpParGeo->GetPitchX()*TAGgeoTrafo::CmToMu();
-   fPixelsNx = fpParGeo->GetNPixelX();
+   fPixelsNx = fpParGeo->GetPixelsNx();
    fPitchY   = fpParGeo->GetPitchY()*TAGgeoTrafo::CmToMu();
-   fPixelsNy = fpParGeo->GetNPixelY();
+   fPixelsNy = fpParGeo->GetPixelsNy();
 }
 
 //------------------------------------------+-----------------------------------

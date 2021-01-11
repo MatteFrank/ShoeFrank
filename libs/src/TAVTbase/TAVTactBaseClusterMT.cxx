@@ -51,8 +51,8 @@ TAVTactBaseClusterMT::TAVTactBaseClusterMT(const char* name,
       printf("Wrong prefix for histograms !");
 
    TAVTparGeo* geoMap = (TAVTparGeo*)fpGeoMap->Object();
-   fDimY = geoMap->GetNPixelY()+1;
-   fDimX = geoMap->GetNPixelX()+1;
+   fDimY = geoMap->GetPixelsNy()+1;
+   fDimX = geoMap->GetPixelsNx()+1;
    
    // max threads
    fThreadsN = fgMaxThreadsN;
@@ -94,8 +94,8 @@ void TAVTactBaseClusterMT::CreateHistogram()
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 	  if (TAVTparConf::IsMapHistOn()) {
 		 fpHisClusMap[i] = new TH2F(Form("%sClusMap%d", fPrefix.Data(), i+1), Form("%s - clusters map for sensor %d", fTitleDev.Data(), i+1),
-									100, -pGeoMap->GetPitchX()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchY()*pGeoMap->GetNPixelX()/2.,
-									100, -pGeoMap->GetPitchY()*pGeoMap->GetNPixelX()/2., pGeoMap->GetPitchY()*pGeoMap->GetNPixelX()/2.);
+									100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchY()*pGeoMap->GetPixelsNx()/2.,
+									100, -pGeoMap->GetPitchY()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchY()*pGeoMap->GetPixelsNx()/2.);
 		 fpHisClusMap[i]->SetMarkerStyle(20);
 		 fpHisClusMap[i]->SetMarkerSize(.6);
 		 fpHisClusMap[i]->SetMarkerColor(1);
