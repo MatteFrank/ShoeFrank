@@ -316,6 +316,8 @@ private:
   TH1D* percentageOfMCTracksVTX;
   TH1D* tempPurity;
   TH1D* qoverp;
+  TH1D* tempPurityFalse;
+
   TH1D* qoverpsel;
   TH1I* ITstudy;
   TH1I* MSDstudy;
