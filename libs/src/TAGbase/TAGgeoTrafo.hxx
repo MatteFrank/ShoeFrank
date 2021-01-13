@@ -141,6 +141,7 @@ public:
 
    TVector3 FromTGLocalToBMLocal(TVector3 apoi);
    TVector3 FromTGLocalToVTLocal(TVector3 apoi);
+   TVector3 FromTGLocalToITLocal(TVector3 apoi);
    TVector3 FromITLocalToVTLocal(TVector3 apoi);
    TVector3 FromTWLocalToVTLocal(TVector3 apoi);
 
