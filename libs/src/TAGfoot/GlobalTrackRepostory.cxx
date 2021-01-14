@@ -405,9 +405,14 @@ void GlobalTrackRepostory::Save( ) {
 	TCanvas* mirror = new TCanvas("TrackChi2Plot", "TrackChi2Plot", 700, 700);
 
 	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dP_x_bin.begin(); collIt != h_dP_x_bin.end(); collIt++ ) {
-		string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dP_x_bin";
+		string pathName = m_kalmanOutputDir+"/"+(*collIt).first;
 		if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
 		system(("mkdir "+pathName).c_str());
+		pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dP_x_bin";
+		if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
+		system(("mkdir "+pathName).c_str());
+
+
 		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
 			(*it).second->GetXaxis()->SetTitle("dP(GeV)");
 			(*it).second->Draw();
@@ -416,9 +421,13 @@ void GlobalTrackRepostory::Save( ) {
 	}
 	gStyle->SetOptFit(111111);
 	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ ) {
-		string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dPOverP_x_bin";
+		string pathName = m_kalmanOutputDir+"/"+(*collIt).first;
 		if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
 		system(("mkdir "+pathName).c_str());
+		pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dPOverP_x_bin";
+		if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
+		system(("mkdir "+pathName).c_str());
+
 		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
 			(*it).second->GetXaxis()->SetTitle("dP/P");
 			(*it).second->Draw();
@@ -427,9 +436,13 @@ void GlobalTrackRepostory::Save( ) {
 	}
 	gStyle->SetOptFit(111);
 	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverSigmaP_x_bin.begin(); collIt != h_dPOverSigmaP_x_bin.end(); collIt++ ) {
-		string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dPOverSigmaP_x_bin";
+		string pathName = m_kalmanOutputDir+"/"+(*collIt).first;
 		if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
 		system(("mkdir "+pathName).c_str());
+		pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dPOverSigmaP_x_bin";
+		if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
+		system(("mkdir "+pathName).c_str());
+
 		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
 			(*it).second->GetXaxis()->SetTitle("dP/sigmaP");
 			(*it).second->Draw();

@@ -40,9 +40,14 @@ KFitter::KFitter () {
 
   // Create dir for kalman output
   struct stat info;
+  m_kalmanOutputDir = (string)getenv("FOOTRES");
+  if( stat( m_kalmanOutputDir.c_str(), &info ) != 0 )		//cannot access
+  system(("mkdir "+m_kalmanOutputDir).c_str());
+
   m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman";
   if( stat( m_kalmanOutputDir.c_str(), &info ) != 0 )		//cannot access
-    system(("mkdir "+m_kalmanOutputDir).c_str());
+  system(("mkdir "+m_kalmanOutputDir).c_str());
+
 
   // class for control plot dumping
   ControlPlotsRepository::Instance();
