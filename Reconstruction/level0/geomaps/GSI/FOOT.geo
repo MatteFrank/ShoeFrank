@@ -9,7 +9,7 @@ TargetAngX: 0. TargetAngX: 0. TargetAngX: 0.
 
 BmBaseName: "BM"
 BmPosX: 0.21 BmPosY: -0.65 BmPosZ: -22.394348
-BmAngX: 1.47 BmAngY: 0.05 BmAngZ:   0.
+BmAngX: 1.37    BmAngY: 0.056 BmAngZ:   0.
 
 VertexBaseName: "VT"
 VertexPosX: 0. VertexPosY:   0. VertexPosZ: 2.1
@@ -28,7 +28,7 @@ MultiStripPosX: 0. MultiStripPosY: 0. MultiStripPosZ: 29.
 MultiStripAngX: 0. MultiStripAngY: 0. MultiStripAngZ: 0.
 
 TofWallBaseName: "TW"
-TofWallPosX: -1. TofWallPosY:  -1.1 TofWallPosZ: 180.25
+TofWallPosX: -1. TofWallPosY:  -1. TofWallPosZ: 180.25
 TofWallAngX: 0. TofWallAngY:  0. TofWallAngZ: 0.
 
 CaloBaseName: "CA"
