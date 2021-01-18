@@ -102,6 +102,7 @@ Bool_t TABMdigitizer::Process(Double_t /*edep*/, Double_t x0, Double_t y0, Doubl
           d->second->SetRdrift(rdrift);
           d->second->SetTdrift(fpParCal->GetTimeFromRDrift(rdrift));
           d->second->SetSigma(fpParCal->ResoEval(rdrift));
+          fCurrentHit=d->second;
           return true;
         }else
           return false;// the present hit should not be charged
