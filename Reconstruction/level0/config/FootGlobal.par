@@ -19,8 +19,8 @@ MC Particle Types:	C11	C12	C13 C14	Li6	Li7	B7	B9	B10	Be10	Be11	N14	N15	O16 O15
 IncludeKalman:   n
 IncludeTOE:      n
 
-Kalman Mode: 		ON
-Tracking Systems Considered:		VT IT MSD
+Kalman Mode: 		ref
+Tracking Systems Considered:		VT IT MSD TW
 Reverse Tracking:	false
 
 VT  Reso: 0.0006
@@ -32,13 +32,13 @@ Kalman Particle Types:	C
 
 ############	END - Kalman Filter Control Parameters	################
 
-IncludeDI:			   n
+IncludeDI:			   y
 IncludeST:				y
 IncludeBM:				y
 IncludeTG:			   y
 IncludeVertex:			y
-IncludeInnerTracker:	n
-IncludeMSD:				n
+IncludeInnerTracker:	y
+IncludeMSD:				y
 IncludeTW:				y
 IncludeCA:				n
 
