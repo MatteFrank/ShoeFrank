@@ -6,7 +6,7 @@
 
 #include "LocalRecoMC.hxx"
 
-#include "FootField.hxx"
+#include "TADIgenField.hxx"
 
 #include "KFitter.hxx"
 #include "UpdatePDG.hxx"
@@ -19,9 +19,9 @@ class GlobalRecoMC : public LocalRecoMC
 public:
   //! default constructor
   GlobalRecoMC(TString expName, TString fileNameIn = "", TString fileNameout = "");
-  
+
   virtual ~GlobalRecoMC();
-  
+
   void BeforeEventLoop();
 
   void LoopEvent(Int_t nEvents);
