@@ -25,6 +25,7 @@ void GlobalRecoMC::BeforeEventLoop()
 
 	TADIparGeo* fDipole = GetParGeoDi();
 	//if (!fDipole) std::cout << "WARNING NO MAG FIELD LOADED" << std::endl;
+
   TADIgeoField* footMagField = new TADIgeoField(fDipole);
   TADIgenField* genfitMagField = new TADIgenField(footMagField);
   genfit::FieldManager::getInstance()->init(genfitMagField);
