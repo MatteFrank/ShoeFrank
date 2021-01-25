@@ -44,7 +44,7 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
     // fTofPropAlpha(0.066), // velocity^-1 of light propagation in the TW bar (ns/cm)
     // fTofErrPropAlpha(2.e-03),
     //Morrocchi:
-    fTofPropAlpha(67.43-03), // velocity^-1 of light propagation in the TW bar (ns/cm)
+    fTofPropAlpha(67.43e-03), // velocity^-1 of light propagation in the TW bar (ns/cm)
     fTofErrPropAlpha(0.09e-03),  // ns/cm
     fEvtCnt(0)
 {
@@ -243,6 +243,14 @@ Bool_t TATWactNtuRaw::Action() {
 	    // get the PosId (0-399) of the cross btw horizontal and vertical bars
 	    Int_t    PosId  = GetBarCrossId(Layer,ShoeBarId,posAlongBar);
 
+	    Double_t btrain =  (hitb->GetTime() - hita->GetTime())/(2*fTofPropAlpha);  // local (TW) ref frame
+	    Double_t atrain =  (hita->GetTime() - hitb->GetTime())/(2*fTofPropAlpha); 
+
+	    if(FootDebugLevel(1)) {
+	      cout<<"ta::"<<hita->GetTime()<<"   tb::"<<hitb->GetTime()<<"  alpha::"<<fTofPropAlpha<<endl;
+	      cout<<"a::"<<atrain<<"  b::"<<btrain<<endl;
+	      cout<<"Eraw::"<<rawEnergy<<" posId::"<<PosId<<" layer::"<<Layer<<endl;
+	    }
 	    // get calibrated energy in MeV
 	    Double_t Energy = GetEnergy(rawEnergy,Layer,PosId,BarId);
 
@@ -265,7 +273,9 @@ Bool_t TATWactNtuRaw::Action() {
 	    fCurrentHit->SetChargeZ(Zrec);
 	    // ToF set as Time
 	    fCurrentHit->SetToF(Time);
-	    
+
+	    // cout<<"Time::"<<Time<<"  Tof::"<<fCurrentHit->GetToF()<<endl;
+
 	    if (ValidHistogram()) {
 	      fpHisDeTot->Fill(Energy);
 	      fpHisTimeTot->Fill(Time);
@@ -450,8 +460,8 @@ Double_t  TATWactNtuRaw::GetTimeOth(Double_t RawTimeOth, Int_t layerId, Int_t po
 
 Double_t TATWactNtuRaw::GetPosition(TATWrawHit*a,TATWrawHit*b)
 {
-  return (b->GetTime()-a->GetTime())/(2*fTofPropAlpha);  // local (TW) ref frame
-  // return (a->GetTime()-b->GetTime())/(2*fTofPropAlpha); 
+  return (b->GetTime() - a->GetTime())/(2*fTofPropAlpha);  // local (TW) ref frame
+  // A <----------- B
 }
 
 //________________________________________________________________

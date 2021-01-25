@@ -1,0 +1,34 @@
+// Campaign file
+CamName: "GSI_MC"
+RunNumber: 1-2
+NumberDevices: 6
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/GSI_MC/FOOT.geo": -1
+
+DetectorName: "ST"
+NumberFiles: 1
+"./geomaps/GSI_MC/TASTdetector.geo": -1
+
+DetectorName: "BM"
+NumberFiles: 2
+"./geomaps/GSI_MC/TABMdetector.geo": -1
+"./config/GSI_MC/TABMdetector.cfg": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/GSI_MC/TAGdetector.geo": -1
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/GSI_MC/TAVTdetector.geo": -1
+"./config/GSI_MC/TAVTdetector.cfg": -1
+
+DetectorName: "TW"
+NumberFiles: 5
+"./geomaps/GSI_MC/TATWdetector.geo": -1
+"./config/GSI_MC/TATW_BBparameters.cfg": -1
+"./config/GSI_MC/TATWbarsMapStatus.map": -1
+"./calib/GSI_MC/TATW_Energy_Calibration.cal": -1
+"./calib/GSI_MC/TATW_Tof_Calibration.cal": -1

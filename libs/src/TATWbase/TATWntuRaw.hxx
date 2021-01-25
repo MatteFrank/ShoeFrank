@@ -21,6 +21,7 @@
 #include "TATWdatRaw.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdata.hxx"
+#include "Parameters.h"
 
 class TATWntuHit : public TAGobject {
    
@@ -47,10 +48,10 @@ private:
 public:
   TATWntuHit();
   TATWntuHit( TATWrawHit* hit );
+  TATWntuHit(const TATWntuHit& aHit);
   TATWntuHit ( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTimeOth,
 		  	   Double_t pos,Double_t chargeCOM,Double_t ChargeA,
 	       Double_t ChargeB,Double_t TimeA,Double_t TimeB, Double_t TimeAOth,Double_t TimeBOth);
-   TATWntuHit(const TATWntuHit& aHit);
   ~TATWntuHit() {};
    void   Clear(Option_t* option = "C");
    bool IsColumn() { return ( m_layer == 0 ? true : false ); };
@@ -101,8 +102,8 @@ class TATWntuRaw : public TAGdata {
    
 private:
     TClonesArray*        m_listOfHits;
-    int m_hitlay1;
-    int m_hitlay2;
+    int m_hitlayX;   
+    int m_hitlayY;
 
 
 public:

@@ -6,11 +6,16 @@
  \brief   Declaration of TATWactNtuPoint.
  */
 /*------------------------------------------+---------------------------------*/
+#include "TError.h"
 
 #include "TAGaction.hxx"
 
 #include "TATWparGeo.hxx"
 #include "TATWparCal.hxx"
+
+#include "TAGparTools.hxx"
+#include "TAGparGeo.hxx"
+#include "TAGgeoTrafo.hxx"
 
 class TAVTntuCluster;
 class TAVTntuHit;
@@ -33,7 +38,16 @@ public:
    
    //! Find point
    virtual Bool_t  FindPoints();
-   
+  
+   //! Get Hit position
+   virtual Double_t  GetPositionFromDeltaTime(int layer, int bar, TATWntuHit* hit);
+   //! Get Hit position
+   virtual Double_t  GetPositionFromBarCenter(int layer, int bar, TATWntuHit* hit);
+   //! Get Local Point position
+   virtual TVector3  GetLocalPointPosition(int layer, double pos, int bar);
+   //! Set TW Point
+   virtual TATWpoint* SetTWPoint(TATWntuPoint* ntuPoint, int layer, TATWntuHit* hit1, TATWntuHit* hit2, TVector3 pos);
+
    //! Create histo
    void            CreateHistogram();
    
@@ -43,17 +57,26 @@ private:
    TAGparaDsc*     fpGeoMap;		 // geometry para dsc
    TAGparaDsc*     fpCalMap;		 // calibration Z para dsc
 
+   TAGparGeo*      fparGeo;
+   TAGgeoTrafo*    fgeoTrafo;
 
-   TATWparGeo*     fparGeo;
+   TATWparGeo*     fparGeoTW;
    TATWparCal*     fparCal;
 
+   Int_t           fZbeam;
    Float_t         fDefPosErr;    // default position error
 
    TH1F*           fpHisDist;
-   TH1F*           fpHisCharge1;
-   TH1F*           fpHisCharge2;
-   TH1F*           fpHisChargeTot;
-   
+   vector<TH1F*>   fpHisDeltaE;
+   vector<TH1F*>   fpHisDeltaTof;
+   vector<TH1F*>   fpHisElossMean;
+   vector<TH1F*>   fpHisTofMean;
+
+   map<Int_t,TATWntuHit*> mapHitX;
+   map<Int_t,TATWntuHit*> mapHitY;
+   map<Int_t,TATWntuHit*> mapMoreHits;
+   map<Int_t,TATWntuHit*> mapLessHits;
+
 
    ClassDef(TATWactNtuPoint,0)
 };
