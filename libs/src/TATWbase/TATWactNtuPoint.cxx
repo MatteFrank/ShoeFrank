@@ -292,7 +292,7 @@ Bool_t TATWactNtuPoint::FindPoints()
        
        minDist = fparGeoTW->GetBarHeight() - 2*fparGeoTW->GetBarWidth(); // borders have no overlapp (44 cm -2*2cm)
        
-       // use the time difference to compute position for the layer with more hits (and less Pile-up probability in order to disentangle ghosts)
+       // use the time difference to compute position for the layer with more hits (and less Pile-up probability)
        Double_t pos1 = GetPositionFromDeltaTime(layer1,bar1,hit1);
        
        best = false;
@@ -329,7 +329,7 @@ Bool_t TATWactNtuPoint::FindPoints()
 
 	 Int_t bar_min   = hitmin->GetBar();
 	 
-	 TVector3 posLoc = GetLocalPointPosition(layer1,pos1,bar_min);
+	 TVector3 posLoc = GetLocalPointPosition(layer1,pos1,bar1,bar_min);
 	 
 	 point = SetTWPoint(pNtuPoint,layer1,hit1,hitmin,posLoc);
 	 if(!point)
@@ -361,13 +361,10 @@ Bool_t TATWactNtuPoint::FindPoints()
 	   
 	   if( Z>0 && Z < fZbeam+1 ) {
 
-	     // golden cut utile per un clustering pulito anche se ammazza la statistica
-	     // if(Z==hitmin->GetChargeZ()) {
-	       fpHisElossMean[Z-1]->Fill(point->GetEnergyLoss()/2.);
-	       fpHisTofMean[Z-1]->Fill(point->GetMeanTof());
-	       fpHisDeltaE[Z-1]->Fill(point->GetColumnHit()->GetEnergyLoss()-point->GetRowHit()->GetEnergyLoss());
-	       fpHisDeltaTof[Z-1]->Fill(point->GetColumnHit()->GetTime()-point->GetRowHit()->GetTime());
-	     // }
+	     fpHisElossMean[Z-1]->Fill(point->GetEnergyLoss()/2.);
+	     fpHisTofMean[Z-1]->Fill(point->GetMeanTof());
+	     fpHisDeltaE[Z-1]->Fill(point->GetColumnHit()->GetEnergyLoss()-point->GetRowHit()->GetEnergyLoss());
+	     fpHisDeltaTof[Z-1]->Fill(point->GetColumnHit()->GetTime()-point->GetRowHit()->GetTime());
 	     
 	   }
 	 }
@@ -419,24 +416,20 @@ Double_t TATWactNtuPoint::GetPositionFromDeltaTime(Int_t layer, Int_t bar, TATWn
 
 Double_t TATWactNtuPoint::GetPositionFromBarCenter(Int_t layer, Int_t bar, TATWntuHit* hit) {
 
-  Double_t posAlongBar1(-99), posAlongBar2(-99), posPerpendicular(-99);
+  Double_t posAlongBar(-99), posPerpendicular(-99);
 
 
-     posAlongBar1  =  hit->GetPosition();
+     posAlongBar  =  hit->GetPosition();
 
-     if(layer==(Int_t)LayerX) {
-       posAlongBar2  = fparGeoTW->GetBarPosition(LayerX, bar)[0];
-       posPerpendicular  = fparGeoTW->GetBarPosition(LayerX, bar)[1];
-     }
-     else if(layer==(Int_t)LayerY) {
-       posPerpendicular  = fparGeoTW->GetBarPosition(LayerY, bar)[0];
-       posAlongBar2  = fparGeoTW->GetBarPosition(LayerY, bar)[1];
-     }
+     if(layer==(Int_t)LayerX)
+       posPerpendicular  = fparGeoTW->GetBarPosition(LayerX, bar)[1];  // get y bar position
+     else if(layer==(Int_t)LayerY) 
+       posPerpendicular  = fparGeoTW->GetBarPosition(LayerY, bar)[0];  // get x bar position
      else
        Error("FindPoints",Form("TW Layer %d doesn't exist...check what's going wrong...",layer));
 
      if(FootDebugLevel(1)) {
-       cout<<"posAlongBar   pos1::"<<posAlongBar1<<"  pos2::"<<posAlongBar2<<" delta::"<<TMath::Abs(posAlongBar2-posAlongBar1)<<"  posPerp::"<<posPerpendicular<<endl;
+       cout<<"posAlongBar::"<<posAlongBar<<"  posPerp::"<<posPerpendicular<<endl;
        cout<<"Z::"<<hit->GetChargeZ()<<"  Eloss::"<<hit->GetEnergyLoss()<<"  ToF::"<<hit->GetToF()<<endl;
      }
 
@@ -446,18 +439,20 @@ Double_t TATWactNtuPoint::GetPositionFromBarCenter(Int_t layer, Int_t bar, TATWn
 
 //____________________________________________________//
 
-TVector3 TATWactNtuPoint::GetLocalPointPosition(Int_t layer1, Double_t pos1, Int_t bar2)
+TVector3 TATWactNtuPoint::GetLocalPointPosition(Int_t layer1, Double_t pos1, Int_t bar1, Int_t bar2)
 {
 
     TVector3 posLoc(-99,-99,-99);
 	
     if(layer1==(Int_t)LayerX) {
-      posLoc.SetX( pos1 );
+      // posLoc.SetX( pos1 );
+      posLoc.SetX( fparGeoTW->GetBarPosition(LayerX, bar1 )[1]);
       posLoc.SetY( fparGeoTW->GetBarPosition(LayerY, bar2 )[0]);
     }
     else if(layer1==(Int_t)LayerY) {
-      posLoc.SetX( fparGeoTW->GetBarPosition(LayerY, bar2 )[1] );
-      posLoc.SetY( pos1 );
+      posLoc.SetX( fparGeoTW->GetBarPosition(LayerX, bar2 )[1] );
+      posLoc.SetY( fparGeoTW->GetBarPosition(LayerY, bar1 )[0] );
+      // posLoc.SetY( pos1 );
     }
     
     double zloc = fgeoTrafo->FromGlobalToTWLocal(fgeoTrafo->GetTWCenter()).z(); 

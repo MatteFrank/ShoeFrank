@@ -23,25 +23,25 @@ CamDataMC:    0
 CamDate: "5-8 April 2019"
 CamSum: "Test experiment with ST+BM+VTX+TW…"
 
-CamNumber:    4
+CamNumber:    7
 CamName:    "GSI_MC"
 CamDataMC:    1
 CamDate: "5-8 April 2019"
-CamSum: "Simulation data for 16O on 12C with ST+BM+VTX+TW…"
+CamSum: "Simulation data for 16O @ 200 and 400 MeV/u with C 5mm target with ST+BM+VTX+TW…"
 
-CamNumber:    5
+CamNumber:    4
 CamName:   "HE_MC"
 CamDataMC:    1
 CamDate: "5-8 January 2020"
 CamSum: "Simulation data for 4He on 12C (5mm target) @ 700MeV/u"
 
-CamNumber:    6
+CamNumber:    5
 CamName:    "H_MC"
 CamDataMC:    1
 CamDate: "16 & 24 May 2020"
 CamSum: "Simulation data for 1H on C2H4 for 5mm target thickness @ 200MeV/u (run 1) and @ 700MeV/u (run 2)"
 
-CamNumber:    7
+CamNumber:    6
 CamName:    "CNAO2020"
 CamDataMC:    1
 CamDate: "December 2020"

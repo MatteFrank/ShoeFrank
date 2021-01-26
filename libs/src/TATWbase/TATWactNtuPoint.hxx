@@ -44,7 +44,7 @@ public:
    //! Get Hit position
    virtual Double_t  GetPositionFromBarCenter(int layer, int bar, TATWntuHit* hit);
    //! Get Local Point position
-   virtual TVector3  GetLocalPointPosition(int layer, double pos, int bar);
+  virtual TVector3  GetLocalPointPosition(int layer1, double pos1, int bar1, int bar2);
    //! Set TW Point
    virtual TATWpoint* SetTWPoint(TATWntuPoint* ntuPoint, int layer, TATWntuHit* hit1, TATWntuHit* hit2, TVector3 pos);
 
