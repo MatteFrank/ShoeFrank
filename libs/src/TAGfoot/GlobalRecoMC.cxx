@@ -10,12 +10,14 @@ GlobalRecoMC::GlobalRecoMC(TString expName, TString fileNameIn, TString fileName
 {
 
 	EnableTracking();
+  EnableItrTracking();
 
 }
 
 //__________________________________________________________
 GlobalRecoMC::~GlobalRecoMC()
 {
+  delete m_kFitter;
 }
 
 //__________________________________________________________

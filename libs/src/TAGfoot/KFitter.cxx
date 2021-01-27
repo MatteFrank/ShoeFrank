@@ -1021,8 +1021,28 @@ int KFitter::PrepareData4Fit_dataLike() {
 
     ofs << "vertex numebr " << iVtx << " has this nr of tracks " << vtxPD->GetTracksN() <<endl;
 
+    //first try with TAITntuTrack
+    TAITntuTrack* innerTrackerContainer = (TAITntuTrack*) gTAGroot->FindDataDsc("itTrack", "TAITntuTrack")->Object();
+    std::cout << "number of IT tracks is " << innerTrackerContainer->GetTracksN() << std::endl;
+    //loop over inner tracker tracks
+    for (Int_t jTrack = 0; jTrack < innerTrackerContainer->GetTracksN(); jTrack++){
+      TAITtrack* innerTrack = innerTrackerContainer->GetTrack(jTrack);
+      Int_t numberClusterIT = innerTrack->GetClustersN();
+      std::cout << "number of cluster in track " << jTrack << " is " << numberClusterIT << std::endl;
+      // for (Int_t jCluster = 0; jCluster < innerTrack->GetClustersN(); ++jCluster){
+      //   TAITcluster* itClus = innerTrack->GetCluster( jCluster );
+      // }
+      innerTrack->GetSlopeZ().Print();
+    }
+
+
     //loop over tracks
     for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {
+
+
+      AbsTrackRep* rep = 0x0;
+      AbsTrackRep* rep1 = 0x0;
+      AbsTrackRep* rep2 = 0x0;
 
       TAVTtrack* track = vtxPD->GetTrack( iTrack );
       int montecarloTrackIndex = -1;
@@ -1034,7 +1054,7 @@ int KFitter::PrepareData4Fit_dataLike() {
 
       // N clusters per track
       int ncluster = track->GetClustersN();
-      ofs << "Track number " << iTrack << " has this number of clusters " << ncluster << endl;
+      //ofs << "Track number " << iTrack << " has this number of clusters " << ncluster << endl;
 
       // loop over clusters in the track  get clusters in track
       for (int iCluster = 0; iCluster < ncluster; iCluster++) {
@@ -1057,9 +1077,10 @@ int KFitter::PrepareData4Fit_dataLike() {
         Prepare4Vertex( clus, iTrack, iCluster );				//fill map m_hitCollectionToFit_dataLike
 
       }
-      ofs << "MONTECARLO CHARGE OF " << montecarloTrackIndex << " IS " << montecarloCharge << endl;
-      ofs << "MONTECARLO INIT POS IS " <<  montecarloInitPos.X() << " " << montecarloInitPos.Y() << " " << montecarloInitPos.Z() << endl;
-      ofs << "MONTECARLO FINAL POS IS " <<  montecarloFinalPos.X() << " " << montecarloFinalPos.Y() << " " << montecarloFinalPos.Z() << endl;
+      std::cout << "MONTECARLO CHARGE OF " << montecarloTrackIndex << " IS " << montecarloCharge << endl;
+      std::cout << "MONTECARLO INIT POS IS " <<  montecarloInitPos.X() << " " << montecarloInitPos.Y() << " " << montecarloInitPos.Z() << endl;
+      std::cout << "MONTECARLO FINAL POS IS " <<  montecarloFinalPos.X() << " " << montecarloFinalPos.Y() << " " << montecarloFinalPos.Z() << endl;
+      track->GetSlopeZ().Print();
 
       //percentageOfMCTracksVTX->Fill(MCindexInTrack/ncluster);
       TVector3 pos_(0, 0, 0);	//global coord [cm]
@@ -1067,9 +1088,9 @@ int KFitter::PrepareData4Fit_dataLike() {
       Track*  fitTrack_ = new Track();  // container of the tracking objects
 
       for (std::set<int>::iterator it = partHypo.begin(); it != partHypo.end(); ++it){
-        AbsTrackRep* rep = 0x0;
-        AbsTrackRep* rep1 = 0x0;
-        AbsTrackRep* rep2 = 0x0;
+        // AbsTrackRep* rep = 0x0;
+        // AbsTrackRep* rep1 = 0x0;
+        // AbsTrackRep* rep2 = 0x0;
 
         string nameParticle_ = "NONE";
         if (*it == 1) {nameParticle_ = "H"; areLightFragments = true;}
@@ -1103,7 +1124,8 @@ int KFitter::PrepareData4Fit_dataLike() {
       if ( fitTrack_->getNumReps() == 0 ){
         ofs << "deleting fitTrack_ no track reps" << endl;
         delete fitTrack_;
-        fitTrack_ = nullptr;
+        //fitTrack_ = nullptr;
+        //fitTrack_->Clear();
         continue;
       }
 
@@ -1137,6 +1159,7 @@ int KFitter::PrepareData4Fit_dataLike() {
       if (fitTrack_->getNumPointsWithMeasurement() > 4){
         //ofs << "Warning: cluster in this track are more than four, skip track for now " << endl;
         delete fitTrack_;
+        //fitTrack_->Clear();
         continue;
       }
 
@@ -1164,7 +1187,7 @@ int KFitter::PrepareData4Fit_dataLike() {
       TF1* polyY = graphErrorY->GetFunction("pol1");
 
       //double chichiY = polyY->GetChisquare();
-      //cout << polyY->GetParameter(0) << "    " << polyY->GetParameter(1) << " " << polyY->GetChisquare() << endl;
+      cout << polyY->GetParameter(0) << "    " << polyY->GetParameter(1) << " " << polyY->GetChisquare() << endl;
       //cout << polyX->GetParameter(0) << "    " << polyX->GetParameter(1) << " " << polyX->GetChisquare() << endl;
 
       double firstGuessYOnIT = polyY->Eval(m_detectorPlanes[4]->getO().Z());
@@ -1184,23 +1207,28 @@ int KFitter::PrepareData4Fit_dataLike() {
       if ( firstGuessYOnIT < -3.39 || firstGuessYOnIT > 3.39 ){
         ofs << "MyTrackFinding: track" << iTrack << "exits in Y from spectrometer, go to next track" << endl;
         delete fitTrack_;
-        fitTrack_ = nullptr;
+        // fitTrack_ = nullptr;
+        //fitTrack_->Clear();
         continue;
       }
 
       if ( firstGuessXOnIT < -4.5 || firstGuessXOnIT > 4.5){
         ofs << "MyTrackFinding: track" << iTrack << "exits in X from spectrometer, go to next track" << endl;
         delete fitTrack_;
-        fitTrack_ = nullptr;
+        // fitTrack_ = nullptr;
+        //fitTrack_->Clear();
         continue;
       }
 
       if ( !m_detectorPlanes[4]->isInActiveX(firstGuessXOnIT) ){
         ofs << "MyTrackFinding: track" << iTrack << "exits in X from spectrometer, go to next track" << endl;
         delete fitTrack_;
-        fitTrack_ = nullptr;
+        // fitTrack_ = nullptr;
+        //fitTrack_->Clear();
         continue;
       }
+
+
 
       //really risky
       bool isInPlane4 = m_detectorPlanes[4]->isInActiveY(firstGuessYOnIT + .1) || m_detectorPlanes[4]->isInActiveY(firstGuessYOnIT - .1);
@@ -1398,13 +1426,15 @@ int KFitter::PrepareData4Fit_dataLike() {
       else if ( chargeFromTW == -1 ) {
         ofs << "deleting fitTrack_ no valid point on TW found" << endl;
         delete fitTrack_;
-        fitTrack_ = nullptr;
+        // fitTrack_ = nullptr;
+        //fitTrack_->Clear();
         continue;
       }
       if ( cardinal == "NONE" ) {
         ofs << "deleting fitTrack_ no valid point on TW found bis" << endl;
         delete fitTrack_;
-        fitTrack_ = nullptr;
+        // fitTrack_ = nullptr;
+        //fitTrack_->Clear();
         continue;
       }
 
@@ -1463,8 +1493,16 @@ int KFitter::PrepareData4Fit_dataLike() {
         MSDstudy->Fill(howManyWithMSD);
 
       }
-      //delete fitTrack_;
-      //fitTrack_ = nullptr;
+
+      // for ( int iNumRep = 0; iNumRep < fitTrack_->getNumReps(); ++iNumRep ){
+      //   m_refFitter->removeForwardBackwardInfo(fitTrack_, fitTrack_->getTrackRep(iNumRep))
+      // }
+
+      if(!m_IsEDOn){
+        delete fitTrack_;
+        // fitTrack_ = nullptr;
+        //fitTrack_->Clear();
+      }
 
     } //end track loop
     m_hitCollectionToFit_dataLike.clear();
@@ -1475,11 +1513,10 @@ int KFitter::PrepareData4Fit_dataLike() {
     //cout << "display->addEvent size  " << m_vectorTrack.size() << endl;
   }
 
-  for (unsigned int iVectorTrack = 0; iVectorTrack < m_vectorTrack.size(); ++iVectorTrack){
-    delete m_vectorTrack.at(iVectorTrack);
-  }
+  // for (unsigned int iVectorTrack = 0; iVectorTrack < m_vectorTrack.size(); ++iVectorTrack){
+  //   delete m_vectorTrack.at(iVectorTrack);
+  // }
   m_vectorTrack.clear();
-  //occhio che sfondo la memoria MEMORY LEAK
 
 
 }
@@ -2391,9 +2428,6 @@ int KFitter::MakeFit( long evNum ) {
 
     if (m_workWithMC)
     m_vectorTrack.clear();
-
-
-
     m_allHitsInMeasurementFormat.clear();
     //delete fitTrack;
     return 2;

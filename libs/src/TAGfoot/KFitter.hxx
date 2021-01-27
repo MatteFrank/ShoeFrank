@@ -95,7 +95,14 @@
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
 
+#include "TAITactBaseNtuTrack.hxx"
+#include "TAITactNtuTrack.hxx"
+#include "TAITactNtuTrackF.hxx"
+#include "TAITntuTrack.hxx"
+
+
 #include "TAVTtrack.hxx"
+#include "TAITtrack.hxx"
 
 
 
@@ -118,6 +125,8 @@ public:
   KFitter();
   ~KFitter() {
     delete m_fitter;
+    delete m_fitter_extrapolation;
+    delete m_refFitter;
   };
 
 
