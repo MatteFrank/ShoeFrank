@@ -352,7 +352,6 @@ Float_t TATWdigitizer::GetTimeLeft(Float_t pos, Float_t time, Float_t edep)
    Float_t alpha  = fTofPropAlpha;
 
    // Float_t timeL  = time - pos*alpha;
-   // the right thing to do would be insert the fSlatLenght in the formula as below but this has not be used for data calibration. Anyhow with the above formula the position along the bar can still be computed  
    Float_t timeL  = time + (fSlatLength/2. - pos) * alpha;  // Left--> positive Pos   L/A <-------- R/B
 
    Float_t resTofL = GetResTimeTW(edep)*TMath::Sqrt(2.); // Assume same time resolution L/R
@@ -369,7 +368,6 @@ Float_t TATWdigitizer::GetTimeRight(Float_t pos, Float_t time, Float_t edep)
    Float_t alpha  = fTofPropAlpha;
 
    // Float_t timeR  = time + pos*alpha;
-   // the right thing to do would be insert the fSlatLenght in the formula as below but this has not be used for data calibration. Anyhow with the above formula the position along the bar can still be computed  
    Float_t timeR  = time + (fSlatLength/2. + pos) * alpha;  // Right--> negative Pos L/A <-------- R/B
 
    Float_t resTofR = GetResTimeTW(edep)*TMath::Sqrt(2.); // Assume same time resolution L/R

@@ -446,12 +446,16 @@ TVector3 TATWactNtuPoint::GetLocalPointPosition(Int_t layer1, Double_t pos1, Int
 	
     if(layer1==(Int_t)LayerX) {
       // posLoc.SetX( pos1 );
-      posLoc.SetX( fparGeoTW->GetBarPosition(LayerX, bar1 )[1]);
-      posLoc.SetY( fparGeoTW->GetBarPosition(LayerY, bar2 )[0]);
+      posLoc.SetX( fparGeoTW->GetBarPosition(LayerY, bar2 )[0]);
+      posLoc.SetY( fparGeoTW->GetBarPosition(LayerX, bar1 )[1]);
+      // posLoc.SetX( fparGeoTW->GetBarPosition(LayerX, bar1 )[1]);
+      // posLoc.SetY( fparGeoTW->GetBarPosition(LayerY, bar2 )[0]);
     }
     else if(layer1==(Int_t)LayerY) {
-      posLoc.SetX( fparGeoTW->GetBarPosition(LayerX, bar2 )[1] );
-      posLoc.SetY( fparGeoTW->GetBarPosition(LayerY, bar1 )[0] );
+      posLoc.SetX( fparGeoTW->GetBarPosition(LayerY, bar1 )[0] );
+      posLoc.SetY( fparGeoTW->GetBarPosition(LayerX, bar2 )[1] );
+      // posLoc.SetX( fparGeoTW->GetBarPosition(LayerX, bar2 )[1] );
+      // posLoc.SetY( fparGeoTW->GetBarPosition(LayerY, bar1 )[0] );
       // posLoc.SetY( pos1 );
     }
     
