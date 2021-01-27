@@ -49,7 +49,7 @@ enum ParticleType {None=-1,Proton,Helium,Carbon,Oxygen};
 
 static std::map<ParticleType,std::string> ParticleName={{None,"None"},{Proton,"Proton"},{Helium,"Helium"},{Carbon,"Carbon"},{Oxygen,"Oxygen"}};
 
-enum TLayer {NoLayer=-1,LayerX=1,LayerY=0};  // layer1--> horizontal bars, layer0--> vertical bars
+enum TLayer {NoLayer=-1,LayerX=1,LayerY=0};  // LayerX--> horizontal bars, LayerY--> vertical bars
 
 static std::map<TLayer,std::string> LayerName={{LayerX,"LayerX"},{LayerY,"LayerY"}};
 

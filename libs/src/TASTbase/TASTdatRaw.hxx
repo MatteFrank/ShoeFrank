@@ -42,6 +42,8 @@ public:
   TASTdatRaw();
   virtual         ~TASTdatRaw();
 
+  Int_t             GetHitsN() {return fHistN;}
+  
   TASTrawHit*       GetHit(Int_t i_ind);
   const TASTrawHit* GetHit(Int_t i_ind) const;
 

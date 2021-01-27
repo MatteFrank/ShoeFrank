@@ -37,5 +37,5 @@ NumberFiles: 6
 "./config/GSI/TATW_BBparameters.cfg": -1
 "./config/GSI/TATWChannelMapXML.map": -1
 "./calib/GSI/TATW_Energy_Calibration.cal": -1
-"./calib/GSI/TATW_Tof_Calibration.cal": -1
+"./calib/GSI/TATW_Tof_Calibration.cal": 2239; 2251
 "./calib/GSI/TATWEnergyTuning.cal": -1
