@@ -31,7 +31,7 @@ public:
    void           SetFunctions();
    void           SetInitParFunction();
    
-   Bool_t         Process(Double_t edep, Double_t x0, Double_t y0, Double_t zin=0, Double_t zout=0, Double_t time = 0, Int_t sensorId = 0, Int_t Z =-99, Double_t px0 = 0, Double_t py0 = 0, Double_t pz0 = 0);
+   Bool_t         Process(Double_t edep, Double_t x0, Double_t y0, Double_t zin=0, Double_t timeST=0, Double_t tof = 0, Int_t sensorId = 0, Int_t Z =-99, Double_t px0 = 0, Double_t py0 = 0, Double_t pz0 = 0);
    
    Float_t        GetResCharge(Float_t energy);
    Float_t        GetResEnergyExp(Float_t energy);
@@ -52,6 +52,7 @@ public:
  
    Float_t        GetResPos(Float_t edep);
    Float_t        GetResToF(Float_t edep);
+   Float_t        GetResTimeTW(Float_t edep);
    
    Float_t        GetDeAttLeft(Float_t pos, Float_t edep);
    Double_t       DeAttLeft(Double_t* pos, Double_t* par);
@@ -59,8 +60,8 @@ public:
    Float_t        GetDeAttRight(Float_t pos, Float_t edep);
    Double_t       DeAttRight(Double_t* pos, Double_t* par);
    
-   Float_t        GetTofLeft(Float_t pos, Float_t time, Float_t edep);
-   Float_t        GetTofRight(Float_t pos, Float_t time, Float_t edep);
+   Float_t        GetTimeLeft(Float_t pos, Float_t time, Float_t edep);
+   Float_t        GetTimeRight(Float_t pos, Float_t time, Float_t edep);
    
    void           SetGain(Float_t g)   { fGain = g;          }
    TATWntuHit*    GetCurrentHit()      { return fCurrentHit; }
@@ -119,6 +120,15 @@ private:
    Float_t       fPosErrk0E;
 
    // TOF
+   TF1*          fTimeTWResE;
+   Float_t       fTimeTW_A;
+   Float_t       fTimeTWErr_A;
+   Float_t       fTimeTW_B;
+   Float_t       fTimeTWErr_B;
+   Float_t       fTimeTW_C;
+   Float_t       fTimeTWErr_C;
+
+  // TOF
    TF1*          fTofResE;
    Float_t       fTofCstE;
    Float_t       fTofErrCstE;
@@ -126,7 +136,7 @@ private:
    Float_t       fTofErrLambdaE;
    Float_t       fTofk0E;
    Float_t       fTofErrk0E;
-   
+
    Float_t       fTofPropAlpha; // inverse of light propagation velocity
    Float_t       fTofErrPropAlpha; 
 

@@ -1,15 +1,9 @@
 
-
-
-
 #include "TATWntuPoint.hxx"
-
 
 #include "TString.h"
 #include "TClonesArray.h"
 #include "TATWparGeo.hxx"
-#include "TATWntuPoint.hxx"
-
 
 
 ClassImp(TATWpoint) // Description of Single Detector TATWpoint
@@ -23,39 +17,58 @@ TATWpoint::TATWpoint()
    m_posErr(),
    m_positionG(),
    m_posErrG(),
-   m_row(0),
-   m_column(0),
+   m_row(-99),
+   m_column(-99),
    m_rowHit(0x0),
    m_columnHit(0x0),
-   m_de1(0.),
-   m_de2(0.),
-   m_time(0.),
-   m_matchCalIdx(-1),
-   m_chargeZ(0),
-   m_chargeZProba(0.)
+   m_de1(-99.),
+   m_de2(-99.),
+   m_time(-99.),
+   m_tof1(-99.),
+   m_tof2(-99.),
+   m_layer(-99),
+   m_id(-99),
+   m_chargeZ(-99),
+   m_chargeZProba(-99.)
 {
 }
 
 //______________________________________________________________________________
 //  build a point
-TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double dy, TATWntuHit* colHit )
+TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double dy, TATWntuHit* colHit, Int_t mainLayer )
 : TAGcluster(),
    m_position(x, y, 0),
    m_posErr(dx, dy, 0),
    m_rowHit(new TATWntuHit(*rowHit)),
    m_columnHit(new TATWntuHit(*colHit)),
-   m_matchCalIdx(-1),
-   m_chargeZ(0),
-   m_chargeZProba(0.)
+   m_layer(mainLayer),
+   m_id(-99),
+   m_chargeZ(-99),
+   m_chargeZProba(-99.)
 {
    m_row = m_rowHit->GetBar();
    m_column    = m_columnHit->GetBar();
    
    m_de1    = m_rowHit->GetEnergyLoss();
    m_de2    = m_columnHit->GetEnergyLoss();
+   m_tof1   = m_rowHit->GetTime();
+   m_tof2   = m_columnHit->GetTime();
    m_time   = m_rowHit->GetTime();
-   
-   for (Int_t j = 0; j < m_columnHit->GetMcTracksN(); ++j) {
+
+   // assign to the point the true id of the hit with no Pile-Up
+   if(m_layer==(Int_t)LayerX) {
+       
+     if(m_rowHit->GetMcTracksN())
+       m_id     = m_rowHit->GetMcTrackIdx(0);
+     
+   } else {
+     
+     if(m_columnHit->GetMcTracksN())
+       m_id     = m_columnHit->GetMcTrackIdx(0);
+     
+   }
+     
+  for (Int_t j = 0; j < m_columnHit->GetMcTracksN(); ++j) {
       Int_t idr = m_columnHit->GetMcTrackIdx(j);
       for (Int_t k = 0; k < m_rowHit->GetMcTracksN(); ++k) {
          Int_t idc = m_rowHit->GetMcTrackIdx(k);
@@ -67,12 +80,19 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double 
 
 //______________________________________________________________________________
 //
+void TATWpoint::SetPosition(TVector3& posLoc)
+{
+   m_position.SetXYZ(posLoc.X(), posLoc.Y(), posLoc.Z());
+   m_posErr.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.15);
+}
+
+//______________________________________________________________________________
+//
 void TATWpoint::SetPositionG(TVector3& posGlo)
 {
    m_positionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
-   m_posErrG.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.1);
+   m_posErrG.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.15);
 }
-
 
 //______________________________________________________________________________
 // Clear
@@ -113,11 +133,11 @@ TATWntuPoint::~TATWntuPoint()
 
 //______________________________________________________________________________
 //  standard 
-TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWntuHit* rowHit, double y, double dy, TATWntuHit* colHit ) {
+TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWntuHit* rowHit, double y, double dy, TATWntuHit* colHit, int mainLayer) {
 
 	// check on aorigin
 	TClonesArray &pixelArray = *m_listOfPoints;
-	TATWpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TATWpoint( x, dx, rowHit, y, dy, colHit );
+	TATWpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TATWpoint( x, dx, rowHit, y, dy, colHit, mainLayer);
 
 	return pixel;
 }

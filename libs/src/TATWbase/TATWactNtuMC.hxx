@@ -61,8 +61,10 @@ private:
     TH1F* fpHisRecPosMc;
     TH1F* fpHisRecTof;
     TH1F* fpHisRecTofMc;
-    TH2I* fpHisZID;
-    TH2I* fpHisZID_MCtrue;
+    TH2I* fpHisZID_f;
+    TH2I* fpHisZID_r;
+    TH2I* fpHisZID_MCtrue_f;
+    TH2I* fpHisZID_MCtrue_r;
     TH2D* fpHisElossTof_MCrec[nLayers];
     TH2D* fpHisElossTof_MCtrue[nLayers];
     // vector of histo with the same size of the ion beam atomic number
