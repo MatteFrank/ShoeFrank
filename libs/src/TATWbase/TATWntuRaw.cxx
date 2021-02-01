@@ -17,25 +17,51 @@
 
 ClassImp(TATWntuHit) // Description of Single Detector TATWntuHit 
 
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+
+TATWntuHit::TATWntuHit()
+  : m_layer(-1),
+    m_bar(-1),
+    m_de(-1),
+    m_time(-1),
+    m_timeofflight(-1),
+    m_coordinate(-99),
+    m_z(-99),
+    m_chargeZ(-99),
+    m_chargeCOM(-1),
+    m_ChargeA(-1),
+    m_ChargeB(-1),
+    m_TimeA(-1),
+    m_TimeB(-1),
+    m_time_oth(-1),
+    m_TimeA_oth(-1),
+    m_TimeB_oth(-1)
+    //m_de(0.),m_time(0.),m_time_oth(0.),m_coordinate(0.),m_z(0.)
+{
+}
+
+
 //______________________________________________________________________________
 //  build a hit from a rawHit
 TATWntuHit::TATWntuHit( TATWrawHit* hit )
 : TAGobject(),
-  m_layer(0),
-  m_bar(0),
-  m_de(0),
-  m_time(0),
-  m_coordinate(0),
-  m_z(0),
-  m_chargeZ(0),
-  m_chargeCOM(0),
-  m_ChargeA(0),
-  m_ChargeB(0),
-  m_TimeA(0),
-  m_TimeB(0),
-  m_time_oth(0),
-  m_TimeA_oth(0),
-  m_TimeB_oth(0)
+  m_layer(-1),
+  m_bar(-1),
+  m_de(-1),
+  m_time(-1),
+  m_timeofflight(-1),
+  m_coordinate(-99),
+  m_z(-99),
+  m_chargeZ(-99),
+  m_chargeCOM(-1),
+  m_ChargeA(-1),
+  m_ChargeB(-1),
+  m_TimeA(-1),
+  m_TimeB(-1),
+  m_time_oth(-1),
+  m_TimeA_oth(-1),
+  m_TimeB_oth(-1)
 {
 }
 
@@ -47,6 +73,7 @@ TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
    m_bar(aHit.m_bar),
    m_de(aHit.m_de),
    m_time(aHit.m_time),
+   m_timeofflight(aHit.m_timeofflight),
    m_coordinate(aHit.m_coordinate),
    m_z(aHit.m_z),
    m_chargeZ(aHit.m_chargeZ),
@@ -64,17 +91,8 @@ TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
 {
 }
 
-//------------------------------------------+-----------------------------------
-//! Default constructor.
-
-TATWntuHit::TATWntuHit()
-  : m_layer(-1), m_bar(-1), m_de(0.),m_time(0.),m_time_oth(0.),m_coordinate(0.),m_z(0.)
-{
-}
-
-
 //______________________________________________________________________________
-// Build the hit from its sensor, line and column// constructor of a Pixel with column and line 
+// Build the hit from its layerID and barID
 TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
 			Double_t pos,Double_t chargeCOM,Double_t ChargeA,
 			Double_t ChargeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth):
@@ -84,9 +102,12 @@ TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, D
   m_bar(aBar),
   m_de(aDe),
   m_time(aTime),
+  m_timeofflight(-1),
   m_coordinate(pos),
-  m_z(0),
-  m_chargeZ(0),
+  m_z(-99),
+  m_chargeZ(-99),
+  // m_z(0),
+  // m_chargeZ(0),
   m_chargeCOM(chargeCOM),
   m_ChargeA(ChargeA),
   m_ChargeB(ChargeB),
@@ -119,6 +140,7 @@ void TATWntuHit::Clear(Option_t* /*option*/)
 	m_bar=0;
 	m_de=0;
 	m_time=0;
+	m_timeofflight=0,
 	m_coordinate=0;
 	m_z=0;
         m_chargeZ = 0;
@@ -130,6 +152,7 @@ void TATWntuHit::Clear(Option_t* /*option*/)
 	m_time_oth=0;
 	m_TimeA_oth=0;
 	m_TimeB_oth=0;
+
 }
 
 //##############################################################################
@@ -144,8 +167,8 @@ TATWntuRaw::TATWntuRaw()
 : TAGdata(),
   m_listOfHits(0x0)
 {
-	m_hitlay1 = 0;
-	m_hitlay2 = 0;
+	m_hitlayY = 0;
+	m_hitlayX = 0;
 	SetupClones();
 }
 
@@ -162,8 +185,8 @@ TATWntuHit* TATWntuRaw::NewHit( int layer, int bar, double energyLoss, double at
 				double ChargeA, double ChargeB, double TimeA, double TimeB,  double TimeA_oth, double TimeB_oth) {
 
 	TClonesArray &pixelArray = *m_listOfHits;
-	if(layer == 0) m_hitlay1++;
-	else   if(layer == 1) m_hitlay2++;
+	if(layer == (int)LayerY) m_hitlayY++;
+	else   if(layer == (int)LayerX) m_hitlayX++;
 	TATWntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWntuHit( layer, bar, energyLoss, atime, atime_oth, pos,
 										   chargeCOM,ChargeA, ChargeB, TimeA, TimeB,  TimeA_oth, TimeB_oth);
 	return hit;
@@ -173,15 +196,15 @@ TATWntuHit* TATWntuRaw::NewHit( int layer, int bar, double energyLoss, double at
 //! return number of hits for a given sensor.  
 int TATWntuRaw::GetHitN(int layer) {
 
-	if(layer == 0) return m_hitlay1;
-	else if(layer == 1) return m_hitlay2;
+  if(layer == (int)LayerY) return m_hitlayY;
+  else if(layer == (int)LayerX) return m_hitlayX;
 	else  return -1;
 
 }
 
 int TATWntuRaw::GetHitN()
 {
-	return m_hitlay1+m_hitlay2;
+	return m_hitlayY+m_hitlayX;
 }
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th hit
@@ -243,8 +266,8 @@ void TATWntuRaw::Clear(Option_t*) {
 
 	TAGdata::Clear();
 	m_listOfHits->Clear();
-	m_hitlay1=0;
-	m_hitlay2=0;
+	m_hitlayY=0;
+	m_hitlayX=0;
 
 }
 

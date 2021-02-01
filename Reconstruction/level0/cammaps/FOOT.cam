@@ -23,6 +23,12 @@ CamDataMC:    0
 CamDate: "5-8 April 2019"
 CamSum: "Test experiment with ST+BM+VTX+TW…"
 
+CamNumber:    7
+CamName:    "GSI_MC"
+CamDataMC:    1
+CamDate: "5-8 April 2019"
+CamSum: "Simulation data for 16O @ 200 and 400 MeV/u with C 5mm target with ST+BM+VTX+TW…"
+
 CamNumber:    4
 CamName:   "HE_MC"
 CamDataMC:    1
