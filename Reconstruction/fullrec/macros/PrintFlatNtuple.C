@@ -414,7 +414,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
       vtxPD = vtx->GetVertex(iVtx);
       
       if (vtxPD == 0x0) continue;
-      vtxPositionPD = vtxPD->GetVertexPosition();
+      vtxPositionPD = vtxPD->GetPosition();
       
       // cout << " vtxPositionPD  local " << vtxPositionPD[2]  << endl;
       vtxPositionPD = geoTrafo->FromVTLocalToGlobal(vtxPositionPD);

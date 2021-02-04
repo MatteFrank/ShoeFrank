@@ -6,6 +6,9 @@
 
 #include "G4RunManager.hh"
 #include "G4Version.hh"
+#include "G4VisManager.hh"
+#include "G4UIExecutive.hh"
+#include "G4VisExecutive.hh"
 
 #include "TCGbaseGeometryConstructor.hxx"
 #include "TCVTgeometryConstructor.hxx"

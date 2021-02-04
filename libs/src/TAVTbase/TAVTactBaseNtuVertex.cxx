@@ -178,7 +178,7 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
    for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
 	  TAVTvertex* vtx = pNtuVertex->GetVertex(i);
       
-	  TVector3 vtxPosition = vtx->GetVertexPosition();
+	  TVector3 vtxPosition = vtx->GetPosition();
 	  vtxPosition          = fpFootGeo->FromVTLocalToGlobal(vtxPosition);
 	  TVector3 bmPosition  = fpFootGeo->FromGlobalToBMLocal(vtxPosition);
 

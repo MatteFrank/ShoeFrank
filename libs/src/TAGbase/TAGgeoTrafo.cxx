@@ -262,6 +262,13 @@ TVector3 TAGgeoTrafo::FromTGLocalToVTLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+TVector3 TAGgeoTrafo::FromTGLocalToITLocal(TVector3 apoi)
+{
+  TVector3 posTg = FromTGLocalToGlobal(apoi);
+  return FromGlobalToITLocal(posTg);
+}
+
+//_____________________________________________________________________________
 TVector3 TAGgeoTrafo::FromITLocalToVTLocal(TVector3 apoi)
 {
   TVector3 posIt = FromITLocalToGlobal(apoi);
