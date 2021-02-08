@@ -20,12 +20,14 @@ int main (int argc, char *argv[])  {
    Bool_t trk = false;
    
    Int_t nTotEv = 1e7;
+   Int_t skipEv = 0;
    
    for (int i = 0; i < argc; i++){
-      if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);  }   // Raw file name for output
-      if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
-      if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
-      if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
+      if(strcmp(argv[i],"-out") == 0)   	{ out =TString(argv[++i]);  }   // Raw file name for output
+      if(strcmp(argv[i],"-in") == 0)    	{ in = TString(argv[++i]);  }   // Root file in input
+      if(strcmp(argv[i],"-exp") == 0)   	{ exp = TString(argv[++i]); }   // extention for config/geomap files
+      if(strcmp(argv[i],"-nev") == 0)   	{ nTotEv = atoi(argv[++i]); }   // Number of events to be analized
+      if(strcmp(argv[i],"-skipEv") == 0)   	{ skipEv = atoi(argv[++i]); }   // Number of events to be skipped
   
       if(strcmp(argv[i],"-ntu") == 0)   { ntu = true;   } // enable tree filling
       if(strcmp(argv[i],"-his") == 0)   { his = true;   } // enable histograming
@@ -73,7 +75,7 @@ int main (int argc, char *argv[])  {
    watch.Start();
    
    glbRec->BeforeEventLoop();
-   glbRec->LoopEvent(nTotEv);
+   glbRec->LoopEvent(nTotEv, skipEv);
    glbRec->AfterEventLoop();
    
    watch.Print();
