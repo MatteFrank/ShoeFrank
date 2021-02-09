@@ -70,7 +70,7 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents, Int_t skipEvent)
       if (!fTAGroot->NextEvent()) break;
 
       //m_globalTrackingStudies->Execute();
-      // m_kFitter->MakeFit(ientry);
+      m_kFitter->MakeFit(ientry);
 
    }
 }

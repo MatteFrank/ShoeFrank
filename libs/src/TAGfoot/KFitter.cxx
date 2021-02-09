@@ -281,75 +281,127 @@ void KFitter::CreateDetectorPlanes() {
     detectorplane->setV(0.,1.,0.);
     m_detectorPlanes[indexOfPlane] = detectorplane;
     ++indexOfPlane;
+
+    // cout << endl << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<<endl;
+    // cout << "Sensor VT "<<i<< endl;;
+    // m_GeoTrafo->FromVTLocalToGlobal(m_VT_geo->GetSensorPosition(i)).Print();
+    // cout << "\t\t "<< " x = "<< m_VT_geo->GetTotalSize().X() << " --> " << m_VT_geo->GetEpiSize().X() << endl;
+    // cout << "\t\t "<< " y = "<< m_VT_geo->GetTotalSize().Y() << " --> " << m_VT_geo->GetEpiSize().Y() << endl;
+    // cout << "\t\t Offset = "; 
+    // m_VT_geo->GetEpiOffset().Print();
+    // cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<< endl << endl;
   }
+
+  // cout << endl << endl << "       INNER        "<< endl << endl;
 
   for ( int i = 0; i < m_IT_geo->GetSensorsN(); i++ ) {
     TVector3 origin_(0.,0.,m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).Z());
-    if ( i == 0 ){
-      //WARNING: HARDCODED AHEAD (TO BE REMOVED)
-      genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -3.3918, -1.47 );
-      genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
-      detectorplane->setU(1.,0.,0.);
-      detectorplane->setV(0.,1.,0.);
-      m_detectorPlanes[indexOfPlane] = detectorplane;
-      ++indexOfPlane;
+
+    // cout << endl << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<<endl;
+    // cout << "Sensor "<<i<< endl;;
+    // m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).Print();
+    // cout << "\t\t "<< " x = "<< m_IT_geo->GetTotalSize().X() << " --> " << m_IT_geo->GetEpiSize().X() << endl;
+    // cout << "\t\t "<< " y = "<< m_IT_geo->GetTotalSize().Y() << " --> " << m_IT_geo->GetEpiSize().Y() << endl;
+    // cout << "\t\t Offset = "; 
+    // m_IT_geo->GetEpiOffset().Print();
+    // cout << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<< endl << endl;
+
+    float xMin = m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).x() - m_IT_geo->GetEpiSize().X()/2 + m_IT_geo->GetEpiOffset().x();
+    float xMax = m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).x() + m_IT_geo->GetEpiSize().X()/2 + m_IT_geo->GetEpiOffset().x();
+    float yMin = m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).y() - m_IT_geo->GetEpiSize().y()/2 + m_IT_geo->GetEpiOffset().y();
+    float yMax = m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).y() + m_IT_geo->GetEpiSize().y()/2 + m_IT_geo->GetEpiOffset().y();
+
+    // This make all the 32 IT sensors
+ //    genfit::AbsFinitePlane* recta = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
+	// genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
+	// detectorplane->setU(1.,0.,0.);
+	// detectorplane->setV(0.,1.,0.);
+	// m_detectorPlanes[indexOfPlane] = detectorplane;
+	// ++indexOfPlane;
+
+
+    if ( i % 4 == 0 ){
+		//WARNING: HARDCODED AHEAD (TO BE REMOVED)
+    	float boardMinX = xMin;
+    	float boardMaxX = m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i+3)).x() + m_IT_geo->GetEpiSize().X()/2 + m_IT_geo->GetEpiOffset().x();
+    	float boardMinY = yMin;
+    	float boardMaxY = yMax;
+    	// cout << " Test board "<<i<< " x "<< boardMinX << "  -->  "<< boardMaxX <<  "  y "<< boardMinY << "  -->  "<< boardMaxY << endl;
+		genfit::AbsFinitePlane* recta = new RectangularFinitePlane( boardMinX, boardMaxX, boardMinY, boardMaxY );
+		// genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -3.3918, -1.47 );
+
+		genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
+		detectorplane->setU(1.,0.,0.);
+		detectorplane->setV(0.,1.,0.);
+		m_detectorPlanes[indexOfPlane] = detectorplane;
+		++indexOfPlane;
     }
-    else if ( i == 4 ){
-      genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -1.77, 0.15 );
-      genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
-      detectorplane->setU(1.,0.,0.);
-      detectorplane->setV(0.,1.,0.);
-      m_detectorPlanes[indexOfPlane] = detectorplane;
-      ++indexOfPlane;
-    }
-    else if ( i == 8 ){
-      genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -0.15, 1.77 );
-      genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
-      detectorplane->setU(1.,0.,0.);
-      detectorplane->setV(0.,1.,0.);
-      m_detectorPlanes[indexOfPlane] = detectorplane;
-      ++indexOfPlane;
-    }
-    else if ( i == 12 ){
-      genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, 1.47, 3.39 );
-      genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
-      detectorplane->setU(1.,0.,0.);
-      detectorplane->setV(0.,1.,0.);
-      m_detectorPlanes[indexOfPlane] = detectorplane;
-      ++indexOfPlane;
-    }
-    else if ( i == 16 ){
-      genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -3.3918, -1.47 );
-      genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
-      detectorplane->setU(1.,0.,0.);
-      detectorplane->setV(0.,1.,0.);
-      m_detectorPlanes[indexOfPlane] = detectorplane;
-      ++indexOfPlane;
-    }
-    else if ( i == 20 ){
-      genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -1.77, 0.15 );
-      genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
-      detectorplane->setU(1.,0.,0.);
-      detectorplane->setV(0.,1.,0.);
-      m_detectorPlanes[indexOfPlane] = detectorplane;
-      ++indexOfPlane;
-    }
-    else if ( i == 24 ){
-      genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -0.15, 1.77 );
-      genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
-      detectorplane->setU(1.,0.,0.);
-      detectorplane->setV(0.,1.,0.);
-      m_detectorPlanes[indexOfPlane] = detectorplane;
-      ++indexOfPlane;
-    }
-    else if ( i == 28 ){
-      genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, 1.47, 3.39 );
-      genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
-      detectorplane->setU(1.,0.,0.);
-      detectorplane->setV(0.,1.,0.);
-      m_detectorPlanes[indexOfPlane] = detectorplane;
-      ++indexOfPlane;
-    }
+
+   //  Test board 0 x -4.011400  -->  4.047800  y -3.063880  -->  -1.142920
+   //  Test board 4 x -4.011400  -->  4.047800  y -1.442980  -->  0.477980
+   //  Test board 8 x -3.976600  -->  4.082600  y 0.178020  -->  2.098980
+   // Test board 12 x -3.976600  -->  4.082600  y 1.798920  -->  3.719880
+   // Test board 16 x -3.976600  -->  4.082600  y -3.063880  -->  -1.142920
+   // Test board 20 x -3.976600  -->  4.082600  y -1.442980  -->  0.477980
+   // Test board 24 x -4.011400  -->  4.047800  y 0.178020  -->  2.098980
+   // Test board 28 x -4.011400  -->  4.047800  y 1.798920  -->  3.719880
+
+    // else if ( i == 4 ){
+    //   genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -1.77, 0.15 );
+    //   genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
+    //   detectorplane->setU(1.,0.,0.);
+    //   detectorplane->setV(0.,1.,0.);
+    //   m_detectorPlanes[indexOfPlane] = detectorplane;
+    //   ++indexOfPlane;
+    // }
+    // else if ( i == 8 ){
+    //   genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -0.15, 1.77 );
+    //   genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
+    //   detectorplane->setU(1.,0.,0.);
+    //   detectorplane->setV(0.,1.,0.);
+    //   m_detectorPlanes[indexOfPlane] = detectorplane;
+    //   ++indexOfPlane;
+    // }
+    // else if ( i == 12 ){
+    //   genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, 1.47, 3.39 );
+    //   genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
+    //   detectorplane->setU(1.,0.,0.);
+    //   detectorplane->setV(0.,1.,0.);
+    //   m_detectorPlanes[indexOfPlane] = detectorplane;
+    //   ++indexOfPlane;
+    // }
+    // else if ( i == 16 ){
+    //   genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -3.3918, -1.47 );
+    //   genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
+    //   detectorplane->setU(1.,0.,0.);
+    //   detectorplane->setV(0.,1.,0.);
+    //   m_detectorPlanes[indexOfPlane] = detectorplane;
+    //   ++indexOfPlane;
+    // }
+    // else if ( i == 20 ){
+    //   genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -1.77, 0.15 );
+    //   genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
+    //   detectorplane->setU(1.,0.,0.);
+    //   detectorplane->setV(0.,1.,0.);
+    //   m_detectorPlanes[indexOfPlane] = detectorplane;
+    //   ++indexOfPlane;
+    // }
+    // else if ( i == 24 ){
+    //   genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, -0.15, 1.77 );
+    //   genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
+    //   detectorplane->setU(1.,0.,0.);
+    //   detectorplane->setV(0.,1.,0.);
+    //   m_detectorPlanes[indexOfPlane] = detectorplane;
+    //   ++indexOfPlane;
+    // }
+    // else if ( i == 28 ){
+    //   genfit::AbsFinitePlane* recta = new RectangularFinitePlane( -4.047, 4.012, 1.47, 3.39 );
+    //   genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), recta));
+    //   detectorplane->setU(1.,0.,0.);
+    //   detectorplane->setV(0.,1.,0.);
+    //   m_detectorPlanes[indexOfPlane] = detectorplane;
+    //   ++indexOfPlane;
+    // }
 
   }
 
