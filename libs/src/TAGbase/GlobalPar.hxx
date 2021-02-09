@@ -20,6 +20,7 @@
 
 using namespace std;
 
+
 // singleton class of global foot parameters
 class GlobalPar {
 
@@ -27,7 +28,7 @@ public:
 	static GlobalPar* Instance( string aparFileName = "FootGlobal.par" );
 	static GlobalPar* GetPar();
    
-public:
+
 	~GlobalPar();
 
 	void ReadParamFile();
@@ -35,17 +36,20 @@ public:
 
 	int  Debug()                const { return m_debug;               }
 
-	int  KalMode()              const { return m_kalmanMode;          }
+	// int KalMode()            const { return m_kalmanMode;          }
+	string KalMode()            const { return m_kalmanMode;          }
+	string PreselectStrategy()  const { return m_kPreselectStrategy;  }
 	bool IsKalReverse()         const { return m_kalReverse;          }
 	bool geoROOT()              const { return m_geoROOT;             }
 	bool geoFLUKA()             const { return m_geoFLUKA;            }
 	bool verFLUKA()             const { return m_verFLUKA;            }
+	bool EnableEventDisplay()   const { return m_enableEventDisplay;  }
    
 	vector<string> KalSystems()       { return m_trackingSystems;     }
 	vector<string> KalParticles()     { return m_kalParticles;        }
 	vector<string> MCParticles()      { return m_mcParticles;         }
 
-	 double VTReso() 	          const { return m_VTreso;              }
+	double VTReso() 	          const { return m_VTreso;              }
     double ITReso() 	          const { return m_ITreso;              }
     double MSDReso()           const { return m_MSDreso;             }
     double TWReso()            const { return m_TWreso;              }
@@ -134,16 +138,14 @@ public:
 		return "default";
 	};
 
+
 private:
 	GlobalPar();
 	GlobalPar( string aparFileName );
    
-private:
 	static GlobalPar* m_pInstance;
 
-private:
 	vector<string> m_copyInputFile;
-
 	vector<string> m_originAllowed;
 
 	map< string, pair< double, double > > m_map_range;
@@ -159,11 +161,14 @@ private:
 
 	vector<string> m_mcParticles;
 	
-	int m_kalmanMode;
+	// int m_kalmanMode;
+	string m_kalmanMode;
+	string m_kPreselectStrategy;
 	bool m_kalReverse;
 	bool m_geoROOT;
 	bool m_geoFLUKA;
 	bool m_verFLUKA;
+	bool m_enableEventDisplay;
 	vector<string> m_trackingSystems;
 	vector<string> m_kalParticles;
 

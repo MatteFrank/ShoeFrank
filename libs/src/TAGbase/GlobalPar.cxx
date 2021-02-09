@@ -49,12 +49,16 @@ GlobalPar::GlobalPar( string aparFileName ) {
     m_debug = 0;
     m_nLevelOfDebug = 4;    // from 0 to 4
 
+    m_kPreselectStrategy = "fire_ball";
+
     m_kalmanMode = -1;
 
     m_kalReverse = false;
     m_geoROOT = true;
     m_geoFLUKA = false;
     m_verFLUKA = false;
+
+    m_enableEventDisplay = false;
 
     ReadParamFile();
 }
@@ -80,7 +84,16 @@ void GlobalPar::ReadParamFile () {
         if ( line.find("Debug:") != string::npos ) {
             m_debug = atoi ( StrReplace( line, "Debug:", "" ).c_str() );
            
-        } else if ( line.find("MC Particle Types:") != string::npos ) {
+        } 
+
+        else if ( line.find("Genfit Event Display ON:") != string::npos ) {
+            string evDisp =StrReplace( line, "Genfit Event Display ON:", "" );   
+            RemoveSpace( &evDisp );
+            if ( evDisp == "y" )        m_enableEventDisplay = true;
+            else                    	m_enableEventDisplay = false;
+        }
+
+        else if ( line.find("MC Particle Types:") != string::npos ) {
             m_mcParticles.clear();
             string formulasString = StrReplace( line, "MC Particle Types:", "" );
             istringstream formulasStream( formulasString );
@@ -89,20 +102,26 @@ void GlobalPar::ReadParamFile () {
                 m_mcParticles.push_back(tmpString);
         } 
 
-        if ( line.find("Kalman Mode:") != string::npos ) {
+        else if ( line.find("Kalman Mode:") != string::npos ) {
             vector<string> tmp_Modes = { "OFF", "ON", "ref", "daf", "dafsimple" };
             istringstream sss(  StrReplace( line, "Kalman Mode:", "" ) );
             
             string inputMode;
             sss >> inputMode;
-            for (unsigned int i=0; i<tmp_Modes.size(); i++) {
 
-                if ( IEquals( inputMode, tmp_Modes[i] ) ) {
-                    m_kalmanMode = i;
-                    break;
-                }
-            }
-            if (m_kalmanMode == -1)         cout<< "ERROR  -->  Kalman Mode parameter "<< endl, exit(0);
+            if ( find(tmp_Modes.begin(), tmp_Modes.end(), inputMode) == tmp_Modes.end() )
+            	cout<< "ERROR  -->  Kalman Mode parameter "<< endl, exit(0);
+            m_kalmanMode = inputMode;
+
+            // for (unsigned int i=0; i<tmp_Modes.size(); i++) {
+
+            //     if ( IEquals( inputMode, tmp_Modes[i] ) ) {
+            //         m_kalmanMode = i;
+            //         break;
+            //     }
+            // }
+            // if (m_kalmanMode == -1)         cout<< "ERROR  -->  Kalman Mode parameter "<< endl, exit(0);
+
         } 
 
         else if ( line.find("Tracking Systems Considered:") != string::npos ) {
@@ -114,7 +133,19 @@ void GlobalPar::ReadParamFile () {
                 m_trackingSystems.push_back(tmpString);
         } 
 
+        else if ( line.find("Kalman preselection strategy:") != string::npos ) {
+            vector<string> tmp_Modes = { "TrueParticle", "Sept2020" };
+            istringstream sss(  StrReplace( line, "Kalman preselection strategy:", "" ) );
+            
+            string inputMode;
+            sss >> inputMode;
 
+            if ( find(tmp_Modes.begin(), tmp_Modes.end(), inputMode) == tmp_Modes.end() )
+            	cout<< "ERROR  -->  Kalman preselection strategy entry error "<< endl, exit(0);
+            m_kPreselectStrategy = inputMode;
+        }
+
+       	
         else if ( line.find("Reverse Tracking:") != string::npos ) {
             string rev =StrReplace( line, "Reverse Tracking:", "" );
             RemoveSpace( &rev );
@@ -283,8 +314,9 @@ void GlobalPar::ReadParamFile () {
 
 
     // Check mandatory parameters set
-    if ( m_debug < 0 || m_debug > m_nLevelOfDebug )     cout<< "ERROR :: GlobalPar.cxx  -->  wrong parameters config setting: debug level = "<< m_debug <<endl, exit(0);
-    if ( m_trackingSystems.size() < 1 )     cout<< "ERROR :: GlobalPar.cxx  -->  wrong parameters config setting: m_trackingSystems ize = 0"<<endl, exit(0);
+    if ( m_debug < 0 || m_debug > m_nLevelOfDebug ) cout<< "ERROR :: GlobalPar.cxx  -->  wrong parameters config setting: debug level = "<< m_debug <<endl, exit(0);
+    if ( m_trackingSystems.size() < 1 )     		cout<< "ERROR :: GlobalPar.cxx  -->  wrong parameters config setting: m_trackingSystems size = 0"<<endl, exit(0);
+    if ( m_kPreselectStrategy == "fire_ball" )     	cout<< "ERROR :: GlobalPar.cxx  -->  Preselect Strategy not set" << endl, exit(0);
 
  
     ifile.close();

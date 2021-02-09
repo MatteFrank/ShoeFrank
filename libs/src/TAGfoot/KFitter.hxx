@@ -181,6 +181,7 @@ public:
   void RecordTrackInfo( Track* track, string hitSampleName );
 
   void IncludeDetectors();
+  void CreateGeometry();
 
   int UploadHitsVT();
   int UploadHitsIT();
@@ -252,8 +253,6 @@ private:
 
   ControlPlotsRepository* m_controlPlotter;
   GlobalTrackRepostory* m_fitTrackCollection;
-
-  // TRandom3* m_diceRoll;
 
   bool m_workWithMC;
 
