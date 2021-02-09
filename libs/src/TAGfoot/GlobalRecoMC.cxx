@@ -10,14 +10,13 @@ GlobalRecoMC::GlobalRecoMC(TString expName, TString fileNameIn, TString fileName
 {
 
 	EnableTracking();
-  EnableItrTracking();
+	EnableItrTracking();
 
 }
 
 //__________________________________________________________
-GlobalRecoMC::~GlobalRecoMC()
-{
-  delete m_kFitter;
+GlobalRecoMC::~GlobalRecoMC() {
+	if ( GlobalPar::GetPar()->IncludeKalman() )			delete m_kFitter;
 }
 
 //__________________________________________________________
@@ -28,9 +27,9 @@ void GlobalRecoMC::BeforeEventLoop()
 	TADIparGeo* fDipole = GetParGeoDi();
 	//if (!fDipole) std::cout << "WARNING NO MAG FIELD LOADED" << std::endl;
 
-  TADIgeoField* footMagField = new TADIgeoField(fDipole);
-  TADIgenField* genfitMagField = new TADIgenField(footMagField);
-  genfit::FieldManager::getInstance()->init(genfitMagField);
+	TADIgeoField* footMagField = new TADIgeoField(fDipole);
+	TADIgenField* genfitMagField = new TADIgenField(footMagField);
+	genfit::FieldManager::getInstance()->init(genfitMagField);
 
 	// set material and geometry into genfit
 	MaterialEffects* materialEffects = MaterialEffects::getInstance();
@@ -45,42 +44,63 @@ void GlobalRecoMC::BeforeEventLoop()
 
 
 	// Initialisation of KFfitter
-	if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init!" << endl;
-	m_kFitter = new KFitter();
-	if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init done!" << endl;
+	if ( GlobalPar::GetPar()->IncludeKalman() ) {
+		if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init!" << endl;
+		m_kFitter = new KFitter();
+		if ( GlobalPar::GetPar()->Debug() > 1 )       cout << "KFitter init done!" << endl;
+	}
 
 
 }
 
 //____________________________________________________________
-void GlobalRecoMC::LoopEvent(Int_t nEvents)
-{
-   if (nEvents <= 0)
-      nEvents = fTree->GetEntries();
+void GlobalRecoMC::LoopEvent(Int_t nEvents, Int_t skipEvent)  {
 
-   if (nEvents > fTree->GetEntries())
-      nEvents = fTree->GetEntries();
+	if (nEvents <= 0)		
+		nEvents = fTree->GetEntries();
 
-   for (Long64_t ientry = 0; ientry < nEvents; ientry++) {
+	if ( (skipEvent + nEvents) > fTree->GetEntries())
+		nEvents = fTree->GetEntries();
 
-      fTree->GetEntry(ientry);
+	for (Long64_t ientry = skipEvent; ientry < skipEvent+nEvents; ientry++) {
 
-      if(ientry % 100 == 0)
-         cout<<" Loaded Event:: " << ientry << endl;
+		fTree->GetEntry(ientry);
 
-      if (!fTAGroot->NextEvent()) break;
+		if(ientry % 100 == 0)		 	cout<<" Loaded Event:: " << ientry << endl;
 
-      //m_globalTrackingStudies->Execute();
-      m_kFitter->MakeFit(ientry);
+		if (!fTAGroot->NextEvent()) 	break;
 
-   }
+		if ( GlobalPar::GetPar()->IncludeKalman() && GlobalPar::GetPar()->KalMode() != "OFF" ) {
+			//m_globalTrackingStudies->Execute();
+			m_kFitter->MakeFit(ientry);
+		}
+
+    }
 }
 
 //______________________________________________________________
 void GlobalRecoMC::AfterEventLoop()
 {
 
-  //m_globalTrackingStudies->Finalize();
-  m_kFitter->Finalize();
+	if ( GlobalPar::GetPar()->IncludeKalman() ) {
+		//m_globalTrackingStudies->Finalize();
+		m_kFitter->Finalize();
+	}
   LocalRecoMC::AfterEventLoop();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

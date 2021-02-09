@@ -24,7 +24,7 @@ public:
 
   void BeforeEventLoop();
 
-  void LoopEvent(Int_t nEvents);
+  void LoopEvent(Int_t nEvents, Int_t skipEvent = 0);
 
   void AfterEventLoop();
 

@@ -6,7 +6,7 @@
 
 
 Debug:	0
-
+Genfit Event Display ON:	n
 
 
 ############	MC selection Control Parameters	################
@@ -23,6 +23,8 @@ Kalman Mode: 		ref
 Tracking Systems Considered:		VT IT MSD TW
 Reverse Tracking:	false
 
+Kalman preselection strategy: TrueParticle
+
 VT  Reso: 0.0006
 IT  Reso: 0.0006
 MSD Reso: 0.003
@@ -32,10 +34,10 @@ Kalman Particle Types:	C
 
 ############	END - Kalman Filter Control Parameters	################
 
-IncludeDI:			   y
+IncludeDI:			    y
 IncludeST:				y
 IncludeBM:				y
-IncludeTG:			   y
+IncludeTG:			    y
 IncludeVertex:			y
 IncludeInnerTracker:	y
 IncludeMSD:				y
