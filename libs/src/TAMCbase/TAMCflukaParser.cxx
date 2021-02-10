@@ -227,7 +227,7 @@ TAMCntuEve* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutra
     Int_t i_bar = evStr->TRbar[i];
     Int_t i_dead = evStr->TRdead[i];
     Int_t i_moth = i_mid-1;
-    Int_t i_type = -999;//useless for now
+    Int_t i_type = evStr->TRgen[i];
     Double_t i_time = evStr->TRtime[i];
     Double_t i_tof = evStr->TRtof[i];
     Double_t i_trlen = evStr->TRtrlen[i];

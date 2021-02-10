@@ -64,7 +64,7 @@ Bool_t TAMCactNtuEve::Action() {
     Int_t i_bar = fpEvtStr->TRbar[i];
     Int_t i_dead = fpEvtStr->TRdead[i];
     Int_t i_moth = i_mid-1;
-    Int_t i_type = -999;//useless for now
+    Int_t i_type = fpEvtStr->TRgen[i];
     Double_t i_time = fpEvtStr->TRtime[i];
     Double_t i_tof = fpEvtStr->TRtof[i];
     Double_t i_trlen = fpEvtStr->TRtrlen[i];
