@@ -131,8 +131,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    info.SetRunNumber(fRunNumber);
    gTAGroot->SetRunInfo(info);
 
-   info.Print();
-   
    // activate per default Dipole, TGT, VTX and TW if TOE on
    if (GlobalPar::GetPar()->IncludeTOE()) {
       GlobalPar::GetPar()->IncludeDI(true);
@@ -385,7 +383,6 @@ void BaseReco::ReadParFiles()
          fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
          TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
          parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber);
-	 cout<<"  ?? "<<parFileName.Data()<<endl;
          parMap->FromFile(parFileName.Data());
          
          fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
