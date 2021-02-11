@@ -114,8 +114,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
 
    // define TAGroot
    fTAGroot = new TAGroot();
-   if (fFlagOut)
-      fActEvtWriter = new TAGactTreeWriter("locRecFile");
 
    // global transformation
    fpFootGeo = new TAGgeoTrafo();
@@ -132,6 +130,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    info.SetCampaignName(fExpName);
    info.SetRunNumber(fRunNumber);
    gTAGroot->SetRunInfo(info);
+
+   info.Print();
    
    // activate per default Dipole, TGT, VTX and TW if TOE on
    if (GlobalPar::GetPar()->IncludeTOE()) {
@@ -140,6 +140,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
       GlobalPar::GetPar()->IncludeVT(true);
       GlobalPar::GetPar()->IncludeTW(true);
    }
+
+   if (fFlagOut)
+      fActEvtWriter = new TAGactTreeWriter("locRecFile");
 }
 
 //__________________________________________________________
@@ -382,6 +385,7 @@ void BaseReco::ReadParFiles()
          fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
          TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
          parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber);
+	 cout<<"  ?? "<<parFileName.Data()<<endl;
          parMap->FromFile(parFileName.Data());
          
          fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
@@ -864,6 +868,8 @@ void BaseReco::SetTreeBranches()
 {
    if (GlobalPar::GetPar()->IncludeTOE()) {
      if (fFlagTrack) {
+       if(fFlagMC) fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
+       
        fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
      }
    }
