@@ -30,7 +30,7 @@ TAMChit::TAMChit()
    fOutPosition(0,0,0),
    fInMomentum(0,0,0),
    fOutMomentum(0,0,0),
-   fDelatE(0.),
+   fDeltaE(0.),
    fTof(0.),
    fTrackId(-1)
 {
@@ -47,7 +47,7 @@ TAMChit::TAMChit(Int_t id, Int_t layer, Int_t view, Int_t cell, TVector3 inpos, 
    fOutPosition(outpos),
    fInMomentum(inmom),
    fOutMomentum(outmom),
-   fDelatE(de),
+   fDeltaE(de),
    fTof(tof),
    fTrackId(trackId)
 {
