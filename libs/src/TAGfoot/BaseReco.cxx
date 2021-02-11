@@ -224,20 +224,24 @@ void BaseReco::LoopEvent(Int_t nEvents)
       //MC block
       TAMCntuEve*  p_ntuMcEve
 	=  static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" ) ->Object() );
-      int nTrkMC = p_ntuMcEve->GetTracksN();
-      for(int iTr = 0; iTr< nTrkMC; iTr++) {
-	TAMCeveTrack *aTr = p_ntuMcEve->GetTrack(iTr);
-	//    cout<<"MCblock:  "<<aTr->GetMass()<<" "<<aTr->GetCharge()<<endl;
+      if(p_ntuMcEve) {
+	int nTrkMC = p_ntuMcEve->GetTracksN();
+	for(int iTr = 0; iTr< nTrkMC; iTr++) {
+	  TAMCeveTrack *aTr = p_ntuMcEve->GetTrack(iTr);
+	  //    cout<<"MCblock:  "<<aTr->GetMass()<<" "<<aTr->GetCharge()<<endl;
+	}
       }
       
-      
-      TAGntuGlbTrack *glbTrack =
-	(TAGntuGlbTrack*) fpNtuGlbTrack->GenerateObject();
-      // (fTAGroot->FindDataDsc("glbTrack", "TAGntuGlbTrack")->Object());
-      int nTrk = glbTrack->GetTracksN();
-      for(int iTr = 0; iTr< nTrk; iTr++) {
-	TAGtrack *aTr = glbTrack->GetTrack(iTr);
-	cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
+      if(fpNtuGlbTrack) {
+	TAGntuGlbTrack *glbTrack =
+	  (TAGntuGlbTrack*) fpNtuGlbTrack->GenerateObject();
+	// (fTAGroot->FindDataDsc("glbTrack", "TAGntuGlbTrack")->Object());
+	
+	int nTrk = glbTrack->GetTracksN();
+	for(int iTr = 0; iTr< nTrk; iTr++) {
+	  TAGtrack *aTr = glbTrack->GetTrack(iTr);
+	  cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
+	}
       }
     }    
 
