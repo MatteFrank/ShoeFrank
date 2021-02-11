@@ -32,7 +32,7 @@ public:
    TVector3      GetOutPosition()   const  { return fOutPosition; }
    TVector3      GetInMomentum()    const  { return fInMomentum;  }
    TVector3      GetOutMomentum()   const  { return fOutMomentum; }
-   Double_t      GetDeltaE()        const  { return fDelatE;   }
+   Double_t      GetDeltaE()        const  { return fDeltaE;   }
    Double_t      GetTof()           const  { return fTof;      }
 
    
@@ -44,7 +44,7 @@ public:
    void          SetOutPosition(TVector3 pos){ fOutPosition = pos; }
    void          SetInMomentum(TVector3 mom) { fInMomentum = mom;  }
    void          SetOutMomentum(TVector3 mom){ fOutMomentum = mom; }
-   void          SetDeltaE(Double_t e)     { fDelatE   = e;    }
+   void          SetDeltaE(Double_t e)     { fDeltaE   = e;    }
    void          SetTof(Double_t tof)      { fTof      = tof;  }
    void          SetTrackId(int aid)       { fTrackId = aid;   }
 
@@ -56,7 +56,7 @@ public:
    TVector3      fOutPosition;  // final position
    TVector3      fInMomentum;   // initial momentum
    TVector3      fOutMomentum;  // final momentum
-   Double32_t    fDelatE;       // deposited energy
+   Double32_t    fDeltaE;       // deposited energy
    Double32_t    fTof;          // time fo flight
    Double32_t    fTrackId;      // MC track Id
    
