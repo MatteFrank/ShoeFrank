@@ -60,7 +60,7 @@ public:
    Double32_t    fTof;          // time fo flight
    Double32_t    fTrackId;      // MC track Id
    
-   ClassDef(TAMChit,3)
+   ClassDef(TAMChit,4)
 };
 
 //##############################################################################
