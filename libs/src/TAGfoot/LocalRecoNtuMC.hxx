@@ -18,13 +18,6 @@
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
-#include "TAMCactNtuStc.hxx"
-#include "TAMCactNtuBm.hxx"
-#include "TAMCactNtuVtx.hxx"
-#include "TAMCactNtuItr.hxx"
-#include "TAMCactNtuMsd.hxx"
-#include "TAMCactNtuTof.hxx"
-#include "TAMCactNtuCal.hxx"
 #include "TAMCactNtuEve.hxx"
 
 #include "TATWntuRaw.hxx"
@@ -72,7 +65,8 @@ public:
 
 protected:
    EVENT_STRUCT*         fEvtStruct;
-   
+  
+   TAMCactNtuEve*        fActNtuMcEve;
    TASTactNtuHitMC*      fActNtuRawSt;  // action for ntu data
    TABMactNtuHitMC*      fActNtuRawBm;  // action for ntu data
    TAVTactNtuHitMC*      fActNtuRawVtx;  // action for ntu data

@@ -353,7 +353,7 @@ void TAEDbaseInterface::MakeGUI()
    displayFrame->AddFrame(fGlbButton, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
 
    // check MC quad
-   if (fType == 1) { // MC
+   if (fType == 1 || fType == 2) { // MC
       fQuadMcButton = new TGCheckButton(displayFrame, "MC", 1);
       fQuadMcButton->SetState(kButtonDown);
       fQuadMcButton->SetToolTipText("Toggle MC hits display");
