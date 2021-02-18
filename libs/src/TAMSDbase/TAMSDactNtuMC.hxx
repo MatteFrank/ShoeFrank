@@ -7,8 +7,9 @@
  */
 /*------------------------------------------+---------------------------------*/
 #include <map>
+#include "TH1F.h"
 
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"

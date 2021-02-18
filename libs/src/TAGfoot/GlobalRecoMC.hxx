@@ -3,6 +3,7 @@
 #define _GlobalRecoMC_HXX_
 
 #include "TString.h"
+#include "TTree.h"
 
 #include "LocalRecoMC.hxx"
 
