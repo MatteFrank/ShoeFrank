@@ -3,7 +3,7 @@
 #include <TFile.h>
 #include <TString.h>
 
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 #include "TAMCevent.hxx"
 
 #include "TAGrunInfo.hxx"
