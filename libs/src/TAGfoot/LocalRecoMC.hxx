@@ -29,7 +29,7 @@
 #include "TATWntuRaw.hxx"
 #include "TATWntuPoint.hxx"
 
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 
 class TTree;
 
