@@ -7,7 +7,7 @@
 */
 /*------------------------------------------+---------------------------------*/
 
-#include "Evento.hxx"
+#include "TAMCflukaParser.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
@@ -17,8 +17,8 @@
 class TAMCactNtuEve : public TAGaction {
   public:
     explicit        TAMCactNtuEve(const char* name=0,
-				   TAGdataDsc* p_nturaw=0, 
-				   EVENT_STRUCT* evStr=0);
+                                  TAGdataDsc* p_nturaw=0,
+                                  EVENT_STRUCT* evStr=0);
     virtual         ~TAMCactNtuEve();
 
     virtual Bool_t  Action();
