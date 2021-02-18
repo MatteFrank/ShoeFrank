@@ -1,0 +1,20 @@
+GEANT4 simulation tools
+
+A) Batch mode:
+
+ 1) With no flag:
+ - command:
+ TAGsimulation -b  -out 12C_C_200_1 -nev 10000 -exp 12C_200 -run 1
+
+ 2) With a given physics list:
+ - command:
+ TAGsimulation -b  -out 12C_C_200_1 -nev 10000 -exp 12C_200 -run 1 -phys [BIC, BERT or INCL]
+
+ 3) With only fragmented events:
+ - command:
+ TAGsimulation -b  -out 12C_C_200_1 -nev 10000 -exp 12C_200 -run 1 -frag
+
+
+B) Interactive mode :
+ - command:
+ TAGsimulation -exp 12C_200 -run 1
