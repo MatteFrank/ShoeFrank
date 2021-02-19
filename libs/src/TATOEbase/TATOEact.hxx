@@ -161,7 +161,7 @@ public:
         
         for(auto & hypothesis : hypothesis_c){
             particle_m = hypothesis;
-            std::cout << "hypothesis: " << hypothesis.charge << " - " << hypothesis.mass << " - " << hypothesis.momentum << " -- " << hypothesis.get_end_points().size() << '\n';
+//            std::cout << "hypothesis: " << hypothesis.charge << " - " << hypothesis.mass << " - " << hypothesis.momentum << " -- " << hypothesis.get_end_points().size() << '\n';
             reconstruct();
         }
         
