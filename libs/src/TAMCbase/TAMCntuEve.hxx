@@ -27,7 +27,7 @@ public:
                TVector3 i_ipos, TVector3 i_fpos,
                TVector3 i_ip,TVector3 i_fp,
                TVector3 i_mothip,
-               TVector3 i_mothfp,Int_t i_pileup);
+	       TVector3 i_mothfp);
 
 	virtual         ~TAMCeveTrack();
 
@@ -49,7 +49,6 @@ public:
    Double32_t       GetDeltaE()       const { return fDeltaE;         }
    TVector3         GetMotherInitP()  const { return fMotherInitMom;  }
    TVector3         GetMotherFinalP() const { return fMotherFinalMom; }
-   Int_t            GetPileUp()       const { return fPileUp;         }
 
    void  SetInitPos(TVector3 pos)           { fInitPos = pos;         }
    void  SetInitP(TVector3 mom)             { fInitMom = mom;         }
@@ -69,7 +68,6 @@ public:
    void  SetDeltaE(double adE)              { fDeltaE = adE;          }
    void  SetTof(double atof)                { fTof = atof;            }
    void  SetTrkLength(double atrlen)        { fTrkLength = atrlen;    }
-   void  SetPileUp(int pup)                 { fPileUp = pup;          }
 
  private:
 	Int_t         fFlukaId;                 // fluka identity
@@ -90,7 +88,6 @@ public:
 	TVector3      fFinalMom;	          	  // final momentum
 	TVector3      fMotherInitMom;		        // mother init momentum
 	TVector3      fMotherFinalMom;		      // mother final momentum
-   Int_t         fPileUp;                 // pile-up index =0 current event
 
 	ClassDef(TAMCeveTrack,1)
 };
@@ -115,7 +112,7 @@ class TAMCntuEve : public TAGdata {
                                 TVector3 i_ipos, TVector3 i_fpos,
                                 TVector3 i_ip,TVector3 i_fp,
                                 TVector3 i_mothip,
-                                TVector3 i_mothfp,Int_t i_pileup);
+                                TVector3 i_mothfp);
    
 	virtual void        SetupClones();
 	virtual void        Clear(Option_t* opt="");
