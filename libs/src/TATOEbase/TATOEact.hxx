@@ -111,9 +111,8 @@ private:
     int beam_mass_number_m;
     double target_position_m;
     double st_position_m;
-    TATOEchecker<TATOEactGlb> checker_m;
+    checker<TATOEactGlb> checker_m;
     TATOElogger logger_m;
-    bool flag_mc_m{false};
 
     node_type const * current_node_mh;
     std::size_t event{0};
@@ -124,7 +123,8 @@ public:
     TATOEactGlb( UKF&& ukf_p,
                  detector_list_t&& list_p,
                  TAGntuGlbTrack* track_phc,
-                 TAGparGeo const * global_parameters_ph) :
+                 TAGparGeo const * global_parameters_ph, 
+                 bool use_checker = false) :
         ukf_m{ std::move(ukf_p) },
         list_m{ std::move(list_p) },
         reconstructed_track_mhc{ track_phc },
@@ -132,12 +132,12 @@ public:
         beam_mass_number_m{ static_cast<int>(global_parameters_ph->GetBeamPar().AtomicMass) },
         target_position_m{ global_parameters_ph->GetTargetPar().Position.Z() },
         st_position_m{ static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()))->GetSTCenter().Z() },
-        checker_m{ global_parameters_ph, *this}
+        checker_m{ empty_checker<TATOEactGlb>{} }
     {
+        if( use_checker ){ checker_m = TATOEchecker<TATOEactGlb>{global_parameters_ph, *this};}
         ukf_m.call_stepper().ode.model().particle_h = &particle_m;
     }
   
-    void SetMcFlag(bool f) {flag_mc_m = f; }
     void Output() override {
         checker_m.compute_results( details::all_mixed_tag{} );
         checker_m.compute_results( details::all_separated_tag{} );
@@ -211,6 +211,7 @@ private:
 //        std::cout << "event: "<< event << '\n';
         auto tof = list_m.last();
 
+//        std::cout << "form_hypothesis:\n";
         auto candidate_c = tof.generate_candidates();
         std::vector<particle_properties> hypothesis_c;
         hypothesis_c.reserve( candidate_c.size()*2 );
@@ -559,10 +560,10 @@ private:
         
         logger_m.add_root_header( "FINALISE_RECONSTRUCTION" );
 //        std::cout << "FINALISE_RECONSTRUCTION\n";
-        
+//        std::cout << "advance_reconstruction<tof>:\n";
         auto& leaf_c = arborescence_p.get_handler();
         
-        
+        auto const& layer = tof_p.form_layer();
         
         for(auto& leaf : leaf_c){
         
@@ -576,7 +577,8 @@ private:
             ukf_m.step_length() = 1e-3;
             
             auto s = make_state(leaf.get_value());
-            auto fs_c = advance_reconstruction_impl( s, tof_p.form_layer() );
+            
+            auto fs_c = advance_reconstruction_impl( s, layer );
             
             if( fs_c.empty() ){ leaf.mark_invalid(); }
             else{
@@ -714,6 +716,7 @@ private:
     
     std::vector<full_state> confront(const state& ps_p, const detector_properties<details::tof_tag>::layer& layer_p)  //optionnal is more relevant here
     {
+        
         using candidate = typename detector_properties< details::tof_tag >::candidate;
         
         
@@ -727,7 +730,8 @@ private:
                                                            [&c_p](auto const & ep_ph ){ return c_p.data == ep_ph;  } );
                                    } );
         logger_m.add_sub_header(  "confront" );
-
+//        std::cout << "confront<tof>:\n";
+        
         using enriched_candidate = enriched_candidate_impl<typename decltype(candidate_c)::value_type>;
         std::vector< enriched_candidate > enriched_c;
         enriched_c.reserve( std::distance( candidate_c.begin(), candidate_end ) );
@@ -747,6 +751,8 @@ private:
         
         auto select = [this, &ps_p, &layer_p ]( const auto & ec_p ){ return pass_selection( ec_p, ps_p, layer_p); };
         
+        
+        
         auto enriched_end = std::partition( enriched_c.begin(), enriched_c.end(), select );
         for(auto iterator = enriched_c.begin() ; iterator != enriched_end ; ++iterator ){
             auto state = ukf_m.correct_state( ps_p, *iterator ); //should be sliced properly
@@ -757,6 +763,9 @@ private:
                                   data_handle<data_type>{ iterator->data } ,
                                   step_register{}
             };
+            
+         //   fs.data->GetPosition().Print();
+         //   fs.data->GetPositionG().Print();
             fs_c.push_back( std::move(fs) );
         }
 
@@ -1233,6 +1242,7 @@ private:
             checker_m.submit_reconstructed_track( track );
             // -----------------------------
             
+//            std::cout << "track:\n";
             auto & value_c = track.get_clusters();
 //                    std::cout << " --- final_track --- " << '\n';
             for(auto& value : value_c){
@@ -1256,6 +1266,10 @@ private:
                 if( value.data ){
                     TVector3 measured_position{ value.data->GetPosition().X(), value.data->GetPosition().Y(), corrected_position.Z() };
                     track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                   // std::cout << "corrected_position:\n";
+                   // corrected_position.Print();
+                  //  std::cout << "measured_position:\n";
+                  //  measured_position.Print();//
                 }
             }
             
