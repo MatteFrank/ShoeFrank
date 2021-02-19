@@ -31,8 +31,6 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActNtuRawVtx(0x0),
    fActNtuRawIt(0x0),
 //   fActNtuRawMsd(0x0),
-//   fpDatRawVtx(0x0),
-//   fpDatRawIt(0x0),
 //   fpDatRawMsd(0x0),
    fActEvtReader(0x0)
 {
