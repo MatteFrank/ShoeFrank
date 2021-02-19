@@ -81,10 +81,12 @@ public:
    //! Add measured point
    TAGpoint*        AddMeasPoint(TAGpoint* point);
    TAGpoint*        AddMeasPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
-   
+   TAGpoint*        AddMeasPoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
+
    //! Add corrected point
    TAGpoint*        AddCorrPoint(TAGpoint* point);
    TAGpoint*        AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
+   TAGpoint*        AddCorrPoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
 
    void             Clear(Option_t* opt="");
    
