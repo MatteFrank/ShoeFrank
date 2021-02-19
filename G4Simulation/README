@@ -25,3 +25,5 @@ B) Batch mode:
 C) Interactive mode:
  - command:
  TAGsimulation -exp 12C_200 -run 1
+
+Rem: don't forget to source the data environment variables
