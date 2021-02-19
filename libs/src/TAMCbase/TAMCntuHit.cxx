@@ -161,7 +161,7 @@ void TAMCntuHit::ToStream(ostream& os, Option_t* option) const
   
   for (Int_t i = 0; i < GetHitsN(); i++) {
     const TAMChit* p_hit = GetHit(i);
-    os << Form("%3d %3d", i, p_hit->GetID())
+    os << Form("%3d %3d", i, p_hit->GetTrackIdx())
        << endl;
   }
 

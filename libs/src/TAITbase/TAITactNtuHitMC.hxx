@@ -10,7 +10,7 @@
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 
 #include "TAITdigitizerE.hxx"
 

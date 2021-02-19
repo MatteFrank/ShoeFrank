@@ -1,0 +1,27 @@
+GEANT4 simulation tools
+
+A) Installation:
+ cmake -DGeant4_DIR=$G4_BUILD10 $FOOT -DCMAKE_BUILD_TYPE=Debug -DFILECOPY=ON
+where G4_BUILD10 is the directory of builded Geant4 v10 and FOOT where the source code is located
+
+B) Batch mode:
+
+ 1) With no flag:
+ - command:
+ TAGsimulation -b  -out 12C_C_200_1 -nev 10000 -exp 12C_200 -run 1
+
+ 2) With a given physics list:
+ - command:
+ TAGsimulation -b  -out 12C_C_200_1 -nev 10000 -exp 12C_200 -run 1 -phys [BIC, BERT or INCL]
+
+ 3) With only fragmented events:
+ - command:
+ TAGsimulation -b  -out 12C_C_200_1 -nev 10000 -exp 12C_200 -run 1 -frag
+
+ 4) With a given seed:
+ - command:
+ TAGsimulation -b  -out 12C_C_200_1 -nev 10000 -exp 12C_200 -run 1 -seed [number]
+
+C) Interactive mode :
+ - command:
+ TAGsimulation -exp 12C_200 -run 1

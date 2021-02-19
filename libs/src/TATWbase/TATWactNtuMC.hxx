@@ -13,7 +13,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 
 #include "TATWntuRaw.hxx"
 #include "TATWparGeo.hxx"
