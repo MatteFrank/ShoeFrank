@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
          maxevpro = atoi(argv[++i]);
       }
       if(strcmp(argv[i],"-reg") == 0) {
-         regFlag = atoi(argv[++i]);
+         regFlag = true;
       }
       if(strcmp(argv[i],"-iL") == 0) {
          iL = 1;
