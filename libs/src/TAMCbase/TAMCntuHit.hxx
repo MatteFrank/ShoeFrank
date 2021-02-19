@@ -19,7 +19,6 @@ public:
    TAMChit(Int_t id, Int_t layer, Int_t view, Int_t cell, TVector3 inpos, TVector3 outpos,TVector3 inmom, TVector3 outmom, Double_t de, Double_t tof, Int_t trackId);
    virtual      ~TAMChit();
    
-   Int_t         GetID()            const  { return fID;       }
    Int_t         GetTrackIdx()      const  { return fID;       }
    Int_t         GetSensorId()      const  { return fLayer;    }
    Int_t         GetBarId()         const  { return fLayer;    }
@@ -36,7 +35,6 @@ public:
    Double_t      GetTof()           const  { return fTof;      }
 
    
-   void          SetID(int aid)            { fID = aid;        }
    void          SetLayer(int aLayer)      { fLayer = aLayer;  }
    void          SetView(int aView)        { fView = aView;    }
    void          SetCell(int aCell)        { fCell = aCell;    }
@@ -48,7 +46,7 @@ public:
    void          SetTof(Double_t tof)      { fTof      = tof;  }
    void          SetTrackId(int aid)       { fTrackId = aid;   }
 
-   Int_t         fID;           // identity
+   Int_t         fID;           // identity of track index
    Int_t         fLayer;        // layer number
    Int_t         fView;         // view number (for BM)
    Int_t         fCell;         // cell number (for BM)

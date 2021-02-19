@@ -3,7 +3,7 @@
 #include <TFile.h>
 #include <TString.h>
 
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 #include "TAMCevent.hxx"
 
 #include "TAGrunInfo.hxx"
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
          maxevpro = atoi(argv[++i]);
       }
       if(strcmp(argv[i],"-reg") == 0) {
-         regFlag = atoi(argv[++i]);
+         regFlag = true;
       }
       if(strcmp(argv[i],"-iL") == 0) {
          iL = 1;

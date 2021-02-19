@@ -9,7 +9,7 @@
 #include <map>
 #include "TVector3.h"
 
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
