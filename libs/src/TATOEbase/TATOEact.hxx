@@ -161,6 +161,7 @@ public:
         
         for(auto & hypothesis : hypothesis_c){
             particle_m = hypothesis;
+            std::cout << "hypothesis: " << hypothesis.charge << " - " << hypothesis.mass << " - " << hypothesis.momentum << " -- " << hypothesis.get_end_points().size() << '\n';
             reconstruct();
         }
         
@@ -241,105 +242,103 @@ private:
             auto add_current_end_point = [&candidate]( particle_properties & hypothesis_p  )
                                  { hypothesis_p.get_end_points().push_back( candidate.data ); };
 //
-//            std::for_each( hypothesis_c.begin(), hypothesis_c.end(),
-//                           [&charge, &candidate, &add_current_end_point]( particle_properties & h_p ){
-//                               if( h_p.charge == charge ){ add_current_end_point( h_p ); }
-//                           } );
-//
-//
-//
-//            auto first_matching_hypothesis = std::find_if( hypothesis_c.begin(), hypothesis_c.end(),
-//                                                          [&charge]( particle_properties const & h_p ){ return h_p.charge == charge; } );
-//
-//            if( first_matching_hypothesis == hypothesis_c.end() ){
             
-                auto add_hypothesis = [&]( int mass_number_p,
-                                           double light_ion_boost_p = 1,
-                                           double energy_modifier_p = 1 )
-                                      {
-                   
-                                          
+
+
+
+            auto first_matching_hypothesis_i = std::find_if( hypothesis_c.begin(), hypothesis_c.end(),
+                                                          [&charge]( particle_properties const & h_p ){ return h_p.charge == charge; } );
+
+            if( first_matching_hypothesis_i != hypothesis_c.end() ) {
+                std::for_each( first_matching_hypothesis_i, hypothesis_c.end(),
+                              [&charge, &candidate, &add_current_end_point]( particle_properties & h_p ){
+                                  if( h_p.charge == charge ){ add_current_end_point( h_p ); }
+                              } );
+                break;
+            }
+        
+            
+            auto add_hypothesis = [&]( int mass_number_p,
+                                        double light_ion_boost_p = 1,
+                                        double energy_modifier_p = 1 )
+                        {
                    // auto true_momentum = checker_m.retrieve_momentum( candidate );
                    // auto true_mass = checker_m.retrieve_mass( candidate );
                   //  auto true_charge = checker_m.retrieve_charge( candidate );
-                                          
                   //  logger_m << "momentum: " << momentum <<  '\n';
                   //  logger_m << "real_momentum: " << true_momentum << '\n';
                  //   if( true_momentum > 0. ){ momentum = true_momentum;}
                    // if( true_charge > 0. ){ charge = true_charge;}
                  //   if( true_mass > 0. ){ mass_number_p = true_mass;}
+                auto momentum = sqrt( pow(beam_energy_m * mass_number_p, 2)  +
+                                      2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  ) *
+                                      energy_modifier_p;
                                           
-                    auto momentum = sqrt( pow(beam_energy_m * mass_number_p, 2)  +
-                                          2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  ) *
-                                    energy_modifier_p;
-                                          
-                    hypothesis_c.push_back( particle_properties{ charge, mass_number_p, momentum, light_ion_boost_p } );
-                    add_current_end_point( hypothesis_c.back() );
-                                      };
+                hypothesis_c.push_back( particle_properties{ charge, mass_number_p, momentum, light_ion_boost_p } );
+                add_current_end_point( hypothesis_c.back() );
+                        };
             
-                switch(charge){
-                    case 1:
-                    {
-                        auto light_ion_boost = 2;
-                        add_hypothesis(1, light_ion_boost);
-                        add_hypothesis(1, light_ion_boost, 0.5);
-//                      light_ion_boost = 1.3;
-                        add_hypothesis(2, light_ion_boost);
-                        add_hypothesis(3);
-                        break;
-                    }
-                    case 2:
-                    {
-                        add_hypothesis(4);
-                        add_hypothesis(3);
-                        break;
-                    }
-                    case 3 :
-                    {
-                        add_hypothesis(6);
-                        add_hypothesis(7);
-                        add_hypothesis(8);
-                        break;
-                    }
-                    case 4 :
-                    {
-                        add_hypothesis(7);
-                        add_hypothesis(9);
-                        add_hypothesis(10);
-                        break;
-                    }
-                    case 5 :
-                    {
-                        add_hypothesis(10);
-                        add_hypothesis(11);
-                        break;
-                    }
-                    case 6 :
-                    {
-                        add_hypothesis(11);
-                        add_hypothesis(12);
-                        add_hypothesis(13);
-                        break;
-                    }
-                    case 7:
-                    {
-                        add_hypothesis(14);
-                        add_hypothesis(15);
-                        break;
-                    }
-                    default:
-                    {
-                        auto mass_number = charge * 2;
-                        add_hypothesis(mass_number);
-                        break;
-                    }
+            switch(charge){
+                case 1:
+                {
+                    auto light_ion_boost = 2;
+                    add_hypothesis(1, light_ion_boost);
+                    add_hypothesis(1, light_ion_boost, 0.5);
+//                     light_ion_boost = 1.3;
+                    add_hypothesis(2, light_ion_boost);
+                    add_hypothesis(3);
+                    break;
+                }
+                case 2:
+                {
+                    add_hypothesis(4);
+                    add_hypothesis(3);
+                    break;
+                }
+                case 3 :
+                {
+                    add_hypothesis(6);
+                    add_hypothesis(7);
+                    add_hypothesis(8);
+                    break;
+                }
+                case 4 :
+                {
+                    add_hypothesis(7);
+                    add_hypothesis(9);
+                    add_hypothesis(10);
+                    break;
+                }
+                case 5 :
+                {
+                    add_hypothesis(10);
+                    add_hypothesis(11);
+                    break;
+                }
+                case 6 :
+                {
+                    add_hypothesis(11);
+                    add_hypothesis(12);
+                    add_hypothesis(13);
+                    break;
+                }
+                case 7:
+                {
+                    add_hypothesis(14);
+                    add_hypothesis(15);
+                    break;
+                }
+                default:
+                {
+                    auto mass_number = charge * 2;
+                    add_hypothesis(mass_number);
+                    break;
+                }
                         
                         
-//                }
-                
-                
             }
             
+                
         }
         
         return hypothesis_c;
@@ -1297,10 +1296,10 @@ auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc,
 
 
 template<class UKF, class DetectorList>
-auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph)
+auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph, bool use_checker)
         -> TATOEactGlb<UKF, DetectorList> *
 {
-    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc, global_parameters_ph};
+    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc, global_parameters_ph, use_checker};
 }
 
 
