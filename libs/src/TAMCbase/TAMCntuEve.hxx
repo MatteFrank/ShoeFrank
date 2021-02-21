@@ -89,7 +89,7 @@ public:
 	TVector3      fMotherInitMom;		        // mother init momentum
 	TVector3      fMotherFinalMom;		      // mother final momentum
 
-	ClassDef(TAMCeveTrack,1)
+	ClassDef(TAMCeveTrack,2)
 };
 
 //##############################################################################
