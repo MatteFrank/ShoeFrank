@@ -129,7 +129,7 @@ private:
    static TString fgkBranchName;    // Branch name in TTree
    static const TString fgkDefDataName;
 
-   ClassDef(TAMCntuEve,1)
+   ClassDef(TAMCntuEve,2)
 };
 
 
