@@ -96,11 +96,14 @@ TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName, In
    fpFootGeo->FromFile(geoFileName.Data());
    
    // initialise map file for target/beam
-   TString mapFileName =  fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
-   fpParGeoG->FromFile(mapFileName.Data());
-   
+  if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM()) {
+    TString mapFileName =  fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
+    fpParGeoG->FromFile(mapFileName.Data());
+  }
+  
    // geometries
-   fTarget = new TCGtargetConstructor(fpParGeoG);
+  if (GlobalPar::GetPar()->IncludeTG())
+      fTarget = new TCGtargetConstructor(fpParGeoG);
    
    printf("Creating geometry for experiment %s with a run number of %d\n", expName.Data(), runNumber);
 }
@@ -135,7 +138,7 @@ G4VPhysicalVolume* TCGbaseGeometryConstructor::Construct()
    G4VPhysicalVolume* pWorld = new G4PVPlacement(0, G4ThreeVector(), fLogWorld, "World", 0, false, 0);
    
    // Target
-   if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM()) {
+   if (GlobalPar::GetPar()->IncludeTG()) {
 
       G4LogicalVolume* logTarget = fTarget->Construct();
    
