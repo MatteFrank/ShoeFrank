@@ -1034,9 +1034,9 @@ struct empty_checker{
     using candidate = typename std::decay_t<decltype( std::declval<typename Action::detector_list_t>().last() )>::candidate;
     using track = typename Action::track;
     using node_type = typename Action::node_type;
-    void update_current_node( node_type const * current_node_ph ){}
-    void submit_reconstructed_track(track const& track_p){}
-    void submit_reconstructible_track(candidate const& candidate_p){}
+    void update_current_node( node_type const *  ){}
+    void submit_reconstructed_track(track const& ){}
+    void submit_reconstructible_track(candidate const& ){}
     void end_event(){}
     void start_event(){}
     void output_current_hypothesis(){}
