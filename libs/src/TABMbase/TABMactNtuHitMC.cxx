@@ -94,7 +94,7 @@ Bool_t TABMactNtuHitMC::Action()
   }
   
   Int_t cell, view, lay, ipoint, cellid;
-  Double_t rdrift;
+  Double_t rdrift, edep;
 
   TVector3 loc, gmom, mom,  glo;
   p_nturaw->SetupClones();
@@ -119,11 +119,12 @@ Bool_t TABMactNtuHitMC::Action()
       view = hitMC->GetView() == -1 ? 1:0;
       cellid = p_bmgeo->GetBMNcell(lay, view, cell);
 
+      edep = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();
       glo.SetXYZ(hitMC->GetInPosition()[0], hitMC->GetInPosition()[1], hitMC->GetInPosition()[2]);
       loc = geoTrafo->FromGlobalToBMLocal(glo);
       gmom.SetXYZ(hitMC->GetInMomentum()[0], hitMC->GetInMomentum()[1], hitMC->GetInMomentum()[2]);
 
-      if(gmom.Mag()!=0){
+      if(gmom.Mag()!=0 && edep > 0.1 ){// cut of 100 keV, tmp solution to rid of some electrons, not yet optimized
         rdrift=p_bmgeo->FindRdrift(loc, gmom, p_bmgeo->GetWirePos(view, lay,p_bmgeo->GetSenseId(cell)),p_bmgeo->GetWireDir(view),false);
         Bool_t added=fDigitizer->Process(0, loc[0], loc[1], loc[2], 0, 0, p_bmgeo->GetBMNcell(lay, view, cell), 0,
                                          gmom[0], gmom[1], gmom[2]);

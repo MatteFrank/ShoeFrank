@@ -152,7 +152,8 @@ void TCFOeventAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
             vin = mcHit1->GetPosIn();
             pin = mcHit1->GetMomIn();
         }
-        if(trackId1 == trackId2 && sensorId1==sensorId2) edep = edep + mcHit2->GetEdep();
+        if(trackId1 == trackId2 && sensorId1==sensorId2)
+          edep += mcHit2->GetEdep();
         else{
             vou = mcHit1->GetPosOut();
             pou = mcHit1->GetMomOut();
@@ -190,7 +191,7 @@ void TCFOeventAction::FillTrack()
     TAMCevent* hit = fRunAction->GetEventMC();
 
     Int_t nTracks = fMcTrack->GetTracksN();
-
+    fMapTrackIdx.clear();
     TVector3 initpos;
     TVector3 initmom;
     TVector3 finalpos;
@@ -223,8 +224,10 @@ void TCFOeventAction::FillTrack()
         finalmom = fMcTrack->GetTrack(i)->GetFinalP();
         dead     = fMcTrack->GetTrack(i)->GetDead() ;
         region   = fMcTrack->GetTrack(i)->GetRegion();
-       
-        fMapTrackIdx[trackID] = i+1;
+
+        fMapTrackIdx[trackID] = i;
+        parentID = fMapTrackIdx[parentID]+1; // index is stored not id, compliant with Fluka
+      
         hit->AddPart(parentID,trackID,charge,region,nbaryon,dead,flukaID,
                                     initpos,finalpos,initmom,finalmom,mass,time,tof,length);
     }
@@ -242,10 +245,9 @@ void TCFOeventAction::FillHits(TAMCevent* hit, TCGmcHit* mcHit)
     Int_t    trackId  = mcHit->GetTrackId();
     Double_t edep     = mcHit->GetEdep()*TAGgeoTrafo::MevToGev();
     Double_t time     = mcHit->GetGlobalTime()*TAGgeoTrafo::NsToSec();
-//    Double_t time     = mcHit->GetLocalTime()*TAGgeoTrafo::NsToSec();
     Double_t al       = 0;
     Int_t    trackIdx = fMapTrackIdx[trackId]+1; // to be compliant with Fluka
-   
+  
     hit->SetEvent(fEventNumber);
 
     if (fStCollId >= 0 && fDetName==TCSTgeometryConstructor::GetSDname()){
@@ -254,13 +256,13 @@ void TCFOeventAction::FillHits(TAMCevent* hit, TCGmcHit* mcHit)
     }
 
     if (fBmCollId >= 0  && fDetName==TCBMgeometryConstructor::GetSDname()) {
-        Int_t layer ;
-        Int_t view = -2;
         TVector3 pos(vin[0],vin[1],vin[2]);
-        layer = (int)sensorId/2;
-        view = -sensorId%2;
-        Int_t cell = fFootGeomConstructor->GetParGeoBm()->GetCell(pos,sensorId,view);
-        hit->AddBMN(trackIdx,layer,TMath::Abs(view), cell, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]),
+        TVector3 posL = fFootGeomConstructor->GetGeoTrafo()->FromGlobalToBMLocal(pos);
+        Int_t layer = (int)sensorId/2;
+        Int_t view  = sensorId%2;
+        Int_t cell  = fFootGeomConstructor->GetParGeoBm()->GetCell(pos,layer,view);
+        view = -view;
+        hit->AddBMN(trackIdx,layer, view, cell, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]),
                     TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackId);
     }
 

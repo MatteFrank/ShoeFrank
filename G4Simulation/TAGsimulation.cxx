@@ -145,7 +145,7 @@ int main(int argc,char** argv)
     kEvento = flk;
    
     // Global Par
-    GlobalPar::Instance();
+    GlobalPar::Instance(expName);
     GlobalPar::GetPar()->SetDebugLevels();
    
     // TAG root
