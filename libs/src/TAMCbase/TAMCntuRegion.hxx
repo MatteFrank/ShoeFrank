@@ -16,6 +16,7 @@ public:
    
    virtual      ~TAMCregion();
    
+   Int_t         GetTrackIdx()    const  { return fID;         }
    Int_t         GetID()          const  { return fID;         }
    Int_t         GetCrossN()      const  { return fCrossN;     }
    Int_t         GetOldCrossN()   const  { return fOldCrossN;  }
@@ -26,6 +27,7 @@ public:
    Double_t      GetTime()        const  { return fTime;       }
 
    
+   void          SetTrackIdx(int aid)      { fID = aid;        }
    void          SetID(int aid)            { fID = aid;        }
    void          SetCrossN(int reg)        { fCrossN = reg;    }
    void          SetOldCrossN(int reg)     { fOldCrossN = reg; }

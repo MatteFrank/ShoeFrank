@@ -162,10 +162,9 @@ void TAGactTreeWriter::Close()
   TDirectory* p_cwd = gDirectory;
 
   if (fpFile && fpTree) {
-    TAGrunInfo runinfo(gTAGroot->CurrentRunInfo());
-    runinfo.Print();
     fpFile->cd();
     fpTree->Write();
+    TAGrunInfo runinfo(gTAGroot->CurrentRunInfo());
     runinfo.Write(TAGrunInfo::GetObjectName());
   }
 

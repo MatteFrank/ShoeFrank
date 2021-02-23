@@ -4,7 +4,8 @@
 # ROOT_FOUND          If the ROOT is found
 # ROOT_INCLUDE_DIR    PATH to the include directory
 # ROOT_LIBRARIES      Most common libraries
-# ROOT_LIBRARY_DIR    PATH to the library directory 
+# ROOT_LIBRARY_DIR    PATH to the library directory
+# ROOT_ETC_DIR        PATH to the etc directory
 
 
 set(ROOT6_USED FALSE)
@@ -56,8 +57,9 @@ else()
 
  string(REPLACE ";" " " ROOT_LIBRARIES "${ROOT_LIBRARIES}")
 
-  set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)
-  
+ set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)
+ set(ROOT_ETC_DIR ${ROOTSYS}/etc)
+
   # Make variables changeble to the advanced user
   mark_as_advanced(ROOT_CONFIG_EXECUTABLE)
 

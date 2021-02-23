@@ -209,8 +209,9 @@ void LocalReco::SetRawHistogramDir()
    // BM
    if (GlobalPar::GetPar()->IncludeBM()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TABMparGeo::GetBaseName());
-      fActDatRawBm->SetHistogramDir(subfolder);
       fActNtuRawBm->SetHistogramDir(subfolder);
+      TDirectory* subsubfolder = subfolder->mkdir("bmdat");
+      fActDatRawBm->SetHistogramDir(subsubfolder);
    }
    
    // VTX
@@ -309,20 +310,20 @@ void LocalReco::SetTreeBranches()
      fActEvtWriter->SetupElementBranch(fpNtuRawBm, TABMntuRaw::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeVT()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuRaw::GetBranchName());
-   }
+   // if (GlobalPar::GetPar()->IncludeVT()) {
+   //    if (fFlagHits)
+   //       fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuRaw::GetBranchName());
+   // }
    
-   if (GlobalPar::GetPar()->IncludeIT()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuRaw::GetBranchName());
-   }
+   // if (GlobalPar::GetPar()->IncludeIT()) {
+   //    if (fFlagHits)
+   //       fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuRaw::GetBranchName());
+   // }
    
-   if (GlobalPar::GetPar()->IncludeMSD()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawMsd, TAMSDntuRaw::GetBranchName());
-   }
+   // if (GlobalPar::GetPar()->IncludeMSD()) {
+   //    if (fFlagHits)
+   //       fActEvtWriter->SetupElementBranch(fpNtuRawMsd, TAMSDntuRaw::GetBranchName());
+   // }
    
    if (GlobalPar::GetPar()->IncludeTW()) {
      if (fFlagHits) {
@@ -331,8 +332,8 @@ void LocalReco::SetTreeBranches()
      fActEvtWriter->SetupElementBranch(fpNtuRawTw, TATWntuRaw::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeCA()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawCa, TACAntuRaw::GetBranchName());
-   }
+   // if (GlobalPar::GetPar()->IncludeCA()) {
+   //    if (fFlagHits)
+   //       fActEvtWriter->SetupElementBranch(fpNtuRawCa, TACAntuRaw::GetBranchName());
+   // }
 }

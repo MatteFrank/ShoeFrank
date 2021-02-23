@@ -46,8 +46,10 @@ TABMparConf::TABMparConf()
   fAssHitErr(5.),
   fSmearHits(0),
   fSmearRDrift(4),
-  fRDriftErr(0.015)
+  fRDriftErr(0.015),
+  fEnThresh(0.0001)
 {
+  fDeadCha.Set(0);
   fkDefaultParName = "./config/TABMdetector.cfg";
 }
 
@@ -118,6 +120,14 @@ Bool_t TABMparConf::FromFile(const TString& name) {
   if(FootDebugLevel(1))
      cout<<"fHitTimeCut="<<fHitTimeCut<<endl;
 
+  ReadItem(fDeadCha);
+  if(FootDebugLevel(1)){
+    cout<<"fDeadCha= ";
+    for(Int_t i=0;i<fDeadCha.GetSize();i++)
+      cout<<" "<<fDeadCha.At(i);
+    cout<<endl;
+  }
+
   //MC parameters
   ReadItem(fSmearRDrift);
   if(FootDebugLevel(1))
@@ -125,6 +135,9 @@ Bool_t TABMparConf::FromFile(const TString& name) {
   ReadItem(fSmearHits);
   if(FootDebugLevel(1))
      cout<<"fSmearHits="<<fSmearHits<<endl;
+  ReadItem(fEnThresh);
+  if(FootDebugLevel(1))
+     cout<<"fEnThresh="<<fEnThresh<<endl;
 
 return false;
 }
@@ -225,10 +238,18 @@ void TABMparConf::Clear(Option_t*)
   fSmearHits=0;
   fSmearRDrift=4;
   fRDriftErr=0.015;
+  fEnThresh=0.0001;
+  fDeadCha.Set(0);
 
   return;
 }
 
+Bool_t TABMparConf::CheckIsDeadCha(Int_t cha){
+  for(Int_t i=0;i<fDeadCha.GetSize();i++)
+    if(fDeadCha.At(i)==cha)
+      return kTRUE;
+  return kFALSE;
+}
 
 
 /*------------------------------------------+---------------------------------*/
@@ -239,5 +260,3 @@ void TABMparConf::ToStream(ostream& os, Option_t*) const
   os << "TABMparConf " << GetName() << endl;
   return;
 }
-
-

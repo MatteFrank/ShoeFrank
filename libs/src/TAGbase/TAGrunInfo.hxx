@@ -13,7 +13,7 @@
 struct GlobalParameter_t : public  TObject {
    GlobalParameter_t() : TObject(),
    EnableLocalReco(false), EnableTree(false), EnableHisto(false), EnableSaveHits(false),
-   EnableTracking(false), EnableRootObject(false), EnableTofZmc(false), EnableTofCalBar(false),
+   EnableTracking(false), EnableRootObject(false), EnableTWZmc(false), EnableTWnoPU(false),EnableTWZmatch(false), EnableTWCalBar(false),
    IncludeKalman(false), IncludeTOE(false), IncludeDI(false), IncludeST(false), IncludeBM(false),
    IncludeTG(false), IncludeVT(false), IncludeIT(false), IncludeMSD(false), IncludeTW(false),
    IncludeCA(false) { }
@@ -24,8 +24,10 @@ struct GlobalParameter_t : public  TObject {
    Bool_t EnableSaveHits;
    Bool_t EnableTracking;
    Bool_t EnableRootObject;
-   Bool_t EnableTofZmc;
-   Bool_t EnableTofCalBar;
+   Bool_t EnableTWZmc;
+   Bool_t EnableTWnoPU;
+   Bool_t EnableTWZmatch;
+   Bool_t EnableTWCalBar;
    Bool_t IncludeKalman;
    Bool_t IncludeTOE;
    Bool_t IncludeDI;
@@ -38,7 +40,7 @@ struct GlobalParameter_t : public  TObject {
    Bool_t IncludeTW;
    Bool_t IncludeCA;
    
-   ClassDef(GlobalParameter_t,1)
+   ClassDef(GlobalParameter_t,2)
 };
 
 class TAGrunInfo : public TAGobject {

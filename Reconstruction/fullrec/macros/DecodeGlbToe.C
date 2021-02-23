@@ -8,28 +8,66 @@
 #include <TStopwatch.h>
 
 #include "GlobalPar.hxx"
-#include "GlobalToeReco.h"
+#include "GlobalToeReco.hxx"
+#include "LocalRecoMC.hxx"
+#include "LocalReco.hxx"
+#include "LocalRecoNtuMC.hxx"
 
 #endif
 
 
-void DecodeGlbToe(TString name = "data/data_built.2211.physics_foot.daq.VTX.1.dat")
+void DecodeGlbToe(TString in = "data/data_built.2211.physics_foot.daq.VTX.1.dat", TString exp = "GSI", Int_t runNb = 2211, Bool_t mc = false)
 {
-   GlobalPar::Instance();
-   GlobalPar::GetPar()->Print();
-   
-   Int_t pos = name.Last('.');
-   TString nameOut = name(0, pos);
-   nameOut.Append("_Out.root");
-   
-   GlobalToeReco* glbRec = new GlobalToeReco(name, nameOut);
-   
-   // global setting
-   glbRec->EnableTree();
-   glbRec->EnableHisto();
-   glbRec->EnableTracking();
+  Int_t pos = in.Last('.');
+  TString out = in(0, pos);
+  out.Append("_Out.root");
+  
+  GlobalPar::Instance(exp);
+  GlobalPar::GetPar()->Print();
+  
+  Bool_t lrc = GlobalPar::GetPar()->IsLocalReco();
+  Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
+  Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
+  Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
+  Bool_t trk = GlobalPar::GetPar()->IsTracking();
+  Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
+  Bool_t zmc = GlobalPar::GetPar()->IsTofZmc();
+  Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
+  
+  GlobalPar::GetPar()->IncludeTOE(true);
+  GlobalPar::GetPar()->IncludeKalman(false);
+  
+  BaseReco* glbRec = 0x0;
+  
+  if (lrc)
+    glbRec = new GlobalToeReco(exp, runNb, in, out, mc);
+  else if (mc) {
+    if (!obj)
+      glbRec = new LocalRecoMC(exp, runNb, in, out);
+    else
+      glbRec = new LocalRecoNtuMC(exp, runNb, in, out);
+    if(zmc)
+      glbRec->EnableZfromMCtrue();
+  } else {
+    glbRec = new LocalReco(exp, runNb, in, out);
+    if (tbc)
+      glbRec->EnableTWcalibPerBar();
+  }
+  
+  
+  // global setting
+  if (ntu)
+    glbRec->EnableTree();
+  if(his)
+    glbRec->EnableHisto();
+  if(hit) {
+    glbRec->EnableTree();
+    glbRec->EnableSaveHits();
+  }
+  if (trk)
+    glbRec->EnableTracking();
 
-   
+
    TStopwatch watch;
    watch.Start();
    

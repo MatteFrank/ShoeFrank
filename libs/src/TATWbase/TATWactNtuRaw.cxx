@@ -253,6 +253,7 @@ Bool_t TATWactNtuRaw::Action() {
 	    }
 	    // get calibrated energy in MeV
 	    Double_t Energy = GetEnergy(rawEnergy,Layer,PosId,BarId);
+	    // cout<<"qA::"<<ChargeA<<" qB::"<<ChargeB<<" Qtot::"<<rawEnergy<<"  Energy::"<<Energy<<" posId::"<<PosId<<" layer::"<<Layer<<endl;
 
 	    // get time calibrated time in ns
 	    Double_t Time    = GetTime(rawTime,Layer,PosId,BarId);

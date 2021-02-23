@@ -51,8 +51,11 @@ int main (int argc, char *argv[])  {
    Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
    Bool_t trk = GlobalPar::GetPar()->IsTracking();
    Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
-   Bool_t zmc = GlobalPar::GetPar()->IsTofZmc();
-   Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
+
+   Bool_t zmc = GlobalPar::GetPar()->IsTWZmc();
+   Bool_t zrec = GlobalPar::GetPar()->IsTWnoPU();
+   Bool_t zmatch = GlobalPar::GetPar()->IsTWZmatch();
+   Bool_t tbc = GlobalPar::GetPar()->IsTWCalBar();
    
    GlobalPar::GetPar()->IncludeTOE(false);
    GlobalPar::GetPar()->IncludeKalman(true);

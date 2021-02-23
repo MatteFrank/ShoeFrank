@@ -89,8 +89,14 @@ const TAGrunInfo GlobalPar::GetGlobalInfo()
    if (IsReadRootObj())
       runInfo.GetGlobalPar().EnableRootObject = true;
    
-   if (IsTofZmc())
-      runInfo.GetGlobalPar().EnableTofZmc = true;
+   if (IsTWZmc())
+      runInfo.GetGlobalPar().EnableTWZmc = true;
+
+   if (IsTWnoPU())
+      runInfo.GetGlobalPar().EnableTWnoPU = true;
+                             
+   if (IsTWZmatch())
+      runInfo.GetGlobalPar().EnableTWZmatch = true;
    
    if (IncludeKalman())
       runInfo.GetGlobalPar().IncludeKalman = true;
@@ -320,18 +326,33 @@ void GlobalPar::ReadParamFile ()
         printf("EnableRootObject: %d\n", m_enableRootObject);
     }
     
-    if (key.Contains("EnableTofZmc:") ) {
-      if ( item.Contains("y"))  m_enableTofZmc = true;
-      else                      m_enableTofZmc = false;
+    if (key.Contains("EnableTWZmc:") ) {
+      if ( item.Contains("y"))  m_enableTWZmc = true;
+      else                      m_enableTWZmc = false;
       if (m_debug > 0)
-        printf("EnableTofZmc: %d\n", m_enableTofZmc);
+        printf("EnableTWZmc: %d\n", m_enableTWZmc);
     }
     
-    if (key.Contains("EnableTofCalBar:")  ) {
-      if ( item.Contains("y"))  m_enableTofCalBar = true;
-      else                      m_enableTofCalBar = false;
+    if (key.Contains("EnableTWnoPU:") ) {
+      if ( item.Contains("y"))  m_enableTWnoPU = true;
+      else                      m_enableTWnoPU = false;
       if (m_debug > 0)
-        printf("EnableTofCalBar: %d\n", m_enableTofCalBar);
+        printf("EnableTWnoPU: %d\n", m_enableTWnoPU);
+    }
+    
+
+    if (key.Contains("EnableTWZmatch:") ) {
+      if ( item.Contains("y"))  m_enableTWZmatch = true;
+      else                      m_enableTWZmatch = false;
+      if (m_debug > 0)
+        printf("EnableTWZmatch: %d\n", m_enableTWZmatch);
+    }
+    
+if (key.Contains("EnableTWCalBar:")  ) {
+      if ( item.Contains("y"))  m_enableTWCalBar = true;
+      else                      m_enableTWCalBar = false;
+      if (m_debug > 0)
+        printf("EnableTWCalBar: %d\n", m_enableTWCalBar);
     }
     
     if (key.Contains("IncludeDI:") ) {

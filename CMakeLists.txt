@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 # Check cmake version is compatible
 #
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 set(CMAKE_MACOSX_RPATH 0)
 #------------------------------------------------------------------------------
 # Project Name 
@@ -16,6 +16,10 @@ MESSAGE("${PROJECT_NAME}:")
 #------------------------------------------------------------------------------
 # option Geant4
 option(Geant4_DIR "Include G4 simulation" OFF)
+
+#------------------------------------------------------------------------------
+# option copying files into build directory
+option(FILECOPY "Files copying" OFF)
 
 #------------------------------------------------------------------------------
 # Enforce an out-of-source builds before anything else
@@ -84,6 +88,7 @@ Set(TATW  "TATWbase")
 Set(TACA  "TACAbase")
 Set(TAMC  "TAMCbase")
 Set(TAED  "TAEDbase")
+Set(TATOE "TATOEbase")
 Set(TAFO  "TAGfoot")
 add_definitions(-std=c++14)
 
@@ -105,6 +110,7 @@ set(TATW_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TATW}")
 set(TACA_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TACA}")
 set(TAMC_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAMC}")
 set(TAED_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAED}")
+set(TATOE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TATOE}")
 set(TAFO_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAFO}")
 
 #----------------------------------------------------------------------------

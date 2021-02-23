@@ -115,7 +115,7 @@ Bool_t TAGdataDsc::Generate()
   if (fpProducer) {
     fpProducer->Process();
   } else {
-    // Error("Generate()", "no action registered for '%s'", GetName());
+    Error("Generate()", "no action registered for '%s'", GetName());
     SetBit(kFail);
   }  
 

@@ -295,7 +295,10 @@ Float_t TATWdigitizer::GetResEnergyMC(Float_t energy)
 Float_t TATWdigitizer::GetResCharge(Float_t energy)
 {
   
-  Float_t relResEloss = GetResEnergyExp(energy);
+  // Float_t relResEloss = GetResEnergyExp(energy);
+  Float_t resElossExp = GetResEnergyExp(energy);
+  Float_t resElossMC  = GetResEnergyMC(energy);
+  Float_t relResEloss = sqrt(pow(resElossExp,2)-pow(resElossMC,2));
 
   return sqrt(2)*relResEloss;
 
@@ -398,10 +401,12 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Int_t layer = -1;
    if (barid < TATWparGeo::GetLayerOffset()) {  // vertical bar --> layer0
       pos = y0;
-      layer = 0;
+      layer = (Int_t)LayerY;
+      // layer = 0;
    } else {   // horizontal bars --> layer1
       pos = x0;
-      layer = 1;
+      layer = (Int_t)LayerX;
+      // layer = 1;
       barid -= TATWparGeo::GetLayerOffset();
    }
 
@@ -445,7 +450,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Double_t energy = TMath::Sqrt(chargeA*chargeB);
    Double_t chargeCOM = TMath::Log(chargeA/chargeB);
 
-   if (FootDebugLevel(1)) {
+   if (FootDebugLevel(4)) {
       printf("pos %.1f\n", pos);
       printf("energy %.1f %.1f\n", chargeA, chargeB);
       printf("Res %.3f %.3f\n", resChargeA*100, resChargeB*100);
@@ -455,19 +460,19 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    Double_t tof = time;
    Double_t resTof = (Double_t)GetResToF(edep);
    tof += gRandom->Gaus(0,resTof);
-   if(FootDebugLevel(1))
+   if(FootDebugLevel(4))
      cout<<"smear tof::"<<tof<<endl;
    //Store Tof in ns
    tof *= TAGgeoTrafo::PsToNs(); 
 
-   if(FootDebugLevel(1)) printf("true pos %.1f\n", pos);
+   if(FootDebugLevel(4)) printf("true pos %.1f\n", pos);
 
 
    // position resolution from data
    Double_t pos_rec = pos;
    Double_t resPos = (Double_t)GetResPos(edep)*TAGgeoTrafo::MmToCm();  //resolution in mm and position in cm!!
    pos_rec += gRandom->Gaus(0,resPos);
-   if(FootDebugLevel(1)) {
+   if(FootDebugLevel(4)) {
      // printf("edep %.1f  resPos %.2f\n", edep, resPos);
      printf("pos %.3f\n\n", pos_rec);
    }
@@ -476,31 +481,31 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    // define tA e tB using position of the hit along the bar
    Double_t timeTW = time + timeST;
 
-   if(FootDebugLevel(1))
+   if(FootDebugLevel(4))
      cout<<timeTW<<" "<<time<<" "<<timeST<<endl;
    
    Float_t timeA = GetTimeLeft(pos, timeTW, edep);
    Float_t timeB = GetTimeRight(pos, timeTW, edep);
 
-   if (FootDebugLevel(1)) {
+   if (FootDebugLevel(4)) {
      printf("time %.1f\n", time);
      printf("time A::%.1f B::%.1f\n", timeA, timeB);
    }
    
    Double_t tof_sum = (timeA+timeB)/2. - fSlatLength/2. * fTofPropAlpha - timeST;
 
-   if(FootDebugLevel(1))
+   if(FootDebugLevel(4))
      cout<<"tof_sum::"<<tof_sum<<endl;
    Float_t resTimeTW = GetResTimeTW(edep);
    tof_sum += gRandom->Gaus(0,sqrt(pow(resTof,2)-pow(resTimeTW,2))); // add smearing of timeST
-   if(FootDebugLevel(1))
+   if(FootDebugLevel(4))
      cout<<"tof_sum smear::"<<tof_sum<<endl;
 
    //Store Tof in ns
    tof_sum *= TAGgeoTrafo::PsToNs(); 
 
    Double_t pos_diff = (timeB-timeA)/(2*fTofPropAlpha);  // cm   
-   if(FootDebugLevel(1))
+   if(FootDebugLevel(4))
      cout<<endl<<"pos_diff::"<<pos_diff<<endl<<endl;
    
    if( IsPileUpOff() ) {     
@@ -511,7 +516,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
        
        fCurrentHit->SetToF(tof_sum);     
        
-       if(FootDebugLevel(1))
+       if(FootDebugLevel(4))
 	 cout<<"PU off    time::"<<tof_sum<<"  tof::"<<fCurrentHit->GetToF()<<endl;
        
      } else {
@@ -520,7 +525,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 
        fCurrentHit->SetToF(tof);     
 
-       if(FootDebugLevel(1))
+       if(FootDebugLevel(4))
 	 cout<<"PU off    time::"<<tof<<"  tof::"<<fCurrentHit->GetToF()<<endl;
      }
 
@@ -539,7 +544,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 	 
 	 fCurrentHit->SetToF(tof_sum);     
 	 
-	 if(FootDebugLevel(1))
+	 if(FootDebugLevel(4))
 	   cout<<"PU off    time::"<<tof_sum<<"  tof::"<<fCurrentHit->GetToF()<<endl;
 	 
        } else {
@@ -548,7 +553,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 	 
 	 fCurrentHit->SetToF(tof);     
 	 
-	 if(FootDebugLevel(1))
+	 if(FootDebugLevel(4))
 	   cout<<"PU off    time::"<<tof<<"  tof::"<<fCurrentHit->GetToF()<<endl;
        }
        
@@ -598,7 +603,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
        fCurrentHit->SetPosition(pos_diff);
        fCurrentHit->SetCOM(chargeCOM);
        
-       if(FootDebugLevel(1))
+       if(FootDebugLevel(4))
 	 cout<<"PU case    time::"<<tof_sum<<"  tof::"<<fCurrentHit->GetToF()<<endl;
        
        // rough: set the "true" Z charge of the PU hit as the charge of the fragment with higher Z (it doesn't work for multiple light ions)
