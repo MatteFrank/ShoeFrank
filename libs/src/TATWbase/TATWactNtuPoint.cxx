@@ -230,6 +230,7 @@ Bool_t TATWactNtuPoint::FindPoints()
        }  
    
        if(point==nullptr) { //continue;
+
        if(FootDebugLevel(1))
 	 Warning("FindPoints()",Form("no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY));
 	 continue;  // no TW point can be assigned...
@@ -308,7 +309,7 @@ Bool_t TATWactNtuPoint::FindPoints()
 	 
 	 if( fIsZmatch && !IsPointsWithMatchedZ(hit1,hitmin) ) {
 	   if(FootDebugLevel(1))
-	     Warning("FindPoints()",Form("no TW point has been assigned: mismatched Z Z1: %d Z2: %d",hit1->GetChargeZ(),hitmin->GetChargeZ()));
+	     Warning("FindPoints()","no TW point has been assigned: mismatched Z Z1: %d Z2: %d",hit1->GetChargeZ(),hitmin->GetChargeZ());
 	   continue;
 	 }
 	 
@@ -316,7 +317,7 @@ Bool_t TATWactNtuPoint::FindPoints()
 
 	 if(!point) {
 	   if(FootDebugLevel(1))
-	     Warning("FindPoints()",Form("no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY));
+	     Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
 	   
 	   return true;
 	 }
@@ -362,8 +363,7 @@ Bool_t TATWactNtuPoint::FindPoints()
    }  // close clustering
 
    if(point==nullptr) { //continue;
-     if(FootDebugLevel(1))
-       Warning("FindPoints()",Form("no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY));
+     Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
    }
 
    
@@ -387,7 +387,7 @@ Double_t TATWactNtuPoint::GetPositionFromDeltaTime(Int_t layer, Int_t bar, TATWn
        posAlongBar  = hit->GetPosition();
      }
      else
-       Error("FindPoints",Form("TW Layer %d doesn't exist...check what's going wrong...",layer));
+       Error("FindPoints","TW Layer %d doesn't exist...check what's going wrong...",layer);
 
      if(FootDebugLevel(4)) {
        cout<<"posHit1::"<<posAlongBar<<" "<<posPerpendicular<<endl;
@@ -412,7 +412,7 @@ Double_t TATWactNtuPoint::GetPositionFromBarCenter(Int_t layer, Int_t bar, TATWn
      else if(layer==(Int_t)LayerY) 
        posPerpendicular  = fparGeoTW->GetBarPosition(LayerY, bar)[0];  // get x bar position
      else
-       Error("FindPoints",Form("TW Layer %d doesn't exist...check what's going wrong...",layer));
+       Error("FindPoints","TW Layer %d doesn't exist...check what's going wrong...",layer);
 
      if(FootDebugLevel(4)) {
        cout<<"posAlongBar::"<<posAlongBar<<"  posPerp::"<<posPerpendicular<<endl;

@@ -508,8 +508,8 @@ void TAFObaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
    } else if (obj->InheritsFrom("TAVTvertex")) {
       TAVTvertex* vtx = (TAVTvertex*)obj;
       if (vtx == 0x0) return;
-      TVector3 pos = vtx->GetVertexPosition();
-      TVector3 err = vtx->GetVertexPosError();
+      TVector3 pos = vtx->GetPosition();
+      TVector3 err = vtx->GetPosError();
       fInfoView->AddLine( Form("Vertex# %d at position:\n", idx) );
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", pos.X(), pos.Y(), pos.Z()) );
       fInfoView->AddLine( Form(" (%.3g %.3g %.3g) cm\n", err.X(), err.Y(), err.Z()) );
@@ -787,7 +787,7 @@ void TAFObaseEventDisplay::UpdateQuadElements(const TString prefix)
             for (Int_t iVtx = 0; iVtx < pNtuVtxPD->GetVertexN(); ++iVtx) {
                vtxPD = pNtuVtxPD->GetVertex(iVtx);
                if (vtxPD == 0x0) continue;
-               vtxPositionPD = vtxPD->GetVertexPosition();
+               vtxPositionPD = vtxPD->GetPosition();
                vtxPositionPD = fpFootGeo->FromVTLocalToGlobal(vtxPositionPD);
                fVtxClusDisplay->AddHit(50, vtxPositionPD.X(), vtxPositionPD.Y(), vtxPositionPD.Z());
                fVtxClusDisplay->QuadId(vtxPD);

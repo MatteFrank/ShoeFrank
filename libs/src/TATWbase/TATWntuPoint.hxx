@@ -98,7 +98,9 @@ public:
   int       GetMainLayer()     const  { return m_layer;             }
   int       GetPointMatchMCtrkID()     const  { return m_id;             }
   int       GetChargeZ()     const  { return m_chargeZ;             }
+
   double    GetChargeZProba() const  { return m_chargeZProba;       }
+  bool      IsValid()         const;
   
   
   void      SetPosition(TVector3& pos);

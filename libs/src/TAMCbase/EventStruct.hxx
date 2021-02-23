@@ -1,6 +1,7 @@
 #ifndef _EVENT_STRUCT_HH
 #define _EVENT_STRUCT_HH
 
+#include "Rtypes.h"
 
 const int MAXTR    = 6000;  
 const int MAXSTC   = 200;   

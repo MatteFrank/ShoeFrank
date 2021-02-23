@@ -107,13 +107,14 @@ private:
     UKF ukf_m;
     detector_list_t list_m;
     TAGntuGlbTrack* reconstructed_track_mhc;
+    
     double beam_energy_m;
     int beam_mass_number_m;
     double target_position_m;
     double st_position_m;
-    TATOEchecker<TATOEactGlb> checker_m;
+    checker<TATOEactGlb> checker_m;
     TATOElogger logger_m;
-    bool flag_mc_m{false};
+    
 
     node_type const * current_node_mh;
     std::size_t event{0};
@@ -124,7 +125,8 @@ public:
     TATOEactGlb( UKF&& ukf_p,
                  detector_list_t&& list_p,
                  TAGntuGlbTrack* track_phc,
-                 TAGparGeo const * global_parameters_ph) :
+                 TAGparGeo const * global_parameters_ph, 
+                 bool use_checker = false) :
         ukf_m{ std::move(ukf_p) },
         list_m{ std::move(list_p) },
         reconstructed_track_mhc{ track_phc },
@@ -132,12 +134,12 @@ public:
         beam_mass_number_m{ static_cast<int>(global_parameters_ph->GetBeamPar().AtomicMass) },
         target_position_m{ global_parameters_ph->GetTargetPar().Position.Z() },
         st_position_m{ static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()))->GetSTCenter().Z() },
-        checker_m{ global_parameters_ph, *this}
+        checker_m{ empty_checker<TATOEactGlb>{} }
     {
+        if( use_checker ){ checker_m = TATOEchecker<TATOEactGlb>{global_parameters_ph, *this};}
         ukf_m.call_stepper().ode.model().particle_h = &particle_m;
     }
   
-    void SetMcFlag(bool f) {flag_mc_m = f; }
     void Output() override {
         checker_m.compute_results( details::all_mixed_tag{} );
         checker_m.compute_results( details::all_separated_tag{} );
@@ -161,6 +163,7 @@ public:
         
         for(auto & hypothesis : hypothesis_c){
             particle_m = hypothesis;
+//            std::cout << "hypothesis: " << hypothesis.charge << " - " << hypothesis.mass << " - " << hypothesis.momentum << " -- " << hypothesis.get_end_points().size() << '\n';
             reconstruct();
         }
         
@@ -211,6 +214,7 @@ private:
 //        std::cout << "event: "<< event << '\n';
         auto tof = list_m.last();
 
+//        std::cout << "form_hypothesis:\n";
         auto candidate_c = tof.generate_candidates();
         std::vector<particle_properties> hypothesis_c;
         hypothesis_c.reserve( candidate_c.size()*2 );
@@ -240,105 +244,103 @@ private:
             auto add_current_end_point = [&candidate]( particle_properties & hypothesis_p  )
                                  { hypothesis_p.get_end_points().push_back( candidate.data ); };
 //
-//            std::for_each( hypothesis_c.begin(), hypothesis_c.end(),
-//                           [&charge, &candidate, &add_current_end_point]( particle_properties & h_p ){
-//                               if( h_p.charge == charge ){ add_current_end_point( h_p ); }
-//                           } );
-//
-//
-//
-//            auto first_matching_hypothesis = std::find_if( hypothesis_c.begin(), hypothesis_c.end(),
-//                                                          [&charge]( particle_properties const & h_p ){ return h_p.charge == charge; } );
-//
-//            if( first_matching_hypothesis == hypothesis_c.end() ){
             
-                auto add_hypothesis = [&]( int mass_number_p,
-                                           double light_ion_boost_p = 1,
-                                           double energy_modifier_p = 1 )
-                                      {
-                   
-                                          
+
+
+
+            auto first_matching_hypothesis_i = std::find_if( hypothesis_c.begin(), hypothesis_c.end(),
+                                                          [&charge]( particle_properties const & h_p ){ return h_p.charge == charge; } );
+
+            if( first_matching_hypothesis_i != hypothesis_c.end() ) {
+                std::for_each( first_matching_hypothesis_i, hypothesis_c.end(),
+                              [&charge, &candidate, &add_current_end_point]( particle_properties & h_p ){
+                                  if( h_p.charge == charge ){ add_current_end_point( h_p ); }
+                              } );
+                break;
+            }
+        
+            
+            auto add_hypothesis = [&]( int mass_number_p,
+                                        double light_ion_boost_p = 1,
+                                        double energy_modifier_p = 1 )
+                        {
                    // auto true_momentum = checker_m.retrieve_momentum( candidate );
                    // auto true_mass = checker_m.retrieve_mass( candidate );
                   //  auto true_charge = checker_m.retrieve_charge( candidate );
-                                          
                   //  logger_m << "momentum: " << momentum <<  '\n';
                   //  logger_m << "real_momentum: " << true_momentum << '\n';
                  //   if( true_momentum > 0. ){ momentum = true_momentum;}
                    // if( true_charge > 0. ){ charge = true_charge;}
                  //   if( true_mass > 0. ){ mass_number_p = true_mass;}
+                auto momentum = sqrt( pow(beam_energy_m * mass_number_p, 2)  +
+                                      2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  ) *
+                                      energy_modifier_p;
                                           
-                    auto momentum = sqrt( pow(beam_energy_m * mass_number_p, 2)  +
-                                          2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  ) *
-                                    energy_modifier_p;
-                                          
-                    hypothesis_c.push_back( particle_properties{ charge, mass_number_p, momentum, light_ion_boost_p } );
-                    add_current_end_point( hypothesis_c.back() );
-                                      };
+                hypothesis_c.push_back( particle_properties{ charge, mass_number_p, momentum, light_ion_boost_p } );
+                add_current_end_point( hypothesis_c.back() );
+                        };
             
-                switch(charge){
-                    case 1:
-                    {
-                        auto light_ion_boost = 2;
-                        add_hypothesis(1, light_ion_boost);
-                        add_hypothesis(1, light_ion_boost, 0.5);
-//                      light_ion_boost = 1.3;
-                        add_hypothesis(2, light_ion_boost);
-                        add_hypothesis(3);
-                        break;
-                    }
-                    case 2:
-                    {
-                        add_hypothesis(4);
-                        add_hypothesis(3);
-                        break;
-                    }
-                    case 3 :
-                    {
-                        add_hypothesis(6);
-                        add_hypothesis(7);
-                        add_hypothesis(8);
-                        break;
-                    }
-                    case 4 :
-                    {
-                        add_hypothesis(7);
-                        add_hypothesis(9);
-                        add_hypothesis(10);
-                        break;
-                    }
-                    case 5 :
-                    {
-                        add_hypothesis(10);
-                        add_hypothesis(11);
-                        break;
-                    }
-                    case 6 :
-                    {
-                        add_hypothesis(11);
-                        add_hypothesis(12);
-                        add_hypothesis(13);
-                        break;
-                    }
-                    case 7:
-                    {
-                        add_hypothesis(14);
-                        add_hypothesis(15);
-                        break;
-                    }
-                    default:
-                    {
-                        auto mass_number = charge * 2;
-                        add_hypothesis(mass_number);
-                        break;
-                    }
+            switch(charge){
+                case 1:
+                {
+                    auto light_ion_boost = 2;
+                    add_hypothesis(1, light_ion_boost);
+                    add_hypothesis(1, light_ion_boost, 0.5);
+//                     light_ion_boost = 1.3;
+                    add_hypothesis(2, light_ion_boost);
+                    add_hypothesis(3);
+                    break;
+                }
+                case 2:
+                {
+                    add_hypothesis(4);
+                    add_hypothesis(3);
+                    break;
+                }
+                case 3 :
+                {
+                    add_hypothesis(6);
+                    add_hypothesis(7);
+                    add_hypothesis(8);
+                    break;
+                }
+                case 4 :
+                {
+                    add_hypothesis(7);
+                    add_hypothesis(9);
+                    add_hypothesis(10);
+                    break;
+                }
+                case 5 :
+                {
+                    add_hypothesis(10);
+                    add_hypothesis(11);
+                    break;
+                }
+                case 6 :
+                {
+                    add_hypothesis(11);
+                    add_hypothesis(12);
+                    add_hypothesis(13);
+                    break;
+                }
+                case 7:
+                {
+                    add_hypothesis(14);
+                    add_hypothesis(15);
+                    break;
+                }
+                default:
+                {
+                    auto mass_number = charge * 2;
+                    add_hypothesis(mass_number);
+                    break;
+                }
                         
                         
-//                }
-                
-                
             }
             
+                
         }
         
         return hypothesis_c;
@@ -352,7 +354,7 @@ private:
                                      gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data() )
                                                             );
         
-        auto start = transformation_h->FromVTLocalToGlobal( vertex_ph->GetVertexPosition() );
+        auto start = transformation_h->FromVTLocalToGlobal( vertex_ph->GetPosition() );
         auto end = transformation_h->FromVTLocalToGlobal( cluster_ph->GetPositionG() );
         
         auto length = end - start;
@@ -361,9 +363,9 @@ private:
         auto track_slope_y = length.Y()/length.Z();
         
         
-        auto length_error_x = sqrt( pow( vertex_ph->GetVertexPosError().X(), 2 ) +
+        auto length_error_x = sqrt( pow( vertex_ph->GetPosError().X(), 2 ) +
                                     pow( cluster_ph->GetPosErrorG().X(), 2)             );
-        auto length_error_y = sqrt( pow( vertex_ph->GetVertexPosError().Y(), 2 ) +
+        auto length_error_y = sqrt( pow( vertex_ph->GetPosError().Y(), 2 ) +
                                     pow( cluster_ph->GetPosErrorG().Y(), 2)           );
         
         
@@ -559,10 +561,10 @@ private:
         
         logger_m.add_root_header( "FINALISE_RECONSTRUCTION" );
 //        std::cout << "FINALISE_RECONSTRUCTION\n";
-        
+//        std::cout << "advance_reconstruction<tof>:\n";
         auto& leaf_c = arborescence_p.get_handler();
         
-        
+        auto const& layer = tof_p.form_layer();
         
         for(auto& leaf : leaf_c){
         
@@ -576,7 +578,8 @@ private:
             ukf_m.step_length() = 1e-3;
             
             auto s = make_state(leaf.get_value());
-            auto fs_c = advance_reconstruction_impl( s, tof_p.form_layer() );
+            
+            auto fs_c = advance_reconstruction_impl( s, layer );
             
             if( fs_c.empty() ){ leaf.mark_invalid(); }
             else{
@@ -714,6 +717,7 @@ private:
     
     std::vector<full_state> confront(const state& ps_p, const detector_properties<details::tof_tag>::layer& layer_p)  //optionnal is more relevant here
     {
+        
         using candidate = typename detector_properties< details::tof_tag >::candidate;
         
         
@@ -727,7 +731,7 @@ private:
                                                            [&c_p](auto const & ep_ph ){ return c_p.data == ep_ph;  } );
                                    } );
         logger_m.add_sub_header(  "confront" );
-
+        
         using enriched_candidate = enriched_candidate_impl<typename decltype(candidate_c)::value_type>;
         std::vector< enriched_candidate > enriched_c;
         enriched_c.reserve( std::distance( candidate_c.begin(), candidate_end ) );
@@ -747,6 +751,8 @@ private:
         
         auto select = [this, &ps_p, &layer_p ]( const auto & ec_p ){ return pass_selection( ec_p, ps_p, layer_p); };
         
+        
+        
         auto enriched_end = std::partition( enriched_c.begin(), enriched_c.end(), select );
         for(auto iterator = enriched_c.begin() ; iterator != enriched_end ; ++iterator ){
             auto state = ukf_m.correct_state( ps_p, *iterator ); //should be sliced properly
@@ -757,6 +763,7 @@ private:
                                   data_handle<data_type>{ iterator->data } ,
                                   step_register{}
             };
+            
             fs_c.push_back( std::move(fs) );
         }
 
@@ -1233,6 +1240,7 @@ private:
             checker_m.submit_reconstructed_track( track );
             // -----------------------------
             
+//            std::cout << "track:\n";
             auto & value_c = track.get_clusters();
 //                    std::cout << " --- final_track --- " << '\n';
             for(auto& value : value_c){
@@ -1252,10 +1260,24 @@ private:
                 TVector3 momentum_error{ 10, 10, 10 };
                 
                 track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
-                
-                if( value.data ){
-                    TVector3 measured_position{ value.data->GetPosition().X(), value.data->GetPosition().Y(), corrected_position.Z() };
-                    track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+
+                if( value.data ){ //needed because first point is vertex, which as no cluster associated
+                    auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+                    TVector3 measured_position{ transformation_h->FromTWLocalToGlobal(value.data->GetPosition()) };
+                    
+                    auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                    for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
+                        measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
+                    }
+                    
+                    auto const * vertex_h = dynamic_cast<TAVTcluster const*>( value.data );
+                    auto const * it_h = dynamic_cast<TAITcluster const*>( value.data );
+                    auto const * msd_h = dynamic_cast<TAMSDcluster const*>( value.data );
+                    auto const * tw_h = dynamic_cast<TATWpoint const*>( value.data );
+                    if( vertex_h ){ measured_h->SetDevName(TAVTparGeo::GetBaseName()); }
+                    if( it_h ){ measured_h->SetDevName(TAITparGeo::GetBaseName()); }
+                    if( msd_h ){ measured_h->SetDevName(TAMSDparGeo::GetBaseName()); }
+                    if( tw_h ){ measured_h->SetDevName(TATWparGeo::GetBaseName()); }
                 }
             }
             
@@ -1283,10 +1305,10 @@ auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc,
 
 
 template<class UKF, class DetectorList>
-auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph)
+auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph, bool use_checker = false)
         -> TATOEactGlb<UKF, DetectorList> *
 {
-    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc, global_parameters_ph};
+    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc, global_parameters_ph, use_checker};
 }
 
 

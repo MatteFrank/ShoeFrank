@@ -9,7 +9,7 @@
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 
 #include "TAGobject.hxx"
 #include "TAGdataDsc.hxx"

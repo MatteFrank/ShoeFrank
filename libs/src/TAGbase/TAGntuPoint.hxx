@@ -24,6 +24,7 @@ class TClonesArray;
 class TAGpoint : public TAGcluster {
    
 private:
+   TString     fDevName;       // Device name (VT,IT, MSD, TW, CA)
    TVector3    fPosition;      // position in FOOT framework
    TVector3    fPosError;      // position error in FOOT framework
    TVector3    fMomentum;      // momentum in FOOT framework
@@ -34,8 +35,12 @@ public:
    TAGpoint();
    TAGpoint(TVector3 pos, TVector3 posErr);
    TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ = 0);
+   TAGpoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ = 0);
    ~TAGpoint() {};
-   
+  
+   // return detector name
+   const Char_t*    GetDevName()     const  { return fDevName.Data(); }
+  
    // All the Get methods
    const TVector3&  GetPosition()    const  { return fPosition;   }
    const TVector3&  GetPosError()    const  { return fPosError;   }
@@ -48,15 +53,15 @@ public:
    TVector3         GetMomError()    const  { return fMomError;   }
    Int_t            GetChargeZ()     const  { return fChargeZ;    }
       
+   void        SetDevName(TString name )    { fDevName = name;    }
    void        SetPosition(TVector3 pos)    { fPosition = pos;    }
    void        SetPosError(TVector3 pos)    { fPosError = pos;    }
    void        SetMomentum(TVector3 mom)    { fMomentum = mom;    }
    void        SetMomError(TVector3 mom)    { fMomError = mom;    }
    void        SetChargeZ(Int_t z)          { fChargeZ = z;       }
    void        Clear(Option_t* opt);
-   
-   
-   ClassDef(TAGpoint,4)
+  
+   ClassDef(TAGpoint,5)
 };
 
 //##############################################################################

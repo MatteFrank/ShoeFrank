@@ -3,7 +3,7 @@
 #include <TFile.h>
 #include <TString.h>
 
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 #include "TAMCevent.hxx"
 
 #include "TAGrunInfo.hxx"
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
          maxevpro = atoi(argv[++i]);
       }
       if(strcmp(argv[i],"-reg") == 0) {
-         regFlag = atoi(argv[++i]);
+         regFlag = true;
       }
       if(strcmp(argv[i],"-iL") == 0) {
          iL = 1;
@@ -174,10 +174,10 @@ int main(int argc, char *argv[])
                
                event->AddPart(eve.TRpaid[jj], eve.TRgen[jj], eve.TRcha[jj], eve.TRreg[jj], eve.TRbar[jj],
                               eve.TRdead[jj], eve.TRfid[jj],
-                              TVector3(eve.TRix[jj], eve.TRiy[jj], eve.TRiy[jj]),
-                              TVector3(eve.TRfx[jj], eve.TRfy[jj], eve.TRfy[jj]),
-                              TVector3(eve.TRipx[jj], eve.TRipy[jj], eve.TRipy[jj]),
-                              TVector3(eve.TRfpx[jj], eve.TRfpy[jj], eve.TRfpy[jj]),
+                              TVector3(eve.TRix[jj], eve.TRiy[jj], eve.TRiz[jj]),
+                              TVector3(eve.TRfx[jj], eve.TRfy[jj], eve.TRfz[jj]),
+                              TVector3(eve.TRipx[jj], eve.TRipy[jj], eve.TRipz[jj]),
+                              TVector3(eve.TRfpx[jj], eve.TRfpy[jj], eve.TRfpz[jj]),
                               eve.TRmass[jj], eve.TRtof[jj], eve.TRtime[jj], eve.TRtrlen[jj]);
                
                if(nread!=23){

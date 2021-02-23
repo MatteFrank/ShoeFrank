@@ -9,6 +9,7 @@
 #include "TF1.h"
 #include "TMath.h"
 #include "TDirectory.h"
+#include "TRandom.h"
 
 
 #include "TAMSDparGeo.hxx"

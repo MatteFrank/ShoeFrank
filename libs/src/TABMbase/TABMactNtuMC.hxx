@@ -7,7 +7,7 @@
 */
 /*------------------------------------------+---------------------------------*/
 
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"

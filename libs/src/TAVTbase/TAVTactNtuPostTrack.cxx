@@ -102,7 +102,7 @@ Bool_t TAVTactNtuPostTrack::FindTiltedTracks()
    TAVTcluster* vtxClus = new TAVTcluster();
    
    if (isVtxFound) {
-	  posG = vertex->GetVertexPosition();
+	  posG = vertex->GetPosition();
 	  vtxClus->SetPositionG(&posG);
 	  vtxClus->SetPlaneNumber(-1);
    } else {

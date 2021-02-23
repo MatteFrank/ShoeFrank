@@ -85,8 +85,8 @@ Int_t TAMCevent::Clean()
 /*-----------------------------------------------------------------*/
 void TAMCevent::AddPart(Int_t aTRpaid, Int_t aTRgen, Int_t aTRcharge, Int_t aTRreg,Int_t aTRbaryon, Int_t aTRdead, Int_t aTRflukid, TVector3 aTRipos,TVector3 aTRfpos, TVector3 aTRip, TVector3 aTRfp, Double_t aTRmass, Double_t aTRtof, Double_t aTRtime, Double_t aTRtrlen)
 {
-    fTrack->NewTrack(aTRflukid,aTRcharge,aTRgen,aTRreg,aTRbaryon,aTRdead,aTRmass,aTRpaid,aTRtime,aTRtof,aTRtrlen,
-                     aTRipos,aTRfpos,aTRip,aTRfp,TVector3(0,0,0),TVector3(0,0,0),-1);
+    fTrack->NewTrack(aTRflukid,aTRcharge,aTRgen,aTRreg,aTRbaryon,aTRdead,aTRmass,aTRpaid-1,aTRtime,aTRtof,aTRtrlen,
+                     aTRipos,aTRfpos,aTRip,aTRfp,TVector3(0,0,0),TVector3(0,0,0));
 }
 
 /*-----------------------------------------------------------------*/
