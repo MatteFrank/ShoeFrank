@@ -65,15 +65,16 @@ int main (int argc, char *argv[])  {
    Bool_t zmatch = GlobalPar::GetPar()->IsTWZmatch();
    
    
-   Int_t pos = out.Last('.');
-   out = out(0, pos);
-   if(!zmc) {
-     if(zrec)
-       out.Append("_noTWPileUp_Zrec.root");
+   if(!zmc && zrec) {
+     Int_t pos_out = out.Last('.');
+     out = out(0, pos_out);
+     out.Append("_noTWPileUp_Zrec.root");
    }
-   else
+   if(zmc) {
+     Int_t pos_out = out.Last('.');
+     out = out(0, pos_out);
      out.Append("_noTWPileUp_Ztrue.root");   
-  
+   }
 
    BaseReco* locRec = 0x0;
    if (!obj && !test)
