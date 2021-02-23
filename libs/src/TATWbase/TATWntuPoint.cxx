@@ -78,6 +78,15 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double 
    }
 }
 
+
+//______________________________________________________________________________
+//
+bool TATWpoint::IsValid() const
+{
+  return (m_columnHit->IsValid() && m_rowHit->IsValid());
+}
+
+
 //______________________________________________________________________________
 //
 void TATWpoint::SetPosition(TVector3& posLoc)

@@ -255,7 +255,7 @@ Bool_t TATWactNtuPoint::FindPoints()
        }  
    
        if(point==nullptr) { //continue;
-	 Warning("FindPoints()",Form("no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY));
+	 Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
 	 continue;  // no TW point can be assigned...
        }
        
@@ -376,7 +376,7 @@ Bool_t TATWactNtuPoint::FindPoints()
    }  // close clustering
 
    if(point==nullptr) { //continue;
-     Warning("FindPoints()",Form("no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY));
+     Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
    }
 
 
@@ -401,7 +401,7 @@ Double_t TATWactNtuPoint::GetPositionFromDeltaTime(Int_t layer, Int_t bar, TATWn
        posAlongBar  = hit->GetPosition();
      }
      else
-       Error("FindPoints",Form("TW Layer %d doesn't exist...check what's going wrong...",layer));
+       Error("FindPoints","TW Layer %d doesn't exist...check what's going wrong...",layer);
 
      if(FootDebugLevel(1)) {
        cout<<"posHit1::"<<posAlongBar<<" "<<posPerpendicular<<endl;
@@ -426,7 +426,7 @@ Double_t TATWactNtuPoint::GetPositionFromBarCenter(Int_t layer, Int_t bar, TATWn
      else if(layer==(Int_t)LayerY) 
        posPerpendicular  = fparGeoTW->GetBarPosition(LayerY, bar)[0];  // get x bar position
      else
-       Error("FindPoints",Form("TW Layer %d doesn't exist...check what's going wrong...",layer));
+       Error("FindPoints","TW Layer %d doesn't exist...check what's going wrong...",layer);
 
      if(FootDebugLevel(1)) {
        cout<<"posAlongBar::"<<posAlongBar<<"  posPerp::"<<posPerpendicular<<endl;

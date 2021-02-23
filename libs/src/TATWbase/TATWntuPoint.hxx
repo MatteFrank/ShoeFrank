@@ -73,27 +73,28 @@ public:
   const TVector3&  GetPositionG() const  { return m_positionG;      }
   const TVector3&  GetPosErrorG() const  { return m_posErrG;        }
   
-  int       GetRowID()    const  { return m_row;              }
-  int       GetColumnID()       const  { return m_column;                 }
+  int       GetRowID()            const  { return m_row;            }
+  int       GetColumnID()         const  { return m_column;         }
   
-  int       GetRow()      const  { return m_rowHit->GetBar(); }
-  int       GetColumn()         const  { return m_columnHit->GetBar();    }
+  int       GetRow()              const  { return m_rowHit->GetBar();    }
+  int       GetColumn()           const  { return m_columnHit->GetBar(); }
   
-  TATWntuHit* GetRowHit()	const	 { return m_rowHit;           }
-  TATWntuHit* GetColumnHit()      const	 { return m_columnHit;              }
+  TATWntuHit* GetRowHit()	       const  { return m_rowHit;         }
+  TATWntuHit* GetColumnHit()      const  { return m_columnHit;      }
   
-  double    GetEnergyLoss1() const  { return m_de1;                 }
-  double    GetEnergyLoss2() const  { return m_de2;                 }
-  double    GetEnergyLoss()  const  { return m_de1+m_de2;           }
-  double    GetTof1()        const  { return m_tof1;                }
-  double    GetTof2()        const  { return m_tof2;                }
-  double    GetMeanTof()  const  { return (m_tof1+m_tof2)/2.;           }
-  double    GetTime()        const  { return m_time;                }
-  int       GetMatchCalIdx() const  { return m_matchCalIdx;         }
-  int       GetMainLayer()     const  { return m_layer;             }
-  int       GetPointID()     const  { return m_id;             }
-  int       GetChargeZ()     const  { return m_chargeZ;             }
+  double    GetEnergyLoss1()  const  { return m_de1;                }
+  double    GetEnergyLoss2()  const  { return m_de2;                }
+  double    GetEnergyLoss()   const  { return m_de1+m_de2;          }
+  double    GetTof1()         const  { return m_tof1;               }
+  double    GetTof2()         const  { return m_tof2;               }
+  double    GetMeanTof()      const  { return (m_tof1+m_tof2)/2.;   }
+  double    GetTime()         const  { return m_time;               }
+  int       GetMatchCalIdx()  const  { return m_matchCalIdx;        }
+  int       GetMainLayer()    const  { return m_layer;              }
+  int       GetPointID()      const  { return m_id;                 }
+  int       GetChargeZ()      const  { return m_chargeZ;            }
   double    GetChargeZProba() const  { return m_chargeZProba;       }
+  bool      IsValid()         const;
   
   
   void      SetPosition(TVector3& pos);

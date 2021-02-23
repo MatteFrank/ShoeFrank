@@ -317,7 +317,6 @@ bool TATWactNtuHitMC::Action() {
       
       barId+=TATWparGeo::GetLayerOffset()*layer;  //offset for the horizontal bars Id
      
-     if (edep < 0.1) continue; // tmp solution, should have a framework
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, barId, Z);
       
       TATWntuHit* hit = fDigitizer->GetCurrentHit();
@@ -433,7 +432,7 @@ bool TATWactNtuHitMC::Action() {
          
          // get Eloss threshold from configuration file
          Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
-         
+        
          Double_t recEloss = hit->GetEnergyLoss(); // MeV
          Double_t recTof   = hit->GetTime();       // ns
          Double_t recPos   = hit->GetPosition();   // cm
@@ -449,6 +448,7 @@ bool TATWactNtuHitMC::Action() {
             
             recEloss=-99.; //set energy to nonsense value
             hit->SetEnergyLoss(recEloss);
+            hit->SetValid(false);
          }
          
          Int_t Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
