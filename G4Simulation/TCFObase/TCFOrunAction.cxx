@@ -66,13 +66,7 @@ void TCFOrunAction::EndOfRunAction(const G4Run* aRun)
     G4cout<<"The total number of events number of events is "<<aRun->GetNumberOfEvent()<<G4endl;
 
     fpTree->Write();
-  
-    // write run info
-    TAGrunInfo info = GlobalPar::Instance()->GetGlobalInfo();
-    info.SetCampaignName(gTAGroot->CurrentCampaignName());
-    info.SetRunNumber(gTAGroot->CurrentRunNumber());
-    info.Write(TAGrunInfo::GetObjectName());
-  
+
     //close file
     fpOutFile->Close();
     fWatch.Print();
