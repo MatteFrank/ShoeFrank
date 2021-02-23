@@ -227,7 +227,7 @@ TAMCntuEve* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutra
     Int_t i_bar = evStr->TRbar[i];
     Int_t i_dead = evStr->TRdead[i];
     Int_t i_moth = i_mid-1;
-    Int_t i_type = -999;//useless for now
+    Int_t i_type = evStr->TRgen[i];
     Double_t i_time = evStr->TRtime[i];
     Double_t i_tof = evStr->TRtof[i];
     Double_t i_trlen = evStr->TRtrlen[i];
@@ -243,9 +243,7 @@ TAMCntuEve* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutra
     TVector3 mothfp = TVector3 (0,0,0);
     if(i_moth>=0) mothfp = TVector3(evStr->TRfpx[i_moth],evStr->TRfpy[i_moth],evStr->TRfpz[i_moth]);
     
-    Int_t i_pileup = 0; // VM added 17/11/13 for pileup
-    
-    p_nturaw->NewTrack(i_id, i_chg, i_type, i_reg, i_bar, i_dead, i_mass, i_moth, i_time, i_tof, i_trlen, ipos, fpos, ip, fp, mothip, mothfp, i_pileup);
+    p_nturaw->NewTrack(i_id, i_chg, i_type, i_reg, i_bar, i_dead, i_mass, i_moth, i_time, i_tof, i_trlen, ipos, fpos, ip, fp, mothip, mothfp);
   }
   
   return p_nturaw;

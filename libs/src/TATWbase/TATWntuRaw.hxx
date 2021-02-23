@@ -44,6 +44,7 @@ private:
     Double_t m_TimeB;
     Double_t m_TimeA_oth;
     Double_t m_TimeB_oth;
+    Bool_t   m_IsValid;
 
 public:
   TATWntuHit();
@@ -71,9 +72,10 @@ public:
    Double_t  GetChargeChB()            const   { return m_ChargeB;           }
    Double_t  GetChargeTimeA()          const   { return m_TimeA;             }
    Double_t  GetChargeTimeB()          const   { return m_TimeB;             }
+   Bool_t    IsValid()                 const   { return m_IsValid;           }
    Float_t   GetHitCoordinate_detectorFrame() const   { return m_coordinate; }
    Float_t   GetHitZ_detectorFrame()          const   { return m_z;          }
-   
+  
    // MC track id
    Int_t     GetMcIndex(Int_t index)    const   { return m_MCindex[index];      }
    Int_t     GetMcTrackIdx(Int_t index) const   { return m_McTrackId[index];    }
@@ -92,8 +94,9 @@ public:
    void      SetChargeChB(Double_t chg)         { m_ChargeB = chg;           }
    void      SetChargeTimeA(Double_t t)         { m_TimeA   = t;             }
    void      SetChargeTimeB(Double_t t)         { m_TimeB   = t;             }
+   void      SetValid(Bool_t t)                 { m_IsValid   = t;           }
 
-  ClassDef(TATWntuHit,1)                            // Pixel or Pixel of a Detector Plane
+  ClassDef(TATWntuHit,2)                            // Pixel or Pixel of a Detector Plane
 };
 
 //##############################################################################

@@ -17,7 +17,7 @@
 #include "TATWparGeo.hxx"
 
 #include "TAGgeoTrafo.hxx"
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"

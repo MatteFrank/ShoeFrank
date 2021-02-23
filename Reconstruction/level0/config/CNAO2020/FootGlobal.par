@@ -41,8 +41,10 @@ EnableTracking:      y
 
 EnableSaveHits:      n
 EnableRootObject:    n
-EnableTofZmc:        n
-EnableTofCalBar:     n
+EnableTWZmc:         n
+EnableTWnoPU:        n
+EnableTWZmatch:      y
+EnableTWCalBar:      n
 
 ############   END - Options for reconstruction   ################
 

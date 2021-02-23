@@ -69,7 +69,7 @@ int main(int argc,char** argv)
     TString physListName("BIC");
 
     // select the output type (Evento tree or object TAMCevent tree)
-    G4bool obj =  false;;
+    G4bool flk =  false;;
     G4bool kEvento;
 
     // Fill only fragmented events
@@ -116,8 +116,8 @@ int main(int argc,char** argv)
         if(strcmp(argv[i],"-r") == 0)
             runMode  = true;
        
-        if(strcmp(argv[i],"-obj") == 0)
-           obj  = true;
+        if(strcmp(argv[i],"-flk") == 0)
+           flk  = true;
 
         if(strcmp(argv[i],"-out") == 0)
             rootFileName  = argv[++i];
@@ -135,22 +135,23 @@ int main(int argc,char** argv)
             printf("  -seed seedNb: seed number for random initialization  \n");
             printf("  -exp name: [def=""] experiment name for config/geomap extension\n");
             printf("  -run #run [def=-1] run number\n");
-            printf("  -obj save MC data in root object\n");
+            printf("  -flk save MC data in Fluka structure object\n");
             printf("  -frag save only when ion inelastic process occurs in target\n");
 
             return 1;
         }
     }
 
-    kEvento = !obj;
+    kEvento = flk;
    
     // Global Par
-    GlobalPar::Instance();
+    GlobalPar::Instance(expName);
     GlobalPar::GetPar()->SetDebugLevels();
    
     // TAG root
     TAGroot tagRoot;
-    tagRoot.SetRunNumber(100);
+    tagRoot.SetRunNumber(runNumber);
+    tagRoot.SetCampaignName(expName);
 
     // Set various flag
     TCVTgeometryConstructor::SetSmearFlag(false); // smearing due to the accurancy of the alignment (DeltaPos = 5mu, DeltaAng = 0.1º default)

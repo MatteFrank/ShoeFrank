@@ -104,6 +104,22 @@ TAGpoint* TAGtrack::AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TV
    return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, fCharge);
 }
 
+// __________________________________________________________________________
+//
+TAGpoint* TAGtrack::AddMeasPoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
+{
+  TClonesArray &pointArray = *fListOfMeasPoints;
+  return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, pos, posErr, mom, momErr, fCharge);
+}
+
+// __________________________________________________________________________
+//
+TAGpoint* TAGtrack::AddCorrPoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
+{
+  TClonesArray &pointArray = *fListOfCorrPoints;
+  return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, pos, posErr, mom, momErr, fCharge);
+}
+
 //------------------------------------------+-----------------------------------
 //! Clear event.
 void TAGtrack::Clear(Option_t*)

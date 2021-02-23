@@ -65,8 +65,9 @@ void TCFOrunAction::EndOfRunAction(const G4Run* aRun)
 {
     G4cout<<"The total number of events number of events is "<<aRun->GetNumberOfEvent()<<G4endl;
 
-    //close file
     fpTree->Write();
+
+    //close file
     fpOutFile->Close();
     fWatch.Print();
 }

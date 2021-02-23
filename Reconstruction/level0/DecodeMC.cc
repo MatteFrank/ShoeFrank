@@ -60,15 +60,20 @@ int main (int argc, char *argv[])  {
    Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
    Bool_t trk = GlobalPar::GetPar()->IsTracking();
    Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
-   Bool_t zmc = GlobalPar::GetPar()->IsTofZmc();
+   Bool_t zmc = GlobalPar::GetPar()->IsTWZmc();
+   Bool_t zrec = GlobalPar::GetPar()->IsTWnoPU();
+   Bool_t zmatch = GlobalPar::GetPar()->IsTWZmatch();
    
    
-   if (zmc) {
-     Int_t pos = out.Last('.');
-     out = out(0, pos);
-     out.Append("_noTWPileUp_Ztrue.root");
-     cout<<out.Data()<<endl;
+   Int_t pos = out.Last('.');
+   out = out(0, pos);
+   if(!zmc) {
+     if(zrec)
+       out.Append("_noTWPileUp_Zrec.root");
    }
+   else
+     out.Append("_noTWPileUp_Ztrue.root");   
+  
 
    BaseReco* locRec = 0x0;
    if (!obj && !test)
@@ -92,7 +97,13 @@ int main (int argc, char *argv[])  {
       locRec->EnableM28lusMT();
 
    if(zmc)
-      locRec->EnableZfromMCtrue();
+     locRec->EnableZfromMCtrue();
+   
+   if(zrec && !zmc)
+     locRec->EnableZrecWithPUoff();
+   
+   if(zmatch)
+     locRec->EnableTWZmatch();
    
    TStopwatch watch;
    watch.Start();

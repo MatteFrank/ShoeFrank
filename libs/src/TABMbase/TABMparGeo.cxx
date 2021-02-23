@@ -1011,20 +1011,26 @@ string TABMparGeo::PrintParameters() {
 Int_t TABMparGeo::GetCell(TVector3 pos, int layer, int view)
 {
     Int_t cell = -1 ;
-    Float_t shift = fBmDeltaDch[1]-fSensesN*fBmCellWide ;
-    if(layer%2==0) shift = -shift;
-    Float_t limit = -fSensesN*fBmCellWide + shift;
-
-    int axis ;
-    if(view==0) axis = 1 ;  /// view 0 along y axis
-    else axis = 0 ;         /// view 1 along x axis
-
+    Float_t min = 999999;
+  
     for(int i=0 ; i<fSensesN ; ++i){
-        if((pos[axis]>= limit) && (pos[axis]<(limit+2.0*fBmCellWide))){
-            cell = i ;
+      Int_t kk = fBmIdSense[i];
+      Float_t distX = TMath::Abs(pos[0] - fPosX[kk][layer][view]);
+      Float_t distY = TMath::Abs(pos[1] - fPosY[kk][layer][view]);
+      
+      if (view == 0) {
+        if (distY < min) {
+          min = distY;
+          cell = i;
         }
-        limit = limit+(2.0*fBmCellWide) ;
+      } else {
+        if (distX < min) {
+          min = distX;
+          cell = i;
+        }
+      }
     }
+  
     return cell ;
 }
 

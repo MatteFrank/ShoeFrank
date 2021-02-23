@@ -1029,6 +1029,79 @@ private:
 };
 
 
+template<class Action>
+struct empty_checker{
+    using candidate = typename std::decay_t<decltype( std::declval<typename Action::detector_list_t>().last() )>::candidate;
+    using track = typename Action::track;
+    using node_type = typename Action::node_type;
+    void update_current_node( node_type const *  ){}
+    void submit_reconstructed_track(track const& ){}
+    void submit_reconstructible_track(candidate const& ){}
+    void end_event(){}
+    void start_event(){}
+    void output_current_hypothesis(){}
+    void compute_results( details::all_mixed_tag ){}
+    void compute_results( details::all_separated_tag ){}
+    void register_histograms( details::all_separated_tag ){}
+};
+
+template<class Action>
+struct checker{
+    using candidate = typename std::decay_t<decltype( std::declval<typename Action::detector_list_t>().last() )>::candidate;
+    using track = typename Action::track;
+    using node_type = typename Action::node_type;
+
+    struct eraser{
+        virtual ~eraser() = default;
+        virtual void update_current_node( node_type const * current_node_ph ) = 0;
+        virtual void submit_reconstructed_track(track const& track_p) = 0;
+        virtual void submit_reconstructible_track(candidate const& candidate_p) = 0;
+        virtual void end_event() = 0;
+        virtual void start_event() = 0;
+        virtual void output_current_hypothesis() = 0;
+        virtual void compute_results( details::all_mixed_tag ) = 0;
+        virtual void compute_results( details::all_separated_tag ) = 0;
+        virtual void register_histograms( details::all_separated_tag ) = 0;
+    };
+
+    template<class T>
+    struct holder : eraser {
+        constexpr holder() = default;
+        constexpr holder(T t) : t_m{ std::move(t)} {}
+        void update_current_node( node_type const * current_node_ph ) override { t_m.update_current_node( current_node_ph ); }
+        void submit_reconstructed_track(track const& track_p) override{ t_m.submit_reconstructed_track( track_p); }
+        void submit_reconstructible_track(candidate const& candidate_p) override{ t_m.submit_reconstructible_track( candidate_p); }
+        void end_event() override{ t_m.end_event(); }
+        void start_event() override{ t_m.start_event();}
+        void output_current_hypothesis() override{ t_m.output_current_hypothesis(); }
+        void compute_results( details::all_mixed_tag ) override{ t_m.compute_results( details::all_mixed_tag{} );}
+        void compute_results( details::all_separated_tag ) override{ t_m.compute_results( details::all_separated_tag{} ); }
+        void register_histograms( details::all_separated_tag ) override{ t_m.register_histograms( details::all_separated_tag{}); }
+        T t_m;
+    };
+
+    constexpr checker() = default;
+    template<class T>
+    constexpr checker(T t) : erased_m{ new holder<T>{ std::move(t) } } {}
+    template<class T>
+    constexpr checker& operator=(T t){ 
+        erased_m.reset( new holder<T>{ std::move(t) } ); 
+        return *this;
+    }
+
+    void update_current_node( node_type const * current_node_ph )  { erased_m->update_current_node( current_node_ph ); }
+    void submit_reconstructed_track(track const& track_p) { erased_m->submit_reconstructed_track( track_p); }
+    void submit_reconstructible_track(candidate const& candidate_p) { erased_m->submit_reconstructible_track( candidate_p); }
+    void end_event() { erased_m->end_event(); }
+    void start_event() { erased_m->start_event();}
+    void output_current_hypothesis() { erased_m->output_current_hypothesis(); }
+    void compute_results( details::all_mixed_tag ) { erased_m->compute_results( details::all_mixed_tag{} );}
+    void compute_results( details::all_separated_tag ) { erased_m->compute_results( details::all_separated_tag{} ); }
+    void register_histograms( details::all_separated_tag ) { erased_m->register_histograms( details::all_separated_tag{}); }
+
+    private:
+    std::unique_ptr<eraser> erased_m;
+}; 
 
 
 #endif

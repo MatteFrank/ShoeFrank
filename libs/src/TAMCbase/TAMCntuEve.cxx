@@ -39,15 +39,12 @@ TAMCeveTrack::TAMCeveTrack()
    fInitMom(0,0,0),
    fFinalMom(0,0,0),
    fMotherInitMom(0,0,0),
-   fMotherFinalMom(0,0,0),
-   fPileUp(-1)
+   fMotherFinalMom(0,0,0)
 {
 }
 
 //------------------------------------------+-----------------------------------
 //! Construct with data
-
-// VM 17/11/13 added info for pile-up
 TAMCeveTrack::TAMCeveTrack(Int_t i_id, Int_t i_chg, Int_t i_type, 
 			       Int_t i_reg, Int_t i_bar, Int_t i_dead,
 			       Double_t i_mass,  Int_t i_moth, 
@@ -56,7 +53,7 @@ TAMCeveTrack::TAMCeveTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
 			       TVector3 i_ipos, TVector3 i_fpos, 
 			       TVector3 i_ip,TVector3 i_fp,
 			       TVector3 i_mothip,
-			       TVector3 i_mothfp,Int_t i_pileup)
+			       TVector3 i_mothfp)
  : TAGobject(),
    fFlukaId(i_id),
    fCharge(i_chg),
@@ -68,8 +65,7 @@ TAMCeveTrack::TAMCeveTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
    fMotherId(i_moth),
    fTime(i_time),
    fTof(i_tof),
-   fTrkLength(i_trlen),
-   fPileUp(i_pileup)
+   fTrkLength(i_trlen)
 {
   fInitPos.SetXYZ(i_ipos.X(),i_ipos.Y(),i_ipos.Z());
   fFinalPos.SetXYZ(i_fpos.X(),i_fpos.Y(),i_fpos.Z());
@@ -128,12 +124,12 @@ TAMCeveTrack* TAMCntuEve::NewTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
                                    TVector3 i_ipos, TVector3 i_fpos,
                                    TVector3 i_ip,TVector3 i_fp,
                                    TVector3 i_mothip,
-                                   TVector3 i_mothfp,Int_t i_pileup ) {
+                                   TVector3 i_mothfp) {
 
     TClonesArray &trackCollection = *fListOfTracks;
     TAMCeveTrack* track = new( trackCollection[trackCollection.GetEntriesFast()] ) TAMCeveTrack(
                                             i_id,i_chg,i_type,i_reg,i_bar,i_dead,i_mass,i_moth,
-                                            i_time,i_tof,i_trlen,i_ipos,i_fpos,i_ip,i_fp,i_mothip,i_mothfp,i_pileup );
+                                            i_time,i_tof,i_trlen,i_ipos,i_fpos,i_ip,i_fp,i_mothip,i_mothfp);
     return track;
 
 };

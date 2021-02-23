@@ -31,8 +31,6 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActNtuRawVtx(0x0),
    fActNtuRawIt(0x0),
 //   fActNtuRawMsd(0x0),
-//   fpDatRawVtx(0x0),
-//   fpDatRawIt(0x0),
 //   fpDatRawMsd(0x0),
    fActEvtReader(0x0)
 {
@@ -312,20 +310,20 @@ void LocalReco::SetTreeBranches()
      fActEvtWriter->SetupElementBranch(fpNtuRawBm, TABMntuRaw::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeVT()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuRaw::GetBranchName());
-   }
+   // if (GlobalPar::GetPar()->IncludeVT()) {
+   //    if (fFlagHits)
+   //       fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuRaw::GetBranchName());
+   // }
    
-   if (GlobalPar::GetPar()->IncludeIT()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuRaw::GetBranchName());
-   }
+   // if (GlobalPar::GetPar()->IncludeIT()) {
+   //    if (fFlagHits)
+   //       fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuRaw::GetBranchName());
+   // }
    
-   if (GlobalPar::GetPar()->IncludeMSD()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawMsd, TAMSDntuRaw::GetBranchName());
-   }
+   // if (GlobalPar::GetPar()->IncludeMSD()) {
+   //    if (fFlagHits)
+   //       fActEvtWriter->SetupElementBranch(fpNtuRawMsd, TAMSDntuRaw::GetBranchName());
+   // }
    
    if (GlobalPar::GetPar()->IncludeTW()) {
      if (fFlagHits) {
@@ -334,8 +332,8 @@ void LocalReco::SetTreeBranches()
      fActEvtWriter->SetupElementBranch(fpNtuRawTw, TATWntuRaw::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeCA()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawCa, TACAntuRaw::GetBranchName());
-   }
+   // if (GlobalPar::GetPar()->IncludeCA()) {
+   //    if (fFlagHits)
+   //       fActEvtWriter->SetupElementBranch(fpNtuRawCa, TACAntuRaw::GetBranchName());
+   // }
 }

@@ -50,8 +50,8 @@ Bool_t TAMCactNtuTof::Action() {
       Int_t trackIdx = fpEvtStr->SCNid[i];
       Int_t barId    = fpEvtStr->SCNibar[i];
       Int_t view     = fpEvtStr->SCNiview[i];
-      Float_t edep   = fpEvtStr->SCNde[i]*TAGgeoTrafo::GevToMev();
-      Float_t time   = fpEvtStr->SCNtim[i]*TAGgeoTrafo::SecToNs();
+     Float_t edep   = fpEvtStr->SCNde[i];
+      Float_t time   = fpEvtStr->SCNtim[i];
 
       TVector3 ipos( fpEvtStr->SCNxin[i], fpEvtStr->SCNyin[i], fpEvtStr->SCNzin[i]);
       TVector3 fpos( fpEvtStr->SCNxout[i], fpEvtStr->SCNyout[i], fpEvtStr->SCNzout[i]);

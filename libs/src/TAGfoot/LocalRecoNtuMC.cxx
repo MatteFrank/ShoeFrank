@@ -43,7 +43,9 @@ void LocalRecoNtuMC::CreateRawAction()
    fpNtuMcEve    = new TAGdataDsc("eveMc", new TAMCntuEve());
    if (GlobalPar::GetPar()->IsReadRootObj())
      fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
-  
+  else
+    fActNtuMcEve = new TAMCactNtuEve("eveActNtuMc", fpNtuMcEve, fEvtStruct);
+
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()) {
       fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
       if (GlobalPar::GetPar()->IsReadRootObj())
@@ -192,6 +194,8 @@ void LocalRecoNtuMC::CloseFileIn()
 void LocalRecoNtuMC::AddRawRequiredItem()
 {
    fTAGroot->AddRequiredItem("actEvtReader");
+  if (!GlobalPar::GetPar()->IsReadRootObj())
+    fTAGroot->AddRequiredItem("eveActNtuMc");
 }
 
 //__________________________________________________________

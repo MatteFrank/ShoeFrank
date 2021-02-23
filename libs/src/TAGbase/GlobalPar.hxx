@@ -64,8 +64,10 @@ public:
     bool IsSaveHits()          const { return m_enableSaveHits;      }
     bool IsTracking()          const { return m_enableTracking;      }
     bool IsReadRootObj()       const { return m_enableRootObject;    }
-    bool IsTofZmc()            const { return m_enableTofZmc;        }
-    bool IsTofCalBar()         const { return m_enableTofCalBar;     }
+    bool IsTWZmc()             const { return m_enableTWZmc;         }
+    bool IsTWnoPU()            const { return m_enableTWnoPU;        }
+    bool IsTWZmatch()          const { return m_enableTWZmatch;      }
+    bool IsTWCalBar()          const { return m_enableTWCalBar;      }
 
     bool IncludeDI()           const { return m_includeDI;           }
     bool IncludeST()           const { return m_includeST;           }
@@ -146,8 +148,10 @@ private:
    Bool_t m_enableSaveHits;
    Bool_t m_enableTracking;
    Bool_t m_enableRootObject;
-   Bool_t m_enableTofZmc;
-   Bool_t m_enableTofCalBar;
+   Bool_t m_enableTWZmc;
+   Bool_t m_enableTWnoPU;
+   Bool_t m_enableTWZmatch;
+   Bool_t m_enableTWCalBar;
 
    bool m_includeST;
    bool m_includeBM;

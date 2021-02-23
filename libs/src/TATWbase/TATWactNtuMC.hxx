@@ -13,7 +13,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 
 #include "TATWntuRaw.hxx"
 #include "TATWparGeo.hxx"
@@ -29,7 +29,7 @@ class TATWdigitizer;
 
 class TATWactNtuMC : public TAGaction {
 public:
-  explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, TAGparaDsc* p_parcal=0, TAGparaDsc *p_pargeo=0, EVENT_STRUCT* evStr=0, Bool_t isZmc = false);
+  explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, TAGparaDsc* p_parcal=0, TAGparaDsc *p_pargeo=0, EVENT_STRUCT* evStr=0, Bool_t isZmc = false, Bool_t isZrecPUoff = false);
     virtual  ~TATWactNtuMC();
 
     virtual bool  Action();
@@ -53,6 +53,7 @@ private:
     Int_t fCntWrong;
 
     Bool_t fIsZtrueMC;
+    Bool_t fIsZrecPUoff;
   
     TH1F* fpHisHitCol;
     TH1F* fpHisHitLine;

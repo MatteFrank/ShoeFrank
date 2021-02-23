@@ -561,8 +561,9 @@ private:
     {
         auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
         
-        
-        return transformation_h->FromTWLocalToGlobal(geo_ph->GetLayerPosition(1)).Z(); //1 ? 2 ? 0 ?
+        auto offset = (geo_ph->GetLayerPosition(0).Z() - geo_ph->GetLayerPosition(1).Z())/2;
+
+        return transformation_h->FromTWLocalToGlobal(geo_ph->GetLayerPosition(1)).Z() + offset; //1 ? 2 ? 0 ?
     }
     
     
@@ -595,8 +596,6 @@ public:
             auto cluster_h = cluster_mhc->GetPoint(i);
             auto position =  transformation_h->FromTWLocalToGlobal(cluster_h->GetPosition());
             auto error = cluster_h->GetPosError();
-            
-
             
             candidate_c.emplace_back( measurement_vector{{ position.X(), position.Y() }},
                                       measurement_covariance{{ pow(error.X(), 2),         0,

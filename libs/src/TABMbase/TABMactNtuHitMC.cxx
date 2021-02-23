@@ -120,7 +120,7 @@ Bool_t TABMactNtuHitMC::Action()
   }
 
   Int_t cell, view, lay, ipoint, cellid;
-  Double_t rdrift;
+  Double_t rdrift, edep;
 
   TVector3 loc, gmom, mom,  glo;
   p_nturaw->SetupClones();

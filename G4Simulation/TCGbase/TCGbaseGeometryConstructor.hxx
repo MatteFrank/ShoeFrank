@@ -68,6 +68,7 @@ public:
    
    G4Material*  GetWorldMaterial()         { return fWorldMaterial;   }
    TAGparGeo*   GetParGeoG()               { return fpParGeoG;        }
+   TAGgeoTrafo* GetGeoTrafo()              { return fpFootGeo;        }
 
 protected:
    TAGcampaignManager*    fCampManager;
