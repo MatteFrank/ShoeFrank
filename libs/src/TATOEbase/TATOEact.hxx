@@ -107,12 +107,14 @@ private:
     UKF ukf_m;
     detector_list_t list_m;
     TAGntuGlbTrack* reconstructed_track_mhc;
+    
     double beam_energy_m;
     int beam_mass_number_m;
     double target_position_m;
     double st_position_m;
     checker<TATOEactGlb> checker_m;
     TATOElogger logger_m;
+    
 
     node_type const * current_node_mh;
     std::size_t event{0};
@@ -729,7 +731,6 @@ private:
                                                            [&c_p](auto const & ep_ph ){ return c_p.data == ep_ph;  } );
                                    } );
         logger_m.add_sub_header(  "confront" );
-//        std::cout << "confront<tof>:\n";
         
         using enriched_candidate = enriched_candidate_impl<typename decltype(candidate_c)::value_type>;
         std::vector< enriched_candidate > enriched_c;
@@ -763,8 +764,6 @@ private:
                                   step_register{}
             };
             
-         //   fs.data->GetPosition().Print();
-         //   fs.data->GetPositionG().Print();
             fs_c.push_back( std::move(fs) );
         }
 
@@ -1261,14 +1260,24 @@ private:
                 TVector3 momentum_error{ 10, 10, 10 };
                 
                 track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
-                
-                if( value.data ){
-                    TVector3 measured_position{ value.data->GetPosition().X(), value.data->GetPosition().Y(), corrected_position.Z() };
-                    track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
-                   // std::cout << "corrected_position:\n";
-                   // corrected_position.Print();
-                  //  std::cout << "measured_position:\n";
-                  //  measured_position.Print();//
+
+                if( value.data ){ //needed because first point is vertex, which as no cluster associated
+                    auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+                    TVector3 measured_position{ transformation_h->FromTWLocalToGlobal(value.data->GetPosition()) };
+                    
+                    auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                    for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
+                        measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
+                    }
+                    
+                    auto const * vertex_h = dynamic_cast<TAVTcluster const*>( value.data );
+                    auto const * it_h = dynamic_cast<TAITcluster const*>( value.data );
+                    auto const * msd_h = dynamic_cast<TAMSDcluster const*>( value.data );
+                    auto const * tw_h = dynamic_cast<TATWpoint const*>( value.data );
+                    if( vertex_h ){ measured_h->SetDevName(TAVTparGeo::GetBaseName()); }
+                    if( it_h ){ measured_h->SetDevName(TAITparGeo::GetBaseName()); }
+                    if( msd_h ){ measured_h->SetDevName(TAMSDparGeo::GetBaseName()); }
+                    if( tw_h ){ measured_h->SetDevName(TATWparGeo::GetBaseName()); }
                 }
             }
             
