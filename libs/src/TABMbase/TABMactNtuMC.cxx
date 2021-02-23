@@ -80,6 +80,8 @@ void TABMactNtuMC::CreateHistogram(){
   AddHistogram(fpHisHitNum);
   fpHisFakeIndex=new TH1I( "bmMCHitFake", "Charged hits fake index; 0=Hit from primaries, 1=Other fluka hits, 2=Random hit not from fluka; Events", 3, -0.5, 2.5);
   AddHistogram(fpHisFakeIndex);
+  fpDisReason=new TH1I( "bmMCDischargedReason", "Discharged hits; 0=efficiency, 1=charge, 2=length, 3=energy, 4=no momentum, 5=dead channel; Events", 6, -0.5, 5.5);
+  AddHistogram(fpDisReason);
 
   SetValidHistogram(kTRUE);
 }
@@ -95,7 +97,7 @@ Bool_t TABMactNtuMC::Action()
   TABMparConf* p_bmcon  = (TABMparConf*) fpParCon->Object();
   TABMparGeo* p_bmgeo   = (TABMparGeo*) fpParGeo->Object();
 
-  Int_t cell, view, lay, ipoint;
+  Int_t cell, view, lay, ipoint, cellid;
   Double_t rdrift;
 
   TVector3 loc, gmom, mom,  glo;
@@ -109,11 +111,18 @@ Bool_t TABMactNtuMC::Action()
 
   //loop for double hits and hits with energy less than enxcell_cut:
   for (Int_t i = 0; i < fpEvtStr->BMNn; ++i) {
-    if(fpEvtStr->TRcha[fpEvtStr->BMNid[i]-1]!=0 && fpEvtStr->TRtrlen[fpEvtStr->BMNid[i]-1]>0.1){//selection criteria: no neutral particles, at least 0,1 mm of track lenght
+    if(fpEvtStr->TRcha[fpEvtStr->BMNid[i]-1]!=0 && fpEvtStr->TRtrlen[fpEvtStr->BMNid[i]-1]>0.1 && fpEvtStr->BMNde[i]>=p_bmcon->GetEnThresh()){
       cell = fpEvtStr->BMNicell[i];
       lay = fpEvtStr->BMNilay[i];
       view = fpEvtStr->BMNiview[i]==-1 ? 1:0;
       ipoint = fpEvtStr->BMNid[i]-1;
+			cellid=p_bmgeo->GetBMNcell(lay, view, cell);
+
+			if(p_bmcon->CheckIsDeadCha(cellid)){
+				if(ValidHistogram())
+					fpDisReason->Fill(5);
+				continue;
+			}
 
       glo.SetXYZ(fpEvtStr->BMNxin[i],fpEvtStr->BMNyin[i],fpEvtStr->BMNzin[i]);
       loc = geoTrafo->FromGlobalToBMLocal(glo);
@@ -121,17 +130,25 @@ Bool_t TABMactNtuMC::Action()
 
       if(gmom.Mag()!=0){
         rdrift=p_bmgeo->FindRdrift(loc, gmom, p_bmgeo->GetWirePos(view, lay,p_bmgeo->GetSenseId(cell)),p_bmgeo->GetWireDir(view),false);
-        Bool_t added=fDigitizer->Process(0, loc[0], loc[1], loc[2], 0, 0, p_bmgeo->GetBMNcell(lay, view, cell), 0,
+        Bool_t added=fDigitizer->Process(0, loc[0], loc[1], loc[2], 0, 0, cellid, 0,
                                          gmom[0], gmom[1], gmom[2]);
 				if(added){
 					TABMntuHit* hit = fDigitizer->GetCurrentHit();
 	        hit->SetIsFake((ipoint==0) ? 0 : 1);
 	        hit->AddMcTrackIdx(ipoint, i);
         }
-	      if(ValidHistogram() && !added)
-						fpDisRdrift->Fill(rdrift);
-      }
-    }
+	      if(ValidHistogram() && !added){
+					fpDisRdrift->Fill(rdrift);
+					fpDisReason->Fill(0);
+				}
+      }else{
+				if(ValidHistogram())
+					fpDisReason->Fill(4);
+			}
+    }else{
+			if(ValidHistogram())
+				fpDisReason->Fill(fpEvtStr->TRcha[fpEvtStr->BMNid[i]-1]==0 ? 1 : (fpEvtStr->TRtrlen[fpEvtStr->BMNid[i]-1]>0.1 ? 3 : 2));
+	  }
 	}
 
   if(p_bmcon->GetSmearHits())
@@ -165,9 +182,11 @@ void TABMactNtuMC::CreateFakeHits()
 
   for(Int_t i=0;i<nfake;i++){
     Bool_t added=fDigitizer->Process(0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0); // the cellid=-1 will tell the digitizer to add a fake hit
-    TABMntuHit* hit = fDigitizer->GetCurrentHit();
-		hit->SetIsFake(2);
-    hit->AddMcTrackIdx(-99, -99);
+    if(added){
+      TABMntuHit* hit = fDigitizer->GetCurrentHit();
+      hit->SetIsFake(2);
+      hit->AddMcTrackIdx(-99, -99);
+    }
 	}
 
   return ;

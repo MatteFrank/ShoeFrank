@@ -55,12 +55,13 @@ class TABMactNtuHitMC : public TAGaction {
 
     //histos
 
-    TH1I*            fpHisCell;    //hits cell
-    TH1I*            fpHisView;    //hits view
-    TH1I*            fpHisPlane;   //hits plane
-    TH1F*            fpHisRdrift;  //hits rdrift
-    TH1F*            fpDisRdrift;  //hits real rdrift - smeared rdrift
-    TH1I*            fpHisHitNum;  //raw hit map
+    TH1I*            fpHisCell;       //hits cell
+    TH1I*            fpHisView;       //hits view
+    TH1I*            fpHisPlane;      //hits plane
+    TH1F*            fpHisRdrift;     //hits rdrift
+    TH1F*            fpDisRdrift;     //hits real rdrift - smeared rdrift
+    TH1I*            fpDisReason;     //discharged hits reason
+    TH1I*            fpHisHitNum;     //raw hit map
     TH1I*            fpHisFakeIndex;  //hits fake index
 };
 

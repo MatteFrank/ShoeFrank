@@ -211,8 +211,9 @@ void LocalReco::SetRawHistogramDir()
    // BM
    if (GlobalPar::GetPar()->IncludeBM()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TABMparGeo::GetBaseName());
-      fActDatRawBm->SetHistogramDir(subfolder);
       fActNtuRawBm->SetHistogramDir(subfolder);
+      TDirectory* subsubfolder = subfolder->mkdir("bmdat");
+      fActDatRawBm->SetHistogramDir(subsubfolder);
    }
    
    // VTX

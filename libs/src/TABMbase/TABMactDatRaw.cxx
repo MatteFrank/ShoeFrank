@@ -59,10 +59,18 @@ void TABMactDatRaw::CreateHistogram(){
   // AddHistogram(fpRawMapX);
   // fpRawMapY=new TH2I( "BM_Dat_cell_raw_occupancy_2d_y", "Cell occupancy for raw hits; z; y", 11, -5.5, 5.5,7, -3.5,3.5);
   // AddHistogram(fpRawMapY);
-  fpRawTdcChannel=new TH1I( "bmDatTdcHitDistribution", "Number of accepted hits x event; Number of hits; Events", p_parmap->GetTdcMaxcha()+1, -0.5, p_parmap->GetTdcMaxcha()+0.5);
+  fpRawTdcChannel=new TH1I( "bmDatTdcHitDistribution", "Number of hits x channel (-1=error); TDC channel; Number of hits", p_parmap->GetTdcMaxcha()+2, -1.5, p_parmap->GetTdcMaxcha()+0.5);
   AddHistogram(fpRawTdcChannel);
   fpRawTrigTime=new TH1I( "bmDatTrigger", "Trigger time; Trigger time [ns]; Events", 200, 0, 0);
   AddHistogram(fpRawTrigTime);
+  TH1I *RawTdcPlot;
+  for(Int_t i=0;i<p_parmap->GetTdcMaxcha();i++){
+    TString title="bmDatTdcCha_";
+    title+=i;
+    RawTdcPlot=new TH1I( title.Data(), "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(RawTdcPlot);
+    fpRawTdcMeas.push_back(RawTdcPlot);
+  }
 
   SetValidHistogram(kTRUE);
 }
@@ -138,9 +146,19 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
   for(Int_t i = 0; i < ((int)evt->measurement.size());i++) {
     measurement=(Double_t) (evt->measurement.at(i) & 0x7ffff)/10.;
     channel=(evt->measurement.at(i)>>19) & 0x7f;
+    if(channel>p_parmap->GetTdcMaxcha() || channel<0){
+      cout<<"TABMactDatRaw::ERROR!!!!!!!   channel="<<channel<<"  TDC maximum number of channel="<<p_parmap->GetTdcMaxcha()<<endl;
+      cout<<"Something nasty just happened!!! please check the BM .map configuration file and/or the input Decoded data"<<endl;
+      p_datraw->AddDischarged();
+      if(ValidHistogram())
+        fpRawTdcChannel->Fill(-1);
+      continue;
+    }
     bmcellid=p_parmap->tdc2cell(channel);
-    if(ValidHistogram())
+    if(ValidHistogram()){
       fpRawTdcChannel->Fill(channel);
+      fpRawTdcMeas.at(channel)->Fill(measurement);
+    }
     if(bmcellid!=-1 && bmcellid!=-1000){//-1000=syncTime, -1=not set
       p_pargeo->GetBMNlvc(bmcellid,plane,view,cell);
       p_datraw->NewHit(bmcellid, plane,view,cell,measurement);
