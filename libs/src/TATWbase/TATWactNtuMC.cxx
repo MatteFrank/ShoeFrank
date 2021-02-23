@@ -344,7 +344,8 @@ bool TATWactNtuMC::Action() {
 	    printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());     
 	  
 	  recEloss=-99.; //set energy released to nonsense value
-	  hit->SetEnergyLoss(recEloss);	
+	  hit->SetEnergyLoss(recEloss);
+     hit->SetValid(false);
 	}       
 	
 	Int_t Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
@@ -429,7 +430,8 @@ bool TATWactNtuMC::Action() {
 	    printf("the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());     
 	  
 	  recEloss=-99.; //set energy released to nonsense value
-	  hit->SetEnergyLoss(recEloss);	
+	  hit->SetEnergyLoss(recEloss);
+     hit->SetValid(false);
 	}       
 	
 	Int_t Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
