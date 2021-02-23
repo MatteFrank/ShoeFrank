@@ -40,6 +40,8 @@ private:
    TVector3    m_posErr;        // position error in local framework
    TVector3    m_positionG;     // position in detector framework
    TVector3    m_posErrG;       // position error in detector framework
+   TVector3    m_positionGlb;   // position in FOOT global framework
+   TVector3    m_posErrGlb;     // position error
 
    int         m_row;           // row number
    int         m_column;        // column number
@@ -72,7 +74,10 @@ public:
   
   const TVector3&  GetPositionG() const  { return m_positionG;      }
   const TVector3&  GetPosErrorG() const  { return m_posErrG;        }
-  
+
+  const TVector3&  GetPositionGlb() const  { return m_positionGlb;      }
+  const TVector3&  GetPosErrorGlb() const  { return m_posErrGlb;        }
+
   int       GetRowID()    const  { return m_row;              }
   int       GetColumnID()       const  { return m_column;                 }
   
@@ -91,16 +96,17 @@ public:
   double    GetTime()        const  { return m_time;                }
   int       GetMatchCalIdx() const  { return m_matchCalIdx;         }
   int       GetMainLayer()     const  { return m_layer;             }
-  int       GetPointID()     const  { return m_id;             }
+  int       GetPointMatchMCtrkID()     const  { return m_id;             }
   int       GetChargeZ()     const  { return m_chargeZ;             }
   double    GetChargeZProba() const  { return m_chargeZProba;       }
   
   
   void      SetPosition(TVector3& pos);
   void      SetPositionG(TVector3& pos);
+  void      SetPositionGlb(TVector3& pos);
   void      SetMatchCalIdx(int idx)   { m_matchCalIdx = idx;        }
   void      SetMainLayer(int main_lay)   { m_layer = main_lay;      }
-  void      SetPointID(int id)       { m_id = id;                   }
+  void      SetPointMatchMCtrkID(int id)       { m_id = id;                   }
   void      SetChargeZ(int z)       { m_chargeZ = z;                }
   void      SetChargeZProba(double p){ m_chargeZProba = p;          }
   

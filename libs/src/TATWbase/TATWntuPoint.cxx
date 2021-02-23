@@ -17,6 +17,8 @@ TATWpoint::TATWpoint()
    m_posErr(),
    m_positionG(),
    m_posErrG(),
+   m_positionGlb(),
+   m_posErrGlb(),
    m_row(-99),
    m_column(-99),
    m_rowHit(0x0),
@@ -39,6 +41,10 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double 
 : TAGcluster(),
    m_position(x, y, 0),
    m_posErr(dx, dy, 0),
+   m_positionG(m_position),
+   m_posErrG(m_posErr),
+   m_positionGlb(-99, -99, -99),
+   m_posErrGlb(m_posErr),
    m_rowHit(new TATWntuHit(*rowHit)),
    m_columnHit(new TATWntuHit(*colHit)),
    m_layer(mainLayer),
@@ -55,17 +61,26 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double 
    m_tof2   = m_columnHit->GetTime();
    m_time   = m_rowHit->GetTime();
 
-   // assign to the point the true id of the hit with no Pile-Up
+   // assign to the point the matched MC track id if no Pile-Up, else for pile-up events assign -1
    if(m_layer==(Int_t)LayerX) {
        
-     if(m_rowHit->GetMcTracksN())
+     // if(m_rowHit->GetMcTracksN())
+     if(m_rowHit->GetMcTracksN()==1)
        m_id     = m_rowHit->GetMcTrackIdx(0);
+     else {
+       m_id = -1; // pile-up
+       // cout<<"NmctracksX::"<<m_rowHit->GetMcTracksN()<<endl;
+     }
      
    } else {
      
-     if(m_columnHit->GetMcTracksN())
+     // if(m_columnHit->GetMcTracksN())
+     if(m_columnHit->GetMcTracksN()==1)
        m_id     = m_columnHit->GetMcTrackIdx(0);
-     
+     else {
+       m_id = -1;  // pile-up
+       // cout<<"NmctracksY::"<<m_columnHit->GetMcTracksN()<<endl;
+     }
    }
      
   for (Int_t j = 0; j < m_columnHit->GetMcTracksN(); ++j) {
@@ -88,10 +103,18 @@ void TATWpoint::SetPosition(TVector3& posLoc)
 
 //______________________________________________________________________________
 //
-void TATWpoint::SetPositionG(TVector3& posGlo)
+void TATWpoint::SetPositionG(TVector3& posG)
 {
-   m_positionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   m_positionG.SetXYZ(posG.X(), posG.Y(), posG.Z());
    m_posErrG.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.15);
+}
+
+//______________________________________________________________________________
+//
+void TATWpoint::SetPositionGlb(TVector3& posGlb)
+{
+   m_positionGlb.SetXYZ(posGlb.X(), posGlb.Y(), posGlb.Z());
+   m_posErrGlb.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.15);
 }
 
 //______________________________________________________________________________

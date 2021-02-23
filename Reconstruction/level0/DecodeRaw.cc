@@ -55,7 +55,7 @@ int main (int argc, char *argv[])  {
    Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
    Bool_t trk = GlobalPar::GetPar()->IsTracking();
    Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
-   Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
+   Bool_t tbc = GlobalPar::GetPar()->IsTWCalBar();
 
    if (tbc) {
      Int_t pos = out.Last('.');
