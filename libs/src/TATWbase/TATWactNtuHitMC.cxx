@@ -316,7 +316,8 @@ bool TATWactNtuHitMC::Action() {
       if(!f_parcal->IsTWbarActive(layer,barId)) continue;
       
       barId+=TATWparGeo::GetLayerOffset()*layer;  //offset for the horizontal bars Id
-      
+     
+     if (edep < 0.1) continue; // tmp solution, should have a framework
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, barId, Z);
       
       TATWntuHit* hit = fDigitizer->GetCurrentHit();
