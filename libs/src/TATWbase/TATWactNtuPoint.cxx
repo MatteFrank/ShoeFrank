@@ -232,6 +232,7 @@ Bool_t TATWactNtuPoint::FindPoints()
        if(point==nullptr) { //continue;
 
        if(FootDebugLevel(1))
+
 	 Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
 	 continue;  // no TW point can be assigned...
        }

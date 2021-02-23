@@ -361,6 +361,7 @@ bool TATWactNtuHitMC::Action() {
             
             recEloss=-99.; //set energy to nonsense value
             hit->SetEnergyLoss(recEloss);
+            hit->SetValid(false);
          }
          
          Int_t Zrec = -2;

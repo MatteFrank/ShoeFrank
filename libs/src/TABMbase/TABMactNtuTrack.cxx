@@ -86,7 +86,7 @@ void TABMactNtuTrack::CreateHistogram()
    AddHistogram(fpHisNhitYTrack);
    fpHisNrejhitTrack = new TH1I("bmTrackNhitsRejectedxTrack","Number of hits rejected x track of a single track event; N hits; Events", 31, -0.5, 30.5);
    AddHistogram(fpHisNrejhitTrack);
-   fpHisTrackFakeHit = new TH1I("bmTrackFakeHits","Selected hits vs fake hits; -1=Lost primary hit 0=Selected primary hit 1=Wrong hit selected; Events", 3, -1.5, 1.5);
+   fpHisTrackFakeHit = new TH1I("bmTrackFakeHits","Selected hits vs fake hits; -1=Lost primary hit 0=Selected primary hit 1=Wrong hit selected 2=correct rejection of fake hit; Events", 4, -1.5, 2.5);
    AddHistogram(fpHisTrackFakeHit);
    fpHisChi2Red = new TH1F("bmTrackChi2Red","chi2red of a single track event", 1000, 0., 100.);
    AddHistogram(fpHisChi2Red);
@@ -308,10 +308,12 @@ Bool_t TABMactNtuTrack::Action()
       TABMntuHit* p_hit=p_nturaw->GetHit(i);
       if(p_hit->GetIsSelected()>0)
         fpResTot->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
-      if( (p_hit->GetIsSelected()>0 && p_hit->GetIsFake()==0) || ((p_hit->GetIsSelected()<=0 && p_hit->GetIsFake()>0) )){
-          fpHisTrackFakeHit->Fill(0);
+      if(p_hit->GetIsSelected()>0 && p_hit->GetIsFake()==0){
+        fpHisTrackFakeHit->Fill(0);
+      }else if(p_hit->GetIsSelected()<=0 && p_hit->GetIsFake()>0){
+        fpHisTrackFakeHit->Fill(2);        
       }else if (p_hit->GetIsFake()>0  &&  p_hit->GetIsSelected()>0){
-          fpHisTrackFakeHit->Fill(1);
+        fpHisTrackFakeHit->Fill(1);
       }else if(p_hit->GetIsSelected()<=0 && p_hit->GetIsFake()==0){
         fpHisTrackFakeHit->Fill(-1);
       }

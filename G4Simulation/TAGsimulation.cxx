@@ -150,7 +150,8 @@ int main(int argc,char** argv)
    
     // TAG root
     TAGroot tagRoot;
-    tagRoot.SetRunNumber(100);
+    tagRoot.SetRunNumber(runNumber);
+    tagRoot.SetCampaignName(expName);
 
     // Set various flag
     TCVTgeometryConstructor::SetSmearFlag(false); // smearing due to the accurancy of the alignment (DeltaPos = 5mu, DeltaAng = 0.1º default)

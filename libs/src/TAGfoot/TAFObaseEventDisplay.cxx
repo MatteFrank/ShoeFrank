@@ -1143,7 +1143,8 @@ void TAFObaseEventDisplay::UpdateBarElements()
       for (Int_t iHit = 0; iHit < nHits; ++iHit) {
 
          TATWntuHit *hit = pNtuHit->GetHit(iHit, iLayer);
-
+        
+         if (!hit->IsValid()) continue;
          if(!hit) continue;
 
          Int_t iBar = hit->GetBar();
@@ -1166,6 +1167,7 @@ void TAFObaseEventDisplay::UpdateBarElements()
    for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
 
       TATWpoint *point = pNtuPoint->GetPoint(iPoint);
+      if (!point->IsValid()) continue;
 
       TVector3 posG = point->GetPosition();
       posG = fpFootGeo->FromTWLocalToGlobal(posG);
