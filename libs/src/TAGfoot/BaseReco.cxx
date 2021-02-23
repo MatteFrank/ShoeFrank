@@ -140,6 +140,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
       GlobalPar::GetPar()->IncludeVT(true);
       GlobalPar::GetPar()->IncludeTW(true);
    }
+
+   if (fFlagOut)
+     fActEvtWriter = new TAGactTreeWriter("locRecFile");
 }
 
 //__________________________________________________________
@@ -866,41 +869,41 @@ void BaseReco::SetL0TreeBranches()
 //__________________________________________________________
 void BaseReco::SetTreeBranches()
 {
-   // if (GlobalPar::GetPar()->IncludeTOE()) {
-   //   if (fFlagTrack) {
-   //     fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
-   //   }
-   // }
+  if (GlobalPar::GetPar()->IncludeTOE()) {
+    if (fFlagTrack) {
+      fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
+    }
+  }
   
-   // if (GlobalPar::GetPar()->IncludeVT()) {
-   //   if (!fFlagTrack)
-   //     fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-   //   else {
-   //     fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-   //     fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
-   //     if (GlobalPar::GetPar()->IncludeTG())
-   //       fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
-   //   }
-   // }
-   
-   // if (GlobalPar::GetPar()->IncludeIT())
-   //   fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
-   
-   // if (GlobalPar::GetPar()->IncludeMSD())
-   //   fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
-   
+  if (GlobalPar::GetPar()->IncludeVT()) {
+    if (!fFlagTrack)
+      fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+    else {
+      fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
+      if (GlobalPar::GetPar()->IncludeTG())
+	fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
+    }
+  }
+  
+  if (GlobalPar::GetPar()->IncludeIT())
+    fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
+  
+  if (GlobalPar::GetPar()->IncludeMSD())
+    fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
+  
    if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->CalibTW())
      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
    
-   // if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
+   if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
    if (GlobalPar::GetPar()->IncludeBM()) {
      if (fFlagTrack)
        fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
    }
    
-   // if (GlobalPar::GetPar()->IncludeCA())
-   //   fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
+   if (GlobalPar::GetPar()->IncludeCA())
+     fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
 }
 
 //__________________________________________________________
