@@ -1263,21 +1263,44 @@ private:
 
                 if( value.data ){ //needed because first point is vertex, which as no cluster associated
                     auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
-                    TVector3 measured_position{ transformation_h->FromTWLocalToGlobal(value.data->GetPosition()) };
-                    
-                    auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
-                    for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
-                        measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
-                    }
-                    
+
                     auto const * vertex_h = dynamic_cast<TAVTcluster const*>( value.data );
                     auto const * it_h = dynamic_cast<TAITcluster const*>( value.data );
                     auto const * msd_h = dynamic_cast<TAMSDcluster const*>( value.data );
                     auto const * tw_h = dynamic_cast<TATWpoint const*>( value.data );
-                    if( vertex_h ){ measured_h->SetDevName(TAVTparGeo::GetBaseName()); }
-                    if( it_h ){ measured_h->SetDevName(TAITparGeo::GetBaseName()); }
-                    if( msd_h ){ measured_h->SetDevName(TAMSDparGeo::GetBaseName()); }
-                    if( tw_h ){ measured_h->SetDevName(TATWparGeo::GetBaseName()); }
+                    if( vertex_h ){
+                        TVector3 measured_position{ transformation_h->FromVTLocalToGlobal(value.data->GetPosition()) };
+                        auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                        measured_h->SetDevName(TAVTparGeo::GetBaseName());
+                        for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
+                            measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
+                        }
+                    }
+                    if( it_h ){
+                        TVector3 measured_position{ transformation_h->FromITLocalToGlobal(value.data->GetPosition()) };
+                        auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                        measured_h->SetDevName(TAITparGeo::GetBaseName());
+                        for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
+                            measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
+                        }
+                    }
+                    if( msd_h ){
+                        TVector3 measured_position{ transformation_h->FromMSDLocalToGlobal(value.data->GetPosition()) };
+                        auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                        measured_h->SetDevName(TAMSDparGeo::GetBaseName());
+                        for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
+                            measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
+                        }
+                    }
+                    if( tw_h ){
+                        TVector3 measured_position{ transformation_h->FromTWLocalToGlobal(value.data->GetPosition()) };
+                        auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                        measured_h->SetDevName(TATWparGeo::GetBaseName());
+                        for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
+                            measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
+                        }
+                        
+                    }
                 }
             }
             
