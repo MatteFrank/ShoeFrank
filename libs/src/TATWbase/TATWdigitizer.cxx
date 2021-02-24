@@ -391,7 +391,6 @@ Bool_t TATWdigitizer::IsOverEnergyThreshold(double edep_thr, double edep) {
   
 }
 //___________________________________________________________________________________________
-//Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t timeST, Double_t time, Int_t barid, Int_t Z)
 Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t timeST, Double_t time, Int_t barid, Int_t Z, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/){
 
   Bool_t roughDig = true;
@@ -402,11 +401,9 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    if (barid < TATWparGeo::GetLayerOffset()) {  // vertical bar --> layer0
       pos = y0;
       layer = (Int_t)LayerY;
-      // layer = 0;
    } else {   // horizontal bars --> layer1
       pos = x0;
       layer = (Int_t)LayerX;
-      // layer = 1;
       barid -= TATWparGeo::GetLayerOffset();
    }
 

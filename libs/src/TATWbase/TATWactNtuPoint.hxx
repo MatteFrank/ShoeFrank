@@ -70,9 +70,9 @@ private:
    Int_t           fZbeam;
    Float_t         fDefPosErr;    // default position error
    Bool_t          fIsZmatch;
-   Bool_t          fIsMCtrue;
+   Bool_t          fIsZMCtrue;
 
-   TH1F*           fpHisDist;
+   vector<TH1F*>   fpHisDist;
    vector<TH1F*>   fpHisDeltaE;
    vector<TH1F*>   fpHisDeltaTof;
    vector<TH1F*>   fpHisElossMean;

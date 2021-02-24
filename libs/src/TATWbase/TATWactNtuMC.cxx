@@ -90,9 +90,6 @@ void TATWactNtuMC::CreateHistogram()
    fpHisHitLine = new TH1F("twHitLine", "ToF Wall - Line hits", 22, 0., 22);
    AddHistogram(fpHisHitLine);
 
-   fpHisHitMap = new TH1F("twHitMap", "ToF Wall - Hit Map", 1000,-50,50);
-   AddHistogram(fpHisHitMap);
-
    fpHisRecPos = new TH1F("RecPos", "RecPos", 1000,-50,50);
    AddHistogram(fpHisRecPos);
 
@@ -185,7 +182,7 @@ bool TATWactNtuMC::Action() {
     // taking the tof for each TW hit with respect to the first hit of ST...for the moment not considered the possibility of multiple Hit in the ST, if any
     Float_t timeST  = fEventStruct->STCtim[0]*TAGgeoTrafo::SecToPs();
     
-    // fill the container of hits, divided by layer, i.e. the column at 0 and row at 1
+    // fill the container of hits, divided by layer, i.e. the column at 0 (LayerY) and row at 1 (LayerX)
     for (int i=0; i < fEventStruct->SCNn; i++) { 
     
        Int_t layer = fEventStruct->SCNiview[i];    // layers 0 (y-bars) and 1 (x-bars)
@@ -248,9 +245,9 @@ bool TATWactNtuMC::Action() {
 	 
 	 if (ValidHistogram()) {
 
-	   if(layer==LayerX)
+	   if(layer==(Int_t)LayerX)
 	     fpHisZID_MCtrue_f->Fill(Zrec_MCtrue,Z);
-	   else if(layer==LayerY)
+	   else if(layer==(Int_t)LayerY)
 	     fpHisZID_MCtrue_r->Fill(Zrec_MCtrue,Z);
 	   
 	   fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
@@ -310,9 +307,9 @@ bool TATWactNtuMC::Action() {
 
        fVecPuOff.push_back(hit);
 
-       if(hit->GetChargeZ()>0 && hit->GetChargeZ()<fZbeam+1) {
-	 fpHisResPos[hit->GetChargeZ()-1]->Fill(hit->GetPosition()-truePos);
-	 // cout<<"layer::"<<layer<<"  trePos::"<<truePos<<" recPos::"<<hit->GetPosition()<<" bar::"<<barId<<endl;
+       if (ValidHistogram()) {
+	 if(hit->GetChargeZ()>0 && hit->GetChargeZ()<fZbeam+1)
+	   fpHisResPos[hit->GetChargeZ()-1]->Fill(hit->GetPosition()-truePos);
        }
     }
 
@@ -327,11 +324,11 @@ bool TATWactNtuMC::Action() {
 	Int_t layer = hit->GetLayer();
 	Int_t bar = hit->GetBar();
 
-	// get Eloss threshold from configuration file
+	// get Eloss threshold in MeV from configuration file: default is 0.1 MeV
 	Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
 
 	Double_t recEloss = hit->GetEnergyLoss(); // MeV
-	Double_t recTof   = hit->GetTime();       // ns
+	Double_t recTof   = hit->GetToF();       // ns
 	Double_t recPos   = hit->GetPosition();   // cm
 	
 	Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
@@ -345,7 +342,7 @@ bool TATWactNtuMC::Action() {
 	  
 	  recEloss=-99.; //set energy released to nonsense value
 	  hit->SetEnergyLoss(recEloss);
-     hit->SetValid(false);
+	  hit->SetValid(false);
 	}       
 	
 	Int_t Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
@@ -387,9 +384,9 @@ bool TATWactNtuMC::Action() {
 	  for(int iZ=1; iZ < fZbeam+1; iZ++)
 	    fpHisDistZ[iZ-1]->Fill(distZ[iZ-1]);
 	  
-	  if(layer==1)
+	  if(layer==(Int_t)LayerX)
 	    fpHisZID_f->Fill(Zrec,Z);
-	  else if(layer==0)
+	  else if(layer==(Int_t)LayerY)
 	    fpHisZID_r->Fill(Zrec,Z);
 	  
 	  fpHisRecPos->Fill(recPos);
@@ -413,11 +410,11 @@ bool TATWactNtuMC::Action() {
 	Int_t layer = hit->GetLayer();
 	Int_t bar = hit->GetBar();
 
-	// get Eloss threshold from configuration file
+	// get Eloss threshold in MeV from configuration file: default is 0.1 MeV
 	Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);
 
 	Double_t recEloss = hit->GetEnergyLoss(); // MeV
-	Double_t recTof   = hit->GetTime();       // ns
+	Double_t recTof   = hit->GetToF();       // ns
 	Double_t recPos   = hit->GetPosition();   // cm
 	
 	Int_t Z = hit->GetChargeZ();  // mc true charge stored in the hit up to now
@@ -431,7 +428,7 @@ bool TATWactNtuMC::Action() {
 	  
 	  recEloss=-99.; //set energy released to nonsense value
 	  hit->SetEnergyLoss(recEloss);
-     hit->SetValid(false);
+	  hit->SetValid(false);
 	}       
 	
 	Int_t Zrec = f_parcal->GetChargeZ(recEloss,recTof,hit->GetLayer());
@@ -454,9 +451,9 @@ bool TATWactNtuMC::Action() {
 	  for(int iZ=1; iZ < fZbeam+1; iZ++)
 	    fpHisDistZ[iZ-1]->Fill(distZ[iZ-1]);
 	  
-	  if(layer==1)
+	  if(layer==(Int_t)LayerX)
 	    fpHisZID_f->Fill(Zrec,Z);
-	  else if(layer==0)
+	  else if(layer==(Int_t)LayerY)
 	    fpHisZID_r->Fill(Zrec,Z);
 
 	  fpHisRecPos->Fill(recPos);

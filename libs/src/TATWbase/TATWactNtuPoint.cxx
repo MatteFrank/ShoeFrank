@@ -25,7 +25,7 @@ ClassImp(TATWactNtuPoint);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TATWactNtuPoint::TATWactNtuPoint(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuPoint, TAGparaDsc* pGeoMap, TAGparaDsc* pCalMap, Bool_t isZmatch, Bool_t ismc)
+TATWactNtuPoint::TATWactNtuPoint(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuPoint, TAGparaDsc* pGeoMap, TAGparaDsc* pCalMap, Bool_t isZmatch, Bool_t isZmc)
  : TAGaction(name, "TATWactNtuCluster - NTuplize cluster"),
    fpNtuRaw(pNtuRaw),
    fpNtuPoint(pNtuPoint),
@@ -33,7 +33,7 @@ TATWactNtuPoint::TATWactNtuPoint(const char* name, TAGdataDsc* pNtuRaw, TAGdataD
    fpCalMap(pCalMap),
    fDefPosErr(0),
    fIsZmatch(isZmatch),
-   fIsMCtrue(ismc)
+   fIsZMCtrue(isZmc)
 {
    AddDataIn(pNtuRaw,   "TATWntuRaw");
    AddDataOut(pNtuPoint, "TATWntuPoint");
@@ -68,15 +68,16 @@ void TATWactNtuPoint::CreateHistogram()
 {
    DeleteHistogram();
    
-   fpHisDist = new TH1F("twDist", "TW - Minimal distance between clusterized hits", 100, 0., 10);
-   AddHistogram(fpHisDist);
-  
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
-     fpHisDeltaE.push_back(new TH1F(Form("DeltaE_Z%d",iZ),Form("DeltaE_Z%d",iZ),1000,-25.,25.));
+     fpHisDist.push_back(new TH1F(Form("twDist_Z%d",iZ), Form("TW - Minimal distance between clusterized hits - Z%d",iZ), 1000, 0., 10));
+     AddHistogram(fpHisDist[iZ-1]);
+  
+
+   fpHisDeltaE.push_back(new TH1F(Form("DeltaE_Z%d",iZ),Form("DeltaE_Z%d",iZ),1000,-25.,25.));
      
      AddHistogram(fpHisDeltaE[iZ-1]);
      
-     fpHisDeltaTof.push_back( new TH1F(Form("DeltaTof_Z%d",iZ),Form("DeltaTof_Z%d",iZ),10000,-5.,5) );
+     fpHisDeltaTof.push_back( new TH1F(Form("DeltaTof_Z%d",iZ),Form("DeltaTof_Z%d",iZ),1000,-5.,5) );
      AddHistogram(fpHisDeltaTof[iZ-1]);
 
      fpHisElossMean.push_back( new TH1F(Form("ElossMean_Z%d",iZ),Form("ElossMean_Z%d",iZ),480,0,120) );
@@ -177,11 +178,9 @@ Bool_t TATWactNtuPoint::FindPoints()
 
    if( nHitsX_good >= nHitsY_good ) {
      
-     if(totChargeX>fZbeam && fIsMCtrue) { // remove double hit in the same layer of the same track when Zrec is not active
+     if(totChargeX>fZbeam && fIsZMCtrue) { // remove double hit in the same layer of the same track when Zrec is not active
        mapMoreHits = mapHitY;
        mapLessHits = mapHitX;
-       // cout<<"totChargeX>Zbeam  -->  "<<totChargeX<<endl;
-       // cout<<"totChargeY:: "<<totChargeY<<endl;
      }
      else {  // default
        mapMoreHits = mapHitX;
@@ -190,11 +189,9 @@ Bool_t TATWactNtuPoint::FindPoints()
        
    } else { //if( nHitsY_good > nHitsX_good )
      
-     if(totChargeY>fZbeam && fIsMCtrue) {  // remove double hit in the same layer of the same track when Zrec is not active
+     if(totChargeY>fZbeam && fIsZMCtrue) {  // remove double hit in the same layer of the same track when Zrec is not active
        mapMoreHits = mapHitX;
        mapLessHits = mapHitY;
-       // cout<<"totChargeY>Zbeam  -->  "<<totChargeY<<endl;
-       // cout<<"totChargeX:: "<<totChargeX<<endl;
      }
      else {  // default
        mapMoreHits = mapHitY;
@@ -345,10 +342,10 @@ Bool_t TATWactNtuPoint::FindPoints()
 	 }
 	 
 	 if (ValidHistogram()) {
-	   fpHisDist->Fill(minDist);
 	   
 	   if( Z>0 && Z < fZbeam+1 ) {
 
+	     fpHisDist[Z-1]->Fill(minDist);
 	     fpHisElossMean[Z-1]->Fill(point->GetEnergyLoss()/2.);
 	     fpHisTofMean[Z-1]->Fill(point->GetMeanTof());
 	     fpHisDeltaE[Z-1]->Fill(point->GetColumnHit()->GetEnergyLoss()-point->GetRowHit()->GetEnergyLoss());
@@ -364,7 +361,8 @@ Bool_t TATWactNtuPoint::FindPoints()
    }  // close clustering
 
    if(point==nullptr) { //continue;
-     Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+     if(FootDebugLevel(1))
+       Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
    }
 
    
@@ -456,36 +454,12 @@ TATWpoint* TATWactNtuPoint::SetTWPoint(TATWntuPoint* pNtuPoint, Int_t layer1, TA
   TATWpoint *point;    
   Int_t mainLayer = hit1->GetLayer();
   
-  // if(!fIsZmatch) {
-    // cout<<"no Z match"<<endl;
-    if(layer1==(Int_t)LayerX) {
-      point = pNtuPoint->NewPoint(posLoc.X(), fDefPosErr, hit1, posLoc.Y(), fDefPosErr, hitmin, mainLayer);
-    }
-    else if(layer1==(Int_t)LayerY) {
-      point = pNtuPoint->NewPoint(posLoc.X(), fDefPosErr, hitmin, posLoc.Y(), fDefPosErr, hit1, mainLayer);
-    }
-
-  // }
-
-  // else {  // isZmatch
-
-  //   if(hit1->GetChargeZ()==hitmin->GetChargeZ()) {
-
-  //     // cout<<"Z match!!"<<endl;
-
-  //     if(layer1==(Int_t)LayerX) {
-  // 	point = pNtuPoint->NewPoint(posLoc.X(), fDefPosErr, hit1, posLoc.Y(), fDefPosErr, hitmin, mainLayer);
-  //     }
-  //     else if(layer1==(Int_t)LayerY) {
-  // 	point = pNtuPoint->NewPoint(posLoc.X(), fDefPosErr, hitmin, posLoc.Y(), fDefPosErr, hit1, mainLayer);
-  //     }
-      
-  //   }
-  //   else {
-  //     point = nullptr;
-  //     // cout<<"no Z match"<<endl;
-  //   }
-  // }
+  if(layer1==(Int_t)LayerX) {
+    point = pNtuPoint->NewPoint(posLoc.X(), fDefPosErr, hit1, posLoc.Y(), fDefPosErr, hitmin, mainLayer);
+  }
+  else if(layer1==(Int_t)LayerY) {
+    point = pNtuPoint->NewPoint(posLoc.X(), fDefPosErr, hitmin, posLoc.Y(), fDefPosErr, hit1, mainLayer);
+  }
   
   return point;
 

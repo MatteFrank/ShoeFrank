@@ -37,6 +37,7 @@ public:
                             TAGparaDsc* p_parcal=0,
                             TAGparaDsc *p_pargeoG=0,
                             Bool_t isZmc = false,
+			    Bool_t isZrecPUoff = false,
                             EVENT_STRUCT* evStr = 0);
   
    virtual  ~TATWactNtuHitMC();
@@ -65,16 +66,18 @@ private:
    Int_t fCntWrong;
    
    Bool_t fIsZtrueMC;
+   Bool_t fIsZrecPUoff;
 
    TH1F* fpHisHitCol;
    TH1F* fpHisHitLine;
-   TH1F* fpHisHitMap;
    TH1F* fpHisRecPos;
    TH1F* fpHisRecPosMc;
    TH1F* fpHisRecTof;
    TH1F* fpHisRecTofMc;
-   TH2I* fpHisZID;
-   TH2I* fpHisZID_MCtrue;
+   TH2I* fpHisZID_f;
+   TH2I* fpHisZID_r;
+   TH2I* fpHisZID_MCtrue_f;
+   TH2I* fpHisZID_MCtrue_r;
    TH2D* fpHisElossTof_MCrec[nLayers];
    TH2D* fpHisElossTof_MCtrue[nLayers];
    // vector of histo with the same size of the ion beam atomic number

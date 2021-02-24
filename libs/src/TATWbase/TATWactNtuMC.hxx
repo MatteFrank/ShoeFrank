@@ -57,7 +57,6 @@ private:
   
     TH1F* fpHisHitCol;
     TH1F* fpHisHitLine;
-    TH1F* fpHisHitMap;
     TH1F* fpHisRecPos;
     TH1F* fpHisRecPosMc;
     TH1F* fpHisRecTof;

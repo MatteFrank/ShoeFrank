@@ -38,7 +38,6 @@ TATWntuHit::TATWntuHit()
     m_TimeA_oth(-1),
     m_TimeB_oth(-1),
     m_IsValid(true)
-    //m_de(0.),m_time(0.),m_time_oth(0.),m_coordinate(0.),m_z(0.)
 {
 }
 
@@ -108,8 +107,6 @@ TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, D
   m_coordinate(pos),
   m_z(-99),
   m_chargeZ(-99),
-  // m_z(0),
-  // m_chargeZ(0),
   m_chargeCOM(chargeCOM),
   m_ChargeA(ChargeA),
   m_ChargeB(ChargeB),
