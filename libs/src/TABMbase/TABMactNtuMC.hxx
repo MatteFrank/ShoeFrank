@@ -55,6 +55,7 @@ class TABMactNtuMC : public TAGaction {
     TH1I*            fpHisPlane;      //hits plane
     TH1F*            fpHisRdrift;     //charged hits rdrift
     TH1F*            fpDisRdrift;     //discharged hits rdrift
+    TH1I*            fpDisReason;     //discharged hits reason
     TH1I*            fpHisHitNum;     //raw hit map
     TH1I*            fpHisFakeIndex;  //hits fake index
 };

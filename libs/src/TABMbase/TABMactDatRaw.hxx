@@ -55,7 +55,11 @@ class TABMactDatRaw : public TAGaction {
 
     //histos
     TH1I*            fpRawTdcChannel;   //tdc channel distribution
-    TH1I*            fpRawTrigTime;     //Trigger time
+    TH1I*            fpRawTrigTime;     //Used Trigger time
+    TH1I*            fpRawSTFitTime;    //Start Counter post analysis fitted trigger Time
+    TH1I*            fpRawSTTdcTime;    //Start Counter Time from TDC
+    TH1I*            fpRawDAQTdcTime;   //DAQ trigger time from TDC
+    std::vector<TH1I*> fpRawTdcMeas;    //vector of tdc channel measurements  
 };
 
 #endif

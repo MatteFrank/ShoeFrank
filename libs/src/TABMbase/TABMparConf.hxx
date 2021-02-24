@@ -43,12 +43,14 @@ class TABMparConf : public TAGparTools {
     Float_t GetLegMRange()              const{return fLegMRange;};
     Float_t GetLegRRange()              const{return fLegRRange;};
     Float_t GetAssHitErr()              const{return fAssHitErr;};
+    Float_t GetEnThresh()               const{return fEnThresh;};
 
 
     //others
     Bool_t    FromFile(const TString& name);//read the config file
     Bool_t    FromFileOld(const TString& name);//read the old config file adopted in bm_calibration
     void      ResetHitTimeCutMC(){fHitTimeCut=330;}; //for MC studies
+    Bool_t    CheckIsDeadCha(Int_t cha); //check if a channel is dead or not
 
     //default
     virtual void    Clear(Option_t* opt="");
@@ -79,9 +81,11 @@ class TABMparConf : public TAGparTools {
     //MC parameters
     Int_t     fSmearHits;         //0=no fSmearHits on MC, 1=smear the number of hits
     Int_t     fSmearRDrift;       //0=no smear rdrift, 1=gauss truncated 1sigma, 2=gaus 2sigma, 3=gaus 3sigma, 4=gaus no truncated, 5=uniform
+    Float_t   fEnThresh;          //Energy Threshold in GeV on the particle energy release
 
     //other parameters
     Float_t   fRDriftErr;         //rdrift default error (used if from parcon file the error isn't loaded)
+    TArrayI   fDeadCha;           //BM dead channels
 };
 
 #endif

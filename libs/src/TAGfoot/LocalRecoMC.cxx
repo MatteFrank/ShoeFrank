@@ -96,7 +96,7 @@ void LocalRecoMC::CreateRawAction()
    if(GlobalPar::GetPar()->IncludeTW()) {
 
       fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
-      fActNtuRawTw = new TATWactNtuMC("twActNtu", fpNtuRawTw,  fpParCalTw, fpParGeoG, fEvtStruct,fFlagZtrueMC);
+      fActNtuRawTw = new TATWactNtuMC("twActNtu", fpNtuRawTw,  fpParCalTw, fpParGeoG, fEvtStruct,fFlagZtrueMC,fFlagZrecPUoff);
       if (fFlagHisto)
 	fActNtuRawTw->CreateHistogram();
       

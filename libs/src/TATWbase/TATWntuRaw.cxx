@@ -36,8 +36,8 @@ TATWntuHit::TATWntuHit()
     m_TimeB(-1),
     m_time_oth(-1),
     m_TimeA_oth(-1),
-    m_TimeB_oth(-1)
-    //m_de(0.),m_time(0.),m_time_oth(0.),m_coordinate(0.),m_z(0.)
+    m_TimeB_oth(-1),
+    m_IsValid(true)
 {
 }
 
@@ -61,7 +61,8 @@ TATWntuHit::TATWntuHit( TATWrawHit* hit )
   m_TimeB(-1),
   m_time_oth(-1),
   m_TimeA_oth(-1),
-  m_TimeB_oth(-1)
+  m_TimeB_oth(-1),
+  m_IsValid(true)
 {
 }
 
@@ -86,8 +87,8 @@ TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
    m_TimeB(aHit.m_TimeB),
    m_time_oth(aHit.m_time_oth),
    m_TimeA_oth(aHit.m_TimeA_oth),
-   m_TimeB_oth(aHit.m_TimeB_oth)
-
+   m_TimeB_oth(aHit.m_TimeB_oth),
+   m_IsValid(aHit.m_IsValid)
 {
 }
 
@@ -106,8 +107,6 @@ TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, D
   m_coordinate(pos),
   m_z(-99),
   m_chargeZ(-99),
-  // m_z(0),
-  // m_chargeZ(0),
   m_chargeCOM(chargeCOM),
   m_ChargeA(ChargeA),
   m_ChargeB(ChargeB),
@@ -115,8 +114,8 @@ TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, D
   m_TimeB(TimeB),
   m_time_oth(aTime_oth),
   m_TimeA_oth(TimeA_oth),
-  m_TimeB_oth(TimeB_oth)
-
+  m_TimeB_oth(TimeB_oth),
+  m_IsValid(true)
 {
 }
 
@@ -152,6 +151,7 @@ void TATWntuHit::Clear(Option_t* /*option*/)
 	m_time_oth=0;
 	m_TimeA_oth=0;
 	m_TimeB_oth=0;
+   m_IsValid = true;
 
 }
 

@@ -29,7 +29,7 @@ class TATWdigitizer;
 
 class TATWactNtuMC : public TAGaction {
 public:
-  explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, TAGparaDsc* p_parcal=0, TAGparaDsc *p_pargeo=0, EVENT_STRUCT* evStr=0, Bool_t isZmc = false);
+  explicit TATWactNtuMC(const char* name=0, TAGdataDsc* p_hitraw=0, TAGparaDsc* p_parcal=0, TAGparaDsc *p_pargeo=0, EVENT_STRUCT* evStr=0, Bool_t isZmc = false, Bool_t isZrecPUoff = false);
     virtual  ~TATWactNtuMC();
 
     virtual bool  Action();
@@ -53,10 +53,10 @@ private:
     Int_t fCntWrong;
 
     Bool_t fIsZtrueMC;
+    Bool_t fIsZrecPUoff;
   
     TH1F* fpHisHitCol;
     TH1F* fpHisHitLine;
-    TH1F* fpHisHitMap;
     TH1F* fpHisRecPos;
     TH1F* fpHisRecPosMc;
     TH1F* fpHisRecTof;

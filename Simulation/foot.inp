@@ -3,9 +3,6 @@ FOOT setup
 * ****************************************************************************
 GLOBAL         9999.                                      1.
 DEFAULTS                                                              PRECISIO
-PHYSICS           3.                                                  EVAPORAT
-IONTRANS    HEAVYION
-RADDECAY          2.                  1.
 * ******************************************************************************
 *                           GENERAL & PRIMARY                                  *
 * ******************************************************************************
@@ -17,6 +14,11 @@ BEAM       -0.200000            0.000000 -0.480000 -0.480000       1.0HEAVYION
 HI-PROPE           6        12                                                  
 BEAMPOS        0.000     0.000   -30.000                                        
 PHYSICS           1.                                                  COALESCE  
+PHYSICS           3.                                                  EVAPORAT
+PHYSICS           1.                                                  ISOMERS
+IONTRANS    HEAVYION
+RADDECAY          2.                  1.
+
 EMFCUT           -1.        1.               BLACK  @LASTREG       1.0          
 EMFCUT           -1.        1.        1.  BLCKHOLE  @LASTMAT       1.0PROD-CUT  
 DELTARAY          1.                      BLCKHOLE  @LASTMAT       1.0          
@@ -26,7 +28,7 @@ MGNFIELD         0.1   0.00001                  0.        0.        0.
 * ******************************************************************************
 *                          GEOMETRY                                            *
 * ******************************************************************************
-GEOBEGIN                             15.                              COMBNAME
+GEOBEGIN                             21.                              COMBNAME
 foot.geo
 GEOEND
 *

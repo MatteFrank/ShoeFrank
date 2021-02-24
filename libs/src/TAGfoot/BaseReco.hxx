@@ -166,6 +166,12 @@ public:
    void EnableZfromMCtrue()  { fFlagZtrueMC = true;   }
    void DisableZfromMCtrue() { fFlagZtrueMC = false;  }
 
+   void EnableZrecWithPUoff()  { fFlagZrecPUoff = true;   }
+   void DisableZrecWithPUoff() { fFlagZrecPUoff = false;  }
+  
+   void EnableTWZmatch()  { fFlagZmatch_TW = true;   }
+   void DisableTWZmatch() { fFlagZmatch_TW = false;  }
+
    void DisableM28ClusMT() { fM28ClusMtFlag = false; }
    void EnableM28lusMT()   { fM28ClusMtFlag = true;  }
    Bool_t IsM28ClusMT()    { return fM28ClusMtFlag;  }
@@ -340,7 +346,10 @@ protected:
    Bool_t                fFlagTrack;     // flag for tracking
    Bool_t                fFlagTWbarCalib; // flag for TW calibration per Bar
    TString               fgTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory)
-   Bool_t                fFlagZtrueMC;    // Z true MC flag
+   Bool_t                fFlagZtrueMC;      // Z true MC flag
+   Bool_t                fFlagZrecPUoff;    // Z rec TW PU off flag
+   Bool_t                fFlagZmatch_TW;    // TW Z match
+
    Bool_t                fFlagMC;        // MC flag
    Bool_t                fM28ClusMtFlag; // flag for multi-threading clustering
 

@@ -101,6 +101,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagTWbarCalib(false),
    fgTrackingAlgo("Full"),
    fFlagZtrueMC(false),
+   fFlagZrecPUoff(false),
+   fFlagZmatch_TW(false),
    fFlagMC(false),
    fM28ClusMtFlag(false)
 {
@@ -114,8 +116,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
 
    // define TAGroot
    fTAGroot = new TAGroot();
-   if (fFlagOut)
-      fActEvtWriter = new TAGactTreeWriter("locRecFile");
 
    // global transformation
    fpFootGeo = new TAGgeoTrafo();
@@ -140,6 +140,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
       GlobalPar::GetPar()->IncludeVT(true);
       GlobalPar::GetPar()->IncludeTW(true);
    }
+
+   if (fFlagOut)
+     fActEvtWriter = new TAGactTreeWriter("locRecFile");
 }
 
 //__________________________________________________________
@@ -218,6 +221,32 @@ void BaseReco::LoopEvent(Int_t nEvents)
       cout<<" Loaded Event:: " << ientry << endl;
     
     if (!fTAGroot->NextEvent()) break;;
+    
+    if (FootDebugLevel(1)) {
+      //MC block
+      TAMCntuEve*  p_ntuMcEve
+	=  static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" ) ->Object() );
+      if(p_ntuMcEve) {
+	int nTrkMC = p_ntuMcEve->GetTracksN();
+	for(int iTr = 0; iTr< nTrkMC; iTr++) {
+	  TAMCeveTrack *aTr = p_ntuMcEve->GetTrack(iTr);
+	  //    cout<<"MCblock:  "<<aTr->GetMass()<<" "<<aTr->GetCharge()<<endl;
+	}
+      }
+      
+      if(fpNtuGlbTrack) {
+	TAGntuGlbTrack *glbTrack =
+	  (TAGntuGlbTrack*) fpNtuGlbTrack->GenerateObject();
+	// (fTAGroot->FindDataDsc("glbTrack", "TAGntuGlbTrack")->Object());
+	
+	int nTrk = glbTrack->GetTracksN();
+	for(int iTr = 0; iTr< nTrk; iTr++) {
+	  TAGtrack *aTr = glbTrack->GetTrack(iTr);
+	  cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
+	}
+      }
+    }    
+
   }
 }
 
@@ -685,7 +714,7 @@ void BaseReco::CreateRecActionTw()
    fpNtuRecTw  = new TAGdataDsc("twPoint", new TATWntuPoint());
    if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
-   fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuRawTw, fpNtuRecTw, fpParGeoTw, fpParCalTw);
+   fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuRawTw, fpNtuRecTw, fpParGeoTw, fpParCalTw,fFlagZmatch_TW,fFlagZtrueMC);
    if (fFlagHisto)
      fActPointTw->CreateHistogram();
 }
@@ -840,29 +869,29 @@ void BaseReco::SetL0TreeBranches()
 //__________________________________________________________
 void BaseReco::SetTreeBranches()
 {
-   if (GlobalPar::GetPar()->IncludeTOE()) {
-     if (fFlagTrack) {
-       fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
-     }
-   }
+  if (GlobalPar::GetPar()->IncludeTOE()) {
+    if (fFlagTrack) {
+      fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
+    }
+  }
   
-   if (GlobalPar::GetPar()->IncludeVT()) {
-     if (!fFlagTrack)
-       fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-     else {
-       fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-       fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
-       if (GlobalPar::GetPar()->IncludeTG())
-         fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
-     }
-   }
-   
-   if (GlobalPar::GetPar()->IncludeIT())
-     fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
-   
-   if (GlobalPar::GetPar()->IncludeMSD())
-     fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
-   
+  if (GlobalPar::GetPar()->IncludeVT()) {
+    if (!fFlagTrack)
+      fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+    else {
+      fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
+      if (GlobalPar::GetPar()->IncludeTG())
+	fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
+    }
+  }
+  
+  if (GlobalPar::GetPar()->IncludeIT())
+    fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
+  
+  if (GlobalPar::GetPar()->IncludeMSD())
+    fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
+  
    if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->CalibTW())
      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
    
