@@ -69,7 +69,7 @@ void TATWactNtuPoint::CreateHistogram()
    DeleteHistogram();
    
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
-     fpHisDist.push_back(new TH1F(Form("twDist_Z%d",iZ), Form("TW - Minimal distance between clusterized hits - Z%d",iZ), 1000, 0., 10));
+     fpHisDist.push_back(new TH1F(Form("minDist_Z%d",iZ), Form("TW - Minimal distance between clusterized hits - Z%d",iZ), 1000, 0., 10));
      AddHistogram(fpHisDist[iZ-1]);
   
 
