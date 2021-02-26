@@ -126,17 +126,21 @@ Bool_t TACAparCal::FromCrysStatusFile(const TString& name) {
   for (Int_t iCrys = 0; iCrys < nCrys; iCrys++) { // Loop over the bars
     
     // read parameters
-    ReadItem(tmp, 5, ' ');
+    ReadItem(tmp, 4, ' ');
+    
     Int_t crysboard = int(tmp[0]);
     Int_t crysCh    = int(tmp[1]);
-    Int_t crysId    = int(tmp[2]);
-    Float_t emin    = tmp[3];
-    Int_t status    = bool(tmp[4]);
+    Float_t emin    = tmp[2];
+    Int_t status    = bool(tmp[3]);
 
+ //   if(FootDebugLevel(1))
+    printf("crysid %d :crysboard %d crysCh %d Eloss_min %.2f active_crys %d\n", iCrys, crysboard, crysCh, emin, status);
+    
+    
     fStatusCrys.push_back(status);
     fStatusEmin.push_back(emin);
     pair<int, int> id(crysboard, crysCh);
-    fStatusCrysHwId[crysId] = id;
+    fStatusCrysHwId[iCrys] = id;
   }
     
   
