@@ -14,6 +14,7 @@
 #include "TAMCntuEve.hxx"
 
 #include "TACAparGeo.hxx"
+#include "TACAparCal.hxx"
 #include "TACAntuRaw.hxx"
 #include "TACAactNtuHitMC.hxx"
 #include "TACAdigitizer.hxx"
@@ -31,11 +32,12 @@ ClassImp(TACAactNtuHitMC);
 //! Default constructor.
 
 TACAactNtuHitMC::TACAactNtuHitMC(const char* name,  TAGdataDsc* p_ntuMC, TAGdataDsc* p_ntuEve,
-                                 TAGdataDsc* p_nturaw, TAGparaDsc* p_geomap, TAGparaDsc* p_geomapG, EVENT_STRUCT* evStr)
+                                 TAGdataDsc* p_nturaw, TAGparaDsc* p_geomap,  TAGparaDsc* p_calmap, TAGparaDsc* p_geomapG, EVENT_STRUCT* evStr)
   : TAGaction(name, "TACAactNtuHitMC - NTuplize CA raw data"),
     fpNtuMC(p_ntuMC),
     fpNtuEve(p_ntuEve),
     fpNtuRaw(p_nturaw),
+    fpCalMap(p_calmap),
     fpGeoMap(p_geomap),
     fpGeoMapG(p_geomapG),
     fEventStruct(evStr)
@@ -46,6 +48,7 @@ TACAactNtuHitMC::TACAactNtuHitMC(const char* name,  TAGdataDsc* p_ntuMC, TAGdata
    } 
    AddDataOut(p_nturaw, "TACAntuRaw");
    AddPara(p_geomap,"TACAparGeo");
+   AddPara(p_calmap,"TACAparCal");
 
    CreateDigitizer();
    
@@ -238,8 +241,9 @@ Bool_t TACAactNtuHitMC::Action()
      pNtuEve = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
    }
   
-   TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
-   
+  TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
+  TACAparCal* parCal = (TACAparCal*) fpCalMap->Object();
+
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
       TAMChit* hitMC = pNtuMC->GetHit(i);
 
@@ -248,7 +252,9 @@ Bool_t TACAactNtuHitMC::Action()
       Int_t trackId = hitMC->GetTrackIdx()-1;
       Int_t cryId   = hitMC->GetCrystalId();
       Float_t edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();;
-      
+     
+      Float_t thres = parCal->GetCrystalThres(cryId);
+
       TVector3 posIn(hitMC->GetInPosition());
       TVector3 posOut(hitMC->GetOutPosition());
       
@@ -294,6 +300,11 @@ Bool_t TACAactNtuHitMC::Action()
          
          positionCry = parGeo->Crystal2Detector(cryId, positionCry);
          hit->SetPosition(positionCry);
+        
+        if (hit->GetCharge() < thres)
+          hit->SetValid(false);
+        else
+          hit->SetValid(true);
       }
       
       // Select Neutrons

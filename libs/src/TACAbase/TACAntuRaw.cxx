@@ -28,7 +28,8 @@ TACAntuHit::TACAntuHit()
    fCharge(0.),
    fCrystalId(0),
    fType(0),
-   fPosition()
+   fPosition(),
+   fIsValid(true)
 {
 }
 
@@ -39,7 +40,8 @@ TACAntuHit::TACAntuHit(int cha, double charge, double time, int typ)
    fCharge(charge),
    fCrystalId(cha),
    fType(typ),
-   fPosition()
+   fPosition(),
+   fIsValid(true)
 {
 }
 

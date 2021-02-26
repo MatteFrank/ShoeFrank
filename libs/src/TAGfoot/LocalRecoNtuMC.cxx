@@ -118,7 +118,7 @@ void LocalRecoNtuMC::CreateRawAction()
         fActEvtReader->SetupBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
       
       fpNtuRawCa   = new TAGdataDsc("caRaw", new TACAntuRaw());
-      fActNtuRawCa = new TACAactNtuHitMC("caActNtu", fpNtuMcCa, fpNtuMcEve, fpNtuRawCa, fpParGeoCa, fpParGeoG, fEvtStruct);
+      fActNtuRawCa = new TACAactNtuHitMC("caActNtu", fpNtuMcCa, fpNtuMcEve, fpNtuRawCa, fpParGeoCa, fpParCalCa, fpParGeoG, fEvtStruct);
       if (fFlagHisto)
          fActNtuRawCa->CreateHistogram();
    }

@@ -1,5 +1,5 @@
-#ifndef TATWCALIBRATIONMAP_H
-#define TATWCALIBRATIONMAP_H
+#ifndef TACACALIBRATIONMAP_H
+#define TACACALIBRATIONMAP_H
 #include <string>
 #include <map>
 #include <TSystem.h>
