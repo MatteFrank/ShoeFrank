@@ -118,7 +118,7 @@ Bool_t TACAparCal::FromCrysStatusFile(const TString& name)
   if(FootDebugLevel(4))
     Info("FromCrysStatusFile()", "Open file %s", name.Data());
   
-  Double_t* tmp = new Double_t[5];
+  Double_t* tmp = new Double_t[4];
   
   Int_t nCrys = fParGeo->GetCrystalsN();
   
