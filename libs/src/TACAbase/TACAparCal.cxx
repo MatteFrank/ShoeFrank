@@ -104,9 +104,8 @@ void TACAparCal::GetCrysMap(Int_t crysId, Int_t& crysBoard, Int_t& crysCh)
 }
 
 //_____________________________________________________________________
-Bool_t TACAparCal::FromCrysStatusFile(const TString& name) {
-  
-  
+Bool_t TACAparCal::FromCrysStatusFile(const TString& name)
+{
   TString nameExp;
   
   if (name.IsNull())
@@ -133,8 +132,8 @@ Bool_t TACAparCal::FromCrysStatusFile(const TString& name) {
     Float_t emin    = tmp[2];
     Int_t status    = bool(tmp[3]);
 
- //   if(FootDebugLevel(1))
-    printf("crysid %d :crysboard %d crysCh %d Eloss_min %.2f active_crys %d\n", iCrys, crysboard, crysCh, emin, status);
+    if(FootDebugLevel(1))
+      printf("crysid %d :crysboard %d crysCh %d Eloss_min %.2f active_crys %d\n", iCrys, crysboard, crysCh, emin, status);
     
     
     fStatusCrys.push_back(status);
@@ -142,13 +141,11 @@ Bool_t TACAparCal::FromCrysStatusFile(const TString& name) {
     pair<int, int> id(crysboard, crysCh);
     fStatusCrysHwId[iCrys] = id;
   }
-    
-  
   
   delete[] tmp;
   
   Close();
   
-  return kFALSE;
+  return true;
 }
 
