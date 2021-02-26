@@ -4,6 +4,11 @@
 
 ClassImp(TACAparCal)
 
+
+
+TString TACAparCal::fgkCrysStatus = "./config/TACACrysMapStatus.map";
+
+//_____________________________________________________________________
 TACAparCal::TACAparCal()
 : TAGparTools()
 {
@@ -88,5 +93,58 @@ Double_t TACAparCal::GetElossParameter(Int_t crysId, UInt_t ParameterNumber)
 Double_t TACAparCal::GetTofParameter(Int_t crysId, UInt_t ParameterNumber)
 {
     return fCalibTofMapCrys[crysId][ParameterNumber];
+}
+
+//_____________________________________________________________________
+void TACAparCal::GetCrysMap(Int_t crysId, Int_t& crysBoard, Int_t& crysCh)
+{
+  pair<int, int> id = fStatusCrysHwId[crysId];
+  crysBoard = id.first;
+  crysCh = id.second;
+}
+
+//_____________________________________________________________________
+Bool_t TACAparCal::FromCrysStatusFile(const TString& name) {
+  
+  
+  TString nameExp;
+  
+  if (name.IsNull())
+    nameExp = fgkCrysStatus;
+  else
+    nameExp = name;
+  
+  if (!Open(nameExp)) return false;
+  
+  if(FootDebugLevel(4))
+    Info("FromCrysStatusFile()", "Open file %s", name.Data());
+  
+  Double_t* tmp = new Double_t[5];
+  
+  Int_t nCrys = fParGeo->GetCrystalsN();
+  
+  for (Int_t iCrys = 0; iCrys < nCrys; iCrys++) { // Loop over the bars
+    
+    // read parameters
+    ReadItem(tmp, 5, ' ');
+    Int_t crysboard = int(tmp[0]);
+    Int_t crysCh    = int(tmp[1]);
+    Int_t crysId    = int(tmp[2]);
+    Float_t emin    = tmp[3];
+    Int_t status    = bool(tmp[4]);
+
+    fStatusCrys.push_back(status);
+    fStatusEmin.push_back(emin);
+    pair<int, int> id(crysboard, crysCh);
+    fStatusCrysHwId[crysId] = id;
+  }
+    
+  
+  
+  delete[] tmp;
+  
+  Close();
+  
+  return kFALSE;
 }
 
