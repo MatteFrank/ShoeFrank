@@ -18,5 +18,6 @@
 #pragma link C++ class TACAntuCluster+;
 #pragma link C++ class TACAparGeo+;
 #pragma link C++ class TACAparCal+;
+#pragma link C++ class TAGactWDreader+;
 
 #endif

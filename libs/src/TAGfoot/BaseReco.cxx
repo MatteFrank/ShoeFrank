@@ -61,6 +61,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParConfIt(0x0),
    fpParConfMsd(0x0),
    fpDatRawSt(0x0),
+   fpDatRawCa(0x0),
    fpNtuRawSt(0x0),
    fpDatRawBm(0x0),
    fpNtuRawBm(0x0),

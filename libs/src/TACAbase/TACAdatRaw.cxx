@@ -56,6 +56,33 @@ TACArawHit::~TACArawHit(){
 
 }
 
+// do not need these interfaces, done by compilator
+double TACArawHit::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
+  return  TAGbaseWD::ComputeTime(w, frac, del, tleft, tright);
+}
+
+
+double TACArawHit::ComputeCharge(TWaveformContainer *w){
+  return TAGbaseWD::ComputeCharge(w);
+}
+
+
+double TACArawHit::ComputeAmplitude(TWaveformContainer *w){
+  return TAGbaseWD::ComputeAmplitude(w);
+}
+
+
+double TACArawHit::ComputeBaseline(TWaveformContainer *w){
+  return TAGbaseWD::ComputeBaseline(w);
+}
+
+
+double TACArawHit::ComputePedestal(TWaveformContainer *w){
+  return  TAGbaseWD::ComputePedestal(w);
+}
+
+
+
 Int_t TACAdatRaw::GetHitsN() const
 {
   return fListOfHits->GetEntries();

@@ -45,7 +45,7 @@ TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGd
    
    fDimY = 18;
    fDimX = 18;
-   SetupMaps(fDimY*fDimX);
+    SetupMaps(fDimY*fDimX);
 }
 
 //------------------------------------------+-----------------------------------

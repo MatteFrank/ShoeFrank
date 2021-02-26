@@ -34,7 +34,7 @@ set( with_dictionnaries
    TATWdigitizer
    TATWchannelMap
    TATWcalibrationMap
-   TAGactWDreader
+
 #   TOFWallCalibration
 )
 

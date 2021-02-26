@@ -23,7 +23,7 @@ TACAactNtuRaw::TACAactNtuRaw(const char* name,
                              TAGdataDsc* p_nturaw,
                              TAGparaDsc* p_parmap,
                              TAGparaDsc* p_parcal)
-  : TAGaction(name, "TACAactNtuRaw - Unpack ST raw data"),
+  : TAGaction(name, "TACAactNtuRaw - Unpack CA raw data"),
     fpDatRaw(p_datraw),
     fpNtuRaw(p_nturaw),
     fpParMap(p_parmap),
@@ -46,59 +46,74 @@ Bool_t TACAactNtuRaw::Action() {
 
    TACAdatRaw*   p_datraw = (TACAdatRaw*) fpDatRaw->Object();
    TACAntuRaw*   p_nturaw = (TACAntuRaw*) fpNtuRaw->Object();
-   TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
-   TACAparCal*   p_parcal = (TACAparCal*) fpParCal->Object();
+   // TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
+   // TACAparCal*   p_parcal = (TACAparCal*) fpParCal->Object();
   
   int nhit = p_datraw->GetHitsN();
+
   
   int ch_num, bo_num;
 
   for(int ih = 0; ih < nhit; ++ih) {
     TACArawHit *aHi = p_datraw->GetHit(ih);
+
     Int_t ch_num     = aHi->GetChID();
     Int_t bo_num     = aHi->GetBoardId();
     Double_t time    = aHi->GetTime();
     Double_t timeOth = aHi->GetTimeOth();
     Double_t charge  = aHi->GetCharge();
-    
+  
     // here needed mapping file
-    Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
+    //Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
+    Int_t crysId = ih; //fake crystal id (gtraini)
+
+    Double_t type=-100; // I define a fake type (I do not know what it really is...) (gtraini)
     
     // here we need the calibration file
     Double_t energy = GetEnergy(charge, crysId);
     Double_t tof    = GetTime(time, crysId);
-    p_nturaw->NewHit(crysId, energy, time);
+    p_nturaw->NewHit(crysId, energy, time,type);
   }
    
-   fpNtuRaw->SetBit(kValid);
-  
+  fpNtuRaw->SetBit(kValid);
+
+     
    return kTRUE;
 }
 
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuRaw::GetEnergy(Double_t rawenergy, Int_t  crysId)
 {
-  TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
+  //TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
-  Double_t p0 = p_parcal->GetElossParameter(crysId,0);
-  Double_t p1 = p_parcal->GetElossParameter(crysId,1);
-  Double_t p2 = p_parcal->GetElossParameter(crysId,2);
-  Double_t p3 = p_parcal->GetElossParameter(crysId,3);
+  // Double_t p0 = p_parcal->GetElossParameter(crysId,0);
+  // Double_t p1 = p_parcal->GetElossParameter(crysId,1);
+  // Double_t p2 = p_parcal->GetElossParameter(crysId,2);
+  // Double_t p3 = p_parcal->GetElossParameter(crysId,3);
   
-  return p0 + p1 * rawenergy;
+  // return p0 + p1 * rawenergy;
+
+
+  //fake calibration (gtraini)
+  return 10000.;
+  
 }
 
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuRaw::GetTime(Double_t RawTime, Int_t  crysId)
 {
-  TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
+  // TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
-  Double_t p0 = p_parcal->GetTofParameter(crysId,0);
-  Double_t p1 = p_parcal->GetTofParameter(crysId,1);
-  Double_t p2 = p_parcal->GetTofParameter(crysId,2);
-  Double_t p3 = p_parcal->GetTofParameter(crysId,3);
+  // Double_t p0 = p_parcal->GetTofParameter(crysId,0);
+  // Double_t p1 = p_parcal->GetTofParameter(crysId,1);
+  // Double_t p2 = p_parcal->GetTofParameter(crysId,2);
+  // Double_t p3 = p_parcal->GetTofParameter(crysId,3);
+
+  // return p0 + p1 * RawTime;
   
-  return p0 + p1 * RawTime;
+  //fake calibration (gtraini)
+  return 10000.;
+
 }
 
 //------------------------------------------+-----------------------------------

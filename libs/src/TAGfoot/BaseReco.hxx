@@ -285,6 +285,7 @@ protected:
    TAGdataDsc*           fpNtuRawMsd;     // input ntu data dsc
    TAGdataDsc*           fpDatRawTw;     // input data dsc
    TAGdataDsc*           fpNtuRawTw;     // input data dsc
+   TAGdataDsc*           fpDatRawCa;     // input data dsc
    TAGdataDsc*           fpNtuRawCa;     // input data dsc
 
    TAGdataDsc*           fpNtuClusVtx;	  // input cluster data dsc

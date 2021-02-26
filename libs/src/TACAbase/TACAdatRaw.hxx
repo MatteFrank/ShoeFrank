@@ -25,7 +25,14 @@ public:
   virtual         ~TACArawHit();
   
 
-  ClassDef(TACArawHit,1);
+  virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
+  virtual double ComputeCharge( TWaveformContainer *w);
+  virtual double ComputeAmplitude( TWaveformContainer *w);
+  virtual double ComputePedestal( TWaveformContainer *w);
+  virtual double ComputeBaseline( TWaveformContainer *w);
+  
+
+  ClassDef(TACArawHit,2);
   //
 };
 
@@ -46,6 +53,9 @@ public:
   
   virtual void      Clear(Option_t* opt="");
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
+
+
+
   
 public:
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }

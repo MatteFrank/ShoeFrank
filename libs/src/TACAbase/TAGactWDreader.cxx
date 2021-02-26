@@ -16,6 +16,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TASTdatRaw.hxx"
 #include "TATWdatRaw.hxx"
+#include "TACAdatRaw.hxx"
 #include "TAGactWDreader.hxx"
 #include <unistd.h>
 #include <stdint.h>
@@ -34,18 +35,21 @@ TAGactWDreader::TAGactWDreader(const char* name,
 			     TAGdataDsc* p_datdaq,
 			     TAGdataDsc* p_stwd, 
 			     TAGdataDsc* p_twwd,
+			     TAGdataDsc* p_cawd,
 			     TAGparaDsc* p_WDmap, 
 			     TAGparaDsc* p_WDtim)
   : TAGaction(name, "TAGactWDreader - Unpack WD raw data"),
     fpDatDaq(p_datdaq),
     fpStWd(p_stwd),
     fpTwWd(p_twwd),
+    fpCaWd(p_cawd),
     fpWDMap(p_WDmap),
     fpWDTim(p_WDtim)
 {
   AddDataIn(p_datdaq, "TAGdaqEvent");
   AddDataOut(p_stwd, "TASTdatRaw");
   AddDataOut(p_twwd, "TATWdatRaw");
+  AddDataOut(p_cawd, "TACAdatRaw");
   AddPara(p_WDmap, "TAGbaseWDparMap");
   AddPara(p_WDtim, "TAGbaseWDparTime");
 
@@ -71,6 +75,7 @@ Bool_t TAGactWDreader::Action() {
    TAGbaseWDparMap*     p_WDmap = (TAGbaseWDparMap*)   fpWDMap->Object();
    TASTdatRaw*          p_stwd = (TASTdatRaw*)   fpStWd->Object();
    TATWdatRaw*          p_twwd = (TATWdatRaw*)   fpTwWd->Object();
+   TACAdatRaw*          p_cawd = (TACAdatRaw*)   fpCaWd->Object();
 
    
    Int_t nFragments = p_datdaq->GetFragmentsN();
@@ -83,7 +88,7 @@ Bool_t TAGactWDreader::Action() {
        const WDEvent* evt = static_cast<const WDEvent*> (p_datdaq->GetFragment(i));
        nmicro = DecodeWaveforms(evt, p_WDtim, p_WDmap);
        WaveformsTimeCalibration();
-       CreateHits(p_stwd, p_twwd);
+       CreateHits(p_stwd, p_twwd, p_cawd);
      }
    }
    
@@ -93,6 +98,7 @@ Bool_t TAGactWDreader::Action() {
 
    p_stwd->UpdateRunTime(nmicro);
    p_twwd->UpdateRunTime(nmicro);
+   //p_cawd->UpdateRunTime(nmicro);
    
    Clear();
 
@@ -100,6 +106,7 @@ Bool_t TAGactWDreader::Action() {
    
    fpStWd->SetBit(kValid);
    fpTwWd->SetBit(kValid);
+   fpCaWd->SetBit(kValid);
    
   return kTRUE;
 }
@@ -233,6 +240,8 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	      st_waves.push_back(w);
 	    }else if(ch_type == "TW"){
 	      tw_waves.push_back(w);
+	    }else if(ch_type == "CALO"){
+	      ca_waves.push_back(w);
 	    }else if(ch_type == "CLK"){
 	      clk_waves.insert(std::pair<std::pair<int,int>, TWaveformContainer*>(make_pair(board_id, ch_num),w));
 	    }
@@ -397,6 +406,23 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration(){
     tw_waves.at(i)->GetVectT() = calib_time;
   }
 
+
+  //calo time calibration
+  for(int i=0; i<(int)ca_waves.size();i++){
+    TWaveformContainer *wca = ca_waves.at(i);
+    int ch_clk = (wca->GetChannelId()<8) ? 16 : 17;
+    double jitter = clk_jitter.find(make_pair(wca->GetBoardId(),ch_clk))->second;
+    t_trig = wca->GetVectRawT().at((1024-wca->GetTriggerCellId())%1024);
+    dt = t_trig_ref - t_trig - jitter;
+    vector<double> calib_time;
+    for(int i=0;i<wca->GetVectRawT().size();i++){
+      calib_time.push_back(wca->GetVectRawT().at(i)+dt);
+      if(wca->GetChannelId()==0){
+      }
+    }
+    ca_waves.at(i)->GetVectT() = calib_time;
+  }
+
   
   
   return true;
@@ -465,7 +491,7 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk){
 
 
 
-Bool_t TAGactWDreader::CreateHits(TASTdatRaw *p_straw, TATWdatRaw *p_twraw){
+Bool_t TAGactWDreader::CreateHits(TASTdatRaw *p_straw, TATWdatRaw *p_twraw, TACAdatRaw *p_caraw){
 
   for(int i=0; i<(int)st_waves.size();i++){
     p_straw->NewHit(st_waves.at(i));
@@ -473,6 +499,10 @@ Bool_t TAGactWDreader::CreateHits(TASTdatRaw *p_straw, TATWdatRaw *p_twraw){
 
   for(int i=0; i<(int)tw_waves.size();i++){
     p_twraw->NewHit(tw_waves.at(i));
+  }
+
+  for(int i=0; i<(int)ca_waves.size();i++){
+    p_caraw->NewHit(ca_waves.at(i));
   }
 
   return true;
@@ -488,6 +518,9 @@ void TAGactWDreader::Clear(){
   for(int i=0;i<tw_waves.size();i++){
     delete tw_waves.at(i);
   }
+  for(int i=0;i<ca_waves.size();i++){
+    delete ca_waves.at(i);
+  }
   map<pair<int,int>, TWaveformContainer*>::iterator it;
   for(it=clk_waves.begin(); it != clk_waves.end(); it++){
     delete it->second;
@@ -495,6 +528,7 @@ void TAGactWDreader::Clear(){
    
   st_waves.clear();
   tw_waves.clear();
+  ca_waves.clear();
   clk_waves.clear();
    
 
