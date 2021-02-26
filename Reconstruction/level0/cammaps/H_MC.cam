@@ -48,5 +48,6 @@ NumberFiles: 4
 "./calib/H_MC/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
-NumberFiles: 1
+NumberFiles: 2
 "./geomaps/H_MC/TACAdetector.geo": -1
+"./config/H_MC/TACACrysMapStatus.map": -1
