@@ -39,5 +39,6 @@ NumberFiles: 5
 "./calib/CNAO2020/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
-NumberFiles: 1
+NumberFiles: 2
 "./geomaps/CNAO2020/TACAdetector.geo": -1
+"./config/CNAO2020/TACAcrystalMapStatus.map": -1
