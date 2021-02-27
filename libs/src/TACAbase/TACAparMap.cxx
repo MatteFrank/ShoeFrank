@@ -8,6 +8,7 @@
 #include "TAGroot.hxx"
 #include "TAGparaDsc.hxx"
 #include "TACAparMap.hxx"
+#include "GlobalPar.hxx"
 
 //##############################################################################
 
@@ -25,7 +26,6 @@ TACAparMap::TACAparMap()
 : TAGparTools()
 {
    fCrysId.clear();
-   fParGeo = (TACAparGeo*)gTAGroot->FindParaDsc(TACAparGeo::GetDefParaName(), "TACAparGeo")->Object();
 }
 
 //------------------------------------------+-----------------------------------
@@ -43,15 +43,21 @@ Bool_t TACAparMap::FromFile(const TString& name)
 {
   Clear();
   
-  if (!Open(name)) {
-    Error("FromFile()", "Cannot open file %s", name.Data());
+  if (!Open(name))
     return false;
-  }
   
   // read for parameter
   Double_t* para = new Double_t[3];
-
-  for (Int_t i = 0; i < fParGeo->GetCrystalsN(); ++i) { // Loop over crystal
+  Int_t nCrys = 0;
+  
+  // number of crystal
+  ReadItem(nCrys);
+  if (FootDebugLevel(1)) {
+    printf("CrystalsN: %d\n", nCrys);
+    printf("BoardId ChannelId CrystalId\n");
+  }
+  
+  for (Int_t i = 0; i < nCrys; ++i) { // Loop over crystal
 
     // read parameters (boardId chId, crysId)
     ReadItem(para, 3, ' ', false);
@@ -64,7 +70,7 @@ Bool_t TACAparMap::FromFile(const TString& name)
     pair<int, int> idx(boardId, channelId);
     fCrysId[idx] = crysId;
     if (FootDebugLevel(1))
-      printf("%d %d %d\n", boardId, channelId, crysId);
+      printf("%2d %2d %3d\n", boardId, channelId, crysId);
   }
   
   delete [] para;
