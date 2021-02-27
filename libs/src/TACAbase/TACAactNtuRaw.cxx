@@ -46,7 +46,7 @@ Bool_t TACAactNtuRaw::Action() {
 
    TACAdatRaw*   p_datraw = (TACAdatRaw*) fpDatRaw->Object();
    TACAntuRaw*   p_nturaw = (TACAntuRaw*) fpNtuRaw->Object();
-   // TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
+   TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
    // TACAparCal*   p_parcal = (TACAparCal*) fpParCal->Object();
   
   int nhit = p_datraw->GetHitsN();
@@ -64,10 +64,12 @@ Bool_t TACAactNtuRaw::Action() {
     Double_t charge  = aHi->GetCharge();
   
     // here needed mapping file
-    //Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
-    Int_t crysId = ih; //fake crystal id (gtraini)
+    Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
+    
+    if (crysId == -1) // pb with mapping
+      continue;
 
-    Double_t type=-100; // I define a fake type (I do not know what it really is...) (gtraini)
+    Double_t type=0; // I define a fake type (I do not know what it really is...) (gtraini)
     
     // here we need the calibration file
     Double_t energy = GetEnergy(charge, crysId);
@@ -94,8 +96,8 @@ Double_t TACAactNtuRaw::GetEnergy(Double_t rawenergy, Int_t  crysId)
   // return p0 + p1 * rawenergy;
 
 
-  //fake calibration (gtraini)
-  return 10000.;
+  //fake calibration (gtraini)  return raw value meanwhile
+  return rawenergy;
   
 }
 
@@ -111,8 +113,8 @@ Double_t TACAactNtuRaw::GetTime(Double_t RawTime, Int_t  crysId)
 
   // return p0 + p1 * RawTime;
   
-  //fake calibration (gtraini)
-  return 10000.;
+  //fake calibration (gtraini), return raw value meanwhile
+  return RawTime;
 
 }
 
