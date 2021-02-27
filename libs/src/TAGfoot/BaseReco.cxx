@@ -566,6 +566,12 @@ void BaseReco::ReadParFiles()
 
        TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
        parCal->FromCrysStatusFile(parFileName.Data());
+     } else {
+       parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+       fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
+
+       TACAparMap* parCal = (TACAparMap*)fpParCalCa->Object();
+       parCal->FromFile(parFileName.Data());
      }
    }
 
