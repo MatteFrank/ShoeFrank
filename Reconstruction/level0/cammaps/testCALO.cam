@@ -41,5 +41,8 @@ NumberFiles: 6
 "./calib/testCALO/TATWEnergyTuning.cal": -1
 
 DetectorName: "CA"
-NumberFiles: 0
+NumberFiles: 2
+"./geomaps/testCALO/TACAdetector.geo": -1
+"./config/testCALO/TACAdetector.map": -1
+
 
