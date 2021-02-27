@@ -13,7 +13,6 @@ using namespace std;
 #include "TString.h"
 
 #include "TAGparTools.hxx"
-#include "TACAparGeo.hxx"
 
 //##############################################################################
 
@@ -30,7 +29,6 @@ public:
     Int_t           GetCrystalId(Int_t boardId, Int_t channelId);
 
 private:
-   TACAparGeo* fParGeo;
    map< pair<int, int>, int > fCrysId;
   
   ClassDef(TACAparMap,1)
