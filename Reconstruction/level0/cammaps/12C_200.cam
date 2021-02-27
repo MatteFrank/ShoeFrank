@@ -51,4 +51,4 @@ NumberFiles: 5
 DetectorName: "CA"
 NumberFiles: 2
 "./geomaps/12C_200/TACAdetector.geo": -1
-"./config/12C_200/TACACrystalMapStatus.map": -1
+"./config/12C_200/TACAcrystalMapStatus.map": -1

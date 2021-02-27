@@ -50,4 +50,4 @@ NumberFiles: 4
 DetectorName: "CA"
 NumberFiles: 2
 "./geomaps/HE_MC/TACAdetector.geo": -1
-"./config/HE_MC/TACACrystalMapStatus.map": -1
+"./config/HE_MC/TACAcrystalMapStatus.map": -1
