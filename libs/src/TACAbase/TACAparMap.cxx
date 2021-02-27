@@ -91,5 +91,9 @@ Int_t TACAparMap::GetCrystalId(Int_t boardId, Int_t channelId)
 {
   pair<int, int> idx(boardId, channelId);
   
+  auto itr = fCrysId.find(idx);
+  if (itr == fCrysId.end())
+    return -1;
+  
   return fCrysId[idx];
 }
