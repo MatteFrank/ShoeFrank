@@ -143,8 +143,8 @@ void LocalReco::CreateRawAction()
    
    if(GlobalPar::GetPar()->IncludeCA()) {
      fpNtuRawCa   = new TAGdataDsc("caRaw", new TACAntuRaw());
-     fActNtuRawCa = new TACAactNtuRaw("caActNtu", fpDatRawCa, fpNtuRawCa, NULL,NULL);
-     //the channel map and calibration parameters have to be still defined!!! (gtraini)
+     fActNtuRawCa = new TACAactNtuRaw("caActNtu", fpDatRawCa, fpNtuRawCa, fpParCalCa, NULL);
+     //the calibration parameters have to be still defined!!! (gtraini)
      if (fFlagHisto){
 	fActNtuRawCa->CreateHistogram();
       }
