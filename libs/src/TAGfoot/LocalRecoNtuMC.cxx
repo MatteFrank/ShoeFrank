@@ -4,6 +4,7 @@
 
 #include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAMCflukaParser.hxx"
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
 #include "TAVTntuRaw.hxx"
@@ -132,9 +133,7 @@ void LocalRecoNtuMC::OpenFileIn()
   else {
     fActEvtReader->Open(GetName(), "READ", "EventTree", false);
     TTree* tree = ((TAGactTreeReader*)fActEvtReader)->GetTree();
-  
-    Evento *ev  = new Evento();
-    ev->FindBranches(tree, fEvtStruct);
+    TAMCflukaParser::FindBranches(tree, fEvtStruct);
   }
 }
 

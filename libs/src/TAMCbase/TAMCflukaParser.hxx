@@ -6,7 +6,7 @@
  \brief   Declaration of TAMCflukaParser.
  */
 /*------------------------------------------+---------------------------------*/
-
+#include "TTree.h"
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
 #include "EventStruct.hxx"
@@ -29,6 +29,8 @@ public:
   static TAMCntuHit*  GetTofHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
   static TAMCntuHit*  GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
   static TAMCntuEve*  GetTracks( EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrck);
+  static void         FindBranches(TTree* rootTree, EVENT_STRUCT* evStr);
+
 };
 
 #endif
