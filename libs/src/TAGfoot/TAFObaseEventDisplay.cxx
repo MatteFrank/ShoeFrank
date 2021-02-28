@@ -1216,6 +1216,7 @@ void TAFObaseEventDisplay::UpdateCrystalElements()
    for (Int_t iHit = 0; iHit < nHits; ++iHit) {
 
       TACAntuHit *hit = pNtuHit->GetHit(iHit);
+      if (!hit->IsValid()) continue;
       Int_t idx = hit->GetCrystalId();
 
       fFiredCaCrystal[idx] = 1;
