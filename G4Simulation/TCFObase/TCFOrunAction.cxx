@@ -90,22 +90,23 @@ void TCFOrunAction::SetContainers()
    
    Int_t run          = gTAGroot->CurrentRunNumber();
    const Char_t* name = gTAGroot->CurrentCampaignName();
-   
+  
+   fpTree = new TTree("EventTree", "FOOT");
+   if(fkEvento) {
+       fpEventoMC = new Evento();
+       fpEventoMC->SetBranches(fpTree);
+       GlobalPar::GetPar()->DisableRootObject();
+   } else {
+       fpEventMC = new TAMCevent();
+       fpEventMC->SetBranches(fpTree);
+       GlobalPar::GetPar()->EnableRootObject();
+   }
+  
    TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
    info.SetCampaignName(name);
    info.SetRunNumber(run);
    gTAGroot->SetRunInfo(info);
    info.Write(TAGrunInfo::GetObjectName());
-   
-   fpTree      = new TTree("EventTree", "FOOT");
-    if(fkEvento){
-        fpEventoMC = new Evento();
-        fpEventoMC->SetBranches(fpTree);
-    }
-    else{
-        fpEventMC = new TAMCevent();
-        fpEventMC->SetBranches(fpTree);
-    }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

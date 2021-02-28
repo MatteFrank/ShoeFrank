@@ -14,7 +14,6 @@ class TCFOrunAction;
 class TCGbaseGeometryConstructor;
 class TCFOgeometryConstructor;
 class TAGgeoTrafo;
-class Evento;
 class TCGmcHit;
 class TAMCntuEve;
 

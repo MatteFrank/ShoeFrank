@@ -95,7 +95,8 @@ int main(int argc, char *argv[])
    
    TFile *f_out = new TFile(outname,"RECREATE");
    f_out->cd();
-   
+  
+   GlobalPar::GetPar()->EnableRootObject();
    TAGrunInfo info = GlobalPar::Instance()->GetGlobalInfo();
    info.SetCampaignName(exp);
    info.SetRunNumber(runNb);

@@ -89,6 +89,9 @@ public:
     void EnableLocalReco()           {  m_enableLocalReco = true;    }
     void DisableLocalReco()          {  m_enableLocalReco = false;   }
 
+    void EnableRootObject()          {  m_enableRootObject = true;   }
+    void DisableRootObject()         {  m_enableRootObject = false;  }
+
     void IncludeDI(bool t)           {  m_includeDI = t;             }
     void IncludeST(bool t)           {  m_includeST = t;             }
     void IncludeBM(bool t)           {  m_includeBM = t;             }
