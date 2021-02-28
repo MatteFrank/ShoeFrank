@@ -8,7 +8,7 @@
 #include <TStopwatch.h>
 
 #include "GlobalPar.hxx"
-#include "LocalRecoMC.hxx"
+#include "LocalRecoNtuMC.hxx"
 
 #endif
 
@@ -34,7 +34,7 @@ void DecodeMC(TString name = "12C_C_200_1.root", TString exp = "12C_200", Int_t 
    Bool_t trk = GlobalPar::GetPar()->IsTracking();
    Bool_t zmc = GlobalPar::GetPar()->IsTofZmc();
   
-   LocalRecoMC* locRec = new LocalRecoMC(exp, runNumber, name, nameOut);
+   LocalRecoNMtuC* locRec = new LocalRecoNtuMC(exp, runNumber, name, nameOut);
    
    // global setting
    if (ntu)
