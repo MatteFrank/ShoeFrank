@@ -37,9 +37,7 @@ TAMCeveTrack::TAMCeveTrack()
    fInitPos(0,0,0),
    fFinalPos(0,0,0),
    fInitMom(0,0,0),
-   fFinalMom(0,0,0),
-   fMotherInitMom(0,0,0),
-   fMotherFinalMom(0,0,0)
+   fFinalMom(0,0,0)
 {
 }
 
@@ -51,9 +49,7 @@ TAMCeveTrack::TAMCeveTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
 			       Double_t i_time,
 			       Double_t i_tof, Double_t i_trlen,
 			       TVector3 i_ipos, TVector3 i_fpos, 
-			       TVector3 i_ip,TVector3 i_fp,
-			       TVector3 i_mothip,
-			       TVector3 i_mothfp)
+			       TVector3 i_ip,TVector3 i_fp)
  : TAGobject(),
    fFlukaId(i_id),
    fCharge(i_chg),
@@ -71,8 +67,6 @@ TAMCeveTrack::TAMCeveTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
   fFinalPos.SetXYZ(i_fpos.X(),i_fpos.Y(),i_fpos.Z());
   fInitMom.SetXYZ(i_ip.X(),i_ip.Y(),i_ip.Z());
   fFinalMom.SetXYZ(i_fp.X(),i_fp.Y(),i_fp.Z());
-  fMotherInitMom.SetXYZ(i_mothip.X(),i_mothip.Y(),i_mothip.Z());
-  fMotherFinalMom.SetXYZ(i_mothfp.X(),i_mothfp.Y(),i_mothfp.Z());
 }
 
 //------------------------------------------+-----------------------------------
@@ -122,14 +116,12 @@ TAMCeveTrack* TAMCntuEve::NewTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
                                    Double_t i_time,
                                    Double_t i_tof, Double_t i_trlen,
                                    TVector3 i_ipos, TVector3 i_fpos,
-                                   TVector3 i_ip,TVector3 i_fp,
-                                   TVector3 i_mothip,
-                                   TVector3 i_mothfp) {
+                                   TVector3 i_ip,TVector3 i_fp) {
 
     TClonesArray &trackCollection = *fListOfTracks;
     TAMCeveTrack* track = new( trackCollection[trackCollection.GetEntriesFast()] ) TAMCeveTrack(
                                             i_id,i_chg,i_type,i_reg,i_bar,i_dead,i_mass,i_moth,
-                                            i_time,i_tof,i_trlen,i_ipos,i_fpos,i_ip,i_fp,i_mothip,i_mothfp);
+                                            i_time,i_tof,i_trlen,i_ipos,i_fpos,i_ip,i_fp);
     return track;
 
 };

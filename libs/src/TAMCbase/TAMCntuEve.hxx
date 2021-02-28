@@ -25,9 +25,7 @@ public:
                Double_t i_time,
                Double_t i_tof, Double_t i_trlen,
                TVector3 i_ipos, TVector3 i_fpos,
-               TVector3 i_ip,TVector3 i_fp,
-               TVector3 i_mothip,
-	       TVector3 i_mothfp);
+               TVector3 i_ip,TVector3 i_fp);
 
 	virtual         ~TAMCeveTrack();
 
@@ -46,16 +44,11 @@ public:
    Double32_t       GetTime()         const { return fTime;           }
    Double32_t       GetTrkLength()    const { return fTrkLength;      }
    Double32_t       GetTof()          const { return fTof;            }
-   Double32_t       GetDeltaE()       const { return fDeltaE;         }
-   TVector3         GetMotherInitP()  const { return fMotherInitMom;  }
-   TVector3         GetMotherFinalP() const { return fMotherFinalMom; }
 
    void  SetInitPos(TVector3 pos)           { fInitPos = pos;         }
    void  SetInitP(TVector3 mom)             { fInitMom = mom;         }
-   void  SetMotherInitP(TVector3 mom)       { fMotherInitMom = mom;   }
    void  SetFinalPos(TVector3 pos)          { fFinalPos = pos;        }
    void  SetFinalP(TVector3 mom)            { fFinalMom = mom;        }
-   void  SetMotherFinalP(TVector3 mom)      { fMotherFinalMom = mom;  }
    void  SetMass(double amass)              { fMass = amass;          }
    void  SetFlukaID(int aid)                { fFlukaId = aid;         }
    void  SetDead(int adead)                 { fDead = adead;          }
@@ -65,7 +58,6 @@ public:
    void  SetCharge(int achg)                { fCharge = achg;         }
    void  SetMotherID(int aid)               { fMotherId = aid;        }
    void  SetTime(double atime)              { fTime = atime;          }
-   void  SetDeltaE(double adE)              { fDeltaE = adE;          }
    void  SetTof(double atof)                { fTof = atof;            }
    void  SetTrkLength(double atrlen)        { fTrkLength = atrlen;    }
 
@@ -77,19 +69,16 @@ public:
 	Int_t         fBaryon;                  // baryonic number
 	Int_t         fDead;                    // region in which it dies
 	Double32_t    fMass;                    // mass
-   Int_t         fMotherId;               // mother identity
+   Int_t         fMotherId;                // mother identity
 	Double32_t    fTime;                    // time of production
 	Double_t      fTof;                     // time of flight
 	Double_t      fTrkLength;               // track length
-   Double32_t    fDeltaE;                 // deposited energy
-	TVector3      fInitPos;		              // initial position
-	TVector3      fFinalPos;		            // final position
+	TVector3      fInitPos;		             // initial position
+	TVector3      fFinalPos;		          // final position
 	TVector3      fInitMom;	          	    // initial momentum
-	TVector3      fFinalMom;	          	  // final momentum
-	TVector3      fMotherInitMom;		        // mother init momentum
-	TVector3      fMotherFinalMom;		      // mother final momentum
+	TVector3      fFinalMom;	          	 // final momentum
 
-	ClassDef(TAMCeveTrack,2)
+	ClassDef(TAMCeveTrack,3)
 };
 
 //##############################################################################
@@ -110,16 +99,14 @@ class TAMCntuEve : public TAGdata {
                                 Double_t i_time,
                                 Double_t i_tof, Double_t i_trlen,
                                 TVector3 i_ipos, TVector3 i_fpos,
-                                TVector3 i_ip,TVector3 i_fp,
-                                TVector3 i_mothip,
-                                TVector3 i_mothfp);
+                                TVector3 i_ip,TVector3 i_fp);
    
 	virtual void        SetupClones();
 	virtual void        Clear(Option_t* opt="");
 	virtual void        ToStream(ostream& os=cout, Option_t* option="") const;
 
 public:
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+   static const Char_t* GetBranchName()   { return fgkBranchName.Data();  }
    static const Char_t* GetDefDataName()  { return fgkDefDataName.Data(); }
 
 private:

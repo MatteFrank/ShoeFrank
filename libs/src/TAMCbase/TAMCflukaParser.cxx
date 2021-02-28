@@ -226,7 +226,6 @@ TAMCntuEve* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutra
     Int_t i_reg = evStr->TRreg[i];
     Int_t i_bar = evStr->TRbar[i];
     Int_t i_dead = evStr->TRdead[i];
-    Int_t i_moth = i_mid-1;
     Int_t i_type = evStr->TRgen[i];
     Double_t i_time = evStr->TRtime[i];
     Double_t i_tof = evStr->TRtof[i];
@@ -236,14 +235,8 @@ TAMCntuEve* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutra
     TVector3 fpos = TVector3(evStr->TRfx[i],evStr->TRfy[i],evStr->TRfz[i]);
     TVector3 ip = TVector3(evStr->TRipx[i],evStr->TRipy[i],evStr->TRipz[i]);
     TVector3 fp = TVector3(evStr->TRfpx[i],evStr->TRfpy[i],evStr->TRfpz[i]);
-    //decide if propagate also final momentum
     
-    TVector3 mothip = TVector3 (0,0,0);
-    if(i_moth>=0) mothip = TVector3(evStr->TRipx[i_moth],evStr->TRipy[i_moth],evStr->TRipz[i_moth]);
-    TVector3 mothfp = TVector3 (0,0,0);
-    if(i_moth>=0) mothfp = TVector3(evStr->TRfpx[i_moth],evStr->TRfpy[i_moth],evStr->TRfpz[i_moth]);
-    
-    p_nturaw->NewTrack(i_id, i_chg, i_type, i_reg, i_bar, i_dead, i_mass, i_moth, i_time, i_tof, i_trlen, ipos, fpos, ip, fp, mothip, mothfp);
+    p_nturaw->NewTrack(i_id, i_chg, i_type, i_reg, i_bar, i_dead, i_mass, i_mid, i_time, i_tof, i_trlen, ipos, fpos, ip, fp);
   }
   
   return p_nturaw;
