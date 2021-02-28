@@ -5,8 +5,7 @@
  author: Ch. Finck
  */
 
-#include "LocalReco.hxx"
-#include "LocalRecoMC.hxx"
+#include "BaseReco.hxx"
 #include "TAGactNtuGlbTrack.hxx"
 
 #include "GlobalToeReco.hxx"
