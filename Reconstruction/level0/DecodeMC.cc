@@ -26,7 +26,6 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
       
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
-      if(strcmp(argv[i],"-test") == 0)  { test = true;  } // enable new readout of fluka structure
 
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
