@@ -4,7 +4,6 @@
 #include <TApplication.h>
 
 #include "GlobalPar.hxx"
-#include "LocalRecoMC.hxx"
 #include "LocalRecoNtuMC.hxx"
 
 int main (int argc, char *argv[])  {
@@ -39,7 +38,6 @@ int main (int argc, char *argv[])  {
          cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
-         cout<<"      -test          : enable new readout of fluka structure (tmp flag)"<<endl;
          return 1;
       }
    }
@@ -59,7 +57,6 @@ int main (int argc, char *argv[])  {
    Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
    Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
    Bool_t trk = GlobalPar::GetPar()->IsTracking();
-   Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
    Bool_t zmc = GlobalPar::GetPar()->IsTWZmc();
    Bool_t zrec = GlobalPar::GetPar()->IsTWnoPU();
    Bool_t zmatch = GlobalPar::GetPar()->IsTWZmatch();
@@ -76,11 +73,7 @@ int main (int argc, char *argv[])  {
      out.Append("_noTWPileUp_Ztrue.root");   
    }
 
-   BaseReco* locRec = 0x0;
-   if (!obj && !test)
-      locRec = new LocalRecoMC(exp, runNb, in, out);
-   else
-      locRec = new LocalRecoNtuMC(exp, runNb, in, out);
+   BaseReco* locRec = new LocalRecoNtuMC(exp, runNb, in, out);
 
    // global setting
    if (ntu)
