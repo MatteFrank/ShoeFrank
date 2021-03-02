@@ -225,30 +225,17 @@ void BaseReco::LoopEvent(Int_t nEvents)
     if (!fTAGroot->NextEvent()) break;;
     
     if (FootDebugLevel(1)) {
-      //MC block
-      TAMCntuEve*  p_ntuMcEve
-	=  static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" ) ->Object() );
-      if(p_ntuMcEve) {
-	int nTrkMC = p_ntuMcEve->GetTracksN();
-	for(int iTr = 0; iTr< nTrkMC; iTr++) {
-	  TAMCeveTrack *aTr = p_ntuMcEve->GetTrack(iTr);
-	  //    cout<<"MCblock:  "<<aTr->GetMass()<<" "<<aTr->GetCharge()<<endl;
-	}
-      }
-      
       if(fpNtuGlbTrack) {
-	TAGntuGlbTrack *glbTrack =
-	  (TAGntuGlbTrack*) fpNtuGlbTrack->GenerateObject();
-	// (fTAGroot->FindDataDsc("glbTrack", "TAGntuGlbTrack")->Object());
-	
-	int nTrk = glbTrack->GetTracksN();
-	for(int iTr = 0; iTr< nTrk; iTr++) {
-	  TAGtrack *aTr = glbTrack->GetTrack(iTr);
-	  cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
-	}
+        TAGntuGlbTrack *glbTrack =
+        (TAGntuGlbTrack*) fpNtuGlbTrack->GenerateObject();
+        
+        int nTrk = glbTrack->GetTracksN();
+        for(int iTr = 0; iTr< nTrk; iTr++) {
+          TAGtrack *aTr = glbTrack->GetTrack(iTr);
+          cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
+        }
       }
-    }    
-
+    }
   }
 }
 
@@ -873,14 +860,8 @@ void BaseReco::SetL0TreeBranches()
     
     if(GlobalPar::GetPar()->IncludeTW())
       fActEvtReader->SetupBranch(fpNtuRecTw,  TATWntuPoint::GetBranchName());
-    
-    if (fFlagMC) {
-      fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
-      fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
-    }
   }
 }
-
 
 //__________________________________________________________
 void BaseReco::SetTreeBranches()

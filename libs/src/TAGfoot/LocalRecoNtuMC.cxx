@@ -5,6 +5,7 @@
 #include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAMCflukaParser.hxx"
+#include "TAMCntuEve.hxx"
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
 #include "TAVTntuRaw.hxx"
@@ -195,6 +196,20 @@ void LocalRecoNtuMC::AddRawRequiredItem()
    fTAGroot->AddRequiredItem("actEvtReader");
   if (!GlobalPar::GetPar()->IsReadRootObj())
     fTAGroot->AddRequiredItem("eveActNtuMc");
+}
+
+
+//__________________________________________________________
+void LocalRecoNtuMC::SetL0TreeBranches()
+{
+  BaseReco::SetL0TreeBranches();
+
+  if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) {
+    if (fFlagMC) {
+      fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
+      fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
+    }
+  }
 }
 
 //__________________________________________________________
