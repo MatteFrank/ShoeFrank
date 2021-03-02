@@ -52,9 +52,6 @@ public:
    
    //! Close File in
    virtual void CloseFileIn();
-  
-   //! Create L0 branch in tree
-   virtual void SetL0TreeBranches();
 
    //! MC container Getter
    TAMCntuEve*  GetNtuMcEve() const { return (TAMCntuEve*)fpNtuMcEve->Object();}

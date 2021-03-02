@@ -44,6 +44,19 @@ void GlobalToeReco::CreateRawAction()
 {
 }
 
+//__________________________________________________________
+void GlobalToeReco::SetL0TreeBranches()
+{
+  BaseReco::SetL0TreeBranches();
+  
+  if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) {
+    if (fFlagMC) {
+      fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
+      fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
+    }
+  }
+}
+
 // --------------------------------------------------------------------------------------
 void GlobalToeReco::SetRunNumber()
 {   
