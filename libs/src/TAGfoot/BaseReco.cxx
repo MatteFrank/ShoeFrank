@@ -860,6 +860,9 @@ void BaseReco::SetL0TreeBranches()
     
     if(GlobalPar::GetPar()->IncludeTW())
       fActEvtReader->SetupBranch(fpNtuRecTw,  TATWntuPoint::GetBranchName());
+    
+    if(GlobalPar::GetPar()->IncludeCA())
+      fActEvtReader->SetupBranch(fpNtuClusCa,  TACAntuCluster::GetBranchName());
   }
 }
 
