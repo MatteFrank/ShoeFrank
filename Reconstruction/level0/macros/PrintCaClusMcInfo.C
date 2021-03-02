@@ -35,7 +35,7 @@
 TString thr = "3thr";
 
 // main
-void PrintCaClusMcInfo_v4(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root",thr.Data()), Int_t nentries = 0)
+void PrintCaClusMcInfo(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root",thr.Data()), Int_t nentries = 0)
 {
    
    printf("ANALISI CON SOGLIA: %s\n",thr.Data());
