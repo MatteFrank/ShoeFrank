@@ -18,7 +18,7 @@ void DisplayMcFOOT(TString file = "12C_C_200_1.root", TString expName = "12C_200
 //   TAFObaseEventDisplay::EnableItrTracking();
 //   TAFObaseEventDisplay::DisableTracking();
    
-   TAFOeventDisplayMC::Instance(expName, type)->ShowDisplay(file, runNumber);
+   TAFOeventDisplayMC::Instance(expName, runNumber, type)->ShowDisplay(file);
 }
 
 

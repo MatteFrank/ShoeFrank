@@ -15,18 +15,18 @@ ClassImp(TAFOeventDisplayMC)
 TAFOeventDisplayMC* TAFOeventDisplayMC::fgInstance = 0x0;
 
 //__________________________________________________________
-TAFOeventDisplayMC* TAFOeventDisplayMC::Instance(const TString name, Int_t type)
+TAFOeventDisplayMC* TAFOeventDisplayMC::Instance(const TString name, Int_t runNumber, Int_t type)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAFOeventDisplayMC(name, type);
+      fgInstance = new TAFOeventDisplayMC(name, runNumber, type);
    
    return fgInstance;
 }
 
 
 //__________________________________________________________
-TAFOeventDisplayMC::TAFOeventDisplayMC(const TString expName, Int_t type)
- : TAFObaseEventDisplay(expName, type),
+TAFOeventDisplayMC::TAFOeventDisplayMC(const TString expName, Int_t runNumber, Int_t type)
+ : TAFObaseEventDisplay(expName, runNumber, type),
    fCaMcDisplay(0x0),
    fTwMcDisplay(0x0),
    fMsdMcDisplay(0x0),
@@ -100,6 +100,9 @@ void TAFOeventDisplayMC::SetLocalReco()
    }
    
    fpFootGeo = fReco->GetGeoTrafo();
+  
+  printf("\n\n\n\n run number %d\n", fRunNumber);
+   gTAGroot->SetRunNumber(fRunNumber);
 }
 
 //__________________________________________________________

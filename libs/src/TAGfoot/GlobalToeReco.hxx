@@ -25,11 +25,8 @@ public:
    //! Close File in
    virtual void CloseFileIn();
 
-   //! Set run number
-   void   SetRunNumber();
-
-  //! Create L0 branch in tree
-  void SetL0TreeBranches();
+   //! Create L0 branch in tree
+   void SetL0TreeBranches();
   
 private:
    TTree*                fTree;         // tree for local reconstruction

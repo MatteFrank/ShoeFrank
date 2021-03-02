@@ -38,17 +38,17 @@ ClassImp(TAFOeventDisplay)
 TAFOeventDisplay* TAFOeventDisplay::fgInstance = 0x0;
 
 //__________________________________________________________
-TAFOeventDisplay* TAFOeventDisplay::Instance(const TString name, Int_t type)
+TAFOeventDisplay* TAFOeventDisplay::Instance(const TString name, Int_t runNumber, Int_t type)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAFOeventDisplay(name, type);
+      fgInstance = new TAFOeventDisplay(name, runNumber, type);
 
    return fgInstance;
 }
 
 //__________________________________________________________
-TAFOeventDisplay::TAFOeventDisplay(const TString expName, Int_t type)
- : TAFObaseEventDisplay(expName, type)
+TAFOeventDisplay::TAFOeventDisplay(const TString expName, Int_t runNumber, Int_t type)
+ : TAFObaseEventDisplay(expName, runNumber, type)
 {
    // local reco
    SetLocalReco();  
@@ -80,4 +80,6 @@ void TAFOeventDisplay::SetLocalReco()
       LocalReco::EnableStdAlone();
 
    fpFootGeo = fReco->GetGeoTrafo();
+  
+   gTAGroot->SetRunNumber(fRunNumber);
 }

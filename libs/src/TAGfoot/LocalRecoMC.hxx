@@ -58,10 +58,7 @@ public:
    
    //! Close File in
    virtual void CloseFileIn();
-   
-   //! Set run number
-   void   SetRunNumber();
-
+  
    //! MC container Getter
    TAMCntuEve*  GetNtuMcEve() const { return (TAMCntuEve*)fpNtuMcEve->Object();}
    TAMCntuHit*  GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object(); }

@@ -45,8 +45,8 @@ Bool_t  TAFObaseEventDisplay::fgM28ClusMtFlag   = false;
 
 
 //__________________________________________________________
-TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t type)
- : TAEDbaseInterface(type, expName),
+TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumber, Int_t type)
+ : TAEDbaseInterface(type, expName, runNumber),
    fStClusDisplay(0x0),
    fBmClusDisplay(0x0),
    fBmTrackDisplay(0x0),
@@ -324,7 +324,6 @@ void TAFObaseEventDisplay::SetFileName(const TString fileName)
 {
    fReco->SetName(fileName);
    fReco->SetRunNumber(fRunNumber);
-   fReco->SetRunNumber();
 }
 
 //__________________________________________________________
@@ -687,7 +686,7 @@ void TAFObaseEventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
 void TAFObaseEventDisplay::UpdateElements()
 {
    if (fgGUIFlag)
-      fEventEntry->SetText(Form("Run %d Event %d", gTAGroot->CurrentRunInfo().RunNumber(), gTAGroot->CurrentEventId().EventNumber()));
+      fEventEntry->SetText(Form("Run %d Event %d", gTAGroot->CurrentRunNumber(), gTAGroot->CurrentEventId().EventNumber()));
 
    if (GlobalPar::GetPar()->IncludeST())
       UpdateElements("st");
