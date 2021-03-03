@@ -464,7 +464,7 @@ void TAFObaseEventDisplay::ConnectElements()
    }
 
    if (GlobalPar::GetPar()->IncludeTOE()) {
-      TQObject::Connect("TAEDglbTrack", "SecSelected(TEveTrack*)", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
+      TQObject::Connect("TEveTrack", "SecSelected(TEveTrack*)", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
    }
 }
 
@@ -636,21 +636,21 @@ void TAFObaseEventDisplay::UpdateTrackInfo(TEveTrack* ts)
       if (track == 0x0) return;
 
       fInfoView->AddLine( Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN()) );
-      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %g GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass()) );
-      fInfoView->AddLine( Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof()) );
+      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass()) );
+      fInfoView->AddLine( Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTof()) );
 
       if (fConsoleButton->IsOn()) {
          cout <<  Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN());
-         cout <<  Form("Charge: %d A: %d Mass: %g GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass());
-         cout <<  Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof());
+         cout <<  Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass());
+         cout <<  Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTof());
 
          for( Int_t iPoint = 0; iPoint < track->GetMeasPointsN(); ++iPoint ) {
             TAGpoint* point = track->GetMeasPoint(iPoint);
-            cout << Form("Point # %2d", iPoint);
+            cout << Form("Point# %2d ", iPoint);
 
             for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
                Int_t idx = point->GetMcTrackIdx(k);
-               cout << Form("Track index %d ", idx);
+              cout << Form("with MC track index; %d ", idx);
             }
             cout << endl;
          }
