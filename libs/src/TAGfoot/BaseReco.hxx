@@ -123,6 +123,9 @@ public:
    
    //! Open File In
    virtual void OpenFileIn()  { return; }
+  
+   // ! Global Checks
+  virtual void GlobalChecks();
    
    //! Close File in
    virtual void CloseFileIn() { return; }

@@ -138,6 +138,40 @@ void LocalRecoNtuMC::OpenFileIn()
   }
 }
 
+//_____________________________________________________________________________
+void LocalRecoNtuMC::GlobalChecks()
+{
+  // base checks
+  BaseReco::GlobalChecks();
+  
+  // from global file
+  Bool_t enableRootObjectG = GlobalPar::GetPar()->IsReadRootObj();
+
+  // from root file
+  TAGrunInfo info = gTAGroot->CurrentRunInfo();
+  TAGrunInfo* p = &info;
+  if (!p) return; // if run info not found in MC file
+  
+  Bool_t enableRootObject = info.GetGlobalPar().EnableRootObject;
+  
+  if (enableRootObjectG && enableRootObject)
+    Info("GlobalChecks()", "Reading MC root file with shoe format");
+  
+  if (!enableRootObjectG && !enableRootObject)
+    Info("GlobalChecks()", "Reading MC root file with Fluka structure format");
+  
+  if (enableRootObjectG && !enableRootObject) {
+    Error("GlobalChecks()", "FootGlobal::enableRootObject set to shoe format but MC file is Fluka structure !");
+    exit(0);
+  }
+  
+  if (!enableRootObjectG && enableRootObject) {
+    Error("GlobalChecks()", "FootGlobal::enableRootObject set to Fluka structure but MC file is shoe format !");
+    exit(0);
+  }
+}
+
+
 //__________________________________________________________
 void LocalRecoNtuMC::SetRawHistogramDir()
 {

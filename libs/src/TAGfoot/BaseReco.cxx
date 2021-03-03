@@ -130,11 +130,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    GlobalPar::GetPar()->SetDebugLevels();
    
    // Save run info
-   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
-   info.SetCampaignName(fExpName);
-   info.SetRunNumber(fRunNumber);
-   gTAGroot->SetRunInfo(info);
    gTAGroot->SetRunNumber(fRunNumber);
+   gTAGroot->SetCampaignName(fExpName);
 
    // activate per default Dipole, TGT, VTX and TW if TOE on
    if (GlobalPar::GetPar()->IncludeTOE()) {
@@ -181,8 +178,50 @@ void BaseReco::CampaignChecks()
    if (!runOk) {
       Error("CampaignChecks()", "run %d is NOT referenced in campaign file", fRunNumber);
       exit(0);
-
    }
+  
+  // Check MC file
+  if (fFlagMC && fCampManager->GetCurCampaignPar().McFlag)
+    Info("CampaignChecks()", "Reading MC data");
+
+  if (fFlagMC && !fCampManager->GetCurCampaignPar().McFlag) {
+    Error("CampaignChecks()", "Trying to read back MC data file while referenced as raw data in campaign file");
+    exit(0);
+  }
+  
+  if (!fFlagMC && fCampManager->GetCurCampaignPar().McFlag) {
+    Error("CampaignChecks()", "Trying to read back raw data file while referenced as MC data in campaign file");
+    exit(0);
+  }
+}
+
+//__________________________________________________________
+void BaseReco::GlobalChecks()
+{
+  if (GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) {
+    // from global file
+    Bool_t enableLocalRecoG = GlobalPar::GetPar()->IsLocalReco();
+    
+    // from root file
+    TAGrunInfo info = gTAGroot->CurrentRunInfo();
+    TAGrunInfo* p = &info;
+    if (!p) return; // if run info not found in MC file
+
+    Bool_t enableLocalReco = info.GetGlobalPar().EnableLocalReco;
+    
+    if (enableLocalRecoG && enableLocalReco)
+      Info("GlobalChecks()", "Make global reconstruction from L0 tree");
+    
+    if (enableLocalRecoG && !enableLocalReco) {
+      Error("GlobalChecks()", "FootGlobal::enableLocalReco set but raw data found in root file !");
+      exit(0);
+    }
+    
+    if (!enableLocalRecoG && enableLocalReco) {
+      Error("GlobalChecks()", "FootGlobal::enableLocalReco not set but L0 tree found in root file!");
+      exit(0);
+    }
+  }
 }
 
 //__________________________________________________________
@@ -199,6 +238,9 @@ void BaseReco::BeforeEventLoop()
    AddRecRequiredItem();
    
    OpenFileIn();
+  
+   GlobalChecks();
+  
    if (fFlagOut)
       OpenFileOut();
    
@@ -330,6 +372,13 @@ void BaseReco::SetRecHistogramDir()
 //__________________________________________________________
 void BaseReco::CloseFileOut()
 {
+   // saving current run info
+   GlobalPar::GetPar()->EnableLocalReco();
+   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
+   info.SetCampaignName(fExpName);
+   info.SetRunNumber(fRunNumber);
+   gTAGroot->SetRunInfo(info);
+
    fActEvtWriter->Print();
    fActEvtWriter->Close();
 }
@@ -757,7 +806,6 @@ void BaseReco::CreateRecActionGlb()
 					   fField );
     if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
-    fActGlbTrack->CheckBranches();
   }
   
 }

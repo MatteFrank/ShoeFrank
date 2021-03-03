@@ -52,6 +52,9 @@ public:
    
    //! Close File in
    virtual void CloseFileIn();
+  
+   // ! Global Checks
+   virtual void GlobalChecks();
 
    //! MC container Getter
    TAMCntuEve*  GetNtuMcEve() const { return (TAMCntuEve*)fpNtuMcEve->Object();}
