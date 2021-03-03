@@ -646,13 +646,16 @@ void TAFObaseEventDisplay::UpdateTrackInfo(TEveTrack* ts)
 
          for( Int_t iPoint = 0; iPoint < track->GetMeasPointsN(); ++iPoint ) {
             TAGpoint* point = track->GetMeasPoint(iPoint);
-            cout << Form("%-3s #%2d ", point->GetDevName(), iPoint);
+            cout << Form("%-3s: #%2d ", point->GetDevName(), iPoint);
+            cout << Form("Momentum: (%.2f %.2f %.2f) GeV/c ", point->GetMomentum()[0], point->GetMomentum()[1], point->GetMomentum()[2]);
 
-            for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
+           if (fType != 0) {
+             for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
                Int_t idx = point->GetMcTrackIdx(k);
-              cout << Form("with MC track index: %d ", idx);
-            }
-            cout << endl;
+               cout << Form(" MCtrackIdx: %d ", idx);
+             }
+           }
+           cout << endl;
          }
       }
    }
