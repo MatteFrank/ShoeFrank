@@ -82,15 +82,35 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double 
        // cout<<"NmctracksY::"<<m_columnHit->GetMcTracksN()<<endl;
      }
    }
-     
+  
+  Bool_t common = false;
   for (Int_t j = 0; j < m_columnHit->GetMcTracksN(); ++j) {
       Int_t idr = m_columnHit->GetMcTrackIdx(j);
       for (Int_t k = 0; k < m_rowHit->GetMcTracksN(); ++k) {
          Int_t idc = m_rowHit->GetMcTrackIdx(k);
-         if (idr == idc)
-            AddMcTrackIdx(idr);
+        if (idr == idc) {
+          AddMcTrackIdx(idr);
+          common = true;
+        }
       }
    }
+  
+  // in case mixing two or more different particles in a point
+  if (!common) {
+    map<int, int> mapIdx;
+    for (Int_t j = 0; j < m_columnHit->GetMcTracksN(); ++j) {
+      Int_t idr = m_columnHit->GetMcTrackIdx(j);
+      mapIdx[idr] = 1;
+    }
+    
+    for (Int_t k = 0; k < m_rowHit->GetMcTracksN(); ++k) {
+      Int_t idc = m_rowHit->GetMcTrackIdx(k);
+      mapIdx[idc] = 1;
+    }
+    
+    for (map<int,int>::iterator it=mapIdx.begin(); it!=mapIdx.end(); ++it)
+      AddMcTrackIdx(it->first);
+  }
 }
 
 
