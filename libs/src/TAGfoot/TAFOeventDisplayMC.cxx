@@ -101,7 +101,6 @@ void TAFOeventDisplayMC::SetLocalReco()
    
    fpFootGeo = fReco->GetGeoTrafo();
   
-  printf("\n\n\n\n run number %d\n", fRunNumber);
    gTAGroot->SetRunNumber(fRunNumber);
 }
 
