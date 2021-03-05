@@ -61,7 +61,6 @@ int main (int argc, char *argv[])  {
    Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
    Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
    Bool_t trk = GlobalPar::GetPar()->IsTracking();
-   Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
    Bool_t zmc = GlobalPar::GetPar()->IsTWZmc();
    Bool_t zrec = GlobalPar::GetPar()->IsTWnoPU();
    Bool_t zmatch = GlobalPar::GetPar()->IsTWZmatch();
@@ -75,14 +74,12 @@ int main (int argc, char *argv[])  {
    if (lrc)
       glbRec = new GlobalReco(exp, runNb, in, out, mc);
    else if (mc) {
-      if (!obj)
-         glbRec = new LocalRecoMC(exp, runNb, in, out);
-      else
-         glbRec = new LocalRecoNtuMC(exp, runNb, in, out);
+     glbRec = new LocalRecoNtuMC(exp, runNb, in, out);
+     
       if(zmc)
-         glbRec->EnableZfromMCtrue();
+        glbRec->EnableZfromMCtrue();
       if(zrec && !zmc)
-	 glbRec->EnableZrecWithPUoff();
+        glbRec->EnableZrecWithPUoff();
       if(zmatch)
          glbRec->EnableTWZmatch();
 
