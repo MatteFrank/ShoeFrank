@@ -68,10 +68,6 @@ int main(int argc,char** argv)
     // initialise physics list
     TString physListName("BIC");
 
-    // select the output type (Evento tree or object TAMCevent tree)
-    G4bool flk =  false;;
-    G4bool kEvento;
-
     // Fill only fragmented events
     G4bool frag = false;
    
@@ -115,9 +111,6 @@ int main(int argc,char** argv)
 
         if(strcmp(argv[i],"-r") == 0)
             runMode  = true;
-       
-        if(strcmp(argv[i],"-flk") == 0)
-           flk  = true;
 
         if(strcmp(argv[i],"-out") == 0)
             rootFileName  = argv[++i];
@@ -135,15 +128,12 @@ int main(int argc,char** argv)
             printf("  -seed seedNb: seed number for random initialization  \n");
             printf("  -exp name: [def=""] experiment name for config/geomap extension\n");
             printf("  -run #run [def=-1] run number\n");
-            printf("  -flk save MC data in Fluka structure object\n");
             printf("  -frag save only when ion inelastic process occurs in target\n");
 
             return 1;
         }
     }
-
-    kEvento = flk;
-   
+  
     // Global Par
     GlobalPar::Instance(expName);
     GlobalPar::GetPar()->SetDebugLevels();
@@ -190,11 +180,8 @@ int main(int argc,char** argv)
       eventsNToBeProcessed = theDetector->GetParGeoG()->GetBeamPar().PartNumber;
    
     TCFOrunAction*  run = new TCFOrunAction();
-    run->SetEvento(kEvento);
-   
-    TCFObaseEventAction* event = 0 ;
-    if(kEvento) event = new TCFOeventoAction(run, theDetector);
-    else event  = new TCFOeventAction(run, theDetector);
+  
+    TCFObaseEventAction* event  = new TCFOeventAction(run, theDetector);
     event->SetInelasticOnly(frag);
 
    

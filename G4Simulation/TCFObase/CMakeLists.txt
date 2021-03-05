@@ -20,7 +20,6 @@ set( Qapivi_file
     TCFOgeometryConstructor
     TCFObaseEventAction
     TCFOeventAction
-    TCFOeventoAction
     TCFOrunAction
     TCFOtrackingAction
 )

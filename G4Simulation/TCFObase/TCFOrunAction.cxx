@@ -25,12 +25,10 @@ TString TCFOrunAction::fgRootFileName = "ionCa1000.root";
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 TCFOrunAction::TCFOrunAction()
 : G4UserRunAction(),
-fkEvento(1),
-fpEventoMC(0x0),
-fpEventMC(0x0),
-fpOutFile(0x0),
-fpTree(0x0),
-fEventsNToBeProcessed(-1)
+  fpEventMC(0x0),
+  fpOutFile(0x0),
+  fpTree(0x0),
+  fEventsNToBeProcessed(-1)
 {
     G4cout<<"Construct Run Action"<<G4endl;
 }
@@ -39,7 +37,6 @@ fEventsNToBeProcessed(-1)
 TCFOrunAction::~TCFOrunAction()
 {
    G4cout<<"Distructor of my class run Action "<<G4endl;
-   if(fpEventoMC) delete fpEventoMC;
    if(fpEventMC)  delete fpEventMC;
 }
 
@@ -93,15 +90,9 @@ void TCFOrunAction::SetContainers()
    const Char_t* name = gTAGroot->CurrentCampaignName();
   
    fpTree = new TTree("EventTree", "FOOT");
-   if(fkEvento) {
-       fpEventoMC = new Evento();
-       fpEventoMC->SetBranches(fpTree);
-       GlobalPar::GetPar()->DisableRootObject();
-   } else {
-       fpEventMC = new TAMCevent();
-       fpEventMC->SetBranches(fpTree);
-       GlobalPar::GetPar()->EnableRootObject();
-   }
+   fpEventMC = new TAMCevent();
+   fpEventMC->SetBranches(fpTree);
+   GlobalPar::GetPar()->EnableRootObject();
   
    TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
    info.SetCampaignName(name);
@@ -113,7 +104,6 @@ void TCFOrunAction::SetContainers()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCFOrunAction::ClearContainers()
 {
-   if(fpEventoMC) fpEventoMC->Clean();
    if(fpEventMC)  fpEventMC->Clean();
 }
 
