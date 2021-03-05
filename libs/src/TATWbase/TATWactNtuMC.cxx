@@ -186,7 +186,7 @@ bool TATWactNtuMC::Action() {
     for (int i=0; i < fEventStruct->SCNn; i++) { 
     
        Int_t layer = fEventStruct->SCNiview[i];    // layers 0 (y-bars) and 1 (x-bars)
-       Int_t barId   = fEventStruct->SCNibar[i];
+       Int_t barId   = fEventStruct->SCNibar[i];   //barId = 0-19 consistent with TATWdetector.geo
        Int_t trackId = fEventStruct->SCNid[i] - 1;
        Float_t x0    = fEventStruct->SCNxin[i];
        Float_t y0    = fEventStruct->SCNyin[i];

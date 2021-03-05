@@ -50,7 +50,9 @@ public:
    //! Set TW Point
    virtual TATWpoint* SetTWPoint(TATWntuPoint* ntuPoint, int layer, TATWntuHit* hit1, TATWntuHit* hit2, TVector3 pos);
    // check if hits matched in the same TW point have same Z
-   virtual Bool_t IsPointsWithMatchedZ(TATWntuHit* hit1, TATWntuHit* hitmin);
+   virtual Bool_t IsPointWithMatchedZ(TATWntuHit* hit1, TATWntuHit* hitmin);
+   // IsMultHit return true if a MC track has hit multiple bars in the same layer (multi-Hit)
+   virtual Bool_t IsMultHit(TATWntuHit* hit);
 
    //! Create histo
    void            CreateHistogram();
@@ -78,11 +80,12 @@ private:
    vector<TH1F*>   fpHisElossMean;
    vector<TH1F*>   fpHisTofMean;
 
-   map<Int_t,TATWntuHit*> mapHitX;
-   map<Int_t,TATWntuHit*> mapHitY;
-   map<Int_t,TATWntuHit*> mapMoreHits;
-   map<Int_t,TATWntuHit*> mapLessHits;
+   map<Int_t,TATWntuHit*> fmapHitX;
+   map<Int_t,TATWntuHit*> fmapHitY;
+   map<Int_t,TATWntuHit*> fmapMoreHits;
+   map<Int_t,TATWntuHit*> fmapLessHits;
 
+   map<int,vector<int>> fmapMultHit;
 
    ClassDef(TATWactNtuPoint,0)
 };

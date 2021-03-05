@@ -40,6 +40,8 @@ private:
     TArrayI  m_McTrackId;              // Id of the track created in the simulation
     Double_t m_ChargeA;
     Double_t m_ChargeB;
+    Double_t m_AmplitudeA;
+    Double_t m_AmplitudeB;
     Double_t m_TimeA;
     Double_t m_TimeB;
     Double_t m_TimeA_oth;
@@ -52,11 +54,11 @@ public:
   TATWntuHit(const TATWntuHit& aHit);
   TATWntuHit ( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTimeOth,
 		  	   Double_t pos,Double_t chargeCOM,Double_t ChargeA,
-	       Double_t ChargeB,Double_t TimeA,Double_t TimeB, Double_t TimeAOth,Double_t TimeBOth);
+	       Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeAOth,Double_t TimeBOth);
   ~TATWntuHit() {};
    void   Clear(Option_t* option = "C");
-   bool IsColumn() { return ( m_layer == 0 ? true : false ); };
-   bool IsRow()    { return ( m_layer == 1 ? true : false ); };
+  bool IsColumn() { return ( m_layer == (Int_t)LayerY ? true : false ); };
+  bool IsRow()    { return ( m_layer == (Int_t)LayerX ? true : false ); };
    
    //    All the Get methods
    Int_t     GetBar()                  const   { return m_bar;               }
@@ -70,6 +72,8 @@ public:
    Double_t  GetCOM()                  const   { return m_chargeCOM;         }
    Double_t  GetChargeChA()            const   { return m_ChargeA;           }
    Double_t  GetChargeChB()            const   { return m_ChargeB;           }
+   Double_t  GetAmplitudeChA()         const   { return m_AmplitudeA;        }
+   Double_t  GetAmplitudeChB()         const   { return m_AmplitudeB;        }
    Double_t  GetChargeTimeA()          const   { return m_TimeA;             }
    Double_t  GetChargeTimeB()          const   { return m_TimeB;             }
    Bool_t    IsValid()                 const   { return m_IsValid;           }
@@ -92,6 +96,8 @@ public:
    void      SetCOM(Double_t c)                 { m_chargeCOM = c;           }
    void      SetChargeChA(Double_t chg)         { m_ChargeA = chg;           }
    void      SetChargeChB(Double_t chg)         { m_ChargeB = chg;           }
+   void      SetAmplitudeChA(Double_t amp)      { m_AmplitudeA = amp;        }
+   void      SetAmplitudeChB(Double_t amp)      { m_AmplitudeB = amp;        }
    void      SetChargeTimeA(Double_t t)         { m_TimeA   = t;             }
    void      SetChargeTimeB(Double_t t)         { m_TimeB   = t;             }
    void      SetValid(Bool_t t)                 { m_IsValid   = t;           }
@@ -117,7 +123,7 @@ public:
 
    TATWntuHit*       NewHit( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
 		  	   	   	   	      Double_t pos,Double_t chargeCOM,Double_t ChargeA,
-			     Double_t ChargeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth);
+			     Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth);
   
     int               GetHitN(int layer); 
     int 			  GetHitN();

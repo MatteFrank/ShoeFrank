@@ -216,16 +216,18 @@ Bool_t TATWactNtuRaw::Action() {
 	if (hita!=nullptr && hitb!=nullptr )
 	  {
 
-	    // this to be consistent with the the bar id of TATWdetector.map
+	    // this to be consistent with the the bar id of TATWdetector.geo [barId=0-19]
 	    Int_t ShoeBarId = (BarId)%nSlatsPerLayer;
 
-	    // get Charge and time on side a of the bar
+	    // get Charge, Amplitude (pedesta subtracted) and time on side a of the bar
 	    Double_t ChargeA  = hita->GetCharge();
+	    Double_t AmplitudeA  = hita->GetAmplitude();
 	    Double_t TimeA    = hita->GetTime();
 	    Double_t TimeAOth = hita->GetTimeOth();
 
-	    // get Charge and time on side b of the bar
+	    // get Charge, Amplitude (pedesta subtracted) and time on side b of the bar
 	    Double_t ChargeB  = hitb->GetCharge();
+	    Double_t AmplitudeB  = hitb->GetAmplitude();
 	    Double_t TimeB    = hitb->GetTime();
 	    Double_t TimeBOth = hitb->GetTimeOth();
 
@@ -268,7 +270,7 @@ Bool_t TATWactNtuRaw::Action() {
 	    }
 
 
-	    fCurrentHit = (TATWntuHit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,TimeOth,posAlongBar,chargeCOM,ChargeA,ChargeB,TimeA,TimeB,TimeAOth,TimeBOth);
+	    fCurrentHit = (TATWntuHit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,TimeOth,posAlongBar,chargeCOM,ChargeA,ChargeB,AmplitudeA, AmplitudeB,TimeA,TimeB,TimeAOth,TimeBOth);
 
 	    Int_t Zrec = f_parcal->GetChargeZ(Energy,Time,Layer);
 	    fCurrentHit->SetChargeZ(Zrec);

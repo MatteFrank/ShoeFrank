@@ -433,7 +433,10 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    chargeB += gRandom->Gaus(0, resChargeB);
 
    */
-
+   // fake amplitude A and B--> assign edep
+   Double_t amplitudeA = edep;
+   Double_t amplitudeB = edep;
+   
    // charge supposing chargeA = chargeB 
    Float_t chargeA = edep;
    Float_t chargeB = edep;
@@ -509,7 +512,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 
      if(roughDig) {
 
-       fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(layer, barid, energy, tof_sum, tof_sum, pos_diff, chargeCOM, chargeA ,chargeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !     
+       fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(layer, barid, energy, tof_sum, tof_sum, pos_diff, chargeCOM, chargeA ,chargeB, amplitudeA ,amplitudeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !     
        
        fCurrentHit->SetToF(tof_sum);     
        
@@ -518,7 +521,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
        
      } else {
        
-       fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(layer, barid, Eloss, tof, tof, pos_rec, chargeCOM, chargeA ,chargeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !
+       fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(layer, barid, Eloss, tof, tof, pos_rec, chargeCOM, chargeA ,chargeB, amplitudeA ,amplitudeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !
 
        fCurrentHit->SetToF(tof);     
 
@@ -537,7 +540,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
        
        if(roughDig) {
 	 
-	 fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(layer, barid, energy, tof_sum, tof_sum, pos_diff, chargeCOM, chargeA ,chargeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !     
+	 fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(layer, barid, energy, tof_sum, tof_sum, pos_diff, chargeCOM, chargeA ,chargeB, amplitudeA ,amplitudeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !     
 	 
 	 fCurrentHit->SetToF(tof_sum);     
 	 
@@ -546,7 +549,7 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 	 
        } else {
        
-	 fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(layer, barid, Eloss, tof, tof, pos_rec, chargeCOM, chargeA ,chargeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !
+	 fCurrentHit = (TATWntuHit*)fpNtuRaw->NewHit(layer, barid, Eloss, tof, tof, pos_rec, chargeCOM, chargeA ,chargeB, amplitudeA ,amplitudeB, timeA, timeB, timeA, timeB); // timeA/B is ps, and tof in ns !
 	 
 	 fCurrentHit->SetToF(tof);     
 	 
