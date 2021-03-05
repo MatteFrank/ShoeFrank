@@ -33,11 +33,13 @@ class TCFOrunAction : public G4UserRunAction
   
     public:
     static void SetRootFileName(const char* name) { fgRootFileName = name; }
-    static const char* GetRootFileName() { return fgRootFileName; }
+    static const char* GetRootFileName()          { return fgRootFileName; }
+
+    private:
+    static TString fgRootFileName;
 
     private:
     TAMCevent*     fpEventMC;  // For data form Simulation
-    static TString fgRootFileName;
     TFile*         fpOutFile;
     TTree*         fpTree;
     Int_t          fEventsNToBeProcessed;
