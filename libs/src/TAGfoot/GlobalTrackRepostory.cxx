@@ -2,6 +2,102 @@
 #include "GlobalTrackRepostory.hxx"
 
 
+ClassImp(GlobalTrackRepostory);
+
+TString GlobalTrackRepostory::fgkBranchName = "glbtrackGF.";
+
+//Default constructor
+GlobalTrackRepostory::GlobalTrackRepostory() : TAGdata(), fListOfTracks(new TClonesArray("GlobalTrackKalman"))
+{
+    m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman";
+    // m_debug = GlobalPar::GetPar()->Debug();
+    m_debug = 0;
+    m_resoP_step = 0.2;
+}
+
+//Default destructor
+GlobalTrackRepostory::~GlobalTrackRepostory()
+{
+	delete fListOfTracks;
+}
+
+
+/*Get number of tracks in the repo
+*
+*/
+Int_t GlobalTrackRepostory::GetTracksN()
+{
+	return fListOfTracks->GetEntries();
+}
+
+
+/*Get track by index
+*
+*/
+GlobalTrackKalman* GlobalTrackRepostory::GetTrack(Int_t trId)
+{
+	if(trId >=0 && trId < GetTracksN())
+		return (GlobalTrackKalman*) fListOfTracks->At(trId);
+	else
+		return 0x0;
+}
+
+/* Setup clones
+*
+*/
+void GlobalTrackRepostory::SetupClones()
+{
+   if (!fListOfTracks) {
+      fListOfTracks = new TClonesArray("GlobalTrackKalman");
+      fListOfTracks->SetOwner(true);
+   }
+}
+
+
+/* Add a new track to the repo
+*
+*/
+GlobalTrackKalman* GlobalTrackRepostory::NewTrack(string name, Track* trk, long evNum, int stateID, TVector3* mom,TVector3* pos,TVector3* mom_MC, TVector3* pos_MC, TMatrixD* mom_cov)
+{
+	TClonesArray &trackArray = *fListOfTracks;
+	GlobalTrackKalman* track = new (trackArray[trackArray.GetEntriesFast()]) GlobalTrackKalman(name, trk, evNum, stateID,mom, pos, mom_MC, pos_MC, mom_cov);
+	return track;
+}
+
+
+/* Add a new track to the repo
+*
+*/
+GlobalTrackKalman* GlobalTrackRepostory::NewTrack(Track* trk)
+{
+	TClonesArray &trackArray = *fListOfTracks;
+	GlobalTrackKalman* track = new (trackArray[trackArray.GetEntriesFast()]) GlobalTrackKalman(trk);
+	return track;
+}
+
+
+
+/* Add a new track to the repo
+*
+*/
+GlobalTrackKalman* GlobalTrackRepostory::NewTrack()
+{
+	TClonesArray &trackArray = *fListOfTracks;
+	GlobalTrackKalman* track = new (trackArray[trackArray.GetEntriesFast()]) GlobalTrackKalman();
+	return track;
+}
+
+
+/* Add a new track to the repo
+* @param -> Kalman Track
+*/
+GlobalTrackKalman* GlobalTrackRepostory::NewTrack(GlobalTrackKalman& trk)
+{
+	TClonesArray &trackArray = *fListOfTracks;
+	GlobalTrackKalman* track = new (trackArray[trackArray.GetEntriesFast()]) GlobalTrackKalman(trk);
+	return track;
+}
+
 void GlobalTrackRepostory::AddTrack( string name, Track* track, long evNum, int stateID,
 	TVector3* mom, TVector3* pos,
 	TVector3* mom_MC, TVector3* pos_MC,
@@ -458,4 +554,21 @@ void GlobalTrackRepostory::Save( ) {
 		mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialResoBias" + ".root").c_str() );
   }
 
+}
+
+
+//! ostream insertion.
+void GlobalTrackRepostory::ToStream(ostream& os, Option_t* option) const
+{
+   //TODO properly
+   os << "globTrackRepo " << endl; //GetName()
+//    << Form("  nPixels=%3d", GetTracksN())
+//    << endl;
+   
+//    for (Int_t j = 0; j < GetTracksN(); j++) {
+//       const GlobalTrack*  track = GetTrack(j);
+//       if (track)
+//          os << Form("%4d", track->GetTrackId());
+//       os << endl;
+//    }
 }

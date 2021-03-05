@@ -5,7 +5,7 @@
 #pragma link off all functions;
 
 
-#pragma link C++ class KFitter;
+#pragma link C++ class TAGactKFitter;
 #pragma link C++ class GlobalTrackRepostory;
 #pragma link C++ class GlobalTrackKalman;
 

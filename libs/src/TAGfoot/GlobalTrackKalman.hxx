@@ -16,6 +16,7 @@
 #include "TVector3.h"
 
 #include <Track.h>
+#include "TAGobject.hxx"
 
 
 #define build_string(expr)						\
@@ -25,17 +26,19 @@
 using namespace std;
 using namespace genfit;
 
-class GlobalTrackKalman {
+class GlobalTrackKalman : public TAGobject {
   
 public:
   
+  GlobalTrackKalman();
   GlobalTrackKalman( string name, Track* track, long evNum, int stateID, 
 		     TVector3* mom, TVector3* pos,
 		     TVector3* mom_MC, TVector3* pos_MC, 
 		     TMatrixD* mom_cov 
 		     );
+  GlobalTrackKalman(Track* track);
   
-  ~GlobalTrackKalman() {};
+  virtual ~GlobalTrackKalman() {delete m_track;}
   
   
   /***	variables	***/
@@ -51,13 +54,16 @@ public:
   int m_pdgID;
   double m_chi2;
   double m_pVal;
+  Track* m_track;
   
   TVector3 m_sigmaMom;
   TVector3 m_sigmaPos;
   
+  // virtual void SetupClones();
+  
 private:
-  
-  
+
+  ClassDef(GlobalTrackKalman, 2)
 };
 
 #endif

@@ -35,7 +35,7 @@ TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
     
     
    TString fullFileName = fpDiGeoMap->GetMapName();
-   FromFile(fullFileName);
+//    FromFile(fullFileName);
        
 //       std::cout << "size->(x,y,z): (" << properties_mc.x.size << ", " << properties_mc.y.size << ", " << properties_mc.z.size << "\n";
 //       std::cout << "product v.s. vector size: " << properties_mc.x.size * properties_mc.y.size * properties_mc.z.size << "  " << field_mc.size() << "\n";

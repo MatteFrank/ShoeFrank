@@ -24,6 +24,7 @@
 
 // #include <Track.h>
 #include <GlobalTrackKalman.hxx>
+#include "TAGdata.hxx"
 
 
 #define build_string(expr) \
@@ -33,17 +34,38 @@
 using namespace std;
 using namespace genfit;
 
-class GlobalTrackRepostory {
+class GlobalTrackRepostory : public TAGdata {
+
+private:
+  TClonesArray*     fListOfTracks;
+
+  static TString fgkBranchName;
 
 public:
 
-  GlobalTrackRepostory() {
-    m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman";
-    m_debug = GlobalPar::GetPar()->Debug();
-    m_resoP_step = 0.2;
-  };
+  GlobalTrackRepostory();
 
-  ~GlobalTrackRepostory() {};
+  virtual ~GlobalTrackRepostory();
+
+  GlobalTrackKalman* GetTrack(Int_t trId);
+  Int_t              GetTracksN();
+
+  TClonesArray*      GetListOfTracks() {return fListOfTracks;}
+
+  GlobalTrackKalman* NewTrack();
+  GlobalTrackKalman* NewTrack(string name, Track* track, long evNum, int stateID, 
+		     TVector3* mom, TVector3* pos,
+		     TVector3* mom_MC, TVector3* pos_MC, 
+		     TMatrixD* mom_cov);
+  GlobalTrackKalman* NewTrack(GlobalTrackKalman& track);
+  GlobalTrackKalman* NewTrack(Track* track);
+
+  virtual void      SetupClones();
+  virtual void      Clear(Option_t* opt="") { fListOfTracks->Delete(); }
+
+  virtual void    ToStream(ostream& os, Option_t* option) const;
+
+  static const      Char_t* GetBranchName() { return fgkBranchName.Data(); }
 
   void AddTrack( string name, Track* track, long evNum, int stateID,
     TVector3* mom, TVector3* pos,
@@ -90,7 +112,7 @@ public:
 
 private:
 
-
+  ClassDef(GlobalTrackRepostory,2)
 };
 
 #endif

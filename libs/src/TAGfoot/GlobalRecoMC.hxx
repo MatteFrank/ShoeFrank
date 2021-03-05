@@ -7,7 +7,7 @@
 
 #include "LocalRecoMC.hxx"
 
-#include "KFitter.hxx"
+#include "TAGactKFitter.hxx"
 #include "UpdatePDG.hxx"
 
 #include "GlobalTrackingStudies.hxx"
@@ -23,15 +23,14 @@ public:
   
   void BeforeEventLoop();
 
-  void LoopEvent(Int_t nEvents);
+  void LoopEvent(Int_t nEvents, Int_t skipEvent);
 
   void AfterEventLoop();
 
   ClassDef(GlobalRecoMC, 0);
 
 private:
-  KFitter* m_kFitter;
-  GlobalTrackingStudies* m_globalTrackingStudies;
+
 };
 
 

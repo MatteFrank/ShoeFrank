@@ -13,6 +13,7 @@ int main (int argc, char *argv[])  {
 
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
+   Int_t skipEv = 0;
    
    for (int i = 0; i < argc; i++){
       if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);  }   // Raw file name for output
@@ -20,6 +21,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
+      if(strcmp(argv[i],"-skipEv") == 0)   { skipEv = atoi(argv[++i]); }   // Number of events to be skipped
       
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
@@ -80,7 +82,7 @@ int main (int argc, char *argv[])  {
    watch.Start();
    
    glbRec->BeforeEventLoop();
-   glbRec->LoopEvent(nTotEv);
+   glbRec->LoopEvent(nTotEv, skipEv);
    glbRec->AfterEventLoop();
    
    watch.Print();

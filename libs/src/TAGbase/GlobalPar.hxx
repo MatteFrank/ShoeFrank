@@ -26,7 +26,7 @@ using namespace std;
 class GlobalPar {
 
 public:
-	static GlobalPar* Instance( const TString expName = "" );
+	static GlobalPar* Instance( const TString expName = "FootGlobal.par" );
 	static GlobalPar* GetPar();
    
 public:
@@ -38,9 +38,11 @@ public:
 
 	int  Debug()                const { return m_debug;               }
 
-	int  KalMode()              const { return m_kalmanMode;          }
+	string  KalMode()           const { return m_kalmanMode;          }
+   string PreselectStrategy()  const { return m_kPreselectStrategy;  }
 	bool IsKalReverse()         const { return m_kalReverse;          }
 	bool verFLUKA()             const { return m_verFLUKA;            }
+	bool EnableEventDisplay()   const { return m_enableEventDisplay;  }
    
 	vector<string> KalSystems()       { return m_trackingSystems;     }
 	vector<string> KalParticles()     { return m_kalParticles;        }
@@ -102,6 +104,8 @@ public:
     void IncludeVT(bool t)           {  m_includeVT = t;             }
     void IncludeIT(bool t)           {  m_includeIT = t;             }
 
+    bool IncludeEvent()        const { return m_includeEvent;        }
+
     void CalibTW(bool t)             {  m_doCalibTW = t;             }
   
     void SetDebugLevels();
@@ -127,9 +131,11 @@ private:
 
 	vector<string> m_mcParticles;
 	
-	int m_kalmanMode;
+	string m_kalmanMode;
+   string m_kPreselectStrategy;
 	bool m_kalReverse;
 	bool m_verFLUKA;
+   bool m_enableEventDisplay;
 	vector<string> m_trackingSystems;
    vector<string> m_kalParticles;
    vector<TString> m_dectInclude;
@@ -166,6 +172,7 @@ private:
    bool m_includeCA;
    bool m_includeIT;
    bool m_includeVT;
+   bool m_includeEvent;
     
    bool m_includeKalman;
    bool m_includeTOE;
