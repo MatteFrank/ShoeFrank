@@ -26,7 +26,7 @@
 #include "TAITntuCluster.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuTrack.hxx"
 
 #include "TAGcampaignManager.hxx"
 #include "TAGactTreeReader.hxx"
@@ -63,7 +63,7 @@ void FillInnerTracker(Int_t runNumber)
    parconf->FromFile(parFileName.Data());
 
    TAITparConf::SetHistoMap();
-   TAGdataDsc* itEve  = new TAGdataDsc("itEve", new TAMCntuEve());
+   TAGdataDsc* itEve  = new TAGdataDsc("itEve", new TAMCntuTrack());
    TAGdataDsc* itMc   = new TAGdataDsc("itMc", new TAMCntuHit());
    TAGdataDsc* itNtu  = new TAGdataDsc("itNtu", new TAITntuRaw());
    TAGdataDsc* itClus = new TAGdataDsc("itClus", new TAITntuCluster());
@@ -71,7 +71,7 @@ void FillInnerTracker(Int_t runNumber)
 
    itActReader  = new TAGactTreeReader("itActEvtReader");
    itActReader->SetupBranch(itMc, TAMCntuHit::GetItrBranchName());
-   itActReader->SetupBranch(itEve,TAMCntuEve::GetBranchName());
+   itActReader->SetupBranch(itEve,TAMCntuTrack::GetBranchName());
 
    itActRaw= new TAITactNtuHitMC("itActNtu", itMc, itEve, itNtu, itGeo);
    itActRaw->CreateHistogram();

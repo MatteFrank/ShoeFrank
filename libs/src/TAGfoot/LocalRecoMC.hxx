@@ -17,8 +17,8 @@
 #include "TACAactNtuHitMC.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
-#include "TAMCactNtuEve.hxx"
+#include "TAMCntuTrack.hxx"
+#include "TAMCactNtuTrack.hxx"
 
 #include "TATWntuRaw.hxx"
 #include "TATWntuPoint.hxx"
@@ -57,7 +57,7 @@ public:
    virtual void GlobalChecks();
 
    //! MC container Getter
-   TAMCntuEve*  GetNtuMcEve() const { return (TAMCntuEve*)fpNtuMcEve->Object();}
+   TAMCntuTrack*  GetNtuMcEve() const { return (TAMCntuTrack*)fpNtuMcEve->Object();}
    TAMCntuHit*  GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object(); }
    TAMCntuHit*  GetNtuMcBm()  const { return (TAMCntuHit*)fpNtuMcBm->Object(); }
    TAMCntuHit*  GetNtuMcVtx() const { return (TAMCntuHit*)fpNtuMcVt->Object(); }
@@ -69,7 +69,7 @@ public:
 protected:
    EVENT_STRUCT*         fEvtStruct;
   
-   TAMCactNtuEve*        fActNtuMcEve;
+   TAMCactNtuTrack*        fActNtuMcEve;
    TASTactNtuHitMC*      fActNtuRawSt;  // action for ntu data
    TABMactNtuHitMC*      fActNtuRawBm;  // action for ntu data
    TAVTactNtuHitMC*      fActNtuRawVtx;  // action for ntu data

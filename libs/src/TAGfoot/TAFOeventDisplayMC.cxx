@@ -279,8 +279,8 @@ void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
       cout << Form("eLoss: %.3g MeV time: %.3g ns\n", point->GetDeltaE()*TAGgeoTrafo::GevToMev(), point->GetTof()*TAGgeoTrafo::SecToNs());
    }
    
-   TAMCntuEve* pNtuHit = fReco->GetNtuMcEve();
-   TAMCeveTrack* track = pNtuHit->GetTrack(trackIdx);
+   TAMCntuTrack* pNtuHit = fReco->GetNtuMcEve();
+   TAMCtrack* track = pNtuHit->GetTrack(trackIdx);
    
    fInfoView->AddLine( Form("Generated from track with index: %d\n", trackIdx) );
    fInfoView->AddLine( Form("Charge: %d Mass: %d\n", track->GetCharge(),  TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor())) );

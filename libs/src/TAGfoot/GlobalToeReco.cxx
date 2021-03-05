@@ -51,8 +51,8 @@ void GlobalToeReco::SetL0TreeBranches()
   
   if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) {
     if (fFlagMC) {
-      fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
-      fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
+      fpNtuMcEve = new TAGdataDsc(TAMCntuTrack::GetDefDataName(), new TAMCntuTrack());
+      fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuTrack::GetBranchName());
     }
   }
 }

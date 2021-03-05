@@ -1,9 +1,9 @@
-#ifndef _TAMCntuEve_HXX
-#define _TAMCntuEve_HXX
+#ifndef _TAMCntuTrack_HXX
+#define _TAMCntuTrack_HXX
 /*!
   \file
-  \version $Id: TAMCntuEve.hxx,v 1.7 2003/06/22 11:48:38 mueller Exp $
-  \brief   Declaration of TAMCntuEve.
+  \version $Id: TAMCntuTrack.hxx,v 1.7 2003/06/22 11:48:38 mueller Exp $
+  \brief   Declaration of TAMCntuTrack.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -14,12 +14,12 @@
 #include "TAGdata.hxx"
 
 
-class TAMCeveTrack : public TAGobject
+class TAMCtrack : public TAGobject
 {
 public:
-   TAMCeveTrack();
+   TAMCtrack();
 
-   TAMCeveTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
+   TAMCtrack(Int_t i_id, Int_t i_chg, Int_t i_type,
                Int_t i_reg, Int_t i_bar, Int_t i_dead,
                Double_t i_mass, Int_t i_moth,
                Double_t i_time,
@@ -27,7 +27,7 @@ public:
                TVector3 i_ipos, TVector3 i_fpos,
                TVector3 i_ip,TVector3 i_fp);
 
-	virtual         ~TAMCeveTrack();
+	virtual         ~TAMCtrack();
 
    TVector3         GetInitPos()      const { return fInitPos;        }
    TVector3         GetInitP()        const { return fInitMom;        }
@@ -78,22 +78,22 @@ public:
 	TVector3      fInitMom;	          	    // initial momentum
 	TVector3      fFinalMom;	          	 // final momentum
 
-	ClassDef(TAMCeveTrack,3)
+	ClassDef(TAMCtrack,3)
 };
 
 //##############################################################################
 
-class TAMCntuEve : public TAGdata {
+class TAMCntuTrack : public TAGdata {
   public:
-                       TAMCntuEve();
-	virtual           ~TAMCntuEve();
+                    TAMCntuTrack();
+	virtual         ~TAMCntuTrack();
 
-	TAMCeveTrack*       GetTrack(Int_t i);
-	const TAMCeveTrack* GetTrack(Int_t i) const;
+	TAMCtrack*       GetTrack(Int_t i);
+	const TAMCtrack* GetTrack(Int_t i) const;
    
-   Int_t               GetTracksN() const;
+   Int_t            GetTracksN() const;
    
-   TAMCeveTrack*       NewTrack(Int_t i_id, Int_t i_fCharge, Int_t i_type,
+   TAMCtrack*       NewTrack(Int_t i_id, Int_t i_fCharge, Int_t i_type,
                                 Int_t i_reg, Int_t i_bar, Int_t i_dead,
                                 Double_t i_mass, Int_t i_moth,
                                 Double_t i_time,
@@ -116,7 +116,7 @@ private:
    static TString fgkBranchName;    // Branch name in TTree
    static const TString fgkDefDataName;
 
-   ClassDef(TAMCntuEve,2)
+   ClassDef(TAMCntuTrack,2)
 };
 
 

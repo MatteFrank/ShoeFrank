@@ -32,7 +32,7 @@
 #include "TCCAgeometryConstructor.hxx"
 
 #include "TCGmcHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuTrack.hxx"
 
 #include "TCFOrunAction.hxx"
 #include "TAGroot.hxx"
@@ -80,7 +80,7 @@ TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeomet
     fEventInterruptHandler = new TAGeventInterruptHandler();
     fEventInterruptHandler->Add();
 
-    fMcTrack = new TAMCntuEve();
+    fMcTrack = new TAMCntuTrack();
 
    if (FootMcDebugLevel(1))
       G4cout<<"Construct event action "<<G4endl;

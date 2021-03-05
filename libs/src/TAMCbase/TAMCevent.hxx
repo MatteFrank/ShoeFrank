@@ -8,7 +8,7 @@
 #include "TVector3.h"
 
 class TAMCntuHit ;
-class TAMCntuEve ;
+class TAMCntuTrack ;
 class TAMCntuRegion;
 using namespace std;
 
@@ -67,7 +67,7 @@ class TAMCevent : public TObject {
 
 public:
    // Getters
-   TAMCntuEve*    GetNtuEve() const { return fTrack;  }
+   TAMCntuTrack*    GetNtuEve() const { return fTrack;  }
    TAMCntuRegion* GetNtuReg() const { return fRegion; }
    TAMCntuHit*    GetHitSTC() const { return fHitSTC; }
    TAMCntuHit*    GetHitBMN() const { return fHitBMN; }
@@ -80,7 +80,7 @@ public:
  private:
    Bool_t         fRegionFlag;
    Int_t          fEventNumber;
-   TAMCntuEve*    fTrack;
+   TAMCntuTrack*    fTrack;
    TAMCntuRegion* fRegion;
    TAMCntuHit*    fHitSTC;
    TAMCntuHit*    fHitBMN;

@@ -11,7 +11,7 @@
 #include "TAMCflukaParser.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuTrack.hxx"
 
 #include "TATWdigitizer.hxx"
 
@@ -51,7 +51,7 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    if (fEventStruct == 0x0) {
      AddDataIn(p_ntuMC, "TAMCntuHit");
      AddDataIn(p_ntuStMC, "TAMCntuHit");
-     AddDataIn(p_ntuEve, "TAMCntuEve");
+     AddDataIn(p_ntuEve, "TAMCntuTrack");
    } 
    AddDataOut(p_hitraw, "TATWntuRaw");
    AddPara(p_parcal,"TATWparCal");
@@ -185,12 +185,12 @@ bool TATWactNtuHitMC::Action() {
   
    TAMCntuHit* pNtuMC   = 0x0;
    TAMCntuHit* pNtuStMC = 0x0;
-   TAMCntuEve* pNtuEve  = 0x0;
+   TAMCntuTrack* pNtuEve  = 0x0;
   
   if (fEventStruct == 0x0) {
     pNtuMC   = (TAMCntuHit*) fpNtuMC->Object();
     pNtuStMC = (TAMCntuHit*) fpNtuStMC->Object();
-    pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
+    pNtuEve  = (TAMCntuTrack*) fpNtuEve->Object();
   } else {
     pNtuMC   = TAMCflukaParser::GetTofHits(fEventStruct, fpNtuMC);
     pNtuStMC = TAMCflukaParser::GetStcHits(fEventStruct, fpNtuStMC);
@@ -228,7 +228,7 @@ bool TATWactNtuHitMC::Action() {
      Float_t edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();
      Float_t time  = hitMC->GetTof()*TAGgeoTrafo::SecToPs();
      // get true charge
-     TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
+     TAMCtrack*  track = pNtuEve->GetTrack(trackId);
      Int_t  Z = track->GetCharge();
      
       if(FootDebugLevel(4))

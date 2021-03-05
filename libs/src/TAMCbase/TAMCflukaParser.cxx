@@ -211,9 +211,9 @@ TAMCntuHit* TAMCflukaParser::GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhi
 
 //------------------------------------------+-----------------------------------
 //! CAL hits
-TAMCntuEve* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrack)
+TAMCntuTrack* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrack)
 {
-  TAMCntuEve* p_nturaw = (TAMCntuEve*) p_ntutrack->Object();
+  TAMCntuTrack* p_nturaw = (TAMCntuTrack*) p_ntutrack->Object();
   
   p_nturaw->Clear();
   

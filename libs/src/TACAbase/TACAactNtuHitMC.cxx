@@ -11,7 +11,7 @@
 
 #include "TAMCparTools.hxx"
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuTrack.hxx"
 
 #include "TACAparGeo.hxx"
 #include "TACAparCal.hxx"
@@ -44,7 +44,7 @@ TACAactNtuHitMC::TACAactNtuHitMC(const char* name,  TAGdataDsc* p_ntuMC, TAGdata
 {
    if (fEventStruct == 0x0) {
      AddDataIn(p_ntuMC, "TAMCntuHit");
-     AddDataIn(p_ntuEve, "TAMCntuEve");
+     AddDataIn(p_ntuEve, "TAMCntuTrack");
    } 
    AddDataOut(p_nturaw, "TACAntuRaw");
    AddPara(p_geomap,"TACAparGeo");
@@ -231,11 +231,11 @@ TACAactNtuHitMC::~TACAactNtuHitMC()
 Bool_t TACAactNtuHitMC::Action()
 {  
    TAMCntuHit* pNtuMC   = 0x0;
-   TAMCntuEve* pNtuEve  = 0x0;
+   TAMCntuTrack* pNtuEve  = 0x0;
   
    if (fEventStruct == 0x0) {
      pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
-     pNtuEve = (TAMCntuEve*) fpNtuEve->Object();
+     pNtuEve = (TAMCntuTrack*) fpNtuEve->Object();
    } else {
      pNtuMC  = TAMCflukaParser::GetCalHits(fEventStruct, fpNtuMC);
      pNtuEve = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
@@ -271,7 +271,7 @@ Bool_t TACAactNtuHitMC::Action()
       TVector3 posOutV(x0_f, y0_f, z0_f);
       TVector3 posOutLoc = fpGeoTrafo->FromGlobalToCALocal(posOutV);
 
-      TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
+      TAMCtrack*  track = pNtuEve->GetTrack(trackId);
       int fluID   = track->GetFlukaID();
       Int_t reg   = track->GetRegion();
       int z       = track->GetCharge();

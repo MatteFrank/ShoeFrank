@@ -8,7 +8,7 @@
 #include <TString.h>
 #include <TVector3.h>
 
-#include "TAMCntuEve.hxx"
+#include "TAMCntuTrack.hxx"
 #include "TAMCntuHit.hxx"
 
 
@@ -132,8 +132,8 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
   TAGdataDsc* track = new TAGdataDsc("vttrack", vttrack);
   
   
-  TAMCntuEve *eve = new TAMCntuEve();
-  tree->SetBranchAddress(TAMCntuEve::GetBranchName(), &eve);
+  TAMCntuTrack *eve = new TAMCntuTrack();
+  tree->SetBranchAddress(TAMCntuTrack::GetBranchName(), &eve);
   
   
   TAMCntuHit *vtMc = new TAMCntuHit();
@@ -430,7 +430,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
     mctrack = Nmctrack;
     // cout << " Nmctrack   " << Nmctrack  << endl;
     for( Int_t iTrack = 0; iTrack < eve->GetTracksN(); ++iTrack ) {
-      TAMCeveTrack* track = eve->GetTrack(iTrack);
+      TAMCtrack* track = eve->GetTrack(iTrack);
       //     printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
       Double_t Charge = track->GetCharge();
       Double_t Mass = track->GetMass();
@@ -506,7 +506,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
           //     cout << "  McIndex   " <<   idx    <<endl;
           //     // printf("TrackMcId %d ", id);
           //     // printf("McIndex   %d ", idx);
-          //     TAMCeveTrack* track = eve->GetTrack(id);
+          //     TAMCtrack* track = eve->GetTrack(id);
           //     printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
           //     // TAMChit* mcHit = vtMc->GetHit(idx);
           //     // TVector3 pos = mcHit->GetPosition();

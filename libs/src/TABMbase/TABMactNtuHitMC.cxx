@@ -5,7 +5,7 @@
 */
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuTrack.hxx"
 #include "TAMCflukaParser.hxx"
 
 #include "TABMactNtuHitMC.hxx"
@@ -43,7 +43,7 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
 
    if (fEventStruct == 0x0) {
      AddDataIn(dscntuMC, "TAMCntuHit");
-     AddDataIn(dscntuEve, "TAMCntuEve");
+     AddDataIn(dscntuEve, "TAMCntuTrack");
    }
    AddDataOut(fpNtuRaw, "TABMntuRaw");
    AddPara(fpParCon, "TABMparConf");
@@ -109,11 +109,11 @@ Bool_t TABMactNtuHitMC::Action()
   TABMparGeo* p_bmgeo   = (TABMparGeo*) fpParGeo->Object();
 
   TAMCntuHit* pNtuMC    = 0;
-  TAMCntuEve* pNtuEve   = 0;
+  TAMCntuTrack* pNtuEve   = 0;
 
   if (fEventStruct == 0x0) {
     pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
-    pNtuEve   = (TAMCntuEve*) fpNtuEve->Object();
+    pNtuEve   = (TAMCntuTrack*) fpNtuEve->Object();
   } else {
     pNtuMC   = TAMCflukaParser::GetBmHits(fEventStruct, fpNtuMC);
     pNtuEve  = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
@@ -136,8 +136,8 @@ Bool_t TABMactNtuHitMC::Action()
     TAMChit* hitMC = pNtuMC->GetHit(i);
     Int_t trackId  = hitMC->GetTrackIdx()-1;
 
-    TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
-    TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
+    TAMCntuTrack* pNtuEve  = (TAMCntuTrack*) fpNtuEve->Object();
+    TAMCtrack*  track = pNtuEve->GetTrack(trackId);
     if(track->GetCharge() != 0 && track->GetTrkLength() > 0.1 && hitMC->GetDeltaE()>=p_bmcon->GetEnThresh()){//selection criteria
       cell = hitMC->GetCell();
       lay = hitMC->GetLayer();

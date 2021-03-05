@@ -19,8 +19,8 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TAMCactNtuEve
-   TAMCntuEve
+   TAMCactNtuTrack
+   TAMCntuTrack
    TAMCntuHit
    TAMCntuRegion
    TAMCevent

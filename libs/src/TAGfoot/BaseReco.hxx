@@ -82,7 +82,7 @@
 #include "GlobalTrackingStudies.hxx"
 
 class TAMCntuHit;
-class TAMCntuEve;
+class TAMCntuTrack;
 class BaseReco : public TNamed // using TNamed for the in/out files
 {
 public:
@@ -224,7 +224,7 @@ public:
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
    //! MC container Getter (virtual)
-   virtual TAMCntuEve*  GetNtuMcEve()       const { return 0x0; }
+   virtual TAMCntuTrack*  GetNtuMcEve()       const { return 0x0; }
    virtual TAMCntuHit*  GetNtuMcSt()        const { return 0x0; }
    virtual TAMCntuHit*  GetNtuMcBm()        const { return 0x0; }
    virtual TAMCntuHit*  GetNtuMcVtx()       const { return 0x0; }

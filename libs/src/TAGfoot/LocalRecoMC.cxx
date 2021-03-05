@@ -5,7 +5,7 @@
 #include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAMCflukaParser.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuTrack.hxx"
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
 #include "TAVTntuRaw.hxx"
@@ -42,11 +42,11 @@ LocalRecoMC::~LocalRecoMC()
 void LocalRecoMC::CreateRawAction()
 {
    fActEvtReader = new TAGactTreeReader("actEvtReader");
-   fpNtuMcEve    = new TAGdataDsc("eveMc", new TAMCntuEve());
+   fpNtuMcEve    = new TAGdataDsc("eveMc", new TAMCntuTrack());
    if (GlobalPar::GetPar()->IsReadRootObj())
-     fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
+     fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuTrack::GetBranchName());
   else
-    fActNtuMcEve = new TAMCactNtuEve("eveActNtuMc", fpNtuMcEve, fEvtStruct);
+    fActNtuMcEve = new TAMCactNtuTrack("eveActNtuMc", fpNtuMcEve, fEvtStruct);
 
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()) {
       fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
@@ -237,7 +237,7 @@ void LocalRecoMC::SetTreeBranches()
 {
    BaseReco::SetTreeBranches();
    
-   fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
+   fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuTrack::GetBranchName());
 
    if (GlobalPar::GetPar()->IncludeST()) {
       fActEvtWriter->SetupElementBranch(fpNtuRawSt, TASTntuRaw::GetBranchName());

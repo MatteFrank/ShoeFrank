@@ -15,7 +15,7 @@
 
 #include "TAMSDntuRaw.hxx"
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuTrack.hxx"
 
 #include "TAMSDactNtuHitMC.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -50,7 +50,7 @@ TAMSDactNtuHitMC::TAMSDactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdata
 {
    if (fEventStruct == 0x0) {
      AddDataIn(pNtuMC, "TAMCntuHit");
-     AddDataIn(pNtuEve, "TAMCntuEve");
+     AddDataIn(pNtuEve, "TAMCntuTrack");
    }
    AddDataOut(pNtuRaw, "TAMSDntuRaw");
 	AddPara(pGeoMap, "TAMSDparGeo");
