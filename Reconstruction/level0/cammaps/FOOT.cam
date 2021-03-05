@@ -47,7 +47,7 @@ CamDataMC:    1
 CamDate: "December 2020"
 CamSum: "Simulation data for data taking at CNAO with ST+BM+VTX+MSD+TW+CAL"
 
-CamNumber:    7
+CamNumber:    8
 CamName:    "testCALO"
 CamDataMC:    1
 CamDate: "February 2021"
