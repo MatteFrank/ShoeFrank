@@ -9,8 +9,8 @@
 #include "TAFOeventDisplayMC.hxx"
 #endif
 
-//void DisplayMcFOOT(TString file = "12C_C_200shoe.root", TString expName = "12C_200", Int_t runNumber = 1, Int_t type = 2)
-void DisplayMcFOOT(TString file = "12C_C_200_1.root", TString expName = "12C_200", Int_t runNumber = 1, Int_t type = 1)
+//void DisplayMcFOOT(TString file = "12C_C_200shoe.root", TString expName = "12C_200", Int_t runNumber = 1)
+void DisplayMcFOOT(TString file = "12C_C_200.root", TString expName = "12C_200", Int_t runNumber = 1)
 {
   // type = 1: Fluka MC structure
   // type = 2: Shoe MC structure
@@ -18,7 +18,7 @@ void DisplayMcFOOT(TString file = "12C_C_200_1.root", TString expName = "12C_200
 //   TAFObaseEventDisplay::EnableItrTracking();
 //   TAFObaseEventDisplay::DisableTracking();
    
-   TAFOeventDisplayMC::Instance(expName, runNumber, type)->ShowDisplay(file);
+   TAFOeventDisplayMC::Instance(expName, runNumber)->ShowDisplay(file);
 }
 
 
