@@ -9,7 +9,6 @@
 
 #include "GlobalPar.hxx"
 #include "GlobalToeReco.hxx"
-#include "LocalRecoMC.hxx"
 #include "LocalReco.hxx"
 #include "LocalRecoNtuMC.hxx"
 
@@ -30,7 +29,6 @@ void DecodeGlbToe(TString in = "data/data_built.2211.physics_foot.daq.VTX.1.dat"
   Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
   Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
   Bool_t trk = GlobalPar::GetPar()->IsTracking();
-  Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
   Bool_t zmc = GlobalPar::GetPar()->IsTofZmc();
   Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
   
@@ -42,9 +40,6 @@ void DecodeGlbToe(TString in = "data/data_built.2211.physics_foot.daq.VTX.1.dat"
   if (lrc)
     glbRec = new GlobalToeReco(exp, runNb, in, out, mc);
   else if (mc) {
-    if (!obj)
-      glbRec = new LocalRecoMC(exp, runNb, in, out);
-    else
       glbRec = new LocalRecoNtuMC(exp, runNb, in, out);
     if(zmc)
       glbRec->EnableZfromMCtrue();

@@ -3,7 +3,6 @@
 #include <TApplication.h>
 
 #include "GlobalPar.hxx"
-#include "LocalRecoMC.hxx"
 #include "LocalReco.hxx"
 #include "LocalRecoNtuMC.hxx"
 #include "GlobalToeReco.hxx"
