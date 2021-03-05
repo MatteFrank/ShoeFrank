@@ -6,7 +6,7 @@ ClassImp(GlobalRecoMC)
 
 //__________________________________________________________
 GlobalRecoMC::GlobalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
- : LocalRecoNtuMC(expName, runNumber, fileNameIn, fileNameout)
+ : LocalRecoMC(expName, runNumber, fileNameIn, fileNameout)
 {
 
 	EnableTracking();
@@ -21,7 +21,7 @@ GlobalRecoMC::~GlobalRecoMC()
 //__________________________________________________________
 void GlobalRecoMC::BeforeEventLoop()
 {
-	LocalRecoNtuMC::BeforeEventLoop();
+	LocalRecoMC::BeforeEventLoop();
 
 	genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
 
@@ -74,7 +74,7 @@ void GlobalRecoMC::AfterEventLoop()
   
   m_globalTrackingStudies->Finalize();
   m_kFitter->Finalize();
-  LocalRecoNtuMC::AfterEventLoop();
+  LocalRecoMC::AfterEventLoop();
 }
 
 

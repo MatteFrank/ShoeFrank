@@ -1,6 +1,6 @@
 
-#ifndef _LocalRecoNtuMC_HXX_
-#define _LocalRecoNtuMC_HXX_
+#ifndef _LocalRecoMC_HXX_
+#define _LocalRecoMC_HXX_
 
 #include "BaseReco.hxx"
 
@@ -27,13 +27,13 @@
 
 class TTree;
 
-class LocalRecoNtuMC : public BaseReco
+class LocalRecoMC : public BaseReco
 {
 public:
    //! default constructor
-   LocalRecoNtuMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "");
+   LocalRecoMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "");
    
-   virtual ~LocalRecoNtuMC();
+   virtual ~LocalRecoMC();
    
    //! Add required items
    virtual void AddRawRequiredItem();
@@ -89,7 +89,7 @@ protected:
    
    TAGactTreeReader*     fActEvtReader; // file for MC
 
-   ClassDef(LocalRecoNtuMC, 1); // Base class for event display
+   ClassDef(LocalRecoMC, 1); // Base class for event display
 };
 
 

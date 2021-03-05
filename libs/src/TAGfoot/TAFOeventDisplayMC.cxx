@@ -7,7 +7,7 @@
 #include "TGeoManager.h"
 
 #include "GlobalPar.hxx"
-#include "LocalRecoNtuMC.hxx"
+#include "LocalRecoMC.hxx"
 
 ClassImp(TAFOeventDisplayMC)
 
@@ -87,7 +87,7 @@ void TAFOeventDisplayMC::SetLocalReco()
      fType = 2;
    }
    if (fType == 2)
-      fReco = new LocalRecoNtuMC(fExpName);
+      fReco = new LocalRecoMC(fExpName);
    else
       Error("SetLocalReco()", "Unknown type %d", fType);
    

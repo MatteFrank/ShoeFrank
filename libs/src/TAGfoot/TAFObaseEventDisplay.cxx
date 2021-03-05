@@ -32,7 +32,7 @@
 #include "TAVTntuVertex.hxx"
 
 #include "LocalReco.hxx"
-#include "LocalRecoNtuMC.hxx"
+#include "LocalRecoMC.hxx"
 
 ClassImp(TAFObaseEventDisplay)
 

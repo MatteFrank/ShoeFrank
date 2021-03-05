@@ -10,7 +10,7 @@
 #include "GlobalPar.hxx"
 #include "GlobalToeReco.hxx"
 #include "LocalReco.hxx"
-#include "LocalRecoNtuMC.hxx"
+#include "LocalRecoMC.hxx"
 
 #endif
 
@@ -40,7 +40,7 @@ void DecodeGlbToe(TString in = "data/data_built.2211.physics_foot.daq.VTX.1.dat"
   if (lrc)
     glbRec = new GlobalToeReco(exp, runNb, in, out, mc);
   else if (mc) {
-      glbRec = new LocalRecoNtuMC(exp, runNb, in, out);
+      glbRec = new LocalRecoMC(exp, runNb, in, out);
     if(zmc)
       glbRec->EnableZfromMCtrue();
   } else {

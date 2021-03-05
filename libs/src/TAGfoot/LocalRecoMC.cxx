@@ -1,6 +1,6 @@
 #include "TTree.h"
 
-#include "LocalRecoNtuMC.hxx"
+#include "LocalRecoMC.hxx"
 
 #include "GlobalPar.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -15,10 +15,10 @@
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
 
-ClassImp(LocalRecoNtuMC)
+ClassImp(LocalRecoMC)
 
 //__________________________________________________________
-LocalRecoNtuMC::LocalRecoNtuMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
+LocalRecoMC::LocalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fEvtStruct(0x0),
    fActNtuRawVtx(0x0),
@@ -33,13 +33,13 @@ LocalRecoNtuMC::LocalRecoNtuMC(TString expName, Int_t runNumber, TString fileNam
 }
 
 //__________________________________________________________
-LocalRecoNtuMC::~LocalRecoNtuMC()
+LocalRecoMC::~LocalRecoMC()
 {
    // default destructor
 }
 
 //__________________________________________________________
-void LocalRecoNtuMC::CreateRawAction()
+void LocalRecoMC::CreateRawAction()
 {
    fActEvtReader = new TAGactTreeReader("actEvtReader");
    fpNtuMcEve    = new TAGdataDsc("eveMc", new TAMCntuEve());
@@ -127,7 +127,7 @@ void LocalRecoNtuMC::CreateRawAction()
 }
 
 //__________________________________________________________
-void LocalRecoNtuMC::OpenFileIn()
+void LocalRecoMC::OpenFileIn()
 {
   if (GlobalPar::GetPar()->IsReadRootObj())
     fActEvtReader->Open(GetName(), "READ", "EventTree");
@@ -139,7 +139,7 @@ void LocalRecoNtuMC::OpenFileIn()
 }
 
 //_____________________________________________________________________________
-void LocalRecoNtuMC::GlobalChecks()
+void LocalRecoMC::GlobalChecks()
 {
   // base checks
   BaseReco::GlobalChecks();
@@ -173,7 +173,7 @@ void LocalRecoNtuMC::GlobalChecks()
 
 
 //__________________________________________________________
-void LocalRecoNtuMC::SetRawHistogramDir()
+void LocalRecoMC::SetRawHistogramDir()
 {
    // ST
    if (GlobalPar::GetPar()->IncludeST()) {
@@ -219,13 +219,13 @@ void LocalRecoNtuMC::SetRawHistogramDir()
 }
 
 //__________________________________________________________
-void LocalRecoNtuMC::CloseFileIn()
+void LocalRecoMC::CloseFileIn()
 {
    fActEvtReader->Close();
 }
 
 //__________________________________________________________
-void LocalRecoNtuMC::AddRawRequiredItem()
+void LocalRecoMC::AddRawRequiredItem()
 {
    fTAGroot->AddRequiredItem("actEvtReader");
   if (!GlobalPar::GetPar()->IsReadRootObj())
@@ -233,7 +233,7 @@ void LocalRecoNtuMC::AddRawRequiredItem()
 }
 
 //__________________________________________________________
-void LocalRecoNtuMC::SetTreeBranches()
+void LocalRecoMC::SetTreeBranches()
 {
    BaseReco::SetTreeBranches();
    

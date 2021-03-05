@@ -4,7 +4,7 @@
 #include <TApplication.h>
 
 #include "GlobalPar.hxx"
-#include "LocalRecoNtuMC.hxx"
+#include "LocalRecoMC.hxx"
 
 int main (int argc, char *argv[])  {
 
@@ -72,7 +72,7 @@ int main (int argc, char *argv[])  {
      out.Append("_noTWPileUp_Ztrue.root");   
    }
 
-   BaseReco* locRec = new LocalRecoNtuMC(exp, runNb, in, out);
+   BaseReco* locRec = new LocalRecoMC(exp, runNb, in, out);
 
    // global setting
    if (ntu)

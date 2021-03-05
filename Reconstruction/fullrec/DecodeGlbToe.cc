@@ -4,7 +4,7 @@
 
 #include "GlobalPar.hxx"
 #include "LocalReco.hxx"
-#include "LocalRecoNtuMC.hxx"
+#include "LocalRecoMC.hxx"
 #include "GlobalToeReco.hxx"
 
 // executabel to read back from local reconstruction tree or from MC/raw data
@@ -77,7 +77,7 @@ int main (int argc, char *argv[])  {
    if (lrc)
       glbRec = new GlobalToeReco(exp, runNb, in, out, mc);
    else if (mc) {
-     glbRec = new LocalRecoNtuMC(exp, runNb, in, out);
+     glbRec = new LocalRecoMC(exp, runNb, in, out);
      
       if(zmc)
          glbRec->EnableZfromMCtrue();

@@ -28,7 +28,6 @@ set( with_dictionnaries
    TAFOeventDisplayMC
    BaseReco
    LocalRecoMC
-   LocalRecoNtuMC
    LocalReco
    TAGactNtuGlbTrack
    GlobalReco
