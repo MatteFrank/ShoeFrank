@@ -39,7 +39,6 @@ set( with_dictionnaries
    TAVTactNtuRaw
    TAVTactBaseNtuMC
    TAVTactNtuHitMC
-   TAVTactNtuMC
    TAVTbaseDigitizer
    TAVTdigitizerE
    TAVTdigitizerG

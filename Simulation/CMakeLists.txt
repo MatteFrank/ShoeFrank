@@ -54,20 +54,6 @@ target_link_libraries(makeGeo ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIBR
 #
 install(TARGETS makeGeo DESTINATION bin)
 
-
-#----------------------------------------------------------------------------
-# Add the executable, and link it to the libraries
-#
-add_executable(Txt2Root Txt2Root.cxx)
-#
-add_dependencies(Txt2Root ${SIM_REC_LIBRARIES})
-target_link_libraries(Txt2Root ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIBRARIES} )
-
-#----------------------------------------------------------------------------
-# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
-#
-install(TARGETS Txt2Root DESTINATION bin)
-
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the libraries
 #

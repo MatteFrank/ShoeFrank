@@ -31,7 +31,6 @@
 #pragma link C++ class TAVTactNtuRaw+;
 
 #pragma link C++ class TAVTactBaseNtuMC+;
-#pragma link C++ class TAVTactNtuMC+;
 #pragma link C++ class TAVTactNtuHitMC+;
 
 #pragma link C++ class TAVTntuCluster+;

@@ -28,7 +28,6 @@ set( with_dictionnaries
    TAITdigitizerE
    TAITactBaseRaw
    TAITactNtuRaw
-   TAITactNtuMC
    TAITactNtuHitMC
    TAITntuCluster
    TAITcluster

@@ -27,7 +27,6 @@ set( with_dictionnaries
    TAMSDparGeo
    TAMSDparConf
    TAMSDdigitizer
-   TAMSDactNtuMC
    TAMSDactNtuHitMC
    TAMSDntuCluster
    TAMSDcluster

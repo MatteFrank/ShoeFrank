@@ -8,6 +8,8 @@
 /*------------------------------------------+---------------------------------*/
 #include <map>
 
+#include "TH1F.h"
+
 #include "EventStruct.hxx"
 
 #include "TAGaction.hxx"

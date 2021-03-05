@@ -24,7 +24,6 @@ set( with_dictionnaries
    TACAparMap
    TACAntuCluster
    TACAdigitizer
-   TACAactNtuMC
    TACAactNtuHitMC
    TACAactNtuRaw
    TACAactNtuCluster

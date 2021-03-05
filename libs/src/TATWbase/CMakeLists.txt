@@ -25,7 +25,6 @@ set( with_dictionnaries
    TATWntuPoint
    TATWparMap
    TATWparCal
-   TATWactNtuMC
    TATWactNtuHitMC
    TATWactNtuRaw
    TATWactCalibTW
