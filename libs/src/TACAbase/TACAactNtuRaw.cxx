@@ -75,6 +75,7 @@ Bool_t TACAactNtuRaw::Action() {
     Double_t energy = GetEnergy(charge, crysId);
     Double_t tof    = GetTime(time, crysId);
     p_nturaw->NewHit(crysId, energy, time,type);
+    cout << "Energy: " << energy << endl;
   }
    
   fpNtuRaw->SetBit(kValid);
@@ -86,7 +87,7 @@ Bool_t TACAactNtuRaw::Action() {
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuRaw::GetEnergy(Double_t rawenergy, Int_t  crysId)
 {
-  //TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
+  // TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
   // Double_t p0 = p_parcal->GetElossParameter(crysId,0);
   // Double_t p1 = p_parcal->GetElossParameter(crysId,1);
@@ -127,7 +128,7 @@ void TACAactNtuRaw::CreateHistogram(){
 
   char histoname[100]="";
   if(FootDebugLevel(1))
-     cout<<"I have created the ST histo. "<<endl;
+     cout<<"I have created the CA histo. "<<endl;
 
   // sprintf(histoname,"stEvtTime");
   // hEventTime = new TH1F(histoname, histoname, 6000, 0., 60.);
@@ -137,7 +138,7 @@ void TACAactNtuRaw::CreateHistogram(){
   // hTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
   // AddHistogram(hTrigTime);
 
-  // sprintf(histoname,"stTotCharge");
+  // sprintf(histoname,"caTotCharge");
   // hTotCharge = new TH1F(histoname, histoname, 400, -0.1, 3.9);
   // AddHistogram(hTotCharge);
   
