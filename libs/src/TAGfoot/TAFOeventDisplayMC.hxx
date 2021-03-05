@@ -24,7 +24,7 @@ protected:
    
 public:
    //! Instance of class
-   static TAFOeventDisplayMC* Instance(const TString name = "", Int_t runNumber = -1, Int_t type = 1);
+   static TAFOeventDisplayMC* Instance(const TString name = "", Int_t runNumber = -1, Int_t type = 2);
    
    virtual ~TAFOeventDisplayMC();
    

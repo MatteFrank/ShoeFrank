@@ -7,7 +7,6 @@
 #include "TGeoManager.h"
 
 #include "GlobalPar.hxx"
-#include "LocalRecoMC.hxx"
 #include "LocalRecoNtuMC.hxx"
 
 ClassImp(TAFOeventDisplayMC)
@@ -83,9 +82,11 @@ TAFOeventDisplayMC::~TAFOeventDisplayMC()
 //__________________________________________________________
 void TAFOeventDisplayMC::SetLocalReco()
 {
-   if (fType == 1)
-      fReco = new LocalRecoMC(fExpName);
-   else if (fType == 2)
+   if (fType == 1) {
+     Warning("SetLocalReco", "Old interface for Fluka Structure not supported anymore, switch to new");
+     fType = 2;
+   }
+   if (fType == 2)
       fReco = new LocalRecoNtuMC(fExpName);
    else
       Error("SetLocalReco()", "Unknown type %d", fType);
