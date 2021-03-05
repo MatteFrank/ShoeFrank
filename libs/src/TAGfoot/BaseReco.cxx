@@ -228,7 +228,7 @@ void BaseReco::GlobalChecks()
 void BaseReco::BeforeEventLoop()
 {
    ReadParFiles();
-
+   
    CreateRawAction();
    CreateRecAction();
 
@@ -606,8 +606,11 @@ void BaseReco::ReadParFiles()
        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
        fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
 
-       TACAparMap* parCal = (TACAparMap*)fpParCalCa->Object();
-       parCal->FromFile(parFileName.Data());
+       // TACAparMap* parCal = (TACAparMap*)fpParCalCa->Object();
+       TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
+
+       parMap->FromFile(parFileName.Data());
+
      }
    }
 
