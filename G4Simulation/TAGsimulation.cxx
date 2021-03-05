@@ -18,7 +18,6 @@
 #include "TCFOgeometryConstructor.hxx"
 #include "TCFOrunAction.hxx"
 #include "TCFObaseEventAction.hxx"
-#include "TCFOeventoAction.hxx"
 #include "TCFOeventAction.hxx"
 #include "TCFOtrackingAction.hxx"
 
