@@ -1,5 +1,6 @@
-// Macro to make reconstruction from MC data
-// Ch. Finck
+
+// Macro to reconstruct from G4 MC hits
+// Ch. Finck, Juky 19.
 
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
@@ -10,174 +11,138 @@
 #include <TString.h>
 #include <TROOT.h>
 #include <TStopwatch.h>
-#include <TGeoManager.h>
-#include <TGeoVolume.h>
 
-#include "Evento.hxx"
-
+#include "GlobalPar.hxx"
+#include "TAGgeoTrafo.hxx"
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
-#include "TAGgeoTrafo.hxx"
 
-#include "TAGparGeo.hxx"
-#include "TAVTparGeo.hxx"
 #include "TAVTparMap.hxx"
+#include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
 #include "TAVTntuRaw.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
-#include "TAVTntuVertex.hxx"
+#include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
 
 #include "TAGcampaignManager.hxx"
-#include "TAMCactNtuEve.hxx"
-#include "TAVTactNtuMC.hxx"
+#include "TAGactTreeReader.hxx"
+#include "TAVTactNtuHitMC.hxx"
+
 #include "TAVTactNtuClusterF.hxx"
 #include "TAVTactNtuTrackF.hxx"
-#include "TAVTactNtuTrack.hxx"
-#include "TAVTactNtuVertexPD.hxx"
-#include "TAVTactNtuVertex.hxx"
-
-#include "GlobalPar.hxx"
 
 #endif
 
 // main
 TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter*   outFile     = 0x0;
-TAVTactNtuMC*       vtActRaw    = 0x0;
+TAGactTreeReader*   vtActReader = 0x0;
+TAVTactNtuHitMC*    vtActRaw    = 0x0;
 TAVTactNtuClusterF* vtActClus   = 0x0;
 TAVTactNtuTrackF*   vtActTrck   = 0x0;
-TAVTactNtuVertex*   vtActVtx    = 0x0;
 
-void FillMCVertex(EVENT_STRUCT *myStr, Int_t runNumber)
+void FillVertex(Int_t runNumber)
 {
-   /*Ntupling the MC Vertex information*/
-   TAGparaDsc* tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
-   TAGparGeo* parGeoG = (TAGparGeo*)tgGeo->Object();
-   TString parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
-   parGeoG->FromFile(parFileName.Data());
-   
-   TAGparaDsc* vtGeo    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
-   TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
-   parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
-   geomap->FromFile(parFileName.Data());
-   
-   TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
-   TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
-   parFileName = campManager->GetCurConfFile(TAVTparGeo::GetBaseName(), runNumber);
-   parconf->FromFile(parFileName.Data());
-
-   TAGdataDsc* vtRaw    = new TAGdataDsc("vtRaw", new TAVTntuRaw());
-   TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
-   TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
-   TAGdataDsc* vtVtx    = new TAGdataDsc("vtVtx", new TAVTntuVertex());
-   TAGdataDsc* eveMc    = new TAGdataDsc("eveMc", new TAMCntuEve());
-
-
-   TAVTparConf::SetHistoMap();
-   TAMCactNtuEve* actNtuMcEve = new TAMCactNtuEve("eveActNtuMc", eveMc, myStr);
-
-   vtActRaw  = new TAVTactNtuMC("vtActRaw", vtRaw, vtGeo, myStr);
-   vtActRaw->CreateHistogram();
-   
-   vtActClus = new TAVTactNtuClusterF("vtActCluster", vtRaw, vtClus, vtConf, vtGeo);
-   vtActClus->CreateHistogram();
-   
-   vtActTrck = new TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);
-   vtActTrck->CreateHistogram();
-   
-   vtActVtx = new TAVTactNtuVertex("vtActVtx", vtTrck, vtVtx, vtConf, vtGeo, tgGeo);
-   vtActVtx->CreateHistogram();
-   
-   // outFile->SetupElementBranch(vtRaw, TAVTntuRaw::GetBranchName());
-   // outFile->SetupElementBranch(vtClus, TAVTntuCluster::GetBranchName());
-   outFile->SetupElementBranch(vtTrck, TAVTntuTrack::GetBranchName());
-   outFile->SetupElementBranch(eveMc, TAMCntuEve::GetBranchName());
-
+  TAGparaDsc* vtGeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());
+  TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
+  TString parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+  geomap->FromFile(parFileName.Data());
+  
+  TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
+  TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
+  parFileName = campManager->GetCurConfFile(TAVTparGeo::GetBaseName(), runNumber);
+  parconf->FromFile(parFileName.Data());
+  
+  TAVTparConf::SetHistoMap();
+  TAGdataDsc* vtEve  = new TAGdataDsc("vtEve", new TAMCntuEve());
+  TAGdataDsc* vtMc   = new TAGdataDsc("vtMc", new TAMCntuHit());
+  TAGdataDsc* vtNtu  = new TAGdataDsc("vtNtu", new TAVTntuRaw());
+  TAGdataDsc* vtClus = new TAGdataDsc("vtClus", new TAVTntuCluster());
+  TAGdataDsc* vtTrck = new TAGdataDsc("vtTrck", new TAVTntuTrack());
+  
+  vtActReader  = new TAGactTreeReader("vtActEvtReader");
+  vtActReader->SetupBranch(vtMc, TAMCntuHit::GetVtxBranchName());
+  vtActReader->SetupBranch(vtEve,TAMCntuEve::GetBranchName());
+  
+  vtActRaw= new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
+  vtActRaw->CreateHistogram();
+  
+  vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
+  vtActClus->CreateHistogram();
+  
+  vtActTrck = new TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);
+  vtActTrck->CreateHistogram();
+  
+  //   outFile->SetupElementBranch(vtNtu, "vtrh.");
+  //   outFile->SetupElementBranch(vtClus, "vtclus.");
+  //   outFile->SetupElementBranch(vtTrck, "vttrack.");
+  
 }
 
-//void ReadVtxRawMC(TString name = "16O_C2H4_200_1.root", Int_t nMaxEvts = 500, TString expName = "160_200", Int_t runNumber = 1)
-//void ReadVtxRawMC(TString name = "p_80_vtx.root", Int_t nMaxEvts = 500, TString expName = "H_200", Int_t runNumber = 1)
-void ReadVtxRawMC(TString name = "12C_C_200_1.root", Int_t nMaxEvts = 500,
+void ReadVtxRawG4(TString filename = "12C_C_200shoe.root", Int_t nMaxEvts = 0,
                   TString expName = "12C_200", Int_t runNumber = 1)
-//void ReadVtxRawMC(TString name = "4He_400_vtx_10k.root",Int_t nMaxEvts = 500, TString expName = "4He_400", Int_t runNumber = 1)
 {
-   GlobalPar::Instance(expName);
-   GlobalPar::GetPar()->Print();
-   
-   TAGroot tagr;
-   
-   campManager = new TAGcampaignManager(expName);
-   campManager->FromFile();
-   
-   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
-   geoTrafo->FromFile(parFileName);
-   
-   TFile* f = new TFile(name.Data());
-   f->ls();
-   
-   TTree* tree = (TTree*)gDirectory->Get("EventTree");
-   
-   
-   Evento *ev  = new Evento();
-   
-   EVENT_STRUCT evStr;
-   
-   ev->FindBranches(tree,&evStr);
-   
-   outFile = new TAGactTreeWriter("outFile");
-   
-   FillMCVertex(&evStr, runNumber);
-   tagr.AddRequiredItem("eveActNtuMc");
-   tagr.AddRequiredItem("vtActRaw");
-   tagr.AddRequiredItem("vtActCluster");
-   tagr.AddRequiredItem("vtActTrck");
-   tagr.AddRequiredItem("vtActVtx");
-   tagr.AddRequiredItem("outFile");
-   tagr.Print();
-   
-   Int_t pos = name.Last('.');
-   TString nameOut = name(0, pos);
-   nameOut.Append("_Out.root");
-   
-   if (outFile->Open(nameOut.Data(), "RECREATE")) return;
-   vtActRaw->SetHistogramDir(outFile->File());
-   vtActClus->SetHistogramDir(outFile->File());
-   vtActTrck->SetHistogramDir(outFile->File());
-   vtActVtx->SetHistogramDir(outFile->File());
-   
-   cout<<" Beginning the Event Loop "<<endl;
-   tagr.BeginEventLoop();
-   TStopwatch watch;
-   watch.Start();
-   
-   Long64_t nentries = tree->GetEntries();
-   
-   cout<<"Running against ntuple with:: "<<nentries<<" entries!"<<endl;
-   Long64_t nbytes = 0, nb = 0;
-   for (Long64_t ientry = 0; ientry < nentries; ientry++) {
-      
-      nb = tree->GetEntry(ientry);
-      nbytes += nb;
-      
-      if(ientry % 100 == 0)
-         cout<<" Loaded Event:: " << ientry << endl;
-      
-      if (ientry == nMaxEvts)
-         break;
-      
-      if (!tagr.NextEvent()) break;
-   }
-   
-   tagr.EndEventLoop();
-   
-   outFile->Print();
-   outFile->Close();
-   
-   watch.Print();
+  GlobalPar::Instance(expName);
+  GlobalPar::GetPar()->Print();
+  
+  TAGroot tagr;
+  
+  campManager = new TAGcampaignManager(expName);
+  campManager->FromFile();
+  
+  TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
+  TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+  geoTrafo->FromFile(parFileName);
+  
+  outFile = new TAGactTreeWriter("outFile");
+  
+  FillVertex(runNumber);
+  vtActReader->Open(filename, "READ", "EventTree");
+  
+  tagr.AddRequiredItem(vtActReader);
+  tagr.AddRequiredItem(vtActRaw);
+  tagr.AddRequiredItem(vtActClus);
+  tagr.AddRequiredItem(vtActTrck);
+  tagr.AddRequiredItem(outFile);
+  
+  tagr.Print();
+  
+  Int_t pos = filename.Last('.');
+  
+  TString outFileName = filename(0,pos);
+  outFileName.Append("_Out.root");
+  
+  if (outFile->Open(outFileName.Data(), "RECREATE")) return;
+  vtActRaw->SetHistogramDir(outFile->File());
+  vtActClus->SetHistogramDir(outFile->File());
+  vtActTrck->SetHistogramDir(outFile->File());
+  
+  cout<<" Beginning the Event Loop "<<endl;
+  tagr.BeginEventLoop();
+  TStopwatch watch;
+  watch.Start();
+  
+  Int_t nEvents = 0;
+  while (tagr.NextEvent() ){
+    
+    // printf("\n");
+    if (++nEvents % 100 == 0)
+      printf("Event: %d\n", nEvents);
+    
+    if (nEvents == nMaxEvts)
+      break;
+  }
+  
+  tagr.EndEventLoop();
+  
+  outFile->Print();
+  outFile->Close();
+  
+  watch.Print();
+  
 }
 
 
