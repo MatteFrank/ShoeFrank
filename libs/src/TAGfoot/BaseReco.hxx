@@ -224,7 +224,7 @@ public:
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
    //! MC container Getter (virtual)
-   virtual TAMCntuTrack* GetNtuMcEve()      const { return 0x0; }
+   virtual TAMCntuTrack* GetNtuMcTrk()      const { return 0x0; }
    virtual TAMCntuHit*   GetNtuMcSt()       const { return 0x0; }
    virtual TAMCntuHit*   GetNtuMcBm()       const { return 0x0; }
    virtual TAMCntuHit*   GetNtuMcVtx()      const { return 0x0; }
@@ -296,7 +296,7 @@ protected:
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
    TAGdataDsc*           fpNtuClusCa;     // input cluster data dsc
   
-   TAGdataDsc*           fpNtuMcEve;
+   TAGdataDsc*           fpNtuMcTrk;
    TAGdataDsc*           fpNtuMcSt;    // input data dsc
    TAGdataDsc*           fpNtuMcBm;    // input data dsc
    TAGdataDsc*           fpNtuMcVt;    // input data dsc

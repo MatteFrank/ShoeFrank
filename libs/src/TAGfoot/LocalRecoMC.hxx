@@ -57,19 +57,19 @@ public:
    virtual void GlobalChecks();
 
    //! MC container Getter
-   TAMCntuTrack*  GetNtuMcEve() const { return (TAMCntuTrack*)fpNtuMcEve->Object();}
-   TAMCntuHit*  GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object(); }
-   TAMCntuHit*  GetNtuMcBm()  const { return (TAMCntuHit*)fpNtuMcBm->Object(); }
-   TAMCntuHit*  GetNtuMcVtx() const { return (TAMCntuHit*)fpNtuMcVt->Object(); }
-   TAMCntuHit*  GetNtuMcIt()  const { return (TAMCntuHit*)fpNtuMcIt->Object(); }
-   TAMCntuHit*  GetNtuMcMsd() const { return (TAMCntuHit*)fpNtuMcMsd->Object();}
-   TAMCntuHit*  GetNtuMcTw()  const { return (TAMCntuHit*)fpNtuMcTw->Object(); }
-   TAMCntuHit*  GetNtuMcCa()  const { return (TAMCntuHit*)fpNtuMcCa->Object(); }
+   TAMCntuTrack*  GetNtuMcTrk() const { return (TAMCntuTrack*)fpNtuMcTrk->Object();}
+   TAMCntuHit*    GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object();   }
+   TAMCntuHit*    GetNtuMcBm()  const { return (TAMCntuHit*)fpNtuMcBm->Object();   }
+   TAMCntuHit*    GetNtuMcVtx() const { return (TAMCntuHit*)fpNtuMcVt->Object();   }
+   TAMCntuHit*    GetNtuMcIt()  const { return (TAMCntuHit*)fpNtuMcIt->Object();   }
+   TAMCntuHit*    GetNtuMcMsd() const { return (TAMCntuHit*)fpNtuMcMsd->Object();  }
+   TAMCntuHit*    GetNtuMcTw()  const { return (TAMCntuHit*)fpNtuMcTw->Object();   }
+   TAMCntuHit*    GetNtuMcCa()  const { return (TAMCntuHit*)fpNtuMcCa->Object();   }
 
 protected:
    EVENT_STRUCT*         fEvtStruct;
   
-   TAMCactNtuTrack*        fActNtuMcEve;
+   TAMCactNtuTrack*      fActNtuMcTrk;
    TASTactNtuHitMC*      fActNtuRawSt;  // action for ntu data
    TABMactNtuHitMC*      fActNtuRawBm;  // action for ntu data
    TAVTactNtuHitMC*      fActNtuRawVtx;  // action for ntu data
@@ -78,7 +78,7 @@ protected:
    TATWactNtuHitMC*      fActNtuRawTw;  // action for ntu data
    TACAactNtuHitMC*      fActNtuRawCa;  // action for ntu data
   
-   TAGdataDsc*           fpNtuMcEve;    // input data dsc
+   TAGdataDsc*           fpNtuMcTrk;    // input data dsc
    TAGdataDsc*           fpNtuMcSt;    // input data dsc
    TAGdataDsc*           fpNtuMcBm;    // input data dsc
    TAGdataDsc*           fpNtuMcVt;    // input data dsc

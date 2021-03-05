@@ -76,7 +76,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuClusIt(0x0),
    fpNtuClusMsd(0x0),
    fpNtuRecTw(0x0),
-   fpNtuMcEve(0x0),
+   fpNtuMcTrk(0x0),
    fpNtuTrackBm(0x0),
    fpNtuTrackVtx(0x0),
    fpNtuTrackIt(0x0),
