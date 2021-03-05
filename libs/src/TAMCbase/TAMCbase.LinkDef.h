@@ -13,15 +13,7 @@
 #pragma link C++ class TAMCntuHit+;
 #pragma link C++ class TAMChit+;
 #pragma link C++ class TAMCevent+;
-#pragma link C++ class Evento+;
 #pragma link C++ class TAMCactNtuEve+;
-#pragma link C++ class TAMCactNtuStc+;
-#pragma link C++ class TAMCactNtuBm+;
-#pragma link C++ class TAMCactNtuVtx+;
-#pragma link C++ class TAMCactNtuItr+;
-#pragma link C++ class TAMCactNtuMsd+;
-#pragma link C++ class TAMCactNtuTof+;
-#pragma link C++ class TAMCactNtuCal+;
 
 
 #endif

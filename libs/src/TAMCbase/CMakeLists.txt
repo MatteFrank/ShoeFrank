@@ -21,20 +21,12 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 set( with_dictionnaries
    TAMCactNtuEve
    TAMCntuEve
-   TAMCactNtuStc
-   TAMCactNtuBm
-   TAMCactNtuVtx
-   TAMCactNtuItr
-   TAMCactNtuMsd
-   TAMCactNtuTof
-   TAMCactNtuCal
    TAMCntuHit
    TAMCntuRegion
    TAMCevent
    TAGparGeo
    TAMCparTools
    TAMCflukaParser
-   Evento
 )
 
 set( without_dictionnaries
