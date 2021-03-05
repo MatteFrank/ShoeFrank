@@ -72,7 +72,7 @@ void TAFOeventDisplay::SetLocalReco()
    fReco->EnableHisto();
 
    if (fgTrackFlag) {
-      fReco->SetTrackingAlgo(fgVtxTrackingAlgo[0]);
+      fReco->SetVtxTrackingAlgo(fgVtxTrackingAlgo[0]);
       fReco->EnableTracking();
    }
 

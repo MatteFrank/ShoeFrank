@@ -161,27 +161,27 @@ public:
    void EnableTracking()  { fFlagTrack = true;   }
    void DisableTracking() { fFlagTrack = false;  }
    
-   void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;   }
-   void DisableTWcalibPerBar() { fFlagTWbarCalib = false;  }
+   void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;  }
+   void DisableTWcalibPerBar() { fFlagTWbarCalib = false; }
 
-   void EnableZfromMCtrue()  { fFlagZtrueMC = true;   }
-   void DisableZfromMCtrue() { fFlagZtrueMC = false;  }
+   void EnableZfromMCtrue()    { fFlagZtrueMC = true;     }
+   void DisableZfromMCtrue()   { fFlagZtrueMC = false;    }
 
    void EnableZrecWithPUoff()  { fFlagZrecPUoff = true;   }
    void DisableZrecWithPUoff() { fFlagZrecPUoff = false;  }
   
-   void EnableTWZmatch()  { fFlagZmatch_TW = true;   }
-   void DisableTWZmatch() { fFlagZmatch_TW = false;  }
+   void EnableTWZmatch()       { fFlagZmatch_TW = true;   }
+   void DisableTWZmatch()      { fFlagZmatch_TW = false;  }
 
-   void DisableM28ClusMT() { fM28ClusMtFlag = false; }
-   void EnableM28lusMT()   { fM28ClusMtFlag = true;  }
-   Bool_t IsM28ClusMT()    { return fM28ClusMtFlag;  }
+   void DisableM28ClusMT()     { fM28ClusMtFlag = false;  }
+   void EnableM28lusMT()       { fM28ClusMtFlag = true;   }
+   Bool_t IsM28ClusMT()        { return fM28ClusMtFlag;   }
 
    // Flag for MC data
-   Bool_t IsMcData()      { return fFlagMC;      }
+   Bool_t IsMcData()           { return fFlagMC;          }
    
    //! Set Tracking algorithm
-   void SetTrackingAlgo(char c);
+   void SetVtxTrackingAlgo(char c);
   
    // Campaign checks
    void CampaignChecks();

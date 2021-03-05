@@ -108,7 +108,7 @@ public:
             fgVtxTrackingAlgo = "Hough";
             break;
          default:
-            printf("SetTrackingAlgo: Wrongly set tracking algorithm");
+            printf("SetVtxTrackingAlgo: Wrongly set tracking algorithm");
       }
    }
    

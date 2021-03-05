@@ -1038,7 +1038,7 @@ void BaseReco::AddRecRequiredItem()
 }
 
 //__________________________________________________________
-void BaseReco::SetTrackingAlgo(char c)
+void BaseReco::SetVtxTrackingAlgo(char c)
 {
    switch (c) {
       case 'S':
@@ -1048,6 +1048,6 @@ void BaseReco::SetTrackingAlgo(char c)
          fgTrackingAlgo = "Full";
          break;
       default:
-         printf("SetTrackingAlgo: Wrongly set tracking algorithm");
+         printf("SetVtxTrackingAlgo: Wrongly set tracking algorithm");
    }
 }
