@@ -5,7 +5,7 @@
 #include "TString.h"
 #include "TTree.h"
 
-#include "LocalRecoMC.hxx"
+#include "LocalRecoNtuMC.hxx"
 
 #include "KFitter.hxx"
 #include "UpdatePDG.hxx"
@@ -13,7 +13,7 @@
 #include "GlobalTrackingStudies.hxx"
 
 
-class GlobalRecoMC : public LocalRecoMC
+class GlobalRecoMC : public LocalRecoNtuMC
 {
 public:
   //! default constructor

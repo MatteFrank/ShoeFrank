@@ -6,7 +6,7 @@ ClassImp(GlobalRecoMC)
 
 //__________________________________________________________
 GlobalRecoMC::GlobalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
- : LocalRecoMC(expName, runNumber, fileNameIn, fileNameout)
+ : LocalRecoNtuMC(expName, runNumber, fileNameIn, fileNameout)
 {
 
 	EnableTracking();
@@ -21,7 +21,7 @@ GlobalRecoMC::~GlobalRecoMC()
 //__________________________________________________________
 void GlobalRecoMC::BeforeEventLoop()
 {
-	LocalRecoMC::BeforeEventLoop();
+	LocalRecoNtuMC::BeforeEventLoop();
 
 	genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
 
@@ -48,25 +48,24 @@ void GlobalRecoMC::BeforeEventLoop()
 //____________________________________________________________
 void GlobalRecoMC::LoopEvent(Int_t nEvents)
 {
-   if (nEvents <= 0)
-      nEvents = fTree->GetEntries();
-   
-   if (nEvents > fTree->GetEntries())
-      nEvents = fTree->GetEntries();
-   
-   for (Long64_t ientry = 0; ientry < nEvents; ientry++) {
-      
-      fTree->GetEntry(ientry);
-      
-      if(ientry % 100 == 0)
-         cout<<" Loaded Event:: " << ientry << endl;
-      
-      if (!fTAGroot->NextEvent()) break;
-
-      m_globalTrackingStudies->Action();
-      m_kFitter->MakeFit(ientry);
-
-   }
+  Int_t frequency = 1;
+  
+  if (nEvents > 100000)      frequency = 100000;
+  else if (nEvents > 10000)  frequency = 10000;
+  else if (nEvents > 1000)   frequency = 1000;
+  else if (nEvents > 100)    frequency = 100;
+  else if (nEvents > 10)     frequency = 10;
+  
+  for (Int_t ientry = 0; ientry < nEvents; ientry++) {
+    
+    if(ientry % frequency == 0)
+      cout<<" Loaded Event:: " << ientry << endl;
+    
+    if (!fTAGroot->NextEvent()) break;;
+    
+    m_globalTrackingStudies->Action();
+    m_kFitter->MakeFit(ientry);
+  }
 }
 
 //______________________________________________________________
@@ -75,7 +74,7 @@ void GlobalRecoMC::AfterEventLoop()
   
   m_globalTrackingStudies->Finalize();
   m_kFitter->Finalize();
-  LocalRecoMC::AfterEventLoop();
+  LocalRecoNtuMC::AfterEventLoop();
 }
 
 
