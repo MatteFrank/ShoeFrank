@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TADAQ} ${TAAPI} ${TAMC} ${TAG} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TADAQ} ${TAAPI} ${TAMC} ${TAG})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 #
 # headers / dictionnary / sources 
