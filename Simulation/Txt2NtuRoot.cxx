@@ -412,10 +412,10 @@ int main(int argc, char *argv[])
          if(!ReadError){
             for(int jj=0; jj<eve.CROSSn;jj++){
                nread = fscanf(pfile,"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
-                              &eve.CROSSid[jj],&eve.CROSSnreg[jj],&eve.CROSSnregold[jj],&eve.CROSSx[jj],
-                              &eve.CROSSy[jj],&eve.CROSSz[jj],&eve.CROSSpx[jj],
-                              &eve.CROSSpy[jj],&eve.CROSSpz[jj],&eve.CROSSm[jj],
-                              &eve.CROSSch[jj],&eve.CROSSt[jj]);
+                              &eve.CROSSid[jj],&eve.CROSSnreg[jj],&eve.CROSSnregold[jj],
+                              &eve.CROSSx[jj],&eve.CROSSy[jj],&eve.CROSSz[jj],
+                              &eve.CROSSpx[jj],&eve.CROSSpy[jj],&eve.CROSSpz[jj],
+                              &eve.CROSSm[jj],&eve.CROSSch[jj],&eve.CROSSt[jj]);
                if (regFlag) {
                   event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
                                   TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
