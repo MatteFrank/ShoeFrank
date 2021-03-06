@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TAVTactBaseNtuMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
-  \brief   Implementation of TAVTactBaseNtuMC.
+  \version $Id: TAVTactBaseNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+  \brief   Implementation of TAVTactBaseNtuHitMC.
 */
 
 #include "TH2F.h"
@@ -18,32 +18,32 @@
 #include "TAVTntuRaw.hxx"
 
 
-#include "TAVTactBaseNtuMC.hxx"
+#include "TAVTactBaseNtuHitMC.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
 #include "GlobalPar.hxx"
 
 /*!
-  \class TAVTactBaseNtuMC"
+  \class TAVTactBaseNtuHitMC"
   \brief NTuplizer for vertex raw hits. **
 */
 
 using namespace std;
 
-ClassImp(TAVTactBaseNtuMC);
+ClassImp(TAVTactBaseNtuHitMC);
 
 
-Bool_t  TAVTactBaseNtuMC::fgPileup          = false;
-Float_t TAVTactBaseNtuMC::fgPoissonPar      = 0.736; // ajust for FIRST
-Int_t   TAVTactBaseNtuMC::fgPileupEventsN   = 10;
-Float_t TAVTactBaseNtuMC::fgSigmaNoiseLevel = -1.;
-Int_t   TAVTactBaseNtuMC::fgMcNoiseId       = -99;
+Bool_t  TAVTactBaseNtuHitMC::fgPileup          = false;
+Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 0.736; // ajust for FIRST
+Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 10;
+Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;
+Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 
 //------------------------------------------+-----------------------------------
 //
-TAVTactBaseNtuMC::TAVTactBaseNtuMC(const char* name,  TAGparaDsc* pGeoMap)
- : TAGaction(name, "TAVTactBaseNtuMC - NTuplize Vertex MC data"),
+TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
+ : TAGaction(name, "TAVTactBaseNtuHitMC - NTuplize Vertex MC data"),
    fpGeoMap(pGeoMap),
 	fNoisyPixelsN(0)
 {   
@@ -79,7 +79,7 @@ TAVTactBaseNtuMC::TAVTactBaseNtuMC(const char* name,  TAGparaDsc* pGeoMap)
 
 //------------------------------------------+-----------------------------------
 //! Setup all histograms.
-void TAVTactBaseNtuMC::CreateHistogram()
+void TAVTactBaseNtuHitMC::CreateHistogram()
 {
 
    DeleteHistogram();
@@ -129,7 +129,7 @@ void TAVTactBaseNtuMC::CreateHistogram()
 
 
 // --------------------------------------------------------------------------------------
-void TAVTactBaseNtuMC::ComputeNoiseLevel()
+void TAVTactBaseNtuHitMC::ComputeNoiseLevel()
 {
 	// computing number of noise pixels (sigma level) from gaussian
 	TF1* f = new TF1("f", "gaus", -10, 10);
@@ -147,7 +147,7 @@ void TAVTactBaseNtuMC::ComputeNoiseLevel()
 }
 
 //------------------------------------------+-----------------------------------
-void  TAVTactBaseNtuMC::GeneratePileup()
+void  TAVTactBaseNtuHitMC::GeneratePileup()
 {
 	Int_t pileupEvents = TMath::Nint(fpHisPoisson->GetRandom())-1;
 

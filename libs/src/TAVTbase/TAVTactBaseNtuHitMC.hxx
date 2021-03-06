@@ -1,9 +1,9 @@
-#ifndef _TAVTactBaseNtuMC_HXX
-#define _TAVTactBaseNtuMC_HXX
+#ifndef _TAVTactBaseNtuHitMC_HXX
+#define _TAVTactBaseNtuHitMC_HXX
 /*!
  \file
- \version $Id: TAVTactBaseNtuMC.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
- \brief   Declaration of TAVTactBaseNtuMC.
+ \version $Id: TAVTactBaseNtuHitMC.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \brief   Declaration of TAVTactBaseNtuHitMC.
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -19,7 +19,7 @@
 
 class TH2F;
 class TH1F;
-class TAVTactBaseNtuMC : public TAGaction {
+class TAVTactBaseNtuHitMC : public TAGaction {
 
 protected:
    struct RawMcHit_t : public  TObject {
@@ -34,8 +34,8 @@ protected:
    
 
 public:
-   explicit TAVTactBaseNtuMC(const char* name=0, TAGparaDsc* p_geomap = 0);
-   virtual ~TAVTactBaseNtuMC() {};
+   explicit TAVTactBaseNtuHitMC(const char* name=0, TAGparaDsc* p_geomap = 0);
+   virtual ~TAVTactBaseNtuHitMC() {};
    
    //! Base action 
    virtual bool  Action()      { return true; }
@@ -108,7 +108,7 @@ protected:
    static Float_t  fgSigmaNoiseLevel;
    static Int_t    fgMcNoiseId;
 
-   ClassDef(TAVTactBaseNtuMC,0)
+   ClassDef(TAVTactBaseNtuHitMC,0)
 };
 
 #endif

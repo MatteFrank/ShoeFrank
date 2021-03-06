@@ -37,7 +37,7 @@ set( with_dictionnaries
    TAVTactStdDaqRaw
    TAVTactBaseNtuRaw
    TAVTactNtuRaw
-   TAVTactBaseNtuMC
+   TAVTactBaseNtuHitMC
    TAVTactNtuHitMC
    TAVTbaseDigitizer
    TAVTdigitizerE

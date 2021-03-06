@@ -38,7 +38,7 @@ ClassImp(TAVTactNtuHitMC);
 //------------------------------------------+-----------------------------------
 //
 TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
-: TAVTactBaseNtuMC(name, pGeoMap),
+: TAVTactBaseNtuHitMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
    fpNtuRaw(pNtuRaw),

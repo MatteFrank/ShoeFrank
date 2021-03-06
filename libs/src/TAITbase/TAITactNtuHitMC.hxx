@@ -16,11 +16,11 @@
 
 #include "TAITntuHit.hxx"
 
-#include "TAVTactBaseNtuMC.hxx"
+#include "TAVTactBaseNtuHitMC.hxx"
 
 class TAITntuRaw;
 
-class TAITactNtuHitMC : public TAVTactBaseNtuMC {
+class TAITactNtuHitMC : public TAVTactBaseNtuHitMC {
 
 public:
    explicit TAITactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0, EVENT_STRUCT* evStr = 0);

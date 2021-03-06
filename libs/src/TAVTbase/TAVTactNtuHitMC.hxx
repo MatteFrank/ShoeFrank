@@ -20,14 +20,14 @@
 
 #include "TAVTntuHit.hxx"
 
-#include "TAVTactBaseNtuMC.hxx"
+#include "TAVTactBaseNtuHitMC.hxx"
 
 class TAVTntuRaw;
 class TAVTparGeo;
 
 using namespace std;
 
-class TAVTactNtuHitMC : public TAVTactBaseNtuMC {
+class TAVTactNtuHitMC : public TAVTactBaseNtuHitMC {
 
 public:
    explicit TAVTactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0, EVENT_STRUCT* evStr=0);
