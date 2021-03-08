@@ -80,6 +80,7 @@
 #include "GlobalPar.hxx"
 // #include "ControlPlotsRepository.hxx"
 #include "GlobalTrackRepostory.hxx"
+#include "MagicSkills.hxx"
 #include "UpdatePDG.hxx"
 
 #include <sys/types.h>

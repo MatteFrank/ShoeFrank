@@ -286,7 +286,6 @@ void BaseReco::SetRecHistogramDir()
       if (!GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IncludeKalman()) {
         TDirectory* subfolder = (TDirectory*) fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
         m_glbAct_KFitter->SetHistogramDir(subfolder);
-        if (GlobalPar::GetPar()->IsLocalReco()) return;
       }
      
       if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman()) {
@@ -893,12 +892,6 @@ void BaseReco::SetTreeBranches()
     }
   }
 
-  if (!GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IncludeKalman()) {
-    if (fFlagTrack) {
-      fActEvtWriter->SetupElementBranch(fpGlobTrackRepo, GlobalTrackRepostory::GetBranchName());
-    }
-  }
-  
   if (GlobalPar::GetPar()->IncludeVT()) {
     if (!fFlagTrack)
       fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
@@ -928,6 +921,12 @@ void BaseReco::SetTreeBranches()
    
    if (GlobalPar::GetPar()->IncludeCA())
      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
+
+   if (!GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IncludeKalman()) {
+    if (fFlagTrack) {
+      fActEvtWriter->SetupElementBranch(fpGlobTrackRepo, GlobalTrackRepostory::GetBranchName());
+    }
+  }
 }
 
 //__________________________________________________________
@@ -938,8 +937,8 @@ void BaseReco::AddRecRequiredItem()
    if (GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
        gTAGroot->AddRequiredItem("glbActTrack");
-     }
      return;
+     }
    }
   
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())

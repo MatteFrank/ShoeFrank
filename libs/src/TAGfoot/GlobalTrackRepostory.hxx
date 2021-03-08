@@ -110,8 +110,6 @@ public:
   map< string, TH1F* > h_resoP_over_Pkf;
   map< string, TH1F* > h_biasP_over_Pkf;
 
-private:
-
   ClassDef(GlobalTrackRepostory,2)
 };
 
