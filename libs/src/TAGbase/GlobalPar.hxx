@@ -185,7 +185,7 @@ public:
 
 
 };
-
+#define FootDebug(level, func, message, ...) GlobalPar::Debug(level, ClassName(), func, message, __VA_ARGS__)
 #define FootDebugLine(level, func, message ) GlobalPar::DebugLine(level, ClassName(), func, message, __FILE__, __LINE__)
 #define FootDebugLevel(level) GlobalPar::GetDebugLevel(level, ClassName())
 #define FootMcDebugLevel(level) GlobalPar::GetMcDebugLevel(level, typeid(*this).name())
