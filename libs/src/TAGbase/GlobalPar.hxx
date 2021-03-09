@@ -159,6 +159,7 @@ private:
    Bool_t m_enableTWnoPU;
    Bool_t m_enableTWZmatch;
    Bool_t m_enableTWCalBar;
+   Bool_t m_doCalibTW;
 
    Bool_t m_includeST;
    Bool_t m_includeBM;
@@ -173,7 +174,6 @@ private:
     
    Bool_t m_includeKalman;
    Bool_t m_includeTOE;
-   Bool_t m_doCalibTW;
   
    // debug levels for classes
    TObjArray  m_ClassDebugLevels;
