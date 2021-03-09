@@ -1,7 +1,6 @@
 #ifndef GLOBALPAR_H
 #define GLOBALPAR_H
 
-
 #include <iomanip>
 #include <iostream>
 #include <stdlib.h>
@@ -15,11 +14,12 @@
 #include <algorithm>
 #include <memory>
 #include <map>
-#include "TString.h"
 
+#include "TString.h"
 #include "TObjArray.h"
 
 #include "TAGrunInfo.hxx"
+
 using namespace std;
 
 // singleton class of global foot parameters
@@ -36,78 +36,80 @@ public:
 	void Print(Option_t* opt = "");
    const TAGrunInfo GetGlobalInfo();
 
-	int  Debug()                const { return m_debug;               }
+	Int_t  Debug()                const { return m_debug;               }
 
-	int  KalMode()              const { return m_kalmanMode;          }
-	bool IsKalReverse()         const { return m_kalReverse;          }
-	bool verFLUKA()             const { return m_verFLUKA;            }
+    // Kalman Getter
+	Int_t  KalMode()              const { return m_kalmanMode;          }
+	Bool_t IsKalReverse()         const { return m_kalReverse;          }
+	Bool_t verFLUKA()             const { return m_verFLUKA;            }
    
-	vector<string> KalSystems()       { return m_trackingSystems;     }
-	vector<string> KalParticles()     { return m_kalParticles;        }
-   vector<string> MCParticles()      { return m_mcParticles;         }
-   vector<TString> DectIncluded()    { return m_dectInclude;         }
+	vector<string> KalSystems()         { return m_trackingSystems;     }
+	vector<string> KalParticles()       { return m_kalParticles;        }
+   vector<string> MCParticles()        { return m_mcParticles;         }
+   vector<TString> DectIncluded()      { return m_dectInclude;         }
 
-	 double VTReso() 	          const { return m_VTreso;              }
-    double ITReso() 	          const { return m_ITreso;              }
-    double MSDReso()           const { return m_MSDreso;             }
-    double TWReso()            const { return m_TWreso;              }
+	 Double_t VTReso() 	         const { return m_VTreso;              }
+    Double_t ITReso() 	         const { return m_ITreso;              }
+    Double_t MSDReso()           const { return m_MSDreso;             }
+    Double_t TWReso()            const { return m_TWreso;              }
 
-    bool IsPrintOutputFile()   const { return m_printoutfile;        }
-    string OutputFile()        const { return m_outputfilename;      }
+    Bool_t IsPrintOutputFile()   const { return m_printoutfile;        }
+    string OutputFile()          const { return m_outputfilename;      }
  
-    bool IsPrintOutputNtuple() const { return m_printoutntuple;      }
-    string OutputNtuple()      const { return m_outputntuplename;    }
+    Bool_t IsPrintOutputNtuple() const { return m_printoutntuple;      }
+    string OutputNtuple()        const { return m_outputntuplename;    }
 	
-    bool IsLocalReco()         const { return m_enableLocalReco;     }
-    bool IsSaveTree()          const { return m_enableTree;          }
-    bool IsSaveHisto()         const { return m_enableHisto;         }
-    bool IsSaveHits()          const { return m_enableSaveHits;      }
-    bool IsTracking()          const { return m_enableTracking;      }
-    bool IsReadRootObj()       const { return m_enableRootObject;    }
-    bool IsTWZmc()             const { return m_enableTWZmc;         }
-    bool IsTWnoPU()            const { return m_enableTWnoPU;        }
-    bool IsTWZmatch()          const { return m_enableTWZmatch;      }
-    bool IsTWCalBar()          const { return m_enableTWCalBar;      }
+    Bool_t Find_MCParticle( string villain );
 
-    bool IncludeDI()           const { return m_includeDI;           }
-    bool IncludeST()           const { return m_includeST;           }
-    bool IncludeBM()           const { return m_includeBM;           }
-    bool IncludeTW()           const { return m_includeTW;           }
-    bool IncludeMSD()          const { return m_includeMSD;          }
-    bool IncludeCA()           const { return m_includeCA;           }
-    bool IncludeTG()           const { return m_includeTG;           }
-    bool IncludeVT()           const { return m_includeVT;           }
-    bool IncludeIT()           const { return m_includeIT;           }
+    // Reconstruction parameters Getter
+    Bool_t IsLocalReco()         const { return m_enableLocalReco;     }
+    Bool_t IsSaveTree()          const { return m_enableTree;          }
+    Bool_t IsSaveHisto()         const { return m_enableHisto;         }
+    Bool_t IsSaveHits()          const { return m_enableSaveHits;      }
+    Bool_t IsTracking()          const { return m_enableTracking;      }
+    Bool_t IsReadRootObj()       const { return m_enableRootObject;    }
+    Bool_t IsTWZmc()             const { return m_enableTWZmc;         }
+    Bool_t IsTWnoPU()            const { return m_enableTWnoPU;        }
+    Bool_t IsTWZmatch()          const { return m_enableTWZmatch;      }
+    Bool_t IsTWCalBar()          const { return m_enableTWCalBar;      }
+    Bool_t CalibTW()             const { return m_doCalibTW;           }
+
+    Bool_t IncludeDI()           const { return m_includeDI;           }
+    Bool_t IncludeST()           const { return m_includeST;           }
+    Bool_t IncludeBM()           const { return m_includeBM;           }
+    Bool_t IncludeTW()           const { return m_includeTW;           }
+    Bool_t IncludeMSD()          const { return m_includeMSD;          }
+    Bool_t IncludeCA()           const { return m_includeCA;           }
+    Bool_t IncludeTG()           const { return m_includeTG;           }
+    Bool_t IncludeVT()           const { return m_includeVT;           }
+    Bool_t IncludeIT()           const { return m_includeIT;           }
    
-    bool IncludeTOE()          const { return m_includeTOE;          }
-    bool IncludeKalman()       const { return m_includeKalman;       }
+    Bool_t IncludeTOE()          const { return m_includeTOE;          }
+    Bool_t IncludeKalman()       const { return m_includeKalman;       }
   
-    bool CalibTW()             const { return m_doCalibTW;           }
 
-    void IncludeTOE(bool t)          {  m_includeTOE = t;            }
-    void IncludeKalman(bool t)       {  m_includeKalman = t;         }
-    void EnableLocalReco()           {  m_enableLocalReco = true;    }
-    void DisableLocalReco()          {  m_enableLocalReco = false;   }
+    // Reconstruction parameters Setter
+    void IncludeTOE(Bool_t t)          {  m_includeTOE = t;            }
+    void IncludeKalman(Bool_t t)       {  m_includeKalman = t;         }
+    void EnableLocalReco()             {  m_enableLocalReco = true;    }
+    void DisableLocalReco()            {  m_enableLocalReco = false;   }
 
-    void EnableRootObject()          {  m_enableRootObject = true;   }
-    void DisableRootObject()         {  m_enableRootObject = false;  }
+    void EnableRootObject()            {  m_enableRootObject = true;   }
+    void DisableRootObject()           {  m_enableRootObject = false;  }
 
-    void IncludeDI(bool t)           {  m_includeDI = t;             }
-    void IncludeST(bool t)           {  m_includeST = t;             }
-    void IncludeBM(bool t)           {  m_includeBM = t;             }
-    void IncludeTW(bool t)           {  m_includeTW = t;             }
-    void IncludeMSD(bool t)          {  m_includeMSD = t;            }
-    void IncludeCA(bool t)           {  m_includeCA = t;             }
-    void IncludeTG(bool t)           {  m_includeTG = t;             }
-    void IncludeVT(bool t)           {  m_includeVT = t;             }
-    void IncludeIT(bool t)           {  m_includeIT = t;             }
-
-    void CalibTW(bool t)             {  m_doCalibTW = t;             }
+    void IncludeDI(Bool_t t)           {  m_includeDI = t;             }
+    void IncludeST(Bool_t t)           {  m_includeST = t;             }
+    void IncludeBM(Bool_t t)           {  m_includeBM = t;             }
+    void IncludeTW(Bool_t t)           {  m_includeTW = t;             }
+    void IncludeMSD(Bool_t t)          {  m_includeMSD = t;            }
+    void IncludeCA(Bool_t t)           {  m_includeCA = t;             }
+    void IncludeTG(Bool_t t)           {  m_includeTG = t;             }
+    void IncludeVT(Bool_t t)           {  m_includeVT = t;             }
+    void IncludeIT(Bool_t t)           {  m_includeIT = t;             }
+    void CalibTW(Bool_t t)             {  m_doCalibTW = t;             }
   
     void SetDebugLevels();
-
-    bool Find_MCParticle( string villain );
-
+  
 private:
 	GlobalPar();
 	GlobalPar( const TString expName );
@@ -120,31 +122,33 @@ private:
 private:
 	vector<string> m_copyInputFile;
 
-   map< string, int >    m_map_debug;
+   map< string, Int_t >    m_map_debug;
 	string m_parFileName;
 
-	int m_debug;
+	Int_t m_debug;
 
+   // Kalman parameters
 	vector<string> m_mcParticles;
 	
-	int m_kalmanMode;
-	bool m_kalReverse;
-	bool m_verFLUKA;
+	Int_t m_kalmanMode;
+	Bool_t m_kalReverse;
+	Bool_t m_verFLUKA;
 	vector<string> m_trackingSystems;
    vector<string> m_kalParticles;
    vector<TString> m_dectInclude;
 
-	double m_VTreso;
-   double m_ITreso;
-   double m_MSDreso;
-   double m_TWreso;
+	Double_t m_VTreso;
+   Double_t m_ITreso;
+   Double_t m_MSDreso;
+   Double_t m_TWreso;
 
    string  m_outputfilename;
-   bool m_printoutfile;
+   Bool_t m_printoutfile;
        
    string  m_outputntuplename;
-   bool m_printoutntuple;
-   
+   Bool_t m_printoutntuple;
+  
+   // reconstruction parameter
    Bool_t m_enableLocalReco;
    Bool_t m_enableTree;
    Bool_t m_enableHisto;
@@ -156,22 +160,23 @@ private:
    Bool_t m_enableTWZmatch;
    Bool_t m_enableTWCalBar;
 
-   bool m_includeST;
-   bool m_includeBM;
-   bool m_includeTG;
-   bool m_includeDI;
+   Bool_t m_includeST;
+   Bool_t m_includeBM;
+   Bool_t m_includeTG;
+   Bool_t m_includeDI;
 
-   bool m_includeTW;
-   bool m_includeMSD;
-   bool m_includeCA;
-   bool m_includeIT;
-   bool m_includeVT;
+   Bool_t m_includeTW;
+   Bool_t m_includeMSD;
+   Bool_t m_includeCA;
+   Bool_t m_includeIT;
+   Bool_t m_includeVT;
     
-   bool m_includeKalman;
-   bool m_includeTOE;
-   bool m_doCalibTW;
+   Bool_t m_includeKalman;
+   Bool_t m_includeTOE;
+   Bool_t m_doCalibTW;
   
-   TObjArray  m_ClassDebugLevels;          // debug levels for classes
+   // debug levels for classes
+   TObjArray  m_ClassDebugLevels;
 
 public:
    static void   DebugLine(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", const char* file = "", Int_t line = -1);
@@ -182,37 +187,11 @@ public:
 
    static void   SetClassDebugLevel(const char* className, Int_t level);
    static void   ClearClassDebugLevel(const char* className);
-
-
 };
+
 #define FootDebug(level, func, message, ...) GlobalPar::Debug(level, ClassName(), func, message, __VA_ARGS__)
 #define FootDebugLine(level, func, message ) GlobalPar::DebugLine(level, ClassName(), func, message, __FILE__, __LINE__)
 #define FootDebugLevel(level) GlobalPar::GetDebugLevel(level, ClassName())
 #define FootMcDebugLevel(level) GlobalPar::GetMcDebugLevel(level, typeid(*this).name())
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
