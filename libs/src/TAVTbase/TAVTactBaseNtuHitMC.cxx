@@ -141,7 +141,7 @@ void TAVTactBaseNtuHitMC::ComputeNoiseLevel()
 	   fNoisyPixelsN = TMath::Nint(fDigitizer->GetPixelsNx()*fDigitizer->GetPixelsNy()*(1.-fraction));
 	}
 	
-   FootDebug(1, "ComputeNoiseLevel()", Form("Number of noise pixels %d\n", fNoisyPixelsN));
+   FootDebugLine(1, "ComputeNoiseLevel()", Form("Number of noise pixels %d\n", fNoisyPixelsN));
 	
 	delete f;
 }

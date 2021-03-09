@@ -136,7 +136,7 @@ void TADIgeoField::FromFile(TString& fullFileName)
    
    ifile.close();
    
-   FootDebug(1, "FromFile()", "exiting");
+   FootDebugLine(1, "FromFile()", "exiting");
 }
 
 //______________________________________________________________________________

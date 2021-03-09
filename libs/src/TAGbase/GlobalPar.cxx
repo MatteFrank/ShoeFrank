@@ -579,7 +579,7 @@ Int_t GlobalPar::GetDebugLevel(const char* className)
 }
 
 //_____________________________________________________________________________
-void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, const char* format, const char* file, Int_t line)
+void GlobalPar::DebugLine(Int_t level, const char* className, const char* funcName, const char* format, const char* file, Int_t line)
 {
    // print the message
    if (level <= Instance()->GetDebugLevel(className)) {
@@ -589,17 +589,25 @@ void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, 
       fprintf(stdout, "%s\n", format);
 
       fprintf(stdout, " in file %s at line %d\n", file, line);
-
-//      if (format==NULL) return;
-//      va_list ap;
-//      va_start(ap, format);
-//      vfprintf(stdout, format, ap);
-//      fprintf(stdout, "\n");
-//      
-//      va_end(ap);
    }
 }
 
+//_____________________________________________________________________________
+void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, const char* format,...)
+{
+  // print the message
+  if (level <= Instance()->GetDebugLevel(className)) {
+    if (funcName)
+      fprintf(stdout, "Debug in <%s:%s>: ", className, funcName);
+    
+    if (format==NULL) return;
+    va_list ap;
+    va_start(ap, format);
+    vfprintf(stdout, format, ap);
+    fprintf(stdout, "\n");
+    va_end(ap);
+  }
+}
 
 //________________________________________________________________________________________
 void GlobalPar::Print(Option_t* opt) {
