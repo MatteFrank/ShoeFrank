@@ -22,7 +22,7 @@
 #include "TATWparGeo.hxx"
 #include "TATWparCal.hxx"
 #include "TATWdatRaw.hxx"
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 
 #include "TASTntuRaw.hxx"
 
@@ -80,7 +80,7 @@ private:
 
 private:
   //
-  TATWntuHit* fCurrentHit;
+  TATWhit* fCurrentHit;
   //
   Double_t GetRawEnergy(TATWrawHit*a,TATWrawHit*b);
   Double_t GetRawTime(TATWrawHit*a,TATWrawHit*b);

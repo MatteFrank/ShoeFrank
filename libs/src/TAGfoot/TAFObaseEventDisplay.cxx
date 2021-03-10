@@ -19,7 +19,7 @@
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"
 #include "TAMSDntuHit.hxx"
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"
 
@@ -1134,7 +1134,7 @@ void TAFObaseEventDisplay::UpdateBarElements()
 
    fFiredTofBar.clear();
 
-   TATWntuRaw* pNtuHit = fReco->GetNtuHitTw();
+   TATWntuHit* pNtuHit = fReco->GetNtuHitTw();
 
    for( Int_t iLayer = 0; iLayer < parGeo->GetLayersN(); iLayer++) {
 
@@ -1143,7 +1143,7 @@ void TAFObaseEventDisplay::UpdateBarElements()
 
       for (Int_t iHit = 0; iHit < nHits; ++iHit) {
 
-         TATWntuHit *hit = pNtuHit->GetHit(iHit, iLayer);
+         TATWhit *hit = pNtuHit->GetHit(iHit, iLayer);
         
          if (!hit->IsValid()) continue;
          if(!hit) continue;

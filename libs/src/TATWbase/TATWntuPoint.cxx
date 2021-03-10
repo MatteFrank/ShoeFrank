@@ -37,7 +37,7 @@ TATWpoint::TATWpoint()
 
 //______________________________________________________________________________
 //  build a point
-TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double dy, TATWntuHit* colHit, Int_t mainLayer )
+TATWpoint::TATWpoint( double x, double dx, TATWhit* rowHit, double y, double dy, TATWhit* colHit, Int_t mainLayer )
 : TAGcluster(),
    m_position(x, y, 0),
    m_posErr(dx, dy, 0),
@@ -45,8 +45,8 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double 
    m_posErrG(m_posErr),
    m_positionGlb(-99, -99, -99),
    m_posErrGlb(m_posErr),
-   m_rowHit(new TATWntuHit(*rowHit)),
-   m_columnHit(new TATWntuHit(*colHit)),
+   m_rowHit(new TATWhit(*rowHit)),
+   m_columnHit(new TATWhit(*colHit)),
    m_layer(mainLayer),
    m_id(-99),
    m_chargeZ(-99),
@@ -185,7 +185,7 @@ TATWntuPoint::~TATWntuPoint()
 
 //______________________________________________________________________________
 //  standard 
-TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWntuHit* rowHit, double y, double dy, TATWntuHit* colHit, int mainLayer) {
+TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWhit* rowHit, double y, double dy, TATWhit* colHit, int mainLayer) {
 
 	// check on aorigin
 	TClonesArray &pixelArray = *m_listOfPoints;

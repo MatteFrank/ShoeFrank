@@ -10,7 +10,7 @@
 
 #include "TAGroot.hxx"
 
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
 
 #include "TATWactNtuPoint.hxx"
@@ -35,7 +35,7 @@ TATWactNtuPoint::TATWactNtuPoint(const char* name, TAGdataDsc* pNtuRaw, TAGdataD
    fIsZmatch(isZmatch),
    fIsZMCtrue(isZmc)
 {
-   AddDataIn(pNtuRaw,   "TATWntuRaw");
+   AddDataIn(pNtuRaw,   "TATWntuHit");
    AddDataOut(pNtuPoint, "TATWntuPoint");
 
    AddPara(pGeoMap, "TATWparGeo");
@@ -113,7 +113,7 @@ Bool_t TATWactNtuPoint::Action()
 //  
 Bool_t TATWactNtuPoint::FindPoints()
 {
-   TATWntuRaw* pNtuHit      = (TATWntuRaw*) fpNtuRaw->Object();
+   TATWntuHit* pNtuHit      = (TATWntuHit*) fpNtuRaw->Object();
    TATWntuPoint* pNtuPoint  = (TATWntuPoint*) fpNtuPoint->Object();
 
    Bool_t isClustering=true;
@@ -138,7 +138,7 @@ Bool_t TATWactNtuPoint::FindPoints()
    fmapMultHit.clear();
    for (Int_t idx = 0; idx < nHitsX; ++idx) {  // loop over front TW hits
 
-     TATWntuHit* hitX = pNtuHit->GetHit(idx, LayerX);
+     TATWhit* hitX = pNtuHit->GetHit(idx, LayerX);
 
      if(FootDebugLevel(4))
        cout<<"Z_x::"<<hitX->GetChargeZ()<<"  bar_x::"<<hitX->GetBar()<<endl;
@@ -163,7 +163,7 @@ Bool_t TATWactNtuPoint::FindPoints()
    fmapMultHit.clear();
    for (Int_t idy = 0; idy < nHitsY; ++idy) {  // loop over front TW hits
 
-     TATWntuHit* hitY = pNtuHit->GetHit(idy, LayerY);
+     TATWhit* hitY = pNtuHit->GetHit(idy, LayerY);
      
      if(FootDebugLevel(4))
        cout<<"Z_y::"<<hitY->GetChargeZ()<<"  bar_y::"<<hitY->GetBar()<<endl;
@@ -234,7 +234,7 @@ Bool_t TATWactNtuPoint::FindPoints()
      
      for (Int_t ihit = 0; ihit < pNtuHit->GetHitN(); ++ihit) {  // loop over all TW hits
        
-       TATWntuHit *hit = pNtuHit->GetHit(ihit);
+       TATWhit *hit = pNtuHit->GetHit(ihit);
        Int_t layer = hit->GetLayer();
        
        if(!hit) continue;
@@ -288,7 +288,7 @@ Bool_t TATWactNtuPoint::FindPoints()
      for(auto it1=fmapMoreHits.begin(); it1!=fmapMoreHits.end(); ++it1) {
        
        Int_t id1 = it1->first;
-       TATWntuHit * hit1 = it1->second;
+       TATWhit * hit1 = it1->second;
        Int_t layer1 = hit1->GetLayer();
        Int_t bar1 = hit1->GetBar();
        
@@ -305,7 +305,7 @@ Bool_t TATWactNtuPoint::FindPoints()
        for(auto it2=fmapLessHits.begin(); it2!=fmapLessHits.end(); ++it2) {
 	 
      	 Int_t id2 = it2->first;
-     	 TATWntuHit * hit2 = it2->second;
+     	 TATWhit * hit2 = it2->second;
      	 Int_t layer2 = hit2->GetLayer();
      	 Int_t bar2 = hit2->GetBar();
 	 
@@ -323,7 +323,7 @@ Bool_t TATWactNtuPoint::FindPoints()
        
        if (best) {
 	 
-       	 TATWntuHit* hitmin = fmapLessHits[minId];
+       	 TATWhit* hitmin = fmapLessHits[minId];
        	 if(!hitmin) continue;
 
 	 if(FootDebugLevel(4))
@@ -400,7 +400,7 @@ Bool_t TATWactNtuPoint::FindPoints()
 
 
 //___________________________________________//
-Bool_t TATWactNtuPoint::IsMultHit(TATWntuHit *hit)
+Bool_t TATWactNtuPoint::IsMultHit(TATWhit *hit)
 {
 
   for (Int_t j = 0; j < hit->GetMcTracksN(); ++j) {
@@ -420,7 +420,7 @@ Bool_t TATWactNtuPoint::IsMultHit(TATWntuHit *hit)
   return false;
 }
 //___________________________________________//
-Double_t TATWactNtuPoint::GetPositionFromDeltaTime(Int_t layer, Int_t bar, TATWntuHit* hit) {
+Double_t TATWactNtuPoint::GetPositionFromDeltaTime(Int_t layer, Int_t bar, TATWhit* hit) {
 
      Double_t posAlongBar(-99), posPerpendicular(-99);
 
@@ -446,7 +446,7 @@ Double_t TATWactNtuPoint::GetPositionFromDeltaTime(Int_t layer, Int_t bar, TATWn
 
 //___________________________________________//
 
-Double_t TATWactNtuPoint::GetPositionFromBarCenter(Int_t layer, Int_t bar, TATWntuHit* hit) {
+Double_t TATWactNtuPoint::GetPositionFromBarCenter(Int_t layer, Int_t bar, TATWhit* hit) {
 
   Double_t posAlongBar(-99), posPerpendicular(-99);
 
@@ -495,7 +495,7 @@ TVector3 TATWactNtuPoint::GetLocalPointPosition(Int_t layer1, Double_t pos1, Int
 
 //___________________________________________________//
 
-TATWpoint* TATWactNtuPoint::SetTWPoint(TATWntuPoint* pNtuPoint, Int_t layer1, TATWntuHit* hit1, TATWntuHit* hitmin, TVector3 posLoc)
+TATWpoint* TATWactNtuPoint::SetTWPoint(TATWntuPoint* pNtuPoint, Int_t layer1, TATWhit* hit1, TATWhit* hitmin, TVector3 posLoc)
 {
 
   TATWpoint *point;    
@@ -513,7 +513,7 @@ TATWpoint* TATWactNtuPoint::SetTWPoint(TATWntuPoint* pNtuPoint, Int_t layer1, TA
 }
 
 //_____________________________________________________________________//
-Bool_t TATWactNtuPoint::IsPointWithMatchedZ(TATWntuHit* hit1, TATWntuHit* hitmin)
+Bool_t TATWactNtuPoint::IsPointWithMatchedZ(TATWhit* hit1, TATWhit* hitmin)
 {
 
   Int_t Z1 = hit1->GetChargeZ();

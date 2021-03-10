@@ -35,7 +35,7 @@
 
 #include "TATWparGeo.hxx"
 #include "TATWdatRaw.hxx"
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 
 
 #include "TAGgeoTrafo.hxx"
@@ -124,8 +124,8 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   // TATW_ContainerPoint *twpoint = new TATW_ContainerPoint();
   // tree->SetBranchAddress(TATW_ContainerPoint::GetBranchName(), &twpoint);
   
-  TATWntuRaw *twrh = new TATWntuRaw();
-  tree->SetBranchAddress(TATWntuRaw::GetBranchName(), &twrh);
+  TATWntuHit *twrh = new TATWntuHit();
+  tree->SetBranchAddress(TATWntuHit::GetBranchName(), &twrh);
   
   TAVTntuVertex* vtx      = new TAVTntuVertex();
   tree->SetBranchAddress(TAVTntuVertex::GetBranchName(), &vtx);
@@ -585,7 +585,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     // if(  twrh->GetHitN() > 0 ) {
     for (int i = 0; i < twrh->GetHitN(); i++) {
       
-      TATWntuHit *hit = twrh->Hit(i);;
+      TATWhit *hit = twrh->Hit(i);;
       int bar = hit->GetBar();
       int layer = hit->GetLayer();
       //    TVector3 posG = hit->GetPosition();

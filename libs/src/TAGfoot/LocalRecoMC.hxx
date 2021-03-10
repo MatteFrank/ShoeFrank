@@ -20,7 +20,7 @@
 #include "TAMCntuTrack.hxx"
 #include "TAMCactNtuTrack.hxx"
 
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
 
 #include "EventStruct.hxx"

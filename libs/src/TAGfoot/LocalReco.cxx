@@ -9,7 +9,7 @@
 #include "TAITntuHit.hxx"
 #include "TAMSDntuHit.hxx"
 #include "TATWdatRaw.hxx"
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 #include "TACAntuRaw.hxx"
 
 #include "TASTdatRaw.hxx"
@@ -123,7 +123,7 @@ void LocalReco::CreateRawAction()
 //   }
 
    if(GlobalPar::GetPar()->IncludeTW()) {
-      fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
+      fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuHit());
 
       if(GlobalPar::GetPar()->CalibTW()) {
 	fActCalibTw = new TATWactCalibTW("twActCalib", fpDatRawTw, fpNtuRawTw, fpNtuRawSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
@@ -132,7 +132,7 @@ void LocalReco::CreateRawAction()
 	
       } else {
 	
-	fActNtuRawTw = new TATWactNtuRaw("twActNtu", fpDatRawTw, fpNtuRawTw, fpNtuRawSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
+	fActNtuRawTw = new TATWactNtuHit("twActNtu", fpDatRawTw, fpNtuRawTw, fpNtuRawSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
 	if(GlobalPar::GetPar()->Debug()) fActNtuRawTw->SetDebugLevel(1);
 	if (fFlagHisto)
 	  fActNtuRawTw->CreateHistogram();
@@ -316,7 +316,7 @@ void LocalReco::SetTreeBranches()
      if (fFlagHits) {
          fActEvtWriter->SetupElementBranch(fpDatRawTw, TATWdatRaw::GetBranchName());
      }
-     fActEvtWriter->SetupElementBranch(fpNtuRawTw, TATWntuRaw::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuRawTw, TATWntuHit::GetBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeCA()) {

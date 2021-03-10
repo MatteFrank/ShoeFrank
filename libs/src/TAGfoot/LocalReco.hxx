@@ -20,7 +20,7 @@
 
 //#include "TAMSDactDatRaw.hxx"
 
-#include "TATWactNtuRaw.hxx"
+#include "TATWactNtuHit.hxx"
 #include "TACAactNtuRaw.hxx"
 
 #include "TAGdaqEvent.hxx"
@@ -75,7 +75,7 @@ private:
    TAITactNtuHit*        fActNtuRawIt;  // action for ntu data
 //   TAMSDactNtuRaw*       fActNtuRawMsd;  // action for ntu data
 
-   TATWactNtuRaw*        fActNtuRawTw;
+   TATWactNtuHit*        fActNtuRawTw;
 
    TACAactNtuRaw*        fActNtuRawCa;
 

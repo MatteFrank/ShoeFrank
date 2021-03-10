@@ -39,17 +39,17 @@ public:
    virtual Bool_t  FindPoints();
   
    //! Get Hit position
-   virtual Double_t  GetPositionFromDeltaTime(int layer, int bar, TATWntuHit* hit);
+   virtual Double_t  GetPositionFromDeltaTime(int layer, int bar, TATWhit* hit);
    //! Get Hit position
-   virtual Double_t  GetPositionFromBarCenter(int layer, int bar, TATWntuHit* hit);
+   virtual Double_t  GetPositionFromBarCenter(int layer, int bar, TATWhit* hit);
    //! Get Local Point position
    virtual TVector3  GetLocalPointPosition(int layer1, double pos1, int bar1, int bar2);
    //! Set TW Point
-   virtual TATWpoint* SetTWPoint(TATWntuPoint* ntuPoint, int layer, TATWntuHit* hit1, TATWntuHit* hit2, TVector3 pos);
+   virtual TATWpoint* SetTWPoint(TATWntuPoint* ntuPoint, int layer, TATWhit* hit1, TATWhit* hit2, TVector3 pos);
    // check if hits matched in the same TW point have same Z
-   virtual Bool_t IsPointWithMatchedZ(TATWntuHit* hit1, TATWntuHit* hitmin);
+   virtual Bool_t IsPointWithMatchedZ(TATWhit* hit1, TATWhit* hitmin);
    // IsMultHit return true if a MC track has hit multiple bars in the same layer (multi-Hit)
-   virtual Bool_t IsMultHit(TATWntuHit* hit);
+   virtual Bool_t IsMultHit(TATWhit* hit);
 
    //! Create histo
    void            CreateHistogram();
@@ -77,10 +77,10 @@ private:
    vector<TH1F*>   fpHisElossMean;
    vector<TH1F*>   fpHisTofMean;
 
-   map<Int_t,TATWntuHit*> fmapHitX;
-   map<Int_t,TATWntuHit*> fmapHitY;
-   map<Int_t,TATWntuHit*> fmapMoreHits;
-   map<Int_t,TATWntuHit*> fmapLessHits;
+   map<Int_t,TATWhit*> fmapHitX;
+   map<Int_t,TATWhit*> fmapHitY;
+   map<Int_t,TATWhit*> fmapMoreHits;
+   map<Int_t,TATWhit*> fmapLessHits;
 
    map<int,vector<int>> fmapMultHit;
 

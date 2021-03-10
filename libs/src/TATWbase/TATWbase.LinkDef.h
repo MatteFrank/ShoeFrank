@@ -11,14 +11,14 @@
 
 #pragma link C++ class TATWrawHit+;
 #pragma link C++ class TATWdatRaw+;
+#pragma link C++ class TATWhit+;
 #pragma link C++ class TATWntuHit+;
-#pragma link C++ class TATWntuRaw+;
 #pragma link C++ class TATWpoint+;
 #pragma link C++ class TATWntuPoint+;
 #pragma link C++ class TATWparMap+;
 #pragma link C++ class TATWparCal+;
 #pragma link C++ class TATWactCalibTW+;
-#pragma link C++ class TATWactNtuRaw+;
+#pragma link C++ class TATWactNtuHit+;
 #pragma link C++ class TATWactNtuHitMC+;
 #pragma link C++ class TATWactNtuPoint+;
 #pragma link C++ class TATWparGeo+;

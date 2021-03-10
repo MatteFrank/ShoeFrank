@@ -5,7 +5,7 @@
 
 #include "TAGbaseDigitizer.hxx"
 
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 
 /*!
  \file
@@ -25,7 +25,7 @@ class TF1;
 class TATWdigitizer : public TAGbaseDigitizer {
    
 public:
-   TATWdigitizer(TATWntuRaw* pNtuRaw);
+   TATWdigitizer(TATWntuHit* pNtuRaw);
    ~TATWdigitizer();
    
    void           SetFunctions();
@@ -64,13 +64,13 @@ public:
    Float_t        GetTimeRight(Float_t pos, Float_t time, Float_t edep);
    
    void           SetGain(Float_t g)   { fGain = g;          }
-   TATWntuHit*    GetCurrentHit()      { return fCurrentHit; }
+   TATWhit*    GetCurrentHit()      { return fCurrentHit; }
  
    void           ClearMap()           { fMap.clear();       }
    
 private:
-   TATWntuRaw*   fpNtuRaw;
-   TATWntuHit*   fCurrentHit;
+   TATWntuHit*   fpNtuRaw;
+   TATWhit*   fCurrentHit;
    TATWparGeo*   fpParGeo;
    
    // flags
@@ -144,7 +144,7 @@ private:
    Float_t       fSlatLength;
    Float_t       fGain;
    
-   map<int, TATWntuHit*> fMap; //! map for pilepup
+   map<int, TATWhit*> fMap; //! map for pilepup
    
    
 private:

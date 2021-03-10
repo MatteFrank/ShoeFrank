@@ -1,10 +1,10 @@
-#ifndef _TATWNtuRaw_HXX
-#define _TATWNtuRaw_HXX
+#ifndef _TATWntuHit_HXX
+#define _TATWntuHit_HXX
 
 /*!
  \File
- \version $Id: TATWntuRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
- \brief   Declaration of TATWntuRaw.
+ \version $Id: TATWntuHit.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+ \brief   Declaration of TATWntuHit.
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -23,7 +23,7 @@
 #include "TAGdata.hxx"
 #include "Parameters.h"
 
-class TATWntuHit : public TAGobject {
+class TATWhit : public TAGobject {
    
 private:
     Int_t    m_layer;
@@ -49,13 +49,13 @@ private:
     Bool_t   m_IsValid;
 
 public:
-  TATWntuHit();
-  TATWntuHit( TATWrawHit* hit );
-  TATWntuHit(const TATWntuHit& aHit);
-  TATWntuHit ( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTimeOth,
+  TATWhit();
+  TATWhit( TATWrawHit* hit );
+  TATWhit(const TATWhit& aHit);
+  TATWhit ( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTimeOth,
 		  	   Double_t pos,Double_t chargeCOM,Double_t ChargeA,
 	       Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeAOth,Double_t TimeBOth);
-  ~TATWntuHit() {};
+  ~TATWhit() {};
    void   Clear(Option_t* option = "C");
   bool IsColumn() { return ( m_layer == (Int_t)LayerY ? true : false ); };
   bool IsRow()    { return ( m_layer == (Int_t)LayerX ? true : false ); };
@@ -102,12 +102,12 @@ public:
    void      SetChargeTimeB(Double_t t)         { m_TimeB   = t;             }
    void      SetValid(Bool_t t)                 { m_IsValid   = t;           }
 
-  ClassDef(TATWntuHit,2)                            // Pixel or Pixel of a Detector Plane
+  ClassDef(TATWhit,2)                            // Pixel or Pixel of a Detector Plane
 };
 
 //##############################################################################
 
-class TATWntuRaw : public TAGdata {
+class TATWntuHit : public TAGdata {
    
 private:
     TClonesArray*        m_listOfHits;
@@ -116,19 +116,19 @@ private:
 
 
 public:
-    TATWntuRaw();
-    virtual          ~TATWntuRaw();
-  TATWntuHit* Hit(Int_t i_ind);
+    TATWntuHit();
+    virtual          ~TATWntuHit();
+  TATWhit* Hit(Int_t i_ind);
 
 
-   TATWntuHit*       NewHit( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
-		  	   	   	   	      Double_t pos,Double_t chargeCOM,Double_t ChargeA,
-			     Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth);
+   TATWhit*           NewHit( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
+                             Double_t pos,Double_t chargeCOM,Double_t ChargeA, Double_t ChargeB, Double_t AmplitudeA, Double_t AmplitudeB,
+                             Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth);
   
     int               GetHitN(int layer); 
-    int 			  GetHitN();
-    TATWntuHit*       GetHit( int hitID , int layer);
-  TATWntuHit* GetHit( int hitID); //Return the hitID hit without looking for expl layer
+    int 			       GetHitN();
+    TATWhit*          GetHit( int hitID , int layer);
+    TATWhit*          GetHit( int hitID); //Return the hitID hit without looking for expl layer
     
     
     virtual void      SetupClones();
@@ -145,7 +145,7 @@ private:
 public:
    static const Char_t* GetBranchName()   { return fgkBranchName.Data(); }
    
-   ClassDef(TATWntuRaw,1)
+   ClassDef(TATWntuHit,1)
 };
 
 #endif

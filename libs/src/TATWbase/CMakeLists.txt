@@ -21,12 +21,12 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 #
 set( with_dictionnaries
    TATWdatRaw
-   TATWntuRaw
+   TATWntuHit
    TATWntuPoint
    TATWparMap
    TATWparCal
    TATWactNtuHitMC
-   TATWactNtuRaw
+   TATWactNtuHit
    TATWactCalibTW
    TATWactNtuPoint
    TATWparGeo

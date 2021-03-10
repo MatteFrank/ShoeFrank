@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TATWactNtuRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
-  \brief   Implementation of TATWactNtuRaw.
+  \version $Id: TATWactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+  \brief   Implementation of TATWactNtuHit.
 */
 
 #include <map>
@@ -10,20 +10,20 @@
 #include "TMath.h"
 #include "TH1F.h"
 
-#include "TATWactNtuRaw.hxx"
+#include "TATWactNtuHit.hxx"
 #include "TATWcalibrationMap.hxx"
 
 /*!
-  \class TATWactNtuRaw TATWactNtuRaw.hxx "TATWactNtuRaw.hxx"
+  \class TATWactNtuHit TATWactNtuHit.hxx "TATWactNtuHit.hxx"
   \brief Get Beam Monitor raw data from WD. **
 */
 
-ClassImp(TATWactNtuRaw);
+ClassImp(TATWactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TATWactNtuRaw::TATWactNtuRaw(const char* name,
+TATWactNtuHit::TATWactNtuHit(const char* name,
 			     TAGdataDsc* p_datraw, 
 			     TAGdataDsc* p_nturaw,
 			     TAGdataDsc* p_STnturaw,
@@ -31,7 +31,7 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
 			     TAGparaDsc* p_parmap,
 			     TAGparaDsc* p_calmap,
 			     TAGparaDsc* p_pargeoG)
-  : TAGaction(name, "TATWactNtuRaw - Unpack TW raw data"),
+  : TAGaction(name, "TATWactNtuHit - Unpack TW raw data"),
     fpDatRaw(p_datraw),
     fpNtuRaw(p_nturaw),
     fpSTNtuRaw(p_STnturaw),
@@ -51,7 +51,7 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
 
   AddDataIn(p_datraw, "TATWdatRaw");
   AddDataIn(p_STnturaw, "TASTntuRaw");
-  AddDataOut(p_nturaw, "TATWntuRaw");
+  AddDataOut(p_nturaw, "TATWntuHit");
 
   AddPara(p_pargeom, "TATWparGeo");
   AddPara(p_parmap, "TATWparMap");
@@ -90,12 +90,12 @@ TATWactNtuRaw::TATWactNtuRaw(const char* name,
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TATWactNtuRaw::~TATWactNtuRaw()
+TATWactNtuHit::~TATWactNtuHit()
 {}
 
 //------------------------------------------+-----------------------------------
 //! Setup all histograms.
-void TATWactNtuRaw::CreateHistogram()
+void TATWactNtuHit::CreateHistogram()
 {
 
   DeleteHistogram();
@@ -137,11 +137,11 @@ void TATWactNtuRaw::CreateHistogram()
 //------------------------------------------+-----------------------------------
 //! Action.
 
-Bool_t TATWactNtuRaw::Action() {
+Bool_t TATWactNtuHit::Action() {
 
   TATWdatRaw*   p_datraw = (TATWdatRaw*) fpDatRaw->Object();
   TASTntuRaw*   p_STnturaw = (TASTntuRaw*)  fpSTNtuRaw->Object();
-  TATWntuRaw*   p_nturaw = (TATWntuRaw*)  fpNtuRaw->Object();
+  TATWntuHit*   p_nturaw = (TATWntuHit*)  fpNtuRaw->Object();
 
   //////////// Time Trigger info from ST ///////////////
   
@@ -187,7 +187,7 @@ Bool_t TATWactNtuRaw::Action() {
   }
 
   // create map to store hits for calibration purpose
-  map< Int_t,vector<TATWntuHit*> > hitMap;
+  map< Int_t,vector<TATWhit*> > hitMap;
   hitMap.clear();
 
   // loop over all the bars
@@ -270,7 +270,7 @@ Bool_t TATWactNtuRaw::Action() {
 	    }
 
 
-	    fCurrentHit = (TATWntuHit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,TimeOth,posAlongBar,chargeCOM,ChargeA,ChargeB,AmplitudeA, AmplitudeB,TimeA,TimeB,TimeAOth,TimeBOth);
+	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,TimeOth,posAlongBar,chargeCOM,ChargeA,ChargeB,AmplitudeA, AmplitudeB,TimeA,TimeB,TimeAOth,TimeBOth);
 
 	    Int_t Zrec = f_parcal->GetChargeZ(Energy,Time,Layer);
 	    fCurrentHit->SetChargeZ(Zrec);
@@ -306,7 +306,7 @@ Bool_t TATWactNtuRaw::Action() {
 
 //________________________________________________________________
 
-Double_t TATWactNtuRaw::GetRawEnergy(TATWrawHit*a,TATWrawHit*b)
+Double_t TATWactNtuHit::GetRawEnergy(TATWrawHit*a,TATWrawHit*b)
 {
 
   // if the waveform is strange/corrupted it is likely that the charge is <0
@@ -320,7 +320,7 @@ Double_t TATWactNtuRaw::GetRawEnergy(TATWrawHit*a,TATWrawHit*b)
 }
 //________________________________________________________________
 
-Double_t TATWactNtuRaw::GetEnergy(Double_t rawenergy, Int_t layerId, Int_t posId, Int_t barId)
+Double_t TATWactNtuHit::GetEnergy(Double_t rawenergy, Int_t layerId, Int_t posId, Int_t barId)
 {
   if ( rawenergy<0 || posId<0 || posId>=nSlatCross || (layerId!=LayerX && layerId!=LayerY) )
     {
@@ -369,7 +369,7 @@ Double_t TATWactNtuRaw::GetEnergy(Double_t rawenergy, Int_t layerId, Int_t posId
 
 //________________________________________________________________
 
-Double_t TATWactNtuRaw::GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b)
+Double_t TATWactNtuHit::GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b)
 {
 
   if (a->GetCharge()<0 || b->GetCharge()<0)
@@ -382,21 +382,21 @@ Double_t TATWactNtuRaw::GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b)
 
 //________________________________________________________________
 
-Double_t TATWactNtuRaw::GetRawTime(TATWrawHit*a,TATWrawHit*b)
+Double_t TATWactNtuHit::GetRawTime(TATWrawHit*a,TATWrawHit*b)
 {
   return (a->GetTime()+b->GetTime())/2;
 }
 
 //________________________________________________________________
 
-Double_t TATWactNtuRaw::GetRawTimeOth(TATWrawHit*a,TATWrawHit*b)
+Double_t TATWactNtuHit::GetRawTimeOth(TATWrawHit*a,TATWrawHit*b)
 {
   return (a->GetTimeOth()+b->GetTimeOth())/2;
 }
 
 //________________________________________________________________
 
-Double_t  TATWactNtuRaw::GetTime(Double_t RawTime, Int_t layerId, Int_t posId, Int_t barId)
+Double_t  TATWactNtuHit::GetTime(Double_t RawTime, Int_t layerId, Int_t posId, Int_t barId)
 {
 
   if ( posId<0 || posId>=nSlatCross || (layerId!=LayerX && layerId!=LayerY) )
@@ -427,7 +427,7 @@ Double_t  TATWactNtuRaw::GetTime(Double_t RawTime, Int_t layerId, Int_t posId, I
 }
 //________________________________________________________________
 
-Double_t  TATWactNtuRaw::GetTimeOth(Double_t RawTimeOth, Int_t layerId, Int_t posId, Int_t barId)
+Double_t  TATWactNtuHit::GetTimeOth(Double_t RawTimeOth, Int_t layerId, Int_t posId, Int_t barId)
 {
 
     if ( posId<0 || posId>=nSlatCross || (layerId!=LayerX && layerId!=LayerY) )
@@ -461,7 +461,7 @@ Double_t  TATWactNtuRaw::GetTimeOth(Double_t RawTimeOth, Int_t layerId, Int_t po
 
 //________________________________________________________________
 
-Double_t TATWactNtuRaw::GetPosition(TATWrawHit*a,TATWrawHit*b)
+Double_t TATWactNtuHit::GetPosition(TATWrawHit*a,TATWrawHit*b)
 {
   return (b->GetTime() - a->GetTime())/(2*fTofPropAlpha);  // local (TW) ref frame
   // A <----------- B
@@ -469,7 +469,7 @@ Double_t TATWactNtuRaw::GetPosition(TATWrawHit*a,TATWrawHit*b)
 
 //________________________________________________________________
 
-Int_t TATWactNtuRaw::GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos)
+Int_t TATWactNtuHit::GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos)
 {
   
   Int_t barX(-1), barY(-1);  // id of horizontal and vertical bars
@@ -510,7 +510,7 @@ Int_t TATWactNtuRaw::GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos)
 
 //_____________________________________________________________________________
 
-Int_t TATWactNtuRaw::GetPerpBarId(Int_t layer, Int_t barId, Double_t rawPos)
+Int_t TATWactNtuHit::GetPerpBarId(Int_t layer, Int_t barId, Double_t rawPos)
 {
 
   Double_t xloc(-99.), yloc(-99.);

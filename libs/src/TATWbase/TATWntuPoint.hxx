@@ -14,7 +14,7 @@
 #include "TVector3.h"
 
 #include "TAGcluster.hxx"
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 
 
 /** TATWpoint class is the scintillator hit reconstructed by the intersection of 2 hits on a
@@ -46,8 +46,8 @@ private:
    int         m_row;           // row number
    int         m_column;        // column number
    
-   TATWntuHit*   m_rowHit;      // hit col
-   TATWntuHit*   m_columnHit;   // hit column
+   TATWhit*   m_rowHit;      // hit col
+   TATWhit*   m_columnHit;   // hit column
    
    Double32_t  m_de1;           // energy loss in the scintillator bars layer 1
    Double32_t  m_de2;           // energy loss in the scintillator bars layer 2
@@ -65,7 +65,7 @@ private:
 public:
    
   TATWpoint();
-  TATWpoint( double x, double dx, TATWntuHit* hitX, double y, double dy, TATWntuHit* hitY, Int_t mainLayer );
+  TATWpoint( double x, double dx, TATWhit* hitX, double y, double dy, TATWhit* hitY, Int_t mainLayer );
   ~TATWpoint() {};
   
   //    All the Get methods
@@ -84,8 +84,8 @@ public:
   int       GetRow()      const  { return m_rowHit->GetBar(); }
   int       GetColumn()         const  { return m_columnHit->GetBar();    }
   
-  TATWntuHit* GetRowHit()	const	 { return m_rowHit;           }
-  TATWntuHit* GetColumnHit()      const	 { return m_columnHit;              }
+  TATWhit* GetRowHit()	const	 { return m_rowHit;           }
+  TATWhit* GetColumnHit()      const	 { return m_columnHit;              }
   
   double    GetEnergyLoss1() const  { return m_de1;                 }
   double    GetEnergyLoss2() const  { return m_de2;                 }
@@ -132,7 +132,7 @@ public:
   TATWntuPoint();
   virtual ~TATWntuPoint();
 	
-  TATWpoint*          NewPoint( double x, double dx, TATWntuHit* hitX, double y, double dy, TATWntuHit* hitY, Int_t mainLayer );
+  TATWpoint*          NewPoint( double x, double dx, TATWhit* hitX, double y, double dy, TATWhit* hitY, Int_t mainLayer );
 
   int                 GetPointN() const;
   TATWpoint*          GetPoint( int iPoint ) const;

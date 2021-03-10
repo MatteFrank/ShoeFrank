@@ -30,7 +30,7 @@
 #include "TATWparTime.hxx"
 #include "TASTdatRaw.hxx"
 #include "TATWdatRaw.hxx"
-#include "TATWactNtuRaw.hxx"
+#include "TATWactNtuHit.hxx"
 #include "TAGactWDreader.hxx"
 #include "TASTactNtuRaw.hxx"
 
@@ -50,7 +50,7 @@
 TAGactDaqReader*  daqActReader = 0x0;
 TABMactDatRaw* bmActDatRaw  = 0x0;
 TAGactWDreader*      wdActRaw  = 0x0;
-//~ TATWactNtuRaw*      twActNtu  = 0x0;
+//~ TATWactNtuHit*      twActNtu  = 0x0;
 TASTactNtuRaw*   stActNtuRaw  = 0x0;
 
 void FillStBm(TString expName) {
@@ -139,8 +139,8 @@ void FillStBm(TString expName) {
   TAGdataDsc* stDat   = new TAGdataDsc("stDat", new TASTdatRaw());
   TAGdataDsc* twDat   = new TAGdataDsc("twdDat", new TATWdatRaw());
   wdActRaw  = new TAGactWDreader("wdActRaw", twDaq, stDat, twDat, parMapSt, parMapTw, parTimeSt, parTimeTw);
-  TAGdataDsc* twNtu  = new TAGdataDsc("twNtu", new TATWntuRaw());
-  //~ twActNtu  = new TATWactNtuRaw("twNtuRaw", twDat, twNtu, parGeoTw, parMapTw, parCalTw);
+  TAGdataDsc* twNtu  = new TAGdataDsc("twNtu", new TATWntuHit());
+  //~ twActNtu  = new TATWactNtuHit("twNtuRaw", twDat, twNtu, parGeoTw, parMapTw, parCalTw);
   TAGdataDsc* stNtuRaw   = new TAGdataDsc("stNtu", new TASTntuRaw());
   stActNtuRaw = new TASTactNtuRaw("stActNtuRaw", stDat, stNtuRaw, parMapSt);
 

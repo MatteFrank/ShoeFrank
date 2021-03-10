@@ -13,7 +13,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 #include "TATWparGeo.hxx"
 
 #include "TAGgeoTrafo.hxx"
@@ -87,8 +87,8 @@ private:
    vector<TH1F*> fpHisDistZ;
    vector<TH1D*> fpHisResPos;
    
-   map<int, TATWntuHit*> fMapPU; //! map for pilepup
-   vector<TATWntuHit*> fVecPuOff; //! vector for pilepup Off
+   map<int, TATWhit*> fMapPU; //! map for pilepup
+   vector<TATWhit*> fVecPuOff; //! vector for pilepup Off
    
 private:
    void          CreateDigitizer();

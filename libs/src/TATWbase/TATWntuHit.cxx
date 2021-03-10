@@ -1,10 +1,10 @@
 /*!
-  \class TATWntuRaw TATWntuRaw.hxx "TATWntuRaw.hxx"
+  \class TATWntuHit TATWntuHit.hxx "TATWntuHit.hxx"
   \brief Container class for VTX ntu hit **
  */
 
 ////////////////////////////////////////////////////////////
-// Class Description of TATWntuHit                        //
+// Class Description of TATWhit                        //
 //                                                        //
 //                                                        //
 ////////////////////////////////////////////////////////////
@@ -13,14 +13,14 @@
 #include "TString.h"
 #include "TClonesArray.h"
 
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 
-ClassImp(TATWntuHit) // Description of Single Detector TATWntuHit 
+ClassImp(TATWhit) // Description of Single Detector TATWhit 
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TATWntuHit::TATWntuHit()
+TATWhit::TATWhit()
   : m_layer(-1),
     m_bar(-1),
     m_de(-1),
@@ -46,7 +46,7 @@ TATWntuHit::TATWntuHit()
 
 //______________________________________________________________________________
 //  build a hit from a rawHit
-TATWntuHit::TATWntuHit( TATWrawHit* hit )
+TATWhit::TATWhit( TATWrawHit* hit )
 : TAGobject(),
   m_layer(-1),
   m_bar(-1),
@@ -72,7 +72,7 @@ TATWntuHit::TATWntuHit( TATWrawHit* hit )
 
 //______________________________________________________________________________
 //
-TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
+TATWhit::TATWhit(const TATWhit& aHit)
 :  TAGobject(aHit),
    m_layer(aHit.m_layer),
    m_bar(aHit.m_bar),
@@ -100,7 +100,7 @@ TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
 
 //______________________________________________________________________________
 // Build the hit from its layerID and barID
-TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
+TATWhit::TATWhit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
 			Double_t pos,Double_t chargeCOM,Double_t ChargeA,
 			Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth):
   
@@ -129,7 +129,7 @@ TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, D
 
 //______________________________________________________________________________
 //
-void TATWntuHit::AddMcTrackIdx(Int_t trackId, Int_t mcId)
+void TATWhit::AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
 	m_MCindex.Set(m_MCindex.GetSize()+1);
 	m_MCindex[m_MCindex.GetSize()-1]   = mcId;
@@ -139,7 +139,7 @@ void TATWntuHit::AddMcTrackIdx(Int_t trackId, Int_t mcId)
 
 //______________________________________________________________________________
 //
-void TATWntuHit::Clear(Option_t* /*option*/)
+void TATWhit::Clear(Option_t* /*option*/)
 {
 	m_MCindex.Set(0);
 	m_McTrackId.Set(0);
@@ -167,13 +167,13 @@ void TATWntuHit::Clear(Option_t* /*option*/)
 
 //##############################################################################
 
-ClassImp(TATWntuRaw);
-TString TATWntuRaw::fgkBranchName   = "twrh.";
+ClassImp(TATWntuHit);
+TString TATWntuHit::fgkBranchName   = "twrh.";
 
 
 //------------------------------------------+-----------------------------------
 //! 
-TATWntuRaw::TATWntuRaw() 
+TATWntuHit::TATWntuHit() 
 : TAGdata(),
   m_listOfHits(0x0)
 {
@@ -184,20 +184,20 @@ TATWntuRaw::TATWntuRaw()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TATWntuRaw::~TATWntuRaw()
+TATWntuHit::~TATWntuHit()
 {
 	delete m_listOfHits;
 }
 
 //______________________________________________________________________________
 //  standard
-TATWntuHit* TATWntuRaw::NewHit( int layer, int bar, double energyLoss, double atime, double atime_oth, double pos,double chargeCOM,
+TATWhit* TATWntuHit::NewHit( int layer, int bar, double energyLoss, double atime, double atime_oth, double pos,double chargeCOM,
 				double ChargeA, double ChargeB, double AmplitudeA, double AmplitudeB, double TimeA, double TimeB, double TimeA_oth, double TimeB_oth) {
 
 	TClonesArray &pixelArray = *m_listOfHits;
 	if(layer == (int)LayerY) m_hitlayY++;
 	else   if(layer == (int)LayerX) m_hitlayX++;
-	TATWntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWntuHit( layer, bar, energyLoss, atime, atime_oth, pos,
+	TATWhit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWhit( layer, bar, energyLoss, atime, atime_oth, pos,
 										   chargeCOM,ChargeA, ChargeB, AmplitudeA, AmplitudeB, TimeA, TimeB,  TimeA_oth, TimeB_oth);
 
 
@@ -206,7 +206,7 @@ TATWntuHit* TATWntuRaw::NewHit( int layer, int bar, double energyLoss, double at
 
 //------------------------------------------+-----------------------------------
 //! return number of hits for a given sensor.  
-int TATWntuRaw::GetHitN(int layer) {
+int TATWntuHit::GetHitN(int layer) {
 
   if(layer == (int)LayerY) return m_hitlayY;
   else if(layer == (int)LayerX) return m_hitlayX;
@@ -214,29 +214,29 @@ int TATWntuRaw::GetHitN(int layer) {
 
 }
 
-int TATWntuRaw::GetHitN()
+int TATWntuHit::GetHitN()
 {
 	return m_hitlayY+m_hitlayX;
 }
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th hit
 
-TATWntuHit* TATWntuRaw::Hit(Int_t i)
+TATWhit* TATWntuHit::Hit(Int_t i)
 {
-	return (TATWntuHit*) ((*m_listOfHits)[i]);;
+	return (TATWhit*) ((*m_listOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TATWntuHit* TATWntuRaw::GetHit( int hitID, int layer ) {
+TATWhit* TATWntuHit::GetHit( int hitID, int layer ) {
 	int tmpId(0);
 	for(int iD=0; iD<m_listOfHits->GetEntries(); iD++)
 	{
-		int CurrentLayer=((TATWntuHit*)m_listOfHits->At(iD))->GetLayer();
+		int CurrentLayer=((TATWhit*)m_listOfHits->At(iD))->GetLayer();
 		if(CurrentLayer == layer)
 		{
 			if(tmpId == hitID)
-				return (TATWntuHit*)(m_listOfHits->At(iD));
+				return (TATWhit*)(m_listOfHits->At(iD));
 			tmpId++;
 
 		}
@@ -246,27 +246,27 @@ TATWntuHit* TATWntuRaw::GetHit( int hitID, int layer ) {
 
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TATWntuHit* TATWntuRaw::GetHit( int hitID) {
+TATWhit* TATWntuHit::GetHit( int hitID) {
 
   if(hitID<m_listOfHits->GetEntries())
-    return (TATWntuHit*)(m_listOfHits->At(hitID));
+    return (TATWhit*)(m_listOfHits->At(hitID));
   else
     return nullptr;
 
 }
 
 //------------------------------------------+-----------------------------------
-TClonesArray* TATWntuRaw::GetListOfHits() {
+TClonesArray* TATWntuHit::GetListOfHits() {
 
 	return m_listOfHits;
 }
 
 //------------------------------------------+-----------------------------------
 //! Setup clones. Crate and initialise the list of pixels
-void TATWntuRaw::SetupClones()   {
+void TATWntuHit::SetupClones()   {
 
 	if (m_listOfHits) return;
-	m_listOfHits = new TClonesArray("TATWntuHit");
+	m_listOfHits = new TClonesArray("TATWhit");
 	//    m_listOfHits->SetOwner(true);
 
 }
@@ -274,7 +274,7 @@ void TATWntuRaw::SetupClones()   {
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
-void TATWntuRaw::Clear(Option_t*) {
+void TATWntuHit::Clear(Option_t*) {
 
 	TAGdata::Clear();
 	m_listOfHits->Clear();
@@ -285,18 +285,18 @@ void TATWntuRaw::Clear(Option_t*) {
 
 //------------------------------------------+-----------------------------------
 //! ostream insertion.
-void TATWntuRaw::ToStream(ostream& os, Option_t* option) const
+void TATWntuHit::ToStream(ostream& os, Option_t* option) const
 {
 	// for (Int_t i = 0; i < m_vtxGeo->GetNSensors(); ++i) {
 
-	// os << "TATWntuRaw " << GetName()
+	// os << "TATWntuHit " << GetName()
 	// << Form("  nPixels=%3d", GetPixelsN(i))
 	// << endl;
 
 	// //TODO properly
 	// //os << "slat stat    adct    adcb    tdct    tdcb" << endl;
 	// for (Int_t j = 0; j < GetPixelsN(i); j++) {  // all by default
-	// const TATWntuHit*  pixel = GetPixel(i,j, "all");
+	// const TATWhit*  pixel = GetPixel(i,j, "all");
 	// if (pixel)
 	// os << Form("%4d", pixel->GetPixelIndex());
 	// os << endl;

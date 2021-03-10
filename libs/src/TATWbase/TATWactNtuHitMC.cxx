@@ -53,7 +53,7 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
      AddDataIn(p_ntuStMC, "TAMCntuHit");
      AddDataIn(p_ntuEve, "TAMCntuTrack");
    } 
-   AddDataOut(p_hitraw, "TATWntuRaw");
+   AddDataOut(p_hitraw, "TATWntuHit");
    AddPara(p_parcal,"TATWparCal");
    AddPara(p_parGeoG,"TAGparGeo");
    
@@ -170,7 +170,7 @@ void TATWactNtuHitMC::CreateHistogram()
 //! Create digitizer
 void TATWactNtuHitMC::CreateDigitizer()
 {
-   TATWntuRaw* pNtuRaw = (TATWntuRaw*) fpNtuRaw->Object();
+   TATWntuHit* pNtuRaw = (TATWntuHit*) fpNtuRaw->Object();
    
    fDigitizer = new TATWdigitizer(pNtuRaw);
 }
@@ -334,7 +334,7 @@ bool TATWactNtuHitMC::Action() {
       
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, timeST, time, barId, Z);
       
-      TATWntuHit* hit = fDigitizer->GetCurrentHit();
+      TATWhit* hit = fDigitizer->GetCurrentHit();
       hit->AddMcTrackIdx(trackId, i);
       
       fMapPU[barId] = hit;
@@ -353,7 +353,7 @@ bool TATWactNtuHitMC::Action() {
      
      for(auto it=fVecPuOff.begin(); it !=fVecPuOff.end(); ++it) {
        
-       TATWntuHit* hit = *it;
+       TATWhit* hit = *it;
        
        Int_t layer = hit->GetLayer();
        Int_t bar = hit->GetBar();
@@ -444,7 +444,7 @@ bool TATWactNtuHitMC::Action() {
      
      for(auto it=fMapPU.begin(); it !=fMapPU.end(); ++it) {
        
-       TATWntuHit* hit = it->second;
+       TATWhit* hit = it->second;
        
        Int_t layer = hit->GetLayer();
        Int_t bar = hit->GetBar();

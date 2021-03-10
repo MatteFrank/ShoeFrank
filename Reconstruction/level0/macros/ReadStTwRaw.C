@@ -33,7 +33,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 #include "TAGactWDreader.hxx"
-#include "TATWactNtuRaw.hxx"
+#include "TATWactNtuHit.hxx"
 
 #endif
 
@@ -41,7 +41,7 @@
 TAGactTreeWriter*   outFile   = 0x0;
 TAGactDaqReader*    daqActReader = 0x0;
 TAGactWDreader*      wdActRaw  = 0x0;
-TATWactNtuRaw*      twActNtu  = 0x0;
+TATWactNtuHit*      twActNtu  = 0x0;
 
 void FillStTw()
 {
@@ -87,13 +87,13 @@ void FillStTw()
    wdActRaw  = new TAGactWDreader("wdActRaw", twDaq, stDat, twDat, parMapSt, parMapTw, parTimeSt, parTimeTw);
    wdActRaw->CreateHistogram();
    
-   TAGdataDsc* twNtu  = new TAGdataDsc("twNtu", new TATWntuRaw());
-   twActNtu  = new TATWactNtuRaw("twNtuRaw", twDat, twNtu, parGeoTw, parMapTw, parCalTw);
+   TAGdataDsc* twNtu  = new TAGdataDsc("twNtu", new TATWntuHit());
+   twActNtu  = new TATWactNtuHit("twNtuRaw", twDat, twNtu, parGeoTw, parMapTw, parCalTw);
    twActNtu->CreateHistogram();
    
    //   outFile->SetupElementBranch(stDat, TASTdatRaw::GetBranchName());
    //   outFile->SetupElementBranch(twDat, TASTdatRaw::GetBranchName());
-   outFile->SetupElementBranch(twNtu, TATWntuRaw::GetBranchName());
+   outFile->SetupElementBranch(twNtu, TATWntuHit::GetBranchName());
 }
 
 void ReadStTwRaw(TString filename = "data/data_built.2242.physics_foot.daq.VTX.1.dat", Int_t nMaxEvts = 100)

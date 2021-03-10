@@ -875,8 +875,8 @@ int KFitter::UploadHitsTW() {
     //get MC info without calling TAMChit
     Int_t idx = GetTWTrackFixed( point );
     //test access to rowhit of TW point to avoid -1
-    //TATWntuHit* testRowHit = 0x0;
-    //TATWntuHit* testColHit = 0x0;
+    //TATWhit* testRowHit = 0x0;
+    //TATWhit* testColHit = 0x0;
     //testRowHit = point->GetRowHit();
     //testColHit = point->GetColumnHit();
     //if (!testRowHit) {ofs << " !testRowHit " <<endl; continue;}
@@ -938,8 +938,8 @@ int KFitter::GetTWTrackFixed (TATWpoint* pointToCheck){
     int index = pointToCheck->GetMcTrackIdx(0);
     if ( index != -1 ) return index;
   }
-  TATWntuHit* rowHit = pointToCheck->GetRowHit();
-  TATWntuHit* colHit = pointToCheck->GetColumnHit();
+  TATWhit* rowHit = pointToCheck->GetRowHit();
+  TATWhit* colHit = pointToCheck->GetColumnHit();
   int matching = -1;
   for (int iRow = 0; iRow < rowHit->GetMcTracksN(); ++iRow){
     for (int iCol = 0; iCol < colHit->GetMcTracksN(); ++iCol){

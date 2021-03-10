@@ -47,7 +47,7 @@ TATWactCalibTW::TATWactCalibTW(const char* name,
 
   AddDataIn(p_datraw, "TATWdatRaw");
   AddDataIn(p_STnturaw, "TASTntuRaw");
-  AddDataOut(p_nturaw, "TATWntuRaw");
+  AddDataOut(p_nturaw, "TATWntuHit");
 
   AddPara(p_pargeom, "TATWparGeo");
   AddPara(p_parmap, "TATWparMap");
@@ -115,7 +115,7 @@ Bool_t TATWactCalibTW::Action() {
 
   TATWdatRaw*   p_datraw = (TATWdatRaw*) fpDatRaw->Object();
   TASTntuRaw*   p_STnturaw = (TASTntuRaw*)  fpSTNtuRaw->Object();
-  TATWntuRaw*   p_nturaw = (TATWntuRaw*)  fpNtuRaw->Object();
+  TATWntuHit*   p_nturaw = (TATWntuHit*)  fpNtuRaw->Object();
 
   //////////// Time Trigger info from ST ///////////////
 
