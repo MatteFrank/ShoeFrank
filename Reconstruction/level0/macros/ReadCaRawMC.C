@@ -23,7 +23,7 @@
 
 #include "TAGparGeo.hxx"
 #include "TACAparGeo.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 
 #include "TACAactNtuMC.hxx"
 
@@ -48,12 +48,12 @@ void FillMCCa(EVENT_STRUCT *myStr, Int_t runNumber) {
    parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName);
    
-   TAGdataDsc* caRaw    = new TAGdataDsc("caRaw", new TACAntuRaw());
+   TAGdataDsc* caRaw    = new TAGdataDsc("caRaw", new TACAntuHit());
    
    caActRaw  = new TACAactNtuMC("caActRaw", caRaw, caGeo, gGeo, myStr);
    caActRaw->CreateHistogram();
    
-   outFile->SetupElementBranch(caRaw, TACAntuRaw::GetBranchName());
+   outFile->SetupElementBranch(caRaw, TACAntuHit::GetBranchName());
 }
 
 void ReadCaRawMC(TString name = "16O_C2H4_200_1.root", TString expName = "16O_200", Int_t runNumber = 1)
