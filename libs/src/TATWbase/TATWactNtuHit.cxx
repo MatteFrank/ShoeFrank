@@ -107,23 +107,23 @@ void TATWactNtuHit::CreateHistogram()
   AddHistogram(fpHisTimeTot);
    
   for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
-    fpHisElossTof_layer[ilayer] = new TH2D(Form("dE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),500,0.,50.,480,0.,120.);
+    fpHisElossTof_layer[ilayer] = new TH2D(Form("twdE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),500,0.,50.,480,0.,120.);
     AddHistogram(fpHisElossTof_layer[ilayer]);
   }
   
   for(int iZ=1; iZ < fZbeam+1; iZ++) {
     
-    fpHisElossTof_Z.push_back( new TH2D(Form("dE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),5000,0.,50.,480,0.,120.) );
+    fpHisElossTof_Z.push_back( new TH2D(Form("twdE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),5000,0.,50.,480,0.,120.) );
 
     AddHistogram(fpHisElossTof_Z[iZ-1]);
 
-    fpHisTof_Z.push_back( new TH1D(Form("hTof_Z%d",iZ),Form("hTof_%d",iZ),5000,0.,50.) );
+    fpHisTof_Z.push_back( new TH1D(Form("twTof_Z%d",iZ),Form("hTof_%d",iZ),5000,0.,50.) );
 
     AddHistogram(fpHisTof_Z[iZ-1]);
 
     for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
       
-      fpHisEloss_Z[ilayer].push_back( new TH1D(Form("hEloss_Z%d_lay%d",iZ,ilayer),Form("hEloss_%d_lay%d",iZ,ilayer),200,0.,100.) );
+      fpHisEloss_Z[ilayer].push_back( new TH1D(Form("twEloss_Z%d_lay%d",iZ,ilayer),Form("hEloss_%d_lay%d",iZ,ilayer),200,0.,100.) );
 
       AddHistogram(fpHisEloss_Z[ilayer][iZ-1]);
     }
