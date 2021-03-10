@@ -24,8 +24,8 @@
 #include "TABMparConf.hxx"
 #include "TASTdatRaw.hxx"
 #include "TABMdatRaw.hxx"
-#include "TABMntuRaw.hxx"
-#include "TABMactNtuRaw.hxx"
+#include "TABMntuHit.hxx"
+#include "TABMactNtuHit.hxx"
 #include "TABMactVmeReader.hxx"
 #include "TABMactNtuTrack.hxx"
 
@@ -36,7 +36,7 @@
 // main
 TAGactTreeWriter* outFile   = 0x0;
 TABMactVmeReader* bmActVmeReader  = 0x0;
-TABMactNtuRaw* bmActNtuRaw  = 0x0;
+TABMactNtuHit* bmActNtuRaw  = 0x0;
 TABMactNtuTrack* bmActTrack = 0x0;
 
 void FillBmVME(TString name, Int_t myexpcode) {
@@ -80,8 +80,8 @@ void FillBmVME(TString name, Int_t myexpcode) {
   bmActVmeReader->CreateHistogram();
 
 
-  TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuRaw());
-  bmActNtuRaw  = new TABMactNtuRaw("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
+  TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuHit());
+  bmActNtuRaw  = new TABMactNtuHit("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
   bmActNtuRaw->CreateHistogram();   
   
   TAGdataDsc* bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
@@ -90,7 +90,7 @@ void FillBmVME(TString name, Int_t myexpcode) {
 
   cout<<"end of FillBmVME"<<endl;
 
-  outFile->SetupElementBranch(bmNtuRaw, TABMntuRaw::GetBranchName());
+  outFile->SetupElementBranch(bmNtuRaw, TABMntuHit::GetBranchName());
   outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
 }
 

@@ -8,8 +8,8 @@
 #include "TABMparGeo.hxx"
 #include "TABMparConf.hxx"
 #include "TABMparCal.hxx"
-#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
+#include "TABMhit.hxx"
 
 using namespace std;
 // --------------------------------------------------------------------------------------
@@ -19,14 +19,14 @@ class TABMdigitizer : public TAGbaseDigitizer
  {
 
 public:
-  TABMdigitizer(TABMntuRaw* p_datraw, TABMparGeo* parGeo, TABMparConf* parCon, TABMparCal* parCal);
+  TABMdigitizer(TABMntuHit* p_datraw, TABMparGeo* parGeo, TABMparConf* parCon, TABMparCal* parCal);
   ~TABMdigitizer();
   void           ClearMap()            { fMap.clear(); }
 
   //getters
   TF1*           GetEffDist()          { return fpEffDist;   }
   Int_t          GetMapSize()          { return fMap.size(); }
-  TABMntuHit*    GetCurrentHit()       { return fCurrentHit; }
+  TABMhit*    GetCurrentHit()       { return fCurrentHit; }
 
   //others
   Bool_t         Process(Double_t edep, Double_t x0, Double_t y0, Double_t z0, Double_t zout, Double_t time,
@@ -36,7 +36,7 @@ public:
 
 private:
 
-  TABMntuRaw*   fpNtuRaw;
+  TABMntuHit*   fpNtuRaw;
   TABMparGeo*   fpParGeo;
   TABMparConf*  fpParCon;
   TABMparCal*   fpParCal;
@@ -44,9 +44,9 @@ private:
   Float_t       fTimeMinDiff;            //minimum time difference between two hits in the same cell to be detected
 
   TF1*          fpEffDist;               //efficiency as a function of drift distance, measured from data taken @ Trento 2019
-  TABMntuHit*   fCurrentHit;
+  TABMhit*   fCurrentHit;
 
-  multimap<Int_t, TABMntuHit*> fMap;     //multimap with cellid and the bm hits
+  multimap<Int_t, TABMhit*> fMap;     //multimap with cellid and the bm hits
 
   ClassDef(TAGobject,0)
 

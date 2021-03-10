@@ -31,9 +31,9 @@
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
 #include "TABMdatRaw.hxx"
-#include "TABMntuRaw.hxx"
+#include "TABMntuHit.hxx"
 #include "TABMactDatRaw.hxx"
-#include "TABMactNtuRaw.hxx"
+#include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
 #include "GlobalPar.hxx"
@@ -46,7 +46,7 @@ TAGactTreeWriter* outFile   = 0x0;
 TAGactDaqReader*  daqActReader = 0x0;
 TASTactDatRaw* stActDatRaw  = 0x0;
 TABMactDatRaw* bmActDatRaw  = 0x0;
-TABMactNtuRaw* bmActNtuRaw  = 0x0;
+TABMactNtuHit* bmActNtuRaw  = 0x0;
 TABMactNtuTrack* bmActTrack = 0x0;
 
 int GetRunNumber(TString name){
@@ -108,8 +108,8 @@ void FillBm(TString fExpName) {
    TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMdatRaw());
    bmActDatRaw  = new TABMactDatRaw("bmActDatRaw", bmDatRaw, bmDaq, bmMap, bmConf, bmGeo,stDatRaw);
 
-   TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuRaw());
-   bmActNtuRaw  = new TABMactNtuRaw("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
+   TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuHit());
+   bmActNtuRaw  = new TABMactNtuHit("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
    bmActNtuRaw->CreateHistogram();   
    
    TAGdataDsc* bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
@@ -119,7 +119,7 @@ void FillBm(TString fExpName) {
    cout<<"end of FillBm"<<endl;
 
    outFile->SetupElementBranch(bmDatRaw, TABMdatRaw::GetBranchName());
-   outFile->SetupElementBranch(bmNtuRaw, TABMntuRaw::GetBranchName());
+   outFile->SetupElementBranch(bmNtuRaw, TABMntuHit::GetBranchName());
    outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
 }
 
@@ -190,7 +190,7 @@ void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242
    Booking(f_out);
    
    TABMdatRaw* pbmdatraw;
-   TABMntuRaw* pbmnturaw;
+   TABMntuHit* pbmnturaw;
    TABMntuTrack* pbmntutrack;
    TABMntuTrackTr* pbmntutracktr;   
    
@@ -203,7 +203,7 @@ void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242
      cout<<" Loaded Event:: " <<std::dec<< ientry << endl;
      if(!tagr.NextEvent()) 
        break; 
-     pbmnturaw = (TABMntuRaw*) (tagr.FindDataDsc("bmNtuRaw", "TABMntuRaw")->Object());
+     pbmnturaw = (TABMntuHit*) (tagr.FindDataDsc("bmNtuRaw", "TABMntuHit")->Object());
      pbmntutrack = (TABMntuTrack*) (tagr.FindDataDsc("bmTrack", "TABMntuTrack")->Object());
      pbmntutracktr=pbmntutrack->Track(0);
      ((TH1D*)(f_out->Get("bm_tracknum")))->Fill(pbmntutrack->GetTracksN());

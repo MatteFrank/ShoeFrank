@@ -1,30 +1,30 @@
 /*!
   \file
-  \version $Id: TABMactNtuRaw.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
-  \brief   Implementation of TABMactNtuRaw.
+  \version $Id: TABMactNtuHit.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+  \brief   Implementation of TABMactNtuHit.
 */
 
 #include "math.h"
 
-#include "TABMactNtuRaw.hxx"
+#include "TABMactNtuHit.hxx"
 
 /*!
-  \class TABMactNtuRaw TABMactNtuRaw.hxx "TABMactNtuRaw.hxx"
+  \class TABMactNtuHit TABMactNtuHit.hxx "TABMactNtuHit.hxx"
   \brief NTuplizer for BM raw hits. **
 */
 
-ClassImp(TABMactNtuRaw);
+ClassImp(TABMactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TABMactNtuRaw::TABMactNtuRaw(const char* name,
+TABMactNtuHit::TABMactNtuHit(const char* name,
 			   TAGdataDsc* dscnturaw,
 			   TAGdataDsc* dscdatraw,
 			   TAGparaDsc* dscgeomap,
 			   TAGparaDsc* dscparcon,
 			   TAGparaDsc* dscparcal)
-  : TAGaction(name, "TABMactNtuRaw - NTuplize BM raw data"),
+  : TAGaction(name, "TABMactNtuHit - NTuplize BM raw data"),
     fpNtuRaw(dscnturaw),
     fpDatRaw(dscdatraw),
     fpGeoMap(dscgeomap),
@@ -32,8 +32,8 @@ TABMactNtuRaw::TABMactNtuRaw(const char* name,
     fpParCal(dscparcal)
 {
   if (FootDebugLevel(1))
-   cout<<"TABMactNtuRaw::default constructor::Creating the Beam Monitor data Ntuplizer"<<endl;
-  AddDataOut(dscnturaw, "TABMntuRaw");
+   cout<<"TABMactNtuHit::default constructor::Creating the Beam Monitor data Ntuplizer"<<endl;
+  AddDataOut(dscnturaw, "TABMntuHit");
   AddDataIn(dscdatraw, "TABMdatRaw");
   AddPara(dscgeomap, "TABMparGeo");
   AddPara(dscparcon, "TABMparConf");
@@ -53,7 +53,7 @@ TABMactNtuRaw::TABMactNtuRaw(const char* name,
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TABMactNtuRaw::~TABMactNtuRaw()
+TABMactNtuHit::~TABMactNtuHit()
 {}
 
 
@@ -61,7 +61,7 @@ TABMactNtuRaw::~TABMactNtuRaw()
 //! Action.
 
 
-void TABMactNtuRaw::CreateHistogram(){
+void TABMactNtuHit::CreateHistogram(){
 
   DeleteHistogram();
 
@@ -115,10 +115,10 @@ void TABMactNtuRaw::CreateHistogram(){
   SetValidHistogram(kTRUE);
 }
 
-Bool_t TABMactNtuRaw::Action()
+Bool_t TABMactNtuHit::Action()
 {
   TABMdatRaw* p_datraw = (TABMdatRaw*) fpDatRaw->Object();
-  TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuRaw->Object();
+  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuRaw->Object();
   TABMparGeo* p_bmgeo = (TABMparGeo*) fpGeoMap->Object();
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
   TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
@@ -152,11 +152,11 @@ Bool_t TABMactNtuRaw::Action()
 
       Double_t i_drift = p_bmcal->STrelEval(i_time);
       if(FootDebugLevel(3))
-        cout<<"TABMactNtuRaw::Action:: charging hit i_time="<<i_time<<"  i_drift="<<i_drift<<"  cell="<<hit->GetCell()<<"  view="<<hit->GetView()<<"  Plane="<<hit->GetPlane()<<"   hit->time="<<hit->GetTime()<<"  T0="<<p_bmcal->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell())<<"  trigtime="<<p_datraw->GetTrigtime()<<endl;
+        cout<<"TABMactNtuHit::Action:: charging hit i_time="<<i_time<<"  i_drift="<<i_drift<<"  cell="<<hit->GetCell()<<"  view="<<hit->GetView()<<"  Plane="<<hit->GetPlane()<<"   hit->time="<<hit->GetTime()<<"  T0="<<p_bmcal->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell())<<"  trigtime="<<p_datraw->GetTrigtime()<<endl;
 
 
       //create the hit (no selection of hit)
-      TABMntuHit *mytmp = p_nturaw->NewHit(hit->GetIdCell(), hit->GetPlane(), hit->GetView(), hit->GetCell(), i_drift, i_time, p_bmcal->ResoEval(i_drift));
+      TABMhit *mytmp = p_nturaw->NewHit(hit->GetIdCell(), hit->GetPlane(), hit->GetView(), hit->GetCell(), i_drift, i_time, p_bmcal->ResoEval(i_drift));
       if (ValidHistogram()){
         fpHisCell->Fill(hit->GetCell());
         fpHisView->Fill(hit->GetView());
@@ -165,7 +165,7 @@ Bool_t TABMactNtuRaw::Action()
         fpHisTdrift->Fill(i_time);
         fpHisDiscAccept->Fill(1);
       }
-    }else{//hit discharged, it will not be saved in the TABMntuHit collection
+    }else{//hit discharged, it will not be saved in the TABMhit collection
       if (ValidHistogram()){
         fpHisDiscAccept->Fill(-1);
         fpHisDiscTime->Fill( (i_time<-40) ? i_time-p_bmcon->GetHitTimeCut() : i_time);

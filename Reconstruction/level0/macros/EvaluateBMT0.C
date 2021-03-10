@@ -38,9 +38,9 @@
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
 #include "TABMdatRaw.hxx"
-#include "TABMntuRaw.hxx"
+#include "TABMntuHit.hxx"
 #include "TABMactDatRaw.hxx"
-#include "TABMactNtuRaw.hxx"
+#include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
 #include "GlobalPar.hxx"

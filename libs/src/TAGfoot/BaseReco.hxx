@@ -43,7 +43,7 @@
 #include "TAMSDparConf.hxx"
 
 #include "TASTntuRaw.hxx"
-#include "TABMntuRaw.hxx"
+#include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"
 #include "TAITntuTrack.hxx"
@@ -200,7 +200,7 @@ public:
    
    //! Containers getters
    TASTntuRaw*          GetNtuHitSt()       const { return (TASTntuRaw*) fpNtuRawSt->Object();       }
-   TABMntuRaw*          GetNtuRawBm()       const { return (TABMntuRaw*)fpNtuRawBm->Object();        }
+   TABMntuHit*          GetNtuRawBm()       const { return (TABMntuHit*)fpNtuRawBm->Object();        }
    TABMntuTrack*        GetNtuTrackBm()     const { return (TABMntuTrack*)fpNtuTrackBm->Object();    }
    
    TAVTntuCluster*      GetNtuClusterVtx()  const { return (TAVTntuCluster*)fpNtuClusVtx->Object();  }

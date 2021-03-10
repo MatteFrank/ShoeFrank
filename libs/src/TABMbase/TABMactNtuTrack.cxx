@@ -33,7 +33,7 @@ TABMactNtuTrack::TABMactNtuTrack(const char* name,
   if (FootDebugLevel(1))
    cout<<"TABMactNtuTrack::default constructor::Creating the Beam Monitor Track ntuplizer"<<endl;
   AddDataOut(fpNtuTrk, "TABMntuTrack");
-  AddDataIn(fpNtuHit,  "TABMntuRaw");
+  AddDataIn(fpNtuHit,  "TABMntuHit");
   AddPara(fpParGeo,  "TABMparGeo");
   AddPara(fpParCon,  "TABMparConf");
   AddPara(fpParCal,  "TABMparCal");
@@ -130,7 +130,7 @@ Bool_t TABMactNtuTrack::Action()
 {
   TABMntuTrack* p_ntutrk = (TABMntuTrack*) fpNtuTrk->Object();
   p_ntutrk->Clear();
-  TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuHit->Object();
+  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
   TABMparGeo* p_bmgeo = (TABMparGeo*) fpParGeo->Object();
 
@@ -194,7 +194,7 @@ Bool_t TABMactNtuTrack::Action()
     firedview=0;
     //check the number of hits for each view
     for(Int_t i_h = 0; i_h < i_nhit; i_h++) {
-      TABMntuHit* p_hit = p_nturaw->GetHit(i_h);
+      TABMhit* p_hit = p_nturaw->GetHit(i_h);
       if(FootDebugLevel(3))
         cout<<"hit="<<i_h<<" plane="<<p_hit->GetPlane()<<"  view="<<p_hit->GetView()<<"  cell="<<p_hit->GetCell()<<"  plane="<<p_hit->GetPlane()<<"  rdrift="<<p_hit->GetRdrift()<<"  isfake="<<p_hit->GetIsFake()<<"  isselected="<<p_hit->GetIsSelected()<<"  fNowView="<<fNowView<<endl;
       if(p_hit->GetView()==fNowView && p_hit->GetIsSelected()<=0)
@@ -305,7 +305,7 @@ Bool_t TABMactNtuTrack::Action()
       }
     }
     for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-      TABMntuHit* p_hit=p_nturaw->GetHit(i);
+      TABMhit* p_hit=p_nturaw->GetHit(i);
       if(p_hit->GetIsSelected()>0)
         fpResTot->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
       if(p_hit->GetIsSelected()>0 && p_hit->GetIsFake()==0){
@@ -336,12 +336,12 @@ void TABMactNtuTrack::ChargeLegendrePoly(){
 
   fLegPolSum->Reset("ICESM");
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
-  TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuHit->Object();
+  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
   fLegPolSum->SetBins(p_bmcon->GetLegMBin(),-p_bmcon->GetLegMRange(),p_bmcon->GetLegMRange(), p_bmcon->GetLegRBin(),-p_bmcon->GetLegRRange(),p_bmcon->GetLegRRange());
 
   Float_t tmp_float;
   for(Int_t i_h = 0; i_h < p_nturaw->GetHitsN(); ++i_h) {
-    TABMntuHit* p_hit = p_nturaw->GetHit(i_h);
+    TABMhit* p_hit = p_nturaw->GetHit(i_h);
     if(p_hit->GetView()==fNowView && p_hit->GetIsSelected()<=0){
       for(Int_t k=1;k<fLegPolSum->GetXaxis()->GetNbins();++k){
         tmp_float=fLegPolSum->GetXaxis()->GetBinCenter(k);
@@ -427,13 +427,13 @@ Int_t TABMactNtuTrack::CheckAssHits(const Float_t asshiterror, const Float_t min
       cout<<"first estimate of the track: slope="<<fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin)<<"  Mbinwidth="<<fLegPolSum->GetXaxis()->GetBinWidth(fBestMBin)<<"  R0="<<fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin)<<"  R0binwidth="<<fLegPolSum->GetYaxis()->GetBinWidth(fBestRBin)<<endl;
   }
 
-  TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuHit->Object();
+  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
   Int_t wireplane[6]={-1,-1,-1,-1,-1,-1};
   Int_t selview=0;
   Float_t xvalue, yvaluemax, yvaluemin,yvalue, res, diff, legvalue, mindist, maxdist, a0pos;
 
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i) {
-    TABMntuHit* p_hit = p_nturaw->GetHit(i);
+    TABMhit* p_hit = p_nturaw->GetHit(i);
     if(p_hit->GetIsSelected()<=0){
       Double_t maxerror= (p_hit->GetSigma()*asshiterror > minRerr) ? p_hit->GetSigma()*asshiterror : minRerr;
       maxdist=p_hit->GetRdrift()+maxerror;
@@ -475,10 +475,10 @@ return selview;
 }
 
 //used in CheckAssHits
-void TABMactNtuTrack::CheckPossibleHits(Int_t wireplane[], Float_t yvalue, Float_t diff, Float_t res, Int_t &selview, const Int_t hitnum, TABMntuHit* p_hit){
+void TABMactNtuTrack::CheckPossibleHits(Int_t wireplane[], Float_t yvalue, Float_t diff, Float_t res, Int_t &selview, const Int_t hitnum, TABMhit* p_hit){
 
-  TABMntuHit*   p_doublehit;
-  TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuHit->Object();
+  TABMhit*   p_doublehit;
+  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
 
   if(wireplane[p_hit->GetPlane()]==-1){
     if(FootDebugLevel(4))
@@ -512,7 +512,7 @@ Double_t TABMactNtuTrack::EvaluateChi2(const double *params){
 
   Double_t chi2=0, res;
   TVector3 vers,r0;
-  TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuHit->Object();
+  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
   TABMparGeo* p_bmgeo  = (TABMparGeo*) fpParGeo->Object();
 
   if(fNowView==0){
@@ -524,7 +524,7 @@ Double_t TABMactNtuTrack::EvaluateChi2(const double *params){
   }
 
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-    TABMntuHit* p_hit = p_nturaw->GetHit(i);
+    TABMhit* p_hit = p_nturaw->GetHit(i);
     if( p_hit->GetView()==fNowView && p_hit->GetIsSelected()==(fTrackNum+1) ){
       res=p_hit->GetRdrift()-p_bmgeo->FindRdrift(r0, vers, p_hit->GetWirePos(), p_hit->GetWireDir(), true);
       chi2+=res*res/p_hit->GetSigma()/p_hit->GetSigma();
@@ -585,13 +585,13 @@ Int_t TABMactNtuTrack::NumericalMinimizationDouble(){
 
 Bool_t TABMactNtuTrack::ComputeDataAll(){
 
-  TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuHit->Object();
+  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
   TABMparGeo* p_bmgeo  = (TABMparGeo*) fpParGeo->Object();
 
   Float_t res, chi2red=0.;
   Int_t nselhit=0;
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-    TABMntuHit* p_hit=p_nturaw->GetHit(i);
+    TABMhit* p_hit=p_nturaw->GetHit(i);
     if(p_hit->GetIsSelected()==(fTrackNum+1)){
       ++nselhit;
       res=p_hit->GetRdrift()-p_bmgeo->FindRdrift(fpTmpTrack->GetOrigin(), fpTmpTrack->GetSlope(), p_hit->GetWirePos(), p_hit->GetWireDir(),true);

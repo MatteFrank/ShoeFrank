@@ -11,12 +11,12 @@
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 #include "TABMntuTrack.hxx"
-#include "TABMntuRaw.hxx"
+#include "TABMntuHit.hxx"
 #include "TABMparGeo.hxx"
 #include "TABMntuTrack.hxx"
 #include "TABMtrack.hxx"
-#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
+#include "TABMhit.hxx"
 #include "TABMparGeo.hxx"
 
 #include "TPad.h"
@@ -32,7 +32,7 @@
 class TABMvieTrackFOOT : public TAGview {
   public:
     //~ explicit        TABMvieTrackFOOT(TAGdataDsc* p_ntutrk=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_bmgeo=0);
-    explicit        TABMvieTrackFOOT(TABMntuTrack* p_ntutrk=nullptr, TABMntuRaw* p_nturaw=nullptr, TABMparGeo* p_bmgeo=nullptr, Int_t fTrackOk=-1000, Int_t fEventNumber=-1000);
+    explicit        TABMvieTrackFOOT(TABMntuTrack* p_ntutrk=nullptr, TABMntuHit* p_nturaw=nullptr, TABMparGeo* p_bmgeo=nullptr, Int_t fTrackOk=-1000, Int_t fEventNumber=-1000);
     //~ explicit        TABMvieTrackFOOT(TABMparGeo* p_bmgeo=nullptr);
     virtual         ~TABMvieTrackFOOT();
 
@@ -42,7 +42,7 @@ class TABMvieTrackFOOT : public TAGview {
     virtual void    Paint(Option_t* option="");
 
     void SetCelloccupy(vector< vector<Int_t> > &vec_in){fCellOccupancy=&vec_in; return;};
-    //~ void SetTrackRaw(TABMntuTrack* p_ntutrk_in, TABMntuRaw* p_nturaw_in){p_ntutrk=p_ntutrk_in;p_nturaw=p_nturaw_in; return;};
+    //~ void SetTrackRaw(TABMntuTrack* p_ntutrk_in, TABMntuHit* p_nturaw_in){p_ntutrk=p_ntutrk_in;p_nturaw=p_nturaw_in; return;};
 
     ClassDef(TABMvieTrackFOOT,0)
 
@@ -55,7 +55,7 @@ class TABMvieTrackFOOT : public TAGview {
     Int_t         fEventNumber;//number of the event
     TABMntuTrack* p_ntutrk;
     TABMtrack* p_trk;
-    TABMntuRaw* p_nturaw;
+    TABMntuHit* p_nturaw;
     TABMparGeo* p_bmgeo;
 
 };

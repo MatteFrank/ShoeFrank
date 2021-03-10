@@ -20,8 +20,8 @@ using namespace std;
 #include "TABMparGeo.hxx"
 #include "TABMparCal.hxx"
 #include "TAGparGeo.hxx"
-#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
+#include "TABMhit.hxx"
 #include "TABMntuTrack.hxx"
 
 #include "FieldManager.h"
@@ -69,7 +69,7 @@ public:
   void ChargeLegendrePoly();                        //fill the fLegPolSum for the legendre polynomy
   Int_t FindLegendreBestValues();                   //find in fLegPolSum the hghest bin with the first estimate of the track parameters
   Int_t CheckAssHits(const Float_t asshiterror, const Float_t minMerr);    //fill the fSelMap with the associated hits
-  void CheckPossibleHits(Int_t wireplane[], Float_t yvalue, Float_t diff, Float_t res, Int_t &selview, const Int_t hitnum, TABMntuHit* p_hit);//adopted inside checkasshits to check if a hit is associated to the track or not
+  void CheckPossibleHits(Int_t wireplane[], Float_t yvalue, Float_t diff, Float_t res, Int_t &selview, const Int_t hitnum, TABMhit* p_hit);//adopted inside checkasshits to check if a hit is associated to the track or not
   Int_t NumericalMinimizationDouble();              //use minuit2 to refine the track parameters
   Double_t EvaluateChi2(const double *params);      //adopted in minuit2 to calculate the track chi2 with the selected hits
   Bool_t ComputeDataAll();                          //after the reconstruction, calculate the residuals, chi2 for all the hits

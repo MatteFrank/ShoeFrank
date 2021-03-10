@@ -1,9 +1,9 @@
-#ifndef _TABMactNtuRaw_HXX
-#define _TABMactNtuRaw_HXX
+#ifndef _TABMactNtuHit_HXX
+#define _TABMactNtuHit_HXX
 /*!
   \file
-  \version $Id: TABMactNtuRaw.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
-  \brief   Declaration of TABMactNtuRaw.
+  \version $Id: TABMactNtuHit.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+  \brief   Declaration of TABMactNtuHit.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -16,26 +16,26 @@
 #include "TABMparGeo.hxx"
 #include "TABMparConf.hxx"
 #include "TABMparCal.hxx"
-#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
+#include "TABMhit.hxx"
 
 #include "TH2.h"
 #include "TRandom3.h"
 
-class TABMactNtuRaw : public TAGaction {
+class TABMactNtuHit : public TAGaction {
   public:
-    explicit         TABMactNtuRaw(const char* name=0,
+    explicit         TABMactNtuHit(const char* name=0,
 				 TAGdataDsc* dscnturaw=0,
 				 TAGdataDsc* dscdatraw=0,
 				 TAGparaDsc* dscgeomap=0,
 				 TAGparaDsc* dscparcon=0,
 				 TAGparaDsc* dscparcal=0);
-    virtual          ~TABMactNtuRaw();
+    virtual          ~TABMactNtuHit();
 
     virtual  void   CreateHistogram();
     virtual Bool_t  Action();
 
-    ClassDef(TABMactNtuRaw,0)
+    ClassDef(TABMactNtuHit,0)
 
   private:
     TAGdataDsc*       fpNtuRaw;		    // output data dsc

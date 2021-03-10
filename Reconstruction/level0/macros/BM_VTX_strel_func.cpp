@@ -617,7 +617,7 @@ return;
 
 //************************************************* BM stuff *************************************************
 
-void bmreadevent(TABMparGeo* geomap, TABMntuRaw*  bmRawHit, TABMntuTrack* bmNtuTrack, BM_evstruct &bmevent, vector<BM_evstruct> &allbmeventin){
+void bmreadevent(TABMparGeo* geomap, TABMntuHit*  bmRawHit, TABMntuTrack* bmNtuTrack, BM_evstruct &bmevent, vector<BM_evstruct> &allbmeventin){
   
   if(debug>2)
     cout<<"I'm in bmreadevent"<<endl;
@@ -632,7 +632,7 @@ void bmreadevent(TABMparGeo* geomap, TABMntuRaw*  bmRawHit, TABMntuTrack* bmNtuT
     bmevent.bm_track_r0pos=bmtrack->GetR0();
     bmevent.hitnum=bmRawHit->GetHitsN();
     for(Int_t i=0;i<bmRawHit->GetHitsN();i++){
-      TABMntuHit* bmhit = bmRawHit->Hit(i);
+      TABMhit* bmhit = bmRawHit->Hit(i);
       bmevent.bm_hit_rdrift[i]=bmhit->Dist();
       bmevent.bm_hit_residual[i]=bmhit->GetResidual();
       bmevent.bm_hit_time[i]=bmhit->Tdrift();

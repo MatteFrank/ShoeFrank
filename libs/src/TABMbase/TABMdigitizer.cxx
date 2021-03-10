@@ -26,7 +26,7 @@
 #include "TABMdigitizer.hxx"
 
 // --------------------------------------------------------------------------------------
-TABMdigitizer::TABMdigitizer(TABMntuRaw* pNtuRaw, TABMparGeo* parGeo, TABMparConf* parCon, TABMparCal* parCal)
+TABMdigitizer::TABMdigitizer(TABMntuHit* pNtuRaw, TABMparGeo* parGeo, TABMparConf* parCon, TABMparCal* parCal)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
    fpParGeo(parGeo),
@@ -81,14 +81,14 @@ Bool_t TABMdigitizer::Process(Double_t /*edep*/, Double_t x0, Double_t y0, Doubl
     rdrift=SmearRdrift(rdrift,fpParCal->ResoEval(rdrift));
 
   //everything is computed, now I can check and add the hit
-  std::multimap<Int_t, TABMntuHit*>::iterator pos=fMap.find(cellid);
+  std::multimap<Int_t, TABMhit*>::iterator pos=fMap.find(cellid);
   if(pos==fMap.end()){//new hit in a new cellid
     fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCal->GetTimeFromRDrift(rdrift), fpParCal->ResoEval(rdrift));
-    fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,fCurrentHit));
+    fMap.insert(std::pair<Int_t, TABMhit*>(cellid,fCurrentHit));
     return true;
   }else{//multihit in the same cellid
     Int_t currhittime=fpParCal->GetTimeFromRDrift(rdrift);
-    std::pair <std::multimap<Int_t, TABMntuHit*>::iterator, std::multimap<Int_t, TABMntuHit*>::iterator> rangeite;
+    std::pair <std::multimap<Int_t, TABMhit*>::iterator, std::multimap<Int_t, TABMhit*>::iterator> rangeite;
     rangeite=fMap.equal_range(pos->first);
     for(auto d=rangeite.first;d!=rangeite.second;){//loop on all the hit with the same cellid
       Double_t distance=d->second->GetTdrift()-currhittime;
@@ -111,7 +111,7 @@ Bool_t TABMdigitizer::Process(Double_t /*edep*/, Double_t x0, Double_t y0, Doubl
     }
     //if the time of the hit is > fTimeMinDiff, it can be added
     fCurrentHit=fpNtuRaw->NewHit(cellid, lay, view, cell, rdrift, fpParCal->GetTimeFromRDrift(rdrift), fpParCal->ResoEval(rdrift));
-    fMap.insert(std::pair<Int_t, TABMntuHit*>(cellid,fCurrentHit));
+    fMap.insert(std::pair<Int_t, TABMhit*>(cellid,fCurrentHit));
     return true;
   }
 

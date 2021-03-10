@@ -15,7 +15,7 @@
 
 #include "TASTdatRaw.hxx"
 #include "TASTntuRaw.hxx"
-#include "TABMntuRaw.hxx"
+#include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"
 #include "TAMSDntuHit.hxx"
@@ -665,7 +665,7 @@ void TAFObaseEventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
 {
     TEveBoxSet* tpCircle = dynamic_cast<TEveBoxSet*>(qs);
 
-    TABMntuHit* hit = dynamic_cast<TABMntuHit*>( tpCircle->GetId(idx) );
+    TABMhit* hit = dynamic_cast<TABMhit*>( tpCircle->GetId(idx) );
     if(!hit){return;}
 
     TABMparGeo* pbmGeo = fReco->GetParGeoBm();;
@@ -1298,13 +1298,13 @@ void TAFObaseEventDisplay::UpdateLayerElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
-   TABMntuRaw* pBMntu = fReco->GetNtuRawBm();
+   TABMntuHit* pBMntu = fReco->GetNtuRawBm();
    Int_t       nHits  = pBMntu->GetHitsN();
    Double_t bm_h_side = pbmGeo->GetWidth();
 
    //hits
    for (Int_t i = 0; i < nHits; i++) {
-      TABMntuHit* hit = pBMntu->GetHit(i);
+      TABMhit* hit = pBMntu->GetHit(i);
 
       if (!hit->GetIsSelected() && fgBmSelectHit) continue;
 

@@ -4,11 +4,11 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class TABMntuRaw+;
 #pragma link C++ class TABMntuHit+;
+#pragma link C++ class TABMhit+;
 #pragma link C++ class TABMparGeo+;
 #pragma link C++ class TABMparMap+;
-#pragma link C++ class TABMactNtuRaw+;
+#pragma link C++ class TABMactNtuHit+;
 #pragma link C++ class TABMdatRaw+;
 #pragma link C++ class TABMrawHit+;
 #pragma link C++ class TABMdigitizer+;

@@ -25,7 +25,7 @@
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
 #include "TABMdatRaw.hxx"
-#include "TABMntuRaw.hxx"
+#include "TABMntuHit.hxx"
 
 #include "TABMactNtuMC.hxx"
 #include "TABMactNtuTrack.hxx"
@@ -56,7 +56,7 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
    parFileName = "./config/TABMdetector.cfg";
    parConf->FromFile(parFileName.Data());
    
-   TAGdataDsc* bmRaw    = new TAGdataDsc("bmRaw", new TABMntuRaw());
+   TAGdataDsc* bmRaw    = new TAGdataDsc("bmRaw", new TABMntuHit());
    bmActRaw  = new TABMactNtuMC("bmActRaw", bmRaw, bmConf, bmGeo, myStr);
    bmActRaw->CreateHistogram();
    
@@ -64,7 +64,7 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
    bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmRaw, bmGeo, bmConf, tgGeo);
    bmActTrack->CreateHistogram();
 
-   outFile->SetupElementBranch(bmRaw, TABMntuRaw::GetBranchName());
+   outFile->SetupElementBranch(bmRaw, TABMntuHit::GetBranchName());
    outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
 }
 

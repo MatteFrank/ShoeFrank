@@ -27,13 +27,13 @@
 #include "TABMparGeo.hxx"
 #include "TABMparConf.hxx"
 #include "TABMdatRaw.hxx"
-#include "TABMNtuRaw.hxx"
+#include "TABMntuHit.hxx"
 
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 #include "TASTactDatRaw.hxx"
 #include "TABMactDatRaw.hxx"
-#include "TABMactNtuRaw.hxx"
+#include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
 #include "TAVTparGeo.hxx"
@@ -59,7 +59,7 @@ TAGdataDsc*         evDaq     = 0x0;
 TAGdataDsc*         bmTrack   = 0x0;
 TASTactDatRaw*      stActDat  = 0x0;
 TABMactDatRaw*      bmActDat  = 0x0;
-TABMactNtuRaw*      bmActNtu  = 0x0;
+TABMactNtuHit*      bmActNtu  = 0x0;
 TABMactNtuTrack*    bmActTrack  = 0x0;
 TAVTactNtuHit*      vtActRaw  = 0x0;
 TAVTactNtuClusterF* vtActClus = 0x0;
@@ -97,14 +97,14 @@ void FillBM()
 
    TAGparaDsc* bmMap   = new TAGparaDsc("bmMap", new TABMparMap());
    TAGdataDsc* bmDat   = new TAGdataDsc("bmDat", new TABMdatRaw());
-   TAGdataDsc* bmNtu   = new TAGdataDsc("bmNtu", new TABMntuRaw());
+   TAGdataDsc* bmNtu   = new TAGdataDsc("bmNtu", new TABMntuHit());
                bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
 
 
    bmActDat  = new TABMactDatRaw("bmActDat", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
    bmActDat->CreateHistogram();
    
-   bmActNtu = new TABMactNtuRaw("bmActNtu", bmNtu, bmDat, bmGeo, bmConf);
+   bmActNtu = new TABMactNtuHit("bmActNtu", bmNtu, bmDat, bmGeo, bmConf);
    bmActNtu->CreateHistogram();
 
    bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmNtu, bmGeo, bmConf, tgGeo);

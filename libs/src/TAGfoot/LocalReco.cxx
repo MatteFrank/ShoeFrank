@@ -4,7 +4,7 @@
 #include "LocalReco.hxx"
 
 #include "TASTntuRaw.hxx"
-#include "TABMntuRaw.hxx"
+#include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"
 #include "TAMSDntuHit.hxx"
@@ -70,7 +70,7 @@ void LocalReco::CreateRawAction()
 
    if (GlobalPar::GetPar()->IncludeBM()) {
       fpDatRawBm = new TAGdataDsc("bmDat", new TABMdatRaw());
-      fpNtuRawBm = new TAGdataDsc("bmNtu", new TABMntuRaw());
+      fpNtuRawBm = new TAGdataDsc("bmNtu", new TABMntuHit());
       
       if (fgStdAloneFlag) {
          fActVmeReaderBm  = new TABMactVmeReader("bmActNtu", fpDatRawBm, fpParMapBm, fpParCalBm, fpParGeoBm);
@@ -83,7 +83,7 @@ void LocalReco::CreateRawAction()
             fActDatRawBm->CreateHistogram();
          if(GlobalPar::GetPar()->Debug()) fActDatRawBm->SetDebugLevel(1);
          
-         fActNtuRawBm = new TABMactNtuRaw("bmActNtu", fpNtuRawBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
+         fActNtuRawBm = new TABMactNtuHit("bmActNtu", fpNtuRawBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
          if (fFlagHisto)
             fActNtuRawBm->CreateHistogram();
          if(GlobalPar::GetPar()->Debug()) fActNtuRawBm->SetDebugLevel(1);
@@ -294,7 +294,7 @@ void LocalReco::SetTreeBranches()
    if (GlobalPar::GetPar()->IncludeBM()) {
       if (fFlagHits)
          fActEvtWriter->SetupElementBranch(fpDatRawBm, TABMdatRaw::GetBranchName());
-     fActEvtWriter->SetupElementBranch(fpNtuRawBm, TABMntuRaw::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuRawBm, TABMntuHit::GetBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeVT()) {

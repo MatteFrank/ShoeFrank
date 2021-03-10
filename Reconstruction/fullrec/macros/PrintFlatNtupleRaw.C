@@ -15,8 +15,8 @@
 
 
 #include "TABMparGeo.hxx"
-#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
+#include "TABMhit.hxx"
 #include "TABMntuTrack.hxx"
 
 #include "TAVTparGeo.hxx"
@@ -104,8 +104,8 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   tree->SetBranchAddress(TASTntuRaw::GetBranchName(), &stHit);
   // tree->SetBranchAddress("stNtu", &stHit);
   
-  TABMntuRaw*  bmHit = new TABMntuRaw(); 
-  tree->SetBranchAddress(TABMntuRaw::GetBranchName(), &bmHit);
+  TABMntuHit*  bmHit = new TABMntuHit(); 
+  tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmHit);
   
   TABMntuTrack*  bmTrack = new TABMntuTrack();
   tree->SetBranchAddress(TABMntuTrack::GetBranchName(), &bmTrack);
@@ -399,7 +399,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     // cout << " nbmHits   " << nbmHits  << endl;
     // //hits
     for (Int_t i = 0; i < nbmHits; i++) {
-      TABMntuHit* hit = bmHit->GetHit(i);
+      TABMhit* hit = bmHit->GetHit(i);
       
       Int_t view  = hit->GetView();
       Int_t lay   = hit->GetPlane();
