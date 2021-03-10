@@ -1,9 +1,9 @@
-#ifndef _TASTactNtuRaw_HXX
-#define _TASTactNtuRaw_HXX
+#ifndef _TASTactNtuHit_HXX
+#define _TASTactNtuHit_HXX
 /*!
   \file
-  \version $Id: TASTactNtuRaw.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
-  \brief   Declaration of TASTactNtuRaw.
+  \version $Id: TASTactNtuHit.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
+  \brief   Declaration of TASTactNtuHit.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -12,33 +12,33 @@
 #include "TAGdataDsc.hxx"
 #include "TASTparGeo.hxx"
 #include "TASTdatRaw.hxx"
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 
 #define REF_CLK make_pair(16,27)
 #define CHISQUARE_THRESHOLD 1.0
 #define AMPLITUDE_THRESHOLD 0.04
 
-class TASTactNtuRaw : public TAGaction {
+class TASTactNtuHit : public TAGaction {
 
 public:
 
-  explicit        TASTactNtuRaw(const char* name=0,
-				TAGdataDsc* p_datraw=0,
-				TAGdataDsc* p_datdaq=0,
-				TAGparaDsc* p_parmap=0);
-  virtual         ~TASTactNtuRaw();
+  explicit        TASTactNtuHit(const char* name=0,
+                                TAGdataDsc* p_datraw=0,
+                                TAGdataDsc* p_datdaq=0,
+                                TAGparaDsc* p_parmap=0);
+  virtual         ~TASTactNtuHit();
 
   virtual Bool_t  Action();
 
   virtual void CreateHistogram();
 
-  ClassDef(TASTactNtuRaw,0)
+  ClassDef(TASTactNtuHit,0)
     
   private:
     
   TAGdataDsc*     fpDatRaw;		    // input data dsc
   TAGdataDsc*     fpNtuRaw;		    // output data dsc
-  TAGparaDsc*      fpParMap;		    // output data dsc
+  TAGparaDsc*     fpParMap;		    // output data dsc
   
   TH1F *hArrivalTime[8];
   TH1F *hCharge[8];

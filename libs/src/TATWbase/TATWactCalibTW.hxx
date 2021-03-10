@@ -24,7 +24,7 @@
 #include "TATWdatRaw.hxx"
 #include "TATWntuHit.hxx"
 
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 
 #include "Parameters.h"
 

@@ -1,53 +1,53 @@
 /*!
   \file
-  \version $Id: TASTactNtuRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
-  \brief   Implementation of TASTactNtuRaw.
+  \version $Id: TASTactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+  \brief   Implementation of TASTactNtuHit.
 */
 
 #include "TASTparMap.hxx"
-#include "TASTactNtuRaw.hxx"
+#include "TASTactNtuHit.hxx"
 #include <TCanvas.h>
 #include <unistd.h>
 #include "TGraphErrors.h"
 #include <stdint.h>
 
 /*!
-  \class TASTactNtuRaw TASTactNtuRaw.hxx "TASTactNtuRaw.hxx"
+  \class TASTactNtuHit TASTactNtuHit.hxx "TASTactNtuHit.hxx"
   \brief Get Beam Monitor raw data from WD. **
 */
 
-ClassImp(TASTactNtuRaw);
+ClassImp(TASTactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TASTactNtuRaw::TASTactNtuRaw(const char* name,
+TASTactNtuHit::TASTactNtuHit(const char* name,
 			     TAGdataDsc* p_datraw, 
 			     TAGdataDsc* p_nturaw,
 			     TAGparaDsc* p_parmap)
-  : TAGaction(name, "TASTactNtuRaw - Unpack ST raw data"),
+  : TAGaction(name, "TASTactNtuHit - Unpack ST raw data"),
     fpDatRaw(p_datraw),
     fpNtuRaw(p_nturaw),
     fpParMap(p_parmap)
 {
   AddDataIn(p_datraw, "TASTdatRaw");
-  AddDataOut(p_nturaw, "TASTntuRaw");
+  AddDataOut(p_nturaw, "TASTntuHit");
 
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TASTactNtuRaw::~TASTactNtuRaw()
+TASTactNtuHit::~TASTactNtuHit()
 {}
 
 //------------------------------------------+-----------------------------------
 //! Action.
 
-Bool_t TASTactNtuRaw::Action() {
+Bool_t TASTactNtuHit::Action() {
 
    TASTdatRaw*   p_datraw = (TASTdatRaw*) fpDatRaw->Object();
-   TASTntuRaw*   p_nturaw = (TASTntuRaw*)  fpNtuRaw->Object();
+   TASTntuHit*   p_nturaw = (TASTntuHit*)  fpNtuRaw->Object();
    TASTparMap*   p_parmap = (TASTparMap*)  fpParMap->Object();
 
    p_nturaw->SetupClones();
@@ -75,7 +75,7 @@ Bool_t TASTactNtuRaw::Action() {
 
 }
 
-void TASTactNtuRaw::SavePlot(TGraph WaveGraph, TF1 fun1, TF1 fun2, TASTrawHit *myHit){
+void TASTactNtuHit::SavePlot(TGraph WaveGraph, TF1 fun1, TF1 fun2, TASTrawHit *myHit){
 
 
   TCanvas c("c","",600,600);
@@ -105,7 +105,7 @@ void TASTactNtuRaw::SavePlot(TGraph WaveGraph, TF1 fun1, TF1 fun2, TASTrawHit *m
 
 
 
-void TASTactNtuRaw::CreateHistogram(){
+void TASTactNtuHit::CreateHistogram(){
 
   DeleteHistogram();
 

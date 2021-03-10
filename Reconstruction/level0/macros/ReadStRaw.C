@@ -21,8 +21,8 @@
 #include "TAGactTreeWriter.hxx"
 #include "TASTparMap.hxx"
 #include "TASTdatRaw.hxx"
-#include "TASTntuRaw.hxx"
-#include "TASTactNtuRaw.hxx"
+#include "TASTntuHit.hxx"
+#include "TASTactNtuHit.hxx"
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 #include "TASTactDatRaw.hxx"
@@ -33,7 +33,7 @@
 TAGactTreeWriter*   outFile   = 0x0;
 TAGactDaqReader*    daqActReader = 0x0;
 TASTactDatRaw*      stActRaw  = 0x0;
-TASTactNtuRaw*      stActNtuRaw  = 0x0;
+TASTactNtuHit*      stActNtuRaw  = 0x0;
 TASTparMap *parMap;
 TAGdataDsc* stNtu;
 
@@ -50,12 +50,12 @@ void FillST(){
    stDaq    = new TAGdataDsc("stDaq", new TAGdaqEvent());
    stDat    = new TAGdataDsc("stDat", new TASTdatRaw());
    stTime   = new TAGparaDsc("stTime", new TASTparTime());
-   stNtu    = new TAGdataDsc("stNtu", new TASTntuRaw());
+   stNtu    = new TAGdataDsc("stNtu", new TASTntuHit());
    
    daqActReader  = new TAGactDaqReader("daqActReader", stDaq);
 
    stActRaw  = new TASTactDatRaw("stActRaw", stDat, stDaq, stMap, stTime);
-   stActNtuRaw  = new TASTactNtuRaw("stActNtuRaw", stDat, stNtu);
+   stActNtuRaw  = new TASTactNtuHit("stActNtuRaw", stDat, stNtu);
    //stNtuRaw->CreateHistogram();
    //   stActNtuRaw->SetHistogramDir(outFile->File());
    

@@ -6,7 +6,7 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAMCflukaParser.hxx"
 #include "TAMCntuTrack.hxx"
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 #include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"
@@ -53,7 +53,7 @@ void LocalRecoMC::CreateRawAction()
       if (GlobalPar::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
       
-      fpNtuRawSt = new TAGdataDsc("stRaw", new TASTntuRaw());
+      fpNtuRawSt = new TAGdataDsc("stRaw", new TASTntuHit());
       fActNtuRawSt = new TASTactNtuHitMC("stActNtu", fpNtuMcSt, fpNtuMcTrk, fpNtuRawSt, fEvtStruct);
       if (fFlagHisto)
          fActNtuRawSt->CreateHistogram();
@@ -240,7 +240,7 @@ void LocalRecoMC::SetTreeBranches()
    fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuTrack::GetBranchName());
 
    if (GlobalPar::GetPar()->IncludeST()) {
-      fActEvtWriter->SetupElementBranch(fpNtuRawSt, TASTntuRaw::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuRawSt, TASTntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
    }
    

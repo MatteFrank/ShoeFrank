@@ -11,7 +11,7 @@
 
 
 #include "TASTparGeo.hxx"
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 
 
 #include "TABMparGeo.hxx"
@@ -100,8 +100,8 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   tree = (TTree*)f->Get("tree");
   
   
-  TASTntuRaw *stHit = new TASTntuRaw();
-  tree->SetBranchAddress(TASTntuRaw::GetBranchName(), &stHit);
+  TASTntuHit *stHit = new TASTntuHit();
+  tree->SetBranchAddress(TASTntuHit::GetBranchName(), &stHit);
   // tree->SetBranchAddress("stNtu", &stHit);
   
   TABMntuHit*  bmHit = new TABMntuHit(); 
@@ -373,7 +373,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     st_time.push_back(time);
     for (Int_t i = 0; i < nstHits; i++) {
       
-      TASTntuHit* hit = stHit->GetHit(i);
+      TASThit* hit = stHit->GetHit(i);
       Float_t charge  = hit->GetCharge();
       Float_t time    = hit->GetTime();
       

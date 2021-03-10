@@ -38,7 +38,7 @@ TABMactDatRaw::TABMactDatRaw(const char* name,
   AddPara(dscparmap, "TABMparMap");
   AddPara(dscparcal, "TABMparCal");
   AddPara(dscpargeo, "TABMparGeo");
-  AddDataIn(dsctimraw, "TASTntuRaw");
+  AddDataIn(dsctimraw, "TASTntuHit");
   AddDataIn(dscdatdaq, "TAGdaqEvent");
 }
 
@@ -82,7 +82,7 @@ Bool_t TABMactDatRaw::Action() {
 
 
    TAGdaqEvent*   p_datdaq = (TAGdaqEvent*)  fpDatDaq->Object();
-   TASTntuRaw*    p_timraw = (TASTntuRaw*)    fpTimRaw->Object();
+   TASTntuHit*    p_timraw = (TASTntuHit*)    fpTimRaw->Object();
 
    Int_t nFragments = p_datdaq->GetFragmentsN();
 

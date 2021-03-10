@@ -14,7 +14,7 @@
 #include "GlobalPar.hxx"
 
 #include "TASTdatRaw.hxx"
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 #include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"
@@ -522,8 +522,8 @@ void TAFObaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
          cout << Form(" With %d tracks\n",  vtx->GetTracksN());
       }
 
-   } else if (obj->InheritsFrom("TASTntuHit")) {
-      TASTntuHit* hit = (TASTntuHit*)obj;
+   } else if (obj->InheritsFrom("TASThit")) {
+      TASThit* hit = (TASThit*)obj;
       if (hit == 0x0) return;
       fInfoView->AddLine( Form("Charge: %.3g u.a.\n", hit->GetCharge()) );
       fInfoView->AddLine( Form("Time: %.3g ps \n", hit->GetTime()) );
@@ -1260,7 +1260,7 @@ void TAFObaseEventDisplay::UpdateStcElements()
       return;
 
    //STC
-   TASTntuRaw* pSTntu = fReco->GetNtuHitSt();
+   TASTntuHit* pSTntu = fReco->GetNtuHitSt();
    Int_t       nHits  = pSTntu->GetHitsN();
 
    //hits
@@ -1269,7 +1269,7 @@ void TAFObaseEventDisplay::UpdateStcElements()
 
    for (Int_t i = 0; i < nHits; i++) {
 
-      TASTntuHit* hit = pSTntu->GetHit(i);
+      TASThit* hit = pSTntu->GetHit(i);
       Float_t charge = hit->GetCharge();
 
       TVector3 posHit(0,0,0); // center

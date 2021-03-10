@@ -10,11 +10,11 @@
 #pragma link C++ class  TAGbaseWDparMap+;
 #pragma link C++ class  TAGbaseWDparTime+;
 #pragma link C++ class  TASTactNtuHitMC+;
-#pragma link C++ class  TASTactNtuRaw+;
+#pragma link C++ class  TASTactNtuHit+;
 #pragma link C++ class  TASTdatRaw+;
-#pragma link C++ class  TASTntuRaw+;
-#pragma link C++ class  TASTrawHit+;
 #pragma link C++ class  TASTntuHit+;
+#pragma link C++ class  TASTrawHit+;
+#pragma link C++ class  TASThit+;
 #pragma link C++ class  TASTparGeo+;
 #pragma link C++ class  TASTparMap+;
 

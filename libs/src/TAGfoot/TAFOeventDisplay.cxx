@@ -14,7 +14,7 @@
 #include "GlobalPar.hxx"
 
 #include "TASTdatRaw.hxx"
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 #include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"

@@ -1,9 +1,9 @@
-#ifndef _TASTntuRaw_HXX
-#define _TASTntuRaw_HXX
+#ifndef _TASTntuHit_HXX
+#define _TASTntuHit_HXX
 /*!
  \file
- \version $Id: TASTntuRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
- \brief   Declaration of TASTntuRaw.
+ \version $Id: TASTntuHit.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+ \brief   Declaration of TASTntuHit.
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -16,12 +16,12 @@ using namespace std;
 #include "TAGdata.hxx"
 #include "TArrayI.h"
 
-class TASTntuHit : public TAGobject {
+class TASThit : public TAGobject {
 public:
    
-  TASTntuHit();
-  TASTntuHit(Double_t charge, Double_t de, Double_t time);
-  virtual         ~TASTntuHit();
+  TASThit();
+  TASThit(Double_t charge, Double_t de, Double_t time);
+  virtual         ~TASThit();
   
   
   Double_t       GetTime()                  const   { return fTime;                 }
@@ -41,7 +41,7 @@ public:
   void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
    
    
-  ClassDef(TASTntuHit,1)
+  ClassDef(TASThit,1)
    
   private:
  
@@ -57,17 +57,17 @@ public:
 
 //##############################################################################
 
-class TASTntuRaw : public TAGdata {
+class TASTntuHit : public TAGdata {
 public:
    
-   TASTntuRaw();
-   virtual         ~TASTntuRaw();
+   TASTntuHit();
+   virtual         ~TASTntuHit();
    
    Int_t             GetHitsN() const;
    
-   TASTntuHit*       GetHit(Int_t i_ind);
-   const TASTntuHit* GetHit(Int_t i_ind) const;
-   TASTntuHit*       NewHit(double charge, double de, double time);
+   TASThit*       GetHit(Int_t i_ind);
+   const TASThit* GetHit(Int_t i_ind) const;
+   TASThit*       NewHit(double charge, double de, double time);
    virtual void      Clear(Option_t* opt="");
    void              SetupClones();
    
@@ -95,7 +95,7 @@ private:
 private:
    static TString fgkBranchName;    // Branch name in TTree
    
-   ClassDef(TASTntuRaw,1)
+   ClassDef(TASTntuHit,1)
 };
 
 

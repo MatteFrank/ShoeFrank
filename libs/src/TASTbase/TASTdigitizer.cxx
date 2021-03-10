@@ -33,7 +33,7 @@
 // Compute the number of photons for 5 mm slice width
 
 // --------------------------------------------------------------------------------------
-TASTdigitizer::TASTdigitizer(TASTntuRaw* pNtuRaw)
+TASTdigitizer::TASTdigitizer(TASTntuHit* pNtuRaw)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
    fGain(5.e-4),
@@ -88,7 +88,7 @@ Bool_t TASTdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
    time /= 1000.;
      
    if (fMap[id] == 0) {
-     fCurrentHit = (TASTntuHit*)fpNtuRaw->NewHit(charge, edep, time);
+     fCurrentHit = (TASThit*)fpNtuRaw->NewHit(charge, edep, time);
       fMap[id] = fCurrentHit;
    } else {
       fCurrentHit = fMap[id];

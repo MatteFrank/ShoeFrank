@@ -42,7 +42,7 @@
 #include "TAITparConf.hxx"
 #include "TAMSDparConf.hxx"
 
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 #include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"
@@ -199,7 +199,7 @@ public:
    TACAparGeo*          GetParGeoCa()       const { return (TACAparGeo*)fpParGeoCa->Object();        }
    
    //! Containers getters
-   TASTntuRaw*          GetNtuHitSt()       const { return (TASTntuRaw*) fpNtuRawSt->Object();       }
+   TASTntuHit*          GetNtuHitSt()       const { return (TASTntuHit*) fpNtuRawSt->Object();       }
    TABMntuHit*          GetNtuRawBm()       const { return (TABMntuHit*)fpNtuRawBm->Object();        }
    TABMntuTrack*        GetNtuTrackBm()     const { return (TABMntuTrack*)fpNtuTrackBm->Object();    }
    

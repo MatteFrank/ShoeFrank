@@ -13,7 +13,7 @@
 
 
 #include "TASTparGeo.hxx"
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 
 
 #include "TABMparGeo.hxx"
@@ -98,8 +98,8 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
   tree = (TTree*)f->Get("tree");
   
   
-  TASTntuRaw *stHit = new TASTntuRaw();
-  tree->SetBranchAddress(TASTntuRaw::GetBranchName(), &stHit);
+  TASTntuHit *stHit = new TASTntuHit();
+  tree->SetBranchAddress(TASTntuHit::GetBranchName(), &stHit);
   
   TABMntuHit*  bmHit = new TABMntuHit();
   tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmHit);
@@ -327,7 +327,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
     //hits
     for (Int_t i = 0; i < nstHits; i++) {
       
-      TASTntuHit* hit = stHit->GetHit(i);
+      TASThit* hit = stHit->GetHit(i);
       Float_t charge = hit->GetCharge();
       Float_t time = hit->GetTime();
       

@@ -32,7 +32,7 @@
 #include "TATWdatRaw.hxx"
 #include "TATWactNtuHit.hxx"
 #include "TAGactWDreader.hxx"
-#include "TASTactNtuRaw.hxx"
+#include "TASTactNtuHit.hxx"
 
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
@@ -51,7 +51,7 @@ TAGactDaqReader*  daqActReader = 0x0;
 TABMactDatRaw* bmActDatRaw  = 0x0;
 TAGactWDreader*      wdActRaw  = 0x0;
 //~ TATWactNtuHit*      twActNtu  = 0x0;
-TASTactNtuRaw*   stActNtuRaw  = 0x0;
+TASTactNtuHit*   stActNtuRaw  = 0x0;
 
 void FillStBm(TString expName) {
   
@@ -141,8 +141,8 @@ void FillStBm(TString expName) {
   wdActRaw  = new TAGactWDreader("wdActRaw", twDaq, stDat, twDat, parMapSt, parMapTw, parTimeSt, parTimeTw);
   TAGdataDsc* twNtu  = new TAGdataDsc("twNtu", new TATWntuHit());
   //~ twActNtu  = new TATWactNtuHit("twNtuRaw", twDat, twNtu, parGeoTw, parMapTw, parCalTw);
-  TAGdataDsc* stNtuRaw   = new TAGdataDsc("stNtu", new TASTntuRaw());
-  stActNtuRaw = new TASTactNtuRaw("stActNtuRaw", stDat, stNtuRaw, parMapSt);
+  TAGdataDsc* stNtuRaw   = new TAGdataDsc("stNtu", new TASTntuHit());
+  stActNtuRaw = new TASTactNtuHit("stActNtuRaw", stDat, stNtuRaw, parMapSt);
 
  
   //Bm TAGdataDsc
@@ -315,7 +315,7 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
    TABMparGeo* bmgeo = (TABMparGeo*)(tagr.FindParaDsc("bmGeo","TABMparGeo")->Object());
    TABMparConf* bmcon = (TABMparConf*)(tagr.FindParaDsc("bmConf","TABMparConf")->Object());
    TABMparMap* bmmap = (TABMparMap*)(tagr.FindParaDsc("bmMap","TABMparMap")->Object());
-   TASTntuRaw* stnturaw;
+   TASTntuHit* stnturaw;
    TABMdatRaw* pbmdatraw;
    TAGdaqEvent*   p_datdaq;
    int nFragments, channel, measurement;
@@ -337,7 +337,7 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
         sttrigger=-1000;
         p_datdaq = (TAGdaqEvent*)(tagr.FindDataDsc("twDaq","TAGdaqEvent")->Object());
         pbmdatraw = (TABMdatRaw*)(tagr.FindDataDsc("bmDat", "TABMdatRaw")->Object());
-        stnturaw = (TASTntuRaw*)(tagr.FindDataDsc("stNtu", "TASTntuRaw")->Object());
+        stnturaw = (TASTntuHit*)(tagr.FindDataDsc("stNtu", "TASTntuHit")->Object());
         nFragments = p_datdaq->GetFragmentsN();
         for (Int_t i = 0; i < nFragments; i++) {       
           type=p_datdaq->GetClassType(i);

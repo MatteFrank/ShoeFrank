@@ -1,24 +1,24 @@
 /*!
   \file
-  \version $Id: TASTntuRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
-  \brief   Implementation of TASTntuRaw.
+  \version $Id: TASTntuHit.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \brief   Implementation of TASTntuHit.
 */
 
 #include "TString.h"
 
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 
 /*!
-  \class TASTntuRaw TASTntuRaw.hxx "TASTntuRaw.hxx"
+  \class TASTntuHit TASTntuHit.hxx "TASTntuHit.hxx"
   \brief Mapping and Geometry parameters for IR detectors. **
 */
 
-ClassImp(TASTntuHit);
+ClassImp(TASThit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TASTntuHit::TASTntuHit()
+TASThit::TASThit()
  : TAGobject(),
    fCharge(0.),
    fTime(0.),
@@ -29,7 +29,7 @@ TASTntuHit::TASTntuHit()
 
 //------------------------------------------+-----------------------------------
 //! Constructor
-TASTntuHit::TASTntuHit(Double_t charge, Double_t De, Double_t time)
+TASThit::TASThit(Double_t charge, Double_t De, Double_t time)
  : TAGobject(),
    fCharge(charge),
    fTime(time),
@@ -41,19 +41,19 @@ TASTntuHit::TASTntuHit(Double_t charge, Double_t De, Double_t time)
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TASTntuHit::~TASTntuHit()
+TASThit::~TASThit()
 {
 }
 
 //------------------------------------------+-----------------------------------
-void TASTntuHit::Clear(Option_t* /*option*/)
+void TASThit::Clear(Option_t* /*option*/)
 {
    fMCindex.Set(0);
    fMcTrackIdx.Set(0);
 }
 
 //------------------------------------------+-----------------------------------
-void TASTntuHit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
+void TASThit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
    fMCindex[fMCindex.GetSize()-1]   = mcId;
@@ -65,14 +65,14 @@ void TASTntuHit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 
 //##############################################################################
 
-ClassImp(TASTntuRaw);
+ClassImp(TASTntuHit);
 
-TString TASTntuRaw::fgkBranchName   = "strh.";
+TString TASTntuHit::fgkBranchName   = "strh.";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TASTntuRaw::TASTntuRaw()
+TASTntuHit::TASTntuHit()
 : TAGdata(),
  m_ListOfHits(0)
 {
@@ -87,23 +87,23 @@ TASTntuRaw::TASTntuRaw()
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TASTntuRaw::~TASTntuRaw()
+TASTntuHit::~TASTntuHit()
 {
   delete m_ListOfHits;
 }
 
 //------------------------------------------+-----------------------------------
-Int_t TASTntuRaw::GetHitsN() const
+Int_t TASTntuHit::GetHitsN() const
 {
    return m_ListOfHits->GetEntries();
 }
 
 //______________________________________________________________________________
 //
-TASTntuHit* TASTntuRaw::NewHit(double charge, double de, double time)
+TASThit* TASTntuHit::NewHit(double charge, double de, double time)
 {
    TClonesArray &pixelArray = *m_ListOfHits;
-   TASTntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTntuHit(charge, de, time);
+   TASThit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASThit(charge, de, time);
    
    return hit;
 }
@@ -111,26 +111,26 @@ TASTntuHit* TASTntuRaw::NewHit(double charge, double de, double time)
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th hit
 
-TASTntuHit* TASTntuRaw::GetHit(Int_t i)
+TASThit* TASTntuHit::GetHit(Int_t i)
 {
-   return (TASTntuHit*) ((*m_ListOfHits)[i]);;
+   return (TASThit*) ((*m_ListOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 
-const TASTntuHit* TASTntuRaw::GetHit(Int_t i) const
+const TASThit* TASTntuHit::GetHit(Int_t i) const
 {
-   return (const TASTntuHit*) ((*m_ListOfHits)[i]);;
+   return (const TASThit*) ((*m_ListOfHits)[i]);;
 }
 
    
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 
-void TASTntuRaw::SetupClones()
+void TASTntuHit::SetupClones()
 {
-  if (!m_ListOfHits) m_ListOfHits = new TClonesArray("TASTntuHit");
+  if (!m_ListOfHits) m_ListOfHits = new TClonesArray("TASThit");
    
   return;
 }
@@ -139,7 +139,7 @@ void TASTntuRaw::SetupClones()
 //------------------------------------------+-----------------------------------
 //! Clear event.
 
-void TASTntuRaw::Clear(Option_t*)
+void TASTntuHit::Clear(Option_t*)
 {
   TAGdata::Clear();
   if (m_ListOfHits) m_ListOfHits->Clear("C");

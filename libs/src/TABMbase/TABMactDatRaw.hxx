@@ -16,7 +16,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TABMdatRaw.hxx"
 #include "TABMrawHit.hxx"
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 #include "TAGactDaqReader.hxx"
 
 #include "TH2.h"
