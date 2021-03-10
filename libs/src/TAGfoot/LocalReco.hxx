@@ -7,7 +7,7 @@
 #include "TAGdataDsc.hxx"
 #include "TAGactWDreader.hxx"
 
-#include "TASTactNtuRaw.hxx"
+#include "TASTactNtuHit.hxx"
 #include "TABMactVmeReader.hxx"
 #include "TABMactDatRaw.hxx"
 #include "TABMactNtuHit.hxx"
@@ -63,7 +63,7 @@ private:
 
    TAGactWDreader*        fActWdRaw;  // action for WD decoding
 
-   TASTactNtuRaw*        fActNtuRawSt;  // action for ntu data
+   TASTactNtuHit*        fActNtuRawSt;  // action for ntu data
    
    TABMactVmeReader*     fActVmeReaderBm; // action for stand alone reader BM
    TABMactDatRaw*        fActDatRawBm;
