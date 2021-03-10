@@ -7,7 +7,7 @@
 #include "TABMntuRaw.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"
-#include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
 #include "TATWdatRaw.hxx"
 #include "TATWntuRaw.hxx"
 #include "TACAntuRaw.hxx"
@@ -115,7 +115,7 @@ void LocalReco::CreateRawAction()
    
 //   if (GlobalPar::GetPar()->IncludeMSD()) {
 //      fpDatRawMsd   = new TAGdataDsc("msdDat", new TAVTdatRaw());
-//      fpNtuRawMsd   = new TAGdataDsc("msdRaw", new TAMSDntuRaw());
+//      fpNtuRawMsd   = new TAGdataDsc("msdRaw", new TAMSDntuHit());
 //      fActDatRawMsd = new TAMSDactDaqRaw("msdAcDat", fpDatRawMsd, fpDaqEvent, fpParGeoMsd);
 //      fActNtuRawMsd = new TAVTactNtuHit("msdActNtu", fpNtuRawMsd, fpDatRawMsd, fpParGeoMsd);
 //      if (fFlagHisto)
@@ -309,7 +309,7 @@ void LocalReco::SetTreeBranches()
    
    if (GlobalPar::GetPar()->IncludeMSD()) {
      if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuRawMsd, TAMSDntuRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpNtuRawMsd, TAMSDntuHit::GetBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeTW()) {

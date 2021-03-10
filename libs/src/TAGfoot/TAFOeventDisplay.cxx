@@ -18,7 +18,7 @@
 #include "TABMntuRaw.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"
-#include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
 #include "TATWntuRaw.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuRaw.hxx"

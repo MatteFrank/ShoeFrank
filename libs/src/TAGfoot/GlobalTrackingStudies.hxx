@@ -61,7 +61,7 @@
 #include "TAITntuCluster.hxx"
 
 #include "TAMSDparGeo.hxx"
-#include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
 
 #include "TATWparGeo.hxx"
