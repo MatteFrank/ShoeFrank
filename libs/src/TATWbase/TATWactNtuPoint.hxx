@@ -17,9 +17,6 @@
 #include "TAGparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
 
-class TAVTntuCluster;
-class TAVTntuHit;
-class TAVTparGeo;
 class TH1F;
 
 class TATWactNtuPoint : public TAGaction {
