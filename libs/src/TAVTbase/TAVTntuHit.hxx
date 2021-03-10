@@ -28,15 +28,15 @@ public:
    TAVTntuHit();
    virtual          ~TAVTntuHit();
    
-   TAVThit*       GetPixel(Int_t iSensor, Int_t iPixel);
-   const TAVThit* GetPixel(Int_t iSensor, Int_t iPixel) const;
+   TAVThit*          GetPixel(Int_t iSensor, Int_t iPixel);
+   const TAVThit*    GetPixel(Int_t iSensor, Int_t iPixel) const;
    
    TClonesArray*     GetListOfPixels(Int_t iSensor);
    TClonesArray*     GetListOfPixels(Int_t iSensor) const;
    
    Int_t             GetPixelsN(Int_t iSensor) const;
    
-   TAVThit*       NewPixel(Int_t sensor, Double_t value, Int_t aLine, Int_t aColumn);
+   TAVThit*          NewPixel(Int_t sensor, Double_t value, Int_t aLine, Int_t aColumn);
    
    virtual void      SetupClones();
    
