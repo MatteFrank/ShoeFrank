@@ -2,13 +2,13 @@
 #ifndef _TAITntuHit_HXX
 #define _TAITntuHit_HXX
 
-#include "TAVTbaseNtuHit.hxx"
+#include "TAVTbaseHit.hxx"
 
 /** TAITntuHit class interface to base class
 */
 /*------------------------------------------+---------------------------------*/
 
-class TAITntuHit : public TAVTbaseNtuHit {
+class TAITntuHit : public TAVTbaseHit {
    
 public:
     TAITntuHit();

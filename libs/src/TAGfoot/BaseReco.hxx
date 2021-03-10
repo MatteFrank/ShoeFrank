@@ -44,7 +44,7 @@
 
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAITntuRaw.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAMSDntuRaw.hxx"

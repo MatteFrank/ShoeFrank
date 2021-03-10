@@ -12,7 +12,7 @@
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTactNtuClusterF.hxx"
 
@@ -32,7 +32,7 @@ TAVTactNtuClusterF::TAVTactNtuClusterF(const char* name,
   fpNtuRaw(pNtuRaw),
   fpNtuClus(pNtuClus)
 {
-   AddDataIn(pNtuRaw,   "TAVTntuRaw");
+   AddDataIn(pNtuRaw,   "TAVTntuHit");
    AddDataOut(pNtuClus, "TAVTntuCluster");
 }
 
@@ -47,7 +47,7 @@ TAVTactNtuClusterF::~TAVTactNtuClusterF()
 //
 Bool_t TAVTactNtuClusterF::Action()
 {
-   TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) fpNtuRaw->Object();
+   TAVTntuHit* pNtuHit  = (TAVTntuHit*) fpNtuRaw->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
    Bool_t ok = true;
@@ -90,7 +90,7 @@ Bool_t TAVTactNtuClusterF::CreateClusters(Int_t iSensor)
       pNtuClus->NewCluster(iSensor);
    
    for (Int_t iPix = 0; iPix < fListOfPixels->GetEntries(); ++iPix) {
-      TAVTntuHit* pixel = (TAVTntuHit*)fListOfPixels->At(iPix);
+      TAVThit* pixel = (TAVThit*)fListOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
       if(!CheckLine(line)) continue;

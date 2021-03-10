@@ -26,7 +26,7 @@
 #include "TAVTparGeo.hxx"
 #include "TAVTparMap.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
@@ -84,7 +84,7 @@ void FillMCVertex(EVENT_STRUCT *myStr, Int_t runNumber) {
    parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
    
-   TAGdataDsc* vtRaw    = new TAGdataDsc("vtRaw", new TAVTntuRaw());
+   TAGdataDsc* vtRaw    = new TAGdataDsc("vtRaw", new TAVTntuHit());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
                vtVtx    = new TAGdataDsc("vtVtx", new TAVTntuVertex());

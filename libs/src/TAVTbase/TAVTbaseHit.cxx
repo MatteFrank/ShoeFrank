@@ -3,15 +3,15 @@
 #include "TVector3.h"
 #include "TClonesArray.h"
 
-#include "TAVTntuRaw.hxx"
-#include "TAVTbaseNtuHit.hxx"
+#include "TAVTntuHit.hxx"
+#include "TAVTbaseHit.hxx"
 
-ClassImp(TAVTbaseNtuHit) // Description of Single Detector TAVTbaseNtuHit 
+ClassImp(TAVTbaseHit) // Description of Single Detector TAVTbaseHit 
 
 
 //______________________________________________________________________________
 //  build the hit from the index
-TAVTbaseNtuHit::TAVTbaseNtuHit( Int_t aSensorNumber, const Int_t aPixelIndex, Double_t aValue)
+TAVTbaseHit::TAVTbaseHit( Int_t aSensorNumber, const Int_t aPixelIndex, Double_t aValue)
 : TAGobject(),
   fSensorId(aSensorNumber),
   fPixelIndex(aPixelIndex),
@@ -24,7 +24,7 @@ TAVTbaseNtuHit::TAVTbaseNtuHit( Int_t aSensorNumber, const Int_t aPixelIndex, Do
 
 //______________________________________________________________________________
 // Build the pixel from its sensor, line and column// constructor of a Pixel with column and line 
-TAVTbaseNtuHit::TAVTbaseNtuHit( Int_t aSensorNumber, Double_t aValue, Int_t aLine, Int_t aColumn )
+TAVTbaseHit::TAVTbaseHit( Int_t aSensorNumber, Double_t aValue, Int_t aLine, Int_t aColumn )
 : TAGobject(),
   fSensorId(aSensorNumber),
   fPixelIndex(0),
@@ -38,13 +38,13 @@ TAVTbaseNtuHit::TAVTbaseNtuHit( Int_t aSensorNumber, Double_t aValue, Int_t aLin
 
 //______________________________________________________________________________
 //
-TAVTbaseNtuHit::~TAVTbaseNtuHit()
+TAVTbaseHit::~TAVTbaseHit()
 {
 }
 
 //______________________________________________________________________________
 //
-void TAVTbaseNtuHit::Clear(Option_t* /*option*/)
+void TAVTbaseHit::Clear(Option_t* /*option*/)
 {
    fMCindex.Set(0);
    fMcTrackIdx.Set(0);
@@ -52,7 +52,7 @@ void TAVTbaseNtuHit::Clear(Option_t* /*option*/)
 
 //______________________________________________________________________________
 //  
-Double_t TAVTbaseNtuHit::Distance(const TVector3& aPosition)
+Double_t TAVTbaseHit::Distance(const TVector3& aPosition)
 {
    TVector3 result(fPosition);
    result -= aPosition; 
@@ -61,7 +61,7 @@ Double_t TAVTbaseNtuHit::Distance(const TVector3& aPosition)
 
 //______________________________________________________________________________
 //  
-Double_t TAVTbaseNtuHit::DistanceU(const TVector3& aPosition)
+Double_t TAVTbaseHit::DistanceU(const TVector3& aPosition)
 {
    TVector3 result(fPosition);
    result -= aPosition; 
@@ -70,7 +70,7 @@ Double_t TAVTbaseNtuHit::DistanceU(const TVector3& aPosition)
 
 //______________________________________________________________________________
 //  
-Double_t TAVTbaseNtuHit::DistanceV(const TVector3& aPosition)
+Double_t TAVTbaseHit::DistanceV(const TVector3& aPosition)
 {
    TVector3 result(fPosition);
    result -= aPosition; 
@@ -79,7 +79,7 @@ Double_t TAVTbaseNtuHit::DistanceV(const TVector3& aPosition)
 
 //______________________________________________________________________________
 //
-void TAVTbaseNtuHit::AddMcTrackIdx(Int_t trackId,Int_t mcId)
+void TAVTbaseHit::AddMcTrackIdx(Int_t trackId,Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
    fMCindex[fMCindex.GetSize()-1]   = mcId;
@@ -90,10 +90,10 @@ void TAVTbaseNtuHit::AddMcTrackIdx(Int_t trackId,Int_t mcId)
 
 //______________________________________________________________________________
 //
-Bool_t TAVTbaseNtuHit::IsEqual(const TObject* hit) const
+Bool_t TAVTbaseHit::IsEqual(const TObject* hit) const
 {
-   return ((fSensorId    == ((TAVTbaseNtuHit*)hit)->fSensorId)    &&
-           (fPixelLine   == ((TAVTbaseNtuHit*)hit)->fPixelLine)   &&
-           (fPixelColumn == ((TAVTbaseNtuHit*)hit)->fPixelColumn)
+   return ((fSensorId    == ((TAVTbaseHit*)hit)->fSensorId)    &&
+           (fPixelLine   == ((TAVTbaseHit*)hit)->fPixelLine)   &&
+           (fPixelColumn == ((TAVTbaseHit*)hit)->fPixelColumn)
            );
 }

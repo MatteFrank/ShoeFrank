@@ -15,7 +15,7 @@
 
 #include "TAITparGeo.hxx"
 #include "TATWparGeo.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
@@ -92,7 +92,7 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
          Int_t nHits = clus->GetPixelsN();
          
          for (Int_t j = 0; j < nHits; ++j) {
-            TAVTntuHit* hit = clus->GetPixel(j);
+            TAVThit* hit = clus->GetPixel(j);
             for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
                Int_t idx = hit->GetMcTrackIdx(k);
                printf("TrackMcId %d ", idx);

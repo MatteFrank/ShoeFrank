@@ -30,7 +30,7 @@
 #include "TAVTparMap.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTactNtuRaw.hxx"
@@ -153,7 +153,7 @@ void FillBm(TString fExpName) {
   bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmNtuRaw, bmGeo, bmConf, tgGeo);
   bmActTrack->CreateHistogram();
 
-  TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuRaw());
+  TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuHit());
   vtActRaw  = new TAVTactNtuRaw("vtActRaw", vtNtu, bmDaq, vtGeo, vtConf, vtMap);
   vtActRaw->CreateHistogram();
   

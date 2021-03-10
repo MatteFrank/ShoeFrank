@@ -15,7 +15,7 @@
 
 #include "TAVTparConf.hxx"
 
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 
 
 #include "TAVTactBaseNtuHitMC.hxx"

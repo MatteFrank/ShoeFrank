@@ -18,11 +18,11 @@
 #include "TAVTdigitizerE.hxx"
 #include "TAVTdigitizerG.hxx"
 
-#include "TAVTntuHit.hxx"
+#include "TAVThit.hxx"
 
 #include "TAVTactBaseNtuHitMC.hxx"
 
-class TAVTntuRaw;
+class TAVTntuHit;
 class TAVTparGeo;
 
 using namespace std;
@@ -45,11 +45,11 @@ private:
    TAGdataDsc*    fpNtuRaw;         // output data dsc
    EVENT_STRUCT*  fEventStruct;
 
-   map<pair<int, int>, TAVTntuHit*> fMap;     //! map for pilepup
+   map<pair<int, int>, TAVThit*> fMap;     //! map for pilepup
 
 private:
    void           FillNoise(Int_t sensorId) ;
-   void           SetMCinfo(TAVTntuHit* pixel, Int_t hitId);
+   void           SetMCinfo(TAVThit* pixel, Int_t hitId);
    void           CreateDigitizer();
    void           FillPixels( Int_t sensorId, Int_t mcId, Int_t trackId);
    void           DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackId);

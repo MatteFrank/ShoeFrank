@@ -13,7 +13,7 @@
 #include "TAVTparConf.hxx"
 #include "TAVTparMap.hxx"
 
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTactBaseRaw.hxx"
 #include "TAVTmi26Type.hxx"
 
@@ -60,7 +60,7 @@ TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
   fEventsOverflow(0), 
   fNStatesInLine(0)
 {
-   AddDataOut(pNtuRaw, "TAVTntuRaw");
+   AddDataOut(pNtuRaw, "TAVTntuHit");
    AddPara(pGeoMap, "TAVTparGeo");
    AddPara(pConfig, "TAVTparConf");
    
@@ -218,7 +218,7 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
     7) Trailer;
     */
    
-   TAVTntuRaw*  pNtuRaw = (TAVTntuRaw*)  fpNtuRaw->Object();
+   TAVTntuHit*  pNtuRaw = (TAVTntuHit*)  fpNtuRaw->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    TAVTparGeo*  pGeoPar = (TAVTparGeo*)  fpGeoMap->Object();
    TAVTparMap*  pParMap = (TAVTparMap*) fpParMap->Object();
@@ -325,14 +325,14 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    // - value = analog value of this pixel
    // - line & column = position of the pixel in the matrix
    
-   TAVTntuRaw* pNtuRaw  = (TAVTntuRaw*) fpNtuRaw->Object();
+   TAVTntuHit* pNtuRaw  = (TAVTntuHit*) fpNtuRaw->Object();
    TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
 
    std::pair<int, int> pair(aLine, aColumn);
    if (pConfig->GetSensorPar(iSensor).DeadPixelMap[pair] == 1) return;
 
-   TAVTntuHit* pixel   = (TAVTntuHit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);

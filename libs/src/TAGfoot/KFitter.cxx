@@ -407,7 +407,7 @@ int KFitter::UploadHitsVT() {
 
 
   // take the ntuple object already filled
-  TAVTntuRaw* ntup = (TAVTntuRaw*) gTAGroot->FindDataDsc("vtRaw", "TAVTntuRaw")->Object();
+  TAVTntuHit* ntup = (TAVTntuHit*) gTAGroot->FindDataDsc("vtRaw", "TAVTntuHit")->Object();
   TAVTparGeo* vtxGeo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
 
   if ( m_debug > 0 )		cout << "N vertex sensors: " << vtxGeo->GetSensorsN() << endl;
@@ -477,7 +477,7 @@ int KFitter::UploadClusVT(){
 
 
       for (Int_t jHit = 0; jHit < nHits; ++jHit) {
-        TAVTntuHit* hit = clus->GetPixel(jHit);
+        TAVThit* hit = clus->GetPixel(jHit);
         if (m_debug > 1 ) cout<< "hit->GetMcTracksN() " << hit->GetMcTracksN() << endl;
         for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
           Int_t idx = hit->GetMcTrackIdx(k);
@@ -1853,7 +1853,7 @@ void KFitter::Prepare4Vertex( TAVTcluster* clus, int track_ID, int iHit ) {
 
 
   for (Int_t jHit = 0; jHit < nHits; ++jHit) {
-    TAVTntuHit* hit = clus->GetPixel(jHit);
+    TAVThit* hit = clus->GetPixel(jHit);
     Int_t id = hit->GetMcIndex(0);
     //cout << "McTrackId: " << idx << endl;
     //cout << "McIndex: " << id << endl;

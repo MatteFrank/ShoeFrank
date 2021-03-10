@@ -5,7 +5,7 @@
 
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAITntuRaw.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TATWdatRaw.hxx"
@@ -91,7 +91,7 @@ void LocalReco::CreateRawAction()
    }
 
    if (GlobalPar::GetPar()->IncludeVT()) {
-      fpNtuRawVtx   = new TAGdataDsc("vtRaw", new TAVTntuRaw());
+      fpNtuRawVtx   = new TAGdataDsc("vtRaw", new TAVTntuHit());
       
       if (fgStdAloneFlag) {
          fActVmeReaderVtx  = new TAVTactVmeReader("vtActNtu", fpNtuRawVtx, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
@@ -299,7 +299,7 @@ void LocalReco::SetTreeBranches()
    
    if (GlobalPar::GetPar()->IncludeVT()) {
      if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuHit::GetBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeIT()) {

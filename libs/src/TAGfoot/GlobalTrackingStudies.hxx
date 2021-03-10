@@ -50,7 +50,7 @@
 #include "TAGparGeo.hxx"
 
 #include "TAVTparGeo.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTtrack.hxx"
 #include "TAVTntuCluster.hxx"

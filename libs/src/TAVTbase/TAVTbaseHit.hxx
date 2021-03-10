@@ -1,6 +1,6 @@
 
-#ifndef _TAVTbaseNtuHit_HXX
-#define _TAVTbaseNtuHit_HXX
+#ifndef _TAVTbaseHit_HXX
+#define _TAVTbaseHit_HXX
 
 // ROOT classes
 #include "TObject.h"
@@ -17,7 +17,7 @@
 
 // class TAVTrawHit;
 
-/** TAVTbaseNtuHit class contains information respect to a pixel in cmos detectors
+/** TAVTbaseHit class contains information respect to a pixel in cmos detectors
  index, position, noise, pulse height, size, etc...
  
     Revised in 2018 by Matteo Franchini franchinim@bo.infn.it
@@ -29,7 +29,7 @@
 */
 /*------------------------------------------+---------------------------------*/
 
-class TAVTbaseNtuHit : public TAGobject {
+class TAVTbaseHit : public TAGobject {
    
 protected:
 	Int_t              fSensorId;                 // number of the sensor
@@ -50,10 +50,10 @@ protected:
 
 public:
 
-    TAVTbaseNtuHit() {};
-    TAVTbaseNtuHit( Int_t iSensor, const Int_t aIndex, Double_t aValue);
-    TAVTbaseNtuHit( Int_t iSensor, Double_t aValue, Int_t aLine, Int_t aColumn);
-    virtual ~TAVTbaseNtuHit();
+    TAVTbaseHit() {};
+    TAVTbaseHit( Int_t iSensor, const Int_t aIndex, Double_t aValue);
+    TAVTbaseHit( Int_t iSensor, Double_t aValue, Int_t aLine, Int_t aColumn);
+    virtual ~TAVTbaseHit();
 
     void               Clear(Option_t* option = "C");
 
@@ -81,15 +81,15 @@ public:
     TVector3&          GetPosition()                   { return fPosition;        }
    
     //! Compute distance from a given pixel
-    Double_t           Distance( TAVTbaseNtuHit&         aPixel);
+    Double_t           Distance( TAVTbaseHit&         aPixel);
     //! Compute distance from a given position
     Double_t           Distance( const TVector3&     aPosition);
     //! Compute distance in U direction from a given pixel
-    Double_t           DistanceU( TAVTbaseNtuHit&        aPixel);
+    Double_t           DistanceU( TAVTbaseHit&        aPixel);
     //! Compute distance in U direction from a given position
     Double_t           DistanceU( const TVector3&     aPosition);
     //! Compute distance in V direction from a given pixel
-    Double_t           DistanceV( TAVTbaseNtuHit&         aPixel);
+    Double_t           DistanceV( TAVTbaseHit&         aPixel);
     //! Compute distance in V direction from a given position
     Double_t           DistanceV( const TVector3&     aPosition);
 
@@ -102,7 +102,7 @@ public:
    // Add MC track Id
    void       AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
 
-    ClassDef(TAVTbaseNtuHit,4)                            // Pixel or Pixel of a Detector Plane
+    ClassDef(TAVTbaseHit,4)                            // Pixel or Pixel of a Detector Plane
 };
 
 //##############################################################################

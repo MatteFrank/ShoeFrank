@@ -21,7 +21,7 @@
 #include "TAVTparMap.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 
@@ -62,7 +62,7 @@ void FillVertex(Int_t runNumber)
 
    TAVTparConf::SetHistoMap();
    TAGdataDsc* vtDaq    = new TAGdataDsc("vtDaq", new TAGdaqEvent());
-   TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuRaw());
+   TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuHit());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
 

@@ -19,7 +19,7 @@
 #include "TABMntuTrack.hxx"
 
 #include "TAVTparGeo.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTntuTrack.hxx"

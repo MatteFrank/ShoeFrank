@@ -8,7 +8,7 @@
 #include "TAMCntuTrack.hxx"
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAITntuRaw.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TATWntuRaw.hxx"
@@ -75,7 +75,7 @@ void LocalRecoMC::CreateRawAction()
       if (GlobalPar::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
       
-      fpNtuRawVtx = new TAGdataDsc("vtRaw", new TAVTntuRaw());
+      fpNtuRawVtx = new TAGdataDsc("vtRaw", new TAVTntuHit());
       fActNtuRawVtx = new TAVTactNtuHitMC("vtActNtu", fpNtuMcVt, fpNtuMcTrk, fpNtuRawVtx, fpParGeoVtx, fEvtStruct);
       if (fFlagHisto)
          fActNtuRawVtx->CreateHistogram();
@@ -251,7 +251,7 @@ void LocalRecoMC::SetTreeBranches()
    
    if (GlobalPar::GetPar()->IncludeVT()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
    }
    

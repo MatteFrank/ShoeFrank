@@ -9,7 +9,7 @@
 #include <vector>
 
 
-class TAVTntuRaw;
+class TAVTntuHit;
 class TH2F;
 class TH1F;
 

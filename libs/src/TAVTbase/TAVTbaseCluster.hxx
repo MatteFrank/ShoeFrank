@@ -11,7 +11,7 @@
 
 #include "TAGcluster.hxx"
 #include "TAGdata.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 
 
 class TAVTparGeo;
@@ -93,15 +93,15 @@ public:
    //! Get validity
    Bool_t             IsValid()                        const { return fIsValid;        }
    //! Get index for a given pixel
-   Int_t              GetIndex(Int_t tSk)              const { return ((TAVTntuHit*)fListOfPixels->At(tSk))->GetPixelIndex();  } 
+   Int_t              GetIndex(Int_t tSk)              const { return ((TAVThit*)fListOfPixels->At(tSk))->GetPixelIndex();  } 
    //! Get pulse height for a given pixel
-   Float_t            GetPulseHeight(Int_t tSk)        const { return ((TAVTntuHit*)fListOfPixels->At(tSk))->GetPulseHeight(); } 
+   Float_t            GetPulseHeight(Int_t tSk)        const { return ((TAVThit*)fListOfPixels->At(tSk))->GetPulseHeight(); } 
    //! Get number of pixels in this clusters
    Int_t              GetPixelsN()                     const { return  fListOfPixels->GetEntries(); }
    //! Get sum of pulse height
    Float_t            GetCharge()                      const { return fCharge;  }
    //! Get pixel
-   TAVTntuHit*        GetPixel(Int_t idx);
+   TAVThit*        GetPixel(Int_t idx);
    //! Get position of seed pixel
    Float_t            GetSeedU()                       const;
    Float_t            GetSeedV()                       const;

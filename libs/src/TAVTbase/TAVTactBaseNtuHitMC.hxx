@@ -15,7 +15,7 @@
 #include "TAVTbaseDigitizer.hxx"
 #include "TAVTdigitizerE.hxx"
 
-#include "TAVTntuHit.hxx"
+#include "TAVThit.hxx"
 
 class TH2F;
 class TH1F;

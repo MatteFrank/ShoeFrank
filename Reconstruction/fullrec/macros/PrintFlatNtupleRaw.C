@@ -20,7 +20,7 @@
 #include "TABMntuTrack.hxx"
 
 #include "TAVTparGeo.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTntuTrack.hxx"
@@ -544,7 +544,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
           
           
           // for (Int_t j = 0; j < nHits; ++j) {
-          //   TAVTntuHit* hit = clus->GetPixel(j);
+          //   TAVThit* hit = clus->GetPixel(j);
           //   for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
           //     Int_t id = hit->GetMcTrackIdx(k);
           //     Int_t idx = hit->GetMcIndex(k);

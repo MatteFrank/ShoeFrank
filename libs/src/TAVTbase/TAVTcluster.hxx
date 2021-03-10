@@ -12,7 +12,7 @@
  */
 
 class TAVTtrack;
-class TAVTntuHit;
+class TAVThit;
 
 class TAVTcluster : public TAVTbaseCluster {
    
@@ -28,7 +28,7 @@ public:
    Float_t            Distance(TAVTtrack *aTrack); 
 
    //! Add pixel to the list
-   void               AddPixel(TAVTntuHit* pixel);
+   void               AddPixel(TAVThit* pixel);
    
    ClassDef(TAVTcluster,2)                          // Describes TAVTcluster
 };
