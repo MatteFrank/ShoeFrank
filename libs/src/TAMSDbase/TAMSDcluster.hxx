@@ -13,7 +13,7 @@
  \author Ch. Finck
  */
 
-class TAMSDntuHit;
+class TAMSDhit;
 
 class TAMSDcluster : public TAGcluster {
    
@@ -74,7 +74,7 @@ public:
    //! Get number of pixels in this clusters
    Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntries(); }
    //! Get pixel
-   TAMSDntuHit*       GetStrip(Int_t idx);
+   TAMSDhit*       GetStrip(Int_t idx);
       
    //! Compute distance from another cluster
    Float_t            Distance(TAMSDcluster *aClus);
@@ -85,7 +85,7 @@ public:
    virtual void       SetupClones();
 
    //! Add pixel to the list
-   void               AddStrip(TAMSDntuHit* strip);
+   void               AddStrip(TAMSDhit* strip);
 
 
    ClassDef(TAMSDcluster,2)                          // Describes TAMSDcluster

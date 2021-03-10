@@ -786,7 +786,7 @@ int KFitter::UploadClusMSD() {
       Int_t nHits = clus->GetStripsN();
 
       for (Int_t jHit = 0; jHit < nHits; ++jHit) {
-        TAMSDntuHit* hit = (TAMSDntuHit*)clus->GetStrip(jHit);
+        TAMSDhit* hit = (TAMSDhit*)clus->GetStrip(jHit);
         for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
           Int_t idx = hit->GetMcTrackIdx(k);
           Int_t id = hit->GetMcIndex(k);

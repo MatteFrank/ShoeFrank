@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////
 
 #include "TAMSDcluster.hxx"
-#include "TAMSDntuHit.hxx"
+#include "TAMSDhit.hxx"
 
 ClassImp(TAMSDcluster) // Description of a cluster
 
@@ -30,7 +30,7 @@ TAMSDcluster::TAMSDcluster()
 //
 void TAMSDcluster::SetupClones()
 {
-   fListOfStrips = new TClonesArray("TAMSDntuHit");
+   fListOfStrips = new TClonesArray("TAMSDhit");
    fListOfStrips->SetOwner(true);
 }
 
@@ -61,7 +61,7 @@ TAMSDcluster::~TAMSDcluster()
 
 //______________________________________________________________________________
 //  
-void TAMSDcluster::AddStrip(TAMSDntuHit* strip)
+void TAMSDcluster::AddStrip(TAMSDhit* strip)
 {
    for (Int_t k = 0; k < strip->GetMcTracksN(); ++k) {
       Int_t idx = strip->GetMcTrackIdx(k);
@@ -69,7 +69,7 @@ void TAMSDcluster::AddStrip(TAMSDntuHit* strip)
    }
    
    TClonesArray &StripArray = *fListOfStrips;
-   new(StripArray[StripArray.GetEntriesFast()]) TAMSDntuHit(*strip);
+   new(StripArray[StripArray.GetEntriesFast()]) TAMSDhit(*strip);
 }
 
 //______________________________________________________________________________
@@ -86,10 +86,10 @@ void TAMSDcluster::SetPositionG(TVector3& posGlo)
 
 //______________________________________________________________________________
 //
-TAMSDntuHit* TAMSDcluster::GetStrip(Int_t idx)
+TAMSDhit* TAMSDcluster::GetStrip(Int_t idx)
 {
    if (idx >=0 && idx < fListOfStrips->GetEntries())
-      return (TAMSDntuHit*)fListOfStrips->At(idx);
+      return (TAMSDhit*)fListOfStrips->At(idx);
    else
       return 0x0;
 }

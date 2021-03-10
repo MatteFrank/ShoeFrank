@@ -10,7 +10,7 @@
 #include "TAGaction.hxx"
 
 class TAMSDntuCluster;
-class TAMSDntuHit;
+class TAMSDhit;
 class TAMSDparGeo;
 class TH1F;
 

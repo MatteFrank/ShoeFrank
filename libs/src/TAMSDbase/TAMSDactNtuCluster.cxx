@@ -10,7 +10,7 @@
 
 #include "TAMSDparGeo.hxx"
 #include "TAMSDparConf.hxx"
-#include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TAMSDactNtuCluster.hxx"
 
@@ -36,7 +36,7 @@ TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TA
 {
   AddPara(pGeoMap, "TAMSDparGeo");
   AddPara(pConfig, "TAMSDparConf");
-  AddDataIn(pNtuRaw,   "TAMSDntuRaw");
+  AddDataIn(pNtuRaw,   "TAMSDntuHit");
   AddDataOut(pNtuClus, "TAMSDntuCluster");
   
   TAMSDparGeo* geoMap = (TAMSDparGeo*)fpGeoMap->Object();
@@ -84,7 +84,7 @@ TAMSDactNtuCluster::~TAMSDactNtuCluster()
 //
 Bool_t TAMSDactNtuCluster::Action()
 {
-  TAMSDntuRaw* pNtuHit  = (TAMSDntuRaw*) fpNtuRaw->Object();
+  TAMSDntuHit* pNtuHit  = (TAMSDntuHit*) fpNtuRaw->Object();
   TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMap->Object();
   Bool_t ok = true;
   
@@ -121,7 +121,7 @@ void TAMSDactNtuCluster::SearchCluster()
   // Search for cluster
   
   for (Int_t iPix = 0; iPix < fListOfStrips->GetEntries(); ++iPix) { // loop over hit strips
-    TAMSDntuHit* strip = (TAMSDntuHit*)fListOfStrips->At(iPix);
+    TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(iPix);
     if (strip->Found()) continue;
     
     Int_t stripId  = strip->GetStrip();
@@ -159,7 +159,7 @@ void TAMSDactNtuCluster::FillMaps()
   // fill maps for cluster
   for (Int_t i = 0; i < fListOfStrips->GetEntries(); i++) { // loop over hit strips
     
-    TAMSDntuHit* strip = (TAMSDntuHit*)fListOfStrips->At(i);
+    TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(i);
     Int_t stripId  = strip->GetStrip();
     if (!CheckLine(stripId)) continue;
     
@@ -181,7 +181,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     pNtuClus->NewCluster(iSensor);
   
   for (Int_t iPix = 0; iPix < fListOfStrips->GetEntries(); ++iPix) {
-    TAMSDntuHit* strip = (TAMSDntuHit*)fListOfStrips->At(iPix);
+    TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(iPix);
     Int_t stripId = strip->GetStrip();
     if(!CheckLine(stripId)) continue;
     
@@ -242,7 +242,7 @@ void TAMSDactNtuCluster::ComputePosition()
   Float_t tClusterPulseSum = 0.;
   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
-    TAMSDntuHit* strip = (TAMSDntuHit*)fCurListOfStrips->At(i);
+    TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
     tCorTemp = strip->GetPosition()*strip->GetValue();
     tCorrection  += tCorTemp;
     tClusterPulseSum  += strip->GetValue();
@@ -251,7 +251,7 @@ void TAMSDactNtuCluster::ComputePosition()
   pos = tCorrection*(1./tClusterPulseSum);
   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
-    TAMSDntuHit* strip = (TAMSDntuHit*)fCurListOfStrips->At(i);
+    TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
     tCorrection2 = strip->GetValue()*(strip->GetPosition()-pos)*(strip->GetPosition()-pos);
     posErr += tCorrection2;
   }

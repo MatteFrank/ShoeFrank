@@ -26,7 +26,7 @@
 #include "TAVTparConf.hxx"
 #include "TAMSDparConf.hxx"
 #include "TAMSDdatRaw.hxx"
-#include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
 
 #include "TAMSDactNtuMC.hxx"
@@ -50,7 +50,7 @@ void FillMCMsd(EVENT_STRUCT *myStr, Int_t runNumber) {
    TString parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
    
-   TAGdataDsc* msdRaw    = new TAGdataDsc("msdRaw", new TAMSDntuRaw());
+   TAGdataDsc* msdRaw    = new TAGdataDsc("msdRaw", new TAMSDntuHit());
    TAGdataDsc* msdClus   = new TAGdataDsc("msdClus", new TAMSDntuCluster());
    
    TAGparaDsc*  msdConf  = new TAGparaDsc("msdConf", new TAMSDparConf());
@@ -65,7 +65,7 @@ void FillMCMsd(EVENT_STRUCT *myStr, Int_t runNumber) {
    msdActClus = new TAMSDactNtuCluster("msdActCluster", msdRaw, msdClus, msdConf, msdGeo);
    msdActClus->CreateHistogram();
    
-   // outFile->SetupElementBranch(itRaw, TAMSDntuRaw::GetBranchName());
+   // outFile->SetupElementBranch(itRaw, TAMSDntuHit::GetBranchName());
   //outFile->SetupElementBranch(itClus, TAMSDntuCluster::GetBranchName());
    // outFile->SetupElementBranch(itTrck, TAMSDntuTrack::GetBranchName());
    

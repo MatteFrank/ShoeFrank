@@ -13,7 +13,7 @@
 #include "TAMSDparGeo.hxx"
 #include "TAMSDparConf.hxx"
 
-#include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAMCntuTrack.hxx"
 
@@ -52,7 +52,7 @@ TAMSDactNtuHitMC::TAMSDactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdata
      AddDataIn(pNtuMC, "TAMCntuHit");
      AddDataIn(pNtuEve, "TAMCntuTrack");
    }
-   AddDataOut(pNtuRaw, "TAMSDntuRaw");
+   AddDataOut(pNtuRaw, "TAMSDntuHit");
 	AddPara(pGeoMap, "TAMSDparGeo");
 
    CreateDigitizer();
@@ -125,7 +125,7 @@ void TAMSDactNtuHitMC::CreateDigitizer()
 bool TAMSDactNtuHitMC::Action()
 {
    TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
-   TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
+   TAMSDntuHit* pNtuRaw = (TAMSDntuHit*) fpNtuRaw->Object();
   
    TAMCntuHit* pNtuMC  = 0;
   
@@ -183,7 +183,7 @@ bool TAMSDactNtuHitMC::Action()
 void TAMSDactNtuHitMC::FillStrips(Int_t sensorId, Int_t hitId,  Int_t trackIdx)
 {
   TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
-  TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
+  TAMSDntuHit* pNtuRaw = (TAMSDntuHit*) fpNtuRaw->Object();
   
   Int_t view = pGeoMap->GetSensorPar(sensorId).TypeIdx;
   
@@ -197,11 +197,11 @@ void TAMSDactNtuHitMC::FillStrips(Int_t sensorId, Int_t hitId,  Int_t trackIdx)
       count++;
       int stripId = it->first;
       
-       TAMSDntuHit* strip  = 0x0;
+       TAMSDhit* strip  = 0x0;
        pair<int, int> p(sensorId, stripId);
 
        if (fMap[p] == 0) {
-          strip = (TAMSDntuHit*)pNtuRaw->NewStrip(sensorId, digiMap[stripId], view, stripId);
+          strip = (TAMSDhit*)pNtuRaw->NewStrip(sensorId, digiMap[stripId], view, stripId);
           fMap[p] = strip;
        } else {
           strip = fMap[p];
@@ -239,7 +239,7 @@ void TAMSDactNtuHitMC::FillNoise()
 //___________________________________
 void TAMSDactNtuHitMC::FillNoise(Int_t sensorId)
 {
-  TAMSDntuRaw* pNtuRaw = (TAMSDntuRaw*) fpNtuRaw->Object();
+  TAMSDntuHit* pNtuRaw = (TAMSDntuHit*) fpNtuRaw->Object();
   TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
   
   Int_t view = pGeoMap->GetSensorPar(sensorId).TypeIdx;
@@ -247,7 +247,7 @@ void TAMSDactNtuHitMC::FillNoise(Int_t sensorId)
   Int_t stripsN = gRandom->Uniform(0, fNoisyStripsN);
   for (Int_t i = 0; i < stripsN; ++i) {
     Int_t stripId  = gRandom->Uniform(0,fDigitizer->GetStripsN());
-    TAMSDntuHit* strip = pNtuRaw->NewStrip(sensorId, 1., view, stripId);
+    TAMSDhit* strip = pNtuRaw->NewStrip(sensorId, 1., view, stripId);
     strip->AddMcTrackIdx(fgMcNoiseId);
   }
 }

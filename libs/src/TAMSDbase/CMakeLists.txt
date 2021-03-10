@@ -20,8 +20,8 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 #
 set( with_dictionnaries
    TAMSDdatRaw
-   TAMSDntuRaw
    TAMSDntuHit
+   TAMSDhit
    TAMSDntuPoint
    TAMSDparMap
    TAMSDparGeo

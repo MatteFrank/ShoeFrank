@@ -7,8 +7,8 @@
 
 #pragma link C++ class TAMSDdatRaw+;
 #pragma link C++ class TAMSDrawHit+;
-#pragma link C++ class TAMSDntuRaw+;
 #pragma link C++ class TAMSDntuHit+;
+#pragma link C++ class TAMSDhit+;
 #pragma link C++ class TAMSDparMap+;
 #pragma link C++ class TAMSDparGeo+;
 #pragma link C++ class TAMSDparConf+;

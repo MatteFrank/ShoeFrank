@@ -9,7 +9,7 @@
 #include "TObjArray.h"
 
 #include "TAGdata.hxx"
-#include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
 
 #include "TAMSDcluster.hxx"
 

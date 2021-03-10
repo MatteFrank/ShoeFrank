@@ -65,7 +65,7 @@
 #include "TAITntuCluster.hxx"
 
 #include "TAMSDparGeo.hxx"
-#include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TAMSDntuPoint.hxx"
 
@@ -256,7 +256,7 @@ private:
   //  delete non va fatto il delete perche APPARENTEMENTE gia fatto
   vector<TAVThit*> m_VT_hitCollection;
   vector<TAIThit*> m_IT_hitCollection;
-  vector<TAMSDntuHit*> m_MSD_hitCollection;
+  vector<TAMSDhit*> m_MSD_hitCollection;
   vector<TATWpoint*> m_TW_hitCollection;
 
   vector<TAVTcluster*> m_VT_clusCollection;
