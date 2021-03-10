@@ -330,7 +330,6 @@ protected:
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
    TAMSDactNtuPoint*     fActPointMsd;   // action for point in MSD
 
-   // TATWactNtuHit*        fActNtuHitTw;  // action for ntu data
    TATWactNtuPoint*      fActPointTw;    // action for clusters
    TATWactCalibTW*       fActCalibTw;
 
