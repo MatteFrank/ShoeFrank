@@ -12,8 +12,8 @@
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAITntuRaw.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
+#include "TAITntuHit.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAITactNtuClusterMT.hxx"
 
@@ -33,7 +33,7 @@ TAITactNtuClusterMT::TAITactNtuClusterMT(const char* name,
   fpNtuRaw(pNtuRaw),
   fpNtuClus(pNtuClus)
 {
-   AddDataIn(pNtuRaw,   "TAITntuRaw");
+   AddDataIn(pNtuRaw,   "TAITntuHit");
    AddDataOut(pNtuClus, "TAITntuCluster");
    
    if (fThreadsN > fgkLimThreadsN)
@@ -93,7 +93,7 @@ Bool_t TAITactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
       pNtuClus->NewCluster(iSensor);
    
    for (Int_t iPix = 0; iPix < listOfPixels->GetEntries(); ++iPix) {
-      TAITntuHit* pixel = (TAITntuHit*)listOfPixels->At(iPix);
+      TAIThit* pixel = (TAIThit*)listOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
       if(!CheckLine(line)) continue;
@@ -135,7 +135,7 @@ Bool_t TAITactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
 //
 TClonesArray* TAITactNtuClusterMT::GetListOfPixels(Int_t sensorId)
 {
-   TAITntuRaw* pNtuHit  = (TAITntuRaw*) fpNtuRaw->Object();
+   TAITntuHit* pNtuHit  = (TAITntuHit*) fpNtuRaw->Object();
    
    return pNtuHit->GetListOfPixels(sensorId);
 }

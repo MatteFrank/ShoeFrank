@@ -9,7 +9,7 @@
 #include <vector>
 
 
-class TAITntuRaw;
+class TAITntuHit;
 class TH2F;
 class TH1F;
 

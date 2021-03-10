@@ -22,7 +22,7 @@
 #include "TAITparMap.hxx"
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAMCntuHit.hxx"
@@ -65,7 +65,7 @@ void FillInnerTracker(Int_t runNumber)
    TAITparConf::SetHistoMap();
    TAGdataDsc* itEve  = new TAGdataDsc("itEve", new TAMCntuTrack());
    TAGdataDsc* itMc   = new TAGdataDsc("itMc", new TAMCntuHit());
-   TAGdataDsc* itNtu  = new TAGdataDsc("itNtu", new TAITntuRaw());
+   TAGdataDsc* itNtu  = new TAGdataDsc("itNtu", new TAITntuHit());
    TAGdataDsc* itClus = new TAGdataDsc("itClus", new TAITntuCluster());
    TAGdataDsc* itTrck = new TAGdataDsc("itTrck", new TAITntuTrack());
 

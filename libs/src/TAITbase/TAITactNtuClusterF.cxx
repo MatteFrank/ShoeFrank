@@ -10,8 +10,8 @@
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAITntuRaw.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
+#include "TAITntuHit.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAITactNtuClusterF.hxx"
 
@@ -31,7 +31,7 @@ TAITactNtuClusterF::TAITactNtuClusterF(const char* name,
   fpNtuRaw(pNtuRaw),
   fpNtuClus(pNtuClus)
 {
-   AddDataIn(pNtuRaw,   "TAITntuRaw");
+   AddDataIn(pNtuRaw,   "TAITntuHit");
    AddDataOut(pNtuClus, "TAITntuCluster");
 }
 
@@ -46,7 +46,7 @@ TAITactNtuClusterF::~TAITactNtuClusterF()
 //
 Bool_t TAITactNtuClusterF::Action()
 {
-   TAITntuRaw* pNtuHit  = (TAITntuRaw*) fpNtuRaw->Object();
+   TAITntuHit* pNtuHit  = (TAITntuHit*) fpNtuRaw->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
    Bool_t ok = true;
@@ -87,7 +87,7 @@ Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor)
       pNtuClus->NewCluster(iSensor);
    
    for (Int_t iPix = 0; iPix < fListOfPixels->GetEntries(); ++iPix) {
-      TAITntuHit* pixel = (TAITntuHit*)fListOfPixels->At(iPix);
+      TAIThit* pixel = (TAIThit*)fListOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
       if(!CheckLine(line)) continue;

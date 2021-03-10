@@ -14,7 +14,7 @@
 #include "TAVTparConf.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
 
 #include "TAITactNtuHitMC.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -51,7 +51,7 @@ TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
      AddDataIn(pNtuMC, "TAMCntuHit");
      AddDataIn(pNtuEve, "TAMCntuTrack");
    } 
-   AddDataOut(pNtuRaw, "TAITntuRaw");
+   AddDataOut(pNtuRaw, "TAITntuHit");
    AddPara(pGeoMap, "TAITparGeo");
    
    CreateDigitizer();
@@ -73,7 +73,7 @@ void TAITactNtuHitMC::CreateDigitizer()
 bool TAITactNtuHitMC::Action()
 {
 	
-	TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
+	TAITntuHit* pNtuRaw = (TAITntuHit*) fpNtuRaw->Object();
 	pNtuRaw->Clear();
 
    static Int_t storedEvents = 0;
@@ -192,7 +192,7 @@ void TAITactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, T
 void TAITactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx )
 {
 	TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
-	TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
+	TAITntuHit* pNtuRaw = (TAITntuHit*) fpNtuRaw->Object();
  
 	map<int, double> digiMap = fDigitizer->GetMap();
 	int nPixelX = fDigitizer->GetPixelsNx();
@@ -207,11 +207,11 @@ void TAITactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx )
 			int col  = it->first % nPixelX;
          Double_t value = digiMap[it->first];
 
-         TAITntuHit* pixel = 0x0;
+         TAIThit* pixel = 0x0;
          pair<int, int> p(sensorId, it->first);
 
          if (fMap[p] == 0x0) {
-            pixel = (TAITntuHit*)pNtuRaw->NewPixel(sensorId, value, line, col);
+            pixel = (TAIThit*)pNtuRaw->NewPixel(sensorId, value, line, col);
             fMap[p] = pixel;
          } else
             pixel = fMap[p];
@@ -247,13 +247,13 @@ void TAITactNtuHitMC::FillNoise()
 //___________________________________
 void TAITactNtuHitMC::FillNoise(Int_t sensorId)
 {
-	TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
+	TAITntuHit* pNtuRaw = (TAITntuHit*) fpNtuRaw->Object();
 
 	Int_t pixelsN = gRandom->Uniform(0, fNoisyPixelsN);
 	for (Int_t i = 0; i < pixelsN; ++i) {
 	   Int_t col  = gRandom->Uniform(0,fDigitizer->GetPixelsNx());
 	   Int_t line = gRandom->Uniform(0,fDigitizer->GetPixelsNy());
-	   TAITntuHit* pixel = pNtuRaw->NewPixel(sensorId, 1., line, col);
+	   TAIThit* pixel = pNtuRaw->NewPixel(sensorId, 1., line, col);
 	   pixel->AddMcTrackIdx(fgMcNoiseId);
 	}
 }

@@ -57,7 +57,7 @@
 #include "TAVTactNtuClusterF.hxx"
 
 #include "TAITparGeo.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
 #include "TAITntuCluster.hxx"
 
 #include "TAMSDparGeo.hxx"

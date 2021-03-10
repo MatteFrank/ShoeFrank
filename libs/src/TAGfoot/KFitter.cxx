@@ -535,7 +535,7 @@ int KFitter::UploadClusVT(){
 int KFitter::UploadHitsIT() {
 
   // take the ntuple object already filled
-  TAITntuRaw* ntup = (TAITntuRaw*) gTAGroot->FindDataDsc("itRaw", "TAITntuRaw")->Object();
+  TAITntuHit* ntup = (TAITntuHit*) gTAGroot->FindDataDsc("itRaw", "TAITntuHit")->Object();
   TAITparGeo* vtxGeo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
 
   if ( m_debug > 0 )		cout << "N IT sensors: " << vtxGeo->GetSensorsN() << endl;
@@ -548,7 +548,7 @@ int KFitter::UploadHitsIT() {
     if ( m_debug > 0 )		cout << "N IT pixel in sensor " << nSensor << ": " << ntup->GetPixelsN( nSensor) << endl;
 
     for (int nPx = 0; nPx < ntup->GetPixelsN( nSensor); nPx++) 		// over all pixels for each sensor
-      m_IT_hitCollection.push_back( (TAITntuHit*)ntup->GetPixel( nSensor, nPx) );
+      m_IT_hitCollection.push_back( (TAIThit*)ntup->GetPixel( nSensor, nPx) );
 
   }
 
@@ -603,7 +603,7 @@ int KFitter::UploadClusIT(){
 
 
       for (Int_t jHit = 0; jHit < nHits; ++jHit) {
-        TAITntuHit* hit = (TAITntuHit*)clus->GetPixel(jHit);
+        TAIThit* hit = (TAIThit*)clus->GetPixel(jHit);
         for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
           Int_t idx = hit->GetMcTrackIdx(k);
           Int_t id = hit->GetMcIndex(k);

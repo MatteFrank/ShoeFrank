@@ -147,7 +147,7 @@ Bool_t GlobalTrackingStudies::Action() {
 
 					int nHits = clus->GetPixelsN();
 					for (Int_t jHit = 0; jHit < nHits; ++jHit) {
-				      	TAITntuHit* hit = (TAITntuHit*)clus->GetPixel(jHit);
+				      	TAIThit* hit = (TAIThit*)clus->GetPixel(jHit);
 				      	for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
 							Int_t idx = hit->GetMcIndex(k);
 							TAMChit* mcHit = itMc->GetHit(idx);

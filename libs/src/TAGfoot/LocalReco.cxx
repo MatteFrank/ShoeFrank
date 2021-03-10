@@ -6,7 +6,7 @@
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
 #include "TAVTntuHit.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TATWdatRaw.hxx"
 #include "TATWntuRaw.hxx"
@@ -107,7 +107,7 @@ void LocalReco::CreateRawAction()
    }
    
    if (GlobalPar::GetPar()->IncludeIT()) {
-      fpNtuRawIt   = new TAGdataDsc("itRaw", new TAITntuRaw());
+      fpNtuRawIt   = new TAGdataDsc("itRaw", new TAITntuHit());
       fActNtuRawIt = new TAITactNtuHit("itActNtu", fpNtuRawIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
       if (fFlagHisto)
          fActNtuRawIt->CreateHistogram();
@@ -304,7 +304,7 @@ void LocalReco::SetTreeBranches()
    
    if (GlobalPar::GetPar()->IncludeIT()) {
      if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuHit::GetBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeMSD()) {

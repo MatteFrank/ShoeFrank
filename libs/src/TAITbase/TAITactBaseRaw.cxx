@@ -13,7 +13,7 @@
 #include "TAITparConf.hxx"
 #include "TAITparMap.hxx"
 
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
 #include "TAITactBaseRaw.hxx"
 #include "TAVTmi26Type.hxx"
 
@@ -60,7 +60,7 @@ TAITactBaseRaw::TAITactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
   fEventsOverflow(0), 
   fNStatesInLine(0)
 {
-   AddDataOut(pNtuRaw, "TAITntuRaw");
+   AddDataOut(pNtuRaw, "TAITntuHit");
    AddPara(pGeoMap, "TAITparGeo");
    AddPara(pConfig, "TAITparConf");
    
@@ -186,7 +186,7 @@ Bool_t TAITactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
     7) Trailer;
     */
    
-   TAITntuRaw*  pNtuRaw = (TAITntuRaw*)  fpNtuRaw->Object();
+   TAITntuHit*  pNtuRaw = (TAITntuHit*)  fpNtuRaw->Object();
    TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
    TAITparGeo*  pGeoPar = (TAITparGeo*)  fpGeoMap->Object();
 
@@ -280,10 +280,10 @@ void TAITactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    // - value = analog value of this pixel
    // - line & column = position of the pixel in the matrix
    
-   TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
+   TAITntuHit* pNtuRaw = (TAITntuHit*) fpNtuRaw->Object();
    TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
    
-   TAITntuHit* pixel   = (TAITntuHit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);

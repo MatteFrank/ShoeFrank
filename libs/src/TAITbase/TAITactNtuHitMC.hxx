@@ -14,11 +14,11 @@
 
 #include "TAITdigitizerE.hxx"
 
-#include "TAITntuHit.hxx"
+#include "TAIThit.hxx"
 
 #include "TAVTactBaseNtuHitMC.hxx"
 
-class TAITntuRaw;
+class TAITntuHit;
 
 class TAITactNtuHitMC : public TAVTactBaseNtuHitMC {
 
@@ -39,11 +39,11 @@ private:
    TAGdataDsc*    fpNtuEve;         // input eve track dsc
    TAGdataDsc*    fpNtuRaw;		   // output data dsc
    EVENT_STRUCT*  fEventStruct;
-   map<pair<int,int>, TAITntuHit*> fMap;      //! map for pilepup
+   map<pair<int,int>, TAIThit*> fMap;      //! map for pilepup
 
 private:
    void           FillNoise(Int_t sensorId) ;
-   void           SetMCinfo(TAITntuHit* pixel, Int_t hitId);
+   void           SetMCinfo(TAIThit* pixel, Int_t hitId);
    void           CreateDigitizer();
    void           FillPixels( Int_t sensorId, Int_t mcId, Int_t trackId);
    void           DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackId);

@@ -61,7 +61,7 @@
 #include "TAVTactNtuClusterF.hxx"
 
 #include "TAITparGeo.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
 #include "TAITntuCluster.hxx"
 
 #include "TAMSDparGeo.hxx"
@@ -255,7 +255,7 @@ private:
 
   //  delete non va fatto il delete perche APPARENTEMENTE gia fatto
   vector<TAVThit*> m_VT_hitCollection;
-  vector<TAITntuHit*> m_IT_hitCollection;
+  vector<TAIThit*> m_IT_hitCollection;
   vector<TAMSDntuHit*> m_MSD_hitCollection;
   vector<TATWpoint*> m_TW_hitCollection;
 
