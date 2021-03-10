@@ -1,9 +1,9 @@
-#ifndef _TACAactNtuRaw_HXX
-#define _TACAactNtuRaw_HXX
+#ifndef _TACAactNtuHit_HXX
+#define _TACAactNtuHit_HXX
 /*!
   \file
-  \version $Id: TACAactNtuRaw.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
-  \brief   Declaration of TACAactNtuRaw.
+  \version $Id: TACAactNtuHit.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
+  \brief   Declaration of TACAactNtuHit.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -12,18 +12,18 @@
 #include "TAGdataDsc.hxx"
 #include "TACAparGeo.hxx"
 #include "TACAdatRaw.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 
-class TACAactNtuRaw : public TAGaction {
+class TACAactNtuHit : public TAGaction {
 
 public:
 
-  explicit        TACAactNtuRaw(const char* name=0,
+  explicit        TACAactNtuHit(const char* name=0,
                                 TAGdataDsc* p_datraw=0,
                                 TAGdataDsc* p_datdaq=0,
                                 TAGparaDsc* p_parmap=0,
                                 TAGparaDsc* p_parcal=0);
-  virtual         ~TACAactNtuRaw();
+  virtual         ~TACAactNtuHit();
 
   Bool_t   Action();
 
@@ -32,7 +32,7 @@ public:
   Double_t GetTime(Double_t RawTime, Int_t  crysId);
   Double_t GetEnergy(Double_t rawEnergy, Int_t  crysId);
 
-  ClassDef(TACAactNtuRaw,0)
+  ClassDef(TACAactNtuHit,0)
     
 private:
   TAGdataDsc*     fpDatRaw;		    // input data dsc

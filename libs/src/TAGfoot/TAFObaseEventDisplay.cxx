@@ -21,7 +21,7 @@
 #include "TAMSDntuHit.hxx"
 #include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 
 #include "TAVTntuCluster.hxx"
 #include "TAITntuCluster.hxx"
@@ -1209,14 +1209,14 @@ void TAFObaseEventDisplay::UpdateCrystalElements()
 
    fFiredCaCrystal.clear();
 
-   TACAntuRaw* pNtuHit = fReco->GetNtuHitCa();
+   TACAntuHit* pNtuHit = fReco->GetNtuHitCa();
 
    Int_t nHits = pNtuHit->GetHitsN();
    if (nHits == 0) return;
 
    for (Int_t iHit = 0; iHit < nHits; ++iHit) {
 
-      TACAntuHit *hit = pNtuHit->GetHit(iHit);
+      TACAhit *hit = pNtuHit->GetHit(iHit);
       if (!hit->IsValid()) continue;
       Int_t idx = hit->GetCrystalId();
 

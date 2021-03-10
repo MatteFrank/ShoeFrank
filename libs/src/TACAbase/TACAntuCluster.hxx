@@ -6,7 +6,7 @@
 #include "TClonesArray.h"
 
 #include "TAGcluster.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 
 /** TACAcluster class, simple container class for tracks with the associated clusters
  
@@ -67,7 +67,7 @@ public:
    //! Get sum of pulse height
    Float_t            GetCharge()                      const { return fCharge;         }
    //! Get pixel
-   TACAntuHit*        GetHit(Int_t idx);
+   TACAhit*        GetHit(Int_t idx);
    
    //! Get list of hits
    TClonesArray*     GetListOfHits()                   const { return fListOfHits;     }
@@ -82,7 +82,7 @@ public:
    void               SetupClones();
 
    //! Add pixel to the list
-   void               AddHit(TACAntuHit* hit);
+   void               AddHit(TACAhit* hit);
    
    ClassDef(TACAcluster,3)                          // Describes TACAcluster
 };

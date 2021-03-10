@@ -20,12 +20,12 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 #
 set( with_dictionnaries
    TACAdatRaw
-   TACAntuRaw
+   TACAntuHit
    TACAparMap
    TACAntuCluster
    TACAdigitizer
    TACAactNtuHitMC
-   TACAactNtuRaw
+   TACAactNtuHit
    TACAactNtuCluster
    TACAparGeo
    TACAparCal

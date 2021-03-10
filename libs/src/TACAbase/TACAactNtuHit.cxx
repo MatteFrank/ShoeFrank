@@ -1,51 +1,51 @@
 /*!
   \file
-  \version $Id: TACAactNtuRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
-  \brief   Implementation of TACAactNtuRaw.
+  \version $Id: TACAactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+  \brief   Implementation of TACAactNtuHit.
 */
 
 #include "TACAparMap.hxx"
 #include "TACAparCal.hxx"
-#include "TACAactNtuRaw.hxx"
+#include "TACAactNtuHit.hxx"
 
 /*!
-  \class TACAactNtuRaw TACAactNtuRaw.hxx "TACAactNtuRaw.hxx"
+  \class TACAactNtuHit TACAactNtuHit.hxx "TACAactNtuHit.hxx"
   \brief Get Beam Monitor raw data from WD. **
 */
 
-ClassImp(TACAactNtuRaw);
+ClassImp(TACAactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TACAactNtuRaw::TACAactNtuRaw(const char* name,
+TACAactNtuHit::TACAactNtuHit(const char* name,
                              TAGdataDsc* p_datraw,
                              TAGdataDsc* p_nturaw,
                              TAGparaDsc* p_parmap,
                              TAGparaDsc* p_parcal)
-  : TAGaction(name, "TACAactNtuRaw - Unpack CA raw data"),
+  : TAGaction(name, "TACAactNtuHit - Unpack CA raw data"),
     fpDatRaw(p_datraw),
     fpNtuRaw(p_nturaw),
     fpParMap(p_parmap),
     fpParCal(p_parcal)
 {
   AddDataIn(p_datraw, "TACAdatRaw");
-  AddDataOut(p_nturaw, "TACAntuRaw");
+  AddDataOut(p_nturaw, "TACAntuHit");
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TACAactNtuRaw::~TACAactNtuRaw()
+TACAactNtuHit::~TACAactNtuHit()
 {}
 
 //------------------------------------------+-----------------------------------
 //! Action.
 
-Bool_t TACAactNtuRaw::Action() {
+Bool_t TACAactNtuHit::Action() {
 
    TACAdatRaw*   p_datraw = (TACAdatRaw*) fpDatRaw->Object();
-   TACAntuRaw*   p_nturaw = (TACAntuRaw*) fpNtuRaw->Object();
+   TACAntuHit*   p_nturaw = (TACAntuHit*) fpNtuRaw->Object();
    TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
    // TACAparCal*   p_parcal = (TACAparCal*) fpParCal->Object();
   
@@ -85,7 +85,7 @@ Bool_t TACAactNtuRaw::Action() {
 }
 
 //------------------------------------------+-----------------------------------
-Double_t TACAactNtuRaw::GetEnergy(Double_t rawenergy, Int_t  crysId)
+Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId)
 {
   // TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
@@ -103,7 +103,7 @@ Double_t TACAactNtuRaw::GetEnergy(Double_t rawenergy, Int_t  crysId)
 }
 
 //------------------------------------------+-----------------------------------
-Double_t TACAactNtuRaw::GetTime(Double_t RawTime, Int_t  crysId)
+Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
 {
   // TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
@@ -122,7 +122,7 @@ Double_t TACAactNtuRaw::GetTime(Double_t RawTime, Int_t  crysId)
 //------------------------------------------+-----------------------------------
 //! Histograms
 
-void TACAactNtuRaw::CreateHistogram(){
+void TACAactNtuHit::CreateHistogram(){
 
   DeleteHistogram();
 

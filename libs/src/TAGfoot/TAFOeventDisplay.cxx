@@ -21,7 +21,7 @@
 #include "TAMSDntuHit.hxx"
 #include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 
 #include "TAVTntuCluster.hxx"
 #include "TAITntuCluster.hxx"

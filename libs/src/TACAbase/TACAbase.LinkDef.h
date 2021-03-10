@@ -7,11 +7,11 @@
 
 #pragma link C++ class TACAdatRaw+;
 #pragma link C++ class TACArawHit+;
-#pragma link C++ class TACAntuRaw+;
 #pragma link C++ class TACAntuHit+;
+#pragma link C++ class TACAhit+;
 #pragma link C++ class TACAparMap+;
 #pragma link C++ class TACAactNtuHitMC+;
-#pragma link C++ class TACAactNtuRaw+;
+#pragma link C++ class TACAactNtuHit+;
 #pragma link C++ class TACAactNtuCluster+;
 #pragma link C++ class TACAcluster+;
 #pragma link C++ class TACAntuCluster+;

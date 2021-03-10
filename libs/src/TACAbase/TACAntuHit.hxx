@@ -1,5 +1,5 @@
-#ifndef _TACAntuRaw_HXX
-#define _TACAntuRaw_HXX
+#ifndef _TACAntuHit_HXX
+#define _TACAntuHit_HXX
 
 
 #include "TArrayI.h"
@@ -10,11 +10,11 @@
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
 
-class TACAntuHit : public TAGobject {
+class TACAhit : public TAGobject {
 public:
-   TACAntuHit();
-   TACAntuHit(int cha, double charge, double time, Int_t type = 0);
-   virtual         ~TACAntuHit();
+   TACAhit();
+   TACAhit(int cha, double charge, double time, Int_t type = 0);
+   virtual         ~TACAhit();
    
    Double_t        GetTime()          const { return fTime;      }
    Double_t        GetCharge()        const { return fCharge;    }
@@ -48,21 +48,21 @@ private:
    TArrayI         fMCindex;                  // Id of the hit created in the simulation
    TArrayI         fMcTrackIdx;                // Id of the track created in the simulation
    
-   ClassDef(TACAntuHit,2)
+   ClassDef(TACAhit,2)
 };
 
 //##############################################################################
 
-class TACAntuRaw : public TAGdata {
+class TACAntuHit : public TAGdata {
 public:
-   TACAntuRaw();
-   virtual         ~TACAntuRaw();
+   TACAntuHit();
+   virtual         ~TACAntuHit();
    
    Int_t              GetHitsN() const;
-   TACAntuHit*        GetHit(Int_t i_ind);
-   const TACAntuHit*  GetHit(Int_t i_ind) const;
+   TACAhit*        GetHit(Int_t i_ind);
+   const TACAhit*  GetHit(Int_t i_ind) const;
    
-   TACAntuHit*        NewHit(int crys, double charge, double time, int type = 0);
+   TACAhit*        NewHit(int crys, double charge, double time, int type = 0);
    
    void               SetTrigTime(Double_t time) { fTrigTime = time; }
    Double_t           GetTrigTime()        const { return fTrigTime; }
@@ -90,7 +90,7 @@ private:
 private:
    static TString fgkBranchName;    // Branch name in TTree
    
-   ClassDef(TACAntuRaw,1)
+   ClassDef(TACAntuHit,1)
 };
 
 #endif

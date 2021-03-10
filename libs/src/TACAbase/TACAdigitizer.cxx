@@ -4,7 +4,7 @@
 #include "TMath.h"
 
 #include "TAGgeoTrafo.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 #include "TACAparGeo.hxx"
 #include "TACAdigitizer.hxx"
 
@@ -12,7 +12,7 @@
 Float_t TACAdigitizer::fgThreshold = 80; // MeV 
 
 // --------------------------------------------------------------------------------------
-TACAdigitizer::TACAdigitizer(TACAntuRaw* pNtuRaw)
+TACAdigitizer::TACAdigitizer(TACAntuHit* pNtuRaw)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
    fGain(1e-4),
@@ -107,7 +107,7 @@ Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
   // Float_t photonsN = GetPhotonsN(x0, y0, edep)*fGain; // skip Birks law should be included in resolution
 
    if (fMap[id] == 0) { //if in the Map of Hits the element id-esimo was empty fill with a NewHit(...)
-      fCurrentHit = (TACAntuHit*)fpNtuRaw->NewHit(id, edep, time);
+      fCurrentHit = (TACAhit*)fpNtuRaw->NewHit(id, edep, time);
       fMap[id] = fCurrentHit;
    } else {  //if the element "fMap[id]" was not empty then assign to the fCurrentHit the previous Hit, but sum the two energies
       fCurrentHit = fMap[id];

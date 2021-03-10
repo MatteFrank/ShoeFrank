@@ -10,7 +10,7 @@
 #include "TAMSDntuHit.hxx"
 #include "TATWdatRaw.hxx"
 #include "TATWntuHit.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 
 #include "TASTdatRaw.hxx"
 #include "TABMdatRaw.hxx"
@@ -141,8 +141,8 @@ void LocalReco::CreateRawAction()
    }
    
    if(GlobalPar::GetPar()->IncludeCA()) {
-     fpNtuRawCa   = new TAGdataDsc("caRaw", new TACAntuRaw());
-     fActNtuRawCa = new TACAactNtuRaw("caActNtu", fpDatRawCa, fpNtuRawCa, fpParMapCa, NULL);
+     fpNtuRawCa   = new TAGdataDsc("caRaw", new TACAntuHit());
+     fActNtuRawCa = new TACAactNtuHit("caActNtu", fpDatRawCa, fpNtuRawCa, fpParMapCa, NULL);
      //the calibration parameters have to be still defined!!! (gtraini)
      if (fFlagHisto){
 	fActNtuRawCa->CreateHistogram();
@@ -321,6 +321,6 @@ void LocalReco::SetTreeBranches()
    
    if (GlobalPar::GetPar()->IncludeCA()) {
      if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuRawCa, TACAntuRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpNtuRawCa, TACAntuHit::GetBranchName());
    }
 }

@@ -30,7 +30,7 @@ TACAcluster::TACAcluster()
 //
 void TACAcluster::SetupClones()
 {
-   fListOfHits = new TClonesArray("TACAntuHit");
+   fListOfHits = new TClonesArray("TACAhit");
    fListOfHits->SetOwner(true);
 }
 
@@ -84,10 +84,10 @@ void TACAcluster::SetPositionG(TVector3& posGlo)
 
 //______________________________________________________________________________
 // 
-TACAntuHit* TACAcluster::GetHit(Int_t idx)
+TACAhit* TACAcluster::GetHit(Int_t idx)
 { 
    if (idx >=0 && idx < fListOfHits->GetEntries())
-	  return (TACAntuHit*)fListOfHits->At(idx);
+	  return (TACAhit*)fListOfHits->At(idx);
    else
 	  return 0x0;
 }
@@ -101,7 +101,7 @@ void TACAcluster::ResetHits()
 
 //______________________________________________________________________________
 //
-void TACAcluster::AddHit(TACAntuHit* hit)
+void TACAcluster::AddHit(TACAhit* hit)
 {
    for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
       Int_t idx = hit->GetMcTrackIdx(k);
@@ -109,7 +109,7 @@ void TACAcluster::AddHit(TACAntuHit* hit)
    }
    
    TClonesArray &pixelArray = *fListOfHits;
-   new(pixelArray[pixelArray.GetEntriesFast()]) TACAntuHit(*hit);
+   new(pixelArray[pixelArray.GetEntriesFast()]) TACAhit(*hit);
 }
 
 //###############################################################################

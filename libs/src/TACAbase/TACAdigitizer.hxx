@@ -4,17 +4,17 @@
 #include <map>
 #include "TAGbaseDigitizer.hxx"
 
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 
 class TF1;
-class TACAntuRaw;
 class TACAntuHit;
+class TACAhit;
 using namespace std;
 // --------------------------------------------------------------------------------------
 class TACAdigitizer : public TAGbaseDigitizer {
    
 public:
-   TACAdigitizer(TACAntuRaw* p_datraw);
+   TACAdigitizer(TACAntuHit* p_datraw);
    ~TACAdigitizer();
    
    void           SetFunctions();
@@ -35,7 +35,7 @@ public:
    void           SetCalEPar0(Float_t p)  { fCalEPar0 = p;      }
    void           SetCalEPar1(Float_t p)  { fCalEPar1 = p;      }
 
-   TACAntuHit*    GetCurrentHit()         { return fCurrentHit; }
+   TACAhit*    GetCurrentHit()         { return fCurrentHit; }
    void           ClearMap()              { fMap.clear();       }
 
 public:
@@ -43,7 +43,7 @@ public:
    static void    SetThreshold(Float_t t) { fgThreshold = t;    }
 
 private:
-   TACAntuRaw*   fpNtuRaw;
+   TACAntuHit*   fpNtuRaw;
    TF1*          fFuncBirks;
    TF1*          fDeResE;
    Float_t       fGain;
@@ -61,8 +61,8 @@ private:
    Float_t       fCalEPar0;
    Float_t       fCalEPar1;
 
-   TACAntuHit*   fCurrentHit;
-   map<int, TACAntuHit*> fMap; //! map for pilepup
+   TACAhit*   fCurrentHit;
+   map<int, TACAhit*> fMap; //! map for pilepup
 
 private:
    static Float_t fgThreshold;

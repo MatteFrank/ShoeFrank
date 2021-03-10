@@ -15,7 +15,7 @@
 
 #include "TACAparGeo.hxx"
 #include "TACAparCal.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 #include "TACAactNtuHitMC.hxx"
 #include "TACAdigitizer.hxx"
 
@@ -46,7 +46,7 @@ TACAactNtuHitMC::TACAactNtuHitMC(const char* name,  TAGdataDsc* p_ntuMC, TAGdata
      AddDataIn(p_ntuMC, "TAMCntuHit");
      AddDataIn(p_ntuEve, "TAMCntuTrack");
    } 
-   AddDataOut(p_nturaw, "TACAntuRaw");
+   AddDataOut(p_nturaw, "TACAntuHit");
    AddPara(p_geomap,"TACAparGeo");
    AddPara(p_calmap,"TACAparCal");
 
@@ -212,7 +212,7 @@ void TACAactNtuHitMC::CreateHistogram()
 //! Create digitizer
 void TACAactNtuHitMC::CreateDigitizer()
 {
-   TACAntuRaw* pNtuRaw = (TACAntuRaw*) fpNtuRaw->Object();
+   TACAntuHit* pNtuRaw = (TACAntuHit*) fpNtuRaw->Object();
 
    fDigitizer = new TACAdigitizer(pNtuRaw);
 }
@@ -289,7 +289,7 @@ Bool_t TACAactNtuHitMC::Action()
       
       // Fill fDigitizer with energy in MeV
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], posInLoc[2], posOutLoc[2], 0, cryId);
-      TACAntuHit* hit = fDigitizer->GetCurrentHit();
+      TACAhit* hit = fDigitizer->GetCurrentHit();
       if (hit){
          hit->AddMcTrackIdx(trackId, i);
          // hit->SetPosition(posInLoc);

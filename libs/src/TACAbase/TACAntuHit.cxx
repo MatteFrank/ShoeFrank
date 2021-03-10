@@ -1,28 +1,28 @@
 /*!
  \file
- \version $Id: TACAntuRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
- \brief   Implementation of TACAntuRaw.
+ \version $Id: TACAntuHit.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+ \brief   Implementation of TACAntuHit.
  */
 
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 
 /*!
- \class TACAntuRaw TACAntuRaw.hxx "TACAntuRaw.hxx"
+ \class TACAntuHit TACAntuHit.hxx "TACAntuHit.hxx"
  \brief Mapping and Geometry parameters for CA detectors. **
  */
 
-ClassImp(TACAntuHit);
+ClassImp(TACAhit);
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TACAntuHit::~TACAntuHit()
+TACAhit::~TACAhit()
 {}
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TACAntuHit::TACAntuHit()
+TACAhit::TACAhit()
  : TAGobject(),
    fTime(999999.),
    fCharge(0.),
@@ -34,7 +34,7 @@ TACAntuHit::TACAntuHit()
 }
 
 //------------------------------------------+-----------------------------------
-TACAntuHit::TACAntuHit(int cha, double charge, double time, int typ)
+TACAhit::TACAhit(int cha, double charge, double time, int typ)
  : TAGobject(),
    fTime(time),
    fCharge(charge),
@@ -47,7 +47,7 @@ TACAntuHit::TACAntuHit(int cha, double charge, double time, int typ)
 
 //______________________________________________________________________________
 //
-void TACAntuHit::Clear(Option_t* /*option*/)
+void TACAhit::Clear(Option_t* /*option*/)
 {
    fMCindex.Set(0);
    fMcTrackIdx.Set(0);
@@ -55,7 +55,7 @@ void TACAntuHit::Clear(Option_t* /*option*/)
 
 //______________________________________________________________________________
 //
-void TACAntuHit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
+void TACAhit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
    fMCindex[fMCindex.GetSize()-1]   = mcId;
@@ -66,14 +66,14 @@ void TACAntuHit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 
 //##############################################################################
 
-ClassImp(TACAntuRaw);
+ClassImp(TACAntuHit);
 
-TString TACAntuRaw::fgkBranchName   = "carh.";
+TString TACAntuHit::fgkBranchName   = "carh.";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TACAntuRaw::TACAntuRaw()
+TACAntuHit::TACAntuHit()
  : TAGdata(),
    fListOfHits(0x0)
 {
@@ -84,7 +84,7 @@ TACAntuRaw::TACAntuRaw()
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TACAntuRaw::~TACAntuRaw()
+TACAntuHit::~TACAntuHit()
 {
    delete fListOfHits;
 }
@@ -92,23 +92,23 @@ TACAntuRaw::~TACAntuRaw()
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 
-void TACAntuRaw::SetupClones()
+void TACAntuHit::SetupClones()
 {
-   if (!fListOfHits) fListOfHits = new TClonesArray("TACAntuHit");
+   if (!fListOfHits) fListOfHits = new TClonesArray("TACAhit");
 }
 
 //------------------------------------------+-----------------------------------
-Int_t TACAntuRaw::GetHitsN() const
+Int_t TACAntuHit::GetHitsN() const
 {
    return fListOfHits->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TACAntuHit* TACAntuRaw::GetHit(Int_t id)
+TACAhit* TACAntuHit::GetHit(Int_t id)
 {
    if (id >=0 || id < 22*22) {
-      return (TACAntuHit*)fListOfHits->At(id);
+      return (TACAhit*)fListOfHits->At(id);
    } else {
       cout << Form("Wrong sensor number %d\n", id);
       return 0x0;
@@ -117,10 +117,10 @@ TACAntuHit* TACAntuRaw::GetHit(Int_t id)
 
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-const TACAntuHit* TACAntuRaw::GetHit(Int_t id) const
+const TACAhit* TACAntuHit::GetHit(Int_t id) const
 {
    if (id >=0 || id < 22*22) {
-      return (TACAntuHit*)fListOfHits->At(id);
+      return (TACAhit*)fListOfHits->At(id);
    } else {
       Error("GetPixel()", "Wrong sensor number %d\n", id);
       return 0x0;
@@ -129,11 +129,11 @@ const TACAntuHit* TACAntuRaw::GetHit(Int_t id) const
 
 //______________________________________________________________________________
 //
-TACAntuHit* TACAntuRaw::NewHit(int crys, double charge, double time, int type)
+TACAhit* TACAntuHit::NewHit(int crys, double charge, double time, int type)
 {
    TClonesArray &pixelArray = *fListOfHits;
 
-   TACAntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TACAntuHit(crys, charge, time, type);
+   TACAhit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TACAhit(crys, charge, time, type);
    return hit;
 
 }
@@ -141,7 +141,7 @@ TACAntuHit* TACAntuRaw::NewHit(int crys, double charge, double time, int type)
 //------------------------------------------+-----------------------------------
 //! Clear event.
 
-void TACAntuRaw::Clear(Option_t*)
+void TACAntuHit::Clear(Option_t*)
 {
    fListOfHits->Clear("C");
    
@@ -151,9 +151,9 @@ void TACAntuRaw::Clear(Option_t*)
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
 
-void TACAntuRaw::ToStream(ostream& os, Option_t* option) const
+void TACAntuHit::ToStream(ostream& os, Option_t* option) const
 {
-   os << "TACAntuRaw " << GetName()
+   os << "TACAntuHit " << GetName()
    << endl;
    return;
 }

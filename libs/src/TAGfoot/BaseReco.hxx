@@ -50,7 +50,7 @@
 #include "TAMSDntuHit.hxx"
 #include "TAMSDntuPoint.hxx"
 #include "TATWntuPoint.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
 #include "TAIRntuTrack.hxx"
 #include "TAGntuGlbTrack.hxx"
@@ -216,7 +216,7 @@ public:
    TATWntuHit*          GetNtuHitTw()       const { return (TATWntuHit*) fpNtuRawTw->Object();       }
    TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
    
-   TACAntuRaw*          GetNtuHitCa()       const { return (TACAntuRaw*) fpNtuRawCa->Object();       }
+   TACAntuHit*          GetNtuHitCa()       const { return (TACAntuHit*) fpNtuRawCa->Object();       }
    TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
