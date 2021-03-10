@@ -1,12 +1,12 @@
-#ifndef _TAITactNtuRaw_HXX
-#define _TAITactNtuRaw_HXX
+#ifndef _TAITactNtuHit_HXX
+#define _TAITactNtuHit_HXX
 
 #include "TAITactBaseRaw.hxx"
 
 /*!
  \file
- \version $Id: TAITactNtuRaw.hxx $
- \brief   Declaration of TAITactNtuRaw.
+ \version $Id: TAITactNtuHit.hxx $
+ \brief   Declaration of TAITactNtuHit.
  */
 
 /*------------------------------------------+---------------------------------*/
@@ -14,11 +14,11 @@ class TAGdataDsc;
 class DECardEvent;
 
 using namespace std;
-class TAITactNtuRaw : public TAITactBaseRaw {
+class TAITactNtuHit : public TAITactBaseRaw {
 public:
    
-   explicit TAITactNtuRaw(const char* name=0, TAGdataDsc* p_datraw=0, TAGdataDsc* p_datmbs=0, TAGparaDsc* p_pargeo=0, TAGparaDsc* p_parconf=0, TAGparaDsc* pParMap=0);
-   virtual  ~TAITactNtuRaw();
+   explicit TAITactNtuHit(const char* name=0, TAGdataDsc* p_datraw=0, TAGdataDsc* p_datmbs=0, TAGparaDsc* p_pargeo=0, TAGparaDsc* p_parconf=0, TAGparaDsc* pParMap=0);
+   virtual  ~TAITactNtuHit();
    
    virtual Bool_t  Action();
    
@@ -38,7 +38,7 @@ private:
    //! Get frame and returns frameRaw
    Bool_t GetFrame(Int_t iSensor, MI26_FrameRaw* data);
    
-   ClassDef(TAITactNtuRaw,0)
+   ClassDef(TAITactNtuHit,0)
 };
 
 #endif

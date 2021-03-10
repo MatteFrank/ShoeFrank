@@ -27,7 +27,7 @@ set( with_dictionnaries
    TAITparConf
    TAITdigitizerE
    TAITactBaseRaw
-   TAITactNtuRaw
+   TAITactNtuHit
    TAITactNtuHitMC
    TAITntuCluster
    TAITcluster

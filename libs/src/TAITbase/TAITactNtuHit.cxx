@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITactNtuRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
- \brief   Implementation of TAITactNtuRaw.
+ \version $Id: TAITactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+ \brief   Implementation of TAITactNtuHit.
  */
 
 #include "TH2F.h"
@@ -12,19 +12,19 @@
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
 
-#include "TAITactNtuRaw.hxx"
+#include "TAITactNtuHit.hxx"
 
 /*!
- \class TAITactNtuRaw TAITactNtuRaw.hxx "TAITactNtuRaw.hxx"
+ \class TAITactNtuHit TAITactNtuHit.hxx "TAITactNtuHit.hxx"
  \brief Get vertex raw data from MBS. **
  */
 
-ClassImp(TAITactNtuRaw);
+ClassImp(TAITactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAITactNtuRaw::TAITactNtuRaw(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pDatDaq, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
+TAITactNtuHit::TAITactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pDatDaq, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAITactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap),
   fpDatDaq(pDatDaq)
 {
@@ -33,13 +33,13 @@ TAITactNtuRaw::TAITactNtuRaw(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* 
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAITactNtuRaw::~TAITactNtuRaw()
+TAITactNtuHit::~TAITactNtuHit()
 {   
 }
 
 //------------------------------------------+-----------------------------------
 //! Action.
-Bool_t TAITactNtuRaw::Action()
+Bool_t TAITactNtuHit::Action()
 {
    
    TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();
@@ -62,7 +62,7 @@ Bool_t TAITactNtuRaw::Action()
 }
 
 // --------------------------------------------------------------------------------------
-Bool_t TAITactNtuRaw::DecodeEvent(const DECardEvent* evt)
+Bool_t TAITactNtuHit::DecodeEvent(const DECardEvent* evt)
 {
    fData      = evt->values;
    fEventSize = evt->evtSize;
@@ -114,7 +114,7 @@ Bool_t TAITactNtuRaw::DecodeEvent(const DECardEvent* evt)
 
 // private method
 // --------------------------------------------------------------------------------------
-Bool_t TAITactNtuRaw::GetVtxHeader()
+Bool_t TAITactNtuHit::GetVtxHeader()
 {
    do {
       if (fData[fIndex] == DECardEvent::GetVertexHeader()) {
@@ -126,7 +126,7 @@ Bool_t TAITactNtuRaw::GetVtxHeader()
 }
 
 // --------------------------------------------------------------------------------------
-Bool_t TAITactNtuRaw::GetSensorHeader(Int_t iSensor)
+Bool_t TAITactNtuHit::GetSensorHeader(Int_t iSensor)
 {
    
    do {
@@ -147,7 +147,7 @@ Bool_t TAITactNtuRaw::GetSensorHeader(Int_t iSensor)
 }
 
 // --------------------------------------------------------------------------------------
-Bool_t TAITactNtuRaw::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
+Bool_t TAITactNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 {
    // check frame header
    if ((fData[++fIndex] & 0xFFF) ==  (GetFrameHeader() & 0xFFF)) { // protection against wrong header !!!

@@ -108,7 +108,7 @@ void LocalReco::CreateRawAction()
    
    if (GlobalPar::GetPar()->IncludeIT()) {
       fpNtuRawIt   = new TAGdataDsc("itRaw", new TAITntuRaw());
-      fActNtuRawIt = new TAITactNtuRaw("itActNtu", fpNtuRawIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
+      fActNtuRawIt = new TAITactNtuHit("itActNtu", fpNtuRawIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
       if (fFlagHisto)
          fActNtuRawIt->CreateHistogram();
    }

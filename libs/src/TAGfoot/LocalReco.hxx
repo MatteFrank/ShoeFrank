@@ -15,7 +15,7 @@
 #include "TAVTactVmeReader.hxx"
 #include "TAVTactNtuHit.hxx"
 
-#include "TAITactNtuRaw.hxx"
+#include "TAITactNtuHit.hxx"
 //#include "TAMSDactNtuRaw.hxx"
 
 //#include "TAMSDactDatRaw.hxx"
@@ -72,7 +72,7 @@ private:
 
    TAVTactVmeReader*     fActVmeReaderVtx; // action for stand alone reader VTX
    TAVTactNtuHit*        fActNtuRawVtx;  // action for ntu data
-   TAITactNtuRaw*        fActNtuRawIt;  // action for ntu data
+   TAITactNtuHit*        fActNtuRawIt;  // action for ntu data
 //   TAMSDactNtuRaw*       fActNtuRawMsd;  // action for ntu data
 
    TATWactNtuRaw*        fActNtuRawTw;
