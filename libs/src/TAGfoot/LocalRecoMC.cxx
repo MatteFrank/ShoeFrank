@@ -21,9 +21,9 @@ ClassImp(LocalRecoMC)
 LocalRecoMC::LocalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fEvtStruct(0x0),
-   fActNtuRawVtx(0x0),
-   fActNtuRawIt(0x0),
-   fActNtuRawMsd(0x0),
+   fActNtuHitVtx(0x0),
+   fActNtuHitIt(0x0),
+   fActNtuHitMsd(0x0),
    fActEvtReader(0x0)
 {
    fFlagMC = true;
@@ -53,10 +53,10 @@ void LocalRecoMC::CreateRawAction()
       if (GlobalPar::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
       
-      fpNtuRawSt = new TAGdataDsc("stRaw", new TASTntuHit());
-      fActNtuRawSt = new TASTactNtuHitMC("stActNtu", fpNtuMcSt, fpNtuMcTrk, fpNtuRawSt, fEvtStruct);
+      fpNtuHitSt = new TAGdataDsc("stRaw", new TASTntuHit());
+      fActNtuHitSt = new TASTactNtuHitMC("stActNtu", fpNtuMcSt, fpNtuMcTrk, fpNtuHitSt, fEvtStruct);
       if (fFlagHisto)
-         fActNtuRawSt->CreateHistogram();
+         fActNtuHitSt->CreateHistogram();
    }
    
    if (GlobalPar::GetPar()->IncludeBM()) {
@@ -64,10 +64,10 @@ void LocalRecoMC::CreateRawAction()
       if (GlobalPar::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcBm, TAMCntuHit::GetBmBranchName());
 
-      fpNtuRawBm = new TAGdataDsc("bmRaw", new TABMntuHit());
-      fActNtuRawBm = new TABMactNtuHitMC("bmActNtu", fpNtuMcBm, fpNtuMcTrk, fpNtuRawBm, fpParConfBm, fpParCalBm, fpParGeoBm, fEvtStruct);
+      fpNtuHitBm = new TAGdataDsc("bmRaw", new TABMntuHit());
+      fActNtuHitBm = new TABMactNtuHitMC("bmActNtu", fpNtuMcBm, fpNtuMcTrk, fpNtuHitBm, fpParConfBm, fpParCalBm, fpParGeoBm, fEvtStruct);
       if (fFlagHisto)
-         fActNtuRawBm->CreateHistogram();
+         fActNtuHitBm->CreateHistogram();
    }
    
    if (GlobalPar::GetPar()->IncludeVT()) {
@@ -75,10 +75,10 @@ void LocalRecoMC::CreateRawAction()
       if (GlobalPar::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
       
-      fpNtuRawVtx = new TAGdataDsc("vtRaw", new TAVTntuHit());
-      fActNtuRawVtx = new TAVTactNtuHitMC("vtActNtu", fpNtuMcVt, fpNtuMcTrk, fpNtuRawVtx, fpParGeoVtx, fEvtStruct);
+      fpNtuHitVtx = new TAGdataDsc("vtRaw", new TAVTntuHit());
+      fActNtuHitVtx = new TAVTactNtuHitMC("vtActNtu", fpNtuMcVt, fpNtuMcTrk, fpNtuHitVtx, fpParGeoVtx, fEvtStruct);
       if (fFlagHisto)
-         fActNtuRawVtx->CreateHistogram();
+         fActNtuHitVtx->CreateHistogram();
    }
    
    if (GlobalPar::GetPar()->IncludeIT()) {
@@ -86,10 +86,10 @@ void LocalRecoMC::CreateRawAction()
       if (GlobalPar::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcIt, TAMCntuHit::GetItrBranchName());
       
-      fpNtuRawIt = new TAGdataDsc("itRaw", new TAITntuHit());
-      fActNtuRawIt = new TAITactNtuHitMC("itActNtu", fpNtuMcIt, fpNtuMcTrk, fpNtuRawIt, fpParGeoIt, fEvtStruct);
+      fpNtuHitIt = new TAGdataDsc("itRaw", new TAITntuHit());
+      fActNtuHitIt = new TAITactNtuHitMC("itActNtu", fpNtuMcIt, fpNtuMcTrk, fpNtuHitIt, fpParGeoIt, fEvtStruct);
       if (fFlagHisto)
-         fActNtuRawIt->CreateHistogram();
+         fActNtuHitIt->CreateHistogram();
    }
    
    if (GlobalPar::GetPar()->IncludeMSD()) {
@@ -97,10 +97,10 @@ void LocalRecoMC::CreateRawAction()
       if (GlobalPar::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcMsd, TAMCntuHit::GetMsdBranchName());
       
-      fpNtuRawMsd = new TAGdataDsc("msdRaw", new TAMSDntuHit());
-      fActNtuRawMsd = new TAMSDactNtuHitMC("msdActNtu", fpNtuMcMsd, fpNtuMcTrk, fpNtuRawMsd, fpParGeoMsd, fEvtStruct);
+      fpNtuHitMsd = new TAGdataDsc("msdRaw", new TAMSDntuHit());
+      fActNtuHitMsd = new TAMSDactNtuHitMC("msdActNtu", fpNtuMcMsd, fpNtuMcTrk, fpNtuHitMsd, fpParGeoMsd, fEvtStruct);
       if (fFlagHisto)
-         fActNtuRawMsd->CreateHistogram();
+         fActNtuHitMsd->CreateHistogram();
    }
    
    if(GlobalPar::GetPar()->IncludeTW()) {
@@ -108,10 +108,10 @@ void LocalRecoMC::CreateRawAction()
       if (GlobalPar::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
       
-      fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuHit());
-      fActNtuRawTw = new TATWactNtuHitMC("twActNtu", fpNtuMcTw, fpNtuMcSt, fpNtuMcTrk, fpNtuRawTw,  fpParCalTw, fpParGeoG, fFlagZtrueMC, fFlagZrecPUoff, fEvtStruct);
+      fpNtuHitTw   = new TAGdataDsc("twRaw", new TATWntuHit());
+      fActNtuHitTw = new TATWactNtuHitMC("twActNtu", fpNtuMcTw, fpNtuMcSt, fpNtuMcTrk, fpNtuHitTw,  fpParCalTw, fpParGeoG, fFlagZtrueMC, fFlagZrecPUoff, fEvtStruct);
       if (fFlagHisto)
-         fActNtuRawTw->CreateHistogram();
+         fActNtuHitTw->CreateHistogram();
    }
    
    if(GlobalPar::GetPar()->IncludeCA()) {
@@ -119,10 +119,10 @@ void LocalRecoMC::CreateRawAction()
       if (GlobalPar::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
       
-      fpNtuRawCa   = new TAGdataDsc("caRaw", new TACAntuHit());
-      fActNtuRawCa = new TACAactNtuHitMC("caActNtu", fpNtuMcCa, fpNtuMcTrk, fpNtuRawCa, fpParGeoCa, fpParCalCa, fpParGeoG, fEvtStruct);
+      fpNtuHitCa   = new TAGdataDsc("caRaw", new TACAntuHit());
+      fActNtuHitCa = new TACAactNtuHitMC("caActNtu", fpNtuMcCa, fpNtuMcTrk, fpNtuHitCa, fpParGeoCa, fpParCalCa, fpParGeoG, fEvtStruct);
       if (fFlagHisto)
-         fActNtuRawCa->CreateHistogram();
+         fActNtuHitCa->CreateHistogram();
    }
 }
 
@@ -178,43 +178,43 @@ void LocalRecoMC::SetRawHistogramDir()
    // ST
    if (GlobalPar::GetPar()->IncludeST()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TASTparGeo::GetBaseName());
-      fActNtuRawSt->SetHistogramDir(subfolder);
+      fActNtuHitSt->SetHistogramDir(subfolder);
    }
   
    // BM
    if (GlobalPar::GetPar()->IncludeBM()) {
      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TABMparGeo::GetBaseName());
-      fActNtuRawBm->SetHistogramDir(subfolder);
+      fActNtuHitBm->SetHistogramDir(subfolder);
    }
   
    // VTX
    if (GlobalPar::GetPar()->IncludeVT()) {
      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAVTparGeo::GetBaseName());
-      fActNtuRawVtx->SetHistogramDir(subfolder);
+      fActNtuHitVtx->SetHistogramDir(subfolder);
    }
   
    // IT
    if (GlobalPar::GetPar()->IncludeIT()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAITparGeo::GetBaseName());
-      fActNtuRawIt->SetHistogramDir(subfolder);
+      fActNtuHitIt->SetHistogramDir(subfolder);
    }
   
    // MSD
    if (GlobalPar::GetPar()->IncludeMSD()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAMSDparGeo::GetBaseName());
-      fActNtuRawMsd->SetHistogramDir(subfolder);
+      fActNtuHitMsd->SetHistogramDir(subfolder);
    }
   
    // TOF
    if (GlobalPar::GetPar()->IncludeTW()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TATWparGeo::GetBaseName());
-      fActNtuRawTw->SetHistogramDir(subfolder);
+      fActNtuHitTw->SetHistogramDir(subfolder);
    }
    
    // CAL
    if (GlobalPar::GetPar()->IncludeCA()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
-      fActNtuRawCa->SetHistogramDir(subfolder);
+      fActNtuHitCa->SetHistogramDir(subfolder);
   }
 }
 
@@ -240,42 +240,42 @@ void LocalRecoMC::SetTreeBranches()
    fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuTrack::GetBranchName());
 
    if (GlobalPar::GetPar()->IncludeST()) {
-      fActEvtWriter->SetupElementBranch(fpNtuRawSt, TASTntuHit::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeBM()) {
-      fActEvtWriter->SetupElementBranch(fpNtuRawBm, TABMntuHit::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcBm, TAMCntuHit::GetBmBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeVT()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuHit::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitVtx, TAVTntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeIT()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuHit::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitIt, TAITntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcIt, TAMCntuHit::GetItrBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeMSD()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawMsd, TAMSDntuHit::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcMsd, TAMCntuHit::GetMsdBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeTW()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawTw, TATWntuHit::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitTw, TATWntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
    }
    
    if (GlobalPar::GetPar()->IncludeCA()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawCa, TACAntuHit::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
    }
 }

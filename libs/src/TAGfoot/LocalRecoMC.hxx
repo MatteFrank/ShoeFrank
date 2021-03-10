@@ -70,13 +70,13 @@ protected:
    EVENT_STRUCT*         fEvtStruct;
   
    TAMCactNtuTrack*      fActNtuMcTrk;
-   TASTactNtuHitMC*      fActNtuRawSt;  // action for ntu data
-   TABMactNtuHitMC*      fActNtuRawBm;  // action for ntu data
-   TAVTactNtuHitMC*      fActNtuRawVtx;  // action for ntu data
-   TAITactNtuHitMC*      fActNtuRawIt;  // action for ntu data
-   TAMSDactNtuHitMC*     fActNtuRawMsd;  // action for ntu data
-   TATWactNtuHitMC*      fActNtuRawTw;  // action for ntu data
-   TACAactNtuHitMC*      fActNtuRawCa;  // action for ntu data
+   TASTactNtuHitMC*      fActNtuHitSt;  // action for ntu data
+   TABMactNtuHitMC*      fActNtuHitBm;  // action for ntu data
+   TAVTactNtuHitMC*      fActNtuHitVtx;  // action for ntu data
+   TAITactNtuHitMC*      fActNtuHitIt;  // action for ntu data
+   TAMSDactNtuHitMC*     fActNtuHitMsd;  // action for ntu data
+   TATWactNtuHitMC*      fActNtuHitTw;  // action for ntu data
+   TACAactNtuHitMC*      fActNtuHitCa;  // action for ntu data
   
    TAGdataDsc*           fpNtuMcTrk;    // input data dsc
    TAGdataDsc*           fpNtuMcSt;    // input data dsc

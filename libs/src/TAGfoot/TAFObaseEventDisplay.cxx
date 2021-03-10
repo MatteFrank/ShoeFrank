@@ -1298,7 +1298,7 @@ void TAFObaseEventDisplay::UpdateLayerElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
-   TABMntuHit* pBMntu = fReco->GetNtuRawBm();
+   TABMntuHit* pBMntu = fReco->GetNtuHitBm();
    Int_t       nHits  = pBMntu->GetHitsN();
    Double_t bm_h_side = pbmGeo->GetWidth();
 

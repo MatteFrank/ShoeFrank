@@ -16,7 +16,7 @@
 #include "TAVTactNtuHit.hxx"
 
 #include "TAITactNtuHit.hxx"
-//#include "TAMSDactNtuRaw.hxx"
+//#include "TAMSDactNtuHit.hxx"
 
 //#include "TAMSDactDatRaw.hxx"
 
@@ -63,21 +63,21 @@ private:
 
    TAGactWDreader*        fActWdRaw;  // action for WD decoding
 
-   TASTactNtuHit*        fActNtuRawSt;  // action for ntu data
+   TASTactNtuHit*        fActNtuHitSt;  // action for ntu data
    
    TABMactVmeReader*     fActVmeReaderBm; // action for stand alone reader BM
    TABMactDatRaw*        fActDatRawBm;
-   TABMactNtuHit*        fActNtuRawBm;
+   TABMactNtuHit*        fActNtuHitBm;
    //   TAMSDactDatuRaw*      fActDatRawMsd;  // action for raw data
 
    TAVTactVmeReader*     fActVmeReaderVtx; // action for stand alone reader VTX
-   TAVTactNtuHit*        fActNtuRawVtx;  // action for ntu data
-   TAITactNtuHit*        fActNtuRawIt;  // action for ntu data
-//   TAMSDactNtuRaw*       fActNtuRawMsd;  // action for ntu data
+   TAVTactNtuHit*        fActNtuHitVtx;  // action for ntu data
+   TAITactNtuHit*        fActNtuHitIt;  // action for ntu data
+//   TAMSDactNtuHit*       fActNtuHitMsd;  // action for ntu data
 
-   TATWactNtuHit*        fActNtuRawTw;
+   TATWactNtuHit*        fActNtuHitTw;
 
-   TACAactNtuHit*        fActNtuRawCa;
+   TACAactNtuHit*        fActNtuHitCa;
 
    TAGactDaqReader*      fActEvtReader; // reader for real data (DAQ)
   

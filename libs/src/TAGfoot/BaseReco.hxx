@@ -199,8 +199,8 @@ public:
    TACAparGeo*          GetParGeoCa()       const { return (TACAparGeo*)fpParGeoCa->Object();        }
    
    //! Containers getters
-   TASTntuHit*          GetNtuHitSt()       const { return (TASTntuHit*) fpNtuRawSt->Object();       }
-   TABMntuHit*          GetNtuRawBm()       const { return (TABMntuHit*)fpNtuRawBm->Object();        }
+   TASTntuHit*          GetNtuHitSt()       const { return (TASTntuHit*) fpNtuHitSt->Object();       }
+   TABMntuHit*          GetNtuHitBm()       const { return (TABMntuHit*)fpNtuHitBm->Object();        }
    TABMntuTrack*        GetNtuTrackBm()     const { return (TABMntuTrack*)fpNtuTrackBm->Object();    }
    
    TAVTntuCluster*      GetNtuClusterVtx()  const { return (TAVTntuCluster*)fpNtuClusVtx->Object();  }
@@ -213,10 +213,10 @@ public:
 
    TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
    
-   TATWntuHit*          GetNtuHitTw()       const { return (TATWntuHit*) fpNtuRawTw->Object();       }
+   TATWntuHit*          GetNtuHitTw()       const { return (TATWntuHit*) fpNtuHitTw->Object();       }
    TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
    
-   TACAntuHit*          GetNtuHitCa()       const { return (TACAntuHit*) fpNtuRawCa->Object();       }
+   TACAntuHit*          GetNtuHitCa()       const { return (TACAntuHit*) fpNtuHitCa->Object();       }
    TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
@@ -277,17 +277,17 @@ protected:
    TAGparaDsc*           fpParConfMsd;
    
    TAGdataDsc*           fpDatRawSt;    // input data dsc
-   TAGdataDsc*           fpNtuRawSt;    // input data dsc
+   TAGdataDsc*           fpNtuHitSt;    // input data dsc
    TAGdataDsc*           fpDatRawBm;    // input data dsc
-   TAGdataDsc*           fpNtuRawBm;    // input data dsc
-   TAGdataDsc*           fpNtuRawVtx;     // input ntu data dsc
-   TAGdataDsc*           fpNtuRawIt;     // input ntu data dsc
+   TAGdataDsc*           fpNtuHitBm;    // input data dsc
+   TAGdataDsc*           fpNtuHitVtx;     // input ntu data dsc
+   TAGdataDsc*           fpNtuHitIt;     // input ntu data dsc
    TAGdataDsc*           fpDatRawMsd;    // input data dsc
-   TAGdataDsc*           fpNtuRawMsd;     // input ntu data dsc
+   TAGdataDsc*           fpNtuHitMsd;     // input ntu data dsc
    TAGdataDsc*           fpDatRawTw;     // input data dsc
-   TAGdataDsc*           fpNtuRawTw;     // input data dsc
+   TAGdataDsc*           fpNtuHitTw;     // input data dsc
    TAGdataDsc*           fpDatRawCa;     // input data dsc
-   TAGdataDsc*           fpNtuRawCa;     // input data dsc
+   TAGdataDsc*           fpNtuHitCa;     // input data dsc
 
    TAGdataDsc*           fpNtuClusVtx;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusIt;	  // input cluster data dsc
@@ -330,7 +330,7 @@ protected:
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
    TAMSDactNtuPoint*     fActPointMsd;   // action for point in MSD
 
-   // TATWactNtuHit*        fActNtuRawTw;  // action for ntu data
+   // TATWactNtuHit*        fActNtuHitTw;  // action for ntu data
    TATWactNtuPoint*      fActPointTw;    // action for clusters
    TATWactCalibTW*       fActCalibTw;
 

@@ -62,16 +62,16 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParConfMsd(0x0),
    fpDatRawSt(0x0),
    fpDatRawCa(0x0),
-   fpNtuRawSt(0x0),
+   fpNtuHitSt(0x0),
    fpDatRawBm(0x0),
-   fpNtuRawBm(0x0),
-   fpNtuRawVtx(0x0),
-   fpNtuRawIt(0x0),
+   fpNtuHitBm(0x0),
+   fpNtuHitVtx(0x0),
+   fpNtuHitIt(0x0),
    fpDatRawMsd(0x0),
-   fpNtuRawMsd(0x0),
+   fpNtuHitMsd(0x0),
    fpDatRawTw(0x0),
-   fpNtuRawTw(0x0),
-   fpNtuRawCa(0x0),
+   fpNtuHitTw(0x0),
+   fpNtuHitCa(0x0),
    fpNtuClusVtx(0x0),
    fpNtuClusIt(0x0),
    fpNtuClusMsd(0x0),
@@ -658,7 +658,7 @@ void BaseReco::CreateRecActionBm()
      if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
      fpNtuTrackBm = new TAGdataDsc("bmTrack", new TABMntuTrack());
 
-     fActTrackBm  = new TABMactNtuTrack("bmActTrack", fpNtuTrackBm, fpNtuRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
+     fActTrackBm  = new TABMactNtuTrack("bmActTrack", fpNtuTrackBm, fpNtuHitBm, fpParGeoBm, fpParConfBm, fpParCalBm);
       if (fFlagHisto)
          fActTrackBm->CreateHistogram();
    }
@@ -677,9 +677,9 @@ void BaseReco::CreateRecActionVtx()
   if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
    if (fM28ClusMtFlag)
-      fActClusVtx   = new TAVTactNtuClusterMT("vtActClus", fpNtuRawVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
+      fActClusVtx   = new TAVTactNtuClusterMT("vtActClus", fpNtuHitVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
    else
-      fActClusVtx   = new TAVTactNtuClusterF("vtActClus", fpNtuRawVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
+      fActClusVtx   = new TAVTactNtuClusterF("vtActClus", fpNtuHitVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
 
    if (fFlagHisto)
       fActClusVtx->CreateHistogram();
@@ -722,9 +722,9 @@ void BaseReco::CreateRecActionIt()
   if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
    if (fM28ClusMtFlag)
-      fActClusIt   = new TAITactNtuClusterMT("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
+      fActClusIt   = new TAITactNtuClusterMT("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
    else
-      fActClusIt   = new TAITactNtuClusterF("itActClus", fpNtuRawIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
+      fActClusIt   = new TAITactNtuClusterF("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
 
    if (fFlagHisto)
      fActClusIt->CreateHistogram();
@@ -753,13 +753,13 @@ void BaseReco::CreateRecActionMsd()
    fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
    if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
-   fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuRawMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
+   fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
    if (fFlagHisto)
       fActClusMsd->CreateHistogram();
    
    if (GlobalPar::GetPar()->IncludeKalman() ){
       fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
-      fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuRawMsd, fpNtuRecMsd, fpParGeoMsd);
+      fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuHitMsd, fpNtuRecMsd, fpParGeoMsd);
    }
 }
 
@@ -769,7 +769,7 @@ void BaseReco::CreateRecActionTw()
    fpNtuRecTw  = new TAGdataDsc("twPoint", new TATWntuPoint());
    if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
-   fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuRawTw, fpNtuRecTw, fpParGeoTw, fpParCalTw,fFlagZmatch_TW,fFlagZtrueMC);
+   fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuHitTw, fpNtuRecTw, fpParGeoTw, fpParCalTw,fFlagZmatch_TW,fFlagZtrueMC);
    if (fFlagHisto)
      fActPointTw->CreateHistogram();
 }
@@ -780,7 +780,7 @@ void BaseReco::CreateRecActionCa()
    fpNtuClusCa  = new TAGdataDsc("caClus", new TACAntuCluster());
    if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) return;
 
-   fActClusCa   = new TACAactNtuCluster("caActClus", fpNtuRawCa, fpNtuClusCa, fpParGeoCa, 0x0, fpNtuRecTw);
+   fActClusCa   = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpNtuRecTw);
    if (fFlagHisto)
       fActClusCa->CreateHistogram();
 }
