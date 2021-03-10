@@ -19,7 +19,6 @@
 #include "TAGactNtuCluster2D.hxx"
 
 class TACAcluster;
-class TAVTntuHit;
 class TACAparGeo;
 class TH1F;
 class TH2F;
