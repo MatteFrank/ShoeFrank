@@ -43,7 +43,7 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
-#include "TAVTactNtuRaw.hxx"
+#include "TAVTactNtuHit.hxx"
 #include "TAVTactNtuClusterF.hxx"
 #include "TAVTactNtuTrackF.hxx"
 #include "TAVTactNtuVertexPD.hxx"
@@ -61,7 +61,7 @@ TASTactDatRaw*      stActDat  = 0x0;
 TABMactDatRaw*      bmActDat  = 0x0;
 TABMactNtuRaw*      bmActNtu  = 0x0;
 TABMactNtuTrack*    bmActTrack  = 0x0;
-TAVTactNtuRaw*      vtActRaw  = 0x0;
+TAVTactNtuHit*      vtActRaw  = 0x0;
 TAVTactNtuClusterF* vtActClus = 0x0;
 TAVTactNtuTrackF*   vtActTrack = 0x0;
 TAVTactNtuVertexPD* vtActVtx  = 0x0;
@@ -134,7 +134,7 @@ void FillVertex()
 
    daqActReader  = new TAGactDaqReader("daqActReader", evDaq);
    
-   vtActRaw  = new TAVTactNtuRaw("vtActRaw", vtNtu, evDaq, vtGeo, vtConf, vtMap);
+   vtActRaw  = new TAVTactNtuHit("vtActRaw", vtNtu, evDaq, vtGeo, vtConf, vtMap);
    vtActRaw->CreateHistogram();
    
    vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);

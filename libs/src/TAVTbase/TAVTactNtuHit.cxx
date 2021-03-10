@@ -1,6 +1,6 @@
 /*!
  \file
- \brief   Implementation of TAVTactNtuRaw.
+ \brief   Implementation of TAVTactNtuHit.
  */
 
 #include "DECardEvent.hh"
@@ -10,20 +10,20 @@
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
 
-#include "TAVTactNtuRaw.hxx"
+#include "TAVTactNtuHit.hxx"
 
 /*!
- \class TAVTactNtuRaw TAVTactNtuRaw.hxx "TAVTactNtuRaw.hxx"
+ \class TAVTactNtuHit TAVTactNtuHit.hxx "TAVTactNtuHit.hxx"
  \brief Get vertex raw data from DAQ (binary format) **
  */
 
-ClassImp(TAVTactNtuRaw);
+ClassImp(TAVTactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAVTactNtuRaw::TAVTactNtuRaw(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pDatDaq, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
-: TAVTactBaseNtuRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap),
+TAVTactNtuHit::TAVTactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pDatDaq, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
+: TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap),
   fpDatDaq(pDatDaq)
 {
    AddDataIn(pDatDaq, "TAGdaqEvent");
@@ -31,13 +31,13 @@ TAVTactNtuRaw::TAVTactNtuRaw(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* 
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAVTactNtuRaw::~TAVTactNtuRaw()
+TAVTactNtuHit::~TAVTactNtuHit()
 {   
 }
 
 //------------------------------------------+-----------------------------------
 //! Action.
-Bool_t TAVTactNtuRaw::Action()
+Bool_t TAVTactNtuHit::Action()
 {
    TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();
    

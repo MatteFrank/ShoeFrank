@@ -1,12 +1,12 @@
-#ifndef _TAVTactBaseNtuRaw_HXX
-#define _TAVTactBaseNtuRaw_HXX
+#ifndef _TAVTactBaseNtuHit_HXX
+#define _TAVTactBaseNtuHit_HXX
 
 #include "TAVTactBaseRaw.hxx"
 
 /*!
  \file
- \version $Id: TAVTactBaseNtuRaw.hxx $
- \brief   Declaration of TAVTactBaseNtuRaw.
+ \version $Id: TAVTactBaseNtuHit.hxx $
+ \brief   Declaration of TAVTactBaseNtuHit.
  */
 
 /*------------------------------------------+---------------------------------*/
@@ -14,11 +14,11 @@ class TAGdataDsc;
 class DECardEvent;
 
 using namespace std;
-class TAVTactBaseNtuRaw : public TAVTactBaseRaw {
+class TAVTactBaseNtuHit : public TAVTactBaseRaw {
 public:
    
-   explicit TAVTactBaseNtuRaw(const char* name=0, TAGdataDsc* p_datraw=0, TAGparaDsc* p_pargeo=0, TAGparaDsc* p_parconf=0, TAGparaDsc* pParMap=0);
-   virtual  ~TAVTactBaseNtuRaw();
+   explicit TAVTactBaseNtuHit(const char* name=0, TAGdataDsc* p_datraw=0, TAGparaDsc* p_pargeo=0, TAGparaDsc* p_parconf=0, TAGparaDsc* pParMap=0);
+   virtual  ~TAVTactBaseNtuHit();
       
 protected:
    //! Find vertex data
@@ -33,7 +33,7 @@ protected:
    //! Get frame and returns frameRaw
    Bool_t GetFrame(Int_t iSensor, MI26_FrameRaw* data);
    
-   ClassDef(TAVTactBaseNtuRaw,0)
+   ClassDef(TAVTactBaseNtuHit,0)
 };
 
 #endif

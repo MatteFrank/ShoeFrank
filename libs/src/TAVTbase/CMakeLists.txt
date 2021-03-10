@@ -35,8 +35,8 @@ set( with_dictionnaries
    TAVTactVmeWriter
    TAVTactStdRaw
    TAVTactStdDaqRaw
-   TAVTactBaseNtuRaw
-   TAVTactNtuRaw
+   TAVTactBaseNtuHit
+   TAVTactNtuHit
    TAVTactBaseNtuHitMC
    TAVTactNtuHitMC
    TAVTbaseDigitizer

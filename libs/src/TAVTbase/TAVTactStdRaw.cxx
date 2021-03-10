@@ -27,7 +27,7 @@ TString TAVTactStdRaw::fgDefaultExtName    = ".ZS";
 //! Default constructor.
 
 TAVTactStdRaw::TAVTactStdRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
-: TAVTactBaseNtuRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap)
+: TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
    TAVTparGeo*  pGeoPar = (TAVTparGeo*)  fpGeoMap->Object();
 

@@ -1,6 +1,6 @@
 /*!
  \file
- \brief   Implementation of TAVTactBaseNtuRaw.
+ \brief   Implementation of TAVTactBaseNtuHit.
  */
 
 #include "DECardEvent.hh"
@@ -10,31 +10,31 @@
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
 
-#include "TAVTactBaseNtuRaw.hxx"
+#include "TAVTactBaseNtuHit.hxx"
 
 /*!
- \class TAVTactBaseNtuRaw TAVTactBaseNtuRaw.hxx "TAVTactBaseNtuRaw.hxx"
+ \class TAVTactBaseNtuHit TAVTactBaseNtuHit.hxx "TAVTactBaseNtuHit.hxx"
  \brief Base to decode raw data from single file **
  */
 
-ClassImp(TAVTactBaseNtuRaw);
+ClassImp(TAVTactBaseNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAVTactBaseNtuRaw::TAVTactBaseNtuRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
+TAVTactBaseNtuHit::TAVTactBaseNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAVTactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAVTactBaseNtuRaw::~TAVTactBaseNtuRaw()
+TAVTactBaseNtuHit::~TAVTactBaseNtuHit()
 {   
 }
 
 // --------------------------------------------------------------------------------------
-Bool_t TAVTactBaseNtuRaw::DecodeEvent()
+Bool_t TAVTactBaseNtuHit::DecodeEvent()
 {
    fIndex     = 0;
    MI26_FrameRaw* data = new MI26_FrameRaw;
@@ -84,7 +84,7 @@ Bool_t TAVTactBaseNtuRaw::DecodeEvent()
 
 // private method
 // --------------------------------------------------------------------------------------
-Bool_t TAVTactBaseNtuRaw::GetVtxHeader()
+Bool_t TAVTactBaseNtuHit::GetVtxHeader()
 {
    do {
       if (fData[fIndex] == DECardEvent::GetVertexHeader()) {
@@ -96,7 +96,7 @@ Bool_t TAVTactBaseNtuRaw::GetVtxHeader()
 }
 
 // --------------------------------------------------------------------------------------
-Bool_t TAVTactBaseNtuRaw::GetSensorHeader(Int_t iSensor)
+Bool_t TAVTactBaseNtuHit::GetSensorHeader(Int_t iSensor)
 {
    
    do {
@@ -120,7 +120,7 @@ Bool_t TAVTactBaseNtuRaw::GetSensorHeader(Int_t iSensor)
 }
 
 // --------------------------------------------------------------------------------------
-Bool_t TAVTactBaseNtuRaw::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
+Bool_t TAVTactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 {
    // check frame header
    if (fData[++fIndex] ==  GetFrameHeader()) {

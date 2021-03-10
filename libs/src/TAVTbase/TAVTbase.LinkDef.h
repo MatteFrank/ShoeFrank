@@ -23,12 +23,12 @@
 
 
 #pragma link C++ class TAVTactBaseRaw+;
-#pragma link C++ class TAVTactBaseNtuRaw+;
+#pragma link C++ class TAVTactBaseNtuHit+;
 #pragma link C++ class TAVTactVmeReader+;
 #pragma link C++ class TAVTactVmeWriter+;
 #pragma link C++ class TAVTactStdRaw+;
 #pragma link C++ class TAVTactStdDaqRaw+;
-#pragma link C++ class TAVTactNtuRaw+;
+#pragma link C++ class TAVTactNtuHit+;
 
 #pragma link C++ class TAVTactBaseNtuHitMC+;
 #pragma link C++ class TAVTactNtuHitMC+;

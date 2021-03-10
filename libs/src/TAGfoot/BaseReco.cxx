@@ -17,7 +17,7 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
-#include "TAVTactNtuRaw.hxx"
+#include "TAVTactNtuHit.hxx"
 #include "TAVTactNtuTrackF.hxx"
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"

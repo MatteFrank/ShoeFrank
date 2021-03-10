@@ -99,7 +99,7 @@ void LocalReco::CreateRawAction()
             fActVmeReaderVtx->CreateHistogram();
          
       } else {
-         fActNtuRawVtx = new TAVTactNtuRaw("vtActNtu", fpNtuRawVtx, fpDaqEvent, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
+         fActNtuRawVtx = new TAVTactNtuHit("vtActNtu", fpNtuRawVtx, fpDaqEvent, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
          if (fFlagHisto)
          fActNtuRawVtx->CreateHistogram();
          if(GlobalPar::GetPar()->Debug()) fActNtuRawVtx->SetDebugLevel(1);
@@ -117,7 +117,7 @@ void LocalReco::CreateRawAction()
 //      fpDatRawMsd   = new TAGdataDsc("msdDat", new TAVTdatRaw());
 //      fpNtuRawMsd   = new TAGdataDsc("msdRaw", new TAMSDntuRaw());
 //      fActDatRawMsd = new TAMSDactDaqRaw("msdAcDat", fpDatRawMsd, fpDaqEvent, fpParGeoMsd);
-//      fActNtuRawMsd = new TAVTactNtuRaw("msdActNtu", fpNtuRawMsd, fpDatRawMsd, fpParGeoMsd);
+//      fActNtuRawMsd = new TAVTactNtuHit("msdActNtu", fpNtuRawMsd, fpDatRawMsd, fpParGeoMsd);
 //      if (fFlagHisto)
 //         fActNtuRawMsd->CreateHistogram();
 //   }
