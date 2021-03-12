@@ -20,7 +20,7 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 set( with_dictionnaries
    TASTactNtuHitMC
    TASTactNtuHit
-   TASTdatRaw
+   TASTntuRaw
    TASTntuHit
    TASTparGeo
    TASTparMap

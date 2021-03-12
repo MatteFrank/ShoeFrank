@@ -24,7 +24,7 @@
 #include "TAGparGeo.hxx"
 
 #include "TASTparMap.hxx"
-#include "TASTdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 #include "TASTactDatRaw.hxx"
 
 #include "TAVTparMap.hxx"
@@ -138,7 +138,7 @@ void FillBm(TString fExpName) {
   TAGdataDsc* bmDaq    = new TAGdataDsc("bmDaq", new TAGdaqEvent());
   daqActReader  = new TAGactDaqReader("daqActReader", bmDaq); 
  
-  TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTdatRaw());
+  TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTntuRaw());
   stActDatRaw  = new TASTactDatRaw("stActDatRaw", stDatRaw,bmDaq,stMap, fpParTimeSt);
   
   TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMdatRaw());

@@ -11,7 +11,7 @@
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
 #include "TASTparGeo.hxx"
-#include "TASTdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 #include "TASTntuHit.hxx"
 
 #define REF_CLK make_pair(16,27)

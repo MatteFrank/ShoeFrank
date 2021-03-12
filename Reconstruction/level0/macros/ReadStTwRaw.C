@@ -27,7 +27,7 @@
 #include "TATWparMap.hxx"
 #include "TATWparTime.hxx"
 
-#include "TASTdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 #include "TATWdatRaw.hxx"
 
 #include "TAGdaqEvent.hxx"
@@ -82,7 +82,7 @@ void FillStTw()
    parFileNameT = Form("./config/%sTATWCalibrationMap.xml", expName.Data());
    parCalT->FromFile(parFileNameT.Data());
    
-   TAGdataDsc* stDat   = new TAGdataDsc("stDat", new TASTdatRaw());
+   TAGdataDsc* stDat   = new TAGdataDsc("stDat", new TASTntuRaw());
    TAGdataDsc* twDat   = new TAGdataDsc("twdDat", new TATWdatRaw());
    wdActRaw  = new TAGactWDreader("wdActRaw", twDaq, stDat, twDat, parMapSt, parMapTw, parTimeSt, parTimeTw);
    wdActRaw->CreateHistogram();
@@ -91,8 +91,8 @@ void FillStTw()
    twActNtu  = new TATWactNtuHit("twNtuRaw", twDat, twNtu, parGeoTw, parMapTw, parCalTw);
    twActNtu->CreateHistogram();
    
-   //   outFile->SetupElementBranch(stDat, TASTdatRaw::GetBranchName());
-   //   outFile->SetupElementBranch(twDat, TASTdatRaw::GetBranchName());
+   //   outFile->SetupElementBranch(stDat, TASTntuRaw::GetBranchName());
+   //   outFile->SetupElementBranch(twDat, TASTntuRaw::GetBranchName());
    outFile->SetupElementBranch(twNtu, TATWntuHit::GetBranchName());
 }
 

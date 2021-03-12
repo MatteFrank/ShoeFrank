@@ -1,9 +1,9 @@
-#ifndef _TASTdatRaw_HXX
-#define _TASTdatRaw_HXX
+#ifndef _TASTntuRaw_HXX
+#define _TASTntuRaw_HXX
 /*!
   \file
-  \version $Id: TASTdatRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
-  \brief   Declaration of TASTdatRaw.
+  \version $Id: TASTntuRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+  \brief   Declaration of TASTntuRaw.
 */
 /*------------------------------------------+---------------------------------*/
 #include <vector>
@@ -36,11 +36,11 @@ public:
 
 //##############################################################################
 
-class TASTdatRaw : public TAGdata {
+class TASTntuRaw : public TAGdata {
 public:
 
-  TASTdatRaw();
-  virtual         ~TASTdatRaw();
+  TASTntuRaw();
+  virtual         ~TASTntuRaw();
 
   Int_t             GetHitsN() {return fHistN;}
   
@@ -61,7 +61,7 @@ public:
    
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
-  ClassDef(TASTdatRaw,3);
+  ClassDef(TASTntuRaw,3);
   
 private:
    Int_t           fHistN;          //

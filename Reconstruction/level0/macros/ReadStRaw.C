@@ -20,7 +20,7 @@
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
 #include "TASTparMap.hxx"
-#include "TASTdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 #include "TASTntuHit.hxx"
 #include "TASTactNtuHit.hxx"
 #include "TAGdaqEvent.hxx"
@@ -48,7 +48,7 @@ void FillST(){
 
    stMap    = new TAGparaDsc("stMap", new TASTparMap());
    stDaq    = new TAGdataDsc("stDaq", new TAGdaqEvent());
-   stDat    = new TAGdataDsc("stDat", new TASTdatRaw());
+   stDat    = new TAGdataDsc("stDat", new TASTntuRaw());
    stTime   = new TAGparaDsc("stTime", new TASTparTime());
    stNtu    = new TAGdataDsc("stNtu", new TASTntuHit());
    

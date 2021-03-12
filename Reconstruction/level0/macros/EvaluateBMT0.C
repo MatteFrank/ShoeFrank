@@ -28,7 +28,7 @@
 #include "TATWparCal.hxx"
 #include "TATWparMap.hxx"
 #include "TATWparTime.hxx"
-#include "TASTdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 #include "TATWdatRaw.hxx"
 #include "TATWactNtuHit.hxx"
 #include "TAGactWDreader.hxx"
@@ -136,7 +136,7 @@ void FillStBm(TString expName) {
   //~ parTimeSt->FromFile(expname.Data(), 2190);
  
   //ST-TW TAGdataDsc
-  TAGdataDsc* stDat   = new TAGdataDsc("stDat", new TASTdatRaw());
+  TAGdataDsc* stDat   = new TAGdataDsc("stDat", new TASTntuRaw());
   TAGdataDsc* twDat   = new TAGdataDsc("twdDat", new TATWdatRaw());
   wdActRaw  = new TAGactWDreader("wdActRaw", twDaq, stDat, twDat, parMapSt, parMapTw, parTimeSt, parTimeTw);
   TAGdataDsc* twNtu  = new TAGdataDsc("twNtu", new TATWntuHit());
@@ -146,7 +146,7 @@ void FillStBm(TString expName) {
 
  
   //Bm TAGdataDsc
-   //~ TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTdatRaw());
+   //~ TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTntuRaw());
    //~ stActDatRaw  = new TASTactDatRaw("stActDatRaw", stDatRaw,bmDaq,stMap, fpParTimeSt);
   TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMdatRaw());
   bmActDatRaw  = new TABMactDatRaw("bmActDatRaw", bmDatRaw, twDaq, bmMap, bmConf, bmGeo,stNtuRaw);  

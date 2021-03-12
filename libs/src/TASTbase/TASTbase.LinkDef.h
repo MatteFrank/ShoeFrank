@@ -11,7 +11,7 @@
 #pragma link C++ class  TAGbaseWDparTime+;
 #pragma link C++ class  TASTactNtuHitMC+;
 #pragma link C++ class  TASTactNtuHit+;
-#pragma link C++ class  TASTdatRaw+;
+#pragma link C++ class  TASTntuRaw+;
 #pragma link C++ class  TASTntuHit+;
 #pragma link C++ class  TASTrawHit+;
 #pragma link C++ class  TASThit+;

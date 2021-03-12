@@ -30,7 +30,7 @@ TASTactNtuHit::TASTactNtuHit(const char* name,
     fpNtuRaw(p_nturaw),
     fpParMap(p_parmap)
 {
-  AddDataIn(p_datraw, "TASTdatRaw");
+  AddDataIn(p_datraw, "TASTntuRaw");
   AddDataOut(p_nturaw, "TASTntuHit");
 
 }
@@ -46,7 +46,7 @@ TASTactNtuHit::~TASTactNtuHit()
 
 Bool_t TASTactNtuHit::Action() {
 
-   TASTdatRaw*   p_datraw = (TASTdatRaw*) fpDatRaw->Object();
+   TASTntuRaw*   p_datraw = (TASTntuRaw*) fpDatRaw->Object();
    TASTntuHit*   p_nturaw = (TASTntuHit*)  fpNtuRaw->Object();
    TASTparMap*   p_parmap = (TASTparMap*)  fpParMap->Object();
 

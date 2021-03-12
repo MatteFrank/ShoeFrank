@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TASTdatRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
-  \brief   Implementation of TASTdatRaw.
+  \version $Id: TASTntuRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \brief   Implementation of TASTntuRaw.
 */
 
 #include <string.h>
@@ -10,18 +10,18 @@
 using namespace std;
 #include <algorithm>
 #include "TString.h"
-#include "TASTdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TF1.h"
 /*!
-  \class TASTdatRaw TASTdatRaw.hxx "TASTdatRaw.hxx"
+  \class TASTntuRaw TASTntuRaw.hxx "TASTntuRaw.hxx"
   \brief Mapping and Geometry parameters for IR detectors. **
 */
 
 ClassImp(TASTrawHit);
 
-TString TASTdatRaw::fgkBranchName   = "stdat.";
+TString TASTntuRaw::fgkBranchName   = "stdat.";
 
 
 //------------------------------------------+-----------------------------------
@@ -86,11 +86,11 @@ double TASTrawHit::ComputePedestal(TWaveformContainer *w){
 
 //##############################################################################
 
-ClassImp(TASTdatRaw);
+ClassImp(TASTntuRaw);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TASTdatRaw::TASTdatRaw() :
+TASTntuRaw::TASTntuRaw() :
   fHistN(0), fListOfHits(0), fSuperHit(0), fRunTime(0x0){
 
   SetupClones();
@@ -101,7 +101,7 @@ TASTdatRaw::TASTdatRaw() :
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TASTdatRaw::~TASTdatRaw() {
+TASTntuRaw::~TASTntuRaw() {
   if(fListOfHits)delete fListOfHits;
   if(fSuperHit) delete fSuperHit;
 }
@@ -109,7 +109,7 @@ TASTdatRaw::~TASTdatRaw() {
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 
-void TASTdatRaw::SetupClones()
+void TASTntuRaw::SetupClones()
 {
   if (!fListOfHits) fListOfHits = new TClonesArray("TASTrawHit");
 }
@@ -118,7 +118,7 @@ void TASTdatRaw::SetupClones()
 //------------------------------------------+-----------------------------------
 //! Clear event.
 
-void TASTdatRaw::Clear(Option_t*){
+void TASTntuRaw::Clear(Option_t*){
   TAGdata::Clear();
   fHistN = 0;
 
@@ -129,20 +129,20 @@ void TASTdatRaw::Clear(Option_t*){
 
 //-----------------------------------------------------------------------------
 //! access to the hit
-TASTrawHit* TASTdatRaw::GetHit(Int_t i){
+TASTrawHit* TASTntuRaw::GetHit(Int_t i){
   return (TASTrawHit*) ((*fListOfHits)[i]);;
 }
 
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
-const TASTrawHit* TASTdatRaw::GetHit(Int_t i) const{
+const TASTrawHit* TASTntuRaw::GetHit(Int_t i) const{
   return (const TASTrawHit*) ((*fListOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! New hit
-void TASTdatRaw::NewHit(TWaveformContainer *W){
+void TASTntuRaw::NewHit(TWaveformContainer *W){
   
   TClonesArray &pixelArray = *fListOfHits;
   TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W);
@@ -151,7 +151,7 @@ void TASTdatRaw::NewHit(TWaveformContainer *W){
 
 //------------------------------------------+-----------------------------------
 //! new super hit
-void TASTdatRaw::NewSuperHit(vector<TWaveformContainer*> vW){
+void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW){
 
 
   if(!vW.size()){
@@ -208,9 +208,9 @@ void TASTdatRaw::NewSuperHit(vector<TWaveformContainer*> vW){
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
-void TASTdatRaw::ToStream(ostream& os, Option_t* option) const
+void TASTntuRaw::ToStream(ostream& os, Option_t* option) const
 {
-  os << "TASTdatRaw " << GetName()
+  os << "TASTntuRaw " << GetName()
 	 << " fHistN"    << fHistN
      << endl;
 }
