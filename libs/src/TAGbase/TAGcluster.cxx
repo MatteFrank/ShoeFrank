@@ -11,7 +11,9 @@ ClassImp(TAGcluster);
 //------------------------------------------+-----------------------------------
 //! Constructor
 TAGcluster::TAGcluster()
-: TAGobject()
+: TAGobject(),
+  fClusterIdx(-1),
+  fSensorIdx(-1)
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
@@ -21,7 +23,9 @@ TAGcluster::TAGcluster()
 //! Copy constructor
 TAGcluster::TAGcluster(const TAGcluster& cluster)
  : TAGobject(),
-   fMcTrackIdx(cluster.fMcTrackIdx)
+   fMcTrackIdx(cluster.fMcTrackIdx),
+   fClusterIdx(cluster.fClusterIdx),
+   fSensorIdx(cluster.fSensorIdx)
 {
 }
 

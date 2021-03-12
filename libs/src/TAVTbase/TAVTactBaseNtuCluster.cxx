@@ -162,8 +162,8 @@ Bool_t TAVTactBaseNtuCluster::ApplyCuts(TAVTbaseCluster* cluster)
    Int_t  entries = list->GetEntries();
    
    // cuts on pixels in cluster
-   if(entries < pConfig->GetSensorPar(cluster->GetPlaneNumber()).MinNofPixelsInCluster ||
-      entries > pConfig->GetSensorPar(cluster->GetPlaneNumber()).MaxNofPixelsInCluster)
+  if(entries < pConfig->GetSensorPar(cluster->GetSensorIdx()).MinNofPixelsInCluster ||
+      entries > pConfig->GetSensorPar(cluster->GetSensorIdx()).MaxNofPixelsInCluster)
       return kFALSE;
    
    return kTRUE;
@@ -231,7 +231,7 @@ void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* clus
 {
    TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
    
-   cluster->SetPlaneNumber(iSensor);
+   cluster->SetSensorIdx(iSensor);
    fCurListOfPixels = cluster->GetListOfPixels();
    ComputePosition();
    TVector3 posG = GetCurrentPosition();
