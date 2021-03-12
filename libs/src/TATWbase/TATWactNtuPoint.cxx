@@ -71,21 +71,21 @@ void TATWactNtuPoint::CreateHistogram()
    DeleteHistogram();
    
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
-     fpHisDist.push_back(new TH1F(Form("minDist_Z%d",iZ), Form("TW - Minimal distance between clusterized hits - Z%d",iZ), 1000, 0., 10));
+     fpHisDist.push_back(new TH1F(Form("twMinDist_Z%d",iZ), Form("TW - Minimal distance between clusterized hits - Z%d",iZ), 1000, 0., 10));
      AddHistogram(fpHisDist[iZ-1]);
   
 
-   fpHisDeltaE.push_back(new TH1F(Form("DeltaE_Z%d",iZ),Form("DeltaE_Z%d",iZ),1000,-25.,25.));
+   fpHisDeltaE.push_back(new TH1F(Form("twDeltaE_Z%d",iZ),Form("DeltaE_Z%d",iZ),1000,-25.,25.));
      
      AddHistogram(fpHisDeltaE[iZ-1]);
      
-     fpHisDeltaTof.push_back( new TH1F(Form("DeltaTof_Z%d",iZ),Form("DeltaTof_Z%d",iZ),1000,-5.,5) );
+     fpHisDeltaTof.push_back( new TH1F(Form("twDeltaTof_Z%d",iZ),Form("DeltaTof_Z%d",iZ),1000,-5.,5) );
      AddHistogram(fpHisDeltaTof[iZ-1]);
 
-     fpHisElossMean.push_back( new TH1F(Form("ElossMean_Z%d",iZ),Form("ElossMean_Z%d",iZ),480,0,120) );
+     fpHisElossMean.push_back( new TH1F(Form("twElossMean_Z%d",iZ),Form("ElossMean_Z%d",iZ),480,0,120) );
      AddHistogram(fpHisElossMean[iZ-1]);
      
-     fpHisTofMean.push_back( new TH1F(Form("TofMean_Z%d",iZ),Form("TofMean_Z%d",iZ),1400,6,20) );
+     fpHisTofMean.push_back( new TH1F(Form("twTofMean_Z%d",iZ),Form("TofMean_Z%d",iZ),1400,6,20) );
      AddHistogram(fpHisTofMean[iZ-1]);
      
    }
@@ -263,7 +263,8 @@ Bool_t TATWactNtuPoint::FindPoints()
        }
        
        point->SetChargeZ(hit->GetChargeZ());
-       
+       point->SetSensorIdx(0);
+
        double z = fgeoTrafo->FromGlobalToTWLocal(fgeoTrafo->GetTWCenter()).z(); 
        TVector3 posLoc(point->GetPosition().x(),point->GetPosition().y(), z);
        TVector3 posGlb = fgeoTrafo->FromTWLocalToGlobal(posLoc);
@@ -350,6 +351,7 @@ Bool_t TATWactNtuPoint::FindPoints()
 
 	 TVector3 posGlb = fgeoTrafo->FromTWLocalToGlobal(posLoc);
 	 point->SetPositionGlb(posGlb);
+    point->SetSensorIdx(0);
 	 
 	 Int_t Z = hit1->GetChargeZ();
 	 point->SetChargeZ(Z);
