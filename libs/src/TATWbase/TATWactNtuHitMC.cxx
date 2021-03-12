@@ -5,7 +5,7 @@
  */
 #include "TAGgeoTrafo.hxx"
 
-#include "TATWdatRaw.hxx"
+#include "TATWntuRaw.hxx"
 #include "TATWparCal.hxx"
 #include "TATWactNtuHitMC.hxx"
 #include "TAMCflukaParser.hxx"

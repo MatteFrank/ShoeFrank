@@ -21,7 +21,7 @@
 #include "TATWparMap.hxx"
 #include "TATWparGeo.hxx"
 #include "TATWparCal.hxx"
-#include "TATWdatRaw.hxx"
+#include "TATWntuRaw.hxx"
 #include "TATWntuHit.hxx"
 
 #include "TASTntuHit.hxx"

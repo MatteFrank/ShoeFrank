@@ -10,7 +10,7 @@
 #pragma link C++ class TATWchannelMap+;
 
 #pragma link C++ class TATWrawHit+;
-#pragma link C++ class TATWdatRaw+;
+#pragma link C++ class TATWntuRaw+;
 #pragma link C++ class TATWhit+;
 #pragma link C++ class TATWntuHit+;
 #pragma link C++ class TATWpoint+;

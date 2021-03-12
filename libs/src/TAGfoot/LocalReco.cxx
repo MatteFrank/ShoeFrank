@@ -8,7 +8,7 @@
 #include "TAVTntuHit.hxx"
 #include "TAITntuHit.hxx"
 #include "TAMSDntuHit.hxx"
-#include "TATWdatRaw.hxx"
+#include "TATWntuRaw.hxx"
 #include "TATWntuHit.hxx"
 #include "TACAntuHit.hxx"
 
@@ -53,7 +53,7 @@ void LocalReco::CreateRawAction()
 
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeCA()) {
       fpDatRawSt   = new TAGdataDsc("stDat", new TASTntuRaw());
-      fpDatRawTw   = new TAGdataDsc("twdDat", new TATWdatRaw());
+      fpDatRawTw   = new TAGdataDsc("twdDat", new TATWntuRaw());
       fpDatRawCa   = new TAGdataDsc("caDat", new TACAntuRaw());
       
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpParMapWD, fpParTimeWD);
@@ -314,7 +314,7 @@ void LocalReco::SetTreeBranches()
    
    if (GlobalPar::GetPar()->IncludeTW()) {
      if (fFlagHits) {
-         fActEvtWriter->SetupElementBranch(fpDatRawTw, TATWdatRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpDatRawTw, TATWntuRaw::GetBranchName());
      }
      fActEvtWriter->SetupElementBranch(fpNtuHitTw, TATWntuHit::GetBranchName());
    }

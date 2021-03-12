@@ -49,7 +49,7 @@ TATWactNtuHit::TATWactNtuHit(const char* name,
     fEvtCnt(0)
 {
 
-  AddDataIn(p_datraw, "TATWdatRaw");
+  AddDataIn(p_datraw, "TATWntuRaw");
   AddDataIn(p_STnturaw, "TASTntuHit");
   AddDataOut(p_nturaw, "TATWntuHit");
 
@@ -139,7 +139,7 @@ void TATWactNtuHit::CreateHistogram()
 
 Bool_t TATWactNtuHit::Action() {
 
-  TATWdatRaw*   p_datraw = (TATWdatRaw*) fpDatRaw->Object();
+  TATWntuRaw*   p_datraw = (TATWntuRaw*) fpDatRaw->Object();
   TASTntuHit*   p_STnturaw = (TASTntuHit*)  fpSTNtuRaw->Object();
   TATWntuHit*   p_nturaw = (TATWntuHit*)  fpNtuRaw->Object();
 

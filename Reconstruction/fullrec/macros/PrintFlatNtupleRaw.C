@@ -34,7 +34,7 @@
 #include "TAMSDntuCluster.hxx"
 
 #include "TATWparGeo.hxx"
-#include "TATWdatRaw.hxx"
+#include "TATWntuRaw.hxx"
 #include "TATWntuHit.hxx"
 
 

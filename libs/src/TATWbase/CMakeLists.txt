@@ -20,7 +20,7 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TATWdatRaw
+   TATWntuRaw
    TATWntuHit
    TATWntuPoint
    TATWparMap
