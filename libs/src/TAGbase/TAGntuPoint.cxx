@@ -11,8 +11,6 @@ ClassImp(TAGpoint) // Description of Single Detector TAGpoint
 TAGpoint::TAGpoint()
  : TAGcluster(),
    fDevName(""),
-   fSensorIdx(-1),
-   fClusterIdx(-1),
    fPosition(0,0,0),
    fPosError(0,0,0),
    fMomentum(0,0,0),
@@ -26,8 +24,6 @@ TAGpoint::TAGpoint()
 TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr)
 : TAGcluster(),
   fDevName(""),
-  fSensorIdx(-1),
-  fClusterIdx(-1),
   fPosition(pos),
   fPosError(posErr),
   fMomentum(0,0,0),
@@ -40,8 +36,6 @@ TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr)
 TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ)
  : TAGcluster(),
    fDevName(""),
-   fSensorIdx(-1),
-   fClusterIdx(-1),
    fPosition(pos),
    fPosError(posErr),
    fMomentum(mom),
