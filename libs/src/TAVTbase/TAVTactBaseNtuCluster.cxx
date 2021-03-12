@@ -162,7 +162,8 @@ Bool_t TAVTactBaseNtuCluster::ApplyCuts(TAVTbaseCluster* cluster)
    Int_t  entries = list->GetEntries();
    
    // cuts on pixels in cluster
-   if(entries < pConfig->GetSensorPar(cluster->GetSensorIdx()).MinNofPixelsInCluster ||
+
+  if(entries < pConfig->GetSensorPar(cluster->GetSensorIdx()).MinNofPixelsInCluster ||
       entries > pConfig->GetSensorPar(cluster->GetSensorIdx()).MaxNofPixelsInCluster)
       return kFALSE;
    

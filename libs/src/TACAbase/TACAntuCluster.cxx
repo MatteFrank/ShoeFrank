@@ -195,7 +195,7 @@ TACAcluster* TACAntuCluster::NewCluster()
    TClonesArray &clusterArray = *GetListOfClusters();
    TACAcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TACAcluster();
    cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
-   
+  
    return cluster;
 }
 
