@@ -25,6 +25,8 @@ class TAGpoint : public TAGcluster {
    
 private:
    TString     fDevName;       // Device name (VT,IT, MSD, TW, CA)
+   Int_t       fSensorIdx;     // sensor index in device
+   Int_t       fClusterIdx;    // cluster index for the given sensor
    TVector3    fPosition;      // position in FOOT framework
    TVector3    fPosError;      // position error in FOOT framework
    TVector3    fMomentum;      // momentum in FOOT framework
@@ -41,6 +43,12 @@ public:
    // return detector name
    const Char_t*    GetDevName()     const  { return fDevName.Data(); }
   
+   // return sensor index
+   Int_t            GetSensorIdx()   const  { return fSensorIdx;  }
+
+   // return cluster index
+   Int_t            GetClusterIdx()  const  { return fClusterIdx; }
+
    // All the Get methods
    const TVector3&  GetPosition()    const  { return fPosition;   }
    const TVector3&  GetPosError()    const  { return fPosError;   }
@@ -54,6 +62,9 @@ public:
    Int_t            GetChargeZ()     const  { return fChargeZ;    }
       
    void        SetDevName(TString name )    { fDevName = name;    }
+   void        SetSensorIdx(Int_t idx)      { fSensorIdx = idx;   }
+   void        SetClusterIdx(Int_t idx)     { fClusterIdx = idx;  }
+
    void        SetPosition(TVector3 pos)    { fPosition = pos;    }
    void        SetPosError(TVector3 pos)    { fPosError = pos;    }
    void        SetMomentum(TVector3 mom)    { fMomentum = mom;    }
@@ -61,7 +72,7 @@ public:
    void        SetChargeZ(Int_t z)          { fChargeZ = z;       }
    void        Clear(Option_t* opt);
   
-   ClassDef(TAGpoint,5)
+   ClassDef(TAGpoint,6)
 };
 
 //##############################################################################
