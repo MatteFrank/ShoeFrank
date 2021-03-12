@@ -29,7 +29,7 @@
 #include "TATWparMap.hxx"
 #include "TATWparTime.hxx"
 #include "TASTntuRaw.hxx"
-#include "TATWdatRaw.hxx"
+#include "TATWntuRaw.hxx"
 #include "TATWactNtuHit.hxx"
 #include "TAGactWDreader.hxx"
 #include "TASTactNtuHit.hxx"
@@ -137,7 +137,7 @@ void FillStBm(TString expName) {
  
   //ST-TW TAGdataDsc
   TAGdataDsc* stDat   = new TAGdataDsc("stDat", new TASTntuRaw());
-  TAGdataDsc* twDat   = new TAGdataDsc("twdDat", new TATWdatRaw());
+  TAGdataDsc* twDat   = new TAGdataDsc("twdDat", new TATWntuRaw());
   wdActRaw  = new TAGactWDreader("wdActRaw", twDaq, stDat, twDat, parMapSt, parMapTw, parTimeSt, parTimeTw);
   TAGdataDsc* twNtu  = new TAGdataDsc("twNtu", new TATWntuHit());
   //~ twActNtu  = new TATWactNtuHit("twNtuRaw", twDat, twNtu, parGeoTw, parMapTw, parCalTw);

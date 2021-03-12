@@ -1,9 +1,9 @@
-#ifndef _TATWdatRaw_HXX
-#define _TATWdatRaw_HXX
+#ifndef _TATWntuRaw_HXX
+#define _TATWntuRaw_HXX
 /*!
   \file
-  \version $Id: TATWdatRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
-  \brief   Declaration of TATWdatRaw.
+  \version $Id: TATWntuRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+  \brief   Declaration of TATWntuRaw.
 */
 /*------------------------------------------+---------------------------------*/
 #include <vector>
@@ -37,11 +37,11 @@ public:
 
 //##############################################################################
 
-class TATWdatRaw : public TAGdata {
+class TATWntuRaw : public TAGdata {
 public:
 
-  TATWdatRaw();
-  virtual         ~TATWdatRaw();
+  TATWntuRaw();
+  virtual         ~TATWntuRaw();
   Int_t             GetHitsN() const;
   TATWrawHit*       GetHit(Int_t i_ind);
   const TATWrawHit* GetHit(Int_t i_ind) const;
@@ -53,7 +53,7 @@ public:
   virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
   void            UpdateRunTime(int value){fRunTime+=value;}
 
-  ClassDef(TATWdatRaw,3);
+  ClassDef(TATWntuRaw,3);
 
 
   

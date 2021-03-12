@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TATWdatRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
-  \brief   Implementation of TATWdatRaw.
+  \version $Id: TATWntuRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \brief   Implementation of TATWntuRaw.
 */
 
 #include <string.h>
@@ -10,17 +10,17 @@
 using namespace std;
 #include <algorithm>
 #include "TString.h"
-#include "TATWdatRaw.hxx"
+#include "TATWntuRaw.hxx"
 #include "TGraph.h"
 #include "TF1.h"
 /*!
-  \class TATWdatRaw TATWdatRaw.hxx "TATWdatRaw.hxx"
+  \class TATWntuRaw TATWntuRaw.hxx "TATWntuRaw.hxx"
   \brief Mapping and Geometry parameters for IR detectors. **
 */
 
 ClassImp(TATWrawHit);
 
-TString TATWdatRaw::fgkBranchName   = "twdat.";
+TString TATWntuRaw::fgkBranchName   = "twdat.";
 
 TATWrawHit::TATWrawHit(TWaveformContainer *W)
   : TAGbaseWD(W){
@@ -78,11 +78,11 @@ double TATWrawHit::ComputePedestal(TWaveformContainer *w){
 
 //##############################################################################
 
-ClassImp(TATWdatRaw);
+ClassImp(TATWntuRaw);
 
 
 //! Default constructor.
-TATWdatRaw::TATWdatRaw() :
+TATWntuRaw::TATWntuRaw() :
   fHitsN(0), fListOfHits(0), fRunTime(0x0)
 {
    SetupClones();
@@ -92,7 +92,7 @@ TATWdatRaw::TATWdatRaw() :
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TATWdatRaw::~TATWdatRaw()
+TATWntuRaw::~TATWntuRaw()
 {
   delete fListOfHits;
 }
@@ -101,14 +101,14 @@ TATWdatRaw::~TATWdatRaw()
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 
-void TATWdatRaw::SetupClones()
+void TATWntuRaw::SetupClones()
 {
   if (!fListOfHits) fListOfHits = new TClonesArray("TATWrawHit");
   return;
 }
 
 
-Int_t TATWdatRaw::GetHitsN() const
+Int_t TATWntuRaw::GetHitsN() const
 {
    return fListOfHits->GetEntries();
 }
@@ -116,7 +116,7 @@ Int_t TATWdatRaw::GetHitsN() const
 //------------------------------------------+-----------------------------------
 //! Clear event.
 
-void TATWdatRaw::Clear(Option_t*)
+void TATWntuRaw::Clear(Option_t*)
 {
   TAGdata::Clear();
   fHitsN = 0;
@@ -126,7 +126,7 @@ void TATWdatRaw::Clear(Option_t*)
 }
 
 
-void TATWdatRaw::NewHit(TWaveformContainer *W)
+void TATWntuRaw::NewHit(TWaveformContainer *W)
 {
 
   //  W->SanitizeWaveform();
@@ -145,9 +145,9 @@ void TATWdatRaw::NewHit(TWaveformContainer *W)
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
 
-void TATWdatRaw::ToStream(ostream& os, Option_t* option) const
+void TATWntuRaw::ToStream(ostream& os, Option_t* option) const
 {
-  os << "TATWdatRaw " << GetName()
+  os << "TATWntuRaw " << GetName()
 	 << " fHitsN"    << fHitsN
      << endl;
 }
@@ -155,7 +155,7 @@ void TATWdatRaw::ToStream(ostream& os, Option_t* option) const
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th hit
 
-TATWrawHit* TATWdatRaw::GetHit(Int_t i)
+TATWrawHit* TATWntuRaw::GetHit(Int_t i)
 {
   return (TATWrawHit*) ((*fListOfHits)[i]);;
 }
@@ -163,7 +163,7 @@ TATWrawHit* TATWdatRaw::GetHit(Int_t i)
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 
-const TATWrawHit* TATWdatRaw::GetHit(Int_t i) const
+const TATWrawHit* TATWntuRaw::GetHit(Int_t i) const
 {
   return (const TATWrawHit*) ((*fListOfHits)[i]);;
 }

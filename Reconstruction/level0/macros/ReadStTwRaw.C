@@ -28,7 +28,7 @@
 #include "TATWparTime.hxx"
 
 #include "TASTntuRaw.hxx"
-#include "TATWdatRaw.hxx"
+#include "TATWntuRaw.hxx"
 
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
@@ -83,7 +83,7 @@ void FillStTw()
    parCalT->FromFile(parFileNameT.Data());
    
    TAGdataDsc* stDat   = new TAGdataDsc("stDat", new TASTntuRaw());
-   TAGdataDsc* twDat   = new TAGdataDsc("twdDat", new TATWdatRaw());
+   TAGdataDsc* twDat   = new TAGdataDsc("twdDat", new TATWntuRaw());
    wdActRaw  = new TAGactWDreader("wdActRaw", twDaq, stDat, twDat, parMapSt, parMapTw, parTimeSt, parTimeTw);
    wdActRaw->CreateHistogram();
    
