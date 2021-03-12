@@ -118,6 +118,7 @@ TAMSDcluster* TAMSDntuCluster::NewCluster(Int_t iSensor)
   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
     TClonesArray &clusterArray = *GetListOfClusters(iSensor);
     TAMSDcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAMSDcluster();
+    cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
     return cluster;
   } else {
     cout << Form("Wrong sensor number %d\n", iSensor);
@@ -132,6 +133,7 @@ TAMSDcluster* TAMSDntuCluster::NewCluster(TAMSDcluster* clus, Int_t iSensor)
   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
     TClonesArray &clusterArray = *GetListOfClusters(iSensor);
     TAMSDcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAMSDcluster(*clus);
+    cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
     return cluster;
   } else {
     cout << Form("Wrong sensor number %d\n", iSensor);

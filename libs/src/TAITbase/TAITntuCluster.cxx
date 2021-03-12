@@ -118,6 +118,7 @@ TAITcluster* TAITntuCluster::NewCluster(Int_t iSensor)
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
 	  TClonesArray &clusterArray = *GetListOfClusters(iSensor);
 	  TAITcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAITcluster();
+     cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
 	  return cluster;
    } else {
 	  cout << Form("Wrong sensor number %d\n", iSensor);
@@ -132,6 +133,7 @@ TAITcluster* TAITntuCluster::NewCluster(TAITcluster* clus, Int_t iSensor)
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
 	  TClonesArray &clusterArray = *GetListOfClusters(iSensor);
 	  TAITcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAITcluster(*clus);
+     cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
 	  return cluster;
    } else {
 	  cout << Form("Wrong sensor number %d\n", iSensor);

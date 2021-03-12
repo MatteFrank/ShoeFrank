@@ -253,7 +253,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
             posG = fpFootGeo->FromITLocalToGlobal(posG);
             TAIRcluster* last = track->GetLastCluster();
             last->SetPositionG(posG);
-            last->SetPlaneNumber(last->GetPlaneNumber()+pGeoMapVt->GetSensorsN());
+            last->SetSensorIdx(last->GetSensorIdx()+pGeoMapVt->GetSensorsN());
 
             if (fgRefit)
                UpdateParam(track);
@@ -294,7 +294,7 @@ void TAIRactNtuTrack::FillHistogramm(TAVTbaseTrack* track)
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
       TAVTbaseCluster * cluster = track->GetCluster(i);
       cluster->SetFound();
-      Int_t idx = cluster->GetPlaneNumber();
+      Int_t idx = cluster->GetSensorIdx();
       fpHisClusSensor->Fill(idx+1);
       fpHisPixelTot->Fill(cluster->GetPixelsN());
       fpHisPixel[idx]->Fill(cluster->GetPixelsN());

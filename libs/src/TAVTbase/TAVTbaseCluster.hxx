@@ -30,8 +30,6 @@ protected:
    TVector3           fPosErrorG;                // position's errors of the clus in tracker frame
    TClonesArray*      fListOfPixels;             // list of pixel attached to this cluster
    
-   Int_t              fNumber;                   // number
-   Int_t              fPlaneNumber;              // plane number
    Float_t            fCharge;                   // sum of pulseheight
    Bool_t             fFoundXZ;					    //! kTRUE is associated to a track in XZ Projection
    Bool_t             fFoundYZ;					    //! kTRUE is associated to a track in YZ Projection
@@ -54,10 +52,6 @@ public:
    void               SetFoundXZ(Bool_t flag = true)         { fFoundXZ = flag;        }
    //! Found flag for this cluster ((Hough Transform YZ)
    void               SetFoundYZ(Bool_t flag = true)         { fFoundYZ = flag;        }
-   //! Set cluster number
-   void               SetNumber(Int_t nb)                    { fNumber = nb;           }
-   //! Set plane number
-   void               SetPlaneNumber(Int_t nb)               { fPlaneNumber = nb;      }
    //! Set sum of pulse height
    void               SetCharge(Float_t chg)                 { fCharge = chg;          }
    //! Set validy
@@ -81,10 +75,6 @@ public:
    Float_t            GetPositionV()                   const { return fPosition[1];    }
    //! Get Pixel list
    TClonesArray*      GetListOfPixels()                const { return fListOfPixels;   }
-   //! Get cluster number
-   Int_t              GetNumber()                      const { return fNumber;         }
-   //! Get cluster number
-   Int_t              GetPlaneNumber()                 const { return fPlaneNumber;    }
    //! Get found flag this cluster
    Bool_t             GetFoundXZ()                     const { return fFoundXZ;        }
    //! Get found flag this cluster
@@ -115,7 +105,7 @@ public:
    //! reset pixels
    void               ResetPixels();
    
-   ClassDef(TAVTbaseCluster,5)                          // Describes TAVTbaseCluster
+   ClassDef(TAVTbaseCluster,6)                          // Describes TAVTbaseCluster
 };
 
 

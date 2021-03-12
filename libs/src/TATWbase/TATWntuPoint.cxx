@@ -188,10 +188,11 @@ TATWntuPoint::~TATWntuPoint()
 TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWhit* rowHit, double y, double dy, TATWhit* colHit, int mainLayer) {
 
 	// check on aorigin
-	TClonesArray &pixelArray = *m_listOfPoints;
-	TATWpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TATWpoint( x, dx, rowHit, y, dy, colHit, mainLayer);
+	TClonesArray &pointArray = *m_listOfPoints;
+	TATWpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TATWpoint( x, dx, rowHit, y, dy, colHit, mainLayer);
+   point->SetClusterIdx(pointArray.GetEntriesFast()-1);
 
-	return pixel;
+	return point;
 }
 
 //------------------------------------------+-----------------------------------

@@ -461,7 +461,7 @@ void TAIRalignM::LocalEquationX(TAIRcluster* cluster, Double_t* param, TAIRtrack
 {
    /// Define local equation for current track and cluster in x coor. measurement
    // set local derivatives   
-   Int_t planeNumber = cluster->GetPlaneNumber();
+   Int_t planeNumber = cluster->GetSensorIdx();
    TVector3 pos      = cluster->GetPositionG();
 
    SetLocalDerivative(0, fCosTheta);
@@ -482,7 +482,7 @@ void TAIRalignM::LocalEquationY(TAIRcluster* cluster, Double_t* param, TAIRtrack
 {
    /// Define local equation for current track and cluster in y coor. measurement
    // set local derivatives
-   Int_t planeNumber = cluster->GetPlaneNumber();
+   Int_t planeNumber = cluster->GetSensorIdx();
    TVector3 pos      = cluster->GetPositionG();
 
    SetLocalDerivative(0,-fSinTheta);

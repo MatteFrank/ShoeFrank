@@ -480,12 +480,12 @@ void TAFObaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       if (clus == 0x0) return;
       TVector3 pos = clus->GetPositionG();
       fInfoView->AddLine( Form("Cluster # %3d\n", idx) );
-      fInfoView->AddLine( Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetPlaneNumber()) );
+      fInfoView->AddLine( Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetSensorIdx()) );
       fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
 
       if (fConsoleButton->IsOn()) {
          cout << Form("Cluster # %3d\n", idx);
-         cout << Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetPlaneNumber());
+         cout << Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetSensorIdx());
          cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
       }
 
@@ -494,12 +494,12 @@ void TAFObaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
          if (clus == 0x0) return;
          TVector3 pos = clus->GetPositionG();
          fInfoView->AddLine( Form("Cluster # %3d\n", idx) );
-         fInfoView->AddLine( Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetPlaneNumber()) );
+         fInfoView->AddLine( Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetSensorIdx()) );
          fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
 
       if (fConsoleButton->IsOn()) {
          cout << Form("Cluster # %3d\n", idx);
-         cout << Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetPlaneNumber());
+         cout << Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetSensorIdx());
          cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
       }
 
@@ -594,12 +594,12 @@ void TAFObaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       for (Int_t i = 0; i < track->GetClustersN(); i++) {
          TAVTbaseCluster* clus = track->GetCluster(i);
          TVector3 posG = clus->GetPositionG();
-         fInfoView->AddLine( Form(" for plane %d\n", clus->GetPlaneNumber()));
+         fInfoView->AddLine( Form(" for plane %d\n", clus->GetSensorIdx()));
          fInfoView->AddLine( Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y()) );
          fInfoView->AddLine( Form(" with %d pixels\n", clus->GetPixelsN()));
 
          if (fConsoleButton->IsOn()) {
-            cout <<  Form(" for plane %d\n", clus->GetPlaneNumber());
+            cout <<  Form(" for plane %d\n", clus->GetSensorIdx());
             cout <<  Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y());
             cout <<  Form(" with %d pixels\n", clus->GetPixelsN());
          }

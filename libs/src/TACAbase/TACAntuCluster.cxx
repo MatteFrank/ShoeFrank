@@ -19,7 +19,6 @@ TACAcluster::TACAcluster()
    fPosErrorG(0., 0., 0.),
    fListOfHits(0x0),
    fIndexSeed(-1),
-   fNumber(-1),
    fCharge(0.),
    fIsValid(kFALSE)
 {
@@ -43,7 +42,6 @@ TACAcluster::TACAcluster(const TACAcluster& cluster)
    fPositionG(cluster.fPositionG),
    fPosErrorG(cluster.fPosErrorG),
    fIndexSeed(cluster.fIndexSeed),
-   fNumber(cluster.fNumber),
    fCharge(cluster.fCharge),
    fIsValid(cluster.fIsValid)
 {
@@ -196,7 +194,7 @@ TACAcluster* TACAntuCluster::NewCluster()
 {
    TClonesArray &clusterArray = *GetListOfClusters();
    TACAcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TACAcluster();
-   cluster->SetNumber(clusterArray.GetEntriesFast()-1);
+   cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
    
    return cluster;
 }
@@ -207,7 +205,7 @@ TACAcluster* TACAntuCluster::NewCluster(TACAcluster* clus)
 {
    TClonesArray &clusterArray = *GetListOfClusters();
    TACAcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TACAcluster(*clus);
-   cluster->SetNumber(clusterArray.GetEntriesFast()-1);
+   cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
 
    return cluster;
 }

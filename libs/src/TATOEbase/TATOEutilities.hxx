@@ -233,7 +233,7 @@ struct track_list
             
             return pseudo_layer{
                 std::move(c),
-                detector_m.layer_depth( cluster_h->GetPlaneNumber() ),
+                detector_m.layer_depth( cluster_h->GetSensorIdx() ),
                 detector_m.minimal_cut_value()
             };
         }
