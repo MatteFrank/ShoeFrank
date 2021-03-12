@@ -49,8 +49,6 @@ TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr,
 TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ)
 : TAGcluster(),
   fDevName(name),
-  fSensorIdx(-1),
-  fClusterIdx(-1),
   fPosition(pos),
   fPosError(posErr),
   fMomentum(mom),
