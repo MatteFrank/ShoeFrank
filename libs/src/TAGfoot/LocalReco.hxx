@@ -9,7 +9,7 @@
 
 #include "TASTactNtuHit.hxx"
 #include "TABMactVmeReader.hxx"
-#include "TABMactDatRaw.hxx"
+#include "TABMactNtuRaw.hxx"
 #include "TABMactNtuHit.hxx"
 
 #include "TAVTactVmeReader.hxx"
@@ -66,7 +66,7 @@ private:
    TASTactNtuHit*        fActNtuHitSt;  // action for ntu data
    
    TABMactVmeReader*     fActVmeReaderBm; // action for stand alone reader BM
-   TABMactDatRaw*        fActDatRawBm;
+   TABMactNtuRaw*        fActDatRawBm;
    TABMactNtuHit*        fActNtuHitBm;
    //   TAMSDactDatuRaw*      fActDatRawMsd;  // action for raw data
 

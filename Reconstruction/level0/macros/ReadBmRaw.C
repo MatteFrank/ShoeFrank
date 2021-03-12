@@ -32,7 +32,7 @@
 #include "TABMparConf.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
-#include "TABMactDatRaw.hxx"
+#include "TABMactNtuRaw.hxx"
 #include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
@@ -45,7 +45,7 @@ TAGactTreeWriter* outFile   = 0x0;
 
 TAGactDaqReader*  daqActReader = 0x0;
 TASTactDatRaw* stActDatRaw  = 0x0;
-TABMactDatRaw* bmActDatRaw  = 0x0;
+TABMactNtuRaw* bmActDatRaw  = 0x0;
 TABMactNtuHit* bmActNtuRaw  = 0x0;
 TABMactNtuTrack* bmActTrack = 0x0;
 
@@ -106,7 +106,7 @@ void FillBm(TString fExpName) {
    stActDatRaw  = new TASTactDatRaw("stActDatRaw", stDatRaw,bmDaq,stMap, fpParTimeSt);
    
    TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMntuRaw());
-   bmActDatRaw  = new TABMactDatRaw("bmActDatRaw", bmDatRaw, bmDaq, bmMap, bmConf, bmGeo,stDatRaw);
+   bmActDatRaw  = new TABMactNtuRaw("bmActDatRaw", bmDatRaw, bmDaq, bmMap, bmConf, bmGeo,stDatRaw);
 
    TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuHit());
    bmActNtuRaw  = new TABMactNtuHit("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);

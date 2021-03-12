@@ -27,7 +27,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 #include "TASTactDatRaw.hxx"
-#include "TABMactDatRaw.hxx"
+#include "TABMactNtuRaw.hxx"
 
 #endif
 
@@ -37,7 +37,7 @@ TAGactDaqReader*    daqActReader = 0x0;
 TAGdataDsc*         stDat     = 0x0;
 TAGdataDsc*         evDaq     = 0x0;
 TASTactDatRaw*      stActRaw  = 0x0;
-TABMactDatRaw*      bmActRaw  = 0x0;
+TABMactNtuRaw*      bmActRaw  = 0x0;
 
 void FillST()
 {
@@ -64,7 +64,7 @@ void FillBM()
    TAGdataDsc* bmDat = new TAGdataDsc("bmDat", new TABMntuRaw());
    daqActReader      = new TAGactDaqReader("daqActReader", evDaq);
 
-   bmActRaw  = new TABMactDatRaw("bmActRaw", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
+   bmActRaw  = new TABMactNtuRaw("bmActRaw", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
    bmActRaw->CreateHistogram();
 }
 

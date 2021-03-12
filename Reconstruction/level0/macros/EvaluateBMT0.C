@@ -39,7 +39,7 @@
 #include "TABMparConf.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
-#include "TABMactDatRaw.hxx"
+#include "TABMactNtuRaw.hxx"
 #include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
@@ -48,7 +48,7 @@
 #endif
 
 TAGactDaqReader*  daqActReader = 0x0;
-TABMactDatRaw* bmActDatRaw  = 0x0;
+TABMactNtuRaw* bmActDatRaw  = 0x0;
 TAGactWDreader*      wdActRaw  = 0x0;
 //~ TATWactNtuHit*      twActNtu  = 0x0;
 TASTactNtuHit*   stActNtuRaw  = 0x0;
@@ -149,7 +149,7 @@ void FillStBm(TString expName) {
    //~ TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTntuRaw());
    //~ stActDatRaw  = new TASTactDatRaw("stActDatRaw", stDatRaw,bmDaq,stMap, fpParTimeSt);
   TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMntuRaw());
-  bmActDatRaw  = new TABMactDatRaw("bmActDatRaw", bmDatRaw, twDaq, bmMap, bmConf, bmGeo,stNtuRaw);  
+  bmActDatRaw  = new TABMactNtuRaw("bmActDatRaw", bmDatRaw, twDaq, bmMap, bmConf, bmGeo,stNtuRaw);  
   
   return;
 }

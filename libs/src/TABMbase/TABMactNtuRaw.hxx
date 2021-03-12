@@ -1,9 +1,9 @@
-#ifndef _TABMactDatRaw_HXX
-#define _TABMactDatRaw_HXX
+#ifndef _TABMactNtuRaw_HXX
+#define _TABMactNtuRaw_HXX
 /*!
   \file
-  \version $Id: TABMactDatRaw.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
-  \brief   Declaration of TABMactDatRaw.
+  \version $Id: TABMactNtuRaw.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
+  \brief   Declaration of TABMactNtuRaw.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -26,22 +26,22 @@
 
 class TDCEvent;
 
-class TABMactDatRaw : public TAGaction {
+class TABMactNtuRaw : public TAGaction {
   public:
 
-    explicit        TABMactDatRaw(const char* name=0,
+    explicit        TABMactNtuRaw(const char* name=0,
                                   TAGdataDsc* dscdatraw=0,
                                   TAGdataDsc* dscdatdaq=0,
                                   TAGparaDsc* dscparmap=0,
                                   TAGparaDsc* dscparcal=0,
                                   TAGparaDsc* dscpargeo=0,
                                   TAGdataDsc* dsctimraw=0);
-    virtual         ~TABMactDatRaw();
+    virtual         ~TABMactNtuRaw();
 
     virtual  void   CreateHistogram();
     virtual Bool_t  Action();
 
-    ClassDef(TABMactDatRaw,0)
+    ClassDef(TABMactNtuRaw,0)
 
   private:
     TAGdataDsc*     fpDatRaw;		        // output data dsc

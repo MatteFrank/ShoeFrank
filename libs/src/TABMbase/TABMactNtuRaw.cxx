@@ -1,30 +1,30 @@
 /*!
   \file
-  \version $Id: TABMactDatRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
-  \brief   Implementation of TABMactDatRaw.
+  \version $Id: TABMactNtuRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+  \brief   Implementation of TABMactNtuRaw.
 */
 
 
-#include "TABMactDatRaw.hxx"
+#include "TABMactNtuRaw.hxx"
 
 /*!
-  \class TABMactDatRaw TABMactDatRaw.hxx "TABMactDatRaw.hxx"
+  \class TABMactNtuRaw TABMactNtuRaw.hxx "TABMactNtuRaw.hxx"
   \brief Get Beam Monitor raw data from DAQ. **
 */
 
-ClassImp(TABMactDatRaw);
+ClassImp(TABMactNtuRaw);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TABMactDatRaw::TABMactDatRaw(const char* name,
+TABMactNtuRaw::TABMactNtuRaw(const char* name,
                              TAGdataDsc* dscdatraw,
                              TAGdataDsc* dscdatdaq,
                              TAGparaDsc* dscparmap,
                              TAGparaDsc* dscparcal,
                              TAGparaDsc* dscpargeo,
                              TAGdataDsc* dsctimraw)
-  : TAGaction(name, "TABMactDatRaw - Unpack BM raw data"),
+  : TAGaction(name, "TABMactNtuRaw - Unpack BM raw data"),
     fpDatRaw(dscdatraw),
     fpDatDaq(dscdatdaq),
     fpParMap(dscparmap),
@@ -33,7 +33,7 @@ TABMactDatRaw::TABMactDatRaw(const char* name,
     fpTimRaw(dsctimraw)
 {
   if (FootDebugLevel(1))
-    cout<<"TABMactDatRaw::default constructor::Creating the Beam Monitor hit Ntuplizer"<<endl;
+    cout<<"TABMactNtuRaw::default constructor::Creating the Beam Monitor hit Ntuplizer"<<endl;
   AddDataOut(dscdatraw, "TABMntuRaw");
   AddPara(dscparmap, "TABMparMap");
   AddPara(dscparcal, "TABMparCal");
@@ -45,13 +45,13 @@ TABMactDatRaw::TABMactDatRaw(const char* name,
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TABMactDatRaw::~TABMactDatRaw()
+TABMactNtuRaw::~TABMactNtuRaw()
 {
 }
 
 //------------------------------------------+-----------------------------------
 
-void TABMactDatRaw::CreateHistogram(){
+void TABMactNtuRaw::CreateHistogram(){
 
   DeleteHistogram();
   TABMparMap*    p_parmap = (TABMparMap*)    fpParMap->Object();
@@ -78,7 +78,7 @@ void TABMactDatRaw::CreateHistogram(){
 
 
 //! Action.
-Bool_t TABMactDatRaw::Action() {
+Bool_t TABMactNtuRaw::Action() {
 
 
    TAGdaqEvent*   p_datdaq = (TAGdaqEvent*)  fpDatDaq->Object();
@@ -87,11 +87,11 @@ Bool_t TABMactDatRaw::Action() {
    Int_t nFragments = p_datdaq->GetFragmentsN();
 
   if(FootDebugLevel(1))
-    cout<<"TABMactDatRaw::Action():: I'm going to charge "<<nFragments<<" number of fragments"<<endl;
+    cout<<"TABMactNtuRaw::Action():: I'm going to charge "<<nFragments<<" number of fragments"<<endl;
 
   if(p_timraw->GetTriggerTime()<0.0001){//No start counter trigger time! --> No BM hits
     if(FootDebugLevel(1))
-      cout<<"TABMactDatRaw::Action():: No ST trigger time --> no BM measurements for this event"<<endl;
+      cout<<"TABMactNtuRaw::Action():: No ST trigger time --> no BM measurements for this event"<<endl;
     fpDatRaw->SetBit(kValid);
     return kTRUE;
   }
@@ -108,14 +108,14 @@ Bool_t TABMactDatRaw::Action() {
    fpDatRaw->SetBit(kValid);
 
   if(FootDebugLevel(2))
-    cout<<"TABMactDatRaw::Action():: done"<<endl;
+    cout<<"TABMactNtuRaw::Action():: done"<<endl;
 
    return kTRUE;
 }
 
 //------------------------------------------+-----------------------------------
 //! Action.
-Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
+Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
 
    TABMntuRaw*    p_datraw = (TABMntuRaw*)    fpDatRaw->Object();
    TABMparMap*    p_parmap = (TABMparMap*)    fpParMap->Object();
@@ -147,7 +147,7 @@ Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
     measurement=(Double_t) (evt->measurement.at(i) & 0x7ffff)/10.;
     channel=(evt->measurement.at(i)>>19) & 0x7f;
     if(channel>p_parmap->GetTdcMaxcha() || channel<0){
-      cout<<"TABMactDatRaw::ERROR!!!!!!!   channel="<<channel<<"  TDC maximum number of channel="<<p_parmap->GetTdcMaxcha()<<endl;
+      cout<<"TABMactNtuRaw::ERROR!!!!!!!   channel="<<channel<<"  TDC maximum number of channel="<<p_parmap->GetTdcMaxcha()<<endl;
       cout<<"Something nasty just happened!!! please check the BM .map configuration file and/or the input Decoded data"<<endl;
       p_datraw->AddDischarged();
       if(ValidHistogram())

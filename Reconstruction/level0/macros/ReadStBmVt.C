@@ -32,7 +32,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 #include "TASTactDatRaw.hxx"
-#include "TABMactDatRaw.hxx"
+#include "TABMactNtuRaw.hxx"
 #include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
@@ -58,7 +58,7 @@ TAGdataDsc*         stDat     = 0x0;
 TAGdataDsc*         evDaq     = 0x0;
 TAGdataDsc*         bmTrack   = 0x0;
 TASTactDatRaw*      stActDat  = 0x0;
-TABMactDatRaw*      bmActDat  = 0x0;
+TABMactNtuRaw*      bmActDat  = 0x0;
 TABMactNtuHit*      bmActNtu  = 0x0;
 TABMactNtuTrack*    bmActTrack  = 0x0;
 TAVTactNtuHit*      vtActRaw  = 0x0;
@@ -101,7 +101,7 @@ void FillBM()
                bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
 
 
-   bmActDat  = new TABMactDatRaw("bmActDat", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
+   bmActDat  = new TABMactNtuRaw("bmActDat", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
    bmActDat->CreateHistogram();
    
    bmActNtu = new TABMactNtuHit("bmActNtu", bmNtu, bmDat, bmGeo, bmConf);
