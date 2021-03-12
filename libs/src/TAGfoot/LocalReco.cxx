@@ -13,7 +13,7 @@
 #include "TACAntuHit.hxx"
 
 #include "TASTntuRaw.hxx"
-#include "TABMdatRaw.hxx"
+#include "TABMntuRaw.hxx"
 #include "TAMSDdatRaw.hxx"
 
 
@@ -69,7 +69,7 @@ void LocalReco::CreateRawAction()
    }
 
    if (GlobalPar::GetPar()->IncludeBM()) {
-      fpDatRawBm = new TAGdataDsc("bmDat", new TABMdatRaw());
+      fpDatRawBm = new TAGdataDsc("bmDat", new TABMntuRaw());
       fpNtuHitBm = new TAGdataDsc("bmNtu", new TABMntuHit());
       
       if (fgStdAloneFlag) {
@@ -293,7 +293,7 @@ void LocalReco::SetTreeBranches()
    
    if (GlobalPar::GetPar()->IncludeBM()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpDatRawBm, TABMdatRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpDatRawBm, TABMntuRaw::GetBranchName());
      fActEvtWriter->SetupElementBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
    }
    

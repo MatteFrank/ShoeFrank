@@ -34,7 +34,7 @@ TABMactNtuHit::TABMactNtuHit(const char* name,
   if (FootDebugLevel(1))
    cout<<"TABMactNtuHit::default constructor::Creating the Beam Monitor data Ntuplizer"<<endl;
   AddDataOut(dscnturaw, "TABMntuHit");
-  AddDataIn(dscdatraw, "TABMdatRaw");
+  AddDataIn(dscdatraw, "TABMntuRaw");
   AddPara(dscgeomap, "TABMparGeo");
   AddPara(dscparcon, "TABMparConf");
   AddPara(dscparcal, "TABMparCal");
@@ -117,7 +117,7 @@ void TABMactNtuHit::CreateHistogram(){
 
 Bool_t TABMactNtuHit::Action()
 {
-  TABMdatRaw* p_datraw = (TABMdatRaw*) fpDatRaw->Object();
+  TABMntuRaw* p_datraw = (TABMntuRaw*) fpDatRaw->Object();
   TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuRaw->Object();
   TABMparGeo* p_bmgeo = (TABMparGeo*) fpGeoMap->Object();
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();

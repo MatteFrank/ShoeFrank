@@ -10,7 +10,7 @@
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
-#include "TABMdatRaw.hxx"
+#include "TABMntuRaw.hxx"
 #include "TABMrawHit.hxx"
 #include "TASTntuHit.hxx"
 #include "TABMparGeo.hxx"

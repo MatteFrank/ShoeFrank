@@ -23,7 +23,7 @@ set( with_dictionnaries
    TABMparGeo
    TABMparMap
    TABMactNtuHit
-   TABMdatRaw
+   TABMntuRaw
    TABMrawHit
    TABMdigitizer   
    TABMactNtuHitMC

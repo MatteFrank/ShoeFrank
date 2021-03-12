@@ -34,7 +34,7 @@ TABMactDatRaw::TABMactDatRaw(const char* name,
 {
   if (FootDebugLevel(1))
     cout<<"TABMactDatRaw::default constructor::Creating the Beam Monitor hit Ntuplizer"<<endl;
-  AddDataOut(dscdatraw, "TABMdatRaw");
+  AddDataOut(dscdatraw, "TABMntuRaw");
   AddPara(dscparmap, "TABMparMap");
   AddPara(dscparcal, "TABMparCal");
   AddPara(dscpargeo, "TABMparGeo");
@@ -117,7 +117,7 @@ Bool_t TABMactDatRaw::Action() {
 //! Action.
 Bool_t TABMactDatRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
 
-   TABMdatRaw*    p_datraw = (TABMdatRaw*)    fpDatRaw->Object();
+   TABMntuRaw*    p_datraw = (TABMntuRaw*)    fpDatRaw->Object();
    TABMparMap*    p_parmap = (TABMparMap*)    fpParMap->Object();
    TABMparCal*    p_parcal = (TABMparCal*)    fpParCal->Object();
    TABMparGeo*    p_pargeo = (TABMparGeo*)    fpParGeo->Object();

@@ -30,7 +30,7 @@
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
-#include "TABMdatRaw.hxx"
+#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 #include "TABMactDatRaw.hxx"
 #include "TABMactNtuHit.hxx"
@@ -105,7 +105,7 @@ void FillBm(TString fExpName) {
    TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTntuRaw());
    stActDatRaw  = new TASTactDatRaw("stActDatRaw", stDatRaw,bmDaq,stMap, fpParTimeSt);
    
-   TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMdatRaw());
+   TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMntuRaw());
    bmActDatRaw  = new TABMactDatRaw("bmActDatRaw", bmDatRaw, bmDaq, bmMap, bmConf, bmGeo,stDatRaw);
 
    TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuHit());
@@ -118,7 +118,7 @@ void FillBm(TString fExpName) {
 
    cout<<"end of FillBm"<<endl;
 
-   outFile->SetupElementBranch(bmDatRaw, TABMdatRaw::GetBranchName());
+   outFile->SetupElementBranch(bmDatRaw, TABMntuRaw::GetBranchName());
    outFile->SetupElementBranch(bmNtuRaw, TABMntuHit::GetBranchName());
    outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
 }
@@ -189,7 +189,7 @@ void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242
    watch.Start();
    Booking(f_out);
    
-   TABMdatRaw* pbmdatraw;
+   TABMntuRaw* pbmdatraw;
    TABMntuHit* pbmnturaw;
    TABMntuTrack* pbmntutrack;
    TABMntuTrackTr* pbmntutracktr;   

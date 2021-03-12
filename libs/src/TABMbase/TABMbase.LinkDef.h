@@ -9,7 +9,7 @@
 #pragma link C++ class TABMparGeo+;
 #pragma link C++ class TABMparMap+;
 #pragma link C++ class TABMactNtuHit+;
-#pragma link C++ class TABMdatRaw+;
+#pragma link C++ class TABMntuRaw+;
 #pragma link C++ class TABMrawHit+;
 #pragma link C++ class TABMdigitizer+;
 #pragma link C++ class TABMactNtuHitMC+;

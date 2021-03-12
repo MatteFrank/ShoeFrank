@@ -40,7 +40,7 @@
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
-#include "TABMdatRaw.hxx"
+#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 //~ #include "TABMhit.hxx"
 #include "TABMntuTrack.hxx"
@@ -141,7 +141,7 @@ void FillBm(TString fExpName) {
   TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTntuRaw());
   stActDatRaw  = new TASTactDatRaw("stActDatRaw", stDatRaw,bmDaq,stMap, fpParTimeSt);
   
-  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMdatRaw());
+  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMntuRaw());
   bmActDatRaw  = new TABMactDatRaw("bmActDatRaw", bmDatRaw, bmDaq, bmMap, bmConf, bmGeo,stDatRaw);
   bmActDatRaw->CreateHistogram();
 
@@ -167,7 +167,7 @@ void FillBm(TString fExpName) {
   
   cout<<"end of FillBm"<<endl;
 
-  outFile->SetupElementBranch(bmDatRaw, TABMdatRaw::GetBranchName());
+  outFile->SetupElementBranch(bmDatRaw, TABMntuRaw::GetBranchName());
   outFile->SetupElementBranch(bmNtuRaw, TABMntuHit::GetBranchName());
   outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
   outFile->SetupElementBranch(vtNtu, "vtrh.");
@@ -255,7 +255,7 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
   
   Booking(f_out);
   
-  TABMdatRaw* pbmdatraw;
+  TABMntuRaw* pbmdatraw;
   TABMntuHit* pbmnturaw;
   TABMntuTrack* pbmntutrack;
   TABMntuTrackTr* pbmntutracktr;
@@ -275,7 +275,7 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
     //~ outFile->File()->cd();
     if(!tagr.NextEvent()) 
       break; 
-    //~ pbmdatraw = (TABMdatRaw*) (tagr.FindDataDsc(TABMdatRaw::GetBranchName(), "TABMdatRaw")->Object());
+    //~ pbmdatraw = (TABMntuRaw*) (tagr.FindDataDsc(TABMntuRaw::GetBranchName(), "TABMntuRaw")->Object());
     pbmnturaw = (TABMntuHit*) (tagr.FindDataDsc("bmNtuRaw", "TABMntuHit")->Object());
     pbmntutrack = (TABMntuTrack*) (tagr.FindDataDsc("bmTrack", "TABMntuTrack")->Object());
     pvtxntutrack = (TAVTntuTrack*) (tagr.FindDataDsc("vtTrck", "TAVTntuTrack")->Object());

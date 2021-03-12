@@ -37,7 +37,7 @@
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
-#include "TABMdatRaw.hxx"
+#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 #include "TABMactDatRaw.hxx"
 #include "TABMactNtuHit.hxx"
@@ -148,7 +148,7 @@ void FillStBm(TString expName) {
   //Bm TAGdataDsc
    //~ TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTntuRaw());
    //~ stActDatRaw  = new TASTactDatRaw("stActDatRaw", stDatRaw,bmDaq,stMap, fpParTimeSt);
-  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMdatRaw());
+  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMntuRaw());
   bmActDatRaw  = new TABMactDatRaw("bmActDatRaw", bmDatRaw, twDaq, bmMap, bmConf, bmGeo,stNtuRaw);  
   
   return;
@@ -316,7 +316,7 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
    TABMparConf* bmcon = (TABMparConf*)(tagr.FindParaDsc("bmConf","TABMparConf")->Object());
    TABMparMap* bmmap = (TABMparMap*)(tagr.FindParaDsc("bmMap","TABMparMap")->Object());
    TASTntuHit* stnturaw;
-   TABMdatRaw* pbmdatraw;
+   TABMntuRaw* pbmdatraw;
    TAGdaqEvent*   p_datdaq;
    int nFragments, channel, measurement;
    char tmp_char[200];
@@ -336,7 +336,7 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
         bmtrigger=-1000;
         sttrigger=-1000;
         p_datdaq = (TAGdaqEvent*)(tagr.FindDataDsc("twDaq","TAGdaqEvent")->Object());
-        pbmdatraw = (TABMdatRaw*)(tagr.FindDataDsc("bmDat", "TABMdatRaw")->Object());
+        pbmdatraw = (TABMntuRaw*)(tagr.FindDataDsc("bmDat", "TABMntuRaw")->Object());
         stnturaw = (TASTntuHit*)(tagr.FindDataDsc("stNtu", "TASTntuHit")->Object());
         nFragments = p_datdaq->GetFragmentsN();
         for (Int_t i = 0; i < nFragments; i++) {       

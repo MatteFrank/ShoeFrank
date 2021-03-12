@@ -23,7 +23,7 @@
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
 #include "TASTntuRaw.hxx"
-#include "TABMdatRaw.hxx"
+#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 #include "TABMactNtuHit.hxx"
 #include "TABMactVmeReader.hxx"
@@ -74,7 +74,7 @@ void FillBmVME(TString name, Int_t myexpcode) {
   parMap->FromFile(parFileName.Data(), geomap);
 
  
-  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDatRaw", new TABMdatRaw());
+  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDatRaw", new TABMntuRaw());
   bmActVmeReader  = new TABMactVmeReader("bmActVmeReader", bmDatRaw, bmMap, bmConf, bmGeo);
   bmActVmeReader->Open(name);
   bmActVmeReader->CreateHistogram();

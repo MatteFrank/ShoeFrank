@@ -14,7 +14,7 @@
 #include "TABMparMap.hxx"
 #include "TABMparCal.hxx"
 #include "TAGdaqEvent.hxx"
-#include "TABMdatRaw.hxx"
+#include "TABMntuRaw.hxx"
 #include "TABMrawHit.hxx"
 #include "TASTntuHit.hxx"
 #include "TAGactDaqReader.hxx"

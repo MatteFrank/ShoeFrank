@@ -26,7 +26,7 @@
 
 #include "TABMparGeo.hxx"
 #include "TABMparConf.hxx"
-#include "TABMdatRaw.hxx"
+#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
 
 #include "TAGdaqEvent.hxx"
@@ -96,7 +96,7 @@ void FillBM()
    parconf->FromFile("./config/TABMdetector.cfg");
 
    TAGparaDsc* bmMap   = new TAGparaDsc("bmMap", new TABMparMap());
-   TAGdataDsc* bmDat   = new TAGdataDsc("bmDat", new TABMdatRaw());
+   TAGdataDsc* bmDat   = new TAGdataDsc("bmDat", new TABMntuRaw());
    TAGdataDsc* bmNtu   = new TAGdataDsc("bmNtu", new TABMntuHit());
                bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
 

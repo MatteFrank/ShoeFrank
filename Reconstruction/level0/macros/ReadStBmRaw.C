@@ -22,7 +22,7 @@
 
 #include "TABMparGeo.hxx"
 #include "TABMparConf.hxx"
-#include "TABMdatRaw.hxx"
+#include "TABMntuRaw.hxx"
 
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
@@ -61,7 +61,7 @@ void FillBM()
    parconf->FromFile("./config/TABMdetector.cfg");
 
    TAGparaDsc* bmMap = new TAGparaDsc("bmMap", new TABMparMap());
-   TAGdataDsc* bmDat = new TAGdataDsc("bmDat", new TABMdatRaw());
+   TAGdataDsc* bmDat = new TAGdataDsc("bmDat", new TABMntuRaw());
    daqActReader      = new TAGactDaqReader("daqActReader", evDaq);
 
    bmActRaw  = new TABMactDatRaw("bmActRaw", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
