@@ -1,9 +1,9 @@
-#ifndef _TACAdatRaw_HXX
-#define _TACAdatRaw_HXX
+#ifndef _TACAntuRaw_HXX
+#define _TACAntuRaw_HXX
 /*!
   \file
-  \version $Id: TACAdatRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
-  \brief   Declaration of TACAdatRaw.
+  \version $Id: TACAntuRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+  \brief   Declaration of TACAntuRaw.
 */
 /*------------------------------------------+---------------------------------*/
 #include <vector>
@@ -38,11 +38,11 @@ public:
 
 //##############################################################################
 
-class TACAdatRaw : public TAGdata {
+class TACAntuRaw : public TAGdata {
 public:
 
-  TACAdatRaw();
-  virtual         ~TACAdatRaw();
+  TACAntuRaw();
+  virtual         ~TACAntuRaw();
 
   Int_t             GetHitsN() const;
   TACArawHit*       GetHit(Int_t i_ind);
@@ -67,7 +67,7 @@ private:
 private:
    static TString fgkBranchName;    // Branch name in TTree
   
-  ClassDef(TACAdatRaw,1);
+  ClassDef(TACAntuRaw,1);
 
 };
 

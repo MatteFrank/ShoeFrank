@@ -5,7 +5,7 @@
 #pragma link off all functions;
 
 
-#pragma link C++ class TACAdatRaw+;
+#pragma link C++ class TACAntuRaw+;
 #pragma link C++ class TACArawHit+;
 #pragma link C++ class TACAntuHit+;
 #pragma link C++ class TACAhit+;

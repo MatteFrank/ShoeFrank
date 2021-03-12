@@ -54,7 +54,7 @@ void LocalReco::CreateRawAction()
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeCA()) {
       fpDatRawSt   = new TAGdataDsc("stDat", new TASTntuRaw());
       fpDatRawTw   = new TAGdataDsc("twdDat", new TATWdatRaw());
-      fpDatRawCa   = new TAGdataDsc("caDat", new TACAdatRaw());
+      fpDatRawCa   = new TAGdataDsc("caDat", new TACAntuRaw());
       
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpParMapWD, fpParTimeWD);
       if (fFlagHisto)

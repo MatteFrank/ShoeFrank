@@ -11,7 +11,7 @@
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
 #include "TACAparGeo.hxx"
-#include "TACAdatRaw.hxx"
+#include "TACAntuRaw.hxx"
 #include "TACAntuHit.hxx"
 
 class TACAactNtuHit : public TAGaction {

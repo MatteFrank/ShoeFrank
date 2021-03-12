@@ -29,7 +29,7 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
     fpParMap(p_parmap),
     fpParCal(p_parcal)
 {
-  AddDataIn(p_datraw, "TACAdatRaw");
+  AddDataIn(p_datraw, "TACAntuRaw");
   AddDataOut(p_nturaw, "TACAntuHit");
 }
 
@@ -44,7 +44,7 @@ TACAactNtuHit::~TACAactNtuHit()
 
 Bool_t TACAactNtuHit::Action() {
 
-   TACAdatRaw*   p_datraw = (TACAdatRaw*) fpDatRaw->Object();
+   TACAntuRaw*   p_datraw = (TACAntuRaw*) fpDatRaw->Object();
    TACAntuHit*   p_nturaw = (TACAntuHit*) fpNtuRaw->Object();
    TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
    // TACAparCal*   p_parcal = (TACAparCal*) fpParCal->Object();

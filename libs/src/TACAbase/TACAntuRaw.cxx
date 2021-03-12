@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TACAdatRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
-  \brief   Implementation of TACAdatRaw.
+  \version $Id: TACAntuRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \brief   Implementation of TACAntuRaw.
 */
 
 #include <string.h>
@@ -10,18 +10,18 @@
 using namespace std;
 #include <algorithm>
 #include "TString.h"
-#include "TACAdatRaw.hxx"
+#include "TACAntuRaw.hxx"
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TF1.h"
 /*!
-  \class TACAdatRaw TACAdatRaw.hxx "TACAdatRaw.hxx"
+  \class TACAntuRaw TACAntuRaw.hxx "TACAntuRaw.hxx"
   \brief Container for dat raw ntu. **
 */
 
 ClassImp(TACArawHit);
 
-TString TACAdatRaw::fgkBranchName   = "cadat.";
+TString TACAntuRaw::fgkBranchName   = "cadat.";
 
 
 //------------------------------------------+-----------------------------------
@@ -83,18 +83,18 @@ double TACArawHit::ComputePedestal(TWaveformContainer *w){
 
 
 
-Int_t TACAdatRaw::GetHitsN() const
+Int_t TACAntuRaw::GetHitsN() const
 {
   return fListOfHits->GetEntries();
 }
 
 //##############################################################################
 
-ClassImp(TACAdatRaw);
+ClassImp(TACAntuRaw);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TACAdatRaw::TACAdatRaw()
+TACAntuRaw::TACAntuRaw()
 : TAGdata(),
   fHistN(0),
   fListOfHits(0)
@@ -105,14 +105,14 @@ TACAdatRaw::TACAdatRaw()
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TACAdatRaw::~TACAdatRaw() {
+TACAntuRaw::~TACAntuRaw() {
   if(fListOfHits)delete fListOfHits;
 }
 
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 
-void TACAdatRaw::SetupClones()
+void TACAntuRaw::SetupClones()
 {
   if (!fListOfHits) fListOfHits = new TClonesArray("TACArawHit");
 }
@@ -121,7 +121,7 @@ void TACAdatRaw::SetupClones()
 //------------------------------------------+-----------------------------------
 //! Clear event.
 
-void TACAdatRaw::Clear(Option_t*){
+void TACAntuRaw::Clear(Option_t*){
   TAGdata::Clear();
   fHistN = 0;
 
@@ -132,20 +132,20 @@ void TACAdatRaw::Clear(Option_t*){
 
 //-----------------------------------------------------------------------------
 //! access to the hit
-TACArawHit* TACAdatRaw::GetHit(Int_t i){
+TACArawHit* TACAntuRaw::GetHit(Int_t i){
   return (TACArawHit*) ((*fListOfHits)[i]);;
 }
 
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
-const TACArawHit* TACAdatRaw::GetHit(Int_t i) const{
+const TACArawHit* TACAntuRaw::GetHit(Int_t i) const{
   return (const TACArawHit*) ((*fListOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! New hit
-void TACAdatRaw::NewHit(TWaveformContainer *W){
+void TACAntuRaw::NewHit(TWaveformContainer *W){
   
   TClonesArray &pixelArray = *fListOfHits;
   TACArawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TACArawHit(W);
@@ -154,9 +154,9 @@ void TACAdatRaw::NewHit(TWaveformContainer *W){
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
-void TACAdatRaw::ToStream(ostream& os, Option_t* option) const
+void TACAntuRaw::ToStream(ostream& os, Option_t* option) const
 {
-  os << "TACAdatRaw " << GetName()
+  os << "TACAntuRaw " << GetName()
 	 << " fHistN"    << fHistN
      << endl;
 }
