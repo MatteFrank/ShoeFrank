@@ -77,6 +77,7 @@ int main (int argc, char *argv[])  {
    if(hit) {
       locRec->EnableTree();
       locRec->EnableSaveHits();
+
    }
    
    if (trk)

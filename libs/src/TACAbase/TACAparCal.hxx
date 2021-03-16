@@ -1,5 +1,5 @@
-#ifndef TACACALIBRATIONMAP_H
-#define TACACALIBRATIONMAP_H
+#ifndef _TACAparCal_HXX
+#define _TACAparCal_HXX
 #include <string>
 #include <map>
 #include <TSystem.h>
@@ -8,6 +8,8 @@
 #include "TAGparTools.hxx"
 #include "TACAparGeo.hxx"
 #include "TAGparaDsc.hxx"
+
+#include "TACAcalibrationMap.hxx"
 
 using namespace std;
 typedef std::map<Int_t,std::vector<Double_t> > TCalibrationMapType;
@@ -22,11 +24,19 @@ private:
   vector<bool> fStatusCrys;
   vector<float> fStatusEmin;
   map<int, pair<int, int> > fStatusCrysHwId;
+
+  TACAcalibrationMap *fMapCal;
   
 public:
   TACAparCal();
+  virtual ~TACAparCal();
+
+  // Calibration
+  inline TACAcalibrationMap* getCalibrationMap() {return fMapCal;}
+
   Bool_t LoadEnergyCalibrationMap(TString Filename);
   Bool_t LoadTofCalibrationMap(TString Filename);
+  Bool_t FromCalibTempFile(const TString& Filename);
   
   Double_t GetElossParameter(Int_t crystalId, UInt_t ParameterNumber);
   Double_t GetTofParameter(Int_t crystalId, UInt_t ParameterNumber);
