@@ -74,6 +74,7 @@ public:
   Double_t EvaluateChi2(const double *params);      //adopted in minuit2 to calculate the track chi2 with the selected hits
   Bool_t ComputeDataAll();                          //after the reconstruction, calculate the residuals, chi2 for all the hits
   void CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack> &xtracktr, TABMntuTrack* p_ntutrk); //combine the track of both views
+  void FitWriteCalib(TString bmCalibFile);//Fit the calibration plots and writhe the output 
 
   //not used methods
   void SaveLegpol();                                // extra method adopted to save fLegPolSum in a different file,
@@ -123,6 +124,10 @@ public:
   TH1F*            fpTrackSep;
   TH1F*            fpParRes;
   TH1F*            fpParSTrel;
+  TH1F*            fpParNewSTrel;
+  TH1F*            fpParNewTimeRes;
+  TH1F*            fpParNewDistRes;
+  std::vector<TH1F*> fpResTimeBin; //for the STREL calibration
 
 };
 
