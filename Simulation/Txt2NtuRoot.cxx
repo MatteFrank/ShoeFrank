@@ -419,7 +419,7 @@ int main(int argc, char *argv[])
                if (regFlag) {
                   event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
                                   TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
-                                  TVector3(eve.CROSSy[jj],eve.CROSSz[jj],eve.CROSSpx[jj]),
+                                  TVector3(eve.CROSSpx[jj],eve.CROSSpy[jj],eve.CROSSpz[jj]),
                                   eve.CROSSm[jj],eve.CROSSch[jj],eve.CROSSt[jj]);
                }
                

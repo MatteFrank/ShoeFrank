@@ -775,7 +775,7 @@ int KFitter::UploadClusMSD() {
       TVector3 prova = m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPositionG() );
 
       if (m_debug > 1){
-        cout << "in clusMSD check plane number " << clus->GetPlaneNumber() << " and view " << clus->GetPlaneView() << endl;
+        cout << "in clusMSD check plane number " << clus->GetSensorIdx() << " and view " << clus->GetPlaneView() << endl;
         prova.Print();
 
     }
@@ -1909,7 +1909,7 @@ void KFitter::Prepare4Vertex( TAVTcluster* clus, int track_ID, int iHit ) {
   }
 
   PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, m_detectorID_map["VT"], iHit, nullptr );
-  hit->setPlane(m_detectorPlanes[clus->GetPlaneNumber()], clus->GetPlaneNumber());
+  hit->setPlane(m_detectorPlanes[clus->GetSensorIdx()], clus->GetSensorIdx());
   m_hitCollectionToFit_dataLike[ track_ID ].push_back( hit );
 
   // }
@@ -1971,7 +1971,7 @@ void KFitter::Prepare4Vertex() {
     // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
     //AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["VT"], i, nullptr );
     PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, m_detectorID_map["VT"], i, nullptr );
-    hit->setPlane(m_detectorPlanes[p_hit->GetPlaneNumber()], p_hit->GetPlaneNumber());
+    hit->setPlane(m_detectorPlanes[p_hit->GetSensorIdx()], p_hit->GetSensorIdx());
     m_allHitsInMeasurementFormat.push_back(hit);
 
   }
@@ -2050,7 +2050,7 @@ void KFitter::Prepare4InnerTracker() {
     hitPos.Print();
 
     int tempPlane = 0;
-    int planeNumber = p_hit->GetPlaneNumber();
+    int planeNumber = p_hit->GetSensorIdx();
 
     if ( planeNumber > -1 &&  planeNumber < 4 )
     tempPlane = 4;
@@ -2220,7 +2220,7 @@ void KFitter::Prepare4Strip() {
     // nullptr is a TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
     //AbsMeasurement* hit = new SpacepointMeasurement(hitCoords, hitCov, m_detectorID_map["MSD"], i, nullptr );
     PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, m_detectorID_map["MSD"], i, nullptr );
-    hit->setPlane(m_detectorPlanes[p_hit->GetPlaneNumber()+12], p_hit->GetPlaneNumber()+12);
+    hit->setPlane(m_detectorPlanes[p_hit->GetSensorIdx()+12], p_hit->GetSensorIdx()+12);
     if (isYView) hit->setStripV();
     m_allHitsInMeasurementFormat.push_back(hit);
 
