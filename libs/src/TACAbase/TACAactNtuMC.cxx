@@ -55,7 +55,7 @@ void TACAactNtuMC::CreateHistogram()
    DeleteHistogram();
    
    TACAparGeo* parGeo   = (TACAparGeo*) fpGeoMap->Object();
-   TAGparGeo* tagParGeo = (TAGparGeo*)  fpGeoMapG->Object();;
+   TAGparGeo* tagParGeo = (TAGparGeo*)  fpGeoMapG->Object();
 
    TGeoElementTable table;
    table.BuildDefaultElements();

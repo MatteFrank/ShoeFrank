@@ -8,6 +8,7 @@
 #include "TAGparTools.hxx"
 #include "TACAparGeo.hxx"
 #include "TACAparMap.hxx"
+#include "TAGaction.hxx"
 
 typedef std::map<Int_t,std::vector<Double_t> > TCalibrationMapType;
 
@@ -18,11 +19,12 @@ private:
 
   TCalibrationMapType fCalibTemperatureCry;   // map for temperature calibration per cry ID
 
-  TACAparMap *fCalMap;
+  TACAparMap *fpCalMap;
+  // TAGparaDsc *fpParMap;
   
 
 public:
-  TACAcalibrationMap();
+  TACAcalibrationMap(TACAparMap* p_parmap);
     
   void LoadCryTemperatureCalibrationMap(std::string Filename);
   

@@ -29,13 +29,15 @@ public:
     void            Clear(Option_t* opt="");
 
     Int_t           GetCrystalId(Int_t boardId, Int_t channelId);
-    Int_t           GetCrystalsN() {return nCrystals;}
+    // Int_t           GetCrystalsN() {return nCrystals;}
+    Int_t           GetCrystalsN() const {return nCrys;}
     Int_t           GetBoardId(Int_t cryId) {return fBoardId[cryId]; }
     Int_t           GetChannelId(Int_t cryId) {return fChannelId[cryId]; }
     Int_t           GetModuleId(Int_t cryId) {return fModuleId[cryId]; }
 
 private:
-  Int_t nCrystals;
+  // Int_t nCrystals;
+  Int_t nCrys;
   map< pair<int, int>, int > fCrysId;
   vector<Int_t> fModuleId;
   vector<Int_t> fBoardId;
