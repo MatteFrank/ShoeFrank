@@ -45,19 +45,20 @@ int main (int argc, char *argv[])  {
   TApplication::CreateApplication();
   GlobalPar::Instance(exp);
   GlobalPar::GetPar()->Print();
+  vector<TF1*> strelvec; 
+  vector<TF1*> resovec; 
+  TString plotname;
 
-  //Whatever it is we're ONLY going to calibrate BM!
   for(Int_t currite=1;currite<=nIte;currite++){
   
     TString rootout=preout;
     TString txtout=preout;
     TString end = Form("_%s_%d_ite_%d.root",exp.Data(),runNb,currite);
     rootout+=end;
-    end = Form("_%s_%d_ite_%d.txt",exp.Data(),runNb,currite);
+    end = Form("_%s_%d_ite.txt",exp.Data(),runNb);
     txtout+=end;
 
     BaseReco* locRec;
-     
     
     if(isMC==kTRUE){
       locRec = new LocalRecoNtuMC(exp, runNb, in, rootout);
@@ -88,15 +89,55 @@ int main (int argc, char *argv[])  {
     TStopwatch watch;
     watch.Start();    
     locRec->BeforeEventLoop();
-    locRec->LoopEvent(nTotEv);
-    TABMactNtuTrack *p_actntutrack=(TABMactNtuTrack*)gTAGroot->FindAction("bmActTrack");
-    p_actntutrack->FitWriteCalib(txtout);
-    locRec->AfterEventLoop();
-    watch.Print();
-    delete locRec;
+    TABMparConf* p_bmcon = (TABMparConf*) (gTAGroot->FindParaDsc("bmConf", "TABMparConf")->Object()); 
+    TABMparCal*  p_bmcal = (TABMparCal*) (gTAGroot->FindParaDsc("bmCal", "TABMparCal")->Object()); 
     
+    if(currite>1){
+      p_bmcal->SetResoFunc(resovec.back());
+      p_bmcal->SetSTrelFunc(strelvec.back());
+    }
+    
+    locRec->LoopEvent(nTotEv);
+    plotname = Form("BMNewStrelFunc_%d",currite);
+    TF1 *newstrel=new TF1(plotname.Data(),"pol4",0.,p_bmcon->GetHitTimeCut());
+    plotname = Form("BMNewResoFunc_%d",currite);
+    TF1 *resofunc=new TF1("BMNewResoFunc","pol10",0.,0.8);
+    Double_t meanTimeReso;
+    Double_t meanDistReso;
+    TABMactNtuTrack *p_actntutrack=(TABMactNtuTrack*)gTAGroot->FindAction("bmActTrack");
+    
+    if(!p_actntutrack->ValidHistogram()){
+      cout<<"ERROR!!! p_actntutrack->ValidHistogram() not true!!! the program will be ended"<<endl;
+      return 0;
+    }
+        
+    p_actntutrack->FitWriteCalib(newstrel, resofunc, meanTimeReso, meanDistReso);
+
+    //printout
+    ofstream outfile;
+    outfile.open(txtout.Data(),ios::app);
+    outfile<<"BM_strel_calibration: "<<in.Data()<<"   iteration: "<<currite<<"/"<<nIte<<endl;
+    outfile<<"mean_spatialres_time: "<<meanTimeReso<<"  mean_spatialres_dist: "<<meanDistReso<<endl;
+    outfile<<"Resolution_function:  "<<resofunc->GetFormula()->GetExpFormula().Data()<<endl;
+    outfile<<"Resolution_number_of_parameters:  "<<resofunc->GetNpar()<<endl;
+    for(Int_t i=0;i<resofunc->GetNpar();i++)
+      outfile<<resofunc->GetParameter(i)<<"   ";
+    outfile<<endl;
+    outfile<<"STrel_function:  "<<newstrel->GetFormula()->GetExpFormula().Data()<<endl;
+    outfile<<"STrel_number_of_parameters:  "<<newstrel->GetNpar()<<endl;
+    for(Int_t i=0;i<newstrel->GetNpar();i++)
+      outfile<<newstrel->GetParameter(i)<<"   ";
+    outfile<<endl<<endl;    
+    outfile.close(); 
+    
+    locRec->AfterEventLoop();
+    resovec.push_back(resofunc);
+    strelvec.push_back(newstrel);
+    watch.Print();
     cout<<"Bm strel calibration done; iteration:"<<currite<<"/"<<nIte<<endl;
     cout<<"root output file="<<rootout.Data()<<"    txt output file="<<txtout.Data()<<endl;
+    cout<<"mean_spatialres_time="<<meanTimeReso<<"  mean_spatialres_dist="<<meanDistReso<<endl<<endl<<endl;
+    delete locRec;
     
   } //end of iteration loop
 

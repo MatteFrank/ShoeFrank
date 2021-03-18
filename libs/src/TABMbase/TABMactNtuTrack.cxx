@@ -57,6 +57,7 @@ TABMactNtuTrack::~TABMactNtuTrack(){
 delete fpTmpTrack;
 delete fpMinimizer;
 delete fpFunctor;
+delete fLegPolSum;
 }
 
 
@@ -66,7 +67,7 @@ void TABMactNtuTrack::CreateHistogram()
 {
   DeleteHistogram();
   
-  fpResTot = new TH2F("bmTrackResidual","Residual vs Rdrift; Residual [cm]; Measured rdrift [cm]", 6000, -0.3, 0.3,250 , 0., 1.);
+  fpResTot = new TH2F("bmTrackResidual","Residual vs Rdrift; Residual [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
   AddHistogram(fpResTot);
   fpHisMap = new TH2F("bmTrackTargetMap","BM - Position of a single track event at target center", 250, -3., 3.,250 , -3, 3);
   AddHistogram(fpHisMap);
@@ -124,18 +125,31 @@ void TABMactNtuTrack::CreateHistogram()
   //STREL calibration
   if(GlobalPar::GetPar()->CalibBM()){
     Int_t nbin=(int)(p_bmcon->GetHitTimeCut()/10.);
+    fpResTimeTot = new TH2F("bmTrackTimeResidual","Residual vs Time; Residual [cm]; Time [ns]", 600, -0.3, 0.3,nbin, 0., p_bmcon->GetHitTimeCut());
+    AddHistogram(fpResTimeTot);
     fpParNewSTrel = new TH1F("bmParNewSTrel","New space time relations; time [ns]; Space [cm]", nbin, 0, p_bmcon->GetHitTimeCut());
     AddHistogram(fpParNewSTrel);
     fpParNewTimeRes = new TH1F("bmParNewTimeRes","New resolution distribution; time [ns]; Resolution [cm]", nbin, 0, p_bmcon->GetHitTimeCut());
     AddHistogram(fpParNewTimeRes);
-    fpParNewDistRes = new TH1F("bmParNewDistRes","New resolution distribution; Drift distance [cm]; Resolution [cm]", 80, 0., 0.8);
+    fpNewStrelDiff = new TH1F("bmStrelDiff","Differences between old and new strel; Time [ns]; New-old strel [cm]", nbin, 0., p_bmcon->GetHitTimeCut());
+    AddHistogram(fpNewStrelDiff);
+    fpNewResoDistDiff = new TH1F("bmResDistDiff","Differences between old and new resolution; Drift distance [cm]; New-old Spatial resolution [cm]", 100, 0., 1.);
+    AddHistogram(fpNewResoDistDiff);
+    fpParNewDistRes = new TH1D("bmParNewDistRes","New resolution distribution; Drift distance [cm]; Resolution [cm]", 100, 0., 1.);
     AddHistogram(fpParNewDistRes);
     TH1F *RawResPlot;
     for(Int_t i=0;i<nbin;i++){
       TString title="bmTrackResTime_";
       title+=i;
-      RawResPlot=new TH1F( title.Data(), "Residual;Residual [cm]; Number of hits", 400, -0.1, 0.1);
+      RawResPlot=new TH1F( title.Data(), "Residual;Residual [cm]; Number of hits", 600, -0.3, 0.3);
       fpResTimeBin.push_back(RawResPlot);
+      AddHistogram(RawResPlot);
+    }   
+    for(Int_t i=0;i<100;i++){
+      TString title="bmTrackResDist_";
+      title+=i;
+      RawResPlot=new TH1F( title.Data(), "Residual;Residual [cm]; Number of hits", 600, -0.3, 0.3);
+      fpResDistBin.push_back(RawResPlot);
       AddHistogram(RawResPlot);
     }   
   } 
@@ -328,8 +342,13 @@ Bool_t TABMactNtuTrack::Action()
       TABMntuHit* p_hit=p_nturaw->GetHit(i);
       if(p_hit->GetIsSelected()>0){
         fpResTot->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
-        if(GlobalPar::GetPar()->CalibBM())
-          fpResTimeBin.at((int)(p_hit->GetTdrift()/10.))->Fill(p_hit->GetResidual());        
+        if(GlobalPar::GetPar()->CalibBM()){
+          fpResTimeTot->Fill(p_hit->GetResidual(),p_hit->GetTdrift());
+          if((int)(p_hit->GetTdrift()/10.)<fpResTimeBin.size())
+            fpResTimeBin.at((int)(p_hit->GetTdrift()/10.))->Fill(p_hit->GetResidual());  
+          if((int)(p_hit->GetRdrift()*100)<fpResDistBin.size())
+            fpResDistBin.at((int)(p_hit->GetRdrift()*100))->Fill(p_hit->GetResidual());
+        }      
       }
       if(p_hit->GetIsSelected()>0 && p_hit->GetIsFake()==0){
         fpHisTrackFakeHit->Fill(0);
@@ -677,16 +696,54 @@ void TABMactNtuTrack::CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack
   return;
 }
 
-void TABMactNtuTrack::FitWriteCalib(TString bmCalibFile){
+void TABMactNtuTrack::FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &meanTimeReso, Double_t &meanDistReso){
+
   TF1* gaus=new TF1("gaus","gaus",-0.1,0.1);
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
   TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
+
+  //strel evaluation
   for(Int_t i=0;i<fpResTimeBin.size();i++){
-    gaus->SetParameters(fpResTimeBin.at(i)->GetEntries(),fpResTimeBin.at(i)->GetMean(),fpResTimeBin.at(i)->GetStdDev());
-    fpResTimeBin.at(i)->Fit("gaus","QR+");
-    fpParNewSTrel->SetBinContent(i+1,p_bmcal->STrelEval(p_bmcon->GetHitTimeCut()/10.*(i+0.5))+gaus->GetParameter(1));
-    fpParNewTimeRes->SetBinContent(i+1,gaus->GetParameter(2));
+    if(fpResTimeBin.at(i)->GetEntries()>300){
+      gaus->SetParameters(fpResTimeBin.at(i)->GetEntries(),fpResTimeBin.at(i)->GetMean(),fpResTimeBin.at(i)->GetStdDev());
+      fpResTimeBin.at(i)->Fit(gaus,"QR+");
+      fpParNewSTrel->SetBinContent(i+1,p_bmcal->STrelEval(fpParNewSTrel->GetXaxis()->GetBinCenter(i+1))+gaus->GetParameter(1));
+      fpParNewTimeRes->SetBinContent(i+1,gaus->GetParameter(2));
+      fpNewStrelDiff->SetBinContent(i+1,gaus->GetParameter(1));
+    }else{
+      fpParNewSTrel->SetBinContent(i+1,p_bmcal->STrelEval(fpParNewSTrel->GetXaxis()->GetBinCenter(i+1)));
+      fpParNewTimeRes->SetBinContent(i+1,p_bmcal->ResoEval(p_bmcal->STrelEval(fpParNewTimeRes->GetXaxis()->GetBinCenter(i+1))));
+      fpNewStrelDiff->SetBinContent(i+1,0.);
+    }
   }
+  TH1D* p_ResProj=(TH1D*)fpResTimeTot->ProjectionX();
+  gaus->SetParameters(p_ResProj->GetEntries(),p_ResProj->GetMean(),p_ResProj->GetStdDev());
+  p_ResProj->Fit(gaus,"QR+");
+  meanTimeReso=gaus->GetParameter(2);
+  
+  //Spatial resolution evaluation
+  for(Int_t i=0;i<fpResDistBin.size();i++){
+    if(fpResDistBin.at(i)->GetEntries()>300){
+      gaus->SetParameters(fpResDistBin.at(i)->GetEntries(),fpResDistBin.at(i)->GetMean(),fpResDistBin.at(i)->GetStdDev());
+      fpResDistBin.at(i)->Fit(gaus,"QR+");
+      fpParNewDistRes->SetBinContent(i+1,gaus->GetParameter(2));
+      fpNewResoDistDiff->SetBinContent(i+1,p_bmcal->ResoEval(fpParNewDistRes->GetXaxis()->GetBinCenter(i+1))-gaus->GetParameter(2));
+    }else{
+      fpParNewDistRes->SetBinContent(i+1,p_bmcal->ResoEval(fpParNewDistRes->GetXaxis()->GetBinCenter(i+1)));
+      fpNewResoDistDiff->SetBinContent(i+1,0.);
+    }
+  }
+  p_ResProj=(TH1D*)fpResTot->ProjectionX();
+  gaus->SetParameters(p_ResProj->GetEntries(),p_ResProj->GetMean(),p_ResProj->GetStdDev());
+  p_ResProj->Fit(gaus,"QR+");
+  meanDistReso=gaus->GetParameter(2);
+  
+  //fit the new strel and spatial resolutions
+  newstrel->FixParameter(0,0.);
+  fpParNewSTrel->Fit(newstrel,"QBR+");
+  fpParNewDistRes->Fit(resofunc,"QR+");
 
 return;
 }
+
+  

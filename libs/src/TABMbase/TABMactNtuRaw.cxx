@@ -89,7 +89,7 @@ void TABMactNtuRaw::CreateHistogram(){
   AddHistogram(fpHisHitYzviewDist);
   fpHisRdrift = new TH1F( "bmRawHitRdrift", "Rdrift; Rdrift [cm]; numevent", 100, 0., 1.);
   AddHistogram(fpHisRdrift);
-  fpHisTdrift = new TH1F( "bmRawHitTdrift", "Tdrift; Tdrift [s]; numevent", 400, 0., 400.);
+  fpHisTdrift = new TH1F( "bmRawHitTdrift", "Tdrift; Tdrift [ns]; numevent", 400, 0., 400.);
   AddHistogram(fpHisTdrift);
   fpHisDiscAccept=new TH1I( "bmRawHitAccDisc", "Number of hits accepted/discharged in the time cut; -1=discharged 1=accepted; Events", 3, -1.5, 1.5);
   AddHistogram(fpHisDiscAccept);
