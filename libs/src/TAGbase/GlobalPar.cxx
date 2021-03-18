@@ -63,6 +63,7 @@ GlobalPar::GlobalPar( const TString expName )
     m_verFLUKA = false;
 
     m_doCalibTW = false;
+    m_doCalibBM = false;
     ReadParamFile();
 }
 

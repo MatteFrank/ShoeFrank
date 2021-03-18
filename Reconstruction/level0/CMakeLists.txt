@@ -90,9 +90,17 @@ install(TARGETS DecodeMC DESTINATION bin)
 add_executable(CalibrateTof CalibrateTof.cc)
 #
 target_link_libraries(CalibrateTof ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
-
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS CalibrateTof DESTINATION bin)
-
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(CalibrateBm CalibrateBm.cc)
+#
+target_link_libraries(CalibrateBm ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS CalibrateBm DESTINATION bin)
