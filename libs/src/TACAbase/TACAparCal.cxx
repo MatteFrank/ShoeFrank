@@ -12,11 +12,42 @@ TString TACAparCal::fgkCrysStatus = "./config/TACACrysMapStatus.map";
 TACAparCal::TACAparCal()
 : TAGparTools()
 {
+  // Standard constructor
+  fMapCal = new TACAcalibrationMap();
   fParGeo = (TACAparGeo*)gTAGroot->FindParaDsc(TACAparGeo::GetDefParaName(), "TACAparGeo")->Object();
 }
 
-//_____________________________________________________________________
 
+//------------------------------------------+-----------------------------------
+TACAparCal::~TACAparCal()
+{
+  if (fMapCal!=nullptr)
+  {
+    free (fMapCal);
+  }
+}
+
+//------------------------------------------+-----------------------------------
+Bool_t TACAparCal::FromCalibTempFile(const TString& name)
+{
+
+  Clear();
+
+  TString name_calib_temp_cry = name;
+  
+  gSystem->ExpandPathName(name_calib_temp_cry);
+  // fMapCal->LoadCalibrationMap(name_exp.Data());
+  
+
+  fMapCal->LoadCryTemperatureCalibrationMap(name_calib_temp_cry.Data());
+  
+  Info("FromCalibFile()", "Open file %s for calibration\n", name_calib_temp_cry.Data());
+
+  return kFALSE;    
+}  
+
+
+//_________________________________________
 Bool_t TACAparCal::LoadEnergyCalibrationMap(TString name)
 {
   if (!Open(name)) {
