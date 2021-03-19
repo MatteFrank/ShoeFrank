@@ -6,10 +6,11 @@
 
 ClassImp(TACAcalibrationMap)
 
-TACAcalibrationMap::TACAcalibrationMap()
-: TAGobject()
+TACAcalibrationMap::TACAcalibrationMap(TACAparMap* p_parmap)
+: TAGobject(),
+fpCalMap(p_parmap)
 {
-  fCalMap = new TACAparMap();
+  // fCalMap = new TACAparMap();
 }
 
 //_____________________________________________________________________
@@ -25,8 +26,8 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
 
   ifstream fin;
   fin.open(FileName,std::ifstream::in);
-
-  Int_t nCrystals = fCalMap->GetCrystalsN();
+  
+  Int_t nCrystals = fpCalMap->GetCrystalsN();
   cout << "nCrystals: " << nCrystals << endl;
   
   Int_t cryId[nCrystals];  // Id of crystal
@@ -67,7 +68,9 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
       fCalibTemperatureCry[cryId[i]].push_back(temp[i]);
 
       if(FootDebugLevel(1))
-  cout<<"Crystal ID: "<<cryId[i]<<" Temperature: "<<temp[i]<<endl;
+        cout<<"Crystal ID: "<<cryId[i]<<" Temperature: "<<temp[i]<<endl;
+
+    // cout<<"Crystal ID: "<<cryId[i]<<" Temperature: "<<temp[i]<<endl;
     
   }
 

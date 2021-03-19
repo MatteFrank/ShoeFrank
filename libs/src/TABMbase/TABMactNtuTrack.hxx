@@ -37,6 +37,7 @@ using namespace std;
 #include "TF1.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TProfile.h"
 #include "TGeoManager.h"
 #include "TGeoMaterialInterface.h"
 
@@ -74,6 +75,10 @@ public:
   Double_t EvaluateChi2(const double *params);      //adopted in minuit2 to calculate the track chi2 with the selected hits
   Bool_t ComputeDataAll();                          //after the reconstruction, calculate the residuals, chi2 for all the hits
   void CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack> &xtracktr, TABMntuTrack* p_ntutrk); //combine the track of both views
+  void EvaluateDistRes();                           //Evaluate the resolution distribution 
+  
+  //for calibration only
+  void FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &meanTimeReso, Double_t &meanDistReso);          //Fit the calibration plots and writhe the output 
 
   //not used methods
   void SaveLegpol();                                // extra method adopted to save fLegPolSum in a different file,
@@ -123,6 +128,16 @@ public:
   TH1F*            fpTrackSep;
   TH1F*            fpParRes;
   TH1F*            fpParSTrel;
+  
+  //for bm calibration
+  TH2F*            fpResTimeTot;
+  TH1F*            fpParNewSTrel;
+  TH1F*            fpParNewTimeRes;
+  TH1F*            fpNewStrelDiff;
+  TH1F*            fpNewResoDistDiff;
+  TH1D*            fpParNewDistRes;
+  std::vector<TH1F*> fpResTimeBin; //for the STREL calibration
+  std::vector<TH1F*> fpResDistBin; //for the STREL calibration
 
 };
 

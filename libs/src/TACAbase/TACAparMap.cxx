@@ -47,17 +47,18 @@ Bool_t TACAparMap::FromFile(const TString& name)
   
   // read for parameter
   Double_t* para = new Double_t[5];
-  Int_t nCrys = 0;
+  // Int_t nCrys = 0;
 
   // number of crystal
   ReadItem(nCrys);
+  printf("CrystalsN: %d\n", nCrys);
   if (FootDebugLevel(1)) {
     printf("CrystalsN: %d\n", nCrys);
     printf("CrystalId ModuleId ChannelId BoardId ActiveCrystal \n");
   }
   
-  nCrystals = nCrys;
-  cout << "n crys: " << nCrys << endl;
+  // nCrystals = nCrys;
+  // cout << "n crys: " << nCrys << endl;
   for (Int_t i = 0; i < nCrys; ++i) { // Loop over crystal
 
     // read parameters (boardId chId, crysId)
@@ -81,11 +82,9 @@ Bool_t TACAparMap::FromFile(const TString& name)
       printf("%2d %2d %2d B%2d %d\n", crysId, moduleId, channelId, boardId, activeCrys);
     
     printf("%2d %2d %2d B%2d %d\n", crysId, moduleId, channelId, boardId, activeCrys);
-    //cout << "ciao" << endl;
   
   }
 
-  
   delete [] para;
 
   return true;

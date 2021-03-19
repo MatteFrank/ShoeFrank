@@ -76,7 +76,6 @@ Bool_t TAGaction::Process()
   }
   
   Bool_t b_ok = CheckDependencies();
-
   if (b_ok) b_ok = Action();
   if (b_ok) SetBit(kValid);
 

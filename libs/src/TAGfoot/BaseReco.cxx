@@ -228,9 +228,11 @@ void BaseReco::GlobalChecks()
 void BaseReco::BeforeEventLoop()
 {
    ReadParFiles();
-   
+   cout << "after READ PAR" << endl;
    CreateRawAction();
+   cout << "after RAW action" << endl;
    CreateRecAction();
+   cout << "after REC action" << endl;
 
    CampaignChecks();
 
@@ -263,8 +265,8 @@ void BaseReco::LoopEvent(Int_t nEvents)
     
     if(ientry % frequency == 0)
       cout<<" Loaded Event:: " << ientry << endl;
-    
-    if (!fTAGroot->NextEvent()) break;;
+        
+    if (!fTAGroot->NextEvent()) break;
     
     if (FootDebugLevel(1)) {
       if(fpNtuGlbTrack) {
@@ -596,21 +598,24 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName);
       
-      fpParCalCa = new TAGparaDsc("caCal", new TACAparCal());
+      fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
+      TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
+
+      fpParCalCa = new TAGparaDsc("caCal", new TACAparCal(parMap));
       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
+      
      
      if(fFlagMC) { // set in MC threshold and active crystals from data informations
        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
        parCal->FromCrysStatusFile(parFileName.Data());
      } else {
-       parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-       fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
+              
+        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parMap->FromFile(parFileName.Data());
+        cout << "nCryMap: " << parMap->GetCrystalsN() << endl;
 
-       // TACAparMap* parCal = (TACAparMap*)fpParCalCa->Object();
-       TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
-
-       parMap->FromFile(parFileName.Data());
-
+        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parCal->FromCalibTempFile(parFileName.Data());
      }
    }
 

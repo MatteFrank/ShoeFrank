@@ -73,6 +73,7 @@ public:
     Bool_t IsTWZmatch()          const { return m_enableTWZmatch;      }
     Bool_t IsTWCalBar()          const { return m_enableTWCalBar;      }
     Bool_t CalibTW()             const { return m_doCalibTW;           }
+    Bool_t CalibBM()             const { return m_doCalibBM;           }
 
     Bool_t IncludeDI()           const { return m_includeDI;           }
     Bool_t IncludeST()           const { return m_includeST;           }
@@ -87,7 +88,6 @@ public:
     Bool_t IncludeTOE()          const { return m_includeTOE;          }
     Bool_t IncludeKalman()       const { return m_includeKalman;       }
   
-
     // Reconstruction parameters Setter
     void IncludeTOE(Bool_t t)          {  m_includeTOE = t;            }
     void IncludeKalman(Bool_t t)       {  m_includeKalman = t;         }
@@ -107,6 +107,7 @@ public:
     void IncludeVT(Bool_t t)           {  m_includeVT = t;             }
     void IncludeIT(Bool_t t)           {  m_includeIT = t;             }
     void CalibTW(Bool_t t)             {  m_doCalibTW = t;             }
+    void CalibBM(bool t)               {  m_doCalibBM = t;             }
   
     void SetDebugLevels();
   
@@ -160,6 +161,7 @@ private:
    Bool_t m_enableTWZmatch;
    Bool_t m_enableTWCalBar;
    Bool_t m_doCalibTW;
+   Bool_t m_doCalibBM;
 
    Bool_t m_includeST;
    Bool_t m_includeBM;

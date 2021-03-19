@@ -44,6 +44,7 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
 
   f_parcal = (TACAparCal*) fpParCal->Object();
   f_parmap = (TACAparMap*) fpParMap->Object();
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -87,12 +88,12 @@ Bool_t TACAactNtuHit::Action() {
     
     // here we need the calibration file
     Double_t charge_tcorr = GetTemperatureCorrection(charge, crysId);
-
     Double_t energy = GetEnergy(charge_tcorr, crysId);
     Double_t tof    = GetTime(time, crysId);
     p_nturaw->NewHit(crysId, energy, time,type);
-    // cout << "Energy: " << energy << endl;
+    
   }
+
    
   fpNtuRaw->SetBit(kValid);
 
@@ -128,19 +129,25 @@ Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
 {
-
-
+  cout << "Setting functions... " << endl;
+  SetTemperatureFunctions();
+  SetParFunction();
+  cout << "cryID: " << crysId << endl; 
   Double_t T0 = f_parcal->getCalibrationMap()->GetTemperatureCry(crysId);
+  cout << "T0: " << T0 << endl;
 
   Double_t m1 = fTcorr1->Eval(charge);
+  cout << "m1: "<< m1 << endl;
   Double_t m2 = fTcorr2->Eval(charge);
+  cout << "m2: "<< m2 << endl;
 
   Double_t m0 = m1 + ((m2-m1)/(T2-T1))*(T0-T1);
 
+  cout << "m0: "<< m0 << endl;
   Double_t delta = (T1 - T0) * m0;
 
   Double_t charge_tcorr = charge + delta;
-
+  cout << "Charge tcorr: "<< charge_tcorr << endl;
   return charge_tcorr;
   
 }

@@ -9,11 +9,12 @@ ClassImp(TACAparCal)
 TString TACAparCal::fgkCrysStatus = "./config/TACACrysMapStatus.map";
 
 //_____________________________________________________________________
-TACAparCal::TACAparCal()
-: TAGparTools()
+TACAparCal::TACAparCal(TACAparMap *parMap)
+: TAGparTools(),
+  fParMap(parMap)
 {
   // Standard constructor
-  fMapCal = new TACAcalibrationMap();
+  fMapCal = new TACAcalibrationMap(fParMap);
   fParGeo = (TACAparGeo*)gTAGroot->FindParaDsc(TACAparGeo::GetDefParaName(), "TACAparGeo")->Object();
 }
 

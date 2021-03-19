@@ -218,23 +218,21 @@ void TAGroot::AbortEventLoop()
 Bool_t TAGroot::NextEvent()
 {
   Bool_t b_ok = kFALSE;
-
   if (fbAbortEventLoop) {
     Warning("NextEvent()","Aborting event loop");
     return kFALSE;
   }
   
   gSystem->ProcessEvents();
-
   TAGactionFile::IncrementTrigger();
-
   ClearAllAction();
   ClearAllData();
 
   fEventId.SetEventNumber(1+fEventId.EventNumber()); // increment event number
   
+  //break segmentation all'ultimo giro del for
   for (TObjLink* lnk = fpRequiredActionList->FirstLink(); 
-       lnk; lnk=lnk->Next()) {
+       lnk; lnk=lnk->Next()) {    
     TAGaction* p = (TAGaction*) lnk->GetObject();
     if (!p->Process()) return kFALSE;
     b_ok = kTRUE;

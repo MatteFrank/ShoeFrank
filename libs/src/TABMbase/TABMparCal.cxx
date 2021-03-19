@@ -113,7 +113,7 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
   Double_t par;
   infile>>tmp_char>>tmp_char;
   delete fpResoFunc;
-  fpResoFunc=new TF1("BMResoFunc",tmp_char,0.,0.8);
+  fpResoFunc=new TF1("bmResoFunc",tmp_char,0.,0.8);
   infile>>tmp_char>>parnum;
   for(Int_t i=0;i<parnum;++i){
     infile>>par;
@@ -206,6 +206,18 @@ void TABMparCal::Clear(Option_t*)
 void TABMparCal::ResetStrelFunc(){
   delete fpSTrel;
   fpSTrel=new TF1("McStrel","0.00773*x -5.169244e-05*x*x + 1.89286e-07*x*x*x -2.465242e-10*x*x*x*x", 0., 330.);
+}
+
+/*------------------------------------------+---------------------------------*/
+void TABMparCal::SetResoFunc(TF1* inreso){
+  delete fpResoFunc;
+  fpResoFunc=(TF1*)(inreso->Clone("bmResoFunc"));
+}
+
+/*------------------------------------------+---------------------------------*/
+void TABMparCal::SetSTrelFunc(TF1* instrel){
+  delete fpSTrel;
+  fpSTrel=(TF1*)(instrel->Clone("bmParSTrel"));
 }
 
 /*------------------------------------------+---------------------------------*/

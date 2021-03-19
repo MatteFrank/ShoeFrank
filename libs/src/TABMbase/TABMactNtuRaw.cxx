@@ -51,8 +51,8 @@ TABMactNtuRaw::~TABMactNtuRaw()
 
 //------------------------------------------+-----------------------------------
 
-void TABMactNtuRaw::CreateHistogram(){
-
+void TABMactNtuRaw::CreateHistogram()
+{
   DeleteHistogram();
   TABMparMap*    p_parmap = (TABMparMap*)    fpParMap->Object();
   // fpRawMapX=new TH2I( "BM_Dat_cell_raw_occupancy_2d_x", "Cell occupancy for raw hits; z; x", 11, -5.5, 5.5,7, -3.5,3.5);
@@ -71,12 +71,11 @@ void TABMactNtuRaw::CreateHistogram(){
     AddHistogram(RawTdcPlot);
     fpRawTdcMeas.push_back(RawTdcPlot);
   }
-
   SetValidHistogram(kTRUE);
 }
 
 
-
+//------------------------------------------+-----------------------------------
 //! Action.
 Bool_t TABMactNtuRaw::Action() {
 
