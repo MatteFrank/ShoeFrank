@@ -5,7 +5,7 @@
 
 #include "GlobalPar.hxx"
 #include "LocalReco.hxx"
-#include "LocalRecoNtuMC.hxx"
+#include "LocalRecoMC.hxx"
 
 int main (int argc, char *argv[])  {
 
@@ -61,7 +61,7 @@ int main (int argc, char *argv[])  {
     BaseReco* locRec;
     
     if(isMC==kTRUE){
-      locRec = new LocalRecoNtuMC(exp, runNb, in, rootout);
+      locRec = new LocalRecoMC(exp, runNb, in, rootout);
     }else{
       locRec= new LocalReco(exp, runNb, in, rootout);
     }
