@@ -228,11 +228,8 @@ void BaseReco::GlobalChecks()
 void BaseReco::BeforeEventLoop()
 {
    ReadParFiles();
-   cout << "after READ PAR" << endl;
    CreateRawAction();
-   cout << "after RAW action" << endl;
    CreateRecAction();
-   cout << "after REC action" << endl;
 
    CampaignChecks();
 
