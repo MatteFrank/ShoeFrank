@@ -201,7 +201,9 @@ void BaseReco::GlobalChecks()
   if (GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) {
     // from global file
     Bool_t enableLocalRecoG = GlobalPar::GetPar()->IsLocalReco();
-    
+    Bool_t globalRecoTOE    = GlobalPar::GetPar()->IncludeTOE();
+    Bool_t globalRecoGF     = GlobalPar::GetPar()->IncludeKalman();
+
     // from root file
     TAGrunInfo info = gTAGroot->CurrentRunInfo();
     TAGrunInfo* p = &info;
@@ -212,6 +214,12 @@ void BaseReco::GlobalChecks()
     if (enableLocalRecoG && enableLocalReco)
       Info("GlobalChecks()", "Make global reconstruction from L0 tree");
     
+    if (globalRecoTOE)
+      Info("GlobalChecks()", "Make global reconstruction with TOE");
+    
+    if (globalRecoGF)
+      Info("GlobalChecks()", "Make global reconstruction with GenFit");
+
     if (enableLocalRecoG && !enableLocalReco) {
       Error("GlobalChecks()", "FootGlobal::enableLocalReco set but raw data found in root file !");
       exit(0);
