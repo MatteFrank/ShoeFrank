@@ -79,7 +79,7 @@ private:
    Bool_t  CreateClusters(Int_t iSensor);
 
 
-   ClassDef(TAMSDactNtuCluster,0)
+   ClassDef(TAMSDactNtuCluster,1)
 };
 
 #endif
