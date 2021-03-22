@@ -47,8 +47,6 @@ TAGgeoTrafo::TAGgeoTrafo(const TString expName)
 {
    fMatrixList->SetOwner(true);
    fDeviceList->SetOwner(true);
-   TGeoIdentity* id = new TGeoIdentity();
-   fIdentity        = new TGeoHMatrix(*id);
 }
 
 //_____________________________________________________________________________
@@ -56,7 +54,6 @@ TAGgeoTrafo::~TAGgeoTrafo()
 {
    delete fMatrixList;
    delete fDeviceList;
-   delete fIdentity;
    delete fFileStream;
 }
 
@@ -72,7 +69,7 @@ const TGeoHMatrix* TAGgeoTrafo::GetTrafo(const char* nameSuf) const
 	  return matrix;
    else {
 	  Error("GetTrafo","No matrix with name %s found, reset to ID", name.Data());
-	  return fIdentity;
+	  return new TGeoHMatrix();
    }
 }
 
@@ -243,7 +240,7 @@ bool TAGgeoTrafo::FromFile(TString ifile)
    }
    
    fFileStream->Close();
-   
+    
    return kTRUE;
 }
 

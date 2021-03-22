@@ -25,7 +25,6 @@ private:
    TAGparTools* fFileStream;
    TObjArray*   fMatrixList;
    TObjArray*   fDeviceList;
-   TGeoHMatrix* fIdentity; // dummy matrix
    TString      fExpName; // name of the experiment
    
 private:
