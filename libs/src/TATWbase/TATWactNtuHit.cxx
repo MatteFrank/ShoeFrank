@@ -80,11 +80,6 @@ TATWactNtuHit::TATWactNtuHit(const char* name,
 
   // fpHisEloss_Z.clear();
   fpHisTof_Z.clear();
-
-
-  f_debug = GetDebugLevel();
-
-
 }
 
 //------------------------------------------+-----------------------------------

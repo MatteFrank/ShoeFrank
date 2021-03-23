@@ -81,11 +81,6 @@ private:
   vector<TH1D*>   fpHisEloss_Z[nLayers];
   vector<TH1D*>   fpHisTof_Z;
 
-  Bool_t          f_debug;
-
- 
-
-
 private:
   //
   TATWhit* fCurrentHit;

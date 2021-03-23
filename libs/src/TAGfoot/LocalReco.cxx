@@ -81,12 +81,10 @@ void LocalReco::CreateRawAction()
          fActDatRawBm = new TABMactNtuRaw("bmActDat", fpDatRawBm, fpDaqEvent, fpParMapBm, fpParCalBm, fpParGeoBm, fpNtuHitSt);
          if (fFlagHisto)
             fActDatRawBm->CreateHistogram();
-         if(GlobalPar::GetPar()->Debug()) fActDatRawBm->SetDebugLevel(1);
-         
+        
          fActNtuHitBm = new TABMactNtuHit("bmActNtu", fpNtuHitBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
          if (fFlagHisto)
             fActNtuHitBm->CreateHistogram();
-         if(GlobalPar::GetPar()->Debug()) fActNtuHitBm->SetDebugLevel(1);
       }
    }
 
@@ -102,7 +100,6 @@ void LocalReco::CreateRawAction()
          fActNtuHitVtx = new TAVTactNtuHit("vtActNtu", fpNtuHitVtx, fpDaqEvent, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
          if (fFlagHisto)
          fActNtuHitVtx->CreateHistogram();
-         if(GlobalPar::GetPar()->Debug()) fActNtuHitVtx->SetDebugLevel(1);
       }
    }
    
@@ -126,17 +123,13 @@ void LocalReco::CreateRawAction()
       fpNtuHitTw   = new TAGdataDsc("twRaw", new TATWntuHit());
 
       if(GlobalPar::GetPar()->CalibTW()) {
-	fActCalibTw = new TATWactCalibTW("twActCalib", fpDatRawTw, fpNtuHitTw, fpNtuHitSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
-	if(GlobalPar::GetPar()->Debug()) fActCalibTw->SetDebugLevel(1);
-	fActCalibTw->CreateHistogram();
-	
+        fActCalibTw = new TATWactCalibTW("twActCalib", fpDatRawTw, fpNtuHitTw, fpNtuHitSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
+        fActCalibTw->CreateHistogram();
+
       } else {
-	
-	fActNtuHitTw = new TATWactNtuHit("twActNtu", fpDatRawTw, fpNtuHitTw, fpNtuHitSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
-	if(GlobalPar::GetPar()->Debug()) fActNtuHitTw->SetDebugLevel(1);
-	if (fFlagHisto)
-	  fActNtuHitTw->CreateHistogram();
-	
+        fActNtuHitTw = new TATWactNtuHit("twActNtu", fpDatRawTw, fpNtuHitTw, fpNtuHitSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
+        if (fFlagHisto)
+          fActNtuHitTw->CreateHistogram();
       }
    }
    

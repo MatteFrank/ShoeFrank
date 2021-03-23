@@ -68,7 +68,7 @@ TAGactWDreader::~TAGactWDreader()
 
 Bool_t TAGactWDreader::Action() {
 
-    if(GetDebugLevel()) { cout<<" Entering the TAGactWDreader action "<<endl; }
+    if(FootDebugLevel(1)) { cout<<" Entering the TAGactWDreader action "<<endl; }
 
    TAGdaqEvent*         p_datdaq = (TAGdaqEvent*)  fpDatDaq->Object();
    TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)   fpWDTim->Object();
