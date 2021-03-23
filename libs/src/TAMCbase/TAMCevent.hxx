@@ -11,6 +11,7 @@ class TAMCntuHit ;
 class TAMCntuEvent ;
 class TAMCntuTrack ;
 class TAMCntuRegion;
+class TAMCntuEvent ;
 using namespace std;
 
 class TAMCevent : public TObject {

@@ -152,7 +152,6 @@ int main(int argc, char *argv[])
                        &eve.SCNn,&eve.CALn,&eve.CROSSn);
          
          event->AddEvent(eve.EventNumber);
-
          if(nread!=10){
             cout<<"ReadError in ev header section: nread = "<<nread<<
             " instead of 10; ev= "<<NumProcessed<<endl;
