@@ -16,6 +16,14 @@
 ClassImp(TAGpara);
 
 //------------------------------------------+-----------------------------------
+//! Default constructor.
+
+TAGpara::TAGpara()
+: TObject()
+{}
+
+
+//------------------------------------------+-----------------------------------
 //! Destructor.
 
 TAGpara::~TAGpara()
@@ -50,3 +58,14 @@ void TAGpara::Print(Option_t* option) const
   return;
 }
 
+//------------------------------------------+-----------------------------------
+/*!
+ \relates TAGpara
+ \brief ostream insertion operator.
+ */
+
+inline ostream& operator<<(ostream& os, const TAGpara& obj)
+{
+  obj.ToStream(os);
+  return os;
+}

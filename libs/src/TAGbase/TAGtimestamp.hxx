@@ -16,15 +16,15 @@ class TAGtimestamp {
     virtual         ~TAGtimestamp();
 
     void            FromDouble(Double_t d_time);
-    void            FromUnixTime(Int_t i_time);
+    void            FromUnixTime(Int_t i_time) { fiSec = i_time; fiUSec = 0;}
     void            SetCurrent();
 
-    Double_t        ToDouble() const;
-    Int_t           ToUnixTime() const;
+    Double_t        ToDouble()   const { return (Double_t)fiSec + 1.e-6 * (Double_t)fiUSec;}
+    Int_t           ToUnixTime() const { return fiSec;}
     Double_t        Age() const;
 
-    Bool_t          Valid() const;
-    void            Clear();
+    Bool_t          Valid() const { return fiSec >= 0;}
+    void            Clear() { fiSec = -1; fiUSec = 0;}
 
     TAGtimestamp&     operator+(Double_t d_deltatime);
     TAGtimestamp&     operator-(Double_t d_deltatime);
@@ -38,7 +38,5 @@ class TAGtimestamp {
     Int_t           fiSec;		    //!
     Int_t           fiUSec;		    //!
 };
-
-#include "TAGtimestamp.icc"
 
 #endif

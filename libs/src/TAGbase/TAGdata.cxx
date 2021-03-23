@@ -13,7 +13,25 @@
   \brief Mother of all data objects. **
 */
 
+//------------------------------------------+-----------------------------------
+/*!
+ \relates TAGdata
+ \brief ostream insertion operator.
+ */
+
+ostream& operator<<(ostream& os, const TAGdata& obj)
+{
+  obj.ToStream(os);
+  return os;
+}
+
 ClassImp(TAGdata);
+
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+
+TAGdata::TAGdata()
+{}
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
@@ -65,4 +83,3 @@ void TAGdata::Print(Option_t* option) const
   ToStream(cout, option);
   return;
 }
-

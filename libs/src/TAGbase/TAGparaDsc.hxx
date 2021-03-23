@@ -24,11 +24,10 @@ class TAGparaDsc : public TAGnamed {
     void            SetObject(TAGpara* p_para);
     void            SetConsumer(TAGaction* p_action);
 
-    TAGpara*        Object() const;
-    TAGpara**       ObjectPointer();
-    TClass*         ObjectClass() const;
-
-    Bool_t          Valid() const;
+    TAGpara**       ObjectPointer()     { return &fpObject;       }
+    TAGpara*        Object()      const { return fpObject;        }
+    TClass*         ObjectClass() const { return fpObjectClass;   }
+    Bool_t          Valid()       const { return TestBit(kValid); }
 
     virtual void    Clear(Option_t* opt="");
 
@@ -43,7 +42,5 @@ class TAGparaDsc : public TAGnamed {
     TClass*         fpObjectClass;
     TList*          fpConsumerList;
 };
-
-#include "TAGparaDsc.icc" 
 
 #endif

@@ -29,6 +29,20 @@ ClassImp(TAGactTreeWriter);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
+TAGactTreeWriterBranch::TAGactTreeWriterBranch(TAGdataDsc* p_data, TString name, Int_t i_size,
+                                                      Int_t i_compress, Bool_t b_object)
+: fpDataDsc(p_data),
+  fName(name),
+  fiBasketSize(i_size),
+  fiCompress(i_compress),
+  fpBranch(0),
+  fbObject(b_object)
+{
+}
+
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+
 TAGactTreeWriter::TAGactTreeWriter(const char* name)
   : TAGactionFile(name, "TAGactTreeWriter - Tree writer", "NEW"),
     fpBranchList(0),

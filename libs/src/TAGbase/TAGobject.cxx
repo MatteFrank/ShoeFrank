@@ -14,6 +14,12 @@
 */
 
 ClassImp(TAGobject);
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+
+TAGobject::TAGobject()
+: fFound(false)
+{}
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
@@ -40,3 +46,14 @@ void TAGobject::Print(Option_t* option) const
   return;
 }
 
+//------------------------------------------+-----------------------------------
+/*!
+ \relates TAGobject
+ \brief ostream insertion operator.
+ */
+
+inline ostream& operator<<(ostream& os, const TAGobject& obj)
+{
+  obj.ToStream(os);
+  return os;
+}

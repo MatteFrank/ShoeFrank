@@ -15,13 +15,13 @@ class TAGeventId {
                     TAGeventId(Short_t i_cam, Short_t i_run, Int_t i_evt);
     virtual         ~TAGeventId();
 
-    void            SetCampaignNumber(Short_t i_cam);
-    void            SetRunNumber(Short_t i_run);
-    void            SetEventNumber(Int_t i_evt);
+    void            SetCampaignNumber(Short_t i_cam)  { fiCam = i_cam; }
+    void            SetRunNumber(Short_t i_run)       { fiRun = i_run; }
+    void            SetEventNumber(Int_t i_evt)       { fiEvt = i_evt; }
 
-    Short_t         CampaignNumber() const;
-    Short_t         RunNumber() const;
-    Int_t           EventNumber() const;
+    Short_t         CampaignNumber()            const { return fiCam;  }
+    Short_t         RunNumber()                 const { return fiRun;  }
+    Int_t           EventNumber()               const { return fiEvt;  }
 
     void            Clear();
 
@@ -38,7 +38,5 @@ class TAGeventId {
     Short_t         fiRun;		    // run number
     Int_t           fiEvt;		    // event number
 };
-
-#include "TAGeventId.icc"
 
 #endif

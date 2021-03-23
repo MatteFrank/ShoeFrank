@@ -23,6 +23,17 @@
 ClassImp(TAGactTreeReaderBranch);
 ClassImp(TAGactTreeReader);
 
+
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+TAGactTreeReaderBranch::TAGactTreeReaderBranch(TAGdataDsc* p_data, TString name)
+: fpDataDsc(p_data),
+  fName(name),
+  fpBranch(0),
+  fiNByte(0)
+{
+}
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

@@ -20,9 +20,9 @@ class TAGdata : public TObject {
     };
 
                     TAGdata();
-    virtual         ~TAGdata();
+   virtual         ~TAGdata();
 
-    Bool_t          Fail() const;
+    Bool_t          Fail()           const { return TestBit(kFail); }
     virtual Bool_t  NeedAutoDelete() const;
 
     virtual void    SetupClones();
@@ -38,7 +38,5 @@ class TAGdata : public TObject {
 };
 
 ostream& operator<<(ostream& os, const TAGdata& obj);
-
-#include "TAGdata.icc" 
 
 #endif

@@ -40,9 +40,9 @@ class TAGroot : public TAGobject {
     void            ClearAllData();
     void            ClearAllPara();
 
-    TList*          ListOfAction() const;
-    TList*          ListOfDataDsc() const;
-    TList*          ListOfParaDsc() const;
+    TList*          ListOfAction()  const { return fpActionList;  }
+    TList*          ListOfDataDsc() const { return fpDataDscList; }
+    TList*          ListOfParaDsc() const { return fpParaDscList; }
 
     TAGaction*      FindAction(const char* name, const char* type=0) const;
     TAGdataDsc*     FindDataDsc(const char* name, const char* type=0) const;
@@ -52,18 +52,18 @@ class TAGroot : public TAGobject {
     const char*     DefaultDataDscName();
     const char*     DefaultParaDscName();
 
-    void            SetCampaignName(TString s_cam);
-    void            SetRunNumber(Short_t i_run);
-    void            SetEventNumber(Int_t i_evt);
+    void            SetCampaignName(TString s_cam) { fRunInfo.SetCampaignName(s_cam); }
+    void            SetRunNumber(Short_t i_run)    {  fRunInfo.SetRunNumber(i_run); fEventId.SetRunNumber(i_run);}
+    void            SetEventNumber(Int_t i_evt)    {  fEventId.SetEventNumber(i_evt); }
     void            SetRunInfo(const TAGrunInfo& info);
     void            SetEventId(const TAGeventId& info);
 
-    const Char_t*   CurrentCampaignName() const;
-    Short_t         CurrentRunNumber() const;
-    Int_t           CurrentEventNumber() const;
+    const Char_t*   CurrentCampaignName() const { return fRunInfo.CampaignName(); }
+    Short_t         CurrentRunNumber()    const { return fEventId.RunNumber();    }
+    Int_t           CurrentEventNumber()  const { return fEventId.EventNumber();  }
 
-    const TAGrunInfo&  CurrentRunInfo() const;
-    const TAGeventId&  CurrentEventId() const;
+    const TAGrunInfo&  CurrentRunInfo()   const {return fRunInfo;  }
+    const TAGeventId&  CurrentEventId()   const { return fEventId; }
 
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
 
@@ -87,7 +87,5 @@ class TAGroot : public TAGobject {
 };
 
 extern TAGroot* gTAGroot;
-
-#include "TAGroot.icc" 
 
 #endif

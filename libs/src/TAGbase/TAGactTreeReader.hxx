@@ -67,6 +67,4 @@ class TAGactTreeReader : public TAGactionFile {
     Bool_t          fbDscBranch;
 };
 
-#include "TAGactTreeReader.icc"
-
 #endif
