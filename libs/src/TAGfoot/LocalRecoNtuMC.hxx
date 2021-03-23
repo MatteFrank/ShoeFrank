@@ -18,6 +18,7 @@
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
+#include "TAMCntuEvent.hxx"
 #include "TAMCactNtuEve.hxx"
 
 #include "TATWntuRaw.hxx"
@@ -78,6 +79,7 @@ protected:
    TATWactNtuHitMC*      fActNtuRawTw;  // action for ntu data
    TACAactNtuHitMC*      fActNtuRawCa;  // action for ntu data
   
+   TAGdataDsc*           fpNtuMcEvt;    // input data dsc
    TAGdataDsc*           fpNtuMcEve;    // input data dsc
    TAGdataDsc*           fpNtuMcSt;    // input data dsc
    TAGdataDsc*           fpNtuMcBm;    // input data dsc
