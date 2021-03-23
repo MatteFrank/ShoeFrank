@@ -14,6 +14,7 @@
 #pragma link C++ class TAMChit+;
 #pragma link C++ class TAMCevent+;
 #pragma link C++ class TAMCactNtuTrack+;
+#pragma link C++ class TAMCntuEvent+;
 
 
 #endif

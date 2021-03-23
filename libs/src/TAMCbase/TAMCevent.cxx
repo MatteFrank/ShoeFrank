@@ -4,6 +4,7 @@
 #include "TAMCevent.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAMCntuTrack.hxx"
+#include "TAMCntuEvent.hxx"
 #include "TAMCntuRegion.hxx"
 
 #include "GlobalPar.hxx"
@@ -15,7 +16,7 @@ ClassImp(TAMCevent);
 /*-----------------------------------------------------------------*/
 TAMCevent::TAMCevent(Bool_t regionFlag)
  : fRegionFlag(regionFlag),
-   fEventNumber(-1),
+   fEvent(new TAMCntuEvent()),
    fTrack(new TAMCntuTrack()),
    fRegion(0x0),
    fHitSTC(0x0),
@@ -54,7 +55,8 @@ TAMCevent::TAMCevent(Bool_t regionFlag)
 /*-----------------------------------------------------------------*/
 Int_t TAMCevent::Clean()
 {
-    fTrack->Clear();
+   fEvent->Clear();
+   fTrack->Clear();
    if (fRegionFlag)
       fRegion->Clear();
 
@@ -80,6 +82,12 @@ Int_t TAMCevent::Clean()
        fHitCAL->Clear();
 
     return 0;
+}
+
+/*-----------------------------------------------------------------*/
+void TAMCevent::AddEvent(Int_t nb)
+{
+  fEvent->SetEventNumber(nb);
 }
 
 /*-----------------------------------------------------------------*/
@@ -170,8 +178,7 @@ void TAMCevent::AddCROSS(Int_t aCROSSid, Int_t aCROSSnreg, Int_t aCROSSnregold,
 /*-----------------------------------------------------------------*/
 void TAMCevent::SetBranches(TTree *RootTree){
 
-    RootTree->Branch("EventNumber",&fEventNumber,"EventNumber/I");
-   
+    RootTree->Branch(fEvent->GetBranchName(),&fEvent);
     RootTree->Branch(fTrack->GetBranchName(),&fTrack);
     if (fRegionFlag)
        RootTree->Branch(fRegion->GetBranchName(),&fRegion);
@@ -201,8 +208,7 @@ void TAMCevent::SetBranches(TTree *RootTree){
 /*-----------------------------------------------------------------*/
 void TAMCevent::FindBranches(TTree *RootTree)
 {
-    RootTree->SetBranchAddress("EventNumber",&fEventNumber);
-
+    RootTree->SetBranchAddress(fEvent->GetBranchName(),&fEvent);
     RootTree->SetBranchAddress(fTrack->GetBranchName(),&fTrack);
 
     if (GlobalPar::GetPar()->IncludeST())

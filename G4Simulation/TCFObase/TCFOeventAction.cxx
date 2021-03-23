@@ -248,7 +248,7 @@ void TCFOeventAction::FillHits(TAMCevent* hit, TCGmcHit* mcHit)
     Double_t al       = 0;
     Int_t    trackIdx = fMapTrackIdx[trackId]+1; // to be compliant with Fluka
   
-    hit->SetEvent(fEventNumber);
+    hit->AddEvent(fEventNumber);
 
     if (fStCollId >= 0 && fDetName==TCSTgeometryConstructor::GetSDname()){
         hit->AddSTC(trackIdx, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]),

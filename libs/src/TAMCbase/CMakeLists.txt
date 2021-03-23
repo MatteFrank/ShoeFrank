@@ -27,6 +27,7 @@ set( with_dictionnaries
    TAGparGeo
    TAMCparTools
    TAMCflukaParser
+   TAMCntuEvent
 )
 
 set( without_dictionnaries
