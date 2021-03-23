@@ -106,6 +106,9 @@ const TAGrunInfo GlobalPar::GetGlobalInfo()
    if (IncludeTOE())
       runInfo.GetGlobalPar().IncludeTOE = true;
 
+   if (IncludeCross())
+      runInfo.GetGlobalPar().IncludeCross = true;
+
    if (IncludeDI())
       runInfo.GetGlobalPar().IncludeDI = true;
 

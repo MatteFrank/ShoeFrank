@@ -15,13 +15,13 @@
 class TObjArray;
 
 class TAGgeoTrafo : public TAGaction {
-   
+
 private:
    struct DeviceParameter_t : public  TNamed {
       TVector3  Center;  // current center
       TVector3  Angle;   // current angles
    };
-   
+
    TAGparTools* fFileStream;
    TObjArray*   fMatrixList;
    TObjArray*   fDeviceList;
@@ -56,33 +56,33 @@ private:
    static const Char_t* fgkGeomTitle;     //! title of GeoManager
    static       Char_t  fgDefaultTransp;  // default transparency value
    static const Char_t* fgkTrafoBaseName; //! name of GeoManager
-   
+
 public:
    TAGgeoTrafo(const TString expName = "FOOT");
    virtual ~TAGgeoTrafo();
-   
+
    bool FromFile(TString ifile = "./geomaps/FOOT.geo");
-   
+
    // Start Counter
    TVector3 GetSTCenter();
    TVector3 GetSTAngles();
-   
+
    // Beam Monitor
    TVector3 GetBMCenter();
    TVector3 GetBMAngles();
-   
+
    // Target
    TVector3 GetTGCenter();
    TVector3 GetTGAngles();
-   
+
    // Dipole
    TVector3 GetDICenter();
    TVector3 GetDIAngles();
-   
+
    // Vertex
    TVector3 GetVTCenter();
    TVector3 GetVTAngles();
-   
+
    // Inner tracker
    TVector3 GetITCenter();
    TVector3 GetITAngles();
@@ -90,15 +90,15 @@ public:
    // MSD
    TVector3 GetMSDCenter();
    TVector3 GetMSDAngles();
-   
+
    // tof Wall
    TVector3 GetTWCenter();
    TVector3 GetTWAngles();
-  
+
    // Calorimeter
    TVector3 GetCACenter();
    TVector3 GetCAAngles();
-   
+
    TVector3 FromSTLocalToGlobal(TVector3 apoi);
    TVector3 FromBMLocalToGlobal(TVector3 apoi);
    TVector3 FromTGLocalToGlobal(TVector3 apoi);
@@ -108,7 +108,7 @@ public:
    TVector3 FromMSDLocalToGlobal(TVector3 apoi);
    TVector3 FromTWLocalToGlobal(TVector3 apoi);
    TVector3 FromCALocalToGlobal(TVector3 apoi);
-   
+
    TVector3 VecFromSTLocalToGlobal(TVector3 avec);
    TVector3 VecFromBMLocalToGlobal(TVector3 avec);
    TVector3 VecFromTGLocalToGlobal(TVector3 avec);
@@ -118,7 +118,7 @@ public:
    TVector3 VecFromMSDLocalToGlobal(TVector3 avec);
    TVector3 VecFromTWLocalToGlobal(TVector3 avec);
    TVector3 VecFromCALocalToGlobal(TVector3 avec);
-   
+
    TVector3 FromGlobalToSTLocal(TVector3 apoi);
    TVector3 FromGlobalToBMLocal(TVector3 apoi);
    TVector3 FromGlobalToTGLocal(TVector3 apoi);
@@ -128,7 +128,7 @@ public:
    TVector3 FromGlobalToMSDLocal(TVector3 apoi);
    TVector3 FromGlobalToTWLocal(TVector3 apoi);
    TVector3 FromGlobalToCALocal(TVector3 apoi);
-   
+
    TVector3 VecFromGlobalToSTLocal(TVector3 avec);
    TVector3 VecFromGlobalToBMLocal(TVector3 avec);
    TVector3 VecFromGlobalToTGLocal(TVector3 avec);
@@ -151,40 +151,40 @@ public:
    void                 AddDevice(DeviceParameter_t* device);
    TVector3             GetDeviceCenter(const char* name) const;
    TVector3             GetDeviceAngle(const char* name) const;
-   
+
    TVector3             Global2Local(const char* name, TVector3& glob) const;
    TVector3             Global2LocalVect(const char* name, TVector3& glob) const;
    TVector3             Local2Global(const char* name, TVector3& loc)  const;
    TVector3             Local2GlobalVect(const char* name, TVector3& loc)  const;
-   
+
 public:
    static void      SetDefaultActName(TString& name) { fgDefaultActName = name; }
    static TString   GetDefaultActName()              { return fgDefaultActName; }
-   
+
    static           Float_t CmToMu()                 { return fgkCmToMu;        }
    static           Float_t MuToCm()                 { return fgkMuToCm;        }
-   
+
    static           Float_t MmToMu()                 { return fgkMmToMu;        }
    static           Float_t MuToMm()                 { return fgkMuToMm;        }
-   
+
    static           Float_t MmToCm()                 { return fgkMmToCm;        }
    static           Float_t CmToMm()                 { return fgkCmToMm;        }
-   
+
    static           Float_t MToCm()                  { return fgkMToCm;         }
    static           Float_t CmToM()                  { return fgkCmToM;         }
-   
+
    static           Float_t SecToNs()                { return fgkSecToNs;       }
    static           Float_t NsToSec()                { return fgkNsToSec;       }
-   
+
    static           Float_t SecToPs()                { return fgkSecToPs;       }
    static           Float_t PsToSec()                { return fgkPsToSec;       }
-   
+
    static           Float_t PsToNs()                 { return fgkPsToNs;        }
    static           Float_t NsToPs()                 { return fgkNsToPs;        }
 
    static           Float_t GevToMev()               { return fgkGevToMev;      }
    static           Float_t MevToGev()               { return fgkMevToGev;      }
-   
+
    static           Float_t GevToKev()               { return fgkGevToKev;      }
    static           Float_t GausToTesla()            { return fgkGausToTesla;   }
 
@@ -194,15 +194,15 @@ public:
    static           Float_t GetElectronMassMeV()     { return fgkElectronMass;  }
    static           Float_t GetElectronMass()        { return fgkElectronMass*fgkMevToGev; }
 
-   
+
    static     const Char_t* GetBaseName()            { return fgkGeomName;      }
    static     const Char_t* GetDefaultGeomName()     { return fgkGeomName;      }
    static     const Char_t* GetDefaultGeomTitle()    { return fgkGeomTitle;     }
-   
+
    static           Char_t  GetDefaultTransp()       { return fgDefaultTransp;  }
    static           void    SetDefaultTransparency(Char_t transparency) { fgDefaultTransp = transparency; }
-   
-   
+
+
    ClassDef(TAGgeoTrafo,1)
 };
 

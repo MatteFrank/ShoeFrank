@@ -38,7 +38,8 @@ TAGrunInfo::TAGrunInfo(TString s_cam, Short_t i_run)
 //! copy cstr
 TAGrunInfo::TAGrunInfo(const TAGrunInfo& right)
  : fsCam(right.fsCam),
-   fiRun(right.fiRun)
+   fiRun(right.fiRun),
+   fCrossMap(right.fCrossMap)
 {
    fGlobalParameter.EnableLocalReco  = right.fGlobalParameter.EnableLocalReco;
    fGlobalParameter.EnableTree       = right.fGlobalParameter.EnableTree;
@@ -52,6 +53,7 @@ TAGrunInfo::TAGrunInfo(const TAGrunInfo& right)
    fGlobalParameter.EnableTWCalBar   = right.fGlobalParameter.EnableTWCalBar;
    fGlobalParameter.IncludeKalman    = right.fGlobalParameter.IncludeKalman;
    fGlobalParameter.IncludeTOE       = right.fGlobalParameter.IncludeTOE;
+   fGlobalParameter.IncludeCross     = right.fGlobalParameter.IncludeCross;
    fGlobalParameter.IncludeDI        = right.fGlobalParameter.IncludeDI;
    fGlobalParameter.IncludeST        = right.fGlobalParameter.IncludeST;
    fGlobalParameter.IncludeBM        = right.fGlobalParameter.IncludeBM;
@@ -75,7 +77,8 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
 {
    fiRun = right.fiRun;
    fsCam = right.fsCam;
-   
+   fCrossMap=right.fCrossMap;
+
    fGlobalParameter.EnableLocalReco  = right.fGlobalParameter.EnableLocalReco;
    fGlobalParameter.EnableTree       = right.fGlobalParameter.EnableTree;
    fGlobalParameter.EnableHisto      = right.fGlobalParameter.EnableHisto;
@@ -88,6 +91,7 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
    fGlobalParameter.EnableTWCalBar   = right.fGlobalParameter.EnableTWCalBar;
    fGlobalParameter.IncludeKalman    = right.fGlobalParameter.IncludeKalman;
    fGlobalParameter.IncludeTOE       = right.fGlobalParameter.IncludeTOE;
+   fGlobalParameter.IncludeCross     = right.fGlobalParameter.IncludeCross;
    fGlobalParameter.IncludeDI        = right.fGlobalParameter.IncludeDI;
    fGlobalParameter.IncludeST        = right.fGlobalParameter.IncludeST;
    fGlobalParameter.IncludeBM        = right.fGlobalParameter.IncludeBM;
@@ -97,7 +101,7 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
    fGlobalParameter.IncludeMSD       = right.fGlobalParameter.IncludeMSD;
    fGlobalParameter.IncludeTW        = right.fGlobalParameter.IncludeTW;
    fGlobalParameter.IncludeCA        = right.fGlobalParameter.IncludeCA;
-   
+
    return *this;
 }
 
@@ -108,6 +112,7 @@ void TAGrunInfo::Clear(Option_t*)
 {
   fsCam = "";
   fiRun = -1;
+  fCrossMap.clear();
 }
 
 //------------------------------------------+-----------------------------------
@@ -119,7 +124,7 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << Form("  cam: %s", fsCam.Data())
    << Form("  run: %4d", fiRun)
    << endl;
-   
+
    os << "Global info:     \n"
    << Form("  EnableLocalReco: %d\n", fGlobalParameter.EnableLocalReco)
    << Form("  EnableTree: %d\n", fGlobalParameter.EnableTree)
@@ -133,6 +138,7 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << Form("  EnableTWCalBar: %d\n\n", fGlobalParameter.EnableTWCalBar)
    << Form("  IncludeKalman: %d\n", fGlobalParameter.IncludeKalman)
    << Form("  IncludeTOE: %d\n\n", fGlobalParameter.IncludeTOE)
+   << Form("  IncludeCross: %d\n\n", fGlobalParameter.IncludeCross)
    << Form("  IncludeDI: %d\n", fGlobalParameter.IncludeDI)
    << Form("  IncludeST: %d\n", fGlobalParameter.IncludeST)
    << Form("  IncludeBM: %d\n", fGlobalParameter.IncludeBM)
@@ -143,6 +149,14 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << Form("  IncludeTW: %d\n", fGlobalParameter.IncludeTW)
    << Form("  IncludeCA: %d", fGlobalParameter.IncludeCA)
    << endl;
+
+   if(fGlobalParameter.IncludeCross){
+     os << "Crossing Map:  \n"
+     <<Form("  Total number of regions: %d\n",fCrossMap.size());
+     if(strcmp(option,"v")==0 || strcmp(option,"verbose")==0)
+       for (auto& x: fCrossMap)
+           os<<"  "<<x.first.Data()<<"  " << x.second <<endl;
+   }
 }
 
 //------------------------------------------+-----------------------------------

@@ -88,7 +88,8 @@ public:
 
     void IncludeTOE(bool t)          {  m_includeTOE = t;            }
     void IncludeKalman(bool t)       {  m_includeKalman = t;         }
-    void IncludeCross(bool t)       {  m_includeCross = t;         }
+    void EnableCross()        			 {  m_includeCross = true;       }
+    void DisableCross()        			 {  m_includeCross = false;      }
     void EnableLocalReco()           {  m_enableLocalReco = true;    }
     void DisableLocalReco()          {  m_enableLocalReco = false;   }
 

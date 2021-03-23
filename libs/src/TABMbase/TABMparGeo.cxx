@@ -69,7 +69,7 @@ TABMparGeo::TABMparGeo()
    fBmDeltaZ(0),
    fBmDeltaY(0),
    fBmDeltaX(0),
-   fDrawWire(false)   
+   fDrawWire(false)
 {
    fkDefaultGeoName = "./geomaps/TABMdetector.geo";
 }
@@ -1012,12 +1012,12 @@ Int_t TABMparGeo::GetCell(TVector3 pos, int layer, int view)
 {
     Int_t cell = -1 ;
     Float_t min = 999999;
-  
+
     for(int i=0 ; i<fSensesN ; ++i){
       Int_t kk = fBmIdSense[i];
       Float_t distX = TMath::Abs(pos[0] - fPosX[kk][layer][view]);
       Float_t distY = TMath::Abs(pos[1] - fPosY[kk][layer][view]);
-      
+
       if (view == 0) {
         if (distY < min) {
           min = distY;
@@ -1030,7 +1030,7 @@ Int_t TABMparGeo::GetCell(TVector3 pos, int layer, int view)
         }
       }
     }
-  
+
     return cell ;
 }
 

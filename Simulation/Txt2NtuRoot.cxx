@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
    int status = 0, iL=0, NumProcessed=0, numfiles = 0, nread=0;
    TString outname("Out.root"), inname("In.txt");
    vector<TString> infiles; TString tmpSin;
-   TString flukalogfile;
+   TString outflukaname;
    TString exp("");
    Int_t runNb = -1;
 
@@ -36,9 +36,6 @@ int main(int argc, char *argv[])
 
    EVENT_STRUCT eve;
 
-   ifstream infile;
-
-
    for (int i = 0; i < argc; i++){
       if(strcmp(argv[i],"-in") == 0) {
          inname = TString(argv[++i]);
@@ -50,7 +47,7 @@ int main(int argc, char *argv[])
          maxevpro = atoi(argv[++i]);
       }
       if(strcmp(argv[i],"-reg") == 0) {
-        flukalogfile=TString(argv[++i]);
+        outflukaname=TString(argv[++i]);
         regFlag = true;
       }
       if(strcmp(argv[i],"-iL") == 0) {
@@ -70,7 +67,7 @@ int main(int argc, char *argv[])
          cout<<"   -out file   : [def=Out.root] Root output file"<<endl;
          cout<<"   -iL         : [def=none] input file is a list of files"<<endl;
          cout<<"   -nev        : [def=Inf] Max no. of events to process"<<endl;
-         cout<<"   -reg        : [def=0] save crossing region info"<<endl;
+         cout<<"   -reg        : save crossing region info reading the FLUKA .out filename"<<endl;
          cout<<"   -run value   : [def=-1] Run number"<<endl;
          cout<<"   -exp name    : [def=""] experient name for config/geomap extention"<<endl;
          return 1;
@@ -93,17 +90,17 @@ int main(int argc, char *argv[])
    numfiles = infiles.size();
 
    GlobalPar::Instance(exp);
-   GlobalPar::IncludeCross(regFlag);
    GlobalPar::GetPar()->Print();
 
    TFile *f_out = new TFile(outname,"RECREATE");
    f_out->cd();
 
+   if(regFlag)
+     GlobalPar::GetPar()->EnableCross();
    GlobalPar::GetPar()->EnableRootObject();
    TAGrunInfo info = GlobalPar::Instance()->GetGlobalInfo();
    info.SetCampaignName(exp);
    info.SetRunNumber(runNb);
-   info.Write(TAGrunInfo::GetObjectName());
 
    rootTree = new TTree("EventTree","gsimay");
 
@@ -456,8 +453,33 @@ int main(int argc, char *argv[])
 
       fclose(pfile);
    }
-   rootTree->Write();
 
+    //read the fluka .out file to load the crossing regions:
+    if(regFlag==true){
+      Int_t regnum;
+      TString regname;
+      ifstream outflukafile(outflukaname.Data());
+      if(outflukafile.is_open()){
+        TString mybuffer;
+        while(!outflukafile.eof()){
+          mybuffer.ReadToken(outflukafile);
+          if(mybuffer=="Region"){
+            mybuffer.ReadToken(outflukafile);
+            if(mybuffer=="n."){
+              outflukafile>>regnum;
+              regname.ReadToken(outflukafile);
+              info.AddRegion(regname,regnum);
+            }
+          }
+        }
+      }else{
+        cout<<"ERROR!!! cannot open "<<outflukaname.Data()<<" to read the crossing reagion names, please check the input file"<<endl;
+        cout<<"The crossing region names will not be added in the output file"<<endl;
+      }
+    }
+
+   info.Write(TAGrunInfo::GetObjectName());
+   rootTree->Write();
    f_out->Close();
    cout<<" total number of event safely converted= "<<NumProcessed<<endl;
 
