@@ -67,15 +67,15 @@ class TAMCevent : public TObject {
 
 public:
    // Getters
-   TAMCntuTrack*    GetNtuEve() const { return fTrack;  }
-   TAMCntuRegion* GetNtuReg() const { return fRegion; }
-   TAMCntuHit*    GetHitSTC() const { return fHitSTC; }
-   TAMCntuHit*    GetHitBMN() const { return fHitBMN; }
-   TAMCntuHit*    GetHitVTX() const { return fHitVTX; }
-   TAMCntuHit*    GetHitITR() const { return fHitITR; }
-   TAMCntuHit*    GetHitMSD() const { return fHitMSD; }
-   TAMCntuHit*    GetHitTW()  const { return fHitTW;  }
-   TAMCntuHit*    GetHitCAL() const { return fHitCAL; }
+   TAMCntuTrack*  GetNtuTrack() const { return fTrack;  }
+   TAMCntuRegion* GetNtuReg()   const { return fRegion; }
+   TAMCntuHit*    GetHitSTC()   const { return fHitSTC; }
+   TAMCntuHit*    GetHitBMN()   const { return fHitBMN; }
+   TAMCntuHit*    GetHitVTX()   const { return fHitVTX; }
+   TAMCntuHit*    GetHitITR()   const { return fHitITR; }
+   TAMCntuHit*    GetHitMSD()   const { return fHitMSD; }
+   TAMCntuHit*    GetHitTW()    const { return fHitTW;  }
+   TAMCntuHit*    GetHitCAL()   const { return fHitCAL; }
 
  private:
    Bool_t         fRegionFlag;
