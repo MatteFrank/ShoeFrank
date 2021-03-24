@@ -210,7 +210,33 @@ TAMCntuHit* TAMCflukaParser::GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhi
 }
 
 //------------------------------------------+-----------------------------------
-//! CAL hits
+//! Tracks
+TAMCntuRegion* TAMCflukaParser::GetRegions(EVENT_STRUCT* evStr, TAGdataDsc* p_ntureg)
+{
+  TAMCntuRegion* p_nturaw = (TAMCntuRegion*) p_ntureg->Object();
+  
+  p_nturaw->Clear();
+  
+  for (Int_t i = 0; i < evStr->CROSSn; i++) {
+    
+    Int_t   id      = evStr->CROSSid[i];
+    Int_t   nreg    = evStr->CROSSnreg[i];  //mother id
+    Int_t   nregold = evStr->CROSSnregold[i];
+    Double_t mass   = evStr->CROSSm[i];
+    Double_t charge = evStr->CROSSch[i];
+    Double_t time   = evStr->CROSSt[i];
+    
+    TVector3 pos = TVector3(evStr->CROSSx[i],  evStr->CROSSy[i],  evStr->CROSSz[i]);
+    TVector3 p   = TVector3(evStr->CROSSpx[i], evStr->CROSSpy[i], evStr->CROSSpz[i]);
+    
+    p_nturaw->NewRegion(id, nreg, nregold, pos, p, mass, charge, time);
+  }
+  
+  return p_nturaw;
+}
+
+//------------------------------------------+-----------------------------------
+//! Tracks
 TAMCntuTrack* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrack)
 {
   TAMCntuTrack* p_nturaw = (TAMCntuTrack*) p_ntutrack->Object();
