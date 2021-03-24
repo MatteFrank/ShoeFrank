@@ -43,6 +43,11 @@ void LocalRecoNtuMC::CreateRawAction()
 {
    fActEvtReader = new TAGactTreeReader("actEvtReader");
   
+  fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
+  if (GlobalPar::GetPar()->IsReadRootObj()) {
+    fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+  }
+  
   fpNtuMcEvt    = new TAGdataDsc("evtMc", new TAMCntuEvent());
   if (GlobalPar::GetPar()->IsReadRootObj())
     fActEvtReader->SetupBranch(fpNtuMcEvt,TAMCntuEvent::GetBranchName());
@@ -233,8 +238,8 @@ void LocalRecoNtuMC::CloseFileIn()
 void LocalRecoNtuMC::AddRawRequiredItem()
 {
    fTAGroot->AddRequiredItem("actEvtReader");
-  if (!GlobalPar::GetPar()->IsReadRootObj())
-    fTAGroot->AddRequiredItem("eveActNtuMc");
+   if (!GlobalPar::GetPar()->IsReadRootObj())
+     fTAGroot->AddRequiredItem("eveActNtuMc");
 }
 
 //__________________________________________________________
@@ -245,6 +250,9 @@ void LocalRecoNtuMC::SetTreeBranches()
    fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
    fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
 
+   if (fActEvtReader->CheckBranch(TAMCntuRegion::GetBranchName()))
+     fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+  
    if (GlobalPar::GetPar()->IncludeST()) {
       fActEvtWriter->SetupElementBranch(fpNtuRawSt, TASTntuRaw::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
