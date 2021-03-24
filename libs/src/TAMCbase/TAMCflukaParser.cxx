@@ -284,7 +284,8 @@ TAMCntuTrack* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntut
 //------------------------------------------+-----------------------------------
 //! Find branches
 void TAMCflukaParser::FindBranches(TTree* rootTree, EVENT_STRUCT* eve)
-{  
+{
+  rootTree->SetBranchAddress("EventNumber",&(eve->EventNumber));
   rootTree->SetBranchAddress("TRn",&(eve->TRn));
   rootTree->SetBranchAddress("TRpaid",&(eve->TRpaid));
   rootTree->SetBranchAddress("TRgen",&(eve->TRgen));
