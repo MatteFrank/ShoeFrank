@@ -243,8 +243,11 @@ void LocalRecoMC::CloseFileIn()
 void LocalRecoMC::AddRawRequiredItem()
 {
    fTAGroot->AddRequiredItem("actEvtReader");
-   if (!GlobalPar::GetPar()->IsReadRootObj())
+   if (!GlobalPar::GetPar()->IsReadRootObj()) {
      fTAGroot->AddRequiredItem("eveActNtuMc");
+     fTAGroot->AddRequiredItem("evtActNtuMc");
+     fTAGroot->AddRequiredItem("regActNtuMc");
+   }
 }
 
 //__________________________________________________________
@@ -255,7 +258,7 @@ void LocalRecoMC::SetTreeBranches()
    fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
    fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuTrack::GetBranchName());
   
-  if (fActEvtReader->CheckBranch(TAMCntuRegion::GetBranchName()))
+  if (fActEvtReader->CheckBranch(TAMCntuRegion::GetBranchName()) || !GlobalPar::GetPar()->IsReadRootObj() )
     fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
 
 
