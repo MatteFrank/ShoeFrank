@@ -79,6 +79,21 @@ Int_t TAGactTreeReader::NEvents()
 }
 
 //------------------------------------------+-----------------------------------
+//! Check branch
+
+Bool_t TAGactTreeReader::CheckBranch(const char* branch, Bool_t verbose)
+{
+  TBranch* p_branch = fpTree->GetBranch(branch);
+  if (p_branch) {
+    return true;
+  } else {
+    if (verbose)
+      Warning("CheckBranch()", "Failed to find branch '%s'", branch);
+    return false;
+  }
+}
+
+//------------------------------------------+-----------------------------------
 //! Open root file.
 
 Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TString treeName, Bool_t dscBranch)

@@ -40,6 +40,7 @@ class TAGactTreeReader : public TAGactionFile {
     virtual         ~TAGactTreeReader();
 
     void            SetupBranch(TAGdataDsc* p_data, const char* branch);
+    Bool_t          CheckBranch(const char* branch, Bool_t verbose = false);
 
     virtual Int_t   Open(const TString& name, Option_t* option="READ", const TString treeName="tree", Bool_t dscBranch = true);
     virtual void    Close();

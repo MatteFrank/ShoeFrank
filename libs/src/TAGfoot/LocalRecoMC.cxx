@@ -7,6 +7,7 @@
 #include "TAMCflukaParser.hxx"
 #include "TAMCntuTrack.hxx"
 #include "TAMCntuEvent.hxx"
+#include "TAMCntuRegion.hxx"
 #include "TASTntuHit.hxx"
 #include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
@@ -43,6 +44,11 @@ LocalRecoMC::~LocalRecoMC()
 void LocalRecoMC::CreateRawAction()
 {
    fActEvtReader = new TAGactTreeReader("actEvtReader");
+  
+  fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
+  if (GlobalPar::GetPar()->IsReadRootObj()) {
+      fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+  }
   
    fpNtuMcEvt    = new TAGdataDsc("evtMc", new TAMCntuEvent());
    if (GlobalPar::GetPar()->IsReadRootObj())
@@ -234,8 +240,8 @@ void LocalRecoMC::CloseFileIn()
 void LocalRecoMC::AddRawRequiredItem()
 {
    fTAGroot->AddRequiredItem("actEvtReader");
-  if (!GlobalPar::GetPar()->IsReadRootObj())
-    fTAGroot->AddRequiredItem("eveActNtuMc");
+   if (!GlobalPar::GetPar()->IsReadRootObj())
+     fTAGroot->AddRequiredItem("eveActNtuMc");
 }
 
 //__________________________________________________________
@@ -245,6 +251,10 @@ void LocalRecoMC::SetTreeBranches()
   
    fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
    fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuTrack::GetBranchName());
+  
+  if (fActEvtReader->CheckBranch(TAMCntuRegion::GetBranchName()))
+    fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+
 
    if (GlobalPar::GetPar()->IncludeST()) {
       fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
