@@ -23,6 +23,17 @@
 ClassImp(TAGactTreeReaderBranch);
 ClassImp(TAGactTreeReader);
 
+
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+TAGactTreeReaderBranch::TAGactTreeReaderBranch(TAGdataDsc* p_data, TString name)
+: fpDataDsc(p_data),
+  fName(name),
+  fpBranch(0),
+  fiNByte(0)
+{
+}
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
@@ -65,6 +76,21 @@ void TAGactTreeReader::SetupBranch(TAGdataDsc* p_data, const char* branch)
 Int_t TAGactTreeReader::NEvents()
 {
   return fiNEntry;
+}
+
+//------------------------------------------+-----------------------------------
+//! Check branch
+
+Bool_t TAGactTreeReader::CheckBranch(const char* branch, Bool_t verbose)
+{
+  TBranch* p_branch = fpTree->GetBranch(branch);
+  if (p_branch) {
+    return true;
+  } else {
+    if (verbose)
+      Warning("CheckBranch()", "Failed to find branch '%s'", branch);
+    return false;
+  }
 }
 
 //------------------------------------------+-----------------------------------

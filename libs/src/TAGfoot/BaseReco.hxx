@@ -83,6 +83,9 @@
 
 class TAMCntuHit;
 class TAMCntuEve;
+class TAMCntuRegion;
+class TAMCntuEvent;
+
 class BaseReco : public TNamed // using TNamed for the in/out files
 {
 public:
@@ -223,16 +226,18 @@ public:
    TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
-   //! MC container Getter (virtual)
-   virtual TAMCntuEve*  GetNtuMcEve()       const { return 0x0; }
-   virtual TAMCntuHit*  GetNtuMcSt()        const { return 0x0; }
-   virtual TAMCntuHit*  GetNtuMcBm()        const { return 0x0; }
-   virtual TAMCntuHit*  GetNtuMcVtx()       const { return 0x0; }
-   virtual TAMCntuHit*  GetNtuMcIt()        const { return 0x0; }
-   virtual TAMCntuHit*  GetNtuMcMsd()       const { return 0x0; }
-   virtual TAMCntuHit*  GetNtuMcTw()        const { return 0x0; }
-   virtual TAMCntuHit*  GetNtuMcCa()        const { return 0x0; }
-   virtual TTree*       GetTree()                 { return 0x0; }
+  //! MC container Getter (virtual)
+  virtual TAMCntuRegion* GetNtuMcReg()     const { return 0x0; }
+  virtual TAMCntuEvent*  GetNtuMcEvt()     const { return 0x0; }
+  virtual TAMCntuEve*    GetNtuMcEve()     const { return 0x0; }
+  virtual TAMCntuHit*    GetNtuMcSt()      const { return 0x0; }
+  virtual TAMCntuHit*    GetNtuMcBm()      const { return 0x0; }
+  virtual TAMCntuHit*    GetNtuMcVtx()     const { return 0x0; }
+  virtual TAMCntuHit*    GetNtuMcIt()      const { return 0x0; }
+  virtual TAMCntuHit*    GetNtuMcMsd()     const { return 0x0; }
+  virtual TAMCntuHit*    GetNtuMcTw()      const { return 0x0; }
+  virtual TAMCntuHit*    GetNtuMcCa()      const { return 0x0; }
+  virtual TTree*         GetTree()               { return 0x0; }
 
 public:
    //! Disable/Enable ITR tracking
