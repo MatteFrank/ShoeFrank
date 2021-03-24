@@ -10,6 +10,7 @@
 #include "TAMCntuHit.hxx"
 #include "TAMCntuTrack.hxx"
 #include "TAMCntuRegion.hxx"
+#include "TAMCntuEvent.hxx"
 #include "EventStruct.hxx"
 
 #include "TAGobject.hxx"
@@ -31,6 +32,7 @@ public:
   static TAMCntuHit*    GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
   static TAMCntuTrack*  GetTracks( EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrck);
   static TAMCntuRegion* GetRegions(EVENT_STRUCT* evStr, TAGdataDsc* p_ntureg);
+  static TAMCntuEvent*  GetEvents(EVENT_STRUCT* evStr,  TAGdataDsc* p_ntuevt);
 
   static void           FindBranches(TTree* rootTree, EVENT_STRUCT* evStr);
 

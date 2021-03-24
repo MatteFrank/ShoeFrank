@@ -209,8 +209,21 @@ TAMCntuHit* TAMCflukaParser::GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhi
   return p_nturaw;
 }
 
+
 //------------------------------------------+-----------------------------------
-//! Tracks
+//! events
+TAMCntuEvent* TAMCflukaParser::GetEvents(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuevt)
+{
+  TAMCntuEvent* p_nturaw = (TAMCntuEvent*) p_ntuevt->Object();  
+  p_nturaw->Clear();
+
+  p_nturaw->SetEventNumber(evStr->EventNumber);
+  
+  return p_nturaw;
+}
+
+//------------------------------------------+-----------------------------------
+//! Crossing regions
 TAMCntuRegion* TAMCflukaParser::GetRegions(EVENT_STRUCT* evStr, TAGdataDsc* p_ntureg)
 {
   TAMCntuRegion* p_nturaw = (TAMCntuRegion*) p_ntureg->Object();
