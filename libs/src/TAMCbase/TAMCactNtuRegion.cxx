@@ -42,7 +42,7 @@ Bool_t TAMCactNtuRegion::Action()
   if(FootDebugLevel(2))
     cout << " Entering TAMCactNtuRegion" << endl;
 
-  TAMCflukaParser::GetTracks(fpEvtStr, fpNtuMC);
+  TAMCflukaParser::GetEvents(fpEvtStr, fpNtuMC);
 
   fpNtuMC->SetBit(kValid);
   
