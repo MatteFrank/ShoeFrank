@@ -50,7 +50,7 @@ Bool_t TAMCactNtuEvent::Action()
   if(FootDebugLevel(2))
     cout << " Entering TAMCactNtuEvent" << endl;
 
-  TAMCflukaParser::GetTracks(fpEvtStr, fpNtuMC);
+  TAMCflukaParser::GetEvents(fpEvtStr, fpNtuMC);
 
   fpNtuMC->SetBit(kValid);
   
