@@ -252,7 +252,7 @@ void LocalRecoNtuMC::SetTreeBranches()
    fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
    fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
 
-   if (fActEvtReader->CheckBranch(TAMCntuRegion::GetBranchName()) && || GlobalPar::GetPar()->IsRegionMc())
+   if (fActEvtReader->CheckBranch(TAMCntuRegion::GetBranchName()) || GlobalPar::GetPar()->IsRegionMc())
      fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
   
    if (GlobalPar::GetPar()->IncludeST()) {
