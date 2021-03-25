@@ -9,6 +9,7 @@
 
 #include "GlobalPar.hxx"
 #include "TAGparTools.hxx"
+#include "TAGroot.hxx"
 
 //##############################################################################
 
@@ -637,4 +638,9 @@ string  TAGparTools::PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, T
 	
   return fLine.str();
   
+}
+
+//_____________________________________________________________________________
+Int_t  TAGparTools::GetCrossReg(TString &regname) {
+  return gTAGroot->CurrentRunInfo().GetRegion(regname);
 }

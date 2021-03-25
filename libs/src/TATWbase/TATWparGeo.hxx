@@ -75,6 +75,9 @@ public:
     int GetNBars() { return fBarsN; };
     int GetLayersN() { return fLayersN; };
 
+   //crossing regions
+   Int_t          GetRegStrip(Int_t lay, Int_t bar); //lay (0-1); bar(0-19)
+
     virtual string PrintBodies();
     virtual string PrintRegions();
     virtual string PrintAssignMaterial(TAGmaterials *Material);

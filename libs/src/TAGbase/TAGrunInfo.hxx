@@ -76,7 +76,8 @@ public:
 
    //crossing region:
    void            AddRegion(TString &regName, Int_t regNum ){fCrossMap[regName] = regNum;};
-   Int_t           GetRegion(TString &regName){return (fCrossMap.find(regName)==fCrossMap.end()) ? -1 : fCrossMap.at(regName);};
+   Int_t           GetRegion(TString &regName) const {return (fCrossMap.find(regName)==fCrossMap.end()) ? -1 : fCrossMap.at(regName);};
+   void            ImportCrossMap(const TAGrunInfo& right){fCrossMap=right.fCrossMap;};
 
 private:
    static TString    fgkObjectName;    // name in TFile

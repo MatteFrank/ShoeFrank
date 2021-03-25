@@ -44,6 +44,11 @@ public:
    //! Build Vertex
    TGeoVolume* BuildVertex( const char *name = "Vertex", const char* basemoduleName = "M28", Bool_t board = false);
    
+   //crossing regions (n = layer number; 0<=n<=3)
+   Int_t          GetRegEpitaxial(Int_t n);
+   Int_t          GetRegModule(Int_t n);
+   Int_t          GetRegPixel(Int_t n);
+
    // to print fluka files
    virtual string PrintParameters();
    virtual string PrintRotations();

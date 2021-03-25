@@ -131,6 +131,10 @@ public:
   TVector3    GetBoxSize()     const { return fSizeBox;  }
   TVector3    GetMinPoistion() const { return fMinPosition; }
   TVector3    GetMaxPoistion() const { return fMaxPosition; }
+
+  //crossing regions
+  Int_t       GetRegMagnet(Int_t n); //n=0,1
+  Int_t       GetRegShield(Int_t n); //n=0,1
   
   // to print fluka files
   string PrintRotations();

@@ -36,6 +36,11 @@ public:
    
    TGeoVolume*     BuildStartCounter(const char *bmName = "ST");
 
+  //crossing regions
+  Int_t          GetRegSensor(){TString regname("STC");return GetCrossReg(regname);};
+  Int_t          GetRegMylar1(){TString regname("STCMYL1");return GetCrossReg(regname);};
+  Int_t          GetRegMylar2(){TString regname("STCMYL2");return GetCrossReg(regname);};
+
   string PrintRotations();
   string PrintBodies();
   string PrintRegions();

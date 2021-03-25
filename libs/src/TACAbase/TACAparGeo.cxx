@@ -1000,6 +1000,12 @@ TString TACAparGeo::PrintModuleAirRegions()
    return modRegion;
 }
 
+Int_t TACAparGeo::GetRegCrystal(Int_t n){
+  TString regname;
+  regname.Form("CAL%03d",n);
+  return GetCrossReg(regname);
+}
+
 //_____________________________________________________________________________
 string TACAparGeo::PrintSubtractBodiesFromAir() 
 {

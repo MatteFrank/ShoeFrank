@@ -379,8 +379,16 @@ void BaseReco::CloseFileOut()
    TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
    info.SetCampaignName(fExpName);
    info.SetRunNumber(fRunNumber);
+   
+   //add crossing map if enabled in input mc files
+   if(fFlagMC){ 
+     TAGrunInfo inputinfo = gTAGroot->CurrentRunInfo();
+     if(inputinfo.GetGlobalPar().IncludeCross==true){
+       info.GetGlobalPar().IncludeCross=true;
+       info.ImportCrossMap(inputinfo);
+     }
+   }
    gTAGroot->SetRunInfo(info);
-
    fActEvtWriter->Print();
    fActEvtWriter->Close();
 }

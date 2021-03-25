@@ -919,8 +919,21 @@ string TABMparGeo::PrintRegions(){
 
 }
 
+//_____________________________________________________________________________
+Int_t TABMparGeo::GetRegCell(Int_t cellid){
+  TString regname("BMN_C");
+  regname.Append((((Int_t)(cellid/3)) % 2 == 0) ? "0":"1");
+  regname.Append(((Int_t)(cellid/6))*3 + cellid % 3);
+  return GetCrossReg(regname);
+}
 
-
+//_____________________________________________________________________________
+Int_t TABMparGeo::GetRegCell(Int_t ilay, Int_t iview, Int_t icell){
+  TString regname("BMN_C");
+  regname.Append(iview);
+  regname.Append(ilay*3 + icell);
+  return GetCrossReg(regname);
+}
 
 //_____________________________________________________________________________
 string TABMparGeo::PrintSubtractBodiesFromAir() {

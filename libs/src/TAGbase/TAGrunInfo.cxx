@@ -138,7 +138,6 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << Form("  EnableTWCalBar: %d\n\n", fGlobalParameter.EnableTWCalBar)
    << Form("  IncludeKalman: %d\n", fGlobalParameter.IncludeKalman)
    << Form("  IncludeTOE: %d\n\n", fGlobalParameter.IncludeTOE)
-   << Form("  IncludeCross: %d\n\n", fGlobalParameter.IncludeCross)
    << Form("  IncludeDI: %d\n", fGlobalParameter.IncludeDI)
    << Form("  IncludeST: %d\n", fGlobalParameter.IncludeST)
    << Form("  IncludeBM: %d\n", fGlobalParameter.IncludeBM)
@@ -147,7 +146,8 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << Form("  IncludeIT: %d\n", fGlobalParameter.IncludeIT)
    << Form("  IncludeMSD: %d\n", fGlobalParameter.IncludeMSD)
    << Form("  IncludeTW: %d\n", fGlobalParameter.IncludeTW)
-   << Form("  IncludeCA: %d", fGlobalParameter.IncludeCA)
+   << Form("  IncludeCA: %d\n", fGlobalParameter.IncludeCA)
+   << Form("  IncludeCross: %d\n", fGlobalParameter.IncludeCross)
    << endl;
 
    if(fGlobalParameter.IncludeCross){
