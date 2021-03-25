@@ -41,7 +41,7 @@ struct GlobalParameter_t : public  TObject {
    Bool_t IncludeTW;
    Bool_t IncludeCA;
    
-   ClassDef(GlobalParameter_t,2)
+   ClassDef(GlobalParameter_t,3)
 };
 
 class TAGrunInfo : public TAGobject {
