@@ -29,9 +29,8 @@ int main(int argc, char *argv[])
    int maxevpro = 1000000000;
    int fragtrig=0;
    double Ethreshold = 0;
-
-   bool regFlag = false;
-
+   bool regFlag=false;
+   
    static TTree *rootTree = 0;
 
    EVENT_STRUCT eve;
@@ -47,8 +46,8 @@ int main(int argc, char *argv[])
          maxevpro = atoi(argv[++i]);
       }
       if(strcmp(argv[i],"-reg") == 0) {
+        regFlag=true;
         outflukaname=TString(argv[++i]);
-        regFlag = true;
       }
       if(strcmp(argv[i],"-iL") == 0) {
          iL = 1;
@@ -96,7 +95,7 @@ int main(int argc, char *argv[])
    f_out->cd();
 
    if(regFlag)
-     GlobalPar::GetPar()->EnableCross();
+     GlobalPar::GetPar()->EnableRegionMc();
    GlobalPar::GetPar()->EnableRootObject();
    TAGrunInfo info = GlobalPar::Instance()->GetGlobalInfo();
    info.SetCampaignName(exp);
@@ -150,9 +149,9 @@ int main(int argc, char *argv[])
          nread= fscanf(pfile,"%d %d %d %d %d %d %d %d %d %d \n",&eve.EventNumber,
                        &eve.TRn,&eve.STCn,&eve.BMNn,&eve.VTXn,&eve.ITRn,&eve.MSDn,
                        &eve.SCNn,&eve.CALn,&eve.CROSSn);
-
-         event->SetEvent(eve.EventNumber);
-
+         
+         event->AddEvent(eve.EventNumber);
+         
          if(nread!=10){
             cout<<"ReadError in ev header section: nread = "<<nread<<
             " instead of 10; ev= "<<NumProcessed<<endl;
@@ -416,7 +415,7 @@ int main(int argc, char *argv[])
                               &eve.CROSSy[jj],&eve.CROSSz[jj],&eve.CROSSpx[jj],
                               &eve.CROSSpy[jj],&eve.CROSSpz[jj],&eve.CROSSm[jj],
                               &eve.CROSSch[jj],&eve.CROSSt[jj]);
-               if (regFlag) {
+              if (GlobalPar::GetPar()->IsRegionMc()) {
                   event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
                                   TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
                                   TVector3(eve.CROSSpx[jj],eve.CROSSpy[jj],eve.CROSSpz[jj]),

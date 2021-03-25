@@ -68,6 +68,7 @@ public:
     bool IsTWnoPU()            const { return m_enableTWnoPU;        }
     bool IsTWZmatch()          const { return m_enableTWZmatch;      }
     bool IsTWCalBar()          const { return m_enableTWCalBar;      }
+    bool IsRegionMc()          const { return m_enableRegionMc;      }
 
     bool IncludeDI()           const { return m_includeDI;           }
     bool IncludeST()           const { return m_includeST;           }
@@ -81,20 +82,20 @@ public:
 
     bool IncludeTOE()          const { return m_includeTOE;          }
     bool IncludeKalman()       const { return m_includeKalman;       }
-    bool IncludeCross()        const { return m_includeCross;       }
 
     bool CalibTW()             const { return m_doCalibTW;           }
     bool CalibBM()             const { return m_doCalibBM;           }
 
     void IncludeTOE(bool t)          {  m_includeTOE = t;            }
     void IncludeKalman(bool t)       {  m_includeKalman = t;         }
-    void EnableCross()        			 {  m_includeCross = true;       }
-    void DisableCross()        			 {  m_includeCross = false;      }
     void EnableLocalReco()           {  m_enableLocalReco = true;    }
     void DisableLocalReco()          {  m_enableLocalReco = false;   }
 
     void EnableRootObject()          {  m_enableRootObject = true;   }
     void DisableRootObject()         {  m_enableRootObject = false;  }
+
+    void EnableRegionMc()              {  m_enableRegionMc = true;     }
+    void DisableRegionMc()             {  m_enableRegionMc = false;    }
 
     void IncludeDI(bool t)           {  m_includeDI = t;             }
     void IncludeST(bool t)           {  m_includeST = t;             }
@@ -160,6 +161,7 @@ private:
    Bool_t m_enableTWnoPU;
    Bool_t m_enableTWZmatch;
    Bool_t m_enableTWCalBar;
+   Bool_t m_enableRegionMc;
 
    bool m_includeST;
    bool m_includeBM;
@@ -174,7 +176,6 @@ private:
 
    bool m_includeKalman;
    bool m_includeTOE;
-   bool m_includeCross;
    bool m_doCalibTW;
    bool m_doCalibBM;
 

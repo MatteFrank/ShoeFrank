@@ -10,6 +10,7 @@
 class TAMCntuHit ;
 class TAMCntuEve ;
 class TAMCntuRegion;
+class TAMCntuEvent ;
 using namespace std;
 
 class TAMCevent : public TObject {
@@ -21,7 +22,7 @@ class TAMCevent : public TObject {
 
   Int_t Clean();
 
-  void SetEvent(Int_t aEventNumber){ fEventNumber = aEventNumber ; }
+  void AddEvent(Int_t nb);
 
   void AddPart(Int_t aTRpaid, Int_t aTRgen, Int_t aTRcharge, Int_t aTRreg, Int_t aTRbaryon,
                 Int_t aTRdead, Int_t aTRflukid, TVector3 aTRipos, TVector3 aTRfpos,
@@ -67,6 +68,7 @@ class TAMCevent : public TObject {
 
 public:
    // Getters
+   TAMCntuEvent*  GetNtuEvent() const { return fEvent;  }
    TAMCntuEve*    GetNtuEve() const { return fTrack;  }
    TAMCntuRegion* GetNtuReg() const { return fRegion; }
    TAMCntuHit*    GetHitSTC() const { return fHitSTC; }
@@ -78,7 +80,7 @@ public:
    TAMCntuHit*    GetHitCAL() const { return fHitCAL; }
 
  private:
-   Int_t          fEventNumber;
+   TAMCntuEvent*  fEvent;
    TAMCntuEve*    fTrack;
    TAMCntuRegion* fRegion;
    TAMCntuHit*    fHitSTC;

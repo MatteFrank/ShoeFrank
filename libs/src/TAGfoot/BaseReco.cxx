@@ -383,10 +383,8 @@ void BaseReco::CloseFileOut()
    //add crossing map if enabled in input mc files
    if(fFlagMC){ 
      TAGrunInfo inputinfo = gTAGroot->CurrentRunInfo();
-     if(inputinfo.GetGlobalPar().IncludeCross==true){
-       info.GetGlobalPar().IncludeCross=true;
+     if(inputinfo.GetGlobalPar().EnableRegionMc==true && info.GetGlobalPar().EnableRegionMc==true)
        info.ImportCrossMap(inputinfo);
-     }
    }
    gTAGroot->SetRunInfo(info);
    fActEvtWriter->Print();

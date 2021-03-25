@@ -15,7 +15,7 @@ struct GlobalParameter_t : public  TObject {
    GlobalParameter_t() : TObject(),
    EnableLocalReco(false), EnableTree(false), EnableHisto(false), EnableSaveHits(false),
    EnableTracking(false), EnableRootObject(false), EnableTWZmc(false), EnableTWnoPU(false),EnableTWZmatch(false), EnableTWCalBar(false),
-   IncludeKalman(false), IncludeTOE(false), IncludeCross(false), IncludeDI(false), IncludeST(false), IncludeBM(false),
+   EnableRegionMc(false), IncludeKalman(false), IncludeTOE(false), IncludeDI(false), IncludeST(false), IncludeBM(false),
    IncludeTG(false), IncludeVT(false), IncludeIT(false), IncludeMSD(false), IncludeTW(false),
    IncludeCA(false) { }
 
@@ -29,9 +29,9 @@ struct GlobalParameter_t : public  TObject {
    Bool_t EnableTWnoPU;
    Bool_t EnableTWZmatch;
    Bool_t EnableTWCalBar;
+   Bool_t EnableRegionMc;
    Bool_t IncludeKalman;
    Bool_t IncludeTOE;
-   Bool_t IncludeCross;
    Bool_t IncludeDI;
    Bool_t IncludeST;
    Bool_t IncludeBM;

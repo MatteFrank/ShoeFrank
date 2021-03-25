@@ -4,6 +4,7 @@
 #include "TAMCevent.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAMCntuEve.hxx"
+#include "TAMCntuEvent.hxx"
 #include "TAMCntuRegion.hxx"
 
 #include "GlobalPar.hxx"
@@ -13,8 +14,8 @@ using namespace std;
 ClassImp(TAMCevent);
 
 /*-----------------------------------------------------------------*/
-TAMCevent::TAMCevent():
-   fEventNumber(-1),
+TAMCevent::TAMCevent()
+ : fEvent(new TAMCntuEvent()),
    fTrack(new TAMCntuEve()),
    fRegion(0x0),
    fHitSTC(0x0),
@@ -25,7 +26,7 @@ TAMCevent::TAMCevent():
    fHitTW(0x0),
    fHitCAL(0x0)
 {
-   if (GlobalPar::GetPar()->IncludeCross())
+    if (GlobalPar::GetPar()->IsRegionMc())
       fRegion = new TAMCntuRegion();
 
     if (GlobalPar::GetPar()->IncludeST())
@@ -53,8 +54,9 @@ TAMCevent::TAMCevent():
 /*-----------------------------------------------------------------*/
 Int_t TAMCevent::Clean()
 {
+    fEvent->Clear();
     fTrack->Clear();
-   if (GlobalPar::GetPar()->IncludeCross())
+    if (fRegion)
       fRegion->Clear();
 
     if (fHitSTC)
@@ -79,6 +81,12 @@ Int_t TAMCevent::Clean()
        fHitCAL->Clear();
 
     return 0;
+}
+
+/*-----------------------------------------------------------------*/
+void TAMCevent::AddEvent(Int_t nb)
+{
+  fEvent->SetEventNumber(nb);
 }
 
 /*-----------------------------------------------------------------*/
@@ -162,17 +170,17 @@ void TAMCevent::AddCROSS(Int_t aCROSSid, Int_t aCROSSnreg, Int_t aCROSSnregold,
                           TVector3 aCROSSpos,TVector3 aCROSSp, Double_t aCROSSm,
                           Double_t aCROSSch, Double_t aCROSSt)
 {
-   if (GlobalPar::GetPar()->IncludeCross())
+   if (fRegion)
       fRegion->NewRegion(aCROSSid, aCROSSnreg, aCROSSnregold, aCROSSpos, aCROSSp, aCROSSm, aCROSSch, aCROSSt);
 }
 
 /*-----------------------------------------------------------------*/
 void TAMCevent::SetBranches(TTree *RootTree){
 
-    RootTree->Branch("EventNumber",&fEventNumber,"EventNumber/I");
-
+    RootTree->Branch(fEvent->GetBranchName(),&fEvent);
     RootTree->Branch(fTrack->GetBranchName(),&fTrack);
-    if (GlobalPar::GetPar()->IncludeCross())
+  
+    if (GlobalPar::GetPar()->IsRegionMc())
        RootTree->Branch(fRegion->GetBranchName(),&fRegion);
 
     if (GlobalPar::GetPar()->IncludeST())
@@ -200,7 +208,7 @@ void TAMCevent::SetBranches(TTree *RootTree){
 /*-----------------------------------------------------------------*/
 void TAMCevent::FindBranches(TTree *RootTree)
 {
-    RootTree->SetBranchAddress("EventNumber",&fEventNumber);
+    RootTree->SetBranchAddress(fEvent->GetBranchName(),&fEvent);
 
     RootTree->SetBranchAddress(fTrack->GetBranchName(),&fTrack);
 
@@ -238,7 +246,9 @@ void TAMCevent::Dump() const
 TAMCevent::~TAMCevent()
 {
     delete fTrack;
-   if (GlobalPar::GetPar()->IncludeCross())
+    delete fEvent;
+
+    if (fRegion)
       delete fRegion;
 
     if (fHitCAL)
