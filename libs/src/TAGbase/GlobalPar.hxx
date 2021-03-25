@@ -53,12 +53,6 @@ public:
     Double_t MSDReso()           const { return m_MSDreso;             }
     Double_t TWReso()            const { return m_TWreso;              }
 
-    Bool_t IsPrintOutputFile()   const { return m_printoutfile;        }
-    string OutputFile()          const { return m_outputfilename;      }
- 
-    Bool_t IsPrintOutputNtuple() const { return m_printoutntuple;      }
-    string OutputNtuple()        const { return m_outputntuplename;    }
-	
     Bool_t Find_MCParticle( string villain );
 
     // Reconstruction parameters Getter
@@ -146,12 +140,6 @@ private:
    Double_t m_ITreso;
    Double_t m_MSDreso;
    Double_t m_TWreso;
-
-   string  m_outputfilename;
-   Bool_t m_printoutfile;
-       
-   string  m_outputntuplename;
-   Bool_t m_printoutntuple;
   
    // reconstruction parameter
    Bool_t m_enableLocalReco;

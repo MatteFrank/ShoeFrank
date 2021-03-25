@@ -59,10 +59,4 @@ IncludeMSD:			   n
 IncludeTW:			   y
 IncludeCA:			   n
 
-Print OutputFile: true
-Output Filename: RecoHistos.root
-
-Print OutputNtuple: false
-Output Ntuplename: RecoTree.root
-
 FLUKA version: pro

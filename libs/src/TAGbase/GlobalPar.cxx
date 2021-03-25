@@ -52,7 +52,6 @@ GlobalPar::~GlobalPar()
 GlobalPar::GlobalPar( const TString expName )
 : m_parFileName(""),        m_debug(0),
   m_kalmanMode(-1),         m_kalReverse(false),   m_verFLUKA(false),       m_VTreso(0.),            m_ITreso(0.),            m_MSDreso(0.), m_TWreso(0.),
-  m_outputfilename(""),     m_printoutfile(false), m_outputntuplename(""),  m_printoutntuple(false),
   m_enableLocalReco(false), m_enableTree(false),   m_enableHisto(false),    m_enableSaveHits(false), m_enableTracking(false), m_enableRootObject(false),
   m_enableTWZmc(false),     m_enableTWnoPU(false), m_enableTWZmatch(false), m_enableTWCalBar(false), m_doCalibTW(false),      m_doCalibBM(false), m_enableRegionMc(false),
   m_includeST(false),       m_includeBM(false),    m_includeTG(false),      m_includeDI(false),      m_includeTW(false),      m_includeMSD(false),
@@ -454,36 +453,6 @@ void GlobalPar::ReadParamFile ()
       
       if (m_includeCA)
         m_dectInclude.push_back("CA");
-    }
-    
-    if (key.Contains("Print OutputFile:")) {
-      if ( item == "true" )
-        m_printoutfile = true;
-      else
-        m_printoutfile = false;
-      if (m_debug > 0)
-        printf("Print OutputFile: %d\n", m_printoutfile);
-    }
-    
-    if (key.Contains("Output Filename:") ) {
-      m_outputfilename = item.Data();
-      if (m_debug > 0)
-        printf("Output Filename: %s\n", m_outputfilename.data());
-    }
-    
-    if (key.Contains("Print OutputNtuple:") ) {
-      if ( item == "true" )
-        m_printoutntuple = true;
-      else
-        m_printoutntuple = false;
-      if (m_debug > 0)
-        printf("Print OutputNtuple: %d\n", m_printoutntuple);
-    }
-    
-    if (key.Contains("Output Ntuplename:") ) {
-      m_outputntuplename = item.Data();
-      if (m_debug > 0)
-        printf("Output Ntuplename: %s\n", m_outputntuplename.data());
     }
     
     if (key.Contains("FLUKA version:")) {
