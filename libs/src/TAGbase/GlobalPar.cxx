@@ -466,8 +466,9 @@ void GlobalPar::FromFile ()
   }
   
   parTools->Close();
-  
   delete parTools;
+
+  SetDebugLevels();
 }
 
 //_____________________________________________________________________________

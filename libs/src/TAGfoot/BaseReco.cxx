@@ -126,9 +126,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fCampManager = new TAGcampaignManager(expName);
    fCampManager->FromFile();
    
-   // activate debug level
-   GlobalPar::GetPar()->SetDebugLevels();
-   
    // Save run info
    gTAGroot->SetRunNumber(fRunNumber);
    gTAGroot->SetCampaignName(fExpName);
