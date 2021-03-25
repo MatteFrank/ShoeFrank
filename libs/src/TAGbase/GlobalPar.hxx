@@ -68,6 +68,7 @@ public:
     bool IsTWnoPU()            const { return m_enableTWnoPU;        }
     bool IsTWZmatch()          const { return m_enableTWZmatch;      }
     bool IsTWCalBar()          const { return m_enableTWCalBar;      }
+    bool IsRegionMc()          const { return m_enableRegionMc;      }
 
     bool IncludeDI()           const { return m_includeDI;           }
     bool IncludeST()           const { return m_includeST;           }
@@ -92,6 +93,9 @@ public:
 
     void EnableRootObject()          {  m_enableRootObject = true;   }
     void DisableRootObject()         {  m_enableRootObject = false;  }
+
+    void EnableRegionMc()              {  m_enableRegionMc = true;     }
+    void DisableRegionMc()             {  m_enableRegionMc = false;    }
 
     void IncludeDI(bool t)           {  m_includeDI = t;             }
     void IncludeST(bool t)           {  m_includeST = t;             }
@@ -157,6 +161,7 @@ private:
    Bool_t m_enableTWnoPU;
    Bool_t m_enableTWZmatch;
    Bool_t m_enableTWCalBar;
+   Bool_t m_enableRegionMc;
 
    bool m_includeST;
    bool m_includeBM;

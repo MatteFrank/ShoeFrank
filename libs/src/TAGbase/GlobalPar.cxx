@@ -92,6 +92,9 @@ const TAGrunInfo GlobalPar::GetGlobalInfo()
    
    if (IsTWZmc())
       runInfo.GetGlobalPar().EnableTWZmc = true;
+ 
+   if (IsRegionMc())
+     runInfo.GetGlobalPar().EnableRegionMc = true;
 
    if (IsTWnoPU())
       runInfo.GetGlobalPar().EnableTWnoPU = true;
@@ -349,11 +352,18 @@ void GlobalPar::ReadParamFile ()
         printf("EnableTWZmatch: %d\n", m_enableTWZmatch);
     }
     
-if (key.Contains("EnableTWCalBar:")  ) {
+    if (key.Contains("EnableTWCalBar:")  ) {
       if ( item.Contains("y"))  m_enableTWCalBar = true;
       else                      m_enableTWCalBar = false;
       if (m_debug > 0)
         printf("EnableTWCalBar: %d\n", m_enableTWCalBar);
+    }
+    
+    if (key.Contains("EnableRegionMc:")  ) {
+      if ( item.Contains("y"))  m_enableRegionMc = true;
+      else                      m_enableRegionMc = false;
+      if (m_debug > 0)
+        printf("EnableRegionMc: %d\n", m_enableRegionMc);
     }
     
     if (key.Contains("IncludeDI:") ) {

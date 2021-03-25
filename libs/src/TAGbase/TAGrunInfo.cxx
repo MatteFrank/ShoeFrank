@@ -50,6 +50,7 @@ TAGrunInfo::TAGrunInfo(const TAGrunInfo& right)
    fGlobalParameter.EnableTWnoPU     = right.fGlobalParameter.EnableTWnoPU;
    fGlobalParameter.EnableTWZmatch   = right.fGlobalParameter.EnableTWZmatch;
    fGlobalParameter.EnableTWCalBar   = right.fGlobalParameter.EnableTWCalBar;
+   fGlobalParameter.EnableRegionMc   = right.fGlobalParameter.EnableRegionMc;
    fGlobalParameter.IncludeKalman    = right.fGlobalParameter.IncludeKalman;
    fGlobalParameter.IncludeTOE       = right.fGlobalParameter.IncludeTOE;
    fGlobalParameter.IncludeDI        = right.fGlobalParameter.IncludeDI;
@@ -86,6 +87,7 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
    fGlobalParameter.EnableTWnoPU     = right.fGlobalParameter.EnableTWnoPU;
    fGlobalParameter.EnableTWZmatch   = right.fGlobalParameter.EnableTWZmatch;
    fGlobalParameter.EnableTWCalBar   = right.fGlobalParameter.EnableTWCalBar;
+   fGlobalParameter.EnableRegionMc   = right.fGlobalParameter.EnableRegionMc;
    fGlobalParameter.IncludeKalman    = right.fGlobalParameter.IncludeKalman;
    fGlobalParameter.IncludeTOE       = right.fGlobalParameter.IncludeTOE;
    fGlobalParameter.IncludeDI        = right.fGlobalParameter.IncludeDI;
@@ -131,6 +133,7 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << Form("  EnableTWnoPU: %d\n\n", fGlobalParameter.EnableTWnoPU)
    << Form("  EnableTWZmatch: %d\n", fGlobalParameter.EnableTWZmatch)
    << Form("  EnableTWCalBar: %d\n\n", fGlobalParameter.EnableTWCalBar)
+   << Form("  EnableRegionMc: %d\n\n", fGlobalParameter.EnableRegionMc)
    << Form("  IncludeKalman: %d\n", fGlobalParameter.IncludeKalman)
    << Form("  IncludeTOE: %d\n\n", fGlobalParameter.IncludeTOE)
    << Form("  IncludeDI: %d\n", fGlobalParameter.IncludeDI)
