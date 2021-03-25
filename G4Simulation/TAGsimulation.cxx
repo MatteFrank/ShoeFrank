@@ -135,6 +135,7 @@ int main(int argc,char** argv)
   
     // Global Par
     GlobalPar::Instance(expName);
+    GlobalPar::GetPar()->FromFile();
     GlobalPar::GetPar()->SetDebugLevels();
    
     // TAG root

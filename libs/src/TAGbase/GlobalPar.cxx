@@ -62,8 +62,6 @@ GlobalPar::GlobalPar( const TString expName )
     m_parFileName = absName.Data();
 
     m_copyInputFile.clear();
-
-    ReadParamFile();
 }
 
 //_____________________________________________________________________________
@@ -138,11 +136,11 @@ const TAGrunInfo GlobalPar::GetGlobalInfo()
 }
 
 //_____________________________________________________________________________
-void GlobalPar::ReadParamFile ()
+void GlobalPar::FromFile ()
 {
   TAGparTools* parTools = new TAGparTools();
   if (!parTools->Open(m_parFileName.data())) {
-    Error("ReadParamFile()", "Cannot open file %s", m_parFileName.c_str());
+    Error("FromFile()", "Cannot open file %s", m_parFileName.c_str());
     exit(0);
   }
   

@@ -66,7 +66,8 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumbe
 {
    // Par instance
    GlobalPar::Instance(expName);
-
+   GlobalPar::GetPar()->FromFile();
+  
    // default constructon
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM()) {
       fStClusDisplay = new TAEDcluster("Start counter Hit");

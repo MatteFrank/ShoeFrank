@@ -19,14 +19,12 @@
 void DecodeMC(TString name = "12C_C_200_1.root", TString exp = "12C_200", Int_t runNumber = 1)
 {
    GlobalPar::Instance(exp);
+   GlobalPar::GetPar()->FromFile();
    GlobalPar::GetPar()->Print();
    
    Int_t pos = name.Last('.');
    TString nameOut = name(0, pos);
    nameOut.Append("_Out.root");
-  
-   GlobalPar::Instance(exp);
-   GlobalPar::GetPar()->Print();
   
    Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
    Bool_t his = GlobalPar::GetPar()->IsSaveHisto();

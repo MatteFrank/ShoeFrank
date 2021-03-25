@@ -101,6 +101,7 @@ void ReadBmRawVME(TString name = "./data/msd_marzo/bmdata/6_March_2019/80MeV_HV2
   //~ Int_t myexpcode=0;   //0=gsi2019, 1=trento msd-bm march 2019
   Long64_t maxevt=10000;
   GlobalPar::Instance();
+  GlobalPar::GetPar()->FromFile();
   GlobalPar::GetPar()->Print();
 
   TAGroot tagr;

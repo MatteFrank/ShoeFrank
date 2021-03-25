@@ -29,6 +29,7 @@
 void TrackDistanceBMtoVT(TString nameFile = "12C_C_200_L0Out.root", TString expName = "12C_200", Int_t runNumber = 1)
 {
   GlobalPar::Instance(expName);
+  GlobalPar::GetPar()->FromFile();
   GlobalPar::GetPar()->Print();
   
   TAGroot tagr;

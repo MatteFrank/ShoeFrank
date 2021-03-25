@@ -22,6 +22,7 @@ void DecodeGlbToe(TString in = "data/data_built.2211.physics_foot.daq.VTX.1.dat"
   out.Append("_Out.root");
   
   GlobalPar::Instance(exp);
+  GlobalPar::GetPar()->FromFile();
   GlobalPar::GetPar()->Print();
   
   Bool_t lrc = GlobalPar::GetPar()->IsLocalReco();

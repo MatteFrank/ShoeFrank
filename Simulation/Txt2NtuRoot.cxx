@@ -85,13 +85,14 @@ int main(int argc, char *argv[])
    numfiles = infiles.size();
    
    GlobalPar::Instance(exp);
+   GlobalPar::GetPar()->FromFile();
    GlobalPar::GetPar()->Print();
    
    TFile *f_out = new TFile(outname,"RECREATE");
    f_out->cd();
   
    GlobalPar::GetPar()->EnableRootObject();
-   TAGrunInfo info = GlobalPar::Instance()->GetGlobalInfo();
+   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
    info.SetCampaignName(exp);
    info.SetRunNumber(runNb);
    info.Write(TAGrunInfo::GetObjectName());

@@ -26,6 +26,7 @@ void PlotTwPos(TString nameFile = "12C_C_200_L0Out.root", TString expName = "12C
 {
   // global par
   GlobalPar::Instance(expName);
+  GlobalPar::GetPar()->FromFile();
   GlobalPar::GetPar()->Print();
   
   // TAGropot

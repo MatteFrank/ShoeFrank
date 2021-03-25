@@ -53,6 +53,7 @@ int main (int argc, char *argv[])  {
    TApplication::CreateApplication();
    
    GlobalPar::Instance(exp);
+   GlobalPar::GetPar()->FromFile();
    GlobalPar::GetPar()->Print();
    
    Bool_t lrc = GlobalPar::GetPar()->IsLocalReco();

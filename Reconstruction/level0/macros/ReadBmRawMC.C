@@ -75,6 +75,7 @@ void ReadBmRawMC(TString name = "./data/flukasim/footC200_C2H4.root")
 {  Long64_t nev=1000;
   
    GlobalPar::Instance();
+   GlobalPar::GetPar()->FromFile();
    GlobalPar::GetPar()->Print();
 
    TAGroot tagr;

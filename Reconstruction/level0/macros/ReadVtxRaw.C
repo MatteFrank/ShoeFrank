@@ -87,6 +87,7 @@ void ReadVtxRaw(TString filename = "data/data_built.2211.physics_foot.daq.VTX.1.
                 TString expName = "GSI", Int_t runNumber = 2211)
 {
    GlobalPar::Instance(expName);
+   GlobalPar::GetPar()->FromFile();
    GlobalPar::GetPar()->Print();
    
    TAGroot tagr;

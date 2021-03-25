@@ -27,6 +27,7 @@ void PlotVtxTrackCluster(TString nameFile = "12C_C_200_L0Out.root", TString expN
 {
   // global par
   GlobalPar::Instance(expName);
+  GlobalPar::GetPar()->FromFile();
   GlobalPar::GetPar()->Print();
   
   // TAGropot

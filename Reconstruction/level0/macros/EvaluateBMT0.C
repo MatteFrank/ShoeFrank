@@ -284,6 +284,7 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
    out_filename.Append(".root");
       
    GlobalPar::Instance();
+   GlobalPar::GetPar()->FromFile();
    GlobalPar::GetPar()->Print();
 
    TAGroot tagr;

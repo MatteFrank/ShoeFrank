@@ -74,6 +74,7 @@ void FillMCInner(EVENT_STRUCT *myStr, Int_t runNumber) {
 void ReadItRawMC(TString name = "16O_C2H4_200_1", TString expName = "16O_200", Int_t runNumber = 1)
 {
    GlobalPar::Instance(expName);
+   GlobalPar::GetPar()->FromFile();
    GlobalPar::GetPar()->Print();
    
    TAGroot tagr;

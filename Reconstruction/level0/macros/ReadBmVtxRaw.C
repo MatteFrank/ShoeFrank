@@ -208,6 +208,7 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
   Int_t maxevents=999999999999;
   TString fExpName="GSI/";
   GlobalPar::Instance();
+  GlobalPar::GetPar()->FromFile();
   GlobalPar::GetPar()->Print();
 
   TAGroot tagr;

@@ -32,7 +32,7 @@ public:
 public:
 	~GlobalPar();
 
-	void ReadParamFile();
+	void FromFile();
 	void Print(Option_t* opt = "");
    const TAGrunInfo GetGlobalInfo();
 

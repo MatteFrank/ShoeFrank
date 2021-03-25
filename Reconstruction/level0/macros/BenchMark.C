@@ -19,6 +19,7 @@ void BenchMark(TString expName = "12C_200" )
 {
   TAGroot tagr;
   GlobalPar::Instance(expName);
+  GlobalPar::GetPar()->FromFile();
   GlobalPar::GetPar()->Print();
   
   TAGcampaignManager* man = new TAGcampaignManager(expName);

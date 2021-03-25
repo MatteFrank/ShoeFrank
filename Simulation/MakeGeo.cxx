@@ -61,7 +61,7 @@ int main (int argc, char *argv[]) {
 
     cout<<" GlobalPar "<<Form("%s/FootGlobal.par",exp.Data())<<endl;
     GlobalPar::Instance(exp);
-
+    GlobalPar::GetPar()->FromFile();
     GlobalPar::GetPar()->Print();
 
     TAGroot* fTAGroot = new TAGroot();
