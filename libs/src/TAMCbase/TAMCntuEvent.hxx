@@ -33,7 +33,7 @@ private:
 private:
   static TString    fgkBranchName;
   
-  ClassDef(TAMCntuEvent,1)
+  ClassDef(TAMCntuEvent,2)
   
 };
 
