@@ -18,7 +18,7 @@ class TAMCevent : public TObject {
 
  public:
 
-  TAMCevent(Bool_t regionFlag = false);
+  TAMCevent();
   virtual ~TAMCevent();
 
   Int_t Clean();
@@ -81,7 +81,6 @@ public:
    TAMCntuHit*    GetHitCAL()   const { return fHitCAL; }
 
  private:
-   Bool_t         fRegionFlag;
    TAMCntuEvent*  fEvent;
    TAMCntuTrack*  fTrack;
    TAMCntuRegion* fRegion;

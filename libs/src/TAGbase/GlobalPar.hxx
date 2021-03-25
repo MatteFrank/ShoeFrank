@@ -72,6 +72,7 @@ public:
     Bool_t IsTWnoPU()            const { return m_enableTWnoPU;        }
     Bool_t IsTWZmatch()          const { return m_enableTWZmatch;      }
     Bool_t IsTWCalBar()          const { return m_enableTWCalBar;      }
+    Bool_t IsRegionMc()          const { return m_enableRegionMc;      }
     Bool_t CalibTW()             const { return m_doCalibTW;           }
     Bool_t CalibBM()             const { return m_doCalibBM;           }
 
@@ -96,6 +97,9 @@ public:
 
     void EnableRootObject()            {  m_enableRootObject = true;   }
     void DisableRootObject()           {  m_enableRootObject = false;  }
+
+    void EnableRegionMc()              {  m_enableRegionMc = true;     }
+    void DisableRegionMc()             {  m_enableRegionMc = false;    }
 
     void IncludeDI(Bool_t t)           {  m_includeDI = t;             }
     void IncludeST(Bool_t t)           {  m_includeST = t;             }
@@ -162,6 +166,7 @@ private:
    Bool_t m_enableTWCalBar;
    Bool_t m_doCalibTW;
    Bool_t m_doCalibBM;
+   Bool_t m_enableRegionMc;
 
    Bool_t m_includeST;
    Bool_t m_includeBM;

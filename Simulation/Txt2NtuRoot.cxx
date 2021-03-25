@@ -28,9 +28,7 @@ int main(int argc, char *argv[])
    int maxevpro = 1000000000;
    int fragtrig=0;
    double Ethreshold = 0;
-   
-   bool regFlag = false;
-   
+  
    static TTree *rootTree = 0;
    
    EVENT_STRUCT eve;
@@ -47,9 +45,6 @@ int main(int argc, char *argv[])
       }
       if(strcmp(argv[i],"-nev") == 0) {
          maxevpro = atoi(argv[++i]);
-      }
-      if(strcmp(argv[i],"-reg") == 0) {
-         regFlag = true;
       }
       if(strcmp(argv[i],"-iL") == 0) {
          iL = 1;
@@ -68,7 +63,6 @@ int main(int argc, char *argv[])
          cout<<"   -out file   : [def=Out.root] Root output file"<<endl;
          cout<<"   -iL         : [def=none] input file is a list of files"<<endl;
          cout<<"   -nev        : [def=Inf] Max no. of events to process"<<endl;
-         cout<<"   -reg        : [def=0] save crossing region info"<<endl;
          cout<<"   -run value   : [def=-1] Run number"<<endl;
          cout<<"   -exp name    : [def=""] experient name for config/geomap extention"<<endl;
          return 1;
@@ -105,7 +99,7 @@ int main(int argc, char *argv[])
    rootTree = new TTree("EventTree","gsimay");
    
    // Event
-   TAMCevent* event = new TAMCevent(regFlag);
+   TAMCevent* event = new TAMCevent();
    event->SetBranches(rootTree);
    
    //    loop sui file della lista ( if any)
@@ -415,7 +409,7 @@ int main(int argc, char *argv[])
                               &eve.CROSSx[jj],&eve.CROSSy[jj],&eve.CROSSz[jj],
                               &eve.CROSSpx[jj],&eve.CROSSpy[jj],&eve.CROSSpz[jj],
                               &eve.CROSSm[jj],&eve.CROSSch[jj],&eve.CROSSt[jj]);
-               if (regFlag) {
+              if (GlobalPar::GetPar()->IsRegionMc()) {
                   event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
                                   TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
                                   TVector3(eve.CROSSpx[jj],eve.CROSSpy[jj],eve.CROSSpz[jj]),

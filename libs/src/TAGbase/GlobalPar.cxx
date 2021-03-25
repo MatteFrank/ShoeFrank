@@ -54,7 +54,7 @@ GlobalPar::GlobalPar( const TString expName )
   m_kalmanMode(-1),         m_kalReverse(false),   m_verFLUKA(false),       m_VTreso(0.),            m_ITreso(0.),            m_MSDreso(0.), m_TWreso(0.),
   m_outputfilename(""),     m_printoutfile(false), m_outputntuplename(""),  m_printoutntuple(false),
   m_enableLocalReco(false), m_enableTree(false),   m_enableHisto(false),    m_enableSaveHits(false), m_enableTracking(false), m_enableRootObject(false),
-  m_enableTWZmc(false),     m_enableTWnoPU(false), m_enableTWZmatch(false), m_enableTWCalBar(false), m_doCalibTW(false),      m_doCalibBM(false),
+  m_enableTWZmc(false),     m_enableTWnoPU(false), m_enableTWZmatch(false), m_enableTWCalBar(false), m_doCalibTW(false),      m_doCalibBM(false), m_enableRegionMc(false),
   m_includeST(false),       m_includeBM(false),    m_includeTG(false),      m_includeDI(false),      m_includeTW(false),      m_includeMSD(false),
   m_includeCA(false),       m_includeIT(false),    m_includeVT(false),
   m_includeKalman(false),   m_includeTOE(false)
@@ -92,6 +92,9 @@ const TAGrunInfo GlobalPar::GetGlobalInfo()
    
    if (IsTWZmc())
       runInfo.GetGlobalPar().EnableTWZmc = true;
+  
+   if (IsRegionMc())
+     runInfo.GetGlobalPar().EnableRegionMc = true;
 
    if (IsTWnoPU())
       runInfo.GetGlobalPar().EnableTWnoPU = true;
@@ -349,11 +352,18 @@ void GlobalPar::ReadParamFile ()
         printf("EnableTWZmatch: %d\n", m_enableTWZmatch);
     }
     
-if (key.Contains("EnableTWCalBar:")  ) {
+    if (key.Contains("EnableTWCalBar:")  ) {
       if ( item.Contains("y"))  m_enableTWCalBar = true;
       else                      m_enableTWCalBar = false;
       if (m_debug > 0)
         printf("EnableTWCalBar: %d\n", m_enableTWCalBar);
+    }
+    
+    if (key.Contains("EnableRegionMc:")  ) {
+      if ( item.Contains("y"))  m_enableRegionMc = true;
+      else                      m_enableRegionMc = false;
+      if (m_debug > 0)
+        printf("EnableRegionMc: %d\n", m_enableRegionMc);
     }
     
     if (key.Contains("IncludeDI:") ) {
