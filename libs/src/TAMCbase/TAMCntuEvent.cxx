@@ -8,7 +8,9 @@ TString  TAMCntuEvent::fgkBranchName = "mcevt.";
 //! Default constructor.
 TAMCntuEvent::TAMCntuEvent()
 : TAGdata(),
-  fEventNumber(-1)
+  fEventNumber(-1),
+  fTriggerNumber(-1),
+  fTimeStamp(0)
 {
 }
 
@@ -23,6 +25,8 @@ TAMCntuEvent::~TAMCntuEvent()
 void TAMCntuEvent::Clear(Option_t*)
 {
   fEventNumber = -1;
+  fTriggerNumber = -1;
+  fTimeStamp = 0;
 }
 
 /*------------------------------------------+---------------------------------*/
@@ -30,7 +34,9 @@ void TAMCntuEvent::Clear(Option_t*)
 void TAMCntuEvent::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAMCntuEvent"
-  << Form("  event number=%d", GetEventNumber())
+  << Form("  event number=%d\n", GetEventNumber())
+  << Form("  trigger number=%d\n", GetTriggerNumber())
+  << Form("  time stamp=%lld\n", GetTimeStamp())
   << endl;
 }
 
