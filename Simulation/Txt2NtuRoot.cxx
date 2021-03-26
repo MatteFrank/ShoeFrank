@@ -4,10 +4,12 @@
 #include <TString.h>
 
 #include "EventStruct.hxx"
+#include "TAGroot.hxx"
 #include "TAMCevent.hxx"
 
 #include "TAGrunInfo.hxx"
-
+#include "TAGgeoTrafo.hxx"
+#include "TAGcampaignManager.hxx"
 #include "GlobalPar.hxx"
 
 using namespace std;
@@ -15,6 +17,8 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 
+   TAGroot tagRoot;
+  
    int status = 0, iL=0, NumProcessed=0, numfiles = 0, nread=0;
    TString outname("Out.root"), inname("In.txt");
    vector<TString> infiles; TString tmpSin;
@@ -47,7 +51,6 @@ int main(int argc, char *argv[])
       }
       if(strcmp(argv[i],"-reg") == 0) {
         regFlag=true;
-        outflukaname=TString(argv[++i]);
       }
       if(strcmp(argv[i],"-iL") == 0) {
          iL = 1;
@@ -92,6 +95,9 @@ int main(int argc, char *argv[])
    GlobalPar::GetPar()->FromFile();
    GlobalPar::GetPar()->Print();
 
+  TAGcampaignManager* campManager = new TAGcampaignManager(exp);
+  campManager->FromFile();
+  
    TFile *f_out = new TFile(outname,"RECREATE");
    f_out->cd();
 
@@ -454,7 +460,9 @@ int main(int argc, char *argv[])
    }
 
     //read the fluka .out file to load the crossing regions:
-    if(regFlag==true){
+    if(regFlag) {
+      outflukaname = campManager->GetCurRegFile(TAGgeoTrafo::GetBaseName(), runNb);
+      printf("Open region file %s\n", outflukaname.Data());
       Int_t regnum;
       TString regname;
       ifstream outflukafile(outflukaname.Data());
