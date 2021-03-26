@@ -77,7 +77,8 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
 {
    fiRun = right.fiRun;
    fsCam = right.fsCam;
-   fCrossMap=right.fCrossMap;
+
+  fCrossMap.insert(right.fCrossMap.begin(), right.fCrossMap.end());
 
    fGlobalParameter.EnableLocalReco  = right.fGlobalParameter.EnableLocalReco;
    fGlobalParameter.EnableTree       = right.fGlobalParameter.EnableTree;
