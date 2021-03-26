@@ -913,6 +913,54 @@ string TAITparGeo::PrintRegions()
 }
 
 //_____________________________________________________________________________
+Int_t TAITparGeo::GetRegEpitaxial(Int_t n){
+  TString regname;
+  regname.Form("ITRE%02d",n);
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
+Int_t TAITparGeo::GetRegModule(Int_t n){
+  TString regname;
+  regname.Form("ITRM%d",n);
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
+Int_t TAITparGeo::GetRegPixel(Int_t n){
+  TString regname;
+  regname.Form("ITRP%d",n);
+  return GetCrossReg(regname);
+}
+//_____________________________________________________________________________
+Int_t TAITparGeo::GetRegFoam(Int_t n){
+  TString regname;
+  regname.Form("ITRF%02d",n*4);
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
+Int_t TAITparGeo::GetRegKapton(Int_t n, Int_t lay, Bool_t side){
+  TString regname;
+  regname.Form("ITRK%02d",n*4 + ((side==true) ? 0:100) + ((lay==0) ? 0:(lay+1)) );
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
+Int_t TAITparGeo::GetRegAluminum(Int_t n, Int_t lay, Bool_t side){
+  TString regname;
+  regname.Form("ITRA%2d",n*4 + ((side==true) ? 0:100) + lay*2 );
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
+Int_t TAITparGeo::GetRegEpoxy(Int_t n, Bool_t side){
+  TString regname;
+  regname.Form("ITRY%2d",n*4 + ((side==true) ? 0:100));
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
 string TAITparGeo::PrintSubtractBodiesFromAir()
 {
   

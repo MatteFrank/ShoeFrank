@@ -42,6 +42,11 @@ public:
   //! Reading from file
   Bool_t      FromFile(const TString& name = "");
   
+  //crossing regions
+  Int_t          GetRegStrip(Int_t n);   //n=sensor (0-5)
+  Int_t          GetRegModule(Int_t n);  //n=sensor (0-5)
+  Int_t          GetRegMetal(Int_t n);   //n=sensor (0-5)
+  
   // to keep interace for compilation
   string      PrintParameters();
   string      PrintRotations();

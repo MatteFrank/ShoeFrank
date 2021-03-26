@@ -406,6 +406,27 @@ string TAVTparGeo::PrintRegions()
 }
 
 //_____________________________________________________________________________
+Int_t TAVTparGeo::GetRegEpitaxial(Int_t n){
+  TString regname;
+  regname.Form("VTXE%d",n);
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
+Int_t TAVTparGeo::GetRegModule(Int_t n){
+  TString regname;
+  regname.Form("VTXM%d",n);
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
+Int_t TAVTparGeo::GetRegPixel(Int_t n){
+  TString regname;
+  regname.Form("VTXP%d",n);
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
 string TAVTparGeo::PrintSubtractBodiesFromAir()
 {
   

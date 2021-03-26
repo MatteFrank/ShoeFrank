@@ -31,7 +31,7 @@ GlobalPar* GlobalPar::Instance( const TString expName )  {
 //_____________________________________________________________________________
 GlobalPar* GlobalPar::GetPar()  {
 
-    if (!m_pInstance) 
+    if (!m_pInstance)
        cout << "ERROR::GlobalPar::GetPar()  -->  called a get before GlobalPar object istance." << endl, exit(0);
 
     return m_pInstance;
@@ -58,7 +58,7 @@ GlobalPar::GlobalPar( const TString expName )
   m_includeCA(false),       m_includeIT(false),    m_includeVT(false),
   m_includeKalman(false),   m_includeTOE(false)
 {
-    TString absName = Form("./config/%s/%s", expName.Data(), m_defParName.Data());   
+    TString absName = Form("./config/%s/%s", expName.Data(), m_defParName.Data());
     m_parFileName = absName.Data();
 
     m_copyInputFile.clear();
@@ -68,25 +68,25 @@ GlobalPar::GlobalPar( const TString expName )
 const TAGrunInfo GlobalPar::GetGlobalInfo()
 {
    TAGrunInfo runInfo;
-   
+  
    if (IsLocalReco())
       runInfo.GetGlobalPar().EnableLocalReco = true;
-   
+  
    if (IsSaveTree())
       runInfo.GetGlobalPar().EnableTree = true;
-   
+  
    if (IsSaveHisto())
       runInfo.GetGlobalPar().EnableHisto = true;
-   
+  
    if (IsSaveHits())
       runInfo.GetGlobalPar().EnableSaveHits = true;
-   
+  
    if (IsTracking())
       runInfo.GetGlobalPar().EnableTracking = true;
 
    if (IsReadRootObj())
       runInfo.GetGlobalPar().EnableRootObject = true;
-   
+  
    if (IsTWZmc())
       runInfo.GetGlobalPar().EnableTWZmc = true;
   
@@ -95,43 +95,43 @@ const TAGrunInfo GlobalPar::GetGlobalInfo()
 
    if (IsTWnoPU())
       runInfo.GetGlobalPar().EnableTWnoPU = true;
-                             
+  
    if (IsTWZmatch())
       runInfo.GetGlobalPar().EnableTWZmatch = true;
-   
+  
    if (IncludeKalman())
       runInfo.GetGlobalPar().IncludeKalman = true;
-   
+  
    if (IncludeTOE())
       runInfo.GetGlobalPar().IncludeTOE = true;
-   
+  
    if (IncludeDI())
       runInfo.GetGlobalPar().IncludeDI = true;
-   
+  
    if (IncludeST())
       runInfo.GetGlobalPar().IncludeST = true;
-   
+  
    if (IncludeBM())
       runInfo.GetGlobalPar().IncludeBM = true;
-   
+  
    if (IncludeTG())
       runInfo.GetGlobalPar().IncludeTG = true;
-   
+  
    if (IncludeVT())
       runInfo.GetGlobalPar().IncludeVT = true;
-   
+  
    if (IncludeIT())
       runInfo.GetGlobalPar().IncludeIT = true;
-   
+  
    if (IncludeMSD())
       runInfo.GetGlobalPar().IncludeMSD = true;
-   
+  
    if (IncludeTW())
       runInfo.GetGlobalPar().IncludeTW = true;
-   
+  
    if (IncludeCA())
       runInfo.GetGlobalPar().IncludeCA = true;
-   
+  
    return runInfo;
 }
 

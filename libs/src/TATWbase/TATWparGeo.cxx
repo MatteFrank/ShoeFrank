@@ -583,6 +583,12 @@ string TATWparGeo::PrintRegions()
   return ss.str();
 }
 
+//_____________________________________________________________________________
+Int_t TATWparGeo::GetRegStrip(Int_t lay, Int_t bar){
+  TString regname;
+  regname.Form("SCN%d%02d",lay,bar);
+  return GetCrossReg(regname);
+}
 
 //_____________________________________________________________________________
 string TATWparGeo::PrintSubtractBodiesFromAir() {

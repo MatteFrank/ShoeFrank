@@ -120,6 +120,16 @@ public:
    //! Build plume support
    TGeoVolume* BuildPlumeSupport(const char* basemoduleName = "Plume", const char *name = "ITSP");
 
+   //crossing regions
+   Int_t          GetRegEpitaxial(Int_t n);                         //n=number of sensor (0<=n<=31)
+   Int_t          GetRegModule(Int_t n);                            //n=number of sensor (0<=n<=31)
+   Int_t          GetRegPixel(Int_t n);                             //n=number of sensor (0<=n<=31)
+                                                                    
+   Int_t          GetRegFoam(Int_t n);                              //n=ladders (0<=n<=3)
+   Int_t          GetRegKapton(Int_t n, Int_t lay, Bool_t side);    //n=ladders (0<=n<=3); side: true=positive, false=negative; lay=number of layer (lay=0,1,2)
+   Int_t          GetRegAluminum(Int_t n, Int_t lay, Bool_t side);  //n=ladders (0<=n<=3); side: true=positive, false=negative; lay=number of layer (lay=0,1)
+   Int_t          GetRegEpoxy(Int_t n, Bool_t side);                //n=ladders (0<=n<=3); side: true=positive, false=negative; 
+
    // to print fluka files
    virtual string PrintParameters();
    virtual string PrintRotations();

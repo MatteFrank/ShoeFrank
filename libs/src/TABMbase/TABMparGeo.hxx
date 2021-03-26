@@ -65,7 +65,7 @@ public:
 
    Bool_t         IsDrawWire()          { return fDrawWire;      }
    void           SetDrawWire(Bool_t f) { fDrawWire = f;         }
-   
+
    //Id sense as function of cell
    Int_t          GetSenseId(int cell) { return fBmIdSense[cell]; }
 
@@ -85,7 +85,7 @@ public:
    TVector3       GetWireDir(Int_t view) const;
 
    Int_t          GetCell(TVector3 pos, int layer, int view) ;
-  
+
    // transformation from BM to wire and vice versa
    void           Wire2Detector(Double_t xl, Double_t yl, Double_t zl,
                                 Double_t& xg, Double_t& yg, Double_t& zg) const;
@@ -129,6 +129,16 @@ public:
 
    void SetLayerColorOn(Int_t idx);
    void SetLayerColorOff(Int_t idx);
+
+   //crossing regions
+   Int_t          GetRegMylar1(){TString regname("BMN_MYL0");return GetCrossReg(regname);};
+   Int_t          GetRegMylar2(){TString regname("BMN_MYL1");return GetCrossReg(regname);};
+   Int_t          GetRegShield(){TString regname("BMN_SHI");return GetCrossReg(regname);};      //detector shielding
+   Int_t          GetRegGas(){TString regname("BMN_GAS");return GetCrossReg(regname);};
+   Int_t          GetRegFieldWires(){TString regname("BMN_FWI");return GetCrossReg(regname);};
+   Int_t          GetRegSenseWires(){TString regname("BMN_SWI");return GetCrossReg(regname);};
+   Int_t          GetRegCell(Int_t cellid); // 0<=cellid<=35
+   Int_t          GetRegCell(Int_t ilay, Int_t iview, Int_t icell);
 
    string PrintRotations();
    string PrintBodies();
@@ -194,7 +204,7 @@ private:
    TString         fkDefaultGeoName;  // default par geo file name
 
    Bool_t          fDrawWire;
-   
+
 private:
    static const TString fgkDefParaName;
    static const TString fgkBaseName;    // device base name

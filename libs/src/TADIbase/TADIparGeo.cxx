@@ -554,6 +554,20 @@ string TADIparGeo::PrintRegions(){
 
 }
 
+//_____________________________________________________________________________
+Int_t TADIparGeo::GetRegMagnet(Int_t n){
+  TString regname;
+  regname.Form("MAG%d",n);
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
+Int_t TADIparGeo::GetRegShield(Int_t n){
+  TString regname;
+  regname.Form("MAG_SH%d",n);
+  return GetCrossReg(regname);
+}
+
 
 //_____________________________________________________________________________
 string TADIparGeo::PrintAssignMaterial(TAGmaterials *Material) {

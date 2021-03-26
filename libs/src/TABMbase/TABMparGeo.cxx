@@ -69,7 +69,7 @@ TABMparGeo::TABMparGeo()
    fBmDeltaZ(0),
    fBmDeltaY(0),
    fBmDeltaX(0),
-   fDrawWire(false)   
+   fDrawWire(false)
 {
    fkDefaultGeoName = "./geomaps/TABMdetector.geo";
 }
@@ -919,8 +919,21 @@ string TABMparGeo::PrintRegions(){
 
 }
 
+//_____________________________________________________________________________
+Int_t TABMparGeo::GetRegCell(Int_t cellid){
+  TString regname("BMN_C");
+  regname.Append((((Int_t)(cellid/3)) % 2 == 0) ? "0":"1");
+  regname.Append(((Int_t)(cellid/6))*3 + cellid % 3);
+  return GetCrossReg(regname);
+}
 
-
+//_____________________________________________________________________________
+Int_t TABMparGeo::GetRegCell(Int_t ilay, Int_t iview, Int_t icell){
+  TString regname("BMN_C");
+  regname.Append(iview);
+  regname.Append(ilay*3 + icell);
+  return GetCrossReg(regname);
+}
 
 //_____________________________________________________________________________
 string TABMparGeo::PrintSubtractBodiesFromAir() {
@@ -1012,12 +1025,12 @@ Int_t TABMparGeo::GetCell(TVector3 pos, int layer, int view)
 {
     Int_t cell = -1 ;
     Float_t min = 999999;
-  
+
     for(int i=0 ; i<fSensesN ; ++i){
       Int_t kk = fBmIdSense[i];
       Float_t distX = TMath::Abs(pos[0] - fPosX[kk][layer][view]);
       Float_t distY = TMath::Abs(pos[1] - fPosY[kk][layer][view]);
-      
+
       if (view == 0) {
         if (distY < min) {
           min = distY;
@@ -1030,7 +1043,7 @@ Int_t TABMparGeo::GetCell(TVector3 pos, int layer, int view)
         }
       }
     }
-  
+
     return cell ;
 }
 
