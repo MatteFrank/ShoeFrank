@@ -510,6 +510,25 @@ string TAMSDparGeo::PrintRegions()
 }
 
 //_____________________________________________________________________________
+Int_t TAMSDparGeo::GetRegStrip(Int_t n){
+  TString regname;
+  regname.Form("MSDS%d",n);
+  return GetCrossReg(regname);
+}
+//_____________________________________________________________________________
+Int_t TAMSDparGeo::GetRegModule(Int_t n){
+  TString regname;
+  regname.Form("MSDP%d",n);
+  return GetCrossReg(regname);
+}
+//_____________________________________________________________________________
+Int_t TAMSDparGeo::GetRegMetal(Int_t n){
+  TString regname;
+  regname.Form("MSDM%d",n);
+  return GetCrossReg(regname);
+}
+
+//_____________________________________________________________________________
 string TAMSDparGeo::PrintSubtractBodiesFromAir()
 {
 

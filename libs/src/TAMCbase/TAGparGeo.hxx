@@ -110,6 +110,9 @@ public:
   //! build Target
   TGeoVolume*        BuildTarget(const char *targetName = "Target");
 
+  //crossing regions:
+  Int_t          GetRegTarget(){TString regname("TARGET");return GetCrossReg(regname);};
+
   //blackbody and air
   string PrintStandardBodies();
   string PrintStandardRegions1();

@@ -10,18 +10,19 @@
 class TAMCntuHit ;
 class TAMCntuEve ;
 class TAMCntuRegion;
+class TAMCntuEvent ;
 using namespace std;
 
 class TAMCevent : public TObject {
 
  public:
 
-  TAMCevent(Bool_t regionFlag = false);
+  TAMCevent();
   virtual ~TAMCevent();
 
   Int_t Clean();
 
-  void SetEvent(Int_t aEventNumber){ fEventNumber = aEventNumber ; }
+  void AddEvent(Int_t nb);
 
   void AddPart(Int_t aTRpaid, Int_t aTRgen, Int_t aTRcharge, Int_t aTRreg, Int_t aTRbaryon,
                 Int_t aTRdead, Int_t aTRflukid, TVector3 aTRipos, TVector3 aTRfpos,
@@ -45,10 +46,10 @@ class TAMCevent : public TObject {
                TVector3 aITRinpos, TVector3 aITRoutpos, TVector3 aITRpin,
                TVector3 aITRpout, Double_t aITRde, Double_t aITRal, Double_t aITRtof, Int_t atrId=-99);
 
-  void AddMSD(Int_t aMSDid, Int_t aMSDilay, 
+  void AddMSD(Int_t aMSDid, Int_t aMSDilay,
                TVector3 aMSDinpos, TVector3 aMSDout, TVector3 aMSDpin,
                TVector3 aMSDpout, Double_t aMSDde, Double_t aMSDal, Double_t aMSDtof, Int_t atrId=-99);
- 
+
   void AddTW(Int_t aTWid, Int_t aTWibar, Int_t aTWiview, TVector3 aTWinpos,
               TVector3 aTWoutpos, TVector3 aTWpin, TVector3 aTWpout, Double_t aTWde,
               Double_t aTWal, Double_t aTWtof, Int_t atrId=-99 );
@@ -56,17 +57,18 @@ class TAMCevent : public TObject {
   void AddCAL(Int_t aCALid, Int_t aCALicry, TVector3 aCALinpos, TVector3 aCALoutpos,
                TVector3 aCALpin,TVector3 aCALpout, Double_t aCALde, Double_t aCALal,
                Double_t aCALtof, Int_t atrId=-99);
-  
+
   void AddCROSS(Int_t aCROSSid, Int_t aCROSSnreg, Int_t aCROSSnregold, TVector3 aCROSSpos,
                  TVector3 aCROSSp, Double_t aCROSSm, Double_t aCROSSch, Double_t aCROSSt);
 
   void FindBranches(TTree *RootTree);
   void SetBranches(TTree *RootTree);
-   
+
   void Dump() const;
 
 public:
    // Getters
+   TAMCntuEvent*  GetNtuEvent() const { return fEvent;  }
    TAMCntuEve*    GetNtuEve() const { return fTrack;  }
    TAMCntuRegion* GetNtuReg() const { return fRegion; }
    TAMCntuHit*    GetHitSTC() const { return fHitSTC; }
@@ -78,8 +80,7 @@ public:
    TAMCntuHit*    GetHitCAL() const { return fHitCAL; }
 
  private:
-   Bool_t         fRegionFlag;
-   Int_t          fEventNumber;
+   TAMCntuEvent*  fEvent;
    TAMCntuEve*    fTrack;
    TAMCntuRegion* fRegion;
    TAMCntuHit*    fHitSTC;

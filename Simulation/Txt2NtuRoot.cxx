@@ -4,20 +4,25 @@
 #include <TString.h>
 
 #include "EventStruct.hxx"
+#include "TAGroot.hxx"
 #include "TAMCevent.hxx"
 
 #include "TAGrunInfo.hxx"
-
+#include "TAGgeoTrafo.hxx"
+#include "TAGcampaignManager.hxx"
 #include "GlobalPar.hxx"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-   
+
+   TAGroot tagRoot;
+  
    int status = 0, iL=0, NumProcessed=0, numfiles = 0, nread=0;
    TString outname("Out.root"), inname("In.txt");
    vector<TString> infiles; TString tmpSin;
+   TString outflukaname;
    TString exp("");
    Int_t runNb = -1;
 
@@ -28,16 +33,12 @@ int main(int argc, char *argv[])
    int maxevpro = 1000000000;
    int fragtrig=0;
    double Ethreshold = 0;
-   
-   bool regFlag = false;
+   bool regFlag=false;
    
    static TTree *rootTree = 0;
-   
+
    EVENT_STRUCT eve;
-   
-   ifstream infile;
-   
-   
+
    for (int i = 0; i < argc; i++){
       if(strcmp(argv[i],"-in") == 0) {
          inname = TString(argv[++i]);
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
          maxevpro = atoi(argv[++i]);
       }
       if(strcmp(argv[i],"-reg") == 0) {
-         regFlag = true;
+        regFlag=true;
       }
       if(strcmp(argv[i],"-iL") == 0) {
          iL = 1;
@@ -68,13 +69,13 @@ int main(int argc, char *argv[])
          cout<<"   -out file   : [def=Out.root] Root output file"<<endl;
          cout<<"   -iL         : [def=none] input file is a list of files"<<endl;
          cout<<"   -nev        : [def=Inf] Max no. of events to process"<<endl;
-         cout<<"   -reg        : [def=0] save crossing region info"<<endl;
+         cout<<"   -reg        : save crossing region info reading the FLUKA .out filename"<<endl;
          cout<<"   -run value   : [def=-1] Run number"<<endl;
          cout<<"   -exp name    : [def=""] experient name for config/geomap extention"<<endl;
          return 1;
       }
    }
-   
+
    if(iL==0) {
       infiles.push_back(inname);
    } else {
@@ -89,48 +90,52 @@ int main(int argc, char *argv[])
       lista_file.close();
    }
    numfiles = infiles.size();
-   
+
    GlobalPar::Instance(exp);
    GlobalPar::GetPar()->Print();
-   
+
+  TAGcampaignManager* campManager = new TAGcampaignManager(exp);
+  campManager->FromFile();
+  
    TFile *f_out = new TFile(outname,"RECREATE");
    f_out->cd();
-  
+
+   if(regFlag)
+     GlobalPar::GetPar()->EnableRegionMc();
    GlobalPar::GetPar()->EnableRootObject();
-   TAGrunInfo info = GlobalPar::Instance()->GetGlobalInfo();
+   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
    info.SetCampaignName(exp);
    info.SetRunNumber(runNb);
-   info.Write(TAGrunInfo::GetObjectName());
 
    rootTree = new TTree("EventTree","gsimay");
-   
+
    // Event
-   TAMCevent* event = new TAMCevent(regFlag);
+   TAMCevent* event = new TAMCevent();
    event->SetBranches(rootTree);
-   
+
    //    loop sui file della lista ( if any)
-   
+
    for(int idfile=0; idfile<numfiles;idfile++){
       cout<<endl<<"Now processing data from "<<infiles.at(idfile)<<" file!"<<endl;
       ReadError = false;
-      
+
       pfile = fopen(infiles.at(idfile),"r");
-      
+
       nread= fscanf(pfile,"%d %lf\n",&fragtrig,&Ethreshold);
       if(nread!=2){
          ReadError= true;
          cout<<"Wrong run header: read Error!! exiting  "<<endl;
          return 1;
       }
-      
+
       //	  loop sugli eventi del file
-      
+
       while((!feof(pfile))&&(!ReadError)){
          NumProcessed++;
          if (maxevpro>0) {
             if (NumProcessed>maxevpro) break;
          }
-         
+
          eve.EventNumber = 0;
          eve.TRn         = 0;
          eve.STCn        = 0;
@@ -141,26 +146,25 @@ int main(int argc, char *argv[])
          eve.SCNn        = 0;
          eve.CALn        = 0;
          eve.CROSSn      = 0;
-         
+
          if(NumProcessed%10000==0){ cout<<"# event = "<<NumProcessed<<endl;}
          status = event->Clean();
-         
+
          //	header
-         
+
          nread= fscanf(pfile,"%d %d %d %d %d %d %d %d %d %d \n",&eve.EventNumber,
                        &eve.TRn,&eve.STCn,&eve.BMNn,&eve.VTXn,&eve.ITRn,&eve.MSDn,
                        &eve.SCNn,&eve.CALn,&eve.CROSSn);
          
-         event->SetEvent(eve.EventNumber);
-         
+         event->AddEvent(eve.EventNumber);
          if(nread!=10){
             cout<<"ReadError in ev header section: nread = "<<nread<<
             " instead of 10; ev= "<<NumProcessed<<endl;
             ReadError = true;
          }
-         
+
          //	track cinematics
-         
+
          if(!ReadError){
             for(int jj =0;jj<eve.TRn;jj++){
                nread = fscanf(pfile,
@@ -172,7 +176,7 @@ int main(int argc, char *argv[])
                               &eve.TRfz[jj],&eve.TRipx[jj],&eve.TRipy[jj],&eve.TRipz[jj],
                               &eve.TRfpx[jj],&eve.TRfpy[jj],&eve.TRfpz[jj],&eve.TRmass[jj],
                               &eve.TRtime[jj],&eve.TRtof[jj],&eve.TRtrlen[jj]);
-               
+
                event->AddPart(eve.TRpaid[jj], eve.TRgen[jj], eve.TRcha[jj], eve.TRreg[jj], eve.TRbar[jj],
                               eve.TRdead[jj], eve.TRfid[jj],
                               TVector3(eve.TRix[jj], eve.TRiy[jj], eve.TRiz[jj]),
@@ -180,19 +184,19 @@ int main(int argc, char *argv[])
                               TVector3(eve.TRipx[jj], eve.TRipy[jj], eve.TRipz[jj]),
                               TVector3(eve.TRfpx[jj], eve.TRfpy[jj], eve.TRfpz[jj]),
                               eve.TRmass[jj], eve.TRtof[jj], eve.TRtime[jj], eve.TRtrlen[jj]);
-               
+
                if(nread!=23){
                   cout<<"ReadError in kine section: nread = "<<nread<<
                   " instead of 23; ev= "<<NumProcessed<<endl;
-                  
+
                   ReadError= true;
                   break;
                }
             }
          }
-         
+
          //	Fill start counter
-         
+
          if(!ReadError){
             for(int jj=0; jj<eve.STCn;jj++){
                nread= fscanf(pfile,
@@ -203,7 +207,7 @@ int main(int argc, char *argv[])
                              &eve.STCpxin[jj],&eve.STCpyin[jj],&eve.STCpzin[jj],
                              &eve.STCpxout[jj],&eve.STCpyout[jj],&eve.STCpzout[jj],
                              &eve.STCde[jj],&eve.STCal[jj],&eve.STCtim[jj]);
-    
+
                if (GlobalPar::GetPar()->IncludeST())
                   event->AddSTC(eve.STCid[jj],
                                 TVector3(eve.STCxin[jj], eve.STCyin[jj], eve.STCzin[jj]),
@@ -211,7 +215,7 @@ int main(int argc, char *argv[])
                                 TVector3(eve.STCpxin[jj], eve.STCpyin[jj], eve.STCpzin[jj]),
                                 TVector3(eve.STCpxout[jj], eve.STCpyout[jj], eve.STCpzout[jj]),
                                 eve.STCde[jj], eve.STCal[jj], eve.STCtim[jj], 0);
-               
+
                if(nread!=16){
                   ReadError= true;
                   cout<<"ReadError in STC: nread = "<<nread<<
@@ -220,11 +224,11 @@ int main(int argc, char *argv[])
                }
             }
          }
-         
+
          //	Fill beam monitor
-         
+
          if(!ReadError){
-            
+
             for(int jj=0; jj<eve.BMNn;jj++){
                nread = fscanf(pfile,
                               "%d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
@@ -235,7 +239,7 @@ int main(int argc, char *argv[])
                               &eve.BMNpxin[jj],&eve.BMNpyin[jj],&eve.BMNpzin[jj],
                               &eve.BMNpxout[jj],&eve.BMNpyout[jj],&eve.BMNpzout[jj],
                               &eve.BMNde[jj],&eve.BMNal[jj],&eve.BMNtim[jj]);
-               
+
                if (GlobalPar::GetPar()->IncludeBM())
                   event->AddBMN(eve.BMNid[jj], eve.BMNilay[jj], eve.BMNiview[jj], eve.BMNicell[jj],
                                 TVector3(eve.BMNxin[jj], eve.BMNyin[jj], eve.BMNzin[jj]),
@@ -243,7 +247,7 @@ int main(int argc, char *argv[])
                                 TVector3(eve.BMNpxin[jj], eve.BMNpyin[jj], eve.BMNpzin[jj]),
                                 TVector3(eve.BMNpxout[jj], eve.BMNpyout[jj], eve.BMNpzout[jj]),
                                 eve.BMNde[jj], eve.BMNal[jj], eve.BMNtim[jj], 0);
-               
+
                if(nread!=19){
                   ReadError = true;
                   cout<<"ReadError in BMN section: nread = "<<nread<<
@@ -252,11 +256,11 @@ int main(int argc, char *argv[])
                }
             }
          }
-         
+
          //	Fill vertex
-         
+
          if(!ReadError){
-            
+
             for(int jj=0; jj<eve.VTXn;jj++){
                nread = fscanf(pfile,
                               "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
@@ -266,7 +270,7 @@ int main(int argc, char *argv[])
                               &eve.VTXpxin[jj],&eve.VTXpyin[jj],&eve.VTXpzin[jj],
                               &eve.VTXpxout[jj],&eve.VTXpyout[jj],&eve.VTXpzout[jj],
                               &eve.VTXde[jj],&eve.VTXal[jj],&eve.VTXtim[jj]);
-               
+
                if (GlobalPar::GetPar()->IncludeVT())
                   event->AddVTX(eve.VTXid[jj], eve.VTXilay[jj],
                                 TVector3(eve.VTXxin[jj], eve.VTXyin[jj], eve.VTXzin[jj]),
@@ -283,11 +287,11 @@ int main(int argc, char *argv[])
                }
             }
          }
-         
+
          //	Fill inner tracker
-         
+
          if(!ReadError){
-            
+
             for(int jj=0; jj<eve.ITRn;jj++){
                nread = fscanf(pfile,
                               "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
@@ -297,7 +301,7 @@ int main(int argc, char *argv[])
                               &eve.ITRpxin[jj],&eve.ITRpyin[jj],&eve.ITRpzin[jj],
                               &eve.ITRpxout[jj],&eve.ITRpyout[jj],&eve.ITRpzout[jj],
                               &eve.ITRde[jj],&eve.ITRal[jj],&eve.ITRtim[jj]);
-               
+
                if (GlobalPar::GetPar()->IncludeIT())
                   event->AddITR(eve.ITRid[jj], eve.ITRisens[jj],
                                 TVector3(eve.ITRxin[jj], eve.ITRyin[jj], eve.ITRzin[jj]),
@@ -305,7 +309,7 @@ int main(int argc, char *argv[])
                                 TVector3(eve.ITRpxin[jj], eve.ITRpyin[jj], eve.ITRpzin[jj]),
                                 TVector3(eve.ITRpxout[jj], eve.ITRpyout[jj], eve.ITRpzout[jj]),
                                 eve.ITRde[jj], eve.ITRal[jj], eve.ITRtim[jj], 0);
-               
+
                if(nread!=17){
                   ReadError = true;
                   cout<<"ReadError in ITR section: nread = "<<nread<<
@@ -314,12 +318,12 @@ int main(int argc, char *argv[])
                }
             }
          }
-         
-         
+
+
          //	Fill multi strip detector
-         
+
          if(!ReadError){
-            
+
             for(int jj=0; jj<eve.MSDn;jj++){
                nread = fscanf(pfile,
                               "%d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
@@ -329,7 +333,7 @@ int main(int argc, char *argv[])
                               &eve.MSDpxin[jj],&eve.MSDpyin[jj],&eve.MSDpzin[jj],
                               &eve.MSDpxout[jj],&eve.MSDpyout[jj],&eve.MSDpzout[jj],
                               &eve.MSDde[jj],&eve.MSDal[jj],&eve.MSDtim[jj]);
-               
+
                if (GlobalPar::GetPar()->IncludeMSD())
                   event->AddMSD(eve.MSDid[jj], eve.MSDilay[jj],
                                 TVector3(eve.MSDxin[jj], eve.MSDyin[jj], eve.MSDzin[jj]),
@@ -337,7 +341,7 @@ int main(int argc, char *argv[])
                                 TVector3(eve.MSDpxin[jj], eve.MSDpyin[jj], eve.MSDpzin[jj]),
                                 TVector3(eve.MSDpxout[jj], eve.MSDpyout[jj], eve.MSDpzout[jj]),
                                 eve.MSDde[jj], eve.MSDal[jj], eve.MSDtim[jj], 0);
-               
+
                if(nread!=17){
                   ReadError = true;
                   cout<<"ReadError in MSD section: nread = "<<nread<<
@@ -346,9 +350,9 @@ int main(int argc, char *argv[])
                }
             }
          }
-         
+
          //	Fill scint
-         
+
          if(!ReadError){
             for(int jj=0; jj<eve.SCNn;jj++){
                nread= fscanf(pfile,"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
@@ -359,7 +363,7 @@ int main(int argc, char *argv[])
                              &eve.SCNpyin[jj],&eve.SCNpzin[jj],&eve.SCNpxout[jj],
                              &eve.SCNpyout[jj],&eve.SCNpzout[jj],&eve.SCNde[jj],
                              &eve.SCNal[jj],&eve.SCNtim[jj]);
-               
+
                if (GlobalPar::GetPar()->IncludeTW())
                   event->AddTW(eve.SCNid[jj], eve.SCNibar[jj], eve.SCNiview[jj],
                                TVector3(eve.SCNxin[jj], eve.SCNyin[jj], eve.SCNzin[jj]),
@@ -367,7 +371,7 @@ int main(int argc, char *argv[])
                                TVector3(eve.SCNpxin[jj], eve.SCNpyin[jj], eve.SCNpzin[jj]),
                                TVector3(eve.SCNpxout[jj], eve.SCNpyout[jj], eve.SCNpzout[jj]),
                                eve.SCNde[jj], eve.SCNal[jj], eve.SCNtim[jj], 0);
-               
+
                if(nread!=18){
                   ReadError= true;
                   cout<<"ReadError in SCN: nread = "<<nread<<
@@ -376,9 +380,9 @@ int main(int argc, char *argv[])
                }
             }
          }
-         
+
          //	Fill calorimeter
-         
+
          if(!ReadError){
             for(int jj=0; jj<eve.CALn;jj++){
                nread= fscanf(pfile,
@@ -389,7 +393,7 @@ int main(int argc, char *argv[])
                              &eve.CALpxin[jj],&eve.CALpyin[jj],&eve.CALpzin[jj],
                              &eve.CALpxout[jj],&eve.CALpyout[jj],&eve.CALpzout[jj],
                              &eve.CALde[jj],&eve.CALal[jj],&eve.CALtim[jj]);
-               
+
                if (GlobalPar::GetPar()->IncludeCA())
                   event->AddCAL(eve.CALid[jj], eve.CALicry[jj],
                                 TVector3(eve.CALxin[jj], eve.CALyin[jj], eve.CALzin[jj]),
@@ -397,7 +401,7 @@ int main(int argc, char *argv[])
                                 TVector3(eve.CALpxin[jj], eve.CALpyin[jj], eve.CALpzin[jj]),
                                 TVector3(eve.CALpxout[jj], eve.CALpyout[jj], eve.CALpzout[jj]),
                                 eve.CALde[jj], eve.CALal[jj], eve.CALtim[jj], 0);
-               
+
                if(nread!=17){
                   ReadError= true;
                   cout<<"ReadError in pixel CAL section: nread = "<<nread<<
@@ -406,23 +410,23 @@ int main(int argc, char *argv[])
                }
             }
          }
-         
+
          //	fill boundary crossing (not fill in G4)
-         
+
          if(!ReadError){
             for(int jj=0; jj<eve.CROSSn;jj++){
                nread = fscanf(pfile,"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
-                              &eve.CROSSid[jj],&eve.CROSSnreg[jj],&eve.CROSSnregold[jj],&eve.CROSSx[jj],
-                              &eve.CROSSy[jj],&eve.CROSSz[jj],&eve.CROSSpx[jj],
-                              &eve.CROSSpy[jj],&eve.CROSSpz[jj],&eve.CROSSm[jj],
-                              &eve.CROSSch[jj],&eve.CROSSt[jj]);
-               if (regFlag) {
+                              &eve.CROSSid[jj],&eve.CROSSnreg[jj],&eve.CROSSnregold[jj],
+                              &eve.CROSSx[jj],&eve.CROSSy[jj],&eve.CROSSz[jj],
+                              &eve.CROSSpx[jj],&eve.CROSSpy[jj],&eve.CROSSpz[jj],
+                              &eve.CROSSm[jj],&eve.CROSSch[jj],&eve.CROSSt[jj]);
+              if (GlobalPar::GetPar()->IsRegionMc()) {
                   event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
                                   TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
                                   TVector3(eve.CROSSpx[jj],eve.CROSSpy[jj],eve.CROSSpz[jj]),
                                   eve.CROSSm[jj],eve.CROSSch[jj],eve.CROSSt[jj]);
                }
-               
+
                if(nread!=12){
                   cout<<"ReadError in CROSS section: nread = "<<nread<<
                   " instead of 12; ev= "<<NumProcessed<<endl;
@@ -431,8 +435,8 @@ int main(int argc, char *argv[])
                }
             }
          }
-         
-         
+
+
          if( ReadError){
             break;
          }
@@ -448,16 +452,43 @@ int main(int argc, char *argv[])
                <<" "<<eve.SCNn<<" "<<eve.CALn<<" "<<eve.CROSSn<<endl;
             }
          }
-         
+
       }
-      
+
       fclose(pfile);
    }
+
+    //read the fluka .out file to load the crossing regions:
+    if(regFlag) {
+      outflukaname = campManager->GetCurRegFile(TAGgeoTrafo::GetBaseName(), runNb);
+      printf("Open region file %s\n", outflukaname.Data());
+      Int_t regnum;
+      TString regname;
+      ifstream outflukafile(outflukaname.Data());
+      if(outflukafile.is_open()){
+        TString mybuffer;
+        while(!outflukafile.eof()){
+          mybuffer.ReadToken(outflukafile);
+          if(mybuffer=="Region"){
+            mybuffer.ReadToken(outflukafile);
+            if(mybuffer=="n."){
+              outflukafile>>regnum;
+              regname.ReadToken(outflukafile);
+              info.AddRegion(regname,regnum);
+            }
+          }
+        }
+      }else{
+        cout<<"ERROR!!! cannot open "<<outflukaname.Data()<<" to read the crossing reagion names, please check the input file"<<endl;
+        cout<<"The crossing region names will not be added in the output file"<<endl;
+      }
+    }
+
+   info.Write(TAGrunInfo::GetObjectName());
    rootTree->Write();
-   
    f_out->Close();
    cout<<" total number of event safely converted= "<<NumProcessed<<endl;
-   
+
    return 0;
-   
+
 }

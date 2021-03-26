@@ -47,6 +47,7 @@ EnableTWZmc:         n
 EnableTWnoPU:        n
 EnableTWZmatch:      y
 EnableTWCalBar:      n
+EnableRegionMc:      n
 
 ############   END - Options for reconstruction   ################
 

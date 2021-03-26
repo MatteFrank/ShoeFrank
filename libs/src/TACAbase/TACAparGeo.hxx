@@ -75,6 +75,9 @@ public:
    virtual void    Clear(Option_t* opt="");
    virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
 
+   //crossing regions
+   Int_t          GetRegCrystal(Int_t n); //n=number of crystal (0-287)
+
    // to print into FLUKA input files
    string          PrintRotations();
    string          PrintBodies();

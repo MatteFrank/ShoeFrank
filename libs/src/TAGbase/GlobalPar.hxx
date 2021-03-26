@@ -28,7 +28,7 @@ class GlobalPar {
 public:
 	static GlobalPar* Instance( const TString expName = "FootGlobal.par" );
 	static GlobalPar* GetPar();
-   
+
 public:
 	~GlobalPar();
 
@@ -43,7 +43,6 @@ public:
 	bool IsKalReverse()         const { return m_kalReverse;          }
 	bool verFLUKA()             const { return m_verFLUKA;            }
 	bool EnableEventDisplay()   const { return m_enableEventDisplay;  }
-   
 	vector<string> KalSystems()       { return m_trackingSystems;     }
 	vector<string> KalParticles()     { return m_kalParticles;        }
    vector<string> MCParticles()      { return m_mcParticles;         }
@@ -56,10 +55,10 @@ public:
 
     bool IsPrintOutputFile()   const { return m_printoutfile;        }
     string OutputFile()        const { return m_outputfilename;      }
- 
+
     bool IsPrintOutputNtuple() const { return m_printoutntuple;      }
     string OutputNtuple()      const { return m_outputntuplename;    }
-	
+
     bool IsLocalReco()         const { return m_enableLocalReco;     }
     bool IsSaveTree()          const { return m_enableTree;          }
     bool IsSaveHisto()         const { return m_enableHisto;         }
@@ -71,7 +70,7 @@ public:
     bool IsTWZmatch()          const { return m_enableTWZmatch;      }
     bool IsTWCalBar()          const { return m_enableTWCalBar;      }
     bool IsRegionMc()          const { return m_enableRegionMc;      }
-  
+
     bool IncludeDI()           const { return m_includeDI;           }
     bool IncludeST()           const { return m_includeST;           }
     bool IncludeBM()           const { return m_includeBM;           }
@@ -81,10 +80,10 @@ public:
     bool IncludeTG()           const { return m_includeTG;           }
     bool IncludeVT()           const { return m_includeVT;           }
     bool IncludeIT()           const { return m_includeIT;           }
-   
+
     bool IncludeTOE()          const { return m_includeTOE;          }
     bool IncludeKalman()       const { return m_includeKalman;       }
-  
+
     bool CalibTW()             const { return m_doCalibTW;           }
     bool CalibBM()             const { return m_doCalibBM;           }
 
@@ -113,7 +112,7 @@ public:
 
     void CalibTW(bool t)             {  m_doCalibTW = t;             }
     void CalibBM(bool t)             {  m_doCalibBM = t;             }
-  
+
     void SetDebugLevels();
 
     bool Find_MCParticle( string villain );
@@ -121,7 +120,7 @@ public:
 private:
 	GlobalPar();
 	GlobalPar( const TString expName );
-   
+
 private:
 	static GlobalPar* m_pInstance;
    static map<TString, TString> m_dectFullName; // full name
@@ -153,10 +152,10 @@ private:
 
    string  m_outputfilename;
    bool m_printoutfile;
-       
+
    string  m_outputntuplename;
    bool m_printoutntuple;
-   
+
    Bool_t m_enableLocalReco;
    Bool_t m_enableTree;
    Bool_t m_enableHisto;
@@ -180,12 +179,11 @@ private:
    bool m_includeIT;
    bool m_includeVT;
    bool m_includeEvent;
-    
    bool m_includeKalman;
    bool m_includeTOE;
    bool m_doCalibTW;
    bool m_doCalibBM;
-  
+
    TObjArray  m_ClassDebugLevels;          // debug levels for classes
 
 public:
@@ -205,28 +203,3 @@ public:
 #define FootMcDebugLevel(level) GlobalPar::GetMcDebugLevel(level, typeid(*this).name())
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

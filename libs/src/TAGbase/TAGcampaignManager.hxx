@@ -26,6 +26,7 @@ public:
    const Char_t*     GetGeoFile(const  TString& detName, Int_t runNumber);
    const Char_t*     GetConfFile(const TString& detName, Int_t runNumber, TString bName = "", Int_t bEnergy = -1);
    const Char_t*     GetMapFile(const  TString& detName, Int_t runNumber, Int_t item = 0);
+   const Char_t*     GetRegFile(const  TString& detName, Int_t runNumber);
    const Char_t*     GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib = false,
                                 Bool_t isTofBarCalib = false, Bool_t elossTuning = false);
 
@@ -49,7 +50,11 @@ private:
    // mapping file
    map<TString, vector<TString> > fFileMap;
    map<TString, vector<TArrayI> > fRunsMap;
-   
+  
+   // region file
+   map<TString, TString> fFileRegMap;
+   map<TString, TArrayI> fRunsRegMap;
+  
    // calibration file
    map<TString, vector<TString> > fFileCalMap;
    map<TString, vector<TArrayI> > fRunsCalMap;
@@ -66,7 +71,7 @@ private:
    static map<Int_t, TString> fgTWcalFileType;
    static map<Int_t, TString> fgTWmapFileType;
 
-   ClassDef(TAGcampaign,1)
+   ClassDef(TAGcampaign,2)
 };
 
 //##############################################################################
@@ -107,6 +112,9 @@ public:
                                        TString bName = "", Int_t bEnergy = -1)
    { return fCurCampaign->GetConfFile(detName, runNumber, bName, bEnergy); }
    const Char_t*        GetCurMapFile(const TString& detName, Int_t runNumber = -1, Int_t item = 0)  { return fCurCampaign->GetMapFile(detName, runNumber, item);  }
+  
+   const Char_t*        GetCurRegFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetRegFile(detName, runNumber);  }
+  
    const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1,
                                       Bool_t isTofCalib = false, Bool_t isTofBarCalib = false,
                                       Bool_t elossTuning = false)
