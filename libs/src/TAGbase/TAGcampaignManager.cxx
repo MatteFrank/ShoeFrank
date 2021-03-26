@@ -256,6 +256,14 @@ bool TAGcampaign::FromFile(TString ifile)
 
          }
 
+         // region
+         if (fileName.Contains("config") && fileName.EndsWith(".reg")) {
+           fFileRegMap[detName] = fileName;
+           fRunsRegMap[detName] = array;
+           if(FootDebugLevel(1))
+             cout << "Device: " << detName << " region file: " << fileName << endl;
+         }
+        
          // calib
          if ((fileName.Contains("calib") && (fileName.EndsWith(".cal") || fileName.EndsWith(".dat"))) || fileName.Contains("T0"))  { // needed for ST
             
@@ -321,6 +329,14 @@ const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber, I
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
+//_____________________________________________________________________________
+const Char_t* TAGcampaign::GetRegFile(const TString& detName, Int_t runNumber)
+{
+  TString nameFile = fFileRegMap[detName];
+  TArrayI arrayRun = fRunsRegMap[detName];
+  
+  return GetFile(detName, runNumber, nameFile, arrayRun);
+}
 
 //_____________________________________________________________________________
 const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib,
