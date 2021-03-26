@@ -4,10 +4,12 @@
 #include <TString.h>
 
 #include "EventStruct.hxx"
+#include "TAGroot.hxx"
 #include "TAMCevent.hxx"
 
 #include "TAGrunInfo.hxx"
-
+#include "TAGgeoTrafo.hxx"
+#include "TAGcampaignManager.hxx"
 #include "GlobalPar.hxx"
 
 using namespace std;
@@ -15,6 +17,8 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 
+   TAGroot tagRoot;
+  
    int status = 0, iL=0, NumProcessed=0, numfiles = 0, nread=0;
    TString outname("Out.root"), inname("In.txt");
    vector<TString> infiles; TString tmpSin;
@@ -47,7 +51,6 @@ int main(int argc, char *argv[])
       }
       if(strcmp(argv[i],"-reg") == 0) {
         regFlag=true;
-        outflukaname=TString(argv[++i]);
       }
       if(strcmp(argv[i],"-iL") == 0) {
          iL = 1;
@@ -91,13 +94,16 @@ int main(int argc, char *argv[])
    GlobalPar::Instance(exp);
    GlobalPar::GetPar()->Print();
 
+  TAGcampaignManager* campManager = new TAGcampaignManager(exp);
+  campManager->FromFile();
+  
    TFile *f_out = new TFile(outname,"RECREATE");
    f_out->cd();
 
    if(regFlag)
      GlobalPar::GetPar()->EnableRegionMc();
    GlobalPar::GetPar()->EnableRootObject();
-   TAGrunInfo info = GlobalPar::Instance()->GetGlobalInfo();
+   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
    info.SetCampaignName(exp);
    info.SetRunNumber(runNb);
 
@@ -151,7 +157,6 @@ int main(int argc, char *argv[])
                        &eve.SCNn,&eve.CALn,&eve.CROSSn);
          
          event->AddEvent(eve.EventNumber);
-         
          if(nread!=10){
             cout<<"ReadError in ev header section: nread = "<<nread<<
             " instead of 10; ev= "<<NumProcessed<<endl;
@@ -411,10 +416,10 @@ int main(int argc, char *argv[])
          if(!ReadError){
             for(int jj=0; jj<eve.CROSSn;jj++){
                nread = fscanf(pfile,"%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf \n",
-                              &eve.CROSSid[jj],&eve.CROSSnreg[jj],&eve.CROSSnregold[jj],&eve.CROSSx[jj],
-                              &eve.CROSSy[jj],&eve.CROSSz[jj],&eve.CROSSpx[jj],
-                              &eve.CROSSpy[jj],&eve.CROSSpz[jj],&eve.CROSSm[jj],
-                              &eve.CROSSch[jj],&eve.CROSSt[jj]);
+                              &eve.CROSSid[jj],&eve.CROSSnreg[jj],&eve.CROSSnregold[jj],
+                              &eve.CROSSx[jj],&eve.CROSSy[jj],&eve.CROSSz[jj],
+                              &eve.CROSSpx[jj],&eve.CROSSpy[jj],&eve.CROSSpz[jj],
+                              &eve.CROSSm[jj],&eve.CROSSch[jj],&eve.CROSSt[jj]);
               if (GlobalPar::GetPar()->IsRegionMc()) {
                   event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
                                   TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
@@ -454,7 +459,9 @@ int main(int argc, char *argv[])
    }
 
     //read the fluka .out file to load the crossing regions:
-    if(regFlag==true){
+    if(regFlag) {
+      outflukaname = campManager->GetCurRegFile(TAGgeoTrafo::GetBaseName(), runNb);
+      printf("Open region file %s\n", outflukaname.Data());
       Int_t regnum;
       TString regname;
       ifstream outflukafile(outflukaname.Data());
