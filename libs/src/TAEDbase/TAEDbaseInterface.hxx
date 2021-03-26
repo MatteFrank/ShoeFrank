@@ -37,7 +37,7 @@ public:
    };
    
 public:
-   TAEDbaseInterface(Int_t type, const TString expName = "");
+   TAEDbaseInterface(Int_t type, const TString expName = "", Int_t runNumber = -1);
    virtual ~TAEDbaseInterface();
    
    //! update elements
@@ -90,7 +90,7 @@ public:
 
    virtual void SetTransparency(Char_t transparency = 50); //*MENU*
    
-   virtual void ShowDisplay(const TString fileName, Int_t runNumber = -1);
+   virtual void ShowDisplay(const TString fileName);
    
    virtual void LoadGeometry(const Char_t* fileName);
    

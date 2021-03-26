@@ -361,7 +361,7 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
       resMin[0]  += gRandom->Uniform(-1, 1);
       resMin[1]  += gRandom->Uniform(-1, 1);
       TATWpoint *point = pNtuPoint->GetPoint(imin);
-      point->SetMatchCalIdx(cluster->GetNumber());
+      point->SetMatchCalIdx(cluster->GetClusterIdx());
       
       if (ValidHistogram()) {
          fpHisResTwMag->Fill(resMin.Mag());

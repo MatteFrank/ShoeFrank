@@ -52,9 +52,6 @@ public:
    //! Close File in
    virtual void CloseFileIn();
    
-   //! Set run number
-   void   SetRunNumber();
-
 public:
    //! Disable/Enable stand alone DAQ
    static void DisableStdAlone()   { fgStdAloneFlag = false;  }

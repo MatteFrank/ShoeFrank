@@ -125,13 +125,13 @@ public:
    
    //! Open File In
    virtual void OpenFileIn()  { return; }
+  
+   // ! Global Checks
+  virtual void GlobalChecks();
    
    //! Close File in
    virtual void CloseFileIn() { return; }
-   
-   //! Set Run number
-   virtual void SetRunNumber() { return; }
-   
+      
    //! Open File Out
    virtual void OpenFileOut();
    

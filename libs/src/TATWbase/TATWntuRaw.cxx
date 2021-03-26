@@ -32,6 +32,8 @@ TATWntuHit::TATWntuHit()
     m_chargeCOM(-1),
     m_ChargeA(-1),
     m_ChargeB(-1),
+    m_AmplitudeA(-1),
+    m_AmplitudeB(-1),
     m_TimeA(-1),
     m_TimeB(-1),
     m_time_oth(-1),
@@ -57,6 +59,8 @@ TATWntuHit::TATWntuHit( TATWrawHit* hit )
   m_chargeCOM(-1),
   m_ChargeA(-1),
   m_ChargeB(-1),
+  m_AmplitudeA(-1),
+  m_AmplitudeB(-1),
   m_TimeA(-1),
   m_TimeB(-1),
   m_time_oth(-1),
@@ -83,6 +87,8 @@ TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
    m_McTrackId(aHit.m_McTrackId),
    m_ChargeA(aHit.m_ChargeA),
    m_ChargeB(aHit.m_ChargeB),
+   m_AmplitudeA(aHit.m_AmplitudeA),
+   m_AmplitudeB(aHit.m_AmplitudeB),
    m_TimeA(aHit.m_TimeA),
    m_TimeB(aHit.m_TimeB),
    m_time_oth(aHit.m_time_oth),
@@ -96,7 +102,7 @@ TATWntuHit::TATWntuHit(const TATWntuHit& aHit)
 // Build the hit from its layerID and barID
 TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
 			Double_t pos,Double_t chargeCOM,Double_t ChargeA,
-			Double_t ChargeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth):
+			Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth):
   
   TAGobject(),
   m_layer(aView),
@@ -110,6 +116,8 @@ TATWntuHit::TATWntuHit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, D
   m_chargeCOM(chargeCOM),
   m_ChargeA(ChargeA),
   m_ChargeB(ChargeB),
+  m_AmplitudeA(AmplitudeA),
+  m_AmplitudeB(AmplitudeB),
   m_TimeA(TimeA),
   m_TimeB(TimeB),
   m_time_oth(aTime_oth),
@@ -146,6 +154,8 @@ void TATWntuHit::Clear(Option_t* /*option*/)
 	m_chargeCOM=0;
 	m_ChargeA=0;
 	m_ChargeB=0;
+	m_AmplitudeA=0;
+	m_AmplitudeB=0;
 	m_TimeA=0;
 	m_TimeB=0;
 	m_time_oth=0;
@@ -182,13 +192,15 @@ TATWntuRaw::~TATWntuRaw()
 //______________________________________________________________________________
 //  standard
 TATWntuHit* TATWntuRaw::NewHit( int layer, int bar, double energyLoss, double atime, double atime_oth, double pos,double chargeCOM,
-				double ChargeA, double ChargeB, double TimeA, double TimeB,  double TimeA_oth, double TimeB_oth) {
+				double ChargeA, double ChargeB, double AmplitudeA, double AmplitudeB, double TimeA, double TimeB, double TimeA_oth, double TimeB_oth) {
 
 	TClonesArray &pixelArray = *m_listOfHits;
 	if(layer == (int)LayerY) m_hitlayY++;
 	else   if(layer == (int)LayerX) m_hitlayX++;
 	TATWntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWntuHit( layer, bar, energyLoss, atime, atime_oth, pos,
-										   chargeCOM,ChargeA, ChargeB, TimeA, TimeB,  TimeA_oth, TimeB_oth);
+										   chargeCOM,ChargeA, ChargeB, AmplitudeA, AmplitudeB, TimeA, TimeB,  TimeA_oth, TimeB_oth);
+
+
 	return hit;
 }
 

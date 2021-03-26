@@ -47,8 +47,8 @@ CamDataMC:    1
 CamDate: "December 2020"
 CamSum: "Simulation data for data taking at CNAO with ST+BM+VTX+MSD+TW+CAL"
 
-CamNumber:    7
+CamNumber:    8
 CamName:    "testCALO"
-CamDataMC:    1
+CamDataMC:    0
 CamDate: "February 2021"
 CamSum: "Fake campaign for CALO waveform decoding test"

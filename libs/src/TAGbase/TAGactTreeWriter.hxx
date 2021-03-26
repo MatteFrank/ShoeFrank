@@ -65,6 +65,12 @@ class TAGactTreeWriter : public TAGactionFile {
 
     ClassDef(TAGactTreeWriter,0)
 
+  public :
+    static Int_t get_be_type(TBranch* p_branch);
+    static Int_t get_be_id(TBranch* p_branch);
+    static void sum_branch(Int_t& i_nsub, Double_t& d_usize, Double_t& d_csize, TBranch* p_branch);
+    static void print_branch(ostream& os, Double_t d_bsize, TBranch* p_branch, Bool_t b_ptop);
+  
   private:
     TList*          fpBranchList;
     TFile*          fpFile;

@@ -112,41 +112,6 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
 }
 
 //------------------------------------------+-----------------------------------
-//! Check branches.
-void TAGactNtuGlbTrack::CheckBranches()
-{
-   TAGrunInfo info = gTAGroot->CurrentRunInfo();
-   TString camName = info.CampaignName();
-   Int_t runNumber = info.RunNumber();
-   
-   if (GlobalPar::GetPar()->IncludeVT()) {
-      if (!info.GetGlobalPar().IncludeVT)
-         Error("SetupBranches()", "No VTX branche available in this root file");
-   }
-   
-   if (GlobalPar::GetPar()->IncludeIT()) {
-      if (!info.GetGlobalPar().IncludeIT)
-         Error("SetupBranches()", "No IT branche available in this root file");
-   }
-   
-   if (GlobalPar::GetPar()->IncludeMSD()) {
-      if (!info.GetGlobalPar().IncludeMSD)
-         Error("SetupBranches()", "No MSD branche available in this root file");
-   }
-   
-   if(GlobalPar::GetPar()->IncludeTW()) {
-      if (!info.GetGlobalPar().IncludeTW)
-         Error("SetupBranches()", "No TW branche available in this root file");
-   }
-   
-   info = GlobalPar::GetPar()->GetGlobalInfo();
-   info.SetCampaignName(camName);
-   info.SetRunNumber(runNumber);
-   
-   gTAGroot->SetRunInfo(info);
-}
-
-//------------------------------------------+-----------------------------------
 //! Setup action.
  TATOEbaseAct* TAGactNtuGlbTrack::SetupAction() const
 {

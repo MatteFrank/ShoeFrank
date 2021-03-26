@@ -45,8 +45,8 @@ Bool_t  TAFObaseEventDisplay::fgM28ClusMtFlag   = false;
 
 
 //__________________________________________________________
-TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t type)
- : TAEDbaseInterface(type, expName),
+TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumber, Int_t type)
+ : TAEDbaseInterface(type, expName, runNumber),
    fStClusDisplay(0x0),
    fBmClusDisplay(0x0),
    fBmTrackDisplay(0x0),
@@ -324,7 +324,6 @@ void TAFObaseEventDisplay::SetFileName(const TString fileName)
 {
    fReco->SetName(fileName);
    fReco->SetRunNumber(fRunNumber);
-   fReco->SetRunNumber();
 }
 
 //__________________________________________________________
@@ -465,7 +464,7 @@ void TAFObaseEventDisplay::ConnectElements()
    }
 
    if (GlobalPar::GetPar()->IncludeTOE()) {
-      TQObject::Connect("TAEDglbTrack", "SecSelected(TEveTrack*)", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
+      TQObject::Connect("TEveTrack", "SecSelected(TEveTrack*)", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
    }
 }
 
@@ -482,12 +481,12 @@ void TAFObaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       if (clus == 0x0) return;
       TVector3 pos = clus->GetPositionG();
       fInfoView->AddLine( Form("Cluster # %3d\n", idx) );
-      fInfoView->AddLine( Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetPlaneNumber()) );
+      fInfoView->AddLine( Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetSensorIdx()) );
       fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
 
       if (fConsoleButton->IsOn()) {
          cout << Form("Cluster # %3d\n", idx);
-         cout << Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetPlaneNumber());
+         cout << Form("with %3d pixels in sensor %d\n", clus->GetPixelsN(), clus->GetSensorIdx());
          cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
       }
 
@@ -496,12 +495,12 @@ void TAFObaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
          if (clus == 0x0) return;
          TVector3 pos = clus->GetPositionG();
          fInfoView->AddLine( Form("Cluster # %3d\n", idx) );
-         fInfoView->AddLine( Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetPlaneNumber()) );
+         fInfoView->AddLine( Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetSensorIdx()) );
          fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
 
       if (fConsoleButton->IsOn()) {
          cout << Form("Cluster # %3d\n", idx);
-         cout << Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetPlaneNumber());
+         cout << Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetSensorIdx());
          cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
       }
 
@@ -596,12 +595,12 @@ void TAFObaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       for (Int_t i = 0; i < track->GetClustersN(); i++) {
          TAVTbaseCluster* clus = track->GetCluster(i);
          TVector3 posG = clus->GetPositionG();
-         fInfoView->AddLine( Form(" for plane %d\n", clus->GetPlaneNumber()));
+         fInfoView->AddLine( Form(" for plane %d\n", clus->GetSensorIdx()));
          fInfoView->AddLine( Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y()) );
          fInfoView->AddLine( Form(" with %d pixels\n", clus->GetPixelsN()));
 
          if (fConsoleButton->IsOn()) {
-            cout <<  Form(" for plane %d\n", clus->GetPlaneNumber());
+            cout <<  Form(" for plane %d\n", clus->GetSensorIdx());
             cout <<  Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y());
             cout <<  Form(" with %d pixels\n", clus->GetPixelsN());
          }
@@ -637,23 +636,26 @@ void TAFObaseEventDisplay::UpdateTrackInfo(TEveTrack* ts)
       if (track == 0x0) return;
 
       fInfoView->AddLine( Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN()) );
-      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %g GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass()) );
-      fInfoView->AddLine( Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof()) );
+      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass()) );
+      fInfoView->AddLine( Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTof()) );
 
       if (fConsoleButton->IsOn()) {
          cout <<  Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN());
-         cout <<  Form("Charge: %d A: %d Mass: %g GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass());
-         cout <<  Form("Momentum: %g GeV/c ToF: %g ns\n", track->GetMomentum(), track->GetTof());
+         cout <<  Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass());
+         cout <<  Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTof());
 
          for( Int_t iPoint = 0; iPoint < track->GetMeasPointsN(); ++iPoint ) {
             TAGpoint* point = track->GetMeasPoint(iPoint);
-            cout << Form("Point # %2d", iPoint);
+            cout << Form("%-3s: #%2d ", point->GetDevName(), iPoint);
+            cout << Form("Momentum: (%.2f %.2f %.2f) GeV/c ", point->GetMomentum()[0], point->GetMomentum()[1], point->GetMomentum()[2]);
 
-            for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
+           if (fType != 0) {
+             for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
                Int_t idx = point->GetMcTrackIdx(k);
-               cout << Form("Track index %d ", idx);
-            }
-            cout << endl;
+               cout << Form(" MCtrackIdx: %d ", idx);
+             }
+           }
+           cout << endl;
          }
       }
    }
@@ -687,7 +689,7 @@ void TAFObaseEventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
 void TAFObaseEventDisplay::UpdateElements()
 {
    if (fgGUIFlag)
-      fEventEntry->SetText(Form("Run %d Event %d", gTAGroot->CurrentRunInfo().RunNumber(), gTAGroot->CurrentEventId().EventNumber()));
+      fEventEntry->SetText(Form("Run %d Event %d", gTAGroot->CurrentRunNumber(), gTAGroot->CurrentEventId().EventNumber()));
 
    if (GlobalPar::GetPar()->IncludeST())
       UpdateElements("st");

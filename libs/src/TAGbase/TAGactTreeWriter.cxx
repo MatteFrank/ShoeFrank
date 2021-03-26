@@ -205,7 +205,7 @@ Bool_t TAGactTreeWriter::Process()
 }
 
 //------------------------------------------+-----------------------------------
-static Int_t get_be_type(TBranch* p_branch)
+Int_t TAGactTreeWriter::get_be_type(TBranch* p_branch)
 {
   Int_t i_btyp = -1;
   if (p_branch->InheritsFrom("TBranchElement")) {
@@ -215,7 +215,7 @@ static Int_t get_be_type(TBranch* p_branch)
 }
 
 //------------------------------------------+-----------------------------------
-static Int_t get_be_id(TBranch* p_branch)
+Int_t TAGactTreeWriter::get_be_id(TBranch* p_branch)
 {
   Int_t i_bid = 0;
   if (p_branch->InheritsFrom("TBranchElement")) {
@@ -225,7 +225,7 @@ static Int_t get_be_id(TBranch* p_branch)
 }
 
 //------------------------------------------+-----------------------------------
-static void sum_branch(Int_t& i_nsub, Double_t& d_usize, Double_t& d_csize,
+void TAGactTreeWriter::sum_branch(Int_t& i_nsub, Double_t& d_usize, Double_t& d_csize,
 		       TBranch* p_branch)
 {
   Int_t i_btyp = get_be_type(p_branch);
@@ -250,7 +250,7 @@ static void sum_branch(Int_t& i_nsub, Double_t& d_usize, Double_t& d_csize,
 }
 
 //------------------------------------------+-----------------------------------
-static void print_branch(ostream& os, Double_t d_bsize, 
+void TAGactTreeWriter::print_branch(ostream& os, Double_t d_bsize, 
 			 TBranch* p_branch, Bool_t b_ptop)
 {
   Int_t i_btyp = get_be_type(p_branch);

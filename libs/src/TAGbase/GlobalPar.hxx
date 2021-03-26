@@ -85,6 +85,7 @@ public:
     bool IncludeKalman()       const { return m_includeKalman;       }
   
     bool CalibTW()             const { return m_doCalibTW;           }
+    bool CalibBM()             const { return m_doCalibBM;           }
 
     void IncludeTOE(bool t)          {  m_includeTOE = t;            }
     void IncludeKalman(bool t)       {  m_includeKalman = t;         }
@@ -107,6 +108,7 @@ public:
     bool IncludeEvent()        const { return m_includeEvent;        }
 
     void CalibTW(bool t)             {  m_doCalibTW = t;             }
+    void CalibBM(bool t)             {  m_doCalibBM = t;             }
   
     void SetDebugLevels();
 
@@ -177,6 +179,7 @@ private:
    bool m_includeKalman;
    bool m_includeTOE;
    bool m_doCalibTW;
+   bool m_doCalibBM;
   
    TObjArray  m_ClassDebugLevels;          // debug levels for classes
 

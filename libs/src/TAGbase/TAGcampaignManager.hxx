@@ -95,10 +95,11 @@ public:
    
    Bool_t               FromFile(TString ifile = "");
    
-   Int_t                GetCampaignsN()             { return fCampaignsN;       }
-   Int_t                GetCurrentCamNumber() const { return fCurCampaignNumber; }
-   CamParameter_t&      GetCampaignPar(Int_t idx)   { return fCamParameter[idx]; }
-   const TAGcampaign*   GetCurCampaign()            { return fCurCampaign;       }
+   Int_t                GetCampaignsN()             const { return fCampaignsN;        }
+   Int_t                GetCurrentCamNumber()       const { return fCurCampaignNumber; }
+   CamParameter_t&      GetCampaignPar(Int_t idx)         { return fCamParameter[idx]; }
+   CamParameter_t&      GetCurCampaignPar()               { return fCamParameter[fCurCampaignNumber]; }
+   const TAGcampaign*   GetCurCampaign()                  { return fCurCampaign;       }
    
    const TArrayI&       GetCurRunArray() const                                       { return fCurCampaign->GetRunArray();                   }
    const Char_t*        GetCurGeoFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetGeoFile(detName, runNumber);  }

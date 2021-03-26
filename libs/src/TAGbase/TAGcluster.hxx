@@ -22,6 +22,16 @@ class TAGcluster : public TAGobject {
 
    virtual           ~TAGcluster() {}
 
+   //! Get cluster index
+   Int_t                    GetClusterIdx()    const { return fClusterIdx; }
+   //! Get sensor index
+   Int_t                    GetSensorIdx()     const { return fSensorIdx;  }
+  
+   //! Set cluster number
+   void                     SetClusterIdx(Int_t nb)  { fClusterIdx = nb;   }
+   //! Set plane number
+   void                     SetSensorIdx(Int_t nb)   { fSensorIdx = nb;    }
+  
    //! Get position in local frame
    virtual const TVector3&  GetPosition() const = 0;
    
@@ -44,7 +54,8 @@ class TAGcluster : public TAGobject {
 private:
    TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
    map<int, int>      fMcTrackMap;               // Map of MC track Id
-
+   Int_t              fClusterIdx;               // cluster index
+   Int_t              fSensorIdx;                // sensor index
    
     ClassDef(TAGcluster,1)
 };

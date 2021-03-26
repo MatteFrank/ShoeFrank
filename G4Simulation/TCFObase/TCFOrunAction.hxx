@@ -7,7 +7,6 @@
 
 #include "globals.hh"
 
-#include "Evento.hxx"
 #include "TAMCevent.hxx"
 #include "TAGroot.hxx"
 #include "TString.h"
@@ -28,23 +27,19 @@ class TCFOrunAction : public G4UserRunAction
     void EndOfRunAction(const G4Run* aRun);
     void FillAndClear(Bool_t fill = true);
 
-    TFile* GetOutFile()                const { return fpOutFile;    }
-    Int_t  GetEventsNToBeProcessed()   const { return fEventsNToBeProcessed;}
-
+    TFile*     GetOutFile()                const { return fpOutFile;             }
+    Int_t      GetEventsNToBeProcessed()   const { return fEventsNToBeProcessed; }
+    TAMCevent* GetEventMC()                const { return fpEventMC;             }
+  
     public:
-    void         DisableEvento()         { fkEvento = 0 ; }
-    Bool_t       GetEvento()       const { return fkEvento  ; }
-    Evento*      GetEventoMC()     const { return fpEventoMC; }
-    TAMCevent*   GetEventMC()      const { return fpEventMC; }
-    void SetEvento(Bool_t akEvento){ fkEvento = akEvento ; }
     static void SetRootFileName(const char* name) { fgRootFileName = name; }
-    static const char* GetRootFileName() { return fgRootFileName; }
+    static const char* GetRootFileName()          { return fgRootFileName; }
 
     private:
-    Bool_t         fkEvento;
-    Evento*        fpEventoMC; // For data form Simulation
-    TAMCevent*     fpEventMC;  // For data form Simulation
     static TString fgRootFileName;
+
+    private:
+    TAMCevent*     fpEventMC;  // For data form Simulation
     TFile*         fpOutFile;
     TTree*         fpTree;
     Int_t          fEventsNToBeProcessed;
@@ -53,7 +48,8 @@ class TCFOrunAction : public G4UserRunAction
     private:
     void           SetContainers();
     void           ClearContainers();
-
+    void           PrintBranches();
+ 
 };
 
 #endif

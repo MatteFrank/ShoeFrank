@@ -55,6 +55,7 @@ int main (int argc, char *argv[])  {
    Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
    Bool_t trk = GlobalPar::GetPar()->IsTracking();
    Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
+   Bool_t zmatch = GlobalPar::GetPar()->IsTWZmatch();
    Bool_t tbc = GlobalPar::GetPar()->IsTWCalBar();
 
    if (tbc) {
@@ -76,10 +77,14 @@ int main (int argc, char *argv[])  {
    if(hit) {
       locRec->EnableTree();
       locRec->EnableSaveHits();
+
    }
    
    if (trk)
       locRec->EnableTracking();
+   
+   if(zmatch)
+     locRec->EnableTWZmatch();
    
    if (tbc)
      locRec->EnableTWcalibPerBar();

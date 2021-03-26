@@ -48,10 +48,7 @@ public:
    
    //! Base creation of histogram
    void      CreateHistogram();
-   
-   //! Check branches
-   void      CheckBranches();
-
+  
     TAGntuGlbTrack* GetTrackContainer() {return static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() );}
     
     void Output(){ fActTOE->Output(); }

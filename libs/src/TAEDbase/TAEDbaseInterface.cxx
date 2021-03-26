@@ -41,11 +41,11 @@ Int_t  TAEDbaseInterface::fgMaxHistosN   =  4;
 ClassImp(TAEDbaseInterface)
 
 //__________________________________________________________
-TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName)
+TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName, Int_t runNumber)
 : TEveEventManager(),
   fExpName(expName),
   fType(type),
-  fRunNumber(-1),
+  fRunNumber(runNumber),
   fWorldSizeZ(120),
   fWorldSizeXY(25),
   fWorldName("World"),
@@ -224,7 +224,7 @@ void TAEDbaseInterface::SetTransparency(Char_t  transparency)
 }
 
 //__________________________________________________________
-void TAEDbaseInterface::ShowDisplay(const TString fileName, Int_t runNumber)
+void TAEDbaseInterface::ShowDisplay(const TString fileName)
 {
    if (fgIsDisplayed) {
       gEve->FullRedraw3D(kTRUE);
@@ -232,7 +232,6 @@ void TAEDbaseInterface::ShowDisplay(const TString fileName, Int_t runNumber)
       return;
    }
    
-   fRunNumber = runNumber;
    SetFileName(fileName);
    ReadParFiles();
    CreateRawAction();

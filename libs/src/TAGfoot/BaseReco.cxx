@@ -131,11 +131,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    GlobalPar::GetPar()->SetDebugLevels();
    
    // Save run info
-   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
-   info.SetCampaignName(fExpName);
-   info.SetRunNumber(fRunNumber);
-   gTAGroot->SetRunInfo(info);
-   
+   gTAGroot->SetRunNumber(fRunNumber);
+   gTAGroot->SetCampaignName(fExpName);
+
    // activate per default Dipole, TGT, VTX and TW if TOE on
    if (GlobalPar::GetPar()->IncludeTOE()) {
       GlobalPar::GetPar()->IncludeDI(true);
@@ -181,25 +179,71 @@ void BaseReco::CampaignChecks()
    if (!runOk) {
       Error("CampaignChecks()", "run %d is NOT referenced in campaign file", fRunNumber);
       exit(0);
-
    }
+  
+  // Check MC file
+  if (fFlagMC && fCampManager->GetCurCampaignPar().McFlag)
+    Info("CampaignChecks()", "Reading MC data");
+
+  if (fFlagMC && !fCampManager->GetCurCampaignPar().McFlag) {
+    Error("CampaignChecks()", "Trying to read back MC data file while referenced as raw data in campaign file");
+    exit(0);
+  }
+  
+  if (!fFlagMC && fCampManager->GetCurCampaignPar().McFlag) {
+    Error("CampaignChecks()", "Trying to read back raw data file while referenced as MC data in campaign file");
+    exit(0);
+  }
+}
+
+//__________________________________________________________
+void BaseReco::GlobalChecks()
+{
+  if (GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) {
+    // from global file
+    Bool_t enableLocalRecoG = GlobalPar::GetPar()->IsLocalReco();
+    
+    // from root file
+    TAGrunInfo info = gTAGroot->CurrentRunInfo();
+    TAGrunInfo* p = &info;
+    if (!p) return; // if run info not found in MC file
+
+    Bool_t enableLocalReco = info.GetGlobalPar().EnableLocalReco;
+    
+    if (enableLocalRecoG && enableLocalReco)
+      Info("GlobalChecks()", "Make global reconstruction from L0 tree");
+    
+    if (enableLocalRecoG && !enableLocalReco) {
+      Error("GlobalChecks()", "FootGlobal::enableLocalReco set but raw data found in root file !");
+      exit(0);
+    }
+    
+    if (!enableLocalRecoG && enableLocalReco) {
+      Error("GlobalChecks()", "FootGlobal::enableLocalReco not set but L0 tree found in root file!");
+      exit(0);
+    }
+  }
 }
 
 //__________________________________________________________
 void BaseReco::BeforeEventLoop()
 {
    ReadParFiles();
-
+   cout << "after READ PAR" << endl;
    CreateRawAction();
+   cout << "after RAW action" << endl;
    CreateRecAction();
+   cout << "after REC action" << endl;
 
-   SetRunNumber();
    CampaignChecks();
 
    AddRawRequiredItem();
    AddRecRequiredItem();
    
    OpenFileIn();
+  
+   GlobalChecks();
+  
    if (fFlagOut)
       OpenFileOut();
    
@@ -222,34 +266,21 @@ void BaseReco::LoopEvent(Int_t nEvents)
     
     if(ientry % frequency == 0)
       cout<<" Loaded Event:: " << ientry << endl;
-    
-    if (!fTAGroot->NextEvent()) break;;
+        
+    if (!fTAGroot->NextEvent()) break;
     
     if (FootDebugLevel(1)) {
-      //MC block
-      TAMCntuEve*  p_ntuMcEve
-	=  static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( "eveMc" ) ->Object() );
-      if(p_ntuMcEve) {
-	int nTrkMC = p_ntuMcEve->GetTracksN();
-	for(int iTr = 0; iTr< nTrkMC; iTr++) {
-	  TAMCeveTrack *aTr = p_ntuMcEve->GetTrack(iTr);
-	  //    cout<<"MCblock:  "<<aTr->GetMass()<<" "<<aTr->GetCharge()<<endl;
-	}
-      }
-      
       if(fpNtuGlbTrack) {
-	TAGntuGlbTrack *glbTrack =
-	  (TAGntuGlbTrack*) fpNtuGlbTrack->GenerateObject();
-	// (fTAGroot->FindDataDsc("glbTrack", "TAGntuGlbTrack")->Object());
-	
-	int nTrk = glbTrack->GetTracksN();
-	for(int iTr = 0; iTr< nTrk; iTr++) {
-	  TAGtrack *aTr = glbTrack->GetTrack(iTr);
-	  cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
-	}
+        TAGntuGlbTrack *glbTrack =
+        (TAGntuGlbTrack*) fpNtuGlbTrack->GenerateObject();
+        
+        int nTrk = glbTrack->GetTracksN();
+        for(int iTr = 0; iTr< nTrk; iTr++) {
+          TAGtrack *aTr = glbTrack->GetTrack(iTr);
+          cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
+        }
       }
-    }    
-
+    }
   }
 }
 
@@ -344,6 +375,13 @@ void BaseReco::SetRecHistogramDir()
 //__________________________________________________________
 void BaseReco::CloseFileOut()
 {
+   // saving current run info
+   GlobalPar::GetPar()->EnableLocalReco();
+   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
+   info.SetCampaignName(fExpName);
+   info.SetRunNumber(fRunNumber);
+   gTAGroot->SetRunInfo(info);
+
    fActEvtWriter->Print();
    fActEvtWriter->Close();
 }
@@ -560,19 +598,25 @@ void BaseReco::ReadParFiles()
       TACAparGeo* parGeo = (TACAparGeo*)fpParGeoCa->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName);
+      
+      fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
+      TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
+
+      fpParCalCa = new TAGparaDsc("caCal", new TACAparCal(parMap));
+      TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
+      
      
      if(fFlagMC) { // set in MC threshold and active crystals from data informations
        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-       fpParCalCa = new TAGparaDsc("caCal", new TACAparCal());
-
-       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
        parCal->FromCrysStatusFile(parFileName.Data());
      } else {
-       parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-       fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
+              
+        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parMap->FromFile(parFileName.Data());
+        cout << "nCryMap: " << parMap->GetCrystalsN() << endl;
 
-       TACAparMap* parCal = (TACAparMap*)fpParCalCa->Object();
-       parCal->FromFile(parFileName.Data());
+        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parCal->FromCalibTempFile(parFileName.Data());
      }
    }
 
@@ -771,7 +815,6 @@ void BaseReco::CreateRecActionGlb()
 					   fField );
     if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
-    fActGlbTrack->CheckBranches();
   }
   
 }
@@ -875,13 +918,10 @@ void BaseReco::SetL0TreeBranches()
     if(GlobalPar::GetPar()->IncludeTW())
       fActEvtReader->SetupBranch(fpNtuRecTw,  TATWntuPoint::GetBranchName());
     
-    if (fFlagMC) {
-      fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
-      fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
-    }
+    if(GlobalPar::GetPar()->IncludeCA())
+      fActEvtReader->SetupBranch(fpNtuClusCa,  TACAntuCluster::GetBranchName());
   }
 }
-
 
 //__________________________________________________________
 void BaseReco::SetTreeBranches()

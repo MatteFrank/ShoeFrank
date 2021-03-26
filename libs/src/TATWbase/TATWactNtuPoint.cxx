@@ -53,6 +53,8 @@ TATWactNtuPoint::TATWactNtuPoint(const char* name, TAGdataDsc* pNtuRaw, TAGdataD
    fparGeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
    fZbeam = fparGeo->GetBeamPar().AtomicNumber;
 
+   fmapMultHit.clear();
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -69,21 +71,21 @@ void TATWactNtuPoint::CreateHistogram()
    DeleteHistogram();
    
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
-     fpHisDist.push_back(new TH1F(Form("minDist_Z%d",iZ), Form("TW - Minimal distance between clusterized hits - Z%d",iZ), 1000, 0., 10));
+     fpHisDist.push_back(new TH1F(Form("twMinDist_Z%d",iZ), Form("TW - Minimal distance between clusterized hits - Z%d",iZ), 1000, 0., 10));
      AddHistogram(fpHisDist[iZ-1]);
   
 
-   fpHisDeltaE.push_back(new TH1F(Form("DeltaE_Z%d",iZ),Form("DeltaE_Z%d",iZ),1000,-25.,25.));
+   fpHisDeltaE.push_back(new TH1F(Form("twDeltaE_Z%d",iZ),Form("DeltaE_Z%d",iZ),1000,-25.,25.));
      
      AddHistogram(fpHisDeltaE[iZ-1]);
      
-     fpHisDeltaTof.push_back( new TH1F(Form("DeltaTof_Z%d",iZ),Form("DeltaTof_Z%d",iZ),1000,-5.,5) );
+     fpHisDeltaTof.push_back( new TH1F(Form("twDeltaTof_Z%d",iZ),Form("DeltaTof_Z%d",iZ),1000,-5.,5) );
      AddHistogram(fpHisDeltaTof[iZ-1]);
 
-     fpHisElossMean.push_back( new TH1F(Form("ElossMean_Z%d",iZ),Form("ElossMean_Z%d",iZ),480,0,120) );
+     fpHisElossMean.push_back( new TH1F(Form("twElossMean_Z%d",iZ),Form("ElossMean_Z%d",iZ),480,0,120) );
      AddHistogram(fpHisElossMean[iZ-1]);
      
-     fpHisTofMean.push_back( new TH1F(Form("TofMean_Z%d",iZ),Form("TofMean_Z%d",iZ),1400,6,20) );
+     fpHisTofMean.push_back( new TH1F(Form("twTofMean_Z%d",iZ),Form("TofMean_Z%d",iZ),1400,6,20) );
      AddHistogram(fpHisTofMean[iZ-1]);
      
    }
@@ -95,10 +97,10 @@ void TATWactNtuPoint::CreateHistogram()
 //
 Bool_t TATWactNtuPoint::Action()
 {
-   mapHitX.clear();
-   mapHitY.clear();
-   mapMoreHits.clear();
-   mapLessHits.clear();
+   fmapHitX.clear();
+   fmapHitY.clear();
+   fmapMoreHits.clear();
+   fmapLessHits.clear();
 
    Bool_t ok = FindPoints();
 
@@ -133,6 +135,7 @@ Bool_t TATWactNtuPoint::FindPoints()
    Int_t totChargeX(0); 
    Int_t totChargeY(0); 
 
+   fmapMultHit.clear();
    for (Int_t idx = 0; idx < nHitsX; ++idx) {  // loop over front TW hits
 
      TATWntuHit* hitX = pNtuHit->GetHit(idx, LayerX);
@@ -141,19 +144,23 @@ Bool_t TATWactNtuPoint::FindPoints()
        cout<<"Z_x::"<<hitX->GetChargeZ()<<"  bar_x::"<<hitX->GetBar()<<endl;
      
      if(!hitX) continue;
+     if(!hitX->IsValid()) continue;
+     if(fIsZMCtrue && hitX->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
      if((Int_t)hitX->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
-     if(fIsZmatch && hitX->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
-       
+     // remove double hit in the same layer of the same track when Z = Ztrue
+     if(fIsZMCtrue && IsMultHit(hitX) ) continue;
+     
      nHitsX_good++;
      totChargeX+=hitX->GetChargeZ();
 
-     mapHitX[idx] = hitX;
+     fmapHitX[idx] = hitX;
 
      if(FootDebugLevel(4))
        cout<<"X  eloss::"<<hitX->GetEnergyLoss()<<" tof::"<<hitX->GetToF()<<" Z::"<<hitX->GetChargeZ()<<" x::"<<hitX->GetPosition()<<" y::"<<fparGeoTW->GetBarPosition(LayerX, hitX->GetBar())[1]<<endl;      	 
 
    }
        
+   fmapMultHit.clear();
    for (Int_t idy = 0; idy < nHitsY; ++idy) {  // loop over front TW hits
 
      TATWntuHit* hitY = pNtuHit->GetHit(idy, LayerY);
@@ -162,13 +169,16 @@ Bool_t TATWactNtuPoint::FindPoints()
        cout<<"Z_y::"<<hitY->GetChargeZ()<<"  bar_y::"<<hitY->GetBar()<<endl;
      
      if(!hitY) continue;
+     if(!hitY->IsValid()) continue;
+     if(fIsZMCtrue && hitY->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
      if((Int_t)hitY->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
-     if(fIsZmatch && hitY->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
+     // remove double hit in the same layer of the same track when Z = Ztrue
+     if(fIsZMCtrue && IsMultHit(hitY) ) continue;
      
      nHitsY_good++;
      totChargeY+=hitY->GetChargeZ();
 
-     mapHitY[idy] = hitY;
+     fmapHitY[idy] = hitY;
 
      if(FootDebugLevel(4))
        cout<<"Y  eloss::"<<hitY->GetEnergyLoss()<<" tof::"<<hitY->GetToF()<<" Z::"<<hitY->GetChargeZ()<<" x::"<<fparGeoTW->GetBarPosition(LayerY, hitY->GetBar())[0]<<" y::"<<hitY->GetPosition()<<endl;
@@ -177,27 +187,44 @@ Bool_t TATWactNtuPoint::FindPoints()
    TATWpoint *point = nullptr;
 
    if( nHitsX_good >= nHitsY_good ) {
+
+     fmapMoreHits = fmapHitX;
+     fmapLessHits = fmapHitY;
      
-     if(totChargeX>fZbeam && fIsZMCtrue) { // remove double hit in the same layer of the same track when Zrec is not active
-       mapMoreHits = mapHitY;
-       mapLessHits = mapHitX;
+     if(fIsZMCtrue) { // remove double hit in the same layer of the same track when Zrec is not active
+       if(totChargeX>fZbeam && totChargeY<fZbeam+1) { 
+	 if(FootDebugLevel(1))
+	   Warning("FindPoints()"," Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+	 fmapMoreHits = fmapHitY;
+	 fmapLessHits = fmapHitX;
+       }
+       else if(totChargeX>fZbeam && totChargeY>fZbeam) { 
+	 if(FootDebugLevel(1))
+	   Warning("FindPoints()","no TW point has been assigned: Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+	 return true;
+       }
      }
-     else {  // default
-       mapMoreHits = mapHitX;
-       mapLessHits = mapHitY;
-     }
-       
+
    } else { //if( nHitsY_good > nHitsX_good )
      
-     if(totChargeY>fZbeam && fIsZMCtrue) {  // remove double hit in the same layer of the same track when Zrec is not active
-       mapMoreHits = mapHitX;
-       mapLessHits = mapHitY;
+
+     fmapMoreHits = fmapHitY;
+     fmapLessHits = fmapHitX;
+
+     if(fIsZMCtrue) { // remove double hit in the same layer of the same track when Zrec is not active
+       if(totChargeY>fZbeam && totChargeX<fZbeam+1) {  // remove double hit in the same layer of the same track when Zrec is not active
+	 if(FootDebugLevel(1))
+	   Warning("FindPoints()"," Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+	 fmapMoreHits = fmapHitX;
+	 fmapLessHits = fmapHitY;
+       }
+       else if(totChargeX>fZbeam && totChargeY>fZbeam) { 
+	 if(FootDebugLevel(1))
+	   Warning("FindPoints()","no TW point has been assigned: Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+	 return true;
+       }
      }
-     else {  // default
-       mapMoreHits = mapHitY;
-       mapLessHits = mapHitX;
-     }
-     
+
    }
 
    
@@ -211,8 +238,9 @@ Bool_t TATWactNtuPoint::FindPoints()
        Int_t layer = hit->GetLayer();
        
        if(!hit) continue;
+       if(!hit->IsValid()) continue;
+       if(fIsZMCtrue && hit->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
        if((Int_t)hit->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
-       if(fIsZmatch && hit->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
        
        if(nHitsX_good >= nHitsY_good) {
 	 
@@ -235,7 +263,8 @@ Bool_t TATWactNtuPoint::FindPoints()
        }
        
        point->SetChargeZ(hit->GetChargeZ());
-       
+       point->SetSensorIdx(0);
+
        double z = fgeoTrafo->FromGlobalToTWLocal(fgeoTrafo->GetTWCenter()).z(); 
        TVector3 posLoc(point->GetPosition().x(),point->GetPosition().y(), z);
        TVector3 posGlb = fgeoTrafo->FromTWLocalToGlobal(posLoc);
@@ -257,7 +286,7 @@ Bool_t TATWactNtuPoint::FindPoints()
    else {  // TW clustering
 
      
-     for(auto it1=mapMoreHits.begin(); it1!=mapMoreHits.end(); ++it1) {
+     for(auto it1=fmapMoreHits.begin(); it1!=fmapMoreHits.end(); ++it1) {
        
        Int_t id1 = it1->first;
        TATWntuHit * hit1 = it1->second;
@@ -274,7 +303,7 @@ Bool_t TATWactNtuPoint::FindPoints()
        if(FootDebugLevel(4))
 	 cout<<"MORE  eloss::"<<hit1->GetEnergyLoss()<<" tof::"<<hit1->GetToF()<<" Z::"<<hit1->GetChargeZ()<<endl;
        
-       for(auto it2=mapLessHits.begin(); it2!=mapLessHits.end(); ++it2) {
+       for(auto it2=fmapLessHits.begin(); it2!=fmapLessHits.end(); ++it2) {
 	 
      	 Int_t id2 = it2->first;
      	 TATWntuHit * hit2 = it2->second;
@@ -295,7 +324,7 @@ Bool_t TATWactNtuPoint::FindPoints()
        
        if (best) {
 	 
-       	 TATWntuHit* hitmin = mapLessHits[minId];
+       	 TATWntuHit* hitmin = fmapLessHits[minId];
        	 if(!hitmin) continue;
 
 	 if(FootDebugLevel(4))
@@ -304,8 +333,8 @@ Bool_t TATWactNtuPoint::FindPoints()
 	 Int_t bar_min   = hitmin->GetBar();
 	 
 	 TVector3 posLoc = GetLocalPointPosition(layer1,pos1,bar1,bar_min);
-	 
-	 if( fIsZmatch && !IsPointsWithMatchedZ(hit1,hitmin) ) {
+
+	 if( fIsZmatch && !IsPointWithMatchedZ(hit1,hitmin) ) {
 	   if(FootDebugLevel(1))
 	     Warning("FindPoints()","no TW point has been assigned: mismatched Z Z1: %d Z2: %d",hit1->GetChargeZ(),hitmin->GetChargeZ());
 	   continue;
@@ -322,6 +351,7 @@ Bool_t TATWactNtuPoint::FindPoints()
 
 	 TVector3 posGlb = fgeoTrafo->FromTWLocalToGlobal(posLoc);
 	 point->SetPositionGlb(posGlb);
+    point->SetSensorIdx(0);
 	 
 	 Int_t Z = hit1->GetChargeZ();
 	 point->SetChargeZ(Z);
@@ -372,7 +402,26 @@ Bool_t TATWactNtuPoint::FindPoints()
 
 
 //___________________________________________//
+Bool_t TATWactNtuPoint::IsMultHit(TATWntuHit *hit)
+{
 
+  for (Int_t j = 0; j < hit->GetMcTracksN(); ++j) {
+
+    int trk_id = hit->GetMcTrackIdx(j);
+    fmapMultHit[trk_id].push_back(hit->GetBar());
+
+    if( fmapMultHit[trk_id].size()>1 ) {
+
+      // cout<<fmapMultHit[trk_id].size()<<endl;
+      return true;
+
+    }
+
+  }   
+  
+  return false;
+}
+//___________________________________________//
 Double_t TATWactNtuPoint::GetPositionFromDeltaTime(Int_t layer, Int_t bar, TATWntuHit* hit) {
 
      Double_t posAlongBar(-99), posPerpendicular(-99);
@@ -466,7 +515,7 @@ TATWpoint* TATWactNtuPoint::SetTWPoint(TATWntuPoint* pNtuPoint, Int_t layer1, TA
 }
 
 //_____________________________________________________________________//
-Bool_t TATWactNtuPoint::IsPointsWithMatchedZ(TATWntuHit* hit1, TATWntuHit* hitmin)
+Bool_t TATWactNtuPoint::IsPointWithMatchedZ(TATWntuHit* hit1, TATWntuHit* hitmin)
 {
 
   Int_t Z1 = hit1->GetChargeZ();

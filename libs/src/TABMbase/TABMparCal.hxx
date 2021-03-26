@@ -28,6 +28,8 @@ class TABMparCal : public TAGparTools {
 
     //setters
     void SetT0choice(Int_t in)                {fT0Choice=in;};
+    void SetResoFunc(TF1* inreso);
+    void SetSTrelFunc(TF1* instrel);
 
     //getters
     Int_t GetT0Choice()                 const{return fT0Choice;};

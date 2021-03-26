@@ -34,7 +34,7 @@ class TAFObaseEventDisplay : public TAEDbaseInterface
 {
 protected:
    //! default constructor
-   TAFObaseEventDisplay(const TString expName, Int_t type);
+   TAFObaseEventDisplay(const TString expName, Int_t runNumber, Int_t type);
    
 public:   
    virtual ~TAFObaseEventDisplay();

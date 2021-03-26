@@ -41,7 +41,7 @@ EnableTracking:      y
 
 EnableSaveHits:      y
 EnableRootObject:    n
-EnableTWZmc:         n
+EnableTWZmc:         y
 EnableTWnoPU:        n
 EnableTWZmatch:      y
 EnableTWCalBar:      n
@@ -52,8 +52,8 @@ IncludeDI:			   n
 IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
-IncludeVT:			   y
-IncludeIT:	         n
+IncludeVT:			   n
+IncludeIT:	                   n
 IncludeMSD:			   n
 IncludeTW:			   y
 IncludeCA:			   n

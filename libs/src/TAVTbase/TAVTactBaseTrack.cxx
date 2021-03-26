@@ -218,13 +218,13 @@ void TAVTactBaseTrack::UpdateParam(TAVTbaseTrack* track)
 	  Double_t x1 = cluster1->GetPositionG()[0];
 	  Double_t y1 = cluster1->GetPositionG()[1];
 	  
-	  Double_t z0 = pGeoMap->GetSensorPosition(cluster0->GetPlaneNumber()).Z();
-	  Double_t z1 = pGeoMap->GetSensorPosition(cluster1->GetPlaneNumber()).Z();
+	  Double_t z0 = pGeoMap->GetSensorPosition(cluster0->GetSensorIdx()).Z();
+	  Double_t z1 = pGeoMap->GetSensorPosition(cluster1->GetSensorIdx()).Z();
 	  
      if(FootDebugLevel(1))
 		 printf( "TAVTactNtuTrack::Analyze cluster[pl %d]=(%.2f, %.2f, %.2f) cluster[pl %d]=(%.2f, %.2f, %.2f)\n",
-				cluster0->GetPlaneNumber(), x0, y0, z0, 
-				cluster1->GetPlaneNumber(), x1, y1, z1);
+				cluster0->GetSensorIdx(), x0, y0, z0,
+				cluster1->GetSensorIdx(), x1, y1, z1);
 	  
 	  if( z1-z0 != 0.) {
 		 lineOrigin(0) = (z1*x0-z0*x1)/(z1-z0);
@@ -281,7 +281,7 @@ void TAVTactBaseTrack::FillHistogramm(TAVTbaseTrack* track)
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
 	  TAVTbaseCluster * cluster = track->GetCluster(i);
 	  cluster->SetFound();
-	  Int_t idx = cluster->GetPlaneNumber();
+	  Int_t idx = cluster->GetSensorIdx();
 	  fpHisPixelTot->Fill(cluster->GetPixelsN());
 	  fpHisPixel[idx]->Fill(cluster->GetPixelsN());
 	  
