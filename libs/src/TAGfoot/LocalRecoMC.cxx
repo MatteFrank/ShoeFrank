@@ -186,6 +186,18 @@ void LocalRecoMC::GlobalChecks()
     Error("GlobalChecks()", "FootGlobal::enableRootObject set to Fluka structure but MC file is shoe format !");
     exit(0);
   }
+  
+  Bool_t enableRgeionG = GlobalPar::GetPar()->IsRegionMc();
+  Bool_t enableRgeion  = info.GetGlobalPar().EnableRegionMc;
+  
+  if (enableRgeionG && enableRgeion)
+    Info("GlobalChecks()", "Reading MC root tree with region crossing informations");
+  
+  if (enableRgeionG && !enableRgeion)
+    Warning("GlobalChecks()", "FootGlobal::enableRegionMc set but no region crossing found in file");
+  
+  if (!enableRgeionG && enableRgeion)
+    Warning("GlobalChecks()", "FootGlobal::enableRegionMc not set but region crossing found in file");
 }
 
 
@@ -260,7 +272,7 @@ void LocalRecoMC::SetTreeBranches()
    fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
    fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuTrack::GetBranchName());
   
-  if (fActEvtReader->CheckBranch(TAMCntuRegion::GetBranchName()) || GlobalPar::GetPar()->IsRegionMc() )
+  if (GlobalPar::GetPar()->IsRegionMc() )
     fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
 
 
