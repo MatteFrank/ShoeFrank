@@ -26,19 +26,19 @@
 using namespace std;
 using namespace genfit;
 
-class GlobalTrackKalman : public TAGobject {
+class TAGtrackK : public TAGobject {
   
 public:
   
-  GlobalTrackKalman();
-  GlobalTrackKalman( string name, Track* track, long evNum, int stateID, 
+  TAGtrackK();
+  TAGtrackK( string name, Track* track, long evNum, int stateID,
 		     TVector3* mom, TVector3* pos,
 		     TVector3* mom_MC, TVector3* pos_MC, 
 		     TMatrixD* mom_cov 
 		     );
-  GlobalTrackKalman(Track* track);
+  TAGtrackK(Track* track);
   
-  virtual ~GlobalTrackKalman() {delete m_track;}
+  virtual ~TAGtrackK() {delete m_track;}
   
   
   /***	variables	***/
@@ -63,7 +63,7 @@ public:
   
 private:
 
-  ClassDef(GlobalTrackKalman, 2)
+  ClassDef(TAGtrackK, 2)
 };
 
 #endif

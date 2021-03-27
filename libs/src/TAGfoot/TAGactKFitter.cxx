@@ -1,5 +1,5 @@
 #include "TAGactKFitter.hxx"
-#include "GlobalTrackRepostory.hxx"
+#include "TAGntuGlbTrackK.hxx"
 #include "TAGactNtuGlbTrack.hxx"
 
 // ClassImp(TAGactKFitter);
@@ -11,7 +11,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* p_glbtrack) : TAGact
   cout << "TAGactKFitter - Constructor" << endl;
   
   // p_glbtrack = new TAGntuGlbTrack();
-  AddDataOut(p_glbtrack, "GlobalTrackRepostory");
+  AddDataOut(p_glbtrack, "TAGntuGlbTrackK");
   // AddDataIn(p_vtxclus, "TAVTntuCluster");
   
   
@@ -37,7 +37,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* p_glbtrack) : TAGact
   
   m_vectorTrack.clear();
   
-  m_fitTrackCollection = new GlobalTrackRepostory();  // contains the fitted track info
+  m_fitTrackCollection = new TAGntuGlbTrackK();  // contains the fitted track info
   
   // Create dir for kalman output if not already present
   // struct stat info;
@@ -2546,8 +2546,8 @@ int TAGactKFitter::MakeFit( long evNum ) {
   
   if ( m_debug > 0 )    cout << "Starting MakeFit " << endl;
   
-  GlobalTrackRepostory* p_glbtrack = (GlobalTrackRepostory*) fpGlobTrackRepo->Object();
-  GlobalTrackKalman* p_track;
+  TAGntuGlbTrackK* p_glbtrack = (TAGntuGlbTrackK*) fpGlobTrackRepo->Object();
+  TAGtrackK* p_track;
   // TAGntuGlbTrack* p_glbtrack = (TAGntuGlbTrack*) fpGlobTrackRepo->Object();
   // TAGtrack* p_track;
   

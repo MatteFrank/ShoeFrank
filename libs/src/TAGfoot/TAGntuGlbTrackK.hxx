@@ -23,7 +23,7 @@
 #include "GlobalPar.hxx"
 
 // #include <Track.h>
-#include <GlobalTrackKalman.hxx>
+#include <TAGtrackK.hxx>
 #include "TAGdata.hxx"
 
 
@@ -34,7 +34,7 @@
 using namespace std;
 using namespace genfit;
 
-class GlobalTrackRepostory : public TAGdata {
+class TAGntuGlbTrackK : public TAGdata {
 
 private:
   TClonesArray*     fListOfTracks;
@@ -43,22 +43,22 @@ private:
 
 public:
 
-  GlobalTrackRepostory();
+  TAGntuGlbTrackK();
 
-  virtual ~GlobalTrackRepostory();
+  virtual ~TAGntuGlbTrackK();
 
-  GlobalTrackKalman* GetTrack(Int_t trId);
+  TAGtrackK* GetTrack(Int_t trId);
   Int_t              GetTracksN();
 
   TClonesArray*      GetListOfTracks() {return fListOfTracks;}
 
-  GlobalTrackKalman* NewTrack();
-  GlobalTrackKalman* NewTrack(string name, Track* track, long evNum, int stateID, 
+  TAGtrackK* NewTrack();
+  TAGtrackK* NewTrack(string name, Track* track, long evNum, int stateID, 
 		     TVector3* mom, TVector3* pos,
 		     TVector3* mom_MC, TVector3* pos_MC, 
 		     TMatrixD* mom_cov);
-  GlobalTrackKalman* NewTrack(GlobalTrackKalman& track);
-  GlobalTrackKalman* NewTrack(Track* track);
+  TAGtrackK* NewTrack(TAGtrackK& track);
+  TAGtrackK* NewTrack(Track* track);
 
   virtual void      SetupClones();
   virtual void      Clear(Option_t* opt="") { fListOfTracks->Delete(); }
@@ -99,7 +99,7 @@ public:
   int m_debug;
   string m_kalmanOutputDir;
 
-  vector<GlobalTrackKalman*> m_fitTrackCollection;
+  vector<TAGtrackK*> m_fitTrackCollection;
 
   double m_resoP_step;
 
@@ -110,7 +110,7 @@ public:
   map< string, TH1F* > h_resoP_over_Pkf;
   map< string, TH1F* > h_biasP_over_Pkf;
 
-  ClassDef(GlobalTrackRepostory,2)
+  ClassDef(TAGntuGlbTrackK,2)
 };
 
 #endif

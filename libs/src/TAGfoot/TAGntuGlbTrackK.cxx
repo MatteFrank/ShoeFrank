@@ -1,13 +1,13 @@
 
-#include "GlobalTrackRepostory.hxx"
+#include "TAGntuGlbTrackK.hxx"
 
 
-ClassImp(GlobalTrackRepostory);
+ClassImp(TAGntuGlbTrackK);
 
-TString GlobalTrackRepostory::fgkBranchName = "glbtrackGF.";
+TString TAGntuGlbTrackK::fgkBranchName = "glbtrackGF.";
 
 //Default constructor
-GlobalTrackRepostory::GlobalTrackRepostory() : TAGdata(), fListOfTracks(new TClonesArray("GlobalTrackKalman"))
+TAGntuGlbTrackK::TAGntuGlbTrackK() : TAGdata(), fListOfTracks(new TClonesArray("TAGtrackK"))
 {
     m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman";
     // m_debug = GlobalPar::GetPar()->Debug();
@@ -16,7 +16,7 @@ GlobalTrackRepostory::GlobalTrackRepostory() : TAGdata(), fListOfTracks(new TClo
 }
 
 //Default destructor
-GlobalTrackRepostory::~GlobalTrackRepostory()
+TAGntuGlbTrackK::~TAGntuGlbTrackK()
 {
 	delete fListOfTracks;
 }
@@ -25,7 +25,7 @@ GlobalTrackRepostory::~GlobalTrackRepostory()
 /*Get number of tracks in the repo
 *
 */
-Int_t GlobalTrackRepostory::GetTracksN()
+Int_t TAGntuGlbTrackK::GetTracksN()
 {
 	return fListOfTracks->GetEntries();
 }
@@ -34,10 +34,10 @@ Int_t GlobalTrackRepostory::GetTracksN()
 /*Get track by index
 *
 */
-GlobalTrackKalman* GlobalTrackRepostory::GetTrack(Int_t trId)
+TAGtrackK* TAGntuGlbTrackK::GetTrack(Int_t trId)
 {
 	if(trId >=0 && trId < GetTracksN())
-		return (GlobalTrackKalman*) fListOfTracks->At(trId);
+		return (TAGtrackK*) fListOfTracks->At(trId);
 	else
 		return 0x0;
 }
@@ -45,10 +45,10 @@ GlobalTrackKalman* GlobalTrackRepostory::GetTrack(Int_t trId)
 /* Setup clones
 *
 */
-void GlobalTrackRepostory::SetupClones()
+void TAGntuGlbTrackK::SetupClones()
 {
    if (!fListOfTracks) {
-      fListOfTracks = new TClonesArray("GlobalTrackKalman");
+      fListOfTracks = new TClonesArray("TAGtrackK");
       fListOfTracks->SetOwner(true);
    }
 }
@@ -57,10 +57,10 @@ void GlobalTrackRepostory::SetupClones()
 /* Add a new track to the repo
 *
 */
-GlobalTrackKalman* GlobalTrackRepostory::NewTrack(string name, Track* trk, long evNum, int stateID, TVector3* mom,TVector3* pos,TVector3* mom_MC, TVector3* pos_MC, TMatrixD* mom_cov)
+TAGtrackK* TAGntuGlbTrackK::NewTrack(string name, Track* trk, long evNum, int stateID, TVector3* mom,TVector3* pos,TVector3* mom_MC, TVector3* pos_MC, TMatrixD* mom_cov)
 {
 	TClonesArray &trackArray = *fListOfTracks;
-	GlobalTrackKalman* track = new (trackArray[trackArray.GetEntriesFast()]) GlobalTrackKalman(name, trk, evNum, stateID,mom, pos, mom_MC, pos_MC, mom_cov);
+	TAGtrackK* track = new (trackArray[trackArray.GetEntriesFast()]) TAGtrackK(name, trk, evNum, stateID,mom, pos, mom_MC, pos_MC, mom_cov);
 	return track;
 }
 
@@ -68,10 +68,10 @@ GlobalTrackKalman* GlobalTrackRepostory::NewTrack(string name, Track* trk, long 
 /* Add a new track to the repo
 *
 */
-GlobalTrackKalman* GlobalTrackRepostory::NewTrack(Track* trk)
+TAGtrackK* TAGntuGlbTrackK::NewTrack(Track* trk)
 {
 	TClonesArray &trackArray = *fListOfTracks;
-	GlobalTrackKalman* track = new (trackArray[trackArray.GetEntriesFast()]) GlobalTrackKalman(trk);
+	TAGtrackK* track = new (trackArray[trackArray.GetEntriesFast()]) TAGtrackK(trk);
 	return track;
 }
 
@@ -80,10 +80,10 @@ GlobalTrackKalman* GlobalTrackRepostory::NewTrack(Track* trk)
 /* Add a new track to the repo
 *
 */
-GlobalTrackKalman* GlobalTrackRepostory::NewTrack()
+TAGtrackK* TAGntuGlbTrackK::NewTrack()
 {
 	TClonesArray &trackArray = *fListOfTracks;
-	GlobalTrackKalman* track = new (trackArray[trackArray.GetEntriesFast()]) GlobalTrackKalman();
+	TAGtrackK* track = new (trackArray[trackArray.GetEntriesFast()]) TAGtrackK();
 	return track;
 }
 
@@ -91,21 +91,21 @@ GlobalTrackKalman* GlobalTrackRepostory::NewTrack()
 /* Add a new track to the repo
 * @param -> Kalman Track
 */
-GlobalTrackKalman* GlobalTrackRepostory::NewTrack(GlobalTrackKalman& trk)
+TAGtrackK* TAGntuGlbTrackK::NewTrack(TAGtrackK& trk)
 {
 	TClonesArray &trackArray = *fListOfTracks;
-	GlobalTrackKalman* track = new (trackArray[trackArray.GetEntriesFast()]) GlobalTrackKalman(trk);
+	TAGtrackK* track = new (trackArray[trackArray.GetEntriesFast()]) TAGtrackK(trk);
 	return track;
 }
 
-void GlobalTrackRepostory::AddTrack( string name, Track* track, long evNum, int stateID,
+void TAGntuGlbTrackK::AddTrack( string name, Track* track, long evNum, int stateID,
 	TVector3* mom, TVector3* pos,
 	TVector3* mom_MC, TVector3* pos_MC,
 	TMatrixD* mom_cov
 )
 {
 
-	m_fitTrackCollection.push_back( new GlobalTrackKalman( name, track, evNum, stateID,
+	m_fitTrackCollection.push_back( new TAGtrackK( name, track, evNum, stateID,
 		mom, pos,
 		mom_MC, pos_MC,
 		mom_cov ) );
@@ -117,7 +117,7 @@ void GlobalTrackRepostory::AddTrack( string name, Track* track, long evNum, int 
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-void GlobalTrackRepostory::AddTrack( string name, Track* track, long evNum, int stateID,
+void TAGntuGlbTrackK::AddTrack( string name, Track* track, long evNum, int stateID,
 	const TVectorD state, const TMatrixDSym covariance, TVector3* mom_MC,
 	TVector3* pos_MC, int charge
 )
@@ -135,7 +135,7 @@ void GlobalTrackRepostory::AddTrack( string name, Track* track, long evNum, int 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //----------------------------------------------------------------------------------------------------
 //  evaluate uncertainty from the diagonal of the covariance matrix ONLY. No correlation is considered!!!
-double GlobalTrackRepostory::EvalError( TVector3 mom, TVector3 err ) {
+double TAGntuGlbTrackK::EvalError( TVector3 mom, TVector3 err ) {
 
   double dx2 = 2 * sqrt(err.x()) * mom.x();
   double dy2 = 2 * sqrt(err.y()) * mom.y();
@@ -152,10 +152,10 @@ double GlobalTrackRepostory::EvalError( TVector3 mom, TVector3 err ) {
 
 //----------------------------------------------------------------------------------------------------
 //  measure the Kalman uncertainty INCLUDING the cross terms in the covariance matrix. CORRELATION considered!!!
-double GlobalTrackRepostory::EvalError( TVector3 mom, TMatrixD cov ) {
+double TAGntuGlbTrackK::EvalError( TVector3 mom, TMatrixD cov ) {
 
   if ( cov.GetNcols() != 3 || cov.GetNrows() != 3 )
-    cout << "ERROR :: GlobalTrackRepostory::EvalError  >>  covariance dimension (should be 6) is wrong " << cov.GetNcols() << " x " << cov.GetNrows() << endl, exit(0);
+    cout << "ERROR :: TAGntuGlbTrackK::EvalError  >>  covariance dimension (should be 6) is wrong " << cov.GetNcols() << " x " << cov.GetNrows() << endl, exit(0);
 
   array<double,3> partialDer = { mom.x()/sqrt(mom.Mag()), mom.y()/sqrt(mom.Mag()), mom.z()/sqrt(mom.Mag()) };
 
@@ -179,7 +179,7 @@ double GlobalTrackRepostory::EvalError( TVector3 mom, TMatrixD cov ) {
 
 
 //----------------------------------------------------------------------------------------------------
-void GlobalTrackRepostory::PrintPositionResidual( TVector3 pos, TVector3 expectedPos, string hitSampleName ) {
+void TAGntuGlbTrackK::PrintPositionResidual( TVector3 pos, TVector3 expectedPos, string hitSampleName ) {
   double dR = pos.DeltaR( expectedPos );
   // h_posRes[ hitSampleName ]->Fill(dR);
 }
@@ -187,9 +187,9 @@ void GlobalTrackRepostory::PrintPositionResidual( TVector3 pos, TVector3 expecte
 
 
 //----------------------------------------------------------------------------------------------------
-void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expected, TVector3 cov, string hitSampleName ) {
+void TAGntuGlbTrackK::PrintMomentumResidual( TVector3 meas, TVector3 expected, TVector3 cov, string hitSampleName ) {
 
-  if ( m_debug > 2 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- Start!!!!  " << endl;
+  if ( m_debug > 2 )		cout << "TAGntuGlbTrackK::PrintMomentumResidual -- Start!!!!  " << endl;
   double err = EvalError( meas, cov );
 
   PrintMomentumResidual( meas, expected, err, hitSampleName );
@@ -198,9 +198,9 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
 
 
 //----------------------------------------------------------------------------------------------------
-void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName ) {
+void TAGntuGlbTrackK::PrintMomentumResidual( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName ) {
 
-  if ( m_debug > 2 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- Start!!!!  " << endl;
+  if ( m_debug > 2 )		cout << "TAGntuGlbTrackK::PrintMomentumResidual -- Start!!!!  " << endl;
   double err = EvalError( meas, cov );
 
   PrintMomentumResidual( meas, expected, err, hitSampleName );
@@ -208,9 +208,9 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
 
 
 //----------------------------------------------------------------------------------------------------
-void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expected, double err, string hitSampleName ) {
+void TAGntuGlbTrackK::PrintMomentumResidual( TVector3 meas, TVector3 expected, double err, string hitSampleName ) {
 
-  if ( m_debug > 0 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- Start!!!!  " << endl;
+  if ( m_debug > 0 )		cout << "TAGntuGlbTrackK::PrintMomentumResidual -- Start!!!!  " << endl;
 
   double dP = meas.Mag() - expected.Mag();
 
@@ -230,7 +230,7 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
 
   // histos for momentum reso
   if ( meas.Mag() == 0 || expected.Mag() == 0 )
-    cout<< "ERROR::GlobalTrackRepostory::PrintMomentumResidual  -->  track momentum - 0. "<< endl, exit(0);
+    cout<< "ERROR::TAGntuGlbTrackK::PrintMomentumResidual  -->  track momentum - 0. "<< endl, exit(0);
 
   // find the center of the momentum bin
   int roundUp = ceil( (double)expected.Mag() );
@@ -302,13 +302,13 @@ void GlobalTrackRepostory::PrintMomentumResidual( TVector3 meas, TVector3 expect
 
   h_dPOverSigmaP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP/err );
 
-  if ( m_debug > 1 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- End!!!!  " << endl;
+  if ( m_debug > 1 )		cout << "TAGntuGlbTrackK::PrintMomentumResidual -- End!!!!  " << endl;
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-void GlobalTrackRepostory::PrintMomentumResidual( double meas, double expected, double err, string hitSampleName ) {
+void TAGntuGlbTrackK::PrintMomentumResidual( double meas, double expected, double err, string hitSampleName ) {
 
-	if ( m_debug > -1 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- Start!!!!  " << endl;
+	if ( m_debug > -1 )		cout << "TAGntuGlbTrackK::PrintMomentumResidual -- Start!!!!  " << endl;
 
 	double dP = meas - expected;
 
@@ -328,7 +328,7 @@ void GlobalTrackRepostory::PrintMomentumResidual( double meas, double expected, 
 
 	// histos for momentum reso
 	if ( meas == 0 || expected == 0 )
-		cout<< "ERROR::GlobalTrackRepostory::PrintMomentumResidual  -->  track momentum - 0. "<< endl, exit(0);
+		cout<< "ERROR::TAGntuGlbTrackK::PrintMomentumResidual  -->  track momentum - 0. "<< endl, exit(0);
 
 	// find the center of the momentum bin
 	int roundUp = ceil( (double)expected );
@@ -400,7 +400,7 @@ void GlobalTrackRepostory::PrintMomentumResidual( double meas, double expected, 
 
 	h_dPOverSigmaP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP/err );
 
-	if ( m_debug > -1 )		cout << "GlobalTrackRepostory::PrintMomentumResidual -- End!!!!  " << endl;
+	if ( m_debug > -1 )		cout << "TAGntuGlbTrackK::PrintMomentumResidual -- End!!!!  " << endl;
 
 }
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -410,7 +410,7 @@ void GlobalTrackRepostory::PrintMomentumResidual( double meas, double expected, 
 
 //----------------------------------------------------------------------------------------------------
 // Called from outside!
-void GlobalTrackRepostory::EvaluateMomentumResolution() {
+void TAGntuGlbTrackK::EvaluateMomentumResolution() {
 
 
 	//problem on iterator it not resolved
@@ -419,12 +419,12 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 		float resoP_min = (*(*collIt).second.begin()).first - m_resoP_step*0.5;
 		float resoP_max = (*(*collIt).second.rbegin()).first + m_resoP_step*0.5;
 		float nfbin = (resoP_max-resoP_min)/m_resoP_step;
-		if ( m_debug > 0 ) cout << "in GlobalTrackRepostory::EvaluateMomentumResolution-> " << (*collIt).first << " resoP_min/max " << resoP_min << " " << resoP_max << " nfbin " << nfbin << endl;
+		if ( m_debug > 0 ) cout << "in TAGntuGlbTrackK::EvaluateMomentumResolution-> " << (*collIt).first << " resoP_min/max " << resoP_min << " " << resoP_max << " nfbin " << nfbin << endl;
 		//if ( modf( (resoP_max-resoP_min)/m_resoP_step, &nfbin ) == 0.0 )
 
 		if ( fabs( nfbin-round(nfbin) ) > 0.001 )
-		//cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl, exit(0);		// check correct binning
-		cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl;		// check correct binning
+		//cout<<"ERROR :: TAGntuGlbTrackK::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl, exit(0);		// check correct binning
+		cout<<"ERROR :: TAGntuGlbTrackK::EvaluateMomentumResolution  --> "<<(*collIt).first<<" resolution binning not round! min=" <<resoP_min<<" max="<<resoP_max<<" step="<<m_resoP_step<<" = "<<nfbin<< endl;		// check correct binning
 		int nbin = round(nfbin);
 
 		string histoName = (string)"h_resoP_over_Pkf"+"__"+(*collIt).first;
@@ -438,7 +438,7 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 			k++; //jump the underflow
 			if ( k > h_resoP_over_Pkf[ (*collIt).first ]->GetNbinsX() )
 			{
-				cout<<"ERROR :: GlobalTrackRepostory::EvaluateMomentumResolution  --> "<<(*collIt).first<< "  binning problem! do not fill all the reso plot. " << endl, exit(0);
+				cout<<"ERROR :: TAGntuGlbTrackK::EvaluateMomentumResolution  --> "<<(*collIt).first<< "  binning problem! do not fill all the reso plot. " << endl, exit(0);
 			}
 
 			if ( (*it).second->GetEntries() < 70 ) continue;
@@ -447,7 +447,7 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 			float a = (h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinLowEdge(k) + h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinUpEdge(k)) /2;
 			float b = (*it).first;
 			if ( fabs(a - b) > 0.00001 ) {
-				cout << "WARNING::GlobalTrackRepostory::EvaluateMomentumResolution \t >> \t chosen binning do not make bin's round bounds. Histo: "
+				cout << "WARNING::TAGntuGlbTrackK::EvaluateMomentumResolution \t >> \t chosen binning do not make bin's round bounds. Histo: "
 				<<(*it).second->GetName() << "  "
 				<<(*collIt).first<<": " << h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinLowEdge(k) << " + "
 				<< h_resoP_over_Pkf[ (*collIt).first ]->GetXaxis()->GetBinUpEdge(k) <<" = " << a << " instead of " << b
@@ -494,7 +494,7 @@ void GlobalTrackRepostory::EvaluateMomentumResolution() {
 
 
 //----------------------------------------------------------------------------------------------------
-void GlobalTrackRepostory::Save( ) {
+void TAGntuGlbTrackK::Save( ) {
 
 	struct stat info;
 
@@ -558,7 +558,7 @@ void GlobalTrackRepostory::Save( ) {
 
 
 //! ostream insertion.
-void GlobalTrackRepostory::ToStream(ostream& os, Option_t* option) const
+void TAGntuGlbTrackK::ToStream(ostream& os, Option_t* option) const
 {
    //TODO properly
    os << "globTrackRepo " << endl; //GetName()

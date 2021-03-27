@@ -6,8 +6,8 @@
 
 
 #pragma link C++ class TAGactKFitter;
-#pragma link C++ class GlobalTrackRepostory;
-#pragma link C++ class GlobalTrackKalman;
+#pragma link C++ class TAGntuGlbTrackK;
+#pragma link C++ class TAGtrackK;
 
 #pragma link C++ class UpdatePDG;
 
