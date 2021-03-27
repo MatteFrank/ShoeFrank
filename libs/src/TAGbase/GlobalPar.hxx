@@ -39,10 +39,12 @@ public:
 	Int_t  Debug()                const { return m_debug;               }
 
     // Kalman Getter
-	Int_t  KalMode()              const { return m_kalmanMode;          }
+   string KalMode()              const { return m_kalmanMode;          }
+   string PreselectStrategy()    const { return m_kPreselectStrategy;  }
 	Bool_t IsKalReverse()         const { return m_kalReverse;          }
 	Bool_t verFLUKA()             const { return m_verFLUKA;            }
-   
+   Bool_t EnableEventDisplay()   const { return m_enableEventDisplay;  }
+
 	vector<string> KalSystems()         { return m_trackingSystems;     }
 	vector<string> KalParticles()       { return m_kalParticles;        }
    vector<string> MCParticles()        { return m_mcParticles;         }
@@ -128,8 +130,9 @@ private:
 
    // Kalman parameters
 	vector<string> m_mcParticles;
-	
-	Int_t m_kalmanMode;
+   string m_kalmanMode;
+   string m_kPreselectStrategy;
+   Bool_t m_enableEventDisplay;
 	Bool_t m_kalReverse;
 	Bool_t m_verFLUKA;
 	vector<string> m_trackingSystems;

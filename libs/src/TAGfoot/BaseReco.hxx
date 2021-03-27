@@ -4,6 +4,7 @@
 
 #include "TNamed.h"
 #include "TString.h"
+#include "TFile.h"
 
 #include "TAGaction.hxx"
 #include "TAGactTreeWriter.hxx"
@@ -76,10 +77,11 @@
 #include "TAIRactNtuTrack.hxx"
 #include "TAGactNtuGlbTrack.hxx"
 
-#include "KFitter.hxx"
+#include "TAGactKFitter.hxx"
 #include "UpdatePDG.hxx"
 
 #include "GlobalTrackingStudies.hxx"
+#include "GlobalTrackRepostory.hxx"
 
 class TAMCntuHit;
 class TAMCntuTrack;
@@ -318,6 +320,7 @@ protected:
    TAGdataDsc*           fpNtuVtx;        // input Vtx data dsc
 
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
+   TAGdataDsc*           fpGlobTrackRepo;      // input data dsc
    TAGdataDsc*           fpNtuTrackIr;     // input data dsc
 
    TAGactionFile*        fActEvtReader;
@@ -344,7 +347,7 @@ protected:
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
   
    GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
-   KFitter*               fActGlbkFitter;    // Global tracking kalman Fitter
+   TAGactKFitter*         fActGlbkFitter;    // Global tracking kalman Fitter
 
    
    Bool_t                fFlagOut;       // flag for output file

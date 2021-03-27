@@ -51,7 +51,7 @@ GlobalPar::~GlobalPar()
 // private constructor
 GlobalPar::GlobalPar( const TString expName )
 : m_parFileName(""),        m_debug(0),
-  m_kalmanMode(-1),         m_kalReverse(false),   m_verFLUKA(false),       m_VTreso(0.),            m_ITreso(0.),            m_MSDreso(0.), m_TWreso(0.),
+  m_kalmanMode(""),         m_kalReverse(false),   m_verFLUKA(false),       m_VTreso(0.),            m_ITreso(0.),            m_MSDreso(0.), m_TWreso(0.),
   m_enableLocalReco(false), m_enableTree(false),   m_enableHisto(false),    m_enableSaveHits(false), m_enableTracking(false), m_enableRootObject(false),
   m_enableTWZmc(false),     m_enableTWnoPU(false), m_enableTWZmatch(false), m_enableTWCalBar(false), m_doCalibTW(false),      m_doCalibBM(false), m_enableRegionMc(false),
   m_includeST(false),       m_includeBM(false),    m_includeTG(false),      m_includeDI(false),      m_includeTW(false),      m_includeMSD(false),
@@ -184,6 +184,12 @@ void GlobalPar::FromFile ()
         printf("ClassDebugLevel: %s %d\n", className.c_str(), classLevel);
     }
     
+    if (key.Contains("Genfit Event Display ON:")  ) {
+      if ( item.Contains("y")) m_enableEventDisplay = true;
+      else                     m_enableEventDisplay = false;
+      if (m_debug > 0)
+        printf("Genfit Event Display ON: %d\n", m_enableEventDisplay);
+    }
     
     if (key.Contains("IncludeKalman:")  ) {
       if ( item.Contains("y")) m_includeKalman = true;
@@ -218,12 +224,31 @@ void GlobalPar::FromFile ()
       for (unsigned int i=0; i<tmp_Modes.size(); i++) {
         
         if (inputMode.Contains(tmp_Modes[i]) ) {
-          m_kalmanMode = i;
+          m_kalmanMode = tmp_Modes[i];
           break;
         }
       }
       if (m_debug > 0)
-        printf("Kalman Mode: %d\n", m_kalmanMode);
+        cout<<"Kalman Mode:" << m_kalmanMode<<endl;
+    }
+    
+    if (key.Contains("Kalman preselection strategy:")) {
+      vector<TString> tmp_Modes = { "TrueParticle", "Sept2020" };
+      istringstream sss(item.Data());
+      
+      TString inputMode;
+      sss >> inputMode;
+      
+      // inputMode.ToLower();
+      for (unsigned int i=0; i<tmp_Modes.size(); i++) {
+        
+        if (inputMode.Contains(tmp_Modes[i]) ) {
+          m_kPreselectStrategy = tmp_Modes[i];
+          break;
+        }
+      }
+      if (m_debug > 0)
+        cout << "Kalman preselection strategy:" << m_kPreselectStrategy << endl;
     }
     
     if (key.Contains("Tracking Systems Considered:")) {
