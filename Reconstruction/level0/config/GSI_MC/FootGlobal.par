@@ -26,6 +26,8 @@ Reverse Tracking:       false
 
 Kalman preselection strategy: Sept2020
 
+Genfit Event Display ON: n
+
 VT  Reso: 0.0006
 IT  Reso: 0.0006
 MSD Reso: 0.003

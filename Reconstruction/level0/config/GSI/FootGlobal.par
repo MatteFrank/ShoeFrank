@@ -33,6 +33,8 @@ TW  Reso: 0.57
 
 Kalman Particle Types:	C
 
+Genfit Event Display ON: n
+
 ############	END - Kalman Filter Control Parameters	################
 
 ############   Options for reconstruction   ################
