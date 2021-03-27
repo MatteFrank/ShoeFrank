@@ -257,7 +257,7 @@ bool TAGcampaign::FromFile(TString ifile)
          }
 
          // region
-         if (fileName.Contains("config") && fileName.EndsWith(".reg")) {
+         if (fileName.Contains("geomaps") && fileName.EndsWith(".reg")) {
            fFileRegMap[detName] = fileName;
            fRunsRegMap[detName] = array;
            if(FootDebugLevel(1))
