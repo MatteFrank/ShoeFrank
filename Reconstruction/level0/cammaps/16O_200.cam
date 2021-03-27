@@ -4,8 +4,9 @@ RunNumber: 1-6
 NumberDevices: 10
 
 DetectorName: "FOOT"
-NumberFiles: 1
+NumberFiles: 2
 "./geomaps/16O_200/FOOT.geo": -1
+"./geomaps/16O_200/FOOT.reg": -1
 
 DetectorName: "DI"
 NumberFiles: 1
