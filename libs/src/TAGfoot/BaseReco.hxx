@@ -320,7 +320,7 @@ protected:
    TAGdataDsc*           fpNtuVtx;        // input Vtx data dsc
 
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
-   TAGdataDsc*           fpGlobTrackRepo;      // input data dsc
+   TAGdataDsc*           fpNtuGlbTrackK;      // input data dsc
    TAGdataDsc*           fpNtuTrackIr;     // input data dsc
 
    TAGactionFile*        fActEvtReader;
