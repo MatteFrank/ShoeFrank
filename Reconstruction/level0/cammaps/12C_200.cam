@@ -6,7 +6,7 @@ NumberDevices: 10
 DetectorName: "FOOT"
 NumberFiles: 2
 "./geomaps/12C_200/FOOT.geo": -1
-"./config/12C_200/FOOT.reg": -1
+"./geomaps/12C_200/FOOT.reg": -1
 
 DetectorName: "DI"
 NumberFiles: 1
