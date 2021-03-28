@@ -23,10 +23,6 @@ public:
   //! Close File in
   virtual void CloseFileIn();
   
-  //! Set run number
-  void   SetRunNumber();
-
-  
    ClassDef(GlobalReco, 0); 
 };
 
