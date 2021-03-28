@@ -84,9 +84,6 @@ protected:
    TATWactNtuHitMC*      fActNtuHitTw;  // action for ntu data
    TACAactNtuHitMC*      fActNtuHitCa;  // action for ntu data
   
-   TAGdataDsc*           fpNtuMcEvt;    // input data dsc
-   TAGdataDsc*           fpNtuMcTrk;    // input data dsc
-   TAGdataDsc*           fpNtuMcReg;    // input data dsc
    TAGdataDsc*           fpNtuMcSt;    // input data dsc
    TAGdataDsc*           fpNtuMcBm;    // input data dsc
    TAGdataDsc*           fpNtuMcVt;    // input data dsc

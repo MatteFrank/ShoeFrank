@@ -6,7 +6,8 @@
  */
 
 #include "BaseReco.hxx"
-#include "TAGactNtuGlbTrack.hxx"
+#include "TAMCntuEvent.hxx"
+#include "TAMCntuRegion.hxx"
 
 #include "GlobalToeReco.hxx"
 
@@ -53,6 +54,14 @@ void GlobalToeReco::SetL0TreeBranches()
     if (fFlagMC) {
       fpNtuMcTrk = new TAGdataDsc(TAMCntuTrack::GetDefDataName(), new TAMCntuTrack());
       fActEvtReader->SetupBranch(fpNtuMcTrk,TAMCntuTrack::GetBranchName());
+      
+      fpNtuMcEvt = new TAGdataDsc("evtMc", new TAMCntuEvent());
+      fActEvtReader->SetupBranch(fpNtuMcEvt,TAMCntuEvent::GetBranchName());
+      
+      if (GlobalPar::GetPar()->IsRegionMc()) {
+        fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
+        fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+      }
     }
   }
 }
