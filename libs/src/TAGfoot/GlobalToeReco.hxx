@@ -27,9 +27,6 @@ public:
 
    //! Create L0 branch in tree
    void SetL0TreeBranches();
-  
-private:
-   TTree*                fTree;         // tree for local reconstruction
    
    ClassDef(GlobalToeReco, 1); 
 };

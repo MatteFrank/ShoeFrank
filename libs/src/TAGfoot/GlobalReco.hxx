@@ -23,6 +23,10 @@ public:
   //! Close File in
   virtual void CloseFileIn();
   
+  //! Create L0 branch in tree
+  void SetL0TreeBranches();
+  
+  
    ClassDef(GlobalReco, 0); 
 };
 
