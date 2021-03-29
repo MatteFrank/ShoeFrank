@@ -93,12 +93,15 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* p_glbtrack) : TAGact
   MSDforwardcounter=0;
   
   GlobalPar::GetPar()->Print("all");
+  
+  m_parTools = new TAMCparTools();
 }
 
 TAGactKFitter::~TAGactKFitter() {
   delete m_fitter;
   delete m_fitter_extrapolation;
   delete m_refFitter;
+  delete m_parTools;
 }
 
 //------------------------------------------+-----------------------------------
@@ -1194,18 +1197,18 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
         else if ( *it == 7) nameParticle_ = "N14";
         else if ( *it == 8) nameParticle_ = "O16";
         if (nameParticle_ != "NONE"){
-          rep = new RKTrackRep( (UpdatePDG::GetPDG()->GetPdgCode( nameParticle_ ) ) );
+          rep = new RKTrackRep( (m_parTools->GetPdgCode( nameParticle_ ) ) );
           fitTrack_->addTrackRep( rep );
         }
         if ( nameParticle_ == "H" ){
-          rep1 = new RKTrackRep( (UpdatePDG::GetPDG()->GetPdgCode( "H2" ) ) );
-          rep2 = new RKTrackRep( (UpdatePDG::GetPDG()->GetPdgCode( "H3" ) ) );
+          rep1 = new RKTrackRep( (m_parTools->GetPdgCode( "H2" ) ) );
+          rep2 = new RKTrackRep( (m_parTools->GetPdgCode( "H3" ) ) );
           fitTrack_->addTrackRep( rep1 );
           fitTrack_->addTrackRep( rep2 );
           
         }
         if ( nameParticle_ == "Alpha" ){
-          rep1 = new RKTrackRep( (UpdatePDG::GetPDG()->GetPdgCode( "He3" ) ) );
+          rep1 = new RKTrackRep( (m_parTools->GetPdgCode( "He3" ) ) );
           fitTrack_->addTrackRep( rep1 );
           
         }
@@ -1507,7 +1510,7 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
         double minChi2 = 99999999;
         //cout << " temptrackrep " << tempTrackRep->getPDGCharge() <<endl;
         if (!tempTrackRep) continue;
-        //if (tempTrackRep->getPDG() == UpdatePDG::GetPDG()->GetPdgCode( cardinal ) )
+        //if (tempTrackRep->getPDG() == m_parTools->GetPdgCode( cardinal ) )
         if ( tempTrackRep->getPDGCharge() == (double)chargeFromTW ){
           if (fitTrack_->hasFitStatus(tempTrackRep) ){
             if (fitTrack_->getFitStatus(tempTrackRep)->getChi2() < minChi2){
@@ -2600,7 +2603,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
       tok.push_back(i);
     
     // check if the category is defined in UpdatePDG  -->  also done in GetPdgCode()
-    if ( !UpdatePDG::GetPDG()->IsParticleDefined( tok.at(0) ) )
+    if ( !m_parTools->IsParticleDefined( tok.at(0) ) )
       cout << "ERROR :: TAGactKFitter::MakeFit  -->   in UpdatePDG not found the category " << (*hitSample).first << endl, exit(0);
     if ( m_debug > 0 )
       cout << "\tCategory under fit  =  " << (*hitSample).first << " of size "<< (*hitSample).second.size() << endl;
@@ -2613,7 +2616,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
     Track*  fitTrack = new Track();  // container of the tracking objects
     
     // SET PARTICLE HYPOTHESIS  --> set repository
-    AbsTrackRep* rep = new RKTrackRep( (UpdatePDG::GetPDG()->GetPdgCode( tok.at(0)) ) );
+    AbsTrackRep* rep = new RKTrackRep( (m_parTools->GetPdgCode( tok.at(0)) ) );
     fitTrack->addTrackRep( rep );
     
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

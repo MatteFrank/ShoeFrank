@@ -80,7 +80,6 @@
 #include "GlobalPar.hxx"
 // #include "ControlPlotsRepository.hxx"
 #include "TAGntuGlbTrackK.hxx"
-#include "UpdatePDG.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -88,6 +87,8 @@
 
 #include "TAGgeoTrafo.hxx"
 #include "TAMCntuHit.hxx"
+#include "TAMCparTools.hxx"
+
 #include "TAVTactBaseNtuTrack.hxx"
 #include "TAVTactNtuVertex.hxx"
 #include "TAVTactNtuTrackF.hxx"
@@ -317,6 +318,7 @@ private:
   bool m_recolike1;
   
   TAGgeoTrafo* m_GeoTrafo;
+  TAMCparTools* m_parTools;
   
   map<int, genfit::SharedPlanePtr> m_detectorPlanes;
   
