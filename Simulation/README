@@ -11,4 +11,4 @@ B) Converting to shoe format:
 
  2) With region flag:
  - command:
-Txt2NtuRoot -in 12C_C_200_dat.txt -out 12C_C_200shoereg.root -exp 12C_200 -run 1 -reg Regions_12C_200.txt
+Txt2NtuRoot -in 12C_C_200_dat.txt -out 12C_C_200shoereg.root -exp 12C_200 -run 1 -reg
