@@ -30,7 +30,6 @@ public:
    TAMCparTools();
     virtual ~TAMCparTools();
   
-   void UpdatePDG();
 
 public:
    // Get Fluka id from G4 particle name
@@ -42,6 +41,10 @@ public:
   static        Bool_t IsParticleDefined( string partName );
   // return PDG code
   static        Int_t GetPdgCode( string partName );
+  // Update PDG
+  static        void UpdatePDG();
+
+  
 
    ClassDef(TAMCparTools,1)
 };

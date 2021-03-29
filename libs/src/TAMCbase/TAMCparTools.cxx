@@ -92,7 +92,6 @@ TAMCparTools::TAMCparTools()
 : TAGpara()
 {
   // Standard constructor
-  UpdatePDG();
 }
 
 //______________________________________________________________________________
@@ -120,7 +119,7 @@ void TAMCparTools::UpdatePDG()
   // check that every particle defined in the parameter file is defined in nameVector
   for ( unsigned int i=0; i<GlobalPar::GetPar()->MCParticles().size(); i++) {
     if ( fgkUpdatePdgMap.find( GlobalPar::GetPar()->MCParticles()[i] ) == fgkUpdatePdgMap.end() ) {
-      Error("UpdatePDG()", "Required %s particle from input parameter not defined", GlobalPar::GetPar()->MCParticles()[i].data());
+      cout << "ERROR :: TAMCparTools::UpdatePDG  -->   Required %s particle from input parameter not defined" << GlobalPar::GetPar()->MCParticles()[i] << endl;
       exit(0);
     }
   }
@@ -137,7 +136,7 @@ bool TAMCparTools::IsParticleDefined( string partName ){
   
   // check if the category is defined in fPdgCodeMap
   if ( fgkUpdatePdgMap.find( partName ) == fgkUpdatePdgMap.end() ) {
-    cout << "ERROR :: UpdatePDG::IsParticleDefined  -->   in fPdgCodeMap not found the category " << partName << endl;
+    cout << "ERROR :: TAMCparTools::IsParticleDefined  -->   in fPdgCodeMap not found the category " << partName << endl;
     return false;
   }
   else {
