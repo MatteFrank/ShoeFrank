@@ -9,8 +9,6 @@
 #pragma link C++ class TAGntuGlbTrackK;
 #pragma link C++ class TAGtrackK;
 
-#pragma link C++ class UpdatePDG;
-
 #pragma link C++ class TAFOeventDisplayMC;
 #pragma link C++ class TAFOeventDisplay;
 #pragma link C++ class TAFObaseEventDisplay;

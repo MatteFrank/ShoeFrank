@@ -78,7 +78,6 @@
 #include "TAGactNtuGlbTrack.hxx"
 
 #include "TAGactKFitter.hxx"
-#include "UpdatePDG.hxx"
 
 #include "GlobalTrackingStudies.hxx"
 #include "TAGntuGlbTrackK.hxx"

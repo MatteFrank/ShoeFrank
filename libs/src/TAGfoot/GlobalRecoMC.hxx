@@ -8,7 +8,6 @@
 #include "LocalRecoMC.hxx"
 
 #include "TAGactKFitter.hxx"
-#include "UpdatePDG.hxx"
 
 #include "GlobalTrackingStudies.hxx"
 

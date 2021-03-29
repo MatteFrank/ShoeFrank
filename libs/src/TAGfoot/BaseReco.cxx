@@ -875,9 +875,6 @@ void BaseReco::CreateRecActionGlbGF()
     MaterialEffects* materialEffects = MaterialEffects::getInstance();
     materialEffects->init(new TGeoMaterialInterface());
     
-    // include the nucleon into the genfit pdg repository
-    UpdatePDG::Instance();
-    
     // study for kalman Filter
     // fActGlbTrackStudies = new GlobalTrackingStudies("glbActTrackStudyGF");
     // if (fFlagHisto)

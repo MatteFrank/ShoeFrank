@@ -74,7 +74,6 @@
 #include "TAGparaDsc.hxx"
 
 #include "GlobalPar.hxx"
-#include "UpdatePDG.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>

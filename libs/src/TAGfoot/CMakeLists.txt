@@ -22,7 +22,6 @@ set( with_dictionnaries
    TAGactKFitter
    TAGntuGlbTrackK
    TAGtrackK
-   UpdatePDG
    TAFObaseEventDisplay
    TAFOeventDisplay
    TAFOeventDisplayMC
