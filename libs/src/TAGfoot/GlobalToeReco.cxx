@@ -6,7 +6,8 @@
  */
 
 #include "BaseReco.hxx"
-#include "TAGactNtuGlbTrack.hxx"
+#include "TAMCntuEvent.hxx"
+#include "TAMCntuRegion.hxx"
 
 #include "GlobalToeReco.hxx"
 
@@ -53,6 +54,26 @@ void GlobalToeReco::SetL0TreeBranches()
     if (fFlagMC) {
       fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
       fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
+      
+      fpNtuMcEvt = new TAGdataDsc("evtMc", new TAMCntuEvent());
+      fActEvtReader->SetupBranch(fpNtuMcEvt,TAMCntuEvent::GetBranchName());
+      
+      if (GlobalPar::GetPar()->IsRegionMc()) {
+        fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
+        fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+      }
     }
   }
+}
+
+//__________________________________________________________
+void GlobalToeReco::SetTreeBranches()
+{
+  BaseReco::SetTreeBranches();
+  
+  fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
+  fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
+  
+  if (GlobalPar::GetPar()->IsRegionMc())
+    fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
 }

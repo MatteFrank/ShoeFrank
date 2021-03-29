@@ -301,7 +301,9 @@ protected:
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
    TAGdataDsc*           fpNtuClusCa;     // input cluster data dsc
   
-   TAGdataDsc*           fpNtuMcEve;
+   TAGdataDsc*           fpNtuMcEvt;    // input data dsc
+   TAGdataDsc*           fpNtuMcEve;    // input data dsc
+   TAGdataDsc*           fpNtuMcReg;    // input data dsc
    TAGdataDsc*           fpNtuMcSt;    // input data dsc
    TAGdataDsc*           fpNtuMcBm;    // input data dsc
    TAGdataDsc*           fpNtuMcVt;    // input data dsc
