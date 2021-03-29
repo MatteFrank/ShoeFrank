@@ -23,10 +23,18 @@ private:
    static map<TString, Int_t> fgkG4PartNameToFlukaId;
    static map<Int_t, TString> fgFlukaIdToPartName;
 
+private:
+  map<string, int> fPdgCodeMap;
+
 public:
    TAMCparTools();
     virtual ~TAMCparTools();
-   
+  
+   void UpdatePDG();
+  
+   Bool_t IsParticleDefined( string partName );
+   Int_t GetPdgCode( string partName );
+
 public:
    // Get Fluka id from G4 particle name
    static       Int_t   GetFlukaId(TString g4PartName) { return fgkG4PartNameToFlukaId[g4PartName]; }
