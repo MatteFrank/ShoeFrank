@@ -51,6 +51,41 @@ map<Int_t, TString> TAMCparTools::fgFlukaIdToPartName =
    {60, "AXSIPC- "},  {61, "AXSIPC0 "},  {62, "AOMEGAC0"}
   };
 
+map<TString, Int_t> TAMCparTools::fgkUpdatePdgMap =
+{
+  {"C11",   66666601}, {"C12",  66666602}, {"C13", 66666603}, {"C14", 66666604},
+  {"Li6",   66666605}, {"Li7",  66666606},
+  {"B7",    66666607}, {"B9",   66666608}, {"B10", 66666609},
+  {"Be10",  66666610}, {"Be11", 66666611},
+  {"N14",   66666612}, {"N15",  66666613},
+  {"Alpha", 66666614}, {"He3",  66666615},
+  {"H",     66666616}, {"H2",   66666617}, {"H3", 66666618},
+  {"O15",   66666619}, {"O16",  66666620}
+};
+
+map<TString, double> TAMCparTools::fgkUpdatePdgMass =
+{
+  {"C11",   10.254},  {"C12",  11.1749}, {"C13", 12.1095}, {"C14", 13.07},
+  {"Li6",   5.612},   {"Li7",  6.548},
+  {"B7",    6.563},   {"B9",   8.357},   {"B10", 9.293},
+  {"Be10",  9.32444}, {"Be11", 10.2525},
+  {"N14",   13.1},    {"N15",  13.97},
+  {"Alpha", 4.0},     {"He3",  3.016},
+  {"H",     1.0},     {"H2",   2.014},   {"H3", 3.016},
+  {"O15",   14.0},    {"O16",  14.88}
+};
+
+map<TString, double> TAMCparTools::fgkUpdatePdgCharge =
+{
+  {"C11",   18}, {"C12",  18}, {"C13", 18}, {"C14", 18},
+  {"Li6",   9},  {"Li7",  9},
+  {"B7",    12}, {"B9",   12}, {"B10", 12},
+  {"Be10",  15}, {"Be11", 15},
+  {"N14",   21}, {"N15",  21},
+  {"Alpha", 6},  {"He3",  6},
+  {"H",     3},  {"H2",   3},   {"H3", 3},
+  {"O15",   24}, {"O16",  24}
+};
 
 //______________________________________________________________________________
 TAMCparTools::TAMCparTools()
@@ -82,60 +117,26 @@ void TAMCparTools::UpdatePDG()
   // clean the particle datatbase. Important!
   TDatabasePDG::Instance()->~TDatabasePDG();
   
-  int nNewParticles = 20;
-  int pdgCode = 66666600;
-  // particle name
-  vector<string> nameVector      = {   "C11", "C12", "C13", "C14",
-    "Li6", "Li7",
-    "B7", "B9", "B10",
-    "Be10", "Be11",
-    "N14", "N15",
-    "Alpha", "He3", "H", "H2", "H3",
-    "O15", "O16" };
-  if ( (int)nameVector.size() != nNewParticles )   {
-    Error("UpdatePDG()", "Particle collection name size not match %ld", nameVector.size());
-    exit(0);
-  }
-  
-  // particle mass
-  double massV [] = {   10.254, 11.1749, 12.1095, 13.07,
-    5.612, 6.548,
-    6.563, 8.357, 9.293,
-    9.32444, 10.2525,
-    13.1, 13.97,
-    4, 3.016, 1, 2.014, 3.016,
-    14, 14.88 };
-  
-  // particle cherge x3
-  double chargeV [] = {   18, 18, 18, 18,
-    9, 9,
-    12, 12, 12,
-    15, 15,
-    21, 21,
-    6, 6, 3, 3, 3,
-    24, 24  };
-  
   // check that every particle defined in the parameter file is defined in nameVector
   for ( unsigned int i=0; i<GlobalPar::GetPar()->MCParticles().size(); i++) {
-    if ( find( nameVector.begin(), nameVector.end(), GlobalPar::GetPar()->MCParticles()[i] ) == nameVector.end() ) {
+    if ( fgkUpdatePdgMap.find( GlobalPar::GetPar()->MCParticles()[i] ) == fgkUpdatePdgMap.end() ) {
       Error("UpdatePDG()", "Required %s particle from input parameter not defined", GlobalPar::GetPar()->MCParticles()[i].data());
       exit(0);
     }
   }
   
   // add the new particles to the standard TDatabasePDG
-  for ( int i=0; i<nNewParticles; i++) {
-    TDatabasePDG::Instance()->AddParticle(nameVector[i].c_str(), nameVector[i].c_str(), massV[i], true, 0., chargeV[i], "ion", ++pdgCode);
-    fPdgCodeMap[ nameVector[i] ] = pdgCode;
+  for (map<TString, Int_t>::iterator it=fgkUpdatePdgMap.begin(); it!=fgkUpdatePdgMap.end(); ++it) {
+    TDatabasePDG::Instance()->AddParticle(it->first.Data(), it->first.Data(), fgkUpdatePdgMass[it->first], true, 0., fgkUpdatePdgCharge[it->first], "ion", it->second);
+   // cout << it->first.Data() << " " << it->second << " " << fgkUpdatePdgMass[it->first] << " " << fgkUpdatePdgCharge[it->first] << endl;
   }
-  
 }
 
 //----------------------------------------------------------------------------------------------------
 bool TAMCparTools::IsParticleDefined( string partName ){
   
   // check if the category is defined in fPdgCodeMap
-  if ( fPdgCodeMap.find( partName ) == fPdgCodeMap.end() ) {
+  if ( fgkUpdatePdgMap.find( partName ) == fgkUpdatePdgMap.end() ) {
     cout << "ERROR :: UpdatePDG::IsParticleDefined  -->   in fPdgCodeMap not found the category " << partName << endl;
     return false;
   }
@@ -150,5 +151,5 @@ int TAMCparTools::GetPdgCode( string partName ) {
   
   IsParticleDefined( partName );
   
-  return fPdgCodeMap[ partName ];
+  return fgkUpdatePdgMap[ partName ];
 }
