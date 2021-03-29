@@ -63,6 +63,7 @@ map<TString, Int_t> TAMCparTools::fgkUpdatePdgMap =
   {"O15",   66666619}, {"O16",  66666620}
 };
 
+// mass = u*0.9315 in GeV/c^2
 map<TString, double> TAMCparTools::fgkUpdatePdgMass =
 {
   {"C11",   10.254},  {"C12",  11.1749}, {"C13", 12.1095}, {"C14", 13.07},
@@ -75,6 +76,7 @@ map<TString, double> TAMCparTools::fgkUpdatePdgMass =
   {"O15",   14.0},    {"O16",  14.88}
 };
 
+// charge = Z*3 ??
 map<TString, double> TAMCparTools::fgkUpdatePdgCharge =
 {
   {"C11",   18}, {"C12",  18}, {"C13", 18}, {"C14", 18},
