@@ -68,8 +68,8 @@ map<TString, double> TAMCparTools::fgkUpdatePdgMass =
 {
   {"C11",   10.254},  {"C12",  11.1749}, {"C13", 12.1095}, {"C14", 13.07},
   {"Li6",   5.612},   {"Li7",  6.548},
-  {"B7",    6.563},   {"B9",   8.357},   {"B10", 9.293},
-  {"Be10",  9.32444}, {"Be11", 10.2525},
+  {"Be7",   6.563},   {"Be9",  8.357},   {"Be10", 9.293},
+  {"B10",   9.32444}, {"B11", 10.2525},
   {"N14",   13.1},    {"N15",  13.97},
   {"Alpha", 4.0},     {"He3",  3.016},
   {"H",     1.0},     {"H2",   2.014},   {"H3", 3.016},
@@ -79,14 +79,14 @@ map<TString, double> TAMCparTools::fgkUpdatePdgMass =
 // charge = Z*3 (counting in 1/3q)
 map<TString, double> TAMCparTools::fgkUpdatePdgCharge =
 {
-  {"C11",   18}, {"C12",  18}, {"C13", 18}, {"C14", 18},
-  {"Li6",   9},  {"Li7",  9},
-  {"B7",    12}, {"B9",   12}, {"B10", 12},
-  {"Be10",  15}, {"Be11", 15},
-  {"N14",   21}, {"N15",  21},
-  {"Alpha", 6},  {"He3",  6},
-  {"H",     3},  {"H2",   3},   {"H3", 3},
-  {"O15",   24}, {"O16",  24}
+  {"C11",   6},  {"C12",  6},  {"C13", 6}, {"C14", 6},
+  {"Li6",   3},  {"Li7",  3},
+  {"Be7",   4},  {"Be9",  4},  {"Be10", 4},
+  {"B10",   5},  {"B11",  5},
+  {"N14",   7},  {"N15",  7},
+  {"Alpha", 2},  {"He3",  2},
+  {"H",     1},  {"H2",   1},  {"H3", 1},
+  {"O15",   8},  {"O16",  8}
 };
 
 //______________________________________________________________________________
@@ -128,7 +128,7 @@ void TAMCparTools::UpdatePDG()
   
   // add the new particles to the standard TDatabasePDG
   for (map<TString, Int_t>::iterator it=fgkUpdatePdgMap.begin(); it!=fgkUpdatePdgMap.end(); ++it) {
-    TDatabasePDG::Instance()->AddParticle(it->first.Data(), it->first.Data(), fgkUpdatePdgMass[it->first], true, 0., fgkUpdatePdgCharge[it->first], "ion", it->second);
+    TDatabasePDG::Instance()->AddParticle(it->first.Data(), it->first.Data(), fgkUpdatePdgMass[it->first], true, 0., fgkUpdatePdgCharge[it->first]*3.0, "ion", it->second);
    // cout << it->first.Data() << " " << it->second << " " << fgkUpdatePdgMass[it->first] << " " << fgkUpdatePdgCharge[it->first] << endl;
   }
 }
