@@ -25,9 +25,12 @@ public:
    //! Close File in
    virtual void CloseFileIn();
 
-   //! Create L0 branch in tree
+   //! Read L0 branch in tree
    void SetL0TreeBranches();
-   
+  
+   //! Create branch in tree
+   void SetTreeBranches();
+
    ClassDef(GlobalToeReco, 1); 
 };
 

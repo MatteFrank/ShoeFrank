@@ -65,3 +65,15 @@ void GlobalToeReco::SetL0TreeBranches()
     }
   }
 }
+
+//__________________________________________________________
+void GlobalToeReco::SetTreeBranches()
+{
+  BaseReco::SetTreeBranches();
+  
+  fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
+  fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuTrack::GetBranchName());
+  
+  if (GlobalPar::GetPar()->IsRegionMc() )
+    fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+}
