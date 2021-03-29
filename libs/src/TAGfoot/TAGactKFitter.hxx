@@ -318,7 +318,6 @@ private:
   bool m_recolike1;
   
   TAGgeoTrafo* m_GeoTrafo;
-  TAMCparTools* m_parTools;
   
   map<int, genfit::SharedPlanePtr> m_detectorPlanes;
   
