@@ -76,7 +76,7 @@ map<TString, double> TAMCparTools::fgkUpdatePdgMass =
   {"O15",   14.0},    {"O16",  14.88}
 };
 
-// charge = Z*3 ??
+// charge = Z*3 (counting in 1/3q)
 map<TString, double> TAMCparTools::fgkUpdatePdgCharge =
 {
   {"C11",   18}, {"C12",  18}, {"C13", 18}, {"C14", 18},
