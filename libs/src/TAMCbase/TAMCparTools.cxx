@@ -55,8 +55,8 @@ map<TString, Int_t> TAMCparTools::fgkUpdatePdgMap =
 {
   {"C11",   66666601}, {"C12",  66666602}, {"C13", 66666603}, {"C14", 66666604},
   {"Li6",   66666605}, {"Li7",  66666606},
-  {"B7",    66666607}, {"B9",   66666608}, {"B10", 66666609},
-  {"Be10",  66666610}, {"Be11", 66666611},
+  {"Be7",   66666607}, {"Be9",  66666608}, {"Be10", 66666609},
+  {"B10",   66666610}, {"B11",  66666611},
   {"N14",   66666612}, {"N15",  66666613},
   {"Alpha", 66666614}, {"He3",  66666615},
   {"H",     66666616}, {"H2",   66666617}, {"H3", 66666618},
@@ -121,7 +121,7 @@ void TAMCparTools::UpdatePDG()
   // check that every particle defined in the parameter file is defined in nameVector
   for ( unsigned int i=0; i<GlobalPar::GetPar()->MCParticles().size(); i++) {
     if ( fgkUpdatePdgMap.find( GlobalPar::GetPar()->MCParticles()[i] ) == fgkUpdatePdgMap.end() ) {
-      cout << "ERROR :: TAMCparTools::UpdatePDG  -->   Required %s particle from input parameter not defined" << GlobalPar::GetPar()->MCParticles()[i] << endl;
+      cout << "ERROR :: TAMCparTools::UpdatePDG  -->   Required %s particle from input parameter not defined " << GlobalPar::GetPar()->MCParticles()[i] << endl;
       exit(0);
     }
   }
