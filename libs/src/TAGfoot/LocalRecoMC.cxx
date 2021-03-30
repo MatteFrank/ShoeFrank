@@ -46,7 +46,7 @@ void LocalRecoMC::CreateRawAction()
    fActEvtReader = new TAGactTreeReader("actEvtReader");
   
    if ( GlobalPar::GetPar()->IsRegionMc()) {
-   fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
+     fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
      if (GlobalPar::GetPar()->IsReadRootObj())
        fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
      else
