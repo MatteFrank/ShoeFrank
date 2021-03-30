@@ -40,6 +40,15 @@ public:
   UInt_t            GetPMTsAndBusy()                  const { return fPMTsAndBusy;            }
   void              SetPMTsAndBusy(UInt_t nb)               { fPMTsAndBusy = nb;              }
 
+  void              TimeFromDouble(Double_t time);
+  void              SetCurrentTime();
+  
+  Double_t          TimeToDouble() const { return (Double_t)fTimeSec + 1.e-6 * (Double_t)fTimeUsec;}
+  
+  TAGntuEvent&      operator+(Double_t deltatime);
+  TAGntuEvent&      operator-(Double_t deltatime);
+  
+  friend Double_t   operator-(const TAGntuEvent& lhs, const TAGntuEvent& rhs);
   
   virtual void      Clear(Option_t* opt="");
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;

@@ -41,7 +41,6 @@ set( with_dictionnaries
    TAGparaDsc
    TAGroot
    TAGrunInfo
-   TAGtimestamp
    TAGview
    TAGbaseMaterials
    TAGmaterials
