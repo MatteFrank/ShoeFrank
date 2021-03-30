@@ -63,20 +63,20 @@ map<TString, Int_t> TAMCparTools::fgkUpdatePdgMap =
   {"O15",   66666619}, {"O16",  66666620}
 };
 
-// mass = u*0.9315 in GeV/c^2
+// mass = u*0.9315 in GeV/c^2, map in atomic units
 map<TString, double> TAMCparTools::fgkUpdatePdgMass =
 {
-  {"H",     1.0},     {"H2",   2.014},   {"H3", 3.016},
-  {"Alpha", 4.0},     {"He3",  3.016},
-  {"Li6",   5.612},   {"Li7",  6.548},
-  {"Be7",   6.563},   {"Be9",  8.357},   {"Be10", 9.293},
-  {"B10",   9.32444}, {"B11", 10.2525},
-  {"C11",   10.254},  {"C12",  11.1749}, {"C13", 12.1095}, {"C14", 13.07},
-  {"N14",   13.1},    {"N15",  13.97},
-  {"O15",   14.0},    {"O16",  14.88}
+  {"H",     1.0078},  {"H2",   2.01410},   {"H3", 3.0160},
+  {"Alpha", 4.0026},  {"He3",  3.01603},
+  {"Li6",   6.0151},  {"Li7",  7.01600},
+  {"Be7",   7.0169},  {"Be9",  8.00531},   {"Be10", 9.0122},
+  {"B10",  10.0129},  {"B11", 11.00930},
+  {"C11",  11.0114},  {"C12",  12.0000},   {"C13", 13.00335}, {"C14", 14.00324},
+  {"N14",  14.0031},  {"N15",  15.0001},
+  {"O15",  15.0031},  {"O16",  15.9949}
 };
 
-// charge = Z*3 (counting in 1/3q)
+// charge = Z*3 (counting in 1/3q), map in Z units
 map<TString, double> TAMCparTools::fgkUpdatePdgCharge =
 {
   {"H",     1},  {"H2",   1},  {"H3", 1},
@@ -128,7 +128,7 @@ void TAMCparTools::UpdatePDG()
   
   // add the new particles to the standard TDatabasePDG
   for (map<TString, Int_t>::iterator it=fgkUpdatePdgMap.begin(); it!=fgkUpdatePdgMap.end(); ++it) {
-    TDatabasePDG::Instance()->AddParticle(it->first.Data(), it->first.Data(), fgkUpdatePdgMass[it->first], true, 0., fgkUpdatePdgCharge[it->first]*3.0, "ion", it->second);
+    TDatabasePDG::Instance()->AddParticle(it->first.Data(), it->first.Data(), fgkUpdatePdgMass[it->first]*0.9315, true, 0., fgkUpdatePdgCharge[it->first]*3.0, "ion", it->second);
    // cout << it->first.Data() << " " << it->second << " " << fgkUpdatePdgMass[it->first] << " " << fgkUpdatePdgCharge[it->first] << endl;
   }
 }
