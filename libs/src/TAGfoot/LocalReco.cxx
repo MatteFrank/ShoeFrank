@@ -3,6 +3,7 @@
 
 #include "LocalReco.hxx"
 
+#include "TAMCntuEvent.hxx"
 #include "TASTntuHit.hxx"
 #include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
@@ -49,6 +50,11 @@ void LocalReco::CreateRawAction()
    if (!fgStdAloneFlag) {
       fpDaqEvent = new TAGdataDsc("daqEvt", new TAGdaqEvent());
       fActEvtReader = new TAGactDaqReader("daqActReader", fpDaqEvent);
+     
+      fpNtuMcEvt = new TAGdataDsc("evtNtu", new TAMCntuEvent());
+      fActNtuEvt = new TAGactNtuEvent("evtActNtu", fpNtuMcEvt, fpDaqEvent);
+     if (fFlagHisto)
+       fActNtuEvt->CreateHistogram();
    }
 
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeCA()) {
@@ -225,8 +231,10 @@ void LocalReco::CloseFileIn()
 //__________________________________________________________
 void LocalReco::AddRawRequiredItem()
 {
-   if (!fgStdAloneFlag)
+   if (!fgStdAloneFlag) {
       fTAGroot->AddRequiredItem("daqActReader");
+      fTAGroot->AddRequiredItem("evtActNtu");
+   }
 
    if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()) {
      fTAGroot->AddRequiredItem("wdActRaw");
@@ -274,7 +282,11 @@ void LocalReco::AddRawRequiredItem()
 void LocalReco::SetTreeBranches()
 {
    BaseReco::SetTreeBranches();
-   
+  
+   if (!fgStdAloneFlag) {
+     fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
+   }
+  
    if (GlobalPar::GetPar()->IncludeST()) {
      if (fFlagHits) {
        fActEvtWriter->SetupElementBranch(fpDatRawSt, TASTntuRaw::GetBranchName());

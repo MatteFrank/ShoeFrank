@@ -1,6 +1,6 @@
 /*!
  \file
- \brief   Implementation of TAGactNtuHit.
+ \brief   Implementation of TAGactNtuEvent.
  */
 
 #include "InfoEvent.hh"
@@ -10,20 +10,20 @@
 #include "TAGdaqEvent.hxx"
 #include "TAMCntuEvent.hxx"
 
-#include "TAGactNtuHit.hxx"
+#include "TAGactNtuEvent.hxx"
 
 /*!
- \class TAGactNtuHit TAGactNtuHit.hxx "TAGactNtuHit.hxx"
+ \class TAGactNtuEvent TAGactNtuEvent.hxx "TAGactNtuEvent.hxx"
  \brief Get trigger from DAQ **
  */
 
-ClassImp(TAGactNtuHit);
+ClassImp(TAGactNtuEvent);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAGactNtuHit::TAGactNtuHit(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* pDatDaq)
-: TAGaction(name, "TAGactNtuHit - Unpack trigger raw data"),
+TAGactNtuEvent::TAGactNtuEvent(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* pDatDaq)
+: TAGaction(name, "TAGactNtuEvent - Unpack trigger raw data"),
   fpDatDaq(pDatDaq),
   fpNtuEvt(pNtuEvt)
 {
@@ -33,13 +33,13 @@ TAGactNtuHit::TAGactNtuHit(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* pD
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAGactNtuHit::~TAGactNtuHit()
+TAGactNtuEvent::~TAGactNtuEvent()
 {   
 }
 
 //------------------------------------------+-----------------------------------
 //! Action.
-Bool_t TAGactNtuHit::Action()
+Bool_t TAGactNtuEvent::Action()
 {
   TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();
   TAMCntuEvent* pNtuEvt = (TAMCntuEvent*)  fpNtuEvt->Object();
