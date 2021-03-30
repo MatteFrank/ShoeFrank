@@ -39,11 +39,10 @@ public:
   
   UInt_t            GetPMTsAndBusy()                  const { return fPMTsAndBusy;            }
   void              SetPMTsAndBusy(UInt_t nb)               { fPMTsAndBusy = nb;              }
-
+  
+  Double_t          TimeToDouble()                    const { return (Double_t)fTimeSec + 1.e-6 * (Double_t)fTimeUsec;}
   void              TimeFromDouble(Double_t time);
   void              SetCurrentTime();
-  
-  Double_t          TimeToDouble() const { return (Double_t)fTimeSec + 1.e-6 * (Double_t)fTimeUsec;}
   
   TAGntuEvent&      operator+(Double_t deltatime);
   TAGntuEvent&      operator-(Double_t deltatime);
