@@ -29,7 +29,6 @@
 
 #pragma link C++ class TAGdataDsc+;
 
-#pragma link C++ class TAGpadGroup+;
 #pragma link C++ class TAGview+;
 
 #pragma link C++ class TAGbaseDigitizer+;

@@ -36,7 +36,6 @@ set( with_dictionnaries
    TAGcampaignManager
    TAGnamed
    TAGobject
-   TAGpadGroup
    TAGparTools
    TAGpara
    TAGparaDsc
