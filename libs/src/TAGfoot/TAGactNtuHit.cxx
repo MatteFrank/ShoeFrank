@@ -1,6 +1,6 @@
 /*!
  \file
- \brief   Implementation of TAIRactNtuHit.
+ \brief   Implementation of TAGactNtuHit.
  */
 
 #include "InfoEvent.hh"
@@ -10,20 +10,20 @@
 #include "TAGdaqEvent.hxx"
 #include "TAMCntuEvent.hxx"
 
-#include "TAIRactNtuHit.hxx"
+#include "TAGactNtuHit.hxx"
 
 /*!
- \class TAIRactNtuHit TAIRactNtuHit.hxx "TAIRactNtuHit.hxx"
- \brief Get vertex raw data from DAQ (binary format) **
+ \class TAGactNtuHit TAGactNtuHit.hxx "TAGactNtuHit.hxx"
+ \brief Get trigger from DAQ **
  */
 
-ClassImp(TAIRactNtuHit);
+ClassImp(TAGactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAIRactNtuHit::TAIRactNtuHit(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* pDatDaq)
-: TAGaction(name, "TAIRactNtuHit - Unpack trigger raw data"),
+TAGactNtuHit::TAGactNtuHit(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* pDatDaq)
+: TAGaction(name, "TAGactNtuHit - Unpack trigger raw data"),
   fpDatDaq(pDatDaq),
   fpNtuEvt(pNtuEvt)
 {
@@ -33,13 +33,13 @@ TAIRactNtuHit::TAIRactNtuHit(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* 
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAIRactNtuHit::~TAIRactNtuHit()
+TAGactNtuHit::~TAGactNtuHit()
 {   
 }
 
 //------------------------------------------+-----------------------------------
 //! Action.
-Bool_t TAIRactNtuHit::Action()
+Bool_t TAGactNtuHit::Action()
 {
   TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();
   TAMCntuEvent* pNtuEvt = (TAMCntuEvent*)  fpNtuEvt->Object();

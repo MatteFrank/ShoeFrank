@@ -1,23 +1,23 @@
-#ifndef _TAIRactNtuHit_HXX
-#define _TAIRactNtuHit_HXX
+#ifndef _TAGactNtuHit_HXX
+#define _TAGactNtuHit_HXX
 
 #include "TAGaction.hxx"
 
 /*!
  \file
- \version $Id: TAIRactNtuHit.hxx $
- \brief   Declaration of TAIRactNtuHit.
+ \version $Id: TAGactNtuHit.hxx $
+ \brief   Declaration of TAGactNtuHit.
  */
 
 /*------------------------------------------+---------------------------------*/
 class TAGdataDsc;
 
 using namespace std;
-class TAIRactNtuHit : public TAGaction {
+class TAGactNtuHit : public TAGaction {
 public:
   
-  explicit TAIRactNtuHit(const char* name=0, TAGdataDsc* p_datraw=0, TAGdataDsc* p_datmbs=0);
-  virtual  ~TAIRactNtuHit();
+  explicit TAGactNtuHit(const char* name=0, TAGdataDsc* p_datraw=0, TAGdataDsc* p_datmbs=0);
+  virtual  ~TAGactNtuHit();
   
   virtual Bool_t  Action();
   
@@ -25,7 +25,7 @@ protected:
   TAGdataDsc*     fpDatDaq;		    // input data dsc
   TAGdataDsc*     fpNtuEvt;         // output data dsc
   
-  ClassDef(TAIRactNtuHit,0)
+  ClassDef(TAGactNtuHit,0)
 };
 
 #endif

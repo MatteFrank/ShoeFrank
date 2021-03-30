@@ -28,7 +28,6 @@ set( with_dictionnaries
    TAIRtrack
    TAIRntuTrack
    TAIRactNtuTrack
-   TAIRactNtuHit
 )
 
 set( without_dictionnaries
