@@ -3,7 +3,7 @@
 
 #include "LocalReco.hxx"
 
-#include "TAMCntuEvent.hxx"
+#include "TAGntuEvent.hxx"
 #include "TASTntuHit.hxx"
 #include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
@@ -26,6 +26,7 @@ Bool_t  LocalReco::fgStdAloneFlag = false;
 LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fpDaqEvent(0x0),
+   fpNtuEvt(0x0),
    fActWdRaw(0x0),
    fActDatRawBm(0x0),
    fActNtuHitBm(0x0),
@@ -51,8 +52,8 @@ void LocalReco::CreateRawAction()
       fpDaqEvent = new TAGdataDsc("daqEvt", new TAGdaqEvent());
       fActEvtReader = new TAGactDaqReader("daqActReader", fpDaqEvent);
      
-      fpNtuMcEvt = new TAGdataDsc("evtNtu", new TAMCntuEvent());
-      fActNtuEvt = new TAGactNtuEvent("evtActNtu", fpNtuMcEvt, fpDaqEvent);
+      fpNtuEvt = new TAGdataDsc("evtNtu", new TAGntuEvent());
+      fActNtuEvt = new TAGactNtuEvent("evtActNtu", fpNtuEvt, fpDaqEvent);
      if (fFlagHisto)
        fActNtuEvt->CreateHistogram();
    }
@@ -284,7 +285,7 @@ void LocalReco::SetTreeBranches()
    BaseReco::SetTreeBranches();
   
    if (!fgStdAloneFlag) {
-     fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuEvt, TAGntuEvent::GetBranchName());
    }
   
    if (GlobalPar::GetPar()->IncludeST()) {

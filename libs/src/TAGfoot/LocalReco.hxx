@@ -60,6 +60,7 @@ public:
    
 private:
    TAGdataDsc*           fpDaqEvent;
+   TAGdataDsc*           fpNtuEvt;    // input data dsc
  //  TAGdataDsc*           fpDatRawMsd;    // input data dsc
    TAGactWDreader*       fActWdRaw;  // action for WD decoding
   
