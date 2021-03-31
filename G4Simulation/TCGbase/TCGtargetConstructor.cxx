@@ -248,11 +248,6 @@ void TCGtargetConstructor::DefineMaterial()
    pmma->AddMaterial(O, fractionmass = 31.96*perCent);
    pmma->AddMaterial(H, fractionmass =  8.05*perCent);
    
-   //Air
-   G4Material* Air = new G4Material(name = "Air", density= 1.29*mg/cm3, ncomponents=2);
-   Air->AddMaterial(N, 70*perCent);
-   Air->AddMaterial(O, 30*perCent);
-   
    //Bone
    G4Material* Bone = new G4Material(name = "Bone", density= 1.85*g/cm3, ncomponents=9);
    Bone->AddMaterial(H, 4.72*perCent); //1
