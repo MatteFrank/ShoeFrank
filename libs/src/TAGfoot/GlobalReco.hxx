@@ -26,7 +26,9 @@ public:
   //! Create L0 branch in tree
   void SetL0TreeBranches();
   
-  
+  //! Create branch in tree
+  void SetTreeBranches();
+
    ClassDef(GlobalReco, 0); 
 };
 

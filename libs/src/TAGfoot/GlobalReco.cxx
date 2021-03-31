@@ -53,6 +53,59 @@ void GlobalReco::SetL0TreeBranches()
         fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
         fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
       }
+      
+      if (GlobalPar::GetPar()->IncludeKalman() && GlobalPar::GetPar()->IsLocalReco()) {
+        if (GlobalPar::GetPar()->IncludeST()) {
+          fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcSt,TAMCntuHit::GetStcBranchName());
+        }
+        
+        if (GlobalPar::GetPar()->IncludeBM()) {
+          fpNtuMcBm   = new TAGdataDsc("bmMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcBm,TAMCntuHit::GetBmBranchName());
+        }
+        
+        if (GlobalPar::GetPar()->IncludeVT()) {
+          fpNtuMcVt   = new TAGdataDsc("vtMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcVt,TAMCntuHit::GetVtxBranchName());
+        }
+        
+        if (GlobalPar::GetPar()->IncludeIT()) {
+          fpNtuMcIt   = new TAGdataDsc("itMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcIt,TAMCntuHit::GetItrBranchName());
+        }
+        
+        if (GlobalPar::GetPar()->IncludeMSD()) {
+          fpNtuMcMsd   = new TAGdataDsc("msdMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcMsd,TAMCntuHit::GetMsdBranchName());
+        }
+        
+        if(GlobalPar::GetPar()->IncludeTW()) {
+          fpNtuMcTw   = new TAGdataDsc("twMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcTw,TAMCntuHit::GetTofBranchName());
+        }
+        
+        if(GlobalPar::GetPar()->IncludeCA()) {
+          fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcCa,TAMCntuHit::GetCalBranchName());
+        }
+      }
+    }
+  }
+}
+
+//__________________________________________________________
+void GlobalReco::SetTreeBranches()
+{
+  BaseReco::SetTreeBranches();
+  
+  if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) {
+    if (fFlagMC) {
+      fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuTrack::GetBranchName());
+      
+      if (GlobalPar::GetPar()->IsRegionMc() )
+        fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
     }
   }
 }
