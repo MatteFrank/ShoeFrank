@@ -6,8 +6,13 @@
 
 //----------------------------------------------------------------------------------------------------
 // TAGactKFitter::TAGactKFitter (const char* name) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker") {
-TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* p_glbtrack) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"), fpGlobTrackRepo(p_glbtrack) {
-  
+TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* p_glbtrack)
+ : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"),
+   fpGlobTrackRepo(p_glbtrack),
+   m_fitter(0x0),
+   m_fitter_extrapolation(0x0),
+   m_refFitter(0x0)
+{
   cout << "TAGactKFitter - Constructor" << endl;
   
   // p_glbtrack = new TAGntuGlbTrack();
@@ -95,10 +100,16 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* p_glbtrack) : TAGact
   GlobalPar::GetPar()->Print("all");
 }
 
-TAGactKFitter::~TAGactKFitter() {
-  delete m_fitter;
-  delete m_fitter_extrapolation;
-  delete m_refFitter;
+//------------------------------------------+-----------------------------------
+//! Destructor
+TAGactKFitter::~TAGactKFitter()
+{
+  if (m_fitter)
+    delete m_fitter;
+  if (m_fitter_extrapolation)
+    delete m_fitter_extrapolation;
+  if (m_refFitter)
+    delete m_refFitter;
 }
 
 //------------------------------------------+-----------------------------------

@@ -885,7 +885,7 @@ void BaseReco::CreateRecActionGlbGF()
     
     // Initialisation of KFfitter
     fpNtuGlbTrackK = new TAGdataDsc("TAGntuGlbTrackK", new TAGntuGlbTrackK());
-    fActGlbkFitter = new TAGactKFitter("glbAct_KFitter", fpNtuGlbTrackK);
+    fActGlbkFitter = new TAGactKFitter("glbActkFitter", fpNtuGlbTrackK);
     if (fFlagHisto)
       fActGlbkFitter->CreateHistogram();
     
@@ -984,8 +984,8 @@ void BaseReco::AddRecRequiredItem()
   
    if (GlobalPar::GetPar()->IncludeKalman() && GlobalPar::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
-       gTAGroot->AddRequiredItem("glbActTrackStudyGF");
-       gTAGroot->AddRequiredItem("glbActTrackGF");
+   //    gTAGroot->AddRequiredItem("glbActTrackStudyGF");
+       gTAGroot->AddRequiredItem("glbActkFitter");
      }
      return;
    }
@@ -1038,8 +1038,8 @@ void BaseReco::AddRecRequiredItem()
          gTAGroot->AddRequiredItem("glbActTrack");
       
       if (!GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IncludeKalman()) {
-         gTAGroot->AddRequiredItem("glbActTrackStudyGF");
-         gTAGroot->AddRequiredItem("glbActTrackGF");
+      //   gTAGroot->AddRequiredItem("glbActTrackStudyGF");
+         gTAGroot->AddRequiredItem("glbActkFitter");
       }
    }
    
