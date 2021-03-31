@@ -182,6 +182,8 @@ public:
    static Int_t  GetDebugLevel(const char* className);
    static Bool_t GetDebugLevel(Int_t level, const char* className);
    static Bool_t GetMcDebugLevel(Int_t level, const char* className);
+   static void   GetMcInfo(const char* className = "", const char* funcName = "", const char* format = "", ...);
+   static void   GetMcInfoMsg(const char* className = "", const char* funcName = "", const char* format = "");
 
    static void   SetClassDebugLevel(const char* className, Int_t level);
    static void   ClearClassDebugLevel(const char* className);
@@ -191,5 +193,7 @@ public:
 #define FootDebugLine(level, func, message ) GlobalPar::DebugLine(level, ClassName(), func, message, __FILE__, __LINE__)
 #define FootDebugLevel(level) GlobalPar::GetDebugLevel(level, ClassName())
 #define FootMcDebugLevel(level) GlobalPar::GetMcDebugLevel(level, typeid(*this).name())
+#define InfoMc(func, message, ...) GlobalPar::GetMcInfo(typeid(*this).name(), func, message, __VA_ARGS__)
+#define InfoMcMsg(func, message) GlobalPar::GetMcInfo(typeid(*this).name(), func, message)
 
 #endif

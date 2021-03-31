@@ -539,9 +539,10 @@ Bool_t GlobalPar::GetMcDebugLevel(Int_t level, const char* className)
    // need to remove compiler index
    
    Int_t status;
+   std::size_t sz = 255;
    char output_buffer[255];
 
-   const char* name = abi::__cxa_demangle(className,  output_buffer, 0,&status);
+   const char* name = abi::__cxa_demangle(className,  output_buffer, &sz, &status);
 
    return GetDebugLevel(level, name);
 }
@@ -588,7 +589,7 @@ void GlobalPar::DebugLine(Int_t level, const char* className, const char* funcNa
    // print the message
    if (level <= Instance()->GetDebugLevel(className)) {
       if (funcName)
-         fprintf(stdout, "Debug in <%s:%s>: ", className, funcName);
+         fprintf(stdout, "Debug in <%s::%s>: ", className, funcName);
    
       fprintf(stdout, "%s\n", format);
 
@@ -602,7 +603,7 @@ void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, 
   // print the message
   if (level <= Instance()->GetDebugLevel(className)) {
     if (funcName)
-      fprintf(stdout, "Debug in <%s:%s>: ", className, funcName);
+      fprintf(stdout, "Debug in <%s::%s>: ", className, funcName);
     
     if (format==NULL) return;
     va_list ap;
@@ -611,6 +612,42 @@ void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, 
     fprintf(stdout, "\n");
     va_end(ap);
   }
+}
+
+//_____________________________________________________________________________
+void GlobalPar::GetMcInfoMsg(const char* className, const char* funcName, const char* format)
+{
+  Int_t status;
+  
+  std::size_t sz = 255;
+  char output_buffer[255];
+  
+  const char* name = abi::__cxa_demangle(className,  output_buffer, &sz, &status);
+  
+  if (funcName)
+    fprintf(stdout, "Info in <%s::%s>: ", name, funcName);
+  cout << format << endl;
+  
+}
+
+//_____________________________________________________________________________
+void GlobalPar::GetMcInfo(const char* className, const char* funcName, const char* format,...)
+{
+  Int_t status;
+  std::size_t sz = 255;
+  char output_buffer[255];
+
+  const char* name = abi::__cxa_demangle(className,  output_buffer, &sz, &status);
+
+  if (funcName)
+    fprintf(stdout, "Info in <%s::%s>: ", name, funcName);
+
+    if (format==NULL) return;
+    va_list ap;
+    va_start(ap, format);
+    vfprintf(stdout, format, ap);
+    fprintf(stdout, "\n");
+    va_end(ap);
 }
 
 //________________________________________________________________________________________
