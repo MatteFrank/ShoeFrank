@@ -260,7 +260,8 @@ void LocalRecoMC::AddRawRequiredItem()
    if (!GlobalPar::GetPar()->IsReadRootObj()) {
      fTAGroot->AddRequiredItem("eveActNtuMc");
      fTAGroot->AddRequiredItem("evtActNtuMc");
-     fTAGroot->AddRequiredItem("regActNtuMc");
+     if (GlobalPar::GetPar()->IsRegionMc() )
+       fTAGroot->AddRequiredItem("regActNtuMc");
    }
 }
 
