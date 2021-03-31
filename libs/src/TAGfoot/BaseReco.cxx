@@ -177,7 +177,10 @@ void BaseReco::CampaignChecks()
       exit(0);
    }
   
-  // Check MC file
+  // Check raw/MC file
+  if (!fFlagMC && !fCampManager->GetCurCampaignPar().McFlag)
+    Info("CampaignChecks()", "Reading raw data");
+  
   if (fFlagMC && fCampManager->GetCurCampaignPar().McFlag)
     Info("CampaignChecks()", "Reading MC data");
 
