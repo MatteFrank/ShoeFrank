@@ -39,6 +39,7 @@
 #include "G4RunManager.hh"
 #include "G4VisAttributes.hh"
 
+#include "GlobalPar.hxx"
 #include "TAGparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
@@ -110,7 +111,7 @@ G4LogicalVolume* TCGtargetConstructor::Construct()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCGtargetConstructor::BuildCubicTarget()
 {
-   Info("BuildCubicTarget()", "Build cubic target ");
+   InfoMcMsg("BuildCubicTarget()", "Build cubic target ");
    
    //build the dimension of target
    TVector3 size(fpParGeo->GetTargetPar().Size[0]*cm, fpParGeo->GetTargetPar().Size[1]*cm,

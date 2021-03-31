@@ -13,7 +13,7 @@
 #include "G4VisAttributes.hh"
 #include "G4NistManager.hh"
 
-
+#include "GlobalPar.hxx"
 #include "TAITparGeo.hxx"
 
 TString TCITgeometryConstructor::fgkItEpiSDname = "ItSD";
@@ -37,7 +37,10 @@ TCITgeometryConstructor::~TCITgeometryConstructor()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCITgeometryConstructor::DefineSensitive()
 {
-   Info("DefineSensitive()", "Define sensitive for Inner Tracker");
+   // Putting here message
+   InfoMcMsg("Construct()", "Construct Inner Tracker");
+  
+   InfoMcMsg("DefineSensitive()", "Define sensitive for Inner Tracker");
 
    // sensitive volume
    G4SDManager* SDman = G4SDManager::GetSDMpointer();

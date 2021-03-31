@@ -54,7 +54,7 @@ void TCBMgeometryConstructor::GetLayersN()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4LogicalVolume* TCBMgeometryConstructor::Construct()
 {
-   Info("Construct()", "Construct Beam Monitor");
+   InfoMcMsg("Construct()", "Construct Beam Monitor");
 
     Float_t shieldThick = fpParGeo->GetShieldThick()*cm;
 
@@ -175,7 +175,7 @@ void  TCBMgeometryConstructor::DefineSensitive()
    
    G4String bmSDname;
    bmSDname = fgkBmSDname;
-   Info("DefineSensitive()", "Define sensitive for Beam Monitor");
+   InfoMcMsg("DefineSensitive()", "Define sensitive for Beam Monitor");
   
    TCBMsensitiveDetector* bmSensitive = new TCBMsensitiveDetector(bmSDname);
    bmSensitive->SetCopyLevel(0);

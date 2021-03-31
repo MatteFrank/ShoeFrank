@@ -3,6 +3,7 @@
 #include "TCMSDsensitiveDetector.hxx"
 
 #include "TAVTparGeo.hxx"
+#include "GlobalPar.hxx"
 
 #include "G4SDManager.hh"
 #include "G4String.hh"
@@ -37,7 +38,10 @@ void TCMSDgeometryConstructor::DefineMaterial()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCMSDgeometryConstructor::DefineSensitive()
 {
-   Info("DefineSensitive()", "Define sensitive for Multi Strip Detector");
+   // Putting here message
+   InfoMcMsg("Construct()", "Construct Multi Strip Detector");
+  
+   InfoMcMsg("DefineSensitive()", "Define sensitive for Multi Strip Detector");
 
    // sensitive volume
    G4SDManager* SDman = G4SDManager::GetSDMpointer();

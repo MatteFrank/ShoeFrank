@@ -35,6 +35,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#include "GlobalPar.hxx"
 #include "TCEMfieldSetup.hxx"
 
 #include "G4MagneticField.hh"
@@ -103,7 +104,7 @@ void TCEMfieldSetup::CreateStepperAndChordFinder()
   // Update field
 
   SetStepper();
-  Info("CreateStepperAndChordFinder()", "The minimal step is equal to %f mm\n ", fMinStep/mm);
+  InfoMc("CreateStepperAndChordFinder()", "The minimal step is equal to %f mm\n ", fMinStep/mm);
 
   fFieldManager->SetDetectorField(fMagneticField);
   fChordFinder = new G4ChordFinder( fMagneticField, fMinStep, fStepper);

@@ -46,7 +46,7 @@ TCTWgeometryConstructor::~TCTWgeometryConstructor()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4LogicalVolume* TCTWgeometryConstructor::Construct()
 {
-   Info("Construct()", "Construct ToF Wall");
+   InfoMcMsg("Construct()", "Construct ToF Wall");
 
    for(Int_t i = 0; i< 3; ++i)
       fSizeBoxTof[i] = (fMaxPosition[i] - fMinPosition[i]);
@@ -103,7 +103,7 @@ void  TCTWgeometryConstructor::DefineSensitive()
    
    G4String twSDname;
    twSDname = fgkTofSDname;
-   Info("DefineSensitive()", "Define sensitive for ToF Wall");
+   InfoMcMsg("DefineSensitive()", "Define sensitive for ToF Wall");
   
    TCTWsensitiveDetector* twSensitive = new TCTWsensitiveDetector(twSDname);
    twSensitive->SetCopyLevel(0);

@@ -14,6 +14,7 @@
 #include "G4SDManager.hh"
 #include "G4RunManager.hh"
 
+#include "GlobalPar.hxx"
 #include "TADIparGeo.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -48,7 +49,7 @@ void  TCEMgeometryConstructor::DefineSensitive()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4LogicalVolume* TCEMgeometryConstructor::Construct()
 {
-   Info("Construct()", "Construct Magnets");
+   InfoMcMsg("Construct()", "Construct Magnets");
 
    for(Int_t i = 0; i< 3; ++i)
       fSizeBoxMg[i] = (fMaxPosition[i] - fMinPosition[i]);

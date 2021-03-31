@@ -46,7 +46,7 @@ TCSTgeometryConstructor::~TCSTgeometryConstructor()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4LogicalVolume* TCSTgeometryConstructor::Construct()
 {
-   Info("Construct()", "Construct Start Counter");
+   InfoMcMsg("Construct()", "Construct Start Counter");
 
    for(Int_t i = 0; i< 3; ++i)
       fSizeBoxIr[i] = (fMaxPosition[i] - fMinPosition[i]);
@@ -85,7 +85,7 @@ void  TCSTgeometryConstructor::DefineSensitive()
    
    G4String calSDname;
    calSDname = fgkIrSDname;
-   Info("DefineSensitive()", "Define sensitive for Start Counter");
+   InfoMcMsg("DefineSensitive()", "Define sensitive for Start Counter");
   
    TCSTsensitiveDetector* calSensitive = new TCSTsensitiveDetector(calSDname);
    SDman->AddNewDetector(calSensitive);
