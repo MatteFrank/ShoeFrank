@@ -407,8 +407,12 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
          break;
       }
    }
+  
+   if (run >= array[n-1])
+     run = array[n-1];
+  
    if (run == -1)
-      run = array[n-1];
+     run = array[0];
    
    Int_t pos = nameFile.Last('.');
 
