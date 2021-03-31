@@ -105,7 +105,7 @@ TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName, In
   if (GlobalPar::GetPar()->IncludeTG())
       fTarget = new TCGtargetConstructor(fpParGeoG);
    
-   printf("Creating geometry for experiment %s with a run number of %d\n", expName.Data(), runNumber);
+   InfoMc("TCGbaseGeometryConstructor()", "Creating geometry for experiment %s with run number %d\n", expName.Data(), runNumber);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
