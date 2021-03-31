@@ -408,7 +408,7 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
       }
    }
   
-   if (run >= array[n-1])
+   if (runNumer >= array[n-1])
      run = array[n-1];
   
    if (run == -1) {
