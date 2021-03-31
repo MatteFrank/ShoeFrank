@@ -835,43 +835,6 @@ void BaseReco::CreateRecActionGlbGF()
   if(fFlagTrack) {
     SetL0TreeBranches();
     
-    //   if (fFlagMC) {
-    //     if (GlobalPar::GetPar()->IncludeST()) {
-    //       fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
-    //       fActEvtReader->SetupBranch(fpNtuMcSt,TAMCntuHit::GetStcBranchName());
-    //     }
-    
-    //     if (GlobalPar::GetPar()->IncludeBM()) {
-    //       fpNtuMcBm   = new TAGdataDsc("bmMc", new TAMCntuHit());
-    //       fActEvtReader->SetupBranch(fpNtuMcBm,TAMCntuHit::GetBmBranchName());
-    //     }
-    
-    //     if (GlobalPar::GetPar()->IncludeVT()) {
-    //       fpNtuMcVt   = new TAGdataDsc("vtMc", new TAMCntuHit());
-    //       fActEvtReader->SetupBranch(fpNtuMcVt,TAMCntuHit::GetVtxBranchName());
-    //     }
-    
-    //     if (GlobalPar::GetPar()->IncludeIT()) {
-    //       fpNtuMcIt   = new TAGdataDsc("itMc", new TAMCntuHit());
-    //       fActEvtReader->SetupBranch(fpNtuMcIt,TAMCntuHit::GetItrBranchName());
-    //     }
-    
-    //     if (GlobalPar::GetPar()->IncludeMSD()) {
-    //       fpNtuMcMsd   = new TAGdataDsc("msdMc", new TAMCntuHit());
-    //       fActEvtReader->SetupBranch(fpNtuMcMsd,TAMCntuHit::GetMsdBranchName());
-    //     }
-    
-    //     if(GlobalPar::GetPar()->IncludeTW()) {
-    //       fpNtuMcTw   = new TAGdataDsc("twMc", new TAMCntuHit());
-    //       fActEvtReader->SetupBranch(fpNtuMcTw,TAMCntuHit::GetTofBranchName());
-    //     }
-    
-    //     if(GlobalPar::GetPar()->IncludeCA()) {
-    //       fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
-    //       fActEvtReader->SetupBranch(fpNtuMcCa,TAMCntuHit::GetCalBranchName());
-    //     }
-    //   }
-    
     genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
     
     // set material and geometry into genfit
