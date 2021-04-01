@@ -299,7 +299,12 @@ const Char_t* TAGcampaign::GetGeoFile(const TString& detName, Int_t runNumber)
 {
    TString nameFile = fFileGeoMap[detName];
    TArrayI arrayRun = fRunsGeoMap[detName];
-   
+  
+  if (nameFile.IsNull()) {
+    Warning("GetGeoFile()", "Empty geometrical file for detector %s and run %d\n", detName.Data(), runNumber);
+    return Form("");
+  }
+  
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
@@ -314,6 +319,11 @@ const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, 
       nameFile.Insert(pos, Form("_%s_%d", bName.Data(), bEnergy));
    }
 
+   if (nameFile.IsNull()) {
+     Warning("GetConfFile()", "Empty configuration file for detector %s and run %d\n", detName.Data(), runNumber);
+     return Form("");
+   }
+  
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
@@ -325,7 +335,12 @@ const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber, I
    
    vector<TArrayI> vecRun = fRunsMap[detName];
    TArrayI arrayRun = vecRun[item];
-   
+  
+  if (nameFile.IsNull()) {
+    Warning("GetMapFile()", "Empty mapping file for detector %s and run %d\n", detName.Data(), runNumber);
+    return Form("");
+  }
+  
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
@@ -334,6 +349,11 @@ const Char_t* TAGcampaign::GetRegFile(const TString& detName, Int_t runNumber)
 {
   TString nameFile = fFileRegMap[detName];
   TArrayI arrayRun = fRunsRegMap[detName];
+  
+  if (nameFile.IsNull()) {
+    Warning("GetRegFile()", "Empty region file for detector %s and run %d\n", detName.Data(), runNumber);
+    return Form("");
+  }
   
   return GetFile(detName, runNumber, nameFile, arrayRun);
 }
@@ -371,7 +391,12 @@ const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, I
    
    vector<TArrayI> vecRun = fRunsCalMap[detName];
    TArrayI arrayRun = vecRun[item];
-   
+  
+   if (nameFile.IsNull()) {
+     Warning("GetCalFile()", "Empty calibration file for detector %s and run %d\n", detName.Data(), runNumber);
+     return Form("");
+   }
+  
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
@@ -379,7 +404,6 @@ const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, I
 const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, const TString& nameFile, TArrayI array)
 {
    if (nameFile.IsNull()) {
-      Warning("GetFile()", "Empty file for detector %s and run %d\n", detName.Data(), runNumber);
       return Form("");
    }
    
