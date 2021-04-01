@@ -58,6 +58,8 @@ GlobalPar::GlobalPar( const TString expName )
     m_debug = 0;
 
     m_kalmanMode = -1;
+    m_kPreselectStrategy = "fire_ball";
+    m_enableEventDisplay = false;
 
     m_kalReverse = false;
     m_verFLUKA = false;
@@ -95,6 +97,9 @@ const TAGrunInfo GlobalPar::GetGlobalInfo()
  
    if (IsRegionMc())
      runInfo.GetGlobalPar().EnableRegionMc = true;
+
+   if (IsRegionMc())
+      runInfo.GetGlobalPar().EnableRegionMc = true;
 
    if (IsTWnoPU())
       runInfo.GetGlobalPar().EnableTWnoPU = true;
@@ -186,8 +191,14 @@ void GlobalPar::ReadParamFile ()
       if (m_debug > 0)
         printf("ClassDebugLevel: %s %d\n", className.c_str(), classLevel);
     }
-
-
+    
+    if (key.Contains("Genfit Event Display ON:")  ) {
+      if ( item.Contains("y")) m_enableEventDisplay = true;
+      else                     m_enableEventDisplay = false;
+      if (m_debug > 0)
+        printf("Genfit Event Display ON: %d\n", m_enableEventDisplay);
+    }
+    
     if (key.Contains("IncludeKalman:")  ) {
       if ( item.Contains("y")) m_includeKalman = true;
       else                     m_includeKalman = false;
@@ -221,12 +232,31 @@ void GlobalPar::ReadParamFile ()
       for (unsigned int i=0; i<tmp_Modes.size(); i++) {
 
         if (inputMode.Contains(tmp_Modes[i]) ) {
-          m_kalmanMode = i;
+          m_kalmanMode = tmp_Modes[i];
           break;
         }
       }
       if (m_debug > 0)
-        printf("Kalman Mode: %d\n", m_kalmanMode);
+        cout<<"Kalman Mode:" << m_kalmanMode<<endl;
+    }
+
+    if (key.Contains("Kalman preselection strategy:")) {
+      vector<TString> tmp_Modes = { "TrueParticle", "Sept2020" };
+      istringstream sss(item.Data());
+
+      TString inputMode;
+      sss >> inputMode;
+
+      // inputMode.ToLower();
+      for (unsigned int i=0; i<tmp_Modes.size(); i++) {
+
+        if (inputMode.Contains(tmp_Modes[i]) ) {
+          m_kPreselectStrategy = tmp_Modes[i];
+          break;
+        }
+      }
+      if (m_debug > 0)
+        cout << "Kalman preselection strategy:" << m_kPreselectStrategy << endl;
     }
 
     if (key.Contains("Tracking Systems Considered:")) {
@@ -616,8 +646,8 @@ void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, 
 void GlobalPar::Print(Option_t* opt) {
 
    TString option(opt);
-
-   cout << endl << "========================   Input Parameters  =============================" << endl<<endl;
+   
+   cout << endl << "========================   Input Parameters - " << m_parFileName << " =============================" << endl<<endl;
 
    if (option.Contains("all")) {
 

@@ -21,6 +21,8 @@
 #include "TAMCntuEvent.hxx"
 #include "TAMCntuRegion.hxx"
 #include "TAMCactNtuEve.hxx"
+#include "TAMCactNtuRegion.hxx"
+#include "TAMCactNtuEvent.hxx"
 
 #include "TATWntuRaw.hxx"
 #include "TATWntuPoint.hxx"
@@ -74,6 +76,8 @@ protected:
    EVENT_STRUCT*         fEvtStruct;
   
    TAMCactNtuEve*        fActNtuMcEve;
+   TAMCactNtuEvent*      fActNtuMcEvt;
+   TAMCactNtuRegion*     fActNtuMcReg;
    TASTactNtuHitMC*      fActNtuRawSt;  // action for ntu data
    TABMactNtuHitMC*      fActNtuRawBm;  // action for ntu data
    TAVTactNtuHitMC*      fActNtuRawVtx;  // action for ntu data

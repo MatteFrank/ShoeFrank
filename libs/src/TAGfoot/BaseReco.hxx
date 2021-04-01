@@ -4,6 +4,7 @@
 
 #include "TNamed.h"
 #include "TString.h"
+#include "TFile.h"
 
 #include "TAGaction.hxx"
 #include "TAGactTreeWriter.hxx"
@@ -76,10 +77,11 @@
 #include "TAIRactNtuTrack.hxx"
 #include "TAGactNtuGlbTrack.hxx"
 
-#include "KFitter.hxx"
+#include "TAGactKFitter.hxx"
 #include "UpdatePDG.hxx"
 
 #include "GlobalTrackingStudies.hxx"
+#include "GlobalTrackRepostory.hxx"
 
 class TAMCntuHit;
 class TAMCntuEve;
@@ -223,21 +225,22 @@ public:
    TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
+   GlobalTrackRepostory* GetGlobTrackRepo() const { return (GlobalTrackRepostory*) fpGlobTrackRepo->Object(); }
    TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
-  //! MC container Getter (virtual)
-  virtual TAMCntuRegion* GetNtuMcReg()     const { return 0x0; }
-  virtual TAMCntuEvent*  GetNtuMcEvt()     const { return 0x0; }
-  virtual TAMCntuEve*    GetNtuMcEve()     const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcSt()      const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcBm()      const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcVtx()     const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcIt()      const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcMsd()     const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcTw()      const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcCa()      const { return 0x0; }
-  virtual TTree*         GetTree()               { return 0x0; }
+   //! MC container Getter (virtual)
+   virtual TAMCntuRegion* GetNtuMcReg()       const { return 0x0; }
+   virtual TAMCntuEvent*  GetNtuMcEvt()       const { return 0x0; }
+   virtual TAMCntuEve*    GetNtuMcEve()       const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcSt()        const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcBm()        const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcVtx()       const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcIt()        const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcMsd()       const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcTw()        const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcCa()        const { return 0x0; }
+   virtual TTree*         GetTree()                 { return 0x0; }
 
 public:
    //! Disable/Enable ITR tracking
@@ -320,6 +323,7 @@ protected:
    TAGdataDsc*           fpNtuVtx;        // input Vtx data dsc
 
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
+   TAGdataDsc*           fpGlobTrackRepo;      // input data dsc
    TAGdataDsc*           fpNtuTrackIr;     // input data dsc
 
    TAGactionFile*        fActEvtReader;
@@ -347,7 +351,7 @@ protected:
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
   
    GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
-   KFitter*               fActGlbkFitter;    // Global tracking kalman Fitter
+   TAGactKFitter*         m_glbAct_KFitter;    // Global tracking kalman Fitter
 
    
    Bool_t                fFlagOut;       // flag for output file

@@ -1,5 +1,5 @@
-#ifndef KFITTER_H
-#define KFITTER_H
+#ifndef TAGACTKFITTER_HXX
+#define TAGACTKFITTER_HXX
 
 
 #include <TGeoManager.h>
@@ -49,7 +49,6 @@
 #include <vector>
 
 #include <TMath.h>
-#include <TFile.h>
 
 #include "TAGparGeo.hxx"
 
@@ -79,14 +78,15 @@
 #include "TAGparaDsc.hxx"
 
 #include "GlobalPar.hxx"
+// #include "ControlPlotsRepository.hxx"
 #include "GlobalTrackRepostory.hxx"
+#include "MagicSkills.hxx"
 #include "UpdatePDG.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <limits>
 
-#include "TAGaction.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
@@ -95,7 +95,14 @@
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
 
+#include "TAITactBaseNtuTrack.hxx"
+#include "TAITactNtuTrack.hxx"
+#include "TAITactNtuTrackF.hxx"
+#include "TAITntuTrack.hxx"
+
+
 #include "TAVTtrack.hxx"
+#include "TAITtrack.hxx"
 
 
 
@@ -110,34 +117,24 @@ using namespace genfit;
 
 typedef vector<genfit::AbsMeasurement*> MeasurementVector;
 
-class KFitter : public TAGaction {
+class TAGactKFitter : public TAGaction  {
 
 public:
 
 
-  KFitter(const char* name);
-  ~KFitter() {
-    delete m_fitter;
-  };
+  // explicit 	TAGactKFitter(const char* name);
+  explicit 	TAGactKFitter(const char* name, TAGdataDsc* p_glbtrack);
 
-
-  struct MCTruthInfo{
-
-    int MCTrackId;
-    int MCFlukaId;
-    int MCMass;
-    int MCCharge;
-    TVector3 MCGenPosition;
-    TVector3 MCGenMomentum;
-    TVector3 MCPosition;
-    TVector3 MCMomentum;
-  };
+  virtual	~TAGactKFitter();
 
   //! Action
-  bool Action();
+  Bool_t Action();
 
   //! create histogram
-  void   CreateHistogram();
+  virtual	void   CreateHistogram();
+
+  ClassDef(TAGactKFitter,0);
+
 
   // int PrepareData4Fit( string option );
   int PrepareData4Fit();
@@ -177,6 +174,7 @@ public:
   void RecordTrackInfo( Track* track, string hitSampleName );
 
   void IncludeDetectors();
+  void CreateGeometry();
 
   int UploadHitsVT();
   int UploadHitsIT();
@@ -229,10 +227,23 @@ public:
 
   genfit::KalmanFittedStateOnPlane GetKalmanTrackInfoDataLike_ ( int indexOfState, Track* track );
 
-private:
-  vector<string> Tokenize(const string str, const string delimiters);
+
+  struct MCTruthInfo{
+
+    int MCTrackId;
+    int MCFlukaId;
+    int MCMass;
+    int MCCharge;
+    TVector3 MCGenPosition;
+    TVector3 MCGenMomentum;
+    TVector3 MCPosition;
+    TVector3 MCMomentum;
+  };
+
 
 private:
+
+  TAGdataDsc*  fpGlobTrackRepo;
 
   KalmanFitter* m_fitter_extrapolation;
 
@@ -246,9 +257,8 @@ private:
   EventDisplay* display;
   bool m_IsEDOn;
 
+  // ControlPlotsRepository* m_controlPlotter;
   GlobalTrackRepostory* m_fitTrackCollection;
-
-  // TRandom3* m_diceRoll;
 
   bool m_workWithMC;
 
@@ -315,28 +325,31 @@ private:
   TGraphErrors* graphErrorX;
   TGraphErrors* graphErrorY;
 
-  TH2D* MSDresidualOfPrediction;
-  TH2D* ITresidualOfPrediction;
+  // TH2D* MSDresidualOfPrediction;
+  // TH2D* ITresidualOfPrediction;
   TH1D* percentageOfMCTracksVTX;
   TH1D* tempPurity;
   TH1D* qoverp;
+  TH1D* tempPurityFalse;
+
   TH1D* qoverpsel;
   TH1I* ITstudy;
   TH1I* MSDstudy;
 
 
-  TH1D* momentum_true[8];
-  TH1D* momentum_reco[8];
-  TH1D* ratio_reco_true[8];
+  vector<TH1D*> momentum_true;
+  vector<TH1D*> momentum_reco;
+  vector<TH1D*> ratio_reco_true;
 
-  TFile* outfile;
   int MSDforwardcounter;
 
   std::vector<Track*> m_vectorTrack;
 
   std::ofstream ofs;
 
-  ClassDef(KFitter, 0);
+
 };
+
+
 
 #endif

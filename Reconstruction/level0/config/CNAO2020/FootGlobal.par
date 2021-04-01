@@ -6,7 +6,7 @@
 
 
 Debug:	0
-
+Genfit Event Display ON: n
 
 
 ############	MC selection Control Parameters	################
@@ -23,6 +23,8 @@ EnableLocalReco: n
 Kalman Mode:       ref
 Tracking Systems Considered:      VT IT MSD TW
 Reverse Tracking:   false
+
+Kalman preselection strategy: Sept2020
 
 VT  Reso: 0.0006
 IT  Reso: 0.0006
