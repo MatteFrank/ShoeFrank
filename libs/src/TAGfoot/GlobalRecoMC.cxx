@@ -10,7 +10,6 @@ GlobalRecoMC::GlobalRecoMC(TString expName, Int_t runNumber, TString fileNameIn,
 {
 
 	EnableTracking();
-	GlobalPar::GetPar()->EnableLocalReco();
 	fFlagMC = true;
 
 }
