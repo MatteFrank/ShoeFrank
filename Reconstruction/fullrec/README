@@ -12,8 +12,8 @@ A) fullrec reconstruction tools with TOE
    Reverse Tracking:   false
    . . .
 - command:
-DecodeGlbToe -in data/data_built.2211.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
-             -exp GSI -run 2211
+DecodeGlbToe -in data/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
+             -exp GSI -run 2239
 
 2)Running from MC data:
 - activate TOE in FootGlobal.par
@@ -56,8 +56,8 @@ B) fullrec reconstruction tools with GenFit
    Reverse Tracking:   false
    . . .
 - command:
-DecodeGlb -in data/data_built.2211.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
-          -exp GSI -run 2211
+DecodeGlb -in data/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
+          -exp GSI -run 2239
 
 2)Running from MC data:
 - activate Kalman in FootGlobal.par
@@ -73,7 +73,7 @@ DecodeGlb -in data/data_built.2211.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_G
 - command:
 DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
 
-3)Running from L0 reconstruction tree: (should come soon)
+3)Running from L0 reconstruction tree:
 - activate Kalman in FootGlobal.par and local reco
 . . .
 IncludeKalman:   y
