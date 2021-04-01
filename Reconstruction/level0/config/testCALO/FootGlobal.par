@@ -6,7 +6,7 @@
 
 
 Debug:	0
-
+Genfit Event Display ON: n
 
 
 ############	MC selection Control Parameters	################
@@ -26,6 +26,8 @@ Reverse Tracking:       false
 Kalman preselection strategy: Sept2020
 
 Genfit Event Display ON: n
+
+Kalman preselection strategy: Sept2020
 
 VT  Reso: 0.0006
 IT  Reso: 0.0006

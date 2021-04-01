@@ -292,6 +292,7 @@ void BaseReco::LoopEvent(Int_t nEvents)
 void BaseReco::AfterEventLoop()
 {
    fTAGroot->EndEventLoop();
+   if (GlobalPar::GetPar()->IncludeKalman())	fActGlbkFitter->Finalize();
    if (fFlagOut)
       CloseFileOut();
    CloseFileIn();

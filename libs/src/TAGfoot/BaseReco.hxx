@@ -239,7 +239,7 @@ public:
    virtual TAMCntuHit*    GetNtuMcTw()      const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcCa()      const { return 0x0; }
    virtual TTree*         GetTree()               { return 0x0; }
-
+  
 public:
    //! Disable/Enable ITR tracking
    static void DisableItrTracking() { fgItrTrackFlag = false; }

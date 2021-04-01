@@ -47,6 +47,7 @@ set( with_dictionnaries
    TAGionisMaterials
    TAGxmlParser
    GlobalPar
+   MagicSkills
 )
 	
 set( without_dictionnaries
