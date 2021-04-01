@@ -407,9 +407,15 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
          break;
       }
    }
-   if (run == -1)
-      run = array[n-1];
-   
+  
+   if (runNumber >= array[n-1])
+     run = array[n-1];
+  
+   if (run == -1) {
+     run = array[0];
+     Warning("GetFile()", "No file found for run number %d, taking default wise run %d", runNumber, run);
+   }
+  
    Int_t pos = nameFile.Last('.');
 
    if (pos == 0) // for folders
