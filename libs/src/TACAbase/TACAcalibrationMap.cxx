@@ -32,6 +32,7 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
   
   Int_t cryId[nCrystals];  // Id of crystal
   Double_t temp[nCrystals];   // temperature
+  Double_t equalis[nCrystals];   // equalis factor
 
   if(fin.is_open()){
 
@@ -47,9 +48,10 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
         continue;
       }
 
-      sscanf(line, "%d %lf",&cryId[cnt],&temp[cnt]);
+      sscanf(line, "%d %lf %lf",&cryId[cnt],&temp[cnt],&equalis[cnt]);
+      cout<<"******cry "<<cryId[cnt]<<"  "<<" temp "<<temp[cnt]<<" equalis "<<equalis[cnt]<<endl;
       if(FootDebugLevel(1))
-        Info("LoadCryTemperatureCalibrationMap()","%d %f\n",cryId[cnt],temp[cnt]);
+        Info("LoadCryTemperatureCalibrationMap()","%d %f %f\n",cryId[cnt],temp[cnt],equalis[cnt]);
       
       cnt++;
     }
@@ -66,9 +68,10 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
 
 
       fCalibTemperatureCry[cryId[i]].push_back(temp[i]);
+      fEqualisFactorCry[cryId[i]].push_back(equalis[i]);
 
       if(FootDebugLevel(1))
-        cout<<"Crystal ID: "<<cryId[i]<<" Temperature: "<<temp[i]<<endl;
+        cout<<"Crystal ID: "<<cryId[i]<<" Temperature: "<<temp[i]<<" Equalisation factor: "<<equalis[i]<<endl;
 
     // cout<<"Crystal ID: "<<cryId[i]<<" Temperature: "<<temp[i]<<endl;
     
@@ -89,6 +92,7 @@ void TACAcalibrationMap::ExportToFile(std::string FileName)
     XMLNodePointer_t b=x.AddElement(TString::Format("CRY").Data(),main);
     x.AddElementWithContent("CRY_ID",b, TString::Format("%d",cryId).Data());
     x.AddElementWithContent("T",b,TString::Format("%f",fCalibrationMap[cryId][0]).Data());
+    x.AddElementWithContent("EQ",b,TString::Format("%f",fCalibrationMap[cryId][0]).Data());
   }
   x.ExportToFile(FileName,main);
 }

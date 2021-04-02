@@ -18,6 +18,7 @@ private:
 	TCalibrationMapType fCalibrationMap;
 
   TCalibrationMapType fCalibTemperatureCry;   // map for temperature calibration per cry ID
+  TCalibrationMapType fEqualisFactorCry;   // map for equalisation factor per cry ID
 
   TACAparMap *fpCalMap;
   // TAGparaDsc *fpParMap;
@@ -36,6 +37,7 @@ public:
 
   Int_t GetNumberOfCrystals() const         { return fCalibrationMap.size();  }
   Double_t GetTemperatureCry(Int_t cryId) { return fCalibTemperatureCry[cryId][0]; }
+  Double_t GetEqualiseCry(Int_t cryId) { return fEqualisFactorCry[cryId][0]; }
  
   ClassDef(TACAcalibrationMap, 0)
 };
