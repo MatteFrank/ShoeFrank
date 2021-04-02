@@ -88,7 +88,8 @@ Bool_t TACAactNtuHit::Action() {
     
     // here we need the calibration file
     Double_t charge_tcorr = GetTemperatureCorrection(charge, crysId);
-    Double_t energy = GetEnergy(charge_tcorr, crysId);
+    Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
+    Double_t energy = GetEnergy(charge_equalis, crysId);
     Double_t tof    = GetTime(time, crysId);
     p_nturaw->NewHit(crysId, energy, time,type);
     
@@ -150,6 +151,17 @@ Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
   cout << "Charge tcorr: "<< charge_tcorr << endl;
   return charge_tcorr;
   
+}
+//------------------------------------------+-----------------------------------
+Double_t TACAactNtuRaw::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
+{
+  cout<<"Equalisation correction..."<<endl;
+  Double_t Equalis0 = f_parcal->getCalibrationMap()->GetEqualiseCry(crysId);
+  Double_t charge_equalis = charge_tcorr*Equalis0;
+  cout<<"Equalisation correction done: charge qualis = "<<charge_equalis<<endl;
+  
+  return charge_equalis;
+
 }
 
 //------------------------------------------+-----------------------------------

@@ -14,6 +14,7 @@
 #include "TACAntuRaw.hxx"
 #include "TACAntuHit.hxx"
 #include "TACAparCal.hxx"
+#include "TACAcalibrationMap.hxx"
 
 class TACAactNtuHit : public TAGaction {
 
@@ -37,6 +38,8 @@ public:
   Double_t GetTime(Double_t RawTime, Int_t  crysId);
   Double_t GetEnergy(Double_t rawEnergy, Int_t  crysId);
   Double_t GetTemperatureCorrection(Double_t rawEnergy, Int_t  crysId);
+  Double_t GetEqualisationCorrection(Double_t rawEnergy, Int_t  crysId);
+
 
   ClassDef(TACAactNtuHit,0)
     
