@@ -88,7 +88,14 @@ Bool_t TADIparGeo::FromFile(const TString& name)
          cout << "   Field map upper bound: "
          << Form("%f %f %f", fMapLimUp[0], fMapLimUp[1], fMapLimUp[2]) << endl;
    }
-   
+  
+   if (fType == 0) {
+     ReadVector3(fMagCstValue);
+     if(FootDebugLevel(1))
+       cout << "   Field constant value "
+       << Form("%f %f %f", fMagCstValue[0], fMagCstValue[1], fMagCstValue[2]) << endl;
+   }
+  
    // Read cover thickness
    ReadItem(fShieldThick);
    if(FootDebugLevel(1))

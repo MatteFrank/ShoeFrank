@@ -27,7 +27,7 @@ public:
         { return point{ value_p.x * factor_p, value_p.y  * factor_p , value_p.z * factor_p  }; }
     };
     
-    struct dimensions_properties {
+    struct DimensionsProperties {
         struct {
             double upper_limit;
             double lower_limit;
@@ -50,33 +50,20 @@ public:
    void     FromFile(TString& name);
 
 private:
-   dimensions_properties retrieve_properties(TADIparGeo const* ) const;
-   point compute_upper_point( point const& input_p ) const;
-   point compute_lower_point( point const& input_p ) const;
-   point const * retrieve_field( point const& input_p ) const;
-    bool is_outside( point const& input_p ) const;
-    
-   TADIparGeo*  fpDiGeoMap;
-   TAGgeoTrafo* fpFootGeo;
+   DimensionsProperties RetrieveProperties(TADIparGeo const* ) const;
+   point    ComputeUpperPoint( point const& input_p ) const;
+   point    ComputeLowerPoint( point const& input_p ) const;
+   point    const * RetrieveField( point const& input_p ) const;
+   bool     IsOutside( point const& input_p ) const;
+  
+private:
+   TADIparGeo*          fpDiGeoMap;
+   TAGgeoTrafo*         fpFootGeo;
 
-   TH3F*        fMagHistoX;
-   TH3F*        fMagHistoY;
-   TH3F*        fMagHistoZ;
+   DimensionsProperties fProperties;  //not const because of ROOT
+   std::vector<point>   fField;
    
-   Int_t        fMaxBinX;
-   Int_t        fMaxBinY;
-   Int_t        fMaxBinZ;
-    
-    
-    dimensions_properties properties_mc;  //not const because of ROOT
-    std::vector<point> field_mc;
-   
-    
    ClassDef(TADIgeoField,2)
 };
-
-
-
-
 
 #endif
