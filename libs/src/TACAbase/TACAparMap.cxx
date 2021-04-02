@@ -51,7 +51,7 @@ Bool_t TACAparMap::FromFile(const TString& name)
 
   // number of crystal
   ReadItem(nCrys);
-  printf("CrystalsN: %d\n", nCrys);
+
   if (FootDebugLevel(1)) {
     printf("CrystalsN: %d\n", nCrys);
     printf("CrystalId ModuleId ChannelId BoardId ActiveCrystal \n");
@@ -80,70 +80,13 @@ Bool_t TACAparMap::FromFile(const TString& name)
 
     if (FootDebugLevel(1))
       printf("%2d %2d %2d B%2d %d\n", crysId, moduleId, channelId, boardId, activeCrys);
-    
-    printf("%2d %2d %2d B%2d %d\n", crysId, moduleId, channelId, boardId, activeCrys);
-  
+      
   }
 
   delete [] para;
 
   return true;
 }
-
-
-// void TACAparMap::FromFile(std::string FileName)
-// {
-//   Clear();
-
-//   if (gSystem->AccessPathName(FileName.c_str()))
-//   {
-//   Error("TACAparMap::FromFile()","File %s doesn't exist",FileName.c_str());
-//   } 
-
-//   ifstream fin;
-//   fin.open(FileName,std::ifstream::in);
-  
-//   if(fin.is_open()){
-//     //skip the first line
-//     fin.ignore(500,'\n');
-    
-//     Int_t nCrystals;
-//     Int_t cnt(0);
-    
-//     char line[200];
-//     //get the second line
-//     fin.getline(line, 200, '\n');
-
-//     sscanf(line, "%d", &nCrystals);
-
-//     Int_t crysId[nCrystals];        // Id of crystal
-//     Int_t moduleId[nCrystals];      // module Id
-//     Int_t channelId[nCrystals];     // channel Id
-//     Int_t boardId[nCrystals];       // board Id
-//     Int_t activeCrys[nCrystals];    // active crystal
-
-//     // loop over all the slat crosses ( nSlatCross*nLayers ) for two TW layers
-//     while (fin.getline(line, 200, '\n')) {
-
-//       if(strchr(line,'#')) {
-//         if(FootDebugLevel(1))
-//           Info("TACAparMap::FromFile()","Skip comment line:: %s\n",line);
-//         continue;
-//       }
-
-//       sscanf(line, "%d %d %d %d %d",&crysId[cnt],&moduleId[cnt],&channelId[cnt],&boardId[cnt],&activeCrys[cnt]);
-      
-//       if(FootDebugLevel(1))
-//         Info("TACAparMap::FromFile()","%d %d %d %d %d\n",crysId[cnt],moduleId[cnt],channelId[cnt],boardId[cnt],activeCrys[cnt]);
-      
-//       cnt++;
-//     }
-
-//   }
-//   else
-//     Info("TACAparMap::FromFile()","File Calibration Energy %s not open!!",FileName.data());
-
-// }
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
