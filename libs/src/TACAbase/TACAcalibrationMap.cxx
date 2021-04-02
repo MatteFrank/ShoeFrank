@@ -28,7 +28,6 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
   fin.open(FileName,std::ifstream::in);
   
   Int_t nCrystals = fpCalMap->GetCrystalsN();
-  cout << "nCrystals: " << nCrystals << endl;
   
   Int_t cryId[nCrystals];  // Id of crystal
   Double_t temp[nCrystals];   // temperature
@@ -49,7 +48,7 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
       }
 
       sscanf(line, "%d %lf %lf",&cryId[cnt],&temp[cnt],&equalis[cnt]);
-      cout<<"******cry "<<cryId[cnt]<<"  "<<" temp "<<temp[cnt]<<" equalis "<<equalis[cnt]<<endl;
+    
       if(FootDebugLevel(1))
         Info("LoadCryTemperatureCalibrationMap()","%d %f %f\n",cryId[cnt],temp[cnt],equalis[cnt]);
       

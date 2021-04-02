@@ -619,7 +619,6 @@ void BaseReco::ReadParFiles()
               
         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
         parMap->FromFile(parFileName.Data());
-        cout << "nCryMap: " << parMap->GetCrystalsN() << endl;
 
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
         parCal->FromCalibTempFile(parFileName.Data());

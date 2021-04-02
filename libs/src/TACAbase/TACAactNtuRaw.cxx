@@ -130,35 +130,28 @@ Double_t TACAactNtuRaw::TemperatureCorrFunction(Double_t* x, Double_t* par)
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuRaw::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
 {
-  cout << "Setting functions... " << endl;
+
   SetTemperatureFunctions();
   SetParFunction();
-  cout << "cryID: " << crysId << endl; 
   Double_t T0 = f_parcal->getCalibrationMap()->GetTemperatureCry(crysId);
-  cout << "T0: " << T0 << endl;
-
   Double_t m1 = fTcorr1->Eval(charge);
-  cout << "m1: "<< m1 << endl;
   Double_t m2 = fTcorr2->Eval(charge);
-  cout << "m2: "<< m2 << endl;
 
   Double_t m0 = m1 + ((m2-m1)/(T2-T1))*(T0-T1);
 
-  cout << "m0: "<< m0 << endl;
   Double_t delta = (T1 - T0) * m0;
 
   Double_t charge_tcorr = charge + delta;
-  cout << "Charge tcorr: "<< charge_tcorr << endl;
+
   return charge_tcorr;
   
 }
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuRaw::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
 {
-  cout<<"Equalisation correction..."<<endl;
+
   Double_t Equalis0 = f_parcal->getCalibrationMap()->GetEqualiseCry(crysId);
   Double_t charge_equalis = charge_tcorr*Equalis0;
-  cout<<"Equalisation correction done: charge qualis = "<<charge_equalis<<endl;
   
   return charge_equalis;
 
