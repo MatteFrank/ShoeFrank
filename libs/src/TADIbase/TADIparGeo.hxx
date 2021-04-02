@@ -29,10 +29,12 @@ private:
   Int_t     fType;       // Magnet type
   TString   fMapName;    // Map filename
   
-  Float_t  fMapMesh;     // size of the map mesh
-  TVector3 fMapLimLo;    // lower bound of the field map
-  TVector3 fMapLimUp;    // upper bound of the field map
-   
+  Float_t   fMapMesh;     // size of the map mesh
+  TVector3  fMapLimLo;    // lower bound of the field map
+  TVector3  fMapLimUp;    // upper bound of the field map
+  
+  TVector3  fMagCstValue;    // if type 0, value of constant field
+
   Float_t   fShieldRadius;  // cover radius
   TString   fShieldMat;     // cover material
   Float_t   fShieldDensity; // cover material density
@@ -107,19 +109,22 @@ public:
   Int_t GetMagnetsN()                  const { return fMagnetsN; }
   
   //! Get type of Magnets
-  Int_t GetMagnetType()                const { return fType;     }
+  Int_t GetType()                      const { return fType;     }
   
   //! Get map file name
   TString GetMapName()                 const { return fMapName;  }
   
   //! Get map mesh size
-   Float_t         GetMapMesh()         const { return fMapMesh; }
+   Float_t         GetMapMesh()        const { return fMapMesh; }
    
   //! Get map lower bound
   TVector3        GetMapLimLo()        const { return fMapLimLo; }
    
   //! Get map upper bound
   TVector3        GetMapLimUp()        const { return fMapLimUp; }
+  
+  //! Get field const value
+  TVector3        GetMagCstValue()     const { return fMagCstValue; }
    
   //! Build Magnet
   TGeoVolume* BuildMagnet(const char* basemoduleName = "Module", const char *name = "Magnet");
