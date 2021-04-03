@@ -58,7 +58,7 @@ void TCEMfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
    // point[4] := time
    fieldB[3] = fieldB[4] = fieldB[5] = 0.;
    
-   TVector3 pos(point)
+   TVector3 pos(point);
    pos *= 1./CLHEP::cm; // mmn -> cm
      
    TVector3 field = fMagField->GetField(pos)*CLHEP::gauss;
