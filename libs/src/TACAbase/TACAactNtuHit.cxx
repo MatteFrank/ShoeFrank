@@ -147,7 +147,7 @@ Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
   
 }
 //------------------------------------------+-----------------------------------
-Double_t TACAactNtuRaw::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
+Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
 {
 
   Double_t Equalis0 = f_parcal->getCalibrationMap()->GetEqualiseCry(crysId);
