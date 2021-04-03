@@ -58,13 +58,12 @@ void TCEMfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
    // point[4] := time
    fieldB[3] = fieldB[4] = fieldB[5] = 0.;
    
-   TVector3 pos;
-   for (Int_t i = 0; i < 3; ++i)
-      pos[i] = point[i]/CLHEP::cm; // mmn -> cm
-   
+   TVector3 pos(point)
+   pos *= 1./CLHEP::cm; // mmn -> cm
+     
    TVector3 field = fMagField->GetField(pos)*CLHEP::gauss;
    for (Int_t i = 0; i < 3; ++i)
-    fieldB[i] = field[i];
+     fieldB[i] = field[i];
   
 //   if (FootMcDebugLevel(1))
 //      printf("[%.3e,%.3e,%.3e] \t %.3e %.3e %.3e\n", pos[0],pos[1],pos[2], field[0],field[1],field[2]);
