@@ -388,6 +388,23 @@ struct TATOEchecker{
         }
     };
     
+    struct value_error_pair{
+        double value;
+        double error;
+    };
+    struct mixed_results {
+        value_error_pair efficiency;
+        value_error_pair purity;
+        value_error_pair fake_yield;
+        value_error_pair multiplicity;
+    };
+    
+    struct separated_results {
+        std::vector< int > charge_c;
+        std::vector< value_error_pair > efficiency_c;
+        std::vector< value_error_pair > purity_c;
+    };
+    
 private:
     TAMCntuEve* data_mhc;
     std::pair<double, double> target_limits_m;
@@ -890,7 +907,9 @@ public:
 
 public:
 
-    void compute_results( details::all_mixed_tag ){
+    mixed_results compute_results( details::all_mixed_tag ){
+        mixed_results result;
+        
         //        action_m.logger_m.freeze_everything();
         action_m.logger_m.add_root_header("RESULTS");
         action_m.logger_m.template add_header<1, details::immutable_tag>("mixed");
@@ -918,14 +937,16 @@ public:
         }
         //look at mass efficiency reconstruction ? because of the plage im momentum of protons !
         action_m.logger_m.template add_header<1, details::immutable_tag>("efficiency");
-        double efficiency = reconstructed_number * 1./reconstructible_number;
-        action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-        action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1+ efficiency)/reconstructible_number) * 100<< '\n';
+        result.efficiency.value = reconstructed_number * 1./reconstructible_number;
+        action_m.logger_m << "global_efficiency: " << result.efficiency.value * 100 << '\n';
+        result.efficiency.error = sqrt(result.efficiency.value* (1+ result.efficiency.value)/reconstructible_number);
+        action_m.logger_m << "global_efficiency_error: " << result.efficiency.error * 100<< '\n';
 
         action_m.logger_m.template add_header<1, details::immutable_tag>("purity");
-        auto purity = correct_cluster_number * 1./recovered_cluster_number;
-        action_m.logger_m << "global_purity: " << purity * 100 << '\n';
-        action_m.logger_m << "global_purity_error: " << sqrt(purity* (1+purity)/recovered_cluster_number) * 100<< '\n';
+        result.purity.value = correct_cluster_number * 1./recovered_cluster_number;
+        action_m.logger_m << "global_purity: " << result.purity.value * 100 << '\n';
+        result.purity.error = sqrt(result.purity.value* (1+result.purity.value)/recovered_cluster_number);
+        action_m.logger_m << "global_purity_error: " << result.purity.error * 100<< '\n';
 
 //        action_m.logger_m.template add_header<1, details::immutable_tag>("coverage");
 //        double coverage = recovered_cluster_number * 1./total_cluster_number;
@@ -933,33 +954,43 @@ public:
 //        action_m.logger_m << "global_coverage_error: " << sqrt(coverage* (1+coverage)/total_cluster_number) * 100<< '\n';
 
         action_m.logger_m.template add_header<1, details::immutable_tag>("fake_yield");
-        double fake_yield = fake_number_m * 1./reconstructed_number;
-        action_m.logger_m << "fake_yield: " << fake_yield * 100 << '\n';
-        action_m.logger_m << "fake_yield_error: " << sqrt(fake_yield* (1+fake_yield)/reconstructed_number) * 100<< '\n';
+        result.fake_yield.value = fake_number_m * 1./reconstructed_number;
+        action_m.logger_m << "fake_yield: " << result.fake_yield.value * 100 << '\n';
+        result.fake_yield.error = sqrt(result.fake_yield.value* (1+result.fake_yield.value)/reconstructed_number);
+        action_m.logger_m << "fake_yield_error: " << result.fake_yield.error * 100<< '\n';
 
         action_m.logger_m.template add_header<1, details::immutable_tag>("multiplicity");
-        double clone_ratio = clone_number * 1./reconstructed_number;
-        action_m.logger_m << "global_clone_ratio: " << clone_ratio << '\n';
-        action_m.logger_m << "global_clone_ratio_error: " << sqrt(clone_ratio* (1+clone_ratio)/reconstructed_number) << '\n';
+        result.multiplicity.value = clone_number * 1./reconstructed_number;
+        action_m.logger_m << "global_clone_ratio: " << result.multiplicity.value << '\n';
+        result.multiplicity.error = sqrt(result.multiplicity.value * (1+result.multiplicity.value)/reconstructed_number);
+        action_m.logger_m << "global_clone_ratio_error: " << result.multiplicity.error << '\n';
+        
+        return result;
     }
     
-    void compute_results( details::all_separated_tag ){
+    separated_results compute_results( details::all_separated_tag ){
         //        action_m.logger_m.freeze_everything();
+        separated_results result;
+        result.efficiency_c.reserve( computation_module_mc.size() );
+         result.purity_c.reserve( computation_module_mc.size() );
+         result.charge_c.reserve( computation_module_mc.size() );
         action_m.logger_m.add_root_header("RESULTS");
         action_m.logger_m.template add_header<1, details::immutable_tag>("separated");
         for(auto const & module : computation_module_mc){
             action_m.logger_m << "charge: " << module.charge << '\n';
-            compute_efficiency( module );
-            compute_purity( module );
+            result.charge_c.push_back( module.charge );
+            result.efficiency_c.push_back( compute_efficiency( module ) );
+            result.purity_c.push_back( compute_purity( module ) );
         }
+        return result;
     }
     
     void register_histograms( details::all_separated_tag )
     {
         
-        action_m.reconstructed_track_mhc->AddHistogram(real_momentum_distribution_h);
-        action_m.reconstructed_track_mhc->AddHistogram(reconstructed_momentum_distribution_h);
-        
+//        action_m.reconstructed_track_mhc->AddHistogram(real_momentum_distribution_h);
+//        action_m.reconstructed_track_mhc->AddHistogram(reconstructed_momentum_distribution_h);
+//
         for(auto const & module : computation_module_mc){
             TH1D* efficiency_histogram_h = const_cast<TH1D*>( module.get_efficiency_histogram() );
 
@@ -985,44 +1016,50 @@ public:
             }
     
 
-            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH1D*>(reconstructible_h) );
-            action_m.reconstructed_track_mhc->AddHistogram( efficiency_histogram_h );
-            
-            action_m.reconstructed_track_mhc->AddHistogram(const_cast<TH1D*>( module.get_momentum_difference_histogram()));
-            action_m.reconstructed_track_mhc->AddHistogram(const_cast<TH1D*>( module.get_reconstructed_histogram()));
-            
-            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(mass_identification_h) );
+//            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH1D*>(reconstructible_h) );
+//            action_m.reconstructed_track_mhc->AddHistogram( efficiency_histogram_h );
+//
+//            action_m.reconstructed_track_mhc->AddHistogram(const_cast<TH1D*>( module.get_momentum_difference_histogram()));
+//            action_m.reconstructed_track_mhc->AddHistogram(const_cast<TH1D*>( module.get_reconstructed_histogram()));
+//
+//            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(mass_identification_h) );
 //            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(charge_identification_h) );
             
             
             TH1D* momentum_histogram_h = new TH1D{ Form("momentum_charge%d", module.charge),
                 ";Momentum (Gev/c/n);#frac{#sigma_p}{p}", 75, 0, 15 };
             for( auto& pair : module.histogram_bundle.momentum_resolution_c  ){
-                action_m.reconstructed_track_mhc->AddHistogram( pair.second);
+//                action_m.reconstructed_track_mhc->AddHistogram( pair.second);
                 
                 auto momentum = (pair.first+0.5)*0.2;
                 auto rms = abs( pair.second->GetMean() - momentum ) ;
                 auto bin_index = momentum_histogram_h->FindBin(momentum);
                 if(pair.second->GetEntries()>50){ momentum_histogram_h->SetBinContent( bin_index, rms/momentum ); }
             }
-            action_m.reconstructed_track_mhc->AddHistogram( momentum_histogram_h );
+//            action_m.reconstructed_track_mhc->AddHistogram( momentum_histogram_h );
             
             
         }
     }
     
 private:
-    void compute_efficiency( computation_module const & module_p ){
-        auto efficiency = module_p.reconstructed_number * 1./module_p.reconstructible_number;
-        action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-        action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1+ efficiency)/module_p.reconstructible_number) * 100<< '\n';
+    value_error_pair compute_efficiency( computation_module const & module_p ){
+        value_error_pair result;
+        result.value = module_p.reconstructed_number * 1./module_p.reconstructible_number;
+        action_m.logger_m << "global_efficiency: " << result.value * 100 << '\n';
+        result.error = sqrt( result.value* (1+ result.value)/module_p.reconstructible_number);
+        action_m.logger_m << "global_efficiency_error: " << result.error * 100<< '\n';
+        return result;
     }
     
     
-    void compute_purity( computation_module const & module_p ){
-        auto purity = module_p.correct_cluster_number * 1./module_p.recovered_cluster_number;
-        action_m.logger_m << "global_purity: " << purity * 100 << '\n';
-        action_m.logger_m << "global_purity_error: " << sqrt(purity* (1+purity)/module_p.recovered_cluster_number)  * 100<< '\n';
+    value_error_pair compute_purity( computation_module const & module_p ){
+        value_error_pair result;
+        result.value = module_p.correct_cluster_number * 1./module_p.recovered_cluster_number;
+        action_m.logger_m << "global_purity: " << result.value * 100 << '\n';
+        result.error = sqrt(result.value* (1+result.value)/module_p.recovered_cluster_number);
+        action_m.logger_m << "global_purity_error: " << result.error  * 100<< '\n';
+        return result;
     }
     
 
