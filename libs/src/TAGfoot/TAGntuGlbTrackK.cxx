@@ -9,12 +9,11 @@ TString TAGntuGlbTrackK::fgkBranchName = "glbtrackGF.";
 //Default constructor
 TAGntuGlbTrackK::TAGntuGlbTrackK() : TAGdata(), fListOfTracks(new TClonesArray("TAGtrackK"))
 {
-   string env = getenv("FOOTRES");
-   
-   if (!env.empty())
-    m_kalmanOutputDir = env + "/Kalman";
-   else
-    m_kalmanOutputDir = "./";
+   if (getenv("FOOTRES")) {
+      string env = getenv("FOOTRES");
+      m_kalmanOutputDir = env + "/Kalman";
+   } else
+      m_kalmanOutputDir = "./";
    
     // m_debug = GlobalPar::GetPar()->Debug();
     m_debug = 0;
