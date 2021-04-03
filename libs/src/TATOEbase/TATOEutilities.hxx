@@ -285,7 +285,7 @@ private:
     const TAVTntuCluster* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const double minimal_cut_m;
+    double minimal_cut_m;
     constexpr static std::size_t layer{4};
     const std::array<double, layer> depth_mc;
     
@@ -340,6 +340,7 @@ public:
     
     std::vector<candidate> generate_candidates(std::size_t index_p) const ;
     
+    constexpr void set_cuts( double&& cut_p ){ minimal_cut_m = std::move(cut_p); }
     
 private:
     std::vector< TAVTvertex const *> retrieve_vertices( ) const;
@@ -372,7 +373,7 @@ private:
     const TAITntuCluster* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const std::array<double, 2> cut_mc;
+    std::array<double, 2> cut_mc;
     constexpr static std::size_t layer{4};
     
     using sensor_container_t = std::array<std::size_t, 8>;
@@ -422,6 +423,8 @@ public:
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
     constexpr double get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
     
+    constexpr void set_cuts( std::array<double, 2>&& cut_pc  ){ cut_mc = std::move(cut_pc); }
+    
     layer_generator<detector_properties> form_layers() const
     {
         return {*this};
@@ -457,7 +460,7 @@ private:
                 measurement_matrix{ 0, 1, 0, 0 }
                                                       };
     
-    const std::array<double, 3> cut_mc;
+    std::array<double, 3> cut_mc;
     constexpr static std::size_t layer{6};
     
     const std::array<std::size_t, layer> view_mc;
@@ -521,6 +524,8 @@ public:
     }
     
     std::vector<candidate> generate_candidates(std::size_t index_p) const ;
+    
+    constexpr void set_cuts( std::array<double, 3>&& cut_pc  ){ cut_mc = std::move(cut_pc); }
 };
 
 
@@ -552,7 +557,7 @@ private:
     const TATWntuPoint* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const double cut_m;
+    double cut_m;
     const double depth_m;
 
     
@@ -623,6 +628,8 @@ public:
             cut_value()
         };
     }
+    
+    constexpr void set_cuts( double&& cut_p ){ cut_m = std::move(cut_p); }
 };
 
 //______________________________________________________________________________

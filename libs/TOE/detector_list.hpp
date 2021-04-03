@@ -143,8 +143,13 @@ public:
         return before_impl<1>(t_p);
     }
     
+    template<class T, class C>
+    constexpr void set_cuts( C cut_pc ) {
+        std::get< T >( tuple_m ).set_cuts( std::move(cut_pc) );
+    }
+    
 private:
-    const tuple_type tuple_m;
+    tuple_type tuple_m;
 };
 
 
