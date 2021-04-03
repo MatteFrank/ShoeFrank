@@ -13,7 +13,7 @@ TAGntuGlbTrackK::TAGntuGlbTrackK() : TAGdata(), fListOfTracks(new TClonesArray("
       string env = getenv("FOOTRES");
       m_kalmanOutputDir = env + "/Kalman";
    } else
-      m_kalmanOutputDir = "./";
+      m_kalmanOutputDir = "./Kalman";
    
     // m_debug = GlobalPar::GetPar()->Debug();
     m_debug = 0;

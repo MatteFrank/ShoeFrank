@@ -40,16 +40,16 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* p_glbtrack) : TAGact
   m_fitTrackCollection = new TAGntuGlbTrackK();  // contains the fitted track info
 
   // Create dir for kalman output if not already present
-  // struct stat info;
-  // m_kalmanOutputDir = (string)getenv("FOOTRES");
-  // if( stat( m_kalmanOutputDir.c_str(), &info ) != 0 )		//check if cannot access
-  // system(("mkdir "+m_kalmanOutputDir).c_str());
-
-  // m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman";
-  // if( stat( m_kalmanOutputDir.c_str(), &info ) != 0 )		//check if cannot access
-  // system(("mkdir "+m_kalmanOutputDir).c_str());
-
-
+  if (getenv("FOOTRES")) {
+     string env = getenv("FOOTRES");
+     m_kalmanOutputDir = env + "/Kalman";
+  } else
+     m_kalmanOutputDir = "./Kalman";
+   
+  struct stat info;
+  if( stat( m_kalmanOutputDir.c_str(), &info ) != 0 )      //check if cannot access
+  system(("mkdir "+m_kalmanOutputDir).c_str());
+   
   // // class for control plot dumping
   // ControlPlotsRepository::Instance();
   // m_controlPlotter = ControlPlotsRepository::GetControlObject( m_kalmanOutputDir );
