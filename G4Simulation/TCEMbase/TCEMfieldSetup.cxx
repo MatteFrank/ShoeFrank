@@ -120,13 +120,6 @@ void TCEMfieldSetup::SetStepper()
 
     switch (fStepperType)
     {
-       case 17:
-       case 457:
-       case 745:
-          fStepper = new G4DormandPrince745( fEquation );
-          G4cout<<"G4DormandPrince745 Stepper is chosen"<<G4endl;
-          break;
-          
         case 0:
             fStepper = new G4ExplicitEuler(fEquation);
             G4cout<<"G4ExplicitEuler is calledS"<<G4endl;
@@ -168,9 +161,12 @@ void TCEMfieldSetup::SetStepper()
             G4cout<<"G4RKG3_Stepper is called"<<G4endl;
             break;
         case 10:
-            fStepper = new G4DormandPrince745(fEquation);
-            G4cout<<"G4DormandPrince745 is called"<<G4endl;
-            break;
+        case 17:
+        case 457:
+        case 745:
+          fStepper = new G4DormandPrince745( fEquation );
+          G4cout<<"G4DormandPrince745 Stepper is chosen"<<G4endl;
+          break;
         default: fStepper = 0;
     }
 }
