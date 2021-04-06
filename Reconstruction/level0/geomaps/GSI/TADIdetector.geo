@@ -9,12 +9,10 @@
 // Types 0 const, 1 function, 2 map file
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 Magnets:     2
-Type:        2
-MapName:     "./data/AsymmetricDipoles.table"
+Magnets:     2
+Type:        0
 
-MapMeshSize: 0.5
-MagLimLoX:  -5.0     MagLimLoY:    -5.0   MagLimLoZ:    -50.0
-MagLimUpX:   5.0     MagLimUpY:     5.0   MagLimUpZ:     50.0
+MagValueX:   0.0     MagValueX:     0.0   MagValueX:     0.0
 
 ShieldThickness:  0.5
 ShieldMat:        "Al"
