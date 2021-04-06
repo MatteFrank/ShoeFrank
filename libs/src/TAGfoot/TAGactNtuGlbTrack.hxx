@@ -52,7 +52,6 @@ public:
     TAGntuGlbTrack* GetTrackContainer() {return static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() );}
     
     void Output(){ fActTOE->Output(); }
-    void RegisterHistograms();
     void WriteHistogram();
     
 private:

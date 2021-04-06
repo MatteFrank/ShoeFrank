@@ -121,8 +121,6 @@ class TAGntuGlbTrack : public TAGdata {
    
 private:
    TClonesArray*    fListOfTracks;		// tracks
-   std::vector<TH1D*>      fEfficiency;
-    std::vector<TH2D*>      fID;
     
 private:
    static TString fgkBranchName;    // Branch name in TTree
@@ -140,12 +138,7 @@ public:
    TAGtrack*        NewTrack();
    TAGtrack*        NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof);
    TAGtrack*        NewTrack(TAGtrack& track);
-   
-    std::vector<TH1D*>& GetEfficiencyHistograms() { return fEfficiency;}
-    void            AddHistogram(TH1D* histogram){ fEfficiency.push_back(histogram); }
-    
-    std::vector<TH2D*>& GetIdentificationHistograms() { return fID;}
-    void            AddHistogram(TH2D* histogram){ fID.push_back(histogram); }
+
     
    virtual void     SetupClones();
    virtual void     Clear(Option_t* opt="");

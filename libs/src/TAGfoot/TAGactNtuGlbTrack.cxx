@@ -146,11 +146,11 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     auto stepper = make_stepper<data_grkn56>( std::move(ode) );
     auto ukf = make_ukf<state>( std::move(stepper) );
 
-    return make_new_TATOEactGlb(
-                                std::move(ukf),
-                                std::move(list),
-                                static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
-                                static_cast<TAGparGeo*>( fpGGeoMap->Object() )
+    return new_TATOEactGlb(
+                std::move(ukf),
+                std::move(list),
+                static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                static_cast<TAGparGeo*>( fpGGeoMap->Object() ), true
                                );
 }
 
@@ -167,34 +167,12 @@ void TAGactNtuGlbTrack::CreateHistogram()
    SetValidHistogram(kTRUE);
 }
 
-//------------------------------------------+-----------------------------------
-//! Register histograms stored in TAGntuGlbTrack.
-void TAGactNtuGlbTrack::RegisterHistograms()
-{
-    fActTOE->RegisterHistograms();
-    
-    auto efficiency_histogram_ch = GetTrackContainer()->GetEfficiencyHistograms();
-    for(auto * histogram_h : efficiency_histogram_ch){
-        AddHistogram(histogram_h);
-    }
-    
-    auto id_histogram_ch = GetTrackContainer()->GetIdentificationHistograms();
-    for(auto * histogram_h : id_histogram_ch){
-        AddHistogram(histogram_h);
-    }
-    
-    SetValidHistogram(kTRUE);
-    
-    auto writer_h = static_cast<TAGactTreeWriter*>( gTAGroot->FindAction("locRecFile") );
-    TDirectory* subfolder  = (TDirectory*)(writer_h->File())->Get(TAGgeoTrafo::GetBaseName());
-    SetHistogramDir( subfolder );
-}
 
 //------------------------------------------+-----------------------------------
 void TAGactNtuGlbTrack::WriteHistogram()
 {
     Output();
-    RegisterHistograms();
+//    RegisterHistograms();
     TAGaction::WriteHistogram();
 }
 
