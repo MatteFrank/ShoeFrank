@@ -44,7 +44,7 @@ LocalRecoMC::~LocalRecoMC()
 void LocalRecoMC::CreateRawAction()
 {
    fActEvtReader = new TAGactTreeReader("actEvtReader");
-  printf("toto\n");
+
    if ( GlobalPar::GetPar()->IsRegionMc()) {
      fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
      if (GlobalPar::GetPar()->IsReadRootObj())
