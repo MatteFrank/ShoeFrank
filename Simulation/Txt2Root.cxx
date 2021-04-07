@@ -110,7 +110,6 @@ int main(int argc, char *argv[])
    if(regFlag)
       GlobalPar::GetPar()->EnableRegionMc();
    GlobalPar::GetPar()->DisableRootObject();
-   GlobalPar::GetPar()->EnableRootObject();
    TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
    info.SetCampaignName(exp);
    info.SetRunNumber(runNb);
