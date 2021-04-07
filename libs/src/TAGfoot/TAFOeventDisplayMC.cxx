@@ -108,8 +108,8 @@ void TAFOeventDisplayMC::SetLocalReco()
 //__________________________________________________________
 Bool_t TAFOeventDisplayMC::GetEntry(Int_t entry)
 {
-   if (fType == 2) return true;
-   if (!fReco->GetTree()->GetEntry(entry)) return false;
+   if (fType != 2) return true;
+   fReco->GoEvent(entry);
    
    return true;
 }

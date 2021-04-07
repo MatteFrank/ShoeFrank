@@ -44,7 +44,7 @@ LocalRecoMC::~LocalRecoMC()
 void LocalRecoMC::CreateRawAction()
 {
    fActEvtReader = new TAGactTreeReader("actEvtReader");
-  
+  printf("toto\n");
    if ( GlobalPar::GetPar()->IsRegionMc()) {
      fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
      if (GlobalPar::GetPar()->IsReadRootObj())
@@ -141,6 +141,13 @@ void LocalRecoMC::CreateRawAction()
       if (fFlagHisto)
          fActNtuHitCa->CreateHistogram();
    }
+}
+
+//__________________________________________________________
+void LocalRecoMC::GoEvent(Int_t iEvent)
+{
+   // only possible for MC data
+   fActEvtReader->Reset(iEvent);
 }
 
 //__________________________________________________________

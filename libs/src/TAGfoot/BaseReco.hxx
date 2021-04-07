@@ -119,6 +119,9 @@ public:
    //! Loop events
   virtual void LoopEvent(Int_t nEvents);
    
+   //! Goto Event
+   virtual void GoEvent(Int_t /*iEvent*/) { return; }
+   
    //! Begin loop
    virtual void BeforeEventLoop();
 
@@ -238,7 +241,6 @@ public:
    virtual TAMCntuHit*    GetNtuMcMsd()     const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcTw()      const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcCa()      const { return 0x0; }
-   virtual TTree*         GetTree()               { return 0x0; }
   
 public:
    //! Disable/Enable ITR tracking
