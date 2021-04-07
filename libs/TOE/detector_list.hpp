@@ -11,6 +11,11 @@
 #include <tuple>
 namespace details{
     struct finished_tag{};
+    
+    template< class ... Ts> struct any_of : std::false_type {};
+    template< class T> struct any_of<T> : T {};
+    template< class T, class ... Ts>
+    struct any_of<T, Ts...> : std::conditional< bool(T::value), T, any_of<Ts...>>::type {};
 }
 
 template<class ... Ts>
@@ -143,10 +148,13 @@ public:
         return before_impl<1>(t_p);
     }
     
-    template<class T, class C>
+    template<class T, class C, typename std::enable_if_t< details::any_of< std::is_same< Ts, T>... >::value , std::nullptr_t> = nullptr>
     constexpr void set_cuts( C cut_pc ) {
         std::get< T >( tuple_m ).set_cuts( std::move(cut_pc) );
     }
+    
+    template<class T, class C, typename std::enable_if_t< !details::any_of< std::is_same< Ts, T>... >::value, std::nullptr_t> = nullptr>
+    constexpr void set_cuts( C /* */ ) {}
     
 private:
     tuple_type tuple_m;
