@@ -27,6 +27,8 @@ class TAGactionFile : public TAGaction {
     virtual void    Close();
 
     virtual Bool_t  IsOpen() const;
+   
+    virtual void    Reset(Int_t iEvent = 0);
 
     ClassDef(TAGactionFile,0)
 

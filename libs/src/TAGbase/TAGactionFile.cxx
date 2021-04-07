@@ -50,6 +50,14 @@ void TAGactionFile::Close()
 }
 
 //------------------------------------------+-----------------------------------
+//! Reset
+
+void TAGactionFile::Reset(Int_t iEvent)
+{
+   return;
+}
+
+//------------------------------------------+-----------------------------------
 //! Returns \a true if a file is open.
 
 Bool_t TAGactionFile::IsOpen() const

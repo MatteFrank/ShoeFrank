@@ -185,9 +185,9 @@ Bool_t TAGactTreeReader::IsOpen() const
 //------------------------------------------+-----------------------------------
 //! Reset
 
-void TAGactTreeReader::Reset()
+void TAGactTreeReader::Reset(Int_t iEvent)
 {
-   fiCurrentEntry = -1;
+   fiCurrentEntry = iEvent-1;
    return;
 }
 

@@ -47,7 +47,7 @@ class TAGactTreeReader : public TAGactionFile {
 
     virtual Bool_t  IsOpen() const;
 
-    virtual void    Reset();
+    virtual void    Reset(Int_t iEvent = 0);
 
     virtual Int_t   NEvents();
   
