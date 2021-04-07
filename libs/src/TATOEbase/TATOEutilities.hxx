@@ -50,7 +50,10 @@ class TAITcluster;
 #include "TADIgeoField.hxx"
 
 
+class TATOEcutter;
 
+template<class Tag>
+struct detector_properties {};
 
 namespace details{
     struct vertex_tag{
@@ -65,7 +68,7 @@ namespace details{
         using covariance_matrix =  matrix<2, 2> ;
         using measurement_matrix =  matrix<2,4> ;
         using data_type = TAITcluster;
-       using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+        using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     };
     struct msd_tag{
         using vector_matrix =  matrix<1, 1> ;
@@ -91,13 +94,72 @@ namespace details{
     struct normal_tag{};
     struct non_removable_tag{};
     
-
+    struct all_mixed_tag{};
+    struct all_separated_tag{};
 } //namespace details
 
 
+struct reconstruction_result{
+    struct module {
+        int charge;
+        std::size_t reconstructed_number{0};
+        std::size_t reconstructible_number{0};
+        std::size_t correct_cluster_number{0};
+        std::size_t recovered_cluster_number{0};
+        std::size_t total_cluster_number{0};
+        std::size_t clone_number{0};
+        std::size_t fake_number{0};
+    };
+    std::vector< module > module_c;
+    
+    void add( reconstruction_result const& result_p ){
+        for( auto const& result : result_p.module_c ){
+            auto module_i = std::find_if(
+                              module_c.begin(),
+                              module_c.end(),
+                              [&result](auto& module_p){ return module_p.charge == result.charge; }
+                                      );
+            if( module_i == module_c.end() ){
+                module_c.push_back( module{result.charge} );
+                module_i = module_c.end() - 1;
+            }
+            
+            module_i->reconstructed_number += result.reconstructed_number;
+            module_i->reconstructible_number += result.reconstructible_number;
+            module_i->correct_cluster_number += result.correct_cluster_number;
+            module_i->recovered_cluster_number += result.recovered_cluster_number;
+            module_i->total_cluster_number += result.total_cluster_number;
+            module_i->clone_number += result.clone_number;
+            module_i->fake_number += result.fake_number;
+        }
+    }
+};
 
-template<class Tag>
-struct detector_properties {};
+
+struct TATOEbaseAct {
+    friend TATOEcutter;
+public:
+    virtual void Action()  = 0;
+    virtual void Output() = 0 ;
+    virtual void RegisterHistograms() = 0;
+    virtual ~TATOEbaseAct() = default;
+    
+private:
+    virtual void reset_event_number() = 0;
+    
+    virtual void set_cuts( details::vertex_tag, double) = 0;
+    virtual void set_cuts( details::it_tag, std::array<double, 2>&& ) = 0;
+    virtual void set_cuts( details::msd_tag, std::array<double, 3>&& ) = 0;
+    virtual void set_cuts( details::tof_tag, double) = 0;
+    
+    virtual reconstruction_result retrieve_result( ) const = 0;
+};
+
+
+
+
+
+
 
 
 
@@ -719,6 +781,8 @@ private:
     
     
 };
+
+
 
 
 #endif

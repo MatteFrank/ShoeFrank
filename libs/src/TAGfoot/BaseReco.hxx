@@ -86,6 +86,9 @@ class TAMCntuEve;
 class TAMCntuRegion;
 class TAMCntuEvent;
 
+
+#include "TATOEcutter.hxx"
+
 class BaseReco : public TNamed // using TNamed for the in/out files
 {
 public:
@@ -175,6 +178,9 @@ public:
   
    void EnableTWZmatch()  { fFlagZmatch_TW = true;   }
    void DisableTWZmatch() { fFlagZmatch_TW = false;  }
+    
+    void EnableRecCutter()  { fFlagRecCutter = true;   }
+    void DisableRecCutter() { fFlagRecCutter = false;  }
 
    void DisableM28ClusMT() { fM28ClusMtFlag = false; }
    void EnableM28lusMT()   { fM28ClusMtFlag = true;  }
@@ -344,6 +350,8 @@ protected:
    TACAactNtuCluster*    fActClusCa;    // action for clusters
 
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
+   TATOEcutter*          fActRecCutter;     //action to determine optimal cuts for TOE given geometry
+    
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
   
    GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
@@ -364,6 +372,8 @@ protected:
    Bool_t                fFlagMC;        // MC flag
    Bool_t                fM28ClusMtFlag; // flag for multi-threading clustering
 
+   Bool_t                fFlagRecCutter;
+    
  protected:
    void CreateRecActionBm();
    void CreateRecActionVtx();

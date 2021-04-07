@@ -94,6 +94,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fActClusMsd(0x0),
    fActPointTw(0x0),
    fActGlbTrack(0x0),
+   fActRecCutter(nullptr),
    fActTrackIr(0x0),
    fFlagOut(true),
    fFlagTree(false),
@@ -106,7 +107,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagZrecPUoff(false),
    fFlagZmatch_TW(false),
    fFlagMC(false),
-   fM28ClusMtFlag(false)
+   fM28ClusMtFlag(false),
+   fFlagRecCutter(true)
 {
 
    // check folder
@@ -243,6 +245,7 @@ void BaseReco::BeforeEventLoop()
   
    GlobalChecks();
   
+
    if (fFlagOut)
       OpenFileOut();
    
@@ -261,6 +264,12 @@ void BaseReco::LoopEvent(Int_t nEvents)
   else if (nEvents > 100)    frequency = 100;
   else if (nEvents > 10)     frequency = 10;
 
+    if(fActRecCutter){
+        static_cast<TAGactTreeReader*>(fActEvtReader)->Reset();
+        fTAGroot->SetEventNumber(0);
+        fActRecCutter->NextIteration();
+    }
+    
   for (Int_t ientry = 0; ientry < nEvents; ientry++) {
     
     if(ientry % frequency == 0)
@@ -280,6 +289,7 @@ void BaseReco::LoopEvent(Int_t nEvents)
         }
       }
     }
+      
   }
 }
 
@@ -287,6 +297,8 @@ void BaseReco::LoopEvent(Int_t nEvents)
 void BaseReco::AfterEventLoop()
 {
    fTAGroot->EndEventLoop();
+    
+    if(fActRecCutter){ fActRecCutter->Output(); }
    if (fFlagOut)
       CloseFileOut();
    CloseFileIn();
@@ -310,6 +322,7 @@ void BaseReco::OpenFileOut()
 void BaseReco::SetRecHistogramDir()
 {
    //Global track
+    if(fFlagRecCutter){return;}
    if (fFlagTrack) {
      
       if (!GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IncludeKalman()) {
@@ -799,7 +812,41 @@ void BaseReco::CreateRecActionCa()
 //__________________________________________________________
 void BaseReco::CreateRecActionGlb()
 {
-
+    if( fFlagRecCutter ){
+        SetL0TreeBranches();
+        auto vtx_features = TATOEcutter::vtx_features{
+            fpNtuClusVtx,
+            fpNtuTrackVtx,
+            fpNtuVtx,
+            fpParGeoVtx,
+        };
+        auto it_features = TATOEcutter::it_features{
+            fpNtuClusIt,
+            fpParGeoIt
+        };
+        auto msd_features = TATOEcutter::msd_features{
+            fpNtuClusMsd,
+             fpParGeoMsd
+        };
+        auto tw_features = TATOEcutter::tw_features{
+            fpNtuRecTw,
+            fpParGeoTw
+        };
+        auto glb_features = TATOEcutter::glb_features{
+            fpParGeoG,
+            fpParGeoDi,
+            fField
+        };
+        fActRecCutter = new TATOEcutter{
+            "toeActCutter",
+            std::move(glb_features),
+            std::move(vtx_features),
+            std::move(it_features),
+            std::move(msd_features),
+            std::move(tw_features)
+        };
+        return;
+    }
   if(fFlagTrack) {
     SetL0TreeBranches();
     fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
@@ -817,11 +864,10 @@ void BaseReco::CreateRecActionGlb()
 					   fpParGeoIt,
 					   fpParGeoMsd,
 					   fpParGeoTw,
-					   fField );
+					   fField);
     if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
   }
-  
 }
 
 //__________________________________________________________
@@ -932,7 +978,7 @@ void BaseReco::SetL0TreeBranches()
 void BaseReco::SetTreeBranches()
 {
   if (GlobalPar::GetPar()->IncludeTOE()) {
-    if (fFlagTrack) {
+    if (fFlagTrack && !fFlagRecCutter) {
       fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
     }
   }
@@ -975,7 +1021,8 @@ void BaseReco::AddRecRequiredItem()
       gTAGroot->AddRequiredItem("locRecFile");
    if (GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
-       gTAGroot->AddRequiredItem("glbActTrack");
+       if(fFlagRecCutter){gTAGroot->AddRequiredItem("toeActCutter");}
+       else{gTAGroot->AddRequiredItem("glbActTrack");}
      }
      return;
    }
@@ -1032,8 +1079,9 @@ void BaseReco::AddRecRequiredItem()
    }
    
    if (fFlagTrack) {
-      if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman())
-         gTAGroot->AddRequiredItem("glbActTrack");
+       if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman()){
+           gTAGroot->AddRequiredItem("glbActTrack");
+       }
       
       if (!GlobalPar::GetPar()->IncludeTOE() && GlobalPar::GetPar()->IncludeKalman()) {
          gTAGroot->AddRequiredItem("glbActTrackStudyGF");

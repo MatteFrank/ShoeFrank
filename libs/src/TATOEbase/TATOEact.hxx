@@ -50,17 +50,11 @@ auto make_ode(Callable&& c_p) -> ode<OperatingType, Order, Callable>;
 #include "TAGparGeo.hxx"
 #include "TAITcluster.hxx"
 
+
+class TATOEcutter;
+
 template<class T>
 class TD;
-
-
-struct TATOEbaseAct {
-    virtual void Action()  = 0;
-    virtual void Output() = 0 ;
-    virtual void RegisterHistograms() = 0;
-    virtual ~TATOEbaseAct() = default;
-};
-
 
 
 
@@ -74,7 +68,6 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
             : TATOEbaseAct
 {
     friend TATOEchecker<TATOEactGlb>;
-//    friend TATOEcutter;
     
     using detector_list_t = detector_list< details::finished_tag, DetectorProperties...  >;
     
@@ -145,6 +138,7 @@ public:
     void Output() override {
         checker_m.compute_results( details::all_mixed_tag{} );
         checker_m.compute_results( details::all_separated_tag{} );
+//        logger_m.freeze_everything();
         logger_m.output();
     }
     
@@ -207,6 +201,23 @@ public:
     };
     
 private:
+    void reset_event_number() override { event = 0 ; }
+    void set_cuts( details::vertex_tag, double cut_p) override{
+        list_m.template set_cuts<detector_properties<details::vertex_tag>>( cut_p );
+    }
+    void set_cuts( details::it_tag, std::array<double, 2>&& cut_pc) override {
+        list_m.template set_cuts<detector_properties<details::it_tag>>( std::move(cut_pc) );
+    }
+    void set_cuts( details::msd_tag, std::array<double, 3>&& cut_pc) override {
+        list_m.template set_cuts<detector_properties<details::msd_tag>>( std::move(cut_pc) );
+    }
+    void set_cuts( details::tof_tag, double cut_p) override  {
+        list_m.template set_cuts<detector_properties<details::tof_tag>>( cut_p );
+    }
+    
+    reconstruction_result retrieve_result( ) const override {
+        return checker_m.retrieve_results( );
+    }
     
     std::vector<particle_properties> form_hypothesis()
     {
@@ -1228,8 +1239,12 @@ private:
 //        std::cout << "register_tracks_upward: " << track_pc.size() << std::endl;
         
         
+        
         for( auto & track : track_pc  ) {
-            
+            // -----------------------------
+            checker_m.submit_reconstructed_track( track );
+            // -----------------------------
+            if( !reconstructed_track_mhc ){ continue; }
 //            std::cout << "particle_mass: " << track.particle.mass << std::endl;
 //            std::cout << "reconstruction_momentum: "<< track.particle.momentum << "\n";
             auto * track_h = reconstructed_track_mhc->NewTrack( track.particle.mass * 0.938 ,
@@ -1238,9 +1253,7 @@ private:
                                                   track.tof  ); //tof value is wrong
 //            std::cout << "registered_momentum: " << track_h->GetMomentum() << "\n";
 
-            // -----------------------------
-            checker_m.submit_reconstructed_track( track );
-            // -----------------------------
+            
             
 //            std::cout << "track:\n";
             auto & value_c = track.get_clusters();
@@ -1341,7 +1354,7 @@ auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc,
 
 
 template<class UKF, class DetectorList>
-auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph, bool use_checker = false)
+auto new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph, bool use_checker = false)
         -> TATOEactGlb<UKF, DetectorList> *
 {
     return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc, global_parameters_ph, use_checker};

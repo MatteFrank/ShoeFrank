@@ -29,15 +29,6 @@
 
 class TATWpoint;
 
-namespace details{
-
-    struct all_mixed_tag{};
-    struct all_separated_tag{};
-    
-    
-    
-}//namespace details
- 
     
 namespace aftereffect {
     template<class T>
@@ -314,6 +305,7 @@ struct TATOEchecker{
         std::size_t recovered_cluster_number{0};
         std::size_t total_cluster_number{0};
         std::size_t clone_number{0};
+        std::size_t fake_number{0};
         
         computation_module(int charge_p) : charge{charge_p}
         {
@@ -388,22 +380,7 @@ struct TATOEchecker{
         }
     };
     
-    struct value_error_pair{
-        double value;
-        double error;
-    };
-    struct mixed_results {
-        value_error_pair efficiency;
-        value_error_pair purity;
-        value_error_pair fake_yield;
-        value_error_pair multiplicity;
-    };
     
-    struct separated_results {
-        std::vector< int > charge_c;
-        std::vector< value_error_pair > efficiency_c;
-        std::vector< value_error_pair > purity_c;
-    };
     
 private:
     TAMCntuEve* data_mhc;
@@ -558,10 +535,11 @@ public:
         auto fake_reconstruction = aftereffect::make_aftereffect(
                     [](reconstruction_module const& module_p)
                     { return !module_p.reconstructible_o.has_value() && module_p.reconstructed_o.has_value(); },
-                    [this](reconstruction_module const& /* module_p */)
+                    [this](reconstruction_module const& module_p )
                     {
                         action_m.logger_m.add_sub_header("fake_reconstruction");
-                        fake_number_m++;
+                        auto & computation_module = find_computation_module( module_p.reconstructed_o.value().properties.charge );
+                        computation_module.fake_number++;
                         //action_m.logger_m.freeze_everything();
                     }
                                                                  );
@@ -626,7 +604,7 @@ public:
         
         
         auto aftereffect_c = aftereffect::make_aftereffect_list(
-                               //     std::move(undiscerning_output),
+//                                    std::move(undiscerning_output),
                                     std::move(reconstructible_registration),
                                     std::move(successful_reconstruction),
                                     std::move(fake_reconstruction),
@@ -638,7 +616,7 @@ public:
         for( auto const& module : reconstruction_module_mc ){ aftereffect_c.evaluate( module ); }
         
 
-        //action_m.logger_m.output();
+//        action_m.logger_m.output();
     };
     
     double retrieve_momentum( candidate const& candidate_p ) const {
@@ -906,9 +884,26 @@ public:
     
 
 public:
-
-    mixed_results compute_results( details::all_mixed_tag ){
-        mixed_results result;
+    reconstruction_result retrieve_results() const {
+        reconstruction_result result;
+        
+        for( auto const& module : computation_module_mc ){
+            result.module_c.push_back( reconstruction_result::module{ module.charge } );
+            auto& result_module = result.module_c.back();
+            result_module.reconstructed_number = module.reconstructed_number;
+            result_module.reconstructible_number = module.reconstructible_number;
+            result_module.correct_cluster_number = module.correct_cluster_number;
+            result_module.recovered_cluster_number = module.recovered_cluster_number;
+            result_module.total_cluster_number = module.total_cluster_number;
+            result_module.clone_number = module.clone_number;
+            result_module.fake_number = module.fake_number;
+        }
+        
+        return result;
+    }
+    
+    
+    void compute_results( details::all_mixed_tag ) const{
         
         //        action_m.logger_m.freeze_everything();
         action_m.logger_m.add_root_header("RESULTS");
@@ -937,16 +932,16 @@ public:
         }
         //look at mass efficiency reconstruction ? because of the plage im momentum of protons !
         action_m.logger_m.template add_header<1, details::immutable_tag>("efficiency");
-        result.efficiency.value = reconstructed_number * 1./reconstructible_number;
-        action_m.logger_m << "global_efficiency: " << result.efficiency.value * 100 << '\n';
-        result.efficiency.error = sqrt(result.efficiency.value* (1+ result.efficiency.value)/reconstructible_number);
-        action_m.logger_m << "global_efficiency_error: " << result.efficiency.error * 100<< '\n';
+        auto efficiency = reconstructed_number * 1./reconstructible_number;
+        action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
+        auto efficiency_error = sqrt(efficiency* (1+ efficiency)/reconstructible_number);
+        action_m.logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
 
         action_m.logger_m.template add_header<1, details::immutable_tag>("purity");
-        result.purity.value = correct_cluster_number * 1./recovered_cluster_number;
-        action_m.logger_m << "global_purity: " << result.purity.value * 100 << '\n';
-        result.purity.error = sqrt(result.purity.value* (1+result.purity.value)/recovered_cluster_number);
-        action_m.logger_m << "global_purity_error: " << result.purity.error * 100<< '\n';
+        auto purity = correct_cluster_number * 1./recovered_cluster_number;
+        action_m.logger_m << "global_purity: " << purity * 100 << '\n';
+        auto purity_error = sqrt(purity* (1+purity)/recovered_cluster_number);
+        action_m.logger_m << "global_purity_error: " << purity_error * 100<< '\n';
 
 //        action_m.logger_m.template add_header<1, details::immutable_tag>("coverage");
 //        double coverage = recovered_cluster_number * 1./total_cluster_number;
@@ -954,35 +949,28 @@ public:
 //        action_m.logger_m << "global_coverage_error: " << sqrt(coverage* (1+coverage)/total_cluster_number) * 100<< '\n';
 
         action_m.logger_m.template add_header<1, details::immutable_tag>("fake_yield");
-        result.fake_yield.value = fake_number_m * 1./reconstructed_number;
-        action_m.logger_m << "fake_yield: " << result.fake_yield.value * 100 << '\n';
-        result.fake_yield.error = sqrt(result.fake_yield.value* (1+result.fake_yield.value)/reconstructed_number);
-        action_m.logger_m << "fake_yield_error: " << result.fake_yield.error * 100<< '\n';
+        auto fake_yield = fake_number_m * 1./reconstructed_number;
+        action_m.logger_m << "fake_yield: " << fake_yield * 100 << '\n';
+        auto fake_yield_error = sqrt( fake_yield * (1+ fake_yield)/reconstructed_number);
+        action_m.logger_m << "fake_yield_error: " << fake_yield_error * 100<< '\n';
 
         action_m.logger_m.template add_header<1, details::immutable_tag>("multiplicity");
-        result.multiplicity.value = clone_number * 1./reconstructed_number;
-        action_m.logger_m << "global_clone_ratio: " << result.multiplicity.value << '\n';
-        result.multiplicity.error = sqrt(result.multiplicity.value * (1+result.multiplicity.value)/reconstructed_number);
-        action_m.logger_m << "global_clone_ratio_error: " << result.multiplicity.error << '\n';
+        auto multiplicity = clone_number * 1./reconstructed_number;
+        action_m.logger_m << "global_clone_ratio: " << multiplicity << '\n';
+        auto multiplicity_error = sqrt(multiplicity * (1+multiplicity)/reconstructed_number);
+        action_m.logger_m << "global_clone_ratio_error: " << multiplicity_error << '\n';
         
-        return result;
     }
     
-    separated_results compute_results( details::all_separated_tag ){
+    void compute_results( details::all_separated_tag ){
         //        action_m.logger_m.freeze_everything();
-        separated_results result;
-        result.efficiency_c.reserve( computation_module_mc.size() );
-         result.purity_c.reserve( computation_module_mc.size() );
-         result.charge_c.reserve( computation_module_mc.size() );
         action_m.logger_m.add_root_header("RESULTS");
         action_m.logger_m.template add_header<1, details::immutable_tag>("separated");
         for(auto const & module : computation_module_mc){
             action_m.logger_m << "charge: " << module.charge << '\n';
-            result.charge_c.push_back( module.charge );
-            result.efficiency_c.push_back( compute_efficiency( module ) );
-            result.purity_c.push_back( compute_purity( module ) );
+            compute_efficiency( module );
+            compute_purity( module );
         }
-        return result;
     }
     
     void register_histograms( details::all_separated_tag )
@@ -1043,23 +1031,19 @@ public:
     }
     
 private:
-    value_error_pair compute_efficiency( computation_module const & module_p ){
-        value_error_pair result;
-        result.value = module_p.reconstructed_number * 1./module_p.reconstructible_number;
-        action_m.logger_m << "global_efficiency: " << result.value * 100 << '\n';
-        result.error = sqrt( result.value* (1+ result.value)/module_p.reconstructible_number);
-        action_m.logger_m << "global_efficiency_error: " << result.error * 100<< '\n';
-        return result;
+    void compute_efficiency( computation_module const & module_p ){
+        auto efficiency = module_p.reconstructed_number * 1./module_p.reconstructible_number;
+        action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
+        auto efficiency_error = sqrt( efficiency* (1+ efficiency)/module_p.reconstructible_number);
+        action_m.logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
     }
     
     
-    value_error_pair compute_purity( computation_module const & module_p ){
-        value_error_pair result;
-        result.value = module_p.correct_cluster_number * 1./module_p.recovered_cluster_number;
-        action_m.logger_m << "global_purity: " << result.value * 100 << '\n';
-        result.error = sqrt(result.value* (1+result.value)/module_p.recovered_cluster_number);
-        action_m.logger_m << "global_purity_error: " << result.error  * 100<< '\n';
-        return result;
+    void compute_purity( computation_module const & module_p ){
+        auto purity = module_p.correct_cluster_number * 1./module_p.recovered_cluster_number;
+        action_m.logger_m << "global_purity: " << purity * 100 << '\n';
+        auto purity_error = sqrt( purity* (1+purity)/module_p.recovered_cluster_number);
+        action_m.logger_m << "global_purity_error: " << purity_error * 100<< '\n';
     }
     
 
@@ -1077,9 +1061,10 @@ struct empty_checker{
     void end_event(){}
     void start_event(){}
     void output_current_hypothesis(){}
-    void compute_results( details::all_mixed_tag ){}
+    void compute_results( details::all_mixed_tag )const { }
     void compute_results( details::all_separated_tag ){}
     void register_histograms( details::all_separated_tag ){}
+    reconstruction_result retrieve_results() const{ return {}; }
 };
 
 template<class Action>
@@ -1096,9 +1081,10 @@ struct checker{
         virtual void end_event() = 0;
         virtual void start_event() = 0;
         virtual void output_current_hypothesis() = 0;
-        virtual void compute_results( details::all_mixed_tag ) = 0;
+        virtual void compute_results( details::all_mixed_tag ) const = 0;
         virtual void compute_results( details::all_separated_tag ) = 0;
         virtual void register_histograms( details::all_separated_tag ) = 0;
+        virtual reconstruction_result retrieve_results() const = 0;
     };
 
     template<class T>
@@ -1111,9 +1097,10 @@ struct checker{
         void end_event() override{ t_m.end_event(); }
         void start_event() override{ t_m.start_event();}
         void output_current_hypothesis() override{ t_m.output_current_hypothesis(); }
-        void compute_results( details::all_mixed_tag ) override{ t_m.compute_results( details::all_mixed_tag{} );}
+        void compute_results( details::all_mixed_tag )const override{ return t_m.compute_results( details::all_mixed_tag{} );}
         void compute_results( details::all_separated_tag ) override{ t_m.compute_results( details::all_separated_tag{} ); }
         void register_histograms( details::all_separated_tag ) override{ t_m.register_histograms( details::all_separated_tag{}); }
+        reconstruction_result retrieve_results() const override{ return t_m.retrieve_results(); }
         T t_m;
     };
 
@@ -1132,9 +1119,10 @@ struct checker{
     void end_event() { erased_m->end_event(); }
     void start_event() { erased_m->start_event();}
     void output_current_hypothesis() { erased_m->output_current_hypothesis(); }
-    void compute_results( details::all_mixed_tag ) { erased_m->compute_results( details::all_mixed_tag{} );}
+    void compute_results( details::all_mixed_tag ) const { return erased_m->compute_results( details::all_mixed_tag{} );}
     void compute_results( details::all_separated_tag ) { erased_m->compute_results( details::all_separated_tag{} ); }
     void register_histograms( details::all_separated_tag ) { erased_m->register_histograms( details::all_separated_tag{}); }
+    reconstruction_result retrieve_results() const { return erased_m->retrieve_results(); }
 
     private:
     std::unique_ptr<eraser> erased_m;
