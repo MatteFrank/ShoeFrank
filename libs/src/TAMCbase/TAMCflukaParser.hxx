@@ -35,6 +35,8 @@ public:
   static TAMCntuEvent*  GetEvents(EVENT_STRUCT* evStr,  TAGdataDsc* p_ntuevt);
 
   static void           FindBranches(TTree* rootTree, EVENT_STRUCT* evStr);
+  static void           CreateBranches(TTree* rootTree, EVENT_STRUCT* evStr, Bool_t reg = false);
+  static Bool_t         ResetEvent(EVENT_STRUCT* evStr);
 
 };
 
