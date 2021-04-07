@@ -117,10 +117,10 @@ public:
    virtual void SetRecHistogramDir();
    
    //! Loop events
-  virtual void LoopEvent(Int_t nEvents);
+   virtual void LoopEvent(Int_t nEvents);
    
    //! Goto Event
-   virtual void GoEvent(Int_t /*iEvent*/) { return; }
+   virtual Bool_t GoEvent(Int_t /*iEvent*/) { return true; }
    
    //! Begin loop
    virtual void BeforeEventLoop();
@@ -132,7 +132,7 @@ public:
    virtual void OpenFileIn()  { return; }
   
    // ! Global Checks
-  virtual void GlobalChecks();
+   virtual void GlobalChecks();
    
    //! Close File in
    virtual void CloseFileIn() { return; }

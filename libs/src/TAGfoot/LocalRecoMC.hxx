@@ -59,7 +59,7 @@ public:
    virtual void GlobalChecks();
    
    //! Goto Event
-   virtual void GoEvent(Int_t iEvent);
+   virtual Bool_t GoEvent(Int_t iEvent);
 
    //! MC container Getter
    TAMCntuEvent*  GetNtuMcEvt() const { return (TAMCntuEvent*)fpNtuMcEvt->Object(); }

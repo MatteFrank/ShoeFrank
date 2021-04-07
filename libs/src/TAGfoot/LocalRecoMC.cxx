@@ -144,10 +144,15 @@ void LocalRecoMC::CreateRawAction()
 }
 
 //__________________________________________________________
-void LocalRecoMC::GoEvent(Int_t iEvent)
+Bool_t LocalRecoMC::GoEvent(Int_t iEvent)
 {
    // only possible for MC data
-   fActEvtReader->Reset(iEvent);
+   if (iEvent < fActEvtReader->NEvents()) {
+      fActEvtReader->Reset(iEvent);
+      return true;
+   }
+   
+   return false;
 }
 
 //__________________________________________________________

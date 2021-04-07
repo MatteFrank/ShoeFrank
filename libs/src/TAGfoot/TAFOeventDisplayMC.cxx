@@ -109,9 +109,7 @@ void TAFOeventDisplayMC::SetLocalReco()
 Bool_t TAFOeventDisplayMC::GetEntry(Int_t entry)
 {
    if (fType != 2) return true;
-   fReco->GoEvent(entry);
-   
-   return true;
+   return fReco->GoEvent(entry);   
 }
 
 //__________________________________________________________
