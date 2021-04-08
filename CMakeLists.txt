@@ -89,6 +89,7 @@ Set(TACA  "TACAbase")
 Set(TAMC  "TAMCbase")
 Set(TAED  "TAEDbase")
 Set(TATOE "TATOEbase")
+Set(TAGF  "TAGFbase")
 Set(TAFO  "TAGfoot")
 add_definitions(-std=c++14)
 
@@ -111,6 +112,7 @@ set(TACA_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TACA}")
 set(TAMC_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAMC}")
 set(TAED_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAED}")
 set(TATOE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TATOE}")
+set(TAGF_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAGF}")
 set(TAFO_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAFO}")
 
 #----------------------------------------------------------------------------
