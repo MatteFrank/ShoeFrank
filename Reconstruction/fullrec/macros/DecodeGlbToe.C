@@ -7,7 +7,7 @@
 #include <TString.h>
 #include <TStopwatch.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "GlobalToeReco.hxx"
 #include "LocalReco.hxx"
 #include "LocalRecoMC.hxx"
@@ -21,20 +21,20 @@ void DecodeGlbToe(TString in = "data/data_built.2211.physics_foot.daq.VTX.1.dat"
   TString out = in(0, pos);
   out.Append("_Out.root");
   
-  GlobalPar::Instance(exp);
-  GlobalPar::GetPar()->FromFile();
-  GlobalPar::GetPar()->Print();
+  TAGrecoManager::Instance(exp);
+  TAGrecoManager::GetPar()->FromFile();
+  TAGrecoManager::GetPar()->Print();
   
-  Bool_t lrc = GlobalPar::GetPar()->IsLocalReco();
-  Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
-  Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
-  Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
-  Bool_t trk = GlobalPar::GetPar()->IsTracking();
-  Bool_t zmc = GlobalPar::GetPar()->IsTofZmc();
-  Bool_t tbc = GlobalPar::GetPar()->IsTofCalBar();
+  Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+  Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
+  Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
+  Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
+  Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
+  Bool_t zmc = TAGrecoManager::GetPar()->IsTofZmc();
+  Bool_t tbc = TAGrecoManager::GetPar()->IsTofCalBar();
   
-  GlobalPar::GetPar()->IncludeTOE(true);
-  GlobalPar::GetPar()->IncludeKalman(false);
+  TAGrecoManager::GetPar()->IncludeTOE(true);
+  TAGrecoManager::GetPar()->IncludeKalman(false);
   
   BaseReco* glbRec = 0x0;
   

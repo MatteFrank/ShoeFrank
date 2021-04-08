@@ -14,7 +14,7 @@
 #include <TGeoVolume.h>
 
 #include "Evento.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
@@ -133,9 +133,9 @@ void FillMCInnerTracker(EVENT_STRUCT *myStr, Int_t runNumber) {
 void ReadIrRawMC(TString name = "ionEventoC_All.root", Int_t nMaxEvts = 20000,
                  TString expName = "12C_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance(expName);
-   GlobalPar::GetPar()->FromFile();
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(expName);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    TAGroot tagr;
    

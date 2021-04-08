@@ -2,7 +2,7 @@
 #include <TStopwatch.h>
 #include <TApplication.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "LocalReco.hxx"
 #include "LocalRecoMC.hxx"
 #include "GlobalToeReco.hxx"
@@ -56,22 +56,22 @@ int main (int argc, char *argv[])  {
    
    TApplication::CreateApplication();
    
-   GlobalPar::Instance(exp);
-   GlobalPar::GetPar()->FromFile();
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(exp);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
-   Bool_t lrc = GlobalPar::GetPar()->IsLocalReco();
-   Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
-   Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
-   Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
-   Bool_t trk = GlobalPar::GetPar()->IsTracking();
-   Bool_t zmc = GlobalPar::GetPar()->IsTWZmc();
-   Bool_t zrec = GlobalPar::GetPar()->IsTWnoPU();
-   Bool_t zmatch = GlobalPar::GetPar()->IsTWZmatch();
-   Bool_t tbc = GlobalPar::GetPar()->IsTWCalBar();
+   Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
+   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
+   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
+   Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
+   Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
+   Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
+   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
+   Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
 
-   GlobalPar::GetPar()->IncludeTOE(true);
-   GlobalPar::GetPar()->IncludeKalman(false);
+   TAGrecoManager::GetPar()->IncludeTOE(true);
+   TAGrecoManager::GetPar()->IncludeKalman(false);
 
    BaseReco* glbRec = 0x0;
    

@@ -14,7 +14,7 @@
 #include <TCanvas.h>
 #include <TStyle.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGactTreeReader.hxx"
 #include "TAGcampaignManager.hxx"
@@ -27,9 +27,9 @@
 void ExtrapoleBMtoTG(TString nameFile = "12C_C_200_L0Out.root", TString expName = "12C_200", Int_t runNumber = 1)
 {
   //Read global parameters
-  GlobalPar::Instance(expName);
-  GlobalPar::GetPar()->FromFile();
-  GlobalPar::GetPar()->Print();
+  TAGrecoManager::Instance(expName);
+  TAGrecoManager::GetPar()->FromFile();
+  TAGrecoManager::GetPar()->Print();
   
   TAGroot tagr;
   

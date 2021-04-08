@@ -91,9 +91,9 @@ void FillInnerTracker(Int_t runNumber)
 void ReadItrRawMC(TString filename = "12C_C_200_ntu.root", Int_t nMaxEvts = 0,
                   TString expName = "12C_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance(expName);
-   GlobalPar::GetPar()->FromFile();
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(expName);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    TAGroot tagr;
    

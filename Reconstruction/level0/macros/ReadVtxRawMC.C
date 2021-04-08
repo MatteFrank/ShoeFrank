@@ -12,7 +12,7 @@
 #include <TROOT.h>
 #include <TStopwatch.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
@@ -85,9 +85,9 @@ void FillVertex(Int_t runNumber)
 void ReadVtxRawMC(TString filename = "12C_C_200shoe.root", Int_t nMaxEvts = 0,
                 TString expName = "12C_200", Int_t runNumber = 1)
 {
-  GlobalPar::Instance(expName);
-  GlobalPar::GetPar()->FromFile();
-  GlobalPar::GetPar()->Print();
+  TAGrecoManager::Instance(expName);
+  TAGrecoManager::GetPar()->FromFile();
+  TAGrecoManager::GetPar()->Print();
   
   TAGroot tagr;
   

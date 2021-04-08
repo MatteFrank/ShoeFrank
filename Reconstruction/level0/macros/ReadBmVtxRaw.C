@@ -49,7 +49,7 @@
 #include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
@@ -207,9 +207,9 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
 {  
   Int_t maxevents=999999999999;
   TString fExpName="GSI/";
-  GlobalPar::Instance();
-  GlobalPar::GetPar()->FromFile();
-  GlobalPar::GetPar()->Print();
+  TAGrecoManager::Instance();
+  TAGrecoManager::GetPar()->FromFile();
+  TAGrecoManager::GetPar()->Print();
 
   TAGroot tagr;
   TAGgeoTrafo geoTrafo;

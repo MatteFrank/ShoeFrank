@@ -3,7 +3,7 @@
 #include <TStopwatch.h>
 #include <TApplication.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "LocalReco.hxx"
 #include "LocalRecoMC.hxx"
 
@@ -43,9 +43,9 @@ int main (int argc, char *argv[])  {
     preout="STrel_Bm_selfcalib";
 
   TApplication::CreateApplication();
-  GlobalPar::Instance(exp);
-  GlobalPar::GetPar()->FromFile();
-  GlobalPar::GetPar()->Print();
+  TAGrecoManager::Instance(exp);
+  TAGrecoManager::GetPar()->FromFile();
+  TAGrecoManager::GetPar()->Print();
   vector<TF1*> strelvec; 
   vector<TF1*> resovec; 
   TString plotname;
@@ -68,19 +68,19 @@ int main (int argc, char *argv[])  {
     }
     
     // global setting
-    GlobalPar::GetPar()->IncludeST(true);
-    GlobalPar::GetPar()->IncludeBM(true);
-    GlobalPar::GetPar()->CalibBM(true);
-    GlobalPar::GetPar()->IncludeTW(false);
-    GlobalPar::GetPar()->CalibTW(false);
-    GlobalPar::GetPar()->IncludeDI(false);
-    GlobalPar::GetPar()->IncludeMSD(false);
-    GlobalPar::GetPar()->IncludeCA(false);
-    GlobalPar::GetPar()->IncludeTG(false);
-    GlobalPar::GetPar()->IncludeVT(false);
-    GlobalPar::GetPar()->IncludeIT(false);
-    GlobalPar::GetPar()->IncludeTOE(false);
-    GlobalPar::GetPar()->DisableLocalReco();
+    TAGrecoManager::GetPar()->IncludeST(true);
+    TAGrecoManager::GetPar()->IncludeBM(true);
+    TAGrecoManager::GetPar()->CalibBM(true);
+    TAGrecoManager::GetPar()->IncludeTW(false);
+    TAGrecoManager::GetPar()->CalibTW(false);
+    TAGrecoManager::GetPar()->IncludeDI(false);
+    TAGrecoManager::GetPar()->IncludeMSD(false);
+    TAGrecoManager::GetPar()->IncludeCA(false);
+    TAGrecoManager::GetPar()->IncludeTG(false);
+    TAGrecoManager::GetPar()->IncludeVT(false);
+    TAGrecoManager::GetPar()->IncludeIT(false);
+    TAGrecoManager::GetPar()->IncludeTOE(false);
+    TAGrecoManager::GetPar()->DisableLocalReco();
     
     locRec->EnableTree();
     locRec->EnableHisto();

@@ -86,9 +86,9 @@ void FillVertex(Int_t runNumber)
 void ReadVtxRaw(TString filename = "data/data_built.2211.physics_foot.daq.VTX.1.dat", Int_t nMaxEvts = 0,
                 TString expName = "GSI", Int_t runNumber = 2211)
 {
-   GlobalPar::Instance(expName);
-   GlobalPar::GetPar()->FromFile();
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(expName);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    TAGroot tagr;
    

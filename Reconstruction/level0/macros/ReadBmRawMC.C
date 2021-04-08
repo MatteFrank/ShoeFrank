@@ -30,7 +30,7 @@
 #include "TABMactNtuMC.hxx"
 #include "TABMactNtuTrack.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
@@ -74,9 +74,9 @@ void ReadBmRawMC(TString name = "./data/flukasim/footC200_C2H4.root")
 //void ReadMsdRawMC(TString name = "12C_400_vtx.root")
 {  Long64_t nev=1000;
   
-   GlobalPar::Instance();
-   GlobalPar::GetPar()->FromFile();
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance();
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
 
    TAGroot tagr;
    TAGgeoTrafo geoTrafo;

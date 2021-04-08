@@ -43,7 +43,7 @@
 #include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
@@ -283,9 +283,9 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
    out_filename.Prepend("bmraw_");
    out_filename.Append(".root");
       
-   GlobalPar::Instance();
-   GlobalPar::GetPar()->FromFile();
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance();
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
 
    TAGroot tagr;
    TAGgeoTrafo geoTrafo;

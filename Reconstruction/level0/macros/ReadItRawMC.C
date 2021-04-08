@@ -31,7 +31,7 @@
 #include "TAITactNtuMC.hxx"
 #include "TAITactNtuClusterF.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
@@ -73,9 +73,9 @@ void FillMCInner(EVENT_STRUCT *myStr, Int_t runNumber) {
 //void ReadItRawMC(TString name = "12C_80_vtx.root")
 void ReadItRawMC(TString name = "16O_C2H4_200_1", TString expName = "16O_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance(expName);
-   GlobalPar::GetPar()->FromFile();
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(expName);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    TAGroot tagr;
    

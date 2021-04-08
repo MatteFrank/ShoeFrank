@@ -8,7 +8,7 @@
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGcampaignManager.hxx"
 
 #endif
@@ -18,9 +18,9 @@
 void BenchMark(TString expName = "12C_200" )
 {
   TAGroot tagr;
-  GlobalPar::Instance(expName);
-  GlobalPar::GetPar()->FromFile();
-  GlobalPar::GetPar()->Print();
+  TAGrecoManager::Instance(expName);
+  TAGrecoManager::GetPar()->FromFile();
+  TAGrecoManager::GetPar()->Print();
   
   TAGcampaignManager* man = new TAGcampaignManager(expName);
   man->FromFile();
