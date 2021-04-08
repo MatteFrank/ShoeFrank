@@ -21,7 +21,7 @@
 #include <TArrayD.h>
 #include <TMath.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TAIRmillepede.hxx"
 

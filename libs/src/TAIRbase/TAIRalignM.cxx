@@ -15,7 +15,7 @@
 #include "TObjArray.h"
 #include "TCanvas.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGactTreeReader.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGgeoTrafo.hxx"
