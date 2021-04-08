@@ -73,7 +73,7 @@
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>

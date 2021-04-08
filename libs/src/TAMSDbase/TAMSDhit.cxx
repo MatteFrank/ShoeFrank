@@ -3,7 +3,7 @@
 #include "TClonesArray.h"
 
 #include "TAGgeoTrafo.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TAMSDhit.hxx"
 

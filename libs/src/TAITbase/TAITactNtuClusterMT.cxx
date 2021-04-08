@@ -8,7 +8,7 @@
 #include "TH2F.h"
 #include "TMath.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"

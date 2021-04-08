@@ -23,14 +23,14 @@
 using namespace std;
 
 // singleton class of global foot parameters
-class GlobalPar {
+class TAGrecoManager {
 
 public:
-	static GlobalPar* Instance( const TString expName = "" );
-	static GlobalPar* GetPar();
+	static TAGrecoManager* Instance( const TString expName = "" );
+	static TAGrecoManager* GetPar();
    
 public:
-	~GlobalPar();
+	~TAGrecoManager();
 
 	void FromFile();
 	void Print(Option_t* opt = "");
@@ -112,11 +112,11 @@ public:
     void SetDebugLevels();
   
 private:
-	GlobalPar();
-	GlobalPar( const TString expName );
+	TAGrecoManager();
+	TAGrecoManager( const TString expName );
    
 private:
-	static GlobalPar* m_pInstance;
+	static TAGrecoManager* m_pInstance;
    static map<TString, TString> m_dectFullName; // full name
    static const TString m_defParName;
 
@@ -189,11 +189,11 @@ public:
    static void   ClearClassDebugLevel(const char* className);
 };
 
-#define FootDebug(level, func, message, ...) GlobalPar::Debug(level, ClassName(), func, message, __VA_ARGS__)
-#define FootDebugLine(level, func, message ) GlobalPar::DebugLine(level, ClassName(), func, message, __FILE__, __LINE__)
-#define FootDebugLevel(level) GlobalPar::GetDebugLevel(level, ClassName())
-#define FootMcDebugLevel(level) GlobalPar::GetMcDebugLevel(level, typeid(*this).name())
-#define InfoMc(func, message, ...) GlobalPar::GetMcInfo(typeid(*this).name(), func, message, __VA_ARGS__)
-#define InfoMcMsg(func, message) GlobalPar::GetMcInfo(typeid(*this).name(), func, message)
+#define FootDebug(level, func, message, ...) TAGrecoManager::Debug(level, ClassName(), func, message, __VA_ARGS__)
+#define FootDebugLine(level, func, message ) TAGrecoManager::DebugLine(level, ClassName(), func, message, __FILE__, __LINE__)
+#define FootDebugLevel(level) TAGrecoManager::GetDebugLevel(level, ClassName())
+#define FootMcDebugLevel(level) TAGrecoManager::GetMcDebugLevel(level, typeid(*this).name())
+#define InfoMc(func, message, ...) TAGrecoManager::GetMcInfo(typeid(*this).name(), func, message, __VA_ARGS__)
+#define InfoMcMsg(func, message) TAGrecoManager::GetMcInfo(typeid(*this).name(), func, message)
 
 #endif

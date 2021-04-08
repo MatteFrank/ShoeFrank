@@ -65,6 +65,6 @@
 #pragma link C++ class TAGmaterials+;
 #pragma link C++ class TAGionisMaterials+;
 
-#pragma link C++ class GlobalPar+;
+#pragma link C++ class TAGrecoManager+;
 
 #endif

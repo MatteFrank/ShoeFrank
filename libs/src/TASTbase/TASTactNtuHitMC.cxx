@@ -4,7 +4,7 @@
   \brief   Implementation of TASTactNtuHitMC.
 */
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGroot.hxx"
 #include "TASTntuHit.hxx"
 #include "TAGgeoTrafo.hxx"

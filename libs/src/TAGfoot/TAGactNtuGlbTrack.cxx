@@ -91,10 +91,10 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    AddDataIn(p_vtxclus, "TAVTntuCluster");
    AddDataIn(p_vtxvertex, "TAVTntuVertex");
    
-   if (GlobalPar::GetPar()->IncludeIT())
+   if (TAGrecoManager::GetPar()->IncludeIT())
       AddDataIn(p_itrclus, "TAITntuCluster");
    
-   if (GlobalPar::GetPar()->IncludeMSD())
+   if (TAGrecoManager::GetPar()->IncludeMSD())
       AddDataIn(p_msdclus, "TAMSDntuCluster");
    
    // TW mandatory

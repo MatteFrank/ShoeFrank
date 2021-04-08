@@ -2,7 +2,7 @@
 
 #include "TACAcalibrationMap.hxx"
 #include "TAGxmlParser.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 ClassImp(TACAcalibrationMap)
 

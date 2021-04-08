@@ -22,7 +22,7 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
   \class TAVTactBaseNtuHitMC"

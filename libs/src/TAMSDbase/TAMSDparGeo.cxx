@@ -12,7 +12,7 @@
 #include "TGeoMatrix.h"
 #include "TROOT.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAMSDparGeo.hxx"
@@ -285,7 +285,7 @@ string TAMSDparGeo::PrintParameters()
   stringstream outstr;
   outstr << setiosflags(ios::fixed) << setprecision(5);
 
-  if(GlobalPar::GetPar()->IncludeMSD()){
+  if(TAGrecoManager::GetPar()->IncludeMSD()){
 
     string precision = "D+00";
 
@@ -311,7 +311,7 @@ string TAMSDparGeo::PrintRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeMSD()){
+  if(TAGrecoManager::GetPar()->IncludeMSD()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
     
@@ -403,7 +403,7 @@ string TAMSDparGeo::PrintBodies()
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeMSD()){
+  if(TAGrecoManager::GetPar()->IncludeMSD()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
@@ -481,7 +481,7 @@ string TAMSDparGeo::PrintRegions()
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeMSD()){
+  if(TAGrecoManager::GetPar()->IncludeMSD()){
 
     string name;
 
@@ -534,7 +534,7 @@ string TAMSDparGeo::PrintSubtractBodiesFromAir()
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeMSD()){
+  if(TAGrecoManager::GetPar()->IncludeMSD()){
 
     for(int i=0; i<vModBody.size(); i++) {
       ss << " -" << vModBody.at(i);
@@ -552,7 +552,7 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials *Material)
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeMSD()){
+  if(TAGrecoManager::GetPar()->IncludeMSD()){
 
     TString flkmatMod, flkmatMetal, flkmatSupp;  
     
@@ -568,7 +568,7 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials *Material)
     }
         
     bool magnetic = false;
-    if(GlobalPar::GetPar()->IncludeDI())
+    if(TAGrecoManager::GetPar()->IncludeDI())
       magnetic = true;
 
     if (vStripRegion.size()==0 || vModRegion.size()==0 || vMetalRegion.size()==0 )

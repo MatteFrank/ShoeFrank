@@ -7,7 +7,7 @@
 #include "TSystem.h"
 #include "TGeoMatrix.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGparTools.hxx"
 #include "TAGroot.hxx"
 

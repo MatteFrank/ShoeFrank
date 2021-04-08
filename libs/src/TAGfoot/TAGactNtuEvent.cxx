@@ -6,7 +6,7 @@
 #include "InfoEvent.hh"
 #include "TrgEvent.hh"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGdaqEvent.hxx"
 #include "TAGntuEvent.hxx"
 

@@ -11,7 +11,7 @@
 #include "TH2F.h"
 #include "TMath.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAVTparGeo.hxx"

@@ -11,7 +11,7 @@
 #include "TSystem.h"
 #include "TString.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGroot.hxx"
 #include "TAGbaseWDparTime.hxx"
 #include "TAGactWDreader.hxx"

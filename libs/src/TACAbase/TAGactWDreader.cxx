@@ -4,7 +4,7 @@
   \brief   Implementation of TAGactWDreader.
 */
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TASTparMap.hxx"
 #include "TATWparMap.hxx"
 #include "TAGbaseWDparTime.hxx"

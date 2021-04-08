@@ -11,12 +11,12 @@ TAGFuploader::TAGFuploader ( map<string, int> adetectorID_map, map<int, genfit::
 
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-	m_debug = GlobalPar::GetPar()->Debug();
+	m_debug = TAGrecoManager::GetPar()->Debug();
 	// list of detectors used for kalman
 	m_systemsON = "";
-	for (unsigned int i=0; i<GlobalPar::GetPar()->KalSystems().size(); i++ ) {
+	for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
 		if (i != 0)		m_systemsON += " ";
-		m_systemsON += GlobalPar::GetPar()->KalSystems().at(i);
+		m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
 	}
 
 }
@@ -35,25 +35,25 @@ int TAGFuploader::TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> >* allHit
 	if ( m_debug > 0 )		cout << "\n\n*******\tTAGFuploader::PrepareData4Fit\t*******\n" << endl;
 
 	// Vertex -  fill fitter collections
-	if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVT() ) {
+	if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeVT() ) {
 		UploadClusVT();
 		if ( m_debug > 0 )		Info( "TakeMeasHits4Fit", "Filling vertex hit collection " );
 	}
 
 	// Inner Tracker -  fill fitter collections
-	if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeIT() ) {
+	if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeIT() ) {
 		UploadClusIT();
 		if ( m_debug > 0 )		Info( "TakeMeasHits4Fit", "Filling Inner Tracker hit collection ");
 	}
 
 	// MSD -  fill fitter collections
-	if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() ) {
+	if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && TAGrecoManager::GetPar()->IncludeMSD() ) {
 		UploadClusMSD();
 		if ( m_debug > 0 )		cout << endl<<endl << "Filling Strip hit collection = "<<endl;
 	}
 
 	// Tof Wall-  fill fitter collections
-	if ( ( m_systemsON.find( "TW" ) != string::npos) && GlobalPar::GetPar()->IncludeTW() ) {
+	if ( ( m_systemsON.find( "TW" ) != string::npos) && TAGrecoManager::GetPar()->IncludeTW() ) {
 		UploadHitsTW();
 		if ( m_debug > 0 )		cout <<endl<<endl << "Filling scintillator hit collection = " << endl;
 	}

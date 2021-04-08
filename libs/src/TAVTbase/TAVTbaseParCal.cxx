@@ -11,7 +11,7 @@
 #include "TObjString.h"
 #include "TCanvas.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAVTparMap.hxx"
 #include "TAVTbaseParCal.hxx"
 

@@ -138,7 +138,7 @@ string TASTparGeo::PrintRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeST()){
+  if(TAGrecoManager::GetPar()->IncludeST()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
@@ -174,7 +174,7 @@ string TASTparGeo::PrintBodies( ) {
   stringstream outstr;
   outstr << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
-  if(GlobalPar::GetPar()->IncludeST()){
+  if(TAGrecoManager::GetPar()->IncludeST()){
     outstr << "* ***Start Counter" << endl;
 
     stringstream ss;
@@ -212,7 +212,7 @@ string TASTparGeo::PrintRegions() {
   
   stringstream outstr;
 
-  if(GlobalPar::GetPar()->IncludeST()){
+  if(TAGrecoManager::GetPar()->IncludeST()){
 
     outstr << "* ***Start Counter" << endl;
 
@@ -231,7 +231,7 @@ string TASTparGeo::PrintSubtractBodiesFromAir() {
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeST()){
+  if(TAGrecoManager::GetPar()->IncludeST()){
 
     ss << "-stc " << endl;;
 
@@ -246,7 +246,7 @@ string TASTparGeo::PrintAssignMaterial(TAGmaterials *Material) {
 
   stringstream outstr;
 
-  if(GlobalPar::GetPar()->IncludeST()){
+  if(TAGrecoManager::GetPar()->IncludeST()){
 
     TString flkmat;  
     
@@ -258,7 +258,7 @@ string TASTparGeo::PrintAssignMaterial(TAGmaterials *Material) {
       flkmat = Material->GetFlukaMatName(fMaterial.Data());
 
     bool magnetic = false;
-    if(GlobalPar::GetPar()->IncludeDI())
+    if(TAGrecoManager::GetPar()->IncludeDI())
       magnetic = true;
         
     outstr << PrintCard("ASSIGNMA", flkmat, "STC", "", "", Form("%d",magnetic), "", "") << endl;

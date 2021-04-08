@@ -1,7 +1,7 @@
 #include "TAVTdigitizerG.hxx"
 #include "TAVTparGeo.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 using namespace std;
 

@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "TObjArray.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 //Class that manage the campaigns
 

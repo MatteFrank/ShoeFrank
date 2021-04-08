@@ -12,7 +12,7 @@
 #include "TObjString.h"
 #include "TSystem.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TADIparGeo.hxx"
 #include "TAGroot.hxx"
@@ -373,7 +373,7 @@ string TADIparGeo::PrintRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeDI()){
+  if(TAGrecoManager::GetPar()->IncludeDI()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
@@ -463,7 +463,7 @@ string TADIparGeo::PrintBodies(){
    
    stringstream ss;
    
-   if ( GlobalPar::GetPar()->IncludeDI()){   
+   if ( TAGrecoManager::GetPar()->IncludeDI()){   
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
@@ -536,7 +536,7 @@ string TADIparGeo::PrintRegions(){
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeDI()){
+  if(TAGrecoManager::GetPar()->IncludeDI()){
 
     string name;
 
@@ -581,7 +581,7 @@ string TADIparGeo::PrintAssignMaterial(TAGmaterials *Material) {
 
   stringstream ss;
   
-  if(GlobalPar::GetPar()->IncludeDI()){
+  if(TAGrecoManager::GetPar()->IncludeDI()){
 
     TString flkmatMag, flkmatShi;  
     
@@ -615,7 +615,7 @@ string TADIparGeo::PrintSubtractBodiesFromAir() {
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeDI()){
+  if(TAGrecoManager::GetPar()->IncludeDI()){
 
     if (fvBodyOut.size()==0 || fvBodyIn.size()==0 || fvBodyOut.size()!=fvBodyIn.size())
       cout << "Error: DI body vectors not correctly filled!" << endl;
@@ -636,7 +636,7 @@ string TADIparGeo::PrintSubtractBodiesFromAir() {
  {   
    stringstream outstr;
     
-   if(GlobalPar::GetPar()->IncludeDI()){
+   if(TAGrecoManager::GetPar()->IncludeDI()){
      
      string precision = "D+00";
      

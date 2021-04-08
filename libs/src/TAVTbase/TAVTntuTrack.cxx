@@ -1,6 +1,6 @@
 
 #include "TMath.h"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx" 
 #include "TAVTparGeo.hxx"
 #include "TAVTtrack.hxx"

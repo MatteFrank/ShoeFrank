@@ -8,7 +8,7 @@
 #include "TAGroot.hxx"
 #include "TAGparaDsc.hxx"
 #include "TACAparMap.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 //##############################################################################
 

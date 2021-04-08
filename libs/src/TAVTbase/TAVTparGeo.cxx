@@ -30,7 +30,7 @@
 #include "TGeoMatrix.h"
 #include "TGeoCompositeShape.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx" 
 
 #include "TAVTparGeo.hxx"
@@ -181,7 +181,7 @@ string TAVTparGeo::PrintParameters()
 {   
   stringstream outstr;
    
-  if(GlobalPar::GetPar()->IncludeVT()){
+  if(TAGrecoManager::GetPar()->IncludeVT()){
     
     string precision = "D+00";
    
@@ -207,7 +207,7 @@ string TAVTparGeo::PrintRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeVT()){
+  if(TAGrecoManager::GetPar()->IncludeVT()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
     
@@ -299,7 +299,7 @@ string TAVTparGeo::PrintBodies()
   stringstream ss;
    ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
-  if(GlobalPar::GetPar()->IncludeVT()){
+  if(TAGrecoManager::GetPar()->IncludeVT()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
@@ -377,7 +377,7 @@ string TAVTparGeo::PrintRegions()
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeVT()){
+  if(TAGrecoManager::GetPar()->IncludeVT()){
 
     string name;
 
@@ -432,7 +432,7 @@ string TAVTparGeo::PrintSubtractBodiesFromAir()
   
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeVT()){
+  if(TAGrecoManager::GetPar()->IncludeVT()){
 
     for(int i=0; i<fvModBody.size(); i++) {
       ss << " -" << fvModBody.at(i);
@@ -450,7 +450,7 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials *Material)
 
   stringstream ss;
   
-  if(GlobalPar::GetPar()->IncludeVT()){
+  if(TAGrecoManager::GetPar()->IncludeVT()){
 
     TString flkmatMod, flkmatPix;  
     
@@ -464,7 +464,7 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials *Material)
     }
 
     bool magnetic = false;
-    if(GlobalPar::GetPar()->IncludeDI())
+    if(TAGrecoManager::GetPar()->IncludeDI())
       magnetic = true;
     
     if (fvEpiRegion.size()==0 || fvModRegion.size()==0 || fvPixRegion.size()==0 )

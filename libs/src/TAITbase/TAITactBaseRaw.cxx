@@ -8,7 +8,7 @@
 
 #include "TH2F.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
 #include "TAITparMap.hxx"

@@ -77,7 +77,7 @@
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 // #include "ControlPlotsRepository.hxx"
 #include "GlobalTrackRepostory.hxx"
 

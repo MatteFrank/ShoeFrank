@@ -4,7 +4,7 @@
 #include "TAGroot.hxx"
 #include "TADIgeoField.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 
 ClassImp(TADIgeoField);

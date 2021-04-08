@@ -27,7 +27,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGmaterials.hxx"
 
 #include "TGeoManager.h"

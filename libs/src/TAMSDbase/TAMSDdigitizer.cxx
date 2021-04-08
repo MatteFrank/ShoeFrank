@@ -1,7 +1,7 @@
 #include "TAMSDdigitizer.hxx"
 #include "TAMSDparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include <math.h>
 #include "TVector2.h"

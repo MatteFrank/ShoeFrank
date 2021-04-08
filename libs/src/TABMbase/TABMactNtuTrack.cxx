@@ -123,7 +123,7 @@ void TABMactNtuTrack::CreateHistogram()
   }
    
   //STREL calibration
-  if(GlobalPar::GetPar()->CalibBM()){
+  if(TAGrecoManager::GetPar()->CalibBM()){
     Int_t nbin=(int)(p_bmcon->GetHitTimeCut()/10.);
     fpResTimeTot = new TH2F("bmTrackTimeResidual","Residual vs Time; Residual [cm]; Time [ns]", 600, -0.3, 0.3,nbin, 0., p_bmcon->GetHitTimeCut());
     AddHistogram(fpResTimeTot);
@@ -342,7 +342,7 @@ Bool_t TABMactNtuTrack::Action()
       TABMhit* p_hit=p_nturaw->GetHit(i);
       if(p_hit->GetIsSelected()>0){
         fpResTot->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
-        if(GlobalPar::GetPar()->CalibBM()){
+        if(TAGrecoManager::GetPar()->CalibBM()){
           fpResTimeTot->Fill(p_hit->GetResidual(),p_hit->GetTdrift());
           if((int)(p_hit->GetTdrift()/10.)<fpResTimeBin.size())
             fpResTimeBin.at((int)(p_hit->GetTdrift()/10.))->Fill(p_hit->GetResidual());  

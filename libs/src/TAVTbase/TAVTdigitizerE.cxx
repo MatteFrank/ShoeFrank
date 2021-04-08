@@ -6,7 +6,7 @@
 #include "TRandom.h"
 #include "TList.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 using namespace std;
 

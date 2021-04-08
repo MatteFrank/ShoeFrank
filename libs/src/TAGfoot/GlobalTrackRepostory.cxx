@@ -15,7 +15,7 @@ GlobalTrackRepostory::GlobalTrackRepostory() : TAGdata(), fListOfTracks(new TClo
    } else
       m_kalmanOutputDir = "./Kalman";
    
-    // m_debug = GlobalPar::GetPar()->Debug();
+    // m_debug = TAGrecoManager::GetPar()->Debug();
     m_debug = 0;
     m_resoP_step = 0.2;
 }

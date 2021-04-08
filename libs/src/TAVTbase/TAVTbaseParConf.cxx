@@ -16,7 +16,7 @@
 #include "TObjString.h"
 #include "TSystem.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAVTbaseParConf.hxx"
 
 //##############################################################################

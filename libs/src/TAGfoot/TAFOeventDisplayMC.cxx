@@ -6,7 +6,7 @@
 #include "TEveWindow.h"
 #include "TGeoManager.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "LocalRecoMC.hxx"
 
 ClassImp(TAFOeventDisplayMC)
@@ -37,25 +37,25 @@ TAFOeventDisplayMC::TAFOeventDisplayMC(const TString expName, Int_t runNumber, I
    // local reco
    SetLocalReco();
    
-   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
+   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM())
       fStMcDisplay = new TAEDpoint("STC MC hit");
    
-   if (GlobalPar::GetPar()->IncludeBM())
+   if (TAGrecoManager::GetPar()->IncludeBM())
       fBmMcDisplay = new TAEDpoint("STC MC hit");
    
-   if (GlobalPar::GetPar()->IncludeVT())
+   if (TAGrecoManager::GetPar()->IncludeVT())
       fVtMcDisplay = new TAEDpoint("VTX MC hit");
    
-   if (GlobalPar::GetPar()->IncludeIT())
+   if (TAGrecoManager::GetPar()->IncludeIT())
       fItMcDisplay = new TAEDpoint("IT MC hit");
    
-   if (GlobalPar::GetPar()->IncludeMSD())
+   if (TAGrecoManager::GetPar()->IncludeMSD())
       fMsdMcDisplay = new TAEDpoint("MSD MC hit");
    
-   if (GlobalPar::GetPar()->IncludeTW())
+   if (TAGrecoManager::GetPar()->IncludeTW())
       fTwMcDisplay = new TAEDpoint("ToF MC hit");
    
-   if (GlobalPar::GetPar()->IncludeCA())
+   if (TAGrecoManager::GetPar()->IncludeCA())
       fCaMcDisplay = new TAEDpoint("Cal MC hit");
 }
 
@@ -115,37 +115,37 @@ Bool_t TAFOeventDisplayMC::GetEntry(Int_t entry)
 //__________________________________________________________
 void TAFOeventDisplayMC::AddMcElements()
 {
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       fCaMcDisplay->ResetPoints();
       gEve->AddElement(fCaMcDisplay);
    }
    
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       fTwMcDisplay->ResetPoints();
       gEve->AddElement(fTwMcDisplay);
    }
    
-   if (GlobalPar::GetPar()->IncludeMSD()){
+   if (TAGrecoManager::GetPar()->IncludeMSD()){
       fMsdMcDisplay->ResetPoints();
       gEve->AddElement(fMsdMcDisplay);
    }
    
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       fItMcDisplay->ResetPoints();
       gEve->AddElement(fItMcDisplay);
    }
    
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       fVtMcDisplay->ResetPoints();
       gEve->AddElement(fVtMcDisplay);
    }
    
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       fBmMcDisplay->ResetPoints();
       gEve->AddElement(fBmMcDisplay);
    }
    
-   if (GlobalPar::GetPar()->IncludeST()) {
+   if (TAGrecoManager::GetPar()->IncludeST()) {
       fStMcDisplay->ResetPoints();
       gEve->AddElement(fStMcDisplay);
    }
@@ -154,25 +154,25 @@ void TAFOeventDisplayMC::AddMcElements()
 //__________________________________________________________
 void TAFOeventDisplayMC::ConnectMcElements()
 {
-   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM())
+   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM())
       fStMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateStInfo(Int_t)");
    
-   if (GlobalPar::GetPar()->IncludeBM())
+   if (TAGrecoManager::GetPar()->IncludeBM())
       fBmMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateBmInfo(Int_t)");
    
-   if (GlobalPar::GetPar()->IncludeVT())
+   if (TAGrecoManager::GetPar()->IncludeVT())
       fVtMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateVtInfo(Int_t)");
    
-   if (GlobalPar::GetPar()->IncludeIT())
+   if (TAGrecoManager::GetPar()->IncludeIT())
       fItMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateItInfo(Int_t)");
    
-   if (GlobalPar::GetPar()->IncludeMSD())
+   if (TAGrecoManager::GetPar()->IncludeMSD())
       fMsdMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateMsInfo(Int_t)");
    
-   if (GlobalPar::GetPar()->IncludeTW())
+   if (TAGrecoManager::GetPar()->IncludeTW())
       fTwMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateTwInfo(Int_t)");
    
-   if (GlobalPar::GetPar()->IncludeCA())
+   if (TAGrecoManager::GetPar()->IncludeCA())
       fCaMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateCaInfo(Int_t)");
 }
 
@@ -292,25 +292,25 @@ void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
 //__________________________________________________________
 void TAFOeventDisplayMC::UpdateMcElements()
 {
-   if (GlobalPar::GetPar()->IncludeST())
+   if (TAGrecoManager::GetPar()->IncludeST())
       UpdateMcElements("st");
    
-   if (GlobalPar::GetPar()->IncludeBM())
+   if (TAGrecoManager::GetPar()->IncludeBM())
       UpdateMcElements("bm");
    
-   if (GlobalPar::GetPar()->IncludeVT())
+   if (TAGrecoManager::GetPar()->IncludeVT())
       UpdateMcElements("vt");
    
-   if (GlobalPar::GetPar()->IncludeIT())
+   if (TAGrecoManager::GetPar()->IncludeIT())
       UpdateMcElements("it");
    
-   if (GlobalPar::GetPar()->IncludeMSD())
+   if (TAGrecoManager::GetPar()->IncludeMSD())
       UpdateMcElements("ms");
    
-   if (GlobalPar::GetPar()->IncludeTW())
+   if (TAGrecoManager::GetPar()->IncludeTW())
       UpdateMcElements("tw");
    
-   if (GlobalPar::GetPar()->IncludeCA())
+   if (TAGrecoManager::GetPar()->IncludeCA())
       UpdateMcElements("ca");
 }
 

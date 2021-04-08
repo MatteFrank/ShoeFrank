@@ -19,7 +19,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* p_glbtrack) : TAGact
   double dPVal = 1.E-3; // convergence criterion
   m_AMU = 0.9310986964; // in GeV // conversion betweem mass in GeV and atomic mass unit
 
-  m_debug = GlobalPar::GetPar()->Debug();
+  m_debug = TAGrecoManager::GetPar()->Debug();
 
   // clear hits collection
   m_VT_hitCollection.clear();
@@ -63,16 +63,16 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* p_glbtrack) : TAGact
 
 
 	// initialise the kalman method selected from param file
-	if ( GlobalPar::GetPar()->KalMode() == "ON" )
+	if ( TAGrecoManager::GetPar()->KalMode() == "ON" )
 	m_fitter = new KalmanFitter(nIter, dPVal);
-	else if ( GlobalPar::GetPar()->KalMode() == "ref" )
+	else if ( TAGrecoManager::GetPar()->KalMode() == "ref" )
 	m_refFitter = new KalmanFitterRefTrack(nIter, dPVal);
-	else if ( GlobalPar::GetPar()->KalMode() == "daf" )
+	else if ( TAGrecoManager::GetPar()->KalMode() == "daf" )
 	m_dafRefFitter = new DAF(true, nIter, dPVal);
-	else if ( GlobalPar::GetPar()->KalMode() == "dafsimple" )
+	else if ( TAGrecoManager::GetPar()->KalMode() == "dafsimple" )
 	m_dafSimpleFitter = new DAF(false, nIter, dPVal);
 	
-	if ( GlobalPar::GetPar()->EnableEventDisplay() )	    InitEventDisplay();
+	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )	    InitEventDisplay();
 
 	//---------------------------------------------------------------
 	//---------------------------------------------------------------
@@ -92,7 +92,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* p_glbtrack) : TAGact
 
 	MSDforwardcounter=0;
 
-	GlobalPar::GetPar()->Print("all");
+	TAGrecoManager::GetPar()->Print("all");
 }
 
 TAGactKFitter::~TAGactKFitter() {
@@ -123,27 +123,27 @@ void TAGactKFitter::IncludeDetectors() {
     m_detectorID_map[ tmp_detName[i] ] = i;
 
   // check kalman detectors set in param file are correct
-  if ( !(GlobalPar::GetPar()->KalSystems().size() == 1 && GlobalPar::GetPar()->KalSystems().at(0) == "all") )	 {
-    // if ( GlobalPar::GetPar()->KalSystems().size() != 0 )	 {
-    for (unsigned int i=0; i<GlobalPar::GetPar()->KalSystems().size(); i++ ) {
-      if ( m_detectorID_map.find( GlobalPar::GetPar()->KalSystems().at(i) ) == m_detectorID_map.end() )
+  if ( !(TAGrecoManager::GetPar()->KalSystems().size() == 1 && TAGrecoManager::GetPar()->KalSystems().at(0) == "all") )	 {
+    // if ( TAGrecoManager::GetPar()->KalSystems().size() != 0 )	 {
+    for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
+      if ( m_detectorID_map.find( TAGrecoManager::GetPar()->KalSystems().at(i) ) == m_detectorID_map.end() )
 	cout<< "ERROR::TAGactKFitter::TAGactKFitter  --> KalSystems parameter not set properly, check before continue."<< endl, exit(0);
     }
   }
-  if (GlobalPar::GetPar()->KalSystems().size() == 0)		cout<< "ERROR::TAGactKFitter::TAGactKFitter  --> KalSystems parameter not set properly, zero parameters, check befor continue."<< endl, exit(0);
+  if (TAGrecoManager::GetPar()->KalSystems().size() == 0)		cout<< "ERROR::TAGactKFitter::TAGactKFitter  --> KalSystems parameter not set properly, zero parameters, check befor continue."<< endl, exit(0);
 
   // list of detectors used for kalman
   m_systemsON = "";
-  for (unsigned int i=0; i<GlobalPar::GetPar()->KalSystems().size(); i++ ) {
+  for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
     if (i != 0)		m_systemsON += " ";
-    m_systemsON += GlobalPar::GetPar()->KalSystems().at(i);
+    m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
   }
   if (m_debug > 0)	cout << "Detector systems for Kalman:  " << m_systemsON << endl;
 
   // print-out of the particle hypothesis used for the fit
-  cout << "GlobalPar::GetPar()->MCParticles()";
-  for (unsigned int i=0; i<GlobalPar::GetPar()->MCParticles().size(); i++ ) {
-    cout << "   " << GlobalPar::GetPar()->MCParticles().at(i);
+  cout << "TAGrecoManager::GetPar()->MCParticles()";
+  for (unsigned int i=0; i<TAGrecoManager::GetPar()->MCParticles().size(); i++ ) {
+    cout << "   " << TAGrecoManager::GetPar()->MCParticles().at(i);
   }
   cout << endl;
 }
@@ -158,22 +158,22 @@ void TAGactKFitter::IncludeDetectors() {
 void TAGactKFitter::CreateGeometry()  {
 
 	// take geometry objects
-  if (GlobalPar::GetPar()->IncludeTG())
+  if (TAGrecoManager::GetPar()->IncludeTG())
     m_TG_geo = shared_ptr<TAGparGeo> ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() );
 
-  if (GlobalPar::GetPar()->IncludeDI())
+  if (TAGrecoManager::GetPar()->IncludeDI())
   m_DI_geo = shared_ptr<TADIparGeo> ( (TADIparGeo*) gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object() );
 
-  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVT() )
+  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeVT() )
     m_VT_geo = shared_ptr<TAVTparGeo> ( (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
 
-  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeIT() )
+  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeIT() )
     m_IT_geo = shared_ptr<TAITparGeo> ( (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
 
-  if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() )
+  if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && TAGrecoManager::GetPar()->IncludeMSD() )
     m_MSD_geo = shared_ptr<TAMSDparGeo> ( (TAMSDparGeo*) gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() );
 
-  if ( ( m_systemsON.find( "TW" ) != string::npos) && GlobalPar::GetPar()->IncludeTW() )
+  if ( ( m_systemsON.find( "TW" ) != string::npos) && TAGrecoManager::GetPar()->IncludeTW() )
     m_TW_geo = shared_ptr<TATWparGeo> ( (TATWparGeo*) gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object() );
 
 
@@ -194,7 +194,7 @@ void TAGactKFitter::CreateGeometry()  {
 
 
   // // ST
-  // if (GlobalPar::GetPar()->IncludeST()) {
+  // if (TAGrecoManager::GetPar()->IncludeST()) {
   //   TASTparGeo* parGeo = fReco->GetParGeoSt();
   //   TGeoVolume* irVol  = parGeo->BuildStartCounter();
 
@@ -202,7 +202,7 @@ void TAGactKFitter::CreateGeometry()  {
   // }
 
   // // BM
-  // if (GlobalPar::GetPar()->IncludeBM()) {
+  // if (TAGrecoManager::GetPar()->IncludeBM()) {
   //   TABMparGeo* parGeo = fReco->GetParGeoBm();;
   //   TGeoVolume* bmVol  = parGeo->BuildBeamMonitor();
 
@@ -210,7 +210,7 @@ void TAGactKFitter::CreateGeometry()  {
   // }
 
   // target
-  if (GlobalPar::GetPar()->IncludeTG()) {
+  if (TAGrecoManager::GetPar()->IncludeTG()) {
     TGeoVolume* tgVol = m_TG_geo->BuildTarget();
     tgVol->SetLineColor(kBlack);
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAGparGeo::GetBaseName());
@@ -218,7 +218,7 @@ void TAGactKFitter::CreateGeometry()  {
   }
 
   // Vertex
-  if (GlobalPar::GetPar()->IncludeVT()) {
+  if (TAGrecoManager::GetPar()->IncludeVT()) {
     TGeoVolume* vtVol  = m_VT_geo->BuildVertex();
     vtVol->SetLineColor(kRed+1);
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAVTparGeo::GetBaseName());
@@ -226,14 +226,14 @@ void TAGactKFitter::CreateGeometry()  {
   }
 
   // Magnet
-  if (GlobalPar::GetPar()->IncludeDI()) {
+  if (TAGrecoManager::GetPar()->IncludeDI()) {
     TGeoVolume* diVol = m_DI_geo->BuildMagnet();
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TADIparGeo::GetBaseName());
     m_TopVolume->AddNode(diVol, 3, transfo);
   }
 
   // IT
-  if (GlobalPar::GetPar()->IncludeIT()) {
+  if (TAGrecoManager::GetPar()->IncludeIT()) {
     TGeoVolume* itVol  = m_IT_geo->BuildInnerTracker();
     itVol->SetLineColor(kRed);
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAITparGeo::GetBaseName());
@@ -242,7 +242,7 @@ void TAGactKFitter::CreateGeometry()  {
   }
 
   // MSD
-  if (GlobalPar::GetPar()->IncludeMSD()) {
+  if (TAGrecoManager::GetPar()->IncludeMSD()) {
     TGeoVolume* msdVol = m_MSD_geo->BuildMultiStripDetector();
     msdVol->SetLineColor(kViolet);
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAMSDparGeo::GetBaseName());
@@ -251,7 +251,7 @@ void TAGactKFitter::CreateGeometry()  {
   }
 
   // TW
-  if (GlobalPar::GetPar()->IncludeTW()) {
+  if (TAGrecoManager::GetPar()->IncludeTW()) {
     TGeoVolume* twVol = m_TW_geo->BuildTofWall();
     twVol->SetLineColor(kBlue);
     TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TATWparGeo::GetBaseName());
@@ -259,7 +259,7 @@ void TAGactKFitter::CreateGeometry()  {
   }
 
   // // CA
-  // if (GlobalPar::GetPar()->IncludeCA()) {
+  // if (TAGrecoManager::GetPar()->IncludeCA()) {
   //   TACAparGeo* parGeo = fReco->GetParGeoCa();
   //   TGeoVolume* caVol = parGeo->BuildCalorimeter();
 
@@ -444,7 +444,7 @@ void TAGactKFitter::CreateDetectorPlanes() {
 
   }
 
-  if ( ( m_systemsON.find( "TW" ) != string::npos) && GlobalPar::GetPar()->IncludeTW() ){
+  if ( ( m_systemsON.find( "TW" ) != string::npos) && TAGrecoManager::GetPar()->IncludeTW() ){
   //genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1)));
   genfit::SharedPlanePtr detectorplane (new genfit::DetPlane(m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)), TVector3(0,0,1)));
   detectorplane->setU(1.,0.,0.);
@@ -1024,7 +1024,7 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
 
   m_allHitsInMeasurementFormat.clear();
   // Inner Tracker -  fill fitter collections
-  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeIT() ) {
+  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeIT() ) {
     //UploadHitsIT();
     UploadClusIT();
     if ( m_debug > 0 )		cout <<endl<<endl << "Filling inner detector hit collection = " << m_IT_clusCollection.size() << endl;
@@ -1032,7 +1032,7 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
   }
 
   // MSD -  fill fitter collections
-  if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() ) {
+  if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && TAGrecoManager::GetPar()->IncludeMSD() ) {
     UploadClusMSD();
     //UploadHitsMSD();
     if ( m_debug > 0 )		cout << endl<<endl << "Filling Strip hit collection = " << m_MSD_pointCollection.size() << endl;
@@ -1040,7 +1040,7 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
   }
 
   // Tof Wall-  fill fitter collections
-  if ( ( m_systemsON.find( "TW" ) != string::npos) && GlobalPar::GetPar()->IncludeTW() ) {
+  if ( ( m_systemsON.find( "TW" ) != string::npos) && TAGrecoManager::GetPar()->IncludeTW() ) {
     UploadHitsTW();
     if ( m_debug > 0 )		cout <<endl<<endl << "Filling scintillator hit collection = " << m_TW_hitCollection.size() << endl;
     Prepare4TofWall();
@@ -1560,7 +1560,7 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
       //   m_refFitter->removeForwardBackwarextrapolateToPladInfo(fitTrack_, fitTrack_->getTrackRep(iNumRep))
       // }
 
-      if ( !GlobalPar::GetPar()->EnableEventDisplay() )  {
+      if ( !TAGrecoManager::GetPar()->EnableEventDisplay() )  {
         delete fitTrack_;
         // fitTrack_ = nullptr;
         //fitTrack_->Clear();
@@ -1574,7 +1574,7 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
     m_hitCollectionToFit_dataLike.clear();
   } //end vertex loop
 
-	if ( GlobalPar::GetPar()->EnableEventDisplay() )  {
+	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )  {
 		display->addEvent(m_vectorTrack);
 		//cout << "display->addEvent size  " << m_vectorTrack.size() << endl;
 	}
@@ -1793,7 +1793,7 @@ TVector3 TAGactKFitter::ExtrapolateToOuterTracker( Track* trackToFit, int whichP
   // TVectorD planarCoords(2);
   // planarCoords(0) = 5.;
   // planarCoords(1) = 5.;
-  // double pixReso = GlobalPar::GetPar()->MSDReso();
+  // double pixReso = TAGrecoManager::GetPar()->MSDReso();
   // planarCov.UnitMatrix();
   // for (int k = 0; k < 2; k++){
   //   planarCov[k][k] = pixReso*pixReso;
@@ -1856,7 +1856,7 @@ TVector3 TAGactKFitter::ExtrapolateToTofWall( Track* trackToFit ){
   // TVectorD planarCoords(2);
   // planarCoords(0) = 5.;
   // planarCoords(1) = 5.;
-  // double twReso = GlobalPar::GetPar()->TWReso();
+  // double twReso = TAGrecoManager::GetPar()->TWReso();
   // planarCov.UnitMatrix();
   // for (int k = 0; k < 2; k++){
   //   planarCov[k][k] = twReso*twReso;
@@ -1896,7 +1896,7 @@ int TAGactKFitter::PrepareData4Fit() {
 
   // Vertex -  fill fitter collections
 
-  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && GlobalPar::GetPar()->IncludeVT() ) {
+  if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeVT() ) {
     UploadClusVT();
     //UploadHitsVT();
     if ( m_debug > 0 )		cout << endl<<endl << "Filling vertex hit collection  = " << m_VT_clusCollection.size() << endl;
@@ -1904,7 +1904,7 @@ int TAGactKFitter::PrepareData4Fit() {
   }
 
   // Inner Tracker -  fill fitter collections
-  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && GlobalPar::GetPar()->IncludeIT() ) {
+  if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeIT() ) {
     //UploadHitsIT();
     UploadClusIT();
     if ( m_debug > 0 )		cout <<endl<<endl << "Filling inner detector hit collection = " << m_IT_clusCollection.size() << endl;
@@ -1912,7 +1912,7 @@ int TAGactKFitter::PrepareData4Fit() {
   }
 
   // MSD -  fill fitter collections
-  if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && GlobalPar::GetPar()->IncludeMSD() ) {
+  if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && TAGrecoManager::GetPar()->IncludeMSD() ) {
     UploadClusMSD();
     //UploadHitsMSD();
     if ( m_debug > 0 )		cout << endl<<endl << "Filling Strip hit collection = " << m_MSD_clusCollection.size() << endl;
@@ -1920,7 +1920,7 @@ int TAGactKFitter::PrepareData4Fit() {
   }
 
   // Tof Wall-  fill fitter collections
-  if ( ( m_systemsON.find( "TW" ) != string::npos) && GlobalPar::GetPar()->IncludeTW() ) {
+  if ( ( m_systemsON.find( "TW" ) != string::npos) && TAGrecoManager::GetPar()->IncludeTW() ) {
     UploadHitsTW();
     if ( m_debug > 0 )		cout <<endl<<endl << "Filling scintillator hit collection = " << m_TW_hitCollection.size() << endl;
     Prepare4TofWall();
@@ -2101,7 +2101,7 @@ void TAGactKFitter::Prepare4Vertex() {
 
     // set covariance matrix
     // double pixReso = 0.001;
-    // double pixReso = GlobalPar::GetPar()->VTReso();
+    // double pixReso = TAGrecoManager::GetPar()->VTReso();
 
     TVector3 pixReso = p_hit->GetPosError();
     //   TVector3 pixReso =  m_GeoTrafo->FromVTLocalToGlobal( pixReso_ );
@@ -2154,7 +2154,7 @@ void TAGactKFitter::Prepare4InnerTracker( TAITcluster* clus, int track_ID, int i
 	hitCoords(1)=hitPos.y();
 	hitCoords(2)=hitPos.z();
 	// set covariance matrix
-	// double pixReso = GlobalPar::GetPar()->VTReso();
+	// double pixReso = TAGrecoManager::GetPar()->VTReso();
 
 	TVector3 pixReso = clus->GetPosError();
 	pixReso(2) = 0.005;   // 50 micron
@@ -2303,7 +2303,7 @@ void TAGactKFitter::Prepare4Strip(TVector3 pos, int track_ID, int iHit ) {
     hitCoords(2)=pos.z();
     // set covariance matrix
     // double pixReso = 0.001;
-    double pixReso = GlobalPar::GetPar()->MSDReso();
+    double pixReso = TAGrecoManager::GetPar()->MSDReso();
 
     //TVector3 pixReso_ = p_hit->GetPosError();
     //TVector3 pixReso =  m_GeoTrafo->FromVTLocalToGlobal( pixReso_ );
@@ -2485,7 +2485,7 @@ void TAGactKFitter::CategoriseHitsToFit_withTrueInfo() {
 
 
     // diventa Find_Category( outName )
-    if ( !GlobalPar::GetPar()->Find_MCParticle( outName ) )
+    if ( !TAGrecoManager::GetPar()->Find_MCParticle( outName ) )
     continue;
 
     if ( m_debug > 0 )		cout << "\tSelected Category: " << outName << "  flukaID=" << flukaID << "  partID="<<partID << "  charge="<<charge << "  mass="<<mass<< endl;
@@ -2565,15 +2565,15 @@ int TAGactKFitter::MakeFit( long evNum ) {
   m_evNum_vect.push_back( evNum );
 
 	// fill m_hitCollectionToFit
-	if ( GlobalPar::GetPar()->PreselectStrategy() == "TrueParticle" )
+	if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" )
 		PrepareData4Fit();
-	else if ( GlobalPar::GetPar()->PreselectStrategy() == "Sept2020" )
+	else if ( TAGrecoManager::GetPar()->PreselectStrategy() == "Sept2020" )
 		PrepareData4Fit_dataLike();
 	else
-		cout <<"ERROR :: TAGactKFitter::MakeFit  -->	 GlobalPar::GetPar()->PreselectStrategy() not defined" << endl, exit(0);
+		cout <<"ERROR :: TAGactKFitter::MakeFit  -->	 TAGrecoManager::GetPar()->PreselectStrategy() not defined" << endl, exit(0);
 
   // check the hit vector not empty otherwise clear
-  if ( m_hitCollectionToFit.size() <= 0  && GlobalPar::GetPar()->PreselectStrategy() == "TrueParticle")	{
+  if ( m_hitCollectionToFit.size() <= 0  && TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle")	{
     // if ( m_debug > 0 )	
     cout << "No category to fit in this event..." << endl;
     m_VT_hitCollection.clear();
@@ -2585,7 +2585,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
     m_MSD_pointCollection.clear();
     m_TW_hitCollection.clear();
 
-    if ( GlobalPar::GetPar()->PreselectStrategy() == "TrueParticle" )    	m_vectorTrack.clear();
+    if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" )    	m_vectorTrack.clear();
     m_allHitsInMeasurementFormat.clear();
     //delete fitTrack;
     return 2;
@@ -2651,7 +2651,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	  	cout << endl;
     }
 
-    if ( GlobalPar::GetPar()->IsKalReverse() )
+    if ( TAGrecoManager::GetPar()->IsKalReverse() )
     	fitTrack->reverseTrackPoints();
 
     //check
@@ -2664,13 +2664,13 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
     // THE REAL FIT with different Kalman modes
     try{
-      if ( GlobalPar::GetPar()->KalMode() == "ON" )
+      if ( TAGrecoManager::GetPar()->KalMode() == "ON" )
       m_fitter->processTrack(fitTrack);
-      else if ( GlobalPar::GetPar()->KalMode() == "ref" )
+      else if ( TAGrecoManager::GetPar()->KalMode() == "ref" )
       {m_refFitter->processTrack(fitTrack); cout << "Fitting ref\n\n" <<endl;}
-      else if ( GlobalPar::GetPar()->KalMode() == "daf" )
+      else if ( TAGrecoManager::GetPar()->KalMode() == "daf" )
       m_dafRefFitter->processTrack(fitTrack);
-      else if ( GlobalPar::GetPar()->KalMode() == "dafsimple" )
+      else if ( TAGrecoManager::GetPar()->KalMode() == "dafsimple" )
       m_dafSimpleFitter->processTrack(fitTrack);
 
       if ( m_debug > 3 )		fitTrack->Print();
@@ -2703,7 +2703,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
   }	// end  - loop over all hit category
 
-  if ( GlobalPar::GetPar()->EnableEventDisplay() ) {
+  if ( TAGrecoManager::GetPar()->EnableEventDisplay() ) {
     display->addEvent(m_vectorTrack);
     cout << "display->addEvent size  " << m_vectorTrack.size() << endl;
   }
@@ -2746,7 +2746,7 @@ void TAGactKFitter::SetTrueSeed( TVector3* pos, TVector3* mom ) {
 
   // SET SEED  --  debug onlyvectorTrack
   // int firstHitToProcess = -666;
-  // if ( !GlobalPar::GetPar()->IsKalReverse() ) 		firstHitToProcess = 0;
+  // if ( !TAGrecoManager::GetPar()->IsKalReverse() ) 		firstHitToProcess = 0;
   // else 					firstHitToProcess = (*hitSample).second.size()-1;
 
   // int detID = (*hitSample).second.at( firstHitToProcess )->getDetId();
@@ -2836,7 +2836,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 
     if ( m_debug > 0 )		cout << "Start hit num: " << i << endl;
     int x = i;	// hit collection index, same in case of forward and reverse
-    if ( GlobalPar::GetPar()->IsKalReverse() ) 	x = m_hitCollectionToFit[ hitSampleName ].size() - 1 - i;	// index last to first
+    if ( TAGrecoManager::GetPar()->IsKalReverse() ) 	x = m_hitCollectionToFit[ hitSampleName ].size() - 1 - i;	// index last to first
 
     // take kinematic variables to be plotted
     TVector3 tmpPos, tmpMom;
@@ -2882,7 +2882,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
     // ControlPlotsRepository::GetControlObject( m_kalmanOutputDir )->SetControlPos_4eachState( hitSampleName, i, &KalmanPos, &tmpPos, &hitPos );
 
     // keep quantities to be plotted of the state CLOSER to the interaction point
-    unsigned int measuredState = ( GlobalPar::GetPar()->IsKalReverse() ? m_hitCollectionToFit[ hitSampleName ].size()-1 : 0 );
+    unsigned int measuredState = ( TAGrecoManager::GetPar()->IsKalReverse() ? m_hitCollectionToFit[ hitSampleName ].size()-1 : 0 );
 
     if ( i == measuredState ) {
       expectedPos = tmpPos;
@@ -2911,7 +2911,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string hitSampleName ) {
 
       //m_controlPlotter->SetTrackInfo( hitSampleName, track );
 
-      //if ( GlobalPar::GetPar()->IsPrintOutputNtuple() )
+      //if ( TAGrecoManager::GetPar()->IsPrintOutputNtuple() )
       //m_controlPlotter->Set_Outputntuple(&kalmanMom, &kalmanPos, &tmp_genMom);
     }
   }
@@ -3147,7 +3147,7 @@ void TAGactKFitter::Finalize() {
   m_categoryFitted.clear();
 
   //show event display
-  if ( GlobalPar::GetPar()->EnableEventDisplay() )		display->open();
+  if ( TAGrecoManager::GetPar()->EnableEventDisplay() )		display->open();
 
 }
 

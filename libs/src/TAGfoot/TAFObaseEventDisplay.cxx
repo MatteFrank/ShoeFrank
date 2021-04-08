@@ -11,7 +11,7 @@
 #include "TEveBrowser.h"
 #include "TEveBrowser.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TASTntuRaw.hxx"
 #include "TASTntuHit.hxx"
@@ -65,11 +65,11 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumbe
    fGlbTrackProp(0x0)
 {
    // Par instance
-   GlobalPar::Instance(expName);
-   GlobalPar::GetPar()->FromFile();
+   TAGrecoManager::Instance(expName);
+   TAGrecoManager::GetPar()->FromFile();
   
    // default constructon
-   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM()) {
       fStClusDisplay = new TAEDcluster("Start counter Hit");
       fStClusDisplay->SetMaxEnergy(fMaxEnergy);
       fStClusDisplay->SetDefWidth(fQuadDefWidth/2.);
@@ -77,7 +77,7 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumbe
       fStClusDisplay->SetPickable(true);
    }
 
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       fBmClusDisplay = new TAEDwire("Beam Monitoring Wires");
       fBmClusDisplay->SetPickable(true);
 
@@ -91,7 +91,7 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumbe
       fBmDriftCircleDisplay->SetPickable(true);
    }
 
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       fVtxClusDisplay = new TAEDcluster("Vertex Cluster");
       fVtxClusDisplay->SetMaxEnergy(fMaxEnergy);
       fVtxClusDisplay->SetDefWidth(fQuadDefWidth/2.);
@@ -105,7 +105,7 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumbe
       fVtxTrackDisplay->SetPickable(true);
    }
 
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       fItClusDisplay = new TAEDcluster("Inner Tracker Cluster");
       fItClusDisplay->SetMaxEnergy(fMaxEnergy);
       fItClusDisplay->SetDefWidth(fQuadDefWidth*2.);
@@ -121,7 +121,7 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumbe
       }
    }
 
-   if (GlobalPar::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fMsdClusDisplay = new TAEDcluster("Multi Strip Cluster");
       fMsdClusDisplay->SetMaxEnergy(fMaxEnergy);
       fMsdClusDisplay->SetDefWidth(fQuadDefWidth);
@@ -129,7 +129,7 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumbe
       fMsdClusDisplay->SetPickable(true);
    }
 
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       fTwClusDisplay = new TAEDcluster("Tof Wall Hit");
       fTwClusDisplay->SetMaxEnergy(fMaxEnergy);
       fTwClusDisplay->SetDefWidth(fQuadDefWidth*8);
@@ -137,7 +137,7 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumbe
       fTwClusDisplay->SetPickable(true);
    }
 
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       fCaClusDisplay = new TAEDcluster("Calorimeter Cluster");
       fCaClusDisplay->SetMaxEnergy(fMaxEnergy);
       fCaClusDisplay->SetDefWidth(fQuadDefWidth*4);
@@ -145,15 +145,15 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumbe
       fCaClusDisplay->SetPickable(true);
    }
 
-   if (GlobalPar::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeTOE()) {
       fGlbTrackProp    = new TADIeveTrackPropagator();
       fGlbTrackDisplay = new TAEDglbTrackList("Global Tracks", fGlbTrackProp);
       fGlbTrackDisplay->SetMaxMomentum(fMaxMomentum);
    }
 
-   if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
-       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
-       GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
+       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
+       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI()) {
 
       fIrTrackDisplay = new TAEDtrack("Interaction Region Tracks");
       fIrTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
@@ -194,13 +194,13 @@ void TAFObaseEventDisplay::ReadParFiles()
    fReco->ReadParFiles();
 
    // Set field for propagator if field defined
-   if (GlobalPar::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeDI()) {
       TADIparGeo* parGeo = fReco->GetParGeoDi();
 
       fFieldImpl = fReco->GetFootField();
       fField     = new TADIeveField(fFieldImpl);
 
-      if (GlobalPar::GetPar()->IncludeTOE()) {
+      if (TAGrecoManager::GetPar()->IncludeTOE()) {
          fGlbTrackDisplay->GetPropagator()->SetMagFieldObj(fField);
          fGlbTrackDisplay->GetPropagator()->SetMaxZ(fWorldSizeZ);
          fGlbTrackDisplay->GetPropagator()->SetMaxR(fWorldSizeXY);
@@ -216,7 +216,7 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
    TAEDbaseInterface::BuildDefaultGeometry();
 
    // ST
-   if (GlobalPar::GetPar()->IncludeST()) {
+   if (TAGrecoManager::GetPar()->IncludeST()) {
       TASTparGeo* parGeo = fReco->GetParGeoSt();
       TGeoVolume* irVol  = parGeo->BuildStartCounter();
       fVolumeNames[irVol->GetName()] = kSTC;
@@ -227,7 +227,7 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
    }
 
    // BM
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       TABMparGeo* parGeo = fReco->GetParGeoBm();;
       TGeoVolume* bmVol  = parGeo->BuildBeamMonitor();
       fVolumeNames[bmVol->GetName()] = kBMN;
@@ -237,7 +237,7 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
    }
 
    // target
-   if (GlobalPar::GetPar()->IncludeTG()) {
+   if (TAGrecoManager::GetPar()->IncludeTG()) {
       TAGparGeo* parGeo = fReco->GetParGeoG();;
       TGeoVolume* tgVol = parGeo->BuildTarget();
       fVolumeNames[tgVol->GetName()] = kTGT;
@@ -247,7 +247,7 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
    }
 
    // Vertex
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       TAVTparGeo* parGeo = fReco->GetParGeoVtx();
       TGeoVolume* vtVol  = parGeo->BuildVertex();
       fVolumeNames[vtVol->GetName()] = kVTX;
@@ -257,7 +257,7 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
    }
 
    // Magnet
-   if (GlobalPar::GetPar()->IncludeDI() || GlobalPar::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeDI() || TAGrecoManager::GetPar()->IncludeTOE()) {
       TADIparGeo* parGeo = fReco->GetParGeoDi();
       TGeoVolume* mgVol = parGeo->BuildMagnet();
       fVolumeNames[mgVol->GetName()] = kDIP;
@@ -267,7 +267,7 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
    }
 
    // IT
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       TAITparGeo* parGeo = fReco->GetParGeoIt();
       TGeoVolume* itVol  = parGeo->BuildInnerTracker();
       fVolumeNames[itVol->GetName()] = kITR;
@@ -277,7 +277,7 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
    }
 
    // MSD
-   if (GlobalPar::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       TAMSDparGeo* parGeo = fReco->GetParGeoMsd();
       TGeoVolume* msdVol = parGeo->BuildMultiStripDetector();
       fVolumeNames[msdVol->GetName()] = kMSD;
@@ -287,7 +287,7 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
    }
 
    // TW
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       TATWparGeo* parGeo = fReco->GetParGeoTw();;
       TGeoVolume* twVol = parGeo->BuildTofWall();
       fVolumeNames[twVol->GetName()] = kTOF;
@@ -297,7 +297,7 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
    }
 
    // CA
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       TACAparGeo* parGeo = fReco->GetParGeoCa();
       TGeoVolume* caVol = parGeo->BuildCalorimeter();
       fVolumeNames[caVol->GetName()] = kCAL;
@@ -346,12 +346,12 @@ void TAFObaseEventDisplay::AddRequiredItem()
 //__________________________________________________________
 void TAFObaseEventDisplay::AddElements()
 {
-   if (GlobalPar::GetPar()->IncludeST()){
+   if (TAGrecoManager::GetPar()->IncludeST()){
       fStClusDisplay->ResetHits();
       gEve->AddElement(fStClusDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       fBmClusDisplay->ResetWires();
       gEve->AddElement(fBmClusDisplay);
 
@@ -362,7 +362,7 @@ void TAFObaseEventDisplay::AddElements()
        gEve->AddElement(fBmDriftCircleDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       fVtxClusDisplay->ResetHits();
       gEve->AddElement(fVtxClusDisplay);
 
@@ -370,7 +370,7 @@ void TAFObaseEventDisplay::AddElements()
       gEve->AddElement(fVtxTrackDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       fItClusDisplay->ResetHits();
       gEve->AddElement(fItClusDisplay);
 
@@ -380,29 +380,29 @@ void TAFObaseEventDisplay::AddElements()
       }
    }
 
-   if (GlobalPar::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fMsdClusDisplay->ResetHits();
       gEve->AddElement(fMsdClusDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       fTwClusDisplay->ResetHits();
       gEve->AddElement(fTwClusDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       fCaClusDisplay->ResetHits();
       gEve->AddElement(fCaClusDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeTOE()) {
       fGlbTrackDisplay->ResetTracks();
       gEve->AddElement(fGlbTrackDisplay);
    }
 
-   if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
-       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
-       GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
+       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
+       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI()) {
       fIrTrackDisplay->ResetTracks();
       gEve->AddElement(fIrTrackDisplay);
    }
@@ -411,19 +411,19 @@ void TAFObaseEventDisplay::AddElements()
 //__________________________________________________________
 void TAFObaseEventDisplay::ConnectElements()
 {
-   if (GlobalPar::GetPar()->IncludeST()){
+   if (TAGrecoManager::GetPar()->IncludeST()){
       fStClusDisplay->SetEmitSignals(true);
       fStClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
 
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       fBmTrackDisplay->SetEmitSignals(true);
       fBmTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
       fBmDriftCircleDisplay->SetEmitSignals(true);
       fBmDriftCircleDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateDriftCircleInfo(TEveDigitSet*, Int_t)");
    }
 
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       fVtxClusDisplay->SetEmitSignals(true);
       fVtxClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
 
@@ -431,7 +431,7 @@ void TAFObaseEventDisplay::ConnectElements()
       fVtxTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
 
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       fItClusDisplay->SetEmitSignals(true);
       fItClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
 
@@ -441,29 +441,29 @@ void TAFObaseEventDisplay::ConnectElements()
       }
    }
 
-   if (GlobalPar::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fMsdClusDisplay->SetEmitSignals(true);
       fMsdClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
 
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       fTwClusDisplay->SetEmitSignals(true);
       fTwClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
 
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       fCaClusDisplay->SetEmitSignals(true);
       fCaClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
    
-   if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
-       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
-       GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
+       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
+       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI()) {
       fIrTrackDisplay->SetEmitSignals(true);
       fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
 
-   if (GlobalPar::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeTOE()) {
       TQObject::Connect("TEveTrack", "SecSelected(TEveTrack*)", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
    }
 }
@@ -691,33 +691,33 @@ void TAFObaseEventDisplay::UpdateElements()
    if (fgGUIFlag)
       fEventEntry->SetText(Form("Run %d Event %d", gTAGroot->CurrentRunNumber(), gTAGroot->CurrentEventId().EventNumber()));
 
-   if (GlobalPar::GetPar()->IncludeST())
+   if (TAGrecoManager::GetPar()->IncludeST())
       UpdateElements("st");
 
-   if (GlobalPar::GetPar()->IncludeBM())
+   if (TAGrecoManager::GetPar()->IncludeBM())
       UpdateElements("bm");
 
-   if (GlobalPar::GetPar()->IncludeVT())
+   if (TAGrecoManager::GetPar()->IncludeVT())
       UpdateElements("vt");
 
-   if (GlobalPar::GetPar()->IncludeIT())
+   if (TAGrecoManager::GetPar()->IncludeIT())
       UpdateElements("it");
 
-   if (GlobalPar::GetPar()->IncludeMSD())
+   if (TAGrecoManager::GetPar()->IncludeMSD())
       UpdateElements("ms");
 
-   if (GlobalPar::GetPar()->IncludeTW())
+   if (TAGrecoManager::GetPar()->IncludeTW())
       UpdateElements("tw");
 
-   if (GlobalPar::GetPar()->IncludeCA())
+   if (TAGrecoManager::GetPar()->IncludeCA())
       UpdateElements("ca");
 
-   if (GlobalPar::GetPar()->IncludeST() && GlobalPar::GetPar()->IncludeTG() &&
-       GlobalPar::GetPar()->IncludeBM() && GlobalPar::GetPar()->IncludeVT() &&
-       GlobalPar::GetPar()->IncludeIT() && !GlobalPar::GetPar()->IncludeDI())
+   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
+       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
+       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI())
       UpdateElements("ir");
 
-   if (GlobalPar::GetPar()->IncludeTOE() && fgTrackFlag)
+   if (TAGrecoManager::GetPar()->IncludeTOE() && fgTrackFlag)
       UpdateGlbTrackElements();
 
 }
@@ -778,7 +778,7 @@ void TAFObaseEventDisplay::UpdateQuadElements(const TString prefix)
    TAVTntuTrack*  pNtuTrack = 0x0;
 
    if (prefix == "vt") {
-      if (fgTrackFlag && GlobalPar::GetPar()->IncludeTG()) {
+      if (fgTrackFlag && TAGrecoManager::GetPar()->IncludeTG()) {
          // vertex
          pNtuTrack = (TAVTntuTrack*)  fReco->GetNtuTrackVtx();
          TAVTvertex*    vtxPD   = 0x0;//NEW
@@ -932,7 +932,7 @@ void TAFObaseEventDisplay::UpdateTrackElements(const TString prefix)
          TVector3 pos;
          TVector3 posG;
 
-         if (GlobalPar::GetPar()->IncludeTG())
+         if (TAGrecoManager::GetPar()->IncludeTG())
             pos = track->Intersection(track->GetPosVertex().Z());
          else
             pos = track->Intersection(posfirstPlane);
@@ -941,7 +941,7 @@ void TAFObaseEventDisplay::UpdateTrackElements(const TString prefix)
 
          x = posG(0); y = posG(1); z = posG(2);
 
-         if (GlobalPar::GetPar()->IncludeTW() && !GlobalPar::GetPar()->IncludeDI()) {
+         if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->IncludeDI()) {
             Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
             posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
             pos = track->Intersection(posZtw);
@@ -978,7 +978,7 @@ void TAFObaseEventDisplay::UpdateTrackElements(const TString prefix)
          TVector3 pos;
          TVector3 posG;
 
-         if (GlobalPar::GetPar()->IncludeTG() ) {
+         if (TAGrecoManager::GetPar()->IncludeTG() ) {
             Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
             posZtg = fpFootGeo->FromGlobalToITLocal(TVector3(0, 0, posZtg)).Z();
             pos = track->Intersection(posZtg);
@@ -1013,7 +1013,7 @@ void TAFObaseEventDisplay::UpdateTrackElements(const TString prefix)
          TVector3 A0 = track->Intersection(parGeo->GetMylar1().Z());
          TVector3 A1 = track->Intersection(parGeo->GetMylar2().Z());
 
-         if (GlobalPar::GetPar()->IncludeTG()) {
+         if (TAGrecoManager::GetPar()->IncludeTG()) {
             Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
             posZtg = fpFootGeo->FromGlobalToBMLocal(TVector3(0, 0, posZtg)).Z();
             A1 = track->Intersection(posZtg);
@@ -1059,7 +1059,7 @@ void TAFObaseEventDisplay::UpdateTrackElements(const TString prefix)
          x = posG(0); y = posG(1); z = posG(2);
 
 
-         if (GlobalPar::GetPar()->IncludeTW()) {
+         if (TAGrecoManager::GetPar()->IncludeTW()) {
             Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
             posG = track->Intersection(posZtw);
          } else {

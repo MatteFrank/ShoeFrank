@@ -11,7 +11,7 @@
 #include "TEveBrowser.h"
 #include "TEveBrowser.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TASTntuRaw.hxx"
 #include "TASTntuHit.hxx"

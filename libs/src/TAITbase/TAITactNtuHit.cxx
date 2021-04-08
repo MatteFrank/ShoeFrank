@@ -6,7 +6,7 @@
 
 #include "TH2F.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "DECardEvent.hh"
 #include "TAGdaqEvent.hxx"
 #include "TAITparGeo.hxx"

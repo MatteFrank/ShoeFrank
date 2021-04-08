@@ -23,7 +23,7 @@
 
 #include "TAMCflukaParser.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
   \class TAMSDactNtuHitMC"

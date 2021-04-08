@@ -20,7 +20,7 @@
 #include <TF1.h>
 
 // #include "TVector3.h"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 // #include <Track.h>
 #include <GlobalTrackKalman.hxx>

@@ -3,7 +3,7 @@
 
 #include "TObjArray.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 //Class that handles the Geometrical transformations in QAPIVI RS
 

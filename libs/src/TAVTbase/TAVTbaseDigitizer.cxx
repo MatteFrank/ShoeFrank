@@ -11,7 +11,7 @@
 #include "TStyle.h"
 #include "TRandom2.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAVTparGeo.hxx"

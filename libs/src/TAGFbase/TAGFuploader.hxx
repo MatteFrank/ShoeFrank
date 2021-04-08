@@ -24,7 +24,7 @@
 #include "SharedPlanePtr.h"
 // #include "RectangularFinitePlane.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TAGroot.hxx"
 #include "TAGdataDsc.hxx"

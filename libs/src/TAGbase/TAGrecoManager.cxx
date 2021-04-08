@@ -5,40 +5,40 @@
 #include "Riostream.h"
 
 #include "TAGparTools.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
-map<TString, TString> GlobalPar::m_dectFullName = {{"ST", "Start Counter"}, {"BM", "Beam Monitor"}, {"DI", "Dipole"}, {"TG", "Target"},
+map<TString, TString> TAGrecoManager::m_dectFullName = {{"ST", "Start Counter"}, {"BM", "Beam Monitor"}, {"DI", "Dipole"}, {"TG", "Target"},
                                                    {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "Multi-Strip Detector"}, {"TW", "ToF Wall"},
                                                    {"CA", "Calorimeter"}};
 
-const TString GlobalPar::m_defParName = "FootGlobal.par";
+const TString TAGrecoManager::m_defParName = "FootGlobal.par";
 
 
 //_____________________________________________________________________________
 // Global static pointer used to ensure a single instance of the class.
-GlobalPar* GlobalPar::m_pInstance = NULL;
+TAGrecoManager* TAGrecoManager::m_pInstance = NULL;
 
 
 //_____________________________________________________________________________
-GlobalPar* GlobalPar::Instance( const TString expName )  {
+TAGrecoManager* TAGrecoManager::Instance( const TString expName )  {
 
     if (!m_pInstance)   // Only allow one instance of class to be generated, only true for multi-thread.
-        m_pInstance = new GlobalPar( expName );
+        m_pInstance = new TAGrecoManager( expName );
 
    return m_pInstance;
 }
 
 //_____________________________________________________________________________
-GlobalPar* GlobalPar::GetPar()  {
+TAGrecoManager* TAGrecoManager::GetPar()  {
 
     if (!m_pInstance)
-       cout << "ERROR::GlobalPar::GetPar()  -->  called a get before GlobalPar object istance." << endl, exit(0);
+       cout << "ERROR::TAGrecoManager::GetPar()  -->  called a get before TAGrecoManager object istance." << endl, exit(0);
 
     return m_pInstance;
 }
 
 //_____________________________________________________________________________
-GlobalPar::~GlobalPar()
+TAGrecoManager::~TAGrecoManager()
 {
   m_ClassDebugLevels.Delete();
   for (Int_t i = 0; i < m_ClassDebugLevels.GetEntriesFast(); i++) {
@@ -49,7 +49,7 @@ GlobalPar::~GlobalPar()
 
 //_____________________________________________________________________________
 // private constructor
-GlobalPar::GlobalPar( const TString expName )
+TAGrecoManager::TAGrecoManager( const TString expName )
 : m_parFileName(""),        m_debug(0),
   m_kalmanMode(""),         m_kalReverse(false),   m_verFLUKA(false),       m_VTreso(0.),            m_ITreso(0.),            m_MSDreso(0.), m_TWreso(0.),
   m_enableLocalReco(false), m_enableTree(false),   m_enableHisto(false),    m_enableSaveHits(false), m_enableTracking(false), m_enableRootObject(false),
@@ -65,7 +65,7 @@ GlobalPar::GlobalPar( const TString expName )
 }
 
 //_____________________________________________________________________________
-const TAGrunInfo GlobalPar::GetGlobalInfo()
+const TAGrunInfo TAGrecoManager::GetGlobalInfo()
 {
    TAGrunInfo runInfo;
   
@@ -136,7 +136,7 @@ const TAGrunInfo GlobalPar::GetGlobalInfo()
 }
 
 //_____________________________________________________________________________
-void GlobalPar::FromFile ()
+void TAGrecoManager::FromFile ()
 {
   TAGparTools* parTools = new TAGparTools();
   if (!parTools->Open(m_parFileName.data())) {
@@ -497,7 +497,7 @@ void GlobalPar::FromFile ()
 }
 
 //_____________________________________________________________________________
-void GlobalPar::SetDebugLevels()
+void TAGrecoManager::SetDebugLevels()
 {
    for ( map< string, int >::iterator it = m_map_debug.begin(); it != m_map_debug.end(); ++it) {
       string name = it->first;
@@ -507,7 +507,7 @@ void GlobalPar::SetDebugLevels()
 }
 
 //_____________________________________________________________________________
-void GlobalPar::SetClassDebugLevel(const char* className, Int_t level)
+void TAGrecoManager::SetClassDebugLevel(const char* className, Int_t level)
 {
    // set the debug level for the given class
    
@@ -523,7 +523,7 @@ void GlobalPar::SetClassDebugLevel(const char* className, Int_t level)
 }
 
 //_____________________________________________________________________________
-void GlobalPar::ClearClassDebugLevel(const char* className)
+void TAGrecoManager::ClearClassDebugLevel(const char* className)
 {
    // remove the setting of the debug level for the given class
    
@@ -533,7 +533,7 @@ void GlobalPar::ClearClassDebugLevel(const char* className)
 }
 
 //_____________________________________________________________________________
-Bool_t GlobalPar::GetMcDebugLevel(Int_t level, const char* className)
+Bool_t TAGrecoManager::GetMcDebugLevel(Int_t level, const char* className)
 {
    // get the logging level for the given MC class
    // need to remove compiler index
@@ -548,7 +548,7 @@ Bool_t GlobalPar::GetMcDebugLevel(Int_t level, const char* className)
 }
 
 //_____________________________________________________________________________
-Bool_t GlobalPar::GetDebugLevel(Int_t level, const char* className)
+Bool_t TAGrecoManager::GetDebugLevel(Int_t level, const char* className)
 {
    // get the logging level for the given module and class
    
@@ -570,7 +570,7 @@ Bool_t GlobalPar::GetDebugLevel(Int_t level, const char* className)
 
 
 //_____________________________________________________________________________
-Int_t GlobalPar::GetDebugLevel(const char* className)
+Int_t TAGrecoManager::GetDebugLevel(const char* className)
 {
    // get the logging level for the given module and class
    
@@ -584,7 +584,7 @@ Int_t GlobalPar::GetDebugLevel(const char* className)
 }
 
 //_____________________________________________________________________________
-void GlobalPar::DebugLine(Int_t level, const char* className, const char* funcName, const char* format, const char* file, Int_t line)
+void TAGrecoManager::DebugLine(Int_t level, const char* className, const char* funcName, const char* format, const char* file, Int_t line)
 {
    // print the message
    if (level <= Instance()->GetDebugLevel(className)) {
@@ -598,7 +598,7 @@ void GlobalPar::DebugLine(Int_t level, const char* className, const char* funcNa
 }
 
 //_____________________________________________________________________________
-void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, const char* format,...)
+void TAGrecoManager::Debug(Int_t level, const char* className, const char* funcName, const char* format,...)
 {
   // print the message
   if (level <= Instance()->GetDebugLevel(className)) {
@@ -615,7 +615,7 @@ void GlobalPar::Debug(Int_t level, const char* className, const char* funcName, 
 }
 
 //_____________________________________________________________________________
-void GlobalPar::GetMcInfoMsg(const char* className, const char* funcName, const char* format)
+void TAGrecoManager::GetMcInfoMsg(const char* className, const char* funcName, const char* format)
 {
   Int_t status;
   
@@ -631,7 +631,7 @@ void GlobalPar::GetMcInfoMsg(const char* className, const char* funcName, const 
 }
 
 //_____________________________________________________________________________
-void GlobalPar::GetMcInfo(const char* className, const char* funcName, const char* format,...)
+void TAGrecoManager::GetMcInfo(const char* className, const char* funcName, const char* format,...)
 {
   Int_t status;
   std::size_t sz = 255;
@@ -651,7 +651,7 @@ void GlobalPar::GetMcInfo(const char* className, const char* funcName, const cha
 }
 
 //________________________________________________________________________________________
-void GlobalPar::Print(Option_t* opt) {
+void TAGrecoManager::Print(Option_t* opt) {
    
    TString option(opt);
    
@@ -688,7 +688,7 @@ void GlobalPar::Print(Option_t* opt) {
 }
 
 //____________________________________________________________________________
-bool GlobalPar::Find_MCParticle( string villain )
+bool TAGrecoManager::Find_MCParticle( string villain )
 {
    return ( find( m_mcParticles.begin(), m_mcParticles.end(), villain ) == m_mcParticles.end() ? false : true);
 }
