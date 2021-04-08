@@ -36,6 +36,7 @@ public:
    TAGpoint(TVector3 pos, TVector3 posErr);
    TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ = 0);
    TAGpoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ = 0);
+   TAGpoint(TString name, TVector3 pos, TVector3 posErr);
    ~TAGpoint() {};
   
    // return detector name

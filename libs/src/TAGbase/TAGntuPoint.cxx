@@ -58,6 +58,20 @@ TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TV
 }
 
 //______________________________________________________________________________
+//  build a point
+TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr)
+: TAGcluster(),
+  fDevName(name),
+  fPosition(pos),
+  fPosError(posErr),
+  fMomentum(0,0,0),
+  fMomError(0,0,0),
+  fChargeZ(-99)
+{
+}
+
+
+//______________________________________________________________________________
 // Clear
 void TAGpoint::Clear(Option_t*)
 {
