@@ -1,10 +1,10 @@
 
-#ifndef _TAFObaseEventDisplay_HXX_
-#define _TAFObaseEventDisplay_HXX_
+#ifndef _TAGbaseEventDisplay_HXX_
+#define _TAGbaseEventDisplay_HXX_
 
 #include "TAEDbaseInterface.hxx"
 
-/** TAFObaseEventDisplay FOOT class to work on event display
+/** TAGbaseEventDisplay FOOT class to work on event display
  
  */
 #include "TAEDcluster.hxx"
@@ -30,14 +30,14 @@
 class TEveDigitSet;
 class TGCheckButton;
 
-class TAFObaseEventDisplay : public TAEDbaseInterface
+class TAGbaseEventDisplay : public TAEDbaseInterface
 {
 protected:
    //! default constructor
-   TAFObaseEventDisplay(const TString expName, Int_t runNumber, Int_t type);
+   TAGbaseEventDisplay(const TString expName, Int_t runNumber, Int_t type);
    
 public:   
-   virtual ~TAFObaseEventDisplay();
+   virtual ~TAGbaseEventDisplay();
          
    virtual void BuildDefaultGeometry();
    
@@ -188,7 +188,7 @@ protected:
    static Bool_t         fgItrTrackFlag;    // flag for ITR tracking
    static Bool_t         fgM28ClusMtFlag;    // flag for MT clustering
 
-   ClassDef(TAFObaseEventDisplay, 1); // Base class for event display
+   ClassDef(TAGbaseEventDisplay, 1); // Base class for event display
 };
 
 

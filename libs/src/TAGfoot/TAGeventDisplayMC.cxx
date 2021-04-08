@@ -1,5 +1,5 @@
 
-#include "TAFOeventDisplayMC.hxx"
+#include "TAGeventDisplayMC.hxx"
 #include "TEveGeoNode.h"
 #include "TEveManager.h"
 #include "TEveBrowser.h"
@@ -9,23 +9,23 @@
 #include "TAGrecoManager.hxx"
 #include "LocalRecoMC.hxx"
 
-ClassImp(TAFOeventDisplayMC)
+ClassImp(TAGeventDisplayMC)
 
-TAFOeventDisplayMC* TAFOeventDisplayMC::fgInstance = 0x0;
+TAGeventDisplayMC* TAGeventDisplayMC::fgInstance = 0x0;
 
 //__________________________________________________________
-TAFOeventDisplayMC* TAFOeventDisplayMC::Instance(const TString name, Int_t runNumber, Int_t type)
+TAGeventDisplayMC* TAGeventDisplayMC::Instance(const TString name, Int_t runNumber, Int_t type)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAFOeventDisplayMC(name, runNumber, type);
+      fgInstance = new TAGeventDisplayMC(name, runNumber, type);
    
    return fgInstance;
 }
 
 
 //__________________________________________________________
-TAFOeventDisplayMC::TAFOeventDisplayMC(const TString expName, Int_t runNumber, Int_t type)
- : TAFObaseEventDisplay(expName, runNumber, type),
+TAGeventDisplayMC::TAGeventDisplayMC(const TString expName, Int_t runNumber, Int_t type)
+ : TAGbaseEventDisplay(expName, runNumber, type),
    fCaMcDisplay(0x0),
    fTwMcDisplay(0x0),
    fMsdMcDisplay(0x0),
@@ -60,7 +60,7 @@ TAFOeventDisplayMC::TAFOeventDisplayMC(const TString expName, Int_t runNumber, I
 }
 
 //__________________________________________________________
-TAFOeventDisplayMC::~TAFOeventDisplayMC()
+TAGeventDisplayMC::~TAGeventDisplayMC()
 {
    // default destructor
    if (fStMcDisplay)
@@ -80,7 +80,7 @@ TAFOeventDisplayMC::~TAFOeventDisplayMC()
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::SetLocalReco()
+void TAGeventDisplayMC::SetLocalReco()
 {
    if (fType == 1) {
      Warning("SetLocalReco", "Old interface for Fluka Structure not supported anymore, switch to new");
@@ -106,14 +106,14 @@ void TAFOeventDisplayMC::SetLocalReco()
 }
 
 //__________________________________________________________
-Bool_t TAFOeventDisplayMC::GetEntry(Int_t entry)
+Bool_t TAGeventDisplayMC::GetEntry(Int_t entry)
 {
    if (fType != 2) return true;
    return fReco->GoEvent(entry);   
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::AddMcElements()
+void TAGeventDisplayMC::AddMcElements()
 {
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       fCaMcDisplay->ResetPoints();
@@ -152,74 +152,74 @@ void TAFOeventDisplayMC::AddMcElements()
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::ConnectMcElements()
+void TAGeventDisplayMC::ConnectMcElements()
 {
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM())
-      fStMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateStInfo(Int_t)");
+      fStMcDisplay->Connect("PointSelected(Int_t )", "TAGeventDisplayMC", this, "UpdateStInfo(Int_t)");
    
    if (TAGrecoManager::GetPar()->IncludeBM())
-      fBmMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateBmInfo(Int_t)");
+      fBmMcDisplay->Connect("PointSelected(Int_t )", "TAGeventDisplayMC", this, "UpdateBmInfo(Int_t)");
    
    if (TAGrecoManager::GetPar()->IncludeVT())
-      fVtMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateVtInfo(Int_t)");
+      fVtMcDisplay->Connect("PointSelected(Int_t )", "TAGeventDisplayMC", this, "UpdateVtInfo(Int_t)");
    
    if (TAGrecoManager::GetPar()->IncludeIT())
-      fItMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateItInfo(Int_t)");
+      fItMcDisplay->Connect("PointSelected(Int_t )", "TAGeventDisplayMC", this, "UpdateItInfo(Int_t)");
    
    if (TAGrecoManager::GetPar()->IncludeMSD())
-      fMsdMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateMsInfo(Int_t)");
+      fMsdMcDisplay->Connect("PointSelected(Int_t )", "TAGeventDisplayMC", this, "UpdateMsInfo(Int_t)");
    
    if (TAGrecoManager::GetPar()->IncludeTW())
-      fTwMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateTwInfo(Int_t)");
+      fTwMcDisplay->Connect("PointSelected(Int_t )", "TAGeventDisplayMC", this, "UpdateTwInfo(Int_t)");
    
    if (TAGrecoManager::GetPar()->IncludeCA())
-      fCaMcDisplay->Connect("PointSelected(Int_t )", "TAFOeventDisplayMC", this, "UpdateCaInfo(Int_t)");
+      fCaMcDisplay->Connect("PointSelected(Int_t )", "TAGeventDisplayMC", this, "UpdateCaInfo(Int_t)");
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateStInfo(Int_t idx)
+void TAGeventDisplayMC::UpdateStInfo(Int_t idx)
 {
    UpdateMcInfo("st", idx);
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateBmInfo(Int_t idx)
+void TAGeventDisplayMC::UpdateBmInfo(Int_t idx)
 {
    UpdateMcInfo("bm", idx);
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateVtInfo(Int_t idx)
+void TAGeventDisplayMC::UpdateVtInfo(Int_t idx)
 {
    UpdateMcInfo("vt", idx);
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateItInfo(Int_t idx)
+void TAGeventDisplayMC::UpdateItInfo(Int_t idx)
 {
    UpdateMcInfo("it", idx);
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateMsInfo(Int_t idx)
+void TAGeventDisplayMC::UpdateMsInfo(Int_t idx)
 {
    UpdateMcInfo("ms", idx);
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateTwInfo(Int_t idx)
+void TAGeventDisplayMC::UpdateTwInfo(Int_t idx)
 {
    UpdateMcInfo("tw", idx);
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateCaInfo(Int_t idx)
+void TAGeventDisplayMC::UpdateCaInfo(Int_t idx)
 {
    UpdateMcInfo("ca", idx);
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
+void TAGeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
 {
    TAMChit* point = 0x0;
    TString name   = "";
@@ -290,7 +290,7 @@ void TAFOeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateMcElements()
+void TAGeventDisplayMC::UpdateMcElements()
 {
    if (TAGrecoManager::GetPar()->IncludeST())
       UpdateMcElements("st");
@@ -315,7 +315,7 @@ void TAFOeventDisplayMC::UpdateMcElements()
 }
 
 //__________________________________________________________
-void TAFOeventDisplayMC::UpdateMcElements(const TString prefix)
+void TAGeventDisplayMC::UpdateMcElements(const TString prefix)
 {
    
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {

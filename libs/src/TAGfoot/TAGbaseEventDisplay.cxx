@@ -1,6 +1,6 @@
 
 
-#include "TAFObaseEventDisplay.hxx"
+#include "TAGbaseEventDisplay.hxx"
 
 // root include
 #include "Riostream.h"
@@ -34,17 +34,17 @@
 #include "LocalReco.hxx"
 #include "LocalRecoMC.hxx"
 
-ClassImp(TAFObaseEventDisplay)
+ClassImp(TAGbaseEventDisplay)
 
-Bool_t  TAFObaseEventDisplay::fgTrackFlag       = true;
-TString TAFObaseEventDisplay::fgVtxTrackingAlgo = "Std";
-Bool_t  TAFObaseEventDisplay::fgStdAloneFlag    = false;
-Bool_t  TAFObaseEventDisplay::fgBmSelectHit     = false;
-Bool_t  TAFObaseEventDisplay::fgM28ClusMtFlag   = false;
+Bool_t  TAGbaseEventDisplay::fgTrackFlag       = true;
+TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Std";
+Bool_t  TAGbaseEventDisplay::fgStdAloneFlag    = false;
+Bool_t  TAGbaseEventDisplay::fgBmSelectHit     = false;
+Bool_t  TAGbaseEventDisplay::fgM28ClusMtFlag   = false;
 
 
 //__________________________________________________________
-TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumber, Int_t type)
+TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber, Int_t type)
  : TAEDbaseInterface(type, expName, runNumber),
    fStClusDisplay(0x0),
    fBmClusDisplay(0x0),
@@ -165,7 +165,7 @@ TAFObaseEventDisplay::TAFObaseEventDisplay(const TString expName, Int_t runNumbe
 }
 
 //__________________________________________________________
-TAFObaseEventDisplay::~TAFObaseEventDisplay()
+TAGbaseEventDisplay::~TAGbaseEventDisplay()
 {
    // default destructor
    if (fStClusDisplay)        delete fStClusDisplay;
@@ -189,7 +189,7 @@ TAFObaseEventDisplay::~TAFObaseEventDisplay()
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::ReadParFiles()
+void TAGbaseEventDisplay::ReadParFiles()
 {
    fReco->ReadParFiles();
 
@@ -211,7 +211,7 @@ void TAFObaseEventDisplay::ReadParFiles()
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::BuildDefaultGeometry()
+void TAGbaseEventDisplay::BuildDefaultGeometry()
 {
    TAEDbaseInterface::BuildDefaultGeometry();
 
@@ -308,32 +308,32 @@ void TAFObaseEventDisplay::BuildDefaultGeometry()
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::CreateRecAction()
+void TAGbaseEventDisplay::CreateRecAction()
 {
    fReco->CreateRecAction();
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::CreateRawAction()
+void TAGbaseEventDisplay::CreateRawAction()
 {
    fReco->CreateRawAction();
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::SetFileName(const TString fileName)
+void TAGbaseEventDisplay::SetFileName(const TString fileName)
 {
    fReco->SetName(fileName);
    fReco->SetRunNumber(fRunNumber);
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::OpenFile()
+void TAGbaseEventDisplay::OpenFile()
 {
    fReco->OpenFileIn();
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::AddRequiredItem()
+void TAGbaseEventDisplay::AddRequiredItem()
 {
    fReco->AddRawRequiredItem();
    fReco->AddRecRequiredItem();
@@ -344,7 +344,7 @@ void TAFObaseEventDisplay::AddRequiredItem()
 
 
 //__________________________________________________________
-void TAFObaseEventDisplay::AddElements()
+void TAGbaseEventDisplay::AddElements()
 {
    if (TAGrecoManager::GetPar()->IncludeST()){
       fStClusDisplay->ResetHits();
@@ -409,67 +409,67 @@ void TAFObaseEventDisplay::AddElements()
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::ConnectElements()
+void TAGbaseEventDisplay::ConnectElements()
 {
    if (TAGrecoManager::GetPar()->IncludeST()){
       fStClusDisplay->SetEmitSignals(true);
-      fStClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      fStClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
       fBmTrackDisplay->SetEmitSignals(true);
-      fBmTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
+      fBmTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
       fBmDriftCircleDisplay->SetEmitSignals(true);
-      fBmDriftCircleDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateDriftCircleInfo(TEveDigitSet*, Int_t)");
+      fBmDriftCircleDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateDriftCircleInfo(TEveDigitSet*, Int_t)");
    }
 
    if (TAGrecoManager::GetPar()->IncludeVT()) {
       fVtxClusDisplay->SetEmitSignals(true);
-      fVtxClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      fVtxClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
 
       fVtxTrackDisplay->SetEmitSignals(true);
-      fVtxTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
+      fVtxTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
 
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       fItClusDisplay->SetEmitSignals(true);
-      fItClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      fItClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
 
       if (IsItrTracking()) {
          fItTrackDisplay->SetEmitSignals(true);
-         fItTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
+         fItTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
       }
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fMsdClusDisplay->SetEmitSignals(true);
-      fMsdClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      fMsdClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       fTwClusDisplay->SetEmitSignals(true);
-      fTwClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      fTwClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
 
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       fCaClusDisplay->SetEmitSignals(true);
-      fCaClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      fCaClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
    
    if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
        TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
        TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI()) {
       fIrTrackDisplay->SetEmitSignals(true);
-      fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
+      fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
 
    if (TAGrecoManager::GetPar()->IncludeTOE()) {
-      TQObject::Connect("TEveTrack", "SecSelected(TEveTrack*)", "TAFObaseEventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
+      TQObject::Connect("TEveTrack", "SecSelected(TEveTrack*)", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
    }
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
+void TAGbaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
 {
    TAEDcluster* quadHits = dynamic_cast<TAEDcluster*> (qs);
    TObject* obj = quadHits->GetId(idx);
@@ -574,7 +574,7 @@ void TAFObaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
+void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
 {
    TAEDtrack* lineTracks = dynamic_cast<TAEDtrack*> (qs);
    TObject* obj = lineTracks->GetId(idx);
@@ -625,7 +625,7 @@ void TAFObaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateTrackInfo(TEveTrack* ts)
+void TAGbaseEventDisplay::UpdateTrackInfo(TEveTrack* ts)
 {
    TAEDglbTrack* lineTracks = dynamic_cast<TAEDglbTrack*> (ts);
    TObject* obj = lineTracks->GetTrackId();
@@ -662,7 +662,7 @@ void TAFObaseEventDisplay::UpdateTrackInfo(TEveTrack* ts)
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
+void TAGbaseEventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
 {
     TEveBoxSet* tpCircle = dynamic_cast<TEveBoxSet*>(qs);
 
@@ -686,7 +686,7 @@ void TAFObaseEventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateElements()
+void TAGbaseEventDisplay::UpdateElements()
 {
    if (fgGUIFlag)
       fEventEntry->SetText(Form("Run %d Event %d", gTAGroot->CurrentRunNumber(), gTAGroot->CurrentEventId().EventNumber()));
@@ -723,7 +723,7 @@ void TAFObaseEventDisplay::UpdateElements()
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateElements(const TString prefix)
+void TAGbaseEventDisplay::UpdateElements(const TString prefix)
 {
    if (prefix == "tw")
       UpdateBarElements();
@@ -745,7 +745,7 @@ void TAFObaseEventDisplay::UpdateElements(const TString prefix)
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateQuadElements(const TString prefix)
+void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
       if (prefix == "vt") {
@@ -844,7 +844,7 @@ void TAFObaseEventDisplay::UpdateQuadElements(const TString prefix)
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateStripElements()
+void TAGbaseEventDisplay::UpdateStripElements()
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn()))
       fMsdClusDisplay->ResetHits();
@@ -893,7 +893,7 @@ void TAFObaseEventDisplay::UpdateStripElements()
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateTrackElements(const TString prefix)
+void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
       if (prefix == "bm")
@@ -1080,7 +1080,7 @@ void TAFObaseEventDisplay::UpdateTrackElements(const TString prefix)
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateGlbTrackElements()
+void TAGbaseEventDisplay::UpdateGlbTrackElements()
 {
    TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
    fGlbTrackDisplay->ResetTracks();
@@ -1108,7 +1108,7 @@ void TAFObaseEventDisplay::UpdateGlbTrackElements()
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateBarElements()
+void TAGbaseEventDisplay::UpdateBarElements()
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
          fTwClusDisplay->ResetHits();
@@ -1186,7 +1186,7 @@ void TAFObaseEventDisplay::UpdateBarElements()
 
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateCrystalElements()
+void TAGbaseEventDisplay::UpdateCrystalElements()
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
          fCaClusDisplay->ResetHits();
@@ -1251,7 +1251,7 @@ void TAFObaseEventDisplay::UpdateCrystalElements()
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateStcElements()
+void TAGbaseEventDisplay::UpdateStcElements()
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
       fStClusDisplay->ResetHits();
@@ -1285,7 +1285,7 @@ void TAFObaseEventDisplay::UpdateStcElements()
 }
 
 //__________________________________________________________
-void TAFObaseEventDisplay::UpdateLayerElements()
+void TAGbaseEventDisplay::UpdateLayerElements()
 {
    TABMparGeo* pbmGeo = fReco->GetParGeoBm();;
 

@@ -24,14 +24,13 @@ set( with_dictionnaries
    TAGactKFitter
    GlobalTrackRepostory
    GlobalTrackKalman
-   TAFObaseEventDisplay
-   TAFOeventDisplay
-   TAFOeventDisplayMC
+   TAGbaseEventDisplay
+   TAGeventDisplay
+   TAGeventDisplayMC
    BaseReco
    LocalRecoMC
    LocalReco
    TAGactNtuGlbTrack
-#   TAGactNtuTrackS
    GlobalReco
    GlobalToeReco
    GlobalTrackingStudies

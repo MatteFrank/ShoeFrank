@@ -1,6 +1,6 @@
 
 
-#include "TAFOeventDisplay.hxx"
+#include "TAGeventDisplay.hxx"
 
 // root include
 #include "Riostream.h"
@@ -33,34 +33,34 @@
 
 #include "LocalReco.hxx"
 
-ClassImp(TAFOeventDisplay)
+ClassImp(TAGeventDisplay)
 
-TAFOeventDisplay* TAFOeventDisplay::fgInstance = 0x0;
+TAGeventDisplay* TAGeventDisplay::fgInstance = 0x0;
 
 //__________________________________________________________
-TAFOeventDisplay* TAFOeventDisplay::Instance(const TString name, Int_t runNumber, Int_t type)
+TAGeventDisplay* TAGeventDisplay::Instance(const TString name, Int_t runNumber, Int_t type)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAFOeventDisplay(name, runNumber, type);
+      fgInstance = new TAGeventDisplay(name, runNumber, type);
 
    return fgInstance;
 }
 
 //__________________________________________________________
-TAFOeventDisplay::TAFOeventDisplay(const TString expName, Int_t runNumber, Int_t type)
- : TAFObaseEventDisplay(expName, runNumber, type)
+TAGeventDisplay::TAGeventDisplay(const TString expName, Int_t runNumber, Int_t type)
+ : TAGbaseEventDisplay(expName, runNumber, type)
 {
    // local reco
    SetLocalReco();  
 }
 
 //__________________________________________________________
-TAFOeventDisplay::~TAFOeventDisplay()
+TAGeventDisplay::~TAGeventDisplay()
 {
 }
 
 //__________________________________________________________
-void TAFOeventDisplay::SetLocalReco()
+void TAGeventDisplay::SetLocalReco()
 {
    if (fType == 0)
       fReco = new LocalReco(fExpName);

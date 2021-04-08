@@ -14,9 +14,9 @@
 #pragma link C++ class GlobalTrackKalman;
 #pragma link C++ class GlobalReco;
 
-#pragma link C++ class TAFOeventDisplayMC;
-#pragma link C++ class TAFOeventDisplay;
-#pragma link C++ class TAFObaseEventDisplay;
+#pragma link C++ class TAGeventDisplayMC;
+#pragma link C++ class TAGeventDisplay;
+#pragma link C++ class TAGbaseEventDisplay;
 
 #pragma link C++ class BaseReco;
 #pragma link C++ class LocalRecoMC;
@@ -24,7 +24,5 @@
 
 #pragma link C++ class TAGactNtuGlbTrack;
 #pragma link C++ class GlobalToeReco;
-
-//#pragma link C++ class TAGactNtuTrackS;
 
 #endif

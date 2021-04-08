@@ -1,10 +1,10 @@
 
-#ifndef _TAFOeventDisplay_HXX_
-#define _TAFOeventDisplay_HXX_
+#ifndef _TAGeventDisplay_HXX_
+#define _TAGeventDisplay_HXX_
 
 #include "TAEDbaseInterface.hxx"
 
-/** TAFOeventDisplay FOOT class to work on event display
+/** TAGeventDisplay FOOT class to work on event display
  
  */
 #include "TAEDcluster.hxx"
@@ -13,7 +13,7 @@
 #include "TAEDglbTrack.hxx"
 #include "TAEDglbTrackList.hxx"
 #include "TADIeveTrackPropagator.hxx"
-#include "TAFObaseEventDisplay.hxx"
+#include "TAGbaseEventDisplay.hxx"
 
 /** TAFOeventnDisplay FOOT class to work on event display
  
@@ -30,26 +30,26 @@
 class TEveDigitSet;
 class TGCheckButton;
 
-class TAFOeventDisplay : public TAFObaseEventDisplay
+class TAGeventDisplay : public TAGbaseEventDisplay
 {
    
 protected:
    //! default constructor
-   TAFOeventDisplay(const TString expName, Int_t runNumber, Int_t type);
+   TAGeventDisplay(const TString expName, Int_t runNumber, Int_t type);
    
 protected:
-   static TAFOeventDisplay* fgInstance; // static instance of class
+   static TAGeventDisplay* fgInstance; // static instance of class
 
 public:
    //! Instance of class
-   static TAFOeventDisplay* Instance(const TString name = "", Int_t runNumber = -1, Int_t type = 0);
+   static TAGeventDisplay* Instance(const TString name = "", Int_t runNumber = -1, Int_t type = 0);
    
-   virtual ~TAFOeventDisplay();
+   virtual ~TAGeventDisplay();
    
    //! Set local reconstruction
    void SetLocalReco();
    
-   ClassDef(TAFOeventDisplay, 1); // Base class for event display
+   ClassDef(TAGeventDisplay, 1); // Base class for event display
 };
 
 

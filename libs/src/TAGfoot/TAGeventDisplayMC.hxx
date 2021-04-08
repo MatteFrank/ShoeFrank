@@ -1,32 +1,32 @@
 
-#ifndef _TAFOeventDisplayMC_HXX_
-#define _TAFOeventDisplayMC_HXX_
+#ifndef _TAGeventDisplayMC_HXX_
+#define _TAGeventDisplayMC_HXX_
 
 
-/** TAFOeventDisplay FOOT class to work on MC event display
+/** TAGeventDisplay FOOT class to work on MC event display
  
  */
 
-#include "TAFObaseEventDisplay.hxx"
+#include "TAGbaseEventDisplay.hxx"
 #include "TAEDpoint.hxx"
 
 class TTree;
 
-class TAFOeventDisplayMC : public TAFObaseEventDisplay
+class TAGeventDisplayMC : public TAGbaseEventDisplay
 {
    
 protected:
    //! default constructor
-   TAFOeventDisplayMC(const TString expName, Int_t runNumber, Int_t type);
+   TAGeventDisplayMC(const TString expName, Int_t runNumber, Int_t type);
    
 protected:
-   static TAFOeventDisplayMC* fgInstance; // static instance of class
+   static TAGeventDisplayMC* fgInstance; // static instance of class
    
 public:
    //! Instance of class
-   static TAFOeventDisplayMC* Instance(const TString name = "", Int_t runNumber = -1, Int_t type = 2);
+   static TAGeventDisplayMC* Instance(const TString name = "", Int_t runNumber = -1, Int_t type = 2);
    
-   virtual ~TAFOeventDisplayMC();
+   virtual ~TAGeventDisplayMC();
    
    //! Tree entry
    Bool_t GetEntry(Int_t entry);
@@ -74,7 +74,7 @@ private:
    void AddRequiredMcItemTw();
    void AddRequiredMcItemCa();
 
-   ClassDef(TAFOeventDisplayMC, 2); // Class for MC event display
+   ClassDef(TAGeventDisplayMC, 2); // Class for MC event display
 };
 
 
