@@ -8,7 +8,7 @@
 /*------------------------------------------+---------------------------------*/
 #include "TTree.h"
 #include "TAMCntuHit.hxx"
-#include "TAMCntuTrack.hxx"
+#include "TAMCntuPart.hxx"
 #include "TAMCntuRegion.hxx"
 #include "TAMCntuEvent.hxx"
 #include "EventStruct.hxx"
@@ -30,7 +30,7 @@ public:
   static TAMCntuHit*    GetMsdHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
   static TAMCntuHit*    GetTofHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
   static TAMCntuHit*    GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  static TAMCntuTrack*  GetTracks( EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrck);
+  static TAMCntuPart*  GetTracks( EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrck);
   static TAMCntuRegion* GetRegions(EVENT_STRUCT* evStr, TAGdataDsc* p_ntureg);
   static TAMCntuEvent*  GetEvents(EVENT_STRUCT* evStr,  TAGdataDsc* p_ntuevt);
 

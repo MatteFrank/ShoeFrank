@@ -7,7 +7,7 @@
 #include "TCFObaseEventAction.hxx"
 #include "globals.hh"
 
-#include "TAMCntuTrack.hxx"
+#include "TAMCntuPart.hxx"
 
 class TCFOrunAction;
 class TCGbaseGeometryConstructor;

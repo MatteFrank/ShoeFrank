@@ -6,14 +6,14 @@
 
 #pragma link C++ class TAGparGeo+;
 #pragma link C++ class TAMCparTools+;
-#pragma link C++ class TAMCtrack+;
-#pragma link C++ class TAMCntuTrack+;
+#pragma link C++ class TAMCpart+;
+#pragma link C++ class TAMCntuPart+;
 #pragma link C++ class TAMCntuRegion+;
 #pragma link C++ class TAMCregion+;
 #pragma link C++ class TAMCntuHit+;
 #pragma link C++ class TAMChit+;
 #pragma link C++ class TAMCevent+;
-#pragma link C++ class TAMCactNtuTrack+;
+#pragma link C++ class TAMCactNtuPart+;
 #pragma link C++ class TAMCactNtuRegion+;
 #pragma link C++ class TAMCactNtuEvent+;
 #pragma link C++ class TAMCntuEvent+;

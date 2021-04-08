@@ -9,19 +9,19 @@ using namespace std;
 
 #include "TString.h"
 
-#include "TAMCntuTrack.hxx"
+#include "TAMCntuPart.hxx"
 
 /*!
-  \class TAMCtrack TAMCntuTrack.hxx "TAMCntuTrack.hxx"
+  \class TAMCpart TAMCntuPart.hxx "TAMCntuPart.hxx"
   \brief Ntuplize ToF raw data - track object. **
 */
 
-ClassImp(TAMCtrack);
+ClassImp(TAMCpart);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAMCtrack::TAMCtrack()
+TAMCpart::TAMCpart()
  : TAGobject(),
    fFlukaId(-1),
    fCharge(0.),
@@ -43,7 +43,7 @@ TAMCtrack::TAMCtrack()
 
 //------------------------------------------+-----------------------------------
 //! Construct with data
-TAMCtrack::TAMCtrack(Int_t i_id, Int_t i_chg, Int_t i_type, 
+TAMCpart::TAMCpart(Int_t i_id, Int_t i_chg, Int_t i_type, 
 			       Int_t i_reg, Int_t i_bar, Int_t i_dead,
 			       Double_t i_mass,  Int_t i_moth, 
 			       Double_t i_time,
@@ -72,7 +72,7 @@ TAMCtrack::TAMCtrack(Int_t i_id, Int_t i_chg, Int_t i_type,
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TAMCtrack::~TAMCtrack()
+TAMCpart::~TAMCpart()
 {
 }
 
@@ -80,20 +80,20 @@ TAMCtrack::~TAMCtrack()
 //##############################################################################
 
 /*!
-  \class TAMCntuTrack TAMCntuTrack.hxx "TAMCntuTrack.hxx"
+  \class TAMCntuPart TAMCntuPart.hxx "TAMCntuPart.hxx"
   \brief Ntuplize ToF raw data - container. **
 */
 
-ClassImp(TAMCntuTrack);
+ClassImp(TAMCntuPart);
 
-      TString TAMCntuTrack::fgkBranchName   = "mctrack.";
-const TString TAMCntuTrack::fgkDefDataName  = "eveMc";
+      TString TAMCntuPart::fgkBranchName   = "mctrack.";
+const TString TAMCntuPart::fgkDefDataName  = "eveMc";
 
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TAMCntuTrack::TAMCntuTrack()
+TAMCntuPart::TAMCntuPart()
  : TAGdata(),
    fListOfTracks(0x0)
 {
@@ -103,14 +103,14 @@ TAMCntuTrack::TAMCntuTrack()
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TAMCntuTrack::~TAMCntuTrack()
+TAMCntuPart::~TAMCntuPart()
 {
   delete fListOfTracks;
 }
 
 //------------------------------------------+-----------------------------------
 //! new track
-TAMCtrack* TAMCntuTrack::NewTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
+TAMCpart* TAMCntuPart::NewTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
                                    Int_t i_reg, Int_t i_bar, Int_t i_dead,
                                    Double_t i_mass, Int_t i_moth,
                                    Double_t i_time,
@@ -119,7 +119,7 @@ TAMCtrack* TAMCntuTrack::NewTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
                                    TVector3 i_ip,TVector3 i_fp) {
 
     TClonesArray &trackCollection = *fListOfTracks;
-    TAMCtrack* track = new( trackCollection[trackCollection.GetEntriesFast()] ) TAMCtrack(
+    TAMCpart* track = new( trackCollection[trackCollection.GetEntriesFast()] ) TAMCpart(
                                             i_id,i_chg,i_type,i_reg,i_bar,i_dead,i_mass,i_moth,
                                             i_time,i_tof,i_trlen,i_ipos,i_fpos,i_ip,i_fp);
     return track;
@@ -129,20 +129,20 @@ TAMCtrack* TAMCntuTrack::NewTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 
-void TAMCntuTrack::SetupClones()   {
-  if (!fListOfTracks) fListOfTracks = new TClonesArray("TAMCtrack", 500);
+void TAMCntuPart::SetupClones()   {
+  if (!fListOfTracks) fListOfTracks = new TClonesArray("TAMCpart", 500);
 }
 
 //------------------------------------------+-----------------------------------
 //! Clear.
-void TAMCntuTrack::Clear(Option_t*)
+void TAMCntuPart::Clear(Option_t*)
 {
    fListOfTracks->Clear();
 }
 
 //------------------------------------------+-----------------------------------
 //! return n tracks
-Int_t TAMCntuTrack::GetTracksN() const
+Int_t TAMCntuPart::GetTracksN() const
 {
    return fListOfTracks->GetEntries();
 }
@@ -150,23 +150,23 @@ Int_t TAMCntuTrack::GetTracksN() const
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th track
 
-TAMCtrack* TAMCntuTrack::GetTrack(Int_t i)
+TAMCpart* TAMCntuPart::GetTrack(Int_t i)
 {
-   return (TAMCtrack*) ((*fListOfTracks)[i]);;
+   return (TAMCpart*) ((*fListOfTracks)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th track
-const TAMCtrack* TAMCntuTrack::GetTrack(Int_t i) const
+const TAMCpart* TAMCntuPart::GetTrack(Int_t i) const
 {
-   return (const TAMCtrack*) ((*fListOfTracks)[i]);;
+   return (const TAMCpart*) ((*fListOfTracks)[i]);;
 }
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
-void TAMCntuTrack::ToStream(ostream& os, Option_t* option) const
+void TAMCntuPart::ToStream(ostream& os, Option_t* option) const
 {
-  // os << "TAMCntuTrack" 
+  // os << "TAMCntuPart" 
   //    // << Form("  ntrack=%3d", ntrack) 
   //    << endl;
 
@@ -175,7 +175,7 @@ void TAMCntuTrack::ToStream(ostream& os, Option_t* option) const
   // os << "ind slat stat  adct  adcb  tdct  tdcb" << endl;
   
   // // for (Int_t i = 0; i < ntrack; i++) {
-  // //   const TAMCtrack* p_track = Hit(i);
+  // //   const TAMCpart* p_track = Hit(i);
   // //   os << Form("%3d %4lf", i, p_track->mass)
   // //      << endl;
   // // }

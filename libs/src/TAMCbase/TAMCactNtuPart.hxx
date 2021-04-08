@@ -1,9 +1,9 @@
-#ifndef _TAMCactNtuTrack_HXX
-#define _TAMCactNtuTrack_HXX
+#ifndef _TAMCactNtuPart_HXX
+#define _TAMCactNtuPart_HXX
 /*!
   \file
-  \version $Id: TAMCactNtuTrack.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
-  \brief   Declaration of TAMCactNtuTrack.
+  \version $Id: TAMCactNtuPart.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+  \brief   Declaration of TAMCactNtuPart.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -14,16 +14,16 @@
 
 #include "GlobalPar.hxx"
 
-class TAMCactNtuTrack : public TAGaction {
+class TAMCactNtuPart : public TAGaction {
   public:
-    explicit        TAMCactNtuTrack(const char* name=0,
+    explicit        TAMCactNtuPart(const char* name=0,
                                   TAGdataDsc* p_nturaw=0,
                                   EVENT_STRUCT* evStr=0);
-    virtual         ~TAMCactNtuTrack();
+    virtual         ~TAMCactNtuPart();
 
     virtual Bool_t  Action();
 
-    ClassDef(TAMCactNtuTrack,0)
+    ClassDef(TAMCactNtuPart,0)
 
   private:
     TAGdataDsc*     fpNtuMC;		    // output data dsc

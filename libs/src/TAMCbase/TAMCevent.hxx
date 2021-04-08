@@ -9,7 +9,7 @@
 
 class TAMCntuHit ;
 class TAMCntuEvent ;
-class TAMCntuTrack ;
+class TAMCntuPart ;
 class TAMCntuRegion;
 class TAMCntuEvent ;
 using namespace std;
@@ -70,7 +70,7 @@ class TAMCevent : public TObject {
 public:
    // Getters
    TAMCntuEvent*  GetNtuEvent() const { return fEvent;  }
-   TAMCntuTrack*  GetNtuTrack() const { return fTrack;  }
+   TAMCntuPart*  GetNtuTrack() const { return fTrack;  }
    TAMCntuRegion* GetNtuReg()   const { return fRegion; }
    TAMCntuHit*    GetHitSTC()   const { return fHitSTC; }
    TAMCntuHit*    GetHitBMN()   const { return fHitBMN; }
@@ -82,7 +82,7 @@ public:
 
  private:
    TAMCntuEvent*  fEvent;
-   TAMCntuTrack*  fTrack;
+   TAMCntuPart*  fTrack;
    TAMCntuRegion* fRegion;
    TAMCntuHit*    fHitSTC;
    TAMCntuHit*    fHitBMN;

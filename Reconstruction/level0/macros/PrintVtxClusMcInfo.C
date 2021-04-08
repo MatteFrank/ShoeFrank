@@ -10,7 +10,7 @@
 #include <TString.h>
 #include <TVector3.h>
 
-#include "TAMCntuTrack.hxx"
+#include "TAMCntuPart.hxx"
 #include "TAMCntuHit.hxx"
 
 #include "TAITparGeo.hxx"
@@ -57,8 +57,8 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
    TAMSDntuCluster *msdClus = new TAMSDntuCluster();
    tree->SetBranchAddress(TAMSDntuCluster::GetBranchName(), &msdClus);
    
-   TAMCntuTrack *eve = new TAMCntuTrack();
-   tree->SetBranchAddress(TAMCntuTrack::GetBranchName(), &eve);
+   TAMCntuPart *eve = new TAMCntuPart();
+   tree->SetBranchAddress(TAMCntuPart::GetBranchName(), &eve);
    tree->SetBranchAddress("mceve.", &eve);
    
    TAMCntuHit *vtMc = new TAMCntuHit();
@@ -96,7 +96,7 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
             for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
                Int_t idx = hit->GetMcTrackIdx(k);
                printf("TrackMcId %d ", idx);
-               TAMCtrack* track = eve->GetTrack(idx);
+               TAMCpart* track = eve->GetTrack(idx);
                printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
                /*
                 TAMChit* mcHit = vtMc->GetHit(idx);

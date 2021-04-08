@@ -250,9 +250,9 @@ TAMCntuRegion* TAMCflukaParser::GetRegions(EVENT_STRUCT* evStr, TAGdataDsc* p_nt
 
 //------------------------------------------+-----------------------------------
 //! Tracks
-TAMCntuTrack* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrack)
+TAMCntuPart* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrack)
 {
-  TAMCntuTrack* p_nturaw = (TAMCntuTrack*) p_ntutrack->Object();
+  TAMCntuPart* p_nturaw = (TAMCntuPart*) p_ntutrack->Object();
   
   p_nturaw->Clear();
   

@@ -17,8 +17,8 @@
 #include "TACAactNtuHitMC.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuTrack.hxx"
-#include "TAMCactNtuTrack.hxx"
+#include "TAMCntuPart.hxx"
+#include "TAMCactNtuPart.hxx"
 #include "TAMCactNtuRegion.hxx"
 #include "TAMCactNtuEvent.hxx"
 
@@ -63,7 +63,7 @@ public:
 
    //! MC container Getter
    TAMCntuEvent*  GetNtuMcEvt() const { return (TAMCntuEvent*)fpNtuMcEvt->Object(); }
-   TAMCntuTrack*  GetNtuMcTrk() const { return (TAMCntuTrack*)fpNtuMcTrk->Object(); }
+   TAMCntuPart*  GetNtuMcTrk() const { return (TAMCntuPart*)fpNtuMcTrk->Object(); }
    TAMCntuRegion* GetNtuMcReg() const { return (TAMCntuRegion*)fpNtuMcReg->Object();}
    TAMCntuHit*    GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object();   }
    TAMCntuHit*    GetNtuMcBm()  const { return (TAMCntuHit*)fpNtuMcBm->Object();   }
@@ -76,7 +76,7 @@ public:
 protected:
    EVENT_STRUCT*         fEvtStruct;
   
-   TAMCactNtuTrack*      fActNtuMcTrk;
+   TAMCactNtuPart*      fActNtuMcTrk;
    TAMCactNtuRegion*     fActNtuMcReg;
    TAMCactNtuEvent*      fActNtuMcEvt;
    TASTactNtuHitMC*      fActNtuHitSt;  // action for ntu data

@@ -3,7 +3,7 @@
 #include <fstream>
 #include "TAMCevent.hxx"
 #include "TAMCntuHit.hxx"
-#include "TAMCntuTrack.hxx"
+#include "TAMCntuPart.hxx"
 #include "TAMCntuEvent.hxx"
 #include "TAMCntuRegion.hxx"
 
@@ -16,7 +16,7 @@ ClassImp(TAMCevent);
 /*-----------------------------------------------------------------*/
 TAMCevent::TAMCevent()
  : fEvent(new TAMCntuEvent()),
-   fTrack(new TAMCntuTrack()),
+   fTrack(new TAMCntuPart()),
    fRegion(0x0),
    fHitSTC(0x0),
    fHitBMN(0x0),

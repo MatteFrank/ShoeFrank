@@ -20,7 +20,7 @@
 #include "TAGroot.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuTrack.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TAMCflukaParser.hxx"
 
@@ -46,7 +46,7 @@ TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
 {
    if (fEventStruct == 0x0) {
      AddDataIn(pNtuMC, "TAMCntuHit");
-     AddDataIn(pNtuEve, "TAMCntuTrack");
+     AddDataIn(pNtuEve, "TAMCntuPart");
    }
    AddDataOut(pNtuRaw, "TAVTntuHit");
    AddPara(pGeoMap, "TAVTparGeo");
@@ -164,14 +164,14 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
 //------------------------------------------+-----------------------------------
 void TAVTactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
 {
-  TAMCntuTrack* pNtuEve  = 0;
+  TAMCntuPart* pNtuEve  = 0;
   
   if (fEventStruct == 0x0)
-    pNtuEve = (TAMCntuTrack*) fpNtuEve->Object();
+    pNtuEve = (TAMCntuPart*) fpNtuEve->Object();
   else
     pNtuEve = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
       
-   TAMCtrack*  track = pNtuEve->GetTrack(trackIdx);
+   TAMCpart*  track = pNtuEve->GetTrack(trackIdx);
    Int_t  Z = track->GetCharge();
    
    if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2], 0, 0, Z)) return;

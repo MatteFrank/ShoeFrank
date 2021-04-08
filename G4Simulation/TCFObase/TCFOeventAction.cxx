@@ -41,7 +41,7 @@
 
 #include "TAMCevent.hxx"
 #include "TCGmcHit.hxx"
-#include "TAMCntuTrack.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TCFOrunAction.hxx"
 #include "TAGroot.hxx"

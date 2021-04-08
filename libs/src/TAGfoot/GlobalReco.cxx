@@ -43,8 +43,8 @@ void GlobalReco::SetL0TreeBranches()
   
   if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) {
     if (fFlagMC) {
-      fpNtuMcTrk = new TAGdataDsc(TAMCntuTrack::GetDefDataName(), new TAMCntuTrack());
-      fActEvtReader->SetupBranch(fpNtuMcTrk,TAMCntuTrack::GetBranchName());
+      fpNtuMcTrk = new TAGdataDsc(TAMCntuPart::GetDefDataName(), new TAMCntuPart());
+      fActEvtReader->SetupBranch(fpNtuMcTrk,TAMCntuPart::GetBranchName());
       
       fpNtuMcEvt = new TAGdataDsc("evtMc", new TAMCntuEvent());
       fActEvtReader->SetupBranch(fpNtuMcEvt,TAMCntuEvent::GetBranchName());
@@ -102,7 +102,7 @@ void GlobalReco::SetTreeBranches()
   if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) {
     if (fFlagMC) {
       fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
-      fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuTrack::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
       
       if (GlobalPar::GetPar()->IsRegionMc() )
         fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());

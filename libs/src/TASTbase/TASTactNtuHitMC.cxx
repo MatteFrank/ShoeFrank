@@ -12,7 +12,7 @@
 #include "TASTdigitizer.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuTrack.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TASTactNtuHitMC.hxx"
 
@@ -38,7 +38,7 @@ TASTactNtuHitMC::TASTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
   
    if (fEventStruct == 0x0) {
      AddDataIn(pNtuMC, "TAMCntuHit");
-     AddDataIn(pNtuEve, "TAMCntuTrack");
+     AddDataIn(pNtuEve, "TAMCntuPart");
    } 
    AddDataOut(pNturaw, "TASTntuHit");
    

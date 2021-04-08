@@ -4,7 +4,7 @@
   \brief   Implementation of TAMCactNtuEvent.
 */
 
-#include "TAMCntuTrack.hxx"
+#include "TAMCntuPart.hxx"
 #include "TAMCactNtuEvent.hxx"
 
 //First

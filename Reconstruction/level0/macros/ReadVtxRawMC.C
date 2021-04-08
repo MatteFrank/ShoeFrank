@@ -25,7 +25,7 @@
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAMCntuHit.hxx"
-#include "TAMCntuTrack.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TAGcampaignManager.hxx"
 #include "TAGactTreeReader.hxx"
@@ -57,7 +57,7 @@ void FillVertex(Int_t runNumber)
   parconf->FromFile(parFileName.Data());
   
   TAVTparConf::SetHistoMap();
-  TAGdataDsc* vtEve  = new TAGdataDsc("vtEve", new TAMCntuTrack());
+  TAGdataDsc* vtEve  = new TAGdataDsc("vtEve", new TAMCntuPart());
   TAGdataDsc* vtMc   = new TAGdataDsc("vtMc", new TAMCntuHit());
   TAGdataDsc* vtNtu  = new TAGdataDsc("vtNtu", new TAVTntuHit());
   TAGdataDsc* vtClus = new TAGdataDsc("vtClus", new TAVTntuCluster());
@@ -65,7 +65,7 @@ void FillVertex(Int_t runNumber)
   
   vtActReader  = new TAGactTreeReader("vtActEvtReader");
   vtActReader->SetupBranch(vtMc, TAMCntuHit::GetVtxBranchName());
-  vtActReader->SetupBranch(vtEve,TAMCntuTrack::GetBranchName());
+  vtActReader->SetupBranch(vtEve,TAMCntuPart::GetBranchName());
   
   vtActRaw= new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
   vtActRaw->CreateHistogram();

@@ -83,7 +83,7 @@
 #include "TAGntuGlbTrackK.hxx"
 
 class TAMCntuHit;
-class TAMCntuTrack;
+class TAMCntuPart;
 class TAMCntuRegion;
 class TAMCntuEvent;
 
@@ -233,7 +233,7 @@ public:
    //! MC container Getter (virtual)
    virtual TAMCntuRegion* GetNtuMcReg()     const { return 0x0; }
    virtual TAMCntuEvent*  GetNtuMcEvt()     const { return 0x0; }
-   virtual TAMCntuTrack*  GetNtuMcTrk()     const { return 0x0; }
+   virtual TAMCntuPart*  GetNtuMcTrk()     const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcSt()      const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcBm()      const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcVtx()     const { return 0x0; }

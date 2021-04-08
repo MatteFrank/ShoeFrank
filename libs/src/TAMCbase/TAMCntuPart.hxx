@@ -1,9 +1,9 @@
-#ifndef _TAMCntuTrack_HXX
-#define _TAMCntuTrack_HXX
+#ifndef _TAMCntuPart_HXX
+#define _TAMCntuPart_HXX
 /*!
   \file
-  \version $Id: TAMCntuTrack.hxx,v 1.7 2003/06/22 11:48:38 mueller Exp $
-  \brief   Declaration of TAMCntuTrack.
+  \version $Id: TAMCntuPart.hxx,v 1.7 2003/06/22 11:48:38 mueller Exp $
+  \brief   Declaration of TAMCntuPart.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -14,12 +14,12 @@
 #include "TAGdata.hxx"
 
 
-class TAMCtrack : public TAGobject
+class TAMCpart : public TAGobject
 {
 public:
-   TAMCtrack();
+   TAMCpart();
 
-   TAMCtrack(Int_t i_id, Int_t i_chg, Int_t i_type,
+   TAMCpart(Int_t i_id, Int_t i_chg, Int_t i_type,
                Int_t i_reg, Int_t i_bar, Int_t i_dead,
                Double_t i_mass, Int_t i_moth,
                Double_t i_time,
@@ -27,7 +27,7 @@ public:
                TVector3 i_ipos, TVector3 i_fpos,
                TVector3 i_ip,TVector3 i_fp);
 
-	virtual         ~TAMCtrack();
+	virtual         ~TAMCpart();
 
    TVector3         GetInitPos()      const { return fInitPos;        }
    TVector3         GetInitP()        const { return fInitMom;        }
@@ -78,22 +78,22 @@ public:
 	TVector3      fInitMom;	          	    // initial momentum
 	TVector3      fFinalMom;	          	 // final momentum
 
-	ClassDef(TAMCtrack,3)
+	ClassDef(TAMCpart,3)
 };
 
 //##############################################################################
 
-class TAMCntuTrack : public TAGdata {
+class TAMCntuPart : public TAGdata {
   public:
-                    TAMCntuTrack();
-	virtual         ~TAMCntuTrack();
+                    TAMCntuPart();
+	virtual         ~TAMCntuPart();
 
-	TAMCtrack*       GetTrack(Int_t i);
-	const TAMCtrack* GetTrack(Int_t i) const;
+	TAMCpart*       GetTrack(Int_t i);
+	const TAMCpart* GetTrack(Int_t i) const;
    
    Int_t            GetTracksN() const;
    
-   TAMCtrack*       NewTrack(Int_t i_id, Int_t i_fCharge, Int_t i_type,
+   TAMCpart*       NewTrack(Int_t i_id, Int_t i_fCharge, Int_t i_type,
                                 Int_t i_reg, Int_t i_bar, Int_t i_dead,
                                 Double_t i_mass, Int_t i_moth,
                                 Double_t i_time,
@@ -116,7 +116,7 @@ private:
    static TString fgkBranchName;    // Branch name in TTree
    static const TString fgkDefDataName;
 
-   ClassDef(TAMCntuTrack,2)
+   ClassDef(TAMCntuPart,2)
 };
 
 

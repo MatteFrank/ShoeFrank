@@ -474,7 +474,7 @@ int TAGactKFitter::UploadHitsVT() {
   if ( m_debug > 0 )		cout << "N vertex sensors: " << vtxGeo->GetSensorsN() << endl;
 
   // MC hits example
-  // TAMCntuTrack* ntuMC = (TAMCntuTrack*) gTAGroot->FindDataDsc("myn_mceve", "TAMCntuTrack")->Object();
+  // TAMCntuPart* ntuMC = (TAMCntuPart*) gTAGroot->FindDataDsc("myn_mceve", "TAMCntuPart")->Object();
   // cout << "Number of MC tracks from repo  " << ntuMC->nhit  << endl;
 
   int totPix = 0;
@@ -503,7 +503,7 @@ int TAGactKFitter::UploadClusVT(){
   //TAVTparGeo* vtxGeo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
   TAVTntuCluster* vtclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object();
 
-  TAMCntuTrack*  eve = (TAMCntuTrack*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuTrack")->Object();
+  TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
   TAMCntuHit* vtMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
 
   int totClus = 0;
@@ -552,7 +552,7 @@ int TAGactKFitter::UploadClusVT(){
           TVector3 posin = mcHit->GetInPosition();
           TVector3 posout = mcHit->GetOutPosition();
           if (idx > -1 ){//unless this is a noise hit
-            TAMCtrack* track = eve->GetTrack(idx);
+            TAMCpart* track = eve->GetTrack(idx);
             if (m_debug > 1)
             printf("charge %d mass %g index %d \n", track->GetCharge(), track->GetMass(), idx);
             //if ( checkTrackId != idx ) { cout << "WARNING: TRACKID DOES NOT MATCH!" << endl; continue; }
@@ -628,7 +628,7 @@ int TAGactKFitter::UploadClusIT(){
   // TAITparGeo* itrGeo = (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object();
   TAITntuCluster* itclus = (TAITntuCluster*) gTAGroot->FindDataDsc("itClus","TAITntuCluster")->Object();
 
-  TAMCntuTrack*  eve = (TAMCntuTrack*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuTrack")->Object();
+  TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
   TAMCntuHit* itMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("itMc", "TAMCntuHit")->Object();
 
   int totClus = 0;
@@ -676,7 +676,7 @@ int TAGactKFitter::UploadClusIT(){
           TVector3 posin = mcHit->GetInPosition();
           TVector3 posout = mcHit->GetOutPosition();
           if (idx > -1 ){
-            TAMCtrack* track = eve->GetTrack(idx);
+            TAMCpart* track = eve->GetTrack(idx);
             if (m_debug > 1)
             printf("charge %d mass %g index %d \n", track->GetCharge(), track->GetMass(), idx);
             TVector3 momin = mcHit->GetInMomentum();
@@ -723,7 +723,7 @@ int TAGactKFitter::UploadHitsMSD() {
   map<int, MCTruthInfo> MCMSDInfo;
 
   TAMSDntuPoint* ntuP = (TAMSDntuPoint*) gTAGroot->FindDataDsc("msdPoint", "TAMSDntuPoint")->Object();
-  TAMCntuTrack*  eve = (TAMCntuTrack*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuTrack")->Object();
+  TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
   TAMCntuHit* msdMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("msdMc", "TAMCntuHit")->Object();
 
   int totPoints = 0;
@@ -766,7 +766,7 @@ int TAGactKFitter::UploadHitsMSD() {
       if (m_debug > 1)
       cout << "idx  idRow   idCol : " << idx << " " << idRow << " " << idCol << " "  << endl;
       if (idx > -1 ){
-        TAMCtrack* track = eve->GetTrack(idx);
+        TAMCpart* track = eve->GetTrack(idx);
         if (m_debug > 1)
         printf("charge %d mass %g index %d \n", track->GetCharge(), track->GetMass(), idx);
         TVector3 momin = (mcRowHit->GetInMomentum() + mcRowHit->GetOutMomentum())*.5;
@@ -811,7 +811,7 @@ int TAGactKFitter::UploadClusMSD() {
   //cluster test
   TAMSDntuCluster* msdclus = (TAMSDntuCluster*) gTAGroot->FindDataDsc("msdClus","TAMSDntuCluster")->Object();
 
-  TAMCntuTrack*  eve = (TAMCntuTrack*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuTrack")->Object();
+  TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
   TAMCntuHit* msdMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("msdMc", "TAMCntuHit")->Object();
 
   int totClus = 0;
@@ -856,7 +856,7 @@ int TAGactKFitter::UploadClusMSD() {
           TVector3 posin = mcHit->GetInPosition();
           TVector3 posout = mcHit->GetOutPosition();
           if (idx > -1 ){
-            TAMCtrack* track = eve->GetTrack(idx);
+            TAMCpart* track = eve->GetTrack(idx);
             if (m_debug > 1)
             printf("charge %d mass %g index %d \n", track->GetCharge(), track->GetMass(), idx);
             TVector3 momin = mcHit->GetInMomentum();
@@ -906,7 +906,7 @@ int TAGactKFitter::UploadHitsTW() {
   TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
   if ( m_debug > 0 )		cout << "number of TW points read: " << ntup->GetPointN() << endl;
 
-  TAMCntuTrack*  eve = (TAMCntuTrack*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuTrack")->Object();
+  TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
   TAMCntuHit* twMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("twMc", "TAMCntuHit")->Object();
 
   int totPoints = 0;
@@ -955,7 +955,7 @@ int TAGactKFitter::UploadHitsTW() {
     // ofs << endl;
     //
     if ( idx > -1 ){
-      TAMCtrack* track = eve->GetTrack(idx);
+      TAMCpart* track = eve->GetTrack(idx);
       if (m_debug > 1)
       printf("charge %d mass %g index %d \n", track->GetCharge(), track->GetMass(), idx);
       MCTruthInfo TWInfo;
@@ -1054,7 +1054,7 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
 	TAVTvertex* vtxPD   = 0x0; //NEW
 
 
-  TAMCntuTrack*  eve = (TAMCntuTrack*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuTrack")->Object();
+  TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 
   if ( m_debug > 0 )		cout  << "EVENTO " << m_evNum << " with vertices number " << vertexNumber << endl;
   if ( m_debug > 0 )		cout  << "TW found " << m_TW_hitCollection.size() << " points " << endl;
@@ -1072,7 +1072,7 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
     //controlla se carica = montecarlo
     if (pointTofWall->GetMcTracksN()==0) {ofs << "dont know which track is " << endl; continue;}
     int mcTrackid = GetTWTrackFixed(pointTofWall);
-    TAMCtrack* montecarlotrack = eve->GetTrack(mcTrackid);
+    TAMCpart* montecarlotrack = eve->GetTrack(mcTrackid);
     if ( fabs (montecarlotrack->GetInitPos().Z() ) < 0.1 ){
       if ( m_debug > 0 )		cout  << "track " << mcTrackid <<  " begins in the target" << endl;
       string nameParticle = "NONE";
@@ -1155,7 +1155,7 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
         if (!clus->IsValid()) continue;
         if (iCluster == 2){//selected hits supposed to be the same track
           montecarloTrackIndex = clus->GetMcTrackIdx(0);
-          TAMCtrack* montecarlotrack = eve->GetTrack(montecarloTrackIndex);
+          TAMCpart* montecarlotrack = eve->GetTrack(montecarloTrackIndex);
           montecarloCharge = montecarlotrack->GetCharge();
           montecarloMass = montecarlotrack->GetMass();
           montecarloMomentum = montecarlotrack->GetInitP().Mag();
@@ -1996,7 +1996,7 @@ void TAGactKFitter::Prepare4Vertex( TAVTcluster* clus, int track_ID, int iHit ) 
 
   //map for m_MCInfo
   map<int, MCTruthInfo> MCVTInfo;
-  TAMCntuTrack*  eve = (TAMCntuTrack*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuTrack")->Object();
+  TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
   TAMCntuHit* vtMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
 
   Int_t idx = clus->GetMcTrackIdx(0);
@@ -2013,7 +2013,7 @@ void TAGactKFitter::Prepare4Vertex( TAVTcluster* clus, int track_ID, int iHit ) 
     TVector3 posin = mcHit->GetInPosition();
     TVector3 posout = mcHit->GetOutPosition();
     if (idx > -1 ){
-      TAMCtrack* track = eve->GetTrack(idx);
+      TAMCpart* track = eve->GetTrack(idx);
       if (m_debug > 1)
       printf("charge %d mass %g index %d \n", track->GetCharge(), track->GetMass(), idx);
       TVector3 momin = mcHit->GetInMomentum();
