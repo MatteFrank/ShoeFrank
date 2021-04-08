@@ -41,7 +41,7 @@
 #include "G4UIExecutive.hh"
 #endif
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
@@ -134,8 +134,8 @@ int main(int argc,char** argv)
     }
   
     // Global Par
-    GlobalPar::Instance(expName);
-    GlobalPar::GetPar()->FromFile();
+    TAGrecoManager::Instance(expName);
+    TAGrecoManager::GetPar()->FromFile();
    
     // TAG root
     TAGroot tagRoot;

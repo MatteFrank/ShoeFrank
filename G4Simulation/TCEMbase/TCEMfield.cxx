@@ -32,7 +32,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TCEMfield.hxx"
 #include "G4SystemOfUnits.hh"

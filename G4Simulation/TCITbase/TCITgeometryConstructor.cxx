@@ -13,7 +13,7 @@
 #include "G4VisAttributes.hh"
 #include "G4NistManager.hh"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAITparGeo.hxx"
 
 TString TCITgeometryConstructor::fgkItEpiSDname = "ItSD";

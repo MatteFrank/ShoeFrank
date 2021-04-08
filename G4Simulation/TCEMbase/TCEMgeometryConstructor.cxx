@@ -14,7 +14,7 @@
 #include "G4SDManager.hh"
 #include "G4RunManager.hh"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TADIparGeo.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"

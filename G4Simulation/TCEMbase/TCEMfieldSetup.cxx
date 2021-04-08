@@ -35,7 +35,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TCEMfieldSetup.hxx"
 
 #include "G4MagneticField.hh"

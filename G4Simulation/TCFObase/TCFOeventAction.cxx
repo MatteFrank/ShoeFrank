@@ -46,7 +46,7 @@
 #include "TCFOrunAction.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TClonesArray.h"
 #include "TRandom.h"

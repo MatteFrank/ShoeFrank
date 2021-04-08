@@ -65,7 +65,7 @@
 #include "TCEMfield.hxx"
 #include "TCEMfieldSetup.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TADIgeoField.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
@@ -96,7 +96,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
   fpParGeoTw(0x0)
 {
    // initialise map file for calorimteer
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       fpParGeoCa = new TACAparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
       fpParGeoCa->FromFile(mapFileName.Data());
@@ -104,7 +104,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    }
    
    // initialise map file for TOF
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       fpParGeoTw = new TATWparGeo();
       TString mapFileName =  fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
       fpParGeoTw->FromFile(mapFileName.Data());
@@ -112,7 +112,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    }
 
    // initialise map file for Multi Strip Detector
-   if (GlobalPar::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fpParGeoMsd = new TAMSDparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       fpParGeoMsd->FromFile(mapFileName.Data());
@@ -120,7 +120,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    }
 
    // initialise map file for Inner Tracker
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       fpParGeoIt = new TAITparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
       fpParGeoIt->FromFile(mapFileName.Data());
@@ -128,7 +128,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    }
    
    // initialise map file for vertex
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       fpParGeoVtx = new TAVTparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
       fpParGeoVtx->FromFile(mapFileName.Data());
@@ -136,7 +136,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    }
    
    // initialise map file for magnet
-   if (GlobalPar::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeDI()) {
       fpParGeoEm = new TADIparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TADIparGeo::GetBaseName(), fRunNumber);
       fpParGeoEm->FromFile(mapFileName.Data());
@@ -144,7 +144,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    }
    
    // initialise map file for beam monitor
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       fpParGeoBm = new TABMparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TABMparGeo::GetBaseName(), fRunNumber);
       fpParGeoBm->FromFile(mapFileName.Data());
@@ -152,7 +152,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    }
    
    // initialise map file for start counter
-   if (GlobalPar::GetPar()->IncludeST()) {
+   if (TAGrecoManager::GetPar()->IncludeST()) {
       fpParGeoSt = new TASTparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TASTparGeo::GetBaseName(), fRunNumber);
       fpParGeoSt->FromFile(mapFileName.Data());
@@ -192,7 +192,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
    G4VPhysicalVolume* pWorld = TCGbaseGeometryConstructor::Construct();
    
    // Start Counter
-   if (GlobalPar::GetPar()->IncludeST()) {
+   if (TAGrecoManager::GetPar()->IncludeST()) {
       
       G4LogicalVolume* log  = fStartCounter->Construct();
       TVector3 ang          = fpFootGeo->GetSTAngles()*TMath::DegToRad(); // in radians
@@ -216,7 +216,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
    }
    
    // Beam Monitor
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       
       G4LogicalVolume* log  = fBeamMonitor->Construct();
       TVector3 ang          = fpFootGeo->GetBMAngles()*TMath::DegToRad(); // in radians
@@ -241,7 +241,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
 
 
    // Vertex
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       
       G4LogicalVolume* log  = fVertex->Construct();
       TVector3 ang          = fpFootGeo->GetVTAngles()*TMath::DegToRad(); // in radians
@@ -268,7 +268,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
    G4LogicalVolume* logMag = 0x0;
    Bool_t isMagnet         = false;
 
-   if (GlobalPar::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeDI()) {
       
       logMag = fMagnet->Construct();
       TVector3 ang          = fpFootGeo->GetDIAngles()*TMath::DegToRad(); // in radians
@@ -293,7 +293,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
    }
 
    // Inner tracker
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       
       G4LogicalVolume* log  = fInnerTracker->Construct();
       TVector3 ang          = fpFootGeo->GetITAngles()*TMath::DegToRad(); // in radians
@@ -325,7 +325,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
    }
    
    // Multi Strip Detector
-   if (GlobalPar::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       
       G4LogicalVolume* log  = fMultiStrip->Construct();
       TVector3 ang          = fpFootGeo->GetMSDAngles()*TMath::DegToRad(); // in radians
@@ -349,7 +349,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
    }
    
    // ToF wall
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       
       G4LogicalVolume* log  = fTofWall->Construct();
       TVector3 ang          = fpFootGeo->GetTWAngles()*TMath::DegToRad(); // in radians
@@ -373,7 +373,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
    }
 
    // Calorimeter
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       
       G4LogicalVolume* log  = fCalorimeter->Construct();
       TVector3 ang          = fpFootGeo->GetCAAngles()*TMath::DegToRad(); // in radians
@@ -402,7 +402,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCFOgeometryConstructor::ConstructSDandField()
 {
-   if (!GlobalPar::GetPar()->IncludeDI()) return;
+   if (!TAGrecoManager::GetPar()->IncludeDI()) return;
 
    if (!fField) {
       fFieldImpl  = new TADIgeoField(fpParGeoEm);

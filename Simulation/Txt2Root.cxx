@@ -25,7 +25,7 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGrunInfo.hxx"
 #include "TAGroot.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 using namespace std;
 
@@ -97,9 +97,9 @@ int main(int argc, char *argv[])
    }
    numfiles = infiles.size();
    
-   GlobalPar::Instance(exp);
-   GlobalPar::GetPar()->FromFile();
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(exp);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    TAGcampaignManager* campManager = new TAGcampaignManager(exp);
    campManager->FromFile();
@@ -108,9 +108,9 @@ int main(int argc, char *argv[])
    f_out->cd();
    
    if(regFlag)
-      GlobalPar::GetPar()->EnableRegionMc();
-   GlobalPar::GetPar()->DisableRootObject();
-   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
+      TAGrecoManager::GetPar()->EnableRegionMc();
+   TAGrecoManager::GetPar()->DisableRootObject();
+   TAGrunInfo info = TAGrecoManager::GetPar()->GetGlobalInfo();
    info.SetCampaignName(exp);
    info.SetRunNumber(runNb);
    

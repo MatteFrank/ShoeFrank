@@ -25,7 +25,7 @@
 //
 //
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TCGmaterials.hxx"
 
 #include "G4NistManager.hh"

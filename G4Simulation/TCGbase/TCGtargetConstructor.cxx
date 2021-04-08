@@ -39,7 +39,7 @@
 #include "G4RunManager.hh"
 #include "G4VisAttributes.hh"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"

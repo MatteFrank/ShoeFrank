@@ -3,7 +3,7 @@
 #include "TCMSDsensitiveDetector.hxx"
 
 #include "TAVTparGeo.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "G4SDManager.hh"
 #include "G4String.hh"

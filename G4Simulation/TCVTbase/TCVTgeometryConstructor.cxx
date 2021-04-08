@@ -15,7 +15,7 @@
 #include "TAVTparGeo.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "G4RunManager.hh"
 
 #include "TMath.h"
