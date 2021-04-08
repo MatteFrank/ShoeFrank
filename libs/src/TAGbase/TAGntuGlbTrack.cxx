@@ -56,6 +56,25 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
    fEnergy = TMath::Sqrt(mass*mass + mom*mom) - mass;
 }
 
+//______________________________________________________________________________
+//
+TAGtrack::TAGtrack(const TAGtrack& aTrack)
+:  TAGobject(aTrack),
+   fMass(aTrack.fMass),
+   fMom(aTrack.fMom),
+   fCharge(aTrack.fCharge),
+   fTof(aTrack.fTof),
+   fTrkId(aTrack.fTrkId),
+   fTgtDir(aTrack.fTgtDir),
+   fTgtPos(aTrack.fTgtPos),
+   fTofPos(aTrack.fTofPos),
+   fTofDir(aTrack.fTofDir)
+{
+   fListOfMeasPoints = (TClonesArray*)aTrack.fListOfMeasPoints->Clone();
+   fListOfCorrPoints = (TClonesArray*)aTrack.fListOfCorrPoints->Clone();
+}
+
+
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGtrack::~TAGtrack()
@@ -86,6 +105,14 @@ TAGpoint* TAGtrack::AddCorrPoint(TAGpoint* point)
 {
    TClonesArray &pointArray = *fListOfCorrPoints;
    return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
+}
+
+// __________________________________________________________________________
+//
+TAGpoint* TAGtrack::AddMeasPoint(TString name, TVector3 pos, TVector3 posErr)
+{
+   TClonesArray &pointArray = *fListOfMeasPoints;
+   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, pos, posErr);
 }
 
 // __________________________________________________________________________
@@ -128,6 +155,72 @@ void TAGtrack::Clear(Option_t*)
    fListOfCorrPoints->Delete();
 }
 
+//______________________________________________________________________________
+//
+Double_t TAGtrack::GetTgtTheta() const
+{
+   TVector3 direction = fTgtDir.Unit();
+   Double_t theta      = direction.Theta()*TMath::RadToDeg();
+   
+   return theta;
+}
+
+//______________________________________________________________________________
+//
+Double_t TAGtrack::GetTgtPhi() const
+{
+   TVector3 origin = fTgtDir.Unit();
+   Double_t phi     = origin.Phi()*TMath::RadToDeg();
+   
+   return phi;
+}
+
+//______________________________________________________________________________
+//
+Double_t TAGtrack::GetTofTheta() const
+{
+   TVector3 direction = fTofDir.Unit();
+   Double_t theta      = direction.Theta()*TMath::RadToDeg();
+   
+   return theta;
+}
+
+//______________________________________________________________________________
+//
+Double_t TAGtrack::GetTofPhi() const
+{
+   TVector3 origin = fTofDir.Unit();
+   Double_t phi     = origin.Phi()*TMath::RadToDeg();
+   
+   return phi;
+}
+
+
+//______________________________________________________________________________
+//
+TVector3 TAGtrack::Intersection(Float_t posZ) const
+{
+   // calculates the Intersection of the Track with the plane in
+   // the coordinate system of the tracker.
+   
+   TVector3 result(fTgtPos);  // track origin in xyz tracker coordinates
+   result(2) = 0.;
+   result += fTgtDir * posZ; // intersection in xyz frame at z_plane
+   return  result;
+}
+
+//______________________________________________________________________________
+//
+Double_t TAGtrack::Distance(TAGtrack* track, Float_t z) const
+{
+   // calculates the distance with a track
+   TVector3 pos1 = Intersection(z);
+   TVector3 pos2 = track->Intersection(z);
+   TVector3 pos0 = pos1-pos2;
+   Double_t rho0  = pos0.Mag();
+   
+   return rho0;
+}
 //##############################################################################
 
 ClassImp(TAGntuGlbTrack);
