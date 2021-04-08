@@ -79,7 +79,7 @@
 
 #include "GlobalPar.hxx"
 // #include "ControlPlotsRepository.hxx"
-#include "TAGntuGlbTrackK.hxx"
+#include "GlobalTrackRepostory.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -258,7 +258,7 @@ private:
   bool m_IsEDOn;
   
   // ControlPlotsRepository* m_controlPlotter;
-  TAGntuGlbTrackK* m_fitTrackCollection;
+  GlobalTrackRepostory* m_fitTrackCollection;
   
   bool m_workWithMC;
   

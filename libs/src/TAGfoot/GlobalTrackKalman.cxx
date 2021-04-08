@@ -1,17 +1,17 @@
 
-#include "TAGtrackK.hxx"
+#include "GlobalTrackKalman.hxx"
 
-ClassImp(TAGtrackK);
+ClassImp(GlobalTrackKalman);
 
 //Default constructor
-TAGtrackK::TAGtrackK()
+GlobalTrackKalman::GlobalTrackKalman()
 {
   m_track = new Track();
   m_lenght = 1.;
 }
 
 //Alternative constructor
-TAGtrackK::TAGtrackK( string name, Track* track, long evNum, int stateID,
+GlobalTrackKalman::GlobalTrackKalman( string name, Track* track, long evNum, int stateID,
 				      TVector3* mom, TVector3* pos,
 				      TVector3* mom_MC, TVector3* pos_MC, 
 				      TMatrixD* mom_cov 
@@ -35,7 +35,7 @@ TAGtrackK::TAGtrackK( string name, Track* track, long evNum, int stateID,
 }
 
 
-TAGtrackK::TAGtrackK(Track* track)
+GlobalTrackKalman::GlobalTrackKalman(Track* track)
 {
   *m_track = *track;
 }
