@@ -127,7 +127,7 @@ void TAGactNtuGlbTrackS::CreateHistogram()
       nHistos += pGeoMapMs->GetSensorsN();
    }
 
-   fOffsetTof = nHistos+1;
+   fOffsetTof = nHistos;
    
    for (Int_t i = 0; i < nHistos+1; ++i) {
       
