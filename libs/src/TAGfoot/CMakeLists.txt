@@ -31,6 +31,7 @@ set( with_dictionnaries
    LocalRecoMC
    LocalReco
    TAGactNtuGlbTrack
+   TAGactNtuGlbTrackS
    GlobalReco
    GlobalToeReco
    GlobalTrackingStudies

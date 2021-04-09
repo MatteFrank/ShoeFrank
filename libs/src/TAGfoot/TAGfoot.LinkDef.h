@@ -25,4 +25,6 @@
 #pragma link C++ class TAGactNtuGlbTrack;
 #pragma link C++ class GlobalToeReco;
 
+#pragma link C++ class TAGactNtuGlbTrackS;
+
 #endif
