@@ -209,7 +209,7 @@ void FillMCTw(Int_t runNumber)
    
    TAGparaDsc* twGeo    = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
    TATWparGeo* geomap   = (TATWparGeo*) twGeo->Object();
-   parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
    
    TAGparaDsc* twCal   = new TAGparaDsc("twCal", new TATWparCal());
