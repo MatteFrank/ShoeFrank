@@ -17,16 +17,17 @@ class TAGactNtuGlbTrackS : public TAGaction {
    
 public:
    explicit  TAGactNtuGlbTrackS(const char* name         = 0,
-                             TAGdataDsc* p_vtvertex   = 0,
-                             TAGdataDsc* p_itntuclus  = 0,
-                             TAGdataDsc* p_msntuclus  = 0,
-                             TAGdataDsc* p_msnturec   = 0,
+                                TAGdataDsc* p_vtvertex   = 0,
+                                TAGdataDsc* p_itntuclus  = 0,
+                                TAGdataDsc* p_msntuclus  = 0,
+                                TAGdataDsc* p_msnturec   = 0,
 
-                             TAGdataDsc* p_irntutrack = 0,
-                             TAGparaDsc* p_vtgeomap   = 0,
-                             TAGparaDsc* p_itgeomap   = 0,
-                             TAGparaDsc* p_itconfig   = 0,
-                             TAGparaDsc* p_msgeomap   = 0);
+                                TAGdataDsc* p_irntutrack = 0,
+                                TAGparaDsc* p_vtgeomap   = 0,
+                                TAGparaDsc* p_itgeomap   = 0,
+                                TAGparaDsc* p_itconfig   = 0,
+                                TAGparaDsc* p_msgeomap   = 0);
+
 
    virtual ~TAGactNtuGlbTrackS();
    
@@ -42,16 +43,16 @@ public:
 
 private:
     Bool_t    FindTracks();
+   
     Bool_t    CheckVtx();
-   TAGtrack*  FillTracks(TAVTtrack* vtTrack);
-   void       FillHistogramm(TAGtrack* track);
-   void       FillHistogramm();
-   void       UpdateParam(TAGtrack* track);
-   Bool_t     AppyCuts(TAGtrack* track) ;
-
+   TAGtrack*  FillVtxTracks(TAVTtrack* vtTrack);
    void       FindItrCluster(TAGtrack* track);
    void       FindMsdCluster(TAGtrack* track);
    void       FindTwCluster(TAGtrack* track);
+
+   void       FillHistogramm(TAGtrack* track);
+   void       FillHistogramm();
+   void       UpdateParam(TAGtrack* track, Int_t viewX = -1);
 
 private:
    TAGdataDsc*     fpVertexVtx;         // VT vertex container
@@ -71,8 +72,10 @@ private:
    TAVTvertex*     fVtVertex;           // VT vertex pointer
 
    Int_t           fRequiredClusters;   //! number of clusters required to make a track
-   Double_t        fSearchClusDistance; //! Max distance to associate a track and a cluster
-   
+   Double_t        fSearchClusDistItr; //! Max distance to associate a track and a cluster
+   Double_t        fSearchClusDistMsd; //! Max distance to associate a track and a cluster
+   Double_t        fSearchClusDistTof; //! Max distance to associate a track and a cluster
+
    TGraphErrors*   fGraphU;             // pointer to graph for fit in U
    TGraphErrors*   fGraphV;             // pointer to graph for fit in V
 
@@ -94,7 +97,6 @@ private:
    TH1F*           fpHisPhi;            // Azimutal angular distribution
    TH1F*           fpHisMeanPixel;      // Mean number of pixels per tracked cluster
    TH1F*           fpHisMeanCharge;     // Mwean Charge per tracked cluster
-   TH2F*           fpHisBeamProf;       // VTX Beam profile extrapolated to target
    
 private:
    static Bool_t fgBmMatched;      // vertex matched with BM flag
