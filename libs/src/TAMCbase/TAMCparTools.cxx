@@ -3,7 +3,7 @@
 
 #include "TAMCparTools.hxx"
 #include "TAGroot.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 
 //##############################################################################
@@ -119,9 +119,9 @@ void TAMCparTools::UpdatePDG()
   TDatabasePDG::Instance()->~TDatabasePDG();
   
   // check that every particle defined in the parameter file is defined in nameVector
-  for ( unsigned int i=0; i<GlobalPar::GetPar()->MCParticles().size(); i++) {
-    if ( fgkUpdatePdgMap.find( GlobalPar::GetPar()->MCParticles()[i] ) == fgkUpdatePdgMap.end() ) {
-      cout << "ERROR :: TAMCparTools::UpdatePDG  -->   Required %s particle from input parameter not defined " << GlobalPar::GetPar()->MCParticles()[i] << endl;
+  for ( unsigned int i=0; i<TAGrecoManager::GetPar()->MCParticles().size(); i++) {
+    if ( fgkUpdatePdgMap.find( TAGrecoManager::GetPar()->MCParticles()[i] ) == fgkUpdatePdgMap.end() ) {
+      cout << "ERROR :: TAMCparTools::UpdatePDG  -->   Required %s particle from input parameter not defined " << TAGrecoManager::GetPar()->MCParticles()[i] << endl;
       exit(0);
     }
   }

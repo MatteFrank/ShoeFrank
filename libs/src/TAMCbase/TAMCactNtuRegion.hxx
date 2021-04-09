@@ -12,7 +12,7 @@
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 class TAMCactNtuRegion : public TAGaction {
   public:

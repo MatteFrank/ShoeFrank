@@ -15,7 +15,7 @@
 #include "TString.h"
 
 #include "TAGparTools.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGmaterials.hxx"
 
 

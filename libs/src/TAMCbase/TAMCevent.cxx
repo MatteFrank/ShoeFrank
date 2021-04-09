@@ -7,7 +7,7 @@
 #include "TAMCntuEvent.hxx"
 #include "TAMCntuRegion.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 using namespace std;
 
@@ -26,28 +26,28 @@ TAMCevent::TAMCevent()
    fHitTW(0x0),
    fHitCAL(0x0)
 {
-    if (GlobalPar::GetPar()->IsRegionMc())
+    if (TAGrecoManager::GetPar()->IsRegionMc())
       fRegion = new TAMCntuRegion();
 
-    if (GlobalPar::GetPar()->IncludeST())
+    if (TAGrecoManager::GetPar()->IncludeST())
       fHitSTC = new TAMCntuHit();
 
-    if (GlobalPar::GetPar()->IncludeBM())
+    if (TAGrecoManager::GetPar()->IncludeBM())
       fHitBMN = new TAMCntuHit();
 
-    if (GlobalPar::GetPar()->IncludeVT())
+    if (TAGrecoManager::GetPar()->IncludeVT())
        fHitVTX = new TAMCntuHit();
 
-    if (GlobalPar::GetPar()->IncludeIT())
+    if (TAGrecoManager::GetPar()->IncludeIT())
        fHitITR = new TAMCntuHit();
 
-    if (GlobalPar::GetPar()->IncludeMSD())
+    if (TAGrecoManager::GetPar()->IncludeMSD())
        fHitMSD = new TAMCntuHit();
 
-    if (GlobalPar::GetPar()->IncludeTW())
+    if (TAGrecoManager::GetPar()->IncludeTW())
        fHitTW  = new TAMCntuHit();
 
-    if (GlobalPar::GetPar()->IncludeCA())
+    if (TAGrecoManager::GetPar()->IncludeCA())
        fHitCAL = new TAMCntuHit();
 }
 
@@ -180,28 +180,28 @@ void TAMCevent::SetBranches(TTree *RootTree){
     RootTree->Branch(fEvent->GetBranchName(),&fEvent);
     RootTree->Branch(fTrack->GetBranchName(),&fTrack);
   
-    if (GlobalPar::GetPar()->IsRegionMc())
+    if (TAGrecoManager::GetPar()->IsRegionMc())
        RootTree->Branch(fRegion->GetBranchName(),&fRegion);
 
-    if (GlobalPar::GetPar()->IncludeST())
+    if (TAGrecoManager::GetPar()->IncludeST())
        RootTree->Branch(fHitSTC->GetStcBranchName(),&fHitSTC);
 
-    if (GlobalPar::GetPar()->IncludeBM())
+    if (TAGrecoManager::GetPar()->IncludeBM())
        RootTree->Branch(fHitBMN->GetBmBranchName(),&fHitBMN);
 
-    if (GlobalPar::GetPar()->IncludeVT())
+    if (TAGrecoManager::GetPar()->IncludeVT())
        RootTree->Branch(fHitVTX->GetVtxBranchName(),&fHitVTX);
 
-    if (GlobalPar::GetPar()->IncludeIT())
+    if (TAGrecoManager::GetPar()->IncludeIT())
        RootTree->Branch(fHitITR->GetItrBranchName(),&fHitITR);
 
-    if (GlobalPar::GetPar()->IncludeMSD())
+    if (TAGrecoManager::GetPar()->IncludeMSD())
        RootTree->Branch(fHitMSD->GetMsdBranchName(),&fHitMSD);
 
-    if (GlobalPar::GetPar()->IncludeTW())
+    if (TAGrecoManager::GetPar()->IncludeTW())
        RootTree->Branch(fHitTW->GetTofBranchName(),&fHitTW);
 
-    if (GlobalPar::GetPar()->IncludeCA())
+    if (TAGrecoManager::GetPar()->IncludeCA())
        RootTree->Branch(fHitCAL->GetCalBranchName(),&fHitCAL);
 }
 
@@ -211,25 +211,25 @@ void TAMCevent::FindBranches(TTree *RootTree)
     RootTree->SetBranchAddress(fEvent->GetBranchName(),&fEvent);
     RootTree->SetBranchAddress(fTrack->GetBranchName(),&fTrack);
 
-    if (GlobalPar::GetPar()->IncludeST())
+    if (TAGrecoManager::GetPar()->IncludeST())
        RootTree->SetBranchAddress(fHitSTC->GetStcBranchName(),&fHitSTC);
 
-    if (GlobalPar::GetPar()->IncludeBM())
+    if (TAGrecoManager::GetPar()->IncludeBM())
        RootTree->SetBranchAddress(fHitBMN->GetBmBranchName(),&fHitBMN);
 
-    if (GlobalPar::GetPar()->IncludeVT())
+    if (TAGrecoManager::GetPar()->IncludeVT())
        RootTree->SetBranchAddress(fHitVTX->GetVtxBranchName(),&fHitVTX);
 
-    if (GlobalPar::GetPar()->IncludeIT())
+    if (TAGrecoManager::GetPar()->IncludeIT())
        RootTree->SetBranchAddress(fHitITR->GetItrBranchName(),&fHitITR);
 
-    if (GlobalPar::GetPar()->IncludeMSD())
+    if (TAGrecoManager::GetPar()->IncludeMSD())
        RootTree->SetBranchAddress(fHitMSD->GetMsdBranchName(),&fHitMSD);
 
-    if (GlobalPar::GetPar()->IncludeTW())
+    if (TAGrecoManager::GetPar()->IncludeTW())
        RootTree->SetBranchAddress(fHitTW->GetTofBranchName(),&fHitTW);
 
-    if (GlobalPar::GetPar()->IncludeCA())
+    if (TAGrecoManager::GetPar()->IncludeCA())
        RootTree->SetBranchAddress(fHitCAL->GetCalBranchName(),&fHitCAL);
 }
 
