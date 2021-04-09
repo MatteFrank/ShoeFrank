@@ -67,12 +67,23 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    fRequiredClusters(3),
    fSearchClusDistance(100),
    fGraphU(new TGraphErrors()),
-   fGraphV(new TGraphErrors())
+   fGraphV(new TGraphErrors()),
+   fOffsetVtx(0),
+   fOffsetItr(0),
+   fOffsetMsd(0),
+   fOffsetTof(0)
 {
    AddDataIn(pVtVertex,   "TAVTntuVertex");
-   AddDataIn(pItNtuClus,  "TAITntuCluster");
-   AddDataIn(pMsdNtuClus, "TAMSDntuCluster");
-   AddDataIn(pTwNtuRec,   "TATWntuPoint");
+   
+   if (TAGrecoManager::GetPar()->IncludeIT())
+      AddDataIn(pItNtuClus,  "TAITntuCluster");
+   
+   if (TAGrecoManager::GetPar()->IncludeMSD())
+      AddDataIn(pMsdNtuClus, "TAMSDntuCluster");
+   
+   if (TAGrecoManager::GetPar()->IncludeTW())
+      AddDataIn(pTwNtuRec,   "TATWntuPoint");
+   
    AddDataOut(pNtuTrack,  "TAGntuGlbTrack");
 
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
@@ -99,10 +110,26 @@ void TAGactNtuGlbTrackS::CreateHistogram()
 
    DeleteHistogram();
    TAVTparGeo* pGeoMapVt   = (TAVTparGeo*) fpGeoMapVtx->Object();
-   TAITparGeo* pGeoMapIt   = (TAITparGeo*) fpGeoMapItr->Object();
-   TAMSDparGeo* pGeoMapMs  = (TAMSDparGeo*) fpGeoMapMsd->Object();
+   Int_t nHistos = pGeoMapVt->GetSensorsN() ;
+   fOffsetVtx = 0;
+   
+   TAITparGeo* pGeoMapIt = 0x0;
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      pGeoMapIt   = (TAITparGeo*) fpGeoMapItr->Object();
+      fOffsetItr = nHistos;
+      nHistos += pGeoMapIt->GetSensorsN();
+   }
+   
+   TAMSDparGeo* pGeoMapMs = 0x0;
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      pGeoMapMs  = (TAMSDparGeo*) fpGeoMapMsd->Object();
+      fOffsetMsd = nHistos;
+      nHistos += pGeoMapMs->GetSensorsN();
+   }
 
-   for (Int_t i = 0; i < pGeoMapVt->GetSensorsN() + pGeoMapIt->GetSensorsN() + pGeoMapMs->GetSensorsN()+1; ++i) {
+   fOffsetTof = nHistos+1;
+   
+   for (Int_t i = 0; i < nHistos+1; ++i) {
       
       fpHisResX[i] = new TH1F(Form("%sResX%d", prefix.Data(), i+1), Form("%s - ResidualX of sensor %d", titleDev.Data(), i+1), 400, -0.01, 0.01);
       AddHistogram(fpHisResX[i]);
@@ -214,9 +241,14 @@ Bool_t TAGactNtuGlbTrackS::FindTracks()
       TAVTtrack* vtTrack = fVtVertex->GetTrack(i);
       TAGtrack* track    = FillTracks(vtTrack);
    
-      FindItrCluster(track);
-      FindMsdCluster(track);
-      FindTwCluster(track);
+      if (TAGrecoManager::GetPar()->IncludeIT())
+         FindItrCluster(track);
+
+      if (TAGrecoManager::GetPar()->IncludeMSD())
+         FindMsdCluster(track);
+      
+      if (TAGrecoManager::GetPar()->IncludeTW())
+         FindTwCluster(track);
 
       // Apply cuts
       if (AppyCuts(track)) {
@@ -481,17 +513,17 @@ void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
       
       if (devName.Contains(TAITparGeo::GetBaseName())) {
          impactLoc = pGeoMapIt->Detector2Sensor(idx, impact);
-         offset = 4;
+         offset = fOffsetItr;;
       }
       
       if (devName.Contains(TAMSDparGeo::GetBaseName())) {
          impactLoc = pGeoMapIt->Detector2Sensor(idx, impact);
-         offset = 36;
+         offset = fOffsetMsd;
       }
       
       if (devName.Contains(TAMSDparGeo::GetBaseName())) {
          impactLoc = pGeoMapIt->Detector2Sensor(idx, impact);
-         offset = 42;
+         offset = fOffsetTof;
       }
       
       

@@ -76,7 +76,11 @@ private:
    TGraphErrors*   fGraphU;             // pointer to graph for fit in U
    TGraphErrors*   fGraphV;             // pointer to graph for fit in V
 
-   
+   Int_t           fOffsetVtx;          // offset VTX
+   Int_t           fOffsetItr;          // offset ITR
+   Int_t           fOffsetMsd;          // offset MSD
+   Int_t           fOffsetTof;          // offset TOF
+
    TH1F*           fpHisResX[43];       // Residual in X
    TH1F*           fpHisResY[43];       // Residual in Y
    TH1F*           fpHisResTotX;        // Total Residual in X
