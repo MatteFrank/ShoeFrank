@@ -199,7 +199,9 @@ void FillMCMsd(Int_t runNumber) {
 }
 
 void FillMCTw(Int_t runNumber)
-{   
+{
+   TAGparGeo* parGeoG = (TAGparGeo*)tgGeo->Object();
+
    Int_t Z_beam = parGeoG->GetBeamPar().AtomicNumber;
    Int_t A_beam = parGeoG->GetBeamPar().AtomicMass;
    TString ion_name = parGeoG->GetBeamPar().Material;
