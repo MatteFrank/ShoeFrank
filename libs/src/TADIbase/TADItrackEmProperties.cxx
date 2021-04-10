@@ -106,28 +106,9 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
    // R = alpha*Energy^(pFactor)
-   Float_t WEPL    = GetFacWEPL(mat)*thickness;
-   Float_t alpha   = 0.0022;
-   Float_t pfactor = 1.;
+   Float_t WEPL = GetFacWEPL(mat)*thickness;
    
-   if (energy < 250){
-      pfactor = 1.77;
-   } else if ((energy >= 250) && (energy < 400)){
-      pfactor = 1.76;
-   } else {
-      pfactor = 1.75;
-   }
-   
-   Float_t rangeW = (massNumber / (atomicNumber*atomicNumber) * alpha * TMath::Power(energy, pfactor));
-   Float_t path   = rangeW - WEPL;
-   Float_t dE     = TMath::Power((path * atomicNumber * atomicNumber / (alpha * massNumber)), (1/pfactor));
-   
-   if (path < 0) {
-      Info("GetEnergyLoss()","The remaining energy is 0....");
-      dE = 0;
-   }
-   
-   return dE;
+   return GetEnergyLoss(energy, massNumber, atomicNumber, WEPL);
 }
 
 //_____________________________________________________________________________
