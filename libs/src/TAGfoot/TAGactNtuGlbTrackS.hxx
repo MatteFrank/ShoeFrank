@@ -12,7 +12,7 @@
 class TAVTvertex;
 class TAVTtrack;
 class TAGtrack;
-class TGraphErrors;
+class TADItrackEmProperties;
 using namespace  std;
 
 class TAGactNtuGlbTrackS : public TAGaction {
@@ -28,7 +28,8 @@ public:
                                 TAGparaDsc* p_vtgeomap   = 0,
                                 TAGparaDsc* p_itgeomap   = 0,
                                 TAGparaDsc* p_itconfig   = 0,
-                                TAGparaDsc* p_msgeomap   = 0);
+                                TAGparaDsc* p_msgeomap   = 0,
+                                TAGparaDsc* p_geomap     = 0);
 
 
    virtual ~TAGactNtuGlbTrackS();
@@ -55,6 +56,9 @@ private:
    void       FillHistogramm(TAGtrack* track);
    void       FillHistogramm();
    void       UpdateParam(TAGtrack* track, Int_t viewX = -1);
+   
+   void       ComputeMass(TAGtrack* track);
+
    vector<double> GetLinearFit(const vector<double>& z, const vector<double>& x, const vector<double>& dx);
 
 private:
@@ -70,16 +74,24 @@ private:
    TAGparaDsc*     fpConfigItr;         // configuration dsc
    
    TAGparaDsc*     fpGeoMapMsd;         // geometry para dsc
+   
+   TAGparaDsc*     fpGeoMapG;           // geometry para dsc
 
    TAGgeoTrafo*    fpFootGeo;           // First geometry transformer
    TAVTvertex*     fVtVertex;           // VT vertex pointer
 
    Int_t           fRequiredClusters;   //! number of clusters required to make a track
-   Double_t        fSearchClusDistItr; //! Max distance to associate a track and a cluster
-   Double_t        fSearchClusDistMsd; //! Max distance to associate a track and a cluster
-   Double_t        fSearchClusDistTof; //! Max distance to associate a track and a cluster
+   Double_t        fSearchClusDistItr;  //! Max distance to associate a track and a cluster
+   Double_t        fSearchClusDistMsd;  //! Max distance to associate a track and a cluster
+   Double_t        fSearchClusDistTof;  //! Max distance to associate a track and a cluster
+   Float_t         fSensorThickVtx;
+   Float_t         fSensorThickItr;
+   Float_t         fSensorThickMsd;
+   
+   Float_t         fBeamEnergyTarget;
 
-
+   TADItrackEmProperties* fEmProperties; // EM properties
+   
    Int_t           fOffsetVtx;          // offset VTX
    Int_t           fOffsetItr;          // offset ITR
    Int_t           fOffsetMsd;          // offset MSD

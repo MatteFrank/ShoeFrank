@@ -15,6 +15,9 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGrecoManager.hxx"
 
+// TGT
+#include "TAGparGeo.hxx"
+
 //VTX
 #include "TAVTtrack.hxx"
 #include "TAVTntuVertex.hxx"
@@ -34,10 +37,13 @@
 //TW
 #include "TATWntuPoint.hxx"
 
-// IR
+// GLB
 #include "TAGntuPoint.hxx"
 #include "TAGntuGlbTrack.hxx"
 #include "TAGactNtuGlbTrackS.hxx"
+
+// EM
+#include "TADItrackEmProperties.hxx"
 
 
 /*!
@@ -52,7 +58,7 @@ Bool_t  TAGactNtuGlbTrackS::fgBmMatched = false;
 //! Default constructor.
 TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
 								 TAGdataDsc* pVtVertex, TAGdataDsc* pItNtuClus, TAGdataDsc* pMsdNtuClus, TAGdataDsc* pTwNtuRec, TAGdataDsc* pNtuTrack,
-								  TAGparaDsc* pVtGeoMap, TAGparaDsc* pItGeoMap, TAGparaDsc* pItConfig,   TAGparaDsc* pMsdGeoMap)
+								  TAGparaDsc* pVtGeoMap, TAGparaDsc* pItGeoMap, TAGparaDsc* pItConfig,   TAGparaDsc* pMsdGeoMap, TAGparaDsc* pgGeoMap)
 :  TAGaction(name, "TAGactNtuGlbTrackS - NTuplize Straight Track"),
    fpVertexVtx(pVtVertex),
    fpNtuClusItr(pItNtuClus),
@@ -62,6 +68,7 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    fpGeoMapItr(pItGeoMap),
    fpConfigItr(pItConfig),
    fpGeoMapMsd(pMsdGeoMap),
+   fpGeoMapG(pgGeoMap),
    fpNtuRecTw(pTwNtuRec),
    fVtVertex(0x0),
    fRequiredClusters(3),
@@ -71,7 +78,8 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    fOffsetVtx(0),
    fOffsetItr(0),
    fOffsetMsd(0),
-   fOffsetTof(0)
+   fOffsetTof(0),
+   fEmProperties(new TADItrackEmProperties)
 {
    AddDataIn(pVtVertex,   "TAVTntuVertex");
    
@@ -90,12 +98,32 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    if (!fpFootGeo)
       Error("TAGactNtuGlbTrackS()", "No GeoTrafo action available yet\n");
    
+   TAVTparGeo* pGeoMapVt  = (TAVTparGeo*)  fpGeoMapVtx->Object();
+   TAITparGeo* pGeoMapIt  = (TAITparGeo*)  fpGeoMapItr->Object();
+   TAMSDparGeo* pGeoMapMs = (TAMSDparGeo*) fpGeoMapMsd->Object();
+   TAGparGeo* pGeoMapG    = (TAGparGeo*)   fpGeoMapG->Object();
+
+   fSensorThickVtx = pGeoMapVt->GetTotalSize()[2];
+   fSensorThickItr = pGeoMapIt->GetTotalSize()[2];
+   fSensorThickMsd = pGeoMapMs->GetTotalSize()[2];
+   
+   fBeamEnergyTarget = pGeoMapG->GetBeamPar().Energy*TAGgeoTrafo::GevToMev();
+   Float_t bA = pGeoMapG->GetBeamPar().AtomicMass;
+   Float_t bz = pGeoMapG->GetBeamPar().AtomicNumber;
+
+   TString matTgt =  pGeoMapG->GetTargetPar().Material;
+   matTgt.ToUpper();
+   Float_t thickTgt = pGeoMapG->GetTargetPar().Size[2];
+   
+   fBeamEnergyTarget = fEmProperties->GetEnergyLoss(matTgt, thickTgt, fBeamEnergyTarget, bA, bz);
+   fBeamEnergyTarget *= TAGgeoTrafo::MevToGev();
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGactNtuGlbTrackS::~TAGactNtuGlbTrackS()
 {
+   delete fEmProperties;
 }
 
 //------------------------------------------+-----------------------------------
@@ -174,6 +202,12 @@ Bool_t TAGactNtuGlbTrackS::Action()
       for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
          TAGtrack* track = pNtuTrack->GetTrack(i);
       }
+   }
+   
+   // compute mass
+   for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
+      TAGtrack* track = pNtuTrack->GetTrack(i);
+      ComputeMass(track);
    }
    
    fpNtuTrack->SetBit(kValid);
@@ -475,7 +509,11 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track)
       
       TAGpoint* point = track->AddMeasPoint(TATWparGeo::GetBaseName(), posG, errG);
       point->SetSensorIdx(0);
-      
+      Float_t Z = bestCluster->GetChargeZ();
+      track->SetCharge(Z);
+      Float_t tof = bestCluster->GetMeanTof();
+      track->SetTof(tof);
+
       UpdateParam(track);
 
       if(FootDebugLevel(1)) {
@@ -483,10 +521,36 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track)
          TVector3 inter = track->Intersection(posG.Z());
          inter.Print();
       }
-      
    }
       
 }
+
+//------------------------------------------+-----------------------------------
+//! Setup all histograms.
+void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
+{
+   Float_t Z = track->GetCharge();
+   if (Z < 1) return;
+
+   // compute beta
+   Double_t tof    = track->GetTof();
+   TVector3 posTw  = fpFootGeo->GetTWCenter();
+   TVector3 pos    = track->Intersection(posTw[2]);
+   
+   Double_t length = pos.Mag();
+   
+   Double_t beta   = length/tof;
+   beta /= 30.; //cm/ns
+   
+   // compute mass
+   Double_t Ekin  = track->GetEnergy(); // should come from Calo
+   Double_t gamma = 1./TMath::Sqrt(1-beta*beta);
+   
+   Double_t mass = Ekin/(gamma-1);
+
+   track->SetMass(mass);
+}
+
 //_____________________________________________________________________________
 //
 void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
@@ -593,6 +657,7 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
       (lineSlope)(1)  = res[1];
    }
    
+   lineSlope[2] = 1.;
    track->SetTgtPosition(lineOrigin);
    track->SetTgtDirection(lineSlope);
 }
