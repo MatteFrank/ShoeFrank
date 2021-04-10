@@ -13,6 +13,8 @@ class TAVTvertex;
 class TAVTtrack;
 class TAGtrack;
 class TGraphErrors;
+using namespace  std;
+
 class TAGactNtuGlbTrackS : public TAGaction {
    
 public:
@@ -53,6 +55,7 @@ private:
    void       FillHistogramm(TAGtrack* track);
    void       FillHistogramm();
    void       UpdateParam(TAGtrack* track, Int_t viewX = -1);
+   vector<double> GetLinearFit(const vector<double>& z, const vector<double>& x, const vector<double>& dx);
 
 private:
    TAGdataDsc*     fpVertexVtx;         // VT vertex container
@@ -76,8 +79,6 @@ private:
    Double_t        fSearchClusDistMsd; //! Max distance to associate a track and a cluster
    Double_t        fSearchClusDistTof; //! Max distance to associate a track and a cluster
 
-   TGraphErrors*   fGraphU;             // pointer to graph for fit in U
-   TGraphErrors*   fGraphV;             // pointer to graph for fit in V
 
    Int_t           fOffsetVtx;          // offset VTX
    Int_t           fOffsetItr;          // offset ITR

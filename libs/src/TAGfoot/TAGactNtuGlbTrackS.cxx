@@ -68,8 +68,6 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    fSearchClusDistItr(0.06),
    fSearchClusDistMsd(0.08),
    fSearchClusDistTof(0.6),
-   fGraphU(new TGraphErrors()),
-   fGraphV(new TGraphErrors()),
    fOffsetVtx(0),
    fOffsetItr(0),
    fOffsetMsd(0),
@@ -98,9 +96,6 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
 //! Destructor.
 TAGactNtuGlbTrackS::~TAGactNtuGlbTrackS()
 {
-   delete fGraphU;
-   delete fGraphV;
-
 }
 
 //------------------------------------------+-----------------------------------
@@ -169,6 +164,9 @@ Bool_t TAGactNtuGlbTrackS::Action()
    TAGntuGlbTrack* pNtuTrack = (TAGntuGlbTrack*) fpNtuTrack->Object();
    pNtuTrack->Clear();
 
+   if(FootDebugLevel(1))
+      printf("\nNext event %d\n", gTAGroot->CurrentEventNumber());
+   
    FindTracks();
    
    if(FootDebugLevel(1)) {
@@ -238,6 +236,9 @@ Bool_t TAGactNtuGlbTrackS::FindTracks()
       delete track;
    }
    
+   if (ValidHistogram())
+      FillHistogramm();
+   
    return true;
 }
 
@@ -255,7 +256,6 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
       
       // from VT local to FOOT global
       posG = fpFootGeo->FromVTLocalToGlobal(posG);
-      errG = fpFootGeo->FromVTLocalToGlobal(errG);
       
       TAGpoint* point = track->AddMeasPoint(TAVTparGeo::GetBaseName(), posG, errG);
       point->SetSensorIdx(cluster->GetSensorIdx());
@@ -263,8 +263,23 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
    
    UpdateParam(track);
    
-   if (ValidHistogram())
-      FillHistogramm();
+   if(FootDebugLevel(1)) {
+      for (Int_t i = 0; i < nClus; ++i) {
+         TAVTcluster* cluster = (TAVTcluster*)vtTrack->GetCluster(i);
+         TVector3 posG = cluster->GetPositionG();
+         TVector3 errG = cluster->GetPosErrorG();
+         
+         // from VT local to FOOT global
+         posG = fpFootGeo->FromVTLocalToGlobal(posG);
+         
+         printf("VTX Sensor %d\n", cluster->GetSensorIdx());
+         posG.Print();
+         errG.Print();
+         
+         TVector3 inter = track->Intersection(posG.Z());
+         inter.Print();
+      }
+   }
    
    return track;
 }
@@ -323,12 +338,17 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
          TVector3 errG = bestCluster->GetPosErrorG();
 
          posG = fpFootGeo->FromITLocalToGlobal(posG);
-         errG = fpFootGeo->FromITLocalToGlobal(errG);
-
+         
          TAGpoint* point = track->AddMeasPoint(TAITparGeo::GetBaseName(), posG, errG);
          point->SetSensorIdx(iSensor);
 
          UpdateParam(track);
+         
+         if(FootDebugLevel(1)) {
+            printf("ITR Sensor %d\n", iSensor);
+            TVector3 inter = track->Intersection(posG.Z());
+            inter.Print();
+         }
       }
       
    } // end loop on sensors
@@ -391,12 +411,17 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          TVector3 errG = bestCluster->GetPosErrorG();
          
          posG = fpFootGeo->FromMSDLocalToGlobal(posG);
-         errG = fpFootGeo->FromMSDLocalToGlobal(errG);
          
          TAGpoint* point = track->AddMeasPoint(TAMSDparGeo::GetBaseName(), posG, errG);
          point->SetSensorIdx(iSensor);
+
+         UpdateParam(track, bestCluster->GetPlaneView());
          
-         UpdateParam(track);
+         if(FootDebugLevel(1)) {
+            printf("MSD Sensor %d %d\n", iSensor, bestCluster->GetPlaneView());
+            TVector3 inter = track->Intersection(posG.Z());
+            inter.Print();
+         }
       }
       
    } // end loop on sensors
@@ -447,12 +472,18 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track)
       TVector3 errG = bestCluster->GetPosErrorG();
       
       posG = fpFootGeo->FromTWLocalToGlobal(posG);
-      errG = fpFootGeo->FromTWLocalToGlobal(errG);
       
       TAGpoint* point = track->AddMeasPoint(TATWparGeo::GetBaseName(), posG, errG);
       point->SetSensorIdx(0);
       
       UpdateParam(track);
+
+      if(FootDebugLevel(1)) {
+         printf("TW\n");
+         TVector3 inter = track->Intersection(posG.Z());
+         inter.Print();
+      }
+      
    }
       
 }
@@ -510,24 +541,20 @@ void TAGactNtuGlbTrackS::FillHistogramm()
 //
 void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
 {
-   TVector3           lineOrigin;  // origin in the tracker system
-   TVector3           lineSlope;   // slope along z-axis in tracker system
-   
-   // init
-   lineOrigin.SetXYZ(0.,0.,0.);
-   lineSlope.SetXYZ(0.,0.,1.);
-   
-   TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMapItr->Object();
+   TVector3 lineOrigin = track->GetTgtPosition();  // origin in the tracker system
+   TVector3 lineSlope  = track->GetTgtDirection();   // slope along z-axis in tracker system
    
    Int_t nClusters = track->GetMeasPointsN();
    
    Double_t x, dx;
    Double_t y, dy;
-   Double_t z, dz;
+   Double_t z;
    
-   fGraphU->Set(nClusters);
-   fGraphV->Set(nClusters);
-   
+   vector<double> xData, dxData;
+   vector<double> yData, dyData;
+   vector<double> zxData, zyData;
+   vector<double> res;
+
    for (Int_t i = 0; i < nClusters; ++i) {
       TAGpoint* cluster = track->GetMeasPoint(i);
       x  = cluster->GetPositionG()(0);
@@ -535,33 +562,68 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
       z  = cluster->GetPositionG()(2);
       dx = cluster->GetPosErrorG()(0);
       dy = cluster->GetPosErrorG()(1);
-      dz = cluster->GetPosErrorG()(2);
-      
+  
+
       if (viewX == -1 || viewX == 0) {
-         fGraphU->SetPoint(i, z, x);
-         fGraphU->SetPointError(i, dz, dx);
+         if (TMath::Abs(x) > 1e-5) {
+            zxData.push_back(z);
+            xData.push_back(x);
+            dxData.push_back(dx);
+         }
       }
       
       if (viewX == -1 || viewX == 1) {
-         fGraphV->SetPoint(i, z, y);
-         fGraphV->SetPointError(i, dz, dy);
+         if (TMath::Abs(y) > 1e-5) {
+            zyData.push_back(z);
+            yData.push_back(y);
+            dyData.push_back(dy);
+         }
       }
    }
    
    if (viewX == -1 || viewX == 0) {
-      fGraphU->Fit("pol1", "Q");
-      TF1* polyU = fGraphU->GetFunction("pol1");
-      (lineOrigin)(0) = polyU->GetParameter(0);
-      (lineSlope)(0)  = polyU->GetParameter(1);
+      res = GetLinearFit(zxData, xData, dxData);
+      (lineOrigin)(0) = res[0];
+      (lineSlope)(0)  = res[1];
    }
    
    if (viewX == -1 || viewX == 1) {
-      fGraphV->Fit("pol1", "Q");
-      TF1* polyV = fGraphV->GetFunction("pol1");
-      (lineOrigin)(1) = polyV->GetParameter(0);
-      (lineSlope)(1)  = polyV->GetParameter(1);
+      res = GetLinearFit(zyData, yData, dyData);
+      (lineOrigin)(1) = res[0];
+      (lineSlope)(1)  = res[1];
    }
    
    track->SetTgtPosition(lineOrigin);
    track->SetTgtDirection(lineSlope);
+}
+
+vector<double> TAGactNtuGlbTrackS::GetLinearFit(const vector<double>& z, const vector<double>& x, const vector<double>& dx)
+{
+   double zzSum = 0, zxSum = 0, slope, intercept;
+   double zMean = 0, xMean = 0, wSum = 0;
+   
+   for (long i = 0; i < z.size(); i++) {
+      double w = 1./(dx[i]*dx[i]);
+      zMean += w*z[i];
+      xMean += w*x[i];
+      wSum += 1./(dx[i]*dx[i]);
+   }
+   
+   zMean /= wSum;
+   xMean /= wSum;
+   
+   for (long i = 0; i < z.size(); i++) {
+      double w = 1./(dx[i]*dx[i]);
+      zxSum += (x[i] - xMean)*(z[i] - zMean)*w;
+      zzSum += (z[i] - zMean)*(z[i] - zMean)*w;
+   }
+   
+   slope = zxSum/zzSum;
+   intercept = xMean - slope*zMean;
+   
+   vector<double> res;
+   res.push_back(intercept);
+   res.push_back(slope);
+   
+   return res;
 }
