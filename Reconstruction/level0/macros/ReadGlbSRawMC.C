@@ -81,33 +81,38 @@ TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter*   outFile     = 0x0;
 TAGactTreeReader*   vtActReader = 0x0;
 
+// VTX
 TAGparaDsc*         tgGeo       = 0x0;
 TAGparaDsc*         vtGeo       = 0x0;
 TAGdataDsc*         vtEve       = 0x0;
 TAGdataDsc*         vtTrck      = 0x0;
 TAGdataDsc*         vtVtx       = 0x0;
-TAVTactNtuHitMC*    vtActRaw    = 0x0;
+TAVTactNtuHitMC*    vtActNtu    = 0x0;
 TAVTactNtuClusterF* vtActClus   = 0x0;
 TAVTactNtuTrackF*   vtActTrck   = 0x0;
 TAVTactNtuVertex*   vtActVtx    = 0x0;
 
+//ITR
 TAGparaDsc*         itGeo       = 0x0;
 TAGparaDsc*         itConf      = 0x0;
 TAGdataDsc*         itClus      = 0x0;
-TAITactNtuHitMC*    itActRaw    = 0x0;
+TAITactNtuHitMC*    itActNtu    = 0x0;
 TAITactNtuClusterF* itActClus   = 0x0;
 
+//MSD
 TAGparaDsc*         msdGeo      = 0x0;
 TAGdataDsc*         msdClus     = 0x0;
-TAMSDactNtuHitMC*   msdActRaw   = 0x0;
+TAMSDactNtuHitMC*   msdActNtu   = 0x0;
 TAMSDactNtuCluster* msdActClus  = 0x0;
 
+//TOF
 TAGparaDsc*         twGeo       = 0x0;
 TAGdataDsc*         twRec       = 0x0;
-TATWactNtuHitMC*    twActRaw    = 0x0;
+TATWactNtuHitMC*    twActNtu    = 0x0;
 TATWactNtuPoint*    twActRec    = 0x0;
 
-TAGactNtuGlbTrackS*    irActTrck = 0x0;
+//GLB
+TAGactNtuGlbTrackS*   glbActTrack = 0x0;
 
 void FillMCVertex(Int_t runNumber) {
    
@@ -138,13 +143,10 @@ void FillMCVertex(Int_t runNumber) {
    vtActReader->SetupBranch(vtMc, TAMCntuHit::GetVtxBranchName());
    vtActReader->SetupBranch(vtEve,TAMCntuPart::GetBranchName());
    
-   vtActRaw = new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
-   
+   vtActNtu  = new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
    vtActClus = new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
-   
    vtActTrck = new TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);
-   
-   vtActVtx = new TAVTactNtuVertex("vtActVtx", vtTrck, vtVtx, vtConf, vtGeo, tgGeo);
+   vtActVtx  = new TAVTactNtuVertex("vtActVtx", vtTrck, vtVtx, vtConf, vtGeo, tgGeo);
 }
 
 void FillMCInnerTracker(Int_t runNumber) {
@@ -164,8 +166,7 @@ void FillMCInnerTracker(Int_t runNumber) {
    parconf->FromFile();
    
    vtActReader->SetupBranch(itMc, TAMCntuHit::GetItrBranchName());
-   itActRaw= new TAITactNtuHitMC("itActNtu", itMc, vtEve, itNtu, itGeo);
-
+   itActNtu  = new TAITactNtuHitMC("itActNtu", itMc, vtEve, itNtu, itGeo);
    itActClus = new TAITactNtuClusterF("itActClus", itNtu, itClus, itConf, itGeo);
 }
 
@@ -178,19 +179,15 @@ void FillMCMsd(Int_t runNumber) {
    geomap->FromFile(parFileName.Data());
    
    TAGdataDsc* msdMc     = new TAGdataDsc("msdMc", new TAMCntuHit());
-   TAGdataDsc* msdRaw    = new TAGdataDsc("msdRaw", new TAMSDntuHit());
+   TAGdataDsc* msdNtu    = new TAGdataDsc("msdNtu", new TAMSDntuHit());
                msdClus   = new TAGdataDsc("msdClus", new TAMSDntuCluster());
    
    TAGparaDsc*  msdConf  = new TAGparaDsc("msdConf", new TAMSDparConf());
    TAMSDparConf* parconf = (TAMSDparConf*) msdConf->Object();
-   //   parconf->FromFile("./config/TAMSDdetector.cfg");
    
    vtActReader->SetupBranch(msdMc, TAMCntuHit::GetMsdBranchName());
-   msdActRaw  = new TAMSDactNtuHitMC("msdActNtu", msdMc, vtEve, msdRaw, msdGeo);
-   
-   TAMSDparConf::SetHistoMap();
-   msdActClus = new TAMSDactNtuCluster("msdActClus", msdRaw, msdClus, msdConf, msdGeo);
-   
+   msdActNtu  = new TAMSDactNtuHitMC("msdActNtu", msdMc, vtEve, msdNtu, msdGeo);
+   msdActClus = new TAMSDactNtuCluster("msdActClus", msdNtu, msdClus, msdConf, msdGeo);
 }
 
 void FillMCTw(Int_t runNumber)
@@ -229,14 +226,13 @@ void FillMCTw(Int_t runNumber)
    
    TAGdataDsc* stMc  = new TAGdataDsc("stMc", new TAMCntuHit());
    TAGdataDsc* twMc  = new TAGdataDsc("twMc", new TAMCntuHit());
-   TAGdataDsc* twRaw = new TAGdataDsc("twRaw", new TATWntuHit());
+   TAGdataDsc* twNtu = new TAGdataDsc("twNtu", new TATWntuHit());
    twRec = new TAGdataDsc("twPoint", new TATWntuPoint());
 
    vtActReader->SetupBranch(stMc, TAMCntuHit::GetStcBranchName());
    vtActReader->SetupBranch(twMc, TAMCntuHit::GetTofBranchName());
-   twActRaw  = new TATWactNtuHitMC("twActNtu", twMc, stMc, vtEve, twRaw, twCal, tgGeo, false, false);
-   
-   twActRec  = new TATWactNtuPoint("twActRec", twRaw, twRec, twGeo, twCal);
+   twActNtu = new TATWactNtuHitMC("twActNtu", twMc, stMc, vtEve, twNtu, twCal, tgGeo, false, false);
+   twActRec = new TATWactNtuPoint("twActRec", twNtu, twRec, twGeo, twCal);
 }
 
 void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 10000, TString expName = "12C_200", Int_t runNumber = 1)
@@ -262,12 +258,11 @@ void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 1000
    FillMCMsd(runNumber);
    FillMCTw(runNumber);
 
-   TAGdataDsc* irTrck   = new TAGdataDsc("irTrack", new TAGntuGlbTrack());
-   irActTrck = new TAGactNtuGlbTrackS("irActTrack",  vtVtx, itClus, msdClus, twRec, irTrck, vtGeo, itGeo, itConf, msdGeo);
-   irActTrck->CreateHistogram();
+   TAGdataDsc* glbTrack   = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+   glbActTrack = new TAGactNtuGlbTrackS("glbActTrack",  vtVtx, itClus, msdClus, twRec, glbTrack, vtGeo, itGeo, itConf, msdGeo);
+   glbActTrack->CreateHistogram();
    
-   //  outFile->SetupElementBranch(irTrck, TAGntuGlbTrack::GetBranchName());
-   
+   //  outFile->SetupElementBranch(glbTrack, TAGntuGlbTrack::GetBranchName());
    
    vtActReader->Open(filename, "READ", "EventTree");
 
@@ -285,7 +280,7 @@ void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 1000
    tagr.AddRequiredItem("twActNtu");
    tagr.AddRequiredItem("twActRec");
 
-   tagr.AddRequiredItem("irActTrack");
+   tagr.AddRequiredItem("glbActTrack");
 
    tagr.AddRequiredItem("outFile");
    tagr.Print();
@@ -297,7 +292,7 @@ void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 1000
    if (outFile->Open(nameOut.Data(), "RECREATE")) return;
 
 
-   irActTrck->SetHistogramDir(outFile->File());
+   glbActTrack->SetHistogramDir(outFile->File());
 
    cout<<" Beginning the Event Loop "<<endl;
    tagr.BeginEventLoop();
