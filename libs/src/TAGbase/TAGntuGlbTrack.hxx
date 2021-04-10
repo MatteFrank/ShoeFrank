@@ -73,7 +73,7 @@ public:
    Double_t         GetTofPhi()             const;
 
    //! Intersection near target
-   TVector3         Intersection(Float_t posZ) const;
+   TVector3         Intersection(Double_t posZ) const;
    
    //! Distance to a track near target
    Double_t         Distance(TAGtrack* track, Float_t z) const;

@@ -198,7 +198,7 @@ Double_t TAGtrack::GetTofPhi() const
 
 //______________________________________________________________________________
 //
-TVector3 TAGtrack::Intersection(Float_t posZ) const
+TVector3 TAGtrack::Intersection(Double_t posZ) const
 {
    // calculates the Intersection of the Track with the plane in
    // the coordinate system of the tracker.
@@ -206,6 +206,8 @@ TVector3 TAGtrack::Intersection(Float_t posZ) const
    TVector3 result(fTgtPos);  // track origin in xyz tracker coordinates
    result(2) = 0.;
    result += fTgtDir * posZ; // intersection in xyz frame at z_plane
+   result(2) = posZ;
+
    return  result;
 }
 
