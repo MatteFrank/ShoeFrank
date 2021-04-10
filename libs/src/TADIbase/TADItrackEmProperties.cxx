@@ -211,11 +211,9 @@ Double_t TADItrackEmProperties::SigmaTheta(Double_t *x, Double_t *par)
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, const TString& beam, Float_t x, Float_t energy)
+Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t bA, Float_t bZ, Float_t x, Float_t energy)
 {
    energy       *= TAGgeoTrafo::GevToMev();
-   Double_t bA   = GetA(beam);
-   Double_t bZ   = GetZ(beam);
    Double_t pc   = GetPCC(energy, bA);
    Double_t beta = GetBeta(energy);
    Double_t radL = GetRadLength(matTarget);  // Radiation length for material
@@ -226,6 +224,15 @@ Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, const TSt
    fFuncSigTheta->SetParameter(3, radL);
    
    return  fFuncSigTheta->Eval(x);
+}
+
+// --------------------------------------------------------------------------------------
+Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, const TString& beam, Float_t x, Float_t energy)
+{
+   Double_t bA   = GetA(beam);
+   Double_t bZ   = GetZ(beam);
+  
+  return GetSigmaTheta(matTarget, bA, bZ, x, energy);
 }
 
 // --------------------------------------------------------------------------------------
