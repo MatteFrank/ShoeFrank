@@ -235,11 +235,11 @@ void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* clus
    cluster->SetSensorIdx(iSensor);
    fCurListOfPixels = cluster->GetListOfPixels();
    ComputePosition();
+   cluster->SetPosition(GetCurrentPosition());
+   cluster->SetPosError(GetCurrentPosError());
    TVector3 posG = GetCurrentPosition();
    posG = pGeoMap->Sensor2Detector(iSensor, posG);
    cluster->SetPositionG(posG);
-   cluster->SetPosition(GetCurrentPosition());
-   cluster->SetPosError(GetCurrentPosError());
    cluster->SetCharge(GetClusterPulseSum());
    
    if (ApplyCuts(cluster)) {
