@@ -1,4 +1,4 @@
-// Macro to make IR track reconstruction from MC data
+// Macro to make Glb track reconstruction when no magnetic field from MC data
 // Ch. Finck
 
 
