@@ -75,7 +75,7 @@ Float_t TADItrackEmProperties::GetEnergyLoss(Float_t energy, Float_t massNumber,
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
    // R = alpha*Energy^(pFactor)
-   
+   energy *= TAGgeoTrafo::GevToMev();
    Float_t alpha   = 0.0022;
    Float_t pfactor = 1.;
 
@@ -96,7 +96,7 @@ Float_t TADItrackEmProperties::GetEnergyLoss(Float_t energy, Float_t massNumber,
       dE = 0;
    }
    
-   return dE;
+   return dE*TAGgeoTrafo::MevToGev();
 }
 
 //_____________________________________________________________________________
