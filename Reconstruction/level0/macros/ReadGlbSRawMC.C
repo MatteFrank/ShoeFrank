@@ -82,9 +82,10 @@ TAGactTreeWriter*   outFile     = 0x0;
 TAGactTreeReader*   vtActReader = 0x0;
 
 TAGparaDsc*         tgGeo       = 0x0;
-TAGdataDsc*         vtVtx       = 0x0;
 TAGparaDsc*         vtGeo       = 0x0;
 TAGdataDsc*         vtEve       = 0x0;
+TAGdataDsc*         vtTrck      = 0x0;
+TAGdataDsc*         vtVtx       = 0x0;
 TAVTactNtuHitMC*    vtActRaw    = 0x0;
 TAVTactNtuClusterF* vtActClus   = 0x0;
 TAVTactNtuTrackF*   vtActTrck   = 0x0;
@@ -101,6 +102,7 @@ TAGdataDsc*         msdClus     = 0x0;
 TAMSDactNtuHitMC*   msdActRaw   = 0x0;
 TAMSDactNtuCluster* msdActClus  = 0x0;
 
+TAGparaDsc*         twGeo       = 0x0;
 TAGdataDsc*         twRec       = 0x0;
 TATWactNtuHitMC*    twActRaw    = 0x0;
 TATWactNtuPoint*    twActRec    = 0x0;
@@ -125,29 +127,24 @@ void FillMCVertex(Int_t runNumber) {
 
    TAGdataDsc* vtNtu    = new TAGdataDsc("vtHit", new TAVTntuHit());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
-   TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
+               vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
                vtVtx    = new TAGdataDsc("vtVtx", new TAVTntuVertex());
    
    TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
    parconf->FromFile();
    
-   TAVTparConf::SetHistoMap();
    vtActReader  = new TAGactTreeReader("vtActEvtReader");
    vtActReader->SetupBranch(vtMc, TAMCntuHit::GetVtxBranchName());
    vtActReader->SetupBranch(vtEve,TAMCntuPart::GetBranchName());
    
-   vtActRaw= new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
-   vtActRaw->CreateHistogram();
+   vtActRaw = new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
    
-   vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
-   vtActClus->CreateHistogram();
+   vtActClus = new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
    
    vtActTrck = new TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);
-   vtActTrck->CreateHistogram();
    
    vtActVtx = new TAVTactNtuVertex("vtActVtx", vtTrck, vtVtx, vtConf, vtGeo, tgGeo);
-   vtActVtx->CreateHistogram();
 }
 
 void FillMCInnerTracker(Int_t runNumber) {
@@ -190,11 +187,9 @@ void FillMCMsd(Int_t runNumber) {
    
    vtActReader->SetupBranch(msdMc, TAMCntuHit::GetMsdBranchName());
    msdActRaw  = new TAMSDactNtuHitMC("msdActNtu", msdMc, vtEve, msdRaw, msdGeo);
-   msdActRaw->CreateHistogram();
    
    TAMSDparConf::SetHistoMap();
    msdActClus = new TAMSDactNtuCluster("msdActClus", msdRaw, msdClus, msdConf, msdGeo);
-   msdActClus->CreateHistogram();
    
 }
 
@@ -207,7 +202,7 @@ void FillMCTw(Int_t runNumber)
    TString ion_name = parGeoG->GetBeamPar().Material;
    Float_t kinE_beam = parGeoG->GetBeamPar().Energy; //GeV/u
    
-   TAGparaDsc* twGeo    = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
+   twGeo    = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
    TATWparGeo* geomap   = (TATWparGeo*) twGeo->Object();
    TString parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
@@ -240,14 +235,11 @@ void FillMCTw(Int_t runNumber)
    vtActReader->SetupBranch(stMc, TAMCntuHit::GetStcBranchName());
    vtActReader->SetupBranch(twMc, TAMCntuHit::GetTofBranchName());
    twActRaw  = new TATWactNtuHitMC("twActNtu", twMc, stMc, vtEve, twRaw, twCal, tgGeo, false, false);
-   twActRaw->CreateHistogram();
    
    twActRec  = new TATWactNtuPoint("twActRec", twRaw, twRec, twGeo, twCal);
-   twActRec->CreateHistogram();
 }
 
-void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 10000,
-                 TString expName = "12C_200", Int_t runNumber = 1)
+void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 10000, TString expName = "12C_200", Int_t runNumber = 1)
 {
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
@@ -303,13 +295,7 @@ void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 1000
    nameOut.Append("_Out.root");
    
    if (outFile->Open(nameOut.Data(), "RECREATE")) return;
-   vtActRaw->SetHistogramDir(outFile->File());
-   vtActClus->SetHistogramDir(outFile->File());
-   vtActTrck->SetHistogramDir(outFile->File());
-   vtActVtx->SetHistogramDir(outFile->File());
-   
-   itActRaw->SetHistogramDir(outFile->File());
-   itActClus->SetHistogramDir(outFile->File());
+
 
    irActTrck->SetHistogramDir(outFile->File());
 
