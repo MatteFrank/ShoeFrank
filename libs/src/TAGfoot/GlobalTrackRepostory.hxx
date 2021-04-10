@@ -61,7 +61,7 @@ public:
  GlobalTrackKalman* NewTrack(Track* track);
 
   virtual void      SetupClones();
-  virtual void      Clear(Option_t* opt="") { fListOfTracks->Delete(); }
+  virtual void      Clear(Option_t* /*opt*/) { fListOfTracks->Delete(); }
 
   virtual void    ToStream(ostream& os, Option_t* option) const;
 
