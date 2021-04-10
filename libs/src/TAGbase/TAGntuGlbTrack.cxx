@@ -170,7 +170,7 @@ Double_t TAGtrack::GetTgtTheta() const
 Double_t TAGtrack::GetTgtPhi() const
 {
    TVector3 origin = fTgtDir.Unit();
-   Double_t phi     = origin.Phi()*TMath::RadToDeg();
+   Double_t phi     = origin.Phi();
    
    return phi;
 }
@@ -180,7 +180,7 @@ Double_t TAGtrack::GetTgtPhi() const
 Double_t TAGtrack::GetTofTheta() const
 {
    TVector3 direction = fTofDir.Unit();
-   Double_t theta      = direction.Theta()*TMath::RadToDeg();
+   Double_t theta      = direction.Theta();
    
    return theta;
 }
