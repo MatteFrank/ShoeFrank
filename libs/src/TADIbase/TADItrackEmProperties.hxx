@@ -24,8 +24,8 @@ public:
    virtual ~TADItrackEmProperties();
    
    Double_t SigmaTheta(Double_t* x, Double_t* par);
-   Float_t  GetSigmaTheta(const TString& matTarget, const TString& beam, Float_t x, Float_t energy);
-   Float_t  GetSigmaTheta(const TString& matTarget, Float_t bA, Float_t bZ, Float_t x, Float_t energy);
+   Float_t  GetSigmaTheta(const TString& matTarget, Float_t x, Float_t energy, const TString& beam);
+   Float_t  GetSigmaTheta(const TString& matTarget, Float_t x, Float_t energy, Float_t bA, Float_t bZ);
 
    Float_t  GetEnergyLoss(const TString& mat, Float_t thickness, Float_t energy, Float_t massNumber, Int_t atomicNumber);
    Float_t  GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL);

@@ -211,7 +211,7 @@ Double_t TADItrackEmProperties::SigmaTheta(Double_t *x, Double_t *par)
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t bA, Float_t bZ, Float_t x, Float_t energy)
+Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t x, Float_t energy, Float_t bA, Float_t bZ)
 {
    energy       *= TAGgeoTrafo::GevToMev();
    Double_t pc   = GetPCC(energy, bA);
@@ -227,7 +227,7 @@ Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t b
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, const TString& beam, Float_t x, Float_t energy)
+Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t x, Float_t energy, const TString& beam)
 {
    Double_t bA   = GetA(beam);
    Double_t bZ   = GetZ(beam);
