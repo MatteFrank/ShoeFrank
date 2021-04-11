@@ -51,7 +51,7 @@ private:
    TAGtrack*  FillVtxTracks(TAVTtrack* vtTrack);
    void       FindItrCluster(TAGtrack* track);
    void       FindMsdCluster(TAGtrack* track);
-   void       FindTwCluster(TAGtrack* track);
+   void       FindTwCluster(TAGtrack* track, Bool_t update = true);
 
    void       FillHistogramm(TAGtrack* track);
    void       FillHistogramm();
@@ -88,6 +88,14 @@ private:
    Float_t         fSensorThickItr;
    Float_t         fSensorThickMsd;
    
+   Float_t         fLastPlaneVtx;
+   Float_t         fLastPlaneItr;
+   Float_t         fLastPlaneMsd;
+
+   Float_t         fPartSigmaTheta;
+   Float_t         fPartEnergy;
+   Float_t         fPartA;
+   Float_t         fPartZ;
    Float_t         fBeamEnergyTarget;
 
    TADItrackEmProperties* fEmProperties; // EM properties

@@ -72,8 +72,8 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    fpNtuRecTw(pTwNtuRec),
    fVtVertex(0x0),
    fRequiredClusters(3),
-   fSearchClusDistItr(0.06),
-   fSearchClusDistMsd(0.08),
+   fSearchClusDistItr(0.04),
+   fSearchClusDistMsd(0.04),
    fSearchClusDistTof(0.6),
    fOffsetVtx(0),
    fOffsetItr(0),
@@ -107,16 +107,24 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    fSensorThickItr = pGeoMapIt->GetTotalSize()[2];
    fSensorThickMsd = pGeoMapMs->GetTotalSize()[2];
    
-   fBeamEnergyTarget = pGeoMapG->GetBeamPar().Energy*TAGgeoTrafo::GevToMev();
+   fLastPlaneVtx = pGeoMapVt->GetLayerPosZ(pGeoMapVt->GetSensorsN()-1);
+   fLastPlaneVtx = fpFootGeo->FromVTLocalToGlobal(TVector3(0,0,fLastPlaneVtx))[2];
+   
+   fLastPlaneItr = pGeoMapIt->GetLayerPosZ(3);
+   fLastPlaneItr = fpFootGeo->FromITLocalToGlobal(TVector3(0,0,fLastPlaneItr))[2];
+
+   fLastPlaneMsd = pGeoMapMs->GetLayerPosZ(pGeoMapMs->GetSensorsN()-1);
+   fLastPlaneMsd = fpFootGeo->FromMSDLocalToGlobal(TVector3(0,0,fLastPlaneMsd))[2];
+   
+   // beam loss in target
+   fBeamEnergyTarget = pGeoMapG->GetBeamPar().Energy;
    Float_t bA = pGeoMapG->GetBeamPar().AtomicMass;
    Float_t bz = pGeoMapG->GetBeamPar().AtomicNumber;
 
-   TString matTgt =  pGeoMapG->GetTargetPar().Material;
-   matTgt.ToUpper();
-   Float_t thickTgt = pGeoMapG->GetTargetPar().Size[2];
+   TString matTgt   = pGeoMapG->GetTargetPar().Material;
+   Float_t thickTgt = pGeoMapG->GetTargetPar().Size[2]/2.; // in average
    
    fBeamEnergyTarget = fEmProperties->GetEnergyLoss(matTgt, thickTgt, fBeamEnergyTarget, bA, bz);
-   fBeamEnergyTarget *= TAGgeoTrafo::MevToGev();
 }
 
 //------------------------------------------+-----------------------------------
@@ -293,11 +301,48 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
       
       TAGpoint* point = track->AddMeasPoint(TAVTparGeo::GetBaseName(), posG, errG);
       point->SetSensorIdx(cluster->GetSensorIdx());
+      
+      if(FootDebugLevel(1))
+         printf("VTX Sensor %d\n", cluster->GetSensorIdx());
    }
    
    UpdateParam(track);
    
-   if(FootDebugLevel(1)) {
+   // first gues with TW
+   TAVTparGeo* pGeoMapVt = (TAVTparGeo*) fpGeoMapVtx->Object();
+   TAGparGeo* pGeoMapG   = (TAGparGeo*)  fpGeoMapG->Object();
+
+   FindTwCluster(track, false);
+   fPartZ = track->GetCharge();
+   
+   if (fPartZ == 0) {
+      fPartSigmaTheta = 0;
+      return track;
+   }
+   
+   if (fPartZ == 1)
+      fPartA = 1.;
+   else
+      fPartA = 2*fPartZ;
+   
+   // Compute particle after half target
+   TString matTgt   = pGeoMapG->GetTargetPar().Material;
+   Float_t thickTgt = pGeoMapG->GetTargetPar().Size[2]/2.; // in average
+   fPartEnergy      = fEmProperties->GetEnergyLoss(matTgt, thickTgt, fBeamEnergyTarget, fPartA, fPartZ);
+   Float_t thetaTgt = fEmProperties->GetSigmaTheta(matTgt, thickTgt, fBeamEnergyTarget, fPartA, fPartZ);
+   
+   // Compute particle after vertex
+   Float_t thickVtx = fSensorThickVtx*nClus;
+   TString matEpi   = pGeoMapVt->GetEpiMaterial();
+   Float_t thetaVtx = fEmProperties->GetSigmaTheta(matEpi, thickVtx, fPartEnergy, fPartA, fPartZ);
+   fPartEnergy      = fEmProperties->GetEnergyLoss(matEpi, thickVtx, fPartEnergy, fPartA, fPartZ);
+   
+   fPartSigmaTheta  = TMath::Sqrt(thetaTgt*thetaTgt + thetaVtx*thetaVtx);
+   
+   if(FootDebugLevel(1))
+      printf("VTX theta %g sensors %d charge %.0f\n", fPartSigmaTheta*TMath::RadToDeg(), nClus, fPartZ);
+      
+   if(FootDebugLevel(2)) {
       for (Int_t i = 0; i < nClus; ++i) {
          TAVTcluster* cluster = (TAVTcluster*)vtTrack->GetCluster(i);
          TVector3 posG = cluster->GetPositionG();
@@ -330,6 +375,7 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
    Double_t aDistance;
    Int_t nSensor = pGeoMap->GetSensorsN();
 
+   Int_t addedCluster = 0;
    // Loop on all sensors to find a matching cluster in them
    for( Int_t iSensor = 0; iSensor < nSensor; ++iSensor) { // loop on sensors
       
@@ -339,7 +385,7 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
       
       
       // loop on all clusters of this sensor and keep the nearest one
-      minDistance = fSearchClusDistItr*(1 + 2.*TMath::Tan(track->GetTgtTheta()*TMath::DegToRad()));
+      minDistance = fSearchClusDistItr;
       TAITcluster* bestCluster = 0x0;
       
       for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
@@ -354,6 +400,17 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
          // track intersection with the sensor
          TVector3 inter = track->Intersection(posG.Z());
          
+         // Compute diffusion
+         Float_t length = posG.Z() - fLastPlaneVtx;
+         Float_t thetaMin = track->GetTgtTheta() - 0.5*fPartSigmaTheta;
+         Float_t thetaMax = track->GetTgtTheta() + 0.5*fPartSigmaTheta;
+         Float_t disp = TMath::Abs(length*TMath::Tan(thetaMax) - length*TMath::Tan(thetaMin));
+         
+         minDistance = TMath::Sqrt(fSearchClusDistItr*fSearchClusDistItr + disp*disp);
+         
+         if(FootDebugLevel(1))
+            printf("min distance %0.1f\n", minDistance*TAGgeoTrafo::CmToMu());
+         
          // compute distance
          aDistance = (inter-posG).Mag();
          
@@ -366,6 +423,7 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
       // if a cluster has been found, add the cluster
       if( bestCluster ) {
          bestCluster->SetFound();
+         addedCluster++;
          
          // from IT local to FOOT global
          TVector3 posG = bestCluster->GetPositionG();
@@ -378,14 +436,27 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
 
          UpdateParam(track);
          
-         if(FootDebugLevel(1)) {
+         if(FootDebugLevel(1))
             printf("ITR Sensor %d\n", iSensor);
-            TVector3 inter = track->Intersection(posG.Z());
-            inter.Print();
-         }
       }
       
    } // end loop on sensors
+   
+   // Compute particle after inner tracker
+   if (fPartZ == 0) {
+      fPartSigmaTheta = 0;
+      return;
+   }
+   
+   Float_t thick    = fSensorThickItr*addedCluster;
+   TString matEpi   = pGeoMap->GetEpiMaterial();
+   Float_t theta    = fEmProperties->GetSigmaTheta(matEpi, thick, fPartEnergy, fPartA, fPartZ);
+   fPartEnergy      = fEmProperties->GetEnergyLoss(matEpi, thick, fPartEnergy, fPartA, fPartZ);
+   fPartSigmaTheta  = TMath::Sqrt(fPartSigmaTheta*fPartSigmaTheta + theta*theta);
+   
+   if(FootDebugLevel(1))
+      printf("ITR theta %g sensors %d\n", fPartSigmaTheta*TMath::RadToDeg(), addedCluster);
+
 }
 
 //_____________________________________________________________________________
@@ -400,6 +471,8 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
    Double_t aDistance;
    Int_t nSensor = pGeoMap->GetSensorsN();
    
+   TVector3 prePosG;
+
    // Loop on all sensors to find a matching cluster in them
    for( Int_t iSensor = 0; iSensor < nSensor; ++iSensor) { // loop on sensors
       
@@ -409,7 +482,8 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
       
       
       // loop on all clusters of this sensor and keep the nearest one
-      minDistance = fSearchClusDistMsd*(1 + 2.*TMath::Tan(track->GetTgtTheta()*TMath::DegToRad()));
+      minDistance = fSearchClusDistMsd;
+
       TAMSDcluster* bestCluster = 0x0;
       
       for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
@@ -440,7 +514,7 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
       if( bestCluster ) {
          bestCluster->SetFound();
          
-         // from IT local to FOOT global
+         // from MSD local to FOOT global
          TVector3 posG = bestCluster->GetPositionG();
          TVector3 errG = bestCluster->GetPosErrorG();
          
@@ -451,19 +525,62 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
 
          UpdateParam(track, bestCluster->GetPlaneView());
          
-         if(FootDebugLevel(1)) {
-            printf("MSD Sensor %d %d\n", iSensor, bestCluster->GetPlaneView());
-            TVector3 inter = track->Intersection(posG.Z());
-            inter.Print();
+         // Compute particle after each plane
+         if (fPartZ == 0)
+            fPartSigmaTheta = 0;
+         else {
+            Float_t thick    = fSensorThickMsd;
+            TString matEpi   = pGeoMap->GetEpiMaterial();
+            Float_t theta    = fEmProperties->GetSigmaTheta(matEpi, thick, fPartEnergy, fPartA, fPartZ);
+            fPartEnergy      = fEmProperties->GetEnergyLoss(matEpi, thick, fPartEnergy, fPartA, fPartZ);
+            fPartSigmaTheta  = TMath::Sqrt(fPartSigmaTheta*fPartSigmaTheta + theta*theta);
+         
+            if(FootDebugLevel(1))
+               printf("MSD theta %g sensor %d\n", fPartSigmaTheta*TMath::RadToDeg(), iSensor);
          }
+         // Compute diffusion
+         Float_t lastPlanePos;
+         if (iSensor == 0 || iSensor == 1)
+            lastPlanePos = fLastPlaneItr;
+         else {
+            lastPlanePos = pGeoMap->GetLayerPosZ(iSensor-2);
+            lastPlanePos = fpFootGeo->FromMSDLocalToGlobal(TVector3(0,0,lastPlanePos))[2];
+         }
+         
+         Float_t length = posG.Z() - lastPlanePos;
+         Float_t thetaMin = track->GetTgtTheta() - 0.5*fPartSigmaTheta;
+         Float_t thetaMax = track->GetTgtTheta() + 0.5*fPartSigmaTheta;
+         Float_t disp = TMath::Abs(length*TMath::Tan(thetaMax) - length*TMath::Tan(thetaMin));
+         
+         minDistance = TMath::Sqrt(fSearchClusDistMsd*fSearchClusDistMsd + disp*disp);
+         
+         if(FootDebugLevel(1))
+            printf("min distance %0.1f\n", minDistance*TAGgeoTrafo::CmToMu());
+         
+         if(FootDebugLevel(1))
+            printf("MSD Sensor %d view %d\n", iSensor, bestCluster->GetPlaneView());
+         
+         prePosG = posG;
       }
       
    } // end loop on sensors
+   
+   // Compute particle after inner tracker
+   if (fPartZ == 0) {
+      fPartSigmaTheta = 0;
+      return;
+   }
+   
+   Float_t thick    = fSensorThickMsd*nSensor;
+   TString matEpi   = pGeoMap->GetEpiMaterial();
+   Float_t theta    = fEmProperties->GetSigmaTheta(matEpi, thick, fPartEnergy, fPartA, fPartZ);
+   fPartEnergy      = fEmProperties->GetEnergyLoss(matEpi, thick, fPartEnergy, fPartA, fPartZ);
+   fPartSigmaTheta  = TMath::Sqrt(fPartSigmaTheta*fPartSigmaTheta + theta*theta);
 }
 
 //_____________________________________________________________________________
 //
-void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track)
+void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
 {
    TAGntuGlbTrack* pNtuTrack = (TAGntuGlbTrack*) fpNtuTrack->Object();
    TATWntuPoint*   pNtuClus  = (TATWntuPoint*)   fpNtuRecTw->Object();
@@ -472,7 +589,7 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track)
    Double_t aDistance;
    
    // loop on all clusters and keep the nearest one
-   minDistance = fSearchClusDistTof*(1 + 2.*TMath::Tan(track->GetTgtTheta()*TMath::DegToRad()))*5.;
+   minDistance = fSearchClusDistTof;
    TATWpoint* bestCluster = 0x0;
    Int_t nClusters = pNtuClus->GetPointN();
    
@@ -481,9 +598,20 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track)
       
       if( aCluster->Found()) continue; // skip cluster already found
       
-      // from IT local to FOOT global
+      // from TW local to FOOT global
       TVector3 posG = aCluster->GetPositionG();
       posG = fpFootGeo->FromTWLocalToGlobal(posG);
+      
+      // Compute diffusion
+      Float_t length = posG.Z() - fLastPlaneMsd;
+      Float_t thetaMin = track->GetTgtTheta() - 0.5*fPartSigmaTheta;
+      Float_t thetaMax = track->GetTgtTheta() + 0.5*fPartSigmaTheta;
+      Float_t disp = TMath::Abs(length*TMath::Tan(thetaMax) - length*TMath::Tan(thetaMin));
+      
+      minDistance = TMath::Sqrt(fSearchClusDistTof*fSearchClusDistTof + disp*disp);
+      
+      if(FootDebugLevel(1))
+         printf("min distance %0.1f\n", minDistance*TAGgeoTrafo::CmToMu());
       
       // track intersection with the sensor
       TVector3 inter = track->Intersection(posG.Z());
@@ -499,7 +627,6 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track)
    
    // if a cluster has been found, add the cluster
    if( bestCluster ) {
-      bestCluster->SetFound();
       
       // from IT local to FOOT global
       TVector3 posG = bestCluster->GetPositionG();
@@ -514,15 +641,14 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track)
       Float_t tof = bestCluster->GetMeanTof();
       track->SetTof(tof);
 
-      UpdateParam(track);
+      if (update) {
+         bestCluster->SetFound();
+         UpdateParam(track);
 
-      if(FootDebugLevel(1)) {
-         printf("TW\n");
-         TVector3 inter = track->Intersection(posG.Z());
-         inter.Print();
+         if(FootDebugLevel(1))
+            printf("TW\n");
       }
    }
-      
 }
 
 //------------------------------------------+-----------------------------------
@@ -662,6 +788,8 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
    track->SetTgtDirection(lineSlope);
 }
 
+//_____________________________________________________________________________
+//
 vector<double> TAGactNtuGlbTrackS::GetLinearFit(const vector<double>& z, const vector<double>& x, const vector<double>& dx)
 {
    double zzSum = 0, zxSum = 0, slope, intercept;
