@@ -147,6 +147,7 @@ Bool_t TATWactNtuPoint::FindPoints()
      if(!hitX->IsValid()) continue;
      if(fIsZMCtrue && hitX->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
      if((Int_t)hitX->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
+     // if((Int_t)hitX->GetChargeZ()<0) continue; //exclude neutrons and hits with Z charge < 0
      // remove double hit in the same layer of the same track when Z = Ztrue
      if(fIsZMCtrue && IsMultHit(hitX) ) continue;
      
@@ -172,6 +173,7 @@ Bool_t TATWactNtuPoint::FindPoints()
      if(!hitY->IsValid()) continue;
      if(fIsZMCtrue && hitY->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
      if((Int_t)hitY->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
+     // if((Int_t)hitY->GetChargeZ()<0) continue; //exclude neutrons and hits with Z charge < 0
      // remove double hit in the same layer of the same track when Z = Ztrue
      if(fIsZMCtrue && IsMultHit(hitY) ) continue;
      
@@ -354,10 +356,14 @@ Bool_t TATWactNtuPoint::FindPoints()
 	 Int_t Z = hit1->GetChargeZ();
 	 point->SetChargeZ(Z);
 
-
 	 if(FootDebugLevel(4)) {
+	   // if(hit1->GetMcTracksN()>1) {
+	   cout<<endl<<"N_MCtracks::"<<hit1->GetMcTracksN()<<endl;
 	   cout<<"fIsZmatch::"<<fIsZmatch<<"  hit1_Z::"<<hit1->GetChargeZ()<<" hitmin_Z::"<<hitmin->GetChargeZ()<<" point_Z::"<<point->GetChargeZ()<<endl;
-	   cout<<"point ID::"<<point->GetPointMatchMCtrkID()<<" Z::"<<point->GetChargeZ()<<" barID::"<<hit1->GetBar()<<endl;	   
+	   cout<<"point ID::"<<point->GetPointMatchMCtrkID()<<" Z::"<<point->GetChargeZ()<<" barID::"<<hit1->GetBar()<<endl;
+	   //   getchar();
+	   // }
+	   
 	   cout<<"Bars::  "<<bar1<<"  "<<bar_min<<"  MainLayer::"<<point->GetMainLayer()<<endl;
 	   cout<<"Eloss1::"<<hit1->GetEnergyLoss()<<"  Eloss2::"<<hitmin->GetEnergyLoss()<<endl;
 	   cout<<"Eloss1::"<<point->GetEnergyLoss1()<<"  Eloss2::"<<point->GetEnergyLoss2()<<endl;
