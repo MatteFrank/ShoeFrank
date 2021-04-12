@@ -27,7 +27,6 @@ public:
                                 TAGdataDsc* p_irntutrack = 0,
                                 TAGparaDsc* p_vtgeomap   = 0,
                                 TAGparaDsc* p_itgeomap   = 0,
-                                TAGparaDsc* p_itconfig   = 0,
                                 TAGparaDsc* p_msgeomap   = 0,
                                 TAGparaDsc* p_geomap     = 0);
 
@@ -69,12 +68,8 @@ private:
    TAGdataDsc*     fpNtuTrack;          // output tracks
 
    TAGparaDsc*     fpGeoMapVtx;         // geometry para dsc
-   
    TAGparaDsc*     fpGeoMapItr;         // geometry para dsc
-   TAGparaDsc*     fpConfigItr;         // configuration dsc
-   
    TAGparaDsc*     fpGeoMapMsd;         // geometry para dsc
-   
    TAGparaDsc*     fpGeoMapG;           // geometry para dsc
 
    TAGgeoTrafo*    fpFootGeo;           // First geometry transformer

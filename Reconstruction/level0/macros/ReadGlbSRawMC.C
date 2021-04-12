@@ -259,7 +259,7 @@ void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 1000
    FillMCTw(runNumber);
 
    TAGdataDsc* glbTrack   = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-   glbActTrack = new TAGactNtuGlbTrackS("glbActTrack",  vtVtx, itClus, msdClus, twRec, glbTrack, vtGeo, itGeo, itConf, msdGeo);
+   glbActTrack = new TAGactNtuGlbTrackS("glbActTrack",  vtVtx, itClus, msdClus, twRec, glbTrack, vtGeo, itGeo, msdGeo);
    glbActTrack->CreateHistogram();
    
    //  outFile->SetupElementBranch(glbTrack, TAGntuGlbTrack::GetBranchName());

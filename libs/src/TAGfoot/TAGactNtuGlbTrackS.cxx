@@ -58,7 +58,7 @@ Bool_t  TAGactNtuGlbTrackS::fgBmMatched = false;
 //! Default constructor.
 TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
 								 TAGdataDsc* pVtVertex, TAGdataDsc* pItNtuClus, TAGdataDsc* pMsdNtuClus, TAGdataDsc* pTwNtuRec, TAGdataDsc* pNtuTrack,
-								  TAGparaDsc* pVtGeoMap, TAGparaDsc* pItGeoMap, TAGparaDsc* pItConfig,   TAGparaDsc* pMsdGeoMap, TAGparaDsc* pgGeoMap)
+								  TAGparaDsc* pVtGeoMap, TAGparaDsc* pItGeoMap, TAGparaDsc* pMsdGeoMap, TAGparaDsc* pgGeoMap)
 :  TAGaction(name, "TAGactNtuGlbTrackS - NTuplize Straight Track"),
    fpVertexVtx(pVtVertex),
    fpNtuClusItr(pItNtuClus),
@@ -66,7 +66,6 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    fpNtuTrack(pNtuTrack),
    fpGeoMapVtx(pVtGeoMap),
    fpGeoMapItr(pItGeoMap),
-   fpConfigItr(pItConfig),
    fpGeoMapMsd(pMsdGeoMap),
    fpGeoMapG(pgGeoMap),
    fpNtuRecTw(pTwNtuRec),
