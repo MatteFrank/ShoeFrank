@@ -98,24 +98,32 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    if (!fpFootGeo)
       Error("TAGactNtuGlbTrackS()", "No GeoTrafo action available yet\n");
    
-   TAVTparGeo* pGeoMapVt  = (TAVTparGeo*)  fpGeoMapVtx->Object();
-   TAITparGeo* pGeoMapIt  = (TAITparGeo*)  fpGeoMapItr->Object();
-   TAMSDparGeo* pGeoMapMs = (TAMSDparGeo*) fpGeoMapMsd->Object();
    TAGparGeo* pGeoMapG    = (TAGparGeo*)   fpGeoMapG->Object();
-
+   TAVTparGeo* pGeoMapVt  = (TAVTparGeo*)  fpGeoMapVtx->Object();
    fSensorThickVtx = pGeoMapVt->GetTotalSize()[2];
-   fSensorThickItr = pGeoMapIt->GetTotalSize()[2];
-   fSensorThickMsd = pGeoMapMs->GetTotalSize()[2];
-   
-   fLastPlaneVtx = pGeoMapVt->GetLayerPosZ(pGeoMapVt->GetSensorsN()-1);
-   fLastPlaneVtx = fpFootGeo->FromVTLocalToGlobal(TVector3(0,0,fLastPlaneVtx))[2];
-   
-   fLastPlaneItr = pGeoMapIt->GetLayerPosZ(3);
-   fLastPlaneItr = fpFootGeo->FromITLocalToGlobal(TVector3(0,0,fLastPlaneItr))[2];
+   fLastPlaneVtx   = pGeoMapVt->GetLayerPosZ(pGeoMapVt->GetSensorsN()-1);
+   fLastPlaneVtx   = fpFootGeo->FromVTLocalToGlobal(TVector3(0,0,fLastPlaneVtx))[2];
 
-   fLastPlaneMsd = pGeoMapMs->GetLayerPosZ(pGeoMapMs->GetSensorsN()-1);
-   fLastPlaneMsd = fpFootGeo->FromMSDLocalToGlobal(TVector3(0,0,fLastPlaneMsd))[2];
+   // in case no ITR and  MSD
+   fLastPlaneItr = fLastPlaneVtx;
+   fLastPlaneMsd = fLastPlaneVtx;
    
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      TAITparGeo* pGeoMapIt  = (TAITparGeo*)  fpGeoMapItr->Object();
+      fSensorThickItr = pGeoMapIt->GetTotalSize()[2];
+      fLastPlaneItr   = pGeoMapIt->GetLayerPosZ(3);
+      fLastPlaneItr   = fpFootGeo->FromITLocalToGlobal(TVector3(0,0,fLastPlaneItr))[2];
+   } 
+   
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      TAMSDparGeo* pGeoMapMs = (TAMSDparGeo*) fpGeoMapMsd->Object();
+      fSensorThickMsd = pGeoMapMs->GetTotalSize()[2];
+      fLastPlaneMsd   = pGeoMapMs->GetLayerPosZ(pGeoMapMs->GetSensorsN()-1);
+      fLastPlaneMsd   = fpFootGeo->FromMSDLocalToGlobal(TVector3(0,0,fLastPlaneMsd))[2];
+      
+   } else if (TAGrecoManager::GetPar()->IncludeIT())
+     fLastPlaneMsd = fSensorThickItr;
+
    // beam loss in target
    fBeamEnergyTarget = pGeoMapG->GetBeamPar().Energy;
    Float_t bA = pGeoMapG->GetBeamPar().AtomicMass;
