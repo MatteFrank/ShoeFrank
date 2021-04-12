@@ -152,10 +152,10 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    }
 
    if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI()) {
+       TAGrecoManager::GetPar()->IncludeVT() &&
+       TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->IncludeDI()) {
 
-      fIrTrackDisplay = new TAEDtrack("Interaction Region Tracks");
+      fIrTrackDisplay = new TAEDtrack("Global Straight Tracks");
       fIrTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
       fIrTrackDisplay->SetDefWidth(fBoxDefWidth);
       fIrTrackDisplay->SetDefHeight(fBoxDefHeight);
@@ -401,8 +401,8 @@ void TAGbaseEventDisplay::AddElements()
    }
 
    if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI()) {
+       TAGrecoManager::GetPar()->IncludeVT() &&
+       TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->IncludeDI()) {
       fIrTrackDisplay->ResetTracks();
       gEve->AddElement(fIrTrackDisplay);
    }
@@ -457,8 +457,8 @@ void TAGbaseEventDisplay::ConnectElements()
    }
    
    if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI()) {
+       TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW() &&
+       !TAGrecoManager::GetPar()->IncludeDI()) {
       fIrTrackDisplay->SetEmitSignals(true);
       fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
@@ -621,6 +621,34 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
          cout <<  Form(" at Slope: (%.3g %.3g) \n", track->GetSlope()[0], track->GetSlope()[1]);
          cout <<  Form(" and Origin (%.3g %.3g)\n",  track->GetOrigin()[0], track->GetOrigin()[1]);
       }
+   } else if (obj->InheritsFrom("TAGtrack")) {
+      
+      TAGtrack* track =  (TAGtrack*)obj;
+      if (track == 0x0) return;
+      
+      fInfoView->AddLine( Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN()) );
+      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass()) );
+      fInfoView->AddLine( Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTof()) );
+      
+      if (fConsoleButton->IsOn()) {
+         cout <<  Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN());
+         cout <<  Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass());
+         cout <<  Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTof());
+         
+         for( Int_t iPoint = 0; iPoint < track->GetMeasPointsN(); ++iPoint ) {
+            TAGpoint* point = track->GetMeasPoint(iPoint);
+            cout << Form("%-3s: #%2d ", point->GetDevName(), iPoint);
+            cout << Form("Momentum: (%.2f %.2f %.2f) GeV/c ", point->GetMomentum()[0], point->GetMomentum()[1], point->GetMomentum()[2]);
+            
+            if (fType != 0) {
+               for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
+                  Int_t idx = point->GetMcTrackIdx(k);
+                  cout << Form(" MCtrackIdx: %d ", idx);
+               }
+            }
+            cout << endl;
+         }
+      }
    }
 }
 
@@ -713,8 +741,8 @@ void TAGbaseEventDisplay::UpdateElements()
       UpdateElements("ca");
 
    if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI())
+       TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW() &&
+       !TAGrecoManager::GetPar()->IncludeDI())
       UpdateElements("ir");
 
    if (TAGrecoManager::GetPar()->IncludeTOE() && fgTrackFlag)
@@ -1036,44 +1064,26 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
    }
 
    if (prefix == "ir") {
-
-      TAITparGeo*  parGeo   = fReco->GetParGeoIt();
-      Int_t nPlanes         = parGeo->GetSensorsN();
-      Float_t posfirstPlane = 0.;
-      Float_t posLastPlane  = parGeo->GetSensorPosition(nPlanes-1)[2]*1.1;
-
-      // Go to FOOT frame
-      TVector3 pos(0,0,posLastPlane);
-      pos = fpFootGeo->FromITLocalToGlobal(pos);
-      posLastPlane = pos.Z();
-
-      TAIRntuTrack* pNtuTrack = fReco->GetNtuTrackIr();
-
+      
+      TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
       for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
          fIrTrackDisplay->AddNewTrack();
 
-         TAIRtrack* track = pNtuTrack->GetTrack(iTrack);
+         TAGtrack* track = pNtuTrack->GetTrack(iTrack);
          TVector3 posG(0, 0, 0);
 
          posG  = track->Intersection(0);
          x = posG(0); y = posG(1); z = posG(2);
 
-
-         if (TAGrecoManager::GetPar()->IncludeTW()) {
-            Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
-            posG = track->Intersection(posZtw);
-         } else {
-            posG  = track->Intersection(posLastPlane);
-         }
-
+         Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+         posG = track->Intersection(posZtw);
          x1 = posG(0); y1 = posG(1); z1 = posG(2);
 
-         Float_t nPix = track->GetMeanPixelsN();
-         fIrTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
+         Int_t nPoint = track->GetMeasPointsN();
+         fIrTrackDisplay->AddTracklet(nPoint*100, x, y, z, x1, y1, z1);
          fIrTrackDisplay->TrackId(track);
 
       } // end loop on tracks
-
 
       fIrTrackDisplay->RefitPlex();
    }

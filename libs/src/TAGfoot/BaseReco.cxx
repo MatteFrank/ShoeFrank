@@ -82,7 +82,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuTrackIt(0x0),
    fpNtuVtx(0x0),
    fpNtuGlbTrack(0x0),
-   fpNtuTrackIr(0x0),
    fActEvtReader(0x0),
    fActEvtWriter(0x0),
    fActTrackBm(0x0),
@@ -94,7 +93,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fActClusMsd(0x0),
    fActPointTw(0x0),
    fActGlbTrack(0x0),
-   fActTrackIr(0x0),
+   fActGlbTrackS(0x0),
    fFlagOut(true),
    fFlagTree(false),
    fFlagHits(false),
@@ -661,10 +660,10 @@ void BaseReco::CreateRecAction()
    if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman())
       CreateRecActionGlbGF();
    
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI())
-       CreateRecActionIr();
+   if (TAGrecoManager::GetPar()->IncludeST()    && TAGrecoManager::GetPar()->IncludeTG()
+       && TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW()
+       && !TAGrecoManager::GetPar()->IncludeDI())
+       CreateRecActionGlbS();
 }
 
 //__________________________________________________________
@@ -859,13 +858,13 @@ void BaseReco::CreateRecActionGlbGF()
 }
 
 //__________________________________________________________
-void BaseReco::CreateRecActionIr()
+void BaseReco::CreateRecActionGlbS()
 {
    if(fFlagTrack) {
-      fpNtuTrackIr = new TAGdataDsc("irTrack", new TAIRntuTrack());
-      fActTrackIr  = new TAIRactNtuTrack("irActTrack", fpNtuClusIt, fpNtuVtx, fpNtuTrackIr, fpParConfIt, fpParGeoIt, fpParGeoVtx);
+      fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+      fActGlbTrackS  = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoG);
       if (fFlagHisto)
-         fActTrackIr->CreateHistogram();
+         fActGlbTrackS->CreateHistogram();
    }
    
 }
@@ -1009,10 +1008,10 @@ void BaseReco::AddRecRequiredItem()
       }
    }
    
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI())
-      gTAGroot->AddRequiredItem("irActTrack");
+   if (TAGrecoManager::GetPar()->IncludeST()    && TAGrecoManager::GetPar()->IncludeTG()
+       && TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW()
+       && !TAGrecoManager::GetPar()->IncludeDI())
+      gTAGroot->AddRequiredItem("glbActTrackS");
 
 }
 

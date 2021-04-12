@@ -74,7 +74,7 @@
 #include "TAITactNtuTrackF.hxx"
 #include "TAVTactNtuVertex.hxx"
 
-#include "TAIRactNtuTrack.hxx"
+#include "TAGactNtuGlbTrackS.hxx"
 #include "TAGactNtuGlbTrack.hxx"
 
 #include "TAGactKFitter.hxx"
@@ -227,13 +227,12 @@ public:
    TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
-   TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
    //! MC container Getter (virtual)
    virtual TAMCntuRegion* GetNtuMcReg()     const { return 0x0; }
    virtual TAMCntuEvent*  GetNtuMcEvt()     const { return 0x0; }
-   virtual TAMCntuPart*  GetNtuMcTrk()     const { return 0x0; }
+   virtual TAMCntuPart*   GetNtuMcTrk()     const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcSt()      const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcBm()      const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcVtx()     const { return 0x0; }
@@ -324,7 +323,6 @@ protected:
 
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
    TAGdataDsc*           fpNtuGlbTrackK;      // input data dsc
-   TAGdataDsc*           fpNtuTrackIr;     // input data dsc
 
    TAGactionFile*        fActEvtReader;
    TAGactTreeWriter*     fActEvtWriter;  // write histo and tree
@@ -347,7 +345,7 @@ protected:
    TACAactNtuCluster*    fActClusCa;    // action for clusters
 
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
-   TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
+   TAGactNtuGlbTrackS*   fActGlbTrackS;     // action for straight tracks
   
    GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
    TAGactKFitter*         fActGlbkFitter;    // Global tracking kalman Fitter
@@ -374,9 +372,9 @@ protected:
    void CreateRecActionMsd();
    void CreateRecActionTw();
    void CreateRecActionCa();
-   void CreateRecActionGlb() ;
-   void CreateRecActionGlbGF() ;
-   void CreateRecActionIr();
+   void CreateRecActionGlb();
+   void CreateRecActionGlbGF();
+   void CreateRecActionGlbS();
 
 protected:
    static Bool_t fgItrTrackFlag;
