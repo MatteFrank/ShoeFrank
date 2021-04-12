@@ -612,8 +612,6 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
       // compute distance
       aDistance = (inter-posG).Mag();
       
-//      printf("min distance %f %f\n", minDistance, aDistance);
-
       if( aDistance < minDistance ) {
          minDistance = aDistance;
          bestCluster = aCluster;
