@@ -66,7 +66,7 @@ public:
    //! Get position in global tracker frame
    const TVector3&     GetPositionG()                  const { return fPositionG ;     }
    //! Get position in global tracker frame
-   const TVector3&     GetPosErrorG()                  const { return fPositionG ;     }
+   const TVector3&     GetPosErrorG()                  const { return fPosErrorG ;     }
 
    
    //! Get U position in local frame
