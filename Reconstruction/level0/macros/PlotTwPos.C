@@ -62,7 +62,7 @@ void PlotTwPos(TString nameFile = "12C_C_200_L0Out.root", TString expName = "12C
 
    while (tagr.NextEvent() ){
 
-    Int_t npoints = twPoint->GetPointN();
+    Int_t npoints = twPoint->GetPointsN();
     for(Int_t i = 0; i < npoints; ++i) {
       TATWpoint* point = twPoint->GetPoint(i);
       if (!point) continue;

@@ -123,7 +123,7 @@ public:
 	
   TATWpoint*          NewPoint( double x, double dx, TATWhit* hitX, double y, double dy, TATWhit* hitY, Int_t mainLayer );
 
-  int                 GetPointN() const;
+  int                 GetPointsN() const;
   TATWpoint*          GetPoint( int iPoint ) const;
   
   

@@ -195,9 +195,9 @@ int TAGFuploader::UploadHitsTW() {
 
 	// take the ntuple object already filled
 	TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
-	if ( m_debug > 0 )		cout << "number of TW points read: " << ntup->GetPointN() << endl;
+	if ( m_debug > 0 )		cout << "number of TW points read: " << ntup->GetPointsN() << endl;
 
-	int totPoints = ntup->GetPointN();
+	int totPoints = ntup->GetPointsN();
 
 	// save hits in the collection
 	for ( int iPoint = 0; iPoint < totPoints; iPoint++ ) {
@@ -260,7 +260,7 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 	int tmp_ch;
 
 	// save hits in the collection
-	for (int iPoint = 0; iPoint < twPoint->GetPointN(); iPoint++) {
+	for (int iPoint = 0; iPoint < twPoint->GetPointsN(); iPoint++) {
 
 		TATWpoint* point = twPoint->GetPoint( iPoint );
 

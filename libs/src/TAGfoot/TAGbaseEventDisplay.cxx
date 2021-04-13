@@ -1174,7 +1174,7 @@ void TAGbaseEventDisplay::UpdateBarElements()
    // Draw Quad
    TATWntuPoint* pNtuPoint =  fReco->GetNtuPointTw();;
 
-   Int_t nPoints = pNtuPoint->GetPointN();
+   Int_t nPoints = pNtuPoint->GetPointsN();
 
    for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
 

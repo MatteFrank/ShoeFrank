@@ -600,7 +600,7 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
       searchDist = fSearchClusDistTof*2;
       
    TATWpoint* bestCluster = 0x0;
-   Int_t nClusters = pNtuRec->GetPointN();
+   Int_t nClusters = pNtuRec->GetPointsN();
 
    for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
       TATWpoint* aCluster =  pNtuRec->GetPoint(iClus);

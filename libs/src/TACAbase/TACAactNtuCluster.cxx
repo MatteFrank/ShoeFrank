@@ -337,7 +337,7 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
    TVector3 resMin;
    
    TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
-   Int_t nPoints = pNtuPoint->GetPointN();
+   Int_t nPoints = pNtuPoint->GetPointsN();
    
    for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
       
