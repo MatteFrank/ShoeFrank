@@ -22,7 +22,8 @@ public:
                                 TAGdataDsc* p_vtvertex   = 0,
                                 TAGdataDsc* p_itntuclus  = 0,
                                 TAGdataDsc* p_msntuclus  = 0,
-                                TAGdataDsc* p_msnturec   = 0,
+                                TAGdataDsc* p_twntuclus  = 0,
+                                TAGdataDsc* p_cantuclus  = 0,
 
                                 TAGdataDsc* p_irntutrack = 0,
                                 TAGparaDsc* p_vtgeomap   = 0,
@@ -65,6 +66,8 @@ private:
    TAGdataDsc*     fpNtuClusItr;        // IT cluster container
    TAGdataDsc*     fpNtuClusMsd;        // MSD cluster container
    TAGdataDsc*     fpNtuRecTw;          // TW rec point container
+   TAGdataDsc*     fpNtuClusCa;         // CA cluster container
+
    TAGdataDsc*     fpNtuTrack;          // output tracks
 
    TAGparaDsc*     fpGeoMapVtx;         // geometry para dsc

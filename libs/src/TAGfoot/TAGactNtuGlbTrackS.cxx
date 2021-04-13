@@ -37,6 +37,9 @@
 //TW
 #include "TATWntuPoint.hxx"
 
+//CA
+#include "TACAntuCluster.hxx"
+
 // GLB
 #include "TAGntuPoint.hxx"
 #include "TAGntuGlbTrack.hxx"
@@ -57,18 +60,19 @@ Bool_t  TAGactNtuGlbTrackS::fgBmMatched = false;
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
-								 TAGdataDsc* pVtVertex, TAGdataDsc* pItNtuClus, TAGdataDsc* pMsdNtuClus, TAGdataDsc* pTwNtuRec, TAGdataDsc* pNtuTrack,
+								 TAGdataDsc* pVtVertex, TAGdataDsc* pItNtuClus, TAGdataDsc* pMsdNtuClus, TAGdataDsc* pTwNtuRec, TAGdataDsc* pCaNtuClus, TAGdataDsc* pNtuTrack,
 								  TAGparaDsc* pVtGeoMap, TAGparaDsc* pItGeoMap, TAGparaDsc* pMsdGeoMap, TAGparaDsc* pgGeoMap)
 :  TAGaction(name, "TAGactNtuGlbTrackS - NTuplize Straight Track"),
    fpVertexVtx(pVtVertex),
    fpNtuClusItr(pItNtuClus),
    fpNtuClusMsd(pMsdNtuClus),
+   fpNtuRecTw(pTwNtuRec),
+   fpNtuClusCa(pCaNtuClus),
    fpNtuTrack(pNtuTrack),
    fpGeoMapVtx(pVtGeoMap),
    fpGeoMapItr(pItGeoMap),
    fpGeoMapMsd(pMsdGeoMap),
    fpGeoMapG(pgGeoMap),
-   fpNtuRecTw(pTwNtuRec),
    fVtVertex(0x0),
    fRequiredClusters(3),
    fSearchClusDistItr(0.06),
@@ -90,6 +94,9 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    
    if (TAGrecoManager::GetPar()->IncludeTW())
       AddDataIn(pTwNtuRec,   "TATWntuPoint");
+   
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      AddDataIn(pCaNtuClus, "TACAntuCluster");
    
    AddDataOut(pNtuTrack,  "TAGntuGlbTrack");
 
@@ -579,7 +586,7 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
 void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
 {
    TAGntuGlbTrack* pNtuTrack = (TAGntuGlbTrack*) fpNtuTrack->Object();
-   TATWntuPoint*   pNtuClus  = (TATWntuPoint*)   fpNtuRecTw->Object();
+   TATWntuPoint*   pNtuRec   = (TATWntuPoint*)   fpNtuRecTw->Object();
    
    Double_t minDistance  = 1.e9;
    Double_t aDistance;
@@ -591,10 +598,10 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
       searchDist = fSearchClusDistTof*2;
       
    TATWpoint* bestCluster = 0x0;
-   Int_t nClusters = pNtuClus->GetPointN();
+   Int_t nClusters = pNtuRec->GetPointN();
 
    for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
-      TATWpoint* aCluster =  pNtuClus->GetPoint(iClus);
+      TATWpoint* aCluster =  pNtuRec->GetPoint(iClus);
       
       if( aCluster->Found()) continue; // skip cluster already found
       
@@ -628,20 +635,34 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
    // if a cluster has been found, add the cluster
    if( bestCluster ) {
       
-      // from IT local to FOOT global
-      TVector3 posG = bestCluster->GetPositionG();
-      TVector3 errG = bestCluster->GetPosErrorG();
-      
-      posG = fpFootGeo->FromTWLocalToGlobal(posG);
-      
-      TAGpoint* point = track->AddMeasPoint(TATWparGeo::GetBaseName(), posG, errG);
-      point->SetSensorIdx(0);
       Float_t Z = bestCluster->GetChargeZ();
       track->SetCharge(Z);
-      Float_t tof = bestCluster->GetMeanTof();
-      track->SetTof(tof);
-
+      
       if (update) {
+         // from IT local to FOOT global
+         TVector3 posG = bestCluster->GetPositionG();
+         TVector3 errG = bestCluster->GetPosErrorG();
+      
+         posG = fpFootGeo->FromTWLocalToGlobal(posG);
+         
+         TAGpoint* point = track->AddMeasPoint(TATWparGeo::GetBaseName(), posG, errG);
+         point->SetSensorIdx(0);
+         
+         Float_t tof = bestCluster->GetMeanTof();
+         track->SetTof(tof);
+         
+         if (TAGrecoManager::GetPar()->IncludeCA()) {
+            TACAntuCluster* pNtuClus  = (TACAntuCluster*) fpNtuClusCa->Object();
+            Int_t idxCa = bestCluster->GetMatchCalIdx();
+            if (idxCa != -1) {
+               TACAcluster* caCluster = pNtuClus->GetCluster(idxCa);
+               if (caCluster) {
+                  Float_t Ek = caCluster->GetCharge();
+                  track->SetEnergy(Ek*1e-3);
+               }
+            }
+         }
+      
          bestCluster->SetFound();
          UpdateParam(track);
 
@@ -675,6 +696,9 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
    Double_t mass = Ekin/(gamma-1);
 
    track->SetMass(mass);
+   
+   if(FootDebugLevel(1))
+      printf("Charge %.0f Mass %f\n", Z, mass);
 }
 
 //_____________________________________________________________________________
