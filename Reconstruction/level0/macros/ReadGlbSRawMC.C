@@ -69,7 +69,16 @@
 #include "TATWactNtuHitMC.hxx"
 #include "TATWactNtuPoint.hxx"
 
-// IR
+// CA
+#include "TACAparGeo.hxx"
+#include "TACAparCal.hxx"
+#include "TACAntuHit.hxx"
+#include "TACAntuCluster.hxx"
+
+#include "TACAactNtuHitMC.hxx"
+#include "TACAactNtuCluster.hxx"
+
+// GLB
 #include "TAGntuGlbTrack.hxx"
 #include "TAGactNtuGlbTrackS.hxx"
 
@@ -111,6 +120,13 @@ TAGdataDsc*         twRec       = 0x0;
 TATWactNtuHitMC*    twActNtu    = 0x0;
 TATWactNtuPoint*    twActRec    = 0x0;
 
+//CA
+TAGparaDsc*         caGeo       = 0x0;
+TAGdataDsc*         caClus      = 0x0;
+TACAactNtuHitMC*    caActNtu    = 0x0;
+TACAactNtuCluster*  caActClus   = 0x0;
+
+
 //GLB
 TAGactNtuGlbTrackS*   glbActTrack = 0x0;
 
@@ -129,11 +145,11 @@ void FillMCVertex(Int_t runNumber) {
    
    vtEve  = new TAGdataDsc("vtEve", new TAMCntuPart());
    TAGdataDsc* vtMc   = new TAGdataDsc("vtMc", new TAMCntuHit());
-
+   
    TAGdataDsc* vtNtu    = new TAGdataDsc("vtHit", new TAVTntuHit());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
-               vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
-               vtVtx    = new TAGdataDsc("vtVtx", new TAVTntuVertex());
+   vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
+   vtVtx    = new TAGdataDsc("vtVtx", new TAVTntuVertex());
    
    TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
@@ -159,14 +175,15 @@ void FillMCInnerTracker(Int_t runNumber) {
    
    TAGdataDsc* itMc     = new TAGdataDsc("itMc", new TAMCntuHit());
    TAGdataDsc* itNtu    = new TAGdataDsc("itHit", new TAITntuHit());
-               itClus   = new TAGdataDsc("itClus", new TAITntuCluster());
+   itClus   = new TAGdataDsc("itClus", new TAITntuCluster());
    
-                itConf  = new TAGparaDsc("itConf", new TAITparConf());
+   itConf  = new TAGparaDsc("itConf", new TAITparConf());
    TAITparConf* parconf = (TAITparConf*) itConf->Object();
    parconf->FromFile();
    
    vtActReader->SetupBranch(itMc, TAMCntuHit::GetItrBranchName());
-   itActNtu  = new TAITactNtuHitMC("itActNtu", itMc, vtEve, itNtu, itGeo);
+   itActNtu= new TAITactNtuHitMC("itActNtu", itMc, vtEve, itNtu, itGeo);
+   
    itActClus = new TAITactNtuClusterF("itActClus", itNtu, itClus, itConf, itGeo);
 }
 
@@ -180,7 +197,7 @@ void FillMCMsd(Int_t runNumber) {
    
    TAGdataDsc* msdMc     = new TAGdataDsc("msdMc", new TAMCntuHit());
    TAGdataDsc* msdNtu    = new TAGdataDsc("msdNtu", new TAMSDntuHit());
-               msdClus   = new TAGdataDsc("msdClus", new TAMSDntuCluster());
+   msdClus   = new TAGdataDsc("msdClus", new TAMSDntuCluster());
    
    TAGparaDsc*  msdConf  = new TAGparaDsc("msdConf", new TAMSDparConf());
    TAMSDparConf* parconf = (TAMSDparConf*) msdConf->Object();
@@ -193,7 +210,7 @@ void FillMCMsd(Int_t runNumber) {
 void FillMCTw(Int_t runNumber)
 {
    TAGparGeo* parGeoG = (TAGparGeo*)tgGeo->Object();
-
+   
    Int_t Z_beam = parGeoG->GetBeamPar().AtomicNumber;
    Int_t A_beam = parGeoG->GetBeamPar().AtomicMass;
    TString ion_name = parGeoG->GetBeamPar().Material;
@@ -228,14 +245,39 @@ void FillMCTw(Int_t runNumber)
    TAGdataDsc* twMc  = new TAGdataDsc("twMc", new TAMCntuHit());
    TAGdataDsc* twNtu = new TAGdataDsc("twNtu", new TATWntuHit());
    twRec = new TAGdataDsc("twPoint", new TATWntuPoint());
-
+   
    vtActReader->SetupBranch(stMc, TAMCntuHit::GetStcBranchName());
    vtActReader->SetupBranch(twMc, TAMCntuHit::GetTofBranchName());
-   twActNtu = new TATWactNtuHitMC("twActNtu", twMc, stMc, vtEve, twNtu, twCal, tgGeo, false, false);
-   twActRec = new TATWactNtuPoint("twActRec", twNtu, twRec, twGeo, twCal);
+   twActNtu  = new TATWactNtuHitMC("twActNtu", twMc, stMc, vtEve, twNtu, twCal, tgGeo, false, false);
+   twActRec  = new TATWactNtuPoint("twActRec", twNtu, twRec, twGeo, twCal);
 }
 
-void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 10000, TString expName = "12C_200", Int_t runNumber = 1)
+void FillMCCa(Int_t runNumber)
+{
+   /*Ntupling the MC Vertex information*/
+   caGeo    = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
+   TACAparGeo* geomap   = (TACAparGeo*) caGeo->Object();
+   TString parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNumber);
+   geomap->FromFile(parFileName.Data());
+   
+   TAGparaDsc* caMap = new TAGparaDsc("caMap", new TACAparMap());
+   TACAparMap* parMap = (TACAparMap*)caMap->Object();
+
+   TAGparaDsc* caCal  = new TAGparaDsc("caCal", new TACAparCal(parMap));
+   TACAparCal* parCal = (TACAparCal*)caCal->Object();
+   parFileName = campManager->GetCurMapFile(TACAparGeo::GetBaseName(), runNumber);
+   parCal->FromCrysStatusFile(parFileName.Data());
+      
+   TAGdataDsc* caMc     = new TAGdataDsc("caMc", new TAMCntuHit());
+   TAGdataDsc* caNtu    = new TAGdataDsc("caNtu", new TACAntuHit());
+   caClus   = new TAGdataDsc("caClus", new TACAntuCluster());
+   
+   vtActReader->SetupBranch(caMc, TAMCntuHit::GetCalBranchName());
+   caActNtu  = new TACAactNtuHitMC("caActNtu", caMc, vtEve, caNtu, caGeo, caCal, tgGeo);
+   caActClus = new TACAactNtuCluster("caActClus", caNtu, caClus, caGeo, 0x0, twRec);
+}
+
+void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 3, TString expName = "12C_200", Int_t runNumber = 1)
 {
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
@@ -257,15 +299,16 @@ void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 1000
    FillMCInnerTracker(runNumber);
    FillMCMsd(runNumber);
    FillMCTw(runNumber);
-
+   FillMCCa(runNumber);
+   
    TAGdataDsc* glbTrack   = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-   glbActTrack = new TAGactNtuGlbTrackS("glbActTrack",  vtVtx, itClus, msdClus, twRec, glbTrack, vtGeo, itGeo, msdGeo);
+   glbActTrack = new TAGactNtuGlbTrackS("glbActTrack",  vtVtx, itClus, msdClus, twRec, caClus, glbTrack, vtGeo, itGeo, msdGeo, tgGeo);
    glbActTrack->CreateHistogram();
    
    //  outFile->SetupElementBranch(glbTrack, TAGntuGlbTrack::GetBranchName());
    
    vtActReader->Open(filename, "READ", "EventTree");
-
+   
    tagr.AddRequiredItem("vtActNtu");
    tagr.AddRequiredItem("vtActClus");
    tagr.AddRequiredItem("vtActTrck");
@@ -273,15 +316,15 @@ void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 1000
    
    tagr.AddRequiredItem("itActNtu");
    tagr.AddRequiredItem("itActClus");
-
+   
    tagr.AddRequiredItem("msdActNtu");
    tagr.AddRequiredItem("msdActClus");
-
+   
    tagr.AddRequiredItem("twActNtu");
    tagr.AddRequiredItem("twActRec");
-
+   
    tagr.AddRequiredItem("glbActTrack");
-
+   
    tagr.AddRequiredItem("outFile");
    tagr.Print();
    
@@ -290,10 +333,10 @@ void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 1000
    nameOut.Append("_Out.root");
    
    if (outFile->Open(nameOut.Data(), "RECREATE")) return;
-
-
+   
+   
    glbActTrack->SetHistogramDir(outFile->File());
-
+   
    cout<<" Beginning the Event Loop "<<endl;
    tagr.BeginEventLoop();
    TStopwatch watch;
