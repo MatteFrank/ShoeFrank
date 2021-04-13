@@ -29,6 +29,7 @@ public:
                                 TAGparaDsc* p_vtgeomap   = 0,
                                 TAGparaDsc* p_itgeomap   = 0,
                                 TAGparaDsc* p_msgeomap   = 0,
+                                TAGparaDsc* p_twgeomap   = 0,
                                 TAGparaDsc* p_geomap     = 0);
 
 
@@ -74,6 +75,7 @@ private:
    TAGparaDsc*     fpGeoMapVtx;         // geometry para dsc
    TAGparaDsc*     fpGeoMapItr;         // geometry para dsc
    TAGparaDsc*     fpGeoMapMsd;         // geometry para dsc
+   TAGparaDsc*     fpGeoMapTof;         // geometry para dsc
    TAGparaDsc*     fpGeoMapG;           // geometry para dsc
 
    TAGgeoTrafo*    fpFootGeo;           // First geometry transformer
@@ -86,7 +88,8 @@ private:
    Float_t         fSensorThickVtx;
    Float_t         fSensorThickItr;
    Float_t         fSensorThickMsd;
-   
+   Float_t         fWallThickTw;
+
    Float_t         fLastPlaneVtx;
    Float_t         fLastPlaneItr;
    Float_t         fLastPlaneMsd;

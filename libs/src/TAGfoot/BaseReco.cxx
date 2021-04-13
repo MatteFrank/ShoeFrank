@@ -862,7 +862,7 @@ void BaseReco::CreateRecActionGlbS()
 {
    if(fFlagTrack) {
       fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-      fActGlbTrackS  = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoG);
+      fActGlbTrackS  = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw, fpParGeoG);
       if (fFlagHisto)
          fActGlbTrackS->CreateHistogram();
    }

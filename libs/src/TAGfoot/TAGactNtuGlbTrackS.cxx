@@ -36,6 +36,7 @@
 
 //TW
 #include "TATWparGeo.hxx"
+#include "TATWparGeo.hxx"
 #include "TATWntuPoint.hxx"
 
 //CA
@@ -63,7 +64,7 @@ Bool_t  TAGactNtuGlbTrackS::fgBmMatched = false;
 //! Default constructor.
 TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
 								 TAGdataDsc* pVtVertex, TAGdataDsc* pItNtuClus, TAGdataDsc* pMsdNtuClus, TAGdataDsc* pTwNtuRec, TAGdataDsc* pCaNtuClus, TAGdataDsc* pNtuTrack,
-								  TAGparaDsc* pVtGeoMap, TAGparaDsc* pItGeoMap, TAGparaDsc* pMsdGeoMap, TAGparaDsc* pgGeoMap)
+								  TAGparaDsc* pVtGeoMap, TAGparaDsc* pItGeoMap, TAGparaDsc* pMsdGeoMap,TAGparaDsc* pTwGeoMap, TAGparaDsc* pgGeoMap)
 :  TAGaction(name, "TAGactNtuGlbTrackS - NTuplize Straight Track"),
    fpVertexVtx(pVtVertex),
    fpNtuClusItr(pItNtuClus),
@@ -74,6 +75,7 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    fpGeoMapVtx(pVtGeoMap),
    fpGeoMapItr(pItGeoMap),
    fpGeoMapMsd(pMsdGeoMap),
+   fpGeoMapTof(pTwGeoMap),
    fpGeoMapG(pgGeoMap),
    fVtVertex(0x0),
    fRequiredClusters(3),
@@ -108,10 +110,13 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    
    TAGparGeo* pGeoMapG    = (TAGparGeo*)   fpGeoMapG->Object();
    TAVTparGeo* pGeoMapVt  = (TAVTparGeo*)  fpGeoMapVtx->Object();
+   TATWparGeo* pGeoMapTw  = (TATWparGeo*)  fpGeoMapTof->Object();
+
    fSensorThickVtx = pGeoMapVt->GetTotalSize()[2];
    fLastPlaneVtx   = pGeoMapVt->GetLayerPosZ(pGeoMapVt->GetSensorsN()-1);
    fLastPlaneVtx   = fpFootGeo->FromVTLocalToGlobal(TVector3(0,0,fLastPlaneVtx))[2];
-
+   fWallThickTw    = pGeoMapTw->GetBarThick()*2;
+   
    // in case no ITR and  MSD
    fLastPlaneItr = fLastPlaneVtx;
    fLastPlaneMsd = fLastPlaneVtx;
@@ -589,7 +594,8 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
 {
    TAGntuGlbTrack* pNtuTrack = (TAGntuGlbTrack*) fpNtuTrack->Object();
    TATWntuPoint*   pNtuRec   = (TATWntuPoint*)   fpNtuRecTw->Object();
-   
+   TATWparGeo*     pGeoMap   = (TATWparGeo*)     fpGeoMapTof->Object();
+
    Double_t minDistance  = 1.e9;
    Double_t aDistance;
    
@@ -660,6 +666,13 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
             printf("TW\n");
       }
    }
+   
+   // Compute particle after ToF Wall
+   Float_t thick    = fWallThickTw/TMath::Cos(track->GetTgtTheta());
+   TString mat      = pGeoMap->GetBarMat();
+   Float_t theta    = fEmProperties->GetSigmaTheta(mat, thick, fPartEnergy, fPartA, fPartZ);
+   fPartEnergy      = fEmProperties->GetEnergyLoss(mat, thick, fPartEnergy, fPartA, fPartZ);
+   fPartSigmaTheta  = TMath::Sqrt(fPartSigmaTheta*fPartSigmaTheta + theta*theta);
 }
 
 //_____________________________________________________________________________
