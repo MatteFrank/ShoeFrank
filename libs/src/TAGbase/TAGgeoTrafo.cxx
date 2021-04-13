@@ -5,7 +5,7 @@
 
 #include "TAGrecoManager.hxx"
 
-//Class that handles the Geometrical transformations in QAPIVI RS
+//Class that handles the Geometrical transformations in FOOT
 
 ClassImp(TAGgeoTrafo);
 
@@ -34,6 +34,7 @@ const Float_t TAGgeoTrafo::fgkMevToGev      = 1e-3;
 const Float_t TAGgeoTrafo::fgkGausToTesla   = 1e-4;
 const Float_t TAGgeoTrafo::fgkMassFactor    = 0.9383; // GeV
 const Float_t TAGgeoTrafo::fgkElectronMass  = 0.5109; // MeV
+const Float_t TAGgeoTrafo::fgkLightVelocity = 29.98; // cm/ns
 
 
 
