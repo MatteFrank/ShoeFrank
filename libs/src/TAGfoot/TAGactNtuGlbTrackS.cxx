@@ -35,9 +35,11 @@
 #include "TAMSDntuCluster.hxx"
 
 //TW
+#include "TATWparGeo.hxx"
 #include "TATWntuPoint.hxx"
 
 //CA
+#include "TACAparGeo.hxx"
 #include "TACAntuCluster.hxx"
 
 // GLB
@@ -226,12 +228,6 @@ Bool_t TAGactNtuGlbTrackS::Action()
       }
    }
    
-   // compute mass
-   for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
-      TAGtrack* track = pNtuTrack->GetTrack(i);
-      ComputeMass(track);
-   }
-   
    fpNtuTrack->SetBit(kValid);
    
    return true;
@@ -286,7 +282,13 @@ Bool_t TAGactNtuGlbTrackS::FindTracks()
 
       if (TAGrecoManager::GetPar()->IncludeTW())
          FindTwCluster(track);
+      
+      if (TAGrecoManager::GetPar()->IncludeCA())
+         FindCaCluster(track);
 
+      // compute mass
+      ComputeMass(track);
+      
       // Add track
       track->SetTrackId(pNtuTrack->GetTracksN()-1);
       pNtuTrack->NewTrack(*track);
@@ -650,25 +652,75 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
          
          Float_t tof = bestCluster->GetMeanTof();
          track->SetTof(tof);
-         
-         if (TAGrecoManager::GetPar()->IncludeCA()) {
-            TACAntuCluster* pNtuClus  = (TACAntuCluster*) fpNtuClusCa->Object();
-            Int_t idxCa = bestCluster->GetMatchCalIdx();
-            if (idxCa != -1) {
-               TACAcluster* caCluster = pNtuClus->GetCluster(idxCa);
-               if (caCluster) {
-                  Float_t Ek = caCluster->GetCharge();
-                  track->SetEnergy(Ek*1e-3);
-               }
-            }
-         }
-      
+   
          bestCluster->SetFound();
          UpdateParam(track);
 
          if(FootDebugLevel(1))
             printf("TW\n");
       }
+   }
+}
+
+//_____________________________________________________________________________
+//
+void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
+{
+   TAGntuGlbTrack* pNtuTrack = (TAGntuGlbTrack*) fpNtuTrack->Object();
+   TACAntuCluster* pNtuClus  = (TACAntuCluster*) fpNtuClusCa->Object();
+
+   Double_t minDistance  = 1.e9;
+   Double_t aDistance;
+   
+   // loop on all clusters and keep the nearest one
+   Double_t  searchDist = fSearchClusDistTof*4;
+   
+   TACAcluster* bestCluster = 0x0;
+   Int_t nClusters = pNtuClus->GetClustersN();
+   
+   for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
+      TACAcluster* aCluster =  pNtuClus->GetCluster(iClus);
+      
+      if( aCluster->Found()) continue; // skip cluster already found
+      
+      // from TW local to FOOT global
+      TVector3 posG = aCluster->GetPositionG();
+      posG = fpFootGeo->FromCALocalToGlobal(posG);
+      
+      minDistance = searchDist;
+      
+      // track intersection with the sensor
+      TVector3 inter = track->Intersection(posG.Z());
+
+      // compute distance
+      aDistance = (inter-posG).Mag();
+      
+      if( aDistance < minDistance ) {
+         minDistance = aDistance;
+         bestCluster = aCluster;
+      }
+   } // end loop on sensor clusters
+   
+   // if a cluster has been found, add the cluster
+   if( bestCluster ) {
+      
+      // from CA local to FOOT global
+      TVector3 posG = bestCluster->GetPositionG();
+      TVector3 errG = bestCluster->GetPosErrorG();
+         
+      posG = fpFootGeo->FromCALocalToGlobal(posG);
+         
+      TAGpoint* point = track->AddMeasPoint(TACAparGeo::GetBaseName(), posG, errG);
+      point->SetSensorIdx(0);
+         
+      Float_t Ek = bestCluster->GetCharge();
+      track->SetEnergy(Ek*TAGgeoTrafo::MevToGev());
+      
+      bestCluster->SetFound();
+      UpdateParam(track);
+         
+      if(FootDebugLevel(1))
+         printf("CA\n");
    }
 }
 
@@ -687,14 +739,12 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
    Double_t length = pos.Mag();
    
    Double_t beta   = length/tof;
-   beta /= 30.; //cm/ns
+   beta /= TAGgeoTrafo::GetLightVelocity(); //cm/ns
    
    // compute mass
    Double_t Ekin  = track->GetEnergy(); // should come from Calo
    Double_t gamma = 1./TMath::Sqrt(1-beta*beta);
-   
-   Double_t mass = Ekin/(gamma-1);
-
+   Double_t mass  = Ekin/(gamma-1);
    track->SetMass(mass);
    
    if(FootDebugLevel(1))

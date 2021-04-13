@@ -52,6 +52,7 @@ private:
    void       FindItrCluster(TAGtrack* track);
    void       FindMsdCluster(TAGtrack* track);
    void       FindTwCluster(TAGtrack* track, Bool_t update = true);
+   void       FindCaCluster(TAGtrack* track);
 
    void       FillHistogramm(TAGtrack* track);
    void       FillHistogramm();
