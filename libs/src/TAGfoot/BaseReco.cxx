@@ -862,7 +862,7 @@ void BaseReco::CreateRecActionGlbS()
 {
    if(fFlagTrack) {
       fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-      fActGlbTrackS  = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoG);
+      fActGlbTrackS  = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoG);
       if (fFlagHisto)
          fActGlbTrackS->CreateHistogram();
    }
@@ -899,9 +899,8 @@ void BaseReco::SetL0TreeBranches()
 void BaseReco::SetTreeBranches()
 {
   if (TAGrecoManager::GetPar()->IncludeTOE()) {
-    if (fFlagTrack) {
+    if (fFlagTrack)
       fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
-    }
   }
   
   if (TAGrecoManager::GetPar()->IncludeVT()) {
@@ -933,6 +932,13 @@ void BaseReco::SetTreeBranches()
    
    if (TAGrecoManager::GetPar()->IncludeCA())
      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
+   
+   if (TAGrecoManager::GetPar()->IncludeST()    && TAGrecoManager::GetPar()->IncludeTG()
+       && TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW()
+       && !TAGrecoManager::GetPar()->IncludeDI()) {
+      if (fFlagTrack)
+         fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
+   }
 }
 
 //__________________________________________________________
