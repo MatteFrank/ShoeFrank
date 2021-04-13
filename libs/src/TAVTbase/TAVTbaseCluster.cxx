@@ -14,10 +14,6 @@ ClassImp(TAVTbaseCluster) // Description of a cluster
 //  
 TAVTbaseCluster::TAVTbaseCluster()
 :  TAGcluster(),
-   fPosition(0., 0., 0.),
-   fPosError(0., 0., 0.),
-   fPositionG(0., 0., 0.),
-   fPosErrorG(0., 0., 0.),
    fListOfPixels(0x0),
    fCharge(0.),
 	fFoundXZ(kFALSE),
@@ -30,10 +26,6 @@ TAVTbaseCluster::TAVTbaseCluster()
 //  
 TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
 :  TAGcluster(cluster),
-   fPosition(cluster.fPosition),
-   fPosError(cluster.fPosError),
-   fPositionG(cluster.fPositionG),
-   fPosErrorG(cluster.fPosErrorG),
    fCharge(cluster.fCharge),
    fFoundXZ(cluster.fFoundXZ),
    fFoundYZ(cluster.fFoundYZ),
@@ -83,20 +75,6 @@ TVector2 TAVTbaseCluster::ComputeSize()
 
 //______________________________________________________________________________
 //  
-void TAVTbaseCluster::SetPosition(TVector3& pos)
-{
-   fPosition.SetXYZ(pos.X(), pos.Y(), pos.Z());
-}
-
-//______________________________________________________________________________
-//  
-void TAVTbaseCluster::SetPosError(TVector3& pos)
-{
-   fPosError.SetXYZ(pos.X(), pos.Y(), pos.Z());
-}
-
-//______________________________________________________________________________
-//  
 void TAVTbaseCluster::SetPositionG(TVector3& posGlo)
 {
    fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
@@ -112,7 +90,6 @@ TAVThit* TAVTbaseCluster::GetPixel(Int_t idx)
    else
 	  return 0x0;
 }
-
 
 //______________________________________________________________________________
 //  

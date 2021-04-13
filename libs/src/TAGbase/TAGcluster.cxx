@@ -11,9 +11,13 @@ ClassImp(TAGcluster);
 //------------------------------------------+-----------------------------------
 //! Constructor
 TAGcluster::TAGcluster()
-: TAGobject(),
-  fClusterIdx(-1),
-  fSensorIdx(-1)
+ : TAGobject(),
+   fPosition(0., 0., 0.),
+   fPosError(0., 0., 0.),
+   fPositionG(0., 0., 0.),
+   fPosErrorG(0., 0., 0.),
+   fClusterIdx(-1),
+   fSensorIdx(-1)
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
@@ -23,10 +27,43 @@ TAGcluster::TAGcluster()
 //! Copy constructor
 TAGcluster::TAGcluster(const TAGcluster& cluster)
  : TAGobject(),
+   fPosition(cluster.fPosition),
+   fPosError(cluster.fPosError),
+   fPositionG(cluster.fPositionG),
+   fPosErrorG(cluster.fPosErrorG),
    fMcTrackIdx(cluster.fMcTrackIdx),
    fClusterIdx(cluster.fClusterIdx),
    fSensorIdx(cluster.fSensorIdx)
 {
+}
+
+//______________________________________________________________________________
+//
+void TAGcluster::SetPosition(TVector3& pos)
+{
+   fPosition.SetXYZ(pos.X(), pos.Y(), pos.Z());
+}
+
+//______________________________________________________________________________
+//
+void TAGcluster::SetPosError(TVector3& pos)
+{
+   fPosError.SetXYZ(pos.X(), pos.Y(), pos.Z());
+}
+
+//______________________________________________________________________________
+//
+void TAGcluster::SetPositionG(TVector3& posGlo)
+{
+   fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   fPosErrorG.SetXYZ(fPosError.X(), fPosError.Y(), 0.01);
+}
+
+//______________________________________________________________________________
+//
+void TAGcluster::SetPosErrorG(TVector3& posGlo)
+{
+   fPosErrorG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
 }
 
 //______________________________________________________________________________

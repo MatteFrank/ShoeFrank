@@ -35,11 +35,6 @@
 class TATWpoint : public TAGcluster {
    
 private:
-
-   TVector3    m_position;      // position in local framework
-   TVector3    m_posErr;        // position error in local framework
-   TVector3    m_positionG;     // position in detector framework
-   TVector3    m_posErrG;       // position error in detector framework
    TVector3    m_positionGlb;   // position in FOOT global framework
    TVector3    m_posErrGlb;     // position error
 
@@ -69,12 +64,6 @@ public:
   ~TATWpoint() {};
   
   //    All the Get methods
-  const TVector3&  GetPosition()  const  { return m_position;       }
-  const TVector3&  GetPosError()  const  { return m_posErr;         }
-  
-  const TVector3&  GetPositionG() const  { return m_positionG;      }
-  const TVector3&  GetPosErrorG() const  { return m_posErrG;        }
-
   const TVector3&  GetPositionGlb() const  { return m_positionGlb;      }
   const TVector3&  GetPosErrorGlb() const  { return m_posErrGlb;        }
 

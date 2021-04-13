@@ -196,15 +196,15 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
   // Compute position and fill clusters info
   for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
     cluster = pNtuClus->GetCluster(iSensor, i);
-    cluster->SetPlaneNumber(iSensor);
+    cluster->SetSensorIdx(iSensor);
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition();
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
     posG = pGeoMap->Sensor2Detector(iSensor, posG);
     cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
-    cluster->SetPosError(GetCurrentPosError());
-    cluster->SetPosition(GetCurrentPosition());
+    cluster->SetPosErrorF(GetCurrentPosError());
+    cluster->SetPositionF(GetCurrentPosition());
     cluster->SetPositionG(posG);
     
      if (ApplyCuts(cluster)) {

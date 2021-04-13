@@ -11,8 +11,6 @@ ClassImp(TAGpoint) // Description of Single Detector TAGpoint
 TAGpoint::TAGpoint()
  : TAGcluster(),
    fDevName(""),
-   fPosition(0,0,0),
-   fPosError(0,0,0),
    fMomentum(0,0,0),
    fMomError(0,0,0),
    fChargeZ(-99)
@@ -24,11 +22,11 @@ TAGpoint::TAGpoint()
 TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr)
 : TAGcluster(),
   fDevName(""),
-  fPosition(pos),
-  fPosError(posErr),
   fMomentum(0,0,0),
   fMomError(0,0,0)
 {
+   SetPosition(pos);
+   SetPosError(posErr);
 }
 
 //______________________________________________________________________________
@@ -36,12 +34,12 @@ TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr)
 TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ)
  : TAGcluster(),
    fDevName(""),
-   fPosition(pos),
-   fPosError(posErr),
    fMomentum(mom),
    fMomError(momErr),
    fChargeZ(chargeZ)
 {
+   SetPosition(pos);
+   SetPosError(posErr);
 }
 
 //______________________________________________________________________________
@@ -49,12 +47,12 @@ TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr,
 TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr, Int_t chargeZ)
 : TAGcluster(),
   fDevName(name),
-  fPosition(pos),
-  fPosError(posErr),
   fMomentum(mom),
   fMomError(momErr),
   fChargeZ(chargeZ)
 {
+   SetPosition(pos);
+   SetPosError(posErr);
 }
 
 //______________________________________________________________________________
@@ -62,12 +60,12 @@ TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TV
 TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr)
 : TAGcluster(),
   fDevName(name),
-  fPosition(pos),
-  fPosError(posErr),
   fMomentum(0,0,0),
   fMomError(0,0,0),
   fChargeZ(-99)
 {
+   SetPosition(pos);
+   SetPosError(posErr);
 }
 
 

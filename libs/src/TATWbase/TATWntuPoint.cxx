@@ -13,10 +13,6 @@ ClassImp(TATWpoint) // Description of Single Detector TATWpoint
 //  default constructor
 TATWpoint::TATWpoint()
 : TAGcluster(),
-   m_position(),
-   m_posErr(),
-   m_positionG(),
-   m_posErrG(),
    m_positionGlb(),
    m_posErrGlb(),
    m_row(-99),
@@ -40,12 +36,7 @@ TATWpoint::TATWpoint()
 //  build a point
 TATWpoint::TATWpoint( double x, double dx, TATWhit* rowHit, double y, double dy, TATWhit* colHit, Int_t mainLayer )
 : TAGcluster(),
-   m_position(x, y, 0),
-   m_posErr(dx, dy, 0),
-   m_positionG(m_position),
-   m_posErrG(m_posErr),
    m_positionGlb(-99, -99, -99),
-   m_posErrGlb(m_posErr),
    m_rowHit(new TATWhit(*rowHit)),
    m_columnHit(new TATWhit(*colHit)),
    m_matchCalIdx(-1),
@@ -54,6 +45,13 @@ TATWpoint::TATWpoint( double x, double dx, TATWhit* rowHit, double y, double dy,
    m_chargeZ(-99),
    m_chargeZProba(-99.)
 {
+   
+   TAGcluster::SetPosition(x, y, 0),
+   TAGcluster::SetPosError(dx, dy, 0),
+   TAGcluster::SetPositionG(x, y, 0);
+   TAGcluster::SetPosErrorG(dx, dy, 0);
+   m_posErrGlb = TAGcluster::GetPosError();
+
    m_row = m_rowHit->GetBar();
    m_column    = m_columnHit->GetBar();
    
@@ -115,7 +113,6 @@ TATWpoint::TATWpoint( double x, double dx, TATWhit* rowHit, double y, double dy,
   }
 }
 
-
 //______________________________________________________________________________
 //
 bool TATWpoint::IsValid() const
@@ -123,21 +120,20 @@ bool TATWpoint::IsValid() const
   return (m_columnHit->IsValid() && m_rowHit->IsValid());
 }
 
-
 //______________________________________________________________________________
 //
 void TATWpoint::SetPosition(TVector3& posLoc)
 {
-   m_position.SetXYZ(posLoc.X(), posLoc.Y(), posLoc.Z());
-   m_posErr.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.15);
+   TAGcluster::SetPosition(posLoc.X(), posLoc.Y(), posLoc.Z());
+   TAGcluster::SetPosError(GetPosition().X(), GetPosition().Y(), 0.15);
 }
 
 //______________________________________________________________________________
 //
 void TATWpoint::SetPositionG(TVector3& posG)
 {
-   m_positionG.SetXYZ(posG.X(), posG.Y(), posG.Z());
-   m_posErrG.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.15);
+   TAGcluster::SetPositionG(posG.X(), posG.Y(), posG.Z());
+   TAGcluster::SetPosErrorG(GetPosError().X(), GetPosError().Y(), 0.15);
 }
 
 //______________________________________________________________________________
@@ -145,7 +141,7 @@ void TATWpoint::SetPositionG(TVector3& posG)
 void TATWpoint::SetPositionGlb(TVector3& posGlb)
 {
    m_positionGlb.SetXYZ(posGlb.X(), posGlb.Y(), posGlb.Z());
-   m_posErrGlb.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.15);
+   m_posErrGlb.SetXYZ(GetPosError().X(), GetPosError().Y(), 0.15);
 }
 
 //______________________________________________________________________________
