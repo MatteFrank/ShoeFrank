@@ -70,6 +70,7 @@ private:
 private:
    static map<Int_t, TString> fgTWcalFileType;
    static map<Int_t, TString> fgTWmapFileType;
+   static map<Int_t, TString> fgCAcalFileType;
 
    ClassDef(TAGcampaign,2)
 };

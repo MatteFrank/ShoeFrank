@@ -603,6 +603,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files for caloriomter
+   Bool_t isCalTre = true;
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       fpParGeoCa = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
       TACAparGeo* parGeo = (TACAparGeo*)fpParGeoCa->Object();
@@ -617,16 +618,23 @@ void BaseReco::ReadParFiles()
       
      
      if(fFlagMC) { // set in MC threshold and active crystals from data informations
-       parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-       parCal->FromCrysStatusFile(parFileName.Data());
+        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parCal->FromCrysStatusFile(parFileName.Data());
+        
+        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parCal->LoadEnergyCalibrationMap(parFileName.Data());
+        
      } else {
-              
         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
         parMap->FromFile(parFileName.Data());
 
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
         parCal->FromCalibTempFile(parFileName.Data());
+        
+        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalTre);
+        parCal->LoadEnergyCalibrationMap(parFileName.Data());
      }
+     
    }
 
    TAVTparConf::SetHistoMap();

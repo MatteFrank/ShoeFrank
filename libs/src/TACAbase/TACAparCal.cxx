@@ -51,34 +51,17 @@ Bool_t TACAparCal::FromCalibTempFile(const TString& name)
 //_________________________________________
 Bool_t TACAparCal::LoadEnergyCalibrationMap(TString name)
 {
-  if (!Open(name)) {
-    Error("FromFile()", "Cannot open file %s", name.Data());
-    return false;
-  }
-  
-  // read for parameter
-  Double_t* parameters = new Double_t[4];
-  Int_t crysId = -1;
-  
-  for (Int_t i = 0; i < fParGeo->GetCrystalsN(); ++i) { // Loop over crystal
-
-    // Read crystal Id
-    ReadItem(crysId);
-    
-    // read parameters
-    ReadItem(parameters, 4, ' ', false);
-    
-    // fill map
-    for (Int_t p = 0; p < 4; p++) { // Loop over parameters
-      fCalibElossMapCrys[crysId].push_back(parameters[p]);
-    }
-  }
-  
-  delete [] parameters;
-  
-  Close();
-  
-  return true;
+   Clear();
+   
+   TString name_calib_en_cry = name;
+   
+   gSystem->ExpandPathName(name_calib_en_cry);
+   
+   fMapCal->LoadEnergyCalibrationMap(name_calib_en_cry.Data());
+   
+   Info("FromCalibFile()", "Open file %s for calibration\n", name_calib_en_cry.Data());
+   
+   return kFALSE;
 }
 
 //_____________________________________________________________________
