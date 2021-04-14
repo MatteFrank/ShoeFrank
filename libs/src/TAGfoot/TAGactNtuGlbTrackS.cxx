@@ -755,7 +755,8 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
    beta /= TAGgeoTrafo::GetLightVelocity(); //cm/ns
    
    // compute mass
-   Double_t Ekin  = track->GetEnergy(); // should come from Calo
+   Double_t Ekin = track->GetEnergy(); // should come from Calo
+  // Ekin += fPartEnergy; // add energy loss (neglecting loss in air)
    Double_t gamma = 1./TMath::Sqrt(1-beta*beta);
    Double_t mass  = Ekin/(gamma-1);
    track->SetMass(mass);
