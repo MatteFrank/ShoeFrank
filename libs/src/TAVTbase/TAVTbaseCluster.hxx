@@ -51,16 +51,6 @@ public:
    // Compute size
    TVector2           ComputeSize();
    
-   //! Get position in local frame
-   const TVector3&     GetPosition()                   const { return fPosition;       }
-   //! Get position error in local frame
-   const TVector3&     GetPosError()                   const { return fPosError;       }
-   //! Get position in global tracker frame
-   const TVector3&     GetPositionG()                  const { return fPositionG ;     }
-   //! Get position in global tracker frame
-   const TVector3&     GetPosErrorG()                  const { return fPosErrorG ;     }
-
-   
    //! Get U position in local frame
    Float_t            GetPositionU()                   const { return fPosition[0];    }
    //! Get V position in local frame
