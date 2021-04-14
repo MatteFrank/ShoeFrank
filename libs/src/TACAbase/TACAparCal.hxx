@@ -18,7 +18,6 @@ class TACAparCal : public TAGparTools
 {
 private:
   TACAparGeo* fParGeo;
-  TCalibrationMapType fCalibElossMapCrys; // map for energy calibration per crystal
   TCalibrationMapType fCalibTofMapCrys;   // map for tof calibration per crystal
   
   vector<bool> fStatusCrys;
@@ -39,8 +38,9 @@ public:
   Bool_t LoadTofCalibrationMap(TString Filename);
   Bool_t FromCalibTempFile(const TString& Filename);
   
-  Double_t GetElossParameter(Int_t crystalId, UInt_t ParameterNumber);
-  Double_t GetTofParameter(Int_t crystalId, UInt_t ParameterNumber);
+  Double_t GetElossParam(Int_t crystalId, UInt_t ParameterNumber);
+  Double_t GetTofParam(Int_t crystalId, UInt_t ParameterNumber);
+  Double_t GetTemperatureCry(Int_t crystalId);
 
   Bool_t FromCrysStatusFile(const TString& name);
   

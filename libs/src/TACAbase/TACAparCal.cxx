@@ -99,13 +99,19 @@ Bool_t TACAparCal::LoadTofCalibrationMap(TString name)
 }
 
 //_____________________________________________________________________
-Double_t TACAparCal::GetElossParameter(Int_t crysId, UInt_t ParameterNumber)
+Double_t TACAparCal::GetTemperatureCry(Int_t crysId)
 {
-    return fCalibElossMapCrys[crysId][ParameterNumber];
+   return fMapCal->GetTemperatureCry(crysId);
 }
 
 //_____________________________________________________________________
-Double_t TACAparCal::GetTofParameter(Int_t crysId, UInt_t ParameterNumber)
+Double_t TACAparCal::GetElossParam(Int_t crysId, UInt_t ParameterNumber)
+{
+    return fMapCal->GetElossParam(crysId, ParameterNumber);
+}
+
+//_____________________________________________________________________
+Double_t TACAparCal::GetTofParam(Int_t crysId, UInt_t ParameterNumber)
 {
     return fCalibTofMapCrys[crysId][ParameterNumber];
 }

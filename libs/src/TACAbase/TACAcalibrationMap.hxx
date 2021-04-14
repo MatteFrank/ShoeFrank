@@ -38,7 +38,7 @@ public:
   Int_t GetNumberOfCrystals()                  const { return fCalibrationMap.size();          }
   Double_t GetTemperatureCry(Int_t cryId)            { return fCalibTemperatureCry[cryId][0];  }
   Double_t GetEqualiseCry(Int_t cryId)               { return fEqualisFactorCry[cryId][0];     }
-  Double_t GetPosElossCry(Int_t cryId, UInt_t parId) { return fCalibElossMapCry[cryId][parId]; }
+  Double_t GetElossParam(Int_t cryId, UInt_t parId)  { return fCalibElossMapCry[cryId][parId]; }
  
   ClassDef(TACAcalibrationMap, 0)
 };

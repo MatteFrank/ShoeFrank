@@ -133,7 +133,7 @@ Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
 
   SetTemperatureFunctions();
   SetParFunction();
-  Double_t T0 = f_parcal->getCalibrationMap()->GetTemperatureCry(crysId);
+  Double_t T0 = f_parcal->GetTemperatureCry(crysId);
   Double_t m1 = fTcorr1->Eval(charge);
   Double_t m2 = fTcorr2->Eval(charge);
 
@@ -160,19 +160,16 @@ Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId)
 {
-  // TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
+   TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
-  // Double_t p0 = p_parcal->GetElossParameter(crysId,0);
-  // Double_t p1 = p_parcal->GetElossParameter(crysId,1);
-  // Double_t p2 = p_parcal->GetElossParameter(crysId,2);
-  // Double_t p3 = p_parcal->GetElossParameter(crysId,3);
-  
-  // return p0 + p1 * rawenergy;
+   Double_t p0 = p_parcal->GetElossParam(crysId,0);
+   Double_t p1 = p_parcal->GetElossParam(crysId,1);
+   
+   return p0 + p1 * rawenergy;
 
 
   //fake calibration (gtraini)  return raw value meanwhile
-  return rawenergy;
-  
+ // return rawenergy;
 }
 
 //------------------------------------------+-----------------------------------
