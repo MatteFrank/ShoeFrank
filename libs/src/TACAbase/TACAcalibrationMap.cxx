@@ -92,14 +92,19 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
    
    // parameters for energy calibration p0 and p1
    Int_t nCrystals = 288; //fParpMap->GetCrystalsN(); need to retrieve the number of crystals
-
-   int crysId[nCrystals];  // Id of the crystal
-   double Q_corrp0[nCrystals], Q_corrp1[nCrystals];
    
    if(fin_Q.is_open()){
       
       int  cnt(0);
       char line[200];
+      
+      fin_Q.getline(line, 200, '\n');
+      if(strchr(line,'#')) // skip first line if comment
+         fin_Q.getline(line, 200, '\n');
+      sscanf(line, "%d", &nCrystals);
+      
+      int crysId[nCrystals];  // Id of the crystal
+      double Q_corrp0[nCrystals], Q_corrp1[nCrystals];
       
       // loop over all the slat crosses ( nSlatCross*nLayers ) for two TW layers
       while (fin_Q.getline(line, 200, '\n')) {
