@@ -346,7 +346,7 @@ struct TATOEchecker{
             auto key = static_cast<int>( momentum_p/0.2 );
           //  std::cout << "get_momentum_histogram_const\n";
        //     std::cout << "momentum: " << momentum_p << '\n';/
-        //    std::cout << "key: " << key << '\n';
+        //    std::cout << "key: " << key << ']\n';
             auto histogram_i = histogram_bundle.momentum_resolution_c.find(key);
             return (histogram_bundle.momentum_resolution_c.find(key) != histogram_bundle.momentum_resolution_c.end() ) ?
                     *histogram_i : nullptr;

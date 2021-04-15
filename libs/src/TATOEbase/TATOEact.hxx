@@ -51,7 +51,7 @@ auto make_ode(Callable&& c_p) -> ode<OperatingType, Order, Callable>;
 #include "TAITcluster.hxx"
 
 
-class TATOEcutter;
+
 
 template<class T>
 class TD;
@@ -202,7 +202,7 @@ public:
     
 private:
     void reset_event_number() override { event = 0 ; }
-    void set_cuts( details::vertex_tag, double cut_p) override{
+    void set_cuts( details::vertex_tag, double cut_p) override {
         list_m.template set_cuts<detector_properties<details::vertex_tag>>( cut_p );
     }
     void set_cuts( details::it_tag, std::array<double, 2>&& cut_pc) override {
