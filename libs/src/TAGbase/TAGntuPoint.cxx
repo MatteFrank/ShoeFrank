@@ -13,7 +13,9 @@ TAGpoint::TAGpoint()
    fDevName(""),
    fMomentum(0,0,0),
    fMomError(0,0,0),
-   fChargeZ(-99)
+   fChargeZ(-99),
+   fIsXon(true),
+   fIsYon(true)
 {
 }
 
@@ -23,7 +25,9 @@ TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr)
 : TAGcluster(),
   fDevName(""),
   fMomentum(0,0,0),
-  fMomError(0,0,0)
+  fMomError(0,0,0),
+  fIsXon(true),
+  fIsYon(true)
 {
    SetPosition(pos);
    SetPosError(posErr);
@@ -36,7 +40,9 @@ TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr,
    fDevName(""),
    fMomentum(mom),
    fMomError(momErr),
-   fChargeZ(chargeZ)
+   fChargeZ(chargeZ),
+   fIsXon(true),
+   fIsYon(true)
 {
    SetPosition(pos);
    SetPosError(posErr);
@@ -49,7 +55,9 @@ TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TV
   fDevName(name),
   fMomentum(mom),
   fMomError(momErr),
-  fChargeZ(chargeZ)
+  fChargeZ(chargeZ),
+  fIsXon(true),
+  fIsYon(true)
 {
    SetPosition(pos);
    SetPosError(posErr);
@@ -62,7 +70,9 @@ TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr)
   fDevName(name),
   fMomentum(0,0,0),
   fMomError(0,0,0),
-  fChargeZ(-99)
+  fChargeZ(-99),
+  fIsXon(true),
+  fIsYon(true)
 {
    SetPosition(pos);
    SetPosError(posErr);
