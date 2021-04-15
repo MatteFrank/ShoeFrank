@@ -546,8 +546,13 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          
          TAGpoint* point = track->AddMeasPoint(TAMSDparGeo::GetBaseName(), posG, errG);
          point->SetSensorIdx(iSensor);
-
-         UpdateParam(track, bestCluster->GetPlaneView());
+         Int_t view =  bestCluster->GetPlaneView();
+         if (view == 0)
+            point->SetYon(false);
+         else
+            point->SetXon(false);
+         
+         UpdateParam(track, view);
          
          // Compute particle after each plane
          Float_t thick    = fSensorThickMsd/TMath::Cos(track->GetTgtTheta());
@@ -841,21 +846,16 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
       dx = cluster->GetPosErrorG()(0);
       dy = cluster->GetPosErrorG()(1);
   
-
-      if (viewX == -1 || viewX == 0) {
-         if (TMath::Abs(x) > 1e-5) {
-            zxData.push_back(z);
-            xData.push_back(x);
-            dxData.push_back(dx);
-         }
+      if (cluster->IsXon()) {
+         zxData.push_back(z);
+         xData.push_back(x);
+         dxData.push_back(dx);
       }
       
-      if (viewX == -1 || viewX == 1) {
-         if (TMath::Abs(y) > 1e-5) {
-            zyData.push_back(z);
-            yData.push_back(y);
-            dyData.push_back(dy);
-         }
+      if (cluster->IsYon()) {
+         zyData.push_back(z);
+         yData.push_back(y);
+         dyData.push_back(dy);
       }
    }
    
