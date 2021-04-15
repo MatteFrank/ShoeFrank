@@ -108,7 +108,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagZmatch_TW(false),
    fFlagMC(false),
    fM28ClusMtFlag(false),
-   fFlagRecCutter(false)
+   fFlagRecCutter(true)
 {
 
    // check folder
@@ -812,39 +812,13 @@ void BaseReco::CreateRecActionCa()
 //__________________________________________________________
 void BaseReco::CreateRecActionGlb()
 {
+    using namespace details;
     if( fFlagRecCutter ){
         SetL0TreeBranches();
-        auto vtx_features = TATOEcutter::vtx_features{
-            fpNtuClusVtx,
-            fpNtuTrackVtx,
-            fpNtuVtx,
-            fpParGeoVtx,
-        };
-        auto it_features = TATOEcutter::it_features{
-            fpNtuClusIt,
-            fpParGeoIt
-        };
-        auto msd_features = TATOEcutter::msd_features{
-            fpNtuClusMsd,
-             fpParGeoMsd
-        };
-        auto tw_features = TATOEcutter::tw_features{
-            fpNtuRecTw,
-            fpParGeoTw
-        };
-        auto glb_features = TATOEcutter::glb_features{
-            fpParGeoG,
-            fpParGeoDi,
-            fField
-        };
-        fActRecCutter = new TATOEcutter{
-            "toeActCutter",
-            std::move(glb_features),
-            std::move(vtx_features),
-            std::move(it_features),
-            std::move(msd_features),
-            std::move(tw_features)
-        };
+        fActRecCutter = new TATOEcutter<
+            procedure< configuration<1, vertex_tag, tof_tag>, range<-2,+2> >
+           // procedure< configuration<1, vertex_tag, it_tag, tof_tag>, range<-5,+5>>
+                                        >{"toeActCutter", fField};
         return;
     }
   if(fFlagTrack) {

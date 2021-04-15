@@ -350,7 +350,7 @@ protected:
    TACAactNtuCluster*    fActClusCa;    // action for clusters
 
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
-   TATOEcutter*          fActRecCutter;     //action to determine optimal cuts for TOE given geometry
+   TATOEbaseCutter*          fActRecCutter;     //action to determine optimal cuts for TOE given geometry
     
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
   
