@@ -260,10 +260,7 @@ void FillMCCa(Int_t runNumber)
    TString parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
    
-   TAGparaDsc* caMap = new TAGparaDsc("caMap", new TACAparMap());
-   TACAparMap* parMap = (TACAparMap*)caMap->Object();
-
-   TAGparaDsc* caCal  = new TAGparaDsc("caCal", new TACAparCal(parMap));
+   TAGparaDsc* caCal  = new TAGparaDsc("caCal", new TACAparCal());
    TACAparCal* parCal = (TACAparCal*)caCal->Object();
    parFileName = campManager->GetCurMapFile(TACAparGeo::GetBaseName(), runNumber);
    parCal->FromCrysStatusFile(parFileName.Data());
