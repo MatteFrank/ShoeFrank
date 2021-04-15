@@ -9,7 +9,7 @@ NumberFiles: 2
 "./geomaps/CNAO2020/FOOT.reg": -1
 
 DetectorName: "ST"
-NumberFiles: 2
+NumberFiles: 1
 "./geomaps/CNAO2020/TASTdetector.geo": -1
 
 DetectorName: "BM"
