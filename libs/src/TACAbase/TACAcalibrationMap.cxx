@@ -6,9 +6,8 @@
 
 ClassImp(TACAcalibrationMap)
 
-TACAcalibrationMap::TACAcalibrationMap(TACAparMap* p_parmap)
-: TAGobject(),
-  fParpMap(p_parmap)
+TACAcalibrationMap::TACAcalibrationMap()
+: TAGobject()
 {
 }
 
@@ -25,7 +24,7 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
   ifstream fin;
   fin.open(FileName,std::ifstream::in);
   
-  Int_t nCrystals = fParpMap->GetCrystalsN();
+  Int_t nCrystals = 0;
   
   Int_t cryId[nCrystals];  // Id of crystal
   Double_t temp[nCrystals];   // temperature
@@ -36,6 +35,11 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
     int  cnt(0);
     char line[200];
     
+     fin.getline(line, 200, '\n');
+     if(strchr(line,'#')) // skip first line if comment
+        fin.getline(line, 200, '\n');
+     sscanf(line, "%d", &nCrystals);
+     
     // loop over all the slat crosses ( nSlatCross*nLayers ) for two TW layers
     while (fin.getline(line, 200, '\n')) {
 
@@ -91,7 +95,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
    fin_Q.open(FileName,std::ifstream::in);
    
    // parameters for energy calibration p0 and p1
-   Int_t nCrystals = 288; //fParpMap->GetCrystalsN(); need to retrieve the number of crystals
+   Int_t nCrystals = 0;
    
    if(fin_Q.is_open()){
       

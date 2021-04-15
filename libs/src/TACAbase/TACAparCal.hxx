@@ -25,10 +25,9 @@ private:
   map<int, pair<int, int> > fStatusCrysHwId;
 
   TACAcalibrationMap *fMapCal;
-  TACAparMap *fParMap;
   
 public:
-  TACAparCal(TACAparMap *parMap);
+  TACAparCal();
   virtual ~TACAparCal();
 
   // Calibration

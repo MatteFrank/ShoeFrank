@@ -24,7 +24,7 @@ private:
   TACAparMap *fParpMap;
    
 public:
-  TACAcalibrationMap(TACAparMap* p_parmap);
+  TACAcalibrationMap();
     
   void LoadCryTemperatureCalibrationMap(std::string Filename);
   void LoadEnergyCalibrationMap(std::string Filename);

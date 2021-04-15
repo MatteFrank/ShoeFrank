@@ -610,13 +610,9 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName);
       
-      fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
-      TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
-
-      fpParCalCa = new TAGparaDsc("caCal", new TACAparCal(parMap));
+      fpParCalCa = new TAGparaDsc("caCal", new TACAparCal());
       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
       
-     
      if(fFlagMC) { // set in MC threshold and active crystals from data informations
         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
         parCal->FromCrysStatusFile(parFileName.Data());
@@ -625,6 +621,9 @@ void BaseReco::ReadParFiles()
         parCal->LoadEnergyCalibrationMap(parFileName.Data());
         
      } else {
+        fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
+        TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
+
         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
         parMap->FromFile(parFileName.Data());
 
