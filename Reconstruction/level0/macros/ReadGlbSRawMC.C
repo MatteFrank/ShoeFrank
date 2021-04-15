@@ -267,7 +267,10 @@ void FillMCCa(Int_t runNumber)
    TACAparCal* parCal = (TACAparCal*)caCal->Object();
    parFileName = campManager->GetCurMapFile(TACAparGeo::GetBaseName(), runNumber);
    parCal->FromCrysStatusFile(parFileName.Data());
-      
+   
+   parFileName = campManager->GetCurCalFile(TACAparGeo::GetBaseName(), runNumber);
+   parCal->LoadEnergyCalibrationMap(parFileName.Data());
+   
    TAGdataDsc* caMc     = new TAGdataDsc("caMc", new TAMCntuHit());
    TAGdataDsc* caNtu    = new TAGdataDsc("caNtu", new TACAntuHit());
    caClus   = new TAGdataDsc("caClus", new TACAntuCluster());
