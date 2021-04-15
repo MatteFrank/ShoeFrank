@@ -119,7 +119,7 @@ Bool_t TABMactNtuHitMC::Action()
     pNtuEve  = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
   }
 
-  Int_t cell, view, lay, ipoint, cellid;
+  Int_t cell, view, lay, cellid;
   Double_t rdrift, edep;
 
   TVector3 loc, gmom, mom,  glo;
@@ -160,9 +160,9 @@ Bool_t TABMactNtuHitMC::Action()
                                          gmom[0], gmom[1], gmom[2]);
 				if(added){
 					TABMhit* hit = fDigitizer->GetCurrentHit();
-	        hit->SetIsFake((ipoint==0) ? 0 : 1);
-	        hit->AddMcTrackIdx(ipoint, i);
-        }
+	        hit->SetIsFake((trackId==0) ? 0 : 1);
+	        hit->AddMcTrackIdx(trackId, i);
+        } 
 	      if(ValidHistogram() && !added){
 					fpDisRdrift->Fill(rdrift);
           fpDisReason->Fill(0);
