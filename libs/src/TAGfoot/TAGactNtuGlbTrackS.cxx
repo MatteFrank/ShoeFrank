@@ -849,12 +849,14 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
       if (cluster->IsXon()) {
          zxData.push_back(z);
          xData.push_back(x);
+         if (dx < 1e-4) dx = 1;
          dxData.push_back(dx);
       }
       
       if (cluster->IsYon()) {
          zyData.push_back(z);
          yData.push_back(y);
+         if (dy < 1e-4) dy = 1;
          dyData.push_back(dy);
       }
    }
