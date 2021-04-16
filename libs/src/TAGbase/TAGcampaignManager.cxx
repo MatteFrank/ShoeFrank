@@ -12,7 +12,6 @@ ClassImp(TAGcampaignManager);
 const TString TAGcampaignManager::fgkDefaultActName = "actCamMan";
 const TString TAGcampaignManager::fgkDefaultFolder  = "./cammaps/";
 const TString TAGcampaignManager::fgkDefaultExt     = ".cam";
-const TString TAGcampaignManager::fgkStandardCamName = "STD";
 const TString TAGcampaignManager::fgkDefaultCamName = "FOOT.cam";
 
 
@@ -26,8 +25,7 @@ TAGcampaignManager::TAGcampaignManager(const TString exp)
    fCurCampaignNumber(-1)
 {
    if (fCurCampaignName.IsNull()) {
-      fCurCampaignName = fgkStandardCamName;
-      Warning("TAGcampaignManager()", "No campaign name set, using %s, should be used only be expert", fgkStandardCamName.Data());
+      Error("TAGcampaignManager()", "No campaign name set, please set the campaign");
    }
 }
 
