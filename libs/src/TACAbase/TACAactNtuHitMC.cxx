@@ -241,13 +241,13 @@ Bool_t TACAactNtuHitMC::Action()
      pNtuEve = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
    }
   
-  TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
-  TACAparCal* parCal = (TACAparCal*) fpCalMap->Object();
+   TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
+   TACAparCal* parCal = (TACAparCal*) fpCalMap->Object();
    
+   fDigitizer->ClearMap();
 
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
       TAMChit* hitMC = pNtuMC->GetHit(i);
-
       
       // Get particle index
       Int_t trackId = hitMC->GetTrackIdx()-1;
