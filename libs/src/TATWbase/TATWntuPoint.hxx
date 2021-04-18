@@ -124,7 +124,7 @@ public:
 private:
   static TString fgkBranchName;    // Branch name in TTree
   
-  ClassDef(TATWntuPoint,2)
+  ClassDef(TATWntuPoint,3)
 
 };
 
