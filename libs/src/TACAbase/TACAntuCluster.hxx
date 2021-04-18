@@ -8,7 +8,7 @@
 #include "TAGcluster.hxx"
 #include "TACAntuHit.hxx"
 
-/** TACAcluster class, simple container class for tracks with the associated clusters
+/** TACAcluster class, simple container class for cluster calorimeter
  
  \author Ch. Finck
  */
@@ -62,7 +62,7 @@ public:
    //! Get sum of pulse height
    Float_t            GetEnergy()                      const { return fEnergy;         }
    //! Get pixel
-   TACAhit*        GetHit(Int_t idx);
+   TACAhit*           GetHit(Int_t idx);
    
    //! Get list of hits
    TClonesArray*     GetListOfHits()                   const { return fListOfHits;     }
