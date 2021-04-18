@@ -64,7 +64,6 @@ TATWpoint::TATWpoint( Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Doub
    // assign to the point the matched MC track id if no Pile-Up, else for pile-up events assign -1
    if(fLayer==(Int_t)LayerX) {
        
-     // if(fRowHit->GetMcTracksN())
      if(fRowHit->GetMcTracksN()==1)
        fId     = fRowHit->GetMcTrackIdx(0);
      else {
@@ -73,9 +72,7 @@ TATWpoint::TATWpoint( Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Doub
      }
      
    } else {
-     
-     // if(fColumnHit->GetMcTracksN())
-     if(fColumnHit->GetMcTracksN()==1)
+      if(fColumnHit->GetMcTracksN()==1)
        fId     = fColumnHit->GetMcTrackIdx(0);
      else {
        fId = -1;  // pile-up
@@ -169,7 +166,7 @@ TString TATWntuPoint::fgkBranchName   = "twpt.";
 //! 
 TATWntuPoint::TATWntuPoint() 
 : TAGdata(),
-  m_listOfPoints(0x0)
+  fListOfPoints(0x0)
 {
 	SetupClones();
 }
@@ -178,7 +175,7 @@ TATWntuPoint::TATWntuPoint()
 //! Destructor.
 TATWntuPoint::~TATWntuPoint()
 {
-	delete m_listOfPoints;
+	delete fListOfPoints;
 }
 
 //______________________________________________________________________________
@@ -186,7 +183,7 @@ TATWntuPoint::~TATWntuPoint()
 TATWpoint* TATWntuPoint::NewPoint(Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Double_t dy, TATWhit* colHit, Int_t mainLayer) {
 
 	// check on aorigin
-  TClonesArray &pointArray = *m_listOfPoints;
+  TClonesArray &pointArray = *fListOfPoints;
   TATWpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TATWpoint( x, dx, rowHit, y, dy, colHit, mainLayer);
   point->SetClusterIdx(pointArray.GetEntriesFast()-1);
   
@@ -196,10 +193,8 @@ TATWpoint* TATWntuPoint::NewPoint(Double_t x, Double_t dx, TATWhit* rowHit, Doub
 //------------------------------------------+-----------------------------------
 Int_t TATWntuPoint::GetPointsN() const
 {
-	return m_listOfPoints->GetEntries();
+	return fListOfPoints->GetEntries();
 }
-
-
 
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
@@ -210,33 +205,23 @@ TATWpoint* TATWntuPoint::GetPoint(Int_t iPoint) const {
         exit(0);
 	}
 
-	return (TATWpoint*)m_listOfPoints->At(iPoint);
+	return (TATWpoint*)fListOfPoints->At(iPoint);
 }
-
-
 
 //------------------------------------------+-----------------------------------
 //! Setup clones. Crate and initialise the list of pixels
 void TATWntuPoint::SetupClones()
 {
-   if (m_listOfPoints) return;
-   m_listOfPoints = new TClonesArray("TATWpoint", 500);
+   if (fListOfPoints) return;
+   fListOfPoints = new TClonesArray("TATWpoint", 500);
 }
-
-
-
-
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
 void TATWntuPoint::Clear(Option_t*)
 {
-	m_listOfPoints->Delete();
+	fListOfPoints->Delete();
 }
-
-
-
-
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.

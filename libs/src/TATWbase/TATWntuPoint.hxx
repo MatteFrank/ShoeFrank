@@ -101,11 +101,9 @@ public:
 class TATWntuPoint : public TAGdata {
    
 private:
-
-  TClonesArray*        m_listOfPoints;
+  TClonesArray*        fListOfPoints;
    
 public:
-
   TATWntuPoint();
   virtual ~TATWntuPoint();
 	
@@ -114,20 +112,16 @@ public:
   Int_t               GetPointsN() const;
   TATWpoint*          GetPoint( int iPoint ) const;
   
-  
   virtual void        Clear(Option_t* opt="");
   
-  // delete?
   virtual void        ToStream(ostream& os=cout, Option_t* option="") const;
   
   virtual void        SetupClones();
   
 public:
-
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
 private:
-
   static TString fgkBranchName;    // Branch name in TTree
   
   ClassDef(TATWntuPoint,2)
