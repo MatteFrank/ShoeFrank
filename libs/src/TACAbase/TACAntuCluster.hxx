@@ -23,7 +23,7 @@ protected:
    TClonesArray*      fListOfHits;               // list of hits attached to this cluster
    
    Int_t              fIndexSeed;                // index of seed crystal
-   Float_t            fCharge;                   // sum of pulseheight
+   Float_t            fEnergy;                   // sum of energy
    Bool_t             fIsValid;                  // validity flag
    
    
@@ -42,7 +42,7 @@ public:
    //! Set crystal seed index
    void               SetIndexSeed(Int_t index)              { fIndexSeed = index;     }
    //! Set sum of pulse height
-   void               SetCharge(Float_t chg)                 { fCharge = chg;          }
+   void               SetEnergy(Float_t chg)                 { fEnergy = chg;          }
    //! Set validy
    void               SetValid(Bool_t v = true)              { fIsValid = v;           }
    
@@ -60,7 +60,7 @@ public:
    //! Get index of seed crystal
    Int_t              GetIndexSeed()                   const { return fIndexSeed;      }
    //! Get sum of pulse height
-   Float_t            GetCharge()                      const { return fCharge;         }
+   Float_t            GetEnergy()                      const { return fEnergy;         }
    //! Get pixel
    TACAhit*        GetHit(Int_t idx);
    

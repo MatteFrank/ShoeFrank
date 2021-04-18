@@ -558,13 +558,13 @@ void TAGbaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       TVector3 pos = clus->GetPositionG();
       fInfoView->AddLine( Form("Cluster # %3d\n", idx) );
       fInfoView->AddLine( Form("with %3d hits\n", clus->GetHitsN()) );
-      fInfoView->AddLine( Form("Energy: %.3g (GeV) \n", clus->GetCharge()*TAGgeoTrafo::MevToGev()) );
+      fInfoView->AddLine( Form("Energy: %.3g (GeV) \n", clus->GetEnergy()*TAGgeoTrafo::MevToGev()) );
       fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
       
       if (fConsoleButton->IsOn()) {
          cout << Form("Cluster # %3d\n", idx);
          cout << Form("with %3d hits\n", clus->GetHitsN());
-         cout << Form("Energy: %.3g (MeV) \n", clus->GetCharge()*TAGgeoTrafo::MevToGev());
+         cout << Form("Energy: %.3g (MeV) \n", clus->GetEnergy()*TAGgeoTrafo::MevToGev());
          cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
       }
 

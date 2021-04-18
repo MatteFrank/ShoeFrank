@@ -731,7 +731,7 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
       TAGpoint* point = track->AddMeasPoint(TACAparGeo::GetBaseName(), posG, errG);
       point->SetSensorIdx(0);
          
-      Float_t Ek = bestCluster->GetCharge();
+      Float_t Ek = bestCluster->GetEnergy();
       track->SetEnergy(Ek*TAGgeoTrafo::MevToGev());
       
       bestCluster->SetFound();
