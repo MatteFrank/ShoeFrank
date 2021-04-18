@@ -26,7 +26,6 @@ protected:
    Float_t            fEnergy;                   // sum of energy
    Bool_t             fIsValid;                  // validity flag
    
-   
 public:
    TACAcluster();
    TACAcluster(const TACAcluster& cluster);
@@ -36,7 +35,6 @@ public:
    void               SetPosition(TVector3& pos);
    //! Set position error in local frame
    void               SetPosError(TVector3& pos);
-   void               SetPosition(Float_t u, Float_t v, Float_t z) { fPosition.SetXYZ(u,v,z); }
    //! Set position in global tracker frame
    void               SetPositionG(TVector3& pos);
    //! Set crystal seed index
@@ -79,7 +77,7 @@ public:
    //! Add pixel to the list
    void               AddHit(TACAhit* hit);
    
-   ClassDef(TACAcluster,4)                          // Describes TACAcluster
+   ClassDef(TACAcluster,5)                          // Describes TACAcluster
 };
 
 
