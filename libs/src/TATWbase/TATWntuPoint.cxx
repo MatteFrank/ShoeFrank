@@ -122,7 +122,7 @@ Bool_t TATWpoint::IsValid() const
 void TATWpoint::SetPosition(TVector3& posLoc)
 {
    fPosition.SetXYZ(posLoc.X(), posLoc.Y(), posLoc.Z());
-   fPosError.SetXYZ(fPosition.X(), fPosition.Y(), 0.15);
+   fPosError.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
 }
 
 //______________________________________________________________________________
