@@ -108,7 +108,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagZmatch_TW(false),
    fFlagMC(false),
    fM28ClusMtFlag(false),
-   fFlagRecCutter(true)
+   fFlagRecCutter(false)
 {
 
    // check folder
