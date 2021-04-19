@@ -353,7 +353,6 @@ protected:
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
    TATOEbaseCutter*          fActRecCutter;     //action to determine optimal cuts for TOE given geometry
     
-   TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
    TAGactNtuGlbTrackS*   fActGlbTrackS;     // action for straight tracks
   
    GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit

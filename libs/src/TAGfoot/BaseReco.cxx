@@ -94,7 +94,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fActPointTw(0x0),
    fActGlbTrack(0x0),
    fActRecCutter(nullptr),
-   fActTrackIr(0x0),
    fActGlbTrackS(0x0),
    fFlagOut(true),
    fFlagTree(false),
@@ -1035,9 +1034,6 @@ void BaseReco::AddRecRequiredItem()
    }
    
    if (fFlagTrack) {
-       if (GlobalPar::GetPar()->IncludeTOE() && !GlobalPar::GetPar()->IncludeKalman()){
-           gTAGroot->AddRequiredItem("glbActTrack");
-       }
       if (TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman())
          gTAGroot->AddRequiredItem("glbActTrack");
       
