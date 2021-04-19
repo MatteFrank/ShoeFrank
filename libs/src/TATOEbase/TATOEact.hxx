@@ -1158,6 +1158,10 @@ private:
             auto cluster_c = track.get_clusters();
             double arc_length{0};
             switch( cluster_c.size() ){
+                case 4:{
+                    arc_length = compute_arc_length<4>( cluster_c );
+                    break;
+                }
                 case 5:{
                     arc_length = compute_arc_length<5>( cluster_c );
                     break;
@@ -1238,8 +1242,6 @@ private:
     {
 //        std::cout << "register_tracks_upward: " << track_pc.size() << std::endl;
         
-        
-        
         for( auto & track : track_pc  ) {
             // -----------------------------
             checker_m.submit_reconstructed_track( track );
@@ -1265,7 +1267,7 @@ private:
                 TVector3 corrected_position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
                 
                 
-                auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * particle_m.momentum ;
+                auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * track.momentum ;
                 momentum_z /= 1000.;
                 auto momentum_x = value.vector(2,0) * momentum_z;
                 auto momentum_y = value.vector(3,0) * momentum_z;

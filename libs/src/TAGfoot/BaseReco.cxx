@@ -816,8 +816,9 @@ void BaseReco::CreateRecActionGlb()
     if( fFlagRecCutter ){
         SetL0TreeBranches();
         fActRecCutter = new TATOEcutter<
-            procedure< configuration<1, vertex_tag, tof_tag>, range<-2,+2> >
-           // procedure< configuration<1, vertex_tag, it_tag, tof_tag>, range<-5,+5>>
+//            procedure< configuration<1, vertex_tag, tof_tag>, range<-1,+5> >
+//            procedure< configuration<1, vertex_tag, it_tag, tof_tag>, range<-1,+1>>
+        procedure< configuration<3, vertex_tag, it_tag, msd_tag, tof_tag>, range<-1,+10>>
                                         >{"toeActCutter", fField};
         return;
     }
