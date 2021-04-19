@@ -15,6 +15,7 @@
 #include "TAVTparGeo.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAGrecoManager.hxx"
 #include "G4RunManager.hh"
 
 #include "TMath.h"
@@ -113,16 +114,19 @@ void TCVTgeometryConstructor::BuildSensor()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void  TCVTgeometryConstructor::DefineSensitive()
 {
+   // Putting here message
+   InfoMcMsg("Construct()", "Construct Vertex");
+
    // sensitive volume
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    
    G4String epiSDname;
    if (fBmFlag) {
       epiSDname = fgkBmEpiSDname;
-      Info("DefineSensitive()", "Define sensitive for BM (Vertex)");
+      InfoMcMsg("DefineSensitive()", "Define sensitive for BM (Vertex)");
    } else {
       epiSDname = fgkVtxEpiSDname;
-      Info("DefineSensitive()", "Define sensitive for Vertex");
+      InfoMcMsg("DefineSensitive()", "Define sensitive for Vertex");
    }
    
    TCVTsensitiveDetector* epiSensitive = new TCVTsensitiveDetector(epiSDname);

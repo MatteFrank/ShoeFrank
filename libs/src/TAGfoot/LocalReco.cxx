@@ -3,17 +3,18 @@
 
 #include "LocalReco.hxx"
 
+#include "TAGntuEvent.hxx"
+#include "TASTntuHit.hxx"
+#include "TABMntuHit.hxx"
+#include "TAVTntuHit.hxx"
+#include "TAITntuHit.hxx"
+#include "TAMSDntuHit.hxx"
+#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
+#include "TACAntuHit.hxx"
+
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
-#include "TAVTntuRaw.hxx"
-#include "TAITntuRaw.hxx"
-#include "TAMSDntuRaw.hxx"
-#include "TATWdatRaw.hxx"
-#include "TATWntuRaw.hxx"
-#include "TACAntuRaw.hxx"
-
-#include "TASTdatRaw.hxx"
-#include "TABMdatRaw.hxx"
 #include "TAMSDdatRaw.hxx"
 
 
@@ -25,13 +26,14 @@ Bool_t  LocalReco::fgStdAloneFlag = false;
 LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fpDaqEvent(0x0),
+   fpNtuEvt(0x0),
    fActWdRaw(0x0),
    fActDatRawBm(0x0),
-   fActNtuRawBm(0x0),
-   fActNtuRawVtx(0x0),
-   fActNtuRawIt(0x0),
-   fActNtuRawCa(0x0),
-//   fActNtuRawMsd(0x0),
+   fActNtuHitBm(0x0),
+   fActNtuHitVtx(0x0),
+   fActNtuHitIt(0x0),
+   fActNtuHitCa(0x0),
+//   fActNtuHitMsd(0x0),
 //   fpDatRawMsd(0x0),
    fActEvtReader(0x0)
 {
@@ -49,28 +51,33 @@ void LocalReco::CreateRawAction()
    if (!fgStdAloneFlag) {
       fpDaqEvent = new TAGdataDsc("daqEvt", new TAGdaqEvent());
       fActEvtReader = new TAGactDaqReader("daqActReader", fpDaqEvent);
+     
+      fpNtuEvt = new TAGdataDsc("evtNtu", new TAGntuEvent());
+      fActNtuEvt = new TAGactNtuEvent("evtActNtu", fpNtuEvt, fpDaqEvent);
+     if (fFlagHisto)
+       fActNtuEvt->CreateHistogram();
    }
 
-   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeCA()) {
-      fpDatRawSt   = new TAGdataDsc("stDat", new TASTdatRaw());
-      fpDatRawTw   = new TAGdataDsc("twdDat", new TATWdatRaw());
-      fpDatRawCa   = new TAGdataDsc("caDat", new TACAdatRaw());
+   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeBM() || TAGrecoManager::GetPar()->IncludeCA()) {
+      fpDatRawSt   = new TAGdataDsc("stDat", new TASTntuRaw());
+      fpDatRawTw   = new TAGdataDsc("twdDat", new TATWntuRaw());
+      fpDatRawCa   = new TAGdataDsc("caDat", new TACAntuRaw());
       
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpParMapWD, fpParTimeWD);
       if (fFlagHisto)
          fActWdRaw->CreateHistogram();
    }
    
-   if (GlobalPar::GetPar()->IncludeST() ||GlobalPar::GetPar()->IncludeBM()) {
-      fpNtuRawSt   = new TAGdataDsc("stNtu", new TASTntuRaw());
-      fActNtuRawSt = new TASTactNtuRaw("stActNtu", fpDatRawSt, fpNtuRawSt, fpParMapSt);
+   if (TAGrecoManager::GetPar()->IncludeST() ||TAGrecoManager::GetPar()->IncludeBM()) {
+      fpNtuHitSt   = new TAGdataDsc("stNtu", new TASTntuHit());
+      fActNtuHitSt = new TASTactNtuHit("stActNtu", fpDatRawSt, fpNtuHitSt, fpParMapSt);
       if (fFlagHisto)
-         fActNtuRawSt->CreateHistogram();
+         fActNtuHitSt->CreateHistogram();
    }
 
-   if (GlobalPar::GetPar()->IncludeBM()) {
-      fpDatRawBm = new TAGdataDsc("bmDat", new TABMdatRaw());
-      fpNtuRawBm = new TAGdataDsc("bmNtu", new TABMntuRaw());
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
+      fpDatRawBm = new TAGdataDsc("bmDat", new TABMntuRaw());
+      fpNtuHitBm = new TAGdataDsc("bmNtu", new TABMntuHit());
       
       if (fgStdAloneFlag) {
          fActVmeReaderBm  = new TABMactVmeReader("bmActNtu", fpDatRawBm, fpParMapBm, fpParCalBm, fpParGeoBm);
@@ -78,87 +85,78 @@ void LocalReco::CreateRawAction()
             fActVmeReaderBm->CreateHistogram();
          
       } else {
-         fActDatRawBm = new TABMactDatRaw("bmActDat", fpDatRawBm, fpDaqEvent, fpParMapBm, fpParCalBm, fpParGeoBm, fpNtuRawSt);
+         fActDatRawBm = new TABMactNtuRaw("bmActDat", fpDatRawBm, fpDaqEvent, fpParMapBm, fpParCalBm, fpParGeoBm, fpNtuHitSt);
          if (fFlagHisto)
             fActDatRawBm->CreateHistogram();
-         if(GlobalPar::GetPar()->Debug()) fActDatRawBm->SetDebugLevel(1);
-         
-         fActNtuRawBm = new TABMactNtuRaw("bmActNtu", fpNtuRawBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
+        
+         fActNtuHitBm = new TABMactNtuHit("bmActNtu", fpNtuHitBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
          if (fFlagHisto)
-            fActNtuRawBm->CreateHistogram();
-         if(GlobalPar::GetPar()->Debug()) fActNtuRawBm->SetDebugLevel(1);
+            fActNtuHitBm->CreateHistogram();
       }
    }
 
-   if (GlobalPar::GetPar()->IncludeVT()) {
-      fpNtuRawVtx   = new TAGdataDsc("vtRaw", new TAVTntuRaw());
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
+      fpNtuHitVtx   = new TAGdataDsc("vtRaw", new TAVTntuHit());
       
       if (fgStdAloneFlag) {
-         fActVmeReaderVtx  = new TAVTactVmeReader("vtActNtu", fpNtuRawVtx, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
+         fActVmeReaderVtx  = new TAVTactVmeReader("vtActNtu", fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
          if (fFlagHisto)
             fActVmeReaderVtx->CreateHistogram();
          
       } else {
-         fActNtuRawVtx = new TAVTactNtuRaw("vtActNtu", fpNtuRawVtx, fpDaqEvent, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
+         fActNtuHitVtx = new TAVTactNtuHit("vtActNtu", fpNtuHitVtx, fpDaqEvent, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
          if (fFlagHisto)
-         fActNtuRawVtx->CreateHistogram();
-         if(GlobalPar::GetPar()->Debug()) fActNtuRawVtx->SetDebugLevel(1);
+         fActNtuHitVtx->CreateHistogram();
       }
    }
    
-   if (GlobalPar::GetPar()->IncludeIT()) {
-      fpNtuRawIt   = new TAGdataDsc("itRaw", new TAITntuRaw());
-      fActNtuRawIt = new TAITactNtuRaw("itActNtu", fpNtuRawIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      fpNtuHitIt   = new TAGdataDsc("itRaw", new TAITntuHit());
+      fActNtuHitIt = new TAITactNtuHit("itActNtu", fpNtuHitIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
       if (fFlagHisto)
-         fActNtuRawIt->CreateHistogram();
+         fActNtuHitIt->CreateHistogram();
    }
    
-//   if (GlobalPar::GetPar()->IncludeMSD()) {
+//   if (TAGrecoManager::GetPar()->IncludeMSD()) {
 //      fpDatRawMsd   = new TAGdataDsc("msdDat", new TAVTdatRaw());
-//      fpNtuRawMsd   = new TAGdataDsc("msdRaw", new TAMSDntuRaw());
+//      fpNtuHitMsd   = new TAGdataDsc("msdRaw", new TAMSDntuHit());
 //      fActDatRawMsd = new TAMSDactDaqRaw("msdAcDat", fpDatRawMsd, fpDaqEvent, fpParGeoMsd);
-//      fActNtuRawMsd = new TAVTactNtuRaw("msdActNtu", fpNtuRawMsd, fpDatRawMsd, fpParGeoMsd);
+//      fActNtuHitMsd = new TAVTactNtuHit("msdActNtu", fpNtuHitMsd, fpDatRawMsd, fpParGeoMsd);
 //      if (fFlagHisto)
-//         fActNtuRawMsd->CreateHistogram();
+//         fActNtuHitMsd->CreateHistogram();
 //   }
 
-   if(GlobalPar::GetPar()->IncludeTW()) {
-      fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
+   if(TAGrecoManager::GetPar()->IncludeTW()) {
+      fpNtuHitTw   = new TAGdataDsc("twRaw", new TATWntuHit());
 
-      if(GlobalPar::GetPar()->CalibTW()) {
-	fActCalibTw = new TATWactCalibTW("twActCalib", fpDatRawTw, fpNtuRawTw, fpNtuRawSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
-	if(GlobalPar::GetPar()->Debug()) fActCalibTw->SetDebugLevel(1);
-	fActCalibTw->CreateHistogram();
-	
+      if(TAGrecoManager::GetPar()->CalibTW()) {
+        fActCalibTw = new TATWactCalibTW("twActCalib", fpDatRawTw, fpNtuHitTw, fpNtuHitSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
+        fActCalibTw->CreateHistogram();
+
       } else {
-	
-	fActNtuRawTw = new TATWactNtuRaw("twActNtu", fpDatRawTw, fpNtuRawTw, fpNtuRawSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
-	if(GlobalPar::GetPar()->Debug()) fActNtuRawTw->SetDebugLevel(1);
-	if (fFlagHisto)
-	  fActNtuRawTw->CreateHistogram();
-	
+        fActNtuHitTw = new TATWactNtuHit("twActNtu", fpDatRawTw, fpNtuHitTw, fpNtuHitSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
+        if (fFlagHisto)
+          fActNtuHitTw->CreateHistogram();
       }
    }
    
-   if(GlobalPar::GetPar()->IncludeCA()) {
-     fpNtuRawCa   = new TAGdataDsc("caRaw", new TACAntuRaw());
-     fActNtuRawCa = new TACAactNtuRaw("caActNtu", fpDatRawCa, fpNtuRawCa, fpParMapCa, fpParCalCa);
-     //the calibration parameters have to be still defined!!! (gtraini)
+   if(TAGrecoManager::GetPar()->IncludeCA()) {
+     fpNtuHitCa   = new TAGdataDsc("caRaw", new TACAntuHit());
+     fActNtuHitCa = new TACAactNtuHit("caActNtu", fpDatRawCa, fpNtuHitCa, fpParMapCa, fpParCalCa);
      if (fFlagHisto){
-	fActNtuRawCa->CreateHistogram();
+       fActNtuHitCa->CreateHistogram();
       }
     }
-   
 }
 
 //__________________________________________________________
 void LocalReco::OpenFileIn()
 {
    if (fgStdAloneFlag) {
-      if (GlobalPar::GetPar()->IncludeVT())
+      if (TAGrecoManager::GetPar()->IncludeVT())
          fActVmeReaderVtx->Open(GetName());
       
-      if (GlobalPar::GetPar()->IncludeBM())
+      if (TAGrecoManager::GetPar()->IncludeBM())
          fActVmeReaderBm->Open(GetName());
       
    } else
@@ -169,56 +167,56 @@ void LocalReco::OpenFileIn()
 void LocalReco::SetRawHistogramDir()
 {
    // ST
-   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TASTparGeo::GetBaseName());
       fActWdRaw->SetHistogramDir(subfolder);
    }
    
-   if (GlobalPar::GetPar()->IncludeST()) {
+   if (TAGrecoManager::GetPar()->IncludeST()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TASTparGeo::GetBaseName());
-      fActNtuRawSt->SetHistogramDir(subfolder);
+      fActNtuHitSt->SetHistogramDir(subfolder);
    }
    
    // BM
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TABMparGeo::GetBaseName());
-      fActNtuRawBm->SetHistogramDir(subfolder);
+      fActNtuHitBm->SetHistogramDir(subfolder);
       TDirectory* subsubfolder = subfolder->mkdir("bmdat");
       fActDatRawBm->SetHistogramDir(subsubfolder);
    }
    
    // VTX
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAVTparGeo::GetBaseName());
-      fActNtuRawVtx->SetHistogramDir(subfolder);
+      fActNtuHitVtx->SetHistogramDir(subfolder);
    }
    
    // IT
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAITparGeo::GetBaseName());
-      fActNtuRawIt->SetHistogramDir(subfolder);
+      fActNtuHitIt->SetHistogramDir(subfolder);
    }
 
    // TW
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TATWparGeo::GetBaseName());
-      if(GlobalPar::GetPar()->CalibTW()) {
+      if(TAGrecoManager::GetPar()->CalibTW()) {
 	fActCalibTw->SetHistogramDir(subfolder);
       } else {
-	fActNtuRawTw->SetHistogramDir(subfolder);
+	fActNtuHitTw->SetHistogramDir(subfolder);
       }
    }
    
    // MSD
-//   if (GlobalPar::GetPar()->IncludeMSD()) {
+//   if (TAGrecoManager::GetPar()->IncludeMSD()) {
 //      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAMSDparGeo::GetBaseName());
 //      fActDatRawMsd->SetHistogramDir(subfolder);
-//      fActNtuRawMsd->SetHistogramDir(subfolder);
+//      fActNtuHitMsd->SetHistogramDir(subfolder);
 //   }
 
 
    // CA
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
      fActWdRaw->SetHistogramDir(subfolder);
    }
@@ -234,32 +232,34 @@ void LocalReco::CloseFileIn()
 //__________________________________________________________
 void LocalReco::AddRawRequiredItem()
 {
-   if (!fgStdAloneFlag)
+   if (!fgStdAloneFlag) {
       fTAGroot->AddRequiredItem("daqActReader");
+      fTAGroot->AddRequiredItem("evtActNtu");
+   }
 
-   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW()) {
      fTAGroot->AddRequiredItem("wdActRaw");
    }
 
-   if (GlobalPar::GetPar()->IncludeST() || GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM()) {
       fTAGroot->AddRequiredItem("stActNtu");
    }
 
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       fTAGroot->AddRequiredItem("bmActDat");
       fTAGroot->AddRequiredItem("bmActNtu");
    }
 
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       fTAGroot->AddRequiredItem("vtActNtu");
    }
    
-//   if (GlobalPar::GetPar()->IncludeIT()) {
+//   if (TAGrecoManager::GetPar()->IncludeIT()) {
 //      fTAGroot->AddRequiredItem("itActNtu");
 //   }
    
-   if (GlobalPar::GetPar()->IncludeTW()) {
-     if(GlobalPar::GetPar()->CalibTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
+     if(TAGrecoManager::GetPar()->CalibTW()) {
        fTAGroot->AddRequiredItem("twActCalib");
      } else {
        fTAGroot->AddRequiredItem("twActNtu");
@@ -267,12 +267,12 @@ void LocalReco::AddRawRequiredItem()
    }
 
    
-//   if (GlobalPar::GetPar()->IncludeMSD()) {
+//   if (TAGrecoManager::GetPar()->IncludeMSD()) {
 //      fTAGroot->AddRequiredItem("msdActDat");
 //      fTAGroot->AddRequiredItem("msdActNtu");
 //   }
 
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
      fTAGroot->AddRequiredItem("caActNtu");
    }
 
@@ -283,44 +283,48 @@ void LocalReco::AddRawRequiredItem()
 void LocalReco::SetTreeBranches()
 {
    BaseReco::SetTreeBranches();
-   
-   if (GlobalPar::GetPar()->IncludeST()) {
+  
+   if (!fgStdAloneFlag) {
+     fActEvtWriter->SetupElementBranch(fpNtuEvt, TAGntuEvent::GetBranchName());
+   }
+  
+   if (TAGrecoManager::GetPar()->IncludeST()) {
      if (fFlagHits) {
-       fActEvtWriter->SetupElementBranch(fpDatRawSt, TASTdatRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpDatRawSt, TASTntuRaw::GetBranchName());
      }
-     fActEvtWriter->SetupElementBranch(fpNtuRawSt, TASTntuRaw::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpDatRawBm, TABMdatRaw::GetBranchName());
-     fActEvtWriter->SetupElementBranch(fpNtuRawBm, TABMntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpDatRawBm, TABMntuRaw::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
      if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpNtuHitVtx, TAVTntuHit::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
      if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpNtuHitIt, TAITntuHit::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
      if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuRawMsd, TAMSDntuRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
      if (fFlagHits) {
-         fActEvtWriter->SetupElementBranch(fpDatRawTw, TATWdatRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpDatRawTw, TATWntuRaw::GetBranchName());
      }
-     fActEvtWriter->SetupElementBranch(fpNtuRawTw, TATWntuRaw::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuHitTw, TATWntuHit::GetBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
      if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuRawCa, TACAntuRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
    }
 }

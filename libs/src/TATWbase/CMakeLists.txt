@@ -10,7 +10,7 @@ set(LIBNAME ${PROJECT_NAME})
 # internal and external dependencies
 #
 set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADAQ} ${TAAPI})
-set( EXTRA_INTERNAL_LIBRARIES ${TAMC} ${TAST} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAMC} ${TAST})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -20,14 +20,13 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TATWdatRaw
    TATWntuRaw
+   TATWntuHit
    TATWntuPoint
    TATWparMap
    TATWparCal
-   TATWactNtuMC
    TATWactNtuHitMC
-   TATWactNtuRaw
+   TATWactNtuHit
    TATWactCalibTW
    TATWactNtuPoint
    TATWparGeo
@@ -85,7 +84,6 @@ foreach( f ${without_dictionnaries} )
 	set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
 endforeach()
 #
-file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
 
 #----------------------------------------------------------------------------
 #

@@ -1,7 +1,7 @@
 #include "TMath.h"
 #include "TClonesArray.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAIRcluster.hxx"
 #include "TAIRtrack.hxx"
 

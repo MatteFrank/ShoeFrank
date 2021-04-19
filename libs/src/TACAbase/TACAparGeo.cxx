@@ -16,14 +16,14 @@
 #include "TROOT.h"
 #include "TSystem.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGionisMaterials.hxx"
 
 #include "TACAparGeo.hxx"
 #include "TAGroot.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 //##############################################################################
 
@@ -530,7 +530,7 @@ string TACAparGeo::PrintRotations()
    // Defines rotations and translations to be applied 
    stringstream ss;
 
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
 
       TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    
@@ -580,7 +580,7 @@ string TACAparGeo::PrintBodies()
    stringstream outstr;  
    outstr << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
-   if ( !GlobalPar::GetPar()->IncludeCA())
+   if ( !TAGrecoManager::GetPar()->IncludeCA())
       return outstr.str();
 
    outstr << "* ***Calorimeter" << endl;
@@ -871,7 +871,7 @@ string TACAparGeo::PrintRegions()
 {
    stringstream outstr;  
 
-   if ( !GlobalPar::GetPar()->IncludeCA())
+   if ( !TAGrecoManager::GetPar()->IncludeCA())
       return outstr.str();
  
    outstr << "* ***Calorimeter" << endl;
@@ -1012,7 +1012,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
 
    stringstream outstr;  
 
-   if ( !GlobalPar::GetPar()->IncludeCA())
+   if ( !TAGrecoManager::GetPar()->IncludeCA())
       return outstr.str(); 
 
    outstr << TString::Format(" - air_cal\n");
@@ -1216,7 +1216,7 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material)
 {
    stringstream outstr;  
 
-   if ( !GlobalPar::GetPar()->IncludeCA())
+   if ( !TAGrecoManager::GetPar()->IncludeCA())
       return outstr.str(); 
 
    TString flkmat;  
@@ -1228,7 +1228,7 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material)
       flkmat = Material->GetFlukaMatName(fCrystalMat.Data());
 
    bool magnetic = false;
-   if (GlobalPar::GetPar()->IncludeDI())
+   if (TAGrecoManager::GetPar()->IncludeDI())
       magnetic = true;
 
    

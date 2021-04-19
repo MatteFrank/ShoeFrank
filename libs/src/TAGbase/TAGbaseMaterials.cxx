@@ -9,7 +9,7 @@
 #include "TGeoManager.h"
 #include "TObjString.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 TString TAGbaseMaterials::fgkWhat = "                                                                                            ";

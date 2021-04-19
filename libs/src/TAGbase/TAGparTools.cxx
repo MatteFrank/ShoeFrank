@@ -7,7 +7,7 @@
 #include "TSystem.h"
 #include "TGeoMatrix.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGparTools.hxx"
 #include "TAGroot.hxx"
 
@@ -349,7 +349,7 @@ void TAGparTools::ReadStringsInts(TString& aString, TArrayI& array, const Char_t
    Int_t pos = key.First('"');
    Int_t end = key.Last('"');
    if (end == -1 || pos == -1 || end-pos-1 > 512) {
-      cout << "TAGparTools: totoproblem with reading file, missing \" or line too long" << endl;
+      cout << "TAGparTools: problem with reading file, missing \" or line too long" << endl;
       return;
    }
    

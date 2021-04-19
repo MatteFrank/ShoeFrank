@@ -22,21 +22,21 @@
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
-#include "TASTdatRaw.hxx"
-#include "TABMdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
-#include "TABMactNtuRaw.hxx"
+#include "TABMntuHit.hxx"
+#include "TABMactNtuHit.hxx"
 #include "TABMactVmeReader.hxx"
 #include "TABMactNtuTrack.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
 // main
 TAGactTreeWriter* outFile   = 0x0;
 TABMactVmeReader* bmActVmeReader  = 0x0;
-TABMactNtuRaw* bmActNtuRaw  = 0x0;
+TABMactNtuHit* bmActNtuRaw  = 0x0;
 TABMactNtuTrack* bmActTrack = 0x0;
 
 void FillBmVME(TString name, Int_t myexpcode) {
@@ -74,14 +74,14 @@ void FillBmVME(TString name, Int_t myexpcode) {
   parMap->FromFile(parFileName.Data(), geomap);
 
  
-  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDatRaw", new TABMdatRaw());
+  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDatRaw", new TABMntuRaw());
   bmActVmeReader  = new TABMactVmeReader("bmActVmeReader", bmDatRaw, bmMap, bmConf, bmGeo);
   bmActVmeReader->Open(name);
   bmActVmeReader->CreateHistogram();
 
 
-  TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuRaw());
-  bmActNtuRaw  = new TABMactNtuRaw("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
+  TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuHit());
+  bmActNtuRaw  = new TABMactNtuHit("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
   bmActNtuRaw->CreateHistogram();   
   
   TAGdataDsc* bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
@@ -90,7 +90,7 @@ void FillBmVME(TString name, Int_t myexpcode) {
 
   cout<<"end of FillBmVME"<<endl;
 
-  outFile->SetupElementBranch(bmNtuRaw, TABMntuRaw::GetBranchName());
+  outFile->SetupElementBranch(bmNtuRaw, TABMntuHit::GetBranchName());
   outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
 }
 
@@ -100,8 +100,9 @@ void ReadBmRawVME(TString name = "./data/msd_marzo/bmdata/6_March_2019/80MeV_HV2
 {  
   //~ Int_t myexpcode=0;   //0=gsi2019, 1=trento msd-bm march 2019
   Long64_t maxevt=10000;
-  GlobalPar::Instance();
-  GlobalPar::GetPar()->Print();
+  TAGrecoManager::Instance();
+  TAGrecoManager::GetPar()->FromFile();
+  TAGrecoManager::GetPar()->Print();
 
   TAGroot tagr;
   TAGgeoTrafo geoTrafo;

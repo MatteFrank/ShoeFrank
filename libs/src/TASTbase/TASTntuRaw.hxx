@@ -1,102 +1,75 @@
 #ifndef _TASTntuRaw_HXX
 #define _TASTntuRaw_HXX
 /*!
- \file
- \version $Id: TASTntuRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
- \brief   Declaration of TASTntuRaw.
- */
+  \file
+  \version $Id: TASTntuRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+  \brief   Declaration of TASTntuRaw.
+*/
 /*------------------------------------------+---------------------------------*/
-
 #include <vector>
 using namespace std;
-
+#include "TObject.h"
 #include "TClonesArray.h"
-
-#include "TAGobject.hxx"
 #include "TAGdata.hxx"
-#include "TArrayI.h"
+#include "TAGbaseWD.hxx"
+//
 
-class TASTntuHit : public TAGobject {
+/**
+ * This class stores the params of a single channel waveform
+ */
+class TASTrawHit : public TAGbaseWD {
+
 public:
-   
-  TASTntuHit();
-  TASTntuHit(Double_t charge, Double_t de, Double_t time);
-  virtual         ~TASTntuHit();
+  TASTrawHit();
+  TASTrawHit(TWaveformContainer *w);
+  virtual         ~TASTrawHit();
   
+  virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
+  virtual double ComputeCharge( TWaveformContainer *w);
+  virtual double ComputeAmplitude( TWaveformContainer *w);
+  virtual double ComputePedestal( TWaveformContainer *w);
+  virtual double ComputeBaseline( TWaveformContainer *w);
   
-  Double_t       GetTime()                  const   { return fTime;                 }
-  Double_t       GetCharge()                const   { return fCharge;               }
-  Double_t       GetDe()                const   { return fCharge;               }
-  
-  inline void SetTime(double value){ fTime = value;}
-  inline void SetCharge(double value){ fCharge = value;}
-  inline void SetDe(double value){ fDe = value;}
-  
-
-  Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
-  Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
-  Int_t          GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
-   
-  void           Clear(Option_t* option = "C");
-  void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
-   
-   
-  ClassDef(TASTntuHit,1)
-   
-  private:
- 
-  Double32_t      fCharge;
-  Double32_t      fDe;
-  Double32_t      fTime;
-  
-   
-  TArrayI         fMCindex;                  // Id of the hit created in the simulation
-  TArrayI         fMcTrackIdx;               // Index of the track created in the simulation
-   
+  ClassDef(TASTrawHit,2);
+  //
 };
 
 //##############################################################################
 
 class TASTntuRaw : public TAGdata {
 public:
-   
-   TASTntuRaw();
-   virtual         ~TASTntuRaw();
-   
-   Int_t             GetHitsN() const;
-   
-   TASTntuHit*       GetHit(Int_t i_ind);
-   const TASTntuHit* GetHit(Int_t i_ind) const;
-   TASTntuHit*       NewHit(double charge, double de, double time);
-   virtual void      Clear(Option_t* opt="");
-   void              SetupClones();
-   
-   void SetCharge(double value){m_Charge = value;}
-   void SetTriggerTime(double value){m_TrigTime = value;}
-   void SetTriggerTimeOth(double value){m_TrigTime_oth = value;}
-   void SetTrigType(int value){m_TrigType=value;}
-  
-   double GetCharge()         const { return m_Charge;}
-   double GetTriggerTime()    const { return m_TrigTime;}
-   double GetTriggerTimeOth() const { return m_TrigTime_oth;}
-   int    GetTrigType()       const { return m_TrigType;}
 
-  
-public:
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-   
-private:
-  TClonesArray* m_ListOfHits;			    // hits
-  Double32_t    m_TrigTime;
-  Double32_t    m_TrigTime_oth;
-  Double32_t    m_Charge;
-  int           m_TrigType;
+  TASTntuRaw();
+  virtual         ~TASTntuRaw();
 
+  Int_t             GetHitsN() {return fHistN;}
+  
+  TASTrawHit*       GetHit(Int_t i_ind);
+  const TASTrawHit* GetHit(Int_t i_ind) const;
+
+  TASTrawHit*       GetSuperHit(){return fSuperHit;}
+  
+  void              NewHit(TWaveformContainer *W);
+  void              NewSuperHit(vector<TWaveformContainer*>);
+  void              SetupClones();
+
+   
+  virtual void      Clear(Option_t* opt="");
+  virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
+
+  void              UpdateRunTime(int value){fRunTime+=value;}
+   
+  static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
+  
+  ClassDef(TASTntuRaw,3);
+  
 private:
+   Int_t           fHistN;          //
+   TClonesArray*   fListOfHits;         // hits
+   TASTrawHit*     fSuperHit;  //sum
+   Int_t           fRunTime;
+
    static TString fgkBranchName;    // Branch name in TTree
-   
-   ClassDef(TASTntuRaw,1)
 };
-
 
 #endif

@@ -8,22 +8,22 @@ B) Batch mode:
 
  1) With no flag:
  - command:
- TAGsimulation -b  -out 12C_C_200.root -nev 10000 -exp 12C_200 -run 1
+ TAGsimulation -out 12C_C_200.root -nev 10000 -exp 12C_200 -run 1
 
  2) With a given physics list:
  - command:
- TAGsimulation -b  -out 12C_C_200.root -nev 10000 -exp 12C_200 -run 1 -phys [BIC, BERT or INCL]
+ TAGsimulation -out 12C_C_200.root -nev 10000 -exp 12C_200 -run 1 -phys [BIC, BERT or INCL]
 
  3) With only fragmented events:
  - command:
- TAGsimulation -b  -out 12C_C_200.root -nev 10000 -exp 12C_200 -run 1 -frag
+ TAGsimulation -out 12C_C_200.root -nev 10000 -exp 12C_200 -run 1 -frag
 
  4) With a given seed:
  - command:
- TAGsimulation -b  -out 12C_C_200.root -nev 10000 -exp 12C_200 -run 1 -seed [number]
+ TAGsimulation -out 12C_C_200.root -nev 10000 -exp 12C_200 -run 1 -seed [number]
 
 C) Interactive mode:
  - command:
- TAGsimulation -exp 12C_200 -run 1
+ TAGsimulation -i -exp 12C_200 -run 1
 
 Rem: don't forget to source the data environment variables before running the executable TAGsimulation

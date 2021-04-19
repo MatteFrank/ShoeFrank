@@ -8,7 +8,7 @@
 #include <Riostream.h>
 #include <limits>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGroot.hxx"
 
 #include "TATWparCal.hxx"

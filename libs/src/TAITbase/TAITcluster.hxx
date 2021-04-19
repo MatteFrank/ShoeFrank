@@ -11,7 +11,7 @@
  \author Ch. Finck
  */
 
-class TAITntuHit;
+class TAIThit;
 class TAITtrack;
 
 class TAITcluster : public TAVTbaseCluster {
@@ -28,7 +28,7 @@ public:
    Float_t            Distance(TAITtrack *aTrack);
 
    //! Add pixel to the list
-   void               AddPixel(TAITntuHit* pixel);
+   void               AddPixel(TAIThit* pixel);
    
    ClassDef(TAITcluster,3)                          // Describes TAITcluster
 };

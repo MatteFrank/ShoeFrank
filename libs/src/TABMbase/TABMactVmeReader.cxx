@@ -7,8 +7,8 @@
 #include "TABMparMap.hxx"
 #include "TABMparCal.hxx"
 #include "TABMrawHit.hxx"
-#include "TABMdatRaw.hxx"
-#include "TASTntuRaw.hxx"
+#include "TABMntuRaw.hxx"
+#include "TASTntuHit.hxx"
 #include "TABMactVmeReader.hxx"
 #include <iomanip>
 
@@ -35,11 +35,11 @@ TABMactVmeReader::TABMactVmeReader(const char* name,
     fpParGeo(dscbmgeo)
     // fpTimRaw(p_timraw)
 {
-  AddDataOut(dscdatraw, "TABMdatRaw");
+  AddDataOut(dscdatraw, "TABMntuRaw");
   AddPara(dscbmmap, "TABMparMap");
   AddPara(dscbmcal, "TABMparCal");
   AddPara(dscbmgeo, "TABMparGeo");
-  // AddDataOut(p_timraw, "TASTntuRaw");
+  // AddDataOut(p_timraw, "TASTntuHit");
   fpEvtStruct=new BM_struct;
   ClearBmstruct(kTRUE);
   fDataNumEv=-1000;
@@ -79,8 +79,8 @@ Bool_t TABMactVmeReader::Process() {
   TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
   TABMparMap* p_bmmap = (TABMparMap*) fpParMap->Object();
   TABMparGeo* p_bmgeo = (TABMparGeo*) fpParGeo->Object();
-  TABMdatRaw* p_datraw= (TABMdatRaw*) fpDatRaw->Object();
-  // TASTntuRaw* p_timraw= (TASTntuRaw*) fpTimRaw->Object();
+  TABMntuRaw* p_datraw= (TABMntuRaw*) fpDatRaw->Object();
+  // TASTntuHit* p_timraw= (TASTntuHit*) fpTimRaw->Object();
 
   ReadEvent(kFALSE);
   //some check on bm_struct

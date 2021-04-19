@@ -7,29 +7,25 @@
 #include "TFile.h"
 
 #include "TAGdataDsc.hxx"
-#include "TASTactNtuMC.hxx"
-#include "TABMactNtuMC.hxx"
-#include "TAVTactNtuMC.hxx"
-#include "TAITactNtuMC.hxx"
-#include "TAMSDactNtuMC.hxx"
-#include "TATWactNtuMC.hxx"
-#include "TACAactNtuMC.hxx"
+#include "TAGactTreeReader.hxx"
+#include "TASTactNtuHitMC.hxx"
+#include "TABMactNtuHitMC.hxx"
+#include "TAVTactNtuHitMC.hxx"
+#include "TAITactNtuHitMC.hxx"
+#include "TAMSDactNtuHitMC.hxx"
+#include "TATWactNtuHitMC.hxx"
+#include "TACAactNtuHitMC.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
-#include "TAMCactNtuStc.hxx"
-#include "TAMCactNtuBm.hxx"
-#include "TAMCactNtuVtx.hxx"
-#include "TAMCactNtuItr.hxx"
-#include "TAMCactNtuMsd.hxx"
-#include "TAMCactNtuTof.hxx"
-#include "TAMCactNtuCal.hxx"
-#include "TAMCactNtuEve.hxx"
+#include "TAMCntuPart.hxx"
+#include "TAMCactNtuPart.hxx"
+#include "TAMCactNtuRegion.hxx"
+#include "TAMCactNtuEvent.hxx"
 
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
 
-#include "Evento.hxx"
+#include "EventStruct.hxx"
 
 class TTree;
 
@@ -37,7 +33,7 @@ class LocalRecoMC : public BaseReco
 {
 public:
    //! default constructor
-   LocalRecoMC(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "");
+   LocalRecoMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~LocalRecoMC();
    
@@ -59,38 +55,38 @@ public:
    //! Close File in
    virtual void CloseFileIn();
   
-   //! MC container Getter
-   TAMCntuEve*  GetNtuMcEve() const { return (TAMCntuEve*)fpNtuMcEve->Object();}
-   TAMCntuHit*  GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object(); }
-   TAMCntuHit*  GetNtuMcBm()  const { return (TAMCntuHit*)fpNtuMcBm->Object(); }
-   TAMCntuHit*  GetNtuMcVtx() const { return (TAMCntuHit*)fpNtuMcVt->Object(); }
-   TAMCntuHit*  GetNtuMcIt()  const { return (TAMCntuHit*)fpNtuMcIt->Object(); }
-   TAMCntuHit*  GetNtuMcMsd() const { return (TAMCntuHit*)fpNtuMcMsd->Object();}
-   TAMCntuHit*  GetNtuMcTw()  const { return (TAMCntuHit*)fpNtuMcTw->Object(); }
-   TAMCntuHit*  GetNtuMcCa()  const { return (TAMCntuHit*)fpNtuMcCa->Object(); }
-   TTree*       GetTree()           { return fTree;                            }
+   // ! Global Checks
+   virtual void GlobalChecks();
+   
+   //! Goto Event
+   virtual Bool_t GoEvent(Int_t iEvent);
 
-private:
-   void AddRequiredMcItemSt();
-   void AddRequiredMcItemBm();
-   void AddRequiredMcItemVt();
-   void AddRequiredMcItemIt();
-   void AddRequiredMcItemMs();
-   void AddRequiredMcItemTw();
-   void AddRequiredMcItemCa();
+   //! MC container Getter
+   TAMCntuEvent*  GetNtuMcEvt() const { return (TAMCntuEvent*)fpNtuMcEvt->Object(); }
+   TAMCntuPart*  GetNtuMcTrk() const { return (TAMCntuPart*)fpNtuMcTrk->Object(); }
+   TAMCntuRegion* GetNtuMcReg() const { return (TAMCntuRegion*)fpNtuMcReg->Object();}
+   TAMCntuHit*    GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object();   }
+   TAMCntuHit*    GetNtuMcBm()  const { return (TAMCntuHit*)fpNtuMcBm->Object();   }
+   TAMCntuHit*    GetNtuMcVtx() const { return (TAMCntuHit*)fpNtuMcVt->Object();   }
+   TAMCntuHit*    GetNtuMcIt()  const { return (TAMCntuHit*)fpNtuMcIt->Object();   }
+   TAMCntuHit*    GetNtuMcMsd() const { return (TAMCntuHit*)fpNtuMcMsd->Object();  }
+   TAMCntuHit*    GetNtuMcTw()  const { return (TAMCntuHit*)fpNtuMcTw->Object();   }
+   TAMCntuHit*    GetNtuMcCa()  const { return (TAMCntuHit*)fpNtuMcCa->Object();   }
 
 protected:
    EVENT_STRUCT*         fEvtStruct;
-   
-   TASTactNtuMC*         fActNtuRawSt;  // action for ntu data
-   TABMactNtuMC*         fActNtuRawBm;  // action for ntu data
-   TAVTactNtuMC*         fActNtuRawVtx;  // action for ntu data
-   TAITactNtuMC*         fActNtuRawIt;  // action for ntu data
-   TAMSDactNtuMC*        fActNtuRawMsd;  // action for ntu data
-   TATWactNtuMC*         fActNtuRawTw;  // action for ntu data
-   TACAactNtuMC*         fActNtuRawCa;  // action for ntu data
-   
-   TAGdataDsc*           fpNtuMcEve;    // input data dsc
+  
+   TAMCactNtuPart*      fActNtuMcTrk;
+   TAMCactNtuRegion*     fActNtuMcReg;
+   TAMCactNtuEvent*      fActNtuMcEvt;
+   TASTactNtuHitMC*      fActNtuHitSt;  // action for ntu data
+   TABMactNtuHitMC*      fActNtuHitBm;  // action for ntu data
+   TAVTactNtuHitMC*      fActNtuHitVtx;  // action for ntu data
+   TAITactNtuHitMC*      fActNtuHitIt;  // action for ntu data
+   TAMSDactNtuHitMC*     fActNtuHitMsd;  // action for ntu data
+   TATWactNtuHitMC*      fActNtuHitTw;  // action for ntu data
+   TACAactNtuHitMC*      fActNtuHitCa;  // action for ntu data
+  
    TAGdataDsc*           fpNtuMcSt;    // input data dsc
    TAGdataDsc*           fpNtuMcBm;    // input data dsc
    TAGdataDsc*           fpNtuMcVt;    // input data dsc
@@ -99,16 +95,7 @@ protected:
    TAGdataDsc*           fpNtuMcTw;    // input data dsc
    TAGdataDsc*           fpNtuMcCa;    // input data dsc
    
-   TAMCactNtuEve*        fActNtuMcEve;
-   TAMCactNtuStc*        fActNtuMcSt;
-   TAMCactNtuBm*         fActNtuMcBm;
-   TAMCactNtuVtx*        fActNtuMcVt;
-   TAMCactNtuItr*        fActNtuMcIt;
-   TAMCactNtuMsd*        fActNtuMcMsd;
-   TAMCactNtuTof*        fActNtuMcTw;
-   TAMCactNtuCal*        fActNtuMcCa;
-
-   TTree*                fTree;         // tree for MC
+   TAGactTreeReader*     fActEvtReader; // file for MC
 
    ClassDef(LocalRecoMC, 1); // Base class for event display
 };

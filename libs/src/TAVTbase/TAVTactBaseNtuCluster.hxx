@@ -19,7 +19,7 @@
 #include "TAGactNtuCluster2D.hxx"
 
 class TAVTbaseCluster;
-class TAVTntuHit;
+class TAVThit;
 class TAVTbaseParGeo;
 class TH1F;
 class TH2F;
@@ -44,7 +44,7 @@ public:
     //! Get list of pixels for a given plane
    TClonesArray*   GetListOfPixels()   const { return fListOfPixels;    }
     //! Return seed pixel
-   TAVTntuHit*     GetSeedPixel()      const { return fPSeed;           }
+   TAVThit*     GetSeedPixel()      const { return fPSeed;           }
    //! Get total charge
    Float_t GetClusterPulseSum()        const { return fClusterPulseSum; }
    
@@ -69,7 +69,7 @@ protected:
    TAGparaDsc*     fpConfig;		  // config para dsc
    TAGparaDsc*     fpGeoMap;		  // geometry para dsc
    
-   TAVTntuHit*    fPSeed;             // seed pixel
+   TAVThit*    fPSeed;             // seed pixel
    TVector3       fCurrentPosition;   // pointer to current position
    TVector3       fCurrentPosError ;  // pointer to current position error
    TClonesArray*  fListOfPixels;      // list of pixels 

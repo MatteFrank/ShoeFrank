@@ -14,18 +14,18 @@
 #include "TAVTparConf.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
 
 #include "TAITactNtuHitMC.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TAMCflukaParser.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 
 /*!
@@ -41,7 +41,7 @@ ClassImp(TAITactNtuHitMC);
 //------------------------------------------+-----------------------------------
 //
 TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
-: TAVTactBaseNtuMC(name, pGeoMap),
+: TAVTactBaseNtuHitMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
    fpNtuRaw(pNtuRaw),
@@ -49,9 +49,9 @@ TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
 {
    if (fEventStruct == 0x0) {
      AddDataIn(pNtuMC, "TAMCntuHit");
-     AddDataIn(pNtuEve, "TAMCntuEve");
+     AddDataIn(pNtuEve, "TAMCntuPart");
    } 
-   AddDataOut(pNtuRaw, "TAITntuRaw");
+   AddDataOut(pNtuRaw, "TAITntuHit");
    AddPara(pGeoMap, "TAITparGeo");
    
    CreateDigitizer();
@@ -73,7 +73,7 @@ void TAITactNtuHitMC::CreateDigitizer()
 bool TAITactNtuHitMC::Action()
 {
 	
-	TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
+	TAITntuHit* pNtuRaw = (TAITntuHit*) fpNtuRaw->Object();
 	pNtuRaw->Clear();
 
    static Int_t storedEvents = 0;
@@ -165,14 +165,14 @@ void TAITactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
 //------------------------------------------+-----------------------------------
 void TAITactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
 {
-  TAMCntuEve* pNtuEve  = 0;
+  TAMCntuPart* pNtuEve  = 0;
   
   if (fEventStruct == 0x0)
-    pNtuEve = (TAMCntuEve*) fpNtuEve->Object();
+    pNtuEve = (TAMCntuPart*) fpNtuEve->Object();
   else
     pNtuEve = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
   
-  TAMCeveTrack*  track = pNtuEve->GetTrack(trackIdx);
+  TAMCpart*  track = pNtuEve->GetTrack(trackIdx);
   Int_t  Z = track->GetCharge();
   
    if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2], 0, 0, Z)) return;
@@ -192,7 +192,7 @@ void TAITactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, T
 void TAITactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx )
 {
 	TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
-	TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
+	TAITntuHit* pNtuRaw = (TAITntuHit*) fpNtuRaw->Object();
  
 	map<int, double> digiMap = fDigitizer->GetMap();
 	int nPixelX = fDigitizer->GetPixelsNx();
@@ -207,11 +207,11 @@ void TAITactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx )
 			int col  = it->first % nPixelX;
          Double_t value = digiMap[it->first];
 
-         TAITntuHit* pixel = 0x0;
+         TAIThit* pixel = 0x0;
          pair<int, int> p(sensorId, it->first);
 
          if (fMap[p] == 0x0) {
-            pixel = (TAITntuHit*)pNtuRaw->NewPixel(sensorId, value, line, col);
+            pixel = (TAIThit*)pNtuRaw->NewPixel(sensorId, value, line, col);
             fMap[p] = pixel;
          } else
             pixel = fMap[p];
@@ -247,13 +247,13 @@ void TAITactNtuHitMC::FillNoise()
 //___________________________________
 void TAITactNtuHitMC::FillNoise(Int_t sensorId)
 {
-	TAITntuRaw* pNtuRaw = (TAITntuRaw*) fpNtuRaw->Object();
+	TAITntuHit* pNtuRaw = (TAITntuHit*) fpNtuRaw->Object();
 
 	Int_t pixelsN = gRandom->Uniform(0, fNoisyPixelsN);
 	for (Int_t i = 0; i < pixelsN; ++i) {
 	   Int_t col  = gRandom->Uniform(0,fDigitizer->GetPixelsNx());
 	   Int_t line = gRandom->Uniform(0,fDigitizer->GetPixelsNy());
-	   TAITntuHit* pixel = pNtuRaw->NewPixel(sensorId, 1., line, col);
+	   TAIThit* pixel = pNtuRaw->NewPixel(sensorId, 1., line, col);
 	   pixel->AddMcTrackIdx(fgMcNoiseId);
 	}
 }

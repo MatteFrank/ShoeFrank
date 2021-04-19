@@ -23,13 +23,13 @@ class TAGobject : public TObject {
                     TAGobject();
     virtual         ~TAGobject();
 
-    Bool_t          Fail() const;
 
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
     virtual void    Print(Option_t* option="") const;
-   
-    Bool_t          Found()         const;
-    void            SetFound(Bool_t b = true);
+  
+    Bool_t          Fail()              const { return TestBit(kFail); }
+    Bool_t          Found()             const { return  fFound;        }
+    void            SetFound(Bool_t b = true) { fFound = b;            }
 
   protected:
    Bool_t  fFound;                    // flag, that pixel/strip/bar is found in hit
@@ -39,7 +39,5 @@ class TAGobject : public TObject {
 };
 
 ostream& operator<<(ostream& os, const TAGobject& obj);
-
-#include "TAGobject.icc" 
 
 #endif

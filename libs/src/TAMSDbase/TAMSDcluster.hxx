@@ -13,19 +13,16 @@
  \author Ch. Finck
  */
 
-class TAMSDntuHit;
+class TAMSDhit;
 
 class TAMSDcluster : public TAGcluster {
    
 private:
-   Float_t            fPosition;                 // position of the cluster in plane frame
-   Float_t            fPosError;                 // position's errors of the cluster in plane frame
+   Float_t            fPositionF;                // position of the cluster in plane frame
+   Float_t            fPosErrorF;                // position's errors of the cluster in plane frame
    TVector3           fCurPosition;              // current position of the cluster in plane frame
-   TVector3           fPositionG;                // position of the clus in tracker frame
-   TVector3           fPosErrorG;                // position error of the clus in tracker frame
    TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
    
-   Int_t              fPlaneNumber;              // plane number
    Int_t              fPlaneView;                // plane view = 0 for X and = 1 for Y plane
    Bool_t             fIsValid;                  // validity flag
    
@@ -35,37 +32,28 @@ public:
    ~TAMSDcluster();
    
    //! Set position in local frame
-   void               SetPosition(Float_t pos);
+   void               SetPositionF(Float_t pos);
    //! Set position error in local frame
-   void               SetPosError(Float_t pos);
+   void               SetPosErrorF(Float_t pos);
    //! Set position in global tracker frame
    void               SetPositionG(TVector3& pos);
-   //! Set plane number
-   void               SetPlaneNumber(Int_t nb)               { fPlaneNumber = nb;      }
    //! Set view
    void               SetPlaneView(Int_t v)                  { fPlaneView = v;         }
    //! Set validy
    void               SetValid(Bool_t v = true)              { fIsValid = v;           }
    
    //! Get position in local frame
-   Float_t            GetPositionF()                   const { return fPosition;       }
+   Float_t            GetPositionF()                   const { return fPositionF;      }
    //! Get position error in local frame
-   Float_t            GetPosErrorF()                   const { return fPosError;       }
+   Float_t            GetPosErrorF()                   const { return fPosErrorF;      }
    
    //! Get vector position in local frame
-   const TVector3&          GetPosition()              const { return fCurPosition;    }
+   const TVector3&    GetPosition()                    const { return fCurPosition;    }
    //! Get vector position error in local frame
-   const TVector3&          GetPosError()              const { return fPosErrorG;    }
-   
-   //! Get position in global tracker frame
-   const TVector3&          GetPositionG()             const { return fPositionG ;     }
-   //! Get position in global tracker frame
-   const TVector3&          GetPosErrorG()             const { return fPosErrorG ;     }
+   const TVector3&    GetPosError()                    const { return fPosErrorG;      }
    
    //! Get Pixel list
    TClonesArray*      GetListOfStrips()                const { return fListOfStrips;   }
-   //! Get cluster number
-   Int_t              GetPlaneNumber()                 const { return fPlaneNumber;    }
    
    //! Get view
    Int_t              GetPlaneView()                   const { return fPlaneView;      }
@@ -74,7 +62,7 @@ public:
    //! Get number of pixels in this clusters
    Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntries(); }
    //! Get pixel
-   TAMSDntuHit*       GetStrip(Int_t idx);
+   TAMSDhit*          GetStrip(Int_t idx);
       
    //! Compute distance from another cluster
    Float_t            Distance(TAMSDcluster *aClus);
@@ -85,10 +73,10 @@ public:
    virtual void       SetupClones();
 
    //! Add pixel to the list
-   void               AddStrip(TAMSDntuHit* strip);
+   void               AddStrip(TAMSDhit* strip);
 
 
-   ClassDef(TAMSDcluster,2)                          // Describes TAMSDcluster
+   ClassDef(TAMSDcluster,3)                          // Describes TAMSDcluster
 };
 
 

@@ -4,38 +4,29 @@
 #include <map>
 #include "TAGbaseDigitizer.hxx"
 
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 
 class TF1;
-class TACAntuRaw;
 class TACAntuHit;
+class TACAhit;
 using namespace std;
 // --------------------------------------------------------------------------------------
 class TACAdigitizer : public TAGbaseDigitizer {
    
 public:
-   TACAdigitizer(TACAntuRaw* p_datraw);
+   TACAdigitizer(TACAntuHit* p_datraw);
    ~TACAdigitizer();
    
    void           SetFunctions();
    void           SetParFunction();
    
    Bool_t         Process(Double_t edep, Double_t x0, Double_t y0, Double_t zin=0, Double_t zout=0, Double_t time = 0, Int_t sensorId = 0, Int_t Z =-99, Double_t px0 = 0, Double_t py0 = 0, Double_t pz0 = 0);
-
-   Float_t        GetPhotonsN(Float_t X, Float_t Y, Float_t edep);
-   Double_t       RecPhotonsN(Double_t* x, Double_t* par);
  
    Float_t        GetResEnergy(Float_t edep);
    Double_t       ResEnergy(Double_t* x, Double_t* par);
-
-   TF1*           GetFuncBirks()   const  { return fFuncBirks;  }
    TF1*           GetFuncResE()    const  { return fDeResE;     }
  
-   void           SetGain(Float_t g)      { fGain = g;          }
-   void           SetCalEPar0(Float_t p)  { fCalEPar0 = p;      }
-   void           SetCalEPar1(Float_t p)  { fCalEPar1 = p;      }
-
-   TACAntuHit*    GetCurrentHit()         { return fCurrentHit; }
+   TACAhit*       GetCurrentHit()         { return fCurrentHit; }
    void           ClearMap()              { fMap.clear();       }
 
 public:
@@ -43,10 +34,8 @@ public:
    static void    SetThreshold(Float_t t) { fgThreshold = t;    }
 
 private:
-   TACAntuRaw*   fpNtuRaw;
-   TF1*          fFuncBirks;
+   TACAntuHit*   fpNtuRaw;
    TF1*          fDeResE;
-   Float_t       fGain;
    
    Float_t       fResPar0;
    Float_t       fResErrPar0;
@@ -55,14 +44,8 @@ private:
    Float_t       fResPar2;
    Float_t       fResErrPar2;
    
-   Float_t       fBirkPar0;
-   Float_t       fBirkPar1;
-
-   Float_t       fCalEPar0;
-   Float_t       fCalEPar1;
-
-   TACAntuHit*   fCurrentHit;
-   map<int, TACAntuHit*> fMap; //! map for pilepup
+   TACAhit*   fCurrentHit;
+   map<int, TACAhit*> fMap; //! map for pilepup
 
 private:
    static Float_t fgThreshold;

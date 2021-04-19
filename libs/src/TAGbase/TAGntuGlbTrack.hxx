@@ -26,6 +26,7 @@ public:
    
    TAGtrack();
    TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof);
+   TAGtrack(const TAGtrack& aTrack);
 
    virtual         ~TAGtrack();
    
@@ -59,6 +60,24 @@ public:
    void             SetTofDirection(TVector3 dir) { fTofDir = dir;     }
    TVector3         GetTofDirection()             { return fTofDir;    }
 
+   //! Get theta angle at target
+   Double_t         GetTgtTheta()           const;
+   
+   //! Get theta angle at Tof
+   Double_t         GetTofTheta()           const;
+   
+   //! Get phi angle at target
+   Double_t         GetTgtPhi()             const;
+   
+   //! Get phi angle at Tof
+   Double_t         GetTofPhi()             const;
+
+   //! Intersection near target
+   TVector3         Intersection(Double_t posZ) const;
+   
+   //! Distance to a track near target
+   Double_t         Distance(TAGtrack* track, Float_t z) const;
+
    
    //! Get list of measured points
    TClonesArray*    GetListOfMeasPoints()   const { return fListOfMeasPoints;                       }
@@ -81,6 +100,7 @@ public:
    //! Add measured point
    TAGpoint*        AddMeasPoint(TAGpoint* point);
    TAGpoint*        AddMeasPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
+   TAGpoint*        AddMeasPoint(TString name, TVector3 pos, TVector3 posErr);
    TAGpoint*        AddMeasPoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
 
    //! Add corrected point

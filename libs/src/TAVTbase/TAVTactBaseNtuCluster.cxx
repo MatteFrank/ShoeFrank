@@ -10,7 +10,7 @@
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTactBaseNtuCluster.hxx"
 
@@ -106,7 +106,7 @@ void TAVTactBaseNtuCluster::FillMaps()
    // fill maps for cluster
    for (Int_t i = 0; i < fListOfPixels->GetEntries(); i++) { // loop over hit pixels
       
-      TAVTbaseNtuHit* pixel = (TAVTbaseNtuHit*)fListOfPixels->At(i);
+      TAVTbaseHit* pixel = (TAVTbaseHit*)fListOfPixels->At(i);
       if (!pixel->IsValidFrames()) continue;
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
@@ -125,7 +125,7 @@ void TAVTactBaseNtuCluster::SearchCluster()
    // Search for cluster
    
    for (Int_t iPix = 0; iPix < fListOfPixels->GetEntries(); ++iPix) { // loop over hit pixels
-      TAVTbaseNtuHit* pixel = (TAVTbaseNtuHit*)fListOfPixels->At(iPix);
+      TAVTbaseHit* pixel = (TAVTbaseHit*)fListOfPixels->At(iPix);
       if (pixel->Found()) continue;
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
@@ -162,6 +162,7 @@ Bool_t TAVTactBaseNtuCluster::ApplyCuts(TAVTbaseCluster* cluster)
    Int_t  entries = list->GetEntries();
    
    // cuts on pixels in cluster
+
   if(entries < pConfig->GetSensorPar(cluster->GetSensorIdx()).MinNofPixelsInCluster ||
       entries > pConfig->GetSensorPar(cluster->GetSensorIdx()).MaxNofPixelsInCluster)
       return kFALSE;
@@ -198,7 +199,7 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    
    
    for (Int_t i = 0; i < fCurListOfPixels->GetEntries(); ++i) {
-      TAVTntuHit* pixel = (TAVTntuHit*)fCurListOfPixels->At(i);
+      TAVThit* pixel = (TAVThit*)fCurListOfPixels->At(i);
       tCorTemp.SetXYZ(pixel->GetPosition()(0)*pixel->GetPulseHeight(), pixel->GetPosition()(1)*pixel->GetPulseHeight(), pixel->GetPosition()(2));
       tCorrection  += tCorTemp;
       fClusterPulseSum  += pixel->GetPulseHeight();
@@ -207,7 +208,7 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    pos = tCorrection*(1./fClusterPulseSum);
    
    for (Int_t i = 0; i < fCurListOfPixels->GetEntries(); ++i) {
-	  TAVTntuHit* pixel = (TAVTntuHit*)fCurListOfPixels->At(i);
+	  TAVThit* pixel = (TAVThit*)fCurListOfPixels->At(i);
 	  tCorrection2.SetXYZ(pixel->GetPulseHeight()*(pixel->GetPosition()(0)-(pos)(0))*(pixel->GetPosition()(0)-(pos)(0)), 
 							pixel->GetPulseHeight()*(pixel->GetPosition()(1)-(pos)(1))*(pixel->GetPosition()(1)-(pos)(1)), 
 							0);
@@ -234,11 +235,11 @@ void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* clus
    cluster->SetSensorIdx(iSensor);
    fCurListOfPixels = cluster->GetListOfPixels();
    ComputePosition();
+   cluster->SetPosition(GetCurrentPosition());
+   cluster->SetPosError(GetCurrentPosError());
    TVector3 posG = GetCurrentPosition();
    posG = pGeoMap->Sensor2Detector(iSensor, posG);
    cluster->SetPositionG(posG);
-   cluster->SetPosition(GetCurrentPosition());
-   cluster->SetPosError(GetCurrentPosError());
    cluster->SetCharge(GetClusterPulseSum());
    
    if (ApplyCuts(cluster)) {

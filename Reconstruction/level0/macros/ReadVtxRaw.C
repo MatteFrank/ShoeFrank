@@ -21,13 +21,13 @@
 #include "TAVTparMap.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
-#include "TAVTactNtuRaw.hxx"
+#include "TAVTactNtuHit.hxx"
 
 #include "TAVTactNtuClusterF.hxx"
 #include "TAVTactNtuTrackF.hxx"
@@ -39,7 +39,7 @@ TAGcampaignManager* campManager  = 0x0;
 TAGactTreeWriter*   outFile      = 0x0;
 TAGactDaqReader*    daqActReader = 0x0;
 
-TAVTactNtuRaw*      vtActRaw  = 0x0;
+TAVTactNtuHit*      vtActRaw  = 0x0;
 TAVTactNtuClusterF* vtActClus = 0x0;
 TAVTactNtuTrackF*   vtActTrck = 0x0;
 
@@ -62,13 +62,13 @@ void FillVertex(Int_t runNumber)
 
    TAVTparConf::SetHistoMap();
    TAGdataDsc* vtDaq    = new TAGdataDsc("vtDaq", new TAGdaqEvent());
-   TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuRaw());
+   TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuHit());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
 
    daqActReader  = new TAGactDaqReader("daqActReader", vtDaq);
    
-   vtActRaw  = new TAVTactNtuRaw("vtActRaw", vtNtu, vtDaq, vtGeo, vtConf, vtMap);
+   vtActRaw  = new TAVTactNtuHit("vtActRaw", vtNtu, vtDaq, vtGeo, vtConf, vtMap);
    vtActRaw->CreateHistogram();
 
    vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
@@ -86,8 +86,9 @@ void FillVertex(Int_t runNumber)
 void ReadVtxRaw(TString filename = "data/data_built.2211.physics_foot.daq.VTX.1.dat", Int_t nMaxEvts = 0,
                 TString expName = "GSI", Int_t runNumber = 2211)
 {
-   GlobalPar::Instance(expName);
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(expName);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    TAGroot tagr;
    

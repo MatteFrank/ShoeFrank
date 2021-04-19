@@ -425,7 +425,7 @@ string TATWparGeo::PrintRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeTW()){
+  if(TAGrecoManager::GetPar()->IncludeTW()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
@@ -520,7 +520,7 @@ string TATWparGeo::PrintBodies()
   stringstream ss;
   ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
-  if(GlobalPar::GetPar()->IncludeTW()){
+  if(TAGrecoManager::GetPar()->IncludeTW()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
@@ -570,7 +570,7 @@ string TATWparGeo::PrintRegions()
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeTW()){
+  if(TAGrecoManager::GetPar()->IncludeTW()){
 
     string name;
 
@@ -595,7 +595,7 @@ string TATWparGeo::PrintSubtractBodiesFromAir() {
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeTW()){
+  if(TAGrecoManager::GetPar()->IncludeTW()){
 
     for (int i=0; i<fvBody.size(); i++) {
       ss << " -" << fvBody.at(i);
@@ -616,7 +616,7 @@ string TATWparGeo::PrintAssignMaterial(TAGmaterials *Material)
 
   stringstream ss; 
   
-  if(GlobalPar::GetPar()->IncludeTW()){
+  if(TAGrecoManager::GetPar()->IncludeTW()){
 
       TString flkmat;  
     
@@ -628,7 +628,7 @@ string TATWparGeo::PrintAssignMaterial(TAGmaterials *Material)
       flkmat = Material->GetFlukaMatName(fBarMat.Data());
       
     bool magnetic = false;
-    if(GlobalPar::GetPar()->IncludeDI())
+    if(TAGrecoManager::GetPar()->IncludeDI())
       magnetic = true;
 
     if (fvRegion.size()==0 )

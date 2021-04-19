@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-#include "TAVTactBaseNtuRaw.hxx"
+#include "TAVTactBaseNtuHit.hxx"
 
 /*!
  \file
@@ -16,7 +16,7 @@ class TAGdataDsc;
 class DECardEvent;
 
 using namespace std;
-class TAVTactStdRaw : public TAVTactBaseNtuRaw {
+class TAVTactStdRaw : public TAVTactBaseNtuHit {
 public:
    
    explicit TAVTactStdRaw(const char* name=0, TAGdataDsc* p_datraw=0, TAGparaDsc* p_pargeo=0, TAGparaDsc* p_parconf=0, TAGparaDsc* pParMap=0);

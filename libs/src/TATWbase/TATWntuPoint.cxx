@@ -12,82 +12,79 @@ ClassImp(TATWpoint) // Description of Single Detector TATWpoint
 //______________________________________________________________________________
 //  default constructor
 TATWpoint::TATWpoint()
-: TAGcluster(),
-   m_position(),
-   m_posErr(),
-   m_positionG(),
-   m_posErrG(),
-   m_positionGlb(),
-   m_posErrGlb(),
-   m_row(-99),
-   m_column(-99),
-   m_rowHit(0x0),
-   m_columnHit(0x0),
-   m_de1(-99.),
-   m_de2(-99.),
-   m_time(-99.),
-   m_tof1(-99.),
-   m_tof2(-99.),
-   m_layer(-99),
-   m_id(-99),
-   m_chargeZ(-99),
-   m_chargeZProba(-99.)
+ : TAGcluster(),
+   fPositionGlb(),
+   fPosErrGlb(),
+   fRow(-99),
+   fColumn(-99),
+   fRowHit(0x0),
+   fColumnHit(0x0),
+   fDe1(-99.),
+   fDe2(-99.),
+   fTime(-99.),
+   fTof1(-99.),
+   fTof2(-99.),
+   fMatchCalIdx(-1),
+   fLayer(-99),
+   fId(-99),
+   fChargeZ(-99),
+   fChargeZProba(-99.)
 {
 }
 
 //______________________________________________________________________________
 //  build a point
-TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double dy, TATWntuHit* colHit, Int_t mainLayer )
-: TAGcluster(),
-   m_position(x, y, 0),
-   m_posErr(dx, dy, 0),
-   m_positionG(m_position),
-   m_posErrG(m_posErr),
-   m_positionGlb(-99, -99, -99),
-   m_posErrGlb(m_posErr),
-   m_rowHit(new TATWntuHit(*rowHit)),
-   m_columnHit(new TATWntuHit(*colHit)),
-   m_layer(mainLayer),
-   m_id(-99),
-   m_chargeZ(-99),
-   m_chargeZProba(-99.)
+TATWpoint::TATWpoint( Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Double_t dy, TATWhit* colHit, Int_t mainLayer )
+ : TAGcluster(),
+   fPositionGlb(-99, -99, -99),
+   fRowHit(new TATWhit(*rowHit)),
+   fColumnHit(new TATWhit(*colHit)),
+   fMatchCalIdx(-1),
+   fLayer(mainLayer),
+   fId(-99),
+   fChargeZ(-99),
+   fChargeZProba(-99.)
 {
-   m_row = m_rowHit->GetBar();
-   m_column    = m_columnHit->GetBar();
    
-   m_de1    = m_rowHit->GetEnergyLoss();
-   m_de2    = m_columnHit->GetEnergyLoss();
-   m_tof1   = m_rowHit->GetTime();
-   m_tof2   = m_columnHit->GetTime();
-   m_time   = m_rowHit->GetTime();
+   fPosition.SetXYZ(x, y, 0),
+   fPosError.SetXYZ(dx, dy, 0),
+   fPositionG.SetXYZ(x, y, 0);
+   fPosErrorG.SetXYZ(dx, dy, 0);
+   fPosErrGlb = fPosError;
+
+   fRow    = fRowHit->GetBar();
+   fColumn = fColumnHit->GetBar();
+   
+   fDe1    = fRowHit->GetEnergyLoss();
+   fDe2    = fColumnHit->GetEnergyLoss();
+   fTof1   = fRowHit->GetTime();
+   fTof2   = fColumnHit->GetTime();
+   fTime   = fRowHit->GetTime();
 
    // assign to the point the matched MC track id if no Pile-Up, else for pile-up events assign -1
-   if(m_layer==(Int_t)LayerX) {
+   if(fLayer==(Int_t)LayerX) {
        
-     // if(m_rowHit->GetMcTracksN())
-     if(m_rowHit->GetMcTracksN()==1)
-       m_id     = m_rowHit->GetMcTrackIdx(0);
+     if(fRowHit->GetMcTracksN()==1)
+       fId     = fRowHit->GetMcTrackIdx(0);
      else {
-       m_id = -1; // pile-up
-       // cout<<"NmctracksX::"<<m_rowHit->GetMcTracksN()<<endl;
+       fId = -1; // pile-up
+       // cout<<"NmctracksX::"<<fRowHit->GetMcTracksN()<<endl;
      }
      
    } else {
-     
-     // if(m_columnHit->GetMcTracksN())
-     if(m_columnHit->GetMcTracksN()==1)
-       m_id     = m_columnHit->GetMcTrackIdx(0);
+      if(fColumnHit->GetMcTracksN()==1)
+       fId     = fColumnHit->GetMcTrackIdx(0);
      else {
-       m_id = -1;  // pile-up
-       // cout<<"NmctracksY::"<<m_columnHit->GetMcTracksN()<<endl;
+       fId = -1;  // pile-up
+       // cout<<"NmctracksY::"<<fColumnHit->GetMcTracksN()<<endl;
      }
    }
   
   Bool_t common = false;
-  for (Int_t j = 0; j < m_columnHit->GetMcTracksN(); ++j) {
-      Int_t idr = m_columnHit->GetMcTrackIdx(j);
-      for (Int_t k = 0; k < m_rowHit->GetMcTracksN(); ++k) {
-         Int_t idc = m_rowHit->GetMcTrackIdx(k);
+  for (Int_t j = 0; j < fColumnHit->GetMcTracksN(); ++j) {
+      Int_t idr = fColumnHit->GetMcTrackIdx(j);
+      for (Int_t k = 0; k < fRowHit->GetMcTracksN(); ++k) {
+         Int_t idc = fRowHit->GetMcTrackIdx(k);
         if (idr == idc) {
           AddMcTrackIdx(idr);
           common = true;
@@ -98,13 +95,13 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double 
   // in case mixing two or more different particles in a point
   if (!common) {
     map<int, int> mapIdx;
-    for (Int_t j = 0; j < m_columnHit->GetMcTracksN(); ++j) {
-      Int_t idr = m_columnHit->GetMcTrackIdx(j);
+    for (Int_t j = 0; j < fColumnHit->GetMcTracksN(); ++j) {
+      Int_t idr = fColumnHit->GetMcTrackIdx(j);
       mapIdx[idr] = 1;
     }
     
-    for (Int_t k = 0; k < m_rowHit->GetMcTracksN(); ++k) {
-      Int_t idc = m_rowHit->GetMcTrackIdx(k);
+    for (Int_t k = 0; k < fRowHit->GetMcTracksN(); ++k) {
+      Int_t idc = fRowHit->GetMcTrackIdx(k);
       mapIdx[idc] = 1;
     }
     
@@ -113,45 +110,43 @@ TATWpoint::TATWpoint( double x, double dx, TATWntuHit* rowHit, double y, double 
   }
 }
 
-
 //______________________________________________________________________________
 //
-bool TATWpoint::IsValid() const
+Bool_t TATWpoint::IsValid() const
 {
-  return (m_columnHit->IsValid() && m_rowHit->IsValid());
+  return (fColumnHit->IsValid() && fRowHit->IsValid());
 }
-
 
 //______________________________________________________________________________
 //
 void TATWpoint::SetPosition(TVector3& posLoc)
 {
-   m_position.SetXYZ(posLoc.X(), posLoc.Y(), posLoc.Z());
-   m_posErr.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.15);
+   fPosition.SetXYZ(posLoc.X(), posLoc.Y(), posLoc.Z());
+   fPosError.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
 }
 
 //______________________________________________________________________________
 //
 void TATWpoint::SetPositionG(TVector3& posG)
 {
-   m_positionG.SetXYZ(posG.X(), posG.Y(), posG.Z());
-   m_posErrG.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.15);
+   fPositionG.SetXYZ(posG.X(), posG.Y(), posG.Z());
+   fPosErrorG.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
 }
 
 //______________________________________________________________________________
 //
 void TATWpoint::SetPositionGlb(TVector3& posGlb)
 {
-   m_positionGlb.SetXYZ(posGlb.X(), posGlb.Y(), posGlb.Z());
-   m_posErrGlb.SetXYZ(m_posErr.X(), m_posErr.Y(), 0.15);
+   fPositionGlb.SetXYZ(posGlb.X(), posGlb.Y(), posGlb.Z());
+   fPosErrGlb.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
 }
 
 //______________________________________________________________________________
 // Clear
 void TATWpoint::Clear(Option_t*)
 {
-   delete m_rowHit;
-   delete m_columnHit;
+   delete fRowHit;
+   delete fColumnHit;
 }
 
 
@@ -171,7 +166,7 @@ TString TATWntuPoint::fgkBranchName   = "twpt.";
 //! 
 TATWntuPoint::TATWntuPoint() 
 : TAGdata(),
-  m_listOfPoints(0x0)
+  fListOfPoints(0x0)
 {
 	SetupClones();
 }
@@ -180,15 +175,15 @@ TATWntuPoint::TATWntuPoint()
 //! Destructor.
 TATWntuPoint::~TATWntuPoint()
 {
-	delete m_listOfPoints;
+	delete fListOfPoints;
 }
 
 //______________________________________________________________________________
 //  standard 
-TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWntuHit* rowHit, double y, double dy, TATWntuHit* colHit, int mainLayer) {
+TATWpoint* TATWntuPoint::NewPoint(Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Double_t dy, TATWhit* colHit, Int_t mainLayer) {
 
 	// check on aorigin
-  TClonesArray &pointArray = *m_listOfPoints;
+  TClonesArray &pointArray = *fListOfPoints;
   TATWpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TATWpoint( x, dx, rowHit, y, dy, colHit, mainLayer);
   point->SetClusterIdx(pointArray.GetEntriesFast()-1);
   
@@ -196,49 +191,37 @@ TATWpoint* TATWntuPoint::NewPoint(double x, double dx, TATWntuHit* rowHit, doubl
 }
 
 //------------------------------------------+-----------------------------------
-int TATWntuPoint::GetPointN() const
+Int_t TATWntuPoint::GetPointsN() const
 {
-	return m_listOfPoints->GetEntries();
+	return fListOfPoints->GetEntries();
 }
-
-
 
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TATWpoint* TATWntuPoint::GetPoint(int iPoint) const {
+TATWpoint* TATWntuPoint::GetPoint(Int_t iPoint) const {
 
-	if ( iPoint < 0  || iPoint >= GetPointN() ) {
-		cout << "ERROR >> TATWntuPoint::GetPoint_includingDuplicates  -->  number of point "<<iPoint<<" required is wrong. Max num  " << GetPointN() << endl;
+	if ( iPoint < 0  || iPoint >= GetPointsN() ) {
+		cout << "ERROR >> TATWntuPoint::GetPoint_includingDuplicates  -->  number of point "<<iPoint<<" required is wrong. Max num  " << GetPointsN() << endl;
         exit(0);
 	}
 
-	return (TATWpoint*)m_listOfPoints->At(iPoint);
+	return (TATWpoint*)fListOfPoints->At(iPoint);
 }
-
-
 
 //------------------------------------------+-----------------------------------
 //! Setup clones. Crate and initialise the list of pixels
 void TATWntuPoint::SetupClones()
 {
-   if (m_listOfPoints) return;
-   m_listOfPoints = new TClonesArray("TATWpoint", 500);
+   if (fListOfPoints) return;
+   fListOfPoints = new TClonesArray("TATWpoint", 500);
 }
-
-
-
-
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
 void TATWntuPoint::Clear(Option_t*)
 {
-	m_listOfPoints->Delete();
+	fListOfPoints->Delete();
 }
-
-
-
-
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.

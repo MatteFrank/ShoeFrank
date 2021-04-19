@@ -49,7 +49,7 @@ TCCAgeometryConstructor::~TCCAgeometryConstructor()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4LogicalVolume* TCCAgeometryConstructor::Construct()
 {
-   Info("Construct()", "Construct Calorimeter");
+   InfoMcMsg("Construct()", "Construct Calorimeter");
 
    for(Int_t i = 0; i< 3; ++i)
       fSizeBoxCal[i] = (fMaxPosition[i] - fMinPosition[i]);
@@ -153,7 +153,7 @@ void  TCCAgeometryConstructor::DefineSensitive()
    
    G4String calSDname;
    calSDname = fgkCalSDname;
-   Info("DefineSensitive()", "Define sensitive for Calorimeter");
+   InfoMcMsg("DefineSensitive()", "Define sensitive for Calorimeter");
   
    TCCAsensitiveDetector* calSensitive = new TCCAsensitiveDetector(calSDname);
    calSensitive->SetCopyLevel(0);

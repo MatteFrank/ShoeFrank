@@ -16,18 +16,18 @@
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
 
-#include "TASTdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 #include "TASTparMap.hxx"
 #include "TASTparTime.hxx"
 
 #include "TABMparGeo.hxx"
 #include "TABMparConf.hxx"
-#include "TABMdatRaw.hxx"
+#include "TABMntuRaw.hxx"
 
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 #include "TASTactDatRaw.hxx"
-#include "TABMactDatRaw.hxx"
+#include "TABMactNtuRaw.hxx"
 
 #endif
 
@@ -37,13 +37,13 @@ TAGactDaqReader*    daqActReader = 0x0;
 TAGdataDsc*         stDat     = 0x0;
 TAGdataDsc*         evDaq     = 0x0;
 TASTactDatRaw*      stActRaw  = 0x0;
-TABMactDatRaw*      bmActRaw  = 0x0;
+TABMactNtuRaw*      bmActRaw  = 0x0;
 
 void FillST()
 {
    TAGparaDsc* stMap = new TAGparaDsc("stMap", new TASTparMap());
    evDaq             = new TAGdataDsc("evDaq", new TAGdaqEvent());
-   stDat             = new TAGdataDsc("stDat", new TASTdatRaw());
+   stDat             = new TAGdataDsc("stDat", new TASTntuRaw());
    TAGparaDsc* stTime = new TAGparaDsc("stTime", new TASTparTime());
    
    stActRaw  = new TASTactDatRaw("stActRaw", stDat, evDaq, stMap, stTime);
@@ -61,10 +61,10 @@ void FillBM()
    parconf->FromFile("./config/TABMdetector.cfg");
 
    TAGparaDsc* bmMap = new TAGparaDsc("bmMap", new TABMparMap());
-   TAGdataDsc* bmDat = new TAGdataDsc("bmDat", new TABMdatRaw());
+   TAGdataDsc* bmDat = new TAGdataDsc("bmDat", new TABMntuRaw());
    daqActReader      = new TAGactDaqReader("daqActReader", evDaq);
 
-   bmActRaw  = new TABMactDatRaw("bmActRaw", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
+   bmActRaw  = new TABMactNtuRaw("bmActRaw", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
    bmActRaw->CreateHistogram();
 }
 

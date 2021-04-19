@@ -2,30 +2,36 @@
 
 #include "LocalRecoMC.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "TASTntuRaw.hxx"
-#include "TABMntuRaw.hxx"
-#include "TAVTntuRaw.hxx"
-#include "TAITntuRaw.hxx"
-#include "TAMSDntuRaw.hxx"
-#include "TATWntuRaw.hxx"
+#include "TAMCflukaParser.hxx"
+#include "TAMCntuPart.hxx"
+#include "TAMCntuEvent.hxx"
+#include "TAMCntuRegion.hxx"
+#include "TASTntuHit.hxx"
+#include "TABMntuHit.hxx"
+#include "TAVTntuHit.hxx"
+#include "TAITntuHit.hxx"
+#include "TAMSDntuHit.hxx"
+#include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
-#include "TACAntuRaw.hxx"
-#include "TAGactTreeReader.hxx"
+#include "TACAntuHit.hxx"
 
 ClassImp(LocalRecoMC)
 
 //__________________________________________________________
 LocalRecoMC::LocalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout),
-   fActNtuRawVtx(0x0),
-   fActNtuRawIt(0x0),
-   fActNtuRawMsd(0x0),
-   fTree(0x0)
+   fEvtStruct(0x0),
+   fActNtuHitVtx(0x0),
+   fActNtuHitIt(0x0),
+   fActNtuHitMsd(0x0),
+   fActEvtReader(0x0)
 {
-   fEvtStruct = new EVENT_STRUCT;
    fFlagMC = true;
+  
+  if (!TAGrecoManager::GetPar()->IsReadRootObj())
+    fEvtStruct = new EVENT_STRUCT;
 }
 
 //__________________________________________________________
@@ -39,136 +45,218 @@ void LocalRecoMC::CreateRawAction()
 {
    fActEvtReader = new TAGactTreeReader("actEvtReader");
 
-   fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
-   fActNtuMcEve = new TAMCactNtuEve("eveActNtuMc", fpNtuMcEve, fEvtStruct);
-   
-   
-   if (GlobalPar::GetPar()->IncludeST()) {
-      fpNtuRawSt = new TAGdataDsc("stRaw", new TASTntuRaw());
-      fActNtuRawSt = new TASTactNtuMC("stActNtu", fpNtuRawSt, fEvtStruct);
-      if (fFlagHisto)
-         fActNtuRawSt->CreateHistogram();
-      
-      fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
-      fActNtuMcSt = new TAMCactNtuStc("stActNtuMc", fpNtuMcSt, fEvtStruct);
+   if ( TAGrecoManager::GetPar()->IsRegionMc()) {
+     fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
+     if (TAGrecoManager::GetPar()->IsReadRootObj())
+       fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+     else
+       fActNtuMcReg = new TAMCactNtuRegion("regActNtuMc", fpNtuMcReg, fEvtStruct);
    }
-   
-   if (GlobalPar::GetPar()->IncludeBM()) {
-      fpNtuRawBm = new TAGdataDsc("bmRaw", new TABMntuRaw());
-      fActNtuRawBm = new TABMactNtuMC("bmActNtu", fpNtuRawBm, fpParConfBm, fpParCalBm, fpParGeoBm, fEvtStruct);
-      if (fFlagHisto)
-         fActNtuRawBm->CreateHistogram();
-      
-      fpNtuMcBm   = new TAGdataDsc("bmMc", new TAMCntuHit());
-      fActNtuMcBm = new TAMCactNtuBm("bmActNtuMc", fpNtuMcBm, fEvtStruct);
-   }
-   
-   if (GlobalPar::GetPar()->IncludeVT()) {
-      fpNtuRawVtx = new TAGdataDsc("vtRaw", new TAVTntuRaw());
-      fActNtuRawVtx = new TAVTactNtuMC("vtActNtu", fpNtuRawVtx, fpParGeoVtx, fEvtStruct);
-      if (fFlagHisto)
-         fActNtuRawVtx->CreateHistogram();
-      
-      fpNtuMcVt   = new TAGdataDsc("vtMc", new TAMCntuHit());
-      fActNtuMcVt = new TAMCactNtuVtx("vtActNtuMc", fpNtuMcVt, fEvtStruct);
-   }
-   
-   if (GlobalPar::GetPar()->IncludeIT()) {
-      fpNtuRawIt = new TAGdataDsc("itRaw", new TAITntuRaw());
-      fActNtuRawIt = new TAITactNtuMC("itActNtu", fpNtuRawIt, fpParGeoIt, fEvtStruct);
-      if (fFlagHisto)
-         fActNtuRawIt->CreateHistogram();
-      
-      fpNtuMcIt   = new TAGdataDsc("itMc", new TAMCntuHit());
-      fActNtuMcIt = new TAMCactNtuItr("itActNtuMc", fpNtuMcIt, fEvtStruct);
-   }
-   
-   if (GlobalPar::GetPar()->IncludeMSD()) {
-      fpNtuRawMsd = new TAGdataDsc("msdRaw", new TAMSDntuRaw());
-      fActNtuRawMsd = new TAMSDactNtuMC("msdActNtu", fpNtuRawMsd, fpParGeoMsd, fEvtStruct);
-      if (fFlagHisto)
-         fActNtuRawMsd->CreateHistogram();
-      
-      fpNtuMcMsd   = new TAGdataDsc("msdMc", new TAMCntuHit());
-      fActNtuMcMsd = new TAMCactNtuMsd("msdActNtuMc", fpNtuMcMsd, fEvtStruct);
-   }
-   
-   if(GlobalPar::GetPar()->IncludeTW()) {
+  
+   fpNtuMcEvt    = new TAGdataDsc("evtMc", new TAMCntuEvent());
+   if (TAGrecoManager::GetPar()->IsReadRootObj())
+     fActEvtReader->SetupBranch(fpNtuMcEvt,TAMCntuEvent::GetBranchName());
+   else
+     fActNtuMcEvt = new TAMCactNtuEvent("evtActNtuMc", fpNtuMcEvt, fEvtStruct);
+  
+   fpNtuMcTrk    = new TAGdataDsc("eveMc", new TAMCntuPart());
+   if (TAGrecoManager::GetPar()->IsReadRootObj())
+     fActEvtReader->SetupBranch(fpNtuMcTrk,TAMCntuPart::GetBranchName());
+   else
+    fActNtuMcTrk = new TAMCactNtuPart("eveActNtuMc", fpNtuMcTrk, fEvtStruct);
 
-      fpNtuRawTw   = new TAGdataDsc("twRaw", new TATWntuRaw());
-      fActNtuRawTw = new TATWactNtuMC("twActNtu", fpNtuRawTw,  fpParCalTw, fpParGeoG, fEvtStruct,fFlagZtrueMC,fFlagZrecPUoff);
-      if (fFlagHisto)
-	fActNtuRawTw->CreateHistogram();
+   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW()) {
+      fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
+      if (TAGrecoManager::GetPar()->IsReadRootObj())
+        fActEvtReader->SetupBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
       
-      fpNtuMcTw   = new TAGdataDsc("twMc", new TAMCntuHit());
-      fActNtuMcTw = new TAMCactNtuTof("twActNtuMc", fpNtuMcTw, fEvtStruct);
+      fpNtuHitSt = new TAGdataDsc("stRaw", new TASTntuHit());
+      fActNtuHitSt = new TASTactNtuHitMC("stActNtu", fpNtuMcSt, fpNtuMcTrk, fpNtuHitSt, fEvtStruct);
+      if (fFlagHisto)
+         fActNtuHitSt->CreateHistogram();
    }
    
-   if(GlobalPar::GetPar()->IncludeCA()) {
-      fpNtuRawCa   = new TAGdataDsc("caRaw", new TACAntuRaw());
-      fActNtuRawCa = new TACAactNtuMC("caActNtu", fpNtuRawCa, fpParGeoCa, fpParGeoG, fEvtStruct);
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
+      fpNtuMcBm   = new TAGdataDsc("bmMc", new TAMCntuHit());
+      if (TAGrecoManager::GetPar()->IsReadRootObj())
+        fActEvtReader->SetupBranch(fpNtuMcBm, TAMCntuHit::GetBmBranchName());
+
+      fpNtuHitBm = new TAGdataDsc("bmRaw", new TABMntuHit());
+      fActNtuHitBm = new TABMactNtuHitMC("bmActNtu", fpNtuMcBm, fpNtuMcTrk, fpNtuHitBm, fpParConfBm, fpParCalBm, fpParGeoBm, fEvtStruct);
       if (fFlagHisto)
-         fActNtuRawCa->CreateHistogram();
-      
-      fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
-      fActNtuMcCa = new TAMCactNtuCal("caActNtuMc", fpNtuMcCa, fEvtStruct);
+         fActNtuHitBm->CreateHistogram();
    }
+   
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
+      fpNtuMcVt   = new TAGdataDsc("vtMc", new TAMCntuHit());
+      if (TAGrecoManager::GetPar()->IsReadRootObj())
+        fActEvtReader->SetupBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
+      
+      fpNtuHitVtx = new TAGdataDsc("vtRaw", new TAVTntuHit());
+      fActNtuHitVtx = new TAVTactNtuHitMC("vtActNtu", fpNtuMcVt, fpNtuMcTrk, fpNtuHitVtx, fpParGeoVtx, fEvtStruct);
+      if (fFlagHisto)
+         fActNtuHitVtx->CreateHistogram();
+   }
+   
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      fpNtuMcIt   = new TAGdataDsc("itMc", new TAMCntuHit());
+      if (TAGrecoManager::GetPar()->IsReadRootObj())
+        fActEvtReader->SetupBranch(fpNtuMcIt, TAMCntuHit::GetItrBranchName());
+      
+      fpNtuHitIt = new TAGdataDsc("itRaw", new TAITntuHit());
+      fActNtuHitIt = new TAITactNtuHitMC("itActNtu", fpNtuMcIt, fpNtuMcTrk, fpNtuHitIt, fpParGeoIt, fEvtStruct);
+      if (fFlagHisto)
+         fActNtuHitIt->CreateHistogram();
+   }
+   
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      fpNtuMcMsd   = new TAGdataDsc("msdMc", new TAMCntuHit());
+      if (TAGrecoManager::GetPar()->IsReadRootObj())
+        fActEvtReader->SetupBranch(fpNtuMcMsd, TAMCntuHit::GetMsdBranchName());
+      
+      fpNtuHitMsd = new TAGdataDsc("msdRaw", new TAMSDntuHit());
+      fActNtuHitMsd = new TAMSDactNtuHitMC("msdActNtu", fpNtuMcMsd, fpNtuMcTrk, fpNtuHitMsd, fpParGeoMsd, fEvtStruct);
+      if (fFlagHisto)
+         fActNtuHitMsd->CreateHistogram();
+   }
+   
+   if(TAGrecoManager::GetPar()->IncludeTW()) {
+      fpNtuMcTw   = new TAGdataDsc("twMc", new TAMCntuHit());
+      if (TAGrecoManager::GetPar()->IsReadRootObj())
+        fActEvtReader->SetupBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
+      
+      fpNtuHitTw   = new TAGdataDsc("twRaw", new TATWntuHit());
+      fActNtuHitTw = new TATWactNtuHitMC("twActNtu", fpNtuMcTw, fpNtuMcSt, fpNtuMcTrk, fpNtuHitTw,  fpParCalTw, fpParGeoG, fFlagZtrueMC, fFlagZrecPUoff, fEvtStruct);
+      if (fFlagHisto)
+         fActNtuHitTw->CreateHistogram();
+   }
+   
+   if(TAGrecoManager::GetPar()->IncludeCA()) {
+      fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
+      if (TAGrecoManager::GetPar()->IsReadRootObj())
+        fActEvtReader->SetupBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
+      
+      fpNtuHitCa   = new TAGdataDsc("caRaw", new TACAntuHit());
+      fActNtuHitCa = new TACAactNtuHitMC("caActNtu", fpNtuMcCa, fpNtuMcTrk, fpNtuHitCa, fpParGeoCa, fpParCalCa, fpParGeoG, fEvtStruct);
+      if (fFlagHisto)
+         fActNtuHitCa->CreateHistogram();
+   }
+}
+
+//__________________________________________________________
+Bool_t LocalRecoMC::GoEvent(Int_t iEvent)
+{
+   // only possible for MC data
+   if (iEvent < fActEvtReader->NEvents()) {
+      fActEvtReader->Reset(iEvent);
+      return true;
+   }
+   
+   return false;
 }
 
 //__________________________________________________________
 void LocalRecoMC::OpenFileIn()
 {
-   fActEvtReader->Open(GetName(), "READ", "EventTree", false);
-   fTree = ((TAGactTreeReader*)fActEvtReader)->GetTree();
-   
-   Evento *ev  = new Evento();
-   ev->FindBranches(fTree, fEvtStruct);
+  if (TAGrecoManager::GetPar()->IsReadRootObj())
+    fActEvtReader->Open(GetName(), "READ", "EventTree");
+  else {
+    fActEvtReader->Open(GetName(), "READ", "EventTree", false);
+    TTree* tree = ((TAGactTreeReader*)fActEvtReader)->GetTree();
+    TAMCflukaParser::FindBranches(tree, fEvtStruct);
+  }
 }
+
+//_____________________________________________________________________________
+void LocalRecoMC::GlobalChecks()
+{
+  // base checks
+  BaseReco::GlobalChecks();
+  
+  // from global file
+  Bool_t enableRootObjectG = TAGrecoManager::GetPar()->IsReadRootObj();
+
+  // from root file
+  TAGrunInfo info = gTAGroot->CurrentRunInfo();
+  TAGrunInfo* p = &info;
+  if (!p) return; // if run info not found in MC file
+  
+  Bool_t enableRootObject = info.GetGlobalPar().EnableRootObject;
+  
+  if (enableRootObjectG && enableRootObject)
+    Info("GlobalChecks()", "Reading MC root file with shoe format");
+  
+  if (!enableRootObjectG && !enableRootObject)
+    Info("GlobalChecks()", "Reading MC root file with Fluka structure format");
+  
+  if (enableRootObjectG && !enableRootObject) {
+    Error("GlobalChecks()", "FootGlobal::enableRootObject set to shoe format but MC file is Fluka structure !");
+    exit(0);
+  }
+  
+  if (!enableRootObjectG && enableRootObject) {
+    Error("GlobalChecks()", "FootGlobal::enableRootObject set to Fluka structure but MC file is shoe format !");
+    exit(0);
+  }
+  
+  Bool_t enableRgeionG = TAGrecoManager::GetPar()->IsRegionMc();
+  Bool_t enableRgeion  = info.GetGlobalPar().EnableRegionMc;
+  
+  if (enableRgeionG && enableRgeion)
+    Info("GlobalChecks()", "Reading MC root tree with region crossing informations");
+  
+  if (enableRgeionG && !enableRgeion)
+    Warning("GlobalChecks()", "FootGlobal::enableRegionMc set but no region crossing found in file");
+  
+  if (!enableRgeionG && enableRgeion)
+    Warning("GlobalChecks()", "FootGlobal::enableRegionMc not set but region crossing found in file");
+}
+
 
 //__________________________________________________________
 void LocalRecoMC::SetRawHistogramDir()
 {
    // ST
-   if (GlobalPar::GetPar()->IncludeST()) {
+   if (TAGrecoManager::GetPar()->IncludeST()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TASTparGeo::GetBaseName());
-      fActNtuRawSt->SetHistogramDir(subfolder);
+      fActNtuHitSt->SetHistogramDir(subfolder);
    }
-   
+  
    // BM
-   if (GlobalPar::GetPar()->IncludeBM()) {
-      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TABMparGeo::GetBaseName());
-      fActNtuRawBm->SetHistogramDir(subfolder);
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
+     TDirectory* subfolder = fActEvtWriter->File()->mkdir(TABMparGeo::GetBaseName());
+      fActNtuHitBm->SetHistogramDir(subfolder);
    }
-   
+  
    // VTX
-   if (GlobalPar::GetPar()->IncludeVT()) {
-      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAVTparGeo::GetBaseName());
-      fActNtuRawVtx->SetHistogramDir(subfolder);
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
+     TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAVTparGeo::GetBaseName());
+      fActNtuHitVtx->SetHistogramDir(subfolder);
    }
-   
+  
    // IT
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAITparGeo::GetBaseName());
-      fActNtuRawIt->SetHistogramDir(subfolder);
+      fActNtuHitIt->SetHistogramDir(subfolder);
    }
-   
+  
    // MSD
-   if (GlobalPar::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAMSDparGeo::GetBaseName());
-      fActNtuRawMsd->SetHistogramDir(subfolder);
+      fActNtuHitMsd->SetHistogramDir(subfolder);
    }
-   
+  
    // TOF
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TATWparGeo::GetBaseName());
-      fActNtuRawTw->SetHistogramDir(subfolder);
+      fActNtuHitTw->SetHistogramDir(subfolder);
    }
    
    // CAL
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
-      fActNtuRawCa->SetHistogramDir(subfolder);
-   }
+      fActNtuHitCa->SetHistogramDir(subfolder);
+  }
 }
 
 //__________________________________________________________
@@ -180,116 +268,65 @@ void LocalRecoMC::CloseFileIn()
 //__________________________________________________________
 void LocalRecoMC::AddRawRequiredItem()
 {
-  fTAGroot->AddRequiredItem("actEvtReader");
-   fTAGroot->AddRequiredItem("eveActNtuMc");
-   
-   if (GlobalPar::GetPar()->IncludeST())
-      AddRequiredMcItemSt();
-   
-   if (GlobalPar::GetPar()->IncludeBM())
-      AddRequiredMcItemBm();
-   
-   if (GlobalPar::GetPar()->IncludeVT())
-      AddRequiredMcItemVt();
-   
-   if (GlobalPar::GetPar()->IncludeIT())
-      AddRequiredMcItemIt();
-   
-   if (GlobalPar::GetPar()->IncludeMSD())
-      AddRequiredMcItemMs();
-   
-   if (GlobalPar::GetPar()->IncludeTW()) {
-      AddRequiredMcItemTw();
+   fTAGroot->AddRequiredItem("actEvtReader");
+   if (!TAGrecoManager::GetPar()->IsReadRootObj()) {
+     fTAGroot->AddRequiredItem("eveActNtuMc");
+     fTAGroot->AddRequiredItem("evtActNtuMc");
+     if (TAGrecoManager::GetPar()->IsRegionMc() )
+       fTAGroot->AddRequiredItem("regActNtuMc");
    }
-   
-   if (GlobalPar::GetPar()->IncludeCA())
-      AddRequiredMcItemCa();
-}
-//__________________________________________________________
-void LocalRecoMC::AddRequiredMcItemSt()
-{
-   fTAGroot->AddRequiredItem("stActNtuMc");
 }
 
-//__________________________________________________________
-void LocalRecoMC::AddRequiredMcItemBm()
-{
-   fTAGroot->AddRequiredItem("bmActNtuMc");
-}
-
-//__________________________________________________________
-void LocalRecoMC::AddRequiredMcItemVt()
-{
-   fTAGroot->AddRequiredItem("vtActNtuMc");
-}
-
-//__________________________________________________________
-void LocalRecoMC::AddRequiredMcItemIt()
-{
-   fTAGroot->AddRequiredItem("itActNtuMc");
-}
-
-//__________________________________________________________
-void LocalRecoMC::AddRequiredMcItemMs()
-{
-   fTAGroot->AddRequiredItem("msdActNtuMc");
-}
-
-//__________________________________________________________
-void LocalRecoMC::AddRequiredMcItemTw()
-{
-   fTAGroot->AddRequiredItem("twActNtuMc");
-}
-
-//__________________________________________________________
-void LocalRecoMC::AddRequiredMcItemCa()
-{
-   fTAGroot->AddRequiredItem("caActNtuMc");
-}
 //__________________________________________________________
 void LocalRecoMC::SetTreeBranches()
 {
    BaseReco::SetTreeBranches();
-   
-   fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
+  
+   fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
+   fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
+  
+  if (TAGrecoManager::GetPar()->IsRegionMc() )
+    fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
 
-   if (GlobalPar::GetPar()->IncludeST()) {
-      fActEvtWriter->SetupElementBranch(fpNtuRawSt, TASTntuRaw::GetBranchName());
+
+   if (TAGrecoManager::GetPar()->IncludeST()) {
+      fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeBM()) {
-      fActEvtWriter->SetupElementBranch(fpNtuRawBm, TABMntuRaw::GetBranchName());
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
+      fActEvtWriter->SetupElementBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcBm, TAMCntuHit::GetBmBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawVtx, TAVTntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitVtx, TAVTntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawIt, TAITntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitIt, TAITntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcIt, TAMCntuHit::GetItrBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawMsd, TAMSDntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcMsd, TAMCntuHit::GetMsdBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawTw, TATWntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitTw, TATWntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
    }
    
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuRawCa, TACAntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
    }
 }
+

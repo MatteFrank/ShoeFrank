@@ -1,7 +1,7 @@
 
 
 #include "TAGactDaqReader.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 ClassImp(TAGactDaqReader);
 

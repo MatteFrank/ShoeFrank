@@ -19,15 +19,10 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TAMCactNtuEve
-   TAMCntuEve
-   TAMCactNtuStc
-   TAMCactNtuBm
-   TAMCactNtuVtx
-   TAMCactNtuItr
-   TAMCactNtuMsd
-   TAMCactNtuTof
-   TAMCactNtuCal
+   TAMCactNtuPart
+   TAMCactNtuRegion
+   TAMCactNtuEvent
+   TAMCntuPart
    TAMCntuHit
    TAMCntuRegion
    TAMCevent
@@ -35,7 +30,6 @@ set( with_dictionnaries
    TAMCparTools
    TAMCflukaParser
    TAMCntuEvent
-   Evento
 )
 
 set( without_dictionnaries
@@ -80,7 +74,6 @@ foreach( f ${without_dictionnaries} )
 	set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
 endforeach()
 #
-file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
 
 #----------------------------------------------------------------------------
 #

@@ -6,7 +6,7 @@
 
 #include "TAITcluster.hxx"
 #include "TAITtrack.hxx"
-#include "TAITntuHit.hxx"
+#include "TAIThit.hxx"
 
 ClassImp(TAITcluster) // Description of a cluster
 
@@ -23,7 +23,7 @@ TAITcluster::TAITcluster()
 //
 void TAITcluster::SetupClones()
 {
-   fListOfPixels = new TClonesArray("TAITntuHit");
+   fListOfPixels = new TClonesArray("TAIThit");
    fListOfPixels->SetOwner(true);
 }
 
@@ -58,7 +58,7 @@ Float_t TAITcluster::Distance(TAITtrack *aTrack) {
 
 //______________________________________________________________________________
 //  
-void TAITcluster::AddPixel(TAITntuHit* pixel)
+void TAITcluster::AddPixel(TAIThit* pixel)
 {
    for (Int_t k = 0; k < pixel->GetMcTracksN(); ++k) {
       Int_t idx = pixel->GetMcTrackIdx(k);
@@ -66,7 +66,7 @@ void TAITcluster::AddPixel(TAITntuHit* pixel)
    }
    
    TClonesArray &pixelArray = *fListOfPixels;
-   new(pixelArray[pixelArray.GetEntriesFast()]) TAITntuHit(*pixel);
+   new(pixelArray[pixelArray.GetEntriesFast()]) TAIThit(*pixel);
 }
 
 

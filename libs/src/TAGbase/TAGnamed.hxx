@@ -24,7 +24,7 @@ class TAGnamed : public TNamed {
                     TAGnamed(const TString& name, const TString& title);
     virtual         ~TAGnamed();
 
-    Bool_t          Fail() const;
+    Bool_t          Fail() const { return TestBit(kFail); }
 
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
     virtual void    Print(Option_t* option="") const;
@@ -34,7 +34,5 @@ class TAGnamed : public TNamed {
 };
 
 ostream& operator<<(ostream& os, const TAGnamed& obj);
-
-#include "TAGnamed.icc"
 
 #endif

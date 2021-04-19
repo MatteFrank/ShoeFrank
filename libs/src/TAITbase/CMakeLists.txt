@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TABM} ${TAVT} ${TADAQ} ${TAAPI} ${TABM} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TABM} ${TAVT} ${TADAQ} ${TAAPI} ${TABM})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -19,16 +19,15 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TAITntuRaw
    TAITntuHit
+   TAIThit
    TAITparMap
    TAITparCal
    TAITparGeo
    TAITparConf
    TAITdigitizerE
    TAITactBaseRaw
-   TAITactNtuRaw
-   TAITactNtuMC
+   TAITactNtuHit
    TAITactNtuHitMC
    TAITntuCluster
    TAITcluster
@@ -88,7 +87,6 @@ foreach( f ${without_dictionnaries} )
 	set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
 endforeach()
 #
-file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
 
 #----------------------------------------------------------------------------
 #

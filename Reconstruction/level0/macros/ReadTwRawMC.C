@@ -23,14 +23,14 @@
 #include "TAGparGeo.hxx"
 #include "TATWparGeo.hxx"
 #include "TATWparCal.hxx"
-#include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
 
 #include "TAGcampaignManager.hxx"
 #include "TATWactNtuMC.hxx"
 #include "TATWactNtuPoint.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
@@ -78,7 +78,7 @@ void FillMCTw(EVENT_STRUCT *myStr, Int_t runNumber) {
    parCal->FromFileZID(parFileName.Data(),Z_beam);
    
    TAGdataDsc* twRec = new TAGdataDsc("twPoint", new TATWntuPoint());
-   TAGdataDsc* twRaw = new TAGdataDsc("twRaw", new TATWntuRaw());
+   TAGdataDsc* twRaw = new TAGdataDsc("twRaw", new TATWntuHit());
    
    twActRaw  = new TATWactNtuMC("twActRaw", twRaw, twCal, twGeo, myStr);
    twActRaw->CreateHistogram();
@@ -87,13 +87,14 @@ void FillMCTw(EVENT_STRUCT *myStr, Int_t runNumber) {
    twActRec->CreateHistogram();
 
    
-   //outFile->SetupElementBranch(twRaw, TATWntuRaw::GetBranchName());
+   //outFile->SetupElementBranch(twRaw, TATWntuHit::GetBranchName());
 }
 
 void ReadTwRawMC(TString name = "16O_C2H4_200_1.root", TString expName = "16O_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance(expName);
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(expName);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
 
    TAGroot tagr;
    

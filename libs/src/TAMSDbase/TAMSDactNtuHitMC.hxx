@@ -8,6 +8,8 @@
 /*------------------------------------------+---------------------------------*/
 #include <map>
 
+#include "TH1F.h"
+
 #include "EventStruct.hxx"
 
 #include "TAGaction.hxx"
@@ -15,11 +17,11 @@
 
 #include "TAMSDdigitizer.hxx"
 
-#include "TAMSDntuHit.hxx"
+#include "TAMSDhit.hxx"
 
 #include "TAGaction.hxx"
 
-class TAMSDntuRaw;
+class TAMSDntuHit;
 class TAMSDparGeo;
 
 using namespace  std;
@@ -60,7 +62,7 @@ private:
    Int_t           fNoisyStripsN;
    EVENT_STRUCT*   fEventStruct;
 
-   map<pair<int, int>, TAMSDntuHit*> fMap; //! map for pilepup
+   map<pair<int, int>, TAMSDhit*> fMap; //! map for pilepup
 
    TH1F*           fpHisStripMap[32];  // pixel map per sensor
    TH1F*           fpHisPosMap[32];    // pixel map per sensor
@@ -76,7 +78,7 @@ private:
 
 private:
    void            FillNoise(Int_t sensorId) ;
-   void            SetMCinfo(TAMSDntuHit* pixel, Int_t hitId);
+   void            SetMCinfo(TAMSDhit* pixel, Int_t hitId);
    void            CreateDigitizer();
    void            FillStrips( Int_t sensorId, Int_t mcId, Int_t trackIdx);
    void            ComputeNoiseLevel();

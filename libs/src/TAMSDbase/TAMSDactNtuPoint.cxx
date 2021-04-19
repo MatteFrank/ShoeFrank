@@ -33,7 +33,7 @@ TAMSDactNtuPoint::TAMSDactNtuPoint(const char* name,
    fpNtuPoint(pNtuPoint),
    fpGeoMap(pGeoMap)
 {
-   AddDataIn(pNtuRaw,   "TAMSDntuRaw");
+   AddDataIn(pNtuRaw,   "TAMSDntuHit");
    AddDataOut(pNtuPoint, "TAMSDntuPoint");
 }
 
@@ -80,7 +80,7 @@ Bool_t TAMSDactNtuPoint::Action()
 //
 Bool_t TAMSDactNtuPoint::FindPoints()
 {
-	TAMSDntuRaw* pNtuHit      = (TAMSDntuRaw*) fpNtuRaw->Object();
+	TAMSDntuHit* pNtuHit      = (TAMSDntuHit*) fpNtuRaw->Object();
 	TAMSDntuPoint* pNtuPoint  = (TAMSDntuPoint*) fpNtuPoint->Object();
 	TAMSDparGeo* pGeoMap      = (TAMSDparGeo*) fpGeoMap->Object();
 
@@ -93,12 +93,12 @@ Bool_t TAMSDactNtuPoint::FindPoints()
 
 		// fill points
 		for (int iStrip = 0; iStrip < m_listOfStripsCol->GetEntries(); iStrip++) {
-			TAMSDntuHit* colHit = (TAMSDntuHit*) m_listOfStripsCol->At(iStrip);
+			TAMSDhit* colHit = (TAMSDhit*) m_listOfStripsCol->At(iStrip);
 			if ( colHit->GetView() == 0 ) 	xyOrder = true;
 			else xyOrder = false;
 			m_listOfStripsRow = pNtuHit->GetListOfStrips(iLayer + 1);
 			for (int iStrip_ = 0; iStrip_ < m_listOfStripsRow->GetEntries(); iStrip_++) {
-				TAMSDntuHit* rowHit = (TAMSDntuHit*)m_listOfStripsRow->At(iStrip_);
+				TAMSDhit* rowHit = (TAMSDhit*)m_listOfStripsRow->At(iStrip_);
 				if ( !(rowHit->GetView() == 1 && xyOrder) ) 	cout << "ERROR on TAMSDactNtuPoint" << endl;
 				TVector3 localPointPosition;
 				localPointPosition.SetXYZ(colHit->GetPosition(), rowHit->GetPosition(), pGeoMap->GetSensorPosition(iLayer).Z());

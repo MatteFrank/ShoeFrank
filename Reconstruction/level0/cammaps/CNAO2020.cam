@@ -9,7 +9,7 @@ NumberFiles: 2
 "./geomaps/CNAO2020/FOOT.reg": -1
 
 DetectorName: "ST"
-NumberFiles: 2
+NumberFiles: 1
 "./geomaps/CNAO2020/TASTdetector.geo": -1
 
 DetectorName: "BM"
@@ -40,6 +40,8 @@ NumberFiles: 5
 "./calib/CNAO2020/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/CNAO2020/TACAdetector.geo": -1
+"./calib/CNAO2020/TACA_Energy_Calibration.cal": -1
 "./config/CNAO2020/TACAcrystalMapStatus.map": -1
+

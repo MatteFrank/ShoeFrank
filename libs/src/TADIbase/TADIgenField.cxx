@@ -42,3 +42,23 @@ TVector3 TADIgenField::get(const TVector3& position) const
 {
   return fField->GetField(position)*TAGgeoTrafo::GausToTesla();
 }
+
+
+//______________________________________________________________________________
+void TADIgenField::getGauss(const double& posX, const double& posY, const double& posZ, double& Bx, double& By, double& Bz) const
+{
+   TVector3 pos(posX, posY, posZ);
+   TVector3 outField(0, 0, 0);
+   
+   outField = fField->GetField(pos)*1e-3; //GENFIT expects kGauss
+   
+   Bx = outField.X();
+   By = outField.Y();
+   Bz = outField.Z();
+   
+}
+//______________________________________________________________________________
+TVector3 TADIgenField::getGauss(const TVector3& position) const
+{
+  return fField->GetField(position)*1e-3; //GENFIT expects kGauss
+}

@@ -14,12 +14,12 @@
 #include "TAGparGeo.hxx"
 
 #include "TABMparGeo.hxx"
-#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
+#include "TABMhit.hxx"
 #include "TABMntuTrack.hxx"
 
 #include "TAVTparGeo.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTntuTrack.hxx"
@@ -115,7 +115,7 @@ void merge_graphics(TFile* infile, TFile* f_out);
 //bm functions
 TVector3 BMlocaltoiso(TVector3 local);//from local to labo syst of ref., including the shift
 void clean_bmevstruct(BM_evstruct &bmevstruct, bool forced);
-void bmreadevent(TABMparGeo* geomap, TABMntuRaw*  bmRawHit, TABMntuTrackTr* bmtrack, BM_evstruct &bmevent, vector<BM_evstruct> &allbmeventin);
+void bmreadevent(TABMparGeo* geomap, TABMntuHit*  bmRawHit, TABMntuTrackTr* bmtrack, BM_evstruct &bmevent, vector<BM_evstruct> &allbmeventin);
 TVector3 ExtrapolateZ(TVector3 pvers, TVector3 r0pos, double proposz, bool global,  bool beammonitor);
 void print_bmevstruct(BM_evstruct &bmevstruct);
 

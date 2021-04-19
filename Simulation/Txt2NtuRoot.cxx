@@ -10,7 +10,7 @@
 #include "TAGrunInfo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGcampaignManager.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 using namespace std;
 
@@ -91,8 +91,9 @@ int main(int argc, char *argv[])
    }
    numfiles = infiles.size();
 
-   GlobalPar::Instance(exp);
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(exp);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
 
   TAGcampaignManager* campManager = new TAGcampaignManager(exp);
   campManager->FromFile();
@@ -101,9 +102,9 @@ int main(int argc, char *argv[])
    f_out->cd();
 
    if(regFlag)
-     GlobalPar::GetPar()->EnableRegionMc();
-   GlobalPar::GetPar()->EnableRootObject();
-   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
+     TAGrecoManager::GetPar()->EnableRegionMc();
+   TAGrecoManager::GetPar()->EnableRootObject();
+   TAGrunInfo info = TAGrecoManager::GetPar()->GetGlobalInfo();
    info.SetCampaignName(exp);
    info.SetRunNumber(runNb);
 
@@ -208,7 +209,7 @@ int main(int argc, char *argv[])
                              &eve.STCpxout[jj],&eve.STCpyout[jj],&eve.STCpzout[jj],
                              &eve.STCde[jj],&eve.STCal[jj],&eve.STCtim[jj]);
 
-               if (GlobalPar::GetPar()->IncludeST())
+               if (TAGrecoManager::GetPar()->IncludeST())
                   event->AddSTC(eve.STCid[jj],
                                 TVector3(eve.STCxin[jj], eve.STCyin[jj], eve.STCzin[jj]),
                                 TVector3(eve.STCxout[jj], eve.STCyout[jj], eve.STCzout[jj]),
@@ -240,7 +241,7 @@ int main(int argc, char *argv[])
                               &eve.BMNpxout[jj],&eve.BMNpyout[jj],&eve.BMNpzout[jj],
                               &eve.BMNde[jj],&eve.BMNal[jj],&eve.BMNtim[jj]);
 
-               if (GlobalPar::GetPar()->IncludeBM())
+               if (TAGrecoManager::GetPar()->IncludeBM())
                   event->AddBMN(eve.BMNid[jj], eve.BMNilay[jj], eve.BMNiview[jj], eve.BMNicell[jj],
                                 TVector3(eve.BMNxin[jj], eve.BMNyin[jj], eve.BMNzin[jj]),
                                 TVector3(eve.BMNxout[jj], eve.BMNyout[jj], eve.BMNzout[jj]),
@@ -271,7 +272,7 @@ int main(int argc, char *argv[])
                               &eve.VTXpxout[jj],&eve.VTXpyout[jj],&eve.VTXpzout[jj],
                               &eve.VTXde[jj],&eve.VTXal[jj],&eve.VTXtim[jj]);
 
-               if (GlobalPar::GetPar()->IncludeVT())
+               if (TAGrecoManager::GetPar()->IncludeVT())
                   event->AddVTX(eve.VTXid[jj], eve.VTXilay[jj],
                                 TVector3(eve.VTXxin[jj], eve.VTXyin[jj], eve.VTXzin[jj]),
                                 TVector3(eve.VTXxout[jj], eve.VTXyout[jj], eve.VTXzout[jj]),
@@ -302,7 +303,7 @@ int main(int argc, char *argv[])
                               &eve.ITRpxout[jj],&eve.ITRpyout[jj],&eve.ITRpzout[jj],
                               &eve.ITRde[jj],&eve.ITRal[jj],&eve.ITRtim[jj]);
 
-               if (GlobalPar::GetPar()->IncludeIT())
+               if (TAGrecoManager::GetPar()->IncludeIT())
                   event->AddITR(eve.ITRid[jj], eve.ITRisens[jj],
                                 TVector3(eve.ITRxin[jj], eve.ITRyin[jj], eve.ITRzin[jj]),
                                 TVector3(eve.ITRxout[jj], eve.ITRyout[jj], eve.ITRzout[jj]),
@@ -334,7 +335,7 @@ int main(int argc, char *argv[])
                               &eve.MSDpxout[jj],&eve.MSDpyout[jj],&eve.MSDpzout[jj],
                               &eve.MSDde[jj],&eve.MSDal[jj],&eve.MSDtim[jj]);
 
-               if (GlobalPar::GetPar()->IncludeMSD())
+               if (TAGrecoManager::GetPar()->IncludeMSD())
                   event->AddMSD(eve.MSDid[jj], eve.MSDilay[jj],
                                 TVector3(eve.MSDxin[jj], eve.MSDyin[jj], eve.MSDzin[jj]),
                                 TVector3(eve.MSDxout[jj], eve.MSDyout[jj], eve.MSDzout[jj]),
@@ -364,7 +365,7 @@ int main(int argc, char *argv[])
                              &eve.SCNpyout[jj],&eve.SCNpzout[jj],&eve.SCNde[jj],
                              &eve.SCNal[jj],&eve.SCNtim[jj]);
 
-               if (GlobalPar::GetPar()->IncludeTW())
+               if (TAGrecoManager::GetPar()->IncludeTW())
                   event->AddTW(eve.SCNid[jj], eve.SCNibar[jj], eve.SCNiview[jj],
                                TVector3(eve.SCNxin[jj], eve.SCNyin[jj], eve.SCNzin[jj]),
                                TVector3(eve.SCNxout[jj], eve.SCNyout[jj], eve.SCNzout[jj]),
@@ -394,7 +395,7 @@ int main(int argc, char *argv[])
                              &eve.CALpxout[jj],&eve.CALpyout[jj],&eve.CALpzout[jj],
                              &eve.CALde[jj],&eve.CALal[jj],&eve.CALtim[jj]);
 
-               if (GlobalPar::GetPar()->IncludeCA())
+               if (TAGrecoManager::GetPar()->IncludeCA())
                   event->AddCAL(eve.CALid[jj], eve.CALicry[jj],
                                 TVector3(eve.CALxin[jj], eve.CALyin[jj], eve.CALzin[jj]),
                                 TVector3(eve.CALxout[jj], eve.CALyout[jj], eve.CALzout[jj]),
@@ -420,7 +421,7 @@ int main(int argc, char *argv[])
                               &eve.CROSSx[jj],&eve.CROSSy[jj],&eve.CROSSz[jj],
                               &eve.CROSSpx[jj],&eve.CROSSpy[jj],&eve.CROSSpz[jj],
                               &eve.CROSSm[jj],&eve.CROSSch[jj],&eve.CROSSt[jj]);
-              if (GlobalPar::GetPar()->IsRegionMc()) {
+              if (TAGrecoManager::GetPar()->IsRegionMc()) {
                   event->AddCROSS(eve.CROSSid[jj],eve.CROSSnreg[jj],eve.CROSSnregold[jj],
                                   TVector3(eve.CROSSx[jj],eve.CROSSy[jj],eve.CROSSz[jj]),
                                   TVector3(eve.CROSSpx[jj],eve.CROSSpy[jj],eve.CROSSpz[jj]),

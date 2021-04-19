@@ -24,13 +24,13 @@
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
-#include "TABMdatRaw.hxx"
 #include "TABMntuRaw.hxx"
+#include "TABMntuHit.hxx"
 
 #include "TABMactNtuMC.hxx"
 #include "TABMactNtuTrack.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
@@ -56,7 +56,7 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
    parFileName = "./config/TABMdetector.cfg";
    parConf->FromFile(parFileName.Data());
    
-   TAGdataDsc* bmRaw    = new TAGdataDsc("bmRaw", new TABMntuRaw());
+   TAGdataDsc* bmRaw    = new TAGdataDsc("bmRaw", new TABMntuHit());
    bmActRaw  = new TABMactNtuMC("bmActRaw", bmRaw, bmConf, bmGeo, myStr);
    bmActRaw->CreateHistogram();
    
@@ -64,7 +64,7 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
    bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmRaw, bmGeo, bmConf, tgGeo);
    bmActTrack->CreateHistogram();
 
-   outFile->SetupElementBranch(bmRaw, TABMntuRaw::GetBranchName());
+   outFile->SetupElementBranch(bmRaw, TABMntuHit::GetBranchName());
    outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
 }
 
@@ -74,8 +74,9 @@ void ReadBmRawMC(TString name = "./data/flukasim/footC200_C2H4.root")
 //void ReadMsdRawMC(TString name = "12C_400_vtx.root")
 {  Long64_t nev=1000;
   
-   GlobalPar::Instance();
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance();
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
 
    TAGroot tagr;
    TAGgeoTrafo geoTrafo;

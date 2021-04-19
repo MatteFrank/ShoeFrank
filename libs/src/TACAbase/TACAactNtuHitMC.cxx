@@ -11,11 +11,11 @@
 
 #include "TAMCparTools.hxx"
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TACAparGeo.hxx"
 #include "TACAparCal.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 #include "TACAactNtuHitMC.hxx"
 #include "TACAdigitizer.hxx"
 
@@ -44,9 +44,9 @@ TACAactNtuHitMC::TACAactNtuHitMC(const char* name,  TAGdataDsc* p_ntuMC, TAGdata
 {
    if (fEventStruct == 0x0) {
      AddDataIn(p_ntuMC, "TAMCntuHit");
-     AddDataIn(p_ntuEve, "TAMCntuEve");
+     AddDataIn(p_ntuEve, "TAMCntuPart");
    } 
-   AddDataOut(p_nturaw, "TACAntuRaw");
+   AddDataOut(p_nturaw, "TACAntuHit");
    AddPara(p_geomap,"TACAparGeo");
    AddPara(p_calmap,"TACAparCal");
 
@@ -212,7 +212,7 @@ void TACAactNtuHitMC::CreateHistogram()
 //! Create digitizer
 void TACAactNtuHitMC::CreateDigitizer()
 {
-   TACAntuRaw* pNtuRaw = (TACAntuRaw*) fpNtuRaw->Object();
+   TACAntuHit* pNtuRaw = (TACAntuHit*) fpNtuRaw->Object();
 
    fDigitizer = new TACAdigitizer(pNtuRaw);
 }
@@ -231,29 +231,31 @@ TACAactNtuHitMC::~TACAactNtuHitMC()
 Bool_t TACAactNtuHitMC::Action()
 {  
    TAMCntuHit* pNtuMC   = 0x0;
-   TAMCntuEve* pNtuEve  = 0x0;
+   TAMCntuPart* pNtuEve  = 0x0;
   
    if (fEventStruct == 0x0) {
      pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
-     pNtuEve = (TAMCntuEve*) fpNtuEve->Object();
+     pNtuEve = (TAMCntuPart*) fpNtuEve->Object();
    } else {
      pNtuMC  = TAMCflukaParser::GetCalHits(fEventStruct, fpNtuMC);
      pNtuEve = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
    }
   
-  TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
-  TACAparCal* parCal = (TACAparCal*) fpCalMap->Object();
+   TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
+   TACAparCal* parCal = (TACAparCal*) fpCalMap->Object();
+   
+   fDigitizer->ClearMap();
 
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
       TAMChit* hitMC = pNtuMC->GetHit(i);
-
       
       // Get particle index
       Int_t trackId = hitMC->GetTrackIdx()-1;
       Int_t cryId   = hitMC->GetCrystalId();
       Float_t edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();;
-     
       Float_t thres = parCal->GetCrystalThres(cryId);
+      Float_t p0    = parCal->GetElossParam(cryId, 0);
+      Float_t p1    = parCal->GetElossParam(cryId, 1);
 
       TVector3 posIn(hitMC->GetInPosition());
       TVector3 posOut(hitMC->GetOutPosition());
@@ -271,7 +273,7 @@ Bool_t TACAactNtuHitMC::Action()
       TVector3 posOutV(x0_f, y0_f, z0_f);
       TVector3 posOutLoc = fpGeoTrafo->FromGlobalToCALocal(posOutV);
 
-      TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
+      TAMCpart*  track = pNtuEve->GetTrack(trackId);
       int fluID   = track->GetFlukaID();
       Int_t reg   = track->GetRegion();
       int z       = track->GetCharge();
@@ -289,7 +291,7 @@ Bool_t TACAactNtuHitMC::Action()
       
       // Fill fDigitizer with energy in MeV
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], posInLoc[2], posOutLoc[2], 0, cryId);
-      TACAntuHit* hit = fDigitizer->GetCurrentHit();
+      TACAhit* hit = fDigitizer->GetCurrentHit();
       if (hit){
          hit->AddMcTrackIdx(trackId, i);
          // hit->SetPosition(posInLoc);
@@ -301,7 +303,10 @@ Bool_t TACAactNtuHitMC::Action()
          positionCry = parGeo->Crystal2Detector(cryId, positionCry);
          hit->SetPosition(positionCry);
         
-        if (hit->GetCharge() < thres)
+         Float_t charge = hit->GetCharge()*p1 + p0;
+         hit->SetCharge(charge);
+         
+        if (charge < thres)
           hit->SetValid(false);
         else
           hit->SetValid(true);

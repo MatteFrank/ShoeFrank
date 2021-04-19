@@ -11,7 +11,7 @@
 #include "TAGgeoTrafo.hxx"
 #include "TACAparGeo.hxx"
 //#include "TACAparConf.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
 #include "TACAactNtuCluster.hxx"
 
@@ -38,7 +38,7 @@ TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGd
    fCurrentPosError(0., 0., 0.),
    fClustersN(0)
 {
-   AddDataIn(pNtuRaw,   "TACAntuRaw");
+   AddDataIn(pNtuRaw,   "TACAntuHit");
    AddDataOut(pNtuClus, "TACAntuCluster");
    AddPara(pGeoMap, "TACAparGeo");
   // AddPara(pConfig, "TACAparConf");
@@ -82,6 +82,11 @@ void TACAactNtuCluster::CreateHistogram()
    fpHisHitTwMatch = new TH1F("caTwMatch", "Calorimeter - Number of matched hits with TW points", 2, 0, 2);
    AddHistogram(fpHisHitTwMatch);
 
+   fpHisTwDeCaE = new TH2F("caTwDeCaE", "Calorimeter TW-deltaE vs CA-E",
+                           300, 0, 3000,  40, 0, 400);
+   fpHisClusMap->SetStats(kFALSE);
+   AddHistogram(fpHisTwDeCaE);
+   
    SetValidHistogram(kTRUE);
    
    return;
@@ -91,7 +96,7 @@ void TACAactNtuCluster::CreateHistogram()
 //
 Bool_t TACAactNtuCluster::Action()
 {
-   TACAntuRaw* pNtuHit  = (TACAntuRaw*) fpNtuRaw->Object();
+   TACAntuHit* pNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
 
    if (pNtuHit->GetHitsN() == 0) {
       fpNtuClus->SetBit(kValid);
@@ -116,11 +121,11 @@ void TACAactNtuCluster::FillMaps()
    ClearMaps();
    
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
-   TACAntuRaw* pNtuHit  = (TACAntuRaw*) fpNtuRaw->Object();
+   TACAntuHit* pNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
 
    // fill maps for cluster
    for (Int_t i = 0; i < pNtuHit->GetHitsN(); i++) { // loop over hit crystals
-      TACAntuHit* hit = pNtuHit->GetHit(i);
+      TACAhit* hit = pNtuHit->GetHit(i);
       Int_t id   = hit->GetCrystalId();
       Int_t line = pGeoMap->GetCrystalLine(id);
       Int_t col  = pGeoMap->GetCrystalCol(id);
@@ -138,11 +143,11 @@ void TACAactNtuCluster::SearchCluster()
    fClustersN = 0;
 
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
-   TACAntuRaw* pNtuHit  = (TACAntuRaw*) fpNtuRaw->Object();
+   TACAntuHit* pNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
 
    // Search for cluster
    for (Int_t i = 0; i < pNtuHit->GetHitsN(); ++i) { // loop over hit crystals
-      TACAntuHit* hit = pNtuHit->GetHit(i);
+      TACAhit* hit = pNtuHit->GetHit(i);
 
       if (hit->Found()) continue;
       
@@ -163,7 +168,7 @@ void TACAactNtuCluster::SearchCluster()
 // Get object in list
 TAGobject*  TACAactNtuCluster::GetHitObject(Int_t idx) const
 {
-   TACAntuRaw* pNtuHit  = (TACAntuRaw*) fpNtuRaw->Object();
+   TACAntuHit* pNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
 
    if (idx >= 0 && idx <  pNtuHit->GetHitsN() )
       return (TAGobject*)pNtuHit->GetHit(idx);
@@ -198,7 +203,7 @@ Bool_t TACAactNtuCluster::CreateClusters()
 {
    TACAntuCluster* pNtuClus = (TACAntuCluster*) fpNtuClus->Object();
    TACAparGeo*     pGeoMap  = (TACAparGeo*)     fpGeoMap->Object();
-   TACAntuRaw*     pNtuHit  = (TACAntuRaw*) fpNtuRaw->Object();
+   TACAntuHit*     pNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
 
    TACAcluster* cluster = 0x0;
    
@@ -207,7 +212,7 @@ Bool_t TACAactNtuCluster::CreateClusters()
       pNtuClus->NewCluster();  //create a TClonesArray of clusters
    
    for (Int_t i = 0; i < pNtuHit->GetHitsN(); ++i) {
-      TACAntuHit* hit = pNtuHit->GetHit(i);
+      TACAhit* hit = pNtuHit->GetHit(i);
       if (hit == 0x0) continue;
       Int_t id = hit->GetCrystalId();
       Int_t line = pGeoMap->GetCrystalLine(id);
@@ -251,7 +256,7 @@ Bool_t TACAactNtuCluster::CreateClusters()
 //
 void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
 {
-   TACAntuRaw* pNtuHit  = (TACAntuRaw*) fpNtuRaw->Object();
+   TACAntuHit* pNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
    
    if (cluster->GetListOfHits() == 0) return;
    
@@ -265,7 +270,7 @@ void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
    Int_t iMax = -1;
    
    for (Int_t i = 0; i < cluster->GetHitsN(); ++i) {
-      TACAntuHit* hit = cluster->GetHit(i);
+      TACAhit* hit = cluster->GetHit(i);
       tCorTemp.SetXYZ(hit->GetPosition()(0)*hit->GetCharge(), hit->GetPosition()(1)*hit->GetCharge(), hit->GetPosition()(2)*hit->GetCharge());
       tCorrection  += tCorTemp;
       fClusterPulseSum  += hit->GetCharge();
@@ -278,7 +283,7 @@ void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
    pos = tCorrection*(1./fClusterPulseSum);
    
    for (Int_t i = 0; i < cluster->GetHitsN(); ++i) {
-      TACAntuHit* hit = cluster->GetHit(i);
+      TACAhit* hit = cluster->GetHit(i);
 	  tCorrection2.SetXYZ(hit->GetCharge()*(hit->GetPosition()(0)-(pos)(0))*(hit->GetPosition()(0)-(pos)(0)),
 							hit->GetCharge()*(hit->GetPosition()(1)-(pos)(1))*(hit->GetPosition()(1)-(pos)(1)),
 							0);
@@ -294,7 +299,7 @@ void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
    cluster->SetPosition(fCurrentPosition);
    cluster->SetPosError(fCurrentPosError);
    cluster->SetPositionG(fCurrentPosition);
-   cluster->SetCharge(fClusterPulseSum);
+   cluster->SetEnergy(fClusterPulseSum);
 }
 
 //______________________________________________________________________________
@@ -311,7 +316,7 @@ void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
       if (ValidHistogram()) {
          if (cluster->GetHitsN() > 0) {
             fpHisHitTot->Fill(cluster->GetHitsN());
-            fpHisChargeTot->Fill(cluster->GetCharge());
+            fpHisChargeTot->Fill(cluster->GetEnergy());
             fpHisClusMap->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
          }
       }
@@ -337,7 +342,7 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
    TVector3 resMin;
    
    TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
-   Int_t nPoints = pNtuPoint->GetPointN();
+   Int_t nPoints = pNtuPoint->GetPointsN();
    
    for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
       
@@ -366,6 +371,7 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
       if (ValidHistogram()) {
          fpHisResTwMag->Fill(resMin.Mag());
          fpHisHitTwMatch->Fill(1);
+         fpHisTwDeCaE->Fill(cluster->GetEnergy(), point->GetEnergyLoss());
       }
    } else
       if (ValidHistogram())

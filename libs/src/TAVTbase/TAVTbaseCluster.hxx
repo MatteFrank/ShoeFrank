@@ -11,7 +11,7 @@
 
 #include "TAGcluster.hxx"
 #include "TAGdata.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 
 
 class TAVTparGeo;
@@ -24,10 +24,6 @@ class TAVTparGeo;
 class TAVTbaseCluster : public TAGcluster {
    
 protected:
-   TVector3           fPosition;                 // position of the cluster in plane frame
-   TVector3           fPosError;                 // position's errors of the cluster in plane frame
-   TVector3           fPositionG;                // position of the clus in tracker frame
-   TVector3           fPosErrorG;                // position's errors of the clus in tracker frame
    TClonesArray*      fListOfPixels;             // list of pixel attached to this cluster
    
    Float_t            fCharge;                   // sum of pulseheight
@@ -41,13 +37,9 @@ public:
    TAVTbaseCluster(const TAVTbaseCluster& cluster);
    ~TAVTbaseCluster();
    
-   //! Set position in local frame
-   void               SetPosition(TVector3& pos);
-   //! Set position error in local frame
-   void               SetPosError(TVector3& pos);
-   void               SetPosition(Float_t u, Float_t v, Float_t z) { fPosition.SetXYZ(u,v,z); }
    //! Set position in global tracker frame
-   void               SetPositionG(TVector3& pos); 
+   void               SetPositionG(TVector3& pos);
+   
    //! Found flag for this cluster (Hough Transform XZ)
    void               SetFoundXZ(Bool_t flag = true)         { fFoundXZ = flag;        }
    //! Found flag for this cluster ((Hough Transform YZ)
@@ -58,16 +50,6 @@ public:
    void               SetValid(Bool_t v = true)              { fIsValid = v;           }
    // Compute size
    TVector2           ComputeSize();
-   
-   //! Get position in local frame
-   const TVector3&     GetPosition()                   const { return fPosition;       }
-   //! Get position error in local frame
-   const TVector3&     GetPosError()                   const { return fPosError;       }
-   //! Get position in global tracker frame
-   const TVector3&     GetPositionG()                  const { return fPositionG ;     }
-   //! Get position in global tracker frame
-   const TVector3&     GetPosErrorG()                  const { return fPositionG ;     }
-
    
    //! Get U position in local frame
    Float_t            GetPositionU()                   const { return fPosition[0];    }
@@ -83,15 +65,15 @@ public:
    //! Get validity
    Bool_t             IsValid()                        const { return fIsValid;        }
    //! Get index for a given pixel
-   Int_t              GetIndex(Int_t tSk)              const { return ((TAVTntuHit*)fListOfPixels->At(tSk))->GetPixelIndex();  } 
+   Int_t              GetIndex(Int_t tSk)              const { return ((TAVThit*)fListOfPixels->At(tSk))->GetPixelIndex();  } 
    //! Get pulse height for a given pixel
-   Float_t            GetPulseHeight(Int_t tSk)        const { return ((TAVTntuHit*)fListOfPixels->At(tSk))->GetPulseHeight(); } 
+   Float_t            GetPulseHeight(Int_t tSk)        const { return ((TAVThit*)fListOfPixels->At(tSk))->GetPulseHeight(); } 
    //! Get number of pixels in this clusters
    Int_t              GetPixelsN()                     const { return  fListOfPixels->GetEntries(); }
    //! Get sum of pulse height
    Float_t            GetCharge()                      const { return fCharge;  }
    //! Get pixel
-   TAVTntuHit*        GetPixel(Int_t idx);
+   TAVThit*           GetPixel(Int_t idx);
    //! Get position of seed pixel
    Float_t            GetSeedU()                       const;
    Float_t            GetSeedV()                       const;
@@ -105,7 +87,7 @@ public:
    //! reset pixels
    void               ResetPixels();
    
-   ClassDef(TAVTbaseCluster,6)                          // Describes TAVTbaseCluster
+   ClassDef(TAVTbaseCluster,7)                          // Describes TAVTbaseCluster
 };
 
 

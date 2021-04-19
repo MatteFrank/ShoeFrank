@@ -5,7 +5,7 @@
 */
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 #include "TAMCflukaParser.hxx"
 
 #include "TABMactNtuHitMC.hxx"
@@ -43,9 +43,9 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
 
    if (fEventStruct == 0x0) {
      AddDataIn(dscntuMC, "TAMCntuHit");
-     AddDataIn(dscntuEve, "TAMCntuEve");
+     AddDataIn(dscntuEve, "TAMCntuPart");
    }
-   AddDataOut(fpNtuRaw, "TABMntuRaw");
+   AddDataOut(fpNtuRaw, "TABMntuHit");
    AddPara(fpParCon, "TABMparConf");
    AddPara(fpParCal, "TABMparCal");
    AddPara(fpParGeo, "TABMparGeo");
@@ -64,7 +64,7 @@ TABMactNtuHitMC::~TABMactNtuHitMC()
 //------------------------------------------+-----------------------------------
 void TABMactNtuHitMC::CreateDigitizer()
 {
-   TABMntuRaw* p_nturaw = (TABMntuRaw*) fpNtuRaw->Object();
+   TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuRaw->Object();
    TABMparGeo* p_bmgeo  = (TABMparGeo*) fpParGeo->Object();
    TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
    TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
@@ -104,22 +104,22 @@ void TABMactNtuHitMC::CreateHistogram(){
 Bool_t TABMactNtuHitMC::Action()
 {
   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-  TABMntuRaw* p_nturaw  = (TABMntuRaw*) fpNtuRaw->Object();
+  TABMntuHit* p_nturaw  = (TABMntuHit*) fpNtuRaw->Object();
   TABMparConf* p_bmcon  = (TABMparConf*) fpParCon->Object();
   TABMparGeo* p_bmgeo   = (TABMparGeo*) fpParGeo->Object();
 
   TAMCntuHit* pNtuMC    = 0;
-  TAMCntuEve* pNtuEve   = 0;
+  TAMCntuPart* pNtuEve   = 0;
 
   if (fEventStruct == 0x0) {
     pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
-    pNtuEve   = (TAMCntuEve*) fpNtuEve->Object();
+    pNtuEve   = (TAMCntuPart*) fpNtuEve->Object();
   } else {
     pNtuMC   = TAMCflukaParser::GetBmHits(fEventStruct, fpNtuMC);
     pNtuEve  = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
   }
 
-  Int_t cell, view, lay, ipoint, cellid;
+  Int_t cell, view, lay, cellid;
   Double_t rdrift, edep;
 
   TVector3 loc, gmom, mom,  glo;
@@ -136,8 +136,8 @@ Bool_t TABMactNtuHitMC::Action()
     TAMChit* hitMC = pNtuMC->GetHit(i);
     Int_t trackId  = hitMC->GetTrackIdx()-1;
 
-    TAMCntuEve* pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
-    TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
+    TAMCntuPart* pNtuEve  = (TAMCntuPart*) fpNtuEve->Object();
+    TAMCpart*  track = pNtuEve->GetTrack(trackId);
     if(track->GetCharge() != 0 && track->GetTrkLength() > 0.1 && hitMC->GetDeltaE()>=p_bmcon->GetEnThresh()){//selection criteria
       cell = hitMC->GetCell();
       lay = hitMC->GetLayer();
@@ -159,10 +159,10 @@ Bool_t TABMactNtuHitMC::Action()
         Bool_t added=fDigitizer->Process(0, loc[0], loc[1], loc[2], 0, 0, cellid, 0,
                                          gmom[0], gmom[1], gmom[2]);
 				if(added){
-					TABMntuHit* hit = fDigitizer->GetCurrentHit();
-	        hit->SetIsFake((ipoint==0) ? 0 : 1);
-	        hit->AddMcTrackIdx(ipoint, i);
-        }
+					TABMhit* hit = fDigitizer->GetCurrentHit();
+	        hit->SetIsFake((trackId==0) ? 0 : 1);
+	        hit->AddMcTrackIdx(trackId, i);
+        } 
 	      if(ValidHistogram() && !added){
 					fpDisRdrift->Fill(rdrift);
           fpDisReason->Fill(0);
@@ -184,7 +184,7 @@ Bool_t TABMactNtuHitMC::Action()
   if(ValidHistogram()){
   	fpHisHitNum->Fill(p_nturaw->GetHitsN());
   	for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-  		TABMntuHit* p_hit=p_nturaw->GetHit(i);
+  		TABMhit* p_hit=p_nturaw->GetHit(i);
   	  fpHisCell->Fill(p_hit->GetCell());
       fpHisView->Fill(p_hit->GetView());
       fpHisPlane->Fill(p_hit->GetPlane());
@@ -213,7 +213,7 @@ void TABMactNtuHitMC::CreateFakeHits()
   for(Int_t i=0;i<nfake;i++){
     Bool_t added=fDigitizer->Process(0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0); // the cellid=-1 will tell the digitizer to add a fake hit
     if(added){
-      TABMntuHit* hit = fDigitizer->GetCurrentHit();
+      TABMhit* hit = fDigitizer->GetCurrentHit();
       hit->SetIsFake(2);
       hit->AddMcTrackIdx(-99, -99);
     }

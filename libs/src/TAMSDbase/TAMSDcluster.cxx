@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////
 
 #include "TAMSDcluster.hxx"
-#include "TAMSDntuHit.hxx"
+#include "TAMSDhit.hxx"
 
 ClassImp(TAMSDcluster) // Description of a cluster
 
@@ -13,12 +13,9 @@ ClassImp(TAMSDcluster) // Description of a cluster
 //  
 TAMSDcluster::TAMSDcluster()
 :  TAGcluster(),
-   fPosition(0.),
-   fPosError(0),
+   fPositionF(0.),
+   fPosErrorF(0),
    fCurPosition(0,0,0),
-   fPositionG(0., 0., 0.),
-   fPosErrorG(0., 0., 0.),
-   fPlaneNumber(10),
    fPlaneView(-1),
    fIsValid(false)
 {
@@ -30,7 +27,7 @@ TAMSDcluster::TAMSDcluster()
 //
 void TAMSDcluster::SetupClones()
 {
-   fListOfStrips = new TClonesArray("TAMSDntuHit");
+   fListOfStrips = new TClonesArray("TAMSDhit");
    fListOfStrips->SetOwner(true);
 }
 
@@ -38,12 +35,9 @@ void TAMSDcluster::SetupClones()
 //  
 TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
 :  TAGcluster(cluster),
-   fPosition(cluster.fPosition),
-   fPosError(cluster.fPosError),
+   fPositionF(cluster.fPositionF),
+   fPosErrorF(cluster.fPosErrorF),
    fCurPosition(cluster.fCurPosition),
-   fPositionG(cluster.fPositionG),
-   fPosErrorG(cluster.fPosErrorG),
-   fPlaneNumber(cluster.fPlaneNumber),
    fPlaneView(cluster.fPlaneView),
    fIsValid(cluster.fIsValid)
 {
@@ -61,7 +55,7 @@ TAMSDcluster::~TAMSDcluster()
 
 //______________________________________________________________________________
 //  
-void TAMSDcluster::AddStrip(TAMSDntuHit* strip)
+void TAMSDcluster::AddStrip(TAMSDhit* strip)
 {
    for (Int_t k = 0; k < strip->GetMcTracksN(); ++k) {
       Int_t idx = strip->GetMcTrackIdx(k);
@@ -69,7 +63,7 @@ void TAMSDcluster::AddStrip(TAMSDntuHit* strip)
    }
    
    TClonesArray &StripArray = *fListOfStrips;
-   new(StripArray[StripArray.GetEntriesFast()]) TAMSDntuHit(*strip);
+   new(StripArray[StripArray.GetEntriesFast()]) TAMSDhit(*strip);
 }
 
 //______________________________________________________________________________
@@ -79,37 +73,37 @@ void TAMSDcluster::SetPositionG(TVector3& posGlo)
    fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
    
    if (fPlaneView == 0)
-      fPosErrorG.SetXYZ(fPosError, 0, 0.01);
+      fPosErrorG.SetXYZ(fPosErrorF, 0, 0.01);
    else
-      fPosErrorG.SetXYZ(0, fPosError, 0.01);
+      fPosErrorG.SetXYZ(0, fPosErrorF, 0.01);
 }
 
 //______________________________________________________________________________
 //
-TAMSDntuHit* TAMSDcluster::GetStrip(Int_t idx)
+TAMSDhit* TAMSDcluster::GetStrip(Int_t idx)
 {
    if (idx >=0 && idx < fListOfStrips->GetEntries())
-      return (TAMSDntuHit*)fListOfStrips->At(idx);
+      return (TAMSDhit*)fListOfStrips->At(idx);
    else
       return 0x0;
 }
 
 //______________________________________________________________________________
 //
-void TAMSDcluster::SetPosition(Float_t pos)
+void TAMSDcluster::SetPositionF(Float_t pos)
 {
-   fPosition = pos;
+   fPositionF = pos;
    if (fPlaneView == 0)
-      fCurPosition.SetXYZ(fPosition, 0, 0);
+      fCurPosition.SetXYZ(fPositionF, 0, 0);
    else
-      fCurPosition.SetXYZ(0, fPosition, 0);
+      fCurPosition.SetXYZ(0, fPositionF, 0);
 }
 
 //______________________________________________________________________________
 //
-void TAMSDcluster::SetPosError(Float_t pos)
+void TAMSDcluster::SetPosErrorF(Float_t pos)
 {
-   fPosError = pos;
+   fPosErrorF = pos;
 }
 
 

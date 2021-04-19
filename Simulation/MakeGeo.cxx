@@ -22,7 +22,7 @@
 #include "TAGmaterials.hxx"
 #include "TAGroot.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include <FieldManager.h>
 
 #include "TAGcampaignManager.hxx"
@@ -60,9 +60,9 @@ int main (int argc, char *argv[]) {
     // real coding starts here!
 
     cout<<" GlobalPar "<<Form("%s/FootGlobal.par",exp.Data())<<endl;
-    GlobalPar::Instance(exp);
-
-    GlobalPar::GetPar()->Print();
+    TAGrecoManager::Instance(exp);
+    TAGrecoManager::GetPar()->FromFile();
+    TAGrecoManager::GetPar()->Print();
 
     TAGroot* fTAGroot = new TAGroot();
     TAGmaterials* fTAGmat = new TAGmaterials();
@@ -122,7 +122,7 @@ int main (int argc, char *argv[]) {
     ifstream file;
     string fileName = Form("foot.inp");
     file.open( fileName.c_str(), ios::in );
-    if ( !file.is_open() )        cout<< "ERROR  -->  wrong input in GlobalPar::ReadParemFile file:: "<<fileName.c_str()<< endl, exit(0);
+    if ( !file.is_open() )        cout<< "ERROR  -->  wrong input in TAGrecoManager::ReadParemFile file:: "<<fileName.c_str()<< endl, exit(0);
 
     string line = "";
     stringstream init, geomat, end;

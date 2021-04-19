@@ -27,8 +27,7 @@ TAGaction::TAGaction(const char* name, const char* title)
     fpParaList(0),
     fpHistList(0),
     fbHistValid(kFALSE),
-    fbIsOpenFile(kFALSE),
-    debugLevel(0)
+    fbIsOpenFile(kFALSE)
 {
   if (!gTAGroot) Fatal("TAGaction()", "TAGroot not instantiated");
   SetBit(kMustCleanup);

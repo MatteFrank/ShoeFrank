@@ -19,7 +19,7 @@ class TAGgeoTrafo;
 class TABMtrack;
 class TGraphErrors;
 class TAVTbaseCluster;
-class TAVTntuHit;
+class TAVThit;
 class TAVTbaseTrack;
 class TH2F;
 class TH1F;

@@ -9,7 +9,7 @@
 #include "TObjArray.h"
 
 #include "TAGdata.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 
 #include "TAVTcluster.hxx"
 

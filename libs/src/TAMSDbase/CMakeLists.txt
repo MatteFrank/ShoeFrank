@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAVT} ${TAMC} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAVT} ${TAMC})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -20,14 +20,13 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 #
 set( with_dictionnaries
    TAMSDdatRaw
-   TAMSDntuRaw
    TAMSDntuHit
+   TAMSDhit
    TAMSDntuPoint
    TAMSDparMap
    TAMSDparGeo
    TAMSDparConf
    TAMSDdigitizer
-   TAMSDactNtuMC
    TAMSDactNtuHitMC
    TAMSDntuCluster
    TAMSDcluster
@@ -79,7 +78,6 @@ foreach( f ${without_dictionnaries} )
 	set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
 endforeach()
 #
-file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
 
 #MESSAGE("headers ${headers}")
 #MESSAGE("sources ${sources}")

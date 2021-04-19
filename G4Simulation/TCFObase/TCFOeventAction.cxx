@@ -41,12 +41,12 @@
 
 #include "TAMCevent.hxx"
 #include "TCGmcHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TCFOrunAction.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TClonesArray.h"
 #include "TRandom.h"

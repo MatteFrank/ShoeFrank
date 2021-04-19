@@ -4,6 +4,7 @@
 
 #include "TNamed.h"
 #include "TString.h"
+#include "TFile.h"
 
 #include "TAGaction.hxx"
 #include "TAGactTreeWriter.hxx"
@@ -42,15 +43,15 @@
 #include "TAITparConf.hxx"
 #include "TAMSDparConf.hxx"
 
-#include "TASTntuRaw.hxx"
-#include "TABMntuRaw.hxx"
-#include "TAVTntuRaw.hxx"
-#include "TAITntuRaw.hxx"
+#include "TASTntuHit.hxx"
+#include "TABMntuHit.hxx"
+#include "TAVTntuHit.hxx"
+#include "TAITntuHit.hxx"
 #include "TAITntuTrack.hxx"
-#include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
 #include "TAMSDntuPoint.hxx"
 #include "TATWntuPoint.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
 #include "TAIRntuTrack.hxx"
 #include "TAGntuGlbTrack.hxx"
@@ -73,16 +74,16 @@
 #include "TAITactNtuTrackF.hxx"
 #include "TAVTactNtuVertex.hxx"
 
-#include "TAIRactNtuTrack.hxx"
+#include "TAGactNtuGlbTrackS.hxx"
 #include "TAGactNtuGlbTrack.hxx"
 
-#include "KFitter.hxx"
-#include "UpdatePDG.hxx"
+#include "TAGactKFitter.hxx"
 
 #include "GlobalTrackingStudies.hxx"
+#include "GlobalTrackRepostory.hxx"
 
 class TAMCntuHit;
-class TAMCntuEve;
+class TAMCntuPart;
 class TAMCntuRegion;
 class TAMCntuEvent;
 
@@ -119,7 +120,10 @@ public:
    virtual void SetRecHistogramDir();
    
    //! Loop events
-  virtual void LoopEvent(Int_t nEvents);
+   virtual void LoopEvent(Int_t nEvents);
+   
+   //! Goto Event
+   virtual Bool_t GoEvent(Int_t /*iEvent*/) { return true; }
    
    //! Begin loop
    virtual void BeforeEventLoop();
@@ -131,7 +135,7 @@ public:
    virtual void OpenFileIn()  { return; }
   
    // ! Global Checks
-  virtual void GlobalChecks();
+   virtual void GlobalChecks();
    
    //! Close File in
    virtual void CloseFileIn() { return; }
@@ -167,11 +171,11 @@ public:
    void EnableTracking()  { fFlagTrack = true;   }
    void DisableTracking() { fFlagTrack = false;  }
    
-   void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;   }
-   void DisableTWcalibPerBar() { fFlagTWbarCalib = false;  }
+   void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;  }
+   void DisableTWcalibPerBar() { fFlagTWbarCalib = false; }
 
-   void EnableZfromMCtrue()  { fFlagZtrueMC = true;   }
-   void DisableZfromMCtrue() { fFlagZtrueMC = false;  }
+   void EnableZfromMCtrue()    { fFlagZtrueMC = true;     }
+   void DisableZfromMCtrue()   { fFlagZtrueMC = false;    }
 
    void EnableZrecWithPUoff()  { fFlagZrecPUoff = true;   }
    void DisableZrecWithPUoff() { fFlagZrecPUoff = false;  }
@@ -182,15 +186,15 @@ public:
     void EnableRecCutter()  { fFlagRecCutter = true;   }
     void DisableRecCutter() { fFlagRecCutter = false;  }
 
-   void DisableM28ClusMT() { fM28ClusMtFlag = false; }
-   void EnableM28lusMT()   { fM28ClusMtFlag = true;  }
-   Bool_t IsM28ClusMT()    { return fM28ClusMtFlag;  }
+   void DisableM28ClusMT()     { fM28ClusMtFlag = false;  }
+   void EnableM28lusMT()       { fM28ClusMtFlag = true;   }
+   Bool_t IsM28ClusMT()        { return fM28ClusMtFlag;   }
 
    // Flag for MC data
-   Bool_t IsMcData()      { return fFlagMC;      }
+   Bool_t IsMcData()           { return fFlagMC;          }
    
    //! Set Tracking algorithm
-   void SetTrackingAlgo(char c);
+   void SetVtxTrackingAlgo(char c);
   
    // Campaign checks
    void CampaignChecks();
@@ -208,8 +212,8 @@ public:
    TACAparGeo*          GetParGeoCa()       const { return (TACAparGeo*)fpParGeoCa->Object();        }
    
    //! Containers getters
-   TASTntuRaw*          GetNtuHitSt()       const { return (TASTntuRaw*) fpNtuRawSt->Object();       }
-   TABMntuRaw*          GetNtuRawBm()       const { return (TABMntuRaw*)fpNtuRawBm->Object();        }
+   TASTntuHit*          GetNtuHitSt()       const { return (TASTntuHit*) fpNtuHitSt->Object();       }
+   TABMntuHit*          GetNtuHitBm()       const { return (TABMntuHit*)fpNtuHitBm->Object();        }
    TABMntuTrack*        GetNtuTrackBm()     const { return (TABMntuTrack*)fpNtuTrackBm->Object();    }
    
    TAVTntuCluster*      GetNtuClusterVtx()  const { return (TAVTntuCluster*)fpNtuClusVtx->Object();  }
@@ -222,29 +226,27 @@ public:
 
    TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
    
-   TATWntuRaw*          GetNtuHitTw()       const { return (TATWntuRaw*) fpNtuRawTw->Object();       }
+   TATWntuHit*          GetNtuHitTw()       const { return (TATWntuHit*) fpNtuHitTw->Object();       }
    TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
    
-   TACAntuRaw*          GetNtuHitCa()       const { return (TACAntuRaw*) fpNtuRawCa->Object();       }
+   TACAntuHit*          GetNtuHitCa()       const { return (TACAntuHit*) fpNtuHitCa->Object();       }
    TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
-   TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
-  //! MC container Getter (virtual)
-  virtual TAMCntuRegion* GetNtuMcReg()     const { return 0x0; }
-  virtual TAMCntuEvent*  GetNtuMcEvt()     const { return 0x0; }
-  virtual TAMCntuEve*    GetNtuMcEve()     const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcSt()      const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcBm()      const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcVtx()     const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcIt()      const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcMsd()     const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcTw()      const { return 0x0; }
-  virtual TAMCntuHit*    GetNtuMcCa()      const { return 0x0; }
-  virtual TTree*         GetTree()               { return 0x0; }
-
+   //! MC container Getter (virtual)
+   virtual TAMCntuRegion* GetNtuMcReg()     const { return 0x0; }
+   virtual TAMCntuEvent*  GetNtuMcEvt()     const { return 0x0; }
+   virtual TAMCntuPart*   GetNtuMcTrk()     const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcSt()      const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcBm()      const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcVtx()     const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcIt()      const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcMsd()     const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcTw()      const { return 0x0; }
+   virtual TAMCntuHit*    GetNtuMcCa()      const { return 0x0; }
+  
 public:
    //! Disable/Enable ITR tracking
    static void DisableItrTracking() { fgItrTrackFlag = false; }
@@ -288,17 +290,17 @@ protected:
    TAGparaDsc*           fpParConfMsd;
    
    TAGdataDsc*           fpDatRawSt;    // input data dsc
-   TAGdataDsc*           fpNtuRawSt;    // input data dsc
+   TAGdataDsc*           fpNtuHitSt;    // input data dsc
    TAGdataDsc*           fpDatRawBm;    // input data dsc
-   TAGdataDsc*           fpNtuRawBm;    // input data dsc
-   TAGdataDsc*           fpNtuRawVtx;     // input ntu data dsc
-   TAGdataDsc*           fpNtuRawIt;     // input ntu data dsc
+   TAGdataDsc*           fpNtuHitBm;    // input data dsc
+   TAGdataDsc*           fpNtuHitVtx;     // input ntu data dsc
+   TAGdataDsc*           fpNtuHitIt;     // input ntu data dsc
    TAGdataDsc*           fpDatRawMsd;    // input data dsc
-   TAGdataDsc*           fpNtuRawMsd;     // input ntu data dsc
+   TAGdataDsc*           fpNtuHitMsd;     // input ntu data dsc
    TAGdataDsc*           fpDatRawTw;     // input data dsc
-   TAGdataDsc*           fpNtuRawTw;     // input data dsc
+   TAGdataDsc*           fpNtuHitTw;     // input data dsc
    TAGdataDsc*           fpDatRawCa;     // input data dsc
-   TAGdataDsc*           fpNtuRawCa;     // input data dsc
+   TAGdataDsc*           fpNtuHitCa;     // input data dsc
 
    TAGdataDsc*           fpNtuClusVtx;	  // input cluster data dsc
    TAGdataDsc*           fpNtuClusIt;	  // input cluster data dsc
@@ -308,7 +310,7 @@ protected:
    TAGdataDsc*           fpNtuClusCa;     // input cluster data dsc
   
    TAGdataDsc*           fpNtuMcEvt;    // input data dsc
-   TAGdataDsc*           fpNtuMcEve;    // input data dsc
+   TAGdataDsc*           fpNtuMcTrk;    // input data dsc
    TAGdataDsc*           fpNtuMcReg;    // input data dsc
    TAGdataDsc*           fpNtuMcSt;    // input data dsc
    TAGdataDsc*           fpNtuMcBm;    // input data dsc
@@ -326,7 +328,7 @@ protected:
    TAGdataDsc*           fpNtuVtx;        // input Vtx data dsc
 
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
-   TAGdataDsc*           fpNtuTrackIr;     // input data dsc
+   TAGdataDsc*           fpNtuGlbTrackK;      // input data dsc
 
    TAGactionFile*        fActEvtReader;
    TAGactTreeWriter*     fActEvtWriter;  // write histo and tree
@@ -343,7 +345,6 @@ protected:
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
    TAMSDactNtuPoint*     fActPointMsd;   // action for point in MSD
 
-   // TATWactNtuRaw*        fActNtuRawTw;  // action for ntu data
    TATWactNtuPoint*      fActPointTw;    // action for clusters
    TATWactCalibTW*       fActCalibTw;
 
@@ -353,9 +354,10 @@ protected:
    TATOEbaseCutter*          fActRecCutter;     //action to determine optimal cuts for TOE given geometry
     
    TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
+   TAGactNtuGlbTrackS*   fActGlbTrackS;     // action for straight tracks
   
    GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
-   KFitter*               fActGlbkFitter;    // Global tracking kalman Fitter
+   TAGactKFitter*         fActGlbkFitter;    // Global tracking kalman Fitter
 
    
    Bool_t                fFlagOut;       // flag for output file
@@ -381,9 +383,9 @@ protected:
    void CreateRecActionMsd();
    void CreateRecActionTw();
    void CreateRecActionCa();
-   void CreateRecActionGlb() ;
-   void CreateRecActionGlbGF() ;
-   void CreateRecActionIr();
+   void CreateRecActionGlb();
+   void CreateRecActionGlbGF();
+   void CreateRecActionGlbS();
 
 protected:
    static Bool_t fgItrTrackFlag;

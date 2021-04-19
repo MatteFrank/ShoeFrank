@@ -39,6 +39,7 @@
 #include "G4RunManager.hh"
 #include "G4VisAttributes.hh"
 
+#include "TAGrecoManager.hxx"
 #include "TAGparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
@@ -110,7 +111,7 @@ G4LogicalVolume* TCGtargetConstructor::Construct()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCGtargetConstructor::BuildCubicTarget()
 {
-   Info("BuildCubicTarget()", "Build cubic target ");
+   InfoMcMsg("BuildCubicTarget()", "Build cubic target ");
    
    //build the dimension of target
    TVector3 size(fpParGeo->GetTargetPar().Size[0]*cm, fpParGeo->GetTargetPar().Size[1]*cm,
@@ -246,11 +247,6 @@ void TCGtargetConstructor::DefineMaterial()
    pmma->AddMaterial(C, fractionmass = 59.98*perCent);
    pmma->AddMaterial(O, fractionmass = 31.96*perCent);
    pmma->AddMaterial(H, fractionmass =  8.05*perCent);
-   
-   //Air
-   G4Material* Air = new G4Material(name = "Air", density= 1.29*mg/cm3, ncomponents=2);
-   Air->AddMaterial(N, 70*perCent);
-   Air->AddMaterial(O, 30*perCent);
    
    //Bone
    G4Material* Bone = new G4Material(name = "Bone", density= 1.85*g/cm3, ncomponents=9);

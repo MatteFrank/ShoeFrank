@@ -11,7 +11,7 @@
 
 class TAMSDntuCluster;
 class TAMSDcluster;
-class TAMSDntuHit;
+class TAMSDhit;
 class TAMSDparGeo;
 
 class TAMSDactNtuCluster : public TAGactNtuCluster1D {

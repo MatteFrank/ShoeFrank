@@ -12,7 +12,7 @@
 #include "TObjString.h"
 #include "TSystem.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TADIparGeo.hxx"
 #include "TAGroot.hxx"
@@ -88,7 +88,14 @@ Bool_t TADIparGeo::FromFile(const TString& name)
          cout << "   Field map upper bound: "
          << Form("%f %f %f", fMapLimUp[0], fMapLimUp[1], fMapLimUp[2]) << endl;
    }
-   
+  
+   if (fType == 0) {
+     ReadVector3(fMagCstValue);
+     if(FootDebugLevel(1))
+       cout << "   Field constant value "
+       << Form("%f %f %f", fMagCstValue[0], fMagCstValue[1], fMagCstValue[2]) << endl;
+   }
+  
    // Read cover thickness
    ReadItem(fShieldThick);
    if(FootDebugLevel(1))
@@ -366,7 +373,7 @@ string TADIparGeo::PrintRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeDI()){
+  if(TAGrecoManager::GetPar()->IncludeDI()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
@@ -456,7 +463,7 @@ string TADIparGeo::PrintBodies(){
    
    stringstream ss;
    
-   if ( GlobalPar::GetPar()->IncludeDI()){   
+   if ( TAGrecoManager::GetPar()->IncludeDI()){   
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
@@ -529,7 +536,7 @@ string TADIparGeo::PrintRegions(){
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeDI()){
+  if(TAGrecoManager::GetPar()->IncludeDI()){
 
     string name;
 
@@ -574,7 +581,7 @@ string TADIparGeo::PrintAssignMaterial(TAGmaterials *Material) {
 
   stringstream ss;
   
-  if(GlobalPar::GetPar()->IncludeDI()){
+  if(TAGrecoManager::GetPar()->IncludeDI()){
 
     TString flkmatMag, flkmatShi;  
     
@@ -608,7 +615,7 @@ string TADIparGeo::PrintSubtractBodiesFromAir() {
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeDI()){
+  if(TAGrecoManager::GetPar()->IncludeDI()){
 
     if (fvBodyOut.size()==0 || fvBodyIn.size()==0 || fvBodyOut.size()!=fvBodyIn.size())
       cout << "Error: DI body vectors not correctly filled!" << endl;
@@ -629,7 +636,7 @@ string TADIparGeo::PrintSubtractBodiesFromAir() {
  {   
    stringstream outstr;
     
-   if(GlobalPar::GetPar()->IncludeDI()){
+   if(TAGrecoManager::GetPar()->IncludeDI()){
      
      string precision = "D+00";
      

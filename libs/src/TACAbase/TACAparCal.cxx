@@ -9,12 +9,11 @@ ClassImp(TACAparCal)
 TString TACAparCal::fgkCrysStatus = "./config/TACACrysMapStatus.map";
 
 //_____________________________________________________________________
-TACAparCal::TACAparCal(TACAparMap *parMap)
-: TAGparTools(),
-  fParMap(parMap)
+TACAparCal::TACAparCal()
+: TAGparTools()
 {
   // Standard constructor
-  fMapCal = new TACAcalibrationMap(fParMap);
+  fMapCal = new TACAcalibrationMap();
   fParGeo = (TACAparGeo*)gTAGroot->FindParaDsc(TACAparGeo::GetDefParaName(), "TACAparGeo")->Object();
 }
 
@@ -51,34 +50,17 @@ Bool_t TACAparCal::FromCalibTempFile(const TString& name)
 //_________________________________________
 Bool_t TACAparCal::LoadEnergyCalibrationMap(TString name)
 {
-  if (!Open(name)) {
-    Error("FromFile()", "Cannot open file %s", name.Data());
-    return false;
-  }
-  
-  // read for parameter
-  Double_t* parameters = new Double_t[4];
-  Int_t crysId = -1;
-  
-  for (Int_t i = 0; i < fParGeo->GetCrystalsN(); ++i) { // Loop over crystal
-
-    // Read crystal Id
-    ReadItem(crysId);
-    
-    // read parameters
-    ReadItem(parameters, 4, ' ', false);
-    
-    // fill map
-    for (Int_t p = 0; p < 4; p++) { // Loop over parameters
-      fCalibElossMapCrys[crysId].push_back(parameters[p]);
-    }
-  }
-  
-  delete [] parameters;
-  
-  Close();
-  
-  return true;
+   Clear();
+   
+   TString name_calib_en_cry = name;
+   
+   gSystem->ExpandPathName(name_calib_en_cry);
+   
+   fMapCal->LoadEnergyCalibrationMap(name_calib_en_cry.Data());
+   
+   Info("FromCalibFile()", "Open file %s for calibration\n", name_calib_en_cry.Data());
+   
+   return kFALSE;
 }
 
 //_____________________________________________________________________
@@ -116,13 +98,19 @@ Bool_t TACAparCal::LoadTofCalibrationMap(TString name)
 }
 
 //_____________________________________________________________________
-Double_t TACAparCal::GetElossParameter(Int_t crysId, UInt_t ParameterNumber)
+Double_t TACAparCal::GetTemperatureCry(Int_t crysId)
 {
-    return fCalibElossMapCrys[crysId][ParameterNumber];
+   return fMapCal->GetTemperatureCry(crysId);
 }
 
 //_____________________________________________________________________
-Double_t TACAparCal::GetTofParameter(Int_t crysId, UInt_t ParameterNumber)
+Double_t TACAparCal::GetElossParam(Int_t crysId, UInt_t ParameterNumber)
+{
+    return fMapCal->GetElossParam(crysId, ParameterNumber);
+}
+
+//_____________________________________________________________________
+Double_t TACAparCal::GetTofParam(Int_t crysId, UInt_t ParameterNumber)
 {
     return fCalibTofMapCrys[crysId][ParameterNumber];
 }

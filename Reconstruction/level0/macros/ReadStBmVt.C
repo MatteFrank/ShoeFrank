@@ -20,30 +20,30 @@
 
 #include "TAGparGeo.hxx"
 
-#include "TASTdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 #include "TASTparMap.hxx"
 #include "TASTparTime.hxx"
 
 #include "TABMparGeo.hxx"
 #include "TABMparConf.hxx"
-#include "TABMdatRaw.hxx"
-#include "TABMNtuRaw.hxx"
+#include "TABMntuRaw.hxx"
+#include "TABMntuHit.hxx"
 
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 #include "TASTactDatRaw.hxx"
-#include "TABMactDatRaw.hxx"
 #include "TABMactNtuRaw.hxx"
+#include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
-#include "TAVTactNtuRaw.hxx"
+#include "TAVTactNtuHit.hxx"
 #include "TAVTactNtuClusterF.hxx"
 #include "TAVTactNtuTrackF.hxx"
 #include "TAVTactNtuVertexPD.hxx"
@@ -58,10 +58,10 @@ TAGdataDsc*         stDat     = 0x0;
 TAGdataDsc*         evDaq     = 0x0;
 TAGdataDsc*         bmTrack   = 0x0;
 TASTactDatRaw*      stActDat  = 0x0;
-TABMactDatRaw*      bmActDat  = 0x0;
-TABMactNtuRaw*      bmActNtu  = 0x0;
+TABMactNtuRaw*      bmActDat  = 0x0;
+TABMactNtuHit*      bmActNtu  = 0x0;
 TABMactNtuTrack*    bmActTrack  = 0x0;
-TAVTactNtuRaw*      vtActRaw  = 0x0;
+TAVTactNtuHit*      vtActRaw  = 0x0;
 TAVTactNtuClusterF* vtActClus = 0x0;
 TAVTactNtuTrackF*   vtActTrack = 0x0;
 TAVTactNtuVertexPD* vtActVtx  = 0x0;
@@ -78,7 +78,7 @@ void FillST()
 {
    TAGparaDsc* stMap  = new TAGparaDsc("stMap", new TASTparMap());
    evDaq              = new TAGdataDsc("evDaq", new TAGdaqEvent());
-   stDat              = new TAGdataDsc("stDat", new TASTdatRaw());
+   stDat              = new TAGdataDsc("stDat", new TASTntuRaw());
    TAGparaDsc* stTime = new TAGparaDsc("stTime", new TASTparTime());
 
    stActDat  = new TASTactDatRaw("stActDat", stDat, evDaq, stMap, stTime);
@@ -96,15 +96,15 @@ void FillBM()
    parconf->FromFile("./config/TABMdetector.cfg");
 
    TAGparaDsc* bmMap   = new TAGparaDsc("bmMap", new TABMparMap());
-   TAGdataDsc* bmDat   = new TAGdataDsc("bmDat", new TABMdatRaw());
-   TAGdataDsc* bmNtu   = new TAGdataDsc("bmNtu", new TABMntuRaw());
+   TAGdataDsc* bmDat   = new TAGdataDsc("bmDat", new TABMntuRaw());
+   TAGdataDsc* bmNtu   = new TAGdataDsc("bmNtu", new TABMntuHit());
                bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
 
 
-   bmActDat  = new TABMactDatRaw("bmActDat", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
+   bmActDat  = new TABMactNtuRaw("bmActDat", bmDat, evDaq, bmMap, bmConf, bmGeo, stDat);
    bmActDat->CreateHistogram();
    
-   bmActNtu = new TABMactNtuRaw("bmActNtu", bmNtu, bmDat, bmGeo, bmConf);
+   bmActNtu = new TABMactNtuHit("bmActNtu", bmNtu, bmDat, bmGeo, bmConf);
    bmActNtu->CreateHistogram();
 
    bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmNtu, bmGeo, bmConf, tgGeo);
@@ -127,14 +127,14 @@ void FillVertex()
    parconf->FromFile("./config/TAVTdetector.cfg");
    
    TAVTparConf::SetHistoMap();
-   TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuRaw());
+   TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuHit());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
    TAGdataDsc* vtVtx    =  new TAGdataDsc("vtVtx",   new TAVTntuVertex());
 
    daqActReader  = new TAGactDaqReader("daqActReader", evDaq);
    
-   vtActRaw  = new TAVTactNtuRaw("vtActRaw", vtNtu, evDaq, vtGeo, vtConf, vtMap);
+   vtActRaw  = new TAVTactNtuHit("vtActRaw", vtNtu, evDaq, vtGeo, vtConf, vtMap);
    vtActRaw->CreateHistogram();
    
    vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);

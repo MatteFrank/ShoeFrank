@@ -2,10 +2,9 @@
 #include <TStopwatch.h>
 #include <TApplication.h>
 
-#include "GlobalPar.hxx"
-#include "LocalRecoMC.hxx"
+#include "TAGrecoManager.hxx"
 #include "LocalReco.hxx"
-#include "LocalRecoNtuMC.hxx"
+#include "LocalRecoMC.hxx"
 #include "GlobalToeReco.hxx"
 
 // executabel to read back from local reconstruction tree or from MC/raw data
@@ -57,38 +56,36 @@ int main (int argc, char *argv[])  {
    
    TApplication::CreateApplication();
    
-   GlobalPar::Instance(exp);
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(exp);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
-   Bool_t lrc = GlobalPar::GetPar()->IsLocalReco();
-   Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
-   Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
-   Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
-   Bool_t trk = GlobalPar::GetPar()->IsTracking();
-   Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
-   Bool_t zmc = GlobalPar::GetPar()->IsTWZmc();
-   Bool_t zrec = GlobalPar::GetPar()->IsTWnoPU();
-   Bool_t zmatch = GlobalPar::GetPar()->IsTWZmatch();
-   Bool_t tbc = GlobalPar::GetPar()->IsTWCalBar();
+   Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
+   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
+   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
+   Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
+   Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
+   Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
+   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
+   Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
 
-   GlobalPar::GetPar()->IncludeTOE(true);
-   GlobalPar::GetPar()->IncludeKalman(false);
+   TAGrecoManager::GetPar()->IncludeTOE(true);
+   TAGrecoManager::GetPar()->IncludeKalman(false);
 
    BaseReco* glbRec = 0x0;
    
    if (lrc)
       glbRec = new GlobalToeReco(exp, runNb, in, out, mc);
    else if (mc) {
-      if (!obj)
-         glbRec = new LocalRecoMC(exp, runNb, in, out);
-      else
-         glbRec = new LocalRecoNtuMC(exp, runNb, in, out);
+     glbRec = new LocalRecoMC(exp, runNb, in, out);
+     
       if(zmc)
          glbRec->EnableZfromMCtrue();
       if(zrec && !zmc)
-	 glbRec->EnableZrecWithPUoff();
+        glbRec->EnableZrecWithPUoff();
       if(zmatch)
-	glbRec->EnableTWZmatch();
+        glbRec->EnableTWZmatch();
 
    } else {
      glbRec = new LocalReco(exp, runNb, in, out);

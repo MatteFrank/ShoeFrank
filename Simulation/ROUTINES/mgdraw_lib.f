@@ -159,6 +159,7 @@ c
          pyinSTC(nSTC_now) = sngl(ptrack*cytrck)
          pzinSTC(nSTC_now) = sngl(ptrack*cztrck)
          timSTC(nSTC_now)  = sngl(atrack)
+         deSTC(nSTC_now) = 0.
       endif
 c 
       xoutSTC(nSTC_now) = sngl(xcordout)
@@ -248,6 +249,7 @@ c
          iviewBMN(nBMN_now) = iview
          ilayBMN(nBMN_now)  = ilay
          icellBMN(nBMN_now) = icell
+         deBMN(nBMN_now) = 0.
       endif
 c 
       xoutBMN(nBMN_now) = sngl(xcordout)
@@ -349,6 +351,7 @@ c
          pyinVTX(nVTX_now) = sngl(ptrack*cytrck)
          pzinVTX(nVTX_now) = sngl(ptrack*cztrck)
          timVTX(nVTX_now)  = sngl(atrack)
+         deVTX(nVTX_now) = 0.
       endif
 c 
       xoutVTX(nVTX_now) = sngl(xcordout)
@@ -483,6 +486,7 @@ c         ilayITR(nITR_now) = ilay
          pyinITR(nITR_now) = sngl(ptrack*cytrck)
          pzinITR(nITR_now) = sngl(ptrack*cztrck)
          timITR(nITR_now)  = sngl(atrack)
+         deITR(nITR_now) = 0.
       endif
 c 
       xoutITR(nITR_now) = sngl(xcordout)
@@ -571,6 +575,7 @@ c
          pzinMSD(nMSD_now)  = sngl(ptrack*cztrck)
          timMSD(nMSD_now)   = sngl(atrack)
          ilayMSD(nMSD_now)  = ilay 
+         deMSD(nMSD_now) = 0.
       endif
 c 
       xoutMSD(nMSD_now) = sngl(xcordout)
@@ -666,6 +671,7 @@ c
          pyinSCN(nSCN_now) = sngl(ptrack*cytrck)
          pzinSCN(nSCN_now) = sngl(ptrack*cztrck)
          timSCN(nSCN_now)  = sngl(atrack)
+         deSCN(nSCN_now) = 0.         
       endif
 c 
       xoutSCN(nSCN_now) = sngl(xcordout)
@@ -750,6 +756,7 @@ c
          pyinCAL(nCAL_now) = sngl(ptrack*cytrck)
          pzinCAL(nCAL_now) = sngl(ptrack*cztrck)
          timCAL(nCAL_now)  = sngl(atrack)
+         deCAL(nCAL_now) = 0.
       endif
 c 
       xoutCAL(nCAL_now) = sngl(xcordout)

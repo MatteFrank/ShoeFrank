@@ -19,7 +19,7 @@ TACAcluster::TACAcluster()
    fPosErrorG(0., 0., 0.),
    fListOfHits(0x0),
    fIndexSeed(-1),
-   fCharge(0.),
+   fEnergy(0.),
    fIsValid(kFALSE)
 {
    SetupClones();
@@ -29,7 +29,7 @@ TACAcluster::TACAcluster()
 //
 void TACAcluster::SetupClones()
 {
-   fListOfHits = new TClonesArray("TACAntuHit");
+   fListOfHits = new TClonesArray("TACAhit");
    fListOfHits->SetOwner(true);
 }
 
@@ -42,7 +42,7 @@ TACAcluster::TACAcluster(const TACAcluster& cluster)
    fPositionG(cluster.fPositionG),
    fPosErrorG(cluster.fPosErrorG),
    fIndexSeed(cluster.fIndexSeed),
-   fCharge(cluster.fCharge),
+   fEnergy(cluster.fEnergy),
    fIsValid(cluster.fIsValid)
 {
    // TACAcluster constructor
@@ -82,10 +82,10 @@ void TACAcluster::SetPositionG(TVector3& posGlo)
 
 //______________________________________________________________________________
 // 
-TACAntuHit* TACAcluster::GetHit(Int_t idx)
+TACAhit* TACAcluster::GetHit(Int_t idx)
 { 
    if (idx >=0 && idx < fListOfHits->GetEntries())
-	  return (TACAntuHit*)fListOfHits->At(idx);
+	  return (TACAhit*)fListOfHits->At(idx);
    else
 	  return 0x0;
 }
@@ -99,7 +99,7 @@ void TACAcluster::ResetHits()
 
 //______________________________________________________________________________
 //
-void TACAcluster::AddHit(TACAntuHit* hit)
+void TACAcluster::AddHit(TACAhit* hit)
 {
    for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
       Int_t idx = hit->GetMcTrackIdx(k);
@@ -107,7 +107,7 @@ void TACAcluster::AddHit(TACAntuHit* hit)
    }
    
    TClonesArray &pixelArray = *fListOfHits;
-   new(pixelArray[pixelArray.GetEntriesFast()]) TACAntuHit(*hit);
+   new(pixelArray[pixelArray.GetEntriesFast()]) TACAhit(*hit);
 }
 
 //###############################################################################
@@ -195,7 +195,7 @@ TACAcluster* TACAntuCluster::NewCluster()
    TClonesArray &clusterArray = *GetListOfClusters();
    TACAcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TACAcluster();
    cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
-
+  
    return cluster;
 }
 

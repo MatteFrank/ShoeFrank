@@ -4,10 +4,10 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class TAVTntuRaw+;
-
-#pragma link C++ class TAVTbaseNtuHit+;
 #pragma link C++ class TAVTntuHit+;
+
+#pragma link C++ class TAVTbaseHit+;
+#pragma link C++ class TAVThit+;
 
 #pragma link C++ class TAVTbaseParMap+;
 #pragma link C++ class TAVTparMap+;
@@ -23,15 +23,14 @@
 
 
 #pragma link C++ class TAVTactBaseRaw+;
-#pragma link C++ class TAVTactBaseNtuRaw+;
+#pragma link C++ class TAVTactBaseNtuHit+;
 #pragma link C++ class TAVTactVmeReader+;
 #pragma link C++ class TAVTactVmeWriter+;
 #pragma link C++ class TAVTactStdRaw+;
 #pragma link C++ class TAVTactStdDaqRaw+;
-#pragma link C++ class TAVTactNtuRaw+;
+#pragma link C++ class TAVTactNtuHit+;
 
-#pragma link C++ class TAVTactBaseNtuMC+;
-#pragma link C++ class TAVTactNtuMC+;
+#pragma link C++ class TAVTactBaseNtuHitMC+;
 #pragma link C++ class TAVTactNtuHitMC+;
 
 #pragma link C++ class TAVTntuCluster+;

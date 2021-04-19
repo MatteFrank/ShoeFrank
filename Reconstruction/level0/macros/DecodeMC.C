@@ -7,8 +7,8 @@
 #include <TString.h>
 #include <TStopwatch.h>
 
-#include "GlobalPar.hxx"
-#include "LocalRecoNtuMC.hxx"
+#include "TAGrecoManager.hxx"
+#include "LocalRecoMC.hxx"
 
 #endif
 
@@ -18,23 +18,21 @@
 //void ReadVtxRawMC(TString name = "12C_80_vtx.root")
 void DecodeMC(TString name = "12C_C_200_1.root", TString exp = "12C_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance(exp);
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(exp);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    Int_t pos = name.Last('.');
    TString nameOut = name(0, pos);
    nameOut.Append("_Out.root");
   
-   GlobalPar::Instance(exp);
-   GlobalPar::GetPar()->Print();
+   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
+   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
+   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
+   Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
+   Bool_t zmc = TAGrecoManager::GetPar()->IsTofZmc();
   
-   Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
-   Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
-   Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
-   Bool_t trk = GlobalPar::GetPar()->IsTracking();
-   Bool_t zmc = GlobalPar::GetPar()->IsTofZmc();
-  
-   LocalRecoNMtuC* locRec = new LocalRecoNtuMC(exp, runNumber, name, nameOut);
+   LocalRecoNMtuC* locRec = new LocalRecoMC(exp, runNumber, name, nameOut);
    
    // global setting
    if (ntu)

@@ -28,30 +28,30 @@
 #include "TATWparCal.hxx"
 #include "TATWparMap.hxx"
 #include "TATWparTime.hxx"
-#include "TASTdatRaw.hxx"
-#include "TATWdatRaw.hxx"
-#include "TATWactNtuRaw.hxx"
+#include "TASTntuRaw.hxx"
+#include "TATWntuRaw.hxx"
+#include "TATWactNtuHit.hxx"
 #include "TAGactWDreader.hxx"
-#include "TASTactNtuRaw.hxx"
+#include "TASTactNtuHit.hxx"
 
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
-#include "TABMdatRaw.hxx"
 #include "TABMntuRaw.hxx"
-#include "TABMactDatRaw.hxx"
+#include "TABMntuHit.hxx"
 #include "TABMactNtuRaw.hxx"
+#include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
 TAGactDaqReader*  daqActReader = 0x0;
-TABMactDatRaw* bmActDatRaw  = 0x0;
+TABMactNtuRaw* bmActDatRaw  = 0x0;
 TAGactWDreader*      wdActRaw  = 0x0;
-//~ TATWactNtuRaw*      twActNtu  = 0x0;
-TASTactNtuRaw*   stActNtuRaw  = 0x0;
+//~ TATWactNtuHit*      twActNtu  = 0x0;
+TASTactNtuHit*   stActNtuRaw  = 0x0;
 
 void FillStBm(TString expName) {
   
@@ -136,20 +136,20 @@ void FillStBm(TString expName) {
   //~ parTimeSt->FromFile(expname.Data(), 2190);
  
   //ST-TW TAGdataDsc
-  TAGdataDsc* stDat   = new TAGdataDsc("stDat", new TASTdatRaw());
-  TAGdataDsc* twDat   = new TAGdataDsc("twdDat", new TATWdatRaw());
+  TAGdataDsc* stDat   = new TAGdataDsc("stDat", new TASTntuRaw());
+  TAGdataDsc* twDat   = new TAGdataDsc("twdDat", new TATWntuRaw());
   wdActRaw  = new TAGactWDreader("wdActRaw", twDaq, stDat, twDat, parMapSt, parMapTw, parTimeSt, parTimeTw);
-  TAGdataDsc* twNtu  = new TAGdataDsc("twNtu", new TATWntuRaw());
-  //~ twActNtu  = new TATWactNtuRaw("twNtuRaw", twDat, twNtu, parGeoTw, parMapTw, parCalTw);
-  TAGdataDsc* stNtuRaw   = new TAGdataDsc("stNtu", new TASTntuRaw());
-  stActNtuRaw = new TASTactNtuRaw("stActNtuRaw", stDat, stNtuRaw, parMapSt);
+  TAGdataDsc* twNtu  = new TAGdataDsc("twNtu", new TATWntuHit());
+  //~ twActNtu  = new TATWactNtuHit("twNtuRaw", twDat, twNtu, parGeoTw, parMapTw, parCalTw);
+  TAGdataDsc* stNtuRaw   = new TAGdataDsc("stNtu", new TASTntuHit());
+  stActNtuRaw = new TASTactNtuHit("stActNtuRaw", stDat, stNtuRaw, parMapSt);
 
  
   //Bm TAGdataDsc
-   //~ TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTdatRaw());
+   //~ TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTntuRaw());
    //~ stActDatRaw  = new TASTactDatRaw("stActDatRaw", stDatRaw,bmDaq,stMap, fpParTimeSt);
-  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMdatRaw());
-  bmActDatRaw  = new TABMactDatRaw("bmActDatRaw", bmDatRaw, twDaq, bmMap, bmConf, bmGeo,stNtuRaw);  
+  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMntuRaw());
+  bmActDatRaw  = new TABMactNtuRaw("bmActDatRaw", bmDatRaw, twDaq, bmMap, bmConf, bmGeo,stNtuRaw);  
   
   return;
 }
@@ -283,8 +283,9 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
    out_filename.Prepend("bmraw_");
    out_filename.Append(".root");
       
-   GlobalPar::Instance();
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance();
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
 
    TAGroot tagr;
    TAGgeoTrafo geoTrafo;
@@ -315,8 +316,8 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
    TABMparGeo* bmgeo = (TABMparGeo*)(tagr.FindParaDsc("bmGeo","TABMparGeo")->Object());
    TABMparConf* bmcon = (TABMparConf*)(tagr.FindParaDsc("bmConf","TABMparConf")->Object());
    TABMparMap* bmmap = (TABMparMap*)(tagr.FindParaDsc("bmMap","TABMparMap")->Object());
-   TASTntuRaw* stnturaw;
-   TABMdatRaw* pbmdatraw;
+   TASTntuHit* stnturaw;
+   TABMntuRaw* pbmdatraw;
    TAGdaqEvent*   p_datdaq;
    int nFragments, channel, measurement;
    char tmp_char[200];
@@ -336,8 +337,8 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
         bmtrigger=-1000;
         sttrigger=-1000;
         p_datdaq = (TAGdaqEvent*)(tagr.FindDataDsc("twDaq","TAGdaqEvent")->Object());
-        pbmdatraw = (TABMdatRaw*)(tagr.FindDataDsc("bmDat", "TABMdatRaw")->Object());
-        stnturaw = (TASTntuRaw*)(tagr.FindDataDsc("stNtu", "TASTntuRaw")->Object());
+        pbmdatraw = (TABMntuRaw*)(tagr.FindDataDsc("bmDat", "TABMntuRaw")->Object());
+        stnturaw = (TASTntuHit*)(tagr.FindDataDsc("stNtu", "TASTntuHit")->Object());
         nFragments = p_datdaq->GetFragmentsN();
         for (Int_t i = 0; i < nFragments; i++) {       
           type=p_datdaq->GetClassType(i);

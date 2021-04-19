@@ -5,13 +5,13 @@
  */
 #include "TAGgeoTrafo.hxx"
 
-#include "TATWdatRaw.hxx"
+#include "TATWntuRaw.hxx"
 #include "TATWparCal.hxx"
 #include "TATWactNtuHitMC.hxx"
 #include "TAMCflukaParser.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TATWdigitizer.hxx"
 
@@ -51,9 +51,9 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    if (fEventStruct == 0x0) {
      AddDataIn(p_ntuMC, "TAMCntuHit");
      AddDataIn(p_ntuStMC, "TAMCntuHit");
-     AddDataIn(p_ntuEve, "TAMCntuEve");
+     AddDataIn(p_ntuEve, "TAMCntuPart");
    } 
-   AddDataOut(p_hitraw, "TATWntuRaw");
+   AddDataOut(p_hitraw, "TATWntuHit");
    AddPara(p_parcal,"TATWparCal");
    AddPara(p_parGeoG,"TAGparGeo");
    
@@ -170,7 +170,7 @@ void TATWactNtuHitMC::CreateHistogram()
 //! Create digitizer
 void TATWactNtuHitMC::CreateDigitizer()
 {
-   TATWntuRaw* pNtuRaw = (TATWntuRaw*) fpNtuRaw->Object();
+   TATWntuHit* pNtuRaw = (TATWntuHit*) fpNtuRaw->Object();
    
    fDigitizer = new TATWdigitizer(pNtuRaw);
 }
@@ -185,12 +185,12 @@ bool TATWactNtuHitMC::Action() {
   
    TAMCntuHit* pNtuMC   = 0x0;
    TAMCntuHit* pNtuStMC = 0x0;
-   TAMCntuEve* pNtuEve  = 0x0;
+   TAMCntuPart* pNtuEve  = 0x0;
   
   if (fEventStruct == 0x0) {
     pNtuMC   = (TAMCntuHit*) fpNtuMC->Object();
     pNtuStMC = (TAMCntuHit*) fpNtuStMC->Object();
-    pNtuEve  = (TAMCntuEve*) fpNtuEve->Object();
+    pNtuEve  = (TAMCntuPart*) fpNtuEve->Object();
   } else {
     pNtuMC   = TAMCflukaParser::GetTofHits(fEventStruct, fpNtuMC);
     pNtuStMC = TAMCflukaParser::GetStcHits(fEventStruct, fpNtuStMC);
@@ -228,7 +228,7 @@ bool TATWactNtuHitMC::Action() {
      Float_t edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();
      Float_t time  = hitMC->GetTof()*TAGgeoTrafo::SecToPs();
      // get true charge
-     TAMCeveTrack*  track = pNtuEve->GetTrack(trackId);
+     TAMCpart*  track = pNtuEve->GetTrack(trackId);
      Int_t  Z = track->GetCharge();
      
       if(FootDebugLevel(4))
@@ -334,7 +334,7 @@ bool TATWactNtuHitMC::Action() {
       
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, timeST, time, barId, Z);
       
-      TATWntuHit* hit = fDigitizer->GetCurrentHit();
+      TATWhit* hit = fDigitizer->GetCurrentHit();
       hit->AddMcTrackIdx(trackId, i);
       
       fMapPU[barId] = hit;
@@ -353,7 +353,7 @@ bool TATWactNtuHitMC::Action() {
      
      for(auto it=fVecPuOff.begin(); it !=fVecPuOff.end(); ++it) {
        
-       TATWntuHit* hit = *it;
+       TATWhit* hit = *it;
        
        Int_t layer = hit->GetLayer();
        Int_t bar = hit->GetBar();
@@ -444,7 +444,7 @@ bool TATWactNtuHitMC::Action() {
      
      for(auto it=fMapPU.begin(); it !=fMapPU.end(); ++it) {
        
-       TATWntuHit* hit = it->second;
+       TATWhit* hit = it->second;
        
        Int_t layer = hit->GetLayer();
        Int_t bar = hit->GetBar();

@@ -8,7 +8,8 @@
 #include "TVector3.h"
 
 class TAMCntuHit ;
-class TAMCntuEve ;
+class TAMCntuEvent ;
+class TAMCntuPart ;
 class TAMCntuRegion;
 class TAMCntuEvent ;
 using namespace std;
@@ -69,19 +70,19 @@ class TAMCevent : public TObject {
 public:
    // Getters
    TAMCntuEvent*  GetNtuEvent() const { return fEvent;  }
-   TAMCntuEve*    GetNtuEve() const { return fTrack;  }
-   TAMCntuRegion* GetNtuReg() const { return fRegion; }
-   TAMCntuHit*    GetHitSTC() const { return fHitSTC; }
-   TAMCntuHit*    GetHitBMN() const { return fHitBMN; }
-   TAMCntuHit*    GetHitVTX() const { return fHitVTX; }
-   TAMCntuHit*    GetHitITR() const { return fHitITR; }
-   TAMCntuHit*    GetHitMSD() const { return fHitMSD; }
-   TAMCntuHit*    GetHitTW()  const { return fHitTW;  }
-   TAMCntuHit*    GetHitCAL() const { return fHitCAL; }
+   TAMCntuPart*  GetNtuTrack() const { return fTrack;  }
+   TAMCntuRegion* GetNtuReg()   const { return fRegion; }
+   TAMCntuHit*    GetHitSTC()   const { return fHitSTC; }
+   TAMCntuHit*    GetHitBMN()   const { return fHitBMN; }
+   TAMCntuHit*    GetHitVTX()   const { return fHitVTX; }
+   TAMCntuHit*    GetHitITR()   const { return fHitITR; }
+   TAMCntuHit*    GetHitMSD()   const { return fHitMSD; }
+   TAMCntuHit*    GetHitTW()    const { return fHitTW;  }
+   TAMCntuHit*    GetHitCAL()   const { return fHitCAL; }
 
  private:
    TAMCntuEvent*  fEvent;
-   TAMCntuEve*    fTrack;
+   TAMCntuPart*  fTrack;
    TAMCntuRegion* fRegion;
    TAMCntuHit*    fHitSTC;
    TAMCntuHit*    fHitBMN;

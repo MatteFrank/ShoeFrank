@@ -14,7 +14,7 @@
 #include "TAGparTools.hxx"
 #include "TAGmaterials.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 
 //##############################################################################

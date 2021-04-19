@@ -21,7 +21,7 @@
 #include <TArrayD.h>
 #include <TMath.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TAIRmillepede.hxx"
 
@@ -366,7 +366,7 @@ Int_t TAIRmillepede::SetLocalEquation(double dergb[], double derlc[], double lMe
 		 iLocLast = i;     // last index
 	  }
    }
-   FootDebug(2, "SetLocalEquation()", Form("%d / %d",iLocFirst, iLocLast));
+   FootDebugLine(2, "SetLocalEquation()", Form("%d / %d",iLocFirst, iLocLast));
    
    for (int i=0; i<fNGlobalPar; i++) { // Idem for global parameters
 	  if (dergb[i]!=0.0) {
@@ -376,7 +376,7 @@ Int_t TAIRmillepede::SetLocalEquation(double dergb[], double derlc[], double lMe
 		 iGlobLast = i; 	 // last index
 	  }
    }
-   FootDebug(2, "SetLocalEquation()", Form("%d / %d",iGlobFirst,iGlobLast));
+   FootDebugLine(2, "SetLocalEquation()", Form("%d / %d",iGlobFirst,iGlobLast));
    
    if (fNIndexLocEq==fIndexLocEq.GetSize()) fIndexLocEq.Set(2*fNIndexLocEq);
    fIndexLocEq.AddAt(-1,fNIndexLocEq++);    
@@ -409,7 +409,7 @@ Int_t TAIRmillepede::SetLocalEquation(double dergb[], double derlc[], double lMe
 	  }
    }
    
-   FootDebug(2, "SetLocalEquation()", Form("Out Equloc --  NST = %d",fNDerivLocEq));
+   FootDebugLine(2, "SetLocalEquation()", Form("Out Equloc --  NST = %d",fNDerivLocEq));
    return 1; 	
 }
 
@@ -478,8 +478,8 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 	  fLocEqPlace.AddAt(fNIndexAllEqs,fNLocEqPlace++);
 	  
 	  
-      FootDebug(2, "LocalFit()", Form("FLocEqPlace size = %d",fLocEqPlace[iFit]));
-      FootDebug(2, "LocalFit()", Form("FIndexAllEqs size   = %d",fNIndexAllEqs));
+      FootDebugLine(2, "LocalFit()", Form("FLocEqPlace size = %d",fLocEqPlace[iFit]));
+      FootDebugLine(2, "LocalFit()", Form("FIndexAllEqs size   = %d",fNIndexAllEqs));
    }
    
    
@@ -552,24 +552,24 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 			// 
 			for (i=iGloFirst; i<=iGloLast; i++) {
 			   iIdx = fIndexLocEq[i];              // Global param indice
-            FootDebug(2, "LocalFit()", Form("fDeltaPar[%d] = %f", iIdx, fDeltaPar[iIdx]));
-            FootDebug(2, "LocalFit()", Form("Starting misalignment = %f",fInitPar[iIdx]));
+            FootDebugLine(2, "LocalFit()", Form("fDeltaPar[%d] = %f", iIdx, fDeltaPar[iIdx]));
+            FootDebugLine(2, "LocalFit()", Form("Starting misalignment = %f",fInitPar[iIdx]));
 			   if (fIsNonLinear[iIdx] == 0)
 				  lMeas -= fDerivLocEq[i]*(fInitPar[iIdx]+fDeltaPar[iIdx]); // linear parameter
 			   else
 				  lMeas -= fDerivLocEq[i]*(fDeltaPar[iIdx]); // nonlinear parameter
 			}
-          FootDebug(2, "LocalFit()", Form("lMeas after global stuff removal = %f", lMeas));
+          FootDebugLine(2, "LocalFit()", Form("lMeas after global stuff removal = %f", lMeas));
 			
 			for (i=iLocFirst; i<=iLocLast; i++) { // Finally fill local matrix and vector
 			   iIdx = fIndexLocEq[i];   // Local param indice (the matrix line) 
 			   fVecBLoc[iIdx] += lWeight*lMeas*fDerivLocEq[i];  
-            FootDebug(2, "LocalFit()", Form("fVecBLoc[%d] = %f", iIdx, fVecBLoc[iIdx]));
+            FootDebugLine(2, "LocalFit()", Form("fVecBLoc[%d] = %f", iIdx, fVecBLoc[iIdx]));
 			   
 			   for (j=iLocFirst; j<=i ; j++) { // Symmetric matrix, don't bother j>i coeffs
 				  jIdx = fIndexLocEq[j];						
 				  fMatCLoc[iIdx][jIdx] += lWeight*fDerivLocEq[i]*fDerivLocEq[j];	    
-               FootDebug(2, "LocalFit()", Form("fMatCLoc[%d][%d] = %g", iIdx, jIdx, fMatCLoc[iIdx][jIdx]));
+               FootDebugLine(2, "LocalFit()", Form("fMatCLoc[%d][%d] = %g", iIdx, jIdx, fMatCLoc[iIdx][jIdx]));
 			   }
 			}
 			iMeas   = -1;
@@ -636,17 +636,17 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 			// 	int nDerLoc = iLocLast-iLocFirst+1;   // Number of local derivatives involved
 			// 	int nDerGlo = iGloLast-iGloFirst+1;   // Number of global derivatives involved
 			
-			// 	FootDebug(2,"LocalFit()", Form(". equation:  measured value %.6f +/- %.6f", lMeas, 1.0/TMath::Sqrt(lWeight)));
-			// 	FootDebug(2,"LocalFit()", Form("Number of derivatives (global, local): %d, %d",nDerGlo,nDerLoc));
-			// 	FootDebug(2,"LocalFit()", "Global derivatives are: (index/derivative/parvalue) ");
+			// 	FootDebugLine(2,"LocalFit()", Form(". equation:  measured value %.6f +/- %.6f", lMeas, 1.0/TMath::Sqrt(lWeight)));
+			// 	FootDebugLine(2,"LocalFit()", Form("Number of derivatives (global, local): %d, %d",nDerGlo,nDerLoc));
+			// 	FootDebugLine(2,"LocalFit()", "Global derivatives are: (index/derivative/parvalue) ");
 			
 			// 	for (i=iGloFirst; i<=iGloLast; i++) {
-			// 	  FootDebug(2,"LocalFit()", Form("%d / %.6f / %.6f",fIndexLocEq[i],fDerivLocEq[i],fInitPar[fIndexLocEq[i]]));
+			// 	  FootDebugLine(2,"LocalFit()", Form("%d / %.6f / %.6f",fIndexLocEq[i],fDerivLocEq[i],fInitPar[fIndexLocEq[i]]));
 			//      } 
 			
-			// 	FootDebug(2, "LocalFit()", "Local derivatives are: (index/derivative) ");
+			// 	FootDebugLine(2, "LocalFit()", "Local derivatives are: (index/derivative) ");
 			
-			// 	for (i=(ja+1); i<jb; i++) {FootDebug(2, "LocalFit()", "LocalFit()", Form("%d / %.6f",fIndexLocEq[i], fDerivLocEq[i]));}
+			// 	for (i=(ja+1); i<jb; i++) {FootDebugLine(2, "LocalFit()", "LocalFit()", Form("%d / %.6f",fIndexLocEq[i], fDerivLocEq[i]));}
 			
 			// Now suppress local and global parts to LMEAS;
 			//
@@ -665,11 +665,11 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 			}
 			
 			// lMeas contains now the residual value
-          FootDebug(2,"LocalFit()", Form("Residual value : %.6f", lMeas));
+          FootDebugLine(2,"LocalFit()", Form("Residual value : %.6f", lMeas));
 			
 			// reject the track if lMeas is too important (outlier)
 			if (TMath::Abs(lMeas) >= fResCutInit && fIter <= 1) {
-            FootDebug(2, "LocalFit()", "Rejected track !!!!!");
+            FootDebugLine(2, "LocalFit()", "Rejected track !!!!!");
 			   fNLocalFitsRejected++;      
 			   fIndexLocEq.Reset();  fNIndexLocEq=0; // reset stores and go to the next track 
 			   fDerivLocEq.Reset();  fNDerivLocEq=0;	  
@@ -677,7 +677,7 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 			}
 			
 			if (TMath::Abs(lMeas) >= fResCut && fIter > 1) {
-            FootDebug(2,"LocalFit()", "Rejected track !!!!!");
+            FootDebugLine(2,"LocalFit()", "Rejected track !!!!!");
 			   fNLocalFitsRejected++;      
 			   fIndexLocEq.Reset();  fNIndexLocEq=0; // reset stores and go to the next track 
 			   fDerivLocEq.Reset();  fNDerivLocEq=0;	  
@@ -768,14 +768,14 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 			   iIdx = fIndexLocEq[i];   // Global param indice (the matrix line)          
 			   
 			   fVecBGlo[iIdx] += lWeight*lMeas*fDerivLocEq[i];  
-            FootDebug(2, "LocalFit()", Form("fVecBGlo[%d] = %.6f", j, fVecBGlo[j] ));
+            FootDebugLine(2, "LocalFit()", Form("fVecBGlo[%d] = %.6f", j, fVecBGlo[j] ));
 			   
 			   // First of all, the global/global terms (exactly like local matrix)
 			   //	  
 			   for (j=iGloFirst; j<=iGloLast; j++) {	  
 				  jIdx = fIndexLocEq[j];			
 				  fMatCGlo[iIdx][jIdx] += lWeight*fDerivLocEq[i]*fDerivLocEq[j];
-               FootDebug(2, "LocalFit()", Form("fMatCGlo[%d][%d] = %.6f",iIdx,jIdx,fMatCGlo[iIdx][jIdx]));
+               FootDebugLine(2, "LocalFit()", Form("fMatCGlo[%d][%d] = %.6f",iIdx,jIdx,fMatCGlo[iIdx][jIdx]));
 			   } 
 			   
 			   // Now we have also rectangular matrices containing global/local terms.
@@ -795,7 +795,7 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 			   for (k=iLocFirst; k<=iLocLast ; k++) {
 				  kIdx = fIndexLocEq[k];						
 				  fMatCGloLoc[iIdxIdx][kIdx] += lWeight*fDerivLocEq[i]*fDerivLocEq[k];
-				  FootDebug(2, "LocalFit()", Form("fMatCGloLoc[%d][%d] = %.6f",iIdxIdx,kIdx,fMatCGloLoc[iIdxIdx][kIdx]));
+				  FootDebugLine(2, "LocalFit()", Form("fMatCGloLoc[%d][%d] = %.6f",iIdxIdx,kIdx,fMatCGloLoc[iIdxIdx][kIdx]));
 			   } 
 			}
 			iMeas   = -1;
@@ -995,9 +995,9 @@ Int_t TAIRmillepede::GlobalFit(double par[], double error[], double pull[])
 		 (i>0) ? iEqFirst = fLocEqPlace[i-1] : iEqFirst = 0;
 		 iEqLast = fLocEqPlace[i];
 		 
-        FootDebug(2, "GlobalFit()", Form("Track %d : ",i));
-        FootDebug(2, "GlobalFit()", Form("Starts at %d", iEqFirst));
-        FootDebug(2, "GlobalFit()", Form("Ends at %d",iEqLast));
+        FootDebugLine(2, "GlobalFit()", Form("Track %d : ",i));
+        FootDebugLine(2, "GlobalFit()", Form("Starts at %d", iEqFirst));
+        FootDebugLine(2, "GlobalFit()", Form("Ends at %d",iEqLast));
 		 
 		 if (fIndexAllEqs[iEqFirst] != -999) { // Fit is still OK      
 			fIndexLocEq.Reset();  fNIndexLocEq=0;

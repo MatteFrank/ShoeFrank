@@ -8,7 +8,9 @@
 /*------------------------------------------+---------------------------------*/
 #include "TTree.h"
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
+#include "TAMCntuRegion.hxx"
+#include "TAMCntuEvent.hxx"
 #include "EventStruct.hxx"
 
 #include "TAGobject.hxx"
@@ -21,15 +23,20 @@ public:
   virtual       ~TAMCflukaParser();
   
 public:
-  static TAMCntuHit*  GetStcHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  static TAMCntuHit*  GetBmHits( EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  static TAMCntuHit*  GetVtxHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  static TAMCntuHit*  GetItrHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  static TAMCntuHit*  GetMsdHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  static TAMCntuHit*  GetTofHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  static TAMCntuHit*  GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  static TAMCntuEve*  GetTracks( EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrck);
-  static void         FindBranches(TTree* rootTree, EVENT_STRUCT* evStr);
+  static TAMCntuHit*    GetStcHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*    GetBmHits( EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*    GetVtxHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*    GetItrHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*    GetMsdHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*    GetTofHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*    GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuPart*  GetTracks( EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrck);
+  static TAMCntuRegion* GetRegions(EVENT_STRUCT* evStr, TAGdataDsc* p_ntureg);
+  static TAMCntuEvent*  GetEvents(EVENT_STRUCT* evStr,  TAGdataDsc* p_ntuevt);
+
+  static void           FindBranches(TTree* rootTree, EVENT_STRUCT* evStr);
+  static void           CreateBranches(TTree* rootTree, EVENT_STRUCT* evStr, Bool_t reg = false);
+  static Bool_t         ResetEvent(EVENT_STRUCT* evStr);
 
 };
 

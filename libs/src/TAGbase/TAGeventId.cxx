@@ -16,10 +16,39 @@
 ClassImp(TAGeventId);
 
 //------------------------------------------+-----------------------------------
+//! Default constructor.
+
+TAGeventId::TAGeventId()
+: fiCam(-1),
+  fiRun(-1),
+  fiEvt(-1)
+{}
+
+//------------------------------------------+-----------------------------------
+//! Construct with campaign, run, and event number.
+
+TAGeventId::TAGeventId(Short_t i_cam, Short_t i_run, Int_t i_evt)
+: fiCam(i_cam),
+  fiRun(i_run),
+  fiEvt(i_evt)
+{}
+
+//------------------------------------------+-----------------------------------
 //! Destructor.
 
 TAGeventId::~TAGeventId()
 {}
+
+//------------------------------------------+-----------------------------------
+//! Clear event id.
+
+void TAGeventId::Clear()
+{
+  fiCam = -1;
+  fiRun = -1;
+  fiEvt = -1;
+  return;
+}
 
 //------------------------------------------+-----------------------------------
 //! operator =
@@ -55,3 +84,15 @@ void TAGeventId::Streamer(TBuffer &R__b)
 
   return;
 }
+
+//------------------------------------------+-----------------------------------
+/*!
+ \relates TAGeventId
+ \brief Returns true of event id's \a lhs and \a rhs are equal
+ */
+
+bool operator==(const TAGeventId& lhs, const TAGeventId& rhs)
+{
+  return lhs.fiCam==rhs.fiCam && lhs.fiRun==rhs.fiRun && lhs.fiEvt==rhs.fiEvt;
+}
+

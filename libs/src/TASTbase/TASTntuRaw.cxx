@@ -4,147 +4,217 @@
   \brief   Implementation of TASTntuRaw.
 */
 
+#include <string.h>
+#include <fstream>
+#include <bitset>
+using namespace std;
+#include <algorithm>
 #include "TString.h"
-
 #include "TASTntuRaw.hxx"
-
+#include "TGraph.h"
+#include "TCanvas.h"
+#include "TF1.h"
 /*!
   \class TASTntuRaw TASTntuRaw.hxx "TASTntuRaw.hxx"
   \brief Mapping and Geometry parameters for IR detectors. **
 */
 
-ClassImp(TASTntuHit);
+ClassImp(TASTrawHit);
+
+TString TASTntuRaw::fgkBranchName   = "stdat.";
+
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
-TASTntuHit::TASTntuHit()
- : TAGobject(),
-   fCharge(0.),
-   fTime(0.),
-   fDe(0.)
-{
-  Clear();
+TASTrawHit::TASTrawHit()
+  : TAGbaseWD(){
+   
+  fBaseline = -1000;
+  fPedestal = -1000;
+  fChg = -1000;
+  fAmplitude = -1000;
+  fTime =-1000;
 }
 
 //------------------------------------------+-----------------------------------
-//! Constructor
-TASTntuHit::TASTntuHit(Double_t charge, Double_t De, Double_t time)
- : TAGobject(),
-   fCharge(charge),
-   fTime(time),
-   fDe(De)
-{
-   
+//! constructor.
+TASTrawHit::TASTrawHit(TWaveformContainer *W)
+  : TAGbaseWD(W){
+
+  fBaseline = ComputeBaseline(W);
+  fPedestal = ComputePedestal(W);
+  fChg = ComputeCharge(W);
+  fAmplitude = ComputeAmplitude(W);
+  fTime = ComputeTime(W,0.3,2.0,-5,2);
+  fTimeOth = TAGbaseWD::ComputeTimeSimpleCFD(W,0.3);
+
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
+TASTrawHit::~TASTrawHit(){
 
-TASTntuHit::~TASTntuHit()
-{
 }
 
-//------------------------------------------+-----------------------------------
-void TASTntuHit::Clear(Option_t* /*option*/)
-{
-   fMCindex.Set(0);
-   fMcTrackIdx.Set(0);
+
+// do not need these interfaces, done by compilator
+double TASTrawHit::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
+  return  TAGbaseWD::ComputeTime(w, frac, del, tleft, tright);
 }
 
-//------------------------------------------+-----------------------------------
-void TASTntuHit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
-{
-   fMCindex.Set(fMCindex.GetSize()+1);
-   fMCindex[fMCindex.GetSize()-1]   = mcId;
-   
-   fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
-   fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackId;
+
+double TASTrawHit::ComputeCharge(TWaveformContainer *w){
+  return TAGbaseWD::ComputeCharge(w);
 }
+
+
+double TASTrawHit::ComputeAmplitude(TWaveformContainer *w){
+  return TAGbaseWD::ComputeAmplitude(w);
+}
+
+
+double TASTrawHit::ComputeBaseline(TWaveformContainer *w){
+  return TAGbaseWD::ComputeBaseline(w);
+}
+
+
+double TASTrawHit::ComputePedestal(TWaveformContainer *w){
+  return  TAGbaseWD::ComputePedestal(w);
+}
+
 
 
 //##############################################################################
 
 ClassImp(TASTntuRaw);
 
-TString TASTntuRaw::fgkBranchName   = "strh.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+TASTntuRaw::TASTntuRaw() :
+  fHistN(0), fListOfHits(0), fSuperHit(0), fRunTime(0x0){
 
-TASTntuRaw::TASTntuRaw()
-: TAGdata(),
- m_ListOfHits(0)
-{
-  m_Charge=-1000;
-  m_TrigTime=-1000;
-  m_TrigTime_oth=-1000;
-  m_TrigType=-1000;
   SetupClones();
 }
+
 
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 
-TASTntuRaw::~TASTntuRaw()
-{
-  delete m_ListOfHits;
+TASTntuRaw::~TASTntuRaw() {
+  if(fListOfHits)delete fListOfHits;
+  if(fSuperHit) delete fSuperHit;
 }
 
-//------------------------------------------+-----------------------------------
-Int_t TASTntuRaw::GetHitsN() const
-{
-   return m_ListOfHits->GetEntries();
-}
-
-//______________________________________________________________________________
-//
-TASTntuHit* TASTntuRaw::NewHit(double charge, double de, double time)
-{
-   TClonesArray &pixelArray = *m_ListOfHits;
-   TASTntuHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTntuHit(charge, de, time);
-   
-   return hit;
-}
-
-//------------------------------------------+-----------------------------------
-//! Access \a i 'th hit
-
-TASTntuHit* TASTntuRaw::GetHit(Int_t i)
-{
-   return (TASTntuHit*) ((*m_ListOfHits)[i]);;
-}
-
-//------------------------------------------+-----------------------------------
-//! Read-only access \a i 'th hit
-
-const TASTntuHit* TASTntuRaw::GetHit(Int_t i) const
-{
-   return (const TASTntuHit*) ((*m_ListOfHits)[i]);;
-}
-
-   
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 
 void TASTntuRaw::SetupClones()
 {
-  if (!m_ListOfHits) m_ListOfHits = new TClonesArray("TASTntuHit");
-   
-  return;
+  if (!fListOfHits) fListOfHits = new TClonesArray("TASTrawHit");
 }
-   
+
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
 
-void TASTntuRaw::Clear(Option_t*)
-{
+void TASTntuRaw::Clear(Option_t*){
   TAGdata::Clear();
-  if (m_ListOfHits) m_ListOfHits->Clear("C");
+  fHistN = 0;
 
-  return;
+  
+  if (fListOfHits) fListOfHits->Clear();
 }
+
+
+//-----------------------------------------------------------------------------
+//! access to the hit
+TASTrawHit* TASTntuRaw::GetHit(Int_t i){
+  return (TASTrawHit*) ((*fListOfHits)[i]);;
+}
+
+
+//------------------------------------------+-----------------------------------
+//! Read-only access \a i 'th hit
+const TASTrawHit* TASTntuRaw::GetHit(Int_t i) const{
+  return (const TASTrawHit*) ((*fListOfHits)[i]);;
+}
+
+//------------------------------------------+-----------------------------------
+//! New hit
+void TASTntuRaw::NewHit(TWaveformContainer *W){
+  
+  TClonesArray &pixelArray = *fListOfHits;
+  TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W);
+  fHistN++;
+}
+
+//------------------------------------------+-----------------------------------
+//! new super hit
+void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW){
+
+
+  if(!vW.size()){
+    printf("Warning, ST waveforms not found!!\n");
+    return;
+  }
+
+  TWaveformContainer *wsum = new TWaveformContainer;
+  int ChannelId=-1;
+  int BoardId = vW.at(0)->GetBoardId();
+  int TrigType = vW.at(0)->GetTrigType();
+  int TriggerCellId = vW.at(0)->GetTriggerCellId();
+
+  
+
+  //I define the time window
+  int i_ampmin = TMath::LocMin(vW.at(0)->GetVectA().size(),&(vW.at(0)->GetVectA())[0]);
+  double t_ampmin = vW.at(0)->GetVectT().at(i_ampmin);
+  double tmin = (t_ampmin-20 > vW.at(0)->GetVectT().at(0)) ? t_ampmin-20 : vW.at(0)->GetVectT().at(0);
+  double tmax = (t_ampmin+5 < vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1)) ? t_ampmin+5 : vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1);
+  vector<double> time,amp;
+  double tmpt=tmin;
+  while(tmpt<tmax){
+    time.push_back(tmpt);
+    tmpt+=0.2;
+  }
+  amp.assign(time.size(),0);
+
+  //I sum the signals
+    for(int i=0;i<vW.size();i++){
+    vector<double> tmpamp = vW.at(i)->GetVectA();
+    vector<double> tmptime = vW.at(i)->GetVectT();
+    TGraph tmpgr(tmptime.size(), &tmptime[0], &tmpamp[0]);
+    for(int isa=0;isa<time.size();isa++){
+      amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
+    }
+  }
+
+  wsum->SetChannelId(ChannelId);
+  wsum->SetBoardId(BoardId);
+  wsum->SetTrigType(TrigType);
+  wsum->SetTriggerCellId(TriggerCellId);
+  wsum->GetVectA() = amp;
+  wsum->GetVectT() = time;
+  wsum->GetVectRawT() = time;
+  wsum->SetNEvent(vW.at(0)->GetNEvent());
+  
+  fSuperHit = new TASTrawHit(wsum);
+
+  delete wsum;
+  
+}
+
+
+/*------------------------------------------+---------------------------------*/
+//! ostream insertion.
+void TASTntuRaw::ToStream(ostream& os, Option_t* option) const
+{
+  os << "TASTntuRaw " << GetName()
+	 << " fHistN"    << fHistN
+     << endl;
+}
+
+
 
 

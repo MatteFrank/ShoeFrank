@@ -11,12 +11,12 @@
 #include "TH2F.h"
 #include "TMath.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTactNtuClusterMT.hxx"
 
@@ -36,7 +36,7 @@ TAVTactNtuClusterMT::TAVTactNtuClusterMT(const char* name,
   fpNtuRaw(pNtuRaw),
   fpNtuClus(pNtuClus)
 {
-   AddDataIn(pNtuRaw,   "TAVTntuRaw");
+   AddDataIn(pNtuRaw,   "TAVTntuHit");
    AddDataOut(pNtuClus, "TAVTntuCluster");
 }
 
@@ -90,7 +90,7 @@ Bool_t TAVTactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
       pNtuClus->NewCluster(iSensor);
    
    for (Int_t iPix = 0; iPix < listOfPixels->GetEntries(); ++iPix) {
-      TAVTntuHit* pixel = (TAVTntuHit*)listOfPixels->At(iPix);
+      TAVThit* pixel = (TAVThit*)listOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
       if(!CheckLine(line)) continue;
@@ -134,7 +134,7 @@ Bool_t TAVTactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
 //
 TClonesArray* TAVTactNtuClusterMT::GetListOfPixels(Int_t sensorId)
 {
-   TAVTntuRaw* pNtuHit  = (TAVTntuRaw*) fpNtuRaw->Object();
+   TAVTntuHit* pNtuHit  = (TAVTntuHit*) fpNtuRaw->Object();
 
    return pNtuHit->GetListOfPixels(sensorId);
 }

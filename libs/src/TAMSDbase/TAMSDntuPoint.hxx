@@ -14,7 +14,7 @@
 #include "TVector3.h"
 
 #include "TAGobject.hxx"
-#include "TAMSDntuHit.hxx"
+#include "TAMSDhit.hxx"
 
 class TAMSDparGeo;
 

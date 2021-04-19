@@ -25,9 +25,6 @@ class TAGaction : public TAGnamed {
     explicit        TAGaction(const char* name=0, const char* title=0);
     virtual         ~TAGaction();
 
-    Bool_t          Valid() const;
-    Bool_t          Eof() const;
-
     virtual void    Clear(Option_t* opt="");
 
     virtual Bool_t  Process();
@@ -38,16 +35,23 @@ class TAGaction : public TAGnamed {
     void            ClearHistogram();
     virtual void    WriteHistogram();
     void            SetHistogramDir(TDirectory* dir);
-    TList*          GetHistogrammList() const;
-
-    inline    void SetDebugLevel(int dbg) { debugLevel = dbg; }
-  inline    int     GetDebugLevel() { return debugLevel; }
-    Bool_t          ValidHistogram() const;
 
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
 
     virtual void    RecursiveRemove(TObject* p_obj);
 
+    //! Returns setting of the kValid status bit.
+    Bool_t          Valid()             const { return TestBit(kValid); }
+  
+    //! Returns setting of the kEof status bit.
+    Bool_t          Eof()               const { return TestBit(kEof);   }
+  
+    //! Returns true if histograms are properly booked
+    Bool_t          ValidHistogram()    const { return fbHistValid;     }
+  
+    //! Set histogram booking state
+    TList*          GetHistogrammList() const { return fpHistList;      }
+  
     ClassDef(TAGaction,0)
 
   protected:
@@ -56,7 +60,7 @@ class TAGaction : public TAGnamed {
     void            AddPara(TAGparaDsc* p_para, const char* baseclass);
 
     void            AddHistogram(TH1* p_hist);
-    void            SetValidHistogram(Bool_t b_ok=kTRUE);
+    void            SetValidHistogram(Bool_t b_ok=kTRUE)  { fbHistValid = b_ok; }
 
     Bool_t          CheckDependencies();
     void            SetBitAllDataOut(UInt_t i_bits);
@@ -68,9 +72,6 @@ class TAGaction : public TAGnamed {
     TList*          fpHistList;
     Bool_t          fbHistValid;
     Bool_t          fbIsOpenFile;
-    int debugLevel;
 };
-
-#include "TAGaction.icc"
 
 #endif

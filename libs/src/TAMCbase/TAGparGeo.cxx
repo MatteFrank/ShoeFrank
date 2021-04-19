@@ -13,7 +13,7 @@
 #include "TObjString.h"
 #include "TSystem.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGmaterials.hxx"
 #include "TAGionisMaterials.hxx"
@@ -380,7 +380,7 @@ string TAGparGeo::PrintStandardBodies( ) {
   zplane =  fCenterMSD.Z() + ( fCenterTW.Z()-fCenterMSD.Z() ) /2.;
   //needed to subdivide air in two because when the calo is present too many bodies
   //are subtracted to air and fluka complains
-  if(GlobalPar::GetPar()->IncludeCA())
+  if(TAGrecoManager::GetPar()->IncludeCA())
     ss << "XYP airpla     " << zplane << endl;
 
   return ss.str();
@@ -393,7 +393,7 @@ string TAGparGeo::PrintTargRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeTG()){
+  if(TAGrecoManager::GetPar()->IncludeTG()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
@@ -428,7 +428,7 @@ string TAGparGeo::PrintTargBody( ) {
   
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeTG()){
+  if(TAGrecoManager::GetPar()->IncludeTG()){
     ss << "* ***Target" << endl;
 
     double zero = 0.;
@@ -464,7 +464,7 @@ string TAGparGeo::PrintStandardRegions1() {
 
   ss <<"BLACK        5 blk -air\n";
   ss <<"* ***Air\n";
-  if(GlobalPar::GetPar()->IncludeCA())
+  if(TAGrecoManager::GetPar()->IncludeCA())
     ss <<"AIR1          5 air +airpla";
   else
     ss <<"AIR1          5 air";
@@ -482,7 +482,7 @@ string TAGparGeo::PrintStandardRegions2() {
   
   stringstream ss;
   
-  if(GlobalPar::GetPar()->IncludeCA())
+  if(TAGrecoManager::GetPar()->IncludeCA())
     ss <<"AIR2          5 air -airpla";
   
   return ss.str();
@@ -495,7 +495,7 @@ string TAGparGeo::PrintTargRegion() {
   
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeTG()){
+  if(TAGrecoManager::GetPar()->IncludeTG()){
 
     ss << "* ***Target" << endl;
 
@@ -512,7 +512,7 @@ string TAGparGeo::PrintSubtractTargBodyFromAir() {
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeTG()){
+  if(TAGrecoManager::GetPar()->IncludeTG()){
 
     ss << "-tgt " << endl;
 
@@ -527,7 +527,7 @@ string TAGparGeo::PrintTargAssignMaterial(TAGmaterials *Material) {
 
   stringstream outstr;
 
-  if(GlobalPar::GetPar()->IncludeTG()){
+  if(TAGrecoManager::GetPar()->IncludeTG()){
 
     TString flkmat;  
     
@@ -539,7 +539,7 @@ string TAGparGeo::PrintTargAssignMaterial(TAGmaterials *Material) {
       flkmat = Material->GetFlukaMatName(GetTargetPar().Material);
 
     bool magnetic = false;
-    if(GlobalPar::GetPar()->IncludeDI())
+    if(TAGrecoManager::GetPar()->IncludeDI())
       magnetic = true;
         
     outstr << PrintCard("ASSIGNMA", flkmat, "TARGET", "", "", Form("%d",magnetic), "", "") << endl;
@@ -555,13 +555,13 @@ string TAGparGeo::PrintStandardAssignMaterial() {
   stringstream ss;
 
   int magnetic = 0;
-  if(GlobalPar::GetPar()->IncludeDI())
+  if(TAGrecoManager::GetPar()->IncludeDI())
     magnetic = 1;
     
   ss << PrintCard("ASSIGNMA","BLCKHOLE", "BLACK","","","","","") << endl;
   ss << PrintCard("ASSIGNMA","AIR","AIR1","","",TString::Format("%d",magnetic),"","") << endl;
   
-  if(GlobalPar::GetPar()->IncludeCA())
+  if(TAGrecoManager::GetPar()->IncludeCA())
     ss << PrintCard("ASSIGNMA","AIR","AIR2","","",TString::Format("%d",magnetic),"","") << endl;
 
   return ss.str();
@@ -606,7 +606,7 @@ string TAGparGeo::PrintPhysics() {
 
   stringstream str;
  
-  if ( GlobalPar::GetPar()->verFLUKA() )
+  if ( TAGrecoManager::GetPar()->verFLUKA() )
     str << PrintCard("PHYSICS","1.","","","","","","COALESCE") << endl;
   else
     str << PrintCard("PHYSICS","12001.","1.","1.","","","","COALESCE") << endl;
@@ -616,7 +616,7 @@ string TAGparGeo::PrintPhysics() {
   str << PrintCard("DELTARAY","1.","","","BLCKHOLE","@LASTMAT","1.0","") << endl;
   str << PrintCard("PAIRBREM","-3.","","","BLCKHOLE","@LASTMAT","","") << endl;
   
-  if(GlobalPar::GetPar()->IncludeDI()){
+  if(TAGrecoManager::GetPar()->IncludeDI()){
     str << PrintCard("MGNFIELD","0.1","0.00001","","0.","0.","0.","") << endl;
   }
     

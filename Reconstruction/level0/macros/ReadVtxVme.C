@@ -20,7 +20,7 @@
 #include "TAVTparMap.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 
@@ -52,7 +52,7 @@ void FillVertex()
    parconf->FromFile("./config/GSI/TAVTdetector.cfg");
    
    TAVTparConf::SetHistoMap();
-   TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuRaw());
+   TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuHit());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
    

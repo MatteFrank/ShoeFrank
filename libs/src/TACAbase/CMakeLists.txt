@@ -19,14 +19,13 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TACAdatRaw
    TACAntuRaw
+   TACAntuHit
    TACAparMap
    TACAntuCluster
    TACAdigitizer
-   TACAactNtuMC
    TACAactNtuHitMC
-   TACAactNtuRaw
+   TACAactNtuHit
    TACAactNtuCluster
    TACAparGeo
    TACAparCal
@@ -81,7 +80,6 @@ foreach( f ${without_dictionnaries} )
 	set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
 endforeach()
 #
-file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
 
 #----------------------------------------------------------------------------
 #

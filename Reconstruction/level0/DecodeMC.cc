@@ -3,8 +3,8 @@
 #include <TStopwatch.h>
 #include <TApplication.h>
 
-#include "GlobalPar.hxx"
-#include "LocalRecoNtuMC.hxx"
+#include "TAGrecoManager.hxx"
+#include "LocalRecoMC.hxx"
 
 int main (int argc, char *argv[])  {
 
@@ -49,16 +49,17 @@ int main (int argc, char *argv[])  {
    
    TApplication::CreateApplication();
    
-   GlobalPar::Instance(exp);
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(exp);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
 
-   Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
-   Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
-   Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
-   Bool_t trk = GlobalPar::GetPar()->IsTracking();
-   Bool_t zmc = GlobalPar::GetPar()->IsTWZmc();
-   Bool_t zrec = GlobalPar::GetPar()->IsTWnoPU();
-   Bool_t zmatch = GlobalPar::GetPar()->IsTWZmatch();
+   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
+   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
+   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
+   Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
+   Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
+   Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
+   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
    
    
    if(!zmc && zrec) {
@@ -72,7 +73,7 @@ int main (int argc, char *argv[])  {
      out.Append("_noTWPileUp_Ztrue.root");   
    }
 
-   BaseReco* locRec = new LocalRecoNtuMC(exp, runNb, in, out);
+   BaseReco* locRec = new LocalRecoMC(exp, runNb, in, out);
 
    // global setting
    if (ntu)

@@ -4,7 +4,7 @@
   \brief   Implementation of TAGactWDreader.
 */
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TASTparMap.hxx"
 #include "TATWparMap.hxx"
 #include "TAGbaseWDparTime.hxx"
@@ -14,9 +14,9 @@
 #include "WDEvent.hh"
 #include "TWaveformContainer.hxx"
 #include "TAGdaqEvent.hxx"
-#include "TASTdatRaw.hxx"
-#include "TATWdatRaw.hxx"
-#include "TACAdatRaw.hxx"
+#include "TASTntuRaw.hxx"
+#include "TATWntuRaw.hxx"
+#include "TACAntuRaw.hxx"
 #include "TAGactWDreader.hxx"
 #include <unistd.h>
 #include <stdint.h>
@@ -47,9 +47,9 @@ TAGactWDreader::TAGactWDreader(const char* name,
     fpWDTim(p_WDtim)
 {
   AddDataIn(p_datdaq, "TAGdaqEvent");
-  AddDataOut(p_stwd, "TASTdatRaw");
-  AddDataOut(p_twwd, "TATWdatRaw");
-  AddDataOut(p_cawd, "TACAdatRaw");
+  AddDataOut(p_stwd, "TASTntuRaw");
+  AddDataOut(p_twwd, "TATWntuRaw");
+  AddDataOut(p_cawd, "TACAntuRaw");
   AddPara(p_WDmap, "TAGbaseWDparMap");
   AddPara(p_WDtim, "TAGbaseWDparTime");
 
@@ -68,14 +68,14 @@ TAGactWDreader::~TAGactWDreader()
 
 Bool_t TAGactWDreader::Action() {
 
-    if(GetDebugLevel()) { cout<<" Entering the TAGactWDreader action "<<endl; }
+    if(FootDebugLevel(1)) { cout<<" Entering the TAGactWDreader action "<<endl; }
 
    TAGdaqEvent*         p_datdaq = (TAGdaqEvent*)  fpDatDaq->Object();
    TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)   fpWDTim->Object();
    TAGbaseWDparMap*     p_WDmap = (TAGbaseWDparMap*)   fpWDMap->Object();
-   TASTdatRaw*          p_stwd = (TASTdatRaw*)   fpStWd->Object();
-   TATWdatRaw*          p_twwd = (TATWdatRaw*)   fpTwWd->Object();
-   TACAdatRaw*          p_cawd = (TACAdatRaw*)   fpCaWd->Object();
+   TASTntuRaw*          p_stwd = (TASTntuRaw*)   fpStWd->Object();
+   TATWntuRaw*          p_twwd = (TATWntuRaw*)   fpTwWd->Object();
+   TACAntuRaw*          p_cawd = (TACAntuRaw*)   fpCaWd->Object();
 
    
    Int_t nFragments = p_datdaq->GetFragmentsN();
@@ -491,7 +491,7 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk){
 
 
 
-Bool_t TAGactWDreader::CreateHits(TASTdatRaw *p_straw, TATWdatRaw *p_twraw, TACAdatRaw *p_caraw){
+Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw){
 
   for(int i=0; i<(int)st_waves.size();i++){
     p_straw->NewHit(st_waves.at(i));

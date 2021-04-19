@@ -5,7 +5,7 @@
 
 #include "DECardEvent.hh"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGdaqEvent.hxx"
 #include "TAGroot.hxx"
 #include "TAVTparGeo.hxx"
@@ -27,7 +27,7 @@ TString TAVTactStdRaw::fgDefaultExtName    = ".ZS";
 //! Default constructor.
 
 TAVTactStdRaw::TAVTactStdRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
-: TAVTactBaseNtuRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap)
+: TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
    TAVTparGeo*  pGeoPar = (TAVTparGeo*)  fpGeoMap->Object();
 

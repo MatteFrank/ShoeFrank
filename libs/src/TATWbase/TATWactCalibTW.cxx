@@ -45,9 +45,9 @@ TATWactCalibTW::TATWactCalibTW(const char* name,
     fEvtCnt(0)
 {
 
-  AddDataIn(p_datraw, "TATWdatRaw");
-  AddDataIn(p_STnturaw, "TASTntuRaw");
-  AddDataOut(p_nturaw, "TATWntuRaw");
+  AddDataIn(p_datraw, "TATWntuRaw");
+  AddDataIn(p_STnturaw, "TASTntuHit");
+  AddDataOut(p_nturaw, "TATWntuHit");
 
   AddPara(p_pargeom, "TATWparGeo");
   AddPara(p_parmap, "TATWparMap");
@@ -113,9 +113,9 @@ void TATWactCalibTW::CreateHistogram()
 
 Bool_t TATWactCalibTW::Action() {
 
-  TATWdatRaw*   p_datraw = (TATWdatRaw*) fpDatRaw->Object();
-  TASTntuRaw*   p_STnturaw = (TASTntuRaw*)  fpSTNtuRaw->Object();
-  TATWntuRaw*   p_nturaw = (TATWntuRaw*)  fpNtuRaw->Object();
+  TATWntuRaw*   p_datraw = (TATWntuRaw*) fpDatRaw->Object();
+  TASTntuHit*   p_STnturaw = (TASTntuHit*)  fpSTNtuRaw->Object();
+  TATWntuHit*   p_nturaw = (TATWntuHit*)  fpNtuRaw->Object();
 
   //////////// Time Trigger info from ST ///////////////
 
@@ -130,7 +130,7 @@ Bool_t TATWactCalibTW::Action() {
 
   Int_t SThitN = p_STnturaw->GetHitsN();  // same of STtrigTime
 
-  TASTntuHit *stHit = (TASTntuHit*)p_STnturaw->GetHit(0);
+  TASThit *stHit = (TASThit*)p_STnturaw->GetHit(0);
   Double_t time_st = stHit->GetTime();
 
   if(FootDebugLevel(1))

@@ -306,9 +306,9 @@ Double_t TAVTactBaseNtuVertex::ComputeScatterAngle()
    Float_t depth      = geoMapG->GetTargetPar().Size[2];
 
    TString matBeam   = geoMapG->GetBeamPar().Material;
-   Float_t energy    = geoMapG->GetBeamPar().Energy * geoMapG->GetBeamPar().AtomicMass;
+   Float_t enBeam    = geoMapG->GetBeamPar().Energy * geoMapG->GetBeamPar().AtomicMass;
    
-   return fEmProp->GetSigmaTheta(matTarget, matBeam, depth,  energy);
+   return fEmProp->GetSigmaTheta(matTarget, depth, enBeam, matBeam);
 }
 
 //--------------------------------------------

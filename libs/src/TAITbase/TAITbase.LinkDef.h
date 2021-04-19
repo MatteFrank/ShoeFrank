@@ -9,11 +9,10 @@
 #pragma link C++ class TAITparGeo+;
 #pragma link C++ class TAITparConf+;
 
-#pragma link C++ class TAITntuRaw+;
 #pragma link C++ class TAITntuHit+;
+#pragma link C++ class TAIThit+;
 #pragma link C++ class TAITactBaseRaw+;
-#pragma link C++ class TAITactNtuRaw+;
-#pragma link C++ class TAITactNtuMC+;
+#pragma link C++ class TAITactNtuHit+;
 #pragma link C++ class TAITactNtuHitMC+;
 
 #pragma link C++ class TAITntuCluster+;

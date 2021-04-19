@@ -10,9 +10,9 @@
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
-#include "TASTdatRaw.hxx"
-#include "TATWdatRaw.hxx"
-#include "TACAdatRaw.hxx"
+#include "TASTntuRaw.hxx"
+#include "TATWntuRaw.hxx"
+#include "TACAntuRaw.hxx"
 #include "TAGbaseWDparTime.hxx"
 #include "TAGbaseWDparMap.hxx"
 
@@ -63,7 +63,7 @@ public:
 
   Int_t DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
   Bool_t WaveformsTimeCalibration();
-  Bool_t CreateHits(TASTdatRaw *p_straw, TATWdatRaw *p_twraw, TACAdatRaw *p_caraw);
+  Bool_t CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw);
   void Clear();
 
   vector<double> ADC2Volt(vector<int>, double);

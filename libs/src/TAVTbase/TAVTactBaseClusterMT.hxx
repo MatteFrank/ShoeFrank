@@ -21,7 +21,7 @@
 #include "TAGactNtuClusterMT.hxx"
 
 class TAVTbaseCluster;
-class TAVTntuHit;
+class TAVThit;
 class TAVTbaseParGeo;
 class TH1F;
 class TH2F;
@@ -44,7 +44,7 @@ public:
    virtual  void   CreateHistogram();
    
    //! Return seed pixel
-   TAVTntuHit*     GetSeedPixel()      const { return fPSeed;           }
+   TAVThit*     GetSeedPixel()      const { return fPSeed;           }
    //! Get total charge
    Float_t GetClusterPulseSum()        const { return fClusterPulseSum; }
    
@@ -67,7 +67,7 @@ protected:
    TAGparaDsc*     fpConfig;		  // config para dsc
    TAGparaDsc*     fpGeoMap;		  // geometry para dsc
    
-   TAVTntuHit*    fPSeed;             // seed pixel
+   TAVThit*    fPSeed;             // seed pixel
    TVector3       fCurrentPosition;   // pointer to current position
    TVector3       fCurrentPosError ;  // pointer to current position error
    TClonesArray*  fCurListOfPixels;   // list of pixels in current cluster

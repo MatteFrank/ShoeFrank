@@ -6,19 +6,19 @@
 
 #include <Riostream.h>
 #include <TString.h>
-#include "TAFOeventDisplayMC.hxx"
+#include "TAGeventDisplayMC.hxx"
 #endif
 
-//void DisplayMcFOOT(TString file = "12C_C_200shoe.root", TString expName = "12C_200", Int_t runNumber = 1, Int_t type = 2)
-void DisplayMcFOOT(TString file = "12C_C_200_1.root", TString expName = "12C_200", Int_t runNumber = 1, Int_t type = 1)
+//void DisplayMcFOOT(TString file = "12C_C_200shoe.root", TString expName = "12C_200", Int_t runNumber = 1)
+void DisplayMcFOOT(TString file = "12C_C_200.root", TString expName = "12C_200", Int_t runNumber = 1)
 {
   // type = 1: Fluka MC structure
   // type = 2: Shoe MC structure
-   TAFObaseEventDisplay::SetVtxTrackingAlgo('F');
-//   TAFObaseEventDisplay::EnableItrTracking();
-//   TAFObaseEventDisplay::DisableTracking();
+   TAGbaseEventDisplay::SetVtxTrackingAlgo('F');
+//   TAGbaseEventDisplay::EnableItrTracking();
+//   TAGbaseEventDisplay::DisableTracking();
    
-   TAFOeventDisplayMC::Instance(expName, runNumber, type)->ShowDisplay(file);
+   TAGeventDisplayMC::Instance(expName, runNumber)->ShowDisplay(file);
 }
 
 

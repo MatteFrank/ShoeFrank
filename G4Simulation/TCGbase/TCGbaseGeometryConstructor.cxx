@@ -56,7 +56,7 @@
 #include "TCGmaterials.hxx"
 
 #include "TAGgeoTrafo.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGroot.hxx"
 
 using namespace CLHEP;
@@ -96,16 +96,16 @@ TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName, In
    fpFootGeo->FromFile(geoFileName.Data());
    
    // initialise map file for target/beam
-  if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM()) {
+  if (TAGrecoManager::GetPar()->IncludeTG() || TAGrecoManager::GetPar()->IncludeBM()) {
     TString mapFileName =  fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
     fpParGeoG->FromFile(mapFileName.Data());
   }
   
    // geometries
-  if (GlobalPar::GetPar()->IncludeTG())
+  if (TAGrecoManager::GetPar()->IncludeTG())
       fTarget = new TCGtargetConstructor(fpParGeoG);
    
-   printf("Creating geometry for experiment %s with a run number of %d\n", expName.Data(), runNumber);
+   InfoMc("TCGbaseGeometryConstructor()", "Creating geometry for experiment %s with run number %d\n", expName.Data(), runNumber);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -138,7 +138,7 @@ G4VPhysicalVolume* TCGbaseGeometryConstructor::Construct()
    G4VPhysicalVolume* pWorld = new G4PVPlacement(0, G4ThreeVector(), fLogWorld, "World", 0, false, 0);
    
    // Target
-   if (GlobalPar::GetPar()->IncludeTG()) {
+   if (TAGrecoManager::GetPar()->IncludeTG()) {
 
       G4LogicalVolume* logTarget = fTarget->Construct();
    

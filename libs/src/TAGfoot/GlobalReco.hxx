@@ -23,10 +23,12 @@ public:
   //! Close File in
   virtual void CloseFileIn();
   
-  //! Set run number
-  void   SetRunNumber();
-
+  //! Create L0 branch in tree
+  void SetL0TreeBranches();
   
+  //! Create branch in tree
+  void SetTreeBranches();
+
    ClassDef(GlobalReco, 0); 
 };
 

@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG}  ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -70,7 +70,6 @@ foreach( f ${without_dictionnaries} )
 	set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
 endforeach()
 #
-file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
 
 #----------------------------------------------------------------------------
 #

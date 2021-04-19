@@ -32,7 +32,7 @@
 #include "TCCAgeometryConstructor.hxx"
 
 #include "TCGmcHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TCFOrunAction.hxx"
 #include "TAGroot.hxx"
@@ -80,7 +80,7 @@ TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeomet
     fEventInterruptHandler = new TAGeventInterruptHandler();
     fEventInterruptHandler->Add();
 
-    fMcTrack = new TAMCntuEve();
+    fMcTrack = new TAMCntuPart();
 
    if (FootMcDebugLevel(1))
       G4cout<<"Construct event action "<<G4endl;
@@ -145,31 +145,31 @@ void TCFObaseEventAction::ConstructCollection()
 {
    G4SDManager * SDman = G4SDManager::GetSDMpointer();
 
-   if (GlobalPar::GetPar()->IncludeST()) {
+   if (TAGrecoManager::GetPar()->IncludeST()) {
       fStCollId = SDman->GetCollectionID(TCSTgeometryConstructor::GetSDname());
    }
    
-   if (GlobalPar::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
       fBmCollId = SDman->GetCollectionID(TCBMgeometryConstructor::GetSDname());
    }
    
-   if (GlobalPar::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       fVtxCollId = SDman->GetCollectionID(TCVTgeometryConstructor::GetSDname());
    }
    
-   if (GlobalPar::GetPar()->IncludeIT()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       fItCollId = SDman->GetCollectionID(TCITgeometryConstructor::GetSDname());
    }
    
-   if (GlobalPar::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fMsdCollId = SDman->GetCollectionID(TCMSDgeometryConstructor::GetSDname());
    }
    
-   if (GlobalPar::GetPar()->IncludeTW()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       fTwCollId = SDman->GetCollectionID(TCTWgeometryConstructor::GetSDname());
    }
    
-   if (GlobalPar::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       fCaCollId = SDman->GetCollectionID(TCCAgeometryConstructor::GetSDname());
    }
 }

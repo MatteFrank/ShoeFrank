@@ -12,7 +12,7 @@
 #include <TROOT.h>
 #include <TStopwatch.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
@@ -21,11 +21,11 @@
 #include "TAVTparMap.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TAGcampaignManager.hxx"
 #include "TAGactTreeReader.hxx"
@@ -57,15 +57,15 @@ void FillVertex(Int_t runNumber)
   parconf->FromFile(parFileName.Data());
   
   TAVTparConf::SetHistoMap();
-  TAGdataDsc* vtEve  = new TAGdataDsc("vtEve", new TAMCntuEve());
+  TAGdataDsc* vtEve  = new TAGdataDsc("vtEve", new TAMCntuPart());
   TAGdataDsc* vtMc   = new TAGdataDsc("vtMc", new TAMCntuHit());
-  TAGdataDsc* vtNtu  = new TAGdataDsc("vtNtu", new TAVTntuRaw());
+  TAGdataDsc* vtNtu  = new TAGdataDsc("vtNtu", new TAVTntuHit());
   TAGdataDsc* vtClus = new TAGdataDsc("vtClus", new TAVTntuCluster());
   TAGdataDsc* vtTrck = new TAGdataDsc("vtTrck", new TAVTntuTrack());
   
   vtActReader  = new TAGactTreeReader("vtActEvtReader");
   vtActReader->SetupBranch(vtMc, TAMCntuHit::GetVtxBranchName());
-  vtActReader->SetupBranch(vtEve,TAMCntuEve::GetBranchName());
+  vtActReader->SetupBranch(vtEve,TAMCntuPart::GetBranchName());
   
   vtActRaw= new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
   vtActRaw->CreateHistogram();
@@ -85,8 +85,9 @@ void FillVertex(Int_t runNumber)
 void ReadVtxRawMC(TString filename = "12C_C_200shoe.root", Int_t nMaxEvts = 0,
                 TString expName = "12C_200", Int_t runNumber = 1)
 {
-  GlobalPar::Instance(expName);
-  GlobalPar::GetPar()->Print();
+  TAGrecoManager::Instance(expName);
+  TAGrecoManager::GetPar()->FromFile();
+  TAGrecoManager::GetPar()->Print();
   
   TAGroot tagr;
   

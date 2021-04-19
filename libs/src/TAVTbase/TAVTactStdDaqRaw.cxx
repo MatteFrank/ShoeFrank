@@ -5,7 +5,7 @@
 
 #include "DECardEvent.hh"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGdaqEvent.hxx"
 #include "TAGroot.hxx"
 #include "TAVTparGeo.hxx"
@@ -24,7 +24,7 @@ ClassImp(TAVTactStdDaqRaw);
 //! Default constructor.
 
 TAVTactStdDaqRaw::TAVTactStdDaqRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
-: TAVTactBaseNtuRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap)
+: TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
    TAVTparGeo*  pGeoPar = (TAVTparGeo*)  fpGeoMap->Object();
    Int_t size = ((sizeof(MI26_FrameRaw)/4)*3 + 3)*pGeoPar->GetSensorsN(); // 3 frame per event and 3 header word for each sensor

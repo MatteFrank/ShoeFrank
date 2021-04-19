@@ -2,7 +2,7 @@
 
 #include "TATWcalibrationMap.hxx"
 #include "TAGxmlParser.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 ClassImp(TATWcalibrationMap)
 

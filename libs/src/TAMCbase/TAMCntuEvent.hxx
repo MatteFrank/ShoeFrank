@@ -12,10 +12,10 @@ public:
   
   Int_t             GetEventNumber()      const { return fEventNumber;   }
   void              SetEventNumber(Int_t nb)    { fEventNumber = nb;     }
-  
+
   Int_t             GetTriggerNumber()    const { return fTriggerNumber; }
   void              SetTriggerNumber(Int_t nb)  { fTriggerNumber = nb;   }
-  
+
   ULong64_t         GetTimeStamp()        const { return fTimeStamp;     }
   void              SetTimeStamp(ULong64_t nb)  { fTimeStamp = nb;       }
   
@@ -29,7 +29,7 @@ private:
   Int_t             fEventNumber;
   Int_t             fTriggerNumber;
   ULong64_t         fTimeStamp;
-  
+
 private:
   static TString    fgkBranchName;
   

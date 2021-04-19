@@ -11,6 +11,7 @@
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
+#include "TAGgeoTrafo.hxx"
 
 #include "TH2I.h"
 #include "TH1F.h"

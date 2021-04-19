@@ -24,14 +24,14 @@
 #include "TAITparGeo.hxx"
 #include "TAITparMap.hxx"
 #include "TAITparConf.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAITntuTrack.hxx"
 
 #include "TAITactNtuMC.hxx"
 #include "TAITactNtuClusterF.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
@@ -49,7 +49,7 @@ void FillMCInner(EVENT_STRUCT *myStr, Int_t runNumber) {
    TString parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
    
-   TAGdataDsc* itRaw    = new TAGdataDsc("itRaw", new TAITntuRaw());
+   TAGdataDsc* itRaw    = new TAGdataDsc("itRaw", new TAITntuHit());
    TAGdataDsc* itClus   = new TAGdataDsc("itClus", new TAITntuCluster());
    
    TAGparaDsc*  itConf  = new TAGparaDsc("itConf", new TAITparConf());
@@ -64,7 +64,7 @@ void FillMCInner(EVENT_STRUCT *myStr, Int_t runNumber) {
    itActClus = new TAITactNtuClusterF("itActCluster", itRaw, itClus, itConf, itGeo);
    itActClus->CreateHistogram();
    
-   // outFile->SetupElementBranch(itRaw, TAITntuRaw::GetBranchName());
+   // outFile->SetupElementBranch(itRaw, TAITntuHit::GetBranchName());
   //outFile->SetupElementBranch(itClus, TAITntuCluster::GetBranchName());   
 }
 
@@ -73,8 +73,9 @@ void FillMCInner(EVENT_STRUCT *myStr, Int_t runNumber) {
 //void ReadItRawMC(TString name = "12C_80_vtx.root")
 void ReadItRawMC(TString name = "16O_C2H4_200_1", TString expName = "16O_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance(expName);
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(expName);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    TAGroot tagr;
    

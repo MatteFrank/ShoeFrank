@@ -25,7 +25,6 @@ private:
    TAGparTools* fFileStream;
    TObjArray*   fMatrixList;
    TObjArray*   fDeviceList;
-   TGeoHMatrix* fIdentity; // dummy matrix
    TString      fExpName; // name of the experiment
    
 private:
@@ -51,6 +50,7 @@ private:
 
    static const Float_t fgkMassFactor;     // default proton mass
    static const Float_t fgkElectronMass;   // default electron mass
+   static const Float_t fgkLightVelocity;  // Speed of light in vacuum
 
    static const Char_t* fgkGeomName;      //! name of GeoManager
    static const Char_t* fgkGeomTitle;     //! title of GeoManager
@@ -193,6 +193,7 @@ public:
 
    static           Float_t GetElectronMassMeV()     { return fgkElectronMass;  }
    static           Float_t GetElectronMass()        { return fgkElectronMass*fgkMevToGev; }
+   static           Float_t GetLightVelocity()       { return fgkLightVelocity; }
 
 
    static     const Char_t* GetBaseName()            { return fgkGeomName;      }

@@ -2,7 +2,7 @@
 #include <TStopwatch.h>
 #include <TApplication.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "LocalReco.hxx"
 
 int main (int argc, char *argv[])  {
@@ -47,16 +47,17 @@ int main (int argc, char *argv[])  {
    
    TApplication::CreateApplication();
    
-   GlobalPar::Instance(exp);
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(exp);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
-   Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
-   Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
-   Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
-   Bool_t trk = GlobalPar::GetPar()->IsTracking();
-   Bool_t obj = GlobalPar::GetPar()->IsReadRootObj();
-   Bool_t zmatch = GlobalPar::GetPar()->IsTWZmatch();
-   Bool_t tbc = GlobalPar::GetPar()->IsTWCalBar();
+   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
+   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
+   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
+   Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
+   Bool_t obj = TAGrecoManager::GetPar()->IsReadRootObj();
+   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
+   Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
 
    if (tbc) {
      Int_t pos = out.Last('.');

@@ -36,6 +36,4 @@ class TAGview : public TAGnamed {
       
 };
 
-#include "TAGview.icc" 
-
 #endif

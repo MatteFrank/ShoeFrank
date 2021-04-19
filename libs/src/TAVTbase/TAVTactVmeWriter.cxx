@@ -7,7 +7,7 @@
 
 #include "DECardEvent.hh"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGroot.hxx"
 #include "TAVTparConf.hxx"
 #include "TAVTparGeo.hxx"

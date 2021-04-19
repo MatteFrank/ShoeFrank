@@ -652,7 +652,7 @@ public:
     std::vector<candidate> generate_candidates() const
     {
         std::vector<candidate> candidate_c;
-        std::size_t entries = cluster_mhc->GetPointN();
+        std::size_t entries = cluster_mhc->GetPointsN();
         candidate_c.reserve( entries );
         
 //        std::cout << "detector_properties<details::tof_tag>::generate_candidate : " << entries << '\n';

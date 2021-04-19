@@ -4,7 +4,7 @@
 #include <map>
 #include "TAGbaseDigitizer.hxx"
 
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 
 class TF1;
 using namespace std;
@@ -12,7 +12,7 @@ using namespace std;
 class TASTdigitizer : public TAGbaseDigitizer {
    
 public:
-   TASTdigitizer(TASTntuRaw* p_datraw);
+   TASTdigitizer(TASTntuHit* p_datraw);
    ~TASTdigitizer();
    
    void           SetFunctions();
@@ -29,17 +29,17 @@ public:
    void           SetGain(Float_t g)    { fGain = g;          }
    void           SetResTime(Float_t r) { fResTime = r;       }
 
-   TASTntuHit*    GetCurrentHit()       { return fCurrentHit; }
+   TASThit*    GetCurrentHit()       { return fCurrentHit; }
    void           ClearMap()            { fMap.clear();       }
   
 private:
-   TASTntuRaw*   fpNtuRaw;
+   TASTntuHit*   fpNtuRaw;
    TF1*          fFuncBirks;
    Float_t       fGain;
    Float_t       fResTime;
-   TASTntuHit*   fCurrentHit;
+   TASThit*   fCurrentHit;
 
-   map<int, TASTntuHit*> fMap; //! map for pilepup
+   map<int, TASThit*> fMap; //! map for pilepup
 
 };
 #endif

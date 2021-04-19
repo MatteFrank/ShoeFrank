@@ -14,7 +14,7 @@
 #include <TCanvas.h>
 #include <TStyle.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGactTreeReader.hxx"
 #include "TAGcampaignManager.hxx"
 
@@ -25,8 +25,9 @@
 void PlotTwPos(TString nameFile = "12C_C_200_L0Out.root", TString expName = "12C_200", Int_t runNumber = 1)
 {
   // global par
-  GlobalPar::Instance(expName);
-  GlobalPar::GetPar()->Print();
+  TAGrecoManager::Instance(expName);
+  TAGrecoManager::GetPar()->FromFile();
+  TAGrecoManager::GetPar()->Print();
   
   // TAGropot
   TAGroot tagr;
@@ -61,7 +62,7 @@ void PlotTwPos(TString nameFile = "12C_C_200_L0Out.root", TString expName = "12C
 
    while (tagr.NextEvent() ){
 
-    Int_t npoints = twPoint->GetPointN();
+    Int_t npoints = twPoint->GetPointsN();
     for(Int_t i = 0; i < npoints; ++i) {
       TATWpoint* point = twPoint->GetPoint(i);
       if (!point) continue;

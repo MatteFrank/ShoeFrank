@@ -6,9 +6,9 @@
 #include "TClonesArray.h"
 
 #include "TAGcluster.hxx"
-#include "TACAntuRaw.hxx"
+#include "TACAntuHit.hxx"
 
-/** TACAcluster class, simple container class for tracks with the associated clusters
+/** TACAcluster class, simple container class for cluster calorimeter
  
  \author Ch. Finck
  */
@@ -23,9 +23,8 @@ protected:
    TClonesArray*      fListOfHits;               // list of hits attached to this cluster
    
    Int_t              fIndexSeed;                // index of seed crystal
-   Float_t            fCharge;                   // sum of pulseheight
+   Float_t            fEnergy;                   // sum of energy
    Bool_t             fIsValid;                  // validity flag
-   
    
 public:
    TACAcluster();
@@ -36,13 +35,12 @@ public:
    void               SetPosition(TVector3& pos);
    //! Set position error in local frame
    void               SetPosError(TVector3& pos);
-   void               SetPosition(Float_t u, Float_t v, Float_t z) { fPosition.SetXYZ(u,v,z); }
    //! Set position in global tracker frame
    void               SetPositionG(TVector3& pos);
    //! Set crystal seed index
    void               SetIndexSeed(Int_t index)              { fIndexSeed = index;     }
    //! Set sum of pulse height
-   void               SetCharge(Float_t chg)                 { fCharge = chg;          }
+   void               SetEnergy(Float_t chg)                 { fEnergy = chg;          }
    //! Set validy
    void               SetValid(Bool_t v = true)              { fIsValid = v;           }
    
@@ -53,16 +51,16 @@ public:
    //! Get position in global tracker frame
    const TVector3&     GetPositionG()                  const { return fPositionG ;     }
    //! Get position in global tracker frame
-   const TVector3&     GetPosErrorG()                  const { return fPositionG ;     }
+   const TVector3&     GetPosErrorG()                  const { return fPosErrorG ;     }
 
    //! Get validity
    Bool_t             IsValid()                        const { return fIsValid;        }
    //! Get index of seed crystal
    Int_t              GetIndexSeed()                   const { return fIndexSeed;      }
    //! Get sum of pulse height
-   Float_t            GetCharge()                      const { return fCharge;         }
+   Float_t            GetEnergy()                      const { return fEnergy;         }
    //! Get pixel
-   TACAntuHit*        GetHit(Int_t idx);
+   TACAhit*           GetHit(Int_t idx);
    
    //! Get list of hits
    TClonesArray*     GetListOfHits()                   const { return fListOfHits;     }
@@ -77,9 +75,9 @@ public:
    void               SetupClones();
 
    //! Add pixel to the list
-   void               AddHit(TACAntuHit* hit);
+   void               AddHit(TACAhit* hit);
    
-   ClassDef(TACAcluster,4)                          // Describes TACAcluster
+   ClassDef(TACAcluster,5)                          // Describes TACAcluster
 };
 
 

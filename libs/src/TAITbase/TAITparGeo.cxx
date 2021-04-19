@@ -12,7 +12,7 @@
 #include "TGeoMatrix.h"
 #include "TGeoMaterial.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAITparGeo.hxx"
@@ -413,7 +413,7 @@ string TAITparGeo::PrintParameters()
   stringstream outstr;
   // outstr << setiosflags(ios::fixed) << setprecision(5);
 
-  if(GlobalPar::GetPar()->IncludeIT()){
+  if(TAGrecoManager::GetPar()->IncludeIT()){
    
     string precision = "D+00";
    
@@ -441,7 +441,7 @@ string TAITparGeo::PrintRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeIT()){
+  if(TAGrecoManager::GetPar()->IncludeIT()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
     TVector3  fCenter = fpFootGeo->GetITCenter();
@@ -535,7 +535,7 @@ string TAITparGeo::PrintBodies()
    stringstream ss;
    ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
    
-   if(GlobalPar::GetPar()->IncludeIT()){
+   if(TAGrecoManager::GetPar()->IncludeIT()){
       
       TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
       
@@ -863,7 +863,7 @@ string TAITparGeo::PrintRegions()
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeIT()){
+  if(TAGrecoManager::GetPar()->IncludeIT()){
 
     string name;
 
@@ -966,7 +966,7 @@ string TAITparGeo::PrintSubtractBodiesFromAir()
   
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeIT()){
+  if(TAGrecoManager::GetPar()->IncludeIT()){
 
     for(int i=0; i<fvModBody.size(); i++) {
       ss << " -" << fvModBody.at(i);
@@ -1011,7 +1011,7 @@ string TAITparGeo::PrintAssignMaterial(TAGmaterials *material)
 
   stringstream ss;
   
-  if(GlobalPar::GetPar()->IncludeIT()){
+  if(TAGrecoManager::GetPar()->IncludeIT()){
 
     TString flkmatMod, flkmatPix;
     TString flkmatFoam, flkmatKapton, flkmatEpoxy, flkmatAl;
@@ -1036,7 +1036,7 @@ string TAITparGeo::PrintAssignMaterial(TAGmaterials *material)
     }
 
     bool magnetic = false;
-    if(GlobalPar::GetPar()->IncludeDI())
+    if(TAGrecoManager::GetPar()->IncludeDI())
       magnetic = true;
     
     if (fvEpiRegion.size()==0 || fvModRegion.size()==0 || fvPixRegion.size()==0 )

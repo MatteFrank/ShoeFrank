@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TADAQ} ${TAAPI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${TATOE} ${TOE_LIBRARIES} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TADAQ} ${TAAPI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${TATOE} ${TAGF} ${TOE_LIBRARIES} ${GENFIT_LIBRARIES})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -19,20 +19,20 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   KFitter
+   TAGntuEvent
+   TAGactNtuEvent
+   TAGactKFitter
    GlobalTrackRepostory
    GlobalTrackKalman
-   UpdatePDG
-   TAFObaseEventDisplay
-   TAFOeventDisplay
-   TAFOeventDisplayMC
+   TAGbaseEventDisplay
+   TAGeventDisplay
+   TAGeventDisplayMC
    BaseReco
    LocalRecoMC
-   LocalRecoNtuMC
    LocalReco
    TAGactNtuGlbTrack
+   TAGactNtuGlbTrackS
    GlobalReco
-   GlobalRecoMC
    GlobalToeReco
    GlobalTrackingStudies
 )
@@ -59,6 +59,7 @@ include_directories(${TATW_INCLUDE_DIR})
 include_directories(${TACA_INCLUDE_DIR})
 include_directories(${TAED_INCLUDE_DIR})
 include_directories(${TATOE_INCLUDE_DIR})
+include_directories(${TAGF_INCLUDE_DIR})
 include_directories(${TOE_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -95,7 +96,6 @@ foreach( f ${without_dictionnaries} )
 	set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
 endforeach()
 #
-file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
 
 #----------------------------------------------------------------------------
 #

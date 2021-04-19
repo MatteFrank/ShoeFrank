@@ -6,21 +6,21 @@
 #include <TString.h>
 #include <TVector3.h>
 
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 #include "TAMCntuHit.hxx"
 
 
 #include "TASTparGeo.hxx"
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 
 
 #include "TABMparGeo.hxx"
-#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
+#include "TABMhit.hxx"
 #include "TABMntuTrack.hxx"
 
 #include "TAVTparGeo.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTntuTrack.hxx"
@@ -34,8 +34,8 @@
 #include "TAMSDntuCluster.hxx"
 
 #include "TATWparGeo.hxx"
-#include "TATWdatRaw.hxx"
 #include "TATWntuRaw.hxx"
+#include "TATWntuHit.hxx"
 
 
 #include "TAGgeoTrafo.hxx"
@@ -100,12 +100,12 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   tree = (TTree*)f->Get("tree");
   
   
-  TASTntuRaw *stHit = new TASTntuRaw();
-  tree->SetBranchAddress(TASTntuRaw::GetBranchName(), &stHit);
+  TASTntuHit *stHit = new TASTntuHit();
+  tree->SetBranchAddress(TASTntuHit::GetBranchName(), &stHit);
   // tree->SetBranchAddress("stNtu", &stHit);
   
-  TABMntuRaw*  bmHit = new TABMntuRaw(); 
-  tree->SetBranchAddress(TABMntuRaw::GetBranchName(), &bmHit);
+  TABMntuHit*  bmHit = new TABMntuHit(); 
+  tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmHit);
   
   TABMntuTrack*  bmTrack = new TABMntuTrack();
   tree->SetBranchAddress(TABMntuTrack::GetBranchName(), &bmTrack);
@@ -124,8 +124,8 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   // TATW_ContainerPoint *twpoint = new TATW_ContainerPoint();
   // tree->SetBranchAddress(TATW_ContainerPoint::GetBranchName(), &twpoint);
   
-  TATWntuRaw *twrh = new TATWntuRaw();
-  tree->SetBranchAddress(TATWntuRaw::GetBranchName(), &twrh);
+  TATWntuHit *twrh = new TATWntuHit();
+  tree->SetBranchAddress(TATWntuHit::GetBranchName(), &twrh);
   
   TAVTntuVertex* vtx      = new TAVTntuVertex();
   tree->SetBranchAddress(TAVTntuVertex::GetBranchName(), &vtx);
@@ -135,8 +135,8 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   TAGdataDsc* track = new TAGdataDsc("vttrack", vttrack);
   
   
-  //    TAMCntuEve *eve = new TAMCntuEve();
-  //    tree->SetBranchAddress(TAMCntuEve::GetBranchName(), &eve);
+  //    TAMCntuPart *eve = new TAMCntuPart();
+  //    tree->SetBranchAddress(TAMCntuPart::GetBranchName(), &eve);
   
   
   //    TAMCntuHit *vtMc = new TAMCntuHit();
@@ -373,7 +373,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     st_time.push_back(time);
     for (Int_t i = 0; i < nstHits; i++) {
       
-      TASTntuHit* hit = stHit->GetHit(i);
+      TASThit* hit = stHit->GetHit(i);
       Float_t charge  = hit->GetCharge();
       Float_t time    = hit->GetTime();
       
@@ -399,7 +399,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     // cout << " nbmHits   " << nbmHits  << endl;
     // //hits
     for (Int_t i = 0; i < nbmHits; i++) {
-      TABMntuHit* hit = bmHit->GetHit(i);
+      TABMhit* hit = bmHit->GetHit(i);
       
       Int_t view  = hit->GetView();
       Int_t lay   = hit->GetPlane();
@@ -476,7 +476,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     //  mctrack = Nmctrack;
     //  // cout << " Nmctrack   " << Nmctrack  << endl;
     //  for( Int_t iTrack = 0; iTrack < eve->GetTracksN(); ++iTrack ) {
-    //    TAMCeveTrack* track = eve->GetTrack(iTrack);
+    //    TAMCpart* track = eve->GetTrack(iTrack);
     //    //     printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
     //    Double_t Charge = track->GetCharge();
     //    Double_t Mass = track->GetMass();
@@ -544,7 +544,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
           
           
           // for (Int_t j = 0; j < nHits; ++j) {
-          //   TAVTntuHit* hit = clus->GetPixel(j);
+          //   TAVThit* hit = clus->GetPixel(j);
           //   for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
           //     Int_t id = hit->GetMcTrackIdx(k);
           //     Int_t idx = hit->GetMcIndex(k);
@@ -552,7 +552,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
           //     cout << "  McIndex   " <<   idx    <<endl;
           //     // printf("TrackMcId %d ", id);
           //     // printf("McIndex   %d ", idx);
-          //     TAMCeveTrack* track = eve->GetHit(id);
+          //     TAMCpart* track = eve->GetHit(id);
           //     printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
           //     // TAMChit* mcHit = vtMc->GetHit(idx);
           //     // TVector3 pos = mcHit->GetPosition();
@@ -585,7 +585,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     // if(  twrh->GetHitN() > 0 ) {
     for (int i = 0; i < twrh->GetHitN(); i++) {
       
-      TATWntuHit *hit = twrh->Hit(i);;
+      TATWhit *hit = twrh->Hit(i);;
       int bar = hit->GetBar();
       int layer = hit->GetLayer();
       //    TVector3 posG = hit->GetPosition();

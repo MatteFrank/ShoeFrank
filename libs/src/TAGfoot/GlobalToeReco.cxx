@@ -18,7 +18,7 @@ ClassImp(GlobalToeReco)
 GlobalToeReco::GlobalToeReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout)
 {
-   GlobalPar::GetPar()->EnableLocalReco();
+   TAGrecoManager::GetPar()->EnableLocalReco();
    fFlagMC = isMC;
 }
 
@@ -50,15 +50,15 @@ void GlobalToeReco::SetL0TreeBranches()
 {
   BaseReco::SetL0TreeBranches();
   
-  if ((GlobalPar::GetPar()->IncludeTOE() || GlobalPar::GetPar()->IncludeKalman()) && GlobalPar::GetPar()->IsLocalReco()) {
+  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
     if (fFlagMC) {
-      fpNtuMcEve = new TAGdataDsc(TAMCntuEve::GetDefDataName(), new TAMCntuEve());
-      fActEvtReader->SetupBranch(fpNtuMcEve,TAMCntuEve::GetBranchName());
+      fpNtuMcTrk = new TAGdataDsc(TAMCntuPart::GetDefDataName(), new TAMCntuPart());
+      fActEvtReader->SetupBranch(fpNtuMcTrk,TAMCntuPart::GetBranchName());
       
       fpNtuMcEvt = new TAGdataDsc("evtMc", new TAMCntuEvent());
       fActEvtReader->SetupBranch(fpNtuMcEvt,TAMCntuEvent::GetBranchName());
       
-      if (GlobalPar::GetPar()->IsRegionMc()) {
+      if (TAGrecoManager::GetPar()->IsRegionMc()) {
         fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
         fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
       }
@@ -71,9 +71,13 @@ void GlobalToeReco::SetTreeBranches()
 {
   BaseReco::SetTreeBranches();
   
-  fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
-  fActEvtWriter->SetupElementBranch(fpNtuMcEve, TAMCntuEve::GetBranchName());
-  
-  if (GlobalPar::GetPar()->IsRegionMc())
-    fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
+    if (fFlagMC) {
+      fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
+      
+      if (TAGrecoManager::GetPar()->IsRegionMc() )
+        fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+    }
+  }
 }

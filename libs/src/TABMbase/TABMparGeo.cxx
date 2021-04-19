@@ -692,7 +692,7 @@ string TABMparGeo::PrintBodies(){
   stringstream ss;
   ss << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
-  if(GlobalPar::GetPar()->IncludeBM()){
+  if(TAGrecoManager::GetPar()->IncludeBM()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
@@ -808,7 +808,7 @@ string TABMparGeo::PrintRotations()
 {
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeBM()){
+  if(TAGrecoManager::GetPar()->IncludeBM()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
@@ -843,7 +843,7 @@ string TABMparGeo::PrintRegions(){
 
   stringstream outstr;
 
-  if(GlobalPar::GetPar()->IncludeBM()){
+  if(TAGrecoManager::GetPar()->IncludeBM()){
 
     outstr << "* ***Beam Monitor" << endl;
 
@@ -940,7 +940,7 @@ string TABMparGeo::PrintSubtractBodiesFromAir() {
 
   stringstream ss;
 
-  if(GlobalPar::GetPar()->IncludeBM()){
+  if(TAGrecoManager::GetPar()->IncludeBM()){
 
     ss << "-(BmnShiOu -BmnShiIn) -(BmnShiIn -BmnMyl0 +BmnMyl3)" << endl;
 
@@ -958,7 +958,7 @@ string TABMparGeo::PrintAssignMaterial(TAGmaterials *Material) {
     // loop in order of the material alfabeth
     stringstream outstr;
 
-    if(GlobalPar::GetPar()->IncludeBM()){
+    if(TAGrecoManager::GetPar()->IncludeBM()){
 
       TString flkmatFWire, flkmatSWire, flkmatGas, flkmatFoil;
 
@@ -977,7 +977,7 @@ string TABMparGeo::PrintAssignMaterial(TAGmaterials *Material) {
       }
 
       bool magnetic = false;
-      if(GlobalPar::GetPar()->IncludeDI())
+      if(TAGrecoManager::GetPar()->IncludeDI())
 	magnetic = true;
 
       outstr << PrintCard("ASSIGNMA", flkmatFWire, "BMN_SHI", "", "", Form("%d",magnetic), "", "") << endl;//shield has the same mat as field wires
@@ -999,7 +999,7 @@ string TABMparGeo::PrintParameters() {
   stringstream outstr;
   outstr << setiosflags(ios::fixed) << setprecision(5);
 
-  if(GlobalPar::GetPar()->IncludeBM()){
+  if(TAGrecoManager::GetPar()->IncludeBM()){
 
     outstr << "c     BEAM MONITOR PARAMETERS " << endl;
     outstr << endl;

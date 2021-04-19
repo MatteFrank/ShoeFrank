@@ -24,7 +24,7 @@ ClassImp(TABMvieTrackFOOT);
     //~ fpParBMGeo(p_bmgeo)
 //~ {
   //~ if (p_ntutrk)  AddObservable(p_ntutrk,  "@TABMntuTrack");
-  //~ if (p_nturaw)  AddObservable(p_nturaw,  "@TABMntuRaw");
+  //~ if (p_nturaw)  AddObservable(p_nturaw,  "@TABMntuHit");
   //~ if (p_bmgeo)   AddObservable(p_bmgeo,   "@TABMparGeo");
   //~ SetName("TABMvieTrackFOOT");
   //~ SetTitle("TABMvieTrackFOOT");
@@ -32,7 +32,7 @@ ClassImp(TABMvieTrackFOOT);
 
 //~ TABMvieTrackFOOT::TABMvieTrackFOOT(TABMparGeo* p_bmgeo_in)
   //~ : p_bmgeo(p_bmgeo_in)
-TABMvieTrackFOOT::TABMvieTrackFOOT(TABMntuTrack* p_ntutrk_in, TABMntuRaw* p_nturaw_in, TABMparGeo* p_bmgeo_in, Int_t trackok_in, Int_t event_number_in)
+TABMvieTrackFOOT::TABMvieTrackFOOT(TABMntuTrack* p_ntutrk_in, TABMntuHit* p_nturaw_in, TABMparGeo* p_bmgeo_in, Int_t trackok_in, Int_t event_number_in)
   : p_ntutrk(p_ntutrk_in), p_nturaw(p_nturaw_in), p_bmgeo(p_bmgeo_in), fTrackOk(trackok_in), fEventNumber(event_number_in)
 {
   fCellOccupancy=nullptr;
@@ -149,7 +149,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
     for (Int_t i=3; i<36;) {
       tmp_int=0;
       for (Int_t k=fCellOccupancy->at(i).size()-1; k>=0; k--) {
-        TABMntuHit* hit = p_nturaw->GetHit(fCellOccupancy->at(i)[k]);
+        TABMhit* hit = p_nturaw->GetHit(fCellOccupancy->at(i)[k]);
         if(hit->GetView()==1 && hit->GetIsSelected()) {
           //Top view, V view, (X,Z)
           p_bmgeo->GetCellInfo(1, hit->GetPlane(), hit->GetCell(), h_x, h_y, h_z, h_cx, h_cy, h_cz);//charge the wire position and direction in h_x.. and h_cx...
@@ -230,7 +230,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
     for (Int_t i=0; i<33;) {
       tmp_int=0;
       for (Int_t k=fCellOccupancy->at(i).size()-1; k>=0; k--) {
-        TABMntuHit* hit = p_nturaw->GetHit(fCellOccupancy->at(i)[k]);
+        TABMhit* hit = p_nturaw->GetHit(fCellOccupancy->at(i)[k]);
         //View  == 0 (Side view, U view)
         if(hit->GetView()==0 && hit->GetIsSelected()) {
           //Side view, U view, (Y,Z)

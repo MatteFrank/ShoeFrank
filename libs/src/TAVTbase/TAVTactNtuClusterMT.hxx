@@ -10,7 +10,7 @@
 #include "TAVTactBaseNtuClusterMT.hxx"
 
 class TAVTntuCluster;
-class TAVTntuHit;
+class TAVThit;
 class TAVTparGeo;
 
 class TAVTactNtuClusterMT : public TAVTactBaseNtuClusterMT {

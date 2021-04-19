@@ -10,7 +10,7 @@
 #include "TAGmaterials.hxx"
 #include "TGeoMatrix.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 class TAGionisMaterials;
 class TGeoNode;

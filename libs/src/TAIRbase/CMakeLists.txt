@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAMC} ${TAVT} ${TAIT} ${TADI} ${TAMSD})
+set( EXTRA_INTERNAL_LIBRARIES ${TADAQ} ${TAAPI} ${TAG} ${TAMC} ${TAVT} ${TAIT} ${TADI} ${TAMSD})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -39,6 +39,8 @@ include_directories(${ROOT_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${TAMC_INCLUDE_DIR})
 include_directories(${TAG_INCLUDE_DIR})
+include_directories(${TADAQ_INCLUDE_DIR})
+include_directories(${TAAPI_INCLUDE_DIR})
 include_directories(${TAVT_INCLUDE_DIR})
 include_directories(${TAIT_INCLUDE_DIR})
 include_directories(${TADI_INCLUDE_DIR})
@@ -77,7 +79,6 @@ foreach( f ${without_dictionnaries} )
 	set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
 endforeach()
 #
-file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
 
 #----------------------------------------------------------------------------
 #

@@ -4,15 +4,15 @@
   \brief   Implementation of TASTactNtuHitMC.
 */
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGroot.hxx"
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAMCflukaParser.hxx"
 #include "TASTdigitizer.hxx"
 
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TASTactNtuHitMC.hxx"
 
@@ -38,9 +38,9 @@ TASTactNtuHitMC::TASTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
   
    if (fEventStruct == 0x0) {
      AddDataIn(pNtuMC, "TAMCntuHit");
-     AddDataIn(pNtuEve, "TAMCntuEve");
+     AddDataIn(pNtuEve, "TAMCntuPart");
    } 
-   AddDataOut(pNturaw, "TASTntuRaw");
+   AddDataOut(pNturaw, "TASTntuHit");
    
    CreateDigitizer();
 }
@@ -49,7 +49,7 @@ TASTactNtuHitMC::TASTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
 //! Create digitizer
 void TASTactNtuHitMC::CreateDigitizer()
 {
-   TASTntuRaw* p_nturaw = (TASTntuRaw*) fpNtuRaw->Object();
+   TASTntuHit* p_nturaw = (TASTntuHit*) fpNtuRaw->Object();
    
    fDigitizer = new TASTdigitizer(p_nturaw);
 }
@@ -68,7 +68,7 @@ TASTactNtuHitMC::~TASTactNtuHitMC()
 Bool_t TASTactNtuHitMC::Action()
 {
   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-  TASTntuRaw* pNturaw   = (TASTntuRaw*) fpNtuRaw->Object();
+  TASTntuHit* pNturaw   = (TASTntuHit*) fpNtuRaw->Object();
   
   TAMCntuHit* pNtuMC    = 0;
 
@@ -103,7 +103,7 @@ Bool_t TASTactNtuHitMC::Action()
      fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, id);
 
 
-     TASTntuHit* hit = fDigitizer->GetCurrentHit();
+     TASThit* hit = fDigitizer->GetCurrentHit();
      trigtime = hit->GetTime();
      hit->AddMcTrackIdx(trackId, i);
   }

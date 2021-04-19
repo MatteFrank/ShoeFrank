@@ -14,10 +14,6 @@ ClassImp(TAVTbaseCluster) // Description of a cluster
 //  
 TAVTbaseCluster::TAVTbaseCluster()
 :  TAGcluster(),
-   fPosition(0., 0., 0.),
-   fPosError(0., 0., 0.),
-   fPositionG(0., 0., 0.),
-   fPosErrorG(0., 0., 0.),
    fListOfPixels(0x0),
    fCharge(0.),
 	fFoundXZ(kFALSE),
@@ -30,10 +26,6 @@ TAVTbaseCluster::TAVTbaseCluster()
 //  
 TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
 :  TAGcluster(cluster),
-   fPosition(cluster.fPosition),
-   fPosError(cluster.fPosError),
-   fPositionG(cluster.fPositionG),
-   fPosErrorG(cluster.fPosErrorG),
    fCharge(cluster.fCharge),
    fFoundXZ(cluster.fFoundXZ),
    fFoundYZ(cluster.fFoundYZ),
@@ -64,7 +56,7 @@ TVector2 TAVTbaseCluster::ComputeSize()
    Int_t maxCol = 0;
    
    for (Int_t iPix = 0; iPix < fListOfPixels->GetEntries(); ++iPix) {
-      TAVTntuHit* pixel = (TAVTntuHit*)fListOfPixels->At(iPix);
+      TAVThit* pixel = (TAVThit*)fListOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
       
@@ -83,20 +75,6 @@ TVector2 TAVTbaseCluster::ComputeSize()
 
 //______________________________________________________________________________
 //  
-void TAVTbaseCluster::SetPosition(TVector3& pos)
-{
-   fPosition.SetXYZ(pos.X(), pos.Y(), pos.Z());
-}
-
-//______________________________________________________________________________
-//  
-void TAVTbaseCluster::SetPosError(TVector3& pos)
-{
-   fPosError.SetXYZ(pos.X(), pos.Y(), pos.Z());
-}
-
-//______________________________________________________________________________
-//  
 void TAVTbaseCluster::SetPositionG(TVector3& posGlo)
 {
    fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
@@ -105,22 +83,21 @@ void TAVTbaseCluster::SetPositionG(TVector3& posGlo)
 
 //______________________________________________________________________________
 // 
-TAVTntuHit* TAVTbaseCluster::GetPixel(Int_t idx)                    
+TAVThit* TAVTbaseCluster::GetPixel(Int_t idx)                    
 { 
    if (idx >=0 && idx < fListOfPixels->GetEntries())
-	  return (TAVTntuHit*)fListOfPixels->At(idx); 
+	  return (TAVThit*)fListOfPixels->At(idx); 
    else
 	  return 0x0;
 }
-
 
 //______________________________________________________________________________
 //  
 Float_t TAVTbaseCluster::GetPixelDistanceU(Int_t index) const
 {
-   TAVTbaseNtuHit* pixelSeed = (TAVTbaseNtuHit*)fListOfPixels->At(0);
+   TAVTbaseHit* pixelSeed = (TAVTbaseHit*)fListOfPixels->At(0);
    if (index >= 0 && index < fListOfPixels->GetEntries()) {
-	  TAVTbaseNtuHit* aNeighbour = (TAVTbaseNtuHit*)fListOfPixels->At(index);
+	  TAVTbaseHit* aNeighbour = (TAVTbaseHit*)fListOfPixels->At(index);
 	  return pixelSeed->DistanceU(aNeighbour->GetPosition());
    } else {
 	  return -1;
@@ -131,9 +108,9 @@ Float_t TAVTbaseCluster::GetPixelDistanceU(Int_t index) const
 //  
 Float_t TAVTbaseCluster::GetPixelDistanceV(Int_t index) const
 {
-   TAVTbaseNtuHit* pixelSeed = (TAVTbaseNtuHit*)fListOfPixels->At(0);
+   TAVTbaseHit* pixelSeed = (TAVTbaseHit*)fListOfPixels->At(0);
    if (index >= 0 && index < fListOfPixels->GetEntries()) {
-	  TAVTbaseNtuHit* aNeighbour = (TAVTbaseNtuHit*)fListOfPixels->At(index);
+	  TAVTbaseHit* aNeighbour = (TAVTbaseHit*)fListOfPixels->At(index);
 	  return pixelSeed->DistanceV(aNeighbour->GetPosition());
    } else {
 	  return -1;
@@ -144,7 +121,7 @@ Float_t TAVTbaseCluster::GetPixelDistanceV(Int_t index) const
 //  
 Float_t TAVTbaseCluster::GetSeedU() const 
 { 
-   TAVTbaseNtuHit* pixelSeed = (TAVTbaseNtuHit*)fListOfPixels->At(0);
+   TAVTbaseHit* pixelSeed = (TAVTbaseHit*)fListOfPixels->At(0);
    return pixelSeed->GetPosition().Px();
 }
 
@@ -152,7 +129,7 @@ Float_t TAVTbaseCluster::GetSeedU() const
 //  
 Float_t TAVTbaseCluster::GetSeedV() const 
 { 
-   TAVTbaseNtuHit* pixelSeed = (TAVTbaseNtuHit*)fListOfPixels->At(0);
+   TAVTbaseHit* pixelSeed = (TAVTbaseHit*)fListOfPixels->At(0);
    return pixelSeed->GetPosition().Py();
 }
 

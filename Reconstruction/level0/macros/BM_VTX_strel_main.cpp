@@ -42,8 +42,8 @@ void BM_VTX_strel_main(Int_t nentries=0){
   parFileName += bmcon->GetParmapfile();
   parMap->FromFile(parFileName.Data(), bmgeo);
     
-  TABMntuRaw*  bmRawHit = new TABMntuRaw(); 
-  tree->SetBranchAddress(TABMntuRaw::GetBranchName(), &bmRawHit);    
+  TABMntuHit*  bmRawHit = new TABMntuHit(); 
+  tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmRawHit);    
   TABMntuTrack*  bmNtuTrack = new TABMntuTrack();
   tree->SetBranchAddress(TABMntuTrack::GetBranchName(), &bmNtuTrack);
 

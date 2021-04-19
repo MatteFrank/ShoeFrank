@@ -11,7 +11,7 @@
 #include "TObjString.h"
 #include "TSystem.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGmaterials.hxx"
 #include "TAGionisMaterials.hxx"

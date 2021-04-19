@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES "")
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 #
 # headers / dictionnary / sources 
@@ -36,19 +36,17 @@ set( with_dictionnaries
    TAGcampaignManager
    TAGnamed
    TAGobject
-   TAGpadGroup
    TAGparTools
    TAGpara
    TAGparaDsc
    TAGroot
    TAGrunInfo
-   TAGtimestamp
    TAGview
    TAGbaseMaterials
    TAGmaterials
    TAGionisMaterials
    TAGxmlParser
-   GlobalPar
+   TAGrecoManager
 )
 	
 set( without_dictionnaries
@@ -95,7 +93,6 @@ foreach( f ${without_dictionnaries} )
 	set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
 endforeach()
 #
-file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
 
 #----------------------------------------------------------------------------
 #

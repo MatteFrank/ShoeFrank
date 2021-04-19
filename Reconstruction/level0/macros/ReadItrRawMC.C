@@ -22,11 +22,11 @@
 #include "TAITparMap.hxx"
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAMCntuHit.hxx"
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TAGcampaignManager.hxx"
 #include "TAGactTreeReader.hxx"
@@ -63,15 +63,15 @@ void FillInnerTracker(Int_t runNumber)
    parconf->FromFile(parFileName.Data());
 
    TAITparConf::SetHistoMap();
-   TAGdataDsc* itEve  = new TAGdataDsc("itEve", new TAMCntuEve());
+   TAGdataDsc* itEve  = new TAGdataDsc("itEve", new TAMCntuPart());
    TAGdataDsc* itMc   = new TAGdataDsc("itMc", new TAMCntuHit());
-   TAGdataDsc* itNtu  = new TAGdataDsc("itNtu", new TAITntuRaw());
+   TAGdataDsc* itNtu  = new TAGdataDsc("itNtu", new TAITntuHit());
    TAGdataDsc* itClus = new TAGdataDsc("itClus", new TAITntuCluster());
    TAGdataDsc* itTrck = new TAGdataDsc("itTrck", new TAITntuTrack());
 
    itActReader  = new TAGactTreeReader("itActEvtReader");
    itActReader->SetupBranch(itMc, TAMCntuHit::GetItrBranchName());
-   itActReader->SetupBranch(itEve,TAMCntuEve::GetBranchName());
+   itActReader->SetupBranch(itEve,TAMCntuPart::GetBranchName());
 
    itActRaw= new TAITactNtuHitMC("itActNtu", itMc, itEve, itNtu, itGeo);
    itActRaw->CreateHistogram();
@@ -91,8 +91,9 @@ void FillInnerTracker(Int_t runNumber)
 void ReadItrRawMC(TString filename = "12C_C_200_ntu.root", Int_t nMaxEvts = 0,
                   TString expName = "12C_200", Int_t runNumber = 1)
 {
-   GlobalPar::Instance(expName);
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(expName);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    TAGroot tagr;
    

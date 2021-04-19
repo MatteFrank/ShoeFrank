@@ -3,7 +3,7 @@
 #include <TStopwatch.h>
 #include <TApplication.h>
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "LocalReco.hxx"
 
 int main (int argc, char *argv[])  {
@@ -46,24 +46,24 @@ int main (int argc, char *argv[])  {
 
    TApplication::CreateApplication();
 
-   GlobalPar::Instance(exp);
-   GlobalPar::GetPar()->Print();
+   TAGrecoManager::Instance(exp);
+   TAGrecoManager::GetPar()->Print();
 
-   Bool_t ntu = GlobalPar::GetPar()->IsSaveTree();
-   Bool_t his = GlobalPar::GetPar()->IsSaveHisto();
-   Bool_t hit = GlobalPar::GetPar()->IsSaveHits();
+   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
+   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
+   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
 
    //Whatever it is we're ONLY going to calibrate TW!
-   GlobalPar::GetPar()->IncludeST(true);
-   GlobalPar::GetPar()->IncludeTW(true);
-   GlobalPar::GetPar()->CalibTW(true);
-   GlobalPar::GetPar()->IncludeDI(false);
-   GlobalPar::GetPar()->IncludeBM(false);
-   GlobalPar::GetPar()->IncludeMSD(false);
-   GlobalPar::GetPar()->IncludeCA(false);
-   GlobalPar::GetPar()->IncludeTG(false);
-   GlobalPar::GetPar()->IncludeVT(false);
-   GlobalPar::GetPar()->IncludeIT(false);
+   TAGrecoManager::GetPar()->IncludeST(true);
+   TAGrecoManager::GetPar()->IncludeTW(true);
+   TAGrecoManager::GetPar()->CalibTW(true);
+   TAGrecoManager::GetPar()->IncludeDI(false);
+   TAGrecoManager::GetPar()->IncludeBM(false);
+   TAGrecoManager::GetPar()->IncludeMSD(false);
+   TAGrecoManager::GetPar()->IncludeCA(false);
+   TAGrecoManager::GetPar()->IncludeTG(false);
+   TAGrecoManager::GetPar()->IncludeVT(false);
+   TAGrecoManager::GetPar()->IncludeIT(false);
 
    out = Form("./dE-TOF_Calib_%s_run%d.root",exp.Data(),runNb);
 

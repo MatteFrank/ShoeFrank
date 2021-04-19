@@ -92,9 +92,9 @@ void TCFOrunAction::SetContainers()
    fpTree = new TTree("EventTree", "FOOT");
    fpEventMC = new TAMCevent();
    fpEventMC->SetBranches(fpTree);
-   GlobalPar::GetPar()->EnableRootObject();
+   TAGrecoManager::GetPar()->EnableRootObject();
   
-   TAGrunInfo info = GlobalPar::GetPar()->GetGlobalInfo();
+   TAGrunInfo info = TAGrecoManager::GetPar()->GetGlobalInfo();
    info.SetCampaignName(name);
    info.SetRunNumber(run);
    gTAGroot->SetRunInfo(info);

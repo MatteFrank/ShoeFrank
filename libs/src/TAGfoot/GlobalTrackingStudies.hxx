@@ -50,31 +50,30 @@
 #include "TAGparGeo.hxx"
 
 #include "TAVTparGeo.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTtrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTactNtuClusterF.hxx"
 
 #include "TAITparGeo.hxx"
-#include "TAITntuRaw.hxx"
+#include "TAITntuHit.hxx"
 #include "TAITntuCluster.hxx"
 
 #include "TAMSDparGeo.hxx"
-#include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
 
 #include "TATWparGeo.hxx"
 #include "TATWntuPoint.hxx"
 
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TAGroot.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 
-#include "GlobalPar.hxx"
-#include "UpdatePDG.hxx"
+#include "TAGrecoManager.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>

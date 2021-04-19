@@ -6,7 +6,7 @@
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TSysEvtHandler.h"
 
@@ -15,7 +15,7 @@ class TCGbaseGeometryConstructor;
 class TCFOgeometryConstructor;
 class TAGgeoTrafo;
 class TCGmcHit;
-class TAMCntuEve;
+class TAMCntuPart;
 
 class TAGeventInterruptHandler : public TSignalHandler {
     public:
@@ -37,7 +37,7 @@ class TCFObaseEventAction : public G4UserEventAction
     virtual void   EndOfEventAction(const G4Event*);
     void   ConstructCollection();
 
-    TAMCntuEve* GetTrackMc()           { return fMcTrack;       }
+    TAMCntuPart* GetTrackMc()           { return fMcTrack;       }
     void SetFillTree(Bool_t fill)      { fFillTree = fill;      }
    
     void SetInelasticOnly(G4bool frag) { fInelasticOnly = frag; }
@@ -56,7 +56,7 @@ class TCFObaseEventAction : public G4UserEventAction
     Int_t                    fCaCollId;            // Id of Calo collection
     TString                  fDetName;
     TSignalHandler*          fEventInterruptHandler;
-    TAMCntuEve*              fMcTrack;
+    TAMCntuPart*              fMcTrack;
     Bool_t                   fFillTree;
     TAGgeoTrafo*             fpGeoTrafo;           // trafo pointer
     G4bool                   fInelasticOnly;

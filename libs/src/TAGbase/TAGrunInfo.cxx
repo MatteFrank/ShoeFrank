@@ -77,9 +77,9 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
 {
    fiRun = right.fiRun;
    fsCam = right.fsCam;
-
-  fCrossMap.insert(right.fCrossMap.begin(), right.fCrossMap.end());
-
+  
+   fCrossMap.insert(right.fCrossMap.begin(), right.fCrossMap.end());
+  
    fGlobalParameter.EnableLocalReco  = right.fGlobalParameter.EnableLocalReco;
    fGlobalParameter.EnableTree       = right.fGlobalParameter.EnableTree;
    fGlobalParameter.EnableHisto      = right.fGlobalParameter.EnableHisto;
@@ -153,7 +153,7 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
 
    if(fGlobalParameter.EnableRegionMc){
      os << "Crossing Map:  \n"
-     <<Form("  Total number of regions: %d\n",fCrossMap.size());
+     <<Form("  Total number of regions: %ld\n",fCrossMap.size());
      if(strcmp(option,"v")==0 || strcmp(option,"verbose")==0)
        for (auto& x: fCrossMap)
            os<<"  "<<x.first.Data()<<"  " << x.second <<endl;

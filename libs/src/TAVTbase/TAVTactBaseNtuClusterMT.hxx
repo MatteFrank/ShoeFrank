@@ -10,7 +10,7 @@
 #include "TAVTactBaseClusterMT.hxx"
 
 class TAVTntuCluster;
-class TAVTntuHit;
+class TAVThit;
 class TAVTparGeo;
 class TClonesArray;
 

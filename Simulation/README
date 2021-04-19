@@ -1,0 +1,14 @@
+FLuka simulation tools
+
+A) Producing geometry file:
+ makeGeo -exp 12C_200 -run 1
+
+B) Converting to shoe format:
+
+ 1) No region flag:
+ - command:
+ Txt2NtuRoot -in 12C_C_200_dat.txt -out 12C_C_200shoe.root -exp 12C_200 -run 1
+
+ 2) With region flag:
+ - command:
+Txt2NtuRoot -in 12C_C_200_dat.txt -out 12C_C_200shoereg.root -exp 12C_200 -run 1 -reg

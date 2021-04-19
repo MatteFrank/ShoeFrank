@@ -26,17 +26,17 @@ class TAGdataDsc : public TAGnamed {
     void            SetProducer(TAGaction* p_action);
     void            SetConsumer(TAGaction* p_action);
 
-    TAGdata*        Object() const;
-    TAGaction*      Producer() const;
-
     TAGdata*        GenerateObject();
 
-    TAGdata**       ObjectPointer();
+    TAGdata**       ObjectPointer()     { return &fpObject;       }
 
-    TClass*         ObjectClass() const;
+    TAGdata*        Object()      const { return fpObject;        }
+    TAGaction*      Producer()    const { return fpProducer;      }
 
-    Bool_t          Valid() const;
-    Bool_t          Eof() const;
+    TClass*         ObjectClass() const { return fpObjectClass;   }
+
+    Bool_t          Valid()       const { return TestBit(kValid); }
+    Bool_t          Eof()         const { return TestBit(kEof);   }
 
     virtual void    Clear(Option_t* opt="");
     Bool_t          Generate();
@@ -53,7 +53,5 @@ class TAGdataDsc : public TAGnamed {
     TAGaction*      fpProducer;
     TList*          fpConsumerList;
 };
-
-#include "TAGdataDsc.icc" 
 
 #endif

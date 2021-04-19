@@ -19,7 +19,7 @@
 
 #include "TH2.h"
 
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 #include "TAGparGeo.hxx"
 #include "TAGroot.hxx"
 #include "TAGdataDsc.hxx"
@@ -383,7 +383,7 @@ struct TATOEchecker{
     
     
 private:
-    TAMCntuEve* data_mhc;
+    TAMCntuPart* data_mhc;
     std::pair<double, double> target_limits_m;
     Action& action_m;
     node_type const * current_node_mh = nullptr;
@@ -401,7 +401,7 @@ private:
 public:
     TATOEchecker( TAGparGeo const * global_parameters_ph,
                   Action& action_p ) :
-    data_mhc{ static_cast<TAMCntuEve*>( gTAGroot->FindDataDsc( TAMCntuEve::GetDefDataName() )->Object() ) },
+    data_mhc{ static_cast<TAMCntuPart*>( gTAGroot->FindDataDsc( TAMCntuPart::GetDefDataName() )->Object() ) },
         target_limits_m{ retrieve_target_limits( global_parameters_ph ) },
         action_m{action_p}
     {

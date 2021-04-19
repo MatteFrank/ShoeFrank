@@ -41,7 +41,7 @@
 #include "G4UIExecutive.hh"
 #endif
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
@@ -58,8 +58,8 @@ int main(int argc,char** argv)
     // initialise seed
     UInt_t seed = 0;
 
-    // batch mode flag
-    G4bool batchMode(false);
+    // interactive mode flag
+    G4bool interMode(false);
 
     // run mode flag
     G4bool runMode(false);
@@ -102,8 +102,8 @@ int main(int argc,char** argv)
         if(strcmp(argv[i],"-phys") == 0)
             physListName  = argv[++i];
 
-        if(strcmp(argv[i],"-b") == 0)
-            batchMode  = true;
+        if(strcmp(argv[i],"-i") == 0)
+            interMode  = true;
        
        if(strcmp(argv[i],"-frag") == 0)
           frag  = true;
@@ -119,7 +119,7 @@ int main(int argc,char** argv)
 
         if(strcmp(argv[i],"-help") == 0) {
             printf("Possible arguments are:\n");
-            printf("  -b batch mode active \n");
+            printf("  -i interactive mode enable \n");
             printf("  -r run.mac is launched \n");
             printf("  -nev nevent: number of events");
             printf("  -out rootFileName: root output file name \n");
@@ -134,8 +134,8 @@ int main(int argc,char** argv)
     }
   
     // Global Par
-    GlobalPar::Instance(expName);
-    GlobalPar::GetPar()->SetDebugLevels();
+    TAGrecoManager::Instance(expName);
+    TAGrecoManager::GetPar()->FromFile();
    
     // TAG root
     TAGroot tagRoot;
@@ -211,22 +211,21 @@ int main(int argc,char** argv)
         UI->ApplyCommand(command+name);
     }
 
-    //batch mode
-    if (batchMode) {
-        runManager->BeamOn(eventsNToBeProcessed);
-    }
-    else if (runMode){
+    // modes
+    if (interMode) {// with visualization
+      G4UIExecutive * ui = new G4UIExecutive(argc,argv);
+      G4cout<<" USE G4_VIS USE"<<G4endl;
+      UI->ApplyCommand("/control/execute vis.mac");
+      ui->SessionStart();
+      delete ui;
+      
+    } else if (runMode){
         G4String command = "/control/execute run.mac";
         UI->ApplyCommand(command);
-    }
-    else { // with visualization
-        G4UIExecutive * ui = new G4UIExecutive(argc,argv);
-        G4cout<<" USE G4_VIS USE"<<G4endl;
-        UI->ApplyCommand("/control/execute vis.mac");
-        ui->SessionStart();
-        delete ui;
-    }
-    
+      
+    } else
+      runManager->BeamOn(eventsNToBeProcessed);
+  
     delete visManager;
     delete runManager;
     

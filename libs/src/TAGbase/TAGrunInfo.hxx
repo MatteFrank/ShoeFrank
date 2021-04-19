@@ -85,7 +85,7 @@ private:
 public:
    static const Char_t* GetObjectName()   { return fgkObjectName.Data();   }
 
-   ClassDef(TAGrunInfo,3)
+   ClassDef(TAGrunInfo,4)
 };
 
 #endif

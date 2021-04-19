@@ -22,7 +22,7 @@ TAVTcluster::TAVTcluster()
 //
 void TAVTcluster::SetupClones()
 {
-   fListOfPixels = new TClonesArray("TAVTntuHit");
+   fListOfPixels = new TClonesArray("TAVThit");
    fListOfPixels->SetOwner(true);
 }
 
@@ -58,7 +58,7 @@ Float_t TAVTcluster::Distance( TAVTtrack *aTrack) {
 
 //______________________________________________________________________________
 //  
-void TAVTcluster::AddPixel(TAVTntuHit* pixel)
+void TAVTcluster::AddPixel(TAVThit* pixel)
 {
    for (Int_t k = 0; k < pixel->GetMcTracksN(); ++k) {
       Int_t idx = pixel->GetMcTrackIdx(k);
@@ -66,7 +66,7 @@ void TAVTcluster::AddPixel(TAVTntuHit* pixel)
    }
 
    TClonesArray &pixelArray = *fListOfPixels;
-   new(pixelArray[pixelArray.GetEntriesFast()]) TAVTntuHit(*pixel);
+   new(pixelArray[pixelArray.GetEntriesFast()]) TAVThit(*pixel);
 }
 
 

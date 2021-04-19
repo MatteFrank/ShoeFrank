@@ -17,7 +17,7 @@ GlobalTrackingStudies::GlobalTrackingStudies(const char* name)
 
 Bool_t GlobalTrackingStudies::Action() {
 
-	TAMCntuEve*  eve = (TAMCntuEve*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuEve")->Object();
+	TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 	TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 	TAITparGeo* itGeo = (TAITparGeo*) ( (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
 
@@ -48,7 +48,7 @@ Bool_t GlobalTrackingStudies::Action() {
 			TAVTcluster* clus = (TAVTcluster*) track->GetCluster( i );
 			if (!clus->IsValid()) continue;
 			
-			TAMCeveTrack* genParticle;
+			TAMCpart* genParticle;
 
 			// if just one particle producing clusters
 			if ( clus->GetMcTracksN() == 1 ) {
@@ -142,12 +142,12 @@ Bool_t GlobalTrackingStudies::Action() {
 					TAITcluster* clus = itclus->GetCluster(iPlane, iClus);
 					// TVector3 itCluster = geoTrafo->FromITLocalToGlobal( clus->GetPositionG() );
 					
-					// TAMCeveTrack* genParticle = eve->GetTrack( clus->GetMcTrackIdx(0) );
+					// TAMCpart* genParticle = eve->GetTrack( clus->GetMcTrackIdx(0) );
 					if ( clus->GetMcTrackIdx(0) != genParticleID_vec[0] )	continue;
 
 					int nHits = clus->GetPixelsN();
 					for (Int_t jHit = 0; jHit < nHits; ++jHit) {
-				      	TAITntuHit* hit = (TAITntuHit*)clus->GetPixel(jHit);
+				      	TAIThit* hit = (TAIThit*)clus->GetPixel(jHit);
 				      	for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
 							Int_t idx = hit->GetMcIndex(k);
 							TAMChit* mcHit = itMc->GetHit(idx);

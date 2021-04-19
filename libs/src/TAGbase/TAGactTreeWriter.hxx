@@ -56,8 +56,9 @@ class TAGactTreeWriter : public TAGactionFile {
 
     virtual Bool_t  IsOpen() const;
 
-    TFile*          File();
-    TTree*          Tree();
+    TFile*          File() { return fpFile; }
+
+    TTree*          Tree() { return fpTree; }
 
     virtual Bool_t  Process();
 
@@ -78,7 +79,5 @@ class TAGactTreeWriter : public TAGactionFile {
     Int_t           fiNEntry;
     Int_t           fiCompress;
 };
-
-#include "TAGactTreeWriter.icc"
 
 #endif

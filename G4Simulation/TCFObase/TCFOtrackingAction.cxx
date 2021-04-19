@@ -5,7 +5,7 @@
 // Help          : http://www.lcsim.org/software/geant4/doxygen/html/classes.html
 //
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #include "TAMCparTools.hxx"
 

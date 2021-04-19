@@ -15,6 +15,7 @@ if (FILECOPY)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/link_FOOT_mag.sh DESTINATION ${CMAKE_BINARY_DIR}/Simulation/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/foot.inp DESTINATION ${CMAKE_BINARY_DIR}/Simulation/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ROUTINES/  DESTINATION ${CMAKE_BINARY_DIR}/Simulation/ROUTINES)
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/README   DESTINATION ${CMAKE_BINARY_DIR}/Simulation/)
 
  execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/data/  ${CMAKE_BINARY_DIR}/Simulation)
  execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/level0/geomaps/  ${CMAKE_BINARY_DIR}/Simulation)
@@ -54,6 +55,18 @@ target_link_libraries(makeGeo ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIBR
 #
 install(TARGETS makeGeo DESTINATION bin)
 
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the libraries
+#
+add_executable(Txt2NtuRoot Txt2NtuRoot.cxx)
+#
+add_dependencies(Txt2NtuRoot ${SIM_REC_LIBRARIES})
+target_link_libraries(Txt2NtuRoot ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIBRARIES} )
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS Txt2NtuRoot DESTINATION bin)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the libraries
@@ -67,16 +80,3 @@ target_link_libraries(Txt2Root ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIB
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS Txt2Root DESTINATION bin)
-
-#----------------------------------------------------------------------------
-# Add the executable, and link it to the libraries
-#
-add_executable(Txt2NtuRoot Txt2NtuRoot.cxx)
-#
-add_dependencies(Txt2NtuRoot ${SIM_REC_LIBRARIES})
-target_link_libraries(Txt2NtuRoot ${EXTRA_EXTERNAL_LIBRARIES}  ${EXTRA_INTERNAL_LIBRARIES} )
-
-#----------------------------------------------------------------------------
-# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
-#
-install(TARGETS Txt2NtuRoot DESTINATION bin)

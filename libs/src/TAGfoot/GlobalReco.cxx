@@ -1,5 +1,7 @@
 
-
+#include "BaseReco.hxx"
+#include "TAMCntuEvent.hxx"
+#include "TAMCntuRegion.hxx"
 #include "GlobalReco.hxx"
 
 ClassImp(GlobalReco)
@@ -8,7 +10,7 @@ ClassImp(GlobalReco)
 GlobalReco::GlobalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
 : BaseReco(expName, runNumber, fileNameIn, fileNameout)
 {
-  GlobalPar::GetPar()->EnableLocalReco();
+  TAGrecoManager::GetPar()->EnableLocalReco();
   fFlagMC = isMC;
 }
 
@@ -34,44 +36,76 @@ void GlobalReco::CreateRawAction()
 {
 }
 
-// --------------------------------------------------------------------------------------
-void GlobalReco::SetRunNumber()
+//__________________________________________________________
+void GlobalReco::SetL0TreeBranches()
 {
-  if (fRunNumber != -1) { // if set from outside return, else take from name
-    gTAGroot->SetRunNumber(fRunNumber);
-    return;
+  BaseReco::SetL0TreeBranches();
+  
+  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
+    if (fFlagMC) {
+      fpNtuMcTrk = new TAGdataDsc(TAMCntuPart::GetDefDataName(), new TAMCntuPart());
+      fActEvtReader->SetupBranch(fpNtuMcTrk,TAMCntuPart::GetBranchName());
+      
+      fpNtuMcEvt = new TAGdataDsc("evtMc", new TAMCntuEvent());
+      fActEvtReader->SetupBranch(fpNtuMcEvt,TAMCntuEvent::GetBranchName());
+      
+      if (TAGrecoManager::GetPar()->IsRegionMc()) {
+        fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
+        fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+      }
+      
+      if (TAGrecoManager::GetPar()->IncludeKalman() && TAGrecoManager::GetPar()->IsLocalReco()) {
+        if (TAGrecoManager::GetPar()->IncludeST()) {
+          fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcSt,TAMCntuHit::GetStcBranchName());
+        }
+        
+        if (TAGrecoManager::GetPar()->IncludeBM()) {
+          fpNtuMcBm   = new TAGdataDsc("bmMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcBm,TAMCntuHit::GetBmBranchName());
+        }
+        
+        if (TAGrecoManager::GetPar()->IncludeVT()) {
+          fpNtuMcVt   = new TAGdataDsc("vtMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcVt,TAMCntuHit::GetVtxBranchName());
+        }
+        
+        if (TAGrecoManager::GetPar()->IncludeIT()) {
+          fpNtuMcIt   = new TAGdataDsc("itMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcIt,TAMCntuHit::GetItrBranchName());
+        }
+        
+        if (TAGrecoManager::GetPar()->IncludeMSD()) {
+          fpNtuMcMsd   = new TAGdataDsc("msdMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcMsd,TAMCntuHit::GetMsdBranchName());
+        }
+        
+        if(TAGrecoManager::GetPar()->IncludeTW()) {
+          fpNtuMcTw   = new TAGdataDsc("twMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcTw,TAMCntuHit::GetTofBranchName());
+        }
+        
+        if(TAGrecoManager::GetPar()->IncludeCA()) {
+          fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcCa,TAMCntuHit::GetCalBranchName());
+        }
+      }
+    }
   }
+}
+
+//__________________________________________________________
+void GlobalReco::SetTreeBranches()
+{
+  BaseReco::SetTreeBranches();
   
-  // Done by hand shoud be given by DAQ header
-  TString name = GetName();
-  if (name.IsNull()) return;
-  
-  // protection about file name starting with .
-  if (name[0] == '.')
-    name.Remove(0,1);
-  
-  if (fFlagMC) {
-    // assuming name XXX_run.root
-    Int_t pos1   = name.Last('_');
-    Int_t len    = name.Length();
-    
-    TString tmp1 = name(pos1+1, len);
-    Int_t pos2   = tmp1.First(".");
-    TString tmp  = tmp1(0, pos2);
-    fRunNumber = tmp.Atoi();
-    
-  } else {
-    // assuming XXX.run.XXX.dat
-    Int_t pos1   = name.First(".");
-    Int_t len    = name.Length();
-    
-    TString tmp1 = name(pos1+1, len);
-    Int_t pos2   = tmp1.First(".");
-    TString tmp  = tmp1(0, pos2);
-    fRunNumber = tmp.Atoi();
+  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
+    if (fFlagMC) {
+      fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
+      
+      if (TAGrecoManager::GetPar()->IsRegionMc() )
+        fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+    }
   }
-  
-  Warning("SetRunNumber()", "Run number not set !, taking number from file: %d", fRunNumber);
-  
-  gTAGroot->SetRunNumber(fRunNumber);
 }

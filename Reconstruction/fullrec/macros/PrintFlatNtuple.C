@@ -8,21 +8,21 @@
 #include <TString.h>
 #include <TVector3.h>
 
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 #include "TAMCntuHit.hxx"
 
 
 #include "TASTparGeo.hxx"
-#include "TASTntuRaw.hxx"
+#include "TASTntuHit.hxx"
 
 
 #include "TABMparGeo.hxx"
-#include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
+#include "TABMhit.hxx"
 #include "TABMntuTrack.hxx"
 
 #include "TAVTparGeo.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuVertex.hxx"
 #include "TAVTntuTrack.hxx"
@@ -98,11 +98,11 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
   tree = (TTree*)f->Get("tree");
   
   
-  TASTntuRaw *stHit = new TASTntuRaw();
-  tree->SetBranchAddress(TASTntuRaw::GetBranchName(), &stHit);
+  TASTntuHit *stHit = new TASTntuHit();
+  tree->SetBranchAddress(TASTntuHit::GetBranchName(), &stHit);
   
-  TABMntuRaw*  bmHit = new TABMntuRaw();
-  tree->SetBranchAddress(TABMntuRaw::GetBranchName(), &bmHit);
+  TABMntuHit*  bmHit = new TABMntuHit();
+  tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmHit);
   
   TABMntuTrack*  bmTrack = new TABMntuTrack();
   tree->SetBranchAddress(TABMntuTrack::GetBranchName(), &bmTrack);
@@ -132,8 +132,8 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
   TAGdataDsc* track = new TAGdataDsc("vttrack", vttrack);
   
   
-  TAMCntuEve *eve = new TAMCntuEve();
-  tree->SetBranchAddress(TAMCntuEve::GetBranchName(), &eve);
+  TAMCntuPart *eve = new TAMCntuPart();
+  tree->SetBranchAddress(TAMCntuPart::GetBranchName(), &eve);
   
   
   TAMCntuHit *vtMc = new TAMCntuHit();
@@ -327,7 +327,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
     //hits
     for (Int_t i = 0; i < nstHits; i++) {
       
-      TASTntuHit* hit = stHit->GetHit(i);
+      TASThit* hit = stHit->GetHit(i);
       Float_t charge = hit->GetCharge();
       Float_t time = hit->GetTime();
       
@@ -354,7 +354,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
     // cout << " nbmHits   " << nbmHits  << endl;
     // //hits
     for (Int_t i = 0; i < nbmHits; i++) {
-      TABMntuHit* hit = bmHit->GetHit(i);
+      TABMhit* hit = bmHit->GetHit(i);
       
       Int_t view  = hit->GetView();
       Int_t lay   = hit->GetPlane();
@@ -430,7 +430,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
     mctrack = Nmctrack;
     // cout << " Nmctrack   " << Nmctrack  << endl;
     for( Int_t iTrack = 0; iTrack < eve->GetTracksN(); ++iTrack ) {
-      TAMCeveTrack* track = eve->GetTrack(iTrack);
+      TAMCpart* track = eve->GetTrack(iTrack);
       //     printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
       Double_t Charge = track->GetCharge();
       Double_t Mass = track->GetMass();
@@ -498,7 +498,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
           
           
           // for (Int_t j = 0; j < nHits; ++j) {
-          //   TAVTntuHit* hit = clus->GetPixel(j);
+          //   TAVThit* hit = clus->GetPixel(j);
           //   for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
           //     Int_t id = hit->GetMcTrackIdx(k);
           //     Int_t idx = hit->GetMcIndex(k);
@@ -506,7 +506,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
           //     cout << "  McIndex   " <<   idx    <<endl;
           //     // printf("TrackMcId %d ", id);
           //     // printf("McIndex   %d ", idx);
-          //     TAMCeveTrack* track = eve->GetTrack(id);
+          //     TAMCpart* track = eve->GetTrack(id);
           //     printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
           //     // TAMChit* mcHit = vtMc->GetHit(idx);
           //     // TVector3 pos = mcHit->GetPosition();
@@ -532,10 +532,10 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
     
     
     
-    // Float_t nTWpoint = twpoint->GetPointN();
+    // Float_t nTWpoint = twpoint->GetPointsN();
     //  // cout << " n point in Tofwall " << nTWpoint  <<endl;
-    // if(  twpoint->GetPointN() > 0 ) {
-    //   for (int i = 0; i < twpoint->GetPointN(); i++) {
+    // if(  twpoint->GetPointsN() > 0 ) {
+    //   for (int i = 0; i < twpoint->GetPointsN(); i++) {
     
     //     TATW_Point *point = twpoint->GetPoint(i);
     

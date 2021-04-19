@@ -11,7 +11,7 @@
 //TAGroot
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 //VTX
 #include "TAVTntuVertex.hxx"

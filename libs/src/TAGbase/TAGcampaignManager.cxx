@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "TObjArray.h"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 //Class that manage the campaigns
 
@@ -12,7 +12,6 @@ ClassImp(TAGcampaignManager);
 const TString TAGcampaignManager::fgkDefaultActName = "actCamMan";
 const TString TAGcampaignManager::fgkDefaultFolder  = "./cammaps/";
 const TString TAGcampaignManager::fgkDefaultExt     = ".cam";
-const TString TAGcampaignManager::fgkStandardCamName = "STD";
 const TString TAGcampaignManager::fgkDefaultCamName = "FOOT.cam";
 
 
@@ -26,8 +25,7 @@ TAGcampaignManager::TAGcampaignManager(const TString exp)
    fCurCampaignNumber(-1)
 {
    if (fCurCampaignName.IsNull()) {
-      fCurCampaignName = fgkStandardCamName;
-      Warning("TAGcampaignManager()", "No campaign name set, using %s, should be used only be expert", fgkStandardCamName.Data());
+      Error("TAGcampaignManager()", "No campaign name set, please set the campaign");
    }
 }
 
@@ -157,6 +155,7 @@ void TAGcampaignManager::Print(Option_t* opt) const
 ClassImp(TAGcampaign);
 
 map<Int_t, TString> TAGcampaign::fgTWcalFileType = {{0, "TATW_Energy"},{1, "TATW_Tof"}, {2, "TATWEnergy"} };
+map<Int_t, TString> TAGcampaign::fgCAcalFileType = {{0, "TACA_Energy"},{1, "TACA_Temperature"}};
 map<Int_t, TString> TAGcampaign::fgTWmapFileType = {{0, "TATWChannel"},{1, "TATWbars"} };
 
 //_____________________________________________________________________________
@@ -283,6 +282,18 @@ bool TAGcampaign::FromFile(TString ifile)
                exit(0);
             }
             
+            
+            // check order in CA calibration files
+            if (fileName.Contains(fgCAcalFileType[0]) && fFileCalMap[detName].size() != 0 ) {
+               Error("FromFile()", "File %s must appears in first position in CA calibration list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
+            if (fileName.Contains(fgCAcalFileType[1]) && fFileCalMap[detName].size() != 1 ) {
+               Error("FromFile()", "File %s must appears in first position in CA calibration list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
             fFileCalMap[detName].push_back(fileName);
             fRunsCalMap[detName].push_back(array);
             if(FootDebugLevel(1))
@@ -299,7 +310,12 @@ const Char_t* TAGcampaign::GetGeoFile(const TString& detName, Int_t runNumber)
 {
    TString nameFile = fFileGeoMap[detName];
    TArrayI arrayRun = fRunsGeoMap[detName];
-   
+  
+  if (nameFile.IsNull()) {
+    Warning("GetGeoFile()", "Empty geometrical file for detector %s and run %d\n", detName.Data(), runNumber);
+    return Form("");
+  }
+  
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
@@ -314,6 +330,11 @@ const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, 
       nameFile.Insert(pos, Form("_%s_%d", bName.Data(), bEnergy));
    }
 
+   if (nameFile.IsNull()) {
+     Warning("GetConfFile()", "Empty configuration file for detector %s and run %d\n", detName.Data(), runNumber);
+     return Form("");
+   }
+  
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
@@ -325,7 +346,12 @@ const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber, I
    
    vector<TArrayI> vecRun = fRunsMap[detName];
    TArrayI arrayRun = vecRun[item];
-   
+  
+  if (nameFile.IsNull()) {
+    Warning("GetMapFile()", "Empty mapping file for detector %s and run %d\n", detName.Data(), runNumber);
+    return Form("");
+  }
+  
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
@@ -335,6 +361,11 @@ const Char_t* TAGcampaign::GetRegFile(const TString& detName, Int_t runNumber)
   TString nameFile = fFileRegMap[detName];
   TArrayI arrayRun = fRunsRegMap[detName];
   
+  if (nameFile.IsNull()) {
+    Warning("GetRegFile()", "Empty region file for detector %s and run %d\n", detName.Data(), runNumber);
+    return Form("");
+  }
+  
   return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
@@ -342,6 +373,7 @@ const Char_t* TAGcampaign::GetRegFile(const TString& detName, Int_t runNumber)
 const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib,
                                       Bool_t isTofBarCalib, Bool_t elossTuning)
 {
+   //  isTofCalib is also used as isCalTemperature
    Int_t item = -1;
    if (!isTofCalib)
       item = 0;
@@ -371,7 +403,12 @@ const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, I
    
    vector<TArrayI> vecRun = fRunsCalMap[detName];
    TArrayI arrayRun = vecRun[item];
-   
+  
+   if (nameFile.IsNull()) {
+     Warning("GetCalFile()", "Empty calibration file for detector %s and run %d\n", detName.Data(), runNumber);
+     return Form("");
+   }
+  
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }
 
@@ -379,7 +416,6 @@ const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, I
 const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, const TString& nameFile, TArrayI array)
 {
    if (nameFile.IsNull()) {
-      Warning("GetFile()", "Empty file for detector %s and run %d\n", detName.Data(), runNumber);
       return Form("");
    }
    

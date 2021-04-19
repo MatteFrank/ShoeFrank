@@ -29,7 +29,6 @@
 
 #pragma link C++ class TAGdataDsc+;
 
-#pragma link C++ class TAGpadGroup+;
 #pragma link C++ class TAGview+;
 
 #pragma link C++ class TAGbaseDigitizer+;
@@ -62,13 +61,10 @@
 #pragma link C++ struct GlobalParameter_t+;
 #pragma link C++ function operator==(const TAGrunInfo&,const TAGrunInfo&);
 
-#pragma link C++ class TAGtimestamp-;
-#pragma link C++ function operator-(const TAGtimestamp&,const TAGtimestamp&);
-
 #pragma link C++ class TAGbaseMaterials+;
 #pragma link C++ class TAGmaterials+;
 #pragma link C++ class TAGionisMaterials+;
 
-#pragma link C++ class GlobalPar+;
+#pragma link C++ class TAGrecoManager+;
 
 #endif

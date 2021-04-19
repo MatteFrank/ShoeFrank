@@ -22,7 +22,7 @@ class TAGpara : public TObject {
                     TAGpara();
     virtual         ~TAGpara();
 
-    Bool_t          Fail() const;
+    Bool_t          Fail() const { return TestBit(kFail); }
 
     virtual void    Clear(Option_t* opt="");
 
@@ -33,7 +33,5 @@ class TAGpara : public TObject {
 };
 
 ostream& operator<<(ostream& os, const TAGpara& obj);
-
-#include "TAGpara.icc" 
 
 #endif

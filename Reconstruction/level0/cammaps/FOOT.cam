@@ -1,29 +1,23 @@
 // List of Campaigns
 CamNumber:    0
-CamName:    "STD"
-CamDataMC:    1
-CamDate:      ""
-CamSum: "Test using standard input files"
-
-CamNumber:    1
 CamName:    "12C_200"
 CamDataMC:    1
 CamDate:  "16-17 February 2020"
 CamSum: "Simulation data for 12C on 12C (5mm target) @ 200MeV/u"
 
-CamNumber:    2
+CamNumber:    1
 CamName:    "16O_200"
 CamDataMC:    1
 CamDate: "16 April-4 May 2020"
 CamSum: "Simulation data for 16O on 12C (run 6) or C2H4 (run 1-5) for 5mm target thickness @ 200MeV/u"
 
-CamNumber:    3
+CamNumber:    2
 CamName:    "GSI"
 CamDataMC:    0
 CamDate: "5-8 April 2019"
 CamSum: "Test experiment with ST+BM+VTX+TW…"
 
-CamNumber:    7
+CamNumber:    3
 CamName:    "GSI_MC"
 CamDataMC:    1
 CamDate: "5-8 April 2019"
@@ -47,7 +41,7 @@ CamDataMC:    1
 CamDate: "December 2020"
 CamSum: "Simulation data for data taking at CNAO with ST+BM+VTX+MSD+TW+CAL"
 
-CamNumber:    8
+CamNumber:    7
 CamName:    "testCALO"
 CamDataMC:    0
 CamDate: "February 2021"

@@ -24,32 +24,32 @@
 #include "TAGparGeo.hxx"
 
 #include "TASTparMap.hxx"
-#include "TASTdatRaw.hxx"
+#include "TASTntuRaw.hxx"
 #include "TASTactDatRaw.hxx"
 
 #include "TAVTparMap.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuRaw.hxx"
+#include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
-#include "TAVTactNtuRaw.hxx"
+#include "TAVTactNtuHit.hxx"
 #include "TAVTactNtuClusterF.hxx"
 #include "TAVTactNtuTrackF.hxx"
 
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
-#include "TABMdatRaw.hxx"
 #include "TABMntuRaw.hxx"
-//~ #include "TABMntuHit.hxx"
+#include "TABMntuHit.hxx"
+//~ #include "TABMhit.hxx"
 #include "TABMntuTrack.hxx"
 //~ #include "TABMntuTrackTr.hxx"
-#include "TABMactDatRaw.hxx"
 #include "TABMactNtuRaw.hxx"
+#include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
 
-#include "GlobalPar.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
@@ -60,11 +60,11 @@ TAGactDaqReader*  daqActReader = 0x0;
 
 TASTactDatRaw* stActDatRaw  = 0x0;
 
-TABMactDatRaw* bmActDatRaw  = 0x0;
-TABMactNtuRaw* bmActNtuRaw  = 0x0;
+TABMactNtuRaw* bmActDatRaw  = 0x0;
+TABMactNtuHit* bmActNtuRaw  = 0x0;
 TABMactNtuTrack* bmActTrack = 0x0;
 
-TAVTactNtuRaw*      vtActRaw  = 0x0;
+TAVTactNtuHit*      vtActRaw  = 0x0;
 TAVTactNtuClusterF* vtActClus = 0x0;
 TAVTactNtuTrackF*   vtActTrck = 0x0;
 
@@ -138,23 +138,23 @@ void FillBm(TString fExpName) {
   TAGdataDsc* bmDaq    = new TAGdataDsc("bmDaq", new TAGdaqEvent());
   daqActReader  = new TAGactDaqReader("daqActReader", bmDaq); 
  
-  TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTdatRaw());
+  TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTntuRaw());
   stActDatRaw  = new TASTactDatRaw("stActDatRaw", stDatRaw,bmDaq,stMap, fpParTimeSt);
   
-  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMdatRaw());
-  bmActDatRaw  = new TABMactDatRaw("bmActDatRaw", bmDatRaw, bmDaq, bmMap, bmConf, bmGeo,stDatRaw);
+  TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMntuRaw());
+  bmActDatRaw  = new TABMactNtuRaw("bmActDatRaw", bmDatRaw, bmDaq, bmMap, bmConf, bmGeo,stDatRaw);
   bmActDatRaw->CreateHistogram();
 
-  TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuRaw());
-  bmActNtuRaw  = new TABMactNtuRaw("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
+  TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuHit());
+  bmActNtuRaw  = new TABMactNtuHit("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
   bmActNtuRaw->CreateHistogram();   
   
   TAGdataDsc* bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
   bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmNtuRaw, bmGeo, bmConf, tgGeo);
   bmActTrack->CreateHistogram();
 
-  TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuRaw());
-  vtActRaw  = new TAVTactNtuRaw("vtActRaw", vtNtu, bmDaq, vtGeo, vtConf, vtMap);
+  TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuHit());
+  vtActRaw  = new TAVTactNtuHit("vtActRaw", vtNtu, bmDaq, vtGeo, vtConf, vtMap);
   vtActRaw->CreateHistogram();
   
   TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
@@ -167,8 +167,8 @@ void FillBm(TString fExpName) {
   
   cout<<"end of FillBm"<<endl;
 
-  outFile->SetupElementBranch(bmDatRaw, TABMdatRaw::GetBranchName());
-  outFile->SetupElementBranch(bmNtuRaw, TABMntuRaw::GetBranchName());
+  outFile->SetupElementBranch(bmDatRaw, TABMntuRaw::GetBranchName());
+  outFile->SetupElementBranch(bmNtuRaw, TABMntuHit::GetBranchName());
   outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
   outFile->SetupElementBranch(vtNtu, "vtrh.");
   outFile->SetupElementBranch(vtClus, "vtclus.");
@@ -207,8 +207,9 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
 {  
   Int_t maxevents=999999999999;
   TString fExpName="GSI/";
-  GlobalPar::Instance();
-  GlobalPar::GetPar()->Print();
+  TAGrecoManager::Instance();
+  TAGrecoManager::GetPar()->FromFile();
+  TAGrecoManager::GetPar()->Print();
 
   TAGroot tagr;
   TAGgeoTrafo geoTrafo;
@@ -255,8 +256,8 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
   
   Booking(f_out);
   
-  TABMdatRaw* pbmdatraw;
-  TABMntuRaw* pbmnturaw;
+  TABMntuRaw* pbmdatraw;
+  TABMntuHit* pbmnturaw;
   TABMntuTrack* pbmntutrack;
   TABMntuTrackTr* pbmntutracktr;
   
@@ -275,12 +276,12 @@ void ReadBmVtxRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2
     //~ outFile->File()->cd();
     if(!tagr.NextEvent()) 
       break; 
-    //~ pbmdatraw = (TABMdatRaw*) (tagr.FindDataDsc(TABMdatRaw::GetBranchName(), "TABMdatRaw")->Object());
-    pbmnturaw = (TABMntuRaw*) (tagr.FindDataDsc("bmNtuRaw", "TABMntuRaw")->Object());
+    //~ pbmdatraw = (TABMntuRaw*) (tagr.FindDataDsc(TABMntuRaw::GetBranchName(), "TABMntuRaw")->Object());
+    pbmnturaw = (TABMntuHit*) (tagr.FindDataDsc("bmNtuRaw", "TABMntuHit")->Object());
     pbmntutrack = (TABMntuTrack*) (tagr.FindDataDsc("bmTrack", "TABMntuTrack")->Object());
     pvtxntutrack = (TAVTntuTrack*) (tagr.FindDataDsc("vtTrck", "TAVTntuTrack")->Object());
     //~ for(int i=0;i<pbmnturaw->GetHitsN();i++){
-      //~ const TABMntuHit* pbmntuhit=pbmnturaw->Hit(i);  
+      //~ const TABMhit* pbmntuhit=pbmnturaw->Hit(i);  
     //~ }
     ((TH1D*)(f_out->Get("bm_tracknum")))->Fill(pbmntutrack->GetTracksN());
     vtx_bestchi2=1e7;
