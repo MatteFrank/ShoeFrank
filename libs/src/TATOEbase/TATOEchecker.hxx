@@ -388,8 +388,6 @@ private:
     Action& action_m;
     node_type const * current_node_mh = nullptr;
     
-    std::size_t fake_number_m{0};
-    
     TH1D* real_momentum_distribution_h{nullptr};
     TH1D* reconstructed_momentum_distribution_h{nullptr};
 
@@ -917,7 +915,8 @@ public:
        
 //        std::size_t total_cluster_number{0};
 //        std::size_t local_total_cluster_number{0};
-
+        std::size_t fake_number{0};
+        
         std::size_t clone_number{0};
         
         for(auto const & module : computation_module_mc){
@@ -927,7 +926,8 @@ public:
             correct_cluster_number += module.correct_cluster_number;
             recovered_cluster_number += module.recovered_cluster_number;
 //            total_cluster_number += module.total_cluster_number;
-
+            
+            fake_number += module.fake_number;
             clone_number += module.clone_number;
         }
         //look at mass efficiency reconstruction ? because of the plage im momentum of protons !
@@ -949,7 +949,7 @@ public:
 //        action_m.logger_m << "global_coverage_error: " << sqrt(coverage* (1+coverage)/total_cluster_number) * 100<< '\n';
 
         action_m.logger_m.template add_header<1, details::immutable_tag>("fake_yield");
-        auto fake_yield = fake_number_m * 1./reconstructed_number;
+        auto fake_yield = fake_number * 1./reconstructed_number;
         action_m.logger_m << "fake_yield: " << fake_yield * 100 << '\n';
         auto fake_yield_error = sqrt( fake_yield * (1+ fake_yield)/reconstructed_number);
         action_m.logger_m << "fake_yield_error: " << fake_yield_error * 100<< '\n';
