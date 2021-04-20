@@ -30,6 +30,9 @@ class TABMactVmeReader : public TAGaction {
     virtual  void   CreateHistogram();
     //~ virtual Bool_t  Action();
 
+    void EvaluateT0time();
+
+    //BM standalone reader methods
     void ClearBmstruct(Bool_t forced);
     Bool_t ReadEvent(Bool_t evt0);
     void PrintBMstruct();
@@ -53,9 +56,10 @@ class TABMactVmeReader : public TAGaction {
 
     //histos
     TH1I*            fpRawError;        //BM hit channel error
-    TH1I*            fpRawTdcChannel;   //TDC signal distribution 
+    TH1I*            fpRawTdcChannel;   //TDC signal distribution
     TH1I*            fpRawTrigTime;     //Trigger time
-
+    std::vector<TH1F*> fpRawTdcMeas;    //vector of tdc channel measurements
+    std::vector<TH1F*> fpRawTdcLessSync;    //vector of tdc channel measurements
 };
 
 #endif

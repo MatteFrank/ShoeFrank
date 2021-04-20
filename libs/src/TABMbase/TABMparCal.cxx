@@ -30,8 +30,7 @@ ClassImp(TABMparCal);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TABMparCal::TABMparCal()
-  :  TAGparTools(),
-  fT0Choice(-10000)
+  :  TAGparTools()
 {
   fkDefaultParName = "./calib/TABM_T0_Calibration.cal";
   vector<Float_t> myt0s(36,-10000);
@@ -48,15 +47,30 @@ TABMparCal::~TABMparCal(){
   delete fpSTrel;
 }
 
-
-
-
 void TABMparCal::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
   ofstream outfile;
   outfile.open(output_filename.Data(),ios::out);
-  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<"     fT0Choice= "<<fT0Choice<<endl;
+  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<endl<<endl;
   for(Int_t i=0;i<36;i++)
     outfile<<"cellid= "<<i<<"  T0_time= "<<fT0Vec[i]<<endl;
+  outfile<<endl;
+  outfile.close();
+  return;
+}
+
+void TABMparCal::PrintResoStrel(TString output_filename){
+  ofstream outfile;
+  outfile.open(output_filename.Data(),ios::app);
+  outfile<<"Resolution_function:  "<<fpResoFunc->GetFormula()->GetExpFormula().Data()<<endl;
+  outfile<<"Resolution_number_of_parameters:  "<<fpResoFunc->GetNpar()<<endl;
+  for(Int_t i=0;i<fpResoFunc->GetNpar();i++)
+    outfile<<fpResoFunc->GetParameter(i)<<"   ";
+  outfile<<endl<<endl;
+  outfile<<"STrel_function:  "<<fpSTrel->GetFormula()->GetExpFormula().Data()<<endl;
+  outfile<<"STrel_number_of_parameters:  "<<fpSTrel->GetNpar()<<endl;
+  for(Int_t i=0;i<fpSTrel->GetNpar();i++)
+    outfile<<fpSTrel->GetParameter(i)<<"   ";
+  outfile<<endl;
   outfile.close();
   return;
 }
@@ -72,9 +86,9 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
     filename = fkDefaultParName;
   }else
      filename = inputname;
-  
+
   Info("FromFile", "Loading BM T0 calibration from file: %s\n", filename.Data());
-   
+
   gSystem->ExpandPathName(filename);
   infile.open(filename,ios::in);
   if(infile.is_open()==kFALSE){
@@ -84,7 +98,7 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
   char tmp_char[200];
   vector<Float_t> fileT0(36,-10000.);
   Int_t tmp_int=-1, status=0;
-  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>tmp_char>>fT0Choice;
+  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char;
 
   for(Int_t i=0;i<36;i++){
     if(!infile.eof() && tmp_int==i-1)
@@ -102,9 +116,9 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
     for(Int_t i=0;i<36;i++) {
       cout<<"BM T0: "<<fT0Vec[i]<<endl;
       if(fT0Vec[i]==-10000)
-      cout<<"WARNING IN TABMparCal::FromFile: channel not considered in tdc map tdc_cha=i="<<i<<" T0 for this channel is set to -10000"<<endl;
+        cout<<"WARNING IN TABMparCal::FromFile: channel not considered in tdc map tdc_cha=i="<<i<<" T0 for this channel is set to -10000"<<endl;
       else if(fT0Vec[i]==-20000)
-      cout<<"WARNING IN TABMparCal::FromFile: channel with too few elements to evaluate T0: tdc_cha=i="<<i<<" T0 for this channel is set to -20000"<<endl;
+        cout<<"WARNING IN TABMparCal::FromFile: channel with too few elements to evaluate T0: tdc_cha=i="<<i<<" T0 for this channel is set to -20000"<<endl;
     }
   }
 
@@ -189,13 +203,12 @@ void TABMparCal::CoutT0(){
 
 void TABMparCal::Clear(Option_t*)
 {
-  
+
   delete fpResoFunc;
   delete fpSTrel;
-  
+
   vector<Float_t> myt0s(36,-10000);
   fT0Vec = myt0s;
-  fT0Choice=-10000;  
   fpResoFunc=new TF1("bmResoFunc","0.0245237+0.106748*x+0.229201*x*x-24.0304*x*x*x+183.529*x*x*x*x-619.259*x*x*x*x*x+1080.97*x*x*x*x*x*x-952.989*x*x*x*x*x*x*x+335.937*x*x*x*x*x*x*x*x",0.,0.8);
   fpSTrel=new TF1("McStrel","0.00773*x -5.1692440e-05*x*x + 1.8928600e-07*x*x*x -2.4652420e-10*x*x*x*x", 0., 350.);
   return;
@@ -233,4 +246,3 @@ void TABMparCal::ToStream(ostream& os, Option_t*) const
   os << "TABMparCal " << GetName() << endl;
   return;
 }
-

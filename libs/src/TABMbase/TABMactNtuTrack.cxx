@@ -66,7 +66,7 @@ delete fLegPolSum;
 void TABMactNtuTrack::CreateHistogram()
 {
   DeleteHistogram();
-  
+
   fpResTot = new TH2F("bmTrackResidual","Residual vs Rdrift; Residual [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
   AddHistogram(fpResTot);
   fpHisMap = new TH2F("bmTrackTargetMap","BM - Position of a single track event at target center", 250, -3., 3.,250 , -3, 3);
@@ -105,7 +105,7 @@ void TABMactNtuTrack::CreateHistogram()
   AddHistogram(fpTrackAngles);
   fpTrackSep = new TH1F("bmTrackMultiSeparation","Separation btw multi-tracks of the same event in the BM sys of ref. origin; cm; tracks", 500, 0, 5.);
   AddHistogram(fpTrackSep);
-  
+
   //control graphs
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
   TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
@@ -121,9 +121,9 @@ void TABMactNtuTrack::CreateHistogram()
       fpParSTrel->SetBinContent(i, p_bmcal->STrelEval(i+1));
     AddHistogram(fpParSTrel);
   }
-   
+
   //STREL calibration
-  if(TAGrecoManager::GetPar()->CalibBM()){
+  if(TAGrecoManager::GetPar()->CalibBM()>0){
     Int_t nbin=(int)(p_bmcon->GetHitTimeCut()/10.);
     fpResTimeTot = new TH2F("bmTrackTimeResidual","Residual vs Time; Residual [cm]; Time [ns]", 600, -0.3, 0.3,nbin, 0., p_bmcon->GetHitTimeCut());
     AddHistogram(fpResTimeTot);
@@ -144,16 +144,16 @@ void TABMactNtuTrack::CreateHistogram()
       RawResPlot=new TH1F( title.Data(), "Residual;Residual [cm]; Number of hits", 600, -0.3, 0.3);
       fpResTimeBin.push_back(RawResPlot);
       AddHistogram(RawResPlot);
-    }   
+    }
     for(Int_t i=0;i<100;i++){
       TString title="bmTrackResDist_";
       title+=i;
       RawResPlot=new TH1F( title.Data(), "Residual;Residual [cm]; Number of hits", 600, -0.3, 0.3);
       fpResDistBin.push_back(RawResPlot);
       AddHistogram(RawResPlot);
-    }   
-  } 
-   
+    }
+  }
+
 
    SetValidHistogram(kTRUE);
 }
@@ -345,15 +345,15 @@ Bool_t TABMactNtuTrack::Action()
         if(TAGrecoManager::GetPar()->CalibBM()){
           fpResTimeTot->Fill(p_hit->GetResidual(),p_hit->GetTdrift());
           if((int)(p_hit->GetTdrift()/10.)<fpResTimeBin.size())
-            fpResTimeBin.at((int)(p_hit->GetTdrift()/10.))->Fill(p_hit->GetResidual());  
+            fpResTimeBin.at((int)(p_hit->GetTdrift()/10.))->Fill(p_hit->GetResidual());
           if((int)(p_hit->GetRdrift()*100)<fpResDistBin.size())
             fpResDistBin.at((int)(p_hit->GetRdrift()*100))->Fill(p_hit->GetResidual());
-        }      
+        }
       }
       if(p_hit->GetIsSelected()>0 && p_hit->GetIsFake()==0){
         fpHisTrackFakeHit->Fill(0);
       }else if(p_hit->GetIsSelected()<=0 && p_hit->GetIsFake()>0){
-        fpHisTrackFakeHit->Fill(2);        
+        fpHisTrackFakeHit->Fill(2);
       }else if (p_hit->GetIsFake()>0  &&  p_hit->GetIsSelected()>0){
         fpHisTrackFakeHit->Fill(1);
       }else if(p_hit->GetIsSelected()<=0 && p_hit->GetIsFake()==0){
@@ -707,7 +707,7 @@ void TABMactNtuTrack::FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &mean
     if(fpResTimeBin.at(i)->GetEntries()>300){
       gaus->SetParameters(fpResTimeBin.at(i)->GetEntries(),fpResTimeBin.at(i)->GetMean(),fpResTimeBin.at(i)->GetStdDev());
       fpResTimeBin.at(i)->Fit(gaus,"QR+");
-      fpParNewSTrel->SetBinContent(i+1,p_bmcal->STrelEval(fpParNewSTrel->GetXaxis()->GetBinCenter(i+1))+gaus->GetParameter(1));
+      fpParNewSTrel->SetBinContent(i+1,p_bmcal->STrelEval(fpParNewSTrel->GetXaxis()->GetBinCenter(i+1))-gaus->GetParameter(1));
       fpParNewTimeRes->SetBinContent(i+1,gaus->GetParameter(2));
       fpNewStrelDiff->SetBinContent(i+1,gaus->GetParameter(1));
     }else{
@@ -720,7 +720,7 @@ void TABMactNtuTrack::FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &mean
   gaus->SetParameters(p_ResProj->GetEntries(),p_ResProj->GetMean(),p_ResProj->GetStdDev());
   p_ResProj->Fit(gaus,"QR+");
   meanTimeReso=gaus->GetParameter(2);
-  
+
   //Spatial resolution evaluation
   for(Int_t i=0;i<fpResDistBin.size();i++){
     if(fpResDistBin.at(i)->GetEntries()>300){
@@ -737,7 +737,7 @@ void TABMactNtuTrack::FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &mean
   gaus->SetParameters(p_ResProj->GetEntries(),p_ResProj->GetMean(),p_ResProj->GetStdDev());
   p_ResProj->Fit(gaus,"QR+");
   meanDistReso=gaus->GetParameter(2);
-  
+
   //fit the new strel and spatial resolutions
   newstrel->FixParameter(0,0.);
   fpParNewSTrel->Fit(newstrel,"QBR+");
@@ -745,5 +745,3 @@ void TABMactNtuTrack::FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &mean
 
 return;
 }
-
-  

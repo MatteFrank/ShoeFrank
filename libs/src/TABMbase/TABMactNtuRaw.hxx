@@ -40,6 +40,7 @@ class TABMactNtuRaw : public TAGaction {
 
     virtual  void   CreateHistogram();
     virtual Bool_t  Action();
+    void EvaluateT0time();
 
     ClassDef(TABMactNtuRaw,0)
 
@@ -59,7 +60,9 @@ class TABMactNtuRaw : public TAGaction {
     TH1I*            fpRawSTFitTime;    //Start Counter post analysis fitted trigger Time
     TH1I*            fpRawSTTdcTime;    //Start Counter Time from TDC
     TH1I*            fpRawDAQTdcTime;   //DAQ trigger time from TDC
-    std::vector<TH1I*> fpRawTdcMeas;    //vector of tdc channel measurements  
+    std::vector<TH1F*> fpRawTdcMeas;    //vector of tdc channel raw measurements
+    std::vector<TH1F*> fpRawTdcLessSync;//vector of tdc channel meas - sync meas
+
 };
 
 #endif
