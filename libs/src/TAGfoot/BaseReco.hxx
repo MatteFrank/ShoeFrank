@@ -74,7 +74,7 @@
 #include "TAITactNtuTrackF.hxx"
 #include "TAVTactNtuVertex.hxx"
 
-#include "TAIRactNtuTrack.hxx"
+#include "TAGactNtuGlbTrackS.hxx"
 #include "TAGactNtuGlbTrack.hxx"
 
 #include "TAGactKFitter.hxx"
@@ -86,6 +86,9 @@ class TAMCntuHit;
 class TAMCntuPart;
 class TAMCntuRegion;
 class TAMCntuEvent;
+
+
+#include "TATOEcutter.hxx"
 
 class BaseReco : public TNamed // using TNamed for the in/out files
 {
@@ -177,8 +180,11 @@ public:
    void EnableZrecWithPUoff()  { fFlagZrecPUoff = true;   }
    void DisableZrecWithPUoff() { fFlagZrecPUoff = false;  }
   
-   void EnableTWZmatch()       { fFlagZmatch_TW = true;   }
-   void DisableTWZmatch()      { fFlagZmatch_TW = false;  }
+   void EnableTWZmatch()  { fFlagZmatch_TW = true;   }
+   void DisableTWZmatch() { fFlagZmatch_TW = false;  }
+    
+    void EnableRecCutter()  { fFlagRecCutter = true;   }
+    void DisableRecCutter() { fFlagRecCutter = false;  }
 
    void DisableM28ClusMT()     { fM28ClusMtFlag = false;  }
    void EnableM28lusMT()       { fM28ClusMtFlag = true;   }
@@ -227,13 +233,12 @@ public:
    TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
-   TAIRntuTrack*        GetNtuTrackIr()     const { return (TAIRntuTrack*)fpNtuTrackIr->Object();    }
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
    //! MC container Getter (virtual)
    virtual TAMCntuRegion* GetNtuMcReg()     const { return 0x0; }
    virtual TAMCntuEvent*  GetNtuMcEvt()     const { return 0x0; }
-   virtual TAMCntuPart*  GetNtuMcTrk()     const { return 0x0; }
+   virtual TAMCntuPart*   GetNtuMcTrk()     const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcSt()      const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcBm()      const { return 0x0; }
    virtual TAMCntuHit*    GetNtuMcVtx()     const { return 0x0; }
@@ -324,7 +329,6 @@ protected:
 
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
    TAGdataDsc*           fpNtuGlbTrackK;      // input data dsc
-   TAGdataDsc*           fpNtuTrackIr;     // input data dsc
 
    TAGactionFile*        fActEvtReader;
    TAGactTreeWriter*     fActEvtWriter;  // write histo and tree
@@ -347,7 +351,9 @@ protected:
    TACAactNtuCluster*    fActClusCa;    // action for clusters
 
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
-   TAIRactNtuTrack*      fActTrackIr;     // action for IR tracks
+   TATOEbaseCutter*          fActRecCutter;     //action to determine optimal cuts for TOE given geometry
+    
+   TAGactNtuGlbTrackS*   fActGlbTrackS;     // action for straight tracks
   
    GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
    TAGactKFitter*         fActGlbkFitter;    // Global tracking kalman Fitter
@@ -367,6 +373,8 @@ protected:
    Bool_t                fFlagMC;        // MC flag
    Bool_t                fM28ClusMtFlag; // flag for multi-threading clustering
 
+   Bool_t                fFlagRecCutter;
+    
  protected:
    void CreateRecActionBm();
    void CreateRecActionVtx();
@@ -374,9 +382,9 @@ protected:
    void CreateRecActionMsd();
    void CreateRecActionTw();
    void CreateRecActionCa();
-   void CreateRecActionGlb() ;
-   void CreateRecActionGlbGF() ;
-   void CreateRecActionIr();
+   void CreateRecActionGlb();
+   void CreateRecActionGlbGF();
+   void CreateRecActionGlbS();
 
 protected:
    static Bool_t fgItrTrackFlag;

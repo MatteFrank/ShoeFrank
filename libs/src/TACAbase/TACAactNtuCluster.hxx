@@ -75,9 +75,11 @@ protected:
    TH1F*          fpHisHitTot;       // Total number of hits per cluster
    TH1F*          fpHisChargeTot;    // Total charge per cluster
    TH2F*          fpHisClusMap;      // cluster map per sensor
+   
    TH1F*          fpHisHitTwMatch;   // Number of hit that match a TW point
-
    TH1F*          fpHisResTwMag;     // Minimal distance in position with TW
+   TH2F*          fpHisTwDeCaE;      // TW-deltaE vs CA-E
+
    TString        fPrefix;           // prefix of histogram
    TString        fTitleDev;         // device name for histogram title
 

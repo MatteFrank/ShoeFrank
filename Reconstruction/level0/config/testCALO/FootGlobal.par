@@ -1,12 +1,12 @@
 
 
 ################################################################
-############	MC selection Control Parameters	################
+##################    Campaign Test Calo   #####################
 ################################################################
 
 
+
 Debug:	0
-Genfit Event Display ON: n
 
 
 ############	MC selection Control Parameters	################
@@ -25,16 +25,14 @@ Reverse Tracking:       false
 
 Kalman preselection strategy: Sept2020
 
-Genfit Event Display ON: n
-
-Kalman preselection strategy: Sept2020
-
 VT  Reso: 0.0006
 IT  Reso: 0.0006
 MSD Reso: 0.003
 TW  Reso: 0.57
 
 Kalman Particle Types:	C
+
+Genfit Event Display ON: n
 
 ############	END - Kalman Filter Control Parameters	################
 

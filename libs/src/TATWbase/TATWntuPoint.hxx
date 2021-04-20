@@ -20,102 +20,79 @@
 /** TATWpoint class is the scintillator hit reconstructed by the intersection of 2 hits on a
 	column and a row bar respectively
  
-	Created in 2018 by Matteo Franchini franchinim@bo.infn.it
- 
- Complete revised to be compliant with foot framework and raw data.
- Copy hits in point not just assigning pointers
- by Ch. Finck cfinck@iphc.cnrs.fr
- 
-	All the coordinates are in cm and in the detector reference frame, i.e. the center
-	is the center of the detector.
- 
  */
 /*------------------------------------------+---------------------------------*/
 
 class TATWpoint : public TAGcluster {
    
 private:
+   TVector3    fPositionGlb;   // position in FOOT global framework
+   TVector3    fPosErrGlb;     // position error
 
-   TVector3    m_position;      // position in local framework
-   TVector3    m_posErr;        // position error in local framework
-   TVector3    m_positionG;     // position in detector framework
-   TVector3    m_posErrG;       // position error in detector framework
-   TVector3    m_positionGlb;   // position in FOOT global framework
-   TVector3    m_posErrGlb;     // position error
-
-   int         m_row;           // row number
-   int         m_column;        // column number
+   Int_t       fRow;           // row number
+   Int_t       fColumn;        // column number
    
-   TATWhit*   m_rowHit;      // hit col
-   TATWhit*   m_columnHit;   // hit column
+   TATWhit*    fRowHit;        // hit col
+   TATWhit*    fColumnHit;     // hit column
    
-   Double32_t  m_de1;           // energy loss in the scintillator bars layer 1
-   Double32_t  m_de2;           // energy loss in the scintillator bars layer 2
+   Double32_t  fDe1;           // energy loss in the scintillator bars layer 1
+   Double32_t  fDe2;           // energy loss in the scintillator bars layer 2
 
-   Double32_t  m_tof1;          // ToF in the scintillator bars layer 1
-   Double32_t  m_tof2;          // ToF in the scintillator bars layer 2
-   Double32_t  m_time;          // for the moment I take the row time
-   Int_t       m_matchCalIdx;   // Index of Calorimeter cluster matched (-1 if not)
+   Double32_t  fTof1;          // ToF in the scintillator bars layer 1
+   Double32_t  fTof2;          // ToF in the scintillator bars layer 2
+   Double32_t  fTime;          // for the moment I take the row time
+   Int_t       fMatchCalIdx;   // Index of Calorimeter cluster matched (-1 if not)
   
-   int         m_layer;         // layer with more hits in the event
-   int         m_id;            // point ID
-   int         m_chargeZ;       // point charge Z
-   Double32_t  m_chargeZProba;  // raw guess of charge Z probability
+   Int_t       fLayer;         // layer with more hits in the event
+   Int_t       fId;            // point ID
+   Int_t       fChargeZ;       // point charge Z
+   Double32_t  fChargeZProba;  // raw guess of charge Z probability
 
 public:
    
   TATWpoint();
-  TATWpoint( double x, double dx, TATWhit* hitX, double y, double dy, TATWhit* hitY, Int_t mainLayer );
+  TATWpoint( Double_t x, Double_t dx, TATWhit* hitX, Double_t y, Double_t dy, TATWhit* hitY, Int_t mainLayer );
   ~TATWpoint() {};
   
   //    All the Get methods
-  const TVector3&  GetPosition()  const  { return m_position;       }
-  const TVector3&  GetPosError()  const  { return m_posErr;         }
-  
-  const TVector3&  GetPositionG() const  { return m_positionG;      }
-  const TVector3&  GetPosErrorG() const  { return m_posErrG;        }
+  const TVector3&  GetPositionGlb() const  { return fPositionGlb;      }
+  const TVector3&  GetPosErrorGlb() const  { return fPosErrGlb;        }
 
-  const TVector3&  GetPositionGlb() const  { return m_positionGlb;      }
-  const TVector3&  GetPosErrorGlb() const  { return m_posErrGlb;        }
-
-  int       GetRowID()    const  { return m_row;              }
-  int       GetColumnID()       const  { return m_column;                 }
+  Int_t     GetRowID()        const  { return fRow;                    }
+  Int_t     GetColumnID()     const  { return fColumn;                 }
   
-  int       GetRow()      const  { return m_rowHit->GetBar(); }
-  int       GetColumn()         const  { return m_columnHit->GetBar();    }
+  Int_t     GetRow()          const  { return fRowHit->GetBar();       }
+  Int_t     GetColumn()       const  { return fColumnHit->GetBar();    }
   
-  TATWhit* GetRowHit()	const	 { return m_rowHit;           }
-  TATWhit* GetColumnHit()      const	 { return m_columnHit;              }
+  TATWhit*  GetRowHit()	      const	 { return fRowHit;                 }
+  TATWhit*  GetColumnHit()    const	 { return fColumnHit;              }
   
-  double    GetEnergyLoss1() const  { return m_de1;                 }
-  double    GetEnergyLoss2() const  { return m_de2;                 }
-  double    GetEnergyLoss()  const  { return m_de1+m_de2;           }
-  double    GetTof1()        const  { return m_tof1;                }
-  double    GetTof2()        const  { return m_tof2;                }
-  double    GetMeanTof()  const  { return (m_tof1+m_tof2)/2.;           }
-  double    GetTime()        const  { return m_time;                }
-  int       GetMatchCalIdx() const  { return m_matchCalIdx;         }
-  int       GetMainLayer()     const  { return m_layer;             }
-  int       GetPointMatchMCtrkID()     const  { return m_id;             }
-  int       GetChargeZ()     const  { return m_chargeZ;             }
-
-  double    GetChargeZProba() const  { return m_chargeZProba;       }
-  bool      IsValid()         const;
-  
+  Double_t  GetEnergyLoss1()  const  { return fDe1;                    }
+  Double_t  GetEnergyLoss2()  const  { return fDe2;                    }
+  Double_t  GetEnergyLoss()   const  { return fDe1+fDe2;               }
+  Double_t  GetTof1()         const  { return fTof1;                   }
+  Double_t  GetTof2()         const  { return fTof2;                   }
+  Double_t  GetMeanTof()      const  { return (fTof1+fTof2)/2.;        }
+  Double_t  GetTime()         const  { return fTime;                   }
+  Int_t     GetMatchCalIdx()  const  { return fMatchCalIdx;            }
+  Int_t     GetMainLayer()    const  { return fLayer;                  }
+  Int_t     GetPointMatchMCtrkID()  const  { return fId;               }
+  Int_t     GetChargeZ()      const  { return fChargeZ;                }
+  Double_t  GetChargeZProba() const  { return fChargeZProba;           }
+  Bool_t    IsValid()         const;
   
   void      SetPosition(TVector3& pos);
   void      SetPositionG(TVector3& pos);
   void      SetPositionGlb(TVector3& pos);
-  void      SetMatchCalIdx(int idx)   { m_matchCalIdx = idx;        }
-  void      SetMainLayer(int main_lay)   { m_layer = main_lay;      }
-  void      SetPointMatchMCtrkID(int id)       { m_id = id;                   }
-  void      SetChargeZ(int z)       { m_chargeZ = z;                }
-  void      SetChargeZProba(double p){ m_chargeZProba = p;          }
-  
+  void      SetMatchCalIdx(Int_t idx)      { fMatchCalIdx = idx;       }
+  void      SetMainLayer(Int_t main_lay)   { fLayer = main_lay;        }
+  void      SetPointMatchMCtrkID(Int_t id) { fId = id;                 }
+  void      SetChargeZ(Int_t z)            { fChargeZ = z;             }
+  void      SetChargeZProba(Double_t p)    { fChargeZProba = p;        }
   
   void      Clear(Option_t* opt);
   
-  ClassDef(TATWpoint,4)
+  ClassDef(TATWpoint,5)
 
 };
 
@@ -124,36 +101,30 @@ public:
 class TATWntuPoint : public TAGdata {
    
 private:
-
-  TClonesArray*        m_listOfPoints;
+  TClonesArray*        fListOfPoints;
    
 public:
-
   TATWntuPoint();
   virtual ~TATWntuPoint();
 	
-  TATWpoint*          NewPoint( double x, double dx, TATWhit* hitX, double y, double dy, TATWhit* hitY, Int_t mainLayer );
+  TATWpoint*          NewPoint( Double_t x, Double_t dx, TATWhit* hitX, Double_t y, Double_t dy, TATWhit* hitY, Int_t mainLayer );
 
-  int                 GetPointN() const;
+  Int_t               GetPointsN() const;
   TATWpoint*          GetPoint( int iPoint ) const;
-  
   
   virtual void        Clear(Option_t* opt="");
   
-  // delete?
   virtual void        ToStream(ostream& os=cout, Option_t* option="") const;
   
   virtual void        SetupClones();
   
 public:
-
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
 private:
-
   static TString fgkBranchName;    // Branch name in TTree
   
-  ClassDef(TATWntuPoint,2)
+  ClassDef(TATWntuPoint,3)
 
 };
 

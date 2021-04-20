@@ -532,10 +532,10 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
     
     
     
-    // Float_t nTWpoint = twpoint->GetPointN();
+    // Float_t nTWpoint = twpoint->GetPointsN();
     //  // cout << " n point in Tofwall " << nTWpoint  <<endl;
-    // if(  twpoint->GetPointN() > 0 ) {
-    //   for (int i = 0; i < twpoint->GetPointN(); i++) {
+    // if(  twpoint->GetPointsN() > 0 ) {
+    //   for (int i = 0; i < twpoint->GetPointsN(); i++) {
     
     //     TATW_Point *point = twpoint->GetPoint(i);
     

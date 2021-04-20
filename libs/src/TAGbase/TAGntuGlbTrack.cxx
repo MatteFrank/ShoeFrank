@@ -160,7 +160,7 @@ void TAGtrack::Clear(Option_t*)
 Double_t TAGtrack::GetTgtTheta() const
 {
    TVector3 direction = fTgtDir.Unit();
-   Double_t theta      = direction.Theta()*TMath::RadToDeg();
+   Double_t theta      = direction.Theta();
    
    return theta;
 }
@@ -170,7 +170,7 @@ Double_t TAGtrack::GetTgtTheta() const
 Double_t TAGtrack::GetTgtPhi() const
 {
    TVector3 origin = fTgtDir.Unit();
-   Double_t phi     = origin.Phi()*TMath::RadToDeg();
+   Double_t phi     = origin.Phi();
    
    return phi;
 }
@@ -180,7 +180,7 @@ Double_t TAGtrack::GetTgtPhi() const
 Double_t TAGtrack::GetTofTheta() const
 {
    TVector3 direction = fTofDir.Unit();
-   Double_t theta      = direction.Theta()*TMath::RadToDeg();
+   Double_t theta      = direction.Theta();
    
    return theta;
 }
@@ -190,7 +190,7 @@ Double_t TAGtrack::GetTofTheta() const
 Double_t TAGtrack::GetTofPhi() const
 {
    TVector3 origin = fTofDir.Unit();
-   Double_t phi     = origin.Phi()*TMath::RadToDeg();
+   Double_t phi     = origin.Phi();
    
    return phi;
 }
@@ -198,7 +198,7 @@ Double_t TAGtrack::GetTofPhi() const
 
 //______________________________________________________________________________
 //
-TVector3 TAGtrack::Intersection(Float_t posZ) const
+TVector3 TAGtrack::Intersection(Double_t posZ) const
 {
    // calculates the Intersection of the Track with the plane in
    // the coordinate system of the tracker.
@@ -206,6 +206,8 @@ TVector3 TAGtrack::Intersection(Float_t posZ) const
    TVector3 result(fTgtPos);  // track origin in xyz tracker coordinates
    result(2) = 0.;
    result += fTgtDir * posZ; // intersection in xyz frame at z_plane
+   result(2) = posZ;
+
    return  result;
 }
 

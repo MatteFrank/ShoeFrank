@@ -40,8 +40,8 @@ Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    // std array
    fMap.clear();
 
-   if (TMath::Abs(y0) > fPitchX*fPixelsNx/2.) return false;
-   if (TMath::Abs(x0) > fPitchY*fPixelsNy/2.) return false;
+   if (TMath::Abs(x0) > fPitchX*fPixelsNx/2.) return false;
+   if (TMath::Abs(y0) > fPitchY*fPixelsNy/2.) return false;
    
    Int_t line0 = GetLine(y0);
    Int_t col0  = GetColumn(x0);

@@ -1,13 +1,11 @@
 
 
 ################################################################
-############	MC selection Control Parameters	################
+####################   Campaign 16O 200   ######################
 ################################################################
 
 
 Debug:	0
-Genfit Event Display ON: n
-
 
 ############	MC selection Control Parameters	################
 MC Particle Types:  C11  C12  C13 C14  Li6  Li7  Be7  Be9  Be10  B10  B11  N14  N15  O16 O15
@@ -22,8 +20,6 @@ EnableLocalReco: n
 Kalman Mode:       ref
 Tracking Systems Considered:      VT IT MSD TW
 Reverse Tracking:       false
-
-Kalman preselection strategy: Sept2020
 
 Kalman preselection strategy: Sept2020
 

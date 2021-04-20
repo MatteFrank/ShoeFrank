@@ -49,8 +49,11 @@ class TAITcluster;
 
 #include "TADIgeoField.hxx"
 
+//template<class ... Ps>
+//struct TATOEcutter;
 
-
+template<class Tag>
+struct detector_properties {};
 
 namespace details{
     struct vertex_tag{
@@ -59,13 +62,17 @@ namespace details{
         using measurement_matrix =  matrix<2,4> ;
         using data_type = TAVTbaseCluster; //to be noted
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+        using cut_t = double;
+        constexpr static double default_cut_value{15};
     };
     struct it_tag{
         using vector_matrix =  matrix<2, 1>;
         using covariance_matrix =  matrix<2, 2> ;
         using measurement_matrix =  matrix<2,4> ;
         using data_type = TAITcluster;
-       using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+        using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+        using cut_t = std::array<double, 2>;
+        constexpr static std::array<double, 2> default_cut_value{33,38};
     };
     struct msd_tag{
         using vector_matrix =  matrix<1, 1> ;
@@ -73,6 +80,8 @@ namespace details{
         using measurement_matrix =  matrix<1,4> ;
         using data_type = TAMSDcluster;
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+        using cut_t = std::array<double, 3>;
+        constexpr static std::array<double, 3> default_cut_value{13,18,23};
     };
     struct tof_tag{
         using vector_matrix =  matrix<2, 1>;
@@ -80,6 +89,8 @@ namespace details{
         using measurement_matrix =  matrix<2,4> ;
         using data_type = TATWpoint;
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+        using cut_t = double;
+        constexpr static double default_cut_value{2.2};
     };
     
     
@@ -91,13 +102,73 @@ namespace details{
     struct normal_tag{};
     struct non_removable_tag{};
     
-
+    struct all_mixed_tag{};
+    struct all_separated_tag{};
 } //namespace details
 
 
+struct reconstruction_result{
+    struct module {
+        int charge;
+        std::size_t reconstructed_number{0};
+        std::size_t reconstructible_number{0};
+        std::size_t correct_cluster_number{0};
+        std::size_t recovered_cluster_number{0};
+        std::size_t total_cluster_number{0};
+        std::size_t clone_number{0};
+        std::size_t fake_number{0};
+    };
+    std::vector< module > module_c;
+    
+    void add( reconstruction_result const& result_p ){
+        for( auto const& result : result_p.module_c ){
+            auto module_i = std::find_if(
+                              module_c.begin(),
+                              module_c.end(),
+                              [&result](auto& module_p){ return module_p.charge == result.charge; }
+                                      );
+            if( module_i == module_c.end() ){
+                module_c.push_back( module{result.charge} );
+                module_i = module_c.end() - 1;
+            }
+            
+            module_i->reconstructed_number += result.reconstructed_number;
+            module_i->reconstructible_number += result.reconstructible_number;
+            module_i->correct_cluster_number += result.correct_cluster_number;
+            module_i->recovered_cluster_number += result.recovered_cluster_number;
+            module_i->total_cluster_number += result.total_cluster_number;
+            module_i->clone_number += result.clone_number;
+            module_i->fake_number += result.fake_number;
+        }
+    }
+};
 
-template<class Tag>
-struct detector_properties {};
+
+struct TATOEbaseAct {
+    template<class ... Ps>
+    friend class TATOEcutter;
+public:
+    virtual void Action()  = 0;
+    virtual void Output() = 0 ;
+    virtual void RegisterHistograms() = 0;
+    virtual ~TATOEbaseAct() = default;
+    
+private:
+    virtual void reset_event_number() = 0;
+    
+    virtual void set_cuts( details::vertex_tag, double) = 0;
+    virtual void set_cuts( details::it_tag, std::array<double, 2>&& ) = 0;
+    virtual void set_cuts( details::msd_tag, std::array<double, 3>&& ) = 0;
+    virtual void set_cuts( details::tof_tag, double) = 0;
+    
+    virtual reconstruction_result retrieve_result( ) const = 0;
+};
+
+
+
+
+
+
 
 
 
@@ -285,7 +356,7 @@ private:
     const TAVTntuCluster* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const double minimal_cut_m;
+    double minimal_cut_m{details::vertex_tag::default_cut_value};
     constexpr static std::size_t layer{4};
     const std::array<double, layer> depth_mc;
     
@@ -294,11 +365,9 @@ public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAVTntuVertex* vertex_phc,
                          TAVTntuCluster* cluster_phc,
-                         TAVTparGeo* geo_ph,
-                         double minimal_cut_p ) :
+                         TAVTparGeo* geo_ph ) :
         vertex_mhc{ vertex_phc },
         cluster_mhc{ cluster_phc },
-        minimal_cut_m{minimal_cut_p},
         depth_mc{ retrieve_depth(geo_ph) } {}
     
     
@@ -340,6 +409,7 @@ public:
     
     std::vector<candidate> generate_candidates(std::size_t index_p) const ;
     
+    constexpr void set_cuts( double&& cut_p ){ minimal_cut_m = std::move(cut_p); }
     
 private:
     std::vector< TAVTvertex const *> retrieve_vertices( ) const;
@@ -372,7 +442,7 @@ private:
     const TAITntuCluster* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const std::array<double, 2> cut_mc;
+    std::array<double, 2> cut_mc{details::it_tag::default_cut_value};
     constexpr static std::size_t layer{4};
     
     using sensor_container_t = std::array<std::size_t, 8>;
@@ -388,10 +458,8 @@ private:
 public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAITntuCluster* cluster_phc,
-                         TAITparGeo* geo_ph,
-                         std::array<double, 2> cut_pc)  :
+                         TAITparGeo* geo_ph )  :
         cluster_mhc{cluster_phc},
-        cut_mc{cut_pc},
         depth_mc{ retrieve_depth(geo_ph) }
     { }
     
@@ -421,6 +489,8 @@ public:
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
     constexpr double get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
+    
+    constexpr void set_cuts( std::array<double, 2>&& cut_pc  ){ cut_mc = std::move(cut_pc); }
     
     layer_generator<detector_properties> form_layers() const
     {
@@ -457,7 +527,7 @@ private:
                 measurement_matrix{ 0, 1, 0, 0 }
                                                       };
     
-    const std::array<double, 3> cut_mc;
+    std::array<double, 3> cut_mc{details::msd_tag::default_cut_value};
     constexpr static std::size_t layer{6};
     
     const std::array<std::size_t, layer> view_mc;
@@ -466,10 +536,8 @@ private:
 public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAMSDntuCluster* cluster_phc,
-                         TAMSDparGeo* geo_ph,
-                         std::array<double, 3> cut_pc)  :
+                         TAMSDparGeo* geo_ph )  :
     cluster_mhc{cluster_phc},
-    cut_mc{cut_pc},
     view_mc{ retrieve_view(geo_ph) },
     depth_mc{ retrieve_depth(geo_ph) }
     { }
@@ -521,6 +589,8 @@ public:
     }
     
     std::vector<candidate> generate_candidates(std::size_t index_p) const ;
+    
+    constexpr void set_cuts( std::array<double, 3>&& cut_pc  ){ cut_mc = std::move(cut_pc); }
 };
 
 
@@ -552,7 +622,7 @@ private:
     const TATWntuPoint* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    const double cut_m;
+    double cut_m{details::tof_tag::default_cut_value};
     const double depth_m;
 
     
@@ -570,10 +640,8 @@ private:
 public:
     
     detector_properties( TATWntuPoint* cluster_phc,
-                         TATWparGeo* geo_ph,
-                         double cut_p) :
+                         TATWparGeo* geo_ph) :
         cluster_mhc{cluster_phc},
-        cut_m{cut_p},
         depth_m{ retrieve_depth(geo_ph) } {}
     
     constexpr std::size_t layer_count() const { return 1; }
@@ -584,7 +652,7 @@ public:
     std::vector<candidate> generate_candidates() const
     {
         std::vector<candidate> candidate_c;
-        std::size_t entries = cluster_mhc->GetPointN();
+        std::size_t entries = cluster_mhc->GetPointsN();
         candidate_c.reserve( entries );
         
 //        std::cout << "detector_properties<details::tof_tag>::generate_candidate : " << entries << '\n';
@@ -623,6 +691,8 @@ public:
             cut_value()
         };
     }
+    
+    constexpr void set_cuts( double&& cut_p ){ cut_m = std::move(cut_p); }
 };
 
 //______________________________________________________________________________
@@ -712,6 +782,8 @@ private:
     
     
 };
+
+
 
 
 #endif

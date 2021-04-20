@@ -57,11 +57,13 @@ Float_t TADItrackEmProperties::GetFacWEPL(const TString& mat)
    } else if (material == "C"){
       factor = 1.991445766;
    } else if (material == "PMMA"){
-      factor = 0.925313636;
+      factor = 1.1635;
+   } else if (material.Contains("EJ")){
+      factor = 1.0259;
    } else if (material == "H2O" || material == "WATER"){
       factor = 1.;
    } else if (material == "TI"){
-   	  factor = 3.136600294;
+      factor = 3.136600294;
    } else Warning("GetWEPL()","Material is not in the list.... Candidates: Air, Si, C, PMMA, H2O, Ti");
    
 
@@ -75,7 +77,7 @@ Float_t TADItrackEmProperties::GetEnergyLoss(Float_t energy, Float_t massNumber,
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
    // R = alpha*Energy^(pFactor)
-   
+   energy *= TAGgeoTrafo::GevToMev();
    Float_t alpha   = 0.0022;
    Float_t pfactor = 1.;
 
@@ -96,7 +98,7 @@ Float_t TADItrackEmProperties::GetEnergyLoss(Float_t energy, Float_t massNumber,
       dE = 0;
    }
    
-   return dE;
+   return dE*TAGgeoTrafo::MevToGev();
 }
 
 //_____________________________________________________________________________
@@ -106,28 +108,9 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
    // R = alpha*Energy^(pFactor)
-   Float_t WEPL    = GetFacWEPL(mat)*thickness;
-   Float_t alpha   = 0.0022;
-   Float_t pfactor = 1.;
+   Float_t WEPL = GetFacWEPL(mat)*thickness;
    
-   if (energy < 250){
-      pfactor = 1.77;
-   } else if ((energy >= 250) && (energy < 400)){
-      pfactor = 1.76;
-   } else {
-      pfactor = 1.75;
-   }
-   
-   Float_t rangeW = (massNumber / (atomicNumber*atomicNumber) * alpha * TMath::Power(energy, pfactor));
-   Float_t path   = rangeW - WEPL;
-   Float_t dE     = TMath::Power((path * atomicNumber * atomicNumber / (alpha * massNumber)), (1/pfactor));
-   
-   if (path < 0) {
-      Info("GetEnergyLoss()","The remaining energy is 0....");
-      dE = 0;
-   }
-   
-   return dE;
+   return GetEnergyLoss(energy, massNumber, atomicNumber, WEPL);
 }
 
 //_____________________________________________________________________________
@@ -230,11 +213,9 @@ Double_t TADItrackEmProperties::SigmaTheta(Double_t *x, Double_t *par)
 }
 
 // --------------------------------------------------------------------------------------
-Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, const TString& beam, Float_t x, Float_t energy)
+Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t x, Float_t energy, Float_t bA, Float_t bZ)
 {
    energy       *= TAGgeoTrafo::GevToMev();
-   Double_t bA   = GetA(beam);
-   Double_t bZ   = GetZ(beam);
    Double_t pc   = GetPCC(energy, bA);
    Double_t beta = GetBeta(energy);
    Double_t radL = GetRadLength(matTarget);  // Radiation length for material
@@ -245,6 +226,15 @@ Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, const TSt
    fFuncSigTheta->SetParameter(3, radL);
    
    return  fFuncSigTheta->Eval(x);
+}
+
+// --------------------------------------------------------------------------------------
+Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t x, Float_t energy, const TString& beam)
+{
+   Double_t bA   = GetA(beam);
+   Double_t bZ   = GetZ(beam);
+  
+  return GetSigmaTheta(matTarget, bA, bZ, x, energy);
 }
 
 // --------------------------------------------------------------------------------------

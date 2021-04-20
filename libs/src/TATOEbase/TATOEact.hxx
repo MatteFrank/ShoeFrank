@@ -48,18 +48,13 @@ auto make_ode(Callable&& c_p) -> ode<OperatingType, Order, Callable>;
 #include "TAGntuGlbTrack.hxx"
 #include "TAGcluster.hxx"
 #include "TAGparGeo.hxx"
+#include "TAITcluster.hxx"
+
+
+
 
 template<class T>
 class TD;
-
-
-struct TATOEbaseAct {
-    virtual void Action()  = 0;
-    virtual void Output() = 0 ;
-    virtual void RegisterHistograms() = 0;
-    virtual ~TATOEbaseAct() = default;
-};
-
 
 
 
@@ -143,6 +138,7 @@ public:
     void Output() override {
         checker_m.compute_results( details::all_mixed_tag{} );
         checker_m.compute_results( details::all_separated_tag{} );
+//        logger_m.freeze_everything();
         logger_m.output();
     }
     
@@ -205,6 +201,23 @@ public:
     };
     
 private:
+    void reset_event_number() override { event = 0 ; }
+    void set_cuts( details::vertex_tag, double cut_p) override {
+        list_m.template set_cuts<detector_properties<details::vertex_tag>>( cut_p );
+    }
+    void set_cuts( details::it_tag, std::array<double, 2>&& cut_pc) override {
+        list_m.template set_cuts<detector_properties<details::it_tag>>( std::move(cut_pc) );
+    }
+    void set_cuts( details::msd_tag, std::array<double, 3>&& cut_pc) override {
+        list_m.template set_cuts<detector_properties<details::msd_tag>>( std::move(cut_pc) );
+    }
+    void set_cuts( details::tof_tag, double cut_p) override  {
+        list_m.template set_cuts<detector_properties<details::tof_tag>>( cut_p );
+    }
+    
+    reconstruction_result retrieve_result( ) const override {
+        return checker_m.retrieve_results( );
+    }
     
     std::vector<particle_properties> form_hypothesis()
     {
@@ -1145,6 +1158,10 @@ private:
             auto cluster_c = track.get_clusters();
             double arc_length{0};
             switch( cluster_c.size() ){
+                case 4:{
+                    arc_length = compute_arc_length<4>( cluster_c );
+                    break;
+                }
                 case 5:{
                     arc_length = compute_arc_length<5>( cluster_c );
                     break;
@@ -1225,9 +1242,11 @@ private:
     {
 //        std::cout << "register_tracks_upward: " << track_pc.size() << std::endl;
         
-        
         for( auto & track : track_pc  ) {
-            
+            // -----------------------------
+            checker_m.submit_reconstructed_track( track );
+            // -----------------------------
+            if( !reconstructed_track_mhc ){ continue; }
 //            std::cout << "particle_mass: " << track.particle.mass << std::endl;
 //            std::cout << "reconstruction_momentum: "<< track.particle.momentum << "\n";
             auto * track_h = reconstructed_track_mhc->NewTrack( track.particle.mass * 0.938 ,
@@ -1236,9 +1255,7 @@ private:
                                                   track.tof  ); //tof value is wrong
 //            std::cout << "registered_momentum: " << track_h->GetMomentum() << "\n";
 
-            // -----------------------------
-            checker_m.submit_reconstructed_track( track );
-            // -----------------------------
+            
             
 //            std::cout << "track:\n";
             auto & value_c = track.get_clusters();
@@ -1250,7 +1267,7 @@ private:
                 TVector3 corrected_position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
                 
                 
-                auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * particle_m.momentum ;
+                auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * track.momentum ;
                 momentum_z /= 1000.;
                 auto momentum_x = value.vector(2,0) * momentum_z;
                 auto momentum_y = value.vector(3,0) * momentum_z;
@@ -1265,41 +1282,52 @@ private:
                     auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
 
                     auto const * vertex_h = dynamic_cast<TAVTcluster const*>( value.data );
-                    auto const * it_h = dynamic_cast<TAITcluster const*>( value.data );
-                    auto const * msd_h = dynamic_cast<TAMSDcluster const*>( value.data );
-                    auto const * tw_h = dynamic_cast<TATWpoint const*>( value.data );
                     if( vertex_h ){
                         TVector3 measured_position{ transformation_h->FromVTLocalToGlobal(value.data->GetPosition()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
-                        measured_h->SetDevName(TAVTparGeo::GetBaseName());
+                        measured_h->SetDevName( TAVTparGeo::GetBaseName() );
+                        measured_h->SetClusterIdx( vertex_h->GetClusterIdx() );
+                        measured_h->SetSensorIdx( vertex_h->GetSensorIdx() );
                         for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
                             measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
                         }
+                        break;
                     }
+                    auto const * it_h = dynamic_cast<TAITcluster const*>( value.data );
                     if( it_h ){
                         TVector3 measured_position{ transformation_h->FromITLocalToGlobal(value.data->GetPosition()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
-                        measured_h->SetDevName(TAITparGeo::GetBaseName());
+                        measured_h->SetDevName( TAITparGeo::GetBaseName() );
+                        measured_h->SetClusterIdx( it_h->GetClusterIdx() );
+                        measured_h->SetSensorIdx( it_h->GetSensorIdx() );
                         for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
                             measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
                         }
+                        break;
                     }
+                    auto const * msd_h = dynamic_cast<TAMSDcluster const*>( value.data );
                     if( msd_h ){
                         TVector3 measured_position{ transformation_h->FromMSDLocalToGlobal(value.data->GetPosition()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
-                        measured_h->SetDevName(TAMSDparGeo::GetBaseName());
+                        measured_h->SetDevName( TAMSDparGeo::GetBaseName() );
+                        measured_h->SetClusterIdx( msd_h->GetClusterIdx() );
+                        measured_h->SetSensorIdx( msd_h->GetSensorIdx() );
                         for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
                             measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
                         }
+                        break;
                     }
+                    auto const * tw_h = dynamic_cast<TATWpoint const*>( value.data );
                     if( tw_h ){
                         TVector3 measured_position{ transformation_h->FromTWLocalToGlobal(value.data->GetPosition()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
-                        measured_h->SetDevName(TATWparGeo::GetBaseName());
+                        measured_h->SetDevName( TATWparGeo::GetBaseName() );
+                        measured_h->SetClusterIdx( tw_h->GetClusterIdx() );
+                        measured_h->SetSensorIdx( tw_h->GetSensorIdx() );
                         for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
                             measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
                         }
-                        
+                        break;
                     }
                 }
             }
@@ -1328,7 +1356,7 @@ auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc,
 
 
 template<class UKF, class DetectorList>
-auto make_new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph, bool use_checker = false)
+auto new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph, bool use_checker = false)
         -> TATOEactGlb<UKF, DetectorList> *
 {
     return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc, global_parameters_ph, use_checker};

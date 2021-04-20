@@ -20,7 +20,7 @@ namespace details{
     
     //will need some adaptation for matrices
     template<std::size_t NRows, template<std::size_t, std::size_t > class Matrix>
-    double error( Matrix<NRows, 1 > const& estimation_p, Matrix<NRows, 1 > const& correction_p)
+    inline double computation_error( Matrix<NRows, 1 > const& estimation_p, Matrix<NRows, 1 > const& correction_p)
     {
         Matrix<NRows, 1> difference = estimation_p - correction_p;
         // std::cout << "\nestimation:\n" << estimation_p << "correction: \n" << correction_p;
@@ -30,7 +30,7 @@ namespace details{
         return (temp < 1e-15 ? 1e-15 : temp );
     }
     
-    double error(double estimation_p, double correction_p)
+    inline double computation_error(double estimation_p, double correction_p)
     {
         return std::abs(estimation_p - correction_p);
     }
@@ -364,7 +364,7 @@ namespace details {
                 auto estimate = derived().compute_solution(eos, details::order_tag<0>{}, estimation_tag{});
                 auto correction = derived().compute_solution(eos, details::order_tag<0>{}, correction_tag{});
 //                std::cout << "Estimate: \n" << estimate << " - Correction: \n" << correction << '\n';
-                auto local_error_estimate = details::error( estimate, correction );
+                auto local_error_estimate = details::computation_error( estimate, correction );
                
                 
                 isToleranceReached = local_error_estimate <= tolerance_m;
@@ -514,7 +514,7 @@ namespace details {
                 auto estimate = derived().compute_solution(eos, details::order_tag<0>{}, estimation_tag{});
                 auto correction = derived().compute_solution(eos, details::order_tag<0>{}, correction_tag{});
 //                std::cout << "Estimate: \n" << estimate << " - Correction: \n" << correction << '\n';
-                auto local_error_estimate = details::error( estimate, correction );
+                auto local_error_estimate = details::computation_error( estimate, correction );
                
                 
                 isToleranceReached = local_error_estimate <= tolerance_m;

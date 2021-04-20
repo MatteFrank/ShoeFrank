@@ -82,6 +82,11 @@ void TACAactNtuCluster::CreateHistogram()
    fpHisHitTwMatch = new TH1F("caTwMatch", "Calorimeter - Number of matched hits with TW points", 2, 0, 2);
    AddHistogram(fpHisHitTwMatch);
 
+   fpHisTwDeCaE = new TH2F("caTwDeCaE", "Calorimeter TW-deltaE vs CA-E",
+                           300, 0, 3000,  40, 0, 400);
+   fpHisClusMap->SetStats(kFALSE);
+   AddHistogram(fpHisTwDeCaE);
+   
    SetValidHistogram(kTRUE);
    
    return;
@@ -294,7 +299,7 @@ void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
    cluster->SetPosition(fCurrentPosition);
    cluster->SetPosError(fCurrentPosError);
    cluster->SetPositionG(fCurrentPosition);
-   cluster->SetCharge(fClusterPulseSum);
+   cluster->SetEnergy(fClusterPulseSum);
 }
 
 //______________________________________________________________________________
@@ -311,7 +316,7 @@ void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
       if (ValidHistogram()) {
          if (cluster->GetHitsN() > 0) {
             fpHisHitTot->Fill(cluster->GetHitsN());
-            fpHisChargeTot->Fill(cluster->GetCharge());
+            fpHisChargeTot->Fill(cluster->GetEnergy());
             fpHisClusMap->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
          }
       }
@@ -337,7 +342,7 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
    TVector3 resMin;
    
    TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
-   Int_t nPoints = pNtuPoint->GetPointN();
+   Int_t nPoints = pNtuPoint->GetPointsN();
    
    for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
       
@@ -366,6 +371,7 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
       if (ValidHistogram()) {
          fpHisResTwMag->Fill(resMin.Mag());
          fpHisHitTwMatch->Fill(1);
+         fpHisTwDeCaE->Fill(cluster->GetEnergy(), point->GetEnergyLoss());
       }
    } else
       if (ValidHistogram())

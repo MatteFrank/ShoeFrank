@@ -19,7 +19,7 @@ TACAcluster::TACAcluster()
    fPosErrorG(0., 0., 0.),
    fListOfHits(0x0),
    fIndexSeed(-1),
-   fCharge(0.),
+   fEnergy(0.),
    fIsValid(kFALSE)
 {
    SetupClones();
@@ -42,7 +42,7 @@ TACAcluster::TACAcluster(const TACAcluster& cluster)
    fPositionG(cluster.fPositionG),
    fPosErrorG(cluster.fPosErrorG),
    fIndexSeed(cluster.fIndexSeed),
-   fCharge(cluster.fCharge),
+   fEnergy(cluster.fEnergy),
    fIsValid(cluster.fIsValid)
 {
    // TACAcluster constructor

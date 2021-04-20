@@ -23,6 +23,11 @@
 //______________________________________________________________________________
 //                          VTX
 
+constexpr double details::vertex_tag::default_cut_value;
+constexpr std::array<double, 2> details::it_tag::default_cut_value;
+constexpr std::array<double, 3> details::msd_tag::default_cut_value;
+constexpr double details::tof_tag::default_cut_value;
+
 typename details::vertex_tag::candidate detector_properties< details::vertex_tag >::generate_candidate( TAVTbaseCluster const * cluster_ph) const
 {
     auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data()) );

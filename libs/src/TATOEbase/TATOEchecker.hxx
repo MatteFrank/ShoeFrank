@@ -29,15 +29,6 @@
 
 class TATWpoint;
 
-namespace details{
-
-    struct all_mixed_tag{};
-    struct all_separated_tag{};
-    
-    
-    
-}//namespace details
- 
     
 namespace aftereffect {
     template<class T>
@@ -314,6 +305,7 @@ struct TATOEchecker{
         std::size_t recovered_cluster_number{0};
         std::size_t total_cluster_number{0};
         std::size_t clone_number{0};
+        std::size_t fake_number{0};
         
         computation_module(int charge_p) : charge{charge_p}
         {
@@ -354,7 +346,7 @@ struct TATOEchecker{
             auto key = static_cast<int>( momentum_p/0.2 );
           //  std::cout << "get_momentum_histogram_const\n";
        //     std::cout << "momentum: " << momentum_p << '\n';/
-        //    std::cout << "key: " << key << '\n';
+        //    std::cout << "key: " << key << ']\n';
             auto histogram_i = histogram_bundle.momentum_resolution_c.find(key);
             return (histogram_bundle.momentum_resolution_c.find(key) != histogram_bundle.momentum_resolution_c.end() ) ?
                     *histogram_i : nullptr;
@@ -387,6 +379,8 @@ struct TATOEchecker{
                             ) ){ index_c.push_back( index_p ); }
         }
     };
+    
+    
     
 private:
     TAMCntuPart* data_mhc;
@@ -541,10 +535,11 @@ public:
         auto fake_reconstruction = aftereffect::make_aftereffect(
                     [](reconstruction_module const& module_p)
                     { return !module_p.reconstructible_o.has_value() && module_p.reconstructed_o.has_value(); },
-                    [this](reconstruction_module const& /* module_p */)
+                    [this](reconstruction_module const& module_p )
                     {
                         action_m.logger_m.add_sub_header("fake_reconstruction");
-                        fake_number_m++;
+                        auto & computation_module = find_computation_module( module_p.reconstructed_o.value().properties.charge );
+                        computation_module.fake_number++;
                         //action_m.logger_m.freeze_everything();
                     }
                                                                  );
@@ -609,7 +604,7 @@ public:
         
         
         auto aftereffect_c = aftereffect::make_aftereffect_list(
-                               //     std::move(undiscerning_output),
+//                                    std::move(undiscerning_output),
                                     std::move(reconstructible_registration),
                                     std::move(successful_reconstruction),
                                     std::move(fake_reconstruction),
@@ -621,7 +616,7 @@ public:
         for( auto const& module : reconstruction_module_mc ){ aftereffect_c.evaluate( module ); }
         
 
-        //action_m.logger_m.output();
+//        action_m.logger_m.output();
     };
     
     double retrieve_momentum( candidate const& candidate_p ) const {
@@ -889,8 +884,27 @@ public:
     
 
 public:
-
-    void compute_results( details::all_mixed_tag ){
+    reconstruction_result retrieve_results() const {
+        reconstruction_result result;
+        
+        for( auto const& module : computation_module_mc ){
+            result.module_c.push_back( reconstruction_result::module{ module.charge } );
+            auto& result_module = result.module_c.back();
+            result_module.reconstructed_number = module.reconstructed_number;
+            result_module.reconstructible_number = module.reconstructible_number;
+            result_module.correct_cluster_number = module.correct_cluster_number;
+            result_module.recovered_cluster_number = module.recovered_cluster_number;
+            result_module.total_cluster_number = module.total_cluster_number;
+            result_module.clone_number = module.clone_number;
+            result_module.fake_number = module.fake_number;
+        }
+        
+        return result;
+    }
+    
+    
+    void compute_results( details::all_mixed_tag ) const{
+        
         //        action_m.logger_m.freeze_everything();
         action_m.logger_m.add_root_header("RESULTS");
         action_m.logger_m.template add_header<1, details::immutable_tag>("mixed");
@@ -918,14 +932,16 @@ public:
         }
         //look at mass efficiency reconstruction ? because of the plage im momentum of protons !
         action_m.logger_m.template add_header<1, details::immutable_tag>("efficiency");
-        double efficiency = reconstructed_number * 1./reconstructible_number;
+        auto efficiency = reconstructed_number * 1./reconstructible_number;
         action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-        action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1+ efficiency)/reconstructible_number) * 100<< '\n';
+        auto efficiency_error = sqrt(efficiency* (1+ efficiency)/reconstructible_number);
+        action_m.logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
 
         action_m.logger_m.template add_header<1, details::immutable_tag>("purity");
         auto purity = correct_cluster_number * 1./recovered_cluster_number;
         action_m.logger_m << "global_purity: " << purity * 100 << '\n';
-        action_m.logger_m << "global_purity_error: " << sqrt(purity* (1+purity)/recovered_cluster_number) * 100<< '\n';
+        auto purity_error = sqrt(purity* (1+purity)/recovered_cluster_number);
+        action_m.logger_m << "global_purity_error: " << purity_error * 100<< '\n';
 
 //        action_m.logger_m.template add_header<1, details::immutable_tag>("coverage");
 //        double coverage = recovered_cluster_number * 1./total_cluster_number;
@@ -933,14 +949,17 @@ public:
 //        action_m.logger_m << "global_coverage_error: " << sqrt(coverage* (1+coverage)/total_cluster_number) * 100<< '\n';
 
         action_m.logger_m.template add_header<1, details::immutable_tag>("fake_yield");
-        double fake_yield = fake_number_m * 1./reconstructed_number;
+        auto fake_yield = fake_number_m * 1./reconstructed_number;
         action_m.logger_m << "fake_yield: " << fake_yield * 100 << '\n';
-        action_m.logger_m << "fake_yield_error: " << sqrt(fake_yield* (1+fake_yield)/reconstructed_number) * 100<< '\n';
+        auto fake_yield_error = sqrt( fake_yield * (1+ fake_yield)/reconstructed_number);
+        action_m.logger_m << "fake_yield_error: " << fake_yield_error * 100<< '\n';
 
         action_m.logger_m.template add_header<1, details::immutable_tag>("multiplicity");
-        double clone_ratio = clone_number * 1./reconstructed_number;
-        action_m.logger_m << "global_clone_ratio: " << clone_ratio << '\n';
-        action_m.logger_m << "global_clone_ratio_error: " << sqrt(clone_ratio* (1+clone_ratio)/reconstructed_number) << '\n';
+        auto multiplicity = clone_number * 1./reconstructed_number;
+        action_m.logger_m << "global_clone_ratio: " << multiplicity << '\n';
+        auto multiplicity_error = sqrt(multiplicity * (1+multiplicity)/reconstructed_number);
+        action_m.logger_m << "global_clone_ratio_error: " << multiplicity_error << '\n';
+        
     }
     
     void compute_results( details::all_separated_tag ){
@@ -957,9 +976,9 @@ public:
     void register_histograms( details::all_separated_tag )
     {
         
-        action_m.reconstructed_track_mhc->AddHistogram(real_momentum_distribution_h);
-        action_m.reconstructed_track_mhc->AddHistogram(reconstructed_momentum_distribution_h);
-        
+//        action_m.reconstructed_track_mhc->AddHistogram(real_momentum_distribution_h);
+//        action_m.reconstructed_track_mhc->AddHistogram(reconstructed_momentum_distribution_h);
+//
         for(auto const & module : computation_module_mc){
             TH1D* efficiency_histogram_h = const_cast<TH1D*>( module.get_efficiency_histogram() );
 
@@ -985,27 +1004,27 @@ public:
             }
     
 
-            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH1D*>(reconstructible_h) );
-            action_m.reconstructed_track_mhc->AddHistogram( efficiency_histogram_h );
-            
-            action_m.reconstructed_track_mhc->AddHistogram(const_cast<TH1D*>( module.get_momentum_difference_histogram()));
-            action_m.reconstructed_track_mhc->AddHistogram(const_cast<TH1D*>( module.get_reconstructed_histogram()));
-            
-            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(mass_identification_h) );
+//            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH1D*>(reconstructible_h) );
+//            action_m.reconstructed_track_mhc->AddHistogram( efficiency_histogram_h );
+//
+//            action_m.reconstructed_track_mhc->AddHistogram(const_cast<TH1D*>( module.get_momentum_difference_histogram()));
+//            action_m.reconstructed_track_mhc->AddHistogram(const_cast<TH1D*>( module.get_reconstructed_histogram()));
+//
+//            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(mass_identification_h) );
 //            action_m.reconstructed_track_mhc->AddHistogram( const_cast<TH2D*>(charge_identification_h) );
             
             
             TH1D* momentum_histogram_h = new TH1D{ Form("momentum_charge%d", module.charge),
                 ";Momentum (Gev/c/n);#frac{#sigma_p}{p}", 75, 0, 15 };
             for( auto& pair : module.histogram_bundle.momentum_resolution_c  ){
-                action_m.reconstructed_track_mhc->AddHistogram( pair.second);
+//                action_m.reconstructed_track_mhc->AddHistogram( pair.second);
                 
                 auto momentum = (pair.first+0.5)*0.2;
                 auto rms = abs( pair.second->GetMean() - momentum ) ;
                 auto bin_index = momentum_histogram_h->FindBin(momentum);
                 if(pair.second->GetEntries()>50){ momentum_histogram_h->SetBinContent( bin_index, rms/momentum ); }
             }
-            action_m.reconstructed_track_mhc->AddHistogram( momentum_histogram_h );
+//            action_m.reconstructed_track_mhc->AddHistogram( momentum_histogram_h );
             
             
         }
@@ -1015,14 +1034,16 @@ private:
     void compute_efficiency( computation_module const & module_p ){
         auto efficiency = module_p.reconstructed_number * 1./module_p.reconstructible_number;
         action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-        action_m.logger_m << "global_efficiency_error: " << sqrt(efficiency* (1+ efficiency)/module_p.reconstructible_number) * 100<< '\n';
+        auto efficiency_error = sqrt( efficiency* (1+ efficiency)/module_p.reconstructible_number);
+        action_m.logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
     }
     
     
     void compute_purity( computation_module const & module_p ){
         auto purity = module_p.correct_cluster_number * 1./module_p.recovered_cluster_number;
         action_m.logger_m << "global_purity: " << purity * 100 << '\n';
-        action_m.logger_m << "global_purity_error: " << sqrt(purity* (1+purity)/module_p.recovered_cluster_number)  * 100<< '\n';
+        auto purity_error = sqrt( purity* (1+purity)/module_p.recovered_cluster_number);
+        action_m.logger_m << "global_purity_error: " << purity_error * 100<< '\n';
     }
     
 
@@ -1040,9 +1061,10 @@ struct empty_checker{
     void end_event(){}
     void start_event(){}
     void output_current_hypothesis(){}
-    void compute_results( details::all_mixed_tag ){}
+    void compute_results( details::all_mixed_tag )const { }
     void compute_results( details::all_separated_tag ){}
     void register_histograms( details::all_separated_tag ){}
+    reconstruction_result retrieve_results() const{ return {}; }
 };
 
 template<class Action>
@@ -1059,9 +1081,10 @@ struct checker{
         virtual void end_event() = 0;
         virtual void start_event() = 0;
         virtual void output_current_hypothesis() = 0;
-        virtual void compute_results( details::all_mixed_tag ) = 0;
+        virtual void compute_results( details::all_mixed_tag ) const = 0;
         virtual void compute_results( details::all_separated_tag ) = 0;
         virtual void register_histograms( details::all_separated_tag ) = 0;
+        virtual reconstruction_result retrieve_results() const = 0;
     };
 
     template<class T>
@@ -1074,9 +1097,10 @@ struct checker{
         void end_event() override{ t_m.end_event(); }
         void start_event() override{ t_m.start_event();}
         void output_current_hypothesis() override{ t_m.output_current_hypothesis(); }
-        void compute_results( details::all_mixed_tag ) override{ t_m.compute_results( details::all_mixed_tag{} );}
+        void compute_results( details::all_mixed_tag )const override{ return t_m.compute_results( details::all_mixed_tag{} );}
         void compute_results( details::all_separated_tag ) override{ t_m.compute_results( details::all_separated_tag{} ); }
         void register_histograms( details::all_separated_tag ) override{ t_m.register_histograms( details::all_separated_tag{}); }
+        reconstruction_result retrieve_results() const override{ return t_m.retrieve_results(); }
         T t_m;
     };
 
@@ -1095,9 +1119,10 @@ struct checker{
     void end_event() { erased_m->end_event(); }
     void start_event() { erased_m->start_event();}
     void output_current_hypothesis() { erased_m->output_current_hypothesis(); }
-    void compute_results( details::all_mixed_tag ) { erased_m->compute_results( details::all_mixed_tag{} );}
+    void compute_results( details::all_mixed_tag ) const { return erased_m->compute_results( details::all_mixed_tag{} );}
     void compute_results( details::all_separated_tag ) { erased_m->compute_results( details::all_separated_tag{} ); }
     void register_histograms( details::all_separated_tag ) { erased_m->register_histograms( details::all_separated_tag{}); }
+    reconstruction_result retrieve_results() const { return erased_m->retrieve_results(); }
 
     private:
     std::unique_ptr<eraser> erased_m;

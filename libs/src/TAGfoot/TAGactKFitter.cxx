@@ -904,13 +904,13 @@ int TAGactKFitter::UploadHitsTW() {
 
   // take the ntuple object already filled
   TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
-  if ( m_debug > 0 )		cout << "number of TW points read: " << ntup->GetPointN() << endl;
+  if ( m_debug > 0 )		cout << "number of TW points read: " << ntup->GetPointsN() << endl;
 
   TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
   TAMCntuHit* twMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("twMc", "TAMCntuHit")->Object();
 
   int totPoints = 0;
-  totPoints = ntup->GetPointN();
+  totPoints = ntup->GetPointsN();
 
   // save hits in the collection
   for (int iPoint = 0; iPoint < totPoints; iPoint++) {

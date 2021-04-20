@@ -241,19 +241,21 @@ Bool_t TACAactNtuHitMC::Action()
      pNtuEve = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
    }
   
-  TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
-  TACAparCal* parCal = (TACAparCal*) fpCalMap->Object();
+   TACAparGeo* parGeo = (TACAparGeo*) fpGeoMap->Object();
+   TACAparCal* parCal = (TACAparCal*) fpCalMap->Object();
+   
+   fDigitizer->ClearMap();
 
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
       TAMChit* hitMC = pNtuMC->GetHit(i);
-
       
       // Get particle index
       Int_t trackId = hitMC->GetTrackIdx()-1;
       Int_t cryId   = hitMC->GetCrystalId();
       Float_t edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();;
-     
       Float_t thres = parCal->GetCrystalThres(cryId);
+      Float_t p0    = parCal->GetElossParam(cryId, 0);
+      Float_t p1    = parCal->GetElossParam(cryId, 1);
 
       TVector3 posIn(hitMC->GetInPosition());
       TVector3 posOut(hitMC->GetOutPosition());
@@ -301,7 +303,10 @@ Bool_t TACAactNtuHitMC::Action()
          positionCry = parGeo->Crystal2Detector(cryId, positionCry);
          hit->SetPosition(positionCry);
         
-        if (hit->GetCharge() < thres)
+         Float_t charge = hit->GetCharge()*p1 + p0;
+         hit->SetCharge(charge);
+         
+        if (charge < thres)
           hit->SetValid(false);
         else
           hit->SetValid(true);

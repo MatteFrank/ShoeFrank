@@ -82,7 +82,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuTrackIt(0x0),
    fpNtuVtx(0x0),
    fpNtuGlbTrack(0x0),
-   fpNtuTrackIr(0x0),
    fActEvtReader(0x0),
    fActEvtWriter(0x0),
    fActTrackBm(0x0),
@@ -94,7 +93,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fActClusMsd(0x0),
    fActPointTw(0x0),
    fActGlbTrack(0x0),
-   fActTrackIr(0x0),
+   fActRecCutter(nullptr),
+   fActGlbTrackS(0x0),
    fFlagOut(true),
    fFlagTree(false),
    fFlagHits(false),
@@ -106,7 +106,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagZrecPUoff(false),
    fFlagZmatch_TW(false),
    fFlagMC(false),
-   fM28ClusMtFlag(false)
+   fM28ClusMtFlag(false),
+   fFlagRecCutter(false)
 {
 
    // check folder
@@ -248,6 +249,7 @@ void BaseReco::BeforeEventLoop()
   
    GlobalChecks();
   
+
    if (fFlagOut)
       OpenFileOut();
    
@@ -266,6 +268,12 @@ void BaseReco::LoopEvent(Int_t nEvents)
   else if (nEvents > 100)    frequency = 100;
   else if (nEvents > 10)     frequency = 10;
 
+    if(fActRecCutter){
+        static_cast<TAGactTreeReader*>(fActEvtReader)->Reset();
+        fTAGroot->SetEventNumber(0);
+        fActRecCutter->NextIteration();
+    }
+    
   for (Int_t ientry = 0; ientry < nEvents; ientry++) {
     
     if(ientry % frequency == 0)
@@ -285,6 +293,7 @@ void BaseReco::LoopEvent(Int_t nEvents)
         }
       }
     }
+      
   }
 }
 
@@ -292,6 +301,8 @@ void BaseReco::LoopEvent(Int_t nEvents)
 void BaseReco::AfterEventLoop()
 {
    fTAGroot->EndEventLoop();
+    
+    if(fActRecCutter){ fActRecCutter->Output(); }
    if (TAGrecoManager::GetPar()->IncludeKalman())	fActGlbkFitter->Finalize();
    if (fFlagOut)
       CloseFileOut();
@@ -316,6 +327,7 @@ void BaseReco::OpenFileOut()
 void BaseReco::SetRecHistogramDir()
 {
    //Global track
+    if(fFlagRecCutter){return;}
    if (fFlagTrack) {
      
       if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
@@ -604,30 +616,37 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files for caloriomter
+   Bool_t isCalTre = true;
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       fpParGeoCa = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
       TACAparGeo* parGeo = (TACAparGeo*)fpParGeoCa->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName);
       
-      fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
-      TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
-
-      fpParCalCa = new TAGparaDsc("caCal", new TACAparCal(parMap));
+      fpParCalCa = new TAGparaDsc("caCal", new TACAparCal());
       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
       
-     
      if(fFlagMC) { // set in MC threshold and active crystals from data informations
-       parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-       parCal->FromCrysStatusFile(parFileName.Data());
+        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parCal->FromCrysStatusFile(parFileName.Data());
+        
+        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parCal->LoadEnergyCalibrationMap(parFileName.Data());
+        
      } else {
-              
+        fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
+        TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
+
         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
         parMap->FromFile(parFileName.Data());
 
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
         parCal->FromCalibTempFile(parFileName.Data());
+        
+        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalTre);
+        parCal->LoadEnergyCalibrationMap(parFileName.Data());
      }
+     
    }
 
    TAVTparConf::SetHistoMap();
@@ -661,10 +680,10 @@ void BaseReco::CreateRecAction()
    if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman())
       CreateRecActionGlbGF();
    
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI())
-       CreateRecActionIr();
+   if (TAGrecoManager::GetPar()->IncludeST()    && TAGrecoManager::GetPar()->IncludeTG()
+       && TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW()
+       && !TAGrecoManager::GetPar()->IncludeDI())
+       CreateRecActionGlbS();
 }
 
 //__________________________________________________________
@@ -804,7 +823,16 @@ void BaseReco::CreateRecActionCa()
 //__________________________________________________________
 void BaseReco::CreateRecActionGlb()
 {
-
+    using namespace details;
+    if( fFlagRecCutter ){
+        SetL0TreeBranches();
+        fActRecCutter = new TATOEcutter<
+//            procedure< configuration<1, vertex_tag, tof_tag>, range<-1,+5> >
+//            procedure< configuration<1, vertex_tag, it_tag, tof_tag>, range<-1,+1>>
+        procedure< configuration<3, vertex_tag, it_tag, msd_tag, tof_tag>, range<-1,+10>>
+                                        >{"toeActCutter", fField};
+        return;
+    }
   if(fFlagTrack) {
     SetL0TreeBranches();
     fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
@@ -822,11 +850,10 @@ void BaseReco::CreateRecActionGlb()
 					   fpParGeoIt,
 					   fpParGeoMsd,
 					   fpParGeoTw,
-					   fField );
+					   fField);
     if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
   }
-  
 }
 
 //__________________________________________________________
@@ -859,13 +886,13 @@ void BaseReco::CreateRecActionGlbGF()
 }
 
 //__________________________________________________________
-void BaseReco::CreateRecActionIr()
+void BaseReco::CreateRecActionGlbS()
 {
    if(fFlagTrack) {
-      fpNtuTrackIr = new TAGdataDsc("irTrack", new TAIRntuTrack());
-      fActTrackIr  = new TAIRactNtuTrack("irActTrack", fpNtuClusIt, fpNtuVtx, fpNtuTrackIr, fpParConfIt, fpParGeoIt, fpParGeoVtx);
+      fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+      fActGlbTrackS  = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw, fpParGeoG);
       if (fFlagHisto)
-         fActTrackIr->CreateHistogram();
+         fActGlbTrackS->CreateHistogram();
    }
    
 }
@@ -900,9 +927,8 @@ void BaseReco::SetL0TreeBranches()
 void BaseReco::SetTreeBranches()
 {
   if (TAGrecoManager::GetPar()->IncludeTOE()) {
-    if (fFlagTrack) {
+    if (fFlagTrack && !fFlagRecCutter)
       fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
-    }
   }
   
   if (TAGrecoManager::GetPar()->IncludeVT()) {
@@ -934,6 +960,13 @@ void BaseReco::SetTreeBranches()
    
    if (TAGrecoManager::GetPar()->IncludeCA())
      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
+   
+   if (TAGrecoManager::GetPar()->IncludeST()    && TAGrecoManager::GetPar()->IncludeTG()
+       && TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW()
+       && !TAGrecoManager::GetPar()->IncludeDI()) {
+      if (fFlagTrack)
+         fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
+   }
 }
 
 //__________________________________________________________
@@ -943,7 +976,8 @@ void BaseReco::AddRecRequiredItem()
       gTAGroot->AddRequiredItem("locRecFile");
    if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
-       gTAGroot->AddRequiredItem("glbActTrack");
+       if(fFlagRecCutter){gTAGroot->AddRequiredItem("toeActCutter");}
+       else{gTAGroot->AddRequiredItem("glbActTrack");}
      }
      return;
    }
@@ -1009,10 +1043,10 @@ void BaseReco::AddRecRequiredItem()
       }
    }
    
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeBM() && TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeIT() && !TAGrecoManager::GetPar()->IncludeDI())
-      gTAGroot->AddRequiredItem("irActTrack");
+   if (TAGrecoManager::GetPar()->IncludeST()    && TAGrecoManager::GetPar()->IncludeTG()
+       && TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW()
+       && !TAGrecoManager::GetPar()->IncludeDI())
+      gTAGroot->AddRequiredItem("glbActTrackS");
 
 }
 
