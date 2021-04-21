@@ -24,6 +24,9 @@ public:
    Double_t       EtaX0(Double_t* x, Double_t* par);
    Double_t       GetEta(Double_t pos);
 
+   Double_t       ResEnergy(Double_t* x, Double_t* par);
+   Double_t       GetResEnergy(Float_t edep);
+   
    void           SetFunctions();
    void           SetParFunction();
 
@@ -39,6 +42,14 @@ private:
    Double_t        fEtaLimUp;
    Float_t         fEtaCst;
    Float_t         fEtaErrCst;
+   
+   TF1*            fDeResE;
+   Float_t         fResPar0;
+   Float_t         fResErrPar0;
+   Float_t         fResPar1;
+   Float_t         fResErrPar1;
+   Float_t         fResPar2;
+   Float_t         fResErrPar2;
    
    std::map<int, double> fMap;      // map of found strips
 
