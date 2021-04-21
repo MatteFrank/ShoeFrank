@@ -551,6 +551,7 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
             point->SetYon(false);
          else
             point->SetXon(false);
+         point->SetEnergyLoss(bestCluster->GetEnergyLoss());
          
          UpdateParam(track, view);
          
@@ -660,7 +661,8 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
          
          TAGpoint* point = track->AddMeasPoint(TATWparGeo::GetBaseName(), posG, errG);
          point->SetSensorIdx(0);
-         
+         point->SetEnergyLoss(bestCluster->GetEnergyLoss());
+
          Float_t tof = bestCluster->GetMeanTof();
          track->SetTof(tof);
    
