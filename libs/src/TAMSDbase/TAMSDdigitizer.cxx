@@ -11,7 +11,7 @@
 
 using namespace std;
 
-Float_t TAMSDdigitizer::fgChargeGain  = 20;
+Float_t TAMSDdigitizer::fgChargeGain  = 1.;
 Bool_t  TAMSDdigitizer::fgSmearFlag   = false;
 Float_t TAMSDdigitizer::fgDefSmearPos =  70;    // in micron
 

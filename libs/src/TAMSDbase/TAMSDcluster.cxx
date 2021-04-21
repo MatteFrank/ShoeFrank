@@ -17,6 +17,7 @@ TAMSDcluster::TAMSDcluster()
    fPosErrorF(0),
    fCurPosition(0,0,0),
    fPlaneView(-1),
+   fEnergyLoss(0),
    fIsValid(false)
 {
    // TAMSDcluster constructor
@@ -39,6 +40,7 @@ TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
    fPosErrorF(cluster.fPosErrorF),
    fCurPosition(cluster.fCurPosition),
    fPlaneView(cluster.fPlaneView),
+   fEnergyLoss(cluster.fEnergyLoss),
    fIsValid(cluster.fIsValid)
 {
    fListOfStrips = (TClonesArray*)cluster.fListOfStrips->Clone();

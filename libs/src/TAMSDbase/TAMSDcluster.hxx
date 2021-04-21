@@ -24,6 +24,7 @@ private:
    TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
    
    Int_t              fPlaneView;                // plane view = 0 for X and = 1 for Y plane
+   Float_t            fEnergyLoss;               // loss of energy
    Bool_t             fIsValid;                  // validity flag
    
 public:
@@ -39,6 +40,8 @@ public:
    void               SetPositionG(TVector3& pos);
    //! Set view
    void               SetPlaneView(Int_t v)                  { fPlaneView = v;         }
+   //! Set energy loss
+   void               SetEnergyLoss(Float_t chg)             { fEnergyLoss = chg;      }
    //! Set validy
    void               SetValid(Bool_t v = true)              { fIsValid = v;           }
    
@@ -57,6 +60,8 @@ public:
    
    //! Get view
    Int_t              GetPlaneView()                   const { return fPlaneView;      }
+   //! Get energy loss
+   Float_t            GetEnergyLoss()                  const { return fEnergyLoss;     }
    //! Get validity
    Bool_t             IsValid()                        const { return fIsValid;        }
    //! Get number of pixels in this clusters
@@ -76,7 +81,7 @@ public:
    void               AddStrip(TAMSDhit* strip);
 
 
-   ClassDef(TAMSDcluster,3)                          // Describes TAMSDcluster
+   ClassDef(TAMSDcluster,4)                          // Describes TAMSDcluster
 };
 
 
