@@ -82,8 +82,7 @@ void TACAactNtuCluster::CreateHistogram()
    fpHisHitTwMatch = new TH1F("caTwMatch", "Calorimeter - Number of matched hits with TW points", 2, 0, 2);
    AddHistogram(fpHisHitTwMatch);
 
-   fpHisTwDeCaE = new TH2F("caTwDeCaE", "Calorimeter TW-deltaE vs CA-E",
-                           300, 0, 3000,  40, 0, 400);
+   fpHisTwDeCaE = new TH2F("caTwDeCaE", "Calorimeter TW-deltaE vs CA-E", 300, 0, 3000,  100, 0, 200);
    fpHisClusMap->SetStats(kFALSE);
    AddHistogram(fpHisTwDeCaE);
    
