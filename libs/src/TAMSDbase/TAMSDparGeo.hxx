@@ -25,7 +25,6 @@ class TGeoVolume;
 
 class TAMSDparGeo : public TAVTbaseParGeo {
 
-
 public:
   TAMSDparGeo();
   virtual ~TAMSDparGeo();
@@ -42,10 +41,18 @@ public:
   //! Reading from file
   Bool_t      FromFile(const TString& name = "");
   
+  Float_t     GetPosition(Int_t strip) const;
+   
+  //! Get number of strip
+  Int_t       GetStripsN()             const { return fStripsN; }
+   
+   //! Get pitch
+  Float_t     GetPitch()               const { return fPitch;   }
+   
   //crossing regions
-  Int_t          GetRegStrip(Int_t n);   //n=sensor (0-5)
-  Int_t          GetRegModule(Int_t n);  //n=sensor (0-5)
-  Int_t          GetRegMetal(Int_t n);   //n=sensor (0-5)
+  Int_t       GetRegStrip(Int_t n);   //n=sensor (0-5)
+  Int_t       GetRegModule(Int_t n);  //n=sensor (0-5)
+  Int_t       GetRegMetal(Int_t n);   //n=sensor (0-5)
   
   // to keep interace for compilation
   string      PrintParameters();
@@ -56,20 +63,20 @@ public:
   string      PrintSubtractBodiesFromAir();
 
 private:
-  map<string, vector<string> > m_regionName;
-  map<string, vector<string> > m_bodyName;
-  // map<string, vector<string> > m_regionPrintOut;
-  map<string, vector<string> > m_bodyPrintOut;
-  vector<string> vMetalBody, vModBody, vStripBody;
-  vector<string> vMetalRegion, vModRegion, vStripRegion;
+  vector<string> fvMetalBody;
+  vector<string> fvModBody;
+  vector<string> fvStripBody;
+  vector<string> fvMetalRegion;
+  vector<string> fvModRegion;
+  vector<string> fvStripRegion;
+
+  Int_t          fStripsN;         // Number of strips
+  Float_t        fPitch;           // Pitch value
   
-  Int_t      fStripN;          // Number of strips
-  Float_t    fPitch;           // Pitch value
-  
-  TVector3   fMetalSize;        // Sensitive size of metallization
-  Float_t    fMetalThickness;   // Thickness of metallization
-  TString    fMetalMat;         // Material of metallization
-  Float_t    fMetalDensity;     // density of metallization
+  TVector3       fMetalSize;        // Sensitive size of metallization
+  Float_t        fMetalThickness;   // Thickness of metallization
+  TString        fMetalMat;         // Material of metallization
+  Float_t        fMetalDensity;     // density of metallization
   
 private:
   static const TString fgkBaseName;   // MSD base name
@@ -79,14 +86,7 @@ public:
   static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
   static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
 
-  Float_t GetPosition(Int_t strip) const;
-
-  //! Get number of strip
-  Int_t   GetNStrip()                  const { return fStripN;       }
-  Float_t GetPitch()                   const { return fPitch;        }
-
-  
-  ClassDef(TAMSDparGeo,1)
+  ClassDef(TAMSDparGeo,3)
 };
 
 #endif

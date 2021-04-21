@@ -40,7 +40,7 @@ TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TA
   AddDataOut(pNtuClus, "TAMSDntuCluster");
   
   TAMSDparGeo* geoMap = (TAMSDparGeo*)fpGeoMap->Object();
-  fDimX = geoMap->GetNStrip()+1;
+  fDimX = geoMap->GetStripsN()+1;
   SetupMaps(fDimX);
 }
 
@@ -65,7 +65,7 @@ void TAMSDactNtuCluster::CreateHistogram()
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fpHisClusMap[i] = new TH1F(Form("%sClusMap%d", prefix.Data(), i+1), Form("%s - clusters map for sensor %d", titleDev.Data(), i+1),
-			       pGeoMap->GetNStrip(), -pGeoMap->GetPitch()*pGeoMap->GetNStrip()/2., pGeoMap->GetPitch()*pGeoMap->GetNStrip()/2.);
+			       pGeoMap->GetStripsN(), -pGeoMap->GetPitch()*pGeoMap->GetStripsN()/2., pGeoMap->GetPitch()*pGeoMap->GetStripsN()/2.);
     
     AddHistogram(fpHisClusMap[i]);
   }

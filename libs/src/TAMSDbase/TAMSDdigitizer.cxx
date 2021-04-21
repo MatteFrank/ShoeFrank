@@ -33,7 +33,7 @@ TAMSDdigitizer::TAMSDdigitizer(TAMSDparGeo* parGeo)
   fResPar2(0),
   fResErrPar2(0)
 {
-  fStripsN = fpParGeo->GetNStrip();
+  fStripsN = fpParGeo->GetStripsN();
   fPitch   = fpParGeo->GetPitch();
 
    SetFunctions();

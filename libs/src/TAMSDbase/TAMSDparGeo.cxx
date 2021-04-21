@@ -83,9 +83,9 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
    if(FootDebugLevel(1))
       cout  << endl << "  Type Number : "<< fTypeNumber << endl;
 
-   ReadItem(fStripN);
+   ReadItem(fStripsN);
    if(FootDebugLevel(1))
-      cout  << "  Number of strip: "<< fStripN << endl;
+      cout  << "  Number of strip: "<< fStripsN << endl;
 
    ReadItem(fPitch);
    if(FootDebugLevel(1))
@@ -232,7 +232,7 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
 //_____________________________________________________________________________
 Float_t TAMSDparGeo::GetPosition(Int_t strip) const
 {
-  Float_t x = (Float_t(2*strip - fStripN + 1) * fPitch)/2.;
+  Float_t x = (Float_t(2*strip - fStripsN + 1) * fPitch)/2.;
   return  x;
 }
 
@@ -436,8 +436,8 @@ string TAMSDparGeo::PrintBodies()
 	 << posStrip.y() + fEpiSize.Y()/2. << " "
 	 << posStrip.z() - fEpiSize.Z()/2. << " "
 	 << posStrip.z() + fEpiSize.Z()/2. << endl;
-      vStripBody.push_back(bodyname);
-      vStripRegion.push_back(regionname);
+      fvStripBody.push_back(bodyname);
+      fvStripRegion.push_back(regionname);
 
       //module
       bodyname = Form("msdp%d",iSens);
@@ -452,8 +452,8 @@ string TAMSDparGeo::PrintBodies()
 	 << posMod.y() + fTotalSize.Y()/2. << " "
 	 << posMod.z() - fTotalSize.Z()/2. << " "
 	 << posMod.z() + fTotalSize.Z()/2. << endl;
-      vModBody.push_back(bodyname);
-      vModRegion.push_back(regionname);
+      fvModBody.push_back(bodyname);
+      fvModRegion.push_back(regionname);
 
       //metal layer
       bodyname = Form("msdm%d",iSens);
@@ -466,8 +466,8 @@ string TAMSDparGeo::PrintBodies()
 	 << posMet.y() + fEpiSize.Y()/2. << " "
 	 << posMet.z() - fMetalThickness/2. << " "
 	 << posMet.z() + fMetalThickness/2. << endl;
-      vMetalBody.push_back(bodyname);
-      vMetalRegion.push_back(regionname);
+      fvMetalBody.push_back(bodyname);
+      fvMetalRegion.push_back(regionname);
 
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$end_transform " << endl;
@@ -490,20 +490,20 @@ string TAMSDparGeo::PrintRegions()
 
     ss << "* ***MSD regions" << endl;
 
-    for(int i=0; i<vStripRegion.size(); i++) {
-      ss << setw(13) << setfill( ' ' ) << std::left << vStripRegion.at(i)
-    	 << "5 " << vStripBody.at(i) <<endl;
+    for(int i=0; i<fvStripRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvStripRegion.at(i)
+    	 << "5 " << fvStripBody.at(i) <<endl;
     }
 
-    for(int i=0; i<vModRegion.size(); i++) {
-      ss << setw(13) << setfill( ' ' ) << std::left << vModRegion.at(i)
-	 << "5 " << vModBody.at(i)
-	 << " -" << vStripBody.at(i) << " -" << vMetalBody.at(i) <<endl;
+    for(int i=0; i<fvModRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvModRegion.at(i)
+	 << "5 " << fvModBody.at(i)
+	 << " -" << fvStripBody.at(i) << " -" << fvMetalBody.at(i) <<endl;
     }
 
-    for(int i=0; i<vMetalRegion.size(); i++) {
-      ss << setw(13) << setfill( ' ' ) << std::left << vMetalRegion.at(i)
-    	 << "5 " << vMetalBody.at(i) <<endl;
+    for(int i=0; i<fvMetalRegion.size(); i++) {
+      ss << setw(13) << setfill( ' ' ) << std::left << fvMetalRegion.at(i)
+    	 << "5 " << fvMetalBody.at(i) <<endl;
     }
 
   }
@@ -539,8 +539,8 @@ string TAMSDparGeo::PrintSubtractBodiesFromAir()
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
 
-    for(int i=0; i<vModBody.size(); i++) {
-      ss << " -" << vModBody.at(i);
+    for(int i=0; i<fvModBody.size(); i++) {
+      ss << " -" << fvModBody.at(i);
     }
     ss << endl;
 
@@ -574,14 +574,14 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials *Material)
     if(TAGrecoManager::GetPar()->IncludeDI())
       magnetic = true;
 
-    if (vStripRegion.size()==0 || vModRegion.size()==0 || vMetalRegion.size()==0 )
+    if (fvStripRegion.size()==0 || fvModRegion.size()==0 || fvMetalRegion.size()==0 )
       cout << "Error: MSD regions vector not correctly filled!"<<endl;
     
-    ss << PrintCard("ASSIGNMA", flkmatMod, vStripRegion.at(0), vStripRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatMod, fvStripRegion.at(0), fvStripRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
-    ss << PrintCard("ASSIGNMA", flkmatMetal, vMetalRegion.at(0), vMetalRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatMetal, fvMetalRegion.at(0), fvMetalRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
-    ss << PrintCard("ASSIGNMA", flkmatSupp, vModRegion.at(0), vModRegion.back(),
+    ss << PrintCard("ASSIGNMA", flkmatSupp, fvModRegion.at(0), fvModRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
 
   }
