@@ -5,6 +5,7 @@
 
 ClassImp(TAMSDcalibrationMap)
 
+//_____________________________________________________________________
 TAMSDcalibrationMap::TAMSDcalibrationMap()
 : TAGobject()
 {

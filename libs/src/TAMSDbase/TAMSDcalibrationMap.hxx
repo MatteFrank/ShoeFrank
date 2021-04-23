@@ -16,7 +16,7 @@ private:
 public:
   TAMSDcalibrationMap();
     
-  void LoadEnergyCalibrationMap(TString Filename);
+  void     LoadEnergyCalibrationMap(TString Filename);
   Double_t GetElossParam(Int_t sensorId, Int_t stripId, UInt_t parId)  { return fCalibElossMapStrip[make_pair(sensorId, stripId)][parId]; }
  
   ClassDef(TAMSDcalibrationMap, 0)
