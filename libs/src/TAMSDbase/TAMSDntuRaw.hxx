@@ -60,12 +60,13 @@ public:
  
  \author Ch. Finck
  */
-
+class TAMSDparGeo;
 class TAMSDntuRaw : public TAGdata {
    
 protected:
-   TObjArray* fListOfPixels;
-
+   TObjArray*   fListOfPixels;
+   TAMSDparGeo* fpGeoMap;
+   
 private:
    static TString fgkBranchName;    // Branch name in TTree
 
