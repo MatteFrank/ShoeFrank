@@ -1,7 +1,6 @@
 #include "TError.h"
 
 #include "TAMSDcalibrationMap.hxx"
-#include "TAGxmlParser.hxx"
 #include "TAGrecoManager.hxx"
 
 ClassImp(TAMSDcalibrationMap)
@@ -12,11 +11,11 @@ TAMSDcalibrationMap::TAMSDcalibrationMap()
 }
 
 //_____________________________________________________________________
-void TAMSDcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
+void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
 {
    
-   if (gSystem->AccessPathName(FileName.c_str()))
-      Error("LoadEnergyCalibrationMap()","File %s doesn't exist",FileName.c_str());
+   if (gSystem->AccessPathName(FileName.Data()))
+      Error("LoadEnergyCalibrationMap()","File %s doesn't exist",FileName.Data());
    
    ///////// read the file with Charge calibration
    ifstream fin;
@@ -46,7 +45,7 @@ void TAMSDcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
          fCalibElossMapStrip[p].push_back(Q_corrp1);
       }
    } else
-      Info("LoadEnergyCalibrationMap()","File Calibration Energy %s not open!!",FileName.data());
+      Info("LoadEnergyCalibrationMap()","File Calibration Energy %s not open!!",FileName.Data());
    
    fin.close();
 }
