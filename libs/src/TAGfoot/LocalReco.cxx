@@ -15,7 +15,7 @@
 
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
-#include "TAMSDdatRaw.hxx"
+#include "TAMSDntuRaw.hxx"
 
 
 ClassImp(LocalReco)

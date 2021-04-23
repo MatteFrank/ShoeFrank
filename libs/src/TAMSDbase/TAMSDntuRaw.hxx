@@ -1,5 +1,5 @@
-#ifndef _TAMSDdatRaw_HXX
-#define _TAMSDdatRaw_HXX
+#ifndef _TAMSDntuRaw_HXX
+#define _TAMSDntuRaw_HXX
 
 #include "TAGdata.hxx"
 #include "TObjArray.h"
@@ -56,12 +56,12 @@ public:
 };
 
 //######################################################################################
-/** TAMSDdatRaw class for raw data (VME & PXI)
+/** TAMSDntuRaw class for raw data
  
  \author Ch. Finck
  */
 
-class TAMSDdatRaw : public TAGdata {
+class TAMSDntuRaw : public TAGdata {
    
 protected:
    TObjArray* fListOfPixels;
@@ -70,8 +70,8 @@ private:
    static TString fgkBranchName;    // Branch name in TTree
 
 public:
-   TAMSDdatRaw();
-   ~TAMSDdatRaw();
+   TAMSDntuRaw();
+   ~TAMSDntuRaw();
    
    //! Get list of pixels
    TClonesArray*     GetPixels(Int_t iSensor)  const;
@@ -98,7 +98,7 @@ public:
 public:   
    static const Char_t* GetBranchName()   { return fgkBranchName.Data(); }
 
-   ClassDef(TAMSDdatRaw,2)
+   ClassDef(TAMSDntuRaw,2)
 };
 
 # endif

@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////
 #include "TClonesArray.h"
 
-#include "TAMSDdatRaw.hxx"
+#include "TAMSDntuRaw.hxx"
 
 ClassImp(TAMSDrawHit) 
 
@@ -59,20 +59,20 @@ Int_t TAMSDrawHit::Compare(const TObject* obj) const
 //####################################################################################
 
   ////////////////////////////////////////////////////////////
-  // Class Description of TAMSDdatRaw                        //
+  // Class Description of TAMSDntuRaw                        //
   //                                                        //
   //                                                        //
   ////////////////////////////////////////////////////////////
 
 #include "TAMSDparMap.hxx"
 
-ClassImp(TAMSDdatRaw) 
+ClassImp(TAMSDntuRaw) 
 
-TString TAMSDdatRaw::fgkBranchName   = "msdrd.";
+TString TAMSDntuRaw::fgkBranchName   = "msdrd.";
 
 //______________________________________________________________________________
 //
-TAMSDdatRaw::TAMSDdatRaw() 
+TAMSDntuRaw::TAMSDntuRaw() 
 : TAGdata(),
   fListOfPixels(0x0)
 {
@@ -81,15 +81,15 @@ TAMSDdatRaw::TAMSDdatRaw()
 
 //______________________________________________________________________________
 //  
-TAMSDdatRaw::~TAMSDdatRaw()
+TAMSDntuRaw::~TAMSDntuRaw()
 {
-  // TAMSDdatRaw default destructor
+  // TAMSDntuRaw default destructor
    delete fListOfPixels; 
 }
 
 //------------------------------------------+-----------------------------------
 //! return number of pixels for a given sensor.
-Int_t TAMSDdatRaw::GetPixelsN(Int_t iSensor) const
+Int_t TAMSDntuRaw::GetPixelsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < TAMSDparMap::GetSensorsN())
 	  return GetPixels(iSensor)->GetEntries();
@@ -101,7 +101,7 @@ Int_t TAMSDdatRaw::GetPixelsN(Int_t iSensor) const
 
 //______________________________________________________________________________
 //
-TClonesArray* TAMSDdatRaw::GetPixels(Int_t iSensor) const      
+TClonesArray* TAMSDntuRaw::GetPixels(Int_t iSensor) const      
 { 
    if (iSensor >= 0  || iSensor < TAMSDparMap::GetSensorsN()) 	  
 	  return (TClonesArray*)fListOfPixels->At(iSensor);
@@ -114,7 +114,7 @@ TClonesArray* TAMSDdatRaw::GetPixels(Int_t iSensor) const
    
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-const TAMSDrawHit* TAMSDdatRaw::GetPixel(Int_t iSensor, Int_t iPixel) const
+const TAMSDrawHit* TAMSDntuRaw::GetPixel(Int_t iSensor, Int_t iPixel) const
 {
    if (iPixel >=0 || iPixel < GetPixelsN(iSensor))
 	  return (TAMSDrawHit*)GetPixels(iSensor)->At(iPixel);
@@ -126,7 +126,7 @@ const TAMSDrawHit* TAMSDdatRaw::GetPixel(Int_t iSensor, Int_t iPixel) const
  
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TAMSDrawHit* TAMSDdatRaw::GetPixel(Int_t iSensor, Int_t iPixel)
+TAMSDrawHit* TAMSDntuRaw::GetPixel(Int_t iSensor, Int_t iPixel)
 {
    if (iPixel >=0 || iPixel < GetPixelsN(iSensor))
 	  return (TAMSDrawHit*)GetPixels(iSensor)->At(iPixel);
@@ -138,7 +138,7 @@ TAMSDrawHit* TAMSDdatRaw::GetPixel(Int_t iSensor, Int_t iPixel)
    
 //______________________________________________________________________________
 //  
-void TAMSDdatRaw::AddPixel(Int_t sensor, Int_t value, Int_t aLine, Int_t aColumn)
+void TAMSDntuRaw::AddPixel(Int_t sensor, Int_t value, Int_t aLine, Int_t aColumn)
 {
    if (sensor >= 0  || sensor < TAMSDparMap::GetSensorsN()) {	  
 	  TClonesArray &pixelArray = *GetPixels(sensor);
@@ -150,7 +150,7 @@ void TAMSDdatRaw::AddPixel(Int_t sensor, Int_t value, Int_t aLine, Int_t aColumn
 
 //______________________________________________________________________________
 //  
-void TAMSDdatRaw::SetupClones()
+void TAMSDntuRaw::SetupClones()
 {
    if (fListOfPixels) return;
    fListOfPixels = new TObjArray();
@@ -164,7 +164,7 @@ void TAMSDdatRaw::SetupClones()
 
 //______________________________________________________________________________
 //  
-void TAMSDdatRaw::Clear(Option_t* /*opt*/)
+void TAMSDntuRaw::Clear(Option_t* /*opt*/)
 {
    TAGdata::Clear();
    for (Int_t i = 0; i < TAMSDparMap::GetSensorsN(); ++i) 
@@ -173,10 +173,10 @@ void TAMSDdatRaw::Clear(Option_t* /*opt*/)
 
 //______________________________________________________________________________
 //  
-void TAMSDdatRaw::ToStream(ostream& os, Option_t* option) const
+void TAMSDntuRaw::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < TAMSDparMap::GetSensorsN(); ++i) {
-	  os << "TAMSDdatRaw " << GetName()
+	  os << "TAMSDntuRaw " << GetName()
 	     << Form("  nhit=%3d", GetPixelsN(i))
 	     << endl;
 	  
