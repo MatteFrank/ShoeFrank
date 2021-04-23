@@ -11,7 +11,7 @@ typedef map<pair<Int_t, Int_t>, vector<Double_t> > TCalibrationMapType;
 class TAMSDcalibrationMap : public TAGobject
 {
 private:
-  TCalibrationMapType fCalibElossMapStrip;     // map for energy calibration per crystal
+  TCalibrationMapType fCalibElossMapStrip;     // map for energy calibration per strip
 
 public:
   TAMSDcalibrationMap();
