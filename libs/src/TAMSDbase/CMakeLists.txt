@@ -26,6 +26,8 @@ set( with_dictionnaries
    TAMSDparMap
    TAMSDparGeo
    TAMSDparConf
+   TAMSDparCal
+   TAMSDcalibrationMap
    TAMSDdigitizer
    TAMSDactNtuHitMC
    TAMSDntuCluster
