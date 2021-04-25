@@ -49,7 +49,7 @@
 #include "TAITntuCluster.hxx"
 
 #include "TAITactNtuHitMC.hxx"
-#include "TAITactNtuClusterF.hxx"
+#include "TAITactNtuCluster.hxx"
 
 // IR
 #include "TAIRntuTrack.hxx"
@@ -72,7 +72,7 @@ TAGparaDsc*         vtGeo     = 0x0;
 TAGdataDsc*         vtEve     = 0x0;
 
 TAITactNtuHitMC*       itActRaw  = 0x0;
-TAITactNtuClusterF* itActClus = 0x0;
+TAITactNtuCluster* itActClus = 0x0;
 
 TAIRactNtuTrack*    irActTrck = 0x0;
 
@@ -139,7 +139,7 @@ void FillMCInnerTracker(Int_t runNumber) {
    
    itActRaw= new TAITactNtuHitMC("itActNtu", itMc, vtEve, itNtu, itGeo);
    
-   itActClus = new TAITactNtuClusterF("itActCluster", itNtu, itClus, itConf, itGeo);
+   itActClus = new TAITactNtuCluster("itActCluster", itNtu, itClus, itConf, itGeo);
    
    TAGdataDsc* irTrck   = new TAGdataDsc("irTrack", new TAIRntuTrack());
    irActTrck = new TAIRactNtuTrack("irActTrack", itClus, vtVtx, irTrck, itConf, itGeo, vtGeo);

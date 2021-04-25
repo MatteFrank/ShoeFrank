@@ -767,7 +767,7 @@ void BaseReco::CreateRecActionIt()
    if (fM28ClusMtFlag)
       fActClusIt   = new TAITactNtuClusterMT("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
    else
-      fActClusIt   = new TAITactNtuClusterF("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
+      fActClusIt   = new TAITactNtuCluster("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
 
    if (fFlagHisto)
      fActClusIt->CreateHistogram();

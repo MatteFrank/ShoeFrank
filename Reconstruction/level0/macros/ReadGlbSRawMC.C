@@ -49,7 +49,7 @@
 #include "TAITntuCluster.hxx"
 
 #include "TAITactNtuHitMC.hxx"
-#include "TAITactNtuClusterF.hxx"
+#include "TAITactNtuCluster.hxx"
 
 //MSD
 #include "TAMSDparGeo.hxx"
@@ -106,7 +106,7 @@ TAGparaDsc*         itGeo       = 0x0;
 TAGparaDsc*         itConf      = 0x0;
 TAGdataDsc*         itClus      = 0x0;
 TAITactNtuHitMC*    itActNtu    = 0x0;
-TAITactNtuClusterF* itActClus   = 0x0;
+TAITactNtuCluster* itActClus   = 0x0;
 
 //MSD
 TAGparaDsc*         msdGeo      = 0x0;
@@ -184,7 +184,7 @@ void FillMCInnerTracker(Int_t runNumber) {
    vtActReader->SetupBranch(itMc, TAMCntuHit::GetItrBranchName());
    itActNtu= new TAITactNtuHitMC("itActNtu", itMc, vtEve, itNtu, itGeo);
    
-   itActClus = new TAITactNtuClusterF("itActClus", itNtu, itClus, itConf, itGeo);
+   itActClus = new TAITactNtuCluster("itActClus", itNtu, itClus, itConf, itGeo);
 }
 
 void FillMCMsd(Int_t runNumber) {

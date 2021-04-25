@@ -60,7 +60,7 @@
 
 #include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuClusterMT.hxx"
-#include "TAITactNtuClusterF.hxx"
+#include "TAITactNtuCluster.hxx"
 #include "TAITactNtuClusterMT.hxx"
 #include "TAMSDactNtuCluster.hxx"
 #include "TAMSDactNtuPoint.hxx"

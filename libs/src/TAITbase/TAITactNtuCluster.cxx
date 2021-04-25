@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITactNtuClusterF.cxx $
- \brief   Implementation of TAITactNtuClusterF.
+ \version $Id: TAITactNtuCluster.cxx $
+ \brief   Implementation of TAITactNtuCluster.
  */
 #include "TClonesArray.h"
 #include "TH1F.h"
@@ -13,18 +13,18 @@
 #include "TAITntuHit.hxx"
 #include "TAITntuHit.hxx"
 #include "TAITntuCluster.hxx"
-#include "TAITactNtuClusterF.hxx"
+#include "TAITactNtuCluster.hxx"
 
 /*!
- \class TAITactNtuClusterF 
+ \class TAITactNtuCluster 
  \brief NTuplizer for vertex raw hits. **
  */
 
-ClassImp(TAITactNtuClusterF);
+ClassImp(TAITactNtuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAITactNtuClusterF::TAITactNtuClusterF(const char* name, 
+TAITactNtuCluster::TAITactNtuCluster(const char* name, 
 									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus,
 									 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
 : TAVTactBaseNtuCluster(name, pConfig, pGeoMap),
@@ -37,14 +37,14 @@ TAITactNtuClusterF::TAITactNtuClusterF(const char* name,
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAITactNtuClusterF::~TAITactNtuClusterF()
+TAITactNtuCluster::~TAITactNtuCluster()
 {
    
 }
 
 //______________________________________________________________________________
 //
-Bool_t TAITactNtuClusterF::Action()
+Bool_t TAITactNtuCluster::Action()
 {
    TAITntuHit* pNtuHit  = (TAITntuHit*) fpNtuRaw->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
@@ -64,7 +64,7 @@ Bool_t TAITactNtuClusterF::Action()
 
 //______________________________________________________________________________
 //  
-Bool_t TAITactNtuClusterF::FindClusters(Int_t iSensor)
+Bool_t TAITactNtuCluster::FindClusters(Int_t iSensor)
 {
    // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
    // Look in a iterative way to next neighbour
@@ -77,7 +77,7 @@ Bool_t TAITactNtuClusterF::FindClusters(Int_t iSensor)
 
 //______________________________________________________________________________
 //
-Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor)
+Bool_t TAITactNtuCluster::CreateClusters(Int_t iSensor)
 {
    TAITntuCluster* pNtuClus = (TAITntuCluster*) fpNtuClus->Object();
    TAITcluster* cluster1    = 0x0;

@@ -32,7 +32,7 @@
 #include "TAGactTreeReader.hxx"
 #include "TAITactNtuHitMC.hxx"
 
-#include "TAITactNtuClusterF.hxx"
+#include "TAITactNtuCluster.hxx"
 #include "TAITactNtuTrackF.hxx"
 
 #endif
@@ -42,7 +42,7 @@ TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter*   outFile     = 0x0;
 TAGactTreeReader*   itActReader = 0x0;
 TAITactNtuHitMC*    itActRaw    = 0x0;
-TAITactNtuClusterF* itActClus   = 0x0;
+TAITactNtuCluster* itActClus   = 0x0;
 TAITactNtuTrackF*   itActTrck   = 0x0;
 
 void FillInnerTracker(Int_t runNumber)
@@ -76,7 +76,7 @@ void FillInnerTracker(Int_t runNumber)
    itActRaw= new TAITactNtuHitMC("itActNtu", itMc, itEve, itNtu, itGeo);
    itActRaw->CreateHistogram();
 
-   itActClus =  new TAITactNtuClusterF("itActClus", itNtu, itClus, itConf, itGeo);
+   itActClus =  new TAITactNtuCluster("itActClus", itNtu, itClus, itConf, itGeo);
    itActClus->CreateHistogram();
 
    itActTrck = new TAITactNtuTrackF("itActTrck", itClus, itTrck, itConf, itGeo, 0x0, tgGeo);

@@ -17,7 +17,7 @@
 
 #pragma link C++ class TAITntuCluster+;
 #pragma link C++ class TAITcluster+;
-#pragma link C++ class TAITactNtuClusterF+;
+#pragma link C++ class TAITactNtuCluster+;
 #pragma link C++ class TAITactNtuClusterMT+;
 
 #pragma link C++ class TAITtrack+;
