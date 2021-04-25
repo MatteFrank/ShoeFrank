@@ -722,7 +722,7 @@ void BaseReco::CreateRecActionVtx()
    if (fM28ClusMtFlag)
       fActClusVtx   = new TAVTactNtuClusterMT("vtActClus", fpNtuHitVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
    else
-      fActClusVtx   = new TAVTactNtuClusterF("vtActClus", fpNtuHitVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
+      fActClusVtx   = new TAVTactNtuCluster("vtActClus", fpNtuHitVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
 
    if (fFlagHisto)
       fActClusVtx->CreateHistogram();

@@ -58,7 +58,7 @@
 
 #include "TAGactionFile.hxx"
 
-#include "TAVTactNtuClusterF.hxx"
+#include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuClusterMT.hxx"
 #include "TAITactNtuClusterF.hxx"
 #include "TAITactNtuClusterMT.hxx"

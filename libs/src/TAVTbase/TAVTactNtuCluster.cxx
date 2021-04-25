@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAVTactNtuClusterF.cxx $
- \brief   Implementation of TAVTactNtuClusterF.
+ \version $Id: TAVTactNtuCluster.cxx $
+ \brief   Implementation of TAVTactNtuCluster.
  */
 #include "TClonesArray.h"
 #include "TH1F.h"
@@ -14,18 +14,18 @@
 #include "TAVTparConf.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
-#include "TAVTactNtuClusterF.hxx"
+#include "TAVTactNtuCluster.hxx"
 
 /*!
- \class TAVTactNtuClusterF 
- \brief NTuplizer for vertex raw hits. **
+ \class TAVTactNtuCluster 
+ \brief NTuplizer for vertex clusters. **
  */
 
-ClassImp(TAVTactNtuClusterF);
+ClassImp(TAVTactNtuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAVTactNtuClusterF::TAVTactNtuClusterF(const char* name, 
+TAVTactNtuCluster::TAVTactNtuCluster(const char* name, 
 									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus,
 									 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
 : TAVTactBaseNtuCluster(name, pConfig, pGeoMap),
@@ -38,14 +38,14 @@ TAVTactNtuClusterF::TAVTactNtuClusterF(const char* name,
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAVTactNtuClusterF::~TAVTactNtuClusterF()
+TAVTactNtuCluster::~TAVTactNtuCluster()
 {
    
 }
 
 //______________________________________________________________________________
 //
-Bool_t TAVTactNtuClusterF::Action()
+Bool_t TAVTactNtuCluster::Action()
 {
    TAVTntuHit* pNtuHit  = (TAVTntuHit*) fpNtuRaw->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
@@ -66,7 +66,7 @@ Bool_t TAVTactNtuClusterF::Action()
 
 //______________________________________________________________________________
 //  
-Bool_t TAVTactNtuClusterF::FindClusters(Int_t iSensor)
+Bool_t TAVTactNtuCluster::FindClusters(Int_t iSensor)
 {
    // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
    // Look in a iterative way to next neighbour
@@ -80,7 +80,7 @@ Bool_t TAVTactNtuClusterF::FindClusters(Int_t iSensor)
 
 //______________________________________________________________________________
 //
-Bool_t TAVTactNtuClusterF::CreateClusters(Int_t iSensor)
+Bool_t TAVTactNtuCluster::CreateClusters(Int_t iSensor)
 {
    TAVTntuCluster* pNtuClus = (TAVTntuCluster*) fpNtuClus->Object();
    TAVTcluster* cluster1    = 0x0;

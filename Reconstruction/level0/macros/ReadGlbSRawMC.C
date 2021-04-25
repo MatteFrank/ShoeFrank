@@ -35,7 +35,7 @@
 #include "TAGcampaignManager.hxx"
 #include "TAGactTreeReader.hxx"
 #include "TAVTactNtuHitMC.hxx"
-#include "TAVTactNtuClusterF.hxx"
+#include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuTrackF.hxx"
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
@@ -97,7 +97,7 @@ TAGdataDsc*         vtEve       = 0x0;
 TAGdataDsc*         vtTrck      = 0x0;
 TAGdataDsc*         vtVtx       = 0x0;
 TAVTactNtuHitMC*    vtActNtu    = 0x0;
-TAVTactNtuClusterF* vtActClus   = 0x0;
+TAVTactNtuCluster* vtActClus   = 0x0;
 TAVTactNtuTrackF*   vtActTrck   = 0x0;
 TAVTactNtuVertex*   vtActVtx    = 0x0;
 
@@ -160,7 +160,7 @@ void FillMCVertex(Int_t runNumber) {
    vtActReader->SetupBranch(vtEve,TAMCntuPart::GetBranchName());
    
    vtActNtu  = new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
-   vtActClus = new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
+   vtActClus = new TAVTactNtuCluster("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
    vtActTrck = new TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);
    vtActVtx  = new TAVTactNtuVertex("vtActVtx", vtTrck, vtVtx, vtConf, vtGeo, tgGeo);
 }

@@ -41,7 +41,7 @@
 #pragma link C++ class TAVTactNtuClusterMT+;
 #pragma link C++ class TAVTactBaseNtuClusterMT+;
 #pragma link C++ class TAVTactBaseNtuCluster+;
-#pragma link C++ class TAVTactNtuClusterF+;
+#pragma link C++ class TAVTactNtuCluster+;
 
 #pragma link C++ class TAVTntuTrack+;
 #pragma link C++ class TAVTbaseTrack+;
