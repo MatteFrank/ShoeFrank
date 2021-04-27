@@ -83,7 +83,8 @@ Bool_t TAMSDdigitizerG::Process( Double_t edep, Double_t x0, Double_t y0, Double
    smear = gRandom->Gaus(0, fCstWidthParErr);
    fFuncClusterWidth->SetParameter(0, fCstWidthPar+smear);
    
-   fClusterWidth = fFuncClusterWidth->Eval(deltaE, Z);
+   fClusterWidth = TMath::Nint(fFuncClusterWidth->GetRandom());
+   
    if (fClusterWidth <= 0) fClusterWidth = 0.8;
 
    if(FootDebugLevel(1)) {
