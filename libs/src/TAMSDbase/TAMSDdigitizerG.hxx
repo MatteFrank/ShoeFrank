@@ -99,7 +99,6 @@ private:
    Double_t     fTotThres;        // threshold factor for Time over threshold
    
    Int_t        fStripsN;         // number of strips
-   Int_t        fStrips;          // current number of strips
    Float_t      fPitch;           // pitch
 
 private:

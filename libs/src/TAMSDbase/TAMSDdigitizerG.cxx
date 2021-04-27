@@ -89,7 +89,7 @@ Bool_t TAMSDdigitizerG::Process( Double_t edep, Double_t x0, Double_t y0, Double
 
    if(FootDebugLevel(1)) {
       printf("\nnext hit:\n");
-      printf("eloss %6.1f pixels %d\n", deltaE, fStrips);
+      printf("eloss %6.1f width %.0f\n", deltaE, fClusterWidth);
    }
    
    if (fgSmearFlag) {
@@ -122,7 +122,7 @@ Bool_t TAMSDdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, 
    Int_t strip = GetStrip(pos);
    
    if(FootDebugLevel(1))
-      printf("%d %d\n", fStrips, strip);
+      printf("Seed strip %d\n", strip);
    
    // choose the cluster version
    Int_t reg     = GetRegion(pos);
@@ -230,7 +230,7 @@ Int_t TAMSDdigitizerG::GetRegion(Float_t pos) const
    else if (rem > 0.33 && rem < 0.66)
       return 5;
    else if (rem > 0.66)
-      return 10;
+      return 1;
    else
       return -99;
 }
