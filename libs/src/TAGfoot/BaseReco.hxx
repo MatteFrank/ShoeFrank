@@ -159,17 +159,17 @@ public:
    void SetRunNumber(Int_t run)                { fRunNumber = run; }
 
    // Enable global
-   void EnableTree()      { fFlagTree = true;    }
-   void DisableTree()     { fFlagTree = false;   }
+   void EnableTree()           { fFlagTree = true;        }
+   void DisableTree()          { fFlagTree = false;       }
    
-   void EnableSaveHits()  { fFlagHits = true;    }
-   void DisableSaveHits() { fFlagHits = false;   }
+   void EnableSaveHits()       { fFlagHits = true;        }
+   void DisableSaveHits()      { fFlagHits = false;       }
 
-   void EnableHisto()     { fFlagHisto = true;   }
-   void DisableHisto()    { fFlagHisto = false;  }
+   void EnableHisto()          { fFlagHisto = true;       }
+   void DisableHisto()         { fFlagHisto = false;      }
    
-   void EnableTracking()  { fFlagTrack = true;   }
-   void DisableTracking() { fFlagTrack = false;  }
+   void EnableTracking()       { fFlagTrack = true;       }
+   void DisableTracking()      { fFlagTrack = false;      }
    
    void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;  }
    void DisableTWcalibPerBar() { fFlagTWbarCalib = false; }
@@ -180,15 +180,19 @@ public:
    void EnableZrecWithPUoff()  { fFlagZrecPUoff = true;   }
    void DisableZrecWithPUoff() { fFlagZrecPUoff = false;  }
   
-   void EnableTWZmatch()  { fFlagZmatch_TW = true;   }
-   void DisableTWZmatch() { fFlagZmatch_TW = false;  }
+   void EnableTWZmatch()       { fFlagZmatch_TW = true;   }
+   void DisableTWZmatch()      { fFlagZmatch_TW = false;  }
     
-    void EnableRecCutter()  { fFlagRecCutter = true;   }
-    void DisableRecCutter() { fFlagRecCutter = false;  }
+   void EnableRecCutter()      { fFlagRecCutter = true;   }
+   void DisableRecCutter()     { fFlagRecCutter = false;  }
 
    void DisableM28ClusMT()     { fM28ClusMtFlag = false;  }
    void EnableM28lusMT()       { fM28ClusMtFlag = true;   }
    Bool_t IsM28ClusMT()        { return fM28ClusMtFlag;   }
+   
+   void DisableReadL0Hits()    { fReadL0Hits = false;     }
+   void EnableReadL0Hits()     { fReadL0Hits = true;      }
+   Bool_t IsReadL0Hits()       { return fReadL0Hits;      }
 
    // Flag for MC data
    Bool_t IsMcData()           { return fFlagMC;          }
@@ -222,7 +226,7 @@ public:
    TAGdataDsc*          GetDscVertexVtx()   const { return fpNtuVtx;                                 }
    
    TAITntuCluster*      GetNtuClusterIt()   const { return (TAITntuCluster*)fpNtuClusIt->Object();   }
-   TAITntuTrack*        GetNtuTrackIt()     const { return (TAITntuTrack*)fpNtuTrackIt->Object();   }
+   TAITntuTrack*        GetNtuTrackIt()     const { return (TAITntuTrack*)fpNtuTrackIt->Object();    }
 
    TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
    
@@ -235,17 +239,17 @@ public:
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
-   //! MC container Getter (virtual)
-   virtual TAMCntuRegion* GetNtuMcReg()     const { return 0x0; }
-   virtual TAMCntuEvent*  GetNtuMcEvt()     const { return 0x0; }
-   virtual TAMCntuPart*   GetNtuMcTrk()     const { return 0x0; }
-   virtual TAMCntuHit*    GetNtuMcSt()      const { return 0x0; }
-   virtual TAMCntuHit*    GetNtuMcBm()      const { return 0x0; }
-   virtual TAMCntuHit*    GetNtuMcVtx()     const { return 0x0; }
-   virtual TAMCntuHit*    GetNtuMcIt()      const { return 0x0; }
-   virtual TAMCntuHit*    GetNtuMcMsd()     const { return 0x0; }
-   virtual TAMCntuHit*    GetNtuMcTw()      const { return 0x0; }
-   virtual TAMCntuHit*    GetNtuMcCa()      const { return 0x0; }
+   //! MC container Getter
+   TAMCntuEvent*        GetNtuMcEvt()       const { return (TAMCntuEvent*)fpNtuMcEvt->Object();      }
+   TAMCntuPart*         GetNtuMcTrk()       const { return (TAMCntuPart*)fpNtuMcTrk->Object();       }
+   TAMCntuRegion*       GetNtuMcReg()       const { return (TAMCntuRegion*)fpNtuMcReg->Object();     }
+   TAMCntuHit*          GetNtuMcSt()        const { return (TAMCntuHit*)fpNtuMcSt->Object();         }
+   TAMCntuHit*          GetNtuMcBm()        const { return (TAMCntuHit*)fpNtuMcBm->Object();         }
+   TAMCntuHit*          GetNtuMcVtx()       const { return (TAMCntuHit*)fpNtuMcVt->Object();         }
+   TAMCntuHit*          GetNtuMcIt()        const { return (TAMCntuHit*)fpNtuMcIt->Object();         }
+   TAMCntuHit*          GetNtuMcMsd()       const { return (TAMCntuHit*)fpNtuMcMsd->Object();        }
+   TAMCntuHit*          GetNtuMcTw()        const { return (TAMCntuHit*)fpNtuMcTw->Object();         }
+   TAMCntuHit*          GetNtuMcCa()        const { return (TAMCntuHit*)fpNtuMcCa->Object();         }
   
 public:
    //! Disable/Enable ITR tracking
@@ -351,29 +355,28 @@ protected:
    TACAactNtuCluster*    fActClusCa;    // action for clusters
 
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
-   TATOEbaseCutter*          fActRecCutter;     //action to determine optimal cuts for TOE given geometry
+   TATOEbaseCutter*      fActRecCutter;     //action to determine optimal cuts for TOE given geometry
     
    TAGactNtuGlbTrackS*   fActGlbTrackS;     // action for straight tracks
   
    GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
    TAGactKFitter*         fActGlbkFitter;    // Global tracking kalman Fitter
 
-   
-   Bool_t                fFlagOut;       // flag for output file
-   Bool_t                fFlagTree;      // flag to save in tree
-   Bool_t                fFlagHits;      // flag to save hits in tree
-   Bool_t                fFlagHisto;     // flag for histo generatiom
-   Bool_t                fFlagTrack;     // flag for tracking
-   Bool_t                fFlagTWbarCalib; // flag for TW calibration per Bar
-   TString               fgTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory)
-   Bool_t                fFlagZtrueMC;      // Z true MC flag
-   Bool_t                fFlagZrecPUoff;    // Z rec TW PU off flag
-   Bool_t                fFlagZmatch_TW;    // TW Z match
+   Bool_t                fFlagOut;         // flag for output file
+   Bool_t                fFlagTree;        // flag to save in tree
+   Bool_t                fFlagHits;        // flag to save hits in tree
+   Bool_t                fFlagHisto;       // flag for histo generatiom
+   Bool_t                fFlagTrack;       // flag for tracking
+   Bool_t                fFlagTWbarCalib;  // flag for TW calibration per Bar
+   TString               fgTrackingAlgo;   // tracking algorithm ("std" with BM, "Full" combinatory)
+   Bool_t                fFlagZtrueMC;     // Z true MC flag
+   Bool_t                fFlagZrecPUoff;   // Z rec TW PU off flag
+   Bool_t                fFlagZmatch_TW;   // TW Z match
 
-   Bool_t                fFlagMC;        // MC flag
-   Bool_t                fM28ClusMtFlag; // flag for multi-threading clustering
-
-   Bool_t                fFlagRecCutter;
+   Bool_t                fFlagMC;          // MC flag
+   Bool_t                fReadL0Hits;      // read back hits
+   Bool_t                fM28ClusMtFlag;   // flag for multi-threading clustering
+   Bool_t                fFlagRecCutter;   // cutter flag for TOE Glb reco
     
  protected:
    void CreateRecActionBm();

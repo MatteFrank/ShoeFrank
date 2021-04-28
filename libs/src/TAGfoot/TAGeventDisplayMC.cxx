@@ -8,6 +8,7 @@
 
 #include "TAGrecoManager.hxx"
 #include "LocalRecoMC.hxx"
+#include "GlobalToeReco.hxx"
 
 ClassImp(TAGeventDisplayMC)
 
@@ -82,13 +83,21 @@ TAGeventDisplayMC::~TAGeventDisplayMC()
 //__________________________________________________________
 void TAGeventDisplayMC::SetLocalReco()
 {
+   Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+   Bool_t mc    = true;
+
    if (fType == 1) {
      Warning("SetLocalReco", "Old interface for Fluka Structure not supported anymore, switch to new");
      fType = 2;
    }
-   if (fType == 2)
-      fReco = new LocalRecoMC(fExpName);
-   else
+   
+   if (fType == 2) {
+      if (lrc) {
+         fReco = new GlobalToeReco(fExpName, fRunNumber, "","",  mc);
+         fReco->EnableReadL0Hits();
+      } else
+         fReco = new LocalRecoMC(fExpName, fRunNumber);
+   } else
       Error("SetLocalReco()", "Unknown type %d", fType);
    
    fReco->DisableTree();

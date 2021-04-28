@@ -61,22 +61,10 @@ public:
    //! Goto Event
    virtual Bool_t GoEvent(Int_t iEvent);
 
-   //! MC container Getter
-   TAMCntuEvent*  GetNtuMcEvt() const { return (TAMCntuEvent*)fpNtuMcEvt->Object(); }
-   TAMCntuPart*  GetNtuMcTrk() const { return (TAMCntuPart*)fpNtuMcTrk->Object(); }
-   TAMCntuRegion* GetNtuMcReg() const { return (TAMCntuRegion*)fpNtuMcReg->Object();}
-   TAMCntuHit*    GetNtuMcSt()  const { return (TAMCntuHit*)fpNtuMcSt->Object();   }
-   TAMCntuHit*    GetNtuMcBm()  const { return (TAMCntuHit*)fpNtuMcBm->Object();   }
-   TAMCntuHit*    GetNtuMcVtx() const { return (TAMCntuHit*)fpNtuMcVt->Object();   }
-   TAMCntuHit*    GetNtuMcIt()  const { return (TAMCntuHit*)fpNtuMcIt->Object();   }
-   TAMCntuHit*    GetNtuMcMsd() const { return (TAMCntuHit*)fpNtuMcMsd->Object();  }
-   TAMCntuHit*    GetNtuMcTw()  const { return (TAMCntuHit*)fpNtuMcTw->Object();   }
-   TAMCntuHit*    GetNtuMcCa()  const { return (TAMCntuHit*)fpNtuMcCa->Object();   }
-
 protected:
    EVENT_STRUCT*         fEvtStruct;
   
-   TAMCactNtuPart*      fActNtuMcTrk;
+   TAMCactNtuPart*       fActNtuMcTrk;
    TAMCactNtuRegion*     fActNtuMcReg;
    TAMCactNtuEvent*      fActNtuMcEvt;
    TASTactNtuHitMC*      fActNtuHitSt;  // action for ntu data
@@ -87,14 +75,6 @@ protected:
    TATWactNtuHitMC*      fActNtuHitTw;  // action for ntu data
    TACAactNtuHitMC*      fActNtuHitCa;  // action for ntu data
   
-   TAGdataDsc*           fpNtuMcSt;    // input data dsc
-   TAGdataDsc*           fpNtuMcBm;    // input data dsc
-   TAGdataDsc*           fpNtuMcVt;    // input data dsc
-   TAGdataDsc*           fpNtuMcIt;    // input data dsc
-   TAGdataDsc*           fpNtuMcMsd;    // input data dsc
-   TAGdataDsc*           fpNtuMcTw;    // input data dsc
-   TAGdataDsc*           fpNtuMcCa;    // input data dsc
-   
    TAGactTreeReader*     fActEvtReader; // file for MC
 
    ClassDef(LocalRecoMC, 1); // Base class for event display
