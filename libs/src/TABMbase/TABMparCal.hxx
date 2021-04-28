@@ -18,6 +18,7 @@
 #include "TAGpara.hxx"
 #include "TAGparTools.hxx"
 #include "TAGrecoManager.hxx"
+#include "TABMparMap.hxx"
 
 
 //##############################################################################
@@ -43,6 +44,15 @@ class TABMparCal : public TAGparTools {
     void        CoutT0();
     void        ResetT0(){fill(fT0Vec.begin(), fT0Vec.end(),-10000);};
 
+    //Adc pedestals
+    void        PrintAdc(TString , TString, Long64_t);
+    Bool_t      LoadAdc(TString inputname, TABMparMap *p_bmmap);
+    void        ResetAdc(Int_t size){fAdcPedVec.clear(); fAdcPedVec.resize(size,make_pair(0,0));};
+    void        SetAdc(Int_t cha, Float_t ped, Float_t dev){fAdcPedVec.at(cha)=make_pair(ped,dev);};
+    Float_t     GetAdcPed(Int_t cha){return fAdcPedVec.at(cha).first;};
+    Float_t     GetAdcDevStd(Int_t cha){return fAdcPedVec.at(cha).second;};
+    void        CoutAdc();
+
     //others
     Bool_t    FromFile(const TString& name);//read the calibration file
     Double_t  STrelEval(Float_t tdrift) {return fpSTrel->Eval(tdrift);};
@@ -59,9 +69,10 @@ class TABMparCal : public TAGparTools {
     ClassDef(TABMparCal,1)
 
   private:
-    vector<Float_t>  fT0Vec;             //T0 in ns
-    TF1             *fpResoFunc;         //space resolution function
-    TF1             *fpSTrel;            //Space time relation
+    vector<Float_t>  fT0Vec;                   //T0 in ns
+    vector<pair<Float_t,Float_t>>  fAdcPedVec;  //Adc pedestals, adc devstd
+    TF1             *fpResoFunc;               //space resolution function
+    TF1             *fpSTrel;                  //Space time relation
 };
 
 #endif

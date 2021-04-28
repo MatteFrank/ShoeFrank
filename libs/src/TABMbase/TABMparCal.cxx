@@ -47,38 +47,9 @@ TABMparCal::~TABMparCal(){
   delete fpSTrel;
 }
 
-void TABMparCal::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
-  ofstream outfile;
-  outfile.open(output_filename.Data(),ios::out);
-  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<endl<<endl;
-  for(Int_t i=0;i<36;i++)
-    outfile<<"cellid= "<<i<<"  T0_time= "<<fT0Vec[i]<<endl;
-  outfile<<endl;
-  outfile.close();
-  return;
-}
-
-void TABMparCal::PrintResoStrel(TString output_filename){
-  ofstream outfile;
-  outfile.open(output_filename.Data(),ios::app);
-  outfile<<"Resolution_function:  "<<fpResoFunc->GetFormula()->GetExpFormula().Data()<<endl;
-  outfile<<"Resolution_number_of_parameters:  "<<fpResoFunc->GetNpar()<<endl;
-  for(Int_t i=0;i<fpResoFunc->GetNpar();i++)
-    outfile<<fpResoFunc->GetParameter(i)<<"   ";
-  outfile<<endl<<endl;
-  outfile<<"STrel_function:  "<<fpSTrel->GetFormula()->GetExpFormula().Data()<<endl;
-  outfile<<"STrel_number_of_parameters:  "<<fpSTrel->GetNpar()<<endl;
-  for(Int_t i=0;i<fpSTrel->GetNpar();i++)
-    outfile<<fpSTrel->GetParameter(i)<<"   ";
-  outfile<<endl;
-  outfile.close();
-  return;
-}
-
 
 Bool_t TABMparCal::FromFile(const TString& inputname) {
   ifstream infile;
-
   TString filename;
 
   if (inputname.IsNull()){
@@ -97,7 +68,7 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
   }
   char tmp_char[200];
   vector<Float_t> fileT0(36,-10000.);
-  Int_t tmp_int=-1, status=0;
+  Int_t tmp_int=-1;
   infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char;
 
   for(Int_t i=0;i<36;i++){
@@ -165,6 +136,18 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
   return kFALSE;
 }
 
+//********************************** T0 ********************************
+
+void TABMparCal::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
+  ofstream outfile;
+  outfile.open(output_filename.Data(),ios::out);
+  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<endl<<endl;
+  for(Int_t i=0;i<36;i++)
+    outfile<<"cellid= "<<i<<"  T0_time= "<<fT0Vec[i]<<endl;
+  outfile<<endl;
+  outfile.close();
+  return;
+}
 
 
 void TABMparCal::SetT0s(vector<Float_t> t0s) {
@@ -197,6 +180,116 @@ void TABMparCal::CoutT0(){
   cout<<endl;
 }
 
+//********************************** ADC ********************************
+Bool_t TABMparCal::LoadAdc(TString inputname, TABMparMap *p_bmmap){
+  ifstream infile;
+  TString filename;
+  ResetAdc(p_bmmap->GetAdcMaxCh());
+
+  if (inputname.IsNull()){
+    cout<<"ERROR in TABMparCal::LoadAdc:: the input filename is Null, please add a file name!"<<endl;
+    return kTRUE;
+  }else
+    filename = inputname;
+
+  Info("LoadAdc", "Loading BM Adc pedestals from file: %s\n", filename.Data());
+
+  gSystem->ExpandPathName(filename);
+  infile.open(filename,ios::in);
+  if(infile.is_open()==kFALSE){
+    cout<<"TABMparCal::ERROR: Cannot open Adc Pedestals file: "<<filename<<endl;
+    return kTRUE;
+  }
+
+  char tmp_char[200];
+  Int_t channel=-1;
+  Float_t mean, stddev;
+  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char;
+
+  for(Int_t i=0;i<p_bmmap->GetAdcMaxCh();i++){
+    if(!infile.eof() && channel==i-1){
+      infile>>tmp_char>>channel>>tmp_char>>mean>>tmp_char>>stddev;
+      fAdcPedVec.at(channel)=make_pair(mean,stddev);
+    }else{
+      cout<<"TABMparCal::LoadAdc::Error in the Adc file "<<filename<<"!!!!!! check if it is write properly"<<endl;
+      infile.close();
+      return kTRUE;
+      }
+  }
+
+  //check if the Adc are ok
+  if(FootDebugLevel(1))
+    CoutAdc();
+
+  return kFALSE;
+}
+
+void TABMparCal::PrintAdc(TString output_filename, TString input_filename, Long64_t tot_num_ev){
+  ofstream outfile;
+  outfile.open(output_filename.Data(),ios::out);
+  outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<endl<<endl;
+  for(Int_t i=0;i<fAdcPedVec.size();i++)
+    outfile<<"adc_cha= "<<i<<"  pedestal= "<<fAdcPedVec[i].first<<"  devstd= "<<fAdcPedVec[i].second<<endl;
+  outfile<<endl;
+  outfile.close();
+  return;
+}
+
+void TABMparCal::CoutAdc(){
+  cout<<"Print BM ADC pedestals:"<<endl;
+  for(Int_t i=0;i<fAdcPedVec.size();i++)
+    cout<<"adc_channel= "<<i<<"  pedestal= "<<fAdcPedVec[i].first<<"   devstd="<<fAdcPedVec[i].second<<endl;
+  cout<<endl;
+}
+
+
+//********************************** STREL AND RESOLUTION ********************************
+
+void TABMparCal::PrintResoStrel(TString output_filename){
+  ofstream outfile;
+  outfile.open(output_filename.Data(),ios::app);
+  outfile<<"Resolution_function:  "<<fpResoFunc->GetFormula()->GetExpFormula().Data()<<endl;
+  outfile<<"Resolution_number_of_parameters:  "<<fpResoFunc->GetNpar()<<endl;
+  for(Int_t i=0;i<fpResoFunc->GetNpar();i++)
+    outfile<<fpResoFunc->GetParameter(i)<<"   ";
+  outfile<<endl<<endl;
+  outfile<<"STrel_function:  "<<fpSTrel->GetFormula()->GetExpFormula().Data()<<endl;
+  outfile<<"STrel_number_of_parameters:  "<<fpSTrel->GetNpar()<<endl;
+  for(Int_t i=0;i<fpSTrel->GetNpar();i++)
+    outfile<<fpSTrel->GetParameter(i)<<"   ";
+  outfile<<endl;
+  outfile.close();
+  return;
+}
+
+
+void TABMparCal::ResetStrelFunc(){
+  delete fpSTrel;
+  fpSTrel=new TF1("McStrel","0.00773*x -5.169244e-05*x*x + 1.89286e-07*x*x*x -2.465242e-10*x*x*x*x", 0., 330.);
+}
+
+void TABMparCal::SetResoFunc(TF1* inreso){
+  delete fpResoFunc;
+  fpResoFunc=(TF1*)(inreso->Clone("bmResoFunc"));
+}
+
+void TABMparCal::SetSTrelFunc(TF1* instrel){
+  delete fpSTrel;
+  fpSTrel=(TF1*)(instrel->Clone("bmParSTrel"));
+}
+
+Double_t TABMparCal:: GetTimeFromRDrift(Double_t rdrift){
+  return (rdrift<=0.8) ? fpSTrel->GetX(rdrift) : (rdrift+1.156)/0.006;
+}
+
+/*------------------------------------------+---------------------------------*/
+//! ostream insertion.
+
+void TABMparCal::ToStream(ostream& os, Option_t*) const
+{
+  os << "TABMparCal " << GetName() << endl;
+  return;
+}
 
 //------------------------------------------+-----------------------------------
 //! Clear geometry info.
@@ -211,38 +304,5 @@ void TABMparCal::Clear(Option_t*)
   fT0Vec = myt0s;
   fpResoFunc=new TF1("bmResoFunc","0.0245237+0.106748*x+0.229201*x*x-24.0304*x*x*x+183.529*x*x*x*x-619.259*x*x*x*x*x+1080.97*x*x*x*x*x*x-952.989*x*x*x*x*x*x*x+335.937*x*x*x*x*x*x*x*x",0.,0.8);
   fpSTrel=new TF1("McStrel","0.00773*x -5.1692440e-05*x*x + 1.8928600e-07*x*x*x -2.4652420e-10*x*x*x*x", 0., 350.);
-  return;
-}
-
-/*------------------------------------------+---------------------------------*/
-
-void TABMparCal::ResetStrelFunc(){
-  delete fpSTrel;
-  fpSTrel=new TF1("McStrel","0.00773*x -5.169244e-05*x*x + 1.89286e-07*x*x*x -2.465242e-10*x*x*x*x", 0., 330.);
-}
-
-/*------------------------------------------+---------------------------------*/
-void TABMparCal::SetResoFunc(TF1* inreso){
-  delete fpResoFunc;
-  fpResoFunc=(TF1*)(inreso->Clone("bmResoFunc"));
-}
-
-/*------------------------------------------+---------------------------------*/
-void TABMparCal::SetSTrelFunc(TF1* instrel){
-  delete fpSTrel;
-  fpSTrel=(TF1*)(instrel->Clone("bmParSTrel"));
-}
-
-/*------------------------------------------+---------------------------------*/
-Double_t TABMparCal:: GetTimeFromRDrift(Double_t rdrift){
-  return (rdrift<=0.8) ? fpSTrel->GetX(rdrift) : (rdrift+1.156)/0.006;
-}
-
-/*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
-void TABMparCal::ToStream(ostream& os, Option_t*) const
-{
-  os << "TABMparCal " << GetName() << endl;
   return;
 }

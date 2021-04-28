@@ -30,15 +30,22 @@ class TABMactVmeReader : public TAGaction {
     virtual  void   CreateHistogram();
     //~ virtual Bool_t  Action();
 
-    void EvaluateT0time();
+    void EvaluateT0time();        //used in CalibrateBm
+    void EvaluateAdcPedestals();  //used in CalibrateBm
+
+    //getters
+    BM_struct*  GetEvtStruct(){return fpEvtStruct;};
+    vector<TH1F*> GetRawTdc(){return fpRawTdcMeas;};
+    vector<TH1F*> GetTdcLessSync(){return fpRawTdcLessSync;};
+    vector<TH1F*> GetRawSca(){return fpRawSca;};
+    vector<TH1F*> GetRawAdc(){return fpRawAdc;};
+    vector<TH1F*> GetAdcLessPed(){return fpAdcLessPed;};
 
     //BM standalone reader methods
     void ClearBmstruct(Bool_t forced);
     Bool_t ReadEvent(Bool_t evt0);
     void PrintBMstruct();
     void MonitorQDC(vector<Int_t>& adc792_words);
-
-
 
     ClassDef(TABMactVmeReader,0)
 
@@ -56,10 +63,14 @@ class TABMactVmeReader : public TAGaction {
 
     //histos
     TH1I*            fpRawError;        //BM hit channel error
-    TH1I*            fpRawTdcChannel;   //TDC signal distribution
     TH1I*            fpRawTrigTime;     //Trigger time
-    std::vector<TH1F*> fpRawTdcMeas;    //vector of tdc channel measurements
-    std::vector<TH1F*> fpRawTdcLessSync;    //vector of tdc channel measurements
+    TH1I*            fpRawTdcChannel;   //TDC signal distribution
+    TH1I*            fpRawAdcAccDisc;   //Adc overflow check
+    vector<TH1F*> fpRawTdcMeas;         //vector of tdc channel raw measurements
+    vector<TH1F*> fpRawTdcLessSync;     //vector of tdc channel meas -  sync meas
+    vector<TH1F*> fpRawSca;             //vector of scaler channel measurements
+    vector<TH1F*> fpRawAdc;             //vector of adc  channel measurements
+    vector<TH1F*> fpAdcLessPed;      //vector of adc  channel - pedestals
 };
 
 #endif
