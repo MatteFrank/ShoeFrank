@@ -84,7 +84,7 @@ TAGeventDisplayMC::~TAGeventDisplayMC()
 void TAGeventDisplayMC::SetLocalReco()
 {
    Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
-   Bool_t mc    = true;
+   Bool_t mc  = true;
 
    if (fType == 1) {
      Warning("SetLocalReco", "Old interface for Fluka Structure not supported anymore, switch to new");
@@ -100,18 +100,7 @@ void TAGeventDisplayMC::SetLocalReco()
    } else
       Error("SetLocalReco()", "Unknown type %d", fType);
    
-   fReco->DisableTree();
-   fReco->DisableSaveHits();
-   fReco->EnableHisto();
-   
-   if (fgTrackFlag) {
-      fReco->SetVtxTrackingAlgo(fgVtxTrackingAlgo[0]);
-      fReco->EnableTracking();
-   }
-   
-   fpFootGeo = fReco->GetGeoTrafo();
-  
-   gTAGroot->SetRunNumber(fRunNumber);
+   SetRecoOptions();
 }
 
 //__________________________________________________________
