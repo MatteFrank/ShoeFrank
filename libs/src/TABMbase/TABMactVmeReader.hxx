@@ -30,11 +30,27 @@ class TABMactVmeReader : public TAGaction {
     virtual  void   CreateHistogram();
     //~ virtual Bool_t  Action();
 
-    void EvaluateT0time();        //used in CalibrateBm
-    void EvaluateAdcPedestals();  //used in CalibrateBm
+    //used in CalibrateBm
+    void EvaluateT0time();
+    void EvaluateAdcPedestals();
+
+    //setters
+    void SetAdcSize(Int_t adc){adc792.resize(adc,make_pair(-1000,-1000));return;};
+    void SetScaSize(Int_t sca){sca830.resize(sca,make_pair(0,0));return;};
 
     //getters
     BM_struct*  GetEvtStruct(){return fpEvtStruct;};
+    Int_t  GetSizeTdcEv(){return tdc_event.size();};
+    Int_t  GetSizeTdcSync(){return tdc_sync.size();};
+    Int_t  GetSizeTdcMeas(){return tdc_meas.size();};
+    Int_t  GetSizeSca(){return sca830.size();};
+    Int_t  GetSizeAdc(){return adc792.size();};
+    pair<Int_t,Int_t>  GetTdcEv(Int_t i){return tdc_event.at(i);};
+    Int_t  GetTdcSync(Int_t i){return tdc_sync.at(i);};
+    pair<Int_t,Int_t>  GetTdcMeas(Int_t i){return tdc_meas.at(i);};
+    pair<Int_t,Int_t>  GetScaMeas(Int_t i){return sca830.at(i);};
+    pair<Int_t,Int_t>  GetAdcMeas(Int_t i){return adc792.at(i);};
+
     vector<TH1F*> GetRawTdc(){return fpRawTdcMeas;};
     vector<TH1F*> GetTdcLessSync(){return fpRawTdcLessSync;};
     vector<TH1F*> GetRawSca(){return fpRawSca;};
@@ -43,9 +59,9 @@ class TABMactVmeReader : public TAGaction {
 
     //BM standalone reader methods
     void ClearBmstruct(Bool_t forced);
-    Bool_t ReadEvent(Bool_t evt0);
-    void PrintBMstruct();
+    Bool_t ReadEvent();
     void MonitorQDC(vector<Int_t>& adc792_words);
+    void PrintBMstruct();
 
     ClassDef(TABMactVmeReader,0)
 
@@ -55,13 +71,28 @@ class TABMactVmeReader : public TAGaction {
     TAGparaDsc*     fpParMap;		    // parameter dsc
     TAGparaDsc*     fpParCal;		    // parameter dsc
     TAGparaDsc*     fpParGeo;		    // parameter dsc
-    BM_struct*      fpEvtStruct;
     ifstream        fbmfile;        //bm raw file
+
+    //data reading structure
+    BM_struct*      fpEvtStruct;               //integer t0values
+    vector<pair<Int_t,Int_t>>   tdc_event;     //first=total number of hits of the tdc, second=tdc event number
+    vector<Int_t>   tdc_sync;                  //time of the sync channel (10^-8 sec.)
+    vector<pair<Int_t,Int_t>>   tdc_meas;      //first=tdc channel, second=measurement value (10^-8 sec.)
+    vector<pair<Int_t,Int_t>>   sca830;        //first=scaler measurements defined as new count - old count, second=scaler counts
+    vector<pair<Int_t,Int_t>>   adc792;        //ADC measurement for each channel, second=ADC overflow cannel, -1000=not set, 1=overflow, 0=ok
 
     Long64_t fDataNumEv;            //current number of events
     Long64_t fDataSyncNumEv;        //current number of events + number of sync
 
     //histos
+    //BM struct histos
+    TH1I*            fpTotStatus;
+    TH1I*            fpTdcStatus;
+    TH1I*            fpScaStatus;
+    TH1I*            fpAdcStatus;
+    TH1F*            fpTimeEvtoev;
+    TH1I*            fpTimeRead;
+
     TH1I*            fpRawError;        //BM hit channel error
     TH1I*            fpRawTrigTime;     //Trigger time
     TH1I*            fpRawTdcChannel;   //TDC signal distribution
