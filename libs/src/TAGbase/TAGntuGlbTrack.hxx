@@ -21,7 +21,12 @@ using namespace std;
 #include "TAGntuPoint.hxx"
 
 class TAGtrack : public TAGobject {
-   
+public:
+    struct polynomial_fit_parameters{
+        std::array<double, 4> parameter_x;
+        std::array<double, 2> parameter_y;
+    };
+    
 public:
    
    TAGtrack();
