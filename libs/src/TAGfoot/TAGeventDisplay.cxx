@@ -32,6 +32,7 @@
 #include "TAVTntuVertex.hxx"
 
 #include "LocalReco.hxx"
+#include "GlobalToeReco.hxx"
 
 ClassImp(TAGeventDisplay)
 
@@ -62,9 +63,15 @@ TAGeventDisplay::~TAGeventDisplay()
 //__________________________________________________________
 void TAGeventDisplay::SetLocalReco()
 {
-   if (fType == 0)
-      fReco = new LocalReco(fExpName);
-   else
+   Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+   
+   if (fType == 0) {
+      if (lrc) {
+         fReco = new GlobalToeReco(fExpName, fRunNumber);
+         fReco->EnableReadL0Hits();
+      } else
+         fReco = new LocalReco(fExpName, fRunNumber);
+   } else
       Error("SetLocalReco()", "Unknown type %d", fType);
 
    fReco->DisableTree();

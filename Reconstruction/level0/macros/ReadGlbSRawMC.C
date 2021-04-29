@@ -35,7 +35,7 @@
 #include "TAGcampaignManager.hxx"
 #include "TAGactTreeReader.hxx"
 #include "TAVTactNtuHitMC.hxx"
-#include "TAVTactNtuClusterF.hxx"
+#include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuTrackF.hxx"
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
@@ -49,7 +49,7 @@
 #include "TAITntuCluster.hxx"
 
 #include "TAITactNtuHitMC.hxx"
-#include "TAITactNtuClusterF.hxx"
+#include "TAITactNtuCluster.hxx"
 
 //MSD
 #include "TAMSDparGeo.hxx"
@@ -97,7 +97,7 @@ TAGdataDsc*         vtEve       = 0x0;
 TAGdataDsc*         vtTrck      = 0x0;
 TAGdataDsc*         vtVtx       = 0x0;
 TAVTactNtuHitMC*    vtActNtu    = 0x0;
-TAVTactNtuClusterF* vtActClus   = 0x0;
+TAVTactNtuCluster* vtActClus   = 0x0;
 TAVTactNtuTrackF*   vtActTrck   = 0x0;
 TAVTactNtuVertex*   vtActVtx    = 0x0;
 
@@ -106,7 +106,7 @@ TAGparaDsc*         itGeo       = 0x0;
 TAGparaDsc*         itConf      = 0x0;
 TAGdataDsc*         itClus      = 0x0;
 TAITactNtuHitMC*    itActNtu    = 0x0;
-TAITactNtuClusterF* itActClus   = 0x0;
+TAITactNtuCluster* itActClus   = 0x0;
 
 //MSD
 TAGparaDsc*         msdGeo      = 0x0;
@@ -160,7 +160,7 @@ void FillMCVertex(Int_t runNumber) {
    vtActReader->SetupBranch(vtEve,TAMCntuPart::GetBranchName());
    
    vtActNtu  = new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
-   vtActClus = new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
+   vtActClus = new TAVTactNtuCluster("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
    vtActTrck = new TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);
    vtActVtx  = new TAVTactNtuVertex("vtActVtx", vtTrck, vtVtx, vtConf, vtGeo, tgGeo);
 }
@@ -184,7 +184,7 @@ void FillMCInnerTracker(Int_t runNumber) {
    vtActReader->SetupBranch(itMc, TAMCntuHit::GetItrBranchName());
    itActNtu= new TAITactNtuHitMC("itActNtu", itMc, vtEve, itNtu, itGeo);
    
-   itActClus = new TAITactNtuClusterF("itActClus", itNtu, itClus, itConf, itGeo);
+   itActClus = new TAITactNtuCluster("itActClus", itNtu, itClus, itConf, itGeo);
 }
 
 void FillMCMsd(Int_t runNumber) {

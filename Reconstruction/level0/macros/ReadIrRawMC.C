@@ -35,7 +35,7 @@
 #include "TAGcampaignManager.hxx"
 #include "TAGactTreeReader.hxx"
 #include "TAVTactNtuHitMC.hxx"
-#include "TAVTactNtuClusterF.hxx"
+#include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuTrackF.hxx"
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
@@ -49,7 +49,7 @@
 #include "TAITntuCluster.hxx"
 
 #include "TAITactNtuHitMC.hxx"
-#include "TAITactNtuClusterF.hxx"
+#include "TAITactNtuCluster.hxx"
 
 // IR
 #include "TAIRntuTrack.hxx"
@@ -63,7 +63,7 @@ TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter*   outFile     = 0x0;
 TAGactTreeReader*   vtActReader = 0x0;
 TAVTactNtuHitMC*    vtActRaw    = 0x0;
-TAVTactNtuClusterF* vtActClus   = 0x0;
+TAVTactNtuCluster* vtActClus   = 0x0;
 TAVTactNtuTrackF*   vtActTrck   = 0x0;
 TAVTactNtuVertex*   vtActVtx  = 0x0;
 TAGdataDsc*         vtVtx     = 0x0;
@@ -72,7 +72,7 @@ TAGparaDsc*         vtGeo     = 0x0;
 TAGdataDsc*         vtEve     = 0x0;
 
 TAITactNtuHitMC*       itActRaw  = 0x0;
-TAITactNtuClusterF* itActClus = 0x0;
+TAITactNtuCluster* itActClus = 0x0;
 
 TAIRactNtuTrack*    irActTrck = 0x0;
 
@@ -109,7 +109,7 @@ void FillMCVertex(Int_t runNumber) {
    vtActRaw= new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
    vtActRaw->CreateHistogram();
    
-   vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
+   vtActClus =  new TAVTactNtuCluster("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
    vtActClus->CreateHistogram();
    
    vtActTrck = new TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);
@@ -139,7 +139,7 @@ void FillMCInnerTracker(Int_t runNumber) {
    
    itActRaw= new TAITactNtuHitMC("itActNtu", itMc, vtEve, itNtu, itGeo);
    
-   itActClus = new TAITactNtuClusterF("itActCluster", itNtu, itClus, itConf, itGeo);
+   itActClus = new TAITactNtuCluster("itActCluster", itNtu, itClus, itConf, itGeo);
    
    TAGdataDsc* irTrck   = new TAGdataDsc("irTrack", new TAIRntuTrack());
    irActTrck = new TAIRactNtuTrack("irActTrack", itClus, vtVtx, irTrck, itConf, itGeo, vtGeo);

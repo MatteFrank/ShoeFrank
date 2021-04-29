@@ -1,53 +1,52 @@
 /*!
  \file
- \version $Id: TAVTactNtuClusterF.cxx $
- \brief   Implementation of TAVTactNtuClusterF.
+ \version $Id: TAITactNtuCluster.cxx $
+ \brief   Implementation of TAITactNtuCluster.
  */
 #include "TClonesArray.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TMath.h"
 
-#include "TAGgeoTrafo.hxx"
-
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAVTntuHit.hxx"
-#include "TAVTntuCluster.hxx"
-#include "TAVTactNtuClusterF.hxx"
+#include "TAITntuHit.hxx"
+#include "TAITntuHit.hxx"
+#include "TAITntuCluster.hxx"
+#include "TAITactNtuCluster.hxx"
 
 /*!
- \class TAVTactNtuClusterF 
+ \class TAITactNtuCluster 
  \brief NTuplizer for vertex raw hits. **
  */
 
-ClassImp(TAVTactNtuClusterF);
+ClassImp(TAITactNtuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAVTactNtuClusterF::TAVTactNtuClusterF(const char* name, 
+TAITactNtuCluster::TAITactNtuCluster(const char* name, 
 									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus,
 									 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
 : TAVTactBaseNtuCluster(name, pConfig, pGeoMap),
   fpNtuRaw(pNtuRaw),
   fpNtuClus(pNtuClus)
 {
-   AddDataIn(pNtuRaw,   "TAVTntuHit");
-   AddDataOut(pNtuClus, "TAVTntuCluster");
+   AddDataIn(pNtuRaw,   "TAITntuHit");
+   AddDataOut(pNtuClus, "TAITntuCluster");
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAVTactNtuClusterF::~TAVTactNtuClusterF()
+TAITactNtuCluster::~TAITactNtuCluster()
 {
    
 }
 
 //______________________________________________________________________________
 //
-Bool_t TAVTactNtuClusterF::Action()
+Bool_t TAITactNtuCluster::Action()
 {
-   TAVTntuHit* pNtuHit  = (TAVTntuHit*) fpNtuRaw->Object();
+   TAITntuHit* pNtuHit  = (TAITntuHit*) fpNtuRaw->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
    Bool_t ok = true;
@@ -60,18 +59,16 @@ Bool_t TAVTactNtuClusterF::Action()
    
    if(ok)
       fpNtuClus->SetBit(kValid);
-   
    return ok;
 }
 
 //______________________________________________________________________________
 //  
-Bool_t TAVTactNtuClusterF::FindClusters(Int_t iSensor)
+Bool_t TAITactNtuCluster::FindClusters(Int_t iSensor)
 {
    // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
    // Look in a iterative way to next neighbour
    
-
    FillMaps();
    SearchCluster();
  
@@ -80,17 +77,17 @@ Bool_t TAVTactNtuClusterF::FindClusters(Int_t iSensor)
 
 //______________________________________________________________________________
 //
-Bool_t TAVTactNtuClusterF::CreateClusters(Int_t iSensor)
+Bool_t TAITactNtuCluster::CreateClusters(Int_t iSensor)
 {
-   TAVTntuCluster* pNtuClus = (TAVTntuCluster*) fpNtuClus->Object();
-   TAVTcluster* cluster1    = 0x0;
+   TAITntuCluster* pNtuClus = (TAITntuCluster*) fpNtuClus->Object();
+   TAITcluster* cluster1    = 0x0;
 
    // create clusters
    for (Int_t i = 0; i< fClustersN; ++i)
       pNtuClus->NewCluster(iSensor);
    
    for (Int_t iPix = 0; iPix < fListOfPixels->GetEntries(); ++iPix) {
-      TAVThit* pixel = (TAVThit*)fListOfPixels->At(iPix);
+      TAIThit* pixel = (TAIThit*)fListOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
       if(!CheckLine(line)) continue;
@@ -102,10 +99,10 @@ Bool_t TAVTactNtuClusterF::CreateClusters(Int_t iSensor)
          cluster1->AddPixel(pixel);
       }
    }
-
+   
    // Compute position and fill clusters info
    TAVTbaseCluster* cluster = 0x0;
-
+   
    for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
       cluster = pNtuClus->GetCluster(iSensor, i);
       FillClusterInfo(iSensor, cluster);
@@ -117,12 +114,9 @@ Bool_t TAVTactNtuClusterF::CreateClusters(Int_t iSensor)
       if (!cluster->IsValid())
          pNtuClus->GetListOfClusters(iSensor)->Remove(cluster);
    }
-
-   pNtuClus->GetListOfClusters(iSensor)->Compress();
-
+   
    if (pNtuClus->GetClustersN(iSensor))
       return true;
    
    return false;
-
 }

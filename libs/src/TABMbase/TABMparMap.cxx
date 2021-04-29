@@ -26,7 +26,6 @@ ClassImp(TABMparMap);
 //! Default constructor.
 
 TABMparMap::TABMparMap() {
-  fTdcMaxCha=64;
 }
 
 //------------------------------------------+-----------------------------------
@@ -42,97 +41,108 @@ TABMparMap::~TABMparMap()
 Bool_t TABMparMap::FromFile(const TString& name, TABMparGeo *bmgeo) {
 
   Clear();
+  TString nameExp;
+  TArrayI readArrayI;
 
-  TString name_exp = name;
-  gSystem->ExpandPathName(name_exp);
+  if (name.IsNull()){
+    Error("TABMparMap::FromFile()","Input file not set!!!!");
+    return kFALSE;
+  }else
+     nameExp = name;
 
-  char bufConf[1024];
-  Int_t myArg1(-100), myArg2(-100), myArg3(-100), myArg4(-100), myArg5(-100);
+  if (!Open(nameExp)) return false;
 
-  ifstream incF;
-  incF.open(name_exp.Data());
-  if (!incF) {
-    Error("ERROR in TABMparMap::FromFile()", "failed to open file '%s'", name_exp.Data());
-    return kTRUE;
+  if(FootDebugLevel(1))
+     cout<<"TABMparMap::FromFile:: read config file from "<<nameExp.Data()<<endl<<"Now I'll printout the BM FromFile read parameters"<<endl;
+
+  //Read TDC channels
+  fTdcCha.Set(0);
+  ReadItem(fTdcCha);
+  for(int k=0;k<fTdcCha.GetSize();k++)
+    if(fTdcCha[k]==999)
+      fTdcCha[k]=-1;
+
+  //Read Scaler channels
+  fScaCha.Set(0);
+  ReadItem(fScaCha);
+  for(int k=0;k<fScaCha.GetSize();k++)
+    if(fScaCha[k]==999)
+      fScaCha[k]=-1;
+
+  //Read Adc channels
+  fAdcCha.Set(0);
+  ReadItem(fAdcCha);
+  for(int k=0;k<fAdcCha.GetSize();k++)
+    if(fAdcCha[k]==999)
+      fAdcCha[k]=-1;
+
+  //Let's do some checks on the values
+  if(fTdcCha.GetSize()<2 || fScaCha.GetSize()<1 || fAdcCha.GetSize()<1){
+    Error("TABMparMap::FromFile()","tdc, scaler and adc values not initialized");
+    cout<<"fTdcCha.GetSize()="<<fTdcCha.GetSize()<<"  fScaCha.GetSize()="<<"  fAdcCha.GetSize()="<<fAdcCha.GetSize()<<endl;
+    return kFALSE;
+  }
+  if(fTdcCha[0]<=0){
+    Error("TABMparMap::FromFile()","Tdc max number of channel not set");
+    return kFALSE;
   }
 
-  while (incF.getline(bufConf, 200, '\n')) {
-    if(strchr(bufConf,'!')) {
-      //      Info("FromFile()","Skip comment line:: %s",bufConf);
-    }else if(strchr(bufConf,'#')) {
-      sscanf(bufConf, "#%d %d %d %d %d",&myArg1,&myArg2,&myArg3,&myArg4, &myArg5);
-       if(myArg1>-1 && myArg1<fTdcMaxCha && myArg2<36 && myArg2>-1 && (myArg3>=0 || myArg3<=5) && (myArg4==1 || myArg4==0) && myArg5>-1 && myArg5<3) {
-        if(fTdc2CellVec[myArg1]<0){
-          if(bmgeo->GetBMNcell(myArg3,myArg4,myArg5)!=myArg2)
-            Error("TABMparMap::FromFile()","channel wrong channel id and identifiers!!!!");
-          else{
-            fTdc2CellVec[myArg1]=myArg2;
-            fCell2TdcVec[myArg2]=myArg1;
-          }
-        }
-        else{
-          Error("TABMparMap::FromFile()","channel already set; check config file!!");
-          return kTRUE;
-        }
-      } else {
-        Error(""," TABMparMap Plane Map Error:: check config file!! (#)");
-        cout<<"myArg1="<<myArg1<<"  myArg2="<<myArg2<<"  myArg3="<<myArg3<<"  myArg4="<<myArg4<<"  myArg5="<<myArg5<<"  fTdcMaxCha="<<fTdcMaxCha<<endl;
-        return kTRUE;
-      }
-    } else if(strchr(bufConf,'T')) {
-        sscanf(bufConf, "T %d",&myArg1);
-      if(myArg1<0 || myArg1>fTdcMaxCha) {
-        Error("FromFile()","TABMparMap::Reference Tr channel:: check config file!!(T)");
-        return kTRUE;
-      }else{
-        fTrefCh=myArg1;
-        fTdc2CellVec[fTrefCh]=-1000;
-        fCell2TdcVec[36]=fTrefCh;
-      }
-    } else if(strchr(bufConf,'S')) {
-        sscanf(bufConf, "S %d",&fSca830ch);
-    } else if(strchr(bufConf,'A')) {
-        sscanf(bufConf, "A %d",&fAdc792ch);
-    } else if(strchr(bufConf,'M')) {
-        sscanf(bufConf, "M %d",&myArg1);
-        if(!(myArg1==64 || myArg1==128 || myArg1==256)) {
-          Error("FromFile()","TABMparMap::fTdcMaxCha not = 64 || 128 || 256:: check config file!!(M)");
-          return kTRUE;
-        }else{
-          fTdcMaxCha=myArg1;
-          for(Int_t i=0;i<fTdcMaxCha;i++)
-            fTdc2CellVec.push_back(-1);
-          for(Int_t i=0;i<37;i++)
-            fCell2TdcVec.push_back(-1);
-          }
+  //set the start values
+  for(Int_t i=0;i<fTdcCha[0];i++)
+    fTdc2CellVec[i]=-1;
+  if(fTdcCha[1]>=0)
+    fTdc2CellVec[fTdcCha[1]]=-1000;
+  if(fTdcCha[2]>=0)
+    fTdc2CellVec[fTdcCha[2]]=-1001;
+  for(Int_t i=0;i<36;i++)
+    fCell2TdcVec[i]=-1;
+
+
+  fboardNum=513; //512 is fixed + 1=tdc (mandatory)
+  if(fScaCha[0]>=0)
+  fboardNum+= 256;
+  if(fScaCha[0]>=0)
+  fboardNum+= 16;
+
+  //Read tdc channel mapping
+  for(Int_t i=0;i<36;++i){
+    readArrayI.Set(0);
+    ReadItem(readArrayI);
+  if(readArrayI[0]<fTdcCha[0] && readArrayI[0]>=0 && readArrayI[1]<36 && readArrayI[1]>=0 && fTdc2CellVec[readArrayI[0]]==-1 && fCell2TdcVec[readArrayI[1]]==-1) {
+      fTdc2CellVec[readArrayI[0]]=readArrayI[1];
+      fCell2TdcVec[readArrayI[1]]=readArrayI[0];
+    }else{
+      Error("TABMparMap::FromFile()","wrong channel id and identifiers!!!! check the map file");
+      cout<<"read value 0="<<readArrayI[0]<<"  read value 1="<<readArrayI[1]<<endl;
+      cout<<"fTdc2CellVec="<<fTdc2CellVec[readArrayI[0]]<<"  fCell2TdcVec="<<fCell2TdcVec[readArrayI[1]]<<endl;
+      return kFALSE;
     }
   }
 
-  fboardNum=513; //512 is fixed + 1=tdc (mandatory)
-  if(fSca830ch>=0)
-    fboardNum+= 256;
-  if(fAdc792ch>=0)
-    fboardNum+= 16;
-
-  //check on the map
-  Int_t tmp_int(0);
-  for(Int_t i=0;i<fTdcMaxCha;i++)
-    if(fTdc2CellVec[i]>=0)
-      tmp_int++;
-  if(tmp_int!=36){
-    cout<<"ERROR in TABMparMap:FromFile():error in the map! you haven't set 36 channel for the BM! number of channel set="<<tmp_int<<endl;
-    return kTRUE;
-  }
-
   if(FootDebugLevel(1)){
+    cout<<"TABMparMap::print fTdcCha"<<endl;
+    for(Int_t i=0;i<fTdcCha.GetSize();i++)
+      cout<<"index="<<i<<"  fTdcCha="<<fTdcCha[i]<<endl;
+
+    cout<<"TABMparMap::print fScaCha"<<endl;
+    for(Int_t i=0;i<fScaCha.GetSize();i++)
+      cout<<"index="<<i<<"  fScaCha="<<fScaCha[i]<<endl;
+
+    cout<<"TABMparMap::print fAdcCha"<<endl;
+    for(Int_t i=0;i<fAdcCha.GetSize();i++)
+      cout<<"index="<<i<<"  fAdcCha="<<fAdcCha[i]<<endl;
+
     cout<<"TABMparMap::print fTdc2CellVec"<<endl;
-    for(Int_t i=0;i<fTdc2CellVec.size();i++)
-      cout<<"i="<<i<<"  fTdc2CellVec[i]="<<fTdc2CellVec[i]<<endl;
-    cout<<endl<<"print fCell2TdcVec"<<endl;
-    for(Int_t i=0;i<fCell2TdcVec.size();i++)
-      cout<<"i="<<i<<"   fCell2TdcVec[i]="<<fCell2TdcVec[i]<<endl;
+    for(auto it = fTdc2CellVec.cbegin(); it != fTdc2CellVec.cend(); ++it)
+      cout<<"Tdc channel:"<<it->first<<"  cellid:"<< it->second<<endl;
+
+    cout<<endl<<"TABMparMap::print fCell2TdcVec"<<endl;
+    for(auto it = fTdc2CellVec.cbegin(); it != fTdc2CellVec.cend(); ++it)
+      cout<<"cellid:"<<it->first<<"  tdc channel:"<< it->second<<endl;
     cout<<endl;
   }
+
+  Close();
 
   return kFALSE;
 }
@@ -144,5 +154,8 @@ void TABMparMap::Clear(Option_t*){
   TAGpara::Clear();
   fTdc2CellVec.clear();
   fCell2TdcVec.clear();
+  fTdcCha.Set(0);
+  fScaCha.Set(0);
+  fAdcCha.Set(0);
   return;
 }

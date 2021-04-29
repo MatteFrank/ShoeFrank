@@ -347,7 +347,7 @@ void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match
             for(int k = 0; k < evt->measurement.size();k++){//loop to find bmtrigger
               channel=(evt->measurement.at(k)>>19) & 0x7f;
               measurement=evt->measurement.at(k) & 0x7ffff;
-              if(channel==bmmap->GetTrefCh()){
+              if(channel==bmmap->GetBmTrefCh()){
                 bmtrigger=measurement;
                 break;
               }

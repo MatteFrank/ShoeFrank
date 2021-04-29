@@ -29,7 +29,7 @@
 #include "TAITntuTrack.hxx"
 
 #include "TAITactNtuMC.hxx"
-#include "TAITactNtuClusterF.hxx"
+#include "TAITactNtuCluster.hxx"
 
 #include "TAGrecoManager.hxx"
 
@@ -39,7 +39,7 @@
 TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter* outFile = 0x0;
 TAITactNtuMC* itActRaw = 0x0;
-TAITactNtuClusterF* itActClus = 0x0;
+TAITactNtuCluster* itActClus = 0x0;
 
 void FillMCInner(EVENT_STRUCT *myStr, Int_t runNumber) {
    
@@ -61,7 +61,7 @@ void FillMCInner(EVENT_STRUCT *myStr, Int_t runNumber) {
    itActRaw->CreateHistogram();
    
    
-   itActClus = new TAITactNtuClusterF("itActCluster", itRaw, itClus, itConf, itGeo);
+   itActClus = new TAITactNtuCluster("itActCluster", itRaw, itClus, itConf, itGeo);
    itActClus->CreateHistogram();
    
    // outFile->SetupElementBranch(itRaw, TAITntuHit::GetBranchName());

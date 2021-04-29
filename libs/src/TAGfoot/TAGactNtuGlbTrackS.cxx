@@ -209,7 +209,15 @@ void TAGactNtuGlbTrackS::CreateHistogram()
    
    fpHisPhi = new TH1F(Form("%sTrackPhi", prefix.Data()), Form("%s - Track azimutal distribution (#theta > 5)", titleDev.Data()), 500, -180, 180);
    AddHistogram(fpHisPhi);
-      
+   
+   fpHisTwDeCaE = new TH2F(Form("%sTwDeCaE", prefix.Data()), Form("%s - TW-deltaE vs CA-E", titleDev.Data()), 300, 0, 3000,  100, 0, 200);
+   fpHisTwDeCaE->SetStats(kFALSE);
+   AddHistogram(fpHisTwDeCaE);
+   
+   fpHisMsdDeCaE = new TH2F(Form("%sMsdDeCaE", prefix.Data()), Form("%s - MSD-deltaE vs CA-E", titleDev.Data()), 300, 0, 3000,  300, 0, 10000);
+   fpHisMsdDeCaE->SetStats(kFALSE);
+   AddHistogram(fpHisMsdDeCaE);
+
    SetValidHistogram(kTRUE);
 }
 
@@ -551,6 +559,7 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
             point->SetYon(false);
          else
             point->SetXon(false);
+         point->SetEnergyLoss(bestCluster->GetEnergyLoss());
          
          UpdateParam(track, view);
          
@@ -660,7 +669,8 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
          
          TAGpoint* point = track->AddMeasPoint(TATWparGeo::GetBaseName(), posG, errG);
          point->SetSensorIdx(0);
-         
+         point->SetEnergyLoss(bestCluster->GetEnergyLoss());
+
          Float_t tof = bestCluster->GetMeanTof();
          track->SetTof(tof);
    
@@ -730,7 +740,8 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
          
       TAGpoint* point = track->AddMeasPoint(TACAparGeo::GetBaseName(), posG, errG);
       point->SetSensorIdx(0);
-         
+      point->SetEnergyLoss(bestCluster->GetEnergy());
+
       Float_t Ek = bestCluster->GetEnergy();
       track->SetEnergy(Ek*TAGgeoTrafo::MevToGev());
       
@@ -774,6 +785,11 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
 //
 void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
 {
+   Float_t twEnergyLoss  = -1.;
+   Float_t msdEnergyLoss =  0.;
+   Int_t   msdSensorsN   =  0;
+   Float_t caEnergyRes   = -1.;
+
    fpHisTheta->Fill(track->GetTgtTheta());
    fpHisPhi->Fill(track->GetTgtPhi());
    
@@ -796,17 +812,35 @@ void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
       if (devName.Contains(TAITparGeo::GetBaseName()))
          offset = fOffsetItr;;
       
-      if (devName.Contains(TAMSDparGeo::GetBaseName()))
+      if (devName.Contains(TAMSDparGeo::GetBaseName())) {
          offset = fOffsetMsd;
+         msdEnergyLoss += cluster->GetEnergyLoss();
+         msdSensorsN++;
+      }
       
-      if (devName.Contains(TATWparGeo::GetBaseName()))
+      if (devName.Contains(TATWparGeo::GetBaseName())) {
          offset = fOffsetTof;
+         twEnergyLoss = cluster->GetEnergyLoss();
+      }
+      
+      if (devName.Contains(TACAparGeo::GetBaseName())) {
+         caEnergyRes = cluster->GetEnergyLoss();
+      }
       
       fpHisResTotX->Fill(impact[0]-cluster->GetPositionG()[0]);
       fpHisResTotY->Fill(impact[1]-cluster->GetPositionG()[1]);
       fpHisResX[idx+offset]->Fill(impact[0]-cluster->GetPositionG()[0]);
       fpHisResY[idx+offset]->Fill(impact[1]-cluster->GetPositionG()[1]);
    }
+   
+   if (twEnergyLoss != -1 && caEnergyRes != -1)
+      fpHisTwDeCaE->Fill(caEnergyRes, twEnergyLoss);
+   
+   if (msdSensorsN > 0 && caEnergyRes != -1) {
+      msdEnergyLoss /= float(msdSensorsN);
+      fpHisMsdDeCaE->Fill(caEnergyRes, msdEnergyLoss);
+   }
+
 }
 
 //_____________________________________________________________________________

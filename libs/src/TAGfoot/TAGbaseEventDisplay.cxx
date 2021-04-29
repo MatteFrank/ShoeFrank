@@ -1127,7 +1127,29 @@ void TAGbaseEventDisplay::UpdateBarElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
-   Float_t  x = 0.,  y = 0.,  z = 0.;
+   // Draw Quad
+   TATWntuPoint* pNtuPoint =  fReco->GetNtuPointTw();;
+   
+   Int_t nPoints = pNtuPoint->GetPointsN();
+   
+   for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
+      
+      TATWpoint *point = pNtuPoint->GetPoint(iPoint);
+      if (!point->IsValid()) continue;
+      
+      TVector3 posG = point->GetPosition();
+      posG = fpFootGeo->FromTWLocalToGlobal(posG);
+      
+      Float_t edep = point->GetEnergyLoss();
+      
+      fTwClusDisplay->AddHit(edep/1e5, posG[0], posG[1], posG[2]);
+      fTwClusDisplay->QuadId(point);
+   } //end loop on points
+   
+   
+   fTwClusDisplay->RefitPlex();
+   
+   if (TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    // Color bar
    TATWparGeo* parGeo = parGeo = fReco->GetParGeoTw();
@@ -1170,28 +1192,6 @@ void TAGbaseEventDisplay::UpdateBarElements()
 
    } //end loop on planes
 
-
-   // Draw Quad
-   TATWntuPoint* pNtuPoint =  fReco->GetNtuPointTw();;
-
-   Int_t nPoints = pNtuPoint->GetPointsN();
-
-   for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
-
-      TATWpoint *point = pNtuPoint->GetPoint(iPoint);
-      if (!point->IsValid()) continue;
-
-      TVector3 posG = point->GetPosition();
-      posG = fpFootGeo->FromTWLocalToGlobal(posG);
-
-      Float_t edep = point->GetEnergyLoss();
-
-      fTwClusDisplay->AddHit(edep/1e5, posG[0], posG[1], posG[2]);
-      fTwClusDisplay->QuadId(point);
-   } //end loop on points
-
-
-   fTwClusDisplay->RefitPlex();
 }
 
 
@@ -1207,6 +1207,31 @@ void TAGbaseEventDisplay::UpdateCrystalElements()
 
    Float_t  x = 0.,  y = 0.,  z = 0.;
 
+   // clusters
+   TACAntuCluster* pNtuClus  = (TACAntuCluster*)fReco->GetNtuClusterCa();
+   
+   Int_t nclus = pNtuClus->GetClustersN();
+   for (Int_t iClus = 0; iClus < nclus; ++iClus) {
+      TACAcluster *clus = pNtuClus->GetCluster(iClus);
+      if (!clus->IsValid()) continue;
+      TVector3 pos = clus->GetPositionG();
+
+      TVector3 posG = fpFootGeo->FromCALocalToGlobal(pos);
+      Int_t nhits = clus->GetHitsN();
+      
+      x = posG(0);
+      y = posG(1);
+      z = posG(2);
+      
+      fCaClusDisplay->AddHit(nhits*10, x, y, z);
+      fCaClusDisplay->QuadId(clus);
+      
+   } //end loop on clusters
+      
+   fCaClusDisplay->RefitPlex();
+   
+   if (TAGrecoManager::GetPar()->IsLocalReco()) return;
+   
    TACAparGeo* parGeo = fReco->GetParGeoCa();;
 
    // reset previous fired bar
@@ -1233,31 +1258,8 @@ void TAGbaseEventDisplay::UpdateCrystalElements()
 
       fFiredCaCrystal[idx] = 1;
       parGeo->SetCrystalColorOn(idx);
-
+      
    } //end loop on hits
-
-   // clusters
-   TACAntuCluster* pNtuClus  = (TACAntuCluster*)fReco->GetNtuClusterCa();
-   
-   Int_t nclus = pNtuClus->GetClustersN();
-   for (Int_t iClus = 0; iClus < nclus; ++iClus) {
-      TACAcluster *clus = pNtuClus->GetCluster(iClus);
-      if (!clus->IsValid()) continue;
-      TVector3 pos = clus->GetPositionG();
-
-      TVector3 posG = fpFootGeo->FromCALocalToGlobal(pos);
-      Int_t nhits = clus->GetHitsN();
-      
-      x = posG(0);
-      y = posG(1);
-      z = posG(2);
-      
-      fCaClusDisplay->AddHit(nhits*10, x, y, z);
-      fCaClusDisplay->QuadId(clus);
-      
-   } //end loop on clusters
-      
-   fCaClusDisplay->RefitPlex();
 }
 
 //__________________________________________________________

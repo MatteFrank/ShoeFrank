@@ -106,6 +106,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagZrecPUoff(false),
    fFlagZmatch_TW(false),
    fFlagMC(false),
+   fReadL0Hits(false),
    fM28ClusMtFlag(false),
    fFlagRecCutter(false)
 {
@@ -386,6 +387,14 @@ void BaseReco::SetRecHistogramDir()
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TACAparGeo::GetBaseName());
       fActClusCa->SetHistogramDir(subfolder);
+   }
+   
+   // Global straight tyrack
+   if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
+       && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
+       && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
+      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAGgeoTrafo::GetBaseName());
+      fActGlbTrackS->SetHistogramDir(subfolder);
    }
 }
 
@@ -680,9 +689,9 @@ void BaseReco::CreateRecAction()
    if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman())
       CreateRecActionGlbGF();
    
-   if (TAGrecoManager::GetPar()->IncludeST()    && TAGrecoManager::GetPar()->IncludeTG()
-       && TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW()
-       && !TAGrecoManager::GetPar()->IncludeDI())
+   if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
+       && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
+       && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman())
        CreateRecActionGlbS();
 }
 
@@ -714,7 +723,7 @@ void BaseReco::CreateRecActionVtx()
    if (fM28ClusMtFlag)
       fActClusVtx   = new TAVTactNtuClusterMT("vtActClus", fpNtuHitVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
    else
-      fActClusVtx   = new TAVTactNtuClusterF("vtActClus", fpNtuHitVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
+      fActClusVtx   = new TAVTactNtuCluster("vtActClus", fpNtuHitVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);
 
    if (fFlagHisto)
       fActClusVtx->CreateHistogram();
@@ -759,7 +768,7 @@ void BaseReco::CreateRecActionIt()
    if (fM28ClusMtFlag)
       fActClusIt   = new TAITactNtuClusterMT("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
    else
-      fActClusIt   = new TAITactNtuClusterF("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
+      fActClusIt   = new TAITactNtuCluster("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
 
    if (fFlagHisto)
      fActClusIt->CreateHistogram();
@@ -920,6 +929,55 @@ void BaseReco::SetL0TreeBranches()
     
     if(TAGrecoManager::GetPar()->IncludeCA())
       fActEvtReader->SetupBranch(fpNtuClusCa,  TACAntuCluster::GetBranchName());
+     
+     
+    if (fReadL0Hits) {
+       if (TAGrecoManager::GetPar()->IncludeST()) {
+          if (fFlagMC) {
+             fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
+             fActEvtReader->SetupBranch(fpNtuMcSt,TAMCntuHit::GetStcBranchName());
+          }
+          fpNtuHitSt   = new TAGdataDsc("stNtu", new TASTntuHit());
+          fActEvtReader->SetupBranch(fpNtuHitSt,TASTntuHit::GetBranchName());
+       }
+       
+       if (TAGrecoManager::GetPar()->IncludeBM()) {
+          if (fFlagMC) {
+             fpNtuMcBm   = new TAGdataDsc("bmMc", new TAMCntuHit());
+             fActEvtReader->SetupBranch(fpNtuMcBm,TAMCntuHit::GetBmBranchName());
+          }
+          fpNtuHitBm = new TAGdataDsc("bmNtu", new TABMntuHit());
+          fActEvtReader->SetupBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
+          
+          fpNtuTrackBm = new TAGdataDsc("bmTrack", new TABMntuTrack());
+          fActEvtReader->SetupBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+       }
+       
+       if (TAGrecoManager::GetPar()->IncludeVT() && fFlagMC) {
+          fpNtuMcVt   = new TAGdataDsc("vtMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcVt,TAMCntuHit::GetVtxBranchName());
+       }
+       
+       if (TAGrecoManager::GetPar()->IncludeIT() && fFlagMC) {
+          fpNtuMcIt   = new TAGdataDsc("itMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcIt,TAMCntuHit::GetItrBranchName());
+       }
+       
+       if (TAGrecoManager::GetPar()->IncludeMSD() && fFlagMC) {
+          fpNtuMcMsd   = new TAGdataDsc("msdMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcMsd,TAMCntuHit::GetMsdBranchName());
+       }
+       
+       if(TAGrecoManager::GetPar()->IncludeTW() && fFlagMC) {
+          fpNtuMcTw   = new TAGdataDsc("twMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcTw,TAMCntuHit::GetTofBranchName());
+       }
+       
+       if(TAGrecoManager::GetPar()->IncludeCA() && fFlagMC) {
+          fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
+          fActEvtReader->SetupBranch(fpNtuMcCa,TAMCntuHit::GetCalBranchName());
+       }
+     }
   }
 }
 
@@ -961,9 +1019,9 @@ void BaseReco::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeCA())
      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
    
-   if (TAGrecoManager::GetPar()->IncludeST()    && TAGrecoManager::GetPar()->IncludeTG()
-       && TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW()
-       && !TAGrecoManager::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
+       && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
+       && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
       if (fFlagTrack)
          fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
    }
@@ -1043,9 +1101,9 @@ void BaseReco::AddRecRequiredItem()
       }
    }
    
-   if (TAGrecoManager::GetPar()->IncludeST()    && TAGrecoManager::GetPar()->IncludeTG()
-       && TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW()
-       && !TAGrecoManager::GetPar()->IncludeDI())
+   if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
+       && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
+       && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman())
       gTAGroot->AddRequiredItem("glbActTrackS");
 
 }

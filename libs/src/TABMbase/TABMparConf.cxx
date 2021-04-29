@@ -139,6 +139,8 @@ Bool_t TABMparConf::FromFile(const TString& name) {
   if(FootDebugLevel(1))
      cout<<"fEnThresh="<<fEnThresh<<endl;
 
+  Close();
+
 return false;
 }
 

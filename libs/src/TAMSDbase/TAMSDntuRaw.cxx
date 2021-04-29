@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////
 #include "TClonesArray.h"
 
-#include "TAMSDdatRaw.hxx"
+#include "TAMSDntuRaw.hxx"
 
 ClassImp(TAMSDrawHit) 
 
@@ -59,39 +59,47 @@ Int_t TAMSDrawHit::Compare(const TObject* obj) const
 //####################################################################################
 
   ////////////////////////////////////////////////////////////
-  // Class Description of TAMSDdatRaw                        //
+  // Class Description of TAMSDntuRaw                        //
   //                                                        //
   //                                                        //
   ////////////////////////////////////////////////////////////
 
+#include "TAGroot.hxx"
+#include "TAGparaDsc.hxx"
+#include "TAMSDparGeo.hxx"
 #include "TAMSDparMap.hxx"
 
-ClassImp(TAMSDdatRaw) 
+ClassImp(TAMSDntuRaw) 
 
-TString TAMSDdatRaw::fgkBranchName   = "msdrd.";
+TString TAMSDntuRaw::fgkBranchName   = "msdrd.";
 
 //______________________________________________________________________________
 //
-TAMSDdatRaw::TAMSDdatRaw() 
+TAMSDntuRaw::TAMSDntuRaw() 
 : TAGdata(),
   fListOfPixels(0x0)
 {
+   fpGeoMap = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
+   if (!fpGeoMap) {
+      Error("TAMSDntuRaw()", "Para desciptor %s does not exist", TAMSDparGeo::GetDefParaName());
+      exit(0);
+   }
    SetupClones();
 }
 
 //______________________________________________________________________________
 //  
-TAMSDdatRaw::~TAMSDdatRaw()
+TAMSDntuRaw::~TAMSDntuRaw()
 {
-  // TAMSDdatRaw default destructor
+  // TAMSDntuRaw default destructor
    delete fListOfPixels; 
 }
 
 //------------------------------------------+-----------------------------------
 //! return number of pixels for a given sensor.
-Int_t TAMSDdatRaw::GetPixelsN(Int_t iSensor) const
+Int_t TAMSDntuRaw::GetPixelsN(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < TAMSDparMap::GetSensorsN())
+   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
 	  return GetPixels(iSensor)->GetEntries();
    else {
 	  Error("GetPixelsN()","Wrong sensor number %d\n", iSensor);
@@ -101,9 +109,9 @@ Int_t TAMSDdatRaw::GetPixelsN(Int_t iSensor) const
 
 //______________________________________________________________________________
 //
-TClonesArray* TAMSDdatRaw::GetPixels(Int_t iSensor) const      
+TClonesArray* TAMSDntuRaw::GetPixels(Int_t iSensor) const      
 { 
-   if (iSensor >= 0  || iSensor < TAMSDparMap::GetSensorsN()) 	  
+   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
 	  return (TClonesArray*)fListOfPixels->At(iSensor);
    else {
 	  Error("GetPixels()","Wrong sensor number %d\n", iSensor);
@@ -114,7 +122,7 @@ TClonesArray* TAMSDdatRaw::GetPixels(Int_t iSensor) const
    
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-const TAMSDrawHit* TAMSDdatRaw::GetPixel(Int_t iSensor, Int_t iPixel) const
+const TAMSDrawHit* TAMSDntuRaw::GetPixel(Int_t iSensor, Int_t iPixel) const
 {
    if (iPixel >=0 || iPixel < GetPixelsN(iSensor))
 	  return (TAMSDrawHit*)GetPixels(iSensor)->At(iPixel);
@@ -126,7 +134,7 @@ const TAMSDrawHit* TAMSDdatRaw::GetPixel(Int_t iSensor, Int_t iPixel) const
  
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TAMSDrawHit* TAMSDdatRaw::GetPixel(Int_t iSensor, Int_t iPixel)
+TAMSDrawHit* TAMSDntuRaw::GetPixel(Int_t iSensor, Int_t iPixel)
 {
    if (iPixel >=0 || iPixel < GetPixelsN(iSensor))
 	  return (TAMSDrawHit*)GetPixels(iSensor)->At(iPixel);
@@ -138,9 +146,9 @@ TAMSDrawHit* TAMSDdatRaw::GetPixel(Int_t iSensor, Int_t iPixel)
    
 //______________________________________________________________________________
 //  
-void TAMSDdatRaw::AddPixel(Int_t sensor, Int_t value, Int_t aLine, Int_t aColumn)
+void TAMSDntuRaw::AddPixel(Int_t sensor, Int_t value, Int_t aLine, Int_t aColumn)
 {
-   if (sensor >= 0  || sensor < TAMSDparMap::GetSensorsN()) {	  
+   if (sensor >= 0  || sensor < fpGeoMap->GetSensorsN()) {
 	  TClonesArray &pixelArray = *GetPixels(sensor);
 	  new(pixelArray[pixelArray.GetEntriesFast()]) TAMSDrawHit(sensor, value, aLine, aColumn);
    } else {
@@ -150,11 +158,11 @@ void TAMSDdatRaw::AddPixel(Int_t sensor, Int_t value, Int_t aLine, Int_t aColumn
 
 //______________________________________________________________________________
 //  
-void TAMSDdatRaw::SetupClones()
+void TAMSDntuRaw::SetupClones()
 {
    if (fListOfPixels) return;
    fListOfPixels = new TObjArray();
-   for (Int_t i = 0; i < TAMSDparMap::GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
 	  TClonesArray* arr = new TClonesArray("TAMSDrawHit");
 	  arr->SetOwner(true); 
 	  fListOfPixels->AddAt(arr,i);
@@ -164,19 +172,19 @@ void TAMSDdatRaw::SetupClones()
 
 //______________________________________________________________________________
 //  
-void TAMSDdatRaw::Clear(Option_t* /*opt*/)
+void TAMSDntuRaw::Clear(Option_t* /*opt*/)
 {
    TAGdata::Clear();
-   for (Int_t i = 0; i < TAMSDparMap::GetSensorsN(); ++i) 
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i)
 	  GetPixels(i)->Delete();
 }
 
 //______________________________________________________________________________
 //  
-void TAMSDdatRaw::ToStream(ostream& os, Option_t* option) const
+void TAMSDntuRaw::ToStream(ostream& os, Option_t* option) const
 {
-   for (Int_t i = 0; i < TAMSDparMap::GetSensorsN(); ++i) {
-	  os << "TAMSDdatRaw " << GetName()
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+	  os << "TAMSDntuRaw " << GetName()
 	     << Form("  nhit=%3d", GetPixelsN(i))
 	     << endl;
 	  

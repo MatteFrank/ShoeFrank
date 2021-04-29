@@ -13,9 +13,10 @@ NumberFiles: 1
 "./geomaps/GSI_MC/TASTdetector.geo": -1
 
 DetectorName: "BM"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/GSI_MC/TABMdetector.geo": -1
 "./config/GSI_MC/TABMdetector.cfg": -1
+"./calib/GSI_MC/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1

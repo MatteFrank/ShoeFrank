@@ -19,14 +19,17 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TAMSDdatRaw
+   TAMSDntuRaw
    TAMSDntuHit
    TAMSDhit
    TAMSDntuPoint
    TAMSDparMap
    TAMSDparGeo
    TAMSDparConf
+   TAMSDparCal
+   TAMSDcalibrationMap
    TAMSDdigitizer
+   TAMSDdigitizerG
    TAMSDactNtuHitMC
    TAMSDntuCluster
    TAMSDcluster
