@@ -206,10 +206,10 @@ Bool_t TABMactNtuTrack::Action()
    }
 
   //apply some cut on the minimum number of fired plane for each view
-  if(p_nturaw->GetNtothitx()<p_bmcon->GetPlaneHitCut() || p_nturaw->GetNtothity()<p_bmcon->GetPlaneHitCut()){
+  if(p_nturaw->GetTothitsNx()<p_bmcon->GetPlaneHitCut() || p_nturaw->GetTothitsNy()<p_bmcon->GetPlaneHitCut()){
     if(FootDebugLevel(1))
-      cout<<"TABMactNtuTrack::no possible track!!: number of xz view hit="<<p_nturaw->GetNtothitx()<<"  number of yz view hit="<<p_nturaw->GetNtothity()<<"   planehitcut="<<p_bmcon->GetPlaneHitCut()<<endl;
-    if(p_nturaw->GetNtothity()<p_bmcon->GetPlaneHitCut())
+      cout<<"TABMactNtuTrack::no possible track!!: number of xz view hit="<<p_nturaw->GetTothitsNx()<<"  number of yz view hit="<<p_nturaw->GetTothitsNy()<<"   planehitcut="<<p_bmcon->GetPlaneHitCut()<<endl;
+    if(p_nturaw->GetTothitsNy()<p_bmcon->GetPlaneHitCut())
       p_ntutrk->SetTrackStatus(1);
     else
       p_ntutrk->SetTrackStatus(2);
