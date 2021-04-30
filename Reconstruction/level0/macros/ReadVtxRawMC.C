@@ -31,7 +31,7 @@
 #include "TAGactTreeReader.hxx"
 #include "TAVTactNtuHitMC.hxx"
 
-#include "TAVTactNtuClusterF.hxx"
+#include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuTrackF.hxx"
 
 #endif
@@ -41,7 +41,7 @@ TAGcampaignManager* campManager = 0x0;
 TAGactTreeWriter*   outFile     = 0x0;
 TAGactTreeReader*   vtActReader = 0x0;
 TAVTactNtuHitMC*    vtActRaw    = 0x0;
-TAVTactNtuClusterF* vtActClus   = 0x0;
+TAVTactNtuCluster* vtActClus   = 0x0;
 TAVTactNtuTrackF*   vtActTrck   = 0x0;
 
 void FillVertex(Int_t runNumber)
@@ -70,7 +70,7 @@ void FillVertex(Int_t runNumber)
   vtActRaw= new TAVTactNtuHitMC("vtActNtu", vtMc, vtEve, vtNtu, vtGeo);
   vtActRaw->CreateHistogram();
   
-  vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
+  vtActClus =  new TAVTactNtuCluster("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
   vtActClus->CreateHistogram();
   
   vtActTrck = new TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);

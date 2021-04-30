@@ -1,31 +1,32 @@
-#ifndef _TAITactNtuClusterF_HXX
-#define _TAITactNtuClusterF_HXX
+#ifndef _TAVTactNtuCluster_HXX
+#define _TAVTactNtuCluster_HXX
 /*!
  \file
- \version $Id: TAITactNtuClusterF.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
- \brief   Declaration of TAITactNtuClusterF.
+ \version $Id: TAVTactNtuCluster.hxx
+ \brief   Declaration of TAVTactNtuCluster.
  */
 /*------------------------------------------+---------------------------------*/
 
 #include "TAVTactBaseNtuCluster.hxx"
 
-class TAITntuCluster;
+class TAVTntuCluster;
 class TAVThit;
-class TAVTbaseParGeo;
+class TAVTparGeo;
 
-class TAITactNtuClusterF : public TAVTactBaseNtuCluster {
+class TAVTactNtuCluster : public TAVTactBaseNtuCluster {
    
 public:
-   explicit  TAITactNtuClusterF(const char* name     = 0,
+   explicit  TAVTactNtuCluster(const char* name     = 0,
 								       TAGdataDsc* p_nturaw  = 0,
                                TAGdataDsc* p_ntuclus = 0,
 								       TAGparaDsc* p_config  = 0,
 							          TAGparaDsc* p_geomap  = 0);
    
-   virtual ~TAITactNtuClusterF();
+   virtual ~TAVTactNtuCluster();
    
    //! Action
    virtual  Bool_t Action();
+   
 
    //! Find cluster charge, noise & position
    virtual Bool_t  FindClusters(Int_t iSensor);
@@ -37,8 +38,7 @@ private:
 private:
    Bool_t  CreateClusters(Int_t iSensor);
 
-
-   ClassDef(TAITactNtuClusterF,0)
+   ClassDef(TAVTactNtuCluster,0)
 };
 
 #endif

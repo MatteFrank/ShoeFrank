@@ -25,7 +25,7 @@
 #include "TAMSDparMap.hxx"
 #include "TAVTparConf.hxx"
 #include "TAMSDparConf.hxx"
-#include "TAMSDdatRaw.hxx"
+#include "TAMSDntuRaw.hxx"
 #include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
 

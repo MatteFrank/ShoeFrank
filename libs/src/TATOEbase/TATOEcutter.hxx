@@ -61,6 +61,7 @@ struct action_factory<configuration<I, vertex_tag, tof_tag>> {
                                std::move(list),
                                nullptr,
                                static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object() ),
+                               field_ph,
                                true
                                );
     }
@@ -103,6 +104,7 @@ struct action_factory<configuration<I, vertex_tag, it_tag, tof_tag>> {
                                std::move(list),
                                nullptr,
                                static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object() ),
+                               field_ph,
                                true
                                );
     }
@@ -148,6 +150,7 @@ struct action_factory<configuration<I, vertex_tag, it_tag, msd_tag, tof_tag>> {
                                std::move(list),
                                nullptr,
                                static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object() ),
+                               field_ph,
                                true
                                );
     }

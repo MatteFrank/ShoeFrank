@@ -36,7 +36,7 @@ public:
    virtual  void   CreateHistogram();
 
    //! Compute position
-   void    ComputePosition();
+   void    ComputePosition(TAMSDcluster* cluster);
 
    //! Get list of pixels for a given plane
    TClonesArray*   GetListOfStrips()   const { return fListOfStrips;    }
@@ -70,8 +70,10 @@ private:
    Int_t          fClustersN;     // number of cluster
    
    TH1F*          fpHisStripTot;	     // Total number of pixels per cluster
-   TH1F*          fpHisStrip[6];	  // number of pixels per cluster per sensor
-   TH1F*          fpHisClusMap[6];   // cluster map per sensor
+   TH1F*          fpHisStrip[6];	     // number of pixels per cluster per sensor
+   TH1F*          fpHisClusMap[6];    // cluster map per sensor
+   TH1F*          fpHisClusCharge[6]; // cluster charge per sensor
+   TH1F*          fpHisClusChargeTot; // Total cluster charge for all sensors
 
 private:
    void    SearchCluster();

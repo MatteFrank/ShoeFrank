@@ -120,7 +120,9 @@ private:
    TH1F*           fpHisPhi;            // Azimutal angular distribution
    TH1F*           fpHisMeanPixel;      // Mean number of pixels per tracked cluster
    TH1F*           fpHisMeanCharge;     // Mwean Charge per tracked cluster
-   
+   TH2F*           fpHisTwDeCaE;        // TW-deltaE vs CA-E
+   TH2F*           fpHisMsdDeCaE;       // MSD-deltaE vs CA-E
+
 private:
    static Bool_t fgBmMatched;      // vertex matched with BM flag
 

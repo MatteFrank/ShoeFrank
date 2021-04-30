@@ -31,7 +31,7 @@ set( with_dictionnaries
    TAITactNtuHitMC
    TAITntuCluster
    TAITcluster
-   TAITactNtuClusterF
+   TAITactNtuCluster
    TAITactNtuClusterMT
    TAITtrack
    TAITntuTrack

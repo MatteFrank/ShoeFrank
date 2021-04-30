@@ -42,6 +42,8 @@ auto make_ode(Callable&& c_p) -> ode<OperatingType, Order, Callable>;
 //
 
 #include "TAMCntuPart.hxx"
+#include "TAMCntuRegion.hxx"
+
 #include "TAVTcluster.hxx"
 #include "TAVTntuVertex.hxx"
 
@@ -83,6 +85,7 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
     
     
     struct track{
+        
         particle_properties particle;
         
         double total_chisquared;
@@ -94,6 +97,8 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
         double momentum{0};
         double tof{0};
         
+        TAGtrack::polynomial_fit_parameters parameters;
+        
         std::size_t clone{0};
     };
     
@@ -102,6 +107,7 @@ private:
     UKF ukf_m;
     detector_list_t list_m;
     TAGntuGlbTrack* reconstructed_track_mhc;
+    TADIgeoField const* field_mh;
     
     double beam_energy_m;
     int beam_mass_number_m;
@@ -120,7 +126,8 @@ public:
     TATOEactGlb( UKF&& ukf_p,
                  detector_list_t&& list_p,
                  TAGntuGlbTrack* track_phc,
-                 TAGparGeo const * global_parameters_ph, 
+                 TAGparGeo const * global_parameters_ph,
+                 TADIgeoField const* field_ph,
                  bool use_checker = false) :
         ukf_m{ std::move(ukf_p) },
         list_m{ std::move(list_p) },
@@ -129,6 +136,7 @@ public:
         beam_mass_number_m{ static_cast<int>(global_parameters_ph->GetBeamPar().AtomicMass) },
         target_position_m{ global_parameters_ph->GetTargetPar().Position.Z() },
         st_position_m{ static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()))->GetSTCenter().Z() },
+    field_mh{field_ph},
         checker_m{ empty_checker<TATOEactGlb>{} }
     {
         if( use_checker ){ checker_m = TATOEchecker<TATOEactGlb>{global_parameters_ph, *this};}
@@ -171,7 +179,7 @@ public:
         
         checker_m.end_event();
 //        logger_m.freeze_everything();
-       // logger_m.output();
+        logger_m.output();
         
         
         
@@ -1152,6 +1160,69 @@ private:
 //        return 0;
     }
     
+    template<std::size_t N>
+    TAGtrack::polynomial_fit_parameters compute_polynomial_parameters( std::vector<full_state> const& cluster_pc ) const {
+        
+        //fit in x/y
+        //retrieve fit parameters
+        
+        std::array<double, N> z_c{};
+        
+        std::array<double, N> x_c{};
+        std::array<double, N * N> weight_x_c{};
+        
+        std::array<double, N> y_c{};
+        std::array<double, N * N> weight_y_c{};
+        
+        //zip !
+        for( std::size_t i{0}; i < N; ++i ) {
+            auto const& cluster = cluster_pc[i];
+            
+            z_c[i] = cluster.evaluation_point;
+            x_c[i] = cluster.vector(0, 0);
+            y_c[i] = cluster.vector(1, 0);
+            
+            weight_x_c[i + i*N] = cluster.covariance(0, 0);
+            weight_y_c[i + N*i] = cluster.covariance(1, 1);
+        }
+        
+        
+        constexpr std::size_t const order_x = 4;
+        auto const regressor_x = make_custom_matrix<N, order_x>(
+                                            [&z_c, &order_x]( std::size_t index_p ){
+                                                std::size_t column_index = index_p % order_x;
+                                                std::size_t row_index = index_p / order_x;
+                                                return pow( z_c[row_index], column_index );
+                                                                                    }
+                                                                );
+        auto const observation_x = matrix<N, 1>{ std::move(x_c) };
+        auto const weight_x = matrix<N, N>{ std::move(weight_x_c)};
+        
+        //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
+        auto const part1_x = form_inverse( expr::compute( transpose(regressor_x) * weight_x * regressor_x ) );
+        auto const part2_x = expr::compute( transpose( regressor_x ) * weight_x * observation_x );
+        auto const parameter_x = expr::compute( part1_x * part2_x );
+        
+        
+        constexpr std::size_t const order_y = 2;
+        auto const regressor_y = make_custom_matrix<N, order_y>(
+                                                                [&z_c, &order_y]( std::size_t index_p ){
+                                                                    std::size_t column_index = index_p % order_y;
+                                                                    std::size_t row_index = index_p / order_y;
+                                                                    return pow( z_c[row_index], column_index );
+                                                                }
+                                                                );
+        auto const observation_y = matrix<N, 1>{ std::move(y_c) };
+        auto const weight_y = matrix<N, N>{ std::move(weight_y_c)};
+        
+        //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
+        auto const part1_y = form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) );
+        auto const part2_y = expr::compute( transpose( regressor_y ) * weight_y * observation_y );
+        auto const parameter_y = expr::compute( part1_y * part2_y );
+        
+        return {std::move(parameter_x.data()), std::move(parameter_y.data())};
+    }
+    
     constexpr std::vector< track > compute_momentum_new( std::vector<track>&& track_pc ) const {
         for( auto& track : track_pc) {
             
@@ -1160,54 +1231,67 @@ private:
             switch( cluster_c.size() ){
                 case 4:{
                     arc_length = compute_arc_length<4>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<4>( cluster_c );
                     break;
                 }
                 case 5:{
                     arc_length = compute_arc_length<5>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<5>( cluster_c );
                     break;
                 }
                 case 6:{
                     arc_length = compute_arc_length<6>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<6>( cluster_c );
                     break;
                 }
                 case 7:{
                     arc_length = compute_arc_length<7>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<7>( cluster_c );
                     break;
                 }
                 case 8:{
                     arc_length = compute_arc_length<8>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<8>( cluster_c );
                     break;
                 }
                 case 9:{
                     arc_length = compute_arc_length<9>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<9>( cluster_c );
                     break;
                 }
                 case 10:{
                     arc_length = compute_arc_length<10>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<10>( cluster_c );
                     break;
                 }
                 case 11:{
                     arc_length = compute_arc_length<11>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<11>( cluster_c );
                     break;
                 }
                 case 12:{
                     arc_length = compute_arc_length<12>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<12>( cluster_c );
                     break;
                 }
                 case 13:{
                     arc_length = compute_arc_length<13>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<13>( cluster_c );
                     break;
                 }
                 case 14:{
                     arc_length = compute_arc_length<14>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<14>( cluster_c );
                     break;
                 }
                 case 15:{
                     arc_length = compute_arc_length<15>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<15>( cluster_c );
                     break;
                 }
                 case 16:{
                     arc_length = compute_arc_length<16>( cluster_c );
+                    track.parameters = compute_polynomial_parameters<16>( cluster_c );
                     break;
                 }
                 default:{
@@ -1241,6 +1325,15 @@ private:
     void register_tracks_upward( std::vector<track> track_pc )
     {
 //        std::cout << "register_tracks_upward: " << track_pc.size() << std::endl;
+//        auto * mc_region_hc = static_cast<TAMCntuRegion*>( gTAGroot->FindDataDsc( "regMc" )->Object() );
+//        std::cout << *mc_region_hc;
+//        for( auto i{0}; i < mc_region_hc->GetRegionsN() ; ++i){
+//            auto *mc_reg_h = mc_region_hc->GetRegion(i);
+//            std::cout << mc_reg_h->GetTrackIdx() << ", " << mc_reg_h->GetCrossN() << ": " << mc_reg_h->GetMomentum().Mag();
+//            std::cout << " [ " << mc_reg_h->GetMomentum().X() << " ; " << mc_reg_h->GetMomentum().Y() << " ; " << mc_reg_h->GetMomentum().Z() << " ]\n";
+//        }
+        
+        std::vector<int> index_c;
         
         for( auto & track : track_pc  ) {
             // -----------------------------
@@ -1252,20 +1345,41 @@ private:
             auto * track_h = reconstructed_track_mhc->NewTrack( track.particle.mass * 0.938 ,
                                                   track.momentum / 1000.,
                                                   static_cast<double>(track.particle.charge),
-                                                  track.tof  ); //tof value is wrong
+                                                  track.tof  );
 //            std::cout << "registered_momentum: " << track_h->GetMomentum() << "\n";
 
             
             
 //            std::cout << "track:\n";
             auto & value_c = track.get_clusters();
+            auto compute_y_l = [&track]( double z ){ return track.parameters.parameter_y[1] * z + track.parameters.parameter_y[0];  };
+            auto compute_x_l = [&track]( double z ){
+                return track.parameters.parameter_x[3] * z * z * z +
+                       track.parameters.parameter_x[2] * z * z +
+                       track.parameters.parameter_x[1] * z +
+                       track.parameters.parameter_x[0];
+                                                    };
+            auto compute_angle_l = [&track, &compute_x_l, &compute_y_l]( double z, double step_size ){
+                TVector3 pre_bending{
+                    (compute_x_l(z) - compute_x_l(z-1e-3))/1e-3,
+                    (compute_y_l(z) - compute_y_l(z-1e-3))/1e-3,
+                    1
+                                    };
+                TVector3 post_bending{
+                    (compute_x_l(z+step_size+1e-3) - compute_x_l(z+step_size))/1e-3,
+                    (compute_y_l(z+step_size+1e-3) - compute_y_l(z+step_size))/1e-3,
+                    1
+                                      };
+                return acos((pre_bending * post_bending)/(pre_bending.Mag() * post_bending.Mag()));
+                                                                         };
+            
 //                    std::cout << " --- final_track --- " << '\n';
             for(auto& value : value_c){
                 //
 //                std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << std::endl;
 //                ////
                 TVector3 corrected_position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
-                
+//                corrected_position.Print();
                 
                 auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * track.momentum ;
                 momentum_z /= 1000.;
@@ -1275,6 +1389,19 @@ private:
                 TVector3 momentum{ momentum_x , momentum_y, momentum_z };
                 TVector3 position_error{ 0.01 ,0.01, 0.01 };
                 TVector3 momentum_error{ 10, 10, 10 };
+                
+                
+                TVector3 reco_position{
+                    compute_x_l(value.evaluation_point),
+                    compute_y_l(value.evaluation_point),
+                    value.evaluation_point
+                };
+//                reco_position.Print();
+                auto const temp_field = field_mh->GetField(reco_position);
+                
+//                std::cout << "angle" << compute_angle_l( value.evaluation_point, 1e-2 ) << '\n';
+//                std::cout << "momentum: " << momentum.Mag() << " - " << 0.3e-3 * track.particle.charge * temp_field.Mag() * 1e-3;
+//                std::cout << " [ " << momentum_x << " ; " << momentum_y << " ; " << momentum_z << "]";
                 
                 track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
 
@@ -1286,54 +1413,93 @@ private:
                         TVector3 measured_position{ transformation_h->FromVTLocalToGlobal(value.data->GetPosition()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
                         measured_h->SetDevName( TAVTparGeo::GetBaseName() );
+//                        std::cout << " in " << TAVTparGeo::GetBaseName() ;
                         measured_h->SetClusterIdx( vertex_h->GetClusterIdx() );
                         measured_h->SetSensorIdx( vertex_h->GetSensorIdx() );
+//                        std::cout << "( ";
                         for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
                             measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
+//                            std::cout << value.data->GetMcTrackIdx(i) << " ";
+                            index_c.push_back(value.data->GetMcTrackIdx(i));
                         }
-                        break;
+//                        std::cout << ")\n";
+                        continue;
                     }
                     auto const * it_h = dynamic_cast<TAITcluster const*>( value.data );
                     if( it_h ){
                         TVector3 measured_position{ transformation_h->FromITLocalToGlobal(value.data->GetPosition()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
                         measured_h->SetDevName( TAITparGeo::GetBaseName() );
+//                        std::cout << " in " << TAITparGeo::GetBaseName();
                         measured_h->SetClusterIdx( it_h->GetClusterIdx() );
                         measured_h->SetSensorIdx( it_h->GetSensorIdx() );
+//                        std::cout << " ( ";
                         for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
                             measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
+//                            std::cout << value.data->GetMcTrackIdx(i) << " ";
+                            index_c.push_back(value.data->GetMcTrackIdx(i));
                         }
-                        break;
+//                        std::cout << ")\n";
+                        continue;
                     }
                     auto const * msd_h = dynamic_cast<TAMSDcluster const*>( value.data );
                     if( msd_h ){
                         TVector3 measured_position{ transformation_h->FromMSDLocalToGlobal(value.data->GetPosition()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
                         measured_h->SetDevName( TAMSDparGeo::GetBaseName() );
+//                        std::cout << " in " << TAMSDparGeo::GetBaseName();
                         measured_h->SetClusterIdx( msd_h->GetClusterIdx() );
                         measured_h->SetSensorIdx( msd_h->GetSensorIdx() );
+//                        std::cout << " ( ";
                         for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
                             measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
+//                            std::cout << value.data->GetMcTrackIdx(i) << " ";
+                            index_c.push_back(value.data->GetMcTrackIdx(i));
                         }
-                        break;
+//                        std::cout << ")\n";
+                        continue;
                     }
                     auto const * tw_h = dynamic_cast<TATWpoint const*>( value.data );
                     if( tw_h ){
                         TVector3 measured_position{ transformation_h->FromTWLocalToGlobal(value.data->GetPosition()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
                         measured_h->SetDevName( TATWparGeo::GetBaseName() );
+//                        std::cout << " in " << TATWparGeo::GetBaseName() ;
                         measured_h->SetClusterIdx( tw_h->GetClusterIdx() );
                         measured_h->SetSensorIdx( tw_h->GetSensorIdx() );
+//                        std::cout << " ( ";
                         for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
                             measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
+//                            std::cout << value.data->GetMcTrackIdx(i) << " ";
+                            index_c.push_back(value.data->GetMcTrackIdx(i));
                         }
-                        break;
+//                        std::cout << ")\n";
+                        continue;
                     }
+                    
                 }
+//                std::cout << "\n";
             }
             
         }
-            
+        
+       // for(auto index: index_c) { std::cout << index << " "; }
+//        for( auto i{0}; i < mc_region_hc->GetRegionsN() ; ++i){
+//            auto *mc_reg_h = mc_region_hc->GetRegion(i);
+//
+//            auto is_reconstructed_l = [&index_c]( int index_p ){
+//                                            return std::find_if(
+//                                                    index_c.begin(),
+//                                                    index_c.end(),
+//                                                    [&index_p](int reconstructed_index_p ){ return index_p == reconstructed_index_p; }
+//                                                                ) != index_c.end();
+//                                                                };
+//            if( is_reconstructed_l(mc_reg_h->GetTrackIdx()-1) ){
+//                std::cout << mc_reg_h->GetTrackIdx()-1 << ", " << mc_reg_h->GetCrossN() << ": " << mc_reg_h->GetMomentum().Mag();
+//                std::cout << " [ " << mc_reg_h->GetMomentum().X() << " ; " << mc_reg_h->GetMomentum().Y() << " ; " << mc_reg_h->GetMomentum().Z() << " ]\n";
+//            }
+//        }
+        
         
     }
     
@@ -1346,20 +1512,24 @@ private:
 
 
 
-template<class UKF, class DetectorList>
-auto make_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph)
-        ->TATOEactGlb<UKF, DetectorList>
-{
-    return {std::move(ukf_p), std::move(list_p), track_phc, global_parameters_ph};
-}
-
-
 
 template<class UKF, class DetectorList>
-auto new_TATOEactGlb(UKF ukf_p, DetectorList list_p, TAGntuGlbTrack* track_phc, TAGparGeo* global_parameters_ph, bool use_checker = false)
-        -> TATOEactGlb<UKF, DetectorList> *
+auto new_TATOEactGlb(
+            UKF ukf_p,
+            DetectorList list_p,
+            TAGntuGlbTrack* track_phc,
+            TAGparGeo* global_parameters_ph,
+            TADIgeoField* field_ph,
+            bool use_checker = false
+                     ) -> TATOEactGlb<UKF, DetectorList> *
 {
-    return new TATOEactGlb<UKF, DetectorList>{std::move(ukf_p), std::move(list_p), track_phc, global_parameters_ph, use_checker};
+    return new TATOEactGlb<UKF, DetectorList>{
+                    std::move(ukf_p),
+                    std::move(list_p),
+                    track_phc,
+                    global_parameters_ph,
+                    field_ph,
+                    use_checker};
 }
 
 

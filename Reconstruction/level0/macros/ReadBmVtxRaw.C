@@ -34,7 +34,7 @@
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTactNtuHit.hxx"
-#include "TAVTactNtuClusterF.hxx"
+#include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuTrackF.hxx"
 
 #include "TABMparGeo.hxx"
@@ -65,7 +65,7 @@ TABMactNtuHit* bmActNtuRaw  = 0x0;
 TABMactNtuTrack* bmActTrack = 0x0;
 
 TAVTactNtuHit*      vtActRaw  = 0x0;
-TAVTactNtuClusterF* vtActClus = 0x0;
+TAVTactNtuCluster* vtActClus = 0x0;
 TAVTactNtuTrackF*   vtActTrck = 0x0;
 
 int GetRunNumber(TString name){
@@ -158,7 +158,7 @@ void FillBm(TString fExpName) {
   vtActRaw->CreateHistogram();
   
   TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
-  vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
+  vtActClus =  new TAVTactNtuCluster("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
   vtActClus->CreateHistogram();
   
   TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());

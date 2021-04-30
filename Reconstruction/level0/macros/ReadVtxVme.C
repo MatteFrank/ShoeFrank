@@ -25,7 +25,7 @@
 #include "TAVTntuTrack.hxx"
 
 #include "TAVTactVmeReader.hxx"
-#include "TAVTactNtuClusterF.hxx"
+#include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuTrack.hxx"
 
 #endif
@@ -33,7 +33,7 @@
 // main
 TAGactTreeWriter*   outFile   = 0x0;
 TAVTactVmeReader*   vmeFile   = 0x0;
-TAVTactNtuClusterF* vtActClus = 0x0;
+TAVTactNtuCluster* vtActClus = 0x0;
 TAVTactNtuTrack*   vtActTrck = 0x0;
 
 void FillVertex()
@@ -57,7 +57,7 @@ void FillVertex()
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
    
    
-   vtActClus =  new TAVTactNtuClusterF("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
+   vtActClus =  new TAVTactNtuCluster("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
    vtActClus->CreateHistogram();
    
    vtActTrck = new TAVTactNtuTrack("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);

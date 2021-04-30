@@ -1,52 +1,53 @@
 /*!
  \file
- \version $Id: TAITactNtuClusterF.cxx $
- \brief   Implementation of TAITactNtuClusterF.
+ \version $Id: TAVTactNtuCluster.cxx $
+ \brief   Implementation of TAVTactNtuCluster.
  */
 #include "TClonesArray.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TMath.h"
 
+#include "TAGgeoTrafo.hxx"
+
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
-#include "TAITntuHit.hxx"
-#include "TAITntuHit.hxx"
-#include "TAITntuCluster.hxx"
-#include "TAITactNtuClusterF.hxx"
+#include "TAVTntuHit.hxx"
+#include "TAVTntuCluster.hxx"
+#include "TAVTactNtuCluster.hxx"
 
 /*!
- \class TAITactNtuClusterF 
- \brief NTuplizer for vertex raw hits. **
+ \class TAVTactNtuCluster 
+ \brief NTuplizer for vertex clusters. **
  */
 
-ClassImp(TAITactNtuClusterF);
+ClassImp(TAVTactNtuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAITactNtuClusterF::TAITactNtuClusterF(const char* name, 
+TAVTactNtuCluster::TAVTactNtuCluster(const char* name, 
 									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus,
 									 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
 : TAVTactBaseNtuCluster(name, pConfig, pGeoMap),
   fpNtuRaw(pNtuRaw),
   fpNtuClus(pNtuClus)
 {
-   AddDataIn(pNtuRaw,   "TAITntuHit");
-   AddDataOut(pNtuClus, "TAITntuCluster");
+   AddDataIn(pNtuRaw,   "TAVTntuHit");
+   AddDataOut(pNtuClus, "TAVTntuCluster");
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAITactNtuClusterF::~TAITactNtuClusterF()
+TAVTactNtuCluster::~TAVTactNtuCluster()
 {
    
 }
 
 //______________________________________________________________________________
 //
-Bool_t TAITactNtuClusterF::Action()
+Bool_t TAVTactNtuCluster::Action()
 {
-   TAITntuHit* pNtuHit  = (TAITntuHit*) fpNtuRaw->Object();
+   TAVTntuHit* pNtuHit  = (TAVTntuHit*) fpNtuRaw->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
    Bool_t ok = true;
@@ -59,16 +60,18 @@ Bool_t TAITactNtuClusterF::Action()
    
    if(ok)
       fpNtuClus->SetBit(kValid);
+   
    return ok;
 }
 
 //______________________________________________________________________________
 //  
-Bool_t TAITactNtuClusterF::FindClusters(Int_t iSensor)
+Bool_t TAVTactNtuCluster::FindClusters(Int_t iSensor)
 {
    // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
    // Look in a iterative way to next neighbour
    
+
    FillMaps();
    SearchCluster();
  
@@ -77,17 +80,17 @@ Bool_t TAITactNtuClusterF::FindClusters(Int_t iSensor)
 
 //______________________________________________________________________________
 //
-Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor)
+Bool_t TAVTactNtuCluster::CreateClusters(Int_t iSensor)
 {
-   TAITntuCluster* pNtuClus = (TAITntuCluster*) fpNtuClus->Object();
-   TAITcluster* cluster1    = 0x0;
+   TAVTntuCluster* pNtuClus = (TAVTntuCluster*) fpNtuClus->Object();
+   TAVTcluster* cluster1    = 0x0;
 
    // create clusters
    for (Int_t i = 0; i< fClustersN; ++i)
       pNtuClus->NewCluster(iSensor);
    
    for (Int_t iPix = 0; iPix < fListOfPixels->GetEntries(); ++iPix) {
-      TAIThit* pixel = (TAIThit*)fListOfPixels->At(iPix);
+      TAVThit* pixel = (TAVThit*)fListOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
       if(!CheckLine(line)) continue;
@@ -99,10 +102,10 @@ Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor)
          cluster1->AddPixel(pixel);
       }
    }
-   
+
    // Compute position and fill clusters info
    TAVTbaseCluster* cluster = 0x0;
-   
+
    for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
       cluster = pNtuClus->GetCluster(iSensor, i);
       FillClusterInfo(iSensor, cluster);
@@ -114,9 +117,12 @@ Bool_t TAITactNtuClusterF::CreateClusters(Int_t iSensor)
       if (!cluster->IsValid())
          pNtuClus->GetListOfClusters(iSensor)->Remove(cluster);
    }
-   
+
+   pNtuClus->GetListOfClusters(iSensor)->Compress();
+
    if (pNtuClus->GetClustersN(iSensor))
       return true;
    
    return false;
+
 }
