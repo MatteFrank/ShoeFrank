@@ -1,8 +1,8 @@
-//TDC: max_cha, BM trigger, DAQ trigger
-TDC_channels: 64 ; 47 ; 999; 43 ; 44 ; 45 ; 46
+//TDC: max_cha, BM trigger, DAQ trigger 
+TDC_channels: 64 ; 47 ; 999 
 
-//SCALER830 max_cha
-Scaler: 32 ; 2
+//SCALER830 max_cha, busy, nobusy
+Scaler: 32 ; 1 ; 2
 
 //ADC792 max_cha
 Adc: 16 ; 4 ; 5 ; 6
