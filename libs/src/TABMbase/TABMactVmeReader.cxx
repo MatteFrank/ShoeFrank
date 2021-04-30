@@ -75,6 +75,8 @@ void TABMactVmeReader::CreateHistogram(){
   AddHistogram(fpTdcStatus);
 	fpScaStatus=new TH1I( "BmStr_ScaStatus", "sca_status; 0=ok otherwise=Error; Events", 11, -5.5, 5.5);
   AddHistogram(fpScaStatus);
+	fpScaNegative=new TH1I( "BmStr_ScaNegative", "Scaler negative measurements; Channel; Number of negative measurements", p_bmmap->GetScaMaxCh(), -0.5, p_bmmap->GetScaMaxCh()-0.5);
+  AddHistogram(fpScaNegative);
 	fpAdcStatus=new TH1I( "BmStr_AdcStatus", "adc_status; 0=ok otherwise=Error; Events", 11, -5.5, 5.5);
   AddHistogram(fpAdcStatus);
 	fpTimeEvtoev=new TH1F("BmStr_RateAcquire","Acquisition rate from time_evtoev;rate (Hz); Events",500,0,5000);
@@ -91,6 +93,7 @@ void TABMactVmeReader::CreateHistogram(){
   fpRawAdcAccDisc=new TH1I( "AdcAccDisc", "Adc overflow control; 0=ok  1=overflow; Hits",2,-0.5,1.5);
 	AddHistogram(fpRawAdcAccDisc);
   TH1F *bmRawPlot;
+  TH1I *bmRawIntPlot;
 	for(Int_t i=0;i<p_bmmap->GetTdcMaxCh();i++){
     TString title="TdcRawCha_";
     title+=i;
@@ -108,17 +111,17 @@ void TABMactVmeReader::CreateHistogram(){
 	for(Int_t i=0;i<p_bmmap->GetScaMaxCh();i++){
     TString title="ScaRawCha_";
     title+=i;
-    bmRawPlot=new TH1F( title.Data(), "Scaler measurements;Scaler counts; Events", 1001, -0.5, 1000.5);
-    AddHistogram(bmRawPlot);
-    fpRawSca.push_back(bmRawPlot);
+    bmRawIntPlot=new TH1I( title.Data(), "Scaler measurements;Scaler counts; Events", 1001, -0.5, 1000.5);
+    AddHistogram(bmRawIntPlot);
+    fpRawScaMeas.push_back(bmRawIntPlot);
   }
   p_bmcal->ResetAdc(p_bmmap->GetAdcMaxCh());
 	for(Int_t i=0;i<p_bmmap->GetAdcMaxCh();i++){
     TString title="AdcRawCha_";
     title+=i;
-    bmRawPlot=new TH1F( title.Data(), "Adc raw measurements;Adc counts; Events",2100, 0., 4200);
-    AddHistogram(bmRawPlot);
-    fpRawAdc.push_back(bmRawPlot);
+    bmRawIntPlot=new TH1I( title.Data(), "Adc raw measurements;Adc counts; Events",2100, 0., 4200);
+    AddHistogram(bmRawIntPlot);
+    fpRawAdc.push_back(bmRawIntPlot);
   }
 	for(Int_t i=0;i<p_bmmap->GetAdcMaxCh();i++){
     TString title="AdcLessPed_";
@@ -226,7 +229,9 @@ Bool_t TABMactVmeReader::Process() {
 
 		//Scaler
 		for(Int_t i=0;i<p_bmmap->GetScaMaxCh();i++){
-			fpRawSca.at(i)->Fill(sca830[i].first);
+			fpRawScaMeas.at(i)->Fill(sca830[i].first);
+			if(sca830[i].first<0)
+				fpScaNegative->Fill(i);
 		}
 		//Adc
 		for(Int_t i=0;i<p_bmmap->GetAdcMaxCh();i++){

@@ -53,8 +53,8 @@ class TABMactVmeReader : public TAGaction {
 
     vector<TH1F*> GetRawTdc(){return fpRawTdcMeas;};
     vector<TH1F*> GetTdcLessSync(){return fpRawTdcLessSync;};
-    vector<TH1F*> GetRawSca(){return fpRawSca;};
-    vector<TH1F*> GetRawAdc(){return fpRawAdc;};
+    vector<TH1I*> GetRawSca(){return fpRawScaMeas;};
+    vector<TH1I*> GetRawAdc(){return fpRawAdc;};
     vector<TH1F*> GetAdcLessPed(){return fpAdcLessPed;};
 
     //BM standalone reader methods
@@ -89,6 +89,7 @@ class TABMactVmeReader : public TAGaction {
     TH1I*            fpTotStatus;
     TH1I*            fpTdcStatus;
     TH1I*            fpScaStatus;
+    TH1I*            fpScaNegative;    //Sometime the scaler can wrongly read a negative measurement
     TH1I*            fpAdcStatus;
     TH1F*            fpTimeEvtoev;
     TH1I*            fpTimeRead;
@@ -99,9 +100,9 @@ class TABMactVmeReader : public TAGaction {
     TH1I*            fpRawAdcAccDisc;   //Adc overflow check
     vector<TH1F*> fpRawTdcMeas;         //vector of tdc channel raw measurements
     vector<TH1F*> fpRawTdcLessSync;     //vector of tdc channel meas -  sync meas
-    vector<TH1F*> fpRawSca;             //vector of scaler channel measurements
-    vector<TH1F*> fpRawAdc;             //vector of adc  channel measurements
-    vector<TH1F*> fpAdcLessPed;      //vector of adc  channel - pedestals
+    vector<TH1I*> fpRawScaMeas;         //vector of scaler channel measurements
+    vector<TH1I*> fpRawAdc;             //vector of adc  channel measurements
+    vector<TH1F*> fpAdcLessPed;         //vector of adc  channel - pedestals
 };
 
 #endif
