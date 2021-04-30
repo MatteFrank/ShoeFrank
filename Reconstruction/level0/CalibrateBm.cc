@@ -12,7 +12,7 @@ int main (int argc, char *argv[])  {
   TString in("12C_C_200_1.root");
   TString preout("");
   TString exp("");
-  TString calname, mapname;
+  TString calname, mapname, adcpedname;
 
   Int_t runNb = -1;
   Int_t nTotEv = 1e7;
@@ -31,6 +31,7 @@ int main (int argc, char *argv[])  {
      if(strcmp(argv[i],"-bmstd") == 0) { bmstd = kTRUE;  }            // Flag for the stand alone runs
      if(strcmp(argv[i],"-cal") == 0)   { calname = TString(argv[++i]);  }  // path for a specific calibration file
      if(strcmp(argv[i],"-map") == 0)   { mapname = TString(argv[++i]);  }  // path for a specific mapping file
+     if(strcmp(argv[i],"-adc") == 0)   { adcpedname = TString(argv[++i]);  }  // path for a specific mapping file
 
      if(strcmp(argv[i],"-help") == 0)  {
         cout<<" Decoder help:"<<endl;
@@ -48,8 +49,15 @@ int main (int argc, char *argv[])  {
   if (preout.IsNull()){
     preout=(evt0==kTRUE) ? "BM_T0Eval" : "BM_STREL" ;
     if(bmstd==kTRUE)
-    preout+="_bmstd";
-    cout<<"WARNING:: No output name has been set, a default name will be set with a prefix="<<endl;
+      preout+="_bmstd";
+    cout<<"WARNING:: No output name has been set, a default name will be set with a prefix="<<preout.Data()<<endl;
+  }
+  if(adcpedname.Length()>0 && bmstd==kFALSE){
+    cout<<"ERROR: bmstd=FALSE but you want to fit the adc pedestals, did you forget to add a -bmstd flag?"<<endl<<"Please check the input flags and values"<<endl<<"The program will be terminated"<<endl;
+    return 1;
+  }
+  if(adcpedname.Length()>0 && evt0==kTRUE){
+    cout<<"WARNING: you are trying to evaluate the T0s and the adc pedestals from the same file!!!!!!!!"<<endl<<"Usually they should be done with different files."<<endl;
   }
 
   TApplication::CreateApplication();
@@ -60,8 +68,8 @@ int main (int argc, char *argv[])  {
   vector<TF1*> resovec;
   TString plotname;
 
-  //BM T0 evaluation
-  if(evt0==true){
+  //BM T0 and ADC evaluation
+  if(evt0==kTRUE || adcpedname.Length()>0){
     TString rootout=preout;
     TString txtout=preout;
     rootout+=".root";
@@ -99,28 +107,40 @@ int main (int argc, char *argv[])  {
     TABMparConf* p_bmcon = (TABMparConf*) (gTAGroot->FindParaDsc("bmConf", "TABMparConf")->Object());
     TABMparCal*  p_bmcal = (TABMparCal*) (gTAGroot->FindParaDsc("bmCal", "TABMparCal")->Object());
     TABMparMap* p_bmmap = (TABMparMap*) (gTAGroot->FindParaDsc("bmMap", "TABMparMap")->Object());
+    TABMactVmeReader *p_actvmereader;
+    if(bmstd)
+      p_actvmereader=(TABMactVmeReader*)gTAGroot->FindAction("bmActRaw");
+
     if(calname.Length()>0)
       p_bmcal->FromFile(calname);
     if(mapname.Length()>0)
       p_bmmap->FromFile(mapname,p_bmgeo);
+
     p_bmcal->ResetT0();
 
     locRec->LoopEvent(nTotEv);
-    if(bmstd){
-      TABMactVmeReader *p_actvmereader=(TABMactVmeReader*)gTAGroot->FindAction("bmActRaw");
-      p_actvmereader->EvaluateT0time();
-    }else{
-      TABMactNtuRaw *p_actnturaw=(TABMactNtuRaw*)gTAGroot->FindAction("bmActRaw");
-      p_actnturaw->EvaluateT0time();
+    if(evt0==kTRUE){
+      if(bmstd){
+        p_actvmereader->EvaluateT0time();
+      }else{
+        TABMactNtuRaw *p_actnturaw=(TABMactNtuRaw*)gTAGroot->FindAction("bmActRaw");
+        p_actnturaw->EvaluateT0time();
+      }
+      p_bmcal->PrintT0s(txtout,in,gTAGroot->CurrentEventNumber());
+      p_bmcal->PrintResoStrel(txtout);
     }
-    p_bmcal->PrintT0s(txtout,in,gTAGroot->CurrentEventNumber());
-    p_bmcal->PrintResoStrel(txtout);
+    if(adcpedname.Length()>0){
+      p_actvmereader->EvaluateAdcPedestals();
+      p_bmcal->PrintAdc(adcpedname, in, gTAGroot->CurrentEventNumber());
+    }
     locRec->AfterEventLoop();
     watch.Print();
-    cout<<"BM T0 calculation done"<<endl;
-    cout<<"root output file="<<rootout.Data()<<"    txt output file="<<txtout.Data()<<endl;
+    if(evt0==kTRUE)
+      cout<<"T0 calculation done, calibration file:"<<txtout.Data()<<endl;
+    if(adcpedname.Length()>0)
+      cout<<"ADC pedestals calculation done, adc pedestal file:"<<adcpedname.Data()<<endl;
+    cout<<"root output file="<<rootout.Data()<<endl;
     delete locRec;
-
   }else{      //BM self calibration loop
     ofstream outfile;
     TString txtout=preout;
