@@ -8,6 +8,7 @@
 /*------------------------------------------+---------------------------------*/
 
 #include <map>
+#include <array>
 #include "TVector3.h"
 #include "TH1.h"
 #include "TH2.h"
