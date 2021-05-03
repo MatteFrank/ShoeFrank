@@ -9,9 +9,11 @@
 
 ClassImp(TADIgeoField);
 
+const TString TADIgeoField::fgkDefParaName = "geoField";
+
 //______________________________________________________________________________
 TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
- : TVirtualMagField(),
+ : TAGpara(),
    fpDiGeoMap(diGeo),
    fpFootGeo(0x0)
 {

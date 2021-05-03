@@ -6,14 +6,14 @@
 
 #include <TVector3.h>
 #include <TH3F.h>
-#include "TVirtualMagField.h"
 
+#include "TAGpara.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TADIparGeo.hxx"
 
 
 
-class TADIgeoField : public TVirtualMagField {
+class TADIgeoField : public TAGpara {
     
 public:
     struct point{
@@ -49,6 +49,9 @@ public:
    
    void     FromFile(TString& name);
 
+public:
+   static const Char_t* GetDefParaName()      { return fgkDefParaName.Data(); }
+   
 private:
    DimensionsProperties RetrieveProperties(TADIparGeo const* ) const;
    point    ComputeUpperPoint( point const& input_p ) const;
@@ -62,6 +65,9 @@ private:
 
    DimensionsProperties fProperties;  //not const because of ROOT
    std::vector<point>   fField;
+ 
+private:
+   static const TString fgkDefParaName;
    
    ClassDef(TADIgeoField,2)
 };
