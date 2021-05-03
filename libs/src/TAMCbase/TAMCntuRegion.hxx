@@ -71,13 +71,15 @@ public:
    
 public:
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();  }
+   static const Char_t* GetDefParaName()  { return fgkDefParaName.Data(); }
 
 private:
    TClonesArray*     fListOfRegions; // region crossing list
   
 private:
-   static TString    fgkBranchName;
-   
+   static       TString fgkBranchName;
+   static const TString fgkDefParaName;
+
    ClassDef(TAMCntuRegion,1)
    
 };
