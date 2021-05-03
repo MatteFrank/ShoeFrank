@@ -69,9 +69,9 @@ void TABMactNtuTrack::CreateHistogram()
 
   fpResTot = new TH2F("bmTrackResidual","Residual vs Rdrift; Residual [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
   AddHistogram(fpResTot);
-  fpHisMap = new TH2F("bmTrackTargetMap","BM - Position of a single track event at target center", 250, -3., 3.,250 , -3, 3);
+  fpHisMap = new TH2F("bmTrackTargetMap","BM - Position of the tracks at the target center", 250, -3., 3.,250 , -3, 3);
   AddHistogram(fpHisMap);
-  fpHisMylar12d = new TH2F("bmTrackCenter","BM - Position of a single track event on the BM center plane", 500, -3., 3.,500 , -3., 3.);
+  fpHisMylar12d = new TH2F("bmTrackCenter","BM - Position of the tracks on the BM center plane", 500, -3., 3.,500 , -3., 3.);
   AddHistogram(fpHisMylar12d);
   fpHisAngleX = new TH1F("bmTrackAngleX","BM track XZ Angular spread; XZ Angle [rad]; Events", 200, -0.3, 0.3);
   AddHistogram(fpHisAngleX);
@@ -85,15 +85,15 @@ void TABMactNtuTrack::CreateHistogram()
   AddHistogram(fpHisNhitXTrack);
   fpHisNhitYTrack = new TH1I("bmTrackNYHitsxTrack","Number of hits x track on the YZ view; N hits; Events", 17, -0.5, 16.5);
   AddHistogram(fpHisNhitYTrack);
-  fpHisNrejhitTrack = new TH1I("bmTrackNhitsRejectedxTrack","Number of hits rejected x track of a single track event; N hits; Events", 31, -0.5, 30.5);
+  fpHisNrejhitTrack = new TH1I("bmTrackNhitsRejectedxTrack","Number of hits rejected x track; N hits; Events", 31, -0.5, 30.5);
   AddHistogram(fpHisNrejhitTrack);
   fpHisTrackFakeHit = new TH1I("bmTrackFakeHits","Selected hits vs fake hits; -1=Lost primary hit 0=Selected primary hit 1=Wrong hit selected 2=correct rejection of fake hit; Events", 4, -1.5, 2.5);
   AddHistogram(fpHisTrackFakeHit);
-  fpHisChi2Red = new TH1F("bmTrackChi2Red","chi2red of a single track event", 1000, 0., 100.);
+  fpHisChi2Red = new TH1F("bmTrackChi2Red","total chi2red", 1000, 0., 100.);
   AddHistogram(fpHisChi2Red);
-  fpHisChi2XZ = new TH1F("bmTrackChi2xzView","chi2red on xz view of a single track event", 1000, 0., 100.);
+  fpHisChi2XZ = new TH1F("bmTrackChi2xzView","chi2red on xz view", 1000, 0., 100.);
   AddHistogram(fpHisChi2XZ);
-  fpHisChi2YZ = new TH1F("bmTrackChi2yzView","chi2red on yz view of a single track event", 1000, 0., 100.);
+  fpHisChi2YZ = new TH1F("bmTrackChi2yzView","chi2red on yz view", 1000, 0., 100.);
   AddHistogram(fpHisChi2YZ);
   fpNtotTrack = new TH1I("bmTrackTotNumber","Total number of tracks per event; Number of tracks; evts", 7, -0.5, 6.5);
   AddHistogram(fpNtotTrack);
