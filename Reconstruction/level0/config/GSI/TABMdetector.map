@@ -1,11 +1,11 @@
-//TDC: max_cha, BM trigger, DAQ trigger
-TdcCha: 64 ; 47 ; 999
+//TDC: max_cha, BM trigger, DAQ trigger 
+TDC_channels: 64 ; 47 ; 999 
 
-//SCALER830 max_cha,
-ScaCha: 16
+//SCALER830 max_cha, busy, nobusy
+Scaler: 32 ; 1 ; 2
 
 //ADC792 max_cha
-AdcCha: 999
+Adc: 16 ; 4 ; 5 ; 6
 
 // TDCcha (chaBoID); CellID; Plane [0-5]; View 0==U, 1==V; Idsense: 0,1,2 (a,b,c)
 bmcha: 0 ;   0  ; 0 ; 0 ; 0

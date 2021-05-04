@@ -508,8 +508,10 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TADIparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
-      if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman())
-         fField = new TADIgeoField(parGeo);
+      if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
+         TAGparaDsc* fieldDsc = new TAGparaDsc(TADIgeoField::GetDefParaName(), new TADIgeoField(parGeo));
+         fField = (TADIgeoField*)fieldDsc->Object();
+      }
    }
    
    // initialise par files for vertex

@@ -46,11 +46,13 @@ Bool_t TABMparMap::FromFile(const TString& name, TABMparGeo *bmgeo) {
 
   if (name.IsNull()){
     Error("TABMparMap::FromFile()","Input file not set!!!!");
-    return kFALSE;
+    return kTRUE;
   }else
      nameExp = name;
 
-  if (!Open(nameExp)) return false;
+  if (!Open(nameExp)) return kTRUE;
+
+  Info("FromFile", "Loading BM map from file: %s\n", nameExp.Data());
 
   if(FootDebugLevel(1))
      cout<<"TABMparMap::FromFile:: read config file from "<<nameExp.Data()<<endl<<"Now I'll printout the BM FromFile read parameters"<<endl;
@@ -80,11 +82,11 @@ Bool_t TABMparMap::FromFile(const TString& name, TABMparGeo *bmgeo) {
   if(fTdcCha.GetSize()<2 || fScaCha.GetSize()<1 || fAdcCha.GetSize()<1){
     Error("TABMparMap::FromFile()","tdc, scaler and adc values not initialized");
     cout<<"fTdcCha.GetSize()="<<fTdcCha.GetSize()<<"  fScaCha.GetSize()="<<"  fAdcCha.GetSize()="<<fAdcCha.GetSize()<<endl;
-    return kFALSE;
+    return kTRUE;
   }
   if(fTdcCha[0]<=0){
     Error("TABMparMap::FromFile()","Tdc max number of channel not set");
-    return kFALSE;
+    return kTRUE;
   }
 
   //set the start values
@@ -115,7 +117,7 @@ Bool_t TABMparMap::FromFile(const TString& name, TABMparGeo *bmgeo) {
       Error("TABMparMap::FromFile()","wrong channel id and identifiers!!!! check the map file");
       cout<<"read value 0="<<readArrayI[0]<<"  read value 1="<<readArrayI[1]<<endl;
       cout<<"fTdc2CellVec="<<fTdc2CellVec[readArrayI[0]]<<"  fCell2TdcVec="<<fCell2TdcVec[readArrayI[1]]<<endl;
-      return kFALSE;
+      return kTRUE;
     }
   }
 

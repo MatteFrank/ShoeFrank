@@ -27,7 +27,7 @@ class TABMparMap : public TAGparTools {
     Bool_t          FromFile(const TString& name, TABMparGeo *bmgeo);
 
     //getters
-    Int_t GetTdcMaxcha() const {return fTdcCha[0];}
+    Int_t GetTdcMaxCh() const {return fTdcCha[0];}
     Int_t GetBmTrefCh()  const {return fTdcCha[1];}
     Int_t GetDaqTrefCh() const {return fTdcCha[2];}
     Int_t GetScaMaxCh()  const {return fScaCha[0];}

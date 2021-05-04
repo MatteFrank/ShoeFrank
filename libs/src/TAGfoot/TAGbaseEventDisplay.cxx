@@ -211,6 +211,23 @@ void TAGbaseEventDisplay::ReadParFiles()
 }
 
 //__________________________________________________________
+void TAGbaseEventDisplay::SetRecoOptions()
+{
+   fReco->DisableTree();
+   fReco->DisableSaveHits();
+   fReco->EnableHisto();
+   
+   if (fgTrackFlag) {
+      fReco->SetVtxTrackingAlgo(fgVtxTrackingAlgo[0]);
+      fReco->EnableTracking();
+   }
+   
+   fpFootGeo = fReco->GetGeoTrafo();
+   
+   gTAGroot->SetRunNumber(fRunNumber);
+}
+
+//__________________________________________________________
 void TAGbaseEventDisplay::BuildDefaultGeometry()
 {
    TAEDbaseInterface::BuildDefaultGeometry();

@@ -80,9 +80,9 @@ protected:
    void AddRequiredRawItem();
    void AddRequiredRecItem();
 
-   
    void ReadParFiles();
-
+   void SetRecoOptions();
+   
    void UpdateStcElements();
    void UpdateLayerElements();
    void UpdateBarElements();

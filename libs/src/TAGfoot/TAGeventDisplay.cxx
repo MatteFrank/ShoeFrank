@@ -74,19 +74,8 @@ void TAGeventDisplay::SetLocalReco()
    } else
       Error("SetLocalReco()", "Unknown type %d", fType);
 
-   fReco->DisableTree();
-   fReco->DisableSaveHits();
-   fReco->EnableHisto();
-
-   if (fgTrackFlag) {
-      fReco->SetVtxTrackingAlgo(fgVtxTrackingAlgo[0]);
-      fReco->EnableTracking();
-   }
+   SetRecoOptions();
 
    if (fgStdAloneFlag)
       LocalReco::EnableStdAlone();
-
-   fpFootGeo = fReco->GetGeoTrafo();
-  
-   gTAGroot->SetRunNumber(fRunNumber);
 }
