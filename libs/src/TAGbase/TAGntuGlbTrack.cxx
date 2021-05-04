@@ -225,7 +225,7 @@ Double_t TAGtrack::Distance(TAGtrack* track, Float_t z) const
 }
 
 //------------------------------------------+-----------------------------------
-TVector3 GetPosition( double z ){
+TVector3 TAGtrack::GetPosition( double z ){
     return TVector3{
         fParameters.parameter_x[3] * z * z * z + fParameters.parameter_x[2] * z * z + fParameters.parameter_x[1] * z + fParameters.parameter_x[0],
         fParameters.parameter_y[1] * z + fParameters.parameter_y[0],

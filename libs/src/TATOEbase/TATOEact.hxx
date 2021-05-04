@@ -1347,7 +1347,7 @@ private:
                                                   static_cast<double>(track.particle.charge),
                                                   track.tof  );
 //            std::cout << "registered_momentum: " << track_h->GetMomentum() << "\n";
-
+            track_h->SetParameters( track.parameters );
             
             
 //            std::cout << "track:\n";
