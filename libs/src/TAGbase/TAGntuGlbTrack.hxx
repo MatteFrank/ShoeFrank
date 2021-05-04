@@ -19,7 +19,7 @@ using namespace std;
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
 #include "TAGntuPoint.hxx"
-
+//
 class TAGtrack : public TAGobject {
 public:
     struct polynomial_fit_parameters{
@@ -116,6 +116,9 @@ public:
    void             Clear(Option_t* opt="");
    
    void             SetupClones();
+    
+    void             SetParameters( polynomial_fit_parameters parameters ){ fParameters = std::move( parameters ); }
+   TVector3         GetPosition( double z );
    
 private:
    Double32_t       fMass;
@@ -136,6 +139,8 @@ private:
    TClonesArray*    fListOfMeasPoints;          // Attached measured points
    TClonesArray*    fListOfCorrPoints;          // Attached corrected points
 
+    polynomial_fit_parameters fParameters;
+    
    ClassDef(TAGtrack,2)
    
 };
