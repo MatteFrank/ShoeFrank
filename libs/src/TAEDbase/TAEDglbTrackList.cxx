@@ -1,25 +1,25 @@
 #include <Riostream.h>
 
-#include "TAEDglbTrackLine.hxx"
-#include "TAEDglbTrackLineList.hxx"
+#include "TAEDglbTrack.hxx"
+#include "TAEDglbTrackList.hxx"
 
 //__________________________________________________________
-TAEDglbTrackLineList::TAEDglbTrackLineList(const Char_t* name)
+TAEDglbTrackList::TAEDglbTrackList(const Char_t* name)
  : TEveElementList(name),
    fNofTracks(0)
 {
 }
 
 //__________________________________________________________
-TAEDglbTrackLineList::~TAEDglbTrackLineList()
+TAEDglbTrackList::~TAEDglbTrackList()
 {
   // default destructor
 }
 
 //__________________________________________________________
-TAEDglbTrackLine* TAEDglbTrackLineList::NewTrack(const Char_t* label)
+TAEDglbTrack* TAEDglbTrackList::NewTrack(const Char_t* label)
 {
-   TAEDglbTrackLine* track = new TAEDglbTrackLine(label);
+   TAEDglbTrack* track = new TAEDglbTrack(label);
    fNofTracks++;
    AddElement(track);
    
@@ -27,7 +27,7 @@ TAEDglbTrackLine* TAEDglbTrackLineList::NewTrack(const Char_t* label)
 }
 
 //__________________________________________________________
-void TAEDglbTrackLineList::ResetTracks()
+void TAEDglbTrackList::ResetTracks()
 {
    RemoveElements();
    fNofTracks = 0;

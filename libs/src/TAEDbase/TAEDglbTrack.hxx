@@ -1,19 +1,19 @@
-#ifndef _TAEDglbTrackLine_HXX_
-#define _TAEDglbTrackLine_HXX_
+#ifndef _TAEDglbTrack_HXX_
+#define _TAEDglbTrack_HXX_
 
 #include "TEveStraightLineSet.h"
 #include "TVector3.h"
 
-/** TAEDglbTrackLine a class to display global track line on event
+/** TAEDglbTrack a class to display global track line on event
  
  */
 
-class TAEDglbTrackLine : public  TEveStraightLineSet
+class TAEDglbTrack : public  TEveStraightLineSet
 {
    
 public:
-   TAEDglbTrackLine(const Text_t* name);
-   virtual ~TAEDglbTrackLine();
+   TAEDglbTrack(const Text_t* name);
+   virtual ~TAEDglbTrack();
    
    //! Add line
    void AddTracklet(Int_t Z, Float_t x1, Float_t y1, Float_t z1, Float_t x2, Float_t y2, Float_t z2);
