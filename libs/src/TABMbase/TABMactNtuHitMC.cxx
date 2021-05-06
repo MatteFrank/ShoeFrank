@@ -178,7 +178,7 @@ Bool_t TABMactNtuHitMC::Action()
 	  }
   }
 
-  if(p_bmcon->GetSmearHits())
+  if(p_bmcon->GetSmearHits()==2)
     CreateFakeHits();
 
   //histos

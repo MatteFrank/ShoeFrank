@@ -79,7 +79,7 @@ class TABMparConf : public TAGparTools {
     Float_t   fAssHitErr;         //to select a hit for the reco in checkasshits (high value=more selected hits)
 
     //MC parameters
-    Int_t     fSmearHits;         //0=no fSmearHits on MC, 1=smear the number of hits
+    Int_t     fSmearHits;         //0=no fSmearHits on MC, 1=add BM efficiency effect, 2=use createfakehits
     Int_t     fSmearRDrift;       //0=no smear rdrift, 1=gauss truncated 1sigma, 2=gaus 2sigma, 3=gaus 3sigma, 4=gaus no truncated, 5=uniform
     Float_t   fEnThresh;          //Energy Threshold in GeV on the particle energy release
 
