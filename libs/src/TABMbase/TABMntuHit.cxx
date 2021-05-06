@@ -23,16 +23,17 @@ TString TABMntuHit::fgkBranchName   = "bmrh.";
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
-TABMntuHit::TABMntuHit() :
-  fListOfHits(0x0) {
-    fEffPaoloni=-3;
-    fEffPaoloniXview=-3;
-    fEffPaoloniYview=-3;
-    fNselhitX=0;
-    fNselhitY=0;
-    fNtothitX=0;
-    fNtothitY=0;
-  }
+TABMntuHit::TABMntuHit()
+ : fListOfHits(0x0),
+   fEffPaoloni(-3),
+   fEffPaoloniXview(-3),
+   fEffPaoloniYview(3),
+   fSelhitsNX(0),
+   fSelhitsNY(0),
+   fTothitsNX(0),
+   fTothitsNY(0)
+{
+}
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
@@ -50,9 +51,9 @@ TABMhit* TABMntuHit::NewHit(Int_t id, Int_t il, Int_t iv, Int_t ic, Double_t r, 
   TClonesArray &pixelArray = *fListOfHits;
   TABMhit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TABMhit(id, il, iv, ic, r, t,  s);
   if(iv==0)
-    ++fNtothitY;
+    ++fTothitsNY;
   else
-    ++fNtothitX;
+    ++fTothitsNX;
   fCellOccMap[id]++;
   return hit;
 }
@@ -78,10 +79,10 @@ void TABMntuHit::Clear(Option_t*)
     fEffPaoloni=-3;
     fEffPaoloniXview=-3;
     fEffPaoloniYview=-3;
-    fNselhitX=0;
-    fNselhitY=0;
-    fNtothitX=0;
-    fNtothitY=0;
+    fSelhitsNX=0;
+    fSelhitsNY=0;
+    fTothitsNX=0;
+    fTothitsNY=0;
   return;
 }
 

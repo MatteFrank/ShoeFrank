@@ -385,7 +385,7 @@ public:
     Stepper& call_stepper() {return stepper_m;}
     double& step_length() {return step_m;}
     const double& step_length() const {return step_m;}
-    const double max_step_length() const {return maxStepLength_m;}
+    double max_step_length() const {return maxStepLength_m;}
     
 public:
     template< class Stepper_,

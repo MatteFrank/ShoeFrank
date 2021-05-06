@@ -1347,7 +1347,7 @@ private:
                                                   static_cast<double>(track.particle.charge),
                                                   track.tof  );
 //            std::cout << "registered_momentum: " << track_h->GetMomentum() << "\n";
-
+            track_h->SetParameters( track.parameters );
             
             
 //            std::cout << "track:\n";
@@ -1410,7 +1410,7 @@ private:
 
                     auto const * vertex_h = dynamic_cast<TAVTcluster const*>( value.data );
                     if( vertex_h ){
-                        TVector3 measured_position{ transformation_h->FromVTLocalToGlobal(value.data->GetPosition()) };
+                        TVector3 measured_position{ transformation_h->FromVTLocalToGlobal(value.data->GetPositionG()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
                         measured_h->SetDevName( TAVTparGeo::GetBaseName() );
 //                        std::cout << " in " << TAVTparGeo::GetBaseName() ;
@@ -1427,7 +1427,7 @@ private:
                     }
                     auto const * it_h = dynamic_cast<TAITcluster const*>( value.data );
                     if( it_h ){
-                        TVector3 measured_position{ transformation_h->FromITLocalToGlobal(value.data->GetPosition()) };
+                        TVector3 measured_position{ transformation_h->FromITLocalToGlobal(value.data->GetPositionG()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
                         measured_h->SetDevName( TAITparGeo::GetBaseName() );
 //                        std::cout << " in " << TAITparGeo::GetBaseName();
@@ -1444,7 +1444,7 @@ private:
                     }
                     auto const * msd_h = dynamic_cast<TAMSDcluster const*>( value.data );
                     if( msd_h ){
-                        TVector3 measured_position{ transformation_h->FromMSDLocalToGlobal(value.data->GetPosition()) };
+                        TVector3 measured_position{ transformation_h->FromMSDLocalToGlobal(value.data->GetPositionG()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
                         measured_h->SetDevName( TAMSDparGeo::GetBaseName() );
 //                        std::cout << " in " << TAMSDparGeo::GetBaseName();
@@ -1461,7 +1461,7 @@ private:
                     }
                     auto const * tw_h = dynamic_cast<TATWpoint const*>( value.data );
                     if( tw_h ){
-                        TVector3 measured_position{ transformation_h->FromTWLocalToGlobal(value.data->GetPosition()) };
+                        TVector3 measured_position{ transformation_h->FromTWLocalToGlobal(value.data->GetPositionG()) };
                         auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
                         measured_h->SetDevName( TATWparGeo::GetBaseName() );
 //                        std::cout << " in " << TATWparGeo::GetBaseName() ;

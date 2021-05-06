@@ -42,7 +42,7 @@ EnableHisto:         y
 EnableTracking:      y
 
 EnableSaveHits:      n
-EnableRootObject:    n
+EnableRootObject:    y
 EnableTWZmc:         n
 EnableTWnoPU:        n
 EnableTWZmatch:      y

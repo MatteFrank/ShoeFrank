@@ -40,21 +40,21 @@ class TABMntuHit : public TAGdata {
 
 
     //getters
-    Int_t             GetHitsN()    const{return fListOfHits->GetEntries();};
-    Int_t             GetNselhitx() const{return fNselhitX;};
-    Int_t             GetNselhity() const{return fNselhitY;};
-    Int_t             GetNtothitx() const{return fNtothitX;};
-    Int_t             GetNtothity() const{return fNtothitY;};
-    Int_t             GetNselhits() const{return fNselhitX + fNselhitY;};
+    Int_t             GetHitsN()     const { return fListOfHits->GetEntries(); }
+    Int_t             GetSelhitsNx() const { return fSelhitsNX; }
+    Int_t             GetSelhitsNy() const { return fSelhitsNY; }
+    Int_t             GetTothitsNx() const { return fTothitsNX; }
+    Int_t             GetTothitsNy() const { return fTothitsNY; }
+    Int_t             GetSelhitsNs() const { return fSelhitsNX + fSelhitsNY; }
 
     //setters
-    void              SetNselhitx(Int_t selin){fNselhitX=selin; return;};
-    void              SetNselhity(Int_t selin){fNselhitY=selin; return;};
+    void              SetSelhitsNx(Int_t selin) { fSelhitsNX=selin; }
+    void              SetSelhitsNy(Int_t selin) { fSelhitsNY=selin; }
 
     //other
-    TABMhit*       GetHit(Int_t i);
-    const TABMhit*       GetHit(Int_t i) const;
-    TABMhit*       NewHit(Int_t id, Int_t il, Int_t iv, Int_t ic, Double_t r, Double_t t, Double_t s);
+    TABMhit*          GetHit(Int_t i);
+    const TABMhit*    GetHit(Int_t i) const;
+    TABMhit*          NewHit(Int_t id, Int_t il, Int_t iv, Int_t ic, Double_t r, Double_t t, Double_t s);
 
     //CellOccupy
     void ClearCellOccupy();
@@ -78,12 +78,12 @@ class TABMntuHit : public TAGdata {
     Float_t          fEffPaoloniYview;   //value of the efficiency calculated with the Paoloni's method for the yz view
 
     //for the reconstructed track
-    Int_t            fNselhitX;           //number of selected hits on x view for the reconstructed track
-    Int_t            fNselhitY;           //number of selected hits on y view for the reconstructed track
-    Int_t            fNtothitX;           //Total number of  hits on xz view
-    Int_t            fNtothitY;           //Total number of  hits on yz view
+    Int_t            fSelhitsNX;           //number of selected hits on x view for the reconstructed track
+    Int_t            fSelhitsNY;           //number of selected hits on y view for the reconstructed track
+    Int_t            fTothitsNX;           //Total number of  hits on xz view
+    Int_t            fTothitsNY;           //Total number of  hits on yz view
 
-    ClassDef(TABMntuHit,1)
+    ClassDef(TABMntuHit,2)
 };
 
 

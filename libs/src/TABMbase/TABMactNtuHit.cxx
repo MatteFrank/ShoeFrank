@@ -193,8 +193,8 @@ Bool_t TABMactNtuHit::Action()
     if(p_nturaw->GetEffPaoloniyview()>=0)
       fpHisEval_paoloni_Yview->Fill(p_nturaw->GetEffPaoloniyview());
 		fpHisHitTotDist->Fill(p_nturaw->GetHitsN());
-		fpHisHitXzviewDist->Fill(p_nturaw->GetNtothitx());
-		fpHisHitYzviewDist->Fill(p_nturaw->GetNtothity());
+		fpHisHitXzviewDist->Fill(p_nturaw->GetTothitsNx());
+		fpHisHitYzviewDist->Fill(p_nturaw->GetTothitsNy());
   }
 
   if(FootDebugLevel(1))
