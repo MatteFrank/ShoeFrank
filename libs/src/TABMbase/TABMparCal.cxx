@@ -265,7 +265,7 @@ void TABMparCal::PrintResoStrel(TString output_filename){
 
 void TABMparCal::ResetStrelFunc(){
   delete fpSTrel;
-  fpSTrel=new TF1("McStrel","0.00773*x -5.169244e-05*x*x + 1.89286e-07*x*x*x -2.465242e-10*x*x*x*x", 0., 330.);
+  fpSTrel=new TF1("McStrel","0.0096625*x -6.461555e-05*x*x + 2.366075e-07*x*x*x -3.0815525e-10*x*x*x*x", 0., 330.);
 }
 
 void TABMparCal::SetResoFunc(TF1* inreso){
@@ -276,10 +276,6 @@ void TABMparCal::SetResoFunc(TF1* inreso){
 void TABMparCal::SetSTrelFunc(TF1* instrel){
   delete fpSTrel;
   fpSTrel=(TF1*)(instrel->Clone("bmParSTrel"));
-}
-
-Double_t TABMparCal:: GetTimeFromRDrift(Double_t rdrift){
-  return (rdrift<=0.8) ? fpSTrel->GetX(rdrift) : (rdrift+1.156)/0.006;
 }
 
 /*------------------------------------------+---------------------------------*/

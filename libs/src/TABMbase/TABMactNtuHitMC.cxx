@@ -162,7 +162,7 @@ Bool_t TABMactNtuHitMC::Action()
 					TABMhit* hit = fDigitizer->GetCurrentHit();
 	        hit->SetIsFake((trackId==0) ? 0 : 1);
 	        hit->AddMcTrackIdx(trackId, i);
-        } 
+        }
 
 	      if(ValidHistogram() && !added){
 					fpDisRdrift->Fill(rdrift);
