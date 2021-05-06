@@ -4,22 +4,22 @@
 #include "TEveRGBAPalette.h"
 #include "TColor.h"
 
-#include "TAEDglbTrack.hxx"
+#include "TAEDeveGlbTrack.hxx"
 
 //__________________________________________________________
-TAEDglbTrack::TAEDglbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop)
+TAEDeveGlbTrack::TAEDeveGlbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop)
  : TEveTrack(track, prop)
 {
 }
 
 //__________________________________________________________
-TAEDglbTrack::~TAEDglbTrack()
+TAEDeveGlbTrack::~TAEDeveGlbTrack()
 {
   // default destructor
 }
 
 //__________________________________________________________
-void TAEDglbTrack::AddTrackPoint(TVector3& point, TVector3& mom)
+void TAEDeveGlbTrack::AddTrackPoint(TVector3& point, TVector3& mom)
 {
    AddPathMark(TEvePathMarkD(TEvePathMarkD::kReference,
                              TEveVectorD(point[0], point[1], point[2]),
@@ -27,13 +27,13 @@ void TAEDglbTrack::AddTrackPoint(TVector3& point, TVector3& mom)
 }
                               
 //__________________________________________________________
-void TAEDglbTrack::ResetTrack()
+void TAEDeveGlbTrack::ResetTrack()
 {
    Reset();
 }
 
 //__________________________________________________________
-void TAEDglbTrack::TrackId(TObject* obj)
+void TAEDeveGlbTrack::TrackId(TObject* obj)
 {
    fTrackId = obj;
 }

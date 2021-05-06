@@ -1,22 +1,22 @@
-#ifndef _TAEDglbTrackList_HXX_
-#define _TAEDglbTrackList_HXX_
+#ifndef _TAEDeveGlbTrackList_HXX_
+#define _TAEDeveGlbTrackList_HXX_
 
 
 #include "TEveTrack.h"
 #include "TVector3.h"
 
-/** TAEDglbTrackList a class to display global tracks on event
+/** TAEDeveGlbTrackList a class to display global tracks on event
  
 */
 class TEveRGBAPalette;
 class TADIeveTrackPropagator;
 class TAEDglbTrack;
 
-class TAEDglbTrackList : public TEveTrackList {
+class TAEDeveGlbTrackList : public TEveTrackList {
 
 public:
-   TAEDglbTrackList(const Char_t* name = "", TADIeveTrackPropagator* prop = 0x0);
-   virtual ~TAEDglbTrackList();
+   TAEDeveGlbTrackList(const Char_t* name = "", TADIeveTrackPropagator* prop = 0x0);
+   virtual ~TAEDeveGlbTrackList();
   
    //! return number of tracks
    Int_t GetNofTracks()     const { return fNofTracks; }
@@ -28,7 +28,7 @@ public:
    void SetMaxMomentum(Float_t m);
    
    //! Add Track
-   TAEDglbTrack* AddTrack(TVector3& vertex, TVector3& momentum, Int_t charge);
+   TAEDeveGlbTrack* AddTrack(TVector3& vertex, TVector3& momentum, Int_t charge);
   
    //! Reset tracks
    void ResetTracks();

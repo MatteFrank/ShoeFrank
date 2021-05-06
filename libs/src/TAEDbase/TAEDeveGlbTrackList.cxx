@@ -5,11 +5,11 @@
 #include "TColor.h"
 
 #include "TADIeveTrackPropagator.hxx"
-#include "TAEDglbTrack.hxx"
-#include "TAEDglbTrackList.hxx"
+#include "TAEDeveGlbTrack.hxx"
+#include "TAEDeveGlbTrackList.hxx"
 
 //__________________________________________________________
-TAEDglbTrackList::TAEDglbTrackList(const Char_t* name, TADIeveTrackPropagator* prop)
+TAEDeveGlbTrackList::TAEDeveGlbTrackList(const Char_t* name, TADIeveTrackPropagator* prop)
  : TEveTrackList(name, prop),
    fPalette(new TEveRGBAPalette()),
    fNofTracks(0),
@@ -20,14 +20,14 @@ TAEDglbTrackList::TAEDglbTrackList(const Char_t* name, TADIeveTrackPropagator* p
 }
 
 //__________________________________________________________
-TAEDglbTrackList::~TAEDglbTrackList()
+TAEDeveGlbTrackList::~TAEDeveGlbTrackList()
 {
   // default destructor
    delete fPalette;
 }
 
 //__________________________________________________________
-TAEDglbTrack* TAEDglbTrackList::AddTrack(TVector3& vertex, TVector3& moment, Int_t charge)
+TAEDeveGlbTrack* TAEDeveGlbTrackList::AddTrack(TVector3& vertex, TVector3& moment, Int_t charge)
 {
    TEveRecTrackD *recTrack = new TEveRecTrackD();
    recTrack->fV.Set(vertex[0], vertex[1], vertex[2]);
@@ -39,7 +39,7 @@ TAEDglbTrack* TAEDglbTrackList::AddTrack(TVector3& vertex, TVector3& moment, Int
    const UChar_t* pix = fPalette->ColorFromValue(mag);
    Int_t          ci  = TColor::GetColor(pix[0], pix[1], pix[2]);
    
-   TAEDglbTrack* track = new TAEDglbTrack(recTrack, fPropagator);
+   TAEDeveGlbTrack* track = new TAEDeveGlbTrack(recTrack, fPropagator);
    track->SetLineColor(ci);
    
    fNofTracks++;
@@ -52,14 +52,14 @@ TAEDglbTrack* TAEDglbTrackList::AddTrack(TVector3& vertex, TVector3& moment, Int
 }
 
 //__________________________________________________________
-void TAEDglbTrackList::ResetTracks()
+void TAEDeveGlbTrackList::ResetTracks()
 {
    RemoveElements();
    fNofTracks = 0;
 }
 
 //__________________________________________________________
-void TAEDglbTrackList::SetMaxMomentum(Float_t m)
+void TAEDeveGlbTrackList::SetMaxMomentum(Float_t m)
 {
    fPalette->SetMax(Int_t(m+0.5));
    fMaxMomentum = Int_t(m+0.5);

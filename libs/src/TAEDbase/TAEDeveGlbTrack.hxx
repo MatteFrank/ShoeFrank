@@ -1,20 +1,20 @@
-#ifndef _TAEDglbTrack_HXX_
-#define _TAEDglbTrack_HXX_
+#ifndef _TAEDeveGlbTrack_HXX_
+#define _TAEDeveGlbTrack_HXX_
 
 
 #include "TEveTrack.h"
 #include "TVector3.h"
 
-/** TAEDglbTrack a class to display global tracks on event
+/** TAEDeveGlbTrack a class to display global tracks on event
  
 */
 class TEveTrackPropagator;
 
-class TAEDglbTrack : public TEveTrack {
+class TAEDeveGlbTrack : public TEveTrack {
 
 public:
-   TAEDglbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop);
-   virtual ~TAEDglbTrack();
+   TAEDeveGlbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop);
+   virtual ~TAEDeveGlbTrack();
     
    //! Add track point
    void AddTrackPoint(TVector3& point, TVector3& mom);
