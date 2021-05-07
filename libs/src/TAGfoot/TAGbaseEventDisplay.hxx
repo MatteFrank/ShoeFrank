@@ -56,7 +56,7 @@ public:
    
    void UpdateHitInfo(TEveDigitSet* qs, Int_t idx);
    void UpdateTrackInfo(TEveDigitSet* qs, Int_t idx);
-   void UpdateTrackInfo(TEveStraightLineSet* ts, Int_t idx);
+   void UpdateGlbTrackInfo(TEveDigitSet* ts, Int_t idx);
    void UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx);
    
 protected:

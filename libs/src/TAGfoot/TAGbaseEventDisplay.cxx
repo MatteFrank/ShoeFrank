@@ -458,7 +458,7 @@ void TAGbaseEventDisplay::ConnectElements()
    }
 
    if (TAGrecoManager::GetPar()->IncludeTOE()) {
-      TQObject::Connect("TAEDglbTrack", "SecSelected(TEveStraightLineSet*, Int_t)", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveStraightLineSet*, Int_t)");
+      TQObject::Connect("TEveDigitSet", "SecSelected(TEveDigitSet*, Int_t)", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
 }
 
@@ -647,10 +647,10 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
 }
 
 //__________________________________________________________
-void TAGbaseEventDisplay::UpdateTrackInfo(TEveStraightLineSet* ts, Int_t)
+void TAGbaseEventDisplay::UpdateGlbTrackInfo(TEveDigitSet* ts, Int_t idx)
 {
-   TAEDglbTrack* lineTracks = dynamic_cast<TAEDglbTrack*> (ts);
-   TObject* obj = lineTracks->GetTrackId();
+   TAEDtrack* lineTracks = dynamic_cast<TAEDtrack*> (ts);
+   TObject* obj = lineTracks->GetId(idx);
 
    if (obj->InheritsFrom("TAGtrack")) {
 
@@ -1093,8 +1093,8 @@ void TAGbaseEventDisplay::UpdateGlbTrackElements()
       TAGtrack* track = pNtuTrack->GetTrack(iTrack);
       Int_t charge    = track->GetCharge();
 
-      TAEDglbTrack* glbTrack = fGlbTrackDisplay->NewTrack(Form("Track%d", iTrack));
-      glbTrack->TrackId(track);
+      TAEDtrack* glbTrack = fGlbTrackDisplay->NewTrack(Form("Track%d", iTrack));
+      glbTrack->ResetTracks();
 
       TAGpoint* point = track->GetMeasPoint(0);
       Float_t z1      = point->GetPosition().Z();
@@ -1109,6 +1109,9 @@ void TAGbaseEventDisplay::UpdateGlbTrackElements()
          pos1 = pos2;
          
       } // end loop on points
+      glbTrack->TrackId(track);
+      glbTrack->RefitPlex();
+
    } // end loop on tracks
 }
 
