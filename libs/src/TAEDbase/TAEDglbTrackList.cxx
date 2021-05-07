@@ -1,12 +1,15 @@
 #include <Riostream.h>
 
-#include "TAEDglbTrack.hxx"
+#include "TAEDtrack.hxx"
 #include "TAEDglbTrackList.hxx"
 
 //__________________________________________________________
 TAEDglbTrackList::TAEDglbTrackList(const Char_t* name)
  : TEveElementList(name),
-   fNofTracks(0)
+   fNofTracks(0),
+   fBoxDefWidth(0.5),
+   fBoxDefHeight(0.5),
+   fMaxEnergy(16)
 {
 }
 
@@ -17,9 +20,16 @@ TAEDglbTrackList::~TAEDglbTrackList()
 }
 
 //__________________________________________________________
-TAEDglbTrack* TAEDglbTrackList::NewTrack(const Char_t* label)
+TAEDtrack* TAEDglbTrackList::NewTrack(const Char_t* label)
 {
-   TAEDglbTrack* track = new TAEDglbTrack(label);
+   TAEDtrack* track = new TAEDtrack(label);
+   track->AddNewTrack();
+   
+   track->SetMaxEnergy(fMaxEnergy);
+   track->SetDefWidth(fBoxDefWidth);
+   track->SetDefHeight(fBoxDefHeight);
+   track->SetPickable(true);
+   
    fNofTracks++;
    AddElement(track);
    

@@ -28,7 +28,7 @@ TAEDtrack::TAEDtrack(const Text_t* name)
     fBoxVert(),
     fNofTracks(0),
     fHitIdPerTrack(0),
-	fStyle("Rectangle")
+	 fStyle("Rectangle")
 { 
   // default constructor
   fBoxVert.Set(32);
@@ -91,6 +91,12 @@ void TAEDtrack::AddNewTrack()
 {
   fNofTracks++;
   fHitIdPerTrack = 0;
+}
+
+//__________________________________________________________
+void TAEDtrack::AddTracklet(Float_t Z, TVector3 pos1, TVector3 pos2)
+{
+   AddTracklet(Z, pos1[0], pos1[1], pos1[2], pos2[0], pos2[1], pos2[2]);
 }
 
 //__________________________________________________________

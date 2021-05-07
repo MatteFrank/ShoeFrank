@@ -57,7 +57,8 @@ public:
   
   //! Add Track
   void AddTracklet(Float_t e, Float_t x1, Float_t y1, Float_t z1, Float_t x2, Float_t y2, Float_t z2, Bool_t eTot = false);
-  
+  void AddTracklet(Float_t Z, TVector3 pos1, TVector3 pos2);
+
   //! Reset tracks
   void ResetTracks();
   
