@@ -162,7 +162,7 @@ Bool_t TABMactNtuHitMC::Action()
 					TABMhit* hit = fDigitizer->GetCurrentHit();
 	        hit->SetIsFake((trackId==0) ? 0 : 1);
 	        hit->AddMcTrackIdx(trackId, i);
-        } 
+        }
 
 	      if(ValidHistogram() && !added){
 					fpDisRdrift->Fill(rdrift);
@@ -178,7 +178,7 @@ Bool_t TABMactNtuHitMC::Action()
 	  }
   }
 
-  if(p_bmcon->GetSmearHits())
+  if(p_bmcon->GetSmearHits()==2)
     CreateFakeHits();
 
   //histos

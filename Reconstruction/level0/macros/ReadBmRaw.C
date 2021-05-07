@@ -17,21 +17,30 @@
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
 #include "TAGgeoTrafo.hxx"
-
+#include "TAGcampaignManager.hxx"
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 
 #include "TAGparGeo.hxx"
 
+#include "TASTparGeo.hxx"
 #include "TASTparMap.hxx"
+#include "TATWparMap.hxx"
+#include "TATWparGeo.hxx"
+#include "TAGbaseWDparMap.hxx"
+#include "TAGbaseWDparTime.hxx"
+#include "TAGactWDreader.hxx"
+
 #include "TASTntuRaw.hxx"
-#include "TASTactDatRaw.hxx"
+#include "TASTntuHit.hxx"
+#include "TASTactNtuHit.hxx"
 
 #include "TABMparGeo.hxx"
 #include "TABMparMap.hxx"
 #include "TABMparConf.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMntuHit.hxx"
+#include "TABMtrack.hxx"
 #include "TABMactNtuRaw.hxx"
 #include "TABMactNtuHit.hxx"
 #include "TABMactNtuTrack.hxx"
@@ -41,86 +50,95 @@
 #endif
 
 // main
+TAGcampaignManager* campManager  = 0x0;
 TAGactTreeWriter* outFile   = 0x0;
-
 TAGactDaqReader*  daqActReader = 0x0;
-TASTactDatRaw* stActDatRaw  = 0x0;
-TABMactNtuRaw* bmActDatRaw  = 0x0;
-TABMactNtuHit* bmActNtuRaw  = 0x0;
+
+TASTactNtuHit* stActNtuHit  = 0x0;
+TAGactWDreader* fActWdRaw  = 0x0;
+TABMactNtuRaw* bmActNtuRaw  = 0x0;
+TABMactNtuHit* bmActNtuHit  = 0x0;
 TABMactNtuTrack* bmActTrack = 0x0;
 
-int GetRunNumber(TString name){
-   // Done by hand shoud be given by DAQ header
-   if (name.IsNull()) return 0;
-   // protection about file name starting with .
-   if (name[0] == '.')
-      name.Remove(0,1);
-   Int_t pos1   = name.First(".");
-   Int_t len    = name.Length();
-   TString tmp1 = name(pos1+1, len);
-   Int_t pos2   = tmp1.First(".");
-   TString tmp  = tmp1(0, pos2);
-   return tmp.Atoi();
- }
 
-void FillBm(TString fExpName) {
+void FillBm(Int_t runNumber) {
    
    cout<<"start FillBm"<<endl;
    
-   //parameters
-   TAGparaDsc* tgGeo = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
-   TAGparGeo* parGeo = (TAGparGeo*)tgGeo->Object();
-   parGeo->FromFile();
-     
-   TAGparaDsc* bmGeo    = new TAGparaDsc("bmGeo", new TABMparGeo());
+   //parameters     
+   TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
    TABMparGeo* bmgeomap   = (TABMparGeo*) bmGeo->Object();
-   TString parFileName = "./geomaps/TABMdetector.geo";
+   TString parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
    bmgeomap->FromFile(parFileName.Data());
 
    TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparConf());
-   TABMparConf* parConf = (TABMparConf*)bmConf->Object();
-   parFileName = "./config/TABMdetector.cfg";
-   parConf->FromFile(parFileName.Data());
-   parFileName = Form("./config/%sTABM_T0_Calibration.cal", fExpName.Data());
-   parConf->loadT0s(parFileName);
+   TABMparConf* bmparConf = (TABMparConf*)bmConf->Object();
+   parFileName = campManager->GetCurConfFile(TABMparGeo::GetBaseName(), runNumber);
+   bmparConf->FromFile(parFileName.Data());   
+
+   TAGparaDsc*  bmCal  = new TAGparaDsc("bmCal", new TABMparCal());
+   TABMparCal* bmparCal = (TABMparCal*)bmCal->Object();
+   parFileName = campManager->GetCurCalFile(TABMparGeo::GetBaseName(), runNumber);
+   bmparCal->FromFile(parFileName.Data());
    
    TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
    TABMparMap*  bmparMap = (TABMparMap*)bmMap->Object();
-   parFileName = Form("./config/%sTABMdetector.map", fExpName.Data());
+   parFileName = campManager->GetCurMapFile(TABMparGeo::GetBaseName(), runNumber);
    bmparMap->FromFile(parFileName.Data(), bmgeomap);
    
-   TAGparaDsc* fpParTimeSt = new TAGparaDsc("stTime", new TASTparTime()); // need the file
-   TASTparTime* parTimeSt = (TASTparTime*) fpParTimeSt->Object();
-   parTimeSt->FromFile("GSI", 2190);
-  
-   TAGparaDsc*  stMap  = new TAGparaDsc("stMap", new TASTparMap());
-   TASTparMap*  stparMap = (TASTparMap*)stMap->Object();
-   parFileName="./config/TASTdetector.cfg";
-   stparMap->FromFile(parFileName.Data());
+   TAGparaDsc* fpParGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
+   TASTparGeo* stparGeo = (TASTparGeo*)fpParGeoSt->Object();
+   parFileName = campManager->GetCurGeoFile(TASTparGeo::GetBaseName(), runNumber);
+   stparGeo->FromFile(parFileName.Data());
+
+   TAGparaDsc* fpParMapSt = new TAGparaDsc("stMap", new TASTparMap()); 
+   TASTparMap* stparMap = (TASTparMap*) fpParMapSt->Object();
+   parFileName = campManager->GetCurConfFile(TASTparGeo::GetBaseName(), runNumber);
+   stparMap->FromFile(parFileName);
+   
+   TAGparaDsc* fpParMapTw = new TAGparaDsc("twMap", new TATWparMap());
+   TATWparMap* twparMap = (TATWparMap*)fpParMapTw->Object();
+   parFileName = campManager->GetCurMapFile(TATWparGeo::GetBaseName(), runNumber);
+   twparMap->FromFile(parFileName.Data());
+   
+   TAGparaDsc* fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
+   TAGbaseWDparMap* wdparMap = (TAGbaseWDparMap*)fpParMapWD->Object();
+   parFileName = campManager->GetCurMapFile(TASTparGeo::GetBaseName(), runNumber);
+   wdparMap->FromFile(parFileName.Data());
+   
+   TAGparaDsc* fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
+   TAGbaseWDparTime* wdparTime = (TAGbaseWDparTime*) fpParTimeWD->Object();
+   parFileName = campManager->GetCurCalFile(TASTparGeo::GetBaseName(), runNumber);
+   wdparTime->FromFile(parFileName.Data());
   
   //TAGdataDsc
    TAGdataDsc* bmDaq    = new TAGdataDsc("bmDaq", new TAGdaqEvent());
    daqActReader  = new TAGactDaqReader("daqActReader", bmDaq); 
+
+  TAGdataDsc* fpDatRawSt   = new TAGdataDsc("stDat", new TASTntuRaw());
+  TAGdataDsc* fpDatRawTw   = new TAGdataDsc("twdDat", new TATWntuRaw());
+  TAGdataDsc* fpDatRawCa   = new TAGdataDsc("caDat", new TACAntuRaw());
+  fActWdRaw  = new TAGactWDreader("wdActRaw", bmDaq, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpParMapWD, fpParTimeWD);
+
+  TAGdataDsc* fpNtuHitSt   = new TAGdataDsc("stNtu", new TASTntuHit());
+  stActNtuHit = new TASTactNtuHit("stActNtu", fpDatRawSt, fpNtuHitSt, fpParMapSt);
+   
+  TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmDat", new TABMntuRaw());
+  bmActNtuRaw  = new TABMactNtuRaw("bmActNtuRaw", bmNtuRaw, bmDaq, bmMap, bmCal, bmGeo, fpNtuHitSt);
+
+  TAGdataDsc* bmNtuHit    = new TAGdataDsc("bmNtuHit", new TABMntuHit());
+  bmActNtuHit  = new TABMactNtuHit("bmActNtuHit", bmNtuHit, bmNtuRaw, bmGeo, bmConf, bmCal);
+  bmActNtuHit->CreateHistogram();   
   
-   TAGdataDsc* stDatRaw    = new TAGdataDsc("stDat", new TASTntuRaw());
-   stActDatRaw  = new TASTactDatRaw("stActDatRaw", stDatRaw,bmDaq,stMap, fpParTimeSt);
-   
-   TAGdataDsc* bmDatRaw    = new TAGdataDsc("bmDat", new TABMntuRaw());
-   bmActDatRaw  = new TABMactNtuRaw("bmActDatRaw", bmDatRaw, bmDaq, bmMap, bmConf, bmGeo,stDatRaw);
+  TAGdataDsc* bmNtuTrack = new TAGdataDsc("bmNtuTrack", new TABMntuTrack());
+  bmActTrack  = new TABMactNtuTrack("bmActTrack", bmNtuTrack, bmNtuHit, bmGeo, bmConf, bmCal);
+  bmActTrack->CreateHistogram();
 
-   TAGdataDsc* bmNtuRaw    = new TAGdataDsc("bmNtuRaw", new TABMntuHit());
-   bmActNtuRaw  = new TABMactNtuHit("bmActNtuRaw", bmNtuRaw, bmDatRaw, bmGeo, bmConf);
-   bmActNtuRaw->CreateHistogram();   
-   
-   TAGdataDsc* bmTrack = new TAGdataDsc("bmTrack", new TABMntuTrack());
-   bmActTrack  = new TABMactNtuTrack("bmActTrack", bmTrack, bmNtuRaw, bmGeo, bmConf, tgGeo);
-   bmActTrack->CreateHistogram();
+  cout<<"end of FillBm"<<endl;
 
-   cout<<"end of FillBm"<<endl;
-
-   outFile->SetupElementBranch(bmDatRaw, TABMntuRaw::GetBranchName());
-   outFile->SetupElementBranch(bmNtuRaw, TABMntuHit::GetBranchName());
-   outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
+  outFile->SetupElementBranch(bmNtuRaw, TABMntuRaw::GetBranchName());
+  outFile->SetupElementBranch(bmNtuHit, TABMntuHit::GetBranchName());
+  outFile->SetupElementBranch(bmNtuTrack, TABMntuTrack::GetBranchName());
 }
 
 void Booking(TFile *f_out){
@@ -140,33 +158,31 @@ void Booking(TFile *f_out){
 }
 
 
-//~ void ReadBmRaw(TString name = "data_test.00001462.physics_foot.daq.RAW._lb0000._EB-RCD._0001.data")
-//~ void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.VTX.1.dat")
-void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242.physics_foot.daq.VTX.1.dat")
+void ReadBmRaw(TString name = "mydata/2019_GSI_foot/data_built.2242.physics_foot.daq.WD.1.dat", Int_t maxevents = 10000,
+                TString expName = "GSI", Int_t runNumber = 2242)
 {  
-   Int_t maxevents=1000;
-   TString fExpName="GSI/";
-   TAGrecoManager::Instance();
+   TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
 
    TAGroot tagr;
-   TAGgeoTrafo geoTrafo;
-   TString parFileName = Form("./geomaps/%sFOOT.geo", fExpName.Data());
-   geoTrafo.FromFile(parFileName);
 
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
 
-   tagr.SetCampaignNumber(1);
-   tagr.SetRunNumber(GetRunNumber(name));
+   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   geoTrafo->FromFile(parFileName);
 
    outFile = new TAGactTreeWriter("outFile");
-   FillBm(fExpName);
+   FillBm(runNumber);
    daqActReader->Open(name);
    
    tagr.AddRequiredItem(daqActReader);
-   tagr.AddRequiredItem(stActDatRaw);
-   tagr.AddRequiredItem(bmActDatRaw);
+   tagr.AddRequiredItem(stActNtuHit);
+   tagr.AddRequiredItem(fActWdRaw);
    tagr.AddRequiredItem(bmActNtuRaw);
+   tagr.AddRequiredItem(bmActNtuHit);
    tagr.AddRequiredItem(bmActTrack);
    tagr.AddRequiredItem(outFile);
    tagr.Print();
@@ -180,8 +196,8 @@ void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242
    
    
    if (outFile->Open(nameOut.Data(), "RECREATE")) return;
-   bmActDatRaw->SetHistogramDir(outFile->File());
    bmActNtuRaw->SetHistogramDir(outFile->File());
+   bmActNtuHit->SetHistogramDir(outFile->File());
    bmActTrack->SetHistogramDir(outFile->File());
    
    cout<<" Beginning the Event Loop "<<endl;
@@ -190,33 +206,33 @@ void ReadBmRaw(TString name = "data/GSI_electronic/DataGSI_match/data_built.2242
    watch.Start();
    Booking(f_out);
    
-   TABMntuRaw* pbmdatraw;
-   TABMntuHit* pbmnturaw;
+   TABMntuRaw* pbmnturaw;
+   TABMntuHit* pbmntuhit;
    TABMntuTrack* pbmntutrack;
-   TABMntuTrackTr* pbmntutracktr;   
+   TABMtrack* pbmtrack;   
    
    TABMparConf* bmcon = (TABMparConf*) (tagr.FindParaDsc("bmConf", "TABMparConf")->Object()); 
    TABMparGeo* bmgeo = (TABMparGeo*) (tagr.FindParaDsc("bmGeo", "TABMparGeo")->Object());
    TABMparMap* bmmap = (TABMparMap*) (tagr.FindParaDsc("bmMap", "TABMparMap")->Object());  
+   TABMparCal* bmcal = (TABMparCal*) (tagr.FindParaDsc("bmCal", "TABMparCal")->Object());  
        
    TVector3 bm_project;    
    for (Long64_t ientry = 0; ientry < maxevents; ientry++) {
      cout<<" Loaded Event:: " <<std::dec<< ientry << endl;
      if(!tagr.NextEvent()) 
        break; 
-     pbmnturaw = (TABMntuHit*) (tagr.FindDataDsc("bmNtuRaw", "TABMntuHit")->Object());
-     pbmntutrack = (TABMntuTrack*) (tagr.FindDataDsc("bmTrack", "TABMntuTrack")->Object());
-     pbmntutracktr=pbmntutrack->Track(0);
+     pbmntutrack = (TABMntuTrack*) (tagr.FindDataDsc("bmNtuTrack", "TABMntuTrack")->Object());
      ((TH1D*)(f_out->Get("bm_tracknum")))->Fill(pbmntutrack->GetTracksN());
      if(pbmntutrack->GetTracksN()==1){
-       bm_project=bmgeo->ProjectFromPversR0(pbmntutracktr->GetPvers(), pbmntutracktr->GetR0(),bmgeo->GetMylar1().Z());
+       pbmtrack=pbmntutrack->GetTrack(0);
+       bm_project=bmgeo->ProjectFromPversR0(pbmtrack->GetSlope(), pbmtrack->GetOrigin(),bmgeo->GetMylar1().Z());
        ((TH2D*)(f_out->Get("BM_mylar1_bmsys")))->Fill(bm_project.X(),bm_project.Y());
-       bm_project=geoTrafo.FromBMLocalToGlobal(bm_project);
+       bm_project=geoTrafo->FromBMLocalToGlobal(bm_project);
        ((TH2D*)(f_out->Get("BM_mylar1_glbsys")))->Fill(bm_project.X(),bm_project.Y());
-       bm_project=bmgeo->ProjectFromPversR0(pbmntutracktr->GetPvers(), pbmntutracktr->GetR0(),bmgeo->GetMylar2().Z());
+       bm_project=bmgeo->ProjectFromPversR0(pbmtrack->GetSlope(), pbmtrack->GetOrigin(),bmgeo->GetMylar2().Z());
        ((TH2D*)(f_out->Get("BM_mylar2_bmsys")))->Fill(bm_project.X(),bm_project.Y());
        ((TH1D*)(f_out->Get("BM_mylar2Z_bmsys")))->Fill(bm_project.Z());   
-       bm_project=geoTrafo.FromBMLocalToGlobal(bm_project);
+       bm_project=geoTrafo->FromBMLocalToGlobal(bm_project);
        ((TH2D*)(f_out->Get("BM_mylar2_glbsys")))->Fill(bm_project.X(),bm_project.Y());   
        ((TH1D*)(f_out->Get("BM_mylar2Z_glbsys")))->Fill(bm_project.Z());   
      }

@@ -57,7 +57,7 @@ class TABMparCal : public TAGparTools {
     Bool_t    FromFile(const TString& name);//read the calibration file
     Double_t  STrelEval(Float_t tdrift) {return fpSTrel->Eval(tdrift);};
     Float_t   ResoEval(Float_t dist){return (dist>0 && dist<0.8) ? fpResoFunc->Eval(dist) : 0.15;};
-    Double_t  GetTimeFromRDrift(Double_t rdrift);
+    Double_t  GetTimeFromRDrift(Double_t rdrift){return fpSTrel->GetX(rdrift);};
     void      ResetStrelFunc();
     void      PrintResoStrel(TString output_filename);
 
