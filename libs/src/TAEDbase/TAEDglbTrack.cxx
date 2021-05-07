@@ -51,3 +51,13 @@ void TAEDglbTrack::TrackId(TObject* obj)
 {
    fTrackId = obj;
 }
+
+//__________________________________________________________
+void TAEDglbTrack::SecSelected(TEveStraightLineSet* qs, Int_t idx)
+ {
+    Long_t args[2];
+    args[0] = (Long_t) qs;
+    args[1] = (Long_t) idx;
+   
+    Emit("SecSelected(TEveStraightLineSet*, Int_t)", args);
+ }

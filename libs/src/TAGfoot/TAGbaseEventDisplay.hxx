@@ -7,24 +7,14 @@
 /** TAGbaseEventDisplay FOOT class to work on event display
  
  */
+#include <map>
+
 #include "TAEDcluster.hxx"
 #include "TAEDtrack.hxx"
 #include "TAEDwire.hxx"
 #include "TAEDglbTrack.hxx"
 #include "TAEDglbTrackList.hxx"
 #include "TAEDbaseInterface.hxx"
-#include "TADIeveTrackPropagator.hxx"
-
-/** TAFOeventnDisplay FOOT class to work on event display
- 
- */
-#include <map>
-
-#include "TVirtualMagField.h"
-
-#include "TADIeveField.hxx"
-#include "TADIgeoField.hxx"
-
 #include "BaseReco.hxx"
 
 class TEveDigitSet;
@@ -66,7 +56,7 @@ public:
    
    void UpdateHitInfo(TEveDigitSet* qs, Int_t idx);
    void UpdateTrackInfo(TEveDigitSet* qs, Int_t idx);
-   void UpdateTrackInfo(TEveTrack* ts);
+   void UpdateTrackInfo(TEveStraightLineSet* ts, Int_t idx);
    void UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx);
    
 protected:
@@ -163,11 +153,6 @@ protected:
    TAEDglbTrackList* fGlbTrackDisplay;  // list of global tracks to display
    TAEDtrack*      fIrTrackDisplay;   // list of line to display tracks
    Bool_t          fIrFlag;
-
-   // Magnet
-   TADIgeoField*         fFieldImpl;       // magnetic field implementation
-   TADIeveField*         fField;           // Eve magnetic field
-   TADIeveTrackPropagator* fGlbTrackProp;  // global track propagator
    
    // TW
    map< pair<Int_t, Int_t>, Int_t > fFiredTofBar;       // list of fired bar per event

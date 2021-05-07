@@ -28,6 +28,9 @@ public:
    //! Refit plex
    void RefitPlex();
    
+   // secondary selection
+   void SecSelected(TEveStraightLineSet* qs, Int_t idx);  // *SIGNAL*
+   
    //! Get track id object
    TObject* GetTrackId() const { return fTrackId; }
    

@@ -10,9 +10,6 @@
 #include "TAEDcluster.hxx"
 #include "TAEDtrack.hxx"
 #include "TAEDwire.hxx"
-#include "TAEDglbTrack.hxx"
-#include "TAEDglbTrackList.hxx"
-#include "TADIeveTrackPropagator.hxx"
 #include "TAGbaseEventDisplay.hxx"
 
 /** TAFOeventnDisplay FOOT class to work on event display

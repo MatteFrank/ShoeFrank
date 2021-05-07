@@ -59,10 +59,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    fCaClusDisplay(0x0),
    fGlbTrackDisplay(0x0),
    fIrTrackDisplay(0x0),
-   fIrFlag(false),
-   fFieldImpl(0x0),
-   fField(0x0),
-   fGlbTrackProp(0x0)
+   fIrFlag(false)
 {
    // Par instance
    TAGrecoManager::Instance(expName);
@@ -146,9 +143,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    }
 
    if (TAGrecoManager::GetPar()->IncludeTOE()) {
-      fGlbTrackProp    = new TADIeveTrackPropagator();
-      fGlbTrackDisplay = new TAEDglbTrackList("Global Tracks", fGlbTrackProp);
-      fGlbTrackDisplay->SetMaxMomentum(fMaxMomentum);
+      fGlbTrackDisplay = new TAEDglbTrackList("Global Tracks");
    }
 
    if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
@@ -182,9 +177,6 @@ TAGbaseEventDisplay::~TAGbaseEventDisplay()
    if (fIrTrackDisplay)       delete fIrTrackDisplay;
    if (fItTrackDisplay)       delete fItTrackDisplay;
 
-   if (fField)                delete fField;
-   if (fGlbTrackProp)         delete fGlbTrackProp;
-
    delete fReco;
 }
 
@@ -192,21 +184,6 @@ TAGbaseEventDisplay::~TAGbaseEventDisplay()
 void TAGbaseEventDisplay::ReadParFiles()
 {
    fReco->ReadParFiles();
-
-   // Set field for propagator if field defined
-   if (TAGrecoManager::GetPar()->IncludeDI()) {
-      TADIparGeo* parGeo = fReco->GetParGeoDi();
-
-      fFieldImpl = fReco->GetFootField();
-      fField     = new TADIeveField(fFieldImpl);
-
-      if (TAGrecoManager::GetPar()->IncludeTOE()) {
-         fGlbTrackDisplay->GetPropagator()->SetMagFieldObj(fField);
-         fGlbTrackDisplay->GetPropagator()->SetMaxZ(fWorldSizeZ);
-         fGlbTrackDisplay->GetPropagator()->SetMaxR(fWorldSizeXY);
-      }
-   }
-
    TAVTparConf::SetHistoMap();
 }
 
@@ -481,7 +458,7 @@ void TAGbaseEventDisplay::ConnectElements()
    }
 
    if (TAGrecoManager::GetPar()->IncludeTOE()) {
-      TQObject::Connect("TEveTrack", "SecSelected(TEveTrack*)", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveTrack*)");
+      TQObject::Connect("TAEDglbTrack", "SecSelected(TEveStraightLineSet*, Int_t)", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveStraightLineSet*, Int_t)");
    }
 }
 
@@ -670,7 +647,7 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
 }
 
 //__________________________________________________________
-void TAGbaseEventDisplay::UpdateTrackInfo(TEveTrack* ts)
+void TAGbaseEventDisplay::UpdateTrackInfo(TEveStraightLineSet* ts, Int_t)
 {
    TAEDglbTrack* lineTracks = dynamic_cast<TAEDglbTrack*> (ts);
    TObject* obj = lineTracks->GetTrackId();
@@ -1114,22 +1091,23 @@ void TAGbaseEventDisplay::UpdateGlbTrackElements()
 
    for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
       TAGtrack* track = pNtuTrack->GetTrack(iTrack);
+      Int_t charge    = track->GetCharge();
 
-      // vertex
-      TAGpoint* point = track->GetMeasPoint(0);
-      TVector3 vtx    = point->GetPosition();
-      TVector3 mom0   = point->GetMomentum();
-      Int_t charge    = point->GetChargeZ();
-
-      TAEDglbTrack* glbTrack = fGlbTrackDisplay->AddTrack(vtx, mom0, charge);
+      TAEDglbTrack* glbTrack = fGlbTrackDisplay->NewTrack(Form("Track%d", iTrack));
       glbTrack->TrackId(track);
+
+      TAGpoint* point = track->GetMeasPoint(0);
+      Float_t z1      = point->GetPosition().Z();
+      TVector3 pos1   = track->GetPosition(z1);
 
       for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
          TAGpoint* point = track->GetMeasPoint(iPoint);
-         TVector3 pos    = point->GetPosition();
-         TVector3 mom    = point->GetMomentum();
+         Float_t z2      = point->GetPosition().Z();
+         TVector3 pos2   = track->GetPosition(z2);
 
-         glbTrack->AddTrackPoint(pos, mom);
+         glbTrack->AddTracklet(charge, pos1, pos2);
+         pos1 = pos2;
+         
       } // end loop on points
    } // end loop on tracks
 }
