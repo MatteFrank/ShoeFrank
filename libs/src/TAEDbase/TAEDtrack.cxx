@@ -38,7 +38,6 @@ TAEDtrack::TAEDtrack(const Text_t* name)
 TAEDtrack::~TAEDtrack()
 {
   // default destructor
-  delete fPalette;
 }
 
 //__________________________________________________________
@@ -115,7 +114,7 @@ void TAEDtrack::AddTracklet(Float_t e, Float_t x1, Float_t y1, Float_t z1,
 	TEveVector dir, pos;
     pos.Set(x1, y1, z1);
     dir.Set(x2-x1, y2-y1, z2-z1);	
-	AddEllipticCone(pos, dir, fBoxHeight, fBoxHeight/2, 0);   
+	AddEllipticCone(pos, dir, fBoxHeight, fBoxHeight/2, 0);
   } else {
     vert = MakeRecTVert(x1, y1, z1, x2, y2, z2);
     AddBox(vert);   
