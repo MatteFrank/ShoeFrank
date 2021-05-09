@@ -52,3 +52,15 @@ CamName:    "GSI2021"
 CamDataMC:    1
 CamDate: "July 2021"
 CamSum: "Simulation data for data taking at GSI with ST+BM+VTX+MSD+TW+CAL"
+
+CamNumber:    9
+CamName:    "GSI2021_200"
+CamDataMC:    1
+CamDate: "July 2021"
+CamSum: "Simulation data for data taking at GSI with ST+BM+VTX+MSD+TW+CAL 16O 200 MeV/u"
+
+CamNumber:    10
+CamName:    "GSI2021_400"
+CamDataMC:    1
+CamDate: "July 2021"
+CamSum: "Simulation data for data taking at GSI with ST+BM+VTX+MSD+TW+CAL 16O 400 MeV/u"

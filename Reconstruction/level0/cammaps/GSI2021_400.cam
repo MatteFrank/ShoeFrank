@@ -1,0 +1,43 @@
+// Campaign file
+CamName: "GSI2021_400"
+RunNumber: 1-2
+NumberDevices: 8
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/GSI2021_400/FOOT.geo": -1
+
+DetectorName: "ST"
+NumberFiles: 2
+"./geomaps/GSI2021_400/TASTdetector.geo": -1
+
+DetectorName: "BM"
+NumberFiles: 3
+"./geomaps/GSI2021_400/TABMdetector.geo": -1
+"./config/GSI2021_400/TABMdetector.cfg": -1
+"./calib/GSI2021_400/TABM_T0_Calibration.cal": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/GSI2021_400/TAGdetector.geo": -1
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/GSI2021_400/TAVTdetector.geo": -1
+"./config/GSI2021_400/TAVTdetector.cfg": -1
+
+DetectorName: "MSD"
+NumberFiles: 1
+"./geomaps/GSI2021_400/TAMSDdetector.geo": -1
+
+DetectorName: "TW"
+NumberFiles: 5
+"./geomaps/GSI2021_400/TATWdetector.geo": -1
+"./config/GSI2021_400/TATW_BBparameters.cfg": -1
+"./config/GSI2021_400/TATWbarsMapStatus.map": -1
+"./calib/GSI2021_400/TATW_Energy_Calibration.cal": -1
+"./calib/GSI2021_400/TATW_Tof_Calibration.cal": -1
+
+DetectorName: "CA"
+NumberFiles: 1
+"./geomaps/GSI2021_400/TACAdetector.geo": -1
