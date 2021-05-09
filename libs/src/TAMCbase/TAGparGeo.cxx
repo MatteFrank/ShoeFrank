@@ -606,11 +606,21 @@ string TAGparGeo::PrintPhysics() {
 
   stringstream str;
  
-  if ( TAGrecoManager::GetPar()->verFLUKA() )
+  if ( TAGrecoManager::GetPar()->verFLUKA() ) {
     str << PrintCard("PHYSICS","1.","","","","","","COALESCE") << endl;
-  else
-    str << PrintCard("PHYSICS","12001.","1.","1.","","","","COALESCE") << endl;
-    
+    str << PrintCard("PHYSICS","3.","","","","","","EVAPORAT") << endl;
+    str << PrintCard("PHYSICS","1.","","","","","","ISOMERS") << endl;
+    str << PrintCard("PHYSICS","1.","0.005","0.15","2.","2.","2.","IONSPLIT") << endl;
+    str << PrintCard("RADDECAY","2.","","1.","","","","") << endl;
+  }  else {
+    str << PrintCard("PHYSICS","212001.","1.","1.","","","","COALESCE") << endl;
+    str << PrintCard("PHYSICS","3.","","","","","","EVAPORAT") << endl;
+    str << PrintCard("PHYSICS","1.","","","","","","ISOMERS") << endl;
+    str << PrintCard("PHYSICS","1.","","","","","","INFLDCAY") << endl;
+    str << PrintCard("PHYSICS","1.","","","","","","QUASI-EL") << endl;
+    str << PrintCard("PHYSICS","1.","0.005","0.15","2.","2.","2.","IONSPLIT") << endl;
+    str << PrintCard("RADDECAY","1.","2.","","1.","","","") << endl;
+  }    
   str << PrintCard("EMFCUT","-1.","1.","","BLACK","@LASTREG","1.0","") << endl;
   str << PrintCard("EMFCUT","-1.","1.","1.","BLCKHOLE","@LASTMAT","1.0","PROD-CUT") << endl;
   str << PrintCard("DELTARAY","1.","","","BLCKHOLE","@LASTMAT","1.0","") << endl;
