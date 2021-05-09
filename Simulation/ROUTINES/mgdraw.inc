@@ -37,7 +37,7 @@ c     tof           = tof of the particle
 c     trlen         = track lenght of the particle
 c     
       integer nump, maxnump
-      parameter(maxnump=2000)
+      parameter(maxnump=8000)
 
       integer idpa(maxnump), igen(maxnump)
       integer icha(maxnump), numreg(maxnump), iba(maxnump)
@@ -202,7 +202,7 @@ c     *************************************************************
 c     common neede to score the hit in the Calo regions
 c     
       integer nCAL, maxCAL
-      parameter (maxCAL=6000)
+      parameter (maxCAL=8000)
       integer idCAL(maxCAL),icryCAL(maxCAL)
 
       real xinCAL(maxCAL), xoutCAL(maxCAL), yinCAL(maxCAL),
@@ -226,7 +226,7 @@ c     common needed to score the boundary crossing info
 c     and put the right pointer to the particle common of the produced electrons
 c     
       integer nCROSS, maxCROSS
-      parameter (maxCROSS=10000)
+      parameter (maxCROSS=15000)
       integer idCROSS(maxCROSS), nregCROSS(maxCROSS) 
       integer nregoldCROSS(maxCROSS)
       real pxCROSS(maxCROSS), pyCROSS(maxCROSS), pzCROSS(maxCROSS)
@@ -270,7 +270,7 @@ c     recording with the info on the interaction point
 c     
       integer idfluka(maxnump)
       integer numint, maxint
-      parameter (MAXINT=6000)
+      parameter (MAXINT=8000)
       double precision xint(maxint),yint(maxint),zint(maxint)
       integer intpa(maxint),intcode(maxint)
       common /particle_stack/xint,yint,zint,intpa,intcode,
