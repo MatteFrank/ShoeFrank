@@ -48,13 +48,7 @@ CamDate: "February 2021"
 CamSum: "Fake campaign for CALO waveform decoding test"
 
 CamNumber:    8
-CamName:    "GSI2021_200"
+CamName:    "GSI2021"
 CamDataMC:    1
 CamDate: "July 2021"
-CamSum: "Simulation data for data taking at GSI with ST+BM+VTX+MSD+TW+CAL 16O 200 MeV/u"
-
-CamNumber:    9
-CamName:    "GSI2021_400"
-CamDataMC:    1
-CamDate: "July 2021"
-CamSum: "Simulation data for data taking at GSI with ST+BM+VTX+MSD+TW+CAL 16O 400 MeV/u"
+CamSum: "Simulation data for data taking at GSI with ST+BM+VTX+MSD+TW+CAL 16O 200 and 400 MeV/u"
