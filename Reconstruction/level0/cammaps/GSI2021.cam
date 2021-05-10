@@ -41,7 +41,7 @@ NumberFiles: 5
 
 DetectorName: "CA"
 NumberFiles: 3
-"./geomaps/CNAO2020/TACAdetector.geo": -1
-"./calib/CNAO2020/TACA_Energy_Calibration.cal": -1
-"./config/CNAO2020/TACAcrystalMapStatus.map": -1
+"./geomaps/GSI2021/TACAdetector.geo": -1
+"./calib/GSI2021/TACA_Energy_Calibration.cal": -1
+"./config/GSI2021/TACAcrystalMapStatus.map": -1
 
