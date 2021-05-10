@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "GSI2021"
-RunNumber: 1-2
+RunNumber: 200-410
 NumberDevices: 8
 
 DetectorName: "FOOT"
@@ -40,5 +40,8 @@ NumberFiles: 5
 "./calib/GSI2021/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
-NumberFiles: 1
-"./geomaps/GSI2021/TACAdetector.geo": -1
+NumberFiles: 3
+"./geomaps/CNAO2020/TACAdetector.geo": -1
+"./calib/CNAO2020/TACA_Energy_Calibration.cal": -1
+"./config/CNAO2020/TACAcrystalMapStatus.map": -1
+
