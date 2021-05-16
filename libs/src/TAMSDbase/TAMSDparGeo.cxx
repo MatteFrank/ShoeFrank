@@ -426,49 +426,94 @@ string TAMSDparGeo::PrintBodies()
       //strip layer
       bodyname = Form("msds%d",iSens);
       regionname = Form("MSDS%d",iSens);
-      posStrip.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
-		     fCenter.Y() + GetSensorPosition(iSens).Y(),
-		     fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fMetalThickness + fEpiSize.Z()/2. );
-      ss <<  "RPP " << bodyname <<  "     "
-	 << posStrip.x() - fEpiSize.X()/2. << " "
-	 << posStrip.x() + fEpiSize.X()/2. << " "
-	 << posStrip.y() - fEpiSize.Y()/2. << " "
-	 << posStrip.y() + fEpiSize.Y()/2. << " "
-	 << posStrip.z() - fEpiSize.Z()/2. << " "
-	 << posStrip.z() + fEpiSize.Z()/2. << endl;
-      fvStripBody.push_back(bodyname);
-      fvStripRegion.push_back(regionname);
+      if (iSens%2==0) {
+	posStrip.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
+			 fCenter.Y() + GetSensorPosition(iSens).Y(),
+			 fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fMetalThickness + fEpiSize.Z()/2. );
+	ss <<  "RPP " << bodyname <<  "     "
+	   << posStrip.x() - fEpiSize.X()/2. << " "
+	   << posStrip.x() + fEpiSize.X()/2. << " "
+	   << posStrip.y() - fEpiSize.Y()/2. << " "
+	   << posStrip.y() + fEpiSize.Y()/2. << " "
+	   << posStrip.z() - fEpiSize.Z()/2. << " "
+	   << posStrip.z() + fEpiSize.Z()/2. << endl;
+	fvStripBody.push_back(bodyname);
+	fvStripRegion.push_back(regionname);
 
       //module
-      bodyname = Form("msdp%d",iSens);
-      regionname = Form("MSDP%d",iSens);
-      posMod.SetXYZ( posStrip.X() + fEpiSize.X()/2. + fEpiOffset.X() - fTotalSize.X()/2.,
-		     posStrip.Y() - fEpiSize.Y()/2. - fEpiOffset.Y() + fTotalSize.Y()/2.,
-		     fCenter.Z() + GetSensorPosition(iSens).Z() );
-      ss <<  "RPP " << bodyname <<  "     "
-	 << posMod.x() - fTotalSize.X()/2. << " "
-	 << posMod.x() + fTotalSize.X()/2. << " "
-	 << posMod.y() - fTotalSize.Y()/2. << " "
-	 << posMod.y() + fTotalSize.Y()/2. << " "
-	 << posMod.z() - fTotalSize.Z()/2. << " "
-	 << posMod.z() + fTotalSize.Z()/2. << endl;
-      fvModBody.push_back(bodyname);
-      fvModRegion.push_back(regionname);
+	bodyname = Form("msdp%d",iSens);
+	regionname = Form("MSDP%d",iSens);
+	posMod.SetXYZ( posStrip.X() + fEpiSize.X()/2. + fEpiOffset.X() - fTotalSize.X()/2.,
+		       posStrip.Y() - fEpiSize.Y()/2. - fEpiOffset.Y() + fTotalSize.Y()/2.,
+		       fCenter.Z() + GetSensorPosition(iSens).Z() );
+	ss <<  "RPP " << bodyname <<  "     "
+	   << posMod.x() - fTotalSize.X()/2. << " "
+	   << posMod.x() + fTotalSize.X()/2. << " "
+	   << posMod.y() - fTotalSize.Y()/2. << " "
+	   << posMod.y() + fTotalSize.Y()/2. << " "
+	   << posMod.z() - fTotalSize.Z()/2. << " "
+	   << posMod.z() + fTotalSize.Z()/2. << endl;
+	fvModBody.push_back(bodyname);
+	fvModRegion.push_back(regionname);
 
       //metal layer
-      bodyname = Form("msdm%d",iSens);
-      regionname = Form("MSDM%d",iSens);
-      posMet.SetXYZ( posStrip.X(), posStrip.Y(), posStrip.Z() - fEpiSize.Z()/2. - fMetalThickness/2.);
-      ss <<  "RPP " << bodyname <<  "     "
-	 << posMet.x() - fEpiSize.X()/2. << " "
-	 << posMet.x() + fEpiSize.X()/2. << " "
-	 << posMet.y() - fEpiSize.Y()/2. << " "
-	 << posMet.y() + fEpiSize.Y()/2. << " "
-	 << posMet.z() - fMetalThickness/2. << " "
-	 << posMet.z() + fMetalThickness/2. << endl;
-      fvMetalBody.push_back(bodyname);
-      fvMetalRegion.push_back(regionname);
+	bodyname = Form("msdm%d",iSens);
+	regionname = Form("MSDM%d",iSens);
+	posMet.SetXYZ( posStrip.X(), posStrip.Y(), posStrip.Z() - fEpiSize.Z()/2. - fMetalThickness/2.);
+	ss <<  "RPP " << bodyname <<  "     "
+	   << posMet.x() - fEpiSize.X()/2. << " "
+	   << posMet.x() + fEpiSize.X()/2. << " "
+	   << posMet.y() - fEpiSize.Y()/2. << " "
+	   << posMet.y() + fEpiSize.Y()/2. << " "
+	   << posMet.z() - fMetalThickness/2. << " "
+	   << posMet.z() + fMetalThickness/2. << endl;
+	fvMetalBody.push_back(bodyname);
+	fvMetalRegion.push_back(regionname);
+      }	else {
+	posStrip.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
+			 fCenter.Y() + GetSensorPosition(iSens).Y(),
+			 fCenter.Z() + GetSensorPosition(iSens).Z() + fTotalSize.Z()/2. - fMetalThickness - fEpiSize.Z()/2. );
+	ss <<  "RPP " << bodyname <<  "     "
+	   << posStrip.x() - fEpiSize.X()/2. << " "
+	   << posStrip.x() + fEpiSize.X()/2. << " "
+	   << posStrip.y() - fEpiSize.Y()/2. << " "
+	   << posStrip.y() + fEpiSize.Y()/2. << " "
+	   << posStrip.z() - fEpiSize.Z()/2. << " "
+	   << posStrip.z() + fEpiSize.Z()/2. << endl;
+	fvStripBody.push_back(bodyname);
+	fvStripRegion.push_back(regionname);
 
+      //module
+	bodyname = Form("msdp%d",iSens);
+	regionname = Form("MSDP%d",iSens);
+	posMod.SetXYZ( posStrip.X() + fEpiSize.X()/2. + fEpiOffset.X() - fTotalSize.X()/2.,
+		       posStrip.Y() - fEpiSize.Y()/2. - fEpiOffset.Y() + fTotalSize.Y()/2.,
+		       fCenter.Z() + GetSensorPosition(iSens).Z() );
+	ss <<  "RPP " << bodyname <<  "     "
+	   << posMod.x() - fTotalSize.X()/2. << " "
+	   << posMod.x() + fTotalSize.X()/2. << " "
+	   << posMod.y() - fTotalSize.Y()/2. << " "
+	   << posMod.y() + fTotalSize.Y()/2. << " "
+	   << posMod.z() - fTotalSize.Z()/2. << " "
+	   << posMod.z() + fTotalSize.Z()/2. << endl;
+	fvModBody.push_back(bodyname);
+	fvModRegion.push_back(regionname);
+
+      //metal layer
+	bodyname = Form("msdm%d",iSens);
+	regionname = Form("MSDM%d",iSens);
+	posMet.SetXYZ( posStrip.X(), posStrip.Y(), posStrip.Z() + fEpiSize.Z()/2. + fMetalThickness/2.);
+	ss <<  "RPP " << bodyname <<  "     "
+	   << posMet.x() - fEpiSize.X()/2. << " "
+	   << posMet.x() + fEpiSize.X()/2. << " "
+	   << posMet.y() - fEpiSize.Y()/2. << " "
+	   << posMet.y() + fEpiSize.Y()/2. << " "
+	   << posMet.z() - fMetalThickness/2. << " "
+	   << posMet.z() + fMetalThickness/2. << endl;
+	fvMetalBody.push_back(bodyname);
+	fvMetalRegion.push_back(regionname);
+	//
+      }
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
 	ss << "$end_transform " << endl;
 
