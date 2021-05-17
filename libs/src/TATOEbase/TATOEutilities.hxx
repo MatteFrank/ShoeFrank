@@ -49,6 +49,8 @@ class TAITcluster;
 
 #include "TADIgeoField.hxx"
 
+#include "TAGntuGlbTrack.hxx"
+
 //template<class ... Ps>
 //struct TATOEcutter;
 
@@ -163,12 +165,6 @@ private:
     
     virtual reconstruction_result retrieve_result( ) const = 0;
 };
-
-
-
-
-
-
 
 
 
@@ -725,16 +721,13 @@ struct model
     
     particle_properties* particle_h = nullptr;
     static constexpr double conversion_factor = 0.000299792458; //[MeV/c . G^{-1} . cm^{-1} ]
-    TADIgeoField const * field_mh;
+    TADIgeoField const * field_mh; //G
     
     constexpr model(TADIgeoField const * field_ph) : field_mh{field_ph} {}
     
     
     auto operator()(const operating_state_t& os_p) const
-   // matrix<2,1> operator()(const int& os_p) const
     {
-      //  std::cout << "------ LET'S GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO --------\n";
-        //return {};
        return conversion_factor * particle_h->charge/particle_h->momentum * compute_R(os_p) * compute_change(os_p);
     }
     

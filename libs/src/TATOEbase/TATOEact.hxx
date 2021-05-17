@@ -22,6 +22,7 @@
 #include "TATOEutilities.hxx"
 #include "TATOEchecker.hxx"
 #include "TATOElogger.hxx"
+#include "TATOEmomentum.hxx"
 
 #include "grkn_data.hpp"
 //#include "stepper.hpp"
@@ -665,14 +666,14 @@ private:
                     logger_m << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
                     logger_m << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
 
-                    std::cout << " in [" << fs.vector(0, 0) << ", " << fs.vector(1, 0) << ", " << fs.evaluation_point << "]\n";
-                    TVector3 reco_position{
-                        fs.vector(0, 0),
-                        fs.vector(1,0),
-                        fs.evaluation_point
-                    };
-                    auto const field = field_mh->GetField(reco_position);
-                    std::cout << " field: [" << field.X() << ", " << field.Y() << ", " << field.Z() << "]\n";
+//                    std::cout << " in [" << fs.vector(0, 0) << ", " << fs.vector(1, 0) << ", " << fs.evaluation_point << "]\n";
+//                    TVector3 reco_position{
+//                        fs.vector(0, 0),
+//                        fs.vector(1,0),
+//                        fs.evaluation_point
+//                    };
+//                    auto const field = field_mh->GetField(reco_position);
+//                    std::cout << " field: [" << field.X() << ", " << field.Y() << ", " << field.Z() << "]\n";
                     
                     
                     leaf_h = leaf_h->add_child( std::move(fs_c.front()) );
@@ -1355,129 +1356,7 @@ private:
 //            std::cout << "registered_momentum: " << track_h->GetMomentum() << "\n";
             track_h->SetParameters( track.parameters );
             
-            
-//            std::cout << "track:\n";
             auto & value_c = track.get_clusters();
-            auto compute_y_l = [&track]( double z ){ return track.parameters.parameter_y[1] * z + track.parameters.parameter_y[0];  };
-            auto compute_x_l = [&track]( double z ){
-                return track.parameters.parameter_x[3] * z * z * z +
-                       track.parameters.parameter_x[2] * z * z +
-                       track.parameters.parameter_x[1] * z +
-                       track.parameters.parameter_x[0];
-                                                    };
-            auto compute_angle_l = [&track, &compute_x_l, &compute_y_l]( double z, double step_size ){
-                TVector3 pre_bending{
-                    (compute_x_l(z) - compute_x_l(z-1e-3))/1e-3,
-                    (compute_y_l(z) - compute_y_l(z-1e-3))/1e-3,
-                    1
-                                    };
-                TVector3 post_bending{
-                    (compute_x_l(z+step_size+1e-3) - compute_x_l(z+step_size))/1e-3,
-                    (compute_y_l(z+step_size+1e-3) - compute_y_l(z+step_size))/1e-3,
-                    1
-                                      };
-                return acos((pre_bending * post_bending)/(pre_bending.Mag() * post_bending.Mag()));
-                                                                         };
-            
-            //------------ "ode" ----------------
-            auto step = 1e-3;
-            auto ode = make_ode< matrix<3,1>, 1>(
-                                                 [&step, &track, &compute_x_l, &compute_y_l, &compute_angle_l, this](operating_state<matrix<3,1>, 1> const& os_p){
-                             double const z = os_p.evaluation_point;
-                             double const dx_dz = (compute_x_l(z) - compute_x_l(z-1e-3))/1e-3;
-                             double const dy_dz = (compute_y_l(z) - compute_y_l(z-1e-3))/1e-3;
-                             double const R = sqrt( dx_dz*dx_dz + dy_dz*dy_dz +1 );
-                             double angle = compute_angle_l( z, step );
-                             
-                             TVector3 reco_position{
-                                 compute_x_l(z),
-                                 compute_y_l(z),
-                                 z
-                             };
-                             auto const temp_field = field_mh->GetField(reco_position);
-                             
-                             auto dp_dz = 0.3 * track.particle.charge * R * angle * temp_field * 1e-4;
-                             
-                           // std::cout << R << " - " << angle;
-                           // std::cout << " -> (" << reco_position.X() << "; " << reco_position.Y() << "; " << reco_position.Z() << ")\n";
-                            
-                             return matrix<3, 1>{ dp_dz.X(), dp_dz.Y(), dp_dz.Z() };
-                                                                            }
-                                                 );
-            
-            auto ode2 = make_ode< matrix<3,1>, 1>(
-                            [&step, &track, &compute_x_l, &compute_y_l, &compute_angle_l, this](operating_state<matrix<3,1>, 1> const& os_p){
-                             double const z = os_p.evaluation_point;
-                                double const dx_dz = os_p.state( details::order_tag<0>{} )(0,0)/os_p.state( details::order_tag<0>{} )(2,0);
-                             double const dy_dz = os_p.state( details::order_tag<0>{} )(1,0)/os_p.state( details::order_tag<0>{} )(2,0);
-                             
-                             TVector3 reco_position{
-                                 compute_x_l(z),
-                                 compute_y_l(z),
-                                 z
-                             };
-                             auto const field = field_mh->GetField(reco_position);
-                            
-                                std::cout << "p_x: " << os_p.state( details::order_tag<0>{} )( 0, 0 ) << '\n';
-                                std::cout << "p_y: " << os_p.state( details::order_tag<0>{} )( 1, 0 ) << '\n';
-                                std::cout << "p_z: " << os_p.state( details::order_tag<0>{} )( 2, 0 ) << '\n';
-
-                                std::cout << "dpx_dz: " << 0.3e-4 * track.particle.charge * (dy_dz* field.Z() - field.Y()) << '\n';
-                                std::cout << "dpy_dz: " << 0.3e-4 * track.particle.charge * (field.X() - dx_dz * field.Z()) << '\n';
-                                std::cout << "dpz_dz: " << 0.3e-4 * track.particle.charge * (dx_dz * field.Y()  - dy_dz * field.X()) << '\n';
-                                
-                             return matrix<3, 1>{
-                                 0.3e-4 * track.particle.charge * (dy_dz* field.Z() - field.Y()),
-                                 0.3e-4 * track.particle.charge * (field.X() - dx_dz * field.Z()),
-                                 0.3e-4 * track.particle.charge * (dx_dz * field.Y()  - dy_dz * field.X())
-                                                };
-                                                                            }
-                                                 );
-            
-            auto ode3 = make_ode< matrix<3,1>, 1>(
-                            [&step, &track, &compute_x_l, &compute_y_l, &compute_angle_l, this](operating_state<matrix<3,1>, 1> const& os_p){
-                                double const z = os_p.evaluation_point;
-                                double const dx_dz = os_p.state( details::order_tag<0>{} )(0,0)/os_p.state( details::order_tag<0>{} )(2,0);
-                                double const dy_dz = os_p.state( details::order_tag<0>{} )(1,0)/os_p.state( details::order_tag<0>{} )(2,0);
-                             
-                                double const R = sqrt( dx_dz*dx_dz + dy_dz*dy_dz + 1 );
-//                                std::cout << "R: " << R << '\n';
-                                
-                                TVector3 reco_position{
-                                    compute_x_l(z),
-                                    compute_y_l(z),
-                                    z
-                                };
-//                                std::cout << "position: ";
-//                                reco_position.Print();
-                                auto const field = field_mh->GetField(reco_position);
-                                
-                                auto const p_x = os_p.state( details::order_tag<0>{} )( 0, 0 );
-                                auto const p_y = os_p.state( details::order_tag<0>{} )( 1, 0 );
-                                auto const p_z = os_p.state( details::order_tag<0>{} )( 2, 0 );
-//                                std::cout << "p_x: " << os_p.state( details::order_tag<0>{} )( 0, 0 ) << '\n';
-//                                std::cout << "p_y: " << os_p.state( details::order_tag<0>{} )( 1, 0 ) << '\n';
-//                                std::cout << "p_z: " << os_p.state( details::order_tag<0>{} )( 2, 0 ) << '\n';
-
-                                auto p = sqrt( p_x * p_x + p_y * p_y + p_z * p_z);
-//                                std::cout << "p: " << p << '\n';
-                                
-                                auto const dpx_dz = 0.3e-3 * R * track.particle.charge/p * (p_y*field.Z() - p_z * field.Y());
-                                auto const dpy_dz = 0.3e-3 * R * track.particle.charge/p * (p_z*field.X() - p_x * field.Z());
-                                auto const dpz_dz = 0.3e-3 * R * track.particle.charge/p * (p_x*field.Y() - p_y * field.X());
-//                                std::cout << "dpx_dz: " << dpx_dz << '\n';
-//                                std::cout << "dpy_dz: " << dpy_dz << '\n';
-//                                std::cout << "dpz_dz: " << dpz_dz << '\n';
-                                
-                                return matrix<3, 1>{ dpx_dz, dpy_dz, dpz_dz };
-                                                                            }
-                                                 );
-            
-            //------------- numerical_integration -------------------
-            auto stepper = make_stepper<data_rkf45>( std::move(ode3) );
-            stepper.specify_tolerance(1e-8);
-            
-//                    std::cout << " --- final_track --- " << '\n';
             for(auto& value : value_c){
                 //
 //                std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << std::endl;
@@ -1494,166 +1373,48 @@ private:
                 TVector3 position_error{ 0.01 ,0.01, 0.01 };
                 TVector3 momentum_error{ 10, 10, 10 };
                 
-                
-                operating_state<matrix<3,1>, 1> os;
-                step = 1e-3;
-//                std::cout << "angle" << compute_angle_l( value.evaluation_point, 1e-2 ) << '\n';
-//                std::cout << "not-so-reco preco: " << momentum.Mag() ;
-//                std::cout << " [ " << momentum_x << " ; " << momentum_y << " ; " << momentum_z << "]\n";
-                
                 track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
-                if( !value.data ){  os = operating_state<matrix<3,1>, 1>{ value.evaluation_point, {momentum_x *1000, momentum_y*1000, momentum_z*1000} };}
+
                 if( value.data ){ //needed because first point is vertex, which has no cluster associated
                     auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+
                     
-                    while( os.evaluation_point + step < value.evaluation_point ){
-                        auto const y = compute_y_l(os.evaluation_point);
-                        auto const x = compute_x_l(os.evaluation_point);
-//                        std::cout << " in: [" << x << ", " << y << ", "  << os.evaluation_point << " + " << step << " ] \n";
-                        TVector3 reco_position{
-                            compute_x_l(os.evaluation_point),
-                            compute_y_l(os.evaluation_point),
-                            os.evaluation_point
-                        };
-                        auto const field = field_mh->GetField(reco_position);
-//                        std::cout << " field: [" << field.X() << ", " << field.Y() << ", " << field.Z() << "]\n";
-                        
-                        auto step_result = stepper.step( std::move(os), step );
-                        if( step_result.second != 0 ){
-                            auto new_step_length = stepper.optimize_step_length(step, step_result.second);
-                           // step = ( new_step_length > 1e-1 ) ? 1e-1 : new_step_length ;
-                            step = new_step_length;
-                        } //steplength modification means you should recompute step ? -> or prep for next round ?
-                        os = std::move(step_result.first);
-                        
-                        TVector3 mom{
-                            os.state(details::order_tag<0>{})(0,0),
-                            os.state(details::order_tag<0>{})(1,0),
-                            os.state(details::order_tag<0>{})(2,0)
-                        };
-//                        std::cout << "preco: " << mom.Mag() ;
-//                        std::cout << " [ " << mom.X() << " ; " << mom.Y() << " ; " << mom.Z() << "]";
-                    }
-                    step = value.evaluation_point - os.evaluation_point;
-                    auto const y = compute_y_l(os.evaluation_point);
-                    auto const x = compute_x_l(os.evaluation_point);
-//                    std::cout << " in: [" << x << ", " << y << ", "  << os.evaluation_point << " + " << step << " ] \n";
-                    os = stepper.force_step( std::move(os), step );
-                    TVector3 reco_position{
-                        compute_x_l(os.evaluation_point),
-                        compute_y_l(os.evaluation_point),
-                        os.evaluation_point
-                    };
-                    auto const field = field_mh->GetField(reco_position);
-//                    std::cout << " field: [" << field.X() << ", " << field.Y() << ", " << field.Z() << "]\n";
-                    
-                    TVector3 mom{
-                        os.state(details::order_tag<0>{})(0,0),
-                        os.state(details::order_tag<0>{})(1,0),
-                        os.state(details::order_tag<0>{})(2,0)
-                                };
-//                    std::cout << "preco: " << mom.Mag() ;
-//                    std::cout << " [ " << mom.X() << " ; " << mom.Y() << " ; " << mom.Z() << "]";
-                    
-                    
+                    auto fill_measured_point_l = [&value, &transformation_h, &position_error, &momentum, &momentum_error, &track_h](
+                                                            auto * cluster_ph,
+                                                            std::string&& name_p,
+                                                            auto transformation_p
+                                                                            ){
+                                TVector3 measured_position{ (transformation_h->*transformation_p)(value.data->GetPositionG()) };
+                                auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                                measured_h->SetDevName( name_p.c_str() );
+                                measured_h->SetClusterIdx( cluster_ph->GetClusterIdx() );
+                                measured_h->SetSensorIdx( cluster_ph->GetSensorIdx() );
+                                                                      };
                     auto const * vertex_h = dynamic_cast<TAVTcluster const*>( value.data );
                     if( vertex_h ){
-<<<<<<< Updated upstream
-                        TVector3 measured_position{ transformation_h->FromVTLocalToGlobal(value.data->GetPositionG()) };
-=======
-                        TVector3 measured_position{ transformation_h->FromVTLocalToGlobal(value.data->GetPosition()) };
-                        std::cout << "vtx: "; value.data->GetPosition().Print();
-                        std::cout << "vtx_g: "; value.data->GetPositionG().Print();
->>>>>>> Stashed changes
-                        auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
-                        measured_h->SetDevName( TAVTparGeo::GetBaseName() );
-//                        std::cout << " in " << TAVTparGeo::GetBaseName() ;
-                        measured_h->SetClusterIdx( vertex_h->GetClusterIdx() );
-                        measured_h->SetSensorIdx( vertex_h->GetSensorIdx() );
-//                        std::cout << "( ";
-                        for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
-                            measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
-//                            std::cout << value.data->GetMcTrackIdx(i) << " ";
-                            index_c.push_back(value.data->GetMcTrackIdx(i));
-                        }
-//                        std::cout << ")\n";
+                        fill_measured_point_l( vertex_h, TAVTparGeo::GetBaseName(), &TAGgeoTrafo::FromVTLocalToGlobal );
                         continue;
                     }
                     auto const * it_h = dynamic_cast<TAITcluster const*>( value.data );
                     if( it_h ){
-                        TVector3 measured_position{ transformation_h->FromITLocalToGlobal(value.data->GetPositionG()) };
-                        auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
-                        measured_h->SetDevName( TAITparGeo::GetBaseName() );
-//                        std::cout << " in " << TAITparGeo::GetBaseName();
-                        measured_h->SetClusterIdx( it_h->GetClusterIdx() );
-                        measured_h->SetSensorIdx( it_h->GetSensorIdx() );
-//                        std::cout << " ( ";
-                        for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
-                            measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
-//                            std::cout << value.data->GetMcTrackIdx(i) << " ";
-                            index_c.push_back(value.data->GetMcTrackIdx(i));
-                        }
-//                        std::cout << ")\n";
+                         fill_measured_point_l( it_h, TAITparGeo::GetBaseName(), &TAGgeoTrafo::FromITLocalToGlobal );
                         continue;
                     }
                     auto const * msd_h = dynamic_cast<TAMSDcluster const*>( value.data );
                     if( msd_h ){
-                        TVector3 measured_position{ transformation_h->FromMSDLocalToGlobal(value.data->GetPositionG()) };
-                        auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
-                        measured_h->SetDevName( TAMSDparGeo::GetBaseName() );
-//                        std::cout << " in " << TAMSDparGeo::GetBaseName();
-                        measured_h->SetClusterIdx( msd_h->GetClusterIdx() );
-                        measured_h->SetSensorIdx( msd_h->GetSensorIdx() );
-//                        std::cout << " ( ";
-                        for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
-                            measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
-//                            std::cout << value.data->GetMcTrackIdx(i) << " ";
-                            index_c.push_back(value.data->GetMcTrackIdx(i));
-                        }
-//                        std::cout << ")\n";
+                         fill_measured_point_l( msd_h, TAMSDparGeo::GetBaseName(), &TAGgeoTrafo::FromMSDLocalToGlobal );
                         continue;
                     }
                     auto const * tw_h = dynamic_cast<TATWpoint const*>( value.data );
                     if( tw_h ){
-                        TVector3 measured_position{ transformation_h->FromTWLocalToGlobal(value.data->GetPositionG()) };
-                        auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
-                        measured_h->SetDevName( TATWparGeo::GetBaseName() );
-//                        std::cout << " in " << TATWparGeo::GetBaseName() ;
-                        measured_h->SetClusterIdx( tw_h->GetClusterIdx() );
-                        measured_h->SetSensorIdx( tw_h->GetSensorIdx() );
-//                        std::cout << " ( ";
-                        for( auto i{0}; i < value.data->GetMcTracksN() ; ++i){
-                            measured_h->AddMcTrackIdx( value.data->GetMcTrackIdx(i) );
-//                            std::cout << value.data->GetMcTrackIdx(i) << " ";
-                            index_c.push_back(value.data->GetMcTrackIdx(i));
-                        }
-//                        std::cout << ")\n";
+                         fill_measured_point_l( tw_h, TATWparGeo::GetBaseName(), &TAGgeoTrafo::FromTWLocalToGlobal );
                         continue;
                     }
                     
                 }
-//                std::cout << "\n";
             }
             
         }
-        
-//        for(auto index: index_c) { std::cout << index << " "; }
-//        auto * mc_region_hc = static_cast<TAMCntuRegion*>( gTAGroot->FindDataDsc( "regMc" )->Object() );
-//        for( auto i{0}; i < mc_region_hc->GetRegionsN() ; ++i){
-//            auto *mc_reg_h = mc_region_hc->GetRegion(i);
-//
-//            auto is_reconstructed_l = [&index_c]( int index_p ){
-//                                            return std::find_if(
-//                                                    index_c.begin(),
-//                                                    index_c.end(),
-//                                                    [&index_p](int reconstructed_index_p ){ return index_p == reconstructed_index_p; }
-//                                                                ) != index_c.end();
-//                                                                };
-//            if( is_reconstructed_l(mc_reg_h->GetTrackIdx()-1) ){
-//                std::cout << mc_reg_h->GetTrackIdx()-1 << ", " << mc_reg_h->GetCrossN() << ": " << mc_reg_h->GetMomentum().Mag();
-//                std::cout << " [ " << mc_reg_h->GetMomentum().X() << " ; " << mc_reg_h->GetMomentum().Y() << " ; " << mc_reg_h->GetMomentum().Z() << " ]\n";
-//            }
-//        }
         
         
     }
