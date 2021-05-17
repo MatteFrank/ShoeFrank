@@ -151,7 +151,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                 std::move(list),
                 static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
                 static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
-                GetFootField(), true
+                GetFootField(), false
                                );
 }
 

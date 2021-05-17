@@ -118,7 +118,8 @@ public:
    
    void             SetupClones();
     
-    void             SetParameters( polynomial_fit_parameters parameters ){ fParameters = std::move( parameters ); }
+   void             SetParameters( polynomial_fit_parameters parameters ){ fParameters = std::move( parameters ); }
+   polynomial_fit_parameters const&    GetParameters( ) const{ return fParameters; }
    TVector3         GetPosition( double z );
    
 private:
