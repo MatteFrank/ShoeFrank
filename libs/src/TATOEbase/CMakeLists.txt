@@ -26,6 +26,10 @@ set( without_dictionnaries
     TATOElogger
 )
 
+set(with_dictionnaries
+TATOEmomentum
+)
+
 # add includes : root + current + dependencies
 #
 include_directories(${ROOT_INCLUDE_DIR})
@@ -63,20 +67,30 @@ foreach( f ${without_dictionnaries} )
 endforeach()
 #
 
+ROOT6_GENERATE_DICTIONARY(G_${LIBNAME} ${CMAKE_CURRENT_SOURCE_DIR}/TATOEmomentum.hxx MODULE ${LIBNAME} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}.LinkDef.h OPTIONS "")
+
+set(sources ${sources} ${PROJECT_BINARY_DIR}/G_${LIBNAME}.cxx)
+
+ROOT_LINKER_LIBRARY(${LIBNAME} ${CMAKE_CURRENT_SOURCE_DIR}/TATOEmomentum.cxx ${sources} CMAKENOEXPORT LIBRARIES ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
 #----------------------------------------------------------------------------
 #
 # Generate the library
 #
-add_library(${LIBNAME} SHARED  ${sources} )
+#add_library(${LIBNAME} SHARED  ${sources} )
 #
-set_target_properties(${LIBNAME} PROPERTIES ${ROOT_LIBRARY_PROPERTIES})
+#set_target_properties(${LIBNAME} PROPERTIES ${ROOT_LIBRARY_PROPERTIES})
 #
-target_link_libraries(${LIBNAME} ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+#target_link_libraries(${LIBNAME} ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+
+
 
 #
 # Install lib and headers
 #
-install(TARGETS ${LIBNAME}  RUNTIME DESTINATION bin
+install(TARGETS ${LIBNAME} RUNTIME DESTINATION bin
 							LIBRARY DESTINATION lib
 							ARCHIVE DESTINATION lib
 							COMPONENT libraries)
+
