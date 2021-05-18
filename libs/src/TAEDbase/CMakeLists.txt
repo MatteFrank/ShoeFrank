@@ -25,6 +25,8 @@ set( with_dictionnaries
    TAEDpoint
    TAEDeveGlbTrack
    TAEDeveGlbTrackList
+   TAEDglbTrack
+   TAEDglbTrackGL
    TAEDglbTrackList
    TAEDbaseInterface
 )
