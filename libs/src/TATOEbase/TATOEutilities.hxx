@@ -106,6 +106,10 @@ namespace details{
     
     struct all_mixed_tag{};
     struct all_separated_tag{};
+    
+    
+    template<class C>
+    class cut_holder;
 } //namespace details
 
 
@@ -149,6 +153,9 @@ struct reconstruction_result{
 struct TATOEbaseAct {
     template<class C>
     friend class TATOEcutter;
+    
+    template<class C>
+    friend class details::cut_holder;
 public:
     virtual void Action()  = 0;
     virtual void Output() = 0 ;
@@ -159,8 +166,8 @@ private:
     virtual void reset_event_number() = 0;
     
     virtual void set_cuts( details::vertex_tag, double) = 0;
-    virtual void set_cuts( details::it_tag, std::array<double, 2>&& ) = 0;
-    virtual void set_cuts( details::msd_tag, std::array<double, 3>&& ) = 0;
+    virtual void set_cuts( details::it_tag, std::array<double, 2> const& ) = 0;
+    virtual void set_cuts( details::msd_tag, std::array<double, 3> const& ) = 0;
     virtual void set_cuts( details::tof_tag, double) = 0;
     
     virtual reconstruction_result retrieve_result( ) const = 0;

@@ -109,6 +109,10 @@ struct cut_holder{
     constexpr double* get_cut_handle( std::size_t index_p ){
         return get_cut_handle_impl(index_p, std::make_index_sequence< C::cut_count >{} );
     }
+    template<class A>
+    constexpr void apply(A * action_ph) const {
+        apply_impl(action_ph, std::make_index_sequence<C::detector_count>{} );
+    }
 private:
     template<std::size_t ... Indices>
     constexpr double* get_cut_handle_impl(std::size_t index_p, std::index_sequence<Indices...>){
@@ -147,7 +151,15 @@ private:
     template<std::size_t Index, typename std::enable_if_t< !std::is_same<typename std::tuple_element<Index, tuple_t>::type, double >::value, std::nullptr_t > = nullptr >
     constexpr double* get_underlying_cut_impl( std::size_t index_p ){return &std::get<Index>(cut_mc)[index_p]; }
     
+private:
+    template<class A, std::size_t ... Indices>
+    constexpr void apply_impl(A * action_ph, std::index_sequence<Indices...>) const {
+        int expander[] =  { 0, ( action_ph->set_cuts( typename std::tuple_element<Indices, detector_tuple_t>::type{}, std::get<Indices>(cut_mc) ), void() , 0)... };
+    }
     
+    
+    
+private:
     template<std::size_t ... Indices>
     constexpr tuple_t retrieve_default( std::index_sequence<Indices...> ) const {
         tuple_t result;
@@ -345,7 +357,6 @@ struct scan_procedure{
         auto efficiency = reconstructed_number * 1./reconstructible_number;
         auto purity = correct_cluster_number * 1./recovered_cluster_number;
         
-        std::cout << "result: " << efficiency << " - " << purity << '\n';
         auto score_l = [this]( double const& e_p, double const& p_p ){
                             return ( e_p - derived().baseline_m.efficiency )/derived().baseline_m.efficiency +
                                    ( p_p - derived().baseline_m.purity )/derived().baseline_m.purity;
@@ -358,12 +369,13 @@ struct scan_procedure{
     }
     
     constexpr void select() {
-        std::cout << "select:\n";
+        std::sort( selection_c.begin(), selection_c.end(), [](auto const& s1_p, auto const& s2_p){ return s1_p.score > s2_p.score; } );
+        
+        std::cout << "sorted_selection:\n";
         for(auto const& selection : selection_c ){
             std::cout << "[" << selection.cut_index << " : " << selection.modifier << "] -> " << selection.score << '\n';
         }
         
-        std::sort( selection_c.begin(), selection_c.end(), [](auto const& s1_p, auto const& s2_p){ return s1_p.score > s2_p.score; } );
         auto const& winner = selection_c.front();
         derived().selected_cut_m = winner.cut_index;
         derived().focus_modifier_m = winner.modifier;
@@ -377,7 +389,10 @@ private:
 
 template< class Derived >
 struct focus_procedure{
-    constexpr void call() { puts(__PRETTY_FUNCTION__) ;}
+    constexpr void call() {
+        puts(__PRETTY_FUNCTION__);
+        
+    }
 };
 
 
@@ -487,10 +502,10 @@ struct TATOEcutter : TATOEbaseCutter,
         
         if( !iterator_mh->can_increment() ) { iterator_mh->switch_procedure(); }
         iterator_mh->increment_and_setup();
-        //apply the cuts to the action
         std::cout << "current_cuts: ";
         for(auto i{0}; i < C::cut_count; ++i){ std::cout << *cut_mc.get_cut_handle(i) << " "; }
         std::cout << '\n';
+        cut_mc.apply( action_mh.get() );
     };
     
     Bool_t Action() override {

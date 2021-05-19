@@ -214,11 +214,11 @@ private:
     void set_cuts( details::vertex_tag, double cut_p) override {
         list_m.template set_cuts<detector_properties<details::vertex_tag>>( cut_p );
     }
-    void set_cuts( details::it_tag, std::array<double, 2>&& cut_pc) override {
-        list_m.template set_cuts<detector_properties<details::it_tag>>( std::move(cut_pc) );
+    void set_cuts( details::it_tag, std::array<double, 2> const& cut_pc) override {
+        list_m.template set_cuts<detector_properties<details::it_tag>>( cut_pc );
     }
-    void set_cuts( details::msd_tag, std::array<double, 3>&& cut_pc) override {
-        list_m.template set_cuts<detector_properties<details::msd_tag>>( std::move(cut_pc) );
+    void set_cuts( details::msd_tag, std::array<double, 3> const& cut_pc) override {
+        list_m.template set_cuts<detector_properties<details::msd_tag>>( cut_pc );
     }
     void set_cuts( details::tof_tag, double cut_p) override  {
         list_m.template set_cuts<detector_properties<details::tof_tag>>( cut_p );
