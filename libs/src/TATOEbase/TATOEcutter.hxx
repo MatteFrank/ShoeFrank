@@ -301,12 +301,78 @@ constexpr auto new_action(){ return action_factory<C>{}(); }
 
 template< class Derived >
 struct baseline_procedure{
-    constexpr void call() { puts(__PRETTY_FUNCTION__) ;}
+    constexpr void call() {
+        puts(__PRETTY_FUNCTION__) ;
+        std::size_t reconstructed_number{0};
+        std::size_t reconstructible_number{0};
+        std::size_t correct_cluster_number{0};
+        std::size_t recovered_cluster_number{0};\
+        for(auto const & module : derived().result_m.module_c){
+            reconstructed_number += module.reconstructed_number;
+            reconstructible_number += module.reconstructible_number;
+            correct_cluster_number += module.correct_cluster_number;
+            recovered_cluster_number += module.recovered_cluster_number;
+        }
+        derived().baseline_m.efficiency = reconstructed_number * 1./reconstructible_number;
+        derived().baseline_m.purity = correct_cluster_number * 1./recovered_cluster_number;
+    }
+    
+private:
+    constexpr Derived& derived(){ return static_cast<Derived&>(*this); }
 };
 
 template< class Derived >
 struct scan_procedure{
-    constexpr void call() { puts(__PRETTY_FUNCTION__) ; static_cast<Derived&>(*this).selected_cut_m = 2;}
+    struct selection{
+        std::size_t cut_index;
+        int modifier;
+        double score;
+    };
+    
+    constexpr void call() {
+        puts(__PRETTY_FUNCTION__) ;
+        
+        std::size_t reconstructed_number{0};
+        std::size_t reconstructible_number{0};
+        std::size_t correct_cluster_number{0};
+        std::size_t recovered_cluster_number{0};\
+        for(auto const & module : derived().result_m.module_c){
+            reconstructed_number += module.reconstructed_number;
+            reconstructible_number += module.reconstructible_number;
+            correct_cluster_number += module.correct_cluster_number;
+            recovered_cluster_number += module.recovered_cluster_number;
+        }
+        auto efficiency = reconstructed_number * 1./reconstructible_number;
+        auto purity = correct_cluster_number * 1./recovered_cluster_number;
+        
+        std::cout << "result: " << efficiency << " - " << purity << '\n';
+        auto score_l = [this]( double const& e_p, double const& p_p ){
+                            return ( e_p - derived().baseline_m.efficiency )/derived().baseline_m.efficiency +
+                                   ( p_p - derived().baseline_m.purity )/derived().baseline_m.purity;
+                                                                     };
+        selection_c.push_back( selection{
+                                    derived().selected_cut_m,
+                                    derived().focus_modifier_m,
+                                    score_l( efficiency, purity )
+                                         } );
+    }
+    
+    constexpr void select() {
+        std::cout << "select:\n";
+        for(auto const& selection : selection_c ){
+            std::cout << "[" << selection.cut_index << " : " << selection.modifier << "] -> " << selection.score << '\n';
+        }
+        
+        std::sort( selection_c.begin(), selection_c.end(), [](auto const& s1_p, auto const& s2_p){ return s1_p.score > s2_p.score; } );
+        auto const& winner = selection_c.front();
+        derived().selected_cut_m = winner.cut_index;
+        derived().focus_modifier_m = winner.modifier;
+    }
+    
+private:
+    constexpr Derived& derived(){ return static_cast<Derived&>(*this); }
+private:
+    std::vector<selection> selection_c;
 };
 
 template< class Derived >
@@ -334,6 +400,7 @@ struct TATOEcutter : TATOEbaseCutter,
     using baseline_procedure< TATOEcutter >::call;
     friend class baseline_procedure< TATOEcutter >;
     using scan_procedure< TATOEcutter >::call;
+    using scan_procedure< TATOEcutter >::select;
     friend class scan_procedure< TATOEcutter >;
     using focus_procedure< TATOEcutter >::call;
     friend class focus_procedure< TATOEcutter >;
@@ -348,7 +415,7 @@ struct TATOEcutter : TATOEbaseCutter,
     struct baseline_iterator : iterator {
         baseline_iterator(TATOEcutter* c_ph) : c_mh{c_ph} {}
         bool can_increment() override { return !was_called_m; }
-        void increment_and_setup() override { was_called_m = true; c_mh->call(); }
+        void increment_and_setup() override { was_called_m = true; }
         void switch_procedure() override {
             c_mh->call_mhf = &scan_procedure<TATOEcutter>::call;
             c_mh->iterator_mh.reset( new scan_iterator{c_mh} );
@@ -359,17 +426,18 @@ struct TATOEcutter : TATOEbaseCutter,
     };
     
     struct scan_iterator : iterator {
-        scan_iterator(TATOEcutter* c_ph) : c_mh{c_ph} {  }
+        scan_iterator(TATOEcutter* c_ph) : c_mh{c_ph} { c_mh->selected_cut_m = *iterator_m; }
         bool can_increment() override {
-            return modifier_m < 0 || (++iterator_m)-- != c_mh->remaining_cut_mc.end() ;
+            return c_mh->focus_modifier_m < 0 || (++iterator_m)-- != c_mh->remaining_cut_mc.end() ;
         }
         void increment_and_setup() override {
-            if( modifier_m > 0 ){ ++iterator_m; modifier_m = -1; }
-            else { modifier_m += 2; }
+            if( c_mh->focus_modifier_m > 0 ){ c_mh->focus_modifier_m = -1; c_mh->selected_cut_m = *(++iterator_m); }
+            else { c_mh->focus_modifier_m += 2;  }
             c_mh->cut_mc.reset_cuts();
-            *c_mh->cut_mc.get_cut_handle( *iterator_m ) += modifier_m;
+            *c_mh->cut_mc.get_cut_handle( *iterator_m ) += c_mh->focus_modifier_m;
         }
         void switch_procedure() override {
+            c_mh->select();
             c_mh->cut_mc.reset_cuts();
             c_mh->call_mhf = &focus_procedure<TATOEcutter>::call;
             c_mh->iterator_mh.reset( new focus_iterator{c_mh} );
@@ -377,7 +445,6 @@ struct TATOEcutter : TATOEbaseCutter,
     private:
         TATOEcutter* c_mh;
         std::vector<std::size_t>::iterator iterator_m{ c_mh->remaining_cut_mc.begin() };
-        int modifier_m{-3};
     };
     
     struct focus_iterator : iterator {
@@ -390,9 +457,9 @@ struct TATOEcutter : TATOEbaseCutter,
         void switch_procedure() override {
             c_mh->cut_mc.save_cuts();
             c_mh->remaining_cut_mc.erase( std::remove_if(
-                                                         c_mh->remaining_cut_mc.begin(),
-                                                         c_mh->remaining_cut_mc.end(),
-                                                         [this](auto const& value_p){ return value_p == c_mh->selected_cut_m; }
+                                                c_mh->remaining_cut_mc.begin(),
+                                                c_mh->remaining_cut_mc.end(),
+                                                [this](auto const& value_p){ return value_p == c_mh->selected_cut_m; }
                                                          ) );
             c_mh->call_mhf = &baseline_procedure<TATOEcutter>::call;
             c_mh->iterator_mh.reset( new baseline_iterator{c_mh} );
@@ -403,6 +470,10 @@ struct TATOEcutter : TATOEbaseCutter,
     };
     friend class TATOEcutter::iterator;
     
+    struct ep_goals {
+        double efficiency;
+        double purity;
+    };
     
     TATOEcutter(char const* name_p) :
         TATOEbaseCutter(name_p),
@@ -410,59 +481,25 @@ struct TATOEcutter : TATOEbaseCutter,
         iterator_mh{ new baseline_iterator{this} },
         call_mhf{&baseline_procedure<TATOEcutter>::call} {}
     
-    void NextIteration() override{
-        if( iterator_mh->can_increment() ) { puts(__PRETTY_FUNCTION__); std::cout << std::flush;  iterator_mh->increment_and_setup(); }
-        else{ iterator_mh->switch_procedure(); iterator_mh->increment_and_setup(); }
-    };
-    
-    Bool_t Action() override {
-        
-        std::cout << "current_cuts: ";
-        for(auto i{0}; i < C::cut_count; ++i){ std::cout << *cut_mc.get_cut_handle(i) << " "; }
-        std::cout << '\n';
-        action_mh->Action();
+    void NextIteration() override{ //carefull ! first call should be empty: nothing to retrieve yet
         result_m = action_mh->retrieve_result();
         call();
         
+        if( !iterator_mh->can_increment() ) { iterator_mh->switch_procedure(); }
+        iterator_mh->increment_and_setup();
+        //apply the cuts to the action
+        std::cout << "current_cuts: ";
+        for(auto i{0}; i < C::cut_count; ++i){ std::cout << *cut_mc.get_cut_handle(i) << " "; }
+        std::cout << '\n';
+    };
+    
+    Bool_t Action() override {
+        action_mh->Action();
         return true;
     }
     
     void Output() const override{
-        
-//        for( auto const& result : result_mc) {
-//            std::size_t reconstructed_number{0};
-//            std::size_t reconstructible_number{0};
-//
-//            std::size_t correct_cluster_number{0};
-//            std::size_t recovered_cluster_number{0};
-//
-//            std::size_t clone_number{0};
-//
-//            for(auto const & module : result.module_c){
-//                reconstructed_number += module.reconstructed_number;
-//                reconstructible_number += module.reconstructible_number;
-//
-//                correct_cluster_number += module.correct_cluster_number;
-//                recovered_cluster_number += module.recovered_cluster_number;
-//
-//                clone_number += module.clone_number;
-//            }
-//
-//            std::cout << "===== MIXED_RESULTS ====\n";
-//            std::cout << "----- efficiency -----\n";
-//            auto efficiency = reconstructed_number * 1./reconstructible_number;
-//            std::cout << "global_efficiency: " << efficiency * 100 << '\n';
-//            auto efficiency_error = sqrt(efficiency* (1+ efficiency)/reconstructible_number);
-//            std::cout << "global_efficiency_error: " << efficiency_error * 100<< '\n';
-//
-//            std::cout << "----- purity -----\n";
-//
-//            auto purity = correct_cluster_number * 1./recovered_cluster_number;
-//            std::cout << "global_purity: " << purity * 100 << '\n';
-//            auto purity_error = sqrt(purity* (1+purity)/recovered_cluster_number);
-//            std::cout << "global_purity_error: " << purity_error * 100<< '\n';
-//
-//        }
+        std::cout << "baseline ref:" << baseline_m.efficiency << "-" << baseline_m.purity << '\n';
     }
     
 private:
@@ -483,9 +520,10 @@ private:
     details::cut_holder<C> cut_mc;
     std::vector<std::size_t> remaining_cut_mc{ generate_remaining_cut() };
     std::size_t selected_cut_m;
-    int focus_modifier_m{1};
+    int focus_modifier_m{-3};
 
     reconstruction_result result_m;
+    ep_goals baseline_m;
 };
 
 
