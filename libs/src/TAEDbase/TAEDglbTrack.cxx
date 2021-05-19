@@ -67,6 +67,5 @@ void TAEDglbTrack::LineSecSelected(TEveStraightLineSet* qs, Int_t line)
 //__________________________________________________________
 void TAEDglbTrack::LineSelected(Int_t line)
 {
-   //printf("Selected GlbTrack %d\n", line);
    LineSecSelected(this, line);
 }
