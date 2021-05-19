@@ -8,7 +8,7 @@
 /** TAEDglbTrackList a class to display global tracks on event
  
 */
-class TAEDtrack;
+class TAEDglbTrack;
 
 class TAEDglbTrackList : public TEveElementList {
 
@@ -20,29 +20,15 @@ public:
    Int_t      GetNofTracks()     const { return fNofTracks; }
    
    //! Add Track
-   TAEDtrack* NewTrack(const Char_t* label);
+   TAEDglbTrack* NewTrack(const Char_t* label);
   
    //! Reset tracks
-   void       ResetTracks();
-   
-   //! Set width/height of box
-   void        SetBoxDefWidth(Float_t w)   { fBoxDefWidth = w;       }
-   void        SetBoxDefHeight(Float_t h)  { fBoxDefHeight = h;      }
-   
-   //! Get width/height of box
-   Float_t     GetBoxDefWidth()    const   { return fBoxDefWidth;    }
-   Float_t     GetBoxDefHeight()   const   { return fBoxDefHeight;   }
-   
-   // set/get max energy
-   void         SetMaxEnergy(Float_t e)     { fMaxEnergy = e;         }
-   Float_t      GetMaxEnergy()      const   { return fMaxEnergy;      }
-   
+   void ResetTracks();
+      
 private:
-   Int_t       fNofTracks;        // number of tracks
-   Float_t     fBoxDefWidth;      // default width of track box
-   Float_t     fBoxDefHeight;     // default height of track box
-   Float_t     fMaxEnergy;        // maximum energy for palette
-
+   Int_t            fNofTracks;   // number of tracks
+   
+   ClassDef(TAEDglbTrackList, 0);
 };
 
 
