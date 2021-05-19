@@ -303,7 +303,7 @@ void BaseReco::AfterEventLoop()
 {
    fTAGroot->EndEventLoop();
     
-    if(fActRecCutter){ fActRecCutter->Output(); }
+//    if(fActRecCutter){ fActRecCutter->Output(); }
    if (TAGrecoManager::GetPar()->IncludeKalman())	fActGlbkFitter->Finalize();
    if (fFlagOut)
       CloseFileOut();
@@ -837,11 +837,11 @@ void BaseReco::CreateRecActionGlb()
     using namespace details;
     if( fFlagRecCutter ){
         SetL0TreeBranches();
-        fActRecCutter = new TATOEcutter<
-//            procedure< configuration<1, vertex_tag, tof_tag>, range<-1,+5> >
-//            procedure< configuration<1, vertex_tag, it_tag, tof_tag>, range<-1,+1>>
-        procedure< configuration<3, vertex_tag, it_tag, msd_tag, tof_tag>, range<-1,+10>>
-                                        >{"toeActCutter", fField};
+//        fActRecCutter = new TATOEcutter<
+////            procedure< configuration<1, vertex_tag, tof_tag>, range<-1,+5> >
+////            procedure< configuration<1, vertex_tag, it_tag, tof_tag>, range<-1,+1>>
+//        procedure< configuration<3, vertex_tag, it_tag, msd_tag, tof_tag>, range<-1,+10>>
+//                                        >{"toeActCutter", fField};
         return;
     }
   if(fFlagTrack) {
@@ -1036,8 +1036,7 @@ void BaseReco::AddRecRequiredItem()
       gTAGroot->AddRequiredItem("locRecFile");
    if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
-       if(fFlagRecCutter){gTAGroot->AddRequiredItem("toeActCutter");}
-       else{gTAGroot->AddRequiredItem("glbActTrack");}
+       if(!fFlagRecCutter){gTAGroot->AddRequiredItem("glbActTrack");}
      }
      return;
    }

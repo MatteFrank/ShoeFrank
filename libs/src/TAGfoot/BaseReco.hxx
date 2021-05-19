@@ -251,6 +251,8 @@ public:
    TAMCntuHit*          GetNtuMcTw()        const { return (TAMCntuHit*)fpNtuMcTw->Object();         }
    TAMCntuHit*          GetNtuMcCa()        const { return (TAMCntuHit*)fpNtuMcCa->Object();         }
   
+   void                 SetCutter(TATOEbaseCutter* cutter_ph){ fActRecCutter = cutter_ph;}
+
 public:
    //! Disable/Enable ITR tracking
    static void DisableItrTracking() { fgItrTrackFlag = false; }
