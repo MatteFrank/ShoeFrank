@@ -180,7 +180,7 @@ public:
         
         checker_m.end_event();
 //        logger_m.freeze_everything();
-        logger_m.output();
+        //logger_m.output();
         
         
         
