@@ -96,17 +96,10 @@ int main (int argc, char *argv[])  {
    watch.Start();
    
    glbRec->BeforeEventLoop();
-    glbRec->SetCutter(new TATOEcutter<
-                        details::configuration<
-                            details::range<5>,
-                            details::vertex_tag,
-                            details::it_tag,
-                            details::msd_tag,
-                            details::tof_tag
-                                              >
-                                    >{"toeActCutter"} );
+    using config_t = details::configuration< details::range<5>, details::vertex_tag, details::it_tag, details::msd_tag, details::tof_tag >;
+    glbRec->SetCutter(new TATOEcutter< config_t >{"toeActCutter"} );
     gTAGroot->AddRequiredItem("toeActCutter");
-    for( auto i{0} ; i < 30; ++i)
+    for( auto i{0} ; i < 20 ; ++i)
    glbRec->LoopEvent(nTotEv);
    glbRec->AfterEventLoop();
    
