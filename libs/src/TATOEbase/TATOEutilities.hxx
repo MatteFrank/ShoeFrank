@@ -147,7 +147,7 @@ struct reconstruction_result{
 
 
 struct TATOEbaseAct {
-    template<class ... Ps>
+    template<class C>
     friend class TATOEcutter;
 public:
     virtual void Action()  = 0;
