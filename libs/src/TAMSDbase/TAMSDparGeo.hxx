@@ -36,7 +36,7 @@ public:
   TGeoVolume* AddModule(const char* basemoduleName = "SSSD", const char *name = "MSD");
    
   //! Build MSD
-  TGeoVolume* BuildMultiStripDetector(const char* basemoduleName = "Module", const char *name = "MSD");
+  TGeoVolume* BuildMultiStripDetector(const char* basemoduleName = "Module", const char *name = GetBaseName());
    
   //! Reading from file
   Bool_t      FromFile(const TString& name = "");

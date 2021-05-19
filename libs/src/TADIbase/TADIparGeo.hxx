@@ -127,7 +127,7 @@ public:
   TVector3        GetMagCstValue()     const { return fMagCstValue; }
    
   //! Build Magnet
-  TGeoVolume* BuildMagnet(const char* basemoduleName = "Module", const char *name = "Magnet");
+  TGeoVolume* BuildMagnet(const char* basemoduleName = "Module", const char *name = GetBaseName());
   
   //! Get Magnet parameter
   MagnetParameter_t& GetMagnetPar(Int_t idx) { return fMagnetParameter[idx]; }

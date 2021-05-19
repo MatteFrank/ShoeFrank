@@ -34,7 +34,7 @@ public:
    
    virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
    
-   TGeoVolume*     BuildStartCounter(const char *bmName = "ST");
+   TGeoVolume*     BuildStartCounter(const char *bmName = GetBaseName());
 
   //crossing regions
   Int_t          GetRegSensor(){TString regname("STC");return GetCrossReg(regname);};

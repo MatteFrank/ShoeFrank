@@ -42,7 +42,7 @@ public:
    TGeoVolume* BuildBoard(const char* basemoduleName = "M28Board", const char *name = "M28Epi");
    
    //! Build Vertex
-   TGeoVolume* BuildVertex( const char *name = "Vertex", const char* basemoduleName = "M28", Bool_t board = false);
+   TGeoVolume* BuildVertex( const char *name = GetBaseName(), const char* basemoduleName = "M28", Bool_t board = false);
    
    //crossing regions (n = layer number; 0<=n<=3)
    Int_t          GetRegEpitaxial(Int_t n);

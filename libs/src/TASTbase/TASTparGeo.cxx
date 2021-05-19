@@ -123,7 +123,7 @@ TGeoVolume* TASTparGeo::BuildStartCounter(const char *stName )
    TGeoMedium*  medST = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
    
    TGeoBBox* box = new TGeoBBox(stName, fSize[0]/2., fSize[1]/2., fSize[2]/2.);
-   TGeoVolume *start = new TGeoVolume(Form("%s_Mod",stName), box, medST);
+   TGeoVolume *start = new TGeoVolume(stName, box, medST);
 
    start->SetVisibility(true);
    start->SetLineColor(kRed-5);
