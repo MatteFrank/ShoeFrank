@@ -90,13 +90,27 @@ struct range{
     static constexpr std::size_t value = R;
 };
 
+template<std::size_t N>
+constexpr std::size_t scan_iteration() {
+    return N*2 + scan_iteration<N-1>();
+}
+
+template<>
+constexpr std::size_t scan_iteration<1UL>() {
+    return 2;
+}
+    
 template<class R, class ... Ts>
 struct configuration {
     using detector_tuple_t = std::tuple<Ts...>;
     static constexpr std::size_t detector_count = sizeof...(Ts);
+    
     static constexpr std::size_t cut_count = cut_counter<typename Ts::cut_t...>{}();
     using cut_tuple_t = std::tuple< typename Ts::cut_t... >;
+    
     static constexpr std::size_t range = R::value;
+    
+    static constexpr std::size_t iteration_count = cut_count * (range+1) + scan_iteration<cut_count>() ;
 };
 
 template<class C>
@@ -368,7 +382,7 @@ struct scan_procedure{
                                          } );
     }
     
-    constexpr void select() {
+    constexpr void select_cut() {
         std::sort( selection_c.begin(), selection_c.end(), [](auto const& s1_p, auto const& s2_p){ return s1_p.score > s2_p.score; } );
         
         std::cout << "sorted_selection:\n";
@@ -379,6 +393,7 @@ struct scan_procedure{
         auto const& winner = selection_c.front();
         derived().selected_cut_m = winner.cut_index;
         derived().focus_modifier_m = winner.modifier;
+        selection_c.clear();
     }
     
 private:
@@ -389,10 +404,54 @@ private:
 
 template< class Derived >
 struct focus_procedure{
+    struct selection{
+        int offset;
+        double score;
+    };
+    
     constexpr void call() {
-        puts(__PRETTY_FUNCTION__);
+        puts(__PRETTY_FUNCTION__) ;
         
+        std::size_t reconstructed_number{0};
+        std::size_t reconstructible_number{0};
+        std::size_t correct_cluster_number{0};
+        std::size_t recovered_cluster_number{0};\
+        for(auto const & module : derived().result_m.module_c){
+            reconstructed_number += module.reconstructed_number;
+            reconstructible_number += module.reconstructible_number;
+            correct_cluster_number += module.correct_cluster_number;
+            recovered_cluster_number += module.recovered_cluster_number;
+        }
+        auto efficiency = reconstructed_number * 1./reconstructible_number;
+        auto purity = correct_cluster_number * 1./recovered_cluster_number;
+        
+        auto score_l = [this]( double const& e_p, double const& p_p ){
+            return ( e_p - derived().target_m.efficiency )/derived().target_m.efficiency +
+            ( p_p - derived().target_m.purity )/derived().target_m.purity;
+        };
+        selection_c.push_back( selection{
+            derived().offset_m,
+            score_l( efficiency, purity )
+        } );
     }
+    
+    constexpr void optimize_cut() {
+        std::sort( selection_c.begin(), selection_c.end(), [](auto const& s1_p, auto const& s2_p){ return s1_p.score > s2_p.score; } );
+        
+        std::cout << "sorted_selection: "<< derived().selected_cut_m <<"\n";
+        for(auto const& selection : selection_c ){
+            std::cout << "[" << selection.offset << "] -> " << selection.score << '\n';
+        }
+        
+        auto const& winner = selection_c.front();
+        *derived().cut_mc.get_cut_handle( derived().selected_cut_m  ) += winner.offset;
+        selection_c.clear();
+    }
+    
+private:
+    constexpr Derived& derived(){ return static_cast<Derived&>(*this); }
+private:
+    std::vector<selection> selection_c;
 };
 
 
@@ -402,6 +461,7 @@ struct TATOEbaseCutter : TAGaction {
     virtual void NextIteration() = 0;
     virtual Bool_t Action() = 0;
     virtual void Output() const  = 0 ;
+    virtual void Compute() = 0 ;
     virtual ~TATOEbaseCutter() = default;
 };
 
@@ -415,9 +475,10 @@ struct TATOEcutter : TATOEbaseCutter,
     using baseline_procedure< TATOEcutter >::call;
     friend class baseline_procedure< TATOEcutter >;
     using scan_procedure< TATOEcutter >::call;
-    using scan_procedure< TATOEcutter >::select;
+    using scan_procedure< TATOEcutter >::select_cut;
     friend class scan_procedure< TATOEcutter >;
     using focus_procedure< TATOEcutter >::call;
+    using focus_procedure< TATOEcutter >::optimize_cut;
     friend class focus_procedure< TATOEcutter >;
     
     struct iterator{
@@ -452,7 +513,7 @@ struct TATOEcutter : TATOEbaseCutter,
             *c_mh->cut_mc.get_cut_handle( *iterator_m ) += c_mh->focus_modifier_m;
         }
         void switch_procedure() override {
-            c_mh->select();
+            c_mh->select_cut();
             c_mh->cut_mc.reset_cuts();
             c_mh->call_mhf = &focus_procedure<TATOEcutter>::call;
             c_mh->iterator_mh.reset( new focus_iterator{c_mh} );
@@ -464,12 +525,15 @@ struct TATOEcutter : TATOEbaseCutter,
     
     struct focus_iterator : iterator {
         focus_iterator(TATOEcutter* c_ph) : c_mh{c_ph} {}
-        bool can_increment() override { return counter_m < C::range + 1; }
+        bool can_increment() override { return counter_m < C::range ; }
         void increment_and_setup() override {
             c_mh->cut_mc.reset_cuts();
-            *c_mh->cut_mc.get_cut_handle( c_mh->selected_cut_m ) += ++counter_m * c_mh->focus_modifier_m;
+            c_mh->offset_m = ++counter_m * c_mh->focus_modifier_m;
+            *c_mh->cut_mc.get_cut_handle( c_mh->selected_cut_m ) += c_mh->offset_m;
         }
         void switch_procedure() override {
+            c_mh->cut_mc.reset_cuts();
+            c_mh->optimize_cut();
             c_mh->cut_mc.save_cuts();
             c_mh->remaining_cut_mc.erase( std::remove_if(
                                                 c_mh->remaining_cut_mc.begin(),
@@ -496,10 +560,7 @@ struct TATOEcutter : TATOEbaseCutter,
         iterator_mh{ new baseline_iterator{this} },
         call_mhf{&baseline_procedure<TATOEcutter>::call} {}
     
-    void NextIteration() override{ //carefull ! first call should be empty: nothing to retrieve yet
-        result_m = action_mh->retrieve_result();
-        call();
-        
+    void NextIteration() override{
         if( !iterator_mh->can_increment() ) { iterator_mh->switch_procedure(); }
         iterator_mh->increment_and_setup();
         std::cout << "current_cuts: ";
@@ -513,8 +574,13 @@ struct TATOEcutter : TATOEbaseCutter,
         return true;
     }
     
+    void Compute() override {
+        result_m = action_mh->retrieve_result();
+        call();
+    }
+    
     void Output() const override{
-        std::cout << "baseline ref:" << baseline_m.efficiency << "-" << baseline_m.purity << '\n';
+        std::cout << "baseline: " << baseline_m.efficiency << " - " << baseline_m.purity << '\n';
     }
     
 private:
@@ -536,9 +602,11 @@ private:
     std::vector<std::size_t> remaining_cut_mc{ generate_remaining_cut() };
     std::size_t selected_cut_m;
     int focus_modifier_m{-3};
+    int offset_m;
 
     reconstruction_result result_m;
     ep_goals baseline_m;
+    ep_goals target_m{0.92, 0.97};
 };
 
 
