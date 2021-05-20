@@ -69,6 +69,7 @@
          
 *         CALL OAUXFI('DoubleDipole.table',22,'OLD',IERR)
          CALL OAUXFI(mapname,22,'OLD',IERR)
+         WRITE(*,*) 'Opening Magnetic Map: ',mapname
          
          READ (22,*) NROW, NX, NY, NZ
 
@@ -102,6 +103,7 @@
             WRITE(*,*)'Mag field lattice: reading problem'
             CALL FLABRT('MAGFLD','Error in map readout')
          ENDIF
+         WRITE(*,*) 'Magnetic Map reading complete'
          
          LFIRST = .FALSE.
       ENDIF
