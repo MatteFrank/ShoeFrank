@@ -242,6 +242,13 @@ void TABMparCal::CoutAdc(){
   cout<<endl;
 }
 
+void TABMparCal::ResetAdc(Int_t size){
+  fAdcPedVec.clear();
+  if(size<=0)
+    return;
+  fAdcPedVec.resize(size,make_pair(0,0));
+  return;
+};
 
 //********************************** STREL AND RESOLUTION ********************************
 

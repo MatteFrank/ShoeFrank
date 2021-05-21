@@ -139,6 +139,8 @@ int main (int argc, char *argv[])  {
 
   TStopwatch watch;
   watch.Start();
+  if(TAGrecoManager::GetPar()->Debug())
+    cout<<"start BeforeEventLoop"<<endl;
   locRec->BeforeEventLoop();
   TABMparGeo* p_bmgeo = (TABMparGeo*) (gTAGroot->FindParaDsc("bmGeo", "TABMparGeo")->Object());
   TABMparConf* p_bmcon = (TABMparConf*) (gTAGroot->FindParaDsc("bmConf", "TABMparConf")->Object());
@@ -152,7 +154,6 @@ int main (int argc, char *argv[])  {
     p_ntutrack = (TABMntuTrack*) (gTAGroot->FindDataDsc("bmTrack", "TABMntuTrack")->Object());
     p_acttrack=(TABMactNtuTrack*)gTAGroot->FindAction("bmActTrack");
   }
-
   if(calname.Length()>0)
     p_bmcal->FromFile(calname);
   if(mapname.Length()>0){
@@ -168,6 +169,8 @@ int main (int argc, char *argv[])  {
   }
 
   vector<TH1*> scaplots, adcplots, recoplots;
+  if(TAGrecoManager::GetPar()->Debug())
+    cout<<"start booking"<<endl;
   Booking(scaplots, adcplots, recoplots);
   Long64_t ientry;
 
@@ -180,6 +183,8 @@ int main (int argc, char *argv[])  {
   Double_t adcsumweighted;
   vector<Double_t>  adcmean;
   //default mean set to 0 and limit set to 2000 (2000 is a random high number)
+  if(TAGrecoManager::GetPar()->Debug())
+    cout<<"start event loop"<<endl;
   for(Int_t i=1;i<p_bmmap->GetAdcMaxCh();i++){ //set the adc integral value for each petal channel
     if(p_bmmap->GetAdcCh(i)!=-1){
       adcmean.push_back(0.);
@@ -196,12 +201,11 @@ int main (int argc, char *argv[])  {
       cout<<"ERROR: scanobusy channel="<<scanobusy<<"   check your map!!"<<endl;
       return 1;
     }
-    if(scanobusy<0 || scanobusy>p_bmmap->GetScaMaxCh()){
-      cout<<"ERROR: scanobusy channel="<<scanobusy<<"   check your map!!"<<endl;
+    if(scabusy<0 || scabusy>p_bmmap->GetScaMaxCh()){
+      cout<<"ERROR: scabusy channel="<<scabusy<<"   check your map!!"<<endl;
       return 1;
     }
   }
-
 
   //event loop
   for ( ientry= 0; ientry < nTotEv; ientry++) {
@@ -230,23 +234,28 @@ int main (int argc, char *argv[])  {
         recoplots.at(1)->Fill(ientry,track->GetOrigin().X());
       }
     }
-    if(p_bmmap->GetAdcCh(1)!=-1){
-      adcsumweighted=0;
-      for(Int_t i=0;i<adcmean.size();i++){
-        Int_t adccha=p_bmmap->GetAdcCh(i+1);
-        if(adccha!=-1){
-          Double_t meas=p_actvme->GetAdcMeas(adccha).first-adcmean.at(i)-(Int_t)(p_bmcal->GetAdcPed(adccha)+.3*p_bmcal->GetAdcDevStd(adccha));
-          adcplots.at(i+5)->Fill(meas);
-          adcsumweighted+=meas;
-        }else{
-          cout<<"ERROR in the adcmean vector!!! check your parameters"<<endl;
+    if(p_bmmap->GetAdcMaxCh()>0){
+      if(p_bmmap->GetAdcCh(1)!=-1){
+        adcsumweighted=0;
+        for(Int_t i=0;i<adcmean.size();i++){
+          Int_t adccha=p_bmmap->GetAdcCh(i+1);
+          if(adccha!=-1){
+            Double_t meas=p_actvme->GetAdcMeas(adccha).first-adcmean.at(i)-(Int_t)(p_bmcal->GetAdcPed(adccha)+.3*p_bmcal->GetAdcDevStd(adccha));
+            adcplots.at(i+5)->Fill(meas);
+            adcsumweighted+=meas;
+          }else{
+            cout<<"ERROR in the adcmean vector!!! check your parameters"<<endl;
+          }
         }
+        adcplots.at(4)->Fill(adcsumweighted);
       }
-      adcplots.at(4)->Fill(adcsumweighted);
     }
 
 
   }//end of event loop
+
+  if(TAGrecoManager::GetPar()->Debug())
+    cout<<"Event loop done"<<endl;
 
   //further analysis:
   //Scaler meas. loop
@@ -265,15 +274,17 @@ int main (int argc, char *argv[])  {
 
   //adc and scaler
   Double_t adcratio=1;
-  if(p_bmmap->GetAdcCh(1)!=-1 && p_bmmap->GetScaMaxCh()>0){
-    TF1 *adcsumfit = new TF1("adcsumfit","gaus", -1000.,1000);
-    adcsumfit->SetParameter(0,adcplots.at(4)->GetEntries());
-    adcsumfit->SetParameter(1,adcplots.at(4)->GetMean());
-    adcsumfit->SetParameter(2,adcplots.at(4)->GetStdDev());
-    adcplots.at(4)->Fit("adcsumfit", "QB+");
-    adcratio=(Double_t)adcplots.at(4)->GetEntries()/adcplots.at(4)->Integral(1,adcplots.at(4)->FindBin(adcsumfit->GetParameter(1)+adcsumfit->GetParameter(2)*5.));
-    for(Int_t i=0;i<4;i++)
-      nobusyweightcounts[i]=nobusycounts[i]*(adcratio);
+  if(p_bmmap->GetAdcMaxCh()>0 && p_bmmap->GetScaMaxCh()>0){
+    if(p_bmmap->GetAdcCh(1)!=-1){
+      TF1 *adcsumfit = new TF1("adcsumfit","gaus", -1000.,1000);
+      adcsumfit->SetParameter(0,adcplots.at(4)->GetEntries());
+      adcsumfit->SetParameter(1,adcplots.at(4)->GetMean());
+      adcsumfit->SetParameter(2,adcplots.at(4)->GetStdDev());
+      adcplots.at(4)->Fit("adcsumfit", "QB+");
+      adcratio=(Double_t)adcplots.at(4)->GetEntries()/adcplots.at(4)->Integral(1,adcplots.at(4)->FindBin(adcsumfit->GetParameter(1)+adcsumfit->GetParameter(2)*5.));
+      for(Int_t i=0;i<4;i++)
+        nobusyweightcounts[i]=nobusycounts[i]*(adcratio);
+    }
   }
 
   //printout useful stuffs
@@ -286,13 +297,17 @@ int main (int argc, char *argv[])  {
     }
     if(p_bmmap->GetScaMaxCh()>0)
       cout<<"scaler nobusy channel="<<scanobusy<<";   nobusy final four counts="<<nobusycounts[0]<<" , "<<nobusycounts[1]<<" ,  "<<nobusycounts[2]<<" , "<<nobusycounts[3]<<endl;
-    if(p_bmmap->GetAdcCh(1)!=-1){
-      cout<<"Adc ratio="<<adcratio<<"  Final counts with adcratio="<<nobusyweightcounts[0]<<" , "<<nobusyweightcounts[1]<<" , "<<nobusyweightcounts[2]<<" , "<<nobusyweightcounts[3]<<endl<<endl;
+    if(p_bmmap->GetAdcMaxCh()>0){
+      if(p_bmmap->GetAdcCh(1)!=-1){
+        cout<<"Adc ratio="<<adcratio<<"  Final counts with adcratio="<<nobusyweightcounts[0]<<" , "<<nobusyweightcounts[1]<<" , "<<nobusyweightcounts[2]<<" , "<<nobusyweightcounts[3]<<endl<<endl;
+      }
     }
   }
 
 
   //save my histos
+  if(TAGrecoManager::GetPar()->Debug())
+    cout<<"start AfterEventLoop"<<endl;
   locRec->AfterEventLoop();
   TFile fileout(rootout.Data(),"UPDATE");
   for(Int_t i=0;i<scaplots.size();i++)

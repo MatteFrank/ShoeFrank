@@ -35,8 +35,8 @@ class TABMactVmeReader : public TAGaction {
     void EvaluateAdcPedestals();
 
     //setters
-    void SetAdcSize(Int_t adc){adc792.resize(adc,make_pair(-1000,-1000));return;};
-    void SetScaSize(Int_t sca){sca830.resize(sca,make_pair(0,0));return;};
+    void SetAdcSize(Int_t adc);
+    void SetScaSize(Int_t sca);
 
     //getters
     BM_struct*  GetEvtStruct(){return fpEvtStruct;};
