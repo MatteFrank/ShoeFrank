@@ -33,6 +33,9 @@ public:
    // secondary selection
    void LineSecSelected(TEveStraightLineSet* qs, Int_t idx); // *SIGNAL*
    void LineSelected(Int_t line);
+   
+   void MarkerSecSelected(TEveStraightLineSet* qs, Int_t idx); // *SIGNAL*
+   void MarkerSelected(Int_t marker);
 
    //! Get track id object
    TObject* GetTrackId() const { return fTrackId; }

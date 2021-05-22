@@ -28,7 +28,6 @@ void TAEDglbTrackGL::ProcessSelection(TGLRnrCtx& /*rnrCtx*/, TGLSelectRecord& re
    if (rec.GetItem(1) == 1) {
       LS.LineSelected(rec.GetItem(1));
    } else {
-      TEveStraightLineSet::Marker_t& m = * (TEveStraightLineSet::Marker_t*) fM->GetMarkerPlex().Atom(rec.GetItem(2));
-      printf("Selected point %d on line %d\n", rec.GetItem(2), m.fLineId);
+      LS.MarkerSelected(rec.GetItem(2));
    }
 }

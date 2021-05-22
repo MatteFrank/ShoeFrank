@@ -69,3 +69,19 @@ void TAEDglbTrack::LineSelected(Int_t line)
 {
    LineSecSelected(this, line);
 }
+
+//__________________________________________________________
+void TAEDglbTrack::MarkerSecSelected(TEveStraightLineSet* qs, Int_t line)
+{
+   Long_t args[2];
+   args[0] = (Long_t) qs;
+   args[1] = (Long_t) line;
+   
+   Emit("MarkerSecSelected(TEveStraightLineSet*, Int_t)", args);
+}
+
+//__________________________________________________________
+void TAEDglbTrack::MarkerSelected(Int_t marker)
+{
+   MarkerSecSelected(this, marker);
+}
