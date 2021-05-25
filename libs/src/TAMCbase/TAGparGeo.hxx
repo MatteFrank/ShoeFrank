@@ -108,7 +108,7 @@ public:
    TGeoVolume*        AddTarget(const char *targetName = "Target");
 
   //! build Target
-  TGeoVolume*        BuildTarget(const char *targetName = "Target");
+  TGeoVolume*        BuildTarget(const char *targetName = GetBaseName());
 
   //crossing regions:
   Int_t          GetRegTarget(){TString regname("TARGET");return GetCrossReg(regname);};

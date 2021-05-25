@@ -115,7 +115,7 @@ public:
    void    ReadSupportInfo();
 
    //! Build Innert Tracker
-   TGeoVolume* BuildInnerTracker(const char *name = "IT", const char* basemoduleName = "Module", Bool_t board = false,  Bool_t support = false);
+   TGeoVolume* BuildInnerTracker(const char *name = GetBaseName(), const char* basemoduleName = "Module", Bool_t board = false,  Bool_t support = false);
    
    //! Build plume support
    TGeoVolume* BuildPlumeSupport(const char* basemoduleName = "Plume", const char *name = "ITSP");

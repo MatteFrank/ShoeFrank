@@ -3,6 +3,8 @@
 
 #include "TAEDglbTrack.hxx"
 
+ClassImp(TAEDglbTrack);
+
 //__________________________________________________________
 TAEDglbTrack::TAEDglbTrack(const Text_t* name)
   : TEveStraightLineSet(name),
@@ -53,11 +55,33 @@ void TAEDglbTrack::TrackId(TObject* obj)
 }
 
 //__________________________________________________________
-void TAEDglbTrack::SecSelected(TEveStraightLineSet* qs, Int_t idx)
+void TAEDglbTrack::LineSecSelected(TEveStraightLineSet* qs, Int_t line)
  {
     Long_t args[2];
     args[0] = (Long_t) qs;
-    args[1] = (Long_t) idx;
+    args[1] = (Long_t) line;
    
-    Emit("SecSelected(TEveStraightLineSet*, Int_t)", args);
+    Emit("LineSecSelected(TEveStraightLineSet*, Int_t)", args);
  }
+
+//__________________________________________________________
+void TAEDglbTrack::LineSelected(Int_t line)
+{
+   LineSecSelected(this, line);
+}
+
+//__________________________________________________________
+void TAEDglbTrack::MarkerSecSelected(TEveStraightLineSet* qs, Int_t line)
+{
+   Long_t args[2];
+   args[0] = (Long_t) qs;
+   args[1] = (Long_t) line;
+   
+   Emit("MarkerSecSelected(TEveStraightLineSet*, Int_t)", args);
+}
+
+//__________________________________________________________
+void TAEDglbTrack::MarkerSelected(Int_t marker)
+{
+   MarkerSecSelected(this, marker);
+}

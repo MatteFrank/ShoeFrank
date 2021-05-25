@@ -2,15 +2,17 @@
 #define _TAEDglbTrack_HXX_
 
 #include "TEveStraightLineSet.h"
+#include "TEveSecondarySelectable.h"
+
 #include "TVector3.h"
 
 /** TAEDglbTrack a class to display global track line on event
  
  */
 
-class TAEDglbTrack : public  TEveStraightLineSet
+class TAEDglbTrack : public  TEveStraightLineSet, public TEveSecondarySelectable
 {
-   
+
 public:
    TAEDglbTrack(const Text_t* name);
    virtual ~TAEDglbTrack();
@@ -29,14 +31,20 @@ public:
    void RefitPlex();
    
    // secondary selection
-   void SecSelected(TEveStraightLineSet* qs, Int_t idx);  // *SIGNAL*
+   void LineSecSelected(TEveStraightLineSet* qs, Int_t idx); // *SIGNAL*
+   void LineSelected(Int_t line);
    
+   void MarkerSecSelected(TEveStraightLineSet* qs, Int_t idx); // *SIGNAL*
+   void MarkerSelected(Int_t marker);
+
    //! Get track id object
    TObject* GetTrackId() const { return fTrackId; }
    
 private:
    TObject* fTrackId;
    
+   ClassDef(TAEDglbTrack, 0);
+
 };
 
 

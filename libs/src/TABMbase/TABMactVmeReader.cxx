@@ -252,6 +252,22 @@ Bool_t TABMactVmeReader::Process() {
 }
 
 
+void TABMactVmeReader::SetAdcSize(Int_t adc){
+	adc792.clear();
+  if(adc<=0)
+		return;
+	adc792.resize(adc,make_pair(-1000,-1000));
+	return;
+};
+
+void TABMactVmeReader::SetScaSize(Int_t sca){
+	sca830.clear();
+	if(sca<=0)
+		return;
+	sca830.resize(sca,make_pair(0,0));
+	return;
+};
+
 Int_t TABMactVmeReader::Open(const TString& name)
 {
   fbmfile.open(name.Data(), ios::in | ios::binary);

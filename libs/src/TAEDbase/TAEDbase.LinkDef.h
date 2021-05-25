@@ -6,5 +6,9 @@
 #pragma link off all functions;
 
 #pragma link C++ class TAEDbaseInterface+;
+#pragma link C++ class TAEDglbTrack+;
+#pragma link C++ class TAEDglbTrackGL+;
+#pragma link C++ class TAEDglbTrackList+;
+
 
 #endif

@@ -69,15 +69,33 @@ int main (int argc, char *argv[]) {
 
     TAGgeoTrafo geoTrafo;
 
-    TADIparGeo* diGeo = new TADIparGeo();
-    TASTparGeo* stcGeo = new TASTparGeo();
-    TABMparGeo* bmGeo = new TABMparGeo();
-    TAVTparGeo* vtxGeo = new TAVTparGeo();
-    TAITparGeo* itrGeo = new TAITparGeo();
-    TAMSDparGeo* msdGeo = new TAMSDparGeo();
-    TATWparGeo* twGeo = new TATWparGeo();
-    TACAparGeo* caGeo = new TACAparGeo();
-    TAGparGeo* generalGeo = new TAGparGeo();
+    TADIparGeo* diGeo = 0x0;
+    TASTparGeo* stcGeo = 0x0;
+    TABMparGeo* bmGeo = 0x0;
+    TAVTparGeo* vtxGeo = 0x0;
+    TAITparGeo* itrGeo = 0x0;
+    TAMSDparGeo* msdGeo = 0x0;
+    TATWparGeo* twGeo = 0x0;
+    TACAparGeo* caGeo = 0x0;
+      
+   diGeo = new TADIparGeo();
+   if (TAGrecoManager::GetPar()->IncludeST())
+      stcGeo = new TASTparGeo();
+   if (TAGrecoManager::GetPar()->IncludeBM())
+      bmGeo = new TABMparGeo();
+   if (TAGrecoManager::GetPar()->IncludeVT())
+      vtxGeo = new TAVTparGeo();
+   if (TAGrecoManager::GetPar()->IncludeIT())
+      itrGeo = new TAITparGeo();
+   if (TAGrecoManager::GetPar()->IncludeMSD())
+      msdGeo = new TAMSDparGeo();
+   if (TAGrecoManager::GetPar()->IncludeTW())
+      twGeo = new TATWparGeo();
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      caGeo = new TACAparGeo();
+   
+   // always there
+   TAGparGeo* generalGeo = new TAGparGeo();
 
     // load campaign file
     TAGcampaignManager* campManager = new TAGcampaignManager(exp);
@@ -93,31 +111,39 @@ int main (int argc, char *argv[]) {
     parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
     generalGeo->FromFile(parFileName.Data());
    
+   if (TAGrecoManager::GetPar()->IncludeST()) {
     parFileName = campManager->GetCurGeoFile(TASTparGeo::GetBaseName(), runNumber);
     stcGeo->FromFile(parFileName.Data());
-
-    parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
-    bmGeo->FromFile(parFileName.Data());
-   
-    vtxGeo->SetMcFlag();
-    parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
-    vtxGeo->FromFile(parFileName.Data());
-   
-    parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
-    itrGeo->FromFile(parFileName.Data());
-   
-    parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
-    msdGeo->FromFile(parFileName.Data());
-   
+   }
+   if (TAGrecoManager::GetPar()->IncludeBM()) {
+      parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+      bmGeo->FromFile(parFileName.Data());
+   }
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
+      vtxGeo->SetMcFlag();
+      parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+      vtxGeo->FromFile(parFileName.Data());
+   }
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+      itrGeo->FromFile(parFileName.Data());
+   }
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+      msdGeo->FromFile(parFileName.Data());
+   }
+   if (TAGrecoManager::GetPar()->IncludeDI()) {
     parFileName = campManager->GetCurGeoFile(TADIparGeo::GetBaseName(), runNumber);
     diGeo->FromFile(parFileName.Data());
-   
-    parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
-    twGeo->FromFile(parFileName.Data());
-   
+   }
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
+      parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+      twGeo->FromFile(parFileName.Data());
+   }
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
     parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNumber);
     caGeo->FromFile(parFileName.Data());
-   
+   }
   
     ifstream file;
     string fileName = Form("foot.inp");
@@ -168,15 +194,24 @@ int main (int argc, char *argv[]) {
 
     //print bodies
     geofile << generalGeo->PrintStandardBodies(  );
-    geofile << stcGeo->PrintBodies(  );
-    geofile << bmGeo->PrintBodies(  );
+   if (TAGrecoManager::GetPar()->IncludeST())
+      geofile << stcGeo->PrintBodies(  );
+   if (TAGrecoManager::GetPar()->IncludeBM())
+      geofile << bmGeo->PrintBodies(  );
+   if (TAGrecoManager::GetPar()->IncludeTG())
     geofile << generalGeo->PrintTargBody(  );
-    geofile << vtxGeo->PrintBodies(  );
-    geofile << itrGeo->PrintBodies(  );
-    geofile << msdGeo->PrintBodies(  );
-    geofile << diGeo->PrintBodies(  );
-    geofile << twGeo->PrintBodies(  );
-    geofile << caGeo->PrintBodies(  );
+   if (TAGrecoManager::GetPar()->IncludeVT())
+      geofile << vtxGeo->PrintBodies(  );
+   if (TAGrecoManager::GetPar()->IncludeIT())
+      geofile << itrGeo->PrintBodies(  );
+   if (TAGrecoManager::GetPar()->IncludeMSD())
+      geofile << msdGeo->PrintBodies(  );
+   if (TAGrecoManager::GetPar()->IncludeDI())
+      geofile << diGeo->PrintBodies(  );
+   if (TAGrecoManager::GetPar()->IncludeTW())
+      geofile << twGeo->PrintBodies(  );
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      geofile << caGeo->PrintBodies(  );
 
     // end print bodies
     geofile << "END        " <<endl;
@@ -187,25 +222,45 @@ int main (int argc, char *argv[]) {
     geofile <<"* ******************************************************************************"<<endl;
     //print regions
     geofile << generalGeo->PrintStandardRegions1();
-    geofile << stcGeo->PrintSubtractBodiesFromAir();
-    geofile << bmGeo->PrintSubtractBodiesFromAir();
-    geofile << generalGeo->PrintSubtractTargBodyFromAir();
-    geofile << vtxGeo->PrintSubtractBodiesFromAir();
-    geofile << itrGeo->PrintSubtractBodiesFromAir();
-    geofile << msdGeo->PrintSubtractBodiesFromAir();
-    geofile << diGeo->PrintSubtractBodiesFromAir();
-    geofile << generalGeo->PrintStandardRegions2();
-    geofile << twGeo->PrintSubtractBodiesFromAir();
-    geofile << caGeo->PrintSubtractBodiesFromAir();    
-    geofile << stcGeo->PrintRegions();
-    geofile << bmGeo->PrintRegions();
-    geofile << generalGeo->PrintTargRegion();
-    geofile << vtxGeo->PrintRegions();
-    geofile << itrGeo->PrintRegions();
-    geofile << msdGeo->PrintRegions(  );
-    geofile << diGeo->PrintRegions(  );
-    geofile << twGeo->PrintRegions(  );
-    geofile << caGeo->PrintRegions(  );
+   if (TAGrecoManager::GetPar()->IncludeST())
+      geofile << stcGeo->PrintSubtractBodiesFromAir();
+   if (TAGrecoManager::GetPar()->IncludeBM())
+      geofile << bmGeo->PrintSubtractBodiesFromAir();
+   if (TAGrecoManager::GetPar()->IncludeTG())
+      geofile << generalGeo->PrintSubtractTargBodyFromAir();
+   if (TAGrecoManager::GetPar()->IncludeVT())
+      geofile << vtxGeo->PrintSubtractBodiesFromAir();
+   if (TAGrecoManager::GetPar()->IncludeIT())
+      geofile << itrGeo->PrintSubtractBodiesFromAir();
+   if (TAGrecoManager::GetPar()->IncludeMSD())
+      geofile << msdGeo->PrintSubtractBodiesFromAir();
+   if (TAGrecoManager::GetPar()->IncludeDI())
+      geofile << diGeo->PrintSubtractBodiesFromAir();
+   if (TAGrecoManager::GetPar()->IncludeTG())
+      geofile << generalGeo->PrintStandardRegions2();
+   if (TAGrecoManager::GetPar()->IncludeTW())
+      geofile << twGeo->PrintSubtractBodiesFromAir();
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      geofile << caGeo->PrintSubtractBodiesFromAir();
+   
+   if (TAGrecoManager::GetPar()->IncludeST())
+      geofile << stcGeo->PrintRegions();
+   if (TAGrecoManager::GetPar()->IncludeBM())
+      geofile << bmGeo->PrintRegions();
+   if (TAGrecoManager::GetPar()->IncludeTG())
+      geofile << generalGeo->PrintTargRegion();
+   if (TAGrecoManager::GetPar()->IncludeVT())
+      geofile << vtxGeo->PrintRegions();
+   if (TAGrecoManager::GetPar()->IncludeIT())
+      geofile << itrGeo->PrintRegions();
+   if (TAGrecoManager::GetPar()->IncludeMSD())
+      geofile << msdGeo->PrintRegions(  );
+   if (TAGrecoManager::GetPar()->IncludeDI())
+      geofile << diGeo->PrintRegions(  );
+   if (TAGrecoManager::GetPar()->IncludeTW())
+      geofile << twGeo->PrintRegions(  );
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      geofile << caGeo->PrintRegions(  );
 
     // end print regions
     geofile << "END        " <<endl;
@@ -229,25 +284,43 @@ int main (int argc, char *argv[]) {
 
     //print assig nmaterials
     outfile << generalGeo->PrintStandardAssignMaterial();
-    outfile << stcGeo->PrintAssignMaterial(fTAGmat);
-    outfile << bmGeo->PrintAssignMaterial(fTAGmat);
+   if (TAGrecoManager::GetPar()->IncludeST())
+      outfile << stcGeo->PrintAssignMaterial(fTAGmat);
+   if (TAGrecoManager::GetPar()->IncludeBM())
+      outfile << bmGeo->PrintAssignMaterial(fTAGmat);
+   if (TAGrecoManager::GetPar()->IncludeTG())
     outfile << generalGeo->PrintTargAssignMaterial(fTAGmat);
+   if (TAGrecoManager::GetPar()->IncludeVT())
     outfile << vtxGeo->PrintAssignMaterial(fTAGmat);
+   if (TAGrecoManager::GetPar()->IncludeIT())
     outfile << itrGeo->PrintAssignMaterial(fTAGmat);
-    outfile << msdGeo->PrintAssignMaterial(fTAGmat);
-    outfile << diGeo->PrintAssignMaterial(fTAGmat);
+   if (TAGrecoManager::GetPar()->IncludeMSD())
+      outfile << msdGeo->PrintAssignMaterial(fTAGmat);
+   if (TAGrecoManager::GetPar()->IncludeDI())
+      outfile << diGeo->PrintAssignMaterial(fTAGmat);
+   if (TAGrecoManager::GetPar()->IncludeTW())
     outfile << twGeo->PrintAssignMaterial(fTAGmat);
-    outfile << caGeo->PrintAssignMaterial(fTAGmat);
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      outfile << caGeo->PrintAssignMaterial(fTAGmat);
 
     // print rotations
-    outfile << stcGeo->PrintRotations();
-    outfile << bmGeo->PrintRotations();
-    outfile << generalGeo->PrintTargRotations();
-    outfile << vtxGeo->PrintRotations();
+   if (TAGrecoManager::GetPar()->IncludeST())
+      outfile << stcGeo->PrintRotations();
+   if (TAGrecoManager::GetPar()->IncludeBM())
+      outfile << bmGeo->PrintRotations();
+   if (TAGrecoManager::GetPar()->IncludeTG())
+      outfile << generalGeo->PrintTargRotations();
+   if (TAGrecoManager::GetPar()->IncludeVT())
+      outfile << vtxGeo->PrintRotations();
+   if (TAGrecoManager::GetPar()->IncludeIT())
     outfile << itrGeo->PrintRotations();
+   if (TAGrecoManager::GetPar()->IncludeMSD())
     outfile << msdGeo->PrintRotations();
+   if (TAGrecoManager::GetPar()->IncludeDI())
     outfile << diGeo->PrintRotations();
+   if (TAGrecoManager::GetPar()->IncludeTW())
     outfile << twGeo->PrintRotations();
+   if (TAGrecoManager::GetPar()->IncludeCA())
     outfile << caGeo->PrintRotations();
 
     outfile << end.str();
@@ -260,14 +333,21 @@ int main (int argc, char *argv[]) {
     paramfile.open(parFileName);
     if ( !paramfile.is_open() )
       cout<< "ERROR  --> I do not find the parameters.inc file"<<fileName.c_str()<< endl;
-
-    paramfile << bmGeo->PrintParameters();
-    paramfile << vtxGeo->PrintParameters();
-    paramfile << itrGeo->PrintParameters();
-    paramfile << msdGeo->PrintParameters();
-    paramfile << diGeo->PrintParameters();
-    paramfile << twGeo->PrintParameters();
-    paramfile << caGeo->PrintParameters();
+ 
+   if (TAGrecoManager::GetPar()->IncludeBM())
+      paramfile << bmGeo->PrintParameters();
+   if (TAGrecoManager::GetPar()->IncludeVT())
+      paramfile << vtxGeo->PrintParameters();
+   if (TAGrecoManager::GetPar()->IncludeIT())
+      paramfile << itrGeo->PrintParameters();
+   if (TAGrecoManager::GetPar()->IncludeMSD())
+      paramfile << msdGeo->PrintParameters();
+   if (TAGrecoManager::GetPar()->IncludeDI())
+      paramfile << diGeo->PrintParameters();
+   if (TAGrecoManager::GetPar()->IncludeTW())
+      paramfile << twGeo->PrintParameters();
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      paramfile << caGeo->PrintParameters();
 
     paramfile.close();
 
