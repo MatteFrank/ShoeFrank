@@ -296,6 +296,12 @@ void BaseReco::LoopEvent(Int_t nEvents)
     }
       
   }
+    
+    
+    if(fActRecCutter){
+        fActRecCutter->Compute();
+        fActRecCutter->Output();
+    }
 }
 
 //__________________________________________________________

@@ -110,7 +110,7 @@ struct configuration {
     
     static constexpr std::size_t range = R::value;
     
-    static constexpr std::size_t iteration_count = cut_count * (range+1) + scan_iteration<cut_count>() ;
+    static constexpr std::size_t iteration_count = cut_count * (range+1) + scan_iteration<cut_count>() + 1 ;
 };
 
 template<class C>
@@ -427,7 +427,7 @@ struct focus_procedure{
         
         auto score_l = [this]( double const& e_p, double const& p_p ){
             return ( e_p - derived().target_m.efficiency )/derived().target_m.efficiency +
-            ( p_p - derived().target_m.purity )/derived().target_m.purity;
+                    ( p_p - derived().target_m.purity )/derived().target_m.purity;
         };
         selection_c.push_back( selection{
             derived().offset_m,
@@ -494,6 +494,7 @@ struct TATOEcutter : TATOEbaseCutter,
         void increment_and_setup() override { was_called_m = true; }
         void switch_procedure() override {
             c_mh->call_mhf = &scan_procedure<TATOEcutter>::call;
+            c_mh->focus_modifier_m = -3;
             c_mh->iterator_mh.reset( new scan_iterator{c_mh} );
         }
     private:
@@ -580,7 +581,9 @@ struct TATOEcutter : TATOEbaseCutter,
     }
     
     void Output() const override{
-        std::cout << "baseline: " << baseline_m.efficiency << " - " << baseline_m.purity << '\n';
+        std::cout << "baseline: " << baseline_m.efficiency << " - " << baseline_m.purity << "\nremaining_cut: ";
+        for(auto const& remaining_cut : remaining_cut_mc){ std::cout << remaining_cut << " "; }
+        std::cout << "\nselected_cut: " << selected_cut_m << "\n";
     }
     
 private:
