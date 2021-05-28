@@ -28,8 +28,7 @@ ClassImp(TAGbaseMaterials);
 TAGbaseMaterials::TAGbaseMaterials()
  : TAGobject(),
    fIonisation(new TAGionisMaterials()),
-   fTable(0x0),
-   fDegugLevel(0)
+   fTable(0x0)
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
       new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
@@ -164,7 +163,7 @@ void TAGbaseMaterials::GetIsotopeAndWeight(const TString formula)
    Float_t weight  = sWeight.Atof();
    if (weight < 1) weight = 1.;
    
-   if (fDegugLevel > 0)
+   if(FootDebugLevel(1))
       printf("%s %g\n", sIsotope.Data(), weight);
    
    fIsotope.push_back(sIsotope);

@@ -30,10 +30,10 @@ protected:
    static Int_t                 fgkWhatWidth;
 
    struct FlukaMat_t {
-	TString     Name;      // material name
-	Int_t       Z;         // atomic number
-	Double_t    Amean;  // mean mass number
-	Double_t    Density;   // density (g/cmˆ3)
+      TString     Name;      // material name
+      Int_t       Z;         // atomic number
+      Double_t    Amean;     // mean mass number
+      Double_t    Density;   // density (g/cmˆ3)
    };
    FlukaMat_t  fFlukaMat[128];
 
@@ -42,7 +42,6 @@ protected:
    vector<Float_t>              fIsotopeWeight;
    TGeoElementTable*            fTable;
    map<TString, Int_t>          fPrintedElt;
-   Int_t                        fDegugLevel;
    
 protected:
    void             GetIsotopes(const TString formula);
