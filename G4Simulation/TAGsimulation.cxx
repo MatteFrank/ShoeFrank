@@ -24,13 +24,10 @@
 #include "G4UImanager.hh"
 #include "G4String.hh"
 
-#if G4VERSION_NUMBER < 1000
-#include "QGSP_BIC_EMY.hh"
-#else
 #include "QGSP_BERT.hh"
 #include "QGSP_INCLXX.hh"
 #include "QGSP_BIC.hh"
-#endif
+
 #include "TCGphysicsQMD.hxx"
 
 #ifdef G4VIS_USE
