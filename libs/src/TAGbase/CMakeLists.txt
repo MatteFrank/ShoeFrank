@@ -47,6 +47,7 @@ set( with_dictionnaries
    TAGionisMaterials
    TAGxmlParser
    TAGrecoManager
+   TAGparGeo
 )
 	
 set( without_dictionnaries

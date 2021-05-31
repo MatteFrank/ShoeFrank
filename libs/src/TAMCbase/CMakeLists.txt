@@ -26,7 +26,6 @@ set( with_dictionnaries
    TAMCntuHit
    TAMCntuRegion
    TAMCevent
-   TAGparGeo
    TAMCparTools
    TAMCflukaParser
    TAMCntuEvent
