@@ -3,7 +3,7 @@
 #include <TFile.h>
 #include <TString.h>
 
-#include "EventStruct.hxx"
+#include "TAMCflukaStruct.hxx"
 #include "TAGroot.hxx"
 #include "TAMCevent.hxx"
 
