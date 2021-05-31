@@ -11,7 +11,7 @@
 #include "TAMCntuPart.hxx"
 #include "TAMCntuRegion.hxx"
 #include "TAMCntuEvent.hxx"
-#include "EventStruct.hxx"
+#include "TAMCflukaStruct.hxx"
 
 #include "TAGobject.hxx"
 #include "TAGdataDsc.hxx"

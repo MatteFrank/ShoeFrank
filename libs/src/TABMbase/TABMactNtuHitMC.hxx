@@ -7,7 +7,7 @@
 */
 /*------------------------------------------+---------------------------------*/
 #include <map>
-#include "EventStruct.hxx"
+#include "TAMCflukaStruct.hxx"
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"

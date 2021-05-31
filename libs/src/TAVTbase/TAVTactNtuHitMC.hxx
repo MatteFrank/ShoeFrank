@@ -9,7 +9,7 @@
 #include <map>
 #include "TVector3.h"
 
-#include "EventStruct.hxx"
+#include "TAMCflukaStruct.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"

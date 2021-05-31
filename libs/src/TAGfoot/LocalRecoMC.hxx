@@ -25,7 +25,7 @@
 #include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
 
-#include "EventStruct.hxx"
+#include "TAMCflukaStruct.hxx"
 
 class TTree;
 

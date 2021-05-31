@@ -7,7 +7,7 @@
 */
 /*------------------------------------------+---------------------------------*/
 
-#include "EventStruct.hxx"
+#include "TAMCflukaStruct.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
