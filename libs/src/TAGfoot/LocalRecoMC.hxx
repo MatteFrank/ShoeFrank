@@ -16,18 +16,9 @@
 #include "TATWactNtuHitMC.hxx"
 #include "TACAactNtuHitMC.hxx"
 
-#include "TAMCntuHit.hxx"
-#include "TAMCntuPart.hxx"
 #include "TAMCactNtuPart.hxx"
 #include "TAMCactNtuRegion.hxx"
 #include "TAMCactNtuEvent.hxx"
-
-#include "TATWntuHit.hxx"
-#include "TATWntuPoint.hxx"
-
-#include "TAMCflukaStruct.hxx"
-
-class TTree;
 
 class LocalRecoMC : public BaseReco
 {

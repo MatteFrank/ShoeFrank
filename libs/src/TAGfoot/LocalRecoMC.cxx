@@ -4,7 +4,8 @@
 
 #include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "TAMCflukaParser.hxx"
+#include "TAMCflukaStruct.hxx"
+#include "TAMCntuHit.hxx"
 #include "TAMCntuPart.hxx"
 #include "TAMCntuEvent.hxx"
 #include "TAMCntuRegion.hxx"
