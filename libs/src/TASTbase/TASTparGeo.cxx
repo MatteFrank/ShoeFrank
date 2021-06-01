@@ -192,12 +192,12 @@ string TASTparGeo::PrintBodies( ) {
     outstr << setiosflags(ios::fixed) << setprecision(6);
     outstr << "RPP stc     "  << fCenter[0]-fSize[0]/2. << " " << fCenter[0]+fSize[0]/2 << " " <<
       fCenter[1]-fSize[1]/2. << " " << fCenter[1]+fSize[1]/2 << " " <<
-      fCenter[2]-fSize[2]/2. << " " << fCenter[2]+fSize[2]/2 << " " <<  endl;
+      fCenter[2]-fSize[2]/2. - 0.001 << " " << fCenter[2]+fSize[2]/2 + 0.001 << " " <<  endl;
 
     //Mylar that is 10\mum thick
-    outstr << "XYP stcmyl1    "  << fCenter[2]-fSize[2]/2. - 0.001<<  endl;
+    outstr << "XYP stcmyl1    "  << fCenter[2]-fSize[2]/2. <<  endl;
     //Mylar that is 10\mum thick
-    outstr << "XYP stcmyl2    "  << fCenter[2]+fSize[2]/2. + 0.001<<  endl;
+    outstr << "XYP stcmyl2    "  << fCenter[2]+fSize[2]/2. <<  endl;
     
     if(fAngle.Mag()!=0)
       outstr << "$end_transform" << endl;
