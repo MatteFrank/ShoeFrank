@@ -394,6 +394,7 @@ void BaseReco::ReadParFiles()
    // Read Trafo file
    TString parFileName = fCampManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), fRunNumber);
    fpFootGeo->FromFile(parFileName);
+   Info("ReadParFiles()",Form("FOOT global geometry from file %s\n",parFileName.Data()));
    
    // initialise par files for target
    if (GlobalPar::GetPar()->IncludeTG() || GlobalPar::GetPar()->IncludeBM() || GlobalPar::GetPar()->IncludeTW() || GlobalPar::GetPar()->IncludeCA() || IsItrTracking()) {

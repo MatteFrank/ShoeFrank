@@ -1054,7 +1054,7 @@ Double_t TABMparGeo::FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVector
     }
   else  //if they go parallel
     rdrift = sqrt(abs( D0.Mag2() - D0W*D0W));
-
+  /*
   if((rdrift<0 || rdrift>0.945) && isTrack==false){
     cout<<"WARNING!!!!! SOMETHING IS WRONG IN THE BM RDRIFT!!!!!!!!!  look at TABMactNtuMC;   rdrift="<<rdrift<<endl;
     rdrift= (rdrift<0) ? 0. : 0.945 ;
@@ -1067,6 +1067,6 @@ Double_t TABMparGeo::FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVector
     cout<<"A0=("<<A0.X()<<","<<A0.Y()<<","<<A0.Z()<<")  Wvers=("<<Wvers.X()<<","<<Wvers.Y()<<","<<Wvers.Z()<<")"<<endl;
     rdrift=0.;
   }
-
+  */
   return rdrift;
 }

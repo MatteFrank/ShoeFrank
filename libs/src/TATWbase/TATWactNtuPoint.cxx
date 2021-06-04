@@ -206,7 +206,7 @@ Bool_t TATWactNtuPoint::FindPoints()
 	 return true;
        }
      }
-
+     
    } else { //if( nHitsY_good > nHitsX_good )
      
 
