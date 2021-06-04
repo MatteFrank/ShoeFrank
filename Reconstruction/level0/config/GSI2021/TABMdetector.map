@@ -1,0 +1,46 @@
+//TDC: max_cha, BM trigger, DAQ trigger 
+TDC_channels: 64 ; 47 ; 999 
+
+//SCALER830 max_cha, busy, nobusy
+Scaler: 32 ; 1 ; 2
+
+//ADC792 max_cha
+Adc: 16 ; 4 ; 5 ; 6
+
+// TDCcha (chaBoID); CellID; Plane [0-5]; View 0==U, 1==V; Idsense: 0,1,2 (a,b,c)
+bmcha: 0 ;   0  ; 0 ; 0 ; 0
+bmcha: 1 ;   1  ; 0 ; 0 ; 1
+bmcha: 2 ;   2  ; 0 ; 0 ; 2
+bmcha: 3 ;   3  ; 0 ; 1 ; 0
+bmcha: 4 ;   4  ; 0 ; 1 ; 1
+bmcha: 5 ;   5  ; 0 ; 1 ; 2
+bmcha: 6 ;   6  ; 1 ; 0 ; 0
+bmcha: 7 ;   7  ; 1 ; 0 ; 1
+bmcha: 8 ;   8  ; 1 ; 0 ; 2
+bmcha: 9 ;   9  ; 1 ; 1 ; 0
+bmcha: 10 ; 10  ; 1 ; 1 ; 1
+bmcha: 11 ; 11  ; 1 ; 1 ; 2
+bmcha: 12 ; 12  ; 2 ; 0 ; 0
+bmcha: 13 ; 13  ; 2 ; 0 ; 1
+bmcha: 14 ; 14  ; 2 ; 0 ; 2
+bmcha: 15 ; 15  ; 2 ; 1 ; 0
+bmcha: 16 ; 16  ; 2 ; 1 ; 1
+bmcha: 17 ; 17  ; 2 ; 1 ; 2
+bmcha: 18 ; 18  ; 3 ; 0 ; 0
+bmcha: 19 ; 19  ; 3 ; 0 ; 1
+bmcha: 20 ; 20  ; 3 ; 0 ; 2
+bmcha: 21 ; 21  ; 3 ; 1 ; 0
+bmcha: 22 ; 22  ; 3 ; 1 ; 1
+bmcha: 23 ; 23  ; 3 ; 1 ; 2
+bmcha: 24 ; 24  ; 4 ; 0 ; 0
+bmcha: 25 ; 25  ; 4 ; 0 ; 1
+bmcha: 26 ; 26  ; 4 ; 0 ; 2
+bmcha: 27 ; 27  ; 4 ; 1 ; 0
+bmcha: 28 ; 28  ; 4 ; 1 ; 1
+bmcha: 29 ; 29  ; 4 ; 1 ; 2
+bmcha: 30 ; 30  ; 5 ; 0 ; 0
+bmcha: 31 ; 31  ; 5 ; 0 ; 1
+bmcha: 32 ; 32  ; 5 ; 0 ; 2
+bmcha: 33 ; 33  ; 5 ; 1 ; 0
+bmcha: 34 ; 34  ; 5 ; 1 ; 1
+bmcha: 35 ; 35  ; 5 ; 1 ; 2
