@@ -9,6 +9,7 @@ class DECardEvent : public RemoteEvent {
     // firmware data
     u_int detectorHeader;
     u_int boardHeader;
+    u_int hardwareEventNumber;
     u_int triggerCounter;
     u_int BCOofTrigger;
     u_int clockCounter;
