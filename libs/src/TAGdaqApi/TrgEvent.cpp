@@ -39,6 +39,7 @@ void TrgEvent::readData( unsigned int **p1 ){
 
 void TrgEvent::printData() const {
 
+  printf ("Trigger DATA: \n");
   printf ("Channel ID (hex): %x\n",  channelID);
   printf ("Time in Seconds: %d\n",  time_sec);
   printf ("Time in MicroSeconds: %d\n",  time_usec);
