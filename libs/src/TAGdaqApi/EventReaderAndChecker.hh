@@ -28,6 +28,8 @@ public:
 
   void printStatistics();
 
+  u_int getBCOdiff() const;
+
 private: 
 
   std::map<u_int,ErrInfo> m_infos;
