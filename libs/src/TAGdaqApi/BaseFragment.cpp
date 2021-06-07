@@ -7,9 +7,10 @@
 #include "TDCEvent.hh"
 #include "EmptyEvent.hh"
 #include "DECardEvent.hh"
+#include "DEMSDEvent.hh"
 #include "WDEvent.hh"
-#include <iostream>
 #include <stdio.h>
+
 
 std::string FRAGnames[] =
   {"Event Header data",
@@ -18,11 +19,12 @@ std::string FRAGnames[] =
    "TDC     fragment ",
    "Empty   fragment ",
    "VTX     fragment ",
-   "WD      fragment "};
+   "WD      fragment ",
+   "MSD     fragment "};
 
 unsigned int FRAGkeys[] =
   {EventHeaderID, dataV2495, dataV1720, dataV1190,
-   dataEmpty, dataVTX, dataWD};
+   dataEmpty, dataVTX, dataWD, dataMSD};
 
 
 std::map<unsigned int, std::string> BaseFragment::fragnames;
@@ -62,10 +64,14 @@ BaseFragment* BaseFragment::create(unsigned int **p){
     p_bf = new DECardEvent;
   } else if( chID==dataWD ){ // get WD info
     p_bf = new WDEvent;
+  } else if( chID==dataMSD ){ // get MSD info
+    p_bf = new DEMSDEvent;
   }
-
+  u_int chID2= (*(*p));
+  unsigned int *p2=*p;
+  //  printf("\n Processing for %x  \n",chID2);
   if( p_bf!=NULL ) p_bf->readData(p);
-
+  //  printf(" Read %d, next word: %x\n",((*p)-(p2)), *p2);
   return p_bf;
 }
 
