@@ -16,6 +16,7 @@
 #include "TrgEvent.hh"
 #include "TDCEvent.hh"
 #include "DECardEvent.hh"
+#include "DEMSDEvent.hh"
 #include "WDEvent.hh"
 
 #include "TAGdaqEvent.hxx"

@@ -96,7 +96,22 @@ Bool_t TAGactDaqReader::Process()
    if (evVTX)
       datDaq->AddFragment(evVTX);
    
-   // WD for ST and TW
+   //MSD 1st station
+   const DEMSDEvent* evMSD0 = static_cast<const DEMSDEvent*>(fDaqFileReader->getFragmentID(dataMSD | 0x30));
+   if (evMSD0)
+      datDaq->AddFragment(evMSD0);
+   
+   //MSD 2nd station
+   const DEMSDEvent* evMSD1 =static_cast<const DEMSDEvent*>(fDaqFileReader->getFragmentID(dataMSD | 0x31));
+   if (evMSD1)
+      datDaq->AddFragment(evMSD1);
+   
+   //MSD 3rd station
+   const DEMSDEvent* evMSD2 = static_cast<const DEMSDEvent*>(fDaqFileReader->getFragmentID(dataMSD | 0x32));
+   if (evMSD2)
+      datDaq->AddFragment(evMSD2);
+   
+   // WD for ST, TW and CA
    const WDEvent* evWD = static_cast<const WDEvent*>(fDaqFileReader->getFragmentID(dataWD | 0x30));
    if (evWD)
       datDaq->AddFragment(evWD);
