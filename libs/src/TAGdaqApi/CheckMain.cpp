@@ -43,29 +43,31 @@ int main( int argc, char *argv[] ){
 
   int nEventsRead=0;
   int nErrors=0;
-  std::ofstream myfile;
-  myfile.open("timediff.dat");
-  myfile << "BCO" << " " << "event\n";
+  
   while ( daqFileChecker.endOfFileReached()==false ){
    
     daqFileChecker.getNextEvent();
-
-    if( !daqFileChecker.endOfFileReached() ){
-
-    if( verbose ) daqFileChecker.printData();
- 
-    bool checkOK = daqFileChecker.check();
     
-    if( verbose ) std::cout<<std::endl;
-    nEventsRead++;
+    if( !daqFileChecker.endOfFileReached() ){
+      
+      if( verbose ) daqFileChecker.printData();
+      
+      bool checkOK = daqFileChecker.check();
+      
+      if( !checkOK ){
+	if( verbose ) std::cout<<"--- @@@ Error on data!!! "<<std::endl;
+	nErrors++;
+      }
+      
+      if( verbose ) std::cout<<std::endl;
+      nEventsRead++;
     }
   }
   std::cout << "End of File reached" << std::endl;
   std::cout << "Events Read from file: "<< nEventsRead 
 	    << " Errors: "<<nErrors << std::endl <<std::endl;
-
+  
   daqFileChecker.printStatistics();
   daqFileChecker.closeFile();
-  myfile.close();
   
 }
