@@ -19,7 +19,7 @@
 #include "TAMSDntuRaw.hxx"
 #include "TAGactDaqReader.hxx"
 
-#include "TH2.h"
+#include "TH1F.h"
 
 class TAMSDactNtuRaw : public TAGaction {
 
@@ -42,6 +42,8 @@ private:
     TAGparaDsc*     fpParMap;		        // parameter dsc
     TAGparaDsc*     fpParGeo;		        // parameter dsc
 
+    TH1F*           fpHisStripMap[6];
+   
 private:
     Bool_t DecodeHits(const DEMSDEvent* evt);
 };

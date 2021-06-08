@@ -51,6 +51,15 @@ void TAMSDactNtuRaw::CreateHistogram()
 {
   DeleteHistogram();
   
+   TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpParGeo->Object();
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+
+      fpHisStripMap[i] = new TH1F(Form("msStripMap%d", i+1), Form("MSD - strip map for sensor %d", i+1),
+                                  pGeoMap->GetStripsN(), 0, pGeoMap->GetStripsN());
+      AddHistogram(fpHisStripMap[i]);
+   }
+   
   SetValidHistogram(kTRUE);
 }
 
@@ -95,6 +104,12 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
    TAMSDparGeo*    p_pargeo = (TAMSDparGeo*)    fpParGeo->Object();
 
    // decode here
+   Int_t sensorId = (evt->boardHeader & 0xF)-1;
+   
+   for (Int_t i = 0; i < p_pargeo->GetStripsN()/2; i+=2) {
+      fpHisStripMap[sensorId]->Fill(evt->Xplane[i]);
+      fpHisStripMap[sensorId+1]->Fill(evt->Yplane[i]);
+   }
    
    return kTRUE;
 }
