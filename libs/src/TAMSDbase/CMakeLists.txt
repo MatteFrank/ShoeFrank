@@ -31,6 +31,7 @@ set( with_dictionnaries
    TAMSDdigitizer
    TAMSDdigitizerG
    TAMSDactNtuRaw
+   TAMSDactNtuHit
    TAMSDactNtuHitMC
    TAMSDntuCluster
    TAMSDcluster
