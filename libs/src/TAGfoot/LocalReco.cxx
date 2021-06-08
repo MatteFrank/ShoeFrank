@@ -207,9 +207,9 @@ void LocalReco::SetRawHistogramDir()
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TATWparGeo::GetBaseName());
       if(TAGrecoManager::GetPar()->CalibTW()) {
-	fActCalibTw->SetHistogramDir(subfolder);
+         fActCalibTw->SetHistogramDir(subfolder);
       } else {
-	fActNtuHitTw->SetHistogramDir(subfolder);
+         fActNtuHitTw->SetHistogramDir(subfolder);
       }
    }
 
@@ -275,11 +275,10 @@ void LocalReco::AddRawRequiredItem()
      }
    }
 
-
-//   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-//      fTAGroot->AddRequiredItem("msdActDat");
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      fTAGroot->AddRequiredItem("msdActDat");
 //      fTAGroot->AddRequiredItem("msdActNtu");
-//   }
+   }
 
    if (TAGrecoManager::GetPar()->IncludeCA()) {
      fTAGroot->AddRequiredItem("caActNtu");
