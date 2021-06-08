@@ -1,10 +1,10 @@
 
 
-#include "GlobalTrackingStudies.hxx"
+#include "TAGFtrackingStudies.hxx"
 
 
-GlobalTrackingStudies::GlobalTrackingStudies(const char* name)
-: TAGaction(name, "GlobalTrackingStudies - Global GenFit Tracking Studies")
+TAGFtrackingStudies::TAGFtrackingStudies(const char* name)
+: TAGaction(name, "TAGFtrackingStudies - Global GenFit Tracking Studies")
 {
 
 	m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman";
@@ -15,7 +15,7 @@ GlobalTrackingStudies::GlobalTrackingStudies(const char* name)
 	m_allNoiseTrack = 0;
 }
 
-Bool_t GlobalTrackingStudies::Action() {
+Bool_t TAGFtrackingStudies::Action() {
 
 	TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 	TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
@@ -184,7 +184,7 @@ Bool_t GlobalTrackingStudies::Action() {
 
 
 
-void GlobalTrackingStudies::CreateHistogram()
+void TAGFtrackingStudies::CreateHistogram()
 {
 	m_histo_nClusXTrk = new TH1F( "nClusXTrk", "nClusXTrk", 7, -1.5, 5.5 );
    AddHistogram(m_histo_nClusXTrk);
@@ -226,7 +226,7 @@ void GlobalTrackingStudies::CreateHistogram()
 }
 
 
-void GlobalTrackingStudies::Finalize()
+void TAGFtrackingStudies::Finalize()
 {
     // no more
    string pathName = m_kalmanOutputDir+"/TrackingStudies";

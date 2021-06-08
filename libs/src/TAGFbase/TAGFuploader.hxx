@@ -41,8 +41,9 @@
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TATWntuPoint.hxx"
+#include "TAGFdetectorMap.hxx"
 
-
+#include "TAMCntuPart.hxx"
 
 
 using namespace std;
@@ -52,12 +53,14 @@ class TAGFuploader {
   
 public:
   
-  TAGFuploader ( map<string, int> adetectorID_map, map<int, genfit::SharedPlanePtr> adetectorPlanes );
+  TAGFuploader ( TAGFdetectorMap* aSensorIDmap );
   
   virtual ~TAGFuploader() {}
   
-  int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> >* allHitMeas  );
+  int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  );
   void GetPossibleCharges( vector<int>* chVect );
+
+  map< int, vector<int> >* TakeMeasParticleMC_Collection();
   
 private:
 
@@ -74,17 +77,18 @@ private:
 	void Prepare4Strip( TAMSDcluster* clus, int iClus );
 	void Prepare4TofWall( TATWpoint* point, int iPoint);
 
-
 	TAGgeoTrafo* m_GeoTrafo;
 
-	map< int, vector<AbsMeasurement*> >* m_allHitMeas;
+	TAGFdetectorMap* m_sensorIDmap;
 
-	map<string, int> m_detectorID_map;
+	map< int, vector<AbsMeasurement*> >* m_allHitMeas;
+	map< int, vector<int> >* m_measParticleMC_collection;
+
 	map<int, int> m_detectorPlaneID;
-	map<int, genfit::SharedPlanePtr> m_detectorPlanes;
 
 	string m_systemsON;
 	int m_debug;
+	bool switchOff_HHe;
 
 };
 

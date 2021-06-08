@@ -24,7 +24,7 @@ endif(FILECOPY)
 #----------------------------------------------------------------------------
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI}  ${TADAQ}  ${TAAPI} ${TAVT} ${TAIT} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAST} ${TAMC} ${TAED} ${TATOE} ${TAFO})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI}  ${TADAQ}  ${TAAPI} ${TAVT} ${TAIT} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAST} ${TAMC} ${TAED} ${TATOE} ${TAGF} ${TAFO})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES} ${GENFIT_LIBRARIES})
 
 # add includes : root + current + dependencies
@@ -46,6 +46,7 @@ include_directories(${TACA_INCLUDE_DIR})
 include_directories(${TAED_INCLUDE_DIR})
 include_directories(${TATOE_INCLUDE_DIR})
 include_directories(${TAFO_INCLUDE_DIR})
+include_directories(${TAGF_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -66,6 +67,10 @@ endif(FILECOPY)
 add_executable(DecodeGlb DecodeGlb.cc)
 #
 target_link_libraries(DecodeGlb ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+add_executable(DecodeGlbMC DecodeGlbMC.cc)
+#
+target_link_libraries(DecodeGlbMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX

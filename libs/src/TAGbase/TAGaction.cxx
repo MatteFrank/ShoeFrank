@@ -109,6 +109,8 @@ void TAGaction::SetHistogramDir(TDirectory* dir)
      fbIsOpenFile = true;
    }
    
+   m_dir = dir;
+
    if (!dir->IsWritable()) fbIsOpenFile = false;
 }
 

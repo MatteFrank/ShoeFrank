@@ -82,6 +82,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuTrackIt(0x0),
    fpNtuVtx(0x0),
    fpNtuGlbTrack(0x0),
+   m_GlobTrackRepo(0x0),
    fActEvtReader(0x0),
    fActEvtWriter(0x0),
    fActTrackBm(0x0),
@@ -307,10 +308,11 @@ void BaseReco::LoopEvent(Int_t nEvents)
 //__________________________________________________________
 void BaseReco::AfterEventLoop()
 {
-   fTAGroot->EndEventLoop();
-    
 //    if(fActRecCutter){ fActRecCutter->Output(); }
    if (TAGrecoManager::GetPar()->IncludeKalman())	fActGlbkFitter->Finalize();
+   
+   fTAGroot->EndEventLoop();
+    
    if (fFlagOut)
       CloseFileOut();
    CloseFileIn();
@@ -876,28 +878,69 @@ void BaseReco::CreateRecActionGlb()
 //__________________________________________________________
 void BaseReco::CreateRecActionGlbGF()
 {
-  if(fFlagTrack) {
-    SetL0TreeBranches();
-    
-    genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
-    
-    // set material and geometry into genfit
-    MaterialEffects* materialEffects = MaterialEffects::getInstance();
-    materialEffects->init(new TGeoMaterialInterface());
-    
-    // include the nucleon into the genfit pdg repository
-    TAMCparTools::UpdatePDG();
-    
-    // study for kalman Filter
-    // fActGlbTrackStudies = new GlobalTrackingStudies("glbActTrackStudyGF");
-    // if (fFlagHisto)
-    //    fActGlbTrackStudies->CreateHistogram();
-    
-    // Initialisation of KFfitter
-    fpNtuGlbTrackK = new TAGdataDsc("GlobalTrackRepostory", new GlobalTrackRepostory());
-    fActGlbkFitter = new TAGactKFitter("glbActkFitter", fpNtuGlbTrackK);
-    if (fFlagHisto)
-      fActGlbkFitter->CreateHistogram();
+ if(fFlagTrack) {
+      SetL0TreeBranches();
+     
+   //   if (fFlagMC) {
+   //     if (TAGrecoManager::GetPar()->IncludeST()) {
+   //       fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
+   //       fActEvtReader->SetupBranch(fpNtuMcSt,TAMCntuHit::GetStcBranchName());
+   //     }
+       
+   //     if (TAGrecoManager::GetPar()->IncludeBM()) {
+   //       fpNtuMcBm   = new TAGdataDsc("bmMc", new TAMCntuHit());
+   //       fActEvtReader->SetupBranch(fpNtuMcBm,TAMCntuHit::GetBmBranchName());
+   //     }
+       
+   //     if (TAGrecoManager::GetPar()->IncludeVT()) {
+   //       fpNtuMcVt   = new TAGdataDsc("vtMc", new TAMCntuHit());
+   //       fActEvtReader->SetupBranch(fpNtuMcVt,TAMCntuHit::GetVtxBranchName());
+   //     }
+       
+   //     if (TAGrecoManager::GetPar()->IncludeIT()) {
+   //       fpNtuMcIt   = new TAGdataDsc("itMc", new TAMCntuHit());
+   //       fActEvtReader->SetupBranch(fpNtuMcIt,TAMCntuHit::GetItrBranchName());
+   //     }
+       
+   //     if (TAGrecoManager::GetPar()->IncludeMSD()) {
+   //       fpNtuMcMsd   = new TAGdataDsc("msdMc", new TAMCntuHit());
+   //       fActEvtReader->SetupBranch(fpNtuMcMsd,TAMCntuHit::GetMsdBranchName());
+   //     }
+       
+   //     if(TAGrecoManager::GetPar()->IncludeTW()) {
+   //       fpNtuMcTw   = new TAGdataDsc("twMc", new TAMCntuHit());
+   //       fActEvtReader->SetupBranch(fpNtuMcTw,TAMCntuHit::GetTofBranchName());
+   //     }
+       
+   //     if(TAGrecoManager::GetPar()->IncludeCA()) {
+   //       fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
+   //       fActEvtReader->SetupBranch(fpNtuMcCa,TAMCntuHit::GetCalBranchName());
+   //     }
+   //   }
+     
+      genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
+      
+      genfit::FieldManager::getInstance()->getFieldVal( TVector3(0,0,14) ).Print();
+
+      // set material and geometry into genfit
+      MaterialEffects* materialEffects = MaterialEffects::getInstance();
+      materialEffects->init(new TGeoMaterialInterface());
+      
+      // include the nucleon into the genfit pdg repository
+      UpdatePDG::Instance();
+      
+      // study for kalman Filter
+      // fActGlbTrackStudies = new TAGFtrackingStudies("glbActTrackStudyGF");
+      // if (fFlagHisto)
+      //    fActGlbTrackStudies->CreateHistogram();
+      
+      // Initialisation of KFfitter
+      m_GlobTrackRepo = new TAGdataDsc("TAGtrackRepoKalman", new TAGtrackRepoKalman());
+      m_newGlobTrackRepo = new TAGdataDsc("TAGntuTrackRepository", new TAGntuTrackRepository());
+      fActGlbkFitter = new TAGactKFitter("glbAct_KFitter", m_GlobTrackRepo, m_newGlobTrackRepo);
+       if (fFlagHisto)
+         fActGlbkFitter->CreateHistogram();
+
     
   }
 }
@@ -992,7 +1035,7 @@ void BaseReco::SetL0TreeBranches()
 //__________________________________________________________
 void BaseReco::SetTreeBranches()
 {
-  if (TAGrecoManager::GetPar()->IncludeTOE()) {
+  if (TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
     if (fFlagTrack && !fFlagRecCutter)
       fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
   }
@@ -1017,7 +1060,7 @@ void BaseReco::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW())
      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
    
-   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
+   if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
      if (fFlagTrack)
@@ -1026,6 +1069,13 @@ void BaseReco::SetTreeBranches()
    
    if (TAGrecoManager::GetPar()->IncludeCA())
      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
+
+   if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
+      if (fFlagTrack) {
+         fActEvtWriter->SetupElementBranch(m_GlobTrackRepo, TAGtrackRepoKalman::GetBranchName());
+         fActEvtWriter->SetupElementBranch(m_newGlobTrackRepo, TAGntuTrackRepository::GetBranchName());
+      }
+   }
    
    if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
        && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
@@ -1104,6 +1154,7 @@ void BaseReco::AddRecRequiredItem()
       
       if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
       //   gTAGroot->AddRequiredItem("glbActTrackStudyGF");
+         gTAGroot->AddRequiredItem("TAGntuTrackRepository");
          gTAGroot->AddRequiredItem("glbActkFitter");
       }
    }

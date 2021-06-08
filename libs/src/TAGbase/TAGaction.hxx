@@ -65,6 +65,8 @@ class TAGaction : public TAGnamed {
     Bool_t          CheckDependencies();
     void            SetBitAllDataOut(UInt_t i_bits);
 
+    TDirectory* m_dir;
+
   private:
     TList*          fpDataOutList;
     TList*          fpDataInList;

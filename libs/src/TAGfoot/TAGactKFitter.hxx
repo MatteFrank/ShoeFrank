@@ -29,13 +29,13 @@
 
 #include <EventDisplay.h>
 
-#include "WireMeasurement.h"
-#include "PlanarMeasurement.h"
-#include "SpacepointMeasurement.h"
-#include "SharedPlanePtr.h"
+// #include "WireMeasurement.h"
+// #include "PlanarMeasurement.h"
+// #include "SpacepointMeasurement.h"
+// #include "SharedPlanePtr.h"
 #include "RectangularFinitePlane.h"
 
-#include <TROOT.h>
+// #include <TROOT.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TH1F.h>
@@ -50,54 +50,53 @@
 
 #include <TMath.h>
 
-#include "TAGparGeo.hxx"
+// #include "TAGparGeo.hxx"
 
 #include "TADIparGeo.hxx"
 
-#include "TAVTparGeo.hxx"
+// #include "TAVTparGeo.hxx"
 #include "TAVTntuHit.hxx"
-#include "TAVTntuCluster.hxx"
-#include "TAVTactNtuCluster.hxx"
+// #include "TAVTntuCluster.hxx"
+// #include "TAVTactNtuClusterF.hxx"
 
-#include "TAITparGeo.hxx"
-#include "TAITntuHit.hxx"
-#include "TAITntuCluster.hxx"
+// #include "TAITparGeo.hxx"
+#include "TAIThit.hxx"
+// #include "TAITntuCluster.hxx"
 
-#include "TAMSDparGeo.hxx"
-#include "TAMSDntuHit.hxx"
-#include "TAMSDntuCluster.hxx"
-#include "TAMSDntuPoint.hxx"
+// #include "TAMSDparGeo.hxx"
+#include "TAMSDntuRaw.hxx"
+// #include "TAMSDntuCluster.hxx"
+// #include "TAMSDntuPoint.hxx"
 
-#include "TATWparGeo.hxx"
-#include "TATWntuPoint.hxx"
+// #include "TATWparGeo.hxx"
+// #include "TATWntuPoint.hxx"
 
 #include "TAMCntuPart.hxx"
 
-#include "TAGroot.hxx"
-#include "TAGdataDsc.hxx"
-#include "TAGparaDsc.hxx"
+// #include "TAGroot.hxx"
+// #include "TAGdataDsc.hxx"
+// #include "TAGparaDsc.hxx"
 
-#include "TAGrecoManager.hxx"
+// #include "TAGrecoManager.hxx"
 // #include "ControlPlotsRepository.hxx"
-#include "GlobalTrackRepostory.hxx"
+#include "TAGtrackRepoKalman.hxx"
+#include "MagicSkills.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <limits>
 
-#include "TAGgeoTrafo.hxx"
+// #include "TAGgeoTrafo.hxx"
 #include "TAMCntuHit.hxx"
-#include "TAMCparTools.hxx"
+// #include "TAVTactBaseNtuTrack.hxx"
+// #include "TAVTactNtuVertex.hxx"
+// #include "TAVTactNtuTrackF.hxx"
+// #include "TAVTactNtuTrack.hxx"
+// #include "TAVTactNtuVertexPD.hxx"
 
-#include "TAVTactBaseNtuTrack.hxx"
-#include "TAVTactNtuVertex.hxx"
-#include "TAVTactNtuTrackF.hxx"
-#include "TAVTactNtuTrack.hxx"
-#include "TAVTactNtuVertexPD.hxx"
-
-#include "TAITactBaseNtuTrack.hxx"
-#include "TAITactNtuTrack.hxx"
-#include "TAITactNtuTrackF.hxx"
+// #include "TAITactBaseNtuTrack.hxx"
+// #include "TAITactNtuTrack.hxx"
+// #include "TAITactNtuTrackF.hxx"
 #include "TAITntuTrack.hxx"
 
 
@@ -105,249 +104,224 @@
 #include "TAITtrack.hxx"
 
 
+#include "TAGFuploader.hxx"
+#include "TAGFselector.hxx"
+#include "TAGFdetectorMap.hxx"
+#include "TAGntuTrackRepository.hxx"
+#include "TAGtrackKalman.hxx"
+#include "TAGF_KalmanStudies.hxx"
+#include "UpdatePDG.hxx"
+
 
 //#include "GlobalTrackFoot.hxx"
 
 using namespace std;
 using namespace genfit;
 
-#define build_string(expr)            \
+#define build_string(expr)						\
 (static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
 
 
 typedef vector<genfit::AbsMeasurement*> MeasurementVector;
 
 class TAGactKFitter : public TAGaction  {
-  
+
 public:
-  
-  
-  // explicit   TAGactKFitter(const char* name);
-  explicit   TAGactKFitter(const char* name, TAGdataDsc* p_glbtrack);
-  
-  virtual  ~TAGactKFitter();
-  
-  //! Action
-  Bool_t Action();
-  
-  //! create histogram
-  virtual  void   CreateHistogram();
-  
-  ClassDef(TAGactKFitter,0);
-  
-  
-  // int PrepareData4Fit( string option );
-  int PrepareData4Fit();
-  int PrepareData4Fit_dataLike();
-  
-  void Prepare4Vertex( TAVTcluster* clus, int track_ID, int iHit );
-  void Prepare4Vertex();
-  
-  void Prepare4InnerTracker();
-  void Prepare4InnerTracker( TAITcluster* clus, int track_ID, int iHit );
-  
-  void Prepare4Strip();
-  void Prepare4Strip(TVector3 pos, int track_ID, int iHit );
-  
-  void Prepare4TofWall();
-  
-  bool PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element );
-  
-  int MakeFit(long evNum);
-  
-  void GetTrueMCInfo( string hitSampleName, int x,
-                     TVector3* tmpPos, TVector3* tmpMom, double* tmp_mass,
-                     TVector3* tmp_genPos,  TVector3* tmp_genMom, TVector3* hitPos );
-  void GetKalmanTrackInfo ( string hitSampleName, int i, Track* track,
-                           TVector3* KalmanPos, TVector3* KalmanMom, TVector3* KalmanPos_err, TVector3* KalmanMom_err,
-                           TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov,
-                           double* KalmanMass );
-  void GetTrueParticleType( AbsMeasurement* , int* flukaID, int* partID, int* charge, double* mass );
-  
-  void SetTrueSeed( TVector3* pos, TVector3* mom );
-  void MakePrefit();
-  
-  void CategoriseHitsToFit_withTrueInfo();
-  void CategoriseHitsToFit_fromVTX() {};
-  
-  
-  void RecordTrackInfo( Track* track, string hitSampleName );
-  
-  void IncludeDetectors();
-  void CreateGeometry();
-  
-  int UploadHitsVT();
-  int UploadHitsIT();
-  int UploadHitsMSD();
-  int UploadHitsTW();
-  
-  int UploadClusVT();
-  int UploadClusIT();
-  int UploadClusMSD();
-  
-  void TestExtrapolation(vector<AbsMeasurement*> extrapTest, string particleHypo);
-  
-  
-  void CreateDetectorPlanes();
-  
-  
-  void Finalize();  // save control plot and calculate resolutions
-  
-  void PrintEfficiency();
-  // void PrintPositionResidual( TVector3 pos, TVector3 expectedPos, string hitSampleName );
-  // void PrintMomentumResidual( TVector3 pos, TVector3 expectedPos, TVector3 cov, string hitSampleName );
-  // void PrintMomentumResidual( TVector3 pos, TVector3 expectedPos, TMatrixD cov, string hitSampleName );
-  // void PrintMomentumResidual( TVector3 pos, TVector3 expectedPos, double cov, string hitSampleName );
-  
-  // void InitAllHistos( string hitSampleName );
-  // void InitSingleHisto( map< string, TH1F* >* histoMap, string collectionName, string histoName, int nBin, float minBin, float maxBin );
-  // void InitMultiBinHistoMap( map< string, vector<TH1F*> >* histoMap, string collectionName, string histoName, int nBin, float minBin, float maxBin );
-  
-  void InitEventDisplay();
-  
-  // void Save();
-  // void SaveHisto( TCanvas* mirror, map< string, TH1F* > histoMap, string title, string saveName );
-  // void SaveHisto( TCanvas* mirror, TH1F* histoMap, string title, string saveName );
-  
-  
-  double EvalError( TVector3 mom, TVector3 err );
-  double EvalError( TVector3 mom, TMatrixD cov );
-  void MatrixToZero( TMatrixD *matrix );
-  
-  int GetChargeFromTW(Track* trackToCheck);
-  TVector3 ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane );
-  bool CheckTrackFinding(Track* trackToCheck, int MCEveCharge, double MCEveMomentum, double MCEveMass, int chargeFromTofWall);
-  TVector3 ExtrapolateToTofWall( Track* trackToFit );
-  
-  int GetTWTrackFixed (TATWpoint* pointToCheck);
-  
-  void RecordTrackInfoDataLike( Track* trackToRecord, int tCharge, string particlename );
-  void GetKalmanTrackInfoDataLike ( int indexOfState, Track* track,
-                                   const TVectorD* KalmanState, const TMatrixDSym* KalmanCov);
-  
-  genfit::KalmanFittedStateOnPlane GetKalmanTrackInfoDataLike_ ( int indexOfState, Track* track );
-  
-  
-  struct MCTruthInfo{
-    
-    int MCTrackId;
-    int MCFlukaId;
-    int MCMass;
-    int MCCharge;
-    TVector3 MCGenPosition;
-    TVector3 MCGenMomentum;
-    TVector3 MCPosition;
-    TVector3 MCMomentum;
-  };
-  
-  
+
+
+	// explicit 	TAGactKFitter(const char* name);
+	explicit 	TAGactKFitter(const char* name, TAGdataDsc* p_glbtrackrepoGF, TAGdataDsc* p_glbtrackrepo);
+
+	virtual	~TAGactKFitter();
+
+	//! Action
+	Bool_t Action();
+
+	//! create histogram
+	virtual	void   CreateHistogram();
+
+	ClassDef(TAGactKFitter,0);
+
+
+	int MakeFit(long evNum);
+	void MakePrefit();
+
+	void RecordTrackInfo( Track* track, string hitSampleName );
+
+	void IncludeDetectors();
+	void CreateGeometry();
+
+
+	void Finalize();	// save control plot and calculate resolutions
+
+	void PrintEfficiency();
+	void PrintPurity();
+
+	void InitEventDisplay();
+
+	void MatrixToZero( TMatrixD *matrix );
+
+
+	int FindMostFrequent( vector<vector<int>>* mcParticleID_track );
+	double TrackQuality( vector<vector<int>>* mcParticleID_track );
+
+	void GetMeasInfo( int detID, int hitID, int* iPlane, int* iClus, vector<int>* iPart );
+	void GetRecoTrackInfo ( int i, Track* track,
+											TVector3* KalmanPos, TVector3* KalmanMom,
+											TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
+	void GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
+
+// TVector3 ExtrapolateToTarget( Track* trackToFit );
+
 private:
-  
-  TAGdataDsc*  fpGlobTrackRepo;
-  
-  KalmanFitter* m_fitter_extrapolation;
-  
-  KalmanFitter* m_fitter;
-  AbsKalmanFitter*  m_refFitter;         //KalmanFitterRefTrack()
-  AbsKalmanFitter*  m_dafRefFitter;               //DAF with kalman ref
-  AbsKalmanFitter*  m_dafSimpleFitter;       //DAF with simple kalman
-  
-  
-  // init event display
-  EventDisplay* display;
-  bool m_IsEDOn;
-  
-  // ControlPlotsRepository* m_controlPlotter;
-  GlobalTrackRepostory* m_fitTrackCollection;
-  
-  bool m_workWithMC;
-  
-  
-  //  delete non va fatto il delete perche APPARENTEMENTE gia fatto
-  vector<TAVThit*> m_VT_hitCollection;
-  vector<TAIThit*> m_IT_hitCollection;
-  vector<TAMSDhit*> m_MSD_hitCollection;
-  vector<TATWpoint*> m_TW_hitCollection;
-  
-  vector<TAVTcluster*> m_VT_clusCollection;
-  vector<TAITcluster*> m_IT_clusCollection;
-  vector<TAMSDcluster*> m_MSD_clusCollection;
-  
-  vector<TAMSDpoint*> m_MSD_pointCollection;
-  
-  // vector<TVector3> m_MSD_posVectorSmearedHit;
-  // vector<TVector3> m_MSD_momVectorSmearedHit;
-  // vector<double> m_MSD_mass;
-  
-  
-  map <string, vector<AbsMeasurement*> > m_hitCollectionToFit;
-  map <int, vector<AbsMeasurement*> > m_hitCollectionToFit_dataLike;
-  vector<AbsMeasurement*> m_allHitsInMeasurementFormat;
-  
-  map <int, map<int, MCTruthInfo> > m_MCInfo;
-  
-  shared_ptr<TAGparGeo> m_TG_geo;
-  shared_ptr<TADIparGeo> m_DI_geo;
-  shared_ptr<TAVTparGeo> m_VT_geo;
-  shared_ptr<TAITparGeo> m_IT_geo;
-  shared_ptr<TAMSDparGeo> m_MSD_geo;
-  shared_ptr<TATWparGeo> m_TW_geo;
-  
-  TGeoVolume* m_TopVolume;          // top volume of geometry
-  
-  // TrackVector* m_fitTrackCollection;
-  vector<int> m_evNum_vect;
-  
-  vector<Color_t> m_vecHistoColor;
-  
-  map<string, int> m_nTotTracks;
-  map<string, int> m_nConvergedTracks;
-  vector<string> m_categoryFitted;
-  map<string, int> m_detectorID_map;
-  
-  string m_systemsON;
-  string m_kalmanOutputDir;
-  
-  double m_AMU; // conversion betweem mass in GeV and atomic mass unit
-  
-  int m_debug;
-  
-  long m_evNum;
-  
-  bool m_reverse;
-  bool m_recolike1;
-  
-  TAGgeoTrafo* m_GeoTrafo;
-  
-  map<int, genfit::SharedPlanePtr> m_detectorPlanes;
-  
-  //temporary placeholder for trackfinding histos and graphs
-  TGraphErrors* graphErrorX;
-  TGraphErrors* graphErrorY;
-  
-  // TH2D* MSDresidualOfPrediction;
-  // TH2D* ITresidualOfPrediction;
-  TH1D* percentageOfMCTracksVTX;
-  TH1D* tempPurity;
-  TH1D* qoverp;
-  TH1D* tempPurityFalse;
-  
-  TH1D* qoverpsel;
-  TH1I* ITstudy;
-  TH1I* MSDstudy;
-  
-  
-  vector<TH1D*> momentum_true;
-  vector<TH1D*> momentum_reco;
-  vector<TH1D*> ratio_reco_true;
-  
-  int MSDforwardcounter;
-  
-  std::vector<Track*> m_vectorTrack;
-  
-  std::ofstream ofs;
-  
-  
+
+	TAGdataDsc*  fpGlobTrackRepoGenFit;
+	TAGdataDsc*  fpGlobTrackRepo;
+
+	KalmanFitter* m_fitter_extrapolation;
+
+	KalmanFitter* m_fitter;
+	AbsKalmanFitter*  m_refFitter;    		 //KalmanFitterRefTrack()
+	AbsKalmanFitter*  m_dafRefFitter;    	         //DAF with kalman ref
+	AbsKalmanFitter*  m_dafSimpleFitter;    	 //DAF with simple kalman
+
+	TAGtrackRepoKalman* m_outTrackRepoGenFit;
+	TAMCntuPart*  m_trueParticleRep;
+
+	TAGFuploader* m_uploader;
+	TAGntuTrackRepository* m_outTrackRepo;
+	TAGFselector* m_selector;
+
+	TAGFdetectorMap* m_sensorIDmap;
+	TAGF_KalmanStudies* m_trackAnalysis;
+
+	// key is the sensor ID
+	map< int, vector<AbsMeasurement*> > m_allHitMeasGF;
+	// key is the hit ID (commbo of det+plane+hit)
+	map< int, vector<int> >* m_measParticleMC_collection;
+
+
+	map<int, int> m_detectorPlaneID;
+
+	map<TString,Track*> m_mapTrack;
+	vector<Track*> m_vectorConvergedTrack;
+
+	vector<string> m_Particles;
+	map<string, int> m_ParticleIndex;
+	vector<string> m_Isotopes;
+	map<string, int> m_IsotopesIndex;
+
+	// init event display
+	EventDisplay* display;
+	bool m_IsEDOn;
+
+	// ControlPlotsRepository* m_controlPlotter;
+
+	bool m_isMC;
+
+
+	//  delete non va fatto il delete perche APPARENTEMENTE gia fatto
+	vector<TAVTntuHit*> m_VT_hitCollection;
+	vector<TAIThit*> m_IT_hitCollection;
+	vector<TAMSDntuHit*> m_MSD_hitCollection;
+	vector<TATWpoint*> m_TW_hitCollection;
+
+	vector<TAVTcluster*> m_VT_clusCollection;
+	vector<TAITcluster*> m_IT_clusCollection;
+	vector<TAMSDcluster*> m_MSD_clusCollection;
+
+
+	// vector<TVector3> m_MSD_posVectorSmearedHit;
+	// vector<TVector3> m_MSD_momVectorSmearedHit;
+	// vector<double> m_MSD_mass;
+
+
+	map <string, vector<AbsMeasurement*> > m_hitCollectionToFit;
+	map <int, vector<AbsMeasurement*> > m_hitCollectionToFit_dataLike;
+	vector<AbsMeasurement*> m_allHitsInMeasurementFormat;
+
+	shared_ptr<TAGparGeo> m_TG_geo;
+	shared_ptr<TADIparGeo> m_DI_geo;
+	shared_ptr<TAVTparGeo> m_VT_geo;
+	shared_ptr<TAITparGeo> m_IT_geo;
+	shared_ptr<TAMSDparGeo> m_MSD_geo;
+	shared_ptr<TATWparGeo> m_TW_geo;
+
+	TGeoVolume* m_TopVolume;          // top volume of geometry
+
+	// TrackVector* m_fitTrackCollection;
+
+	vector<Color_t> m_vecHistoColor;
+
+	// vector<string> m_categoryFitted;
+
+	string m_systemsON;
+	string m_kalmanOutputDir;
+
+	double m_AMU; // conversion betweem mass in GeV and atomic mass unit
+
+	int m_debug;
+
+	long m_evNum;
+
+	bool m_reverse;
+	bool m_recolike1;
+
+	TAGgeoTrafo* m_GeoTrafo;
+
+
+
+	//temporary placeholder for trackfinding histos and graphs
+	TGraphErrors* graphErrorX;
+	TGraphErrors* graphErrorY;
+
+	// TH2D* MSDresidualOfPrediction;
+	// TH2D* ITresidualOfPrediction;
+	TH1F* percentageOfMCTracksVTX;
+	TH1F* h_purity;
+	TH1F* qoverp;
+	TH1F* h_efficiencyKalman;
+	TH1F* h_trackEfficiency;
+
+	TH1F* qoverpsel;
+	TH1I* ITstudy;
+	TH1I* MSDstudy;
+
+	TH1F* h_isotopeDist;
+	TH1F* h_nMeas;
+	TH1F* h_mass;
+	TH1F* h_chi2;
+	TH1F* h_chargeFlip;
+	TH1F* h_particleFlip;
+	TH1F* h_momentum;
+
+	map<string, map<float, TH1F*> > h_dPOverP_x_bin;
+	map<string, TH1F*> h_deltaP;
+	map<string, TH1F*> h_resoP_over_Pkf;
+	map<string, TH1F*> h_biasP_over_Pkf;
+
+
+	vector<TH1F*> h_momentum_true;
+	vector<TH1F*> h_momentum_reco;
+	vector<TH1F*> h_ratio_reco_true;
+
+	int MSDforwardcounter;
+
+
+	//Efficiency & Purity variables
+	map<string, int> m_nTruthMCparticles;
+	map<string, int> m_nSelectedTrackCandidates;
+	map<string, int> m_nConvergedTracks_all;
+	map<string, int> m_nConvergedTracks_good;
+	map<string, int> m_nConvergedTracks_matched;
+
+
+	std::ofstream ofs;
+
+	vector<int> m_NClusTrack;
+	vector<int> m_NClusGood;
+
+	void	EvaluateProjectionEfficiency(Track* fitTrack);
 };
 
 

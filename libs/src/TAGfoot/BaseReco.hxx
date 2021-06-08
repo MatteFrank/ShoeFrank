@@ -78,9 +78,10 @@
 #include "TAGactNtuGlbTrack.hxx"
 
 #include "TAGactKFitter.hxx"
+#include "UpdatePDG.hxx"
 
-#include "GlobalTrackingStudies.hxx"
-#include "GlobalTrackRepostory.hxx"
+#include "TAGFtrackingStudies.hxx"
+#include "TAGntuTrackRepository.hxx"
 
 class TAMCntuHit;
 class TAMCntuPart;
@@ -237,6 +238,7 @@ public:
    TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
+   TAGtrackRepoKalman*  GetGlobTrackRepo() const { return (TAGtrackRepoKalman*) m_GlobTrackRepo->Object(); }
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
    //! MC container Getter
@@ -334,7 +336,8 @@ protected:
    TAGdataDsc*           fpNtuVtx;        // input Vtx data dsc
 
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
-   TAGdataDsc*           fpNtuGlbTrackK;      // input data dsc
+   TAGdataDsc*           m_GlobTrackRepo;      // input data dsc
+   TAGdataDsc*           m_newGlobTrackRepo;      // input data dsc
 
    TAGactionFile*        fActEvtReader;
    TAGactTreeWriter*     fActEvtWriter;  // write histo and tree
@@ -361,8 +364,8 @@ protected:
     
    TAGactNtuGlbTrackS*   fActGlbTrackS;     // action for straight tracks
   
-   GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
-   TAGactKFitter*         fActGlbkFitter;    // Global tracking kalman Fitter
+   TAGFtrackingStudies*  fActGlbTrackStudies;    // Global tracking studies with GenFit
+   TAGactKFitter*        fActGlbkFitter;    // Global tracking kalman Fitter
 
    Bool_t                fFlagOut;         // flag for output file
    Bool_t                fFlagTree;        // flag to save in tree

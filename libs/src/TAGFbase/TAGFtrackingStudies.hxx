@@ -1,5 +1,5 @@
-#ifndef GlobalTrackingStudies_hxx
-#define GlobalTrackingStudies_hxx
+#ifndef TAGFtrackingStudies_hxx
+#define TAGFtrackingStudies_hxx
 
 #include <TGeoManager.h>
 #include <TGeoMedium.h>
@@ -57,11 +57,11 @@
 #include "TAVTactNtuCluster.hxx"
 
 #include "TAITparGeo.hxx"
-#include "TAITntuHit.hxx"
+#include "TAIThit.hxx"
 #include "TAITntuCluster.hxx"
 
 #include "TAMSDparGeo.hxx"
-#include "TAMSDntuHit.hxx"
+#include "TAMSDntuRaw.hxx"
 #include "TAMSDntuCluster.hxx"
 
 #include "TATWparGeo.hxx"
@@ -74,6 +74,7 @@
 #include "TAGparaDsc.hxx"
 
 #include "TAGrecoManager.hxx"
+#include "UpdatePDG.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -99,13 +100,13 @@ using namespace genfit;
 
 typedef vector<genfit::AbsMeasurement*> MeasurementVector;
 
-class GlobalTrackingStudies : public TAGaction {
+class TAGFtrackingStudies : public TAGaction {
 
 public:
 
 
-	GlobalTrackingStudies(const char* name);
-	~GlobalTrackingStudies() {};
+	TAGFtrackingStudies(const char* name);
+	~TAGFtrackingStudies() {};
 
    void   CreateHistogram();
 	Bool_t Action();
@@ -129,6 +130,7 @@ private:
 	int m_moreThanOnePartPerCluster;
 	int m_allNoiseTrack;
 
+	ClassDef(TAGFtrackingStudies, 0)
 };
 
 #endif

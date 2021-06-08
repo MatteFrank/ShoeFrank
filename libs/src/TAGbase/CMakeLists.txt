@@ -48,6 +48,7 @@ set( with_dictionnaries
    TAGxmlParser
    TAGrecoManager
    TAGparGeo
+   MagicSkills
 )
 	
 set( without_dictionnaries

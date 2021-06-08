@@ -22,8 +22,12 @@ set( with_dictionnaries
    TAGntuEvent
    TAGactNtuEvent
    TAGactKFitter
-   GlobalTrackRepostory
-   GlobalTrackKalman
+   TAGglobalTrack
+   TAGntuTrackRepository
+   TAGshoeTrackPoint
+   TAGtrackKalman
+   TAGtrackRepoKalman
+   GlobalRecoMC
    TAGbaseEventDisplay
    TAGeventDisplay
    TAGeventDisplayMC
@@ -34,7 +38,6 @@ set( with_dictionnaries
    TAGactNtuGlbTrackS
    GlobalReco
    GlobalToeReco
-   GlobalTrackingStudies
 )
 
 set( without_dictionnaries

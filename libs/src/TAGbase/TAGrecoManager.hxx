@@ -55,6 +55,9 @@ public:
     Double_t MSDReso()           const { return m_MSDreso;             }
     Double_t TWReso()            const { return m_TWreso;              }
 
+    bool IsMC()								{ return m_isMC; }
+    void SetIsMC( bool aIsMC )				{ m_isMC = aIsMC; }
+
     Bool_t Find_MCParticle( string villain );
 
     // Reconstruction parameters Getter
@@ -127,6 +130,8 @@ private:
 	string m_parFileName;
 
 	Int_t m_debug;
+
+   bool m_isMC;
 
    // Kalman parameters
 	vector<string> m_mcParticles;
