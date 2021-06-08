@@ -1,0 +1,10 @@
+# Mapping sensorId vs planeId
+#          planeId
+SensorsN: 6
+#
+sensorId  0:  0
+sensorId  1:  1
+sensorId  2:  2
+sensorId  3:  3
+sensorId  4:  4
+sensorId  5:  5
