@@ -105,9 +105,9 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
    // decode here
    Int_t sensorId = (evt->boardHeader & 0xF)-1;
    
-   for (Int_t i = 0; i < p_pargeo->GetStripsN()/2; i+=2) {
-      fpHisStripMap[sensorId]->Fill(evt->Xplane[i]);
-      fpHisStripMap[sensorId+1]->Fill(evt->Yplane[i]);
+   for (Int_t i = 0; i < p_pargeo->GetStripsN(); ++i) {
+      fpHisStripMap[2*sensorId]->Fill(evt->Xplane[i]);
+      fpHisStripMap[2*sensorId+1]->Fill(evt->Yplane[i]);
    }
    
    return kTRUE;
