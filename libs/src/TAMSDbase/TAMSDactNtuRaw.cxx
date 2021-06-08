@@ -22,13 +22,11 @@ TAMSDactNtuRaw::TAMSDactNtuRaw(const char* name,
                              TAGdataDsc* dscdatraw,
                              TAGdataDsc* dscdatdaq,
                              TAGparaDsc* dscparmap,
-                             TAGparaDsc* dscparcal,
                              TAGparaDsc* dscpargeo)
   : TAGaction(name, "TAMSDactNtuRaw - Unpack MSD raw data"),
     fpDatRaw(dscdatraw),
     fpDatDaq(dscdatdaq),
     fpParMap(dscparmap),
-    fpParCal(dscparcal),
     fpParGeo(dscpargeo)
 {
   if (FootDebugLevel(1))
@@ -36,7 +34,6 @@ TAMSDactNtuRaw::TAMSDactNtuRaw(const char* name,
    
   AddDataOut(dscdatraw, "TAMSDntuRaw");
   AddPara(dscparmap, "TAMSDparMap");
-  AddPara(dscparcal, "TAMSDparCal");
   AddPara(dscpargeo, "TAMSDparGeo");
   AddDataIn(dscdatdaq, "TAGdaqEvent");
 }
@@ -93,7 +90,6 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 
    TAMSDntuRaw*    p_datraw = (TAMSDntuRaw*)    fpDatRaw->Object();
    TAMSDparMap*    p_parmap = (TAMSDparMap*)    fpParMap->Object();
-   TAMSDparCal*    p_parcal = (TAMSDparCal*)    fpParCal->Object();
    TAMSDparGeo*    p_pargeo = (TAMSDparGeo*)    fpParGeo->Object();
 
    // decode here
