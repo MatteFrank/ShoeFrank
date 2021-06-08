@@ -18,11 +18,7 @@ class DEMSDEvent : public DECardEvent {
     u_int Xplane[640];
     u_int Yplane[640];
 
-  void fillStrip();
-
-
-  
-  
+    void fillStrip();
 };
 
 #endif
