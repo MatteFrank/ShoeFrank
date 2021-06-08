@@ -13,7 +13,7 @@ class DEMSDEvent : public DECardEvent {
     virtual void printData() const;
     virtual bool check() const;
 
-    virtual std::string classType() const {return "DECardEvent";};
+    virtual std::string classType() const {return "DEMSDEvent";};
 
     u_int Xplane[640];
     u_int Yplane[640];
