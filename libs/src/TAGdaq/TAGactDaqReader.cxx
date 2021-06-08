@@ -24,7 +24,7 @@ TAGactDaqReader::~TAGactDaqReader()
 
 //------------------------------------------+-----------------------------------
 //! Open data source.
-Int_t TAGactDaqReader::Open(const TString& name, Option_t*, const TString)
+Int_t TAGactDaqReader::Open(const TString& name, Option_t*, const TString, Bool_t )
 {
    Int_t b_bad = 0;
    
