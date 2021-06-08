@@ -79,10 +79,9 @@ Bool_t TAMSDactNtuRaw::Action()
        TString type = p_datdaq->GetClassType(i);
        if (type.Contains("DEMSDEvent")) {
          const DEMSDEvent* evt = static_cast<const DEMSDEvent*> (p_datdaq->GetFragment(i));
-         if (FootDebugLevel(1))
+          if (FootDebugLevel(1))
             evt->printData();
          DecodeHits(evt);
-         break;
        }
    }
 
