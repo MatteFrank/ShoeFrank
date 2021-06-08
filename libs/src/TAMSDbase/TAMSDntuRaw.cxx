@@ -24,7 +24,7 @@ TAMSDrawHit::TAMSDrawHit()
 
 //______________________________________________________________________________
 //
-TAMSDrawHit::TAMSDrawHit(Int_t id, Int_t view, Int_t strip, Double_t charge)
+TAMSDrawHit::TAMSDrawHit(Int_t id, Int_t view, Int_t strip, UInt_t charge)
 : TObject(),
    fSensorId(id),
    fCharge(charge),
@@ -146,7 +146,7 @@ TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
    
 //______________________________________________________________________________
 //  
-void TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, Double_t value)
+void TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, UInt_t value)
 {
    if (sensor >= 0  || sensor < fpGeoMap->GetSensorsN()) {
 	  TClonesArray &pixelArray = *GetStrips(sensor);
