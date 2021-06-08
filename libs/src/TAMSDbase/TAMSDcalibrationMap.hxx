@@ -1,17 +1,17 @@
-#ifndef TACACALIBRATIONMAP_H
-#define TACACALIBRATIONMAP_H
+#ifndef TAMSDCALIBRATIONMAP_H
+#define TAMSDCALIBRATIONMAP_H
 #include <map>
 #include <TSystem.h>
 #include <TString.h>
 #include "TAGobject.hxx"
 
 using namespace std;
-typedef map<pair<Int_t, Int_t>, vector<Double_t> > TCalibrationMapType;
+typedef map<pair<Int_t, Int_t>, vector<Double_t> > TCalibMapType;
 
 class TAMSDcalibrationMap : public TAGobject
 {
 private:
-  TCalibrationMapType fCalibElossMapStrip;     // map for energy calibration per strip
+  TCalibMapType fCalibElossMapStrip;     // map for energy calibration per strip
 
 public:
   TAMSDcalibrationMap();
