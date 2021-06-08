@@ -42,6 +42,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParMapBm(0x0),
    fpParMapVtx(0x0),
    fpParMapIt(0x0),
+   fpParMapMsd(0x0),
    fpParMapTw(0x0),
    fpParGeoSt(0x0),
    fpParGeoG(0x0),
@@ -571,6 +572,13 @@ void BaseReco::ReadParFiles()
       TAMSDparConf* parConf = (TAMSDparConf*)fpParConfMsd->Object();
 //      parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
 //      parConf->FromFile(parFileName.Data());
+      
+      if(!fFlagMC){
+         fpParMapMsd = new TAGparaDsc("msdMap", new TAMSDparMap());
+         TAMSDparMap*  parMapMsd = (TAMSDparMap*)fpParMapMsd->Object();
+         parFileName = fCampManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+         parMapMsd->FromFile(parFileName.Data());
+      }
    }
 
    // initialise par files for Tof Wall

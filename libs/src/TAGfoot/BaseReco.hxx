@@ -18,6 +18,7 @@
 #include "TABMparMap.hxx"
 #include "TAVTparMap.hxx"
 #include "TAITparMap.hxx"
+#include "TAMSDparMap.hxx"
 #include "TATWparMap.hxx"
 #include "TACAparMap.hxx"
 
@@ -273,6 +274,7 @@ protected:
    TAGparaDsc*           fpParMapBm;
    TAGparaDsc*           fpParMapVtx;
    TAGparaDsc*           fpParMapIt;
+   TAGparaDsc*           fpParMapMsd;
    TAGparaDsc*           fpParMapTw;
    TAGparaDsc*           fpParMapCa;
 
