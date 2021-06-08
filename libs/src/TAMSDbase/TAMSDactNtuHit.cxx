@@ -7,6 +7,7 @@
 #include "TAMSDparMap.hxx"
 #include "TAMSDparCal.hxx"
 #include "TAMSDactNtuHit.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
  \class TAMSDactNtuHit TAMSDactNtuHit.hxx "TAMSDactNtuHit.hxx"
@@ -45,8 +46,8 @@ TAMSDactNtuHit::~TAMSDactNtuHit()
 //------------------------------------------+-----------------------------------
 //! Action.
 
-Bool_t TAMSDactNtuHit::Action() {
-   
+Bool_t TAMSDactNtuHit::Action()
+{
    TAMSDntuRaw*   p_datraw = (TAMSDntuRaw*) fpDatRaw->Object();
    TAMSDntuHit*   p_nturaw = (TAMSDntuHit*) fpNtuRaw->Object();
    TAMSDparGeo*   p_GeoMap = (TAMSDparGeo*) fpGeoMap->Object();
@@ -54,23 +55,24 @@ Bool_t TAMSDactNtuHit::Action() {
    
    // loop over boards
    for (Int_t i = 0; i < p_GeoMap->GetSensorsN(); ++i) {
+      
+      int nstrip = p_datraw->GetStripsN(i);
 
-   int nstrip = p_datraw->GetStripsN(i);
-   
-   for(int ih = 0; ih < nstrip; ++ih) {
-      TAMSDrawHit *strip = p_datraw->GetStrip(i, ih);
-      
-      Int_t sensorId  = strip->GetSensorId();
-      Int_t stripId   = strip->GetStrip();
-      Int_t view      = strip->GetView();
-      Double_t charge = strip->GetCharge();
-      
-      
-      // here we need the calibration file
-      Double_t energy = GetEnergy(charge, sensorId, stripId);
-      p_nturaw->NewStrip(sensorId, stripId, view, charge);
-      
-   }
+      for(int ih = 0; ih < nstrip; ++ih) {
+         TAMSDrawHit *strip = p_datraw->GetStrip(i, ih);
+         
+         Int_t sensorId  = strip->GetSensorId();
+         Int_t stripId   = strip->GetStrip();
+         Int_t view      = strip->GetView();
+         UInt_t charge   = strip->GetCharge();
+         
+        if (FootDebugLevel(1))
+            printf("sensor: %d strip: %d view: %d charge: %d\n", sensorId, stripId, view, charge);
+         
+         // here we need the calibration file
+         Double_t energy = GetEnergy(charge, sensorId, stripId);
+         p_nturaw->NewStrip(sensorId, energy, view, stripId);
+      }
    }
    fpNtuRaw->SetBit(kValid);
    
