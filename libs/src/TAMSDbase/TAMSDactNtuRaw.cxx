@@ -15,6 +15,8 @@
 
 ClassImp(TAMSDactNtuRaw);
 
+ UInt_t TAMSDactNtuRaw::fkgThreshold = 4;
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
@@ -97,17 +99,31 @@ Bool_t TAMSDactNtuRaw::Action()
 //! Action.
 Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 {
-
    TAMSDntuRaw*    p_datraw = (TAMSDntuRaw*)    fpDatRaw->Object();
-   TAMSDparMap*    p_parmap = (TAMSDparMap*)    fpParMap->Object();
    TAMSDparGeo*    p_pargeo = (TAMSDparGeo*)    fpParGeo->Object();
 
    // decode here
    Int_t sensorId = (evt->boardHeader & 0xF)-1;
    
    for (Int_t i = 0; i < p_pargeo->GetStripsN(); ++i) {
-      fpHisStripMap[2*sensorId]->Fill(evt->Xplane[i]);
-      fpHisStripMap[2*sensorId+1]->Fill(evt->Yplane[i]);
+      
+      UInt_t adcX = evt->Xplane[i];
+      UInt_t adcY = evt->Yplane[i];
+      Int_t view  = -1;
+      
+      if (adcX > fkgThreshold) {
+         view = 0;
+         p_datraw->AddStrip(2*sensorId, i,view, adcX);
+         if (ValidHistogram())
+            fpHisStripMap[2*sensorId]->Fill(i, evt->Xplane[i]);
+      }
+      
+      if (adcY > fkgThreshold*10) {
+         view = 1;
+         p_datraw->AddStrip(2*sensorId+1, i,view, adcY);
+         if (ValidHistogram())
+            fpHisStripMap[2*sensorId+1]->Fill(i, evt->Yplane[i]);
+      }
    }
    
    return kTRUE;

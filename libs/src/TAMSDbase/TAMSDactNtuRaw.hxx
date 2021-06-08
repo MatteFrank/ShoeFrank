@@ -46,6 +46,10 @@ private:
    
 private:
     Bool_t DecodeHits(const DEMSDEvent* evt);
+   
+private:
+   
+   static UInt_t fkgThreshold;
 };
 
 #endif
