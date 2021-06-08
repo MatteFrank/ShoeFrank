@@ -122,10 +122,10 @@ void LocalReco::CreateRawAction()
       if (fFlagHisto)
          fActDatRawMsd->CreateHistogram();
 
-//      fpNtuHitMsd   = new TAGdataDsc("msdRaw", new TAMSDntuHit());
-//      fActNtuHitMsd = new TAVTactNtuHit("msdActNtu", fpNtuHitMsd, fpDatRawMsd, fpParGeoMsd);
-//      if (fFlagHisto)
-//         fActNtuHitMsd->CreateHistogram();
+      fpNtuHitMsd   = new TAGdataDsc("msdRaw", new TAMSDntuHit());
+      fActNtuHitMsd = new TAMSDactNtuHit("msdActNtu", fpNtuHitMsd, fpDatRawMsd, fpParGeoMsd, fpParCalMsd);
+      if (fFlagHisto)
+         fActNtuHitMsd->CreateHistogram();
    }
 
    if(TAGrecoManager::GetPar()->IncludeTW()) {

@@ -36,6 +36,7 @@
 #include "TADIgeoField.hxx"
 
 #include "TABMparCal.hxx"
+#include "TAMSDparCal.hxx"
 #include "TATWparCal.hxx"
 #include "TACAparCal.hxx"
 
@@ -289,6 +290,7 @@ protected:
    TAGparaDsc*           fpParGeoCa;
    
    TAGparaDsc*           fpParCalBm;
+   TAGparaDsc*           fpParCalMsd;
    TAGparaDsc*           fpParCalTw;
    TAGparaDsc*           fpParCalCa;
 

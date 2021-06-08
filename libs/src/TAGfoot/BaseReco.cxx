@@ -578,6 +578,11 @@ void BaseReco::ReadParFiles()
          TAMSDparMap*  parMapMsd = (TAMSDparMap*)fpParMapMsd->Object();
          parFileName = fCampManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), fRunNumber);
          parMapMsd->FromFile(parFileName.Data());
+         
+         fpParCalMsd = new TAGparaDsc("msdCal", new TAMSDparCal());
+         TAMSDparCal* parCalMsd = (TAMSDparCal*)fpParCalMsd->Object();
+         parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+         parCalMsd->LoadEnergyCalibrationMap(parFileName.Data());
       }
    }
 
