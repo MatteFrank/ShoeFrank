@@ -26,6 +26,7 @@
 #include "TAMSDntuRaw.hxx"
 #include "TAGactDaqReader.hxx"
 #include "TAMSDactNtuRaw.hxx"
+#include "TAMSDactNtuHit.hxx"
 
 #endif
 
@@ -35,6 +36,7 @@ TAGactTreeWriter*   outFile      = 0x0;
 TAGactDaqReader*    daqActReader = 0x0;
 
 TAMSDactNtuRaw*      msdActRaw  = 0x0;
+TAMSDactNtuHit*      msdActHit  = 0x0;
 
 void FillMsd(Int_t runNumber)
 {
@@ -48,17 +50,28 @@ void FillMsd(Int_t runNumber)
    parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
    
+   TAGparaDsc* msdCal = new TAGparaDsc("msdCal", new TAMSDparCal());
+   TAMSDparCal* parCalMsd = (TAMSDparCal*)msdCal->Object();
+   parFileName = campManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), runNumber);
+   parCalMsd->LoadEnergyCalibrationMap(parFileName.Data());
+   
+   
    TAGdataDsc* msdDaq    = new TAGdataDsc("msdDaq", new TAGdaqEvent());
-   TAGdataDsc* msdNtu    = new TAGdataDsc("msdNtu", new TAMSDntuRaw());
+   TAGdataDsc* msdDat    = new TAGdataDsc("msdDat", new TAMSDntuRaw());
+   TAGdataDsc* msdHit    = new TAGdataDsc("msdHit", new TAMSDntuHit());
 
    daqActReader  = new TAGactDaqReader("daqActReader", msdDaq);
    
-   msdActRaw  = new TAMSDactNtuRaw("msdActRaw", msdNtu, msdDaq, msdMap, msdGeo);
+   msdActRaw  = new TAMSDactNtuRaw("msdActRaw", msdDat, msdDaq, msdMap, msdGeo);
    msdActRaw->CreateHistogram();
+
+   msdActHit  = new TAMSDactNtuHit("msdActHit", msdDat, msdHit, msdGeo, msdCal);
+   msdActHit->CreateHistogram();
 
 }
 
-void ReadMsdRaw(TString filename = "data/data_test.00003864.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 10,
+//void ReadMsdRaw(TString filename = "data/data_test.00003864.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 1,
+void ReadMsdRaw(TString filename = "data/data_test.00003890.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 1,
                 TString expName = "GSI2021", Int_t runNumber = 1)
 {
    TAGrecoManager::Instance(expName);
@@ -81,6 +94,7 @@ void ReadMsdRaw(TString filename = "data/data_test.00003864.physics_foot.daq.RAW
    
    tagr.AddRequiredItem(daqActReader);
    tagr.AddRequiredItem(msdActRaw);
+   tagr.AddRequiredItem(msdActHit);
    tagr.AddRequiredItem(outFile);
 
    tagr.Print();
@@ -94,6 +108,7 @@ void ReadMsdRaw(TString filename = "data/data_test.00003864.physics_foot.daq.RAW
    outFileName.Append(".root");
    if (outFile->Open(outFileName.Data(), "RECREATE")) return;
    msdActRaw->SetHistogramDir(outFile->File());
+   msdActHit->SetHistogramDir(outFile->File());
 
    cout<<" Beginning the Event Loop "<<endl;
    tagr.BeginEventLoop();
