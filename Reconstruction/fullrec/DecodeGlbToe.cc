@@ -73,6 +73,11 @@ int main (int argc, char *argv[])  {
    TAGrecoManager::GetPar()->IncludeTOE(true);
    TAGrecoManager::GetPar()->IncludeKalman(false);
 
+   if (out.IsNull()) {
+      TAGrecoManager::GetPar()->DisableTree();
+      TAGrecoManager::GetPar()->DisableHisto();
+   }
+   
    BaseReco* glbRec = 0x0;
    
    if (lrc)

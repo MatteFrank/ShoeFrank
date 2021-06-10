@@ -39,12 +39,6 @@ int main (int argc, char *argv[])  {
       }
    }
    
-   if (out.IsNull()) {
-      Int_t pos = in.Last('.');
-      out = in(0, pos);
-      out.Append("_Out.root");
-   }
-   
    TApplication::CreateApplication();
    
    TAGrecoManager::Instance(exp);
@@ -59,7 +53,12 @@ int main (int argc, char *argv[])  {
    Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
    Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
 
-   if (tbc) {
+   if (out.IsNull()) {
+      TAGrecoManager::GetPar()->DisableTree();
+      TAGrecoManager::GetPar()->DisableHisto();
+   }
+   
+   if (tbc && !out.IsNull()) {
      Int_t pos = out.Last('.');
      out = out(0, pos);
      out.Append("_TWBarCalib.root");

@@ -44,12 +44,6 @@ int main (int argc, char *argv[])  {
       }
    }
    
-   if (out.IsNull()) {
-      Int_t pos = in.Last('.');
-      out = in(0, pos);
-      out.Append("_Out.root");
-   }
-   
    TApplication::CreateApplication();
    
    TAGrecoManager::Instance(exp);
@@ -68,6 +62,11 @@ int main (int argc, char *argv[])  {
    
    TAGrecoManager::GetPar()->IncludeTOE(false);
    TAGrecoManager::GetPar()->IncludeKalman(true);
+   
+   if (out.IsNull()) {
+      TAGrecoManager::GetPar()->DisableTree();
+      TAGrecoManager::GetPar()->DisableHisto();
+   }
    
    BaseReco* glbRec = 0x0;
    
