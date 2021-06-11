@@ -16,9 +16,13 @@
 class TAMSDparConf : public TAVTbaseParConf {
    
 public:
-
+   
    TAMSDparConf();
-    virtual ~TAMSDparConf();
+   virtual ~TAMSDparConf();
+   
+   
+   Bool_t     FromFile(const TString& name = "");
+   
    
    ClassDef(TAMSDparConf,1)
 };

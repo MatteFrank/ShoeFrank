@@ -13,6 +13,7 @@
 #include "TObject.h"
 #include "TString.h"
 #include "TVector3.h"
+#include "TArrayC.h"
 
 #include "TAGparTools.hxx"
 
@@ -29,9 +30,11 @@ protected:
 
    struct SensorParameter_t : public  TObject {
 	  Int_t     SensorIdx;              // sensor index
+     Int_t     Type;                   // sensor type
 	  Int_t     Status;                 // Status flag: Primary Reference = 1., Secondary Reference = 2. DeviceUunderTest = 3. Out = -1.
 	  Int_t     MinNofPixelsInCluster;  // minimum pixels in a cluster
 	  Int_t     MaxNofPixelsInCluster;  // maximum pixels in a cluster
+     TArrayC   DeadStripMap;           // dead strip map
      map< pair<int, int>, int > DeadPixelMap;    // dead pixel map
    };
    
@@ -41,6 +44,7 @@ protected:
 	  Float_t    SearchHitDistance;      // max distance hit-track to add hit to track
 	  Float_t    TrackChi2Limit;         // chi2 limit on the track
 	  Float_t    BmTrackChi2Limit;       // chi2 limit on the BM track
+     Float_t    NoiseSigmaLevel;        //noise sigma level
    };
    
    
@@ -79,7 +83,7 @@ public:
    static void   SetHistoMap(Bool_t flag = true) { fgIsMapHist = flag; }
    
 
-   ClassDef(TAVTbaseParConf,2)
+   ClassDef(TAVTbaseParConf,3)
 };
 
 #endif
