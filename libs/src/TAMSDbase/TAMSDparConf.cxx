@@ -44,12 +44,7 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
       nameExp = name;
    
    if (!Open(nameExp)) return false;
-   
-   // read noise sigma level
-   ReadItem(fAnalysisParameter.NoiseSigmaLevel);
-   if(FootDebugLevel(1))
-      cout << "Noise sigma level: "<< fAnalysisParameter.NoiseSigmaLevel << endl;
-   
+      
    ReadItem(fSensorsN);
    if(FootDebugLevel(1))
       cout << endl << "Reading Parameters for "<< fSensorsN << " Sensors" << endl;
