@@ -32,8 +32,9 @@ NumberFiles: 3
 "./config/GSI2021/TAVTdetector.map": -1
 
 DetectorName: "MSD"
-NumberFiles: 3
+NumberFiles: 4
 "./geomaps/GSI2021/TAMSDdetector.geo": -1
+"./config/GSI2021/TAMSDdetector.cfg": -1
 "./config/GSI2021/TAMSDdetector.map": -1
 "./calib/GSI2021/TAMSD_Energy_Calibration.cal": -1
 
