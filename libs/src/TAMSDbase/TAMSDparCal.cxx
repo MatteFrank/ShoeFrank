@@ -38,3 +38,26 @@ Double_t TAMSDparCal::GetElossParam(Int_t sensorId, Int_t stripId, UInt_t Parame
     return fMapCal->GetElossParam(sensorId, stripId, ParameterNumber);
 }
 
+//_________________________________________
+Bool_t TAMSDparCal::LoadPedestalMap(TString name)
+{
+   Clear();
+   
+   fMapCal->LoadPedestalMap(name.Data());
+   
+   Info("LoadPedestalMap()", "Open file %s for calibration\n", name.Data());
+   
+   return true;
+}
+
+//_____________________________________________________________________
+Double_t TAMSDparCal::GetPedestalMean(Int_t sensorId, Int_t stripId)
+{
+   return fMapCal->GetElossParam(sensorId, stripId, 0);
+}
+
+//_____________________________________________________________________
+Double_t TAMSDparCal::GetPedestalSigma(Int_t sensorId, Int_t stripId)
+{
+   return fMapCal->GetElossParam(sensorId, stripId, 1);
+}
