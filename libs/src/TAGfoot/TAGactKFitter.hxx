@@ -1,6 +1,7 @@
 #ifndef TAGACTKFITTER_HXX
 #define TAGACTKFITTER_HXX
 
+#include <map>
 
 #include <TGeoManager.h>
 #include <TGeoMedium.h>
@@ -321,7 +322,10 @@ private:
 	vector<int> m_NClusTrack;
 	vector<int> m_NClusGood;
 
-	void	EvaluateProjectionEfficiency(Track* fitTrack);
+	int m_NTWTracksGoodHypo;
+	int m_NTWTracks;
+
+	void	EvaluateProjectionEfficiency(string* PartName, Track* fitTrack);
 };
 
 

@@ -76,6 +76,7 @@ public:
 
 	int			Categorize( );
 	TString		GetRecoTrackName(Track* tr);
+	int			GetChargeFromTW(Track* trackToCheck);
 
 private:
 
@@ -91,7 +92,6 @@ private:
 	void		CategorizeMSD();
 	void		CategorizeTW();
 	void		FillTrackCategoryMap();
-	int			GetChargeFromTW(Track* trackToCheck);
 	TVector3	ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane, int repId =-1);
 
 

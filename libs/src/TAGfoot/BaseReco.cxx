@@ -937,7 +937,7 @@ void BaseReco::CreateRecActionGlbGF()
       // Initialisation of KFfitter
       m_GlobTrackRepo = new TAGdataDsc("TAGtrackRepoKalman", new TAGtrackRepoKalman());
       m_newGlobTrackRepo = new TAGdataDsc("TAGntuTrackRepository", new TAGntuTrackRepository());
-      fActGlbkFitter = new TAGactKFitter("glbAct_KFitter", m_GlobTrackRepo, m_newGlobTrackRepo);
+      fActGlbkFitter = new TAGactKFitter("glbActKFitter", m_GlobTrackRepo, m_newGlobTrackRepo);
        if (fFlagHisto)
          fActGlbkFitter->CreateHistogram();
 
@@ -1100,7 +1100,7 @@ void BaseReco::AddRecRequiredItem()
    if (TAGrecoManager::GetPar()->IncludeKalman() && TAGrecoManager::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
    //    gTAGroot->AddRequiredItem("glbActTrackStudyGF");
-       gTAGroot->AddRequiredItem("glbActkFitter");
+       gTAGroot->AddRequiredItem("glbActKFitter");
      }
      return;
    }
@@ -1155,7 +1155,7 @@ void BaseReco::AddRecRequiredItem()
       if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
       //   gTAGroot->AddRequiredItem("glbActTrackStudyGF");
          gTAGroot->AddRequiredItem("TAGntuTrackRepository");
-         gTAGroot->AddRequiredItem("glbActkFitter");
+         gTAGroot->AddRequiredItem("glbActKFitter");
       }
    }
    

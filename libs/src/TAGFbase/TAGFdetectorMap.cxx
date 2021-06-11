@@ -11,6 +11,8 @@ TAGFdetectorMap::TAGFdetectorMap()
 		m_detectorIndex[tmp_detName.at(i)] = i;
 		m_DetToFitPlaneMap[tmp_detName[i]];
 	}
+
+	m_debug = TAGrecoManager::GetPar()->Debug();
 }
 
 //Destructor -> clean all the maps
@@ -53,14 +55,18 @@ void TAGFdetectorMap::AddPlane_Zorder(float zPos, int indexOfPlane)	{
 		m_zOrderingPlanes[zPos];
 	
 	m_zOrderingPlanes[zPos].push_back(indexOfPlane);
-	cout << "Assigned IT plane::" << indexOfPlane << " to zPos::" << zPos << endl;
-	cout << "zPos::" << zPos << " has now " << m_zOrderingPlanes[zPos].size() << " planes!!" << endl;
+	if(m_debug > 0)
+	{
+		cout << "Assigned IT plane::" << indexOfPlane << " to zPos::" << zPos << endl;
+		cout << "zPos::" << zPos << " has now " << m_zOrderingPlanes[zPos].size() << " planes!!" << endl;
+	}
 
 	if ( find(m_itPossibleZ.begin(), m_itPossibleZ.end(), zPos) == m_itPossibleZ.end() )
 	{
 		m_itPossibleZ.push_back(zPos);
 		std::sort(m_itPossibleZ.begin(), m_itPossibleZ.end());
-		cout << "Added " << zPos << " to possible ITz" << endl;
+		
+		if(m_debug > 0)	cout << "Added " << zPos << " to possible ITz" << endl;
 	}
 
 }

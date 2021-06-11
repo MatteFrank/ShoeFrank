@@ -97,6 +97,9 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepoGenFit, 
 		m_NClusGood.push_back(0);
 	}
 
+	m_NTWTracks = 0;
+	m_NTWTracksGoodHypo = 0;
+
 }
 
 
@@ -243,10 +246,16 @@ void TAGactKFitter::Finalize() {
   if ( TAGrecoManager::GetPar()->EnableEventDisplay() )		display->open();
 
 
-	cout << "PlaneId\tNClus\tNGood" << endl;
-	for(int i=0; i< m_NClusGood.size(); ++i)
+	if(m_debug > 0)
 	{
-		cout << i << "\t" << m_NClusTrack.at(i) << "\t" << m_NClusGood.at(i) << endl;
+		cout << "Check quality of charge hypothesis\nPlaneId\tNClus\tNGood" << endl;
+		for(int i=0; i< m_NClusGood.size(); ++i)
+		{
+			cout << i << "\t" << m_NClusTrack.at(i) << "\t" << m_NClusGood.at(i) << endl;
+		}
+
+		cout << "TWtracks\t\tTWtracksGoodHypo\n" << m_NTWTracks << "\t\t" << m_NTWTracksGoodHypo << endl;
+
 	}
 
 }
@@ -309,7 +318,7 @@ void TAGactKFitter::IncludeDetectors() {
 //----------------------------------------------------------------------------------------------------
 void TAGactKFitter::CreateGeometry()  {
 
-	cout << "TAGactKFitter::CreateGeometry() -- " << endl;
+	if(m_debug > 0)	cout << "TAGactKFitter::CreateGeometry() -- START" << endl;
 
 	// take geometry objects
   if (TAGrecoManager::GetPar()->IncludeTG())
@@ -468,6 +477,7 @@ void TAGactKFitter::CreateGeometry()  {
 	// ++indexOfDet;
 	// }
 
+	if(m_debug > 0)	cout << "TAGactKFitter::CreateGeometry() -- STOP" << endl;
 
 }
 
@@ -499,9 +509,9 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		isConverged = 0;
 		
 		vector<string> tok = Tokenize( trackIt->first.Data() , "_" );
-		string fitTrackName = tok.at(0);
+		string PartName = tok.at(0);
 
-		cout << "Track candidate: "<<trackCounter<< "  "<< fitTrackName << " " << trackIt->first.Data() << endl;
+		cout << "Track candidate: "<<trackCounter<< "  "<< PartName << " " << trackIt->first.Data() << endl;
 
 		// check if the category is defined in UpdatePDG  -->  also done in GetPdgCode()
 		if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" )  {
@@ -520,7 +530,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		trackCounter++;
 
 	    // check of fitTrack filling
-	    if ( m_debug > 0 ) {
+	    if ( m_debug > 2 ) {
 		    cout << " check of fitTrack filling " << endl;
 		    for (unsigned int iMeas = 0; iMeas < fitTrack->getNumPointsWithMeasurement(); ++iMeas){
 
@@ -539,10 +549,12 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	    //check
 	    fitTrack->checkConsistency();
 	    if ( m_debug > 2 )	    fitTrack->Print();
+		
+		EvaluateProjectionEfficiency(&PartName, fitTrack);
 
 		// map of the number of converged tracks for each track hypothesis
-		if ( m_nSelectedTrackCandidates.find( fitTrackName ) == m_nSelectedTrackCandidates.end() )	m_nSelectedTrackCandidates[ fitTrackName ] = 0;
-		m_nSelectedTrackCandidates[ fitTrackName ]++;
+		if ( m_nSelectedTrackCandidates.find( PartName ) == m_nSelectedTrackCandidates.end() )	m_nSelectedTrackCandidates[ PartName ] = 0;
+		m_nSelectedTrackCandidates[ PartName ]++;
 
 		if(m_debug > 0)	{
 			cout << "PROCESSING TRACK!!!!!" << endl;
@@ -553,23 +565,26 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	    // THE REAL FIT with different Kalman modes
 	    try{
 
+
 	    	double dPVal = 1.E-3; // convergence criterion
 	    	KalmanFitter* preFitter = new KalmanFitter(1, dPVal);
-			cout << "Prefit reps" << endl;
-			for(int i = 0; i < fitTrack->getNumReps(); ++i)
-				fitTrack->getTrackRep(i)->Print();
 	    	preFitter->processTrackWithRep( fitTrack, fitTrack->getCardinalRep() );
+			
+			if(m_debug > 0)
+			{
+				cout << "Track reps" << endl;
+				for(int i = 0; i < fitTrack->getNumReps(); ++i)
+					fitTrack->getTrackRep(i)->Print();
+				cout << "Cardinal rep: ";
+				fitTrack->getCardinalRep()->Print();
+			}
 	    	// m_fitter_extrapolation->processTrack( fitTrack );
-			cout << "Prefit reps processed" << endl;
-			for(int i = 0; i < fitTrack->getNumReps(); ++i)
-				fitTrack->getTrackRep(i)->Print();
 
 			if ( TAGrecoManager::GetPar()->KalMode() == "ON" ) {
 				// m_fitter->processTrack( fitTrack );
 				m_fitter->processTrackWithRep( fitTrack, fitTrack->getCardinalRep() );
 			}
 			else if ( TAGrecoManager::GetPar()->KalMode() == "ref" ) {
-				EvaluateProjectionEfficiency(fitTrack);
 
 				// if(TAGrecoManager::GetPar()->PreselectStrategy() == "Sept2020")
 				// {
@@ -599,12 +614,11 @@ int TAGactKFitter::MakeFit( long evNum ) {
 			continue;
     	}
 
-		if(m_debug > 0) cout << "TRACK PROCESSED!!!!!" << endl;
-		// if ( m_debug > 0 )		fitTrack->Print();
-		
-		if ( m_debug > 0 )		cout << "Fitted " <<  fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitted() << endl;
-
-		if ( m_debug > 0 )		cout << "Converged " <<  fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitConverged() << endl;
+		if(m_debug > 0)
+		{
+			cout << "TRACK PROCESSED!!!!!" << endl;
+			fitTrack->getFitStatus(fitTrack->getCardinalRep())->Print();
+		}
 
 		if (  fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitConverged() &&   fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitted() )		
 			isConverged = 1;	// convergence check
@@ -614,10 +628,6 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 		// // map of the CONVERGED tracks for each category
 		if (isConverged) {
-			cout << "CONVERGED!!!" << endl;
-
-
-
 
 			// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!" << endl;
 			// 			TVector3 target(0,0,0);
@@ -628,12 +638,10 @@ int TAGactKFitter::MakeFit( long evNum ) {
 			// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!   end - l= " << extL << "\n\toldZ = " <<old << "\t newZ = " << ext << endl<<endl;
 			
 
+			if ( m_nConvergedTracks_all.find( PartName ) == m_nConvergedTracks_all.end() )	m_nConvergedTracks_all[ PartName ] = 0;
+			m_nConvergedTracks_all[ PartName ]++;
 
-
-			if ( m_nConvergedTracks_all.find( fitTrackName ) == m_nConvergedTracks_all.end() )	m_nConvergedTracks_all[ fitTrackName ] = 0;
-			m_nConvergedTracks_all[ fitTrackName ]++;
-
-			RecordTrackInfo( fitTrack, fitTrackName );
+			RecordTrackInfo( fitTrack, PartName );
 			cout << "DONE" << endl;
 			m_vectorConvergedTrack.push_back( fitTrack );
 		}
@@ -783,7 +791,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, fitTrackName, &h_deltaP );
 
 		h_particleFlip->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] - trackMC_id ); 
-		if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: m_IsotopesIndex = "<< m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] << "  trackMC_id = "<< trackMC_id<< endl;
+		if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: m_IsotopesIndex = "<< m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] << "  trackMC_id = "<< trackMC_id<< endl;
 		
 		double trackQuality = TrackQuality( &mcParticleID_track );
 		if ( particle->GetCharge() == measCh && trackQuality > 0.7 ) {
@@ -988,7 +996,7 @@ void TAGactKFitter::GetRecoTrackInfo ( int i, Track* track,
 	// Get reco track kinematics and errors
 	*KalmanPos = TVector3( (track->getFittedState(i).get6DState())[0],	(track->getFittedState(i).get6DState())[1],	(track->getFittedState(i).get6DState())[2] );
 	*KalmanMom = TVector3( (track->getFittedState(i).get6DState())[3], (track->getFittedState(i).get6DState())[4],	(track->getFittedState(i).get6DState())[5] );
-	
+
 	MatrixToZero(KalmanPos_cov);
 	MatrixToZero(KalmanMom_cov);
 	for ( int j=0; j<3; j++ ) {
@@ -1252,12 +1260,12 @@ void TAGactKFitter::InitEventDisplay() {
 }
 
 
-void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
+void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTrack)
 {
-	int MeasId;
-	int PlaneId;
-	int chargeHypo;
-	int chargeMC;
+	int MeasId, PlaneId;
+	int chargeHypo, chargeMC;
+
+	if(m_debug > 0)	cout << "Check of charge hypo: " << endl;
 
 	for(int i=0; i<fitTrack->getNumPointsWithMeasurement(); ++i)
 	{
@@ -1273,7 +1281,8 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 			TAMCpart* particle = m_trueParticleRep->GetTrack(*itTrackMC);
 			chargeMC = particle->GetCharge();
 
-			cout << "Plane::" << PlaneId << "\tChargeHypo::" << chargeHypo << "\tMCCharge::" << chargeMC << "\tMeasId::" << MeasId << "\tMCTrackId::" << *itTrackMC << "\tflagGood::" << good << endl;
+			if(m_debug > 0)	cout << "Plane::" << PlaneId << "\tChargeHypo::" << chargeHypo << "\tMCCharge::" << chargeMC << "\tMeasId::" << MeasId << "\tMCTrackId::" << *itTrackMC << "\tflagGood::" << good << endl;
+			
 			if(chargeHypo == chargeMC && !good)
 			{
 				m_NClusGood.at( PlaneId )++;
@@ -1281,8 +1290,66 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 			}
 		}
 
+	}
+
+	int chargeFromTW = m_selector->GetChargeFromTW( fitTrack );
+	cout << "Charge From TW::" << chargeFromTW << endl;
+	if(chargeFromTW == -1)
+		return;
+	
+
+	m_NTWTracks++;
+
+	if(chargeFromTW != fitTrack->getCardinalRep()->getPDGCharge())
+	{
+		if(m_debug > 0)	Info("EvaluateProjectionEfficiency()", "Charge Hypo (%d) wrong, changing to measured from TW (%d)", int(fitTrack->getCardinalRep()->getPDGCharge()), chargeFromTW);
+		for(int i=0; i<fitTrack->getNumReps(); ++i)
+		{
+			if(fitTrack->getTrackRep(i)->getPDGCharge() == chargeFromTW)
+			{
+				fitTrack->setCardinalRep( i );
+				break;
+			}
+		}
+
+		double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(chargeFromTW) );
+		int A_Hypo = round(mass_Hypo/m_AMU);
+
+		TVector3 pos, mom;
+		TVectorD seed = fitTrack->getStateSeed();
+		pos.SetX(seed(0)); pos.SetY(seed(1)); pos.SetZ(seed(2));
+		if(m_debug > 1)	pos.Print();
+
+		mom.SetX(seed(3)); mom.SetY(seed(4)); mom.SetZ(seed(5));
+		if(m_debug > 1)	mom.Print();
+
+
+		mom.SetMag(TMath::Sqrt( pow(0.2*A_Hypo,2) + 2*mass_Hypo*0.2*A_Hypo ));
+		if(m_debug > 1)	mom.Print();
+
+		fitTrack->setStateSeed(pos,mom);
+
+		//change name of the particle associated to track
+		switch(chargeFromTW)
+		{
+			case 1:	*PartName = "H";	break;
+			case 2:	*PartName = "He";	break;
+			case 3:	*PartName = "Li";	break;
+			case 4:	*PartName = "Be";	break;
+			case 5:	*PartName = "B";	break;
+			case 6:	*PartName = "C";	break;
+			case 7:	*PartName = "N";	break;
+			case 8:	*PartName = "O";	break;
+			default:
+				*PartName = "fail";	break;
+		}
+	}
+	else
+	{
+		m_NTWTracksGoodHypo++;
 
 	}
+
 }
 
 

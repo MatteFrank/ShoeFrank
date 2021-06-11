@@ -273,8 +273,8 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
     
-   cluster->SetPosErrorF(fCurrentPosition);
-   cluster->SetPositionF(fCurrentPosError);
+   cluster->SetPositionF(fCurrentPosition);
+   cluster->SetPosErrorF(fCurrentPosError);
    cluster->SetEnergyLoss(tClusterPulseSum);
 
 }

@@ -14,6 +14,7 @@
 #include <array>
 #include <sys/stat.h>
 
+#include "TAGrecoManager.hxx"
 #include "TVector3.h"
 #include "TAGobject.hxx"
 #include "RectangularFinitePlane.h"
@@ -75,6 +76,8 @@ private:
 
 	map<float, vector<int> > m_zOrderingPlanes;
 	vector<float> m_itPossibleZ;
+
+	int m_debug;
 };
 
 #endif

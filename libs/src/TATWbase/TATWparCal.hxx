@@ -86,7 +86,6 @@ private:
   Double_t   fDistPrime(double tof, double eloss, double x, double fBB, double fBB_prime, double dist);
   
   Int_t      SelectProtonsFromNeutrons(float distance_Z1);
-  void       ComputeBBDistance(double edep, double tof, int tw_layer);
 
   int     fZraw;
   float   f_dist_min_Z;
@@ -102,6 +101,7 @@ public:
   inline TATWcalibrationMap* getCalibrationMap() {return fMapCal;}
   //
   //! Read from file
+  void       ComputeBBDistance(double edep, double tof, int tw_layer);
   Bool_t          FromCalibFile(const TString& name = "", Bool_t isTofcal = false, Bool_t Corr = false);
   Bool_t          FromElossTuningFile(const TString& name = "");
   Bool_t          FromFileZID(const TString& name = "", Int_t zbeam=-1);

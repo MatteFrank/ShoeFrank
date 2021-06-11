@@ -264,6 +264,9 @@ bool TATWactNtuHitMC::Action() {
 	Int_t mothId = track->GetMotherID()-1;
 	
 	Float_t distZ_MC[fZbeam]; //inf
+
+	f_parcal->ComputeBBDistance(edep,trueTof,layer);
+
         
 	Int_t Zrec_MCtrue;
 	// test algorithm in MC in a clean situation: only primary fragmentation

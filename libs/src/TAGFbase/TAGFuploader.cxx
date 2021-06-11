@@ -285,7 +285,7 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 	// 	TATWpoint* point = twPoint->GetPoint( iPoint );
 
 	// 	tmp_ch = point->GetChargeZ();
-	// 	if ( m_debug > 1 ) 
+	// 	// if ( m_debug > 1 ) 
 	// 		cout << "TAGFuploader::GetPossibleCharges  " << tmp_ch << endl;
 	// 	if ( tmp_ch > -1) {
 
@@ -294,7 +294,7 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 
 	// 	}
 
-	// // 	// check if correct MC charge... for cross check only
+	// // // 	// check if correct MC charge... for cross check only
 		
 	// }
 
@@ -304,10 +304,11 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 	for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
 
 		TAMCpart* point = m_McNtuEve->GetTrack(iPart);		
-		if ( point->GetCharge() > 0 && point->GetCharge() < 8) {
+		if ( point->GetCharge() > 0 && point->GetCharge() <= 8) {
 			if ( find( chVect->begin(), chVect->end(), point->GetCharge() ) == chVect->end() ) {
 				chVect->push_back( point->GetCharge() );
-				if ( m_debug > 1 )		cout << "TAGFuploader::GetPossibleCharges  " << point->GetCharge() << endl;
+				// if ( m_debug > 1 )		
+				cout << "TAGFuploader::GetPossibleCharges  " << point->GetCharge() << endl;
 			}
 		}
 		
@@ -481,11 +482,15 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 	if ( clus->GetPlaneView() == 0 ){
 		planarCoords(0) = hitPos.x();
-		pixReso = clus->GetPosError().X();
+		// pixReso = clus->GetPosError().X();
+		// cout << "Err MSD X: " << pixReso << endl;
+		pixReso = 0.003; //hardcoded!!!!!
 	}
 	else{
 		planarCoords(0) = hitPos.y();
-		pixReso = clus->GetPosError().Y();
+		// pixReso = clus->GetPosError().Y();
+		// cout << "Err MSD Y: " << pixReso << endl;
+		pixReso = 0.003; //hardcoded!!!!!
 		isYView = true;
 	}
 
@@ -549,20 +554,24 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	planarCoords(1) = hitPos.y();
 	TVector3 pixReso = point->GetPosErrorG();
 
-	if ( m_debug > -1 )	   pixReso.Print();
+	if ( m_debug > 1 )	   pixReso.Print();
 
 	planarCov.UnitMatrix();
 	for (int k = 0; k < 2; k++)
 	{
 		planarCov[k][k] = pixReso(k)*pixReso(k);
-		cout << pixReso(k)*pixReso(k) << endl;
+		if(m_debug > 1) 
+			cout << pixReso(k)*pixReso(k) << endl;
 	}
 
 	vector<int> mcParticlesInMeasuerement;
 	for (int nPart = 0; nPart < point->GetMcTracksN(); nPart++) {
 		mcParticlesInMeasuerement.push_back( point->GetMcTrackIdx( nPart ) );
-		cout << "TW meas::" << iMeas << "\tMCTrack::" << point->GetMcTrackIdx( nPart ) << endl;
-		point->GetPosition().Print();
+		if(m_debug > 0) 
+		{
+			cout << "TW meas::" << iMeas << "\tMCTrack::" << point->GetMcTrackIdx( nPart ) << endl;
+			point->GetPosition().Print();
+		}
 	}
 	// m_measParticleMC_collection[ iPoint ] = mcParticlesInMeasuerement;
 	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );

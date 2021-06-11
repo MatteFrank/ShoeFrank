@@ -71,7 +71,9 @@ int TAGFselector::FillTrackRepVector()	{
 	}
 	for(int i=0; i< m_chargeVect->size(); ++i)
 	{
-		// cout << "TAGFselector::FillTrackRepVector() -- charge: "<< m_chargeVect->at(i)<< endl;
+		if(m_debug > 0)
+			cout << "TAGFselector::FillTrackRepVector() -- charge: "<< m_chargeVect->at(i)<< endl;
+		
 		AbsTrackRep* rep = new RKTrackRep( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( m_chargeVect->at(i) ) );
 		m_trackRepVec.push_back( rep );
 	}
@@ -179,6 +181,7 @@ int TAGFselector::Categorize_TruthMC( )
 						momV.Print();
 					}
 					(*m_trackCategoryMap)[outName] = new Track();
+					posV.SetMag(posV.Mag()*0.99);
 					m_trackCategoryMap->at(outName)->setStateSeed(posV, momV);
 
 					m_trackCategoryMap->at(outName)->addTrackRep( new RKTrackRep( UpdatePDG::GetPDG()->GetPdgCode( pdgName.Data() ) ) );
@@ -291,8 +294,11 @@ void TAGFselector::CategorizeVT()
 				int plane = clus->GetSensorIdx();
 				int clusIdPerPlane = clus->GetClusterIdx();
 
-				if( m_debug > 1) cout << "VTX::PLANE::" << plane << endl;
-				if( m_debug > 1) cout << "VTX::CLUS_ID::" << clusIdPerPlane << endl;
+				if( m_debug > 1) 
+				{
+					cout << "VTX::PLANE::" << plane << endl;
+					cout << "VTX::CLUS_ID::" << clusIdPerPlane << endl;
+				}
 
 				// if ( m_allHitMeas->find( plane ) == m_allHitMeas->end() )									continue;
 				// if ( m_allHitMeas->at(plane).find( clusIdPerPlane ) == m_allHitMeas->at(plane).end() )		continue;
@@ -427,7 +433,7 @@ void TAGFselector::CategorizeIT()	{
 	// cout << "TAGFselector::CategorizeIT()     check2"<< endl;
 				// insert measurement in GF Track
 				if (indexOfMinY != -1){
-					cout << "Track::" << itTrack->first << "\tdistanceInY::" << distanceInY << "\tdistanceinX::" << distanceInX << endl;
+					if(m_debug > 0) cout << "ITcheck\tTrack::" << itTrack->first << "\tdistanceInY::" << distanceInY << "\tdistanceinX::" << distanceInX << endl;
 					AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> ( m_allHitMeas->at(sensorMatch).at(indexOfMinY) ))->clone();
 					(itTrack->second)->insertMeasurement( hitToAdd );
 					// (itTrack->second)->insertPoint( new genfit::TrackPoint(hitToAdd, (itTrack->second)) );
@@ -488,26 +494,41 @@ void TAGFselector::CategorizeMSD()	{
 		int maxMSDdetPlane = m_SensorIDMap->GetMaxFitPlane("MSD");
 		int minMSDdetPlane = m_SensorIDMap->GetMinFitPlane("MSD");
 
-// cout << "TAGFselector::CategorizeMSD()     MSDcheck2"<< endl;
 		//RZ: SET STATE SEED
+		//Pos seed: take 
 		TVector3 pos = TVector3(0,0,0);
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
 		pos.SetX(firstTrackMeas->getRawHitCoords()(0));
 		pos.SetY(firstTrackMeas->getRawHitCoords()(1));
 		pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
-		cout << "***POS***" << endl;
-		pos.Print();
-		pos = pos + m_trackSlopeMap[itTrack->first]*( -pos.Z() );
-		pos.Print();
+		
+		if(m_debug > 0)
+		{
+			cout << "***POS SEED***\nVTX: ";
+			pos.Print();
+		}
 
+		pos = pos - m_trackSlopeMap[itTrack->first]*pos.Z();
+
+		if(m_debug > 0)
+		{
+			cout << "TGT: ";
+			pos.Print();
+		}
+
+		//Set mom seed for extrapolation: use track slope and then scale for particle mass hypo with beta of the primary
 		TVector3 mom = m_trackSlopeMap[itTrack->first];
-		cout << "momSlope" << endl;
-		mom.Print();
+		
+		if(m_debug > 0)
+		{
+			cout << endl << "***MOM SEED***\nDIR: ";
+			mom.Print();
+		}
 
 		m_fitter_extrapolation->setMaxIterations(1);
 		float chi2 = 10000;
 		int idCardRep = -1;
-		cout << "\nSelectorKalmanGF::CategorizeMSD()  --  number of Reps = "<< itTrack->second->getNumReps() <<endl;
+		if(m_debug > 0)	cout << "\nSelectorKalmanGF::CategorizeMSD()  --  number of Reps = "<< itTrack->second->getNumReps() <<endl;
 
 		for(int repId = 0; repId < itTrack->second->getNumReps(); ++repId)
 		{
@@ -516,20 +537,32 @@ void TAGFselector::CategorizeMSD()	{
 			double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(Z_Hypo) );
 			int A_Hypo = round(mass_Hypo/m_AMU);
 
-			cout << "Z_Hypo::" << Z_Hypo << "\tA_Hypo::" << A_Hypo << endl;
+			if(m_debug > 0)	cout << "Z_Hypo::" << Z_Hypo << "\tA_Hypo::" << A_Hypo << endl;
 
 			mom.SetMag(TMath::Sqrt( pow(0.2*A_Hypo,2) + 2*mass_Hypo*0.2*A_Hypo ));
-			cout << "momScaled" << endl;
-			mom.Print();
+
+			if(m_debug > 0)
+			{
+				cout << "MOM: ";
+				mom.Print();
+			}
 
 			testTrack->setStateSeed(pos, mom);
 			try
 			{
 				m_fitter_extrapolation->processTrackWithRep( testTrack, testTrack->getTrackRep(repId) );
-				cout << "Processed" << endl;
+				
+				if(m_debug > 0)	cout << "Processed" << endl;
+				
 				TVector3 guessOnMSD = ExtrapolateToOuterTracker( testTrack, m_SensorIDMap->GetMinFitPlane("MSD"), repId);
-				guessOnMSD.Print();
-				cout << "\t\t charge = " << Z_Hypo << "  chi2 = " << m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) ) << endl;
+				
+				if(m_debug > 0)
+				{
+					cout << "GuessOnMSD: ";
+					guessOnMSD.Print();
+					cout << "\t\t charge = " << Z_Hypo << "  chi2 = " << m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) ) << endl;
+				}
+
 				if(chi2 > m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) ))
 				{
 					chi2 = m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) );
@@ -539,7 +572,7 @@ void TAGFselector::CategorizeMSD()	{
 			catch (genfit::Exception& e)
 			{
 				std::cerr << e.what();
-				std::cerr << "Exception, next rep" << std::endl;
+				std::cerr << "MSD extrapolation: Exception, next rep" << std::endl;
 				continue;
 			}
 			delete testTrack;
@@ -564,8 +597,11 @@ void TAGFselector::CategorizeMSD()	{
 		itTrack->second->setStateSeed(pos, mom);
 		m_fitter_extrapolation->processTrackWithRep( itTrack->second, itTrack->second->getCardinalRep() );
 
-		itTrack->second->getCardinalRep()->Print();
-		cout << "Charge::" << itTrack->second->getCardinalRep()->getPDGCharge() << endl;
+		if(m_debug > 0)
+		{
+			itTrack->second->getCardinalRep()->Print();
+			cout << "CardRep charge::" << itTrack->second->getCardinalRep()->getPDGCharge() << endl;
+		}
 
 		//------------------------------------------------------------------------------------------
 
@@ -588,7 +624,7 @@ void TAGFselector::CategorizeMSD()	{
 			}
 
 			for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
-			cout << "TAGFselector::CategorizeMSD()     MSDcheck4"<< endl;
+			// cout << "TAGFselector::CategorizeMSD()     MSDcheck4"<< endl;
 				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselector::Categorize_dataLike() --> ERROR MSD" <<endl, exit(0);
 
 				//RZ: CHECK -> AVOID ERRORS
@@ -608,13 +644,13 @@ void TAGFselector::CategorizeMSD()	{
 
 				// find hit at minimum distance
 				if ( distanceFromHit < distanceInY ){
-					cout << "Plane::" << sensorMatch << "\tTrack::" << itTrack->first << "\tdistanceFromHit::" << distanceFromHit << "\tStrip::" << strip << endl;
+					if(m_debug > 0) cout << "MSDcheck\tPlane::" << sensorMatch << "\tTrack::" << itTrack->first << "\tdistanceFromHit::" << distanceFromHit << "\tStrip::" << strip << endl;
 					distanceInY = distanceFromHit;
 					indexOfMinY = count;
 				}
 				count++;
 			}
-cout << "TAGFselector::CategorizeMSD()     MSDcheck5"<< endl;
+			// cout << "TAGFselector::CategorizeMSD()     MSDcheck5"<< endl;
 			// insert measurementi in GF Track
 			if (indexOfMinY != -1){
 
@@ -625,7 +661,7 @@ cout << "TAGFselector::CategorizeMSD()     MSDcheck5"<< endl;
 			}
 
 		} // end loop MSD planes
-cout << "TAGFselector::CategorizeMSD()     MSDcheck6"<< endl;
+		// cout << "TAGFselector::CategorizeMSD()     MSDcheck6"<< endl;
 		// if (findMSD < 5)
 		// {
 		// 	delete itTrack->second;
@@ -663,7 +699,7 @@ void TAGFselector::CategorizeTW()
 			continue;
 		}
 
-		if( m_debug > -1) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << endl;
+		if( m_debug > 0) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << endl;
 
 		//calculate distance TW point
 		double TWdistance = 4.;
@@ -683,7 +719,7 @@ void TAGFselector::CategorizeTW()
 			double distanceFromHit = sqrt( ( guessOnTW.X() - (*it)->getRawHitCoords()(0) )*( guessOnTW.X() - (*it)->getRawHitCoords()(0) ) +
 					( guessOnTW.Y() - (*it)->getRawHitCoords()(1) )*( guessOnTW.Y() - (*it)->getRawHitCoords()(1) ) );
 			
-			if( m_debug > 1) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< endl;
+			if( m_debug > 0) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< endl;
 
 			if ( distanceFromHit < TWdistance )	{
 				TWdistance = distanceFromHit;
@@ -698,12 +734,6 @@ void TAGFselector::CategorizeTW()
 			(itTrack->second)->insertMeasurement( hitToAdd );
 			// (itTrack->second)->insertPoint( new genfit::TrackPoint(hitToAdd, (itTrack->second)) );
 		}
-
-		// int chargeFromTW = GetChargeFromTW( itTrack->second );
-
-		//RZ: TO DO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-		// if(charge == -1 ) do cose
-
 	}
 	
 }
@@ -720,7 +750,7 @@ void TAGFselector::FillTrackCategoryMap()  {
 	{
 		if( itTrack->second->getNumPointsWithMeasurement() < 9 )
 		{
-			// if( m_debug > 1 )
+			// if( m_debug > 0 )
 				Info("FillTrackCategoryMap()", "Skipped Track %d with %d TrackPoints with measurement!!", itTrack->first, itTrack->second->getNumPointsWithMeasurement());
 			continue;
 		}
@@ -795,16 +825,61 @@ void TAGFselector::FillTrackCategoryMap()  {
 int TAGFselector::GetChargeFromTW(Track* trackToCheck){
 
 	int charge = -1;
-	TATWpoint* twpoint = 0x0;
-	for (unsigned int jTracking = 0; jTracking < trackToCheck->getNumPointsWithMeasurement(); ++jTracking){
+	// TATWpoint* twpoint = 0x0;
+	// for (unsigned int jTracking = 0; jTracking < trackToCheck->getNumPointsWithMeasurement(); ++jTracking){
 
-		if ( static_cast<genfit::PlanarMeasurement*>(trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId() != m_SensorIDMap->GetFitPlaneTW() ) continue;
+	// 	if ( static_cast<genfit::PlanarMeasurement*>(trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId() != m_SensorIDMap->GetFitPlaneTW() ) continue;
 		
-		int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
+	// 	int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
 
-		twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) );
+	// 	twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) );
 
-		charge = twpoint->GetChargeZ();
+	// 	charge = twpoint->GetChargeZ();
+	// }
+
+	int MeasId = trackToCheck->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
+
+	if(m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
+		return -1;
+	
+	if(m_measParticleMC_collection->at(MeasId).size() == 1)
+	{
+		return m_McNtuEve->GetTrack( m_measParticleMC_collection->at(MeasId).at(0) )->GetCharge();
+	}
+	else
+	{
+		map<int,int> ChargeOccMap;
+
+		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
+		{
+			if( m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() < 1 ||  m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() > 8)
+				continue;
+			ChargeOccMap[ m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() ] = 1;
+		}
+
+		for(int i = 0; i < trackToCheck->getNumPointsWithMeasurement() - 1; ++i)
+		{
+			MeasId = trackToCheck->getPointWithMeasurement(i)->getRawMeasurement()->getHitId();
+			for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
+			{
+				charge = m_McNtuEve->GetTrack( *itTrackMC )->GetCharge();
+				if(ChargeOccMap.find(charge) == ChargeOccMap.end()) 
+					continue;
+			
+				ChargeOccMap[ charge ]++;
+			}
+		}
+		
+		int occ = 0;
+
+		for(map<int,int>::iterator itMap = ChargeOccMap.begin(); itMap != ChargeOccMap.end(); ++itMap)
+		{
+			if(itMap->second > occ)
+			{
+				occ = itMap->second;
+				charge = itMap->first;
+			}
+		}
 	}
 
 	return charge;
