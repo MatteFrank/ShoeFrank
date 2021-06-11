@@ -205,7 +205,7 @@ void TAMSDactNtuHitMC::FillStrips(Int_t sensorId, Int_t hitId,  Int_t trackIdx)
           fMap[p] = strip;
        } else {
           strip = fMap[p];
-          strip->SetValue(strip->GetValue()+digiMap[stripId]);
+          strip->SetEnergyLoss(strip->GetEnergyLoss()+digiMap[stripId]);
        }
        
       Int_t genPartID = trackIdx;

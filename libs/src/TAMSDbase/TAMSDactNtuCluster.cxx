@@ -251,16 +251,16 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
     TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
-    tCorTemp = strip->GetPosition()*strip->GetValue();
+    tCorTemp = strip->GetPosition()*strip->GetEnergyLoss();
     tCorrection  += tCorTemp;
-    tClusterPulseSum  += strip->GetValue();
+    tClusterPulseSum  += strip->GetEnergyLoss();
   }
   
   pos = tCorrection*(1./tClusterPulseSum);
   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
     TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
-    tCorrection2 = strip->GetValue()*(strip->GetPosition()-pos)*(strip->GetPosition()-pos);
+    tCorrection2 = strip->GetEnergyLoss()*(strip->GetPosition()-pos)*(strip->GetPosition()-pos);
     posErr += tCorrection2;
   }
   
