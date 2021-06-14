@@ -65,7 +65,9 @@ namespace details{
         using data_type = TAVTbaseCluster; //to be noted
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = double;
+        constexpr static uint8_t shift = 3;
         constexpr static double default_cut_value{15};
+//        constexpr static double default_cut_value{26};
     };
     struct it_tag{
         using vector_matrix =  matrix<2, 1>;
@@ -74,7 +76,10 @@ namespace details{
         using data_type = TAITcluster;
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = std::array<double, 2>;
+        static constexpr uint8_t shift = 2;
+//        constexpr static std::array<double, 2> default_cut_value{29,29};
         constexpr static std::array<double, 2> default_cut_value{33,38};
+
     };
     struct msd_tag{
         using vector_matrix =  matrix<1, 1> ;
@@ -83,7 +88,10 @@ namespace details{
         using data_type = TAMSDcluster;
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = std::array<double, 3>;
+        static constexpr uint8_t shift = 1;
+//        constexpr static std::array<double, 3> default_cut_value{1,2,4};
         constexpr static std::array<double, 3> default_cut_value{13,18,23};
+
     };
     struct tof_tag{
         using vector_matrix =  matrix<2, 1>;
@@ -92,7 +100,9 @@ namespace details{
         using data_type = TATWpoint;
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = double;
+        static constexpr uint8_t shift = 0;
         constexpr static double default_cut_value{2.2};
+//        constexpr static double default_cut_value{3};
     };
     
     
