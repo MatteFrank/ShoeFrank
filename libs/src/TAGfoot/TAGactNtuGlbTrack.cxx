@@ -41,6 +41,7 @@
 #include "grkn_data.hpp"
 #include "stepper.hpp"
 #include "ukf.hpp"
+#include "flag_set.hpp"
 
 
 /*!
@@ -133,25 +134,84 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     auto * clusterTW_hc = static_cast<TATWntuPoint*>( fpTwPoint->Object() );
     auto * geoTW_h = static_cast<TATWparGeo*>( fpTofGeoMap->Object() );
     
+    auto ode = make_ode< matrix<2,1>, 2>( model{ GetFootField() } );
+    auto stepper = make_stepper<data_grkn56>( std::move(ode) );
+    auto ukf = make_ukf<state>( std::move(stepper) );
+    
+    uint8_t opcode{ flag_set<details::vertex_tag>{} + flag_set<details::tof_tag>{} };
+    if( clusterIT_hc && geoIT_h ){ opcode |= flag_set<details::it_tag>{}; }
+    if( clusterMSD_hc && geoMSD_h ){ opcode |= flag_set<details::msd_tag>{}; }
+    switch( opcode ){
+        case flag_set<details::vertex_tag, details::it_tag, details::tof_tag>{}: {
+            auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
+                                                                             geoVTX_h) )
+                            .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h) )
+                            .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
+                            .finish();
+            
+            
+            
+
+            return new_TATOEactGlb(
+                        std::move(ukf),
+                        std::move(list),
+                        static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                        static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
+                        GetFootField(), true
+                                       );
+            
+        }
+        case flag_set<details::vertex_tag, details::msd_tag, details::tof_tag>{}: {
+            auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
+                                                                             geoVTX_h) )
+                            .add( detector_properties<details::msd_tag>(clusterMSD_hc, geoMSD_h) )
+                            .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
+                            .finish();
+            
+            
+            
+
+            return new_TATOEactGlb(
+                        std::move(ukf),
+                        std::move(list),
+                        static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                        static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
+                        GetFootField(), true
+                                       );
+        }
+        case flag_set<details::vertex_tag, details::it_tag, details::msd_tag, details::tof_tag>{}: {
+            auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
+                                                                             geoVTX_h) )
+                            .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h) )
+                            .add( detector_properties<details::msd_tag>(clusterMSD_hc, geoMSD_h) )
+                            .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
+                            .finish();
+            
+            
+            
+
+            return new_TATOEactGlb(
+                        std::move(ukf),
+                        std::move(list),
+                        static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                        static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
+                        GetFootField(), true
+                                       );
+        }
+    }
     
     auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
                                                                      geoVTX_h) )
-                    .add( detector_properties<details::it_tag>(clusterIT_hc, geoIT_h) )
-                    .add( detector_properties<details::msd_tag>(clusterMSD_hc, geoMSD_h) )
                     .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
                     .finish();
     
     
-    auto ode = make_ode< matrix<2,1>, 2>( model{ GetFootField() } );
-    auto stepper = make_stepper<data_grkn56>( std::move(ode) );
-    auto ukf = make_ukf<state>( std::move(stepper) );
-
     return new_TATOEactGlb(
                 std::move(ukf),
                 std::move(list),
                 static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
                 static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
-                GetFootField(), false
+                GetFootField(), true
                                );
 }
 
