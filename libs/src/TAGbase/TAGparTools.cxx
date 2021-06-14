@@ -115,7 +115,6 @@ void TAGparTools::ReadItem(TArrayC& array, const Char_t delimiter)
    // From a string of the form "i-j;k;l;m-n" returns an integer array
    // containing all the integers from i to j, then k, l and then from m to n.
    
-   array.Set(3000);
    array.Reset(0);
    
    TString key;
