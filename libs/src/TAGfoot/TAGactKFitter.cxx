@@ -1021,17 +1021,22 @@ void TAGactKFitter::PrintPurity() {
 
 	int k = 0;
 
-	for ( map<string, int>::iterator itTotNum = m_nConvergedTracks_all.begin(); itTotNum != m_nConvergedTracks_all.end(); itTotNum++ ) {
+	for(vector<string>::iterator itPart = m_Particles.begin(); itPart != m_Particles.end(); ++itPart)
+	{
+		if(m_nConvergedTracks_all.find(*itPart) == m_nConvergedTracks_all.end())
+			continue;
+		
 		k++;
-		float eff = (float)m_nConvergedTracks_matched[ (*itTotNum).first ] / (*itTotNum).second;
-		float kk = (float)m_nConvergedTracks_matched[ (*itTotNum).first ];
-		float nn = (*itTotNum).second;
+
+		float kk = (float)m_nConvergedTracks_matched[ *itPart ];
+		float nn = m_nConvergedTracks_all[ *itPart ];
+		float eff = (float)kk/nn;
 		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
-		if ( m_debug > -1 )		cout << "Purity " << (*itTotNum).first << " = " << eff << "  " << m_nConvergedTracks_matched[ (*itTotNum).first ]<< " " << (*itTotNum).second << endl;
+		if ( m_debug > -1 )		cout << "Purity " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
 		h_purity->SetBinContent(k, eff);
 		h_purity->SetBinError(k, sqrt(variance));
 
-		h_purity->GetXaxis()->SetBinLabel(k, (*itTotNum).first.c_str() );
+		h_purity->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
 
 	AddHistogram(h_purity);
@@ -1046,23 +1051,28 @@ void TAGactKFitter::PrintPurity() {
 //----------------------------------------------------------------------------------------------------
 void TAGactKFitter::PrintEfficiency() {
 
-  int nCollection = m_nSelectedTrackCandidates.size();
-  h_trackEfficiency = new TH1F( "TrackEfficiency", "TrackEfficiency", nCollection, 0, nCollection );
+	int nCollection = m_nSelectedTrackCandidates.size();
+	h_trackEfficiency = new TH1F( "TrackEfficiency", "TrackEfficiency", nCollection, 0, nCollection );
 
-  int k = 0;
+	int k = 0;
 
-  for ( map<string, int>::iterator itTotNum = m_nSelectedTrackCandidates.begin(); itTotNum != m_nSelectedTrackCandidates.end(); itTotNum++ ) {
-    k++;
-    float eff = (float)m_nConvergedTracks_all[ (*itTotNum).first ] / (*itTotNum).second;
-    float kk = (float)m_nConvergedTracks_all[ (*itTotNum).first ];
-    float nn = (*itTotNum).second;
-    float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
-    if ( m_debug > -1 )		cout << "Efficiency " << (*itTotNum).first << " = " << eff << "  " << m_nConvergedTracks_all[ (*itTotNum).first ]<< " " << (*itTotNum).second << endl;
-    h_trackEfficiency->SetBinContent(k, eff);
-    h_trackEfficiency->SetBinError(k, sqrt(variance));
+	for(vector<string>::iterator itPart = m_Particles.begin(); itPart != m_Particles.end(); ++itPart)
+	{
+		if(m_nConvergedTracks_all.find(*itPart) == m_nConvergedTracks_all.end())
+			continue;
+		
+		k++;
 
-    h_trackEfficiency->GetXaxis()->SetBinLabel(k, (*itTotNum).first.c_str() );
-  }
+		float kk = (float)m_nConvergedTracks_all[ *itPart ];
+		float nn = m_nSelectedTrackCandidates[ *itPart ];
+		float eff = (float)kk/nn;
+		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
+		if ( m_debug > -1 )		cout << "Purity " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
+		h_trackEfficiency->SetBinContent(k, eff);
+		h_trackEfficiency->SetBinError(k, sqrt(variance));
+
+		h_trackEfficiency->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
+	}
 
   h_trackEfficiency->SetTitle(0);
   h_trackEfficiency->SetStats(0);

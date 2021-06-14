@@ -495,7 +495,6 @@ void TAGFselector::CategorizeMSD()	{
 		int minMSDdetPlane = m_SensorIDMap->GetMinFitPlane("MSD");
 
 		//RZ: SET STATE SEED
-		//Pos seed: take 
 		TVector3 pos = TVector3(0,0,0);
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
 		pos.SetX(firstTrackMeas->getRawHitCoords()(0));
@@ -504,16 +503,14 @@ void TAGFselector::CategorizeMSD()	{
 		
 		if(m_debug > 0)
 		{
-			cout << "***POS SEED***\nVTX: ";
-			pos.Print();
+			cout << "***POS SEED***\nVTX: "; pos.Print();
 		}
 
 		pos = pos - m_trackSlopeMap[itTrack->first]*pos.Z();
 
 		if(m_debug > 0)
 		{
-			cout << "TGT: ";
-			pos.Print();
+			cout << "TGT: "; pos.Print();
 		}
 
 		//Set mom seed for extrapolation: use track slope and then scale for particle mass hypo with beta of the primary
@@ -521,8 +518,7 @@ void TAGFselector::CategorizeMSD()	{
 		
 		if(m_debug > 0)
 		{
-			cout << endl << "***MOM SEED***\nDIR: ";
-			mom.Print();
+			cout << endl << "***MOM SEED***\nDIR: "; mom.Print();
 		}
 
 		m_fitter_extrapolation->setMaxIterations(1);
@@ -543,8 +539,7 @@ void TAGFselector::CategorizeMSD()	{
 
 			if(m_debug > 0)
 			{
-				cout << "MOM: ";
-				mom.Print();
+				cout << "MOM: "; mom.Print();
 			}
 
 			testTrack->setStateSeed(pos, mom);
@@ -748,7 +743,7 @@ void TAGFselector::FillTrackCategoryMap()  {
 
 	for(map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
 	{
-		if( itTrack->second->getNumPointsWithMeasurement() < 9 )
+		if( itTrack->second->getNumPointsWithMeasurement() < 13 )
 		{
 			// if( m_debug > 0 )
 				Info("FillTrackCategoryMap()", "Skipped Track %d with %d TrackPoints with measurement!!", itTrack->first, itTrack->second->getNumPointsWithMeasurement());
@@ -1038,9 +1033,7 @@ TString TAGFselector::GetRecoTrackName(Track* tr)
 	for(map<TString, Track*>::iterator it = m_trackCategoryMap->begin(); it != m_trackCategoryMap->end(); ++it)
 	{
 		if(it->second == tr)
-		{
 			return it->first;
-		}
 	}
 	Error("GetRecoTrackName()", "Track not found in Category Map!!");
 	throw -1;
