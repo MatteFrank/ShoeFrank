@@ -77,6 +77,7 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
          cout << "Maximum number of pixels per cluster: "<< fSensorParameter[p].MaxNofPixelsInCluster << endl;
       
       // read dead pixel map
+      fSensorParameter[p].DeadStripMap.Set(640);
       ReadItem(fSensorParameter[p].DeadStripMap);
       if(FootDebugLevel(1)) {
          cout << "Dead Strips: ";

@@ -20,98 +20,97 @@
    }    
 
    // comes from configure
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TABMbase/"; printf("- Add %s to the include path \n",tmp.Data());
-   tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data()); 
-
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TAMSDbase/"; printf("- Add %s to the include path \n",tmp.Data());
-   tmp.Prepend(" .include ");
-   gROOT->ProcessLine(tmp.Data());
-   
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TAGfoot/"; printf("- Add %s to the include path \n",tmp.Data());
-   tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data()); 
-   
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TAIRbase/"; printf("- Add %s to the include path \n",tmp.Data());
-   tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data());
-
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TASTbase/"; printf("- Add %s to the include path \n",tmp.Data());
+   tmp = "@TAG_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
 
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TADIbase/"; printf("- Add %s to the include path \n",tmp.Data());
+   tmp = "@TAMC_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
 
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TAEDbase/"; printf("- Add %s to the include path \n",tmp.Data());
+   tmp = "@TADI_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
 
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TATWbase/"; printf("- Add %s to the include path \n",tmp.Data());
-   tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data()); 
-   
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TACAbase/"; printf("- Add %s to the include path \n",tmp.Data());
-   tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data()); 
-   
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TAGbase/"; printf("- Add %s to the include path \n",tmp.Data());
-   tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data());
-   
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TAMCbase/"; printf("- Add %s to the include path \n",tmp.Data());
-   tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data());
-   
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TAITbase/"; printf("- Add %s to the include path \n",tmp.Data());
-   tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data());
-   
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TAVTbase/"; printf("- Add %s to the include path \n",tmp.Data());
-   tmp.Prepend(" .include "); 
-   gROOT->ProcessLine(tmp.Data());
-
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TATOEbase/"; printf("- Add %s to the include path \n",tmp.Data());
+   tmp = "@TADAQ_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
 
-   tmp = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@";
-   tmp += "/TAGFbase/"; printf("- Add %s to the include path \n",tmp.Data());
+   tmp = "@TAAPI_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TAST_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TAIR_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TABM_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TAVT_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TAIT_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TAMSD_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TATW_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TACA_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TAED_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TATOE_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TAGF_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TOE_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+
+   tmp = "@TAFO_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
 
    tmp = "@GENFIT_INCLUDE_ROOT@";
    printf("- Add GenFit to the include path \n");
    gSystem->AddIncludePath(tmp.Data());
-   
-   gSystem->Load("libEve.so");
-   gSystem->Load("libgenfit2.so");
-
-   gSystem->Load("libTAGbase.so");
-   gSystem->Load("libTAMCbase.so");
-   gSystem->Load("libTASTase.so");
-   gSystem->Load("libTABMbase.so");
-   gSystem->Load("libTAVTbase.so");
-   gSystem->Load("libTAITbase.so");
-   gSystem->Load("libTAMSDbase.so");
-   gSystem->Load("libTATWbase.so");
-   gSystem->Load("libTACAbase.so");
-   gSystem->Load("libTATOEbase.so");
-   gSystem->Load("libTAGFbase.so");
-   gSystem->Load("libTAGfoot.so");
 }
