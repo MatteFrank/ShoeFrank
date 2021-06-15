@@ -95,8 +95,8 @@ TVector3 GetMomentumAtZ( TAGtrack* track_ph, double z ) {
     os = stepper.force_step( std::move(os), step );
     
     return TVector3{
-        os.state(details::order_tag<0>{})(0,0),
-        os.state(details::order_tag<0>{})(1,0),
-        os.state(details::order_tag<0>{})(2,0)
+        os.state(details::order_tag<0>{})(0,0) / 1000,
+        os.state(details::order_tag<0>{})(1,0) / 1000,
+        os.state(details::order_tag<0>{})(2,0) / 1000
     };
 }
