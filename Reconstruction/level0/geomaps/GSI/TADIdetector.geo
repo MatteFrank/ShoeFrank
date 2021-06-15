@@ -8,8 +8,7 @@
 // Parameters of the magnets
 // Types 0 const, 1 function, 2 map file
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Magnets:     2
-Magnets:     2
+Magnets:     0
 Type:        0
 
 MagValueX:   0.0     MagValueX:     0.0   MagValueX:     0.0
