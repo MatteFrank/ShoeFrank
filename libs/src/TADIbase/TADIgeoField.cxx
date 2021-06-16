@@ -32,7 +32,9 @@ TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
     
     TString fullFileName = fpDiGeoMap->GetMapName();
     FromFile(fullFileName);
-  }
+     
+  } else if(fpDiGeoMap->GetType() == 0)
+     Info("TADIgeoField()", "Constant field with value (%.1f %.1f %.1f)\n", fpDiGeoMap->GetMagCstValue()[0], fpDiGeoMap->GetMagCstValue()[1], fpDiGeoMap->GetMagCstValue()[2]);
 }
 
 //______________________________________________________________________________

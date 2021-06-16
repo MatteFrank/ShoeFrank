@@ -58,7 +58,7 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
   }else
      filename = inputname;
 
-  Info("FromFile", "Loading BM T0 calibration from file: %s\n", filename.Data());
+  Info("FromFile", "Open file: %s for T0 calibration\n", filename.Data());
 
   gSystem->ExpandPathName(filename);
   infile.open(filename,ios::in);
