@@ -192,7 +192,7 @@ bool TATWactNtuHitMC::Action() {
     pNtuStMC = (TAMCntuHit*) fpNtuStMC->Object();
     pNtuEve  = (TAMCntuPart*) fpNtuEve->Object();
   } else {
-    pNtuMC   = TAMCflukaParser::GetTofHits(fEventStruct, fpNtuMC);
+    pNtuMC   = TAMCflukaParser::GetTwHits(fEventStruct, fpNtuMC);
     pNtuStMC = TAMCflukaParser::GetStcHits(fEventStruct, fpNtuStMC);
     pNtuEve  = TAMCflukaParser::GetTracks(fEventStruct, fpNtuEve);
   }

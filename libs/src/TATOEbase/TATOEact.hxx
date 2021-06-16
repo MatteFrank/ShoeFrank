@@ -1024,7 +1024,7 @@ private:
 //            double additional_time = (target_position_m - st_position_m)/beam_speed;
             double additional_time = (cluster_c.front().evaluation_point - st_position_m)/beam_speed;
         
-            double speed = total_step_length/(static_cast<TATWpoint const *>(cluster_c.back().data)->GetTime() - additional_time);
+            double speed = total_step_length/(static_cast<TATWpoint const *>(cluster_c.back().data)->GetToF() - additional_time);
             double beta = speed/30;
             double gamma = 1./sqrt(1 - pow(beta, 2));
             double momentum = gamma * 938 * track.particle.mass * beta;
@@ -1316,7 +1316,7 @@ private:
 //            double additional_time = (target_position_m - st_position_m)/beam_speed;
             double additional_time = (cluster_c.front().evaluation_point - st_position_m)/beam_speed;
 
-            double tof = (static_cast<TATWpoint const *>(cluster_c.back().data)->GetTime() - additional_time);
+            double tof = (static_cast<TATWpoint const *>(cluster_c.back().data)->GetToF() - additional_time);
             double speed = arc_length/tof;
             double beta = speed/30;
             double gamma = 1./sqrt(1 - pow(beta, 2));

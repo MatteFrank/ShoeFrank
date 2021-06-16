@@ -40,7 +40,7 @@ private:
 
    Double32_t  fTof1;          // ToF in the scintillator bars layer 1
    Double32_t  fTof2;          // ToF in the scintillator bars layer 2
-   Double32_t  fTime;          // for the moment I take the row time
+   Double32_t  fToF;           // ToF
    Int_t       fMatchCalIdx;   // Index of Calorimeter cluster matched (-1 if not)
   
    Int_t       fLayer;         // layer with more hits in the event
@@ -73,7 +73,7 @@ public:
   Double_t  GetTof1()         const  { return fTof1;                   }
   Double_t  GetTof2()         const  { return fTof2;                   }
   Double_t  GetMeanTof()      const  { return (fTof1+fTof2)/2.;        }
-  Double_t  GetTime()         const  { return fTime;                   }
+  Double_t  GetToF()          const  { return fToF;                   }
   Int_t     GetMatchCalIdx()  const  { return fMatchCalIdx;            }
   Int_t     GetMainLayer()    const  { return fLayer;                  }
   Int_t     GetPointMatchMCtrkID()  const  { return fId;               }
@@ -89,6 +89,7 @@ public:
   void      SetPointMatchMCtrkID(Int_t id) { fId = id;                 }
   void      SetChargeZ(Int_t z)            { fChargeZ = z;             }
   void      SetChargeZProba(Double_t p)    { fChargeZProba = p;        }
+  void      SetToF(Double_t tof)           { fToF = tof;               }
   
   void      Clear(Option_t* opt);
   
