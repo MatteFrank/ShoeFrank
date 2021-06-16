@@ -37,6 +37,7 @@ private:
 	  TString   Shape;    // Target shape
 	  TVector3  Size;     // Target size
 	  TString   Material; // Target material
+     Float_t   AtomicMass;    // A of the target
      Float_t   Density;  // Target density
      Float_t   ExcEnergy; // Target mean excitation energy
      TVector3  Position; // Target position
@@ -48,6 +49,7 @@ private:
    struct InsertParameter_t : public TObject {
       Int_t     InsertIdx;
       TString   Material;
+      Float_t   AtomicMass;         
       TString   Shape;
       TVector3  Size;
       TVector3  Position;
