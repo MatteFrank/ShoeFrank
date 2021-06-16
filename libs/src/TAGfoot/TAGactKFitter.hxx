@@ -53,6 +53,10 @@
 
 // #include "TAGparGeo.hxx"
 
+#include "TASTparGeo.hxx"
+#include "TABMparGeo.hxx"
+#include "TACAparGeo.hxx"
+
 #include "TADIparGeo.hxx"
 
 // #include "TAVTparGeo.hxx"
@@ -241,12 +245,15 @@ private:
 	map <int, vector<AbsMeasurement*> > m_hitCollectionToFit_dataLike;
 	vector<AbsMeasurement*> m_allHitsInMeasurementFormat;
 
+	shared_ptr<TASTparGeo> m_ST_geo;
+	shared_ptr<TABMparGeo> m_BM_geo;
 	shared_ptr<TAGparGeo> m_TG_geo;
 	shared_ptr<TADIparGeo> m_DI_geo;
 	shared_ptr<TAVTparGeo> m_VT_geo;
 	shared_ptr<TAITparGeo> m_IT_geo;
 	shared_ptr<TAMSDparGeo> m_MSD_geo;
 	shared_ptr<TATWparGeo> m_TW_geo;
+	shared_ptr<TACAparGeo> m_CA_geo;
 
 	TGeoVolume* m_TopVolume;          // top volume of geometry
 

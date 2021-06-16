@@ -39,11 +39,11 @@ int TAGFselector::Categorize( ) {
 	// fill m_mapTrack
 	if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" ){
 		if ( !TAGrecoManager::GetPar()->IsMC() )		Error("TAGactKFitter::Action()", "Asked TrueParticle tracking but running not on MC." ), exit(0); 
-		if(m_debug > 0) cout << "TAGFselector::Categorize_TruthMC START" << endl;
+		if(m_debug > 0) cout << "TAGFselector::Categorize_TruthMC START\n";
 		
 		Categorize_TruthMC();
 
-		if(m_debug > 0) cout << "TAGFselector::Categorize_TruthMC END" << endl;
+		if(m_debug > 0) cout << "TAGFselector::Categorize_TruthMC END\n";
 	}
 	else if ( TAGrecoManager::GetPar()->PreselectStrategy() == "Sept2020" )
 		Categorize_dataLike();
@@ -72,7 +72,7 @@ int TAGFselector::FillTrackRepVector()	{
 	for(int i=0; i< m_chargeVect->size(); ++i)
 	{
 		if(m_debug > 0)
-			cout << "TAGFselector::FillTrackRepVector() -- charge: "<< m_chargeVect->at(i)<< endl;
+			cout << "TAGFselector::FillTrackRepVector() -- charge: "<< m_chargeVect->at(i) << "\n";
 		
 		AbsTrackRep* rep = new RKTrackRep( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( m_chargeVect->at(i) ) );
 		m_trackRepVec.push_back( rep );
@@ -96,42 +96,37 @@ int TAGFselector::Categorize_TruthMC( )
 
 	if(m_debug > 0)
 	{
-		cout << "MC particles:\n" << endl;
+		cout << "MC particles:\n\n";
 		for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
 		{
 			for(int i=0; i < (it->second).size(); ++i)
 			{
-				cout << "GlobId::" << it->first << "\tId::" << i << "\tTrackId::" << it->second.at(i) << endl;
+				cout << "GlobId::" << it->first << "\tId::" << i << "\tTrackId::" << it->second.at(i) << "\n";
 			}
 		}
 	}
 
 	//Cycle on FitPlanes
-	if(m_debug > 0) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << endl;
+	if(m_debug > 0) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 	for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)
 	{
 
-		if(m_debug > 0) cout << "Plane::" << iPlane << endl;
+		if(m_debug > 0) cout << "Plane::" << iPlane << "\n";
 		
 		//Skip plane if no hit was found
 		if(m_allHitMeas->find(iPlane) == m_allHitMeas->end()){continue;}
 
-		if(m_debug > 0) cout << "Cycle on hits" << endl;
+		if(m_debug > 0) cout << "Cycle on hits\n";
 
 		int foundHit = 0;
 	
 		//Cycle on all measurements/clusters of plane
 		for(vector<AbsMeasurement*>::iterator itHit = m_allHitMeas->at(iPlane).begin(); itHit != m_allHitMeas->at(iPlane).end(); ++itHit)
-		// for(int iHit = 0; iHit < m_allHitMeas->at(iPlane).size(); ++iHit)
 		{
-			// cout << "NHits::" << m_allHitMeas->at(iPlane).size() << endl;
-			// int MeasGlobId = m_SensorIDMap->GetMeasID_eventLevel(iPlane, (*itHit)->getHitId());
 			int MeasGlobId = (*itHit)->getHitId();
-			// if ( m_SensorIDMap->GetDetNameFromMeasID( MeasGlobId ) == "TW" || m_SensorIDMap->GetDetNameFromMeasID( MeasGlobId ) == "MSD"  ) 
-				// continue;
 
 			//Cycle on all the MC particles that created that cluster/measurement
-			if(m_debug > 0) cout << "Cycle on MC particles with GlobId::" << MeasGlobId << endl;
+			if(m_debug > 0) cout << "Cycle on MC particles with GlobId::" << MeasGlobId << "\n";
 
 
 			TVector3 posV;		//global coord [cm]
@@ -171,12 +166,12 @@ int TAGFselector::Categorize_TruthMC( )
 				//Set a unique ID for the particle that will be used in the map of Genfit tracks to fit
 				outName += Form("_%d_%d", int(round(mass/m_AMU)), *itTrackMC);
 
-				if ( m_debug > 0 )		cout << "\tSelected Category: " << outName << "  flukaID=" << flukaID << "  partID="<< *itTrackMC << "  charge="<<charge << "  mass="<<mass<< endl;
+				if ( m_debug > 0 )		cout << "\tSelected Category: " << outName << "  flukaID=" << flukaID << "  partID="<< *itTrackMC << "  charge="<<charge << "  mass="<<mass<< "\n";
 
 				if(m_trackCategoryMap->find(outName) == m_trackCategoryMap->end())
 				{
 					if(m_debug > 0) {
-						cout << "Found new particle!! " << outName << endl;
+						cout << "Found new particle!! " << outName << "\n";
 						posV.Print();
 						momV.Print();
 					}
@@ -209,7 +204,7 @@ int TAGFselector::Categorize_TruthMC( )
 // Categorize tracks and representations -> data-like approach avoiding MC truth info
 int TAGFselector::Categorize_dataLike( ) {
 
-	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********" << endl;
+	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
 
 	if(!TAGrecoManager::GetPar()->IncludeVT())
 	{
@@ -219,28 +214,28 @@ int TAGFselector::Categorize_dataLike( ) {
 	else
 		CategorizeVT();
 
-	if( m_debug > 1 ) cout << "******** END OF VT CYCLE **********" << endl;
+	if( m_debug > 1 ) cout << "******** END OF VT CYCLE **********\n";
 
-	if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********" << endl;
+	if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
 	
 	if(TAGrecoManager::GetPar()->IncludeIT())
 		CategorizeIT();
 	
-	if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********" << endl;
+	if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
 
-	if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********" << endl;
+	if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
 	
 	if(TAGrecoManager::GetPar()->IncludeMSD())
 		CategorizeMSD();
 	
-	if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********" << endl;
+	if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
 
-	if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********" << endl;
+	if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
 	
 	if(TAGrecoManager::GetPar()->IncludeTW())
 		CategorizeTW();
 	
-	if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********" << endl;
+	if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
 
 	FillTrackCategoryMap();
 
@@ -258,17 +253,17 @@ void TAGFselector::CategorizeVT()
 	TVector3 pos_(0, 0, 0);		//global coord [cm]
     TVector3 mom_(0, 0, 2.);	//GeV //considering that fragments have same velocity of beam this should be changed accordingly
 
-    if ( m_debug > 1 )		cout << "TAGFselector::CategorizeVT()  --  " << vertexNumber << endl;
+    if ( m_debug > 1 )		cout << "TAGFselector::CategorizeVT()  --  " << vertexNumber << "\n";
 
 	//loop over all vertices
 	for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) {
 		vtxPD = vertexContainer->GetVertex(iVtx);
 		if (vtxPD == 0x0){
-			cout << "Vertex number " << iVtx << " seems to be empty" << endl;
+			cout << "Vertex number " << iVtx << " seems to be empty\n";
 			continue;
 		}
 
-		if ( m_debug > 0 )		cout  << "vertex number " << iVtx << " has this nr of tracks " << vtxPD->GetTracksN() <<endl;
+		if ( m_debug > 0 )		cout  << "vertex number " << iVtx << " has this nr of tracks " << vtxPD->GetTracksN() <<"\n";
 
 		//loop over tracks for each Vertex
 		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {
@@ -296,8 +291,8 @@ void TAGFselector::CategorizeVT()
 
 				if( m_debug > 1) 
 				{
-					cout << "VTX::PLANE::" << plane << endl;
-					cout << "VTX::CLUS_ID::" << clusIdPerPlane << endl;
+					cout << "VTX::PLANE::" << plane << "\n";
+					cout << "VTX::CLUS_ID::" << clusIdPerPlane << "\n";
 				}
 
 				// if ( m_allHitMeas->find( plane ) == m_allHitMeas->end() )									continue;
@@ -320,7 +315,6 @@ void TAGFselector::CategorizeVT()
 
 			}	// end cluster loop
 
-			//cout << " number of points is " << fitTrack_->getNumPointsWithMeasurement() << endl;
 			if (fitTrack_->getNumPointsWithMeasurement() > 4 || fitTrack_->getNumPointsWithMeasurement() < 3){
 				Warning("Categorize_dataLike()", "Track with %d measurements found in VTX => rejected!", fitTrack_->getNumPointsWithMeasurement());
 				// delete fitTrack_;
@@ -330,7 +324,7 @@ void TAGFselector::CategorizeVT()
 			for ( int nRep=0; nRep < m_trackRepVec.size(); nRep++) {
 				fitTrack_->addTrackRep( m_trackRepVec.at( nRep )->clone() );
 				if ( m_debug > 1 ) {
-					cout << "TAGFselector::CategorizeVT() -- rep charge = " << m_trackRepVec.at( nRep )->getPDGCharge() << endl;
+					cout << "TAGFselector::CategorizeVT() -- rep charge = " << m_trackRepVec.at( nRep )->getPDGCharge() << "\n";
 				}
 			}
 
@@ -376,18 +370,18 @@ void TAGFselector::CategorizeIT()	{
 			
 			// tmpITz = m_GeoTrafo->FromGlobalToVTLocal(m_SensorIDMap->GetFitPlane(ITnPlane)->getO()).Z();
 			tmpITz = allZinIT->at(iz);
-			// cout << "FOUND " << m_SensorIDMap->GetPlanesAtZ( tmpITz )->size() << " IT PLANES FOUND AT Z::" << tmpITz << endl;
+			// cout << "FOUND " << m_SensorIDMap->GetPlanesAtZ( tmpITz )->size() << " IT PLANES FOUND AT Z::" << tmpITz << "\n";
 			tmpExtrap = tmpVTX + m_trackSlopeMap[itTrack->first]*( tmpITz - tmpVTX.Z() );
 
 			vector<int>* planesAtZ  = m_SensorIDMap->GetPlanesAtZ( tmpITz );
-			// cout << "planes at z::" << tmpITz << " -> " << planesAtZ->size() << endl;
+			// cout << "planes at z::" << tmpITz << " -> " << planesAtZ->size() << "\n";
 
 			// select a matching plane -> CHECK!!!!!!!!!!!!!!!
 			// RZ: there is a potentially bad issue here with the bending plane!!! the intersection might be in another sensor since it is done with a linear extrapolation. Would i tbe better to only check the y? how much do we risk of f-ing this up?
 			
 
 			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); iPlane++ ) {
-				// cout << "Found plane::" << *iPlane << " at z::" << tmpITz << endl;
+				// cout << "Found plane::" << *iPlane << " at z::" << tmpITz << "\n";
 
 				double guessOnPlaneIT = tmpExtrap.Y();
 				if ( !m_SensorIDMap->GetFitPlane( *iPlane )->isInActiveY( guessOnPlaneIT ) )	
@@ -395,7 +389,7 @@ void TAGFselector::CategorizeIT()	{
 
 				// Info ("TAGFselector::CategorizeIT()", "Current IT plane %d. Candidate ID %i with vertex %i and tracklet %d", sensorMatch, (itTrack->first), (itTrack->first)/1000 , (itTrack->first)%1000  );
 
-	// cout << "TAGFselector::CategorizeIT()     check"<< endl;
+	// cout << "TAGFselector::CategorizeIT()     check\n";
 				int sensorMatch = (*iPlane);
 
 				int indexOfMinY = -1.;
@@ -405,9 +399,9 @@ void TAGFselector::CategorizeIT()	{
 				if (areLightFragments) distanceInY = .5;
 				// loop all absMeas in the found IT plane
 
-				// cout << "TAGFselector::CategorizeIT()     check1"<< endl;
+				// cout << "TAGFselector::CategorizeIT()     check1\n";
 				if ( m_allHitMeas->find( sensorMatch ) == m_allHitMeas->end() )   {
-					// cout << "TAGFselector::CategorizeIT() -- WARNING extapolated plane empty!"<<endl;
+					// cout << "TAGFselector::CategorizeIT() -- WARNING extapolated plane empty!\n";
 					// cin.get();
 					continue;
 				}
@@ -430,20 +424,22 @@ void TAGFselector::CategorizeIT()	{
 					distanceInY += .05; 
 
 				}while (indexOfMinY == -1 && distanceInY < .3);
-	// cout << "TAGFselector::CategorizeIT()     check2"<< endl;
+	// cout << "TAGFselector::CategorizeIT()     check2\n";
 				// insert measurement in GF Track
-				if (indexOfMinY != -1){
-					if(m_debug > 0) cout << "ITcheck\tTrack::" << itTrack->first << "\tdistanceInY::" << distanceInY << "\tdistanceinX::" << distanceInX << endl;
+				
+				
+				if (indexOfMinY != -1 && distanceInX < 1.){
+					if(m_debug > 0) cout << "ITcheck\tTrack::" << itTrack->first << "\tdistanceInY::" << distanceInY << "\tdistanceinX::" << distanceInX << "\n";
 					AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> ( m_allHitMeas->at(sensorMatch).at(indexOfMinY) ))->clone();
 					(itTrack->second)->insertMeasurement( hitToAdd );
 					// (itTrack->second)->insertPoint( new genfit::TrackPoint(hitToAdd, (itTrack->second)) );
 					addedMeas++;
 					
 				}
-	// cout << "TAGFselector::CategorizeIT()     check3"<< endl;
+	// cout << "TAGFselector::CategorizeIT()     check3\n";
 			}	// end loop on IT planes
 		} // end loop over z
-// cout << "TAGFselector::CategorizeIT()     check4"<< endl;
+// cout << "TAGFselector::CategorizeIT()     check4"<<\n";
 		// if(addedMeas == 0)
 		// {
 		// 	delete itTrack->second;
@@ -452,7 +448,7 @@ void TAGFselector::CategorizeIT()	{
 		// else
 			++itTrack;
 
-		// cout << "TAGFselector::CategorizeIT()     check5"<< endl;
+		// cout << "TAGFselector::CategorizeIT()     check5\n";
 
 	}	// end loop on GF Track candidates
 }
@@ -468,7 +464,7 @@ void TAGFselector::CategorizeIT()	{
 
 void TAGFselector::CategorizeMSD()	{
 
-	// cout << "TAGFselector::CategorizeMSD()     MSDcheck"<< endl;
+	// cout << "TAGFselector::CategorizeMSD()     MSDcheck\n";
 
 	// for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); itTrack++)
 	// {
@@ -477,7 +473,7 @@ void TAGFselector::CategorizeMSD()	{
 	// 		(itTrack->second)->addTrackRep( new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( m_chargeVect->at(i) ) ) );
 	// 	}
 	// }
-// cout << "TAGFselector::CategorizeMSD()     MSDcheck1"<< endl;
+// cout << "TAGFselector::CategorizeMSD()     MSDcheck1\n";
 	// ClearTrackMap();
 
 	//RZ: CHECK!!! ADDED TO AVOID ERRORS
@@ -518,13 +514,13 @@ void TAGFselector::CategorizeMSD()	{
 		
 		if(m_debug > 0)
 		{
-			cout << endl << "***MOM SEED***\nDIR: "; mom.Print();
+			cout << "\n***MOM SEED***\nDIR: "; mom.Print();
 		}
 
 		m_fitter_extrapolation->setMaxIterations(1);
 		float chi2 = 10000;
 		int idCardRep = -1;
-		if(m_debug > 0)	cout << "\nSelectorKalmanGF::CategorizeMSD()  --  number of Reps = "<< itTrack->second->getNumReps() <<endl;
+		if(m_debug > 0)	cout << "\nSelectorKalmanGF::CategorizeMSD()  --  number of Reps = "<< itTrack->second->getNumReps() <<"\n";
 
 		for(int repId = 0; repId < itTrack->second->getNumReps(); ++repId)
 		{
@@ -533,7 +529,7 @@ void TAGFselector::CategorizeMSD()	{
 			double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(Z_Hypo) );
 			int A_Hypo = round(mass_Hypo/m_AMU);
 
-			if(m_debug > 0)	cout << "Z_Hypo::" << Z_Hypo << "\tA_Hypo::" << A_Hypo << endl;
+			if(m_debug > 0)	cout << "Z_Hypo::" << Z_Hypo << "\tA_Hypo::" << A_Hypo << "\n";
 
 			mom.SetMag(TMath::Sqrt( pow(0.2*A_Hypo,2) + 2*mass_Hypo*0.2*A_Hypo ));
 
@@ -547,7 +543,7 @@ void TAGFselector::CategorizeMSD()	{
 			{
 				m_fitter_extrapolation->processTrackWithRep( testTrack, testTrack->getTrackRep(repId) );
 				
-				if(m_debug > 0)	cout << "Processed" << endl;
+				if(m_debug > 0)	cout << "Processed\n";
 				
 				TVector3 guessOnMSD = ExtrapolateToOuterTracker( testTrack, m_SensorIDMap->GetMinFitPlane("MSD"), repId);
 				
@@ -555,7 +551,7 @@ void TAGFselector::CategorizeMSD()	{
 				{
 					cout << "GuessOnMSD: ";
 					guessOnMSD.Print();
-					cout << "\t\t charge = " << Z_Hypo << "  chi2 = " << m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) ) << endl;
+					cout << "\t\t charge = " << Z_Hypo << "  chi2 = " << m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) ) << "\n";
 				}
 
 				if(chi2 > m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) ))
@@ -567,7 +563,7 @@ void TAGFselector::CategorizeMSD()	{
 			catch (genfit::Exception& e)
 			{
 				std::cerr << e.what();
-				std::cerr << "MSD extrapolation: Exception, next rep" << std::endl;
+				std::cerr << "MSD extrapolation: Exception, next rep\n";
 				continue;
 			}
 			delete testTrack;
@@ -595,7 +591,7 @@ void TAGFselector::CategorizeMSD()	{
 		if(m_debug > 0)
 		{
 			itTrack->second->getCardinalRep()->Print();
-			cout << "CardRep charge::" << itTrack->second->getCardinalRep()->getPDGCharge() << endl;
+			cout << "CardRep charge::" << itTrack->second->getCardinalRep()->getPDGCharge() << "\n";
 		}
 
 		//------------------------------------------------------------------------------------------
@@ -603,7 +599,9 @@ void TAGFselector::CategorizeMSD()	{
 		
 		for ( int MSDnPlane = minMSDdetPlane; MSDnPlane <= maxMSDdetPlane; MSDnPlane++ ) {
 			TVector3 guessOnMSD = ExtrapolateToOuterTracker( itTrack->second, MSDnPlane );
-// cout << "TAGFselector::CategorizeMSD()     MSDcheck3"<< endl;
+			if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) )
+				continue;
+// cout << "TAGFselector::CategorizeMSD()     MSDcheck3\n";
 			int indexOfMinY = -1;
 			int count = 0;
 			double distanceInY = 1;
@@ -614,12 +612,12 @@ void TAGFselector::CategorizeMSD()	{
 			// loop all absMeas in the found IT plane
 
 			if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
-				cout << "TAGFselector::CategorizeMSD() -- no MSD layer MSDnPlane "<< MSDnPlane<<endl;
+				cout << "TAGFselector::CategorizeMSD() -- no MSD layer MSDnPlane "<< MSDnPlane<<"\n";
 				continue;
 			}
 
 			for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
-			// cout << "TAGFselector::CategorizeMSD()     MSDcheck4"<< endl;
+			// cout << "TAGFselector::CategorizeMSD()     MSDcheck4\n";
 				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselector::Categorize_dataLike() --> ERROR MSD" <<endl, exit(0);
 
 				//RZ: CHECK -> AVOID ERRORS
@@ -639,13 +637,13 @@ void TAGFselector::CategorizeMSD()	{
 
 				// find hit at minimum distance
 				if ( distanceFromHit < distanceInY ){
-					if(m_debug > 0) cout << "MSDcheck\tPlane::" << sensorMatch << "\tTrack::" << itTrack->first << "\tdistanceFromHit::" << distanceFromHit << "\tStrip::" << strip << endl;
+					if(m_debug > 0) cout << "MSDcheck\tPlane::" << sensorMatch << "\tTrack::" << itTrack->first << "\tdistanceFromHit::" << distanceFromHit << "\tStrip::" << strip << "\n";
 					distanceInY = distanceFromHit;
 					indexOfMinY = count;
 				}
 				count++;
 			}
-			// cout << "TAGFselector::CategorizeMSD()     MSDcheck5"<< endl;
+			// cout << "TAGFselector::CategorizeMSD()     MSDcheck5\n";
 			// insert measurementi in GF Track
 			if (indexOfMinY != -1){
 
@@ -656,7 +654,7 @@ void TAGFselector::CategorizeMSD()	{
 			}
 
 		} // end loop MSD planes
-		// cout << "TAGFselector::CategorizeMSD()     MSDcheck6"<< endl;
+		// cout << "TAGFselector::CategorizeMSD()     MSDcheck6\n";
 		// if (findMSD < 5)
 		// {
 		// 	delete itTrack->second;
@@ -690,11 +688,11 @@ void TAGFselector::CategorizeTW()
 		catch(genfit::Exception& ex)
 		{
 			std::cerr << ex.what();
-			std::cerr << "Exception, skip track candidate" << endl;
+			std::cerr << "Exception, skip track candidate\n";
 			continue;
 		}
 
-		if( m_debug > 0) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << endl;
+		if( m_debug > 0) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << "\n";
 
 		//calculate distance TW point
 		double TWdistance = 4.;
@@ -702,7 +700,7 @@ void TAGFselector::CategorizeTW()
 		int count = 0;
 
 		if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
-			cout << "TAGFselector::CategorizeTW() -- no TW layer  "<<endl;
+			cout << "TAGFselector::CategorizeTW() -- no TW layer\n";
 			continue;
 		}
 
@@ -714,7 +712,7 @@ void TAGFselector::CategorizeTW()
 			double distanceFromHit = sqrt( ( guessOnTW.X() - (*it)->getRawHitCoords()(0) )*( guessOnTW.X() - (*it)->getRawHitCoords()(0) ) +
 					( guessOnTW.Y() - (*it)->getRawHitCoords()(1) )*( guessOnTW.Y() - (*it)->getRawHitCoords()(1) ) );
 			
-			if( m_debug > 0) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< endl;
+			if( m_debug > 0) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< "\n";
 
 			if ( distanceFromHit < TWdistance )	{
 				TWdistance = distanceFromHit;
@@ -743,20 +741,13 @@ void TAGFselector::FillTrackCategoryMap()  {
 
 	for(map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
 	{
-		if( itTrack->second->getNumPointsWithMeasurement() < 13 )
-		{
-			// if( m_debug > 0 )
-				Info("FillTrackCategoryMap()", "Skipped Track %d with %d TrackPoints with measurement!!", itTrack->first, itTrack->second->getNumPointsWithMeasurement());
-			continue;
-		}
-		
 		TString outName;
 
 
 		// int nRep = itTrack->second->getNumReps();
 		// int customCardRepID = -1;
 		// float tmp_chi2 = 666;
-		// // cout << "\nSelectorKalmanGF::FillTrackCategoryMap()  --  number of Reps = "<< nRep <<endl;
+		// // cout << "\nSelectorKalmanGF::FillTrackCategoryMap()  --  number of Reps = "<< nRep <<"\n";
 		// for (int r=0; r<nRep; r++) {
 		// 	float currentRep_Chi2 = itTrack->second->getFitStatus( itTrack->second->getTrackRep(r) )->getChi2();
 		// 	if ( tmp_chi2 > currentRep_Chi2 ){	
@@ -764,20 +755,20 @@ void TAGFselector::FillTrackCategoryMap()  {
 		// 		customCardRepID = r;
 		// 	}
 		// 	// cout << "\t\t charge = " << itTrack->second->getTrackRep(r)->getPDGCharge() 
-		// 	// 		<< "  chi2 = " << currentRep_Chi2 << endl;
+		// 	// 		<< "  chi2 = " << currentRep_Chi2 << "\n";
 		// }
 		// cout << "\t\t\t\t CARDINAL charge = " << itTrack->second->getCardinalRep()->getPDGCharge() 
-		// 			<< "  chi2 = " << itTrack->second->getFitStatus( itTrack->second->getCardinalRep() )->getChi2() << endl;
+		// 			<< "  chi2 = " << itTrack->second->getFitStatus( itTrack->second->getCardinalRep() )->getChi2() << "\n";
 
 		// if ( customCardRepID >= 0 && customCardRepID < nRep ) {
 		// 	itTrack->second->setCardinalRep( customCardRepID );
 		// }
 		// else {
-		// 	cout << "TAGFselector::FillTrackCategoryMap() :: ERROR  -- wrong rep number! = " << customCardRepID<<endl;
+		// 	cout << "TAGFselector::FillTrackCategoryMap() :: ERROR  -- wrong rep number! = " << customCardRepID<<"\n";
 		// }	
 
 		// if ( customCardRepID == -1 )
-		// 	cout<< "TAGFselector::FillTrackCategoryMap() :: ERROR  --  Never found a Cardinal rep"<< endl;
+		// 	cout<< "TAGFselector::FillTrackCategoryMap() :: ERROR  --  Never found a Cardinal rep"<< "\n";
 
 
 		// int measCharge = int( round( (itTrack->second)->getFittedState(-1).getCharge() ) );
@@ -938,7 +929,7 @@ TVector3 TAGFselector::ExtrapolateToOuterTracker( Track* trackToFit, int whichPl
 // pre-fit requirements to be applied to EACH of the hitCollections
 bool TAGFselector::PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element ) {
 
-	if ( m_debug > 0 )		cout << "SelctorKalmanGF::PrefitRequirements()  -  Category = " << (*element).first << " " << m_systemsON << endl;
+	if ( m_debug > 0 )		cout << "SelctorKalmanGF::PrefitRequirements()  -  Category = " << (*element).first << " " << m_systemsON << "\n";
 
 
 	int testHitNumberLimit = 0;
@@ -968,7 +959,7 @@ bool TAGFselector::PrefitRequirements( map< string, vector<AbsMeasurement*> >::i
 
 	// // test the total number of hits ->  speed up the test
 	// if ( (int)((*element).second.size()) != testHitNumberLimit ) {
-	// 	if ( m_debug > 0 )		cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : Nel=" << (int)((*element).second.size()) << "   Nexp= " << testHitNumberLimit << endl;
+	// 	if ( m_debug > 0 )		cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : Nel=" << (int)((*element).second.size()) << "   Nexp= " << testHitNumberLimit << "\n";
 	// 	return false;
 	// }
 
@@ -986,7 +977,7 @@ bool TAGFselector::PrefitRequirements( map< string, vector<AbsMeasurement*> >::i
 			if ( planeId == m_SensorIDMap->GetFitPlaneTW() )	nHitTW++;
 	}
 
-	if ( m_debug > 0 )	cout << "nHitVT  " <<nHitVT<< " nHitIT " <<nHitIT<< " nHitMSD "<<nHitMSD<< " nHitTW "<<nHitTW<<endl;
+	if ( m_debug > 0 )	cout << "nHitVT  " <<nHitVT<< " nHitIT " <<nHitIT<< " nHitMSD "<<nHitMSD<< " nHitTW "<<nHitTW<<"\n";
 
 	// test the num of hits per each detector
 	// if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD != testHit_MSD ) {
@@ -994,10 +985,10 @@ bool TAGFselector::PrefitRequirements( map< string, vector<AbsMeasurement*> >::i
 	if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD < 4 ){
 	    if ( m_debug > 0 ) {
 		    cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : " <<
-				    "\n\t nVTX = " << nHitVT << "  Nexp = " << testHit_VT << endl <<
-				    "\n\t nITR = " << nHitIT << "  Nexp = " << testHit_IT << endl <<
-				    "\n\t nMSD = " << nHitMSD << "  Nexp = " << testHit_MSD << endl <<
-				    "\n\t nTW = " << nHitTW << "  Nexp = " << testHit_TW << endl;
+				    "\n\n\t nVTX = " << nHitVT << "  Nexp = " << testHit_VT <<
+				    "\n\n\t nITR = " << nHitIT << "  Nexp = " << testHit_IT <<
+				    "\n\n\t nMSD = " << nHitMSD << "  Nexp = " << testHit_MSD <<
+				    "\n\n\t nTW = " << nHitTW << "  Nexp = " << testHit_TW << "\n";
 	    }
     	return false;
   	}

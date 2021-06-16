@@ -307,8 +307,8 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 		if ( point->GetCharge() > 0 && point->GetCharge() <= 8) {
 			if ( find( chVect->begin(), chVect->end(), point->GetCharge() ) == chVect->end() ) {
 				chVect->push_back( point->GetCharge() );
-				// if ( m_debug > 1 )		
-				cout << "TAGFuploader::GetPossibleCharges  " << point->GetCharge() << endl;
+				if ( m_debug > 0 )		
+					cout << "TAGFuploader::GetPossibleCharges  " << point->GetCharge() << "\n";
 			}
 		}
 		

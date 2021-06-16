@@ -57,8 +57,7 @@ void TAGFdetectorMap::AddPlane_Zorder(float zPos, int indexOfPlane)	{
 	m_zOrderingPlanes[zPos].push_back(indexOfPlane);
 	if(m_debug > 0)
 	{
-		cout << "Assigned IT plane::" << indexOfPlane << " to zPos::" << zPos << endl;
-		cout << "zPos::" << zPos << " has now " << m_zOrderingPlanes[zPos].size() << " planes!!" << endl;
+		cout << "Assigned IT plane::" << indexOfPlane << " to zPos::" << zPos << "\nzPos::" << zPos << " has now " << m_zOrderingPlanes[zPos].size() << " planes!!\n";
 	}
 
 	if ( find(m_itPossibleZ.begin(), m_itPossibleZ.end(), zPos) == m_itPossibleZ.end() )
@@ -66,7 +65,7 @@ void TAGFdetectorMap::AddPlane_Zorder(float zPos, int indexOfPlane)	{
 		m_itPossibleZ.push_back(zPos);
 		std::sort(m_itPossibleZ.begin(), m_itPossibleZ.end());
 		
-		if(m_debug > 0)	cout << "Added " << zPos << " to possible ITz" << endl;
+		if(m_debug > 0)	cout << "Added " << zPos << " to possible ITz\n";
 	}
 
 }
@@ -280,7 +279,7 @@ int TAGFdetectorMap::GetMeasID_eventLevel(string detName, int sensorId, int hitI
 		throw -1;
 	}
 
-	// cout << "TAGFdetectorMap::GetMeasID_eventLevel    = " << m_detectorIndex.at(detName)*1E7 <<" " << sensorId*1E5 << " "<< hitId <<"  =  "  << (m_detectorIndex.at(detName)*1E7 + sensorId*1E5 + hitId) << endl;
+	// cout << "TAGFdetectorMap::GetMeasID_eventLevel    = " << m_detectorIndex.at(detName)*1E7 <<" " << sensorId*1E5 << " "<< hitId <<"  =  "  << (m_detectorIndex.at(detName)*1E7 + sensorId*1E5 + hitId) << "\n";
 
 	return m_detectorIndex.at(detName)*1E7 + sensorId*1E5 + hitId;
 }
@@ -304,15 +303,15 @@ int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 		if(found)
 			break;
 
-		cout << "GetMeasID_eventLevel()\t" << itDet->first << "\t" << itDet->second << endl;
-		cout << "IsFitPlaneInDet\tplane::" << planeId << "\tbool::" << IsFitPlaneInDet(planeId, itDet->first) << endl;
+		cout << "GetMeasID_eventLevel()\t" << itDet->first << "\t" << itDet->second << "\n";
+		cout << "IsFitPlaneInDet\tplane::" << planeId << "\tbool::" << IsFitPlaneInDet(planeId, itDet->first) << "\n";
 		//WRITE THIS IN A MORE EFFICIENT WAY!!! It just works right now
 		if(!found && IsFitPlaneInDet(planeId, itDet->first))
 		{
-			cout << "GetMeasID_eventLevel()\tDetGood" << endl;
+			cout << "GetMeasID_eventLevel()\tDetGood\n";
 			for(int i=0; i < m_DetToFitPlaneMap.at(itDet->first).size(); ++i)
 			{
-				cout << "GetMeasID_eventLevel()\ti::" << i << endl;
+				cout << "GetMeasID_eventLevel()\ti::" << i << "\n";
 				if( m_DetToFitPlaneMap.at(itDet->first).at(i) == planeId )
 				{
 					sensorId = i;
@@ -331,7 +330,7 @@ int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 	}
 
 
-	cout << "det::" << detName << "\tsensorId::" << sensorId << "\thitId::" << hitId << endl;
+	cout << "det::" << detName << "\tsensorId::" << sensorId << "\thitId::" << hitId << "\n";
 	return GetMeasID_eventLevel(detName, sensorId, hitId);
 }
 
