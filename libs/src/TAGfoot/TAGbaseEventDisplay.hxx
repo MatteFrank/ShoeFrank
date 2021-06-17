@@ -102,10 +102,6 @@ public:
       }
    }
    
-   //! Disable/Enable tracking
-   static void DisableTracking()    { fgTrackFlag = false;    }
-   static void EnableTracking()     { fgTrackFlag = true;     }
-
    //! Disable/Enable stand alone DAQ
    static void DisableStdAlone()    { fgStdAloneFlag = false; }
    static void EnableStdAlone()     { fgStdAloneFlag = true;  }
@@ -154,6 +150,8 @@ protected:
    TAEDtrack*      fIrTrackDisplay;   // list of line to display tracks
    Bool_t          fIrFlag;
    
+   Bool_t          fFlagTrack;       // flag for tracking
+
    // TW
    map< pair<Int_t, Int_t>, Int_t > fFiredTofBar;       // list of fired bar per event
    
@@ -166,7 +164,6 @@ protected:
    TGCheckButton*       fRateButton;       // toggle recompute parameters at each plane
    
 protected:
-   static Bool_t         fgTrackFlag;       // flag for tracking
    static Bool_t         fgStdAloneFlag;    // flag for standalone DAQ
    static TString        fgVtxTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory and "Hough" Hough transformation)
    static Bool_t         fgBmSelectHit;     // flag BM selected hit

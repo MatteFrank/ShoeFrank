@@ -36,7 +36,6 @@
 
 ClassImp(TAGbaseEventDisplay)
 
-Bool_t  TAGbaseEventDisplay::fgTrackFlag       = true;
 TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Std";
 Bool_t  TAGbaseEventDisplay::fgStdAloneFlag    = false;
 Bool_t  TAGbaseEventDisplay::fgBmSelectHit     = false;
@@ -64,7 +63,9 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    // Par instance
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
-  
+   
+   fFlagTrack = TAGrecoManager::GetPar()->IsTracking();
+     
    // default constructon
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM()) {
       fStClusDisplay = new TAEDcluster("Start counter Hit");
@@ -194,7 +195,7 @@ void TAGbaseEventDisplay::SetRecoOptions()
    fReco->DisableSaveHits();
    fReco->EnableHisto();
    
-   if (fgTrackFlag) {
+   if (fFlagTrack) {
       fReco->SetVtxTrackingAlgo(fgVtxTrackingAlgo[0]);
       fReco->EnableTracking();
    }
@@ -739,7 +740,7 @@ void TAGbaseEventDisplay::UpdateElements()
        !TAGrecoManager::GetPar()->IncludeDI())
       UpdateElements("ir");
 
-   if (TAGrecoManager::GetPar()->IncludeTOE() && fgTrackFlag)
+   if (TAGrecoManager::GetPar()->IncludeTOE() && fFlagTrack)
       UpdateGlbTrackElements();
 
 }
@@ -755,13 +756,13 @@ void TAGbaseEventDisplay::UpdateElements(const TString prefix)
       UpdateStcElements();
    else if (prefix == "bm") {
       UpdateLayerElements();
-      if (fgTrackFlag)
+      if (fFlagTrack)
          UpdateTrackElements(prefix);
    } else if (prefix == "ms") {
       UpdateStripElements();
    } else {
       UpdateQuadElements(prefix);
-      if (fgTrackFlag)
+      if (fFlagTrack)
          UpdateTrackElements(prefix);
    }
 }
@@ -800,7 +801,7 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
    TAVTntuTrack*  pNtuTrack = 0x0;
 
    if (prefix == "vt") {
-      if (fgTrackFlag && TAGrecoManager::GetPar()->IncludeTG()) {
+      if (fFlagTrack && TAGrecoManager::GetPar()->IncludeTG()) {
          // vertex
          pNtuTrack = (TAVTntuTrack*)  fReco->GetNtuTrackVtx();
          TAVTvertex*    vtxPD   = 0x0;//NEW
