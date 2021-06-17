@@ -535,14 +535,14 @@ void TAGbaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form("Point# %d at position:\n", idx) );
       fInfoView->AddLine( Form(" (%.1f %.1f %.1f) cm\n", pos.X(), pos.Y(), pos.Z()) );
       fInfoView->AddLine( Form("Charge: %.3e u.a.\n", point->GetEnergyLoss()) );
-      fInfoView->AddLine( Form("Time: %.3g ps \n", point->GetTime()) );
+      fInfoView->AddLine( Form("Time: %.3g ps \n", point->GetToF()) );
       fInfoView->AddLine( Form("Charge Z: %d \n", point->GetChargeZ()) );
 
       if (fConsoleButton->IsOn()) {
          cout <<  Form("Point# %d at position:\n", idx);
          cout <<  Form(" (%.1f %.1f %.1f) cm\n", pos.X(), pos.Y(), pos.Z());
          cout <<  Form("Charge: %.3e u.a.\n", point->GetEnergyLoss());
-         cout <<  Form("Time: %.3g ps \n", point->GetTime());
+         cout <<  Form("Time: %.3g ps \n", point->GetToF());
          cout <<  Form("Charge Z: %d \n", point->GetChargeZ());
       }
       

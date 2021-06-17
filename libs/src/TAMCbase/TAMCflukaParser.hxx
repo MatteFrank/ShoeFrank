@@ -28,7 +28,7 @@ public:
   static TAMCntuHit*    GetVtxHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
   static TAMCntuHit*    GetItrHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
   static TAMCntuHit*    GetMsdHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  static TAMCntuHit*    GetTofHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
+  static TAMCntuHit*    GetTwHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
   static TAMCntuHit*    GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
   static TAMCntuPart*  GetTracks( EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrck);
   static TAMCntuRegion* GetRegions(EVENT_STRUCT* evStr, TAGdataDsc* p_ntureg);

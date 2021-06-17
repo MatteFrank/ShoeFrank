@@ -917,7 +917,7 @@ int TAGactKFitter::UploadHitsTW() {
     TATWpoint* point = ntup->GetPoint(iPoint);
 
     //HACK to prevent fake points (try)
-    if (point->GetTime() > 15.) continue;
+    if (point->GetToF() > 15.) continue;
     //if (point->GetMcTracksN() == 0) continue;
     //if ( point->GetChargeZ() < 1 ) continue; // wrong association, maybe neutron from calo
 
@@ -1067,7 +1067,7 @@ int TAGactKFitter::PrepareData4Fit_dataLike() {
   for (unsigned int iTW = 0; iTW < m_TW_hitCollection.size(); ++iTW){
     TATWpoint* pointTofWall = m_TW_hitCollection.at(iTW);
     if ( m_debug > 0 )		cout  << "CHARGE seen by TW " << pointTofWall->GetChargeZ() << endl;
-    if ( m_debug > 0 )		cout  << "TIME seen by TW " << pointTofWall->GetTime() << endl;
+    if ( m_debug > 0 )		cout  << "TIME seen by TW " << pointTofWall->GetToF() << endl;
     if ( pointTofWall->GetChargeZ() > -1) partHypo.insert(pointTofWall->GetChargeZ());
     //controlla se carica = montecarlo
     if (pointTofWall->GetMcTracksN()==0) {ofs << "dont know which track is " << endl; continue;}

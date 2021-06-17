@@ -351,7 +351,7 @@ Bool_t TATWactNtuPoint::FindPoints()
 
 	 TVector3 posGlb = fgeoTrafo->FromTWLocalToGlobal(posLoc);
 	 point->SetPositionGlb(posGlb);
-    point->SetSensorIdx(0);
+	 point->SetSensorIdx(0);
 	 
 	 Int_t Z = hit1->GetChargeZ();
 	 point->SetChargeZ(Z);
@@ -509,6 +509,8 @@ TATWpoint* TATWactNtuPoint::SetTWPoint(TATWntuPoint* pNtuPoint, Int_t layer1, TA
   else if(layer1==(Int_t)LayerY) {
     point = pNtuPoint->NewPoint(posLoc.X(), fDefPosErr, hitmin, posLoc.Y(), fDefPosErr, hit1, mainLayer);
   }
+
+  point->SetToF(hit1->GetToF());
   
   return point;
 
