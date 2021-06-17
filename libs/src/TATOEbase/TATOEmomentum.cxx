@@ -69,7 +69,7 @@ TVector3 GetMomentumAtZ( TAGtrack* track_ph, double z ) {
                                          );
 
     auto stepper = make_stepper<data_rkf45>( std::move(ode) );
-    stepper.specify_tolerance(1e-8);
+//    stepper.specify_tolerance(1e-8);
 
     auto * starting_point_h = track_ph->GetCorrPoint( 0 );
     
