@@ -38,8 +38,9 @@ NumberFiles: 2
 "./config/12C_200/TAITdetector.cfg": -1
 
 DetectorName: "MSD"
-NumberFiles: 1
+NumberFiles: 2
 "./geomaps/12C_200/TAMSDdetector.geo": -1
+"./config/12C_200/TAMSDdetector.cfg": -1
 
 DetectorName: "TW"
 NumberFiles: 5
