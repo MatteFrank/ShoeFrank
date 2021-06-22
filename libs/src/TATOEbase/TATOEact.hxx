@@ -1319,6 +1319,8 @@ private:
             double tof = (static_cast<TATWpoint const *>(cluster_c.back().data)->GetToF() - additional_time);
             double speed = arc_length/tof;
             double beta = speed/30;
+            
+            if( beta < 1){
             double gamma = 1./sqrt(1 - pow(beta, 2));
             double momentum = gamma * 938 * track.particle.mass * beta;
             
@@ -1326,6 +1328,10 @@ private:
        //     std::cout << "momentum: " << momentum << '\n';
 
             track.momentum = momentum;
+            }
+            else {
+                track.momentum = track.particle.momentum;
+            }
             track.tof = tof;
         }
 
