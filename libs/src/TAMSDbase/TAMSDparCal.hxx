@@ -6,7 +6,6 @@
 
 #include "TAGroot.hxx"
 #include "TAGparTools.hxx"
-#include "TAMSDparGeo.hxx"
 #include "TAGparaDsc.hxx"
 
 #include "TAMSDcalibrationMap.hxx"
@@ -14,7 +13,6 @@
 class TAMSDparCal : public TAGparTools
 {
 private:
-  TAMSDparGeo* fParGeo;
   TAMSDcalibrationMap *fMapCal;
   
 public:
@@ -29,6 +27,7 @@ public:
   Bool_t   LoadPedestalMap(TString Filename);
   Double_t GetPedestalMean(Int_t sensorId, Int_t stripId);
   Double_t GetPedestalSigma(Int_t sensorId, Int_t stripId);
+  Int_t    GetPedestalStatus(Int_t sensorId, Int_t stripId);
 
  ClassDef(TAMSDparCal, 0)
 };

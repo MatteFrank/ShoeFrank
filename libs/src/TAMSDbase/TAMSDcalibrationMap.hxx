@@ -18,11 +18,10 @@ public:
   TAMSDcalibrationMap();
     
   void     LoadEnergyCalibrationMap(TString Filename);
-  Double_t GetElossParam(Int_t sensorId, Int_t stripId, UInt_t parId)  { return fCalibElossMapStrip[make_pair(sensorId, stripId)][parId]; }
+  Double_t GetElossParam(Int_t sensorId, Int_t stripId, UInt_t parId)    { return fCalibElossMapStrip[make_pair(sensorId, stripId)][parId]; }
 
   void     LoadPedestalMap(TString Filename);
-  Double_t GetPedestalMean(Int_t sensorId, Int_t stripId)   { return fCalibElossMapStrip[make_pair(sensorId, stripId)][0]; }
-  Double_t GetPedestalSigma(Int_t sensorId, Int_t stripId)  { return fCalibElossMapStrip[make_pair(sensorId, stripId)][1]; }
+  Double_t GetPedestalParam(Int_t sensorId, Int_t stripId, UInt_t parId) { return fCalibPedMapStrip[make_pair(sensorId, stripId)][parId];   }
 
   ClassDef(TAMSDcalibrationMap, 0)
 };

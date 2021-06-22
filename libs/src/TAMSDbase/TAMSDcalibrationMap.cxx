@@ -67,7 +67,8 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
       char line[200];
       
       int sensorId, stripId;
-      double Q_corrp0, Q_corrp1;
+      int asicId, asicCh;
+      double Q_corrp0, Q_corrp1, Q_corrp2;
       
       // loop over all the strips
       while (fin.getline(line, 200, '\n')) {
@@ -78,12 +79,14 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
             continue;
          }
          
-         sscanf(line, "%d %d %lf %lf",&sensorId, &stripId, &Q_corrp0, &Q_corrp1);
+         sscanf(line, "%d %d %d %d %lf %lf %lf",&sensorId, &stripId, &asicId, &asicCh, &Q_corrp0, &Q_corrp1, &Q_corrp2);
          if(FootDebugLevel(1))
-            Info("LoadPedestalMap()","%d %d %.5f %.7f\n",sensorId, stripId, Q_corrp0, Q_corrp1);
+            Info("LoadPedestalMap()","sensorId: %d stripId %d Mean: %5.1f Sigma: %3.1f status: %d\n",sensorId, stripId, Q_corrp0, Q_corrp1, int(Q_corrp2));
+         
          pair<int, int> p(sensorId, stripId);
          fCalibPedMapStrip[p].push_back(Q_corrp0);
          fCalibPedMapStrip[p].push_back(Q_corrp1);
+         fCalibPedMapStrip[p].push_back(Q_corrp2);
       }
    } else
       Info("LoadPedestalMap()","File for pedestal %s not open!!",FileName.Data());

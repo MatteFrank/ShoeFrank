@@ -10,7 +10,6 @@ TAMSDparCal::TAMSDparCal()
 {
   // Standard constructor
   fMapCal = new TAMSDcalibrationMap();
-  fParGeo = (TAMSDparGeo*)gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
 }
 
 //------------------------------------------+-----------------------------------
@@ -53,11 +52,17 @@ Bool_t TAMSDparCal::LoadPedestalMap(TString name)
 //_____________________________________________________________________
 Double_t TAMSDparCal::GetPedestalMean(Int_t sensorId, Int_t stripId)
 {
-   return fMapCal->GetElossParam(sensorId, stripId, 0);
+   return fMapCal->GetPedestalParam(sensorId, stripId, 0);
 }
 
 //_____________________________________________________________________
 Double_t TAMSDparCal::GetPedestalSigma(Int_t sensorId, Int_t stripId)
 {
-   return fMapCal->GetElossParam(sensorId, stripId, 1);
+   return fMapCal->GetPedestalParam(sensorId, stripId, 1);
+}
+
+//_____________________________________________________________________
+Int_t TAMSDparCal::GetPedestalStatus(Int_t sensorId, Int_t stripId)
+{
+   return (int)fMapCal->GetPedestalParam(sensorId, stripId, 2);
 }
