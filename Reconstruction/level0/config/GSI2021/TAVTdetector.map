@@ -1,8 +1,11 @@
-# Mapping sensorId vs planeId
-#          planeId
-SensorsN: 4
+# Mapping planeId (SW) sensorId (HW)
 #
-sensorId  0:  0
-sensorId  1:  1
-sensorId  2:  2
-sensorId  3:  3
+DataLinksN: 1
+#
+DataLink: 0
+#
+SensorsN: 4
+PlaneId  0:  0
+PlaneId  1:  1
+PlaneId  2:  2
+PlaneId  3:  3

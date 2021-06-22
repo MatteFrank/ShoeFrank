@@ -34,7 +34,6 @@ protected:
 	  Int_t     Status;                 // Status flag: Primary Reference = 1., Secondary Reference = 2. DeviceUunderTest = 3. Out = -1.
 	  Int_t     MinNofPixelsInCluster;  // minimum pixels in a cluster
 	  Int_t     MaxNofPixelsInCluster;  // maximum pixels in a cluster
-     TArrayC   DeadStripMap;           // dead strip map
      map< pair<int, int>, int > DeadPixelMap;    // dead pixel map
    };
    
@@ -46,7 +45,9 @@ protected:
 	  Float_t    BmTrackChi2Limit;       // chi2 limit on the BM track
    };
    
-   
+   SensorParameter_t fSensorParameter[32];
+   AnalysisParameter_t fAnalysisParameter;
+
 private:
    static Bool_t  fgIsMapHist;   // enable  map histo
 
@@ -64,13 +65,8 @@ public:
    
    Int_t           GetStatus(Int_t idx) const;
    Int_t           GetStatusMinor(Int_t idx) const ;
-
-
-      
-   SensorParameter_t fSensorParameter[32];
-   SensorParameter_t& GetSensorPar(Int_t idx)  { return fSensorParameter[idx];    }
    
-   AnalysisParameter_t fAnalysisParameter;
+   SensorParameter_t& GetSensorPar(Int_t idx)  { return fSensorParameter[idx];    }
    AnalysisParameter_t& GetAnalysisPar()       { return fAnalysisParameter;       }
    
    Int_t         GetSensorsN()          const  { return fSensorsN;                }

@@ -32,8 +32,9 @@ NumberFiles: 2
 "./config/GSI2021_MC/TAVTdetector.cfg": -1
 
 DetectorName: "MSD"
-NumberFiles: 1
+NumberFiles: 2
 "./geomaps/GSI2021_MC/TAMSDdetector.geo": -1
+"./config/GSI2021_MC/TAMSDdetector.cfg": -1
 
 DetectorName: "TW"
 NumberFiles: 5

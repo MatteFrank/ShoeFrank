@@ -46,30 +46,43 @@ Bool_t TAVTbaseParMap::FromFile(const TString& name)
    if (!Open(nameExp))
       return false;
    
-   ReadItem(fSensorsN);
-   fPlaneId.reserve(fSensorsN);
+   ReadItem(fDataLinksN);
    
-   Int_t tmp;
+   for (Int_t l = 0; l < fDataLinksN; ++l) { // Loop on each data link
+      
+      Int_t dataLink;
+      ReadItem(dataLink);
 
-   for (Int_t i = 0; i < fSensorsN; ++i) { // Loop on each charge
+      ReadItem(fSensorsN);
       
-      ReadItem(tmp);
+      for (Int_t i = 0; i < fSensorsN; ++i) { // Loop on each sensor
       
-      fPlaneId.push_back(tmp);
+         Int_t sensorId;
+         ReadItem(sensorId);
+
+         pair<int, int> idx(dataLink, sensorId);
+
+         fPlaneId[idx] = i;
       
-      if(FootDebugLevel(1))
-         printf("SensorId: %d PlaneId: %d\n", i, fPlaneId[i]);
+         if(FootDebugLevel(1))
+            printf("DataLink %d SensorId: %d PlaneId: %d\n", dataLink, sensorId, i);
+      }
    }
-
+   
    return true;
 }
 
 //------------------------------------------+-----------------------------------
-Int_t TAVTbaseParMap::GetPlaneId(Int_t sensorId)
+Int_t TAVTbaseParMap::GetPlaneId(Int_t sensorId, Int_t dataLink)
 {
-   if (sensorId >= fSensorsN)
+   pair<int, int> idx(dataLink, sensorId);
+
+   auto itr = fPlaneId.find(idx);
+   if (itr == fPlaneId.end()) {
+      Error("GetPlaneId()", "Wrong sensor or/and data link number");
       return -1;
-   else
-      return fPlaneId[sensorId];
+   }
+   
+   return fPlaneId[idx];
 }
 

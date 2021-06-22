@@ -33,7 +33,7 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActNtuHitVtx(0x0),
    fActNtuHitIt(0x0),
    fActNtuHitCa(0x0),
-//   fActNtuHitMsd(0x0),
+   fActNtuHitMsd(0x0),
    fpDatRawMsd(0x0),
    fActEvtReader(0x0)
 {
@@ -217,7 +217,7 @@ void LocalReco::SetRawHistogramDir()
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAMSDparGeo::GetBaseName());
       fActDatRawMsd->SetHistogramDir(subfolder);
-//      fActNtuHitMsd->SetHistogramDir(subfolder);
+      fActNtuHitMsd->SetHistogramDir(subfolder);
    }
 
 

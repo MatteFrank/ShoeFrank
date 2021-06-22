@@ -67,14 +67,14 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
          cout << "Status: "<< fSensorParameter[p].Status << endl;
       
       // read min of pixel per cluster
-      ReadItem(fSensorParameter[p].MinNofPixelsInCluster);
+      ReadItem(fSensorParameter[p].MinNofStripsInCluster);
       if(FootDebugLevel(1))
-         cout << "Minimum number of pixels per cluster: "<< fSensorParameter[p].MinNofPixelsInCluster << endl;
+         cout << "Minimum number of pixels per cluster: "<< fSensorParameter[p].MinNofStripsInCluster << endl;
       
       // read max of pixel per cluster
-      ReadItem(fSensorParameter[p].MaxNofPixelsInCluster);
+      ReadItem(fSensorParameter[p].MaxNofStripsInCluster);
       if(FootDebugLevel(1))
-         cout << "Maximum number of pixels per cluster: "<< fSensorParameter[p].MaxNofPixelsInCluster << endl;
+         cout << "Maximum number of pixels per cluster: "<< fSensorParameter[p].MaxNofStripsInCluster << endl;
       
       // read dead pixel map
       fSensorParameter[p].DeadStripMap.Set(640);
@@ -90,4 +90,28 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
    }
    
    return kFALSE;
+}
+
+//------------------------------------------+-----------------------------------
+//! Get major number status
+Int_t TAMSDparConf::GetStatus(Int_t idx) const
+{
+   Int_t major = fSensorParameter[idx].Status/10;
+   if (major == 0)
+      return fSensorParameter[idx].Status;
+   else
+      return major;
+   
+}
+
+//------------------------------------------+-----------------------------------
+//! Get minor number status
+Int_t TAMSDparConf::GetStatusMinor(Int_t idx) const
+{
+   Int_t major = fSensorParameter[idx].Status/10;
+   if (major == 0) {
+      Warning("GetStatusMinor", "No status minor number!");
+      return -99;
+   }  else
+      return (fSensorParameter[idx].Status % 10);
 }
