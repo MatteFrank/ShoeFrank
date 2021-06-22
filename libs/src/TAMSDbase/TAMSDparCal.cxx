@@ -66,3 +66,18 @@ Int_t TAMSDparCal::GetPedestalStatus(Int_t sensorId, Int_t stripId)
 {
    return (int)fMapCal->GetPedestalParam(sensorId, stripId, 2);
 }
+
+//_____________________________________________________________________
+Double_t TAMSDparCal::GetPedestalValue(Int_t sensorId, Int_t stripId, Double_t sigmaLevel)
+{
+   Double_t mean  = fMapCal->GetPedestalParam(sensorId, stripId, 0);
+   Double_t sigma = fMapCal->GetPedestalParam(sensorId, stripId, 1);
+   Int_t status   = (int)fMapCal->GetPedestalParam(sensorId, stripId, 2);
+
+   Double_t value = mean + sigmaLevel*sigma;
+   
+   if (status == 0)
+      return value;
+   else
+      return -1;
+}

@@ -29,6 +29,8 @@ public:
   Double_t GetPedestalSigma(Int_t sensorId, Int_t stripId);
   Int_t    GetPedestalStatus(Int_t sensorId, Int_t stripId);
 
+  Double_t GetPedestalValue(Int_t sensorId, Int_t stripId, Double_t sigmaLevel);
+
  ClassDef(TAMSDparCal, 0)
 };
 
