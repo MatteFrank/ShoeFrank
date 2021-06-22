@@ -15,7 +15,7 @@
 
 ClassImp(TAMSDactNtuRaw);
 
- UInt_t TAMSDactNtuRaw::fkgThreshold = 4;
+ UInt_t TAMSDactNtuRaw::fkgThreshold = 0;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -24,11 +24,13 @@ TAMSDactNtuRaw::TAMSDactNtuRaw(const char* name,
                              TAGdataDsc* dscdatraw,
                              TAGdataDsc* dscdatdaq,
                              TAGparaDsc* dscparmap,
+                             TAGparaDsc* dscparcal,
                              TAGparaDsc* dscpargeo)
   : TAGaction(name, "TAMSDactNtuRaw - Unpack MSD raw data"),
     fpDatRaw(dscdatraw),
     fpDatDaq(dscdatdaq),
     fpParMap(dscparmap),
+    fpParCal(dscparcal),
     fpParGeo(dscpargeo)
 {
   if (FootDebugLevel(1))
@@ -36,6 +38,7 @@ TAMSDactNtuRaw::TAMSDactNtuRaw(const char* name,
    
   AddDataOut(dscdatraw, "TAMSDntuRaw");
   AddPara(dscparmap, "TAMSDparMap");
+  AddPara(dscparcal, "TAMSDparCal");
   AddPara(dscpargeo, "TAMSDparGeo");
   AddDataIn(dscdatdaq, "TAGdaqEvent");
 }
@@ -101,28 +104,41 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 {
    TAMSDntuRaw*    p_datraw = (TAMSDntuRaw*)    fpDatRaw->Object();
    TAMSDparGeo*    p_pargeo = (TAMSDparGeo*)    fpParGeo->Object();
+   TAMSDparCal*    p_parcal = (TAMSDparCal*)    fpParCal->Object();
 
    // decode here
-   Int_t sensorId = (evt->boardHeader & 0xF)-1;
+   Int_t boardId = (evt->boardHeader & 0xF)-1;
    
    for (Int_t i = 0; i < p_pargeo->GetStripsN(); ++i) {
       
       UInt_t adcX = evt->Xplane[i];
       UInt_t adcY = evt->Yplane[i];
       Int_t view  = -1;
+      Int_t sensorId = -1;
+      Double_t sigmaLevel = 5;
       
-      if (adcX > fkgThreshold) {
-         view = 0;
-         p_datraw->AddStrip(2*sensorId, i,view, adcX);
+      view = 1;
+      sensorId = 2*boardId+view;
+      Double_t valueX = p_parcal->GetPedestalValue(sensorId, i, sigmaLevel);
+      Double_t meanX  = p_parcal->GetPedestalMean(sensorId, i);
+      valueX  = adcX - valueX;
+      
+      if (valueX > 0) {
+         p_datraw->AddStrip(sensorId, i, view, adcX-meanX);
          if (ValidHistogram())
-            fpHisStripMap[2*sensorId]->Fill(i, evt->Xplane[i]);
+            fpHisStripMap[sensorId]->Fill(i, adcX-meanX);
       }
       
-      if (adcY > fkgThreshold*10) {
-         view = 1;
-         p_datraw->AddStrip(2*sensorId+1, i,view, adcY);
+      view = 0;
+      sensorId = 2*boardId+view;
+      Double_t valueY = p_parcal->GetPedestalValue(sensorId, i, sigmaLevel);
+      Double_t meanY  = p_parcal->GetPedestalMean(sensorId, i);
+      valueY  = adcY - valueY;
+
+      if (valueY > 0) {
+         p_datraw->AddStrip(sensorId, i, view, adcY-meanY);
          if (ValidHistogram())
-            fpHisStripMap[2*sensorId+1]->Fill(i, evt->Yplane[i]);
+            fpHisStripMap[sensorId]->Fill(i, adcY-meanY);
       }
    }
    

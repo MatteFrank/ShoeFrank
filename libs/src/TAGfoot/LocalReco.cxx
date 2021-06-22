@@ -118,7 +118,7 @@ void LocalReco::CreateRawAction()
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fpDatRawMsd   = new TAGdataDsc("msdDat", new TAMSDntuRaw());
-      fActDatRawMsd = new TAMSDactNtuRaw("msdActRaw", fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParGeoMsd);
+      fActDatRawMsd = new TAMSDactNtuRaw("msdActRaw", fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd);
       if (fFlagHisto)
          fActDatRawMsd->CreateHistogram();
 
