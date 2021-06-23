@@ -185,7 +185,6 @@ TAGbaseEventDisplay::~TAGbaseEventDisplay()
 void TAGbaseEventDisplay::ReadParFiles()
 {
    fReco->ReadParFiles();
-   TAVTparConf::SetHistoMap();
 }
 
 //__________________________________________________________

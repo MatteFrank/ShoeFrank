@@ -682,8 +682,6 @@ void BaseReco::ReadParFiles()
      }
      
    }
-
-   TAVTparConf::SetHistoMap();
 }
 
 //__________________________________________________________

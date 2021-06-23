@@ -93,13 +93,12 @@ void TAVTactBaseRaw::CreateHistogram()
    TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-	  if (TAVTparConf::IsMapHistOn()) {
-		 fpHisPixelMap[i] = new TH2F(Form("vtPixelMap%d", i+1), Form("Vertex - pixel map for sensor %d", i+1), 
-									 pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy(), 
-									 pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
-		 fpHisPixelMap[i]->SetStats(kFALSE);
-		 AddHistogram(fpHisPixelMap[i]);
-	  }
+      fpHisPixelMap[i] = new TH2F(Form("vtPixelMap%d", i+1), Form("Vertex - pixel map for sensor %d", i+1),
+                                  pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy(),
+                                  pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
+      fpHisPixelMap[i]->SetStats(kFALSE);
+      AddHistogram(fpHisPixelMap[i]);
+   
       
       fpHisRateMap[i] = new TH1F(Form("vtRateMap%d", i+1), Form("Vertex - rate per line for sensor %d", i+1),
                                  pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
@@ -341,8 +340,7 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    pixel->SetValidFrames(fFrameOk);
    
    if (ValidHistogram()) {
-	  if (TAVTparConf::IsMapHistOn()) 
-		 fpHisPixelMap[iSensor]->Fill(aLine, aColumn);
+      fpHisPixelMap[iSensor]->Fill(aLine, aColumn);
 	  
 	  fpHisRateMap[iSensor]->Fill(aColumn);
 	  

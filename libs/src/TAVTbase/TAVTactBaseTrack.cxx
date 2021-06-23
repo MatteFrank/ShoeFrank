@@ -104,16 +104,14 @@ void TAVTactBaseTrack::CreateHistogram()
    AddHistogram(fpHisPixelTot);
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-	  if (TAVTbaseParConf::IsMapHistOn()) {
-		 fpHisTrackMap[i] = new TH2F(Form("%sTrackMap%d", fPrefix.Data(), i+1), Form("%s - Tracks map for sensor %d", fTitleDev.Data(), i+1),
-									 100, -pGeoMap->GetPitchY()*pGeoMap->GetPixelsNy()/2., pGeoMap->GetPitchY()*pGeoMap->GetPixelsNy()/2., 
-									 100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2.);
-		 fpHisTrackMap[i]->SetMarkerStyle(24);
-		 fpHisTrackMap[i]->SetMarkerSize(1.);
-		 fpHisTrackMap[i]->SetMarkerColor(3);
-		 fpHisTrackMap[i]->SetStats(kFALSE);
-		 AddHistogram(fpHisTrackMap[i]);
-	  }
+     fpHisTrackMap[i] = new TH2F(Form("%sTrackMap%d", fPrefix.Data(), i+1), Form("%s - Tracks map for sensor %d", fTitleDev.Data(), i+1),
+                                 100, -pGeoMap->GetPitchY()*pGeoMap->GetPixelsNy()/2., pGeoMap->GetPitchY()*pGeoMap->GetPixelsNy()/2.,
+                                 100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2.);
+     fpHisTrackMap[i]->SetMarkerStyle(24);
+     fpHisTrackMap[i]->SetMarkerSize(1.);
+     fpHisTrackMap[i]->SetMarkerColor(3);
+     fpHisTrackMap[i]->SetStats(kFALSE);
+     AddHistogram(fpHisTrackMap[i]);
 	  
 	  fpHisPixel[i] = new TH1F(Form("%sTrackedClusPix%d", fPrefix.Data(), i+1), Form("%s - # pixels per tracked clusters of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
 	  AddHistogram(fpHisPixel[i]);
@@ -290,8 +288,7 @@ void TAVTactBaseTrack::FillHistogramm(TAVTbaseTrack* track)
    
      TVector3 impactLoc =  pGeoMap->Detector2Sensor(idx, impact);
       
-	  if (TAVTbaseParConf::IsMapHistOn()) 
-		 fpHisTrackMap[idx]->Fill(impactLoc[0], impactLoc[1]);
+     fpHisTrackMap[idx]->Fill(impactLoc[0], impactLoc[1]);
 	  fpHisResTotX->Fill(impact[0]-cluster->GetPositionG()[0]);
 	  fpHisResTotY->Fill(impact[1]-cluster->GetPositionG()[1]);
 	  fpHisResX[idx]->Fill(impact[0]-cluster->GetPositionG()[0]);

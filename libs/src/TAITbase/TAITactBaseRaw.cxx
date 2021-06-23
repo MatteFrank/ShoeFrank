@@ -84,13 +84,11 @@ void TAITactBaseRaw::CreateHistogram()
    DeleteHistogram();
    TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-	  if (TAITparConf::IsMapHistOn()) {
-		 fpHisPixelMap[i] = new TH2F(Form("itPixelMap%d", i+1), Form("Vertex - pixel map for sensor %d", i+1), 
-									 pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy(), 
-									 pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
-		 fpHisPixelMap[i]->SetStats(kFALSE);
-		 AddHistogram(fpHisPixelMap[i]);
-	  }
+     fpHisPixelMap[i] = new TH2F(Form("itPixelMap%d", i+1), Form("Vertex - pixel map for sensor %d", i+1),
+                                  pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy(),
+                                  pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
+     fpHisPixelMap[i]->SetStats(kFALSE);
+     AddHistogram(fpHisPixelMap[i]);
       
 	  fpHisRateMap[i] = new TH1F(Form("itRateMap%d", i+1), Form("Vertex - rate per line for sensor %d", i+1), 
 								 pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
@@ -292,8 +290,7 @@ void TAITactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
 
    
    if (ValidHistogram()) {
-	  if (TAITparConf::IsMapHistOn()) 
-		 fpHisPixelMap[iSensor]->Fill(aLine, aColumn);
+      fpHisPixelMap[iSensor]->Fill(aLine, aColumn);
 	  
 	  fpHisRateMap[iSensor]->Fill(aColumn);
 	  

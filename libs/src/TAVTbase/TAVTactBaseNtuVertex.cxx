@@ -108,14 +108,13 @@ void TAVTactBaseNtuVertex::CreateHistogram()
 	  AddHistogram(fpHisBmMatchY);
    }
    
-   if (TAVTparConf::IsMapHistOn()) {
-	  fpHisPosXY = new TH2F( "vtVtxPosXY", "Vertex position at XY",
+   fpHisPosXY = new TH2F( "vtVtxPosXY", "Vertex position at XY",
                            100, -size[0]/2., size[0]/2.,
                            100, -size[1]/2., size[1]/2.);
-	  fpHisPosXY->SetMarkerColor(3);
-	  fpHisPosXY->SetStats(kFALSE);
-	  AddHistogram(fpHisPosXY);
-   }
+   fpHisPosXY->SetMarkerColor(3);
+   fpHisPosXY->SetStats(kFALSE);
+   AddHistogram(fpHisPosXY);
+   
    
    SetValidHistogram(kTRUE);
 }
