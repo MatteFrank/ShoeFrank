@@ -115,29 +115,36 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       UInt_t adcY = evt->Yplane[i];
       Int_t view  = -1;
       Int_t sensorId = -1;
+      Bool_t status  = true;
       
       view = 1;
       sensorId = 2*boardId+view;
-      Double_t valueX = p_parcal->GetPedestalValue(sensorId, i);
-      Double_t meanX  = p_parcal->GetPedestalMean(sensorId, i);
-      valueX  = adcX - valueX;
-      
-      if (valueX > 0) {
-         p_datraw->AddStrip(sensorId, i, view, adcX-meanX);
-         if (ValidHistogram())
-            fpHisStripMap[sensorId]->Fill(i, adcX-meanX);
+      status   = p_parcal->GetPedestalStatus(sensorId, i);
+      if (status == 0) {
+         Double_t valueX = p_parcal->GetPedestalValue(sensorId, i);
+         Double_t meanX  = p_parcal->GetPedestalMean(sensorId, i);
+         valueX  = adcX - valueX;
+         
+         if (valueX > 0) {
+            p_datraw->AddStrip(sensorId, i, view, adcX-meanX);
+            if (ValidHistogram())
+               fpHisStripMap[sensorId]->Fill(i, adcX-meanX);
+         }
       }
       
       view = 0;
       sensorId = 2*boardId+view;
-      Double_t valueY = p_parcal->GetPedestalValue(sensorId, i);
-      Double_t meanY  = p_parcal->GetPedestalMean(sensorId, i);
-      valueY  = adcY - valueY;
-
-      if (valueY > 0) {
-         p_datraw->AddStrip(sensorId, i, view, adcY-meanY);
-         if (ValidHistogram())
-            fpHisStripMap[sensorId]->Fill(i, adcY-meanY);
+      status   = p_parcal->GetPedestalStatus(sensorId, i);
+      if (status == 0) {
+         Double_t valueY = p_parcal->GetPedestalValue(sensorId, i);
+         Double_t meanY  = p_parcal->GetPedestalMean(sensorId, i);
+         valueY  = adcY - valueY;
+         
+         if (valueY > 0) {
+            p_datraw->AddStrip(sensorId, i, view, adcY-meanY);
+            if (ValidHistogram())
+               fpHisStripMap[sensorId]->Fill(i, adcY-meanY);
+         }
       }
    }
    
