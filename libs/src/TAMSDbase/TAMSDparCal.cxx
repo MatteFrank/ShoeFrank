@@ -26,7 +26,7 @@ Bool_t TAMSDparCal::LoadEnergyCalibrationMap(TString name)
    
    fMapCal->LoadEnergyCalibrationMap(name.Data());
    
-   Info("FromCalibFile()", "Open file %s for calibration\n", name.Data());
+   Info("FromCalibFile()", "Open file %s for Energy calibration\n", name.Data());
    
    return true;
 }
@@ -44,7 +44,7 @@ Bool_t TAMSDparCal::LoadPedestalMap(TString name)
    
    fMapCal->LoadPedestalMap(name.Data());
    
-   Info("LoadPedestalMap()", "Open file %s for calibration\n", name.Data());
+   Info("LoadPedestalMap()", "Open file %s for Pedestals\n", name.Data());
    
    return true;
 }
