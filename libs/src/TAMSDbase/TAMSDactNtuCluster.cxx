@@ -222,9 +222,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
               fpHisStrip[iSensor]->Fill(cluster->GetStripsN());
               fpHisClusCharge[iSensor]->Fill(cluster->GetEnergyLoss());
               fpHisClusChargeTot->Fill(cluster->GetEnergyLoss());
-              if (TAMSDparConf::IsMapHistOn()) {
-                 fpHisClusMap[iSensor]->Fill(cluster->GetPositionF());
-              }
+              fpHisClusMap[iSensor]->Fill(cluster->GetPositionF());
            }
         }
      }
@@ -267,8 +265,8 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   posErr *= 1./tClusterPulseSum;
   
   // for cluster with a single strip
-  Float_t lim = 9e-6; // in cm !
-  if (posErr < lim) posErr = lim; //(20/Sqrt(12)^2
+  Float_t lim = 1.875e-5; // in cm !
+  if (posErr < lim) posErr = lim; //(150/Sqrt(12)^2
   
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
