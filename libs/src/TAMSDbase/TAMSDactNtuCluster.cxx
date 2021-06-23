@@ -51,7 +51,7 @@ void TAMSDactNtuCluster::CreateHistogram()
   DeleteHistogram();
   
   TString prefix = "ms";
-  TString titleDev = "Multi Strip Detector";
+  TString titleDev = "Mirco Strip Detector";
   
   fpHisStripTot = new TH1F(Form("%sClusStripTot", prefix.Data()), Form("%s - Total # strips per clusters", titleDev.Data()), 25, 0., 25.);
   AddHistogram(fpHisStripTot);

@@ -324,7 +324,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
          new G4PVPlacement(rot, trans, log, "InnerTracker", fLogWorld, false, 0);
    }
    
-   // Multi Strip Detector
+   // Micro Strip Detector
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       
       G4LogicalVolume* log  = fMicroStrip->Construct();

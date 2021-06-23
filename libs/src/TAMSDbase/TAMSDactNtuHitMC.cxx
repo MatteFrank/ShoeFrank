@@ -66,7 +66,7 @@ void TAMSDactNtuHitMC::CreateHistogram()
   DeleteHistogram();
   
   TString prefix = "ms";
-  TString titleDev = "Multi Strip Detector";
+  TString titleDev = "Micro Strip Detector";
   
   TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
   
