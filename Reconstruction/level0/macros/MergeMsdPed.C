@@ -8,12 +8,25 @@
 // Convert pedestal files from standalone pgm into pedestal file for SHOE
 ///////////////////////////////////////////////////////////////////////////
 // main
-void MergeMsdPed(TString fileOutName = "TAMSD_Pedestal.cal")
+void MergeMsdPed(TString fileOutName = "TAMSD_Pedestal.cal", Int_t runNumber = 3876)
 {
+   Int_t numFiles = 6;
+
    FILE* fp = fopen(fileOutName.Data(), "w");
+  
+   // sigma noise level
+   Double_t sigLevel[] = {6, 7, 5, 6, 5, 6};
+   fprintf(fp,"# SigmaNoiseLevel\n");
+
+   for (Int_t i = 0; i < numFiles; ++i) {
+      fprintf(fp,"#sensorId: %d\n", i);
+      fprintf(fp,"%.0f\n", sigLevel[i]);
+   }
+   fprintf(fp,"############\n");
+
+   // pedestal values
    fprintf(fp,"#senorId stripId AsicId AsicCh Mean Sigma status\n");
 
-   Int_t numFiles = 6;
    
    Char_t line[255];
    
@@ -29,7 +42,7 @@ void MergeMsdPed(TString fileOutName = "TAMSD_Pedestal.cal")
 
       Int_t boardId = i / 2;
       Int_t sideId  = i % 2;
-      TString name = Form("FOOT_3876_board-%d_side-%d.cal", boardId, sideId);
+      TString name = Form("FOOT_%d_board-%d_side-%d.cal", runNumber, boardId, sideId);
       FILE* fpin = fopen(name.Data(), "r");
       
       for (Int_t k = 0; k < 18; ++k) {
