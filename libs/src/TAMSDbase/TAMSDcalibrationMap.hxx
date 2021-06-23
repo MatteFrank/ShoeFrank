@@ -13,7 +13,7 @@ class TAMSDcalibrationMap : public TAGobject
 private:
    TCalibMapType fCalibElossMapStrip;     // map for energy calibration per strip
    TCalibMapType fCalibPedMapStrip;       // map for pedestal per strip
-   vector<Float_t> fSigmaNoiseLevel;
+   vector<Double_t> fSigmaNoiseLevel;
 
 public:
   TAMSDcalibrationMap();
@@ -23,6 +23,7 @@ public:
 
   void     LoadPedestalMap(TString Filename);
   Double_t GetPedestalParam(Int_t sensorId, Int_t stripId, UInt_t parId) { return fCalibPedMapStrip[make_pair(sensorId, stripId)][parId];   }
+  Double_t GetPedestalNoiseLevel(Int_t sensorId)                         { return fSigmaNoiseLevel[sensorId];   }
 
   ClassDef(TAMSDcalibrationMap, 0)
 };

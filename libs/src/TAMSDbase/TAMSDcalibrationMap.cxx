@@ -69,6 +69,29 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
       int sensorId, stripId;
       int asicId, asicCh;
       double Q_corrp0, Q_corrp1, Q_corrp2;
+      double sigmaLevel;
+      int k = 0;
+      
+      // loop over sigma level per sensor
+      while (fin.getline(line, 200, '\n')) {
+         
+         // separate noise level and pedestal by ##
+         if (line[0] == '#' && line[1] == '#')
+            break;
+         
+         if(strchr(line,'#')) {
+            if(FootDebugLevel(1))
+               Info("LoadEnergyCalibrationMap()","Skip comment line:: %s\n",line);
+            continue;
+         }
+        
+         sscanf(line, "%lf", &sigmaLevel);
+         fSigmaNoiseLevel.push_back(sigmaLevel);
+         if(FootDebugLevel(1)) {
+            Info("LoadPedestalMap()","sensorId: %d Sigma Level %.1f\n", k, fSigmaNoiseLevel[k]);
+            k++;
+         }
+      }
       
       // loop over all the strips
       while (fin.getline(line, 200, '\n')) {
