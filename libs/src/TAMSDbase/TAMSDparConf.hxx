@@ -33,7 +33,6 @@ private:
    };
    
    struct AnalysisParameter_t : public  TObject {
-      Float_t    SigmaNoiseLevel;      // sigma noise level
    };
    
    SensorParameter_t   fSensorParameter[6];
