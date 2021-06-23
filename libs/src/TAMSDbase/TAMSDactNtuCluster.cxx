@@ -16,7 +16,7 @@
 
 /*!
  \class TAMSDactNtuCluster 
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for MSD cluster. **
  */
 
 ClassImp(TAMSDactNtuCluster);
@@ -285,7 +285,7 @@ Bool_t TAMSDactNtuCluster::ApplyCuts(TAMSDcluster* cluster)
    TClonesArray* list = cluster->GetListOfStrips();
    Int_t  entries = list->GetEntries();
    
-   // cuts on pixels in cluster
+   // cuts on strips in cluster
    if(entries < pConfig->GetSensorPar(cluster->GetSensorIdx()).MinNofStripsInCluster ||
       entries > pConfig->GetSensorPar(cluster->GetSensorIdx()).MaxNofStripsInCluster)
       return false;
