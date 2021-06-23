@@ -30,7 +30,7 @@ public:
    virtual Bool_t  FindClusters(Int_t iSensor);
    
    //! Apply basic cuts
-   virtual Bool_t  ApplyCuts(TAMSDcluster* /*cluster*/) { return true; }// no config for the moment
+   virtual Bool_t  ApplyCuts(TAMSDcluster* /*cluster*/);
    
    //! Base creation of histogram
    virtual  void   CreateHistogram();

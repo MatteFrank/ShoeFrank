@@ -53,13 +53,13 @@ void TAMSDactNtuCluster::CreateHistogram()
   TString prefix = "ms";
   TString titleDev = "Multi Strip Detector";
   
-  fpHisStripTot = new TH1F(Form("%sClusStripTot", prefix.Data()), Form("%s - Total # strips per clusters", titleDev.Data()), 100, 0., 100.);
+  fpHisStripTot = new TH1F(Form("%sClusStripTot", prefix.Data()), Form("%s - Total # strips per clusters", titleDev.Data()), 25, 0., 25.);
   AddHistogram(fpHisStripTot);
   
   TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMap->Object();
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-    fpHisStrip[i] = new TH1F(Form("%sClusStrip%d",prefix.Data(), i+1), Form("%s - # strips per clusters for sensor %d", titleDev.Data(), i+1), 100, 0., 100.);
+    fpHisStrip[i] = new TH1F(Form("%sClusStrip%d",prefix.Data(), i+1), Form("%s - # strips per clusters for sensor %d", titleDev.Data(), i+1), 25, 0., 25);
     AddHistogram(fpHisStrip[i]);
   }
   
@@ -71,11 +71,11 @@ void TAMSDactNtuCluster::CreateHistogram()
   }
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-     fpHisClusCharge[i] = new TH1F(Form("%sClusCharge%d",prefix.Data(), i+1), Form("%s - cluster charge for sensor %d", titleDev.Data(), i+1), 1000, 0., 10000.);
+     fpHisClusCharge[i] = new TH1F(Form("%sClusCharge%d",prefix.Data(), i+1), Form("%s - cluster charge for sensor %d", titleDev.Data(), i+1), 100, 0., 500);
      AddHistogram(fpHisClusCharge[i]);
   }
    
-  fpHisClusChargeTot = new TH1F(Form("%sClusChargeTot",prefix.Data()), Form("%s - total cluster charge", titleDev.Data()), 1000, 0., 10000.);
+  fpHisClusChargeTot = new TH1F(Form("%sClusChargeTot",prefix.Data()), Form("%s - total cluster charge", titleDev.Data()), 100, 0., 500);
   AddHistogram(fpHisClusChargeTot);
 
   SetValidHistogram(kTRUE);
@@ -274,4 +274,21 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   cluster->SetPositionF(fCurrentPosition);
   cluster->SetPosErrorF(fCurrentPosError);
   cluster->SetEnergyLoss(tClusterPulseSum);
+}
+
+//______________________________________________________________________________
+//
+Bool_t TAMSDactNtuCluster::ApplyCuts(TAMSDcluster* cluster)
+{
+   TAMSDparConf* pConfig = (TAMSDparConf*) fpConfig->Object();
+   
+   TClonesArray* list = cluster->GetListOfStrips();
+   Int_t  entries = list->GetEntries();
+   
+   // cuts on pixels in cluster
+   if(entries < pConfig->GetSensorPar(cluster->GetSensorIdx()).MinNofStripsInCluster ||
+      entries > pConfig->GetSensorPar(cluster->GetSensorIdx()).MaxNofStripsInCluster)
+      return false;
+   
+   return true;
 }
