@@ -89,7 +89,7 @@ private:
    TCBMgeometryConstructor*  fBeamMonitor;
    TCVTgeometryConstructor*  fVertex;
    TCITgeometryConstructor*  fInnerTracker;
-   TCMSDgeometryConstructor* fMultiStrip;
+   TCMSDgeometryConstructor* fMicroStrip;
    TCCAgeometryConstructor*  fCalorimeter;
    TCTWgeometryConstructor*  fTofWall;
    TCEMgeometryConstructor*  fMagnet;

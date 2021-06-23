@@ -79,7 +79,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
   fBeamMonitor(0x0),
   fVertex(0x0),
   fInnerTracker(0x0),
-  fMultiStrip(0x0),
+  fMicroStrip(0x0),
   fCalorimeter(0x0),
   fTofWall(0x0),
   fMagnet(0x0),
@@ -111,12 +111,12 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
       fTofWall = new TCTWgeometryConstructor(fpParGeoTw);
    }
 
-   // initialise map file for Multi Strip Detector
+   // initialise map file for Micro Strip Detector
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fpParGeoMsd = new TAMSDparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       fpParGeoMsd->FromFile(mapFileName.Data());
-      fMultiStrip = new TCMSDgeometryConstructor(fpParGeoMsd);
+      fMicroStrip = new TCMSDgeometryConstructor(fpParGeoMsd);
    }
 
    // initialise map file for Inner Tracker
@@ -167,7 +167,7 @@ TCFOgeometryConstructor::~TCFOgeometryConstructor()
    if (fBeamMonitor)  delete fBeamMonitor;
    if (fVertex)       delete fVertex;
    if (fInnerTracker) delete fInnerTracker;
-   if (fMultiStrip)   delete fMultiStrip;
+   if (fMicroStrip)   delete fMicroStrip;
    if (fCalorimeter)  delete fCalorimeter;
    if (fTofWall)      delete fTofWall;
    if (fMagnet)       delete fMagnet;
@@ -327,7 +327,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
    // Multi Strip Detector
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       
-      G4LogicalVolume* log  = fMultiStrip->Construct();
+      G4LogicalVolume* log  = fMicroStrip->Construct();
       TVector3 ang          = fpFootGeo->GetMSDAngles()*TMath::DegToRad(); // in radians
       G4RotationMatrix* rot = new G4RotationMatrix;
       rot->rotateX(ang[0]);
@@ -345,7 +345,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
        log->SetRegion(regMSD);
        regMSD->AddRootLogicalVolume(log);
 
-      new G4PVPlacement(rot, trans, log, "MultiStrip", fLogWorld, false, 0);
+      new G4PVPlacement(rot, trans, log, "MicroStrip", fLogWorld, false, 0);
    }
    
    // ToF wall

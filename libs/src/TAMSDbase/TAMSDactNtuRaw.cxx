@@ -115,7 +115,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       UInt_t adcY = evt->Yplane[i];
       Int_t view  = -1;
       Int_t sensorId = -1;
-      Double_t sigmaLevel = 5;
+      Double_t sigmaLevel = 6;
       
       view = 1;
       sensorId = 2*boardId+view;

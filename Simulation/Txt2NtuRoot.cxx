@@ -321,7 +321,7 @@ int main(int argc, char *argv[])
          }
 
 
-         //	Fill multi strip detector
+         //	Fill Micro strip detector
 
          if(!ReadError){
 

@@ -120,7 +120,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      fMsdClusDisplay = new TAEDcluster("Multi Strip Cluster");
+      fMsdClusDisplay = new TAEDcluster("Micro Strip Cluster");
       fMsdClusDisplay->SetMaxEnergy(fMaxEnergy);
       fMsdClusDisplay->SetDefWidth(fQuadDefWidth);
       fMsdClusDisplay->SetDefHeight(fQuadDefHeight);
@@ -274,7 +274,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
    // MSD
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       TAMSDparGeo* parGeo = fReco->GetParGeoMsd();
-      TGeoVolume* msdVol = parGeo->BuildMultiStripDetector();
+      TGeoVolume* msdVol = parGeo->BuildMicroStripDetector();
       fVolumeNames[msdVol->GetName()] = kMSD;
 
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAMSDparGeo::GetBaseName());

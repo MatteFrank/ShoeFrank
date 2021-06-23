@@ -39,9 +39,9 @@ void TCMSDgeometryConstructor::DefineMaterial()
 void TCMSDgeometryConstructor::DefineSensitive()
 {
    // Putting here message
-   InfoMcMsg("Construct()", "Construct Multi Strip Detector");
+   InfoMcMsg("Construct()", "Construct Micro Strip Detector");
   
-   InfoMcMsg("DefineSensitive()", "Define sensitive for Multi Strip Detector");
+   InfoMcMsg("DefineSensitive()", "Define sensitive for Micro Strip Detector");
 
    // sensitive volume
    G4SDManager* SDman = G4SDManager::GetSDMpointer();

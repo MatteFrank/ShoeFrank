@@ -13,6 +13,7 @@ class TAMSDcalibrationMap : public TAGobject
 private:
    TCalibMapType fCalibElossMapStrip;     // map for energy calibration per strip
    TCalibMapType fCalibPedMapStrip;       // map for pedestal per strip
+   vector<Float_t> fSigmaNoiseLevel;
 
 public:
   TAMSDcalibrationMap();
