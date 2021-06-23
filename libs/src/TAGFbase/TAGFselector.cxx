@@ -160,6 +160,7 @@ int TAGFselector::Categorize_TruthMC( )
 				//CAREFUL HERE!!!!!!!!! FOOT TAGrecoManager file does not have Hydrogen and Helium isotopes!!!! Also think about throwing an error here...
 				if ( !TAGrecoManager::GetPar()->Find_MCParticle( pdgName.Data() ) ) 
 				{
+					if(m_debug > 0) cout << "Found Particle not in MC list: " << pdgName << "\n";
 					continue;
 				}
 
@@ -612,7 +613,7 @@ void TAGFselector::CategorizeMSD()	{
 			// loop all absMeas in the found IT plane
 
 			if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
-				cout << "TAGFselector::CategorizeMSD() -- no MSD layer MSDnPlane "<< MSDnPlane<<"\n";
+				if(m_debug > 0) cout << "TAGFselector::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
 				continue;
 			}
 
@@ -700,7 +701,7 @@ void TAGFselector::CategorizeTW()
 		int count = 0;
 
 		if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
-			cout << "TAGFselector::CategorizeTW() -- no TW layer\n";
+			if(m_debug > 0) cout << "TAGFselector::CategorizeTW() -- no measurement found int TW layer\n";
 			continue;
 		}
 

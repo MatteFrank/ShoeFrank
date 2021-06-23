@@ -45,38 +45,44 @@ void UpdatePDG::MakePdgDatabase() {
   // clean the particle datatbase. Important!
   TDatabasePDG::Instance()->~TDatabasePDG();
   
-  int nNewParticles = 20;
+  int nNewParticles = 41;
   int pdgCode = 66666600;
   // particle name
-  vector<string> nameVector 		 = { 	"C11", "C12", "C13", "C14", 
-						"Li6", "Li7",
-						"Be7", "Be9", "Be10",
-						"B10", "B11",
-						"N14", "N15",
-						"He4", "He3", "H1", "H2", "H3",
-						"O15", "O16" };
+  vector<string> nameVector 		 = {
+			"H1", "H2", "H3",
+			"He3", "He4", "He6", "He8",
+			"Li6", "Li7", "Li8", "Li9",
+			"Be7", "Be9", "Be10", "Be11", "Be12", "Be14",
+			"B8", "B10", "B11", "B12", "B13", "B14", "B15",
+			"C9", "C10", "C11", "C12", "C13", "C14", "C15", "C16",
+			"N12", "N13", "N14", "N15", "N16",
+			"O13", "O14", "O15", "O16" };
   if ( (int)nameVector.size() != nNewParticles ) 	{
     cout << "ERROR::UpdatePDG::MakePdgDatabase  -->  particle collection name size not match "<< nameVector.size() <<endl;
     exit(0);
   }
   
   // particle mass
-  double massV [] = { 	10.254, 11.1749, 12.1095, 13.07,
-			5.612, 6.548,
-			6.563, 8.357, 9.293,
-			9.32444, 10.2525,
-			13.1, 13.97,
-			4, 3.016, 1, 2.014, 3.016,
-			14, 14.88 };
+  double massV [] = {
+			1, 2.014, 3.016,
+			3.016, 4, 5.604, 7.480,
+			5.612, 6.548, 7.47, 8.405,
+			6.563, 8.357, 9.293, 10.262, 11.198, 13.075,
+			7.47, 9.32444, 10.2525, 11.187, 12.121, 13.059, 13.995,
+    	8.409, 9.328, 10.254, 11.1749, 12.1095, 13.07, 13.976, 14.911,
+			11.19, 12.11, 13.1, 13.97, 14.903,
+			12.13, 13.04, 14, 14.88 };
   
   // particle cherge x3
-  double chargeV [] = { 	18, 18, 18, 18,
-				9, 9,
-				12, 12, 12,
-				15, 15, 
-				21, 21,
-				6, 6, 3, 3, 3,
-				24, 24  };
+  double chargeV [] = {
+			3, 3, 3,
+			6, 6, 6, 6,
+			9, 9, 9, 9,
+			12, 12, 12, 12, 12, 12,
+			15, 15, 15, 15, 15, 15, 15,
+    	18, 18, 18, 18, 18, 18, 18, 18,
+			21, 21, 21, 21, 21,
+			24, 24, 24, 24  };
   
   // check that every particle defined in the parameter file is defined in nameVector
   for ( unsigned int i=0; i<TAGrecoManager::GetPar()->MCParticles().size(); i++) {

@@ -33,13 +33,14 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepoGenFit, 
 	for ( unsigned int i=0; i<m_Particles.size(); i++ )
 		m_ParticleIndex[ m_Particles[i] ] = i;
 
-	m_Isotopes  = { 	"C11", "C12", "C13", "C14", 
-						"Li6", "Li7",
-						"Be7", "Be9", "Be10",
-						"B10", "B11",
-						"N14", "N15",
-						"He4", "He3", "H1", "H2", "H3",
-						"O15", "O16" };
+	m_Isotopes  = {		"H1", "H2", "H3",
+						"He3", "He4", "He6", "He8",
+						"Li6", "Li7", "Li8", "Li9",
+						"Be7", "Be9", "Be10", "Be11", "Be12", "Be14",
+						"B8", "B10", "B11", "B12", "B13", "B14", "B15",
+						"C9", "C10", "C11", "C12", "C13", "C14", "C15", "C16",
+						"N12", "N13", "N14", "N15", "N16",
+						"O13", "O14", "O15", "O16" };
 	for ( unsigned int i=0; i<m_Isotopes.size(); i++ )
 		m_IsotopesIndex[ m_Isotopes[i] ] = i;
 
@@ -470,7 +471,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	int trackCounter = -1;
 
 	m_evNum = evNum;
-	// if(m_debug > 0)			
+	if(m_debug > 0)			
 		cout << "\n  ----------------------\nEvento numero " << m_evNum << " track " << m_mapTrack.size() << endl;
 	
 	// loop over all hit category
@@ -481,7 +482,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		vector<string> tok = Tokenize( trackIt->first.Data() , "_" );
 		string PartName = tok.at(0);
 
-		cout << "Track candidate: "<<trackCounter<< "  "<< PartName << " " << trackIt->first.Data() << "\n";
+		if(m_debug > 0) cout << "Track candidate: "<<trackCounter<< "  "<< PartName << " " << trackIt->first.Data() << "\n";
 
 		// check if the category is defined in UpdatePDG  -->  also done in GetPdgCode()
 		if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" )  {
@@ -603,7 +604,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 			m_nConvergedTracks_all[ PartName ]++;
 
 			RecordTrackInfo( fitTrack, PartName );
-			cout << "DONE\n";
+			if(m_debug > 0) cout << "DONE\n";
 			m_vectorConvergedTrack.push_back( fitTrack );
 		}
 		
@@ -1188,7 +1189,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTra
 	}
 
 	int chargeFromTW = m_selector->GetChargeFromTW( fitTrack );
-	cout << "Charge From TW::" << chargeFromTW << endl;
+	if(m_debug > 0 ) cout << "Charge From TW::" << chargeFromTW << endl;
 	if(chargeFromTW == -1)
 		return;
 	
