@@ -19,11 +19,10 @@
 
 /*!
  \class TAITactBaseRaw TAITactBaseRaw.hxx "TAITactBaseRaw.hxx"
- \brief Base class to get vertex raw data. **
+ \brief Base class to get ITR/VTX raw data. **
  */
 
 ClassImp(TAITactBaseRaw);
-
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -31,7 +30,6 @@ ClassImp(TAITactBaseRaw);
 TAITactBaseRaw::TAITactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAVTactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
-
 }
 
 //------------------------------------------+-----------------------------------

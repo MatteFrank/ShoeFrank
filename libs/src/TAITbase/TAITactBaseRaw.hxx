@@ -29,22 +29,18 @@ public:
    explicit TAITactBaseRaw(const char* name=0, TAGdataDsc* p_datraw=0, TAGparaDsc* p_geomap=0, TAGparaDsc* p_config=0, TAGparaDsc* pParMap=0);
    virtual  ~TAITactBaseRaw();
    
-   
    //! Base creation of histogram
    void CreateHistogram();
    
-   
 protected:
-   
+
    //! Add pixel to list
    void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
    
    //! Get Sensor number
    Int_t  GetSensor(UInt_t key);
 
-
    ClassDef(TAITactBaseRaw,0)
-
 };
 
 #endif
