@@ -58,14 +58,16 @@ Bool_t TAVTbaseParMap::FromFile(const TString& name)
       for (Int_t i = 0; i < fSensorsN; ++i) { // Loop on each sensor
       
          Int_t sensorId;
-         ReadItem(sensorId);
+         Int_t planeId;
+
+         ReadItem(planeId, sensorId);
 
          pair<int, int> idx(dataLink, sensorId);
 
-         fPlaneId[idx] = i;
+         fPlaneId[idx] = planeId;
       
          if(FootDebugLevel(1))
-            printf("DataLink %d SensorId: %d PlaneId: %d\n", dataLink, sensorId, i);
+            printf("DataLink %d SensorId: %d PlaneId: %d\n", dataLink, sensorId, fPlaneId[idx]);
       }
    }
    
