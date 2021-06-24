@@ -24,12 +24,26 @@
 
 ClassImp(TAVTactBaseRaw);
 
-const UInt_t TAVTactBaseRaw::fgkKeyHeader[]      = {0x80008000, 0x80018001, 0x80028002, 0x80038003};
-const Int_t  TAVTactBaseRaw::fgkFrameHeaderSize  = 6;
-const Int_t  TAVTactBaseRaw::fgkLineWidth        = 9;
-const UInt_t TAVTactBaseRaw::fgkFrameHeader      = 0x80088007;
-const UInt_t TAVTactBaseRaw::fgkFrameTail        = 0xaaa8aaa7;
-const UInt_t TAVTactBaseRaw::fgkKeyTail[]        = {0x8bb08bb0, 0x8bb18bb1, 0x8bb28bb2, 0x8bb38bb3};
+const UInt_t TAVTactBaseRaw::fgkKeyHeader[]     = {0x80008000, 0x80018001, 0x80028002, 0x80038003,
+                                                   0x80048004, 0x80058005, 0x80068006, 0x80078007,
+                                                   0x80088008, 0x80098009, 0x80108010, 0x80118011,
+                                                   0x80128012, 0x80138013, 0x80148014, 0x80158015,
+                                                   0x80168016, 0x80178017, 0x80188018, 0x80198019,
+                                                   0x80208020, 0x80218021, 0x80228022, 0x80238023,
+                                                   0x80248024, 0x80248024, 0x80258025, 0x80268026,
+                                                   0x80288028, 0x80298029, 0x80308030, 0x80318031 };
+const Int_t  TAVTactBaseRaw::fgkFrameHeaderSize =  6;
+const Int_t  TAVTactBaseRaw::fgkLineWidth       =  9;
+const UInt_t TAVTactBaseRaw::fgkFrameHeader     =  0x80088007;
+const UInt_t TAVTactBaseRaw::fgkFrameTail       =  0xaaa8aaa7;
+const UInt_t TAVTactBaseRaw::fgkKeyTail[]       = {0x8bb08bb0, 0x8bb18bb1, 0x8bb28bb2, 0x8bb38bb3,
+                                                   0x8bb48bb4, 0x8bb58bb5, 0x8bb68bb6, 0x8bb78bb7,
+                                                   0x8bb88bb8, 0x8bb98bb9, 0x8b108b10, 0x8b118b11,
+                                                   0x8b128b12, 0x8b138b13, 0x8b148b14, 0x8b158b15,
+                                                   0x8b168b16, 0x8b178b17, 0x8b188b18, 0x8b198b19,
+                                                   0x8b208b20, 0x8b218b21, 0x8b228b22, 0x8b238b23,
+                                                   0x8b248b24, 0x8b258b25, 0x8b268b26, 0x8b278b27,
+                                                   0x8b288b28, 0x8b298b29, 0x8b308b30, 0x8b318b31 };
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

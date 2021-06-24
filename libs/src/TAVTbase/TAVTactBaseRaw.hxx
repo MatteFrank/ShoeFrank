@@ -54,11 +54,11 @@ protected:
    UInt_t*           fDataEvent;         // data array to fill the whol eevent
 
    Int_t             fEventNumber;        // number of the event
-   Int_t             fPrevEventNumber[8];    // previous number of the event
+   Int_t             fPrevEventNumber[32];    // previous number of the event
    Int_t             fTriggerNumber;      // number of the trigger
-   Int_t             fPrevTriggerNumber[8];  // previous number of the trigger
+   Int_t             fPrevTriggerNumber[32];  // previous number of the trigger
    Int_t             fTimeStamp;          // time stamp per frame
-   Int_t             fPrevTimeStamp[8];      // time stamp per frame
+   Int_t             fPrevTimeStamp[32];      // time stamp per frame
    Int_t             fFrameCount;         // number of frame
    Int_t             fTriggerNumberFrame; // number of the trigger
    Int_t             fTimeStampFrame;     // time stamp per frame
@@ -77,17 +77,17 @@ protected:
    Int_t             fEventsOverflow; 
    Int_t             fNStatesInLine; 
       
-   TH2F*             fpHisPixelMap[8];  // pixel map per sensor
-   TH1F*             fpHisRateMap[8];   // pixel map per sensor
-   TH1F*             fpHisRateMapQ[8];  // pixel map per sensor quadrant
-   TH1F*             fpHisEvtLength[8]; // event data length for each sensor (all 3 frames)
-   TH1F*             fpHisEvtNumber[8]; //
-   TH1F*             fpHisTriggerEvt[8]; //
-   TH1F*             fpHisTimeStampEvt[8]; //
-   TH1F*             fpHisTriggerFrame[8];
-   TH1F*             fpHisTimeStampFrame[8];
-   TH1F*             fpHisFrameCnt[8];
-   TH1F*             fpHisFrameErrors[8];
+   TH2F*             fpHisPixelMap[32];  // pixel map per sensor
+   TH1F*             fpHisRateMap[32];   // pixel map per sensor
+   TH1F*             fpHisRateMapQ[32];  // pixel map per sensor quadrant
+   TH1F*             fpHisEvtLength[32]; // event data length for each sensor (all 3 frames)
+   TH1F*             fpHisEvtNumber[32]; //
+   TH1F*             fpHisTriggerEvt[32]; //
+   TH1F*             fpHisTimeStampEvt[32]; //
+   TH1F*             fpHisTriggerFrame[32];
+   TH1F*             fpHisTimeStampFrame[32];
+   TH1F*             fpHisFrameCnt[32];
+   TH1F*             fpHisFrameErrors[32];
    
 protected:
    static const UInt_t  fgkKeyHeader[];
