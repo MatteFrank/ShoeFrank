@@ -29,6 +29,21 @@ TAITactNtuHit::TAITactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* 
   fpDatDaq(pDatDaq)
 {
    AddDataIn(pDatDaq, "TAGdaqEvent");
+   AddDataOut(pNtuRaw, "TAITntuHit");
+   AddPara(pGeoMap, "TAITparGeo");
+   AddPara(pConfig, "TAITparConf");
+   
+   TAITparGeo* parGeo = (TAITparGeo*) fpGeoMap->Object();
+   fNSensors = parGeo->GetSensorsN();
+   
+   for (Int_t i = 0; i < fNSensors; ++i) {
+      fPrevEventNumber[i]   = 0;
+      fPrevTriggerNumber[i] = 0;
+      fPrevTimeStamp[i]     = 0;
+   }
+   
+   Int_t size = parGeo->GetSensorsN()*sizeof(MI26_FrameRaw)*4;
+   fData.resize(size);
 }
 
 //------------------------------------------+-----------------------------------
@@ -87,6 +102,10 @@ Bool_t TAITactNtuHit::DecodeEvent(const DECardEvent* evt)
       while (GetFrame(i, data)) {
          DecodeFrame(i, data);
       }
+      
+      fPrevEventNumber[i]   = fEventNumber;
+      fPrevTriggerNumber[i] = fTriggerNumber;
+      fPrevTimeStamp[i]     = fTimeStamp;
    }
    
   if(FootDebugLevel(3)) {
@@ -103,10 +122,6 @@ Bool_t TAITactNtuHit::DecodeEvent(const DECardEvent* evt)
   }
    
    delete data;
-
-   fPrevEventNumber   = fEventNumber;
-   fPrevTriggerNumber = fTriggerNumber;
-   fPrevTimeStamp     = fTimeStamp;
 
    return true;
 }
