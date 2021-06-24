@@ -100,7 +100,6 @@ void TAGparTools::ReadItem(Int_t& key, Int_t& item)
    sscanf(sKey.Data(), "%s %d:", tmp, &key);
    
    item = sItem.Atoi();
-   printf("%d %d\n", key, item);
 }
 
 //_____________________________________________________________________________
