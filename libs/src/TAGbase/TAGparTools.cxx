@@ -88,6 +88,21 @@ void TAGparTools::ReadItem(TString& key, TString& item)
   item = line(pos+1, line.Length()-pos);
   item = Normalize(item.Data());
 }
+
+//_____________________________________________________________________________
+void TAGparTools::ReadItem(Int_t& key, Int_t& item)
+{
+   TString sKey;
+   TString sItem;
+   
+   ReadItem(sKey, sItem);
+   char tmp[128];
+   sscanf(sKey.Data(), "%s %d:", tmp, &key);
+   
+   item = sItem.Atoi();
+   printf("%d %d\n", key, item);
+}
+
 //_____________________________________________________________________________
 void TAGparTools::ReadItem(Int_t &arg)
 {
