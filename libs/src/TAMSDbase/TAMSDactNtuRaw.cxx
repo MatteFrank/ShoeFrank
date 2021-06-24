@@ -118,7 +118,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       Bool_t status  = true;
       
       view = 1;
-      sensorId = 2*boardId+view;
+      sensorId = TAMSDparGeo::GetSensorId(boardId, view);
       status   = p_parcal->GetPedestalStatus(sensorId, i);
       if (status == 0) {
          Double_t valueX = p_parcal->GetPedestalValue(sensorId, i);
@@ -133,7 +133,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       }
       
       view = 0;
-      sensorId = 2*boardId+view;
+      sensorId = TAMSDparGeo::GetSensorId(boardId, view);
       status   = p_parcal->GetPedestalStatus(sensorId, i);
       if (status == 0) {
          Double_t valueY = p_parcal->GetPedestalValue(sensorId, i);
