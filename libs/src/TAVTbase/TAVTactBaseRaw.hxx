@@ -32,7 +32,7 @@ public:
    Int_t GetSensorsN() const { return fNSensors; }
    
    //! Base creation of histogram
-   void CreateHistogram();
+   virtual void CreateHistogram();
    
 public:
    static  UInt_t  GetKeyHeader(Int_t idx)                  { return fgkKeyHeader[idx];   }
@@ -100,22 +100,22 @@ protected:
 protected:
    
    // Reset frame counters
-   void  ResetFrames();
+   virtual void  ResetFrames();
    
    //! Add pixel to list
-   void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
+   virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
    
    //! Get Sensor number
-   Int_t  GetSensor(UInt_t key);
+   virtual  Int_t  GetSensor(UInt_t key);
 
    //! decode frame
-   Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame);
+   virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame);
 
    //! Fill histogram frame
-   void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data);
+   virtual void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data);
    
    //! Fill histogram frame
-   void FillHistoEvt(Int_t iSensor);
+   virtual void FillHistoEvt(Int_t iSensor);
    
    //! Fill DAQ event
    virtual void FillDaqEvent() { return; }
