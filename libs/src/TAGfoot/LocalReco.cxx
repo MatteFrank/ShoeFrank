@@ -276,8 +276,8 @@ void LocalReco::AddRawRequiredItem()
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      fTAGroot->AddRequiredItem("msdActDat");
-//      fTAGroot->AddRequiredItem("msdActNtu");
+      fTAGroot->AddRequiredItem("msdActRaw");
+      fTAGroot->AddRequiredItem("msdActNtu");
    }
 
    if (TAGrecoManager::GetPar()->IncludeCA()) {
