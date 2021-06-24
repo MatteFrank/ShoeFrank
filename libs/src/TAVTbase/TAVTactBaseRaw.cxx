@@ -60,21 +60,7 @@ TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
   fEventsOverflow(0), 
   fNStatesInLine(0)
 {
-   AddDataOut(pNtuRaw, "TAVTntuHit");
-   AddPara(pGeoMap, "TAVTparGeo");
-   AddPara(pConfig, "TAVTparConf");
-   
-   TAVTparGeo* parGeo = (TAVTparGeo*) fpGeoMap->Object();
-   fNSensors = parGeo->GetSensorsN();
-   
-   for (Int_t i = 0; i < fNSensors; ++i) {
-      fPrevEventNumber[i]   = 0;
-      fPrevTriggerNumber[i] = 0;
-      fPrevTimeStamp[i]     = 0;
-   }
-   
-   Int_t size = parGeo->GetSensorsN()*sizeof(MI26_FrameRaw)*4;
-   fData.resize(size);
+  
 }
 
 //------------------------------------------+-----------------------------------
@@ -217,11 +203,6 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
     7) Trailer;
     */
    
-   TAVTntuHit*  pNtuRaw = (TAVTntuHit*)  fpNtuRaw->Object();
-   TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
-   TAVTparGeo*  pGeoPar = (TAVTparGeo*)  fpGeoMap->Object();
-   TAVTparMap*  pParMap = (TAVTparMap*) fpParMap->Object();
-   
    Int_t dataLength    = ((frame->DataLength & 0xFFFF0000)>>16);
    if (ValidHistogram()) {
    if (dataLength != fDataSize)
@@ -298,8 +279,7 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
             // create a new pixel only if we are reading an event
             // and if the line is in the proper limit
             if (!lineStatus->F.Ovf) {
-               Int_t planeId = pParMap->GetPlaneId(iSensor);
-               AddPixel(planeId, 1, lineStatus->F.LineAddr, state->F.ColAddr+iPixel);
+               AddPixel(iSensor, 1, lineStatus->F.LineAddr, state->F.ColAddr+iPixel);
                if(FootDebugLevel(3))
                   printf("sensor %d, line %d, col %d\n", iSensor, lineStatus->F.LineAddr, state->F.ColAddr+iPixel);
             }
@@ -316,7 +296,7 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
 }
 
 // --------------------------------------------------------------------------------------
-void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
+void TAVTactBaseRaw::AddPixel( Int_t planeId, Int_t value, Int_t aLine, Int_t aColumn)
 {
    // Add a pixel to the vector of pixels
    // require the following info
@@ -326,8 +306,11 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    
    TAVTntuHit* pNtuRaw  = (TAVTntuHit*) fpNtuRaw->Object();
    TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
+   TAVTparMap*  pParMap = (TAVTparMap*) fpParMap->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
-
+   
+   Int_t iSensor = pParMap->GetPlaneId(planeId);
+   
    std::pair<int, int> pair(aLine, aColumn);
    if (pConfig->GetSensorPar(iSensor).DeadPixelMap[pair] == 1) return;
 
