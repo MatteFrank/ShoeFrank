@@ -54,6 +54,7 @@ protected:
    static const TString fgkDefParaNameIt;
    static const Int_t   fgkDefSensPerLayer; // Def number of sensors per layer
    static const Int_t   fgkDefSensPerPlume; // Def number of sensors per plume module
+   static const Int_t   fgkDefLayersN;      // Def number of layers
    
 private:
    Float_t GetPassiveLayerPosZ(Int_t layer);
