@@ -72,9 +72,10 @@ TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
   fReadingEvent(0),
   fOverflow(0),
   fEventsOverflow(0), 
-  fNStatesInLine(0)
+  fNStatesInLine(0),
+  fPrefix("vt"),
+  fTitleDev("Vertex")
 {
-  
 }
 
 //------------------------------------------+-----------------------------------
@@ -90,45 +91,51 @@ TAVTactBaseRaw::~TAVTactBaseRaw()
 void TAVTactBaseRaw::CreateHistogram()
 {
    DeleteHistogram();
-   TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*) fpGeoMap->Object();
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-      fpHisPixelMap[i] = new TH2F(Form("vtPixelMap%d", i+1), Form("Vertex - pixel map for sensor %d", i+1),
+      fpHisPixelMap[i] = new TH2F(Form("%sPixelMap%d", fPrefix.Data(), i+1), Form("%s - pixel map for sensor %d", fTitleDev.Data(), i+1),
                                   pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy(),
                                   pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
       fpHisPixelMap[i]->SetStats(kFALSE);
       AddHistogram(fpHisPixelMap[i]);
    
       
-      fpHisRateMap[i] = new TH1F(Form("vtRateMap%d", i+1), Form("Vertex - rate per line for sensor %d", i+1),
+      fpHisRateMap[i] = new TH1F(Form("%sRateMap%d", fPrefix.Data(), i+1), Form("%s - rate per line for sensor %d", fTitleDev.Data(), i+1),
                                  pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
       AddHistogram(fpHisRateMap[i]);
       
-      fpHisRateMapQ[i] = new TH1F(Form("vtRateMapQ%d", i+1), Form("Vertex - rate per quadrant for sensor %d", i+1), 10, 0, 5);
+      fpHisRateMapQ[i] = new TH1F(Form("%sRateMapQ%d", fPrefix.Data(), i+1), Form("%s - rate per quadrant for sensor %d", fTitleDev.Data(), i+1), 10, 0, 5);
       AddHistogram(fpHisRateMapQ[i]);
 	  
-      fpHisEvtLength[i] = new TH1F(Form("vtEvtLength%d", i+1), Form("Vertex - event length sensor %d", i+1), 1000, 0, 10000);
+      fpHisEvtLength[i] = new TH1F(Form("%sEvtLength%d", fPrefix.Data(), i+1), Form("%s - event length sensor %d", fTitleDev.Data(), i+1), 1000, 0, 10000);
       AddHistogram(fpHisEvtLength[i]);
       
-      fpHisTriggerEvt[i] = new TH1F(Form("vtTriggerEvt%d", i+1), Form("Vertex - Trigger difference in event sensor %d vs sensor 1", i+1),  40, -19.5, 20.5);
+      fpHisTriggerEvt[i] = new TH1F(Form("%sTriggerEvt%d", fPrefix.Data(), i+1), Form("%s - Trigger difference in event sensor %d vs sensor 1",
+                                                                                      fTitleDev.Data(), i+1),  40, -19.5, 20.5);
       AddHistogram(fpHisTriggerEvt[i]);
       
-      fpHisEvtNumber[i] = new TH1F(Form("vtNumberEvt%d", i+1), Form("Vertex -  Event number difference per event sensor %d", i+1), 40, -19.5, 20.5);
+      fpHisEvtNumber[i] = new TH1F(Form("%sNumberEvt%d", fPrefix.Data(), i+1), Form("%s -  Event number difference per event sensor %d", fTitleDev.Data(),
+                                                                                    i+1), 40, -19.5, 20.5);
       AddHistogram(fpHisEvtNumber[i]);
       
-      fpHisTimeStampEvt[i] = new TH1F(Form("vtTimeStampEvt%d", i+1), Form("Vertex -  Time stamp difference per event sensor %d", i+1), 1000, -200, 200);
+      fpHisTimeStampEvt[i] = new TH1F(Form("%sTimeStampEvt%d", fPrefix.Data(), i+1), Form("%s -  Time stamp difference per event sensor %d", fTitleDev.Data(),
+                                                                                          i+1), 1000, -200, 200);
       AddHistogram(fpHisTimeStampEvt[i]);
   
-      fpHisTriggerFrame[i] = new TH1F(Form("vtTriggerFrame%d", i+1), Form("Vertex - Trigger difference in sensor %d", i+1),  20, -9.5, 10.5);
+      fpHisTriggerFrame[i] = new TH1F(Form("%sTriggerFrame%d", fPrefix.Data(), i+1), Form("%s - Trigger difference in sensor %d", fTitleDev.Data(), i+1),  20,
+                                      -9.5, 10.5);
       AddHistogram(fpHisTriggerFrame[i]);
       
-      fpHisTimeStampFrame[i] = new TH1F(Form("vtTimeStampFrame%d", i+1), Form("Vertex - Time stamp difference in sensor% d", i+1),  1000, -20000, 20000);
+      fpHisTimeStampFrame[i] = new TH1F(Form("%sTimeStampFrame%d", fPrefix.Data(), i+1), Form("%s - Time stamp difference in sensor% d", fTitleDev.Data(),
+                                                                                              i+1),  1000, -20000, 20000);
       AddHistogram(fpHisTimeStampFrame[i]);
       
-      fpHisFrameCnt[i] = new TH1F(Form("vtFrameCnt%d", i+1), Form("Vertex - Frame cnt difference in sensor %d", i+1),  510, -9.5, 500.5);
+      fpHisFrameCnt[i] = new TH1F(Form("%sFrameCnt%d", fPrefix.Data(), i+1), Form("%s - Frame cnt difference in sensor %d", fTitleDev.Data(), i+1),  510,
+                                  -9.5, 500.5);
       AddHistogram(fpHisFrameCnt[i]);
    
-      fpHisFrameErrors[i] = new TH1F(Form("vtErrorsFrame%d", i+1), Form("Vertex - Frame errors in sensor %d", i+1), 4, 0.5, 4.5);
+      fpHisFrameErrors[i] = new TH1F(Form("%sErrorsFrame%d", fPrefix.Data(), i+1), Form("%s - Frame errors in sensor %d", fTitleDev.Data(), i+1), 4, 0.5, 4.5);
       AddHistogram(fpHisFrameErrors[i]);
    }
 

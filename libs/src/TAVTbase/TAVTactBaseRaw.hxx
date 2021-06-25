@@ -76,7 +76,10 @@ protected:
    
    Int_t             fEventsOverflow; 
    Int_t             fNStatesInLine; 
-      
+   
+   TString           fPrefix;            // prefix of histogram
+   TString           fTitleDev;          // device name for histogram title
+   
    TH2F*             fpHisPixelMap[32];  // pixel map per sensor
    TH1F*             fpHisRateMap[32];   // pixel map per sensor
    TH1F*             fpHisRateMapQ[32];  // pixel map per sensor quadrant
