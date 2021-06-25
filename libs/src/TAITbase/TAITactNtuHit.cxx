@@ -95,7 +95,7 @@ Bool_t TAITactNtuHit::DecodeEvent()
    if (!GetVtxHeader()) return false;
    
    // loop over boards
-   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensPerPlume(); ++i) {
       
       if (!GetSensorHeader(i)) return false;
       fFirstFrame = true;

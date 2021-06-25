@@ -23,6 +23,7 @@
 const TString TAITparGeo::fgkBaseNameIt      = "IT";
 const TString TAITparGeo::fgkDefParaNameIt   = "itGeo";
 const Int_t   TAITparGeo::fgkDefSensPerLayer = 8;
+const Int_t   TAITparGeo::fgkDefSensPerPlume = 4;
 
 //_____________________________________________________________________________
 TAITparGeo::TAITparGeo()
@@ -32,6 +33,7 @@ TAITparGeo::TAITparGeo()
    fFlagIt = true;
    fLayersN = 2;
    fSensPerLayer = fgkDefSensPerLayer;
+   fSensPerPlume = fgkDefSensPerPlume;
    fkDefaultGeoName = "./geomaps/TAITdetector.geo";
 }
 
