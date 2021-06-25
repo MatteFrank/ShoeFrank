@@ -56,6 +56,7 @@ TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
   fpParMap(pParMap),
   fData(0x0),
   fDataEvent(0x0),
+  fDataLink(0),
   fEventNumber(0),
   fTriggerNumber(0),
   fTimeStamp(0),
@@ -317,7 +318,7 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
 }
 
 // --------------------------------------------------------------------------------------
-void TAVTactBaseRaw::AddPixel( Int_t planeId, Int_t value, Int_t aLine, Int_t aColumn)
+void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
 {
    // Add a pixel to the vector of pixels
    // require the following info
@@ -325,17 +326,17 @@ void TAVTactBaseRaw::AddPixel( Int_t planeId, Int_t value, Int_t aLine, Int_t aC
    // - value = analog value of this pixel
    // - line & column = position of the pixel in the matrix
    
-   TAVTntuHit* pNtuRaw  = (TAVTntuHit*) fpNtuRaw->Object();
-   TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
-   TAVTparMap*  pParMap = (TAVTparMap*) fpParMap->Object();
+   TAVTntuHit*  pNtuRaw = (TAVTntuHit*)  fpNtuRaw->Object();
+   TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
+   TAVTparMap*  pParMap = (TAVTparMap*)  fpParMap->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
-   Int_t iSensor = pParMap->GetPlaneId(planeId);
+   Int_t planeId = pParMap->GetPlaneId(iSensor);
    
    std::pair<int, int> pair(aLine, aColumn);
-   if (pConfig->GetSensorPar(iSensor).DeadPixelMap[pair] == 1) return;
-
-   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   if (pConfig->GetSensorPar(planeId).DeadPixelMap[pair] == 1) return;
+   
+   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(planeId, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);
@@ -344,14 +345,14 @@ void TAVTactBaseRaw::AddPixel( Int_t planeId, Int_t value, Int_t aLine, Int_t aC
    pixel->SetValidFrames(fFrameOk);
    
    if (ValidHistogram()) {
-      fpHisPixelMap[iSensor]->Fill(aLine, aColumn);
-	  
-	  fpHisRateMap[iSensor]->Fill(aColumn);
-	  
-	  for (Int_t i = 0; i < 4; ++i) {
-		 if (aColumn >= 258*i && aColumn < (i+1)*258)
-			fpHisRateMapQ[iSensor]->Fill(i+1);
-	  }
+      fpHisPixelMap[planeId]->Fill(aLine, aColumn);
+      
+      fpHisRateMap[planeId]->Fill(aColumn);
+      
+      for (Int_t i = 0; i < 4; ++i) {
+         if (aColumn >= 258*i && aColumn < (i+1)*258)
+            fpHisRateMapQ[planeId]->Fill(i+1);
+      }
    }
 }
 

@@ -52,6 +52,7 @@ protected:
    
    vector<UInt_t>    fData;              // data array to fill
    UInt_t*           fDataEvent;         // data array to fill the whol eevent
+   UInt_t            fDataLink;          // data link
 
    Int_t             fEventNumber;        // number of the event
    Int_t             fPrevEventNumber[32];    // previous number of the event
