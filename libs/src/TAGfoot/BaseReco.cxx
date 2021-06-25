@@ -557,7 +557,7 @@ void BaseReco::ReadParFiles()
          fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
          TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
          parFileName = fCampManager->GetCurMapFile(TAITparGeo::GetBaseName(), fRunNumber);
-         // parMap->FromFile(parFileName.Data());
+         parMap->FromFile(parFileName.Data());
       }
    }
 
