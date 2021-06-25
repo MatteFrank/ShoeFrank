@@ -210,6 +210,19 @@ void TAVTactBaseRaw::FillHistoEvt(Int_t iSensor)
 }
 
 // --------------------------------------------------------------------------------------
+void TAVTactBaseRaw::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn)
+{
+   fpHisPixelMap[planeId]->Fill(aLine, aColumn);
+   
+   fpHisRateMap[planeId]->Fill(aColumn);
+   
+   for (Int_t i = 0; i < 4; ++i) {
+      if (aColumn >= 258*i && aColumn < (i+1)*258)
+         fpHisRateMapQ[planeId]->Fill(i+1);
+   }
+}
+
+// --------------------------------------------------------------------------------------
 Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
 {
    // Read the information of a frame for a given sensor
@@ -344,15 +357,7 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    pixel->SetPosition(pos);
    pixel->SetValidFrames(fFrameOk);
    
-   if (ValidHistogram()) {
-      fpHisPixelMap[planeId]->Fill(aLine, aColumn);
-      
-      fpHisRateMap[planeId]->Fill(aColumn);
-      
-      for (Int_t i = 0; i < 4; ++i) {
-         if (aColumn >= 258*i && aColumn < (i+1)*258)
-            fpHisRateMapQ[planeId]->Fill(i+1);
-      }
-   }
+   if (ValidHistogram())
+    FillHistoPixel(planeId, aLine, aColumn);
 }
 

@@ -67,16 +67,7 @@ void TAITactBaseRaw::AddPixel(Int_t iSensor, Int_t value, Int_t aLine, Int_t aCo
    TVector3 pos(u,v,0);
    pixel->SetPosition(pos);
 
-   
-   if (ValidHistogram()) {
-      fpHisPixelMap[planeId]->Fill(aLine, aColumn);
-	  
-	  fpHisRateMap[planeId]->Fill(aColumn);
-	  
-	  for (Int_t i = 0; i < 4; ++i) {
-		 if (aColumn >= 258*i && aColumn < (i+1)*258)
-			fpHisRateMapQ[planeId]->Fill(i+1);
-	  }
-   }
+   if (ValidHistogram())
+      FillHistoPixel(planeId, aLine, aColumn);
 }
 
