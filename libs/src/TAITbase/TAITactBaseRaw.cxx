@@ -42,7 +42,7 @@ TAITactBaseRaw::~TAITactBaseRaw()
 
 
 // --------------------------------------------------------------------------------------
-void TAITactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
+void TAITactBaseRaw::AddPixel(Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
 {
    // Add a pixel to the vector of pixels
    // require the following info
@@ -50,10 +50,17 @@ void TAITactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    // - value = analog value of this pixel
    // - line & column = position of the pixel in the matrix
    
-   TAITntuHit* pNtuRaw = (TAITntuHit*) fpNtuRaw->Object();
-   TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
+   TAITntuHit*  pNtuRaw = (TAITntuHit*)  fpNtuRaw->Object();
+   TAITparGeo*  pGeoMap = (TAITparGeo*)  fpGeoMap->Object();
+   TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
+   TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
    
-   TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   Int_t planeId = pParMap->GetPlaneId(iSensor, fDataLink);
+   
+   std::pair<int, int> pair(aLine, aColumn);
+   if (pConfig->GetSensorPar(planeId).DeadPixelMap[pair] == 1) return;
+   
+   TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(planeId, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);
@@ -62,13 +69,13 @@ void TAITactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
 
    
    if (ValidHistogram()) {
-      fpHisPixelMap[iSensor]->Fill(aLine, aColumn);
+      fpHisPixelMap[planeId]->Fill(aLine, aColumn);
 	  
-	  fpHisRateMap[iSensor]->Fill(aColumn);
+	  fpHisRateMap[planeId]->Fill(aColumn);
 	  
 	  for (Int_t i = 0; i < 4; ++i) {
 		 if (aColumn >= 258*i && aColumn < (i+1)*258)
-			fpHisRateMapQ[iSensor]->Fill(i+1);
+			fpHisRateMapQ[planeId]->Fill(i+1);
 	  }
    }
 }

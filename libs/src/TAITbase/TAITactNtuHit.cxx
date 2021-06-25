@@ -6,8 +6,10 @@
 
 #include "TH2F.h"
 
-#include "TAGrecoManager.hxx"
 #include "DECardEvent.hh"
+#include "DAQMarkers.hh"
+
+#include "TAGrecoManager.hxx"
 #include "TAGdaqEvent.hxx"
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
@@ -65,8 +67,12 @@ Bool_t TAITactNtuHit::Action()
       
        TString type = datDaq->GetClassType(i);
        if (type.Contains("DECardEvent")) {
-         const DECardEvent* evt = static_cast<const DECardEvent*> (datDaq->GetFragment(i));
-          DecodeEvent(evt);
+          const DECardEvent* evt = static_cast<const DECardEvent*> (datDaq->GetFragment(i));
+          fData      = evt->values;
+          fEventSize = evt->evtSize;
+          fDataLink  = evt->channelID - (dataVTX | 0x30);
+          if (fEventSize == 0) continue;
+          DecodeEvent();
        }
    }
    
@@ -77,13 +83,8 @@ Bool_t TAITactNtuHit::Action()
 }
 
 // --------------------------------------------------------------------------------------
-Bool_t TAITactNtuHit::DecodeEvent(const DECardEvent* evt)
+Bool_t TAITactNtuHit::DecodeEvent()
 {
-   fData      = evt->values;
-   fEventSize = evt->evtSize;
-   
-   if (fEventSize == 0) return true;
-
    fIndex     = 0;
    MI26_FrameRaw* data = new MI26_FrameRaw;
 
