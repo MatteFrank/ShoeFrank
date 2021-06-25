@@ -26,7 +26,8 @@ void WriteItrMap(TString fileOutName = "TAITdetector.map")
 
       for (Int_t i = 0; i < sensorsN; ++i) {
          Int_t sensorId = i+4*(l-1);
-         fprintf(fp,"PlaneId  %2d: %2d\n", sensorId, sensorId);
+         Int_t planeId = i+4*(l-1);
+         fprintf(fp,"PlaneId  %2d: %2d\n", planeId, sensorId);
       }
    }
    fclose(fp);
