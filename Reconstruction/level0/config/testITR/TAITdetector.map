@@ -1,0 +1,59 @@
+# Mapping planeId (SW) sensorId (HW)
+#
+DataLinksN: 8
+#
+DataLink: 1
+SensorsN: 4
+PlaneId   0:  0
+PlaneId   1:  1
+PlaneId   2:  2
+PlaneId   3:  3
+#
+DataLink: 2
+SensorsN: 4
+PlaneId   4:  0
+PlaneId   5:  1
+PlaneId   6:  2
+PlaneId   7:  3
+#
+DataLink: 3
+SensorsN: 4
+PlaneId   8:  0
+PlaneId   9:  1
+PlaneId  10:  2
+PlaneId  11:  3
+#
+DataLink: 4
+SensorsN: 4
+PlaneId  12:  0
+PlaneId  13:  1
+PlaneId  14:  2
+PlaneId  15:  3
+#
+DataLink: 5
+SensorsN: 4
+PlaneId  16:  0
+PlaneId  17:  1
+PlaneId  18:  2
+PlaneId  19:  3
+#
+DataLink: 6
+SensorsN: 4
+PlaneId  20:  0
+PlaneId  21:  1
+PlaneId  22:  2
+PlaneId  23:  3
+#
+DataLink: 7
+SensorsN: 4
+PlaneId  24:  0
+PlaneId  25:  1
+PlaneId  26:  2
+PlaneId  27:  3
+#
+DataLink: 8
+SensorsN: 4
+PlaneId  28:  0
+PlaneId  29:  1
+PlaneId  30:  2
+PlaneId  31:  3
