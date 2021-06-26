@@ -63,6 +63,8 @@ public:
    TAITparGeo();
     virtual ~TAITparGeo();
    
+   //! Get number of Sensors per link
+   Int_t GetSensPerDataLink()           const { return fSensPerPlume;     }
    //! Get sensors per Plume
    Int_t    GetSensPerPlume()           const { return fSensPerPlume;     }
    //! Get Foam size

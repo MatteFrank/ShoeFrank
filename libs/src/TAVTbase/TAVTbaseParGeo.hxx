@@ -110,6 +110,8 @@ public:
 
    //! Get number of Sensors
    Int_t GetSensorsN()                 const { return fSensorsN;       }
+   //! Get number of Sensors per link
+   Int_t GetSensPerDataLink()          const { return fSensorsN;       }
    //! Get number of layers
    Int_t GetLayersN()                  const { return fLayersN;        }
 
