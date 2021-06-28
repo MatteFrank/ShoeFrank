@@ -78,18 +78,37 @@ double TAGF_KalmanStudies::EvalError( TVector3 mom, TMatrixD cov ) {
 
 
 //----------------------------------------------------------------------------------------------------
-void TAGF_KalmanStudies::FillMomentumInfo( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName, map<string, TH1F*> *h_deltaP ) {
+void TAGF_KalmanStudies::FillMomentumInfo( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName, map<string, TH1F*> *h_deltaP, map<string, TH1F*> *h_sigmaP ) {
 
 	double dP = meas.Mag() - expected.Mag();
+	double err = EvalError( meas, cov );
 
 	if ( (*h_deltaP).find( hitSampleName ) == (*h_deltaP).end() ) {
 		string name = "h_deltaP_" + hitSampleName;
-		TH1F* h = new TH1F( name.c_str(), name.c_str(), 100 , -1, 1 );
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 150 , -1.5, 1.5 );
+		h->GetXaxis()->SetRange(0, h->GetNbinsX() + 1);
 		(*h_deltaP)[ hitSampleName ] = h;
 	}
+
+	if ( (*h_sigmaP).find( hitSampleName ) == (*h_sigmaP).end() ) {
+		string name = "h_sigmaP_" + hitSampleName;
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 150 , 0, 1.5 );
+		h->GetXaxis()->SetRange(0, h->GetNbinsX() + 1);
+		(*h_sigmaP)[ hitSampleName ] = h;
+	}
+
+	// if ( (*h_momentumRes).find( hitSampleName ) == (*h_momentumRes).end() ) {
+	// 	string name = "h_momentumRes_" + hitSampleName;
+	// 	TH1F* h = new TH1F( name.c_str(), name.c_str(), 100 , -1, 1 );
+	// 	h->GetXaxis()->SetRange(0, h->GetNbinsX() + 1);
+	// 	(*h_momentumRes)[ hitSampleName ] = h;
+	// }
+
 	(*h_deltaP)[ hitSampleName ]->Fill( dP );
-	// h_sigmaP[ hitSampleName ]->Fill(err);
-	// h_momentumRes[ hitSampleName ]->Fill( dP /err);
+	(*h_sigmaP)[ hitSampleName ]->Fill(err);
+	// (*h_momentumRes)[ hitSampleName ]->Fill( dP /err);
+
+
 
 	// h_dP_over_Ptrue[ hitSampleName ]->Fill( dP / expected.Mag() );
 	// h_dP_over_Pkf[ hitSampleName ]->Fill( dP / meas.Mag() );
@@ -144,16 +163,15 @@ void TAGF_KalmanStudies::Fill_MomentumResidual( TVector3 meas, TVector3 expected
 
 	// create plot the h_dPOverP_x_bin if not already defined
 	else if ( (*h_dPOverP_x_bin)[ hitSampleName ].find( binCenter ) == (*h_dPOverP_x_bin)[ hitSampleName ].end() ) {
-	string name = "dPOverP_dist_" + hitSampleName + "_" + build_string( binCenter );
-	TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -0.2, 0.2 );
-	(*h_dPOverP_x_bin)[ hitSampleName ][ binCenter ] = h;
+		string name = "dPOverP_dist_" + hitSampleName + "_" + build_string( binCenter );
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -0.2, 0.2 );
+		(*h_dPOverP_x_bin)[ hitSampleName ][ binCenter ] = h;
 	}
 	if ( m_debug > 0 ) cout << "Filling h_dPOverP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP/expected.Mag() << endl;
 
 	// fill the h_dPOverP_x_bin
 	// h_dPOverP_x_bin->at(binCenter)->Fill( dP/expected.Mag() );
 	// h_dPOverP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP/expected.Mag() );
-	( ((*h_dPOverP_x_bin).at( hitSampleName )).at(binCenter) )->Fill( dP/expected.Mag() );
 	( ((*h_dPOverP_x_bin).at( hitSampleName )).at(binCenter) )->Fill( dP/expected.Mag() );
 
 	if ( m_debug > 1 )		

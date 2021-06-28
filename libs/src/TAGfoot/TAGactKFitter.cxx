@@ -183,7 +183,7 @@ void TAGactKFitter::Finalize() {
   //     system(("mkdir "+pathName).c_str());
   // }
 
-	if ( TAGrecoManager::GetPar()->IsMC() ) 		m_trackAnalysis->EvaluateAndFill_MomentumResolution( &h_dPOverP_x_bin, &h_resoP_over_Pkf, &h_biasP_over_Pkf );
+	// if ( TAGrecoManager::GetPar()->IsMC() ) 		m_trackAnalysis->EvaluateAndFill_MomentumResolution( &h_dPOverP_x_bin, &h_resoP_over_Pkf, &h_biasP_over_Pkf );
 	if ( TAGrecoManager::GetPar()->IsMC() ) 		PrintPurity();
 	PrintEfficiency();
 	
@@ -196,16 +196,38 @@ void TAGactKFitter::Finalize() {
 
 	// map<string, TH1F*>* h_resoP_over_Pkf
 	for ( map<string, TH1F*>::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); it++ ) 
-			AddHistogram( (*it).second );
+		AddHistogram( (*it).second );
 
 	// map<string, TH1F*>* h_biasP_over_Pkf
 	for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); it++ ) 
-			AddHistogram( (*it).second );
+		AddHistogram( (*it).second );
+
+	TH1F* h_deltaP_tot = new TH1F();
+	TH1F* h_sigmaP_tot = new TH1F();
 
 	// map<string, TH1F*>* h_deltaP
-	for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); it++ ) 
-			AddHistogram( (*it).second );
+	int count = 0;
+	for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); it++ ) {
+		if ( count = 0 ) 	h_deltaP_tot = (TH1F*)((*it).second)->Clone("dP");
+		else 				h_deltaP_tot->Add( (*it).second, 1 );
+		AddHistogram( (*it).second );
+		count++;
+	}
+	h_deltaP_tot->SetTitle( "dP" );
+	AddHistogram( h_deltaP_tot );
 
+	// map<string, TH1F*>* h_sigmaP
+	count=0;
+	for ( map<string, TH1F*>::iterator it=h_sigmaP.begin(); it != h_sigmaP.end(); it++ ) {
+		if ( count = 0 ) 	h_sigmaP_tot = (TH1F*) (*it).second->Clone();
+		else 				h_sigmaP_tot->Add( (*it).second, 1 );
+		AddHistogram( (*it).second );
+		count++;
+	}
+	h_sigmaP_tot->SetNameTitle( "errdP", "errdP" );
+	AddHistogram( h_sigmaP_tot );
+
+	cout << "TAGactKFitter::Finalize() -- END"<< endl;
 	SetValidHistogram(kTRUE);
 	SetHistogramDir(m_dir);
 
@@ -477,7 +499,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	// loop over all hit category
 	for ( map<TString,Track*>::iterator trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); ++trackIt) {
 
-		isConverged = 0;
+		
 		
 		vector<string> tok = Tokenize( trackIt->first.Data() , "_" );
 		string PartName = tok.at(0);
@@ -512,7 +534,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		  	}
 		  	cout << "\n";
 	    }
-		if ( fitTrack->getNumPointsWithMeasurement() < 13 )
+		if ( fitTrack->getNumPointsWithMeasurement() < 9 )
 		{
 			if( m_debug > 0 )	Info("FillTrackCategoryMap()", "Skipped Track %s with %d TrackPoints with measurement!!", tok.at(2).c_str(), fitTrack->getNumPointsWithMeasurement());
 			continue;
@@ -582,6 +604,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 			fitTrack->getFitStatus(fitTrack->getCardinalRep())->Print();
 		}
 
+		isConverged = 0;
 		if (  fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitConverged() &&   fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitted() )		
 			isConverged = 1;	// convergence check
 
@@ -674,7 +697,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	TAGtrackKalman* shoeOutTrackGenFit;
 	vector<TAGshoeTrackPoint*> shoeTrackPointRepo;
 	
-	// Fill Point and retrieve the true MC particle for each measuerement
+	// Fill Point and retrieve the true MC particle for each measuerement [ nMeasurement, shoeID of generated particle in the particle array ]
 	vector<vector<int>> mcParticleID_track;
 	for (unsigned int iMeas = 0; iMeas < track->getNumPointsWithMeasurement(); ++iMeas) {
 		
@@ -691,8 +714,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		GetMeasInfo( trackDetID, trackHitID, &iPlane, &iClus, &iPart );
 
 		// vector with index of the mc truth particles generating the measurement
-		for ( unsigned int ip=0; ip<iPart.size()
-		; ip++)
+		for ( unsigned int ip=0; ip<iPart.size(); ip++)
 			mcID_Meas.push_back( iPart.at(ip) );
 		mcParticleID_track.push_back(mcID_Meas);
 
@@ -712,7 +734,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	}
 
 	TVector3 recoPos_target, recoMom_target;
-	TVector3 mcMom, mcPos;
 	// TVector3 recoPos_err, recoMom_err;
 	TMatrixD recoPos_target_cov(3,3);
 	TMatrixD recoMom_target_cov(3,3);
@@ -732,64 +753,87 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 	int trackMC_id = -1;
 	if ( TAGrecoManager::GetPar()->IsMC() ) {
+
+		TVector3 mcMom, mcPos;
+
 		trackMC_id = FindMostFrequent( &mcParticleID_track );
 		// trackMC_id = track->getMcTrackId();     //???????
 
 		TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
 		mcMom = particle->GetInitP();
 		mcPos = particle->GetInitPos();
+		int mcCharge = particle->GetCharge();
 
-		if(m_debug > 0)	cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos = "<< mcPos.Mag() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
+		h_trackMC_true_id->Fill( trackMC_id );
+		h_mcMom->Fill( mcMom.Mag() );
+		h_mcPosX->Fill( mcPos.X() );
+		h_mcPosY->Fill( mcPos.Y() );
+		h_mcPosZ->Fill( mcPos.Z() );
+		
+
+		if(m_debug > 0)	cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos z = "<< mcPos.z() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
 		if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
 
 		m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, fitTrackName, &h_dPOverP_x_bin );
-		// m_trackAnalysis->EvaluateAndFill_MomentumResolution( &h_dPOverP_x_bin, &h_resoP_over_Pkf, &h_biasP_over_Pkf );
 
-		m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, fitTrackName, &h_deltaP );
+		m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, fitTrackName, &h_deltaP, &h_sigmaP );
 
-		h_particleFlip->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] - trackMC_id ); 
-		if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: m_IsotopesIndex = "<< m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] << "  trackMC_id = "<< trackMC_id<< endl;
-		
 		double trackQuality = TrackQuality( &mcParticleID_track );
 		if(m_debug > 0) cout << "trackQuality::" << trackQuality << "\n";
-		if ( particle->GetCharge() == measCh && trackQuality > 0.7 ) {
+
+		
+		if ( mcCharge == measCh && trackQuality > 0.7 ) {
 			if ( m_nConvergedTracks_matched.find( fitTrackName ) == m_nConvergedTracks_matched.end() )	m_nConvergedTracks_matched[ fitTrackName ] = 0;
 			m_nConvergedTracks_matched[ fitTrackName ]++;
 		}
 		// else
 		// 	cin.get();
 
-
+		h_chargeMC->Fill( mcCharge );
+		h_trackQuality->Fill( trackQuality );
+		h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
 		h_momentum_true.at(measCh)->Fill( particle->GetInitP().Mag() );	// check if not present
 		h_ratio_reco_true.at(measCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present
 		
-
 	}
-if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE MC = "<< endl;
+
+	
+
+	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE MC = "<< endl;
 		
 	// int firstState = 0;
 	// int lastState = -1;
 	// double length = track->getTrackLen( track->getCardinalRep(), firstState, finalState );
-	// double length 		= track->getTrackLen( track->getCardinalRep() );
-	double length 		= 1;
+	double length 		= track->getTrackLen( track->getCardinalRep() );
+	// double length 		= 1;
 	double tof 			= 0;
 	// double tof 			= track->getTOF( track->getCardinalRep() ) ;
-if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE length = " << length  << endl;
+	
+	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE length = " << length  << endl;
 	double chi2 		= m_refFitter->getRedChiSqu(track, track->getCardinalRep());
-if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE chi2 = " << chi2  << endl;
+	
+	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE chi2 = " << chi2  << endl;
 	int ndof 			= track->getFitStatus( track->getCardinalRep() )->getNdf();
 	double chisquare 	= track->getFitStatus( track->getCardinalRep() )->getChi2();
 	double pVal 		= track->getFitStatus( track->getCardinalRep() )->getPVal();
-if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE chisquare = " << chisquare  << endl;
+
+	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE chisquare = " << chisquare  << endl;
+	
 	// track->getFitStatus( track->getCardinalRep() )->isFitConverged();
 	// track->getFitStatus( track->getCardinalRep() )->getNFailedPoints();
 	// track->getFitStatus( track->getCardinalRep() )->isFitConvergedFully();
 
-	h_isotopeDist->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );  // check if not present
 	h_nMeas->Fill ( nMeas );
 	h_mass->Fill( mass );
 	h_chi2->Fill( chi2 );
+	
+	h_chargeMeas->Fill( measCh );
 	h_chargeFlip->Fill( pdgCh - measCh );
+
+	
+	h_length->Fill( length );
+	h_tof->Fill( tof );
+	h_pVal->Fill( pVal );
 
 	h_momentum->Fill( recoMom_target.Mag() );
 	h_momentum_reco.at(measCh)->Fill( recoMom_target.Mag() );	// check if not present
@@ -823,9 +867,12 @@ if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE FILL = "  << endl
 
 
 
+
+
+
 int TAGactKFitter::FindMostFrequent( vector<vector<int>>* mcParticleID_track ) {
 
-	map<int,int> qualityMap;
+	map<int,int> qualityMap; // [ID in the shoe particle container, multiplicity in the track points]
 	for ( unsigned int i=0; i<mcParticleID_track->size(); i++)
 	{
 		for(int j = 0; j < mcParticleID_track->at(i).size(); j++ )
@@ -844,6 +891,8 @@ int TAGactKFitter::FindMostFrequent( vector<vector<int>>* mcParticleID_track ) {
 	return id;
 
 }
+
+
 
 
 
@@ -980,6 +1029,7 @@ void TAGactKFitter::PrintPurity() {
 
 	int nCollection = m_nConvergedTracks_all.size();
 	h_purity = new TH1F( "h_purity", "h_purity", nCollection, 0, nCollection );
+	TH1F* h_trackMatched = new TH1F( "h_trackMatched", "h_trackMatched", nCollection, 0, nCollection );
 
 	int k = 0;
 
@@ -995,12 +1045,15 @@ void TAGactKFitter::PrintPurity() {
 		float eff = (float)kk/nn;
 		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
 		if ( m_debug > -1 )		cout << "Purity " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
+		h_trackMatched->SetBinContent(k, kk);
+
 		h_purity->SetBinContent(k, eff);
 		h_purity->SetBinError(k, sqrt(variance));
 
 		h_purity->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
 
+	AddHistogram(h_trackMatched);
 	AddHistogram(h_purity);
 
 }
@@ -1015,6 +1068,9 @@ void TAGactKFitter::PrintEfficiency() {
 
 	int nCollection = m_nSelectedTrackCandidates.size();
 	h_trackEfficiency = new TH1F( "TrackEfficiency", "TrackEfficiency", nCollection, 0, nCollection );
+	
+	TH1F* h_trackConverged = new TH1F( "h_trackConverged", "h_trackConverged", nCollection, 0, nCollection );
+	TH1F* h_trackSelected = new TH1F( "h_trackSelected", "h_trackSelected", nCollection, 0, nCollection );
 
 	int k = 0;
 
@@ -1030,6 +1086,10 @@ void TAGactKFitter::PrintEfficiency() {
 		float eff = (float)kk/nn;
 		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
 		if ( m_debug > -1 )		cout << "Efficiency " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
+		
+		h_trackConverged->SetBinContent(k, kk);
+		h_trackSelected->SetBinContent(k, nn);
+
 		h_trackEfficiency->SetBinContent(k, eff);
 		h_trackEfficiency->SetBinError(k, sqrt(variance));
 
@@ -1046,6 +1106,8 @@ void TAGactKFitter::PrintEfficiency() {
   // mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
   // mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.root").c_str() );
 
+  AddHistogram(h_trackSelected);
+  AddHistogram(h_trackConverged);
   AddHistogram(h_trackEfficiency);
 
 }
@@ -1061,44 +1123,71 @@ void TAGactKFitter::PrintEfficiency() {
 
 void TAGactKFitter::CreateHistogram()	{
 
-	h_isotopeDist = new TH1F("mean number of tracks","mean number of tracks", 10, 0., 5.);
-	AddHistogram(h_isotopeDist);
+	h_trackMC_true_id = new TH1F("h_trackMC_true_id", "h_trackMC_true_id", 45, 0., 45);
+	AddHistogram(h_trackMC_true_id);
 
-	// h_purity = new TH1F("purity", "purity", 20, 0., 1.5);
-	// AddHistogram(h_purity);
+	h_trackMC_reco_id = new TH1F("h_trackMC_reco_id", "h_trackMC_reco_id", 45, 0., 45);
+	AddHistogram(h_trackMC_reco_id);
 
-	// h_efficiencyKalman = new TH1F("h_efficiencyKalman", "h_efficiencyKalman", 20, 0., 1.5);
-	// AddHistogram(h_efficiencyKalman);
 
-	// h_qOverp = new TH1F("qoverp_all", "qoverp_all", 100, 0., 2.);
-	// AddHistogram(qoverp);
+	h_trackQuality = new TH1F("m_trackQuality", "m_trackQuality", 50, 0, 1);
+	AddHistogram(h_trackQuality);
 
-	h_nMeas = new TH1F("nMeas", "nMeas", 100, 0., 2.);
+	h_length = new TH1F("m_length", "m_length", 340, 0, 120);
+	AddHistogram(h_length);
+
+	h_tof = new TH1F("m_tof", "m_tof", 200, 0, 20);
+	AddHistogram(h_tof);
+
+	h_pVal = new TH1F("m_pVal", "m_pVal", 300, 0, 3);
+	AddHistogram(h_pVal);
+
+	
+	h_mcPosX = new TH1F("h_mcPosX", "h_mcPosX", 400, -1, 1);
+	AddHistogram(h_mcPosX);
+
+	h_mcPosY = new TH1F("h_mcPosY", "h_mcPosY", 400, -1, 1);
+	AddHistogram(h_mcPosY);
+
+	h_mcPosZ = new TH1F("h_mcPosZ", "h_mcPosZ", 500, -0.25, 0.25);
+	AddHistogram(h_mcPosZ);
+
+
+
+	h_nMeas = new TH1F("nMeas", "nMeas", 13, 0., 13.);
 	AddHistogram(h_nMeas);  
+	
+	h_chargeMC = new TH1F("h_chargeMC", "h_chargeMC", 9, 0, 9);
+	AddHistogram(h_chargeMC);
 
-	h_chargeFlip = new TH1F("h_chargeFlip", "h_chargeFlip", 100, 0., 2.);
+	h_chargeMeas = new TH1F("h_chargeMeas", "h_chargeMeas", 9, 0, 9);
+	AddHistogram(h_chargeMC);
+	
+	h_chargeFlip = new TH1F("h_chargeFlip", "h_chargeFlip", 20, -5, 5);
 	AddHistogram(h_chargeFlip);
 
-  	h_mass = new TH1F("h_mass", "h_mass", 100, 0., 2.);
+  	h_mass = new TH1F("h_mass", "h_mass", 100, 0., 20.);
 	AddHistogram(h_mass);
 
-	h_particleFlip = new TH1F("h_particleFlip", "h_particleFlip", 100, 0., 2.);
-	AddHistogram(h_particleFlip);
 
-	h_chi2 = new TH1F("h_chi2", "h_chi2", 100, 0., 2.);
+
+	h_chi2 = new TH1F("h_chi2", "h_chi2", 200, 0., 10.);
 	AddHistogram(h_chi2);
 
-	h_momentum = new TH1F("h_momentum", "h_momentum", 100, 0., 10.);
+	h_mcMom = new TH1F("h_mcMom", "h_mcMom", 150, 0., 15.);
+	AddHistogram(h_mcMom);
+
+	h_momentum = new TH1F("h_momentum", "h_momentum", 150, 0., 15.);
 	AddHistogram(h_momentum);
 
 	for (int i = 0; i < 9; ++i){
-		h_momentum_true.push_back(new TH1F(Form("histoChargeTrue%d",i), "test", 25, 0.,10.));
+		h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d",i), 150, 0.,15.));
 		AddHistogram(h_momentum_true[i]);
 
-		h_momentum_reco.push_back(new TH1F(Form("histoChargeReco%d",i), "test", 25, 0.,10.));
+		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d",i), 150, 0.,15.));
 		AddHistogram(h_momentum_reco[i]);
 
-		h_ratio_reco_true.push_back(new TH1F(Form("histoRatio%d",i), "test", 25, 0.,10.));
+		h_ratio_reco_true.push_back(new TH1F(Form("MomentumRadio%d",i), Form("Momentum Ratio %d",i), 150, 0, 2.5));
 		AddHistogram(h_ratio_reco_true[i]);
 	}
 

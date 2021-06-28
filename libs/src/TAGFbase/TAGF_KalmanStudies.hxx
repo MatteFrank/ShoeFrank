@@ -43,7 +43,7 @@ public:
 	double EvalError( TVector3 mom, TMatrixD cov );
 
 	void FillMomentumInfo( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName, 
-							map<string, TH1F*> *h_deltaP );
+							map<string, TH1F*> *h_deltaP, map<string, TH1F*> *h_sigmaP );
 
 	void Fill_MomentumResidual( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName, 
 							map<string, map<float, TH1F*> > * h_dPOverP_x_bin );

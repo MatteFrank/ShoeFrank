@@ -278,36 +278,39 @@ private:
 	TAGgeoTrafo* m_GeoTrafo;
 
 
-
-	//temporary placeholder for trackfinding histos and graphs
-	TGraphErrors* graphErrorX;
-	TGraphErrors* graphErrorY;
-
 	// TH2D* MSDresidualOfPrediction;
 	// TH2D* ITresidualOfPrediction;
-	TH1F* percentageOfMCTracksVTX;
+	// TH1F* percentageOfMCTracksVTX;
 	TH1F* h_purity;
-	TH1F* qoverp;
-	TH1F* h_efficiencyKalman;
 	TH1F* h_trackEfficiency;
 
-	TH1F* qoverpsel;
-	TH1I* ITstudy;
-	TH1I* MSDstudy;
+	TH1F* h_trackMC_true_id;
+	TH1F* h_trackMC_reco_id;
+	TH1F* h_trackQuality;
+	
+	TH1F* h_length;
+	TH1F* h_tof;
 
-	TH1F* h_isotopeDist;
 	TH1F* h_nMeas;
 	TH1F* h_mass;
 	TH1F* h_chi2;
-	TH1F* h_chargeFlip;
-	TH1F* h_particleFlip;
-	TH1F* h_momentum;
+	TH1F* h_pVal;
 
+	TH1F* h_chargeMC;
+	TH1F* h_chargeMeas;
+	TH1F* h_chargeFlip;
+	TH1F* h_momentum;
+	
+	TH1F* h_mcMom;
+	TH1F* h_mcPosX;
+	TH1F* h_mcPosY;
+	TH1F* h_mcPosZ;
+	
 	map<string, map<float, TH1F*> > h_dPOverP_x_bin;
 	map<string, TH1F*> h_deltaP;
+	map<string, TH1F*> h_sigmaP;
 	map<string, TH1F*> h_resoP_over_Pkf;
 	map<string, TH1F*> h_biasP_over_Pkf;
-
 
 	vector<TH1F*> h_momentum_true;
 	vector<TH1F*> h_momentum_reco;
