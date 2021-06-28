@@ -50,6 +50,11 @@ void GlobalRecoMC::BeforeEventLoop()
 //____________________________________________________________
 void GlobalRecoMC::LoopEvent(Int_t nEvents, Int_t skipEvent)
 {
+	if(skipEvent >= fTree->GetEntries())
+	{
+		Error("LoopEvent()", "Skip Event (%d) higher than input tree entries (%lld)", skipEvent, fTree->GetEntries());
+		throw -1;
+	}
 	cout << "SkipEv2::" << skipEvent << endl;
    	if (nEvents <= 0)
     	nEvents = fTree->GetEntries();
@@ -89,26 +94,4 @@ void GlobalRecoMC::OpenFileIn()
 	LocalRecoMC::OpenFileIn();
 	fTree = ((TAGactTreeReader*)fActEvtReader)->GetTree();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
