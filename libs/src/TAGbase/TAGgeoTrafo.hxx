@@ -205,7 +205,7 @@ public:
    static           Char_t  GetDefaultTransp()       { return fgDefaultTransp;  }
    static           void    SetDefaultTransparency(Char_t transparency) { fgDefaultTransp = transparency; }
    static           Int_t   GetDeviceType(const TString name) { return fgkDeviceType[name];}
-
+   static    const Char_t*  GetDeviceName(Int_t devType);
    ClassDef(TAGgeoTrafo,1)
 };
 
