@@ -29,6 +29,8 @@
 #include "TAMSDntuCluster.hxx"
 
 #include "TAGgeoTrafo.hxx"
+#include "TAGrecoManager.hxx"
+#include "TAGcampaignManager.hxx"
 
 #include "TAIRalignC.hxx"
 
@@ -45,19 +47,21 @@ ClassImp(TAIRalignC);
 TAIRalignC* TAIRalignC::fgInstance = 0x0;
       Int_t TAIRalignC::fgkPreciseIt = 5;
 //__________________________________________________________
-TAIRalignC* TAIRalignC::Instance(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
+TAIRalignC* TAIRalignC::Instance(const TString name, const TString expName, Int_t runNumber, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAIRalignC(name, flagVtx, flagIt, flagMsd, weight);
+      fgInstance = new TAIRalignC(name, expName, runNumber, flagVtx, flagIt, flagMsd, weight);
    
    return fgInstance;
 }
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
+TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNUmber, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
  : TObject(),
    fFileName(name),
+   fCampManager(0x0),
+   fRunNumber(runNUmber),
    fFlagVtx(flagVtx),
    fFlagIt(flagIt),
    fFlagMsd(flagMsd),
@@ -85,14 +89,15 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    fResidualY(new TGraphErrors())
 {
    
-   const TString confFileVtx = "./config/TAVTdetector.cfg";
-   const TString confFileMsd = "./config/TAMSDdetector.cfg";
-   
    Int_t devsNtot = 0;
    
    fAGRoot        = new TAGroot();
    fGeoTrafo      = new TAGgeoTrafo();
    fGeoTrafo->FromFile();
+   
+   // load campaign file
+   fCampManager = new TAGcampaignManager(expName);
+   fCampManager->FromFile();
    
    fClusterArray  = new TObjArray();
    fClusterArray->SetOwner(false);
@@ -101,7 +106,7 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    
    fpGeoMapG    = new TAGparaDsc("gGeo", new TAGparGeo());
    TAGparGeo* geomapG   = (TAGparGeo*) fpGeoMapG->Object();
-   TString parFile = "./geomaps/TAGdetector.geo";
+   TString parFile = fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
    geomapG->FromFile(parFile.Data());
    fpDiff         = new TADItrackEmProperties();
 
@@ -109,11 +114,11 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    if (fFlagVtx) {
       fpGeoMapVtx    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
-      TString parFile = "./geomaps/TAVTdetector.geo";
+      TString parFile = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
       geomapVtx->FromFile(parFile.Data());
       
       fpConfigVtx    = new TAGparaDsc("vtConf", new TAVTparConf());
-      parFile = "./config/TAVTdetector.cfg";
+      parFile = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
       TAVTparConf* parConfVtx = (TAVTparConf*) fpConfigVtx->Object();
       parConfVtx->FromFile(parFile.Data());
       
@@ -127,12 +132,12 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    if (fFlagMsd) {
       fpGeoMapMsd    = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
       TAMSDparGeo* geomapMsd   = (TAMSDparGeo*) fpGeoMapMsd->Object();
-      TString parFile = "./geomaps/TAMSDdetector.geo";
+      TString parFile = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       geomapMsd->FromFile(parFile.Data());
    
       fpConfigMsd    = new TAGparaDsc("msdConf", new TAMSDparConf());
       TAMSDparConf* parConfMsd = (TAMSDparConf*) fpConfigMsd->Object();
-      parFile = "./config/TAMSDdetector.cfg";
+      parFile = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parConfMsd->FromFile(parFile.Data());
       
       devsNtot += parConfMsd->GetSensorsN();
