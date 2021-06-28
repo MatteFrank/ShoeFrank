@@ -20,7 +20,7 @@
 //void Align(TString name = "run_1028_cut35_5kEvt.root")
 //void Align(TString name = "run_1028_cut5_dist500mu_5kEvt.root")
 //void Align(TString name = "run_1021_cut35_33kEvt.root")
-void AlignTrackers(TString name = "run.2211_cut30-40_61kEvt_DP_N.root", const TString expName = "GSI", Int_t runNumber = 211)
+void AlignTrackers(TString name = "run.2211_cut30-40_61kEvt_DP_N.root", const TString expName = "GSI", Int_t runNumber = 2211)
 {
    Bool_t flagVtx = true;
    Bool_t flagIt  = false;
