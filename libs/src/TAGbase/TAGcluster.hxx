@@ -26,6 +26,10 @@ class TAGcluster : public TAGobject {
    Bool_t                   IsValid()          const { return fIsValid;    }
    //! Get type
    Int_t                    GetDeviceType()    const { return fDeviceType; }
+   //! Get major type
+   Int_t                    GetDevMajorType()  const { return fDeviceType/10; }
+   //! Get minor type
+   Int_t                    GetDevMinorType()  const { return fDeviceType%10; }
    //! Get cluster index
    Int_t                    GetClusterIdx()    const { return fClusterIdx; }
    //! Get sensor index

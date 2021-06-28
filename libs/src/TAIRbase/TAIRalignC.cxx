@@ -548,11 +548,16 @@ Bool_t TAIRalignC::Align(Bool_t rough)
 // Fill rough position of cluster
 Bool_t TAIRalignC::FillClusPosRough(Int_t i, TAGcluster* cluster)
 {
-   if (cluster->GetDeviceType() == -1 || cluster->GetDeviceType() == 0)
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName())) {
       fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
-   if (cluster->GetDeviceType() == -1 || cluster->GetDeviceType() == 1)
       fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm();
+   }
    
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 0)
+      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 1)
+      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm();
+
    return true;
 }
 

@@ -238,7 +238,7 @@ Bool_t TACAactNtuCluster::CreateClusters()
    // Remove no valid cluster
    for (Int_t i = pNtuClus->GetClustersN()-1; i >= 0; --i) {
       cluster = pNtuClus->GetCluster(i);
-      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(TACAparGeo::GetBaseName());
+      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(TACAparGeo::GetBaseName()));
       if (!cluster->IsValid())
          pNtuClus->GetListOfClusters()->Remove(cluster);
    }
