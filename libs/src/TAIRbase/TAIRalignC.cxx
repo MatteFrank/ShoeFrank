@@ -57,11 +57,11 @@ TAIRalignC* TAIRalignC::Instance(const TString name, const TString expName, Int_
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNUmber, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
+TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumber, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
  : TObject(),
    fFileName(name),
    fCampManager(0x0),
-   fRunNumber(runNUmber),
+   fRunNumber(runNumber),
    fFlagVtx(flagVtx),
    fFlagIt(flagIt),
    fFlagMsd(flagMsd),
