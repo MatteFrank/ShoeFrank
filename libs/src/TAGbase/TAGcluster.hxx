@@ -76,7 +76,7 @@ protected:
    map<int, int>      fMcTrackMap;               // Map of MC track Id
    Int_t              fClusterIdx;               // cluster index
    Int_t              fSensorIdx;                // sensor index
-   Int_t              fDeviceType;               // type of sensor -1 VTX, 0 MSD X, 1 MSD Y, 2 TW, 3 CA
+   Int_t              fDeviceType;               // type of sensor VT: 40, IT: 50, MSD: 60, TW: 70, CA: 80
    Bool_t             fIsValid;                  // validity flag
 
     ClassDef(TAGcluster,2)
