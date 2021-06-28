@@ -578,25 +578,57 @@ Bool_t TAIRalignC::FillClusPosPrecise(Int_t i, TAGcluster* cluster)
       exit(0);
    }
 
-   fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
-   fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
-   
-   if (i != 0){
-      fNewSlopeU = (fPosUClusters[i]-fPosUClusters[i-1])/(fZposition[i]-fZposition[i-1]);
-      fNewSlopeV = (fPosVClusters[i]-fPosVClusters[i-1])/(fZposition[i]-fZposition[i-1]);
-   }
-   
-   if ((i != 0) && (i !=1)){
-      if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
-         if ((TMath::Abs(fNewSlopeU - fSlopeU) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu()) ||
-             (TMath::Abs(fNewSlopeV - fSlopeV) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu())) return false;
-      } else {
-         if ((TMath::Abs(fNewSlopeU - fSlopeU) > fSigmaAlfaDist[i]*fCutFactor) || (TMath::Abs(fNewSlopeV - fSlopeV) > fSigmaAlfaDist[i]*fCutFactor)) return false;
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName())) {
+
+      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
+      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
+      
+      if (i != 0){
+         fNewSlopeU = (fPosUClusters[i]-fPosUClusters[i-1])/(fZposition[i]-fZposition[i-1]);
+         fNewSlopeV = (fPosVClusters[i]-fPosVClusters[i-1])/(fZposition[i]-fZposition[i-1]);
       }
+      
+      if ((i != 0) && (i !=1)){
+         if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
+            if ((TMath::Abs(fNewSlopeU - fSlopeU) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu()) ||
+                (TMath::Abs(fNewSlopeV - fSlopeV) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu())) return false;
+         } else {
+            if ((TMath::Abs(fNewSlopeU - fSlopeU) > fSigmaAlfaDist[i]*fCutFactor) || (TMath::Abs(fNewSlopeV - fSlopeV) > fSigmaAlfaDist[i]*fCutFactor)) return false;
+         }
+      }
+      fSlopeU = fNewSlopeU;
+      fSlopeV = fNewSlopeV;
    }
    
-   fSlopeU = fNewSlopeU;
-   fSlopeV = fNewSlopeV;
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 0) {
+      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
+      if (i != 0)
+         fNewSlopeU = (fPosUClusters[i]-fPosUClusters[i-1])/(fZposition[i]-fZposition[i-1]);
+      if ((i != 0) && (i !=1)){
+         if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
+            if ((TMath::Abs(fNewSlopeU - fSlopeU) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu())) return false;
+         } else {
+            if (TMath::Abs(fNewSlopeU - fSlopeU) > fSigmaAlfaDist[i]*fCutFactor) return false;
+         }
+      }
+      fSlopeU = fNewSlopeU;
+   }
+   
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 1) {
+      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
+
+      if (i != 0)
+         fNewSlopeV = (fPosVClusters[i]-fPosVClusters[i-1])/(fZposition[i]-fZposition[i-1]);
+
+      if ((i != 0) && (i !=1)){
+         if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
+            if (TMath::Abs(fNewSlopeV - fSlopeV) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu()) return false;
+         } else {
+            if (TMath::Abs(fNewSlopeV - fSlopeV) > fSigmaAlfaDist[i]*fCutFactor) return false;
+         }
+      }
+      fSlopeV = fNewSlopeV;
+   }
    
    return true;
 }
