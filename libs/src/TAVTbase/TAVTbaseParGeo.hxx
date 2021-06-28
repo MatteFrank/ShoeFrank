@@ -103,8 +103,6 @@ public:
    //! Get position sensor
    TVector3        GetSensorPosition(Int_t iSensor);
    
-   virtual int     GetSensorID( int layer, int /*col*/, int /*row*/ )    { return layer; };
-
    //! Get Sensor idx for a given type and sensor in type
    Int_t GetSensorIdx(Int_t iSensor, Int_t type);
 
