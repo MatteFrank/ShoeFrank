@@ -22,7 +22,7 @@ private:
    Float_t            fPosErrorF;                // position's errors of the cluster in plane frame
    TVector3           fCurPosition;              // current position of the cluster in plane frame
    TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
-   
+   Int_t              fPlaneView;                // plane view = 0 for X and = 1 for Y plane
    Float_t            fEnergyLoss;               // loss of energy
    
 public:
@@ -37,7 +37,7 @@ public:
    //! Set position in global tracker frame
    void               SetPositionG(TVector3& pos);
    //! Set view
-   void               SetPlaneView(Int_t v)                  { fDeviceType = v;        }
+   void               SetPlaneView(Int_t v);
    //! Set energy loss
    void               SetEnergyLoss(Float_t chg)             { fEnergyLoss = chg;      }
    
@@ -55,7 +55,7 @@ public:
    TClonesArray*      GetListOfStrips()                const { return fListOfStrips;   }
    
    //! Get view
-   Int_t              GetPlaneView()                   const { return fDeviceType;     }
+   Int_t              GetPlaneView()                   const { return fPlaneView;      }
    //! Get energy loss
    Float_t            GetEnergyLoss()                  const { return fEnergyLoss;     }
    //! Get number of pixels in this clusters

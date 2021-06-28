@@ -6,6 +6,8 @@
 
 #include "TAMSDcluster.hxx"
 #include "TAMSDhit.hxx"
+#include "TAMSDparGeo.hxx"
+#include "TAGgeoTrafo.hxx"
 
 ClassImp(TAMSDcluster) // Description of a cluster
 
@@ -16,6 +18,7 @@ TAMSDcluster::TAMSDcluster()
    fPositionF(0.),
    fPosErrorF(0),
    fCurPosition(0,0,0),
+   fPlaneView(-1),
    fEnergyLoss(0)
 {
    // TAMSDcluster constructor
@@ -37,6 +40,7 @@ TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
    fPositionF(cluster.fPositionF),
    fPosErrorF(cluster.fPosErrorF),
    fCurPosition(cluster.fCurPosition),
+   fPlaneView(cluster.fPlaneView),
    fEnergyLoss(cluster.fEnergyLoss)
 {
    fListOfStrips = (TClonesArray*)cluster.fListOfStrips->Clone();
@@ -104,6 +108,13 @@ void TAMSDcluster::SetPosErrorF(Float_t pos)
    fPosErrorF = pos;
 }
 
+//______________________________________________________________________________
+//
+void TAMSDcluster::SetPlaneView(Int_t v)
+{
+   fPlaneView = v;
+   fDeviceType = TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) + fPlaneView;
+}
 
 //______________________________________________________________________________
 //
