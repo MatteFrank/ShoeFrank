@@ -519,7 +519,7 @@ Bool_t TAIRalignC::Align(Bool_t rough)
 
       if (nCluster < 1) return false;
       for (Int_t j = 0; j < nCluster; j++){
-         TAVTbaseCluster* cluster = (TAVTbaseCluster*)list->At(j);
+         TAGcluster* cluster = (TAGcluster*)list->At(j);
          if (cluster->IsValid() != true) continue;
          nValidCluster++;
          if (nValidCluster > 1) return false;
@@ -527,7 +527,7 @@ Bool_t TAIRalignC::Align(Bool_t rough)
       }
       if (nValidCluster < 1) return false;
       fHitPlanes ++;
-      TAVTbaseCluster* cluster = (TAVTbaseCluster*)list->At(aCluster);
+      TAGcluster* cluster = (TAGcluster*)list->At(aCluster);
       if (rough) {
          FillClusPosRough(i, cluster);
       } else {
@@ -546,10 +546,12 @@ Bool_t TAIRalignC::Align(Bool_t rough)
 //______________________________________________________________________________
 //
 // Fill rough position of cluster
-Bool_t TAIRalignC::FillClusPosRough(Int_t i, TAVTbaseCluster* cluster)
+Bool_t TAIRalignC::FillClusPosRough(Int_t i, TAGcluster* cluster)
 {
-   fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
-   fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm();
+   if (cluster->GetDeviceType() == -1 || cluster->GetDeviceType() == 0)
+      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
+   if (cluster->GetDeviceType() == -1 || cluster->GetDeviceType() == 1)
+      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm();
    
    return true;
 }
@@ -558,7 +560,7 @@ Bool_t TAIRalignC::FillClusPosRough(Int_t i, TAVTbaseCluster* cluster)
 //
 // Fill precise position of cluster, rejecting the ones which are too much scattered for
 // a precise alignment
-Bool_t TAIRalignC::FillClusPosPrecise(Int_t i, TAVTbaseCluster* cluster)
+Bool_t TAIRalignC::FillClusPosPrecise(Int_t i, TAGcluster* cluster)
 {
    TAVTbaseParGeo* pGeoMap   =  0x0;
    
@@ -619,7 +621,7 @@ Bool_t TAIRalignC::FillHistograms()
       
       if (nCluster < 1) return false;
       for (Int_t j = 0; j < nCluster; j++){
-         TAVTbaseCluster* cluster = (TAVTbaseCluster*)list->At(j);
+         TAGcluster* cluster = (TAGcluster*)list->At(j);
          if (cluster->IsValid() != true) continue;
          nValidCluster++;
          if (nValidCluster > 1) return false;
@@ -627,7 +629,7 @@ Bool_t TAIRalignC::FillHistograms()
       }
       if (nValidCluster < 1) return false;
       fHitPlanes ++;
-      TAVTbaseCluster* cluster = (TAVTbaseCluster*)list->At(aCluster[i]);
+      TAGcluster* cluster = (TAGcluster*)list->At(aCluster[i]);
       
       fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
       fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
@@ -637,7 +639,6 @@ Bool_t TAIRalignC::FillHistograms()
       cluster->SetPosition(pos);
       fErrUClusters[i] = cluster->GetPosError()(0)*TAGgeoTrafo::CmToMm();
       fErrVClusters[i] = cluster->GetPosError()(1)*TAGgeoTrafo::CmToMm();
-      cluster->ComputeSize();
    }
    
    if (fHitPlanes < fSecArray.GetSize()) return false;

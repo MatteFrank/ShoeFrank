@@ -24,7 +24,7 @@
 #include "TAIRntuAlignC.hxx"
 
 class TAGcampaignManager;
-class TAVTbaseCluster;
+class TAGcluster;
 class TAVTbaseParGeo;
 class TAVTbaseParConf;
 class TObjArray;
@@ -53,8 +53,8 @@ private:
    Bool_t  Align(Bool_t rough);
    Bool_t  FillHistograms();
    Bool_t  DefineWeights();
-   Bool_t  FillClusPosRough(Int_t i, TAVTbaseCluster* cluster);
-   Bool_t  FillClusPosPrecise(Int_t i, TAVTbaseCluster* cluster);
+   Bool_t  FillClusPosRough(Int_t i, TAGcluster* cluster);
+   Bool_t  FillClusPosPrecise(Int_t i, TAGcluster* cluster);
 
    void    FillClusterArray();
    void    InitParameters();
