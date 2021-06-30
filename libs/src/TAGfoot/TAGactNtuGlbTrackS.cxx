@@ -881,17 +881,20 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
       dx = cluster->GetPosErrorG()(0);
       dy = cluster->GetPosErrorG()(1);
   
-      if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 0) {
-         zxData.push_back(z);
-         xData.push_back(x);
-         if (dx < 1e-4) dx = 1;
-         dxData.push_back(dx);
+      if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName())) {
+         if (cluster->GetDevMinorType() == 0) {
+            zxData.push_back(z);
+            xData.push_back(x);
+            if (dx < 1e-4) dx = 1;
+            dxData.push_back(dx);
+         }
          
-      } else if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 1) {
-         zyData.push_back(z);
-         yData.push_back(y);
-         if (dy < 1e-4) dy = 1;
-         dyData.push_back(dy);
+         if (cluster->GetDevMinorType() == 1) {
+            zyData.push_back(z);
+            yData.push_back(y);
+            if (dy < 1e-4) dy = 1;
+            dyData.push_back(dy);
+         }
          
       } else {
          zxData.push_back(z);
