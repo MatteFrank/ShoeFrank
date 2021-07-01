@@ -322,6 +322,33 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 
 
 
+int TAGFuploader::GetNumGenParticle_noFrag() {
+
+	
+	TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+	
+	int count = 0;
+	for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
+
+		TAMCpart* particle = m_McNtuEve->GetTrack(iPart);		
+		if ( particle->GetCharge() > 0 && particle->GetCharge() <= 8) {
+
+			if ( particle->GetInitPos().z() > 1 ) continue;
+			if ( particle->GetFinalPos().z() < 120 ) continue;
+
+			count++;
+
+		}
+		
+	}
+	return count;
+}
+
+
+
+
+
+
 
 
 //----------------------------------------------------------------------------------------------------

@@ -272,6 +272,8 @@ private:
 
 	long m_evNum;
 
+	int m_numGenParticle_noFrag;
+
 	bool m_reverse;
 	bool m_recolike1;
 

@@ -88,6 +88,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepoGenFit, 
 
 	m_NTWTracks = 0;
 	m_NTWTracksGoodHypo = 0;
+	m_numGenParticle_noFrag = 0;
 
 }
 
@@ -120,9 +121,10 @@ Bool_t TAGactKFitter::Action()	{
 	vector<int> chVect;
 	m_uploader->GetPossibleCharges( &chVect );
 
-	if ( TAGrecoManager::GetPar()->IsMC() ) 
+	if ( TAGrecoManager::GetPar()->IsMC() ) {
 			m_measParticleMC_collection = m_uploader->TakeMeasParticleMC_Collection();
-
+			m_numGenParticle_noFrag += m_uploader->GetNumGenParticle_noFrag();
+	}
 
 	if(m_debug > 0)	{
 		cout << "TAGactKFitter::Action()  ->  " << m_allHitMeasGF.size() << endl;
@@ -234,6 +236,10 @@ void TAGactKFitter::Finalize() {
 	//show event display
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )		display->open();
 
+	TH1F* h_numGenParticle_noFrag = new TH1F( "h_numGenParticle_noFrag", "h_numGenParticle_noFrag", 100, 0, 10000 );
+	AddHistogram( h_numGenParticle_noFrag );
+	h_numGenParticle_noFrag->Fill( m_numGenParticle_noFrag );
+	cout << "m_numGenParticle_noFrag = " << m_numGenParticle_noFrag << endl;
 
 	if(m_debug > 0)
 	{
