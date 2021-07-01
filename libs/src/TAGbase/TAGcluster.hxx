@@ -16,7 +16,19 @@ using namespace std;
 
 class TAGcluster : public TAGobject {
    
-  public:
+protected:
+   TVector3           fPosition;                 // position of the cluster in plane frame
+   TVector3           fPosError;                 // position's errors of the cluster in plane frame
+   TVector3           fPositionG;                // position of the clus in tracker frame
+   TVector3           fPosErrorG;                // position's errors of the clus in tracker frame
+   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
+   map<int, int>      fMcTrackMap;               //! Map of MC track Id
+   Int_t              fClusterIdx;               // cluster index
+   Int_t              fSensorIdx;                // sensor index
+   Int_t              fDeviceType;               // type of sensor VT: 40, IT: 50, MSD: 60, TW: 70, CA: 80
+   Bool_t             fIsValid;                  // validity flag
+   
+public:
                       TAGcluster();
                       TAGcluster(const TAGcluster& cluster);
 
@@ -71,18 +83,6 @@ class TAGcluster : public TAGobject {
    Int_t              GetMcTrackIdx(Int_t index)      const   { return fMcTrackIdx[index];    }
    Int_t              GetMcTracksN()                  const   { return fMcTrackIdx.GetSize(); }
    
-protected:
-   TVector3           fPosition;                 // position of the cluster in plane frame
-   TVector3           fPosError;                 // position's errors of the cluster in plane frame
-   TVector3           fPositionG;                // position of the clus in tracker frame
-   TVector3           fPosErrorG;                // position's errors of the clus in tracker frame
-   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
-   map<int, int>      fMcTrackMap;               // Map of MC track Id
-   Int_t              fClusterIdx;               // cluster index
-   Int_t              fSensorIdx;                // sensor index
-   Int_t              fDeviceType;               // type of sensor VT: 40, IT: 50, MSD: 60, TW: 70, CA: 80
-   Bool_t             fIsValid;                  // validity flag
-
     ClassDef(TAGcluster,2)
 };
 
