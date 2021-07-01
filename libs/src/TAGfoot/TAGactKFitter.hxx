@@ -301,6 +301,13 @@ private:
 	TH1F* h_chargeFlip;
 	TH1F* h_momentum;
 	
+	TH1F* h_dR; 
+	TH1F* h_phi; 
+	TH1F* h_theta; 
+	TH1F* h_eta; 
+	TH1F* h_dx_dz; 
+	TH1F* h_dy_dz; 
+
 	TH1F* h_mcMom;
 	TH1F* h_mcPosX;
 	TH1F* h_mcPosY;

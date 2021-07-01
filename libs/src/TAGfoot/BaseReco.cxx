@@ -918,28 +918,29 @@ void BaseReco::CreateRecActionGlbGF()
    //     }
    //   }
      
-      genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
-      
-      genfit::FieldManager::getInstance()->getFieldVal( TVector3(0,0,14) ).Print();
+			if (TAGrecoManager::GetPar()->IncludeDI()) {
+				genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
 
-      // set material and geometry into genfit
-      MaterialEffects* materialEffects = MaterialEffects::getInstance();
-      materialEffects->init(new TGeoMaterialInterface());
-      
-      // include the nucleon into the genfit pdg repository
-      UpdatePDG::Instance();
-      
-      // study for kalman Filter
-      // fActGlbTrackStudies = new TAGFtrackingStudies("glbActTrackStudyGF");
-      // if (fFlagHisto)
-      //    fActGlbTrackStudies->CreateHistogram();
-      
-      // Initialisation of KFfitter
-      m_GlobTrackRepo = new TAGdataDsc("TAGtrackRepoKalman", new TAGtrackRepoKalman());
-      m_newGlobTrackRepo = new TAGdataDsc("TAGntuTrackRepository", new TAGntuTrackRepository());
-      fActGlbkFitter = new TAGactKFitter("glbActKFitter", m_GlobTrackRepo, m_newGlobTrackRepo);
-       if (fFlagHisto)
-         fActGlbkFitter->CreateHistogram();
+				genfit::FieldManager::getInstance()->getFieldVal( TVector3(0,0,14) ).Print();
+			}
+			// set material and geometry into genfit
+			MaterialEffects* materialEffects = MaterialEffects::getInstance();
+			materialEffects->init(new TGeoMaterialInterface());
+
+			// include the nucleon into the genfit pdg repository
+			UpdatePDG::Instance();
+
+			// study for kalman Filter
+			// fActGlbTrackStudies = new TAGFtrackingStudies("glbActTrackStudyGF");
+			// if (fFlagHisto)
+			//    fActGlbTrackStudies->CreateHistogram();
+
+			// Initialisation of KFfitter
+			m_GlobTrackRepo = new TAGdataDsc("TAGtrackRepoKalman", new TAGtrackRepoKalman());
+			m_newGlobTrackRepo = new TAGdataDsc("TAGntuTrackRepository", new TAGntuTrackRepository());
+			fActGlbkFitter = new TAGactKFitter("glbActKFitter", m_GlobTrackRepo, m_newGlobTrackRepo);
+			if (fFlagHisto)
+				fActGlbkFitter->CreateHistogram();
 
     
   }

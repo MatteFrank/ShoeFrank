@@ -823,6 +823,17 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	// track->getFitStatus( track->getCardinalRep() )->getNFailedPoints();
 	// track->getFitStatus( track->getCardinalRep() )->isFitConvergedFully();
 
+
+	// 	ANGULAR VARIBLE   
+	h_dR->Fill ( recoMom_target.DeltaR( TVector3(0,0,0) ) );
+	h_phi->Fill ( recoMom_target.Phi() );
+	h_theta->Fill ( recoMom_target.Theta() );
+	h_eta->Fill ( recoMom_target.Eta() );
+	h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
+	h_dy_dz->Fill ( recoMom_target.y() / recoMom_target.z() );
+	
+
+
 	h_nMeas->Fill ( nMeas );
 	h_mass->Fill( mass );
 	h_chi2->Fill( chi2 );
@@ -839,12 +850,12 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	h_momentum_reco.at(measCh)->Fill( recoMom_target.Mag() );	// check if not present
 
 	
-	shoeOutTrackGenFit = m_outTrackRepoGenFit->NewTrack( fitTrackName, track, 
-										(long)gTAGroot->CurrentEventId().EventNumber(), 
-										pdgID, pdgCh, measCh, mass, length, tof, chi2, ndof, pVal, 
-										&recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov, 
-										&shoeTrackPointRepo
-										);
+	// shoeOutTrackGenFit = m_outTrackRepoGenFit->NewTrack( fitTrackName, track, 
+	// 									(long)gTAGroot->CurrentEventId().EventNumber(), 
+	// 									pdgID, pdgCh, measCh, mass, length, tof, chi2, ndof, pVal, 
+	// 									&recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov, 
+	// 									&shoeTrackPointRepo
+	// 									);
 
 	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, 
 										(long)gTAGroot->CurrentEventId().EventNumber(),
@@ -1130,7 +1141,7 @@ void TAGactKFitter::CreateHistogram()	{
 	AddHistogram(h_trackMC_reco_id);
 
 
-	h_trackQuality = new TH1F("m_trackQuality", "m_trackQuality", 50, 0, 1);
+	h_trackQuality = new TH1F("m_trackQuality", "m_trackQuality", 55, 0, 1.1);
 	AddHistogram(h_trackQuality);
 
 	h_length = new TH1F("m_length", "m_length", 340, 0, 120);
@@ -1151,6 +1162,26 @@ void TAGactKFitter::CreateHistogram()	{
 
 	h_mcPosZ = new TH1F("h_mcPosZ", "h_mcPosZ", 500, -0.25, 0.25);
 	AddHistogram(h_mcPosZ);
+
+
+
+	h_dR = new TH1F("h_dR", "h_dR", 100, 0., 20.);
+	AddHistogram(h_dR);  
+
+	h_phi = new TH1F("h_phi", "h_phi", 80, -4, 4);
+	AddHistogram(h_phi);  
+
+	h_theta = new TH1F("h_theta", "h_theta", 100, 0., 2.);
+	AddHistogram(h_theta);  
+
+	h_eta = new TH1F("h_eta", "h_eta", 100, 0., 20.);
+	AddHistogram(h_eta);  
+
+	h_dx_dz = new TH1F("h_dx_dz", "h_dx_dz", 110, 0., 0.3);
+	AddHistogram(h_dx_dz);  
+
+	h_dy_dz = new TH1F("h_dy_dz", "h_dy_dz", 110, 0., 0.3);
+	AddHistogram(h_dy_dz);  
 
 
 

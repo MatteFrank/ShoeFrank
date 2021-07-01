@@ -3,6 +3,10 @@ CamName: "GSI2021"
 RunNumber: 200-410
 NumberDevices: 8
 
+DetectorName: "DI"
+NumberFiles: 1
+"./geomaps/GSI2021/TADIdetector.geo": -1
+
 DetectorName: "FOOT"
 NumberFiles: 2
 "./geomaps/GSI2021/FOOT.geo": -1

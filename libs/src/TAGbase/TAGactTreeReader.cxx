@@ -215,19 +215,19 @@ Bool_t TAGactTreeReader::Process()
    return kFALSE;
   }
   
-  // if (Valid()) {
-  //   if (fbDscBranch) {
-  //     for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
-  //       TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
-  //       if (p_chan->fpBranch) {
-  //         Int_t i_nbyte = p_chan->fpBranch->GetEntry(fiCurrentEntry);
-  //         p_chan->fiNByte += i_nbyte;
-  //       }
-  //       p_chan->fpDataDsc->SetBit(kValid);
-  //     }
-  //   } else
-  //     fpTree->GetEntry(fiCurrentEntry);
-  // }
+  if (Valid()) {
+    if (fbDscBranch) {
+      for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
+        TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
+        if (p_chan->fpBranch) {
+          Int_t i_nbyte = p_chan->fpBranch->GetEntry(fiCurrentEntry);
+          p_chan->fiNByte += i_nbyte;
+        }
+        p_chan->fpDataDsc->SetBit(kValid);
+      }
+    } else
+      fpTree->GetEntry(fiCurrentEntry);
+  }
 
   return Valid();
 }
