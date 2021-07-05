@@ -64,3 +64,9 @@ CamName:    "12C_200new"
 CamDataMC:    1
 CamDate: "May 2021"
 CamSum: "Simulation data for 12C on 12C (5mm target) @ 200MeV/u with new Magnets and MSD"
+
+CamNumber:    11
+CamName:    "testITR"
+CamDataMC:    0
+CamDate: "June 2021"
+CamSum: "Test for ITR data"

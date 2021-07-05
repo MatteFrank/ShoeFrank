@@ -21,12 +21,16 @@
 
 #include "TAMSDparMap.hxx"
 #include "TAMSDparGeo.hxx"
+#include "TAMSDparConf.hxx"
 
 #include "TAGdaqEvent.hxx"
 #include "TAMSDntuRaw.hxx"
+#include "TAMSDntuHit.hxx"
+#include "TAMSDntuCluster.hxx"
 #include "TAGactDaqReader.hxx"
 #include "TAMSDactNtuRaw.hxx"
 #include "TAMSDactNtuHit.hxx"
+#include "TAMSDactNtuCluster.hxx"
 
 #endif
 
@@ -37,6 +41,7 @@ TAGactDaqReader*    daqActReader = 0x0;
 
 TAMSDactNtuRaw*      msdActRaw  = 0x0;
 TAMSDactNtuHit*      msdActHit  = 0x0;
+TAMSDactNtuCluster*  msdActClus = 0x0;
 
 void FillMsd(Int_t runNumber)
 {
@@ -50,28 +55,39 @@ void FillMsd(Int_t runNumber)
    parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
    
+   TAGparaDsc* msdConf    = new TAGparaDsc("msdConf", new TAMSDparConf());
+   TAMSDparConf* confmap   = (TAMSDparConf*) msdConf->Object();
+   parFileName = campManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), runNumber);
+   confmap->FromFile(parFileName.Data());
+   
    TAGparaDsc* msdCal = new TAGparaDsc("msdCal", new TAMSDparCal());
    TAMSDparCal* parCalMsd = (TAMSDparCal*)msdCal->Object();
-   parFileName = campManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), runNumber, true);
    parCalMsd->LoadEnergyCalibrationMap(parFileName.Data());
+   
+   parFileName = campManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), runNumber);
+   parCalMsd->LoadPedestalMap(parFileName.Data());
    
    
    TAGdataDsc* msdDaq    = new TAGdataDsc("msdDaq", new TAGdaqEvent());
    TAGdataDsc* msdDat    = new TAGdataDsc("msdDat", new TAMSDntuRaw());
    TAGdataDsc* msdHit    = new TAGdataDsc("msdHit", new TAMSDntuHit());
+   TAGdataDsc* msdclus   = new TAGdataDsc("msdClus", new TAMSDntuCluster());
 
    daqActReader  = new TAGactDaqReader("daqActReader", msdDaq);
    
-   msdActRaw  = new TAMSDactNtuRaw("msdActRaw", msdDat, msdDaq, msdMap, msdGeo);
+   msdActRaw  = new TAMSDactNtuRaw("msdActRaw", msdDat, msdDaq, msdMap, msdCal, msdGeo);
    msdActRaw->CreateHistogram();
 
    msdActHit  = new TAMSDactNtuHit("msdActHit", msdDat, msdHit, msdGeo, msdCal);
    msdActHit->CreateHistogram();
 
+   msdActClus  = new TAMSDactNtuCluster("msdActClus", msdHit, msdclus, msdConf, msdGeo);
+   msdActClus->CreateHistogram();
 }
 
 //void ReadMsdRaw(TString filename = "data/data_test.00003864.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 1,
-void ReadMsdRaw(TString filename = "data/data_test.00003890.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 1,
+void ReadMsdRaw(TString filename = "data/data_test.00003890.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 1000,
                 TString expName = "GSI2021", Int_t runNumber = 1)
 {
    TAGrecoManager::Instance(expName);
@@ -95,6 +111,7 @@ void ReadMsdRaw(TString filename = "data/data_test.00003890.physics_foot.daq.RAW
    tagr.AddRequiredItem(daqActReader);
    tagr.AddRequiredItem(msdActRaw);
    tagr.AddRequiredItem(msdActHit);
+   tagr.AddRequiredItem(msdActClus);
    tagr.AddRequiredItem(outFile);
 
    tagr.Print();
@@ -109,6 +126,7 @@ void ReadMsdRaw(TString filename = "data/data_test.00003890.physics_foot.daq.RAW
    if (outFile->Open(outFileName.Data(), "RECREATE")) return;
    msdActRaw->SetHistogramDir(outFile->File());
    msdActHit->SetHistogramDir(outFile->File());
+   msdActClus->SetHistogramDir(outFile->File());
 
    cout<<" Beginning the Event Loop "<<endl;
    tagr.BeginEventLoop();

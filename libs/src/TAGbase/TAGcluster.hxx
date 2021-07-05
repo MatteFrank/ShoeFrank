@@ -22,6 +22,14 @@ class TAGcluster : public TAGobject {
 
    virtual           ~TAGcluster() {}
 
+   //! Get validity
+   Bool_t                   IsValid()          const { return fIsValid;    }
+   //! Get type
+   Int_t                    GetDeviceType()    const { return fDeviceType; }
+   //! Get major type
+   Int_t                    GetDevMajorType()  const { return fDeviceType/10; }
+   //! Get minor type
+   Int_t                    GetDevMinorType()  const { return fDeviceType%10; }
    //! Get cluster index
    Int_t                    GetClusterIdx()    const { return fClusterIdx; }
    //! Get sensor index
@@ -39,6 +47,10 @@ class TAGcluster : public TAGobject {
    virtual void             SetPosErrorG(TVector3& pos);
    virtual void             SetPosErrorG(Float_t u, Float_t v, Float_t z) { fPosErrorG.SetXYZ(u,v,z); }
 
+   //! Set validy
+   void                     SetValid(Bool_t v = true){ fIsValid = v;       }
+   //! Set cluster type
+   void                     SetDeviceType(Int_t nb)  { fDeviceType = nb;   }
    //! Set cluster number
    void                     SetClusterIdx(Int_t nb)  { fClusterIdx = nb;   }
    //! Set plane number
@@ -68,7 +80,9 @@ protected:
    map<int, int>      fMcTrackMap;               // Map of MC track Id
    Int_t              fClusterIdx;               // cluster index
    Int_t              fSensorIdx;                // sensor index
-   
+   Int_t              fDeviceType;               // type of sensor VT: 40, IT: 50, MSD: 60, TW: 70, CA: 80
+   Bool_t             fIsValid;                  // validity flag
+
     ClassDef(TAGcluster,2)
 };
 

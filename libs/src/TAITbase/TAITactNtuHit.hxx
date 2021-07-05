@@ -27,7 +27,7 @@ private:
    
 private:   
    //! Find vertex data
-   Bool_t DecodeEvent(const DECardEvent* evt);
+   Bool_t DecodeEvent();
       
    //! Get the starting point of each event
    Bool_t GetVtxHeader();

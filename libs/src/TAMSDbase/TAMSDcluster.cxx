@@ -6,6 +6,8 @@
 
 #include "TAMSDcluster.hxx"
 #include "TAMSDhit.hxx"
+#include "TAMSDparGeo.hxx"
+#include "TAGgeoTrafo.hxx"
 
 ClassImp(TAMSDcluster) // Description of a cluster
 
@@ -17,8 +19,7 @@ TAMSDcluster::TAMSDcluster()
    fPosErrorF(0),
    fCurPosition(0,0,0),
    fPlaneView(-1),
-   fEnergyLoss(0),
-   fIsValid(false)
+   fEnergyLoss(0)
 {
    // TAMSDcluster constructor
    SetupClones();
@@ -40,8 +41,7 @@ TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
    fPosErrorF(cluster.fPosErrorF),
    fCurPosition(cluster.fCurPosition),
    fPlaneView(cluster.fPlaneView),
-   fEnergyLoss(cluster.fEnergyLoss),
-   fIsValid(cluster.fIsValid)
+   fEnergyLoss(cluster.fEnergyLoss)
 {
    fListOfStrips = (TClonesArray*)cluster.fListOfStrips->Clone();
 }
@@ -74,7 +74,7 @@ void TAMSDcluster::SetPositionG(TVector3& posGlo)
 {
    fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
    
-   if (fPlaneView == 0)
+   if (GetPlaneView() == 0)
       fPosErrorG.SetXYZ(fPosErrorF, 0, 0.01);
    else
       fPosErrorG.SetXYZ(0, fPosErrorF, 0.01);
@@ -95,7 +95,7 @@ TAMSDhit* TAMSDcluster::GetStrip(Int_t idx)
 void TAMSDcluster::SetPositionF(Float_t pos)
 {
    fPositionF = pos;
-   if (fPlaneView == 0)
+   if (GetPlaneView() == 0)
       fCurPosition.SetXYZ(fPositionF, 0, 0);
    else
       fCurPosition.SetXYZ(0, fPositionF, 0);
@@ -108,6 +108,13 @@ void TAMSDcluster::SetPosErrorF(Float_t pos)
    fPosErrorF = pos;
 }
 
+//______________________________________________________________________________
+//
+void TAMSDcluster::SetPlaneView(Int_t v)
+{
+   fPlaneView = v;
+   fDeviceType = TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) + fPlaneView;
+}
 
 //______________________________________________________________________________
 //

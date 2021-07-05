@@ -544,7 +544,7 @@ void BaseReco::ReadParFiles()
          fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
          TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
          parFileName = fCampManager->GetCurMapFile(TAITparGeo::GetBaseName(), fRunNumber);
-         // parMap->FromFile(parFileName.Data());
+         parMap->FromFile(parFileName.Data());
       }
    }
 
@@ -566,10 +566,14 @@ void BaseReco::ReadParFiles()
          parFileName = fCampManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), fRunNumber);
          parMapMsd->FromFile(parFileName.Data());
          
+         Bool_t energyFile = true;
          fpParCalMsd = new TAGparaDsc("msdCal", new TAMSDparCal());
          TAMSDparCal* parCalMsd = (TAMSDparCal*)fpParCalMsd->Object();
-         parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber, energyFile);
          parCalMsd->LoadEnergyCalibrationMap(parFileName.Data());
+         
+         parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+         parCalMsd->LoadPedestalMap(parFileName.Data());
       }
    }
 
@@ -665,8 +669,6 @@ void BaseReco::ReadParFiles()
      }
      
    }
-
-   TAVTparConf::SetHistoMap();
 }
 
 //__________________________________________________________

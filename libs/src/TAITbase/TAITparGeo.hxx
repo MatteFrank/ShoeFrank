@@ -18,7 +18,7 @@ class TGeoVolume;
 class TAITparGeo : public TAVTparGeo {
    
 private:
-   
+   Int_t      fSensPerPlume;      // number of sensors per Plume
    TVector3   fSupportSize;       // Support size
    TVector3   fSupportOffset;     // Support offset
    Float_t    fFoamThickness;     // Foam thickness
@@ -52,7 +52,9 @@ private:
 protected:
    static const TString fgkBaseNameIt;   // IT base name
    static const TString fgkDefParaNameIt;
-   static const Int_t   fgkDefSensPerLayer; // number of sensor per layer
+   static const Int_t   fgkDefSensPerLayer; // Def number of sensors per layer
+   static const Int_t   fgkDefSensPerPlume; // Def number of sensors per plume module
+   static const Int_t   fgkDefLayersN;      // Def number of layers
    
 private:
    Float_t GetPassiveLayerPosZ(Int_t layer);
@@ -61,6 +63,10 @@ public:
    TAITparGeo();
     virtual ~TAITparGeo();
    
+   //! Get number of Sensors per link
+   Int_t GetSensPerDataLink()           const { return fSensPerPlume;     }
+   //! Get sensors per Plume
+   Int_t    GetSensPerPlume()           const { return fSensPerPlume;     }
    //! Get Foam size
    TVector3 GetSupportSize()            const { return fSupportSize;      }
    //! Get Foam Offset

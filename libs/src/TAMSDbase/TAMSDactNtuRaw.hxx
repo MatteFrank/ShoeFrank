@@ -15,6 +15,7 @@
 
 #include "TAMSDparGeo.hxx"
 #include "TAMSDparMap.hxx"
+#include "TAMSDparCal.hxx"
 #include "TAGdaqEvent.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TAGactDaqReader.hxx"
@@ -28,6 +29,7 @@ public:
                                    TAGdataDsc* dscdatraw=0,
                                    TAGdataDsc* dscdatdaq=0,
                                    TAGparaDsc* dscparmap=0,
+                                   TAGparaDsc* dscparcal=0,
                                    TAGparaDsc* dscpargeo=0);
     virtual         ~TAMSDactNtuRaw();
 
@@ -39,7 +41,8 @@ public:
 private:
     TAGdataDsc*     fpDatRaw;		        // output data dsc
     TAGdataDsc*     fpDatDaq;		        // input data dsc
-    TAGparaDsc*     fpParMap;		        // parameter dsc
+    TAGparaDsc*     fpParMap;              // parameter dsc
+    TAGparaDsc*     fpParCal;              // parameter dsc
     TAGparaDsc*     fpParGeo;		        // parameter dsc
 
     TH1F*           fpHisStripMap[6];

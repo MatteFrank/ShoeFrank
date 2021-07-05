@@ -8,7 +8,8 @@
 #include "TH2F.h"
 #include "TMath.h"
 
-#include "TAVTparGeo.hxx"
+#include "TAGgeoTrafo.hxx"
+#include "TAITparGeo.hxx"
 #include "TAVTparConf.hxx"
 #include "TAITntuHit.hxx"
 #include "TAITntuHit.hxx"
@@ -105,6 +106,7 @@ Bool_t TAITactNtuCluster::CreateClusters(Int_t iSensor)
    
    for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
       cluster = pNtuClus->GetCluster(iSensor, i);
+      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAITparGeo::GetBaseName()));
       FillClusterInfo(iSensor, cluster);
    }
    

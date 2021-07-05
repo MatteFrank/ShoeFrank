@@ -48,9 +48,6 @@ protected:
    SensorParameter_t fSensorParameter[32];
    AnalysisParameter_t fAnalysisParameter;
 
-private:
-   static Bool_t  fgIsMapHist;   // enable  map histo
-
 public:
 
    TAVTbaseParConf();
@@ -71,12 +68,6 @@ public:
    
    Int_t         GetSensorsN()          const  { return fSensorsN;                }
    const Char_t* GetDefaultConfName()   const  { return fkDefaultConfName.Data(); }
-
-public:
-   
-   static Bool_t IsMapHistOn()                   { return fgIsMapHist; }
-   static void   SetHistoMap(Bool_t flag = true) { fgIsMapHist = flag; }
-   
 
    ClassDef(TAVTbaseParConf,3)
 };

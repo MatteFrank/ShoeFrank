@@ -105,23 +105,19 @@ void TAVTactBaseNtuHitMC::CreateHistogram()
    }
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-      if (TAVTparConf::IsMapHistOn()) {
-         fpHisPixelMap[i]  = new TH2F(Form("%sMcPixelMap%d", fPrefix.Data(), i+1) , Form("%s - MC pixel map for sensor %d", fTitleDev.Data(), i+1),
-                                      pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx(),
-                                      pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy());
-         fpHisPixelMap[i]->SetStats(kFALSE);
-         AddHistogram(fpHisPixelMap[i]);
-      }
+      fpHisPixelMap[i]  = new TH2F(Form("%sMcPixelMap%d", fPrefix.Data(), i+1) , Form("%s - MC pixel map for sensor %d", fTitleDev.Data(), i+1),
+                                   pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx(),
+                                   pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy());
+      fpHisPixelMap[i]->SetStats(kFALSE);
+      AddHistogram(fpHisPixelMap[i]);
    }
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-      if (TAVTparConf::IsMapHistOn()) {
-         fpHisPosMap[i] =  new TH2F(Form("%sMcPosMap%d", fPrefix.Data(), i+1), Form("%s - MC position map for sensor %d", fTitleDev.Data(), i+1),
-                                    100, -pGeoMap->GetPitchX()/2.*pGeoMap->GetPixelsNx(), pGeoMap->GetPitchX()/2.*pGeoMap->GetPixelsNx(),
-                                    100, -pGeoMap->GetPitchY()/2.*pGeoMap->GetPixelsNy(), pGeoMap->GetPitchY()/2.*pGeoMap->GetPixelsNy());
-         fpHisPosMap[i]->SetStats(kFALSE);
-         AddHistogram(fpHisPosMap[i]);
-      }
+      fpHisPosMap[i] =  new TH2F(Form("%sMcPosMap%d", fPrefix.Data(), i+1), Form("%s - MC position map for sensor %d", fTitleDev.Data(), i+1),
+                                 100, -pGeoMap->GetPitchX()/2.*pGeoMap->GetPixelsNx(), pGeoMap->GetPitchX()/2.*pGeoMap->GetPixelsNx(),
+                                 100, -pGeoMap->GetPitchY()/2.*pGeoMap->GetPixelsNy(), pGeoMap->GetPitchY()/2.*pGeoMap->GetPixelsNy());
+      fpHisPosMap[i]->SetStats(kFALSE);
+      AddHistogram(fpHisPosMap[i]);
    }
    
    SetValidHistogram(kTRUE);

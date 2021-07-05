@@ -103,13 +103,13 @@ public:
    //! Get position sensor
    TVector3        GetSensorPosition(Int_t iSensor);
    
-   virtual int     GetSensorID( int layer, int /*col*/, int /*row*/ )    { return layer; };
-
    //! Get Sensor idx for a given type and sensor in type
    Int_t GetSensorIdx(Int_t iSensor, Int_t type);
 
    //! Get number of Sensors
    Int_t GetSensorsN()                 const { return fSensorsN;       }
+   //! Get number of Sensors per link
+   Int_t GetSensPerDataLink()          const { return fSensorsN;       }
    //! Get number of layers
    Int_t GetLayersN()                  const { return fLayersN;        }
 

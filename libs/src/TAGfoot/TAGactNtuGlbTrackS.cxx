@@ -332,6 +332,7 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
       posG = fpFootGeo->FromVTLocalToGlobal(posG);
       
       TAGpoint* point = track->AddMeasPoint(TAVTparGeo::GetBaseName(), posG, errG);
+      point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName()));
       point->SetSensorIdx(cluster->GetSensorIdx());
    }
    
@@ -468,6 +469,7 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
          posG = fpFootGeo->FromITLocalToGlobal(posG);
          
          TAGpoint* point = track->AddMeasPoint(TAITparGeo::GetBaseName(), posG, errG);
+         point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAITparGeo::GetBaseName()));
          point->SetSensorIdx(iSensor);
 
          UpdateParam(track);
@@ -555,10 +557,7 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          TAGpoint* point = track->AddMeasPoint(TAMSDparGeo::GetBaseName(), posG, errG);
          point->SetSensorIdx(iSensor);
          Int_t view =  bestCluster->GetPlaneView();
-         if (view == 0)
-            point->SetYon(false);
-         else
-            point->SetXon(false);
+         point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()+view));
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
          
          UpdateParam(track, view);
@@ -668,6 +667,7 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
          posG = fpFootGeo->FromTWLocalToGlobal(posG);
          
          TAGpoint* point = track->AddMeasPoint(TATWparGeo::GetBaseName(), posG, errG);
+         point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TATWparGeo::GetBaseName()));
          point->SetSensorIdx(0);
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
 
@@ -739,6 +739,7 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
       posG = fpFootGeo->FromCALocalToGlobal(posG);
          
       TAGpoint* point = track->AddMeasPoint(TACAparGeo::GetBaseName(), posG, errG);
+      point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TACAparGeo::GetBaseName()));
       point->SetSensorIdx(0);
       point->SetEnergyLoss(bestCluster->GetEnergy());
 
@@ -880,14 +881,27 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
       dx = cluster->GetPosErrorG()(0);
       dy = cluster->GetPosErrorG()(1);
   
-      if (cluster->IsXon()) {
+      if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName())) {
+         if (cluster->GetDevMinorType() == 0) {
+            zxData.push_back(z);
+            xData.push_back(x);
+            if (dx < 1e-4) dx = 1;
+            dxData.push_back(dx);
+         }
+         
+         if (cluster->GetDevMinorType() == 1) {
+            zyData.push_back(z);
+            yData.push_back(y);
+            if (dy < 1e-4) dy = 1;
+            dyData.push_back(dy);
+         }
+         
+      } else {
          zxData.push_back(z);
          xData.push_back(x);
          if (dx < 1e-4) dx = 1;
          dxData.push_back(dx);
-      }
-      
-      if (cluster->IsYon()) {
+         
          zyData.push_back(z);
          yData.push_back(y);
          if (dy < 1e-4) dy = 1;

@@ -108,6 +108,7 @@ Bool_t TAVTactNtuCluster::CreateClusters(Int_t iSensor)
 
    for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
       cluster = pNtuClus->GetCluster(iSensor, i);
+      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName()));
       FillClusterInfo(iSensor, cluster);
    }
    

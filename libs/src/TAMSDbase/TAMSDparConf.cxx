@@ -91,27 +91,3 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
    
    return kFALSE;
 }
-
-//------------------------------------------+-----------------------------------
-//! Get major number status
-Int_t TAMSDparConf::GetStatus(Int_t idx) const
-{
-   Int_t major = fSensorParameter[idx].Status/10;
-   if (major == 0)
-      return fSensorParameter[idx].Status;
-   else
-      return major;
-   
-}
-
-//------------------------------------------+-----------------------------------
-//! Get minor number status
-Int_t TAMSDparConf::GetStatusMinor(Int_t idx) const
-{
-   Int_t major = fSensorParameter[idx].Status/10;
-   if (major == 0) {
-      Warning("GetStatusMinor", "No status minor number!");
-      return -99;
-   }  else
-      return (fSensorParameter[idx].Status % 10);
-}

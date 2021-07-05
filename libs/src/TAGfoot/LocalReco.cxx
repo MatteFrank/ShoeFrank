@@ -118,7 +118,7 @@ void LocalReco::CreateRawAction()
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fpDatRawMsd   = new TAGdataDsc("msdDat", new TAMSDntuRaw());
-      fActDatRawMsd = new TAMSDactNtuRaw("msdActRaw", fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParGeoMsd);
+      fActDatRawMsd = new TAMSDactNtuRaw("msdActRaw", fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd);
       if (fFlagHisto)
          fActDatRawMsd->CreateHistogram();
 
@@ -263,9 +263,9 @@ void LocalReco::AddRawRequiredItem()
       fTAGroot->AddRequiredItem("vtActNtu");
    }
 
-//   if (TAGrecoManager::GetPar()->IncludeIT()) {
-//      fTAGroot->AddRequiredItem("itActNtu");
-//   }
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      fTAGroot->AddRequiredItem("itActNtu");
+   }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
      if(TAGrecoManager::GetPar()->CalibTW()) {
@@ -276,8 +276,8 @@ void LocalReco::AddRawRequiredItem()
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      fTAGroot->AddRequiredItem("msdActDat");
-//      fTAGroot->AddRequiredItem("msdActNtu");
+      fTAGroot->AddRequiredItem("msdActRaw");
+      fTAGroot->AddRequiredItem("msdActNtu");
    }
 
    if (TAGrecoManager::GetPar()->IncludeCA()) {

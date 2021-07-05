@@ -50,28 +50,30 @@ Bool_t TAMSDactNtuHit::Action()
 {
    TAMSDntuRaw*   p_datraw = (TAMSDntuRaw*) fpDatRaw->Object();
    TAMSDntuHit*   p_nturaw = (TAMSDntuHit*) fpNtuRaw->Object();
-   TAMSDparGeo*   p_GeoMap = (TAMSDparGeo*) fpGeoMap->Object();
+   TAMSDparGeo*   p_geoMap = (TAMSDparGeo*) fpGeoMap->Object();
    
    
    // loop over boards
-   for (Int_t i = 0; i < p_GeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < p_geoMap->GetSensorsN(); ++i) {
       
       int nstrip = p_datraw->GetStripsN(i);
 
       for(int ih = 0; ih < nstrip; ++ih) {
          TAMSDrawHit *strip = p_datraw->GetStrip(i, ih);
          
-         Int_t sensorId  = strip->GetSensorId();
-         Int_t stripId   = strip->GetStrip();
-         Int_t view      = strip->GetView();
-         UInt_t charge   = strip->GetCharge();
+         Int_t sensorId   = strip->GetSensorId();
+         Int_t stripId    = strip->GetStrip();
+         Int_t view       = strip->GetView();
+         UInt_t charge    = strip->GetCharge();
+         Float_t posStrip = p_geoMap->GetPosition(stripId);
          
         if (FootDebugLevel(1))
             printf("sensor: %d strip: %d view: %d charge: %d\n", sensorId, stripId, view, charge);
          
          // here we need the calibration file
          Double_t energy = GetEnergy(charge, sensorId, stripId);
-         p_nturaw->NewStrip(sensorId, energy, view, stripId);
+         TAMSDhit* hit = p_nturaw->NewStrip(sensorId, energy, view, stripId);
+         hit->SetPosition(posStrip);
       }
    }
    fpNtuRaw->SetBit(kValid);

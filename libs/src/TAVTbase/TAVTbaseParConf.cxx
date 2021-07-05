@@ -28,8 +28,6 @@
 
 ClassImp(TAVTbaseParConf);
 
- Bool_t TAVTbaseParConf::fgIsMapHist       = false;
-
 //______________________________________________________________________________
 TAVTbaseParConf::TAVTbaseParConf()
 : TAGparTools(),

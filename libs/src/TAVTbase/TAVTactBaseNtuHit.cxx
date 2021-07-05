@@ -25,6 +25,21 @@ ClassImp(TAVTactBaseNtuHit);
 TAVTactBaseNtuHit::TAVTactBaseNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAVTactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
+   AddDataOut(pNtuRaw, "TAVTntuHit");
+   AddPara(pGeoMap, "TAVTparGeo");
+   AddPara(pConfig, "TAVTparConf");
+   
+   TAVTparGeo* parGeo = (TAVTparGeo*) fpGeoMap->Object();
+   fNSensors = parGeo->GetSensorsN();
+   
+   for (Int_t i = 0; i < fNSensors; ++i) {
+      fPrevEventNumber[i]   = 0;
+      fPrevTriggerNumber[i] = 0;
+      fPrevTimeStamp[i]     = 0;
+   }
+   
+   Int_t size = parGeo->GetSensorsN()*sizeof(MI26_FrameRaw)*4;
+   fData.resize(size);
 }
 
 //------------------------------------------+-----------------------------------

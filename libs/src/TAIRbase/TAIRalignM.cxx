@@ -19,6 +19,8 @@
 #include "TAGactTreeReader.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAGrecoManager.hxx"
+#include "TAGcampaignManager.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
@@ -41,19 +43,21 @@ ClassImp(TAIRalignM);
 
 TAIRalignM* TAIRalignM::fgInstance = 0x0;
 //__________________________________________________________
-TAIRalignM* TAIRalignM::Instance(const TString name)
+TAIRalignM* TAIRalignM::Instance(const TString name, const TString expName, Int_t runNumber)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAIRalignM(name);
+      fgInstance = new TAIRalignM(name, expName, runNumber);
    
    return fgInstance;
 }
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAIRalignM::TAIRalignM(const TString name)
+TAIRalignM::TAIRalignM(const TString name, const TString expName, Int_t runNumber)
  : TObject(),
    fFileName(name),
+   fCampManager(0x0),
+   fRunNumber(runNumber),
    fStartFac(16.),
    fResCutInitial(100.),
    fResCut(100.),
@@ -68,26 +72,30 @@ TAIRalignM::TAIRalignM(const TString name)
    fAGRoot        = new TAGroot();
    fInfile        = new TAGactTreeReader("inFile");
    
+   // load campaign file
+   fCampManager = new TAGcampaignManager(expName);
+   fCampManager->FromFile();
+   
    // VTX
    fpGeoMapVtx    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
    TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
-   TString parFile = "./geomaps/TAVTdetector.geo";
+   TString parFile = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
    geomapVtx->FromFile(parFile.Data());
       
    fpConfigVtx    = new TAGparaDsc("vtConf", new TAVTparConf());
-   parFile = "./config/TAVTdetector_align.cfg";
+   parFile = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
    TAVTparConf* parConfVtx = (TAVTparConf*) fpConfigVtx->Object();
    parConfVtx->FromFile(parFile.Data());
    
    // ITR
    fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
-   TAITparGeo* geomapMsd   = (TAITparGeo*) fpGeoMapItr->Object();
-    parFile = "./geomaps/TAITdetector.geo";
-   geomapMsd->FromFile(parFile.Data());
+   TAITparGeo* geomapItr   = (TAITparGeo*) fpGeoMapItr->Object();
+   parFile = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
+   geomapItr->FromFile(parFile.Data());
    
    fpConfigItr    = new TAGparaDsc("itConf", new TAITparConf());
    TAITparConf* parConfItr = (TAITparConf*) fpConfigItr->Object();
-   parFile = "./config/TAITdetector_align.cfg";
+   parFile = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
    parConfItr->FromFile(parFile.Data());
    
    //IR

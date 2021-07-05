@@ -16,7 +16,7 @@
 
 /*!
  \class TAMSDactNtuCluster 
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for MSD cluster. **
  */
 
 ClassImp(TAMSDactNtuCluster);
@@ -51,15 +51,15 @@ void TAMSDactNtuCluster::CreateHistogram()
   DeleteHistogram();
   
   TString prefix = "ms";
-  TString titleDev = "Multi Strip Detector";
+  TString titleDev = "Mirco Strip Detector";
   
-  fpHisStripTot = new TH1F(Form("%sClusStripTot", prefix.Data()), Form("%s - Total # strips per clusters", titleDev.Data()), 100, 0., 100.);
+  fpHisStripTot = new TH1F(Form("%sClusStripTot", prefix.Data()), Form("%s - Total # strips per clusters", titleDev.Data()), 25, 0., 25.);
   AddHistogram(fpHisStripTot);
   
   TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMap->Object();
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-    fpHisStrip[i] = new TH1F(Form("%sClusStrip%d",prefix.Data(), i+1), Form("%s - # strips per clusters for sensor %d", titleDev.Data(), i+1), 100, 0., 100.);
+    fpHisStrip[i] = new TH1F(Form("%sClusStrip%d",prefix.Data(), i+1), Form("%s - # strips per clusters for sensor %d", titleDev.Data(), i+1), 25, 0., 25);
     AddHistogram(fpHisStrip[i]);
   }
   
@@ -71,11 +71,11 @@ void TAMSDactNtuCluster::CreateHistogram()
   }
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-     fpHisClusCharge[i] = new TH1F(Form("%sClusCharge%d",prefix.Data(), i+1), Form("%s - cluster charge for sensor %d", titleDev.Data(), i+1), 1000, 0., 10000.);
+     fpHisClusCharge[i] = new TH1F(Form("%sClusCharge%d",prefix.Data(), i+1), Form("%s - cluster charge for sensor %d", titleDev.Data(), i+1), 100, 0., 500);
      AddHistogram(fpHisClusCharge[i]);
   }
    
-  fpHisClusChargeTot = new TH1F(Form("%sClusChargeTot",prefix.Data()), Form("%s - total cluster charge", titleDev.Data()), 1000, 0., 10000.);
+  fpHisClusChargeTot = new TH1F(Form("%sClusChargeTot",prefix.Data()), Form("%s - total cluster charge", titleDev.Data()), 100, 0., 500);
   AddHistogram(fpHisClusChargeTot);
 
   SetValidHistogram(kTRUE);
@@ -222,9 +222,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
               fpHisStrip[iSensor]->Fill(cluster->GetStripsN());
               fpHisClusCharge[iSensor]->Fill(cluster->GetEnergyLoss());
               fpHisClusChargeTot->Fill(cluster->GetEnergyLoss());
-              if (TAMSDparConf::IsMapHistOn()) {
-                 fpHisClusMap[iSensor]->Fill(cluster->GetPositionF());
-              }
+              fpHisClusMap[iSensor]->Fill(cluster->GetPositionF());
            }
         }
      }
@@ -267,8 +265,8 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   posErr *= 1./tClusterPulseSum;
   
   // for cluster with a single strip
-  Float_t lim = 9e-6; // in cm !
-  if (posErr < lim) posErr = lim; //(20/Sqrt(12)^2
+  Float_t lim = 1.875e-5; // in cm !
+  if (posErr < lim) posErr = lim; //(150/Sqrt(12)^2
   
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
@@ -276,4 +274,21 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   cluster->SetPositionF(fCurrentPosition);
   cluster->SetPosErrorF(fCurrentPosError);
   cluster->SetEnergyLoss(tClusterPulseSum);
+}
+
+//______________________________________________________________________________
+//
+Bool_t TAMSDactNtuCluster::ApplyCuts(TAMSDcluster* cluster)
+{
+   TAMSDparConf* pConfig = (TAMSDparConf*) fpConfig->Object();
+   
+   TClonesArray* list = cluster->GetListOfStrips();
+   Int_t  entries = list->GetEntries();
+   
+   // cuts on strips in cluster
+   if(entries < pConfig->GetSensorPar(cluster->GetSensorIdx()).MinNofStripsInCluster ||
+      entries > pConfig->GetSensorPar(cluster->GetSensorIdx()).MaxNofStripsInCluster)
+      return false;
+   
+   return true;
 }

@@ -1,6 +1,7 @@
 #ifndef _TAGgeoTrafo_HXX
 #define _TAGgeoTrafo_HXX
 
+#include <map>
 #include <TVector3.h>
 #include <TString.h>
 #include <TMath.h>
@@ -56,6 +57,7 @@ private:
    static const Char_t* fgkGeomTitle;     //! title of GeoManager
    static       Char_t  fgDefaultTransp;  // default transparency value
    static const Char_t* fgkTrafoBaseName; //! name of GeoManager
+   static map<TString, Int_t> fgkDeviceType; // device name
 
 public:
    TAGgeoTrafo(const TString expName = "FOOT");
@@ -202,8 +204,8 @@ public:
 
    static           Char_t  GetDefaultTransp()       { return fgDefaultTransp;  }
    static           void    SetDefaultTransparency(Char_t transparency) { fgDefaultTransp = transparency; }
-
-
+   static           Int_t   GetDeviceType(const TString name) { return fgkDeviceType[name];}
+   static    const Char_t*  GetDeviceName(Int_t devType);
    ClassDef(TAGgeoTrafo,1)
 };
 
