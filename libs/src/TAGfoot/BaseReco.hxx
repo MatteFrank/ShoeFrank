@@ -253,7 +253,6 @@ public:
    TAMCntuHit*          GetNtuMcTw()        const { return (TAMCntuHit*)fpNtuMcTw->Object();         }
    TAMCntuHit*          GetNtuMcCa()        const { return (TAMCntuHit*)fpNtuMcCa->Object();         }
   
-   void                 SetCutter(TATOEbaseCutter* cutter_ph){ fActRecCutter = cutter_ph;}
 
 public:
    //! Disable/Enable ITR tracking
@@ -361,7 +360,6 @@ protected:
    TACAactNtuCluster*    fActClusCa;    // action for clusters
 
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
-   TATOEbaseCutter*      fActRecCutter;     //action to determine optimal cuts for TOE given geometry
     
    TAGactNtuGlbTrackS*   fActGlbTrackS;     // action for straight tracks
   

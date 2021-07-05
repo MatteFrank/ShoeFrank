@@ -224,7 +224,7 @@ private:
         list_m.template set_cuts<detector_properties<details::tof_tag>>( cut_p );
     }
     
-    reconstruction_result retrieve_result( ) const override {
+    reconstruction_result retrieve_results( ) const override {
         return checker_m.retrieve_results( );
     }
     
