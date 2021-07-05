@@ -66,8 +66,8 @@ namespace details{
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = double;
         constexpr static uint8_t shift = 3;
-        constexpr static double default_cut_value{15};
-//        constexpr static double default_cut_value{26};
+//        constexpr static double default_cut_value{15};
+        constexpr static double default_cut_value{20};
     };
     struct it_tag{
         using vector_matrix =  matrix<2, 1>;
@@ -77,8 +77,8 @@ namespace details{
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = std::array<double, 2>;
         static constexpr uint8_t shift = 2;
-//        constexpr static std::array<double, 2> default_cut_value{29,29};
-        constexpr static std::array<double, 2> default_cut_value{33,38};
+        constexpr static std::array<double, 2> default_cut_value{20,20};
+//        constexpr static std::array<double, 2> default_cut_value{33,38};
 
     };
     struct msd_tag{
@@ -89,8 +89,8 @@ namespace details{
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = std::array<double, 3>;
         static constexpr uint8_t shift = 1;
-//        constexpr static std::array<double, 3> default_cut_value{1,2,4};
-        constexpr static std::array<double, 3> default_cut_value{13,18,23};
+        constexpr static std::array<double, 3> default_cut_value{20,20,20};
+//        constexpr static std::array<double, 3> default_cut_value{13,18,23};
 
     };
     struct tof_tag{
@@ -180,7 +180,7 @@ private:
     virtual void set_cuts( details::msd_tag, std::array<double, 3> const& ) = 0;
     virtual void set_cuts( details::tof_tag, double) = 0;
     
-    virtual reconstruction_result retrieve_result( ) const = 0;
+    virtual reconstruction_result retrieve_results( ) const = 0;
 };
 
 
