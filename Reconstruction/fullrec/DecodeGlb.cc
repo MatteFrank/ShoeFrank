@@ -50,6 +50,11 @@ int main (int argc, char *argv[])  {
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
    
+   if (out.IsNull()) {
+      TAGrecoManager::GetPar()->DisableTree();
+      TAGrecoManager::GetPar()->DisableHisto();
+   }
+
    Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
    Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
    Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
@@ -62,11 +67,6 @@ int main (int argc, char *argv[])  {
    
    TAGrecoManager::GetPar()->IncludeTOE(false);
    TAGrecoManager::GetPar()->IncludeKalman(true);
-   
-   if (out.IsNull()) {
-      TAGrecoManager::GetPar()->DisableTree();
-      TAGrecoManager::GetPar()->DisableHisto();
-   }
    
    BaseReco* glbRec = 0x0;
    
