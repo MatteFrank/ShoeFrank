@@ -190,7 +190,7 @@ void TCFOeventAction::FillTrack()
 {
     TAMCevent* event = fRunAction->GetEventMC();
 
-    Int_t nTracks = fMcTrack->GetTracksN();
+    Int_t nTracks = fMcEvent->GetTracksN();
     fMapTrackIdx.clear();
     TVector3 initpos;
     TVector3 initmom;
@@ -209,21 +209,21 @@ void TCFOeventAction::FillTrack()
     Double_t length;
 
     for(Int_t i = 0 ; i < nTracks; ++i){
-        flukaID  = fMcTrack->GetTrack(i)->GetFlukaID();
-        trackID  = fMcTrack->GetTrack(i)->GetType();
-        parentID = fMcTrack->GetTrack(i)->GetMotherID();
-        mass     = fMcTrack->GetTrack(i)->GetMass();
-        charge   = fMcTrack->GetTrack(i)->GetCharge();
-        nbaryon  = fMcTrack->GetTrack(i)->GetBaryon();
-        tof      = fMcTrack->GetTrack(i)->GetTof();
-        time     = fMcTrack->GetTrack(i)->GetTime();
-        length   = fMcTrack->GetTrack(i)->GetTrkLength();
-        initpos  = fMcTrack->GetTrack(i)->GetInitPos();
-        initmom  = fMcTrack->GetTrack(i)->GetInitP();
-        finalpos = fMcTrack->GetTrack(i)->GetFinalPos();
-        finalmom = fMcTrack->GetTrack(i)->GetFinalP();
-        dead     = fMcTrack->GetTrack(i)->GetDead() ;
-        region   = fMcTrack->GetTrack(i)->GetRegion();
+        flukaID  = fMcEvent->GetTrack(i)->GetFlukaID();
+        trackID  = fMcEvent->GetTrack(i)->GetType();
+        parentID = fMcEvent->GetTrack(i)->GetMotherID();
+        mass     = fMcEvent->GetTrack(i)->GetMass();
+        charge   = fMcEvent->GetTrack(i)->GetCharge();
+        nbaryon  = fMcEvent->GetTrack(i)->GetBaryon();
+        tof      = fMcEvent->GetTrack(i)->GetTof();
+        time     = fMcEvent->GetTrack(i)->GetTime();
+        length   = fMcEvent->GetTrack(i)->GetTrkLength();
+        initpos  = fMcEvent->GetTrack(i)->GetInitPos();
+        initmom  = fMcEvent->GetTrack(i)->GetInitP();
+        finalpos = fMcEvent->GetTrack(i)->GetFinalPos();
+        finalmom = fMcEvent->GetTrack(i)->GetFinalP();
+        dead     = fMcEvent->GetTrack(i)->GetDead() ;
+        region   = fMcEvent->GetTrack(i)->GetRegion();
 
         fMapTrackIdx[trackID] = i;
         parentID = fMapTrackIdx[parentID]+1; // index is stored not id, compliant with Fluka
@@ -299,7 +299,7 @@ void TCFOeventAction::FillHits(TAMCevent* event, TCGmcHit* mcHit)
 
    static Int_t crossIdOld = 0;
    if (TAGrecoManager::GetPar()->IsRegionMc()) {
-      TAMCpart* part = fMcTrack->GetTrack(trackIdx-1);
+      TAMCpart* part = fMcEvent->GetTrack(trackIdx-1);
       Int_t crossId  = part->GetRegion();
       TVector3 pos   = part->GetInitPos();
       TVector3 mom   = part->GetInitP();

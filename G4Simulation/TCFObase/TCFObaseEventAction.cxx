@@ -80,7 +80,7 @@ TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeomet
     fEventInterruptHandler = new TAGeventInterruptHandler();
     fEventInterruptHandler->Add();
 
-    fMcTrack = new TAMCntuPart();
+    fMcEvent = new TAMCntuPart();
 
    if (FootMcDebugLevel(1))
       G4cout<<"Construct event action "<<G4endl;
@@ -97,7 +97,7 @@ TCFObaseEventAction::~TCFObaseEventAction()
       G4cout<<"Distructor Event Action "<<G4endl;
 
     delete fEventInterruptHandler;
-    delete fMcTrack;
+    delete fMcEvent;
 
     if (FootMcDebugLevel(1))
        G4cout<<"Out Destructor Event Action "<<G4endl;
@@ -183,7 +183,7 @@ Int_t TCFObaseEventAction::GetEventsNToBeProcessed()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void TCFObaseEventAction::FillAndClear()
 {
-   fMcTrack->Clear();
+   fMcEvent->Clear();
    return fRunAction->FillAndClear(fFillTree);
 }
 
