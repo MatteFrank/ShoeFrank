@@ -83,6 +83,99 @@ int TAGFselector::FillTrackRepVector()	{
 
 
 
+map<string, int> TAGFselector::CountParticleGenaratedAndVisible() { 
+
+	if(m_debug > 0) cout << "TAGFselector::CountParticleGenaratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
+
+	int particleCh;
+	float mass;
+	map<string, int> genCount_vector;
+	TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+	
+	for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
+
+		
+		TAMCpart* particle = m_McNtuEve->GetTrack(iPart);		
+		
+		particleCh = particle->GetCharge();
+		mass = particle->GetMass();
+
+
+		if ( particle->GetCharge() < 1 || particle->GetCharge() > 8)
+		 	continue;
+
+		string outName, pdgName;
+
+		switch(particleCh)	{
+
+			case 1:	outName = "H";	break;
+			case 2:	outName = "He";	break;
+			case 3:	outName = "Li";	break;
+			case 4:	outName = "Be";	break;
+			case 5:	outName = "B";	break;
+			case 6:	outName = "C";	break;
+			case 7:	outName = "N";	break;
+			case 8:	outName = "O";	break;
+			default:
+				outName = "fail";	break;
+		}
+
+		//CAREFUL HERE!! Think about the possibility of throwing an error -> skip particle for the moment
+		if( outName == "fail" ) {continue;}
+
+		pdgName = outName + int(round(mass/m_AMU));
+
+		//CAREFUL HERE!!!!!!!!! FOOT TAGrecoManager file does not have Hydrogen and Helium isotopes!!!! Also think about throwing an error here...
+		if ( !TAGrecoManager::GetPar()->Find_MCParticle( pdgName ) ) 	{
+			if(m_debug > 0)  cout << "Found Particle not in MC list: " << pdgName << " num=" << iPart << "\n";
+			continue;
+
+		}
+
+		if ( genCount_vector.find( outName ) == genCount_vector.end() ) 
+			genCount_vector[ outName ] = 0;
+
+		int foundHit = 0;
+
+		for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)    {
+		
+			//Skip plane if no hit was found
+			if(m_allHitMeas->find(iPlane) == m_allHitMeas->end()) 
+				continue;
+		
+			//Cycle on all measurements/clusters of plane
+			for(vector<AbsMeasurement*>::iterator itHit = m_allHitMeas->at(iPlane).begin(); itHit != m_allHitMeas->at(iPlane).end(); ++itHit)		{
+			
+				int MeasGlobId = (*itHit)->getHitId();
+				int match = 0;
+				for( vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasGlobId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasGlobId).end(); ++itTrackMC )	{
+					
+					int tmpID = ( *(itTrackMC) );
+					if ( tmpID == iPart ) 
+						match = 1;
+				}
+
+
+				if (match == 0)		continue;
+
+				foundHit++;
+			}
+		}
+
+		if ( foundHit < TAGrecoManager::GetPar()->MeasureN() ) 
+			continue;
+
+		genCount_vector.at( outName ) += 1;
+
+	}
+
+	return genCount_vector;
+
+}
+
+
+
+
 
 //----------------------------------------------------------------------------------------------------
 //

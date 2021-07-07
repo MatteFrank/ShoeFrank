@@ -36,7 +36,9 @@ public:
 	void Print(Option_t* opt = "");
    const TAGrunInfo GetGlobalInfo();
 
-	Int_t  Debug()                const { return m_debug;               }
+	Int_t  Debug()                const { return m_debug;              }
+	float  Chi2Cut()              const { return m_chi2;               }
+	int  MeasureN()               const { return m_measureN;           }
 
     // Kalman Getter
    string KalMode()              const { return m_kalmanMode;          }
@@ -130,6 +132,8 @@ private:
 	string m_parFileName;
 
 	Int_t m_debug;
+	float m_chi2;
+	int m_measureN;
 
    bool m_isMC;
 

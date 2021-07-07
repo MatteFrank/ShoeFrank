@@ -161,6 +161,7 @@ public:
 
 	void PrintEfficiency();
 	void PrintPurity();
+	void PrintSelectionEfficiency();
 
 	void InitEventDisplay();
 
@@ -175,6 +176,8 @@ public:
 											TVector3* KalmanPos, TVector3* KalmanMom,
 											TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
 	void GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
+
+	void FillGenCounter( map<string, int> mappa );
 
 // TVector3 ExtrapolateToTarget( Track* trackToFit );
 
@@ -334,6 +337,7 @@ private:
 	map<string, int> m_nConvergedTracks_all;
 	map<string, int> m_nConvergedTracks_good;
 	map<string, int> m_nConvergedTracks_matched;
+	map<string, int> m_genCount_vector;
 
 
 	std::ofstream ofs;
