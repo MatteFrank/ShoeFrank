@@ -14,6 +14,7 @@
 #include "TAGrunInfo.hxx"
 
 #include "TAGactTreeReader.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
   \class TAGactTreeReader TAGactTreeReader.hxx "TAGactTreeReader.hxx"
@@ -43,7 +44,8 @@ TAGactTreeReader::TAGactTreeReader(const char* name)
     fpFile(0),
     fpTree(0),
     fiNEntry(0),
-    fiCurrentEntry(-1),
+    fiCurrentEntry( TAGrecoManager::GetPar()->SkipN() ),
+    // fiCurrentEntry(-1),
     fbDscBranch(true)
 {
   fpBranchList = new TList();
@@ -130,22 +132,23 @@ Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TStrin
     return 3;
   }
 
-  if (fbDscBranch) {
-    for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
-      TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
-      TBranch* p_branch = fpTree->GetBranch(p_chan->fName);
-      if (p_branch) {
-        p_branch->SetAddress(p_chan->fpDataDsc->ObjectPointer());
-      } else {
-        Warning("Open()", "Failed to find branch '%s'", p_chan->fName.Data());
-      }
-      p_chan->fpBranch = p_branch;
-      p_chan->fiNByte  = 0;
-    }
-  }
+	if (fbDscBranch) {
+	for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
+			TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
+			TBranch* p_branch = fpTree->GetBranch(p_chan->fName);
+			if (p_branch) {
+				p_branch->SetAddress(p_chan->fpDataDsc->ObjectPointer());
+			} else {
+				Warning("Open()", "Failed to find branch '%s'", p_chan->fName.Data());
+			}
+			p_chan->fpBranch = p_branch;
+			p_chan->fiNByte  = 0;
+		}
+	}
   
   fiNEntry = (Int_t) fpTree->GetEntries();
-  fiCurrentEntry = -1;
+  // fiCurrentEntry = -1;
+  fiCurrentEntry = TAGrecoManager::GetPar()->SkipN();
 
   TAGrunInfo* p_ri = (TAGrunInfo*) fpFile->Get(TAGrunInfo::GetObjectName());
 
@@ -215,19 +218,26 @@ Bool_t TAGactTreeReader::Process()
    return kFALSE;
   }
   
-  if (Valid()) {
-    if (fbDscBranch) {
-      for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
-        TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
-        if (p_chan->fpBranch) {
-          Int_t i_nbyte = p_chan->fpBranch->GetEntry(fiCurrentEntry);
-          p_chan->fiNByte += i_nbyte;
-        }
-        p_chan->fpDataDsc->SetBit(kValid);
-      }
-    } else
-      fpTree->GetEntry(fiCurrentEntry);
-  }
+	if (Valid()) {
+		if (fbDscBranch) {
+			for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
+			// cout << " SkipN =  " << TAGrecoManager::GetPar()->SkipN() << endl;
+			// if ( fpBranchList->At( TAGrecoManager::GetPar()->SkipN() ) != 0 ) {
+			// 	for (TObjLink* lnk = new TObjLink( fpBranchList->At( TAGrecoManager::GetPar()->SkipN() ) ); lnk; lnk=lnk->Next()) {
+
+					TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
+					if (p_chan->fpBranch) {
+						Int_t i_nbyte = p_chan->fpBranch->GetEntry(fiCurrentEntry);
+						p_chan->fiNByte += i_nbyte;
+					}
+					p_chan->fpDataDsc->SetBit(kValid);
+				}
+			// }
+		} 
+		else {
+			fpTree->GetEntry(fiCurrentEntry);
+		}
+	}
 
   return Valid();
 }

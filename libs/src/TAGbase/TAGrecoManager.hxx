@@ -36,26 +36,27 @@ public:
 	void Print(Option_t* opt = "");
    const TAGrunInfo GetGlobalInfo();
 
-	Int_t  Debug()                const { return m_debug;              }
-	float  Chi2Cut()              const { return m_chi2;               }
-	int  MeasureN()               const { return m_measureN;           }
+	Int_t  Debug()                	const { return m_debug;              }
+	float  Chi2Cut()             	const { return m_chi2;               }
+	int  MeasureN()               	const { return m_measureN;           }
+	int  SkipN()              		const { return m_skipN;           }
 
-    // Kalman Getter
-   string KalMode()              const { return m_kalmanMode;          }
-   string PreselectStrategy()    const { return m_kPreselectStrategy;  }
+	// Kalman Getter
+	string KalMode()              const { return m_kalmanMode;          }
+	string PreselectStrategy()    const { return m_kPreselectStrategy;  }
 	Bool_t IsKalReverse()         const { return m_kalReverse;          }
 	Bool_t verFLUKA()             const { return m_verFLUKA;            }
-   Bool_t EnableEventDisplay()   const { return m_enableEventDisplay;  }
+	Bool_t EnableEventDisplay()   const { return m_enableEventDisplay;  }
 
 	vector<string> KalSystems()         { return m_trackingSystems;     }
 	vector<string> KalParticles()       { return m_kalParticles;        }
-   vector<string> MCParticles()        { return m_mcParticles;         }
-   vector<TString> DectIncluded()      { return m_dectInclude;         }
+	vector<string> MCParticles()        { return m_mcParticles;         }
+	vector<TString> DectIncluded()      { return m_dectInclude;         }
 
-	 Double_t VTReso() 	         const { return m_VTreso;              }
-    Double_t ITReso() 	         const { return m_ITreso;              }
-    Double_t MSDReso()           const { return m_MSDreso;             }
-    Double_t TWReso()            const { return m_TWreso;              }
+	Double_t VTReso() 	         const { return m_VTreso;              }
+	Double_t ITReso() 	         const { return m_ITreso;              }
+	Double_t MSDReso()           const { return m_MSDreso;             }
+	Double_t TWReso()            const { return m_TWreso;              }
 
     bool IsMC()								{ return m_isMC; }
     void SetIsMC( bool aIsMC )				{ m_isMC = aIsMC; }
@@ -134,6 +135,7 @@ private:
 	Int_t m_debug;
 	float m_chi2;
 	int m_measureN;
+	int m_skipN;
 
    bool m_isMC;
 
