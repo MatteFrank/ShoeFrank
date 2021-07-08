@@ -17,6 +17,9 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 
 	m_debug = TAGrecoManager::GetPar()->Debug();
 
+	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
+
+
 	flagMC = true; //HARDCODED -> TO BE CHANGED!!
 
 	if (flagMC)
@@ -47,8 +50,10 @@ int TAGFselector::Categorize( ) {
 	}
 	else if ( TAGrecoManager::GetPar()->PreselectStrategy() == "Sept2020" )
 		Categorize_dataLike();
+	else if ( TAGrecoManager::GetPar()->PreselectStrategy() == "Linear" )
+		Categorize_Linear();
 	else
-		cout <<"ERROR :: TAGactKFitter::MakeFit  -->	 TAGrecoManager::GetPar()->PreselectStrategy() not defined" << endl, exit(0);
+		cout <<"ERROR :: TAGFselector::MakeFit  -->	 TAGrecoManager::GetPar()->PreselectStrategy() not defined" << endl, exit(0);
 
 	return 0;
 }
@@ -244,6 +249,84 @@ int TAGFselector::Categorize_dataLike( ) {
 }
 
 
+/*Function used to handle linear tracks when no magnetic field is used -> GSI2021 
+*
+*/
+int TAGFselector::Categorize_Linear()
+{
+	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
+
+	if(!TAGrecoManager::GetPar()->IncludeVT())
+	{
+		Error("Categorize_dataLike()", "Vertex is needed for linear selection!");
+		throw -1;
+	}
+	else
+		CategorizeVT();
+
+	if( m_debug > 1 ) cout << "******** END OF VT CYCLE **********\n";
+
+	if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
+	
+	if(TAGrecoManager::GetPar()->IncludeIT())
+		CategorizeIT();
+	
+	if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
+
+	if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
+	
+	if(TAGrecoManager::GetPar()->IncludeMSD())
+		CategorizeMSD_Linear();
+	
+	if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
+
+	if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
+	
+	if(TAGrecoManager::GetPar()->IncludeTW())
+		CategorizeTW_Linear();
+	
+	if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
+
+	double dPVal = 1.E-3; // convergence criterion
+	KalmanFitter* preFitter = new KalmanFitter(1, dPVal);
+
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
+	{
+		int Z_Hypo = GetChargeFromTW(itTrack->second);
+		if( Z_Hypo == -1 )
+		{
+			Z_Hypo = 8;
+			itTrack->second->addTrackRep(new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( Z_Hypo )));
+		}
+		else
+		{
+			for ( int nRep=0; nRep < m_trackRepVec.size(); nRep++)
+				if( m_trackRepVec.at(nRep)->getPDGCharge() == Z_Hypo )	(itTrack->second)->addTrackRep( m_trackRepVec.at( nRep )->clone() );
+		}
+
+		TVector3 pos = TVector3(0,0,0);
+		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
+		pos.SetX(firstTrackMeas->getRawHitCoords()(0));
+		pos.SetY(firstTrackMeas->getRawHitCoords()(1));
+		pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+		pos = pos - m_trackSlopeMap[itTrack->first]*pos.Z();
+
+		TVector3 mom = m_trackSlopeMap[itTrack->first];
+		double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(Z_Hypo) );
+		int A_Hypo = round(mass_Hypo/m_AMU);
+
+		mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
+		itTrack->second->setStateSeed(pos, mom);
+
+		// preFitter->processTrackWithRep( itTrack->second, itTrack->second->getCardinalRep() );
+	}
+
+	FillTrackCategoryMap();
+
+	return 0;
+}
+
+
 
 void TAGFselector::CategorizeVT()
 {
@@ -318,7 +401,6 @@ void TAGFselector::CategorizeVT()
 
 			if (fitTrack_->getNumPointsWithMeasurement() > 4 || fitTrack_->getNumPointsWithMeasurement() < 3){
 				Warning("Categorize_dataLike()", "Track with %d measurements found in VTX => rejected!", fitTrack_->getNumPointsWithMeasurement());
-				// delete fitTrack_;
 				continue;
 			}
 
@@ -388,8 +470,6 @@ void TAGFselector::CategorizeIT()	{
 				if ( !m_SensorIDMap->GetFitPlane( *iPlane )->isInActiveY( guessOnPlaneIT ) )	
 					continue;
 
-				// Info ("TAGFselector::CategorizeIT()", "Current IT plane %d. Candidate ID %i with vertex %i and tracklet %d", sensorMatch, (itTrack->first), (itTrack->first)/1000 , (itTrack->first)%1000  );
-
 	// cout << "TAGFselector::CategorizeIT()     check\n";
 				int sensorMatch = (*iPlane);
 
@@ -441,13 +521,8 @@ void TAGFselector::CategorizeIT()	{
 			}	// end loop on IT planes
 		} // end loop over z
 // cout << "TAGFselector::CategorizeIT()     check4"<<\n";
-		// if(addedMeas == 0)
-		// {
-		// 	delete itTrack->second;
-		// 	m_trackTempMap.erase(itTrack++);
-		// }
-		// else
-			++itTrack;
+
+		++itTrack;
 
 		// cout << "TAGFselector::CategorizeIT()     check5\n";
 
@@ -532,7 +607,7 @@ void TAGFselector::CategorizeMSD()	{
 
 			if(m_debug > 0)	cout << "Z_Hypo::" << Z_Hypo << "\tA_Hypo::" << A_Hypo << "\n";
 
-			mom.SetMag(TMath::Sqrt( pow(0.2*A_Hypo,2) + 2*mass_Hypo*0.2*A_Hypo ));
+			mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
 
 			if(m_debug > 0)
 			{
@@ -584,7 +659,7 @@ void TAGFselector::CategorizeMSD()	{
 		double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( itTrack->second->getCardinalRep()->getPDGCharge() ) );
 		int A_Hypo = round(mass_Hypo/m_AMU);
 
-		mom.SetMag( TMath::Sqrt( pow(0.2*A_Hypo,2) + 2*mass_Hypo*0.2*A_Hypo ));
+		mom.SetMag( TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
 
 		itTrack->second->setStateSeed(pos, mom);
 		m_fitter_extrapolation->processTrackWithRep( itTrack->second, itTrack->second->getCardinalRep() );
@@ -670,6 +745,101 @@ void TAGFselector::CategorizeMSD()	{
 }
 
 
+/*MSD selection algorithm when no magnetic field is present
+*
+*/
+void TAGFselector::CategorizeMSD_Linear()
+{
+	int findMSD;
+
+	// Extrapolate to MSD
+	// same index if VTX_tracklets (for one vertex..)
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
+
+		findMSD=0;
+
+		int maxMSDdetPlane = m_SensorIDMap->GetMaxFitPlane("MSD");
+		int minMSDdetPlane = m_SensorIDMap->GetMinFitPlane("MSD");
+
+		//RZ: SET STATE SEED
+		TVector3 pos = TVector3(0,0,0);
+		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
+		pos.SetX(firstTrackMeas->getRawHitCoords()(0));
+		pos.SetY(firstTrackMeas->getRawHitCoords()(1));
+		pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+		
+		if(m_debug > 0)
+		{
+			cout << "***POS SEED***\nVTX: "; pos.Print();
+		}
+
+		for ( int MSDnPlane = minMSDdetPlane; MSDnPlane <= maxMSDdetPlane; MSDnPlane++ ) {
+			TVector3 guessOnMSD = pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(MSDnPlane)->getO().Z() - pos.Z());
+			
+			if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) )
+				continue;
+
+			int indexOfMinY = -1;
+			int count = 0;
+			double distanceInY = 1;
+			int sensorMatch = MSDnPlane;
+			//RZ: TO BE CHECKED!! ADDED TO AVOID ERRORS
+			Bool_t areLightFragments = false;
+			if (areLightFragments) distanceInY = 2;
+			// loop all absMeas in the found IT plane
+
+			if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
+				if(m_debug > 0) cout << "TAGFselector::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
+				continue;
+			}
+
+			for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
+
+				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselector::Categorize_dataLike() --> ERROR MSD" <<endl, exit(0);
+
+				//RZ: CHECK -> AVOID ERRORS
+				double distanceFromHit;
+				string strip;
+
+				if ( ! static_cast<PlanarMeasurement*>(*it)->getStripV() )
+				{
+					distanceFromHit = fabs(guessOnMSD.X() - (*it)->getRawHitCoords()(0));
+					strip = "X";
+				}
+				else
+				{
+					distanceFromHit = fabs(guessOnMSD.Y() - (*it)->getRawHitCoords()(0));
+					strip = "Y";
+				}
+
+				// find hit at minimum distance
+				if ( distanceFromHit < distanceInY ){
+					if(m_debug > 0) cout << "MSDcheck\tPlane::" << sensorMatch << "\tTrack::" << itTrack->first << "\tdistanceFromHit::" << distanceFromHit << "\tStrip::" << strip << "\n";
+					distanceInY = distanceFromHit;
+					indexOfMinY = count;
+				}
+				count++;
+			}
+
+			// insert measurementi in GF Track
+			if (indexOfMinY != -1){
+
+				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitMeas->at(sensorMatch).at(indexOfMinY)))->clone();
+				(itTrack->second)->insertMeasurement( hitToAdd );
+				findMSD++;
+			}
+
+		} // end loop MSD planes
+
+		++itTrack;
+
+	}// end loop on GF Track candidates
+
+	return;
+}
+
+
+
 
 void TAGFselector::CategorizeTW()
 {
@@ -734,6 +904,68 @@ void TAGFselector::CategorizeTW()
 
 
 
+/*TW selection algorithm when no magnetic field is present
+*
+*/
+void TAGFselector::CategorizeTW_Linear()
+{
+	// Extrapolate to TW
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); itTrack++) 
+	{
+		TVector3 pos = TVector3(0,0,0);
+		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
+		pos.SetX(firstTrackMeas->getRawHitCoords()(0));
+		pos.SetY(firstTrackMeas->getRawHitCoords()(1));
+		pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+
+		int planeTW = m_SensorIDMap->GetFitPlaneTW();
+		TVector3 guessOnTW = pos + m_trackSlopeMap[itTrack->first]*( m_SensorIDMap->GetFitPlane(planeTW)->getO().Z() - pos.Z() );
+
+		if( m_debug > 1) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << "\n";
+
+		//calculate distance TW point
+		double TWdistance = 4.;
+		int indexOfMin = -1;
+		int count = 0;
+
+		//RZ -> See if this check can be done outside this cycle... it seems a much more general skip
+		if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
+			if(m_debug > 0) cout << "TAGFselector::CategorizeTW() -- no measurement found int TW layer\n";
+			continue;
+		}
+		double distInX, distInY;
+
+		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
+
+			if (  m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != planeTW )
+				cout << "TAGFselector::Categorize_dataLike() --> ERROR TW" <<endl, exit(0);
+
+			double distanceFromHit = sqrt( ( guessOnTW.X() - (*it)->getRawHitCoords()(0) )*( guessOnTW.X() - (*it)->getRawHitCoords()(0) ) +
+					( guessOnTW.Y() - (*it)->getRawHitCoords()(1) )*( guessOnTW.Y() - (*it)->getRawHitCoords()(1) ) );
+			
+			if( m_debug > 0) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< "\n";
+
+			if ( distanceFromHit < TWdistance )	{
+				distInX = guessOnTW.X() - (*it)->getRawHitCoords()(0);
+				distInY = guessOnTW.Y() - (*it)->getRawHitCoords()(1);
+				TWdistance = distanceFromHit;
+				indexOfMin = count;
+			}
+
+			count++;
+		}	// end of TW hits
+
+		if (indexOfMin != -1)	{
+			AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitMeas->at(planeTW).at(indexOfMin)))->clone();
+			(itTrack->second)->insertMeasurement( hitToAdd );
+		}
+	}
+
+
+	return;
+}
+
+
 
 
 
@@ -743,6 +975,9 @@ void TAGFselector::FillTrackCategoryMap()  {
 	for(map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
 	{
 		TString outName;
+		int MeasId = itTrack->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
+		if( m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
+			continue;
 
 
 		// int nRep = itTrack->second->getNumReps();
@@ -775,7 +1010,12 @@ void TAGFselector::FillTrackCategoryMap()  {
 		// int measCharge = int( round( (itTrack->second)->getFittedState(-1).getCharge() ) );
 		// int measMass = int( round( (itTrack->second)->getFittedState(-1).getMass()/m_AMU ) );
 		int measCharge = itTrack->second->getCardinalRep()->getPDGCharge();
-		int measMass = round( itTrack->second->getCardinalRep()->getMass( (itTrack->second)->getFittedState(-1) )/m_AMU );
+		int measMass;
+		if( TAGrecoManager::GetPar()->PreselectStrategy() == "Linear" )
+			measMass = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(measCharge) );
+		else
+			measMass = round( itTrack->second->getCardinalRep()->getMass( (itTrack->second)->getFittedState(-1) )/m_AMU );
+		
 
 		switch(measCharge)
 		{

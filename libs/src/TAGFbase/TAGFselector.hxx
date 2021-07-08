@@ -87,10 +87,13 @@ private:
 	void		GetTrueParticleType(int trackid, int* flukaID, int* charge, double* mass, TVector3* posV, TVector3* momV );
 
 	int			Categorize_dataLike( );
+	int			Categorize_Linear( );
 	void		CategorizeVT();
 	void		CategorizeIT();
 	void		CategorizeMSD();
+	void		CategorizeMSD_Linear();
 	void		CategorizeTW();
+	void		CategorizeTW_Linear();
 	void		FillTrackCategoryMap();
 	TVector3	ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane, int repId =-1);
 
@@ -111,6 +114,7 @@ private:
 	int m_debug;
 	string m_systemsON;
 	
+	double m_BeamEnergy;
 	double m_AMU = 0.9310986964; // in GeV // conversion betweem mass in GeV and atomic mass unit
 };
 

@@ -508,6 +508,10 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 		// check if the category is defined in UpdatePDG  -->  also done in GetPdgCode()
 		if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" )  {
+		int MeasId = trackIt->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
+		if( m_sensorIDmap->GetFitPlaneIDFromMeasID(MeasId) != m_sensorIDmap->GetFitPlaneTW())
+			continue;
+			
 			string partName = tok.at(0) + tok.at(1);
 			if ( !UpdatePDG::GetPDG()->IsParticleDefined( partName ) )
 			{
@@ -786,8 +790,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			if ( m_nConvergedTracks_matched.find( fitTrackName ) == m_nConvergedTracks_matched.end() )	m_nConvergedTracks_matched[ fitTrackName ] = 0;
 			m_nConvergedTracks_matched[ fitTrackName ]++;
 		}
-		// else
-		// 	cin.get();
+		else
+		{
+			if(m_debug > 0)	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tmeasCh::" << measCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
+		}
 
 		h_chargeMC->Fill( mcCharge );
 		h_trackQuality->Fill( trackQuality );

@@ -233,7 +233,7 @@ void TAGrecoManager::FromFile ()
     }
     
     if (key.Contains("Kalman preselection strategy:")) {
-      vector<TString> tmp_Modes = { "TrueParticle", "Sept2020" };
+      vector<TString> tmp_Modes = { "TrueParticle", "Sept2020", "Linear" };
       istringstream sss(item.Data());
       
       TString inputMode;
