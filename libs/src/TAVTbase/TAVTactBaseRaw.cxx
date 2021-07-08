@@ -24,26 +24,12 @@
 
 ClassImp(TAVTactBaseRaw);
 
-const UInt_t TAVTactBaseRaw::fgkKeyHeader[]     = {0x80008000, 0x80018001, 0x80028002, 0x80038003,
-                                                   0x80048004, 0x80058005, 0x80068006, 0x80078007,
-                                                   0x80088008, 0x80098009, 0x80108010, 0x80118011,
-                                                   0x80128012, 0x80138013, 0x80148014, 0x80158015,
-                                                   0x80168016, 0x80178017, 0x80188018, 0x80198019,
-                                                   0x80208020, 0x80218021, 0x80228022, 0x80238023,
-                                                   0x80248024, 0x80248024, 0x80258025, 0x80268026,
-                                                   0x80288028, 0x80298029, 0x80308030, 0x80318031 };
+const UInt_t TAVTactBaseRaw::fgkKeyHeader[]     = {0x80008000, 0x80018001, 0x80028002, 0x80038003};
 const Int_t  TAVTactBaseRaw::fgkFrameHeaderSize =  6;
 const Int_t  TAVTactBaseRaw::fgkLineWidth       =  9;
 const UInt_t TAVTactBaseRaw::fgkFrameHeader     =  0x80088007;
 const UInt_t TAVTactBaseRaw::fgkFrameTail       =  0xaaa8aaa7;
-const UInt_t TAVTactBaseRaw::fgkKeyTail[]       = {0x8bb08bb0, 0x8bb18bb1, 0x8bb28bb2, 0x8bb38bb3,
-                                                   0x8bb48bb4, 0x8bb58bb5, 0x8bb68bb6, 0x8bb78bb7,
-                                                   0x8bb88bb8, 0x8bb98bb9, 0x8b108b10, 0x8b118b11,
-                                                   0x8b128b12, 0x8b138b13, 0x8b148b14, 0x8b158b15,
-                                                   0x8b168b16, 0x8b178b17, 0x8b188b18, 0x8b198b19,
-                                                   0x8b208b20, 0x8b218b21, 0x8b228b22, 0x8b238b23,
-                                                   0x8b248b24, 0x8b258b25, 0x8b268b26, 0x8b278b27,
-                                                   0x8b288b28, 0x8b298b29, 0x8b308b30, 0x8b318b31 };
+const UInt_t TAVTactBaseRaw::fgkKeyTail[]       = {0x8bb08bb0, 0x8bb18bb1, 0x8bb28bb2, 0x8bb38bb3};
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -56,6 +42,7 @@ TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
   fpParMap(pParMap),
   fData(0x0),
   fDataEvent(0x0),
+  fDataLink(0),
   fEventNumber(0),
   fTriggerNumber(0),
   fTimeStamp(0),
@@ -72,9 +59,10 @@ TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
   fReadingEvent(0),
   fOverflow(0),
   fEventsOverflow(0), 
-  fNStatesInLine(0)
+  fNStatesInLine(0),
+  fPrefix("vt"),
+  fTitleDev("Vertex")
 {
-  
 }
 
 //------------------------------------------+-----------------------------------
@@ -90,45 +78,51 @@ TAVTactBaseRaw::~TAVTactBaseRaw()
 void TAVTactBaseRaw::CreateHistogram()
 {
    DeleteHistogram();
-   TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*) fpGeoMap->Object();
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-      fpHisPixelMap[i] = new TH2F(Form("vtPixelMap%d", i+1), Form("Vertex - pixel map for sensor %d", i+1),
+      fpHisPixelMap[i] = new TH2F(Form("%sPixelMap%d", fPrefix.Data(), i+1), Form("%s - pixel map for sensor %d", fTitleDev.Data(), i+1),
                                   pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy(),
                                   pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
       fpHisPixelMap[i]->SetStats(kFALSE);
       AddHistogram(fpHisPixelMap[i]);
    
       
-      fpHisRateMap[i] = new TH1F(Form("vtRateMap%d", i+1), Form("Vertex - rate per line for sensor %d", i+1),
+      fpHisRateMap[i] = new TH1F(Form("%sRateMap%d", fPrefix.Data(), i+1), Form("%s - rate per line for sensor %d", fTitleDev.Data(), i+1),
                                  pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
       AddHistogram(fpHisRateMap[i]);
       
-      fpHisRateMapQ[i] = new TH1F(Form("vtRateMapQ%d", i+1), Form("Vertex - rate per quadrant for sensor %d", i+1), 10, 0, 5);
+      fpHisRateMapQ[i] = new TH1F(Form("%sRateMapQ%d", fPrefix.Data(), i+1), Form("%s - rate per quadrant for sensor %d", fTitleDev.Data(), i+1), 10, 0, 5);
       AddHistogram(fpHisRateMapQ[i]);
 	  
-      fpHisEvtLength[i] = new TH1F(Form("vtEvtLength%d", i+1), Form("Vertex - event length sensor %d", i+1), 1000, 0, 10000);
+      fpHisEvtLength[i] = new TH1F(Form("%sEvtLength%d", fPrefix.Data(), i+1), Form("%s - event length sensor %d", fTitleDev.Data(), i+1), 1000, 0, 10000);
       AddHistogram(fpHisEvtLength[i]);
       
-      fpHisTriggerEvt[i] = new TH1F(Form("vtTriggerEvt%d", i+1), Form("Vertex - Trigger difference in event sensor %d vs sensor 1", i+1),  40, -19.5, 20.5);
+      fpHisTriggerEvt[i] = new TH1F(Form("%sTriggerEvt%d", fPrefix.Data(), i+1), Form("%s - Trigger difference in event sensor %d vs sensor 1",
+                                                                                      fTitleDev.Data(), i+1),  40, -19.5, 20.5);
       AddHistogram(fpHisTriggerEvt[i]);
       
-      fpHisEvtNumber[i] = new TH1F(Form("vtNumberEvt%d", i+1), Form("Vertex -  Event number difference per event sensor %d", i+1), 40, -19.5, 20.5);
+      fpHisEvtNumber[i] = new TH1F(Form("%sNumberEvt%d", fPrefix.Data(), i+1), Form("%s -  Event number difference per event sensor %d", fTitleDev.Data(),
+                                                                                    i+1), 40, -19.5, 20.5);
       AddHistogram(fpHisEvtNumber[i]);
       
-      fpHisTimeStampEvt[i] = new TH1F(Form("vtTimeStampEvt%d", i+1), Form("Vertex -  Time stamp difference per event sensor %d", i+1), 1000, -200, 200);
+      fpHisTimeStampEvt[i] = new TH1F(Form("%sTimeStampEvt%d", fPrefix.Data(), i+1), Form("%s -  Time stamp difference per event sensor %d", fTitleDev.Data(),
+                                                                                          i+1), 1000, -200, 200);
       AddHistogram(fpHisTimeStampEvt[i]);
   
-      fpHisTriggerFrame[i] = new TH1F(Form("vtTriggerFrame%d", i+1), Form("Vertex - Trigger difference in sensor %d", i+1),  20, -9.5, 10.5);
+      fpHisTriggerFrame[i] = new TH1F(Form("%sTriggerFrame%d", fPrefix.Data(), i+1), Form("%s - Trigger difference in sensor %d", fTitleDev.Data(), i+1),  20,
+                                      -9.5, 10.5);
       AddHistogram(fpHisTriggerFrame[i]);
       
-      fpHisTimeStampFrame[i] = new TH1F(Form("vtTimeStampFrame%d", i+1), Form("Vertex - Time stamp difference in sensor% d", i+1),  1000, -20000, 20000);
+      fpHisTimeStampFrame[i] = new TH1F(Form("%sTimeStampFrame%d", fPrefix.Data(), i+1), Form("%s - Time stamp difference in sensor% d", fTitleDev.Data(),
+                                                                                              i+1),  1000, -20000, 20000);
       AddHistogram(fpHisTimeStampFrame[i]);
       
-      fpHisFrameCnt[i] = new TH1F(Form("vtFrameCnt%d", i+1), Form("Vertex - Frame cnt difference in sensor %d", i+1),  510, -9.5, 500.5);
+      fpHisFrameCnt[i] = new TH1F(Form("%sFrameCnt%d", fPrefix.Data(), i+1), Form("%s - Frame cnt difference in sensor %d", fTitleDev.Data(), i+1),  510,
+                                  -9.5, 500.5);
       AddHistogram(fpHisFrameCnt[i]);
    
-      fpHisFrameErrors[i] = new TH1F(Form("vtErrorsFrame%d", i+1), Form("Vertex - Frame errors in sensor %d", i+1), 4, 0.5, 4.5);
+      fpHisFrameErrors[i] = new TH1F(Form("%sErrorsFrame%d", fPrefix.Data(), i+1), Form("%s - Frame errors in sensor %d", fTitleDev.Data(), i+1), 4, 0.5, 4.5);
       AddHistogram(fpHisFrameErrors[i]);
    }
 
@@ -139,10 +133,10 @@ void TAVTactBaseRaw::CreateHistogram()
 // --------------------------------------------------------------------------------------
 Int_t TAVTactBaseRaw::GetSensor(UInt_t key)
 {
-   TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
-   
+   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*) fpGeoMap->Object();
+
    key = (key >> 16) & 0xFFFF;
-   for (Int_t i = 0; i <  pGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i <  pGeoMap->GetSensPerDataLink(); ++i) {
       if (fgkKeyHeader[i] == key)
          return i;
    }
@@ -199,6 +193,19 @@ void TAVTactBaseRaw::FillHistoEvt(Int_t iSensor)
    if (fTriggerNumber - fPrevTriggerNumber[iSensor] != 1)
       fpHisFrameErrors[iSensor]->Fill(4);
    fpHisTimeStampEvt[iSensor]->Fill(fTimeStamp - fPrevTimeStamp[iSensor]);
+}
+
+// --------------------------------------------------------------------------------------
+void TAVTactBaseRaw::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn)
+{
+   fpHisPixelMap[planeId]->Fill(aLine, aColumn);
+   
+   fpHisRateMap[planeId]->Fill(aColumn);
+   
+   for (Int_t i = 0; i < 4; ++i) {
+      if (aColumn >= 258*i && aColumn < (i+1)*258)
+         fpHisRateMapQ[planeId]->Fill(i+1);
+   }
 }
 
 // --------------------------------------------------------------------------------------
@@ -310,7 +317,7 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
 }
 
 // --------------------------------------------------------------------------------------
-void TAVTactBaseRaw::AddPixel( Int_t planeId, Int_t value, Int_t aLine, Int_t aColumn)
+void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
 {
    // Add a pixel to the vector of pixels
    // require the following info
@@ -318,17 +325,17 @@ void TAVTactBaseRaw::AddPixel( Int_t planeId, Int_t value, Int_t aLine, Int_t aC
    // - value = analog value of this pixel
    // - line & column = position of the pixel in the matrix
    
-   TAVTntuHit* pNtuRaw  = (TAVTntuHit*) fpNtuRaw->Object();
-   TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
-   TAVTparMap*  pParMap = (TAVTparMap*) fpParMap->Object();
+   TAVTntuHit*  pNtuRaw = (TAVTntuHit*)  fpNtuRaw->Object();
+   TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
+   TAVTparMap*  pParMap = (TAVTparMap*)  fpParMap->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
-   Int_t iSensor = pParMap->GetPlaneId(planeId);
+   Int_t planeId = pParMap->GetPlaneId(iSensor);
    
    std::pair<int, int> pair(aLine, aColumn);
-   if (pConfig->GetSensorPar(iSensor).DeadPixelMap[pair] == 1) return;
-
-   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   if (pConfig->GetSensorPar(planeId).DeadPixelMap[pair] == 1) return;
+   
+   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(planeId, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);
@@ -336,15 +343,7 @@ void TAVTactBaseRaw::AddPixel( Int_t planeId, Int_t value, Int_t aLine, Int_t aC
    pixel->SetPosition(pos);
    pixel->SetValidFrames(fFrameOk);
    
-   if (ValidHistogram()) {
-      fpHisPixelMap[iSensor]->Fill(aLine, aColumn);
-	  
-	  fpHisRateMap[iSensor]->Fill(aColumn);
-	  
-	  for (Int_t i = 0; i < 4; ++i) {
-		 if (aColumn >= 258*i && aColumn < (i+1)*258)
-			fpHisRateMapQ[iSensor]->Fill(i+1);
-	  }
-   }
+   if (ValidHistogram())
+    FillHistoPixel(planeId, aLine, aColumn);
 }
 

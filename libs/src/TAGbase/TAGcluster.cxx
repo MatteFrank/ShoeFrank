@@ -17,7 +17,9 @@ TAGcluster::TAGcluster()
    fPositionG(0., 0., 0.),
    fPosErrorG(0., 0., 0.),
    fClusterIdx(-1),
-   fSensorIdx(-1)
+   fSensorIdx(-1),
+   fDeviceType(-1),
+   fIsValid(kFALSE)
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
@@ -33,7 +35,9 @@ TAGcluster::TAGcluster(const TAGcluster& cluster)
    fPosErrorG(cluster.fPosErrorG),
    fMcTrackIdx(cluster.fMcTrackIdx),
    fClusterIdx(cluster.fClusterIdx),
-   fSensorIdx(cluster.fSensorIdx)
+   fSensorIdx(cluster.fSensorIdx),
+   fDeviceType(cluster.fDeviceType),
+   fIsValid(cluster.fIsValid)
 {
 }
 

@@ -94,7 +94,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fActClusMsd(0x0),
    fActPointTw(0x0),
    fActGlbTrack(0x0),
-   fActRecCutter(nullptr),
    fActGlbTrackS(0x0),
    fFlagOut(true),
    fFlagTree(false),
@@ -270,11 +269,6 @@ void BaseReco::LoopEvent(Int_t nEvents)
   else if (nEvents > 100)    frequency = 100;
   else if (nEvents > 10)     frequency = 10;
 
-    if(fActRecCutter){
-        static_cast<TAGactTreeReader*>(fActEvtReader)->Reset();
-        fTAGroot->SetEventNumber(0);
-        fActRecCutter->NextIteration();
-    }
     
   for (Int_t ientry = 0; ientry < nEvents; ientry++) {
     
@@ -297,12 +291,6 @@ void BaseReco::LoopEvent(Int_t nEvents)
     }
       
   }
-    
-    
-    if(fActRecCutter){
-        fActRecCutter->Compute();
-        fActRecCutter->Output();
-    }
 }
 
 //__________________________________________________________
@@ -310,7 +298,6 @@ void BaseReco::AfterEventLoop()
 {
    fTAGroot->EndEventLoop();
     
-//    if(fActRecCutter){ fActRecCutter->Output(); }
    if (TAGrecoManager::GetPar()->IncludeKalman())	fActGlbkFitter->Finalize();
    if (fFlagOut)
       CloseFileOut();
@@ -557,7 +544,7 @@ void BaseReco::ReadParFiles()
          fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
          TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
          parFileName = fCampManager->GetCurMapFile(TAITparGeo::GetBaseName(), fRunNumber);
-         // parMap->FromFile(parFileName.Data());
+         parMap->FromFile(parFileName.Data());
       }
    }
 
@@ -858,11 +845,6 @@ void BaseReco::CreateRecActionGlb()
     using namespace details;
     if( fFlagRecCutter ){
         SetL0TreeBranches();
-//        fActRecCutter = new TATOEcutter<
-////            procedure< configuration<1, vertex_tag, tof_tag>, range<-1,+5> >
-////            procedure< configuration<1, vertex_tag, it_tag, tof_tag>, range<-1,+1>>
-//        procedure< configuration<3, vertex_tag, it_tag, msd_tag, tof_tag>, range<-1,+10>>
-//                                        >{"toeActCutter", fField};
         return;
     }
   if(fFlagTrack) {

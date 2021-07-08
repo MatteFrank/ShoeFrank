@@ -22,6 +22,7 @@
 #include "TAGactTreeReader.hxx"
 #include "TAIRmillepede.hxx"
 
+class TAGcampaignManager;
 class TAVTbaseParGeo;
 class TAVTbaseParConf;
 class TObjArray;
@@ -35,7 +36,7 @@ private:
    
 public:
    //! Instance of class
-   static TAIRalignM* Instance(const TString name = "16O_C2H4_200_1.root");
+   static TAIRalignM* Instance(const TString name = "16O_C2H4_200_1.root", const TString exp = "", Int_t runNUmber = 1);
    virtual ~TAIRalignM();
    
    void ProcessTrack(TAIRtrack *track, Double_t* param = 0x0);
@@ -70,7 +71,7 @@ public:
    
 private:
    //! ctr
-   TAIRalignM(const TString name);
+   TAIRalignM(const TString name, const TString exp = "", Int_t runNUmber = 1);
    void ResetLocalEquation();
    void LocalEquationX(TAIRcluster* cluster, Double_t* param, TAIRtrack* track);
    void LocalEquationY(TAIRcluster* cluster, Double_t* param, TAIRtrack* track);
@@ -91,6 +92,9 @@ private:
       
 private:
    TAGroot*             fAGRoot;        // pointer to TAGroot
+   TAGcampaignManager*  fCampManager;
+   const TString        fFileName;      // input file
+   Int_t                fRunNumber;
    TAGparaDsc*          fpConfigVtx;	 // configuration dsc
    TAGparaDsc*          fpGeoMapVtx;    // geometry para dsc
    TAGparaDsc*          fpConfigItr;	 // configuration dsc
@@ -98,9 +102,7 @@ private:
    TAGdataDsc*          fpNtuTrackIr;   // Track IR
    TAGactTreeReader*    fInfile;        // action for reading track
    TAIRmillepede*       fMillepede;     // pointer to align para
-   
-   const TString        fFileName;      // input file
-      
+         
    Int_t*               fDevStatus;
    Int_t                fOffsetItr;
    TArrayI              fSecArray;   // contains the sensor number to be aligned

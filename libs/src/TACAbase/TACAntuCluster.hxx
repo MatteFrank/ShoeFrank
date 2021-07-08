@@ -24,7 +24,6 @@ protected:
    
    Int_t              fIndexSeed;                // index of seed crystal
    Float_t            fEnergy;                   // sum of energy
-   Bool_t             fIsValid;                  // validity flag
    
 public:
    TACAcluster();
@@ -41,8 +40,6 @@ public:
    void               SetIndexSeed(Int_t index)              { fIndexSeed = index;     }
    //! Set sum of pulse height
    void               SetEnergy(Float_t chg)                 { fEnergy = chg;          }
-   //! Set validy
-   void               SetValid(Bool_t v = true)              { fIsValid = v;           }
    
    //! Get position in local frame
    const TVector3&     GetPosition()                   const { return fPosition;       }
@@ -53,8 +50,6 @@ public:
    //! Get position in global tracker frame
    const TVector3&     GetPosErrorG()                  const { return fPosErrorG ;     }
 
-   //! Get validity
-   Bool_t             IsValid()                        const { return fIsValid;        }
    //! Get index of seed crystal
    Int_t              GetIndexSeed()                   const { return fIndexSeed;      }
    //! Get sum of pulse height
@@ -77,7 +72,7 @@ public:
    //! Add pixel to the list
    void               AddHit(TACAhit* hit);
    
-   ClassDef(TACAcluster,5)                          // Describes TACAcluster
+   ClassDef(TACAcluster,6)                          // Describes TACAcluster
 };
 
 

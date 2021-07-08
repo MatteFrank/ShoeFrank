@@ -48,17 +48,16 @@ int main (int argc, char *argv[])  {
       }
    }
    
-   if (out.IsNull()) {
-      Int_t pos = in.Last('.');
-      out = in(0, pos);
-      out.Append("_Out.root");
-   }
-   
    TApplication::CreateApplication();
    
    TAGrecoManager::Instance(exp);
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
+   
+   if (out.IsNull()) {
+      TAGrecoManager::GetPar()->DisableTree();
+      TAGrecoManager::GetPar()->DisableHisto();
+   }
    
    Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
    Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
@@ -73,11 +72,6 @@ int main (int argc, char *argv[])  {
    TAGrecoManager::GetPar()->IncludeTOE(true);
    TAGrecoManager::GetPar()->IncludeKalman(false);
 
-   if (out.IsNull()) {
-      TAGrecoManager::GetPar()->DisableTree();
-      TAGrecoManager::GetPar()->DisableHisto();
-   }
-   
    BaseReco* glbRec = 0x0;
    
    if (lrc)

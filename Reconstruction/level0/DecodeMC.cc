@@ -47,6 +47,11 @@ int main (int argc, char *argv[])  {
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
 
+   if (out.IsNull()) {
+      TAGrecoManager::GetPar()->DisableTree();
+      TAGrecoManager::GetPar()->DisableHisto();
+   }
+   
    Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
    Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
    Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
@@ -54,11 +59,6 @@ int main (int argc, char *argv[])  {
    Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
    Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
    Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
-   
-   if (out.IsNull()) {
-      TAGrecoManager::GetPar()->DisableTree();
-      TAGrecoManager::GetPar()->DisableHisto();
-   }
    
    if(!zmc && zrec && !out.IsNull()) {
      Int_t pos_out = out.Last('.');

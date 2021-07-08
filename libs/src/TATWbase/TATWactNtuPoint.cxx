@@ -263,7 +263,8 @@ Bool_t TATWactNtuPoint::FindPoints()
        }
        
        point->SetChargeZ(hit->GetChargeZ());
-       point->SetSensorIdx(0);
+        point->SetSensorIdx(0);
+        point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TATWparGeo::GetBaseName()));
 
        double z = fgeoTrafo->FromGlobalToTWLocal(fgeoTrafo->GetTWCenter()).z(); 
        TVector3 posLoc(point->GetPosition().x(),point->GetPosition().y(), z);
@@ -349,12 +350,6 @@ Bool_t TATWactNtuPoint::FindPoints()
 	   return true;
 	 }
 
-	 // TVector3 posGlb = fgeoTrafo->FromTWLocalToGlobal(posLoc);
-	 // point->SetPositionGlb(posGlb);
-	 // point->SetSensorIdx(0);
-	 
-	 // Int_t Z = hit1->GetChargeZ();
-	 // point->SetChargeZ(Z);
 	 Int_t Z = point->GetChargeZ();
 
 	 if(FootDebugLevel(4)) {
@@ -517,6 +512,7 @@ TATWpoint* TATWactNtuPoint::SetTWPoint(TATWntuPoint* pNtuPoint, Int_t layer1, TA
     
   point->SetPositionGlb(posGlb);
   point->SetSensorIdx(0);
+  point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TATWparGeo::GetBaseName()));
 
   // set point charge Z
   point->SetChargeZ(hit1->GetChargeZ());

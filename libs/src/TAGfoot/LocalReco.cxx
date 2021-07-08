@@ -263,9 +263,9 @@ void LocalReco::AddRawRequiredItem()
       fTAGroot->AddRequiredItem("vtActNtu");
    }
 
-//   if (TAGrecoManager::GetPar()->IncludeIT()) {
-//      fTAGroot->AddRequiredItem("itActNtu");
-//   }
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      fTAGroot->AddRequiredItem("itActNtu");
+   }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
      if(TAGrecoManager::GetPar()->CalibTW()) {

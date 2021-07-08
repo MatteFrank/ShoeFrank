@@ -52,6 +52,7 @@ protected:
    
    vector<UInt_t>    fData;              // data array to fill
    UInt_t*           fDataEvent;         // data array to fill the whol eevent
+   UInt_t            fDataLink;          // data link
 
    Int_t             fEventNumber;        // number of the event
    Int_t             fPrevEventNumber[32];    // previous number of the event
@@ -76,7 +77,10 @@ protected:
    
    Int_t             fEventsOverflow; 
    Int_t             fNStatesInLine; 
-      
+   
+   TString           fPrefix;            // prefix of histogram
+   TString           fTitleDev;          // device name for histogram title
+   
    TH2F*             fpHisPixelMap[32];  // pixel map per sensor
    TH1F*             fpHisRateMap[32];   // pixel map per sensor
    TH1F*             fpHisRateMapQ[32];  // pixel map per sensor quadrant
@@ -116,6 +120,9 @@ protected:
    
    //! Fill histogram frame
    virtual void FillHistoEvt(Int_t iSensor);
+   
+   //! Fill histogram pixel
+   virtual void FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn);
    
    //! Fill DAQ event
    virtual void FillDaqEvent() { return; }

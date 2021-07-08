@@ -27,10 +27,6 @@ protected:
    TClonesArray*      fListOfPixels;             // list of pixel attached to this cluster
    
    Float_t            fCharge;                   // sum of pulseheight
-   Bool_t             fFoundXZ;					    //! kTRUE is associated to a track in XZ Projection
-   Bool_t             fFoundYZ;					    //! kTRUE is associated to a track in YZ Projection
-   Bool_t             fIsValid;                  // validity flag
-   
    
 public:
    TAVTbaseCluster(); 
@@ -40,14 +36,9 @@ public:
    //! Set position in global tracker frame
    void               SetPositionG(TVector3& pos);
    
-   //! Found flag for this cluster (Hough Transform XZ)
-   void               SetFoundXZ(Bool_t flag = true)         { fFoundXZ = flag;        }
-   //! Found flag for this cluster ((Hough Transform YZ)
-   void               SetFoundYZ(Bool_t flag = true)         { fFoundYZ = flag;        }
    //! Set sum of pulse height
    void               SetCharge(Float_t chg)                 { fCharge = chg;          }
-   //! Set validy
-   void               SetValid(Bool_t v = true)              { fIsValid = v;           }
+  
    // Compute size
    TVector2           ComputeSize();
    
@@ -57,13 +48,7 @@ public:
    Float_t            GetPositionV()                   const { return fPosition[1];    }
    //! Get Pixel list
    TClonesArray*      GetListOfPixels()                const { return fListOfPixels;   }
-   //! Get found flag this cluster
-   Bool_t             GetFoundXZ()                     const { return fFoundXZ;        }
-   //! Get found flag this cluster
-   Bool_t             GetFoundYZ()                     const { return fFoundYZ;        }
    
-   //! Get validity
-   Bool_t             IsValid()                        const { return fIsValid;        }
    //! Get index for a given pixel
    Int_t              GetIndex(Int_t tSk)              const { return ((TAVThit*)fListOfPixels->At(tSk))->GetPixelIndex();  } 
    //! Get pulse height for a given pixel
@@ -87,7 +72,7 @@ public:
    //! reset pixels
    void               ResetPixels();
    
-   ClassDef(TAVTbaseCluster,7)                          // Describes TAVTbaseCluster
+   ClassDef(TAVTbaseCluster,8)                          // Describes TAVTbaseCluster
 };
 
 

@@ -1,0 +1,14 @@
+// Campaign file
+CamName: "testITR"
+RunNumber: 1
+NumberDevices: 2
+
+DetectorName: "FOOT"
+NumberFiles: 2
+"./geomaps/testITR/FOOT.geo": -1
+
+DetectorName: "IT"
+NumberFiles: 3
+"./geomaps/testITR/TAITdetector.geo": -1
+"./config/testITR/TAITdetector.cfg": -1
+"./config/testITR/TAITdetector.map": -1

@@ -4,6 +4,7 @@
  */
 
 #include "DECardEvent.hh"
+#include "DAQMarkers.hh"
 
 #include "TAGrecoManager.hxx"
 #include "TAGdaqEvent.hxx"
@@ -50,6 +51,7 @@ Bool_t TAVTactNtuHit::Action()
          const DECardEvent* evt = static_cast<const DECardEvent*> (datDaq->GetFragment(i));
           fData      = evt->values;
           fEventSize = evt->evtSize;
+          fDataLink  = evt->channelID - (dataVTX | 0x30);
           if (fEventSize == 0) continue;
           DecodeEvent();
        }

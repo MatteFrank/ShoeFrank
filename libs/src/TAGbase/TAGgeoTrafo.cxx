@@ -36,7 +36,19 @@ const Float_t TAGgeoTrafo::fgkMassFactor    = 0.9383; // GeV
 const Float_t TAGgeoTrafo::fgkElectronMass  = 0.5109; // MeV
 const Float_t TAGgeoTrafo::fgkLightVelocity = 29.98; // cm/ns
 
+map<TString, Int_t> TAGgeoTrafo::fgkDeviceType = {{"ST", 0}, {"BM", 10},  {"DI", 20}, {"TG", 30},  {"VT", 40},
+                                                  {"IT", 50}, {"MSD", 60}, {"TW", 70}, {"CA", 80}};
 
+//_____________________________________________________________________________
+const Char_t* TAGgeoTrafo::GetDeviceName(Int_t devType)
+{
+   for (const auto &item : fgkDeviceType) {
+     if(item.second == devType)
+        return item.first.Data();
+   }
+   
+   return TString().Data();
+}
 
 //_____________________________________________________________________________
 TAGgeoTrafo::TAGgeoTrafo(const TString expName)
