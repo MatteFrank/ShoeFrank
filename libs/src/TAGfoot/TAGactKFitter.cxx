@@ -88,6 +88,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepoGenFit, 
 
 	m_NTWTracks = 0;
 	m_NTWTracksGoodHypo = 0;
+	m_numGenParticle_noFrag = 0;
 
 }
 
@@ -106,6 +107,21 @@ TAGactKFitter::~TAGactKFitter() {
 
 
 
+//----------------------------------------------------------------------------------------------------
+void TAGactKFitter::FillGenCounter( map< string, int > mappa )	{
+	
+	for( map<string, int>::iterator it = mappa.begin(); it != mappa.end(); ++it )	{
+
+		if ( m_genCount_vector.find( (*it).first ) == m_genCount_vector.end() ) 
+			m_genCount_vector[ (*it).first ] = 0;
+		
+		m_genCount_vector.at( (*it).first ) += (*it).second;
+	}
+
+}
+
+
+
 
 //------------------------------------------+-----------------------------------
 //! Action.
@@ -120,9 +136,10 @@ Bool_t TAGactKFitter::Action()	{
 	vector<int> chVect;
 	m_uploader->GetPossibleCharges( &chVect );
 
-	if ( TAGrecoManager::GetPar()->IsMC() ) 
+	if ( TAGrecoManager::GetPar()->IsMC() ) {
 			m_measParticleMC_collection = m_uploader->TakeMeasParticleMC_Collection();
-
+			m_numGenParticle_noFrag += m_uploader->GetNumGenParticle_noFrag();
+	}
 
 	if(m_debug > 0)	{
 		cout << "TAGactKFitter::Action()  ->  " << m_allHitMeasGF.size() << endl;
@@ -135,8 +152,14 @@ Bool_t TAGactKFitter::Action()	{
 
 	m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_sensorIDmap, &m_mapTrack, m_measParticleMC_collection);
 
-	if ( m_selector->Categorize() >= 0 )
+	if ( m_selector->Categorize() >= 0 ) {
+
+		if ( TAGrecoManager::GetPar()->IsMC() ) {
+			FillGenCounter( m_selector->CountParticleGenaratedAndVisible() );
+		}
+
 		MakeFit(evNum);
+	}
 	
 	chVect.clear();
 	m_allHitMeasGF.clear();
@@ -183,9 +206,10 @@ void TAGactKFitter::Finalize() {
   //     system(("mkdir "+pathName).c_str());
   // }
 
-	// if ( TAGrecoManager::GetPar()->IsMC() ) 		m_trackAnalysis->EvaluateAndFill_MomentumResolution( &h_dPOverP_x_bin, &h_resoP_over_Pkf, &h_biasP_over_Pkf );
+	if ( TAGrecoManager::GetPar()->IsMC() ) 		m_trackAnalysis->EvaluateAndFill_MomentumResolution( &h_dPOverP_x_bin, &h_resoP_over_Pkf, &h_biasP_over_Pkf );
 	if ( TAGrecoManager::GetPar()->IsMC() ) 		PrintPurity();
 	PrintEfficiency();
+	if ( TAGrecoManager::GetPar()->IsMC() ) 		PrintSelectionEfficiency();
 	
 	// map<string, map<float, TH1F*> > h_dPOverP_x_bin
 	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ )
@@ -227,13 +251,19 @@ void TAGactKFitter::Finalize() {
 	h_sigmaP_tot->SetNameTitle( "errdP", "errdP" );
 	AddHistogram( h_sigmaP_tot );
 
+
+	TH1F* h_numGenParticle_noFrag = new TH1F( "h_numGenParticle_noFrag", "h_numGenParticle_noFrag", 100, 0, 10000 );
+	AddHistogram( h_numGenParticle_noFrag );
+	h_numGenParticle_noFrag->Fill( m_numGenParticle_noFrag );
+	cout << "m_numGenParticle_noFrag = " << m_numGenParticle_noFrag << endl;
+
+
 	cout << "TAGactKFitter::Finalize() -- END"<< endl;
 	SetValidHistogram(kTRUE);
 	SetHistogramDir(m_dir);
 
 	//show event display
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )		display->open();
-
 
 	if(m_debug > 0)
 	{
@@ -538,7 +568,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		  	}
 		  	cout << "\n";
 	    }
-		if ( fitTrack->getNumPointsWithMeasurement() < 9 )
+		if ( fitTrack->getNumPointsWithMeasurement() < TAGrecoManager::GetPar()->MeasureN() )
 		{
 			if( m_debug > 0 )	Info("FillTrackCategoryMap()", "Skipped Track %s with %d TrackPoints with measurement!!", tok.at(2).c_str(), fitTrack->getNumPointsWithMeasurement());
 			continue;
@@ -627,12 +657,16 @@ int TAGactKFitter::MakeFit( long evNum ) {
 			// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!   end - l= " << extL << "\n\toldZ = " <<old << "\t newZ = " << ext << endl<<endl;
 			
 
-			if ( m_nConvergedTracks_all.find( PartName ) == m_nConvergedTracks_all.end() )	m_nConvergedTracks_all[ PartName ] = 0;
-			m_nConvergedTracks_all[ PartName ]++;
+			if ( (TAGrecoManager::GetPar()->Chi2Cut() < 0) || ( m_refFitter->getRedChiSqu(fitTrack, fitTrack->getCardinalRep()) <= TAGrecoManager::GetPar()->Chi2Cut() ) ) {
 
-			RecordTrackInfo( fitTrack, PartName );
-			if(m_debug > 0) cout << "DONE\n";
-			m_vectorConvergedTrack.push_back( fitTrack );
+				if ( m_nConvergedTracks_all.find( PartName ) == m_nConvergedTracks_all.end() )	m_nConvergedTracks_all[ PartName ] = 0;
+				m_nConvergedTracks_all[ PartName ]++;
+
+				RecordTrackInfo( fitTrack, PartName );
+				if(m_debug > 0) cout << "DONE\n";
+				m_vectorConvergedTrack.push_back( fitTrack );
+
+			}
 		}
 		
 
@@ -810,8 +844,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	// int firstState = 0;
 	// int lastState = -1;
 	// double length = track->getTrackLen( track->getCardinalRep(), firstState, finalState );
-	double length 		= track->getTrackLen( track->getCardinalRep() );
-	// double length 		= 1;
+	// double length 		= track->getTrackLen( track->getCardinalRep() );
+	double length 		= 1;
 	double tof 			= 0;
 	// double tof 			= track->getTOF( track->getCardinalRep() ) ;
 	
@@ -1049,6 +1083,8 @@ void TAGactKFitter::PrintPurity() {
 	TH1F* h_trackMatched = new TH1F( "h_trackMatched", "h_trackMatched", nCollection, 0, nCollection );
 
 	int k = 0;
+	float totalNum = 0;
+	float totalDen = 0;
 
 	for(vector<string>::iterator itPart = m_Particles.begin(); itPart != m_Particles.end(); ++itPart)
 	{
@@ -1057,18 +1093,25 @@ void TAGactKFitter::PrintPurity() {
 		
 		k++;
 
+
 		float kk = (float)m_nConvergedTracks_matched[ *itPart ];
 		float nn = m_nConvergedTracks_all[ *itPart ];
 		float eff = (float)kk/nn;
 		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
 		if ( m_debug > -1 )		cout << "Purity " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
-		h_trackMatched->SetBinContent(k, kk);
+		
+		totalNum+=kk;
+		totalDen+=nn;
 
+		h_trackMatched->SetBinContent(k, kk);
+		
 		h_purity->SetBinContent(k, eff);
 		h_purity->SetBinError(k, sqrt(variance));
 
 		h_purity->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
+
+	if ( m_debug > -1 )		cout << "Total Purity " << " = " << totalNum/totalDen << "  " << int(totalNum) << " " << int(totalDen) << endl;
 
 	AddHistogram(h_trackMatched);
 	AddHistogram(h_purity);
@@ -1090,6 +1133,8 @@ void TAGactKFitter::PrintEfficiency() {
 	TH1F* h_trackSelected = new TH1F( "h_trackSelected", "h_trackSelected", nCollection, 0, nCollection );
 
 	int k = 0;
+	float totalNum = 0;
+	float totalDen = 0;
 
 	for(vector<string>::iterator itPart = m_Particles.begin(); itPart != m_Particles.end(); ++itPart)
 	{
@@ -1104,6 +1149,9 @@ void TAGactKFitter::PrintEfficiency() {
 		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
 		if ( m_debug > -1 )		cout << "Efficiency " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
 		
+		totalNum+=kk;
+		totalDen+=nn;
+
 		h_trackConverged->SetBinContent(k, kk);
 		h_trackSelected->SetBinContent(k, nn);
 
@@ -1113,24 +1161,81 @@ void TAGactKFitter::PrintEfficiency() {
 		h_trackEfficiency->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
 
-  h_trackEfficiency->SetTitle(0);
-  h_trackEfficiency->SetStats(0);
-  h_trackEfficiency->GetYaxis()->SetTitle("Reco Efficiency");
-  h_trackEfficiency->GetYaxis()->SetTitleOffset(1.1);
-  h_trackEfficiency->GetYaxis()->SetRange(0.,1.);
-  h_trackEfficiency->SetLineWidth(2); // take short ~ int
-  // h_trackEfficiency->Draw("E");
-  // mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
-  // mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.root").c_str() );
+	if ( m_debug > -1 )		cout << "Total Efficiency " << " = " << totalNum/totalDen << "  " << int(totalNum) << " " << int(totalDen) << endl;
 
-  AddHistogram(h_trackSelected);
-  AddHistogram(h_trackConverged);
-  AddHistogram(h_trackEfficiency);
+	h_trackEfficiency->SetTitle(0);
+	h_trackEfficiency->SetStats(0);
+	h_trackEfficiency->GetYaxis()->SetTitle("Reco Efficiency");
+	h_trackEfficiency->GetYaxis()->SetTitleOffset(1.1);
+	h_trackEfficiency->GetYaxis()->SetRange(0.,1.);
+	h_trackEfficiency->SetLineWidth(2); // take short ~ int
+	// h_trackEfficiency->Draw("E");
+	// mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
+	// mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.root").c_str() );
+
+	AddHistogram(h_trackSelected);
+	AddHistogram(h_trackConverged);
+	AddHistogram(h_trackEfficiency);
 
 }
 
 
 
+
+//----------------------------------------------------------------------------------------------------
+void TAGactKFitter::PrintSelectionEfficiency() {
+
+	int nCollection = m_genCount_vector.size();
+	TH1F* h_selectEfficiency = new TH1F( "h_selectEfficiency", "h_selectEfficiency", nCollection, 0, nCollection );
+	
+	TH1F* h_trackProduced = new TH1F( "h_trackProduced", "h_trackProduced", nCollection, 0, nCollection );
+
+	int k = 0;
+	float totalNum = 0;
+	float totalDen = 0;
+
+	for(vector<string>::iterator itPart = m_Particles.begin(); itPart != m_Particles.end(); ++itPart) 	{
+
+		if(m_genCount_vector.find(*itPart) == m_genCount_vector.end())
+			continue;
+		if(m_nSelectedTrackCandidates.find(*itPart) == m_nSelectedTrackCandidates.end())
+			continue;
+		
+		k++;
+
+		float kk = (float)m_nSelectedTrackCandidates[ *itPart ];
+		float nn = m_genCount_vector[ *itPart ];
+		float eff = (float)kk/nn;
+		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
+		if ( m_debug > -1 )		cout << "Efficiency Selection " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
+		
+		totalNum+=kk;
+		totalDen+=nn;
+
+		h_trackProduced->SetBinContent(k, nn);
+
+		h_selectEfficiency->SetBinContent(k, eff);
+		h_selectEfficiency->SetBinError(k, sqrt(variance));
+
+		h_selectEfficiency->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
+	}
+
+	if ( m_debug > -1 )		cout << "Total Efficiency Selection " << " = " << totalNum/totalDen << "  " << int(totalNum) << " " << int(totalDen) << endl;
+
+	h_selectEfficiency->SetTitle(0);
+	h_selectEfficiency->SetStats(0);
+	h_selectEfficiency->GetYaxis()->SetTitle("Sel Efficiency");
+	h_selectEfficiency->GetYaxis()->SetTitleOffset(1.1);
+	h_selectEfficiency->GetYaxis()->SetRange(0.,1.);
+	h_selectEfficiency->SetLineWidth(2); // take short ~ int
+	// h_selectEfficiency->Draw("E");
+	// mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
+	// mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.root").c_str() );
+
+	AddHistogram(h_trackProduced);
+	AddHistogram(h_selectEfficiency);
+
+}
 
 
 
@@ -1177,7 +1282,7 @@ void TAGactKFitter::CreateHistogram()	{
 	h_phi = new TH1F("h_phi", "h_phi", 80, -4, 4);
 	AddHistogram(h_phi);  
 
-	h_theta = new TH1F("h_theta", "h_theta", 100, 0., 2.);
+	h_theta = new TH1F("h_theta", "h_theta", 100, 0, 0.3);
 	AddHistogram(h_theta);  
 
 	h_eta = new TH1F("h_eta", "h_eta", 100, 0., 20.);
@@ -1316,7 +1421,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTra
 
 	int chargeFromTW = m_selector->GetChargeFromTW( fitTrack );
 	if(m_debug > 0 ) cout << "Charge From TW::" << chargeFromTW << endl;
-	if(chargeFromTW == -1)
+	if( chargeFromTW == -1 || chargeFromTW > 8 || chargeFromTW < 1 )
 		return;
 	
 

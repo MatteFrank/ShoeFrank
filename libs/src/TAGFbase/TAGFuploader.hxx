@@ -59,6 +59,7 @@ public:
   
   int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  );
   void GetPossibleCharges( vector<int>* chVect );
+  int GetNumGenParticle_noFrag();
 
   map< int, vector<int> >* TakeMeasParticleMC_Collection();
   
@@ -70,7 +71,6 @@ private:
 	int UploadHitsTW();
 
 	int GetTWTrackFixed ( TATWpoint* point );
-
 
 	void Prepare4Vertex( TAVTcluster* clus, int iClus );
 	void Prepare4InnerTracker( TAITcluster* clus, int iClus );

@@ -50,7 +50,7 @@ TAGrecoManager::~TAGrecoManager()
 //_____________________________________________________________________________
 // private constructor
 TAGrecoManager::TAGrecoManager( const TString expName )
-: m_parFileName(""),        m_debug(0),
+: m_parFileName(""),        m_debug(0),				m_chi2(-1),				m_measureN(11),			m_skipN(-1),
   m_kalmanMode(""),         m_kalReverse(false),   m_verFLUKA(false),       m_VTreso(0.),            m_ITreso(0.),            m_MSDreso(0.), m_TWreso(0.),
   m_enableLocalReco(false), m_enableTree(false),   m_enableHisto(false),    m_enableSaveHits(false), m_enableTracking(false), m_enableRootObject(false),
   m_enableTWZmc(false),     m_enableTWnoPU(false), m_enableTWZmatch(false), m_enableTWCalBar(false), m_doCalibTW(false),      m_doCalibBM(false), m_enableRegionMc(false),
@@ -155,6 +155,26 @@ void TAGrecoManager::FromFile ()
       if (m_debug > 0)
         printf("Debug: %d\n", m_debug);
     }
+
+    if (key.Contains("Chi2 cut:")) {
+      m_chi2 = item.Atof();
+      if (m_debug > 0)
+        printf("Chi2 cut: %d\n", m_chi2);
+    }
+
+    if (key.Contains("N measure in global tracking:")) {
+      m_measureN = item.Atoi();
+      if (m_debug > 0)
+        printf("N measure in global tracking: %d\n", m_measureN);
+    }
+
+    if (key.Contains("Skip n events:")) {
+		m_skipN = item.Atoi();
+		if (m_debug > 0)
+			printf("Skip n events: %d\n", m_skipN);
+		if (  m_skipN <= 0 )	m_skipN = -1;
+		else 					m_skipN -= 1;
+	}
     
     if (key.Contains("MC Particle Types:")) {
       m_mcParticles.clear();

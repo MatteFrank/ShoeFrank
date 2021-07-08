@@ -136,6 +136,8 @@ int UpdatePDG::GetPdgMass( string partName ) {
 //----------------------------------------------------------------------------------------------------
 int UpdatePDG::GetPdgMass( int PdgCode ) {
   
+  if ( PdgCode == -999 )	return -1;
+
   string name = GetPdgName(PdgCode);
   return GetPdgMass( name );
 }
@@ -149,11 +151,10 @@ string UpdatePDG::GetPdgName( int pdgCode ) {
 
 
 //----------------------------------------------------------------------------------------------------
-int UpdatePDG::GetPdgCodeMainIsotope(int partCharge)
-{
+int UpdatePDG::GetPdgCodeMainIsotope(int partCharge)  {
+
   string partName;
-  switch(partCharge)
-  {
+  switch(partCharge)  {
     case 1: partName = "H1"; break;
     case 2: partName = "He4"; break;
     case 3: partName = "Li7"; break;
@@ -165,14 +166,12 @@ int UpdatePDG::GetPdgCodeMainIsotope(int partCharge)
     default: partName = "None"; break;
   }
 
-  if(partName == "None")
-  {
+  if(partName == "None")  {
     // Error("GetPdgCodeMainIsotope()", "Particle charge is out of range! Charge::%d", partCharge);
     cout << "GetPgdCodeMainIsotope() --> Particle charge is out of range! Charge::" << partCharge << endl; exit(0);
     return -999;
   }
-  else
-  {
+  else  {
     return GetPdgCode(partName);
   }
 }

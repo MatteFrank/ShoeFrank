@@ -1,38 +1,41 @@
 
 
 ################################################################
-############	MC selection Control Parameters	################
+####################   Campaign GSI2021   ######################
 ################################################################
 
 
 Debug:	0
 
+Skip n events: 0
 
 ############	MC selection Control Parameters	################
-#MC Particle Types:	C10	C11	C12	Li6	Li7	B7	B8	B9	Be9	Be10	N12	N14	O15
-MC Particle Types:	C11	C12	C13 C14	Li6	Li7	B7	B9	B10	Be10	Be11	N14	N15	O16 O15
+MC Particle Types: H1 H2 H3 He3 He4 He6 He8  Li6 Li7 Li8 Li9  Be7 Be9 Be10 Be11 Be12 Be14 B8 B10 B11 B12 B13 B14 B15 C9 C10 C11 C12 C13 C14 C15 C16 N12 N13 N14 N15 N16 O13 O14 O15 O16
 
+Genfit Event Display ON: n
 
 ############	Kalman Filter Control Parameters	################
 
-IncludeKalman:   n
+IncludeKalman:   y
 IncludeTOE:      n
 EnableLocalReco: n
 
 Kalman Mode:       ref
 Tracking Systems Considered:      VT IT MSD TW
-Reverse Tracking:   false
+Reverse Tracking:       false
 
 Kalman preselection strategy: Sept2020
+#Kalman preselection strategy: TrueParticle
 
 VT  Reso: 0.0006
 IT  Reso: 0.0006
 MSD Reso: 0.003
 TW  Reso: 0.57
 
-Kalman Particle Types:	C
+Chi2 cut: -1
+N measure in global tracking: 11
 
-Genfit Event Display ON: n
+Kalman Particle Types:	C
 
 ############	END - Kalman Filter Control Parameters	################
 
@@ -52,14 +55,14 @@ EnableRegionMc:      n
 
 ############   END - Options for reconstruction   ################
 
-IncludeDI:			   n
-IncludeST:			   y
-IncludeBM:			   y
+IncludeDI:			   y
+IncludeST:			   n
+IncludeBM:			   n
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:			   n
+IncludeIT:	           n
 IncludeMSD:			   y
 IncludeTW:			   y
-IncludeCA:			   y
+IncludeCA:			   n
 
 FLUKA version: pro

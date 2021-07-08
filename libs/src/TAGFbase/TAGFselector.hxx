@@ -74,9 +74,10 @@ public:
 
 	virtual ~TAGFselector() { }
 
-	int			Categorize( );
-	TString		GetRecoTrackName(Track* tr);
-	int			GetChargeFromTW(Track* trackToCheck);
+	int					Categorize( );
+	TString				GetRecoTrackName(Track* tr);
+	int					GetChargeFromTW(Track* trackToCheck);
+	map<string, int>	CountParticleGenaratedAndVisible();
 
 private:
 
