@@ -119,21 +119,21 @@ Bool_t TATWpoint::IsValid() const
   return (fColumnHit->IsValid() && fRowHit->IsValid());
 }
 
-// //______________________________________________________________________________
-// //
-// void TATWpoint::SetPosition(TVector3& posLoc)
-// {
-//    fPosition.SetXYZ(posLoc.X(), posLoc.Y(), posLoc.Z());
-//    fPosError.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
-// }
+//______________________________________________________________________________
+//
+void TATWpoint::SetPosition(TVector3& posLoc)
+{
+   fPosition.SetXYZ(posLoc.X(), posLoc.Y(), posLoc.Z());
+   fPosError.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
+}
 
-// //______________________________________________________________________________
-// //
-// void TATWpoint::SetPositionG(TVector3& posG)
-// {
-//    fPositionG.SetXYZ(posG.X(), posG.Y(), posG.Z());
-//    fPosErrorG.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
-// }
+//______________________________________________________________________________
+//
+void TATWpoint::SetPositionG(TVector3& posG)
+{
+   fPositionG.SetXYZ(posG.X(), posG.Y(), posG.Z());
+   fPosErrorG.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
+}
 
 //______________________________________________________________________________
 //

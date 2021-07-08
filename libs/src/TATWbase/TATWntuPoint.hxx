@@ -75,7 +75,7 @@ public:
   Double_t  GetTof1()         const  { return fTof1;                   }
   Double_t  GetTof2()         const  { return fTof2;                   }
   Double_t  GetMeanTof()      const  { return (fTof1+fTof2)/2.;        }
-  Double_t  GetToF()          const  { return fToF;                    }
+  Double_t  GetToF()          const  { return fToF;                   }
   Int_t     GetMatchCalIdx()  const  { return fMatchCalIdx;            }
   Int_t     GetMainLayer()    const  { return fLayer;                  }
   Int_t     GetPointMatchMCtrkID()  const  { return fId;               }
@@ -83,8 +83,8 @@ public:
   Double_t  GetChargeZProba() const  { return fChargeZProba;           }
   Bool_t    IsValid()         const;
   
-  // void      SetPosition(TVector3& pos);
-  // void      SetPositionG(TVector3& pos);
+  void      SetPosition(TVector3& pos);
+  void      SetPositionG(TVector3& pos);
   void      SetPositionGlb(TVector3& pos);
   void      SetMatchCalIdx(Int_t idx)      { fMatchCalIdx = idx;       }
   void      SetMainLayer(Int_t main_lay)   { fLayer = main_lay;        }
