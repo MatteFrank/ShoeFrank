@@ -56,7 +56,7 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents, Int_t skipEvent)
 		throw -1;
 	}
 	cout << "SkipEv::" << skipEvent << endl;
-   	if (nEvents <= 0)
+   	if (nEvents < 0)
     	nEvents = fTree->GetEntries();
    
     if ( skipEvent >= fTree->GetEntries() )	
@@ -75,7 +75,7 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents, Int_t skipEvent)
    for (Long64_t ientry = skipEvent; ientry < skipEvent + nEvents; ientry++) {
       fTree->GetEntry(ientry);
       
-      if(ientry % frequency == 0)
+      // if(ientry % frequency == 0)
          cout<<" Loaded Event:: " << ientry << endl;
       
       if (!fTAGroot->NextEvent(ientry)) break;

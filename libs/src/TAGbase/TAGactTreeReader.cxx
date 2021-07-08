@@ -45,7 +45,6 @@ TAGactTreeReader::TAGactTreeReader(const char* name)
     fpTree(0),
     fiNEntry(0),
     fiCurrentEntry( TAGrecoManager::GetPar()->SkipN() ),
-    // fiCurrentEntry(-1),
     fbDscBranch(true)
 {
   fpBranchList = new TList();
@@ -147,7 +146,6 @@ Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TStrin
 	}
   
   fiNEntry = (Int_t) fpTree->GetEntries();
-  // fiCurrentEntry = -1;
   fiCurrentEntry = TAGrecoManager::GetPar()->SkipN();
 
   TAGrunInfo* p_ri = (TAGrunInfo*) fpFile->Get(TAGrunInfo::GetObjectName());
@@ -197,8 +195,8 @@ void TAGactTreeReader::Reset(Int_t iEvent)
 //------------------------------------------+-----------------------------------
 //! Process TreeReader.
 
-Bool_t TAGactTreeReader::Process()
-{
+Bool_t TAGactTreeReader::Process()	{
+	
   if (Valid()) return kTRUE;
   if (IsZombie()) return kFALSE;
 
@@ -218,13 +216,10 @@ Bool_t TAGactTreeReader::Process()
    return kFALSE;
   }
   
+  	cout << " SkipN =  " << TAGrecoManager::GetPar()->SkipN() << endl;
 	if (Valid()) {
 		if (fbDscBranch) {
 			for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
-			// cout << " SkipN =  " << TAGrecoManager::GetPar()->SkipN() << endl;
-			// if ( fpBranchList->At( TAGrecoManager::GetPar()->SkipN() ) != 0 ) {
-			// 	for (TObjLink* lnk = new TObjLink( fpBranchList->At( TAGrecoManager::GetPar()->SkipN() ) ); lnk; lnk=lnk->Next()) {
-
 					TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
 					if (p_chan->fpBranch) {
 						Int_t i_nbyte = p_chan->fpBranch->GetEntry(fiCurrentEntry);
