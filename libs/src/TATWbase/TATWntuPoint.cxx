@@ -22,6 +22,7 @@ TATWpoint::TATWpoint()
    fDe1(-99.),
    fDe2(-99.),
    fToF(-99.),
+   fMainEloss(-99),
    fTof1(-99.),
    fTof2(-99.),
    fMatchCalIdx(-1),
@@ -44,7 +45,8 @@ TATWpoint::TATWpoint( Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Doub
    fId(-99),
    fChargeZ(-99),
    fChargeZProba(-99.),
-   fToF(-99)
+   fToF(-99),
+   fMainEloss(-99)
 {
    
    fPosition.SetXYZ(x, y, 0),
@@ -117,21 +119,21 @@ Bool_t TATWpoint::IsValid() const
   return (fColumnHit->IsValid() && fRowHit->IsValid());
 }
 
-//______________________________________________________________________________
-//
-void TATWpoint::SetPosition(TVector3& posLoc)
-{
-   fPosition.SetXYZ(posLoc.X(), posLoc.Y(), posLoc.Z());
-   fPosError.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
-}
+// //______________________________________________________________________________
+// //
+// void TATWpoint::SetPosition(TVector3& posLoc)
+// {
+//    fPosition.SetXYZ(posLoc.X(), posLoc.Y(), posLoc.Z());
+//    fPosError.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
+// }
 
-//______________________________________________________________________________
-//
-void TATWpoint::SetPositionG(TVector3& posG)
-{
-   fPositionG.SetXYZ(posG.X(), posG.Y(), posG.Z());
-   fPosErrorG.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
-}
+// //______________________________________________________________________________
+// //
+// void TATWpoint::SetPositionG(TVector3& posG)
+// {
+//    fPositionG.SetXYZ(posG.X(), posG.Y(), posG.Z());
+//    fPosErrorG.SetXYZ(fPosError.X(), fPosError.Y(), 0.15);
+// }
 
 //______________________________________________________________________________
 //
