@@ -216,7 +216,6 @@ Bool_t TAGactTreeReader::Process()	{
    return kFALSE;
   }
   
-  	cout << " SkipN =  " << TAGrecoManager::GetPar()->SkipN() << endl;
 	if (Valid()) {
 		if (fbDscBranch) {
 			for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {

@@ -18,6 +18,7 @@
 	#include "TClonesArray.h"
 	#include "TAGobject.hxx"
 	#include "TAGshoeTrackPoint.hxx"
+	#include "TAGntuGlbTrack.hxx"
 
 	#define build_string(expr)						\
 	(static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
@@ -42,8 +43,6 @@
 	
 	virtual ~TAGglobalTrack();
 	
-	void SetGeneratorParticleID( int i ) {};
-
 	//! Get list of measured points
 	TClonesArray*	GetListOfMeasPoints()	const { return m_pointContainer; }
 	
@@ -64,9 +63,9 @@ private:
 	string m_name;
 	
 	long m_evNum;
-	int m_pdgID;
-	int m_pdgCh;
-	int m_measCh;
+	int m_pdgID;							// PDG ID used in the fit
+	int m_pdgCh;							// charge used in the fit by the cardinal rep
+	int m_measCh;							// charge measured at state 0 (VTX 1st ly)
 
 	double m_length;
 	double m_tof;
@@ -81,7 +80,7 @@ private:
 	// int m_mcParticleID;
 	// vector<int> m_mcParticleID;
 
-	TVector3 m_target_mom;
+	TVector3 m_target_mom; 
 	TVector3 m_target_pos;
 	
 	TVector3 m_target_mom_err;
@@ -90,9 +89,24 @@ private:
 	TMatrixD m_pos_cov;
 	TMatrixD m_mom_cov;
 
+	/// ONLY MC QUANTITIES  //////////
+
+	int m_MCparticle_id;					//	ID in the shoe particle container ( TAMCpart )
+	float m_trackQuality;					//	ratio of (N of most frequent particle measure)/(N all measurements)
+
+	/////////////////////////////////
+
 	TClonesArray*   m_pointContainer;
 
 	ClassDef(TAGglobalTrack, 2)
 };
 
 #endif
+
+
+
+
+
+
+
+

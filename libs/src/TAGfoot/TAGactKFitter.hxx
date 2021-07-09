@@ -112,8 +112,9 @@
 #include "TAGFuploader.hxx"
 #include "TAGFselector.hxx"
 #include "TAGFdetectorMap.hxx"
-#include "TAGntuTrackRepository.hxx"
-#include "TAGtrackKalman.hxx"
+// #include "TAGntuTrackRepository.hxx"
+// #include "TAGtrackKalman.hxx"
+#include "TAGntuGlbTrack.hxx"
 #include "TAGF_KalmanStudies.hxx"
 #include "UpdatePDG.hxx"
 
@@ -135,7 +136,8 @@ public:
 
 
 	// explicit 	TAGactKFitter(const char* name);
-	explicit 	TAGactKFitter(const char* name, TAGdataDsc* p_glbtrackrepoGF, TAGdataDsc* p_glbtrackrepo);
+	// explicit 	TAGactKFitter(const char* name, TAGdataDsc* p_glbtrackrepoGF, TAGdataDsc* p_glbtrackrepo);
+	explicit 	TAGactKFitter(const char* name, TAGdataDsc* p_glbtrackrepo);
 
 	virtual	~TAGactKFitter();
 
@@ -183,7 +185,7 @@ public:
 
 private:
 
-	TAGdataDsc*  fpGlobTrackRepoGenFit;
+	// TAGdataDsc*  fpGlobTrackRepoGenFit;
 	TAGdataDsc*  fpGlobTrackRepo;
 
 	KalmanFitter* m_fitter_extrapolation;
@@ -193,11 +195,12 @@ private:
 	AbsKalmanFitter*  m_dafRefFitter;    	         //DAF with kalman ref
 	AbsKalmanFitter*  m_dafSimpleFitter;    	 //DAF with simple kalman
 
-	TAGtrackRepoKalman* m_outTrackRepoGenFit;
+	// TAGtrackRepoKalman* m_outTrackRepoGenFit;
 	TAMCntuPart*  m_trueParticleRep;
 
 	TAGFuploader* m_uploader;
-	TAGntuTrackRepository* m_outTrackRepo;
+	TAGntuGlbTrack* m_outTrackRepo;
+	// TAGntuTrackRepository* m_outTrackRepo;
 	TAGFselector* m_selector;
 
 	TAGFdetectorMap* m_sensorIDmap;

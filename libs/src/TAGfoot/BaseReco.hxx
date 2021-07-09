@@ -238,7 +238,8 @@ public:
    TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
-   TAGtrackRepoKalman*  GetGlobTrackRepo() const { return (TAGtrackRepoKalman*) m_GlobTrackRepo->Object(); }
+   // TAGtrackRepoKalman*  GetGlobTrackRepo() const { return (TAGtrackRepoKalman*) m_GlobTrackRepo->Object(); }
+   TAGntuGlbTrack*  GetGlobTrackRepo() const { return (TAGntuGlbTrack*) m_newGlobTrackRepo->Object(); }
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
    //! MC container Getter
@@ -336,7 +337,7 @@ protected:
    TAGdataDsc*           fpNtuVtx;        // input Vtx data dsc
 
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
-   TAGdataDsc*           m_GlobTrackRepo;      // input data dsc
+   // TAGdataDsc*           m_GlobTrackRepo;      // input data dsc
    TAGdataDsc*           m_newGlobTrackRepo;      // input data dsc
 
    TAGactionFile*        fActEvtReader;

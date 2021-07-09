@@ -1,7 +1,7 @@
 
 #include "TAGglobalTrack.hxx"
 
-ClassImp(TAGglobalTrack);
+// ClassImp(TAGglobalTrack);
 
 //Default constructor
 TAGglobalTrack::TAGglobalTrack()

@@ -31,6 +31,7 @@ TAGtrack::TAGtrack()
    fTofPos(0,0,0),
    fTofDir(0,0,0),
    fListOfMeasPoints(0x0),
+   // m_shoeTrackPointRepo(0x0),
    fListOfCorrPoints(0x0)
 {
    SetupClones();
@@ -50,6 +51,7 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
    fTofPos(0,0,0),
    fTofDir(0,0,0),
    fListOfMeasPoints(0x0),
+   // m_shoeTrackPointRepo(0x0),
    fListOfCorrPoints(0x0)
 {
    SetupClones();
@@ -75,12 +77,75 @@ TAGtrack::TAGtrack(const TAGtrack& aTrack)
 }
 
 
+
+
+//Alternative constructor
+TAGtrack::TAGtrack( string name, long evNum, 
+								int pdgID, int pdgCh, int measCh, float mass, 
+								float length, float tof, 
+								float chi2, int ndof, float pVal, 
+								TVector3* pos, TVector3* mom,
+								TMatrixD* pos_cov, TMatrixD* mom_cov,
+								vector<TAGpoint*>* shoeTrackPointRepo 
+					) 
+	: TAGobject(),
+	fListOfCorrPoints(0x0),
+	// m_shoeTrackPointRepo(0x0),
+	fListOfMeasPoints(0x0)
+{
+
+	SetupClones();
+
+	m_name = name;
+	m_evNum = evNum;
+	m_pdgID = pdgID;
+	fCharge = pdgCh;
+	m_measCh = measCh;
+	fMass = mass;
+	m_length = length;
+	fTof = tof;
+	m_chi2 = chi2;
+	m_ndof = ndof;
+	m_pVal = pVal;
+	// m_stateID = stateID;
+	m_target_mom = *mom;
+	fTgtPos = *pos;
+
+	fMom = m_target_mom.Mag();
+
+
+
+	TClonesArray &pointArray = *fListOfMeasPoints;
+	for(int i=0; i < shoeTrackPointRepo->size(); ++i)	{
+
+		m_shoeTrackPointRepo.push_back( * (shoeTrackPointRepo->at(i) ) );
+
+		new (pointArray[pointArray.GetEntriesFast()]) TAGpoint( *(shoeTrackPointRepo->at(i)) );
+	}
+
+	// m_pos_cov = *pos_cov;
+	// m_mom_cov = *mom_cov;
+}
+
+
+
+void TAGtrack::SetMCInfo( int MCparticle_id, float trackQuality ) {
+
+	m_MCparticle_id = MCparticle_id;
+	m_trackQuality = trackQuality;
+
+}
+
+
+
+
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGtrack::~TAGtrack()
 {
    delete fListOfMeasPoints;
    delete fListOfCorrPoints;
+   // delete m_shoeTrackPointRepo;
 }
 
 //______________________________________________________________________________
@@ -153,6 +218,7 @@ void TAGtrack::Clear(Option_t*)
 {
    fListOfMeasPoints->Delete();
    fListOfCorrPoints->Delete();
+   // m_shoeTrackPointRepo.clear();
 }
 
 //______________________________________________________________________________
@@ -235,6 +301,22 @@ TVector3 TAGtrack::GetPosition( double z ){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //##############################################################################
 
 ClassImp(TAGntuGlbTrack);
@@ -247,6 +329,11 @@ TAGntuGlbTrack::TAGntuGlbTrack()
  : TAGdata(),
    fListOfTracks(new TClonesArray("TAGtrack"))
 {
+	SetupClones();
+	m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman_new";
+    // m_debug = TAGrecoManager::GetPar()->Debug();
+    m_debug = 0;
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -301,6 +388,24 @@ void TAGntuGlbTrack::Clear(Option_t*)
    fListOfTracks->Delete();
 }
 
+
+/* Add a new track to the repo  --- Genfit
+*
+*/
+TAGtrack* TAGntuGlbTrack::NewTrack(string name, long evNum, int pdgID, int pdgCh, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* recoPos_target, TVector3* recoMom_target, TMatrixD* recoPos_target_cov, TMatrixD* recoMom_target_cov, vector<TAGpoint*>* shoeTrackPointRepo)
+{
+	TClonesArray &trackArray = *fListOfTracks;
+	TAGtrack* track = new (trackArray[trackArray.GetEntriesFast()]) TAGtrack(
+													name, evNum,
+													pdgID, pdgCh, measCh, mass, length, tof, chi2, ndof, pVal, 
+													recoPos_target, recoMom_target, recoPos_target_cov, recoMom_target_cov,
+													shoeTrackPointRepo
+												);
+	return track;
+}
+
+
+
 //______________________________________________________________________________
 //
 TAGtrack* TAGntuGlbTrack::NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
@@ -330,6 +435,9 @@ TAGtrack* TAGntuGlbTrack::NewTrack(TAGtrack& trk)
    TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(trk);
    return track;
 }
+
+
+
 
 //______________________________________________________________________________
 //! ostream insertion.

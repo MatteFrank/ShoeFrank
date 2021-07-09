@@ -9,12 +9,14 @@
 
 //----------------------------------------------------------------------------------------------------
 // TAGactKFitter::TAGactKFitter (const char* name) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker") {
-TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepoGenFit, TAGdataDsc* outTrackRepo) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"), fpGlobTrackRepoGenFit(outTrackRepoGenFit), fpGlobTrackRepo(outTrackRepo) {
+// TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepoGenFit, TAGdataDsc* outTrackRepo) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"), fpGlobTrackRepoGenFit(outTrackRepoGenFit), fpGlobTrackRepo(outTrackRepo) {
+TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"), fpGlobTrackRepo(outTrackRepo) {
 
 	// cout << "TAGactKFitter::TAGactKFitter -- begin" << endl;
 
-	AddDataOut(outTrackRepoGenFit, "TAGtrackRepoKalman");
-	AddDataOut(outTrackRepo, "TAGntuTrackRepository");
+	// AddDataOut(outTrackRepoGenFit, "TAGtrackRepoKalman");
+	// AddDataOut(outTrackRepo, "TAGntuTrackRepository");
+	AddDataOut(outTrackRepo, "TAGntuGlbTrack");
 
 	m_trueParticleRep = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 
@@ -49,8 +51,9 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepoGenFit, 
 	m_mapTrack.clear();
 
 	// new one
-	m_outTrackRepoGenFit = (TAGtrackRepoKalman*) fpGlobTrackRepoGenFit->Object();
-	m_outTrackRepo = (TAGntuTrackRepository*) fpGlobTrackRepo->Object();
+	// m_outTrackRepoGenFit = (TAGtrackRepoKalman*) fpGlobTrackRepoGenFit->Object();
+	m_outTrackRepo = (TAGntuGlbTrack*) fpGlobTrackRepo->Object();
+	// m_outTrackRepo = (TAGntuTrackRepository*) fpGlobTrackRepo->Object();
 
 	// checks for the detector to be used for kalman
 	IncludeDetectors();
@@ -180,7 +183,7 @@ Bool_t TAGactKFitter::Action()	{
 
 	// m_mapTrack.clear();
 
-	fpGlobTrackRepoGenFit->SetBit(kValid);
+	// fpGlobTrackRepoGenFit->SetBit(kValid);
 	fpGlobTrackRepo->SetBit(kValid);
 	return true;
 
@@ -731,9 +734,9 @@ void TAGactKFitter::MakePrefit() {
 void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 	if(m_debug > 0)		cout << "RECORD START" << endl;
-	TAGglobalTrack* shoeOutTrack;
+	TAGtrack* shoeOutTrack;
 	TAGtrackKalman* shoeOutTrackGenFit;
-	vector<TAGshoeTrackPoint*> shoeTrackPointRepo;
+	vector<TAGpoint*> shoeTrackPointRepo;
 	
 	// Fill Point and retrieve the true MC particle for each measuerement [ nMeasurement, shoeID of generated particle in the particle array ]
 	vector<vector<int>> mcParticleID_track;
@@ -750,6 +753,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		int iPlane, iClus;
 		vector<int> iPart;
 		GetMeasInfo( trackDetID, trackHitID, &iPlane, &iClus, &iPart );
+		string detName = m_sensorIDmap->GetDetNameFromMeasID( trackHitID );
 
 		// vector with index of the mc truth particles generating the measurement
 		for ( unsigned int ip=0; ip<iPart.size(); ip++)
@@ -757,7 +761,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		mcParticleID_track.push_back(mcID_Meas);
 
 		// create shoe track points vector repository to be passed to the output track object, wth geenral and measurement info
-		TAGshoeTrackPoint* shoeTrackPoint = new TAGshoeTrackPoint( trackDetID, iPlane, iClus, iPart, &measPos );
+		// TAGpoint* shoeTrackPoint = new TAGpoint( trackDetID, iPlane, iClus, iPart, &measPos );
+		TAGpoint* shoeTrackPoint = new TAGpoint( detName, iPlane, iClus, iPart, &measPos );
 
 		// getRecoInfo
 		TVector3 recoPos, recoMom;
@@ -790,6 +795,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	if(measCh < 0 || measCh > 8) {return;}
 
 	int trackMC_id = -1;
+	double trackQuality = -1;
 	if ( TAGrecoManager::GetPar()->IsMC() ) {
 
 		TVector3 mcMom, mcPos;
@@ -816,7 +822,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 		m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, fitTrackName, &h_deltaP, &h_sigmaP );
 
-		double trackQuality = TrackQuality( &mcParticleID_track );
+		trackQuality = TrackQuality( &mcParticleID_track );
 		if(m_debug > 0) cout << "trackQuality::" << trackQuality << "\n";
 
 		
@@ -904,9 +910,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 										&shoeTrackPointRepo
 										);
 	
-	//TO BE IMPLEMENTED!!
+	
 	if ( TAGrecoManager::GetPar()->IsMC() )		
-		shoeOutTrack->SetGeneratorParticleID ( trackMC_id );
+		shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
+
 
 if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE FILL = "  << endl;
 

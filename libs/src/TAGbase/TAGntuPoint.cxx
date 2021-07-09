@@ -67,6 +67,8 @@ TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TV
    SetPosError(posErr);
 }
 
+
+
 //______________________________________________________________________________
 //  build a point
 TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr)
@@ -84,11 +86,121 @@ TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr)
 }
 
 
+
+
+
+
+//______________________________________________________________________________
+//  build a point
+TAGpoint::TAGpoint( string trackDetID, int iPlane, int iClus, vector<int> iPart, TVector3* measPos )
+                  : TAGcluster()
+{
+	fDevName = trackDetID;       // Device name (VT,IT, MSD, TW, CA)
+	m_planeID = iPlane;
+	m_clusterID = iClus;
+	for(int i=0; i < iPart.size(); ++i){
+		m_iPart.push_back( iPart.at(i) );
+	}
+	m_measPos = *measPos;
+}
+
+
+
+
+void TAGpoint::SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* recoPos_cov, TMatrixD* recoMom_cov ) {
+	fPosition = *recoPos;
+	fMomentum = *recoMom;
+	// TMatrixD m(3,3);
+	// m_recoPos_cov = m;
+	// m_recoMom_cov = TMatrixD(3,3);
+
+	// m_recoPos_cov = *recoPos_cov;
+	// m_recoMom_cov = *recoMom_cov;
+	// MatrixToZero(m_recoPos_cov);
+	// MatrixToZero(m_recoMom_cov);
+
+	// for ( int j=0; j<3; j++ ) {
+	// 	for ( int k=0; k<3; k++ ) {
+	// 		m_recoPos_cov(j,k) = (*recoPos_cov)(j,k);
+	// 		m_recoMom_cov(j,k) = (*recoMom_cov)(j,k);
+	// 	}
+	// }
+
+	fPosError = EvalError( *recoPos_cov );
+	fMomError = EvalError( *recoMom_cov );
+
+}
+
+
+
+
+//----------------------------------------------------------------------------------------------------
+TVector3 TAGpoint::EvalError( TMatrixD cov ) {
+
+	TVector3 vec(0,0,0);
+  
+
+	vec = TVector3( cov(0,0)*cov(0,0), cov(1,1)*cov(1,1), cov(2,2)*cov(2,2) ); // * diagFactor;
+
+  
+  return vec;
+}
+
+
+
+
+
+//----------------------------------------------------------------------------------------------------
+//  measure the Kalman uncertainty INCLUDING the cross terms in the covariance matrix. CORRELATION considered!!!
+double TAGpoint::EvalError( TVector3 mom, TMatrixD cov ) {
+
+  // if ( cov.GetNcols() != 3 || cov.GetNrows() != 3 )
+  //   cout << "ERROR :: TAGtrackRepoKalman::EvalError  >>  covariance dimension (should be 6) is wrong " << cov.GetNcols() << " x " << cov.GetNrows() << endl, exit(0);
+
+  array<double,3> partialDer = { mom.x()/sqrt(mom.Mag()), mom.y()/sqrt(mom.Mag()), mom.z()/sqrt(mom.Mag()) };
+
+
+  double err = 0;
+  for ( int j=0; j<cov.GetNrows(); j++ ) {
+    for ( int k=0; k<cov.GetNcols(); k++ ) {
+
+      err += partialDer[j] * partialDer[k] * cov(j,k); // * diagFactor;
+
+    }
+  }
+
+  double dp = sqrt(err);
+
+  return dp;
+}
+
+
+
+
+
+
+
 //______________________________________________________________________________
 // Clear
 void TAGpoint::Clear(Option_t*)
 {
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //##############################################################################
