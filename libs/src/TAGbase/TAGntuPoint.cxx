@@ -2,7 +2,7 @@
 #include "TString.h"
 #include "TClonesArray.h"
 #include "TAGntuPoint.hxx"
-
+#include <array>
 
 ClassImp(TAGpoint) // Description of Single Detector TAGpoint
 
