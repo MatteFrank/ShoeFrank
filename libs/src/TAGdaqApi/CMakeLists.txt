@@ -22,6 +22,7 @@ set( EXTRA_EXTERNAL_LIBRARIES "")
 set( files
    BaseFragment
    DECardEvent
+   DEMSDEvent
    EventReaderAndChecker
    TDCEvent
    WDEvent
@@ -90,3 +91,39 @@ target_link_libraries(readDAQFile ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_L
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS readDAQFile DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(listerDAQFile EventListerMain.cpp)
+#
+target_link_libraries(listerDAQFile ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} ${LIBNAME} )
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS listerDAQFile DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(CheckforWD CheckforWD.cpp)
+#
+target_link_libraries(CheckforWD ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} ${LIBNAME} )
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS CheckforWD DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(CheckAllWD CheckAllWD.cpp)
+#
+target_link_libraries(CheckAllWD ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} ${LIBNAME} )
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS CheckAllWD DESTINATION bin)

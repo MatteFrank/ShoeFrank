@@ -36,7 +36,7 @@ public:
   TGeoVolume* AddModule(const char* basemoduleName = "SSSD", const char *name = "MSD");
    
   //! Build MSD
-  TGeoVolume* BuildMultiStripDetector(const char* basemoduleName = "Module", const char *name = GetBaseName());
+  TGeoVolume* BuildMicroStripDetector(const char* basemoduleName = "Module", const char *name = GetBaseName());
    
   //! Reading from file
   Bool_t      FromFile(const TString& name = "");
@@ -83,8 +83,9 @@ private:
   static const TString fgkDefParaName;
   
 public:
-  static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
-  static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
+  static const Char_t* GetBaseName()                    { return fgkBaseName.Data();    }
+  static const Char_t* GetDefParaName()                 { return fgkDefParaName.Data(); }
+  static Int_t GetSensorId(Int_t boardId, Int_t sideId) { return 2*boardId+sideId;      }
 
   ClassDef(TAMSDparGeo,3)
 };

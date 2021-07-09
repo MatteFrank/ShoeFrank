@@ -88,6 +88,20 @@ void TAGparTools::ReadItem(TString& key, TString& item)
   item = line(pos+1, line.Length()-pos);
   item = Normalize(item.Data());
 }
+
+//_____________________________________________________________________________
+void TAGparTools::ReadItem(Int_t& key, Int_t& item)
+{
+   TString sKey;
+   TString sItem;
+   
+   ReadItem(sKey, sItem);
+   char tmp[128];
+   sscanf(sKey.Data(), "%s %d:", tmp, &key);
+   
+   item = sItem.Atoi();
+}
+
 //_____________________________________________________________________________
 void TAGparTools::ReadItem(Int_t &arg)
 {
@@ -115,7 +129,6 @@ void TAGparTools::ReadItem(TArrayC& array, const Char_t delimiter)
    // From a string of the form "i-j;k;l;m-n" returns an integer array
    // containing all the integers from i to j, then k, l and then from m to n.
    
-   array.Set(3000);
    array.Reset(0);
    
    TString key;

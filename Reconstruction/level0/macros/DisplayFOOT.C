@@ -9,7 +9,8 @@
 #include "TAGeventDisplay.hxx"
 #endif
 
-void DisplayFOOT(TString file = "data/data_built.2211.physics_foot.daq.VTX.1.dat", TString expName = "GSI", Int_t runNumber = 2211)
+void DisplayFOOT(TString file = "data/data_test.00004037.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", TString expName = "GSI2021", Int_t runNumber = 1)
+//void DisplayFOOT(TString file = "data/data_built.2211.physics_foot.daq.VTX.1.dat", TString expName = "GSI", Int_t runNumber = 2211)
 //void DisplayFOOT(TString file = "./run_2211", TString expName = "GSI", Int_t runNumber = 2211)
 {
    //TAGbaseEventDisplay::SetVtxTrackingAlgo('F');

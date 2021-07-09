@@ -41,7 +41,7 @@ Bool_t TACAparCal::FromCalibTempFile(const TString& name)
 
   fMapCal->LoadCryTemperatureCalibrationMap(name_calib_temp_cry.Data());
   
-  Info("FromCalibFile()", "Open file %s for calibration\n", name_calib_temp_cry.Data());
+  Info("FromCalibFile()", "Open file %s for Temperature calibration\n", name_calib_temp_cry.Data());
 
   return kFALSE;    
 }  
@@ -58,7 +58,7 @@ Bool_t TACAparCal::LoadEnergyCalibrationMap(TString name)
    
    fMapCal->LoadEnergyCalibrationMap(name_calib_en_cry.Data());
    
-   Info("FromCalibFile()", "Open file %s for calibration\n", name_calib_en_cry.Data());
+   Info("FromCalibFile()", "Open file %s for Energy calibration\n", name_calib_en_cry.Data());
    
    return kFALSE;
 }

@@ -14,8 +14,6 @@ TAGpoint::TAGpoint()
    fMomentum(0,0,0),
    fMomError(0,0,0),
    fChargeZ(-99),
-   fIsXon(true),
-   fIsYon(true),
    fEnergyLoss(-1.)
 {
 }
@@ -27,8 +25,6 @@ TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr)
   fDevName(""),
   fMomentum(0,0,0),
   fMomError(0,0,0),
-  fIsXon(true),
-  fIsYon(true),
   fEnergyLoss(-1.)
 {
    SetPosition(pos);
@@ -43,8 +39,6 @@ TAGpoint::TAGpoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr,
    fMomentum(mom),
    fMomError(momErr),
    fChargeZ(chargeZ),
-   fIsXon(true),
-   fIsYon(true),
    fEnergyLoss(-1.)
 {
    SetPosition(pos);
@@ -59,8 +53,6 @@ TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TV
   fMomentum(mom),
   fMomError(momErr),
   fChargeZ(chargeZ),
-  fIsXon(true),
-  fIsYon(true),
   fEnergyLoss(-1.)
 {
    SetPosition(pos);
@@ -77,8 +69,6 @@ TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr)
   fMomentum(0,0,0),
   fMomError(0,0,0),
   fChargeZ(-99),
-  fIsXon(true),
-  fIsYon(true),
   fEnergyLoss(-1.)
 {
    SetPosition(pos);

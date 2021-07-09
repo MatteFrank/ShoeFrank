@@ -14,25 +14,27 @@ void InfoEvent::readData(unsigned int ** p1){
   
   ++p;
   ++p;
-  ++p;
-  ++p;
-  time_sec= *p;
-  ++p;
-  time_nsec= *p;
+  eventNumber = *p;
   ++p;
   ++p;
   ++p;
+  time_sec = 0;
+  //++p;
+  time_nsec= 0;
+  // ++p;
+  // ++p;
+  // ++p;
   runType= *p;
-  ++p;
+  // ++p;
   runNumber= *p;
-  ++p;
-  ++p;
-  eventNumber= *p;
-  ++p;
-  // eventNumber= *p;  this  is also an event number!!
-  ++p;
-  ++p;
-  ++p;
+  // ++p;
+  // ++p;
+  // eventNumber= *p;
+  // ++p;
+  // // eventNumber= *p;  this  is also an event number!!
+  // ++p;
+  // ++p;
+  // ++p;
   ++p;
   *p1 = p;
 }

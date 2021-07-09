@@ -22,10 +22,8 @@ private:
    Float_t            fPosErrorF;                // position's errors of the cluster in plane frame
    TVector3           fCurPosition;              // current position of the cluster in plane frame
    TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
-   
    Int_t              fPlaneView;                // plane view = 0 for X and = 1 for Y plane
    Float_t            fEnergyLoss;               // loss of energy
-   Bool_t             fIsValid;                  // validity flag
    
 public:
    TAMSDcluster(); 
@@ -39,11 +37,9 @@ public:
    //! Set position in global tracker frame
    void               SetPositionG(TVector3& pos);
    //! Set view
-   void               SetPlaneView(Int_t v)                  { fPlaneView = v;         }
+   void               SetPlaneView(Int_t v);
    //! Set energy loss
    void               SetEnergyLoss(Float_t chg)             { fEnergyLoss = chg;      }
-   //! Set validy
-   void               SetValid(Bool_t v = true)              { fIsValid = v;           }
    
    //! Get position in local frame
    Float_t            GetPositionF()                   const { return fPositionF;      }
@@ -62,8 +58,6 @@ public:
    Int_t              GetPlaneView()                   const { return fPlaneView;      }
    //! Get energy loss
    Float_t            GetEnergyLoss()                  const { return fEnergyLoss;     }
-   //! Get validity
-   Bool_t             IsValid()                        const { return fIsValid;        }
    //! Get number of pixels in this clusters
    Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntries(); }
    //! Get pixel
@@ -81,7 +75,7 @@ public:
    void               AddStrip(TAMSDhit* strip);
 
 
-   ClassDef(TAMSDcluster,4)                          // Describes TAMSDcluster
+   ClassDef(TAMSDcluster,5)                          // Describes TAMSDcluster
 };
 
 

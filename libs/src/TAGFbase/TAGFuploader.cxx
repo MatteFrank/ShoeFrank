@@ -211,7 +211,7 @@ int TAGFuploader::UploadHitsTW() {
 		TATWpoint* point = ntup->GetPoint(iPoint);
 
 		//HACK to prevent fake points (try)
-		if ( point->GetTime() > 15 ) 	continue;
+		if ( point->GetToF() > 15 ) 	continue;
 		//if (point->GetMcTracksN() == 0) continue;
 		//if ( point->GetChargeZ() < 1 ) continue; // wrong association, maybe neutron from calo
 

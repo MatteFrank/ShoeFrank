@@ -92,7 +92,6 @@ void TAVTactBaseClusterMT::CreateHistogram()
    }
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-	  if (TAVTparConf::IsMapHistOn()) {
 		 fpHisClusMap[i] = new TH2F(Form("%sClusMap%d", fPrefix.Data(), i+1), Form("%s - clusters map for sensor %d", fTitleDev.Data(), i+1),
 									100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchY()*pGeoMap->GetPixelsNx()/2.,
 									100, -pGeoMap->GetPitchY()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchY()*pGeoMap->GetPixelsNx()/2.);
@@ -101,7 +100,6 @@ void TAVTactBaseClusterMT::CreateHistogram()
 		 fpHisClusMap[i]->SetMarkerColor(1);
 		 fpHisClusMap[i]->SetStats(kFALSE);
 		 AddHistogram(fpHisClusMap[i]);
-	  }
    }
    
    SetValidHistogram(kTRUE);
@@ -270,9 +268,7 @@ void TAVTactBaseClusterMT::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* clust
             fpHisPixelTot->Fill(cluster->GetPixelsN());
             fpHisPixel[iSensor]->Fill(cluster->GetPixelsN());
             // printf("sensor %d %d\n", iSensor, cluster->GetPixelsN());
-            if (TAVTparConf::IsMapHistOn()) {
                fpHisClusMap[iSensor]->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
-            }
          }
       }
       cluster->SetValid(true);

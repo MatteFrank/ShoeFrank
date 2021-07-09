@@ -43,6 +43,7 @@ public:
    Bool_t  Close();
    void    ReadItem(TString& item);
    void    ReadItem(TString& key, TString& item);
+   void    ReadItem(Int_t& key, Int_t& item);
    void    ReadItem(Char_t& item);
    void    ReadItem(Int_t &arg);
    void    ReadItem(Float_t &arg);

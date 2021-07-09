@@ -36,7 +36,6 @@
 
 ClassImp(TAGbaseEventDisplay)
 
-Bool_t  TAGbaseEventDisplay::fgTrackFlag       = true;
 TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Std";
 Bool_t  TAGbaseEventDisplay::fgStdAloneFlag    = false;
 Bool_t  TAGbaseEventDisplay::fgBmSelectHit     = false;
@@ -64,7 +63,9 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    // Par instance
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
-  
+   
+   fFlagTrack = TAGrecoManager::GetPar()->IsTracking();
+     
    // default constructon
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM()) {
       fStClusDisplay = new TAEDcluster("Start counter Hit");
@@ -119,7 +120,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      fMsdClusDisplay = new TAEDcluster("Multi Strip Cluster");
+      fMsdClusDisplay = new TAEDcluster("Micro Strip Cluster");
       fMsdClusDisplay->SetMaxEnergy(fMaxEnergy);
       fMsdClusDisplay->SetDefWidth(fQuadDefWidth);
       fMsdClusDisplay->SetDefHeight(fQuadDefHeight);
@@ -184,7 +185,6 @@ TAGbaseEventDisplay::~TAGbaseEventDisplay()
 void TAGbaseEventDisplay::ReadParFiles()
 {
    fReco->ReadParFiles();
-   TAVTparConf::SetHistoMap();
 }
 
 //__________________________________________________________
@@ -194,7 +194,7 @@ void TAGbaseEventDisplay::SetRecoOptions()
    fReco->DisableSaveHits();
    fReco->EnableHisto();
    
-   if (fgTrackFlag) {
+   if (fFlagTrack) {
       fReco->SetVtxTrackingAlgo(fgVtxTrackingAlgo[0]);
       fReco->EnableTracking();
    }
@@ -273,7 +273,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
    // MSD
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       TAMSDparGeo* parGeo = fReco->GetParGeoMsd();
-      TGeoVolume* msdVol = parGeo->BuildMultiStripDetector();
+      TGeoVolume* msdVol = parGeo->BuildMicroStripDetector();
       fVolumeNames[msdVol->GetName()] = kMSD;
 
       TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAMSDparGeo::GetBaseName());
@@ -535,14 +535,14 @@ void TAGbaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
       fInfoView->AddLine( Form("Point# %d at position:\n", idx) );
       fInfoView->AddLine( Form(" (%.1f %.1f %.1f) cm\n", pos.X(), pos.Y(), pos.Z()) );
       fInfoView->AddLine( Form("Charge: %.3e u.a.\n", point->GetEnergyLoss()) );
-      fInfoView->AddLine( Form("Time: %.3g ps \n", point->GetTime()) );
+      fInfoView->AddLine( Form("Time: %.3g ps \n", point->GetToF()) );
       fInfoView->AddLine( Form("Charge Z: %d \n", point->GetChargeZ()) );
 
       if (fConsoleButton->IsOn()) {
          cout <<  Form("Point# %d at position:\n", idx);
          cout <<  Form(" (%.1f %.1f %.1f) cm\n", pos.X(), pos.Y(), pos.Z());
          cout <<  Form("Charge: %.3e u.a.\n", point->GetEnergyLoss());
-         cout <<  Form("Time: %.3g ps \n", point->GetTime());
+         cout <<  Form("Time: %.3g ps \n", point->GetToF());
          cout <<  Form("Charge Z: %d \n", point->GetChargeZ());
       }
       
@@ -739,7 +739,7 @@ void TAGbaseEventDisplay::UpdateElements()
        !TAGrecoManager::GetPar()->IncludeDI())
       UpdateElements("ir");
 
-   if (TAGrecoManager::GetPar()->IncludeTOE() && fgTrackFlag)
+   if (TAGrecoManager::GetPar()->IncludeTOE() && fFlagTrack)
       UpdateGlbTrackElements();
 
 }
@@ -755,13 +755,13 @@ void TAGbaseEventDisplay::UpdateElements(const TString prefix)
       UpdateStcElements();
    else if (prefix == "bm") {
       UpdateLayerElements();
-      if (fgTrackFlag)
+      if (fFlagTrack)
          UpdateTrackElements(prefix);
    } else if (prefix == "ms") {
       UpdateStripElements();
    } else {
       UpdateQuadElements(prefix);
-      if (fgTrackFlag)
+      if (fFlagTrack)
          UpdateTrackElements(prefix);
    }
 }
@@ -800,7 +800,7 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
    TAVTntuTrack*  pNtuTrack = 0x0;
 
    if (prefix == "vt") {
-      if (fgTrackFlag && TAGrecoManager::GetPar()->IncludeTG()) {
+      if (fFlagTrack && TAGrecoManager::GetPar()->IncludeTG()) {
          // vertex
          pNtuTrack = (TAVTntuTrack*)  fReco->GetNtuTrackVtx();
          TAVTvertex*    vtxPD   = 0x0;//NEW

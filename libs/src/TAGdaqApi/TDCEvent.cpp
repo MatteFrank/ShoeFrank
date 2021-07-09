@@ -33,6 +33,10 @@ void TDCEvent::readData( unsigned int **p1 ){
       ++p;
       ( tdcTrailer ).push_back( *p );
     }
+    else if ( buffer1 == 0x11 ){
+      ++p;
+      extendedTimeTag = *p;
+    }
     else {
       printf("EventReader::getTDCData --> unexpected sequence in lookAtTDC evaluation \n");
       exit(0);
@@ -64,6 +68,7 @@ void TDCEvent::printData() const {
   for ( unsigned int i = 0; i < tdcTrailer.size(); ++i ){
     printf ("TDC Trailer %i: %x\n", i, tdcTrailer.at( i ) );
   }
+  printf ("TDC Extended Time Tag (800 ns unit): %x\n", extendedTimeTag);
   printf ("Global Trailer: %x\n",  globalTrailer);
   printf("\n");
 }

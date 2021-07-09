@@ -38,8 +38,9 @@ NumberFiles: 2
 "./config/HE_MC/TAITdetector.cfg": -1
 
 DetectorName: "MSD"
-NumberFiles: 1
+NumberFiles: 2
 "./geomaps/HE_MC/TAMSDdetector.geo": -1
+"./config/HE_MC/TAMSDdetector.cfg": -1
 
 DetectorName: "TW"
 NumberFiles: 4

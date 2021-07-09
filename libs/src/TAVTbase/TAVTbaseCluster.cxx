@@ -15,10 +15,7 @@ ClassImp(TAVTbaseCluster) // Description of a cluster
 TAVTbaseCluster::TAVTbaseCluster()
 :  TAGcluster(),
    fListOfPixels(0x0),
-   fCharge(0.),
-	fFoundXZ(kFALSE),
-	fFoundYZ(kFALSE),
-   fIsValid(kFALSE)
+   fCharge(0.)
 {
 }
 
@@ -26,10 +23,7 @@ TAVTbaseCluster::TAVTbaseCluster()
 //  
 TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
 :  TAGcluster(cluster),
-   fCharge(cluster.fCharge),
-   fFoundXZ(cluster.fFoundXZ),
-   fFoundYZ(cluster.fFoundYZ),
-   fIsValid(cluster.fIsValid)
+   fCharge(cluster.fCharge)
 {
    // TAVTbaseCluster constructor
    if (cluster.fListOfPixels)

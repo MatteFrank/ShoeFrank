@@ -23,7 +23,8 @@
 #include "TADItrackEmProperties.hxx"
 #include "TAIRntuAlignC.hxx"
 
-class TAVTbaseCluster;
+class TAGcampaignManager;
+class TAGcluster;
 class TAVTbaseParGeo;
 class TAVTbaseParConf;
 class TObjArray;
@@ -34,7 +35,7 @@ private:
    
 public:
    //! Instance of class
-   static TAIRalignC* Instance(const TString name = "16O_C2H4_200_1.root",
+   static TAIRalignC* Instance(const TString name = "16O_C2H4_200_1.root", const TString exp = "", Int_t runNUmber = 1,
                                Bool_t flagVtx = false,
                                Bool_t flagIt  = false,
                                Bool_t flagMsd = false,
@@ -43,7 +44,7 @@ public:
    
 private:
    //! ctr
-   TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight);
+   TAIRalignC(const TString name, const TString exp, Int_t runNUmber, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight);
 public:
    void   LoopEvent(Int_t nEvts = 1);
    
@@ -52,8 +53,8 @@ private:
    Bool_t  Align(Bool_t rough);
    Bool_t  FillHistograms();
    Bool_t  DefineWeights();
-   Bool_t  FillClusPosRough(Int_t i, TAVTbaseCluster* cluster);
-   Bool_t  FillClusPosPrecise(Int_t i, TAVTbaseCluster* cluster);
+   Bool_t  FillClusPosRough(Int_t i, TAGcluster* cluster);
+   Bool_t  FillClusPosPrecise(Int_t i, TAGcluster* cluster);
 
    void    FillClusterArray();
    void    InitParameters();
@@ -71,6 +72,9 @@ private:
       
 private:
    TAGroot*             fAGRoot;        // pointer to TAGroot
+   TAGcampaignManager*  fCampManager;
+   const TString        fFileName;      // input file
+   Int_t                fRunNumber;
    TAGgeoTrafo*         fGeoTrafo;
    Bool_t               fFlagVtx;
    Bool_t               fFlagIt;
@@ -86,7 +90,6 @@ private:
    TAGactTreeReader*    fInfile;        // action for reading cluster
    TAIRntuAlignC*       fAlign;         // pointer to align para
    
-   const TString        fFileName;      // input file
    
    TObjArray*           fClusterArray;  // contains all clusters
    

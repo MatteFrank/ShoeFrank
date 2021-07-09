@@ -15,16 +15,7 @@
 #include "TAGdataDsc.hxx"
 
 
-/** TAMSDhit class contains information respect to a pixel in cmos detectors
- index, position, noise, pulse height, size, etc...
- 
-    Revised in 2018 by Matteo Franchini franchinim@bo.infn.it
-    Back to a class compliant with storing in a root file by Ch. Finck
 
-    All the coordinates are in cm and in the detector reference frame, i.e. the center
-    is the center of the detector.
-
-*/
 /*------------------------------------------+---------------------------------*/
 
 class TAMSDhit : public TAGobject {
@@ -32,7 +23,7 @@ class TAMSDhit : public TAGobject {
 protected:
   Int_t     fSensorId;
   Float_t   fPosition;                 // strip position in the detector frame
-  Float_t   fValue;
+  Float_t   fEnergyLoss;
   Int_t     fIndex;
   Int_t     fView;
   Int_t     fStrip;
@@ -42,31 +33,30 @@ protected:
   
 public:
    TAMSDhit();
-    TAMSDhit( Int_t input, Float_t value, Int_t view, Int_t strip);
+   TAMSDhit( Int_t input, Float_t value, Int_t view, Int_t strip);
 
-   virtual ~TAMSDhit() {};
+  virtual ~TAMSDhit() {};
 
-   Bool_t	  IsEqual(const TObject* obj) const;
+  Bool_t	  IsEqual(const TObject* obj) const;
    
-   //! Comapre method
-   Int_t      Compare(const TObject* obj) const;
+  //! Comapre method
+  Int_t      Compare(const TObject* obj) const;
    
-   // Clear
-   void       Clear(Option_t* option = "C");
+  // Clear
+  void       Clear(Option_t* option = "C");
 
-   //! Get input type
-   Int_t      GetSensorId()     const    { return fSensorId; }
-   //! Get value (pulse height)
-   Float_t    GetValue()        const    { return fValue;    }
-   //! Get line number
-   Int_t      GetView()         const    { return fView;     }
-   //! Get column number
-  Int_t      GetStrip()         const    { return fStrip;    }
+  //! Get input type
+  Int_t      GetSensorId()      const    { return fSensorId;   }
+  //! Get energy loss
+  Float_t    GetEnergyLoss()    const    { return fEnergyLoss; }
+  //! Get line number
+  Int_t      GetView()          const    { return fView;       }
+  //! Get column number
+  Int_t      GetStrip()         const    { return fStrip;      }
   //! Get index
-  Int_t      GetIndex()         const    { return fIndex;    }
+  Int_t      GetIndex()         const    { return fIndex;      }
   // Get position
-  Float_t    GetPosition()      const    { return fPosition; }
-  
+  Float_t    GetPosition()      const    { return fPosition;   }
   
   //! Is Sortable
   Bool_t     IsSortable()       const    { return kTRUE;     }
@@ -80,7 +70,7 @@ public:
   //! Set input type
   void     SetSensorId(Int_t input)     { fSensorId = input; }
   //! Set value
-  void     SetValue(Float_t value)      { fValue = value;    }
+  void     SetEnergyLoss(Float_t v)     { fEnergyLoss = v;   }
   //! Set line number
   void     SetView(Int_t view)          { fView = view;      }
   //! Set column number
@@ -93,7 +83,7 @@ public:
   void     AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
   
   
-  ClassDef(TAMSDhit,3)                            // Pixel or Pixel of a Detector Plane
+  ClassDef(TAMSDhit,4)                            // Pixel or Pixel of a Detector Plane
 };
 
 //##############################################################################

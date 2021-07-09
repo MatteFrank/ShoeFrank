@@ -8,15 +8,17 @@
 #include <string>
 #include <map>
 
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
 typedef unsigned int u_int;
   
 class BaseFragment {
 
 public:
   u_int channelID;
-  int   debugLevel;
 
-   BaseFragment() : channelID(0), debugLevel(0){};
+  BaseFragment() : channelID(0){};
   virtual ~BaseFragment();
   
   virtual void readData(unsigned int **p);

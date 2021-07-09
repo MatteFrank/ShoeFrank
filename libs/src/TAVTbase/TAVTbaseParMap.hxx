@@ -7,7 +7,7 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-
+using namespace std;
 #include <vector> 
 
 #include "TAGparTools.hxx"
@@ -21,15 +21,16 @@ public:
    virtual ~TAVTbaseParMap();
 
    //! return plane id
-   Int_t        GetPlaneId(Int_t sensorId);
+   Int_t        GetPlaneId(Int_t sensorId, Int_t dataLink = 0);
    
    //! Read from file
    Bool_t       FromFile(const TString& name = "");
 
 protected:
-   Int_t              fSensorsN;
-   std::vector<int>   fPlaneId;
-   TString            fkDefaultMapName; // default detector mapping file
+   Int_t                    fSensorsN;
+   Int_t                    fDataLinksN;
+   map<pair<int, int>, int> fPlaneId;
+   TString                  fkDefaultMapName; // default detector mapping file
    
    ClassDef(TAVTbaseParMap,1)
   

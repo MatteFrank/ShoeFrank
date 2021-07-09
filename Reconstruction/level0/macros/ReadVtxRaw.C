@@ -31,6 +31,7 @@
 
 #include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuTrackF.hxx"
+#include "TAGrecoManager.hxx"
 
 #endif
 
@@ -83,8 +84,8 @@ void FillVertex(Int_t runNumber)
 
 }
 
-void ReadVtxRaw(TString filename = "data/data_built.2211.physics_foot.daq.VTX.1.dat", Int_t nMaxEvts = 0,
-                TString expName = "GSI", Int_t runNumber = 2211)
+void ReadVtxRaw(TString filename = "data/data_test.00004037.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEvts = 100000,
+                TString expName = "GSI2021", Int_t runNumber = 1)
 {
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();

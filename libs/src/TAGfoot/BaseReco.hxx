@@ -18,6 +18,7 @@
 #include "TABMparMap.hxx"
 #include "TAVTparMap.hxx"
 #include "TAITparMap.hxx"
+#include "TAMSDparMap.hxx"
 #include "TATWparMap.hxx"
 #include "TACAparMap.hxx"
 
@@ -35,6 +36,7 @@
 #include "TADIgeoField.hxx"
 
 #include "TABMparCal.hxx"
+#include "TAMSDparCal.hxx"
 #include "TATWparCal.hxx"
 #include "TACAparCal.hxx"
 
@@ -254,7 +256,6 @@ public:
    TAMCntuHit*          GetNtuMcTw()        const { return (TAMCntuHit*)fpNtuMcTw->Object();         }
    TAMCntuHit*          GetNtuMcCa()        const { return (TAMCntuHit*)fpNtuMcCa->Object();         }
   
-   void                 SetCutter(TATOEbaseCutter* cutter_ph){ fActRecCutter = cutter_ph;}
 
 public:
    //! Disable/Enable ITR tracking
@@ -276,6 +277,7 @@ protected:
    TAGparaDsc*           fpParMapBm;
    TAGparaDsc*           fpParMapVtx;
    TAGparaDsc*           fpParMapIt;
+   TAGparaDsc*           fpParMapMsd;
    TAGparaDsc*           fpParMapTw;
    TAGparaDsc*           fpParMapCa;
 
@@ -290,6 +292,7 @@ protected:
    TAGparaDsc*           fpParGeoCa;
    
    TAGparaDsc*           fpParCalBm;
+   TAGparaDsc*           fpParCalMsd;
    TAGparaDsc*           fpParCalTw;
    TAGparaDsc*           fpParCalCa;
 
@@ -361,7 +364,6 @@ protected:
    TACAactNtuCluster*    fActClusCa;    // action for clusters
 
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
-   TATOEbaseCutter*      fActRecCutter;     //action to determine optimal cuts for TOE given geometry
     
    TAGactNtuGlbTrackS*   fActGlbTrackS;     // action for straight tracks
   

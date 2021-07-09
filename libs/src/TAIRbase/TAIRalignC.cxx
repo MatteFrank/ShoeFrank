@@ -29,6 +29,8 @@
 #include "TAMSDntuCluster.hxx"
 
 #include "TAGgeoTrafo.hxx"
+#include "TAGrecoManager.hxx"
+#include "TAGcampaignManager.hxx"
 
 #include "TAIRalignC.hxx"
 
@@ -45,19 +47,21 @@ ClassImp(TAIRalignC);
 TAIRalignC* TAIRalignC::fgInstance = 0x0;
       Int_t TAIRalignC::fgkPreciseIt = 5;
 //__________________________________________________________
-TAIRalignC* TAIRalignC::Instance(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
+TAIRalignC* TAIRalignC::Instance(const TString name, const TString expName, Int_t runNumber, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TAIRalignC(name, flagVtx, flagIt, flagMsd, weight);
+      fgInstance = new TAIRalignC(name, expName, runNumber, flagVtx, flagIt, flagMsd, weight);
    
    return fgInstance;
 }
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
+TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumber, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
  : TObject(),
    fFileName(name),
+   fCampManager(0x0),
+   fRunNumber(runNumber),
    fFlagVtx(flagVtx),
    fFlagIt(flagIt),
    fFlagMsd(flagMsd),
@@ -85,14 +89,15 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    fResidualY(new TGraphErrors())
 {
    
-   const TString confFileVtx = "./config/TAVTdetector.cfg";
-   const TString confFileMsd = "./config/TAMSDdetector.cfg";
-   
    Int_t devsNtot = 0;
    
    fAGRoot        = new TAGroot();
    fGeoTrafo      = new TAGgeoTrafo();
    fGeoTrafo->FromFile();
+   
+   // load campaign file
+   fCampManager = new TAGcampaignManager(expName);
+   fCampManager->FromFile();
    
    fClusterArray  = new TObjArray();
    fClusterArray->SetOwner(false);
@@ -101,7 +106,7 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    
    fpGeoMapG    = new TAGparaDsc("gGeo", new TAGparGeo());
    TAGparGeo* geomapG   = (TAGparGeo*) fpGeoMapG->Object();
-   TString parFile = "./geomaps/TAGdetector.geo";
+   TString parFile = fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
    geomapG->FromFile(parFile.Data());
    fpDiff         = new TADItrackEmProperties();
 
@@ -109,11 +114,11 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    if (fFlagVtx) {
       fpGeoMapVtx    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
-      TString parFile = "./geomaps/TAVTdetector.geo";
+      TString parFile = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
       geomapVtx->FromFile(parFile.Data());
       
       fpConfigVtx    = new TAGparaDsc("vtConf", new TAVTparConf());
-      parFile = "./config/TAVTdetector.cfg";
+      parFile = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
       TAVTparConf* parConfVtx = (TAVTparConf*) fpConfigVtx->Object();
       parConfVtx->FromFile(parFile.Data());
       
@@ -127,12 +132,12 @@ TAIRalignC::TAIRalignC(const TString name, Bool_t flagVtx, Bool_t flagIt, Bool_t
    if (fFlagMsd) {
       fpGeoMapMsd    = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
       TAMSDparGeo* geomapMsd   = (TAMSDparGeo*) fpGeoMapMsd->Object();
-      TString parFile = "./geomaps/TAMSDdetector.geo";
+      TString parFile = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       geomapMsd->FromFile(parFile.Data());
    
       fpConfigMsd    = new TAGparaDsc("msdConf", new TAMSDparConf());
       TAMSDparConf* parConfMsd = (TAMSDparConf*) fpConfigMsd->Object();
-      parFile = "./config/TAMSDdetector.cfg";
+      parFile = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parConfMsd->FromFile(parFile.Data());
       
       devsNtot += parConfMsd->GetSensorsN();
@@ -514,7 +519,7 @@ Bool_t TAIRalignC::Align(Bool_t rough)
 
       if (nCluster < 1) return false;
       for (Int_t j = 0; j < nCluster; j++){
-         TAVTbaseCluster* cluster = (TAVTbaseCluster*)list->At(j);
+         TAGcluster* cluster = (TAGcluster*)list->At(j);
          if (cluster->IsValid() != true) continue;
          nValidCluster++;
          if (nValidCluster > 1) return false;
@@ -522,7 +527,7 @@ Bool_t TAIRalignC::Align(Bool_t rough)
       }
       if (nValidCluster < 1) return false;
       fHitPlanes ++;
-      TAVTbaseCluster* cluster = (TAVTbaseCluster*)list->At(aCluster);
+      TAGcluster* cluster = (TAGcluster*)list->At(aCluster);
       if (rough) {
          FillClusPosRough(i, cluster);
       } else {
@@ -541,11 +546,18 @@ Bool_t TAIRalignC::Align(Bool_t rough)
 //______________________________________________________________________________
 //
 // Fill rough position of cluster
-Bool_t TAIRalignC::FillClusPosRough(Int_t i, TAVTbaseCluster* cluster)
+Bool_t TAIRalignC::FillClusPosRough(Int_t i, TAGcluster* cluster)
 {
-   fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
-   fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm();
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName())) {
+      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
+      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm();
+   }
    
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 0)
+      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 1)
+      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm();
+
    return true;
 }
 
@@ -553,7 +565,7 @@ Bool_t TAIRalignC::FillClusPosRough(Int_t i, TAVTbaseCluster* cluster)
 //
 // Fill precise position of cluster, rejecting the ones which are too much scattered for
 // a precise alignment
-Bool_t TAIRalignC::FillClusPosPrecise(Int_t i, TAVTbaseCluster* cluster)
+Bool_t TAIRalignC::FillClusPosPrecise(Int_t i, TAGcluster* cluster)
 {
    TAVTbaseParGeo* pGeoMap   =  0x0;
    
@@ -566,25 +578,57 @@ Bool_t TAIRalignC::FillClusPosPrecise(Int_t i, TAVTbaseCluster* cluster)
       exit(0);
    }
 
-   fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
-   fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
-   
-   if (i != 0){
-      fNewSlopeU = (fPosUClusters[i]-fPosUClusters[i-1])/(fZposition[i]-fZposition[i-1]);
-      fNewSlopeV = (fPosVClusters[i]-fPosVClusters[i-1])/(fZposition[i]-fZposition[i-1]);
-   }
-   
-   if ((i != 0) && (i !=1)){
-      if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
-         if ((TMath::Abs(fNewSlopeU - fSlopeU) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu()) ||
-             (TMath::Abs(fNewSlopeV - fSlopeV) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu())) return false;
-      } else {
-         if ((TMath::Abs(fNewSlopeU - fSlopeU) > fSigmaAlfaDist[i]*fCutFactor) || (TMath::Abs(fNewSlopeV - fSlopeV) > fSigmaAlfaDist[i]*fCutFactor)) return false;
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName())) {
+
+      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
+      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
+      
+      if (i != 0){
+         fNewSlopeU = (fPosUClusters[i]-fPosUClusters[i-1])/(fZposition[i]-fZposition[i-1]);
+         fNewSlopeV = (fPosVClusters[i]-fPosVClusters[i-1])/(fZposition[i]-fZposition[i-1]);
       }
+      
+      if ((i != 0) && (i !=1)){
+         if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
+            if ((TMath::Abs(fNewSlopeU - fSlopeU) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu()) ||
+                (TMath::Abs(fNewSlopeV - fSlopeV) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu())) return false;
+         } else {
+            if ((TMath::Abs(fNewSlopeU - fSlopeU) > fSigmaAlfaDist[i]*fCutFactor) || (TMath::Abs(fNewSlopeV - fSlopeV) > fSigmaAlfaDist[i]*fCutFactor)) return false;
+         }
+      }
+      fSlopeU = fNewSlopeU;
+      fSlopeV = fNewSlopeV;
    }
    
-   fSlopeU = fNewSlopeU;
-   fSlopeV = fNewSlopeV;
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 0) {
+      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
+      if (i != 0)
+         fNewSlopeU = (fPosUClusters[i]-fPosUClusters[i-1])/(fZposition[i]-fZposition[i-1]);
+      if ((i != 0) && (i !=1)){
+         if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
+            if ((TMath::Abs(fNewSlopeU - fSlopeU) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu())) return false;
+         } else {
+            if (TMath::Abs(fNewSlopeU - fSlopeU) > fSigmaAlfaDist[i]*fCutFactor) return false;
+         }
+      }
+      fSlopeU = fNewSlopeU;
+   }
+   
+   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 1) {
+      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
+
+      if (i != 0)
+         fNewSlopeV = (fPosVClusters[i]-fPosVClusters[i-1])/(fZposition[i]-fZposition[i-1]);
+
+      if ((i != 0) && (i !=1)){
+         if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
+            if (TMath::Abs(fNewSlopeV - fSlopeV) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu()) return false;
+         } else {
+            if (TMath::Abs(fNewSlopeV - fSlopeV) > fSigmaAlfaDist[i]*fCutFactor) return false;
+         }
+      }
+      fSlopeV = fNewSlopeV;
+   }
    
    return true;
 }
@@ -614,7 +658,7 @@ Bool_t TAIRalignC::FillHistograms()
       
       if (nCluster < 1) return false;
       for (Int_t j = 0; j < nCluster; j++){
-         TAVTbaseCluster* cluster = (TAVTbaseCluster*)list->At(j);
+         TAGcluster* cluster = (TAGcluster*)list->At(j);
          if (cluster->IsValid() != true) continue;
          nValidCluster++;
          if (nValidCluster > 1) return false;
@@ -622,7 +666,7 @@ Bool_t TAIRalignC::FillHistograms()
       }
       if (nValidCluster < 1) return false;
       fHitPlanes ++;
-      TAVTbaseCluster* cluster = (TAVTbaseCluster*)list->At(aCluster[i]);
+      TAGcluster* cluster = (TAGcluster*)list->At(aCluster[i]);
       
       fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
       fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
@@ -632,7 +676,6 @@ Bool_t TAIRalignC::FillHistograms()
       cluster->SetPosition(pos);
       fErrUClusters[i] = cluster->GetPosError()(0)*TAGgeoTrafo::CmToMm();
       fErrVClusters[i] = cluster->GetPosError()(1)*TAGgeoTrafo::CmToMm();
-      cluster->ComputeSize();
    }
    
    if (fHitPlanes < fSecArray.GetSize()) return false;

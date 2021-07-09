@@ -82,7 +82,9 @@ install(TARGETS DecodeGlb DESTINATION bin)
 #
 add_executable(DecodeGlbToe DecodeGlbToe.cc)
 #
+#target_compile_options( DecodeGlbToe PUBLIC -g -I/usr/local/Cellar/gperftools/2.8/include/ )
 target_link_libraries(DecodeGlbToe ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+#target_link_options(DecodeGlbToe PUBLIC  -L/usr/local/Cellar/gperftools/2.8/lib/ -lprofiler)
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX

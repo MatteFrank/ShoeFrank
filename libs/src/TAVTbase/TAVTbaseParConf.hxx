@@ -13,6 +13,7 @@
 #include "TObject.h"
 #include "TString.h"
 #include "TVector3.h"
+#include "TArrayC.h"
 
 #include "TAGparTools.hxx"
 
@@ -29,6 +30,7 @@ protected:
 
    struct SensorParameter_t : public  TObject {
 	  Int_t     SensorIdx;              // sensor index
+     Int_t     Type;                   // sensor type
 	  Int_t     Status;                 // Status flag: Primary Reference = 1., Secondary Reference = 2. DeviceUunderTest = 3. Out = -1.
 	  Int_t     MinNofPixelsInCluster;  // minimum pixels in a cluster
 	  Int_t     MaxNofPixelsInCluster;  // maximum pixels in a cluster
@@ -43,9 +45,8 @@ protected:
 	  Float_t    BmTrackChi2Limit;       // chi2 limit on the BM track
    };
    
-   
-private:
-   static Bool_t  fgIsMapHist;   // enable  map histo
+   SensorParameter_t fSensorParameter[32];
+   AnalysisParameter_t fAnalysisParameter;
 
 public:
 
@@ -61,25 +62,14 @@ public:
    
    Int_t           GetStatus(Int_t idx) const;
    Int_t           GetStatusMinor(Int_t idx) const ;
-
-
-      
-   SensorParameter_t fSensorParameter[32];
-   SensorParameter_t& GetSensorPar(Int_t idx)  { return fSensorParameter[idx];    }
    
-   AnalysisParameter_t fAnalysisParameter;
+   SensorParameter_t& GetSensorPar(Int_t idx)  { return fSensorParameter[idx];    }
    AnalysisParameter_t& GetAnalysisPar()       { return fAnalysisParameter;       }
    
    Int_t         GetSensorsN()          const  { return fSensorsN;                }
    const Char_t* GetDefaultConfName()   const  { return fkDefaultConfName.Data(); }
 
-public:
-   
-   static Bool_t IsMapHistOn()                   { return fgIsMapHist; }
-   static void   SetHistoMap(Bool_t flag = true) { fgIsMapHist = flag; }
-   
-
-   ClassDef(TAVTbaseParConf,2)
+   ClassDef(TAVTbaseParConf,3)
 };
 
 #endif

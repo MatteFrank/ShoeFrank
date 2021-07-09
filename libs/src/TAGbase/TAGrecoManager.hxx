@@ -102,6 +102,12 @@ public:
 
     void EnableRegionMc()              {  m_enableRegionMc = true;     }
     void DisableRegionMc()             {  m_enableRegionMc = false;    }
+   
+    void EnableTree()                  {  m_enableTree = true;         }
+    void DisableTree()                 {  m_enableTree = false;        }
+   
+    void EnableHisto()                 {  m_enableHisto = true;        }
+    void DisableHisto()                {  m_enableHisto = false;       }
 
     void IncludeDI(Bool_t t)           {  m_includeDI = t;             }
     void IncludeST(Bool_t t)           {  m_includeST = t;             }

@@ -33,8 +33,8 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActNtuHitVtx(0x0),
    fActNtuHitIt(0x0),
    fActNtuHitCa(0x0),
-//   fActNtuHitMsd(0x0),
-//   fpDatRawMsd(0x0),
+   fActNtuHitMsd(0x0),
+   fpDatRawMsd(0x0),
    fActEvtReader(0x0)
 {
 }
@@ -116,14 +116,17 @@ void LocalReco::CreateRawAction()
          fActNtuHitIt->CreateHistogram();
    }
 
-//   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-//      fpDatRawMsd   = new TAGdataDsc("msdDat", new TAVTdatRaw());
-//      fpNtuHitMsd   = new TAGdataDsc("msdRaw", new TAMSDntuHit());
-//      fActDatRawMsd = new TAMSDactDaqRaw("msdAcDat", fpDatRawMsd, fpDaqEvent, fpParGeoMsd);
-//      fActNtuHitMsd = new TAVTactNtuHit("msdActNtu", fpNtuHitMsd, fpDatRawMsd, fpParGeoMsd);
-//      if (fFlagHisto)
-//         fActNtuHitMsd->CreateHistogram();
-//   }
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      fpDatRawMsd   = new TAGdataDsc("msdDat", new TAMSDntuRaw());
+      fActDatRawMsd = new TAMSDactNtuRaw("msdActRaw", fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd);
+      if (fFlagHisto)
+         fActDatRawMsd->CreateHistogram();
+
+      fpNtuHitMsd   = new TAGdataDsc("msdRaw", new TAMSDntuHit());
+      fActNtuHitMsd = new TAMSDactNtuHit("msdActNtu", fpDatRawMsd, fpNtuHitMsd, fpParGeoMsd, fpParCalMsd);
+      if (fFlagHisto)
+         fActNtuHitMsd->CreateHistogram();
+   }
 
    if(TAGrecoManager::GetPar()->IncludeTW()) {
       fpNtuHitTw   = new TAGdataDsc("twRaw", new TATWntuHit());
@@ -204,18 +207,18 @@ void LocalReco::SetRawHistogramDir()
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TATWparGeo::GetBaseName());
       if(TAGrecoManager::GetPar()->CalibTW()) {
-	fActCalibTw->SetHistogramDir(subfolder);
+         fActCalibTw->SetHistogramDir(subfolder);
       } else {
-	fActNtuHitTw->SetHistogramDir(subfolder);
+         fActNtuHitTw->SetHistogramDir(subfolder);
       }
    }
 
    // MSD
-//   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-//      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAMSDparGeo::GetBaseName());
-//      fActDatRawMsd->SetHistogramDir(subfolder);
-//      fActNtuHitMsd->SetHistogramDir(subfolder);
-//   }
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAMSDparGeo::GetBaseName());
+      fActDatRawMsd->SetHistogramDir(subfolder);
+      fActNtuHitMsd->SetHistogramDir(subfolder);
+   }
 
 
    // CA
@@ -260,9 +263,9 @@ void LocalReco::AddRawRequiredItem()
       fTAGroot->AddRequiredItem("vtActNtu");
    }
 
-//   if (TAGrecoManager::GetPar()->IncludeIT()) {
-//      fTAGroot->AddRequiredItem("itActNtu");
-//   }
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      fTAGroot->AddRequiredItem("itActNtu");
+   }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
      if(TAGrecoManager::GetPar()->CalibTW()) {
@@ -272,11 +275,10 @@ void LocalReco::AddRawRequiredItem()
      }
    }
 
-
-//   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-//      fTAGroot->AddRequiredItem("msdActDat");
-//      fTAGroot->AddRequiredItem("msdActNtu");
-//   }
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      fTAGroot->AddRequiredItem("msdActRaw");
+      fTAGroot->AddRequiredItem("msdActNtu");
+   }
 
    if (TAGrecoManager::GetPar()->IncludeCA()) {
      fTAGroot->AddRequiredItem("caActNtu");

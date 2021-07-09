@@ -159,7 +159,7 @@ TAMCntuHit* TAMCflukaParser::GetMsdHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhi
 
 //------------------------------------------+-----------------------------------
 //! TOF hits
-TAMCntuHit* TAMCflukaParser::GetTofHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
+TAMCntuHit* TAMCflukaParser::GetTwHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   
   TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();

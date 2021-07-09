@@ -16,6 +16,7 @@
 #include "TrgEvent.hh"
 #include "TDCEvent.hh"
 #include "DECardEvent.hh"
+#include "DEMSDEvent.hh"
 #include "WDEvent.hh"
 
 #include "TAGdaqEvent.hxx"
@@ -28,7 +29,7 @@ public:
    explicit        TAGactDaqReader(const char* name=0, TAGdataDsc* p_datdaq=0);
    virtual         ~TAGactDaqReader();
       
-   virtual Int_t   Open(const TString& name, Option_t* option=0, const TString treeName="");
+   virtual Int_t   Open(const TString& name, Option_t* option=0, const TString treeName="", Bool_t dscBranch = true);
    virtual void    Close();
    
    virtual Bool_t  IsOpen() const;

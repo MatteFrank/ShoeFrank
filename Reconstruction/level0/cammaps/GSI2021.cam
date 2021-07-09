@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "GSI2021"
-RunNumber: 200-410
+RunNumber: 200; 400;
 NumberDevices: 8
 
 DetectorName: "DI"
@@ -8,44 +8,52 @@ NumberFiles: 1
 "./geomaps/GSI2021/TADIdetector.geo": -1
 
 DetectorName: "FOOT"
-NumberFiles: 2
+NumberFiles: 1
 "./geomaps/GSI2021/FOOT.geo": -1
-"./geomaps/GSI2021/FOOT.reg": -1
 
 DetectorName: "ST"
-NumberFiles: 2
+NumberFiles: 4
 "./geomaps/GSI2021/TASTdetector.geo": -1
+"./config/GSI2021/TASTdetector.cfg": -1
+"./config/GSI2021/WDChannelMap.map": -1
+"./calib/GSI2021/WDTimeCalibration/tcalib.dat": 200; 400;
 
 DetectorName: "BM"
-NumberFiles: 3
+NumberFiles: 4
 "./geomaps/GSI2021/TABMdetector.geo": -1
 "./config/GSI2021/TABMdetector.cfg": -1
-"./calib/GSI2021/TABM_T0_Calibration.cal": -1
+"./config/GSI2021/TABMdetector.map": -1
+"./calib/GSI2021/TABM_T0_Calibration.cal": 200; 400;
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/GSI2021/TAGdetector.geo": 200-210;400-410
+"./geomaps/GSI2021/TAGdetector.geo": 200; 400;
 
 DetectorName: "VT"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/GSI2021/TAVTdetector.geo": -1
 "./config/GSI2021/TAVTdetector.cfg": -1
+"./config/GSI2021/TAVTdetector.map": -1
 
 DetectorName: "MSD"
-NumberFiles: 1
+NumberFiles: 5
 "./geomaps/GSI2021/TAMSDdetector.geo": -1
+"./config/GSI2021/TAMSDdetector.cfg": -1
+"./config/GSI2021/TAMSDdetector.map": -1
+"./calib/GSI2021/TAMSD_Pedestal.cal": -1
+"./calib/GSI2021/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
 NumberFiles: 5
 "./geomaps/GSI2021/TATWdetector.geo": -1
 "./config/GSI2021/TATW_BBparameters.cfg": -1
-"./config/GSI2021/TATWbarsMapStatus.map": -1
+"./config/GSI2021/TATWChannelMapXML.map": -1
 "./calib/GSI2021/TATW_Energy_Calibration.cal": -1
-"./calib/GSI2021/TATW_Tof_Calibration.cal": -1
+"./calib/GSI2021/TATW_Tof_Calibration.cal": 200; 400;
 
 DetectorName: "CA"
-NumberFiles: 3
+NumberFiles: 4
 "./geomaps/GSI2021/TACAdetector.geo": -1
+"./config/GSI2021/TACAdetector.map": -1
 "./calib/GSI2021/TACA_Energy_Calibration.cal": -1
-"./config/GSI2021/TACAcrystalMapStatus.map": -1
-
+"./calib/GSI2021/TACA_Temperature_Calibration_perCry.cal": -1

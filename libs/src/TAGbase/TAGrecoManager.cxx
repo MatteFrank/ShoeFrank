@@ -8,7 +8,7 @@
 #include "TAGrecoManager.hxx"
 
 map<TString, TString> TAGrecoManager::m_dectFullName = {{"ST", "Start Counter"}, {"BM", "Beam Monitor"}, {"DI", "Dipole"}, {"TG", "Target"},
-                                                   {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "Multi-Strip Detector"}, {"TW", "ToF Wall"},
+                                                   {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "MicroStrip Detector"}, {"TW", "ToF Wall"},
                                                    {"CA", "Calorimeter"}};
 
 const TString TAGrecoManager::m_defParName = "FootGlobal.par";

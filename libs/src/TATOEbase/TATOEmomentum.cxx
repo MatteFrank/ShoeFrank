@@ -69,7 +69,7 @@ TVector3 GetMomentumAtZ( TAGtrack* track_ph, double z ) {
                                          );
 
     auto stepper = make_stepper<data_rkf45>( std::move(ode) );
-    stepper.specify_tolerance(1e-8);
+//    stepper.specify_tolerance(1e-8);
 
     auto * starting_point_h = track_ph->GetCorrPoint( 0 );
     
@@ -82,21 +82,26 @@ TVector3 GetMomentumAtZ( TAGtrack* track_ph, double z ) {
             }
                                              };
     
+    
     while( os.evaluation_point + step < z ){
+//        std::cout << "starting_point: " << os.evaluation_point << '\n';
         auto step_result = stepper.step( std::move(os), step );
         if( step_result.second != 0 ){
             auto new_step_length = stepper.optimize_step_length(step, step_result.second);
-            step = ( new_step_length > 1e-1 ) ? 1e-1 : new_step_length ;
+            step = ( new_step_length > 1 ) ?
+                            1 :
+                            (new_step_length < 1e-3) ? 1e-3 : new_step_length;
         }
         os = std::move(step_result.first);
+//        std::cout << "end_point: " << os.evaluation_point << '\n';
     }
     step = z - os.evaluation_point;
     
     os = stepper.force_step( std::move(os), step );
     
     return TVector3{
-        os.state(details::order_tag<0>{})(0,0),
-        os.state(details::order_tag<0>{})(1,0),
-        os.state(details::order_tag<0>{})(2,0)
+        os.state(details::order_tag<0>{})(0,0) / 1000,
+        os.state(details::order_tag<0>{})(1,0) / 1000,
+        os.state(details::order_tag<0>{})(2,0) / 1000
     };
 }

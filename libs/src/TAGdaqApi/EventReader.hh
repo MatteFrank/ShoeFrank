@@ -9,6 +9,8 @@
 #include <vector>
 #include <map>
 
+#include <stdint.h>
+
 typedef unsigned int u_int;
 
 #include "DAQFileHeader.hh"

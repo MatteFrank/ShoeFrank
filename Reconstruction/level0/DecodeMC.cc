@@ -41,18 +41,17 @@ int main (int argc, char *argv[])  {
       }
    }
    
-   if (out.IsNull()) {
-      Int_t pos = in.Last('.');
-      out = in(0, pos);
-      out.Append("_Out.root");
-   }
-   
    TApplication::CreateApplication();
    
    TAGrecoManager::Instance(exp);
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
 
+   if (out.IsNull()) {
+      TAGrecoManager::GetPar()->DisableTree();
+      TAGrecoManager::GetPar()->DisableHisto();
+   }
+   
    Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
    Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
    Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
@@ -61,13 +60,13 @@ int main (int argc, char *argv[])  {
    Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
    Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
    
-   
-   if(!zmc && zrec) {
+   if(!zmc && zrec && !out.IsNull()) {
      Int_t pos_out = out.Last('.');
      out = out(0, pos_out);
      out.Append("_noTWPileUp_Zrec.root");
    }
-   if(zmc) {
+   
+   if(zmc && !out.IsNull()) {
      Int_t pos_out = out.Last('.');
      out = out(0, pos_out);
      out.Append("_noTWPileUp_Ztrue.root");   

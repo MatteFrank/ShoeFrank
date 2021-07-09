@@ -8,7 +8,7 @@ RemoteEvent::~RemoteEvent(){
 
 void RemoteEvent::readData(unsigned int **p1){
 
-  uint32_t * p = *p1;
+  unsigned int * p = *p1;
   channelID= *p;
   ++p;
   time_sec= *p;
@@ -21,19 +21,16 @@ void RemoteEvent::readData(unsigned int **p1){
   ++p;
   evtSize= *p;
   ++p;
- 
   if( evtSize!=0){
     for (unsigned int i=0; i<evtSize-1; i++){
-      //      uint32_t WORD= *p;
-      //      std::cout<<"\n The previous word is:"<< std::hex << *(p-1) << std::endl;
-      //      std::cout<<"\n The current word is:"<< std::hex << WORD << std::endl;
       values.push_back(*p);
       ++p;
     }
+    //int WORD= *p;
+    //std::cout<<"\n The previous word is:"<< std::hex << *(p-1) << std::endl;
+    //std::cout<<"\n The current word is:"<< std::hex << WORD << std::endl;
   } else {
-     if (debugLevel)
-        std::cout<<"Size of RemoteEvent " << std::hex << channelID << " is zero!"<<std::endl;
-    ++p; //to check
+    std::cout<<"Size of RemoteEvent " << std::hex << channelID << " is zero!"<<std::endl;
   }
   *p1 = p;
 }

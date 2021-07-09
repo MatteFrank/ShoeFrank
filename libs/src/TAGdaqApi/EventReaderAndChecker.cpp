@@ -201,9 +201,19 @@ bool EventReaderAndChecker::check(){
 }
 
 
+// return the BCO difference wrt the previous event
+u_int  EventReaderAndChecker::getBCOdiff() const{
 
+  static u_int lastBCO=0;
 
+  TrgEvent*  trgEv = getTriggerEvent(); // Trigger Event
+  u_int BCO = trgEv->BCOofTrigger;
 
-
-
-
+  if( lastBCO==0){
+    lastBCO=0;
+    return 0;
+  }
+  u_int diff = BCO-lastBCO;
+  lastBCO = BCO;
+  return diff;
+}

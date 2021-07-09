@@ -164,7 +164,7 @@ public:
         
         auto hypothesis_c = form_hypothesis();
         
-//        logger_m << "hypothesis: " << hypothesis_c.size() << '\n';
+//        std::cout << "hypothesis: " << hypothesis_c.size() << '\n';
         
         for(auto & hypothesis : hypothesis_c){
             particle_m = hypothesis;
@@ -180,7 +180,7 @@ public:
         
         checker_m.end_event();
 //        logger_m.freeze_everything();
-        //logger_m.output();
+//        logger_m.output();
         
         
         
@@ -224,7 +224,7 @@ private:
         list_m.template set_cuts<detector_properties<details::tof_tag>>( cut_p );
     }
     
-    reconstruction_result retrieve_result( ) const override {
+    reconstruction_result retrieve_results( ) override {
         return checker_m.retrieve_results( );
     }
     
@@ -241,7 +241,7 @@ private:
         std::vector<particle_properties> hypothesis_c;
         hypothesis_c.reserve( candidate_c.size()*2 );
 
-        
+//        std::cout << "candidates: " << candidate_c.size() << '\n';
         for( const auto& candidate : candidate_c ) {
             auto charge = candidate.data->GetChargeZ();
             if(charge == 0) {continue;}
@@ -1024,7 +1024,7 @@ private:
 //            double additional_time = (target_position_m - st_position_m)/beam_speed;
             double additional_time = (cluster_c.front().evaluation_point - st_position_m)/beam_speed;
         
-            double speed = total_step_length/(static_cast<TATWpoint const *>(cluster_c.back().data)->GetTime() - additional_time);
+            double speed = total_step_length/(static_cast<TATWpoint const *>(cluster_c.back().data)->GetToF() - additional_time);
             double beta = speed/30;
             double gamma = 1./sqrt(1 - pow(beta, 2));
             double momentum = gamma * 938 * track.particle.mass * beta;
@@ -1316,9 +1316,11 @@ private:
 //            double additional_time = (target_position_m - st_position_m)/beam_speed;
             double additional_time = (cluster_c.front().evaluation_point - st_position_m)/beam_speed;
 
-            double tof = (static_cast<TATWpoint const *>(cluster_c.back().data)->GetTime() - additional_time);
+            double tof = (static_cast<TATWpoint const *>(cluster_c.back().data)->GetToF() - additional_time);
             double speed = arc_length/tof;
             double beta = speed/30;
+            
+            if( beta < 1){
             double gamma = 1./sqrt(1 - pow(beta, 2));
             double momentum = gamma * 938 * track.particle.mass * beta;
             
@@ -1326,6 +1328,10 @@ private:
        //     std::cout << "momentum: " << momentum << '\n';
 
             track.momentum = momentum;
+            }
+            else {
+                track.momentum = track.particle.momentum;
+            }
             track.tof = tof;
         }
 

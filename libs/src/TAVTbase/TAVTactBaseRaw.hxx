@@ -32,7 +32,7 @@ public:
    Int_t GetSensorsN() const { return fNSensors; }
    
    //! Base creation of histogram
-   void CreateHistogram();
+   virtual void CreateHistogram();
    
 public:
    static  UInt_t  GetKeyHeader(Int_t idx)                  { return fgkKeyHeader[idx];   }
@@ -52,13 +52,14 @@ protected:
    
    vector<UInt_t>    fData;              // data array to fill
    UInt_t*           fDataEvent;         // data array to fill the whol eevent
+   UInt_t            fDataLink;          // data link
 
    Int_t             fEventNumber;        // number of the event
-   Int_t             fPrevEventNumber[8];    // previous number of the event
+   Int_t             fPrevEventNumber[32];    // previous number of the event
    Int_t             fTriggerNumber;      // number of the trigger
-   Int_t             fPrevTriggerNumber[8];  // previous number of the trigger
+   Int_t             fPrevTriggerNumber[32];  // previous number of the trigger
    Int_t             fTimeStamp;          // time stamp per frame
-   Int_t             fPrevTimeStamp[8];      // time stamp per frame
+   Int_t             fPrevTimeStamp[32];      // time stamp per frame
    Int_t             fFrameCount;         // number of frame
    Int_t             fTriggerNumberFrame; // number of the trigger
    Int_t             fTimeStampFrame;     // time stamp per frame
@@ -76,18 +77,21 @@ protected:
    
    Int_t             fEventsOverflow; 
    Int_t             fNStatesInLine; 
-      
-   TH2F*             fpHisPixelMap[8];  // pixel map per sensor
-   TH1F*             fpHisRateMap[8];   // pixel map per sensor
-   TH1F*             fpHisRateMapQ[8];  // pixel map per sensor quadrant
-   TH1F*             fpHisEvtLength[8]; // event data length for each sensor (all 3 frames)
-   TH1F*             fpHisEvtNumber[8]; //
-   TH1F*             fpHisTriggerEvt[8]; //
-   TH1F*             fpHisTimeStampEvt[8]; //
-   TH1F*             fpHisTriggerFrame[8];
-   TH1F*             fpHisTimeStampFrame[8];
-   TH1F*             fpHisFrameCnt[8];
-   TH1F*             fpHisFrameErrors[8];
+   
+   TString           fPrefix;            // prefix of histogram
+   TString           fTitleDev;          // device name for histogram title
+   
+   TH2F*             fpHisPixelMap[32];  // pixel map per sensor
+   TH1F*             fpHisRateMap[32];   // pixel map per sensor
+   TH1F*             fpHisRateMapQ[32];  // pixel map per sensor quadrant
+   TH1F*             fpHisEvtLength[32]; // event data length for each sensor (all 3 frames)
+   TH1F*             fpHisEvtNumber[32]; //
+   TH1F*             fpHisTriggerEvt[32]; //
+   TH1F*             fpHisTimeStampEvt[32]; //
+   TH1F*             fpHisTriggerFrame[32];
+   TH1F*             fpHisTimeStampFrame[32];
+   TH1F*             fpHisFrameCnt[32];
+   TH1F*             fpHisFrameErrors[32];
    
 protected:
    static const UInt_t  fgkKeyHeader[];
@@ -100,22 +104,25 @@ protected:
 protected:
    
    // Reset frame counters
-   void  ResetFrames();
+   virtual void  ResetFrames();
    
    //! Add pixel to list
-   void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
+   virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
    
    //! Get Sensor number
-   Int_t  GetSensor(UInt_t key);
+   virtual  Int_t  GetSensor(UInt_t key);
 
    //! decode frame
-   Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame);
+   virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame);
 
    //! Fill histogram frame
-   void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data);
+   virtual void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data);
    
    //! Fill histogram frame
-   void FillHistoEvt(Int_t iSensor);
+   virtual void FillHistoEvt(Int_t iSensor);
+   
+   //! Fill histogram pixel
+   virtual void FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn);
    
    //! Fill DAQ event
    virtual void FillDaqEvent() { return; }

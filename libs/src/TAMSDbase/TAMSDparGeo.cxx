@@ -254,7 +254,7 @@ TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *verte
 }
 
 //_____________________________________________________________________________
-TGeoVolume* TAMSDparGeo::BuildMultiStripDetector(const char* basemoduleName, const char *msdName)
+TGeoVolume* TAMSDparGeo::BuildMicroStripDetector(const char* basemoduleName, const char *msdName)
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
       new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());

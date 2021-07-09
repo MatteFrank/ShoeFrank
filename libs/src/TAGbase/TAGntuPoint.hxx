@@ -33,8 +33,6 @@ protected:
    TVector3    fMomentum;      // momentum in FOOT framework
    TVector3    fMomError;      // momentum error in FOOT framework
    Int_t       fChargeZ;       // Charge Z
-   Bool_t      fIsXon;         // always true except for strip detector
-   Bool_t      fIsYon;         // always true except for strip detector
    Double32_t  fEnergyLoss;    // Energy loss in sensor
 
    //genfit
@@ -70,8 +68,6 @@ public:
    TVector3         GetMomentum()    const  { return fMomentum;   }		 //(also Genfit)
    TVector3         GetMomError()    const  { return fMomError;   }		 //(also Genfit)
    Int_t            GetChargeZ()     const  { return fChargeZ;    }
-   Bool_t           IsXon()          const  { return fIsXon;      }
-   Bool_t           IsYon()          const  { return fIsYon;      }
    Double_t         GetEnergyLoss()  const  { return fEnergyLoss; }
 
    // genfit
@@ -86,12 +82,10 @@ public:
    void        SetMomentum(TVector3 mom)    { fMomentum = mom;    }
    void        SetMomError(TVector3 mom)    { fMomError = mom;    }
    void        SetChargeZ(Int_t z)          { fChargeZ = z;       }
-   void        SetXon(Bool_t b)             { fIsXon = b;         }
-   void        SetYon(Bool_t b)             { fIsYon = b;         }
    void        SetEnergyLoss(Double_t e)    { fEnergyLoss = e;    }
    void        Clear(Option_t* opt);
   
-   ClassDef(TAGpoint,8)
+   ClassDef(TAGpoint,9)
 };
 
 //##############################################################################

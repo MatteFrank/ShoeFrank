@@ -37,7 +37,7 @@ class TCFObaseEventAction : public G4UserEventAction
     virtual void   EndOfEventAction(const G4Event*);
     void   ConstructCollection();
 
-    TAMCntuPart* GetTrackMc()           { return fMcTrack;       }
+    TAMCntuPart* GetTrackMc()          { return fMcEvent;       }
     void SetFillTree(Bool_t fill)      { fFillTree = fill;      }
    
     void SetInelasticOnly(G4bool frag) { fInelasticOnly = frag; }
@@ -56,7 +56,7 @@ class TCFObaseEventAction : public G4UserEventAction
     Int_t                    fCaCollId;            // Id of Calo collection
     TString                  fDetName;
     TSignalHandler*          fEventInterruptHandler;
-    TAMCntuPart*              fMcTrack;
+    TAMCntuPart*             fMcEvent;
     Bool_t                   fFillTree;
     TAGgeoTrafo*             fpGeoTrafo;           // trafo pointer
     G4bool                   fInelasticOnly;

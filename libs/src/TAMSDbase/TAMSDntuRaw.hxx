@@ -15,42 +15,42 @@
 class TAMSDrawHit : public TObject {
    
 protected:
-   Int_t fInput;
-   Int_t fValue;
-   Int_t fIndex;
-   Int_t fView;
-   Int_t fStrip;
+   Int_t      fSensorId;
+   UInt_t     fCharge;
+   Int_t      fIndex;
+   Int_t      fView;
+   Int_t      fStrip;
          
 public:
    TAMSDrawHit();
-   TAMSDrawHit( Int_t input, Int_t value, Int_t view, Int_t strip );
+   TAMSDrawHit( Int_t id, Int_t view, Int_t strip, UInt_t charge);
    virtual ~TAMSDrawHit() {;}
 
    //! Comapre method
    Int_t      Compare(const TObject* obj) const;
    //! Get input type
-   Int_t      GetInput()        const    { return fInput;  }
+   Int_t      GetSensorId()     const    { return fSensorId; }
    //! Get value (pulse height)
-   Int_t      GetValue()        const    { return fValue;  }
+   UInt_t      GetCharge()      const    { return fCharge;   }
    //! Get line number
-   Int_t      GetView()         const    { return fView;   }
+   Int_t      GetView()         const    { return fView;     }
    //! Get column number
-   Int_t      GetStrip()        const    { return fStrip;  }
+   Int_t      GetStrip()        const    { return fStrip;    }
    //! Get index
-   Int_t      GetIndex()        const    { return fIndex;  }
+   Int_t      GetIndex()        const    { return fIndex;    }
    //! Is Sortable
-   Bool_t     IsSortable()      const    { return kTRUE;   }
+   Bool_t     IsSortable()      const    { return kTRUE;     }
 
    //! Set input type
-   void     SetInput(Int_t input)        { fInput = input; }
+   void     SetSensorId(Int_t id)        { fSensorId = id;   }
    //! Set value
-   void     SetValue(Int_t value)        { fValue = value; }
+   void     SetCharge(UInt_t value)      { fCharge = value;  }
    //! Set line number
-   void     SetView(Int_t view)          { fView = view;   }
+   void     SetView(Int_t view)          { fView = view;     }
    //! Set column number
-   void     SetStrip(Int_t strip)        { fStrip = strip; }
+   void     SetStrip(Int_t strip)        { fStrip = strip;   }
    //! Set index
-   void     SetIndex(Int_t index)        { fIndex = index; }
+   void     SetIndex(Int_t index)        { fIndex = index;   }
    
    ClassDef(TAMSDrawHit,1)
 };
@@ -64,7 +64,7 @@ class TAMSDparGeo;
 class TAMSDntuRaw : public TAGdata {
    
 protected:
-   TObjArray*   fListOfPixels;
+   TObjArray*   fListOfStrips;
    TAMSDparGeo* fpGeoMap;
    
 private:
@@ -75,26 +75,26 @@ public:
    ~TAMSDntuRaw();
    
    //! Get list of pixels
-   TClonesArray*     GetPixels(Int_t iSensor)  const;
+   TClonesArray*      GetStrips(Int_t iSensor)  const;
  
    //! Get number of pixels
-   Int_t             GetPixelsN(Int_t iSensor)  const;      
+   Int_t              GetStripsN(Int_t iSensor)  const;
    
    //! Get pixel
-   TAMSDrawHit*       GetPixel(Int_t iSensor, Int_t iPixel);        
-   const TAMSDrawHit* GetPixel(Int_t iSensor, Int_t iPixel)   const;
+   TAMSDrawHit*       GetStrip(Int_t iSensor, Int_t iStrip);
+   const TAMSDrawHit* GetStrip(Int_t iSensor, Int_t iStrip)   const;
    
    //! Add pixel to list
-   void              AddPixel(Int_t sensor, Int_t value, Int_t aLine, Int_t aColumn);
+   void               AddStrip(Int_t sensor, Int_t view, Int_t aStrip, UInt_t value);
   
    //! Set up clones
-   void             SetupClones();
+   void               SetupClones();
 
    //! Clear pixel list
-   virtual void     Clear(Option_t* opt="");
+   virtual void       Clear(Option_t* opt="");
    
    //! To stream
-   virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
+   virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
 
 public:   
    static const Char_t* GetBranchName()   { return fgkBranchName.Data(); }

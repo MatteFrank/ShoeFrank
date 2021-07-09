@@ -42,6 +42,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParMapBm(0x0),
    fpParMapVtx(0x0),
    fpParMapIt(0x0),
+   fpParMapMsd(0x0),
    fpParMapTw(0x0),
    fpParGeoSt(0x0),
    fpParGeoG(0x0),
@@ -94,7 +95,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fActClusMsd(0x0),
    fActPointTw(0x0),
    fActGlbTrack(0x0),
-   fActRecCutter(nullptr),
    fActGlbTrackS(0x0),
    fFlagOut(true),
    fFlagTree(false),
@@ -270,11 +270,6 @@ void BaseReco::LoopEvent(Int_t nEvents)
   else if (nEvents > 100)    frequency = 100;
   else if (nEvents > 10)     frequency = 10;
 
-    if(fActRecCutter){
-        static_cast<TAGactTreeReader*>(fActEvtReader)->Reset();
-        fTAGroot->SetEventNumber(0);
-        fActRecCutter->NextIteration();
-    }
     
   for (Int_t ientry = 0; ientry < nEvents; ientry++) {
     
@@ -297,12 +292,6 @@ void BaseReco::LoopEvent(Int_t nEvents)
     }
       
   }
-    
-    
-    if(fActRecCutter){
-        fActRecCutter->Compute();
-        fActRecCutter->Output();
-    }
 }
 
 //__________________________________________________________
@@ -558,7 +547,7 @@ void BaseReco::ReadParFiles()
          fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
          TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
          parFileName = fCampManager->GetCurMapFile(TAITparGeo::GetBaseName(), fRunNumber);
-         // parMap->FromFile(parFileName.Data());
+         parMap->FromFile(parFileName.Data());
       }
    }
 
@@ -571,8 +560,24 @@ void BaseReco::ReadParFiles()
       
       fpParConfMsd = new TAGparaDsc("msdConf", new TAMSDparConf());
       TAMSDparConf* parConf = (TAMSDparConf*)fpParConfMsd->Object();
-//      parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
-//      parConf->FromFile(parFileName.Data());
+      parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
+      
+      if(!fFlagMC){
+         fpParMapMsd = new TAGparaDsc("msdMap", new TAMSDparMap());
+         TAMSDparMap*  parMapMsd = (TAMSDparMap*)fpParMapMsd->Object();
+         parFileName = fCampManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+         parMapMsd->FromFile(parFileName.Data());
+         
+         Bool_t energyFile = true;
+         fpParCalMsd = new TAGparaDsc("msdCal", new TAMSDparCal());
+         TAMSDparCal* parCalMsd = (TAMSDparCal*)fpParCalMsd->Object();
+         parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber, energyFile);
+         parCalMsd->LoadEnergyCalibrationMap(parFileName.Data());
+         
+         parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+         parCalMsd->LoadPedestalMap(parFileName.Data());
+      }
    }
 
    // initialise par files for Tof Wall
@@ -667,8 +672,6 @@ void BaseReco::ReadParFiles()
      }
      
    }
-
-   TAVTparConf::SetHistoMap();
 }
 
 //__________________________________________________________
@@ -842,14 +845,8 @@ void BaseReco::CreateRecActionCa()
 //__________________________________________________________
 void BaseReco::CreateRecActionGlb()
 {
-    using namespace details;
     if( fFlagRecCutter ){
         SetL0TreeBranches();
-//        fActRecCutter = new TATOEcutter<
-////            procedure< configuration<1, vertex_tag, tof_tag>, range<-1,+5> >
-////            procedure< configuration<1, vertex_tag, it_tag, tof_tag>, range<-1,+1>>
-//        procedure< configuration<3, vertex_tag, it_tag, msd_tag, tof_tag>, range<-1,+10>>
-//                                        >{"toeActCutter", fField};
         return;
     }
   if(fFlagTrack) {
@@ -1062,6 +1059,7 @@ void BaseReco::AddRecRequiredItem()
    if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
        if(!fFlagRecCutter){gTAGroot->AddRequiredItem("glbActTrack");}
+       else{ gTAGroot->AddRequiredItem("evtReader"); }
      }
      return;
    }
