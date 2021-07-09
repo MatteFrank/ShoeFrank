@@ -180,7 +180,7 @@ private:
     virtual void set_cuts( details::msd_tag, std::array<double, 3> const& ) = 0;
     virtual void set_cuts( details::tof_tag, double) = 0;
     
-    virtual reconstruction_result retrieve_results( ) const = 0;
+    virtual reconstruction_result retrieve_results( ) = 0;
 };
 
 

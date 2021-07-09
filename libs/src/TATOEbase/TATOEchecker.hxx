@@ -288,13 +288,13 @@ struct TATOEchecker{
     struct computation_module{
         
         struct bundle {
-            TH1D* reconstructible_h{nullptr};
-            TH1D* reconstructed_h{nullptr};
-            TH1D* efficiency_h{nullptr};
-            TH2D* mass_identification_h{nullptr};
+            std::unique_ptr<TH1D> reconstructible_h{nullptr};
+            std::unique_ptr<TH1D> reconstructed_h{nullptr};
+            std::unique_ptr<TH1D> efficiency_h{nullptr};
+            std::unique_ptr<TH2D> mass_identification_h{nullptr};
             //TH2D* charge_identification_h{nullptr};
-            std::map<int, TH1D*> momentum_resolution_c;
-            TH1D* momentum_difference_h{nullptr};
+            std::map<int, std::unique_ptr<TH1D>> momentum_resolution_c;
+            std::unique_ptr<TH1D> momentum_difference_h{nullptr};
         } histogram_bundle;
         
         int charge;
@@ -309,35 +309,40 @@ struct TATOEchecker{
         
         computation_module(int charge_p) : charge{charge_p}
         {
-            histogram_bundle.reconstructible_h = new TH1D{ Form("reconstructible_charge%d", charge),
-                                                                      ";Momentum(GeV/c);Count", 100, 0, 1.3 };
-            histogram_bundle.efficiency_h = new TH1D{ Form("efficiency_charge%d", charge),
-                ";Momentum(GeV/c);Count", 100, 0, 1.3 };
-            histogram_bundle.reconstructed_h = new TH1D{ Form("reconstructed_charge%d", charge),
-                                                                    ";Momentum(GeV/c);Count", 100, 0, 1.3 };
-            histogram_bundle.mass_identification_h = new TH2D{ Form("mass_identification_charge%d", charge),
-                ";A_{reconstructed};A_{real};Count", 20, 0, 20, 20, 0, 20 };
+            histogram_bundle.reconstructible_h.reset( new TH1D{ Form("reconstructible_charge%d", charge),
+                                                                      ";Momentum(GeV/c);Count", 100, 0, 1.3 } );
+            histogram_bundle.reconstructible_h->SetDirectory(nullptr);
+            histogram_bundle.efficiency_h.reset( new TH1D{ Form("efficiency_charge%d", charge),
+                ";Momentum(GeV/c);Count", 100, 0, 1.3 } );
+            histogram_bundle.efficiency_h->SetDirectory(nullptr);
+            histogram_bundle.reconstructed_h.reset( new TH1D{ Form("reconstructed_charge%d", charge),
+                                                                    ";Momentum(GeV/c);Count", 100, 0, 1.3 } );
+            histogram_bundle.reconstructed_h->SetDirectory(nullptr);
+            histogram_bundle.mass_identification_h.reset( new TH2D{ Form("mass_identification_charge%d", charge),
+                ";A_{reconstructed};A_{real};Count", 20, 0, 20, 20, 0, 20 } );
+            histogram_bundle.mass_identification_h->SetDirectory(nullptr);
 //            histogram_bundle.charge_identification_h = new TH2D{ Form("charge_identification_charge%d", charge),
 //                ";Z_{reconstructed};Z_{real};Count", 20, 0, 20, 20, 0, 20 };
-            histogram_bundle.momentum_difference_h = new TH1D{ Form("momentum_difference_charge%d", charge),
-                Form(";p_{mc} - p_{rec}(GeV/c);Count"), 500, -5, 5 };
+            histogram_bundle.momentum_difference_h.reset( new TH1D{ Form("momentum_difference_charge%d", charge),
+                Form(";p_{mc} - p_{rec}(GeV/c);Count"), 500, -5, 5 } );
+            histogram_bundle.momentum_difference_h->SetDirectory(nullptr);
         }
                                                                                
         
-        TH1D const * get_reconstructed_histogram() const { return histogram_bundle.reconstructed_h; }
-        TH1D * get_reconstructed_histogram() { return histogram_bundle.reconstructed_h; }
+        TH1D const * get_reconstructed_histogram() const { return histogram_bundle.reconstructed_h.get(); }
+        TH1D * get_reconstructed_histogram() { return histogram_bundle.reconstructed_h.get(); }
         
-        TH1D const * get_reconstructible_histogram() const { return histogram_bundle.reconstructible_h; }
-        TH1D * get_reconstructible_histogram() { return histogram_bundle.reconstructible_h; }
+        TH1D const * get_reconstructible_histogram() const { return histogram_bundle.reconstructible_h.get(); }
+        TH1D * get_reconstructible_histogram() { return histogram_bundle.reconstructible_h.get(); }
         
-        TH1D const * get_efficiency_histogram() const { return histogram_bundle.efficiency_h; }
-        TH1D * get_efficiency_histogram() { return histogram_bundle.efficiency_h; }
+        TH1D const * get_efficiency_histogram() const { return histogram_bundle.efficiency_h.get(); }
+        TH1D * get_efficiency_histogram() { return histogram_bundle.efficiency_h.get(); }
         
-        TH1D const * get_momentum_difference_histogram() const { return histogram_bundle.momentum_difference_h; }
-        TH1D * get_momentum_difference_histogram() { return histogram_bundle.momentum_difference_h; }
+        TH1D const * get_momentum_difference_histogram() const { return histogram_bundle.momentum_difference_h.get(); }
+        TH1D * get_momentum_difference_histogram() { return histogram_bundle.momentum_difference_h.get(); }
         
-        TH2D const * get_mass_identification_histogram() const { return histogram_bundle.mass_identification_h; }
-        TH2D * get_mass_identification_histogram() { return histogram_bundle.mass_identification_h; }
+        TH2D const * get_mass_identification_histogram() const { return histogram_bundle.mass_identification_h.get(); }
+        TH2D * get_mass_identification_histogram() { return histogram_bundle.mass_identification_h.get(); }
 //
 //        TH2D const * get_charge_identification_histogram() const { return histogram_bundle.charge_identification_h; }
 //        TH2D * get_charge_identification_histogram() { return histogram_bundle.charge_identification_h; }
@@ -349,7 +354,7 @@ struct TATOEchecker{
         //    std::cout << "key: " << key << ']\n';
             auto histogram_i = histogram_bundle.momentum_resolution_c.find(key);
             return (histogram_bundle.momentum_resolution_c.find(key) != histogram_bundle.momentum_resolution_c.end() ) ?
-                    *histogram_i : nullptr;
+                    histogram_i->get() : nullptr;
         }
         TH1D * get_momentum_histogram( double momentum_p ) {
             auto key = static_cast<int>( momentum_p/0.2 );
@@ -358,11 +363,12 @@ struct TATOEchecker{
          //   std::cout << "key: " << key << '\n';
             auto histogram_i = histogram_bundle.momentum_resolution_c.find(key);
             if(histogram_bundle.momentum_resolution_c.find(key) != histogram_bundle.momentum_resolution_c.end() ) {
-                return histogram_i->second;
+                return histogram_i->second.get();
             }
-            histogram_bundle.momentum_resolution_c[key] = new TH1D{ Form("momentum_resolution_%d_charge%d", key, charge),
-                Form("momentum_resolution_%.1fMeV/c_charge%d;p(GeV/c);p_{rec}(GeV/c)", (key+0.5)*0.2, charge), 300, 0, 15 };
-            return histogram_bundle.momentum_resolution_c[key];
+            histogram_bundle.momentum_resolution_c[key].reset( new TH1D{ Form("momentum_resolution_%d_charge%d", key, charge),
+                Form("momentum_resolution_%.1fMeV/c_charge%d;p(GeV/c);p_{rec}(GeV/c)", (key+0.5)*0.2, charge), 300, 0, 15 } );
+            histogram_bundle.momentum_resolution_c[key]->SetDirectory(nullptr);
+            return histogram_bundle.momentum_resolution_c[key].get();
             
         }
         
@@ -882,7 +888,7 @@ public:
     
 
 public:
-    reconstruction_result retrieve_results() const {
+    reconstruction_result retrieve_results() {
         reconstruction_result result;
         
         for( auto const& module : computation_module_mc ){
@@ -896,6 +902,8 @@ public:
             result_module.clone_number = module.clone_number;
             result_module.fake_number = module.fake_number;
         }
+        
+        computation_module_mc.clear();
         
         return result;
     }
@@ -1084,7 +1092,7 @@ struct checker{
         virtual void compute_results( details::all_mixed_tag ) const = 0;
         virtual void compute_results( details::all_separated_tag ) = 0;
         virtual void register_histograms( details::all_separated_tag ) = 0;
-        virtual reconstruction_result retrieve_results() const = 0;
+        virtual reconstruction_result retrieve_results() = 0;
     };
 
     template<class T>
@@ -1100,7 +1108,7 @@ struct checker{
         void compute_results( details::all_mixed_tag )const override{ return t_m.compute_results( details::all_mixed_tag{} );}
         void compute_results( details::all_separated_tag ) override{ t_m.compute_results( details::all_separated_tag{} ); }
         void register_histograms( details::all_separated_tag ) override{ t_m.register_histograms( details::all_separated_tag{}); }
-        reconstruction_result retrieve_results() const override{ return t_m.retrieve_results(); }
+        reconstruction_result retrieve_results() override{ return t_m.retrieve_results(); }
         T t_m;
     };
 
@@ -1122,7 +1130,7 @@ struct checker{
     void compute_results( details::all_mixed_tag ) const { return erased_m->compute_results( details::all_mixed_tag{} );}
     void compute_results( details::all_separated_tag ) { erased_m->compute_results( details::all_separated_tag{} ); }
     void register_histograms( details::all_separated_tag ) { erased_m->register_histograms( details::all_separated_tag{}); }
-    reconstruction_result retrieve_results() const { return erased_m->retrieve_results(); }
+    reconstruction_result retrieve_results() { return erased_m->retrieve_results(); }
 
     private:
     std::unique_ptr<eraser> erased_m;
