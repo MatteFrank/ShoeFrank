@@ -93,11 +93,11 @@ install(TARGETS DecodeGlbToe DESTINATION bin)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
-#add_executable(OptimizeToeCuts OptimizeToeCuts.cc)
+add_executable(OptimizeToeCuts OptimizeToeCuts.cc)
 #
-#target_link_libraries(OptimizeToeCuts ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+target_link_libraries(OptimizeToeCuts ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-#install(TARGETS OptimizeToeCuts DESTINATION bin)
+install(TARGETS OptimizeToeCuts DESTINATION bin)
