@@ -762,7 +762,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 		// create shoe track points vector repository to be passed to the output track object, wth geenral and measurement info
 		// TAGpoint* shoeTrackPoint = new TAGpoint( trackDetID, iPlane, iClus, iPart, &measPos );
-		TAGpoint* shoeTrackPoint = new TAGpoint( detName, iPlane, iClus, iPart, &measPos );
+		TAGpoint* shoeTrackPoint = new TAGpoint( detName, iPlane, iClus, &iPart, &measPos );
 
 		// getRecoInfo
 		TVector3 recoPos, recoMom;
@@ -847,13 +847,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE MC = "<< endl;
 		
-	// int firstState = 0;
-	// int lastState = -1;
-	// double length = track->getTrackLen( track->getCardinalRep(), firstState, finalState );
+	double length = track->getTrackLen( track->getCardinalRep(), 0, -1 );
 	// double length 		= track->getTrackLen( track->getCardinalRep() );
-	double length 		= 1;
-	double tof 			= 0;
-	// double tof 			= track->getTOF( track->getCardinalRep() ) ;
+	double tof	= track->getTOF( track->getCardinalRep(), 0, -1 ) ;
 	
 	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE length = " << length  << endl;
 	double chi2 		= m_refFitter->getRedChiSqu(track, track->getCardinalRep());

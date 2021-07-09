@@ -82,14 +82,14 @@ TAGpoint::TAGpoint(TString name, TVector3 pos, TVector3 posErr)
 
 //______________________________________________________________________________
 //  build a point
-TAGpoint::TAGpoint( string trackDetID, int iPlane, int iClus, vector<int> iPart, TVector3* measPos )
+TAGpoint::TAGpoint( string trackDetID, int iPlane, int iClus, vector<int>* iPart, TVector3* measPos )
                   : TAGcluster()
 {
 	fDevName = trackDetID;       // Device name (VT,IT, MSD, TW, CA)
 	m_planeID = iPlane;
 	m_clusterID = iClus;
-	for(int i=0; i < iPart.size(); ++i){
-		m_iPart.push_back( iPart.at(i) );
+	for(int i=0; i < iPart->size(); ++i){
+		m_iPart.push_back( iPart->at(i) );
 	}
 	m_measPos = *measPos;
 }
