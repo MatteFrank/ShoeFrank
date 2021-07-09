@@ -459,7 +459,7 @@ void TAGactKFitter::CreateGeometry()  {
 
 	// MSD
 	if (TAGrecoManager::GetPar()->IncludeMSD()) {
-		TGeoVolume* msdVol = m_MSD_geo->BuildMultiStripDetector();
+		TGeoVolume* msdVol = m_MSD_geo->BuildMicroStripDetector();
 		msdVol->SetLineColor(kViolet);
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAMSDparGeo::GetBaseName());
 		m_TopVolume->AddNode(msdVol, 7, transfo);
