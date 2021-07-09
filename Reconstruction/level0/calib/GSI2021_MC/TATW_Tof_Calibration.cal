@@ -1,4 +1,4 @@
-#position barId_LayerX barId_LayerY deltaT deltaT2 layer(SHOE)
+#position barId_LayerY barId_LayerX deltaT deltaT2 layer(SHOE)
 0 0 20 8.29157 0.07 1
 1 1 20 8.29157 0.07 1
 2 2 20 8.29157 0.07 1
