@@ -142,20 +142,20 @@ private:
     
     
     template< std::size_t Index,
-    std::size_t ... Indices,
-    typename std::enable_if_t< Index < cut_count_up_to<detector_tuple_t, 1>(  ) , std::nullptr_t> = nullptr >
+              std::size_t ... Indices,
+              typename std::enable_if_t< Index < cut_count_up_to<detector_tuple_t, 1>(  ) , std::nullptr_t> = nullptr >
     constexpr double* get_underlying_cut(std::index_sequence<Indices...>){
         return get_underlying_cut_impl<0>( Index );
     }
     template< std::size_t Index,
-    std::size_t ... Indices,
-    typename std::enable_if_t< Index >= cut_count_up_to<detector_tuple_t, C::detector_count -1>() , std::nullptr_t> = nullptr >
+              std::size_t ... Indices,
+              typename std::enable_if_t< Index >= cut_count_up_to<detector_tuple_t, C::detector_count -1>() , std::nullptr_t> = nullptr >
     constexpr double* get_underlying_cut( std::index_sequence<Indices...>){
         return get_underlying_cut_impl<C::detector_count -1>( Index - cut_count_up_to<detector_tuple_t, C::detector_count -1>()  );
     }
     template< std::size_t Index,
-    std::size_t ... Indices,
-    typename std::enable_if_t< (Index >= cut_count_up_to<detector_tuple_t, 1>() &&
+              std::size_t ... Indices,
+              typename std::enable_if_t< (Index >= cut_count_up_to<detector_tuple_t, 1>() &&
                                 Index <  cut_count_up_to<detector_tuple_t, C::detector_count-1>() ) , std::nullptr_t> = nullptr>
     constexpr double* get_underlying_cut( std::index_sequence<Indices...>){
         double* result_h{nullptr};
@@ -166,9 +166,9 @@ private:
     }
     
     template<std::size_t Index, typename std::enable_if_t< std::is_same<typename std::tuple_element<Index, tuple_t>::type, double >::value, std::nullptr_t > = nullptr >
-    constexpr double* get_underlying_cut_impl( std::size_t ){return &std::get<Index>(cut_mc); }
+    constexpr double* get_underlying_cut_impl( std::size_t ){ return &std::get<Index>(cut_mc); }
     template<std::size_t Index, typename std::enable_if_t< !std::is_same<typename std::tuple_element<Index, tuple_t>::type, double >::value, std::nullptr_t > = nullptr >
-    constexpr double* get_underlying_cut_impl( std::size_t index_p ){return &std::get<Index>(cut_mc)[index_p]; }
+    constexpr double* get_underlying_cut_impl( std::size_t index_p ){ return &std::get<Index>(cut_mc)[index_p]; }
     
 private:
     template<class A, std::size_t ... Indices>
@@ -185,8 +185,26 @@ private:
         int expander[] = {0, (std::get<Indices>(result) = std::tuple_element<Indices, typename C::detector_tuple_t>::type::default_cut_value, 0)...};
         return result;
     }
+    
+public:
+    void output() const { output_impl(std::make_index_sequence<C::detector_count>{}); }
+private:
+    template<std::size_t ... Indices>
+    void output_impl( std::index_sequence<Indices...> ) const {
+        std::cout << "\noutputing_current_cut_values: ";
+        int expander[] = {0,  (output_element(std::get<Indices>(cut_mc)), 0)...};
+        std::cout << '\n';
+    }
+    template<class T, typename std::enable_if_t< std::is_same<T, double>::value, std::nullptr_t> = nullptr>
+    void output_element(T t_p) const { std::cout << t_p<< " "; }
+    template<class T, typename std::enable_if_t< !std::is_same<T, double>::value, std::nullptr_t> = nullptr>
+    void output_element(T t_pc) const {
+        for( auto const& t : t_pc) { std::cout << t<< " " ; }
+    }
 private:
     tuple_t cut_mc{ retrieve_default( std::make_index_sequence<C::detector_count>{} ) };
+//    tuple_t cut_mc;
+//    tuple_t saved_cut_mc;
     tuple_t saved_cut_mc{ cut_mc };
 };
 
@@ -346,6 +364,10 @@ struct baseline_procedure{
         }
         derived().baseline_m.efficiency = reconstructed_number * 1./reconstructible_number;
         derived().baseline_m.purity = correct_cluster_number * 1./recovered_cluster_number;
+        
+        std::cout << "new_baseline_efficiency: " << derived().baseline_m.efficiency << '\n';
+        std::cout << "new_baseline_purity: " << derived().baseline_m.purity << '\n';
+        std::cout << "reconstructed_number: " << reconstructed_number << '\n';
     }
     
 private:
@@ -406,8 +428,10 @@ struct global_scan_procedure{
         if( winner.score > 0 ){
             derived().selected_cut_m = winner.cut_index;
             derived().modifier_m = winner.modifier;
-            derived().selected_m.efficiency = winner.efficiency;
-            derived().selected_m.purity = winner.purity;
+            
+            derived().selected_m.efficiency = derived().baseline_m.efficiency; //from global to rough, baseline is zero-value
+            derived().selected_m.purity = derived().baseline_m.purity;
+            
             selection_c.clear();
             return true;
         }
@@ -484,8 +508,10 @@ struct local_scan_procedure{
         
         auto const& winner = selection_c.front();
         *derived().cut_mc.get_cut_handle( derived().selected_cut_m  ) += winner.offset;
+        
         derived().selected_m.efficiency = winner.efficiency;
         derived().selected_m.purity = winner.purity;
+        
         selection_c.clear();
     }
     
@@ -560,9 +586,7 @@ struct TATOEcutter : TATOEbaseCutter,
         constexpr empty_result operator*(){
             if( !erased_mh->can_increment() ) { erased_mh->switch_procedure(*this); }
             erased_mh->increment_and_setup();
-            std::cout << "current_cuts: " << std::endl;
-            for(auto i{0}; i < C::cut_count; ++i){ std::cout << *c_mh->get_cut_holder().get_cut_handle(i) << " "; }
-            std::cout << '\n';
+            c_mh->get_cut_holder().output();
             c_mh->apply_cuts();
             return {};
         }
@@ -570,6 +594,7 @@ struct TATOEcutter : TATOEbaseCutter,
         constexpr iterator& operator++(){
             c_mh->retrieve_results();
             c_mh->call();
+            std::cout << "remaining_cuts: ";
             for(auto const& remaining_cut : c_mh->remaining_cut_mc){ std::cout << remaining_cut << " "; }
             std::cout << "\nselected_cut: " << c_mh->selected_cut_m << "\n";
             return *this;
@@ -609,6 +634,8 @@ struct TATOEcutter : TATOEbaseCutter,
     struct global_scan_iterator {
         global_scan_iterator(TATOEcutter* c_ph) : c_mh{c_ph} { c_mh->selected_cut_m = *iterator_m; }
         bool can_increment() {
+            std::cout << "negative_modifier: " << std::boolalpha << (c_mh->modifier_m < 0) << '\n';
+            std::cout << "no_remaining_cuts: " << std::boolalpha << ((++iterator_m)-- != c_mh->remaining_cut_mc.end()) << '\n';
             return c_mh->modifier_m < 0 || (++iterator_m)-- != c_mh->remaining_cut_mc.end() ;
         }
         void increment_and_setup() {
@@ -700,7 +727,7 @@ struct TATOEcutter : TATOEbaseCutter,
     TATOEcutter(char const* name_p) :
         TATOEbaseCutter(name_p),
         action_mh{ details::new_action<C>() },
-        call_mhf{&baseline_procedure<TATOEcutter>::call} {}
+    call_mhf{&baseline_procedure<TATOEcutter>::call} { cut_mc.output(); }
     
     Bool_t Action() override {
         action_mh->Action();
@@ -728,7 +755,7 @@ private:
     
     void (TATOEcutter::* call_mhf)();
     
-    details::cut_holder<C> cut_mc;
+    details::cut_holder<C> cut_mc{};
     std::vector<std::size_t> remaining_cut_mc{ generate_remaining_cut() };
     std::size_t selected_cut_m;
     int modifier_m{-3};
