@@ -842,7 +842,6 @@ void BaseReco::CreateRecActionCa()
 //__________________________________________________________
 void BaseReco::CreateRecActionGlb()
 {
-    using namespace details;
     if( fFlagRecCutter ){
         SetL0TreeBranches();
         return;
@@ -1040,6 +1039,7 @@ void BaseReco::AddRecRequiredItem()
    if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
        if(!fFlagRecCutter){gTAGroot->AddRequiredItem("glbActTrack");}
+       else{ gTAGroot->AddRequiredItem("evtReader"); }
      }
      return;
    }

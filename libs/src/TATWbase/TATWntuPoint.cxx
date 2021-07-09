@@ -22,6 +22,7 @@ TATWpoint::TATWpoint()
    fDe1(-99.),
    fDe2(-99.),
    fToF(-99.),
+   fMainEloss(-99),
    fTof1(-99.),
    fTof2(-99.),
    fMatchCalIdx(-1),
@@ -44,7 +45,8 @@ TATWpoint::TATWpoint( Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Doub
    fId(-99),
    fChargeZ(-99),
    fChargeZProba(-99.),
-   fToF(-99)
+   fToF(-99),
+   fMainEloss(-99)
 {
    
    fPosition.SetXYZ(x, y, 0),
@@ -61,24 +63,24 @@ TATWpoint::TATWpoint( Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Doub
    fTof1   = fRowHit->GetToF();
    fTof2   = fColumnHit->GetToF();
 
-   // assign to the point the matched MC track id if no Pile-Up, else for pile-up events assign -1
-   if(fLayer==(Int_t)LayerX) {
+   // // assign to the point the matched MC track id if no Pile-Up, else for pile-up events assign -1
+   // if(fLayer==(Int_t)LayerX) {
        
-     if(fRowHit->GetMcTracksN()==1)
-       fId     = fRowHit->GetMcTrackIdx(0);
-     else {
-       fId = -1; // pile-up
-       // cout<<"NmctracksX::"<<fRowHit->GetMcTracksN()<<endl;
-     }
+   //   if(fRowHit->GetMcTracksN()==1)
+   //     fId     = fRowHit->GetMcTrackIdx(0);
+   //   else {
+   //     fId = -1; // pile-up
+   //     // cout<<"NmctracksX::"<<fRowHit->GetMcTracksN()<<endl;
+   //   }
      
-   } else {
-      if(fColumnHit->GetMcTracksN()==1)
-       fId     = fColumnHit->GetMcTrackIdx(0);
-     else {
-       fId = -1;  // pile-up
-       // cout<<"NmctracksY::"<<fColumnHit->GetMcTracksN()<<endl;
-     }
-   }
+   // } else {
+   //    if(fColumnHit->GetMcTracksN()==1)
+   //     fId     = fColumnHit->GetMcTrackIdx(0);
+   //   else {
+   //     fId = -1;  // pile-up
+   //     // cout<<"NmctracksY::"<<fColumnHit->GetMcTracksN()<<endl;
+   //   }
+   // }
   
   Bool_t common = false;
   for (Int_t j = 0; j < fColumnHit->GetMcTracksN(); ++j) {

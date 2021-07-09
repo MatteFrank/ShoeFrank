@@ -164,7 +164,7 @@ public:
         
         auto hypothesis_c = form_hypothesis();
         
-//        logger_m << "hypothesis: " << hypothesis_c.size() << '\n';
+//        std::cout << "hypothesis: " << hypothesis_c.size() << '\n';
         
         for(auto & hypothesis : hypothesis_c){
             particle_m = hypothesis;
@@ -180,7 +180,7 @@ public:
         
         checker_m.end_event();
 //        logger_m.freeze_everything();
-        //logger_m.output();
+//        logger_m.output();
         
         
         
@@ -224,7 +224,7 @@ private:
         list_m.template set_cuts<detector_properties<details::tof_tag>>( cut_p );
     }
     
-    reconstruction_result retrieve_results( ) const override {
+    reconstruction_result retrieve_results( ) override {
         return checker_m.retrieve_results( );
     }
     
@@ -241,7 +241,7 @@ private:
         std::vector<particle_properties> hypothesis_c;
         hypothesis_c.reserve( candidate_c.size()*2 );
 
-        
+//        std::cout << "candidates: " << candidate_c.size() << '\n';
         for( const auto& candidate : candidate_c ) {
             auto charge = candidate.data->GetChargeZ();
             if(charge == 0) {continue;}
