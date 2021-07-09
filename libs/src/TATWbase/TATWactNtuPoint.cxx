@@ -350,14 +350,7 @@ Bool_t TATWactNtuPoint::FindPoints()
 	   return true;
 	 }
 
-	 TVector3 posGlb = fgeoTrafo->FromTWLocalToGlobal(posLoc);
-	 point->SetPositionGlb(posGlb);
-	 point->SetSensorIdx(0);
-    point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TATWparGeo::GetBaseName()));
-
-	 Int_t Z = hit1->GetChargeZ();
-	 point->SetChargeZ(Z);
-
+	 Int_t Z = point->GetChargeZ();
 
 	 if(FootDebugLevel(4)) {
 	   cout<<"fIsZmatch::"<<fIsZmatch<<"  hit1_Z::"<<hit1->GetChargeZ()<<" hitmin_Z::"<<hitmin->GetChargeZ()<<" point_Z::"<<point->GetChargeZ()<<endl;
@@ -369,10 +362,8 @@ Bool_t TATWactNtuPoint::FindPoints()
 	   cout<<"hits  Time1::"<<hit1->GetTime()<<"  Time2::"<<hitmin->GetTime()<<endl;
 	   cout<<"point Tof1::"<<point->GetTof1()<<"  Tof2::"<<point->GetTof2()<<endl;
 	   cout<<"Z::"<<Z<<"  "<<hitmin->GetChargeZ()<<" "<<endl;
-	   cout<<"X::"<<posLoc.X()<<"  Y::"<<posLoc.Y()<<"  Z::"<<posLoc.Z()<<endl;
-	   cout<<"X::"<<posGlb.X()<<"  Y::"<<posGlb.Y()<<"  Z::"<<posGlb.Z()<<endl;
 	 }
-	 
+
 	 if (ValidHistogram()) {
 	   
 	   if( Z>0 && Z < fZbeam+1 ) {
@@ -512,7 +503,39 @@ TATWpoint* TATWactNtuPoint::SetTWPoint(TATWntuPoint* pNtuPoint, Int_t layer1, TA
     point = pNtuPoint->NewPoint(posLoc.X(), fDefPosErr, hitmin, posLoc.Y(), fDefPosErr, hit1, mainLayer);
   }
 
+  // set point globa position and sensor Id
+  TVector3 posGlb = fgeoTrafo->FromTWLocalToGlobal(posLoc);
+  Float_t barThick = fparGeoTW->GetBarThick();
+  // the point z position is the entrance of the LayerY. Modify for LayerX
+  if(layer1==(Int_t)LayerX)
+    posGlb.SetXYZ(posGlb.X(),posGlb.Y(),posGlb.Z()-barThick);
+    
+  point->SetPositionGlb(posGlb);
+  point->SetSensorIdx(0);
+  point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TATWparGeo::GetBaseName()));
+
+  // set point charge Z
+  point->SetChargeZ(hit1->GetChargeZ());
+
+  // set point Tof
   point->SetToF(hit1->GetToF());
+
+  // set point main Eloss 
+  point->SetMainEloss(hit1->GetEnergyLoss());
+
+  // assign to the point the matched MC track id if no Pile-Up, else for pile-up events assign -1
+  if(hit1->GetMcTracksN()==1)
+    point->SetPointMatchMCtrkID(hit1->GetMcTrackIdx(0));
+  else // pile-up
+    point->SetPointMatchMCtrkID(-1);
+
+  // cout<<"NmctracksY::"<<fColumnHit->GetMcTracksN()<<endl;
+
+  if(FootDebugLevel(4)) {
+    cout<<"X::"<<posLoc.X()<<"  Y::"<<posLoc.Y()<<"  Z::"<<posLoc.Z()<<endl;
+    cout<<"X::"<<posGlb.X()<<"  Y::"<<posGlb.Y()<<"  Z::"<<posGlb.Z()<<endl;
+  }
+  
   
   return point;
 

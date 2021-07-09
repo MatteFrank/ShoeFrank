@@ -22,6 +22,7 @@ TATWpoint::TATWpoint()
    fDe1(-99.),
    fDe2(-99.),
    fToF(-99.),
+   fMainEloss(-99),
    fTof1(-99.),
    fTof2(-99.),
    fMatchCalIdx(-1),
@@ -44,7 +45,8 @@ TATWpoint::TATWpoint( Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Doub
    fId(-99),
    fChargeZ(-99),
    fChargeZProba(-99.),
-   fToF(-99)
+   fToF(-99),
+   fMainEloss(-99)
 {
    
    fPosition.SetXYZ(x, y, 0),
