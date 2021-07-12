@@ -228,7 +228,7 @@ Bool_t TAGroot::NextEvent(long nEv)
   ClearAllAction();
   ClearAllData();
 
-  if(nEv = -999)
+  if(nEv == -999)
     fEventId.SetEventNumber(1+fEventId.EventNumber()); // increment event number
   else
     fEventId.SetEventNumber( nEv );

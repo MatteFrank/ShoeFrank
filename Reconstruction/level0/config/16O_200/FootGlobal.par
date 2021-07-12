@@ -16,7 +16,7 @@ Genfit Event Display ON: n
 
 ############	Kalman Filter Control Parameters	################
 
-IncludeKalman:   y
+IncludeKalman:   n
 IncludeTOE:      n
 EnableLocalReco: n
 
@@ -56,13 +56,13 @@ EnableRegionMc:      n
 ############   END - Options for reconstruction   ################
 
 IncludeDI:			   y
-IncludeST:			   n
-IncludeBM:			   n
+IncludeST:			   y
+IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
 IncludeIT:	           y
 IncludeMSD:			   y
 IncludeTW:			   y
-IncludeCA:			   n
+IncludeCA:			   y
 
 FLUKA version: pro

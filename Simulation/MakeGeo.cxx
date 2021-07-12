@@ -59,7 +59,7 @@ int main (int argc, char *argv[]) {
 
     // real coding starts here!
 
-    cout<<" TAGrecoManager "<<Form("%s/FootGlobal.par",exp.Data())<<endl;
+    cout<<" GlobalPar "<<Form("%s/FootGlobal.par",exp.Data())<<endl;
     TAGrecoManager::Instance(exp);
     TAGrecoManager::GetPar()->FromFile();
     TAGrecoManager::GetPar()->Print();

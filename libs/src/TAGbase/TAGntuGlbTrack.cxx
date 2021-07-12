@@ -329,7 +329,7 @@ TAGntuGlbTrack::TAGntuGlbTrack()
  : TAGdata(),
    fListOfTracks(new TClonesArray("TAGtrack"))
 {
-	SetupClones();
+  //	SetupClones();
 	m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman_new";
     // m_debug = TAGrecoManager::GetPar()->Debug();
     m_debug = 0;

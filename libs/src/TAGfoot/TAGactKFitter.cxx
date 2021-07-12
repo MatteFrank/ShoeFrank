@@ -235,7 +235,7 @@ void TAGactKFitter::Finalize() {
 	// map<string, TH1F*>* h_deltaP
 	int count = 0;
 	for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); it++ ) {
-		if ( count = 0 ) 	h_deltaP_tot = (TH1F*)((*it).second)->Clone("dP");
+		if ( count == 0 ) 	h_deltaP_tot = (TH1F*)((*it).second)->Clone("dP");
 		else 				h_deltaP_tot->Add( (*it).second, 1 );
 		AddHistogram( (*it).second );
 		count++;
@@ -246,7 +246,7 @@ void TAGactKFitter::Finalize() {
 	// map<string, TH1F*>* h_sigmaP
 	count=0;
 	for ( map<string, TH1F*>::iterator it=h_sigmaP.begin(); it != h_sigmaP.end(); it++ ) {
-		if ( count = 0 ) 	h_sigmaP_tot = (TH1F*) (*it).second->Clone();
+		if ( count == 0 ) 	h_sigmaP_tot = (TH1F*) (*it).second->Clone();
 		else 				h_sigmaP_tot->Add( (*it).second, 1 );
 		AddHistogram( (*it).second );
 		count++;
