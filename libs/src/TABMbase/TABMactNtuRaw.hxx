@@ -56,13 +56,21 @@ class TABMactNtuRaw : public TAGaction {
 
     //histos
     TH1I*            fpRawTdcChannel;   //tdc channel distribution
-    TH1I*            fpRawTrigTime;     //Used Trigger time
-    TH1I*            fpRawSTFitTime;    //Start Counter post analysis fitted trigger Time
-    TH1I*            fpRawSTTdcTime;    //Start Counter Time from TDC
-    TH1I*            fpRawDAQTdcTime;   //DAQ trigger time from TDC
+    TH1F*            fpRawTrigTrigger;     //Used Trigger time
+    TH1F*            fpRawSTFitTrigger;    //Start Counter post analysis fitted trigger Time
+    TH1F*            fpRawDaqTrigger;      //Daq trigger Time
+    TH1F*            fpRawTdcTrigger;   //Tdc trigger Time
     std::vector<TH1F*> fpRawTdcMeas;    //vector of tdc channel raw measurements
-    std::vector<TH1F*> fpRawTdcLessSync;//vector of tdc channel meas - sync meas
+    std::vector<TH1F*> fpRawTdcLessSync;//vector of tdc channel meas - used_trigger
 
+    //channel 1 trigger plots
+    TH1F*            fpRawCh1NoTrig;    //BM channel 1 without trigger subtraction
+    TH1F*            fpRawCh1LessTdcTr; //BM channel 1 - TDC Trigger time
+    TH1F*            fpRawCh1LessSTFit; //BM channel 1 - TDC trigger - STfit time
+    TH1F*            fpRawCh1PlusSTFit; //BM channel 1 - TDC trigger + STfit time
+    TH1F*            fpRawCh1LessDaqTr; //BM channel 1 - TDC trigger - Daq trigger
+    TH1F*            fpRawCh1LessSTFitLessDaq; //BM channel 1 - Tdc trigger - STfit - Daq trigger
+    TH1F*            fpRawCh1PlusSTFitLessDaq; //BM channel 1 - Tdc trigger + STfit - Daq trigger
 };
 
 #endif
