@@ -259,28 +259,38 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
       }
       
       
-       if(evt->values.at(iW)== TRIG_HEADER){
+      if((evt->values.at(iW) &0xffff)== TRIG_HEADER){
 	int tbo =  (evt->values.at(iW) >> 16)& 0xffff;
+	iW++;
 	int nbanks =  evt->values.at(iW) & 0xffff;
 	iW++;	    
 	if(FootDebugLevel(1))printf("found trigger board %d header, nbanks::%d\n",tbo,nbanks);
 	for(int ibank=0;ibank<nbanks;ibank++){
 	  if(evt->values.at(iW) == TRGI_BANK_HEADER){
+	    if(FootDebugLevel(1))printf("trig header::%08x\n",evt->values.at(iW));
+	    iW++;
 	    int size =  evt->values.at(iW);
+	    if(FootDebugLevel(1))printf("size::%08x\n",evt->values.at(iW));
 	    for(int i=0;i<size;i++){
 	      iW++;
+	      if(FootDebugLevel(1))printf("data::%08x\n",evt->values.at(iW));
 	      //fill trigger class
 	    }
 	  }else if(evt->values.at(iW) == TGEN_BANK_HEADER){
-	    int size = word;
+	    if(FootDebugLevel(1))printf("trig header::%08x\n",evt->values.at(iW));
+	    iW++;
+	    int size = evt->values.at(iW);;
+	    if(FootDebugLevel(1))printf("size::%08x\n",evt->values.at(iW));
+	    iW++;
 	    for(int i=0;i<size;i++){
+	      if(FootDebugLevel(1))printf("data::%08x\n",evt->values.at(iW));
 	      iW++;
 	      //fill trigger class
 	    }
 	  }
 	}
       }
-      
+      iW++;
       if(evt->values.at(iW) == EVT_FOOTER){
 	if(FootDebugLevel(1))printf("found footer\n");
 	iW++;
