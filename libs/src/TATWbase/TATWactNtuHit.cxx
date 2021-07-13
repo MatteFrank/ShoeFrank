@@ -50,7 +50,10 @@ TATWactNtuHit::TATWactNtuHit(const char* name,
 {
 
   AddDataIn(p_datraw, "TATWntuRaw");
-  AddDataIn(p_STnturaw, "TASTntuHit");
+  if(p_STnturaw) {
+    AddDataIn(p_STnturaw, "TASTntuHit");
+    Warning("TATWactNtuHit","No ST information present");
+  }
   AddDataOut(p_nturaw, "TATWntuHit");
 
   AddPara(p_pargeom, "TATWparGeo");
@@ -148,7 +151,9 @@ void TATWactNtuHit::CreateHistogram()
 Bool_t TATWactNtuHit::Action() {
 
   TATWntuRaw*   p_datraw = (TATWntuRaw*) fpDatRaw->Object();
-  TASTntuHit*   p_STnturaw = (TASTntuHit*)  fpSTNtuRaw->Object();
+  TASTntuHit*   p_STnturaw;
+  if(fpSTNtuRaw) 
+    p_STnturaw = (TASTntuHit*)  fpSTNtuRaw->Object();
   TATWntuHit*   p_nturaw = (TATWntuHit*)  fpNtuRaw->Object();
 
   //////////// Time Trigger info from ST ///////////////
@@ -159,17 +164,25 @@ Bool_t TATWactNtuHit::Action() {
     fEvtCnt++;
   }
 
-  double STtrigTime = p_STnturaw->GetTriggerTime();
-  double STtrigTimeOth = p_STnturaw->GetTriggerTimeOth();
+  double STtrigTime(0);
+  double STtrigTimeOth(0);
+  Int_t SThitN(0.);
+  TASThit *stHit;
+  Double_t time_st(0.);
 
-  Int_t SThitN = p_STnturaw->GetHitsN();  // same of STtrigTime
+  if(fpSTNtuRaw) {
 
-  TASThit *stHit = (TASThit*)p_STnturaw->GetHit(0);
-  Double_t time_st = stHit->GetTime();
+    STtrigTime = p_STnturaw->GetTriggerTime();
+    STtrigTimeOth = p_STnturaw->GetTriggerTimeOth();
+
+    SThitN = p_STnturaw->GetHitsN();  // same of STtrigTime
+
+    stHit = (TASThit*)p_STnturaw->GetHit(0);
+    time_st = stHit->GetTime();
+  }
 
   if(FootDebugLevel(1))
     cout<<"ST hitN::"<<SThitN<<" trigTime::"<<STtrigTime<<"  trigTimeOth::"<<STtrigTimeOth<<" time_ST::"<<time_st<<endl;
-
   /////////////////////////////////////////////////////
   
   p_nturaw->SetupClones();
@@ -273,7 +286,6 @@ Bool_t TATWactNtuHit::Action() {
 	      if(posAlongBar<-22 || posAlongBar>22) {
 		cout<<"layer::"<<Layer<<"  barId::"<<BarId<<"  shoeId::"<<ShoeBarId<<"  posId::"<<PosId<<"  pos::"<<posAlongBar<<endl;
 		cout<<"eloss::"<<Energy<<" chA::"<<ChargeA<<"  chB::"<<ChargeB<<" Time::"<<Time<<" timeA::"<<TimeA<<" timeB::"<<TimeB<<endl;
-		getchar();
 	      }
 	    }
 
