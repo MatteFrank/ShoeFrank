@@ -61,8 +61,34 @@ void TABMactNtuRaw::CreateHistogram()
   // AddHistogram(fpRawMapY);
   fpRawTdcChannel=new TH1I( "bmRawTdcHitDistribution", "Number of hits x channel (-1=error); TDC channel; Number of hits", p_parmap->GetTdcMaxCh()+2, -1.5, p_parmap->GetTdcMaxCh()+0.5);
   AddHistogram(fpRawTdcChannel);
-  fpRawTrigTime=new TH1I( "bmRawTrigger", "Trigger time; Trigger time [ns]; Events", 200, 0, 0);
-  AddHistogram(fpRawTrigTime);
+  fpRawTrigTrigger=new TH1F( "bmRawTrigger", "Trigger time; Trigger time [ns]; Events", 200, 0, 0);
+  AddHistogram(fpRawTrigTrigger);
+  fpRawSTFitTrigger=new TH1F( "bmSTFITTrigger", "SC Fitted Trigger time; Trigger time [ns]; Events", 200, 0, 0);
+  AddHistogram(fpRawSTFitTrigger);
+  fpRawTdcTrigger=new TH1F( "bmTdcTrigger", "Tdc Trigger time; Trigger time [ns]; Events", 200, 0, 0);
+  AddHistogram(fpRawTdcTrigger);
+  if(p_parmap->GetDaqTrefCh()>=0){
+    fpRawDaqTrigger=new TH1F( "bmDaqTrigger", "Daq Trigger time; Trigger time [ns]; Events", 200, 0, 0);
+    AddHistogram(fpRawDaqTrigger);
+  }
+
+  fpRawCh1NoTrig=new TH1F( "RawCh1NoTrig", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+  AddHistogram(fpRawCh1NoTrig);
+  fpRawCh1LessTdcTr=new TH1F( "RawCh1LessTdcTr", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+  AddHistogram(fpRawCh1LessTdcTr);
+  fpRawCh1LessSTFit=new TH1F( "RawCh1LessSTFit", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+  AddHistogram(fpRawCh1LessSTFit);
+  fpRawCh1PlusSTFit=new TH1F( "RawCh1PlusSTFit", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+  AddHistogram(fpRawCh1PlusSTFit);
+  if(p_parmap->GetDaqTrefCh()>=0){
+    fpRawCh1LessDaqTr=new TH1F( "RawCh1LessDaqTr", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1LessDaqTr);
+    fpRawCh1LessSTFitLessDaq=new TH1F( "RawCh1LessSTFitLessDaq", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1LessSTFitLessDaq);
+    fpRawCh1PlusSTFitLessDaq=new TH1F( "RawCh1PlusSTFitLessDaq", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1PlusSTFitLessDaq);
+  }
+
   TH1F *RawTdcPlot;
   for(Int_t i=0;i<p_parmap->GetTdcMaxCh();i++){
     TString title="bmRawTdcCha_";
@@ -95,6 +121,9 @@ Bool_t TABMactNtuRaw::Action() {
 
   if(FootDebugLevel(1))
     cout<<"TABMactNtuRaw::Action():: I'm going to charge "<<nFragments<<" number of fragments"<<endl;
+
+  if (ValidHistogram())
+    fpRawSTFitTrigger->Fill(p_timraw->GetTriggerTime());
 
   if(p_timraw->GetTriggerTime()<0.0001){//No start counter trigger time! --> No BM hits
     if(FootDebugLevel(1))
@@ -131,22 +160,29 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
 
    //From there we get the Mapping of the wires into the Chamber to the TDC channels
   Int_t view,plane,cell, channel,up, hitnum=0, discharged=0, bmcellid;
-  Double_t used_trigger=0., measurement;
+  Double_t used_trigger=0., measurement, daqtrigger=-99999, tdctrigger=-99999;
   for(Int_t i = 0; i < ((int)evt->measurement.size());++i) {
     if(((evt->measurement.at(i)>>19) & 0x7f) == p_parmap->GetBmTrefCh()){
-      used_trigger+=(evt->measurement.at(i) & 0x7ffff)/10. - sttrigger;
+      tdctrigger=(evt->measurement.at(i) & 0x7ffff)/10.;
+      used_trigger+=tdctrigger - sttrigger;
+      if(ValidHistogram())
+        fpRawTdcTrigger->Fill(tdctrigger);
       if(p_parmap->GetDaqTrefCh()<0)
         break;
     }
     if(p_parmap->GetDaqTrefCh()>=0){
-      if(((evt->measurement.at(i)>>19) & 0x7f) == p_parmap->GetDaqTrefCh())
-        used_trigger-=(evt->measurement.at(i) & 0x7ffff)/10.;
+      if(((evt->measurement.at(i)>>19) & 0x7f) == p_parmap->GetDaqTrefCh()){
+        daqtrigger=(evt->measurement.at(i) & 0x7ffff)/10.;
+        used_trigger+=daqtrigger;
+        if(ValidHistogram())
+          fpRawDaqTrigger->Fill(daqtrigger);
+      }
     }
   }
 
   p_datraw->SetTrigtime(used_trigger);
   if (ValidHistogram())
-    fpRawTrigTime->Fill(used_trigger);
+    fpRawTrigTrigger->Fill(used_trigger);
   for(Int_t i = 0; i < ((int)evt->measurement.size());i++) {
     measurement=(Double_t) (evt->measurement.at(i) & 0x7ffff)/10.;
     channel=(evt->measurement.at(i)>>19) & 0x7f;
@@ -163,6 +199,19 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
       fpRawTdcChannel->Fill(channel);
       fpRawTdcMeas.at(channel)->Fill(measurement);
       fpRawTdcLessSync.at(channel)->Fill(measurement-used_trigger);
+      if(channel==1){
+        fpRawCh1NoTrig->Fill(measurement);
+        if(tdctrigger!=-99999){
+          fpRawCh1LessSTFit->Fill(measurement-tdctrigger-sttrigger);
+          fpRawCh1PlusSTFit->Fill(measurement-tdctrigger+sttrigger);
+          fpRawCh1LessTdcTr->Fill(measurement-tdctrigger);
+          if(daqtrigger!=-99999){
+            fpRawCh1LessDaqTr->Fill(measurement-tdctrigger-daqtrigger);
+            fpRawCh1LessSTFitLessDaq->Fill(measurement-tdctrigger-daqtrigger-sttrigger);
+            fpRawCh1PlusSTFitLessDaq->Fill(measurement-tdctrigger-daqtrigger+sttrigger);
+          }
+        }
+      }
     }
     if(bmcellid!=-1 && bmcellid!=-1000){//-1000=syncTime, -1=not set
       p_pargeo->GetBMNlvc(bmcellid,plane,view,cell);

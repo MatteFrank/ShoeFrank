@@ -25,7 +25,7 @@ public:
    virtual Bool_t  Action();
    
    //! Open file with a given prefix and suffix for the files
-   virtual Int_t   Open(const TString& prefix, Option_t* opt = "", const TString treeName = "");
+   virtual Int_t   Open(const TString& prefix, Option_t* opt = "", const TString treeName = "",  Bool_t dscBranch = true);
    
    //! close files
    virtual void    Close();
