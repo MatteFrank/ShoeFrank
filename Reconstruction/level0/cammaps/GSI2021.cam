@@ -1,11 +1,15 @@
 // Campaign file
 CamName: "GSI2021"
 RunNumber: 200; 400;
-NumberDevices: 8
+NumberDevices: 9
 
 DetectorName: "FOOT"
 NumberFiles: 1
 "./geomaps/GSI2021/FOOT.geo": -1
+
+DetectorName: "DI"
+NumberFiles: 1
+"./geomaps/GSI2021/TADIdetector.geo": -1
 
 DetectorName: "ST"
 NumberFiles: 4
