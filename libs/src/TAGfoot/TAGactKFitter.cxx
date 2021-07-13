@@ -776,13 +776,44 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		shoeTrackPointRepo.push_back( shoeTrackPoint ); 
 	}
 
+
+	// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!" << endl;
+	// StateOnPlane state_target = track->getFittedState(0);
+	// StateOnPlane state_TW = track->getFittedState(-1);
+	// float old_target = state_target.get6DState()[2];
+	// float old_TW = state_TW.get6DState()[2];
+	// // double extL = track->getCardinalRep()->extrapolateToPoint( state, target );
+
+	// genfit::SharedPlanePtr plane_target (new genfit::DetPlane( TVector3(0,0,0), TVector3(0,0,1) ) );
+	// plane_target->setU(1.,0.,0.);
+	// plane_target->setV(0.,1.,0.);
+
+	// genfit::SharedPlanePtr plane_TW (new genfit::DetPlane( TVector3(0,0,182), TVector3(0,0,1) ) );
+	// plane_TW->setU(1.,0.,0.);
+	// plane_TW->setV(0.,1.,0.);
+
+	// double extL_target = track->getCardinalRep()->extrapolateToPlane( state_target, plane_target );
+	// double extL_TW     = track->getCardinalRep()->extrapolateToPlane( state_TW, plane_TW );
+	// // double extL_target = track->getCardinalRep()->extrapolateToPlane( state_target, m_SensorIDMap->GetFitPlane( m_SensorIDMap->GetMinFitPlane("VT") ) );
+	// // double extL_TW     = track->getCardinalRep()->extrapolateToPlane( state_TW, m_SensorIDMap->GetFitPlane( m_SensorIDMap->GetMaxFitPlane("TW") ) );
+
+
 	TVector3 recoPos_target, recoMom_target;
-	// TVector3 recoPos_err, recoMom_err;
 	TMatrixD recoPos_target_cov(3,3);
 	TMatrixD recoMom_target_cov(3,3);
-
 	// get reco info at the target level (by now at the first VT layer)
+	// GetRecoTrackInfo( &state_target, &recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov );
 	GetRecoTrackInfo( 0, track, &recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov );
+
+	// // getRecoInfo
+	// TVector3 recoPos_TW, recoMom_TW;
+	// TMatrixD recoPos_TW_cov(3,3);
+	// TMatrixD recoMom_TW_cov(3,3);	
+	// GetRecoTrackInfo( &state_TW, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
+
+	// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!   end - l= " << extL_target << "\n\toldZ = " <<old_target << "\t newZ = " << recoPos_target.z() << endl<<endl;
+	// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!   end - l= " << extL_TW << "\n\toldZ = " <<old_TW << "\t newZ = " << recoPos_TW.z() << endl<<endl;
+	
 
 	// Retrieve tracking info!
 	int nMeas 	= track->getCardinalRep()->getDim();
@@ -910,8 +941,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	if ( TAGrecoManager::GetPar()->IsMC() )		
 		shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
 
+	// shoeOutTrack->SetExtrapInfoTW( &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
 
-if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE FILL = "  << endl;
+if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: DONE FILL = "  << endl;
 
     //! Get the accumulated X/X0 (path / radiation length) of the material crossed in the last extrapolation.
     // virtual double getRadiationLenght() const = 0;
@@ -1070,6 +1102,34 @@ void TAGactKFitter::GetRecoTrackInfo ( int i, Track* track,
 			(*KalmanPos_cov)(j,k) = (track->getFittedState(i).get6DCov())[j][k];
 		}
 	}
+
+}
+
+
+
+
+
+
+//----------------------------------------------------------------------------------------------------
+void TAGactKFitter::GetRecoTrackInfo (  StateOnPlane* state,
+										TVector3* KalmanPos, TVector3* KalmanMom,
+										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov ) {
+
+
+	// Get reco track kinematics and errors
+	*KalmanPos = TVector3( (state->get6DState())[0],	(state->get6DState())[1],	(state->get6DState())[2] );
+	*KalmanMom = TVector3( (state->get6DState())[3], (state->get6DState())[4],	(state->get6DState())[5] );
+
+	MatrixToZero(KalmanPos_cov);
+	MatrixToZero(KalmanMom_cov);
+
+	// incertainty given only in fitting a StateOnPlane, not for extrapolation, even if in RKTrackRep the noise Jacobian can  be calcualted 
+	// for ( int j=0; j<3; j++ ) {
+	// 	for ( int k=0; k<3; k++ ) {
+	// 		(*KalmanMom_cov)(j,k) = (state->get6DCov())[j+3][k+3];
+	// 		(*KalmanPos_cov)(j,k) = (state->get6DCov())[j][k];
+	// 	}
+	// }
 
 }
 

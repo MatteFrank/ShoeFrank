@@ -56,6 +56,7 @@ public:
 		);   
 
    void SetMCInfo( int MCparticle_id, float trackQuality );
+   void SetExtrapInfoTW( TVector3* pos, TVector3* mom, TMatrixD* pos_cov, TMatrixD* mom_cov );
 
    virtual         ~TAGtrack();
    

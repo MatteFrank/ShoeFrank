@@ -177,6 +177,9 @@ public:
 	void GetRecoTrackInfo ( int i, Track* track,
 											TVector3* KalmanPos, TVector3* KalmanMom,
 											TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
+	void GetRecoTrackInfo ( StateOnPlane* state,
+											TVector3* KalmanPos, TVector3* KalmanMom,
+											TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
 	void GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
 
 	void FillGenCounter( map<string, int> mappa );

@@ -123,8 +123,8 @@ TAGtrack::TAGtrack( string name, long evNum,
 		new (pointArray[pointArray.GetEntriesFast()]) TAGpoint( *(shoeTrackPointRepo->at(i)) );
 	}
 
-	// m_pos_cov = *pos_cov;
-	// m_mom_cov = *mom_cov;
+	// m_target_pos_cov = *pos_cov;
+	// m_target_mom_cov = *mom_cov;
 }
 
 
@@ -134,6 +134,15 @@ void TAGtrack::SetMCInfo( int MCparticle_id, float trackQuality ) {
 	m_MCparticle_id = MCparticle_id;
 	m_trackQuality = trackQuality;
 
+}
+
+
+void TAGtrack::SetExtrapInfoTW( TVector3* pos, TVector3* mom, TMatrixD* pos_cov, TMatrixD* mom_cov ) {
+
+	m_TW_mom = *mom;
+	fTofPos = *pos;
+	// m_pos_TW_cov = *pos_cov;
+	// m_mom_TW_cov = *mom_cov;
 }
 
 
