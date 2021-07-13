@@ -26,6 +26,10 @@ class WDEvent;
 #define CH_HEADER 0x00003043
 #define EVT_HEADER 0x52444845
 #define EVT_FOOTER 0xfafefafe
+#define TRIG_HEADER 0x00002354
+#define TRGI_BANK_HEADER 0x49475254
+#define TGEN_BANK_HEADER 0x4e454754
+
 
 
 class TAGactWDreader : public TAGaction {
