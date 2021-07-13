@@ -1,7 +1,7 @@
 // Campaign file
 CamName: "GSI2021"
 RunNumber: 200; 400;
-NumberDevices: 8
+NumberDevices: 9
 
 DetectorName: "DI"
 NumberFiles: 1
