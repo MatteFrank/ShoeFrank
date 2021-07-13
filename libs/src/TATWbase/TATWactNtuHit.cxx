@@ -104,6 +104,19 @@ void TATWactNtuHit::CreateHistogram()
   for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
     fpHisElossTof_layer[ilayer] = new TH2D(Form("twdE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),500,0.,50.,480,0.,120.);
     AddHistogram(fpHisElossTof_layer[ilayer]);
+
+    fpHisAmpA[ilayer] = new TH1F(Form("twAmpA_%s",LayerName[(TLayer)ilayer].data()), "TW - AmpA ", 1000,0.,1.);
+    AddHistogram(fpHisAmpA[ilayer]);
+
+    fpHisAmpB[ilayer] = new TH1F(Form("twAmpB_%s",LayerName[(TLayer)ilayer].data()), "TW - AmpB ", 1000,0.,1.);
+    AddHistogram(fpHisAmpB[ilayer]);
+    
+    fpHisAmpA_vs_Eloss[ilayer] = new TH2F(Form("twAmpADe_%s",LayerName[(TLayer)ilayer].data()), "TW - AmpA vs Energy Loss ", 480, 0., 120.,1000,0.,1.);
+    AddHistogram(fpHisAmpA_vs_Eloss[ilayer]);
+    
+    fpHisAmpB_vs_Eloss[ilayer] = new TH2F(Form("twAmpBDe_%s",LayerName[(TLayer)ilayer].data()), "TW - AmpB vs Energy Loss", 480, 0., 120.,1000,0.,1.);
+    AddHistogram(fpHisAmpB_vs_Eloss[ilayer]);    
+    
   }
   
   for(int iZ=1; iZ < fZbeam+1; iZ++) {
@@ -279,6 +292,13 @@ Bool_t TATWactNtuHit::Action() {
 	      fpHisTimeTot->Fill(Time);
 	      fpHisElossTof_layer[Layer]->Fill(Time,Energy);
 	      
+	      if(ShoeBarId==9) {  // only for central bars for trigger purposes
+		fpHisAmpA[Layer]->Fill(AmplitudeA);
+		fpHisAmpB[Layer]->Fill(AmplitudeB);
+		fpHisAmpA_vs_Eloss[Layer]->Fill(Energy,AmplitudeA);
+		fpHisAmpB_vs_Eloss[Layer]->Fill(Energy,AmplitudeB);
+	      }
+
 	      if(Zrec>0 && Zrec<fZbeam+1) {
 		// for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++)
 		fpHisEloss_Z[Layer][Zrec-1]->Fill(Energy);

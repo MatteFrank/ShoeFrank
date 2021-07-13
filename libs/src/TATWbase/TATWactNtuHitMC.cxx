@@ -209,7 +209,9 @@ bool TATWactNtuHitMC::Action() {
    
    // taking the tof for each TW hit with respect to the first hit of ST...for the moment not considered the possibility of multiple Hit in the ST, if any
    TAMChit* hitStMC = pNtuStMC->GetHit(0);
-   Float_t  timeST  = hitStMC->GetTof()*TAGgeoTrafo::SecToPs();
+   Float_t  timeST(-1);
+   if(pNtuStMC->GetHitsN()==1)
+     timeST  = hitStMC->GetTof()*TAGgeoTrafo::SecToPs();
    
    // fill the container of hits, divided by layer, i.e. the column at 0 (LayerY) and row at 1 (LayerX)
    for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
@@ -335,6 +337,9 @@ bool TATWactNtuHitMC::Action() {
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, timeST, time, barId, Z);
       
       TATWhit* hit = fDigitizer->GetCurrentHit();
+      if(timeST<0)
+	hit->SetValid(false);
+      
       hit->AddMcTrackIdx(trackId, i);
       
       fMapPU[barId] = hit;
