@@ -31,6 +31,8 @@ ClassImp(TAGactWDreader);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
+
+
 TAGactWDreader::TAGactWDreader(const char* name,
 			     TAGdataDsc* p_datdaq,
 			     TAGdataDsc* p_stwd, 
@@ -237,6 +239,8 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	    
 	    string ch_type;
 	    ch_type = p_WDMap->GetChannelType(board_id, ch_num);
+
+	    if(FootDebugLevel(1))printf("type::%s\n", ch_type.data());
 	    
 	    if(ch_type =="ST"){
 	      st_waves.push_back(w);

@@ -67,8 +67,9 @@ bool TAGbaseWDparTime::FromFile(TString tcal_filename)
     ret = fread(&word, 4,1,stream);
     while(fread(&word, 4,1,stream) !=0 && (word & 0xffff)== BOARD_HEADER){
       
-      if(FootDebugLevel(1))printf("found board header::%08x num%d\n", word, board_id);
+
       board_id = (word>>16)  & 0xffff;
+      if(FootDebugLevel(1))printf("found board header::%08x num%d\n", word, board_id);
       
       while(fread(&word, 4,1,stream) !=0 && (word & 0xffff)== CH_HEADER){
 	char tmp_chstr[3]={'0','0','\0'};
@@ -83,7 +84,7 @@ bool TAGbaseWDparTime::FromFile(TString tcal_filename)
 	  time_bin = *((float*)&word);
 	  w_tcal.push_back(time_bin);
 	}
-
+	if(FootDebugLevel(1))printf("set time calbration\n");
 	SetTimeCal(board_id, ch_num,  w_tcal);
       }
       fseek(stream, -4, SEEK_CUR);
