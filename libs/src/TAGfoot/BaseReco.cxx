@@ -602,8 +602,8 @@ void BaseReco::ReadParFiles()
 
          Bool_t elossTuning = false;
 
-         if(!fFlagMC)
-            elossTuning = true;
+	 if( !((TString)fCampManager->GetCurCampaign()->GetName()).CompareTo("GSI"))
+	   elossTuning = true;
 	
          if(elossTuning) {
             Info("ReadParFiles()","Eloss tuning for GSI data status:: ON\n");
@@ -611,6 +611,9 @@ void BaseReco::ReadParFiles()
                                                       false, false, true);
             parCal->FromElossTuningFile(parFileName.Data());
          }
+	 else
+	   Info("ReadParFiles()","Eloss tuning for GSI data status:: OFF\n");
+
       }
       
       isTof_calib = true;

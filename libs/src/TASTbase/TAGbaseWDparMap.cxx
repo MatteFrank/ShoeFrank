@@ -66,7 +66,7 @@ Bool_t TAGbaseWDparMap::FromFile(const TString& name) {
       for(int iCh=0;iCh<18;iCh++){
 	incF.getline(bufConf, 200, '\n');
 	sscanf(bufConf, "%d\t%c\t%s", &channel, &isenabled, detector);
-	//	printf("%d\t%c\t%s\n", iCh, isenabled, detector);
+	//printf("bo::%d %d\t%c\t%s\n", board, iCh, isenabled, detector);
 	key = make_pair(board, iCh);
 	chmap[key] = detector;
       }

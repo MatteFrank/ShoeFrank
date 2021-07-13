@@ -58,8 +58,9 @@ class TABMactNtuRaw : public TAGaction {
     TH1I*            fpRawTdcChannel;   //tdc channel distribution
     TH1F*            fpRawTrigTrigger;     //Used Trigger time
     TH1F*            fpRawSTFitTrigger;    //Start Counter post analysis fitted trigger Time
-    TH1F*            fpRawDaqTrigger;      //Daq trigger Time
+    TH1F*            fpRawMagorTrigger;      //Daq trigger Time
     TH1F*            fpRawTdcTrigger;   //Tdc trigger Time
+    TH1I*            fpRawMagorDouble;   //Number of Margherita or signals in the +- 10 ns window
     std::vector<TH1F*> fpRawTdcMeas;    //vector of tdc channel raw measurements
     std::vector<TH1F*> fpRawTdcLessSync;//vector of tdc channel meas - used_trigger
 
@@ -68,9 +69,9 @@ class TABMactNtuRaw : public TAGaction {
     TH1F*            fpRawCh1LessTdcTr; //BM channel 1 - TDC Trigger time
     TH1F*            fpRawCh1LessSTFit; //BM channel 1 - TDC trigger - STfit time
     TH1F*            fpRawCh1PlusSTFit; //BM channel 1 - TDC trigger + STfit time
-    TH1F*            fpRawCh1LessDaqTr; //BM channel 1 - TDC trigger - Daq trigger
-    TH1F*            fpRawCh1LessSTFitLessDaq; //BM channel 1 - Tdc trigger - STfit - Daq trigger
-    TH1F*            fpRawCh1PlusSTFitLessDaq; //BM channel 1 - Tdc trigger + STfit - Daq trigger
+    TH1F*            fpRawCh1LessMagorTr; //BM channel 1 - TDC trigger - Daq trigger
+    TH1F*            fpRawCh1LessSTFitLessMagor; //BM channel 1 - Tdc trigger - STfit - Daq trigger
+    TH1F*            fpRawCh1PlusSTFitLessMagor; //BM channel 1 - Tdc trigger + STfit - Daq trigger
 };
 
 #endif

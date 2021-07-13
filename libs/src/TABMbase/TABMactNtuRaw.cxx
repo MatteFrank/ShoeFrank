@@ -68,8 +68,10 @@ void TABMactNtuRaw::CreateHistogram()
   fpRawTdcTrigger=new TH1F( "bmTdcTrigger", "Tdc Trigger time; Trigger time [ns]; Events", 200, 0, 0);
   AddHistogram(fpRawTdcTrigger);
   if(p_parmap->GetDaqTrefCh()>=0){
-    fpRawDaqTrigger=new TH1F( "bmDaqTrigger", "Daq Trigger time; Trigger time [ns]; Events", 200, 0, 0);
-    AddHistogram(fpRawDaqTrigger);
+    fpRawMagorTrigger=new TH1F( "bmmagortrigger", "Margherita Or Trigger time; Trigger time [ns]; Events", 200, 0, 0);
+    AddHistogram(fpRawMagorTrigger);
+    fpRawMagorDouble=new TH1I( "bmmagordouble", "Margherita Or double counting whitin the +- 10 ns; Number of Margherita or signal; Events", 21, -0.5, 20.5);
+    AddHistogram(fpRawMagorTrigger);
   }
 
   fpRawCh1NoTrig=new TH1F( "RawCh1NoTrig", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
@@ -81,12 +83,12 @@ void TABMactNtuRaw::CreateHistogram()
   fpRawCh1PlusSTFit=new TH1F( "RawCh1PlusSTFit", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
   AddHistogram(fpRawCh1PlusSTFit);
   if(p_parmap->GetDaqTrefCh()>=0){
-    fpRawCh1LessDaqTr=new TH1F( "RawCh1LessDaqTr", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
-    AddHistogram(fpRawCh1LessDaqTr);
-    fpRawCh1LessSTFitLessDaq=new TH1F( "RawCh1LessSTFitLessDaq", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
-    AddHistogram(fpRawCh1LessSTFitLessDaq);
-    fpRawCh1PlusSTFitLessDaq=new TH1F( "RawCh1PlusSTFitLessDaq", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
-    AddHistogram(fpRawCh1PlusSTFitLessDaq);
+    fpRawCh1LessMagorTr=new TH1F( "RawCh1LessMagorTr", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1LessMagorTr);
+    fpRawCh1LessSTFitLessMagor=new TH1F( "RawCh1LessSTFitLessMagor", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1LessSTFitLessMagor);
+    fpRawCh1PlusSTFitLessMagor=new TH1F( "RawCh1PlusSTFitLessMagor", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1PlusSTFitLessMagor);
   }
 
   TH1F *RawTdcPlot;
@@ -160,11 +162,12 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
 
    //From there we get the Mapping of the wires into the Chamber to the TDC channels
   Int_t view,plane,cell, channel,up, hitnum=0, discharged=0, bmcellid;
-  Double_t used_trigger=0., measurement, daqtrigger=-99999, tdctrigger=-99999;
+  Double_t used_trigger=0., measurement, tdctrigger=-99999, magortrigger=-99999;
+  vector<Double_t>magorvec;
   for(Int_t i = 0; i < ((int)evt->measurement.size());++i) {
     if(((evt->measurement.at(i)>>19) & 0x7f) == p_parmap->GetBmTrefCh()){
       tdctrigger=(evt->measurement.at(i) & 0x7ffff)/10.;
-      used_trigger+=tdctrigger - sttrigger;
+      // used_trigger+=tdctrigger - sttrigger;
       if(ValidHistogram())
         fpRawTdcTrigger->Fill(tdctrigger);
       if(p_parmap->GetDaqTrefCh()<0)
@@ -172,17 +175,37 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
     }
     if(p_parmap->GetDaqTrefCh()>=0){
       if(((evt->measurement.at(i)>>19) & 0x7f) == p_parmap->GetDaqTrefCh()){
-        daqtrigger=(evt->measurement.at(i) & 0x7ffff)/10.;
-        used_trigger+=daqtrigger;
+        magorvec.push_back((evt->measurement.at(i) & 0x7ffff)/10.);
+        // used_trigger+=magortrigger;
         if(ValidHistogram())
-          fpRawDaqTrigger->Fill(daqtrigger);
+          fpRawMagorTrigger->Fill(magorvec.back());
       }
     }
   }
 
+  //check on trigger status
+  Int_t magorcounter=0;
+  if(p_parmap->GetDaqTrefCh()>=0){
+    if(tdctrigger!=99999 && magorvec.size()!=0){
+      for(Int_t i=0;i<magorvec.size();i++){
+        if(fabs(tdctrigger-magorvec.at(i))<11){
+          magortrigger=magorvec.at(i);
+          magorcounter++;
+        }
+      }
+    }
+    if(magortrigger!=-99999)
+      used_trigger=magortrigger+tdctrigger-sttrigger;
+  }else
+    used_trigger=tdctrigger-sttrigger;
+
+
   p_datraw->SetTrigtime(used_trigger);
-  if (ValidHistogram())
+  if (ValidHistogram()){
     fpRawTrigTrigger->Fill(used_trigger);
+    if(p_parmap->GetDaqTrefCh()>=0)
+      fpRawMagorDouble->Fill(magorcounter);
+  }
   for(Int_t i = 0; i < ((int)evt->measurement.size());i++) {
     measurement=(Double_t) (evt->measurement.at(i) & 0x7ffff)/10.;
     channel=(evt->measurement.at(i)>>19) & 0x7f;
@@ -205,10 +228,10 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
           fpRawCh1LessSTFit->Fill(measurement-tdctrigger-sttrigger);
           fpRawCh1PlusSTFit->Fill(measurement-tdctrigger+sttrigger);
           fpRawCh1LessTdcTr->Fill(measurement-tdctrigger);
-          if(daqtrigger!=-99999){
-            fpRawCh1LessDaqTr->Fill(measurement-tdctrigger-daqtrigger);
-            fpRawCh1LessSTFitLessDaq->Fill(measurement-tdctrigger-daqtrigger-sttrigger);
-            fpRawCh1PlusSTFitLessDaq->Fill(measurement-tdctrigger-daqtrigger+sttrigger);
+          if(magortrigger!=-99999){
+            fpRawCh1LessMagorTr->Fill(measurement-tdctrigger-magortrigger);
+            fpRawCh1LessSTFitLessMagor->Fill(measurement-tdctrigger-magortrigger-sttrigger);
+            fpRawCh1PlusSTFitLessMagor->Fill(measurement-tdctrigger-magortrigger+sttrigger);
           }
         }
       }

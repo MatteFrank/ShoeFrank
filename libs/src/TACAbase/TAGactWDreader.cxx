@@ -31,6 +31,8 @@ ClassImp(TAGactWDreader);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
+
+
 TAGactWDreader::TAGactWDreader(const char* name,
 			     TAGdataDsc* p_datdaq,
 			     TAGdataDsc* p_stwd, 
@@ -150,7 +152,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
       nmicro = 1000;
            
       iW++; //
-      
+      if(FootDebugLevel(1))printf("word:%08x\n", evt->values.at(iW));
       //found evt_header
       if(evt->values.at(iW) == EVT_HEADER){
 	if(FootDebugLevel(1))printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
@@ -222,6 +224,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	      w_amp = ADC2Volt_CLK(w_adc);
 	    }
 
+	    
 	    w = new TWaveformContainer();
 	    w->SetChannelId(ch_num);
 	    w->SetBoardId(board_id);
@@ -232,9 +235,12 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	    w->SetEmptyFlag(false);
 	    w->SetTrigType(trig_type);
 	    w->SetTriggerCellId(trig_cell);
-
+	    if(FootDebugLevel(1))printf("found waveform board:%d  channel:%d\n", board_id,ch_num);
+	    
 	    string ch_type;
 	    ch_type = p_WDMap->GetChannelType(board_id, ch_num);
+
+	    if(FootDebugLevel(1))printf("type::%s\n", ch_type.data());
 	    
 	    if(ch_type =="ST"){
 	      st_waves.push_back(w);
@@ -252,6 +258,28 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	}
       }
       
+      
+       if(evt->values.at(iW)== TRIG_HEADER){
+	int tbo =  (evt->values.at(iW) >> 16)& 0xffff;
+	int nbanks =  evt->values.at(iW) & 0xffff;
+	iW++;	    
+	if(FootDebugLevel(1))printf("found trigger board %d header, nbanks::%d\n",tbo,nbanks);
+	for(int ibank=0;ibank<nbanks;ibank++){
+	  if(evt->values.at(iW) == TRGI_BANK_HEADER){
+	    int size =  evt->values.at(iW);
+	    for(int i=0;i<size;i++){
+	      iW++;
+	      //fill trigger class
+	    }
+	  }else if(evt->values.at(iW) == TGEN_BANK_HEADER){
+	    int size = word;
+	    for(int i=0;i<size;i++){
+	      iW++;
+	      //fill trigger class
+	    }
+	  }
+	}
+      }
       
       if(evt->values.at(iW) == EVT_FOOTER){
 	if(FootDebugLevel(1))printf("found footer\n");
