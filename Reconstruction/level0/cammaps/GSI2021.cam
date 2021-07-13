@@ -48,8 +48,7 @@ NumberFiles: 5
 "./calib/GSI2021/TATW_Tof_Calibration.cal": 200; 400;
 
 DetectorName: "CA"
-NumberFiles: 4
+NumberFiles: 3
 "./geomaps/GSI2021/TACAdetector.geo": -1
-"./config/GSI2021/TACAdetector.map": -1
 "./calib/GSI2021/TACA_Energy_Calibration.cal": -1
 "./calib/GSI2021/TACA_Temperature_Calibration_perCry.cal": -1
