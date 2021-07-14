@@ -14,12 +14,6 @@
 ClassImp(TACAhit);
 
 //------------------------------------------+-----------------------------------
-//! Destructor.
-
-TACAhit::~TACAhit()
-{}
-
-//------------------------------------------+-----------------------------------
 //! Default constructor.
 
 TACAhit::TACAhit()
@@ -31,6 +25,7 @@ TACAhit::TACAhit()
    fPosition(),
    fIsValid(true)
 {
+  Clear();
 }
 
 //------------------------------------------+-----------------------------------
@@ -44,6 +39,12 @@ TACAhit::TACAhit(int cha, double charge, double time, int typ)
    fIsValid(true)
 {
 }
+
+//------------------------------------------+-----------------------------------
+//! Destructor.
+
+TACAhit::~TACAhit()
+{}
 
 //______________________________________________________________________________
 //
@@ -143,7 +144,8 @@ TACAhit* TACAntuHit::NewHit(int crys, double charge, double time, int type)
 
 void TACAntuHit::Clear(Option_t*)
 {
-   fListOfHits->Clear("C");
+  TAGdata::Clear();
+  if (fListOfHits) fListOfHits->Clear("C");
    
    return;
 }

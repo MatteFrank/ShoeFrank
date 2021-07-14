@@ -333,6 +333,8 @@ void LocalReco::SetTreeBranches()
 
    if (TAGrecoManager::GetPar()->IncludeCA()) {
      if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpDatRawCa, TACAntuRaw::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
+
    }
 }

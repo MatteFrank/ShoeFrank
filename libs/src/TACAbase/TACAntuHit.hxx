@@ -90,7 +90,7 @@ private:
 private:
    static TString fgkBranchName;    // Branch name in TTree
    
-   ClassDef(TACAntuHit,1)
+   ClassDef(TACAntuHit,2)
 };
 
 #endif
