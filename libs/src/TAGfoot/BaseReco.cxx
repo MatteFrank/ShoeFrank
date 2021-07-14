@@ -660,7 +660,10 @@ void BaseReco::ReadParFiles()
      } else {
         fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
         TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
-        
+
+        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parMap->FromFile(parFileName.Data());
+
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
         parCal->FromCalibTempFile(parFileName.Data());
         

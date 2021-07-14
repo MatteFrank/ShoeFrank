@@ -45,6 +45,9 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
   f_parcal = (TACAparCal*) fpParCal->Object();
   f_parmap = (TACAparMap*) fpParMap->Object();
 
+  SetTemperatureFunctions();
+  SetParFunction();
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -80,14 +83,15 @@ Bool_t TACAactNtuHit::Action() {
   
     // here needed mapping file
     Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
-    
     if (crysId == -1) // pb with mapping
       continue;
 
     Double_t type=0; // I define a fake type (I do not know what it really is...) (gtraini)
     
     // here we need the calibration file
-    Double_t charge_tcorr = GetTemperatureCorrection(charge, crysId);
+    //    Double_t charge_tcorr = GetTemperatureCorrection(charge, crysId);
+    //AS:: we wait for a proper integration of T inside the DAQ
+    Double_t charge_tcorr = charge;
     Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
     Double_t energy = GetEnergy(charge_equalis, crysId);
     Double_t tof    = GetTime(time, crysId);
@@ -131,8 +135,6 @@ Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
 Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
 {
 
-  SetTemperatureFunctions();
-  SetParFunction();
   Double_t T0 = f_parcal->GetTemperatureCry(crysId);
   Double_t m1 = fTcorr1->Eval(charge);
   Double_t m2 = fTcorr2->Eval(charge);
