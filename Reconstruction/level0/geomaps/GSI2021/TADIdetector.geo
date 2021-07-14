@@ -8,10 +8,6 @@
 // Parameters of the magnets
 // Types 0 const, 1 function, 2 map file
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-<<<<<<< HEAD
-Magnets:     2
-Type:        0
-=======
 Magnets:     0
 Type:        0
 
@@ -39,9 +35,5 @@ Inputs:            2
 InnerRad:          6.2     OuterRad:    25.000   Size3:          10.0
 PositionsX:        0.0000  PositionsY:   0.000   PositionsZ:      8.0
 Tilt1:             0.0000  Tilt2:        0.000   Tilt3:           0.0
->>>>>>> origin/newgeom_v1.0
-
-MagValueX:	0	MagValueY:	0	MagValueZ:	0
-
 
 
