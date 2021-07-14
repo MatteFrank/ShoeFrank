@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "GSI2021"
-RunNumber: 200; 400;
+RunNumber: 200; 400; 4100-4500;
 NumberDevices: 9
 
 DetectorName: "FOOT"
