@@ -55,7 +55,7 @@ Bool_t TASTactNtuHit::Action() {
    double timestamp=0, charge_dep=0, de_dep=0; 
    
    if(p_datraw->GetSuperHit()){
-
+     if(FootDebugLevel(1))printf("got super hit\n");
      timestamp = p_datraw->GetSuperHit()->GetTime();
      charge_dep =  p_datraw->GetSuperHit()->GetCharge();
      de_dep = -1000.; //calibration missing
@@ -66,6 +66,8 @@ Bool_t TASTactNtuHit::Action() {
      p_nturaw->SetTriggerTimeOth(p_datraw->GetSuperHit()->GetTimeOth());
      p_nturaw->SetCharge(charge_dep);
      p_nturaw->SetTrigType(p_datraw->GetSuperHit()->GetTriggerType());
+   }else{
+     if(FootDebugLevel(1))printf("super hit missing\n");
    }
    
    fpNtuRaw->SetBit(kValid);

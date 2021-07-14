@@ -47,7 +47,6 @@ TASTrawHit::TASTrawHit(TWaveformContainer *W)
   fAmplitude = ComputeAmplitude(W);
   fTime = ComputeTime(W,0.3,2.0,-5,2);
   fTimeOth = TAGbaseWD::ComputeTimeSimpleCFD(W,0.3);
-
 }
 
 //------------------------------------------+-----------------------------------
@@ -121,7 +120,7 @@ void TASTntuRaw::SetupClones()
 void TASTntuRaw::Clear(Option_t*){
   TAGdata::Clear();
   fHistN = 0;
-
+  
   
   if (fListOfHits) fListOfHits->Clear();
 }
@@ -198,6 +197,8 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW){
   wsum->GetVectT() = time;
   wsum->GetVectRawT() = time;
   wsum->SetNEvent(vW.at(0)->GetNEvent());
+
+  //cout << "trigid::" << TrigType << endl;
   
   fSuperHit = new TASTrawHit(wsum);
 
