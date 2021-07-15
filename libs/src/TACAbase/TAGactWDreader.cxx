@@ -102,10 +102,9 @@ Bool_t TAGactWDreader::Action() {
      }
    }
    
-   //if(st_waves.size()){
-     p_stwd->NewSuperHit(st_waves);
-     //}
-
+   
+   p_stwd->NewSuperHit(st_waves);
+   
    p_stwd->UpdateRunTime(nmicro);
    p_twwd->UpdateRunTime(nmicro);
    //   p_cawd->UpdateRunTime(nmicro);
@@ -355,7 +354,15 @@ void TAGactWDreader::CreateHistogram()
       hCalo[iEv][iCh] = new TH1F(Form("hCA_board161_ch%d_nev%d",iCh, iEv),"",1024,xmin,xmax);
       AddHistogram(hCalo[iEv][iCh]);
     }
+    
+    Double_t xmin =  p_WDtim->GetRawTimeArray(27, 16, 0).at(0);
+    Double_t xmax =  p_WDtim->GetRawTimeArray(27, 16, 0).at(1023);
+    hClk[iEv] = new TH1F(Form("hCLK_board27_ch16_nev%d", iEv),"",1024,xmin,xmax);
+    AddHistogram(hClk[iEv]);
   }
+
+
+
   
   SetValidHistogram(kTRUE);
 }
@@ -591,6 +598,15 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACA
     int ch = ca_waves.at(i)->GetChannelId();
     if(ValidHistogram() && m_nev<MaxEvents && ch<MaxCalo)FillHistogram(hCalo[m_nev][ch], ca_waves.at(i));
   }
+
+   map<pair<int,int>, TWaveformContainer*>::iterator it;
+   for(it=clk_waves.begin(); it != clk_waves.end(); it++){
+     int bo = it->second->GetBoardId();
+     int ch = it->second->GetChannelId();
+     if(bo==27 && ch == 16){
+       if(ValidHistogram() && m_nev<MaxEvents)FillHistogram(hClk[m_nev], it->second);
+     }
+   }
 
   return true;
   
