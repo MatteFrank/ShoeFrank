@@ -332,21 +332,18 @@ void TAGactWDreader::CreateHistogram()
     for(int iCh=0;iCh<8;iCh++){
       Double_t xmin =  p_WDtim->GetRawTimeArray(27, iCh, 0).at(0);
       Double_t xmax =  p_WDtim->GetRawTimeArray(27, iCh, 0).at(1023);
-      cout<<"ST "<<iEv<<" "<<iCh<<" "<<xmin<<" "<<xmax<<endl;
       hST[iEv][iCh] = new TH1F(Form("hST_board27_ch%d_nev%d",iCh, iEv),"",1024,xmin,xmax);
       AddHistogram(hST[iEv][iCh]);
     }
     for(int iCh=0;iCh<4;iCh++){
       Double_t xmin =  p_WDtim->GetRawTimeArray(166, iCh, 0).at(0);
       Double_t xmax =  p_WDtim->GetRawTimeArray(166, iCh, 0).at(1023);
-      cout<<"TW "<<iEv<<" "<<iCh<<" "<<xmin<<" "<<xmax<<endl;
       hTW[iEv][iCh] = new TH1F(Form("hTW_board166_ch%d_nev%d",iCh, iEv),"",1024,xmin,xmax);
       AddHistogram(hTW[iEv][iCh]);
     }
     for(int iCh=0;iCh<9;iCh++){
       Double_t xmin =  p_WDtim->GetRawTimeArray(161, iCh, 0).at(0);
       Double_t xmax =  p_WDtim->GetRawTimeArray(161, iCh, 0).at(1023);
-      cout<<"Ca "<<iEv<<" "<<iCh<<" "<<xmin<<" "<<xmax<<endl;
       hCalo[iEv][iCh] = new TH1F(Form("hCA_board161_ch%d_nev%d",iCh, iEv),"",1024,xmin,xmax);
       AddHistogram(hCalo[iEv][iCh]);
     }
@@ -362,9 +359,7 @@ void TAGactWDreader::FillHistogram(TH1F *h, TWaveformContainer *w){
   vector<Double_t> vtime = w->GetVectT();
   vector<Double_t> vamp = w->GetVectA();
   Int_t nsample = vtime.size();
-  cout<<"NS ::  "<<nsample<<" "<<vamp.size()<<endl;
   for(int i=0;i<nsample;i++) {
-    cout<<" "<<vamp.at(i)<<" "<<i<<endl;
     h->SetBinContent(i+1,vamp.at(i));
   }
   
@@ -576,21 +571,18 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACA
   for(int i=0; i<(int)st_waves.size();i++){
     p_straw->NewHit(st_waves.at(i));
     int ch = st_waves.at(i)->GetChannelId();
-    cout<<" "<<ch<<endl;
     if(ValidHistogram() && m_nev<20 && ch<8)FillHistogram(hST[m_nev][ch], st_waves.at(i));
   }
 
   for(int i=0; i<(int)tw_waves.size();i++){
     p_twraw->NewHit(tw_waves.at(i));
     int ch = tw_waves.at(i)->GetChannelId();
-    cout<<" "<<ch<<endl;
     if(ValidHistogram() && m_nev<20 && ch<4)FillHistogram(hTW[m_nev][ch], tw_waves.at(i));
   }
 
   for(int i=0; i<(int)ca_waves.size();i++){
     p_caraw->NewHit(ca_waves.at(i));
     int ch = ca_waves.at(i)->GetChannelId();
-    cout<<" calo "<<ch<<endl;
     if(ValidHistogram() && m_nev<20 && ch<9)FillHistogram(hCalo[m_nev][ch], ca_waves.at(i));
   }
 
