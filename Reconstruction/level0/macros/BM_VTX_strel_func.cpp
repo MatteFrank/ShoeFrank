@@ -107,6 +107,7 @@ void BookingBMVTX(TFile* f_out, Int_t doalign){
   h = new TH1D("originX_glb_diff","Difference of bm tracks and vtx tracks X projection on tg in glb sys;x diff[cm];Events",400,-0.2,0.2);
   h = new TH1D("originY_glb_diff","Difference of bm tracks and vtx tracks Y projection on tg in glb sys;y diff[cm];Events",400,-0.2,0.2);
   h = new TH1D("combinedStatus","Status of combined events;0=ok, 1=vttrknum>1, 2=vttrknum<1, 3=bmtrknum>1, 4=bmtrknum<1, 5=vttrkChi2, 6=bmtrkChi2;Events",7,-0.5,6.5);
+  h = new TH1D("residualXevent","BM - VTX track residual on target plane per events;Events",100000,0.,100000);
 
   for(Int_t i=0;i<doalign;i++){
     h = new TH1D(Form("slopeX_glb_diff_%d",i),"angle difference bm_track - vtx_track in glb sys;[rad];Events",2000,-0.1,0.1);
@@ -218,6 +219,8 @@ void FillCombined(TABMtrack* bmtrack, TAVTtrack* vttrack, vector<TVector3> &vtxs
   vtglbvec=geoTrafo->FromVTLocalToGlobal(vttrack->Intersection(postgvt.Z()));
   ((TH1D*)gDirectory->Get("originX_glb_diff"))->Fill(bmglbvec.X()-vtglbvec.X());
   ((TH1D*)gDirectory->Get("originY_glb_diff"))->Fill(bmglbvec.Y()-vtglbvec.Y());
+  if(evnum>0 && evnum<100000)
+    ((TH1D*)gDirectory->Get("residualXevent"))->SetBinContent(evnum,fabs((bmglbvec-vtglbvec).Mag()));
   vtxoriginvec.push_back(vtglbvec);
   bmoriginvec.push_back(bmglbvec);
 
