@@ -64,6 +64,8 @@ public:
   TH1F *hST[20][8];
   TH1F *hTW[20][4];
   TH1F *hCalo[20][9];
+  TH1F *hClk[20];
+
 
   int m_nev;
   

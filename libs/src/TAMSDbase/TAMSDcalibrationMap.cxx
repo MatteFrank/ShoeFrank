@@ -6,9 +6,12 @@
 ClassImp(TAMSDcalibrationMap)
 
 //_____________________________________________________________________
-TAMSDcalibrationMap::TAMSDcalibrationMap()
-: TAGobject()
+TAMSDcalibrationMap::TAMSDcalibrationMap(int strip_number_p)
+: TAGobject(),
+strip_number_m{strip_number_p}
 {
+    eloss_c.reserve( strip_number_m * 6 );
+    pedestal_c.reserve( strip_number_m * 6 );
 }
 
 //_____________________________________________________________________
@@ -44,6 +47,8 @@ void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
          pair<int, int> p(sensorId, stripId);
          fCalibElossMapStrip[p].push_back(Q_corrp0);
          fCalibElossMapStrip[p].push_back(Q_corrp1);
+          eloss_c.push_back( eloss_parameters{Q_corrp0, Q_corrp1} );
+          
       }
    } else
       Info("LoadEnergyCalibrationMap()","File Calibration Energy %s not open!!",FileName.Data());
@@ -110,6 +115,7 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
          fCalibPedMapStrip[p].push_back(Q_corrp0);
          fCalibPedMapStrip[p].push_back(Q_corrp1);
          fCalibPedMapStrip[p].push_back(Q_corrp2);
+          pedestal_c.push_back( pedestal_values{Q_corrp0, Q_corrp1, static_cast<bool>(true-Q_corrp2)} );
       }
    } else
       Info("LoadPedestalMap()","File for pedestal %s not open!!",FileName.Data());

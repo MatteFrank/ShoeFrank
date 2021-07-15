@@ -5,11 +5,11 @@
 ClassImp(TAMSDparCal)
 
 //_____________________________________________________________________
-TAMSDparCal::TAMSDparCal()
+TAMSDparCal::TAMSDparCal(int strip_number_p)
 : TAGparTools()
 {
   // Standard constructor
-  fMapCal = new TAMSDcalibrationMap();
+  fMapCal = new TAMSDcalibrationMap(strip_number_p);
 }
 
 //------------------------------------------+-----------------------------------
@@ -37,6 +37,12 @@ Double_t TAMSDparCal::GetElossParam(Int_t sensorId, Int_t stripId, UInt_t Parame
     return fMapCal->GetElossParam(sensorId, stripId, ParameterNumber);
 }
 
+//_____________________________________________________________________
+TAMSDcalibrationMap::eloss_parameters TAMSDparCal::GetElossParameters(Int_t sensorId, Int_t stripId)
+{
+    return fMapCal->GetElossParameters(sensorId, stripId);
+}
+
 //_________________________________________
 Bool_t TAMSDparCal::LoadPedestalMap(TString name)
 {
@@ -47,6 +53,11 @@ Bool_t TAMSDparCal::LoadPedestalMap(TString name)
    Info("LoadPedestalMap()", "Open file %s for Pedestals\n", name.Data());
    
    return true;
+}
+
+//_____________________________________________________________________
+TAMSDcalibrationMap::pedestal_values  TAMSDparCal::GetPedestal(Int_t sensorId, Int_t stripId) {
+    return fMapCal->GetPedestal( sensorId, stripId );
 }
 
 //_____________________________________________________________________
@@ -85,6 +96,23 @@ Double_t TAMSDparCal::GetPedestalValue(Int_t sensorId, Int_t stripId)
    Double_t value = mean + sigLevel*sigma;
    
    if (status == 0)
+      return value;
+   else
+      return -1;
+}
+
+
+
+//_____________________________________________________________________
+Double_t TAMSDparCal::GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::pedestal_values const& pedestal_p )
+{
+   Double_t sigLevel = fMapCal->GetPedestalNoiseLevel(sensorId);
+   Double_t mean     = pedestal_p.mean;
+   Double_t sigma    = pedestal_p.sigma;
+
+   Double_t value = mean + sigLevel*sigma;
+   
+   if (pedestal_p.status)
       return value;
    else
       return -1;

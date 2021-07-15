@@ -16,20 +16,23 @@ private:
   TAMSDcalibrationMap *fMapCal;
   
 public:
-  TAMSDparCal();
+  TAMSDparCal(int strip_number_p);
   virtual ~TAMSDparCal();
 
   // Calibration
   Bool_t   LoadEnergyCalibrationMap(TString Filename);
   Double_t GetElossParam(Int_t sensorId, Int_t stripId, UInt_t ParameterNumber);
+    TAMSDcalibrationMap::eloss_parameters GetElossParameters(Int_t sensorId, Int_t stripId);
 
   // Pedestal
   Bool_t   LoadPedestalMap(TString Filename);
   Double_t GetPedestalMean(Int_t sensorId, Int_t stripId);
   Double_t GetPedestalSigma(Int_t sensorId, Int_t stripId);
   Int_t    GetPedestalStatus(Int_t sensorId, Int_t stripId);
+    TAMSDcalibrationMap::pedestal_values GetPedestal(Int_t sensorId, Int_t stripId);
 
   Double_t GetPedestalValue(Int_t sensorId, Int_t stripId);
+    Double_t GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::pedestal_values const& pedestal_p);
   Double_t GetPedestalNoiseLevel(Int_t sensorId);
 
 

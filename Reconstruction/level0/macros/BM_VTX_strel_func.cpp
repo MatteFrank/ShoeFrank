@@ -73,6 +73,7 @@ void BookingBMVTX(TFile* f_out, Int_t doalign){
   h = new TH1D("vtx_originX_glbsys","VTX origin X in glb sys;X[cm];Events",600,-3.,3.);
   h = new TH1D("vtx_originY_glbsys","VTX origin Y in glb sys;Y[cm];Events",600,-3.,3.);
   h2 = new TH2D("vtx_target_glbsys","VTX tracks projection on target plane in glb sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("vtx_tw_glbsys","VTX tracks projection on target plane in glb sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
 
   h = new TH1D("vtx_polar_angle","vtx polar angle distribution ;AngZ(deg);Events",400,0.,10.);
   h = new TH1D("vtx_azimuth_angle","vtx azimuth angle distribution ;Phi(deg);Events",180,0.,180.);
@@ -89,6 +90,7 @@ void BookingBMVTX(TFile* f_out, Int_t doalign){
   h = new TH1D("bm_originX_glbsys","BM origin X in glb sys;X[cm];Events",600,-3.,3.);
   h = new TH1D("bm_originY_glbsys","BM origin Y in glb sys;Y[cm];Events",600,-3.,3.);
   h2 = new TH2D("bm_target_glbsys","BM tracks on target projections in GLB sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("bm_tw_glbsys","BM tracks on tw position in GLB sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
 
   h = new TH1D("bm_polar_angle","BM polar angle distribution ;AngZ(deg);Events",400,0.,10.);
   h = new TH1D("bm_azimuth_angle","BM azimuth angle distribution ;Phi(deg);Events",180,0.,180.);
@@ -159,6 +161,10 @@ void FillSeparated(){
     ((TH2D*)gDirectory->Get("vtx_target_vtxsys"))->Fill(tmp_tvector3.X(),tmp_tvector3.Y());
     tmp_tvector3 = geoTrafo->FromVTLocalToGlobal(tmp_tvector3);
     ((TH2D*)gDirectory->Get("vtx_target_glbsys"))->Fill(tmp_tvector3.X(),tmp_tvector3.Y());
+    TVector3 twposglo = geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0));  //Target position in global  framework
+    postgvt = geoTrafo->FromGlobalToVTLocal(twposglo);     //TW position in BM framework
+    TVector3 vtglbvec=geoTrafo->FromVTLocalToGlobal(bmtrack->Intersection(postgvt.Z()));
+    ((TH2D*)gDirectory->Get("vtx_tw_glbsys"))->Fill(vtglbvec.X(), vtglbvec.Y());
   }
 
   //bm tracks loop
@@ -182,6 +188,12 @@ void FillSeparated(){
     ((TH2D*)gDirectory->Get("bm_target_bmsys"))->Fill(tmp_tvector3.X(), tmp_tvector3.Y());
     tmp_tvector3 = geoTrafo->FromBMLocalToGlobal(tmp_tvector3);
     ((TH2D*)gDirectory->Get("bm_target_glbsys"))->Fill(tmp_tvector3.X(), tmp_tvector3.Y());
+
+    //tw position
+    TVector3 twposglo = geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0));  //Target position in global  framework
+    postgbm = geoTrafo->FromGlobalToBMLocal(twposglo);     //TW position in BM framework
+    TVector3 bmglbvec=geoTrafo->FromBMLocalToGlobal(bmtrack->Intersection(postgbm.Z()));
+    ((TH2D*)gDirectory->Get("bm_tw_glbsys"))->Fill(bmglbvec.X(), bmglbvec.Y());
   }
 
   if(debug)
@@ -221,6 +233,14 @@ void FillCombined(TABMtrack* bmtrack, TAVTtrack* vttrack, vector<TVector3> &vtxs
   ((TH1D*)gDirectory->Get("originY_glb_diff"))->Fill(bmglbvec.Y()-vtglbvec.Y());
   if(evnum>0 && evnum<100000)
     ((TH1D*)gDirectory->Get("residualXevent"))->SetBinContent(evnum,fabs((bmglbvec-vtglbvec).Mag()));
+
+  //TW position
+  TVector3 twposglo = geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0));  //Target position in global  framework
+  postgvt = geoTrafo->FromGlobalToVTLocal(twposglo);     //TW position in VT framework
+  postgbm = geoTrafo->FromGlobalToBMLocal(postgglo);     //TW position in BM framework
+  bmglbvec=geoTrafo->FromBMLocalToGlobal(bmtrack->Intersection(postgbm.Z()));
+  vtglbvec=geoTrafo->FromVTLocalToGlobal(vttrack->Intersection(postgvt.Z()));
+
   vtxoriginvec.push_back(vtglbvec);
   bmoriginvec.push_back(bmglbvec);
 
@@ -273,7 +293,7 @@ void PostLoopAnalysis(){
   garfield_strel_tf1->Write();
 
   cout<<"BM VTX X origin correlation factor= "<<((TH2D*)gDirectory->Get("origin_xx_bmvtx"))->GetCorrelationFactor()<<endl;
-  cout<<"BM VTX Y slope correlation factor= "<<((TH2D*)gDirectory->Get("slope_myy_bmvtx"))->GetCorrelationFactor()<<endl;
+  cout<<"BM VTX Y slope correlation factor="<<((TH2D*)gDirectory->Get("slope_myy_bmvtx"))->GetCorrelationFactor()<<endl;
 
   TProfile *prof_newstrel=((TH2D*)gDirectory->Get("NewStrel"))->ProfileX();
   prof_newstrel->SetLineColor(3);

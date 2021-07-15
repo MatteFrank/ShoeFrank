@@ -33,6 +33,11 @@ ClassImp(TAGactWDreader);
 //! Default constructor.
 
 
+const int MaxEvents=20;
+const int MaxST=8;
+const int MaxTW=4;
+const int MaxCalo=9;
+
 
 TAGactWDreader::TAGactWDreader(const char* name,
 			     TAGdataDsc* p_datdaq,
@@ -97,10 +102,9 @@ Bool_t TAGactWDreader::Action() {
      }
    }
    
-   if(st_waves.size()){
-     p_stwd->NewSuperHit(st_waves);
-   }
-
+   
+   p_stwd->NewSuperHit(st_waves);
+   
    p_stwd->UpdateRunTime(nmicro);
    p_twwd->UpdateRunTime(nmicro);
    //   p_cawd->UpdateRunTime(nmicro);
@@ -266,6 +270,9 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	    w_amp.clear();
 	  }
 	}
+      }else if(evt->values.at(iW) == EVT_FOOTER){
+	if(FootDebugLevel(1))printf("found footer\n");
+	return nmicro;
       }
       
       
@@ -300,6 +307,8 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	  }
 	}
       }
+
+      
       iW++;
       if(evt->values.at(iW) == EVT_FOOTER){
 	if(FootDebugLevel(1))printf("found footer\n");
@@ -328,7 +337,7 @@ void TAGactWDreader::CreateHistogram()
 
   TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)   fpWDTim->Object();
 
-  for(int iEv=0;iEv<20;iEv++){
+  for(int iEv=0;iEv<MaxEvents;iEv++){
     for(int iCh=0;iCh<8;iCh++){
       Double_t xmin =  p_WDtim->GetRawTimeArray(27, iCh, 0).at(0);
       Double_t xmax =  p_WDtim->GetRawTimeArray(27, iCh, 0).at(1023);
@@ -347,7 +356,15 @@ void TAGactWDreader::CreateHistogram()
       hCalo[iEv][iCh] = new TH1F(Form("hCA_board161_ch%d_nev%d",iCh, iEv),"",1024,xmin,xmax);
       AddHistogram(hCalo[iEv][iCh]);
     }
+    
+    Double_t xmin =  p_WDtim->GetRawTimeArray(27, 16, 0).at(0);
+    Double_t xmax =  p_WDtim->GetRawTimeArray(27, 16, 0).at(1023);
+    hClk[iEv] = new TH1F(Form("hCLK_board27_ch16_nev%d", iEv),"",1024,xmin,xmax);
+    AddHistogram(hClk[iEv]);
   }
+
+
+
   
   SetValidHistogram(kTRUE);
 }
@@ -571,20 +588,29 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACA
   for(int i=0; i<(int)st_waves.size();i++){
     p_straw->NewHit(st_waves.at(i));
     int ch = st_waves.at(i)->GetChannelId();
-    if(ValidHistogram() && m_nev<20 && ch<8)FillHistogram(hST[m_nev][ch], st_waves.at(i));
+    if(ValidHistogram() && m_nev<MaxEvents && ch<MaxST)FillHistogram(hST[m_nev][ch], st_waves.at(i));
   }
 
   for(int i=0; i<(int)tw_waves.size();i++){
     p_twraw->NewHit(tw_waves.at(i));
     int ch = tw_waves.at(i)->GetChannelId();
-    if(ValidHistogram() && m_nev<20 && ch<4)FillHistogram(hTW[m_nev][ch], tw_waves.at(i));
+    if(ValidHistogram() && m_nev<MaxEvents && ch<MaxTW)FillHistogram(hTW[m_nev][ch], tw_waves.at(i));
   }
 
   for(int i=0; i<(int)ca_waves.size();i++){
     p_caraw->NewHit(ca_waves.at(i));
     int ch = ca_waves.at(i)->GetChannelId();
-    if(ValidHistogram() && m_nev<20 && ch<9)FillHistogram(hCalo[m_nev][ch], ca_waves.at(i));
+    if(ValidHistogram() && m_nev<MaxEvents && ch<MaxCalo)FillHistogram(hCalo[m_nev][ch], ca_waves.at(i));
   }
+
+   map<pair<int,int>, TWaveformContainer*>::iterator it;
+   for(it=clk_waves.begin(); it != clk_waves.end(); it++){
+     int bo = it->second->GetBoardId();
+     int ch = it->second->GetChannelId();
+     if(bo==27 && ch == 16){
+       if(ValidHistogram() && m_nev<MaxEvents)FillHistogram(hClk[m_nev], it->second);
+     }
+   }
 
   return true;
   
