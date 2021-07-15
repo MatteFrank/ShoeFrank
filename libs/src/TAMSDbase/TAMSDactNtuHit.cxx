@@ -86,11 +86,14 @@ Double_t TAMSDactNtuHit::GetEnergy(Double_t rawenergy, Int_t sensorId, Int_t str
 {
    TAMSDparCal* p_parcal = (TAMSDparCal*) fpParCal->Object();
    
-   Double_t p0 = p_parcal->GetElossParam(sensorId, stripId, 0);
-   Double_t p1 = p_parcal->GetElossParam(sensorId, stripId, 1);
+    //switching from this to only one call would speed up thing, buit using flat vector of struct would be faster
+    //only thing needed is to compute index, but it is easy, it's a matrix
+//   Double_t p0 = p_parcal->GetElossParam(sensorId, stripId, 0);
+//   Do,/uble_t p1 = p_parcal->GetElossParam(sensorId, stripId, 1);
+    auto eloss_parameters = p_parcal->GetElossParameters(sensorId, stripId);
    
-   return p0 + p1 * rawenergy;
-   
+   //return p0 + p1 * rawenergy;
+    return eloss_parameters.offset + eloss_parameters.slope * rawenergy;
 }
 
 
