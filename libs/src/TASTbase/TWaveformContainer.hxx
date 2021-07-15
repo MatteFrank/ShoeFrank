@@ -47,6 +47,8 @@ public:
   vector<double>& GetVectRawT()   { return fVectRawT;       }
   vector<double>& GetVectA()      { return fVectA;          }
 
+
+  
 private:
   Int_t  fTrigType;
   Int_t  fTriggerCellId;

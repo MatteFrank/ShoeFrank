@@ -43,9 +43,9 @@ public:
   TH1F *hArrivalTime[8];
   TH1F *hCharge[8];
   TH1F *hAmplitude[8];
-  TH1F *hTrigTime;
+  TH1F *hTime;
   TH1F *hTotCharge;
-  TH1F *hEventTime;
+
 
   int m_nev;
   
