@@ -47,14 +47,15 @@ private:
     Double_t m_TimeA_oth;
     Double_t m_TimeB_oth;
     Bool_t   m_IsValid;
-
+    Int_t m_TrigType;
+  
 public:
   TATWhit();
   TATWhit( TATWrawHit* hit );
   TATWhit(const TATWhit& aHit);
   TATWhit ( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTimeOth,
 		  	   Double_t pos,Double_t chargeCOM,Double_t ChargeA,
-	       Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeAOth,Double_t TimeBOth);
+	    Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeAOth,Double_t TimeBOth, Int_t trigType);
   ~TATWhit() {};
    void   Clear(Option_t* option = "C");
   bool IsColumn() { return ( m_layer == (Int_t)LayerY ? true : false ); };
@@ -79,6 +80,7 @@ public:
    Bool_t    IsValid()                 const   { return m_IsValid;           }
    Float_t   GetHitCoordinate_detectorFrame() const   { return m_coordinate; }
    Float_t   GetHitZ_detectorFrame()          const   { return m_z;          }
+   Int_t     GetTrigType()             const {return m_TrigType;}
   
    // MC track id
    Int_t     GetMcIndex(Int_t index)    const   { return m_MCindex[index];      }
@@ -123,7 +125,7 @@ public:
 
    TATWhit*           NewHit( Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
                              Double_t pos,Double_t chargeCOM,Double_t ChargeA, Double_t ChargeB, Double_t AmplitudeA, Double_t AmplitudeB,
-                             Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth);
+			      Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth, Int_t trigType);
   
     int               GetHitN(int layer); 
     int 			       GetHitN();

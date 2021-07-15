@@ -83,6 +83,8 @@ Bool_t TAGactWDreader::Action() {
    Int_t nFragments = p_datdaq->GetFragmentsN();
    Int_t nmicro;
 
+
+
    //decoding fragment and fillin the datRaw class
    for (Int_t i = 0; i < nFragments; ++i) {
      TString type = p_datdaq->GetClassType(i);
@@ -160,7 +162,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	iW++;
 	trig_type = (evt->values.at(iW)>>16) & 0xffff;
 	ser_evt_number =  evt->values.at(iW)& 0xffff;
-      
+	
 	iW++;
 	bco_counter = (int)evt->values.at(iW);
       

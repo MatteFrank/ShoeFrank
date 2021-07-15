@@ -156,6 +156,8 @@ Bool_t TATWactNtuHit::Action() {
     p_STnturaw = (TASTntuHit*)  fpSTNtuRaw->Object();
   TATWntuHit*   p_nturaw = (TATWntuHit*)  fpNtuRaw->Object();
 
+
+  
   //////////// Time Trigger info from ST ///////////////
   
   if(FootDebugLevel(1)) {
@@ -269,6 +271,8 @@ Bool_t TATWactNtuHit::Action() {
 	    Double_t btrain =  (hitb->GetTime() - hita->GetTime())/(2*fTofPropAlpha);  // local (TW) ref frame
 	    Double_t atrain =  (hita->GetTime() - hitb->GetTime())/(2*fTofPropAlpha); 
 
+
+	    Int_t TrigType= hita->GetTriggerType();
 	    if(FootDebugLevel(1)) {
 	      cout<<"ta::"<<hita->GetTime()<<"   tb::"<<hitb->GetTime()<<"  alpha::"<<fTofPropAlpha<<endl;
 	      cout<<"a::"<<atrain<<"  b::"<<btrain<<endl;
@@ -290,7 +294,7 @@ Bool_t TATWactNtuHit::Action() {
 	    }
 
 
-	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,TimeOth,posAlongBar,chargeCOM,ChargeA,ChargeB,AmplitudeA, AmplitudeB,TimeA,TimeB,TimeAOth,TimeBOth);
+	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,TimeOth,posAlongBar,chargeCOM,ChargeA,ChargeB,AmplitudeA, AmplitudeB,TimeA,TimeB,TimeAOth,TimeBOth,TrigType);
 
 	    Int_t Zrec = f_parcal->GetChargeZ(Energy,Time,Layer);
 	    fCurrentHit->SetChargeZ(Zrec);

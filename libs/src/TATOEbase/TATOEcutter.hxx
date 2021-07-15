@@ -590,7 +590,7 @@ struct TATOEcutter : TATOEbaseCutter,
             c_mh->apply_cuts();
             return {};
         }
-        friend bool operator!=(const iterator& lhs, const iterator& rhs){ return !lhs.erased_mh->is_done(); }
+        friend bool operator!=(const iterator& lhs, const iterator& /*rhs*/){ return !lhs.erased_mh->is_done(); }
         constexpr iterator& operator++(){
             c_mh->retrieve_results();
             c_mh->call();

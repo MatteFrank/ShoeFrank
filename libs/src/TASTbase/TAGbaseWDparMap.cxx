@@ -90,7 +90,6 @@ void TAGbaseWDparMap::Clear(Option_t*){
 
 
 string TAGbaseWDparMap::GetChannelType(int board, int channel){
-  
   string res = "CORRUPTED";
   if(chmap.count(make_pair(board, channel))) {
     return chmap.find(make_pair(board, channel))->second;

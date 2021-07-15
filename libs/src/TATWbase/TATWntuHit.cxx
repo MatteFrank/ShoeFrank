@@ -39,7 +39,8 @@ TATWhit::TATWhit()
     m_time_oth(-1),
     m_TimeA_oth(-1),
     m_TimeB_oth(-1),
-    m_IsValid(true)
+    m_IsValid(true),
+    m_TrigType(-1000)
 {
 }
 
@@ -66,7 +67,8 @@ TATWhit::TATWhit( TATWrawHit* hit )
   m_time_oth(-1),
   m_TimeA_oth(-1),
   m_TimeB_oth(-1),
-  m_IsValid(true)
+  m_IsValid(true),
+  m_TrigType(-1000)
 {
 }
 
@@ -94,7 +96,8 @@ TATWhit::TATWhit(const TATWhit& aHit)
    m_time_oth(aHit.m_time_oth),
    m_TimeA_oth(aHit.m_TimeA_oth),
    m_TimeB_oth(aHit.m_TimeB_oth),
-   m_IsValid(aHit.m_IsValid)
+   m_IsValid(aHit.m_IsValid),
+   m_TrigType(aHit.m_TrigType)
 {
 }
 
@@ -102,7 +105,7 @@ TATWhit::TATWhit(const TATWhit& aHit)
 // Build the hit from its layerID and barID
 TATWhit::TATWhit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
 			Double_t pos,Double_t chargeCOM,Double_t ChargeA,
-			Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth):
+		  Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth, Int_t TrigType):
   
   TAGobject(),
   m_layer(aView),
@@ -123,7 +126,8 @@ TATWhit::TATWhit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_
   m_time_oth(aTime_oth),
   m_TimeA_oth(TimeA_oth),
   m_TimeB_oth(TimeB_oth),
-  m_IsValid(true)
+  m_IsValid(true),
+  m_TrigType(TrigType)
 {
 }
 
@@ -192,13 +196,13 @@ TATWntuHit::~TATWntuHit()
 //______________________________________________________________________________
 //  standard
 TATWhit* TATWntuHit::NewHit( int layer, int bar, double energyLoss, double atime, double atime_oth, double pos,double chargeCOM,
-				double ChargeA, double ChargeB, double AmplitudeA, double AmplitudeB, double TimeA, double TimeB, double TimeA_oth, double TimeB_oth) {
+			     double ChargeA, double ChargeB, double AmplitudeA, double AmplitudeB, double TimeA, double TimeB, double TimeA_oth, double TimeB_oth, Int_t TrigType) {
 
 	TClonesArray &pixelArray = *m_listOfHits;
 	if(layer == (int)LayerY) m_hitlayY++;
 	else   if(layer == (int)LayerX) m_hitlayX++;
 	TATWhit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWhit( layer, bar, energyLoss, atime, atime_oth, pos,
-										   chargeCOM,ChargeA, ChargeB, AmplitudeA, AmplitudeB, TimeA, TimeB,  TimeA_oth, TimeB_oth);
+									     chargeCOM,ChargeA, ChargeB, AmplitudeA, AmplitudeB, TimeA, TimeB,  TimeA_oth, TimeB_oth, TrigType);
 
 
 	return hit;
