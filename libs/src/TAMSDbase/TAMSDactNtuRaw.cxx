@@ -78,14 +78,14 @@ Bool_t TAMSDactNtuRaw::Action()
 
    Int_t nFragments = p_datdaq->GetFragmentsN();
 
-  if(FootDebugLevel(1))
+   if(FootDebugLevel(1))
     cout<<"TAMSDactNtuRaw::Action():: I'm going to charge "<<nFragments<<" number of fragments"<<endl;
 
    for (Int_t i = 0; i < nFragments; ++i) {
        TString type = p_datdaq->GetClassType(i);
        if (type.Contains("DEMSDEvent")) {
          const DEMSDEvent* evt = static_cast<const DEMSDEvent*> (p_datdaq->GetFragment(i));
-          if (FootDebugLevel(1))
+	 if (FootDebugLevel(1))
             evt->printData();
          DecodeHits(evt);
        }
@@ -106,10 +106,11 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
    TAMSDntuRaw*    p_datraw = (TAMSDntuRaw*)    fpDatRaw->Object();
    TAMSDparGeo*    p_pargeo = (TAMSDparGeo*)    fpParGeo->Object();
    TAMSDparCal*    p_parcal = (TAMSDparCal*)    fpParCal->Object();
+   TAMSDparMap*    p_parmap = (TAMSDparMap*)    fpParMap->Object();
 
    // decode here
    Int_t boardId = (evt->boardHeader & 0xF)-1;
-   
+
    for (Int_t i = 0; i < p_pargeo->GetStripsN(); ++i) {
       
       UInt_t adcX = evt->Xplane[i];
@@ -125,41 +126,34 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       Double_t meanY  = 0;
 
       view = 1;
-      sensorId = TAMSDparGeo::GetSensorId(boardId, view);
-       auto pedestal = p_parcal->GetPedestal( sensorId, i );
-//      status   = p_parcal->GetPedestalStatus(sensorId, i);
-//      if (status == 0) {
-       if( pedestal.status ) {
-         if (fgPedestalSub) {
-//            valueX = p_parcal->GetPedestalValue(sensorId, i);
-             valueX = p_parcal->GetPedestalValue(sensorId, pedestal);
-             meanX = pedestal.mean;
-//            meanX  = p_parcal->GetPedestalMean(sensorId, i);
-             valueX = adcX - valueX;
-         }
-         if (valueX > 0) {
-            p_datraw->AddStrip(sensorId, i, view, adcX-meanX);
-            if (ValidHistogram())
-               fpHisStripMap[sensorId]->Fill(i, adcX-meanX);
-         }
+      sensorId = p_parmap->GetSensorId(boardId, view);
+      auto pedestal = p_parcal->GetPedestal( sensorId, i );
+      
+      if( pedestal.status ) {
+	if (fgPedestalSub) {
+	  valueX = p_parcal->GetPedestalValue(sensorId, pedestal);
+	  meanX = pedestal.mean;
+	  valueX = adcX - valueX;
+	}
+	if (valueX > 0) {
+	  p_datraw->AddStrip(sensorId, i, view, adcX-meanX);
+	  if (ValidHistogram())
+	    fpHisStripMap[sensorId]->Fill(i, adcX-meanX);
+	}
       }
       view = 0;
-      sensorId = TAMSDparGeo::GetSensorId(boardId, view);
-//      status   = p_parcal->GetPedestalStatus(sensorId, i);
-//      if (status == 0) {
-       pedestal = p_parcal->GetPedestal( sensorId, i );
+      sensorId = p_parmap->GetSensorId(boardId, view);
+      pedestal = p_parcal->GetPedestal( sensorId, i );
       if( pedestal.status ) {
          if (fgPedestalSub) {
-//            valueY = p_parcal->GetPedestalValue(sensorId, i);
-//            meanY  = p_parcal->GetPedestalMean(sensorId, i);
-             valueY = p_parcal->GetPedestalValue(sensorId, pedestal);
-             meanY = pedestal.mean;
-            valueY = adcY - valueY;
+	   valueY = p_parcal->GetPedestalValue(sensorId, pedestal);
+	   meanY = pedestal.mean;
+	   valueY = adcY - valueY;
          }
          if (valueY > 0) {
-            p_datraw->AddStrip(sensorId, i, view, adcY-meanY);
-            if (ValidHistogram())
-               fpHisStripMap[sensorId]->Fill(i, adcY-meanY);
+	   p_datraw->AddStrip(sensorId, i, view, adcY-meanY);
+	   if (ValidHistogram())
+	     fpHisStripMap[sensorId]->Fill(i, adcY-meanY);
          }
       }
    }

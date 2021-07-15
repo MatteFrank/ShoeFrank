@@ -47,7 +47,7 @@ public:
 public:
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
-   ClassDef(TAMSDntuHit,1)
+   ClassDef(TAMSDntuHit,2)
 };
 
 #endif

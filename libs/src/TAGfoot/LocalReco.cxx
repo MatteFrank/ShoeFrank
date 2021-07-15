@@ -319,8 +319,10 @@ void LocalReco::SetTreeBranches()
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
-     if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
+     if (fFlagHits) {
+         fActEvtWriter->SetupElementBranch(fpDatRawMsd, TAMSDntuRaw::GetBranchName());
+     }
+     fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {

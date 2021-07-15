@@ -61,7 +61,7 @@ void TABMactNtuRaw::CreateHistogram()
   // AddHistogram(fpRawMapY);
   fpRawTdcChannel=new TH1I( "bmRawTdcHitDistribution", "Number of hits x channel (-1=error); TDC channel; Number of hits", p_parmap->GetTdcMaxCh()+2, -1.5, p_parmap->GetTdcMaxCh()+0.5);
   AddHistogram(fpRawTdcChannel);
-  fpRawTrigTrigger=new TH1F( "bmRawTrigger", "Trigger time; Trigger time [ns]; Events", 200, 0, 0);
+  fpRawTrigTrigger=new TH1F( "bmRawTrigger", "BM used trigger time; Trigger time [ns]; Events", 200, 0, 0);
   AddHistogram(fpRawTrigTrigger);
   fpRawSTFitTrigger=new TH1F( "bmSTFITTrigger", "SC Fitted Trigger time; Trigger time [ns]; Events", 200, 0, 0);
   AddHistogram(fpRawSTFitTrigger);
@@ -70,9 +70,22 @@ void TABMactNtuRaw::CreateHistogram()
   if(p_parmap->GetDaqTrefCh()>=0){
     fpRawMagorTrigger=new TH1F( "bmmagortrigger", "Margherita Or Trigger time; Trigger time [ns]; Events", 200, 0, 0);
     AddHistogram(fpRawMagorTrigger);
+    fpRawbmTdcLessSTFITLessMagorTrigger=new TH1F( "bmTdcLessSTFITLessMagorTrigger", "Tdc Trigger Less STFITT time; Trigger time [ns]; Events", 200, 0, 0);
+    AddHistogram(fpRawbmTdcLessSTFITLessMagorTrigger);
+    fpRawbmTdcLessSTFITPlusMagorTrigger=new TH1F( "bmTdcLessSTFITPlusMagorTrigger", "Tdc Trigger Less STFITT time; Trigger time [ns]; Events", 200, 0, 0);
+    AddHistogram(fpRawbmTdcLessSTFITPlusMagorTrigger);
+    fpRawbmTdcPlusSTFITPlusMagorTrigger=new TH1F( "bmTdcPlusSTFITPlusMagorTrigger", "Tdc Trigger Less STFITT time; Trigger time [ns]; Events", 200, 0, 0);
+    AddHistogram(fpRawbmTdcPlusSTFITPlusMagorTrigger);
+    fpRawbmTdcPlusSTFITLessMagorTrigger=new TH1F( "bmTdcPlusSTFITLessMagorTrigger", "Tdc Trigger Less STFITT time; Trigger time [ns]; Events", 200, 0, 0);
+    AddHistogram(fpRawbmTdcPlusSTFITLessMagorTrigger);
     fpRawMagorDouble=new TH1I( "bmmagordouble", "Margherita Or double counting whitin the +- 10 ns; Number of Margherita or signal; Events", 21, -0.5, 20.5);
-    AddHistogram(fpRawMagorTrigger);
+    AddHistogram(fpRawMagorDouble);
   }
+
+  fpRawbmTdcLessSTFITTrigger=new TH1F( "bmTdcLessSTFITTrigger", "Tdc Trigger Less STFITT time; Trigger time [ns]; Events", 200, 0, 0);
+  AddHistogram(fpRawbmTdcLessSTFITTrigger);
+  fpRawbmTdcPlusSTFITTrigger=new TH1F( "bmTdcPlusSTFITTrigger", "Tdc Trigger Plus STFITT time; Trigger time [ns]; Events", 200, 0, 0);
+  AddHistogram(fpRawbmTdcPlusSTFITTrigger);
 
   fpRawCh1NoTrig=new TH1F( "RawCh1NoTrig", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
   AddHistogram(fpRawCh1NoTrig);
@@ -187,8 +200,9 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
   Int_t magorcounter=0;
   if(p_parmap->GetDaqTrefCh()>=0){
     if(tdctrigger!=99999 && magorvec.size()!=0){
+      Double_t min=999999999;
       for(Int_t i=0;i<magorvec.size();i++){
-        if(fabs(tdctrigger-magorvec.at(i))<11){
+        if(fabs(tdctrigger-magorvec.at(i))<min){
           magortrigger=magorvec.at(i);
           magorcounter++;
         }
@@ -199,13 +213,24 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
   }else
     used_trigger=tdctrigger-sttrigger;
 
+    //redifinition of used
+    used_trigger=tdctrigger+sttrigger;
 
   p_datraw->SetTrigtime(used_trigger);
   if (ValidHistogram()){
     fpRawTrigTrigger->Fill(used_trigger);
-    if(p_parmap->GetDaqTrefCh()>=0)
+    if(p_parmap->GetDaqTrefCh()>=0){
       fpRawMagorDouble->Fill(magorcounter);
+      fpRawbmTdcLessSTFITLessMagorTrigger->Fill(tdctrigger-sttrigger-magortrigger);
+      fpRawbmTdcLessSTFITPlusMagorTrigger->Fill(tdctrigger-sttrigger+magortrigger);
+      fpRawbmTdcPlusSTFITPlusMagorTrigger->Fill(tdctrigger+sttrigger+magortrigger);
+      fpRawbmTdcPlusSTFITLessMagorTrigger->Fill(tdctrigger+sttrigger-magortrigger);
+    }
+    fpRawbmTdcPlusSTFITTrigger->Fill(tdctrigger+sttrigger);
+    fpRawbmTdcLessSTFITTrigger->Fill(tdctrigger-sttrigger);
   }
+
+
   for(Int_t i = 0; i < ((int)evt->measurement.size());i++) {
     measurement=(Double_t) (evt->measurement.at(i) & 0x7ffff)/10.;
     channel=(evt->measurement.at(i)>>19) & 0x7f;
@@ -242,7 +267,7 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
       hitnum++;
       if(FootDebugLevel(3))
         cout<<"BM hit charged : channel="<<channel<<"  tdc2cell="<<bmcellid<<"  measurement="<<measurement<<"  T0="<<p_parcal->GetT0(bmcellid)<<"  triggertime="<<used_trigger<<"  hittime="<<measurement - p_parcal->GetT0(bmcellid)-used_trigger<<endl;
-    }else if(channel!=p_parmap->GetBmTrefCh()){
+    }else if(bmcellid!=-1000 && bmcellid!=-1001){
       p_datraw->AddDischarged();
       if(FootDebugLevel(3))
         cout<<"BM hit DIScharged: tdc channel="<<channel<<"  measurement="<<measurement<<endl;

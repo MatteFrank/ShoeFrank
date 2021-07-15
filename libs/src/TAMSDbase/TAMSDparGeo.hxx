@@ -85,7 +85,7 @@ private:
 public:
   static const Char_t* GetBaseName()                    { return fgkBaseName.Data();    }
   static const Char_t* GetDefParaName()                 { return fgkDefParaName.Data(); }
-  static Int_t GetSensorId(Int_t boardId, Int_t sideId) { return 2*boardId+sideId;      }
+  static Int_t GetSensorId(Int_t boardId, Int_t sideId) { return 2*(boardId-1)+sideId;      }
 
   ClassDef(TAMSDparGeo,3)
 };

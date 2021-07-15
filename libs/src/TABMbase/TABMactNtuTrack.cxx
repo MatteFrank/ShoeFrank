@@ -73,6 +73,12 @@ void TABMactNtuTrack::CreateHistogram()
   AddHistogram(fpHisMap);
   fpHisMylar12d = new TH2F("bmTrackCenter","BM - Position of the tracks on the BM center plane", 500, -3., 3.,500 , -3., 3.);
   AddHistogram(fpHisMylar12d);
+  // fpHis0MSD = new TH2F("bmMsd0","BM - Position of the tracks on the MSD 0 plane in global ref", 500, -5., 5.,500 , -5., 5.);
+  // AddHistogram(fpHis0MSD);
+  // fpHis1MSD = new TH2F("bmMsd1","BM - Position of the tracks on the MSD 1 plane in global ref", 500, -5., 5.,500 , -5., 5.);
+  // AddHistogram(fpHis1MSD);
+  // fpHis2MSD = new TH2F("bmMsd2","BM - Position of the tracks on the MSD 2 plane in global ref", 500, -5., 5.,500 , -5., 5.);
+  // AddHistogram(fpHis2MSD);//new plots for gsi2021
   fpHisAngleX = new TH1F("bmTrackAngleX","BM track XZ Angular spread; XZ Angle [rad]; Events", 200, -0.3, 0.3);
   AddHistogram(fpHisAngleX);
   fpHisAngleY = new TH1F("bmTrackAngleY","BM track YZ Angular spread; YZ Angle [rad]; Events", 200, -0.3, 0.3);
@@ -328,6 +334,12 @@ Bool_t TABMactNtuTrack::Action()
       TVector3 pos = savedtracktr->PointAtLocalZ(posZ);
       fpHisMap->Fill(pos[0], pos[1]);
       fpHisMylar12d->Fill(savedtracktr->GetOrigin().X(), savedtracktr->GetOrigin().Y());
+      // posZ = geoTrafo->FromGlobalToBMLocal(geoTrafo->FromMSDLocalToGlobal(0.,0.,0.)).Z(); //msd first plane z position in global position
+      // pos = savedtracktr->PointAtLocalZ(posZ);
+      // fpHis0MSD->Fill(pos[0], pos[1]);
+
+
+
       fpHisAngleX->Fill(savedtracktr->GetSlope().X()/savedtracktr->GetSlope().Z());
       fpHisAngleY->Fill(savedtracktr->GetSlope().Y()/savedtracktr->GetSlope().Z());
       fpHisChi2Red->Fill(savedtracktr->GetChiSquare());

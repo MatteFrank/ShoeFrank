@@ -67,13 +67,14 @@ Bool_t TAMSDactNtuHit::Action()
          UInt_t charge    = strip->GetCharge();
          Float_t posStrip = p_geoMap->GetPosition(stripId);
          
-        if (FootDebugLevel(1))
+	 if (FootDebugLevel(1))
             printf("sensor: %d strip: %d view: %d charge: %d\n", sensorId, stripId, view, charge);
          
          // here we need the calibration file
          Double_t energy = GetEnergy(charge, sensorId, stripId);
          TAMSDhit* hit = p_nturaw->NewStrip(sensorId, energy, view, stripId);
          hit->SetPosition(posStrip);
+	 
       }
    }
    fpNtuRaw->SetBit(kValid);

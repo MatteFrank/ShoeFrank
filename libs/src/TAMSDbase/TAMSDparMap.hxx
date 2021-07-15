@@ -10,17 +10,28 @@
 
 #include <vector>
 
-#include "TAVTbaseParMap.hxx"
+#include "TAGparTools.hxx"
 
 //##############################################################################
 
-class TAMSDparMap : public TAVTbaseParMap {
+class TAMSDparMap : public TAGparTools {
    
 public:
    TAMSDparMap();
    virtual ~TAMSDparMap();
-   
-   ClassDef(TAMSDparMap,1)
+
+   Bool_t          FromFile(const TString& name);
+   Int_t           GetSensorId(Int_t boardId, Int_t viewId);
+
+private:
+
+  Int_t nSens;
+  vector<Int_t> fSensId;
+  vector<Int_t> fBoardId;
+  vector<Int_t> fViewId;
+  TString                  fkDefaultMapName; // default detector mapping file
+  
+  ClassDef(TAMSDparMap,2)
   
 };
 
