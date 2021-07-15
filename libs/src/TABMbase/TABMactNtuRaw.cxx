@@ -236,7 +236,7 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
         }
       }
     }
-    if(bmcellid!=-1 && bmcellid!=-1000){//-1000=syncTime, -1=not set
+    if(bmcellid!=-1 && bmcellid!=-1000 && bmcellid!=-1001){//-1000=syncTime, -1=not set
       p_pargeo->GetBMNlvc(bmcellid,plane,view,cell);
       p_datraw->NewHit(bmcellid, plane,view,cell,measurement);
       hitnum++;
