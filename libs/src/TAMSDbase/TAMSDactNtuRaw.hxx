@@ -37,12 +37,16 @@ public:
     virtual Bool_t  Action();
 
     ClassDef(TAMSDactNtuRaw,0)
+   
+public:
+   static void EnablePedSub()  { fgPedestalSub = true;  }
+   static void DisablePedSub() { fgPedestalSub = false; }
 
 private:
     TAGdataDsc*     fpDatRaw;		        // output data dsc
     TAGdataDsc*     fpDatDaq;		        // input data dsc
-    TAGparaDsc*     fpParMap;              // parameter dsc
-    TAGparaDsc*     fpParCal;              // parameter dsc
+    TAGparaDsc*     fpParMap;            // parameter dsc
+    TAGparaDsc*     fpParCal;            // parameter dsc
     TAGparaDsc*     fpParGeo;		        // parameter dsc
 
     TH1F*           fpHisStripMap[6];
@@ -51,8 +55,8 @@ private:
     Bool_t DecodeHits(const DEMSDEvent* evt);
    
 private:
-   
    static UInt_t fkgThreshold;
+   static Bool_t fgPedestalSub;
 };
 
 #endif

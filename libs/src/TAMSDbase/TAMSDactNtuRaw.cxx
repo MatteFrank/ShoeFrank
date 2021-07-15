@@ -15,7 +15,8 @@
 
 ClassImp(TAMSDactNtuRaw);
 
- UInt_t TAMSDactNtuRaw::fkgThreshold = 0;
+UInt_t TAMSDactNtuRaw::fkgThreshold = 0;
+Bool_t TAMSDactNtuRaw::fgPedestalSub = true;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -117,14 +118,21 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       Int_t sensorId = -1;
       Bool_t status  = true;
       
+      Double_t valueX = 99;
+      Double_t valueY = 99;
+
+      Double_t meanX  = 0;
+      Double_t meanY  = 0;
+
       view = 1;
       sensorId = TAMSDparGeo::GetSensorId(boardId, view);
       status   = p_parcal->GetPedestalStatus(sensorId, i);
       if (status == 0) {
-         Double_t valueX = p_parcal->GetPedestalValue(sensorId, i);
-         Double_t meanX  = p_parcal->GetPedestalMean(sensorId, i);
-         valueX  = adcX - valueX;
-         
+         if (fgPedestalSub) {
+            valueX = p_parcal->GetPedestalValue(sensorId, i);
+            meanX  = p_parcal->GetPedestalMean(sensorId, i);
+            valueX = adcX - valueX;
+         }
          if (valueX > 0) {
             p_datraw->AddStrip(sensorId, i, view, adcX-meanX);
             if (ValidHistogram())
@@ -136,10 +144,11 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       sensorId = TAMSDparGeo::GetSensorId(boardId, view);
       status   = p_parcal->GetPedestalStatus(sensorId, i);
       if (status == 0) {
-         Double_t valueY = p_parcal->GetPedestalValue(sensorId, i);
-         Double_t meanY  = p_parcal->GetPedestalMean(sensorId, i);
-         valueY  = adcY - valueY;
-         
+         if (fgPedestalSub) {
+            valueY = p_parcal->GetPedestalValue(sensorId, i);
+            meanY  = p_parcal->GetPedestalMean(sensorId, i);
+            valueY = adcY - valueY;
+         }
          if (valueY > 0) {
             p_datraw->AddStrip(sensorId, i, view, adcY-meanY);
             if (ValidHistogram())
