@@ -101,9 +101,8 @@ void TATWactNtuHit::CreateHistogram()
   fpHisDeTot = new TH1F("twDeTot", "TW - Total Energy Loss", 480, 0., 120.);
   AddHistogram(fpHisDeTot);
    
-  fpHisTimeTot = new TH1F("twTimeTot", "TW - Total Time Of Flight", 5000, 0., 50);
+  fpHisTimeTot = new TH1F("twTimeTot", "TW - Total Time Of Flight", 5000, -50., 50);
   AddHistogram(fpHisTimeTot);
-
 
   
   for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {

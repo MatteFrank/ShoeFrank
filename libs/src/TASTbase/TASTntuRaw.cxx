@@ -34,6 +34,7 @@ TASTrawHit::TASTrawHit()
   fChg = -1000;
   fAmplitude = -1000;
   fTime =-1000;
+  fTimeOth =-1000;
 }
 
 //------------------------------------------+-----------------------------------
@@ -155,6 +156,7 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW){
 
   if(!vW.size()){
     printf("Warning, ST waveforms not found!!\n");
+    fSuperHit = new TASTrawHit();
     return;
   }
 

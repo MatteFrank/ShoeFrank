@@ -222,10 +222,10 @@ void LocalReco::SetRawHistogramDir()
 
 
    // CA
-   if (TAGrecoManager::GetPar()->IncludeCA()) {
-     TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
-     fActWdRaw->SetHistogramDir(subfolder);
-   }
+   // if (TAGrecoManager::GetPar()->IncludeCA()) {
+   //   TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
+   //   fActWdRaw->SetHistogramDir(subfolder);
+   // }
 
 }
 

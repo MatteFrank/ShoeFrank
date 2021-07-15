@@ -18,6 +18,8 @@
 
 ClassImp(TASTactNtuHit);
 
+
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 
@@ -145,7 +147,7 @@ void TASTactNtuHit::CreateHistogram(){
   
   for(int iCh=0;iCh<8;iCh++){
     sprintf(histoname,"stTime_ch%d", iCh);
-    hArrivalTime[iCh]= new TH1F(histoname, histoname, 100, 0., 256.);
+    hArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -2., 2.);
     AddHistogram(hArrivalTime[iCh]);
 
     sprintf(histoname,"stCharge_ch%d", iCh);
