@@ -66,9 +66,28 @@ Bool_t TASTactNtuHit::Action() {
      p_nturaw->SetTriggerTimeOth(p_datraw->GetSuperHit()->GetTimeOth());
      p_nturaw->SetCharge(charge_dep);
      p_nturaw->SetTrigType(p_datraw->GetSuperHit()->GetTriggerType());
+     int nHit =  p_datraw->GetHitsN(); 
+     if(ValidHistogram()){
+       hTime->Fill(timestamp);
+       hTotCharge->Fill(charge_dep);
+       for(int iHit=0;iHit<nHit;iHit++){
+	 Double_t amplitude = p_datraw->GetHit(iHit)->GetAmplitude();
+	 Double_t charge= p_datraw->GetHit(iHit)->GetCharge();
+	 Double_t time = p_datraw->GetHit(iHit)->GetTime();
+	 int iCh  = p_datraw->GetHit(iHit)->GetChID();
+	 if(iCh<8){
+	   hArrivalTime[iCh]->Fill(time-timestamp);
+	   hAmplitude[iCh]->Fill(amplitude);
+	   hCharge[iCh]->Fill(charge);
+	 }
+       }
+     }
+   
    }else{
      if(FootDebugLevel(1))printf("super hit missing\n");
    }
+
+  
    
    fpNtuRaw->SetBit(kValid);
    return kTRUE;
@@ -115,31 +134,28 @@ void TASTactNtuHit::CreateHistogram(){
   if(FootDebugLevel(1))
      cout<<"I have created the ST histo. "<<endl;
 
-  // sprintf(histoname,"stEvtTime");
-  // hEventTime = new TH1F(histoname, histoname, 6000, 0., 60.);
-  // AddHistogram(hEventTime);
-
-  // sprintf(histoname,"stTrigTime");
-  // hTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
-  // AddHistogram(hTrigTime);
-
-  // sprintf(histoname,"stTotCharge");
-  // hTotCharge = new TH1F(histoname, histoname, 400, -0.1, 3.9);
-  // AddHistogram(hTotCharge);
   
-  // for(int iCh=0;iCh<8;iCh++){
-  //   sprintf(histoname,"stDeltaTime_ch%d", iCh);
-  //   hArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -5., 5.);
-  //   AddHistogram(hArrivalTime[iCh]);
+  sprintf(histoname,"stTime");
+  hTime = new TH1F(histoname, histoname, 256, 0., 256.);
+  AddHistogram(hTime);
 
-  //   sprintf(histoname,"stCharge_ch%d", iCh);
-  //   hCharge[iCh]= new TH1F(histoname, histoname, 200, -0.1, 1.9);
-  //   AddHistogram(hCharge[iCh]);
+  sprintf(histoname,"stTotCharge");
+  hTotCharge = new TH1F(histoname, histoname, 1100, -0.1, 10.9);
+  AddHistogram(hTotCharge);
+  
+  for(int iCh=0;iCh<8;iCh++){
+    sprintf(histoname,"stTime_ch%d", iCh);
+    hArrivalTime[iCh]= new TH1F(histoname, histoname, 100, 0., 256.);
+    AddHistogram(hArrivalTime[iCh]);
 
-  //   sprintf(histoname,"stMaxAmp_ch%d", iCh);
-  //   hAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
-  //   AddHistogram(hAmplitude[iCh]);
-  // }
+    sprintf(histoname,"stCharge_ch%d", iCh);
+    hCharge[iCh]= new TH1F(histoname, histoname, 200, -0.1, 4.9);
+    AddHistogram(hCharge[iCh]);
+
+    sprintf(histoname,"stAmp_ch%d", iCh);
+    hAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
+    AddHistogram(hAmplitude[iCh]);
+  }
 
   SetValidHistogram(kTRUE);
   
