@@ -267,7 +267,6 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 		cout<<"******************************************* "<<endl;
 	      }
 	    }
-
 	    nhitsA++;
 	    w_amp.clear();
 	  }

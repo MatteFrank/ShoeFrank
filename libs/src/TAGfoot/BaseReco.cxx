@@ -134,13 +134,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    gTAGroot->SetRunNumber(fRunNumber);
    gTAGroot->SetCampaignName(fExpName);
 
-   // activate per default Dipole, TGT, VTX and TW if TOE on
-   if (TAGrecoManager::GetPar()->IncludeTOE()) {
-      TAGrecoManager::GetPar()->IncludeDI(true);
-      TAGrecoManager::GetPar()->IncludeTG(true);
-      TAGrecoManager::GetPar()->IncludeVT(true);
+   // activate per default only TW if TOE on
+   if (TAGrecoManager::GetPar()->IncludeTOE())
       TAGrecoManager::GetPar()->IncludeTW(true);
-   }
 
    if (fFlagOut)
      fActEvtWriter = new TAGactTreeWriter("locRecFile");
@@ -388,7 +384,7 @@ void BaseReco::SetRecHistogramDir()
       fActClusCa->SetHistogramDir(subfolder);
    }
    
-   // Global straight tyrack
+   // Global straight track
    if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
        && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
        && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
@@ -532,7 +528,7 @@ void BaseReco::ReadParFiles()
          parMap->FromFile(parFileName.Data());
       }
    }
-   
+
    // initialise par files for inner tracker
    if (TAGrecoManager::GetPar()->IncludeIT() || TAGrecoManager::GetPar()->IsLocalReco()) {
       fpParGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
@@ -592,7 +588,6 @@ void BaseReco::ReadParFiles()
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       Bool_t isTof_calib = false;
-
       if(fFlagTWbarCalib) {
          parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
                                                    isTof_calib,fFlagTWbarCalib);
@@ -811,17 +806,18 @@ void BaseReco::CreateRecActionIt()
 //__________________________________________________________
 void BaseReco::CreateRecActionMsd()
 {
-   fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
-   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
-
-   fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
-   if (fFlagHisto)
-      fActClusMsd->CreateHistogram();
-   
-   fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
-   fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuClusMsd, fpNtuRecMsd, fpParGeoMsd);
-   if (fFlagHisto)
-      fActPointMsd->CreateHistogram();
+  fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
+  fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
+  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
+  
+  fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
+  
+  fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuClusMsd, fpNtuRecMsd, fpParGeoMsd);
+  if (fFlagHisto) {
+    fActClusMsd->CreateHistogram();
+    fActPointMsd->CreateHistogram();
+  }
+  
 }
 
 //__________________________________________________________
@@ -862,6 +858,7 @@ void BaseReco::CreateRecActionGlb()
 					   fpNtuVtx,
 					   fpNtuClusIt,
 					   fpNtuClusMsd,
+                       fpNtuRecMsd,
 					   fpNtuRecTw,
 					   fpNtuGlbTrack,
 					   fpParGeoG,
