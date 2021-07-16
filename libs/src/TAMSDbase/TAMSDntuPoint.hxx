@@ -111,7 +111,7 @@ class TAMSDntuPoint : public TAGdata {
 
 private:
 
-  TAMSDparGeo*         m_geometry;
+  TAMSDparGeo*         m_geometry; //!
   TObjArray*           m_listOfPoints;
 
 public:

@@ -76,6 +76,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuClusVtx(0x0),
    fpNtuClusIt(0x0),
    fpNtuClusMsd(0x0),
+   fpNtuRecMsd(0x0),
    fpNtuRecTw(0x0),
    fpNtuMcTrk(0x0),
    fpNtuTrackBm(0x0),
@@ -929,8 +930,10 @@ void BaseReco::SetL0TreeBranches()
     if (TAGrecoManager::GetPar()->IncludeIT())
       fActEvtReader->SetupBranch(fpNtuClusIt,  TAITntuCluster::GetBranchName());
     
-    if (TAGrecoManager::GetPar()->IncludeMSD())
+    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fActEvtReader->SetupBranch(fpNtuClusMsd,  TAMSDntuCluster::GetBranchName());
+      fActEvtReader->SetupBranch(fpNtuRecMsd,  TAMSDntuPoint::GetBranchName());
+    }
     
     if(TAGrecoManager::GetPar()->IncludeTW())
       fActEvtReader->SetupBranch(fpNtuRecTw,  TATWntuPoint::GetBranchName());
@@ -1011,13 +1014,14 @@ void BaseReco::SetTreeBranches()
   if (TAGrecoManager::GetPar()->IncludeIT())
     fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
   
-  if (TAGrecoManager::GetPar()->IncludeMSD())
+  if (TAGrecoManager::GetPar()->IncludeMSD()) {
     fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
-  
+    fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
+  }
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW())
      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
    
-   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
+   if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
      if (fFlagTrack)
@@ -1085,8 +1089,7 @@ void BaseReco::AddRecRequiredItem()
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       gTAGroot->AddRequiredItem("msdActNtu");
       gTAGroot->AddRequiredItem("msdActClus");
-      if (TAGrecoManager::GetPar()->IncludeKalman())
-         gTAGroot->AddRequiredItem("msdActPoint");
+      gTAGroot->AddRequiredItem("msdActPoint");
    }
    
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW()) {
