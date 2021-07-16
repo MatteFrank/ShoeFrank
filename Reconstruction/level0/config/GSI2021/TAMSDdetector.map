@@ -1,10 +1,11 @@
 # Mapping sensorId vs planeId
 #          planeId
 SensorsN: 6
-#
-sensorId  0:  0
-sensorId  1:  1
-sensorId  2:  2
-sensorId  3:  3
-sensorId  4:  4
-sensorId  5:  5
+
+#sensid sensBoard(HW) view
+0   0   0
+1   0   1
+2   1   0
+3   1   1
+4   3   0
+5   3   1
