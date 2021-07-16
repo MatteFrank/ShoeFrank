@@ -110,14 +110,6 @@ Bool_t TAMSDactNtuPoint::FindPoints()
 
 	TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), localPointPosition );
 
-	/*
-	int colGenParticleID = colHit->GetMcTrackIdx(0);
-	int colMCHitID = colHit->GetMcIndex(0);
-	int rowGenParticleID = rowHit->GetMcTrackIdx(0);
-	int rowMCHitID = rowHit->GetMcIndex(0);
-
-	point->SetGeneratedParticle( colGenParticleID, rowGenParticleID, colMCHitID, rowMCHitID );
-	*/
       }
     }
   }
