@@ -97,6 +97,7 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
         
         double momentum{0};
         double tof{0};
+        double length{0};
         
         TAGtrack::polynomial_fit_parameters parameters;
         
@@ -223,6 +224,9 @@ private:
     void set_cuts( details::tof_tag, double cut_p) override  {
         list_m.template set_cuts<detector_properties<details::tof_tag>>( cut_p );
     }
+    void set_cuts( details::ms2d_tag, double cut_p) override  {
+        list_m.template set_cuts<detector_properties<details::ms2d_tag>>( cut_p );
+    }
     
     reconstruction_result retrieve_results( ) override {
         return checker_m.retrieve_results( );
@@ -305,7 +309,7 @@ private:
             switch(charge){
                 case 1:
                 {
-                    auto light_ion_boost = 2;
+                    auto light_ion_boost = 2.5;
                     add_hypothesis(1, light_ion_boost);
                     add_hypothesis(1, light_ion_boost, 0.5);
 //                     light_ion_boost = 1.3;
@@ -415,7 +419,62 @@ private:
         };
     }
     
-    
+    std::vector<corrected_state> generate_corrected_state( TAMSDpoint const * msd_ph )
+    {
+        std::vector<corrected_state> result_c;
+
+        auto * transformation_h = static_cast<TAGgeoTrafo*>(
+                                     gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data() )
+                                                            );
+        
+        auto start = transformation_h->FromMSDLocalToGlobal( msd_ph->GetPositionG() );
+        
+        auto tof = list_m.last();
+        auto candidate_c = tof.generate_candidates();
+        result_c.reserve( candidate_c.size() );
+        
+        for(auto && candidate : candidate_c) {
+            auto end = transformation_h->FromTWLocalToGlobal( candidate.data->GetPositionG() );
+        
+            auto length = end - start;
+        
+            auto track_slope_x = length.X()/length.Z();
+            auto track_slope_y = length.Y()/length.Z();
+        
+        
+            auto length_error_x = sqrt( pow( msd_ph->GetPosError().X(), 2 ) +
+                                       pow( candidate.data->GetPosErrorG().X(), 2)             );
+            auto length_error_y = sqrt( pow( msd_ph->GetPosError().Y(), 2 ) +
+                                       pow( candidate.data->GetPosErrorG().Y(), 2)           );
+        
+        
+            auto track_slope_error_x = abs( track_slope_x ) *
+                                       sqrt( pow( length_error_x/length.X(), 2) +
+                                            pow( 0.05/length.Z(), 2)              );
+            auto track_slope_error_y = abs( track_slope_y ) *
+                                        sqrt( pow( length_error_y/length.Y(), 2) +
+                                              pow( 0.05/length.Z(), 2)               );
+        
+        
+            using vector = typename underlying<state>::vector;
+            using covariance = typename underlying<state>::covariance;
+        
+            result_c.push_back(
+                        corrected_state{
+                            state{
+                                evaluation_point{ start.Z() },
+                                vector{{ start.X(), start.Y(), track_slope_x, track_slope_y }},
+                                covariance{{   pow(length_error_x, 2  ),     0,    0,    0,
+                                                0,     pow(length_error_y, 2),      0,    0,
+                                                0,    0,   pow(track_slope_error_x, 2),   0,
+                                                0,    0,    0,   pow( track_slope_error_y, 2)  }}
+                                },
+                            chisquared{0}
+                                        }
+                               );
+        }
+        return result_c;
+    }
     
     
     
@@ -469,6 +528,12 @@ private:
     void cross_check_origin( arborescence< node_type >& /*arborescence_p*/,
                              const detector_properties<details::vertex_tag>& /*vertex_p*/ )
     {}
+    
+    void cross_check_origin( arborescence< node_type >& /*arborescence_p*/,
+                             const detector_properties<details::ms2d_tag>& /*vertex_p*/ )
+    {}
+    
+    //cross_check_origin msd -> same as vertex
     
     //-------------------------------------------------------------------------------------
     //                            advance_reconstruction_impl
@@ -693,6 +758,72 @@ private:
         }
         
     }
+    
+    
+    
+     void advance_reconstruction( arborescence<node_type>& arborescence_p,
+                                  const detector_properties<details::ms2d_tag>& ms2d_p )
+     {
+         
+         logger_m.add_root_header("START_RECONSTRUCTION");
+ //        std::cout << "START_RECONSTRUCTION\n";
+         
+         auto layer_c = ms2d_p.form_layers();
+         auto generating_candidate_c = layer_c.generating_candidates();
+            
+         for( auto&& candidate : generating_candidate_c ){
+             auto cs_c = generate_corrected_state( candidate );
+             
+             for( auto && cs : cs_c){
+                 auto fs = full_state{
+                    std::move(cs),
+                    data_handle<data_type>{candidate.data},
+                    step_register{}
+                };
+             
+                 auto * leaf_h = arborescence_p.add_root( std::move(fs) );
+             // -----------------------------
+                 checker_m.update_current_node( leaf_h );
+                 checker_m.output_current_hypothesis();
+             }
+         }
+         
+         for(auto && layer : layer_c) {
+             logger_m.add_header<1>("layer");
+         
+             if( layer.get_candidates().empty() ){ continue; }
+             
+             auto& leaf_c = arborescence_p.get_handler();
+             for(auto& leaf : leaf_c){
+                 
+                 logger_m.add_header<2>( "leaf" );
+                 
+                 // -----------------------------
+                 checker_m.update_current_node( &leaf );
+                 checker_m.output_current_hypothesis();
+                 // -----------------------------
+             
+                 ukf_m.step_length() = 1e-3;
+             
+                 auto s = make_state( leaf.get_value() );
+                 auto fs_c = advance_reconstruction_impl( s, layer );
+             
+                 for( auto & fs : fs_c ){
+ //
+                     fs.step_length = compute_step_length( s, fs );
+                     
+                     logger_m << "corrected_state : ( " << fs.vector(0,0) << ", " << fs.vector(1,0) ;
+                     logger_m << ") -- (" << fs.vector(2,0) << ", " << fs.vector(3,0)  ;
+                     logger_m << ") -- " << fs.evaluation_point << " -- " << fs.chisquared << '\n';
+ //
+                     leaf.add_child( std::move(fs) );
+                 }
+
+             }
+  
+         }
+         
+     }
     
     
     //-------------------------------------------------------------------------------------
@@ -1321,18 +1452,19 @@ private:
             double beta = speed/30;
             
             if( beta < 1){
-            double gamma = 1./sqrt(1 - pow(beta, 2));
-            double momentum = gamma * 938 * track.particle.mass * beta;
+                double gamma = 1./sqrt(1 - pow(beta, 2));
+                double momentum = gamma * 938 * track.particle.mass * beta;
             
        //     std::cout << "arc_length: " << arc_length << '\n';
        //     std::cout << "momentum: " << momentum << '\n';
 
-            track.momentum = momentum;
+                track.momentum = momentum;
             }
             else {
                 track.momentum = track.particle.momentum;
             }
             track.tof = tof;
+            track.length = arc_length;
         }
 
         return std::move( track_pc );

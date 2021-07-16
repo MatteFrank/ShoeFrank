@@ -102,7 +102,7 @@ int TAMSDntuPoint::GetPointN(int iStation) const
 
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) {
+TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const {
 
 	if ( iPoint >= 0  && iPoint < GetPointN( iStation ) ) {
     TClonesArray* list = GetListOfPoints(iStation);

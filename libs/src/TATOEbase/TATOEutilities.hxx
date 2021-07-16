@@ -33,6 +33,7 @@
 #include "TAMSDntuCluster.hxx"
 #include "TATWntuPoint.hxx"
 
+#include "TAMSDntuPoint.hxx"
 
 
 class TAVTntuCluster;
@@ -67,7 +68,7 @@ namespace details{
         using cut_t = double;
         constexpr static uint8_t shift = 3;
 //        constexpr static double default_cut_value{15};
-        constexpr static double default_cut_value{20};
+        constexpr static double default_cut_value{15};
     };
     struct it_tag{
         using vector_matrix =  matrix<2, 1>;
@@ -77,7 +78,8 @@ namespace details{
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = std::array<double, 2>;
         static constexpr uint8_t shift = 2;
-        constexpr static std::array<double, 2> default_cut_value{20,20};
+//        constexpr static std::array<double, 2> default_cut_value{20,20};
+        constexpr static std::array<double, 2> default_cut_value{38,42};
 //        constexpr static std::array<double, 2> default_cut_value{33,38};
 
     };
@@ -89,10 +91,23 @@ namespace details{
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = std::array<double, 3>;
         static constexpr uint8_t shift = 1;
-        constexpr static std::array<double, 3> default_cut_value{20,20,20};
+//        constexpr static std::array<double, 3> default_cut_value{20,20,20};
+        
+        constexpr static std::array<double, 3> default_cut_value{35,16,27};
 //        constexpr static std::array<double, 3> default_cut_value{13,18,23};
 
     };
+struct ms2d_tag{
+    using vector_matrix =  matrix<2, 1> ;
+    using covariance_matrix = matrix<2, 2> ;
+    using measurement_matrix =  matrix<2,4> ;
+    using data_type = TAMSDpoint;
+    using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+    using cut_t = double;
+    static constexpr uint8_t shift = 1;
+
+    constexpr static double default_cut_value{15};
+};
     struct tof_tag{
         using vector_matrix =  matrix<2, 1>;
         using covariance_matrix =  matrix<2, 2> ;
@@ -101,7 +116,7 @@ namespace details{
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = double;
         static constexpr uint8_t shift = 0;
-        constexpr static double default_cut_value{2.2};
+        constexpr static double default_cut_value{3.2};
 //        constexpr static double default_cut_value{3};
     };
     
@@ -179,6 +194,7 @@ private:
     virtual void set_cuts( details::it_tag, std::array<double, 2> const& ) = 0;
     virtual void set_cuts( details::msd_tag, std::array<double, 3> const& ) = 0;
     virtual void set_cuts( details::tof_tag, double) = 0;
+    virtual void set_cuts( details::ms2d_tag, double) = 0;
     
     virtual reconstruction_result retrieve_results( ) = 0;
 };
@@ -247,6 +263,61 @@ public:
     
 private:
     DetectorProperties const & detector_m;
+};
+
+
+template<template<class> class D>
+struct layer_generator<D<details::ms2d_tag>>
+{
+    using candidate = typename details::ms2d_tag::candidate;
+    
+    struct layer{
+        std::vector<candidate> candidate_c;
+        const double depth;
+        const double cut;
+        
+        std::vector<candidate>& get_candidates(){ return candidate_c; }
+        std::vector<candidate> const & get_candidates() const { return candidate_c; }
+        
+        double cut_value() const { return cut; }
+        
+        bool empty(){ return candidate_c.empty(); }
+    };
+    
+    
+    struct iterator{
+        
+        using value_type = layer;
+        
+        iterator(const D<details::ms2d_tag>& detector_p, std::size_t index_p ) : detector_m{detector_p}, index_m{index_p} {}
+        
+        iterator& operator++(){ ++index_m ; return *this; }
+        value_type operator*()
+        {
+            return {
+                detector_m.generate_candidates(index_m),
+                detector_m.layer_depth(index_m),
+                detector_m.get_cut_values(index_m/2)
+            };
+        }
+        friend bool operator!=(const iterator& lhs, const iterator& rhs){ return lhs.index_m != rhs.index_m; }
+        
+        
+    private:
+        const D<details::ms2d_tag>& detector_m;
+        std::size_t index_m;
+    };
+
+    
+public:
+    layer_generator( D<details::ms2d_tag> const & detector_p) :
+        detector_m{detector_p} {}
+    iterator begin() const { return {detector_m, 1}; }
+    iterator end() const { return {detector_m, detector_m.layer_count()}; }
+    std::vector<candidate> generating_candidates(){ return detector_m.generate_candidates(0); }
+    
+private:
+    D<details::ms2d_tag> const & detector_m;
 };
 
 
@@ -707,6 +778,72 @@ public:
     
     constexpr void set_cuts( double&& cut_p ){ cut_m = std::move(cut_p); }
 };
+
+//______________________________________________________________________________
+//
+
+
+template<>
+struct detector_properties< details::ms2d_tag >
+{
+    using candidate = details::ms2d_tag::candidate;
+    using measurement_vector = underlying<candidate>::vector;
+    using measurement_covariance = underlying<candidate>::covariance;
+    using measurement_matrix = underlying<candidate>::measurement_matrix;
+    using data_type = underlying<candidate>::data_type;
+    
+    
+private:
+    
+    const TAMSDntuPoint* cluster_mhc;
+    const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
+                                           0, 1, 0, 0  }};
+    double cut_m{details::ms2d_tag::default_cut_value};
+    constexpr static std::size_t layer{3};
+    
+    const std::array<double, layer> depth_mc;
+    
+public:
+    //might go to intermediate struc holding the data ?
+    detector_properties( TAMSDntuPoint* cluster_phc,
+                         TAMSDparGeo* geo_ph )  :
+        cluster_mhc{cluster_phc},
+        depth_mc{ retrieve_depth(geo_ph) }
+    { }
+    
+    
+private:
+    template<std::size_t ... Indices>
+    auto retrieve_depth_impl( TAMSDparGeo* geo_ph,
+                             std::index_sequence<Indices...> ) const
+    -> std::array<double, layer>
+    {
+        auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+        return {transformation_h->FromMSDLocalToGlobal(geo_ph->GetSensorPosition(Indices)).Z()...};
+    }
+
+    auto retrieve_depth( TAMSDparGeo* geo_ph ) const
+    -> std::array<double, layer>
+    {
+        return retrieve_depth_impl( geo_ph, std::make_index_sequence<layer>{} );
+    }
+    
+public:
+    
+    constexpr std::size_t layer_count() const { return layer; }
+    constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
+    constexpr double cut_value() const { return cut_m; }
+    
+    constexpr void set_cuts( double cut_p  ){ cut_m = std::move(cut_p); }
+    
+    layer_generator<detector_properties> form_layers() const
+    {
+        return {*this};
+    }
+    
+    std::vector<candidate> generate_candidates(std::size_t index_p) const ;
+};
+
 
 //______________________________________________________________________________
 //
