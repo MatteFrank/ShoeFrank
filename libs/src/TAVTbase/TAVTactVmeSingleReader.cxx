@@ -1,6 +1,6 @@
 /*!
   \file
- \brief Get vertex raw data from stanbd alone files (ascii format)
+ \brief Get vertex raw data from stand alone single file (ascii format)
   Keep VME name, though new card is no more VME standard
 */
 
