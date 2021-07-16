@@ -48,13 +48,6 @@ static TAMSDntuCluster* msdNtuCluster;
 
 //*********************************************  combined functions  *****************************************
 
-TVector3 Intersection(double zloc, TVector3 fSlope, TVector3 fOrigin) const
-{
-   TVector3 projected(fSlope.X()/fSlope.Z()*zloc+fOrigin.X() ,fSlope.Y()/fSlope.Z()*zloc+fOrigin.Y(), zloc);
-   return projected;
-}
-
-
 void BookingBMVTX(TFile* f_out){
 
   if(debug>0)
@@ -72,7 +65,6 @@ void BookingBMVTX(TFile* f_out){
   h = new TH1D("vtx_originX_glbsys","VTX origin X in glb sys;X[cm];Events",600,-3.,3.);
   h = new TH1D("vtx_originY_glbsys","VTX origin Y in glb sys;Y[cm];Events",600,-3.,3.);
   h2 = new TH2D("vtx_target_glbsys","VTX tracks projection on target plane in glb sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
-  h2 = new TH2D("msd_tw_glbsys","MSD tracks projection on tw plane in glb sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
 
   //bm
   h = new TH1D("bm_slopeX_bmsys","BM mx in bm sys ;mx;Events",1000,-0.3,0.3);
@@ -128,18 +120,6 @@ void FillSeparated(){
     ((TH1D*)gDirectory->Get("vtx_originY_glbsys"))->Fill(glborigin.Y());
     tmp_tvector3 = geoTrafo->FromMSDLocalToGlobal(tmp_tvector3);
     ((TH2D*)gDirectory->Get("vtx_target_glbsys"))->Fill(tmp_tvector3.X(),tmp_tvector3.Y());
-  }
-
-  //tentative to fit a dummy msd track from 1 hit of the first and 1 hit of the last plane
-  if(msdNtuCluster->GetClustersN(0)==1 && msdNtuCluster->GetClustersN(2)==1){
-    TAMSDcluster* msd0clus = msdNtuCluster->GetCluster(0,0);
-    TAMSDcluster* msd2clus = msdNtuCluster->GetCluster(2,0);
-    TVector3 msdglbpos = geoTrafo->FromMSDLocalToGlobal(msd0clus->GetPosition());
-    TVector3 msdglbdir = geoTrafo->VecFromMSDLocalToGlobal(msd2clus->GetPosition()-msd0clus->GetPosition());
-    TVector3 twposglo = geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0));  //Target position in global  framework
-    TVector3 postgmsd = geoTrafo->FromGlobalToMSDLocal(twposglo);     //TW position in MSD framework
-    TVector3 msdglbtw=geoTrafo->FromMSDLocalToGlobal(Intersection(postgmsd.Z(),msdglbdir, msdglbpos));
-    ((TH2D*)gDirectory->Get("msd_tw_glbsys"))->Fill(msdglbtw.X(), msdglbtw.Y());
   }
 
   //bm tracks loop

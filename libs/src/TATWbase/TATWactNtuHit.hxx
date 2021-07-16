@@ -80,6 +80,8 @@ private:
   TH1F*           fpHisAmpB[nLayers];     // Total time of flight
   TH2F*           fpHisAmpA_vs_Eloss[nLayers];     // Total time of flight
   TH2F*           fpHisAmpB_vs_Eloss[nLayers];     // Total time of flight
+  TH1F            *fpHisDeltaTimeRawCenterFront;
+  TH1F            *fpHisDeltaTimeRawCenterRear;
 
   Bool_t          f_debug;
 

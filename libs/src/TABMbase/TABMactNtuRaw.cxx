@@ -71,7 +71,7 @@ void TABMactNtuRaw::CreateHistogram()
     fpRawMagorTrigger=new TH1F( "bmmagortrigger", "Margherita Or Trigger time; Trigger time [ns]; Events", 200, 0, 0);
     AddHistogram(fpRawMagorTrigger);
     fpRawMagorDouble=new TH1I( "bmmagordouble", "Margherita Or double counting whitin the +- 10 ns; Number of Margherita or signal; Events", 21, -0.5, 20.5);
-    AddHistogram(fpRawMagorTrigger);
+    AddHistogram(fpRawMagorDouble);
   }
 
   fpRawCh1NoTrig=new TH1F( "RawCh1NoTrig", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
@@ -187,18 +187,21 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
   Int_t magorcounter=0;
   if(p_parmap->GetDaqTrefCh()>=0){
     if(tdctrigger!=99999 && magorvec.size()!=0){
+      Double_t min=999999999;
       for(Int_t i=0;i<magorvec.size();i++){
-        if(fabs(tdctrigger-magorvec.at(i))<11){
+        if(fabs(tdctrigger-magorvec.at(i))<min){
           magortrigger=magorvec.at(i);
           magorcounter++;
         }
       }
     }
     if(magortrigger!=-99999)
-      used_trigger=magortrigger+tdctrigger-sttrigger;
+      used_trigger=magortrigger+tdctrigger+sttrigger;
   }else
-    used_trigger=tdctrigger-sttrigger;
+    used_trigger=tdctrigger+sttrigger;
 
+  //redifinition of used
+  used_trigger=tdctrigger+sttrigger;
 
   p_datraw->SetTrigtime(used_trigger);
   if (ValidHistogram()){
