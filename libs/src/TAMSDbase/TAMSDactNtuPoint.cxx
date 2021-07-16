@@ -113,7 +113,7 @@ Bool_t TAMSDactNtuPoint::FindPoints()
          TVector3 pos(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
          point->SetPositionG(pos);
          
-         TVector3 posErr(colHit->GetPosError().X(), rowHit->GetPosError().Y(), 0.01);
+         TVector3 posErr(colHit->GetPosErrorG().X(), rowHit->GetPosErrorG().Y(), 0.01);
          point->SetPosErrorG(posErr);
          
          // tmp solution, considered only one particle
