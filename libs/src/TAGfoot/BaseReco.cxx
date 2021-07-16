@@ -860,6 +860,7 @@ void BaseReco::CreateRecActionGlb()
 					   fpNtuVtx,
 					   fpNtuClusIt,
 					   fpNtuClusMsd,
+                       fpNtuRecMsd,
 					   fpNtuRecTw,
 					   fpNtuGlbTrack,
 					   fpParGeoG,

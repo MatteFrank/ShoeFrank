@@ -297,7 +297,7 @@ struct layer_generator<D<details::ms2d_tag>>
             return {
                 detector_m.generate_candidates(index_m),
                 detector_m.layer_depth(index_m),
-                detector_m.get_cut_values(index_m/2)
+                detector_m.get_cut_value()
             };
         }
         friend bool operator!=(const iterator& lhs, const iterator& rhs){ return lhs.index_m != rhs.index_m; }
@@ -832,7 +832,7 @@ public:
     
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
-    constexpr double cut_value() const { return cut_m; }
+    constexpr double get_cut_value() const { return cut_m; }
     
     constexpr void set_cuts( double cut_p  ){ cut_m = std::move(cut_p); }
     

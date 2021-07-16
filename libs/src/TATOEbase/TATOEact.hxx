@@ -772,7 +772,7 @@ private:
          auto generating_candidate_c = layer_c.generating_candidates();
             
          for( auto&& candidate : generating_candidate_c ){
-             auto cs_c = generate_corrected_state( candidate );
+             auto cs_c = generate_corrected_state( candidate.data );
              
              for( auto && cs : cs_c){
                  auto fs = full_state{
