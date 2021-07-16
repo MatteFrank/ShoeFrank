@@ -133,13 +133,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    gTAGroot->SetRunNumber(fRunNumber);
    gTAGroot->SetCampaignName(fExpName);
 
-   // activate per default Dipole, TGT, VTX and TW if TOE on
-   if (TAGrecoManager::GetPar()->IncludeTOE()) {
-      TAGrecoManager::GetPar()->IncludeDI(true);
-      TAGrecoManager::GetPar()->IncludeTG(true);
-      TAGrecoManager::GetPar()->IncludeVT(true);
+   // activate per default only TW if TOE on
+   if (TAGrecoManager::GetPar()->IncludeTOE())
       TAGrecoManager::GetPar()->IncludeTW(true);
-   }
 
    if (fFlagOut)
      fActEvtWriter = new TAGactTreeWriter("locRecFile");
