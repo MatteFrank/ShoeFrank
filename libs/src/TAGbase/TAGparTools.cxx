@@ -52,11 +52,11 @@ void TAGparTools::ReadItem(Char_t& item)
 void TAGparTools::ReadItem(TString& item)
 {
    Int_t pos = -1;
-   Char_t buf[255];
+   Char_t buf[512];
    TString key;
    while (pos == -1) {
       if (fFileStream.eof()) break;
-	  fFileStream.getline(buf, 255);
+	  fFileStream.getline(buf, 512);
      if (buf[0] == '/') continue;
      if (buf[0] == '#') continue;
 	  key = buf;
@@ -70,11 +70,11 @@ void TAGparTools::ReadItem(TString& item)
 void TAGparTools::ReadItem(TString& key, TString& item)
 {
   Int_t pos = -1;
-  Char_t buf[255];
+  Char_t buf[512];
   TString line;
   while (pos == -1) {
     if (fFileStream.eof()) break;
-    fFileStream.getline(buf, 255);
+    fFileStream.getline(buf, 512);
     if (buf[0] == '/') continue;
     if (buf[0] == '#') continue;
     if (buf[0] == '\n') continue;
@@ -219,11 +219,11 @@ void TAGparTools::ReadItem(map<pair<int, int>, int>& map, const Char_t delimiter
    // containing the pixel line i / col j, line k / col l, line m / col n
    
    TArrayC arrayLine;
-   arrayLine.Set(960);
+   arrayLine.Set(968);
    arrayLine.Reset(0);
    
    TArrayC arrayCol;
-   arrayCol.Set(960);
+   arrayCol.Set(968);
    arrayCol.Reset(0);
    
    TString key;

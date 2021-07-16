@@ -88,8 +88,6 @@ Bool_t TAMSDactNtuPoint::FindPoints()
   
   for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
 
-    
-  
     // fill points
     for (int iStrip = 0; iStrip < pNtuCluster->GetClustersN(iLayer); iStrip++) {
 
@@ -100,24 +98,25 @@ Bool_t TAMSDactNtuPoint::FindPoints()
 
       for (int iStrip_ = 0; iStrip_ < pNtuCluster->GetClustersN(iLayer+1); iStrip_++) {
 
-	TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iStrip);
+         TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iStrip);
 
-      if (rowHit == 0) continue;
+         if (rowHit == 0) continue;
 
-      if ( !(rowHit->GetPlaneView() == 1 && xyOrder) ) 	cout << "ERROR on TAMSDactNtuPoint" << endl;
-	TVector3 localPointPosition;
-	localPointPosition.SetXYZ(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
+         if ( !(rowHit->GetPlaneView() == 1 && xyOrder) ) 	cout << "ERROR on TAMSDactNtuPoint" << endl;
+         
+         TVector3 localPointPosition;
+         localPointPosition.SetXYZ(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
 
-	TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), localPointPosition );
-
-	/*
-	int colGenParticleID = colHit->GetMcTrackIdx(0);
-	int colMCHitID = colHit->GetMcIndex(0);
-	int rowGenParticleID = rowHit->GetMcTrackIdx(0);
-	int rowMCHitID = rowHit->GetMcIndex(0);
-
-	point->SetGeneratedParticle( colGenParticleID, rowGenParticleID, colMCHitID, rowMCHitID );
-	*/
+         TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(),
+                                                 localPointPosition );
+         TVector3 posErr(colHit->GetPosError().X(), rowHit->GetPosError().Y(), 0.01);
+         point->SetPosErrorG(posErr);
+         
+         // tmp solution, considered only one particle
+         if (colHit->GetMcTracksN())
+            point->AddMcTrackIdx(colHit->GetMcTrackIdx(0));
+         if (rowHit->GetMcTracksN())
+            point->AddMcTrackIdx(rowHit->GetMcTrackIdx(0));
       }
     }
   }

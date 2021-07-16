@@ -120,28 +120,6 @@ TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
    } else return 0x0;
 }
 
-
-//------------------------------------------------------------------------------
-void TAMSDpoint::SetGeneratedParticle ( int colGenPart, int rowGenPart, int colMCHitID, int rowMCHitID )
-{
-  m_isMC             = true;
-  m_columnParticleID = colGenPart;
-  m_rowParticleID    = rowGenPart;
-  m_columnMCHitID    = colMCHitID;
-  m_rowMCHitID       = rowMCHitID;
-
-  if ( m_columnParticleID == m_rowParticleID )   	{
-    m_isTrueGhost = false;
-    m_ParticleID = m_columnParticleID;
-  }
-  else 	{
-    m_isTrueGhost = true;
-    m_ParticleID = -1;
-  }
-
-}
-
-
 //------------------------------------------+-----------------------------------
 //! Setup clones. Crate and initialise the list of pixels
 void TAMSDntuPoint::SetupClones()
