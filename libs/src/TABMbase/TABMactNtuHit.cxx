@@ -76,7 +76,9 @@ void TABMactNtuHit::CreateHistogram(){
   fpHisEval_paoloni_Yview = new TH1F( "bmRaweffEvalYview", "Hit detection efficiency on yz view; Efficiency; Events", 110, 0., 1.1);
   AddHistogram(fpHisEval_paoloni_Yview);
   fpHisCell = new TH1I( "bmRawHitCell", "cell index; index; Counter", 3, -0.5, 2.5);
-  AddHistogram(fpHisCell);
+	AddHistogram(fpHisCell);
+  fpHisHitXCell = new TH1I( "bmRawHitXEvent", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
+  AddHistogram(fpHisHitXCell);
   fpHisView = new TH1I( "bmRawHitView", "view index; index; Counter", 2, -0.5, 1.5);
   AddHistogram(fpHisView);
   fpHisPlane = new TH1I( "bmRawHitPlane", "plane index; index; Counter", 6, -0.5, 5.5);
@@ -130,6 +132,9 @@ Bool_t TABMactNtuHit::Action()
   Double_t i_time;
   p_nturaw->ClearCellOccupy();
 
+	if(ValidHistogram())
+	  fpHisHitXCell->Fill(p_datraw->GetHitsN());
+
   for (Int_t i = 0; i < p_datraw->GetHitsN(); i++) {//loop on p_datrawhit
     const TABMrawHit* hit = p_datraw->GetHit(i);
 
@@ -145,7 +150,7 @@ Bool_t TABMactNtuHit::Action()
 
     //retrive hit parameters
     i_time = hit->GetTime()- p_bmcal->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell()) - p_datraw->GetTrigtime();
-    if(i_time<p_bmcon->GetHitTimeCut() && i_time>-40){//apply cut
+    if(i_time<p_bmcon->GetHitTimeCut() && i_time>-20){//apply cut
       //Temporary time cut set at -40; it should be few ns, but at the first GSI data taking there is a jitter of ~ tens of ns not measured
       if(i_time<0)
           i_time=0.;
