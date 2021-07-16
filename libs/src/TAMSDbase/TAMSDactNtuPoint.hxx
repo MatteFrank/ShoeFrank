@@ -17,8 +17,8 @@ class TH1F;
 class TAMSDactNtuPoint : public TAGaction {
 
 public:
-   explicit  TAMSDactNtuPoint(const char* name       = 0,
-                             TAGdataDsc* p_nturaw   = 0,
+    explicit  TAMSDactNtuPoint(const char* name       = 0,
+                             TAGdataDsc* p_ntuclus   = 0,
                              TAGdataDsc* p_ntupoint = 0,
                              TAGparaDsc* p_geomap   = 0);
 
@@ -34,7 +34,7 @@ public:
    void            CreateHistogram();
 
 private:
-   TAGdataDsc*     fpNtuRaw;		 // input data dsc
+   TAGdataDsc*     fpNtuCluster;		 // input data dsc
    TAGdataDsc*     fpNtuPoint;	 	// output data dsc
    TAGparaDsc*     fpGeoMap;		 // geometry para dsc
 

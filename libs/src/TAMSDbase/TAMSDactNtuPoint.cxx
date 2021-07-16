@@ -27,14 +27,14 @@ ClassImp(TAMSDactNtuPoint);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAMSDactNtuPoint::TAMSDactNtuPoint(const char* name,
-									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuPoint, TAGparaDsc* pGeoMap)
- : TAGaction(name, "TAMSDactNtuHit - NTuplize hits"),
-   fpNtuRaw(pNtuRaw),
-   fpNtuPoint(pNtuPoint),
-   fpGeoMap(pGeoMap)
+				   TAGdataDsc* pNtuCluster, TAGdataDsc* pNtuPoint, TAGparaDsc* pGeoMap)
+  : TAGaction(name, "TAMSDactNtuHit - NTuplize hits"),
+    fpNtuCluster(pNtuCluster),
+    fpNtuPoint(pNtuPoint),
+    fpGeoMap(pGeoMap)
 {
-   AddDataIn(pNtuRaw,   "TAMSDntuHit");
-   AddDataOut(pNtuPoint, "TAMSDntuPoint");
+  AddDataIn(pNtuCluster,   "TAMSDntuCluster");
+  AddDataOut(pNtuPoint, "TAMSDntuPoint");
 }
 
 //------------------------------------------+-----------------------------------
@@ -80,36 +80,46 @@ Bool_t TAMSDactNtuPoint::Action()
 //
 Bool_t TAMSDactNtuPoint::FindPoints()
 {
-	TAMSDntuHit* pNtuHit      = (TAMSDntuHit*) fpNtuRaw->Object();
-	TAMSDntuPoint* pNtuPoint  = (TAMSDntuPoint*) fpNtuPoint->Object();
-	TAMSDparGeo* pGeoMap      = (TAMSDparGeo*) fpGeoMap->Object();
+  TAMSDntuCluster* pNtuCluster  = (TAMSDntuCluster*) fpNtuCluster->Object();
+  TAMSDntuPoint* pNtuPoint      = (TAMSDntuPoint*) fpNtuPoint->Object();
+  TAMSDparGeo* pGeoMap          = (TAMSDparGeo*) fpGeoMap->Object();
+  
+  bool xyOrder = true;
+  
+  for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
 
-	bool xyOrder = true;
+    
+  
+    // fill points
+    for (int iStrip = 0; iStrip < pNtuCluster->GetClustersN(iLayer); iStrip++) {
 
-	for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
-		m_listOfStripsCol = pNtuHit->GetListOfStrips(iLayer);
+      TAMSDcluster* colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iStrip);
+      if (colHit == 0) continue;
+      if (colHit->GetPlaneView() == 0 ) 	xyOrder = true;
+      else xyOrder = false;
 
-		if (m_listOfStripsCol->GetEntries() == 0) continue;
+      for (int iStrip_ = 0; iStrip_ < pNtuCluster->GetClustersN(iLayer+1); iStrip_++) {
 
-		// fill points
-		for (int iStrip = 0; iStrip < m_listOfStripsCol->GetEntries(); iStrip++) {
-			TAMSDhit* colHit = (TAMSDhit*) m_listOfStripsCol->At(iStrip);
-			if ( colHit->GetView() == 0 ) 	xyOrder = true;
-			else xyOrder = false;
-			m_listOfStripsRow = pNtuHit->GetListOfStrips(iLayer + 1);
-			for (int iStrip_ = 0; iStrip_ < m_listOfStripsRow->GetEntries(); iStrip_++) {
-				TAMSDhit* rowHit = (TAMSDhit*)m_listOfStripsRow->At(iStrip_);
-				if ( !(rowHit->GetView() == 1 && xyOrder) ) 	cout << "ERROR on TAMSDactNtuPoint" << endl;
-				TVector3 localPointPosition;
-				localPointPosition.SetXYZ(colHit->GetPosition(), rowHit->GetPosition(), pGeoMap->GetSensorPosition(iLayer).Z());
-				TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPosition(), rowHit->GetPosition(), localPointPosition );
-				int colGenParticleID = colHit->GetMcTrackIdx(0);
-				int colMCHitID = colHit->GetMcIndex(0);
-				int rowGenParticleID = rowHit->GetMcTrackIdx(0);
-				int rowMCHitID = rowHit->GetMcIndex(0);
-				point->SetGeneratedParticle( colGenParticleID, rowGenParticleID, colMCHitID, rowMCHitID );
-			}
-		}
-	}
-	return true;
+	TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iStrip);
+
+      if (rowHit == 0) continue;
+
+      if ( !(rowHit->GetPlaneView() == 1 && xyOrder) ) 	cout << "ERROR on TAMSDactNtuPoint" << endl;
+	TVector3 localPointPosition;
+	localPointPosition.SetXYZ(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
+
+	TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), localPointPosition );
+
+	/*
+	int colGenParticleID = colHit->GetMcTrackIdx(0);
+	int colMCHitID = colHit->GetMcIndex(0);
+	int rowGenParticleID = rowHit->GetMcTrackIdx(0);
+	int rowMCHitID = rowHit->GetMcIndex(0);
+
+	point->SetGeneratedParticle( colGenParticleID, rowGenParticleID, colMCHitID, rowMCHitID );
+	*/
+      }
+    }
+  }
+  return true;
 }

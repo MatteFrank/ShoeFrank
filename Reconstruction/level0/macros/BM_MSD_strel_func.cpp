@@ -25,6 +25,7 @@
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TAMSDcluster.hxx"
+#include "TAMSDntuPoint.hxx"
 
 
 #include "TAGgeoTrafo.hxx"
@@ -44,6 +45,7 @@ static TAGgeoTrafo* geoTrafo;
 static TABMntuHit*  bmNtuHit;
 static TABMntuTrack*  bmNtuTrack;
 static TAMSDntuCluster* msdNtuCluster;
+static TAMSDntuPoint* msdNtuPoint;
 
 
 //*********************************************  combined functions  *****************************************
