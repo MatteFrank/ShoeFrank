@@ -93,9 +93,6 @@ public:
    int       GetChargeZ()      const  { return m_chargeZ;       }
    double    GetChargeZProba() const  { return m_chargeZProba; }
 
-   void      SetGeneratedParticle ( int colGenPart, int rowGenPart, int colMCHitID, int rowMCHitID );
-
-
    void      SetChargeZ(int z)       { m_chargeZ = z;          }
    void      SetChargeZProba(double p){ m_chargeZProba = p;    }
    void      Clear(Option_t* opt);
