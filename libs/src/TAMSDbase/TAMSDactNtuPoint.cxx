@@ -84,9 +84,7 @@ Bool_t TAMSDactNtuPoint::FindPoints()
   TAMSDntuCluster* pNtuCluster  = (TAMSDntuCluster*) fpNtuCluster->Object();
   TAMSDntuPoint* pNtuPoint      = (TAMSDntuPoint*) fpNtuPoint->Object();
   TAMSDparGeo* pGeoMap          = (TAMSDparGeo*) fpGeoMap->Object();
-  
-  bool xyOrder = true;
-  if(FootDebugLevel(2)) {
+  if(FootDebugLevel(1)) {  
     cout<<"****************************"<<endl;
     cout<<"  NtuPoint hits "<<endl;
     cout<<"****************************"<<endl;
@@ -97,34 +95,34 @@ Bool_t TAMSDactNtuPoint::FindPoints()
 
     // fill points
     
-    for (int iStrip = 0; iStrip < pNtuCluster->GetClustersN(iLayer); iStrip++) {
+    for (int iStrip = 0; iStrip < pNtuCluster->GetClustersN(iLayer+1); iStrip++) {
 
-      TAMSDcluster* colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iStrip);
+      TAMSDcluster* colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iStrip);
       if (colHit == 0) continue;
-      if (colHit->GetPlaneView() == 0 ) 	xyOrder = true;
-      else xyOrder = false;
 
-      for (int iStrip_ = 0; iStrip_ < pNtuCluster->GetClustersN(iLayer+1); iStrip_++) {
+      for (int iStrip_ = 0; iStrip_ < pNtuCluster->GetClustersN(iLayer); iStrip_++) {
 
-         TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iStrip);
+	TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iStrip_);
 
-         if (rowHit == 0) continue;
+      if (rowHit == 0) continue;
 
-         if ( !(rowHit->GetPlaneView() == 1 && xyOrder) ) 	cout << "ERROR on TAMSDactNtuPoint" << endl;
-         
-         TVector3 localPointPosition;
-         localPointPosition.SetXYZ(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
+      TVector3 localPointPosition;
+	localPointPosition.SetXYZ(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
 
-         TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(),
-                                                 localPointPosition );
-         TVector3 posErr(colHit->GetPosError().X(), rowHit->GetPosError().Y(), 0.01);
-         point->SetPosErrorG(posErr);
-         
-         // tmp solution, considered only one particle
-         if (colHit->GetMcTracksN())
-            point->AddMcTrackIdx(colHit->GetMcTrackIdx(0));
-         if (rowHit->GetMcTracksN())
-            point->AddMcTrackIdx(rowHit->GetMcTrackIdx(0));
+	TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), localPointPosition );
+        fpSens[plane]->Fill(point->GetPosition().X(),point->GetPosition().Y());
+
+	if(FootDebugLevel(2))
+	  cout<<" Layer "<<iLayer<<" iStrip "<<iStrip<<" x:: "<<point->GetPosition().X()<<" y:: "<<point->GetPosition().Y()<<endl;
+	
+	/*
+	int colGenParticleID = colHit->GetMcTrackIdx(0);
+	int colMCHitID = colHit->GetMcIndex(0);
+	int rowGenParticleID = rowHit->GetMcTrackIdx(0);
+	int rowMCHitID = rowHit->GetMcIndex(0);
+
+	point->SetGeneratedParticle( colGenParticleID, rowGenParticleID, colMCHitID, rowMCHitID );
+	*/
       }
     } 
     plane++;

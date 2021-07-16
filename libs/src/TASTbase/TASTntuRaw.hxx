@@ -66,7 +66,7 @@ public:
 private:
    Int_t           fHistN;          //
    TClonesArray*   fListOfHits;         // hits
-   TASTrawHit*     fSuperHit;  //sum
+   TASTrawHit*     fSuperHit;  //!
    Int_t           fRunTime;
 
    static TString fgkBranchName;    // Branch name in TTree
