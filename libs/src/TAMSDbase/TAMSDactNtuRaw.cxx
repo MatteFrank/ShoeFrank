@@ -106,10 +106,12 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
    TAMSDntuRaw*    p_datraw = (TAMSDntuRaw*)    fpDatRaw->Object();
    TAMSDparGeo*    p_pargeo = (TAMSDparGeo*)    fpParGeo->Object();
    TAMSDparCal*    p_parcal = (TAMSDparCal*)    fpParCal->Object();
+   TAMSDparMap*    p_parmap = (TAMSDparMap*)    fpParMap->Object();
 
    // decode here
    Int_t boardId = (evt->boardHeader & 0xF)-1;
    
+   if ( boardId >= 3 ||  boardId < 0) return true;
    for (Int_t i = 0; i < p_pargeo->GetStripsN(); ++i) {
       
       UInt_t adcX = evt->Xplane[i];
@@ -125,16 +127,13 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       Double_t meanY  = 0;
 
       view = 1;
-      sensorId = TAMSDparGeo::GetSensorId(boardId, view);
-       auto pedestal = p_parcal->GetPedestal( sensorId, i );
-//      status   = p_parcal->GetPedestalStatus(sensorId, i);
-//      if (status == 0) {
-       if( pedestal.status ) {
+      sensorId = p_parmap->GetSensorId(boardId, view);
+      auto pedestal = p_parcal->GetPedestal( sensorId, i );
+
+      if( pedestal.status ) {
          if (fgPedestalSub) {
-//            valueX = p_parcal->GetPedestalValue(sensorId, i);
              valueX = p_parcal->GetPedestalValue(sensorId, pedestal);
              meanX = pedestal.mean;
-//            meanX  = p_parcal->GetPedestalMean(sensorId, i);
              valueX = adcX - valueX;
          }
          if (valueX > 0) {
@@ -144,16 +143,13 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
          }
       }
       view = 0;
-      sensorId = TAMSDparGeo::GetSensorId(boardId, view);
-//      status   = p_parcal->GetPedestalStatus(sensorId, i);
-//      if (status == 0) {
-       pedestal = p_parcal->GetPedestal( sensorId, i );
+      sensorId = p_parmap->GetSensorId(boardId, view);
+      pedestal = p_parcal->GetPedestal( sensorId, i );
+
       if( pedestal.status ) {
          if (fgPedestalSub) {
-//            valueY = p_parcal->GetPedestalValue(sensorId, i);
-//            meanY  = p_parcal->GetPedestalMean(sensorId, i);
-             valueY = p_parcal->GetPedestalValue(sensorId, pedestal);
-             meanY = pedestal.mean;
+            valueY = p_parcal->GetPedestalValue(sensorId, pedestal);
+            meanY = pedestal.mean;
             valueY = adcY - valueY;
          }
          if (valueY > 0) {
