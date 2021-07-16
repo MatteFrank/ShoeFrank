@@ -1,18 +1,18 @@
 // X,Y,Z and angles
 StartBaseName: "ST"
-StartPosX: 0. StartPosY: 0. StartPosZ: -35.55
+StartPosX: 1.2 StartPosY: 0. StartPosZ: -35.55
 StartAngX: 0. StartAngX: 0. StartAngX: 0.
 
 TargetBaseName: "TG"
-TargetPosX: 0. TargetPosY: 0. TargetPosZ: 0.
+TargetPosX: 1.2 TargetPosY: 0. TargetPosZ: 0.
 TargetAngX: 0. TargetAngX: 0. TargetAngX: 0.
 
 BmBaseName: "BM"
-BmPosX: 0. BmPosY: 0. BmPosZ: -19.9
+BmPosX: 1.2 BmPosY: 0. BmPosZ: -19.9
 BmAngX: 0. BmAngY: 0. BmAngZ:   0.
 
 VertexBaseName: "VT"
-VertexPosX: 0. VertexPosY:   0. VertexPosZ: 2.1
+VertexPosX: 1.2 VertexPosY:   0. VertexPosZ: 2.1
 VertexAngX: 0. VertexAngY:   0. VertexAngZ: 0.
 
 MagnetsBaseName: "DI"
@@ -28,7 +28,7 @@ MicroStripPosX: 0. MicroStripPosY: 0. MicroStripPosZ: 44.65
 MicroStripAngX: 0. MicroStripAngY: 0. MicroStripAngZ: 0.
 
 TofWallBaseName: "TW"
-TofWallPosX: -1. TofWallPosY: -1. TofWallPosZ: 193.5
+TofWallPosX: -0.3 TofWallPosY: -1. TofWallPosZ: 193.5
 TofWallAngX: 0. TofWallAngY:  0. TofWallAngZ: 0.
 
 CaloBaseName: "CA"
