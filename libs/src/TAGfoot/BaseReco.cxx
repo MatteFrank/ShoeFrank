@@ -812,10 +812,9 @@ void BaseReco::CreateRecActionMsd()
    if (fFlagHisto)
       fActClusMsd->CreateHistogram();
    
-   if (TAGrecoManager::GetPar()->IncludeKalman() ){
-      fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
-      fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuHitMsd, fpNtuRecMsd, fpParGeoMsd);
-   }
+   fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
+   fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuHitMsd, fpNtuRecMsd, fpParGeoMsd);
+
 }
 
 //__________________________________________________________
