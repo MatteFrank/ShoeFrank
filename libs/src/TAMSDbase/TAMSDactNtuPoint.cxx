@@ -109,6 +109,9 @@ Bool_t TAMSDactNtuPoint::FindPoints()
 
          TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(),
                                                  localPointPosition );
+         TVector3 posErr(colHit->GetPosError().X(), rowHit->GetPosError().Y(), 0.01);
+         point->SetPosErrorG(posErr);
+         
          // tmp solution, considered only one particle
          if (colHit->GetMcTracksN())
             point->AddMcTrackIdx(colHit->GetMcTrackIdx(0));
