@@ -111,7 +111,6 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
    // decode here
    Int_t boardId = (evt->boardHeader & 0xF)-1;
    
-   if ( boardId >= 3 ||  boardId < 0) return true;
    for (Int_t i = 0; i < p_pargeo->GetStripsN(); ++i) {
       
       UInt_t adcX = evt->Xplane[i];
