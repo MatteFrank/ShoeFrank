@@ -106,7 +106,7 @@ struct ms2d_tag{
     using cut_t = double;
     static constexpr uint8_t shift = 4;
 
-    constexpr static double default_cut_value{15};
+    constexpr static double default_cut_value{20};
 };
     struct tof_tag{
         using vector_matrix =  matrix<2, 1>;
@@ -809,10 +809,7 @@ public:
                          TAMSDparGeo* geo_ph )  :
         cluster_mhc{cluster_phc},
         depth_mc{ retrieve_depth(geo_ph) }
-    {
-        puts(__PRETTY_FUNCTION__);
-        for(auto const& depth: depth_mc){ std::cout << "depth: " << depth << '\n'; }
-    }
+    {}
     
     
 private:
