@@ -78,7 +78,7 @@ void BM_MSD_strel_main(TString in_filename = "", Int_t nentries = 0){
   vector<TVector3> vtxoriginvec;
   vector<TVector3> bmslopevec;
   vector<TVector3> bmoriginvec;
-
+  char hname[200];
   //****************************************** Event Loop ****************************************
 
   //read BM and Vertex loop
@@ -100,7 +100,8 @@ void BM_MSD_strel_main(TString in_filename = "", Int_t nentries = 0){
 
 	for(int iPoi=0; iPoi<msdNtuPoint->GetPointN(iL); iPoi++) {
 	  TAMSDpoint* aPoi = msdNtuPoint->GetPoint(iL,iPoi);
-	  cout<<" "<<aPoi->GetPosition().X()<<" "<<aPoi->GetPosition().Y()<<" "<<aPoi->GetPosition().Z()<<endl;
+	  sprintf(hname,"Sensor_%d",iL);
+	  ((TH2D*)gDirectory->Get(hname))->Fill(aPoi->GetPosition().X(),aPoi->GetPosition().Y());
 	}
 	
       }

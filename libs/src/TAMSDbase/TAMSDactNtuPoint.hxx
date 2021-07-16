@@ -41,11 +41,7 @@ private:
    TClonesArray*   m_listOfStripsCol;      // list of column strip
    TClonesArray*   m_listOfStripsRow;      // list of row strip 
 
-
-   TH1F*           fpHisDist;
-   TH1F*           fpHisCharge1;
-   TH1F*           fpHisCharge2;
-   TH1F*           fpHisChargeTot;
+   TH2F*           fpSens[3];
 
    ClassDef(TAMSDactNtuPoint,0)
 };

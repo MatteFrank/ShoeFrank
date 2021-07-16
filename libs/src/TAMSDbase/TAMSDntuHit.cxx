@@ -8,6 +8,7 @@
 #include "TClonesArray.h"
 
 #include "TAMSDntuHit.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
  \class TAMSDntuHit TAMSDntuHit.hxx "TAMSDntuHit.hxx"

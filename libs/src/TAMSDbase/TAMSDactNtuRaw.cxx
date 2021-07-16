@@ -108,6 +108,11 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
    TAMSDparCal*    p_parcal = (TAMSDparCal*)    fpParCal->Object();
    TAMSDparMap*    p_parmap = (TAMSDparMap*)    fpParMap->Object();
 
+   if(FootDebugLevel(2)) {
+     cout<<"****************************"<<endl;
+     cout<<"  NtuRaw hits "<<endl;
+     cout<<"****************************"<<endl;
+   }
    // decode here
    Int_t boardId = (evt->boardHeader & 0xF)-1;
 
@@ -160,6 +165,10 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 	   if (ValidHistogram())
 	     fpHisStripMap[sensorId]->Fill(i, adcY-meanY);
          }
+      }
+      if(FootDebugLevel(2)) {
+	if(valueX>0 || valueY>0)
+	  cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
       }
    }
    

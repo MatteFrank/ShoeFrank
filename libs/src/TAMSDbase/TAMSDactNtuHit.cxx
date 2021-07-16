@@ -51,7 +51,12 @@ Bool_t TAMSDactNtuHit::Action()
    TAMSDntuRaw*   p_datraw = (TAMSDntuRaw*) fpDatRaw->Object();
    TAMSDntuHit*   p_nturaw = (TAMSDntuHit*) fpNtuRaw->Object();
    TAMSDparGeo*   p_geoMap = (TAMSDparGeo*) fpGeoMap->Object();
-   
+
+   if(FootDebugLevel(2)) {
+     cout<<"****************************"<<endl;
+     cout<<"  NtuHit hits "<<endl;
+     cout<<"****************************"<<endl;
+   }
    
    // loop over boards
    for (Int_t i = 0; i < p_geoMap->GetSensorsN(); ++i) {
@@ -66,7 +71,9 @@ Bool_t TAMSDactNtuHit::Action()
          Int_t view       = strip->GetView();
          UInt_t charge    = strip->GetCharge();
          Float_t posStrip = p_geoMap->GetPosition(stripId);
-         
+	 if(FootDebugLevel(2))
+	   cout<<" Sens "<<sensorId<<" strip "<<stripId<<" View "<<view<<" position (cm) "<<posStrip<<" "<<endl;
+	 
 	 if (FootDebugLevel(1))
             printf("sensor: %d strip: %d view: %d charge: %d\n", sensorId, stripId, view, charge);
          

@@ -16,6 +16,7 @@
 #include "TAMSDntuPoint.hxx"
 
 #include "TAMSDactNtuPoint.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
  \class TAMSDactNtuPoint
@@ -53,14 +54,14 @@ void TAMSDactNtuPoint::CreateHistogram()
    // fpHisDist = new TH1F("twDist", "ToF Wall - Minimal distance between planes", 200, 0., 100);
    // AddHistogram(fpHisDist);
 	 //
-   // fpHisCharge1 = new TH1F("twCharge1", "ToF Wall - Charge layer 1", 1000, 0., 5e6);
-   // AddHistogram(fpHisCharge1);
-	 //
-   // fpHisCharge2 = new TH1F("twCharge2", "ToF Wall - Charge layer 2", 1000, 0., 5e6);
-   // AddHistogram(fpHisCharge2);
-	 //
-   // fpHisChargeTot = new TH1F("twChargeTot", "ToF Wall - Total charge", 1000, 0., 5e6);
-   // AddHistogram(fpHisChargeTot);
+   fpSens[0] = new TH2F("msdSens1_xy", "MSD - X - Y Dist", 500, -5., 5., 500, -5., 5.);
+   AddHistogram(fpSens[0]);
+
+   fpSens[1] = new TH2F("msdSens2_xy", "MSD - X - Y Dist", 500, -5., 5., 500, -5., 5.);
+   AddHistogram(fpSens[1]);
+
+   fpSens[2] = new TH2F("msdSens3_xy", "MSD - X - Y Dist", 500, -5., 5., 500, -5., 5.);
+   AddHistogram(fpSens[2]);
 
    SetValidHistogram(kTRUE);
 }
@@ -85,12 +86,18 @@ Bool_t TAMSDactNtuPoint::FindPoints()
   TAMSDparGeo* pGeoMap          = (TAMSDparGeo*) fpGeoMap->Object();
   
   bool xyOrder = true;
+  if(FootDebugLevel(2)) {
+    cout<<"****************************"<<endl;
+    cout<<"  NtuPoint hits "<<endl;
+    cout<<"****************************"<<endl;
+  }
   
+  int plane(0);
   for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
-
     
-  
+    
     // fill points
+    
     for (int iStrip = 0; iStrip < pNtuCluster->GetClustersN(iLayer); iStrip++) {
 
       TAMSDcluster* colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iStrip);
@@ -103,13 +110,17 @@ Bool_t TAMSDactNtuPoint::FindPoints()
 	TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iStrip);
 
       if (rowHit == 0) continue;
-
-      if ( !(rowHit->GetPlaneView() == 1 && xyOrder) ) 	cout << "ERROR on TAMSDactNtuPoint" << endl;
+      //AS:: to be checked
+      //      if ( !(rowHit->GetPlaneView() == 1 && xyOrder) ) 	cout << "ERROR on TAMSDactNtuPoint" << endl;
 	TVector3 localPointPosition;
 	localPointPosition.SetXYZ(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
 
 	TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), localPointPosition );
+        fpSens[plane]->Fill(point->GetPosition().X(),point->GetPosition().Y());
 
+	if(FootDebugLevel(2))
+	  cout<<" Layer "<<iLayer<<" iStrip "<<iStrip<<" x:: "<<point->GetPosition().X()<<" y:: "<<point->GetPosition().Y()<<endl;
+	
 	/*
 	int colGenParticleID = colHit->GetMcTrackIdx(0);
 	int colMCHitID = colHit->GetMcIndex(0);
@@ -119,7 +130,8 @@ Bool_t TAMSDactNtuPoint::FindPoints()
 	point->SetGeneratedParticle( colGenParticleID, rowGenParticleID, colMCHitID, rowMCHitID );
 	*/
       }
-    }
+    } 
+    plane++;
   }
   return true;
 }

@@ -373,6 +373,7 @@ void BaseReco::SetRecHistogramDir()
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAMSDparGeo::GetBaseName());
       fActClusMsd->SetHistogramDir(subfolder);
+      fActPointMsd->SetHistogramDir(subfolder);
    }
 
    // TW
@@ -819,6 +820,8 @@ void BaseReco::CreateRecActionMsd()
    
    fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
    fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuClusMsd, fpNtuRecMsd, fpParGeoMsd);
+   if (fFlagHisto)
+      fActPointMsd->CreateHistogram();
 }
 
 //__________________________________________________________
