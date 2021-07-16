@@ -380,7 +380,7 @@ void BaseReco::SetRecHistogramDir()
       fActClusCa->SetHistogramDir(subfolder);
    }
    
-   // Global straight tyrack
+   // Global straight track
    if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
        && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
        && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
