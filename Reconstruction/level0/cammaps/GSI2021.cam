@@ -40,7 +40,8 @@ NumberFiles: 5
 "./geomaps/GSI2021/TAMSDdetector.geo": -1
 "./config/GSI2021/TAMSDdetector.cfg": -1
 "./config/GSI2021/TAMSDdetector.map": -1
-"./calib/GSI2021/TAMSD_Pedestal.cal": 4000-4228; 4229; 4320-;
+"./config/GSI2021/TAMSDdetector.map": 4000; 4229; 4235;
+"./calib/GSI2021/TAMSD_Pedestal.cal": 4000;
 "./calib/GSI2021/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
