@@ -573,7 +573,6 @@ void BaseReco::ReadParFiles()
          fpParCalMsd = new TAGparaDsc("msdCal", new TAMSDparCal( parGeo->GetStripsN() ));
          TAMSDparCal* parCalMsd = (TAMSDparCal*)fpParCalMsd->Object();
          parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber, energyFile);
-          std::cout << "MSD parameter calibration file is: " << parFileName << '\n';
          parCalMsd->LoadEnergyCalibrationMap(parFileName.Data());
          
          parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber);

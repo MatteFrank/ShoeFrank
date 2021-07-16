@@ -127,6 +127,11 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 
       view = 1;
       sensorId = p_parmap->GetSensorId(boardId, view);
+
+      if(sensorId<0) {
+	cout<<" Decoding ERROR !!!"<<endl;
+	cout<<" "<<boardId<<" "<<view<<" "<<sensorId<<endl;
+      }
       auto pedestal = p_parcal->GetPedestal( sensorId, i );
       
       if( pedestal.status ) {
