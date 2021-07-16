@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "GSI2021"
-RunNumber: 200; 400;4100-4500;
+RunNumber: 200; 400; 4100-4500;
 NumberDevices: 9
 
 DetectorName: "FOOT"
@@ -39,8 +39,8 @@ DetectorName: "MSD"
 NumberFiles: 5
 "./geomaps/GSI2021/TAMSDdetector.geo": -1
 "./config/GSI2021/TAMSDdetector.cfg": -1
-"./config/GSI2021/TAMSDdetector.map": -1
-"./calib/GSI2021/TAMSD_Pedestal.cal": -1
+"./config/GSI2021/TAMSDdetector.map": 4000; 4234;
+"./calib/GSI2021/TAMSD_Pedestal.cal": 4000;
 "./calib/GSI2021/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
