@@ -55,6 +55,7 @@ class TABMactNtuHit : public TAGaction {
     TH1F*              fpHisEval_paoloni;         //efficiency evaluation of the Paoloni's method for all the different configuration
     TH1F*              fpHisEval_paoloni_Xview;   //efficiency evaluation of the Paoloni's method only for the x view
     TH1F*              fpHisEval_paoloni_Yview;   //efficiency evaluation of the Paoloni's method only for the y view
+    TH1I*              fpHisHitXCell;             //number of raw hits x event
     TH1I*              fpHisCell;                 //hits cell
     TH1I*              fpHisView;                 //hits view
     TH1I*              fpHisPlane;                //hits plane
