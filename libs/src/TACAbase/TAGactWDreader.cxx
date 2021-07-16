@@ -260,12 +260,13 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	    }else if(ch_type == "CLK"){
 	      clk_waves.insert(std::pair<std::pair<int,int>, TWaveformContainer*>(make_pair(board_id, ch_num),w));
 	    } else {
-	      cout<<"******************************************* "<<endl;
-	      cout<<"*******    CORRUPTED EVENT      *********** "<<endl;
-	      cout<<"*******    Bo:: "<<board_id<<" Cha:: "<<ch_num<<"      *********** "<<endl;
-	      cout<<"******************************************* "<<endl;
-	    }
-
+          if (FootDebugLevel(1)) {
+             cout<<"******************************************* "<<endl;
+             cout<<"*******    CORRUPTED EVENT      *********** "<<endl;
+             cout<<"*******    Bo:: "<<board_id<<" Cha:: "<<ch_num<<"      *********** "<<endl;
+             cout<<"******************************************* "<<endl;
+          }
+       }
 	    nhitsA++;
 	    w_amp.clear();
 	  }
