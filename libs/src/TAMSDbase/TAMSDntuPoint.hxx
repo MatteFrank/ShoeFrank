@@ -121,7 +121,7 @@ public:
 
   TClonesArray*       GetListOfPoints(int iStation) const;
 
-  TAMSDpoint*         GetPoint( int iStation, int iPoint );
+  TAMSDpoint*         GetPoint( int iStation, int iPoint ) const ;
 
 
   virtual void        Clear(Option_t* opt="");
