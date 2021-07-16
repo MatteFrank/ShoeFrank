@@ -16,7 +16,7 @@
 
 /*!
   \class TAVTactVmeSingleReader
-  \brief Reader action for ascii files **
+  \brief Reader action for ascii single file **
 */
 
 ClassImp(TAVTactVmeSingleReader);
@@ -25,31 +25,8 @@ TString TAVTactVmeSingleReader::fgDefaultFolderName = "run_";
 TString TAVTactVmeSingleReader::fgDefaultExtName    = ".ZS";
  Bool_t TAVTactVmeSingleReader::fgTrigJumpAuto      = true;
 
-// run 5007
-//map<pair<int, int>, int > TAVTactVmeSingleReader::fgTrigJumpMap = { {{0, 8425}, 2},
-//                                                              {{1, 4}, 2}, {{1, 9306}, 2},
-//                                                              {{2, 7}, 5}, {{2, 8424}, 1},
-//                                                              {{3, 5}, 1}, {{3, 9305}, 1}};
-
 // set nil
 map<pair<int, int>, int > TAVTactVmeSingleReader::fgTrigJumpMap = { {{0, 0}, 0}};
-
-
-// run 221
-//map<pair<int, int>, int > TAVTactVmeSingleReader::fgTrigJumpMap = { {{1,18564}, 4}, {{1,18674}, 2}, {{1,18715}, 1},  {{1,37425}, 1}, {{1,37482}, 5},  {{1,37599}, 5}, {{1,38721}, 1},
-//                                                              {{1,38834}, 1}, {{1,38838}, 1}, {{1,39847}, 15}, {{1,39956}, 1}, {{1,40990}, 13}, {{1,40993}, 1}, {{1,41008}, 1},
-//                                                              {{1,41105}, 4}, {{1,41123}, 1},  {{1,41145}, 1} };
-
-
-// run 2212
-//map<pair<int, int>, int > TAVTactVmeSingleReader::fgTrigJumpMap = { {{1, 350}, 151}, {{2, 214}, 15}, {{3, 210}, 11}};
-
-
-// run 2242
-//map<pair<int, int>, int > TAVTactVmeSingleReader::fgTrigJumpMap = { {{1, 60}, 59}};
-
-// run 2251
-//map<pair<int, int>, int > TAVTactVmeSingleReader::fgTrigJumpMap = { {{0, 0}, 0}};
 
 
 //------------------------------------------+-----------------------------------
