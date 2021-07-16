@@ -12,8 +12,7 @@ ClassImp(TAMSDpoint) // Description of Single Detector TAMSDpoint
 //______________________________________________________________________________
 //  default constructor
 TAMSDpoint::TAMSDpoint()
-: TAGobject(),
-   m_position(),
+: TAGcluster(),
    m_layer(0),
    m_column(0),
    m_row(0),
@@ -32,12 +31,12 @@ TAMSDpoint::TAMSDpoint()
 //______________________________________________________________________________
 //  build a point
 TAMSDpoint::TAMSDpoint( int layer, double x, double y, TVector3 position )
-: TAGobject(),
+: TAGcluster(),
    m_layer(layer),
-   m_position(position),
    m_chargeZ(0),
    m_chargeZProba(0.)
 {
+   fPosition = position;
 }
 
 //______________________________________________________________________________

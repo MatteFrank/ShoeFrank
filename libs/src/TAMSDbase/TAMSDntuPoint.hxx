@@ -7,7 +7,7 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "TAGdata.hxx"
+#include "TAGcluster.hxx"
 #include <map>
 
 // ROOT classes
@@ -28,10 +28,9 @@ class TAMSDparGeo;
  */
 /*------------------------------------------+---------------------------------*/
 
-class TAMSDpoint : public TAGobject {
+class TAMSDpoint : public TAGcluster {
 
 private:
-   TVector3    m_position;      // position in detector framework
    int         m_layer;         // number of MSD tracking station
    int         m_column;        // column number
    int         m_row;           // row number
@@ -71,7 +70,6 @@ public:
 
 
    //    All the Get methods
-   TVector3  GetPosition()    const  { return m_position;      }
 
    int       GetColumnID()    const  { return m_column;        }
    int       GetRowID()       const  { return m_row;           }
