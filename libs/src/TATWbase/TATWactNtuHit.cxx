@@ -104,8 +104,11 @@ void TATWactNtuHit::CreateHistogram()
   fpHisTimeTot = new TH1F("twTimeTot", "TW - Total Time Of Flight", 5000, -50., 50);
   AddHistogram(fpHisTimeTot);
 
-  fpHisDeltaTimeRaw = new TH1F("twDeltaTime", "raw time of flight", 5000, -50., 50);
-  AddHistogram(fpHisDeltaTimeRaw);
+  fpHisDeltaTimeRawCenterFront = new TH1F("twDeltaTimeCenterFront", "raw time of flight", 5000, -50., 50);
+  AddHistogram(fpHisDeltaTimeRawCenterFront);
+
+  fpHisDeltaTimeRawCenterRear = new TH1F("twDeltaTimeCenterRear", "raw time of flight", 5000, -50., 50);
+  AddHistogram(fpHisDeltaTimeRawCenterRear);
 
   
   for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
@@ -316,7 +319,8 @@ Bool_t TATWactNtuHit::Action() {
 	      
 	      if(ShoeBarId==9) {  // only for central bars for trigger purposes
 
-		if(AmplitudeA>0.4 && AmplitudeB>0.4)fpHisDeltaTimeRaw->Fill(rawTime);
+		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 0)fpHisDeltaTimeRawCenterFront->Fill(rawTime);
+		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 1)fpHisDeltaTimeRawCenterRear->Fill(rawTime);
 		fpHisAmpA[Layer]->Fill(AmplitudeA);
 		fpHisAmpB[Layer]->Fill(AmplitudeB);
 		fpHisAmpA_vs_Eloss[Layer]->Fill(Energy,AmplitudeA);

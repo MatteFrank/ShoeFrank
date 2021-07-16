@@ -209,12 +209,12 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
       }
     }
     if(magortrigger!=-99999)
-      used_trigger=magortrigger+tdctrigger-sttrigger;
+      used_trigger=magortrigger+tdctrigger+sttrigger;
   }else
-    used_trigger=tdctrigger-sttrigger;
-
-    //redifinition of used
     used_trigger=tdctrigger+sttrigger;
+
+  //redifinition of used
+  used_trigger=tdctrigger+sttrigger;
 
   p_datraw->SetTrigtime(used_trigger);
   if (ValidHistogram()){
