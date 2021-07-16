@@ -50,10 +50,11 @@ TATWactNtuHit::TATWactNtuHit(const char* name,
 {
 
   AddDataIn(p_datraw, "TATWntuRaw");
-  if(p_STnturaw) {
+  if(p_STnturaw)
     AddDataIn(p_STnturaw, "TASTntuHit");
+  else
     Warning("TATWactNtuHit","No ST information present");
-  }
+
   AddDataOut(p_nturaw, "TATWntuHit");
 
   AddPara(p_pargeom, "TATWparGeo");
