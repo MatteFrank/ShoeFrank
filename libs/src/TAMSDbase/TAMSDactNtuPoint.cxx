@@ -93,16 +93,11 @@ Bool_t TAMSDactNtuPoint::FindPoints()
 
       TAMSDcluster* colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iStrip);
       if (colHit == 0) continue;
-      if (colHit->GetPlaneView() == 0 ) 	xyOrder = true;
-      else xyOrder = false;
 
       for (int iStrip_ = 0; iStrip_ < pNtuCluster->GetClustersN(iLayer+1); iStrip_++) {
 
          TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iStrip);
-
          if (rowHit == 0) continue;
-
-         if ( !(rowHit->GetPlaneView() == 1 && xyOrder) ) 	cout << "ERROR on TAMSDactNtuPoint" << endl;
          
          TVector3 localPointPosition;
          localPointPosition.SetXYZ(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
