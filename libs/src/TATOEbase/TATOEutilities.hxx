@@ -104,7 +104,7 @@ struct ms2d_tag{
     using data_type = TAMSDpoint;
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     using cut_t = double;
-    static constexpr uint8_t shift = 1;
+    static constexpr uint8_t shift = 4;
 
     constexpr static double default_cut_value{15};
 };
@@ -780,7 +780,7 @@ public:
 };
 
 //______________________________________________________________________________
-//
+//                   MS2D
 
 
 template<>
@@ -809,7 +809,10 @@ public:
                          TAMSDparGeo* geo_ph )  :
         cluster_mhc{cluster_phc},
         depth_mc{ retrieve_depth(geo_ph) }
-    { }
+    {
+        puts(__PRETTY_FUNCTION__);
+        for(auto const& depth: depth_mc){ std::cout << "depth: " << depth << '\n'; }
+    }
     
     
 private:

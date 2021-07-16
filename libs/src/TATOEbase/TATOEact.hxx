@@ -180,8 +180,8 @@ public:
         register_tracks_upward( std::move( track_c ) );
         
         checker_m.end_event();
-//        logger_m.freeze_everything();
-//        logger_m.output();
+        logger_m.freeze_everything();
+        logger_m.output();
         
         
         
@@ -428,6 +428,7 @@ private:
                                                             );
         
         auto start = transformation_h->FromMSDLocalToGlobal( msd_ph->GetPositionG() );
+        logger_m << "selected_start: " << start.X() << " - " << start.Y() << " - " << start.Z() << '\n';
         
         auto tof = list_m.last();
         auto candidate_c = tof.generate_candidates();
@@ -435,7 +436,8 @@ private:
         
         for(auto && candidate : candidate_c) {
             auto end = transformation_h->FromTWLocalToGlobal( candidate.data->GetPositionG() );
-        
+            logger_m <<"selected_end: " << end.X() << " - " << end.Y() << " - " << end.Z() << '\n';
+            
             auto length = end - start;
         
             auto track_slope_x = length.X()/length.Z();
@@ -594,7 +596,6 @@ private:
     void advance_reconstruction( arborescence<node_type>& arborescence_p,
                                  const T& detector_p )
     {
-        
         logger_m.add_root_header("ADVANCE_RECONSTRUCTION");
 //        std::cout << "ADVANCE_RECONSTRUCTION\n";
         
@@ -645,7 +646,6 @@ private:
     void advance_reconstruction( arborescence<node_type>& arborescence_p,
                                  const detector_properties<details::tof_tag>& tof_p )
     {
-        
         logger_m.add_root_header( "FINALISE_RECONSTRUCTION" );
 //        std::cout << "FINALISE_RECONSTRUCTION\n";
 //        std::cout << "advance_reconstruction<tof>:\n";
@@ -691,7 +691,6 @@ private:
     void advance_reconstruction( arborescence<node_type>& arborescence_p,
                                  const detector_properties<details::vertex_tag>& vertex_p )
     {
-        
         logger_m.add_root_header("START_RECONSTRUCTION");
 //        std::cout << "START_RECONSTRUCTION\n";
         
@@ -764,13 +763,16 @@ private:
      void advance_reconstruction( arborescence<node_type>& arborescence_p,
                                   const detector_properties<details::ms2d_tag>& ms2d_p )
      {
-         
+//         puts(__PRETTY_FUNCTION__);
          logger_m.add_root_header("START_RECONSTRUCTION");
  //        std::cout << "START_RECONSTRUCTION\n";
          
          auto layer_c = ms2d_p.form_layers();
          auto generating_candidate_c = layer_c.generating_candidates();
-            
+        
+         logger_m.add_header<1>("candidate_generation");
+         logger_m << "generating_candidate_found: " << generating_candidate_c.size() << '\n';
+        
          for( auto&& candidate : generating_candidate_c ){
              auto cs_c = generate_corrected_state( candidate.data );
              
@@ -789,14 +791,16 @@ private:
          }
          
          for(auto && layer : layer_c) {
-             logger_m.add_header<1>("layer");
-         
+             logger_m.add_header<2>("layer");
+             logger_m << "candidate_size: " << layer.get_candidates().size();
+             
+             
              if( layer.get_candidates().empty() ){ continue; }
              
              auto& leaf_c = arborescence_p.get_handler();
              for(auto& leaf : leaf_c){
                  
-                 logger_m.add_header<2>( "leaf" );
+                 logger_m.add_header<3>( "leaf" );
                  
                  // -----------------------------
                  checker_m.update_current_node( &leaf );
@@ -822,7 +826,6 @@ private:
              }
   
          }
-         
      }
     
     

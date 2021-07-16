@@ -124,10 +124,6 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     using state_covariance =  matrix<4, 4> ;
     using state = state_impl< state_vector, state_covariance  >;
     
-    auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
-    auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
-    auto * geoVTX_h = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
-    
     auto * clusterTW_hc = static_cast<TATWntuPoint*>( fpTwPoint->Object() );
     auto * geoTW_h = static_cast<TATWparGeo*>( fpTofGeoMap->Object() );
     
@@ -139,9 +135,14 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     if( fpVtxClus && fpVtxVertex && fpVtxGeoMap ){ opcode |= flag_set<details::vertex_tag>{};  }
     if( fpItrClus && fpItrGeoMap ){ opcode |= flag_set<details::it_tag>{}; }
     if( fpMsdClus && fpMsdGeoMap ){ opcode |= flag_set<details::msd_tag>{}; }
-    if( fpMsdPoint && fpMsdGeoMap ){ opcode |= flag_set<details::ms2d_tag>{}; }
+    if( fpMsdPoint && fpMsdGeoMap ){ opcode &= ~flag_set<details::msd_tag>{}; opcode |= flag_set<details::ms2d_tag>{}; }
+    
     switch( opcode ){
         case flag_set<details::vertex_tag, details::it_tag, details::tof_tag>{}: {
+            auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
+            auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
+            auto * geoVTX_h = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
+            
             auto * clusterIT_hc = static_cast<TAITntuCluster*>( fpItrClus->Object() );
             auto * geoIT_h = static_cast<TAITparGeo*>( fpItrGeoMap->Object() );
             
@@ -161,6 +162,10 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             
         }
         case flag_set<details::vertex_tag, details::msd_tag, details::tof_tag>{}: {
+            auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
+            auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
+            auto * geoVTX_h = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
+            
             auto * clusterMSD_hc = static_cast<TAMSDntuCluster*>( fpMsdClus->Object() );
             auto * geoMSD_h = static_cast<TAMSDparGeo*>( fpMsdGeoMap->Object() );
             
@@ -179,6 +184,10 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                                        );
         }
         case flag_set<details::vertex_tag, details::it_tag, details::msd_tag, details::tof_tag>{}: {
+            auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
+            auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
+            auto * geoVTX_h = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
+            
             auto * clusterIT_hc = static_cast<TAITntuCluster*>( fpItrClus->Object() );
             auto * geoIT_h = static_cast<TAITparGeo*>( fpItrGeoMap->Object() );
             
@@ -217,6 +226,10 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                                        );
         }
     }
+    
+    auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
+    auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
+    auto * geoVTX_h = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
     
     auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
                                                                      geoVTX_h) )

@@ -189,6 +189,7 @@ std::vector<typename details::ms2d_tag::candidate> detector_properties< details:
     candidate_c.reserve( 10 );
     
     std::size_t entries = cluster_mhc->GetPointN(index_p);
+    std::cout << "detector_properties< details::ms2d_tag >::generate_candidates_entries: " << entries << '\n';
     
     for(std::size_t i{0}; i < entries ; ++i) {
         auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
