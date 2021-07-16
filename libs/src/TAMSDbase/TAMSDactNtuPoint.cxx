@@ -109,6 +109,10 @@ Bool_t TAMSDactNtuPoint::FindPoints()
 
          TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(),
                                                  localPointPosition );
+       
+         TVector3 pos(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
+         point->SetPositionG(pos);
+         
          TVector3 posErr(colHit->GetPosError().X(), rowHit->GetPosError().Y(), 0.01);
          point->SetPosErrorG(posErr);
          
