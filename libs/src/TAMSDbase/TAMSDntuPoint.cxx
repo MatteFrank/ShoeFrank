@@ -40,6 +40,18 @@ TAMSDpoint::TAMSDpoint( int layer, double x, double y, TVector3 position )
 }
 
 //______________________________________________________________________________
+//  build a point
+TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, Double_t y, Double_t dy)
+: TAGcluster(),
+  m_layer(layer),
+  m_chargeZ(0),
+  m_chargeZProba(0.)
+{
+   fPosition.SetXYZ(x,y,0);
+   fPosError.SetXYZ(dx,dy,0);
+}
+
+//______________________________________________________________________________
 // Clear
 void TAMSDpoint::Clear(Option_t*)
 {
@@ -77,8 +89,8 @@ TAMSDntuPoint::~TAMSDntuPoint()
 
 //______________________________________________________________________________
 //  standard
-TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 position ) {
-
+TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 position )
+{
   if ( iStation >= 0 && iStation < m_geometry->GetSensorsN()/2 ) {
     TClonesArray &pointArray = *GetListOfPoints(iStation);
     TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, x, y, position );
@@ -87,6 +99,20 @@ TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 
     cout << Form("Wrong sensor number %d\n", iStation);
     return 0x0;
   }
+}
+
+//______________________________________________________________________________
+//  standard
+TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, Double_t y, Double_t dy )
+{
+   if ( iStation >= 0 && iStation < m_geometry->GetSensorsN()/2 ) {
+      TClonesArray &pointArray = *GetListOfPoints(iStation);
+      TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, x, dx, y, dy);
+      return point;
+   } else {
+      cout << Form("Wrong sensor number %d\n", iStation);
+      return 0x0;
+   }
 }
 
 //------------------------------------------+-----------------------------------

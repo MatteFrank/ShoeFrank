@@ -99,17 +99,13 @@ Bool_t TAMSDactNtuPoint::FindPoints()
          TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iStrip);
          if (rowHit == 0) continue;
          
-         TVector3 localPointPosition;
-         localPointPosition.SetXYZ(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
-
-         TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(),
-                                                 localPointPosition );
+         TAMSDpoint* point = pNtuPoint->NewPoint(iLayer/2,
+                                                 colHit->GetPosition().X(), colHit->GetPosError().X(),
+                                                 rowHit->GetPosition().Y(), rowHit->GetPosError().Y());
        
-         TVector3 pos(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
+         auto posz = (colHit->GetPositionG().Z() + rowHit->GetPositionG().Z())/2.;
+         TVector3 pos(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), posz);
          point->SetPositionG(pos);
-         
-         TVector3 posErr(colHit->GetPosErrorG().X(), rowHit->GetPosErrorG().Y(), 0.01);
-         point->SetPosErrorG(posErr);
          
          // tmp solution, considered only one particle
          if (colHit->GetMcTracksN())

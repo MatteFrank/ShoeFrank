@@ -66,6 +66,8 @@ public:
 
    TAMSDpoint();
    TAMSDpoint( int layer, double x, double y, TVector3 position);
+   TAMSDpoint(Int_t layer, Double_t x, Double_t dx, Double_t y, Double_t dy);
+
    virtual ~TAMSDpoint() {};
 
 
@@ -115,6 +117,7 @@ public:
   virtual ~TAMSDntuPoint();
 
   TAMSDpoint*         NewPoint( int iStation, double x, double y, TVector3 position);
+  TAMSDpoint*         NewPoint(Int_t iStation, Double_t x, Double_t dx, Double_t y, Double_t dy );
 
   int                 GetPointN(int iStation) const;
   int                 GetPointN_includingGhosts();
