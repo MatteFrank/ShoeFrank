@@ -50,7 +50,7 @@ TAGrecoManager::~TAGrecoManager()
 //_____________________________________________________________________________
 // private constructor
 TAGrecoManager::TAGrecoManager( const TString expName )
-: m_parFileName(""),        m_debug(0),				m_chi2(-1),				m_measureN(11),			m_skipN(-1),
+: m_parFileName(""),        m_debug(0),				m_chi2(-1),				m_measureN(11),			m_skipN(-1),			m_isMC(true),
   m_kalmanMode(""),         m_kalReverse(false),   m_verFLUKA(false),       m_VTreso(0.),            m_ITreso(0.),            m_MSDreso(0.), m_TWreso(0.),
   m_enableLocalReco(false), m_enableTree(false),   m_enableHisto(false),    m_enableSaveHits(false), m_enableTracking(false), m_enableRootObject(false),
   m_enableTWZmc(false),     m_enableTWnoPU(false), m_enableTWZmatch(false), m_enableTWCalBar(false), m_doCalibTW(false),      m_doCalibBM(false), m_enableRegionMc(false),
@@ -175,6 +175,14 @@ void TAGrecoManager::FromFile ()
 		if (  m_skipN <= 0 )	m_skipN = -1;
 		else 					m_skipN -= 1;
 	}
+
+	if (key.Contains("MC sample:")  ) {
+      if ( item.Contains("y")) m_isMC = true;
+      else                     m_isMC = false;
+      if (m_debug > 0)
+        printf("MC sample: %d\n", m_isMC);
+      
+    }
     
     if (key.Contains("MC Particle Types:")) {
       m_mcParticles.clear();
