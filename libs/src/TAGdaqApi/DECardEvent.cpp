@@ -15,6 +15,7 @@ void DECardEvent::readData(unsigned int **p1)
 {
    evtSize   = 0;
    u_int * p = *p1;
+   u_int * p_max = *p1 + 2047;
    
    channelID= *p;
    ++p;
@@ -77,7 +78,7 @@ void DECardEvent::readData(unsigned int **p1)
          evtSize++;
          if(*p != m_vtxTail)values.push_back(*p);
          
-      } while (*p != m_vtxTail);
+      } while (*p != m_vtxTail && p != p_max);
    }
    *p1 = (++p);
 }
