@@ -10,7 +10,9 @@ ClassImp(TAGactDaqReader);
 TAGactDaqReader::TAGactDaqReader(const char* name, TAGdataDsc* p_datdaq)
   : TAGactionFile(name, "TAGactDaqReader - DAQ file reader", "READ"),
    fDaqFileReader(new EventReader()),
-   fDaqEvent(p_datdaq)
+   fDaqEvent(p_datdaq),
+   fDaqFileIndex(0),
+   fDaqFileChain(false)
 {
    AddDataIn(p_datdaq, "TAGdaqEvent");
 }
@@ -24,14 +26,32 @@ TAGactDaqReader::~TAGactDaqReader()
 
 //------------------------------------------+-----------------------------------
 //! Open data source.
-Int_t TAGactDaqReader::Open(const TString& name, Option_t*, const TString, Bool_t )
+Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString, Bool_t )
 {
+   fCurFileName = name;
+   
+   TString opt(option);
+   opt.ToLower();
+   
+   if (opt.Contains("chain")) {
+      fDaqFileChain = true;
+      fDaqFileIndex++;
+   }
+   
+   // all hard coded for the moment
+   if (fDaqFileChain) {
+      Int_t pos = name.Last('.');
+      pos -= 4;
+      TString tmp = name(0, pos);
+      fCurFileName = tmp + Form("%04d", fDaqFileIndex) + ".data";
+   }
+
    Int_t b_bad = 0;
    
-   std::string filename ( name.Data() );
+   std::string filename ( fCurFileName.Data() );
    fDaqFileReader->openFile( filename );
    if ( !fDaqFileReader->getIsOpened() ) {
-      Error("Open()", "Cannot open file %s", name.Data());
+      Warning("Open()", "Cannot open next file %s, stop reading", name.Data());
       b_bad = -1;
    }
    
@@ -41,7 +61,8 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t*, const TString, Bool_
       fDaqFileHeader->printData();
    }
 
-  return b_bad;
+   
+   return b_bad;
 }
 
 //------------------------------------------+-----------------------------------
@@ -116,8 +137,13 @@ Bool_t TAGactDaqReader::Process()
    if (evWD)
       datDaq->AddFragment(evWD);
    
-   if (fDaqFileReader->endOfFileReached())
-      return false;
+   if (fDaqFileReader->endOfFileReached()) {
+      if (fDaqFileChain) {
+         Close();
+        if(Open(fCurFileName, "chain") ==  -1) return false;
+      } else
+         return false;
+   }
    
    if( fDaqFileReader->check()) {
       fDaqEvent->SetBit(kValid);
