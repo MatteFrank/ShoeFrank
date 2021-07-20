@@ -742,7 +742,6 @@ int TAGactKFitter::UploadHitsMSD() {
       std::cout << "entered cycle pointsMSD of plane " << iPlane << std::endl;
       TAMSDpoint* point = (TAMSDpoint*) ntuP->GetPoint(iPlane, iPoint);
       TVector3 pointPosition = point->GetPosition();
- //     bool isPointGhost = point->IsTrueGhost();
 
       TVector3 prova = m_GeoTrafo->FromMSDLocalToGlobal( pointPosition );
       if (m_debug > 1)
@@ -750,47 +749,55 @@ int TAGactKFitter::UploadHitsMSD() {
 
       m_MSD_pointCollection.push_back(point);
 
-//      int idx    = point->GetGenPartID();
-//      int idRow  = point->GetRowMCHitID();
-//      int idCol  = point->GetColumnMCHitID();
-//      TAMChit* mcRowHit = msdMc->GetHit(idRow);
-//      TAMChit* mcColHit = msdMc->GetHit(idCol);
-//      //Int_t checkTrackId = mcHit->GetTrackId();
-//      //if ( checkTrackId != idx ) { cout << "WARNING: TRACKID DOES NOT MATCH!" << endl; continue; }
-//      TVector3 posin = (mcRowHit->GetInPosition() + mcRowHit->GetOutPosition())*.5;
-//      TVector3 posout = (mcColHit->GetInPosition() + mcColHit->GetOutPosition())*.5;
-//      if (m_debug > 1)
-//      cout << "idx  idRow   idCol : " << idx << " " << idRow << " " << idCol << " "  << endl;
-//      if (idx > -1 ){
-//        TAMCpart* track = eve->GetTrack(idx);
-//        if (m_debug > 1)
-//        printf("charge %d mass %g index %d \n", track->GetCharge(), track->GetMass(), idx);
-//        TVector3 momin = (mcRowHit->GetInMomentum() + mcRowHit->GetOutMomentum())*.5;
-//        TVector3 momout = (mcColHit->GetInMomentum() + mcColHit->GetOutMomentum())*.5;
-//        if (m_debug > 1)
-//        printf("MC In Position pos (%.4f %.4f %.4f)\n", posin[0], posin[1], posin[2]);
-//        MCTruthInfo MSDInfo;
-//        MSDInfo.MCTrackId = idx;
-//        MSDInfo.MCFlukaId = track->GetFlukaID();
-//        MSDInfo.MCMass = track->GetMass();
-//        MSDInfo.MCCharge = track->GetCharge();
-//        MSDInfo.MCGenPosition = track->GetInitPos();
-//        MSDInfo.MCGenMomentum = track->GetInitP();
-//        MSDInfo.MCPosition = (posin + posout)*.5;
-//        MSDInfo.MCMomentum = (momin + momout)*.5;
-//        MCMSDInfo[m_MSD_pointCollection.size()-1] = MSDInfo;
-//      } else {
-//        MCTruthInfo MSDInfo;
-//        MSDInfo.MCTrackId = idx;
-//        MSDInfo.MCFlukaId = -999.;
-//        MSDInfo.MCMass = -999.;
-//        MSDInfo.MCCharge = -999.;
-//        MSDInfo.MCGenPosition.SetXYZ(-999., -999, -999);
-//        MSDInfo.MCGenMomentum.SetXYZ(-999., -999, -999);
-//        MSDInfo.MCPosition = (posin + posout)*.5;
-//        MSDInfo.MCMomentum.SetXYZ(-999., -999, -999);
-//        MCMSDInfo[m_MSD_pointCollection.size()-1] = MSDInfo;
-//      }
+      TAMSDcluster* rowClus = point->GetRowClus();
+      TAMSDcluster* colClus = point->GetColClus();
+       
+      // only considered the first strip and the first MC particle
+      int idx    = point->GetMcTrackIdx(0);
+      TAMSDhit* rowHit = rowClus->GetStrip(0);
+      TAMSDhit* colHit = colClus->GetStrip(0);
+
+      int idRow  = rowHit->GetMcIndex(0);
+      int idCol  = colHit->GetMcIndex(0);
+
+      TAMChit* mcRowHit = msdMc->GetHit(idRow);
+      TAMChit* mcColHit = msdMc->GetHit(idCol);
+      //Int_t checkTrackId = mcHit->GetTrackId();
+      //if ( checkTrackId != idx ) { cout << "WARNING: TRACKID DOES NOT MATCH!" << endl; continue; }
+      TVector3 posin = (mcRowHit->GetInPosition() + mcRowHit->GetOutPosition())*.5;
+      TVector3 posout = (mcColHit->GetInPosition() + mcColHit->GetOutPosition())*.5;
+      if (m_debug > 1)
+      cout << "idx  idRow   idCol : " << idx << " " << idRow << " " << idCol << " "  << endl;
+      if (idx > -1 ){
+        TAMCpart* track = eve->GetTrack(idx);
+        if (m_debug > 1)
+        printf("charge %d mass %g index %d \n", track->GetCharge(), track->GetMass(), idx);
+        TVector3 momin = (mcRowHit->GetInMomentum() + mcRowHit->GetOutMomentum())*.5;
+        TVector3 momout = (mcColHit->GetInMomentum() + mcColHit->GetOutMomentum())*.5;
+        if (m_debug > 1)
+        printf("MC In Position pos (%.4f %.4f %.4f)\n", posin[0], posin[1], posin[2]);
+        MCTruthInfo MSDInfo;
+        MSDInfo.MCTrackId = idx;
+        MSDInfo.MCFlukaId = track->GetFlukaID();
+        MSDInfo.MCMass = track->GetMass();
+        MSDInfo.MCCharge = track->GetCharge();
+        MSDInfo.MCGenPosition = track->GetInitPos();
+        MSDInfo.MCGenMomentum = track->GetInitP();
+        MSDInfo.MCPosition = (posin + posout)*.5;
+        MSDInfo.MCMomentum = (momin + momout)*.5;
+        MCMSDInfo[m_MSD_pointCollection.size()-1] = MSDInfo;
+      } else {
+        MCTruthInfo MSDInfo;
+        MSDInfo.MCTrackId = idx;
+        MSDInfo.MCFlukaId = -999.;
+        MSDInfo.MCMass = -999.;
+        MSDInfo.MCCharge = -999.;
+        MSDInfo.MCGenPosition.SetXYZ(-999., -999, -999);
+        MSDInfo.MCGenMomentum.SetXYZ(-999., -999, -999);
+        MSDInfo.MCPosition = (posin + posout)*.5;
+        MSDInfo.MCMomentum.SetXYZ(-999., -999, -999);
+        MCMSDInfo[m_MSD_pointCollection.size()-1] = MSDInfo;
+      }
     }
   }
   m_MCInfo[m_detectorID_map["MSD"]] = MCMSDInfo;
