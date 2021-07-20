@@ -18,6 +18,7 @@
 #include "TATWntuPoint.hxx"
 #include "TACAntuHit.hxx"
 
+
 ClassImp(LocalRecoMC)
 
 //__________________________________________________________
@@ -44,6 +45,8 @@ LocalRecoMC::~LocalRecoMC()
 //__________________________________________________________
 void LocalRecoMC::CreateRawAction()
 {
+
+	if(!fFlagMC)	 return;
    fActEvtReader = new TAGactTreeReader("actEvtReader");
 
    if ( TAGrecoManager::GetPar()->IsRegionMc()) {

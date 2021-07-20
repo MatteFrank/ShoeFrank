@@ -66,7 +66,7 @@ Bool_t TAGbaseWDparMap::FromFile(const TString& name) {
       for(int iCh=0;iCh<18;iCh++){
 	incF.getline(bufConf, 200, '\n');
 	sscanf(bufConf, "%d\t%c\t%s", &channel, &isenabled, detector);
-	//	printf("%d\t%c\t%s\n", iCh, isenabled, detector);
+	//printf("bo::%d %d\t%c\t%s\n", board, iCh, isenabled, detector);
 	key = make_pair(board, iCh);
 	chmap[key] = detector;
       }
@@ -90,7 +90,11 @@ void TAGbaseWDparMap::Clear(Option_t*){
 
 
 string TAGbaseWDparMap::GetChannelType(int board, int channel){
-
-  return chmap.find(make_pair(board, channel))->second;
-    
+  string res = "CORRUPTED";
+  if(chmap.count(make_pair(board, channel))) {
+    return chmap.find(make_pair(board, channel))->second;
+  }  else {
+    return res;
+  }
+  
 }

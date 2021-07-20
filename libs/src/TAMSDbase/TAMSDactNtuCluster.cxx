@@ -13,6 +13,7 @@
 #include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TAMSDactNtuCluster.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
  \class TAMSDactNtuCluster 
@@ -51,7 +52,7 @@ void TAMSDactNtuCluster::CreateHistogram()
   DeleteHistogram();
   
   TString prefix = "ms";
-  TString titleDev = "Mirco Strip Detector";
+  TString titleDev = "Micro Strip Detector";
   
   fpHisStripTot = new TH1F(Form("%sClusStripTot", prefix.Data()), Form("%s - Total # strips per clusters", titleDev.Data()), 25, 0., 25.);
   AddHistogram(fpHisStripTot);
@@ -197,6 +198,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     if ( clusterN != -1 ) {
       cluster = pNtuClus->GetCluster(iSensor, clusterN);
       cluster->AddStrip(strip);
+      cluster->SetPlaneView(strip->GetView());
     }
   }
 
@@ -204,12 +206,19 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
   // Compute position and fill clusters info
   for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
     cluster = pNtuClus->GetCluster(iSensor, i);
+
     cluster->SetSensorIdx(iSensor);
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition(cluster);
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
+    if(FootDebugLevel(1))
+      cout<<" Sensor "<<iSensor<<" cluster:: "<<i<<" pos:: "<<posG.X()<<endl;
     posG = pGeoMap->Sensor2Detector(iSensor, posG);
+    if(FootDebugLevel(1)) {
+      cout<<" New pos  pos:: "<<posG.X()<<" "<<posG.Y()<<" "<<posG.Z()<<endl;
+      cout<<" view:: "<<pGeoMap->GetSensorPar(iSensor).TypeIdx<<endl;
+    }
     cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
     cluster->SetPositionG(posG);
     

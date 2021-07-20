@@ -12,8 +12,7 @@ ClassImp(TAMSDpoint) // Description of Single Detector TAMSDpoint
 //______________________________________________________________________________
 //  default constructor
 TAMSDpoint::TAMSDpoint()
-: TAGobject(),
-   m_position(),
+: TAGcluster(),
    m_layer(0),
    m_column(0),
    m_row(0),
@@ -32,12 +31,12 @@ TAMSDpoint::TAMSDpoint()
 //______________________________________________________________________________
 //  build a point
 TAMSDpoint::TAMSDpoint( int layer, double x, double y, TVector3 position )
-: TAGobject(),
+: TAGcluster(),
    m_layer(layer),
-   m_position(position),
    m_chargeZ(0),
    m_chargeZProba(0.)
 {
+   fPosition = position;
 }
 
 //______________________________________________________________________________
@@ -103,7 +102,7 @@ int TAMSDntuPoint::GetPointN(int iStation) const
 
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) {
+TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const {
 
 	if ( iPoint >= 0  && iPoint < GetPointN( iStation ) ) {
     TClonesArray* list = GetListOfPoints(iStation);
@@ -120,28 +119,6 @@ TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
 	  return list;
    } else return 0x0;
 }
-
-
-//------------------------------------------------------------------------------
-void TAMSDpoint::SetGeneratedParticle ( int colGenPart, int rowGenPart, int colMCHitID, int rowMCHitID )
-{
-  m_isMC             = true;
-  m_columnParticleID = colGenPart;
-  m_rowParticleID    = rowGenPart;
-  m_columnMCHitID    = colMCHitID;
-  m_rowMCHitID       = rowMCHitID;
-
-  if ( m_columnParticleID == m_rowParticleID )   	{
-    m_isTrueGhost = false;
-    m_ParticleID = m_columnParticleID;
-  }
-  else 	{
-    m_isTrueGhost = true;
-    m_ParticleID = -1;
-  }
-
-}
-
 
 //------------------------------------------+-----------------------------------
 //! Setup clones. Crate and initialise the list of pixels

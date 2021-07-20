@@ -60,8 +60,8 @@ int main (int argc, char *argv[])  {
    Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
    Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
    
-   TAGrecoManager::GetPar()->IncludeTOE(false);
-   TAGrecoManager::GetPar()->IncludeKalman(true);
+   // TAGrecoManager::GetPar()->IncludeTOE(false);
+   // TAGrecoManager::GetPar()->IncludeKalman(true);
    
    GlobalRecoMC* glbRec = new GlobalRecoMC(exp, runNb, in, out);
 

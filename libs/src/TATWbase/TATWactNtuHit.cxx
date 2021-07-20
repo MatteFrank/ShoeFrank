@@ -50,7 +50,11 @@ TATWactNtuHit::TATWactNtuHit(const char* name,
 {
 
   AddDataIn(p_datraw, "TATWntuRaw");
-  AddDataIn(p_STnturaw, "TASTntuHit");
+  if(p_STnturaw)
+    AddDataIn(p_STnturaw, "TASTntuHit");
+  else
+    Warning("TATWactNtuHit","No ST information present");
+
   AddDataOut(p_nturaw, "TATWntuHit");
 
   AddPara(p_pargeom, "TATWparGeo");
@@ -98,12 +102,32 @@ void TATWactNtuHit::CreateHistogram()
   fpHisDeTot = new TH1F("twDeTot", "TW - Total Energy Loss", 480, 0., 120.);
   AddHistogram(fpHisDeTot);
    
-  fpHisTimeTot = new TH1F("twTimeTot", "TW - Total Time Of Flight", 5000, 0., 50);
+  fpHisTimeTot = new TH1F("twTimeTot", "TW - Total Time Of Flight", 5000, -50., 50);
   AddHistogram(fpHisTimeTot);
-   
+
+  fpHisDeltaTimeRawCenterFront = new TH1F("twDeltaTimeCenterFront", "raw time of flight", 5000, -50., 50);
+  AddHistogram(fpHisDeltaTimeRawCenterFront);
+
+  fpHisDeltaTimeRawCenterRear = new TH1F("twDeltaTimeCenterRear", "raw time of flight", 5000, -50., 50);
+  AddHistogram(fpHisDeltaTimeRawCenterRear);
+
+  
   for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
     fpHisElossTof_layer[ilayer] = new TH2D(Form("twdE_vs_Tof_layer%d",ilayer),Form("dE_vs_Tof_ilayer%d",ilayer),500,0.,50.,480,0.,120.);
     AddHistogram(fpHisElossTof_layer[ilayer]);
+
+    fpHisAmpA[ilayer] = new TH1F(Form("twAmpA_%s",LayerName[(TLayer)ilayer].data()), "TW - AmpA ", 1000,0.,1.);
+    AddHistogram(fpHisAmpA[ilayer]);
+
+    fpHisAmpB[ilayer] = new TH1F(Form("twAmpB_%s",LayerName[(TLayer)ilayer].data()), "TW - AmpB ", 1000,0.,1.);
+    AddHistogram(fpHisAmpB[ilayer]);
+    
+    fpHisAmpA_vs_Eloss[ilayer] = new TH2F(Form("twAmpADe_%s",LayerName[(TLayer)ilayer].data()), "TW - AmpA vs Energy Loss ", 480, 0., 120.,1000,0.,1.);
+    AddHistogram(fpHisAmpA_vs_Eloss[ilayer]);
+    
+    fpHisAmpB_vs_Eloss[ilayer] = new TH2F(Form("twAmpBDe_%s",LayerName[(TLayer)ilayer].data()), "TW - AmpB vs Energy Loss", 480, 0., 120.,1000,0.,1.);
+    AddHistogram(fpHisAmpB_vs_Eloss[ilayer]);    
+    
   }
   
   for(int iZ=1; iZ < fZbeam+1; iZ++) {
@@ -135,9 +159,13 @@ void TATWactNtuHit::CreateHistogram()
 Bool_t TATWactNtuHit::Action() {
 
   TATWntuRaw*   p_datraw = (TATWntuRaw*) fpDatRaw->Object();
-  TASTntuHit*   p_STnturaw = (TASTntuHit*)  fpSTNtuRaw->Object();
+  TASTntuHit*   p_STnturaw;
+  if(fpSTNtuRaw) 
+    p_STnturaw = (TASTntuHit*)  fpSTNtuRaw->Object();
   TATWntuHit*   p_nturaw = (TATWntuHit*)  fpNtuRaw->Object();
 
+
+  
   //////////// Time Trigger info from ST ///////////////
   
   if(FootDebugLevel(1)) {
@@ -146,17 +174,25 @@ Bool_t TATWactNtuHit::Action() {
     fEvtCnt++;
   }
 
-  double STtrigTime = p_STnturaw->GetTriggerTime();
-  double STtrigTimeOth = p_STnturaw->GetTriggerTimeOth();
+  double STtrigTime(0);
+  double STtrigTimeOth(0);
+  Int_t SThitN(0.);
+  TASThit *stHit;
+  Double_t time_st(0.);
 
-  Int_t SThitN = p_STnturaw->GetHitsN();  // same of STtrigTime
+  if(fpSTNtuRaw) {
 
-  TASThit *stHit = (TASThit*)p_STnturaw->GetHit(0);
-  Double_t time_st = stHit->GetTime();
+    STtrigTime = p_STnturaw->GetTriggerTime();
+    STtrigTimeOth = p_STnturaw->GetTriggerTimeOth();
+
+    SThitN = p_STnturaw->GetHitsN();  // same of STtrigTime
+
+    stHit = (TASThit*)p_STnturaw->GetHit(0);
+    time_st = stHit->GetTime();
+  }
 
   if(FootDebugLevel(1))
     cout<<"ST hitN::"<<SThitN<<" trigTime::"<<STtrigTime<<"  trigTimeOth::"<<STtrigTimeOth<<" time_ST::"<<time_st<<endl;
-
   /////////////////////////////////////////////////////
   
   p_nturaw->SetupClones();
@@ -242,7 +278,8 @@ Bool_t TATWactNtuHit::Action() {
 
 	    Double_t btrain =  (hitb->GetTime() - hita->GetTime())/(2*fTofPropAlpha);  // local (TW) ref frame
 	    Double_t atrain =  (hita->GetTime() - hitb->GetTime())/(2*fTofPropAlpha); 
-
+	    
+	    Int_t TrigType= hita->GetTriggerType();
 	    if(FootDebugLevel(1)) {
 	      cout<<"ta::"<<hita->GetTime()<<"   tb::"<<hitb->GetTime()<<"  alpha::"<<fTofPropAlpha<<endl;
 	      cout<<"a::"<<atrain<<"  b::"<<btrain<<endl;
@@ -256,16 +293,17 @@ Bool_t TATWactNtuHit::Action() {
 	    Double_t Time    = GetTime(rawTime,Layer,PosId,BarId);
 	    Double_t TimeOth = GetTimeOth(rawTimeOth,Layer,PosId,BarId);
 
+	    
+	    
 	    if(FootDebugLevel(1)) {
 	      if(posAlongBar<-22 || posAlongBar>22) {
 		cout<<"layer::"<<Layer<<"  barId::"<<BarId<<"  shoeId::"<<ShoeBarId<<"  posId::"<<PosId<<"  pos::"<<posAlongBar<<endl;
 		cout<<"eloss::"<<Energy<<" chA::"<<ChargeA<<"  chB::"<<ChargeB<<" Time::"<<Time<<" timeA::"<<TimeA<<" timeB::"<<TimeB<<endl;
-		getchar();
 	      }
 	    }
 
 
-	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,TimeOth,posAlongBar,chargeCOM,ChargeA,ChargeB,AmplitudeA, AmplitudeB,TimeA,TimeB,TimeAOth,TimeBOth);
+	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,TimeOth,posAlongBar,chargeCOM,ChargeA,ChargeB,AmplitudeA, AmplitudeB,TimeA,TimeB,TimeAOth,TimeBOth,TrigType);
 
 	    Int_t Zrec = f_parcal->GetChargeZ(Energy,Time,Layer);
 	    fCurrentHit->SetChargeZ(Zrec);
@@ -273,12 +311,23 @@ Bool_t TATWactNtuHit::Action() {
 	    fCurrentHit->SetToF(Time);
 
 	    // cout<<"Time::"<<Time<<"  Tof::"<<fCurrentHit->GetToF()<<endl;
-
+	  
 	    if (ValidHistogram()) {
 	      fpHisDeTot->Fill(Energy);
 	      fpHisTimeTot->Fill(Time);
 	      fpHisElossTof_layer[Layer]->Fill(Time,Energy);
 	      
+	      
+	      if(ShoeBarId==9) {  // only for central bars for trigger purposes
+
+		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 0)fpHisDeltaTimeRawCenterFront->Fill(rawTime);
+		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 1)fpHisDeltaTimeRawCenterRear->Fill(rawTime);
+		fpHisAmpA[Layer]->Fill(AmplitudeA);
+		fpHisAmpB[Layer]->Fill(AmplitudeB);
+		fpHisAmpA_vs_Eloss[Layer]->Fill(Energy,AmplitudeA);
+		fpHisAmpB_vs_Eloss[Layer]->Fill(Energy,AmplitudeB);
+	      }
+
 	      if(Zrec>0 && Zrec<fZbeam+1) {
 		// for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++)
 		fpHisEloss_Z[Layer][Zrec-1]->Fill(Energy);

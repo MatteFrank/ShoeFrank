@@ -1,46 +1,46 @@
-calculated_from: mydata/2019_GSI_foot/data_built.2242.physics_foot.daq.WD.1.dat    number_of_events= 99999
+calculated_from: mydata/GSI2021/data_test.00004239.physics_foot.daq.RAW._lb0000._FOOT-RCD._001-10.data.moved    number_of_events= 217849
 
-cellid= 0  T0_time= -369
-cellid= 1  T0_time= -360
-cellid= 2  T0_time= -363
-cellid= 3  T0_time= -369
-cellid= 4  T0_time= -359
-cellid= 5  T0_time= -367
-cellid= 6  T0_time= -366
-cellid= 7  T0_time= -369
-cellid= 8  T0_time= -367
-cellid= 9  T0_time= -368
-cellid= 10  T0_time= -366
-cellid= 11  T0_time= -368
-cellid= 12  T0_time= -367
-cellid= 13  T0_time= -371
-cellid= 14  T0_time= -368
-cellid= 15  T0_time= -371
-cellid= 16  T0_time= -362
-cellid= 17  T0_time= -369
-cellid= 18  T0_time= -367
-cellid= 19  T0_time= -356
-cellid= 20  T0_time= -369
-cellid= 21  T0_time= -370
-cellid= 22  T0_time= -364
-cellid= 23  T0_time= -368
-cellid= 24  T0_time= -369
-cellid= 25  T0_time= -374
-cellid= 26  T0_time= -370
-cellid= 27  T0_time= -350
-cellid= 28  T0_time= -362
-cellid= 29  T0_time= -374
-cellid= 30  T0_time= -365
-cellid= 31  T0_time= -362
-cellid= 32  T0_time= -367
-cellid= 33  T0_time= -367
-cellid= 34  T0_time= -365
-cellid= 35  T0_time= -369
+cellid= 0  T0_time= -409
+cellid= 1  T0_time= -406
+cellid= 2  T0_time= -410
+cellid= 3  T0_time= -407
+cellid= 4  T0_time= -398
+cellid= 5  T0_time= -412
+cellid= 6  T0_time= -410
+cellid= 7  T0_time= -402
+cellid= 8  T0_time= -411
+cellid= 9  T0_time= -409
+cellid= 10  T0_time= -414
+cellid= 11  T0_time= -415
+cellid= 12  T0_time= -410
+cellid= 13  T0_time= -415
+cellid= 14  T0_time= -409
+cellid= 15  T0_time= -409
+cellid= 16  T0_time= -409
+cellid= 17  T0_time= -412
+cellid= 18  T0_time= -410
+cellid= 19  T0_time= -401
+cellid= 20  T0_time= -408
+cellid= 21  T0_time= -409
+cellid= 22  T0_time= -413
+cellid= 23  T0_time= -414
+cellid= 24  T0_time= -410
+cellid= 25  T0_time= -415
+cellid= 26  T0_time= -409
+cellid= 27  T0_time= -409
+cellid= 28  T0_time= -409
+cellid= 29  T0_time= -412
+cellid= 30  T0_time= -408
+cellid= 31  T0_time= -403
+cellid= 32  T0_time= -409
+cellid= 33  T0_time= -408
+cellid= 34  T0_time= -412
+cellid= 35  T0_time= -414
 
-Resolution_function:  pol10
+Resolution_function:  ([p0]+[p1]*x+[p2]*pow(x,2)+[p3]*pow(x,3)+[p4]*pow(x,4)+[p5]*pow(x,5)+[p6]*pow(x,6)+[p7]*pow(x,7)+[p8]*pow(x,8)+[p9]*pow(x,9)+[p10]*pow(x,10))
 Resolution_number_of_parameters:  11
-0.0898586   -2.36781   43.4118   -413.43   2170.68   -6473.74   10605.4   -7594.92   -1868.77   6209.22   -2693.51   
+0.0898586   -2.36781   43.4118   -413.43   2170.68   -6473.74   10605.4   -7594.92   -1868.77   6209.22   -2693.51
 
-STrel_function:  pol4
-STrel_number_of_parameters:  5
-0   0.00856389   -6.16671e-05   2.24387e-07   -2.86374e-10   
+STrel_function:  ([p6]*([p0]+[p1]*x*[p5]+[p2]*pow(x*[p5],2)+[p3]*pow(x*[p5],3)+[p4]*pow(x*[p5],4)))
+STrel_number_of_parameters:  7
+0   0.00856389   -6.16671e-05   2.24387e-07   -2.86374e-10  0.78125000   1.491

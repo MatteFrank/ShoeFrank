@@ -16,6 +16,7 @@
 #include "TAMSDntuPoint.hxx"
 
 #include "TAMSDactNtuPoint.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
  \class TAMSDactNtuPoint
@@ -27,14 +28,14 @@ ClassImp(TAMSDactNtuPoint);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAMSDactNtuPoint::TAMSDactNtuPoint(const char* name,
-									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuPoint, TAGparaDsc* pGeoMap)
- : TAGaction(name, "TAMSDactNtuHit - NTuplize hits"),
-   fpNtuRaw(pNtuRaw),
-   fpNtuPoint(pNtuPoint),
-   fpGeoMap(pGeoMap)
+				   TAGdataDsc* pNtuCluster, TAGdataDsc* pNtuPoint, TAGparaDsc* pGeoMap)
+  : TAGaction(name, "TAMSDactNtuHit - NTuplize hits"),
+    fpNtuCluster(pNtuCluster),
+    fpNtuPoint(pNtuPoint),
+    fpGeoMap(pGeoMap)
 {
-   AddDataIn(pNtuRaw,   "TAMSDntuHit");
-   AddDataOut(pNtuPoint, "TAMSDntuPoint");
+  AddDataIn(pNtuCluster,   "TAMSDntuCluster");
+  AddDataOut(pNtuPoint, "TAMSDntuPoint");
 }
 
 //------------------------------------------+-----------------------------------
@@ -53,14 +54,14 @@ void TAMSDactNtuPoint::CreateHistogram()
    // fpHisDist = new TH1F("twDist", "ToF Wall - Minimal distance between planes", 200, 0., 100);
    // AddHistogram(fpHisDist);
 	 //
-   // fpHisCharge1 = new TH1F("twCharge1", "ToF Wall - Charge layer 1", 1000, 0., 5e6);
-   // AddHistogram(fpHisCharge1);
-	 //
-   // fpHisCharge2 = new TH1F("twCharge2", "ToF Wall - Charge layer 2", 1000, 0., 5e6);
-   // AddHistogram(fpHisCharge2);
-	 //
-   // fpHisChargeTot = new TH1F("twChargeTot", "ToF Wall - Total charge", 1000, 0., 5e6);
-   // AddHistogram(fpHisChargeTot);
+   fpSens[0] = new TH2F("msdSens1_xy", "MSD - X - Y Dist", 500, -5., 5., 500, -5., 5.);
+   AddHistogram(fpSens[0]);
+
+   fpSens[1] = new TH2F("msdSens2_xy", "MSD - X - Y Dist", 500, -5., 5., 500, -5., 5.);
+   AddHistogram(fpSens[1]);
+
+   fpSens[2] = new TH2F("msdSens3_xy", "MSD - X - Y Dist", 500, -5., 5., 500, -5., 5.);
+   AddHistogram(fpSens[2]);
 
    SetValidHistogram(kTRUE);
 }
@@ -80,36 +81,51 @@ Bool_t TAMSDactNtuPoint::Action()
 //
 Bool_t TAMSDactNtuPoint::FindPoints()
 {
-	TAMSDntuHit* pNtuHit      = (TAMSDntuHit*) fpNtuRaw->Object();
-	TAMSDntuPoint* pNtuPoint  = (TAMSDntuPoint*) fpNtuPoint->Object();
-	TAMSDparGeo* pGeoMap      = (TAMSDparGeo*) fpGeoMap->Object();
+  TAMSDntuCluster* pNtuCluster  = (TAMSDntuCluster*) fpNtuCluster->Object();
+  TAMSDntuPoint* pNtuPoint      = (TAMSDntuPoint*) fpNtuPoint->Object();
+  TAMSDparGeo* pGeoMap          = (TAMSDparGeo*) fpGeoMap->Object();
+  if(FootDebugLevel(1)) {  
+    cout<<"****************************"<<endl;
+    cout<<"  NtuPoint hits "<<endl;
+    cout<<"****************************"<<endl;
+  }
+  
+  int plane(0);
+  for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
 
-	bool xyOrder = true;
+    // fill points
+    
+    for (int iStrip = 0; iStrip < pNtuCluster->GetClustersN(iLayer+1); iStrip++) {
 
-	for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
-		m_listOfStripsCol = pNtuHit->GetListOfStrips(iLayer);
+      TAMSDcluster* colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iStrip);
+      if (colHit == 0) continue;
 
-		if (m_listOfStripsCol->GetEntries() == 0) continue;
+      for (int iStrip_ = 0; iStrip_ < pNtuCluster->GetClustersN(iLayer); iStrip_++) {
 
-		// fill points
-		for (int iStrip = 0; iStrip < m_listOfStripsCol->GetEntries(); iStrip++) {
-			TAMSDhit* colHit = (TAMSDhit*) m_listOfStripsCol->At(iStrip);
-			if ( colHit->GetView() == 0 ) 	xyOrder = true;
-			else xyOrder = false;
-			m_listOfStripsRow = pNtuHit->GetListOfStrips(iLayer + 1);
-			for (int iStrip_ = 0; iStrip_ < m_listOfStripsRow->GetEntries(); iStrip_++) {
-				TAMSDhit* rowHit = (TAMSDhit*)m_listOfStripsRow->At(iStrip_);
-				if ( !(rowHit->GetView() == 1 && xyOrder) ) 	cout << "ERROR on TAMSDactNtuPoint" << endl;
-				TVector3 localPointPosition;
-				localPointPosition.SetXYZ(colHit->GetPosition(), rowHit->GetPosition(), pGeoMap->GetSensorPosition(iLayer).Z());
-				TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPosition(), rowHit->GetPosition(), localPointPosition );
-				int colGenParticleID = colHit->GetMcTrackIdx(0);
-				int colMCHitID = colHit->GetMcIndex(0);
-				int rowGenParticleID = rowHit->GetMcTrackIdx(0);
-				int rowMCHitID = rowHit->GetMcIndex(0);
-				point->SetGeneratedParticle( colGenParticleID, rowGenParticleID, colMCHitID, rowMCHitID );
-			}
-		}
-	}
-	return true;
+	TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iStrip_);
+
+      if (rowHit == 0) continue;
+
+      TVector3 localPointPosition;
+	localPointPosition.SetXYZ(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), pGeoMap->GetSensorPosition(iLayer).Z());
+
+	TAMSDpoint* point = pNtuPoint->NewPoint( iLayer/2, colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), localPointPosition );
+        fpSens[plane]->Fill(point->GetPosition().X(),point->GetPosition().Y());
+
+	if(FootDebugLevel(2))
+	  cout<<" Layer "<<iLayer<<" iStrip "<<iStrip<<" x:: "<<point->GetPosition().X()<<" y:: "<<point->GetPosition().Y()<<endl;
+	
+	/*
+	int colGenParticleID = colHit->GetMcTrackIdx(0);
+	int colMCHitID = colHit->GetMcIndex(0);
+	int rowGenParticleID = rowHit->GetMcTrackIdx(0);
+	int rowMCHitID = rowHit->GetMcIndex(0);
+
+	point->SetGeneratedParticle( colGenParticleID, rowGenParticleID, colMCHitID, rowMCHitID );
+	*/
+      }
+    } 
+    plane++;
+  }
+  return true;
 }

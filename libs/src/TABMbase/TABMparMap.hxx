@@ -38,7 +38,7 @@ class TABMparMap : public TAGparTools {
     Int_t GetScaCh(Int_t ch)     const {return (fScaCha.GetSize()>ch && ch>=0) ? fScaCha[ch] : -1;}
     Int_t GetAdcCh(Int_t ch)     const {return (fAdcCha.GetSize()>ch && ch>=0) ? fAdcCha[ch] : -1;}
 
-    Int_t tdc2cell(Int_t tdccha){return (tdccha>=0 && tdccha<fTdcCha[0]) ? fTdc2CellVec[tdccha] : -1;};
+    Int_t tdc2cell(Int_t tdccha){return (tdccha>=0 && tdccha<fTdcCha[1]) ? fTdc2CellVec[tdccha] : -1;};
     Int_t cell2tdc(Int_t cell){return (cell>=0 && cell<36) ? fCell2TdcVec[cell] : -1;};
 
     virtual void    Clear(Option_t* opt="");

@@ -18,7 +18,8 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 	// AddDataOut(outTrackRepo, "TAGntuTrackRepository");
 	AddDataOut(outTrackRepo, "TAGntuGlbTrack");
 
-	m_trueParticleRep = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+	if ( TAGrecoManager::GetPar()->IsMC() )
+		m_trueParticleRep = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 
 	int nIter = 20; // max number of iterations
 	double dPVal = 1.E-3; // convergence criterion

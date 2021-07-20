@@ -59,7 +59,7 @@ public:
 	Double_t TWReso()            const { return m_TWreso;              }
 
     bool IsMC()								{ return m_isMC; }
-    void SetIsMC( bool aIsMC )				{ m_isMC = aIsMC; }
+    // void SetIsMC( bool aIsMC )				{ m_isMC = aIsMC; }
 
     Bool_t Find_MCParticle( string villain );
 

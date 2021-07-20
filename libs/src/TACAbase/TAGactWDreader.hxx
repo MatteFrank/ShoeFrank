@@ -15,7 +15,7 @@
 #include "TACAntuRaw.hxx"
 #include "TAGbaseWDparTime.hxx"
 #include "TAGbaseWDparMap.hxx"
-
+#include <TH2F.h>
 
 class WDEvent;
 
@@ -26,6 +26,10 @@ class WDEvent;
 #define CH_HEADER 0x00003043
 #define EVT_HEADER 0x52444845
 #define EVT_FOOTER 0xfafefafe
+#define TRIG_HEADER 0x00002354
+#define TRGI_BANK_HEADER 0x49475254
+#define TGEN_BANK_HEADER 0x4e454754
+
 
 
 class TAGactWDreader : public TAGaction {
@@ -56,6 +60,13 @@ public:
   TAGparaDsc*     fpWDMap;		    // parameter dsc
 
   //vector<TH1F *> wv0;
+  
+  TH1F *hST[20][8];
+  TH1F *hTW[20][4];
+  TH1F *hCalo[20][9];
+  TH1F *hClk[20];
+  TH1F *hTrig;
+  TH2F *hTrigClk;
 
   int m_nev;
   
@@ -69,6 +80,8 @@ public:
   vector<double> ADC2Volt(vector<int>, double);
   vector<double> ADC2Volt_CLK(vector<int>);
   double ComputeJitter(TWaveformContainer*);
+  void  SavePlot(TWaveformContainer *w, string type);
+  void FillHistogram(TH1F *h, TWaveformContainer *w);
   
   vector<TWaveformContainer*> st_waves;
   vector<TWaveformContainer*> tw_waves;

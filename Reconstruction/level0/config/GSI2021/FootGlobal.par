@@ -6,7 +6,7 @@
 
 
 Debug:	0
-
+MC sample: n
 Skip n events: 0
 
 ############	MC selection Control Parameters	################
@@ -60,7 +60,7 @@ IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:	           n
+IncludeIT:	     		   n
 IncludeMSD:			   y
 IncludeTW:			   y
 IncludeCA:			   y

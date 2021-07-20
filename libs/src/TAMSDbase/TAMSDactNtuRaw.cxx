@@ -15,7 +15,8 @@
 
 ClassImp(TAMSDactNtuRaw);
 
- UInt_t TAMSDactNtuRaw::fkgThreshold = 0;
+UInt_t TAMSDactNtuRaw::fkgThreshold = 0;
+Bool_t TAMSDactNtuRaw::fgPedestalSub = true;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -77,14 +78,14 @@ Bool_t TAMSDactNtuRaw::Action()
 
    Int_t nFragments = p_datdaq->GetFragmentsN();
 
-  if(FootDebugLevel(1))
+   if(FootDebugLevel(1))
     cout<<"TAMSDactNtuRaw::Action():: I'm going to charge "<<nFragments<<" number of fragments"<<endl;
 
    for (Int_t i = 0; i < nFragments; ++i) {
        TString type = p_datdaq->GetClassType(i);
        if (type.Contains("DEMSDEvent")) {
          const DEMSDEvent* evt = static_cast<const DEMSDEvent*> (p_datdaq->GetFragment(i));
-          if (FootDebugLevel(1))
+	 if (FootDebugLevel(1))
             evt->printData();
          DecodeHits(evt);
        }
@@ -105,10 +106,16 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
    TAMSDntuRaw*    p_datraw = (TAMSDntuRaw*)    fpDatRaw->Object();
    TAMSDparGeo*    p_pargeo = (TAMSDparGeo*)    fpParGeo->Object();
    TAMSDparCal*    p_parcal = (TAMSDparCal*)    fpParCal->Object();
+   TAMSDparMap*    p_parmap = (TAMSDparMap*)    fpParMap->Object();
 
+   if(FootDebugLevel(2)) {
+     cout<<"****************************"<<endl;
+     cout<<"  NtuRaw hits "<<endl;
+     cout<<"****************************"<<endl;
+   }
    // decode here
    Int_t boardId = (evt->boardHeader & 0xF)-1;
-   
+
    for (Int_t i = 0; i < p_pargeo->GetStripsN(); ++i) {
       
       UInt_t adcX = evt->Xplane[i];
@@ -117,34 +124,51 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       Int_t sensorId = -1;
       Bool_t status  = true;
       
+      Double_t valueX = 99;
+      Double_t valueY = 99;
+
+      Double_t meanX  = 0;
+      Double_t meanY  = 0;
+
       view = 1;
-      sensorId = TAMSDparGeo::GetSensorId(boardId, view);
-      status   = p_parcal->GetPedestalStatus(sensorId, i);
-      if (status == 0) {
-         Double_t valueX = p_parcal->GetPedestalValue(sensorId, i);
-         Double_t meanX  = p_parcal->GetPedestalMean(sensorId, i);
-         valueX  = adcX - valueX;
-         
-         if (valueX > 0) {
-            p_datraw->AddStrip(sensorId, i, view, adcX-meanX);
-            if (ValidHistogram())
-               fpHisStripMap[sensorId]->Fill(i, adcX-meanX);
+      sensorId = p_parmap->GetSensorId(boardId, view);
+
+      if(sensorId<0) {
+	cout<<" Decoding ERROR !!!"<<endl;
+	cout<<" "<<boardId<<" "<<view<<" "<<sensorId<<endl;
+      }
+      auto pedestal = p_parcal->GetPedestal( sensorId, i );
+      
+      if( pedestal.status ) {
+	if (fgPedestalSub) {
+	  valueX = p_parcal->GetPedestalValue(sensorId, pedestal);
+	  meanX = pedestal.mean;
+	  valueX = adcX - valueX;
+	}
+	if (valueX > 0) {
+	  p_datraw->AddStrip(sensorId, i, view, adcX-meanX);
+	  if (ValidHistogram())
+	    fpHisStripMap[sensorId]->Fill(i, adcX-meanX);
+	}
+      }
+      view = 0;
+      sensorId = p_parmap->GetSensorId(boardId, view);
+      pedestal = p_parcal->GetPedestal( sensorId, i );
+      if( pedestal.status ) {
+         if (fgPedestalSub) {
+	   valueY = p_parcal->GetPedestalValue(sensorId, pedestal);
+	   meanY = pedestal.mean;
+	   valueY = adcY - valueY;
+         }
+         if (valueY > 0) {
+	   p_datraw->AddStrip(sensorId, i, view, adcY-meanY);
+	   if (ValidHistogram())
+	     fpHisStripMap[sensorId]->Fill(i, adcY-meanY);
          }
       }
-      
-      view = 0;
-      sensorId = TAMSDparGeo::GetSensorId(boardId, view);
-      status   = p_parcal->GetPedestalStatus(sensorId, i);
-      if (status == 0) {
-         Double_t valueY = p_parcal->GetPedestalValue(sensorId, i);
-         Double_t meanY  = p_parcal->GetPedestalMean(sensorId, i);
-         valueY  = adcY - valueY;
-         
-         if (valueY > 0) {
-            p_datraw->AddStrip(sensorId, i, view, adcY-meanY);
-            if (ValidHistogram())
-               fpHisStripMap[sensorId]->Fill(i, adcY-meanY);
-         }
+      if(FootDebugLevel(2)) {
+	if(valueX>0 || valueY>0)
+	  cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
       }
    }
    

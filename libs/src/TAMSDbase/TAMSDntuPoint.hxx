@@ -7,7 +7,7 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "TAGdata.hxx"
+#include "TAGcluster.hxx"
 #include <map>
 
 // ROOT classes
@@ -28,10 +28,9 @@ class TAMSDparGeo;
  */
 /*------------------------------------------+---------------------------------*/
 
-class TAMSDpoint : public TAGobject {
+class TAMSDpoint : public TAGcluster {
 
 private:
-   TVector3    m_position;      // position in detector framework
    int         m_layer;         // number of MSD tracking station
    int         m_column;        // column number
    int         m_row;           // row number
@@ -71,7 +70,6 @@ public:
 
 
    //    All the Get methods
-   TVector3  GetPosition()    const  { return m_position;      }
 
    int       GetColumnID()    const  { return m_column;        }
    int       GetRowID()       const  { return m_row;           }
@@ -95,9 +93,6 @@ public:
    int       GetChargeZ()      const  { return m_chargeZ;       }
    double    GetChargeZProba() const  { return m_chargeZProba; }
 
-   void      SetGeneratedParticle ( int colGenPart, int rowGenPart, int colMCHitID, int rowMCHitID );
-
-
    void      SetChargeZ(int z)       { m_chargeZ = z;          }
    void      SetChargeZProba(double p){ m_chargeZProba = p;    }
    void      Clear(Option_t* opt);
@@ -111,7 +106,7 @@ class TAMSDntuPoint : public TAGdata {
 
 private:
 
-  TAMSDparGeo*         m_geometry;
+  TAMSDparGeo*         m_geometry; //!
   TObjArray*           m_listOfPoints;
 
 public:
@@ -126,7 +121,7 @@ public:
 
   TClonesArray*       GetListOfPoints(int iStation) const;
 
-  TAMSDpoint*         GetPoint( int iStation, int iPoint );
+  TAMSDpoint*         GetPoint( int iStation, int iPoint ) const ;
 
 
   virtual void        Clear(Option_t* opt="");

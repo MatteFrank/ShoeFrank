@@ -9,10 +9,11 @@
 
 int main (int argc, char *argv[])  {
 
-  TString in("12C_C_200_1.root");
+  TString infile;
   TString preout("");
   TString exp("");
   TString calname, mapname, adcpedname;
+  TString lis;
 
   Int_t runNb = -1;
   Int_t nTotEv = 1e7;
@@ -21,7 +22,8 @@ int main (int argc, char *argv[])  {
   Bool_t bmstd = kFALSE;
 
   for (int i = 0; i < argc; i++){
-     if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
+     if(strcmp(argv[i],"-in") == 0)    { infile = TString(argv[++i]);  }   // Root file in input
+     if(strcmp(argv[i],"-lis") == 0)   { lis = TString(argv[++i]);  }   // Root file in input
      if(strcmp(argv[i],"-out") == 0)   { preout = TString(argv[++i]); }   // Root file output
      if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
      if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
@@ -75,7 +77,7 @@ int main (int argc, char *argv[])  {
     rootout+=".root";
     txtout+=".cal";
 
-    LocalReco* locRec= new LocalReco(exp, runNb, in, rootout);
+    LocalReco* locRec= new LocalReco(exp, runNb, infile, rootout);
 
     // global setting
     TAGrecoManager::GetPar()->IncludeBM(true);
@@ -126,12 +128,12 @@ int main (int argc, char *argv[])  {
         TABMactNtuRaw *p_actnturaw=(TABMactNtuRaw*)gTAGroot->FindAction("bmActRaw");
         p_actnturaw->EvaluateT0time();
       }
-      p_bmcal->PrintT0s(txtout,in,gTAGroot->CurrentEventNumber());
+      p_bmcal->PrintT0s(txtout,infile,gTAGroot->CurrentEventNumber());
       p_bmcal->PrintResoStrel(txtout);
     }
     if(adcpedname.Length()>0){
       p_actvmereader->EvaluateAdcPedestals();
-      p_bmcal->PrintAdc(adcpedname, in, gTAGroot->CurrentEventNumber());
+      p_bmcal->PrintAdc(adcpedname, infile, gTAGroot->CurrentEventNumber());
     }
     locRec->AfterEventLoop();
     watch.Print();
@@ -149,92 +151,104 @@ int main (int argc, char *argv[])  {
     outfile.open(txtout.Data(),ios::out);
 
     for(Int_t currite=1;currite<=nIte;currite++){
-      TString rootout=preout;
-      end = Form("_%s_%d_ite_%d.root",exp.Data(),runNb,currite);
-      rootout+=end;
-
-      LocalReco* locRec= new LocalReco(exp, runNb, in, rootout);
-
-      // global setting
-      TAGrecoManager::GetPar()->IncludeBM(true);
-      TAGrecoManager::GetPar()->IncludeTW(false);
-      TAGrecoManager::GetPar()->CalibTW(false);
-      TAGrecoManager::GetPar()->IncludeDI(false);
-      TAGrecoManager::GetPar()->IncludeMSD(false);
-      TAGrecoManager::GetPar()->IncludeCA(false);
-      TAGrecoManager::GetPar()->IncludeTG(false);
-      TAGrecoManager::GetPar()->IncludeVT(false);
-      TAGrecoManager::GetPar()->IncludeIT(false);
-      TAGrecoManager::GetPar()->IncludeTOE(false);
-      TAGrecoManager::GetPar()->DisableLocalReco();
-      if(bmstd){
-        TAGrecoManager::GetPar()->IncludeST(false);
-        locRec->EnableStdAlone();
-      }else{
-        TAGrecoManager::GetPar()->IncludeST(true);
+      vector<TString> invecfile;
+      if(infile.Length()>0)
+        invecfile.push_back(infile);
+      else if(lis.Length()>0){
+        ifstream filelist;
+        filelist.open(lis.Data(),fstream::in);
+        char tmp_char[200];
+        filelist>>tmp_char;
+        TString tmp_filename(tmp_char);
+        invecfile.push_back(tmp_filename);
       }
-      TAGrecoManager::GetPar()->CalibBM(1);
+      for(Int_t currfilenum=0;currfilenum<invecfile.size();currfilenum++){
+        TString rootout=preout;
+        end = Form("_%s_%d_ite_%d.root",exp.Data(),runNb,currite);
+        rootout+=end;
 
-      // locRec->EnableTree();
-      locRec->EnableHisto();
-      locRec->EnableTracking();
+        LocalReco* locRec= new LocalReco(exp, runNb, invecfile.at(currfilenum), rootout);
 
-      TStopwatch watch;
-      watch.Start();
-      locRec->BeforeEventLoop();
-      TABMparGeo* p_bmgeo = (TABMparGeo*) (gTAGroot->FindParaDsc("bmGeo", "TABMparGeo")->Object());
-      TABMparConf* p_bmcon = (TABMparConf*) (gTAGroot->FindParaDsc("bmConf", "TABMparConf")->Object());
-      TABMparCal*  p_bmcal = (TABMparCal*) (gTAGroot->FindParaDsc("bmCal", "TABMparCal")->Object());
-      TABMparMap* p_bmmap = (TABMparMap*) (gTAGroot->FindParaDsc("bmMap", "TABMparMap")->Object());
-      if(calname.Length()>0)
+        // global setting
+        TAGrecoManager::GetPar()->IncludeBM(true);
+        TAGrecoManager::GetPar()->IncludeTW(false);
+        TAGrecoManager::GetPar()->CalibTW(false);
+        TAGrecoManager::GetPar()->IncludeDI(false);
+        TAGrecoManager::GetPar()->IncludeMSD(false);
+        TAGrecoManager::GetPar()->IncludeCA(false);
+        TAGrecoManager::GetPar()->IncludeTG(false);
+        TAGrecoManager::GetPar()->IncludeVT(false);
+        TAGrecoManager::GetPar()->IncludeIT(false);
+        TAGrecoManager::GetPar()->IncludeTOE(false);
+        TAGrecoManager::GetPar()->DisableLocalReco();
+        if(bmstd){
+          TAGrecoManager::GetPar()->IncludeST(false);
+          locRec->EnableStdAlone();
+        }else{
+          TAGrecoManager::GetPar()->IncludeST(true);
+        }
+        TAGrecoManager::GetPar()->CalibBM(1);
+
+        // locRec->EnableTree();
+        locRec->EnableHisto();
+        locRec->EnableTracking();
+
+        TStopwatch watch;
+        watch.Start();
+        locRec->BeforeEventLoop();
+        TABMparGeo* p_bmgeo = (TABMparGeo*) (gTAGroot->FindParaDsc("bmGeo", "TABMparGeo")->Object());
+        TABMparConf* p_bmcon = (TABMparConf*) (gTAGroot->FindParaDsc("bmConf", "TABMparConf")->Object());
+        TABMparCal*  p_bmcal = (TABMparCal*) (gTAGroot->FindParaDsc("bmCal", "TABMparCal")->Object());
+        TABMparMap* p_bmmap = (TABMparMap*) (gTAGroot->FindParaDsc("bmMap", "TABMparMap")->Object());
+        if(calname.Length()>0)
         p_bmcal->FromFile(calname);
-      if(mapname.Length()>0)
+        if(mapname.Length()>0)
         p_bmmap->FromFile(mapname, p_bmgeo);
 
-      if(currite>1){
-        p_bmcal->SetResoFunc(resovec.back());
-        p_bmcal->SetSTrelFunc(strelvec.back());
-      }
+        if(currite>1){
+          p_bmcal->SetResoFunc(resovec.back());
+          p_bmcal->SetSTrelFunc(strelvec.back());
+        }
 
-      locRec->LoopEvent(nTotEv);
-      plotname = Form("BMNewStrelFunc_%d",currite);
-      TF1 *newstrel=new TF1(plotname.Data(),"pol4",0.,p_bmcon->GetHitTimeCut());
-      plotname = Form("BMNewResoFunc_%d",currite);
-      TF1 *resofunc=new TF1("BMNewResoFunc","pol10",0.,0.8);
-      Double_t meanTimeReso;
-      Double_t meanDistReso;
-      TABMactNtuTrack *p_actntutrack=(TABMactNtuTrack*)gTAGroot->FindAction("bmActTrack");
+        locRec->LoopEvent(nTotEv);
+        plotname = Form("BMNewStrelFunc_%d",currite);
+        TF1 *newstrel=new TF1(plotname.Data(),"pol4",0.,p_bmcon->GetHitTimeCut());
+        plotname = Form("BMNewResoFunc_%d",currite);
+        TF1 *resofunc=new TF1("BMNewResoFunc","pol10",0.,0.8);
+        Double_t meanTimeReso;
+        Double_t meanDistReso;
+        TABMactNtuTrack *p_actntutrack=(TABMactNtuTrack*)gTAGroot->FindAction("bmActTrack");
 
-      if(!p_actntutrack->ValidHistogram()){
-        cout<<"ERROR!!! p_actntutrack->ValidHistogram() not true!!! the program will be ended"<<endl;
-        return 0;
-      }
+        if(!p_actntutrack->ValidHistogram()){
+          cout<<"ERROR!!! p_actntutrack->ValidHistogram() not true!!! the program will be ended"<<endl;
+          return 0;
+        }
 
-      p_actntutrack->FitWriteCalib(newstrel, resofunc, meanTimeReso, meanDistReso);
+        p_actntutrack->FitWriteCalib(newstrel, resofunc, meanTimeReso, meanDistReso);
 
-      //printout
-      outfile<<"BM_strel_calibration: "<<in.Data()<<"   iteration: "<<currite<<"/"<<nIte<<endl;
-      outfile<<"mean_spatialres_time: "<<meanTimeReso<<"  mean_spatialres_dist: "<<meanDistReso<<endl;
-      outfile<<"Resolution_function:  "<<resofunc->GetFormula()->GetExpFormula().Data()<<endl;
-      outfile<<"Resolution_number_of_parameters:  "<<resofunc->GetNpar()<<endl;
-      for(Int_t i=0;i<resofunc->GetNpar();i++)
+        //printout
+        outfile<<"BM_strel_calibration: "<<infile.Data()<<"   iteration: "<<currite<<"/"<<nIte<<endl;
+        outfile<<"mean_spatialres_time: "<<meanTimeReso<<"  mean_spatialres_dist: "<<meanDistReso<<endl;
+        outfile<<"Resolution_function:  "<<resofunc->GetFormula()->GetExpFormula().Data()<<endl;
+        outfile<<"Resolution_number_of_parameters:  "<<resofunc->GetNpar()<<endl;
+        for(Int_t i=0;i<resofunc->GetNpar();i++)
         outfile<<resofunc->GetParameter(i)<<"   ";
-      outfile<<endl;
-      outfile<<"STrel_function:  "<<newstrel->GetFormula()->GetExpFormula().Data()<<endl;
-      outfile<<"STrel_number_of_parameters:  "<<newstrel->GetNpar()<<endl;
-      for(Int_t i=0;i<newstrel->GetNpar();i++)
+        outfile<<endl;
+        outfile<<"STrel_function:  "<<newstrel->GetFormula()->GetExpFormula().Data()<<endl;
+        outfile<<"STrel_number_of_parameters:  "<<newstrel->GetNpar()<<endl;
+        for(Int_t i=0;i<newstrel->GetNpar();i++)
         outfile<<newstrel->GetParameter(i)<<"   ";
-      outfile<<endl<<endl;
+        outfile<<endl<<endl;
 
-      locRec->AfterEventLoop();
-      resovec.push_back(resofunc);
-      strelvec.push_back(newstrel);
-      watch.Print();
-      cout<<"Bm strel calibration done; iteration:"<<currite<<"/"<<nIte<<endl;
-      cout<<"root output file="<<rootout.Data()<<"    txt output file="<<txtout.Data()<<endl;
-      cout<<"mean_spatialres_time="<<meanTimeReso<<"  mean_spatialres_dist="<<meanDistReso<<endl<<endl<<endl;
-      delete locRec;
-
+        locRec->AfterEventLoop();
+        resovec.push_back(resofunc);
+        strelvec.push_back(newstrel);
+        watch.Print();
+        cout<<"Bm strel calibration done; iteration:"<<currite<<"/"<<nIte<<endl;
+        cout<<"root output file="<<rootout.Data()<<"    txt output file="<<txtout.Data()<<endl;
+        cout<<"mean_spatialres_time="<<meanTimeReso<<"  mean_spatialres_dist="<<meanDistReso<<endl<<endl<<endl;
+        delete locRec;
+      }
     } //end of iteration loop
     outfile.close();
   }

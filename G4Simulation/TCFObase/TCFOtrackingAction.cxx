@@ -105,7 +105,7 @@ void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack){
       fEventAction->SetFillTree(true);
 
    
-    fEventAction->GetTrackMc()->NewTrack(flukaID,charge,trackID,regId,baryon,deadId,mass,parentID,time,tof,
+    fEventAction->GetMcEvent()->NewTrack(flukaID,charge,trackID,regId,baryon,deadId,mass,parentID,time,tof,
                                        length,vtxpos,finpos,vtxmom,finmom);
 }
 

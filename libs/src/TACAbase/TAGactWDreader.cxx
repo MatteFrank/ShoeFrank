@@ -18,6 +18,7 @@
 #include "TATWntuRaw.hxx"
 #include "TACAntuRaw.hxx"
 #include "TAGactWDreader.hxx"
+#include <TCanvas.h>
 #include <unistd.h>
 #include <stdint.h>
 
@@ -30,6 +31,13 @@ ClassImp(TAGactWDreader);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+
+
+const int MaxEvents=20;
+const int MaxST=8;
+const int MaxTW=4;
+const int MaxCalo=9;
+
 
 TAGactWDreader::TAGactWDreader(const char* name,
 			     TAGdataDsc* p_datdaq,
@@ -81,6 +89,8 @@ Bool_t TAGactWDreader::Action() {
    Int_t nFragments = p_datdaq->GetFragmentsN();
    Int_t nmicro;
 
+
+
    //decoding fragment and fillin the datRaw class
    for (Int_t i = 0; i < nFragments; ++i) {
      TString type = p_datdaq->GetClassType(i);
@@ -92,13 +102,12 @@ Bool_t TAGactWDreader::Action() {
      }
    }
    
-   if(st_waves.size()){
-     p_stwd->NewSuperHit(st_waves);
-   }
-
+   
+   p_stwd->NewSuperHit(st_waves);
+   
    p_stwd->UpdateRunTime(nmicro);
    p_twwd->UpdateRunTime(nmicro);
-   //p_cawd->UpdateRunTime(nmicro);
+   //   p_cawd->UpdateRunTime(nmicro);
    
    Clear();
 
@@ -134,6 +143,8 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
   vector<double> w_time;
   vector<double> w_amp;
   vector<float> w_tcal;
+
+  int TGEN[65];
   
   int nmicro=0;
   TWaveformContainer *w;
@@ -150,7 +161,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
       nmicro = 1000;
            
       iW++; //
-      
+      if(FootDebugLevel(1))printf("word:%08x\n", evt->values.at(iW));
       //found evt_header
       if(evt->values.at(iW) == EVT_HEADER){
 	if(FootDebugLevel(1))printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
@@ -158,7 +169,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	iW++;
 	trig_type = (evt->values.at(iW)>>16) & 0xffff;
 	ser_evt_number =  evt->values.at(iW)& 0xffff;
-      
+	
 	iW++;
 	bco_counter = (int)evt->values.at(iW);
       
@@ -222,6 +233,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	      w_amp = ADC2Volt_CLK(w_adc);
 	    }
 
+	    
 	    w = new TWaveformContainer();
 	    w->SetChannelId(ch_num);
 	    w->SetBoardId(board_id);
@@ -232,9 +244,12 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	    w->SetEmptyFlag(false);
 	    w->SetTrigType(trig_type);
 	    w->SetTriggerCellId(trig_cell);
-
+	    if(FootDebugLevel(1))printf("found waveform board:%d  channel:%d\n", board_id,ch_num);
+	    
 	    string ch_type;
 	    ch_type = p_WDMap->GetChannelType(board_id, ch_num);
+
+	    if(FootDebugLevel(1))printf("type::%s\n", ch_type.data());
 	    
 	    if(ch_type =="ST"){
 	      st_waves.push_back(w);
@@ -244,15 +259,119 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	      ca_waves.push_back(w);
 	    }else if(ch_type == "CLK"){
 	      clk_waves.insert(std::pair<std::pair<int,int>, TWaveformContainer*>(make_pair(board_id, ch_num),w));
+	    } else {
+	      if(FootDebugLevel(1)) {
+		cout<<"******************************************* "<<endl;
+		cout<<"*******    CORRUPTED EVENT      *********** "<<endl;
+		cout<<"*******    Bo:: "<<board_id<<" Cha:: "<<ch_num<<"      *********** "<<endl;
+		cout<<"******************************************* "<<endl;
+	      }
 	    }
-
 	    nhitsA++;
 	    w_amp.clear();
 	  }
 	}
+      }else if(evt->values.at(iW) == EVT_FOOTER){
+	if(FootDebugLevel(1))printf("found footer\n");
+	return nmicro;
       }
       
       
+      if((evt->values.at(iW) &0xffff)== TRIG_HEADER){
+	int tbo =  (evt->values.at(iW) >> 16)& 0xffff;
+	iW++;
+	int nbanks =  evt->values.at(iW) & 0xffff;
+	iW++;
+
+	
+	if(FootDebugLevel(1))printf("found trigger board %d header, nbanks::%d\n",tbo,nbanks);
+	for(int ibank=0;ibank<nbanks;ibank++){
+	  if(evt->values.at(iW) == TRGI_BANK_HEADER){
+	    if(FootDebugLevel(1))printf("trig header::%08x\n",evt->values.at(iW));
+	    iW++;
+	    int size =  evt->values.at(iW);
+	    if(FootDebugLevel(1))printf("size::%08x\n",evt->values.at(iW));
+	    int cnt=0;
+	    iW++;
+	    for(int i=0;i<size;i++){
+	      int word= evt->values.at(iW);
+	      if(FootDebugLevel(1))printf("data::%08x\n",evt->values.at(iW));
+	      if(cnt==1){
+		for(int iTrig=0;iTrig<32;iTrig++){
+		  int bit = (word >> iTrig) &0x1;
+		  if(bit && ValidHistogram())hTrig->Fill(iTrig);
+		}
+	      }
+	      if(cnt==2){
+		for(int iTrig=0;iTrig<32;iTrig++){
+		  int bit = (word >> iTrig) &0x1;
+		  if(bit && ValidHistogram())hTrig->Fill(iTrig+32);
+		}
+	      }
+	      cnt++;
+	      iW++;
+	      //fill trigger class
+	    }
+	  }else if(evt->values.at(iW) == TGEN_BANK_HEADER){
+	    
+	    if(FootDebugLevel(1))printf("trig header::%08x\n",evt->values.at(iW));
+	    iW++;
+	    int size = evt->values.at(iW);;
+	    if(FootDebugLevel(1))printf("size::%08x\n",evt->values.at(iW));
+	    iW++;
+	    for(int i=0;i<size;i++){
+	    
+	      if(FootDebugLevel(1))printf("data::%08x\n",evt->values.at(iW));
+	      TGEN[i] = evt->values.at(iW);
+	      iW++;
+	      //fill trigger class
+	    }
+	  }
+	}
+      }
+    
+
+      uint64_t TriggerGenerationBin[32];
+      for(unsigned int ibin = 0; ibin<32; ibin++){
+	TriggerGenerationBin[(ibin + 32 - TGEN[0]) % 32] = TGEN[ibin+1]; // bit 31:0
+      }
+      for(unsigned int ibin = 0; ibin<32; ibin++){
+	TriggerGenerationBin[(ibin + 32 - TGEN[0]) % 32] = (((uint64_t)TGEN[ibin+33])<<32) | TriggerGenerationBin[(ibin + 32 - TGEN[0]) % 32]; // bit 63:32
+      }
+
+      uint64_t iTriggerGenerationBin = 0;
+      uint64_t TrigOr = 0;
+      for(unsigned int iclktick=0; iclktick<32; iclktick++){
+	iTriggerGenerationBin = TriggerGenerationBin[iclktick];
+	TrigOr = TrigOr | iTriggerGenerationBin;
+	int bit[14]={0,1,2,3,4,5,6,7,8,9,10,11,12,63};
+	for(int ialgo=0; ialgo<14; ialgo++){
+	  if( ((iTriggerGenerationBin >> bit[ialgo])&0x1 )== 1){
+	    hTrigClk->Fill( (float)iclktick, (float) ialgo);
+	  }
+	}
+	TriggerGenerationBin[iclktick] = 0; //auto reset ouput
+	/*
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >> 0) & 0x1); // MARGOR
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >> 1) & 0x1); // MARG MAJ
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >> 2) & 0x1); // MARG MAJ REG
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >> 3) & 0x1); // TOFTRG
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >> 4) & 0x1); // CALOOR
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >> 5) & 0x1); // NEUTRON
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >> 6) & 0x1); // INTERSPILL TRG?
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >> 7) & 0x1); // TRIGBACKTRG ?
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >> 8) & 0x1); // FRAGTOFREG
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >> 9) & 0x1); // FRAGVETO
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >>10) & 0x1); // FRAGTOFROMEREG
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >>11) & 0x1); // FRAGVETOROME
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >>12) & 0x1); // FRAGTOFREGT1
+	_hTGEN->Fill(i+1, (TriggerGenerationBin >>63) & 0x1); // TRIGGER
+	*/
+      }
+      
+	
+      
+    
       if(evt->values.at(iW) == EVT_FOOTER){
 	if(FootDebugLevel(1))printf("found footer\n");
 	iW++;
@@ -275,19 +394,56 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 //! Setup all histograms.
 void TAGactWDreader::CreateHistogram()
 {
-  // max number of histo
-  // Int_t MaxHist0=20;
+
   DeleteHistogram();
-  //  wv0.resize(MaxHist0);
-  //
-  // for (int i=0;i<MaxHist0;++i)
-  //   {
-  //     wv0[i] = new TH1F();
-  //     wv0[i]->SetName("WD"+TString::Format("%d",i));
-  //     wv0[i]->SetTitle("WD graph"+TString::Format("%d",i));
-  //     AddHistogram(wv0[i]);
-  //   }
+
+  TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)   fpWDTim->Object();
+
+  for(int iEv=0;iEv<MaxEvents;iEv++){
+    for(int iCh=0;iCh<8;iCh++){
+      Double_t xmin =  p_WDtim->GetRawTimeArray(27, iCh, 0).at(0);
+      Double_t xmax =  p_WDtim->GetRawTimeArray(27, iCh, 0).at(1023);
+      hST[iEv][iCh] = new TH1F(Form("hST_board27_ch%d_nev%d",iCh, iEv),"",1024,xmin,xmax);
+      AddHistogram(hST[iEv][iCh]);
+    }
+    for(int iCh=0;iCh<4;iCh++){
+      Double_t xmin =  p_WDtim->GetRawTimeArray(166, iCh, 0).at(0);
+      Double_t xmax =  p_WDtim->GetRawTimeArray(166, iCh, 0).at(1023);
+      hTW[iEv][iCh] = new TH1F(Form("hTW_board166_ch%d_nev%d",iCh, iEv),"",1024,xmin,xmax);
+      AddHistogram(hTW[iEv][iCh]);
+    }
+    for(int iCh=0;iCh<9;iCh++){
+      Double_t xmin =  p_WDtim->GetRawTimeArray(161, iCh, 0).at(0);
+      Double_t xmax =  p_WDtim->GetRawTimeArray(161, iCh, 0).at(1023);
+      hCalo[iEv][iCh] = new TH1F(Form("hCA_board161_ch%d_nev%d",iCh, iEv),"",1024,xmin,xmax);
+      AddHistogram(hCalo[iEv][iCh]);
+    }
+    
+    Double_t xmin =  p_WDtim->GetRawTimeArray(27, 16, 0).at(0);
+    Double_t xmax =  p_WDtim->GetRawTimeArray(27, 16, 0).at(1023);
+    hClk[iEv] = new TH1F(Form("hCLK_board27_ch16_nev%d", iEv),"",1024,xmin,xmax);
+    AddHistogram(hClk[iEv]);
+  }
+
+  hTrig = new TH1F("hTrig","",64,-0.5,63.5);
+  AddHistogram(hTrig);
+  hTrigClk = new TH2F("hTrigClk","",34, -1.5, 32.5, 16, -1.5, 14.5);
+  AddHistogram(hTrigClk);
+  
   SetValidHistogram(kTRUE);
+}
+
+
+void TAGactWDreader::FillHistogram(TH1F *h, TWaveformContainer *w){
+
+
+  vector<Double_t> vtime = w->GetVectT();
+  vector<Double_t> vamp = w->GetVectA();
+  Int_t nsample = vtime.size();
+  for(int i=0;i<nsample;i++) {
+    h->SetBinContent(i+1,vamp.at(i));
+  }
+  
 }
 
 
@@ -495,15 +651,30 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACA
 
   for(int i=0; i<(int)st_waves.size();i++){
     p_straw->NewHit(st_waves.at(i));
+    int ch = st_waves.at(i)->GetChannelId();
+    if(ValidHistogram() && m_nev<MaxEvents && ch<MaxST)FillHistogram(hST[m_nev][ch], st_waves.at(i));
   }
 
   for(int i=0; i<(int)tw_waves.size();i++){
     p_twraw->NewHit(tw_waves.at(i));
+    int ch = tw_waves.at(i)->GetChannelId();
+    if(ValidHistogram() && m_nev<MaxEvents && ch<MaxTW)FillHistogram(hTW[m_nev][ch], tw_waves.at(i));
   }
 
   for(int i=0; i<(int)ca_waves.size();i++){
     p_caraw->NewHit(ca_waves.at(i));
+    int ch = ca_waves.at(i)->GetChannelId();
+    if(ValidHistogram() && m_nev<MaxEvents && ch<MaxCalo)FillHistogram(hCalo[m_nev][ch], ca_waves.at(i));
   }
+
+   map<pair<int,int>, TWaveformContainer*>::iterator it;
+   for(it=clk_waves.begin(); it != clk_waves.end(); it++){
+     int bo = it->second->GetBoardId();
+     int ch = it->second->GetChannelId();
+     if(bo==27 && ch == 16){
+       if(ValidHistogram() && m_nev<MaxEvents)FillHistogram(hClk[m_nev], it->second);
+     }
+   }
 
   return true;
   
@@ -535,4 +706,26 @@ void TAGactWDreader::Clear(){
   return;
 
 
+}
+
+
+
+void  TAGactWDreader::SavePlot(TWaveformContainer *w, string type){
+
+  TCanvas c("c","",600,600);
+  c.cd();
+
+  vector<Double_t> vtime = w->GetVectT();
+  vector<Double_t> vamp = w->GetVectA();
+  Int_t nsample = vtime.size();
+  TGraph WaveGraph(nsample,&vtime[0], &vamp[0]);
+  
+  WaveGraph.Draw("APL");
+  WaveGraph.SetMarkerSize(0.5);
+  WaveGraph.SetMarkerStyle(22);
+  WaveGraph.SetMarkerColor(kBlue);
+  WaveGraph.GetXaxis()->SetRangeUser(0,100);
+
+  c.Print(Form("waveform%s_board%d_ch%d_nev%d.png", type.data(), w->GetBoardId(), w->GetChannelId(), m_nev));
+  
 }

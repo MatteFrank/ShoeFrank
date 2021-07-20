@@ -16,7 +16,7 @@ using namespace std;
 #include "TWaveformContainer.hxx"
 
 
-#define NMAX_BO_ID 100
+#define NMAX_BO_ID 200
 #define NMAX_CH_ID 18
 
 //##############################################################################

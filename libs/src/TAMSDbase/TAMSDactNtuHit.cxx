@@ -51,7 +51,12 @@ Bool_t TAMSDactNtuHit::Action()
    TAMSDntuRaw*   p_datraw = (TAMSDntuRaw*) fpDatRaw->Object();
    TAMSDntuHit*   p_nturaw = (TAMSDntuHit*) fpNtuRaw->Object();
    TAMSDparGeo*   p_geoMap = (TAMSDparGeo*) fpGeoMap->Object();
-   
+
+   if(FootDebugLevel(2)) {
+     cout<<"****************************"<<endl;
+     cout<<"  NtuHit hits "<<endl;
+     cout<<"****************************"<<endl;
+   }
    
    // loop over boards
    for (Int_t i = 0; i < p_geoMap->GetSensorsN(); ++i) {
@@ -66,14 +71,17 @@ Bool_t TAMSDactNtuHit::Action()
          Int_t view       = strip->GetView();
          UInt_t charge    = strip->GetCharge();
          Float_t posStrip = p_geoMap->GetPosition(stripId);
-         
-        if (FootDebugLevel(1))
+	 if(FootDebugLevel(2))
+	   cout<<" Sens "<<sensorId<<" strip "<<stripId<<" View "<<view<<" position (cm) "<<posStrip<<" "<<endl;
+	 
+	 if (FootDebugLevel(1))
             printf("sensor: %d strip: %d view: %d charge: %d\n", sensorId, stripId, view, charge);
          
          // here we need the calibration file
          Double_t energy = GetEnergy(charge, sensorId, stripId);
          TAMSDhit* hit = p_nturaw->NewStrip(sensorId, energy, view, stripId);
          hit->SetPosition(posStrip);
+	 
       }
    }
    fpNtuRaw->SetBit(kValid);
@@ -86,11 +94,14 @@ Double_t TAMSDactNtuHit::GetEnergy(Double_t rawenergy, Int_t sensorId, Int_t str
 {
    TAMSDparCal* p_parcal = (TAMSDparCal*) fpParCal->Object();
    
-   Double_t p0 = p_parcal->GetElossParam(sensorId, stripId, 0);
-   Double_t p1 = p_parcal->GetElossParam(sensorId, stripId, 1);
+    //switching from this to only one call would speed up thing, buit using flat vector of struct would be faster
+    //only thing needed is to compute index, but it is easy, it's a matrix
+//   Double_t p0 = p_parcal->GetElossParam(sensorId, stripId, 0);
+//   Do,/uble_t p1 = p_parcal->GetElossParam(sensorId, stripId, 1);
+    auto eloss_parameters = p_parcal->GetElossParameters(sensorId, stripId);
    
-   return p0 + p1 * rawenergy;
-   
+   //return p0 + p1 * rawenergy;
+    return eloss_parameters.offset + eloss_parameters.slope * rawenergy;
 }
 
 

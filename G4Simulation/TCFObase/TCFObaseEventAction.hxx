@@ -37,7 +37,7 @@ class TCFObaseEventAction : public G4UserEventAction
     virtual void   EndOfEventAction(const G4Event*);
     void   ConstructCollection();
 
-    TAMCntuPart* GetTrackMc()          { return fMcEvent;       }
+    TAMCntuPart* GetMcEvent()          { return fMcEvent;       }
     void SetFillTree(Bool_t fill)      { fFillTree = fill;      }
    
     void SetInelasticOnly(G4bool frag) { fInelasticOnly = frag; }

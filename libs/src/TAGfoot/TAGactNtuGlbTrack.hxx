@@ -31,6 +31,7 @@ public:
                                TAGdataDsc* p_vtxvertex = 0,
                                TAGdataDsc* p_itrclus  = 0,
                                TAGdataDsc* p_msdclus  = 0,
+                               TAGdataDsc* p_msdpoint  = 0,
                                TAGdataDsc* p_twpoint  = 0,
                                TAGdataDsc* p_glbtrack = 0,
                                TAGparaDsc* p_geoG     = 0,
@@ -65,6 +66,7 @@ private:
    TAGdataDsc*       fpVtxClus;
    TAGdataDsc*       fpItrClus;		   // ITR clusters
    TAGdataDsc*       fpMsdClus;		   // MSD clusters
+    TAGdataDsc*       fpMsdPoint;           // MSD clusters
    TAGdataDsc*       fpTwPoint;		   // TOF points, should be cluster
    TAGdataDsc*       fpGlbTrack;		   // global tracks
    TAGparaDsc*       fpGGeoMap;
