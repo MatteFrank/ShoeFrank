@@ -11,34 +11,34 @@ typedef map<pair<Int_t, Int_t>, vector<Double_t> > TCalibMapType;
 class TAMSDcalibrationMap : public TAGobject
 {
 public:
-    struct pedestal_values {
+    struct PedParameter_t {
         double mean;
         double sigma;
         bool status;
     };
     
-    struct eloss_parameters {
+    struct ElossParameter_t {
         double offset;
         double slope;
     };
     
 private:
-   TCalibMapType fCalibElossMapStrip;     // map for energy calibration per strip
-   TCalibMapType fCalibPedMapStrip;       // map for pedestal per strip
-   vector<Double_t> fSigmaNoiseLevel;
-    vector<pedestal_values> pedestal_c;
-    vector<eloss_parameters> eloss_c;
-    int strip_number_m;
+   TCalibMapType            fCalibElossMapStrip;     // map for energy calibration per strip
+   TCalibMapType            fCalibPedMapStrip;       // map for pedestal per strip
+   vector<Double_t>         fSigmaNoiseLevel;
+   vector<PedParameter_t>   fPedestal;
+   vector<ElossParameter_t> fEloss;
+   Int_t                    fStripNumber;
 
 public:
   TAMSDcalibrationMap(int strip_number_p);
     
   void     LoadEnergyCalibrationMap(TString Filename);
   Double_t GetElossParam(Int_t sensorId, Int_t stripId, UInt_t parId)  { return fCalibElossMapStrip[make_pair(sensorId, stripId)][parId]; }
-  eloss_parameters GetElossParameters(Int_t sensorId, Int_t stripId) { return eloss_c[ sensorId*strip_number_m + stripId];}
+  ElossParameter_t GetElossParameters(Int_t sensorId, Int_t stripId) { return fEloss[ sensorId*fStripNumber + stripId];}
 
   void     LoadPedestalMap(TString Filename);
-    pedestal_values GetPedestal(Int_t sensorId, Int_t stripId) { return pedestal_c[ sensorId*strip_number_m + stripId ]; }
+    PedParameter_t GetPedestal(Int_t sensorId, Int_t stripId) { return fPedestal[ sensorId*fStripNumber + stripId ]; }
   Double_t GetPedestalParam(Int_t sensorId, Int_t stripId, UInt_t parId) { return fCalibPedMapStrip[make_pair(sensorId, stripId)][parId];   }
   Double_t GetPedestalNoiseLevel(Int_t sensorId)                         { return fSigmaNoiseLevel[sensorId];   }
 
