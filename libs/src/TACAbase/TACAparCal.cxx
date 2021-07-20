@@ -28,7 +28,7 @@ TACAparCal::~TACAparCal()
 }
 
 //------------------------------------------+-----------------------------------
-Bool_t TACAparCal::FromCalibTempFile(const TString& name)
+Bool_t TACAparCal::LoadCryTemperatureCalibrationMap(const TString& name)
 {
 
   Clear();
@@ -63,39 +63,6 @@ Bool_t TACAparCal::LoadEnergyCalibrationMap(TString name)
    return kFALSE;
 }
 
-//_____________________________________________________________________
-
-Bool_t TACAparCal::LoadTofCalibrationMap(TString name)
-{
-  if (!Open(name)) {
-    Error("FromFile()", "Cannot open file %s", name.Data());
-    return false;
-  }
-  
-  // read for parameter
-  Double_t* parameters = new Double_t[4];
-  Int_t crysId = -1;
-  
-  for (Int_t i = 0; i < fParGeo->GetCrystalsN(); ++i) { // Loop over crystal
-    
-    // Read crystal Id
-    ReadItem(crysId);
-    
-    // read parameters
-    ReadItem(parameters, 4, ' ', false);
-    
-    // fill map
-    for (Int_t p = 0; p < 4; p++) { // Loop over parameters
-      fCalibTofMapCrys[crysId].push_back(parameters[p]);
-    }
-  }
-  
-  delete [] parameters;
-  
-  Close();
-  
-  return true;
-}
 
 //_____________________________________________________________________
 Double_t TACAparCal::GetTemperatureCry(Int_t crysId)
@@ -104,15 +71,15 @@ Double_t TACAparCal::GetTemperatureCry(Int_t crysId)
 }
 
 //_____________________________________________________________________
-Double_t TACAparCal::GetElossParam(Int_t crysId, UInt_t ParameterNumber)
+Double_t TACAparCal::GetEqualiseCry(Int_t crysId)
 {
-    return fMapCal->GetElossParam(crysId, ParameterNumber);
+   return fMapCal->GetEqualiseCry(crysId);
 }
 
 //_____________________________________________________________________
-Double_t TACAparCal::GetTofParam(Int_t crysId, UInt_t ParameterNumber)
+Double_t TACAparCal::GetElossParam(Int_t crysId, UInt_t ParameterNumber)
 {
-    return fCalibTofMapCrys[crysId][ParameterNumber];
+    return fMapCal->GetElossParam(crysId, ParameterNumber);
 }
 
 //_____________________________________________________________________

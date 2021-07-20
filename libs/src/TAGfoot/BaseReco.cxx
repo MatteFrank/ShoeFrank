@@ -637,7 +637,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files for caloriomter
-   Bool_t isCalTre = true;
+   Bool_t isCalEloss = true;
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       fpParGeoCa = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
       TACAparGeo* parGeo = (TACAparGeo*)fpParGeoCa->Object();
@@ -662,9 +662,9 @@ void BaseReco::ReadParFiles()
         parMap->FromFile(parFileName.Data());
 
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->FromCalibTempFile(parFileName.Data());
+        parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
         
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalTre);
+        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
         parCal->LoadEnergyCalibrationMap(parFileName.Data());
      }
      
