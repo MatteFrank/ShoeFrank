@@ -89,29 +89,23 @@ Bool_t TAMSDactNtuPoint::FindPoints()
   for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
 
     // fill points
-    for (int iStrip = 0; iStrip < pNtuCluster->GetClustersN(iLayer); iStrip++) {
+    for (int iClus = 0; iClus < pNtuCluster->GetClustersN(iLayer); iClus++) {
 
-      TAMSDcluster* colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iStrip);
+      TAMSDcluster* colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iClus);
       if (colHit == 0) continue;
 
-      for (int iStrip_ = 0; iStrip_ < pNtuCluster->GetClustersN(iLayer+1); iStrip_++) {
+      for (int iClus_ = 0; iClus_ < pNtuCluster->GetClustersN(iLayer+1); iClus_++) {
 
-         TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iStrip);
+         TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iClus);
          if (rowHit == 0) continue;
          
          TAMSDpoint* point = pNtuPoint->NewPoint(iLayer/2,
-                                                 colHit->GetPosition().X(), colHit->GetPosError().X(),
-                                                 rowHit->GetPosition().Y(), rowHit->GetPosError().Y());
+                                                 colHit->GetPosition().X(), colHit->GetPosError().X(), colHit,
+                                                 rowHit->GetPosition().Y(), rowHit->GetPosError().Y(), rowHit);
        
          auto posz = (colHit->GetPositionG().Z() + rowHit->GetPositionG().Z())/2.;
          TVector3 pos(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), posz);
          point->SetPositionG(pos);
-         
-         // tmp solution, considered only one particle
-         if (colHit->GetMcTracksN())
-            point->AddMcTrackIdx(colHit->GetMcTrackIdx(0));
-         if (rowHit->GetMcTracksN())
-            point->AddMcTrackIdx(rowHit->GetMcTrackIdx(0));
       }
     }
   }
