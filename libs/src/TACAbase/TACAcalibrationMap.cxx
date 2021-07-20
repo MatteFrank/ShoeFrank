@@ -58,7 +58,7 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
        fEqualisFactorCry[cryId] = equalis;
 
        
-      // if(FootDebugLevel(1))
+       if(FootDebugLevel(1))
         Info("LoadCryTemperatureCalibrationMap()","%d %f %f\n",cryId, temp, equalis);
     }
   }
