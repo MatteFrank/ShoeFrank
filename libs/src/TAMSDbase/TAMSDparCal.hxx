@@ -26,12 +26,8 @@ public:
 
   // Pedestal
   Bool_t   LoadPedestalMap(TString Filename);
-  Double_t GetPedestalMean(Int_t sensorId, Int_t stripId);
-  Double_t GetPedestalSigma(Int_t sensorId, Int_t stripId);
-  Int_t    GetPedestalStatus(Int_t sensorId, Int_t stripId);
   TAMSDcalibrationMap::PedParameter_t GetPedestal(Int_t sensorId, Int_t stripId);
 
-  Double_t GetPedestalValue(Int_t sensorId, Int_t stripId);
   Double_t GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p);
   Double_t GetPedestalNoiseLevel(Int_t sensorId);
 

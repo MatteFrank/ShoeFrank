@@ -8,7 +8,7 @@ ClassImp(TAMSDcalibrationMap)
 //_____________________________________________________________________
 TAMSDcalibrationMap::TAMSDcalibrationMap(int strip_number_p)
 : TAGobject(),
-fStripNumber{strip_number_p}
+  fStripNumber{strip_number_p}
 {
     fEloss.reserve( fStripNumber * 6 );
     fPedestal.reserve( fStripNumber * 6 );
