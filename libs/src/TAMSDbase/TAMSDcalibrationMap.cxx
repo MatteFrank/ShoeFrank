@@ -8,10 +8,10 @@ ClassImp(TAMSDcalibrationMap)
 //_____________________________________________________________________
 TAMSDcalibrationMap::TAMSDcalibrationMap(int strip_number_p)
 : TAGobject(),
-  fStripNumber{strip_number_p}
+  fStripsN{strip_number_p}
 {
-    fEloss.reserve( fStripNumber * 6 );
-    fPedestal.reserve( fStripNumber * 6 );
+    fEloss.reserve( fStripsN * 6 );
+    fPedestal.reserve( fStripsN * 6 );
 }
 
 //_____________________________________________________________________
@@ -44,9 +44,6 @@ void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
          sscanf(line, "%d %d %lf %lf",&sensorId, &stripId, &Q_corrp0, &Q_corrp1);
          if(FootDebugLevel(1))
             Info("LoadEnergyCalibrationMap()","%d %d %.5f %.7f\n",sensorId, stripId, Q_corrp0, Q_corrp1);
-         pair<int, int> p(sensorId, stripId);
-         fCalibElossMapStrip[p].push_back(Q_corrp0);
-         fCalibElossMapStrip[p].push_back(Q_corrp1);
          fEloss.push_back( ElossParameter_t{Q_corrp0, Q_corrp1} );
           
       }
@@ -111,10 +108,6 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
          if(FootDebugLevel(1))
             Info("LoadPedestalMap()","sensorId: %d stripId %d Mean: %5.1f Sigma: %3.1f status: %d\n",sensorId, stripId, Q_corrp0, Q_corrp1, int(Q_corrp2));
          
-         pair<int, int> p(sensorId, stripId);
-         fCalibPedMapStrip[p].push_back(Q_corrp0);
-         fCalibPedMapStrip[p].push_back(Q_corrp1);
-         fCalibPedMapStrip[p].push_back(Q_corrp2);
          fPedestal.push_back( PedParameter_t{Q_corrp0, Q_corrp1, static_cast<bool>(true-Q_corrp2)} );
       }
    } else
