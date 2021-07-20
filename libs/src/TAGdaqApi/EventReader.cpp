@@ -255,7 +255,7 @@ void EventReader::preEvent(){
     word = readWord();
     std::cout << "\n Looking for EventMarker or EndOfFile " 
 	      << (std::hex)<<word<<std::endl;
-    if ( word == EndOfFile || m_errorOnRead ) {
+    if ( word == EndOfFile || m_errorOnRead || m_file->eof()) {
       m_errorOnRead = true;
       std::cout << "\nEnd of file" << std::endl;
       return;
