@@ -29,8 +29,6 @@ public:
   TAMSDcalibrationMap::PedParameter_t GetPedestal(Int_t sensorId, Int_t stripId);
 
   Double_t GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p);
-  Double_t GetPedestalNoiseLevel(Int_t sensorId);
-
 
  ClassDef(TAMSDparCal, 0)
 };
