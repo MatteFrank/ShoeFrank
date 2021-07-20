@@ -56,6 +56,9 @@ public:
 
    int       GetLayer()          const  { return fStation;      }
    int       GetStation()        const  { return fStation;      }
+   
+   TAMSDcluster*  GetColClus()   const  { return fColClus;      }
+   TAMSDcluster*  GetRowClus()   const  { return fRowClus;      }
 
    double    GetEnergyLoss1()    const  { return fDe1;          }
    double    GetEnergyLoss2()    const  { return fDe2;          }
