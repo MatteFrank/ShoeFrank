@@ -71,7 +71,7 @@ public:
    void      SetChargeZProba(double p)  { fChargeZProba = p;    }
    void      Clear(Option_t* opt);
 
-   ClassDef(TAMSDpoint,5)
+   ClassDef(TAMSDpoint,6)
 };
 
 //##############################################################################
@@ -90,12 +90,10 @@ public:
   TAMSDpoint*         NewPoint(Int_t iStation, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY);
 
   int                 GetPointN(int iStation) const;
-  int                 GetPointN_includingGhosts();
 
   TClonesArray*       GetListOfPoints(int iStation) const;
 
   TAMSDpoint*         GetPoint( int iStation, int iPoint ) const ;
-
 
   virtual void        Clear(Option_t* opt="");
 
