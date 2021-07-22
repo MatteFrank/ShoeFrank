@@ -30,6 +30,9 @@ void DECardEvent::readData(unsigned int **p1)
    ++p;
    
    if(evtSize != 0) {
+      // skip 4 words ???
+      p += 4;
+      
       // check header
       if (*p != m_vtxHeader)
          printf("Error in the event reader %x instead of %x\n", *p, m_vtxHeader);
@@ -48,31 +51,16 @@ void DECardEvent::readData(unsigned int **p1)
       evtSize++;
       values.push_back(*p);
       
-      // skip 2 words and frame header
-      evtSize++;
-      values.push_back(*(++p));
-      
-      evtSize++;
-      values.push_back(*(++p));
-
-      evtSize++;
-      values.push_back(*(++p));
-      
       // trigger number
       triggerCounter = *(++p);
       evtSize++;
       values.push_back(*p);
       
       // timestamp
-      clockCounter = *(++p);
-      evtSize++;
-      values.push_back(*p);
-      
-      // frame counter
       BCOofTrigger = *(++p);
       evtSize++;
       values.push_back(*p);
-      
+   
       do {
          p++;
          evtSize++;
