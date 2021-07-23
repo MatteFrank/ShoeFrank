@@ -140,7 +140,7 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, TAM
 }
 
 //------------------------------------------+-----------------------------------
-int TAMSDntuPoint::GetPointN(int iStation) const
+int TAMSDntuPoint::GetPointsN(int iStation) const
 {
   if ( iStation >= 0 && iStation < fGeometry->GetSensorsN()/2 ) {
     TClonesArray* list = (TClonesArray*)fListOfPoints->At(iStation);
@@ -153,7 +153,7 @@ int TAMSDntuPoint::GetPointN(int iStation) const
 //! return a pixel for a given sensor
 TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const
 {
-	if ( iPoint >= 0  && iPoint < GetPointN( iStation ) ) {
+	if ( iPoint >= 0  && iPoint < GetPointsN( iStation ) ) {
     TClonesArray* list = GetListOfPoints(iStation);
     return (TAMSDpoint*)list->At(iPoint);
 	} else
