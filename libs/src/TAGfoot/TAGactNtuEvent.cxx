@@ -45,8 +45,10 @@ Bool_t TAGactNtuEvent::Action()
   TAGntuEvent* pNtuEvt = (TAGntuEvent*)  fpNtuEvt->Object();
   
   InfoEvent*  infoEvent = datDaq->GetInfoEvent();
+  if (!infoEvent) return true;
   TrgEvent*   trgEvent  = datDaq->GetTrgEvent();
-  
+  if (!trgEvent) return true;
+
   if (trgEvent->eventNumber != infoEvent->eventNumber)
     Warning("Action()", "Event number different in trigger and info event");
   
