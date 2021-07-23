@@ -731,7 +731,7 @@ int TAGactKFitter::UploadHitsMSD() {
 
   for(Int_t iPlane = 0; iPlane < nPlanes; iPlane++){
 
-    Int_t npoints = ntuP->GetPointN(iPlane);
+    Int_t npoints = ntuP->GetPointsN(iPlane);
     if (m_debug > 1)
     std::cout << "\nfound " << npoints << " in station " << iPlane << std::endl;
     totPoints+=npoints;

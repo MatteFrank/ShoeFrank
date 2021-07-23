@@ -188,7 +188,7 @@ std::vector<typename details::ms2d_tag::candidate> detector_properties< details:
     std::vector<candidate> candidate_c;
     candidate_c.reserve( 10 );
     
-    std::size_t entries = cluster_mhc->GetPointN(index_p);
+    std::size_t entries = cluster_mhc->GetPointsN(index_p);
 //    std::cout << "detector_properties< details::ms2d_tag >::generate_candidates_entries: " << entries << '\n';
     
     for(std::size_t i{0}; i < entries ; ++i) {
