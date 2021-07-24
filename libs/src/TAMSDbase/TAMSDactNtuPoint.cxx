@@ -106,6 +106,7 @@ Bool_t TAMSDactNtuPoint::FindPoints()
          auto posz = (colHit->GetPositionG().Z() + rowHit->GetPositionG().Z())/2.;
          TVector3 pos(rowHit->GetPositionG().X(), colHit->GetPositionG().Y(), posz);
          point->SetPositionG(pos);
+         point->SetValid();
       }
     }
   }
