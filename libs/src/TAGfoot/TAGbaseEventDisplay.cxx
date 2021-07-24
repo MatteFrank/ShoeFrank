@@ -944,7 +944,6 @@ void TAGbaseEventDisplay::UpdateStripElements()
          TAMSDpoint *point = pNtuPoint->GetPoint(iStation, iPoint);
         // if (!point->IsValid()) continue;
          TVector3 pos = point->GetPositionG();
-      //   pos.Print();
          TVector3 posG = fpFootGeo->FromMSDLocalToGlobal(pos);
          
          x = posG(0);
