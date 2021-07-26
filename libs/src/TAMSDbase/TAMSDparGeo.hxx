@@ -49,6 +49,9 @@ public:
    //! Get pitch
   Float_t     GetPitch()               const { return fPitch;   }
    
+  //! Get pitch
+  Float_t     GetStationsN()           const { return (fSensorsN % 2 == 0) ? fSensorsN/2 : fSensorsN/2 + 1;  }
+   
   //crossing regions
   Int_t       GetRegStrip(Int_t n);   //n=sensor (0-5)
   Int_t       GetRegModule(Int_t n);  //n=sensor (0-5)
