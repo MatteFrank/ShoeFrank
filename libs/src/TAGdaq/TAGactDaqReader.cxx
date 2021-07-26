@@ -40,6 +40,8 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString
    
    // all hard coded for the moment
    if (fDaqFileChain) {
+      if (!name.EndsWith(".data"))
+         Error("Open()", "wrong file extension file, must be .data");
       Int_t pos = name.Last('.');
       pos -= 4;
       TString tmp = name(0, pos);
