@@ -184,9 +184,9 @@ void TAGactNtuGlbTrackS::CreateHistogram()
    fOffsetTof = nHistos;
    
    for (Int_t i = 0; i < nHistos+1; ++i) {
-      fpHisResX[i] = new TH1F(Form("%sResX%d", prefix.Data(), i+1), Form("%s - ResidualX of sensor %d", titleDev.Data(), i+1), 400, -0.01, 0.01);
+      fpHisResX[i] = new TH1F(Form("%sResX%d", prefix.Data(), i+1), Form("%s - ResidualX of sensor %d", titleDev.Data(), i+1), 400, -0.2, 0.2);
       AddHistogram(fpHisResX[i]);
-      fpHisResY[i] = new TH1F(Form("%sResY%d", prefix.Data(), i+1), Form("%s - ResidualY of sensor %d", titleDev.Data(), i+1), 400, -0.01, 0.01);
+      fpHisResY[i] = new TH1F(Form("%sResY%d", prefix.Data(), i+1), Form("%s - ResidualY of sensor %d", titleDev.Data(), i+1), 400, -0.2, 0.2);
       AddHistogram(fpHisResY[i]);
    }
    
@@ -516,7 +516,7 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
       
       
       // loop on all clusters of this sensor and keep the nearest one
-      minDistance = fSearchClusDistMsd;
+      minDistance = fSearchClusDistMsd*4;
 
       TAMSDpoint* bestCluster = 0x0;
       
