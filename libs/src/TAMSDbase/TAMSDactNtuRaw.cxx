@@ -136,7 +136,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
              valueX = adcX - valueX;
          }
          if (valueX > 0) {
-            p_datraw->AddStrip(sensorId, i, view, adcX-meanX);
+            p_datraw->AddStrip(sensorId, i, 0, adcX-meanX);
             if (ValidHistogram())
                fpHisStripMap[sensorId]->Fill(i, adcX-meanX);
          }
@@ -152,7 +152,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
             valueY = adcY - valueY;
          }
          if (valueY > 0) {
-            p_datraw->AddStrip(sensorId, i, view, adcY-meanY);
+            p_datraw->AddStrip(sensorId, i, 1, adcY-meanY);
             if (ValidHistogram())
                fpHisStripMap[sensorId]->Fill(i, adcY-meanY);
          }

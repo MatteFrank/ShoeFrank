@@ -24,6 +24,7 @@ public:
    
 protected:
    TAGdataDsc*     fpDatDaq;		    // input data dsc
+   UInt_t          fFirstBcoTrig;
    
    
    ClassDef(TAVTactNtuHit,0)

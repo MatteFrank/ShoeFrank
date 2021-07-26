@@ -137,7 +137,8 @@ protected:
    TAEDtrack*      fItTrackDisplay; // list of line to display tracks
 
    TAEDcluster*    fMsdClusDisplay;  // list of strip to display hits
-   
+   TAEDcluster*    fMsdPointDisplay;  // list of strip to display hits
+
    TAEDcluster*    fTwClusDisplay;  // list of quad to display hits
    
    TAEDcluster*    fCaClusDisplay;  // list of quad to display hits

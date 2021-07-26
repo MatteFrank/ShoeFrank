@@ -270,7 +270,7 @@ void BaseReco::LoopEvent(Int_t nEvents)
   for (Int_t ientry = 0; ientry < nEvents; ientry++) {
     
     if(ientry % frequency == 0)
-      cout<<" Loaded Event:: " << ientry << endl;
+      printf(" Loaded Event: %d\n", ientry);
         
     if (!fTAGroot->NextEvent()) break;
     

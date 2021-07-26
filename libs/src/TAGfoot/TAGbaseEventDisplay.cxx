@@ -54,6 +54,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    fItClusDisplay(0x0),
    fItTrackDisplay(0x0),
    fMsdClusDisplay(0x0),
+   fMsdPointDisplay(0x0),
    fTwClusDisplay(0x0),
    fCaClusDisplay(0x0),
    fGlbTrackDisplay(0x0),
@@ -125,6 +126,13 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
       fMsdClusDisplay->SetDefWidth(fQuadDefWidth);
       fMsdClusDisplay->SetDefHeight(fQuadDefHeight);
       fMsdClusDisplay->SetPickable(true);
+      
+      
+      fMsdPointDisplay = new TAEDcluster("Micro Strip Point");
+      fMsdPointDisplay->SetMaxEnergy(fMaxEnergy);
+      fMsdPointDisplay->SetDefWidth(fQuadDefWidth*4);
+      fMsdPointDisplay->SetDefHeight(fQuadDefHeight*4);
+      fMsdPointDisplay->SetPickable(true);
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
@@ -172,6 +180,7 @@ TAGbaseEventDisplay::~TAGbaseEventDisplay()
    if (fVtxTrackDisplay)      delete fVtxTrackDisplay;
    if (fItClusDisplay)        delete fItClusDisplay;
    if (fMsdClusDisplay)       delete fMsdClusDisplay;
+   if (fMsdPointDisplay)      delete fMsdPointDisplay;
    if (fTwClusDisplay)        delete fTwClusDisplay;
    if (fCaClusDisplay)        delete fCaClusDisplay;
    if (fGlbTrackDisplay)      delete fGlbTrackDisplay;
@@ -377,6 +386,9 @@ void TAGbaseEventDisplay::AddElements()
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fMsdClusDisplay->ResetHits();
       gEve->AddElement(fMsdClusDisplay);
+      
+      fMsdPointDisplay->ResetHits();
+      gEve->AddElement(fMsdPointDisplay);
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
@@ -438,6 +450,9 @@ void TAGbaseEventDisplay::ConnectElements()
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fMsdClusDisplay->SetEmitSignals(true);
       fMsdClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      
+      fMsdPointDisplay->SetEmitSignals(true);
+      fMsdPointDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
@@ -868,9 +883,11 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
 //__________________________________________________________
 void TAGbaseEventDisplay::UpdateStripElements()
 {
-   if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn()))
+   if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
       fMsdClusDisplay->ResetHits();
-
+      fMsdPointDisplay->ResetHits();
+   }
+   
    if (!fgDisplayFlag) // do not update event display
       return;
 
@@ -881,6 +898,7 @@ void TAGbaseEventDisplay::UpdateStripElements()
    TVector3 epi  = parGeo->GetEpiSize();
    Int_t nPlanes = parGeo->GetSensorsN();
 
+   // strips
    TAMSDntuCluster* pNtuClus  = (TAMSDntuCluster*)fReco->GetNtuClusterMsd();
 
    for( Int_t iPlane = 0; iPlane < nPlanes; iPlane++) {
@@ -912,6 +930,34 @@ void TAGbaseEventDisplay::UpdateStripElements()
    } //end loop on planes
 
    fMsdClusDisplay->RefitPlex();
+   
+   // point
+   TAMSDntuPoint* pNtuPoint  = (TAMSDntuPoint*)fReco->GetNtuPointMsd();
+   
+   for( Int_t iStation = 0; iStation < nPlanes/2; iStation++) {
+      
+      Int_t npoint = pNtuPoint->GetPointsN(iStation);
+      
+      if (npoint == 0) continue;
+      
+      for (Int_t iPoint = 0; iPoint < npoint; ++iPoint) {
+         TAMSDpoint *point = pNtuPoint->GetPoint(iStation, iPoint);
+        // if (!point->IsValid()) continue;
+         TVector3 pos = point->GetPositionG();
+         TVector3 posG = fpFootGeo->FromMSDLocalToGlobal(pos);
+         
+         x = posG(0);
+         y = posG(1);
+         z = posG(2);
+         
+         fMsdPointDisplay->AddHit(10, x, y, z);
+         fMsdPointDisplay->QuadId(point);
+         
+      } //end loop on hits
+      
+   } //end loop on planes
+   
+   fMsdPointDisplay->RefitPlex();
 }
 
 //__________________________________________________________

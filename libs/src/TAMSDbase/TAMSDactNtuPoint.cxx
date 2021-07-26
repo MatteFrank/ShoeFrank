@@ -100,12 +100,13 @@ Bool_t TAMSDactNtuPoint::FindPoints()
          if (rowHit == 0) continue;
          
          TAMSDpoint* point = pNtuPoint->NewPoint(iLayer/2,
-                                                 colHit->GetPosition().X(), colHit->GetPosError().X(), colHit,
-                                                 rowHit->GetPosition().Y(), rowHit->GetPosError().Y(), rowHit);
+                                                 colHit->GetPosition().Y(), colHit->GetPosError().Y(), colHit,
+                                                 rowHit->GetPosition().X(), rowHit->GetPosError().X(), rowHit);
        
          auto posz = (colHit->GetPositionG().Z() + rowHit->GetPositionG().Z())/2.;
-         TVector3 pos(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), posz);
+         TVector3 pos(rowHit->GetPositionG().X(), colHit->GetPositionG().Y(), posz);
          point->SetPositionG(pos);
+         point->SetValid();
       }
     }
   }
