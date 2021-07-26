@@ -26,7 +26,7 @@
 
 #include "TAMSDparGeo.hxx"
 #include "TAMSDparConf.hxx"
-#include "TAMSDntuCluster.hxx"
+#include "TAMSDntuPoint.hxx"
 
 #include "TAGgeoTrafo.hxx"
 #include "TAGrecoManager.hxx"
@@ -140,10 +140,10 @@ TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumbe
       parFile = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parConfMsd->FromFile(parFile.Data());
       
-      devsNtot += parConfMsd->GetSensorsN();
+      devsNtot += parConfMsd->GetSensorsN()/2;
       
-      fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
-      fInfile->SetupBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
+      fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuPoint());
+      fInfile->SetupBranch(fpNtuClusMsd, TAMSDntuPoint::GetBranchName());
    }
 
    if (devsNtot <= 2) {
@@ -206,12 +206,12 @@ void TAIRalignC::FillClusterArray()
    }
    
    if (fFlagMsd) {
-      TAMSDntuCluster* pNtuClus  = (TAMSDntuCluster*) fpNtuClusMsd->Object();
+      TAMSDntuPoint* pNtuClus  = (TAMSDntuPoint*) fpNtuClusMsd->Object();
       TAMSDparConf* pConfigMsd = (TAMSDparConf*) fpConfigMsd->Object();
       
       for (Int_t iPlane = 0; iPlane < pConfigMsd->GetSensorsN(); ++iPlane) {
          if (pConfigMsd->GetStatus(iPlane) == -1) continue;
-         TClonesArray* list = pNtuClus->GetListOfClusters(iPlane);
+         TClonesArray* list = pNtuClus->GetListOfPoints(iPlane/2);
          fClusterArray->AddLast(list);
       }
    }
@@ -279,23 +279,44 @@ void TAIRalignC::FillStatus()
 // Fill Status
 void TAIRalignC::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
 {
-   for (Int_t i = 0; i < parConf->GetSensorsN(); i++) {
-      if (parConf->GetStatus(i) != -1) {
-         fSecArray.Set(fSecArray.GetSize()+1);
-         fSecArray.AddAt(i, fSecArray.GetSize()-1);
+   if (offset == 0) {
+      for (Int_t i = 0; i < parConf->GetSensorsN(); i++) {
+         if (parConf->GetStatus(i) != -1) {
+            fSecArray.Set(fSecArray.GetSize()+1);
+            fSecArray.AddAt(i, fSecArray.GetSize()-1);
+         }
+         if (parConf->GetStatus(i) == 0) {
+            fFixPlaneRef1 = true;
+            fPlaneRef1 = fSecArray.GetSize()-1;
+         }
+         
+         if (parConf->GetStatus(i) == 1) {
+            fFixPlaneRef2 = true;
+            fPlaneRef2 = fSecArray.GetSize()-1;
+         }
+         
+         Int_t iSensor = fSecArray.GetSize()-1;
+         fDevStatus[fSecArray.GetSize()-1] = parConf->GetStatus(iSensor);
       }
-      if (parConf->GetStatus(i) == 0) {
-         fFixPlaneRef1 = true;
-         fPlaneRef1 = fSecArray.GetSize()-1;
+   } else {
+      for (Int_t i = 0; i < parConf->GetSensorsN(); i += 2) {
+         if (parConf->GetStatus(i) != -1 &&  parConf->GetStatus(i+1) != -1) {
+            fSecArray.Set(fSecArray.GetSize()+1);
+            fSecArray.AddAt(i/2, fSecArray.GetSize()-1);
+         }
+         if (parConf->GetStatus(i) == 0 && parConf->GetStatus(i+1) == 0) {
+            fFixPlaneRef1 = true;
+            fPlaneRef1 = fSecArray.GetSize()-1;
+         }
+         
+         if (parConf->GetStatus(i) == 1 && parConf->GetStatus(i+1) == 1) {
+            fFixPlaneRef2 = true;
+            fPlaneRef2 = fSecArray.GetSize()-1;
+         }
+         
+         Int_t iSensor = fSecArray.GetSize()-1;
+         fDevStatus[fSecArray.GetSize()-1] = parConf->GetStatus(iSensor);
       }
-      
-      if (parConf->GetStatus(i) == 1) {
-         fFixPlaneRef2 = true;
-         fPlaneRef2 = fSecArray.GetSize()-1;
-      }
-      
-      Int_t iSensor = fSecArray.GetSize()-1;
-      fDevStatus[fSecArray.GetSize()-1] = parConf->GetStatus(iSensor);
    }
 }
 
@@ -324,12 +345,27 @@ void TAIRalignC::FillPosition(TAVTbaseParGeo* parGeo, Int_t offset)
 {
    TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-   for (Int_t i = 0; i < parGeo->GetSensorsN(); i++) {
-      TVector3 posSens = parGeo->GetSensorPosition(i);
-      posSens = geoTrafo->FromVTLocalToGlobal(posSens);
+   Int_t sensorsN = parGeo->GetSensorsN();
+   
+   if (offset == 0) {
+      for (Int_t i = 0; i < sensorsN; i++) {
+         TVector3 posSens = parGeo->GetSensorPosition(i);
+         posSens = geoTrafo->FromVTLocalToGlobal(posSens);
+         
+         fZposition[i+offset] = posSens.Z()*TAGgeoTrafo::CmToMm();
+         fThickDect[i+offset] = parGeo->GetTotalSize()[2]*TAGgeoTrafo::CmToMm();
+      }
+   } else {
+      for (Int_t i = 0; i < sensorsN; i+=2) {
+         TVector3 posSens1 = parGeo->GetSensorPosition(i);
+         posSens1 = geoTrafo->FromVTLocalToGlobal(posSens1);
 
-      fZposition[i+offset] = posSens.Z()*TAGgeoTrafo::CmToMm();
-      fThickDect[i+offset] = parGeo->GetTotalSize()[2]*TAGgeoTrafo::CmToMm();
+         TVector3 posSens2 = parGeo->GetSensorPosition(i+1);
+         posSens2 = geoTrafo->FromVTLocalToGlobal(posSens2);
+
+         fZposition[i+offset] = (posSens1.Z()+posSens2.Z())*TAGgeoTrafo::CmToMm()/2.;
+         fThickDect[i+offset] = parGeo->GetTotalSize()[2]*TAGgeoTrafo::CmToMm();
+      }
    }
 }
 
@@ -517,6 +553,8 @@ Bool_t TAIRalignC::Align(Bool_t rough)
       TClonesArray* list = (TClonesArray*)fClusterArray->At(i);
       nCluster = list->GetEntries();
 
+   //   printf("%d %d\n", i, nCluster);
+
       if (nCluster < 1) return false;
       for (Int_t j = 0; j < nCluster; j++){
          TAGcluster* cluster = (TAGcluster*)list->At(j);
@@ -548,16 +586,9 @@ Bool_t TAIRalignC::Align(Bool_t rough)
 // Fill rough position of cluster
 Bool_t TAIRalignC::FillClusPosRough(Int_t i, TAGcluster* cluster)
 {
-   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName())) {
-      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
-      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm();
-   }
+   fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
+   fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm();
    
-   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 0)
-      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
-   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 1)
-      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm();
-
    return true;
 }
 
@@ -571,64 +602,32 @@ Bool_t TAIRalignC::FillClusPosPrecise(Int_t i, TAGcluster* cluster)
    
    if(cluster->InheritsFrom("TAVTcluster"))
       pGeoMap = (TAVTparGeo*) fpGeoMapVtx->Object();
-   else if (cluster->InheritsFrom("TAMSDcluster"))
+   else if (cluster->InheritsFrom("TAMSDpoint"))
       pGeoMap = (TAMSDparGeo*) fpGeoMapMsd->Object();
    else {
       Error("FillClusPosPrecise()","Unknown detector");
       exit(0);
    }
 
-   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName())) {
-
-      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
-      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
-      
-      if (i != 0){
-         fNewSlopeU = (fPosUClusters[i]-fPosUClusters[i-1])/(fZposition[i]-fZposition[i-1]);
-         fNewSlopeV = (fPosVClusters[i]-fPosVClusters[i-1])/(fZposition[i]-fZposition[i-1]);
-      }
-      
-      if ((i != 0) && (i !=1)){
-         if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
-            if ((TMath::Abs(fNewSlopeU - fSlopeU) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu()) ||
-                (TMath::Abs(fNewSlopeV - fSlopeV) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu())) return false;
-         } else {
-            if ((TMath::Abs(fNewSlopeU - fSlopeU) > fSigmaAlfaDist[i]*fCutFactor) || (TMath::Abs(fNewSlopeV - fSlopeV) > fSigmaAlfaDist[i]*fCutFactor)) return false;
-         }
-      }
-      fSlopeU = fNewSlopeU;
-      fSlopeV = fNewSlopeV;
+   fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
+   fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
+   
+   if (i != 0){
+      fNewSlopeU = (fPosUClusters[i]-fPosUClusters[i-1])/(fZposition[i]-fZposition[i-1]);
+      fNewSlopeV = (fPosVClusters[i]-fPosVClusters[i-1])/(fZposition[i]-fZposition[i-1]);
    }
    
-   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 0) {
-      fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() + (cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentU[i];
-      if (i != 0)
-         fNewSlopeU = (fPosUClusters[i]-fPosUClusters[i-1])/(fZposition[i]-fZposition[i-1]);
-      if ((i != 0) && (i !=1)){
-         if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
-            if ((TMath::Abs(fNewSlopeU - fSlopeU) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu())) return false;
-         } else {
-            if (TMath::Abs(fNewSlopeU - fSlopeU) > fSigmaAlfaDist[i]*fCutFactor) return false;
-         }
+   if ((i != 0) && (i !=1)){
+      if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
+         if ((TMath::Abs(fNewSlopeU - fSlopeU) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu()) ||
+             (TMath::Abs(fNewSlopeV - fSlopeV) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu())) return false;
+      } else {
+         if ((TMath::Abs(fNewSlopeU - fSlopeU) > fSigmaAlfaDist[i]*fCutFactor) || (TMath::Abs(fNewSlopeV - fSlopeV) > fSigmaAlfaDist[i]*fCutFactor)) return false;
       }
-      fSlopeU = fNewSlopeU;
    }
    
-   if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) && cluster->GetDevMinorType() == 1) {
-      fPosVClusters[i] = cluster->GetPositionG()[1]*TAGgeoTrafo::CmToMm() - (cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm() * (-fTiltW[i])) - fAlignmentV[i];
-
-      if (i != 0)
-         fNewSlopeV = (fPosVClusters[i]-fPosVClusters[i-1])/(fZposition[i]-fZposition[i-1]);
-
-      if ((i != 0) && (i !=1)){
-         if (fCutFactor*fSigmaAlfaDist[i]*((fZposition[i]-fZposition[i-1])/TMath::Sqrt(12)*TAGgeoTrafo::MmToMu()) < pGeoMap->GetPitchX()/TMath::Sqrt(12)*TAGgeoTrafo::CmToMu()){
-            if (TMath::Abs(fNewSlopeV - fSlopeV) > pGeoMap->GetPitchX()/TMath::Sqrt(12)*fCutFactor*TAGgeoTrafo::CmToMu()) return false;
-         } else {
-            if (TMath::Abs(fNewSlopeV - fSlopeV) > fSigmaAlfaDist[i]*fCutFactor) return false;
-         }
-      }
-      fSlopeV = fNewSlopeV;
-   }
+   fSlopeU = fNewSlopeU;
+   fSlopeV = fNewSlopeV;
    
    return true;
 }
