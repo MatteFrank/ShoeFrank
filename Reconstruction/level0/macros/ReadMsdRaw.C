@@ -140,6 +140,7 @@ void ReadMsdRaw(TString filename = "data/data_test.00004287.physics_foot.daq.RAW
    msdActRaw->SetHistogramDir(outFile->File());
    msdActHit->SetHistogramDir(outFile->File());
    msdActClus->SetHistogramDir(outFile->File());
+   msdActPoint->SetHistogramDir(outFile->File());
 
    cout<<" Beginning the Event Loop "<<endl;
    tagr.BeginEventLoop();
