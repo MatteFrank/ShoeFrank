@@ -45,6 +45,9 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
    fPosition.SetXYZ(x,y,0);
    fPosError.SetXYZ(dx,dy,0);
    
+   fDe1 = clusX->GetEnergyLoss();
+   fDe2 = clusY->GetEnergyLoss();
+
    Bool_t common = false;
    for (Int_t j = 0; j < fColClus->GetMcTracksN(); ++j) {
       Int_t idr = fColClus->GetMcTrackIdx(j);
