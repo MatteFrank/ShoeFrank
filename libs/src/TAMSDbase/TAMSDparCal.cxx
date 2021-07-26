@@ -26,7 +26,7 @@ Bool_t TAMSDparCal::LoadEnergyCalibrationMap(TString name)
    
    fMapCal->LoadEnergyCalibrationMap(name.Data());
    
-   Info("FromCalibFile()", "Open file %s for Energy calibration\n", name.Data());
+   Info("LoadEnergyCalibrationMap()", "Open file %s for Energy calibration\n", name.Data());
    
    return true;
 }
