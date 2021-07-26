@@ -55,7 +55,6 @@ void TAMSDactNtuPoint::CreateHistogram()
       
    TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMap->Object();
    
-   printf("%d\n", pGeoMap->GetStationsN());
    for (Int_t i = 0; i < pGeoMap->GetStationsN(); ++i) {
       fpHisPointMap[i] = new TH2F(Form("%sPointMap%d", prefix.Data(), i+1), Form("%s - point map for sensor %d", titleDev.Data(), i+1),
                                   pGeoMap->GetStripsN(), -pGeoMap->GetPitch()*pGeoMap->GetStripsN()/2., pGeoMap->GetPitch()*pGeoMap->GetStripsN()/2.,
