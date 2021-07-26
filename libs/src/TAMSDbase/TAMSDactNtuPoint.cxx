@@ -28,13 +28,13 @@ ClassImp(TAMSDactNtuPoint);
 //! Default constructor.
 TAMSDactNtuPoint::TAMSDactNtuPoint(const char* name,
 				   TAGdataDsc* pNtuCluster, TAGdataDsc* pNtuPoint, TAGparaDsc* pGeoMap)
-  : TAGaction(name, "TAMSDactNtuHit - NTuplize hits"),
+  : TAGaction(name, "TAMSDactNtuPoint - NTuplize points"),
     fpNtuCluster(pNtuCluster),
     fpNtuPoint(pNtuPoint),
     fpGeoMap(pGeoMap)
 {
-  AddDataIn(pNtuCluster,   "TAMSDntuCluster");
-  AddDataOut(pNtuPoint, "TAMSDntuPoint");
+  AddDataIn(pNtuCluster, "TAMSDntuCluster");
+  AddDataOut(pNtuPoint,  "TAMSDntuPoint");
 }
 
 //------------------------------------------+-----------------------------------
@@ -50,17 +50,27 @@ void TAMSDactNtuPoint::CreateHistogram()
 {
    DeleteHistogram();
 
-   // fpHisDist = new TH1F("twDist", "ToF Wall - Minimal distance between planes", 200, 0., 100);
-   // AddHistogram(fpHisDist);
-	 //
-   // fpHisCharge1 = new TH1F("twCharge1", "ToF Wall - Charge layer 1", 1000, 0., 5e6);
-   // AddHistogram(fpHisCharge1);
-	 //
-   // fpHisCharge2 = new TH1F("twCharge2", "ToF Wall - Charge layer 2", 1000, 0., 5e6);
-   // AddHistogram(fpHisCharge2);
-	 //
-   // fpHisChargeTot = new TH1F("twChargeTot", "ToF Wall - Total charge", 1000, 0., 5e6);
-   // AddHistogram(fpHisChargeTot);
+   TString prefix = "ms";
+   TString titleDev = "Mirco Strip Detector";
+      
+   TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMap->Object();
+   
+   printf("%d\n", pGeoMap->GetStationsN());
+   for (Int_t i = 0; i < pGeoMap->GetStationsN(); ++i) {
+      fpHisPointMap[i] = new TH2F(Form("%sPointMap%d", prefix.Data(), i+1), Form("%s - point map for sensor %d", titleDev.Data(), i+1),
+                                  pGeoMap->GetStripsN(), -pGeoMap->GetPitch()*pGeoMap->GetStripsN()/2., pGeoMap->GetPitch()*pGeoMap->GetStripsN()/2.,
+                                  pGeoMap->GetStripsN(), -pGeoMap->GetPitch()*pGeoMap->GetStripsN()/2., pGeoMap->GetPitch()*pGeoMap->GetStripsN()/2.);
+      
+      AddHistogram(fpHisPointMap[i]);
+   }
+   
+   for (Int_t i = 0; i < pGeoMap->GetStationsN(); ++i) {
+      fpHisPointCharge[i] = new TH1F(Form("%sPointCharge%d",prefix.Data(), i+1), Form("%s - point charge for sensor %d", titleDev.Data(), i+1), 500, 0., 10000);
+      AddHistogram(fpHisPointCharge[i]);
+   }
+   
+   fpHisPointChargeTot = new TH1F(Form("%sPointChargeTot",prefix.Data()), Form("%s - total point charge", titleDev.Data()), 500, 0., 10000);
+   AddHistogram(fpHisPointChargeTot);
 
    SetValidHistogram(kTRUE);
 }
@@ -107,6 +117,9 @@ Bool_t TAMSDactNtuPoint::FindPoints()
          TVector3 pos(rowHit->GetPositionG().X(), colHit->GetPositionG().Y(), posz);
          point->SetPositionG(pos);
          point->SetValid();
+         fpHisPointMap[iLayer/2]->Fill(pos[0], pos[1]);
+         fpHisPointCharge[iLayer/2]->Fill(point->GetEnergyLoss());
+         fpHisPointChargeTot->Fill(point->GetEnergyLoss());
       }
     }
   }

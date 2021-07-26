@@ -13,6 +13,7 @@ class TAMSDntuCluster;
 class TAMSDhit;
 class TAMSDparGeo;
 class TH1F;
+class TH2F;
 
 class TAMSDactNtuPoint : public TAGaction {
 
@@ -38,14 +39,9 @@ private:
    TAGdataDsc*     fpNtuPoint;	 	// output data dsc
    TAGparaDsc*     fpGeoMap;		 // geometry para dsc
 
-   TClonesArray*   m_listOfStripsCol;      // list of column strip
-   TClonesArray*   m_listOfStripsRow;      // list of row strip 
-
-
-   TH1F*           fpHisDist;
-   TH1F*           fpHisCharge1;
-   TH1F*           fpHisCharge2;
-   TH1F*           fpHisChargeTot;
+   TH2F*           fpHisPointMap[3];    // cluster map per station
+   TH1F*           fpHisPointCharge[3]; // cluster charge per station
+   TH1F*           fpHisPointChargeTot; // Total cluster charge for all stations
 
    ClassDef(TAMSDactNtuPoint,0)
 };
