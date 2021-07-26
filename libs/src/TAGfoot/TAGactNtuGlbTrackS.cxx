@@ -32,7 +32,7 @@
 #include "TAMSDparGeo.hxx"
 #include "TAMSDparConf.hxx"
 #include "TAMSDparMap.hxx"
-#include "TAMSDntuCluster.hxx"
+#include "TAMSDntuPoint.hxx"
 
 //TW
 #include "TATWparGeo.hxx"
@@ -68,7 +68,7 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
 :  TAGaction(name, "TAGactNtuGlbTrackS - NTuplize Straight Track"),
    fpVertexVtx(pVtVertex),
    fpNtuClusItr(pItNtuClus),
-   fpNtuClusMsd(pMsdNtuClus),
+   fpNtuClusPoint(pMsdNtuClus),
    fpNtuRecTw(pTwNtuRec),
    fpNtuClusCa(pCaNtuClus),
    fpNtuTrack(pNtuTrack),
@@ -94,7 +94,7 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
       AddDataIn(pItNtuClus,  "TAITntuCluster");
    
    if (TAGrecoManager::GetPar()->IncludeMSD())
-      AddDataIn(pMsdNtuClus, "TAMSDntuCluster");
+      AddDataIn(pMsdNtuClus, "TAMSDntuPoint");
    
    if (TAGrecoManager::GetPar()->IncludeTW())
       AddDataIn(pTwNtuRec,   "TATWntuPoint");
@@ -178,7 +178,7 @@ void TAGactNtuGlbTrackS::CreateHistogram()
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       pGeoMapMs  = (TAMSDparGeo*) fpGeoMapMsd->Object();
       fOffsetMsd = nHistos;
-      nHistos += pGeoMapMs->GetSensorsN();
+      nHistos += pGeoMapMs->GetStationsN();
    }
 
    fOffsetTof = nHistos;
@@ -498,30 +498,30 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
 void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
 {
    TAGntuGlbTrack*  pNtuTrack = (TAGntuGlbTrack*)  fpNtuTrack->Object();
-   TAMSDntuCluster* pNtuClus  = (TAMSDntuCluster*) fpNtuClusMsd->Object();
+   TAMSDntuPoint*   pNtuRec   = (TAMSDntuPoint*)   fpNtuClusPoint->Object();
    TAMSDparGeo*     pGeoMap   = (TAMSDparGeo*)     fpGeoMapMsd->Object();
    
    Double_t minDistance  = 1.e9;
    Double_t aDistance;
-   Int_t nSensor = pGeoMap->GetSensorsN();
+   Int_t nSensor = pGeoMap->GetSensorsN()/2.;
    
    TVector3 prePosG;
 
    // Loop on all sensors to find a matching cluster in them
-   for( Int_t iSensor = 0; iSensor < nSensor; ++iSensor) { // loop on sensors
+   for( Int_t iStation = 0; iStation < nSensor; ++iStation) { // loop on sensors
       
-      TClonesArray* list = pNtuClus->GetListOfClusters(iSensor);
-      Int_t nClusters = pNtuClus->GetClustersN(iSensor);
+      TClonesArray* list = pNtuRec->GetListOfPoints(iStation);
+      Int_t nClusters = pNtuRec->GetPointsN(iStation);
       if (nClusters == 0) continue; //empty sensors
       
       
       // loop on all clusters of this sensor and keep the nearest one
       minDistance = fSearchClusDistMsd;
 
-      TAMSDcluster* bestCluster = 0x0;
+      TAMSDpoint* bestCluster = 0x0;
       
       for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
-         TAMSDcluster* aCluster = (TAMSDcluster*)list->At(iClus);
+         TAMSDpoint* aCluster = (TAMSDpoint*)list->At(iClus);
          
          if( aCluster->Found()) continue; // skip cluster already found
          
@@ -533,10 +533,7 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          TVector3 inter = track->Intersection(posG.Z());
          
          // compute distance
-         if (aCluster->GetPlaneView() == 0)
-            aDistance = TMath::Abs(inter[0]-posG[0]);
-         else
-            aDistance = TMath::Abs(inter[1]-posG[1]);
+         aDistance = (inter-posG).Mag();
          
          if( aDistance < minDistance ) {
             minDistance = aDistance;
@@ -555,12 +552,10 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          posG = fpFootGeo->FromMSDLocalToGlobal(posG);
          
          TAGpoint* point = track->AddMeasPoint(TAMSDparGeo::GetBaseName(), posG, errG);
-         point->SetSensorIdx(iSensor);
-         Int_t view =  bestCluster->GetPlaneView();
-         point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()+view));
+         point->SetSensorIdx(iStation);
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
          
-         UpdateParam(track, view);
+         UpdateParam(track);
          
          // Compute particle after each plane
          Float_t thick    = fSensorThickMsd/TMath::Cos(track->GetTgtTheta());
@@ -570,14 +565,14 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          fPartSigmaTheta  = TMath::Sqrt(fPartSigmaTheta*fPartSigmaTheta + theta*theta);
          
          if(FootDebugLevel(2))
-            printf("MSD theta %g sensor %d\n", fPartSigmaTheta*TMath::RadToDeg(), iSensor);
+            printf("MSD theta %g sensor %d\n", fPartSigmaTheta*TMath::RadToDeg(), iStation);
          
          // Compute diffusion
          Float_t lastPlanePos;
-         if (iSensor == 0 || iSensor == 1)
+         if (iStation == 0)
             lastPlanePos = fLastPlaneItr;
          else {
-            lastPlanePos = pGeoMap->GetLayerPosZ(iSensor-2);
+            lastPlanePos = pGeoMap->GetLayerPosZ(iStation-1);
             lastPlanePos = fpFootGeo->FromMSDLocalToGlobal(TVector3(0,0,lastPlanePos))[2];
          }
          
@@ -587,9 +582,6 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          Float_t disp = TMath::Abs(length*TMath::Tan(thetaMax) - length*TMath::Tan(thetaMin));
          
          minDistance = TMath::Sqrt(fSearchClusDistMsd*fSearchClusDistMsd + disp*disp);
-         
-         if(FootDebugLevel(1))
-            printf("MSD Sensor %d view %d\n", iSensor, bestCluster->GetPlaneView());
          
          if(FootDebugLevel(2))
             printf("min distance %0.1f\n", minDistance*TAGgeoTrafo::CmToMu());
@@ -881,45 +873,27 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
       dx = cluster->GetPosErrorG()(0);
       dy = cluster->GetPosErrorG()(1);
   
-      if (cluster->GetDeviceType() == TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName())) {
-         if (cluster->GetDevMinorType() == 0) {
-            zxData.push_back(z);
-            xData.push_back(x);
-            if (dx < 1e-4) dx = 1;
-            dxData.push_back(dx);
-         }
-         
-         if (cluster->GetDevMinorType() == 1) {
-            zyData.push_back(z);
-            yData.push_back(y);
-            if (dy < 1e-4) dy = 1;
-            dyData.push_back(dy);
-         }
-         
-      } else {
-         zxData.push_back(z);
-         xData.push_back(x);
-         if (dx < 1e-4) dx = 1;
-         dxData.push_back(dx);
-         
-         zyData.push_back(z);
-         yData.push_back(y);
-         if (dy < 1e-4) dy = 1;
-         dyData.push_back(dy);
-      }
+     
+      zxData.push_back(z);
+      xData.push_back(x);
+      if (dx < 1e-4) dx = 1;
+      dxData.push_back(dx);
+      
+      zyData.push_back(z);
+      yData.push_back(y);
+      if (dy < 1e-4) dy = 1;
+      dyData.push_back(dy);
+      
    }
    
-   if (viewX == -1 || viewX == 0) {
-      res = GetLinearFit(zxData, xData, dxData);
-      (lineOrigin)(0) = res[0];
-      (lineSlope)(0)  = res[1];
-   }
+   res = GetLinearFit(zxData, xData, dxData);
+   (lineOrigin)(0) = res[0];
+   (lineSlope)(0)  = res[1];
+
    
-   if (viewX == -1 || viewX == 1) {
-      res = GetLinearFit(zyData, yData, dyData);
-      (lineOrigin)(1) = res[0];
-      (lineSlope)(1)  = res[1];
-   }
+   res = GetLinearFit(zyData, yData, dyData);
+   (lineOrigin)(1) = res[0];
+   (lineSlope)(1)  = res[1];
    
    lineSlope[2] = 1.;
    track->SetTgtPosition(lineOrigin);

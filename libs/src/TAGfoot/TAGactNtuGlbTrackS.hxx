@@ -66,7 +66,7 @@ private:
 private:
    TAGdataDsc*     fpVertexVtx;         // VT vertex container
    TAGdataDsc*     fpNtuClusItr;        // IT cluster container
-   TAGdataDsc*     fpNtuClusMsd;        // MSD cluster container
+   TAGdataDsc*     fpNtuClusPoint;      // MSD point container
    TAGdataDsc*     fpNtuRecTw;          // TW rec point container
    TAGdataDsc*     fpNtuClusCa;         // CA cluster container
 
