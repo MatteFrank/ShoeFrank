@@ -124,6 +124,7 @@ void ReadMsdRaw(TString filename = "data/data_test.00004287.physics_foot.daq.RAW
    tagr.AddRequiredItem(msdActRaw);
    tagr.AddRequiredItem(msdActHit);
    tagr.AddRequiredItem(msdActClus);
+   tagr.AddRequiredItem(msdActPoint);
    tagr.AddRequiredItem(outFile);
 
    tagr.Print();
