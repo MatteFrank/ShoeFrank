@@ -117,9 +117,11 @@ Bool_t TAMSDactNtuPoint::FindPoints()
          TVector3 pos(rowHit->GetPositionG().X(), colHit->GetPositionG().Y(), posz);
          point->SetPositionG(pos);
          point->SetValid();
-         fpHisPointMap[iLayer/2]->Fill(pos[0], pos[1]);
-         fpHisPointCharge[iLayer/2]->Fill(point->GetEnergyLoss());
-         fpHisPointChargeTot->Fill(point->GetEnergyLoss());
+         if (ValidHistogram()) {
+            fpHisPointMap[iLayer/2]->Fill(pos[0], pos[1]);
+            fpHisPointCharge[iLayer/2]->Fill(point->GetEnergyLoss());
+            fpHisPointChargeTot->Fill(point->GetEnergyLoss());
+         }
       }
     }
   }
