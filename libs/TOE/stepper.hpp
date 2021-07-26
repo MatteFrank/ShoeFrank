@@ -11,11 +11,13 @@
 #include <numeric>
 #include <cmath>
 #include <array>
-
-
-//#include "state.hpp"
-#include "utility_types.hpp"
 #include <iostream>
+
+
+#include "utility_types.hpp"
+#include "state.hpp"
+#include "expr.hpp"
+
 namespace details{
     
     //will need some adaptation for matrices

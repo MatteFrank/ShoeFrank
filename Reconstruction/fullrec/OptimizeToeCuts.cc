@@ -7,9 +7,7 @@
 #include "LocalRecoMC.hxx"
 #include "GlobalToeReco.hxx"
 
-// executabel to read back from local reconstruction tree or from MC/raw data
-// author: Ch. Finck
-#include "TATOEcutter.hxx"
+#include "TATOEoptimizer.hxx"
 #include "TATOEutilities.hxx"
 
 
@@ -60,16 +58,37 @@ int main (int argc, char *argv[])  {
    watch.Start();
    
    glbRec->BeforeEventLoop();
-    using config_t = details::configuration< details::local_scan_parameters<3, 3>, details::vertex_tag, details::it_tag, details:: msd_tag, details::tof_tag >;
-    auto * cutter_h = new TATOEcutter< config_t >{"toeActCutter"};
-    gTAGroot->AddRequiredItem("toeActCutter");
+    using config_t = details::configuration< details::vertex_tag, details::it_tag, details:: msd_tag, details::tof_tag >;
+//    auto * o_h = new_optimizer<
+//                    config_t,
+//                    global_scan_procedure,
+//                    rough_scan_procedure<details::local_scan_parameters<6,3>>,
+//                    fine_scan_procedure<details::local_scan_parameters<3,1>>
+//                                   >( "toeActOptimizer" );
+    auto * o_h = new_optimizer<
+                    config_t,
+                    global_scan_procedure_only
+                                   >( "toeActOptimizer" );
+    gTAGroot->AddRequiredItem("toeActOptimizer");
     
-    cutter_h->get_cut_holder().output();
-    
-    for(auto iteration : *cutter_h) {
+    while( !o_h->is_optimization_done() ){
+        
+        if( o_h->is_procedure_done() ){
+            o_h->finalise_procedure();
+            o_h->switch_procedure();
+            o_h->setup_procedure();
+            continue; //continue is needed because gloabl_scan::finalize can decide the optimization is done
+        }
+        
+        o_h->setup_cuts();
+        o_h->output_cuts();
+        
         static_cast<TAGactTreeReader*>(gTAGroot->FindAction("evtReader"))->Reset();
         gTAGroot->SetEventNumber(0);
         glbRec->LoopEvent(nTotEv);
+        o_h->call();
+        
+        o_h->setup_next_iteration();
     }
     
    glbRec->AfterEventLoop();

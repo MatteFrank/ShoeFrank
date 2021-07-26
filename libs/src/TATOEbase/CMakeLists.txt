@@ -24,6 +24,8 @@ set( without_dictionnaries
     TATOEutilities
     TATOEchecker
     TATOElogger
+    TATOEprocedure
+    TATOEoptimizer
 )
 
 set(with_dictionnaries
