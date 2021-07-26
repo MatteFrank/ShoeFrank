@@ -43,7 +43,7 @@ Bool_t TAMSDparMap::FromFile(const TString& name)
   if (!Open(name))
     return false;
   
-  Info("FromFile()", "Open file %s for mappin\n", name.Data());
+  Info("FromFile()", "Open file %s for mapping\n", name.Data());
 
   // read for parameter
   Double_t* para = new Double_t[3];
