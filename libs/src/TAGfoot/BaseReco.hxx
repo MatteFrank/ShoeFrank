@@ -90,7 +90,6 @@ class TAMCntuRegion;
 class TAMCntuEvent;
 
 
-#include "TATOEcutter.hxx"
 
 class BaseReco : public TNamed // using TNamed for the in/out files
 {
