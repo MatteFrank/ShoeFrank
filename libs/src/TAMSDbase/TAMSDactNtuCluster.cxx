@@ -51,7 +51,7 @@ void TAMSDactNtuCluster::CreateHistogram()
   DeleteHistogram();
   
   TString prefix = "ms";
-  TString titleDev = "Mirco Strip Detector";
+  TString titleDev = "Micro Strip Detector";
   
   fpHisStripTot = new TH1F(Form("%sClusStripTot", prefix.Data()), Form("%s - Total # strips per clusters", titleDev.Data()), 25, 0., 25.);
   AddHistogram(fpHisStripTot);
@@ -71,11 +71,11 @@ void TAMSDactNtuCluster::CreateHistogram()
   }
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-     fpHisClusCharge[i] = new TH1F(Form("%sClusCharge%d",prefix.Data(), i+1), Form("%s - cluster charge for sensor %d", titleDev.Data(), i+1), 100, 0., 500);
+     fpHisClusCharge[i] = new TH1F(Form("%sClusCharge%d",prefix.Data(), i+1), Form("%s - cluster charge for sensor %d", titleDev.Data(), i+1), 1000, 0., 5000);
      AddHistogram(fpHisClusCharge[i]);
   }
    
-  fpHisClusChargeTot = new TH1F(Form("%sClusChargeTot",prefix.Data()), Form("%s - total cluster charge", titleDev.Data()), 100, 0., 500);
+  fpHisClusChargeTot = new TH1F(Form("%sClusChargeTot",prefix.Data()), Form("%s - total cluster charge", titleDev.Data()), 1000, 0., 5000);
   AddHistogram(fpHisClusChargeTot);
 
   SetValidHistogram(kTRUE);
