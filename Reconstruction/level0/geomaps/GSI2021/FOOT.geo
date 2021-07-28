@@ -24,8 +24,8 @@ InnerTrackerPosX: 0. InnerTrackerPosY: 0. InnerTrackerPosZ: 14.
 InnerTrackerAngX: 0. InnerTrackerAngY: 0. InnerTrackerAngZ: 0.
 
 MicroStripBaseName: "MSD"
-MicroStripPosX: 1.61 MicroStripPosY: 0.46 MicroStripPosZ: 44.65
-MicroStripAngX: 0. MicroStripAngY: 0. MicroStripAngZ: 0.
+MicroStripPosX: 1.2 MicroStripPosY: 0. MicroStripPosZ: 44.65
+MicroStripAngX: 0.  MicroStripAngY: 0. MicroStripAngZ: 0.
 
 TofWallBaseName: "TW"
 TofWallPosX: 3 TofWallPosY: -1. TofWallPosZ: 193.5
