@@ -91,8 +91,8 @@ Bool_t TAVTactNtuHit::Action()
    Int_t diff    = bcoTrig - trig->BCOofTrigger - fFirstBcoTrig;
    fpHisBCOofTrigger->Fill(diff);
    
-   if (TMath::Abs(float(diff)) > 3) {
-      Warning("Action()", "BCOofTrigger difference higher than 3 (%d) for %d time, resynchronizing", diff, fQueueEvtsN+1);
+   if (TMath::Abs(float(diff)) > 4) {
+      Warning("Action()", "BCOofTrigger difference higher than 4 (%d) for %d time, resynchronizing", diff, fQueueEvtsN+1);
       if (diff > 0) // to avoid corrupted timestamp number
          fQueueEvtsN++;
    }
