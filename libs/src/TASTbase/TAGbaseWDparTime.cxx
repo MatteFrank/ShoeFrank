@@ -50,7 +50,7 @@ bool TAGbaseWDparTime::FromFile(TString tcal_filename)
     return false;
   }else{
     // if (FootDebugLevel(1) > 1)
-    Info("FromFile()", "Loading ST WD time calibration from file::%s \n", tcal_filename.Data());
+    Info("FromFile()", "Open file %s for WD time calibration\n", tcal_filename.Data());
   }
 
   

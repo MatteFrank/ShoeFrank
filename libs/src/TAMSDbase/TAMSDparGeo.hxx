@@ -46,8 +46,11 @@ public:
   //! Get number of strip
   Int_t       GetStripsN()             const { return fStripsN; }
    
-   //! Get pitch
+  //! Get pitch
   Float_t     GetPitch()               const { return fPitch;   }
+   
+  //! Get stationsN
+  Int_t       GetStationsN()           const { return (fSensorsN % 2 == 0) ? fSensorsN/2 : fSensorsN/2 + 1;  }
    
   //crossing regions
   Int_t       GetRegStrip(Int_t n);   //n=sensor (0-5)

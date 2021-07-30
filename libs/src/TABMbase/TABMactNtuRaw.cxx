@@ -183,7 +183,7 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
     }
   }
 
-  //check on trigger status
+  // check on trigger status
   Int_t magorcounter=0;
   if(p_parmap->GetDaqTrefCh()>=0){
     if(tdctrigger!=99999 && magorvec.size()!=0){
@@ -225,7 +225,7 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
       fpRawTdcChannel->Fill(channel);
       fpRawTdcMeas.at(channel)->Fill(measurement);
       fpRawTdcLessSync.at(channel)->Fill(measurement-used_trigger);
-      if(channel==1){
+      if(channel==10){
         fpRawCh1NoTrig->Fill(measurement);
         if(tdctrigger!=-99999){
           fpRawCh1LessSTFit->Fill(measurement-tdctrigger-sttrigger);

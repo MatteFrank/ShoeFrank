@@ -45,6 +45,9 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
    fPosition.SetXYZ(x,y,0);
    fPosError.SetXYZ(dx,dy,0);
    
+   fDe1 = clusX->GetEnergyLoss();
+   fDe2 = clusY->GetEnergyLoss();
+
    Bool_t common = false;
    for (Int_t j = 0; j < fColClus->GetMcTracksN(); ++j) {
       Int_t idr = fColClus->GetMcTrackIdx(j);
@@ -115,7 +118,7 @@ TAMSDntuPoint::~TAMSDntuPoint()
 //  standard
 TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 position )
 {
-  if ( iStation >= 0 && iStation < fGeometry->GetSensorsN()/2 ) {
+  if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
     TClonesArray &pointArray = *GetListOfPoints(iStation);
     TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, x, y, position );
     return point;
@@ -129,7 +132,7 @@ TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 
 //  standard
 TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY)
 {
-   if ( iStation >= 0 && iStation < fGeometry->GetSensorsN()/2 ) {
+   if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
       TClonesArray &pointArray = *GetListOfPoints(iStation);
       TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, x, dx, clusX, y, dy, clusY);
       return point;
@@ -142,7 +145,7 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, TAM
 //------------------------------------------+-----------------------------------
 int TAMSDntuPoint::GetPointsN(int iStation) const
 {
-  if ( iStation >= 0 && iStation < fGeometry->GetSensorsN()/2 ) {
+  if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
     TClonesArray* list = (TClonesArray*)fListOfPoints->At(iStation);
     return list->GetEntries();
   } else return -1;
@@ -164,7 +167,7 @@ TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const
 //! return number of points
 TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
 {
-   if (iStation >= 0  && iStation < fGeometry->GetSensorsN()/2) {
+   if (iStation >= 0  && iStation < fGeometry->GetStationsN()) {
 	  TClonesArray* list = (TClonesArray*)fListOfPoints->At(iStation);
 	  return list;
    } else return 0x0;
@@ -178,7 +181,7 @@ void TAMSDntuPoint::SetupClones()
 
    if (fListOfPoints) return;
    fListOfPoints = new TObjArray();
-   for ( int i = 0; i < fGeometry->GetSensorsN()/2; ++i ){
+   for ( int i = 0; i < fGeometry->GetStationsN(); ++i ){
      TClonesArray* arr = new TClonesArray("TAMSDpoint");
      arr->SetOwner(true);
      fListOfPoints->AddAt(arr, i);
@@ -191,7 +194,7 @@ void TAMSDntuPoint::SetupClones()
 void TAMSDntuPoint::Clear(Option_t*)
 {
   //	fListOfPoints->Delete();
-  for (int i = 0; i < fGeometry->GetSensorsN()/2; ++i) {
+  for (int i = 0; i < fGeometry->GetStationsN(); ++i) {
     TClonesArray* list = GetListOfPoints(i);
     list->Delete();
   }

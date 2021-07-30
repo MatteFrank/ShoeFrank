@@ -43,11 +43,12 @@ Bool_t TAMSDparMap::FromFile(const TString& name)
   if (!Open(name))
     return false;
   
+  Info("FromFile()", "Open file %s for mapping\n", name.Data());
+
   // read for parameter
   Double_t* para = new Double_t[3];
-  // Int_t nCrys = 0;
 
-  // number of crystal
+  // number of sensors
   ReadItem(nSens);
 
   if (FootDebugLevel(1)) {
@@ -57,10 +58,9 @@ Bool_t TAMSDparMap::FromFile(const TString& name)
 
   //To read header
   ReadItem(para, 3, ' ', false);  
-  // cout << "n crys: " << nCrys << endl;
-  for (Int_t i = 0; i < nSens; ++i) { // Loop over crystal
+  for (Int_t i = 0; i < nSens; ++i) { // Loop over sensors
 
-    // read parameters (boardId chId, crysId)
+    // read parameters (sensId, boardId, view)
     ReadItem(para, 3, ' ', false);
   
     // fill map
@@ -74,7 +74,6 @@ Bool_t TAMSDparMap::FromFile(const TString& name)
 
     if (FootDebugLevel(1))
       printf("%2d %2d %d\n", sensId, boardId, view);
-      
   }
 
   delete [] para;
