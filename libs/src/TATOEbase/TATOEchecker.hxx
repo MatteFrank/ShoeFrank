@@ -50,7 +50,9 @@ struct well_matched{
 
 struct per_nucleon{};
 struct absolute{};
-template<class T>
+struct reconstructible_based{};
+struct reconstructed_based{};
+template<class R, class B = reconstructible_based>
 struct histogram{};
 
 struct computation{};
@@ -83,8 +85,8 @@ struct residuals{
 struct purity_tag{};
 
 template<class Derived, class F> struct purity_outcome{};
-template<class Derived, class T>
-struct purity_outcome<Derived, histogram<T>>{
+template<class Derived>
+struct purity_outcome<Derived, histogram<per_nucleon, reconstructible_based>>{
     void outcome( reconstruction_module<TAGcluster> const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto const& reconstructible = rm_p.reconstructible_o.value();
@@ -143,8 +145,8 @@ struct purity_output< Derived, computation, CO  >{
     }
 };
 
-template<class Derived, class T, class CO>
-struct purity_output< Derived, histogram<T>, CO>{
+template<class Derived, class T, class B, class CO>
+struct purity_output< Derived, histogram<T, B>, CO>{
     void output() const {
         TH1D result{ generate_histogram< purity_tag, T, CO >{}() };
         
@@ -173,14 +175,14 @@ struct generate_histogram< purity_tag, per_nucleon, isolate_charge<C> >{
 };
 
 
-template<class Format> struct purity_data{};
-template<>
-struct purity_data<histogram<per_nucleon>>{
+template<class F, class CO> struct purity_data{};
+template<class B, class CO>
+struct purity_data<histogram<per_nucleon, B>, CO>{
     TH1D recovered_cluster_histogram{"", "", 100, 0, 1.3 };
     TH1D correct_cluster_histogram{"", "", 100, 0, 1.3};
 };
-template<>
-struct purity_data< computation >{
+template<class CO>
+struct purity_data< computation, CO >{
     std::size_t recovered_cluster_count{0};
     std::size_t correct_cluster_count{0};
 };
@@ -219,8 +221,8 @@ struct fake_distribution_output< Derived, computation, CO  >{
     }
 };
 
-template<class F> struct fake_distribution_data{};
-template<> struct fake_distribution_data<computation>{ std::size_t fake_count{0}; };
+template<class F, class CO> struct fake_distribution_data{};
+template<class CO> struct fake_distribution_data<computation, CO>{ std::size_t fake_count{0}; };
 
 template<class CO, class MO>
 struct fake_distribution_predicate {
@@ -234,20 +236,202 @@ struct fake_distribution_predicate {
 //----------------------------------------------
 //                  reconstructed_distribution
 
-
-
-struct reconstructed_distribution{
-    
+template<class Derived, class F> struct reconstructed_distribution_outcome{};
+template<class Derived>
+struct reconstructed_distribution_outcome<Derived, histogram<per_nucleon, reconstructible_based>>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructible = rm_p.reconstructible_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.reconstructed_histogram.Fill(
+                            reconstructible.properties.momentum/(1000*reconstructible.properties.mass)
+                                          );
+    }
+};
+template<class Derived>
+struct reconstructed_distribution_outcome<Derived, histogram<per_nucleon, reconstructed_based>>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.reconstructed_histogram.Fill(
+                            reconstructed.properties.momentum/(1000*reconstructed.properties.mass)
+                                          );
+    }
+};
+template<class Derived>
+struct reconstructed_distribution_outcome<Derived, histogram<absolute, reconstructible_based>>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructible = rm_p.reconstructible_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.reconstructed_histogram.Fill( reconstructible.properties.momentum/1000 );
+    }
+};
+template<class Derived>
+struct reconstructed_distribution_outcome<Derived, histogram<absolute, reconstructed_based>>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.reconstructed_histogram.Fill( reconstructed.properties.momentum/1000 );
+    }
 };
 
+template<class Derived>
+struct reconstructed_distribution_outcome<Derived, computation>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        ++data.reconstructed_count;
+    }
+};
+
+
+template<class Derived, class F, class CO> struct reconstructed_distribution_output{};
+template<class Derived, class CO >
+struct reconstructed_distribution_output< Derived, computation, CO >{
+    value_and_error output() const {
+        value_and_error result;
+        auto const& data = static_cast<Derived const&>(*this).data();
+        result.value = data.reconstructed_count;
+        result.error = sqrt(data.reconstructed_count);
+        return result;
+    }
+};
+
+template<class Derived, class T, class B, class CO>
+struct reconstructed_distribution_output< Derived, histogram<T, B>, CO>{
+    void output() const { static_cast<Derived const&>(*this).data().reconstructed_histogram.Write(); }
+};
+
+template<class F, class CO> struct reconstructed_distribution_data{};
+template<>
+struct reconstructed_distribution_data<histogram<per_nucleon, reconstructible_based>, no_requirement>{
+    TH1D reconstructed_histogram{ "reconstructed_distribution_mixed_pmc/u", ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+};
+template<>
+struct reconstructed_distribution_data<histogram<absolute, reconstructible_based>, no_requirement>{
+    TH1D reconstructed_histogram{ "reconstructed_distribution_mixed_pmc", ";p_{mc} (GeV); Count", 1000, 0, 9 };
+};
+template<int C>
+struct reconstructed_distribution_data<histogram<per_nucleon, reconstructible_based>, isolate_charge<C>>{
+    TH1D reconstructed_histogram{ Form("reconstructed_distribution_charge%d_pmc/u", C), ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+};
+template<int C>
+struct reconstructed_distribution_data<histogram<absolute, reconstructible_based>, isolate_charge<C>>{
+    TH1D reconstructed_histogram{ Form("reconstructed_distribution_charge%d_pmc", C), ";p_{mc} (GeV); Count", 1000, 0, 9 };
+};
+
+template<>
+struct reconstructed_distribution_data<histogram<per_nucleon, reconstructed_based>, no_requirement>{
+    TH1D reconstructed_histogram{ "reconstructed_distribution_mixed_prec/u", ";p_{rec} (GeV/u); Count", 100, 0, 1.3 };
+};
+template<>
+struct reconstructed_distribution_data<histogram<absolute, reconstructed_based>, no_requirement>{
+    TH1D reconstructed_histogram{ "reconstructed_distribution_mixed_prec", ";p_{rec} (GeV); Count", 1000, 0, 9 };
+};
+template<int C>
+struct reconstructed_distribution_data<histogram<per_nucleon, reconstructed_based>, isolate_charge<C>>{
+    TH1D reconstructed_histogram{ Form("reconstructed_distribution_charge%d_prec/u", C), ";p_{rec} (GeV/u); Count", 100, 0, 1.3 };
+};
+template<int C>
+struct reconstructed_distribution_data<histogram<absolute, reconstructed_based>, isolate_charge<C>>{
+    TH1D reconstructed_histogram{ Form("reconstructed_distribution_charge%d_prec", C), ";p_{rec} (GeV); Count", 1000, 0, 9 };
+};
+template<class CO>
+struct reconstructed_distribution_data< computation, CO >{
+    std::size_t reconstructed_count{0};
+};
+
+template<class CO, class MO>
+struct reconstructed_distribution_predicate {
+    bool predicate( reconstruction_module<TAGcluster> const& rm_p ) const {
+        return ( rm_p.reconstructible_o.has_value() && rm_p.reconstructed_o.has_value() ) &&
+               CO{}.predicate(rm_p) &&
+               MO{}.predicate(rm_p);
+    }
+};
 
 
 //----------------------------------------------
 //                  reconstructible_distribution
-struct reconstructible_distribution{
-    
+
+template<class Derived, class F> struct reconstructible_distribution_outcome{};
+template<class Derived>
+struct reconstructible_distribution_outcome<Derived, histogram<per_nucleon, reconstructible_based>>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructible = rm_p.reconstructible_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.reconstructible_histogram.Fill(
+                            reconstructible.properties.momentum/(1000*reconstructible.properties.mass)
+                                          );
+    }
+};
+template<class Derived>
+struct reconstructible_distribution_outcome<Derived, histogram<absolute, reconstructible_based>>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructible = rm_p.reconstructible_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.reconstructible_histogram.Fill( reconstructible.properties.momentum/1000 );
+    }
 };
 
+template<class Derived>
+struct reconstructible_distribution_outcome<Derived, computation>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructible = rm_p.reconstructible_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        ++data.reconstructible_count;
+    }
+};
+
+
+template<class Derived, class F, class CO> struct reconstructible_distribution_output{};
+template<class Derived, class CO >
+struct reconstructible_distribution_output< Derived, computation, CO >{
+    value_and_error output() const {
+        value_and_error result;
+        auto const& data = static_cast<Derived const&>(*this).data();
+        result.value = data.reconstructible_count;
+        result.error = sqrt(data.reconstructible_count);
+        return result;
+    }
+};
+
+template<class Derived, class T, class B, class CO>
+struct reconstructible_distribution_output< Derived, histogram<T, B>, CO>{
+    void output() const { static_cast<Derived const&>(*this).data().reconstructible_histogram.Write(); }
+};
+
+template<class F, class CO> struct reconstructible_distribution_data{};
+template<>
+struct reconstructible_distribution_data<histogram<per_nucleon, reconstructible_based>, no_requirement>{
+    TH1D reconstructible_histogram{ "reconstructible_distribution_mixed_pmc/u", ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+};
+template<>
+struct reconstructible_distribution_data<histogram<absolute, reconstructible_based>, no_requirement>{
+    TH1D reconstructible_histogram{ "reconstructible_distribution_mixed_pmc", ";p_{mc} (GeV); Count", 1000, 0, 9 };
+};
+template<int C>
+struct reconstructible_distribution_data<histogram<per_nucleon, reconstructible_based>, isolate_charge<C>>{
+    TH1D reconstructible_histogram{ Form("reconstructible_distribution_charge%d_pmc/u", C), ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+};
+template<int C>
+struct reconstructible_distribution_data<histogram<absolute, reconstructible_based>, isolate_charge<C>>{
+    TH1D reconstructible_histogram{ Form("reconstructible_distribution_charge%d_pmc", C), ";p_{mc} (GeV); Count", 1000, 0, 9 };
+};
+
+
+template<class CO>
+struct reconstructible_distribution_data< computation, CO >{
+    std::size_t reconstructible_count{0};
+};
+
+template<class CO, class MO>
+struct reconstructible_distribution_predicate {
+    bool predicate( reconstruction_module<TAGcluster> const& rm_p ) const {
+        return rm_p.reconstructible_o.has_value() &&
+               CO{}.predicate(rm_p) &&
+               MO{}.predicate(rm_p);
+    }
+};
 
 
 
@@ -271,7 +455,7 @@ struct momentum_resolution{
 
 //template<template<class, class > class T, class F, class CO = no_requirement, class MO = no_requirement>
 template< class F, class CO, class MO,
-          template<class> class Data,
+          template<class, class> class Data,
           template<class, class> class Predicate,
           template<class, class> class Outcome,
           template<class, class, class> class Output >
@@ -292,7 +476,7 @@ struct producer :
     auto& data() { return data_m; }
     auto const& data() const { return data_m; }
 private:
-    Data<F> data_m;
+    Data<F, CO> data_m;
 };
 
 template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
@@ -308,6 +492,20 @@ using fake_distribution = producer< Format, ChargeOption, MatchOption,
                                     fake_distribution_predicate,
                                     fake_distribution_outcome,
                                     fake_distribution_output >;
+
+template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
+using reconstructed_distribution = producer< Format, ChargeOption, MatchOption,
+                                             reconstructed_distribution_data,
+                                             reconstructed_distribution_predicate,
+                                             reconstructed_distribution_outcome,
+                                             reconstructed_distribution_output >;
+
+template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
+using reconstructible_distribution = producer< Format, ChargeOption, MatchOption,
+                                             reconstructible_distribution_data,
+                                             reconstructible_distribution_predicate,
+                                             reconstructible_distribution_outcome,
+                                             reconstructible_distribution_output >;
 
 
 } // namespace checker
