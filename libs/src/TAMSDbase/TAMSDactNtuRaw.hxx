@@ -41,6 +41,8 @@ public:
 public:
    static void EnablePedSub()  { fgPedestalSub = true;  }
    static void DisablePedSub() { fgPedestalSub = false; }
+   static void EnableCNSub()  { fgCommonModeSub = true;  }
+   static void DisableCNSub() { fgCommonModeSub = false; }
 
 private:
     TAGdataDsc*     fpDatRaw;		        // output data dsc
@@ -50,13 +52,16 @@ private:
     TAGparaDsc*     fpParGeo;		        // parameter dsc
 
     TH1F*           fpHisStripMap[6];
+    TH1F*           fpHisCommonMode[6];
    
 private:
     Bool_t DecodeHits(const DEMSDEvent* evt);
-   
+    Double_t ComputeCN(Int_t strip, Double_t *VaContent, Int_t type);
+
 private:
    static UInt_t fkgThreshold;
    static Bool_t fgPedestalSub;
+   static Bool_t fgCommonModeSub;
 };
 
 #endif
