@@ -16,6 +16,10 @@ class RemoteEvent : public BaseFragment {
 
     virtual ~RemoteEvent();
   
+   RemoteEvent();
+   RemoteEvent(const RemoteEvent &right);
+   const RemoteEvent& operator=(const RemoteEvent &right);
+   
     virtual void readData(unsigned int **p);
     virtual void printData() const;
     virtual bool check() const { return true;};

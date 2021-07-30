@@ -19,6 +19,9 @@ public:
   u_int channelID;
 
   BaseFragment() : channelID(0){};
+   BaseFragment(const BaseFragment &right) : channelID(right.channelID) {};
+   const BaseFragment& operator=(const BaseFragment &right) {channelID = right.channelID; return *this;};
+
   virtual ~BaseFragment();
   
   virtual void readData(unsigned int **p);

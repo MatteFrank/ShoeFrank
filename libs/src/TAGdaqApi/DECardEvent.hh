@@ -22,6 +22,11 @@ class DECardEvent : public RemoteEvent {
 
     virtual std::string classType() const {return "DECardEvent";   }
    
+   DECardEvent();
+   DECardEvent(const DECardEvent &right);
+   const DECardEvent& operator=(const DECardEvent &right);
+   
+   
   public:
    static  u_int  GetVertexHeader()        { return m_vtxHeader; }
    static  u_int  GetVertexTail()          { return m_vtxTail;   }
