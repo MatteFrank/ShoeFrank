@@ -51,11 +51,10 @@ Bool_t TAVTactNtuHit::Action()
    UInt_t bcoTrig = 0;
    static Bool_t first = false;
    
-   const DECardEvent* evt = 0x0;
+   const DECardEvent* evt  = 0x0;
    const DECardEvent* evt0 = 0x0;
-   static const DECardEvent* evtp = 0x0;
+   const DECardEvent* evtp = 0x0;
 
-   static UInt_t prefBco = 0;
    for (Int_t i = 0; i < nFragments; ++i) {
       
        TString type = datDaq->GetClassType(i);
@@ -90,23 +89,20 @@ Bool_t TAVTactNtuHit::Action()
    }
    
    Int_t diff    = bcoTrig - trig->BCOofTrigger - fFirstBcoTrig;
-   Int_t prediff = prefBco - trig->BCOofTrigger - fFirstBcoTrig;
    fpHisBCOofTrigger->Fill(diff);
    
    if (TMath::Abs(float(diff)) > 3) {
       Warning("Action()", "BCOofTrigger difference higher than 3 (%d) for %d time, resynchronizing", diff, fQueueEvtsN+1);
-      
- //     fQueueEvt.push(evtp);
-      fQueueEvtsN++;
+      if (diff > 0) // to avoid corrupted timestamp number
+         fQueueEvtsN++;
    }
+   
    if (fQueueEvtsN > 0) {
       if (fQueueEvtsN - fQueueEvt.size() == 0)
          fQueueEvt.pop();
       evtp = new DECardEvent(*evt0);
       fQueueEvt.push(evtp);
    }
-
-   prefBco = bcoTrig;
    
    return kTRUE;
 }
