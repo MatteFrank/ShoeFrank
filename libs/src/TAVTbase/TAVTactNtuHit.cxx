@@ -65,8 +65,7 @@ Bool_t TAVTactNtuHit::Action()
           if (fQueueEvtsN == 0)
              evt = evt0;
           else {
-             evt = evtp;//fQueueEvt.front();
-             //fQueueEvt.push(evt0);
+             evt = fQueueEvt.front();
           }
           bcoTrig    = evt->BCOofTrigger;
           fData      = evt->values;
@@ -74,9 +73,6 @@ Bool_t TAVTactNtuHit::Action()
           fDataLink  = evt->channelID - (dataVTX | 0x30);
           if (fEventSize == 0) continue;
           DecodeEvent();
-          
-  //        if (fQueueEvtsN > 0)
-//              fQueueEvt.pop();
        }
    }
    
@@ -104,9 +100,10 @@ Bool_t TAVTactNtuHit::Action()
       fQueueEvtsN++;
    }
    if (fQueueEvtsN > 0) {
-      if (evtp)
-         delete evtp;
+      if (fQueueEvtsN - fQueueEvt.size() == 0)
+         fQueueEvt.pop();
       evtp = new DECardEvent(*evt0);
+      fQueueEvt.push(evtp);
    }
 
    prefBco = bcoTrig;
