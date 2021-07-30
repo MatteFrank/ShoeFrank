@@ -92,9 +92,11 @@ Bool_t TAVTactNtuHit::Action()
    fpHisBCOofTrigger->Fill(diff);
    
    if (TMath::Abs(float(diff)) > 4) {
-      Warning("Action()", "BCOofTrigger difference higher than 4 (%d) for %d time, resynchronizing", diff, fQueueEvtsN+1);
+      Warning("Action()", "BCOofTrigger difference higher than 4 (%d) for %d time(s), resynchronizing", diff, fQueueEvtsN+1);
       if (diff > 0) // to avoid corrupted timestamp number
          fQueueEvtsN++;
+      else
+          Warning("Action()", "BCOofTrigger difference negative value, do not resynchronize");
    }
    
    if (fQueueEvtsN > 0) {
