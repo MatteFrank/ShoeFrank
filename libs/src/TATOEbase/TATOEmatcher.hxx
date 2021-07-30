@@ -1,21 +1,17 @@
-//
-// Plot tot residual + Fit for FIRST data
-//
-/** TATOEchecker class
- 
+/*
  \author A. Sécher
  */
 
 //
-//File      : TATOEchecker.cpp
+//File      : TATOEmatcher.cpp
 //Author    : Alexandre Sécher (alexandre.secher@iphc.cnrs.fr)
 //Date      : 10/02/2020
 //Framework : PhD thesis, CNRS/IPHC/DRHIM/Hadrontherapy, Strasbourg, France
 //
 
 
-#ifndef _TATOEchecker_HXX
-#define _TATOEchecker_HXX
+#ifndef _TATOEmatcher_HXX
+#define _TATOEmatcher_HXX
 
 #include "TAMCntuPart.hxx"
 #include "TAGparGeo.hxx"
@@ -29,7 +25,7 @@
 #include "TATWntuPoint.hxx"
 
 template<class Action>
-struct TATOEchecker{
+struct TATOEmatcher{
     
     using candidate = typename std::decay_t<decltype( std::declval<typename Action::detector_list_t>().last() )>::candidate;
     using detector_list_t = typename Action::detector_list_t;
@@ -58,7 +54,7 @@ private:
     std::vector< reconstruction_module<data_type> > reconstruction_module_mc;
 
 public:
-    TATOEchecker( TAGparGeo const * global_parameters_ph,
+    TATOEmatcher( TAGparGeo const * global_parameters_ph,
                   Action& action_p ) :
     data_mhc{ static_cast<TAMCntuPart*>( gTAGroot->FindDataDsc( TAMCntuPart::GetDefDataName() )->Object() ) },
         target_limits_m{ retrieve_target_limits( global_parameters_ph ) },
@@ -78,10 +74,7 @@ private:
 
     
 public:
-    
-    void update_current_node( node_type const * current_node_ph ){ current_node_mh = current_node_ph; }
-    
-    void start_event() {
+    void generate_candidate_indices() {
 //        std::cout << "====start_event====\n";
         
         candidate_index_mc.clear();
@@ -112,10 +105,6 @@ public:
 //            std::cout << "\n";
 //        }
     }
-    
-    void end_event(){
-    };
-    
     
     double retrieve_momentum( candidate const& candidate_p ) const {
         for( auto const& module : reconstruction_module_mc ) {
@@ -328,7 +317,7 @@ public:
         action_m.logger_m << "mass: " << particle.mass << '\n';
         action_m.logger_m << "momentum: " << particle.momentum << '\n';
         
-        auto reconstructed = reconstructed_track<data_type>{ cluster_c, std::move(particle), track_p.clone };
+        auto reconstructed = reconstructed_track<data_type>{ cluster_c, std::move(particle),  track_p.parameters, track_p.clone };
         register_reconstructed_track( cluster_c.back(), std::move(reconstructed) );
     }
     
@@ -355,22 +344,11 @@ private:
         }
     }
 
-public:
-    void output_current_hypothesis()
-    {
-        action_m.logger_m.add_sub_header("current_hypothesis");
-        action_m.logger_m << "charge: " << action_m.current_hypothesis_m.properties.charge << '\n';
-        action_m.logger_m << "mass: " << action_m.current_hypothesis_m.properties.mass << '\n';
-        action_m.logger_m << "momentum: " << action_m.current_hypothesis_m.properties.momentum << '\n';
-        
-     //   auto * root_h = current_node_mh->get_ancestor();
-     //   action_m.logger_m << "track_slope_x: " << root_h->get_value().vector(2, 0) << '\n';
-    //    action_m.logger_m << "track_slope_y: " << root_h->get_value().vector(3, 0) << '\n';
-    }
-    
 
 public:
     //will need a reset method
+    void clear_reconstruction_modules(){ reconstruction_module_mc.clear(); }
+    
     std::vector<reconstruction_module<data_type>> const& retrieve_results() const {
         return reconstruction_module_mc;
     }
@@ -469,7 +447,7 @@ public:
 
 
 template<class Action>
-struct empty_checker{
+struct empty_matcher{
     using candidate = typename std::decay_t<decltype( std::declval<typename Action::detector_list_t>().last() )>::candidate;
     using track = typename Action::track;
     using node_type = typename Action::node_type;
@@ -477,20 +455,15 @@ struct empty_checker{
     
     std::vector<reconstruction_module<data_type>> reconstruction_module_mc;
     
-    void update_current_node( node_type const *  ){}
     void submit_reconstructed_track(track const& ){}
     void submit_reconstructible_track(candidate const& ){}
-    void end_event(){}
-    void start_event(){}
-    void output_current_hypothesis(){}
-    void compute_results( details::all_mixed_tag )const { }
-    void compute_results( details::all_separated_tag ){}
-    void register_histograms( details::all_separated_tag ){}
+    void generate_candidate_indices(){}
     std::vector<reconstruction_module<data_type>> const& retrieve_results() const{ return reconstruction_module_mc; }
+    void clear_reconstruction_modules(){}
 };
 
 template<class Action>
-struct checker{
+struct matcher{
     using candidate = typename std::decay_t<decltype( std::declval<typename Action::detector_list_t>().last() )>::candidate;
     using track = typename Action::track;
     using node_type = typename Action::node_type;
@@ -498,54 +471,40 @@ struct checker{
 
     struct eraser{
         virtual ~eraser() = default;
-        virtual void update_current_node( node_type const * current_node_ph ) = 0;
         virtual void submit_reconstructed_track(track const& track_p) = 0;
         virtual void submit_reconstructible_track(candidate const& candidate_p) = 0;
-        virtual void end_event() = 0;
-        virtual void start_event() = 0;
-        virtual void output_current_hypothesis() = 0;
-        virtual void compute_results( details::all_mixed_tag ) const = 0;
-        virtual void compute_results( details::all_separated_tag ) = 0;
-        virtual void register_histograms( details::all_separated_tag ) = 0;
+        virtual void generate_candidate_indices() = 0;
         virtual std::vector<reconstruction_module<data_type>> const& retrieve_results() const = 0;
+        virtual void clear_reconstruction_modules() =0;
     };
 
     template<class T>
     struct holder : eraser {
         constexpr holder() = default;
         constexpr holder(T t) : t_m{ std::move(t)} {}
-        void update_current_node( node_type const * current_node_ph ) override { t_m.update_current_node( current_node_ph ); }
         void submit_reconstructed_track(track const& track_p) override{ t_m.submit_reconstructed_track( track_p); }
         void submit_reconstructible_track(candidate const& candidate_p) override{ t_m.submit_reconstructible_track( candidate_p); }
-        void end_event() override{ t_m.end_event(); }
-        void start_event() override{ t_m.start_event();}
-        void output_current_hypothesis() override{ t_m.output_current_hypothesis(); }
-        void compute_results( details::all_mixed_tag )const override{ return t_m.compute_results( details::all_mixed_tag{} );}
-        void compute_results( details::all_separated_tag ) override{ t_m.compute_results( details::all_separated_tag{} ); }
-        void register_histograms( details::all_separated_tag ) override{ t_m.register_histograms( details::all_separated_tag{}); }
+        void generate_candidate_indices() override{ t_m.generate_candidate_indices();}
         std::vector<reconstruction_module<data_type>> const& retrieve_results() const override{ return t_m.retrieve_results(); }
+        void clear_reconstruction_modules() override { t_m.clear_reconstruction_modules(); }
         T t_m;
     };
 
-    constexpr checker() = default;
+    constexpr matcher() = default;
     template<class T>
-    constexpr checker(T t) : erased_m{ new holder<T>{ std::move(t) } } {}
+    constexpr matcher(T t) : erased_m{ new holder<T>{ std::move(t) } } {}
     template<class T>
-    constexpr checker& operator=(T t){ 
+    constexpr matcher& operator=(T t){ 
         erased_m.reset( new holder<T>{ std::move(t) } ); 
         return *this;
     }
 
-    void update_current_node( node_type const * current_node_ph )  { erased_m->update_current_node( current_node_ph ); }
+
     void submit_reconstructed_track(track const& track_p) { erased_m->submit_reconstructed_track( track_p); }
     void submit_reconstructible_track(candidate const& candidate_p) { erased_m->submit_reconstructible_track( candidate_p); }
-    void end_event() { erased_m->end_event(); }
-    void start_event() { erased_m->start_event();}
-    void output_current_hypothesis() { erased_m->output_current_hypothesis(); }
-    void compute_results( details::all_mixed_tag ) const { return erased_m->compute_results( details::all_mixed_tag{} );}
-    void compute_results( details::all_separated_tag ) { erased_m->compute_results( details::all_separated_tag{} ); }
-    void register_histograms( details::all_separated_tag ) { erased_m->register_histograms( details::all_separated_tag{}); }
+    void generate_candidate_indices() { erased_m->generate_candidate_indices();}
     std::vector<reconstruction_module<data_type>> const& retrieve_results() const { return erased_m->retrieve_results(); }
+    void clear_reconstruction_modules(){ erased_m->clear_reconstruction_modules(); }
 
     private:
     std::unique_ptr<eraser> erased_m;

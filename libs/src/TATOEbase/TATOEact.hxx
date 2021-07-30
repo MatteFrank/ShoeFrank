@@ -18,11 +18,12 @@
 #include "detector_list.hpp"
 #include "arborescence.hpp"
 
-
 #include "TATOEutilities.hxx"
-#include "TATOEchecker.hxx"
+#include "TATOEdetector.hxx"
+#include "TATOEmatcher.hxx"
 #include "TATOElogger.hxx"
 #include "TATOEmomentum.hxx"
+#include "TATOEchecker.hxx"
 
 #include "grkn_data.hpp"
 //#include "stepper.hpp"
@@ -54,7 +55,7 @@ auto make_ode(Callable&& c_p) -> ode<OperatingType, Order, Callable>;
 #include "TAITcluster.hxx"
 
 
-
+#include "TFile.h"
 
 template<class T>
 class TD;
@@ -70,7 +71,7 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
                                         DetectorProperties...  >   >
             : TATOEbaseAct
 {
-    friend TATOEchecker<TATOEactGlb>;
+    friend TATOEmatcher<TATOEactGlb>;
     
     using detector_list_t = detector_list< details::finished_tag, DetectorProperties...  >;
     
@@ -86,8 +87,7 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
     
     
     struct track{
-        
-        particle_properties particle;
+        particle_hypothesis hypothesis;
         
         double total_chisquared;
         
@@ -99,13 +99,13 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
         double tof{0};
         double length{0};
         
-        TAGtrack::polynomial_fit_parameters parameters;
+        polynomial_fit_parameters parameters;
         
         std::size_t clone{0};
     };
     
 private:
-    particle_properties particle_m{};
+    particle_hypothesis current_hypothesis_m{};
     UKF ukf_m;
     detector_list_t list_m;
     TAGntuGlbTrack* reconstructed_track_mhc;
@@ -115,9 +115,10 @@ private:
     int beam_mass_number_m;
     double target_position_m;
     double st_position_m;
-    checker<TATOEactGlb> checker_m;
+    matcher<TATOEactGlb> matcher_m;
     TATOElogger logger_m;
-    
+    std::vector<computation_checker> computation_checker_mc;
+    std::vector<histogram_checker> histogram_checker_mc;
 
     node_type const * current_node_mh;
     std::size_t event{0};
@@ -130,7 +131,7 @@ public:
                  TAGntuGlbTrack* track_phc,
                  TAGparGeo const * global_parameters_ph,
                  TADIgeoField const* field_ph,
-                 bool use_checker = false) :
+                 bool use_matcher = false) :
         ukf_m{ std::move(ukf_p) },
         list_m{ std::move(list_p) },
         reconstructed_track_mhc{ track_phc },
@@ -139,36 +140,34 @@ public:
         target_position_m{ global_parameters_ph->GetTargetPar().Position.Z() },
         st_position_m{ static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()))->GetSTCenter().Z() },
     field_mh{field_ph},
-        checker_m{ empty_checker<TATOEactGlb>{} }
+        matcher_m{ empty_matcher<TATOEactGlb>{} }
     {
-        if( use_checker ){ checker_m = TATOEchecker<TATOEactGlb>{global_parameters_ph, *this};}
-        ukf_m.call_stepper().ode.model().particle_h = &particle_m;
+        if( use_matcher ){
+            using namespace checker;
+            matcher_m = TATOEmatcher<TATOEactGlb>{global_parameters_ph, *this};
+            computation_checker_mc.push_back( TATOEchecker< purity<computation> >{} );
+            computation_checker_mc.push_back( TATOEchecker< fake_distribution<computation> >{} );
+        }
+        fill_histogram_checker();
+        
+        ukf_m.call_stepper().ode.model().particle_h = &current_hypothesis_m;
     }
-  
-    void Output() override {
-        checker_m.compute_results( details::all_mixed_tag{} );
-        checker_m.compute_results( details::all_separated_tag{} );
-//        logger_m.freeze_everything();
-        logger_m.output();
-    }
-    
-    void RegisterHistograms() override {
-        checker_m.register_histograms( details::all_separated_tag{} );
-    }
-    
+
     void Action() override {
         
         
         ++event;
         logger_m.clear();
-        checker_m.start_event();
+        
+        matcher_m.clear_reconstruction_modules();
+        matcher_m.generate_candidate_indices();
         
         auto hypothesis_c = form_hypothesis();
         
 //        std::cout << "hypothesis: " << hypothesis_c.size() << '\n';
         
         for(auto & hypothesis : hypothesis_c){
-            particle_m = hypothesis;
+            current_hypothesis_m = hypothesis;
 //            std::cout << "hypothesis: " << hypothesis.charge << " - " << hypothesis.mass << " - " << hypothesis.momentum << " -- " << hypothesis.get_end_points().size() << '\n';
             reconstruct();
         }
@@ -188,16 +187,23 @@ public:
         track_c = compute_momentum_new( std::move(track_c) );
         register_tracks_upward( std::move( track_c ) );
         
-        checker_m.end_event();
+//        checker_m.end_event();
 //        logger_m.freeze_everything();
 //        logger_m.output();
         
+        auto result_c = matcher_m.retrieve_results();
+        for( auto& checker : computation_checker_mc ){
+            checker.apply( result_c );
+        }
+        for( auto & checker : histogram_checker_mc ){
+            checker.apply( result_c );
+        }
         
         
         //form list of hypothesis
         
         //for each
-        // - set particle_m
+        // - set current_hypothesis_m
         // - reconstruct: either consume the arborescence and release global tracks -> better
 
      
@@ -219,6 +225,51 @@ public:
         
     };
     
+    void Output() override {
+        if( !computation_checker_mc.empty() ){
+            logger_m.add_root_header("RESULTS");
+            auto purity = computation_checker_mc[0].output();
+            logger_m.template add_header<1, details::immutable_tag>("purity");
+            logger_m << "global_purity: " << purity.value * 100 << '\n';
+            logger_m << "global_purity_error: " << purity.error * 100<< '\n';
+            
+            auto fake = computation_checker_mc[1].output();
+            std::cout << "fake_count: " << fake.value <<  '\n';
+        }
+        
+        logger_m.output();
+        
+        
+        TFile file{"toe_output_local.root", "RECREATE"};
+        for( auto & checker : histogram_checker_mc ){
+            checker.output();
+        }
+        file.Close();
+       // auto efficiency = checker_m.compute_mixed<details::efficiency_tag>( result_c );
+       // logger_m.template add_header<1, details::immutable_tag>("efficiency");
+      //  logger_m << "global_efficiency: " << efficiency.value * 100 << '\n';
+       // logger_m << "global_efficiency_error: " << efficiency.error * 100<< '\n';
+        //auto checker_m.compute_mixed<details::purity_tag>( result_c );
+       // auto checker_m.compute_mixed<details::fake_tag>( result_c );
+        //auto checker_m.compute_mixed<details::clone_tag>( result_c );
+    }
+    
+private:
+    void fill_histogram_checker() {
+        using namespace checker;
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    purity< histogram<per_nucleon> >,
+                    purity< histogram<per_nucleon>, isolate_charge<1> >,
+                    purity< histogram<per_nucleon>, isolate_charge<2> >,
+                    purity< histogram<per_nucleon>, isolate_charge<3> >,
+                    purity< histogram<per_nucleon>, isolate_charge<4> >,
+                    purity< histogram<per_nucleon>, isolate_charge<5> >,
+                    purity< histogram<per_nucleon>, isolate_charge<6> >,
+                    purity< histogram<per_nucleon>, isolate_charge<7> >
+                            >{} );
+    }
+    
 private:
     void reset_event_number() override { event = 0 ; }
     void set_cuts( details::vertex_tag, double cut_p) override {
@@ -237,11 +288,11 @@ private:
         list_m.template set_cuts<detector_properties<details::ms2d_tag>>( cut_p );
     }
     
-    reconstruction_result retrieve_results( ) override {
-        return checker_m.retrieve_results( );
+    std::vector<reconstruction_module<data_type>> const& retrieve_matched_results( ) const override {
+        return matcher_m.retrieve_results( );
     }
     
-    std::vector<particle_properties> form_hypothesis()
+    std::vector<particle_hypothesis> form_hypothesis()
     {
         
         logger_m.add_root_header( "FORM_HYPOTHESIS" );
@@ -251,10 +302,10 @@ private:
 
 //        std::cout << "form_hypothesis:\n";
         auto candidate_c = tof.generate_candidates();
-        std::vector<particle_properties> hypothesis_c;
+        std::vector<particle_hypothesis> hypothesis_c;
         hypothesis_c.reserve( candidate_c.size()*2 );
 
-//        std::cout << "candidates: " << candidate_c.size() << '\n';
+        logger_m << "candidates: " << candidate_c.size() << '\n';
         for( const auto& candidate : candidate_c ) {
             auto charge = candidate.data->GetChargeZ();
             if(charge == 0) {continue;}
@@ -273,10 +324,10 @@ private:
 //            logger_m << '\n';
 //
             // -----------------------------
-            checker_m.submit_reconstructible_track( candidate );
+            matcher_m.submit_reconstructible_track( candidate );
             // -----------------------------
             
-            auto add_current_end_point = [&candidate]( particle_properties & hypothesis_p  )
+            auto add_current_end_point = [&candidate]( particle_hypothesis & hypothesis_p  )
                                  { hypothesis_p.get_end_points().push_back( candidate.data ); };
 //
             
@@ -284,12 +335,12 @@ private:
 
 
             auto first_matching_hypothesis_i = std::find_if( hypothesis_c.begin(), hypothesis_c.end(),
-                                                          [&charge]( particle_properties const & h_p ){ return h_p.charge == charge; } );
+                                                          [&charge]( particle_hypothesis const & h_p ){ return h_p.properties.charge == charge; } );
 
             if( first_matching_hypothesis_i != hypothesis_c.end() ) {
                 std::for_each( first_matching_hypothesis_i, hypothesis_c.end(),
-                              [&charge, &candidate, &add_current_end_point]( particle_properties & h_p ){
-                                  if( h_p.charge == charge ){ add_current_end_point( h_p ); }
+                              [&charge, &candidate, &add_current_end_point]( particle_hypothesis & h_p ){
+                                  if( h_p.properties.charge == charge ){ add_current_end_point( h_p ); }
                               } );
                 break;
             }
@@ -311,7 +362,11 @@ private:
                                       2 *  (beam_energy_m * mass_number_p) * (938 * mass_number_p)  ) *
                                       energy_modifier_p;
                                           
-                hypothesis_c.push_back( particle_properties{ charge, mass_number_p, momentum, light_ion_boost_p } );
+                            hypothesis_c.push_back(
+                                            particle_hypothesis{
+                                                particle_properties{momentum, charge, mass_number_p},
+                                                light_ion_boost_p
+                                                                } );
                 add_current_end_point( hypothesis_c.back() );
                         };
             
@@ -624,8 +679,7 @@ private:
                 logger_m.add_header<2>( "leaf" );
                 
                 // -----------------------------
-                checker_m.update_current_node( &leaf );
-                checker_m.output_current_hypothesis();
+                output_current_hypothesis();
                 // -----------------------------
             
                 ukf_m.step_length() = 1e-3;
@@ -668,8 +722,7 @@ private:
             logger_m.add_header<1>("leaf");
             
             // -----------------------------
-            checker_m.update_current_node( &leaf );
-            checker_m.output_current_hypothesis();
+            output_current_hypothesis();
             // -----------------------------
             
             ukf_m.step_length() = 1e-3;
@@ -718,8 +771,7 @@ private:
             
             auto * leaf_h = arborescence_p.add_root( std::move(fs) );
             // -----------------------------
-            checker_m.update_current_node( leaf_h );
-            checker_m.output_current_hypothesis();
+            output_current_hypothesis();
             // -----------------------------
             logger_m.add_header<1>( "vertex_track_reconstruction" );
             
@@ -752,7 +804,6 @@ private:
                     
                     leaf_h = leaf_h->add_child( std::move(fs_c.front()) );
                     // -----------------------------
-                    checker_m.update_current_node( leaf_h );
                     // -----------------------------
                 }
                 
@@ -794,9 +845,6 @@ private:
                 };
              
                  auto * leaf_h = arborescence_p.add_root( std::move(fs) );
-             // -----------------------------
-                 //checker_m.update_current_node( leaf_h );
-                // checker_m.output_current_hypothesis();
              }
          }
          
@@ -813,8 +861,7 @@ private:
                  logger_m.add_header<3>( "leaf" );
                  
                  // -----------------------------
-                 checker_m.update_current_node( &leaf );
-                 checker_m.output_current_hypothesis();
+                 output_current_hypothesis();
                  // -----------------------------
              
                  ukf_m.step_length() = 1e-3;
@@ -903,7 +950,7 @@ private:
         auto candidate_end = std::partition( candidate_c.begin(), candidate_c.end(),
                                    [this, &candidate_c](candidate const & c_p)
                                    {
-                                       auto const & end_point_ch = particle_m.get_end_points();
+                                       auto const & end_point_ch = current_hypothesis_m.get_end_points();
                                        return std::any_of( end_point_ch.begin(), end_point_ch.end(),
                                                            [&c_p](auto const & ep_ph ){ return c_p.data == ep_ph;  } );
                                    } );
@@ -995,8 +1042,8 @@ private:
         
         
         auto mps = split_half( ps_p.vector , details::row_tag{});
-        mps.first(0,0) += layer_p.cut * particle_m.light_ion_boost * error.X();
-        mps.first(1,0) += layer_p.cut * particle_m.light_ion_boost * error.Y();
+        mps.first(0,0) += layer_p.cut * current_hypothesis_m.light_ion_boost * error.X();
+        mps.first(1,0) += layer_p.cut * current_hypothesis_m.light_ion_boost * error.Y();
         
         using candidate = typename underlying<Enriched>::candidate;
         using vector = typename underlying<candidate>::vector;
@@ -1039,12 +1086,12 @@ private:
         if( ec_p.measurement_matrix(0,0) > 0 ) {
             logger_m << " -- x orientation -- \n";
             logger_m << "error: (" << error.X() << ", " << error.Y() << ")\n";
-            v(0,0) += layer_p.cut * particle_m.light_ion_boost * error.X();
+            v(0,0) += layer_p.cut * current_hypothesis_m.light_ion_boost * error.X();
         }
         else {
             logger_m << " -- y orientation -- \n";
             logger_m << "error: (" << error.X() << ", " << error.Y() << ")\n";
-            v(0,0) += layer_p.cut * particle_m.light_ion_boost * error.Y();
+            v(0,0) += layer_p.cut * current_hypothesis_m.light_ion_boost * error.Y();
         }
         
         using candidate = typename underlying<Enriched>::candidate;
@@ -1095,8 +1142,8 @@ private:
         }
         double shearing_factor = total_chisquared / value_c.size();
         
-//        track_mc.push_back( track{ particle_m, shearing_factor, 0, 0, std::move(value_c)} );
-        track_mc.push_back( track{ particle_m, shearing_factor, std::move(value_c) } );
+//        track_mc.push_back( track{ current_hypothesis_m, shearing_factor, 0, 0, std::move(value_c)} );
+        track_mc.push_back( track{ current_hypothesis_m, shearing_factor, std::move(value_c) } );
     }
     
     std::vector< track > shear_suboptimal_tracks( std::vector<track>&& track_pc )
@@ -1172,7 +1219,7 @@ private:
             double speed = total_step_length/(static_cast<TATWpoint const *>(cluster_c.back().data)->GetToF() - additional_time);
             double beta = speed/30;
             double gamma = 1./sqrt(1 - pow(beta, 2));
-            double momentum = gamma * 938 * track.particle.mass * beta;
+            double momentum = gamma * 938 * track.hypothesis.properties.mass * beta;
         
             track.momentum = momentum;
             
@@ -1318,7 +1365,7 @@ private:
     }
     
     template<std::size_t N>
-    TAGtrack::polynomial_fit_parameters compute_polynomial_parameters( std::vector<full_state> const& cluster_pc ) const {
+    polynomial_fit_parameters compute_polynomial_parameters( std::vector<full_state> const& cluster_pc ) const {
         
         //fit in x/y
         //retrieve fit parameters
@@ -1471,7 +1518,7 @@ private:
             
             if( beta < 1){
                 double gamma = 1./sqrt(1 - pow(beta, 2));
-                double momentum = gamma * 938 * track.particle.mass * beta;
+                double momentum = gamma * 938 * track.hypothesis.properties.mass * beta;
             
        //     std::cout << "arc_length: " << arc_length << '\n';
        //     std::cout << "momentum: " << momentum << '\n';
@@ -1479,7 +1526,7 @@ private:
                 track.momentum = momentum;
             }
             else {
-                track.momentum = track.particle.momentum;
+                track.momentum = track.hypothesis.properties.momentum;
             }
             track.tof = tof;
             track.length = arc_length;
@@ -1498,19 +1545,22 @@ private:
         
         for( auto & track : track_pc  ) {
             // -----------------------------
-            checker_m.submit_reconstructed_track( track );
+            matcher_m.submit_reconstructed_track( track );
             // -----------------------------
             if( !reconstructed_track_mhc ){ continue; }
-//            std::cout << "particle_mass: " << track.particle.mass << std::endl;
+//            std::cout << "current_hypothesis_mass: " << track.particle.mass << std::endl;
 //            std::cout << "reconstruction_momentum: "<< track.particle.momentum << "\n";
             auto * track_h = reconstructed_track_mhc->NewTrack(
-                                                  track.particle.mass * 0.938 ,
+                                                  track.hypothesis.properties.mass * 0.938 ,
                                                   track.momentum / 1000.,
-                                                  static_cast<double>(track.particle.charge),
+                                                  static_cast<double>(track.hypothesis.properties.charge),
                                                   track.tof
                                                                );
 //            std::cout << "registered_momentum: " << track_h->GetMomentum() << "\n";
-            track_h->SetParameters( track.parameters );
+            TAGtrack::polynomial_fit_parameters parameters;
+            parameters.parameter_x = track.parameters.x;
+            parameters.parameter_y = track.parameters.y;
+            track_h->SetParameters( parameters );
             
             auto & value_c = track.get_clusters();
             for(auto& value : value_c){
@@ -1575,7 +1625,17 @@ private:
         
     }
     
-    
+    void output_current_hypothesis()
+    {
+        logger_m.add_sub_header("current_hypothesis");
+        logger_m << "charge: " << current_hypothesis_m.properties.charge << '\n';
+        logger_m << "mass: " << current_hypothesis_m.properties.mass << '\n';
+        logger_m << "momentum: " << current_hypothesis_m.properties.momentum << '\n';
+        
+     //   auto * root_h = current_node_mh->get_ancestor();
+     //   action_m.logger_m << "track_slope_x: " << root_h->get_value().vector(2, 0) << '\n';
+    //    action_m.logger_m << "track_slope_y: " << root_h->get_value().vector(3, 0) << '\n';
+    }
     
 
     
