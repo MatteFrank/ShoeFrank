@@ -21,12 +21,8 @@ RemoteEvent::RemoteEvent(const RemoteEvent& right)
   eventNumber(right.eventNumber),
   evtSize(right.evtSize)
 {
-   
-   for (int i=0; i<right.values.size(); ++i)
-      values.push_back(right.values[i]);
-   
-//   values.reserve(right.values.size());
-//   values = right.values;
+   values.reserve(right.values.size());
+   values = right.values;
 }
 
 
