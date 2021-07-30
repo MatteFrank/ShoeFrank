@@ -12,8 +12,9 @@
 
 #include "TATOEutilities.hxx"
 
-
 #include "TAGcluster.hxx"
+
+#include "TH2D.h"
 
 namespace checker {
 
@@ -52,7 +53,7 @@ struct per_nucleon{};
 struct absolute{};
 struct reconstructible_based{};
 struct reconstructed_based{};
-template<class R, class B = reconstructible_based>
+template<class R = per_nucleon, class B = reconstructible_based>
 struct histogram{};
 
 struct computation{};
@@ -64,6 +65,14 @@ template<class T, class R, class CO>
 struct generate_histogram{};
 
 
+template<class CO, class MO>
+struct successfull_reconstruction_predicate {
+    bool predicate( reconstruction_module<TAGcluster> const& rm_p ) const {
+        return rm_p.reconstructible_o.has_value() && rm_p.reconstructed_o.has_value() &&
+                CO{}.predicate(rm_p) &&
+                MO{}.predicate(rm_p);
+    }
+};
 
 //=====================================================
 //                 type
@@ -185,15 +194,6 @@ template<class CO>
 struct purity_data< computation, CO >{
     std::size_t recovered_cluster_count{0};
     std::size_t correct_cluster_count{0};
-};
-
-template<class CO, class MO>
-struct purity_predicate {
-    bool predicate( reconstruction_module<TAGcluster> const& rm_p ) const {
-        return ( rm_p.reconstructible_o.has_value() && rm_p.reconstructed_o.has_value() ) &&
-               CO{}.predicate(rm_p) &&
-               MO{}.predicate(rm_p);
-    }
 };
 
 
@@ -340,15 +340,6 @@ struct reconstructed_distribution_data< computation, CO >{
     std::size_t reconstructed_count{0};
 };
 
-template<class CO, class MO>
-struct reconstructed_distribution_predicate {
-    bool predicate( reconstruction_module<TAGcluster> const& rm_p ) const {
-        return ( rm_p.reconstructible_o.has_value() && rm_p.reconstructed_o.has_value() ) &&
-               CO{}.predicate(rm_p) &&
-               MO{}.predicate(rm_p);
-    }
-};
-
 
 //----------------------------------------------
 //                  reconstructible_distribution
@@ -434,14 +425,63 @@ struct reconstructible_distribution_predicate {
 };
 
 
+//----------------------------------------------
+//           clone_distribution
+template<class Derived, class F> struct clone_distribution_outcome{};
+template<class Derived>
+struct clone_distribution_outcome<Derived, computation>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.clone_count+=reconstructed.clone_number;
+    }
+};
+
+template<class Derived, class F, class CO> struct clone_distribution_output{};
+template< class Derived, class CO >
+struct clone_distribution_output< Derived, computation, CO  >{
+    value_and_error output() const {
+        value_and_error result;
+        auto const& data = static_cast<Derived const&>(*this).data();
+        result.value = data.clone_count;
+        result.error = sqrt(data.clone_count);
+        return result;
+    }
+};
+
+template<class F, class CO> struct clone_distribution_data{};
+template<class CO> struct clone_distribution_data<computation, CO>{ std::size_t clone_count{0}; };
+
 
 //----------------------------------------------
 //           mass_identification
-struct mass_identification{
-    
+template<class Derived, class F> struct mass_identification_outcome{};
+template<class Derived, class R, class B>
+struct mass_identification_outcome<Derived, histogram<R, B>>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        auto const& reconstructible = rm_p.reconstructible_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.value.Fill( reconstructible.properties.mass, reconstructed.properties.mass );
+    }
 };
 
+template<class Derived, class F, class CO> struct mass_identification_output{};
+template<class Derived, class R, class B, class CO>
+struct mass_identification_output<Derived, histogram<R, B>, CO>{
+    void output() const { static_cast<Derived const&>(*this).data().value.Write(); }
+};
 
+template<class F, class CO> struct mass_identification_data{};
+template<class R, class B>
+struct mass_identification_data<histogram<R, B>, no_requirement> {
+    TH2D value{"mass_identification_mixed", ";A_{mc};A_{rec};Count", 20, 0, 20, 20, 0, 20  };
+};
+
+template<class R, class B, int C>
+struct mass_identification_data<histogram<R, B>, isolate_charge<C>> {
+    TH2D value{Form("mass_identification_charge%d", C), ";A_{mc};A_{rec};Count", 20, 0, 20, 20, 0, 20  };
+};
 
 //----------------------------------------------
 //           momentum_resolution
@@ -482,7 +522,7 @@ private:
 template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
 using purity = producer< Format, ChargeOption, MatchOption,
                          purity_data,
-                         purity_predicate,
+                         successfull_reconstruction_predicate,
                          purity_outcome,
                          purity_output >;
 
@@ -496,7 +536,7 @@ using fake_distribution = producer< Format, ChargeOption, MatchOption,
 template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
 using reconstructed_distribution = producer< Format, ChargeOption, MatchOption,
                                              reconstructed_distribution_data,
-                                             reconstructed_distribution_predicate,
+                                             successfull_reconstruction_predicate,
                                              reconstructed_distribution_outcome,
                                              reconstructed_distribution_output >;
 
@@ -506,6 +546,20 @@ using reconstructible_distribution = producer< Format, ChargeOption, MatchOption
                                              reconstructible_distribution_predicate,
                                              reconstructible_distribution_outcome,
                                              reconstructible_distribution_output >;
+
+template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
+using clone_distribution = producer< Format, ChargeOption, MatchOption,
+                                    clone_distribution_data,
+                                    successfull_reconstruction_predicate,
+                                    clone_distribution_outcome,
+                                    clone_distribution_output >;
+
+template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
+using mass_identification = producer< Format, ChargeOption, MatchOption,
+                                    mass_identification_data,
+                                    successfull_reconstruction_predicate,
+                                    mass_identification_outcome,
+                                    mass_identification_output >;
 
 
 } // namespace checker
