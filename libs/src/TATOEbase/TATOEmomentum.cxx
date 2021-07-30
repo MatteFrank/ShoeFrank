@@ -19,6 +19,7 @@
 #include "stepper.hpp"
 #include "grkn_data.hpp"
 
+#include "TAGroot.hxx"
 #include "TADIgeoField.hxx"
 
 
