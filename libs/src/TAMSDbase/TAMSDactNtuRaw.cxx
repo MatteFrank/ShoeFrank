@@ -201,7 +201,9 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 
    // decode here
    Int_t boardId = (evt->boardHeader & 0xF)-1;
-   
+   Double_t cnX = 0;
+   Double_t cnY = 0;
+
    for (Int_t i = 0; i < p_pargeo->GetStripsN(); ++i) {
       
       UInt_t adcX = evt->Xplane[i];
@@ -215,9 +217,6 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 
       Double_t meanX  = 0;
       Double_t meanY  = 0;
-
-      Double_t cnX = 0;
-      Double_t cnY = 0;
 
       Double_t VaContent[64] = {0};
        
@@ -240,16 +239,15 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                      VaContent[VaChan] = evt->Xplane[i + VaChan] - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
                   }
                   cnX = ComputeCN(i, VaContent, 0);
+                  if (ValidHistogram())
+                  fpHisCommonMode[sensorId]->Fill(cnX);
                }
             }
          }
          if (valueX > 0) {
             p_datraw->AddStrip(sensorId, i, 0, adcX-meanX-cnX);
             if (ValidHistogram())
-            {
                fpHisStripMap[sensorId]->Fill(i, adcX-meanX-cnX);
-               fpHisCommonMode[sensorId]->Fill(cnX);
-            }
          }
       }
       view = 0;
