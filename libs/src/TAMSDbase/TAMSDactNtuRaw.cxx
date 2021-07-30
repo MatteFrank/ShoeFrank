@@ -221,7 +221,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 
       Double_t VaContent[64] = {0};
        
-      view = 0;
+      view = 1;
       sensorId = p_parmap->GetSensorId(boardId, view);
       auto pedestal = p_parcal->GetPedestal( sensorId, i );
 
@@ -252,7 +252,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
             }
          }
       }
-      view = 1;
+      view = 0;
       sensorId = p_parmap->GetSensorId(boardId, view);
       pedestal = p_parcal->GetPedestal( sensorId, i );
 
