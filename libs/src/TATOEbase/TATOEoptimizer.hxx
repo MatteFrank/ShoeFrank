@@ -405,7 +405,7 @@ struct TATOEoptimizer : TATOEbaseOptimizer{
         return result_c;
     }
     
-    reconstruction_result retrieve_results() { return action_mh->retrieve_results(); }
+    auto const& retrieve_results() { return action_mh->retrieve_matched_results(); }
     
 private:
     template<std::size_t ... Indices>
