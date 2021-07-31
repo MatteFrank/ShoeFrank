@@ -184,6 +184,35 @@ void  EventReader::getNextEvent(){
 }
 
 
+
+/************************************************/
+// skip full event
+void  EventReader::skipEvent(){
+   
+   
+   preEvent();
+   if( m_errorOnRead ) return;
+   
+   m_errorOnRead = true;
+   unsigned int word = readWord();
+   word = readWord();
+   
+   //  reading header
+   unsigned int base = readWord();
+   // reading size
+   base = readWord();
+//   if( base == NULL ){
+//      m_errorOnRead = true;
+//      // error reading file
+//      std::cout << "Error reading event 0 - " << (std::hex)<<*base<<std::endl;
+//      return;
+//   }
+   unsigned int size = base;
+   
+   m_file->seekg((size-2)*sizeof(unsigned int), std::ios::cur);
+}
+
+
 //
 // Printing of all information stored
 //

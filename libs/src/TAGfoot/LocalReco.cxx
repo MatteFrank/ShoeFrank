@@ -152,6 +152,13 @@ void LocalReco::CreateRawAction()
 }
 
 //__________________________________________________________
+Bool_t LocalReco::GoEvent(Int_t iEvent)
+{
+   fActEvtReader->SkipEvents(iEvent);
+   return true;
+}
+
+//__________________________________________________________
 void LocalReco::OpenFileIn()
 {
    if (fgStdAloneFlag) {

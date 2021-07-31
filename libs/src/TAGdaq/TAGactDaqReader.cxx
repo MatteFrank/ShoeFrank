@@ -82,6 +82,14 @@ Bool_t TAGactDaqReader::IsOpen() const
 }
 
 //------------------------------------------+-----------------------------------
+//! Reset
+void TAGactDaqReader::SkipEvents(Int_t nEvents)
+{
+   for (Int_t i = 0; i < nEvents; ++i)
+      fDaqFileReader->skipEvent();
+}
+
+//------------------------------------------+-----------------------------------
 //! Process Reader.
 Bool_t TAGactDaqReader::Process()
 {

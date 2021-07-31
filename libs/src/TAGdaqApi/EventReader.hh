@@ -38,6 +38,7 @@ public:
 
   void readFileHeader();
   void getNextEvent();
+  void skipEvent();
   bool endOfFileReached() const { return m_errorOnRead;};
   unsigned int getEventsRead() const { return m_eventsRead;};
 
