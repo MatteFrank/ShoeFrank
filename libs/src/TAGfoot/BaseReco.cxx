@@ -274,19 +274,6 @@ void BaseReco::LoopEvent(Int_t nEvents)
         
     if (!fTAGroot->NextEvent()) break;
     
-    if (FootDebugLevel(1)) {
-      if(fpNtuGlbTrack) {
-        TAGntuGlbTrack *glbTrack =
-        (TAGntuGlbTrack*) fpNtuGlbTrack->GenerateObject();
-        
-        int nTrk = glbTrack->GetTracksN();
-        for(int iTr = 0; iTr< nTrk; iTr++) {
-          TAGtrack *aTr = glbTrack->GetTrack(iTr);
-          cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
-        }
-      }
-    }
-      
   }
 }
 
