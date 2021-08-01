@@ -309,7 +309,6 @@ char* EventReader::readInEvent(){
 
   m_errorOnRead = false;
   unsigned int size = readWord();
-   printf("size2 %x\n", size);
   if( m_buffer!=NULL ) free(m_buffer);
   m_buffer = (char*) malloc(size+8);
   //  std::cout <<" Allocating "<< size+8 << " words p="<<m_buffer<<std::endl;
