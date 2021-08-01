@@ -196,20 +196,17 @@ void  EventReader::skipEvent(){
    m_errorOnRead = true;
    unsigned int word = readWord();
    word = readWord();
+
+   //  reading size
+   unsigned int size = readWord();
+//   printf("skip size %x\n", size);
+
+   m_file->seekg(size, std::ios::cur);
    
-   //  reading header
-   unsigned int base = readWord();
-   // reading size
-   base = readWord();
-//   if( base == NULL ){
-//      m_errorOnRead = true;
-//      // error reading file
-//      std::cout << "Error reading event 0 - " << (std::hex)<<*base<<std::endl;
-//      return;
-//   }
-   unsigned int size = base;
-   
-   m_file->seekg((size-2)*sizeof(unsigned int), std::ios::cur);
+//   word = readWord();
+//   printf("word %x\n", word);
+//   m_file->seekg(-4, std::ios::cur);
+
 }
 
 
@@ -312,6 +309,7 @@ char* EventReader::readInEvent(){
 
   m_errorOnRead = false;
   unsigned int size = readWord();
+   printf("size2 %x\n", size);
   if( m_buffer!=NULL ) free(m_buffer);
   m_buffer = (char*) malloc(size+8);
   //  std::cout <<" Allocating "<< size+8 << " words p="<<m_buffer<<std::endl;

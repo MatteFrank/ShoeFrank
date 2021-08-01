@@ -15,12 +15,14 @@ int main (int argc, char *argv[])  {
 
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
-   
+   Int_t nSkipEv = 0;
+
    for (int i = 0; i < argc; i++){
       if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);  }   // Raw file name for output
       if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
+      if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
 
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
@@ -32,6 +34,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -in path/file  : [def=""] raw input file"<<endl;
          cout<<"      -out path/file : [def=*_Out.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
+         cout<<"      -nsk value     : [def=0] Skip number of events"<<endl;
          cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
@@ -77,7 +80,6 @@ int main (int argc, char *argv[])  {
    if(hit) {
       locRec->EnableTree();
       locRec->EnableSaveHits();
-
    }
    
    if (trk)
@@ -91,6 +93,9 @@ int main (int argc, char *argv[])  {
    
    if (mth)
       locRec->EnableM28lusMT();
+   
+   if (nSkipEv > 0)
+      locRec->GoEvent(nSkipEv);
    
    TStopwatch watch;
    watch.Start();
