@@ -83,6 +83,7 @@ private:
    TACAactNtuHit*        fActNtuHitCa;
 
    TAGactDaqReader*      fActEvtReader; // reader for real data (DAQ)
+   Int_t                 fSkipEventsN;  // number of events to skip
   
 private:
    static Bool_t         fgStdAloneFlag;   // flag for standalone DAQ

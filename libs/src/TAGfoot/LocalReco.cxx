@@ -35,7 +35,8 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActNtuHitCa(0x0),
    fActNtuHitMsd(0x0),
    fpDatRawMsd(0x0),
-   fActEvtReader(0x0)
+   fActEvtReader(0x0),
+   fSkipEventsN(0)
 {
 }
 
@@ -154,7 +155,8 @@ void LocalReco::CreateRawAction()
 //__________________________________________________________
 Bool_t LocalReco::GoEvent(Int_t iEvent)
 {
-   fActEvtReader->SkipEvents(iEvent);
+   fSkipEventsN = iEvent;
+   
    return true;
 }
 
@@ -168,8 +170,11 @@ void LocalReco::OpenFileIn()
       if (TAGrecoManager::GetPar()->IncludeBM())
          fActVmeReaderBm->Open(GetName());
 
-   } else
+   } else {
       fActEvtReader->Open(GetName());
+      if (fSkipEventsN > 0)
+         fActEvtReader->SkipEvents(fSkipEventsN);
+   }
 }
 
 //__________________________________________________________
