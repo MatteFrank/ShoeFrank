@@ -72,11 +72,11 @@ void TAMSDactNtuCluster::CreateHistogram()
   }
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-     fpHisClusCharge[i] = new TH1F(Form("%sClusCharge%d",prefix.Data(), i+1), Form("%s - cluster charge for sensor %d", titleDev.Data(), i+1), 100, 0., 500);
+     fpHisClusCharge[i] = new TH1F(Form("%sClusCharge%d",prefix.Data(), i+1), Form("%s - cluster charge for sensor %d", titleDev.Data(), i+1), 1000, 0., 5000);
      AddHistogram(fpHisClusCharge[i]);
   }
    
-  fpHisClusChargeTot = new TH1F(Form("%sClusChargeTot",prefix.Data()), Form("%s - total cluster charge", titleDev.Data()), 100, 0., 500);
+  fpHisClusChargeTot = new TH1F(Form("%sClusChargeTot",prefix.Data()), Form("%s - total cluster charge", titleDev.Data()), 1000, 0., 5000);
   AddHistogram(fpHisClusChargeTot);
 
   SetValidHistogram(kTRUE);
@@ -210,6 +210,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     cluster->SetSensorIdx(iSensor);
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition(cluster);
+    ComputeCog(cluster);
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
     if(FootDebugLevel(1))
@@ -283,6 +284,29 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   cluster->SetPositionF(fCurrentPosition);
   cluster->SetPosErrorF(fCurrentPosError);
   cluster->SetEnergyLoss(tClusterPulseSum);
+}
+
+void TAMSDactNtuCluster::ComputeCog(TAMSDcluster* cluster)
+{
+  if (!fCurListOfStrips) return;
+    
+  Float_t num = 0;
+  Float_t den = 0;
+  Float_t cog = 0;
+   
+  Float_t tClusterPulseSum = 0.;
+  
+  for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
+    TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
+    num += strip->GetStrip()*strip->GetEnergyLoss();
+    den += strip->GetEnergyLoss();
+  }
+  
+  cog = num / den;
+
+  fCurrentCog = cog;
+   
+  cluster->SetCog(fCurrentCog);
 }
 
 //______________________________________________________________________________

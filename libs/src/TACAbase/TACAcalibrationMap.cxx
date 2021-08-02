@@ -26,19 +26,22 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
   
   Int_t nCrystals = 0;
   
-  Int_t cryId[nCrystals];  // Id of crystal
-  Double_t temp[nCrystals];   // temperature
-  Double_t equalis[nCrystals];   // equalis factor
+   Int_t cryId;  // Id of crystal
+   Double_t temp;   // temperature
+   Double_t equalis;   // equalis factor
 
   if(fin.is_open()){
 
-    int  cnt(0);
     char line[200];
     
      fin.getline(line, 200, '\n');
      if(strchr(line,'#')) // skip first line if comment
         fin.getline(line, 200, '\n');
      sscanf(line, "%d", &nCrystals);
+  
+     fCalibTemperatureCry.reserve(nCrystals);
+     fEqualisFactorCry.reserve(nCrystals);
+
      
     // loop over all the slat crosses ( nSlatCross*nLayers ) for two TW layers
     while (fin.getline(line, 200, '\n')) {
@@ -49,35 +52,20 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
         continue;
       }
 
-      sscanf(line, "%d %lf %lf",&cryId[cnt],&temp[cnt],&equalis[cnt]);
+      sscanf(line, "%d %lf %lf",&cryId, &temp, &equalis);
     
-      if(FootDebugLevel(1))
-        Info("LoadCryTemperatureCalibrationMap()","%d %f %f\n",cryId[cnt],temp[cnt],equalis[cnt]);
-      
-      cnt++;
-    }
+       fCalibTemperatureCry[cryId] = temp;
+       fEqualisFactorCry[cryId] = equalis;
 
+       
+       if(FootDebugLevel(1))
+        Info("LoadCryTemperatureCalibrationMap()","%d %f %f\n",cryId, temp, equalis);
+    }
   }
   else
     Info("LoadCryTemperatureCalibrationMap()","File Calibration Energy %s not open!!",FileName.data());
 
   fin.close();
-
-  
-  // store in a Map the temperature parameter for the temperature correction with key their cry Id
-  for(int i=0; i<nCrystals; i++) {
-
-
-      fCalibTemperatureCry[cryId[i]].push_back(temp[i]);
-      fEqualisFactorCry[cryId[i]].push_back(equalis[i]);
-
-      if(FootDebugLevel(1))
-        cout<<"Crystal ID: "<<cryId[i]<<" Temperature: "<<temp[i]<<" Equalisation factor: "<<equalis[i]<<endl;
-
-    // cout<<"Crystal ID: "<<cryId[i]<<" Temperature: "<<temp[i]<<endl;
-    
-  }
-
 }
 
 //_____________________________________________________________________
@@ -106,9 +94,10 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
       if(strchr(line,'#')) // skip first line if comment
          fin_Q.getline(line, 200, '\n');
       sscanf(line, "%d", &nCrystals);
+      fCalibElossMapCry.reserve(nCrystals);
       
-      int crysId[nCrystals];  // Id of the crystal
-      double Q_corrp0[nCrystals], Q_corrp1[nCrystals];
+      int crysId;  // Id of the crystal
+      double Q_corrp0, Q_corrp1;
       
       // loop over all the slat crosses ( nSlatCross*nLayers ) for two TW layers
       while (fin_Q.getline(line, 200, '\n')) {
@@ -119,12 +108,11 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
             continue;
          }
          
-         sscanf(line, "%d %lf %lf",&crysId[cnt], &Q_corrp0[cnt], &Q_corrp1[cnt]);
+         sscanf(line, "%d %lf %lf",&crysId, &Q_corrp0, &Q_corrp1);
          if(FootDebugLevel(1))
-            Info("LoadEnergyCalibrationMap()","%d %.5f %.7f\n",crysId[cnt], Q_corrp0[cnt], Q_corrp1[cnt]);
+            Info("LoadEnergyCalibrationMap()","%d %.5f %.7f\n",crysId, Q_corrp0, Q_corrp1);
          
-         fCalibElossMapCry[crysId[cnt]].push_back(Q_corrp0[cnt]);
-         fCalibElossMapCry[crysId[cnt]].push_back(Q_corrp1[cnt]);
+         fCalibElossMapCry[crysId] = ElossParameter_t{Q_corrp0, Q_corrp1};
          cnt++;
       }
    } else
@@ -159,4 +147,17 @@ bool TACAcalibrationMap::Exists(Int_t cryId)
     return false;
   }
   return true;
+}
+
+//_______________________________________________
+Double_t TACAcalibrationMap::GetElossParam(Int_t cryId, UInt_t parId)
+{
+   if (parId == 0)
+      return fCalibElossMapCry[cryId].offset;
+   else if (parId == 1)
+      return fCalibElossMapCry[cryId].slope;
+   else {
+      Error("GetElossParam()", "No parameter %d found", parId);
+      return -99999;
+   }
 }

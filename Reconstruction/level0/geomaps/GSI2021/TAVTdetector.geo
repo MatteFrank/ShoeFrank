@@ -47,7 +47,7 @@ Inputs:            2
 Type:              0
 PositionsX:        0.0000  PositionsY:   0.000   PositionsZ:   -0.6
 Tilt1:             0.0000  Tilt2:      180.000   Tilt3:         0.000
-AlignementU:       0.0326
+AlignementU:       0.0330
 AlignementV:       0.0037
 AlignementTilt:    0.182
 
@@ -56,8 +56,8 @@ Inputs:            3
 Type:              0
 PositionsX:        0.0000  PositionsY:   0.000  PositionsZ:     0.6
 Tilt1:             0.0000  Tilt2:        0.000   Tilt3:         0.000
-AlignementU:      -0.0266
-AlignementV:      -0.0008
+AlignementU:      -0.0267
+AlignementV:      -0.0010
 AlignementTilt:    0.306
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 4  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-

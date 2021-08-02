@@ -79,3 +79,13 @@ void TAGeventDisplay::SetLocalReco()
    if (fgStdAloneFlag)
       LocalReco::EnableStdAlone();
 }
+
+//__________________________________________________________
+Bool_t TAGeventDisplay::SkipEvent()
+{
+   Int_t nEvts = fNumberEvent->GetIntNumber();
+   fCurrentEventId += nEvts;
+   gTAGroot->SetEventNumber(fCurrentEventId-1);
+   
+  return fReco->GoEvent(nEvts);
+}

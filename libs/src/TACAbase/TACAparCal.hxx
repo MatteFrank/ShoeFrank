@@ -35,12 +35,12 @@ public:
 
   Bool_t LoadEnergyCalibrationMap(TString Filename);
   Bool_t LoadTofCalibrationMap(TString Filename);
-  Bool_t FromCalibTempFile(const TString& Filename);
+  Bool_t LoadCryTemperatureCalibrationMap(const TString& Filename);
   
   Double_t GetElossParam(Int_t crystalId, UInt_t ParameterNumber);
-  Double_t GetTofParam(Int_t crystalId, UInt_t ParameterNumber);
   Double_t GetTemperatureCry(Int_t crystalId);
-
+  Double_t GetEqualiseCry(Int_t crystalId);
+   
   Bool_t FromCrysStatusFile(const TString& name);
   
   Bool_t  GetCrystalStatus(Int_t id) const { return fStatusCrys[id]; }

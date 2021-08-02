@@ -52,7 +52,7 @@ Bool_t TABMparMap::FromFile(const TString& name, TABMparGeo *bmgeo) {
 
   if (!Open(nameExp)) return kTRUE;
 
-  Info("FromFile", "Loading BM map from file: %s\n", nameExp.Data());
+  Info("FromFile()", "Open file %s for mapping\n", nameExp.Data());
 
   if(FootDebugLevel(1))
      cout<<"TABMparMap::FromFile:: read config file from "<<nameExp.Data()<<endl<<"Now I'll printout the BM FromFile read parameters"<<endl;

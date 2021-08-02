@@ -175,13 +175,22 @@ public:
         
         logger_m.add_root_header( "END_RECONSTRUCTION" );
         auto track_c = shear_suboptimal_tracks( std::move(track_mc) );
+        
+        logger_m << "track_size: " << track_c.size() << '\n';
+        
+        for(auto const& track : track_c){
+            logger_m << "track_cluster_count: " << track.get_clusters().size() << '\n';
+            for(auto const& cluster : track.get_clusters() ){
+                logger_m << "cluster: " << cluster.vector(0,0) << " - " << cluster.vector(1,0) << " - " << cluster.evaluation_point << '\n';
+            }
+        }
 //        track_c = compute_momentum_old( std::move(track_c) );
         track_c = compute_momentum_new( std::move(track_c) );
         register_tracks_upward( std::move( track_c ) );
         
         checker_m.end_event();
-        logger_m.freeze_everything();
-        logger_m.output();
+//        logger_m.freeze_everything();
+//        logger_m.output();
         
         
         
@@ -429,6 +438,7 @@ private:
         
         auto start = transformation_h->FromMSDLocalToGlobal( msd_ph->GetPositionG() );
         logger_m << "selected_start: " << start.X() << " - " << start.Y() << " - " << start.Z() << '\n';
+
         
         auto tof = list_m.last();
         auto candidate_c = tof.generate_candidates();
@@ -785,14 +795,14 @@ private:
              
                  auto * leaf_h = arborescence_p.add_root( std::move(fs) );
              // -----------------------------
-                 checker_m.update_current_node( leaf_h );
-                 checker_m.output_current_hypothesis();
+                 //checker_m.update_current_node( leaf_h );
+                // checker_m.output_current_hypothesis();
              }
          }
          
          for(auto && layer : layer_c) {
              logger_m.add_header<2>("layer");
-             logger_m << "candidate_size: " << layer.get_candidates().size();
+             logger_m << "candidate_size: " << layer.get_candidates().size() << '\n';
              
              
              if( layer.get_candidates().empty() ){ continue; }
@@ -979,7 +989,8 @@ private:
     {
         logger_m.add_sub_header( "pass_selection" );
         
-        auto error = ec_p.data->GetPosError();
+        //should be retrieved form covariance matrix
+        auto error = ec_p.data->GetPosErrorG();
         logger_m << "error: (" << error.X() << ", " << error.Y() << ")\n";
         
         
@@ -1441,7 +1452,11 @@ private:
                     break;
                 }
                 default:{
-                    std::cerr << "<Warning> in compute_momentum, size of vector was not a considered case " << cluster_c.size() << '\n';
+//                    std::cerr << "<Warning> in compute_momentum, size of vector was not a considered case " << cluster_c.size() << '\n';
+//                    std::cerr << "switching back to old momentum computation through step_length\n";
+                    for( auto && cluster : cluster_c ){
+                        arc_length += cluster.step_length;
+                    }
                 }
             }
             

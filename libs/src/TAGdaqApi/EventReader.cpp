@@ -184,6 +184,32 @@ void  EventReader::getNextEvent(){
 }
 
 
+
+/************************************************/
+// skip full event
+void  EventReader::skipEvent(){
+   
+   
+   preEvent();
+   if( m_errorOnRead ) return;
+   
+   m_errorOnRead = true;
+   unsigned int word = readWord();
+   word = readWord();
+
+   //  reading size
+   unsigned int size = readWord();
+//   printf("skip size %x\n", size);
+
+   m_file->seekg(size, std::ios::cur);
+   
+//   word = readWord();
+//   printf("word %x\n", word);
+//   m_file->seekg(-4, std::ios::cur);
+
+}
+
+
 //
 // Printing of all information stored
 //
@@ -255,7 +281,7 @@ void EventReader::preEvent(){
     word = readWord();
     std::cout << "\n Looking for EventMarker or EndOfFile " 
 	      << (std::hex)<<word<<std::endl;
-    if ( word == EndOfFile || m_errorOnRead ) {
+    if ( word == EndOfFile || m_errorOnRead || m_file->eof()) {
       m_errorOnRead = true;
       std::cout << "\nEnd of file" << std::endl;
       return;

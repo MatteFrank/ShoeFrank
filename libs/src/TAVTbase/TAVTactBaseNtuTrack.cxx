@@ -78,10 +78,10 @@ void TAVTactBaseNtuTrack::CreateHistogram()
    fpHisBmBeamProf->SetStats(kFALSE);
    AddHistogram(fpHisBmBeamProf);
    
-   fpHisVtxResX = new TH1F(Form("%sBmResX", fPrefix.Data()), Form("%s - Vertex position resisdualX BM/VT", fTitleDev.Data()), 500, -5, 5);
+   fpHisVtxResX = new TH2F(Form("%sBmResX", fPrefix.Data()), Form("%s - Vertex position correlationX BM/VT", fTitleDev.Data()), 200, -5, 5, 200, -5, 5);
    AddHistogram(fpHisVtxResX);
    
-   fpHisVtxResY = new TH1F(Form("%sBmResY", fPrefix.Data()), Form("%s - Vertex position resisdualY BM/VT", fTitleDev.Data()), 500, -5, 5);
+   fpHisVtxResY = new TH2F(Form("%sBmResY", fPrefix.Data()), Form("%s - Vertex position correlationY BM/VT", fTitleDev.Data()), 200, -5, 5, 200, -5, 5);
    AddHistogram(fpHisVtxResY);
    
    fpHisBmChi2 = new TH1F(Form("%sbmChi2", fPrefix.Data()), Form("%s - BM Chi2 of tracks", fTitleDev.Data()), 200, 0, 1000);
@@ -309,8 +309,8 @@ void TAVTactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
 	  
 	  origin  = fpFootGeo->FromVTLocalToGlobal(origin);
 	  TVector3 res = origin - bmTrackPos;
-	  fpHisVtxResX->Fill(res.X());
-	  fpHisVtxResY->Fill(res.Y());
+	  fpHisVtxResX->Fill(origin.X(), bmTrackPos.Y());
+	  fpHisVtxResY->Fill(origin.Y(), bmTrackPos.Y());
    }   
 }
 
