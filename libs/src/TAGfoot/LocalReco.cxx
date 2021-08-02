@@ -35,8 +35,7 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActNtuHitCa(0x0),
    fActNtuHitMsd(0x0),
    fpDatRawMsd(0x0),
-   fActEvtReader(0x0),
-   fSkipEventsN(0)
+   fActEvtReader(0x0)
 {
 }
 
