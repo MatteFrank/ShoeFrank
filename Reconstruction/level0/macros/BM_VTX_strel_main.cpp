@@ -3,7 +3,7 @@
 using namespace std;
 using namespace TMath;
 
-void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doalign=1){
+void BM_VTX_strel_main(TString in_filename = "",TString expName="GSI2021",Int_t runNumber=4287, Int_t nentries = 0, Int_t doalign=1, TString addoutname=""){
 
   gROOT->SetBatch(kTRUE);//turn off graphical output on screen
   TFile *infile = new TFile(in_filename.Data(),"READ");
@@ -18,18 +18,20 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
   }
   TString out_filename=in_filename(in_filename.Last('/')+1, in_filename.Last('.'));
   out_filename.Prepend("strelcal_");
-  out_filename.Append("_myreadbmvtxraw_Out.root");
+  out_filename.Append("_myreadbmvtxraw_Out");
+  out_filename.Append(addoutname);
+  out_filename.Append(".root");
   TFile *f_out = new TFile(out_filename.Data(),"RECREATE");
 
   //define and charge varaibles and geometrical parameters
   TAGroot gTAGroot;
-  TAGrunInfo* runinfo=(TAGrunInfo*)(infile->Get("runinfo"));
-  const TAGrunInfo construninfo(*runinfo);
-  gTAGroot.SetRunInfo(construninfo);
-  TString expName=runinfo->CampaignName();
+  // TAGrunInfo* runinfo=(TAGrunInfo*)(infile->Get("runinfo"));
+  // const TAGrunInfo construninfo(*runinfo);
+  // gTAGroot.SetRunInfo(construninfo);
+  // TString expName=runinfo->CampaignName();
   if(expName.EndsWith("/")) //fix a bug present in shoe
     expName.Remove(expName.Length()-1);
-  Int_t runNumber=runinfo->RunNumber();
+  // Int_t runNumber=runinfo->RunNumber();
   TAGrecoManager::Instance(expName);
   TAGcampaignManager* campManager = new TAGcampaignManager(expName);
   campManager->FromFile();
@@ -42,10 +44,10 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
   parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
   bmpargeo->FromFile(parFileName.Data());
 
-  // TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparConf());
-  // TABMparConf* bmparconf = (TABMparConf*)bmConf->Object();
-  // parFileName = campManager->GetCurConfFile(TABMparGeo::GetBaseName(), runNumber);
-  // bmparConf->FromFile(parFileName.Data());
+  TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparConf());
+  bmparconf = (TABMparConf*)bmConf->Object();
+  parFileName = campManager->GetCurConfFile(TABMparGeo::GetBaseName(), runNumber);
+  bmparconf->FromFile(parFileName.Data());
 
   // TAGparaDsc*  bmCal  = new TAGparaDsc("bmCal", new TABMparCal());
   // TABMparCal* bmparcal = (TABMparCal*)bmCal->Object();
@@ -67,19 +69,30 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
   tree->SetBranchAddress(TAVTntuTrack::GetBranchName(), &vtNtuTrack);
   TBranch *vtBraNtuTrack=tree->GetBranch(TAVTntuTrack::GetBranchName());
 
-  BookingBMVTX(f_out, doalign);
   //used for alignment:
   vector<TVector3> vtxslopevec;
   vector<TVector3> vtxoriginvec;
   vector<TVector3> bmslopevec;
   vector<TVector3> bmoriginvec;
 
+  //check the bm sense wire position
+  Int_t ilay, iview, icell;
+  // for(Int_t i=0;i<36;i++){
+  //   bmpargeo->GetBMNlvc(i,ilay, iview, icell);
+  //   cout<<"cellid="<<i<<" ilay="<<ilay<<"  iview="<<iview<<"  icell="<<icell<<"  GetWireX="<<bmpargeo->GetWireX(bmpargeo->GetSenseId(icell),ilay, iview)<<"  GetwireY="<<bmpargeo->GetWireY(bmpargeo->GetSenseId(icell),ilay, iview)<<"  getwireZ="<<bmpargeo->GetWireZ(bmpargeo->GetSenseId(icell),ilay, iview)<<"  getwirecx="<<bmpargeo->GetWireCX(bmpargeo->GetSenseId(icell),ilay, iview)<<"  getwirecy="<<bmpargeo->GetWireCY(bmpargeo->GetSenseId(icell),ilay, iview)<<"  getwirecz="<<bmpargeo->GetWireCZ(bmpargeo->GetSenseId(icell),ilay, iview)<<endl;
+  // }
+
   //****************************************** Event Loop ****************************************
 
   //read BM and Vertex loop
   if (nentries == 0 || nentries>tree->GetEntries())
-    nentries = tree->GetEntries();
-  for (evnum = 0; evnum < nentries; ++evnum) {
+    maxentries = tree->GetEntries();
+  else
+    maxentries=nentries;
+
+  BookingBMVTX(f_out, doalign);
+
+  for (evnum = 0; evnum < maxentries; ++evnum) {
     if(debug)
       cout<<"processing evnum="<<evnum<<endl;
 
@@ -87,19 +100,29 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
     bmBraNtuTrack->GetEntry(evnum);
     vtBraNtuTrack->GetEntry(evnum);
 
-    FillSeparated();
+    FillSeparated(); //here I inverted the vtx SlopeZ.Y and origin.Y
 
     if(vtNtuTrack->GetTracksN() == 1 && bmNtuTrack->GetTracksN()==1){
-      TAVTtrack* vttrack = vtNtuTrack->GetTrack(0);
+      Int_t bestvtxindex=0;
+      Double_t bestratio=1000;
       TABMtrack* bmtrack = bmNtuTrack->GetTrack(0);
-      if(bmtrack->GetChiSquare()<10 && vttrack->GetChi2()<10){
+      for(int i=0;i<vtNtuTrack->GetTracksN();i++){
+        TAVTtrack* tmpvttrack = vtNtuTrack->GetTrack(i);
+        if(fabs(bmtrack->GetOrigin().X()-tmpvttrack->GetOrigin().X())<bestratio){
+          bestratio=fabs(bmtrack->GetOrigin().X()-tmpvttrack->GetOrigin().X());
+          bestvtxindex=i;
+        }
+      }
+      ((TH2D*)gDirectory->Get("bestratioX"))->SetBinContent(evnum,bestratio);
+      TAVTtrack* vttrack=vtNtuTrack->GetTrack(bestvtxindex);
+      if(bmtrack->GetChiSquare()<100 && vttrack->GetChi2()<100){
         ((TH1D*)gDirectory->Get("combinedStatus"))->Fill(0);
         FillCombined(bmtrack, vttrack, vtxslopevec, vtxoriginvec, bmslopevec, bmoriginvec);
         FillStrel(vttrack, bmpargeo);
       }else{
-        if(vttrack->GetChi2()>=10)
+        if(vttrack->GetChi2()>=100)
           ((TH1D*)gDirectory->Get("combinedStatus"))->Fill(5);
-        if(bmtrack->GetChiSquare()>=10)
+        if(bmtrack->GetChiSquare()>=100)
           ((TH1D*)gDirectory->Get("combinedStatus"))->Fill(6);
       }
     }else{
@@ -112,8 +135,7 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
 
   }
 
-  if(debug)
-    cout<<"End of event loop, total number of events read="<<evnum<<endl;
+  cout<<"End of event loop, total number of events read="<<evnum<<endl;
 
   //****************************************************** end of program, print! *********************************
   PostLoopAnalysis();
