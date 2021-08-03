@@ -3,6 +3,7 @@
 
 #include <map>
 #include "TAGbaseDigitizer.hxx"
+#include "TACAparCal.hxx"
 
 #include "TACAntuHit.hxx"
 
@@ -22,6 +23,8 @@ public:
    
    Bool_t         Process(Double_t edep, Double_t x0, Double_t y0, Double_t zin=0, Double_t zout=0, Double_t time = 0, Int_t sensorId = 0, Int_t Z =-99, Double_t px0 = 0, Double_t py0 = 0, Double_t pz0 = 0);
  
+   void           SmearEnergy(TACAparCal* parCal);
+  
    Float_t        GetResEnergy(Float_t edep);
    Double_t       ResEnergy(Double_t* x, Double_t* par);
    TF1*           GetFuncResE()    const  { return fDeResE;     }
