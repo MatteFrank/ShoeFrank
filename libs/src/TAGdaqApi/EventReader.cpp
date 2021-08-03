@@ -262,45 +262,43 @@ bool EventReader::check(){
 //------------------------------------------
 void EventReader::preEvent(){
 
-  unsigned int word = readWord();
-  if( m_errorOnRead ){
-    std::cout << "\n End of file" << std::endl;
-    return;
-  }
-  if( word==FileHeader2 ){
-    int n=readWord();
-    if( n<50 ){
-      n-=1;
-      do{
-	word = readWord();
-	n--;
-      }while(n>0 ||m_errorOnRead );
-    }
-  }
-  while( word!=EventMarker ){
-    word = readWord();
-    std::cout << "\n Looking for EventMarker or EndOfFile " 
-	      << (std::hex)<<word<<std::endl;
-    if ( word == EndOfFile || m_errorOnRead || m_file->eof()) {
-      m_errorOnRead = true;
-      std::cout << "\nEnd of file" << std::endl;
-      return;
-    }
-  }
-  if ( word==EventMarker ) {
-    //unsigned int size = readWord();
-    if( m_errorOnRead ){
+   unsigned int word = readWord();
+   if( m_errorOnRead ){
       std::cout << "\n End of file" << std::endl;
       return;
-    }
-    // if( size==0 ) size =2;
-    // for( unsigned int i=0; i< size-2; i++)
-    //   readWord();
-  }
-  else {
-    m_errorOnRead = true;
-    return;
-  }
+   }
+   if( word==FileHeader2 ){
+      int n=readWord();
+      if( n<50 ){
+         n-=1;
+         do{
+            word = readWord();
+            n--;
+         }while(n>0 ||m_errorOnRead );
+      }
+   }
+   while( word!=EventMarker ){
+      word = readWord();
+      if ( word == EndOfFile || m_errorOnRead || m_file->eof()) {
+         m_errorOnRead = true;
+         std::cout << "\nEnd of file" << std::endl;
+         return;
+      }
+   }
+   if ( word==EventMarker ) {
+      //unsigned int size = readWord();
+      if( m_errorOnRead ){
+         std::cout << "\n End of file" << std::endl;
+         return;
+      }
+      // if( size==0 ) size =2;
+      // for( unsigned int i=0; i< size-2; i++)
+      //   readWord();
+   }
+   else {
+      m_errorOnRead = true;
+      return;
+   }
 }
 
 /****************************************/
