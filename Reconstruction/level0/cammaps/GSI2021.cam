@@ -5,7 +5,7 @@ NumberDevices: 9
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/GSI2021/FOOT.geo": -1
+"./geomaps/GSI2021/FOOT.geo": 4100; 4271; 4319;
 
 DetectorName: "DI"
 NumberFiles: 1
@@ -23,11 +23,11 @@ NumberFiles: 4
 "./geomaps/GSI2021/TABMdetector.geo": -1
 "./config/GSI2021/TABMdetector.cfg": -1
 "./config/GSI2021/TABMdetector.map": -1
-"./calib/GSI2021/TABM_T0_Calibration.cal": 200; 400;
+"./calib/GSI2021/TABM_T0_Calibration.cal": 4100; 4271; 4319;
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/GSI2021/TAGdetector.geo": 200; 400;
+"./geomaps/GSI2021/TAGdetector.geo": 4100; 4271; 4319;
 
 DetectorName: "VT"
 NumberFiles: 3
