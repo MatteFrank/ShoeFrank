@@ -14,8 +14,8 @@ BeamAtomicMass:       16   //! A Beam
 BeamAtomicNumber:     8    //! Z Beam
 BeamMaterial:        "O"   //! Beam Material
 BeamPartNumber:       1    // particles in Beam
-BeamPosX:            0.0000   BeamPosY:     0.0000    BeamPosZ:      -84.35
-BeamSpreadX:         0.0000   BeamSpreadY:  0.0000    BeamSpread:      0.0
+BeamPosX:            0.0000   BeamPosY:     0.0000    BeamPosZ:     -104.45
+BeamSpreadX:        -0.5428   BeamSpreadY: -0.3540    BeamSpread:      0.0
 BeamDiv:             0.0000
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
