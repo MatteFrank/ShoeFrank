@@ -385,6 +385,7 @@ protected:
    Bool_t                fReadL0Hits;      // read back hits
    Bool_t                fM28ClusMtFlag;   // flag for multi-threading clustering
    Bool_t                fFlagRecCutter;   // cutter flag for TOE Glb reco
+   Int_t                 fSkipEventsN;     // number of events to skip
     
  protected:
    void CreateRecActionBm();

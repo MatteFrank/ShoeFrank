@@ -110,7 +110,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagMC(false),
    fReadL0Hits(false),
    fM28ClusMtFlag(false),
-   fFlagRecCutter(false)
+   fFlagRecCutter(false),
+   fSkipEventsN(0)
 {
 
    // check folder
@@ -267,11 +268,14 @@ void BaseReco::LoopEvent(Int_t nEvents)
   else if (nEvents > 100)    frequency = 100;
   else if (nEvents > 10)     frequency = 10;
 
-    
+   
+  if (fSkipEventsN > 0)
+     printf(" Skipped Event: %d\n", fSkipEventsN);
+
   for (Int_t ientry = 0; ientry < nEvents; ientry++) {
     
     if(ientry % frequency == 0)
-      printf(" Loaded Event: %d\n", ientry);
+      printf(" Loaded Event: %d\n", ientry+fSkipEventsN);
         
     if (!fTAGroot->NextEvent()) break;
     
