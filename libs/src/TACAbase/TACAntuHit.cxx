@@ -60,7 +60,7 @@ void TACAhit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
    fMCindex[fMCindex.GetSize()-1]   = mcId;
-   
+
    fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
    fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackId;
 }
@@ -79,6 +79,7 @@ TACAntuHit::TACAntuHit()
    fListOfHits(0x0)
 {
    SetupClones();
+   fiNDrop=0;
 }
 
 
@@ -146,7 +147,7 @@ void TACAntuHit::Clear(Option_t*)
 {
   TAGdata::Clear();
   if (fListOfHits) fListOfHits->Clear("C");
-   
+
    return;
 }
 

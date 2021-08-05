@@ -47,7 +47,7 @@ EnableRootObject:    y
 EnableTWZmc:         n
 EnableTWnoPU:        n
 EnableTWZmatch:      y
-EnableTWCalBar:      n
+EnableTWCalBar:      y
 EnableRegionMc:      n
 
 ############   END - Options for reconstruction   ################
