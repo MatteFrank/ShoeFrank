@@ -21,6 +21,11 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 
 	if (flagMC)
 		m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+	
+	m_limitReFrag=7;
+	// InitializeMapSelectedNoFrag();
+
+	
 }
 
 
@@ -474,7 +479,7 @@ void TAGFselector::CategorizeMSD()	{
 	// 		(itTrack->second)->addTrackRep( new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( m_chargeVect->at(i) ) ) );
 	// 	}
 	// }
-// cout << "TAGFselector::CategorizeMSD()     MSDcheck1\n";
+// cout << "TAGFselector::CategohitToAddrizeMSD()     MSDcheck1\n";
 	// ClearTrackMap();
 
 	//RZ: CHECK!!! ADDED TO AVOID ERRORS
@@ -741,7 +746,10 @@ void TAGFselector::CategorizeTW()
 void TAGFselector::FillTrackCategoryMap()  {
 
 	for(map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
-	{
+	{	
+		
+
+
 		TString outName;
 
 
@@ -1033,3 +1041,311 @@ TString TAGFselector::GetRecoTrackName(Track* tr)
 
 
 
+
+bool TAGFselector::IsRefragmentedMC( TAMCpart * particle)
+	{
+		
+		bool frag=false;
+
+		if ( particle->GetCharge() < 0 && particle->GetCharge() >= 8) {frag=true;}
+		else
+		if ( particle->GetInitPos().z() > 1 ) {frag=true;}
+		else  
+		if ( particle->GetFinalPos().z() < 99.6 ) {frag=true;}
+		else
+		if ( particle->GetBaryon() < 1 ) {frag=true;}
+		else
+		if ( particle->GetMass()< 0.937){frag=true;}
+		else {
+		TVector3 pfinal = particle->GetFinalP();
+			
+			// theta = pfinal.Theta();
+			// deltaxy= tan(theta)*(particle->GetFinalPos().Z()-43.03);
+
+			// phi=pfinal.Angle(iversor);
+
+			// if(particle->GetFinalPos().X() - deltaxy*cos(phi)>4.9075 || particle->GetFinalPos().X() - deltaxy*cos(phi)< -4.9075) continue;
+			// if(particle->GetFinalPos().Y() - deltaxy*sin(phi)>4.9075 || particle->GetFinalPos().Y() - deltaxy*sin(phi)< -4.9075) continue; 
+
+		double theta =tan(4.9075/43.03);
+		if (pfinal.Theta()>theta) frag=true;}
+
+			// if ( particle->)
+
+			
+
+		
+	return frag;
+
+
+	}
+
+
+bool TAGFselector::IsRefragmentedDataLike (int IdTrackToCheck, Track* TrackToCheck)
+
+{
+	// cout << "TAGFselector::IsRefragmentedDataLike IdTrackToCheck " << IdTrackToCheck << endl;
+	bool refrag=false;
+	TVector3 posExtrapol{0,0,0}, posBeginning{0,0,0}, posToCheck{0,0,0};
+	//check between each copy of relevator (VTX->ITR, ITR->MSD, MSD->TW)
+	vector<string> planeToReach {"IT", "MSD" , "TW"};
+	int idPlaneToReachMin, idPlaneToReachMax;
+	// vector<float>* allZ;
+	double PlaneZSensor;
+
+	//Hoping the slope map will not change significantly
+
+	for (vector<string>::iterator itPlane=planeToReach.begin(); itPlane!=planeToReach.end(); itPlane++)
+	{
+
+		idPlaneToReachMin=m_SensorIDMap->GetMinFitPlane (*itPlane);
+		idPlaneToReachMax=m_SensorIDMap->GetMaxFitPlane (*itPlane);
+
+		int idPlaneItToCheck;
+		bool errorNoMis =false;
+		vector< genfit::TrackPoint* > AllMeasOfTrack = TrackToCheck->getPointsWithMeasurement();
+
+		if (AllMeasOfTrack.begin()!=AllMeasOfTrack.end()){
+		for (vector< genfit::TrackPoint* >::iterator itMeas=AllMeasOfTrack.begin(); itMeas!=AllMeasOfTrack.end(); itMeas++)
+		{
+			int tmpId=(*itMeas)->getRawMeasurement()->getDetId();
+			if (itMeas==AllMeasOfTrack.begin()) 
+			{
+				// idPlaneLastIt=tmpId; 
+				// posBeginning.SetX( (*itMeas)->getRawMeasurement()->getRawHitCoords()(0) );
+				// posBeginning.SetY( (*itMeas)->getRawMeasurement()->getRawHitCoords()(1) );
+				// posBeginning.SetZ( m_SensorIDMap->GetFitPlane( tmpId )->getO().Z() );
+			errorNoMis=true;
+			
+
+			}
+			// posBeginning=(*itMeas)->getRawMeasurement()->getRawHitCoords();}
+			else
+			// if (tmpId==(*itMeas-1)->getRawMeasurement()->getDetid()) continue;
+			// else
+			if (tmpId>=idPlaneToReachMin) 
+			{
+				if (tmpId>idPlaneToReachMax)
+				{//cout << "TAGFselector::IsRefragmentedDataLike no hit on the plane" << endl;
+				errorNoMis=true;}
+				else
+				{
+				errorNoMis=false;
+				posBeginning.SetX( (*(itMeas--))->getRawMeasurement()->getRawHitCoords()(0) );
+				posBeginning.SetY( (*(itMeas--))->getRawMeasurement()->getRawHitCoords()(1) );
+				posBeginning.SetZ( m_SensorIDMap->GetFitPlane( (*(itMeas--))->getRawMeasurement()->getDetId() )->getO().Z() );
+
+				posToCheck.SetX( (*itMeas)->getRawMeasurement()->getRawHitCoords()(0) );
+				posToCheck.SetY( (*itMeas)->getRawMeasurement()->getRawHitCoords()(1) );
+				posToCheck.SetZ( m_SensorIDMap->GetFitPlane( (*itMeas)->getRawMeasurement()->getDetId() )->getO().Z() );
+				
+				idPlaneItToCheck=(*(itMeas))->getRawMeasurement()->getDetId();
+
+				
+				// posBeginning=(*itMeas-1)->getRawMeasurement()->getRawHitCoords();
+				}
+				break;
+			}
+
+		errorNoMis=true;
+
+		}
+		}
+		else 
+		{
+			cout << "No Measure associated to the track"<< endl;
+			errorNoMis=true;
+		}
+		if (errorNoMis)
+		{
+		// cout << "TAGFselector::IsRefragmentedDataLike only Hit or no hit" << endl;
+		continue;
+		}
+		
+
+		// if (*itPlane=="ITR")
+		// {
+			
+		// 	allZ = m_SensorIDMap->GetPossibleITz();
+
+		// }
+		// else 
+		// allZ->push_back(m_SensorIDMap->GetFitPlane(idPlaneItToCheck)->getO().Z());
+		PlaneZSensor = m_SensorIDMap->GetFitPlane(idPlaneItToCheck)->getO().Z();
+		//propagation
+		// for (vector<float>::iterator itZ=allZ->begin(); itZ!=allZ->end(); itZ++)
+		
+		posExtrapol = posBeginning + m_trackSlopeMap[IdTrackToCheck] * (PlaneZSensor-posBeginning.Z());
+
+		float dist =sqrt((posExtrapol.Y()-posToCheck.Y())*(posExtrapol.Y()-posToCheck.Y())+ (posExtrapol.X()-posToCheck.X())*(posExtrapol.X()-posToCheck.X()));
+
+		if (dist>m_limitReFrag) refrag=true;
+		
+		
+		
+
+		// allZ->clear();
+
+
+
+
+	}
+
+
+	// if (TrackToCheck->getPointWithMeasurment(TrackToCheck->getNumPointsWithMeasurement())->;
+
+
+
+
+
+
+
+	return refrag;
+}
+
+int TAGFselector::TesterCheckNoFrag1()
+{
+	int count=0;
+	TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+	for (map <int, Track*>::iterator itTrack=m_trackTempMap.begin(); itTrack!=m_trackTempMap.end(); itTrack++)
+	{
+		bool check = IsRefragmentedDataLike(itTrack->first, itTrack->second);
+		if (check==IsRefragmentedMC( m_McNtuEve->GetTrack(m_measParticleMC_collection->at((*itTrack).second->getPointWithMeasurement(0)->getRawMeasurement()->getHitId())[0])))
+		count++;
+
+	}
+	
+return count;
+}
+
+int TAGFselector::TesterCheckNoFrag2()
+{
+int count2=0;
+for (map <int, Track*>::iterator itTrack=m_trackTempMap.begin(); itTrack!=m_trackTempMap.end(); itTrack++)
+{
+	
+		bool check = IsRefragmentedDataLike(itTrack->first, itTrack->second);
+		if (check==false) count2++;
+	
+}
+return count2;
+}
+
+
+
+//----------------------------------------------------------------------------------------------------
+
+	map<string,int> TAGFselector::CountSelectedNoFrag()
+	{
+
+
+        // if(m_debug > 0) cout << "TAGFselector::CountParticleGenaratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
+		map <string,int> m_numSelectedNoFragPerEl;
+		int count =0;
+        int particleCh;
+        float mass;
+
+
+        // map<string, int> genCount_vector;
+        TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+       
+       // for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
+		for(map<TString, Track*>::iterator itTrack = m_trackCategoryMap->begin(); itTrack != m_trackCategoryMap->end(); ++itTrack){
+
+				// vector<genfit::TrackPoint*> tempvect = (*itTrack).second->getPointsWithMeasurement();
+
+				bool refragedd=false;
+			   	// for(auto itPartTrack =tempvect.begin();itPartTrack!=tempvect.end(); itPartTrack++ )
+
+				// {
+				// TAMCpart* particle = m_McNtuEve->GetTrack(m_measParticleMC_collection->at((*itPartTrack)->getRawMeasurement()->getHitId())[0]);
+				TAMCpart* particle = m_McNtuEve->GetTrack(m_measParticleMC_collection->at(((*itTrack).second->getPointWithMeasurement(0)->getRawMeasurement()->getHitId()))[0]);              
+				// if (particle->GetCharge()==int(round(itTrack->second->getCardinalRep()->getPDGCharge()))) continue;
+                if (IsRefragmentedMC(particle)==true) continue;
+				// refragedd=true;
+				// } 
+				
+				// if (refragedd) continue;
+
+            //    cout << "CountSelectedNoFrag Hitid\t" <<  (*itTrack).second->getPointWithMeasurement(0)->getRawMeasurement()->getHitId()<< endl;
+				particleCh = int(round(itTrack->second->getCardinalRep()->getPDGCharge()));
+                mass = itTrack->second->getCardinalRep()->getMass((itTrack->second)->getFittedState(-1));
+
+
+ 				string outName; //pdgName
+
+                switch(particleCh)      {
+
+                        case 1: outName = "H";  break;
+                        case 2: outName = "He"; break;
+                        case 3: outName = "Li"; break;
+                        case 4: outName = "Be"; break;
+                        case 5: outName = "B";  break;
+                        case 6: outName = "C";  break;
+                        case 7: outName = "N";  break;
+                        case 8: outName = "O";  break;
+                        default:
+                                outName = "fail";       break;
+                }
+
+                //CAREFUL HERE!! Think about the possibility of throwing an error -> skip particle for the moment
+                if( outName == "fail" ) {continue;}
+				// cout << "OutName " << outName << '\n';
+
+                // pdgName = outName + int(round(mass/m_AMU));
+
+                //CAREFUL HERE!!!!!!!!! FOOT TAGrecoManager file does not have Hydrogen and Helium isotopes!!!! Also think about throwing an error here...
+                // if ( !TAGrecoManager::GetPar()->Find_MCParticle( pdgName ) )     {
+                //         continue;
+
+                // } temporary excluded
+
+				 if ( m_numSelectedNoFragPerEl.find( outName ) == m_numSelectedNoFragPerEl.end() )
+                // if (*(m_numSelectedNoFragPerEl).count(outName)==0)
+				
+                        // m_numSelectedNoFragPerEl->insert(pair<string,int> (outName,0));
+						m_numSelectedNoFragPerEl[outName]=0;
+				
+                int foundHit = 0;
+
+               for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)    {
+               
+                        // Skip plane if no hit was found
+                        if(m_allHitMeas->find(iPlane) == m_allHitMeas->end())
+                                continue;
+               
+                        // Cycle on all measurements/clusters of plane
+                        for(vector<AbsMeasurement*>::iterator itHit = m_allHitMeas->at(iPlane).begin(); itHit != m_allHitMeas->at(iPlane).end(); ++itHit)               {
+                       
+                                int MeasGlobId = (*itHit)->getHitId();
+								int match = 0;
+                                for( vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasGlobId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasGlobId).end(); ++itTrackMC )       {
+                                       
+                                        int tmpID = ( *(itTrackMC) );
+                                        if ( tmpID == m_measParticleMC_collection->at((*itTrack).second->getPointWithMeasurement(0)->getRawMeasurement()->getHitId() )[0])
+                                                match = 1;
+                                }
+
+                                if (match == 0)         continue;
+
+                                foundHit++;
+                        }
+                }
+
+                if ( foundHit < 10 )//hard-coded Should be a control based on how many hits are needed for a selection
+                        continue;
+				// count ++;
+				// cout << "OutName " << outName << "foundHit" << foundHit<< '\n';
+
+                m_numSelectedNoFragPerEl[ outName ] += 1;
+
+        }
+
+        return m_numSelectedNoFragPerEl;
+	}
+
+
+// void InitializeMapSelectedNoFrag()
+// {
+
+// }

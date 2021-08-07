@@ -89,7 +89,9 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepoGenFit, 
 	m_NTWTracks = 0;
 	m_NTWTracksGoodHypo = 0;
 	m_numGenParticle_noFrag = 0;
-
+	m_numSelected=0;
+	m_numSelectedNoFrag=0;
+	m_testcounts1=0, m_testcounts2=0;
 }
 
 
@@ -140,6 +142,16 @@ Bool_t TAGactKFitter::Action()	{
 	if ( m_selector->Categorize() >= 0 )
 		MakeFit(evNum);
 	
+	AcquireNumSelectedNoFrag(m_selector->CountSelectedNoFrag());
+	
+	m_testcounts1+=m_selector->	TesterCheckNoFrag1();
+	m_testcounts2+=m_selector->	TesterCheckNoFrag2();
+	
+
+	 //map<TString,int> * numSelectedNoFragPerEl 
+	// cout << "TAGactKFitter::CountSelected \t\t" << m_selector->CountSelectedNoFrag() << endl;
+	// cout << "TAGactKFitter::m_numSelectedNoFrag partial\t" << m_numSelectedNoFrag<<endl;; 
+
 	chVect.clear();
 	m_allHitMeasGF.clear();
 	m_measParticleMC_collection->clear();
@@ -186,9 +198,20 @@ void TAGactKFitter::Finalize() {
   // }
 
 	// if ( TAGrecoManager::GetPar()->IsMC() ) 		m_trackAnalysis->EvaluateAndFill_MomentumResolution( &h_dPOverP_x_bin, &h_resoP_over_Pkf, &h_biasP_over_Pkf );
-	if ( TAGrecoManager::GetPar()->IsMC() ) 		PrintPurity();
-	PrintEfficiency();
+	if ( TAGrecoManager::GetPar()->IsMC() ) 
+	{
+	PrintPurity();
+	m_numSelected = GetNumSelected();
+	cout << "TAGCactKFitter::m_numSelected " << m_numSelected << '\n';
+	}
 	
+	// cout << "TAGactKFitter::Finalize() num Selected No Frag \t" << m_numSelectedNoFrag << endl;
+	
+	PrintEfficiency();
+	EfficiencySelNoFrag();
+	EfficiencyTotal();
+
+
 	// map<string, map<float, TH1F*> > h_dPOverP_x_bin
 	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ )
 		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
@@ -229,6 +252,17 @@ void TAGactKFitter::Finalize() {
 	h_sigmaP_tot->SetNameTitle( "errdP", "errdP" );
 	AddHistogram( h_sigmaP_tot );
 
+	
+	TH1F* h_numGenParticle_noFrag = new TH1F( "h_numGenParticle_noFrag", "h_numGenParticle_noFrag", 100, 0, 10000 );
+	h_numGenParticle_noFrag->Fill( m_numGenParticle_noFrag );
+	cout << "m_numGenParticle_noFrag = " << m_numGenParticle_noFrag << endl;
+	AddHistogram( h_numGenParticle_noFrag );
+	EfficiencySelGenNoFrag(m_numSelected, m_numGenParticle_noFrag); 
+	cout << "checking count matches "<< m_testcounts1 << endl;
+	cout << "checking count datalike " << m_testcounts2 <<endl;
+
+
+
 	cout << "TAGactKFitter::Finalize() -- END"<< endl;
 	SetValidHistogram(kTRUE);
 	SetHistogramDir(m_dir);
@@ -236,10 +270,6 @@ void TAGactKFitter::Finalize() {
 	//show event display
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )		display->open();
 
-	TH1F* h_numGenParticle_noFrag = new TH1F( "h_numGenParticle_noFrag", "h_numGenParticle_noFrag", 100, 0, 10000 );
-	AddHistogram( h_numGenParticle_noFrag );
-	h_numGenParticle_noFrag->Fill( m_numGenParticle_noFrag );
-	cout << "m_numGenParticle_noFrag = " << m_numGenParticle_noFrag << endl;
 
 	if(m_debug > 0)
 	{
@@ -1101,6 +1131,7 @@ void TAGactKFitter::PrintEfficiency() {
 		float kk = (float)m_nConvergedTracks_all[ *itPart ];
 		float nn = m_nSelectedTrackCandidates[ *itPart ];
 		float eff = (float)kk/nn;
+		m_EfficiencyRec[*itPart]=eff;
 		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
 		if ( m_debug > -1 )		cout << "Efficiency " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
 		
@@ -1131,9 +1162,81 @@ void TAGactKFitter::PrintEfficiency() {
 
 
 
+int TAGactKFitter::GetNumSelected()
+{
+	int count=0;
+
+	for(vector<string>::iterator itPart = m_Particles.begin(); itPart != m_Particles.end(); ++itPart)
+	{
+		if (m_nSelectedTrackCandidates.find(*itPart)==m_nSelectedTrackCandidates.end()) continue;
+		count += m_nSelectedTrackCandidates[*itPart];
+	}
+
+
+	return count;
+
+
+}
 
 
 
+void TAGactKFitter::EfficiencySelGenNoFrag(int TotSel, int TotNoFrag)
+{
+	double Efficiency = ((double)TotSel)/((double)TotNoFrag);
+	cout << "TAGactKFitter::EfficiencySelGenNoFrag " << Efficiency << '\n';
+	TH1F* h_EfficiencyNoFrag = new TH1F("h_EfficiencyNoFrag", "h_EfficiencyNoFrag", 100,0,5);
+	AddHistogram(h_EfficiencyNoFrag);
+	h_EfficiencyNoFrag->Fill(Efficiency);
+
+}
+
+void TAGactKFitter::EfficiencySelNoFrag()
+{
+
+	TH1F* h_EfficiencySelNoFrag = new TH1F("h_EfficiencySelNoFrag", "h_EfficiencySelNoFrag", 9,0,9);
+	int k=0;
+	int m_numSelNoFragTot=0, m_numSelTot=0;
+	// vector<string>::iterator itPart2 = m_Particles.begin();
+	for(vector<string>::iterator itPart = m_Particles.begin(); itPart != m_Particles.end(); ++itPart)
+	{	
+		k++;
+		m_EfficiencyNoFrag[*itPart] = double(	m_numSelectedNoFragPerEl[*itPart]) /m_nSelectedTrackCandidates[*itPart];
+		m_numSelNoFragTot+=m_numSelectedNoFragPerEl[*itPart];
+		m_numSelTot+=m_nSelectedTrackCandidates[*itPart];
+		h_EfficiencySelNoFrag->SetBinContent(k,m_EfficiencyNoFrag[*itPart]);
+		h_EfficiencySelNoFrag->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
+		cout << "TAGactKFitter::EfficiencySelNoFrag " << *itPart << ' ' << m_EfficiencyNoFrag[*itPart]<<' ' <<m_numSelectedNoFragPerEl[*itPart]<<' ' << m_nSelectedTrackCandidates[*itPart]	<< '\n'; 
+
+		// itPart2++;
+	}
+
+	double Efficiency = ((double)m_numSelNoFragTot)/((double)m_numSelTot);
+		cout << "OverAll Efficiency " << Efficiency << ' ' << m_numSelNoFragTot << ' ' << m_numSelTot << '\n';
+	h_EfficiencySelNoFrag->SetBinContent(9,Efficiency);
+	h_EfficiencySelNoFrag->GetXaxis()->SetBinLabel(9, "Overall" );
+	AddHistogram(h_EfficiencySelNoFrag);
+	// h_EfficiencySelNoFrag->Fill(Efficiency);
+
+}
+
+void TAGactKFitter::EfficiencyTotal()
+{
+
+	TH1F* h_EfficiencyTot = new TH1F("h_EfficiencyTot", "h_EfficiencyTot", 8,0,8);
+	int k=0;
+	for(vector<string>::iterator itPart = m_Particles.begin(); itPart != m_Particles.end(); ++itPart) 
+	{
+		k++;
+		double eff = m_EfficiencyRec[*itPart]*m_EfficiencyNoFrag[*itPart];
+		h_EfficiencyTot->SetBinContent(k,eff);
+		h_EfficiencyTot->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
+		cout << "Efficiency Tot " << (*itPart) << ' '<<   ' ' << eff <<'\n';
+	
+	}
+	
+AddHistogram(h_EfficiencyTot);
+
+}
 
 
 
@@ -1376,7 +1479,16 @@ void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTra
 
 
 
+void TAGactKFitter::AcquireNumSelectedNoFrag(map<string,int> numSelectedNoFragPerEltemp)
+{
 
+
+for (map<string,int>::iterator itEl= numSelectedNoFragPerEltemp.begin(); itEl!=numSelectedNoFragPerEltemp.end(); itEl++)
+{
+
+	m_numSelectedNoFragPerEl[((*itEl).first)]+=(*itEl).second;
+}
+}
 
 
 

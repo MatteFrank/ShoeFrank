@@ -162,6 +162,12 @@ public:
 	void PrintEfficiency();
 	void PrintPurity();
 
+	int GetNumSelected();
+	// int GetNumSelectedNoFrag();
+	void EfficiencySelGenNoFrag(int,int);
+	void EfficiencySelNoFrag();
+	void EfficiencyTotal();
+
 	void InitEventDisplay();
 
 	void MatrixToZero( TMatrixD *matrix );
@@ -273,6 +279,8 @@ private:
 	long m_evNum;
 
 	int m_numGenParticle_noFrag;
+	int m_numSelected;
+	int m_numSelectedNoFrag;
 
 	bool m_reverse;
 	bool m_recolike1;
@@ -334,6 +342,10 @@ private:
 	map<string, int> m_nConvergedTracks_all;
 	map<string, int> m_nConvergedTracks_good;
 	map<string, int> m_nConvergedTracks_matched;
+	map<string, int> m_numSelectedNoFragPerEl;
+	
+	map<string, double> m_EfficiencyNoFrag;
+	map<string, double> m_EfficiencyRec;
 
 
 	std::ofstream ofs;
@@ -344,7 +356,10 @@ private:
 	int m_NTWTracksGoodHypo;
 	int m_NTWTracks;
 
+	int m_testcounts1,m_testcounts2;
+
 	void	EvaluateProjectionEfficiency(string* PartName, Track* fitTrack);
+	void 	AcquireNumSelectedNoFrag(map<string, int>);
 };
 
 

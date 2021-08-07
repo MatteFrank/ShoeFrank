@@ -77,6 +77,11 @@ public:
 	int			Categorize( );
 	TString		GetRecoTrackName(Track* tr);
 	int			GetChargeFromTW(Track* trackToCheck);
+	// int 		GetNSelectedNoFrag(){return m_nSelectedNoFrag;}
+	// map<string,int>* GetNumSelectedNoFragPerEl () {return m_numSelectedNoFragPerEl;}
+	map<string,int>	CountSelectedNoFrag();
+	int			TesterCheckNoFrag1();
+	int			TesterCheckNoFrag2();
 
 private:
 
@@ -92,14 +97,20 @@ private:
 	void		CategorizeMSD();
 	void		CategorizeTW();
 	void		FillTrackCategoryMap();
+
 	TVector3	ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane, int repId =-1);
+
+	bool 		IsRefragmentedMC( TAMCpart* );
+	bool 		IsRefragmentedDataLike(int, Track* );
+	// void 		InitializeMapSelectedNoFrag();
 
 
 	vector<int>* m_chargeVect; //Vector with charge values seen by TW -> used for track representation
 	map<int, vector<AbsMeasurement*> >* m_allHitMeas; //Vector with all the Measurements in GenFit format
 	TAGFdetectorMap* m_SensorIDMap;
 	vector<AbsTrackRep*> m_trackRepVec;
-	
+	// map<string,int>* m_numSelectedNoFragPerEl;
+
 	map<TString, Track*>* m_trackCategoryMap;
 	map<int, Track*> m_trackTempMap;
 	map<int, TVector3> m_trackSlopeMap;
@@ -107,9 +118,12 @@ private:
 	
 	TAMCntuPart* m_McNtuEve;
 
+	// int m_nSelectedNoFrag;
 	Bool_t flagMC; 
 	int m_debug;
 	string m_systemsON;
+	float m_limitReFrag ;
+	
 	
 	double m_AMU = 0.9310986964; // in GeV // conversion betweem mass in GeV and atomic mass unit
 };

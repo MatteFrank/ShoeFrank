@@ -327,6 +327,12 @@ int TAGFuploader::GetNumGenParticle_noFrag() {
 	
 	TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 	
+	TVector3 kversor (0,0,1);
+	TVector3 iversor (1,0,0);
+	// double z = 14;
+	double theta=0,deltaxy=0, phi=0;
+
+
 	int count = 0;
 	for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
 
@@ -334,16 +340,48 @@ int TAGFuploader::GetNumGenParticle_noFrag() {
 		if ( particle->GetCharge() > 0 && particle->GetCharge() <= 8) {
 
 			if ( particle->GetInitPos().z() > 1 ) continue;
-			if ( particle->GetFinalPos().z() < 120 ) continue;
+			if ( particle->GetFinalPos().z() < 99.6 ) continue;
+			if ( particle->GetBaryon() < 1 ) continue;
+			if ( particle->GetMass()< 0.937)continue;
+			
+			TVector3 pfinal = particle->GetFinalP();
+			
+			// theta = pfinal.Theta();
+			// deltaxy= tan(theta)*(particle->GetFinalPos().Z()-43.03);
+
+			// phi=pfinal.Angle(iversor);
+
+			// if(particle->GetFinalPos().X() - deltaxy*cos(phi)>4.9075 || particle->GetFinalPos().X() - deltaxy*cos(phi)< -4.9075) continue;
+			// if(particle->GetFinalPos().Y() - deltaxy*sin(phi)>4.9075 || particle->GetFinalPos().Y() - deltaxy*sin(phi)< -4.9075) continue; 
+
+			theta =tan(4.9075/43.03);
+			if (pfinal.Theta()>theta) continue;
+
+			// if ( particle->)
 
 			count++;
 
 		}
 		
 	}
+
+	
 	return count;
 }
 
+// int TAGFuploader::GetNumParticle_noFrag_MC2()
+// {
+// int count=0;
+
+// for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)
+// {
+
+
+// }
+
+// return int;
+
+// }
 
 
 

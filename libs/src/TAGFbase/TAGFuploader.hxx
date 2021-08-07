@@ -60,6 +60,7 @@ public:
   int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  );
   void GetPossibleCharges( vector<int>* chVect );
   int GetNumGenParticle_noFrag();
+//   int GetNumParticle_noFrag_MC2();
 
   map< int, vector<int> >* TakeMeasParticleMC_Collection();
   
