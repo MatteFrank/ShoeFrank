@@ -53,22 +53,19 @@ struct baseline_procedure {
     template<class O>
     constexpr void call( O* o_ph ) {
         puts(__PRETTY_FUNCTION__) ;
-        std::size_t reconstructed_number{0};
-        std::size_t reconstructible_number{0};
-        std::size_t correct_cluster_number{0};
-        std::size_t recovered_cluster_number{0};\
-        for(auto const & module : o_ph->retrieve_results().module_c){
-            reconstructed_number += module.reconstructed_number;
-            reconstructible_number += module.reconstructible_number;
-            correct_cluster_number += module.correct_cluster_number;
-            recovered_cluster_number += module.recovered_cluster_number;
-        }
-        o_ph->baseline.efficiency = reconstructed_number * 1./reconstructible_number;
-        o_ph->baseline.purity = correct_cluster_number * 1./recovered_cluster_number;
+        
+        auto reconstructible = o_ph->retrieve_reconstructible();
+        auto reconstructed = o_ph->retrieve_reconstructed();
+        auto efficiency = reconstructed.value / reconstructible.value;
+        
+        auto purity = o_ph->retrieve_purity();
+
+        o_ph->baseline.efficiency = efficiency;
+        o_ph->baseline.purity = purity.value;
         
         std::cout << "new_baseline_efficiency: " << o_ph->baseline.efficiency << '\n';
         std::cout << "new_baseline_purity: " << o_ph->baseline.purity << '\n';
-        std::cout << "reconstructed_number: " << reconstructed_number << '\n';
+        std::cout << "reconstructed_number: " << reconstructed.value << '\n';
     }
     
     template<class O>
@@ -109,25 +106,18 @@ struct caller{
     constexpr void call(O *o_ph){
         puts(__PRETTY_FUNCTION__) ;
         
-        std::size_t reconstructed_number{0};
-        std::size_t reconstructible_number{0};
-        std::size_t correct_cluster_number{0};
-        std::size_t recovered_cluster_number{0};\
-        for(auto const & module : o_ph->retrieve_results().module_c){
-            reconstructed_number += module.reconstructed_number;
-            reconstructible_number += module.reconstructible_number;
-            correct_cluster_number += module.correct_cluster_number;
-            recovered_cluster_number += module.recovered_cluster_number;
-        }
+        auto reconstructible = o_ph->retrieve_reconstructible();
+        auto reconstructed = o_ph->retrieve_reconstructed();
+        auto efficiency = reconstructed.value / reconstructible.value;
         
-        auto efficiency = reconstructed_number * 1./reconstructible_number;
-        auto purity = correct_cluster_number * 1./recovered_cluster_number;
+        auto purity = o_ph->retrieve_purity();
         
         auto& derived = static_cast<Derived&>(*this);
-        auto score = derived.compute_score( efficiency, purity, o_ph);
+        auto score = derived.compute_score( efficiency, purity.value, o_ph); //should be only o_ph right ? -> want to store efficiency and purity thouuugh
                                                                
         std::cout << "efficiency: " << efficiency << '\n';
-        std::cout << "purity: " << purity << '\n';
+        std::cout << "purity: " << purity.value << '\n';
+        std::cout << "reconstructed_number: " << reconstructed.value << '\n';
         
         derived.get_results().push_back(
                     procedure_result{
@@ -135,7 +125,7 @@ struct caller{
                             o_ph->sign * o_ph->offset,
                             score,
                             efficiency,
-                            purity
+                            purity.value
                                     }   );
     }
 };

@@ -304,10 +304,18 @@ public:
         
         std::vector< data_type const* > cluster_c;
         cluster_c.reserve( full_state_c.size() );
+        chisquared chi2;
         for( auto const& full_state : full_state_c ){
             cluster_c.emplace_back( full_state.data );
+            chi2.chisquared_predicted += full_state.chisquared_predicted;
+            chi2.chisquared_corrected += full_state.chisquared_corrected;
+            chi2.distance  += full_state.distance;
         }
+        chi2.chisquared_predicted /= full_state_c.size();
+        chi2.chisquared_corrected /= full_state_c.size();
+        chi2.distance /= full_state_c.size();
         
+        //store both chisquare as well -> distribution of mean value then 
         auto particle = particle_properties{
                                        track_p.momentum,
                                        track_p.hypothesis.properties.charge,
@@ -317,7 +325,7 @@ public:
         action_m.logger_m << "mass: " << particle.mass << '\n';
         action_m.logger_m << "momentum: " << particle.momentum << '\n';
         
-        auto reconstructed = reconstructed_track<data_type>{ cluster_c, std::move(particle),  track_p.parameters, track_p.clone };
+        auto reconstructed = reconstructed_track<data_type>{ cluster_c, std::move(particle),  track_p.parameters, track_p.clone, chi2 };
         register_reconstructed_track( cluster_c.back(), std::move(reconstructed) );
     }
     

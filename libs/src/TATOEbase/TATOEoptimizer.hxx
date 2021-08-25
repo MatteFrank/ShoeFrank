@@ -18,6 +18,7 @@
 #include "TATOEutilities.hxx"
 #include "TATOEprocedure.hxx"
 #include "TATOEact.hxx"
+#include "TATOEchecker.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGparGeo.hxx"
@@ -221,7 +222,7 @@ struct action_factory<configuration< vertex_tag, tof_tag>> {
         auto stepper = make_stepper<data_grkn56>( std::move(ode) );
         auto ukf = make_ukf<state>( std::move(stepper) );
         
-        return new_TATOEactGlb(
+        auto* action_h = new_TATOEactGlb(
                                std::move(ukf),
                                std::move(list),
                                nullptr,
@@ -229,6 +230,14 @@ struct action_factory<configuration< vertex_tag, tof_tag>> {
                                field_h,
                                true
                                );
+        
+        using namespace checker;
+        auto& computation_checker_c = action_h->get_computation_checker();
+        computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
+        computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
+        computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
+        
+        return action_h;
     }
 };
     
@@ -264,7 +273,7 @@ struct action_factory<configuration< vertex_tag, it_tag, tof_tag>> {
         auto stepper = make_stepper<data_grkn56>( std::move(ode) );
         auto ukf = make_ukf<state>( std::move(stepper) );
         
-        return new_TATOEactGlb(
+        auto * action_h = new_TATOEactGlb(
                                std::move(ukf),
                                std::move(list),
                                nullptr,
@@ -272,6 +281,14 @@ struct action_factory<configuration< vertex_tag, it_tag, tof_tag>> {
                                field_h,
                                true
                                );
+    
+        using namespace checker;
+        auto& computation_checker_c = action_h->get_computation_checker();
+        computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
+        computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
+        computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
+        
+        return action_h;
     }
 };
 
@@ -310,7 +327,7 @@ struct action_factory<configuration<vertex_tag, it_tag, msd_tag, tof_tag>> {
         auto stepper = make_stepper<data_grkn56>( std::move(ode) );
         auto ukf = make_ukf<state>( std::move(stepper) );
         
-        return new_TATOEactGlb(
+        auto * action_h = new_TATOEactGlb(
                                std::move(ukf),
                                std::move(list),
                                nullptr,
@@ -318,6 +335,14 @@ struct action_factory<configuration<vertex_tag, it_tag, msd_tag, tof_tag>> {
                                field_h,
                                true
                                );
+        
+        using namespace checker;
+        auto& computation_checker_c = action_h->get_computation_checker();
+        computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
+        computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
+        computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
+        
+        return action_h;
     }
 };
     
@@ -384,7 +409,11 @@ struct TATOEoptimizer : TATOEbaseOptimizer{
         ++current_procedure_m;
     }
     void setup_procedure(){ erased_procedure_mh->setup(this); }
-    void setup_next_iteration(){ erased_procedure_mh->setup_next_iteration(this); }
+    void setup_next_iteration(){
+        auto& computation_checker_c = action_mh->get_computation_checker();
+        for( auto& computation_checker : computation_checker_c ){ computation_checker.clear(); }
+        erased_procedure_mh->setup_next_iteration(this);
+    }
     void setup_cuts(){ erased_procedure_mh->setup_cuts(this); }
 
     
@@ -406,6 +435,10 @@ struct TATOEoptimizer : TATOEbaseOptimizer{
     }
     
     auto const& retrieve_results() { return action_mh->retrieve_matched_results(); }
+    
+    auto retrieve_reconstructible(){ return action_mh->get_computation_checker()[0].output(); }
+    auto retrieve_reconstructed(){ return action_mh->get_computation_checker()[1].output(); }
+    auto retrieve_purity(){ return action_mh->get_computation_checker()[2].output(); }
     
 private:
     template<std::size_t ... Indices>

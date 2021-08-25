@@ -12,7 +12,12 @@
 
 #include "TATOEutilities.hxx"
 
+#include "TAGroot.hxx"
 #include "TAGcluster.hxx"
+#include "TAVTntuCluster.hxx"
+#include "TAITntuCluster.hxx"
+#include "TAMSDntuCluster.hxx"
+#include "TATWntuPoint.hxx"
 
 #include "TH2D.h"
 
@@ -241,11 +246,15 @@ template<class B, class CO>
 struct purity_data<histogram<per_nucleon, B>, CO>{
     TH1D recovered_cluster_histogram{"", "", 100, 0, 1.3 };
     TH1D correct_cluster_histogram{"", "", 100, 0, 1.3};
+    
+    void clear(){}
 };
 template<class CO>
 struct purity_data< computation, CO >{
     std::size_t recovered_cluster_count{0};
     std::size_t correct_cluster_count{0};
+
+    void clear() { puts(__PRETTY_FUNCTION__); recovered_cluster_count = correct_cluster_count = 0 ;  }
 };
 
 
@@ -254,7 +263,10 @@ struct purity_data< computation, CO >{
 
 
 template<class F, class CO> struct fake_distribution_data{};
-template<class CO> struct fake_distribution_data<computation, CO>{ std::size_t counter{0}; };
+template<class CO> struct fake_distribution_data<computation, CO>{
+    std::size_t counter{0};
+    void clear(){ puts(__PRETTY_FUNCTION__); counter = 0 ; }
+};
 
 template<class CO, class MO>
 struct fake_distribution_predicate {
@@ -272,39 +284,48 @@ template<class F, class CO> struct reconstructed_distribution_data{};
 template<>
 struct reconstructed_distribution_data<histogram<per_nucleon, reconstructible_based>, no_requirement>{
     TH1D value{ "reconstructed_distribution_mixed_pmc/u", ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+    void clear(){}
 };
 template<>
 struct reconstructed_distribution_data<histogram<absolute, reconstructible_based>, no_requirement>{
     TH1D value{ "reconstructed_distribution_mixed_pmc", ";p_{mc} (GeV); Count", 1000, 0, 9 };
+    void clear(){}
 };
 template<int C>
 struct reconstructed_distribution_data<histogram<per_nucleon, reconstructible_based>, isolate_charge<C>>{
     TH1D value{ Form("reconstructed_distribution_charge%d_pmc/u", C), ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+    void clear(){}
 };
 template<int C>
 struct reconstructed_distribution_data<histogram<absolute, reconstructible_based>, isolate_charge<C>>{
     TH1D value{ Form("reconstructed_distribution_charge%d_pmc", C), ";p_{mc} (GeV); Count", 1000, 0, 9 };
+    void clear(){}
 };
 
 template<>
 struct reconstructed_distribution_data<histogram<per_nucleon, reconstructed_based>, no_requirement>{
     TH1D value{ "reconstructed_distribution_mixed_prec/u", ";p_{rec} (GeV/u); Count", 100, 0, 1.3 };
+    void clear(){}
 };
 template<>
 struct reconstructed_distribution_data<histogram<absolute, reconstructed_based>, no_requirement>{
     TH1D value{ "reconstructed_distribution_mixed_prec", ";p_{rec} (GeV); Count", 1000, 0, 9 };
+    void clear(){}
 };
 template<int C>
 struct reconstructed_distribution_data<histogram<per_nucleon, reconstructed_based>, isolate_charge<C>>{
     TH1D value{ Form("reconstructed_distribution_charge%d_prec/u", C), ";p_{rec} (GeV/u); Count", 100, 0, 1.3 };
+    void clear(){}
 };
 template<int C>
 struct reconstructed_distribution_data<histogram<absolute, reconstructed_based>, isolate_charge<C>>{
     TH1D value{ Form("reconstructed_distribution_charge%d_prec", C), ";p_{rec} (GeV); Count", 1000, 0, 9 };
+    void clear(){}
 };
 template<class CO>
 struct reconstructed_distribution_data< computation, CO >{
     std::size_t counter{0};
+    void clear(){ puts(__PRETTY_FUNCTION__); counter = 0 ; }
 };
 
 
@@ -315,23 +336,28 @@ template<class F, class CO> struct reconstructible_distribution_data{};
 template<>
 struct reconstructible_distribution_data<histogram<per_nucleon, reconstructible_based>, no_requirement>{
     TH1D value{ "reconstructible_distribution_mixed_pmc/u", ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+    void clear(){}
 };
 template<>
 struct reconstructible_distribution_data<histogram<absolute, reconstructible_based>, no_requirement>{
     TH1D value{ "reconstructible_distribution_mixed_pmc", ";p_{mc} (GeV); Count", 1000, 0, 9 };
+    void clear(){}
 };
 template<int C>
 struct reconstructible_distribution_data<histogram<per_nucleon, reconstructible_based>, isolate_charge<C>>{
     TH1D value{ Form("reconstructible_distribution_charge%d_pmc/u", C), ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+    void clear(){}
 };
 template<int C>
 struct reconstructible_distribution_data<histogram<absolute, reconstructible_based>, isolate_charge<C>>{
     TH1D value{ Form("reconstructible_distribution_charge%d_pmc", C), ";p_{mc} (GeV); Count", 1000, 0, 9 };
+    void clear(){}
 };
 
 template<class CO>
 struct reconstructible_distribution_data< computation, CO >{
     std::size_t counter{0};
+    void clear(){ counter = 0 ; }
 };
 
 template<class CO, class MO>
@@ -358,7 +384,10 @@ struct clone_distribution_outcome<Derived, computation>{
 
 
 template<class F, class CO> struct clone_distribution_data{};
-template<class CO> struct clone_distribution_data<computation, CO>{ std::size_t counter{0}; };
+template<class CO> struct clone_distribution_data<computation, CO>{
+    std::size_t counter{0};
+    void clear(){ counter = 0 ; }
+};
 
 
 //----------------------------------------------
@@ -378,11 +407,13 @@ template<class F, class CO> struct mass_identification_data{};
 template<class R, class B>
 struct mass_identification_data<histogram<R, B>, no_requirement> {
     TH2D value{"mass_identification_mixed", ";A_{mc};A_{rec};Count", 20, 0, 20, 20, 0, 20  };
+    void clear(){}
 };
 
 template<class R, class B, int C>
 struct mass_identification_data<histogram<R, B>, isolate_charge<C>> {
     TH2D value{Form("mass_identification_charge%d", C), ";A_{mc};A_{rec};Count", 20, 0, 20, 20, 0, 20  };
+    void clear(){}
 };
 
 //----------------------------------------------
@@ -412,25 +443,192 @@ template<class F, class CO> struct momentum_difference_data{};
 template< class B>
 struct momentum_difference_data<histogram<per_nucleon, B>, no_requirement> {
     TH1D value{"momentum_difference_mixed/u", ";p_{mc}/u-p_{rec}/u;Count", 500, -5, 5 };
+    void clear(){}
 };
 template<class B, int C>
 struct momentum_difference_data<histogram<per_nucleon, B>, isolate_charge<C>> {
     TH1D value{Form("momentum_difference_charge%d/u", C), ";p_{mc}/u-p_{rec}/u;Count", 500, -5, 5  };
+    void clear(){}
 };
 template<class B>
 struct momentum_difference_data<histogram<absolute, B>, no_requirement> {
     TH1D value{"momentum_difference_mixed", ";p_{mc}-p_{rec};Count", 500, -5, 5  };
+    void clear(){}
 };
 template<class B, int C>
 struct momentum_difference_data<histogram<absolute, B>, isolate_charge<C>> {
     TH1D value{Form("momentum_difference_charge%d", C), ";p_{mc}-p_{rec};Count", 500, -5, 5 };
+    void clear(){}
 };
 
 
 //----------------------------------------------
 //                  residuals
 
+//way to separate X/Y ? just change output from single_value to custom
+template<class Derived, class F> struct residuals_outcome{};
+template<class Derived, class R, class B>
+struct residuals_outcome<Derived, histogram<R, B>>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        
+        auto compute_position_x_l = [&parameters = reconstructed.parameters.x]( double z ){
+            return parameters[3] * z * z * z + parameters[2] * z * z + parameters[1] * z + parameters[0];
+        };
+        auto compute_position_y_l = [&parameters = reconstructed.parameters.y]( double z ){
+            return parameters[1] * z + parameters[0];
+        };
+        
+        auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+        
+        auto transform_l = [&transformation_h]( auto * cluster_ph, auto transformation_p )
+                                    { return (transformation_h->*transformation_p)(cluster_ph->GetPositionG()); };
+        
+        
+        auto const& cluster_c = reconstructed.get_clusters();
+        for( auto const& cluster_h : cluster_c){
+            
+            TVector3 cluster_position;
+            auto const * vertex_h = dynamic_cast<TAVTcluster const*>( cluster_h );
+            if( vertex_h ){
+                cluster_position = transform_l( vertex_h, &TAGgeoTrafo::FromVTLocalToGlobal );
+                auto track_position_x = compute_position_x_l( cluster_position.Z() );
+                auto track_position_y = compute_position_y_l( cluster_position.Z() );
+                data.value_all_x.Fill( cluster_position.X() - track_position_x );
+                data.value_all_y.Fill( cluster_position.Y() - track_position_y );
+                data.value_vtx_x.Fill( cluster_position.X() - track_position_x );
+                data.value_vtx_y.Fill( cluster_position.Y() - track_position_y );
+                continue;
+            }
+            auto const * it_h = dynamic_cast<TAITcluster const*>( cluster_h );
+            if( it_h ){
+                cluster_position = transform_l( it_h, &TAGgeoTrafo::FromITLocalToGlobal );
+                auto track_position_x = compute_position_x_l( cluster_position.Z() );
+                auto track_position_y = compute_position_y_l( cluster_position.Z() );
+                data.value_all_x.Fill( cluster_position.X() - track_position_x );
+                data.value_all_y.Fill( cluster_position.Y() - track_position_y );
+                data.value_it_x.Fill( cluster_position.X() - track_position_x );
+                data.value_it_y.Fill( cluster_position.Y() - track_position_y );
+                continue;
+            }
+            auto const * msd_h = dynamic_cast<TAMSDcluster const*>( cluster_h );
+            if( msd_h ){
+                cluster_position = transform_l( msd_h, &TAGgeoTrafo::FromMSDLocalToGlobal );
+                auto view = msd_h->GetPlaneView();
+                if( view ){
+                    auto track_position_y = compute_position_y_l( cluster_position.Z() );
+                    data.value_all_y.Fill( cluster_position.Y() - track_position_y );
+                    data.value_msd_y.Fill( cluster_position.Y() - track_position_y );
+                    continue;
+                }
+                auto track_position_x = compute_position_x_l( cluster_position.Z() );
+                data.value_all_x.Fill( cluster_position.X() - track_position_x );
+                data.value_msd_x.Fill( cluster_position.X() - track_position_x );
+                continue;
+            }
+            auto const * tw_h = dynamic_cast<TATWpoint const*>( cluster_h );
+            if( tw_h ){
+                cluster_position = transform_l( tw_h, &TAGgeoTrafo::FromTWLocalToGlobal);
+                auto track_position_x = compute_position_x_l( cluster_position.Z() );
+                auto track_position_y = compute_position_y_l( cluster_position.Z() );
+                data.value_all_x.Fill( cluster_position.X() - track_position_x );
+                data.value_all_y.Fill( cluster_position.Y() - track_position_y );
+                data.value_tof_x.Fill( cluster_position.X() - track_position_x );
+                data.value_tof_y.Fill( cluster_position.Y() - track_position_y );
+                continue;
+            }
+        }
+    }
+};
 
+template<class F, class CO> struct residuals_data{};
+template< class R, class B>
+struct residuals_data<histogram<R, B>, no_requirement> {
+    TH1D value_all_x{"residuals_mixed_all_x", ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_vtx_x{"residuals_mixed_vtx_x", ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_it_x{"residuals_mixed_it_x", ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_msd_x{"residuals_mixed_msd_x", ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_tof_x{"residuals_mixed_tof_x", ";cluster_position - track_position;Count", 500, -20, 20 };
+    
+    TH1D value_all_y{"residuals_mixed_all_y", ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_vtx_y{"residuals_mixed_vtx_y", ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_it_y{"residuals_mixed_it_y", ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_msd_y{"residuals_mixed_msd_y", ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_tof_y{"residuals_mixed_tof_y", ";cluster_position - track_position;Count", 500, -20, 20 };
+    void clear(){}
+};
+template<class R, class B, int C>
+struct residuals_data<histogram<R, B>, isolate_charge<C>> {
+    TH1D value_all_x{Form("residuals_charge%d_all_x", C), ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_vtx_x{Form("residuals_charge%d_vtx_x", C), ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_it_x{Form("residuals_charge%d_it_x", C), ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_msd_x{Form("residuals_charge%d_msd_x", C), ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_tof_x{Form("residuals_charge%d_tof_x", C), ";cluster_position - track_position;Count", 500, -20, 20 };
+    
+    TH1D value_all_y{Form("residuals_charge%d_all_y", C), ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_vtx_y{Form("residuals_charge%d_vtx_y", C), ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_it_y{Form("residuals_charge%d_it_y", C), ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_msd_y{Form("residuals_charge%d_msd_y", C), ";cluster_position - track_position;Count", 500, -20, 20 };
+    TH1D value_tof_y{Form("residuals_charge%d_tof_y", C), ";cluster_position - track_position;Count", 500, -20, 20 };
+    void clear(){}
+};
+
+
+template<class Derived, class F, class CO> struct residuals_output{};
+template<class Derived, class T, class B, class CO>
+struct residuals_output< Derived, histogram<T, B>, CO>{
+    void output() const {
+        auto& data = static_cast<Derived const&>(*this).data();
+        data.value_all_x.Write();
+        data.value_vtx_x.Write();
+        data.value_it_x.Write();
+        data.value_msd_x.Write();
+        data.value_tof_x.Write();
+        
+        data.value_all_y.Write();
+        data.value_vtx_y.Write();
+        data.value_it_y.Write();
+        data.value_msd_y.Write();
+        data.value_tof_y.Write();
+    }
+};
+
+
+//----------------------------------------------
+//                  chisquared_distribution
+template<class Derived, class F> struct chisquared_distribution_outcome{};
+template<class Derived, class R, class B>
+struct chisquared_distribution_outcome<Derived, histogram<R, B>>{
+    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.value_predicted.Fill( reconstructed.chi2.chisquared_predicted );
+        data.value_corrected.Fill( reconstructed.chi2.chisquared_corrected );
+        data.value_distance.Fill( reconstructed.chi2.distance );
+    }
+};
+
+template<class Derived, class F, class CO> struct chisquared_distribution_output{};
+template<class Derived, class T, class B, class CO>
+struct chisquared_distribution_output< Derived, histogram<T, B>, CO> {
+    void output() const {
+        auto& data = static_cast<Derived const&>(*this).data();
+        data.value_predicted.Write();
+        data.value_corrected.Write();
+        data.value_distance.Write();
+    }
+};
+
+template<class F, class CO> struct chisquared_distribution_data{};
+template< class R, class B>
+struct chisquared_distribution_data<histogram<R, B>, no_requirement> {
+    TH1D value_predicted{"chisquared_predicted", ";;Count", 500, 0, 30 };
+    TH1D value_corrected{"chisquared_corrected", ";;Count", 500, 0, 30 };
+    TH1D value_distance{"distance", ";;Count", 500, 0, 30 };
+
+    void clear(){}
+};
 
 //----------------------------------------------
 //                 producer
@@ -457,6 +655,8 @@ struct producer :
 
     auto& data() { return data_m; }
     auto const& data() const { return data_m; }
+        
+    void clear(){ data_m.clear(); }
 private:
     Data<F, CO> data_m;
 };
@@ -510,6 +710,21 @@ using momentum_difference = producer< Format, ChargeOption, MatchOption,
                                     momentum_difference_outcome,
                                     single_value_output >;
 
+template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
+using residuals = producer< Format, ChargeOption, MatchOption,
+                            residuals_data,
+                            successfull_reconstruction_predicate,
+                            residuals_outcome,
+                            residuals_output >;
+
+//chisquare_distribution
+template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
+using chisquared_distribution = producer< Format, ChargeOption, MatchOption,
+                                         chisquared_distribution_data,
+                                         successfull_reconstruction_predicate,
+                                         chisquared_distribution_outcome,
+                                         chisquared_distribution_output >;
+
 } // namespace checker
 
 template<class ... Producers>
@@ -523,6 +738,9 @@ struct TATOEchecker{
     
     void output() const { output_impl( std::make_index_sequence<sizeof...(Producers)>{}); }
     
+    //SFINAE based on producer type ? but then need to check that all are compatible
+    void clear() { clear_impl( std::make_index_sequence<sizeof...(Producers)>{} ); }
+    
 private:
     template<std::size_t ... Indices>
     auto generate_aftereffects( std::index_sequence<Indices...>  ){
@@ -532,6 +750,11 @@ private:
     template<std::size_t ... Indices>
     void output_impl( std::index_sequence<Indices...> ) const {
         int expander[] = {0, (std::get<Indices>(producer_mc).output(), 0)...};
+    }
+    
+    template<std::size_t ... Indices>
+    void clear_impl( std::index_sequence<Indices...> ) {
+        int expander[] = {0, (std::get<Indices>(producer_mc).clear(), 0)...};
     }
     
 private:
@@ -547,6 +770,9 @@ struct TATOEchecker<Producer>{
     
     auto output() const { return producer_m.output(); }
     
+    //SFINAE based on producer type
+    void clear() { producer_m.clear(); }
+    
 private:
     Producer producer_m;
 };
@@ -557,6 +783,7 @@ struct computation_checker{
         virtual ~eraser() = default;
         virtual void apply( std::vector<reconstruction_module<TAGcluster>> const& ) = 0;
         virtual checker::value_and_error output() const =0;
+        virtual void clear() = 0;
     };
     
     template<class T>
@@ -565,6 +792,7 @@ struct computation_checker{
         
         void apply( std::vector<reconstruction_module<TAGcluster>> const& rm_pc ) override { t_m.apply( rm_pc ); }
         checker::value_and_error output() const override{ return t_m.output(); }
+        void clear() override { t_m.clear(); }
     private:
         T t_m;
     };
@@ -573,6 +801,7 @@ struct computation_checker{
     computation_checker(T t_p) : erased_checker_mh{ new holder<T>{ std::move(t_p) } }{}
     void apply( std::vector<reconstruction_module<TAGcluster>> const& rm_pc ){ erased_checker_mh->apply(rm_pc);}
     checker::value_and_error output() const { return erased_checker_mh->output(); }
+    void clear() { erased_checker_mh->clear(); }
     
 private:
     std::unique_ptr<eraser> erased_checker_mh;

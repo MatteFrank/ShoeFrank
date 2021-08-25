@@ -25,6 +25,7 @@
 #include "state.hpp"
 #include "aftereffect.hpp"
 #include "matrix_new.hpp"
+
 #include "TADIgeoField.hxx"
 
 
@@ -79,6 +80,7 @@ struct reconstructed_track{
     particle_properties properties;
     polynomial_fit_parameters parameters;
     std::size_t clone_number{0};
+    chisquared chi2;
 };
 
 template<class T>
@@ -98,6 +100,7 @@ struct reconstruction_module{
 
 
 struct TAGcluster;
+struct computation_checker;
 
 struct TATOEbaseAct {
     template<class C, class ... Ps>
@@ -111,6 +114,8 @@ public:
     virtual void Action()  = 0;
     virtual void Output() =0;
     virtual ~TATOEbaseAct() = default;
+    virtual std::vector<computation_checker>& get_computation_checker() = 0;
+    
     
 private:
     virtual void reset_event_number() = 0;
@@ -122,6 +127,8 @@ private:
     virtual void set_cuts( details::ms2d_tag, double) = 0;
     
     virtual std::vector<reconstruction_module<data_type>> const& retrieve_matched_results( ) const = 0;
+    
+    
 };
 
 //---------------------------------------------------------------

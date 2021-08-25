@@ -59,7 +59,7 @@ struct vertex_tag{
     using cut_t = double;
     constexpr static uint8_t shift = 3;
 //        constexpr static double default_cut_value{15};
-    constexpr static double default_cut_value{20};
+    constexpr static double default_cut_value{25};
 };
     
 struct it_tag{
@@ -70,9 +70,10 @@ struct it_tag{
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     using cut_t = std::array<double, 2>;
     static constexpr uint8_t shift = 2;
-    constexpr static std::array<double, 2> default_cut_value{20,20};
+//    constexpr static std::array<double, 2> default_cut_value{25,25};
 //        constexpr static std::array<double, 2> default_cut_value{38,42};
-//        constexpr static std::array<double, 2> default_cut_value{33,38};
+//    constexpr static std::array<double, 2> default_cut_value{41,41};
+        constexpr static std::array<double, 2> default_cut_value{40,32};
 };
 
 struct msd_tag{
@@ -83,8 +84,9 @@ struct msd_tag{
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     using cut_t = std::array<double, 3>;
     static constexpr uint8_t shift = 1;
-    constexpr static std::array<double, 3> default_cut_value{20,20,20};
-//        constexpr static std::array<double, 3> default_cut_value{35,16,27};
+//    constexpr static std::array<double, 3> default_cut_value{25,25,25};
+        constexpr static std::array<double, 3> default_cut_value{27,22,20};
+//    constexpr static std::array<double, 3> default_cut_value{43,16,11};
 //        constexpr static std::array<double, 3> default_cut_value{13,18,23};
 };
 
@@ -96,7 +98,7 @@ struct ms2d_tag{
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     using cut_t = double;
     static constexpr uint8_t shift = 4;
-    constexpr static double default_cut_value{20};
+    constexpr static double default_cut_value{25};
 };
 
 struct tof_tag{
@@ -107,8 +109,9 @@ struct tof_tag{
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     using cut_t = double;
     static constexpr uint8_t shift = 0;
-    constexpr static double default_cut_value{3.2};
+//    constexpr static double default_cut_value{3.2};
 //        constexpr static double default_cut_value{3};
+    constexpr static double default_cut_value{3};
 };
     
 template<class Tag>
