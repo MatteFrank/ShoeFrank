@@ -736,6 +736,7 @@ void TABMactNtuTrack::FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &mean
   //Spatial resolution evaluation
   for(Int_t i=0;i<fpResDistBin.size();i++){
     if(fpResDistBin.at(i)->GetEntries()>300){
+      gaus->SetRange(-1.5,(i<3) ? 0. : 1.5);
       gaus->SetParameters(fpResDistBin.at(i)->GetEntries(),fpResDistBin.at(i)->GetMean(),fpResDistBin.at(i)->GetStdDev());
       fpResDistBin.at(i)->Fit(gaus,"QR+");
       fpParNewDistRes->SetBinContent(i+1,gaus->GetParameter(2));

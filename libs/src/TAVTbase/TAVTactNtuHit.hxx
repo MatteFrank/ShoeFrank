@@ -1,6 +1,8 @@
 #ifndef _TAVTactNtuHit_HXX
 #define _TAVTactNtuHit_HXX
 
+#include <queue>
+
 #include "TAVTactBaseNtuHit.hxx"
 
 /*!
@@ -22,8 +24,18 @@ public:
    
    virtual Bool_t  Action();
    
+public:
+   void   SetTStolerance(UInt_t ts) { fgTStolerance = ts;   }
+   UInt_t GetTStolerance()          { return fgTStolerance; }
+
 protected:
-   TAGdataDsc*     fpDatDaq;		    // input data dsc
+   TAGdataDsc*         fpDatDaq;		    // input data dsc
+   UInt_t              fFirstBcoTrig;
+   queue<const DECardEvent*> fQueueEvt;
+   UInt_t              fQueueEvtsN;
+   
+private:
+   static UInt_t       fgTStolerance;
    
    
    ClassDef(TAVTactNtuHit,0)

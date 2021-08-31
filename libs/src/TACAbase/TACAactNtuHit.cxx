@@ -66,10 +66,10 @@ Bool_t TACAactNtuHit::Action() {
    TACAntuRaw*   p_datraw = (TACAntuRaw*) fpDatRaw->Object();
    TACAntuHit*   p_nturaw = (TACAntuHit*) fpNtuRaw->Object();
    TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
-  
+
   int nhit = p_datraw->GetHitsN();
 
-  
+
   int ch_num, bo_num;
 
   for(int ih = 0; ih < nhit; ++ih) {
@@ -80,14 +80,14 @@ Bool_t TACAactNtuHit::Action() {
     Double_t time    = aHi->GetTime();
     Double_t timeOth = aHi->GetTimeOth();
     Double_t charge  = aHi->GetCharge();
-  
+
     // here needed mapping file
     Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
     if (crysId == -1) // pb with mapping
       continue;
 
     Double_t type=0; // I define a fake type (I do not know what it really is...) (gtraini)
-    
+
     // here we need the calibration file
     //    Double_t charge_tcorr = GetTemperatureCorrection(charge, crysId);
     //AS:: we wait for a proper integration of T inside the DAQ
@@ -95,14 +95,14 @@ Bool_t TACAactNtuHit::Action() {
     Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
     Double_t energy = GetEnergy(charge_equalis, crysId);
     Double_t tof    = GetTime(time, crysId);
-    p_nturaw->NewHit(crysId, energy, time,type);
-    
+    TACAhit* createdhit=p_nturaw->NewHit(crysId, energy, time,type);
+    createdhit->SetValid(true);
   }
 
-   
+
   fpNtuRaw->SetBit(kValid);
 
-     
+
    return kTRUE;
 }
 
@@ -146,7 +146,7 @@ Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
   Double_t charge_tcorr = charge + delta;
 
   return charge_tcorr;
-  
+
 }
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
@@ -154,7 +154,7 @@ Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  
 
   Double_t Equalis0 = f_parcal->getCalibrationMap()->GetEqualiseCry(crysId);
   Double_t charge_equalis = charge_tcorr*Equalis0;
-  
+
   return charge_equalis;
 
 }
@@ -166,7 +166,7 @@ Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId)
 
    Double_t p0 = p_parcal->GetElossParam(crysId,0);
    Double_t p1 = p_parcal->GetElossParam(crysId,1);
-   
+
    return p0 + p1 * rawenergy;
 
 
@@ -185,7 +185,7 @@ Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
   // Double_t p3 = p_parcal->GetTofParameter(crysId,3);
 
   // return p0 + p1 * RawTime;
-  
+
   //fake calibration (gtraini), return raw value meanwhile
   return RawTime;
 
@@ -213,7 +213,7 @@ void TACAactNtuHit::CreateHistogram(){
   sprintf(histoname,"caTotCharge");
   hTotCharge = new TH1F(histoname, histoname, 400, -0.1, 3.9);
   AddHistogram(hTotCharge);
-  
+
   // for(int iCh=0;iCh<8;iCh++){
   //   sprintf(histoname,"stDeltaTime_ch%d", iCh);
   //   hArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -5., 5.);
@@ -229,5 +229,5 @@ void TACAactNtuHit::CreateHistogram(){
   // }
 
   SetValidHistogram(kTRUE);
-  
+
 }

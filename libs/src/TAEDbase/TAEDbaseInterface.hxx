@@ -82,6 +82,8 @@ public:
    //! MC virtual methods
    virtual Bool_t GetEntry(Int_t /*entry*/) { return true; }
    
+   virtual Bool_t SkipEvent()               { return true; }
+
    virtual void UpdateMcElements()          { return;      }
    
    virtual void ConnectMcElements()         { return;      }

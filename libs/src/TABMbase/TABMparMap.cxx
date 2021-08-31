@@ -52,7 +52,7 @@ Bool_t TABMparMap::FromFile(const TString& name, TABMparGeo *bmgeo) {
 
   if (!Open(nameExp)) return kTRUE;
 
-  Info("FromFile", "Loading BM map from file: %s\n", nameExp.Data());
+  Info("FromFile()", "Open file %s for mapping\n", nameExp.Data());
 
   if(FootDebugLevel(1))
      cout<<"TABMparMap::FromFile:: read config file from "<<nameExp.Data()<<endl<<"Now I'll printout the BM FromFile read parameters"<<endl;
@@ -139,7 +139,7 @@ Bool_t TABMparMap::FromFile(const TString& name, TABMparGeo *bmgeo) {
       cout<<"Tdc channel:"<<it->first<<"  cellid:"<< it->second<<endl;
 
     cout<<endl<<"TABMparMap::print fCell2TdcVec"<<endl;
-    for(auto it = fTdc2CellVec.cbegin(); it != fTdc2CellVec.cend(); ++it)
+    for(auto it = fCell2TdcVec.cbegin(); it != fCell2TdcVec.cend(); ++it)
       cout<<"cellid:"<<it->first<<"  tdc channel:"<< it->second<<endl;
     cout<<endl;
   }

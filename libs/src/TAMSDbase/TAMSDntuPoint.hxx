@@ -14,13 +14,13 @@
 #include "TVector3.h"
 
 #include "TAGobject.hxx"
-#include "TAMSDhit.hxx"
+#include "TAMSDntuCluster.hxx"
 
 class TAMSDparGeo;
 
 
-/** TAMSDpoint class is the MSD hit reconstructed by the intersection of 2 hits on a
-	column and a row strip respectively
+/** TAMSDpoint class is the MSD hit reconstructed by the intersection of 2 clusters on a
+	column and a row cluster respectively
 
 	All the coordinates are in cm and in the detector reference frame, i.e. the center
 	is the center of the detector.
@@ -31,73 +31,47 @@ class TAMSDparGeo;
 class TAMSDpoint : public TAGcluster {
 
 private:
-   int         m_layer;         // number of MSD tracking station
-   int         m_column;        // column number
-   int         m_row;           // row number
-
-   int         m_columnHitID;
-   int         m_rowHitID;
-
-   //specific methods for MSD
-   int         m_columnParticleID;
-   int         m_rowParticleID;
-   int         m_ParticleID;
-
-   int         m_columnMCHitID;
-   int         m_rowMCHitID;
-
-   bool        m_isMC;
-   bool        m_isTrueGhost;
-
-   TVector3    m_posMC;
-   TVector3    m_momMC;
-
-   void TrueGhostWarning();
+   int              fStation;    // number of MSD tracking station
+   TAMSDcluster*    fColClus;    // cluster column
+   TAMSDcluster*    fRowClus;    // cluster col
 
    //generic methods
-   Double32_t  m_de1;           // energy loss in 1st strip
-   Double32_t  m_de2;           // energy loss in 2nd strip
-   Double32_t  m_time;
+   Double32_t  fDe1;           // energy loss in 1st strip
+   Double32_t  fDe2;           // energy loss in 2nd strip
+   Double32_t  fTime;
 
-   int         m_chargeZ;       // raw guess of charge Z
-   Double32_t  m_chargeZProba;  // raw guess of charge Z probability
+   int         fChargeZ;       // raw guess of charge Z
+   Double32_t  fChargeZProba;  // raw guess of charge Z probability
 
 public:
-
    TAMSDpoint();
    TAMSDpoint( int layer, double x, double y, TVector3 position);
+   TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY);
+
    virtual ~TAMSDpoint() {};
 
-
    //    All the Get methods
+   int       GetColClusId()      const  { return fColClus->GetClusterIdx(); }
+   int       GetRowClusId()      const  { return fRowClus->GetClusterIdx(); }
 
-   int       GetColumnID()    const  { return m_column;        }
-   int       GetRowID()       const  { return m_row;           }
+   int       GetLayer()          const  { return fStation;      }
+   int       GetStation()        const  { return fStation;      }
+   
+   TAMSDcluster*  GetColClus()   const  { return fColClus;      }
+   TAMSDcluster*  GetRowClus()   const  { return fRowClus;      }
 
-   int       GetColumnHitID()    const  { return m_columnHitID;}
-   int       GetRowHitID()       const  { return m_rowHitID;   }
+   double    GetEnergyLoss1()    const  { return fDe1;          }
+   double    GetEnergyLoss2()    const  { return fDe2;          }
+   double    GetEnergyLoss()     const  { return fDe1+fDe2;     }
+   double    GetTime()           const  { return fTime;         }
+   int       GetChargeZ()        const  { return fChargeZ;      }
+   double    GetChargeZProba()   const  { return fChargeZProba; }
 
-   int       GetLayer()  const  {return m_layer;}
-
-   bool      IsMC()             { return m_isMC; };
-   bool      IsTrueGhost()      { return m_isTrueGhost; };
-
-   int       GetGenPartID()     {return m_ParticleID;};
-   int       GetColumnMCHitID() {return m_columnMCHitID;};
-   int       GetRowMCHitID()    {return m_rowMCHitID;};
-
-   double    GetEnergyLoss1()  const  { return m_de1;           }
-   double    GetEnergyLoss2()  const  { return m_de2;           }
-   double    GetEnergyLoss()   const  { return m_de1+m_de2;     }
-   double    GetTime()         const  { return m_time;          }
-   int       GetChargeZ()      const  { return m_chargeZ;       }
-   double    GetChargeZProba() const  { return m_chargeZProba; }
-
-   void      SetChargeZ(int z)       { m_chargeZ = z;          }
-   void      SetChargeZProba(double p){ m_chargeZProba = p;    }
+   void      SetChargeZ(int z)          { fChargeZ = z;         }
+   void      SetChargeZProba(double p)  { fChargeZProba = p;    }
    void      Clear(Option_t* opt);
 
-   ClassDef(TAMSDpoint,4)
+   ClassDef(TAMSDpoint,6)
 };
 
 //##############################################################################
@@ -105,24 +79,21 @@ public:
 class TAMSDntuPoint : public TAGdata {
 
 private:
-
-  TAMSDparGeo*         m_geometry; //!
-  TObjArray*           m_listOfPoints;
+  TAMSDparGeo*         fGeometry; //!
+  TObjArray*           fListOfPoints;
 
 public:
-
   TAMSDntuPoint();
   virtual ~TAMSDntuPoint();
 
   TAMSDpoint*         NewPoint( int iStation, double x, double y, TVector3 position);
+  TAMSDpoint*         NewPoint(Int_t iStation, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY);
 
-  int                 GetPointN(int iStation) const;
-  int                 GetPointN_includingGhosts();
+  int                 GetPointsN(int iStation) const;
 
   TClonesArray*       GetListOfPoints(int iStation) const;
 
   TAMSDpoint*         GetPoint( int iStation, int iPoint ) const ;
-
 
   virtual void        Clear(Option_t* opt="");
 

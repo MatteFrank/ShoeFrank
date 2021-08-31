@@ -110,7 +110,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagMC(false),
    fReadL0Hits(false),
    fM28ClusMtFlag(false),
-   fFlagRecCutter(false)
+   fFlagRecCutter(false),
+   fSkipEventsN(0)
 {
 
    // check folder
@@ -267,27 +268,17 @@ void BaseReco::LoopEvent(Int_t nEvents)
   else if (nEvents > 100)    frequency = 100;
   else if (nEvents > 10)     frequency = 10;
 
-    
+   
+  if (fSkipEventsN > 0)
+     printf(" Skipped Event: %d\n", fSkipEventsN);
+
   for (Int_t ientry = 0; ientry < nEvents; ientry++) {
     
     if(ientry % frequency == 0)
-      cout<<" Loaded Event:: " << ientry << endl;
+      printf(" Loaded Event: %d\n", ientry+fSkipEventsN);
         
     if (!fTAGroot->NextEvent()) break;
     
-    if (FootDebugLevel(1)) {
-      if(fpNtuGlbTrack) {
-        TAGntuGlbTrack *glbTrack =
-        (TAGntuGlbTrack*) fpNtuGlbTrack->GenerateObject();
-        
-        int nTrk = glbTrack->GetTracksN();
-        for(int iTr = 0; iTr< nTrk; iTr++) {
-          TAGtrack *aTr = glbTrack->GetTrack(iTr);
-          cout<<"  "<<aTr->GetMass()<<" "<<aTr->GetEnergy()<<" "<<aTr->GetMomentum()<<endl;
-        }
-      }
-    }
-      
   }
 }
 
@@ -640,7 +631,7 @@ void BaseReco::ReadParFiles()
    }
    
    // initialise par files for caloriomter
-   Bool_t isCalTre = true;
+   Bool_t isCalEloss = true;
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       fpParGeoCa = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
       TACAparGeo* parGeo = (TACAparGeo*)fpParGeoCa->Object();
@@ -664,9 +655,9 @@ void BaseReco::ReadParFiles()
 	parMap->FromFile(parFileName.Data());
         
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->FromCalibTempFile(parFileName.Data());
+        parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
         
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalTre);
+        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
         parCal->LoadEnergyCalibrationMap(parFileName.Data());
      }
      
@@ -806,18 +797,17 @@ void BaseReco::CreateRecActionIt()
 //__________________________________________________________
 void BaseReco::CreateRecActionMsd()
 {
-  fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
-  fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
-  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
-  
-  fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
-  
-  fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuClusMsd, fpNtuRecMsd, fpParGeoMsd);
-  if (fFlagHisto) {
-    fActClusMsd->CreateHistogram();
-    fActPointMsd->CreateHistogram();
-  }
-  
+   fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
+    fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
+   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
+
+   fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
+   if (fFlagHisto)
+      fActClusMsd->CreateHistogram();
+   
+   fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuClusMsd, fpNtuRecMsd, fpParGeoMsd);
+   if (fFlagHisto)
+      fActPointMsd->CreateHistogram();
 }
 
 //__________________________________________________________
@@ -915,7 +905,7 @@ void BaseReco::CreateRecActionGlbS()
 {
    if(fFlagTrack) {
       fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-      fActGlbTrackS  = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuClusMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw, fpParGeoG);
+      fActGlbTrackS  = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuRecMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw, fpParGeoG);
       if (fFlagHisto)
          fActGlbTrackS->CreateHistogram();
    }

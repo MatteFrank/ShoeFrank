@@ -29,12 +29,14 @@ public:
    explicit        TAGactDaqReader(const char* name=0, TAGdataDsc* p_datdaq=0);
    virtual         ~TAGactDaqReader();
       
-   virtual Int_t   Open(const TString& name, Option_t* option=0, const TString treeName="", Bool_t dscBranch = true);
+   virtual Int_t   Open(const TString& name, Option_t* option="chain", const TString treeName="", Bool_t dscBranch = true);
    virtual void    Close();
    
    virtual Bool_t  IsOpen() const;
    
    virtual Bool_t  Process();
+
+   virtual void    SkipEvents(Int_t nEvents);
 
    DAQFileHeader*  GetFileHeader()  const { return fDaqFileHeader;  }
 
@@ -42,7 +44,10 @@ private:
    EventReader*    fDaqFileReader;
    DAQFileHeader*  fDaqFileHeader;
    TAGdataDsc*     fDaqEvent;		    // input data dsc
-   
+   TString         fCurFileName;
+   Int_t           fDaqFileIndex;
+   Bool_t          fDaqFileChain;    // chaining files in reading
+
    ClassDef(TAGactDaqReader,0)
 };
 

@@ -46,6 +46,9 @@ public:
    //! Set local reconstruction
    void SetLocalReco();
    
+   //! skip event
+   Bool_t SkipEvent();
+   
    ClassDef(TAGeventDisplay, 1); // Base class for event display
 };
 

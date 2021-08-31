@@ -66,8 +66,8 @@ protected:
    TVector3         fBmTrackPos;         // BM track position 
    
    TH2F*            fpHisBmBeamProf;     // BM Beam profile extrapolated to target
-   TH1F*            fpHisVtxResX;        // residualX between BM position and track intersection at target
-   TH1F*            fpHisVtxResY;        // residualY between BM position and track intersection at target
+   TH2F*            fpHisVtxResX;        // residualX between BM position and track intersection at target
+   TH2F*            fpHisVtxResY;        // residualY between BM position and track intersection at target
    TH1F*            fpHisBmChi2;         // number of clusters per track
    TH1F*            fpHiVtxTgResX;       // Vertex resolution at Target X
    TH1F*            fpHiVtxTgResY;       // Vertex resolution at Target Y

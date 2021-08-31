@@ -8,6 +8,9 @@
 #include "TAMSDhit.hxx"
 #include "TAMSDparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TF1.h"
+
+#include <math.h>
 
 ClassImp(TAMSDcluster) // Description of a cluster
 
@@ -110,6 +113,13 @@ void TAMSDcluster::SetPosErrorF(Float_t pos)
 
 //______________________________________________________________________________
 //
+void TAMSDcluster::SetCog(Float_t pos)
+{
+   fCog = pos;
+}
+
+//______________________________________________________________________________
+//
 void TAMSDcluster::SetPlaneView(Int_t v)
 {
    fPlaneView = v;
@@ -132,4 +142,26 @@ Float_t TAMSDcluster::Distance(TAMSDcluster *aClus) {
    
    return clusPosition.Mag();
 }
+
+//______________________________________________________________________________
+//
+Float_t TAMSDcluster::ComputeEta(Float_t cog) {
+
+   Double_t fractpart, intpart;
+   fractpart = modf (cog , &intpart);
+
+   return fractpart;
+}
+
+//______________________________________________________________________________
+//
+Float_t TAMSDcluster::ComputeEtaCorrection(Float_t cog) {
+
+   TF1 *etafunc = new TF1("test","0.9*TMath::Gaus(x,0,0.1)+TMath::Gaus(x,1./3,0.13)+TMath::Gaus(x,2./3,0.13)+0.9*TMath::Gaus(x,1,0.1)",0,1); //FAKE ETA FUNCTION
+   Double_t fractpart, intpart;
+   fractpart = modf (cog , &intpart);
+
+   return etafunc->Eval(fractpart);
+}
+
 

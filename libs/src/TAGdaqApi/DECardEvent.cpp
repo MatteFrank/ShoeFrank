@@ -7,6 +7,43 @@ const u_int DECardEvent::m_vtxHeader = 0xfafafafa;
 const u_int DECardEvent::m_vtxTail   = 0xabcdabcd;
 
 
+DECardEvent::DECardEvent()
+: RemoteEvent(),
+  detectorHeader(0),
+  boardHeader(0),
+  hardwareEventNumber(0),
+  triggerCounter(0),
+  BCOofTrigger(0),
+  clockCounter(0)
+{
+}
+
+
+DECardEvent::DECardEvent(const DECardEvent& right)
+: RemoteEvent(right),
+ detectorHeader(right.detectorHeader),
+ boardHeader(right.boardHeader),
+ hardwareEventNumber(right.hardwareEventNumber),
+ triggerCounter(right.triggerCounter),
+ BCOofTrigger(right.BCOofTrigger),
+ clockCounter(right.clockCounter)
+{
+}
+
+
+const DECardEvent& DECardEvent::operator=(const DECardEvent& right)
+{
+   RemoteEvent::operator=(right);
+   detectorHeader       = right.detectorHeader;
+   boardHeader          = right.boardHeader;
+   hardwareEventNumber  = right.hardwareEventNumber;
+   triggerCounter       = right.triggerCounter;
+   BCOofTrigger         = right.BCOofTrigger;
+   clockCounter         = right.clockCounter;
+   
+   return *this;
+}
+
 DECardEvent::~DECardEvent()
 {
 }
@@ -15,7 +52,8 @@ void DECardEvent::readData(unsigned int **p1)
 {
    evtSize   = 0;
    u_int * p = *p1;
-   u_int * p_max = *p1 + 2047; 
+   u_int * p_max = *p1 + 2047;
+   
    channelID= *p;
    ++p;
    time_sec= *p;
@@ -29,6 +67,9 @@ void DECardEvent::readData(unsigned int **p1)
    ++p;
    
    if(evtSize != 0) {
+      // skip 4 words ???
+      p += 4;
+      
       // check header
       if (*p != m_vtxHeader)
          printf("Error in the event reader %x instead of %x\n", *p, m_vtxHeader);
@@ -47,31 +88,16 @@ void DECardEvent::readData(unsigned int **p1)
       evtSize++;
       values.push_back(*p);
       
-      // skip 2 words and frame header
-      evtSize++;
-      values.push_back(*(++p));
-      
-      evtSize++;
-      values.push_back(*(++p));
-
-      evtSize++;
-      values.push_back(*(++p));
-      
       // trigger number
       triggerCounter = *(++p);
       evtSize++;
       values.push_back(*p);
       
       // timestamp
-      clockCounter = *(++p);
-      evtSize++;
-      values.push_back(*p);
-      
-      // frame counter
       BCOofTrigger = *(++p);
       evtSize++;
       values.push_back(*p);
-      
+   
       do {
          p++;
          evtSize++;

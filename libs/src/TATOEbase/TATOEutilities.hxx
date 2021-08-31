@@ -41,7 +41,7 @@ class TAVTcluster;
 #include "TAVTtrack.hxx"
 #include "TAVTntuVertex.hxx"
 
-class TAITntuCluster;
+#include "TAITntuCluster.hxx"
 class TAITcluster;
 
 #include "TAVTparGeo.hxx"
@@ -68,7 +68,7 @@ namespace details{
         using cut_t = double;
         constexpr static uint8_t shift = 3;
 //        constexpr static double default_cut_value{15};
-        constexpr static double default_cut_value{15};
+        constexpr static double default_cut_value{20};
     };
     struct it_tag{
         using vector_matrix =  matrix<2, 1>;
@@ -78,8 +78,8 @@ namespace details{
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = std::array<double, 2>;
         static constexpr uint8_t shift = 2;
-//        constexpr static std::array<double, 2> default_cut_value{20,20};
-        constexpr static std::array<double, 2> default_cut_value{38,42};
+        constexpr static std::array<double, 2> default_cut_value{20,20};
+//        constexpr static std::array<double, 2> default_cut_value{38,42};
 //        constexpr static std::array<double, 2> default_cut_value{33,38};
 
     };
@@ -91,9 +91,9 @@ namespace details{
         using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
         using cut_t = std::array<double, 3>;
         static constexpr uint8_t shift = 1;
-//        constexpr static std::array<double, 3> default_cut_value{20,20,20};
+        constexpr static std::array<double, 3> default_cut_value{20,20,20};
         
-        constexpr static std::array<double, 3> default_cut_value{35,16,27};
+//        constexpr static std::array<double, 3> default_cut_value{35,16,27};
 //        constexpr static std::array<double, 3> default_cut_value{13,18,23};
 
     };
@@ -106,7 +106,7 @@ struct ms2d_tag{
     using cut_t = double;
     static constexpr uint8_t shift = 4;
 
-    constexpr static double default_cut_value{15};
+    constexpr static double default_cut_value{20};
 };
     struct tof_tag{
         using vector_matrix =  matrix<2, 1>;
@@ -176,8 +176,8 @@ struct reconstruction_result{
 
 
 struct TATOEbaseAct {
-    template<class C>
-    friend class TATOEcutter;
+    template<class C, class ... Ps>
+    friend class TATOEoptimizer;
     
     template<class C>
     friend class details::cut_holder;
@@ -809,10 +809,7 @@ public:
                          TAMSDparGeo* geo_ph )  :
         cluster_mhc{cluster_phc},
         depth_mc{ retrieve_depth(geo_ph) }
-    {
-        puts(__PRETTY_FUNCTION__);
-        for(auto const& depth: depth_mc){ std::cout << "depth: " << depth << '\n'; }
-    }
+    {}
     
     
 private:

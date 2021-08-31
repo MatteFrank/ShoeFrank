@@ -11,8 +11,8 @@
 #include "expr.hpp"
 #include "matrix_new.hpp"
 
-//template<std::size_t NRows, std::size_t NCols>
-//struct matrix;
+template<std::size_t NRows, std::size_t NCols>
+struct matrix;
 
 template<std::size_t N>
 constexpr matrix<N,N> make_identity_matrix();

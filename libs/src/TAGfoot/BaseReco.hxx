@@ -91,7 +91,6 @@ class TAMCntuRegion;
 class TAMCntuEvent;
 
 
-#include "TATOEcutter.hxx"
 
 class BaseReco : public TNamed // using TNamed for the in/out files
 {
@@ -232,7 +231,8 @@ public:
    TAITntuTrack*        GetNtuTrackIt()     const { return (TAITntuTrack*)fpNtuTrackIt->Object();    }
 
    TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
-   
+   TAMSDntuPoint*       GetNtuPointMsd()    const { return (TAMSDntuPoint*)fpNtuRecMsd->Object();    }
+
    TATWntuHit*          GetNtuHitTw()       const { return (TATWntuHit*) fpNtuHitTw->Object();       }
    TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
    
@@ -385,6 +385,7 @@ protected:
    Bool_t                fReadL0Hits;      // read back hits
    Bool_t                fM28ClusMtFlag;   // flag for multi-threading clustering
    Bool_t                fFlagRecCutter;   // cutter flag for TOE Glb reco
+   Int_t                 fSkipEventsN;     // number of events to skip
     
  protected:
    void CreateRecActionBm();

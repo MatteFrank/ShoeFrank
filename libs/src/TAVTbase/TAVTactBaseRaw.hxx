@@ -92,6 +92,8 @@ protected:
    TH1F*             fpHisTimeStampFrame[32];
    TH1F*             fpHisFrameCnt[32];
    TH1F*             fpHisFrameErrors[32];
+   TH1F*             fpHisBCOofTrigger; //
+
    
 protected:
    static const UInt_t  fgkKeyHeader[];

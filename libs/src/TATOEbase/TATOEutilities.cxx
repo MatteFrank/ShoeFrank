@@ -188,15 +188,15 @@ std::vector<typename details::ms2d_tag::candidate> detector_properties< details:
     std::vector<candidate> candidate_c;
     candidate_c.reserve( 10 );
     
-    std::size_t entries = cluster_mhc->GetPointN(index_p);
-    std::cout << "detector_properties< details::ms2d_tag >::generate_candidates_entries: " << entries << '\n';
+    std::size_t entries = cluster_mhc->GetPointsN(index_p);
+//    std::cout << "detector_properties< details::ms2d_tag >::generate_candidates_entries: " << entries << '\n';
     
     for(std::size_t i{0}; i < entries ; ++i) {
         auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
         
         auto cluster_h = cluster_mhc->GetPoint(index_p, i);
         auto position =  transformation_h->FromMSDLocalToGlobal(cluster_h->GetPositionG());
-        auto error = cluster_h->GetPosError();
+        auto error = cluster_h->GetPosErrorG();
             
         candidate_c.emplace_back( measurement_vector{{ position.X(), position.Y() }},
                                  measurement_covariance{{ pow(error.X(), 2),         0,

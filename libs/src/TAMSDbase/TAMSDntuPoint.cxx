@@ -13,30 +13,69 @@ ClassImp(TAMSDpoint) // Description of Single Detector TAMSDpoint
 //  default constructor
 TAMSDpoint::TAMSDpoint()
 : TAGcluster(),
-   m_layer(0),
-   m_column(0),
-   m_row(0),
-   m_columnHitID(0),
-   m_rowHitID(0),
-   m_columnParticleID(0),
-   m_rowParticleID(0),
-   m_ParticleID(0),
-   m_isMC(false),
-   m_isTrueGhost(false),
-   m_chargeZ(0),
-   m_chargeZProba(0.)
+   fStation(0),
+   fColClus(0),
+   fRowClus(0),
+   fChargeZ(0),
+   fChargeZProba(0.)
 {
 }
 
 //______________________________________________________________________________
 //  build a point
 TAMSDpoint::TAMSDpoint( int layer, double x, double y, TVector3 position )
-: TAGcluster(),
-   m_layer(layer),
-   m_chargeZ(0),
-   m_chargeZProba(0.)
+ : TAGcluster(),
+   fStation(layer),
+   fChargeZ(0),
+   fChargeZProba(0.)
 {
    fPosition = position;
+}
+
+//______________________________________________________________________________
+//  build a point
+TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY)
+ : TAGcluster(),
+   fStation(layer),
+   fColClus(new TAMSDcluster(*clusX)),
+   fRowClus(new TAMSDcluster(*clusY)),
+   fChargeZ(0),
+   fChargeZProba(0.)
+{
+   fPosition.SetXYZ(x,y,0);
+   fPosError.SetXYZ(dx,dy,0);
+   
+   fDe1 = clusX->GetEnergyLoss();
+   fDe2 = clusY->GetEnergyLoss();
+
+   Bool_t common = false;
+   for (Int_t j = 0; j < fColClus->GetMcTracksN(); ++j) {
+      Int_t idr = fColClus->GetMcTrackIdx(j);
+      for (Int_t k = 0; k < fRowClus->GetMcTracksN(); ++k) {
+         Int_t idc = fRowClus->GetMcTrackIdx(k);
+         if (idr == idc) {
+            AddMcTrackIdx(idr);
+            common = true;
+         }
+      }
+   }
+   
+   // in case mixing two or more different particles in a point
+   if (!common) {
+      map<int, int> mapIdx;
+      for (Int_t j = 0; j < fColClus->GetMcTracksN(); ++j) {
+         Int_t idr = fColClus->GetMcTrackIdx(j);
+         mapIdx[idr] = 1;
+      }
+      
+      for (Int_t k = 0; k < fRowClus->GetMcTracksN(); ++k) {
+         Int_t idc = fRowClus->GetMcTrackIdx(k);
+         mapIdx[idc] = 1;
+      }
+      
+      for (map<int,int>::iterator it=mapIdx.begin(); it!=mapIdx.end(); ++it)
+         AddMcTrackIdx(it->first);
+   }
 }
 
 //______________________________________________________________________________
@@ -62,8 +101,8 @@ TString TAMSDntuPoint::fgkBranchName   = "msdpt.";
 //!
 TAMSDntuPoint::TAMSDntuPoint()
 : TAGdata(),
-  m_geometry(0x0),
-  m_listOfPoints(0x0)
+  fGeometry(0x0),
+  fListOfPoints(0x0)
 {
 	SetupClones();
 }
@@ -72,14 +111,14 @@ TAMSDntuPoint::TAMSDntuPoint()
 //! Destructor.
 TAMSDntuPoint::~TAMSDntuPoint()
 {
-	delete m_listOfPoints;
+	delete fListOfPoints;
 }
 
 //______________________________________________________________________________
 //  standard
-TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 position ) {
-
-  if ( iStation >= 0 && iStation < m_geometry->GetSensorsN()/2 ) {
+TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 position )
+{
+  if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
     TClonesArray &pointArray = *GetListOfPoints(iStation);
     TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, x, y, position );
     return point;
@@ -89,33 +128,47 @@ TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 
   }
 }
 
-//------------------------------------------+-----------------------------------
-int TAMSDntuPoint::GetPointN(int iStation) const
+//______________________________________________________________________________
+//  standard
+TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY)
 {
-  if ( iStation >= 0 && iStation < m_geometry->GetSensorsN()/2 ) {
-    TClonesArray* list = (TClonesArray*)m_listOfPoints->At(iStation);
+   if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
+      TClonesArray &pointArray = *GetListOfPoints(iStation);
+      TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, x, dx, clusX, y, dy, clusY);
+      return point;
+   } else {
+      cout << Form("Wrong sensor number %d\n", iStation);
+      return 0x0;
+   }
+}
+
+//------------------------------------------+-----------------------------------
+int TAMSDntuPoint::GetPointsN(int iStation) const
+{
+  if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
+    TClonesArray* list = (TClonesArray*)fListOfPoints->At(iStation);
     return list->GetEntries();
   } else return -1;
 }
 
 
-
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor
-TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const {
-
-	if ( iPoint >= 0  && iPoint < GetPointN( iStation ) ) {
+TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const
+{
+	if ( iPoint >= 0  && iPoint < GetPointsN( iStation ) ) {
     TClonesArray* list = GetListOfPoints(iStation);
     return (TAMSDpoint*)list->At(iPoint);
-	} else return 0x0;
+	} else
+      return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
 //! return number of points
 TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
 {
-   if (iStation >= 0  && iStation < m_geometry->GetSensorsN()/2) {
-	  TClonesArray* list = (TClonesArray*)m_listOfPoints->At(iStation);
+   if (iStation >= 0  && iStation < fGeometry->GetStationsN()) {
+	  TClonesArray* list = (TClonesArray*)fListOfPoints->At(iStation);
 	  return list;
    } else return 0x0;
 }
@@ -124,37 +177,29 @@ TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
 //! Setup clones. Crate and initialise the list of pixels
 void TAMSDntuPoint::SetupClones()
 {
-  m_geometry = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
+  fGeometry = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
 
-   if (m_listOfPoints) return;
-   m_listOfPoints = new TObjArray();
-   for ( int i = 0; i < m_geometry->GetSensorsN()/2; ++i ){
+   if (fListOfPoints) return;
+   fListOfPoints = new TObjArray();
+   for ( int i = 0; i < fGeometry->GetStationsN(); ++i ){
      TClonesArray* arr = new TClonesArray("TAMSDpoint");
      arr->SetOwner(true);
-     m_listOfPoints->AddAt(arr, i);
+     fListOfPoints->AddAt(arr, i);
    }
-   m_listOfPoints->SetOwner(true);
+   fListOfPoints->SetOwner(true);
 }
-
-
-
-
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
 void TAMSDntuPoint::Clear(Option_t*)
 {
-  //	m_listOfPoints->Delete();
-  for (int i = 0; i < m_geometry->GetSensorsN()/2; ++i) {
+  //	fListOfPoints->Delete();
+  for (int i = 0; i < fGeometry->GetStationsN(); ++i) {
     TClonesArray* list = GetListOfPoints(i);
     list->Delete();
   }
 
 }
-
-
-
-
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.

@@ -312,6 +312,11 @@ void TAEDbaseInterface::MakeGUI()
       eventFrame->AddFrame(b);
       b->SetToolTipText("Go To Event");
       b->Connect("Clicked()", "TAEDbaseInterface", this, "SetEvent()");
+   } else {
+      b = new TGPictureButton(eventFrame, gClient->GetPicture(icondir + "GoHome.gif"));
+      eventFrame->AddFrame(b);
+      b->SetToolTipText("Skip Event");
+      b->Connect("Clicked()", "TAEDbaseInterface", this, "SkipEvent()");
    }
    
    fNumberEvent  = new TGNumberEntry(eventFrame, 0, 4, -1,
