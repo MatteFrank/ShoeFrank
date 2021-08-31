@@ -299,20 +299,27 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 	// }
 
 
-	TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
-	
-	for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
+	if( TAGrecoManager::GetPar()->IsMC() )
+	{	
+		TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+		
+		for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
 
-		TAMCpart* point = m_McNtuEve->GetTrack(iPart);		
-		if ( point->GetCharge() > 0 && point->GetCharge() <= 8) {
-			if ( find( chVect->begin(), chVect->end(), point->GetCharge() ) == chVect->end() ) {
-				chVect->push_back( point->GetCharge() );
-				if ( m_debug > 0 )		
-					cout << "TAGFuploader::GetPossibleCharges  " << point->GetCharge() << "\n";
+			TAMCpart* point = m_McNtuEve->GetTrack(iPart);		
+			if ( point->GetCharge() > 0 && point->GetCharge() <= 8) {
+				if ( find( chVect->begin(), chVect->end(), point->GetCharge() ) == chVect->end() ) {
+					chVect->push_back( point->GetCharge() );
+					if ( m_debug > 0 )		
+						cout << "TAGFuploader::GetPossibleCharges  " << point->GetCharge() << "\n";
+				}
 			}
 		}
-		
 	}
+	else
+	{
+		for(int i=1; i<=8; ++i)	chVect->push_back( i );
+	}
+
 
 }
 

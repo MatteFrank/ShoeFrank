@@ -19,10 +19,10 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 
 	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
 
+	cout << "Beam Energy::" << m_BeamEnergy << endl;
 
-	flagMC = true; //HARDCODED -> TO BE CHANGED!!
 
-	if (flagMC)
+	if ( TAGrecoManager::GetPar()->IsMC() )
 		m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 }
 
@@ -450,6 +450,8 @@ void TAGFselector::CategorizeVT()
 
 			// N clusters per tracklet
 			int ncluster = tracklet->GetClustersN();
+			if( m_debug > 0 )
+				cout << "tracklet " << iTrack << " has " << ncluster << " clusters" << "\n";
 
 			if(ncluster < 3){ continue; }
 
@@ -480,7 +482,7 @@ void TAGFselector::CategorizeVT()
 				fitTrack_->insertMeasurement( hitToAdd );
 				// fitTrack_->insertPoint( new genfit::TrackPoint(hitToAdd, fitTrack_) );
 
-				if ( m_debug > 1) {
+				if ( m_debug > 1 && TAGrecoManager::GetPar()->IsMC() ) {
 					vector<int> iPart = m_measParticleMC_collection->at( hitToAdd->getHitId() );
 					cout << "\t-- Truth particles of the measurement:\n";
 					for (int k=0; k< iPart.size(); k++) {
