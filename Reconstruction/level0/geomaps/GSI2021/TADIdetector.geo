@@ -8,10 +8,13 @@
 // Parameters of the magnets
 // Types 0 const, 1 function, 2 map file
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Magnets:     0
-Type:        0
+Magnets:     2
+Type:        2
+MapName:     "./data/AsymmetricDipoles.table"
 
-MagValueX:   0.0     MagValueX:     0.0   MagValueX:     0.0
+MapMeshSize: 0.5
+MagLimLoX:  -5.0     MagLimLoY:    -5.0   MagLimLoZ:    -50.0
+MagLimUpX:   5.0     MagLimUpY:     5.0   MagLimUpZ:     50.0
 
 ShieldThickness:  0.5
 ShieldMat:        "Al"
@@ -35,5 +38,7 @@ Inputs:            2
 InnerRad:          6.2     OuterRad:    25.000   Size3:          10.0
 PositionsX:        0.0000  PositionsY:   0.000   PositionsZ:      8.0
 Tilt1:             0.0000  Tilt2:        0.000   Tilt3:           0.0
+
+
 
 

@@ -23,12 +23,12 @@
 ///////////////////////////////////////////////////   
    //////// Set config values 
 
-   // type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD)
-   TString fConfig_typegeo = "FULL_DET";
+   // type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, GSI2021)
+   TString fConfig_typegeo = "GSI2021";
 
    // half dimensions of BGO crystal
    double xdim1 = 1.; 
-   double xdim2 = 1.45; 
+   double xdim2 = 1.5; 
    double ydim1 = xdim1; // assume squart
    double ydim2 = xdim2;
    double zdim  = 12.;
@@ -60,7 +60,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////
 // main
-void BuildCaGeoFile(TString fileOutName = "./geomaps/TACAdetector.map")
+void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2020/TACAdetector.geo")
 {
 
    FILE* fp = fopen(fileOutName.Data(), "w");
@@ -155,7 +155,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/TACAdetector.map")
    TGeoTranslation * trasP = new TGeoTranslation(posx, 0, posz - piramid_base_c );
    TGeoRotation * rotN = new TGeoRotation ();
    rotN->RotateY(-alfa_degree * 2);
-   TGeoTranslation * trasN = new TGeoTranslation(-posx, 0, posz - piramid_base_c );
+   TGeoTranslation * trasN = new TGeoTranslation(-posx, 0, posz - piramid_base_c);
 
    TGeoVolumeAssembly * row = new TGeoVolumeAssembly("CAL_ROW");
    row->AddNode(caloCristal, 1);
@@ -216,13 +216,13 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/TACAdetector.map")
    double ydimA2 = xdimA2;
    double zdimA = zdim + delZ;
    double shiftA = -delZ * 0.55;
-   fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
-   fprintf(fp,"// Parameter of the Air around each module. It is need ONLY by FLUKA geometry (cm)\n");
-   fprintf(fp,"// it will be removed if a truncate piramid body is implemented in FLUKA \n");
-   fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
-   fprintf(fp,"Widthfront:   %f   Heightfront:  %f    DummyLength:    0.\n",   xdimA1, ydimA1);
-   fprintf(fp,"Widthback :   %f	 Heightback :  %f	   Length:         %f\n", xdimA2, ydimA2, zdimA);
-   fprintf(fp,"PositionZ:    %f\n\n", shiftA);
+   //fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
+   //fprintf(fp,"// Parameter of the Air around each module. It is need ONLY by FLUKA geometry (cm)\n");
+   //fprintf(fp,"// it will be removed if a truncate piramid body is implemented in FLUKA \n");
+   //fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
+   //fprintf(fp,"Widthfront:   %f   Heightfront:  %f    DummyLength:    0.\n",   xdimA1, ydimA1);
+   //fprintf(fp,"Widthback :   %f	 Heightback :  %f	   Length:         %f\n", xdimA2, ydimA2, zdimA);
+   //fprintf(fp,"PositionZ:    %f\n\n", shiftA);
 
    TGeoVolume * modAir = gGeoManager->MakeTrd2("MOD_AIR", medAir, xdimA1, xdimA2, ydimA1, ydimA2, zdimA);
    modAir->SetLineColor(kGreen);
@@ -252,10 +252,23 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/TACAdetector.map")
 
    // displacement of module center
    double deltaM  = 2 * delta; // 2mm between MODULES
-   double deltaMx = deltaM * TMath::Cos(alfa*3);
-   double deltaMz = - deltaM * TMath::Sin(alfa*3);
-   double posModx = TMath::Sin(alfa*3) * piramid_base_c + deltaMx;
-   double posModz = TMath::Cos(alfa*3) * piramid_base_c + deltaMz;
+   double deltaMx = deltaM * TMath::Cos(alfa * 3);
+   double deltaMz = - deltaM * TMath::Sin(alfa * 3);
+   double posModx = TMath::Sin(alfa * 3) * piramid_base_c + deltaMx;
+   double posModz = TMath::Cos(alfa * 3) * piramid_base_c + deltaMz;
+
+   if ( fConfig_typegeo.CompareTo("GSI2021") == 0 ) {
+
+   TGeoRotation * rotNDet  = new TGeoRotation (); rotNDet->RotateY(-alfa_degree * 3);
+   TGeoTranslation * trasNDet  = new TGeoTranslation(-posModx, 0, posModz - piramid_base_c );
+   TGeoRotation * rotLeftZ  = new TGeoRotation (); 
+   rotLeftZ->RotateZ(-0.2);
+   detector->AddNode(mod, 1);  
+   detector->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasNDet, *rotNDet) * TGeoCombiTrans(*trasNDet, *rotNDet) * TGeoHMatrix(*rotLeftZ) ) );
+    
+   EndGeometry(fp);   
+   return;
+   }
    
    // set rotations/translation (left/right/up/down)
    TGeoRotation * rotUpDet = new TGeoRotation (); rotUpDet->RotateX(-alfa_degree * 3);
@@ -505,12 +518,12 @@ TVector3 PrintCalorimeterSize(FILE * fp, double &shift)
    shift = (maxpoint[2] + minpoint[2])/2;
    cout << "Shift " << (maxpoint[2] + minpoint[2] + delta[2])/2 << endl;
 
-   fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
-   fprintf(fp,"// Parameter of the Calorimeter bounding box (cm)\n");
-   fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
-   fprintf(fp,"Width:          %f     Height:      %f      Thick:     %f, \n", 
-               fCaloSize[0], fCaloSize[1], fCaloSize[2] );
-   fprintf(fp,"PositionZ:      %f\n\n", shift);
+   //fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
+   //fprintf(fp,"// Parameter of the Calorimeter bounding box (cm)\n");
+   //fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
+   //fprintf(fp,"Width:          %f     Height:      %f      Thick:     %f, \n", 
+   //            fCaloSize[0], fCaloSize[1], fCaloSize[2] );
+   //fprintf(fp,"PositionZ:      %f\n\n", shift);
 
    return fCaloSize;
 }

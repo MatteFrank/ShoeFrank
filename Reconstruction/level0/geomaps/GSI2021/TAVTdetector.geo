@@ -38,41 +38,37 @@ Inputs:            1
 Type:              0
 PositionsX:        0.0000  PositionsY:   0.0000  PositionsZ:   -0.92
 Tilt1:             0.0000  Tilt2:        0.000   Tilt3:         0.000
-AlignementU:      -0.0003
-AlignementV:       0.0000
-AlignementTilt:   -0.000
+AlignementU:       0.000
+AlignementV:       0.000
+AlignementTilt:    0.000
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 2  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            2
 Type:              0
 PositionsX:        0.0000  PositionsY:   0.000   PositionsZ:   -0.6
 Tilt1:             0.0000  Tilt2:      180.000   Tilt3:         0.000
-AlignementU:       0.0330
-AlignementV:       0.0037
-AlignementTilt:    0.182
+AlignementU:       0.000
+AlignementV:       0.000
+AlignementTilt:    0.000
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 3  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            3
 Type:              0
 PositionsX:        0.0000  PositionsY:   0.000  PositionsZ:     0.6
 Tilt1:             0.0000  Tilt2:        0.000   Tilt3:         0.000
-AlignementU:      -0.0267
-AlignementV:      -0.0010
-AlignementTilt:    0.306
+AlignementU:       0.000
+AlignementV:       0.000
+AlignementTilt:    0.000
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 4  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            4
 Type:              0
 PositionsX:        0.0000  PositionsY:   0.0000  PositionsZ:    0.92
 Tilt1:             0.0000  Tilt2:      180.000   Tilt3:         0.000
-AlignementU:       0.0000
-AlignementV:       0.0006
-AlignementTilt:   -0.035
+AlignementU:       0.000
+AlignementV:       0.000
+AlignementTilt:    0.000
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // End of Mapping File
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-
-
-
-
