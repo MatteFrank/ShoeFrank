@@ -49,6 +49,9 @@ struct msd_tag;
 struct tof_tag;
 struct ms2d_tag;
 
+struct x_view_tag{  static constexpr uint8_t shift = 7; };
+struct y_view_tag{  static constexpr uint8_t shift = 6; };
+
 } //namespace details
 
 
@@ -72,27 +75,31 @@ struct reconstructible_track{
     particle_properties properties;
 };
 
-template<class T>
+
+struct cluster{
+    struct vector{ double x; double y; double z; };
+    
+    vector position;
+    std::vector<int> mc_index_c;
+    chisquared chi2;
+    uint8_t opcode;
+};
+
 struct reconstructed_track{
-    std::vector<T const*> cluster_c;
-    std::vector<T const*> const& get_clusters() const { return cluster_c; }
-    std::vector<T const*> & get_clusters() { return cluster_c; }
+    std::vector<cluster> cluster_c;
+    std::vector<cluster> const& get_clusters() const { return cluster_c; }
+    std::vector<cluster> & get_clusters() { return cluster_c; }
     particle_properties properties;
     polynomial_fit_parameters parameters;
     std::size_t clone_number{0};
-    chisquared chi2;
 };
 
-template<class T>
 struct reconstruction_module{
-    T const* end_point_h;
     aftereffect::optional<reconstructible_track> reconstructible_o;
-    aftereffect::optional<reconstructed_track<T>> reconstructed_o;
+    aftereffect::optional<reconstructed_track> reconstructed_o;
     
-    reconstruction_module( T const* end_point_ph,
-                          aftereffect::optional<reconstructible_track> reconstructible_po,
-                          aftereffect::optional<reconstructed_track<T>> reconstructed_po) :
-    end_point_h{end_point_ph},
+    reconstruction_module( aftereffect::optional<reconstructible_track> reconstructible_po,
+                          aftereffect::optional<reconstructed_track> reconstructed_po) :
     reconstructible_o{ std::move(reconstructible_po) },
     reconstructed_o{ std::move(reconstructed_po) } {}
 };
@@ -126,7 +133,7 @@ private:
     virtual void set_cuts( details::tof_tag, double) = 0;
     virtual void set_cuts( details::ms2d_tag, double) = 0;
     
-    virtual std::vector<reconstruction_module<data_type>> const& retrieve_matched_results( ) const = 0;
+    virtual std::vector<reconstruction_module> const& retrieve_matched_results( ) const = 0;
     
     
 };

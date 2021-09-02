@@ -187,8 +187,8 @@ struct underlying< candidate_impl<Vector, Covariance, Matrix, Data> >
 // ----------------- enriched_candidate_impl ---------------------------
 
 struct chisquared{
-    double chisquared_predicted;
-    double chisquared_corrected;
+    double prediction;
+    double correction;
     double distance;
 };
 

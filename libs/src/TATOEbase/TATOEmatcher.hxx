@@ -13,19 +13,36 @@
 #ifndef _TATOEmatcher_HXX
 #define _TATOEmatcher_HXX
 
+
+#include "flag_set.hpp"
+#include "aftereffect.hpp"
+#include "TATOEutilities.hxx"
+#include "TATOEdetector.hxx"
+
 #include "TAMCntuPart.hxx"
 #include "TAGparGeo.hxx"
 #include "TAGroot.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGcluster.hxx"
 
-#include "aftereffect.hpp"
-#include "TATOEutilities.hxx"
-
+class TAVTcluster;
+class TAITcluster;
+#include "TAMSDcluster.hxx"
 #include "TATWntuPoint.hxx"
 
-template<class Action>
-struct TATOEmatcher{
+
+
+template<class Derived>
+struct empty_writer{
+    void write() {}
+};
+
+
+
+
+
+template<class Action, template<class> class Writer>
+struct TATOEmatcher : Writer<TATOEmatcher<Action, Writer>> {
     
     using candidate = typename std::decay_t<decltype( std::declval<typename Action::detector_list_t>().last() )>::candidate;
     using detector_list_t = typename Action::detector_list_t;
@@ -51,8 +68,9 @@ private:
     node_type const * current_node_mh = nullptr;
 
     std::vector< candidate_indices > candidate_index_mc;
-    std::vector< reconstruction_module<data_type> > reconstruction_module_mc;
-
+    std::vector< reconstruction_module > reconstruction_module_mc;
+    std::vector< data_type const * >     end_point_mc;
+    
 public:
     TATOEmatcher( TAGparGeo const * global_parameters_ph,
                   Action& action_p ) :
@@ -280,12 +298,12 @@ private:
     void register_reconstructible_track(data_type const* end_point_ph, reconstructible_track&& reconstructible_p)
     {
         reconstruction_module_mc.push_back(
-                                           reconstruction_module<data_type>{
-                                               end_point_ph,
-                                               aftereffect::optional<reconstructible_track>{ std::move(reconstructible_p) },
-                                               aftereffect::optional<reconstructed_track<data_type>>{ }
-                                           }
+                        reconstruction_module{
+                            aftereffect::optional<reconstructible_track>{ std::move(reconstructible_p) },
+                            aftereffect::optional<reconstructed_track>{ }
+                                              }
                                            );
+        end_point_mc.push_back( end_point_ph );
     }
 
     
@@ -302,18 +320,27 @@ public:
         using full_state = typename std::decay_t<decltype(state_c)>::value_type ;
         std::vector<full_state> full_state_c{ state_c.begin()+ 1 , state_c.end() }; //remove vertex
         
-        std::vector< data_type const* > cluster_c;
+        std::vector< cluster > cluster_c;
         cluster_c.reserve( full_state_c.size() );
-        chisquared chi2;
         for( auto const& full_state : full_state_c ){
-            cluster_c.emplace_back( full_state.data );
-            chi2.chisquared_predicted += full_state.chisquared_predicted;
-            chi2.chisquared_corrected += full_state.chisquared_corrected;
-            chi2.distance  += full_state.distance;
+            auto result = cluster{};
+            result.position = cluster::vector{
+                full_state.data->GetPositionG().X(),
+                full_state.data->GetPositionG().Y(),
+                full_state.data->GetPositionG().Z()
+            };
+            result.chi2 = chisquared{ full_state.prediction, full_state.correction, full_state.distance };
+            if( dynamic_cast<TAVTcluster const*>( full_state.data ) ){ result.opcode = flag_set<details::vertex_tag>{}; }
+            if( dynamic_cast<TAITcluster const*>( full_state.data ) ){ result.opcode = flag_set<details::it_tag>{}; }
+            if( dynamic_cast<TAMSDcluster const*>( full_state.data ) ){
+                auto msd_h = dynamic_cast<TAMSDcluster const*>( full_state.data );
+                if( msd_h->GetPlaneView()  ){ result.opcode = flag_set<details::msd_tag, details::y_view_tag>{}; }
+                else{ result.opcode = flag_set<details::msd_tag, details::x_view_tag>{}; }
+            }
+            if( dynamic_cast<TATWpoint const*>( full_state.data ) ){ result.opcode = flag_set<details::tof_tag>{}; }
+            for(auto i{0}; i < full_state.data->GetMcTracksN(); ++i){ result.mc_index_c.push_back( full_state.data->GetMcTrackIdx(i) ); }
+            cluster_c.push_back( std::move(result ));
         }
-        chi2.chisquared_predicted /= full_state_c.size();
-        chi2.chisquared_corrected /= full_state_c.size();
-        chi2.distance /= full_state_c.size();
         
         //store both chisquare as well -> distribution of mean value then 
         auto particle = particle_properties{
@@ -325,132 +352,52 @@ public:
         action_m.logger_m << "mass: " << particle.mass << '\n';
         action_m.logger_m << "momentum: " << particle.momentum << '\n';
         
-        auto reconstructed = reconstructed_track<data_type>{ cluster_c, std::move(particle),  track_p.parameters, track_p.clone, chi2 };
-        register_reconstructed_track( cluster_c.back(), std::move(reconstructed) );
-    }
+        auto reconstructed = reconstructed_track{ cluster_c, std::move(particle),  track_p.parameters, track_p.clone };
+        register_reconstructed_track( state_c.back().data , std::move(reconstructed) );
+    }    
     
 private:
-    void register_reconstructed_track(data_type const* end_point_ph, reconstructed_track<data_type>&& reconstructed_p)
+    void register_reconstructed_track(data_type const* end_point_ph, reconstructed_track&& reconstructed_p)
     {
-        auto module_i = std::find_if( reconstruction_module_mc.begin(),
-                                     reconstruction_module_mc.end(),
-                                     [&end_point_ph](reconstruction_module<data_type> const& module_p){ return module_p.end_point_h == end_point_ph;  } );
-        if( module_i != reconstruction_module_mc.end() ){
-            module_i->reconstructed_o = aftereffect::optional<reconstructed_track<data_type>>{ std::move(reconstructed_p) };
+        auto end_point_i = std::find_if( end_point_mc.begin(), end_point_mc.end(),
+                                   [&end_point_ph](data_type const* en_ph){ return en_ph == end_point_ph;  } );
+        
+        if( end_point_i != end_point_mc.end() ){
+            auto module_index = std::distance( end_point_mc.begin(), end_point_i );
+            reconstruction_module_mc[module_index].reconstructed_o = aftereffect::optional<reconstructed_track>{ std::move(reconstructed_p) };
             
             action_m.logger_m << "corresponding_mc_id: ";
-            auto index_c = module_i->reconstructible_o.value().get_indices();
+            auto index_c = reconstruction_module_mc[module_index].reconstructible_o.value().get_indices();
             for( auto index : index_c ){ action_m.logger_m << index << " "; }
             action_m.logger_m << "\n";
         }
         else{
             reconstruction_module_mc.emplace_back(
-                                        end_point_ph,
                                         aftereffect::optional<reconstructible_track>{  },
-                                        aftereffect::optional<reconstructed_track<data_type>>{ std::move(reconstructed_p) }
+                                        aftereffect::optional<reconstructed_track>{ std::move(reconstructed_p) }
                                                   );
+            end_point_mc.push_back( end_point_ph);
         }
     }
 
 
 public:
     //will need a reset method
-    void clear_reconstruction_modules(){ reconstruction_module_mc.clear(); }
+    void clear(){
+        reconstruction_module_mc.clear();
+        end_point_mc.clear();
+    }
     
-    std::vector<reconstruction_module<data_type>> const& retrieve_results() const {
+    std::vector<reconstruction_module> const& retrieve_results() const {
         return reconstruction_module_mc;
     }
     
-//    void compute_results( details::all_mixed_tag ) const{
-//
-//        //        action_m.logger_m.freeze_everything();
-//        action_m.logger_m.add_root_header("RESULTS");
-//        action_m.logger_m.template add_header<1, details::immutable_tag>("mixed");
-//
-//        std::size_t reconstructed_number{0};
-//        std::size_t reconstructible_number{0};
-//
-//        std::size_t correct_cluster_number{0};
-//        std::size_t recovered_cluster_number{0};
-//
-////        std::size_t total_cluster_number{0};
-////        std::size_t local_total_cluster_number{0};
-//        std::size_t fake_number{0};
-//
-//        std::size_t clone_number{0};
-//
-//        for(auto const & module : computation_module_mc){
-//            reconstructed_number += module.reconstructed_number;
-//            reconstructible_number += module.reconstructible_number;
-//
-//            correct_cluster_number += module.correct_cluster_number;
-//            recovered_cluster_number += module.recovered_cluster_number;
-////            total_cluster_number += module.total_cluster_number;
-//
-//            fake_number += module.fake_number;
-//            clone_number += module.clone_number;
-//        }
-//        //look at mass efficiency reconstruction ? because of the plage im momentum of protons !
-//        action_m.logger_m.template add_header<1, details::immutable_tag>("efficiency");
-//        auto efficiency = reconstructed_number * 1./reconstructible_number;
-//        action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-//        auto efficiency_error = sqrt(efficiency* (1+ efficiency)/reconstructible_number);
-//        action_m.logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
-//
-//        action_m.logger_m.template add_header<1, details::immutable_tag>("purity");
-//        auto purity = correct_cluster_number * 1./recovered_cluster_number;
-//        action_m.logger_m << "global_purity: " << purity * 100 << '\n';
-//        auto purity_error = sqrt(purity* (1+purity)/recovered_cluster_number);
-//        action_m.logger_m << "global_purity_error: " << purity_error * 100<< '\n';
-//
-////        action_m.logger_m.template add_header<1, details::immutable_tag>("coverage");
-////        double coverage = recovered_cluster_number * 1./total_cluster_number;
-////        action_m.logger_m << "global_coverage: " << coverage * 100 << '\n';
-////        action_m.logger_m << "global_coverage_error: " << sqrt(coverage* (1+coverage)/total_cluster_number) * 100<< '\n';
-//
-//        action_m.logger_m.template add_header<1, details::immutable_tag>("fake_yield");
-//        auto fake_yield = fake_number * 1./reconstructed_number;
-//        action_m.logger_m << "fake_yield: " << fake_yield * 100 << '\n';
-//        auto fake_yield_error = sqrt( fake_yield * (1+ fake_yield)/reconstructed_number);
-//        action_m.logger_m << "fake_yield_error: " << fake_yield_error * 100<< '\n';
-//
-//        action_m.logger_m.template add_header<1, details::immutable_tag>("multiplicity");
-//        auto multiplicity = clone_number * 1./reconstructed_number;
-//        action_m.logger_m << "global_clone_ratio: " << multiplicity << '\n';
-//        auto multiplicity_error = sqrt(multiplicity * (1+multiplicity)/reconstructed_number);
-//        action_m.logger_m << "global_clone_ratio_error: " << multiplicity_error << '\n';
-//
-//    }
+    void end_event() {
+        Writer<TATOEmatcher<Action, Writer>>::write();
+        reconstruction_module_mc.clear();
+        end_point_mc.clear();
+    }
     
-//    void compute_results( details::all_separated_tag ){
-//        //        action_m.logger_m.freeze_everything();
-//        action_m.logger_m.add_root_header("RESULTS");
-//        action_m.logger_m.template add_header<1, details::immutable_tag>("separated");
-//        for(auto const & module : computation_module_mc){
-//            action_m.logger_m << "charge: " << module.charge << '\n';
-//            compute_efficiency( module );
-//            compute_purity( module );
-//        }
-//    }
-//
-//
-//private:
-//    void compute_efficiency( computation_module const & module_p ){
-//        auto efficiency = module_p.reconstructed_number * 1./module_p.reconstructible_number;
-//        action_m.logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-//        auto efficiency_error = sqrt( efficiency* (1+ efficiency)/module_p.reconstructible_number);
-//        action_m.logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
-//    }
-//
-//
-//    void compute_purity( computation_module const & module_p ){
-//        auto purity = module_p.correct_cluster_number * 1./module_p.recovered_cluster_number;
-//        action_m.logger_m << "global_purity: " << purity * 100 << '\n';
-//        auto purity_error = sqrt( purity* (1+purity)/module_p.recovered_cluster_number);
-//        action_m.logger_m << "global_purity_error: " << purity_error * 100<< '\n';
-//    }
-//
-
 };
 
 
@@ -461,13 +408,14 @@ struct empty_matcher{
     using node_type = typename Action::node_type;
     using data_type = typename Action::data_type;
     
-    std::vector<reconstruction_module<data_type>> reconstruction_module_mc;
+    std::vector<reconstruction_module> reconstruction_module_mc;
     
     void submit_reconstructed_track(track const& ){}
     void submit_reconstructible_track(candidate const& ){}
     void generate_candidate_indices(){}
-    std::vector<reconstruction_module<data_type>> const& retrieve_results() const{ return reconstruction_module_mc; }
-    void clear_reconstruction_modules(){}
+    std::vector<reconstruction_module> const& retrieve_results() const{ return reconstruction_module_mc; }
+    void clear(){}
+    void end_event() {}
 };
 
 template<class Action>
@@ -482,8 +430,9 @@ struct matcher{
         virtual void submit_reconstructed_track(track const& track_p) = 0;
         virtual void submit_reconstructible_track(candidate const& candidate_p) = 0;
         virtual void generate_candidate_indices() = 0;
-        virtual std::vector<reconstruction_module<data_type>> const& retrieve_results() const = 0;
-        virtual void clear_reconstruction_modules() =0;
+        virtual std::vector<reconstruction_module> const& retrieve_results() const = 0;
+        virtual void clear() =0;
+        virtual void end_event()  =0;
     };
 
     template<class T>
@@ -493,8 +442,9 @@ struct matcher{
         void submit_reconstructed_track(track const& track_p) override{ t_m.submit_reconstructed_track( track_p); }
         void submit_reconstructible_track(candidate const& candidate_p) override{ t_m.submit_reconstructible_track( candidate_p); }
         void generate_candidate_indices() override{ t_m.generate_candidate_indices();}
-        std::vector<reconstruction_module<data_type>> const& retrieve_results() const override{ return t_m.retrieve_results(); }
-        void clear_reconstruction_modules() override { t_m.clear_reconstruction_modules(); }
+        std::vector<reconstruction_module> const& retrieve_results() const override{ return t_m.retrieve_results(); }
+        void clear() override { t_m.clear(); }
+        void end_event() override { t_m.end_event(); }
         T t_m;
     };
 
@@ -511,9 +461,10 @@ struct matcher{
     void submit_reconstructed_track(track const& track_p) { erased_m->submit_reconstructed_track( track_p); }
     void submit_reconstructible_track(candidate const& candidate_p) { erased_m->submit_reconstructible_track( candidate_p); }
     void generate_candidate_indices() { erased_m->generate_candidate_indices();}
-    std::vector<reconstruction_module<data_type>> const& retrieve_results() const { return erased_m->retrieve_results(); }
-    void clear_reconstruction_modules(){ erased_m->clear_reconstruction_modules(); }
-
+    std::vector<reconstruction_module> const& retrieve_results() const { return erased_m->retrieve_results(); }
+    void clear(){ erased_m->clear(); }
+    void end_event() { erased_m->end_event(); }
+    
     private:
     std::unique_ptr<eraser> erased_m;
 }; 

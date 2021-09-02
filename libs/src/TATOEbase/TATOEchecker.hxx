@@ -9,8 +9,10 @@
 #define TATOEchecker_h
 
 #include "aftereffect.hpp"
+#include "flag_set.hpp"
 
 #include "TATOEutilities.hxx"
+#include "TATOEdetector.hxx"
 
 #include "TAGroot.hxx"
 #include "TAGcluster.hxx"
@@ -31,23 +33,39 @@ struct value_and_error{
 // -------------------------------------------
 //                    Options
 struct no_requirement{
-    bool predicate(reconstruction_module<TAGcluster> const& rm_p){ return true; }
+    bool predicate(reconstruction_module const& rm_p){ return true; }
 };
 
 template<int C>
 struct isolate_charge{
     static constexpr int charge = C;
-    bool predicate(reconstruction_module<TAGcluster> const& rm_p){
+    bool predicate(reconstruction_module const& rm_p){
         return rm_p.reconstructible_o.value().properties.charge == charge;
     }
 };
 
 struct well_matched{
-    bool predicate(reconstruction_module<TAGcluster> const& rm_p){
+    bool predicate(reconstruction_module const& rm_p){
         auto const& reconstructible = rm_p.reconstructible_o.value();
         auto const& reconstructed = rm_p.reconstructed_o.value();
         return reconstructible.properties.charge == reconstructed.properties.charge &&
                reconstructible.properties.mass   == reconstructed.properties.mass;
+    }
+};
+
+struct charge_well_matched{
+    bool predicate(reconstruction_module const& rm_p){
+        auto const& reconstructible = rm_p.reconstructible_o.value();
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        return reconstructible.properties.charge == reconstructed.properties.charge;
+    }
+};
+
+struct badly_matched{
+    bool predicate(reconstruction_module const& rm_p){
+        auto const& reconstructible = rm_p.reconstructible_o.value();
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        return reconstructible.properties.mass != reconstructed.properties.mass;
     }
 };
 
@@ -72,7 +90,7 @@ struct generate_histogram{};
 
 template<class CO, class MO>
 struct successfull_reconstruction_predicate {
-    bool predicate( reconstruction_module<TAGcluster> const& rm_p ) const {
+    bool predicate( reconstruction_module const& rm_p ) const {
         return rm_p.reconstructible_o.has_value() && rm_p.reconstructed_o.has_value() &&
                 CO{}.predicate(rm_p) &&
                 MO{}.predicate(rm_p);
@@ -83,7 +101,7 @@ struct successfull_reconstruction_predicate {
 template<class Derived, class F> struct single_value_outcome{};
 template<class Derived>
 struct single_value_outcome<Derived, histogram<per_nucleon, reconstructible_based>>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructible = rm_p.reconstructible_o.value();
         auto & data = static_cast<Derived&>(*this).data();
         data.value.Fill( reconstructible.properties.momentum/(1000*reconstructible.properties.mass) );
@@ -91,7 +109,7 @@ struct single_value_outcome<Derived, histogram<per_nucleon, reconstructible_base
 };
 template<class Derived>
 struct single_value_outcome<Derived, histogram<per_nucleon, reconstructed_based>>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto & data = static_cast<Derived&>(*this).data();
         data.value.Fill( reconstructed.properties.momentum/(1000*reconstructed.properties.mass) );
@@ -99,7 +117,7 @@ struct single_value_outcome<Derived, histogram<per_nucleon, reconstructed_based>
 };
 template<class Derived>
 struct single_value_outcome<Derived, histogram<absolute, reconstructible_based>>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructible = rm_p.reconstructible_o.value();
         auto & data = static_cast<Derived&>(*this).data();
         data.value.Fill( reconstructible.properties.momentum/1000 );
@@ -107,7 +125,7 @@ struct single_value_outcome<Derived, histogram<absolute, reconstructible_based>>
 };
 template<class Derived>
 struct single_value_outcome<Derived, histogram<absolute, reconstructed_based>>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto & data = static_cast<Derived&>(*this).data();
         data.value.Fill( reconstructed.properties.momentum/1000 );
@@ -116,7 +134,7 @@ struct single_value_outcome<Derived, histogram<absolute, reconstructed_based>>{
 
 template<class Derived>
 struct single_value_outcome<Derived, computation>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto & data = static_cast<Derived&>(*this).data();
         ++data.counter;
@@ -153,7 +171,7 @@ struct purity_tag{};
 template<class Derived, class F> struct purity_outcome{};
 template<class Derived>
 struct purity_outcome<Derived, histogram<per_nucleon, reconstructible_based>>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto const& reconstructible = rm_p.reconstructible_o.value();
         
@@ -164,9 +182,8 @@ struct purity_outcome<Derived, histogram<per_nucleon, reconstructible_based>>{
                             reconstructed.get_clusters().size()
                                           );
         auto index_c = reconstructible.get_indices();
-        for( auto const& cluster_h : reconstructed.get_clusters() ) {
-            for( auto i{0}; i < cluster_h->GetMcTracksN() ; ++i ) {
-                auto cluster_index = cluster_h->GetMcTrackIdx(i);
+        for( auto const& cluster : reconstructed.get_clusters() ) {
+            for( auto const& cluster_index : cluster.mc_index_c ) {
                 if( std::any_of( index_c.begin(), index_c.end(),
                                  [&cluster_index]( int index_p ){ return index_p == cluster_index; } ) ){
                     data.correct_cluster_histogram.Fill( reconstructible.properties.momentum/(1000 * reconstructible.properties.mass) );
@@ -178,7 +195,7 @@ struct purity_outcome<Derived, histogram<per_nucleon, reconstructible_based>>{
 };
 template<class Derived>
 struct purity_outcome<Derived, computation>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto const& reconstructible = rm_p.reconstructible_o.value();
         
@@ -186,9 +203,8 @@ struct purity_outcome<Derived, computation>{
         
         data.recovered_cluster_count += reconstructed.get_clusters().size();
         auto index_c = reconstructible.get_indices();
-        for( auto const& cluster_h : reconstructed.get_clusters() ) {
-            for( auto i{0}; i < cluster_h->GetMcTracksN() ; ++i ) {
-                auto cluster_index = cluster_h->GetMcTrackIdx(i);
+        for( auto const& cluster : reconstructed.get_clusters() ) {
+            for( auto const& cluster_index : cluster.mc_index_c ) {
                 if( std::any_of( index_c.begin(), index_c.end(),
                                  [&cluster_index]( int index_p ){ return index_p == cluster_index; } ) ){
                     data.correct_cluster_count++;
@@ -254,7 +270,7 @@ struct purity_data< computation, CO >{
     std::size_t recovered_cluster_count{0};
     std::size_t correct_cluster_count{0};
 
-    void clear() { puts(__PRETTY_FUNCTION__); recovered_cluster_count = correct_cluster_count = 0 ;  }
+    void clear() { recovered_cluster_count = correct_cluster_count = 0 ;  }
 };
 
 
@@ -265,16 +281,47 @@ struct purity_data< computation, CO >{
 template<class F, class CO> struct fake_distribution_data{};
 template<class CO> struct fake_distribution_data<computation, CO>{
     std::size_t counter{0};
-    void clear(){ puts(__PRETTY_FUNCTION__); counter = 0 ; }
+    void clear(){  counter = 0 ; }
 };
 
 template<class CO, class MO>
 struct fake_distribution_predicate {
-    bool predicate( reconstruction_module<TAGcluster> const& rm_p ) const {
+    bool predicate( reconstruction_module const& rm_p ) const {
         return !rm_p.reconstructible_o.has_value() && rm_p.reconstructed_o.has_value() &&
                 CO{}.predicate(rm_p) &&
                 MO{}.predicate(rm_p);
     }
+};
+
+
+//----------------------------------------------
+//                  missed_distribution
+
+template<class CO, class MO>
+struct missed_distribution_predicate {
+    bool predicate( reconstruction_module const& rm_p ) const {
+        return rm_p.reconstructible_o.has_value() && !rm_p.reconstructed_o.has_value() &&
+                CO{}.predicate(rm_p) &&
+                MO{}.predicate(rm_p);
+    }
+};
+
+template<class F, class CO> struct missed_distribution_data{};
+template<class CO> struct missed_distribution_data<computation, CO>{
+    std::size_t counter{0};
+    void clear(){  counter = 0 ; }
+};
+
+template<>
+struct missed_distribution_data<histogram<absolute, reconstructible_based>, no_requirement>{
+    TH1D value{ "missed_distribution_mixed_pmc", ";p_{mc} (GeV); Count", 1000, 0, 13 };
+    void clear(){}
+};
+
+template<int C>
+struct missed_distribution_data<histogram<absolute, reconstructible_based>, isolate_charge<C>>{
+    TH1D value{ Form("missed_distribution_charge%d_pmc", C), ";p_{mc} (GeV); Count", 1000, 0, 13 };
+    void clear(){}
 };
 
 //----------------------------------------------
@@ -283,43 +330,43 @@ struct fake_distribution_predicate {
 template<class F, class CO> struct reconstructed_distribution_data{};
 template<>
 struct reconstructed_distribution_data<histogram<per_nucleon, reconstructible_based>, no_requirement>{
-    TH1D value{ "reconstructed_distribution_mixed_pmc/u", ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+    TH1D value{ "reconstructed_distribution_mixed_pmc/u", ";p_{mc} (GeV/u); Count", 50, 0, 1.3 };
     void clear(){}
 };
 template<>
 struct reconstructed_distribution_data<histogram<absolute, reconstructible_based>, no_requirement>{
-    TH1D value{ "reconstructed_distribution_mixed_pmc", ";p_{mc} (GeV); Count", 1000, 0, 9 };
+    TH1D value{ "reconstructed_distribution_mixed_pmc", ";p_{mc} (GeV); Count", 1000, 0, 13 };
     void clear(){}
 };
 template<int C>
 struct reconstructed_distribution_data<histogram<per_nucleon, reconstructible_based>, isolate_charge<C>>{
-    TH1D value{ Form("reconstructed_distribution_charge%d_pmc/u", C), ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+    TH1D value{ Form("reconstructed_distribution_charge%d_pmc/u", C), ";p_{mc} (GeV/u); Count", 50, 0, 1.3 };
     void clear(){}
 };
 template<int C>
 struct reconstructed_distribution_data<histogram<absolute, reconstructible_based>, isolate_charge<C>>{
-    TH1D value{ Form("reconstructed_distribution_charge%d_pmc", C), ";p_{mc} (GeV); Count", 1000, 0, 9 };
+    TH1D value{ Form("reconstructed_distribution_charge%d_pmc", C), ";p_{mc} (GeV); Count", 1000, 0, 13 };
     void clear(){}
 };
 
 template<>
 struct reconstructed_distribution_data<histogram<per_nucleon, reconstructed_based>, no_requirement>{
-    TH1D value{ "reconstructed_distribution_mixed_prec/u", ";p_{rec} (GeV/u); Count", 100, 0, 1.3 };
+    TH1D value{ "reconstructed_distribution_mixed_prec/u", ";p_{rec} (GeV/u); Count", 50, 0, 1.3 };
     void clear(){}
 };
 template<>
 struct reconstructed_distribution_data<histogram<absolute, reconstructed_based>, no_requirement>{
-    TH1D value{ "reconstructed_distribution_mixed_prec", ";p_{rec} (GeV); Count", 1000, 0, 9 };
+    TH1D value{ "reconstructed_distribution_mixed_prec", ";p_{rec} (GeV); Count", 1000, 0, 13 };
     void clear(){}
 };
 template<int C>
 struct reconstructed_distribution_data<histogram<per_nucleon, reconstructed_based>, isolate_charge<C>>{
-    TH1D value{ Form("reconstructed_distribution_charge%d_prec/u", C), ";p_{rec} (GeV/u); Count", 100, 0, 1.3 };
+    TH1D value{ Form("reconstructed_distribution_charge%d_prec/u", C), ";p_{rec} (GeV/u); Count", 50, 0, 1.3 };
     void clear(){}
 };
 template<int C>
 struct reconstructed_distribution_data<histogram<absolute, reconstructed_based>, isolate_charge<C>>{
-    TH1D value{ Form("reconstructed_distribution_charge%d_prec", C), ";p_{rec} (GeV); Count", 1000, 0, 9 };
+    TH1D value{ Form("reconstructed_distribution_charge%d_prec", C), ";p_{rec} (GeV); Count", 1000, 0, 13 };
     void clear(){}
 };
 template<class CO>
@@ -335,22 +382,22 @@ struct reconstructed_distribution_data< computation, CO >{
 template<class F, class CO> struct reconstructible_distribution_data{};
 template<>
 struct reconstructible_distribution_data<histogram<per_nucleon, reconstructible_based>, no_requirement>{
-    TH1D value{ "reconstructible_distribution_mixed_pmc/u", ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+    TH1D value{ "reconstructible_distribution_mixed_pmc/u", ";p_{mc} (GeV/u); Count", 50, 0, 1.3 };
     void clear(){}
 };
 template<>
 struct reconstructible_distribution_data<histogram<absolute, reconstructible_based>, no_requirement>{
-    TH1D value{ "reconstructible_distribution_mixed_pmc", ";p_{mc} (GeV); Count", 1000, 0, 9 };
+    TH1D value{ "reconstructible_distribution_mixed_pmc", ";p_{mc} (GeV); Count", 1000, 0, 13 };
     void clear(){}
 };
 template<int C>
 struct reconstructible_distribution_data<histogram<per_nucleon, reconstructible_based>, isolate_charge<C>>{
-    TH1D value{ Form("reconstructible_distribution_charge%d_pmc/u", C), ";p_{mc} (GeV/u); Count", 100, 0, 1.3 };
+    TH1D value{ Form("reconstructible_distribution_charge%d_pmc/u", C), ";p_{mc} (GeV/u); Count", 50, 0, 1.3 };
     void clear(){}
 };
 template<int C>
 struct reconstructible_distribution_data<histogram<absolute, reconstructible_based>, isolate_charge<C>>{
-    TH1D value{ Form("reconstructible_distribution_charge%d_pmc", C), ";p_{mc} (GeV); Count", 1000, 0, 9 };
+    TH1D value{ Form("reconstructible_distribution_charge%d_pmc", C), ";p_{mc} (GeV); Count", 1000, 0, 13 };
     void clear(){}
 };
 
@@ -362,7 +409,7 @@ struct reconstructible_distribution_data< computation, CO >{
 
 template<class CO, class MO>
 struct reconstructible_distribution_predicate {
-    bool predicate( reconstruction_module<TAGcluster> const& rm_p ) const {
+    bool predicate( reconstruction_module const& rm_p ) const {
         return rm_p.reconstructible_o.has_value() &&
                CO{}.predicate(rm_p) &&
                MO{}.predicate(rm_p);
@@ -375,7 +422,7 @@ struct reconstructible_distribution_predicate {
 template<class Derived, class F> struct clone_distribution_outcome{};
 template<class Derived>
 struct clone_distribution_outcome<Derived, computation>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto & data = static_cast<Derived&>(*this).data();
         data.counter+=reconstructed.clone_number;
@@ -395,7 +442,7 @@ template<class CO> struct clone_distribution_data<computation, CO>{
 template<class Derived, class F> struct mass_identification_outcome{};
 template<class Derived, class R, class B>
 struct mass_identification_outcome<Derived, histogram<R, B>>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto const& reconstructible = rm_p.reconstructible_o.value();
         auto & data = static_cast<Derived&>(*this).data();
@@ -421,46 +468,155 @@ struct mass_identification_data<histogram<R, B>, isolate_charge<C>> {
 template<class Derived, class F> struct momentum_difference_outcome{};
 template<class Derived, class B>
 struct momentum_difference_outcome<Derived, histogram<per_nucleon, B>>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto const& reconstructible = rm_p.reconstructible_o.value();
         auto & data = static_cast<Derived&>(*this).data();
-        data.value.Fill( reconstructible.properties.momentum/(1000*reconstructible.properties.mass) -
+        data.value.get(reconstructible.properties.momentum/1000).Fill( reconstructible.properties.momentum/(1000*reconstructible.properties.mass) -
                          reconstructed.properties.momentum/(1000*reconstructed.properties.mass) );
     }
 };
 template<class Derived, class B>
 struct momentum_difference_outcome<Derived, histogram<absolute, B>>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto const& reconstructible = rm_p.reconstructible_o.value();
         auto & data = static_cast<Derived&>(*this).data();
-        data.value.Fill( (reconstructible.properties.momentum - reconstructed.properties.momentum)/1000 );
+        data.value.get(reconstructible.properties.momentum/1000).Fill( (reconstructible.properties.momentum - reconstructed.properties.momentum)/1000 );
     }
 };
+
 
 template<class F, class CO> struct momentum_difference_data{};
 template< class B>
 struct momentum_difference_data<histogram<per_nucleon, B>, no_requirement> {
-    TH1D value{"momentum_difference_mixed/u", ";p_{mc}/u-p_{rec}/u;Count", 500, -5, 5 };
+    struct link {
+        TH1D histogram;
+        double momentum;
+    };
+    static constexpr double bin_size = 0.2;
+    struct holder{
+        std::vector<link> link_c;
+        TH1D& get( double momentum_p ){
+            auto link_i = std::find_if(
+                                link_c.begin(), link_c.end(),
+                                [&momentum_p]( auto const& link_p ){
+                                            return link_p.momentum-bin_size/2< momentum_p && momentum_p < link_p.momentum+bin_size/2;
+                                                                    }
+                                        );
+            if( link_i != link_c.cend() ){ return link_i->histogram; }
+            else{
+                auto momentum = (static_cast<int>( momentum_p/bin_size ) * bin_size + bin_size/2);
+                link_c.push_back( link{ TH1D{Form("momentum_difference_%.1fGev/c/u_mixed/u", momentum), ";p_{mc}/u - p_{rec}/u;Count", 100, -5, 5},
+                                        momentum } );
+                return link_c.back().histogram;
+            }
+        };
+    };
+    
+    holder value;
     void clear(){}
 };
+
 template<class B, int C>
 struct momentum_difference_data<histogram<per_nucleon, B>, isolate_charge<C>> {
-    TH1D value{Form("momentum_difference_charge%d/u", C), ";p_{mc}/u-p_{rec}/u;Count", 500, -5, 5  };
+    struct link {
+        TH1D histogram;
+        double momentum;
+    };
+    static constexpr double bin_size = 0.2;
+    struct holder{
+        std::vector<link> link_c;
+        TH1D& get( double momentum_p ){
+            auto link_i = std::find_if(
+                                link_c.begin(), link_c.end(),
+                                [&momentum_p]( auto const& link_p ){
+                                            return link_p.momentum-bin_size/2< momentum_p && momentum_p < link_p.momentum+bin_size/2;
+                                                                    }
+                                        );
+            if( link_i != link_c.cend() ){ return link_i->histogram; }
+            else{
+                auto momentum = (static_cast<int>( momentum_p/bin_size ) * bin_size + bin_size/2);
+                link_c.push_back( link{ TH1D{Form("momentum_difference_%.1fGev/c/u_charge%d/u", momentum, C), ";p_{mc}/u - p_{rec}/u;Count", 100, -5, 5},
+                                        momentum }  );
+                return link_c.back().histogram;
+            }
+        };
+    };
+    
+    holder value;
     void clear(){}
 };
+
 template<class B>
 struct momentum_difference_data<histogram<absolute, B>, no_requirement> {
-    TH1D value{"momentum_difference_mixed", ";p_{mc}-p_{rec};Count", 500, -5, 5  };
+    struct link {
+        TH1D histogram;
+        double momentum;
+    };
+    static constexpr double bin_size = 0.2;
+    struct holder{
+        std::vector<link> link_c;
+        TH1D& get( double momentum_p ){
+            auto link_i = std::find_if(
+                                link_c.begin(), link_c.end(),
+                                [&momentum_p]( auto const& link_p ){
+                                            return link_p.momentum-bin_size/2< momentum_p && momentum_p < link_p.momentum+bin_size/2;
+                                                                    }
+                                        );
+            if( link_i != link_c.cend() ){ return link_i->histogram; }
+            else{
+                auto momentum = (static_cast<int>( momentum_p/bin_size ) * bin_size + bin_size/2);
+                link_c.push_back( link{ TH1D{Form("momentum_difference_%.1fGev/c_mixed", momentum), ";p_{mc} - p_{rec};Count", 100, -5, 5},
+                                        momentum }  );
+                return link_c.back().histogram;
+            }
+        };
+    };
+    
+    holder value;
     void clear(){}
 };
 template<class B, int C>
 struct momentum_difference_data<histogram<absolute, B>, isolate_charge<C>> {
-    TH1D value{Form("momentum_difference_charge%d", C), ";p_{mc}-p_{rec};Count", 500, -5, 5 };
+    struct link {
+        TH1D histogram;
+        double momentum;
+    };
+    static constexpr double bin_size = 0.2;
+    struct holder{
+        std::vector<link> link_c;
+        TH1D& get( double momentum_p ){
+            auto link_i = std::find_if(
+                                link_c.begin(), link_c.end(),
+                                [&momentum_p]( auto const& link_p ){
+                                            return link_p.momentum-bin_size/2< momentum_p && momentum_p < link_p.momentum+bin_size/2;
+                                                                    }
+                                        );
+            if( link_i != link_c.cend() ){ return link_i->histogram; }
+            else{
+                auto momentum = (static_cast<int>( momentum_p/bin_size ) * bin_size + bin_size/2);
+                link_c.push_back( link{ TH1D{Form("momentum_difference_%.1fGev/c_charge%d", momentum, C), ";p_{mc} - p_{rec};Count", 100, -5, 5},
+                                        momentum   } );
+                return link_c.back().histogram;
+            }
+        };
+    };
+    
+    holder value;
     void clear(){}
 };
 
+template<class Derived, class F, class CO> struct momentum_difference_output{};
+template<class Derived, class T, class B, class CO>
+struct momentum_difference_output< Derived, histogram<T, B>, CO>{
+    void output() const {
+        auto& data = static_cast<Derived const&>(*this).data();
+        for( auto& link: data.value.link_c){
+            link.histogram.Write();
+        }
+    }
+};
 
 //----------------------------------------------
 //                  residuals
@@ -469,7 +625,7 @@ struct momentum_difference_data<histogram<absolute, B>, isolate_charge<C>> {
 template<class Derived, class F> struct residuals_outcome{};
 template<class Derived, class R, class B>
 struct residuals_outcome<Derived, histogram<R, B>>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto & data = static_cast<Derived&>(*this).data();
         
@@ -482,61 +638,61 @@ struct residuals_outcome<Derived, histogram<R, B>>{
         
         auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
         
-        auto transform_l = [&transformation_h]( auto * cluster_ph, auto transformation_p )
-                                    { return (transformation_h->*transformation_p)(cluster_ph->GetPositionG()); };
+        auto transform_l = [&transformation_h]( auto cluster_p, auto transformation_p )
+                                    {
+                                        TVector3 position{ cluster_p.position.x, cluster_p.position.y, cluster_p.position.z};
+                                        return (transformation_h->*transformation_p)(position);
+                                    };
         
         
         auto const& cluster_c = reconstructed.get_clusters();
-        for( auto const& cluster_h : cluster_c){
+        for( auto const& cluster : cluster_c){
             
             TVector3 cluster_position;
-            auto const * vertex_h = dynamic_cast<TAVTcluster const*>( cluster_h );
-            if( vertex_h ){
-                cluster_position = transform_l( vertex_h, &TAGgeoTrafo::FromVTLocalToGlobal );
-                auto track_position_x = compute_position_x_l( cluster_position.Z() );
-                auto track_position_y = compute_position_y_l( cluster_position.Z() );
-                data.value_all_x.Fill( cluster_position.X() - track_position_x );
-                data.value_all_y.Fill( cluster_position.Y() - track_position_y );
-                data.value_vtx_x.Fill( cluster_position.X() - track_position_x );
-                data.value_vtx_y.Fill( cluster_position.Y() - track_position_y );
-                continue;
-            }
-            auto const * it_h = dynamic_cast<TAITcluster const*>( cluster_h );
-            if( it_h ){
-                cluster_position = transform_l( it_h, &TAGgeoTrafo::FromITLocalToGlobal );
-                auto track_position_x = compute_position_x_l( cluster_position.Z() );
-                auto track_position_y = compute_position_y_l( cluster_position.Z() );
-                data.value_all_x.Fill( cluster_position.X() - track_position_x );
-                data.value_all_y.Fill( cluster_position.Y() - track_position_y );
-                data.value_it_x.Fill( cluster_position.X() - track_position_x );
-                data.value_it_y.Fill( cluster_position.Y() - track_position_y );
-                continue;
-            }
-            auto const * msd_h = dynamic_cast<TAMSDcluster const*>( cluster_h );
-            if( msd_h ){
-                cluster_position = transform_l( msd_h, &TAGgeoTrafo::FromMSDLocalToGlobal );
-                auto view = msd_h->GetPlaneView();
-                if( view ){
+            switch( cluster.opcode ) {
+                case flag_set<details::vertex_tag>{}: {
+                    cluster_position = transform_l( cluster, &TAGgeoTrafo::FromVTLocalToGlobal );
+                    auto track_position_x = compute_position_x_l( cluster_position.Z() );
                     auto track_position_y = compute_position_y_l( cluster_position.Z() );
+                    data.value_all_x.Fill( cluster_position.X() - track_position_x );
+                    data.value_all_y.Fill( cluster_position.Y() - track_position_y );
+                    data.value_vtx_x.Fill( cluster_position.X() - track_position_x );
+                    data.value_vtx_y.Fill( cluster_position.Y() - track_position_y );
+                    break;
+                }
+                case flag_set<details::it_tag>{}: {
+                    cluster_position = transform_l( cluster, &TAGgeoTrafo::FromITLocalToGlobal );
+                    auto track_position_x = compute_position_x_l( cluster_position.Z());
+                    auto track_position_y = compute_position_y_l( cluster_position.Z());
+                    data.value_all_x.Fill( cluster_position.X() - track_position_x );
+                    data.value_all_y.Fill( cluster_position.Y() - track_position_y );
+                    data.value_it_x.Fill( cluster_position.X() - track_position_x );
+                    data.value_it_y.Fill( cluster_position.Y() - track_position_y );
+                    break;
+                }
+                case flag_set<details::msd_tag, details::y_view_tag>{}: {
+                    cluster_position = transform_l( cluster, &TAGgeoTrafo::FromMSDLocalToGlobal );
+                    auto track_position_y = compute_position_y_l( cluster_position.Z());
                     data.value_all_y.Fill( cluster_position.Y() - track_position_y );
                     data.value_msd_y.Fill( cluster_position.Y() - track_position_y );
-                    continue;
+                    break;
                 }
-                auto track_position_x = compute_position_x_l( cluster_position.Z() );
-                data.value_all_x.Fill( cluster_position.X() - track_position_x );
-                data.value_msd_x.Fill( cluster_position.X() - track_position_x );
-                continue;
-            }
-            auto const * tw_h = dynamic_cast<TATWpoint const*>( cluster_h );
-            if( tw_h ){
-                cluster_position = transform_l( tw_h, &TAGgeoTrafo::FromTWLocalToGlobal);
-                auto track_position_x = compute_position_x_l( cluster_position.Z() );
-                auto track_position_y = compute_position_y_l( cluster_position.Z() );
-                data.value_all_x.Fill( cluster_position.X() - track_position_x );
-                data.value_all_y.Fill( cluster_position.Y() - track_position_y );
-                data.value_tof_x.Fill( cluster_position.X() - track_position_x );
-                data.value_tof_y.Fill( cluster_position.Y() - track_position_y );
-                continue;
+                case flag_set<details::msd_tag, details::x_view_tag>{}: {
+                    auto track_position_x = compute_position_x_l( cluster_position.Z());
+                    data.value_all_x.Fill( cluster_position.X() - track_position_x );
+                    data.value_msd_x.Fill( cluster_position.X() - track_position_x );
+                    break;
+                }
+                case flag_set<details::tof_tag>{}: {
+                    cluster_position = transform_l( cluster, &TAGgeoTrafo::FromTWLocalToGlobal);
+                    auto track_position_x = compute_position_x_l( cluster_position.Z());
+                    auto track_position_y = compute_position_y_l( cluster_position.Z());
+                    data.value_all_x.Fill( cluster_position.X() - track_position_x );
+                    data.value_all_y.Fill( cluster_position.Y() - track_position_y );
+                    data.value_tof_x.Fill( cluster_position.X() - track_position_x );
+                    data.value_tof_y.Fill( cluster_position.Y() - track_position_y );
+                    break;
+                }
             }
         }
     }
@@ -600,12 +756,14 @@ struct residuals_output< Derived, histogram<T, B>, CO>{
 template<class Derived, class F> struct chisquared_distribution_outcome{};
 template<class Derived, class R, class B>
 struct chisquared_distribution_outcome<Derived, histogram<R, B>>{
-    void outcome( reconstruction_module<TAGcluster> const& rm_p ){
+    void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto & data = static_cast<Derived&>(*this).data();
-        data.value_predicted.Fill( reconstructed.chi2.chisquared_predicted );
-        data.value_corrected.Fill( reconstructed.chi2.chisquared_corrected );
-        data.value_distance.Fill( reconstructed.chi2.distance );
+        for( auto const& cluster : reconstructed.get_clusters() ){
+            data.value_predicted.Fill( cluster.chi2.prediction );
+            data.value_corrected.Fill( cluster.chi2.correction );
+            data.value_distance.Fill( cluster.chi2.distance );
+        }
     }
 };
 
@@ -623,9 +781,18 @@ struct chisquared_distribution_output< Derived, histogram<T, B>, CO> {
 template<class F, class CO> struct chisquared_distribution_data{};
 template< class R, class B>
 struct chisquared_distribution_data<histogram<R, B>, no_requirement> {
-    TH1D value_predicted{"chisquared_predicted", ";;Count", 500, 0, 30 };
-    TH1D value_corrected{"chisquared_corrected", ";;Count", 500, 0, 30 };
-    TH1D value_distance{"distance", ";;Count", 500, 0, 30 };
+    TH1D value_predicted{"chisquared_predicted", ";;Count", 500, 0, 40 };
+    TH1D value_corrected{"chisquared_corrected", ";;Count", 500, 0, 40 };
+    TH1D value_distance{"distance", ";;Count", 500, 0, 40 };
+
+    void clear(){}
+};
+
+template< class R, class B, int C>
+struct chisquared_distribution_data<histogram<R, B>, isolate_charge<C>> {
+    TH1D value_predicted{Form("chisquared_predicted_charge%d", C), ";;Count", 500, 0, 40 };
+    TH1D value_corrected{Form("chisquared_corrected_charge%d", C), ";;Count", 500, 0, 40 };
+    TH1D value_distance{Form("distance_charge%d", C), ";;Count", 500, 0, 40 };
 
     void clear(){}
 };
@@ -648,8 +815,8 @@ struct producer :
     using Output< producer< F, CO, MO, Data, Predicate, Outcome, Output>, F, CO>::output;
         
     auto generate_aftereffect(){
-        auto predicate_l = [this](reconstruction_module<TAGcluster> const& rm_p){ return predicate( rm_p ); };
-        auto outcome_l = [this](reconstruction_module<TAGcluster> const& rm_p){ outcome( rm_p ); };
+        auto predicate_l = [this](reconstruction_module const& rm_p){ return predicate( rm_p ); };
+        auto outcome_l = [this](reconstruction_module const& rm_p){ outcome( rm_p ); };
         return aftereffect::make_aftereffect(std::move(predicate_l), std::move(outcome_l));
     }
 
@@ -674,6 +841,13 @@ using fake_distribution = producer< Format, ChargeOption, MatchOption,
                                     fake_distribution_predicate,
                                     single_value_outcome,
                                     single_value_output >;
+
+template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
+using missed_distribution = producer< Format, ChargeOption, MatchOption,
+                                        missed_distribution_data,
+                                        missed_distribution_predicate,
+                                        single_value_outcome,
+                                        single_value_output >;
 
 template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
 using reconstructed_distribution = producer< Format, ChargeOption, MatchOption,
@@ -708,7 +882,7 @@ using momentum_difference = producer< Format, ChargeOption, MatchOption,
                                     momentum_difference_data,
                                     successfull_reconstruction_predicate,
                                     momentum_difference_outcome,
-                                    single_value_output >;
+                                    momentum_difference_output >;
 
 template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
 using residuals = producer< Format, ChargeOption, MatchOption,
@@ -729,7 +903,7 @@ using chisquared_distribution = producer< Format, ChargeOption, MatchOption,
 
 template<class ... Producers>
 struct TATOEchecker{
-    void apply(std::vector<reconstruction_module<TAGcluster>> const& rm_pc){
+    void apply(std::vector<reconstruction_module> const& rm_pc){
         auto aftereffect_c = generate_aftereffects( std::make_index_sequence<sizeof...(Producers)>{} );
         for( auto const& module : rm_pc){
             aftereffect_c.evaluate( module );
@@ -763,7 +937,7 @@ private:
 
 template<class Producer>
 struct TATOEchecker<Producer>{
-    void apply(std::vector<reconstruction_module<TAGcluster>> const& rm_pc){
+    void apply(std::vector<reconstruction_module> const& rm_pc){
         auto aftereffect = producer_m.generate_aftereffect();
         for( auto const& module : rm_pc){ aftereffect( module ); }
     }
@@ -781,7 +955,7 @@ private:
 struct computation_checker{
     struct eraser{
         virtual ~eraser() = default;
-        virtual void apply( std::vector<reconstruction_module<TAGcluster>> const& ) = 0;
+        virtual void apply( std::vector<reconstruction_module> const& ) = 0;
         virtual checker::value_and_error output() const =0;
         virtual void clear() = 0;
     };
@@ -790,7 +964,7 @@ struct computation_checker{
     struct holder : eraser{
         holder(T t_p) : t_m{ std::move(t_p) }{}
         
-        void apply( std::vector<reconstruction_module<TAGcluster>> const& rm_pc ) override { t_m.apply( rm_pc ); }
+        void apply( std::vector<reconstruction_module> const& rm_pc ) override { t_m.apply( rm_pc ); }
         checker::value_and_error output() const override{ return t_m.output(); }
         void clear() override { t_m.clear(); }
     private:
@@ -799,7 +973,7 @@ struct computation_checker{
     
     template<class T>
     computation_checker(T t_p) : erased_checker_mh{ new holder<T>{ std::move(t_p) } }{}
-    void apply( std::vector<reconstruction_module<TAGcluster>> const& rm_pc ){ erased_checker_mh->apply(rm_pc);}
+    void apply( std::vector<reconstruction_module> const& rm_pc ){ erased_checker_mh->apply(rm_pc);}
     checker::value_and_error output() const { return erased_checker_mh->output(); }
     void clear() { erased_checker_mh->clear(); }
     
@@ -812,7 +986,7 @@ private:
 struct histogram_checker{
     struct eraser{
         virtual ~eraser() = default;
-        virtual void apply( std::vector<reconstruction_module<TAGcluster>> const& ) = 0;
+        virtual void apply( std::vector<reconstruction_module> const& ) = 0;
         virtual void output() const =0;
     };
     
@@ -820,7 +994,7 @@ struct histogram_checker{
     struct holder : eraser{
         holder(T t_p) : t_m{ std::move(t_p) }{}
         
-        void apply( std::vector<reconstruction_module<TAGcluster>> const& rm_pc ) override { t_m.apply( rm_pc ); }
+        void apply( std::vector<reconstruction_module> const& rm_pc ) override { t_m.apply( rm_pc ); }
         void output() const override{ t_m.output(); }
     private:
         T t_m;
@@ -828,7 +1002,7 @@ struct histogram_checker{
     
     template<class T>
     histogram_checker(T t_p) : erased_checker_mh{ new holder<T>{ std::move(t_p) } }{}
-    void apply( std::vector<reconstruction_module<TAGcluster>> const& rm_pc ){ erased_checker_mh->apply(rm_pc);}
+    void apply( std::vector<reconstruction_module> const& rm_pc ){ erased_checker_mh->apply(rm_pc);}
     void output() const { erased_checker_mh->output(); }
     
 private:

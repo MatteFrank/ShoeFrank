@@ -13,6 +13,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
 
 template<class O> struct underlying_configuration;
@@ -79,10 +80,6 @@ private:
 };
 
 
-// - first cut is not properly set
-// - check ending
-// - customize set to get rid of baseline if needed -> after doing local scan ?
-
 struct procedure_result {
     std::size_t cut_index;
     int modifier;
@@ -99,6 +96,25 @@ struct baseline_scorer{
                ( purity_p - o_ph->baseline.purity )/o_ph->baseline.purity;
     }
 };
+
+struct purity_scorer{
+    template<class O>
+    constexpr double compute_score(double efficiency_p, double purity_p, O const* o_ph) const {
+        return ( purity_p - o_ph->baseline.purity )/o_ph->baseline.purity;
+    }
+};
+
+
+struct target_scorer{
+    static constexpr double efficiency = 0.92;
+    static constexpr double purity = 0.95;
+    template<class O>
+    constexpr double compute_score(double efficiency_p, double purity_p, O const* o_ph) const {
+        return ( efficiency_p - efficiency )/efficiency +
+               pow( ( purity_p - purity )/purity, 3);
+    }
+};
+
 
 template<class Derived>
 struct caller{
@@ -255,8 +271,10 @@ private:
 };
 
 
-using global_scan_procedure_only = global_scan_procedure_impl<baseline_scorer, caller, cut_setter, global_setter, global_only_finaliser >;
-using global_scan_procedure      = global_scan_procedure_impl<baseline_scorer, caller, cut_setter, global_setter, global_finaliser >;
+template<class S>
+using global_scan_procedure_only = global_scan_procedure_impl<S, caller, cut_setter, global_setter, global_only_finaliser >;
+template<class S>
+using global_scan_procedure      = global_scan_procedure_impl<S, caller, cut_setter, global_setter, global_finaliser >;
 
 //-----------------------------------------------------------------
 //               local_scan_procedure
@@ -403,12 +421,12 @@ private:
 };
 
 
-template<class R>
-using rough_scan_procedure = local_scan_procedure_impl<R, baseline_scorer, caller, cut_setter, rough_scan_setter, rough_scan_finaliser >;
+template<class R, class S>
+using rough_scan_procedure = local_scan_procedure_impl<R, S, caller, cut_setter, rough_scan_setter, rough_scan_finaliser >;
 
 
-template<class R>
-using fine_scan_procedure = local_scan_procedure_impl<R, baseline_scorer, caller, cut_setter, fine_scan_setter, fine_scan_finaliser >;
+template<class R, class S>
+using fine_scan_procedure = local_scan_procedure_impl<R, S, caller, cut_setter, fine_scan_setter, fine_scan_finaliser >;
 //    constexpr void optimize_cut() {
 //        std::sort( selection_c.begin(), selection_c.end(), [](auto const& s1_p, auto const& s2_p){ return s1_p.score > s2_p.score; } );
 //        

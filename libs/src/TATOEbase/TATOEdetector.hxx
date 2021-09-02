@@ -73,7 +73,9 @@ struct it_tag{
 //    constexpr static std::array<double, 2> default_cut_value{25,25};
 //        constexpr static std::array<double, 2> default_cut_value{38,42};
 //    constexpr static std::array<double, 2> default_cut_value{41,41};
-        constexpr static std::array<double, 2> default_cut_value{40,32};
+        constexpr static std::array<double, 2> default_cut_value{40,32}; //eff+purity optimized
+//    constexpr static std::array<double, 2> default_cut_value{31,35}; //purity optimized
+//    constexpr static std::array<double, 2> default_cut_value{50,51}; //eff+purity optimized 16O_200
 };
 
 struct msd_tag{
@@ -85,9 +87,9 @@ struct msd_tag{
     using cut_t = std::array<double, 3>;
     static constexpr uint8_t shift = 1;
 //    constexpr static std::array<double, 3> default_cut_value{25,25,25};
-        constexpr static std::array<double, 3> default_cut_value{27,22,20};
-//    constexpr static std::array<double, 3> default_cut_value{43,16,11};
-//        constexpr static std::array<double, 3> default_cut_value{13,18,23};
+        constexpr static std::array<double, 3> default_cut_value{27,22,20}; //eff+purity optimized
+//    constexpr static std::array<double, 3> default_cut_value{27,12,18}; //purity optimized
+//    constexpr static std::array<double, 3> default_cut_value{11,7,19}; //eff+purity optimized 16O_200
 };
 
 struct ms2d_tag{
@@ -111,7 +113,9 @@ struct tof_tag{
     static constexpr uint8_t shift = 0;
 //    constexpr static double default_cut_value{3.2};
 //        constexpr static double default_cut_value{3};
-    constexpr static double default_cut_value{3};
+//    constexpr static double default_cut_value{3}; //efficiency+purity optimized
+    constexpr static double default_cut_value{3}; //efficiency+purity optimized 16O_200
+//    constexpr static double default_cut_value{1}; //purity optimized
 };
     
 template<class Tag>

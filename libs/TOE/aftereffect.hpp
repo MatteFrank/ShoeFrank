@@ -17,68 +17,68 @@
 
 namespace aftereffect {
     template<class T>
-    struct optional{
-        T t_m;
-        T* t_mh;
+struct optional{
+    T t_m;
+    bool has_value_m;
+  
+    template< class T_ = T,
+              typename std::enable_if_t< std::is_default_constructible<T_>::value, std::nullptr_t > = nullptr >
+    explicit optional( T t_p  ) : t_m{ std::move(t_p) }, has_value_m{true} {}
+ 
+    template< class T_ = T,
+              typename std::enable_if_t< std::is_default_constructible<T_>::value, std::nullptr_t > = nullptr >
+    optional() : t_m{}, has_value_m{false} {}
         
-        template< class T_ = T,
-        typename std::enable_if_t< std::is_default_constructible<T_>::value, std::nullptr_t > = nullptr >
-        explicit optional( T t_p  ) : t_m{ std::move(t_p) }, t_mh{ &t_m } {}
-        
-        template< class T_ = T,
-        typename std::enable_if_t< std::is_default_constructible<T_>::value, std::nullptr_t > = nullptr >
-        optional() : t_m{}, t_mh{nullptr} {}
-        
-        optional(optional const& rhs_p){
-            if(rhs_p.has_value()){
-                t_m = rhs_p.t_m;
-                t_mh = &t_m;
-            }
-            else{
-                t_m = T{};
-                t_mh = nullptr;
-            }
+    optional(optional const& rhs_p){
+        if(rhs_p.has_value()){
+            t_m = rhs_p.t_m;
+            has_value_m = true;
         }
-        optional(optional&& rhs_p){
-            if(rhs_p.has_value()){
-                t_m = std::move(rhs_p.t_m);
-                rhs_p.t_mh = nullptr;
-                t_mh = &t_m;
-            }
-            else{
-                t_m = T{};
-                t_mh = nullptr;
-            }
+        else{
+            t_m = T{};
+            has_value_m = false;
         }
-        optional& operator=(optional const& rhs_p){
-            if(rhs_p.has_value()){
-                t_m = rhs_p.t_m;
-                t_mh = &t_m;
-            }
-            else{
-                t_m = T{};
-                t_mh = nullptr;
-            }
-            return *this;
+    }
+    optional(optional&& rhs_p){
+        if(rhs_p.has_value()){
+            t_m = std::move(rhs_p.t_m);
+            rhs_p.has_value_m = false;
+            has_value_m = true;
         }
-        optional& operator=(optional&& rhs_p){
-            if(rhs_p.has_value()){
-                t_m = std::move( rhs_p.t_m );
-                rhs_p.t_mh = nullptr;
-                t_mh = &t_m;
-            }
-            else{
-                t_m = T{};
-                t_mh = nullptr;
-            }
-            return *this;
+        else{
+            t_m = T{};
+            has_value_m = false;
         }
-        
-        T const& value() const { return t_m; }
-        T& value() { return t_m; }
-        
-        bool has_value() const { return t_mh != nullptr; }
-    };
+    }
+    optional& operator=(optional const& rhs_p){
+        if(rhs_p.has_value()){
+            t_m = rhs_p.t_m;
+            has_value_m = true;
+        }
+        else{
+            t_m = T{};
+            has_value_m = false;
+        }
+        return *this;
+    }
+    optional& operator=(optional&& rhs_p){
+        if(rhs_p.has_value()){
+            t_m = std::move( rhs_p.t_m );
+            rhs_p.has_value_m = false;
+            has_value_m = true;
+        }
+        else{
+            t_m = T{};
+            has_value_m = false;
+        }
+        return *this;
+    }
+     
+    T const& value() const { return t_m; }
+    T& value() { return t_m; }
+     
+    bool has_value() const { return has_value_m; }
+};
 
     
     
