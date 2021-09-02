@@ -36,6 +36,8 @@ public:
    
    virtual Bool_t  Process();
 
+   virtual void    SkipEvents(Int_t nEvents);
+
    DAQFileHeader*  GetFileHeader()  const { return fDaqFileHeader;  }
 
 private:

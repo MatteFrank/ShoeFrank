@@ -21,6 +21,9 @@
  \brief Get vertex raw data from DAQ (binary format) **
  */
 
+
+UInt_t TAVTactNtuHit::fgTStolerance = 40;
+
 ClassImp(TAVTactNtuHit);
 
 //------------------------------------------+-----------------------------------
@@ -63,9 +66,9 @@ Bool_t TAVTactNtuHit::Action()
           
           if (fQueueEvtsN == 0)
              evt = evt0;
-          else {
+          else
              evt = fQueueEvt.front();
-          }
+
           bcoTrig    = evt->BCOofTrigger;
           fData      = evt->values;
           fEventSize = evt->evtSize;
@@ -91,10 +94,12 @@ Bool_t TAVTactNtuHit::Action()
    Int_t diff    = bcoTrig - trig->BCOofTrigger - fFirstBcoTrig;
    fpHisBCOofTrigger->Fill(diff);
    
-   if (TMath::Abs(float(diff)) > 3) {
-      Warning("Action()", "BCOofTrigger difference higher than 3 (%d) for %d time, resynchronizing", diff, fQueueEvtsN+1);
+   if (TMath::Abs(float(diff)) > fgTStolerance) {
+      Warning("Action()", "BCOofTrigger difference higher than %u (%d) for %d time(s), resynchronizing", fgTStolerance, diff, fQueueEvtsN+1);
       if (diff > 0) // to avoid corrupted timestamp number
          fQueueEvtsN++;
+      else
+          Warning("Action()", "BCOofTrigger difference negative value, do not resynchronize");
    }
    
    if (fQueueEvtsN > 0) {

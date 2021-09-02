@@ -149,6 +149,7 @@ Bool_t LocalRecoMC::GoEvent(Int_t iEvent)
 {
    // only possible for MC data
    if (iEvent < fActEvtReader->NEvents()) {
+      fSkipEventsN = iEvent;
       fActEvtReader->Reset(iEvent);
       return true;
    }

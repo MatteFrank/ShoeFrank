@@ -53,6 +53,9 @@ public:
    //! Close File in
    virtual void CloseFileIn();
    
+   //! Goto Event
+   virtual Bool_t GoEvent(Int_t iEvent);
+
 public:
    //! Disable/Enable stand alone DAQ
    static void DisableStdAlone()   { fgStdAloneFlag = false;  }

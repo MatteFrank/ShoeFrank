@@ -12,6 +12,7 @@
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TRandom3.h"
 
 #include "TH2I.h"
 #include "TH1F.h"
@@ -23,7 +24,7 @@
 
 class TACAdigitizer;
 class TACAactNtuHitMC : public TAGaction {
-   
+
 private:
    // Helper class to sum MC hit of the same particle
    struct EnergyDep_t : public TObject {
@@ -35,9 +36,9 @@ private:
       int fid;               // index in the particle block
       float fTimeFirstHit;   // dep. time at FIRST hit
       double fDE;            // sum Edep
-      
+
    };
-   
+
   public:
     explicit       TACAactNtuHitMC(const char* name       = 0,
                                     TAGdataDsc* p_ntuMC   = 0,
@@ -47,10 +48,12 @@ private:
                                     TAGparaDsc* p_calmap  = 0,
                                     TAGparaDsc* p_geomapG = 0,
                                     EVENT_STRUCT* evStr   = 0);
-   
+
     virtual        ~TACAactNtuHitMC();
 
     virtual Bool_t Action();
+
+    void SmearEnergy();
 
     void           CreateHistogram();
 
@@ -66,7 +69,7 @@ private:
    TAGgeoTrafo*    fpGeoTrafo;
    TACAdigitizer*  fDigitizer;       // cluster size digitizer
    EVENT_STRUCT*   fEventStruct;
-   
+
    TH1F* fpHisDeTot;
    TH1F* fpHisDeTotMc;
    TH1F* fpHisNeutron_dE;
@@ -77,7 +80,7 @@ private:
    TH1F* fpHisIon_dE[MAX_ANUMBER];
    TH1F* fpHisEnPerCry[MAX_NCRY];
    TH1F* fpHisEnVsPositionPerCry[MAX_NCRY];
-   
+
    TH2F* fpHisCryHitVsEnDep;
    TH2F* fpHisRangeVsMass;
    TH2F* fpHisCryHitVsZ;
@@ -87,7 +90,6 @@ private:
    TH2F* fpHisHitMapZYout;
    TH2I* fpHisParticleVsRegion;
 
-private:
    void           CreateDigitizer();
 
 };
