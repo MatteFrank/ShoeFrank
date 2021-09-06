@@ -166,8 +166,10 @@ Bool_t TAGactKFitter::Action()	{
 	}
 	
 	chVect.clear();
+	
+	if( TAGrecoManager::GetPar()->IsMC() )	m_measParticleMC_collection->clear();
+	
 	m_allHitMeasGF.clear();
-	m_measParticleMC_collection->clear();
 
 	for ( auto it = m_mapTrack.cbegin(), next_it = m_mapTrack.cbegin(); it != m_mapTrack.cend(); it = next_it)	{
 		next_it = it; ++next_it;	
@@ -586,7 +588,8 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	    fitTrack->checkConsistency();
 	    if ( m_debug > 2 )	    fitTrack->Print();
 		
-		EvaluateProjectionEfficiency(&PartName, fitTrack);
+		if( TAGrecoManager::GetPar()->IsMC() )
+			EvaluateProjectionEfficiency(&PartName, fitTrack);
 
 		// map of the number of converged tracks for each track hypothesis
 		if ( m_nSelectedTrackCandidates.find( PartName ) == m_nSelectedTrackCandidates.end() )	m_nSelectedTrackCandidates[ PartName ] = 0;
@@ -681,10 +684,11 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	}	// end  - loop over all hit category
 
 	// filling event display with converged tracks
-	if ( TAGrecoManager::GetPar()->EnableEventDisplay() ) {
-		display->addEvent(m_vectorConvergedTrack);
+	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
 		cout << "display->addEvent size  " << m_vectorConvergedTrack.size() << "\n";
+		display->addEvent(m_vectorConvergedTrack);
 	}
+	m_vectorConvergedTrack.clear();
 
 	if ( m_debug > 0 )		cout << "Ready for the next track fit!\n";
 

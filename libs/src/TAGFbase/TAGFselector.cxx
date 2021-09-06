@@ -19,7 +19,7 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 
 	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
 
-	cout << "Beam Energy::" << m_BeamEnergy << endl;
+	if( m_debug > 1 )	cout << "Beam Energy::" << m_BeamEnergy << endl;
 
 
 	if ( TAGrecoManager::GetPar()->IsMC() )
@@ -424,6 +424,9 @@ int TAGFselector::Categorize_Linear()
 void TAGFselector::CategorizeVT()
 {
 	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object();
+		//cluster test
+	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object(); //To find the riht clus Index -> TO BE CHANGED!
+
 	int vertexNumber = vertexContainer->GetVertexN();
 	TAVTvertex* vtxPD   = 0x0; //NEW
 
@@ -468,17 +471,22 @@ void TAGFselector::CategorizeVT()
 				int plane = clus->GetSensorIdx();
 				int clusIdPerPlane = clus->GetClusterIdx();
 
+				int index=0;
+				while( clusIdPerPlane != vtntuclus->GetCluster(plane, index)->GetClusterIdx() )
+					index++;
+
 				if( m_debug > 1) 
 				{
 					cout << "VTX::PLANE::" << plane << "\n";
-					cout << "VTX::CLUS_ID::" << clusIdPerPlane << "\n";
+					cout << "VTX::CLUS_IDx::" << clusIdPerPlane << "\n";
+					cout << "VTX::CLUS_ID::" << index << "\n";
 				}
 
 				// if ( m_allHitMeas->find( plane ) == m_allHitMeas->end() )									continue;
 				// if ( m_allHitMeas->at(plane).find( clusIdPerPlane ) == m_allHitMeas->at(plane).end() )		continue;
 
 
-				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (  m_allHitMeas->at(plane).at(clusIdPerPlane) ))->clone();
+				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (  m_allHitMeas->at(plane).at(index) ))->clone();
 				fitTrack_->insertMeasurement( hitToAdd );
 				// fitTrack_->insertPoint( new genfit::TrackPoint(hitToAdd, fitTrack_) );
 
@@ -966,7 +974,7 @@ void TAGFselector::CategorizeTW()
 		int count = 0;
 
 		if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
-			if(m_debug > 0) cout << "TAGFselector::CategorizeTW() -- no measurement found int TW layer\n";
+			if(m_debug > 0) cout << "TAGFselector::CategorizeTW() -- no measurement found in TW layer\n";
 			continue;
 		}
 
@@ -1025,7 +1033,7 @@ void TAGFselector::CategorizeTW_Linear()
 
 		//RZ -> See if this check can be done outside this cycle... it seems a much more general skip
 		if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
-			if(m_debug > 0) cout << "TAGFselector::CategorizeTW() -- no measurement found int TW layer\n";
+			if(m_debug > 0) cout << "TAGFselector::CategorizeTW() -- no measurement found in TW layer\n";
 			continue;
 		}
 		double distInX, distInY;
@@ -1147,62 +1155,69 @@ void TAGFselector::FillTrackCategoryMap()  {
 int TAGFselector::GetChargeFromTW(Track* trackToCheck){
 
 	int charge = -1;
-	// TATWpoint* twpoint = 0x0;
-	// for (unsigned int jTracking = 0; jTracking < trackToCheck->getNumPointsWithMeasurement(); ++jTracking){
 
-	// 	if ( static_cast<genfit::PlanarMeasurement*>(trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId() != m_SensorIDMap->GetFitPlaneTW() ) continue;
-		
-	// 	int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
-
-	// 	twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) );
-
-	// 	charge = twpoint->GetChargeZ();
-	// }
-
-	int MeasId = trackToCheck->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
-
-	if(m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
-		return -1;
-	
-	if(m_measParticleMC_collection->at(MeasId).size() == 1)
+	if( !TAGrecoManager::GetPar()->IsMC() ) //do not use MC!
 	{
-		return m_McNtuEve->GetTrack( m_measParticleMC_collection->at(MeasId).at(0) )->GetCharge();
-	}
-	else
-	{
-		map<int,int> ChargeOccMap;
+		TATWpoint* twpoint = 0x0;
+		for (unsigned int jTracking = 0; jTracking < trackToCheck->getNumPointsWithMeasurement(); ++jTracking){
 
-		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
-		{
-			if( m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() < 1 ||  m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() > 8)
-				continue;
-			ChargeOccMap[ m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() ] = 1;
+			if ( static_cast<genfit::PlanarMeasurement*>(trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId() != m_SensorIDMap->GetFitPlaneTW() ) continue;
+			
+			int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
+
+			twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) );
+
+			charge = twpoint->GetChargeZ();
 		}
+	}	//end of charge calculation from data
 
-		for(int i = 0; i < trackToCheck->getNumPointsWithMeasurement() - 1; ++i)
+	else	//use MC!
+	{	
+		int MeasId = trackToCheck->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
+		if(m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
+			return -1;
+		
+		if(m_measParticleMC_collection->at(MeasId).size() == 1)
 		{
-			MeasId = trackToCheck->getPointWithMeasurement(i)->getRawMeasurement()->getHitId();
+			return m_McNtuEve->GetTrack( m_measParticleMC_collection->at(MeasId).at(0) )->GetCharge();
+		}
+		else
+		{
+			map<int,int> ChargeOccMap;
+
 			for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
 			{
-				charge = m_McNtuEve->GetTrack( *itTrackMC )->GetCharge();
-				if(ChargeOccMap.find(charge) == ChargeOccMap.end()) 
+				if( m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() < 1 ||  m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() > 8)
 					continue;
-			
-				ChargeOccMap[ charge ]++;
+				ChargeOccMap[ m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() ] = 1;
 			}
-		}
-		
-		int occ = 0;
 
-		for(map<int,int>::iterator itMap = ChargeOccMap.begin(); itMap != ChargeOccMap.end(); ++itMap)
-		{
-			if(itMap->second > occ)
+			for(int i = 0; i < trackToCheck->getNumPointsWithMeasurement() - 1; ++i)
 			{
-				occ = itMap->second;
-				charge = itMap->first;
+				MeasId = trackToCheck->getPointWithMeasurement(i)->getRawMeasurement()->getHitId();
+				for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
+				{
+					charge = m_McNtuEve->GetTrack( *itTrackMC )->GetCharge();
+					if(ChargeOccMap.find(charge) == ChargeOccMap.end()) 
+						continue;
+				
+					ChargeOccMap[ charge ]++;
+				}
+			}
+			
+			int occ = 0;
+
+			for(map<int,int>::iterator itMap = ChargeOccMap.begin(); itMap != ChargeOccMap.end(); ++itMap)
+			{
+				if(itMap->second > occ)
+				{
+					occ = itMap->second;
+					charge = itMap->first;
+				}
 			}
 		}
-	}
+	} //end MC charge calcualtion
+
 
 	return charge;
 }

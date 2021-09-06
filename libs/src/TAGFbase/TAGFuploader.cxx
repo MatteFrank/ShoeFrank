@@ -99,7 +99,8 @@ int TAGFuploader::UploadClusVT(){
 			if (m_debug > 1)	      Info( "UploadClusVT()", "entered cycle clusVT of sensor %d", iSensor );
 
 			TAVTcluster* clus = vtclus->GetCluster(iSensor, iClus);
-			if (!clus->IsValid()) continue;		// Guardare meglio cosa significa...
+			if(m_debug > 1)	cout << "iClus::" << iClus << "\tClusterIdx::" << clus->GetClusterIdx() << "\n";
+			if (!clus->IsValid())	continue; // Guardare meglio cosa significa...
 
 			// m_VT_clusCollection.push_back(clus);
 			Prepare4Vertex( clus, m_sensorIDmap->GetMeasID_eventLevel( "VT", iSensor, iClus ) );
@@ -201,7 +202,7 @@ int TAGFuploader::UploadHitsTW() {
 
 	// take the ntuple object already filled
 	TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
-	if ( m_debug > 0 )		cout << "number of TW points read: " << ntup->GetPointsN() << endl;
+	if ( m_debug > 0 )		cout << "\nnumber of TW points read: " << ntup->GetPointsN() << "\n";
 
 	int totPoints = ntup->GetPointsN();
 
