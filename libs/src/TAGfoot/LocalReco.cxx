@@ -170,11 +170,7 @@ void LocalReco::OpenFileIn()
          fActVmeReaderBm->Open(GetName());
 
    } else {
-      if(fActEvtReader->Open(GetName()) == -1) {
-         CloseFileIn();
-         exit(0);
-      }
-      
+      fActEvtReader->Open(GetName());
       if (fSkipEventsN > 0)
          fActEvtReader->SkipEvents(fSkipEventsN);
    }

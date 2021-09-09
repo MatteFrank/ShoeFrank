@@ -61,13 +61,13 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString
    if ( !fDaqFileReader->getIsOpened() ) {
       Warning("Open()", "Cannot open next file %s, stop reading", name.Data());
       b_bad = -1;
-      return b_bad;
    }
 
    if( !fDaqFileReader->endOfFileReached() ) {
       fDaqFileReader->readFileHeader();
       fDaqFileHeader = fDaqFileReader->getFileHeader();
-      fDaqFileHeader->printData();
+      if (fDaqFileHeader)
+         fDaqFileHeader->printData();
    }
 
 
@@ -103,6 +103,9 @@ Bool_t TAGactDaqReader::Process()
   if (Valid()) return kTRUE;
   if (IsZombie()) return kFALSE;
 
+   if (!fDaqFileReader->getIsOpened())
+      return false;
+   
    TAGdaqEvent* datDaq = (TAGdaqEvent*)  fDaqEvent->Object();
 
    datDaq->Clear();
