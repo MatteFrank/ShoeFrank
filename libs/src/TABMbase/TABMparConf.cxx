@@ -44,6 +44,7 @@ TABMparConf::TABMparConf()
   fLegRBin(75),
   fLegRRange(2.),
   fAssHitErr(5.),
+  fInvertTrack(0),
   fSmearHits(0),
   fSmearRDrift(4),
   fRDriftErr(0.015),
@@ -114,6 +115,9 @@ Bool_t TABMparConf::FromFile(const TString& name) {
   ReadItem(fAssHitErr);
   if(FootDebugLevel(1))
      cout<<"fAssHitErr="<<fAssHitErr<<endl;
+  ReadItem(fInvertTrack);
+  if(FootDebugLevel(1))
+     cout<<"fInvertTrack="<<fInvertTrack<<endl;
 
   //other parameters
   ReadItem(fHitTimeCut);
