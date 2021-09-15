@@ -367,22 +367,26 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 
 	TMatrixDSym hitCov(3);
 	TMatrixDSym planarCov(2);
-	TVectorD hitCoords(3);
+	// TVectorD hitCoords(3);
 	TVectorD planarCoords(2);
 
 
 	// get pixel coord
-	TVector3 hitPos = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
+	// TVector3 hitPos = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
+	TVector3 hitPos = clus->GetPosition();
 
-	if ( m_debug > 1 )	  hitPos.Print();
+	if ( m_debug > 1 )
+	{
+		cout << "VT hit loc coords::";
+		hitPos.Print();
+	}
 
 	// set hit position vector
-	hitCoords(0)=hitPos.x();	hitCoords(1)=hitPos.y();	hitCoords(2)=hitPos.z();
+	// hitCoords(0)=hitPos.x();	hitCoords(1)=hitPos.y();	hitCoords(2)=hitPos.z();
 	planarCoords(0) = hitPos.x();	planarCoords(1) = hitPos.y();  
 
 	// set covariance matrix
 	TVector3 pixReso = clus->GetPosError();    // z???
-	//   TVector3 pixReso =  m_GeoTrafo->FromVTLocalToGlobal( pixReso_ );
 
 	// to be tested for SpasePoints
 	hitCov.UnitMatrix();
@@ -409,16 +413,12 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 
 	// if ( switchOff_HHe && found_HHe )	return;
 
-	// m_measParticleMC_collection[iMeas] = mcParticlesInMeasuerement;
 	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );
-	// m_measParticleMC_collection->at( iMeas ) = mcParticlesInMeasuerement;
 
 	int planeID = m_sensorIDmap->GetFitPlaneIDFromMeasID( iMeas );
 	int detId = m_sensorIDmap->GetDetIDFromMeasID( iMeas );
-	// nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
-	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr );
+	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr ); // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
 	hit->setPlane( m_sensorIDmap->GetFitPlane(planeID), planeID ); 
-	// m_allHitMeas[ planeID ].push_back(hit);
 	(*m_allHitMeas)[ planeID ].push_back(hit);
 
 
@@ -443,8 +443,13 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 	TVectorD planarCoords(2);
 
 	// get pixel coord
-	TVector3 hitPos = m_GeoTrafo->FromITLocalToGlobal( clus->GetPositionG() );
-	if ( m_debug > 1 )		hitPos.Print();
+	TVector3 hitPos = clus->GetPosition() ;
+	if ( m_debug > 1 )
+	{
+		cout << "IT hit loc coords::";
+		hitPos.Print();
+	}
+
 
 	// set hit position vector
 	planarCoords(0) = hitPos.x();
@@ -507,10 +512,13 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 
 	// get pixel coord
-	TVector3 hitPos = m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPositionG() );
+	TVector3 hitPos = clus->GetPosition();
 
-	if ( m_debug > 1 )	    hitPos.Print();
-
+	if ( m_debug > 1 )
+	{
+		cout << "MSD hit loc coords::";
+		hitPos.Print();
+	}
 	//check the view, 0 ->X, 1->Y
 	double pixReso = 0;
 	bool isYView = false;
@@ -556,7 +564,6 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 	if (isYView) hit->setStripV();
 
-	// m_allHitMeas[ sensorID ].push_back(hit);
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 
 	if ( m_debug > 0 )	  cout << "\nPrepare4Strip::Exiting\n";
@@ -580,16 +587,20 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	TVectorD planarCoords(2);
 
 	// get point coord
-	TVector3 hitPos = m_GeoTrafo->FromTWLocalToGlobal( point->GetPositionG() );
+	TVector3 hitPos = point->GetPosition();
 
-	// if ( m_debug > 1 )	   hitPos.Print();
+	if ( m_debug > 1 )
+	{
+		cout << "TW hit loc coords::";
+		hitPos.Print();
+	}
 
 	// set point position vector
 	planarCoords(0) = hitPos.x();
 	planarCoords(1) = hitPos.y();
 	TVector3 pixReso = point->GetPosErrorG();
 
-	if ( m_debug > 1 )	   pixReso.Print();
+	if ( m_debug > 1 )		pixReso.Print();
 
 	planarCov.UnitMatrix();
 	for (int k = 0; k < 2; k++)
@@ -608,7 +619,7 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 			point->GetPosition().Print();
 		}
 	}
-	// m_measParticleMC_collection[ iPoint ] = mcParticlesInMeasuerement;
+
 	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );
 
 	int sensorID = m_sensorIDmap->GetFitPlaneTW();

@@ -17,6 +17,9 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 
 	m_debug = TAGrecoManager::GetPar()->Debug();
 
+	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+
+
 	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
 
 	if( m_debug > 1 )	cout << "Beam Energy::" << m_BeamEnergy << endl;
@@ -397,11 +400,15 @@ int TAGFselector::Categorize_Linear()
 				if( m_trackRepVec.at(nRep)->getPDGCharge() == Z_Hypo )	(itTrack->second)->addTrackRep( m_trackRepVec.at( nRep )->clone() );
 		}
 
-		TVector3 pos = TVector3(0,0,0);
+		// TVector3 pos = TVector3(0,0,0);
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
-		pos.SetX(firstTrackMeas->getRawHitCoords()(0));
-		pos.SetY(firstTrackMeas->getRawHitCoords()(1));
-		pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+		TVector3 pos = m_GeoTrafo->FromVTLocalToGlobal( TVector3(
+				firstTrackMeas->getRawHitCoords()(0), //X
+				firstTrackMeas->getRawHitCoords()(1), //Y
+				m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z())); //Z
+		// pos.SetX( m_GeoTrafo->FromVTLocalToGlobal( firstTrackMeas->getRawHitCoords()).X() );
+		// pos.SetY( m_GeoTrafo->FromVTLocalToGlobal( firstTrackMeas->getRawHitCoords()).Y() );
+		// pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
 		pos = pos - m_trackSlopeMap[itTrack->first]*pos.Z();
 
 		TVector3 mom = m_trackSlopeMap[itTrack->first];
@@ -475,12 +482,6 @@ void TAGFselector::CategorizeVT()
 				while( clusIdPerPlane != vtntuclus->GetCluster(plane, index)->GetClusterIdx() )
 					index++;
 
-				if( m_debug > 1) 
-				{
-					cout << "VTX::PLANE::" << plane << "\n";
-					cout << "VTX::CLUS_IDx::" << clusIdPerPlane << "\n";
-					cout << "VTX::CLUS_ID::" << index << "\n";
-				}
 
 				// if ( m_allHitMeas->find( plane ) == m_allHitMeas->end() )									continue;
 				// if ( m_allHitMeas->at(plane).find( clusIdPerPlane ) == m_allHitMeas->at(plane).end() )		continue;
@@ -489,6 +490,16 @@ void TAGFselector::CategorizeVT()
 				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (  m_allHitMeas->at(plane).at(index) ))->clone();
 				fitTrack_->insertMeasurement( hitToAdd );
 				// fitTrack_->insertPoint( new genfit::TrackPoint(hitToAdd, fitTrack_) );
+
+				if( m_debug > 1) 
+				{
+					cout << "VTX::PLANE::" << plane << "\n";
+					cout << "VTX::CLUS_IDx::" << clusIdPerPlane << "\n";
+					cout << "VTX::CLUS_ID::" << index << "\n";
+					cout << "VTX::CLUS_POS::"; 
+					hitToAdd->getRawHitCoords().Print();
+				}
+
 
 				if ( m_debug > 1 && TAGrecoManager::GetPar()->IsMC() ) {
 					vector<int> iPart = m_measParticleMC_collection->at( hitToAdd->getHitId() );
@@ -536,9 +547,13 @@ void TAGFselector::CategorizeIT()	{
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
 		int addedMeas = 0;
 		PlanarMeasurement* lastVTXMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(-1)->getRawMeasurement());
-		tmpVTX.SetX( lastVTXMeas->getRawHitCoords()(0) );
-		tmpVTX.SetY( lastVTXMeas->getRawHitCoords()(1) );
-		tmpVTX.SetZ( m_SensorIDMap->GetFitPlane( lastVTXMeas->getPlaneId() )->getO().Z() );
+		tmpVTX = m_GeoTrafo->FromVTLocalToGlobal( TVector3(
+				lastVTXMeas->getRawHitCoords()(0), //X
+				lastVTXMeas->getRawHitCoords()(1), //Y
+				m_SensorIDMap->GetFitPlane( lastVTXMeas->getPlaneId() )->getO().Z())); //Z
+		// tmpVTX.SetX( m_GeoTrafo->FromVTLocalToGlobal(lastVTXMeas->getRawHitCoords()).X() );
+		// tmpVTX.SetY( m_GeoTrafo->FromVTLocalToGlobal(lastVTXMeas->getRawHitCoords()).Y() );
+		// tmpVTX.SetZ( m_SensorIDMap->GetFitPlane( lastVTXMeas->getPlaneId() )->getO().Z() );
 
 		
 		int maxITdetPlane = m_SensorIDMap->GetMaxFitPlane("IT");
@@ -569,8 +584,8 @@ void TAGFselector::CategorizeIT()	{
 			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); iPlane++ ) {
 				// cout << "Found plane::" << *iPlane << " at z::" << tmpITz << "\n";
 
-				double guessOnPlaneIT = tmpExtrap.Y();
-				if ( !m_SensorIDMap->GetFitPlane( *iPlane )->isInActiveY( guessOnPlaneIT ) )	
+				TVector3 guessOnPlaneIT = m_GeoTrafo->FromGlobalToITLocal( tmpExtrap ); //RZ: IsInActive controls local or global variables????
+				if ( !m_SensorIDMap->GetFitPlane( *iPlane )->isInActiveY( tmpExtrap.Y() ) )	
 					continue;
 
 	// cout << "TAGFselector::CategorizeIT()     check\n";
@@ -598,9 +613,9 @@ void TAGFselector::CategorizeIT()	{
 						if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselector::Categorize_dataLike() --> ERROR IT" <<endl, exit(0);
 
 						// find hit at minimum distance
-						if ( fabs( guessOnPlaneIT - (*it)->getRawHitCoords()(1) ) < distanceInY ){
-							distanceInY = fabs(guessOnPlaneIT - (*it)->getRawHitCoords()(1));
-							distanceInX = fabs(tmpExtrap.X() - (*it)->getRawHitCoords()(0));
+						if ( fabs( guessOnPlaneIT.Y() - (*it)->getRawHitCoords()(1) ) < distanceInY ){
+							distanceInY = fabs(guessOnPlaneIT.Y() - (*it)->getRawHitCoords()(1));
+							distanceInX = fabs(guessOnPlaneIT.X() - (*it)->getRawHitCoords()(0));
 							indexOfMinY = count;
 						}
 						count++;
@@ -670,11 +685,14 @@ void TAGFselector::CategorizeMSD()	{
 		int minMSDdetPlane = m_SensorIDMap->GetMinFitPlane("MSD");
 
 		//RZ: SET STATE SEED
-		TVector3 pos = TVector3(0,0,0);
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
-		pos.SetX(firstTrackMeas->getRawHitCoords()(0));
-		pos.SetY(firstTrackMeas->getRawHitCoords()(1));
-		pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+		TVector3 pos = m_GeoTrafo->FromVTLocalToGlobal( TVector3(
+						firstTrackMeas->getRawHitCoords()(0), //X
+						firstTrackMeas->getRawHitCoords()(1), //Y
+						m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z())); //Z
+		// pos.SetX( m_GeoTrafo->FromVTLocalToGlobal(firstTrackMeas->getRawHitCoords()).X() );
+		// pos.SetY( m_GeoTrafo->FromVTLocalToGlobal(firstTrackMeas->getRawHitCoords()).Y() );
+		// pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
 		
 		if(m_debug > 0)
 		{
@@ -724,7 +742,8 @@ void TAGFselector::CategorizeMSD()	{
 				
 				if(m_debug > 0)	cout << "Processed\n";
 				
-				TVector3 guessOnMSD = ExtrapolateToOuterTracker( testTrack, m_SensorIDMap->GetMinFitPlane("MSD"), repId);
+				TVector3 guessOnMSD = ExtrapolateToOuterTracker( testTrack, m_SensorIDMap->GetMinFitPlane("MSD"), repId); //RZ: Local or global?!?!?!?!? CHECK!!!!!!!!!!!!!!!
+				// TVector3 guessOnMSD = m_GeoTrafo->FromMSDLocalToGlobal( ExtrapolateToOuterTracker( testTrack, m_SensorIDMap->GetMinFitPlane("MSD"), repId) );
 				
 				if(m_debug > 0)
 				{
@@ -777,7 +796,8 @@ void TAGFselector::CategorizeMSD()	{
 
 		
 		for ( int MSDnPlane = minMSDdetPlane; MSDnPlane <= maxMSDdetPlane; MSDnPlane++ ) {
-			TVector3 guessOnMSD = ExtrapolateToOuterTracker( itTrack->second, MSDnPlane );
+			TVector3 guessOnMSD = ExtrapolateToOuterTracker( itTrack->second, MSDnPlane ); //RZ: Local or Global?!?!?!? CHECK!!!!!!!!
+			// TVector3 guessOnMSD = m_GeoTrafo->FromMSDLocalToGlobal( ExtrapolateToOuterTracker( itTrack->second, MSDnPlane) );
 			if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) )
 				continue;
 // cout << "TAGFselector::CategorizeMSD()     MSDcheck3\n";
@@ -865,11 +885,15 @@ void TAGFselector::CategorizeMSD_Linear()
 		int minMSDdetPlane = m_SensorIDMap->GetMinFitPlane("MSD");
 
 		//RZ: SET STATE SEED
-		TVector3 pos = TVector3(0,0,0);
+		// TVector3 pos = TVector3(0,0,0);
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
-		pos.SetX(firstTrackMeas->getRawHitCoords()(0));
-		pos.SetY(firstTrackMeas->getRawHitCoords()(1));
-		pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+		TVector3 pos = m_GeoTrafo->FromVTLocalToGlobal( TVector3(
+						firstTrackMeas->getRawHitCoords()(0), //X
+						firstTrackMeas->getRawHitCoords()(1), //Y
+						m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z())); //Z
+		// pos.SetX( m_GeoTrafo->FromMSDLocalToGlobal(firstTrackMeas->getRawHitCoords()).X() );
+		// pos.SetY( m_GeoTrafo->FromMSDLocalToGlobal(firstTrackMeas->getRawHitCoords()).Y() );
+		// pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
 		
 		if(m_debug > 0)
 		{
@@ -877,7 +901,7 @@ void TAGFselector::CategorizeMSD_Linear()
 		}
 
 		for ( int MSDnPlane = minMSDdetPlane; MSDnPlane <= maxMSDdetPlane; MSDnPlane++ ) {
-			TVector3 guessOnMSD = pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(MSDnPlane)->getO().Z() - pos.Z());
+			TVector3 guessOnMSD = m_GeoTrafo->FromGlobalToMSDLocal( pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(MSDnPlane)->getO().Z() - pos.Z()));
 			
 			if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) )
 				continue;
@@ -957,7 +981,8 @@ void TAGFselector::CategorizeTW()
 		int planeTW = m_SensorIDMap->GetFitPlaneTW();
 		try
 		{
-			guessOnTW = ExtrapolateToOuterTracker( itTrack->second, planeTW);
+			guessOnTW = ExtrapolateToOuterTracker( itTrack->second, planeTW); //RZ: Local or global?!?!?!?!? CHECK!!!!!!!!!!!!!!!!!!
+			// guessOnTW = m_GeoTrafo->FromTWLocalToGlobal(ExtrapolateToOuterTracker( itTrack->second, planeTW));
 		}
 		catch(genfit::Exception& ex)
 		{
@@ -1015,14 +1040,18 @@ void TAGFselector::CategorizeTW_Linear()
 	// Extrapolate to TW
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); itTrack++) 
 	{
-		TVector3 pos = TVector3(0,0,0);
+		// TVector3 pos = TVector3(0,0,0);
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
-		pos.SetX(firstTrackMeas->getRawHitCoords()(0));
-		pos.SetY(firstTrackMeas->getRawHitCoords()(1));
-		pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+		TVector3 pos = m_GeoTrafo->FromVTLocalToGlobal( TVector3(
+						firstTrackMeas->getRawHitCoords()(0), //X
+						firstTrackMeas->getRawHitCoords()(1), //Y
+						m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z())); //Z
+		// pos.SetX( m_GeoTrafo->FromVTLocalToGlobal(firstTrackMeas->getRawHitCoords()).X() );
+		// pos.SetY( m_GeoTrafo->FromVTLocalToGlobal(firstTrackMeas->getRawHitCoords()).Y() );
+		// pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
 
 		int planeTW = m_SensorIDMap->GetFitPlaneTW();
-		TVector3 guessOnTW = pos + m_trackSlopeMap[itTrack->first]*( m_SensorIDMap->GetFitPlane(planeTW)->getO().Z() - pos.Z() );
+		TVector3 guessOnTW = m_GeoTrafo->FromGlobalToTWLocal(pos + m_trackSlopeMap[itTrack->first]*( m_SensorIDMap->GetFitPlane(planeTW)->getO().Z() - pos.Z() ));
 
 		if( m_debug > 1) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << "\n";
 
@@ -1258,7 +1287,7 @@ TVector3 TAGFselector::ExtrapolateToOuterTracker( Track* trackToFit, int whichPl
 	// else
 	// {
 	kfTest = *(static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep( repId )))->getForwardUpdate());
-	trackToFit->getTrackRep(repId)->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false);
+	trackToFit->getTrackRep(repId)->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local or global?!?!??!?! CHECK!!!!!!!
 	// }
 	// std::cout << "state after extrapolating back to reference plane \n";
 	//kfTest.Print();

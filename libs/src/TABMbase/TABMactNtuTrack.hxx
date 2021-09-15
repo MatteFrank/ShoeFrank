@@ -109,6 +109,7 @@ public:
   //histos
   TH2F*            fpResTot;
   TH2F*            fpHisMap;
+  TH2F*            fpHisMapTW;
   TH2F*            fpHisMylar12d;
 
   // TH2F*            fpHis0MSD;

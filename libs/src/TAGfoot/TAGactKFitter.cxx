@@ -439,7 +439,7 @@ void TAGactKFitter::CreateGeometry()  {
 		m_TopVolume->AddNode(itVol, 6, transfo);
 
 		for ( int i = 0; i < m_IT_geo->GetSensorsN(); i++ ) {
-			TVector3 origin_(0.,0.,m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).Z());
+			TVector3 origin_(m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)));
 
 			float xMin = m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).x() - m_IT_geo->GetEpiSize().X()/2;
 			float xMax = m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).x() + m_IT_geo->GetEpiSize().X()/2;
@@ -452,7 +452,7 @@ void TAGactKFitter::CreateGeometry()  {
 			detectorplane->setU(1.,0.,0.);
 			detectorplane->setV(0.,1.,0.);
 
-			m_sensorIDmap->AddPlane_Zorder( m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).Z(), indexOfPlane );
+			m_sensorIDmap->AddPlane_Zorder( origin_.Z(), indexOfPlane );
 
 			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
 			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "IT");
@@ -468,12 +468,12 @@ void TAGactKFitter::CreateGeometry()  {
 		m_TopVolume->AddNode(msdVol, 7, transfo);
 
 		for ( int i = 0; i < m_MSD_geo->GetSensorsN(); i++ ) {
-			TVector3 origin_(0.,0.,m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).z());
+			TVector3 origin_(m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)));
 
 			float xMin = m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).x() - m_MSD_geo->GetEpiSize().x()/2;
 			float xMax = m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).x() + m_MSD_geo->GetEpiSize().x()/2;
-			float yMin = m_GeoTrafo->FromITLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).y() - m_MSD_geo->GetEpiSize().y()/2;
-			float yMax = m_GeoTrafo->FromITLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).y() + m_MSD_geo->GetEpiSize().y()/2;
+			float yMin = m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).y() - m_MSD_geo->GetEpiSize().y()/2;
+			float yMax = m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).y() + m_MSD_geo->GetEpiSize().y()/2;
 
 			genfit::AbsFinitePlane* recta = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
 			genfit::SharedPlanePtr detectorplane ( new genfit::DetPlane( origin_, TVector3(0,0,1), recta) );

@@ -109,6 +109,8 @@ private:
 	map<int, TVector3> m_trackSlopeMap;
 	map< int, vector<int> >* m_measParticleMC_collection;
 	
+	TAGgeoTrafo* m_GeoTrafo;
+
 	TAMCntuPart* m_McNtuEve;
 
 	Bool_t flagMC; 
