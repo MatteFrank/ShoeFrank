@@ -91,6 +91,10 @@ public:
    TVector3&          GetOrigin()   const { return *fOrigin; }
    //! Get slope of line
    TVector3&          GetSlopeZ()   const { return *fSlope;  }
+   //! Get error origin of line
+   TVector3&          GetOriginErr() const { return *fOriginErr; }
+   //! Get error slope of line
+   TVector3&          GetSlopeErrZ() const { return *fSlopeErr;  }
    //! Get length of line
    Float_t            GetLength()   const { return fLength;  }
    //! Get theta angle of line
