@@ -193,13 +193,18 @@ Bool_t TAVTactBaseTrack::AppyCuts(TAVTbaseTrack* track)
 //  
 void TAVTactBaseTrack::UpdateParam(TAVTbaseTrack* track)
 {
-   TVector3           lineOrigin;  // origin in the tracker system
-   TVector3           lineSlope;   // slope along z-axis in tracker system
-   
+   TVector3  origin;  // origin in the tracker system
+   TVector3  slope;   // slope along z-axis in tracker system
+   TVector3  originErr;  // origin error in the tracker system
+   TVector3  slopeErr;   // slope error along z-axis in tracker system
+
    // init
-   lineOrigin.SetXYZ(0.,0.,0.);
-   lineSlope.SetXYZ(0.,0.,1.);
-   
+   origin.SetXYZ(0.,0.,0.);
+   slope.SetXYZ(0.,0.,1.);
+
+   originErr.SetXYZ(0.,0.,0.);
+   slopeErr.SetXYZ(0.,0.,0.);
+
    TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*) fpGeoMap->Object();
    
    Int_t nClusters = track->GetClustersN();
@@ -225,10 +230,10 @@ void TAVTactBaseTrack::UpdateParam(TAVTbaseTrack* track)
 				cluster1->GetSensorIdx(), x1, y1, z1);
 	  
 	  if( z1-z0 != 0.) {
-		 lineOrigin(0) = (z1*x0-z0*x1)/(z1-z0);
-		 lineOrigin(1) = (z1*y0-z0*y1)/(z1-z0);
-		 lineSlope(0)  = (x1-x0)/(z1-z0);
-		 lineSlope(1)  = (y1-y0)/(z1-z0);
+		 origin[0] = (z1*x0-z0*x1)/(z1-z0);
+		 origin[1] = (z1*y0-z0*y1)/(z1-z0);
+		 slope[0]  = (x1-x0)/(z1-z0);
+		 slope[1]  = (y1-y0)/(z1-z0);
 	  }
    } else {
 	  Double_t x, dx;
@@ -254,16 +259,22 @@ void TAVTactBaseTrack::UpdateParam(TAVTbaseTrack* track)
 	  }
 	  
 	  fGraphU->Fit("pol1", "Q");
-	  TF1* polyU = fGraphU->GetFunction("pol1");
-	  (lineOrigin)(0) = polyU->GetParameter(0);
-	  (lineSlope)(0)  = polyU->GetParameter(1);
+	  TF1* polyU   = fGraphU->GetFunction("pol1");
+	  origin[0]    = polyU->GetParameter(0);
+	  slope[0]     = polyU->GetParameter(1);
+     originErr[0] = polyU->GetParError(0);
+     slopeErr[0]  = polyU->GetParError(1);
+
 	  fGraphV->Fit("pol1", "Q");
-	  TF1* polyV = fGraphV->GetFunction("pol1");
-	  (lineOrigin)(1) = polyV->GetParameter(0);
-	  (lineSlope)(1)  = polyV->GetParameter(1);
+	  TF1* polyV   = fGraphV->GetFunction("pol1");
+	  origin[1]    = polyV->GetParameter(0);
+	  slope[1]     = polyV->GetParameter(1);
+     originErr[1] = polyV->GetParError(0);
+     slopeErr[1]  = polyV->GetParError(1);
    }
    
-   track->SetLineValue(lineOrigin, lineSlope);
+   track->SetLineValue(origin, slope);
+   track->SetLineErrorValue(originErr, slopeErr);
 }
 
 //_____________________________________________________________________________

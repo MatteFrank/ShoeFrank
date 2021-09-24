@@ -48,6 +48,7 @@ private:
    static const Float_t fgkGevToKev;      //! conversion factor bw GeV and keV
    static const Float_t fgkMevToGev;      //! conversion factor bw MeV and GeV
    static const Float_t fgkGausToTesla;   //! conversion factor bw Gaus and Tesla
+   static const Float_t fgkGausToKGaus;   //! conversion factor bw Gaus and kGaus
 
    static const Float_t fgkMassFactor;     // default proton mass
    static const Float_t fgkElectronMass;   // default electron mass
@@ -189,6 +190,7 @@ public:
 
    static           Float_t GevToKev()               { return fgkGevToKev;      }
    static           Float_t GausToTesla()            { return fgkGausToTesla;   }
+   static           Float_t GausToKGaus()            { return fgkGausToKGaus;   }
 
    static           Float_t GetMassFactorMeV()       { return fgkMassFactor*fgkGevToMev;  }
    static           Float_t GetMassFactor()          { return fgkMassFactor;    }
