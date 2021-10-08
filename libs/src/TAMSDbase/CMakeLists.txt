@@ -39,8 +39,8 @@ set( with_dictionnaries
    TAMSDtrack
    TAMSDactNtuCluster
    TAMSDactNtuPoint
-# TAMSDactBaseNtuTrack
-#   TAMSDactNtuTrack
+   TAMSDactBaseNtuTrack
+   TAMSDactNtuTrack
 )
 
 set( without_dictionnaries

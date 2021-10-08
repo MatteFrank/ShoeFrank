@@ -40,9 +40,16 @@ public:
    //! Base creation of histogram
    virtual  void   CreateHistogram();
    
+protected:
+   TH1F*            fpHisStripTot;    // Total number of strips per tracked point
+   TH1F*            fpHisStrip[36];   // number of strip per tracked cluster for each point
+   TH1F*            fpHisPointLeft;   // number of point left (not tracked)
+   TH1F*            fpHisResX;        // residualX
+   TH1F*            fpHisResY;        // residualY 
    
 protected:
-   
+   virtual void   FillHistogramm(TAVTbaseTrack* track);
+   virtual void   FillHistogramm();
    virtual Bool_t FindStraightTracks();
    virtual Bool_t IsGoodCandidate(TAMSDtrack* /*track*/) { return true; }
    virtual Bool_t FindTiltedTracks() { return true; }
@@ -50,7 +57,7 @@ protected:
 
    TAVTbaseTrack* GetTrack(Int_t idx);
    Int_t          GetTracksN() const;
-   	
+   
    ClassDef(TAMSDactBaseNtuTrack,0)
 };
 

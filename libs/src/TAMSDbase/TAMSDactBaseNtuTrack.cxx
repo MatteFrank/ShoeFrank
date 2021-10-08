@@ -13,8 +13,9 @@
 #include "TVector3.h"
 #include "TVector2.h"
 
-// First
+// Foot
 #include "TAGgeoTrafo.hxx"
+#include "TAGrecoManager.hxx"
 
 //TAG
 #include "TAGroot.hxx"
@@ -49,6 +50,36 @@ TAMSDactBaseNtuTrack::~TAMSDactBaseNtuTrack()
 {   
 }
 
+//------------------------------------------+-----------------------------------
+//! Setup all histograms.
+void TAMSDactBaseNtuTrack::CreateHistogram()
+{
+   TAVTactBaseTrack::CreateHistogram();
+   
+   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisStrip[i] = new TH1F(Form("%sTrackedPointStrip%d", fPrefix.Data(), i+1), Form("%s - # strips per tracked points of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
+      AddHistogram(fpHisStrip[i]);
+   }
+   
+   fpHisStripTot = new TH1F(Form("%sTrackedPointStripTot", fPrefix.Data()), Form("%s - Total # strips per tracked points", fTitleDev.Data()), 100, -0.5, 99.5);
+   AddHistogram(fpHisStripTot);
+   
+   
+   fpHisResX = new TH1F(Form("%sResX", fPrefix.Data()), Form("%s -  position resisdualX BM/VT", fTitleDev.Data()), 500, -5, 5);
+   AddHistogram(fpHisResX);
+   
+   fpHisResY = new TH1F(Form("%sResY", fPrefix.Data()), Form("%s -  position resisdualY BM/VT", fTitleDev.Data()), 500, -5, 5);
+   AddHistogram(fpHisResY);
+   
+   
+   fpHisPointLeft = new TH1F(Form("%sPointLeft", fPrefix.Data()), Form("%s -  point left per sensor", fTitleDev.Data()), 8, 1, 8);
+   AddHistogram(fpHisPointLeft);
+   
+   SetValidHistogram(kTRUE);
+   return;
+}
 //_____________________________________________________________________________
 //  
 Bool_t TAMSDactBaseNtuTrack::Action()
@@ -82,9 +113,6 @@ Bool_t TAMSDactBaseNtuTrack::Action()
 
    if (ValidHistogram())
 	  FillHistogramm();
-   
-   // Set charge probability
-   SetChargeProba();
    
    fpNtuTrack->SetBit(kValid);
    return true;
@@ -120,8 +148,8 @@ Bool_t TAMSDactBaseNtuTrack::FindStraightTracks()
    while (curPlane >= fRequiredClusters-1) {
 	  // Get the last reference plane
 	  curPlane = nPlane--;
-	  TClonesArray* list = pNtuClus->GetListOfClusters(curPlane);
-	  Int_t nClusters = pNtuClus->GetClustersN(curPlane);
+	  TClonesArray* list = pNtuClus->GetListOfPoints(curPlane);
+	  Int_t nClusters = pNtuClus->GetPointsN(curPlane);
 	  if ( nClusters == 0) continue;
 	  
 	  // Loop on all clusters of the first plane
@@ -130,14 +158,14 @@ Bool_t TAMSDactBaseNtuTrack::FindStraightTracks()
 		 
 		 if( pNtuTrack->GetTracksN() >= pConfig->GetAnalysisPar().TracksMaximum ) break; // if max track number reach, stop
 		 
-		 TAMSDcluster* cluster = (TAMSDcluster*)list->At( iLastClus );
+		 TAMSDpoint* cluster = (TAMSDpoint*)list->At( iLastClus );
 		 if (cluster->Found()) continue;
 		 TAMSDtrack*   track   = new TAMSDtrack();
 		 array.Clear();
 		 track->AddCluster(cluster);
 		 array.Add(cluster);
 		 
-		 lineOrigin.SetXYZ(cluster->GetPositionU(), cluster->GetPositionV(), 0); // parallel lines
+		 lineOrigin.SetXYZ(cluster->GetPosition()[0], cluster->GetPosition()[1], 0); // parallel lines
 		 lineOrigin = pGeoMap->Sensor2Detector(curPlane, lineOrigin);
 		 lineSlope.SetXYZ(0, 0, 1);
 		 
@@ -145,16 +173,16 @@ Bool_t TAMSDactBaseNtuTrack::FindStraightTracks()
 		 
 		 // Loop on all planes to find a matching cluster in them
 		 for( Int_t iPlane = curPlane-1; iPlane >= 0; --iPlane) { // loop on planes
-			TClonesArray* list1 = pNtuClus->GetListOfClusters(iPlane);
-			Int_t nClusters1 = pNtuClus->GetClustersN(iPlane);
+			TClonesArray* list1 = pNtuClus->GetListOfPoints(iPlane);
+			Int_t nClusters1 = pNtuClus->GetPointsN(iPlane);
 			if (nClusters1 == 0) continue; //empty planes
 			
 			// loop on all clusters of this plane and keep the nearest one
 			minDistance = fSearchClusDistance;
-			TAMSDcluster* bestCluster = 0x0;
+			TAMSDpoint* bestCluster = 0x0;
 			
 			for( Int_t iClus = 0; iClus < nClusters1; ++iClus ) { // loop on plane clusters
-			   TAMSDcluster* aCluster = (TAMSDcluster*)list1->At( iClus );
+			   TAMSDpoint* aCluster = (TAMSDpoint*)list1->At( iClus );
 			   
 			   if( aCluster->Found()) continue; // skip cluster already found
 			   
@@ -194,7 +222,7 @@ Bool_t TAMSDactBaseNtuTrack::FindStraightTracks()
 			delete track;
 		 } else { // reset clusters
 			for (Int_t i = 0; i < array.GetEntries(); ++i) {
-			   TAMSDcluster*  cluster1 = (TAMSDcluster*)array.At(i);
+			   TAMSDpoint*  cluster1 = (TAMSDpoint*)array.At(i);
 			   cluster1->SetFound(false);
 			}
 			delete track;
@@ -209,6 +237,62 @@ Bool_t TAMSDactBaseNtuTrack::FindStraightTracks()
    return true;
 }
 
+
+//_____________________________________________________________________________
+//
+void TAMSDactBaseNtuTrack::FillHistogramm(TAVTbaseTrack* track)
+{
+   TAVTactBaseTrack::FillHistogramm(track);
+   
+   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*)fpGeoMap->Object();
+   
+   fpHisTrackClus->Fill(track->GetClustersN());
+   for (Int_t i = 0; i < track->GetClustersN(); ++i) {
+      TAMSDpoint* cluster = (TAMSDpoint*)track->GetCluster(i);
+      Int_t idx = cluster->GetSensorIdx();
+      fpHisStripTot->Fill(cluster->GetElementsN());
+      fpHisStrip[idx]->Fill(cluster->GetElementsN());
+   }
+   
+   fpHisChi2TotX->Fill(track->GetChi2U());
+   fpHisChi2TotY->Fill(track->GetChi2V());
+   
+   fpHisMeanCharge->Fill(track->GetMeanCharge());
+}
+
+//_____________________________________________________________________________
+//
+void TAMSDactBaseNtuTrack::FillHistogramm()
+{
+   TAVTbaseParGeo* pGeoMap   = (TAVTbaseParGeo*) fpGeoMap->Object();
+   TAMSDntuPoint*  pNtuClus  = (TAMSDntuPoint*)  fpNtuClus->Object();
+   TAMSDntuTrack*  pNtuTrack = (TAMSDntuTrack*)  fpNtuTrack->Object();
+   
+   fpHisTrackEvt->Fill(pNtuTrack->GetTracksN());
+   if (pNtuTrack->GetTracksN() == 0)
+      fpHisClusSensor->Fill(0);
+   
+   for (Int_t iPlane = 0; iPlane < pGeoMap->GetSensorsN(); ++iPlane) {
+      
+      TClonesArray* list = pNtuClus->GetListOfPoints(iPlane);
+      Int_t nClusters = pNtuClus->GetPointsN(iPlane);
+      if ( nClusters == 0) continue;
+      
+      Int_t left = 0;
+      for( Int_t iClus = 0; iClus < nClusters; ++iClus) {
+         
+         TAMSDpoint* cluster = (TAMSDpoint*)list->At(iClus);
+         if (!cluster->Found()) {
+            fpHisPointLeft->Fill(iPlane+1, cluster->GetElementsN());
+            left++;
+         }
+      }
+      static Float_t mean[36];
+      Int_t evtNumber = gTAGroot->CurrentEventNumber();
+      mean[iPlane] = evtNumber/(evtNumber+1.)*mean[iPlane] + 1./(evtNumber+1.)*(left/nClusters);
+      fpHisPointLeft->SetBinContent(iPlane+1, mean[iPlane]*100);
+   }
+}
 
 //_____________________________________________________________________________
 //

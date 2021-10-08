@@ -76,8 +76,8 @@ Bool_t TAMSDactNtuTrack::FindTiltedTracks()
    while (curPlane >= fRequiredClusters-1) {
 	  // Get the last reference plane
 	  curPlane = nPlane--;
-	  TClonesArray* list = pNtuClus->GetListOfClusters(curPlane);
-	  Int_t nClusters = pNtuClus->GetClustersN(curPlane);
+	  TClonesArray* list = pNtuClus->GetListOfPoints(curPlane);
+	  Int_t nClusters = pNtuClus->GetPointsN(curPlane);
 	  if ( nClusters == 0) continue;
 	  
 	  // Loop on all clusters of the last plane
@@ -85,7 +85,7 @@ Bool_t TAMSDactNtuTrack::FindTiltedTracks()
 		 
 		 if( pNtuTrack->GetTracksN() >= pConfig->GetAnalysisPar().TracksMaximum ) break; // if max track number reach, stop
 		 
-		 TAMSDcluster* cluster = (TAMSDcluster*)list->At( iLastClus );
+		 TAMSDpoint* cluster = (TAMSDpoint*)list->At( iLastClus );
 		 if (cluster->Found()) continue;
 		 TAMSDtrack*   track   = new TAMSDtrack();
 		 array.Clear();
@@ -103,16 +103,16 @@ Bool_t TAMSDactNtuTrack::FindTiltedTracks()
 		 
 		 // Loop on all planes to find a matching cluster in them
 		 for( Int_t iPlane = curPlane-1; iPlane >= 0; --iPlane) { // loop on planes
-			TClonesArray* list1 = pNtuClus->GetListOfClusters(iPlane);
-			Int_t nClusters1 = pNtuClus->GetClustersN(iPlane);
+			TClonesArray* list1 = pNtuClus->GetListOfPoints(iPlane);
+			Int_t nClusters1 = pNtuClus->GetPointsN(iPlane);
 			if (nClusters1 == 0) continue; //empty planes
 			
 			// loop on all clusters of this plane and keep the nearest one
 			minDistance = fSearchClusDistance*(1 + 3.*TMath::Tan(track->GetTheta()*TMath::DegToRad()));
-			TAMSDcluster* bestCluster = 0x0;
+			TAMSDpoint* bestCluster = 0x0;
 			
 			for( Int_t iClus = 0; iClus < nClusters1; ++iClus ) { // loop on plane clusters
-			   TAMSDcluster* aCluster = (TAMSDcluster*)list1->At( iClus );
+			   TAMSDpoint* aCluster = (TAMSDpoint*)list1->At( iClus );
 			   
 			   if( aCluster->Found()) continue; // skip cluster already found
 			   
@@ -153,7 +153,7 @@ Bool_t TAMSDactNtuTrack::FindTiltedTracks()
 			
 		 } else { // reset clusters
 			for (Int_t i = 0; i < array.GetEntries(); ++i) {
-			   TAMSDcluster*  cluster1 = (TAMSDcluster*)array.At(i);
+			   TAMSDpoint*  cluster1 = (TAMSDpoint*)array.At(i);
 			   cluster1->SetFound(false);
 			}
 			array.Clear();
