@@ -602,16 +602,16 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       }
 
       for (Int_t i = 0; i < track->GetClustersN(); i++) {
-         TAVTbaseCluster* clus = track->GetCluster(i);
+         TAGcluster* clus = track->GetCluster(i);
          TVector3 posG = clus->GetPositionG();
          fInfoView->AddLine( Form(" for plane %d\n", clus->GetSensorIdx()));
          fInfoView->AddLine( Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y()) );
-         fInfoView->AddLine( Form(" with %d pixels\n", clus->GetPixelsN()));
+         fInfoView->AddLine( Form(" with %d pixels\n", clus->GetElementsN()));
 
          if (fConsoleButton->IsOn()) {
             cout <<  Form(" for plane %d\n", clus->GetSensorIdx());
             cout <<  Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y());
-            cout <<  Form(" with %d pixels\n", clus->GetPixelsN());
+            cout <<  Form(" with %d pixels\n", clus->GetElementsN());
          }
       }
 
