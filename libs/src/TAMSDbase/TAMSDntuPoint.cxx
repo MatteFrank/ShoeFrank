@@ -16,9 +16,28 @@ TAMSDpoint::TAMSDpoint()
    fStation(0),
    fColClus(0),
    fRowClus(0),
+   fDe1(0),
+   fDe2(0),
+   fTime(0),
    fChargeZ(0),
    fChargeZProba(0.)
 {
+}
+
+//______________________________________________________________________________
+//  build a point
+TAMSDpoint::TAMSDpoint(const TAMSDpoint& point)
+:  TAGcluster(point),
+   fStation(point.fStation),
+   fColClus(new TAMSDcluster(*point.fColClus)),
+   fRowClus(new TAMSDcluster(*point.fRowClus)),
+   fDe1(point.fDe1),
+   fDe2(point.fDe2),
+   fTime(point.fTime),
+   fChargeZ(point.fChargeZ),
+   fChargeZProba(point.fChargeZProba)
+{
+   fElementsN = fColClus->GetElementsN() + fRowClus->GetElementsN();
 }
 
 //______________________________________________________________________________
@@ -76,6 +95,8 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
       for (map<int,int>::iterator it=mapIdx.begin(); it!=mapIdx.end(); ++it)
          AddMcTrackIdx(it->first);
    }
+   
+   fElementsN = fColClus->GetElementsN() + fRowClus->GetElementsN();
 }
 
 //______________________________________________________________________________

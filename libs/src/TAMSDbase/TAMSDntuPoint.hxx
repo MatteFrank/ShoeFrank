@@ -45,6 +45,7 @@ private:
 
 public:
    TAMSDpoint();
+   TAMSDpoint(const TAMSDpoint& point);
    TAMSDpoint( int layer, double x, double y, TVector3 position);
    TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY);
 
