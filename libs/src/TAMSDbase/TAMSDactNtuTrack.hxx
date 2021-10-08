@@ -14,12 +14,10 @@ class TAMSDactNtuTrack : public TAMSDactBaseNtuTrack {
 public:
    
    explicit  TAMSDactNtuTrack(const char* name       = 0,
-							 TAGdataDsc* p_ntuclus  = 0, 
-							 TAGdataDsc* p_ntutrack = 0, 
-							 TAGparaDsc* p_config   = 0,
-							 TAGparaDsc* p_geomap   = 0,
-							 TAGparaDsc* p_calib    = 0,
-							 TAGdataDsc* p_bmtrack  = 0);
+                              TAGdataDsc* p_ntuclus  = 0,
+                              TAGdataDsc* p_ntutrack = 0,
+                              TAGparaDsc* p_config   = 0,
+                              TAGparaDsc* p_geomap   = 0);
    virtual ~TAMSDactNtuTrack();
    
 protected:

@@ -31,8 +31,8 @@ ClassImp(TAMSDactNtuTrack);
 //! Default constructor.
 TAMSDactNtuTrack::TAMSDactNtuTrack(const char* name,
 								 TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
-								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
-: TAMSDactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib)
+								 TAGparaDsc* pGeoMap)
+: TAMSDactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap)
 {
    AddDataIn(pNtuClus,   "TAMSDntuPoint");
    AddDataOut(pNtuTrack, "TAMSDntuTrack");

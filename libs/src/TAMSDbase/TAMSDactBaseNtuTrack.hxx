@@ -29,8 +29,7 @@ public:
                                  TAGdataDsc* p_ntuclus  = 0,
                                  TAGdataDsc* p_ntutrack = 0,
                                  TAGparaDsc* p_config   = 0,
-                                 TAGparaDsc* p_geomap   = 0,
-                                 TAGparaDsc* p_calib    = 0);
+                                 TAGparaDsc* p_geomap   = 0);
    
    virtual ~TAMSDactBaseNtuTrack();
    
