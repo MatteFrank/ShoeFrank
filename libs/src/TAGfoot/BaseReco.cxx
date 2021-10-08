@@ -13,23 +13,22 @@
 #include "TAVTntuCluster.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
+#include "TAMSDntuPoint.hxx"
 
+#include "TAMSDntuTrack.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
 #include "TAVTactNtuHit.hxx"
-#include "TAVTactNtuTrackF.hxx"
-#include "TAVTactNtuTrack.hxx"
+
 #include "TAVTactNtuVertexPD.hxx"
-
-
-
 
 #include "TAGrecoManager.hxx"
 
 ClassImp(BaseReco)
 
 Bool_t  BaseReco::fgItrTrackFlag  = false;
+Bool_t  BaseReco::fgMsdTrackFlag  = false;
 
 //__________________________________________________________
 BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
@@ -806,6 +805,20 @@ void BaseReco::CreateRecActionMsd()
    fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuClusMsd, fpNtuRecMsd, fpParGeoMsd);
    if (fFlagHisto)
       fActPointMsd->CreateHistogram();
+   
+   if (fgMsdTrackFlag) {
+      fpNtuTrackMsd  = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
+      
+      if (fgTrackingAlgo.Contains("Std") ) {
+         fActTrackMsd  = new TAMSDactNtuTrack("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd);
+         
+      }  else if (fgTrackingAlgo.Contains("Full")) {
+         fActTrackMsd  = new TAMSDactNtuTrackF("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoIt, fpParGeoG);
+      }
+      
+      if (fFlagHisto)
+         fActTrackMsd->CreateHistogram();
+   }
 }
 
 //__________________________________________________________
@@ -1077,6 +1090,8 @@ void BaseReco::AddRecRequiredItem()
       gTAGroot->AddRequiredItem("msdActNtu");
       gTAGroot->AddRequiredItem("msdActClus");
       gTAGroot->AddRequiredItem("msdActPoint");
+      if (fgMsdTrackFlag)
+         gTAGroot->AddRequiredItem("msdActTrack");
    }
    
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW()) {
