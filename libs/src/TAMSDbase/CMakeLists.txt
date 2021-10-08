@@ -41,6 +41,7 @@ set( with_dictionnaries
    TAMSDactNtuPoint
    TAMSDactBaseNtuTrack
    TAMSDactNtuTrack
+   TAMSDactNtuTrackF
 )
 
 set( without_dictionnaries
