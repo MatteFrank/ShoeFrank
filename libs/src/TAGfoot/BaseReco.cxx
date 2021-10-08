@@ -813,7 +813,7 @@ void BaseReco::CreateRecActionMsd()
          fActTrackMsd  = new TAMSDactNtuTrack("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd);
          
       }  else if (fgTrackingAlgo.Contains("Full")) {
-         fActTrackMsd  = new TAMSDactNtuTrackF("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoIt, fpParGeoG);
+         fActTrackMsd  = new TAMSDactNtuTrackF("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd, fpParGeoG);
       }
       
       if (fFlagHisto)

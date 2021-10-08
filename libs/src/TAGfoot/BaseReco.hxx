@@ -52,6 +52,7 @@
 #include "TAITntuTrack.hxx"
 #include "TAMSDntuHit.hxx"
 #include "TAMSDntuPoint.hxx"
+#include "TAMSDntuTrack.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
@@ -235,6 +236,7 @@ public:
 
    TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
    TAMSDntuPoint*       GetNtuPointMsd()    const { return (TAMSDntuPoint*)fpNtuRecMsd->Object();    }
+   TAMSDntuTrack*       GetNtuTrackMsd()    const { return (TAMSDntuTrack*)fpNtuTrackMsd->Object();  }
 
    TATWntuHit*          GetNtuHitTw()       const { return (TATWntuHit*) fpNtuHitTw->Object();       }
    TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
