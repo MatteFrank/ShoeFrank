@@ -4,6 +4,7 @@
 #include "TClonesArray.h"
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuPoint.hxx"
+#include "TAMSDtrack.hxx"
 
 
 ClassImp(TAMSDpoint) // Description of Single Detector TAMSDpoint
@@ -97,6 +98,20 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
    }
    
    fElementsN = fColClus->GetElementsN() + fRowClus->GetElementsN();
+}
+
+//______________________________________________________________________________
+//
+Float_t TAMSDpoint::Distance(TAMSDtrack *aTrack) {
+   // Return the distance between this cluster and the pointed track impact in the plane
+   //
+   
+   TVector3 impactPosition( aTrack->Intersection( GetPositionG()[2]) );
+   impactPosition -= GetPositionG();
+   // Insure that z position is 0 for 2D length computation
+   impactPosition.SetXYZ(impactPosition(0), impactPosition(1), 0.);
+   
+   return impactPosition.Mag();
 }
 
 //______________________________________________________________________________

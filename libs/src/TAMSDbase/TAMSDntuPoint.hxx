@@ -17,6 +17,7 @@
 #include "TAMSDntuCluster.hxx"
 
 class TAMSDparGeo;
+class TAMSDtrack;
 
 
 /** TAMSDpoint class is the MSD hit reconstructed by the intersection of 2 clusters on a
@@ -72,6 +73,9 @@ public:
    void      SetChargeZProba(double p)  { fChargeZProba = p;    }
    void      Clear(Option_t* opt);
 
+   //! Compute distance from another cluster
+   Float_t            Distance(TAMSDtrack *aClus);
+   
    ClassDef(TAMSDpoint,6)
 };
 
