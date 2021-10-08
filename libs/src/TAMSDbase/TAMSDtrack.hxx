@@ -1,5 +1,5 @@
-#ifndef _TAITtrack_HXX
-#define _TAITtrack_HXX
+#ifndef _TAMSDtrack_HXX
+#define _TAMSDtrack_HXX
 
 // ROOT classes
 #include "TClonesArray.h"
