@@ -6,7 +6,7 @@
  \brief   Declaration of TAIRactNtuTrack.
  */
 /*------------------------------------------+---------------------------------*/
-
+#include "TH1F.h"
 #include "TAVTactBaseTrack.hxx"
 
 class TAVTvertex;
@@ -46,6 +46,8 @@ private:
    TAGdataDsc*  fpVtVertex;        // VT vertex container
    TAVTvertex*  fVtVertex;         // VT vertex pointer
    TAGparaDsc*  fpVtGeoMap;        // VT par geo
+
+   TH1F*        fpHisPixelTot;        // Total number of pixels per cluster
 
 private:
    static Bool_t fgBmMatched;      // vertex matched with BM flag
