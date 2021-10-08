@@ -69,6 +69,7 @@ protected:
    TVector3         fBmTrackPos;         // BM track position 
    
    TH1F*            fpHisPixelTot;       // Total number of pixels per tracked cluster
+   TH1F*            fpHisPixel[36];      // Total number of pixels per tracked cluster for each sensor
    TH2F*            fpHisClusLeftPix;    // number of clusters left (not tracked) vs # pixels
    TH1F*            fpHisClusLeft;       // number of clusters left (not tracked)
    TH2F*            fpHisBmBeamProf;     // BM Beam profile extrapolated to target

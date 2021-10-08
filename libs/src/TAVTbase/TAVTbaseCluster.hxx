@@ -55,8 +55,6 @@ public:
    Float_t            GetPulseHeight(Int_t tSk)        const { return ((TAVThit*)fListOfPixels->At(tSk))->GetPulseHeight(); } 
    //! Get number of pixels in this clusters
    Int_t              GetPixelsN()                     const { return  fListOfPixels->GetEntries(); }
-   //! Get number of elements in this clusters
-   Int_t              GetElementsN()                   const { return  fListOfPixels->GetEntries(); }
    //! Get sum of pulse height
    Float_t            GetCharge()                      const { return fCharge;  }
    //! Get pixel

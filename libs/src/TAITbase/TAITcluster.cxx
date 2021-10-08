@@ -67,6 +67,8 @@ void TAITcluster::AddPixel(TAIThit* pixel)
    
    TClonesArray &pixelArray = *fListOfPixels;
    new(pixelArray[pixelArray.GetEntriesFast()]) TAIThit(*pixel);
+   
+   fElementsN = fListOfPixels->GetEntries();
 }
 
 

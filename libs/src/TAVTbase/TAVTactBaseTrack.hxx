@@ -87,7 +87,6 @@ protected:
    TH1F*           fpHisResY[36];       // Residual in Y
    TH1F*           fpHisResTotX;        // Total Residual in X
    TH1F*           fpHisResTotY;        // Total Residual in Y
-   TH1F*           fpHisPixel[36];      // Total number of pixels per tracked cluster for each sensor
    TH2F*           fpHisTrackMap[36];   // track map per sensor
    TH1F*           fpHisMeanCharge;     // Mwean Charge per tracked cluster
    TH1F*           fpHisMeanPixel;      // Mean number of pixels per tracked cluster

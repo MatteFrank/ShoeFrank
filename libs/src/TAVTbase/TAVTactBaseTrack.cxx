@@ -111,9 +111,6 @@ void TAVTactBaseTrack::CreateHistogram()
       fpHisTrackMap[i]->SetStats(kFALSE);
       AddHistogram(fpHisTrackMap[i]);
       
-	  fpHisPixel[i] = new TH1F(Form("%sTrackedClusPix%d", fPrefix.Data(), i+1), Form("%s - # pixels per tracked clusters of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
-	  AddHistogram(fpHisPixel[i]);
-	  
 	  fpHisResX[i] = new TH1F(Form("%sResX%d", fPrefix.Data(), i+1), Form("%s - ResidualX of sensor %d", fTitleDev.Data(), i+1), 400, -0.01, 0.01);
 	  AddHistogram(fpHisResX[i]);
 	  fpHisResY[i] = new TH1F(Form("%sResY%d", fPrefix.Data(), i+1), Form("%s - ResidualY of sensor %d", fTitleDev.Data(), i+1), 400, -0.01, 0.01);

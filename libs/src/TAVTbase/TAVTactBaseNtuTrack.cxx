@@ -64,6 +64,11 @@ void TAVTactBaseNtuTrack::CreateHistogram()
    
    TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
    
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisPixel[i] = new TH1F(Form("%sTrackedClusPix%d", fPrefix.Data(), i+1), Form("%s - # pixels per tracked clusters of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
+      AddHistogram(fpHisPixel[i]);
+   }
+   
    fpHisPixelTot = new TH1F(Form("%sTrackedClusPixTot", fPrefix.Data()), Form("%s - Total # pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
    AddHistogram(fpHisPixelTot);
    
