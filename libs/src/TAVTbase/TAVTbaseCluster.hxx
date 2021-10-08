@@ -55,6 +55,8 @@ public:
    Float_t            GetPulseHeight(Int_t tSk)        const { return ((TAVThit*)fListOfPixels->At(tSk))->GetPulseHeight(); } 
    //! Get number of pixels in this clusters
    Int_t              GetPixelsN()                     const { return  fListOfPixels->GetEntries(); }
+   //! Get number of elements in this clusters
+   Int_t              GetElementsN()                   const { return  fListOfPixels->GetEntries(); }
    //! Get sum of pulse height
    Float_t            GetCharge()                      const { return fCharge;  }
    //! Get pixel
@@ -68,7 +70,7 @@ public:
    Float_t            GetPixelDistanceV(Int_t index)   const;
    
    //! Compute distance from another cluster
-   Float_t            Distance(TAVTbaseCluster *aClus);
+   Float_t            Distance(TAGcluster *aClus);
    //! reset pixels
    void               ResetPixels();
    
