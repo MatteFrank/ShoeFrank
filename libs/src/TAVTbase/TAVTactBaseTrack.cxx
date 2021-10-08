@@ -74,6 +74,8 @@ TAVTactBaseTrack::TAVTactBaseTrack(const char* name,
       fTitleDev = "Inner Tracker";
    else if (fPrefix.Contains("ir"))
       fTitleDev = "Interaction Region";
+   else if (fPrefix.Contains("ms"))
+      fTitleDev = "Micro Strip Detector";
    else
       printf("Wrong prefix for histograms !");
 
@@ -170,7 +172,7 @@ Bool_t TAVTactBaseTrack::AppyCuts(TAVTbaseTrack* track)
    Bool_t valid = false;  
    
    TAVTbaseParConf* pConfig = (TAVTbaseParConf*) fpConfig->Object();
-   if (track->GetClustersN() >= pConfig->GetAnalysisPar().PlanesForTrackMinimum )
+   if (track->GetClustersN() >= fRequiredClusters)
   	  valid = true;
    
    return valid;
@@ -281,7 +283,7 @@ void TAVTactBaseTrack::FillHistogramm(TAVTbaseTrack* track)
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
 	  TAGcluster * cluster = track->GetCluster(i);
 	  cluster->SetFound();
-	  Int_t idx = cluster->GetSensorIdx();
+	  Int_t idx          = cluster->GetSensorIdx();
 	  Float_t posZ       = cluster->GetPositionG()[2];
 	  TVector3 impact    = track->Intersection(posZ);
    
