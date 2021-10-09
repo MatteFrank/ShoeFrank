@@ -42,8 +42,6 @@ TAMSDactBaseNtuTrack::TAMSDactBaseNtuTrack(const char* name,
 										 TAGparaDsc* pGeoMap)
 : TAVTactBaseTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap)
 {
-   fRequiredClusters = 3;
-   fSearchClusDistance = 0.1;
 }
 
 //------------------------------------------+-----------------------------------
@@ -157,9 +155,7 @@ Bool_t TAMSDactBaseNtuTrack::FindStraightTracks()
 	  // Loop on all clusters of the first plane
 	  // and try to make a track out of each one
 	  for( Int_t iLastClus = 0; iLastClus < nClusters; ++iLastClus) { // loop on cluster of last plane, 
-		 
-		 //if( pNtuTrack->GetTracksN() >= pConfig->GetAnalysisPar().TracksMaximum ) break; // if max track number reach, stop
-		 
+		 		 
 		 TAMSDpoint* cluster = (TAMSDpoint*)list->At( iLastClus );
 		 if (cluster->Found()) continue;
 		 TAMSDtrack*   track   = new TAMSDtrack();
