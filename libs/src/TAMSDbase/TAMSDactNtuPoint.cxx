@@ -112,8 +112,20 @@ Bool_t TAMSDactNtuPoint::FindPoints()
                                                  colHit->GetPosition().Y(), colHit->GetPosError().Y(), colHit,
                                                  rowHit->GetPosition().X(), rowHit->GetPosError().X(), rowHit);
        
+         auto posx = 0.;
+         auto posy = 0.;
          auto posz = (colHit->GetPositionG().Z() + rowHit->GetPositionG().Z())/2.;
-         TVector3 pos(colHit->GetPositionG().X(), rowHit->GetPositionG().Y(), posz);
+
+         if (pGeoMap->GetSensorPar(iLayer).TypeIdx == 1) {
+            posx = rowHit->GetPositionG().X();
+            posy = colHit->GetPositionG().Y();
+         } else {
+            posx = colHit->GetPositionG().X();
+            posy = rowHit->GetPositionG().Y();
+         }
+         TVector3 pos(posx, posy, posz);
+         
+         
          point->SetPositionG(pos);
          point->SetValid();
          point->SetSensorIdx(iLayer);
