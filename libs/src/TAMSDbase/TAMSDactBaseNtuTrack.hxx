@@ -41,10 +41,10 @@ public:
    
 protected:
    TH1F*            fpHisStripTot;    // Total number of strips per tracked point
-   TH1F*            fpHisStrip[36];   // number of strip per tracked cluster for each point
+   TH1F*            fpHisStrip[6];   // number of strip per tracked cluster for each point
+   TH1F*            fpHisChargeTot;    // Total number of charge per tracked point
+   TH1F*            fpHisCharge[6];   // number of charge per tracked cluster for each point
    TH1F*            fpHisPointLeft;   // number of point left (not tracked)
-   TH1F*            fpHisResX;        // residualX
-   TH1F*            fpHisResY;        // residualY 
    
 protected:
    virtual void   FillHistogramm(TAVTbaseTrack* track);

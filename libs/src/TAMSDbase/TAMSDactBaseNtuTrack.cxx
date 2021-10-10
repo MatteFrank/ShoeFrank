@@ -61,18 +61,17 @@ void TAMSDactBaseNtuTrack::CreateHistogram()
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisStrip[i] = new TH1F(Form("%sTrackedPointStrip%d", fPrefix.Data(), i+1), Form("%s - # strips per tracked points of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
       AddHistogram(fpHisStrip[i]);
+      
+      fpHisCharge[i] = new TH1F(Form("%sTrackedPointCharge%d", fPrefix.Data(), i+1), Form("%s - Energy loss per tracked points of sensor %d", fTitleDev.Data(), i+1), 500, 0, 10000);
+      AddHistogram(fpHisCharge[i]);
    }
    
    fpHisStripTot = new TH1F(Form("%sTrackedPointStripTot", fPrefix.Data()), Form("%s - Total # strips per tracked points", fTitleDev.Data()), 100, -0.5, 99.5);
    AddHistogram(fpHisStripTot);
    
-   
-   fpHisResX = new TH1F(Form("%sResX", fPrefix.Data()), Form("%s -  position resisdualX BM/VT", fTitleDev.Data()), 500, -5, 5);
-   AddHistogram(fpHisResX);
-   
-   fpHisResY = new TH1F(Form("%sResY", fPrefix.Data()), Form("%s -  position resisdualY BM/VT", fTitleDev.Data()), 500, -5, 5);
-   AddHistogram(fpHisResY);
-   
+   fpHisChargeTot = new TH1F(Form("%sTrackedPointChargeTot", fPrefix.Data()), Form("%s - Total energy loss per tracked points", fTitleDev.Data()), 500, 0, 10000);
+   AddHistogram(fpHisChargeTot);
+
    
    fpHisPointLeft = new TH1F(Form("%sPointLeft", fPrefix.Data()), Form("%s -  point left per sensor", fTitleDev.Data()), 8, 1, 8);
    AddHistogram(fpHisPointLeft);
@@ -250,12 +249,9 @@ void TAMSDactBaseNtuTrack::FillHistogramm(TAVTbaseTrack* track)
       Int_t idx = cluster->GetSensorIdx();
       fpHisStripTot->Fill(cluster->GetElementsN());
       fpHisStrip[idx]->Fill(cluster->GetElementsN());
+      fpHisChargeTot->Fill(cluster->GetEnergyLoss());
+      fpHisCharge[idx]->Fill(cluster->GetEnergyLoss());
    }
-   
-   fpHisChi2TotX->Fill(track->GetChi2U());
-   fpHisChi2TotY->Fill(track->GetChi2V());
-   
-   fpHisMeanCharge->Fill(track->GetMeanCharge());
 }
 
 //_____________________________________________________________________________
