@@ -43,7 +43,7 @@ SupportInfo:       0
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 1-Y  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            1
 Type:              1
-PositionsX:        0.0000  PositionsY:    -0.2880  PositionsZ:   -5.260
+PositionsX:        0.0000  PositionsY:    -0.2891  PositionsZ:   -5.260
 Tilt1:             0.0000  Tilt2:        180.0000   Tilt3:       -90.000
 AlignementU:       0.000
 AlignementV:       0.000
@@ -61,7 +61,7 @@ AlignementTilt:    0.000
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 2-Y  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            3
 Type:              1
-PositionsX:        0.0000  PositionsY:    -0.2522   PositionsZ:  -0.260
+PositionsX:        0.0000  PositionsY:    -0.2504   PositionsZ:  -0.260
 Tilt1:             0.0000  Tilt2:        180.0000   Tilt3:      -90.000
 AlignementU:       0.000
 AlignementV:       0.000
@@ -78,7 +78,7 @@ AlignementTilt:    0.000
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 3-Y  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            5
 Type:              1
-PositionsX:        0.0000  PositionsY:   -0.2921    PositionsZ:   4.740
+PositionsX:        0.0000  PositionsY:   -0.2932    PositionsZ:   4.740
 Tilt1:             0.0000  Tilt2:       180.0000    Tilt3:      -90.000
 AlignementU:       0.000
 AlignementV:       0.0000
