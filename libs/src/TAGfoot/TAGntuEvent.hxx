@@ -2,7 +2,7 @@
 #define _TAMntuEvent_HXX
 
 #include "TString.h"
-
+#include "TAGWDtrigInfo.hxx"
 #include "TAGdata.hxx"
 
 class TAGntuEvent : public TAGdata {
@@ -39,6 +39,13 @@ public:
   
   UInt_t            GetPMTsAndBusy()                  const { return fPMTsAndBusy;            }
   void              SetPMTsAndBusy(UInt_t nb)               { fPMTsAndBusy = nb;              }
+
+  Int_t             GetTriggerID()                    const { return fTriggerID;              }
+  void              SetTriggerID(Int_t id)                  { fTriggerID = id;                }
+
+  UInt_t*           GetTriggersStatus()                     { return fTriggersStatus;         }
+  void              SetTriggersStatus(Int_t status[NMAXTRIG]) { for(int i=0;i<NMAXTRIG;i++)fTriggersStatus[i] = status[i];}
+
   
   Double_t          TimeToDouble()                    const { return (Double_t)fTimeSec + 1.e-6 * (Double_t)fTimeUsec;}
   void              TimeFromDouble(Double_t time);
@@ -66,6 +73,8 @@ private:
   UInt_t            fBCOofTrigger;
   UInt_t            fSpillNrAndTrgFineDelay;
   UInt_t            fPMTsAndBusy;
+  Int_t            fTriggerID;
+  UInt_t            fTriggersStatus[NMAXTRIG];
 
 private:
   static TString    fgkBranchName;
