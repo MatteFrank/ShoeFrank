@@ -61,7 +61,7 @@ TAGactWDreader::TAGactWDreader(const char* name,
   AddPara(p_WDmap, "TAGbaseWDparMap");
   AddPara(p_WDtim, "TAGbaseWDparTime");
 
-  m_nev=0;
+  fEventsN=0;
 }
 
 
@@ -111,7 +111,7 @@ Bool_t TAGactWDreader::Action() {
    
    Clear();
 
-   m_nev++;
+   fEventsN++;
    
    fpStWd->SetBit(kValid);
    fpTwWd->SetBit(kValid);
@@ -240,7 +240,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_W
 	    w->GetVectA() = w_amp;
 	    w->GetVectRawT() = p_WDTim->GetRawTimeArray(board_id, ch_num, trig_cell);
 	    w->GetVectT() = w->GetVectRawT();
-	    w->SetNEvent(m_nev);
+	    w->SetNEvent(fEventsN);
 	    w->SetEmptyFlag(false);
 	    w->SetTrigType(trig_type);
 	    w->SetTriggerCellId(trig_cell);
@@ -650,19 +650,19 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACA
   for(int i=0; i<(int)st_waves.size();i++){
     p_straw->NewHit(st_waves.at(i));
     int ch = st_waves.at(i)->GetChannelId();
-    if(ValidHistogram() && m_nev<MaxEvents && ch<MaxST)FillHistogram(hST[m_nev][ch], st_waves.at(i));
+    if(ValidHistogram() && fEventsN<MaxEvents && ch<MaxST)FillHistogram(hST[fEventsN][ch], st_waves.at(i));
   }
 
   for(int i=0; i<(int)tw_waves.size();i++){
     p_twraw->NewHit(tw_waves.at(i));
     int ch = tw_waves.at(i)->GetChannelId();
-    if(ValidHistogram() && m_nev<MaxEvents && ch<MaxTW)FillHistogram(hTW[m_nev][ch], tw_waves.at(i));
+    if(ValidHistogram() && fEventsN<MaxEvents && ch<MaxTW)FillHistogram(hTW[fEventsN][ch], tw_waves.at(i));
   }
 
   for(int i=0; i<(int)ca_waves.size();i++){
     p_caraw->NewHit(ca_waves.at(i));
     int ch = ca_waves.at(i)->GetChannelId();
-    if(ValidHistogram() && m_nev<MaxEvents && ch<MaxCalo)FillHistogram(hCalo[m_nev][ch], ca_waves.at(i));
+    if(ValidHistogram() && fEventsN<MaxEvents && ch<MaxCalo)FillHistogram(hCalo[fEventsN][ch], ca_waves.at(i));
   }
 
    map<pair<int,int>, TWaveformContainer*>::iterator it;
@@ -670,7 +670,7 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACA
      int bo = it->second->GetBoardId();
      int ch = it->second->GetChannelId();
      if(bo==27 && ch == 16){
-       if(ValidHistogram() && m_nev<MaxEvents)FillHistogram(hClk[m_nev], it->second);
+       if(ValidHistogram() && fEventsN<MaxEvents)FillHistogram(hClk[fEventsN], it->second);
      }
    }
 
@@ -724,6 +724,6 @@ void  TAGactWDreader::SavePlot(TWaveformContainer *w, string type){
   WaveGraph.SetMarkerColor(kBlue);
   WaveGraph.GetXaxis()->SetRangeUser(0,100);
 
-  c.Print(Form("waveform%s_board%d_ch%d_nev%d.png", type.data(), w->GetBoardId(), w->GetChannelId(), m_nev));
+  c.Print(Form("waveform%s_board%d_ch%d_nev%d.png", type.data(), w->GetBoardId(), w->GetChannelId(), fEventsN));
   
 }

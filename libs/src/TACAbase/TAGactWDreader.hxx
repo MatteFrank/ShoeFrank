@@ -59,6 +59,8 @@ public:
   TAGparaDsc*     fpWDTim;		    // parameter dsc
   TAGparaDsc*     fpWDMap;		    // parameter dsc
 
+  int             fEventsN;
+
   //vector<TH1F *> wv0;
   
   TH1F *hST[20][8];
@@ -68,7 +70,6 @@ public:
   TH1F *hTrig;
   TH2F *hTrigClk;
 
-  int m_nev;
   
  private:
 

@@ -47,6 +47,9 @@ class TAVTbaseTrack : public TAGobject {
 protected:
    TVector3*      fOrigin;                       //->   origin x0,y0,z0
    TVector3*      fSlope;                        //->   the slope (dx/dz, dy/dz, 1)
+   TVector3*      fOriginErr;                    //->   origin dx0,dy0,dz0
+   TVector3*      fSlopeErr;                     //->   the error slope (dx/dz, dy/dz, 1)
+
    Float_t        fLength;
 
    Bool_t         fPileup;                       // true if track is part of pileup events
@@ -78,7 +81,7 @@ public:
    TAVTbaseTrack(const TAVTbaseTrack& aTrack);
    
    //! Get cluster
-   virtual TAVTbaseCluster*   GetCluster(Int_t /*index*/) { return 0x0; }
+   virtual TAGcluster*   GetCluster(Int_t /*index*/) { return 0x0; }
    
    //! Reset line
    void               Zero();
@@ -88,6 +91,10 @@ public:
    TVector3&          GetOrigin()   const { return *fOrigin; }
    //! Get slope of line
    TVector3&          GetSlopeZ()   const { return *fSlope;  }
+   //! Get error origin of line
+   TVector3&          GetOriginErr() const { return *fOriginErr; }
+   //! Get error slope of line
+   TVector3&          GetSlopeErrZ() const { return *fSlopeErr;  }
    //! Get length of line
    Float_t            GetLength()   const { return fLength;  }
    //! Get theta angle of line
@@ -99,6 +106,7 @@ public:
    TVector3           GetPoint(Float_t beta);
    //! Set values of lines
    void               SetValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength = 0.);
+   void               SetErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr);
 
   
    //! Get distance with another track
@@ -134,6 +142,8 @@ public:
    void           SetPosVertex(TVector3& pos)        { fPosVertex = pos;            }
    //! Set values of line track
    void           SetLineValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength = 0.);
+   //! Set values of line track
+   void           SetLineErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr);
    //! Make chi square 
    void           MakeChiSquare(Float_t dhs = 0.);
    //Set charge proba
@@ -187,7 +197,7 @@ public:
    Int_t         GetMcTrackIdx(Int_t index)  const { return fMcTrackIdx[index];    }
    Int_t         GetMcTracksN()              const { return fMcTrackIdx.GetSize(); }
    
-   ClassDef(TAVTbaseTrack,8)                      // Describes TAVTbaseTrack
+   ClassDef(TAVTbaseTrack,9)                      // Describes TAVTbaseTrack
 };
 
 #endif

@@ -24,6 +24,7 @@ protected:
    TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
    map<int, int>      fMcTrackMap;               //! Map of MC track Id
    Int_t              fClusterIdx;               // cluster index
+   Int_t              fElementsN;                // number of cluster elements (pixels, strips, points...)
    Int_t              fSensorIdx;                // sensor index
    Int_t              fDeviceType;               // type of sensor VT: 40, IT: 50, MSD: 60, TW: 70, CA: 80
    Bool_t             fIsValid;                  // validity flag
@@ -46,6 +47,8 @@ public:
    Int_t                    GetClusterIdx()    const { return fClusterIdx;    }
    //! Get sensor index
    Int_t                    GetSensorIdx()     const { return fSensorIdx;     }
+   //! Get cluster elts
+   virtual Int_t            GetElementsN()     const { return fElementsN;     }
    //! Get position in local frame
    virtual const TVector3&  GetPosition()      const { return fPosition;      }
    //! Get position error in local frame
@@ -62,9 +65,11 @@ public:
    void                     SetValid(Bool_t v = true)                     { fIsValid = v;             }
    //! Set cluster type
    void                     SetDeviceType(Int_t nb)                       { fDeviceType = nb;         }
-   //! Set cluster number
+   //! Set cluster elements
+   void                     SetElementsN(Int_t nb)                        { fElementsN = nb;          }
+   //! Set cluster index
    void                     SetClusterIdx(Int_t nb)                       { fClusterIdx = nb;         }
-   //! Set plane number
+   //! Set sensor index
    void                     SetSensorIdx(Int_t nb)                        { fSensorIdx = nb;          }
    //! Set position in local frame
    virtual void             SetPosition(TVector3& pos);
@@ -81,7 +86,7 @@ public:
    //! Add MC track Idx
    void                     AddMcTrackIdx(Int_t trackIdx);
    
-    ClassDef(TAGcluster,2)
+    ClassDef(TAGcluster,3)
 };
 
 #endif

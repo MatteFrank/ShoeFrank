@@ -69,6 +69,8 @@ void TAMSDcluster::AddStrip(TAMSDhit* strip)
    
    TClonesArray &StripArray = *fListOfStrips;
    new(StripArray[StripArray.GetEntriesFast()]) TAMSDhit(*strip);
+   
+   fElementsN = fListOfStrips->GetEntries();
 }
 
 //______________________________________________________________________________

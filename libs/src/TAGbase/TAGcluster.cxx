@@ -17,6 +17,7 @@ TAGcluster::TAGcluster()
    fPositionG(0., 0., 0.),
    fPosErrorG(0., 0., 0.),
    fClusterIdx(-1),
+   fElementsN(-1),
    fSensorIdx(-1),
    fDeviceType(-1),
    fIsValid(kFALSE)
@@ -36,6 +37,7 @@ TAGcluster::TAGcluster(const TAGcluster& cluster)
    fMcTrackIdx(cluster.fMcTrackIdx),
    fClusterIdx(cluster.fClusterIdx),
    fSensorIdx(cluster.fSensorIdx),
+   fElementsN(cluster.fElementsN),
    fDeviceType(cluster.fDeviceType),
    fIsValid(cluster.fIsValid)
 {

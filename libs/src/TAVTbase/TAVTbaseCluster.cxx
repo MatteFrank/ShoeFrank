@@ -129,7 +129,7 @@ Float_t TAVTbaseCluster::GetSeedV() const
 
 //______________________________________________________________________________
 //  
-Float_t TAVTbaseCluster::Distance(TAVTbaseCluster *aClus) {
+Float_t TAVTbaseCluster::Distance(TAGcluster *aClus) {
    // Return the distance between this clusters and the pointed cluster
    // regardless of the plane
    
