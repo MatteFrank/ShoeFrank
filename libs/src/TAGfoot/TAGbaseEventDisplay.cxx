@@ -829,6 +829,8 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
       parGeo = fReco->GetParGeoVtx();
    else if (prefix == "it")
       parGeo = fReco->GetParGeoIt();
+   else
+      return;
 
    // known bug if first event is empty
    if (fVtxClusDisplay)
@@ -1126,7 +1128,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
          x1 = posG(0); y1 = posG(1); z1 = posG(2);
 
          Float_t nPix = track->GetMeanPixelsN();
-         fMsdTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
+         fMsdTrackDisplay->AddTracklet(nPix*500, x, y, z, x1, y1, z1);
          fMsdTrackDisplay->TrackId(track);
       
      } // end loop on tracks
