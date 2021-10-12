@@ -68,6 +68,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    // Par instance
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    fFlagTrack = TAGrecoManager::GetPar()->IsTracking();
      
