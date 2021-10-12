@@ -39,16 +39,25 @@ TASTrawHit::TASTrawHit()
 
 //------------------------------------------+-----------------------------------
 //! constructor.
-TASTrawHit::TASTrawHit(TWaveformContainer *W)
+TASTrawHit::TASTrawHit(TWaveformContainer *W, string algo, double frac, double del)
   : TAGbaseWD(W){
 
   fBaseline = ComputeBaseline(W);
   fPedestal = ComputePedestal(W);
   fChg = ComputeCharge(W);
   fAmplitude = ComputeAmplitude(W);
-  fTime = ComputeTime(W,0.3,2.0,-5,2);
-  fTimeOth = TAGbaseWD::ComputeTimeSimpleCFD(W,0.3);
+  if(algo=="hwCFD"){
+    fTime = ComputeTime(W,frac,del,-10,10);
+    //cout << "frac::" << frac << "  del::" << del << endl;
+  }else if(algo=="simpleCFD"){
+    fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
+  }else{
+    fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
+  }
+  //cout << "algo::" << algo.data() << "  frac::" << frac << "  del::" << del << endl;
+  //if(W->GetChannelId()<0)cout << "timesuperhit::" << fTime << endl;
 }
+
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
@@ -142,16 +151,16 @@ const TASTrawHit* TASTntuRaw::GetHit(Int_t i) const{
 
 //------------------------------------------+-----------------------------------
 //! New hit
-void TASTntuRaw::NewHit(TWaveformContainer *W){
+void TASTntuRaw::NewHit(TWaveformContainer *W, string algo, double frac, double del){
   
   TClonesArray &pixelArray = *fListOfHits;
-  TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W);
+  TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W, algo, frac, del);
   fHistN++;
 }
 
 //------------------------------------------+-----------------------------------
 //! new super hit
-void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW){
+void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double frac, double del){
 
 
   if(!vW.size()){
@@ -169,12 +178,17 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW){
   
 
   //I define the time window
-  int i_ampmin = TMath::LocMin(vW.at(0)->GetVectA().size(),&(vW.at(0)->GetVectA())[0]);
-  double t_ampmin = vW.at(0)->GetVectT().at(i_ampmin);
-  double tmin = (t_ampmin-20 > vW.at(0)->GetVectT().at(0)) ? t_ampmin-20 : vW.at(0)->GetVectT().at(0);
-  double tmax = (t_ampmin+5 < vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1)) ? t_ampmin+5 : vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1);
+  // int i_ampmin = TMath::LocMin(vW.at(0)->GetVectA().size(),&(vW.at(0)->GetVectA())[0]);
+  // double t_ampmin = vW.at(0)->GetVectT().at(i_ampmin);
+  // double tmin = (t_ampmin-20 > vW.at(0)->GetVectT().at(0)) ? t_ampmin-20 : vW.at(0)->GetVectT().at(0);
+  // double tmax = (t_ampmin+5 < vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1)) ? t_ampmin+5 : vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1);
+  // vector<double> time,amp;
+  // double tmpt=tmin;
+  double tmin = vW.at(0)->GetVectT().at(0);
+  double tmax = vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1);
   vector<double> time,amp;
   double tmpt=tmin;
+  
   while(tmpt<tmax){
     time.push_back(tmpt);
     tmpt+=0.2;
@@ -187,7 +201,7 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW){
     vector<double> tmptime = vW.at(i)->GetVectT();
     TGraph tmpgr(tmptime.size(), &tmptime[0], &tmpamp[0]);
     for(int isa=0;isa<time.size();isa++){
-      amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
+      if(amp.at(isa)<0.05)amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
     }
   }
 
@@ -202,8 +216,11 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW){
 
   //cout << "trigid::" << TrigType << endl;
   
-  fSuperHit = new TASTrawHit(wsum);
+  fSuperHit = new TASTrawHit(wsum,algo, frac, del);
 
+
+  // cout<< "superhit  algo::" << algo.data() << "   frac::" << frac << "  del::" << del << endl;
+  
   delete wsum;
   
 }

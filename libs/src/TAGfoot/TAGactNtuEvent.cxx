@@ -23,13 +23,24 @@ ClassImp(TAGactNtuEvent);
 //! Default constructor.
 
 TAGactNtuEvent::TAGactNtuEvent(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* pDatDaq)
-: TAGaction(name, "TAGactNtuEvent - Unpack trigger raw data"),
+  : TAGaction(name, "TAGactNtuEvent - Unpack trigger raw data"),
   fpDatDaq(pDatDaq),
   fpNtuEvt(pNtuEvt)
 {
   AddDataIn(pDatDaq, "TAGdaqEvent");
   AddDataOut(pNtuEvt, "TAGntuEvent");
 }
+
+// TAGactNtuEvent::TAGactNtuEvent(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* pDatDaq,  TAGdataDsc *pWDtrigInfo)
+//   : TAGaction(name, "TAGactNtuEvent - Unpack trigger raw data"),
+//   fpDatDaq(pDatDaq),
+//   fpNtuEvt(pNtuEvt),
+//   fpWDtrigInfo(pWDtrigInfo)    
+// {
+//   AddDataIn(pDatDaq, "TAGdaqEvent");
+//   AddDataIn(pWDtrigInfo, "TAGWDtrigInfo");
+//   AddDataOut(pNtuEvt, "TAGntuEvent");
+// }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
@@ -43,6 +54,7 @@ Bool_t TAGactNtuEvent::Action()
 {
   TAGdaqEvent* datDaq  = (TAGdaqEvent*) fpDatDaq->Object();
   TAGntuEvent* pNtuEvt = (TAGntuEvent*) fpNtuEvt->Object();
+  //  TAGWDtrigInfo* pWDtrigInfo = (TAGWDtrigInfo*) fpWDtrigInfo->Object();
   
   InfoEvent* infoEvent = datDaq->GetInfoEvent();
   TrgEvent*  trgEvent  = datDaq->GetTrgEvent();
@@ -61,6 +73,8 @@ Bool_t TAGactNtuEvent::Action()
      pNtuEvt->SetBCOofTrigger(trgEvent->BCOofTrigger);
      pNtuEvt->SetSpillNrAndTrgFineDelay(trgEvent->spillNrAndTrgFineDelay);
      pNtuEvt->SetPMTsAndBusy(trgEvent->PMTsAndBusy);
+     // pNtuEvt->SetTriggerID(pWDtrigInfo->GetTriggerID());
+     // cout << "TriggerID:" << pWDtrigInfo->GetTriggerID() << endl;
   }
   SetBit(kValid);
   fpNtuEvt->SetBit(kValid);
