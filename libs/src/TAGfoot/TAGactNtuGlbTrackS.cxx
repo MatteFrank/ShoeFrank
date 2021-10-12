@@ -190,10 +190,16 @@ void TAGactNtuGlbTrackS::CreateHistogram()
       AddHistogram(fpHisResY[i]);
    }
    
-   fpHisResTotX = new TH1F(Form("%sResTotX", prefix.Data()), Form("%s - Total ResidualX", titleDev.Data()), 400, -0.01, 0.01);
-   fpHisResTotY = new TH1F(Form("%sResTotY", prefix.Data()), Form("%s - Total ResidualY", titleDev.Data()), 400, -0.01, 0.01);
+   fpHisResTotX = new TH1F(Form("%sResTotX", prefix.Data()), Form("%s - Total ResidualX", titleDev.Data()), 400, -0.2, 0.2);
+   fpHisResTotY = new TH1F(Form("%sResTotY", prefix.Data()), Form("%s - Total ResidualY", titleDev.Data()), 400, -0.2, 0.2);
    AddHistogram(fpHisResTotX);
    AddHistogram(fpHisResTotY);
+
+   fpHisResTrkTotX = new TH1F(Form("%sResTotX", prefix.Data()), Form("%s - Total ResidualX for tracker", titleDev.Data()), 400, -0.2, 0.2);
+   fpHisResTrkTotY = new TH1F(Form("%sResTotY", prefix.Data()), Form("%s - Total ResidualY for tracker", titleDev.Data()), 400, -0.2, 0.2);
+   AddHistogram(fpHisResTrkTotX);
+   AddHistogram(fpHisResTrkTotY);
+
    
    fpHisTrackEvt = new TH1F(Form("%sTrackEvt", prefix.Data()), Form("%s - Number of tracks per event", titleDev.Data()), 20, -0.5, 19.5);
    AddHistogram(fpHisTrackEvt);
@@ -820,6 +826,10 @@ void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
          caEnergyRes = cluster->GetEnergyLoss();
       }
       
+      if (track->GetMeasPointsN() == 7) {
+         fpHisResTrkTotX->Fill(impact[0]-cluster->GetPositionG()[0]);
+         fpHisResTrkTotY->Fill(impact[1]-cluster->GetPositionG()[1]);
+      }
       fpHisResTotX->Fill(impact[0]-cluster->GetPositionG()[0]);
       fpHisResTotY->Fill(impact[1]-cluster->GetPositionG()[1]);
       fpHisResX[idx+offset]->Fill(impact[0]-cluster->GetPositionG()[0]);

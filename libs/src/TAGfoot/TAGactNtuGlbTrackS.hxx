@@ -111,6 +111,8 @@ private:
    TH1F*           fpHisResY[43];       // Residual in Y
    TH1F*           fpHisResTotX;        // Total Residual in X
    TH1F*           fpHisResTotY;        // Total Residual in Y
+   TH1F*           fpHisResTrkTotX;        // Total Residual in X
+   TH1F*           fpHisResTrkTotY;        // Total Residual in Y
    TH1F*           fpHisTrackEvt;       // number of track per event
    TH1F*           fpHisTrackClus;      // number of clusters per track
    TH1F*           fpHisClusSensor;     // number of tracked clusters per sensor
