@@ -195,8 +195,8 @@ void TAGactNtuGlbTrackS::CreateHistogram()
    AddHistogram(fpHisResTotX);
    AddHistogram(fpHisResTotY);
 
-   fpHisResTrkTotX = new TH1F(Form("%sResTotX", prefix.Data()), Form("%s - Total ResidualX for tracker", titleDev.Data()), 400, -0.2, 0.2);
-   fpHisResTrkTotY = new TH1F(Form("%sResTotY", prefix.Data()), Form("%s - Total ResidualY for tracker", titleDev.Data()), 400, -0.2, 0.2);
+   fpHisResTrkTotX = new TH1F(Form("%sResTrkTotX", prefix.Data()), Form("%s - Total ResidualX for tracker", titleDev.Data()), 400, -0.2, 0.2);
+   fpHisResTrkTotY = new TH1F(Form("%sResTrkTotY", prefix.Data()), Form("%s - Total ResidualY for tracker", titleDev.Data()), 400, -0.2, 0.2);
    AddHistogram(fpHisResTrkTotX);
    AddHistogram(fpHisResTrkTotY);
 
