@@ -452,8 +452,9 @@ void BaseReco::ReadParFiles()
          
          fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
          TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
-         parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
-         parTimeWD->FromFile(parFileName.Data());
+         TString parFileName1 = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
+	 TString parFileName2 = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber,true);
+	 parTimeWD->FromFile(parFileName1.Data(),parFileName2.Data());
       }
    }
 

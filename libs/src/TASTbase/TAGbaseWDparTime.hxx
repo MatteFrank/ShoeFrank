@@ -33,17 +33,28 @@ class TAGbaseWDparTime : public TAGpara {
   
   vector<double> GetRawTimeArray(int iBo, int iCha, int TrigCell);
   void InitMap();
-  bool FromFile(TString fileName = "");
+  bool FromFile(TString fileName = "", TString file2Name = "");
   void SetTimeCal(int iBo, int iCha, vector<float> tvec);
 
   ClassDef(TAGbaseWDparTime,1)
 
   const double sec2Nano = 1E9;
+
+  inline string GetCFDalgo(string det){return cfdalgo.find(det)->second;}
+  inline double GetCFDfrac(string det){return cfdfrac.find(det)->second;}
+  inline double GetCFDdel(string det){return cfddel.find(det)->second;}
+
   
 private:
 
   map<pair<int,int>, vector<double>> time_parcal;
+  map<string,string> cfdalgo;
+  map<string,double> cfdfrac;
+  map<string,double> cfddel;
 
+  
+
+  
 };
 
 #endif
