@@ -31,17 +31,6 @@ TAGactNtuEvent::TAGactNtuEvent(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc
   AddDataOut(pNtuEvt, "TAGntuEvent");
 }
 
-// TAGactNtuEvent::TAGactNtuEvent(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* pDatDaq,  TAGdataDsc *pWDtrigInfo)
-//   : TAGaction(name, "TAGactNtuEvent - Unpack trigger raw data"),
-//   fpDatDaq(pDatDaq),
-//   fpNtuEvt(pNtuEvt),
-//   fpWDtrigInfo(pWDtrigInfo)    
-// {
-//   AddDataIn(pDatDaq, "TAGdaqEvent");
-//   AddDataIn(pWDtrigInfo, "TAGWDtrigInfo");
-//   AddDataOut(pNtuEvt, "TAGntuEvent");
-// }
-
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGactNtuEvent::~TAGactNtuEvent()

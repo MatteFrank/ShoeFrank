@@ -68,6 +68,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    // Par instance
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    fFlagTrack = TAGrecoManager::GetPar()->IsTracking();
      
@@ -723,6 +724,7 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveStraightLineSet* ts, Int_t idx)
 //__________________________________________________________
 void TAGbaseEventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
 {
+    if (!fDetectorStatus[kBMN]) return;
     TEveBoxSet* tpCircle = dynamic_cast<TEveBoxSet*>(qs);
 
     TABMhit* hit = dynamic_cast<TABMhit*>( tpCircle->GetId(idx) );
@@ -820,6 +822,9 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
    if (!fgDisplayFlag) // do not update event display
       return;
 
+   if (prefix == "vt" && !fDetectorStatus[kVTX]) return;
+   if (prefix == "it" && !fDetectorStatus[kITR]) return;
+   
    Float_t  x = 0.,  y = 0.,  z = 0.;
    Float_t x1 = 0.,  y1 =0., z1 = 0.;
 
@@ -835,6 +840,9 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
    // known bug if first event is empty
    if (fVtxClusDisplay)
       fVtxClusDisplay->AddHit(-1, 0, 0, 0);
+
+   if (fItClusDisplay)
+      fItClusDisplay->AddHit(-1, 0, 0, 0);
    
    Int_t nPlanes = parGeo->GetSensorsN();
 
@@ -917,6 +925,8 @@ void TAGbaseEventDisplay::UpdateStripElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
+   if (!fDetectorStatus[kMSD]) return;
+
    Float_t  x = 0.,  y = 0.,  z = 0.;
 
    TAMSDparGeo* parGeo = fReco->GetParGeoMsd();
@@ -924,6 +934,10 @@ void TAGbaseEventDisplay::UpdateStripElements()
    TVector3 epi  = parGeo->GetEpiSize();
    Int_t nPlanes = parGeo->GetSensorsN();
 
+   // known bug if first event is empty
+   if (fMsdClusDisplay)
+      fMsdClusDisplay->AddHit(-1, 0, 0, 0);
+   
    // strips
    TAMSDntuCluster* pNtuClus  = (TAMSDntuCluster*)fReco->GetNtuClusterMsd();
 
@@ -1005,6 +1019,11 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
       if (prefix == "ms" && IsMsdTracking())
          fMsdTrackDisplay->ResetTracks();
    }
+
+   if (prefix == "bm" && !fDetectorStatus[kBMN]) return;
+   if (prefix == "vt" && !fDetectorStatus[kVTX]) return;
+   if (prefix == "it" && !fDetectorStatus[kITR]) return;
+   if (prefix == "ms" && !fDetectorStatus[kMSD]) return;
 
    if (!fgDisplayFlag) // do not update event display
       return;
@@ -1236,6 +1255,8 @@ void TAGbaseEventDisplay::UpdateBarElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
+   if (!fDetectorStatus[kTOF]) return;
+
    // Draw Quad
    TATWntuPoint* pNtuPoint =  fReco->GetNtuPointTw();;
    
@@ -1314,6 +1335,8 @@ void TAGbaseEventDisplay::UpdateCrystalElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
+   if (!fDetectorStatus[kCAL]) return;
+
    Float_t  x = 0.,  y = 0.,  z = 0.;
 
    // clusters
@@ -1381,6 +1404,8 @@ void TAGbaseEventDisplay::UpdateStcElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
+   if (!fDetectorStatus[kSTC]) return;
+
    //STC
    TASTntuHit* pSTntu = fReco->GetNtuHitSt();
    Int_t       nHits  = pSTntu->GetHitsN();
@@ -1419,6 +1444,8 @@ void TAGbaseEventDisplay::UpdateLayerElements()
 
    if (!fgDisplayFlag) // do not update event display
       return;
+
+   if (!fDetectorStatus[kBMN]) return;
 
    TABMntuHit* pBMntu = fReco->GetNtuHitBm();
    Int_t       nHits  = pBMntu->GetHitsN();

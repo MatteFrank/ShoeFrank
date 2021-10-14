@@ -102,48 +102,52 @@ bool TAGbaseWDparTime::FromFile(TString tcal_filename, TString cfd_filename)
 
  fclose(stream);
  
- 
- //get cfd parameters for each detectors
- stream = fopen(cfd_filename.Data(), "r");
- if(stream==NULL){
-   return false;
- }else{
-   Info("FromFile()", "Open file %s for cfd algorithm selection\n", cfd_filename.Data());
- }
-  char line[100];
-  while(fgets(line,sizeof(line),stream)!=NULL){
-    if(line[0]=='!'){
-      //skip
-    }else{
-      char det[100],algo[100];
-      double frac, del; 
-      sscanf(line, "%s %s", det, algo);
-      printf("line::%s\n", line);
-      if(strcmp(algo,"hwCFD")==0){
-	sscanf(line, "%s %s %lf %lf", det, algo,&frac,&del);
-	cfdalgo[string(det)] = string(algo); 
-	cfdfrac[string(det)] = frac;
-	cfddel[string(det)] = del;
-	cout << "detector::" << det << "   CFDalgo::" << algo << "   frac::" << frac << "   del::" << del << endl;
-      }else if(strcmp(algo,"simpleCFD")==0){
-	sscanf(line, "%s %s %lf %lf", det, algo,&frac,&del);
-	cfdalgo[string(det)] = string(algo); 
-	cfdfrac[string(det)] = frac;
-	cfddel[string(det)] = 0;
-	cout << "detector::" << det << "   CFDalgo::" << algo << "   frac::" << frac << endl;
+   
+   //get cfd parameters for each detectors
+   stream = fopen(cfd_filename.Data(), "r");
+   if(stream==NULL){
+      return false;
+   }else{
+      Info("FromFile()", "Open file %s for cfd algorithm selection\n", cfd_filename.Data());
+   }
+   char line[100];
+   while(fgets(line,sizeof(line),stream)!=NULL){
+      if(line[0]=='!'){
+         //skip
       }else{
-	cfdalgo[string(det)] = "simpleCFD"; 
-	cfdfrac[string(det)] = 0.3;
-	cfddel[string(det)] = 0;
-	cout << "detector::" << det << "   CFDalgo::" << algo << "   frac::" << frac << endl;
+         char det[100],algo[100];
+         double frac, del;
+         sscanf(line, "%s %s", det, algo);
+         if(FootDebugLevel(1))
+            printf("line::%s\n", line);
+         if(strcmp(algo,"hwCFD")==0){
+            sscanf(line, "%s %s %lf %lf", det, algo,&frac,&del);
+            cfdalgo[string(det)] = string(algo);
+            cfdfrac[string(det)] = frac;
+            cfddel[string(det)] = del;
+            if(FootDebugLevel(1))
+               cout << "detector::" << det << "   CFDalgo::" << algo << "   frac::" << frac << "   del::" << del << endl;
+         }else if(strcmp(algo,"simpleCFD")==0){
+            sscanf(line, "%s %s %lf %lf", det, algo,&frac,&del);
+            cfdalgo[string(det)] = string(algo);
+            cfdfrac[string(det)] = frac;
+            cfddel[string(det)] = 0;
+            if(FootDebugLevel(1))
+               cout << "detector::" << det << "   CFDalgo::" << algo << "   frac::" << frac << endl;
+         }else{
+            cfdalgo[string(det)] = "simpleCFD";
+            cfdfrac[string(det)] = 0.3;
+            cfddel[string(det)] = 0;
+            if(FootDebugLevel(1))
+               cout << "detector::" << det << "   CFDalgo::" << algo << "   frac::" << frac << endl;
+         }
       }
-    }
-  }
-  
-  fclose(stream);
-  
-
-  return true;
+   }
+   
+   fclose(stream);
+   
+   
+   return true;
   
 }
 

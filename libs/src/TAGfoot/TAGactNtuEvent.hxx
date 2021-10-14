@@ -26,7 +26,6 @@ public:
 protected:
   TAGdataDsc*     fpDatDaq;		    // input data dsc
   TAGdataDsc*     fpNtuEvt;         // output data dsc
-  //TAGdataDsc*     fpWDtrigInfo;
   
   ClassDef(TAGactNtuEvent,1)
 };

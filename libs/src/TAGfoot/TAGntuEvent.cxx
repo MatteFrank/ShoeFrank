@@ -24,7 +24,7 @@ TAGntuEvent::TAGntuEvent()
   fTriggerID(-1)  
 {
 
-  cout << "NMAXTRIG::" << NMAXTRIG << endl;
+ // cout << "NMAXTRIG::" << NMAXTRIG << endl;
   
   for(int i=0;i<NMAXTRIG;i++)fTriggersStatus[i]=0;
 }
