@@ -840,6 +840,9 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
    // known bug if first event is empty
    if (fVtxClusDisplay)
       fVtxClusDisplay->AddHit(-1, 0, 0, 0);
+
+   if (fItClusDisplay)
+      fItClusDisplay->AddHit(-1, 0, 0, 0);
    
    Int_t nPlanes = parGeo->GetSensorsN();
 
@@ -931,6 +934,10 @@ void TAGbaseEventDisplay::UpdateStripElements()
    TVector3 epi  = parGeo->GetEpiSize();
    Int_t nPlanes = parGeo->GetSensorsN();
 
+   // known bug if first event is empty
+   if (fMsdClusDisplay)
+      fMsdClusDisplay->AddHit(-1, 0, 0, 0);
+   
    // strips
    TAMSDntuCluster* pNtuClus  = (TAMSDntuCluster*)fReco->GetNtuClusterMsd();
 
