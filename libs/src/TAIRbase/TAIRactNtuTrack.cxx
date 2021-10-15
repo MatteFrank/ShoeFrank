@@ -292,7 +292,7 @@ void TAIRactNtuTrack::FillHistogramm(TAVTbaseTrack* track)
 
    fpHisTrackClus->Fill(track->GetClustersN());
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
-      TAVTbaseCluster * cluster = track->GetCluster(i);
+      TAIRcluster * cluster = (TAIRcluster*)track->GetCluster(i);
       cluster->SetFound();
       Int_t idx = cluster->GetSensorIdx();
       fpHisClusSensor->Fill(idx+1);

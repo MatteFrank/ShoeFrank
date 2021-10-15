@@ -241,11 +241,13 @@ Bool_t TATWactNtuHit::Action() {
 	
 	TATWrawHit* hita = PMap[boardid][channelA];
 	TATWrawHit* hitb = PMap[boardid][channelB];
+
 	
 	// if one of the channels was not acquired
 	// not present, do not create the Hit
 	if (hita!=nullptr && hitb!=nullptr )
 	  {
+
 
 	    // this to be consistent with the the bar id of TATWdetector.geo [barId=0-19]
 	    Int_t ShoeBarId = (BarId)%nSlatsPerLayer;
@@ -339,9 +341,9 @@ Bool_t TATWactNtuHit::Action() {
 	    }
 	  }
       } 
-    } 
+    }
     
-  
+
   fpNtuRaw->SetBit(kValid);
 
   return kTRUE;

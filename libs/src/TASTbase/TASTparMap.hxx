@@ -47,7 +47,7 @@ class TASTparMap : public TAGpara {
    vector<int> TDchaID;
    vector<int> TDboaID;
 
-    map<pair<int,int>, double> reso;
+  map<pair<int,int>, double> reso;
 
 };
 

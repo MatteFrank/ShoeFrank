@@ -63,7 +63,20 @@ void TAVTactBaseNtuTrack::CreateHistogram()
    TAVTactBaseTrack::CreateHistogram();
    
    TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
-
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisPixel[i] = new TH1F(Form("%sTrackedClusPix%d", fPrefix.Data(), i+1), Form("%s - # pixels per tracked clusters of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
+      AddHistogram(fpHisPixel[i]);
+   }
+   
+   fpHisPixelTot = new TH1F(Form("%sTrackedClusPixTot", fPrefix.Data()), Form("%s - Total # pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
+   AddHistogram(fpHisPixelTot);
+   
+   fpHisClusLeftPix = new TH2F(Form("%sClusLeftPix", fPrefix.Data()), Form("%s - Number of pixels for left clusters vs sensor", fTitleDev.Data()),
+                               10, 0, 9, 50, 1, 50);
+   fpHisClusLeftPix->SetStats(kFALSE);
+   AddHistogram(fpHisClusLeftPix);
+   
    // TG
    fpHiVtxTgResX = new TH1F(Form("%sTgResX", fPrefix.Data()), Form("%s - Resolution at target in X", fTitleDev.Data()), 500, -0.02, 0.02);
    AddHistogram(fpHiVtxTgResX);
@@ -87,6 +100,8 @@ void TAVTactBaseNtuTrack::CreateHistogram()
    fpHisBmChi2 = new TH1F(Form("%sbmChi2", fPrefix.Data()), Form("%s - BM Chi2 of tracks", fTitleDev.Data()), 200, 0, 1000);
    AddHistogram(fpHisBmChi2);
    
+   fpHisClusLeft = new TH1F(Form("%sClusLeft", fPrefix.Data()), Form("%s - Clusters left per sensor", fTitleDev.Data()), 8, 1, 8);
+   AddHistogram(fpHisClusLeft);
    
    SetValidHistogram(kTRUE);
    return;
@@ -291,6 +306,91 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
    return true;
 }
 
+
+//_____________________________________________________________________________
+//
+void TAVTactBaseNtuTrack::SetChargeProba()
+{
+   if (fpCalib == 0x0) return;
+   TAVTbaseParCal* pCalib   = (TAVTbaseParCal*) fpCalib->Object();
+   
+   Int_t nTrack = GetTracksN();
+   if (nTrack == 0) return;
+   
+   for (Int_t iTrack = 0; iTrack < nTrack; ++iTrack) {
+      
+      Int_t nPixelsTot = 0;
+      Float_t nPixelsMean;
+      TAVTbaseTrack* track = GetTrack(iTrack);
+      Int_t nClus = track->GetClustersN();
+      
+      for (Int_t i=0;i<nClus;i++) {
+         TAVTcluster* clus = (TAVTcluster*)track->GetCluster(i);
+         nPixelsTot += clus->GetPixelsN();
+      }
+      nPixelsMean = nPixelsTot/nClus;
+      const TArrayF* proba =  pCalib->GetChargeProba(nPixelsMean);
+      track->SetChargeProba(proba);
+      track->SetChargeMaxProba(pCalib->GetChargeMaxProba());
+      track->SetChargeWithMaxProba(pCalib->GetChargeWithMaxProba());
+      
+      proba =  pCalib->GetChargeProbaNorm(nPixelsMean);
+      track->SetChargeProbaNorm(proba);
+      track->SetChargeMaxProbaNorm(pCalib->GetChargeMaxProbaNorm());
+      track->SetChargeWithMaxProbaNorm(pCalib->GetChargeWithMaxProbaNorm());
+   }
+}
+
+//_____________________________________________________________________________
+//
+void TAVTactBaseNtuTrack::FillHistogramm(TAVTbaseTrack* track)
+{
+   TAVTactBaseTrack::FillHistogramm(track);
+
+   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*)fpGeoMap->Object();
+   
+   fpHisTrackClus->Fill(track->GetClustersN());
+   for (Int_t i = 0; i < track->GetClustersN(); ++i) {
+      TAVTcluster* cluster = (TAVTcluster*)track->GetCluster(i);
+      Int_t idx = cluster->GetSensorIdx();
+      fpHisPixelTot->Fill(cluster->GetPixelsN());
+      fpHisPixel[idx]->Fill(cluster->GetPixelsN());
+   }
+}
+
+//_____________________________________________________________________________
+//
+void TAVTactBaseNtuTrack::FillHistogramm()
+{
+   TAVTbaseParGeo* pGeoMap   = (TAVTbaseParGeo*) fpGeoMap->Object();
+   TAVTntuCluster* pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
+   TAVTntuTrack*   pNtuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
+   
+   fpHisTrackEvt->Fill(pNtuTrack->GetTracksN());
+   if (pNtuTrack->GetTracksN() == 0)
+      fpHisClusSensor->Fill(0);
+   
+   for (Int_t iPlane = 0; iPlane < pGeoMap->GetSensorsN(); ++iPlane) {
+      
+      TClonesArray* list = pNtuClus->GetListOfClusters(iPlane);
+      Int_t nClusters = pNtuClus->GetClustersN(iPlane);
+      if ( nClusters == 0) continue;
+      
+      Int_t left = 0;
+      for( Int_t iClus = 0; iClus < nClusters; ++iClus) {
+         
+         TAVTcluster* cluster = (TAVTcluster*)list->At(iClus);
+         if (!cluster->Found()) {
+            fpHisClusLeftPix->Fill(iPlane+1, cluster->GetPixelsN());
+            left++;
+         }
+      }
+      static Float_t mean[36];
+      Int_t evtNumber = gTAGroot->CurrentEventNumber();
+      mean[iPlane] = evtNumber/(evtNumber+1.)*mean[iPlane] + 1./(evtNumber+1.)*(left/nClusters);
+      fpHisClusLeft->SetBinContent(iPlane+1, mean[iPlane]*100);
+   }
+}
 
 //_____________________________________________________________________________
 //  
