@@ -66,7 +66,7 @@ private:
    TAGdataDsc*           fpNtuEvt;    // input data dsc
    TAGdataDsc*           fpDatRawMsd;    // input data dsc
    TAGactWDreader*       fActWdRaw;  // action for WD decoding
-  
+   TAGdataDsc*           fpNtuWDtrigInfo; //contains the WD trigger info   
    TAGactNtuEvent*       fActNtuEvt; // action for trigger event
 
    TASTactNtuHit*        fActNtuHitSt;  // action for ntu data

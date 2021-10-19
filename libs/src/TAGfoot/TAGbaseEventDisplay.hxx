@@ -123,6 +123,13 @@ public:
    //! Disable/Enable ITR tracking
    static void DisableItrTracking() { BaseReco::DisableItrTracking();   }
    static void EnableItrTracking()  { BaseReco::EnableItrTracking();    }
+   
+   // MSD tracking flag
+   static Bool_t IsMsdTracking()    { return BaseReco::IsMsdTracking(); }
+   
+   //! Disable/Enable MSD tracking
+   static void DisableMsdTracking() { BaseReco::DisableMsdTracking();   }
+   static void EnableMsdTracking()  { BaseReco::EnableMsdTracking();    }
 
 protected:
    BaseReco*       fReco;    // local reco
@@ -138,6 +145,7 @@ protected:
 
    TAEDcluster*    fMsdClusDisplay;  // list of strip to display hits
    TAEDcluster*    fMsdPointDisplay;  // list of strip to display hits
+   TAEDtrack*      fMsdTrackDisplay; // list of line to display tracks
 
    TAEDcluster*    fTwClusDisplay;  // list of quad to display hits
    
@@ -168,7 +176,7 @@ protected:
    static Bool_t         fgStdAloneFlag;    // flag for standalone DAQ
    static TString        fgVtxTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory and "Hough" Hough transformation)
    static Bool_t         fgBmSelectHit;     // flag BM selected hit
-   static Bool_t         fgItrTrackFlag;    // flag for ITR tracking
+   static Bool_t         fgMsdsTrackFlag;    // flag for MSD tracking
    static Bool_t         fgM28ClusMtFlag;    // flag for MT clustering
 
    ClassDef(TAGbaseEventDisplay, 1); // Base class for event display

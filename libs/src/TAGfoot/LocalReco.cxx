@@ -12,7 +12,7 @@
 #include "TATWntuRaw.hxx"
 #include "TATWntuHit.hxx"
 #include "TACAntuHit.hxx"
-
+#include "TAGWDtrigInfo.hxx"
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
 #include "TAMSDntuRaw.hxx"
@@ -28,6 +28,7 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fpDaqEvent(0x0),
    fpNtuEvt(0x0),
    fActWdRaw(0x0),
+   fpNtuWDtrigInfo(0x0),
    fActDatRawBm(0x0),
    fActNtuHitBm(0x0),
    fActNtuHitVtx(0x0),
@@ -62,8 +63,9 @@ void LocalReco::CreateRawAction()
       fpDatRawSt   = new TAGdataDsc("stDat", new TASTntuRaw());
       fpDatRawTw   = new TAGdataDsc("twdDat", new TATWntuRaw());
       fpDatRawCa   = new TAGdataDsc("caDat", new TACAntuRaw());
+      fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAGWDtrigInfo());
 
-      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpParMapWD, fpParTimeWD);
+      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD, fpParTimeWD);
       if (fFlagHisto)
          fActWdRaw->CreateHistogram();
    }
@@ -310,6 +312,7 @@ void LocalReco::SetTreeBranches()
        fActEvtWriter->SetupElementBranch(fpDatRawSt, TASTntuRaw::GetBranchName());
      }
      fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuWDtrigInfo, TAGWDtrigInfo::GetBranchName());
    }
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {

@@ -52,6 +52,7 @@
 #include "TAITntuTrack.hxx"
 #include "TAMSDntuHit.hxx"
 #include "TAMSDntuPoint.hxx"
+#include "TAMSDntuTrack.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
@@ -71,9 +72,13 @@
 #include "TATWactCalibTW.hxx"
 
 #include "TABMactNtuTrack.hxx"
-#include "TAVTactBaseNtuTrack.hxx"
+#include "TAVTactNtuTrack.hxx"
+#include "TAVTactNtuTrackF.hxx"
 #include "TAITactNtuTrack.hxx"
 #include "TAITactNtuTrackF.hxx"
+#include "TAMSDactNtuTrack.hxx"
+#include "TAMSDactNtuTrackF.hxx"
+
 #include "TAVTactNtuVertex.hxx"
 
 #include "TAGactNtuGlbTrackS.hxx"
@@ -232,6 +237,7 @@ public:
 
    TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
    TAMSDntuPoint*       GetNtuPointMsd()    const { return (TAMSDntuPoint*)fpNtuRecMsd->Object();    }
+   TAMSDntuTrack*       GetNtuTrackMsd()    const { return (TAMSDntuTrack*)fpNtuTrackMsd->Object();  }
 
    TATWntuHit*          GetNtuHitTw()       const { return (TATWntuHit*) fpNtuHitTw->Object();       }
    TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
@@ -262,6 +268,11 @@ public:
    static void DisableItrTracking() { fgItrTrackFlag = false; }
    static void EnableItrTracking()  { fgItrTrackFlag = true;  }
    static Bool_t IsItrTracking()    { return fgItrTrackFlag;  }
+   
+   //! Disable/Enable MSD tracking
+   static void DisableMsdTracking() { fgMsdTrackFlag = false; }
+   static void EnableMsdTracking()  { fgMsdTrackFlag = true;  }
+   static Bool_t IsMsdTracking()    { return fgMsdTrackFlag;  }
    
 protected:
    TString               fExpName;
@@ -337,6 +348,7 @@ protected:
    TAGdataDsc*           fpNtuTrackBm;  // input track data dsc
    TAGdataDsc*           fpNtuTrackVtx;  // input track data dsc
    TAGdataDsc*           fpNtuTrackIt;  // input track data dsc
+   TAGdataDsc*           fpNtuTrackMsd;  // input track data dsc
    TAGdataDsc*           fpNtuVtx;        // input Vtx data dsc
 
    TAGdataDsc*           fpNtuGlbTrack;     // input data dsc
@@ -357,6 +369,7 @@ protected:
 
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
    TAMSDactNtuPoint*     fActPointMsd;   // action for point in MSD
+   TAMSDactBaseNtuTrack* fActTrackMsd;   // action for track in MSD
 
    TATWactNtuPoint*      fActPointTw;    // action for clusters
    TATWactCalibTW*       fActCalibTw;
@@ -400,6 +413,7 @@ protected:
 
 protected:
    static Bool_t fgItrTrackFlag;
+   static Bool_t fgMsdTrackFlag;
 
    ClassDef(BaseReco, 1); // Base class for event display
 };

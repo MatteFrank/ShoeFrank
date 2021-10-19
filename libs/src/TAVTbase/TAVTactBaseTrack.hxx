@@ -64,8 +64,6 @@ protected:
    virtual Int_t          GetTracksN()                const    { return -1;                   }
 
    void   FillHistogramm(TAVTbaseTrack* track);
-   void   FillHistogramm();
-   void   SetChargeProba();
    void   UpdateParam(TAVTbaseTrack* track);
    Bool_t AppyCuts(TAVTbaseTrack* track) ;
    
@@ -85,26 +83,22 @@ protected:
    TGraphErrors*   fGraphU;             // pointer to graph for fit in U
    TGraphErrors*   fGraphV;             // pointer to graph for fit in V
       
-   TH1F*           fpHisPixelTot;		 // Total number of pixels per tracked cluster
-   TH1F*           fpHisPixel[36];		 // Total number of pixels per tracked cluster for each sensor
-   TH2F*           fpHisTrackMap[36];   // track map per sensor
    TH1F*           fpHisResX[36];       // Residual in X
    TH1F*           fpHisResY[36];       // Residual in Y
    TH1F*           fpHisResTotX;        // Total Residual in X
    TH1F*           fpHisResTotY;        // Total Residual in Y
+   TH2F*           fpHisTrackMap[36];   // track map per sensor
+   TH1F*           fpHisMeanCharge;     // Mwean Charge per tracked cluster
+   TH1F*           fpHisMeanPixel;      // Mean number of pixels per tracked cluster
+   TH2F*           fpHisBeamProf;       // VTX Beam profile extrapolated to target
    TH1F*           fpHisChi2TotX;       // Total Chi2 in X direction
    TH1F*           fpHisChi2TotY;       // Total Chi2 in Y direction
    TH1F*           fpHisTrackEvt;       // number of track per event
    TH1F*           fpHisTrackClus;      // number of clusters per track
    TH1F*           fpHisClusSensor;     // number of tracked clusters per sensor
-   TH1F*           fpHisClusLeft;       // number of clusters left (not tracked)
-   TH2F*           fpHisClusLeftPix;    // number of clusters left (not tracked) vs # pixels
    TH1F*           fpHisTheta;          // Polar angular distribution
    TH1F*           fpHisPhi;            // Azimutal angular distribution
-   TH1F*           fpHisMeanPixel;      // Mean number of pixels per tracked cluster
-   TH1F*           fpHisMeanCharge;     // Mwean Charge per tracked cluster
-   TH2F*           fpHisBeamProf;       // VTX Beam profile extrapolated to target
-   
+  
    TString         fPrefix;             // prefix of histogram
    TString         fTitleDev;           // device name for histogram title
 

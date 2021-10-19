@@ -317,6 +317,9 @@ Bool_t TABMactNtuTrack::Action()
     ++fTrackNum;
   }while(fTrackNum<20);
 
+  if(p_bmcon->GetInvertTrack())
+    InvertTracks(ytracktr, p_bmcon->GetInvertTrack());
+
   CombineTrack(ytracktr, xtracktr, p_ntutrk);
 
   if (ValidHistogram()){
@@ -672,6 +675,31 @@ Bool_t TABMactNtuTrack::ComputeDataAll(){
       cout<<"TABMactNtuTrack::ComputeDataAll finished: track has been reconstructed,  chi2red="<<chi2red/(nselhit-2.)<<"  fNowView="<<fNowView<<endl;
 
   return kFALSE;
+}
+
+//invert the direction and the position of the ytracktr track parameters
+void TABMactNtuTrack::InvertTracks(vector<TABMtrack> &tracktrvec, Int_t InvertView){
+
+  if (FootDebugLevel(2))
+    cout<<"TABMactNtuTrack::InvertTracks: start; Number of tracks="<<tracktrvec.size()<<"  InvertView="<<InvertView<<endl;
+
+  if(InvertView==2 || InvertView==3){
+    for(Int_t i=0;i<tracktrvec.size();i++){
+      tracktrvec.at(i).SetOriginY(-tracktrvec.at(i).GetOrigin().Y());
+      tracktrvec.at(i).SetSlopeY(-tracktrvec.at(i).GetSlope().Y());
+    }
+  }
+  if(InvertView==1 || InvertView==3){
+    for(Int_t i=0;i<tracktrvec.size();i++){
+      tracktrvec.at(i).SetOriginX(-tracktrvec.at(i).GetOrigin().X());
+      tracktrvec.at(i).SetSlopeX(-tracktrvec.at(i).GetSlope().X());
+    }
+  }
+
+  if (FootDebugLevel(2))
+    cout<<"TABMactNtuTrack::InvertTracks:done"<<endl;
+
+  return;
 }
 
 //combine the tracks reconstructed for each view

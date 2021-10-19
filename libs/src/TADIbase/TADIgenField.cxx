@@ -30,7 +30,7 @@ void TADIgenField::get(const double& posX, const double& posY, const double& pos
    TVector3 pos(posX, posY, posZ);
    TVector3 outField(0, 0, 0);
    
-   outField = fField->GetField(pos)*TAGgeoTrafo::GausToTesla()*10; //GENFIT expects kGauss
+   outField = fField->GetField(pos)*TAGgeoTrafo::GausToKGaus(); //GENFIT expects kGauss
    
    Bx = outField.X();
    By = outField.Y();
@@ -40,7 +40,7 @@ void TADIgenField::get(const double& posX, const double& posY, const double& pos
 //______________________________________________________________________________
 TVector3 TADIgenField::get(const TVector3& position) const
 {
-  return fField->GetField(position)*TAGgeoTrafo::GausToTesla()*10; //GENFIT expects kGauss
+  return fField->GetField(position)*TAGgeoTrafo::GausToKGaus(); //GENFIT expects kGauss
 }
 
 

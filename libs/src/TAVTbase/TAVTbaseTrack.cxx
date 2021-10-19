@@ -50,6 +50,8 @@ TAVTbaseTrack::TAVTbaseTrack()
 :  TAGobject(),
    fOrigin(new TVector3()),
    fSlope(new TVector3()),
+   fOriginErr(new TVector3()),
+   fSlopeErr(new TVector3()),
    fLength(0.0),
    fPileup(kFALSE),
    fType(0),
@@ -78,6 +80,8 @@ TAVTbaseTrack::TAVTbaseTrack(const TAVTbaseTrack& aTrack)
 :  TAGobject(aTrack),
    fOrigin(new TVector3(*aTrack.fOrigin)),
    fSlope(new TVector3(*aTrack.fSlope)),
+   fOriginErr(new TVector3(*aTrack.fOriginErr)),
+   fSlopeErr(new TVector3(*aTrack.fSlopeErr)),
    fLength(aTrack.fLength),
    fPileup(aTrack.fPileup),
    fType(aTrack.GetType()),
@@ -106,6 +110,8 @@ TAVTbaseTrack::~TAVTbaseTrack()
 {
    delete fOrigin;
    delete fSlope;
+   delete fOriginErr;
+   delete fSlopeErr;
    delete fListOfClusters;
    delete fChargeProba;
    delete fChargeProbaNorm;
@@ -138,6 +144,13 @@ void TAVTbaseTrack::SetValue(const TVector3& aOrigin, const TVector3& aSlope, co
    *fOrigin = aOrigin;
    *fSlope  = aSlope;
    fLength  = aLength;
+}
+//______________________________________________________________________________
+//
+void TAVTbaseTrack::SetErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr)
+{
+   *fOriginErr = aOriginErr;
+   *fSlopeErr  = aSlopeErr;
 }
 
 //______________________________________________________________________________
@@ -198,6 +211,12 @@ void TAVTbaseTrack::SetLineValue(const TVector3& aOrigin, const TVector3& aSlope
    SetValue(aOrigin, aSlope, aLength);
 }
 
+//______________________________________________________________________________
+//
+void TAVTbaseTrack::SetLineErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr)
+{
+   SetErrorValue(aOriginErr, aSlopeErr);
+}
 //______________________________________________________________________________
 //  
 TVector3 TAVTbaseTrack::Intersection(Float_t posZ) const

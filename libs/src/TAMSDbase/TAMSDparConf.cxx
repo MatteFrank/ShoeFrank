@@ -44,7 +44,15 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
       nameExp = name;
    
    if (!Open(nameExp)) return false;
-      
+   
+   ReadItem(fAnalysisParameter.PlanesForTrackMinimum);
+   if(FootDebugLevel(1))
+      cout << "Minimum number of plane for tracking: "<< fAnalysisParameter.PlanesForTrackMinimum << endl;
+   
+   ReadItem(fAnalysisParameter.SearchHitDistance);
+   if(FootDebugLevel(1))
+      cout << "Maximum distance between cluster and corresponding track: "<< fAnalysisParameter.SearchHitDistance << endl;
+   
    ReadItem(fSensorsN);
    if(FootDebugLevel(1))
       cout << endl << "Reading Parameters for "<< fSensorsN << " Sensors" << endl;

@@ -29,7 +29,7 @@ public:
   virtual double ComputePedestal( TWaveformContainer *w);
   virtual double ComputeBaseline( TWaveformContainer *w);
   
-  TATWrawHit( TWaveformContainer *w);
+  TATWrawHit( TWaveformContainer *w,  string algo, double frac, double del);
 
   ClassDef(TATWrawHit,2);
   //
@@ -45,7 +45,7 @@ public:
   Int_t             GetHitsN() const;
   TATWrawHit*       GetHit(Int_t i_ind);
   const TATWrawHit* GetHit(Int_t i_ind) const;
-  void              NewHit(TWaveformContainer *w);
+  void              NewHit(TWaveformContainer *w,  string algo, double frac, double del);
 
 
   virtual void    Clear(Option_t* opt="");

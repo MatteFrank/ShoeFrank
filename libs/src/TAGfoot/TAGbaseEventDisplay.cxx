@@ -26,6 +26,9 @@
 #include "TAVTntuCluster.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
+#include "TAMSDntuPoint.hxx"
+#include "TAMSDntuTrack.hxx"
+#include "TAMSDtrack.hxx"
 
 #include "TAVTtrack.hxx"
 #include "TAVTntuTrack.hxx"
@@ -55,6 +58,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    fItTrackDisplay(0x0),
    fMsdClusDisplay(0x0),
    fMsdPointDisplay(0x0),
+   fMsdTrackDisplay(0x0),
    fTwClusDisplay(0x0),
    fCaClusDisplay(0x0),
    fGlbTrackDisplay(0x0),
@@ -64,6 +68,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    // Par instance
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
    
    fFlagTrack = TAGrecoManager::GetPar()->IsTracking();
      
@@ -133,6 +138,14 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
       fMsdPointDisplay->SetDefWidth(fQuadDefWidth*4);
       fMsdPointDisplay->SetDefHeight(fQuadDefHeight*4);
       fMsdPointDisplay->SetPickable(true);
+      
+      if (IsMsdTracking()) {
+         fMsdTrackDisplay = new TAEDtrack("Micro Strip Track");
+         fMsdTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+         fMsdTrackDisplay->SetDefWidth(fBoxDefWidth);
+         fMsdTrackDisplay->SetDefHeight(fBoxDefHeight);
+         fMsdTrackDisplay->SetPickable(true);
+      }
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
@@ -179,13 +192,13 @@ TAGbaseEventDisplay::~TAGbaseEventDisplay()
    if (fVtxClusDisplay)       delete fVtxClusDisplay;
    if (fVtxTrackDisplay)      delete fVtxTrackDisplay;
    if (fItClusDisplay)        delete fItClusDisplay;
+   if (fItTrackDisplay)       delete fItTrackDisplay;
    if (fMsdClusDisplay)       delete fMsdClusDisplay;
    if (fMsdPointDisplay)      delete fMsdPointDisplay;
+   if (fMsdTrackDisplay)      delete fMsdTrackDisplay;
    if (fTwClusDisplay)        delete fTwClusDisplay;
    if (fCaClusDisplay)        delete fCaClusDisplay;
    if (fGlbTrackDisplay)      delete fGlbTrackDisplay;
-   if (fIrTrackDisplay)       delete fIrTrackDisplay;
-   if (fItTrackDisplay)       delete fItTrackDisplay;
 
    delete fReco;
 }
@@ -389,6 +402,11 @@ void TAGbaseEventDisplay::AddElements()
       
       fMsdPointDisplay->ResetHits();
       gEve->AddElement(fMsdPointDisplay);
+      
+      if (IsMsdTracking()) {
+         fMsdTrackDisplay->ResetTracks();
+         gEve->AddElement(fMsdTrackDisplay);
+      }
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
@@ -453,6 +471,11 @@ void TAGbaseEventDisplay::ConnectElements()
       
       fMsdPointDisplay->SetEmitSignals(true);
       fMsdPointDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
+      
+      if (IsMsdTracking()) {
+         fMsdTrackDisplay->SetEmitSignals(true);
+         fMsdTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
+      }
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
@@ -602,16 +625,16 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       }
 
       for (Int_t i = 0; i < track->GetClustersN(); i++) {
-         TAVTbaseCluster* clus = track->GetCluster(i);
+         TAGcluster* clus = track->GetCluster(i);
          TVector3 posG = clus->GetPositionG();
          fInfoView->AddLine( Form(" for plane %d\n", clus->GetSensorIdx()));
          fInfoView->AddLine( Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y()) );
-         fInfoView->AddLine( Form(" with %d pixels\n", clus->GetPixelsN()));
+         fInfoView->AddLine( Form(" with %d pixels\n", clus->GetElementsN()));
 
          if (fConsoleButton->IsOn()) {
             cout <<  Form(" for plane %d\n", clus->GetSensorIdx());
             cout <<  Form(" at position: (%.3g %.3g) \n", posG.X(), posG.Y());
-            cout <<  Form(" with %d pixels\n", clus->GetPixelsN());
+            cout <<  Form(" with %d pixels\n", clus->GetElementsN());
          }
       }
 
@@ -701,6 +724,7 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveStraightLineSet* ts, Int_t idx)
 //__________________________________________________________
 void TAGbaseEventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
 {
+    if (!fDetectorStatus[kBMN]) return;
     TEveBoxSet* tpCircle = dynamic_cast<TEveBoxSet*>(qs);
 
     TABMhit* hit = dynamic_cast<TABMhit*>( tpCircle->GetId(idx) );
@@ -774,6 +798,8 @@ void TAGbaseEventDisplay::UpdateElements(const TString prefix)
          UpdateTrackElements(prefix);
    } else if (prefix == "ms") {
       UpdateStripElements();
+      if (fFlagTrack)
+         UpdateTrackElements(prefix);
    } else {
       UpdateQuadElements(prefix);
       if (fFlagTrack)
@@ -796,6 +822,9 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
    if (!fgDisplayFlag) // do not update event display
       return;
 
+   if (prefix == "vt" && !fDetectorStatus[kVTX]) return;
+   if (prefix == "it" && !fDetectorStatus[kITR]) return;
+   
    Float_t  x = 0.,  y = 0.,  z = 0.;
    Float_t x1 = 0.,  y1 =0., z1 = 0.;
 
@@ -805,10 +834,15 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
       parGeo = fReco->GetParGeoVtx();
    else if (prefix == "it")
       parGeo = fReco->GetParGeoIt();
+   else
+      return;
 
    // known bug if first event is empty
    if (fVtxClusDisplay)
       fVtxClusDisplay->AddHit(-1, 0, 0, 0);
+
+   if (fItClusDisplay)
+      fItClusDisplay->AddHit(-1, 0, 0, 0);
    
    Int_t nPlanes = parGeo->GetSensorsN();
 
@@ -891,6 +925,8 @@ void TAGbaseEventDisplay::UpdateStripElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
+   if (!fDetectorStatus[kMSD]) return;
+
    Float_t  x = 0.,  y = 0.,  z = 0.;
 
    TAMSDparGeo* parGeo = fReco->GetParGeoMsd();
@@ -898,6 +934,10 @@ void TAGbaseEventDisplay::UpdateStripElements()
    TVector3 epi  = parGeo->GetEpiSize();
    Int_t nPlanes = parGeo->GetSensorsN();
 
+   // known bug if first event is empty
+   if (fMsdClusDisplay)
+      fMsdClusDisplay->AddHit(-1, 0, 0, 0);
+   
    // strips
    TAMSDntuCluster* pNtuClus  = (TAMSDntuCluster*)fReco->GetNtuClusterMsd();
 
@@ -975,7 +1015,15 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
 
       if (prefix == "it" && IsItrTracking())
          fItTrackDisplay->ResetTracks();
+      
+      if (prefix == "ms" && IsMsdTracking())
+         fMsdTrackDisplay->ResetTracks();
    }
+
+   if (prefix == "bm" && !fDetectorStatus[kBMN]) return;
+   if (prefix == "vt" && !fDetectorStatus[kVTX]) return;
+   if (prefix == "it" && !fDetectorStatus[kITR]) return;
+   if (prefix == "ms" && !fDetectorStatus[kMSD]) return;
 
    if (!fgDisplayFlag) // do not update event display
       return;
@@ -1069,6 +1117,45 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
       fItTrackDisplay->RefitPlex();
    }
 
+   if (prefix == "ms" && !fIrFlag && IsMsdTracking()) {
+      TAMSDparGeo*  parGeo   = fReco->GetParGeoMsd();
+      Int_t nPlanes         = parGeo->GetSensorsN();
+      Float_t posfirstPlane = parGeo->GetSensorPosition(0)[2]*1.1;
+      Float_t posLastPlane  = parGeo->GetSensorPosition(nPlanes-1)[2]*1.1;
+
+      TAMSDntuTrack* pNtuTrack = fReco->GetNtuTrackMsd();
+
+      for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
+         fMsdTrackDisplay->AddNewTrack();
+
+         TAMSDtrack* track = pNtuTrack->GetTrack(iTrack);
+         TVector3 pos;
+         TVector3 posG;
+
+         if (TAGrecoManager::GetPar()->IncludeTG() ) {
+            Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
+            posZtg = fpFootGeo->FromGlobalToMSDLocal(TVector3(0, 0, posZtg)).Z();
+            pos = track->Intersection(posZtg);
+         } else
+            pos  = track->Intersection(posfirstPlane);
+
+         posG = fpFootGeo->FromMSDLocalToGlobal(pos);
+         x = posG(0); y = posG(1); z = posG(2);
+
+         pos  = track->Intersection(posLastPlane);
+         posG = fpFootGeo->FromMSDLocalToGlobal(pos);
+         x1 = posG(0); y1 = posG(1); z1 = posG(2);
+
+         Float_t nPix = track->GetMeanPixelsN();
+         fMsdTrackDisplay->AddTracklet(nPix*500, x, y, z, x1, y1, z1);
+         fMsdTrackDisplay->TrackId(track);
+      
+     } // end loop on tracks
+
+      fMsdTrackDisplay->RefitPlex();
+   }
+
+   
    if (prefix == "bm") {
       TABMparGeo*   parGeo    = fReco->GetParGeoBm();
       TABMntuTrack* pNtuTrack = fReco->GetNtuTrackBm();
@@ -1168,6 +1255,8 @@ void TAGbaseEventDisplay::UpdateBarElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
+   if (!fDetectorStatus[kTOF]) return;
+
    // Draw Quad
    TATWntuPoint* pNtuPoint =  fReco->GetNtuPointTw();;
    
@@ -1246,6 +1335,8 @@ void TAGbaseEventDisplay::UpdateCrystalElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
+   if (!fDetectorStatus[kCAL]) return;
+
    Float_t  x = 0.,  y = 0.,  z = 0.;
 
    // clusters
@@ -1313,6 +1404,8 @@ void TAGbaseEventDisplay::UpdateStcElements()
    if (!fgDisplayFlag) // do not update event display
       return;
 
+   if (!fDetectorStatus[kSTC]) return;
+
    //STC
    TASTntuHit* pSTntu = fReco->GetNtuHitSt();
    Int_t       nHits  = pSTntu->GetHitsN();
@@ -1351,6 +1444,8 @@ void TAGbaseEventDisplay::UpdateLayerElements()
 
    if (!fgDisplayFlag) // do not update event display
       return;
+
+   if (!fDetectorStatus[kBMN]) return;
 
    TABMntuHit* pBMntu = fReco->GetNtuHitBm();
    Int_t       nHits  = pBMntu->GetHitsN();
