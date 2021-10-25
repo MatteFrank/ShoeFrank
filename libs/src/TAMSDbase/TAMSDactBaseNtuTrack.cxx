@@ -205,7 +205,7 @@ Bool_t TAMSDactBaseNtuTrack::FindStraightTracks()
 		 
 		 // Apply cuts
 		 if (AppyCuts(track) && IsGoodCandidate(track)) {
-			track->SetNumber(pNtuTrack->GetTracksN());
+			track->SetTrackIdx(pNtuTrack->GetTracksN());
 			track->MakeChiSquare();
 			track->SetType(0);
          pNtuTrack->NewTrack(*track);

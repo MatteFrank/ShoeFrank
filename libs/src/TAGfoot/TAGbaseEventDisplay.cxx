@@ -617,10 +617,10 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
       TAGbaseTrack* track =  (TAGbaseTrack*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track # %2d (valid: %d): \n", track->GetNumber(), track->GetValidity()) );
+      fInfoView->AddLine( Form("Track # %2d (valid: %d): \n", track->GetTrackIdx(), track->GetValidity()) );
       fInfoView->AddLine( Form(" with %3d clusters\n", track->GetClustersN()) );
       if (fConsoleButton->IsOn()) {
-         cout << Form("Track # %2d (valid: %d): \n", track->GetNumber(), track->GetValidity());
+         cout << Form("Track # %2d (valid: %d): \n", track->GetTrackIdx(), track->GetValidity());
          cout << Form(" with %3d clusters\n", track->GetClustersN());
       }
 

@@ -277,7 +277,7 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 		 
 		 // Apply cuts
 		 if (AppyCuts(track)) {
-			track->SetNumber(pNtuTrack->GetTracksN());
+			track->SetTrackIdx(pNtuTrack->GetTracksN());
 			track->MakeChiSquare();
 			track->SetType(0);
          pNtuTrack->NewTrack(*track);

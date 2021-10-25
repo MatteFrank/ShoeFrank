@@ -36,13 +36,12 @@
 #include "TAMSDntuPoint.hxx"
 
 
-class TAVTntuCluster;
 class TAVTcluster;
 #include "TAVTtrack.hxx"
-#include "TAVTntuVertex.hxx"
 
+#include "TAVTntuVertex.hxx"
+#include "TAVTntuCluster.hxx"
 #include "TAITntuCluster.hxx"
-class TAITcluster;
 
 #include "TAVTparGeo.hxx"
 #include "TAITparGeo.hxx"

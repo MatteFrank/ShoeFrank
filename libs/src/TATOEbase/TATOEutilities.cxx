@@ -14,12 +14,6 @@
 
 #include "TATOEutilities.hxx"
 
-
-#include "TAVTntuVertex.hxx"
-
-
-#include "TAITntuCluster.hxx"
-
 //______________________________________________________________________________
 //                          VTX
 

@@ -277,7 +277,7 @@ Bool_t TAITactBaseNtuTrack::FindStraightTracks()
 		 
 		 // Apply cuts
 		 if (AppyCuts(track) && IsGoodCandidate(track)) {
-			track->SetNumber(pNtuTrack->GetTracksN());
+			track->SetTrackIdx(pNtuTrack->GetTracksN());
 			track->MakeChiSquare();
 			track->SetType(0);
          pNtuTrack->NewTrack(*track);
@@ -350,7 +350,7 @@ void TAITactBaseNtuTrack::FillHistogramm(TAGbaseTrack* track)
    
    fpHisTrackClus->Fill(track->GetClustersN());
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
-      TAVTcluster* cluster = (TAVTcluster*)track->GetCluster(i);
+      TAITcluster* cluster = (TAITcluster*)track->GetCluster(i);
       Int_t idx = cluster->GetSensorIdx();
       fpHisPixelTot->Fill(cluster->GetPixelsN());
       fpHisPixel[idx]->Fill(cluster->GetPixelsN());
@@ -368,7 +368,7 @@ void TAITactBaseNtuTrack::FillHistogramm(TAGbaseTrack* track)
 void TAITactBaseNtuTrack::FillHistogramm()
 {
    TAVTbaseParGeo* pGeoMap   = (TAVTbaseParGeo*) fpGeoMap->Object();
-   TAVTntuCluster* pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
+   TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpNtuClus->Object();
    TAITntuTrack*   pNtuTrack = (TAITntuTrack*)   fpNtuTrack->Object();
    
    fpHisTrackEvt->Fill(pNtuTrack->GetTracksN());
@@ -384,7 +384,7 @@ void TAITactBaseNtuTrack::FillHistogramm()
       Int_t left = 0;
       for( Int_t iClus = 0; iClus < nClusters; ++iClus) {
          
-         TAVTcluster* cluster = (TAVTcluster*)list->At(iClus);
+         TAITcluster* cluster = (TAITcluster*)list->At(iClus);
          if (!cluster->Found()) {
             fpHisClusLeftPix->Fill(iPlane+1, cluster->GetPixelsN());
             left++;

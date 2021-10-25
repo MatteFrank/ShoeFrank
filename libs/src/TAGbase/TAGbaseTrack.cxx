@@ -24,7 +24,6 @@
 #include "TMath.h"
 #include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx" 
-#include "TAVTparGeo.hxx"
 #include "TAGbaseTrack.hxx"
 
 
@@ -55,7 +54,7 @@ TAGbaseTrack::TAGbaseTrack()
    fLength(0.0),
    fPileup(kFALSE),
    fType(0),
-   fTrackNumber(-1),
+   fTrackIdx(-1),
    fChiSquare(0.),
    fChiSquareU(0.),
    fChiSquareV(0.),
@@ -84,7 +83,7 @@ TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack& aTrack)
    fLength(aTrack.fLength),
    fPileup(aTrack.fPileup),
    fType(aTrack.GetType()),
-   fTrackNumber(aTrack.GetNumber()),
+   fTrackIdx(aTrack.GetTrackIdx()),
    fChiSquare(aTrack.GetChi2()),
    fChiSquareU(aTrack.GetChi2U()),
    fChiSquareV(aTrack.GetChi2V()),

@@ -12,7 +12,7 @@
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
-#include "TAVTntuCluster.hxx"
+#include "TAGcluster.hxx"
 
 /**
  Line  is defined by its
@@ -54,7 +54,7 @@ protected:
 
    Bool_t         fPileup;                       // true if track is part of pileup events
    UInt_t         fType;                         // 0 for straight, 1 inclined, 2 for bent
-   Int_t          fTrackNumber;                  // number of the track
+   Int_t          fTrackIdx;                  // number of the track
    TClonesArray*  fListOfClusters;               // list of cluster associated to the track
    
    Float_t        fChiSquare;                    // chisquare/ndf of track fit in 2D
@@ -120,7 +120,7 @@ public:
    //! Get intersection point with plane
    TVector3       Intersection(Float_t posZ) const;
    //! Get track number
-   Int_t          GetNumber()               const { return   fTrackNumber;      }
+   Int_t          GetTrackIdx()               const { return   fTrackIdx;      }
     //! Get list of clusters
    TClonesArray*  GetListOfClusters()       const { return   fListOfClusters;   }
    //! Get number of clusters
@@ -131,7 +131,7 @@ public:
    UInt_t         GetType()                 const { return   fType;                  }
    
    //! Set track number
-   void           SetNumber(Int_t number)            { fTrackNumber = number;       }
+   void           SetTrackIdx(Int_t number)          { fTrackIdx = number;          }
    //! Set track type
    void           SetType(UInt_t type)               { fType = type;                }
    //! Set pileup flag
@@ -194,7 +194,7 @@ public:
    Int_t         GetMcTrackIdx(Int_t index)  const { return fMcTrackIdx[index];    }
    Int_t         GetMcTracksN()              const { return fMcTrackIdx.GetSize(); }
    
-   ClassDef(TAGbaseTrack,10)                      // Describes TAGbaseTrack
+   ClassDef(TAGbaseTrack,1)                      // Describes TAGbaseTrack
 };
 
 #endif

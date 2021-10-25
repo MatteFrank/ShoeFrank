@@ -51,7 +51,6 @@ set( with_dictionnaries
    TAVTactBaseClusterMT
    TAVTactBaseNtuClusterMT
    TAVTactNtuClusterMT
-   TAGbaseTrack
    TAVTtrack
    TAVTntuTrack
    TAVTactBaseTrack

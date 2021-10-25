@@ -378,12 +378,12 @@ void TAIRalignC::CreateHistogram()
    for (Int_t i = 0; i < fSecArray.GetSize(); i++) {
       iPlane = fSecArray[i];
       
-      fpResXC[i] = new TH1F(Form("ResX%dC", i+1), Form("ResidualX of sensor %d", iPlane+1), 400, -200, 200);
-      fpResYC[i] = new TH1F(Form("ResY%dC", i+1), Form("ResidualY of sensor %d", iPlane+1), 400, -200, 200);
+      fpResXC[i] = new TH1F(Form("ResX%dC", i+1), Form("ResidualX of sensor %d", iPlane+1), 600, -600, 600);
+      fpResYC[i] = new TH1F(Form("ResY%dC", i+1), Form("ResidualY of sensor %d", iPlane+1), 600, -600, 600);
    }
    
-   fpResTotXC = new TH1F("TotResXC", "Total residualX", 400, -200, 200);
-   fpResTotYC = new TH1F("TotResYC", "Total residualY", 400, -200, 200);
+   fpResTotXC = new TH1F("TotResXC", "Total residualX", 600, -600, 600);
+   fpResTotYC = new TH1F("TotResYC", "Total residualY", 600, -600, 600);
    
    return;
 }
@@ -874,12 +874,24 @@ Bool_t TAIRalignC::DefineWeights()
 // Update transfo for every loop when it changes the alignment parameters
 void TAIRalignC::UpdateTransfo(Int_t idx)
 {
-   TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMapVtx->Object();
-   Int_t       iPlane   = fSecArray[idx];
-   pGeoMap->GetSensorPar(iPlane).AlignmentU = fAlignmentU[idx];
-   pGeoMap->GetSensorPar(iPlane).AlignmentV = fAlignmentV[idx];
-   pGeoMap->GetSensorPar(iPlane).TiltW      = -fTiltW[idx];
-   
+   if (idx < 4) {
+      TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMapVtx->Object();
+      Int_t       iPlane   = fSecArray[idx];
+      pGeoMap->GetSensorPar(iPlane).AlignmentU = fAlignmentU[idx];
+      pGeoMap->GetSensorPar(iPlane).AlignmentV = fAlignmentV[idx];
+      pGeoMap->GetSensorPar(iPlane).TiltW      = -fTiltW[idx];
+   } else {
+      TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMapMsd->Object();
+      Int_t       iPlane   = fSecArray[idx];
+      if (pGeoMap->GetSensorPar(2*iPlane).TypeIdx == 0) {
+         pGeoMap->GetSensorPar(2*iPlane).AlignmentU = fAlignmentU[idx];
+         pGeoMap->GetSensorPar(2*iPlane+1).AlignmentV = fAlignmentV[idx];
+      } else {
+         pGeoMap->GetSensorPar(2*iPlane+1).AlignmentU = fAlignmentU[idx];
+         pGeoMap->GetSensorPar(2*iPlane).AlignmentV = fAlignmentV[idx];
+      }
+      pGeoMap->GetSensorPar(2*iPlane).TiltW      = -fTiltW[idx];
+   }
    return;
 }
 

@@ -151,7 +151,7 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
 
 			   // apply cut
 			   if (AppyCuts(track)) {
-				  track->SetNumber(pNtuTrack->GetTracksN());
+				  track->SetTrackIdx(pNtuTrack->GetTracksN());
 				  track->MakeChiSquare();
 				  track->SetType(1);
 				  pNtuTrack->NewTrack(*track);
