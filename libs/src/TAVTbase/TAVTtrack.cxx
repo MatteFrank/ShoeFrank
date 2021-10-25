@@ -55,8 +55,9 @@ void TAVTtrack::SetupClones()
 
 // __________________________________________________________________________
 //
-void TAVTtrack::AddCluster(TAVTcluster* cluster)
+void TAVTtrack::AddCluster(TAGcluster* clus)
 {
+  TAVTcluster* cluster = static_cast<TAVTcluster*>(clus);
    for (Int_t k = 0; k < cluster->GetMcTracksN(); ++k) {
       Int_t idx = cluster->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);

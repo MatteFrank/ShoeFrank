@@ -361,11 +361,11 @@ protected:
    TAVTactBaseNtuVertex* fActVtx;        // action for vertex
    
    TAGaction*            fActClusIt;     // action for clusters
-   TAITactBaseNtuTrack*  fActTrackIt;   // action for tracks
+   TAVTactBaseNtuTrack*  fActTrackIt;   // action for tracks
 
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
    TAMSDactNtuPoint*     fActPointMsd;   // action for point in MSD
-   TAMSDactBaseNtuTrack* fActTrackMsd;   // action for track in MSD
+   TAVTactBaseNtuTrack*  fActTrackMsd;   // action for track in MSD
 
    TATWactNtuPoint*      fActPointTw;    // action for clusters
    TATWactCalibTW*       fActCalibTw;

@@ -8,10 +8,10 @@
 /*------------------------------------------+---------------------------------*/
 
 
-#include "TAMSDactBaseNtuTrack.hxx"
+#include "TAVTactNtuTrackF.hxx"
 
 
-class TAMSDactNtuTrackF : public TAMSDactBaseNtuTrack {
+class TAMSDactNtuTrackF : public TAVTactNtuTrackF {
    
 public:
    explicit  TAMSDactNtuTrackF(const char* name      = 0,
@@ -27,9 +27,15 @@ private:
    TAGparaDsc*     fpGeoMapG;       // Global geometry para dsc
    
 private:
-   Bool_t FindTiltedTracks();
-   Bool_t IsGoodCandidate(TAMSDtrack* track);
+ //  Bool_t FindTiltedTracks();
+   Bool_t        IsGoodCandidate(TAGbaseTrack* track);
    
+   void          AddNewTrack(TAGbaseTrack* track);
+   TAGbaseTrack* NewTrack();
+   Int_t         GetTracksN();
+   
+   TAGcluster*   GetCluster(Int_t iPlane, Int_t iClus);
+   Int_t         GetClustersN(Int_t iPlane);
    ClassDef(TAMSDactNtuTrackF,0)
 };
 

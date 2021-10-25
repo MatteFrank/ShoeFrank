@@ -38,11 +38,14 @@ ClassImp(TAMSDactNtuTrackF);
 TAMSDactNtuTrackF::TAMSDactNtuTrackF(const char* name,
 								   TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
 								   TAGparaDsc* pGeoMap, TAGparaDsc* p_geo_g)
-: TAMSDactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap),
+: TAVTactNtuTrackF(name, pNtuClus, pNtuTrack, pConfig, pGeoMap),
   fpGeoMapG(p_geo_g)
 {
-   AddDataIn(pNtuClus,   "TAMSDntuPoint");
-   AddDataOut(pNtuTrack, "TAMSDntuTrack");
+   TString device(name);
+   if (device.Contains("ms")) {
+      AddDataIn(pNtuClus,   "TAMSDntuPoint");
+      AddDataOut(pNtuTrack, "TAMSDntuTrack");
+   }
 }
 
 //------------------------------------------+-----------------------------------
@@ -54,129 +57,19 @@ TAMSDactNtuTrackF::~TAMSDactNtuTrackF()
 
 //_____________________________________________________________________________
 //  
-Bool_t TAMSDactNtuTrackF::FindTiltedTracks()
+Bool_t TAMSDactNtuTrackF::IsGoodCandidate(TAGbaseTrack* trk)
 {
-   Double_t minDistance  = 1.e9;
-   Double_t aDistance = 0;
    
-   TAMSDntuPoint* pNtuClus  = (TAMSDntuPoint*) fpNtuClus->Object();
-   TAMSDntuTrack*   pNtuTrack = (TAMSDntuTrack*)   fpNtuTrack->Object();
-   TAMSDparGeo*     pGeoMap   = (TAMSDparGeo*)     fpGeoMap->Object();
+   TAMSDtrack* track = static_cast<TAMSDtrack*>(trk);
    
-   TList array;
-   array.SetOwner(false);
-   array.Clear();
+   for (Int_t i = 0; i < track->GetClustersN(); i++) {
+      TAMSDpoint* clus = (TAMSDpoint*)track->GetCluster(i);
+      fMapClus[clus] = 1;
+   }
    
-   TAMSDtrack* track = 0x0;
-   Int_t nPlane   = pGeoMap->GetSensorsN()-1;
-   Int_t curPlane = nPlane;
+   if (fpGeoMapG == 0x0)
+      return true;
    
-   while (curPlane >= fRequiredClusters-1) {
-	  
-	  // Get the last plane
-	  curPlane = nPlane--;
-	  
-	  TClonesArray* lastList = pNtuClus->GetListOfPoints(curPlane);
-	  Int_t nLastClusters    = pNtuClus->GetPointsN(curPlane);
-	  
-	  if ( nLastClusters == 0) continue;
-
-	  for( Int_t iLastClus = 0; iLastClus < nLastClusters; ++iLastClus) { // loop on cluster of last plane
-		 TAMSDpoint* lastCluster = (TAMSDpoint*)lastList->At(iLastClus);
-		 if (lastCluster->Found()) continue;
-		 if (lastCluster->GetElementsN() <= 2) continue;
-		 lastCluster->SetFound();
-
-		 for( Int_t iPlane = curPlane-1; iPlane >= 0; --iPlane) { // loop on next planes
-			 
-			TClonesArray* nextList = pNtuClus->GetListOfPoints(iPlane);
-			Int_t nNextClusters    = pNtuClus->GetPointsN(iPlane);
-			
-			for( Int_t iNextClus = 0; iNextClus < nNextClusters; ++iNextClus) { // loop on cluster of next plane
-			   TAMSDpoint* nextCluster = (TAMSDpoint*)nextList->At(iNextClus);
-			   if (nextCluster->Found()) continue;
-			   if (nextCluster->GetElementsN() <= 2) continue;
-			   
-			   track = new TAMSDtrack();
-			   track->AddCluster(lastCluster);
-			   nextCluster->SetFound();
-			   track->AddCluster(nextCluster);
-
-			   UpdateParam(track);
-
-			   if (!IsGoodCandidate(track)) {
-				  nextCluster->SetFound(false);
-				  delete track;
-				  continue;
-			   }
-
-			   array.Clear();
-			   for( Int_t iFirstPlane = iPlane-1; iFirstPlane >= 0; --iFirstPlane) { // loop on first planes
-				  
-//				  if (track->GetClustersN() + iFirstPlane < fRequiredClusters-1)
-//					  break;
-				   
-				  TClonesArray* firstList = pNtuClus->GetListOfPoints(iFirstPlane);
-				  Int_t nFirstClusters    = pNtuClus->GetPointsN(iFirstPlane);
-				  
-				  minDistance = fSearchClusDistance;
-				  TAMSDpoint* bestCluster = 0x0;
-				  for( Int_t iFirstClus = 0; iFirstClus < nFirstClusters; ++iFirstClus) { // loop on cluster of first planes
-					 TAMSDpoint* firstCluster = (TAMSDpoint*)firstList->At(iFirstClus);
-					 if (firstCluster->GetElementsN() <= 1) continue;
-					 if( firstCluster->Found()) continue; // skip cluster already found
-					 
-					 aDistance = firstCluster->Distance(track);
-					 if( aDistance < minDistance ) {
-						minDistance = aDistance;
-						bestCluster = firstCluster;
-					 }
-				  } // end loop on cluster of first planes
-				  
-				  // if a cluster has been found, add the cluster
-				  if( bestCluster ) {
-					 bestCluster->SetFound();
-					 track->AddCluster(bestCluster);
-					 array.Add(bestCluster);
-					 UpdateParam(track);
-				  }
-				  
-			   } // end loop on first planes
-
-			   // apply cut
-			   if (AppyCuts(track)) {
-				  track->SetTrackIdx(pNtuTrack->GetTracksN());
-				  track->MakeChiSquare();
-				  track->SetType(1);
-				  pNtuTrack->NewTrack(*track);
-				  
-				  if (ValidHistogram())
-					 FillHistogramm(track);
-   
-				  delete track;
-			   } else { // reset clusters
-				  nextCluster->SetFound(false);
-				  for (Int_t i = 0; i < array.GetEntries(); ++i) {
-					 TAMSDpoint*  cluster1 = (TAMSDpoint*)array.At(i);
-					 cluster1->SetFound(false);
-				  }
-				  delete track;
-				  array.Clear();
-			   }
-			   
-			} // end cluster of next plane
-		 } // end last-1 plane
-	  } // end loop on last clusters
-	  
-   } // while
-   
-   return true;
-}
-
-//_____________________________________________________________________________
-//  
-Bool_t TAMSDactNtuTrackF::IsGoodCandidate(TAMSDtrack* track)
-{
    TAGparGeo* pGeoMap = (TAGparGeo*)fpGeoMapG->Object();
 
    Float_t width  = pGeoMap->GetTargetPar().Size[0];
@@ -189,4 +82,46 @@ Bool_t TAMSDactNtuTrackF::IsGoodCandidate(TAMSDtrack* track)
    return true;
 }
 
+
+//_____________________________________________________________________________
+//
+Int_t TAMSDactNtuTrackF::GetClustersN(Int_t iPlane)
+{
+   TAMSDntuPoint*  pNtuClus = (TAMSDntuPoint*) fpNtuClus->Object();
+   return pNtuClus->GetPointsN(iPlane);
+}
+
+//_____________________________________________________________________________
+//
+TAGcluster* TAMSDactNtuTrackF::GetCluster(Int_t iPlane, Int_t iClus)
+{
+   TAMSDntuPoint*  pNtuClus = (TAMSDntuPoint*) fpNtuClus->Object();
+   TAMSDpoint* cluster = pNtuClus->GetPoint(iPlane, iClus);
+   
+   return cluster;
+}
+
+//_____________________________________________________________________________
+//
+Int_t TAMSDactNtuTrackF::GetTracksN()
+{
+   TAMSDntuTrack* pNtuTrack = (TAMSDntuTrack*) fpNtuTrack->Object();
+   return pNtuTrack->GetTracksN();
+}
+
+//_____________________________________________________________________________
+//
+void TAMSDactNtuTrackF::AddNewTrack(TAGbaseTrack* trk)
+{
+   TAMSDntuTrack* pNtuTrack = (TAMSDntuTrack*) fpNtuTrack->Object();
+   TAMSDtrack* track = static_cast<TAMSDtrack*>(trk);
+   pNtuTrack->NewTrack(*track);
+}
+
+//_____________________________________________________________________________
+//
+TAGbaseTrack* TAMSDactNtuTrackF::NewTrack()
+{
+   return new TAMSDtrack();
+}
 

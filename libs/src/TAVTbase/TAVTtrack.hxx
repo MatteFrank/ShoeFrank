@@ -43,7 +43,7 @@ public:
    const TVector3&        GetPosVertex()          const { return fPosVertex;                               }
    
    //! Add cluster
-   void                   AddCluster(TAVTcluster* cluster);
+   void                   AddCluster(TAGcluster* cluster);
    
    
    ClassDef(TAVTtrack,9)                      // Describes TAVTtrack

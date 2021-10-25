@@ -37,7 +37,7 @@ public:
    TAIRcluster* GetLastCluster()         { return (TAIRcluster*)fListOfClusters->Last(); }
  
    //! Add cluster
-   void           AddCluster(TAVTbaseCluster* cluster);
+   void           AddCluster(TAGcluster* cluster);
    
    ClassDef(TAIRtrack,1)                      // Describes TAIRtrack
 };

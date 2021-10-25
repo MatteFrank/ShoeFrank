@@ -34,7 +34,7 @@ public:
    TAGcluster* GetCluster(Int_t index)  { return (TAMSDpoint*)fListOfClusters->At(index); }
  
    //! Add cluster
-   void           AddCluster(TAMSDpoint* cluster);
+   void           AddCluster(TAGcluster* cluster);
    
    ClassDef(TAMSDtrack,8)                      // Describes TAMSDtrack
 };

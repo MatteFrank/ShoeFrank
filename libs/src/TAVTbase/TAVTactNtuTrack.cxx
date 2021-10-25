@@ -37,8 +37,11 @@ TAVTactNtuTrack::TAVTactNtuTrack(const char* name,
 								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
 : TAVTactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib, pBMntuTrack)
 {
-   AddDataIn(pNtuClus,   "TAVTntuCluster");
-   AddDataOut(pNtuTrack, "TAVTntuTrack");
+   TString device(name);
+   if (device.Contains("vt")) {
+      AddDataIn(pNtuClus,   "TAVTntuCluster");
+      AddDataOut(pNtuTrack, "TAVTntuTrack");
+   }
 }
 
 //------------------------------------------+-----------------------------------

@@ -158,6 +158,8 @@ public:
    void           SetChargeMaxProbaNorm(Float_t proba)   { fChargeMaxProbaNorm = proba;     }
 
  
+   virtual  void  AddCluster(TAGcluster* /*cluster*/) { return; }
+
     //! Get chi square 
    Float_t        GetChi2()           const { return fChiSquare;     }
    //! Get chi squareU 

@@ -19,10 +19,12 @@ class TAGgeoTrafo;
 class TABMtrack;
 class TGraphErrors;
 class TAVTbaseCluster;
+class TAVTcluster;
 class TAVThit;
 class TAGbaseTrack;
 class TH2F;
 class TH1F;
+
 class TAVTactBaseNtuTrack : public TAVTactBaseTrack {
    
 public:
@@ -59,6 +61,13 @@ protected:
    TAGbaseTrack* GetTrack(Int_t idx);
    Int_t          GetTracksN() const;
    
+   virtual void          AddNewTrack(TAGbaseTrack* track);
+   virtual TAGbaseTrack* NewTrack();
+   virtual Int_t         GetTracksN();
+
+   virtual TAGcluster*   GetCluster(Int_t iPlane, Int_t iClus);
+   virtual Int_t         GetClustersN(Int_t iPlane);
+
 protected:
    TAGdataDsc*     fpBMntuTrack;	     // BM track pointer
 	

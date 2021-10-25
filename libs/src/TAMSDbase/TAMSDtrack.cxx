@@ -54,8 +54,10 @@ void TAMSDtrack::SetupClones()
 
 // __________________________________________________________________________
 //
-void TAMSDtrack::AddCluster(TAMSDpoint* point)
+void TAMSDtrack::AddCluster(TAGcluster* clus)
 {
+   TAMSDpoint* point = static_cast<TAMSDpoint*>(clus);
+
    for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
       Int_t idx = point->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);

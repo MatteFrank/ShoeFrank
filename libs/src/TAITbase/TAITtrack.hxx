@@ -34,7 +34,7 @@ public:
    TAVTbaseCluster* GetCluster(Int_t index)  { return (TAITcluster*)fListOfClusters->At(index); }
  
    //! Add cluster
-   void           AddCluster(TAITcluster* cluster);
+   void           AddCluster(TAGcluster* cluster);
    
    ClassDef(TAITtrack,8)                      // Describes TAITtrack
 };
