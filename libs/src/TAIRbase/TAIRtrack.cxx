@@ -25,7 +25,7 @@ ClassImp(TAIRtrack) // Description of a Track
 //______________________________________________________________________________
 //  
 TAIRtrack::TAIRtrack()
-:  TAVTbaseTrack()
+:  TAGbaseTrack()
 {
    SetupClones();
 }
@@ -39,7 +39,7 @@ TAIRtrack::~TAIRtrack()
 //______________________________________________________________________________
 //
 TAIRtrack::TAIRtrack(const TAIRtrack& aTrack)
-: TAVTbaseTrack::TAVTbaseTrack(aTrack)
+: TAGbaseTrack::TAGbaseTrack(aTrack)
 {
    
 }

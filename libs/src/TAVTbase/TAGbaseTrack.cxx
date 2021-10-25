@@ -25,13 +25,13 @@
 #include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx" 
 #include "TAVTparGeo.hxx"
-#include "TAVTbaseTrack.hxx"
+#include "TAGbaseTrack.hxx"
 
 
 //#################################################################
 
   //////////////////////////////////////////////////////////////////
-  // Class Description of TAVTbaseTrack                               //
+  // Class Description of TAGbaseTrack                               //
   //                                                              //
   // A particle track from e.g. accelerator passing the tracker   //
   // The track is measured by the tracker with its silicon        //
@@ -42,11 +42,11 @@
   //////////////////////////////////////////////////////////////////
 
 
-ClassImp(TAVTbaseTrack) // Description of a Track
+ClassImp(TAGbaseTrack) // Description of a Track
 
 //______________________________________________________________________________
 //  
-TAVTbaseTrack::TAVTbaseTrack()
+TAGbaseTrack::TAGbaseTrack()
 :  TAGobject(),
    fOrigin(new TVector3()),
    fSlope(new TVector3()),
@@ -59,7 +59,6 @@ TAVTbaseTrack::TAVTbaseTrack()
    fChiSquare(0.),
    fChiSquareU(0.),
    fChiSquareV(0.),
-   fPosVertex(0.,0.,0.),
    fValidity(false),
    fChargeProba(new TArrayF(6)),
    fChargeWithMaxProba(0),
@@ -76,7 +75,7 @@ TAVTbaseTrack::TAVTbaseTrack()
 
 //______________________________________________________________________________
 //  
-TAVTbaseTrack::TAVTbaseTrack(const TAVTbaseTrack& aTrack)
+TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack& aTrack)
 :  TAGobject(aTrack),
    fOrigin(new TVector3(*aTrack.fOrigin)),
    fSlope(new TVector3(*aTrack.fSlope)),
@@ -106,7 +105,7 @@ TAVTbaseTrack::TAVTbaseTrack(const TAVTbaseTrack& aTrack)
 
 //______________________________________________________________________________
 //  
-TAVTbaseTrack::~TAVTbaseTrack()
+TAGbaseTrack::~TAGbaseTrack()
 {
    delete fOrigin;
    delete fSlope;
@@ -119,7 +118,7 @@ TAVTbaseTrack::~TAVTbaseTrack()
 
 //______________________________________________________________________________
 //
-Float_t TAVTbaseTrack::GetTheta() const
+Float_t TAGbaseTrack::GetTheta() const
 {
    TVector3 direction = fSlope->Unit();
    Float_t theta      = direction.Theta()*TMath::RadToDeg();
@@ -129,7 +128,7 @@ Float_t TAVTbaseTrack::GetTheta() const
 
 //______________________________________________________________________________
 //
-Float_t TAVTbaseTrack::GetPhi() const
+Float_t TAGbaseTrack::GetPhi() const
 {
    TVector3 origin = fOrigin->Unit();
    Float_t phi     = origin.Phi()*TMath::RadToDeg();
@@ -139,7 +138,7 @@ Float_t TAVTbaseTrack::GetPhi() const
 
 //______________________________________________________________________________
 //
-void TAVTbaseTrack::SetValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength)
+void TAGbaseTrack::SetValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength)
 {
    *fOrigin = aOrigin;
    *fSlope  = aSlope;
@@ -147,7 +146,7 @@ void TAVTbaseTrack::SetValue(const TVector3& aOrigin, const TVector3& aSlope, co
 }
 //______________________________________________________________________________
 //
-void TAVTbaseTrack::SetErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr)
+void TAGbaseTrack::SetErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr)
 {
    *fOriginErr = aOriginErr;
    *fSlopeErr  = aSlopeErr;
@@ -155,7 +154,7 @@ void TAVTbaseTrack::SetErrorValue(const TVector3& aOriginErr, const TVector3& aS
 
 //______________________________________________________________________________
 //
-void TAVTbaseTrack::Zero(){
+void TAGbaseTrack::Zero(){
    fOrigin->SetXYZ(0., 0., 0.);
    fSlope->SetXYZ(0., 0., 0.);
    fLength = 0;
@@ -163,7 +162,7 @@ void TAVTbaseTrack::Zero(){
 
 //______________________________________________________________________________
 //
-TVector3 TAVTbaseTrack::GetPoint(Float_t beta)
+TVector3 TAGbaseTrack::GetPoint(Float_t beta)
 {
    TVector3 result;
    result = (*fSlope) * beta;
@@ -175,7 +174,7 @@ TVector3 TAVTbaseTrack::GetPoint(Float_t beta)
 
 //______________________________________________________________________________
 //
-Float_t TAVTbaseTrack::Distance(TVector3& p)
+Float_t TAGbaseTrack::Distance(TVector3& p)
 {
    // compute distance between a point M(x,y,z) and a
    // line defined by (origin, slope)
@@ -198,7 +197,7 @@ Float_t TAVTbaseTrack::Distance(TVector3& p)
 
 //____________________________________________________________________________
 //  
-void TAVTbaseTrack::Reset()
+void TAGbaseTrack::Reset()
 {
   Zero();
   fPileup          = kFALSE;
@@ -206,20 +205,20 @@ void TAVTbaseTrack::Reset()
 
 //______________________________________________________________________________
 //  
-void TAVTbaseTrack::SetLineValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength)
+void TAGbaseTrack::SetLineValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength)
 {
    SetValue(aOrigin, aSlope, aLength);
 }
 
 //______________________________________________________________________________
 //
-void TAVTbaseTrack::SetLineErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr)
+void TAGbaseTrack::SetLineErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr)
 {
    SetErrorValue(aOriginErr, aSlopeErr);
 }
 //______________________________________________________________________________
 //  
-TVector3 TAVTbaseTrack::Intersection(Float_t posZ) const
+TVector3 TAGbaseTrack::Intersection(Float_t posZ) const
 {
   // calculates the Intersection of the Track with the plane in
   // the coordinate system of the tracker.
@@ -232,7 +231,7 @@ TVector3 TAVTbaseTrack::Intersection(Float_t posZ) const
 
 //______________________________________________________________________________
 //  
-Float_t TAVTbaseTrack::Distance(TAVTbaseTrack* track, Float_t z) const
+Float_t TAGbaseTrack::Distance(TAGbaseTrack* track, Float_t z) const
 {
    // calculates the distance with a track
    TVector3 pos1 = Intersection(z);
@@ -245,7 +244,7 @@ Float_t TAVTbaseTrack::Distance(TAVTbaseTrack* track, Float_t z) const
 
 //______________________________________________________________________________
 //  
-TVector2 TAVTbaseTrack::DistanceXY(TAVTbaseTrack* track, Float_t z) const
+TVector2 TAGbaseTrack::DistanceXY(TAGbaseTrack* track, Float_t z) const
 {
    // calculates the distance in X-Y with a track
    TVector3 pos1 = Intersection(z);
@@ -257,7 +256,7 @@ TVector2 TAVTbaseTrack::DistanceXY(TAVTbaseTrack* track, Float_t z) const
 
 //______________________________________________________________________________
 //  
-TVector2 TAVTbaseTrack::DistanceMin(TAVTbaseTrack* track, Float_t zMin, Float_t zMax, Float_t eps) const
+TVector2 TAGbaseTrack::DistanceMin(TAGbaseTrack* track, Float_t zMin, Float_t zMax, Float_t eps) const
 {
    // calculates the minimum distance with a track
    Float_t z = 0.;
@@ -284,7 +283,7 @@ TVector2 TAVTbaseTrack::DistanceMin(TAVTbaseTrack* track, Float_t zMin, Float_t 
 
 // __________________________________________________________________________
 //
-void TAVTbaseTrack::MakeChiSquare(Float_t dhs)
+void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 {
    // Computes the chi2 of the fit track using dhs as the error
    Float_t tdU, tdV;
@@ -320,13 +319,13 @@ void TAVTbaseTrack::MakeChiSquare(Float_t dhs)
    fChiSquareV /= ndfV;
    
    if(FootDebugLevel(1))
-	  printf("TAVTbaseTrack::MakeChiSquare chi2u=%f, ndfu=%d, chi2v=%f, ndfv=%d, chi2=%f, ndf=%d, resol=%f\n",
+	  printf("TAGbaseTrack::MakeChiSquare chi2u=%f, ndfu=%d, chi2v=%f, ndfv=%d, chi2=%f, ndf=%d, resol=%f\n",
 			 fChiSquareU, ndfU, fChiSquareV, ndfV, fChiSquare, 2*GetClustersN()-4, dhs);
 }
 
 // __________________________________________________________________________
 //
-void TAVTbaseTrack::SetChargeProba(const TArrayF* proba)
+void TAGbaseTrack::SetChargeProba(const TArrayF* proba)
 {
    const Float_t* array = proba->GetArray();
    fChargeProba->Set(proba->GetSize(), array);
@@ -334,7 +333,7 @@ void TAVTbaseTrack::SetChargeProba(const TArrayF* proba)
 
 // __________________________________________________________________________
 //
-void TAVTbaseTrack::SetChargeProbaNorm(const TArrayF* proba)
+void TAGbaseTrack::SetChargeProbaNorm(const TArrayF* proba)
 {
    const Float_t* array = proba->GetArray();
    fChargeProbaNorm->Set(proba->GetSize(), array);
@@ -342,7 +341,7 @@ void TAVTbaseTrack::SetChargeProbaNorm(const TArrayF* proba)
 
 //______________________________________________________________________________
 //
-void TAVTbaseTrack::AddMcTrackIdx(Int_t trackIdx)
+void TAGbaseTrack::AddMcTrackIdx(Int_t trackIdx)
 {
    if (fMcTrackMap[trackIdx] == 0) {
       fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);

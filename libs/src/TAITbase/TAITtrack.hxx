@@ -7,7 +7,7 @@
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
 #include "TAITcluster.hxx"
-#include "TAVTbaseTrack.hxx"
+#include "TAGbaseTrack.hxx"
 
 
 //##############################################################################
@@ -19,12 +19,12 @@
 
 class TAVTbaseCluster;
 class TClonesArray;
-class TAITtrack : public TAVTbaseTrack {
+class TAITtrack : public TAGbaseTrack {
    
 public:
    TAITtrack();                                 
    ~TAITtrack();
-   TAITtrack(const TAVTbaseTrack& aTrack);
+   TAITtrack(const TAGbaseTrack& aTrack);
 
    
    //! Set up clones

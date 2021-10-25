@@ -18,7 +18,7 @@ class TAGgeoTrafo;
 class TABMtrack;
 class TGraphErrors;
 class TAVTbaseCluster;
-class TAVTbaseTrack;
+class TAGbaseTrack;
 class TH2F;
 class TH1F;
 class TAVTactBaseTrack : public TAGaction {
@@ -49,9 +49,9 @@ public:
    void             SetGeoTrafo(TString name);
    
 //   //! Get nearest track to a given cluster
-//   TAVTbaseTrack*       NearestTrack(TAVTbaseCluster *aCluster); 
+//   TAGbaseTrack*       NearestTrack(TAVTbaseCluster *aCluster); 
 //   //! Get nearest cluster for a given track and plane
-//   TAVTbaseCluster*     NearestCluster(TAVTbaseTrack *aTrack, Int_t aPlaneNumber); 
+//   TAVTbaseCluster*     NearestCluster(TAGbaseTrack *aTrack, Int_t aPlaneNumber); 
    
 public:
    //! Set refit flag
@@ -60,12 +60,12 @@ public:
    static Bool_t    GetRefit()                                 { return fgRefit;              }
    
 protected:
-   virtual TAVTbaseTrack* GetTrack(Int_t /*idx*/)              { return 0x0;                  }
+   virtual TAGbaseTrack* GetTrack(Int_t /*idx*/)              { return 0x0;                  }
    virtual Int_t          GetTracksN()                const    { return -1;                   }
 
-   void   FillHistogramm(TAVTbaseTrack* track);
-   void   UpdateParam(TAVTbaseTrack* track);
-   Bool_t AppyCuts(TAVTbaseTrack* track) ;
+   void   FillHistogramm(TAGbaseTrack* track);
+   void   UpdateParam(TAGbaseTrack* track);
+   Bool_t AppyCuts(TAGbaseTrack* track) ;
    
 protected:
    TAGdataDsc*     fpNtuTrack;		    // input data dsc

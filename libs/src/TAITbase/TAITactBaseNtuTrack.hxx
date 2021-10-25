@@ -19,7 +19,7 @@ class TAGgeoTrafo;
 class TABMtrack;
 class TGraphErrors;
 class TAVTbaseCluster;
-class TAVTbaseTrack;
+class TAGbaseTrack;
 class TH2F;
 class TH1F;
 class TAITactBaseNtuTrack : public TAVTactBaseTrack {
@@ -48,7 +48,7 @@ public:
    
 protected:
    void   FillBmHistogramm(TVector3 bmTrackPos);
-   void   FillHistogramm(TAVTbaseTrack* track);
+   void   FillHistogramm(TAGbaseTrack* track);
    void   FillHistogramm();
 
    virtual Bool_t FindStraightTracks();
@@ -57,7 +57,7 @@ protected:
    virtual Bool_t FindVertices()     { return false; }
 
    void           SetChargeProba();
-   TAVTbaseTrack* GetTrack(Int_t idx);
+   TAGbaseTrack* GetTrack(Int_t idx);
    Int_t          GetTracksN() const;
    
 protected:

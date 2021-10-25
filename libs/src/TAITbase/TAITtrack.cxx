@@ -25,7 +25,7 @@ ClassImp(TAITtrack) // Description of a Track
 //______________________________________________________________________________
 //  
 TAITtrack::TAITtrack()
-:  TAVTbaseTrack()
+:  TAGbaseTrack()
 {
    SetupClones();
 }
@@ -38,8 +38,8 @@ TAITtrack::~TAITtrack()
 
 //______________________________________________________________________________
 //
-TAITtrack::TAITtrack(const TAVTbaseTrack& aTrack)
-: TAVTbaseTrack::TAVTbaseTrack(aTrack)
+TAITtrack::TAITtrack(const TAGbaseTrack& aTrack)
+: TAGbaseTrack::TAGbaseTrack(aTrack)
 {
    
 }

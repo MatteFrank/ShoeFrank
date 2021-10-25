@@ -612,9 +612,9 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
    TObject* obj = lineTracks->GetId(idx);
    if (obj == 0x0) return;
 
-   if (obj->InheritsFrom("TAVTbaseTrack")) {
+   if (obj->InheritsFrom("TAGbaseTrack")) {
 
-      TAVTbaseTrack* track =  (TAVTbaseTrack*)obj;
+      TAGbaseTrack* track =  (TAGbaseTrack*)obj;
       if (track == 0x0) return;
 
       fInfoView->AddLine( Form("Track # %2d (valid: %d): \n", track->GetNumber(), track->GetValidity()) );

@@ -1,5 +1,5 @@
-#ifndef _TAVTbaseTrack_HXX
-#define _TAVTbaseTrack_HXX
+#ifndef _TAGbaseTrack_HXX
+#define _TAGbaseTrack_HXX
 
 #include <map>
 
@@ -36,13 +36,13 @@
 
 //##############################################################################
 
-/** TAVTbaseTrack class, simple container class for tracks with the associated clusters                    
+/** TAGbaseTrack class, simple container class for tracks with the associated clusters
  
  \author Ch. Finck
  */
 
 class TClonesArray;
-class TAVTbaseTrack : public TAGobject {
+class TAGbaseTrack : public TAGobject {
    
 protected:
    TVector3*      fOrigin;                       //->   origin x0,y0,z0
@@ -76,9 +76,9 @@ protected:
    std::map<int, int> fMcTrackMap;               //! Map of MC track Id
    
 public:
-   TAVTbaseTrack();                                 
-   ~TAVTbaseTrack();
-   TAVTbaseTrack(const TAVTbaseTrack& aTrack);
+   TAGbaseTrack();
+   ~TAGbaseTrack();
+   TAGbaseTrack(const TAGbaseTrack& aTrack);
    
    //! Get cluster
    virtual TAGcluster*   GetCluster(Int_t /*index*/) { return 0x0; }
@@ -110,11 +110,11 @@ public:
 
   
    //! Get distance with another track
-   Float_t        Distance(TAVTbaseTrack* track, Float_t z) const;
+   Float_t        Distance(TAGbaseTrack* track, Float_t z) const;
    //! Get X-Y distance with another track
-   TVector2       DistanceXY(TAVTbaseTrack* track, Float_t z) const;
+   TVector2       DistanceXY(TAGbaseTrack* track, Float_t z) const;
    //! Get distance with another track
-   TVector2       DistanceMin(TAVTbaseTrack* track1, Float_t zMin = -10000., Float_t zMax =  10000., Float_t eps = 5.) const;
+   TVector2       DistanceMin(TAGbaseTrack* track1, Float_t zMin = -10000., Float_t zMax =  10000., Float_t eps = 5.) const;
    //! Reset track value
    void           Reset();
    //! Get intersection point with plane
@@ -138,8 +138,6 @@ public:
    void           SetPileUp(Bool_t pileup = true)    { fPileup = pileup;            }
    //Set Validity of track in vertex reconstruction
    void           SetValidity(Int_t q)               { fValidity = q;               }
-   //! Set pos vertex
-   void           SetPosVertex(TVector3& pos)        { fPosVertex = pos;            }
    //! Set values of line track
    void           SetLineValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength = 0.);
    //! Set values of line track
@@ -166,8 +164,7 @@ public:
    Float_t        GetChi2U()          const { return fChiSquareU;    }
    //! Get chi squareV 
    Float_t        GetChi2V()          const { return fChiSquareV;    }
-   //! Get pos vertex
-   const TVector3& GetPosVertex()     const { return fPosVertex;     }
+
    //Get Validity
    Int_t         GetValidity()        const { return fValidity;      }
    //Get charge proba
@@ -197,7 +194,7 @@ public:
    Int_t         GetMcTrackIdx(Int_t index)  const { return fMcTrackIdx[index];    }
    Int_t         GetMcTracksN()              const { return fMcTrackIdx.GetSize(); }
    
-   ClassDef(TAVTbaseTrack,10)                      // Describes TAVTbaseTrack
+   ClassDef(TAGbaseTrack,10)                      // Describes TAGbaseTrack
 };
 
 #endif

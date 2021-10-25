@@ -237,7 +237,7 @@ Bool_t TAMSDactBaseNtuTrack::FindStraightTracks()
 
 //_____________________________________________________________________________
 //
-void TAMSDactBaseNtuTrack::FillHistogramm(TAVTbaseTrack* track)
+void TAMSDactBaseNtuTrack::FillHistogramm(TAGbaseTrack* track)
 {
    TAVTactBaseTrack::FillHistogramm(track);
    
@@ -290,10 +290,10 @@ void TAMSDactBaseNtuTrack::FillHistogramm()
 
 //_____________________________________________________________________________
 //
-TAVTbaseTrack* TAMSDactBaseNtuTrack::GetTrack(Int_t idx)
+TAGbaseTrack* TAMSDactBaseNtuTrack::GetTrack(Int_t idx)
 {
    TAMSDntuTrack* pNtuTrack = (TAMSDntuTrack*) fpNtuTrack->Object();
-   TAVTbaseTrack* track  = pNtuTrack->GetTrack(idx);
+   TAGbaseTrack* track  = pNtuTrack->GetTrack(idx);
 
    return track;
 }

@@ -320,7 +320,7 @@ void TAITactBaseNtuTrack::SetChargeProba()
       
       Int_t nPixelsTot = 0;
       Float_t nPixelsMean;
-      TAVTbaseTrack* track = GetTrack(iTrack);
+      TAGbaseTrack* track = GetTrack(iTrack);
       Int_t nClus = track->GetClustersN();
       
       for (Int_t i=0;i<nClus;i++) {
@@ -342,7 +342,7 @@ void TAITactBaseNtuTrack::SetChargeProba()
 
 //_____________________________________________________________________________
 //
-void TAITactBaseNtuTrack::FillHistogramm(TAVTbaseTrack* track)
+void TAITactBaseNtuTrack::FillHistogramm(TAGbaseTrack* track)
 {
    TAVTactBaseTrack::FillHistogramm(track);
    
@@ -421,10 +421,10 @@ void TAITactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
 
 //_____________________________________________________________________________
 //
-TAVTbaseTrack* TAITactBaseNtuTrack::GetTrack(Int_t idx)
+TAGbaseTrack* TAITactBaseNtuTrack::GetTrack(Int_t idx)
 {
    TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
-   TAVTbaseTrack* track  = pNtuTrack->GetTrack(idx);
+   TAGbaseTrack* track  = pNtuTrack->GetTrack(idx);
 
    return track;
 }

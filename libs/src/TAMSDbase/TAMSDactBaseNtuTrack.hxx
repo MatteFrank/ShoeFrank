@@ -19,7 +19,7 @@ class TAGgeoTrafo;
 class TABMtrack;
 class TGraphErrors;
 class TAVTbaseCluster;
-class TAVTbaseTrack;
+class TAGbaseTrack;
 class TH2F;
 class TH1F;
 class TAMSDactBaseNtuTrack : public TAVTactBaseTrack {
@@ -47,14 +47,14 @@ protected:
    TH1F*            fpHisPointLeft;   // number of point left (not tracked)
    
 protected:
-   virtual void   FillHistogramm(TAVTbaseTrack* track);
+   virtual void   FillHistogramm(TAGbaseTrack* track);
    virtual void   FillHistogramm();
    virtual Bool_t FindStraightTracks();
    virtual Bool_t IsGoodCandidate(TAMSDtrack* /*track*/) { return true; }
    virtual Bool_t FindTiltedTracks() { return true; }
    virtual Bool_t FindVertices()     { return false; }
 
-   TAVTbaseTrack* GetTrack(Int_t idx);
+   TAGbaseTrack* GetTrack(Int_t idx);
    Int_t          GetTracksN() const;
    
    ClassDef(TAMSDactBaseNtuTrack,0)

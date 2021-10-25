@@ -167,7 +167,7 @@ void TAVTactBaseTrack::CreateHistogram()
 
 //_____________________________________________________________________________
 //  
-Bool_t TAVTactBaseTrack::AppyCuts(TAVTbaseTrack* track)
+Bool_t TAVTactBaseTrack::AppyCuts(TAGbaseTrack* track)
 {
    Bool_t valid = false;  
    
@@ -180,7 +180,7 @@ Bool_t TAVTactBaseTrack::AppyCuts(TAVTbaseTrack* track)
 
 //_____________________________________________________________________________
 //  
-void TAVTactBaseTrack::UpdateParam(TAVTbaseTrack* track)
+void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 {
    TVector3  origin;  // origin in the tracker system
    TVector3  slope;   // slope along z-axis in tracker system
@@ -268,7 +268,7 @@ void TAVTactBaseTrack::UpdateParam(TAVTbaseTrack* track)
 
 //_____________________________________________________________________________
 //  
-void TAVTactBaseTrack::FillHistogramm(TAVTbaseTrack* track)
+void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
 {
    TAVTntuTrack*   pNtuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
    TAVTbaseParGeo* pGeoMap   = (TAVTbaseParGeo*) fpGeoMap->Object();
@@ -308,7 +308,7 @@ void TAVTactBaseTrack::FillHistogramm(TAVTbaseTrack* track)
 
 //_____________________________________________________________________________
 //  
-//TAVTbaseCluster* TAVTactBaseTrack::NearestCluster(TAVTbaseTrack *aTrack, Int_t iSensor)
+//TAVTbaseCluster* TAVTactBaseTrack::NearestCluster(TAGbaseTrack *aTrack, Int_t iSensor)
 //{   
 //   // For a given track, return the index of the nearest hit of a given plane
 //   TAVTntuCluster* pNtuClus = (TAVTntuCluster*) fpNtuClus->Object();
@@ -332,14 +332,14 @@ void TAVTactBaseTrack::FillHistogramm(TAVTbaseTrack* track)
 
 //_____________________________________________________________________________
 //  
-//TAVTbaseTrack* TAVTactBaseTrack::NearestTrack(TAVTbaseCluster *aCluster) {
+//TAGbaseTrack* TAVTactBaseTrack::NearestTrack(TAVTbaseCluster *aCluster) {
 //   
 //   // For a given track, return the index of the nearest hit of a given plane
 //   Double_t minDist = 1.e9;
 //   Double_t distance;
 //   TAVTtrack *tTrack;
 //   
-//   TAVTbaseTrack *tNearest = 0x0;
+//   TAGbaseTrack *tNearest = 0x0;
 //   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
 //
 //   for( Int_t it = 0; it < pNtuTrack->GetTracksN(); ++it) { // loop on tracks

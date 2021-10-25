@@ -25,7 +25,7 @@ ClassImp(TAMSDtrack) // Description of a Track
 //______________________________________________________________________________
 //  
 TAMSDtrack::TAMSDtrack()
-:  TAVTbaseTrack()
+:  TAGbaseTrack()
 {
    SetupClones();
 }
@@ -38,8 +38,8 @@ TAMSDtrack::~TAMSDtrack()
 
 //______________________________________________________________________________
 //
-TAMSDtrack::TAMSDtrack(const TAVTbaseTrack& aTrack)
-: TAVTbaseTrack::TAVTbaseTrack(aTrack)
+TAMSDtrack::TAMSDtrack(const TAGbaseTrack& aTrack)
+: TAGbaseTrack::TAGbaseTrack(aTrack)
 {
    
 }

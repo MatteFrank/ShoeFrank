@@ -24,9 +24,19 @@ ClassImp(TAVTtrack) // Description of a Track
 //______________________________________________________________________________
 //  
 TAVTtrack::TAVTtrack()
-:  TAVTbaseTrack()
+:  TAGbaseTrack(),
+   fPosVertex(0.,0.,0.)
 {
    SetupClones();
+}
+
+//______________________________________________________________________________
+//
+TAVTtrack::TAVTtrack(const TAVTtrack& aTrack)
+:  TAGbaseTrack(aTrack),
+   fPosVertex(aTrack.fPosVertex)
+{
+   
 }
 
 //______________________________________________________________________________

@@ -7,7 +7,7 @@
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
 #include "TAIRcluster.hxx"
-#include "TAVTbaseTrack.hxx"
+#include "TAGbaseTrack.hxx"
 
 
 //##############################################################################
@@ -20,7 +20,7 @@
 class TAVTbaseCluster;
 class TAIRcluster;
 class TClonesArray;
-class TAIRtrack : public TAVTbaseTrack {
+class TAIRtrack : public TAGbaseTrack {
    
 public:
    TAIRtrack();

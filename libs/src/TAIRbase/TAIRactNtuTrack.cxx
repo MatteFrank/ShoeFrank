@@ -282,7 +282,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
 
 //_____________________________________________________________________________
 //
-void TAIRactNtuTrack::FillHistogramm(TAVTbaseTrack* track)
+void TAIRactNtuTrack::FillHistogramm(TAGbaseTrack* track)
 {
    fpHisTheta->Fill(track->GetTheta());
    fpHisPhi->Fill(track->GetPhi());
