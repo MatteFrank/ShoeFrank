@@ -91,3 +91,11 @@ TAGbaseTrack* TAITactNtuTrack::NewTrack()
 {
    return new TAITtrack();
 }
+
+//_____________________________________________________________________________
+//
+void TAITactNtuTrack::SetBeamPosition(TVector3 pos)
+{
+   TAITntuTrack* pNtuTrack = (TAITntuTrack*)  fpNtuTrack->Object();
+   pNtuTrack->SetBeamPosition(pos);
+}

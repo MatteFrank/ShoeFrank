@@ -30,6 +30,8 @@ protected:
    TAGcluster*   GetCluster(Int_t iPlane, Int_t iClus);
    Int_t         GetClustersN(Int_t iPlane);
    
+   void          SetBeamPosition(TVector3 pos);
+
    ClassDef(TAMSDactNtuTrack,0)
 };
 

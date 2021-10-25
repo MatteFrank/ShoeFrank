@@ -6,6 +6,7 @@
  \brief   Declaration of TAVTactNtuTrack.
  */
 /*------------------------------------------+---------------------------------*/
+#include "TVector3.h"
 
 #include "TAVTactBaseNtuTrack.hxx"
 
@@ -24,7 +25,7 @@ public:
    
 protected:
    virtual Bool_t FindTiltedTracks();
-      
+   virtual void SetBeamPosition(TVector3 pos);
  
    ClassDef(TAVTactNtuTrack,0)
 };

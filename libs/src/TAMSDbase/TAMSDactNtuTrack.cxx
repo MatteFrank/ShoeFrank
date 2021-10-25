@@ -90,5 +90,12 @@ TAGbaseTrack* TAMSDactNtuTrack::NewTrack()
    return new TAMSDtrack();
 }
 
+//_____________________________________________________________________________
+//
+void TAMSDactNtuTrack::SetBeamPosition(TVector3 pos)
+{
+   TAMSDntuTrack* pNtuTrack = (TAMSDntuTrack*)  fpNtuTrack->Object();
+   pNtuTrack->SetBeamPosition(pos);
+}
 
 

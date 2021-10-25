@@ -66,8 +66,6 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
    lineOrigin.SetXYZ(0.,0.,0.);
    lineSlope.SetXYZ(0.,0.,1.);
    
-   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
-   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
    TAVTbaseParGeo*  pGeoMap   = (TAVTbaseParGeo*)  fpGeoMap->Object();
    TAVTbaseParConf* pConfig   = (TAVTbaseParConf*) fpConfig->Object();
    
@@ -82,18 +80,17 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
    while (curPlane >= fRequiredClusters-1) {
 	  // Get the last reference plane
 	  curPlane = nPlane--;
-	  TClonesArray* list = pNtuClus->GetListOfClusters(curPlane);
-	  Int_t nClusters = pNtuClus->GetClustersN(curPlane);
+	  Int_t nClusters = GetClustersN(curPlane);
 	  if ( nClusters == 0) continue;
 	  
 	  // Loop on all clusters of the last plane
 	  for( Int_t iLastClus = 0; iLastClus < nClusters; ++iLastClus) { // loop on cluster of last plane, 
 		 
-		 if( pNtuTrack->GetTracksN() >= pConfig->GetAnalysisPar().TracksMaximum ) break; // if max track number reach, stop
+//       if( pNtuTrack->GetTracksN() >= pConfig->GetAnalysisPar().TracksMaximum ) break; // if max track number reach, stop
 		 
-		 TAVTcluster* cluster = (TAVTcluster*)list->At( iLastClus );
+		 TAGcluster* cluster = GetCluster(curPlane, iLastClus);
 		 if (cluster->Found()) continue;
-		 TAVTtrack*   track   = new TAVTtrack();
+		 TAGbaseTrack*  track  = NewTrack();
 		 array.Clear();
 		 track->AddCluster(cluster);
 		 array.Add(cluster);
@@ -123,16 +120,15 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
 		 
 		 // Loop on all planes to find a matching cluster in them
 		 for( Int_t iPlane = curPlane-1; iPlane >= 0; --iPlane) { // loop on planes
-			TClonesArray* list1 = pNtuClus->GetListOfClusters(iPlane);
-			Int_t nClusters1 = pNtuClus->GetClustersN(iPlane);
+			Int_t nClusters1 = GetClustersN(iPlane);
 			if (nClusters1 == 0) continue; //empty planes
 			
 			// loop on all clusters of this plane and keep the nearest one
 			minDistance = fSearchClusDistance*(1 + 3.*TMath::Tan(track->GetTheta()*TMath::DegToRad()));
-			TAVTcluster* bestCluster = 0x0;
+			TAGcluster* bestCluster = 0x0;
 			
 			for( Int_t iClus = 0; iClus < nClusters1; ++iClus ) { // loop on plane clusters
-			   TAVTcluster* aCluster = (TAVTcluster*)list1->At( iClus );
+			   TAGcluster* aCluster = GetCluster(iPlane, iClus );
 			   
 			   if( aCluster->Found()) continue; // skip cluster already found
 			   
@@ -158,15 +154,15 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
 		 
 		 // Apply cuts
 		 if (AppyCuts(track)) {
-			track->SetTrackIdx(pNtuTrack->GetTracksN());
+			track->SetTrackIdx(GetTracksN());
 			track->MakeChiSquare();
 			track->SetType(1);
-			pNtuTrack->NewTrack(*track);
+			AddNewTrack(track);
 			if (fBmTrack && fBmTrackOk) {
-			   pNtuTrack->SetBeamPosition(fBmTrackPos);
+			   SetBeamPosition(fBmTrackPos);
 			} else {
 			   TVector3 orig(0,0,0);
-			   pNtuTrack->SetBeamPosition(orig);
+			   SetBeamPosition(orig);
 			}
 			
 			if (ValidHistogram()) 
@@ -176,7 +172,7 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
 			
 		 } else { // reset clusters
 			for (Int_t i = 0; i < array.GetEntries(); ++i) {
-			   TAVTcluster*  cluster1 = (TAVTcluster*)array.At(i);
+			   TAGcluster*  cluster1 = (TAGcluster*)array.At(i);
 			   cluster1->SetFound(false);
 			}
 			array.Clear();
@@ -194,5 +190,11 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
    return true;
 }
 
-
+//_____________________________________________________________________________
+//
+void TAVTactNtuTrack::SetBeamPosition(TVector3 pos)
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*)  fpNtuTrack->Object();
+   pNtuTrack->SetBeamPosition(pos);
+}
 
