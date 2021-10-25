@@ -1069,7 +1069,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
 
          x1 = posG(0); y1 = posG(1); z1 = posG(2);
 
-         Float_t nPix = track->GetMeanPixelsN();
+         Float_t nPix = track->GetMeanEltsN();
          fVtxTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
          fVtxTrackDisplay->TrackId(track);
 
@@ -1108,7 +1108,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
          posG = fpFootGeo->FromITLocalToGlobal(pos);
          x1 = posG(0); y1 = posG(1); z1 = posG(2);
 
-         Float_t nPix = track->GetMeanPixelsN();
+         Float_t nPix = track->GetMeanEltsN();
          fItTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
          fItTrackDisplay->TrackId(track);
 
@@ -1146,7 +1146,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
          posG = fpFootGeo->FromMSDLocalToGlobal(pos);
          x1 = posG(0); y1 = posG(1); z1 = posG(2);
 
-         Float_t nPix = track->GetMeanPixelsN();
+         Float_t nPix = track->GetMeanEltsN();
          fMsdTrackDisplay->AddTracklet(nPix*500, x, y, z, x1, y1, z1);
          fMsdTrackDisplay->TrackId(track);
       

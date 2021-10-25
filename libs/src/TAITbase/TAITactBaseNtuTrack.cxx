@@ -359,7 +359,7 @@ void TAITactBaseNtuTrack::FillHistogramm(TAVTbaseTrack* track)
    fpHisChi2TotX->Fill(track->GetChi2U());
    fpHisChi2TotY->Fill(track->GetChi2V());
    
-   fpHisMeanPixel->Fill(track->GetMeanPixelsN());
+   fpHisMeanPixel->Fill(track->GetMeanEltsN());
    fpHisMeanCharge->Fill(track->GetMeanCharge());
 }
 

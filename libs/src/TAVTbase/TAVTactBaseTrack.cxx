@@ -302,7 +302,7 @@ void TAVTactBaseTrack::FillHistogramm(TAVTbaseTrack* track)
    TVector3 origin = track->GetOrigin();
    fpHisBeamProf->Fill(origin.X(), origin.Y());
    
-   fpHisMeanPixel->Fill(track->GetMeanPixelsN());
+   fpHisMeanPixel->Fill(track->GetMeanEltsN());
    fpHisMeanCharge->Fill(track->GetMeanCharge());
 }
 

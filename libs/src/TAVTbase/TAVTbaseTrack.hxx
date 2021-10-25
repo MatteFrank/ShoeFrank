@@ -185,7 +185,7 @@ public:
    Float_t       GetChargeMaxProbaNorm()     const { return fChargeMaxProbaNorm; }
 
    //Get mean number of pixels per tracks
-   Double32_t    GetMeanPixelsN()            const { return fMeanEltsN/(float) fListOfClusters->GetEntries(); }
+   Double32_t    GetMeanEltsN()             const { return fMeanEltsN/(float) fListOfClusters->GetEntries(); }
    
    //Get mean charge per tracks
    Double32_t    GetMeanCharge()             const { return fMeanCharge/(float) fListOfClusters->GetEntries(); }
