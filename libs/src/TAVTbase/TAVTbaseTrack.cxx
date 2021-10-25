@@ -67,7 +67,7 @@ TAVTbaseTrack::TAVTbaseTrack()
    fChargeProbaNorm(new TArrayF(6)),
    fChargeWithMaxProbaNorm(0),
    fChargeMaxProbaNorm(0.),
-   fMeanPixelsN(0),
+   fMeanEltsN(0),
    fMeanCharge(0.)
 {
    fMcTrackIdx.Reset();
@@ -97,7 +97,7 @@ TAVTbaseTrack::TAVTbaseTrack(const TAVTbaseTrack& aTrack)
    fChargeProbaNorm(new TArrayF(*aTrack.fChargeProbaNorm)),
    fChargeWithMaxProbaNorm(aTrack.fChargeWithMaxProbaNorm),
    fChargeMaxProbaNorm(aTrack.fChargeMaxProbaNorm),
-   fMeanPixelsN(aTrack.fMeanPixelsN),
+   fMeanEltsN(aTrack.fMeanEltsN),
    fMeanCharge(aTrack.fMeanCharge),
    fMcTrackIdx(aTrack.fMcTrackIdx)
 {

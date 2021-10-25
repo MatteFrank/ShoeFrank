@@ -64,6 +64,6 @@ void TAITtrack::AddCluster(TAITcluster* cluster)
    
    TClonesArray &clusterArray = *fListOfClusters;
    new(clusterArray[clusterArray.GetEntriesFast()]) TAITcluster(*cluster);
-   fMeanPixelsN += cluster->GetPixelsN();
-   fMeanCharge  += cluster->GetCharge();
+   fMeanEltsN  += cluster->GetPixelsN();
+   fMeanCharge += cluster->GetCharge();
 }

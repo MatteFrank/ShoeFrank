@@ -63,6 +63,6 @@ void TAMSDtrack::AddCluster(TAMSDpoint* point)
    
    TClonesArray &pointArray = *fListOfClusters;
    new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint(*point);
-   fMeanPixelsN += point->GetElementsN();
-   fMeanCharge  += point->GetEnergyLoss();
+   fMeanEltsN  += point->GetElementsN();
+   fMeanCharge += point->GetEnergyLoss();
 }

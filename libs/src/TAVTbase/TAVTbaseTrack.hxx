@@ -69,7 +69,7 @@ protected:
    TArrayF*       fChargeProbaNorm;              //! charge probability array for normalized charge disttribution
    Int_t          fChargeWithMaxProbaNorm;       //! charge with maximum probability for normalized charge disttribution
    Float_t        fChargeMaxProbaNorm;           //! charge maximum probability for normalized charge disttribution
-   Double32_t     fMeanPixelsN;                  // Average number of pixels per track
+   Double32_t     fMeanEltsN;                  // Average number of pixels/strips per track
    Double32_t     fMeanCharge;                   // Average charge (for analogic sensor) per track
 
    TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
@@ -185,7 +185,7 @@ public:
    Float_t       GetChargeMaxProbaNorm()     const { return fChargeMaxProbaNorm; }
 
    //Get mean number of pixels per tracks
-   Double32_t    GetMeanPixelsN()            const { return fMeanPixelsN/(float) fListOfClusters->GetEntries(); }
+   Double32_t    GetMeanPixelsN()            const { return fMeanEltsN/(float) fListOfClusters->GetEntries(); }
    
    //Get mean charge per tracks
    Double32_t    GetMeanCharge()             const { return fMeanCharge/(float) fListOfClusters->GetEntries(); }
@@ -197,7 +197,7 @@ public:
    Int_t         GetMcTrackIdx(Int_t index)  const { return fMcTrackIdx[index];    }
    Int_t         GetMcTracksN()              const { return fMcTrackIdx.GetSize(); }
    
-   ClassDef(TAVTbaseTrack,9)                      // Describes TAVTbaseTrack
+   ClassDef(TAVTbaseTrack,10)                      // Describes TAVTbaseTrack
 };
 
 #endif
