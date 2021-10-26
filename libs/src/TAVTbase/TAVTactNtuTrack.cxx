@@ -111,7 +111,15 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
 			}
 		 }
         
-       lineOrigin = fpFootGeo->FromGlobalToVTLocal(lineOrigin); // back to vertex frame
+        if (fPrefix.Contains("vt"))
+           lineOrigin = fpFootGeo->FromGlobalToVTLocal(lineOrigin); // back to vertex frame
+        else if (fPrefix.Contains("it"))
+           lineOrigin = fpFootGeo->FromGlobalToITLocal(lineOrigin); // back to IT frame
+        else if (fPrefix.Contains("ms"))
+           lineOrigin = fpFootGeo->FromGlobalToMSDLocal(lineOrigin); // back to MSD frame
+        else
+           printf("Wrong prefix !");
+        
 
 		 lineSlope  = cluster->GetPositionG() - lineOrigin;
 		 lineSlope *= 1/(lineSlope)(2);
