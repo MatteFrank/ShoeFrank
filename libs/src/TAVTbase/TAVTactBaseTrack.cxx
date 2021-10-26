@@ -193,8 +193,6 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 
    originErr.SetXYZ(0.,0.,0.);
    slopeErr.SetXYZ(0.,0.,0.);
-
-   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*) fpGeoMap->Object();
    
    Int_t nClusters = track->GetClustersN();
    
@@ -204,14 +202,14 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 	  
      if(FootDebugLevel(1))
 		 printf("TAVTactNtuTrack::Analyse track with %d cluster taking origin from it and slope 0\n", track->GetClustersN());
-	  Double_t x0 = cluster0->GetPositionG()[0];
-	  Double_t y0 = cluster0->GetPositionG()[1];
-	  
-	  Double_t x1 = cluster1->GetPositionG()[0];
-	  Double_t y1 = cluster1->GetPositionG()[1];
-	  
-	  Double_t z0 = pGeoMap->GetSensorPosition(cluster0->GetSensorIdx()).Z();
-	  Double_t z1 = pGeoMap->GetSensorPosition(cluster1->GetSensorIdx()).Z();
+      
+	   Double_t x0 = cluster0->GetPositionG()[0];
+      Double_t y0 = cluster0->GetPositionG()[1];
+      Double_t z0 = cluster0->GetPositionG()[2];
+
+  	   Double_t x1 = cluster1->GetPositionG()[0];
+      Double_t y1 = cluster1->GetPositionG()[1];
+      Double_t z1 = cluster1->GetPositionG()[2];
 	  
      if(FootDebugLevel(1))
 		 printf( "TAVTactNtuTrack::Analyze cluster[pl %d]=(%.2f, %.2f, %.2f) cluster[pl %d]=(%.2f, %.2f, %.2f)\n",
@@ -366,7 +364,7 @@ void TAVTactBaseTrack::SetGeoTrafo(TString name)
 //
 Int_t TAVTactBaseTrack::GetClustersN(Int_t iPlane)
 {
-   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
+   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
    return pNtuClus->GetClustersN(iPlane);
 }
 
@@ -384,7 +382,7 @@ TAGcluster* TAVTactBaseTrack::GetCluster(Int_t iPlane, Int_t iClus)
 //
 Int_t TAVTactBaseTrack::GetTracksN()
 {
-   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
    return pNtuTrack->GetTracksN();
 }
 
@@ -392,7 +390,7 @@ Int_t TAVTactBaseTrack::GetTracksN()
 //
 void TAVTactBaseTrack::AddNewTrack(TAGbaseTrack* trk)
 {
-   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
    TAVTtrack* track = static_cast<TAVTtrack*>(trk);
    pNtuTrack->NewTrack(*track);
 }
@@ -427,16 +425,15 @@ Int_t TAVTactBaseTrack::GetTracksN() const
 //
 void TAVTactBaseTrack::SetBeamPosition(TVector3 pos)
 {
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*)  fpNtuTrack->Object();
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
    pNtuTrack->SetBeamPosition(pos);
 }
-
 
 //_____________________________________________________________________________
 //
 TAVTbaseParGeo* TAVTactBaseTrack::GetParGeo()
 {
-   TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
+   TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
    
    return pGeoMap;
 }
