@@ -21,6 +21,9 @@ class TAVTbaseCluster;
 class TAGbaseTrack;
 class TH2F;
 class TH1F;
+class TAVTbaseParGeo;
+class TAVTbaseParConf;
+
 class TAVTactBaseTrack : public TAGaction {
    
 public:
@@ -60,12 +63,24 @@ public:
    static Bool_t    GetRefit()                                 { return fgRefit;              }
    
 protected:
-   virtual TAGbaseTrack* GetTrack(Int_t /*idx*/)              { return 0x0;                  }
-   virtual Int_t          GetTracksN()                const    { return -1;                   }
-
    void   FillHistogramm(TAGbaseTrack* track);
    void   UpdateParam(TAGbaseTrack* track);
    Bool_t AppyCuts(TAGbaseTrack* track) ;
+   
+   virtual TAGbaseTrack*    GetTrack(Int_t idx);
+   virtual Int_t            GetTracksN() const;
+   
+   virtual void             AddNewTrack(TAGbaseTrack* track);
+   virtual TAGbaseTrack*    NewTrack();
+   virtual Int_t            GetTracksN();
+   
+   virtual TAGcluster*      GetCluster(Int_t iPlane, Int_t iClus);
+   virtual Int_t            GetClustersN(Int_t iPlane);
+   
+   virtual void             SetBeamPosition(TVector3 pos);
+   
+   virtual TAVTbaseParGeo*  GetParGeo();
+   virtual TAVTbaseParConf* GetParConf();
    
 protected:
    TAGdataDsc*     fpNtuTrack;		    // input data dsc

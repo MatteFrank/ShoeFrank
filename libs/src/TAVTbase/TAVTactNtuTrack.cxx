@@ -190,11 +190,3 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
    return true;
 }
 
-//_____________________________________________________________________________
-//
-void TAVTactNtuTrack::SetBeamPosition(TVector3 pos)
-{
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*)  fpNtuTrack->Object();
-   pNtuTrack->SetBeamPosition(pos);
-}
-

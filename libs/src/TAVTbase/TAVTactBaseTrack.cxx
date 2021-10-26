@@ -80,7 +80,7 @@ TAVTactBaseTrack::TAVTactBaseTrack(const char* name,
       printf("Wrong prefix for histograms !");
 
    
-   TAVTbaseParConf* config = (TAVTbaseParConf*) fpConfig->Object();
+   TAVTbaseParConf* config = GetParConf();
    fRequiredClusters   = config->GetAnalysisPar().PlanesForTrackMinimum;
    fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
    SetGeoTrafo(TAGgeoTrafo::GetDefaultActName().Data());
@@ -100,7 +100,7 @@ TAVTactBaseTrack::~TAVTactBaseTrack()
 void TAVTactBaseTrack::CreateHistogram()
 {
    DeleteHistogram();   
-   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMap = GetParGeo();
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 	  
@@ -171,7 +171,7 @@ Bool_t TAVTactBaseTrack::AppyCuts(TAGbaseTrack* track)
 {
    Bool_t valid = false;  
    
-   TAVTbaseParConf* pConfig = (TAVTbaseParConf*) fpConfig->Object();
+   TAVTbaseParConf* pConfig = GetParConf();
    if (track->GetClustersN() >= fRequiredClusters)
   	  valid = true;
    
@@ -270,13 +270,12 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 //  
 void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
 {
-   TAVTntuTrack*   pNtuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
-   TAVTbaseParGeo* pGeoMap   = (TAVTbaseParGeo*) fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMap  = GetParGeo();
    
    fpHisTheta->Fill(track->GetTheta());
    fpHisPhi->Fill(track->GetPhi());
    
-   if (pNtuTrack->GetTracksN() == 0)
+   if (GetTracksN() == 0)
       fpHisClusSensor->Fill(0);
    
    fpHisTrackClus->Fill(track->GetClustersN());
@@ -361,4 +360,92 @@ void TAVTactBaseTrack::SetGeoTrafo(TString name)
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(name.Data());
    if (!fpFootGeo)
 	  Error("SetGeoTrafo()", "No GeoTrafo action %s available yet\n", name.Data());
+}
+
+//_____________________________________________________________________________
+//
+Int_t TAVTactBaseTrack::GetClustersN(Int_t iPlane)
+{
+   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
+   return pNtuClus->GetClustersN(iPlane);
+}
+
+//_____________________________________________________________________________
+//
+TAGcluster* TAVTactBaseTrack::GetCluster(Int_t iPlane, Int_t iClus)
+{
+   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
+   TAVTcluster* cluster = pNtuClus->GetCluster(iPlane, iClus);
+   
+   return cluster;
+}
+
+//_____________________________________________________________________________
+//
+Int_t TAVTactBaseTrack::GetTracksN()
+{
+   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
+   return pNtuTrack->GetTracksN();
+}
+
+//_____________________________________________________________________________
+//
+void TAVTactBaseTrack::AddNewTrack(TAGbaseTrack* trk)
+{
+   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
+   TAVTtrack* track = static_cast<TAVTtrack*>(trk);
+   pNtuTrack->NewTrack(*track);
+}
+
+//_____________________________________________________________________________
+//
+TAGbaseTrack* TAVTactBaseTrack::NewTrack()
+{
+   return new TAVTtrack();
+}
+
+//_____________________________________________________________________________
+//
+TAGbaseTrack* TAVTactBaseTrack::GetTrack(Int_t idx)
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   TAGbaseTrack* track  = pNtuTrack->GetTrack(idx);
+   
+   return track;
+}
+
+//_____________________________________________________________________________
+//
+Int_t TAVTactBaseTrack::GetTracksN() const
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   
+   return pNtuTrack->GetTracksN();
+}
+
+//_____________________________________________________________________________
+//
+void TAVTactBaseTrack::SetBeamPosition(TVector3 pos)
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*)  fpNtuTrack->Object();
+   pNtuTrack->SetBeamPosition(pos);
+}
+
+
+//_____________________________________________________________________________
+//
+TAVTbaseParGeo* TAVTactBaseTrack::GetParGeo()
+{
+   TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
+   
+   return pGeoMap;
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParConf* TAVTactBaseTrack::GetParConf()
+{
+   TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
+   
+   return pConfig;
 }

@@ -125,3 +125,28 @@ TAGbaseTrack* TAMSDactNtuTrackF::NewTrack()
    return new TAMSDtrack();
 }
 
+//_____________________________________________________________________________
+//
+void TAMSDactNtuTrackF::SetBeamPosition(TVector3 pos)
+{
+   TAMSDntuTrack* pNtuTrack = (TAMSDntuTrack*) fpNtuTrack->Object();
+   pNtuTrack->SetBeamPosition(pos);
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParGeo* TAMSDactNtuTrackF::GetParGeo()
+{
+   TAVTbaseParGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
+   
+   return pGeoMap;
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParConf* TAMSDactNtuTrackF::GetParConf()
+{
+   TAVTbaseParConf* pConfig = (TAMSDparConf*) fpConfig->Object();
+   
+   return pConfig;
+}

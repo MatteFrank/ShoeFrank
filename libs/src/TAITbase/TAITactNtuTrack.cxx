@@ -16,8 +16,8 @@
 //BM
 #include "TABMntuTrack.hxx"
 
-#include "TAVTparGeo.hxx"
-#include "TAVTparConf.hxx"
+#include "TAITparGeo.hxx"
+#include "TAITparConf.hxx"
 #include "TAITtrack.hxx"
 #include "TAITntuTrack.hxx"
 #include "TAITntuCluster.hxx"
@@ -96,6 +96,24 @@ TAGbaseTrack* TAITactNtuTrack::NewTrack()
 //
 void TAITactNtuTrack::SetBeamPosition(TVector3 pos)
 {
-   TAITntuTrack* pNtuTrack = (TAITntuTrack*)  fpNtuTrack->Object();
+   TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
    pNtuTrack->SetBeamPosition(pos);
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParGeo* TAITactNtuTrack::GetParGeo()
+{
+   TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
+   
+   return pGeoMap;
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParConf* TAITactNtuTrack::GetParConf()
+{
+   TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
+   
+   return pConfig;
 }

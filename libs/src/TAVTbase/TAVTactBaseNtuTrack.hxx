@@ -24,7 +24,8 @@ class TAVThit;
 class TAGbaseTrack;
 class TH2F;
 class TH1F;
-
+class TAVTbaseParGeo;
+class TAVTbaseParConf;
 class TAVTactBaseNtuTrack : public TAVTactBaseTrack {
    
 public:
@@ -47,7 +48,7 @@ public:
    virtual  void   CreateHistogram();
    
    //! Set BM track pointer
-   void             SetBMntuTrack(TAGdataDsc* pBMtrack)        { fpBMntuTrack = pBMtrack;     }
+   void             SetBMntuTrack(TAGdataDsc* pBMtrack) { fpBMntuTrack = pBMtrack;     }
    
 protected:
    void   FillBmHistogramm(TVector3 bmTrackPos);
@@ -56,22 +57,12 @@ protected:
    virtual Bool_t FindStraightTracks();
    virtual Bool_t FindTiltedTracks() { return true; }
    virtual Bool_t FindVertices()     { return false; }
-   
    void           SetChargeProba();
-   TAGbaseTrack* GetTrack(Int_t idx);
-   Int_t          GetTracksN() const;
    
-   virtual void          AddNewTrack(TAGbaseTrack* track);
-   virtual TAGbaseTrack* NewTrack();
-   virtual Int_t         GetTracksN();
-
-   virtual TAGcluster*   GetCluster(Int_t iPlane, Int_t iClus);
-   virtual Int_t         GetClustersN(Int_t iPlane);
 
 protected:
    TAGdataDsc*     fpBMntuTrack;	     // BM track pointer
 	
-   
    Bool_t           fBmTrackOk;          // flag for BM track chi2 cut
    TABMtrack*       fBmTrack;            // BM track pointer 
    TVector3         fBmTrackPos;         // BM track position 

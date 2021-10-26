@@ -62,7 +62,7 @@ void TAVTactBaseNtuTrack::CreateHistogram()
 {   
    TAVTactBaseTrack::CreateHistogram();
    
-   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
+   TAVTbaseParGeo* pGeoMap  = GetParGeo();
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisPixel[i] = new TH1F(Form("%sTrackedClusPix%d", fPrefix.Data(), i+1), Form("%s - # pixels per tracked clusters of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
@@ -160,7 +160,7 @@ Bool_t TAVTactBaseNtuTrack::Action()
 void TAVTactBaseNtuTrack::CheckBM()
 {   
    // BM info
-   TAVTbaseParConf*  pConfig  = (TAVTbaseParConf*) fpConfig->Object();
+   TAVTbaseParConf* pConfig = GetParConf();
    
    Float_t zDiff = 0;
    
@@ -202,10 +202,8 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
    lineOrigin.SetXYZ(0.,0.,0.);
    lineSlope.SetXYZ(0.,0.,1.);
    
-   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
-   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
-   TAVTbaseParGeo*  pGeoMap   = (TAVTbaseParGeo*)  fpGeoMap->Object();
-   TAVTbaseParConf* pConfig   = (TAVTbaseParConf*) fpConfig->Object();
+   TAVTbaseParGeo*  pGeoMap = GetParGeo();
+   TAVTbaseParConf* pConfig = GetParConf();
    
    TList array;
    array.SetOwner(false);
@@ -280,7 +278,7 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 			track->SetType(0);
          AddNewTrack(track);
 			TVector3 orig(0,0,0);
-			pNtuTrack->SetBeamPosition(orig);
+			SetBeamPosition(orig);
 			
 			if (ValidHistogram()) {
 			   FillHistogramm(track);
@@ -302,48 +300,6 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
    
    
    return true;
-}
-
-//_____________________________________________________________________________
-//
-Int_t TAVTactBaseNtuTrack::GetClustersN(Int_t iPlane)
-{
-   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
-   return pNtuClus->GetClustersN(iPlane);
-}
-
-//_____________________________________________________________________________
-//
-TAGcluster* TAVTactBaseNtuTrack::GetCluster(Int_t iPlane, Int_t iClus)
-{
-   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
-   TAVTcluster* cluster = pNtuClus->GetCluster(iPlane, iClus);
-
-   return cluster;
-}
-
-//_____________________________________________________________________________
-//
-Int_t TAVTactBaseNtuTrack::GetTracksN()
-{
-   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
-   return pNtuTrack->GetTracksN();
-}
-
-//_____________________________________________________________________________
-//
-void TAVTactBaseNtuTrack::AddNewTrack(TAGbaseTrack* trk)
-{
-   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
-   TAVTtrack* track = static_cast<TAVTtrack*>(trk);
-   pNtuTrack->NewTrack(*track);
-}
-
-//_____________________________________________________________________________
-//
-TAGbaseTrack* TAVTactBaseNtuTrack::NewTrack()
-{
-   return new TAVTtrack();
 }
 
 //_____________________________________________________________________________
@@ -447,25 +403,5 @@ void TAVTactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
 	  fpHisVtxResX->Fill(origin.X(), bmTrackPos.Y());
 	  fpHisVtxResY->Fill(origin.Y(), bmTrackPos.Y());
    }   
-}
-
-
-//_____________________________________________________________________________
-//
-TAGbaseTrack* TAVTactBaseNtuTrack::GetTrack(Int_t idx)
-{
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-   TAGbaseTrack* track  = pNtuTrack->GetTrack(idx);
-
-   return track;
-}
-
-//_____________________________________________________________________________
-//
-Int_t TAVTactBaseNtuTrack::GetTracksN() const
-{
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-
-   return pNtuTrack->GetTracksN();
 }
 

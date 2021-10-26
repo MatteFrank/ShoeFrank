@@ -25,7 +25,6 @@ public:
    
 protected:
    virtual Bool_t FindTiltedTracks();
-   virtual void SetBeamPosition(TVector3 pos);
  
    ClassDef(TAVTactNtuTrack,0)
 };

@@ -6,8 +6,10 @@
  \brief   Declaration of TAITactNtuTrack.
  */
 /*------------------------------------------+---------------------------------*/
-class TAVTvertex;
 #include "TAVTactNtuTrack.hxx"
+
+class TAVTbaseParGeo;
+class TAVTbaseParConf;
 
 class TAITactNtuTrack : public TAVTactNtuTrack {
    
@@ -23,14 +25,19 @@ public:
    virtual ~TAITactNtuTrack();
    
 protected:   
-   void          AddNewTrack(TAGbaseTrack* track);
-   TAGbaseTrack* NewTrack();
-   Int_t         GetTracksN();
+   Bool_t                   IsGoodCandidate(TAGbaseTrack* track);
    
-   TAGcluster*   GetCluster(Int_t iPlane, Int_t iClus);
-   Int_t         GetClustersN(Int_t iPlane);
- 
-   void          SetBeamPosition(TVector3 pos);
+   void                     AddNewTrack(TAGbaseTrack* track);
+   TAGbaseTrack*            NewTrack();
+   Int_t                    GetTracksN();
+   
+   TAGcluster*              GetCluster(Int_t iPlane, Int_t iClus);
+   Int_t                    GetClustersN(Int_t iPlane);
+   
+   void                     SetBeamPosition(TVector3 pos);
+   
+   virtual TAVTbaseParGeo*  GetParGeo();
+   virtual TAVTbaseParConf* GetParConf();
 
    ClassDef(TAITactNtuTrack,0)
 };

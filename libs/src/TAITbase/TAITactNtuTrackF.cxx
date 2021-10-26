@@ -123,3 +123,28 @@ TAGbaseTrack* TAITactNtuTrackF::NewTrack()
    return new TAITtrack();
 }
 
+//_____________________________________________________________________________
+//
+void TAITactNtuTrackF::SetBeamPosition(TVector3 pos)
+{
+   TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
+   pNtuTrack->SetBeamPosition(pos);
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParGeo* TAITactNtuTrackF::GetParGeo()
+{
+   TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
+   
+   return pGeoMap;
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParConf* TAITactNtuTrackF::GetParConf()
+{
+   TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
+   
+   return pConfig;
+}
