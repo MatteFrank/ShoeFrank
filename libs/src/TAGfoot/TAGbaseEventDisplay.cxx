@@ -39,7 +39,9 @@
 
 ClassImp(TAGbaseEventDisplay)
 
-TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Std";
+TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Full";
+TString TAGbaseEventDisplay::fgItrTrackingAlgo = "Full";
+TString TAGbaseEventDisplay::fgMsdTrackingAlgo = "Full";
 Bool_t  TAGbaseEventDisplay::fgStdAloneFlag    = false;
 Bool_t  TAGbaseEventDisplay::fgBmSelectHit     = false;
 Bool_t  TAGbaseEventDisplay::fgM28ClusMtFlag   = false;
@@ -218,6 +220,8 @@ void TAGbaseEventDisplay::SetRecoOptions()
    
    if (fFlagTrack) {
       fReco->SetVtxTrackingAlgo(fgVtxTrackingAlgo[0]);
+      fReco->SetItrTrackingAlgo(fgItrTrackingAlgo[0]);
+      fReco->SetMsdTrackingAlgo(fgMsdTrackingAlgo[0]);
       fReco->EnableTracking();
    }
    
