@@ -110,16 +110,19 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    
    TAGparGeo* pGeoMapG    = (TAGparGeo*)   fpGeoMapG->Object();
    TAVTparGeo* pGeoMapVt  = (TAVTparGeo*)  fpGeoMapVtx->Object();
-   TATWparGeo* pGeoMapTw  = (TATWparGeo*)  fpGeoMapTof->Object();
 
    fSensorThickVtx = pGeoMapVt->GetTotalSize()[2];
    fLastPlaneVtx   = pGeoMapVt->GetLayerPosZ(pGeoMapVt->GetSensorsN()-1);
    fLastPlaneVtx   = fpFootGeo->FromVTLocalToGlobal(TVector3(0,0,fLastPlaneVtx))[2];
-   fWallThickTw    = pGeoMapTw->GetBarThick()*2;
    
    // in case no ITR and  MSD
    fLastPlaneItr = fLastPlaneVtx;
    fLastPlaneMsd = fLastPlaneVtx;
+   
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
+      TATWparGeo* pGeoMapTw  = (TATWparGeo*)  fpGeoMapTof->Object();
+      fWallThickTw = pGeoMapTw->GetBarThick()*2;
+   }
    
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       TAITparGeo* pGeoMapIt  = (TAITparGeo*)  fpGeoMapItr->Object();
@@ -348,8 +351,12 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
    TAVTparGeo* pGeoMapVt = (TAVTparGeo*) fpGeoMapVtx->Object();
    TAGparGeo* pGeoMapG   = (TAGparGeo*)  fpGeoMapG->Object();
 
-   FindTwCluster(track, false);
-   fPartZ = track->GetCharge();
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
+      FindTwCluster(track, false);
+      fPartZ = track->GetCharge();
+   } else {
+      fPartZ = 0;
+   }
    
    if (fPartZ == 0) {
       if(FootDebugLevel(1))
