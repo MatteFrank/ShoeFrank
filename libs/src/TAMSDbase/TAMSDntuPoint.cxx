@@ -164,6 +164,20 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, TAM
    }
 }
 
+//______________________________________________________________________________
+//  build a point
+TAMSDpoint* TAMSDntuPoint::NewPoint(TAMSDpoint* point, Int_t iStation)
+{
+   if (iStation >= 0  || iStation < fGeometry->GetStationsN()) {
+      TClonesArray &pointArray = *GetListOfPoints(iStation);
+      TAMSDpoint* pt = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint(*point);
+      pt->SetClusterIdx(pointArray.GetEntriesFast()-1);
+      return pt;
+   } else {
+      cout << Form("Wrong sensor number %d\n", iStation);
+      return 0x0;
+   }
+}
 //------------------------------------------+-----------------------------------
 int TAMSDntuPoint::GetPointsN(int iStation) const
 {
