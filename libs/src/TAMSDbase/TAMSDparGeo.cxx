@@ -71,6 +71,8 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
 
    if (!Open(nameExp)) return false;
 
+   Info("FromFile()", "Open file %s for geometry\n", name.Data());
+
    ReadItem(fSensorsN);
    if(FootDebugLevel(1))
       cout << endl << "Sensors number "<< fSensorsN << endl;

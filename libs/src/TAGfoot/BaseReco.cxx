@@ -589,18 +589,18 @@ void BaseReco::ReadParFiles()
 
          Bool_t elossTuning = false;
 
-	 if( !((TString)fCampManager->GetCurCampaign()->GetName()).CompareTo("GSI"))
-	   elossTuning = true;
-	
-         if(elossTuning) {
-            Info("ReadParFiles()","Eloss tuning for GSI data status:: ON\n");
-            parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
-                                                      false, false, true);
-            parCal->FromElossTuningFile(parFileName.Data());
+         if( !((TString)fCampManager->GetCurCampaign()->GetName()).CompareTo("GSI")) {
+            elossTuning = true;
+            
+            if(elossTuning) {
+               Info("ReadParFiles()","Eloss tuning for GSI data status:: ON");
+               parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+                                                         false, false, true);
+               parCal->FromElossTuningFile(parFileName.Data());
+            } else {
+               Info("ReadParFiles()","Eloss tuning for GSI data status:: OFF\n");
+            }
          }
-	 else
-	   Info("ReadParFiles()","Eloss tuning for GSI data status:: OFF\n");
-
       }
       
       isTof_calib = true;

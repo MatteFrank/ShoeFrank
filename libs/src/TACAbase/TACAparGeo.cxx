@@ -69,6 +69,8 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
 
+   Info("FromFile()", "Open file %s for geometry", name.Data());
+
    ReadStrings(fConfigTypeGeo);
     if(FootDebugLevel(1))
       cout << "   Geometry Type: " << fConfigTypeGeo << endl;
