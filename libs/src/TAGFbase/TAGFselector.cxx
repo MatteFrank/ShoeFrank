@@ -970,6 +970,12 @@ void TAGFselector::CategorizeMSD_Linear()
 
 void TAGFselector::CategorizeTW()
 {
+	int planeTW = m_SensorIDMap->GetFitPlaneTW();
+	if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
+		if(m_debug > -1) cout << "TAGFselector::CategorizeTW() -- no measurement found in TW layer\n";
+		return;
+	}
+
 	// Extrapolate to TW
 	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
 	m_fitter_extrapolation->setMaxIterations(1);
@@ -978,7 +984,6 @@ void TAGFselector::CategorizeTW()
 		m_fitter_extrapolation->processTrackWithRep(itTrack->second, itTrack->second->getCardinalRep() );
 
 		TVector3 guessOnTW;
-		int planeTW = m_SensorIDMap->GetFitPlaneTW();
 		try
 		{
 			guessOnTW = ExtrapolateToOuterTracker( itTrack->second, planeTW); //RZ: Local or global?!?!?!?!? CHECK!!!!!!!!!!!!!!!!!!
@@ -998,10 +1003,6 @@ void TAGFselector::CategorizeTW()
 		int indexOfMin = -1;
 		int count = 0;
 
-		if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
-			if(m_debug > 0) cout << "TAGFselector::CategorizeTW() -- no measurement found in TW layer\n";
-			continue;
-		}
 
 		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
 
