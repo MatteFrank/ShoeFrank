@@ -2,7 +2,7 @@ A) level0 reconstruction tools
 
 1)Running from raw data:
 - command:
-DecodeRaw -in data/data_built.2239.physics_foot.daq.VTX.1.dat -out run2239_Out.root -nev 10000
+DecodeRaw -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out run2239_Out.root -nev 10000
           -exp GSI -run 2239
 
 2)Running from MC data:
