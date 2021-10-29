@@ -891,12 +891,7 @@ void BaseReco::CreateRecActionGlbGF()
     
     // include the nucleon into the genfit pdg repository
     TAMCparTools::UpdatePDG();
-    
-    // study for kalman Filter
-    // fActGlbTrackStudies = new GlobalTrackingStudies("glbActTrackStudyGF");
-    // if (fFlagHisto)
-    //    fActGlbTrackStudies->CreateHistogram();
-    
+   
     // Initialisation of KFfitter
     fpNtuGlbTrackK = new TAGdataDsc("GlobalTrackRepostory", new GlobalTrackRepostory());
     fActGlbkFitter = new TAGactKFitter("glbActkFitter", fpNtuGlbTrackK);

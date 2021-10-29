@@ -34,7 +34,6 @@ set( with_dictionnaries
    TAGactNtuGlbTrackS
    GlobalReco
    GlobalToeReco
-   GlobalTrackingStudies
 )
 
 set( without_dictionnaries

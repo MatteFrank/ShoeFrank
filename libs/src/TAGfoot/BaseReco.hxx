@@ -86,7 +86,6 @@
 
 #include "TAGactKFitter.hxx"
 
-#include "GlobalTrackingStudies.hxx"
 #include "GlobalTrackRepostory.hxx"
 
 class TAMCntuHit;
@@ -382,7 +381,6 @@ protected:
     
    TAGactNtuGlbTrackS*   fActGlbTrackS;     // action for straight tracks
   
-   GlobalTrackingStudies* fActGlbTrackStudies;    // Global tracking studies with GenFit
    TAGactKFitter*         fActGlbkFitter;    // Global tracking kalman Fitter
 
    Bool_t                fFlagOut;         // flag for output file
