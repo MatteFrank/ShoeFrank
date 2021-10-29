@@ -269,6 +269,7 @@ void TAIRalignC::FillStatus()
    }
    
    if (fFlagMsd) {
+      if (!fFlagVtx) fOffsetMsd = 1 ;
       parConf = (TAMSDparConf*) fpConfigMsd->Object();
       FillStatus(parConf, fOffsetMsd);
    }
@@ -299,17 +300,19 @@ void TAIRalignC::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
          fDevStatus[fSecArray.GetSize()-1] = parConf->GetStatus(iSensor);
       }
    } else {
-      for (Int_t i = 0; i < parConf->GetSensorsN(); i += 2) {
-         if (parConf->GetStatus(i) != -1 &&  parConf->GetStatus(i+1) != -1) {
+      TAMSDparConf* parConfMsd = static_cast<TAMSDparConf*>(parConf);
+      for (Int_t i = 0; i < parConfMsd->GetSensorsN(); i += 2) {
+         if (parConfMsd->GetStatus(i) != -1 &&  parConfMsd->GetStatus(i+1) != -1) {
             fSecArray.Set(fSecArray.GetSize()+1);
             fSecArray.AddAt(i/2, fSecArray.GetSize()-1);
          }
-         if (parConf->GetStatus(i) == 0 && parConf->GetStatus(i+1) == 0) {
+
+         if (parConfMsd->GetStatus(i) == 0 && parConfMsd->GetStatus(i+1) == 0) {
             fFixPlaneRef1 = true;
             fPlaneRef1 = fSecArray.GetSize()-1;
          }
          
-         if (parConf->GetStatus(i) == 1 && parConf->GetStatus(i+1) == 1) {
+         if (parConfMsd->GetStatus(i) == 1 && parConfMsd->GetStatus(i+1) == 1) {
             fFixPlaneRef2 = true;
             fPlaneRef2 = fSecArray.GetSize()-1;
          }
@@ -326,7 +329,7 @@ void TAIRalignC::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
 void TAIRalignC::FillPosition()
 {
    TAVTbaseParGeo*  parGeo = 0x0;
-   Int_t offset = 0;
+
    if (fFlagVtx) {
       parGeo  = (TAVTparGeo*)  fpGeoMapVtx->Object();
       FillPosition(parGeo);
@@ -358,10 +361,10 @@ void TAIRalignC::FillPosition(TAVTbaseParGeo* parGeo, Int_t offset)
    } else {
       for (Int_t i = 0; i < sensorsN; i+=2) {
          TVector3 posSens1 = parGeo->GetSensorPosition(i);
-         posSens1 = geoTrafo->FromVTLocalToGlobal(posSens1);
+         posSens1 = geoTrafo->FromMSDLocalToGlobal(posSens1);
 
          TVector3 posSens2 = parGeo->GetSensorPosition(i+1);
-         posSens2 = geoTrafo->FromVTLocalToGlobal(posSens2);
+         posSens2 = geoTrafo->FromMSDLocalToGlobal(posSens2);
 
          fZposition[i+offset] = (posSens1.Z()+posSens2.Z())*TAGgeoTrafo::CmToMm()/2.;
          fThickDect[i+offset] = parGeo->GetTotalSize()[2]*TAGgeoTrafo::CmToMm();
@@ -874,7 +877,7 @@ Bool_t TAIRalignC::DefineWeights()
 // Update transfo for every loop when it changes the alignment parameters
 void TAIRalignC::UpdateTransfo(Int_t idx)
 {
-   if (idx < 4) {
+   if (idx < 4 && fFlagVtx) {
       TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMapVtx->Object();
       Int_t       iPlane   = fSecArray[idx];
       pGeoMap->GetSensorPar(iPlane).AlignmentU = fAlignmentU[idx];
