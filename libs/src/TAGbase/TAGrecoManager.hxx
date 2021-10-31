@@ -37,32 +37,29 @@ public:
    const TAGrunInfo GetGlobalInfo();
    Bool_t           Find_MCParticle( string villain );
 
-	Int_t  Debug()                	const { return m_debug;              }
-	float  Chi2Cut()             	const { return m_chi2;               }
-	int  MeasureN()               	const { return m_measureN;           }
-	int  SkipN()              		const { return m_skipN;           }
+	Int_t  Debug()                const { return fDebugLevel;          }
+	float  Chi2Cut()             	const { return fChi2;               }
+	int  MeasureN()               	const { return fMeasureN;           }
+	int  SkipN()              		const { return fSkipN;           }
 
-	// Kalman Getter
-	string KalMode()              const { return m_kalmanMode;          }
-	string PreselectStrategy()    const { return m_kPreselectStrategy;  }
-	Bool_t IsKalReverse()         const { return m_kalReverse;          }
-	Bool_t verFLUKA()             const { return m_verFLUKA;            }
-	Bool_t EnableEventDisplay()   const { return m_enableEventDisplay;  }
+    // Kalman Getter
+   string KalMode()              const { return fKalmanMode;          }
+   string PreselectStrategy()    const { return fKPreselectStrategy;  }
+	Bool_t IsKalReverse()         const { return fKalReverse;          }
+	Bool_t verFLUKA()             const { return fVerFLUKA;            }
+   Bool_t EnableEventDisplay()   const { return fEnableEventDisplay;  }
 
-	vector<string> KalSystems()         { return m_trackingSystems;     }
-	vector<string> KalParticles()       { return m_kalParticles;        }
-	vector<string> MCParticles()        { return m_mcParticles;         }
-	vector<TString> DectIncluded()      { return m_dectInclude;         }
+	vector<string>  KalSystems()        { return fTrackingSystems;     }
+	vector<string>  KalParticles()      { return fKalParticles;        }
+   vector<string>  MCParticles()       { return fMcParticles;         }
+   vector<TString> DectIncluded()      { return fDectInclude;         }
 
-	Double_t VTReso() 	         const { return m_VTreso;              }
-	Double_t ITReso() 	         const { return m_ITreso;              }
-	Double_t MSDReso()           const { return m_MSDreso;             }
-	Double_t TWReso()            const { return m_TWreso;              }
+	 Double_t VTReso() 	         const { return fVTreso;              }
+    Double_t ITReso() 	         const { return fITreso;              }
+    Double_t MSDReso()           const { return fMSDreso;             }
+    Double_t TWReso()            const { return fTWreso;              }
 
-    bool IsMC()								{ return m_isMC; }
-    void SetIsMC( bool aIsMC )				{ m_isMC = aIsMC; }
-
-    Bool_t Find_MCParticle( string villain );
+    bool IsMC()								{ return fIsMC; }
 
     // Reconstruction parameters Getter
     Bool_t IsLocalReco()         const { return fEnableLocalReco;     }
@@ -134,18 +131,17 @@ private:
    static const TString         fgkDefParName;
 
 private:
-	vector<string> m_copyInputFile;
+   // file parameters
+	vector<string>       fCopyInputFile;
+   map< string, Int_t > fMapDebug;
+	string               fParFileName;
+	Int_t                fDebugLevel;
 
-   map< string, Int_t >    m_map_debug;
-	string m_parFileName;
+	float fChi2;
+	int fMeasureN;
+	int fSkipN;
 
-	Int_t m_debug;
-	float m_chi2;
-	int m_measureN;
-	int m_skipN;
-
-   bool m_isMC;
-
+   bool fIsMC;
    // debug levels for classes
    TObjArray fClassDebugLevels;
    

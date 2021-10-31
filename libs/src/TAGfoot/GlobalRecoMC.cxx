@@ -10,8 +10,7 @@ GlobalRecoMC::GlobalRecoMC(TString expName, Int_t runNumber, TString fileNameIn,
 {
 
 	EnableTracking();
-	fFlagMC = true;
-	TAGrecoManager::GetPar()->SetIsMC( fFlagMC );		// to be changed
+	fFlagMC = TAGrecoManager::GetPar()->IsMC();		// to be changed
 
 }
 

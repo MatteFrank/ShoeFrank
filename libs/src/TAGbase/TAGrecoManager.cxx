@@ -50,13 +50,13 @@ TAGrecoManager::~TAGrecoManager()
 //_____________________________________________________________________________
 // private constructor
 TAGrecoManager::TAGrecoManager( const TString expName )
-: m_parFileName(""),        m_debug(0),				m_chi2(-1),				m_measureN(11),			m_skipN(-1),
-  m_kalmanMode(""),         m_kalReverse(false),   m_verFLUKA(false),       m_VTreso(0.),            m_ITreso(0.),            m_MSDreso(0.), m_TWreso(0.),
-  m_enableLocalReco(false), m_enableTree(false),   m_enableHisto(false),    m_enableSaveHits(false), m_enableTracking(false), m_enableRootObject(false),
-  m_enableTWZmc(false),     m_enableTWnoPU(false), m_enableTWZmatch(false), m_enableTWCalBar(false), m_doCalibTW(false),      m_doCalibBM(false), m_enableRegionMc(false),
-  m_includeST(false),       m_includeBM(false),    m_includeTG(false),      m_includeDI(false),      m_includeTW(false),      m_includeMSD(false),
-  m_includeCA(false),       m_includeIT(false),    m_includeVT(false),
-  m_includeKalman(false),   m_includeTOE(false)
+: fParFileName(""),        fDebugLevel(0),  fChi2(-1),				fMeasureN(11),			fSkipN(-1),			fIsMC(true),
+  fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),       fVTreso(0.),            fITreso(0.),            fMSDreso(0.),             fTWreso(0.),
+  fEnableLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
+  fEnableTWZmc(false),     fEnableTWnoPU(false), fEnableTWZmatch(false), fEnableTWCalBar(false), fDoCalibTW(false),      fDoCalibBM(false),        fEnableRegionMc(false),
+  fIncludeST(false),       fIncludeBM(false),    fIncludeTG(false),      fIncludeDI(false),      fIncludeTW(false),      fIncludeMSD(false),
+  fIncludeCA(false),       fIncludeIT(false),    fIncludeVT(false),
+  fIncludeKalman(false),   fIncludeTOE(false)
 {
     TString absName = Form("./config/%s/%s", expName.Data(), fgkDefParName.Data());
     fParFileName = absName.Data();
@@ -155,26 +155,34 @@ void TAGrecoManager::FromFile ()
       if (fDebugLevel > 0)
         printf("Debug: %d\n", fDebugLevel);
     }
-
+    
     if (key.Contains("Chi2 cut:")) {
-      m_chi2 = item.Atof();
-      if (m_debug > 0)
-        printf("Chi2 cut: %d\n", m_chi2);
+      fChi2 = item.Atof();
+      if (fDebugLevel > 0)
+        printf("Chi2 cut: %d\n", fChi2);
     }
 
     if (key.Contains("N measure in global tracking:")) {
-      m_measureN = item.Atoi();
-      if (m_debug > 0)
-        printf("N measure in global tracking: %d\n", m_measureN);
+      fMeasureN = item.Atoi();
+      if (fDebugLevel > 0)
+        printf("N measure in global tracking: %d\n", fMeasureN);
     }
 
     if (key.Contains("Skip n events:")) {
-		m_skipN = item.Atoi();
-		if (m_debug > 0)
-			printf("Skip n events: %d\n", m_skipN);
-		if (  m_skipN <= 0 )	m_skipN = -1;
-		else 					m_skipN -= 1;
+		fSkipN = item.Atoi();
+		if (fDebugLevel > 0)
+			printf("Skip n events: %d\n", fSkipN);
+		if (  fSkipN <= 0 )	fSkipN = -1;
+		else 					fSkipN -= 1;
 	}
+
+	if (key.Contains("MC sample:")  ) {
+      if ( item.Contains("y")) fIsMC = true;
+      else                     fIsMC = false;
+      if (fDebugLevel > 0)
+        printf("MC sample: %d\n", fIsMC);
+      
+    }
     
     if (key.Contains("MC Particle Types:")) {
       fMcParticles.clear();
@@ -253,7 +261,7 @@ void TAGrecoManager::FromFile ()
     }
     
     if (key.Contains("Kalman preselection strategy:")) {
-      vector<TString> tmp_Modes = { "TrueParticle", "Sept2020", "Linear" };
+      vector<TString> tmp_Modes = { "TrueParticle", "Sept2020" };
       istringstream sss(item.Data());
       
       TString inputMode;

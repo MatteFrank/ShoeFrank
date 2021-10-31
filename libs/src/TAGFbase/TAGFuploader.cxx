@@ -232,8 +232,8 @@ int TAGFuploader::UploadHitsTW() {
 //----------------------------------------------------------------------------------------------------
 map< int, vector<int> >* TAGFuploader::TakeMeasParticleMC_Collection() {
 
-	if ( !TAGrecoManager::GetPar()->IsMC() ) 
-		cout << "ERROR in TAGFuploader::TakeMeasParticleMC_Collection() :: not runnninng onn MC!" << endl, exit(0);
+  //	if ( !TAGrecoManager::GetPar()->IsMC() ) 
+  //		cout << "ERROR in TAGFuploader::TakeMeasParticleMC_Collection() :: not runnninng onn MC!" << endl, exit(0);
 
   	return m_measParticleMC_collection;
 }
