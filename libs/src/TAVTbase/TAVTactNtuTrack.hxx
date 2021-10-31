@@ -6,6 +6,7 @@
  \brief   Declaration of TAVTactNtuTrack.
  */
 /*------------------------------------------+---------------------------------*/
+#include "TVector3.h"
 
 #include "TAVTactBaseNtuTrack.hxx"
 
@@ -24,7 +25,6 @@ public:
    
 protected:
    virtual Bool_t FindTiltedTracks();
-      
  
    ClassDef(TAVTactNtuTrack,0)
 };

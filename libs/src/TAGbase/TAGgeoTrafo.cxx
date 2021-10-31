@@ -218,6 +218,8 @@ bool TAGgeoTrafo::FromFile(TString ifile)
       return kTRUE;
    }
   
+   Info("FromFile()", "Open file %s for geometry", ifile.Data());
+   
    while(!fFileStream->Eof()) {
       TString name;
       TString baseName = "";

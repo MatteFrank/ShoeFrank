@@ -25,7 +25,7 @@ ClassImp(TAIRtrack) // Description of a Track
 //______________________________________________________________________________
 //  
 TAIRtrack::TAIRtrack()
-:  TAVTbaseTrack()
+:  TAGbaseTrack()
 {
    SetupClones();
 }
@@ -39,7 +39,7 @@ TAIRtrack::~TAIRtrack()
 //______________________________________________________________________________
 //
 TAIRtrack::TAIRtrack(const TAIRtrack& aTrack)
-: TAVTbaseTrack::TAVTbaseTrack(aTrack)
+: TAGbaseTrack::TAGbaseTrack(aTrack)
 {
    
 }
@@ -55,8 +55,10 @@ void TAIRtrack::SetupClones()
 
 // __________________________________________________________________________
 //
-void TAIRtrack::AddCluster(TAVTbaseCluster* cluster)
+void TAIRtrack::AddCluster(TAGcluster* clus)
 {
+   TAIRcluster* cluster = static_cast<TAIRcluster*>(clus);
+
    for (Int_t k = 0; k < cluster->GetMcTracksN(); ++k) {
       Int_t idx = cluster->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);
@@ -64,6 +66,6 @@ void TAIRtrack::AddCluster(TAVTbaseCluster* cluster)
    
    TClonesArray &clusterArray = *fListOfClusters;
    new(clusterArray[clusterArray.GetEntriesFast()]) TAIRcluster(*cluster);
-   fMeanPixelsN += cluster->GetPixelsN();
-   fMeanCharge  += cluster->GetCharge();
+   fMeanEltsN  += cluster->GetPixelsN();
+   fMeanCharge += cluster->GetCharge();
 }

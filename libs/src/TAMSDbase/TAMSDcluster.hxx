@@ -74,6 +74,7 @@ public:
       
    //! Compute distance from another cluster
    Float_t            Distance(TAMSDcluster *aClus);
+   
    //! Compute 'Eta' value for the cluster
    Float_t            ComputeEta(Float_t cog);
    //! Compute corection factor for the energy loss wrt position

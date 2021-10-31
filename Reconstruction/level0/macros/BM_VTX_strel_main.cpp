@@ -3,7 +3,7 @@
 using namespace std;
 using namespace TMath;
 
-void BM_VTX_strel_main(TString in_filename = "",TString expName="GSI2021",Int_t runNumber=4287, Int_t nentries = 0, Int_t doalign=1, TString addoutname=""){
+void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doalign=1, TString addoutname=""){
 
   gROOT->SetBatch(kTRUE);//turn off graphical output on screen
   TFile *infile = new TFile(in_filename.Data(),"READ");
@@ -25,13 +25,13 @@ void BM_VTX_strel_main(TString in_filename = "",TString expName="GSI2021",Int_t 
 
   //define and charge varaibles and geometrical parameters
   TAGroot gTAGroot;
-  // TAGrunInfo* runinfo=(TAGrunInfo*)(infile->Get("runinfo"));
-  // const TAGrunInfo construninfo(*runinfo);
-  // gTAGroot.SetRunInfo(construninfo);
-  // TString expName=runinfo->CampaignName();
+  TAGrunInfo* runinfo=(TAGrunInfo*)(infile->Get("runinfo"));
+  const TAGrunInfo construninfo(*runinfo);
+  gTAGroot.SetRunInfo(construninfo);
+  TString expName=runinfo->CampaignName();
   if(expName.EndsWith("/")) //fix a bug present in shoe
     expName.Remove(expName.Length()-1);
-  // Int_t runNumber=runinfo->RunNumber();
+  Int_t runNumber=runinfo->RunNumber();
   TAGrecoManager::Instance(expName);
   TAGcampaignManager* campManager = new TAGcampaignManager(expName);
   campManager->FromFile();
@@ -102,37 +102,15 @@ void BM_VTX_strel_main(TString in_filename = "",TString expName="GSI2021",Int_t 
 
     FillSeparated(); //here I inverted the vtx SlopeZ.Y and origin.Y
 
-    if(vtNtuTrack->GetTracksN() == 1 && bmNtuTrack->GetTracksN()==1){
-      Int_t bestvtxindex=0;
-      Double_t bestratio=1000;
-      TABMtrack* bmtrack = bmNtuTrack->GetTrack(0);
-      for(int i=0;i<vtNtuTrack->GetTracksN();i++){
-        TAVTtrack* tmpvttrack = vtNtuTrack->GetTrack(i);
-        if(fabs(bmtrack->GetOrigin().X()-tmpvttrack->GetOrigin().X())<bestratio){
-          bestratio=fabs(bmtrack->GetOrigin().X()-tmpvttrack->GetOrigin().X());
-          bestvtxindex=i;
-        }
-      }
-      ((TH2D*)gDirectory->Get("bestratioX"))->SetBinContent(evnum,bestratio);
-      TAVTtrack* vttrack=vtNtuTrack->GetTrack(bestvtxindex);
-      if(bmtrack->GetChiSquare()<100 && vttrack->GetChi2()<100){
-        ((TH1D*)gDirectory->Get("combinedStatus"))->Fill(0);
-        FillCombined(bmtrack, vttrack, vtxslopevec, vtxoriginvec, bmslopevec, bmoriginvec);
-        FillStrel(vttrack, bmpargeo);
-      }else{
-        if(vttrack->GetChi2()>=100)
-          ((TH1D*)gDirectory->Get("combinedStatus"))->Fill(5);
-        if(bmtrack->GetChiSquare()>=100)
-          ((TH1D*)gDirectory->Get("combinedStatus"))->Fill(6);
-      }
+    // if(vtNtuTrack->GetTracksN() == 1 && bmNtuTrack->GetTracksN()==1){
+    if(vtNtuTrack->GetTracksN() >0 && bmNtuTrack->GetTracksN()==1){
+      FillCombined(vtxslopevec, vtxoriginvec, bmslopevec, bmoriginvec, bmpargeo);
     }else{
       if(vtNtuTrack->GetTracksN()!=1)
         ((TH1D*)gDirectory->Get("combinedStatus"))->Fill((vtNtuTrack->GetTracksN()>1) ? 1:2);
       if(bmNtuTrack->GetTracksN()!=1)
         ((TH1D*)gDirectory->Get("combinedStatus"))->Fill((bmNtuTrack->GetTracksN()>1) ? 3:4);
-
     }
-
   }
 
   cout<<"End of event loop, total number of events read="<<evnum<<endl;

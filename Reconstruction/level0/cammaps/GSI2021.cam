@@ -50,7 +50,7 @@ NumberFiles: 6
 "./config/GSI2021/TATW_BBparameters.cfg": -1
 "./config/GSI2021/TATWChannelMapXML.map": -1
 "./calib/GSI2021/TATW_Energy_Calibration.cal": -1
-"./calib/GSI2021/TATW_Tof_Calibration.cal": 200; 400;
+"./calib/GSI2021/TATW_Tof_Calibration.cal": -1;
 
 DetectorName: "CA"
 NumberFiles: 5

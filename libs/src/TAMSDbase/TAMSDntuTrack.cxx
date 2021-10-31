@@ -103,7 +103,7 @@ void TAMSDntuTrack::ToStream(ostream& os, Option_t* option) const
    for (Int_t j = 0; j < GetTracksN(); j++) {
 	  const TAMSDtrack*  track = GetTrack(j);
 	  if (track)
-		 os << Form("%4d", track->GetNumber());
+		 os << Form("%4d", track->GetTrackIdx());
 	  os << endl;
    }
 }

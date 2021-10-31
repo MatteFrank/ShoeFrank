@@ -32,9 +32,10 @@ public:
 public:
 	~TAGrecoManager();
 
-	void FromFile();
-	void Print(Option_t* opt = "");
+	void             FromFile();
+	void             Print(Option_t* opt = "");
    const TAGrunInfo GetGlobalInfo();
+   Bool_t           Find_MCParticle( string villain );
 
 	Int_t  Debug()                	const { return m_debug;              }
 	float  Chi2Cut()             	const { return m_chi2;               }
@@ -64,62 +65,62 @@ public:
     Bool_t Find_MCParticle( string villain );
 
     // Reconstruction parameters Getter
-    Bool_t IsLocalReco()         const { return m_enableLocalReco;     }
-    Bool_t IsSaveTree()          const { return m_enableTree;          }
-    Bool_t IsSaveHisto()         const { return m_enableHisto;         }
-    Bool_t IsSaveHits()          const { return m_enableSaveHits;      }
-    Bool_t IsTracking()          const { return m_enableTracking;      }
-    Bool_t IsReadRootObj()       const { return m_enableRootObject;    }
-    Bool_t IsTWZmc()             const { return m_enableTWZmc;         }
-    Bool_t IsTWnoPU()            const { return m_enableTWnoPU;        }
-    Bool_t IsTWZmatch()          const { return m_enableTWZmatch;      }
-    Bool_t IsTWCalBar()          const { return m_enableTWCalBar;      }
-    Bool_t IsRegionMc()          const { return m_enableRegionMc;      }
-    Bool_t CalibTW()             const { return m_doCalibTW;           }
-    Bool_t CalibBM()             const { return m_doCalibBM;           }
+    Bool_t IsLocalReco()         const { return fEnableLocalReco;     }
+    Bool_t IsSaveTree()          const { return fEnableTree;          }
+    Bool_t IsSaveHisto()         const { return fEnableHisto;         }
+    Bool_t IsSaveHits()          const { return fEnableSaveHits;      }
+    Bool_t IsTracking()          const { return fEnableTracking;      }
+    Bool_t IsReadRootObj()       const { return fEnableRootObject;    }
+    Bool_t IsTWZmc()             const { return fEnableTWZmc;         }
+    Bool_t IsTWnoPU()            const { return fEnableTWnoPU;        }
+    Bool_t IsTWZmatch()          const { return fEnableTWZmatch;      }
+    Bool_t IsTWCalBar()          const { return fEnableTWCalBar;      }
+    Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
+    Bool_t CalibTW()             const { return fDoCalibTW;           }
+    Bool_t CalibBM()             const { return fDoCalibBM;           }
 
-    Bool_t IncludeDI()           const { return m_includeDI;           }
-    Bool_t IncludeST()           const { return m_includeST;           }
-    Bool_t IncludeBM()           const { return m_includeBM;           }
-    Bool_t IncludeTW()           const { return m_includeTW;           }
-    Bool_t IncludeMSD()          const { return m_includeMSD;          }
-    Bool_t IncludeCA()           const { return m_includeCA;           }
-    Bool_t IncludeTG()           const { return m_includeTG;           }
-    Bool_t IncludeVT()           const { return m_includeVT;           }
-    Bool_t IncludeIT()           const { return m_includeIT;           }
+    Bool_t IncludeDI()           const { return fIncludeDI;           }
+    Bool_t IncludeST()           const { return fIncludeST;           }
+    Bool_t IncludeBM()           const { return fIncludeBM;           }
+    Bool_t IncludeTW()           const { return fIncludeTW;           }
+    Bool_t IncludeMSD()          const { return fIncludeMSD;          }
+    Bool_t IncludeCA()           const { return fIncludeCA;           }
+    Bool_t IncludeTG()           const { return fIncludeTG;           }
+    Bool_t IncludeVT()           const { return fIncludeVT;           }
+    Bool_t IncludeIT()           const { return fIncludeIT;           }
    
-    Bool_t IncludeTOE()          const { return m_includeTOE;          }
-    Bool_t IncludeKalman()       const { return m_includeKalman;       }
+    Bool_t IncludeTOE()          const { return fIncludeTOE;          }
+    Bool_t IncludeKalman()       const { return fIncludeKalman;       }
   
     // Reconstruction parameters Setter
-    void IncludeTOE(Bool_t t)          {  m_includeTOE = t;            }
-    void IncludeKalman(Bool_t t)       {  m_includeKalman = t;         }
-    void EnableLocalReco()             {  m_enableLocalReco = true;    }
-    void DisableLocalReco()            {  m_enableLocalReco = false;   }
+    void IncludeTOE(Bool_t t)          {  fIncludeTOE = t;            }
+    void IncludeKalman(Bool_t t)       {  fIncludeKalman = t;         }
+    void EnableLocalReco()             {  fEnableLocalReco = true;    }
+    void DisableLocalReco()            {  fEnableLocalReco = false;   }
 
-    void EnableRootObject()            {  m_enableRootObject = true;   }
-    void DisableRootObject()           {  m_enableRootObject = false;  }
+    void EnableRootObject()            {  fEnableRootObject = true;   }
+    void DisableRootObject()           {  fEnableRootObject = false;  }
 
-    void EnableRegionMc()              {  m_enableRegionMc = true;     }
-    void DisableRegionMc()             {  m_enableRegionMc = false;    }
+    void EnableRegionMc()              {  fEnableRegionMc = true;     }
+    void DisableRegionMc()             {  fEnableRegionMc = false;    }
    
-    void EnableTree()                  {  m_enableTree = true;         }
-    void DisableTree()                 {  m_enableTree = false;        }
+    void EnableTree()                  {  fEnableTree = true;         }
+    void DisableTree()                 {  fEnableTree = false;        }
    
-    void EnableHisto()                 {  m_enableHisto = true;        }
-    void DisableHisto()                {  m_enableHisto = false;       }
+    void EnableHisto()                 {  fEnableHisto = true;        }
+    void DisableHisto()                {  fEnableHisto = false;       }
 
-    void IncludeDI(Bool_t t)           {  m_includeDI = t;             }
-    void IncludeST(Bool_t t)           {  m_includeST = t;             }
-    void IncludeBM(Bool_t t)           {  m_includeBM = t;             }
-    void IncludeTW(Bool_t t)           {  m_includeTW = t;             }
-    void IncludeMSD(Bool_t t)          {  m_includeMSD = t;            }
-    void IncludeCA(Bool_t t)           {  m_includeCA = t;             }
-    void IncludeTG(Bool_t t)           {  m_includeTG = t;             }
-    void IncludeVT(Bool_t t)           {  m_includeVT = t;             }
-    void IncludeIT(Bool_t t)           {  m_includeIT = t;             }
-    void CalibTW(Bool_t t)             {  m_doCalibTW = t;             }
-    void CalibBM(bool t)               {  m_doCalibBM = t;             }
+    void IncludeDI(Bool_t t)           {  fIncludeDI = t;             }
+    void IncludeST(Bool_t t)           {  fIncludeST = t;             }
+    void IncludeBM(Bool_t t)           {  fIncludeBM = t;             }
+    void IncludeTW(Bool_t t)           {  fIncludeTW = t;             }
+    void IncludeMSD(Bool_t t)          {  fIncludeMSD = t;            }
+    void IncludeCA(Bool_t t)           {  fIncludeCA = t;             }
+    void IncludeTG(Bool_t t)           {  fIncludeTG = t;             }
+    void IncludeVT(Bool_t t)           {  fIncludeVT = t;             }
+    void IncludeIT(Bool_t t)           {  fIncludeIT = t;             }
+    void CalibTW(Bool_t t)             {  fDoCalibTW = t;             }
+    void CalibBM(bool t)               {  fDoCalibBM = t;             }
   
     void SetDebugLevels();
   
@@ -128,9 +129,9 @@ private:
 	TAGrecoManager( const TString expName );
    
 private:
-	static TAGrecoManager* m_pInstance;
-   static map<TString, TString> m_dectFullName; // full name
-   static const TString m_defParName;
+	static TAGrecoManager*       fgInstance;
+   static map<TString, TString> fgkDectFullName; // full name
+   static const TString         fgkDefParName;
 
 private:
 	vector<string> m_copyInputFile;
@@ -145,53 +146,53 @@ private:
 
    bool m_isMC;
 
+   // debug levels for classes
+   TObjArray fClassDebugLevels;
+   
    // Kalman parameters
-	vector<string> m_mcParticles;
-   string m_kalmanMode;
-   string m_kPreselectStrategy;
-   Bool_t m_enableEventDisplay;
-	Bool_t m_kalReverse;
-	Bool_t m_verFLUKA;
-	vector<string> m_trackingSystems;
-   vector<string> m_kalParticles;
-   vector<TString> m_dectInclude;
+	vector<string>  fMcParticles;
+   string          fKalmanMode;
+   string          fKPreselectStrategy;
+   Bool_t          fEnableEventDisplay;
+	Bool_t          fKalReverse;
+	Bool_t          fVerFLUKA;
+	vector<string>  fTrackingSystems;
+   vector<string>  fKalParticles;
+   vector<TString> fDectInclude;
 
-	Double_t m_VTreso;
-   Double_t m_ITreso;
-   Double_t m_MSDreso;
-   Double_t m_TWreso;
+	Double_t        fVTreso;
+   Double_t        fITreso;
+   Double_t        fMSDreso;
+   Double_t        fTWreso;
   
    // reconstruction parameter
-   Bool_t m_enableLocalReco;
-   Bool_t m_enableTree;
-   Bool_t m_enableHisto;
-   Bool_t m_enableSaveHits;
-   Bool_t m_enableTracking;
-   Bool_t m_enableRootObject;
-   Bool_t m_enableTWZmc;
-   Bool_t m_enableTWnoPU;
-   Bool_t m_enableTWZmatch;
-   Bool_t m_enableTWCalBar;
-   Bool_t m_doCalibTW;
-   Bool_t m_doCalibBM;
-   Bool_t m_enableRegionMc;
+   Bool_t fEnableLocalReco;
+   Bool_t fEnableTree;
+   Bool_t fEnableHisto;
+   Bool_t fEnableSaveHits;
+   Bool_t fEnableTracking;
+   Bool_t fEnableRootObject;
+   Bool_t fEnableTWZmc;
+   Bool_t fEnableTWnoPU;
+   Bool_t fEnableTWZmatch;
+   Bool_t fEnableTWCalBar;
+   Bool_t fDoCalibTW;
+   Bool_t fDoCalibBM;
+   Bool_t fEnableRegionMc;
 
-   Bool_t m_includeST;
-   Bool_t m_includeBM;
-   Bool_t m_includeTG;
-   Bool_t m_includeDI;
+   Bool_t fIncludeST;
+   Bool_t fIncludeBM;
+   Bool_t fIncludeTG;
+   Bool_t fIncludeDI;
 
-   Bool_t m_includeTW;
-   Bool_t m_includeMSD;
-   Bool_t m_includeCA;
-   Bool_t m_includeIT;
-   Bool_t m_includeVT;
+   Bool_t fIncludeTW;
+   Bool_t fIncludeMSD;
+   Bool_t fIncludeCA;
+   Bool_t fIncludeIT;
+   Bool_t fIncludeVT;
     
-   Bool_t m_includeKalman;
-   Bool_t m_includeTOE;
-  
-   // debug levels for classes
-   TObjArray  m_ClassDebugLevels;
+   Bool_t fIncludeKalman;
+   Bool_t fIncludeTOE;
 
 public:
    static void   DebugLine(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", const char* file = "", Int_t line = -1);

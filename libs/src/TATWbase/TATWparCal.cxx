@@ -139,9 +139,9 @@ Bool_t TATWparCal::FromCalibFile(const TString& name, Bool_t isTof, Bool_t barCa
       fMapCal->LoadTofCalibrationMap(name_exp.Data());
   }
   if(isTof==0)
-     Info("FromCalibFile()", "Open file %s for Energy calibration\n", name_exp.Data());
+     Info("FromCalibFile()", "Open file %s for Energy calibration", name_exp.Data());
   if(isTof==1)
-     Info("FromCalibFile()", "Open file %s for TOF calibration\n", name_exp.Data());
+     Info("FromCalibFile()", "Open file %s for TOF calibration", name_exp.Data());
 
 
   return kFALSE;

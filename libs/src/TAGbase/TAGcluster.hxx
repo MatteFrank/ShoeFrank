@@ -14,6 +14,7 @@
 
 using namespace std;
 
+class TAGbaseTrack;
 class TAGcluster : public TAGobject {
    
 protected:
@@ -60,6 +61,9 @@ public:
    //! Get MC info
    Int_t                    GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
    Int_t                    GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
+   
+   //! Compute distance from a track
+   Float_t                  Distance(TAGbaseTrack *aTrack); 
    
    //! Set validy
    void                     SetValid(Bool_t v = true)                     { fIsValid = v;             }

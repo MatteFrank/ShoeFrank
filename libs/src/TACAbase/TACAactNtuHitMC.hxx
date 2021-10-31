@@ -24,21 +24,7 @@
 
 class TACAdigitizer;
 class TACAactNtuHitMC : public TAGaction {
-
-private:
-   // Helper class to sum MC hit of the same particle
-   struct EnergyDep_t : public TObject {
-      EnergyDep_t( int iEvn, int icry, int idpart, float ti, double de ) :
-      index(iEvn), fn(1), fCryid(icry), fid(idpart), fTimeFirstHit(ti), fDE(de) {}
-      int index;             // index in EvnStr
-      int fn;                // number of Edep
-      int fCryid;            // crystal index hit
-      int fid;               // index in the particle block
-      float fTimeFirstHit;   // dep. time at FIRST hit
-      double fDE;            // sum Edep
-
-   };
-
+  
   public:
     explicit       TACAactNtuHitMC(const char* name       = 0,
                                     TAGdataDsc* p_ntuMC   = 0,
@@ -53,11 +39,9 @@ private:
 
     virtual Bool_t Action();
 
-    void SmearEnergy();
+    void           SmearEnergy();
 
     void           CreateHistogram();
-
-    ClassDef(TACAactNtuHitMC,0)
 
   private:
    TAGdataDsc*     fpNtuMC;     // input mc hit
@@ -90,7 +74,10 @@ private:
    TH2F* fpHisHitMapZYout;
    TH2I* fpHisParticleVsRegion;
 
+  private:
    void           CreateDigitizer();
+
+   ClassDef(TACAactNtuHitMC,0)
 
 };
 

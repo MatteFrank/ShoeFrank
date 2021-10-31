@@ -12,7 +12,7 @@ A) fullrec reconstruction tools with TOE
    Reverse Tracking:   false
    . . .
 - command:
-DecodeGlbToe -in data/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
+DecodeGlbToe -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
              -exp GSI -run 2239
 
 2)Running from MC data:
@@ -56,7 +56,7 @@ B) fullrec reconstruction tools with GenFit
    Reverse Tracking:   false
    . . .
 - command:
-DecodeGlb -in data/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
+DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
           -exp GSI -run 2239
 
 2)Running from MC data:

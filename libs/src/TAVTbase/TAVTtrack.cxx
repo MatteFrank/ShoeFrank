@@ -24,9 +24,19 @@ ClassImp(TAVTtrack) // Description of a Track
 //______________________________________________________________________________
 //  
 TAVTtrack::TAVTtrack()
-:  TAVTbaseTrack()
+:  TAGbaseTrack(),
+   fPosVertex(0.,0.,0.)
 {
    SetupClones();
+}
+
+//______________________________________________________________________________
+//
+TAVTtrack::TAVTtrack(const TAVTtrack& aTrack)
+:  TAGbaseTrack(aTrack),
+   fPosVertex(aTrack.fPosVertex)
+{
+   
 }
 
 //______________________________________________________________________________
@@ -45,8 +55,9 @@ void TAVTtrack::SetupClones()
 
 // __________________________________________________________________________
 //
-void TAVTtrack::AddCluster(TAVTcluster* cluster)
+void TAVTtrack::AddCluster(TAGcluster* clus)
 {
+  TAVTcluster* cluster = static_cast<TAVTcluster*>(clus);
    for (Int_t k = 0; k < cluster->GetMcTracksN(); ++k) {
       Int_t idx = cluster->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);
@@ -54,6 +65,6 @@ void TAVTtrack::AddCluster(TAVTcluster* cluster)
    
    TClonesArray &clusterArray = *fListOfClusters;
    new(clusterArray[clusterArray.GetEntriesFast()]) TAVTcluster(*cluster);
-   fMeanPixelsN += cluster->GetPixelsN();
-   fMeanCharge  += cluster->GetCharge();
+   fMeanEltsN  += cluster->GetPixelsN();
+   fMeanCharge += cluster->GetCharge();
 }

@@ -93,15 +93,6 @@
 
 // #include "TAGgeoTrafo.hxx"
 #include "TAMCntuHit.hxx"
-// #include "TAVTactBaseNtuTrack.hxx"
-// #include "TAVTactNtuVertex.hxx"
-// #include "TAVTactNtuTrackF.hxx"
-// #include "TAVTactNtuTrack.hxx"
-// #include "TAVTactNtuVertexPD.hxx"
-
-// #include "TAITactBaseNtuTrack.hxx"
-// #include "TAITactNtuTrack.hxx"
-// #include "TAITactNtuTrackF.hxx"
 #include "TAITntuTrack.hxx"
 
 

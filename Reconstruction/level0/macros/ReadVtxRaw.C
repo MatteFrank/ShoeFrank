@@ -84,7 +84,7 @@ void FillVertex(Int_t runNumber)
 
 }
 
-void ReadVtxRaw(TString filename = "data/data_test.00004037.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEvts = 100000,
+void ReadVtxRaw(TString filename = "dataRaw/data_test.00004037.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEvts = 100000,
                 TString expName = "GSI2021", Int_t runNumber = 1)
 {
    TAGrecoManager::Instance(expName);
