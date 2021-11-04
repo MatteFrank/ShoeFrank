@@ -236,6 +236,7 @@ struct action_factory<configuration< vertex_tag, tof_tag>> {
         computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
         computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
         computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
         
         return action_h;
     }
@@ -287,6 +288,58 @@ struct action_factory<configuration< vertex_tag, it_tag, tof_tag>> {
         computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
         computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
         computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+        
+        return action_h;
+    }
+};
+
+template< >
+struct action_factory<configuration<vertex_tag,msd_tag, tof_tag>> {
+    auto operator()(){
+        using state_vector =  matrix<4,1> ;
+        using state_covariance =  matrix<4, 4> ;
+        using state = state_impl< state_vector, state_covariance  >;
+        
+        
+        auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc("vtClus")->Object() );
+        auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc("vtVtx")->Object() );
+        auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
+        
+        auto * cluster_msd_hc = static_cast<TAMSDntuCluster*>(  gTAGroot->FindDataDsc("msdClus")->Object() );
+        auto * geo_msd_h = static_cast<TAMSDparGeo*>( gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object() );
+        
+        auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc("twPoint")->Object() );
+        auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object() );
+        
+        
+        auto list = start_list( detector_properties<vertex_tag>(vertex_hc,
+                                                                cluster_vtx_hc,
+                                                                geo_vtx_h) )
+                        .add( detector_properties<details::msd_tag>(cluster_msd_hc, geo_msd_h) )
+                        .add( detector_properties<tof_tag>(cluster_tw_hc, geo_tw_h) )
+                        .finish();
+        
+        auto * field_h = static_cast<TADIgeoField*>(gTAGroot->FindParaDsc(TADIgeoField::GetDefParaName())->Object());
+        auto ode = make_ode< matrix<2,1>, 2>( model{ field_h } );
+        auto stepper = make_stepper<data_grkn56>( std::move(ode) );
+        auto ukf = make_ukf<state>( std::move(stepper) );
+        
+        auto * action_h = new_TATOEactGlb(
+                               std::move(ukf),
+                               std::move(list),
+                               nullptr,
+                               static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object() ),
+                               field_h,
+                               true
+                               );
+        
+        using namespace checker;
+        auto& computation_checker_c = action_h->get_computation_checker();
+        computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
+        computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
+        computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
         
         return action_h;
     }
@@ -341,6 +394,7 @@ struct action_factory<configuration<vertex_tag, it_tag, msd_tag, tof_tag>> {
         computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
         computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
         computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
         
         return action_h;
     }
@@ -361,12 +415,9 @@ struct TATOEbaseOptimizer : TAGaction {
 
 template<class O> struct underlying_configuration{};
 
-template<class C, class ... Ps>
+template<class C, class S, template<class> class ... Ps>
 struct TATOEoptimizer : TATOEbaseOptimizer{
-    struct targeted_values{
-        double efficiency;
-        double purity;
-    };
+    using targeted_values = typename S::score_holder;
     
     struct procedure_eraser{
         virtual ~procedure_eraser() = default;
@@ -395,7 +446,7 @@ struct TATOEoptimizer : TATOEbaseOptimizer{
     TATOEoptimizer(char const* name_p):
         TATOEbaseOptimizer(name_p),
         action_mh{ details::new_action<C>() },
-        erased_procedure_mh{ new holder< baseline_procedure > {}}
+        erased_procedure_mh{ new holder< baseline_procedure<S> > {}}
     {}
         
     void call() { erased_procedure_mh->call(this); }
@@ -436,9 +487,10 @@ struct TATOEoptimizer : TATOEbaseOptimizer{
     
     auto const& retrieve_results() { return action_mh->retrieve_matched_results(); }
     
-    auto retrieve_reconstructible(){ return action_mh->get_computation_checker()[0].output(); }
-    auto retrieve_reconstructed(){ return action_mh->get_computation_checker()[1].output(); }
-    auto retrieve_purity(){ return action_mh->get_computation_checker()[2].output(); }
+    auto retrieve_reconstructible() const { return action_mh->get_computation_checker()[0].output(); }
+    auto retrieve_reconstructed() const { return action_mh->get_computation_checker()[1].output(); }
+    auto retrieve_purity() const { return action_mh->get_computation_checker()[2].output(); }
+    auto retrieve_mass_yield() const { return action_mh->get_computation_checker()[3].output(); }
     
 private:
     template<std::size_t ... Indices>
@@ -447,7 +499,7 @@ private:
     }
     template<std::size_t Index>
     void switch_procedure_to() {
-        erased_procedure_mh.reset( new holder< typename details::find_among<Index, Ps...> >{} );
+        erased_procedure_mh.reset( new holder< typename details::find_among<Index, Ps<S>...> >{} );
     }
 
 private:
@@ -474,9 +526,9 @@ struct underlying_configuration< TATOEoptimizer<C, Ps...> >{
     using type = C;
 };
 
-template<class C, class ... Ps>
+template<class C, class S, template<class> class ... Ps>
 auto new_optimizer(char const* name_p ) {
-    return new TATOEoptimizer<C, Ps...>( name_p );
+    return new TATOEoptimizer<C, S, Ps...>( name_p );
 }
 
 

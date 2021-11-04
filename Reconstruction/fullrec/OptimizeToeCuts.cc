@@ -58,16 +58,31 @@ int main (int argc, char *argv[])  {
    watch.Start();
    
    glbRec->BeforeEventLoop();
-    using config_t = details::configuration< details::vertex_tag, details::it_tag, details:: msd_tag, details::tof_tag >;
-    auto * o_h = new_optimizer<
-                    config_t,
-                    global_scan_procedure<baseline_scorer>,
-                    rough_scan_procedure<details::local_scan_parameters<6,3>, baseline_scorer>,
-                    fine_scan_procedure<details::local_scan_parameters<3,1>, baseline_scorer>
-                                   >( "toeActOptimizer" );
+//    using config_t = details::configuration< details::vertex_tag, details::it_tag, details:: msd_tag, details::tof_tag >;
+    using config_t = details::configuration< details::vertex_tag, details:: msd_tag, details::tof_tag >;
 //    auto * o_h = new_optimizer<
 //                    config_t,
-//                    global_scan_procedure_only<baseline_scorer>
+//                    mass_scorer,
+//                    global_scan_procedure,
+//                    rough_scan_procedure,
+//                    fine_scan_procedure
+//                                   >( "toeActOptimizer" );
+//    auto * o_h = new_optimizer<
+//                    config_t,
+//                    mass_scorer,
+//                    global_scan_procedure_only
+//                                   >( "toeActOptimizer" );
+        auto * o_h = new_optimizer<
+                        config_t,
+                        baseline_scorer,
+                        global_scan_procedure,
+                        rough_scan_procedure,
+                        fine_scan_procedure
+                                       >( "toeActOptimizer" );
+//    auto * o_h = new_optimizer<
+//                    config_t,
+//                    baseline_scorer,
+//                    global_scan_procedure_only
 //                                   >( "toeActOptimizer" );
     gTAGroot->AddRequiredItem("toeActOptimizer");
     
@@ -90,6 +105,8 @@ int main (int argc, char *argv[])  {
         
         o_h->setup_next_iteration();
     }
+    
+    o_h->output_cuts();
     
    glbRec->AfterEventLoop();
    

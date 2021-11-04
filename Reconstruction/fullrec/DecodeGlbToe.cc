@@ -118,9 +118,12 @@ int main (int argc, char *argv[])  {
    
    TStopwatch watch;
    watch.Start();
-   
-   glbRec->BeforeEventLoop();
-   glbRec->LoopEvent(nTotEv);
+    
+    glbRec->BeforeEventLoop();
+//    static_cast<TAGactTreeReader*>(gTAGroot->FindAction("evtReader"))->Reset();
+//    gTAGroot->SetEventNumber(100000);
+//    gTAGroot->SetEventNumber(1000000);
+    glbRec->LoopEvent(nTotEv);
    glbRec->AfterEventLoop();
    
    watch.Print();

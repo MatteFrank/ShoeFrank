@@ -43,30 +43,30 @@ struct find_among_impl<Found, Found, T, Ts...>{
 };
 template<std::size_t Index, class ... Ts>
 using find_among = typename find_among_impl<0, Index, Ts...>::type;
-    
+
+
+
+
 }// namespace details
 
 
+namespace tag{
+struct baseline{};
+struct first_score{};
+struct last_winner{};
+}//namespace tag
+
+template<class S>
 struct baseline_procedure {
     template<class O>
     constexpr bool is_done(O const *) const { return is_done_m; }
     
     template<class O>
     constexpr void call( O* o_ph ) {
-        puts(__PRETTY_FUNCTION__) ;
+//        puts(__PRETTY_FUNCTION__) ;
         
-        auto reconstructible = o_ph->retrieve_reconstructible();
-        auto reconstructed = o_ph->retrieve_reconstructed();
-        auto efficiency = reconstructed.value / reconstructible.value;
-        
-        auto purity = o_ph->retrieve_purity();
-
-        o_ph->baseline.efficiency = efficiency;
-        o_ph->baseline.purity = purity.value;
-        
-        std::cout << "new_baseline_efficiency: " << o_ph->baseline.efficiency << '\n';
-        std::cout << "new_baseline_purity: " << o_ph->baseline.purity << '\n';
-        std::cout << "reconstructed_number: " << reconstructed.value << '\n';
+        o_ph->baseline = S{}.compute_first_score( o_ph );
+        std::cout << "baseline: " << o_ph->baseline << "\n";
     }
     
     template<class O>
@@ -80,38 +80,84 @@ private:
 };
 
 
+template<class S>
 struct procedure_result {
     std::size_t cut_index;
     int modifier;
-    double score;
-    double efficiency;
-    double purity;
+    S score;
 };
 
 
 struct baseline_scorer{
+    struct score_holder{
+        double value;
+        double efficiency;
+        double purity;
+        friend std::ostream& operator<<(std::ostream& os_p, score_holder const& s_p){
+            return os_p << "[efficiency, purity : score] -> [" << s_p.efficiency << ", " << s_p.purity << " : " << s_p.value << "]";
+        }
+    };
     template<class O>
-    constexpr double compute_score(double efficiency_p, double purity_p, O const* o_ph) const {
-        return ( efficiency_p - o_ph->baseline.efficiency )/o_ph->baseline.efficiency +
-               ( purity_p - o_ph->baseline.purity )/o_ph->baseline.purity;
+    constexpr score_holder compute_score(O const* o_ph) const {
+        auto reconstructible = o_ph->retrieve_reconstructible();
+        auto reconstructed = o_ph->retrieve_reconstructed();
+        auto efficiency = reconstructed.value / reconstructible.value;
+        
+        auto purity = o_ph->retrieve_purity();
+        
+        auto score = ( efficiency - o_ph->baseline.efficiency )/o_ph->baseline.efficiency +
+        ( purity.value - o_ph->baseline.purity )/o_ph->baseline.purity;
+        
+        return score_holder{ std::move(score), std::move(efficiency), std::move(purity.value) };
+    }
+    template<class O>
+    constexpr score_holder compute_first_score(O const* o_ph) const {
+        auto reconstructible = o_ph->retrieve_reconstructible();
+        auto reconstructed = o_ph->retrieve_reconstructed();
+        auto efficiency = reconstructed.value / reconstructible.value;
+        
+        auto purity = o_ph->retrieve_purity();
+        return score_holder{ 0, efficiency, purity.value};
     }
 };
 
 struct purity_scorer{
+    struct score_holder{
+        double value;
+        double purity;
+        friend std::ostream& operator<<(std::ostream& os_p, score_holder const& s_p){
+            return os_p << "[purity : score] -> [" << s_p.purity << " : " << s_p.value << "]";
+        }
+    };
     template<class O>
-    constexpr double compute_score(double efficiency_p, double purity_p, O const* o_ph) const {
-        return ( purity_p - o_ph->baseline.purity )/o_ph->baseline.purity;
+    constexpr score_holder compute_score( O const* o_ph) const {
+        auto purity = o_ph->retrieve_purity();
+        auto score = ( purity.value - o_ph->baseline.purity )/o_ph->baseline.purity;
+        return score_holder{ std::move(score), std::move(purity.value)};
+    }
+    template<class O>
+    constexpr score_holder compute_first_score( O const* o_ph) const {
+        return score_holder{ 0, o_ph->retrieve_purity().value };
     }
 };
 
-
-struct target_scorer{
-    static constexpr double efficiency = 0.92;
-    static constexpr double purity = 0.95;
+struct mass_scorer{
+    struct score_holder{
+        double value;
+        double mass_yield;
+        friend std::ostream& operator<<(std::ostream& os_p, score_holder const& s_p){
+            return os_p << "[mass_yield : score] -> [" << s_p.mass_yield << " : " << s_p.value << "]";
+        }
+    };
     template<class O>
-    constexpr double compute_score(double efficiency_p, double purity_p, O const* o_ph) const {
-        return ( efficiency_p - efficiency )/efficiency +
-               pow( ( purity_p - purity )/purity, 3);
+    constexpr score_holder compute_score( O const* o_ph) const {
+        auto mass_yield = o_ph->retrieve_mass_yield();
+        auto score = ( mass_yield.value - o_ph->baseline.mass_yield )/o_ph->baseline.mass_yield;
+        return score_holder{ std::move(score), std::move(mass_yield.value)};
+    }
+    template<class O>
+    constexpr score_holder compute_first_score( O const* o_ph) const {
+        return score_holder{0, o_ph->retrieve_mass_yield().value};
     }
 };
 
@@ -129,19 +175,14 @@ struct caller{
         auto purity = o_ph->retrieve_purity();
         
         auto& derived = static_cast<Derived&>(*this);
-        auto score = derived.compute_score( efficiency, purity.value, o_ph); //should be only o_ph right ? -> want to store efficiency and purity thouuugh
-                                                               
-        std::cout << "efficiency: " << efficiency << '\n';
-        std::cout << "purity: " << purity.value << '\n';
-        std::cout << "reconstructed_number: " << reconstructed.value << '\n';
+        auto score = derived.compute_score( o_ph); //should be only o_ph right ? -> want to store efficiency and purity thouuugh
+        std::cout << "score: " << score << '\n';
         
         derived.get_results().push_back(
-                    procedure_result{
+                    procedure_result< typename Derived::score >{
                             o_ph->cut_index,
                             o_ph->sign * o_ph->offset,
-                            score,
-                            efficiency,
-                            purity.value
+                            std::move(score)
                                     }   );
     }
 };
@@ -180,13 +221,13 @@ template<class Derived>
 struct global_only_finaliser{
     template<class O>
     constexpr void finalise(O * o_ph) {
-        puts(__PRETTY_FUNCTION__);
+//        puts(__PRETTY_FUNCTION__);
         auto& derived = static_cast<Derived&>(*this);
         
         std::sort(
             derived.get_results().begin(),
             derived.get_results().end(),
-            [](auto const& v1_p, auto const& v2_p){ return v1_p.score > v2_p.score; }
+            [](auto const& v1_p, auto const& v2_p){ return v1_p.score.value > v2_p.score.value; }
                   );
         
         std::cout << "sorted_selection:\n";
@@ -197,11 +238,10 @@ struct global_only_finaliser{
         o_ph->reset_cuts();
         
         auto const& winner = derived.get_results().front();
-        if( winner.score > 0 ){
+        if( winner.score.value > 0 ){
             o_ph->sign = winner.modifier / o_ph->offset;
             o_ph->cut_index = winner.cut_index;
-            o_ph->baseline.efficiency = winner.efficiency;
-            o_ph->baseline.purity = winner.purity;
+            o_ph->baseline = winner.score;
             
             auto available_cut_c = o_ph->generate_available_cuts();
             available_cut_c.erase( std::remove_if(
@@ -225,7 +265,7 @@ struct global_finaliser{
         std::sort(
             derived.get_results().begin(),
             derived.get_results().end(),
-            [](auto const& v1_p, auto const& v2_p){ return v1_p.score > v2_p.score; }
+            [](auto const& v1_p, auto const& v2_p){ return v1_p.score.value > v2_p.score.value; }
                   );
         
         std::cout << "sorted_selection:\n";
@@ -236,11 +276,12 @@ struct global_finaliser{
         o_ph->reset_cuts();
         
         auto const& winner = derived.get_results().front();
-        if( winner.score > 0 ){
+        if( winner.score.value > 0 ){
             o_ph->sign = winner.modifier / o_ph->offset;
             o_ph->cut_index = winner.cut_index;
-            o_ph->last_winner.efficiency = winner.efficiency;
-            o_ph->last_winner.purity = winner.purity;
+//            o_ph->last_winner.efficiency = winner.efficiency;
+//            o_ph->last_winner.purity = winner.purity;
+            o_ph->last_winner = winner.score;
         }
         else{ o_ph->is_optimization_done() = true; }
     }
@@ -251,6 +292,7 @@ struct global_finaliser{
 //CRTP can be used to customized procedures but must use templated template parameters
 template< class S, template<class> class ... Ms >
 struct global_scan_procedure_impl : S, Ms<global_scan_procedure_impl<S, Ms>>... {
+    using score = typename S::score_holder;
     template<class O>
     constexpr bool is_done(O const * o_ph) const {
         return iterator_m == o_ph->get_available_cuts().cend() ;
@@ -263,10 +305,10 @@ struct global_scan_procedure_impl : S, Ms<global_scan_procedure_impl<S, Ms>>... 
         else { o_ph->sign = 1; }
     }
     
-    std::vector<procedure_result>& get_results() { return result_mc; }
+    std::vector<procedure_result<score>>& get_results() { return result_mc; }
     std::vector<std::size_t>::const_iterator& get_iterator() { return iterator_m; }
 private:
-    std::vector<procedure_result> result_mc;
+    std::vector<procedure_result<score>> result_mc;
     std::vector<std::size_t>::const_iterator iterator_m{};
 };
 
@@ -287,17 +329,20 @@ struct rough_scan_setter{
     constexpr void setup(O * o_ph){
         puts(__PRETTY_FUNCTION__);
         
+        using score_t = typename Derived::score;
         auto& derived = static_cast<Derived&>(*this);
-        auto score = derived.compute_score( o_ph->baseline.efficiency, o_ph->baseline.purity, o_ph );
+//        auto score = derived.compute_score( o_ph->baseline.efficiency, o_ph->baseline.purity, o_ph );
+//        auto score = derived.compute_score( o_ph );
+        auto score = o_ph->baseline;
+        score.value = 0;
         derived.get_results().push_back(
-                    procedure_result{
+                    procedure_result<score_t>{
                             o_ph->cut_index,
                             0,
-                            score,
-                            o_ph->baseline.efficiency,
-                            o_ph->baseline.purity
+                            std::move(score)
+//                            o_ph->baseline.efficiency,
+//                            o_ph->baseline.purity
                                     }   );
-        
         
         derived.get_counter() = 1;
 
@@ -316,16 +361,15 @@ struct fine_scan_setter{
         o_ph->apply_cuts();
         
         auto& derived = static_cast<Derived&>(*this);
-        auto score = derived.compute_score( o_ph->last_winner.efficiency, o_ph->last_winner.purity, o_ph );
+//        auto score = derived.compute_score<tag::last_winner>( o_ph );
         derived.get_results().push_back(
-                    procedure_result{
+                    procedure_result<typename Derived::score>{
                             o_ph->cut_index,
                             0,
-                            score,
-                            o_ph->last_winner.efficiency,
-                            o_ph->last_winner.purity
+                            o_ph->last_winner
+//                            o_ph->last_winner.efficiency,
+//                            o_ph->last_winner.purity
                                     }   );
-        
         
         derived.get_counter() = -static_cast<int>(Derived::count-1);
 
@@ -345,7 +389,7 @@ struct rough_scan_finaliser{
         std::sort(
             derived.get_results().begin(),
             derived.get_results().end(),
-            [](auto const& v1_p, auto const& v2_p){ return v1_p.score > v2_p.score; }
+            [](auto const& v1_p, auto const& v2_p){ return v1_p.score.value > v2_p.score.value; }
                   );
         
         std::cout << "sorted_selection:\n";
@@ -357,8 +401,9 @@ struct rough_scan_finaliser{
         
         auto const& winner = derived.get_results().front();
         o_ph->offset = winner.modifier / o_ph->sign;
-        o_ph->last_winner.efficiency = winner.efficiency;
-        o_ph->last_winner.purity = winner.purity;
+        o_ph->last_winner = winner.score;
+//        o_ph->last_winner.efficiency = winner.efficiency;
+//        o_ph->last_winner.purity = winner.purity;
     }
 };
 
@@ -373,7 +418,7 @@ struct fine_scan_finaliser{
         std::sort(
             derived.get_results().begin(),
             derived.get_results().end(),
-            [](auto const& v1_p, auto const& v2_p){ return v1_p.score > v2_p.score; }
+            [](auto const& v1_p, auto const& v2_p){ return v1_p.score.value > v2_p.score.value; }
                   );
         
         std::cout << "sorted_selection:\n";
@@ -384,8 +429,9 @@ struct fine_scan_finaliser{
         o_ph->reset_cuts();
         
         auto const& winner = derived.get_results().front();
-        o_ph->baseline.efficiency = winner.efficiency;
-        o_ph->baseline.purity = winner.purity;
+//        o_ph->baseline.efficiency = winner.efficiency;
+//        o_ph->baseline.purity = winner.purity;
+        o_ph->baseline = winner.score;
         
         auto& available_cut_c = o_ph->get_available_cuts();
         available_cut_c.erase( std::remove_if(
@@ -400,6 +446,7 @@ struct fine_scan_finaliser{
 
 template< class P, class S, template<class> class ... Ms >
 struct local_scan_procedure_impl : S, Ms< local_scan_procedure_impl<P, S, Ms... > >... {
+    using score = typename S::score_holder;
     static constexpr std::size_t count = P::count;
     static constexpr std::size_t step_size = P::step_size;
     
@@ -413,45 +460,28 @@ struct local_scan_procedure_impl : S, Ms< local_scan_procedure_impl<P, S, Ms... 
         o_ph->offset = ( (++counter_m != 0) ? counter_m : ++counter_m ) * step_size;
     }
     
-    std::vector<procedure_result>& get_results() { return result_mc; }
+    std::vector<procedure_result<score>>& get_results() { return result_mc; }
     int& get_counter() { return counter_m; }
 private:
-    std::vector<procedure_result> result_mc;
+    std::vector<procedure_result<score>> result_mc;
     int counter_m;
 };
 
 
-template<class R, class S>
-using rough_scan_procedure = local_scan_procedure_impl<R, S, caller, cut_setter, rough_scan_setter, rough_scan_finaliser >;
+template<class S>
+using rough_scan_procedure = local_scan_procedure_impl<details::local_scan_parameters<5,3>, S, caller, cut_setter, rough_scan_setter, rough_scan_finaliser >;
 
 
-template<class R, class S>
-using fine_scan_procedure = local_scan_procedure_impl<R, S, caller, cut_setter, fine_scan_setter, fine_scan_finaliser >;
-//    constexpr void optimize_cut() {
-//        std::sort( selection_c.begin(), selection_c.end(), [](auto const& s1_p, auto const& s2_p){ return s1_p.score > s2_p.score; } );
-//        
-//        std::cout << "sorted_selection: "<< derived().selected_cut_m <<"\n";
-//        for(auto const& selection : selection_c ){
-//            std::cout << "[" << selection.offset << "] -> " << selection.score << '\n';
-//        }
-//        
-//        auto const& winner = selection_c.front();
-//        *derived().cut_mc.get_cut_handle( derived().selected_cut_m  ) += winner.offset;
-//        
-//        derived().selected_m.efficiency = winner.efficiency;
-//        derived().selected_m.purity = winner.purity;
-//        
-//        selection_c.clear();
-//    }
+
+template<class S>
+using fine_scan_procedure = local_scan_procedure_impl<details::local_scan_parameters<3,1>, S, caller, cut_setter, fine_scan_setter, fine_scan_finaliser >;
+
+
 //
-//};
-
-    
-//    struct fine_scan_iterator {
-//        fine_scan_iterator(TATOEcutter* c_ph) : c_mh{c_ph} {}
-//        bool can_increment() { return counter_m < static_cast<int>(details::underlying_parameters<C>::type::step_size - 1 ); }
-//        int counter_m{ - static_cast<int>(details::underlying_parameters<C>::type::step_size) };
-//    };
+//template<class T>
+//struct underlying_scorer{};
+//template<class S>
+//struct
 
 
 #endif

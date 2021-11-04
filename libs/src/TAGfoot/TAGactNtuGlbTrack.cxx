@@ -169,6 +169,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
             
             return action_h;
             
@@ -202,6 +203,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
             
             return action_h;
         }
@@ -238,6 +240,19 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<1>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<1>>>{});
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<2>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<2>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<3>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<3>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<4>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<4>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<5>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<5>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<6>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<6>>>{} );
             
             return action_h;
             
@@ -255,7 +270,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                         std::move(list),
                         static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
                         static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
-                        GetFootField(), false
+                        GetFootField(), true
                                        );
             
             auto& computation_checker_c = action_h->get_computation_checker();
@@ -265,6 +280,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
             
             return action_h;
         }
@@ -295,6 +311,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
     computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
     computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
+    computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
     return action_h;
 }
 

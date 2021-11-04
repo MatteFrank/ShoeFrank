@@ -236,6 +236,11 @@ struct step_register
     double step_length;
 };
 
+struct block_weight_register
+{
+    double block_weight;
+};
+
 // ----------------- makers ---------------------------
 
 namespace details{

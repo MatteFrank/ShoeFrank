@@ -58,6 +58,7 @@ struct vertex_tag{
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     using cut_t = double;
     constexpr static uint8_t shift = 3;
+    constexpr static double block_weight = 0.5;
 //        constexpr static double default_cut_value{15};
     constexpr static double default_cut_value{25};
 };
@@ -70,12 +71,15 @@ struct it_tag{
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     using cut_t = std::array<double, 2>;
     static constexpr uint8_t shift = 2;
+    constexpr static double block_weight = 0.37;
 //    constexpr static std::array<double, 2> default_cut_value{25,25};
 //        constexpr static std::array<double, 2> default_cut_value{38,42};
 //    constexpr static std::array<double, 2> default_cut_value{41,41};
-        constexpr static std::array<double, 2> default_cut_value{40,32}; //eff+purity optimized
+//        constexpr static std::array<double, 2> default_cut_value{40,32}; //eff+purity optimized
 //    constexpr static std::array<double, 2> default_cut_value{31,35}; //purity optimized
-//    constexpr static std::array<double, 2> default_cut_value{50,51}; //eff+purity optimized 16O_200
+    constexpr static std::array<double, 2> default_cut_value{50,51}; //eff+purity optimized 16O_200
+//    constexpr static std::array<double, 2> default_cut_value{17,19}; //mass_yield optimized 16O200C2H4
+//    constexpr static std::array<double, 2> default_cut_value{10,12}; //mass_yield optimized 12C_200
 };
 
 struct msd_tag{
@@ -86,10 +90,14 @@ struct msd_tag{
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     using cut_t = std::array<double, 3>;
     static constexpr uint8_t shift = 1;
+    constexpr static double block_weight = 0.08;
 //    constexpr static std::array<double, 3> default_cut_value{25,25,25};
-        constexpr static std::array<double, 3> default_cut_value{27,22,20}; //eff+purity optimized
+//    constexpr static std::array<double, 3> default_cut_value{30,30,33}; //eff+purity GSI2021_MC:16O200C
+//        constexpr static std::array<double, 3> default_cut_value{27,22,20}; //eff+purity optimized
 //    constexpr static std::array<double, 3> default_cut_value{27,12,18}; //purity optimized
-//    constexpr static std::array<double, 3> default_cut_value{11,7,19}; //eff+purity optimized 16O_200
+    constexpr static std::array<double, 3> default_cut_value{11,7,19}; //eff+purity optimized 16O_200
+//    constexpr static std::array<double, 3> default_cut_value{33,25,23}; //mass_yield optimized 16O200C2H4
+//    constexpr static std::array<double, 3> default_cut_value{34,26,22}; //mass_yield optimized 12C_200
 };
 
 struct ms2d_tag{
@@ -100,6 +108,7 @@ struct ms2d_tag{
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     using cut_t = double;
     static constexpr uint8_t shift = 4;
+    constexpr static double block_weight = 0.5;
     constexpr static double default_cut_value{25};
 };
 
@@ -111,10 +120,11 @@ struct tof_tag{
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
     using cut_t = double;
     static constexpr uint8_t shift = 0;
+    constexpr static double block_weight = 0.05;
 //    constexpr static double default_cut_value{3.2};
 //        constexpr static double default_cut_value{3};
-//    constexpr static double default_cut_value{3}; //efficiency+purity optimized
-    constexpr static double default_cut_value{3}; //efficiency+purity optimized 16O_200
+    constexpr static double default_cut_value{3}; //efficiency+purity optimized
+//    constexpr static double default_cut_value{3}; //efficiency+purity optimized 16O_200
 //    constexpr static double default_cut_value{1}; //purity optimized
 };
     
@@ -123,9 +133,11 @@ struct detector_traits<detector_properties<Tag>>
 {
     using tag = Tag;
     using candidate = typename Tag::candidate;
+    constexpr static double block_weight = Tag::block_weight;
 };
 
 } //namespace details
+
 
 
 
@@ -138,6 +150,7 @@ struct layer_generator
         std::vector<candidate> candidate_c;
         const double depth;
         const double cut;
+        static constexpr double block_weight = details::detector_traits<DetectorProperties>::block_weight;
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }
@@ -192,6 +205,7 @@ struct layer_generator<D<details::ms2d_tag>>
         std::vector<candidate> candidate_c;
         const double depth;
         const double cut;
+        static constexpr double block_weight = details::ms2d_tag::block_weight;
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }

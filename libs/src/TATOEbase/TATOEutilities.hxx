@@ -58,7 +58,8 @@ struct y_view_tag{  static constexpr uint8_t shift = 6; };
 struct particle_properties{
     double momentum;
     int charge;
-    int mass;
+    int nucleon_number;
+    double mass;
     double track_slope_x{0};
     double track_slope_y{0};
 };
@@ -110,7 +111,7 @@ struct TAGcluster;
 struct computation_checker;
 
 struct TATOEbaseAct {
-    template<class C, class ... Ps>
+    template<class C, class S, template<class> class ... Ps>
     friend class TATOEoptimizer;
     
     template<class C>
@@ -216,7 +217,7 @@ private:
                         field_p.x -
                 os_p.state(details::order_tag<1>{})(0,0) *
                     os_p.state(details::order_tag<1>{})(1,0) *
-                        field_p.y +
+                        field_p.y -
                 os_p.state(details::order_tag<1>{})(0,0) * field_p.z ;
     }
     

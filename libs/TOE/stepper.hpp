@@ -362,10 +362,16 @@ namespace details {
             
             while(!isToleranceReached){
                 
+//                std::cout << eos.evaluation_point << '\n';
+//                std::cout << eos.state( details::order_tag<0>{} );
+//                std::cout << eos.state( details::order_tag<1>{} );
+////                std::cout << "evaluation: \n" ;
                 eos.evaluation = derived().compute_evaluation(eos, step_p);
+//                std::cout << "evaluation: \n" ;
+//                for(auto const& eval : eos.evaluation ){ std::cout << eval; }
                 auto estimate = derived().compute_solution(eos, details::order_tag<0>{}, estimation_tag{});
                 auto correction = derived().compute_solution(eos, details::order_tag<0>{}, correction_tag{});
-//                std::cout << "Estimate: \n" << estimate << " - Correction: \n" << correction << '\n';
+//                std::cout << "estimate: \n" << estimate << "correction: \n" << correction;
                 auto local_error_estimate = details::computation_error( estimate, correction );
                
                 
@@ -373,7 +379,9 @@ namespace details {
 //                std::cout << "step_error: " << local_error_estimate << '\n';
                 
                 if(!isToleranceReached){
+//                    std::cout << "step: " << eos.step << " -> " << local_error_estimate << '\n';
                     eos.step = optimize_step_length(eos.step, local_error_estimate) ;
+                    if( isnan(eos.step) ){ std::abort(); }
                 }
                 else{
                     error = error_checker{ local_error_estimate };
@@ -521,7 +529,6 @@ namespace details {
                 
                 isToleranceReached = local_error_estimate <= tolerance_m;
 //                std::cout << "step_error: " << local_error_estimate << '\n';
-                
                 if(!isToleranceReached){
                     eos.step = optimize_step_length(eos.step, local_error_estimate) ;
                 }

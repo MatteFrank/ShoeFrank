@@ -286,10 +286,13 @@ private:
     {
         auto mc_track_h = index_pc.size() > 1 ? data_mhc->GetTrack(index_pc[1]) : data_mhc->GetTrack(index_pc[0]) ;
         //if size > 1, then the particle has been scattered, therefore need to retrieve mother parameters
+        
+        
         return particle_properties{
             mc_track_h->GetInitP().Mag() * 1000,
             mc_track_h->GetCharge(),
             static_cast<int>( mc_track_h->GetMass() * 1.1 ), //bad hack to get number of nucleons
+            mc_track_h->GetMass(),
             mc_track_h->GetInitP().X()/mc_track_h->GetInitP().Z(),
             mc_track_h->GetInitP().Y()/mc_track_h->GetInitP().Z()
         };
@@ -346,7 +349,8 @@ public:
         auto particle = particle_properties{
                                        track_p.momentum,
                                        track_p.hypothesis.properties.charge,
-                                       track_p.hypothesis.properties.mass };
+                                       static_cast<int>(track_p.nucleon_number),
+                                       track_p.mass };
         
         action_m.logger_m << "charge: " << particle.charge << '\n';
         action_m.logger_m << "mass: " << particle.mass << '\n';
@@ -398,6 +402,14 @@ public:
         end_point_mc.clear();
     }
     
+    
+    reconstructible_track get_reconstructible_track( data_type const* end_point_ph ) const {
+        for(auto i{0}; i < end_point_mc.size() ; ++i){
+            if( end_point_mc[i] == end_point_ph ){ return reconstruction_module_mc[i].reconstructible_o.value(); }
+        }
+        return reconstructible_track{};
+    }
+    
 };
 
 
@@ -416,6 +428,7 @@ struct empty_matcher{
     std::vector<reconstruction_module> const& retrieve_results() const{ return reconstruction_module_mc; }
     void clear(){}
     void end_event() {}
+    reconstructible_track get_reconstructible_track( data_type const* end_point_ph ) const { return {}; }
 };
 
 template<class Action>
@@ -433,6 +446,7 @@ struct matcher{
         virtual std::vector<reconstruction_module> const& retrieve_results() const = 0;
         virtual void clear() =0;
         virtual void end_event()  =0;
+        virtual reconstructible_track get_reconstructible_track( data_type const* end_point_ph ) const =0;
     };
 
     template<class T>
@@ -445,6 +459,7 @@ struct matcher{
         std::vector<reconstruction_module> const& retrieve_results() const override{ return t_m.retrieve_results(); }
         void clear() override { t_m.clear(); }
         void end_event() override { t_m.end_event(); }
+        reconstructible_track get_reconstructible_track( data_type const* end_point_ph ) const override { return t_m.get_reconstructible_track( end_point_ph); }
         T t_m;
     };
 
@@ -464,6 +479,7 @@ struct matcher{
     std::vector<reconstruction_module> const& retrieve_results() const { return erased_m->retrieve_results(); }
     void clear(){ erased_m->clear(); }
     void end_event() { erased_m->end_event(); }
+    reconstructible_track get_reconstructible_track( data_type const* end_point_ph ) const { return erased_m->get_reconstructible_track(end_point_ph); }
     
     private:
     std::unique_ptr<eraser> erased_m;
