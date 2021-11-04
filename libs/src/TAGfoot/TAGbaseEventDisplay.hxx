@@ -94,11 +94,38 @@ public:
          case 'F':
             fgVtxTrackingAlgo = "Full";
             break;
-         case 'H':
-            fgVtxTrackingAlgo = "Hough";
-            break;
          default:
             printf("SetVtxTrackingAlgo: Wrongly set tracking algorithm");
+      }
+   }
+   
+   //! Set Itr Tracking algorithm
+   static void SetItrTrackingAlgo(char c)
+   {
+      switch (c) {
+         case 'S':
+            fgItrTrackingAlgo = "Std";
+            break;
+         case 'F':
+            fgItrTrackingAlgo = "Full";
+            break;
+         default:
+            printf("SetItrTrackingAlgo: Wrongly set tracking algorithm");
+      }
+   }
+   
+   //! Set Itr Tracking algorithm
+   static void SetMsdTrackingAlgo(char c)
+   {
+      switch (c) {
+         case 'S':
+            fgMsdTrackingAlgo = "Std";
+            break;
+         case 'F':
+            fgMsdTrackingAlgo = "Full";
+            break;
+         default:
+            printf("SetItrTrackingAlgo: Wrongly set tracking algorithm");
       }
    }
    
@@ -174,7 +201,9 @@ protected:
    
 protected:
    static Bool_t         fgStdAloneFlag;    // flag for standalone DAQ
-   static TString        fgVtxTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory and "Hough" Hough transformation)
+   static TString        fgVtxTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory)
+   static TString        fgItrTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory)
+   static TString        fgMsdTrackingAlgo; // tracking algorithm ("std" with BM, "Full" combinatory)
    static Bool_t         fgBmSelectHit;     // flag BM selected hit
    static Bool_t         fgMsdsTrackFlag;    // flag for MSD tracking
    static Bool_t         fgM28ClusMtFlag;    // flag for MT clustering

@@ -39,7 +39,6 @@ set( with_dictionnaries
    TAMSDtrack
    TAMSDactNtuCluster
    TAMSDactNtuPoint
-   TAMSDactBaseNtuTrack
    TAMSDactNtuTrack
    TAMSDactNtuTrackF
 )

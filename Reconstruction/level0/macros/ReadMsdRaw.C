@@ -121,7 +121,7 @@ void Booking(TFile *f_out)
    return;
 }
 
-void ReadMsdRaw(TString filename = "data/data_test.00003890.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 1000,
+void ReadMsdRaw(TString filename = "dataRaw/data_test.00003890.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 1000,
                 TString expName = "GSI2021", Int_t runNumber = 1, Int_t fileNumber = 1)
 {
    TAGrecoManager::Instance(expName);

@@ -59,6 +59,8 @@ Bool_t TATWparGeo::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
    
+   Info("FromFile()", "Open file %s for geometry", name.Data());
+
    ReadItem(fLayersN);
    if(FootDebugLevel(1))
       cout << endl << "Number of layers "<< fLayersN << endl;

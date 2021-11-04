@@ -7,61 +7,61 @@
 #include "TAGparTools.hxx"
 #include "TAGrecoManager.hxx"
 
-map<TString, TString> TAGrecoManager::m_dectFullName = {{"ST", "Start Counter"}, {"BM", "Beam Monitor"}, {"DI", "Dipole"}, {"TG", "Target"},
-                                                   {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "MicroStrip Detector"}, {"TW", "ToF Wall"},
-                                                   {"CA", "Calorimeter"}};
+map<TString, TString> TAGrecoManager::fgkDectFullName = {{"ST", "Start Counter"}, {"BM", "Beam Monitor"}, {"DI", "Dipole"}, {"TG", "Target"},
+                                                         {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "MicroStrip Detector"}, {"TW", "ToF Wall"},
+                                                         {"CA", "Calorimeter"}};
 
-const TString TAGrecoManager::m_defParName = "FootGlobal.par";
+const TString TAGrecoManager::fgkDefParName = "FootGlobal.par";
 
 
 //_____________________________________________________________________________
 // Global static pointer used to ensure a single instance of the class.
-TAGrecoManager* TAGrecoManager::m_pInstance = NULL;
+TAGrecoManager* TAGrecoManager::fgInstance = NULL;
 
 
 //_____________________________________________________________________________
 TAGrecoManager* TAGrecoManager::Instance( const TString expName )  {
 
-    if (!m_pInstance)   // Only allow one instance of class to be generated, only true for multi-thread.
-        m_pInstance = new TAGrecoManager( expName );
+    if (!fgInstance)   // Only allow one instance of class to be generated, only true for multi-thread.
+        fgInstance = new TAGrecoManager( expName );
 
-   return m_pInstance;
+   return fgInstance;
 }
 
 //_____________________________________________________________________________
 TAGrecoManager* TAGrecoManager::GetPar()  {
 
-    if (!m_pInstance)
-       cout << "ERROR::TAGrecoManager::GetPar()  -->  called a get before TAGrecoManager object istance." << endl, exit(0);
+    if (!fgInstance)
+       cout << "ERROR::TAGrecoManager::GetPar()  -->  called a get before TAGrecoManager object instance." << endl, exit(0);
 
-    return m_pInstance;
+    return fgInstance;
 }
 
 //_____________________________________________________________________________
 TAGrecoManager::~TAGrecoManager()
 {
-  m_ClassDebugLevels.Delete();
-  for (Int_t i = 0; i < m_ClassDebugLevels.GetEntriesFast(); i++) {
-      if (m_ClassDebugLevels[i])
-         m_ClassDebugLevels[i]->Delete();
+  fClassDebugLevels.Delete();
+  for (Int_t i = 0; i < fClassDebugLevels.GetEntriesFast(); i++) {
+      if (fClassDebugLevels[i])
+         fClassDebugLevels[i]->Delete();
    }
 }
 
 //_____________________________________________________________________________
 // private constructor
 TAGrecoManager::TAGrecoManager( const TString expName )
-: m_parFileName(""),        m_debug(0),
-  m_kalmanMode(""),         m_kalReverse(false),   m_verFLUKA(false),       m_VTreso(0.),            m_ITreso(0.),            m_MSDreso(0.), m_TWreso(0.),
-  m_enableLocalReco(false), m_enableTree(false),   m_enableHisto(false),    m_enableSaveHits(false), m_enableTracking(false), m_enableRootObject(false),
-  m_enableTWZmc(false),     m_enableTWnoPU(false), m_enableTWZmatch(false), m_enableTWCalBar(false), m_doCalibTW(false),      m_doCalibBM(false), m_enableRegionMc(false),
-  m_includeST(false),       m_includeBM(false),    m_includeTG(false),      m_includeDI(false),      m_includeTW(false),      m_includeMSD(false),
-  m_includeCA(false),       m_includeIT(false),    m_includeVT(false),
-  m_includeKalman(false),   m_includeTOE(false)
+: fParFileName(""),        fDebugLevel(0),
+  fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),       fVTreso(0.),            fITreso(0.),            fMSDreso(0.),             fTWreso(0.),
+  fEnableLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
+  fEnableTWZmc(false),     fEnableTWnoPU(false), fEnableTWZmatch(false), fEnableTWCalBar(false), fDoCalibTW(false),      fDoCalibBM(false),        fEnableRegionMc(false),
+  fIncludeST(false),       fIncludeBM(false),    fIncludeTG(false),      fIncludeDI(false),      fIncludeTW(false),      fIncludeMSD(false),
+  fIncludeCA(false),       fIncludeIT(false),    fIncludeVT(false),
+  fIncludeKalman(false),   fIncludeTOE(false)
 {
-    TString absName = Form("./config/%s/%s", expName.Data(), m_defParName.Data());
-    m_parFileName = absName.Data();
+    TString absName = Form("./config/%s/%s", expName.Data(), fgkDefParName.Data());
+    fParFileName = absName.Data();
 
-    m_copyInputFile.clear();
+    fCopyInputFile.clear();
 }
 
 //_____________________________________________________________________________
@@ -139,8 +139,8 @@ const TAGrunInfo TAGrecoManager::GetGlobalInfo()
 void TAGrecoManager::FromFile ()
 {
   TAGparTools* parTools = new TAGparTools();
-  if (!parTools->Open(m_parFileName.data())) {
-    Error("FromFile()", "Cannot open file %s", m_parFileName.c_str());
+  if (!parTools->Open(fParFileName.data())) {
+    Error("FromFile()", "Cannot open file %s", fParFileName.c_str());
     exit(0);
   }
   
@@ -148,27 +148,27 @@ void TAGrecoManager::FromFile ()
   while (!parTools->Eof()) {
     parTools->ReadItem(key, item);
     
-    m_copyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
+    fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
 
     if (key.Contains("Debug:")) {
-      m_debug = item.Atoi();
-      if (m_debug > 0)
-        printf("Debug: %d\n", m_debug);
+      fDebugLevel = item.Atoi();
+      if (fDebugLevel > 0)
+        printf("Debug: %d\n", fDebugLevel);
     }
     
     if (key.Contains("MC Particle Types:")) {
-      m_mcParticles.clear();
+      fMcParticles.clear();
       string formulasString = item.Data();
       istringstream formulasStream( formulasString );
       string tmpString = "";
-      if (m_debug > 0)
+      if (fDebugLevel > 0)
         printf("MC Particle Types: ");
       while ( formulasStream >> tmpString ) {
-        m_mcParticles.push_back(tmpString);
-        if (m_debug > 0)
+        fMcParticles.push_back(tmpString);
+        if (fDebugLevel > 0)
           printf(" %s ", tmpString.data());
       }
-      if (m_debug > 0)
+      if (fDebugLevel > 0)
         printf("\n");
     }
     
@@ -179,37 +179,37 @@ void TAGrecoManager::FromFile ()
       int    classLevel = -1;
       formulasStream >> className;
       formulasStream >> classLevel;
-      m_map_debug[className] = classLevel;
-      if (m_debug > 0)
+      fMapDebug[className] = classLevel;
+      if (fDebugLevel > 0)
         printf("ClassDebugLevel: %s %d\n", className.c_str(), classLevel);
     }
     
     if (key.Contains("Genfit Event Display ON:")  ) {
-      if ( item.Contains("y")) m_enableEventDisplay = true;
-      else                     m_enableEventDisplay = false;
-      if (m_debug > 0)
-        printf("Genfit Event Display ON: %d\n", m_enableEventDisplay);
+      if ( item.Contains("y")) fEnableEventDisplay = true;
+      else                     fEnableEventDisplay = false;
+      if (fDebugLevel > 0)
+        printf("Genfit Event Display ON: %d\n", fEnableEventDisplay);
     }
     
     if (key.Contains("IncludeKalman:")  ) {
-      if ( item.Contains("y")) m_includeKalman = true;
-      else                     m_includeKalman = false;
-      if (m_debug > 0)
-        printf("IncludeKalman: %d\n", m_includeKalman);
+      if ( item.Contains("y")) fIncludeKalman = true;
+      else                     fIncludeKalman = false;
+      if (fDebugLevel > 0)
+        printf("IncludeKalman: %d\n", fIncludeKalman);
       
     }
     if (key.Contains("IncludeTOE:")) {
-      if ( item.Contains("y")) m_includeTOE = true;
-      else                     m_includeTOE = false;
-      if (m_debug > 0)
-        printf("IncludeTOE: %d\n", m_includeTOE);
+      if ( item.Contains("y")) fIncludeTOE = true;
+      else                     fIncludeTOE = false;
+      if (fDebugLevel > 0)
+        printf("IncludeTOE: %d\n", fIncludeTOE);
     }
     
     if (key.Contains("EnableLocalReco:")  ) {
-      if ( item.Contains("y"))  m_enableLocalReco = true;
-      else                      m_enableLocalReco = false;
-      if (m_debug > 0)
-        printf("EnableLocalReco: %d\n", m_enableLocalReco);
+      if ( item.Contains("y"))  fEnableLocalReco = true;
+      else                      fEnableLocalReco = false;
+      if (fDebugLevel > 0)
+        printf("EnableLocalReco: %d\n", fEnableLocalReco);
     }
     
     
@@ -224,12 +224,12 @@ void TAGrecoManager::FromFile ()
       for (unsigned int i=0; i<tmp_Modes.size(); i++) {
         
         if (inputMode.Contains(tmp_Modes[i]) ) {
-          m_kalmanMode = tmp_Modes[i];
+          fKalmanMode = tmp_Modes[i];
           break;
         }
       }
-      if (m_debug > 0)
-        cout<<"Kalman Mode:" << m_kalmanMode<<endl;
+      if (fDebugLevel > 0)
+        cout<<"Kalman Mode:" << fKalmanMode<<endl;
     }
     
     if (key.Contains("Kalman preselection strategy:")) {
@@ -243,250 +243,250 @@ void TAGrecoManager::FromFile ()
       for (unsigned int i=0; i<tmp_Modes.size(); i++) {
         
         if (inputMode.Contains(tmp_Modes[i]) ) {
-          m_kPreselectStrategy = tmp_Modes[i];
+          fKPreselectStrategy = tmp_Modes[i];
           break;
         }
       }
-      if (m_debug > 0)
-        cout << "Kalman preselection strategy:" << m_kPreselectStrategy << endl;
+      if (fDebugLevel > 0)
+        cout << "Kalman preselection strategy:" << fKPreselectStrategy << endl;
     }
     
     if (key.Contains("Tracking Systems Considered:")) {
-      m_trackingSystems.clear();
+      fTrackingSystems.clear();
       string formulasString = item.Data();
       istringstream formulasStream( formulasString );
       string tmpString = "";
-      if (m_debug > 0)
+      if (fDebugLevel > 0)
         printf("Tracking Systems Considered: ");
       while ( formulasStream >> tmpString ) {
-        m_trackingSystems.push_back(tmpString);
-        if (m_debug > 0)
+        fTrackingSystems.push_back(tmpString);
+        if (fDebugLevel > 0)
           printf(" %s ", tmpString.data());
       }
-      if (m_debug > 0)
+      if (fDebugLevel > 0)
         printf("\n");
     }
     
     if (key.Contains("Reverse Tracking:")) {
       if ( item == "true")
-        m_kalReverse = true;
+        fKalReverse = true;
       else
-        m_kalReverse = false;
-      if (m_debug > 0)
-        printf("Reverse Tracking: %d\n", m_kalReverse);
+        fKalReverse = false;
+      if (fDebugLevel > 0)
+        printf("Reverse Tracking: %d\n", fKalReverse);
     }
     
     
     if (key.Contains("VT  Reso:") ) {
-      m_VTreso = item.Atof();
-      if (m_debug > 0)
-        printf("VT  Reso: %g\n", m_VTreso);
+      fVTreso = item.Atof();
+      if (fDebugLevel > 0)
+        printf("VT  Reso: %g\n", fVTreso);
     }
     
     if (key.Contains("IT  Reso:") ) {
-      m_ITreso = item.Atof();
-      if (m_debug > 0)
-        printf("IT  Reso: %g\n", m_ITreso);
+      fITreso = item.Atof();
+      if (fDebugLevel > 0)
+        printf("IT  Reso: %g\n", fITreso);
     }
     
     if (key.Contains("MSD Reso:")  ) {
-      m_MSDreso = item.Atof();
-      if (m_debug > 0)
-        printf("MSD  Reso: %g\n", m_MSDreso);
+      fMSDreso = item.Atof();
+      if (fDebugLevel > 0)
+        printf("MSD  Reso: %g\n", fMSDreso);
     }
     
     if (key.Contains("TW  Reso:") ) {
-      m_TWreso = item.Atof();
-      if (m_debug > 0)
-        printf("TW  Reso: %g\n", m_TWreso);
+      fTWreso = item.Atof();
+      if (fDebugLevel > 0)
+        printf("TW  Reso: %g\n", fTWreso);
     }
     
     if (key.Contains("Kalman Particle Types:")) {
-      m_kalParticles.clear();
+      fKalParticles.clear();
       string formulasString = item.Data();
       istringstream formulasStream( formulasString );
       string tmpString = "";
-      if (m_debug > 0)
+      if (fDebugLevel > 0)
         printf("Kalman Particle Types:");
       while ( formulasStream >> tmpString ) {
-        m_kalParticles.push_back(tmpString);
-        if (m_debug > 0)
+        fKalParticles.push_back(tmpString);
+        if (fDebugLevel > 0)
           printf(" %s ", tmpString.data());
       }
-      if (m_debug > 0)
+      if (fDebugLevel > 0)
         printf("\n");
     }
     
     if (key.Contains("EnableTree:") ) {
-      if ( item.Contains("y"))  m_enableTree = true;
-      else                      m_enableTree = false;
-      if (m_debug > 0)
-        printf("EnableTree: %d\n", m_enableTree);
+      if ( item.Contains("y"))  fEnableTree = true;
+      else                      fEnableTree = false;
+      if (fDebugLevel > 0)
+        printf("EnableTree: %d\n", fEnableTree);
     }
     
     if (key.Contains("EnableHisto:")) {
-      if ( item.Contains("y") ) m_enableHisto = true;
-      else                      m_enableHisto = false;
-      if (m_debug > 0)
-        printf("EnableHisto: %d\n", m_enableHisto);
+      if ( item.Contains("y") ) fEnableHisto = true;
+      else                      fEnableHisto = false;
+      if (fDebugLevel > 0)
+        printf("EnableHisto: %d\n", fEnableHisto);
     }
     
     if (key.Contains("EnableTracking:")) {
-      if ( item.Contains("y") ) m_enableTracking = true;
-      else                      m_enableTracking = false;
-      if (m_debug > 0)
-        printf("EnableTracking: %d\n", m_enableTracking);
+      if ( item.Contains("y") ) fEnableTracking = true;
+      else                      fEnableTracking = false;
+      if (fDebugLevel > 0)
+        printf("EnableTracking: %d\n", fEnableTracking);
     }
     
     if (key.Contains("EnableSaveHits:")  ) {
-      if ( item.Contains("y"))  m_enableSaveHits = true;
-      else                      m_enableSaveHits = false;
-      if (m_debug > 0)
-        printf("EnableSaveHits: %d\n", m_enableSaveHits);
+      if ( item.Contains("y"))  fEnableSaveHits = true;
+      else                      fEnableSaveHits = false;
+      if (fDebugLevel > 0)
+        printf("EnableSaveHits: %d\n", fEnableSaveHits);
     }
     
     if (key.Contains("EnableRootObject:") ) {
-      if ( item.Contains("y"))  m_enableRootObject = true;
-      else                      m_enableRootObject = false;
-      if (m_debug > 0)
-        printf("EnableRootObject: %d\n", m_enableRootObject);
+      if ( item.Contains("y"))  fEnableRootObject = true;
+      else                      fEnableRootObject = false;
+      if (fDebugLevel > 0)
+        printf("EnableRootObject: %d\n", fEnableRootObject);
     }
     
     if (key.Contains("EnableTWZmc:") ) {
-      if ( item.Contains("y"))  m_enableTWZmc = true;
-      else                      m_enableTWZmc = false;
-      if (m_debug > 0)
-        printf("EnableTWZmc: %d\n", m_enableTWZmc);
+      if ( item.Contains("y"))  fEnableTWZmc = true;
+      else                      fEnableTWZmc = false;
+      if (fDebugLevel > 0)
+        printf("EnableTWZmc: %d\n", fEnableTWZmc);
     }
     
     if (key.Contains("EnableTWnoPU:") ) {
-      if ( item.Contains("y"))  m_enableTWnoPU = true;
-      else                      m_enableTWnoPU = false;
-      if (m_debug > 0)
-        printf("EnableTWnoPU: %d\n", m_enableTWnoPU);
+      if ( item.Contains("y"))  fEnableTWnoPU = true;
+      else                      fEnableTWnoPU = false;
+      if (fDebugLevel > 0)
+        printf("EnableTWnoPU: %d\n", fEnableTWnoPU);
     }
     
 
     if (key.Contains("EnableTWZmatch:") ) {
-      if ( item.Contains("y"))  m_enableTWZmatch = true;
-      else                      m_enableTWZmatch = false;
-      if (m_debug > 0)
-        printf("EnableTWZmatch: %d\n", m_enableTWZmatch);
+      if ( item.Contains("y"))  fEnableTWZmatch = true;
+      else                      fEnableTWZmatch = false;
+      if (fDebugLevel > 0)
+        printf("EnableTWZmatch: %d\n", fEnableTWZmatch);
     }
     
     if (key.Contains("EnableTWCalBar:")  ) {
-      if ( item.Contains("y"))  m_enableTWCalBar = true;
-      else                      m_enableTWCalBar = false;
-      if (m_debug > 0)
-        printf("EnableTWCalBar: %d\n", m_enableTWCalBar);
+      if ( item.Contains("y"))  fEnableTWCalBar = true;
+      else                      fEnableTWCalBar = false;
+      if (fDebugLevel > 0)
+        printf("EnableTWCalBar: %d\n", fEnableTWCalBar);
     }
     
     if (key.Contains("EnableRegionMc:")  ) {
-      if ( item.Contains("y"))  m_enableRegionMc = true;
-      else                      m_enableRegionMc = false;
-      if (m_debug > 0)
-        printf("EnableRegionMc: %d\n", m_enableRegionMc);
+      if ( item.Contains("y"))  fEnableRegionMc = true;
+      else                      fEnableRegionMc = false;
+      if (fDebugLevel > 0)
+        printf("EnableRegionMc: %d\n", fEnableRegionMc);
     }
     
     if (key.Contains("IncludeDI:") ) {
-      if ( item.Contains("y"))  m_includeDI = true;
-      else                      m_includeDI = false;
-      if (m_debug > 0)
-        printf("IncludeDI: %d\n", m_includeDI);
+      if ( item.Contains("y"))  fIncludeDI = true;
+      else                      fIncludeDI = false;
+      if (fDebugLevel > 0)
+        printf("IncludeDI: %d\n", fIncludeDI);
       
-      if (m_includeDI)
-        m_dectInclude.push_back("DI");
+      if (fIncludeDI)
+        fDectInclude.push_back("DI");
     }
     
     if (key.Contains("IncludeST:")) {
-      if ( item.Contains("y"))  m_includeST = true;
-      else                      m_includeST = false;
-      if (m_debug > 0)
-        printf("IncludeST: %d\n", m_includeST);
+      if ( item.Contains("y"))  fIncludeST = true;
+      else                      fIncludeST = false;
+      if (fDebugLevel > 0)
+        printf("IncludeST: %d\n", fIncludeST);
       
-      if (m_includeST)
-        m_dectInclude.push_back("ST");
+      if (fIncludeST)
+        fDectInclude.push_back("ST");
     }
     
     if (key.Contains("IncludeBM:") ) {
-      if ( item.Contains("y") )  m_includeBM = true;
-      else                      m_includeBM = false;
-      if (m_debug > 0)
-        printf("IncludeBM: %d\n", m_includeBM);
+      if ( item.Contains("y") )  fIncludeBM = true;
+      else                      fIncludeBM = false;
+      if (fDebugLevel > 0)
+        printf("IncludeBM: %d\n", fIncludeBM);
       
-      if (m_includeBM)
-        m_dectInclude.push_back("BM");
+      if (fIncludeBM)
+        fDectInclude.push_back("BM");
     }
     
     if (key.Contains("IncludeTG:")  ) {
-      if ( item.Contains("y"))  m_includeTG = true;
-      else                      m_includeTG = false;
-      if (m_debug > 0)
-        printf("IncludeTG: %d\n", m_includeTG);
+      if ( item.Contains("y"))  fIncludeTG = true;
+      else                      fIncludeTG = false;
+      if (fDebugLevel > 0)
+        printf("IncludeTG: %d\n", fIncludeTG);
       
-      if (m_includeTG)
-        m_dectInclude.push_back("TG");
+      if (fIncludeTG)
+        fDectInclude.push_back("TG");
     }
     
     if (key.Contains("IncludeVT:")  ) {
-      if ( item.Contains("y"))  m_includeVT = true;
-      else                      m_includeVT = false;
-      if (m_debug > 0)
-        printf("IncludeVT: %d\n", m_includeVT);
+      if ( item.Contains("y"))  fIncludeVT = true;
+      else                      fIncludeVT = false;
+      if (fDebugLevel > 0)
+        printf("IncludeVT: %d\n", fIncludeVT);
       
-      if (m_includeVT)
-        m_dectInclude.push_back("VT");
+      if (fIncludeVT)
+        fDectInclude.push_back("VT");
     }
     
     if (key.Contains("IncludeIT:") ) {
-      if ( item.Contains("y"))  m_includeIT = true;
-      else                      m_includeIT = false;
-      if (m_debug > 0)
-        printf("IncludeIT: %d\n", m_includeIT);
+      if ( item.Contains("y"))  fIncludeIT = true;
+      else                      fIncludeIT = false;
+      if (fDebugLevel > 0)
+        printf("IncludeIT: %d\n", fIncludeIT);
       
-      if (m_includeIT)
-        m_dectInclude.push_back("IT");
+      if (fIncludeIT)
+        fDectInclude.push_back("IT");
     }
     
     if (key.Contains("IncludeMSD:") ) {
-      if ( item.Contains("y"))  m_includeMSD = true;
-      else                      m_includeMSD = false;
-      if (m_debug > 0)
-        printf("IncludeMSD: %d\n", m_includeMSD);
+      if ( item.Contains("y"))  fIncludeMSD = true;
+      else                      fIncludeMSD = false;
+      if (fDebugLevel > 0)
+        printf("IncludeMSD: %d\n", fIncludeMSD);
       
-      if (m_includeMSD)
-        m_dectInclude.push_back("MSD");
+      if (fIncludeMSD)
+        fDectInclude.push_back("MSD");
     }
     
     if (key.Contains("IncludeTW:")  ) {
-      if ( item.Contains("y"))  m_includeTW = true;
-      else                      m_includeTW = false;
-      if (m_debug > 0)
-        printf("IncludeTW: %d\n", m_includeTW);
+      if ( item.Contains("y"))  fIncludeTW = true;
+      else                      fIncludeTW = false;
+      if (fDebugLevel > 0)
+        printf("IncludeTW: %d\n", fIncludeTW);
       
-      if (m_includeTW)
-        m_dectInclude.push_back("TW");
+      if (fIncludeTW)
+        fDectInclude.push_back("TW");
     }
     
     if (key.Contains("IncludeCA:") ) {
-      if ( item.Contains("y"))  m_includeCA = true;
-      else                      m_includeCA = false;
-      if (m_debug > 0)
-        printf("IncludeCA: %d\n", m_includeCA);
+      if ( item.Contains("y"))  fIncludeCA = true;
+      else                      fIncludeCA = false;
+      if (fDebugLevel > 0)
+        printf("IncludeCA: %d\n", fIncludeCA);
       
-      if (m_includeCA)
-        m_dectInclude.push_back("CA");
+      if (fIncludeCA)
+        fDectInclude.push_back("CA");
     }
     
     if (key.Contains("FLUKA version:")) {
       if ( item == "pro")
-        m_verFLUKA = true;
+        fVerFLUKA = true;
       else if ( item == "dev" )
-        m_verFLUKA = false;
+        fVerFLUKA = false;
       else
-        m_verFLUKA = false;
-      if (m_debug > 0)
-        printf("FLUKA version: %d\n", m_verFLUKA);
+        fVerFLUKA = false;
+      if (fDebugLevel > 0)
+        printf("FLUKA version: %d\n", fVerFLUKA);
     }
   }
   
@@ -499,9 +499,9 @@ void TAGrecoManager::FromFile ()
 //_____________________________________________________________________________
 void TAGrecoManager::SetDebugLevels()
 {
-   for ( map< string, int >::iterator it = m_map_debug.begin(); it != m_map_debug.end(); ++it) {
+   for ( map< string, int >::iterator it = fMapDebug.begin(); it != fMapDebug.end(); ++it) {
       string name = it->first;
-      int level   = m_map_debug[it->first];
+      int level   = fMapDebug[it->first];
       SetClassDebugLevel(name.c_str(), level);
    }
 }
@@ -513,10 +513,10 @@ void TAGrecoManager::SetClassDebugLevel(const char* className, Int_t level)
    
    if (!className) return;
 
-   TObject* obj = Instance()->m_ClassDebugLevels.FindObject(className);
+   TObject* obj = Instance()->fClassDebugLevels.FindObject(className);
    if (!obj) {
       obj = new TNamed(className, className);
-      Instance()->m_ClassDebugLevels.Add(obj);
+      Instance()->fClassDebugLevels.Add(obj);
    }
 
    obj->SetUniqueID(level);
@@ -528,8 +528,8 @@ void TAGrecoManager::ClearClassDebugLevel(const char* className)
    // remove the setting of the debug level for the given class
    
    if (!className) return;
-     TObject* obj = Instance()->m_ClassDebugLevels.FindObject(className);
-   if (obj) delete Instance()->m_ClassDebugLevels.Remove(obj);
+     TObject* obj = Instance()->fClassDebugLevels.FindObject(className);
+   if (obj) delete Instance()->fClassDebugLevels.Remove(obj);
 }
 
 //_____________________________________________________________________________
@@ -554,7 +554,7 @@ Bool_t TAGrecoManager::GetDebugLevel(Int_t level, const char* className)
    
    if (className) {
       Int_t classLevel = -1;
-      TObject* obj = Instance()->m_ClassDebugLevels.FindObject(className);
+      TObject* obj = Instance()->fClassDebugLevels.FindObject(className);
       if (obj) classLevel = obj->GetUniqueID();
 
       if ( level <= classLevel)
@@ -575,7 +575,7 @@ Int_t TAGrecoManager::GetDebugLevel(const char* className)
    // get the logging level for the given module and class
    
    if (className) {
-      TObject* obj = Instance()->m_ClassDebugLevels.FindObject(className);
+      TObject* obj = Instance()->fClassDebugLevels.FindObject(className);
       if (obj) return obj->GetUniqueID();
    }
    
@@ -659,27 +659,27 @@ void TAGrecoManager::Print(Option_t* opt) {
 
    if (option.Contains("all")) {
 
-      for ( unsigned int cl=0; cl<m_copyInputFile.size(); cl++ )
-         cout << m_copyInputFile[cl] << endl;
+      for ( unsigned int cl=0; cl<fCopyInputFile.size(); cl++ )
+         cout << fCopyInputFile[cl] << endl;
       cout << endl <<  "===========================================================================" << endl<<endl;
 
    } else {
-      cout << "Global debug level: " << m_debug << endl;
+      cout << "Global debug level: " << fDebugLevel << endl;
       cout << "Detectors included:" << endl;
       
       printf(" - ");
-      vector<TString> list = m_dectInclude;
+      vector<TString> list = fDectInclude;
       for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
-         TString str = m_dectFullName[*it];
+         TString str = fgkDectFullName[*it];
          printf("%s - ", str.Data());
       }
       
       printf("\n");
 
-      if (m_includeKalman)
+      if (fIncludeKalman)
          cout << "Using GenFit for Global Recontruction" << endl;
       
-      if (m_includeTOE)
+      if (fIncludeTOE)
          cout << "Using TOE for Global Recontruction" << endl;
 
       printf("\n\n");
@@ -690,5 +690,5 @@ void TAGrecoManager::Print(Option_t* opt) {
 //____________________________________________________________________________
 bool TAGrecoManager::Find_MCParticle( string villain )
 {
-   return ( find( m_mcParticles.begin(), m_mcParticles.end(), villain ) == m_mcParticles.end() ? false : true);
+   return ( find( fMcParticles.begin(), fMcParticles.end(), villain ) == fMcParticles.end() ? false : true);
 }

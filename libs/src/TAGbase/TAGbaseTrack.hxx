@@ -1,5 +1,5 @@
-#ifndef _TAVTbaseTrack_HXX
-#define _TAVTbaseTrack_HXX
+#ifndef _TAGbaseTrack_HXX
+#define _TAGbaseTrack_HXX
 
 #include <map>
 
@@ -12,7 +12,7 @@
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
-#include "TAVTntuCluster.hxx"
+#include "TAGcluster.hxx"
 
 /**
  Line  is defined by its
@@ -36,13 +36,13 @@
 
 //##############################################################################
 
-/** TAVTbaseTrack class, simple container class for tracks with the associated clusters                    
+/** TAGbaseTrack class, simple container class for tracks with the associated clusters
  
  \author Ch. Finck
  */
 
 class TClonesArray;
-class TAVTbaseTrack : public TAGobject {
+class TAGbaseTrack : public TAGobject {
    
 protected:
    TVector3*      fOrigin;                       //->   origin x0,y0,z0
@@ -54,7 +54,7 @@ protected:
 
    Bool_t         fPileup;                       // true if track is part of pileup events
    UInt_t         fType;                         // 0 for straight, 1 inclined, 2 for bent
-   Int_t          fTrackNumber;                  // number of the track
+   Int_t          fTrackIdx;                  // number of the track
    TClonesArray*  fListOfClusters;               // list of cluster associated to the track
    
    Float_t        fChiSquare;                    // chisquare/ndf of track fit in 2D
@@ -69,16 +69,16 @@ protected:
    TArrayF*       fChargeProbaNorm;              //! charge probability array for normalized charge disttribution
    Int_t          fChargeWithMaxProbaNorm;       //! charge with maximum probability for normalized charge disttribution
    Float_t        fChargeMaxProbaNorm;           //! charge maximum probability for normalized charge disttribution
-   Double32_t     fMeanPixelsN;                  // Average number of pixels per track
+   Double32_t     fMeanEltsN;                  // Average number of pixels/strips per track
    Double32_t     fMeanCharge;                   // Average charge (for analogic sensor) per track
 
    TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
    std::map<int, int> fMcTrackMap;               //! Map of MC track Id
    
 public:
-   TAVTbaseTrack();                                 
-   ~TAVTbaseTrack();
-   TAVTbaseTrack(const TAVTbaseTrack& aTrack);
+   TAGbaseTrack();
+   ~TAGbaseTrack();
+   TAGbaseTrack(const TAGbaseTrack& aTrack);
    
    //! Get cluster
    virtual TAGcluster*   GetCluster(Int_t /*index*/) { return 0x0; }
@@ -110,17 +110,17 @@ public:
 
   
    //! Get distance with another track
-   Float_t        Distance(TAVTbaseTrack* track, Float_t z) const;
+   Float_t        Distance(TAGbaseTrack* track, Float_t z) const;
    //! Get X-Y distance with another track
-   TVector2       DistanceXY(TAVTbaseTrack* track, Float_t z) const;
+   TVector2       DistanceXY(TAGbaseTrack* track, Float_t z) const;
    //! Get distance with another track
-   TVector2       DistanceMin(TAVTbaseTrack* track1, Float_t zMin = -10000., Float_t zMax =  10000., Float_t eps = 5.) const;
+   TVector2       DistanceMin(TAGbaseTrack* track1, Float_t zMin = -10000., Float_t zMax =  10000., Float_t eps = 5.) const;
    //! Reset track value
    void           Reset();
    //! Get intersection point with plane
    TVector3       Intersection(Float_t posZ) const;
    //! Get track number
-   Int_t          GetNumber()               const { return   fTrackNumber;      }
+   Int_t          GetTrackIdx()               const { return   fTrackIdx;      }
     //! Get list of clusters
    TClonesArray*  GetListOfClusters()       const { return   fListOfClusters;   }
    //! Get number of clusters
@@ -131,15 +131,13 @@ public:
    UInt_t         GetType()                 const { return   fType;                  }
    
    //! Set track number
-   void           SetNumber(Int_t number)            { fTrackNumber = number;       }
+   void           SetTrackIdx(Int_t number)          { fTrackIdx = number;          }
    //! Set track type
    void           SetType(UInt_t type)               { fType = type;                }
    //! Set pileup flag
    void           SetPileUp(Bool_t pileup = true)    { fPileup = pileup;            }
    //Set Validity of track in vertex reconstruction
    void           SetValidity(Int_t q)               { fValidity = q;               }
-   //! Set pos vertex
-   void           SetPosVertex(TVector3& pos)        { fPosVertex = pos;            }
    //! Set values of line track
    void           SetLineValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength = 0.);
    //! Set values of line track
@@ -160,14 +158,15 @@ public:
    void           SetChargeMaxProbaNorm(Float_t proba)   { fChargeMaxProbaNorm = proba;     }
 
  
+   virtual  void  AddCluster(TAGcluster* /*cluster*/) { return; }
+
     //! Get chi square 
    Float_t        GetChi2()           const { return fChiSquare;     }
    //! Get chi squareU 
    Float_t        GetChi2U()          const { return fChiSquareU;    }
    //! Get chi squareV 
    Float_t        GetChi2V()          const { return fChiSquareV;    }
-   //! Get pos vertex
-   const TVector3& GetPosVertex()     const { return fPosVertex;     }
+
    //Get Validity
    Int_t         GetValidity()        const { return fValidity;      }
    //Get charge proba
@@ -185,7 +184,7 @@ public:
    Float_t       GetChargeMaxProbaNorm()     const { return fChargeMaxProbaNorm; }
 
    //Get mean number of pixels per tracks
-   Double32_t    GetMeanPixelsN()            const { return fMeanPixelsN/(float) fListOfClusters->GetEntries(); }
+   Double32_t    GetMeanEltsN()             const { return fMeanEltsN/(float) fListOfClusters->GetEntries(); }
    
    //Get mean charge per tracks
    Double32_t    GetMeanCharge()             const { return fMeanCharge/(float) fListOfClusters->GetEntries(); }
@@ -197,7 +196,7 @@ public:
    Int_t         GetMcTrackIdx(Int_t index)  const { return fMcTrackIdx[index];    }
    Int_t         GetMcTracksN()              const { return fMcTrackIdx.GetSize(); }
    
-   ClassDef(TAVTbaseTrack,9)                      // Describes TAVTbaseTrack
+   ClassDef(TAGbaseTrack,1)                      // Describes TAGbaseTrack
 };
 
 #endif

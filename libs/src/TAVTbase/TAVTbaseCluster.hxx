@@ -68,7 +68,7 @@ public:
    Float_t            GetPixelDistanceV(Int_t index)   const;
    
    //! Compute distance from another cluster
-   Float_t            Distance(TAGcluster *aClus);
+//   Float_t            Distance(TAGcluster *aClus);
    //! reset pixels
    void               ResetPixels();
    

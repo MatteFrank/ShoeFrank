@@ -263,7 +263,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
       
       // Apply cuts
       if (AppyCuts(track)) {
-         track->SetNumber(pNtuTrack->GetTracksN());
+         track->SetTrackIdx(pNtuTrack->GetTracksN());
          track->MakeChiSquare();
          track->SetType(1);
          pNtuTrack->NewTrack(*track);
@@ -282,7 +282,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
 
 //_____________________________________________________________________________
 //
-void TAIRactNtuTrack::FillHistogramm(TAVTbaseTrack* track)
+void TAIRactNtuTrack::FillHistogramm(TAGbaseTrack* track)
 {
    fpHisTheta->Fill(track->GetTheta());
    fpHisPhi->Fill(track->GetPhi());

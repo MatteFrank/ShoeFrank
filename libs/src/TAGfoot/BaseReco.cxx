@@ -101,7 +101,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagHisto(false),
    fFlagTrack(false),
    fFlagTWbarCalib(false),
-   fgTrackingAlgo("Full"),
+   fgVtxTrackingAlgo("Full"),
+   fgItrTrackingAlgo("Full"),
+   fgMsdTrackingAlgo("Full"),
    fFlagZtrueMC(false),
    fFlagZrecPUoff(false),
    fFlagZmatch_TW(false),
@@ -587,18 +589,18 @@ void BaseReco::ReadParFiles()
 
          Bool_t elossTuning = false;
 
-	 if( !((TString)fCampManager->GetCurCampaign()->GetName()).CompareTo("GSI"))
-	   elossTuning = true;
-	
-         if(elossTuning) {
-            Info("ReadParFiles()","Eloss tuning for GSI data status:: ON\n");
-            parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
-                                                      false, false, true);
-            parCal->FromElossTuningFile(parFileName.Data());
+         if( !((TString)fCampManager->GetCurCampaign()->GetName()).CompareTo("GSI")) {
+            elossTuning = true;
+            
+            if(elossTuning) {
+               Info("ReadParFiles()","Eloss tuning for GSI data status:: ON");
+               parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+                                                         false, false, true);
+               parCal->FromElossTuningFile(parFileName.Data());
+            } else {
+               Info("ReadParFiles()","Eloss tuning for GSI data status:: OFF\n");
+            }
          }
-	 else
-	   Info("ReadParFiles()","Eloss tuning for GSI data status:: OFF\n");
-
       }
       
       isTof_calib = true;
@@ -730,12 +732,12 @@ void BaseReco::CreateRecActionVtx()
       fActClusVtx->CreateHistogram();
    
    if (fFlagTrack) {
-      if (fgTrackingAlgo.Contains("Std") ) {
+      if (fgVtxTrackingAlgo.Contains("Std") ) {
          if (TAGrecoManager::GetPar()->IncludeBM())
             fActTrackVtx  = new TAVTactNtuTrack("vtActTrack", fpNtuClusVtx, fpNtuTrackVtx, fpParConfVtx, fpParGeoVtx, 0, fpNtuTrackBm);
          else
             fActTrackVtx  = new TAVTactNtuTrack("vtActTrack", fpNtuClusVtx, fpNtuTrackVtx, fpParConfVtx, fpParGeoVtx);
-      } else if (fgTrackingAlgo.Contains("Full")) {
+      } else if (fgVtxTrackingAlgo.Contains("Full")) {
          if (TAGrecoManager::GetPar()->IncludeBM())
             fActTrackVtx  = new TAVTactNtuTrackF("vtActTrack", fpNtuClusVtx, fpNtuTrackVtx, fpParConfVtx, fpParGeoVtx, 0, fpNtuTrackBm);
          else
@@ -777,13 +779,13 @@ void BaseReco::CreateRecActionIt()
    if (fgItrTrackFlag) {
       fpNtuTrackIt  = new TAGdataDsc("itTrack", new TAITntuTrack());
 
-      if (fgTrackingAlgo.Contains("Std") ) {
+      if (fgItrTrackingAlgo.Contains("Std") ) {
          if (TAGrecoManager::GetPar()->IncludeBM())
             fActTrackIt  = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpNtuTrackBm);
          else
             fActTrackIt  = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt);
          
-      }  else if (fgTrackingAlgo.Contains("Full")) {
+      }  else if (fgItrTrackingAlgo.Contains("Full")) {
          fActTrackIt  = new TAITactNtuTrackF("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpParGeoG);
       }
       
@@ -810,10 +812,10 @@ void BaseReco::CreateRecActionMsd()
    if (fgMsdTrackFlag) {
       fpNtuTrackMsd  = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
       
-      if (fgTrackingAlgo.Contains("Std") ) {
+      if (fgMsdTrackingAlgo.Contains("Std") ) {
          fActTrackMsd  = new TAMSDactNtuTrack("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd);
          
-      }  else if (fgTrackingAlgo.Contains("Full")) {
+      }  else if (fgMsdTrackingAlgo.Contains("Full")) {
          fActTrackMsd  = new TAMSDactNtuTrackF("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd, fpParGeoG);
       }
       
@@ -889,12 +891,7 @@ void BaseReco::CreateRecActionGlbGF()
     
     // include the nucleon into the genfit pdg repository
     TAMCparTools::UpdatePDG();
-    
-    // study for kalman Filter
-    // fActGlbTrackStudies = new GlobalTrackingStudies("glbActTrackStudyGF");
-    // if (fFlagHisto)
-    //    fActGlbTrackStudies->CreateHistogram();
-    
+   
     // Initialisation of KFfitter
     fpNtuGlbTrackK = new TAGdataDsc("GlobalTrackRepostory", new GlobalTrackRepostory());
     fActGlbkFitter = new TAGactKFitter("glbActkFitter", fpNtuGlbTrackK);
@@ -996,41 +993,47 @@ void BaseReco::SetL0TreeBranches()
 //__________________________________________________________
 void BaseReco::SetTreeBranches()
 {
-  if (TAGrecoManager::GetPar()->IncludeTOE()) {
-    if (fFlagTrack && !fFlagRecCutter)
-      fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
-  }
-  
-  if (TAGrecoManager::GetPar()->IncludeVT()) {
-    if (!fFlagTrack)
-      fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-    else {
-      fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-      fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
-      if (TAGrecoManager::GetPar()->IncludeTG())
-	fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
-    }
-  }
-  
-  if (TAGrecoManager::GetPar()->IncludeIT())
-    fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
-  
-  if (TAGrecoManager::GetPar()->IncludeMSD()) {
-    fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
-    fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
-  }
+   if (TAGrecoManager::GetPar()->IncludeTOE()) {
+      if (fFlagTrack && !fFlagRecCutter)
+         fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
+   }
+   
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
+      if (!fFlagTrack)
+         fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+      else {
+         fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
+         if (TAGrecoManager::GetPar()->IncludeTG())
+            fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
+      }
+   }
+   
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
+      if (fgItrTrackFlag)
+         fActEvtWriter->SetupElementBranch(fpNtuTrackIt, TAITntuTrack::GetBranchName());
+   }
+   
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
+      if (fgMsdTrackFlag)
+         fActEvtWriter->SetupElementBranch(fpNtuTrackMsd, TAMSDntuTrack::GetBranchName());
+
+   }
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW())
-     fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
    
    if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsLocalReco()) return;
-
+   
    if (TAGrecoManager::GetPar()->IncludeBM()) {
-     if (fFlagTrack)
-       fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+      if (fFlagTrack)
+         fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
    }
    
    if (TAGrecoManager::GetPar()->IncludeCA())
-     fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
    
    if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
        && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
@@ -1127,12 +1130,42 @@ void BaseReco::SetVtxTrackingAlgo(char c)
 {
    switch (c) {
       case 'S':
-         fgTrackingAlgo = "Std";
+         fgVtxTrackingAlgo = "Std";
          break;
       case 'F':
-         fgTrackingAlgo = "Full";
+         fgVtxTrackingAlgo = "Full";
          break;
       default:
          printf("SetVtxTrackingAlgo: Wrongly set tracking algorithm");
+   }
+}
+
+//__________________________________________________________
+void BaseReco::SetItrTrackingAlgo(char c)
+{
+   switch (c) {
+      case 'S':
+         fgItrTrackingAlgo = "Std";
+         break;
+      case 'F':
+         fgItrTrackingAlgo = "Full";
+         break;
+      default:
+         printf("SetItrTrackingAlgo: Wrongly set tracking algorithm");
+   }
+}
+
+//__________________________________________________________
+void BaseReco::SetMsdTrackingAlgo(char c)
+{
+   switch (c) {
+      case 'S':
+         fgMsdTrackingAlgo = "Std";
+         break;
+      case 'F':
+         fgMsdTrackingAlgo = "Full";
+         break;
+      default:
+         printf("SetMsdTrackingAlgo: Wrongly set tracking algorithm");
    }
 }

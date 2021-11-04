@@ -25,7 +25,28 @@
 #include "state.hpp"
 #include "aftereffect.hpp"
 #include "matrix_new.hpp"
+#include "expr.hpp"
 
+
+#include "TAGroot.hxx"
+#include "TAGgeoTrafo.hxx"
+
+
+#include "TAMSDntuCluster.hxx"
+#include "TATWntuPoint.hxx"
+
+#include "TAMSDntuPoint.hxx"
+
+
+class TAVTcluster;
+#include "TAVTtrack.hxx"
+
+#include "TAVTntuVertex.hxx"
+#include "TAVTntuCluster.hxx"
+#include "TAITntuCluster.hxx"
+
+#include "TAVTparGeo.hxx"
+#include "TAITparGeo.hxx"
 #include "TADIgeoField.hxx"
 
 

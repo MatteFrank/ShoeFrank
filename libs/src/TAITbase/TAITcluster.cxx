@@ -42,21 +42,6 @@ TAITcluster::~TAITcluster()
 }
 
 //______________________________________________________________________________
-//
-Float_t TAITcluster::Distance(TAITtrack *aTrack) {
-   // Return the distance between this cluster and the pointed track impact in the plane
-   //
-   
-   TVector3 impactPosition( aTrack->Intersection( GetPositionG()[2]) );
-   impactPosition -= GetPositionG();
-   // Insure that z position is 0 for 2D length computation
-   impactPosition.SetXYZ(impactPosition(0), impactPosition(1), 0.);
-   
-   return impactPosition.Mag();
-}
-
-
-//______________________________________________________________________________
 //  
 void TAITcluster::AddPixel(TAIThit* pixel)
 {

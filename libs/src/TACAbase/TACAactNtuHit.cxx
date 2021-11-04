@@ -32,18 +32,14 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
     fTcorr1Par0(0.167),
     fTcorr2Par1(4.94583e-03),
     fTcorr2Par0(9000.),
-    T1(270.),
-    T2(380.)
+    fT1(270.),
+    fT2(380.)
 {
   AddDataIn(p_datraw, "TACAntuRaw");
   AddDataOut(p_nturaw, "TACAntuHit");
 
-
   AddPara(p_parmap, "TACAparMap");
   AddPara(p_parcal, "TACAparCal");
-
-  f_parcal = (TACAparCal*) fpParCal->Object();
-  f_parmap = (TACAparMap*) fpParMap->Object();
 
   SetTemperatureFunctions();
   SetParFunction();
@@ -134,14 +130,15 @@ Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
 {
+  TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
 
-  Double_t T0 = f_parcal->GetTemperatureCry(crysId);
+  Double_t T0 = parcal->GetTemperatureCry(crysId);
   Double_t m1 = fTcorr1->Eval(charge);
   Double_t m2 = fTcorr2->Eval(charge);
 
-  Double_t m0 = m1 + ((m2-m1)/(T2-T1))*(T0-T1);
+  Double_t m0 = m1 + ((m2-m1)/(fT2-fT1))*(T0-fT1);
 
-  Double_t delta = (T1 - T0) * m0;
+  Double_t delta = (fT1 - T0) * m0;
 
   Double_t charge_tcorr = charge + delta;
 
@@ -151,8 +148,9 @@ Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
 {
+  TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
 
-  Double_t Equalis0 = f_parcal->getCalibrationMap()->GetEqualiseCry(crysId);
+  Double_t Equalis0 = parcal->getCalibrationMap()->GetEqualiseCry(crysId);
   Double_t charge_equalis = charge_tcorr*Equalis0;
 
   return charge_equalis;
@@ -203,29 +201,29 @@ void TACAactNtuHit::CreateHistogram(){
      cout<<"I have created the CA histo. "<<endl;
 
   // sprintf(histoname,"stEvtTime");
-  // hEventTime = new TH1F(histoname, histoname, 6000, 0., 60.);
-  // AddHistogram(hEventTime);
+  // fhEventTime = new TH1F(histoname, histoname, 6000, 0., 60.);
+  // AddHistogram(fhEventTime);
 
   // sprintf(histoname,"stTrigTime");
-  // hTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
-  // AddHistogram(hTrigTime);
+  // fhTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
+  // AddHistogram(fhTrigTime);
 
   sprintf(histoname,"caTotCharge");
-  hTotCharge = new TH1F(histoname, histoname, 400, -0.1, 3.9);
-  AddHistogram(hTotCharge);
+  fhTotCharge = new TH1F(histoname, histoname, 400, -0.1, 3.9);
+  AddHistogram(fhTotCharge);
 
   // for(int iCh=0;iCh<8;iCh++){
   //   sprintf(histoname,"stDeltaTime_ch%d", iCh);
-  //   hArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -5., 5.);
-  //   AddHistogram(hArrivalTime[iCh]);
+  //   fhArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -5., 5.);
+  //   AddHistogram(fhArrivalTime[iCh]);
 
   //   sprintf(histoname,"stCharge_ch%d", iCh);
-  //   hCharge[iCh]= new TH1F(histoname, histoname, 200, -0.1, 1.9);
-  //   AddHistogram(hCharge[iCh]);
+  //   fhCharge[iCh]= new TH1F(histoname, histoname, 200, -0.1, 1.9);
+  //   AddHistogram(fhCharge[iCh]);
 
   //   sprintf(histoname,"stMaxAmp_ch%d", iCh);
-  //   hAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
-  //   AddHistogram(hAmplitude[iCh]);
+  //   fhAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
+  //   AddHistogram(fhAmplitude[iCh]);
   // }
 
   SetValidHistogram(kTRUE);

@@ -39,7 +39,7 @@ private:
     Bool_t    FindTracks();
     Bool_t    CheckVtx();
    TAIRtrack* FillTracks(TAVTtrack* vtTrack);
-   void       FillHistogramm(TAVTbaseTrack* track);
+   void       FillHistogramm(TAGbaseTrack* track);
    void       FillHistogramm();
 
 private:

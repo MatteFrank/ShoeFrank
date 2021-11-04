@@ -129,20 +129,20 @@ Float_t TAVTbaseCluster::GetSeedV() const
 
 //______________________________________________________________________________
 //  
-Float_t TAVTbaseCluster::Distance(TAGcluster *aClus) {
-   // Return the distance between this clusters and the pointed cluster
-   // regardless of the plane
-   
-   TVector3 clusPosition( aClus->GetPositionG() );
-   
-   // Now compute the distance beetween the two hits
-   clusPosition -= (GetPositionG());
-   
-   // Insure that z position is 0 for 2D length computation
-   clusPosition.SetXYZ( clusPosition[0], clusPosition[1], 0.);
-   
-   return clusPosition.Mag();
-}
+//Float_t TAVTbaseCluster::Distance(TAGcluster *aClus) {
+//   // Return the distance between this clusters and the pointed cluster
+//   // regardless of the plane
+//   
+//   TVector3 clusPosition( aClus->GetPositionG() );
+//   
+//   // Now compute the distance beetween the two hits
+//   clusPosition -= (GetPositionG());
+//   
+//   // Insure that z position is 0 for 2D length computation
+//   clusPosition.SetXYZ( clusPosition[0], clusPosition[1], 0.);
+//   
+//   return clusPosition.Mag();
+//}
 
 
 //______________________________________________________________________________

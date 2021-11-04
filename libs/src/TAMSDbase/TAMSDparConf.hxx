@@ -34,6 +34,9 @@ private:
 public:
    Bool_t               FromFile(const TString& name = "");
    
+   Int_t GetType(Int_t idx)     const { return fSensorParameter[idx].Type;}
+   Int_t GetStatus(Int_t idx)   const { return fSensorParameter[idx].Status;}
+
    SensorParameter_t&   GetSensorPar(Int_t idx) { return fSensorParameter[idx];    }
 
    ClassDef(TAMSDparConf,1)

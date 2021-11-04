@@ -272,8 +272,8 @@ void EvaluateT0time(char *graphname, vector<vector<double>> &t0values, const int
 
 //~ void ReadBmRaw(TString name = "data_test.00001462.physics_foot.daq.RAW._lb0000._EB-RCD._0001.data")
 //~ void EvaluateBMT0(TString in_filename = "data_built.2205.physics_foot.daq.WD.full.dat")//not working: it crashes after 1200 events and prob in datas
-//~ void EvaluateBMT0(TString in_filename = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.VTX.1.dat")
-void EvaluateBMT0(const TString in_filename = "data/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.WD.1.dat")
+//~ void EvaluateBMT0(TString in_filename = "dataRaw/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.VTX.1.dat")
+void EvaluateBMT0(const TString in_filename = "dataRaw/GSI_electronic/DataGSI_match/data_built.2212.physics_foot.daq.WD.1.dat")
 {  
    int maxevnum=1e10;
    //~ int maxevnum=1000;

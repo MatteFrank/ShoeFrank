@@ -95,7 +95,6 @@
 #include "TAVTactNtuTrack.hxx"
 #include "TAVTactNtuVertexPD.hxx"
 
-#include "TAITactBaseNtuTrack.hxx"
 #include "TAITactNtuTrack.hxx"
 #include "TAITactNtuTrackF.hxx"
 #include "TAITntuTrack.hxx"
