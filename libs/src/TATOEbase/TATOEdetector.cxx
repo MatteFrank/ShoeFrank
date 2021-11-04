@@ -11,6 +11,7 @@
 
 
 #include "TAVTntuVertex.hxx"
+#include "TAVTntuCluster.hxx"
 #include "TAITntuCluster.hxx"
 
 //______________________________________________________________________________

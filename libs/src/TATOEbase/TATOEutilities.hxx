@@ -32,21 +32,6 @@
 #include "TAGgeoTrafo.hxx"
 
 
-#include "TAMSDntuCluster.hxx"
-#include "TATWntuPoint.hxx"
-
-#include "TAMSDntuPoint.hxx"
-
-
-class TAVTcluster;
-#include "TAVTtrack.hxx"
-
-#include "TAVTntuVertex.hxx"
-#include "TAVTntuCluster.hxx"
-#include "TAITntuCluster.hxx"
-
-#include "TAVTparGeo.hxx"
-#include "TAITparGeo.hxx"
 #include "TADIgeoField.hxx"
 
 
