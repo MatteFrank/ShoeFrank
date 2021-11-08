@@ -72,9 +72,6 @@ public:
    void      SetChargeZ(int z)          { fChargeZ = z;         }
    void      SetChargeZProba(double p)  { fChargeZProba = p;    }
    void      Clear(Option_t* opt);
-
-   //! Compute distance from another cluster
-   Float_t            Distance(TAMSDtrack *aClus);
    
    ClassDef(TAMSDpoint,6)
 };
@@ -93,6 +90,7 @@ public:
 
   TAMSDpoint*         NewPoint( int iStation, double x, double y, TVector3 position);
   TAMSDpoint*         NewPoint(Int_t iStation, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY);
+  TAMSDpoint*         NewPoint(TAMSDpoint* point, Int_t iStation);
 
   int                 GetPointsN(int iStation) const;
 

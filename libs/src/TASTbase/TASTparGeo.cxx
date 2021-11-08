@@ -76,6 +76,8 @@ Bool_t TASTparGeo::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
 
+   Info("FromFile()", "Open file %s for geometry\n", name.Data());
+
    //The center is taken from the global setup of the experiment.
    ReadVector3(fSize);
    if(FootDebugLevel(1))

@@ -44,7 +44,7 @@ int TAGFselector::Categorize( ) {
 
 	// fill m_mapTrack
 	if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" ){
-		if ( !TAGrecoManager::GetPar()->IsMC() )		Error("TAGactKFitter::Action()", "Asked TrueParticle tracking but running not on MC." ), exit(0); 
+	  //		if ( !TAGrecoManager::GetPar()->IsMC() )		Error("TAGactKFitter::Action()", "Asked TrueParticle tracking but running not on MC." ), exit(0); 
 		if(m_debug > 0) cout << "TAGFselector::Categorize_TruthMC START\n";
 		
 		Categorize_TruthMC();
@@ -170,8 +170,8 @@ map<string, int> TAGFselector::CountParticleGenaratedAndVisible() {
 			}
 		}
 
-		if ( foundHit < TAGrecoManager::GetPar()->MeasureN() ) 
-			continue;
+		//		if ( foundHit < TAGrecoManager::GetPar()->MeasureN() ) 
+		//			continue;
 
 		genCount_vector.at( outName ) += 1;
 

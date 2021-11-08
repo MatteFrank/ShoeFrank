@@ -96,7 +96,7 @@ void FillStTw()
    outFile->SetupElementBranch(twNtu, TATWntuHit::GetBranchName());
 }
 
-void ReadStTwRaw(TString filename = "data/data_built.2242.physics_foot.daq.VTX.1.dat", Int_t nMaxEvts = 100)
+void ReadStTwRaw(TString filename = "dataRaw/data_built.2242.physics_foot.daq.VTX.1.dat", Int_t nMaxEvts = 100)
 {
    
    TAGroot tagr;

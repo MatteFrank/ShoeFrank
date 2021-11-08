@@ -39,7 +39,9 @@
 
 ClassImp(TAGbaseEventDisplay)
 
-TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Std";
+TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Full";
+TString TAGbaseEventDisplay::fgItrTrackingAlgo = "Full";
+TString TAGbaseEventDisplay::fgMsdTrackingAlgo = "Full";
 Bool_t  TAGbaseEventDisplay::fgStdAloneFlag    = false;
 Bool_t  TAGbaseEventDisplay::fgBmSelectHit     = false;
 Bool_t  TAGbaseEventDisplay::fgM28ClusMtFlag   = false;
@@ -218,6 +220,8 @@ void TAGbaseEventDisplay::SetRecoOptions()
    
    if (fFlagTrack) {
       fReco->SetVtxTrackingAlgo(fgVtxTrackingAlgo[0]);
+      fReco->SetItrTrackingAlgo(fgItrTrackingAlgo[0]);
+      fReco->SetMsdTrackingAlgo(fgMsdTrackingAlgo[0]);
       fReco->EnableTracking();
    }
    
@@ -612,15 +616,15 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
    TObject* obj = lineTracks->GetId(idx);
    if (obj == 0x0) return;
 
-   if (obj->InheritsFrom("TAVTbaseTrack")) {
+   if (obj->InheritsFrom("TAGbaseTrack")) {
 
-      TAVTbaseTrack* track =  (TAVTbaseTrack*)obj;
+      TAGbaseTrack* track =  (TAGbaseTrack*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track # %2d (valid: %d): \n", track->GetNumber(), track->GetValidity()) );
+      fInfoView->AddLine( Form("Track # %2d (valid: %d): \n", track->GetTrackIdx(), track->GetValidity()) );
       fInfoView->AddLine( Form(" with %3d clusters\n", track->GetClustersN()) );
       if (fConsoleButton->IsOn()) {
-         cout << Form("Track # %2d (valid: %d): \n", track->GetNumber(), track->GetValidity());
+         cout << Form("Track # %2d (valid: %d): \n", track->GetTrackIdx(), track->GetValidity());
          cout << Form(" with %3d clusters\n", track->GetClustersN());
       }
 
@@ -1069,7 +1073,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
 
          x1 = posG(0); y1 = posG(1); z1 = posG(2);
 
-         Float_t nPix = track->GetMeanPixelsN();
+         Float_t nPix = track->GetMeanEltsN();
          fVtxTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
          fVtxTrackDisplay->TrackId(track);
 
@@ -1108,7 +1112,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
          posG = fpFootGeo->FromITLocalToGlobal(pos);
          x1 = posG(0); y1 = posG(1); z1 = posG(2);
 
-         Float_t nPix = track->GetMeanPixelsN();
+         Float_t nPix = track->GetMeanEltsN();
          fItTrackDisplay->AddTracklet(nPix*10, x, y, z, x1, y1, z1);
          fItTrackDisplay->TrackId(track);
 
@@ -1146,7 +1150,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
          posG = fpFootGeo->FromMSDLocalToGlobal(pos);
          x1 = posG(0); y1 = posG(1); z1 = posG(2);
 
-         Float_t nPix = track->GetMeanPixelsN();
+         Float_t nPix = track->GetMeanEltsN();
          fMsdTrackDisplay->AddTracklet(nPix*500, x, y, z, x1, y1, z1);
          fMsdTrackDisplay->TrackId(track);
       

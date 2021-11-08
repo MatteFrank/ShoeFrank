@@ -233,8 +233,8 @@ int TAGFuploader::UploadHitsTW() {
 //----------------------------------------------------------------------------------------------------
 map< int, vector<int> >* TAGFuploader::TakeMeasParticleMC_Collection() {
 
-	if ( !TAGrecoManager::GetPar()->IsMC() ) 
-		cout << "ERROR in TAGFuploader::TakeMeasParticleMC_Collection() :: not runnninng onn MC!" << endl, exit(0);
+  //	if ( !TAGrecoManager::GetPar()->IsMC() ) 
+  //		cout << "ERROR in TAGFuploader::TakeMeasParticleMC_Collection() :: not runnninng onn MC!" << endl, exit(0);
 
   	return m_measParticleMC_collection;
 }
@@ -372,8 +372,8 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 
 
 	// get pixel coord
-	// TVector3 hitPos = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
-	TVector3 hitPos = clus->GetPosition();
+	TVector3 hitPos = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
+	// TVector3 hitPos = clus->GetPosition();
 
 	if ( m_debug > 1 )
 	{
@@ -443,7 +443,8 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 	TVectorD planarCoords(2);
 
 	// get pixel coord
-	TVector3 hitPos = clus->GetPosition() ;
+	TVector3 hitPos = m_GeoTrafo->FromITLocalToGlobal( clus->GetPosition() );
+	// TVector3 hitPos = clus->GetPosition() ;
 	if ( m_debug > 1 )
 	{
 		cout << "IT hit loc coords::";
@@ -512,7 +513,8 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 
 	// get pixel coord
-	TVector3 hitPos = clus->GetPosition();
+	TVector3 hitPos = m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPosition() );
+	// TVector3 hitPos = clus->GetPosition();
 
 	if ( m_debug > 1 )
 	{
@@ -587,7 +589,8 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	TVectorD planarCoords(2);
 
 	// get point coord
-	TVector3 hitPos = point->GetPosition();
+	TVector3 hitPos = m_GeoTrafo->FromTWLocalToGlobal( point->GetPosition() );
+	// TVector3 hitPos = point->GetPosition();
 
 	if ( m_debug > 1 )
 	{

@@ -269,6 +269,7 @@ void TAIRalignC::FillStatus()
    }
    
    if (fFlagMsd) {
+      if (!fFlagVtx) fOffsetMsd = 1 ;
       parConf = (TAMSDparConf*) fpConfigMsd->Object();
       FillStatus(parConf, fOffsetMsd);
    }
@@ -299,17 +300,19 @@ void TAIRalignC::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
          fDevStatus[fSecArray.GetSize()-1] = parConf->GetStatus(iSensor);
       }
    } else {
-      for (Int_t i = 0; i < parConf->GetSensorsN(); i += 2) {
-         if (parConf->GetStatus(i) != -1 &&  parConf->GetStatus(i+1) != -1) {
+      TAMSDparConf* parConfMsd = static_cast<TAMSDparConf*>(parConf);
+      for (Int_t i = 0; i < parConfMsd->GetSensorsN(); i += 2) {
+         if (parConfMsd->GetStatus(i) != -1 &&  parConfMsd->GetStatus(i+1) != -1) {
             fSecArray.Set(fSecArray.GetSize()+1);
             fSecArray.AddAt(i/2, fSecArray.GetSize()-1);
          }
-         if (parConf->GetStatus(i) == 0 && parConf->GetStatus(i+1) == 0) {
+
+         if (parConfMsd->GetStatus(i) == 0 && parConfMsd->GetStatus(i+1) == 0) {
             fFixPlaneRef1 = true;
             fPlaneRef1 = fSecArray.GetSize()-1;
          }
          
-         if (parConf->GetStatus(i) == 1 && parConf->GetStatus(i+1) == 1) {
+         if (parConfMsd->GetStatus(i) == 1 && parConfMsd->GetStatus(i+1) == 1) {
             fFixPlaneRef2 = true;
             fPlaneRef2 = fSecArray.GetSize()-1;
          }
@@ -326,7 +329,7 @@ void TAIRalignC::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
 void TAIRalignC::FillPosition()
 {
    TAVTbaseParGeo*  parGeo = 0x0;
-   Int_t offset = 0;
+
    if (fFlagVtx) {
       parGeo  = (TAVTparGeo*)  fpGeoMapVtx->Object();
       FillPosition(parGeo);
@@ -358,10 +361,10 @@ void TAIRalignC::FillPosition(TAVTbaseParGeo* parGeo, Int_t offset)
    } else {
       for (Int_t i = 0; i < sensorsN; i+=2) {
          TVector3 posSens1 = parGeo->GetSensorPosition(i);
-         posSens1 = geoTrafo->FromVTLocalToGlobal(posSens1);
+         posSens1 = geoTrafo->FromMSDLocalToGlobal(posSens1);
 
          TVector3 posSens2 = parGeo->GetSensorPosition(i+1);
-         posSens2 = geoTrafo->FromVTLocalToGlobal(posSens2);
+         posSens2 = geoTrafo->FromMSDLocalToGlobal(posSens2);
 
          fZposition[i+offset] = (posSens1.Z()+posSens2.Z())*TAGgeoTrafo::CmToMm()/2.;
          fThickDect[i+offset] = parGeo->GetTotalSize()[2]*TAGgeoTrafo::CmToMm();
@@ -378,12 +381,12 @@ void TAIRalignC::CreateHistogram()
    for (Int_t i = 0; i < fSecArray.GetSize(); i++) {
       iPlane = fSecArray[i];
       
-      fpResXC[i] = new TH1F(Form("ResX%dC", i+1), Form("ResidualX of sensor %d", iPlane+1), 400, -200, 200);
-      fpResYC[i] = new TH1F(Form("ResY%dC", i+1), Form("ResidualY of sensor %d", iPlane+1), 400, -200, 200);
+      fpResXC[i] = new TH1F(Form("ResX%dC", i+1), Form("ResidualX of sensor %d", iPlane+1), 600, -600, 600);
+      fpResYC[i] = new TH1F(Form("ResY%dC", i+1), Form("ResidualY of sensor %d", iPlane+1), 600, -600, 600);
    }
    
-   fpResTotXC = new TH1F("TotResXC", "Total residualX", 400, -200, 200);
-   fpResTotYC = new TH1F("TotResYC", "Total residualY", 400, -200, 200);
+   fpResTotXC = new TH1F("TotResXC", "Total residualX", 600, -600, 600);
+   fpResTotYC = new TH1F("TotResYC", "Total residualY", 600, -600, 600);
    
    return;
 }
@@ -874,12 +877,24 @@ Bool_t TAIRalignC::DefineWeights()
 // Update transfo for every loop when it changes the alignment parameters
 void TAIRalignC::UpdateTransfo(Int_t idx)
 {
-   TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMapVtx->Object();
-   Int_t       iPlane   = fSecArray[idx];
-   pGeoMap->GetSensorPar(iPlane).AlignmentU = fAlignmentU[idx];
-   pGeoMap->GetSensorPar(iPlane).AlignmentV = fAlignmentV[idx];
-   pGeoMap->GetSensorPar(iPlane).TiltW      = -fTiltW[idx];
-   
+   if (idx < 4 && fFlagVtx) {
+      TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMapVtx->Object();
+      Int_t       iPlane   = fSecArray[idx];
+      pGeoMap->GetSensorPar(iPlane).AlignmentU = fAlignmentU[idx];
+      pGeoMap->GetSensorPar(iPlane).AlignmentV = fAlignmentV[idx];
+      pGeoMap->GetSensorPar(iPlane).TiltW      = -fTiltW[idx];
+   } else {
+      TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMapMsd->Object();
+      Int_t       iPlane   = fSecArray[idx];
+      if (pGeoMap->GetSensorPar(2*iPlane).TypeIdx == 0) {
+         pGeoMap->GetSensorPar(2*iPlane).AlignmentU = fAlignmentU[idx];
+         pGeoMap->GetSensorPar(2*iPlane+1).AlignmentV = fAlignmentV[idx];
+      } else {
+         pGeoMap->GetSensorPar(2*iPlane+1).AlignmentU = fAlignmentU[idx];
+         pGeoMap->GetSensorPar(2*iPlane).AlignmentV = fAlignmentV[idx];
+      }
+      pGeoMap->GetSensorPar(2*iPlane).TiltW      = -fTiltW[idx];
+   }
    return;
 }
 

@@ -39,36 +39,31 @@ public:
   Double_t GetEnergy(Double_t rawEnergy, Int_t  crysId);
   Double_t GetTemperatureCorrection(Double_t rawEnergy, Int_t  crysId);
   Double_t GetEqualisationCorrection(Double_t rawEnergy, Int_t  crysId);
-
-
-  ClassDef(TACAactNtuHit,0)
-    
+   
 private:
   TAGdataDsc*     fpDatRaw;		    // input data dsc
   TAGdataDsc*     fpNtuRaw;		    // output data dsc
   TAGparaDsc*     fpParMap;        // output data dsc
   TAGparaDsc*     fpParCal;        // output data dsc
 
-  TACAparMap*     f_parmap;
-  TACAparCal*     f_parcal;
-
   Double_t        fTcorr1Par1;
   Double_t        fTcorr1Par0;
   Double_t        fTcorr2Par1;
   Double_t        fTcorr2Par0;
-  Double_t        T1;
-  Double_t        T2;
+  Double_t        fT1;
+  Double_t        fT2;
 
-  TH1F *hArrivalTime[8];
-  TH1F *hCharge[8];
-  TH1F *hAmplitude[8];
-  TH1F *hTrigTime;
-  TH1F *hTotCharge;
-  TH1F *hEventTime;
+  TH1F*           fhArrivalTime[8];
+  TH1F*           fhCharge[8];
+  TH1F*           fhAmplitude[8];
+  TH1F*           fhTrigTime;
+  TH1F*           fhTotCharge;
+  TH1F*           fhEventTime;
 
-  TF1 *fTcorr1;
-  TF1 *fTcorr2;
+  TF1*            fTcorr1;
+  TF1*            fTcorr2;
   
+   ClassDef(TACAactNtuHit,0)
 };
 
 #endif

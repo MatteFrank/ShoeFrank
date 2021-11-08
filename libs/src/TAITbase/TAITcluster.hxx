@@ -24,9 +24,6 @@ public:
    
    virtual void       SetupClones();
 
-   //! Compute distance from a track
-   Float_t            Distance(TAITtrack *aTrack);
-
    //! Add pixel to the list
    void               AddPixel(TAIThit* pixel);
    

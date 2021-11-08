@@ -25,7 +25,7 @@ ClassImp(TAITtrack) // Description of a Track
 //______________________________________________________________________________
 //  
 TAITtrack::TAITtrack()
-:  TAVTbaseTrack()
+:  TAGbaseTrack()
 {
    SetupClones();
 }
@@ -38,8 +38,8 @@ TAITtrack::~TAITtrack()
 
 //______________________________________________________________________________
 //
-TAITtrack::TAITtrack(const TAVTbaseTrack& aTrack)
-: TAVTbaseTrack::TAVTbaseTrack(aTrack)
+TAITtrack::TAITtrack(const TAGbaseTrack& aTrack)
+: TAGbaseTrack::TAGbaseTrack(aTrack)
 {
    
 }
@@ -55,8 +55,10 @@ void TAITtrack::SetupClones()
 
 // __________________________________________________________________________
 //
-void TAITtrack::AddCluster(TAITcluster* cluster)
+void TAITtrack::AddCluster(TAGcluster* clus)
 {
+   TAITcluster* cluster = static_cast<TAITcluster*>(clus);
+
    for (Int_t k = 0; k < cluster->GetMcTracksN(); ++k) {
       Int_t idx = cluster->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);
@@ -64,6 +66,6 @@ void TAITtrack::AddCluster(TAITcluster* cluster)
    
    TClonesArray &clusterArray = *fListOfClusters;
    new(clusterArray[clusterArray.GetEntriesFast()]) TAITcluster(*cluster);
-   fMeanPixelsN += cluster->GetPixelsN();
-   fMeanCharge  += cluster->GetCharge();
+   fMeanEltsN  += cluster->GetPixelsN();
+   fMeanCharge += cluster->GetCharge();
 }

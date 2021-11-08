@@ -267,12 +267,13 @@ void TAGaction::AddDataOut(TAGdataDsc* p_data, const char* baseclass)
 void TAGaction::AddDataIn(TAGdataDsc* p_data, const char* baseclass)
 {
   if (!p_data) {
+    p_data->Print();
     Error("AddDataIn()", "descriptor object pointer is nil");
     MakeZombie();
     return;
   }
   if (!p_data->Object()) {
-    Error("AddDataIn()", "data object pointer is nil");
+    Error("AddDataIn()", "data object pointer is nil; Base class %s", baseclass);
     MakeZombie();
     return;
   }

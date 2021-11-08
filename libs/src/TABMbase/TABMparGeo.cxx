@@ -94,6 +94,8 @@ Bool_t TABMparGeo::FromFile(const TString& name)
 
    if (!Open(nameExp)) return false;
 
+   Info("FromFile()", "Open file %s for geometry", name.Data());
+
    ReadItem(fWireLayersN);
 
    if(FootDebugLevel(1))

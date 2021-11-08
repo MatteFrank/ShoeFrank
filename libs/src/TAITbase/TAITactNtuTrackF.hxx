@@ -7,14 +7,15 @@
  */
 /*------------------------------------------+---------------------------------*/
 
+#include "TAVTactNtuTrackF.hxx"
 
-#include "TAITactBaseNtuTrack.hxx"
-
-
-class TAITactNtuTrackF : public TAITactBaseNtuTrack {
+class TAGbaseTrack;
+class TAVTbaseParGeo;
+class TAVTbaseParConf;
+class TAITactNtuTrackF : public TAVTactNtuTrackF {
    
 public:
-   explicit  TAITactNtuTrackF(const char* name      = 0,
+   explicit  TAITactNtuTrackF(const char* name       = 0,
                               TAGdataDsc* p_ntuclus  = 0,
                               TAGdataDsc* p_ntutrack = 0,
                               TAGparaDsc* p_config   = 0,
@@ -28,8 +29,19 @@ private:
    TAGparaDsc*     fpGeoMapG;       // Global geometry para dsc
    
 private:
-   Bool_t FindTiltedTracks();
-   Bool_t IsGoodCandidate(TAITtrack* track);
+   Bool_t                   IsGoodCandidate(TAGbaseTrack* track);
+   
+   void                     AddNewTrack(TAGbaseTrack* track);
+   TAGbaseTrack*            NewTrack();
+   Int_t                    GetTracksN();
+   
+   TAGcluster*              GetCluster(Int_t iPlane, Int_t iClus);
+   Int_t                    GetClustersN(Int_t iPlane);
+   
+   void                     SetBeamPosition(TVector3 pos);
+   
+   virtual TAVTbaseParGeo*  GetParGeo();
+   virtual TAVTbaseParConf* GetParConf();
    
    ClassDef(TAITactNtuTrackF,0)
 };

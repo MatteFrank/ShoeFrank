@@ -275,7 +275,7 @@ Bool_t TAVTactNtuTrackH::FindTiltedTracks()
 								else {					
 									for (Int_t nclus = 0; nclus < track->GetClustersN(); ++nclus) {
 										TClonesArray* ListClus = pNtuClus->GetListOfClusters(track->GetCluster(nclus)->GetPlaneNumber());
-										TAVTcluster* iCluster = (TAVTcluster*)ListClus->At(track->GetCluster(nclus)->GetNumber());
+										TAVTcluster* iCluster = (TAVTcluster*)ListClus->At(track->GetCluster(nclus)->GetTrackIdx());
 										iCluster->SetFoundYZ(kFALSE);
 									}
 								}

@@ -204,8 +204,14 @@ public:
    // Flag for MC data
    Bool_t IsMcData()           { return fFlagMC;          }
    
-   //! Set Tracking algorithm
+   //! Set Vtx Tracking algorithm
    void SetVtxTrackingAlgo(char c);
+   
+   //! Set Itr Tracking algorithm
+   void SetItrTrackingAlgo(char c);
+   
+   //! Set Msd Tracking algorithm
+   void SetMsdTrackingAlgo(char c);
   
    // Campaign checks
    void CampaignChecks();
@@ -365,11 +371,11 @@ protected:
    TAVTactBaseNtuVertex* fActVtx;        // action for vertex
    
    TAGaction*            fActClusIt;     // action for clusters
-   TAITactBaseNtuTrack*  fActTrackIt;   // action for tracks
+   TAVTactBaseNtuTrack*  fActTrackIt;   // action for tracks
 
    TAMSDactNtuCluster*   fActClusMsd;    // action for clusters
    TAMSDactNtuPoint*     fActPointMsd;   // action for point in MSD
-   TAMSDactBaseNtuTrack* fActTrackMsd;   // action for track in MSD
+   TAVTactBaseNtuTrack*  fActTrackMsd;   // action for track in MSD
 
    TATWactNtuPoint*      fActPointTw;    // action for clusters
    TATWactCalibTW*       fActCalibTw;
@@ -389,7 +395,9 @@ protected:
    Bool_t                fFlagHisto;       // flag for histo generatiom
    Bool_t                fFlagTrack;       // flag for tracking
    Bool_t                fFlagTWbarCalib;  // flag for TW calibration per Bar
-   TString               fgTrackingAlgo;   // tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fgVtxTrackingAlgo;   // vtx tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fgItrTrackingAlgo;   // itr tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fgMsdTrackingAlgo;   // msd tracking algorithm ("std" with BM, "Full" combinatory)
    Bool_t                fFlagZtrueMC;     // Z true MC flag
    Bool_t                fFlagZrecPUoff;   // Z rec TW PU off flag
    Bool_t                fFlagZmatch_TW;   // TW Z match

@@ -60,14 +60,17 @@ public:
    
    virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
    
-   Int_t           GetStatus(Int_t idx) const;
-   Int_t           GetStatusMinor(Int_t idx) const ;
+   virtual Int_t   GetStatus(Int_t idx)      const;
+   virtual Int_t   GetStatusMinor(Int_t idx) const;
    
-   SensorParameter_t& GetSensorPar(Int_t idx)  { return fSensorParameter[idx];    }
-   AnalysisParameter_t& GetAnalysisPar()       { return fAnalysisParameter;       }
+   virtual Int_t   GetType(Int_t idx)        const { return fSensorParameter[idx].Type; }
+
+   Int_t           GetSensorsN()             const { return fSensorsN;                  }
+   const Char_t*   GetDefaultConfName()      const { return fkDefaultConfName.Data();   }
    
-   Int_t         GetSensorsN()          const  { return fSensorsN;                }
-   const Char_t* GetDefaultConfName()   const  { return fkDefaultConfName.Data(); }
+   SensorParameter_t& GetSensorPar(Int_t idx)      { return fSensorParameter[idx];      }
+   AnalysisParameter_t& GetAnalysisPar()           { return fAnalysisParameter;         }
+
 
    ClassDef(TAVTbaseParConf,3)
 };

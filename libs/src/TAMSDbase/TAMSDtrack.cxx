@@ -25,7 +25,7 @@ ClassImp(TAMSDtrack) // Description of a Track
 //______________________________________________________________________________
 //  
 TAMSDtrack::TAMSDtrack()
-:  TAVTbaseTrack()
+:  TAGbaseTrack()
 {
    SetupClones();
 }
@@ -38,8 +38,8 @@ TAMSDtrack::~TAMSDtrack()
 
 //______________________________________________________________________________
 //
-TAMSDtrack::TAMSDtrack(const TAVTbaseTrack& aTrack)
-: TAVTbaseTrack::TAVTbaseTrack(aTrack)
+TAMSDtrack::TAMSDtrack(const TAGbaseTrack& aTrack)
+: TAGbaseTrack::TAGbaseTrack(aTrack)
 {
    
 }
@@ -54,8 +54,10 @@ void TAMSDtrack::SetupClones()
 
 // __________________________________________________________________________
 //
-void TAMSDtrack::AddCluster(TAMSDpoint* point)
+void TAMSDtrack::AddCluster(TAGcluster* clus)
 {
+   TAMSDpoint* point = static_cast<TAMSDpoint*>(clus);
+
    for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
       Int_t idx = point->GetMcTrackIdx(k);
       AddMcTrackIdx(idx);
@@ -63,6 +65,6 @@ void TAMSDtrack::AddCluster(TAMSDpoint* point)
    
    TClonesArray &pointArray = *fListOfClusters;
    new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint(*point);
-   fMeanPixelsN += point->GetElementsN();
-   fMeanCharge  += point->GetEnergyLoss();
+   fMeanEltsN  += point->GetElementsN();
+   fMeanCharge += point->GetEnergyLoss();
 }

@@ -7,7 +7,7 @@
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
 #include "TAMSDntuPoint.hxx"
-#include "TAVTbaseTrack.hxx"
+#include "TAGbaseTrack.hxx"
 
 
 //##############################################################################
@@ -19,12 +19,12 @@
 
 class TAVTbaseCluster;
 class TClonesArray;
-class TAMSDtrack : public TAVTbaseTrack {
+class TAMSDtrack : public TAGbaseTrack {
    
 public:
    TAMSDtrack();
    ~TAMSDtrack();
-   TAMSDtrack(const TAVTbaseTrack& aTrack);
+   TAMSDtrack(const TAGbaseTrack& aTrack);
 
    
    //! Set up clones
@@ -34,7 +34,7 @@ public:
    TAGcluster* GetCluster(Int_t index)  { return (TAMSDpoint*)fListOfClusters->At(index); }
  
    //! Add cluster
-   void           AddCluster(TAMSDpoint* cluster);
+   void           AddCluster(TAGcluster* cluster);
    
    ClassDef(TAMSDtrack,8)                      // Describes TAMSDtrack
 };

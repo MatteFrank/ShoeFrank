@@ -22,6 +22,7 @@
 #pragma link C++ function operator<<(ostream&,const TAGdata&);
 
 #pragma link C++ class TAGcluster;
+#pragma link C++ class TAGbaseTrack+;
 #pragma link C++ class TAGpoint;
 #pragma link C++ class TAGntuPoint;
 #pragma link C++ class TAGtrack;

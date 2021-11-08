@@ -101,20 +101,6 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
 }
 
 //______________________________________________________________________________
-//
-Float_t TAMSDpoint::Distance(TAMSDtrack *aTrack) {
-   // Return the distance between this cluster and the pointed track impact in the plane
-   //
-   
-   TVector3 impactPosition( aTrack->Intersection( GetPositionG()[2]) );
-   impactPosition -= GetPositionG();
-   // Insure that z position is 0 for 2D length computation
-   impactPosition.SetXYZ(impactPosition(0), impactPosition(1), 0.);
-   
-   return impactPosition.Mag();
-}
-
-//______________________________________________________________________________
 // Clear
 void TAMSDpoint::Clear(Option_t*)
 {
@@ -178,6 +164,20 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, TAM
    }
 }
 
+//______________________________________________________________________________
+//  build a point
+TAMSDpoint* TAMSDntuPoint::NewPoint(TAMSDpoint* point, Int_t iStation)
+{
+   if (iStation >= 0  || iStation < fGeometry->GetStationsN()) {
+      TClonesArray &pointArray = *GetListOfPoints(iStation);
+      TAMSDpoint* pt = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint(*point);
+      pt->SetClusterIdx(pointArray.GetEntriesFast()-1);
+      return pt;
+   } else {
+      cout << Form("Wrong sensor number %d\n", iStation);
+      return 0x0;
+   }
+}
 //------------------------------------------+-----------------------------------
 int TAMSDntuPoint::GetPointsN(int iStation) const
 {
