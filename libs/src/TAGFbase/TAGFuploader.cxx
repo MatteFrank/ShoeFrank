@@ -443,11 +443,16 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 	TVectorD planarCoords(2);
 
 	// get pixel coord
-	TVector3 hitPos = m_GeoTrafo->FromITLocalToGlobal( clus->GetPosition() );
-	// TVector3 hitPos = clus->GetPosition() ;
-	if ( m_debug > 1 )
+	TVector3 hitPos = m_GeoTrafo->FromITLocalToGlobal( clus->GetPositionG() );
+	// TVector3 hitPos = clus->GetPositionG() ;
+	if ( m_debug > 0 )
 	{
-		cout << "IT hit loc coords::";
+		cout << "IT meas::" << iMeas << endl;
+		cout << "IT hit Position::";
+		clus->GetPosition().Print();
+		cout << "IT hit PositionG::";
+		clus->GetPositionG().Print();
+		cout << "IT hit LocalToGlobal::";
 		hitPos.Print();
 	}
 
@@ -513,7 +518,7 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 
 	// get pixel coord
-	TVector3 hitPos = m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPosition() );
+	TVector3 hitPos = m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPositionG() );
 	// TVector3 hitPos = clus->GetPosition();
 
 	if ( m_debug > 1 )
@@ -589,7 +594,7 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	TVectorD planarCoords(2);
 
 	// get point coord
-	TVector3 hitPos = m_GeoTrafo->FromTWLocalToGlobal( point->GetPosition() );
+	TVector3 hitPos = m_GeoTrafo->FromTWLocalToGlobal( point->GetPositionG() );
 	// TVector3 hitPos = point->GetPosition();
 
 	if ( m_debug > 1 )

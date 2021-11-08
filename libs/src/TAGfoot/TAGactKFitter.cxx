@@ -415,7 +415,9 @@ void TAGactKFitter::CreateGeometry()  {
 		m_TopVolume->AddNode(vtVol, 4, transfo);
 
 		for ( int i = 0; i < m_VT_geo->GetSensorsN(); ++i ) {
-			genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( m_GeoTrafo->FromVTLocalToGlobal(m_VT_geo->GetSensorPosition(i)), TVector3(0,0,1)));
+			TVector3 origin_( 0, 0, m_GeoTrafo->FromVTLocalToGlobal(m_VT_geo->GetSensorPosition(i)).z() );
+
+			genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1)));
 			detectorplane->setU(1.,0.,0.);
 			detectorplane->setV(0.,1.,0.);
 			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
@@ -439,7 +441,7 @@ void TAGactKFitter::CreateGeometry()  {
 		m_TopVolume->AddNode(itVol, 6, transfo);
 
 		for ( int i = 0; i < m_IT_geo->GetSensorsN(); i++ ) {
-			TVector3 origin_(m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)));
+			TVector3 origin_( 0, 0, m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).Z() );
 
 			float xMin = m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).x() - m_IT_geo->GetEpiSize().X()/2;
 			float xMax = m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)).x() + m_IT_geo->GetEpiSize().X()/2;
@@ -468,7 +470,7 @@ void TAGactKFitter::CreateGeometry()  {
 		m_TopVolume->AddNode(msdVol, 7, transfo);
 
 		for ( int i = 0; i < m_MSD_geo->GetSensorsN(); i++ ) {
-			TVector3 origin_(m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)));
+			TVector3 origin_( 0, 0, m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).z() );
 
 			float xMin = m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).x() - m_MSD_geo->GetEpiSize().x()/2;
 			float xMax = m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).x() + m_MSD_geo->GetEpiSize().x()/2;
@@ -492,7 +494,8 @@ void TAGactKFitter::CreateGeometry()  {
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TATWparGeo::GetBaseName());
 		m_TopVolume->AddNode(twVol, 8, transfo);
 
-		genfit::SharedPlanePtr detectorplane (new genfit::DetPlane(m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)), TVector3(0,0,1)));
+		TVector3 origin_( 0, 0, m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)).z() );
+		genfit::SharedPlanePtr detectorplane (new genfit::DetPlane(origin_, TVector3(0,0,1)));
 		detectorplane->setU(1.,0.,0.);
 		detectorplane->setV(0.,1.,0.);
 		m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
@@ -563,7 +566,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		trackCounter++;
 
 	    // check of fitTrack filling
-	    if ( m_debug > 2 ) {
+	    if ( m_debug > 0 ) {
 		    cout << " check of fitTrack filling " << endl;
 		    for (unsigned int iMeas = 0; iMeas < fitTrack->getNumPointsWithMeasurement(); ++iMeas){
 
@@ -651,7 +654,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 		if ( m_debug > 3 )		fitTrack->Print("C");
 
-
+		isConverged=1;
 		// // map of the CONVERGED tracks for each category
 		if (isConverged) {
 
