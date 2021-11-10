@@ -1,0 +1,63 @@
+
+
+################################################################
+####################   Campaign 16O 200   ######################
+################################################################
+
+
+Debug:	0
+
+############	MC selection Control Parameters	################
+MC Particle Types:  C11  C12  C13 C14  Li6  Li7  Be7  Be9  Be10  B10  B11  N14  N15  O16 O15
+
+
+############	Kalman Filter Control Parameters	################
+
+IncludeKalman:   n
+IncludeTOE:      n
+EnableLocalReco: n
+
+Kalman Mode:       ref
+Tracking Systems Considered:      VT IT MSD TW
+Reverse Tracking:       false
+
+Kalman preselection strategy: Sept2020
+
+VT  Reso: 0.0006
+IT  Reso: 0.0006
+MSD Reso: 0.003
+TW  Reso: 0.57
+
+Kalman Particle Types:	C
+
+Genfit Event Display ON: n
+
+############	END - Kalman Filter Control Parameters	################
+
+############   Options for reconstruction   ################
+
+EnableTree:          y
+EnableHisto:         y
+EnableTracking:      y
+
+EnableSaveHits:      n
+EnableRootObject:    n
+EnableTWZmc:         n
+EnableTWnoPU:        n
+EnableTWZmatch:      y
+EnableTWCalBar:      n
+EnableRegionMc:      n
+
+############   END - Options for reconstruction   ################
+
+IncludeDI:			   y
+IncludeST:			   y
+IncludeBM:			   y
+IncludeTG:			   y
+IncludeVT:			   y
+IncludeIT:	         y
+IncludeMSD:			   y
+IncludeTW:			   y
+IncludeCA:			   y
+
+FLUKA version: pro
