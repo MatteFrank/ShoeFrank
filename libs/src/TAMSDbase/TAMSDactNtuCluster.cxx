@@ -205,13 +205,13 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
   for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
     cluster = pNtuClus->GetCluster(iSensor, i);
     cluster->SetSensorIdx(iSensor);
+    cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition(cluster);
     ComputeCog(cluster);
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
-    posG = pGeoMap->Sensor2Detector(iSensor, posG);
-    cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
+    posG = pGeoMap->Sensor2Detector(iSensor, posG);    
     cluster->SetPositionG(posG);
     
      if (ApplyCuts(cluster)) {
@@ -271,7 +271,8 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
-   
+  
+  
   cluster->SetPositionF(fCurrentPosition);
   cluster->SetPosErrorF(fCurrentPosError);
   cluster->SetEnergyLoss(tClusterPulseSum);
