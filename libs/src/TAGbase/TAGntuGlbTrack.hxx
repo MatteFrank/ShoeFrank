@@ -17,11 +17,11 @@ using namespace std;
 
 #include "TClonesArray.h"
 
-#include "TAGobject.hxx"
+#include "TAGnamed.hxx"
 #include "TAGdata.hxx"
 #include "TAGntuPoint.hxx"
 //
-class TAGtrack : public TAGobject {
+class TAGtrack : public TAGnamed {
 public:
     struct polynomial_fit_parameters{
         std::array<double, 4> parameter_x;
@@ -29,30 +29,65 @@ public:
     };
     
 public:
-   
    TAGtrack();
    TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof);
    TAGtrack(const TAGtrack& aTrack);
 
    virtual         ~TAGtrack();
    
+   void             SetEvtNumber(Long64_t evt)    { fEvtNumber = evt;  }
+   Long64_t         GetEvtNumber()          const { return fEvtNumber; }
+
+   void             SetPdgID(Int_t id)            { fPdgID = id;       }
+   Int_t            GetPdgID()              const { return fPdgID;     }
+
+   void             SetLength(Int_t len)          { fLength = len;     }
+   Double32_t       GetLength()             const { return fLength;    }
+   
+   void             SetChi2(Int_t chi)            { fChi2 =  chi;      }
+   Double32_t       GetChi2()               const { return fChi2;      }
+   
+   void             Setndof(Int_t n)              { fndof = n;         }
+   Int_t            Getndof()               const { return fndof;      }
+   
+   void             SetpVal(Int_t p)              { fpVal =  p;        }
+   Double32_t       GetpVal()               const { return fpVal;      }
+
+   void             SetQuality(Int_t q)           { fQuality =  q;     }
+   Double32_t       GetQuality()            const { return fQuality;   }
+
    void             SetMass(Double_t amass)       { fMass = amass;     }
    Double_t         GetMass()               const { return fMass;      }
    
-   void             SetMomentum(Double_t amom)    { fMom = amom;       }
-   Double_t         GetMomentum()           const { return fMom;       }
+   void             SetMomentum(Double_t amom)    { fMomModule = amom; }
+   Double_t         GetMomentum()           const { return fMomModule; }
    
-   void             SetCharge(Int_t acharge)      { fCharge = acharge; }
-   Int_t            GetCharge()             const { return fCharge;    }
+   void             SetTwChargeZ(Int_t chg)       { fTwChargeZ = chg;  }
+   Int_t            GetTwChargeZ()          const { return fTwChargeZ; }
    
-   void             SetTof(Double_t atoff)        { fTof = atoff;      }
-   Double_t         GetTof()                const { return fTof;       }
+   void             SetTwTof(Double_t atoff)      { fTwTof = atoff;    }
+   Double_t         GetTwTof()              const { return fTwTof;     }
    
    void             SetTrackId(Int_t trid)        { fTrkId = trid;     }
    Int_t            GetTrackId()            const { return fTrkId;     }
    
-   void             SetEnergy(Double_t e)         { fEnergy = e;       }
-   Double_t         GetEnergy()             const { return fEnergy;    }
+   void             SetFitMass(Double_t amass)    { fFitMass = amass;  }
+   Double_t         GetFitMass()            const { return fFitMass;   }
+   
+   void             SetFitChargeZ(Int_t chg)      { fFitChargeZ = chg;  }
+   Int_t            GetFitChargeZ()         const { return fFitChargeZ; }
+   
+   void             SetFitTof(Double_t atoff)     { fFitTof = atoff;    }
+   Double_t         GetFitTof()             const { return fFitTof;     }
+   
+   void             SetFitEnergyLoss(Double_t e)  { fFitEnergyLoss = e; }
+   Double_t         GetFitEnergyLoss()      const { return fFitEnergyLoss; }
+
+   void             SetFitEnergy(Double_t e)      { fFitEnergy = e;    }
+   Double_t         GetFitEnergy()          const { return fFitEnergy; }
+
+   void             SetCalEnergy(Double_t e)      { fCalEnergy = e;    }
+   Double_t         GetCalEnergy()          const { return fCalEnergy; }
    
    void             SetTgtDirection(TVector3 dir) { fTgtDir = dir;     }
    TVector3         GetTgtDirection()             { return fTgtDir;    }
@@ -60,59 +95,66 @@ public:
    void             SetTgtPosition(TVector3 pos)  { fTgtPos = pos;     }
    TVector3         GetTgtPosition()              { return fTgtPos;    }
    
-   void             SetTofPosition(TVector3 pos)  { fTofPos = pos;     }
-   TVector3         GetTofPosition()              { return fTofPos;    }
+   void             SetTgtMomentum(TVector3 pos)  { fTgtMom = pos;     }
+   TVector3         GetTgtMomentum()              { return fTgtMom;    }
    
-   void             SetTofDirection(TVector3 dir) { fTofDir = dir;     }
-   TVector3         GetTofDirection()             { return fTofDir;    }
+   void             SetTwPosition(TVector3 pos)   { fTwPos = pos;      }
+   TVector3         GetTwPosition()               { return fTwPos;     }
+   
+   void             SetTwDirection(TVector3 dir)  { fTwDir = dir;      }
+   TVector3         GetTwDirection()              { return fTwDir;     }
+   
+   void             SettWMomentum(TVector3 pos)   { fTwMom = pos;      }
+   TVector3         GetTWMomentum()               { return fTwMom;     }
 
+   //! Distance to a track near target
+   Double_t         Distance(TAGtrack* track, Float_t z) const;
+   
+   //! Get list of points
+   TClonesArray*    GetListOfPoints()       const { return fListOfPoints;                       }
+   
+   //! Get number of points
+   Int_t            GetPointsN()            const { return fListOfPoints->GetEntries();         }
+   
+   //! Get  point
+   const TAGpoint*  GetPoint(Int_t index)   const { return (TAGpoint*)fListOfPoints->At(index); }
+
+   //! Get  point
+   TAGpoint*        GetPoint(Int_t index)         { return (TAGpoint*)fListOfPoints->At(index); }
+   
+   //! Get MC info
+   TArrayI          GetMcTrackIdx();
+   
    //! Get theta angle at target
    Double_t         GetTgtTheta()           const;
    
-   //! Get theta angle at Tof
-   Double_t         GetTofTheta()           const;
+   //! Get theta angle at Tw
+   Double_t         GetTwTheta()            const;
    
    //! Get phi angle at target
    Double_t         GetTgtPhi()             const;
    
-   //! Get phi angle at Tof
-   Double_t         GetTofPhi()             const;
+   //! Get phi angle at Tw
+   Double_t         GetTwPhi()              const;
 
    //! Intersection near target
    TVector3         Intersection(Double_t posZ) const;
    
-   //! Distance to a track near target
-   Double_t         Distance(TAGtrack* track, Float_t z) const;
-
+   //! Get Totol Energy Loss (MSD+TW+CAL)
+   Double_t         GetTotEnergyLoss()      const;
    
-   //! Get list of measured points
-   TClonesArray*    GetListOfMeasPoints()   const { return fListOfMeasPoints;                       }
+   //! Get Totol Energy Loss (MSD+TW+CAL)
+   Double_t         GetMsdEnergyLoss()      const;
    
-   //! Get list of corrected points
-   TClonesArray*    GetListOfCorrPoints()   const { return fListOfCorrPoints;                       }
-   
-   //! Get number of measured points
-   Int_t            GetMeasPointsN()        const { return fListOfMeasPoints->GetEntries();         }
-   
-   //! Get number of corrected points
-   Int_t            GetCorrPointsN()        const { return fListOfCorrPoints->GetEntries();         }
-   
-   //! Get measured point
-   TAGpoint*        GetMeasPoint(Int_t index)     { return (TAGpoint*)fListOfMeasPoints->At(index); }
-   
-   //! Get corrected point
-   TAGpoint*        GetCorrPoint(Int_t index)     { return (TAGpoint*)fListOfCorrPoints->At(index); }
+   //! Get Totol Energy Loss (MSD+TW+CAL)
+   Double_t         GetTwEnergyLoss()       const;
    
    //! Add measured point
-   TAGpoint*        AddMeasPoint(TAGpoint* point);
-   TAGpoint*        AddMeasPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
-   TAGpoint*        AddMeasPoint(TString name, TVector3 pos, TVector3 posErr);
-   TAGpoint*        AddMeasPoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
-
-   //! Add corrected point
-   TAGpoint*        AddCorrPoint(TAGpoint* point);
-   TAGpoint*        AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
-   TAGpoint*        AddCorrPoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr);
+   TAGpoint*        AddPoint(TAGpoint* point);
+   TAGpoint*        AddPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr);
+   TAGpoint*        AddPoint(TString name, TVector3 measPos, TVector3 measPosErr);
+   TAGpoint*        AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr);
+   TAGpoint*        AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr);
 
    void             Clear(Option_t* opt="");
    
@@ -123,27 +165,47 @@ public:
    TVector3         GetPosition( double z );
    
 private:
+ //  TString          fName;      // particleName_mass_id (using TNamed data)
+   Long64_t         fEvtNumber;      // event number
+   Int_t            fPdgID;         // PDG ID used in the fit
+   Double32_t       fLength;         // track length from target to TW
+   Double32_t       fChi2;           // Chi2 of the fitted track
+   Int_t            fndof;           // number of freedom of the fitted track
+   Double32_t       fpVal;           // p-Value of the fitted track
+   Double32_t       fQuality;        // quality factor of the fitted track
+
    Double32_t       fMass;
-   Double32_t       fMom;
-   Int_t            fCharge;
-   Double32_t       fTof;
-   Double32_t       fEnergy;
+   Double32_t       fMomModule;
+   Int_t            fTwChargeZ;
+   Double32_t       fTwTof;
+   Double32_t       fCalEnergy;
    Int_t            fTrkId;
+   
+   Double32_t       fFitMass;         // fitted mass
+   Int_t            fFitChargeZ;      // fitted charge Z
+   Double32_t       fFitTof;          // fitted time of flight
+   Double32_t       fFitEnergyLoss;   // fitted energy loss
+   Double32_t       fFitEnergy;       // fitted energy
 
    //Particle directions and positions computed on target middle
    TVector3         fTgtDir;
    TVector3         fTgtPos;
+   TVector3         fTgtMom;
+
+   //Particle directions and positions computed on TW Wall -> Tof to Tw avoid confusion btw time of flight and TW detector
+   TVector3         fTwPos;
+   TVector3         fTwDir;
+   TVector3         fTwMom;
+
+   TClonesArray*    fListOfPoints;          // Attached measured points
    
-   //Particle directions and positions computed on ToF Wall
-   TVector3         fTofPos;
-   TVector3         fTofDir;
-   
-   TClonesArray*    fListOfMeasPoints;          // Attached measured points
-   TClonesArray*    fListOfCorrPoints;          // Attached corrected points
+   TArrayI           fMcTrackIdx;          //! Idx of the track created in the simulation
+   map<int, int>     fMcTrackMap;          //! Map of MC track Id
+
 
     polynomial_fit_parameters fParameters;
     
-   ClassDef(TAGtrack,2)
+   ClassDef(TAGtrack,3)
    
 };
 

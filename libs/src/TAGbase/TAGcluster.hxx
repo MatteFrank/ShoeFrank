@@ -18,10 +18,10 @@ class TAGbaseTrack;
 class TAGcluster : public TAGobject {
    
 protected:
-   TVector3           fPosition;                 // position of the cluster in plane frame
-   TVector3           fPosError;                 // position's errors of the cluster in plane frame
-   TVector3           fPositionG;                // position of the clus in tracker frame
-   TVector3           fPosErrorG;                // position's errors of the clus in tracker frame
+   TVector3           fPosition;                 // position of the cluster in plane frame / measured position in FOOT frame
+   TVector3           fPosError;                 // position's errors of the cluster in plane frame / measured position's error in FOOT frame
+   TVector3           fPositionG;                // position of the clus in tracker frame / / fitted position in FOOT frame
+   TVector3           fPosErrorG;                // position's errors of the clus in tracker frame /  fitted position's error in FOOT frame
    TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
    map<int, int>      fMcTrackMap;               //! Map of MC track Id
    Int_t              fClusterIdx;               // cluster index
@@ -58,6 +58,16 @@ public:
    virtual const TVector3&  GetPositionG()     const { return fPositionG;     }
    //! Get position in global tracker frame
    virtual const TVector3&  GetPosErrorG()     const { return fPosErrorG;     }
+   
+   //! Get measured position in FOOT frame
+   virtual const TVector3&  GetMeasPosition()  const { return fPosition;      }
+   //! Get measured position error in FOOT frame
+   virtual const TVector3&  GetMeasPosError()  const { return fPosError;      }
+   //! Get fitted position in FOOT frame
+   virtual const TVector3&  GetFitPosition()   const { return fPositionG;     }
+   //! Get fitted position in FOOT frame
+   virtual const TVector3&  GetFitPosError()   const { return fPosErrorG;     }
+   
    //! Get MC info
    Int_t                    GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
    Int_t                    GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
@@ -87,6 +97,20 @@ public:
    //! Set position error in global tracker frame
    virtual void             SetPosErrorG(TVector3& pos);
    virtual void             SetPosErrorG(Float_t u, Float_t v, Float_t z) { fPosErrorG.SetXYZ(u,v,z); }
+   
+   //! Set measured position in FOOT frame
+   virtual void             SetMeasPosition(TVector3& pos)                    { fPosition = pos;          }
+   virtual void             SetMeasPosition(Float_t u, Float_t v, Float_t z)  { fPosition.SetXYZ(u,v,z);  }
+   //! Set measured position error in FOOT frame
+   virtual void             SetMeasPosError(TVector3& pos)                    { fPosError = pos;          }
+   virtual void             SetMeasPosError(Float_t u, Float_t v, Float_t z)  { fPosError.SetXYZ(u,v,z);  }
+   //! Set fitted position in FOOT frame
+   virtual void             SetFitPosition(TVector3& pos)                     { fPositionG = pos;         }
+   virtual void             SetFitPosition(Float_t u, Float_t v, Float_t z)   { fPositionG.SetXYZ(u,v,z); }
+   //! Get fitted position in FOOT frame
+   virtual void             SetFitPosError(TVector3& pos)                     { fPosErrorG = pos;         }
+   virtual void             SetFitPosError(Float_t u, Float_t v, Float_t z)   { fPosErrorG.SetXYZ(u,v,z); }
+   
    //! Add MC track Idx
    void                     AddMcTrackIdx(Int_t trackIdx);
    

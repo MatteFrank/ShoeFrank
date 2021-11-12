@@ -1528,24 +1528,27 @@ private:
                 TVector3 momentum{ momentum_x , momentum_y, momentum_z };
                 TVector3 position_error{ 0.01 ,0.01, 0.01 };
                 TVector3 momentum_error{ 10, 10, 10 };
-                
-                track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
+               
+
+               // track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
 
                 if( value.data ){ //needed because first point is vertex, which has no cluster associated
                     auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
 
                     
-                    auto fill_measured_point_l = [&value, &transformation_h, &position_error, &momentum, &momentum_error, &track_h](
+                    auto fill_measured_point_l = [&value, &transformation_h, &position_error, &momentum, &momentum_error, &corrected_position, &track_h](
                                                             auto * cluster_ph,
                                                             std::string&& name_p,
                                                             auto transformation_p
                                                                             ){
                                 TVector3 measured_position{ (transformation_h->*transformation_p)(value.data->GetPositionG()) };
-                                auto* measured_h = track_h->AddMeasPoint( measured_position, position_error, momentum, momentum_error );
+                                auto* measured_h = track_h->AddPoint( measured_position, position_error, corrected_position, position_error,
+                                                                         momentum, momentum_error, momentum, momentum_error );
                                 measured_h->SetDevName( name_p.c_str() );
                                 measured_h->SetClusterIdx( cluster_ph->GetClusterIdx() );
                                 measured_h->SetSensorIdx( cluster_ph->GetSensorIdx() );
                                                                       };
+                   
                     auto const * vertex_h = dynamic_cast<TAVTcluster const*>( value.data );
                     if( vertex_h ){
                         fill_measured_point_l( vertex_h, TAVTparGeo::GetBaseName(), &TAGgeoTrafo::FromVTLocalToGlobal );
