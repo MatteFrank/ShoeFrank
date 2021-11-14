@@ -38,8 +38,8 @@ public:
    void             SetEvtNumber(Long64_t evt)    { fEvtNumber = evt;  }
    Long64_t         GetEvtNumber()          const { return fEvtNumber; }
 
-   void             SetPdgID(Int_t id)            { fPdgID = id;       }
-   Int_t            GetPdgID()              const { return fPdgID;     }
+   void             SetPdgID(Int_t id)            { fPdgId = id;       }
+   Int_t            GetPdgID()              const { return fPdgId;     }
 
    void             SetLength(Int_t len)          { fLength = len;     }
    Double32_t       GetLength()             const { return fLength;    }
@@ -47,11 +47,11 @@ public:
    void             SetChi2(Int_t chi)            { fChi2 =  chi;      }
    Double32_t       GetChi2()               const { return fChi2;      }
    
-   void             Setndof(Int_t n)              { fndof = n;         }
-   Int_t            Getndof()               const { return fndof;      }
+   void             SetNdof(Int_t n)              { fNdof = n;         }
+   Int_t            GetNdof()               const { return fNdof;      }
    
-   void             SetpVal(Int_t p)              { fpVal =  p;        }
-   Double32_t       GetpVal()               const { return fpVal;      }
+   void             SetPval(Int_t p)              { fPval =  p;        }
+   Double32_t       GetPval()               const { return fPval;      }
 
    void             SetQuality(Int_t q)           { fQuality =  q;     }
    Double32_t       GetQuality()            const { return fQuality;   }
@@ -167,19 +167,19 @@ public:
 private:
  //  TString          fName;      // particleName_mass_id (using TNamed data)
    Long64_t         fEvtNumber;      // event number
-   Int_t            fPdgID;         // PDG ID used in the fit
+   Int_t            fPdgId;          // PDG Id used in the fit
    Double32_t       fLength;         // track length from target to TW
    Double32_t       fChi2;           // Chi2 of the fitted track
-   Int_t            fndof;           // number of freedom of the fitted track
-   Double32_t       fpVal;           // p-Value of the fitted track
+   Int_t            fNdof;           // number of freedom of the fitted track
+   Double32_t       fPval;           // p-Value of the fitted track
    Double32_t       fQuality;        // quality factor of the fitted track
 
-   Double32_t       fMass;
-   Double32_t       fMomModule;
-   Int_t            fTwChargeZ;
-   Double32_t       fTwTof;
-   Double32_t       fCalEnergy;
-   Int_t            fTrkId;
+   Double32_t       fMass;           // Initial mass
+   Double32_t       fMomModule;      // Momentum module
+   Int_t            fTwChargeZ;      // TW atomic charge Z
+   Double32_t       fTwTof;          // TW time of flight
+   Double32_t       fCalEnergy;      // CAL energy (loss)
+   Int_t            fTrkId;          // track absolute Id
    
    Double32_t       fFitMass;         // fitted mass
    Int_t            fFitChargeZ;      // fitted charge Z
