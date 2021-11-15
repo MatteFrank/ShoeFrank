@@ -1543,7 +1543,7 @@ private:
                                                                             ){
                                 TVector3 measured_position{ (transformation_h->*transformation_p)(value.data->GetPositionG()) };
                                 auto* measured_h = track_h->AddPoint( measured_position, position_error, corrected_position, position_error,
-                                                                         momentum, momentum_error, momentum, momentum_error );
+                                                                         momentum, momentum_error );
                                 measured_h->SetDevName( name_p.c_str() );
                                 measured_h->SetClusterIdx( cluster_ph->GetClusterIdx() );
                                 measured_h->SetSensorIdx( cluster_ph->GetSensorIdx() );

@@ -136,10 +136,10 @@ TAGpoint* TAGtrack::AddPoint(TAGpoint* point)
 
 // __________________________________________________________________________
 //
-TAGpoint* TAGtrack::AddPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr)
+TAGpoint* TAGtrack::AddPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
 {
    TClonesArray &pointArray = *fListOfPoints;
-   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(measPos, measPosErr, fitPos, fitPosErr, measMom, measMomErr, fitMom, fitMomErr);
+   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(measPos, measPosErr, fitPos, fitPosErr, mom, momErr);
 }
 
 // __________________________________________________________________________
@@ -160,10 +160,10 @@ TAGpoint* TAGtrack::AddPoint(TString name, TVector3 measPos, TVector3 measPosErr
 
 // __________________________________________________________________________
 //
-TAGpoint* TAGtrack::AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr)
+TAGpoint* TAGtrack::AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
 {
   TClonesArray &pointArray = *fListOfPoints;
-  return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, measPos, measPosErr, fitPos, fitPosErr, measMom, measMomErr, fitMom, fitMomErr);
+  return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, measPos, measPosErr, fitPos, fitPosErr, mom, momErr);
 }
 
 //------------------------------------------+-----------------------------------

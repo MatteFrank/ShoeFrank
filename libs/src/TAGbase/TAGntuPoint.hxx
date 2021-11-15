@@ -25,19 +25,17 @@ class TAGpoint : public TAGcluster {
    
 private:
    TString     fDevName;       // Device name (VT,IT, MSD, TW, CA)
-   TVector3    fMeasMom;       // measured momentum in FOOT framework
-   TVector3    fMeasMomError;  // measured momentum error in FOOT framework
-   TVector3    fFitMom;        // fitted momentum in FOOT framework
-   TVector3    fFitMomError;   // fitted momentum error in FOOT framework
+   TVector3    fMomentum;        // fitted momentum in FOOT framework
+   TVector3    fMomError;   // fitted momentum error in FOOT framework
    Double32_t  fEnergyLoss;    // Energy loss in sensor
 
 public:
    TAGpoint();
    TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr);
-   TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr);
+   TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr);
    TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr);
    TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr);
-   TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr);
+   TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr);
    ~TAGpoint() {};
   
    // return detector name
@@ -47,18 +45,14 @@ public:
    const TVector3&  GetPositionG()    const  { return fPosition;   }
    const TVector3&  GetPosErrorG()    const  { return fPosError;   }
 
-   TVector3         GetMeasMomentum() const  { return fMeasMom;      }
-   TVector3         GetMeasMomError() const  { return fMeasMomError; }
-   TVector3         GetFitMomentum()  const  { return fFitMom;       }
-   TVector3         GetFitMomError()  const  { return fFitMomError;  }
-   Double_t         GetEnergyLoss()   const  { return fEnergyLoss;   }
+   TVector3         GetMomentum()     const  { return fMomentum;   }
+   TVector3         GetMomError()     const  { return fMomError;   }
+   Double_t         GetEnergyLoss()   const  { return fEnergyLoss; }
 
-   void        SetDevName(TString name )     { fDevName = name;     }
-   void        SetMeasMomentum(TVector3 mom) { fMeasMom = mom;      }
-   void        SetMeasMomError(TVector3 mom) { fMeasMomError = mom; }
-   void        SetFitMomentum(TVector3 mom)  { fFitMom = mom;       }
-   void        SetFitMomError(TVector3 mom)  { fFitMomError = mom;  }
-   void        SetEnergyLoss(Double_t e)     { fEnergyLoss = e;     }
+   void        SetDevName(TString name )     { fDevName = name;    }
+   void        SetMomentum(TVector3 mom)     { fMomentum = mom;    }
+   void        SetMomError(TVector3 mom)     { fMomError = mom;    }
+   void        SetEnergyLoss(Double_t e)     { fEnergyLoss = e;    }
    void        Clear(Option_t* opt);
   
    ClassDef(TAGpoint,10)
@@ -76,7 +70,7 @@ public:
 	virtual ~TAGntuPoint();
 	
    TAGpoint*         NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr);
-   TAGpoint*         NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr);
+   TAGpoint*         NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr);
 
 	Int_t             GetPointsN();
 	TAGpoint*         GetPoint(Int_t iPoint );
