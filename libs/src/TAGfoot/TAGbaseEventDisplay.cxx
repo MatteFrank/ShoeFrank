@@ -657,34 +657,6 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
          cout <<  Form(" at Slope: (%.3g %.3g) \n", track->GetSlope()[0], track->GetSlope()[1]);
          cout <<  Form(" and Origin (%.3g %.3g)\n",  track->GetOrigin()[0], track->GetOrigin()[1]);
       }
-   } else if (obj->InheritsFrom("TAGtrack")) {
-      
-      TAGtrack* track =  (TAGtrack*)obj;
-      if (track == 0x0) return;
-      
-      fInfoView->AddLine( Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN()) );
-      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass()) );
-      fInfoView->AddLine( Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTof()) );
-      
-      if (fConsoleButton->IsOn()) {
-         cout <<  Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN());
-         cout <<  Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass());
-         cout <<  Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTof());
-         
-         for( Int_t iPoint = 0; iPoint < track->GetMeasPointsN(); ++iPoint ) {
-            TAGpoint* point = track->GetMeasPoint(iPoint);
-            cout << Form("%-3s: #%2d ", point->GetDevName(), iPoint);
-            cout << Form("Momentum: (%.2f %.2f %.2f) GeV/c ", point->GetMomentum()[0], point->GetMomentum()[1], point->GetMomentum()[2]);
-            
-            if (fType != 0) {
-               for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
-                  Int_t idx = point->GetMcTrackIdx(k);
-                  cout << Form(" MCtrackIdx: %d ", idx);
-               }
-            }
-            cout << endl;
-         }
-      }
    }
 }
 
@@ -699,19 +671,19 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveStraightLineSet* ts, Int_t idx)
       TAGtrack* track =  (TAGtrack*)obj;
       if (track == 0x0) return;
 
-      fInfoView->AddLine( Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN()) );
-      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass()) );
-      fInfoView->AddLine( Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTof()) );
+      fInfoView->AddLine( Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetPointsN()) );
+      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetTwChargeZ(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass()) );
+      fInfoView->AddLine( Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTwTof()) );
 
       if (fConsoleButton->IsOn()) {
-         cout <<  Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetMeasPointsN());
-         cout <<  Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass());
-         cout <<  Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTof());
+         cout <<  Form("Track # %2d with %2d points\n", track->GetTrackId(), track->GetPointsN());
+         cout <<  Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetTwChargeZ(), TMath::Nint(track->GetMass()/TAGgeoTrafo::GetMassFactor()), track->GetMass());
+         cout <<  Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetMomentum(), track->GetTwTof());
 
-         for( Int_t iPoint = 0; iPoint < track->GetMeasPointsN(); ++iPoint ) {
-            TAGpoint* point = track->GetMeasPoint(iPoint);
+         for( Int_t iPoint = 0; iPoint < track->GetPointsN(); ++iPoint ) {
+            TAGpoint* point = track->GetPoint(iPoint);
             cout << Form("%-3s: #%2d ", point->GetDevName(), iPoint);
-            cout << Form("Momentum: (%.2f %.2f %.2f) GeV/c ", point->GetMomentum()[0], point->GetMomentum()[1], point->GetMomentum()[2]);
+            cout << Form("Momentum: (%.2f %.2f %.2f) GeV/c ", point->GetMeasMomentum()[0], point->GetMeasMomentum()[1], point->GetMeasMomentum()[2]);
 
            if (fType != 0) {
              for (Int_t k = 0; k < point->GetMcTracksN(); ++k) {
@@ -1210,7 +1182,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
          posG = track->Intersection(posZtw);
          x1 = posG(0); y1 = posG(1); z1 = posG(2);
 
-         Int_t nPoint = track->GetMeasPointsN();
+         Int_t nPoint = track->GetPointsN();
          fIrTrackDisplay->AddTracklet(nPoint*100, x, y, z, x1, y1, z1);
          fIrTrackDisplay->TrackId(track);
 
@@ -1228,18 +1200,18 @@ void TAGbaseEventDisplay::UpdateGlbTrackElements()
 
    for( Int_t iTrack = 0; iTrack < pNtuTrack->GetTracksN(); ++iTrack ) {
       TAGtrack* track = pNtuTrack->GetTrack(iTrack);
-      Int_t charge    = track->GetCharge();
+      Int_t charge    = track->GetTwChargeZ();
 
       TAEDglbTrack* glbTrack = fGlbTrackDisplay->NewTrack(Form("Track%d", iTrack));
       glbTrack->TrackId(track);
 
-      TAGpoint* point = track->GetMeasPoint(0);
+      TAGpoint* point = track->GetPoint(0);
       Float_t z1      = point->GetPosition().Z();
       TVector3 pos1   = track->GetPosition(z1);
 
-      for( Int_t iPoint = 1; iPoint < track->GetMeasPointsN(); ++iPoint ) {
-         TAGpoint* point = track->GetMeasPoint(iPoint);
-         Float_t z2      = point->GetPosition().Z();
+      for( Int_t iPoint = 1; iPoint < track->GetPointsN(); ++iPoint ) {
+         TAGpoint* point = track->GetPoint(iPoint);
+         Float_t z2      = point->GetMeasPosition().Z();
          TVector3 pos2   = track->GetPosition(z2);
 
          glbTrack->AddTracklet(charge, pos1, pos2);

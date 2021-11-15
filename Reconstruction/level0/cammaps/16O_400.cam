@@ -1,0 +1,58 @@
+// Campaign file
+CamName: "16O_400"
+RunNumber: 1
+NumberDevices: 10
+
+DetectorName: "FOOT"
+NumberFiles: 2
+"./geomaps/16O_400/FOOT.geo": -1
+"./geomaps/16O_400/FOOT.reg": -1
+
+DetectorName: "DI"
+NumberFiles: 1
+"./geomaps/16O_400/TADIdetector.geo": -1
+
+DetectorName: "ST"
+NumberFiles: 2
+"./geomaps/16O_400/TASTdetector.geo": -1
+"./config/16O_400/TASTdetector.cfg": -1
+
+DetectorName: "BM"
+NumberFiles: 3
+"./geomaps/16O_400/TABMdetector.geo": -1
+"./config/16O_400/TABMdetector.cfg": -1
+"./calib/16O_400/TABM_T0_Calibration.cal": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/16O_400/TAGdetector.geo": -1
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/16O_400/TAVTdetector.geo": -1
+"./config/16O_400/TAVTdetector.cfg": -1
+
+DetectorName: "IT"
+NumberFiles: 2
+"./geomaps/16O_400/TAITdetector.geo": -1
+"./config/16O_400/TAITdetector.cfg": -1
+
+DetectorName: "MSD"
+NumberFiles: 2
+"./geomaps/16O_400/TAMSDdetector.geo": -1
+"./config/16O_400/TAMSDdetector.cfg": -1
+
+DetectorName: "TW"
+NumberFiles: 5
+"./geomaps/16O_400/TATWdetector.geo": -1
+"./config/16O_400/TATW_BBparameters.cfg": -1
+"./config/16O_400/TATWbarsMapStatus.map": -1
+"./calib/16O_400/TATW_Energy_Calibration.cal": -1
+"./calib/16O_400/TATW_Tof_Calibration.cal": -1
+
+DetectorName: "CA"
+NumberFiles: 3
+"./geomaps/16O_400/TACAdetector.geo": -1
+"./config/16O_400/TACAcrystalMapStatus.map": -1
+"./calib/16O_400/TACA_Energy_Calibration.cal": -1
+

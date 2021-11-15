@@ -208,19 +208,13 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     cluster = pNtuClus->GetCluster(iSensor, i);
 
     cluster->SetSensorIdx(iSensor);
+    cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition(cluster);
     ComputeCog(cluster);
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
-    if(FootDebugLevel(1))
-      cout<<" Sensor "<<iSensor<<" cluster:: "<<i<<" pos:: "<<posG.X()<<endl;
-    posG = pGeoMap->Sensor2Detector(iSensor, posG);
-    if(FootDebugLevel(1)) {
-      cout<<" New pos  pos:: "<<posG.X()<<" "<<posG.Y()<<" "<<posG.Z()<<endl;
-      cout<<" view:: "<<pGeoMap->GetSensorPar(iSensor).TypeIdx<<endl;
-    }
-    cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
+    posG = pGeoMap->Sensor2Detector(iSensor, posG);    
     cluster->SetPositionG(posG);
     
      if (ApplyCuts(cluster)) {
@@ -280,7 +274,8 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
-   
+  
+  
   cluster->SetPositionF(fCurrentPosition);
   cluster->SetPosErrorF(fCurrentPosError);
   cluster->SetEnergyLoss(tClusterPulseSum);

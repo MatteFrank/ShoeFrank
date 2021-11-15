@@ -2,8 +2,6 @@
 
 #include "BaseReco.hxx"
 
-// root include
-
 #include "TAGroot.hxx"
 
 #include "TAGactTreeReader.hxx"
@@ -20,7 +18,6 @@
 #include "TAVTntuVertex.hxx"
 
 #include "TAVTactNtuHit.hxx"
-
 #include "TAVTactNtuVertexPD.hxx"
 
 #include "TAGrecoManager.hxx"
@@ -308,7 +305,6 @@ void BaseReco::OpenFileOut()
       SetRecHistogramDir();
    }
 }
-
 
 //__________________________________________________________
 void BaseReco::SetRecHistogramDir()
@@ -675,7 +671,6 @@ void BaseReco::CreateRecAction()
    if (TAGrecoManager::GetPar()->IncludeVT())
       CreateRecActionVtx();
    
-    
    if (TAGrecoManager::GetPar()->IncludeIT())
       CreateRecActionIt();
    
@@ -1076,8 +1071,7 @@ void BaseReco::AddRecRequiredItem()
   
    if (TAGrecoManager::GetPar()->IncludeKalman() && TAGrecoManager::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
-   //    gTAGroot->AddRequiredItem("glbActTrackStudyGF");
-       gTAGroot->AddRequiredItem("glbActKFitter");
+       gTAGroot->AddRequiredItem("glbActkFitter");
      }
      return;
    }
