@@ -99,10 +99,12 @@ int TAGFuploader::UploadClusVT(){
 			if (m_debug > 1)	      Info( "UploadClusVT()", "entered cycle clusVT of sensor %d", iSensor );
 
 			TAVTcluster* clus = vtclus->GetCluster(iSensor, iClus);
-			if(m_debug > 1)	cout << "iClus::" << iClus << "\tClusterIdx::" << clus->GetClusterIdx() << "\n";
+			if(iClus != clus->GetClusterIdx())
+			{
+				Warning("UploadClusVT()","VT INDEX MISMATCH!! Index::%d  Idx::%d", iClus, clus->GetClusterIdx());
+			}
 			if (!clus->IsValid())	continue; // Guardare meglio cosa significa...
 
-			// m_VT_clusCollection.push_back(clus);
 			Prepare4Vertex( clus, m_sensorIDmap->GetMeasID_eventLevel( "VT", iSensor, iClus ) );
 
 		}
@@ -140,9 +142,12 @@ int TAGFuploader::UploadClusIT(){
 			if (m_debug > 1)      std::cout << "entered cycle clusIT of sensor " << iSensor << std::endl;
 
 			TAITcluster* clus = itclus->GetCluster(iSensor, iClus);
+			if(iClus != clus->GetClusterIdx())
+			{
+				Warning("UploadClusIT()","IT INDEX MISMATCH!! Index::%d  Idx::%d", iClus, clus->GetClusterIdx());
+			}
 			if (!clus->IsValid()) continue;		// Guardare meglio cosa significa...
 
-			// m_IT_clusCollection.push_back(clus);
 			Prepare4InnerTracker( clus, m_sensorIDmap->GetMeasID_eventLevel( "IT", iSensor, iClus ) );
 
 		}
@@ -179,9 +184,13 @@ int TAGFuploader::UploadClusMSD() {
 			if (m_debug > 1)	      std::cout << "entered cycle clusMSD of sensor " << iSensor << std::endl;
 
 			TAMSDcluster* clus = msdclus->GetCluster(iSensor, iClus);
+			if(iClus != clus->GetClusterIdx())
+			{
+				Warning("UploadClusMSD()","MSD INDEX MISMATCH!! Index::%d  Idx::%d", iClus, clus->GetClusterIdx());
+
+			}
 			if (!clus->IsValid()) continue;		// Guardare meglio cosa significa...
 
-			// m_MSD_clusCollection.push_back(clus);
 			Prepare4Strip( clus, m_sensorIDmap->GetMeasID_eventLevel( "MSD", iSensor, iClus ) );
 
 		}
@@ -218,7 +227,6 @@ int TAGFuploader::UploadHitsTW() {
 
 		// if ( GetTWTrackFixed( point ) == -1 ) continue;
 
-		// m_TW_hitCollection.push_back( point );
 		Prepare4TofWall( point, m_sensorIDmap->GetMeasID_eventLevel( "TW", 0, iPoint ) );
 
 	}
@@ -524,6 +532,8 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	if ( m_debug > 1 )
 	{
 		cout << "MSD hit loc coords::";
+		clus->GetPositionG().Print();
+		cout << "MSD hit glob coords::";
 		hitPos.Print();
 	}
 	//check the view, 0 ->X, 1->Y

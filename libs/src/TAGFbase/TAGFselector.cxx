@@ -533,6 +533,9 @@ void TAGFselector::CategorizeVT()
 		}	// end track loop
 
 	} //end loop on vertices
+
+	if(m_trackTempMap.size() == 0)
+		Warning("CategorizeVT()","No VT tracklet found in the event!");
 }
 
 
