@@ -76,9 +76,9 @@ TVector3 GetMomentumAtZ( TAGtrack* track_ph, double z ) {
     auto os = operating_state<matrix<3,1>, 1>{
             starting_point_h->GetPositionG().Z(),
             {
-                starting_point_h->GetFitMomentum().X() * 1000,
-                starting_point_h->GetFitMomentum().Y() * 1000,
-                starting_point_h->GetFitMomentum().Z() * 1000
+                starting_point_h->GetMomentum().X() * 1000,
+                starting_point_h->GetMomentum().Y() * 1000,
+                starting_point_h->GetMomentum().Z() * 1000
             }
                                              };
     
