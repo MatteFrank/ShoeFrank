@@ -22,11 +22,6 @@ set( with_dictionnaries
    TAGntuEvent
    TAGactNtuEvent
    TAGactKFitter
-   TAGglobalTrack
-   TAGntuTrackRepository
-   TAGshoeTrackPoint
-   TAGtrackKalman
-   TAGtrackRepoKalman
    GlobalRecoMC
    TAGbaseEventDisplay
    TAGeventDisplay

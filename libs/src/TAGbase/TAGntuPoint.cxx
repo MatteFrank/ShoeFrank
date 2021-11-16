@@ -11,10 +11,8 @@ ClassImp(TAGpoint) // Description of Single Detector TAGpoint
 TAGpoint::TAGpoint()
  : TAGcluster(),
    fDevName(""),
-   fMeasMom(0,0,0),
-   fMeasMomError(0,0,0),
-   fFitMom(0,0,0),
-   fFitMomError(0,0,0),
+   fMomentum(0,0,0),
+   fMomError(0,0,0),
    fEnergyLoss(-1.)
 {
 }
@@ -24,10 +22,8 @@ TAGpoint::TAGpoint()
 TAGpoint::TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr)
 : TAGcluster(),
    fDevName(name),
-   fMeasMom(0,0,0),
-   fMeasMomError(0,0,0),
-   fFitMom(0,0,0),
-   fFitMomError(0,0,0),
+   fMomentum(0,0,0),
+   fMomError(0,0,0),
    fEnergyLoss(-1.)
 {
    SetMeasPosition(measPos);
@@ -39,10 +35,8 @@ TAGpoint::TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr)
 TAGpoint::TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr)
 : TAGcluster(),
   fDevName(""),
-  fMeasMom(0,0,0),
-  fMeasMomError(0,0,0),
-  fFitMom(0,0,0),
-  fFitMomError(0,0,0),
+  fMomentum(0,0,0),
+  fMomError(0,0,0),
   fEnergyLoss(-1.)
 {
    SetMeasPosition(measPos);
@@ -53,13 +47,11 @@ TAGpoint::TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVect
 
 //______________________________________________________________________________
 //  build a point
-TAGpoint::TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr)
+TAGpoint::TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
  : TAGcluster(),
    fDevName(""),
-   fMeasMom(measMom),
-   fMeasMomError(measMomErr),
-   fFitMom(fitMom),
-   fFitMomError(fitMomErr),
+   fMomentum(mom),
+   fMomError(momErr),
    fEnergyLoss(-1.)
 {
    SetMeasPosition(measPos);
@@ -73,10 +65,8 @@ TAGpoint::TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVect
 TAGpoint::TAGpoint(TString name,TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr)
 : TAGcluster(),
    fDevName(name),
-   fMeasMom(0,0,0),
-   fMeasMomError(0,0,0),
-   fFitMom(0,0,0),
-   fFitMomError(0,0,0),
+   fMomentum(0,0,0),
+   fMomError(0,0,0),
    fEnergyLoss(-1.)
 {
    SetMeasPosition(measPos);
@@ -89,13 +79,11 @@ TAGpoint::TAGpoint(TString name,TVector3 measPos, TVector3 measPosErr, TVector3 
 
 //______________________________________________________________________________
 //  build a point
-TAGpoint::TAGpoint(TString name,TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr)
+TAGpoint::TAGpoint(TString name,TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
 : TAGcluster(),
    fDevName(name),
-   fMeasMom(measMom),
-   fMeasMomError(measMomErr),
-   fFitMom(fitMom),
-   fFitMomError(fitMomErr),
+   fMomentum(mom),
+   fMomError(momErr),
    fEnergyLoss(-1.)
 {
    SetMeasPosition(measPos);
@@ -111,24 +99,30 @@ TAGpoint::TAGpoint(TString name,TVector3 measPos, TVector3 measPosErr, TVector3 
 
 //______________________________________________________________________________
 //  build a point
-TAGpoint::TAGpoint( string trackDetID, int iPlane, int iClus, vector<int>* iPart, TVector3* measPos )
-                  : TAGcluster()
+TAGpoint::TAGpoint( string trackDetID, int iPlane, int iClus, vector<int>* iPart, TVector3* measPos, TVector3* measPosErr )
+                  : TAGcluster(),
+   fDevName(trackDetID),
+   fSensorIdx(iPlane),
+   fClusterIdx(iClus),
+   fEnergyLoss(-1.)
 {
-	fDevName = trackDetID;       // Device name (VT,IT, MSD, TW, CA)
-	m_planeID = iPlane;
-	m_clusterID = iClus;
 	for(int i=0; i < iPart->size(); ++i){
-		m_iPart.push_back( iPart->at(i) );
+      fMcTrackIdx.Set(fMcTrackIdx.GetSize() + 1);
+		fMcTrackIdx[fMcTrackIdx.GetSize() - 1] = iPart->at(i);
 	}
-	m_measPos = *measPos;
+	SetMeasPosition(*measPos);
+	SetMeasPosError(*measPosErr);
 }
 
 
 
 
 void TAGpoint::SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* recoPos_cov, TMatrixD* recoMom_cov ) {
-	// fPosition = *recoPos;
-	fFitMom = *recoMom;
+	SetFitPosition(*recoPos);
+	SetFitPosError(EvalError( *recoPos_cov ));
+
+	SetMomentum(*recoMom);
+   SetMomError(EvalError( *recoMom_cov ));
 	// TMatrixD m(3,3);
 	// m_recoPos_cov = m;
 	// m_recoMom_cov = TMatrixD(3,3);
@@ -144,10 +138,6 @@ void TAGpoint::SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* reco
 	// 		m_recoMom_cov(j,k) = (*recoMom_cov)(j,k);
 	// 	}
 	// }
-
-	// fPosError = EvalError( *recoPos_cov );
-	fFitMomError = EvalError( *recoMom_cov );
-
 }
 
 
@@ -256,10 +246,10 @@ TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 
 
 //______________________________________________________________________________
 //  standard + momentum
-TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr)
+TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
 {
 	TClonesArray &pixelArray = *fListOfPoints;
-	TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(measPos, measPosErr, fitPos, fitPosErr, measMom, measMomErr, fitMom, fitMomErr);
+	TAGpoint* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAGpoint(measPos, measPosErr, fitPos, fitPosErr, mom, momErr);
 
 	return pixel;
 }

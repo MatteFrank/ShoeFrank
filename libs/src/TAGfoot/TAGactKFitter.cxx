@@ -1,6 +1,4 @@
 #include "TAGactKFitter.hxx"
-#include "TAGtrackRepoKalman.hxx"
-#include "TAGactNtuGlbTrack.hxx"
 
 
 
@@ -743,7 +741,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 	if(m_debug > 0)		cout << "RECORD START" << endl;
 	TAGtrack* shoeOutTrack;
-	TAGtrackKalman* shoeOutTrackGenFit;
 	vector<TAGpoint*> shoeTrackPointRepo;
 	
 	// Fill Point and retrieve the true MC particle for each measuerement [ nMeasurement, shoeID of generated particle in the particle array ]
@@ -758,9 +755,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		TVector3 measPos, measPos_err;
 		GetMeasTrackInfo( trackHitID, &measPos, &measPos_err );
 		
-		int iPlane, iClus;
+		int iSensor, iClus;
 		vector<int> iPart;
-		GetMeasInfo( trackDetID, trackHitID, &iPlane, &iClus, &iPart );
+		GetMeasInfo( trackDetID, trackHitID, &iSensor, &iClus, &iPart );
 		string detName = m_sensorIDmap->GetDetNameFromMeasID( trackHitID );
 
 		// vector with index of the mc truth particles generating the measurement
@@ -768,9 +765,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			mcID_Meas.push_back( iPart.at(ip) );
 		mcParticleID_track.push_back(mcID_Meas);
 
-		// create shoe track points vector repository to be passed to the output track object, wth geenral and measurement info
-		// TAGpoint* shoeTrackPoint = new TAGpoint( trackDetID, iPlane, iClus, iPart, &measPos );
-		TAGpoint* shoeTrackPoint = new TAGpoint( detName, iPlane, iClus, &iPart, &measPos );
+		// create shoe track points vector repository to be passed to the output track object, with general and measurement info
+		TAGpoint* shoeTrackPoint = new TAGpoint( detName, iSensor, iClus, &iPart, &measPos, &measPos_err );
 
 		// getRecoInfo
 		TVector3 recoPos, recoMom;
@@ -930,14 +926,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	h_momentum->Fill( recoMom_target.Mag() );
 	h_momentum_reco.at(measCh)->Fill( recoMom_target.Mag() );	// check if not present
 
-	
-	// shoeOutTrackGenFit = m_outTrackRepoGenFit->NewTrack( fitTrackName, track, 
-	// 									(long)gTAGroot->CurrentEventId().EventNumber(), 
-	// 									pdgID, pdgCh, measCh, mass, length, tof, chi2, ndof, pVal, 
-	// 									&recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov, 
-	// 									&shoeTrackPointRepo
-	// 									);
-
 	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, 
 										(long)gTAGroot->CurrentEventId().EventNumber(),
 										pdgID, pdgCh, measCh, mass, length, tof, chi2, ndof, pVal, 
@@ -1034,7 +1022,10 @@ void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus,
 
 	// check
 	if ( detID != m_sensorIDmap->GetDetIDFromMeasID( hitID ) )
-		cout << "ERROR -- TAGactKFitter::GetMeasInfo " << detID << " instead of " << m_sensorIDmap->GetDetIDFromMeasID( hitID ) << endl, exit(0);
+	{
+		Error("GetMeasInfo()", "Detector ID not matching between GENFIT (%d) and SensorIDmap (%d)", detID, m_sensorIDmap->GetDetIDFromMeasID( hitID ));
+		exit(0);
+	}
 
 	*iSensor = m_sensorIDmap->GetSensorIDFromMeasID( hitID );
 	*iClus = m_sensorIDmap->GetHitIDFromMeasID( hitID );

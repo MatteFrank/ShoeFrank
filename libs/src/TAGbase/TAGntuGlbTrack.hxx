@@ -175,10 +175,10 @@ public:
 
    //! Add measured point
    TAGpoint*        AddPoint(TAGpoint* point);
-   TAGpoint*        AddPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr);
+   TAGpoint*        AddPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr);
    TAGpoint*        AddPoint(TString name, TVector3 measPos, TVector3 measPosErr);
    TAGpoint*        AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr);
-   TAGpoint*        AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 measMom, TVector3 measMomErr, TVector3 fitMom, TVector3 fitMomErr);
+   TAGpoint*        AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr);
 
    void             Clear(Option_t* opt="");
    
