@@ -44,7 +44,7 @@ class TAGactTreeReader : public TAGactionFile {
 
     virtual Int_t   Open(const TString& name, Option_t* option="READ", const TString treeName="tree", Bool_t dscBranch = true);
    
-    virtual void    AddTree(TString fileName = "", TString treeName = "EventTree");
+    virtual void    AddFriendTree(TString fileName = "", TString treeName = "EventTree");
    
     virtual void    Close();
 

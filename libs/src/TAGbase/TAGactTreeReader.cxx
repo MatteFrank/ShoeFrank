@@ -200,7 +200,7 @@ Bool_t TAGactTreeReader::IsOpen() const
 //------------------------------------------+-----------------------------------
 //! Add friend tree
 
-void TAGactTreeReader::AddTree(TString fileName, TString treeName)
+void TAGactTreeReader::AddFriendTree(TString fileName, TString treeName)
 {
    fpFriendFileName = fileName;
    fpFriendTreeName = treeName;
