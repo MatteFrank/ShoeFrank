@@ -102,10 +102,10 @@ TAGpoint::TAGpoint(TString name,TVector3 measPos, TVector3 measPosErr, TVector3 
 TAGpoint::TAGpoint( string trackDetID, int iPlane, int iClus, vector<int>* iPart, TVector3* measPos, TVector3* measPosErr )
                   : TAGcluster(),
    fDevName(trackDetID),
-   fSensorIdx(iPlane),
-   fClusterIdx(iClus),
    fEnergyLoss(-1.)
 {
+   fClusterIdx = iClus;
+   fSensorIdx = iPlane;
 	for(int i=0; i < iPart->size(); ++i){
       fMcTrackIdx.Set(fMcTrackIdx.GetSize() + 1);
 		fMcTrackIdx[fMcTrackIdx.GetSize() - 1] = iPart->at(i);
@@ -119,10 +119,12 @@ TAGpoint::TAGpoint( string trackDetID, int iPlane, int iClus, vector<int>* iPart
 
 void TAGpoint::SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* recoPos_cov, TMatrixD* recoMom_cov ) {
 	SetFitPosition(*recoPos);
-	SetFitPosError(EvalError( *recoPos_cov ));
+   TVector3 temp = EvalError( *recoPos_cov );
+	SetFitPosError(temp);
 
 	SetMomentum(*recoMom);
-   SetMomError(EvalError( *recoMom_cov ));
+   temp = EvalError( *recoMom_cov );
+   SetMomError(temp);
 	// TMatrixD m(3,3);
 	// m_recoPos_cov = m;
 	// m_recoMom_cov = TMatrixD(3,3);

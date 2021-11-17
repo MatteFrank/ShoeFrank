@@ -742,6 +742,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	if(m_debug > 0)		cout << "RECORD START" << endl;
 	TAGtrack* shoeOutTrack;
 	vector<TAGpoint*> shoeTrackPointRepo;
+	Int_t TwChargeZ = -1;
+	Float_t TwTof = -1;
 	
 	// Fill Point and retrieve the true MC particle for each measuerement [ nMeasurement, shoeID of generated particle in the particle array ]
 	vector<vector<int>> mcParticleID_track;
@@ -759,6 +761,15 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		vector<int> iPart;
 		GetMeasInfo( trackDetID, trackHitID, &iSensor, &iClus, &iPart );
 		string detName = m_sensorIDmap->GetDetNameFromMeasID( trackHitID );
+		
+		//RZ: First easy implementation -> Check in future when you have more TWpoint in the track
+		if(detName == "TW")
+		{
+			TATWpoint* point = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( iClus );
+			TwChargeZ = point->GetChargeZ();
+			TwTof = point->GetToF();
+		}
+
 
 		// vector with index of the mc truth particles generating the measurement
 		for ( unsigned int ip=0; ip<iPart.size(); ip++)
@@ -823,11 +834,12 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	int nMeas 	= track->getCardinalRep()->getDim();
 	int pdgID 	= track->getCardinalRep()->getPDG();
 	int pdgCh 	= track->getCardinalRep()->getPDGCharge();
-	int measCh 	= track->getCardinalRep()->getCharge( track->getFittedState(0) );            // dipendono dallo stato considerato
-	double mass = track->getCardinalRep()->getMass( track->getFittedState(0) );              // dipendono dallo stato considerato
+	float pdgMass	= (float)track->getCardinalRep()->GetPdgMass(pdgID);
+	int fitCh 	= track->getCardinalRep()->getCharge( track->getFittedState(0) );            // dipendono dallo stato considerato
+	double fitMass = track->getCardinalRep()->getMass( track->getFittedState(0) );              // dipendono dallo stato considerato
 	// track->getCardinalRep()->getRadiationLenght();   // to be done! Check update versions...
 
-	if(measCh < 0 || measCh > 8) {return;}
+	if(fitCh < 0 || fitCh > 8) {return;}
 
 	int trackMC_id = -1;
 	double trackQuality = -1;
@@ -861,20 +873,20 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		if(m_debug > 0) cout << "trackQuality::" << trackQuality << "\n";
 
 		
-		if ( mcCharge == measCh && trackQuality > 0.7 ) {
+		if ( mcCharge == fitCh && trackQuality > 0.7 ) {
 			if ( m_nConvergedTracks_matched.find( fitTrackName ) == m_nConvergedTracks_matched.end() )	m_nConvergedTracks_matched[ fitTrackName ] = 0;
 			m_nConvergedTracks_matched[ fitTrackName ]++;
 		}
 		else
 		{
-			if(m_debug > 0)	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tmeasCh::" << measCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
+			if(m_debug > 0)	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tfitCh::" << fitCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
 		}
 
 		h_chargeMC->Fill( mcCharge );
 		h_trackQuality->Fill( trackQuality );
 		h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
-		h_momentum_true.at(measCh)->Fill( particle->GetInitP().Mag() );	// check if not present
-		h_ratio_reco_true.at(measCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present
+		h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
+		h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present
 		
 	}
 
@@ -912,11 +924,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 
 	h_nMeas->Fill ( nMeas );
-	h_mass->Fill( mass );
+	h_mass->Fill( fitMass );
 	h_chi2->Fill( chi2 );
 	
-	h_chargeMeas->Fill( measCh );
-	h_chargeFlip->Fill( pdgCh - measCh );
+	h_chargeMeas->Fill( fitCh );
+	h_chargeFlip->Fill( pdgCh - fitCh );
 
 	
 	h_length->Fill( length );
@@ -924,11 +936,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	h_pVal->Fill( pVal );
 
 	h_momentum->Fill( recoMom_target.Mag() );
-	h_momentum_reco.at(measCh)->Fill( recoMom_target.Mag() );	// check if not present
+	h_momentum_reco.at(fitCh)->Fill( recoMom_target.Mag() );	// check if not present
 
 	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, 
 										(long)gTAGroot->CurrentEventId().EventNumber(),
-										pdgID, pdgCh, measCh, mass, length, tof, chi2, ndof, pVal, 
+										pdgID, pdgMass, fitCh, fitMass, length, tof, chi2, ndof, pVal, 
 										&recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov,
 										&shoeTrackPointRepo
 										);
@@ -936,6 +948,14 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	
 	if ( TAGrecoManager::GetPar()->IsMC() )		
 		shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
+
+	/*RZ: Quantities to
+	1) CHECK: fLength (currently VT0 to TW!), fMass, fFitTof (same as length)
+	2) ADD: fCalEnergy, fFitEnergyLoss, fFitEnergy, fTgtDir/Pos/Mom, fTwDir/Pos/Mom
+	3) DISCUSS: fMcTrackMap, polynomial_fit_parameters
+	*/
+	shoeOutTrack->SetTwChargeZ(TwChargeZ);
+	shoeOutTrack->SetTwTof(TwTof);
 
 	// shoeOutTrack->SetExtrapInfoTW( &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
 

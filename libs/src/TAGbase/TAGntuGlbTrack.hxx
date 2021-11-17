@@ -45,7 +45,7 @@ public:
    // Genfit
 
    TAGtrack(string name, long evNum, 
-   			int pdgID, int pdgCh, int measCh, float mass, 
+   			int pdgID, float pdgMass, int fitCh, float fitMass, 
    			float length, float tof, 
    			float chi2, int ndof, float pVal, 
    			TVector3* pos, TVector3* mom, 
@@ -261,7 +261,7 @@ public:
    
    TAGtrack*        NewTrack();
    TAGtrack*        NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof);
-   TAGtrack* 		NewTrack(string name, long evNum, int pdgID, int pdgCh, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* pos, TVector3* mom, TMatrixD* pos_cov, TMatrixD* mom_cov, vector<TAGpoint*>* shoeTrackPointRepo);   
+   TAGtrack* 		NewTrack(string name, long evNum, int pdgID, int pdgMass, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* pos, TVector3* mom, TMatrixD* pos_cov, TMatrixD* mom_cov, vector<TAGpoint*>* shoeTrackPointRepo);   
 
    TAGtrack*        NewTrack(TAGtrack& track);
 

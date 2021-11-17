@@ -41,7 +41,7 @@ public:
    TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr);
    TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr);
    TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr);
-   TAGpoint(string trackDetID, int iPlane, int iClus, vector<int>* iPart, TVector3* measPos, TVector* measPosErr);
+   TAGpoint(string trackDetID, int iPlane, int iClus, vector<int>* iPart, TVector3* measPos, TVector3* measPosErr);
    ~TAGpoint() {};
 
    void SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* recoPos_cov, TMatrixD* recoMom_cov );

@@ -115,7 +115,7 @@ TAGtrack::TAGtrack(const TAGtrack& aTrack)
 
 //Alternative constructor
 TAGtrack::TAGtrack( string name, long evNum, 
-								int pdgID, int pdgCh, int measCh, float mass, 
+								int pdgID, float pdgMass, int fitCh, float fitMass, 
 								float length, float tof, 
 								float chi2, int ndof, float pVal, 
 								TVector3* pos, TVector3* mom,
@@ -125,26 +125,23 @@ TAGtrack::TAGtrack( string name, long evNum,
 	: TAGnamed(),
 	fListOfPoints(0x0)
 {
-
 	SetupClones();
 
 	fName = name;
 	fEvtNumber = evNum;
 	fPdgId = pdgID;
-	// fCharge = pdgCh;
-	fFitChargeZ = measCh;
-	fFitMass = mass;
+   fMass = pdgMass;
+	fFitChargeZ = fitCh;
+	fFitMass = fitMass;
 	fLength = length;
 	fFitTof = tof;
 	fChi2 = chi2;
 	fNdof = ndof;
 	fPval = pVal;
-	// m_stateID = stateID;
+
 	fTgtMom = *mom;
 	fTgtPos = *pos;
-
-	// fMom = m_target_mom.Mag();
-
+	fMomModule = mom->Mag();
 
 
 	TClonesArray &pointArray = *fListOfPoints;
@@ -152,9 +149,6 @@ TAGtrack::TAGtrack( string name, long evNum,
 
 		new (pointArray[pointArray.GetEntriesFast()]) TAGpoint( *(shoeTrackPointRepo->at(i)) );
 	}
-
-	// m_target_pos_cov = *pos_cov;
-	// m_target_mom_cov = *mom_cov;
 }
 
 
@@ -480,12 +474,12 @@ void TAGntuGlbTrack::Clear(Option_t*)
 /* Add a new track to the repo  --- Genfit
 *
 */
-TAGtrack* TAGntuGlbTrack::NewTrack(string name, long evNum, int pdgID, int pdgCh, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* recoPos_target, TVector3* recoMom_target, TMatrixD* recoPos_target_cov, TMatrixD* recoMom_target_cov, vector<TAGpoint*>* shoeTrackPointRepo)
+TAGtrack* TAGntuGlbTrack::NewTrack(string name, long evNum, int pdgID, float pdgMass, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* recoPos_target, TVector3* recoMom_target, TMatrixD* recoPos_target_cov, TMatrixD* recoMom_target_cov, vector<TAGpoint*>* shoeTrackPointRepo)
 {
 	TClonesArray &trackArray = *fListOfTracks;
 	TAGtrack* track = new (trackArray[trackArray.GetEntriesFast()]) TAGtrack(
 													name, evNum,
-													pdgID, pdgCh, measCh, mass, length, tof, chi2, ndof, pVal, 
+													pdgID, pdgMass, measCh, mass, length, tof, chi2, ndof, pVal, 
 													recoPos_target, recoMom_target, recoPos_target_cov, recoMom_target_cov,
 													shoeTrackPointRepo
 												);
