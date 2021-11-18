@@ -22,7 +22,8 @@ public:
 
    Bool_t          FromFile(const TString& name);
    Int_t           GetSensorId(Int_t boardId, Int_t viewId);
-
+   Int_t           GetTotSensors() {return nSens;};
+  
 private:
 
   Int_t nSens;
