@@ -146,13 +146,13 @@ Bool_t TAVTactBaseNtuVertex::Action()
 
    if (fgCheckBmMatching)
 	  CheckBmMatching();
-
-   // else {
-   //    for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
-   //       TAVTvertex* vtx  = pNtuVertex->GetVertex(i);
-   //       vtx->SetBmMatched();
-   //    }
-   // }
+   
+   else {
+      for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
+         TAVTvertex* vtx  = pNtuVertex->GetVertex(i);
+         vtx->SetBmMatched();
+      }
+   }
 
     return ok;
 }
@@ -164,12 +164,11 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
    if (!fpBMntuTrack || !fpNtuVertex) return false;
 
    TABMntuTrack* pBMtrack    = (TABMntuTrack*) fpBMntuTrack->Object();
-   if(pBMtrack->GetTracksN()!=1) return false;
+   if(pBMtrack->GetTracksN() != 1) return false;
 
    TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
-
    TAVTbaseParConf* config   = (TAVTbaseParConf*) fpConfig->Object();
-   // Float_t min               = config->GetAnalysisPar().PlanesForTrackMinimum; // to be tuned (sigma ~ 200)
+
    TVector3 minRes(0.,1.,1.);
    Int_t bestVtxIndex        = -1;
 
@@ -196,12 +195,12 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
    }
 
    if(bestVtxIndex>=0){
-	  TAVTvertex* vtx = pNtuVertex->GetVertex(bestVtxIndex);
-    vtx->SetBmMatched();
-     if (ValidHistogram()) {
-        fpHisBmMatchX->Fill(minRes.X());
-        fpHisBmMatchY->Fill(minRes.Y());
-     }
+      TAVTvertex* vtx = pNtuVertex->GetVertex(bestVtxIndex);
+      vtx->SetBmMatched();
+      if (ValidHistogram()) {
+         fpHisBmMatchX->Fill(minRes.X());
+         fpHisBmMatchY->Fill(minRes.Y());
+      }
    }
 
    return true;
