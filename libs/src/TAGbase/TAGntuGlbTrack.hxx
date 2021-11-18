@@ -62,17 +62,17 @@ public:
    void             SetMomentum(Double_t amom)    { fMomModule = amom; }
    Double_t         GetMomentum()           const { return fMomModule; }
    
-   void             SetTwChargeZ(Int_t chg)       { fTwChargeZ = chg;  }
-   Int_t            GetTwChargeZ()          const { return fTwChargeZ; }
+   void             SetTwChargeZ(Int_t chg)       { fTwChargeZ = chg;   }
+   Int_t            GetTwChargeZ()          const { return fTwChargeZ;  }
    
-   void             SetTwTof(Double_t atoff)      { fTwTof = atoff;    }
-   Double_t         GetTwTof()              const { return fTwTof;     }
+   void             SetTwTof(Double_t atoff)      { fTwTof = atoff;     }
+   Double_t         GetTwTof()              const { return fTwTof;      }
    
-   void             SetTrackId(Int_t trid)        { fTrkId = trid;     }
-   Int_t            GetTrackId()            const { return fTrkId;     }
+   void             SetTrackId(Int_t trid)        { fTrkId = trid;      }
+   Int_t            GetTrackId()            const { return fTrkId;      }
    
-   void             SetFitMass(Double_t amass)    { fFitMass = amass;  }
-   Double_t         GetFitMass()            const { return fFitMass;   }
+   void             SetFitMass(Double_t amass)    { fFitMass = amass;   }
+   Double_t         GetFitMass()            const { return fFitMass;    }
    
    void             SetFitChargeZ(Int_t chg)      { fFitChargeZ = chg;  }
    Int_t            GetFitChargeZ()         const { return fFitChargeZ; }
@@ -80,32 +80,41 @@ public:
    void             SetFitTof(Double_t atoff)     { fFitTof = atoff;    }
    Double_t         GetFitTof()             const { return fFitTof;     }
    
-   void             SetFitEnergyLoss(Double_t e)  { fFitEnergyLoss = e; }
+   void             SetFitEnergyLoss(Double_t e)  { fFitEnergyLoss = e;    }
    Double_t         GetFitEnergyLoss()      const { return fFitEnergyLoss; }
 
-   void             SetFitEnergy(Double_t e)      { fFitEnergy = e;    }
-   Double_t         GetFitEnergy()          const { return fFitEnergy; }
+   void             SetFitEnergy(Double_t e)      { fFitEnergy = e;     }
+   Double_t         GetFitEnergy()          const { return fFitEnergy;  }
 
-   void             SetCalEnergy(Double_t e)      { fCalEnergy = e;    }
-   Double_t         GetCalEnergy()          const { return fCalEnergy; }
+   void             SetCalEnergy(Double_t e)      { fCalEnergy = e;     }
+   Double_t         GetCalEnergy()          const { return fCalEnergy;  }
    
-   void             SetTgtDirection(TVector3 dir) { fTgtDir = dir;     }
-   TVector3         GetTgtDirection()             { return fTgtDir;    }
+   void             SetTgtDirection(TVector3 dir) { fTgtDir = dir;      }
+   TVector3         GetTgtDirection()             { return fTgtDir;     }
    
-   void             SetTgtPosition(TVector3 pos)  { fTgtPos = pos;     }
-   TVector3         GetTgtPosition()              { return fTgtPos;    }
+   void             SetTgtPosError(TVector3 err)  { fTgtPosError = err; }
+   TVector3         GetTgtPosError()              { return fTgtPosError;}
    
-   void             SetTgtMomentum(TVector3 pos)  { fTgtMom = pos;     }
-   TVector3         GetTgtMomentum()              { return fTgtMom;    }
+   void             SetTgtPosition(TVector3 pos)  { fTgtPos = pos;      }
+   TVector3         GetTgtPosition()              { return fTgtPos;     }
    
-   void             SetTwPosition(TVector3 pos)   { fTwPos = pos;      }
-   TVector3         GetTwPosition()               { return fTwPos;     }
+   void             SetTgtMomentum(TVector3 pos)  { fTgtMom = pos;      }
+   TVector3         GetTgtMomentum()              { return fTgtMom;     }
    
-   void             SetTwDirection(TVector3 dir)  { fTwDir = dir;      }
-   TVector3         GetTwDirection()              { return fTwDir;     }
+   void             SetTgtMomError(TVector3 err)   { fTgtMomError = err;  }
+   TVector3         GetTgtMomError()               { return fTgtMomError; }
    
-   void             SettWMomentum(TVector3 pos)   { fTwMom = pos;      }
-   TVector3         GetTWMomentum()               { return fTwMom;     }
+   void             SetTwPosition(TVector3 pos)   { fTwPos = pos;       }
+   TVector3         GetTwPosition()               { return fTwPos;      }
+   
+   void             SetTwPosError(TVector3 err)   { fTwPosError = err;  }
+   TVector3         GetTwPosError()               { return fTwPosError; }
+   
+   void             SetTwMomentum(TVector3 pos)   { fTwMom = pos;       }
+   TVector3         GetTwMomentum()               { return fTwMom;      }
+   
+   void             SetTwMomError(TVector3 err)   { fTwMomError = err;  }
+   TVector3         GetTwMomError()               { return fTwMomError; }
 
    //! Distance to a track near target
    Double_t         Distance(TAGtrack* track, Float_t z) const;
@@ -128,14 +137,10 @@ public:
    //! Get theta angle at target
    Double_t         GetTgtTheta()           const;
    
-   //! Get theta angle at Tw
-   Double_t         GetTwTheta()            const;
    
    //! Get phi angle at target
    Double_t         GetTgtPhi()             const;
    
-   //! Get phi angle at Tw
-   Double_t         GetTwPhi()              const;
 
    //! Intersection near target
    TVector3         Intersection(Double_t posZ) const;
@@ -187,15 +192,18 @@ private:
    Double32_t       fFitEnergyLoss;   // fitted energy loss
    Double32_t       fFitEnergy;       // fitted energy
 
-   //Particle directions and positions computed on target middle
+   //Particle momentum and positions computed on target middle
    TVector3         fTgtDir;
    TVector3         fTgtPos;
+   TVector3         fTgtPosError;
    TVector3         fTgtMom;
+   TVector3         fTgtMomError;
 
-   //Particle directions and positions computed on TW Wall -> Tof to Tw avoid confusion btw time of flight and TW detector
+   //Particle momentum and positions computed on TW Wall
    TVector3         fTwPos;
-   TVector3         fTwDir;
+   TVector3         fTwPosError;
    TVector3         fTwMom;
+   TVector3         fTwMomError;
 
    TClonesArray*    fListOfPoints;          // Attached measured points
    

@@ -40,8 +40,13 @@ TAGtrack::TAGtrack()
    fFitEnergy(-99.),
    fTgtDir(0,0,0),
    fTgtPos(0,0,0),
+   fTgtPosError(0,0,0),
+   fTgtMom(0,0,0),
+   fTgtMomError(0,0,0),
    fTwPos(0,0,0),
-   fTwDir(0,0,0),
+   fTwPosError(0,0,0),
+   fTwMom(0,0,0),
+   fTwMomError(0,0,0),
    fListOfPoints(0x0)
 {
    SetupClones();
@@ -69,10 +74,13 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
    fFitEnergyLoss(-99.),
    fTgtDir(0,0,0),
    fTgtPos(0,0,0),
+   fTgtPosError(0,0,0),
    fTgtMom(0,0,0),
+   fTgtMomError(0,0,0),
    fTwPos(0,0,0),
-   fTwDir(0,0,0),
+   fTwPosError(0,0,0),
    fTwMom(0,0,0),
+   fTwMomError(0,0,0),
    fListOfPoints(0x0)
 {
    SetupClones();
@@ -102,10 +110,13 @@ TAGtrack::TAGtrack(const TAGtrack& aTrack)
    fFitEnergy(aTrack.fFitEnergy),
    fTgtDir(aTrack.fTgtDir),
    fTgtPos(aTrack.fTgtPos),
+   fTgtPosError(aTrack.fTgtPosError),
    fTgtMom(aTrack.fTgtMom),
+   fTgtMomError(aTrack.fTgtMomError),
    fTwPos(aTrack.fTwPos),
-   fTwDir(aTrack.fTwDir),
-   fTwMom(aTrack.fTwMom)
+   fTwPosError(aTrack.fTwPosError),
+   fTwMom(aTrack.fTwMom),
+   fTwMomError(aTrack.fTwMomError)
 {
    fListOfPoints = (TClonesArray*)aTrack.fListOfPoints->Clone();
 }
@@ -194,25 +205,7 @@ Double_t TAGtrack::GetTgtPhi() const
    return phi;
 }
 
-//______________________________________________________________________________
-//
-Double_t TAGtrack::GetTwTheta() const
-{
-   TVector3 direction = fTwDir.Unit();
-   Double_t theta      = direction.Theta();
-   
-   return theta;
-}
 
-//______________________________________________________________________________
-//
-Double_t TAGtrack::GetTwPhi() const
-{
-   TVector3 origin = fTwDir.Unit();
-   Double_t phi     = origin.Phi();
-   
-   return phi;
-}
 
 
 //______________________________________________________________________________
