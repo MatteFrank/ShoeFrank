@@ -35,6 +35,8 @@ TATWrawHit::TATWrawHit(TWaveformContainer *W, string algo, double frac, double d
     fTime = ComputeTime(W,frac,del,-30,20);
   }else if(algo=="simpleCFD"){
     fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
+  }else if(algo=="zarrCFD"){
+    fTime = TAGbaseWD::ComputeTimeTangentCFD(W,frac);
   }else{
     fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
   }

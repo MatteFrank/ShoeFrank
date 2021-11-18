@@ -48,15 +48,14 @@ TASTrawHit::TASTrawHit(TWaveformContainer *W, string algo, double frac, double d
   fAmplitude = ComputeAmplitude(W);
   if(algo=="hwCFD"){
     fTime = ComputeTime(W,frac,del,-10,10);
-    //cout << "frac::" << frac << "  del::" << del << endl;
   }else if(algo=="simpleCFD"){
     fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
+  }else if(algo=="zarrCFD"){
+    fTime = TAGbaseWD::ComputeTimeTangentCFD(W,frac);
   }else{
     fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
   }
-  //cout << "algo::" << algo.data() << "  frac::" << frac << "  del::" << del << endl;
-  //if(W->GetChannelId()<0)cout << "timesuperhit::" << fTime << endl;
-}
+  }
 
 
 //------------------------------------------+-----------------------------------
