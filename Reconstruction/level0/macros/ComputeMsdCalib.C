@@ -115,7 +115,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
 
    tagr.Print();
 
-   const int sensors = map->GetTotSensors();
+   const int sensors = map->GetSensorsN();
    const int NChannels = geomap->GetStripsN();
 
    int boardId;
