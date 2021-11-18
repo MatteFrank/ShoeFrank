@@ -652,7 +652,6 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 		if ( m_debug > 3 )		fitTrack->Print("C");
 
-		isConverged=1;
 		// // map of the CONVERGED tracks for each category
 		if (isConverged) {
 
@@ -762,13 +761,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		GetMeasInfo( trackDetID, trackHitID, &iSensor, &iClus, &iPart );
 		string detName = m_sensorIDmap->GetDetNameFromMeasID( trackHitID );
 		
-		//RZ: First easy implementation -> Check in future when you have more TWpoint in the track
-		if(detName == "TW")
-		{
-			TATWpoint* point = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( iClus );
-			TwChargeZ = point->GetChargeZ();
-			TwTof = point->GetToF();
-		}
 
 
 		// vector with index of the mc truth particles generating the measurement
@@ -778,6 +770,20 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 		// create shoe track points vector repository to be passed to the output track object, with general and measurement info
 		TAGpoint* shoeTrackPoint = new TAGpoint( detName, iSensor, iClus, &iPart, &measPos, &measPos_err );
+
+		//RZ: First easy implementation -> Check in future when you have more TWpoint in the track
+		if(detName == "TW")
+		{
+			TATWpoint* point = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( iClus );
+			TwChargeZ = point->GetChargeZ();
+			TwTof = point->GetToF();
+			shoeTrackPoint->SetEnergyLoss(point->GetEnergyLoss());
+		}
+		// else if(detName == "MSD")
+		// {
+		// 	TAMSDcluster* MSDclus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc("msdClus","TAMSDntuCluster")->Object() )->GetCluster( iSensor, iClus );
+		// 	shoeTrackPoint->SetEnergyLoss(MSDclus->GetEnergyLoss());
+		// }
 
 		// getRecoInfo
 		TVector3 recoPos, recoMom;
@@ -821,10 +827,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	GetRecoTrackInfo( 0, track, &recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov );
 
 	// // getRecoInfo
-	// TVector3 recoPos_TW, recoMom_TW;
-	// TMatrixD recoPos_TW_cov(3,3);
-	// TMatrixD recoMom_TW_cov(3,3);	
-	// GetRecoTrackInfo( &state_TW, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
+	TVector3 recoPos_TW, recoMom_TW;
+	TMatrixD recoPos_TW_cov(3,3);
+	TMatrixD recoMom_TW_cov(3,3);
+	GetRecoTrackInfo(-1, track, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
 
 	// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!   end - l= " << extL_target << "\n\toldZ = " <<old_target << "\t newZ = " << recoPos_target.z() << endl<<endl;
 	// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!   end - l= " << extL_TW << "\n\toldZ = " <<old_TW << "\t newZ = " << recoPos_TW.z() << endl<<endl;
@@ -834,7 +840,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	int nMeas 	= track->getCardinalRep()->getDim();
 	int pdgID 	= track->getCardinalRep()->getPDG();
 	int pdgCh 	= track->getCardinalRep()->getPDGCharge();
-	float pdgMass	= (float)track->getCardinalRep()->GetPdgMass(pdgID);
+	float pdgMass	= (float) UpdatePDG::GetPDG()->GetPdgMass(pdgID);
 	int fitCh 	= track->getCardinalRep()->getCharge( track->getFittedState(0) );            // dipendono dallo stato considerato
 	double fitMass = track->getCardinalRep()->getMass( track->getFittedState(0) );              // dipendono dallo stato considerato
 	// track->getCardinalRep()->getRadiationLenght();   // to be done! Check update versions...
@@ -862,7 +868,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_mcPosZ->Fill( mcPos.Z() );
 		
 
-		if(m_debug > 0)	cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos z = "<< mcPos.z() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
+		// if(m_debug > 0)	
+		cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos z = "<< mcPos.z() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
 		if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
 
 		m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, fitTrackName, &h_dPOverP_x_bin );
@@ -897,6 +904,13 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	double length = track->getTrackLen( track->getCardinalRep(), 0, -1 );
 	// double length 		= track->getTrackLen( track->getCardinalRep() );
 	double tof	= track->getTOF( track->getCardinalRep(), 0, -1 ) ;
+	double energy = TMath::Sqrt( pow(recoMom_target.Mag(), 2) + pow(fitMass, 2) ) - fitMass;
+	if(m_debug > 1)
+	{
+		cout << "fitCh::" << fitCh << "\tfitMass::" << fitMass << endl;
+		cout << "Energy at target::" << energy << endl;
+		cout << "TOF::" << tof << endl;
+	}
 	
 	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE length = " << length  << endl;
 	double chi2 		= m_refFitter->getRedChiSqu(track, track->getCardinalRep());
@@ -912,6 +926,29 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	// track->getFitStatus( track->getCardinalRep() )->getNFailedPoints();
 	// track->getFitStatus( track->getCardinalRep() )->isFitConvergedFully();
 
+
+	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, 
+										(long)gTAGroot->CurrentEventId().EventNumber(),
+										pdgID, pdgMass, fitCh, fitMass, length, tof, chi2, ndof, pVal, 
+										&recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov,
+										&shoeTrackPointRepo
+										);
+	
+	
+	if ( TAGrecoManager::GetPar()->IsMC() )		
+		shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
+
+	/*RZ: Quantities to
+	1) CHECK: fLength (currently VT0 to TW!), fMass, fFitTof (same as length), fTgtDir/Pos/Mom (same problem VT0), fFitEnergy
+	2) ADD: fCalEnergy, fName (fix)
+	3) DISCUSS: fMcTrackMap, polynomial_fit_parameters, fFitEnergyLoss
+	*/
+	shoeOutTrack->SetTwChargeZ(TwChargeZ);
+	shoeOutTrack->SetTwTof(TwTof);
+	shoeOutTrack->SetFitEnergy(energy);
+
+
+	//Histogram filling
 
 	// 	ANGULAR VARIBLE   
 	h_dR->Fill ( recoMom_target.DeltaR( TVector3(0,0,0) ) );
@@ -938,28 +975,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	h_momentum->Fill( recoMom_target.Mag() );
 	h_momentum_reco.at(fitCh)->Fill( recoMom_target.Mag() );	// check if not present
 
-	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, 
-										(long)gTAGroot->CurrentEventId().EventNumber(),
-										pdgID, pdgMass, fitCh, fitMass, length, tof, chi2, ndof, pVal, 
-										&recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov,
-										&shoeTrackPointRepo
-										);
-	
-	
-	if ( TAGrecoManager::GetPar()->IsMC() )		
-		shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
-
-	/*RZ: Quantities to
-	1) CHECK: fLength (currently VT0 to TW!), fMass, fFitTof (same as length)
-	2) ADD: fCalEnergy, fFitEnergyLoss, fFitEnergy, fTgtDir/Pos/Mom, fTwDir/Pos/Mom
-	3) DISCUSS: fMcTrackMap, polynomial_fit_parameters
-	*/
-	shoeOutTrack->SetTwChargeZ(TwChargeZ);
-	shoeOutTrack->SetTwTof(TwTof);
-
-	// shoeOutTrack->SetExtrapInfoTW( &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
-
-if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: DONE FILL = "  << endl;
+if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: DONE HISTOGRAM FILL "  << endl;
 
     //! Get the accumulated X/X0 (path / radiation length) of the material crossed in the last extrapolation.
     // virtual double getRadiationLenght() const = 0;

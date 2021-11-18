@@ -40,8 +40,13 @@ TAGtrack::TAGtrack()
    fFitEnergy(-99.),
    fTgtDir(0,0,0),
    fTgtPos(0,0,0),
+   fTgtPosError(0,0,0),
+   fTgtMom(0,0,0),
+   fTgtMomError(0,0,0),
    fTwPos(0,0,0),
-   fTwDir(0,0,0),
+   fTwPosError(0,0,0),
+   fTwMom(0,0,0),
+   fTwMomError(0,0,0),
    fListOfPoints(0x0)
 {
    SetupClones();
@@ -69,10 +74,13 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
    fFitEnergyLoss(-99.),
    fTgtDir(0,0,0),
    fTgtPos(0,0,0),
+   fTgtPosError(0,0,0),
    fTgtMom(0,0,0),
+   fTgtMomError(0,0,0),
    fTwPos(0,0,0),
-   fTwDir(0,0,0),
+   fTwPosError(0,0,0),
    fTwMom(0,0,0),
+   fTwMomError(0,0,0),
    fListOfPoints(0x0)
 {
    SetupClones();
@@ -102,10 +110,13 @@ TAGtrack::TAGtrack(const TAGtrack& aTrack)
    fFitEnergy(aTrack.fFitEnergy),
    fTgtDir(aTrack.fTgtDir),
    fTgtPos(aTrack.fTgtPos),
+   fTgtPosError(aTrack.fTgtPosError),
    fTgtMom(aTrack.fTgtMom),
+   fTgtMomError(aTrack.fTgtMomError),
    fTwPos(aTrack.fTwPos),
-   fTwDir(aTrack.fTwDir),
-   fTwMom(aTrack.fTwMom)
+   fTwPosError(aTrack.fTwPosError),
+   fTwMom(aTrack.fTwMom),
+   fTwMomError(aTrack.fTwMomError)
 {
    fListOfPoints = (TClonesArray*)aTrack.fListOfPoints->Clone();
 }
@@ -118,8 +129,10 @@ TAGtrack::TAGtrack( string name, long evNum,
 								int pdgID, float pdgMass, int fitCh, float fitMass, 
 								float length, float tof, 
 								float chi2, int ndof, float pVal, 
-								TVector3* pos, TVector3* mom,
-								TMatrixD* pos_cov, TMatrixD* mom_cov,
+								TVector3* TgtPos, TVector3* TgtMom,
+								TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov,
+								TVector3* TwPos, TVector3* TwMom,
+								TMatrixD* TwPos_cov, TMatrixD* TwMom_cov,
 								vector<TAGpoint*>* shoeTrackPointRepo 
 					) 
 	: TAGnamed(),
@@ -139,10 +152,23 @@ TAGtrack::TAGtrack( string name, long evNum,
 	fNdof = ndof;
 	fPval = pVal;
 
-	fTgtMom = *mom;
-	fTgtPos = *pos;
-	fMomModule = mom->Mag();
+	fTgtPos = *TgtPos;
+	TVector3 temp = TVector3(pow( (*TgtPos_cov)(0,0),2), pow( (*TgtPos_cov)(1,1),2), pow( (*TgtPos_cov)(2,2),2) );
+	fTgtPosError = temp;
 
+	fTgtMom = *TgtMom;
+	temp = TVector3(pow( (*TgtMom_cov)(0,0),2), pow( (*TgtMom_cov)(1,1),2), pow( (*TgtMom_cov)(2,2),2) );
+	fTgtMomError = temp;
+	fMomModule = TgtMom->Mag();
+	fTgtDir = TgtMom->Unit();
+
+	fTwPos = *TwPos;
+	temp = TVector3(pow( (*TwPos_cov)(0,0),2), pow( (*TwPos_cov)(1,1),2), pow( (*TwPos_cov)(2,2),2) );
+	fTwPosError = temp;
+
+	fTwMom = *TwMom;
+	temp = TVector3(pow( (*TwMom_cov)(0,0),2), pow( (*TwMom_cov)(1,1),2), pow( (*TwMom_cov)(2,2),2) );
+	fTwMomError = temp;
 
 	TClonesArray &pointArray = *fListOfPoints;
 	for(int i=0; i < shoeTrackPointRepo->size(); ++i)	{
@@ -255,25 +281,7 @@ Double_t TAGtrack::GetTgtPhi() const
    return phi;
 }
 
-//______________________________________________________________________________
-//
-Double_t TAGtrack::GetTwTheta() const
-{
-   TVector3 direction = fTwDir.Unit();
-   Double_t theta      = direction.Theta();
-   
-   return theta;
-}
 
-//______________________________________________________________________________
-//
-Double_t TAGtrack::GetTwPhi() const
-{
-   TVector3 origin = fTwDir.Unit();
-   Double_t phi     = origin.Phi();
-   
-   return phi;
-}
 
 
 //______________________________________________________________________________
@@ -474,13 +482,14 @@ void TAGntuGlbTrack::Clear(Option_t*)
 /* Add a new track to the repo  --- Genfit
 *
 */
-TAGtrack* TAGntuGlbTrack::NewTrack(string name, long evNum, int pdgID, float pdgMass, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* recoPos_target, TVector3* recoMom_target, TMatrixD* recoPos_target_cov, TMatrixD* recoMom_target_cov, vector<TAGpoint*>* shoeTrackPointRepo)
+TAGtrack* TAGntuGlbTrack::NewTrack(string name, long evNum, int pdgID, float pdgMass, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* recoPos_target, TVector3* recoMom_target, TMatrixD* recoPos_target_cov, TMatrixD* recoMom_target_cov, TVector3* recoPos_Tw, TVector3* recoMom_Tw, TMatrixD* recoPos_Tw_cov, TMatrixD* recoMom_Tw_cov, vector<TAGpoint*>* shoeTrackPointRepo)
 {
 	TClonesArray &trackArray = *fListOfTracks;
 	TAGtrack* track = new (trackArray[trackArray.GetEntriesFast()]) TAGtrack(
 													name, evNum,
 													pdgID, pdgMass, measCh, mass, length, tof, chi2, ndof, pVal, 
 													recoPos_target, recoMom_target, recoPos_target_cov, recoMom_target_cov,
+													recoPos_Tw, recoMom_Tw, recoPos_Tw_cov, recoMom_Tw_cov,
 													shoeTrackPointRepo
 												);
 	return track;
