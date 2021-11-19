@@ -18,8 +18,8 @@ class TAGbaseTrack;
 class TAGcluster : public TAGobject {
    
 protected:
-   TVector3           fPosition1;                 // position of the cluster in plane frame / measured position in FOOT frame
-   TVector3           fPosError1;                 // position's errors of the cluster in plane frame / measured position's error in FOOT frame
+   TVector3           fPosition1;                // position of the cluster in plane frame / measured position in FOOT frame
+   TVector3           fPosError1;                // position's errors of the cluster in plane frame / measured position's error in FOOT frame
    TVector3           fPosition2;                // position of the clus in tracker frame / / fitted position in FOOT frame
    TVector3           fPosError2;                // position's errors of the clus in tracker frame /  fitted position's error in FOOT frame
    TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
@@ -51,7 +51,7 @@ public:
    //! Get cluster elts
    virtual Int_t            GetElementsN()     const { return fElementsN;     }
    //! Get position in local frame
-   virtual const TVector3&  GetPosition()      const { return fPosition1;      }
+   virtual const TVector3&  GetPosition()      const { return fPosition1;     }
    //! Get position error in local frame
    virtual const TVector3&  GetPosError()      const { return fPosError1;     }
    //! Get position in global tracker frame
@@ -60,7 +60,7 @@ public:
    virtual const TVector3&  GetPosErrorG()     const { return fPosError2;     }
    
    //! Get measured position in FOOT frame
-   virtual const TVector3&  GetMeasPosition()  const { return fPosition1;      }
+   virtual const TVector3&  GetMeasPosition()  const { return fPosition1;     }
    //! Get measured position error in FOOT frame
    virtual const TVector3&  GetMeasPosError()  const { return fPosError1;     }
    //! Get fitted position in FOOT frame
@@ -114,7 +114,7 @@ public:
    //! Add MC track Idx
    void                     AddMcTrackIdx(Int_t trackIdx);
    
-    ClassDef(TAGcluster,3)
+    ClassDef(TAGcluster,4)
 };
 
 #endif
