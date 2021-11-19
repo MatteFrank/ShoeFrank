@@ -707,8 +707,8 @@ void BaseReco::CreateRecAction()
 void BaseReco::CreateRecActionBm()
 {
    if(fFlagTrack) {
-     if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
      fpNtuTrackBm = new TAGdataDsc("bmTrack", new TABMntuTrack());
+     if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
      fActTrackBm  = new TABMactNtuTrack("bmActTrack", fpNtuTrackBm, fpNtuHitBm, fpParGeoBm, fpParConfBm, fpParCalBm);
       if (fFlagHisto)
@@ -927,7 +927,11 @@ void BaseReco::SetL0TreeBranches()
     if (!fSaveMcFlag)
        if (!fFriendFileName.IsNull() && !fFriendTreeName.IsNull())
           fActEvtReader->AddFriendTree(fFriendFileName,fFriendTreeName);
-
+     
+     if (TAGrecoManager::GetPar()->IncludeBM())
+        fActEvtReader->SetupBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+   
+     
     if (TAGrecoManager::GetPar()->IncludeVT()) {
       fActEvtReader->SetupBranch(fpNtuTrackVtx,  TAVTntuTrack::GetBranchName());
       fActEvtReader->SetupBranch(fpNtuClusVtx,   TAVTntuCluster::GetBranchName());
@@ -966,9 +970,6 @@ void BaseReco::SetL0TreeBranches()
           }
           fpNtuHitBm = new TAGdataDsc("bmNtu", new TABMntuHit());
           fActEvtReader->SetupBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
-
-          fpNtuTrackBm = new TAGdataDsc("bmTrack", new TABMntuTrack());
-          fActEvtReader->SetupBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
        }
 
        if (TAGrecoManager::GetPar()->IncludeVT() && fFlagMC) {
