@@ -191,7 +191,7 @@ Double_t TAGtrack::GetTgtTheta() const
 {
    TVector3 direction = fTgtDir.Unit();
    Double_t theta      = direction.Theta();
-   
+
    return theta;
 }
 
@@ -201,7 +201,7 @@ Double_t TAGtrack::GetTgtPhi() const
 {
    TVector3 origin = fTgtDir.Unit();
    Double_t phi     = origin.Phi();
-   
+
    return phi;
 }
 
@@ -214,7 +214,7 @@ TVector3 TAGtrack::Intersection(Double_t posZ) const
 {
    // calculates the Intersection of the Track with the plane in
    // the coordinate system of the tracker.
-   
+
    TVector3 result(fTgtPos);  // track origin in xyz tracker coordinates
    result(2) = 0.;
    result += fTgtDir * posZ; // intersection in xyz frame at z_plane
@@ -232,7 +232,7 @@ Double_t TAGtrack::Distance(TAGtrack* track, Float_t z) const
    TVector3 pos2 = track->Intersection(z);
    TVector3 pos0 = pos1-pos2;
    Double_t rho0  = pos0.Mag();
-   
+
    return rho0;
 }
 
@@ -249,7 +249,7 @@ TVector3 TAGtrack::GetPosition( double z ){
 Double_t TAGtrack::GetTotEnergyLoss() const
 {
  Double_t energyLoss = 0.;
-   
+
    for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
       const TAGpoint* point = GetPoint(iPoint);
       TString name = point->GetDevName();
@@ -260,7 +260,7 @@ Double_t TAGtrack::GetTotEnergyLoss() const
       if (name.Contains("CA"))
          energyLoss += point->GetEnergyLoss();
    }
-   
+
    return energyLoss;
 }
 
@@ -268,14 +268,14 @@ Double_t TAGtrack::GetTotEnergyLoss() const
 Double_t TAGtrack::GetMsdEnergyLoss() const
 {
    Double_t energyLoss = 0.;
-   
+
    for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
       const TAGpoint* point = GetPoint(iPoint);
       TString name = point->GetDevName();
       if (name.Contains("MSD"))
          energyLoss += point->GetEnergyLoss();
    }
-   
+
    return energyLoss;
 }
 
@@ -283,14 +283,14 @@ Double_t TAGtrack::GetMsdEnergyLoss() const
 Double_t TAGtrack::GetTwEnergyLoss() const
 {
    Double_t energyLoss = 0.;
-   
+
    for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
       const TAGpoint* point = GetPoint(iPoint);
       TString name = point->GetDevName();
       if (name.Contains("TW"))
          energyLoss += point->GetEnergyLoss();
    }
-   
+
    return energyLoss;
 }
 
@@ -298,7 +298,7 @@ Double_t TAGtrack::GetTwEnergyLoss() const
 TArrayI TAGtrack::GetMcTrackIdx()
 {
    fMcTrackMap.clear();
-   fMcTrackIdx.Reset();
+   fMcTrackIdx.Set(0);
    for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
       const TAGpoint* point = GetPoint(iPoint);
       for( Int_t i = 0; i < point->GetMcTracksN(); ++i) {
@@ -310,7 +310,7 @@ TArrayI TAGtrack::GetMcTrackIdx()
          }
       }
    }
-   
+
    return fMcTrackIdx;
 }
 
@@ -389,7 +389,7 @@ TAGtrack* TAGntuGlbTrack::NewTrack(Double_t mass, Double_t mom, Double_t charge,
    TClonesArray &trackArray = *fListOfTracks;
    TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(mass, mom, charge, tof);
    track->SetTrackId(trkId);
-   
+
    return track;
 }
 
@@ -418,7 +418,7 @@ void TAGntuGlbTrack::ToStream(ostream& os, Option_t* option) const
    os << "TAGntuGlbTrack " << GetName()
    << Form("  nPixels=%3d", GetTracksN())
    << endl;
-   
+
    //TODO properly
    for (Int_t j = 0; j < GetTracksN(); j++) {
       const TAGtrack*  track = GetTrack(j);
@@ -427,4 +427,3 @@ void TAGntuGlbTrack::ToStream(ostream& os, Option_t* option) const
       os << endl;
    }
 }
-
