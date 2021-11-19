@@ -24,6 +24,8 @@ class TAGactionFile : public TAGaction {
    
     virtual void    SetupBranch(TAGdataDsc* p_data, const char* branch);
 
+    virtual void    AddFriendTree(TString fileName = "", TString treeName = "EventTree");
+
     virtual void    Close();
 
     virtual Bool_t  IsOpen() const;

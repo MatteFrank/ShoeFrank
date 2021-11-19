@@ -15,11 +15,14 @@
 ClassImp(GlobalToeReco)
 
 //__________________________________________________________
-GlobalToeReco::GlobalToeReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
+GlobalToeReco::GlobalToeReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, TString fileNameMcIn)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout)
 {
    TAGrecoManager::GetPar()->EnableLocalReco();
    fFlagMC = isMC;
+   
+   if (!fileNameMcIn.IsNull() && isMC)
+      DisableSaveMc();
 }
 
 //__________________________________________________________

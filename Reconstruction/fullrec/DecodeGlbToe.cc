@@ -14,6 +14,7 @@
 int main (int argc, char *argv[])  {
 
    TString in("");
+   TString inMc("");
    TString out("");
    TString exp("");
 
@@ -31,8 +32,9 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]);  }   // Number of events to be analized
       if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);   }   // Run Number
-  
-      if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
+      if(strcmp(argv[i],"-inmc") == 0)  { inMc = TString(argv[++i]);   } // MC file name
+
+      if(strcmp(argv[i],"-mc") == 0)    { mc = true; inMc = TString(argv[++i]); } // reco from MC local reco data
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
 
       if(strcmp(argv[i],"-help") == 0)  {
@@ -45,7 +47,8 @@ int main (int argc, char *argv[])  {
          cout<<"      -nsk value     : [def=0] Skip number of events"<<endl;
          cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
-         cout<<"      -mc            : reco from MC local reco tree"<<endl;
+         cout<<"      -mc            : reco from MC local reco tree "<<endl;
+         cout<<"      -inmc          : MC file name  "<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
       }
@@ -78,7 +81,7 @@ int main (int argc, char *argv[])  {
    BaseReco* glbRec = 0x0;
    
    if (lrc)
-      glbRec = new GlobalToeReco(exp, runNb, in, out, mc);
+      glbRec = new GlobalToeReco(exp, runNb, in, out, mc, inMc);
    else if (mc) {
      glbRec = new LocalRecoMC(exp, runNb, in, out);
      

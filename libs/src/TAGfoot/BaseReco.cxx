@@ -26,12 +26,15 @@ ClassImp(BaseReco)
 
 Bool_t  BaseReco::fgItrTrackFlag  = false;
 Bool_t  BaseReco::fgMsdTrackFlag  = false;
+Bool_t  BaseReco::fSaveMcFlag     = true;
 
 //__________________________________________________________
 BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
    fRunNumber(runNumber),
+   fFriendFileName(""),
+   fFriendTreeName(""),
    fpParTimeWD(0x0),
    fpParMapWD(0x0),
    fpParMapSt(0x0),
@@ -228,6 +231,13 @@ void BaseReco::GlobalChecks()
       exit(0);
     }
   }
+}
+
+//__________________________________________________________
+void BaseReco::AddFriendTree(TString fileName, TString treeName)
+{
+   fFriendFileName = fileName;
+   fFriendTreeName = treeName;
 }
 
 //__________________________________________________________
@@ -913,6 +923,10 @@ void BaseReco::SetL0TreeBranches()
 {
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
     fActEvtReader = new TAGactTreeReader("evtReader");
+     
+    if (!fSaveMcFlag)
+       if (!fFriendFileName.IsNull() && !fFriendTreeName.IsNull())
+          fActEvtReader->AddFriendTree(fFriendFileName,fFriendTreeName);
 
     if (TAGrecoManager::GetPar()->IncludeVT()) {
       fActEvtReader->SetupBranch(fpNtuTrackVtx,  TAVTntuTrack::GetBranchName());

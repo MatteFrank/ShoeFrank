@@ -12,7 +12,7 @@ class GlobalToeReco  : public BaseReco
 {
 public:
    //! default constructor
-   GlobalToeReco(TString expName, Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t isMc = true);
+   GlobalToeReco(TString expName, Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t isMc = true, TString fileNameMcIn = "");
    
    virtual ~GlobalToeReco();
 

@@ -79,6 +79,13 @@ void TAGactionFile::SetupBranch(TAGdataDsc* p_data, const char* branch)
    return;
 }
 
+//------------------------------------------+-----------------------------------
+//! Add friend tree
+void TAGactionFile::AddFriendTree(TString /*fileName*/, TString /*treeName*/)
+{
+   return;
+}
+
 // --------------------------------------------------------------------------------------
 Bool_t TAGactionFile::CheckTriggerCnt(UInt_t trig)
 {
