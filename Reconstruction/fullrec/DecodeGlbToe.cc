@@ -34,7 +34,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);   }   // Run Number
       if(strcmp(argv[i],"-inmc") == 0)  { inMc = TString(argv[++i]);   } // MC file name
 
-      if(strcmp(argv[i],"-mc") == 0)    { mc = true; inMc = TString(argv[++i]); } // reco from MC local reco data
+      if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
 
       if(strcmp(argv[i],"-help") == 0)  {
