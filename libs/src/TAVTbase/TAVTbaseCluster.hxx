@@ -43,9 +43,9 @@ public:
    TVector2           ComputeSize();
    
    //! Get U position in local frame
-   Float_t            GetPositionU()                   const { return fPosition[0];    }
+   Float_t            GetPositionU()                   const { return fPosition1[0];   }
    //! Get V position in local frame
-   Float_t            GetPositionV()                   const { return fPosition[1];    }
+   Float_t            GetPositionV()                   const { return fPosition1[1];   }
    //! Get Pixel list
    TClonesArray*      GetListOfPixels()                const { return fListOfPixels;   }
    

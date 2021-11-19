@@ -49,7 +49,7 @@ TAMSDpoint::TAMSDpoint( int layer, double x, double y, TVector3 position )
    fChargeZ(0),
    fChargeZProba(0.)
 {
-   fPosition = position;
+   fPosition1 = position;
 }
 
 //______________________________________________________________________________
@@ -62,8 +62,8 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
    fChargeZ(0),
    fChargeZProba(0.)
 {
-   fPosition.SetXYZ(x,y,0);
-   fPosError.SetXYZ(dx,dy,0);
+   fPosition1.SetXYZ(x,y,0);
+   fPosError1.SetXYZ(dx,dy,0);
    
    fDe1 = clusX->GetEnergyLoss();
    fDe2 = clusY->GetEnergyLoss();

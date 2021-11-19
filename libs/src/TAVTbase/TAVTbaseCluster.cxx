@@ -71,8 +71,8 @@ TVector2 TAVTbaseCluster::ComputeSize()
 //  
 void TAVTbaseCluster::SetPositionG(TVector3& posGlo)
 {
-   fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
-   fPosErrorG.SetXYZ(fPosError.X(), fPosError.Y(), 0.01);
+   fPosition2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   fPosError2.SetXYZ(fPosError1.X(), fPosError1.Y(), 0.01);
 }
 
 //______________________________________________________________________________

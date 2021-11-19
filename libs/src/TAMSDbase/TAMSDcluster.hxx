@@ -53,7 +53,7 @@ public:
    //! Get vector position in local frame
    const TVector3&    GetPosition()                    const { return fCurPosition;    }
    //! Get vector position error in local frame
-   const TVector3&    GetPosError()                    const { return fPosErrorG;      }
+   const TVector3&    GetPosError()                    const { return fPosError2;      }
    
    //! Get Pixel list
    TClonesArray*      GetListOfStrips()                const { return fListOfStrips;   }

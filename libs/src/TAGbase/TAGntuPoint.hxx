@@ -42,8 +42,8 @@ public:
    const Char_t*    GetDevName()     const  { return fDevName.Data(); }
   
    // return in the same framework of FOOT
-   const TVector3&  GetPositionG()    const  { return fPosition;   }
-   const TVector3&  GetPosErrorG()    const  { return fPosError;   }
+   const TVector3&  GetPositionG()    const  { return fPosition2;  }
+   const TVector3&  GetPosErrorG()    const  { return fPosError2;  }
 
    TVector3         GetMomentum()     const  { return fMomentum;   }
    TVector3         GetMomError()     const  { return fMomError;   }
