@@ -925,13 +925,14 @@ void BaseReco::SetL0TreeBranches()
     fActEvtReader = new TAGactTreeReader("evtReader");
      
     if (!fSaveMcFlag)
-       if (!fFriendFileName.IsNull() && !fFriendTreeName.IsNull())
+       if (!fFriendFileName.IsNull() && !fFriendTreeName.IsNull()) {
           fActEvtReader->AddFriendTree(fFriendFileName,fFriendTreeName);
+          Info("SetL0TreeBranches()", "\n Open file %s for friend tree %s\n", fFriendFileName.Data(), fFriendTreeName.Data());
+       }
      
-     if (TAGrecoManager::GetPar()->IncludeBM())
-        fActEvtReader->SetupBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+    if (TAGrecoManager::GetPar()->IncludeBM())
+       fActEvtReader->SetupBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
    
-     
     if (TAGrecoManager::GetPar()->IncludeVT()) {
       fActEvtReader->SetupBranch(fpNtuTrackVtx,  TAVTntuTrack::GetBranchName());
       fActEvtReader->SetupBranch(fpNtuClusVtx,   TAVTntuCluster::GetBranchName());
