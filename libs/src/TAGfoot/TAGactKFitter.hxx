@@ -23,20 +23,15 @@
 #include <StateOnPlane.h>
 
 #include <TrackPoint.h>
+#include <SpacepointMeasurement.h>
 #include <MaterialEffects.h>
 #include <TMatrixDSym.h>
 #include <TMatrixD.h>
 
-
 #include <EventDisplay.h>
 
-// #include "WireMeasurement.h"
-// #include "PlanarMeasurement.h"
-// #include "SpacepointMeasurement.h"
-// #include "SharedPlanePtr.h"
 #include "RectangularFinitePlane.h"
 
-// #include <TROOT.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TH1F.h>
@@ -51,49 +46,25 @@
 
 #include <TMath.h>
 
-// #include "TAGparGeo.hxx"
-
 #include "TASTparGeo.hxx"
 #include "TABMparGeo.hxx"
 #include "TACAparGeo.hxx"
 
 #include "TADIparGeo.hxx"
 
-// #include "TAVTparGeo.hxx"
 #include "TAVTntuHit.hxx"
-// #include "TAVTntuCluster.hxx"
-// #include "TAVTactNtuClusterF.hxx"
-
-// #include "TAITparGeo.hxx"
 #include "TAIThit.hxx"
-// #include "TAITntuCluster.hxx"
-
-// #include "TAMSDparGeo.hxx"
 #include "TAMSDntuRaw.hxx"
-// #include "TAMSDntuCluster.hxx"
-// #include "TAMSDntuPoint.hxx"
-
-// #include "TATWparGeo.hxx"
-// #include "TATWntuPoint.hxx"
-
 #include "TAMCntuPart.hxx"
 
-// #include "TAGroot.hxx"
-// #include "TAGdataDsc.hxx"
-// #include "TAGparaDsc.hxx"
-
-// #include "TAGrecoManager.hxx"
-// #include "ControlPlotsRepository.hxx"
 #include "MagicSkills.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <limits>
 
-// #include "TAGgeoTrafo.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAITntuTrack.hxx"
-
 
 #include "TAVTtrack.hxx"
 #include "TAITtrack.hxx"
@@ -102,8 +73,6 @@
 #include "TAGFuploader.hxx"
 #include "TAGFselector.hxx"
 #include "TAGFdetectorMap.hxx"
-// #include "TAGntuTrackRepository.hxx"
-// #include "TAGtrackKalman.hxx"
 #include "TAGntuGlbTrack.hxx"
 #include "TAGF_KalmanStudies.hxx"
 #include "UpdatePDG.hxx"

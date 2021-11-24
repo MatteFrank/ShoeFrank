@@ -126,7 +126,7 @@ TAGtrack::TAGtrack(const TAGtrack& aTrack)
 
 //Alternative constructor
 TAGtrack::TAGtrack( string name, long evNum, 
-								int pdgID, float pdgMass, int fitCh, float fitMass, 
+								int pdgID, float startMass, int fitCh, float fitMass, 
 								float length, float tof, 
 								float chi2, int ndof, float pVal, 
 								TVector3* TgtPos, TVector3* TgtMom,
@@ -143,7 +143,7 @@ TAGtrack::TAGtrack( string name, long evNum,
 	fName = name;
 	fEvtNumber = evNum;
 	fPdgId = pdgID;
-   fMass = pdgMass;
+   fMass = startMass;
 	fFitChargeZ = fitCh;
 	fFitMass = fitMass;
 	fLength = length;
@@ -181,7 +181,8 @@ TAGtrack::TAGtrack( string name, long evNum,
 
 void TAGtrack::SetMCInfo( int MCparticle_id, float trackQuality ) {
 
-	fMcTrackIdx = MCparticle_id;
+	fMcTrackIdx.Set(fMcTrackIdx.GetSize() + 1);
+	fMcTrackIdx[fMcTrackIdx.GetSize() - 1] = MCparticle_id;
 	fQuality = trackQuality;
 
 }

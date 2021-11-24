@@ -325,6 +325,17 @@ Bool_t TAGactNtuGlbTrackS::FindTracks()
    return true;
 }
 
+
+//_____________________________________________________________________________
+//
+void TAGactNtuGlbTrackS::FillMcTrackId(TAGcluster* cluster, TAGpoint* point)
+{
+   for (Int_t k = 0; k < cluster->GetMcTracksN(); ++k) {
+      Int_t idx = cluster->GetMcTrackIdx(k);
+      point->AddMcTrackIdx(idx);
+   }
+}
+
 //_____________________________________________________________________________
 //
 TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
@@ -344,6 +355,7 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
       point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName()));
       point->SetSensorIdx(cluster->GetSensorIdx());
       point->SetClusterIdx(cluster->GetClusterIdx());
+      FillMcTrackId(cluster, point);
    }
    
    UpdateParam(track);
@@ -486,7 +498,7 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
          point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAITparGeo::GetBaseName()));
          point->SetSensorIdx(iSensor);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
-
+         FillMcTrackId(bestCluster, point);
 
          UpdateParam(track);
          
@@ -571,7 +583,8 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          point->SetSensorIdx(iStation);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
-         
+         FillMcTrackId(bestCluster, point);
+
          UpdateParam(track);
          
          // Compute particle after each plane
@@ -680,6 +693,7 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
          point->SetSensorIdx(0);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
+         FillMcTrackId(bestCluster, point);
 
          Float_t tof = bestCluster->GetMeanTof();
          track->SetTwTof(tof);
@@ -753,6 +767,7 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
       point->SetSensorIdx(0);
       point->SetClusterIdx(bestCluster->GetClusterIdx());
       point->SetEnergyLoss(bestCluster->GetEnergy());
+      FillMcTrackId(bestCluster, point);
 
       Float_t Ek = bestCluster->GetEnergy();
       track->SetFitEnergy(Ek*TAGgeoTrafo::MevToGev());

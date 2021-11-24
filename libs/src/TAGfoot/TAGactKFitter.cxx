@@ -653,23 +653,14 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		if ( m_debug > 3 )		fitTrack->Print("C");
 
 		// // map of the CONVERGED tracks for each category
-		if (isConverged) {
-
-			// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!" << endl;
-			// 			TVector3 target(0,0,0);
-			// 			StateOnPlane state = fitTrack->getFittedState(0);
-			// 			float old = state.get6DState()[2];
-			// 			double extL = fitTrack->getCardinalRep()->extrapolateToPoint( state, target );
-			// 			float ext = state.get6DState()[2];
-			// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!   end - l= " << extL << "\n\toldZ = " <<old << "\t newZ = " << ext << endl<<endl;
-			
+		if (isConverged) {			
 
 			if ( (TAGrecoManager::GetPar()->Chi2Cut() < 0) || ( m_refFitter->getRedChiSqu(fitTrack, fitTrack->getCardinalRep()) <= TAGrecoManager::GetPar()->Chi2Cut() ) ) {
 
 				if ( m_nConvergedTracks_all.find( PartName ) == m_nConvergedTracks_all.end() )	m_nConvergedTracks_all[ PartName ] = 0;
 				m_nConvergedTracks_all[ PartName ]++;
 
-				RecordTrackInfo( fitTrack, PartName );
+				RecordTrackInfo( fitTrack, trackIt->first.Data() );
 				if(m_debug > 0) cout << "DONE\n";
 				m_vectorConvergedTrack.push_back( fitTrack );
 
@@ -743,8 +734,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	vector<TAGpoint*> shoeTrackPointRepo;
 	Int_t TwChargeZ = -1;
 	Float_t TwTof = -1;
-	
-	// Fill Point and retrieve the true MC particle for each measuerement [ nMeasurement, shoeID of generated particle in the particle array ]
+	vector<string> tok = Tokenize( fitTrackName , "_" );
+	string PartName = tok.at(0);
+
+	// Fill Points and retrieve the true MC particle for each measuerement [ nMeasurement, shoeID of generated particle in the particle array ]
 	vector<vector<int>> mcParticleID_track;
 	for (unsigned int iMeas = 0; iMeas < track->getNumPointsWithMeasurement(); ++iMeas) {
 		
@@ -771,7 +764,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		// create shoe track points vector repository to be passed to the output track object, with general and measurement info
 		TAGpoint* shoeTrackPoint = new TAGpoint( detName, iSensor, iClus, &iPart, &measPos, &measPos_err );
 
-		//RZ: First easy implementation -> Check in future when you have more TWpoint in the track
+		//RZ: First easy implementation -> Check in future when you have more TWpoints in the track
 		if(detName == "TW")
 		{
 			TATWpoint* point = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( iClus );
@@ -779,11 +772,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			TwTof = point->GetToF();
 			shoeTrackPoint->SetEnergyLoss(point->GetEnergyLoss());
 		}
-		// else if(detName == "MSD")
-		// {
-		// 	TAMSDcluster* MSDclus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc("msdClus","TAMSDntuCluster")->Object() )->GetCluster( iSensor, iClus );
-		// 	shoeTrackPoint->SetEnergyLoss(MSDclus->GetEnergyLoss());
-		// }
+		else if(detName == "MSD")
+		{
+			TAMSDcluster* MSDclus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc("msdClus","TAMSDntuCluster")->Object() )->GetCluster( iSensor, iClus );
+			shoeTrackPoint->SetEnergyLoss(MSDclus->GetEnergyLoss());
+		}
 
 		// getRecoInfo
 		TVector3 recoPos, recoMom;
@@ -798,55 +791,139 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	}
 
 
-	// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!" << endl;
-	// StateOnPlane state_target = track->getFittedState(0);
-	// StateOnPlane state_TW = track->getFittedState(-1);
-	// float old_target = state_target.get6DState()[2];
-	// float old_TW = state_TW.get6DState()[2];
-	// // double extL = track->getCardinalRep()->extrapolateToPoint( state, target );
+	//Start track variables recording
 
-	// genfit::SharedPlanePtr plane_target (new genfit::DetPlane( TVector3(0,0,0), TVector3(0,0,1) ) );
-	// plane_target->setU(1.,0.,0.);
-	// plane_target->setV(0.,1.,0.);
+	// Retrieve tracking info!
+	int nMeas 	= track->getCardinalRep()->getDim();
+	int pdgID 	= track->getCardinalRep()->getPDG();
+	int pdgCh 	= track->getCardinalRep()->getPDGCharge();
+	float startMass	= std::atoi( tok.at(1).c_str() )*m_AMU; //Initial mass of the fit
+	int fitCh 	= track->getCardinalRep()->getCharge( track->getFittedState(0) );            // dipendono dallo stato considerato
+	double fitMass = track->getCardinalRep()->getMass( track->getFittedState(0) );              // dipendono dallo stato considerato
+	int nucleonsN = round(fitMass/m_AMU);
+	// track->getCardinalRep()->getRadiationLenght();   // to be done! Check update versions...
 
-	// genfit::SharedPlanePtr plane_TW (new genfit::DetPlane( TVector3(0,0,182), TVector3(0,0,1) ) );
-	// plane_TW->setU(1.,0.,0.);
-	// plane_TW->setV(0.,1.,0.);
+	//Stop if the fitted charge is outside of boundaries
+	if(fitCh < 0 || fitCh > 8) {return;}
 
-	// double extL_target = track->getCardinalRep()->extrapolateToPlane( state_target, plane_target );
-	// double extL_TW     = track->getCardinalRep()->extrapolateToPlane( state_TW, plane_TW );
-	// // double extL_target = track->getCardinalRep()->extrapolateToPlane( state_target, m_SensorIDMap->GetFitPlane( m_SensorIDMap->GetMinFitPlane("VT") ) );
-	// // double extL_TW     = track->getCardinalRep()->extrapolateToPlane( state_TW, m_SensorIDMap->GetFitPlane( m_SensorIDMap->GetMaxFitPlane("TW") ) );
+	//Vertexing for track length
+	if( m_debug > 1)	cout << "Track length before vertexing::" << track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
+
+	//Extrapolate to VTX 
+	TAVTvertex* vtx = ((TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object() )->GetVertex( std::atoi(tok.at(2).c_str())/1000 ); //Find the vertex associated to the track using the fitTrackName (1000*iVtx + iTracklet)
+	TVector3 targetMeas( m_GeoTrafo->FromVTLocalToGlobal(vtx->GetPosition()) );
+
+	StateOnPlane state_target_point = track->getFittedState(0);
+	double extL_Tgt = track->getCardinalRep()->extrapolateToPoint( state_target_point, targetMeas );
+
+	if(m_debug > 1)
+	{
+		cout << "Vertex" << std::atoi(tok.at(2).c_str())/1000  << " has position:"; targetMeas.Print();
+		cout << "Extrap to point state::"; state_target_point.Print();
+		cout << "Distance point-vtx::" << (state_target_point.getPos() - targetMeas).Mag() << endl;
+		cout << "Extrapolation length::" << extL_Tgt << endl;
+		cout << "Track length after vertexing::" << fabs(extL_Tgt) + track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
+	}
 
 
+	//End VTX; start TW: extrap some mm after TW for fitted total energy loss
+
+	StateOnPlane state_TW = track->getFittedState(-1);
+
+	TVector3 origin_( 0, 0, m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)).z() + 0.5 );
+	genfit::SharedPlanePtr TWextrapPlane (new genfit::DetPlane(origin_, TVector3(0,0,1)));
+	TWextrapPlane->setU(1.,0.,0.);
+	TWextrapPlane->setV(0.,1.,0.);
+
+	double energyOutTw = -1;
+	try
+	{
+		double extL_TW = track->getCardinalRep()->extrapolateToPlane( state_TW, TWextrapPlane );
+	}
+	catch (genfit::Exception& e)
+	{
+		std::cerr << e.what();
+		std::cerr << "Exception, particle is too slow to escape TW. Setting final energy to 0\n";
+		state_TW = track->getFittedState(-1);
+		energyOutTw = 0;
+	}
+
+	//End TW
+
+	// get reco info at the target level (by now at the first VT layer)
 	TVector3 recoPos_target, recoMom_target;
 	TMatrixD recoPos_target_cov(3,3);
 	TMatrixD recoMom_target_cov(3,3);
-	// get reco info at the target level (by now at the first VT layer)
+	
 	// GetRecoTrackInfo( &state_target, &recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov );
-	GetRecoTrackInfo( 0, track, &recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov );
 
+	GetRecoTrackInfo(0, track, &recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov ); //This might be unnecessary...
 	// // getRecoInfo
 	TVector3 recoPos_TW, recoMom_TW;
 	TMatrixD recoPos_TW_cov(3,3);
 	TMatrixD recoMom_TW_cov(3,3);
 	GetRecoTrackInfo(-1, track, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
 
-	// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!   end - l= " << extL_target << "\n\toldZ = " <<old_target << "\t newZ = " << recoPos_target.z() << endl<<endl;
-	// if(m_debug > 0) cout << "---------- TRACK EXTRAPOLATION!!!!!   end - l= " << extL_TW << "\n\toldZ = " <<old_TW << "\t newZ = " << recoPos_TW.z() << endl<<endl;
+	double length = track->getTrackLen( track->getCardinalRep(), 0, -1 ) + fabs(extL_Tgt); //Track length from Tgt to TW
+	double tof	= track->getCardinalRep()->getTime(track->getFittedState(-1)) - track->getCardinalRep()->getTime(state_target_point); //TOF from Tgt to TW
+	double energyAtTgt = TMath::Sqrt( pow(track->getCardinalRep()->getMomMag(state_target_point), 2) + pow(fitMass, 2) ) - fitMass; //Energy at Tgt
 	
+	if(energyOutTw != 0)	energyOutTw = TMath::Sqrt( pow(track->getCardinalRep()->getMomMag(state_TW), 2) + pow(fitMass, 2) ) - fitMass; //Energy after TW
+	
+	if(m_debug > 1)
+	{
+		cout << "fitCh::" << fitCh << "\tfitMass::" << fitMass << endl;
+		cout << "Energy at target::" << energyAtTgt << endl;
+		cout << "TOF::" << tof << endl;
+		cout << "TOF with extrap states::" << track->getCardinalRep()->getTime(track->getFittedState(-1)) - track->getCardinalRep()->getTime(state_target_point) << endl;
+		cout << "Energy loss::" << energyAtTgt - energyOutTw << endl;
+	}
+	
+	double chi2 		= m_refFitter->getRedChiSqu(track, track->getCardinalRep());
+	int ndof 			= track->getFitStatus( track->getCardinalRep() )->getNdf();
+	double chisquare 	= track->getFitStatus( track->getCardinalRep() )->getChi2();
+	double pVal 		= track->getFitStatus( track->getCardinalRep() )->getPVal();
 
-	// Retrieve tracking info!
-	int nMeas 	= track->getCardinalRep()->getDim();
-	int pdgID 	= track->getCardinalRep()->getPDG();
-	int pdgCh 	= track->getCardinalRep()->getPDGCharge();
-	float pdgMass	= (float) UpdatePDG::GetPDG()->GetPdgMass(pdgID);
-	int fitCh 	= track->getCardinalRep()->getCharge( track->getFittedState(0) );            // dipendono dallo stato considerato
-	double fitMass = track->getCardinalRep()->getMass( track->getFittedState(0) );              // dipendono dallo stato considerato
-	// track->getCardinalRep()->getRadiationLenght();   // to be done! Check update versions...
+	if(m_debug > 1)
+	{
+		cout << "TAGactKFitter::RecordTrackInfo:: DONE chi2 = " << chi2  << endl;
+		cout << "TAGactKFitter::RecordTrackInfo:: DONE chisquare = " << chisquare  << endl;
+	}
+	
+	// track->getFitStatus( track->getCardinalRep() )->isFitConverged();
+	// track->getFitStatus( track->getCardinalRep() )->getNFailedPoints();
+	// track->getFitStatus( track->getCardinalRep() )->isFitConvergedFully();
 
-	if(fitCh < 0 || fitCh > 8) {return;}
+	recoPos_target = state_target_point.getPos();
+	//Rescale GeV to MeV/nucleon
+	recoMom_target = state_target_point.getMom();
+	recoMom_target *= 1000./nucleonsN;
+	recoMom_target_cov *= 1000./(Double_t)nucleonsN;
+	recoMom_TW *= 1000./(Double_t)nucleonsN;
+	recoMom_TW_cov *= 1000./(Double_t)nucleonsN;
 
+	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, 
+										(long)gTAGroot->CurrentEventId().EventNumber(),
+										pdgID, startMass, fitCh, fitMass, length, tof, chi2, ndof, pVal, 
+										&recoPos_target, &recoMom_target, &recoPos_target_cov, 
+										&recoMom_target_cov, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov,
+										&recoMom_TW_cov, &shoeTrackPointRepo
+										);
+	
+	//Set additional variables
+	shoeOutTrack->SetTwChargeZ(TwChargeZ);
+	shoeOutTrack->SetTwTof(TwTof);
+	//Convert energy to MeV/n
+	shoeOutTrack->SetFitEnergy( 1E3*energyAtTgt/nucleonsN);
+	shoeOutTrack->SetFitEnergyLoss( 1E3*(energyAtTgt - energyOutTw) );
+
+	/*RZ: Quantities to
+	1) CHECK:
+	2) ADD: fCalEnergy
+	3) DISCUSS: fMcTrackMap, polynomial_fit_parameters, fTgtDir/Pos/Mom (ERROR!!!!!!!!!!!!!)
+	*/
+
+	//MC additional variables if running on simulations
 	int trackMC_id = -1;
 	double trackQuality = -1;
 	if ( TAGrecoManager::GetPar()->IsMC() ) {
@@ -868,85 +945,39 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_mcPosZ->Fill( mcPos.Z() );
 		
 
-		// if(m_debug > 0)	
-		cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos z = "<< mcPos.z() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
-		if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
+		if(m_debug > 0)	
+		{
+			cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos z = "<< mcPos.z() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
+			cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
+		}
 
-		m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, fitTrackName, &h_dPOverP_x_bin );
+		m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin );
 
-		m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, fitTrackName, &h_deltaP, &h_sigmaP );
+		m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
 
 		trackQuality = TrackQuality( &mcParticleID_track );
 		if(m_debug > 0) cout << "trackQuality::" << trackQuality << "\n";
 
 		
 		if ( mcCharge == fitCh && trackQuality > 0.7 ) {
-			if ( m_nConvergedTracks_matched.find( fitTrackName ) == m_nConvergedTracks_matched.end() )	m_nConvergedTracks_matched[ fitTrackName ] = 0;
-			m_nConvergedTracks_matched[ fitTrackName ]++;
+			if ( m_nConvergedTracks_matched.find( PartName ) == m_nConvergedTracks_matched.end() )	m_nConvergedTracks_matched[ PartName ] = 0;
+			m_nConvergedTracks_matched[ PartName ]++;
 		}
 		else
 		{
 			if(m_debug > 0)	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tfitCh::" << fitCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
 		}
 
+		shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
+
 		h_chargeMC->Fill( mcCharge );
 		h_trackQuality->Fill( trackQuality );
 		h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
 		h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
 		h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present
-		
+	
+		if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE MC = "<< endl;
 	}
-
-	
-
-	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE MC = "<< endl;
-		
-	double length = track->getTrackLen( track->getCardinalRep(), 0, -1 );
-	// double length 		= track->getTrackLen( track->getCardinalRep() );
-	double tof	= track->getTOF( track->getCardinalRep(), 0, -1 ) ;
-	double energy = TMath::Sqrt( pow(recoMom_target.Mag(), 2) + pow(fitMass, 2) ) - fitMass;
-	if(m_debug > 1)
-	{
-		cout << "fitCh::" << fitCh << "\tfitMass::" << fitMass << endl;
-		cout << "Energy at target::" << energy << endl;
-		cout << "TOF::" << tof << endl;
-	}
-	
-	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE length = " << length  << endl;
-	double chi2 		= m_refFitter->getRedChiSqu(track, track->getCardinalRep());
-	
-	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE chi2 = " << chi2  << endl;
-	int ndof 			= track->getFitStatus( track->getCardinalRep() )->getNdf();
-	double chisquare 	= track->getFitStatus( track->getCardinalRep() )->getChi2();
-	double pVal 		= track->getFitStatus( track->getCardinalRep() )->getPVal();
-
-	if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE chisquare = " << chisquare  << endl;
-	
-	// track->getFitStatus( track->getCardinalRep() )->isFitConverged();
-	// track->getFitStatus( track->getCardinalRep() )->getNFailedPoints();
-	// track->getFitStatus( track->getCardinalRep() )->isFitConvergedFully();
-
-
-	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, 
-										(long)gTAGroot->CurrentEventId().EventNumber(),
-										pdgID, pdgMass, fitCh, fitMass, length, tof, chi2, ndof, pVal, 
-										&recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov,
-										&shoeTrackPointRepo
-										);
-	
-	
-	if ( TAGrecoManager::GetPar()->IsMC() )		
-		shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
-
-	/*RZ: Quantities to
-	1) CHECK: fLength (currently VT0 to TW!), fMass, fFitTof (same as length), fTgtDir/Pos/Mom (same problem VT0), fFitEnergy
-	2) ADD: fCalEnergy, fName (fix)
-	3) DISCUSS: fMcTrackMap, polynomial_fit_parameters, fFitEnergyLoss
-	*/
-	shoeOutTrack->SetTwChargeZ(TwChargeZ);
-	shoeOutTrack->SetTwTof(TwTof);
-	shoeOutTrack->SetFitEnergy(energy);
-
 
 	//Histogram filling
 
@@ -975,7 +1006,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	h_momentum->Fill( recoMom_target.Mag() );
 	h_momentum_reco.at(fitCh)->Fill( recoMom_target.Mag() );	// check if not present
 
-if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: DONE HISTOGRAM FILL "  << endl;
+	if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: DONE HISTOGRAM FILL "  << endl;
 
     //! Get the accumulated X/X0 (path / radiation length) of the material crossed in the last extrapolation.
     // virtual double getRadiationLenght() const = 0;

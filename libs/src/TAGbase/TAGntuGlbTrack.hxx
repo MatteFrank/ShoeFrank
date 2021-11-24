@@ -45,7 +45,7 @@ public:
    // Genfit
 
    TAGtrack(string name, long evNum, 
-   			int pdgID, float pdgMass, int fitCh, float fitMass, 
+   			int pdgID, float startMass, int fitCh, float fitMass, 
    			float length, float tof, 
    			float chi2, int ndof, float pVal, 
    			TVector3* TgtPos, TVector3* TgtMom, 
@@ -170,13 +170,13 @@ public:
    //! Intersection near target
    TVector3         Intersection(Double_t posZ) const;
    
-   //! Get Totol Energy Loss (MSD+TW+CAL)
+   //! Get Total Energy Loss (MSD+TW+CAL)
    Double_t         GetTotEnergyLoss()      const;
    
-   //! Get Totol Energy Loss (MSD+TW+CAL)
+   //! Get Total Energy Loss (MSD+TW+CAL)
    Double_t         GetMsdEnergyLoss()      const;
    
-   //! Get Totol Energy Loss (MSD+TW+CAL)
+   //! Get Total Energy Loss (MSD+TW+CAL)
    Double_t         GetTwEnergyLoss()       const;
    
 

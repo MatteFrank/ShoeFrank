@@ -449,6 +449,14 @@ void TAGFselector::CategorizeVT()
 			cout << "Vertex number " << iVtx << " seems to be empty\n";
 			continue;
 		}
+		else if( !vtxPD->IsBmMatched() )
+		{
+			if(m_debug > 0)
+			{
+				Info("CategorizeVT()", "In event %d: vertex %d found but not matched with BM tracks; Skipping...",gTAGroot->CurrentEventId().EventNumber(), iVtx);
+				continue;
+			}
+		}
 
 		if ( m_debug > 0 )		cout  << "vertex number " << iVtx << " has this nr of tracks " << vtxPD->GetTracksN() <<"\n";
 
