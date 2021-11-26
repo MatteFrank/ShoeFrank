@@ -27,6 +27,7 @@
 #include "matrix_new.hpp"
 #include "expr.hpp"
 
+#include "TATOEdetector.hxx"
 
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -49,11 +50,11 @@ namespace details{
     template<class C>
     class cut_holder;
 
-struct vertex_tag;
-struct it_tag;
-struct msd_tag;
-struct tof_tag;
-struct ms2d_tag;
+//struct vertex_tag;
+//struct it_tag;
+//struct msd_tag;
+//struct tof_tag;
+//struct ms2d_tag;
 
 struct x_view_tag{  static constexpr uint8_t shift = 7; };
 struct y_view_tag{  static constexpr uint8_t shift = 6; };
@@ -97,6 +98,7 @@ struct reconstructed_track{
     std::vector<cluster> const& get_clusters() const { return cluster_c; }
     std::vector<cluster> & get_clusters() { return cluster_c; }
     particle_properties properties;
+    double shearing_factor;
     polynomial_fit_parameters parameters;
     std::size_t clone_number{0};
 };
@@ -134,11 +136,11 @@ public:
 private:
     virtual void reset_event_number() = 0;
     
-    virtual void set_cuts( details::vertex_tag, double) = 0;
-    virtual void set_cuts( details::it_tag, std::array<double, 2> const& ) = 0;
-    virtual void set_cuts( details::msd_tag, std::array<double, 3> const& ) = 0;
-    virtual void set_cuts( details::tof_tag, double) = 0;
-    virtual void set_cuts( details::ms2d_tag, double) = 0;
+    virtual void set_cuts( details::vertex_tag, details::vertex_tag::cut_t const&) = 0;
+    virtual void set_cuts( details::it_tag, details::it_tag::cut_t const& ) = 0;
+    virtual void set_cuts( details::msd_tag, details::msd_tag::cut_t const& ) = 0;
+    virtual void set_cuts( details::tof_tag, details::tof_tag::cut_t const&) = 0;
+    virtual void set_cuts( details::ms2d_tag, details::ms2d_tag::cut_t const&) = 0;
     
     virtual std::vector<reconstruction_module> const& retrieve_matched_results( ) const = 0;
     

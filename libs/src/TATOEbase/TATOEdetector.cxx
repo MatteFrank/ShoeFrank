@@ -17,17 +17,16 @@
 //______________________________________________________________________________
 //                          VTX
 
-constexpr double details::vertex_tag::default_cut_value;
-constexpr std::array<double, 2> details::it_tag::default_cut_value;
-constexpr std::array<double, 3> details::msd_tag::default_cut_value;
-constexpr double details::tof_tag::default_cut_value;
+constexpr details::vertex_tag::cut_t details::vertex_tag::default_cut_value;
+constexpr details::it_tag::cut_t details::it_tag::default_cut_value;
+constexpr details::msd_tag::cut_t details::msd_tag::default_cut_value;
+constexpr details::tof_tag::cut_t details::tof_tag::default_cut_value;
 
 typename details::vertex_tag::candidate detector_properties< details::vertex_tag >::generate_candidate( TAVTbaseCluster const * cluster_ph) const
 {
     auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data()) );
     auto position  = transformation_h->FromVTLocalToGlobal( cluster_ph->GetPositionG() );
-    auto error     = cluster_ph->GetPosError();
-    
+    auto error     = cluster_ph->GetPosErrorG();
     
     return candidate{
         measurement_vector{{ position.X(), position.Y() }},
@@ -126,7 +125,7 @@ std::vector<typename details::it_tag::candidate> detector_properties< details::i
             
             auto cluster_h = cluster_mhc->GetCluster(id, i);
             auto position =  transformation_h->FromITLocalToGlobal(cluster_h->GetPositionG());
-            auto error = cluster_h->GetPosError();
+            auto error = cluster_h->GetPosErrorG();
             
             
             candidate_c.emplace_back( measurement_vector{{ position.X(), position.Y() }},
@@ -159,7 +158,7 @@ std::vector<typename details::msd_tag::candidate> detector_properties< details::
         
         auto cluster_h = cluster_mhc->GetCluster(index_p, i);
         auto position =  transformation_h->FromMSDLocalToGlobal(cluster_h->GetPositionG());
-        auto error = cluster_h->GetPosError();
+        auto error = cluster_h->GetPosErrorG();
             
         
         candidate_c.emplace_back(
