@@ -25,11 +25,7 @@ namespace details{
     inline double computation_error( Matrix<NRows, 1 > const& estimation_p, Matrix<NRows, 1 > const& correction_p)
     {
         Matrix<NRows, 1> difference = estimation_p - correction_p;
-        // std::cout << "\nestimation:\n" << estimation_p << "correction: \n" << correction_p;
-        // std::cout << "\ndifference:\n" << difference;
-        auto temp = std::sqrt( std::inner_product(difference.data().begin(), difference.data().end(), difference.data().begin(), 0) );
-        //std::cout << "\nupon calculation error is: " << temp << '\n';
-        return (temp < 1e-15 ? 1e-15 : temp );
+        return std::sqrt( std::inner_product(difference.data().begin(), difference.data().end(), difference.data().begin(), 0) );
     }
     
     inline double computation_error(double estimation_p, double correction_p)
@@ -160,6 +156,8 @@ namespace details {
                                            step_p * inner_product( evaluation_c,
                                                                    derived().data().partial_delay(order_tag<1>{}),
                                                                    index );
+//                std::cout << "compute_evaluation: \n";
+//                std::cout << os.evaluation_point << " " << os.state(order_tag<0>{}) << " " << os.state(order_tag<1>{});
                 evaluation_c[index] = derived().ode( os );
             }
             
@@ -361,7 +359,8 @@ namespace details {
             double error{0};
             
             while(!isToleranceReached){
-                
+//                std::cout << "step: " << step_p << '\n';
+//                std::cout << "state:\n";
 //                std::cout << eos.evaluation_point << '\n';
 //                std::cout << eos.state( details::order_tag<0>{} );
 //                std::cout << eos.state( details::order_tag<1>{} );
@@ -372,19 +371,17 @@ namespace details {
                 auto estimate = derived().compute_solution(eos, details::order_tag<0>{}, estimation_tag{});
                 auto correction = derived().compute_solution(eos, details::order_tag<0>{}, correction_tag{});
 //                std::cout << "estimate: \n" << estimate << "correction: \n" << correction;
-                auto local_error_estimate = details::computation_error( estimate, correction );
-               
+                auto local_error_estimate = error_checker{ details::computation_error( estimate, correction ) };;
+                if( isnan(local_error_estimate) ){  std::cout << "local_error is nan, step will fail\n"; std::terminate(); }
                 
                 isToleranceReached = local_error_estimate <= tolerance_m;
 //                std::cout << "step_error: " << local_error_estimate << '\n';
                 
                 if(!isToleranceReached){
-//                    std::cout << "step: " << eos.step << " -> " << local_error_estimate << '\n';
                     eos.step = optimize_step_length(eos.step, local_error_estimate) ;
-                    if( isnan(eos.step) ){ std::abort(); }
                 }
                 else{
-                    error = error_checker{ local_error_estimate };
+                    error = local_error_estimate;
 //                    std::cout << "Step length:" << eos.step << ", error: "<< error <<'\n';
                     eos.state(order_tag<0>{}) = correction;
                 }
@@ -413,6 +410,8 @@ namespace details {
         
         double optimize_step_length(double step_p, double local_error) const
         {
+            if( isnan(step_p) ){ std::cout << "step is nan, cannot compute optimized_step_length\n"; }
+            if( isnan(local_error) ){ std::cout << "local_error is nan, cannot compute optimized_step_length\n"; }
             return step_p * 0.9 * std::pow(tolerance_m/local_error, 1./degree);
         }
         

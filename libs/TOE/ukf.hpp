@@ -243,11 +243,9 @@ namespace details{
 //            std::cout << "propagate_once::error : " << std::setprecision(16) << step_result.second << '\n';
             
             //optimize next step
-            if( step_result.second != 0 ){
-                auto new_step_length = derived().call_stepper().optimize_step_length(step, step_result.second);
-                derived().step_length() = ( new_step_length > derived().max_step_length() ) ? derived().max_step_length() : new_step_length ;
+            auto new_step_length = derived().call_stepper().optimize_step_length(step, step_result.second);
+            derived().step_length() = ( new_step_length > derived().max_step_length() ) ? derived().max_step_length() : new_step_length ;
                // std::cout << "propagate_once::next_step_length : " << derived().step_length() << '\n';
-            }
             
             return std::move(os_pc);
         }
