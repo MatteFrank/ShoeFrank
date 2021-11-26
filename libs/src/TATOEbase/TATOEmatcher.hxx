@@ -356,7 +356,7 @@ public:
         action_m.logger_m << "mass: " << particle.mass << '\n';
         action_m.logger_m << "momentum: " << particle.momentum << '\n';
         
-        auto reconstructed = reconstructed_track{ cluster_c, std::move(particle),  track_p.parameters, track_p.clone };
+        auto reconstructed = reconstructed_track{ cluster_c, std::move(particle), track_p.total_chisquared, track_p.parameters, track_p.clone };
         register_reconstructed_track( state_c.back().data , std::move(reconstructed) );
     }    
     

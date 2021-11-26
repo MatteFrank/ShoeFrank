@@ -92,6 +92,13 @@ struct purity_predicate{
     }
 };
 
+struct shearing_predicate{
+    bool predicate(reconstruction_module const& rm_p){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        return reconstructed.shearing_factor < 0.46;
+    }
+};
+
 //----------------------------------------------
 //                 Format
 
@@ -573,7 +580,7 @@ struct momentum_difference_outcome<Derived, histogram<absolute, B>>{
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto const& reconstructible = rm_p.reconstructible_o.value();
         auto & data = static_cast<Derived&>(*this).data();
-        auto momentum_difference = (reconstructed.properties.momentum - reconstructible.properties.momentum)/1000;
+        auto momentum_difference = (reconstructible.properties.momentum - reconstructed.properties.momentum)/1000;
         data.value.fill_with(reconstructible.properties.momentum/1000, momentum_difference);
     }
 };
@@ -895,6 +902,33 @@ struct track_chisquared_distribution_data<histogram<R, B>, isolate_charge<C>> {
     void clear(){}
 };
 
+
+
+//----------------------------------------------
+//                  shearing_factor_distribution
+template<class Derived, class F> struct shearing_factor_distribution_outcome{};
+template<class Derived, class R, class B>
+struct shearing_factor_distribution_outcome<Derived, histogram<R, B>>{
+    void outcome( reconstruction_module const& rm_p ){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.value.Fill( reconstructed.shearing_factor );
+    }
+};
+
+template<class F, class CO> struct shearing_factor_distribution_data{};
+template< class R, class B>
+struct shearing_factor_distribution_data<histogram<R, B>, no_requirement> {
+    TH1D value{"shearing_factor", ";;count", 500, 0, 5};
+    void clear(){}
+};
+
+template< class R, class B, int C>
+struct shearing_factor_distribution_data<histogram<R, B>, isolate_charge<C>> {
+    TH1D value{Form("shearing_factor_charge%d", C), ";;count", 500, 0, 5 };
+    void clear(){}
+};
+
 //----------------------------------------------
 //                 producer
 
@@ -1024,6 +1058,13 @@ using track_chisquared_distribution = producer< Format, ChargeOption, MatchOptio
                                          successfull_reconstruction_predicate,
                                          track_chisquared_distribution_outcome,
                                          track_chisquared_distribution_output >;
+
+template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
+using shearing_factor_distribution = producer< Format, ChargeOption, MatchOption,
+                                    shearing_factor_distribution_data,
+                                    successfull_reconstruction_predicate,
+                                    shearing_factor_distribution_outcome,
+                                    single_value_output >;
 
 } // namespace checker
 
