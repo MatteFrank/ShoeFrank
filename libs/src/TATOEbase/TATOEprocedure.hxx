@@ -161,6 +161,41 @@ struct mass_scorer{
     }
 };
 
+struct overall_scorer{
+    struct score_holder{
+        double value;
+        double efficiency;
+        double purity;
+        double mass_yield;
+        friend std::ostream& operator<<(std::ostream& os_p, score_holder const& s_p){
+            return os_p << "[efficiency, purity, mass_yield : score] -> [" << s_p.efficiency << ", " << s_p.purity << ", " << s_p.mass_yield << " : " << s_p.value << "]";
+        }
+    };
+    template<class O>
+    constexpr score_holder compute_score(O const* o_ph) const {
+        auto reconstructible = o_ph->retrieve_reconstructible();
+        auto reconstructed = o_ph->retrieve_reconstructed();
+        auto efficiency = reconstructed.value / reconstructible.value;
+        
+        auto purity = o_ph->retrieve_purity();
+        auto mass_yield = o_ph->retrieve_mass_yield();
+        
+        auto score = ( efficiency - o_ph->baseline.efficiency )/o_ph->baseline.efficiency +
+                     ( purity.value - o_ph->baseline.purity )/o_ph->baseline.purity +
+                     ( mass_yield.value - o_ph->baseline.mass_yield )/o_ph->baseline.mass_yield  ;
+        
+        return score_holder{ std::move(score), std::move(efficiency), std::move(purity.value), std::move(mass_yield.value) };
+    }
+    template<class O>
+    constexpr score_holder compute_first_score(O const* o_ph) const {
+        auto reconstructible = o_ph->retrieve_reconstructible();
+        auto reconstructed = o_ph->retrieve_reconstructed();
+        auto efficiency = reconstructed.value / reconstructible.value;
+        
+        auto purity = o_ph->retrieve_purity();
+        return score_holder{ 0, efficiency, purity.value, o_ph->retrieve_mass_yield().value};
+    }
+};
 
 template<class Derived>
 struct caller{
@@ -469,7 +504,7 @@ private:
 
 
 template<class S>
-using rough_scan_procedure = local_scan_procedure_impl<details::local_scan_parameters<5,3>, S, caller, cut_setter, rough_scan_setter, rough_scan_finaliser >;
+using rough_scan_procedure = local_scan_procedure_impl<details::local_scan_parameters<3,3>, S, caller, cut_setter, rough_scan_setter, rough_scan_finaliser >;
 
 
 
