@@ -126,7 +126,7 @@ void TAVTactBaseRaw::CreateHistogram()
       AddHistogram(fpHisFrameErrors[i]);
    }
    
-   fpHisBCOofTrigger = new TH1F(Form("%sBCOofTrigger", fPrefix.Data()), Form("%s - BCOofTrigger difference", fTitleDev.Data()), 6, -1.5, 4.5);
+   fpHisBCOofTrigger = new TH1F(Form("%sBCOofTrigger", fPrefix.Data()), Form("%s - BCOofTrigger difference", fTitleDev.Data()), 200000, 0, 200000);
    AddHistogram(fpHisBCOofTrigger);
 
    SetValidHistogram(kTRUE);
