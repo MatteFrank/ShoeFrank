@@ -11,6 +11,7 @@
 #include "TF1.h"
 #include "TCanvas.h"
 #include "TError.h"
+#include "TAxis.h"
 
 #include "TAGgeoTrafo.hxx"
 #include "TAGaction.hxx"
@@ -125,8 +126,29 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    TH1D *hADC[sensors][NChannels];
    TH1D *hSignal[sensors][NChannels];
 
+   TGraph *ped_graph[sensors];
+   TGraph *sig_graph[sensors];
+   TAxis *ped_axis[sensors];
+   TAxis *sig_axis[sensors];
+
    for (int sen = 0; sen < sensors; sen++)
    {
+      ped_graph[sen] = new TGraph(NChannels);
+      ped_graph[sen]->SetTitle(Form("Pedestals for detector %i RUN %i", sen, runNumber));
+      ped_graph[sen]->GetXaxis()->SetTitle("channel");
+      ped_graph[sen]->GetYaxis()->SetTitle("Pedestal");
+      ped_axis[sen] = ped_graph[sen]->GetXaxis();
+      ped_axis[sen]->SetLimits(0, NChannels);
+      ped_axis[sen]->SetNdivisions(NChannels / 64, false);
+
+      sig_graph[sen] = new TGraph(NChannels);
+      sig_graph[sen]->SetTitle(Form("Sigmas for detector %i RUN %i", sen, runNumber));
+      sig_graph[sen]->GetXaxis()->SetTitle("channel");
+      sig_graph[sen]->GetYaxis()->SetTitle("Sigma");
+      sig_axis[sen] = sig_graph[sen]->GetXaxis();
+      sig_axis[sen]->SetLimits(0, NChannels);
+      sig_axis[sen]->SetNdivisions(NChannels / 64, false);
+
       for (int ch = 0; ch < NChannels; ch++)
       {
          hADC[sen][ch] = new TH1D(Form("pedestal_channel_%d_sensor_%d", ch, sen), Form("Pedestal %d", ch), 50, 4096, -1);
@@ -160,7 +182,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
       }
    }
 
-   calfile = fopen(calfile_name,"w");
+   calfile = fopen(calfile_name, "w");
    fprintf(calfile, "# SigmaNoiseLevel\n");
 
    cout << "\nBeginning the Event Loop " << endl;
@@ -170,7 +192,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    watch.Start();
 
    Int_t nEvents = 0;
-   while (tagr.NextEvent() && nEvents < nMaxEmsds/2)
+   while (tagr.NextEvent() && nEvents < nMaxEmsds / 2)
    {
 
       rawevent = (TAGdaqEvent *)(tagr.FindDataDsc("msdDaq", "TAGdaqEvent")->Object());
@@ -182,6 +204,8 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
          if (type.Contains("DEMSDEvent"))
          {
             const DEMSDEvent *evt = static_cast<const DEMSDEvent *>(rawevent->GetFragment(i));
+            if(evt->boardHeader == 0x0000dead) continue;
+
             boardId = (evt->boardHeader & 0xF) - 1;
 
             sensorId = map->GetSensorId(boardId, 0);
@@ -231,7 +255,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    fprintf(calfile, "#sensorId stripId AsicId AsicCh Mean Sigma status\n");
 
    nEvents = 0;
-   while (tagr.NextEvent() && nEvents < nMaxEmsds/2)
+   while (tagr.NextEvent() && nEvents < nMaxEmsds / 2)
    {
 
       rawevent = (TAGdaqEvent *)(tagr.FindDataDsc("msdDaq", "TAGdaqEvent")->Object());
@@ -304,6 +328,9 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
       fprintf(calfile, "#sensorId: %i\n", sen);
       for (int ch = 0; ch < NChannels; ch++)
       {
+         ped_graph[sen]->SetPoint(ch, ch, pedestals[sen][ch]);
+         sig_graph[sen]->SetPoint(ch, ch, sigma[sen][ch]);
+
          fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], (sigma[sen][ch] < 1.8 || sigma[sen][ch] > 5));
       }
    }
@@ -311,6 +338,22 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    tagr.EndEventLoop();
    fclose(calfile);
    watch.Print();
+
+   // plot correlation in telescope planes
+   TCanvas *calibrations = new TCanvas("calib", "calibrations", 1920, 1080);
+   ped_graph[0]->Draw("AL*");
+   calibrations->Print(calfile_name + ".pdf(", "pdf");
+   sig_graph[0]->Draw("AL*");
+   calibrations->Print(calfile_name + ".pdf", "pdf");
+
+   for (int i = 2; i < 2 * sensors; i += 2)
+   {
+      ped_graph[i / 2]->Draw("AL*");
+      calibrations->Print(calfile_name + ".pdf", "pdf");
+      sig_graph[i / 2]->Draw("AL*");
+      calibrations->Print(calfile_name + ".pdf", "pdf");
+   }
+   calibrations->Print(calfile_name + ".pdf)", "pdf");
 
    pedestals.clear();
    pedestals.shrink_to_fit();
