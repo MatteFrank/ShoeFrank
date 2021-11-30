@@ -170,6 +170,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
             
             return action_h;
             
@@ -204,6 +205,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
             
             return action_h;
         }
@@ -241,6 +243,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
 //            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<1>>>{} );
 //            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<1>>>{});
 //            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<2>>>{} );
@@ -281,6 +284,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
             computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
             
             return action_h;
         }
@@ -312,6 +316,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
     computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
     computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+    computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
     return action_h;
 }
 
