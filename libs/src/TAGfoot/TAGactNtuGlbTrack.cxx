@@ -43,6 +43,9 @@
 #include "ukf.hpp"
 #include "flag_set.hpp"
 
+namespace details{
+struct ms2d_tag;
+}
 
 /*!
  \class TAGactNtuGlbTrack TAGactNtuGlbTrack.hxx "TAGactNtuGlbTrack.hxx"
