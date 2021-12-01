@@ -124,31 +124,6 @@ public:
 //        }
     }
     
-    double retrieve_momentum( candidate const& candidate_p ) const {
-        for( auto const& module : reconstruction_module_mc ) {
-            if( module.end_point_h == candidate_p.data && module.reconstructible_o.has_value() ){ return module.reconstructible_o.value().properties.momentum; }
-        }
-        return 0;
-    }
-    
-    
-    int retrieve_mass( candidate const& candidate_p ) const {
-        for( auto const& module : reconstruction_module_mc ) {
-            if( module.end_point_h == candidate_p.data && module.reconstructible_o.has_value() ){ return module.reconstructible_o.value().properties.mass; }
-        }
-        return 0;
-    }
-    
-    int retrieve_charge( candidate const& candidate_p ) const {
-        for( auto const& module : reconstruction_module_mc ) {
-            if( module.end_point_h == candidate_p.data && module.reconstructible_o.has_value() ){ return module.reconstructible_o.value().properties.charge; }
-        }
-        return 0;
-    }
-    
-    
-    
-    
     void submit_reconstructible_track(candidate const& candidate_p)
     {
         auto output_reconstructible = [this]( auto const& reconstructible_p )
