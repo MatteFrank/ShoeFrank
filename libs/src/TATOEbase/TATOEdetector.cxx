@@ -21,6 +21,7 @@ constexpr details::vertex_tag::cut_t details::vertex_tag::default_cut_value;
 constexpr details::it_tag::cut_t details::it_tag::default_cut_value;
 constexpr details::msd_tag::cut_t details::msd_tag::default_cut_value;
 constexpr details::tof_tag::cut_t details::tof_tag::default_cut_value;
+constexpr details::ms2d_tag::cut_t details::ms2d_tag::default_cut_value;
 
 typename details::vertex_tag::candidate detector_properties< details::vertex_tag >::generate_candidate( TAVTbaseCluster const * cluster_ph) const
 {
