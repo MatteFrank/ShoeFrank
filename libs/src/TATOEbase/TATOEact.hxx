@@ -139,6 +139,10 @@ private:
     mutable std::size_t over_counter_y{0};
     mutable std::size_t below_counter_y{0};
     mutable std::size_t skip_counter{0};
+    
+    mutable std::size_t same_sign_counter{0};
+    mutable std::size_t not_same_sign_counter{0};
+    mutable double mean_weight{0.};
 public:
     
     TATOEactGlb( UKF&& ukf_p,
@@ -161,7 +165,7 @@ public:
             using namespace checker;
             matcher_m = TATOEmatcher<TATOEactGlb, empty_writer>{global_parameters_ph, *this};
         }
-        fill_histogram_checker<>();
+//        fill_histogram_checker<>();
 //        fill_histogram_checker<checker::charge_well_matched>();
 //        fill_histogram_checker<checker::well_matched>();
 //        fill_histogram_checker<checker::badly_matched>();
@@ -208,7 +212,7 @@ public:
         track_c = compute_arc_length( std::move(track_c) );
         track_c = compute_time_of_flight( std::move(track_c));
         track_c = compute_momentum( std::move(track_c ));
-        track_c = refine_hypotheses_using_track( std::move(track_c) );
+//        track_c = refine_hypotheses_using_track( std::move(track_c) );
 //        track_c = refine_hypotheses_using_clusters( std::move(track_c) );
         
         register_tracks_upward( std::move( track_c ) );
@@ -257,6 +261,8 @@ public:
         std::cout << "reprocessed: " <<final_counter << " / " << minimal_counter << '\n';
         std::cout << ">95? " << over_counter << " / " << below_counter << '\n';
         std::cout << "skipped: " << skip_counter << '\n';
+        std::cout << "mean_weight: " << mean_weight/final_counter << '\n';
+        std::cout << "is_same_sign: " << same_sign_counter << " / " << not_same_sign_counter << '\n';
         
         if( !computation_checker_mc.empty() ){
             logger_m.add_root_header("RESULTS");
@@ -291,6 +297,11 @@ public:
             logger_m.template add_header<1, details::immutable_tag>("mass_yield");
             logger_m << "mass_yield: " << mass_yield.value << '\n';
             logger_m << "mass_yield_error: " << mass_yield.error << '\n';
+            
+            auto momentum_residuals = computation_checker_mc[6].output();
+            logger_m.template add_header<1, details::immutable_tag>("momentum_residuals");
+            logger_m << "momentum_residuals: " << momentum_residuals.value << '\n';
+            logger_m << "momentum_residuals_error: " << momentum_residuals.error << '\n';
             
 //            auto reconstructible1 = computation_checker_mc[5].output();
 //            auto reconstructed1 = computation_checker_mc[6].output();
@@ -340,7 +351,10 @@ public:
         
         //scan change limits + number of points -> count how many actually go through the recomputation
         if(!histogram_checker_mc.empty()){
-            TFile file{"tol_16O200C2H4_5e4_refinepht30m11pw2-5_effc.root", "RECREATE"};
+//            TFile file{"tol_16O200C2H4_5e4_refinepht100m11pwr2-5_effc.root", "RECREATE"};
+//            TFile file{"tol_16O200C2H4_5e4_refinephol5p_effc.root", "RECREATE"};
+//            TFile file{"tol_12C200C_3e4_refinep_outw_effc.root", "RECREATE"};
+            TFile file{"tol_16O200C2H4_5e4_refinep_outw_effc.root", "RECREATE"};
 //            TFile file{"tol_16O400C_25e3_refinep_effc.root", "RECREATE"};
 //            TFile file{"tol_16O200C2H4_25e3_refinemn_effGc.root", "RECREATE"};
 //            TFile file{"tol_16O200C2H4_25e3_refinenm_rdfc_effc.root", "RECREATE"};
@@ -512,6 +526,19 @@ private:
                     momentum_difference< histogram<absolute>, isolate_charge<7>, MO >,
                     momentum_difference< histogram<absolute>, isolate_charge<8>, MO >,
                     momentum_difference< histogram<absolute>, isolate_charge<9>, MO >
+                            >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    momentum_study< histogram<absolute>, no_requirement, MO >,
+                    momentum_study< histogram<absolute>, isolate_charge<1>, MO >,
+                    momentum_study< histogram<absolute>, isolate_charge<2>, MO >,
+                    momentum_study< histogram<absolute>, isolate_charge<3>, MO >,
+                    momentum_study< histogram<absolute>, isolate_charge<4>, MO >,
+                    momentum_study< histogram<absolute>, isolate_charge<5>, MO >,
+                    momentum_study< histogram<absolute>, isolate_charge<6>, MO >,
+                    momentum_study< histogram<absolute>, isolate_charge<7>, MO >,
+                    momentum_study< histogram<absolute>, isolate_charge<8>, MO >,
+                    momentum_study< histogram<absolute>, isolate_charge<9>, MO >
                             >{} );
         histogram_checker_mc.push_back(
                 TATOEchecker<
@@ -1851,6 +1878,7 @@ private:
             if( beta < 1 && !std::isnan(beta)){
                 double gamma = 1./sqrt(1 - pow(beta, 2));
 //                track.mass = track.momentum/(931.5 * beta * gamma);
+                track.hypothesis.properties.momentum = track.nucleon_number * 931.5 * beta * gamma;
                 track.momentum = track.nucleon_number * 931.5 * beta * gamma;
             }
         }
@@ -1885,17 +1913,18 @@ private:
                 }
                                                       );
         auto position_stepper = make_stepper<data_grkn56>( std::move(position_ode) );
+
         position_stepper.specify_tolerance(1e-8);
 
-//        TFile file{"momentum_scanR2.root", "UPDATE"};
+//        TFile file{"momentum_scan_ol.root", "UPDATE"};
 //        std::unique_ptr<TTree> tree_h{nullptr};
 //        auto * temp_tree_h = static_cast<TTree*>( file.Get( "data" ) );
 //        if( temp_tree_h ){ tree_h.reset( temp_tree_h ); }
 //        else{ tree_h.reset( new TTree{ "data", ""} ); }
-////        auto * g_h = new TGraph{};
+//        auto * g_h = new TGraph{};
 //        double R2{-1};
-////        if( tree_h->GetBranch("graphs") ){ tree_h->SetBranchAddress( "graphs" , &g_h ); }
-////        else{ tree_h->Branch("graphs", &g_h); }
+//        if( tree_h->GetBranch("graphs") ){ tree_h->SetBranchAddress( "graphs" , &g_h ); }
+//        else{ tree_h->Branch("graphs", &g_h); }
 //        if( tree_h->GetBranch("R2") ){ tree_h->SetBranchAddress( "R2" , &R2); }
 //        else{ tree_h->Branch("R2", &R2); }
                         
@@ -1918,9 +1947,12 @@ private:
             double relative_momentum = track.momentum / track.hypothesis.properties.nucleon_number;
             std::vector<score_and_momentum> refined_c;
             
-            for( double factor{ track.hypothesis.properties.nucleon_number - 1.5 > 0 ? track.hypothesis.properties.nucleon_number - 1.5 : 0.5 };
-                 factor < track.hypothesis.properties.nucleon_number + 1.6 ;
-                 factor+=0.1 ){
+//            for( double factor{ track.hypothesis.properties.nucleon_number - 1.5 > 0 ? track.hypothesis.properties.nucleon_number - 1.5 : 0.5 };
+//                 factor < track.hypothesis.properties.nucleon_number + 1.6 ;
+//                 factor+=0.1 ){
+            for( double factor{ track.hypothesis.properties.nucleon_number - 2 > 0 ? track.hypothesis.properties.nucleon_number - 2 : 0.5 };
+                 factor < track.hypothesis.properties.nucleon_number + 2.05 ;
+                 factor+=0.01 ){
                 momentum = factor * relative_momentum;
                 if(momentum < 100){  continue; }
 
@@ -1934,10 +1966,29 @@ private:
                 };
                 double distance{0};
 //                for( auto cluster_i = track.get_clusters().begin() + 1 ; cluster_i != track.get_clusters().end() ; ++cluster_i ){
-                std::size_t const matching_points = 100;
-                double const z_increment = (track.get_clusters().back().evaluation_point - track.get_clusters().front().evaluation_point)/(matching_points+1);
-                for( auto i{1}; i < matching_points +1 ; ++i){
-                    double const z = starting_z + i * z_increment;
+//                std::size_t const matching_points = 100;
+//                double const z_increment = (track.get_clusters().back().evaluation_point - track.get_clusters().front().evaluation_point)/(matching_points+1);
+//                for( auto i{1}; i < matching_points +1 ; ++i){
+//                    double const z = starting_z + i * z_increment;
+//                    auto step = 1e-3;
+////                    while( position_os.evaluation_point + step < cluster_i->evaluation_point ){
+//                    while( position_os.evaluation_point + step < z ){
+//                        auto step_result = position_stepper.step( std::move(position_os), step );
+//                        auto new_step_length = position_stepper.optimize_step_length(step, step_result.second);
+//                        step = ( new_step_length > 10 ) ?
+//                                10 :
+//                                (new_step_length < 1e-3) ? 1e-3 : new_step_length;
+//                        position_os = std::move(step_result.first);
+//                    }
+////                    step = cluster_i->evaluation_point - position_os.evaluation_point;
+//                    step = z - position_os.evaluation_point;
+//                    position_os = position_stepper.force_step( std::move(position_os), step );
+//
+//                    matrix<2,1> track_position{ compute_x_l(position_os.evaluation_point, track), compute_y_l(position_os.evaluation_point, track)  };
+//                    auto residuals = expr::compute(position_os.state( details::order_tag<0>{}) - track_position );
+//                    distance += expr::compute( transpose(residuals) * residuals );
+//                }
+                double const z = track.get_clusters().back().evaluation_point;
                     auto step = 1e-3;
 //                    while( position_os.evaluation_point + step < cluster_i->evaluation_point ){
                     while( position_os.evaluation_point + step < z ){
@@ -1955,9 +2006,9 @@ private:
                     matrix<2,1> track_position{ compute_x_l(position_os.evaluation_point, track), compute_y_l(position_os.evaluation_point, track)  };
                     auto residuals = expr::compute(position_os.state( details::order_tag<0>{}) - track_position );
                     distance += expr::compute( transpose(residuals) * residuals );
-                }
+//                }
 //                distance = sqrt(distance/track.get_clusters().size()-2);
-                distance = sqrt(distance/(matching_points-1));
+                distance = sqrt(distance);
                 refined_c.push_back( score_and_momentum{distance, momentum} );
             }
 //////
@@ -1970,17 +2021,22 @@ private:
 //            tree_h->Fill();
 //            std::sort(refined_c.begin(), refined_c.end(),
 //                      [](auto const& v1_p, auto const& v2_p){ return v1_p.score < v2_p.score; });
-            std::size_t const size{11};
+            std::size_t const size{5};
             std::size_t const lower_limit{size/2};
             std::size_t const upper_limit{size/2 +1 };
-            double const weight_refine = 2./7;
-            double const weight_computation = 5./7;
+//            double const weight_refine = 1 - 1./2 * ( );
+//            double const weight_refine = 1.258753;
+//            double const weight_computation = 1 - weight_refine;
             
             auto minimum_i = std::min_element( refined_c.begin(), refined_c.end(),
                                                [](auto const& v1_p, auto const& v2_p){ return v1_p.score < v2_p.score; } );
             if( minimum_i == refined_c.end() ){ ++skip_counter; continue ;}
             if( std::distance(refined_c.begin(), minimum_i) < lower_limit || std::distance(minimum_i, refined_c.end()) < upper_limit ){
-                track.momentum = weight_refine * minimum_i->momentum + track.momentum * weight_computation;
+//                double const weight_refine = 1 - 1./2 * abs( track.momentum - minimum_i->momentum )/track.momentum;
+//                double const weight_computation = 1 - weight_refine;
+//                track.momentum = weight_refine * minimum_i->momentum + track.momentum * weight_computation;
+                track.hypothesis.properties.momentum = track.momentum;
+                track.momentum = minimum_i->momentum;
                 ++minimal_counter;
             }
             else{
@@ -2017,8 +2073,14 @@ private:
                 determination_coefficient > 0.95 ? ++over_counter : ++below_counter;
 //                R2 = determination_coefficient;
 //
-                track.momentum = (-parameter(1,0)/(2*parameter(2,0))) * weight_refine + track.momentum * weight_computation;
                 
+//                double const weight_refine = 1 - 1./2 * determination_coefficient * abs( track.momentum - (-parameter(1,0)/(2*parameter(2,0))) )/track.momentum;
+//                double const weight_computation = 1 - weight_refine;
+//                track.momentum = (-parameter(1,0)/(2*parameter(2,0))) * weight_refine * determination_coefficient + track.momentum * (1 - weight_refine * determination_coefficient);
+//                track.momentum = (-parameter(1,0)/(2*parameter(2,0))) * weight_refine  + track.momentum * (1 - weight_refine);
+                track.hypothesis.properties.momentum = track.momentum;
+                track.momentum = (-parameter(1,0)/(2*parameter(2,0)));
+            
                 ++final_counter;
             }
 
