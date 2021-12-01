@@ -34,24 +34,24 @@ namespace details{
 
 template<class ... Ts> struct cut_counter_impl{};
 template<class ... Ts>
-struct cut_counter_impl<double, Ts...>{
+struct cut_counter_impl<details::cut, Ts...>{
     constexpr void operator()(std::size_t& count_p) const {
         ++count_p;
         cut_counter_impl<Ts...>{}(count_p);
     }
 };
 template<std::size_t N, class ... Ts>
-struct cut_counter_impl<std::array<double, N>, Ts...>{
+struct cut_counter_impl<std::array<details::cut, N>, Ts...>{
     constexpr void operator()(std::size_t& count_p) const {
         count_p +=N;
         cut_counter_impl<Ts...>{}(count_p);
     }
 };
-template<> struct cut_counter_impl<double>{
+template<> struct cut_counter_impl<details::cut>{
     constexpr void operator()(std::size_t& count_p) const { ++count_p; }
 };
 template<std::size_t N>
-struct cut_counter_impl< std::array<double, N> >{
+struct cut_counter_impl< std::array<details::cut, N> >{
     constexpr void operator()(std::size_t& count_p) const { count_p += N; }
 };
 template<> struct cut_counter_impl<>{
@@ -109,7 +109,7 @@ struct cut_holder{
     
     constexpr void reset_cuts(){ cut_mc = saved_cut_mc; }
     constexpr void save_cuts(){ saved_cut_mc = cut_mc; }
-    constexpr double* get_cut_handle( std::size_t index_p ){
+    constexpr details::cut* get_cut_handle( std::size_t index_p ){
         return get_cut_handle_impl(index_p, std::make_index_sequence< C::cut_count >{} );
     }
     template<class A>
@@ -118,8 +118,8 @@ struct cut_holder{
     }
 private:
     template<std::size_t ... Indices>
-    constexpr double* get_cut_handle_impl(std::size_t index_p, std::index_sequence<Indices...>){
-        double* result_h{nullptr};
+    constexpr details::cut* get_cut_handle_impl(std::size_t index_p, std::index_sequence<Indices...>){
+        details::cut* result_h{nullptr};
         int expander[] =  { 0, ( index_p == Indices ? void(result_h = get_underlying_cut<Indices>( std::make_index_sequence<C::detector_count-1>{} ) ) : void() , 0)...};
         return result_h;
     }
@@ -128,31 +128,31 @@ private:
     template< std::size_t Index,
               std::size_t ... Indices,
               typename std::enable_if_t< Index < cut_count_up_to<detector_tuple_t, 1>(  ) , std::nullptr_t> = nullptr >
-    constexpr double* get_underlying_cut(std::index_sequence<Indices...>){
+    constexpr details::cut* get_underlying_cut(std::index_sequence<Indices...>){
         return get_underlying_cut_impl<0>( Index );
     }
     template< std::size_t Index,
               std::size_t ... Indices,
               typename std::enable_if_t< Index >= cut_count_up_to<detector_tuple_t, C::detector_count -1>() , std::nullptr_t> = nullptr >
-    constexpr double* get_underlying_cut( std::index_sequence<Indices...>){
+    constexpr details::cut* get_underlying_cut( std::index_sequence<Indices...>){
         return get_underlying_cut_impl<C::detector_count -1>( Index - cut_count_up_to<detector_tuple_t, C::detector_count -1>()  );
     }
     template< std::size_t Index,
               std::size_t ... Indices,
               typename std::enable_if_t< (Index >= cut_count_up_to<detector_tuple_t, 1>() &&
                                 Index <  cut_count_up_to<detector_tuple_t, C::detector_count-1>() ) , std::nullptr_t> = nullptr>
-    constexpr double* get_underlying_cut( std::index_sequence<Indices...>){
-        double* result_h{nullptr};
+    constexpr details::cut* get_underlying_cut( std::index_sequence<Indices...>){
+        details::cut* result_h{nullptr};
         int expander[] =  {0, ( cut_count_up_to<detector_tuple_t, Indices>() <= Index && Index < cut_count_up_to<detector_tuple_t, Indices+1>() ?
                                void(result_h = get_underlying_cut_impl<Indices>( Index - cut_count_up_to<detector_tuple_t, Indices>() ) ) :
                                void() , 0)...};
         return result_h;
     }
     
-    template<std::size_t Index, typename std::enable_if_t< std::is_same<typename std::tuple_element<Index, tuple_t>::type, double >::value, std::nullptr_t > = nullptr >
-    constexpr double* get_underlying_cut_impl( std::size_t ){ return &std::get<Index>(cut_mc); }
-    template<std::size_t Index, typename std::enable_if_t< !std::is_same<typename std::tuple_element<Index, tuple_t>::type, double >::value, std::nullptr_t > = nullptr >
-    constexpr double* get_underlying_cut_impl( std::size_t index_p ){ return &std::get<Index>(cut_mc)[index_p]; }
+    template<std::size_t Index, typename std::enable_if_t< std::is_same<typename std::tuple_element<Index, tuple_t>::type, details::cut >::value, std::nullptr_t > = nullptr >
+    constexpr details::cut* get_underlying_cut_impl( std::size_t ){ return &std::get<Index>(cut_mc); }
+    template<std::size_t Index, typename std::enable_if_t< !std::is_same<typename std::tuple_element<Index, tuple_t>::type, details::cut >::value, std::nullptr_t > = nullptr >
+    constexpr details::cut* get_underlying_cut_impl( std::size_t index_p ){ return &std::get<Index>(cut_mc)[index_p]; }
     
 private:
     template<class A, std::size_t ... Indices>
@@ -179,9 +179,9 @@ private:
         int expander[] = {0,  (output_element(std::get<Indices>(cut_mc)), 0)...};
         std::cout << '\n';
     }
-    template<class T, typename std::enable_if_t< std::is_same<T, double>::value, std::nullptr_t> = nullptr>
+    template<class T, typename std::enable_if_t< std::is_same<T, details::cut>::value, std::nullptr_t> = nullptr>
     void output_element(T t_p) const { std::cout << t_p<< " "; }
-    template<class T, typename std::enable_if_t< !std::is_same<T, double>::value, std::nullptr_t> = nullptr>
+    template<class T, typename std::enable_if_t< !std::is_same<T, details::cut>::value, std::nullptr_t> = nullptr>
     void output_element(T t_pc) const {
         for( auto const& t : t_pc) { std::cout << t<< " " ; }
     }
@@ -237,6 +237,7 @@ struct action_factory<configuration< vertex_tag, tof_tag>> {
         computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
         computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
         computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
         
         return action_h;
     }
@@ -289,6 +290,7 @@ struct action_factory<configuration< vertex_tag, it_tag, tof_tag>> {
         computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
         computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
         computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
         
         return action_h;
     }
@@ -340,6 +342,7 @@ struct action_factory<configuration<vertex_tag,msd_tag, tof_tag>> {
         computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
         computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
         computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
         
         return action_h;
     }
@@ -395,6 +398,7 @@ struct action_factory<configuration<vertex_tag, it_tag, msd_tag, tof_tag>> {
         computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
         computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
         computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
         
         return action_h;
     }
@@ -411,6 +415,31 @@ struct TATOEbaseOptimizer : TAGaction {
     TAGaction(name_p, "TATOEoptimizer - Tool used to determine optimal cut values according to geometry for use in TOE") {}
     virtual Bool_t Action() = 0;
     virtual ~TATOEbaseOptimizer() = default;
+    
+    virtual void call() =0;
+    virtual bool& is_optimization_done()  =0;
+    virtual bool is_procedure_done() const  =0;
+    virtual void finalise_procedure()  =0;
+    virtual void switch_procedure() =0;
+    virtual void setup_procedure() =0;
+    virtual void setup_next_iteration() =0;
+    virtual void setup_cuts() =0;
+
+    virtual void apply_cuts() =0;
+    virtual void save_cuts()  =0;
+    virtual void output_cuts() const =0;
+    virtual void reset_cuts() =0;
+    virtual void set_selected_cut() =0;
+    
+    virtual std::vector<std::size_t> generate_available_cuts()  =0;
+    
+    virtual std::vector<reconstruction_module> const& retrieve_results()  =0;
+    
+    virtual checker::value_and_error retrieve_reconstructible() const  =0;
+    virtual checker::value_and_error retrieve_reconstructed() const  =0;
+    virtual checker::value_and_error retrieve_purity() const =0;
+    virtual checker::value_and_error retrieve_mass_yield() const =0;
+    virtual checker::value_and_error retrieve_momentum_residuals() const =0;
 };
 
 template<class O> struct underlying_configuration{};
@@ -449,23 +478,23 @@ struct TATOEoptimizer : TATOEbaseOptimizer{
         erased_procedure_mh{ new holder< baseline_procedure<S> > {}}
     {}
         
-    void call() { erased_procedure_mh->call(this); }
-    bool& is_optimization_done() { return is_optimization_done_m; }
-    bool is_procedure_done() const { return erased_procedure_mh->is_done( this ); }
-    void finalise_procedure() { erased_procedure_mh->finalise(this); }
-    void switch_procedure(){
+    void call() override { erased_procedure_mh->call(this); }
+    bool& is_optimization_done() override { return is_optimization_done_m; }
+    bool is_procedure_done() const override { return erased_procedure_mh->is_done( this ); }
+    void finalise_procedure()override  { erased_procedure_mh->finalise(this); }
+    void switch_procedure() override {
         puts(__PRETTY_FUNCTION__);
         if( current_procedure_m > sizeof...(Ps)-1 ){ current_procedure_m = 0; }
         switch_procedure_impl( std::make_index_sequence<sizeof...(Ps)>{} );
         ++current_procedure_m;
     }
-    void setup_procedure(){ erased_procedure_mh->setup(this); }
-    void setup_next_iteration(){
+    void setup_procedure() override { erased_procedure_mh->setup(this); }
+    void setup_next_iteration() override {
         auto& computation_checker_c = action_mh->get_computation_checker();
         for( auto& computation_checker : computation_checker_c ){ computation_checker.clear(); }
         erased_procedure_mh->setup_next_iteration(this);
     }
-    void setup_cuts(){ erased_procedure_mh->setup_cuts(this); }
+    void setup_cuts() override { erased_procedure_mh->setup_cuts(this); }
 
     
     Bool_t Action() override {
@@ -473,24 +502,25 @@ struct TATOEoptimizer : TATOEbaseOptimizer{
         return true;
     }
     
-    void apply_cuts(){ cut_mc.apply( action_mh.get() ); }
-    void save_cuts() { cut_mc.save_cuts(); }
-    void output_cuts() const { cut_mc.output(); }
-    void reset_cuts() { cut_mc.reset_cuts(); }
-    void set_selected_cut(){ *cut_mc.get_cut_handle( cut_index ) += offset * sign; }
+    void apply_cuts() override { cut_mc.apply( action_mh.get() ); }
+    void save_cuts() override  { cut_mc.save_cuts(); }
+    void output_cuts() const  override { cut_mc.output(); }
+    void reset_cuts()override  { cut_mc.reset_cuts(); }
+    void set_selected_cut() override { *cut_mc.get_cut_handle( cut_index ) += offset * sign; }
     
-    std::vector<std::size_t> generate_available_cuts() {
+    std::vector<std::size_t> generate_available_cuts() override {
         std::vector<std::size_t> result_c;
         for( std::size_t i{0}; i < C::cut_count ; ++i ){ result_c.push_back(i); }
         return result_c;
     }
     
-    auto const& retrieve_results() { return action_mh->retrieve_matched_results(); }
+    std::vector<reconstruction_module> const& retrieve_results() override  { return action_mh->retrieve_matched_results(); }
     
-    auto retrieve_reconstructible() const { return action_mh->get_computation_checker()[0].output(); }
-    auto retrieve_reconstructed() const { return action_mh->get_computation_checker()[1].output(); }
-    auto retrieve_purity() const { return action_mh->get_computation_checker()[2].output(); }
-    auto retrieve_mass_yield() const { return action_mh->get_computation_checker()[3].output(); }
+    checker::value_and_error retrieve_reconstructible() const override { return action_mh->get_computation_checker()[0].output(); }
+    checker::value_and_error retrieve_reconstructed() const override { return action_mh->get_computation_checker()[1].output(); }
+    checker::value_and_error retrieve_purity() const override { return action_mh->get_computation_checker()[2].output(); }
+    checker::value_and_error retrieve_mass_yield() const override { return action_mh->get_computation_checker()[3].output(); }
+    checker::value_and_error retrieve_momentum_residuals() const override { return action_mh->get_computation_checker()[4].output(); }
     
 private:
     template<std::size_t ... Indices>

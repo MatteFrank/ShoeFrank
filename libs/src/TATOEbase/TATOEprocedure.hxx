@@ -161,6 +161,27 @@ struct mass_scorer{
     }
 };
 
+
+struct momentum_scorer{
+    struct score_holder{
+        double value;
+        double residuals;
+        friend std::ostream& operator<<(std::ostream& os_p, score_holder const& s_p){
+            return os_p << "[momentum_residuals : score] -> [" << s_p.residuals << " : " << s_p.value << "]";
+        }
+    };
+    template<class O>
+    constexpr score_holder compute_score( O const* o_ph) const {
+        auto residuals = o_ph->retrieve_momentum_residuals();
+        auto score = -( residuals.value - o_ph->baseline.residuals )/o_ph->baseline.residuals;
+        return score_holder{ std::move(score), std::move(residuals.value)};
+    }
+    template<class O>
+    constexpr score_holder compute_first_score( O const* o_ph) const {
+        return score_holder{0, o_ph->retrieve_momentum_residuals().value};
+    }
+};
+
 struct overall_scorer{
     struct score_holder{
         double value;
@@ -180,8 +201,8 @@ struct overall_scorer{
         auto purity = o_ph->retrieve_purity();
         auto mass_yield = o_ph->retrieve_mass_yield();
         
-        auto score = ( efficiency - o_ph->baseline.efficiency )/o_ph->baseline.efficiency +
-                     ( purity.value - o_ph->baseline.purity )/o_ph->baseline.purity +
+        auto score = pow( ( efficiency - o_ph->baseline.efficiency )/o_ph->baseline.efficiency, 3) +
+                     pow( ( purity.value - o_ph->baseline.purity )/o_ph->baseline.purity, 3) +
                      ( mass_yield.value - o_ph->baseline.mass_yield )/o_ph->baseline.mass_yield  ;
         
         return score_holder{ std::move(score), std::move(efficiency), std::move(purity.value), std::move(mass_yield.value) };
@@ -278,13 +299,13 @@ struct global_only_finaliser{
             o_ph->cut_index = winner.cut_index;
             o_ph->baseline = winner.score;
             
-            auto available_cut_c = o_ph->generate_available_cuts();
-            available_cut_c.erase( std::remove_if(
-                                        available_cut_c.begin(),
-                                        available_cut_c.end(),
-                                        [&winner](auto const& value_p){ return value_p == winner.cut_index; }
-                                                  ) );
-            o_ph->get_available_cuts() = available_cut_c;
+//            auto available_cut_c = o_ph->generate_available_cuts();
+//            available_cut_c.erase( std::remove_if(
+//                                        available_cut_c.begin(),
+//                                        available_cut_c.end(),
+//                                        [&winner](auto const& value_p){ return value_p == winner.cut_index; }
+//                                                  ) );
+//            o_ph->get_available_cuts() = available_cut_c;
         }
         else{ o_ph->is_optimization_done() = true; }
     }
@@ -510,13 +531,6 @@ using rough_scan_procedure = local_scan_procedure_impl<details::local_scan_param
 
 template<class S>
 using fine_scan_procedure = local_scan_procedure_impl<details::local_scan_parameters<3,1>, S, caller, cut_setter, fine_scan_setter, fine_scan_finaliser >;
-
-
-//
-//template<class T>
-//struct underlying_scorer{};
-//template<class S>
-//struct
 
 
 #endif

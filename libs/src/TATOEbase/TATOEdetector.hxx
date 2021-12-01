@@ -48,6 +48,42 @@ template<class Tag>
 struct detector_properties {};
 
 namespace details{
+
+struct cut{
+//    constexpr friend cut operator+( cut lhs_p, int rhs_p){
+//        return (rhs_p < 0) ?
+//                    ((-rhs_p > static_cast<int>(lhs_p.value)) ? cut{1} : cut{lhs_p.value + rhs_p} ) :
+//                    cut{lhs_p.value + rhs_p};
+//    }
+//    constexpr friend cut operator-( cut lhs_p, int rhs_p){
+//        return (rhs_p > static_cast<int>(lhs_p.value)) ? cut{1} : cut{lhs_p.value - rhs_p};
+//    }
+//    constexpr friend cut operator+( cut lhs_p, unsigned int rhs_p){
+//        return cut{lhs_p.value + rhs_p};
+//    }
+//    constexpr friend cut operator-( cut lhs_p, unsigned int rhs_p){
+//        return (rhs_p > lhs_p.value) ? cut{1} : cut{lhs_p.value - rhs_p};
+//    }
+//    constexpr friend cut operator+( cut lhs_p, long unsigned int rhs_p){
+//        return cut{lhs_p.value + rhs_p};
+//    }
+//    constexpr friend cut operator-( cut lhs_p, long unsigned int rhs_p){
+//        return (rhs_p > lhs_p.value) ? cut{1} : cut{lhs_p.value - rhs_p};
+//    }
+    constexpr cut& operator+=( int value_p ){
+        (value_p < 0) ?
+              ((-value_p > static_cast<int>(value-1)) ? (value=1) : value+=value_p ) :
+              value+=value_p;
+        return *this;
+    }
+//    constexpr cut& operator+=( std::size_t value_p){
+//        value += value_p;
+//        return *this;
+//    }
+    constexpr operator std::size_t () const { return value; }
+    std::size_t value;
+};
+
 template<class D> struct detector_traits{};
 
 struct vertex_tag{
@@ -56,13 +92,18 @@ struct vertex_tag{
     using measurement_matrix =  matrix<2,4> ;
     using data_type = TAVTbaseCluster; //to be noted
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
-    using cut_t = std::array<double, 2>;
+    using cut_t = std::array<cut, 2>;
     constexpr static uint8_t shift = 3;
     constexpr static double block_weight = 0.5;
     
 //    constexpr static cut_t default_cut_value{15 ,15};
-    constexpr static cut_t default_cut_value{25 ,8}; //16O200C2H4_effc
+    constexpr static cut_t default_cut_value{20 ,20};
+//    constexpr static cut_t default_cut_value{25 ,25}; //old values
+//    constexpr static cut_t default_cut_value{25 ,8}; //16O200C2H4_effc
 //    constexpr static cut_t default_cut_value{22 ,9}; //16O200C2H4_massc
+//        constexpr static cut_t default_cut_value{15 ,15}; //16O200C2H4_massc
+//        constexpr static cut_t default_cut_value{20,8}; //16O200C2H4_momc
+//    constexpr static cut_t default_cut_value{25 ,16}; //12C200C_effc
 };
     
 struct it_tag{
@@ -71,13 +112,19 @@ struct it_tag{
     using measurement_matrix =  matrix<2,4> ;
     using data_type = TAITcluster;
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
-    using cut_t = std::array<double, 4>;
+    using cut_t = std::array<cut, 4>;
     static constexpr uint8_t shift = 2;
     constexpr static double block_weight = 0.37;
 
 //    constexpr static cut_t default_cut_value{15,15,15,15}; //default scan
-    constexpr static cut_t default_cut_value{24,33,24,37}; //16O200C2H4_effc
+    constexpr static cut_t default_cut_value{20,20,20,20}; //default scan
+//    constexpr static cut_t default_cut_value{50,50,51,51}; //old_values
+//    constexpr static cut_t default_cut_value{24,33,24,37}; //16O200C2H4_effc
 //    constexpr static cut_t default_cut_value{23,30,21,31}; //16O200C2H4_massc
+//        constexpr static cut_t default_cut_value{15,18,16,16}; //16O200C2H4_massc
+//    constexpr static cut_t default_cut_value{29,29,31,37}; //16O200C2H4_momc
+//    constexpr static cut_t default_cut_value{24,20,20,17}; //16O200C2H4_momc
+//    constexpr static cut_t default_cut_value{21,34,26,37}; //12C200C_effc
 };
 
 struct msd_tag{
@@ -86,14 +133,20 @@ struct msd_tag{
     using measurement_matrix =  matrix<1,4> ;
     using data_type = TAMSDcluster;
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
-    using cut_t = std::array<double, 6>;
+    using cut_t = std::array<cut, 6>;
     static constexpr uint8_t shift = 1;
     constexpr static double block_weight = 0.08;
 
-    constexpr static cut_t default_cut_value{20,25,12,19,3,6};  //16O200C2H4_effc
-//    constexpr static cut_t default_cut_value{15,15,15,15,15,15};
+//    constexpr static cut_t default_cut_value{20,25,12,19,3,6};  //16O200C2H4_effc
+//    constexpr static cut_t default_cut_value{15,15,15,15,15,15}; //default
+    constexpr static cut_t default_cut_value{20,20,20,20,20,20}; //default
+//    constexpr static cut_t default_cut_value{11,11,7,7,19,19}; //old_values
 //    constexpr static cut_t default_cut_value{17,25,12,19,6,8}; //16O200C2H4_massc
+//        constexpr static cut_t default_cut_value{15,15,13,12,15,15}; //16O200C2H4_massc
 
+//    constexpr static cut_t default_cut_value{22,19,12,19,3,12};  //16O200C2H4_momc
+//    constexpr static cut_t default_cut_value{23,20,20,18,20,15};  //16O200C2H4_momc
+//    constexpr static cut_t default_cut_value{20,20,19,21,20,19};  //12C200C_effc
 };
 
 struct ms2d_tag{
@@ -102,10 +155,10 @@ struct ms2d_tag{
     using measurement_matrix =  matrix<2,4> ;
     using data_type = TAMSDpoint;
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
-    using cut_t = double;
+    using cut_t = cut;
     static constexpr uint8_t shift = 4;
     constexpr static double block_weight = 0.5;
-    constexpr static double default_cut_value{25};
+    constexpr static cut_t default_cut_value{25};
 };
 
 struct tof_tag{
@@ -114,13 +167,16 @@ struct tof_tag{
     using measurement_matrix =  matrix<2,4> ;
     using data_type = TATWpoint;
     using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
-    using cut_t = std::array<double, 2 >;
+    using cut_t = std::array<cut, 2 >;
     static constexpr uint8_t shift = 0;
     constexpr static double block_weight = 0.05;
 
-//    constexpr static cut_t default_cut_value{4}; //efficiency+purity optimized 16O_200
-    constexpr static cut_t default_cut_value{7,3}; //16O200C2H4_effc
+    constexpr static cut_t default_cut_value{3,3}; //default
+//    constexpr static cut_t default_cut_value{7,3}; //16O200C2H4_effc
 //    constexpr static cut_t default_cut_value{11,2}; //16O200C2H4_massc
+//    constexpr static cut_t default_cut_value{6,2}; //16O200C2H4_momc
+//    constexpr static cut_t default_cut_value{1,3}; //16O200C2H4_momc
+//    constexpr static cut_t default_cut_value{4,5}; //16O200C2H4_effc
 };
     
 template<class Tag>
@@ -148,14 +204,14 @@ struct layer_generator
     struct layer{
         std::vector<candidate> candidate_c;
         const double depth;
-        std::array<double, 2> const cut_c;
+        std::array<details::cut, 2> const cut_c;
         static constexpr double block_weight = details::detector_traits<DetectorProperties>::block_weight;
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }
         
         template<class T>
-        double cut_value(T) const { return cut_c[T::index]; }
+        details::cut cut_value(T) const { return cut_c[T::index]; }
         
         bool empty(){ return candidate_c.empty(); }
     };
@@ -204,14 +260,14 @@ struct layer_generator<D<details::ms2d_tag>>
     struct layer{
         std::vector<candidate> candidate_c;
         const double depth;
-        const double cut;
+        const details::cut cut;
         static constexpr double block_weight = details::ms2d_tag::block_weight;
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }
         
         template<class T>
-        double cut_value(T) const { return cut; }
+        details::cut cut_value(T) const { return cut; }
         
         bool empty(){ return candidate_c.empty(); }
     };
@@ -263,13 +319,13 @@ struct track_list
     struct pseudo_layer{
         candidate_type candidate_m;
         double depth;
-        std::array<double,2> cut_c;
+        std::array<details::cut,2> cut_c;
         
         candidate_type& get_candidate(){ return candidate_m; }
         candidate_type const & get_candidate() const { return candidate_m; }
         
         template<class T>
-        double cut_value(T) const { return cut_c[T::index]; }
+        details::cut cut_value(T) const { return cut_c[T::index]; }
     };
     
     struct iterable_track{
@@ -416,7 +472,7 @@ public:
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
     
-    constexpr double get_cut_value(std::size_t index_p) const { return cut_mc[index_p]; }
+    constexpr details::cut get_cut_value(std::size_t index_p) const { return cut_mc[index_p]; }
 
     
     candidate generate_candidate( TAVTbaseCluster const * cluster_h  ) const ;
@@ -508,7 +564,7 @@ public:
     
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
-    constexpr double get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
+    constexpr details::cut get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
     
     constexpr void set_cuts( details::it_tag::cut_t&& cut_pc  ){ cut_mc = std::move(cut_pc); }
     
@@ -601,7 +657,7 @@ public:
     
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p ) const { return depth_mc[index_p]; }
-    constexpr double get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
+    constexpr details::cut get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
     
     layer_generator<detector_properties> form_layers() const
     {
@@ -630,14 +686,14 @@ struct detector_properties< details::tof_tag >
     struct layer{
         std::vector<candidate> candidate_c;
         double depth;
-        std::array<double, 2> cut_c;
+        std::array<details::cut, 2> cut_c;
         
         std::vector<candidate>& get_candidates(){ return candidate_c; }
         std::vector<candidate> const & get_candidates() const { return candidate_c; }
         bool empty(){ return candidate_c.empty(); }
         
         template<class T>
-        double cut_value(T) const { return cut_c[T::index]; }
+        details::cut cut_value(T) const { return cut_c[T::index]; }
     };
     
 private:
@@ -669,7 +725,7 @@ public:
     
     constexpr std::size_t layer_count() const { return 1; }
     constexpr double layer_depth() const { return depth_m; }
-    constexpr double get_cut_value(std::size_t index_p) const { return cut_mc[index_p]; }
+    constexpr details::cut get_cut_value(std::size_t index_p) const { return cut_mc[index_p]; }
     
     //remove with sfinae inside of range generator ?
     std::vector<candidate> generate_candidates() const
@@ -737,7 +793,7 @@ private:
     const TAMSDntuPoint* cluster_mhc;
     const measurement_matrix matrix_m = {{ 1, 0, 0, 0,
                                            0, 1, 0, 0  }};
-    double cut_m{details::ms2d_tag::default_cut_value};
+    details::cut cut_m{details::ms2d_tag::default_cut_value};
     constexpr static std::size_t layer{3};
     
     const std::array<double, layer> depth_mc;
@@ -771,9 +827,9 @@ public:
     
     constexpr std::size_t layer_count() const { return layer; }
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
-    constexpr double get_cut_value() const { return cut_m; }
+    constexpr details::cut get_cut_value() const { return cut_m; }
     
-    constexpr void set_cuts( double cut_p  ){ cut_m = std::move(cut_p); }
+    constexpr void set_cuts( details::cut cut_p  ){ cut_m = std::move(cut_p); }
     
     layer_generator<detector_properties> form_layers() const
     {
