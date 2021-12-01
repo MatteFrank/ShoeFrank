@@ -574,19 +574,43 @@ struct mass_distribution_data<histogram<absolute, reconstructed_based>, isolate_
 //----------------------------------------------
 //           momentum_resolution
 template<class Derived, class F> struct momentum_difference_outcome{};
+
+template<class Derived>
+struct momentum_difference_outcome<Derived, computation>{
+    void outcome( reconstruction_module const& rm_p ){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        auto const& reconstructible = rm_p.reconstructible_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        auto momentum_difference = (reconstructed.properties.momentum - reconstructible.properties.momentum)/1000;
+        ++data.counter;
+        data.residuals += pow( momentum_difference, 2);
+    }
+};
+
 template<class Derived, class B>
 struct momentum_difference_outcome<Derived, histogram<absolute, B>>{
     void outcome( reconstruction_module const& rm_p ){
         auto const& reconstructed = rm_p.reconstructed_o.value();
         auto const& reconstructible = rm_p.reconstructible_o.value();
         auto & data = static_cast<Derived&>(*this).data();
-        auto momentum_difference = (reconstructible.properties.momentum - reconstructed.properties.momentum)/1000;
+        auto momentum_difference = (reconstructed.properties.momentum - reconstructible.properties.momentum)/1000;
         data.value.fill_with(reconstructible.properties.momentum/1000, momentum_difference);
     }
 };
 
 
+
+
 template<class F, class CO> struct momentum_difference_data{};
+
+template<class CO>
+struct momentum_difference_data<computation, CO>{
+    double residuals{0};
+    std::size_t counter{0};
+
+    void clear() { residuals = 0.; counter = 0 ;  }
+};
+
 template<class B>
 struct momentum_difference_data<histogram<absolute, B>, no_requirement> {
     struct link {
@@ -613,7 +637,7 @@ struct momentum_difference_data<histogram<absolute, B>, no_requirement> {
                 link_c.push_back( link{std::make_unique<TTree>(Form("momentum_difference_%.2fGev/c_mixed", momentum), ""),
                                         momentum }  );
                 link_c.back().tree_h->Branch("value", &momentum_difference_p);
-                link_i->tree_h->Fill();
+                link_c.back().tree_h->Fill();
             }
         };
     };
@@ -631,7 +655,7 @@ struct momentum_difference_data<histogram<absolute, B>, isolate_charge<C>> {
     struct holder{
         std::vector<link> link_c;
         holder() { link_c.reserve(100); }
-        void fill_with( double momentum_p, double momentum_difference_p ){
+        void fill_with( double momentum_p, double momentum_difference_p){
             auto link_i = std::find_if(
                                 link_c.begin(), link_c.end(),
                                 [&momentum_p]( auto const& link_p ){
@@ -647,7 +671,7 @@ struct momentum_difference_data<histogram<absolute, B>, isolate_charge<C>> {
                 link_c.push_back( link{ std::make_unique<TTree>(Form("momentum_difference_%.2fGev/c_charge%d", momentum, C), ""),
                                         momentum   } );
                 link_c.back().tree_h->Branch("value", &momentum_difference_p);
-                link_i->tree_h->Fill();
+                link_c.back().tree_h->Fill();
             }
         };
     };
@@ -666,6 +690,126 @@ struct momentum_difference_output< Derived, histogram<T, B>, CO>{
         }
     }
 };
+template<class Derived, class CO>
+struct momentum_difference_output< Derived, computation, CO>{
+    value_and_error output() const {
+        value_and_error result;
+        auto const& data = static_cast<Derived const&>(*this).data();
+        result.value = sqrt(data.residuals/(data.counter-1));
+        result.error = result.value/sqrt(data.counter);
+        return result;
+    }
+};
+
+
+//----------------------------------------------
+//temp study
+template<class Derived, class F> struct momentum_study_outcome{};
+
+template<class Derived, class B>
+struct momentum_study_outcome<Derived, histogram<absolute, B>>{
+    void outcome( reconstruction_module const& rm_p ){
+        auto const& reconstructed = rm_p.reconstructed_o.value();
+        auto const& reconstructible = rm_p.reconstructible_o.value();
+        auto & data = static_cast<Derived&>(*this).data();
+        data.value.fill_with(reconstructible.properties.momentum/1000, reconstructed.properties.momentum/1000, reconstructed.computed_momentum/1000);
+    }
+};
+
+
+
+
+template<class F, class CO> struct momentum_study_data{};
+
+template<class B>
+struct momentum_study_data<histogram<absolute, B>, no_requirement> {
+    struct link {
+        std::unique_ptr<TTree> tree_h;
+        double momentum;
+    };
+    static constexpr double bin_size = 0.2;
+    struct holder{
+        std::vector<link> link_c;
+        holder() { link_c.reserve(100); }
+        void fill_with( double momentum_p, double refined_momentum_p, double computed_momentum_p ){
+            auto link_i = std::find_if(
+                                link_c.begin(), link_c.end(),
+                                [&momentum_p]( auto const& link_p ){
+                                            return link_p.momentum-bin_size/2 <= momentum_p && momentum_p < link_p.momentum+bin_size/2;
+                                                                    }
+                                        );
+            if( link_i != link_c.cend() ){
+                link_i->tree_h->SetBranchAddress("mc", &momentum_p);
+                link_i->tree_h->SetBranchAddress("refined", &refined_momentum_p );
+                link_i->tree_h->SetBranchAddress("computed", &computed_momentum_p );
+                link_i->tree_h->Fill();
+            }
+            else{
+                auto momentum = (static_cast<int>( momentum_p/bin_size ) * bin_size + bin_size/2);
+                link_c.push_back( link{std::make_unique<TTree>(Form("momentum_study_%.0fGevc_mixed", momentum*10), ""),
+                                        momentum }  );
+                link_c.back().tree_h->Branch("mc", &momentum_p);
+                link_c.back().tree_h->Branch("refined", &refined_momentum_p );
+                link_c.back().tree_h->Branch("computed", &computed_momentum_p );
+                link_c.back().tree_h->Fill();
+            }
+        };
+    };
+    
+    holder value;
+    void clear(){}
+};
+template<class B, int C>
+struct momentum_study_data<histogram<absolute, B>, isolate_charge<C>> {
+    struct link {
+        std::unique_ptr<TTree> tree_h;
+        double momentum;
+    };
+    static constexpr double bin_size = 0.2;
+    struct holder{
+        std::vector<link> link_c;
+        holder() { link_c.reserve(100); }
+        void fill_with( double momentum_p, double refined_momentum_p, double computed_momentum_p ){
+            auto link_i = std::find_if(
+                                link_c.begin(), link_c.end(),
+                                [&momentum_p]( auto const& link_p ){
+                                            return link_p.momentum-bin_size/2 <= momentum_p && momentum_p < link_p.momentum+bin_size/2;
+                                                                    }
+                                        );
+            if( link_i != link_c.cend() ){
+                link_i->tree_h->SetBranchAddress("mc", &momentum_p);
+                link_i->tree_h->SetBranchAddress("refined", &refined_momentum_p );
+                link_i->tree_h->SetBranchAddress("computed", &computed_momentum_p );
+                link_i->tree_h->Fill();
+            }
+            else{
+                auto momentum = (static_cast<int>( momentum_p/bin_size ) * bin_size + bin_size/2);
+                link_c.push_back( link{ std::make_unique<TTree>(Form("momentum_study_%.0fGevc_charge%d", momentum*10, C), ""),
+                                        momentum   } );
+                link_c.back().tree_h->Branch("mc", &momentum_p);
+                link_c.back().tree_h->Branch("refined", &refined_momentum_p );
+                link_c.back().tree_h->Branch("computed", &computed_momentum_p );
+                link_c.back().tree_h->Fill();
+            }
+        };
+    };
+    
+    holder value;
+    void clear(){}
+};
+
+template<class Derived, class F, class CO> struct momentum_study_output{};
+template<class Derived, class T, class B, class CO>
+struct momentum_study_output< Derived, histogram<T, B>, CO>{
+    void output() const {
+        auto& data = static_cast<Derived const&>(*this).data();
+        for( auto& link: data.value.link_c){
+            link.tree_h->Write();
+        }
+    }
+};
+
+
 
 //----------------------------------------------
 //                  residuals
@@ -1036,6 +1180,13 @@ using momentum_difference = producer< Format, ChargeOption, MatchOption,
                                     successfull_reconstruction_predicate,
                                     momentum_difference_outcome,
                                     momentum_difference_output >;
+
+template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
+using momentum_study = producer< Format, ChargeOption, MatchOption,
+                                    momentum_study_data,
+                                    successfull_reconstruction_predicate,
+                                    momentum_study_outcome,
+                                    momentum_study_output >;
 
 template<class Format, class ChargeOption = no_requirement, class MatchOption = no_requirement>
 using residuals = producer< Format, ChargeOption, MatchOption,

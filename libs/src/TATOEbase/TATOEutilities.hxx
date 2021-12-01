@@ -101,6 +101,7 @@ struct reconstructed_track{
     double shearing_factor;
     polynomial_fit_parameters parameters;
     std::size_t clone_number{0};
+    double computed_momentum;
 };
 
 struct reconstruction_module{
