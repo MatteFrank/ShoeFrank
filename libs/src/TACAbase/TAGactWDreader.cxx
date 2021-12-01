@@ -408,14 +408,16 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration(){
   }
   
   wclk_ref = clk_waves.find(make_pair(27,16))->second;
-  t_trig_ref = wclk_ref->GetVectRawT().at((1024-wclk_ref->GetTriggerCellId())%1024);
+  //  t_trig_ref = wclk_ref->GetVectRawT().at((1024-wclk_ref->GetTriggerCellId())%1024);
+  t_trig_ref = wclk_ref->GetVectRawT().at(1023);
 
   //clocks alignment and jitter calculation
   map<pair<int,int>, double> clk_jitter;
   map<pair<int,int>, TWaveformContainer*>::iterator it;
   for(it=clk_waves.begin(); it != clk_waves.end(); it++){
     TWaveformContainer *wclk = it->second;
-    t_trig = wclk->GetVectRawT().at((1024-wclk->GetTriggerCellId())%1024);
+    //t_trig = wclk->GetVectRawT().at((1024-wclk->GetTriggerCellId())%1024);
+    t_trig = wclk->GetVectRawT().at(1023);
     dt = t_trig_ref - t_trig;
     vector<double> calib_time;
     for(int i=0;i<wclk->GetVectRawT().size();i++){
@@ -432,9 +434,14 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration(){
   for(int i=0; i<(int)st_waves.size();i++){
     TWaveformContainer *wst = st_waves.at(i);
     int ch_clk = (wst->GetChannelId()<8) ? 16 : 17;
-    double jitter = clk_jitter.find(make_pair(wst->GetBoardId(),ch_clk))->second;
-    t_trig = wst->GetVectRawT().at((1024-wst->GetTriggerCellId())%1024);
-    dt = t_trig_ref - t_trig - jitter;
+    double phaseST = clk_jitter.find(make_pair(27,16))->second;
+    double phase = clk_jitter.find(make_pair(wst->GetBoardId(),ch_clk))->second;
+    //t_trig = wst->GetVectRawT().at((1024-wst->GetTriggerCellId())%1024);
+    t_trig = wst->GetVectRawT().at(1023);
+    dt = t_trig_ref - t_trig +phaseST - phase;
+    //dt = t_trig_ref - t_trig;
+    //dt = - phaseST+phase;
+    //cout << "jitterST::" << jitter << endl;
     vector<double> calib_time;
     for(int i=0;i<wst->GetVectRawT().size();i++){
       calib_time.push_back(wst->GetVectRawT().at(i)+dt);
@@ -452,9 +459,15 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration(){
   for(int i=0; i<(int)tw_waves.size();i++){
     TWaveformContainer *wtw = tw_waves.at(i);
     int ch_clk = (wtw->GetChannelId()<8) ? 16 : 17;
-    double jitter = clk_jitter.find(make_pair(wtw->GetBoardId(),ch_clk))->second;
-    t_trig = wtw->GetVectRawT().at((1024-wtw->GetTriggerCellId())%1024);
-    dt = t_trig_ref - t_trig - jitter;
+    double phaseST = clk_jitter.find(make_pair(27,16))->second;
+    double phase = clk_jitter.find(make_pair(wtw->GetBoardId(),ch_clk))->second;
+    // t_trig = wtw->GetVectRawT().at((1024-wtw->GetTriggerCellId())%1024);
+    t_trig = wtw->GetVectRawT().at(1023);
+    dt = t_trig_ref - t_trig + phaseST-phase;
+    //dt = t_trig_ref - t_trig;
+    // cout << "board::" << wtw->GetBoardId() << "  jitter:" << -phaseST+phase << endl;
+    // cout << "phaseST::" << phaseST << endl;
+    // cout << "phase::" << phase << endl;
     vector<double> calib_time;
     for(int i=0;i<wtw->GetVectRawT().size();i++){
       calib_time.push_back(wtw->GetVectRawT().at(i)+dt);
@@ -509,7 +522,24 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk){
   //Find the zero of the CLK waveform
   double wave_0 = (*(minmax.second) + *(minmax.first))/2;
   
-  for(int i=5;i<vtime.size()-5;i++){
+  // for(int i=5;i<vtime.size()-5;i++){
+
+  //     t1 = vtime.at(i-1);
+  //     t2 = vtime.at(i);
+  //     a1 = vamp.at(i-1);
+  //     a2 = vamp.at(i);
+      
+  //     if(a1<wave_0 && a2>=wave_0){
+  // 	m = (a2-a1)/(t2-t1);
+  // 	q = a1 - m*t1;
+  // 	tzerocrossing = (wave_0-q/m);
+  // 	tzeros.push_back(tzerocrossing);
+  // 	ncycles++;
+  // 	nclock.push_back((double)ncycles);
+  //     }
+  // }
+
+  for(int i=vtime.size()-1;i>=1;i--){
 
       t1 = vtime.at(i-1);
       t2 = vtime.at(i);
@@ -519,28 +549,35 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk){
       if(a1<wave_0 && a2>=wave_0){
 	m = (a2-a1)/(t2-t1);
 	q = a1 - m*t1;
-	tzerocrossing = -q/m;
+	tzerocrossing = (wave_0-q)/m;
 	tzeros.push_back(tzerocrossing);
-	nclock.push_back((double)ncycles);
 	ncycles++;
+	nclock.push_back((double)ncycles);
+	//cout << "tzero::" << tzerocrossing << endl;
       }
+      if(ncycles==10)break;
   }
+  
+
   
   double phase, period=0;
   int status;
+
+  reverse(tzeros.begin(), tzeros.end());
+  //for(int i=0;i<nclock.size();i++)cout << "nclock::" << nclock.at(i) << endl;
   TGraph tmp_gr(nclock.size(),&nclock[0], &tzeros[0]);
   tmp_gr.LeastSquareLinearFit(nclock.size(), phase, period, status);
   // TCanvas c("c","",600,600);
   // c.cd();
-  tmp_gr.Draw("AP*");
-  tmp_gr.GetXaxis()->SetLimits(-3,3);
-  tmp_gr.SetMaximum(25);
-  // tmp_gr.SetMinimum(-2);
+  // tmp_gr.Draw("AP*");
+  // //  tmp_gr.GetXaxis()->SetLimits(-3,3);
+  // //tmp_gr.SetMaximum(25);
+  // //tmp_gr.SetMinimum(-2);
   // TF1 fun("fun","[0]+[1]*x",-1,100);
   // fun.SetParameter(0, phase);
   // fun.SetParameter(1, period);
   // fun.Draw("same");
-  // c.SaveAs(Form("clock_board%d.pdf", BoardId));
+  // c.SaveAs(Form("clock_board%d.pdf",wclk->GetBoardId()));
   // cout << "board::" << BoardId << "  phase::" << phase << endl;
   
   return phase;
@@ -566,7 +603,6 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACA
   double delTW = p_WDtim->GetCFDdel("TW");
   double delCA = p_WDtim->GetCFDdel("CA");
 
-  //cout  << "algo::" << algoST.data() << "  frac::" << fracST << "  del::" << delST << endl;
   
   for(int i=0; i<(int)st_waves.size();i++){
     p_straw->NewHit(st_waves.at(i), algoST, fracST, delST);

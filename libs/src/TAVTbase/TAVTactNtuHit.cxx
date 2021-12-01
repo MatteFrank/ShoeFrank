@@ -52,6 +52,7 @@ Bool_t TAVTactNtuHit::Action()
    
    Int_t nFragments = datDaq->GetFragmentsN();
    UInt_t bcoTrig = 0;
+   UInt_t evtNumber = 0;
    static Bool_t first = false;
    
    const DECardEvent* evt  = 0x0;
@@ -68,7 +69,6 @@ Bool_t TAVTactNtuHit::Action()
              evt = evt0;
           else
              evt = fQueueEvt.front();
-
           bcoTrig    = evt->BCOofTrigger;
           fData      = evt->values;
           fEventSize = evt->evtSize;
@@ -86,13 +86,18 @@ Bool_t TAVTactNtuHit::Action()
    TrgEvent* trig = datDaq->GetTrgEvent();
    if (!trig) return true;
 
+   InfoEvent* evtInfo = datDaq->GetInfoEvent();
+   if (!evtInfo) return true;
+
+   evtNumber = evtInfo->eventNumber;
+   
    if (!first) {
       fFirstBcoTrig = bcoTrig-trig->BCOofTrigger;
       first = true;
    }
    
-   Int_t diff    = bcoTrig - trig->BCOofTrigger - fFirstBcoTrig;
-   fpHisBCOofTrigger->Fill(diff);
+   Int_t diff = bcoTrig - trig->BCOofTrigger - fFirstBcoTrig;
+   fpHisBCOofTrigger->Fill(evtNumber, diff);
    
    if (TMath::Abs(float(diff)) > fgTStolerance) {
       Warning("Action()", "BCOofTrigger difference higher than %u (%d) for %d time(s), resynchronizing", fgTStolerance, diff, fQueueEvtsN+1);

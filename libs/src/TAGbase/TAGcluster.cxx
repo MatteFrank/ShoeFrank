@@ -13,10 +13,10 @@ ClassImp(TAGcluster);
 //! Constructor
 TAGcluster::TAGcluster()
  : TAGobject(),
-   fPosition(0., 0., 0.),
-   fPosError(0., 0., 0.),
-   fPositionG(0., 0., 0.),
-   fPosErrorG(0., 0., 0.),
+   fPosition1(0., 0., 0.),
+   fPosError1(0., 0., 0.),
+   fPosition2(0., 0., 0.),
+   fPosError2(0., 0., 0.),
    fClusterIdx(-1),
    fElementsN(-1),
    fSensorIdx(-1),
@@ -31,10 +31,10 @@ TAGcluster::TAGcluster()
 //! Copy constructor
 TAGcluster::TAGcluster(const TAGcluster& cluster)
  : TAGobject(),
-   fPosition(cluster.fPosition),
-   fPosError(cluster.fPosError),
-   fPositionG(cluster.fPositionG),
-   fPosErrorG(cluster.fPosErrorG),
+   fPosition1(cluster.fPosition1),
+   fPosError1(cluster.fPosError1),
+   fPosition2(cluster.fPosition2),
+   fPosError2(cluster.fPosError2),
    fMcTrackIdx(cluster.fMcTrackIdx),
    fClusterIdx(cluster.fClusterIdx),
    fSensorIdx(cluster.fSensorIdx),
@@ -48,29 +48,29 @@ TAGcluster::TAGcluster(const TAGcluster& cluster)
 //
 void TAGcluster::SetPosition(TVector3& pos)
 {
-   fPosition.SetXYZ(pos.X(), pos.Y(), pos.Z());
+   fPosition1.SetXYZ(pos.X(), pos.Y(), pos.Z());
 }
 
 //______________________________________________________________________________
 //
 void TAGcluster::SetPosError(TVector3& pos)
 {
-   fPosError.SetXYZ(pos.X(), pos.Y(), pos.Z());
+   fPosError1.SetXYZ(pos.X(), pos.Y(), pos.Z());
 }
 
 //______________________________________________________________________________
 //
 void TAGcluster::SetPositionG(TVector3& posGlo)
 {
-   fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
-   fPosErrorG.SetXYZ(fPosError.X(), fPosError.Y(), 0.01);
+   fPosition2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   fPosError2.SetXYZ(fPosError1.X(), fPosError1.Y(), 0.01);
 }
 
 //______________________________________________________________________________
 //
 void TAGcluster::SetPosErrorG(TVector3& posGlo)
 {
-   fPosErrorG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   fPosError2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
 }
 
 //______________________________________________________________________________

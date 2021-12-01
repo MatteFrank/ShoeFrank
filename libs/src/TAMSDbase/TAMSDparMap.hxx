@@ -22,14 +22,14 @@ public:
 
    Bool_t          FromFile(const TString& name);
    Int_t           GetSensorId(Int_t boardId, Int_t viewId);
-
+   Int_t           GetSensorsN() const { return fSensorsN; }
+  
 private:
-
-  Int_t nSens;
+  Int_t         fSensorsN;
   vector<Int_t> fSensId;
   vector<Int_t> fBoardId;
   vector<Int_t> fViewId;
-  TString                  fkDefaultMapName; // default detector mapping file
+  TString       fkDefaultMapName; // default detector mapping file
   
   ClassDef(TAMSDparMap,2)
   

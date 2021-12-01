@@ -20,18 +20,34 @@ ClassImp(TAGtrack);
 //! Default constructor.
 
 TAGtrack::TAGtrack()
- : TAGobject(),
+ : TAGnamed(),
+   fEvtNumber(-1),
+   fPdgId(-1),
+   fLength(-99.),
+   fChi2(-99.),
+   fNdof(-1),
+   fPval(-99.),
+   fQuality(-99),
    fMass(0.),
-   fMom(0.),
-   fCharge(0.),
-   fTof(0.),
+   fMomModule(0.),
+   fTwChargeZ(0.),
+   fTwTof(0.),
    fTrkId(-1),
+   fFitMass(-99.),
+   fFitChargeZ(-1),
+   fFitTof(-99.),
+   fFitEnergyLoss(-99.),
+   fFitEnergy(-99.),
    fTgtDir(0,0,0),
    fTgtPos(0,0,0),
-   fTofPos(0,0,0),
-   fTofDir(0,0,0),
-   fListOfMeasPoints(0x0),
-   fListOfCorrPoints(0x0)
+   fTgtPosError(0,0,0),
+   fTgtMom(0,0,0),
+   fTgtMomError(0,0,0),
+   fTwPos(0,0,0),
+   fTwPosError(0,0,0),
+   fTwMom(0,0,0),
+   fTwMomError(0,0,0),
+   fListOfPoints(0x0)
 {
    SetupClones();
 }
@@ -39,39 +55,70 @@ TAGtrack::TAGtrack()
 //------------------------------------------+-----------------------------------
 //! Constructor.
 TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
- : TAGobject(),
+ : TAGnamed(),
+   fEvtNumber(-1),
+   fPdgId(-1),
+   fLength(-99.),
+   fChi2(-99.),
+   fNdof(-1),
+   fPval(-99.),
+   fQuality(-99),
    fMass(mass),
-   fMom(mom),
-   fCharge(charge),
-   fTof(tof),
+   fMomModule(mom),
+   fTwChargeZ(charge),
+   fTwTof(tof),
    fTrkId(-1),
+   fFitMass(-99.),
+   fFitChargeZ(-1),
+   fFitTof(-99.),
+   fFitEnergyLoss(-99.),
    fTgtDir(0,0,0),
    fTgtPos(0,0,0),
-   fTofPos(0,0,0),
-   fTofDir(0,0,0),
-   fListOfMeasPoints(0x0),
-   fListOfCorrPoints(0x0)
+   fTgtPosError(0,0,0),
+   fTgtMom(0,0,0),
+   fTgtMomError(0,0,0),
+   fTwPos(0,0,0),
+   fTwPosError(0,0,0),
+   fTwMom(0,0,0),
+   fTwMomError(0,0,0),
+   fListOfPoints(0x0)
 {
    SetupClones();
-   fEnergy = TMath::Sqrt(mass*mass + mom*mom) - mass;
+   fFitEnergy = TMath::Sqrt(mass*mass + mom*mom) - mass;
 }
 
 //______________________________________________________________________________
 //
 TAGtrack::TAGtrack(const TAGtrack& aTrack)
-:  TAGobject(aTrack),
+:  TAGnamed(aTrack),
+   fEvtNumber(aTrack.fEvtNumber),
+   fPdgId(aTrack.fPdgId),
+   fLength(aTrack.fLength),
+   fChi2(aTrack.fChi2),
+   fNdof(aTrack.fNdof),
+   fPval(aTrack.fPval),
+   fQuality(aTrack.fQuality),
    fMass(aTrack.fMass),
-   fMom(aTrack.fMom),
-   fCharge(aTrack.fCharge),
-   fTof(aTrack.fTof),
+   fMomModule(aTrack.fMomModule),
+   fTwChargeZ(aTrack.fTwChargeZ),
+   fTwTof(aTrack.fTwTof),
    fTrkId(aTrack.fTrkId),
+   fFitMass(aTrack.fFitMass),
+   fFitChargeZ(aTrack.fFitChargeZ),
+   fFitTof(aTrack.fFitTof),
+   fFitEnergyLoss(aTrack.fFitEnergyLoss),
+   fFitEnergy(aTrack.fFitEnergy),
    fTgtDir(aTrack.fTgtDir),
    fTgtPos(aTrack.fTgtPos),
-   fTofPos(aTrack.fTofPos),
-   fTofDir(aTrack.fTofDir)
+   fTgtPosError(aTrack.fTgtPosError),
+   fTgtMom(aTrack.fTgtMom),
+   fTgtMomError(aTrack.fTgtMomError),
+   fTwPos(aTrack.fTwPos),
+   fTwPosError(aTrack.fTwPosError),
+   fTwMom(aTrack.fTwMom),
+   fTwMomError(aTrack.fTwMomError)
 {
-   fListOfMeasPoints = (TClonesArray*)aTrack.fListOfMeasPoints->Clone();
-   fListOfCorrPoints = (TClonesArray*)aTrack.fListOfCorrPoints->Clone();
+   fListOfPoints = (TClonesArray*)aTrack.fListOfPoints->Clone();
 }
 
 
@@ -79,80 +126,63 @@ TAGtrack::TAGtrack(const TAGtrack& aTrack)
 //! Destructor.
 TAGtrack::~TAGtrack()
 {
-   delete fListOfMeasPoints;
-   delete fListOfCorrPoints;
+   delete fListOfPoints;
 }
 
 //______________________________________________________________________________
 //
 void TAGtrack::SetupClones()
 {
-   if (!fListOfMeasPoints) fListOfMeasPoints = new TClonesArray("TAGpoint");
-   if (!fListOfCorrPoints) fListOfCorrPoints = new TClonesArray("TAGpoint");
+   if (!fListOfPoints) fListOfPoints = new TClonesArray("TAGpoint");
 }
 
 // __________________________________________________________________________
 //
-TAGpoint* TAGtrack::AddMeasPoint(TAGpoint* point)
+TAGpoint* TAGtrack::AddPoint(TAGpoint* point)
 {
-   TClonesArray &pointArray = *fListOfMeasPoints;
+   TClonesArray &pointArray = *fListOfPoints;
    return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
 }
 
+
 // __________________________________________________________________________
 //
-TAGpoint* TAGtrack::AddCorrPoint(TAGpoint* point)
+TAGpoint* TAGtrack::AddPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
 {
-   TClonesArray &pointArray = *fListOfCorrPoints;
-   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
+   TClonesArray &pointArray = *fListOfPoints;
+   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(measPos, measPosErr, fitPos, fitPosErr, mom, momErr);
 }
 
 // __________________________________________________________________________
 //
-TAGpoint* TAGtrack::AddMeasPoint(TString name, TVector3 pos, TVector3 posErr)
+TAGpoint* TAGtrack::AddPoint(TString name, TVector3 measPos, TVector3 measPosErr)
 {
-   TClonesArray &pointArray = *fListOfMeasPoints;
-   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, pos, posErr);
+   TClonesArray &pointArray = *fListOfPoints;
+   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, measPos, measPosErr);
 }
 
 // __________________________________________________________________________
 //
-TAGpoint* TAGtrack::AddMeasPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
+TAGpoint* TAGtrack::AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr)
 {
-   TClonesArray &pointArray = *fListOfMeasPoints;
-   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, fCharge);
+   TClonesArray &pointArray = *fListOfPoints;
+   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, measPos, measPosErr, fitPos, fitPosErr);
 }
 
 // __________________________________________________________________________
 //
-TAGpoint* TAGtrack::AddCorrPoint(TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
+TAGpoint* TAGtrack::AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
 {
-   TClonesArray &pointArray = *fListOfCorrPoints;
-   return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(pos, posErr, mom, momErr, fCharge);
-}
-
-// __________________________________________________________________________
-//
-TAGpoint* TAGtrack::AddMeasPoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
-{
-  TClonesArray &pointArray = *fListOfMeasPoints;
-  return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, pos, posErr, mom, momErr, fCharge);
-}
-
-// __________________________________________________________________________
-//
-TAGpoint* TAGtrack::AddCorrPoint(TString name, TVector3 pos, TVector3 posErr, TVector3 mom, TVector3 momErr)
-{
-  TClonesArray &pointArray = *fListOfCorrPoints;
-  return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, pos, posErr, mom, momErr, fCharge);
+  TClonesArray &pointArray = *fListOfPoints;
+  return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(name, measPos, measPosErr, fitPos, fitPosErr, mom, momErr);
 }
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
 void TAGtrack::Clear(Option_t*)
 {
-   fListOfMeasPoints->Delete();
-   fListOfCorrPoints->Delete();
+   fListOfPoints->Delete();
+   fListOfPoints->Delete();
 }
 
 //______________________________________________________________________________
@@ -161,7 +191,7 @@ Double_t TAGtrack::GetTgtTheta() const
 {
    TVector3 direction = fTgtDir.Unit();
    Double_t theta      = direction.Theta();
-   
+
    return theta;
 }
 
@@ -171,29 +201,11 @@ Double_t TAGtrack::GetTgtPhi() const
 {
    TVector3 origin = fTgtDir.Unit();
    Double_t phi     = origin.Phi();
-   
+
    return phi;
 }
 
-//______________________________________________________________________________
-//
-Double_t TAGtrack::GetTofTheta() const
-{
-   TVector3 direction = fTofDir.Unit();
-   Double_t theta      = direction.Theta();
-   
-   return theta;
-}
 
-//______________________________________________________________________________
-//
-Double_t TAGtrack::GetTofPhi() const
-{
-   TVector3 origin = fTofDir.Unit();
-   Double_t phi     = origin.Phi();
-   
-   return phi;
-}
 
 
 //______________________________________________________________________________
@@ -202,7 +214,7 @@ TVector3 TAGtrack::Intersection(Double_t posZ) const
 {
    // calculates the Intersection of the Track with the plane in
    // the coordinate system of the tracker.
-   
+
    TVector3 result(fTgtPos);  // track origin in xyz tracker coordinates
    result(2) = 0.;
    result += fTgtDir * posZ; // intersection in xyz frame at z_plane
@@ -220,7 +232,7 @@ Double_t TAGtrack::Distance(TAGtrack* track, Float_t z) const
    TVector3 pos2 = track->Intersection(z);
    TVector3 pos0 = pos1-pos2;
    Double_t rho0  = pos0.Mag();
-   
+
    return rho0;
 }
 
@@ -233,6 +245,74 @@ TVector3 TAGtrack::GetPosition( double z ){
     };
 }
 
+//------------------------------------------+-----------------------------------
+Double_t TAGtrack::GetTotEnergyLoss() const
+{
+ Double_t energyLoss = 0.;
+
+   for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
+      const TAGpoint* point = GetPoint(iPoint);
+      TString name = point->GetDevName();
+      if (name.Contains("MSD"))
+         energyLoss += point->GetEnergyLoss();
+      if (name.Contains("TW"))
+         energyLoss += point->GetEnergyLoss();
+      if (name.Contains("CA"))
+         energyLoss += point->GetEnergyLoss();
+   }
+
+   return energyLoss;
+}
+
+//------------------------------------------+-----------------------------------
+Double_t TAGtrack::GetMsdEnergyLoss() const
+{
+   Double_t energyLoss = 0.;
+
+   for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
+      const TAGpoint* point = GetPoint(iPoint);
+      TString name = point->GetDevName();
+      if (name.Contains("MSD"))
+         energyLoss += point->GetEnergyLoss();
+   }
+
+   return energyLoss;
+}
+
+//------------------------------------------+-----------------------------------
+Double_t TAGtrack::GetTwEnergyLoss() const
+{
+   Double_t energyLoss = 0.;
+
+   for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
+      const TAGpoint* point = GetPoint(iPoint);
+      TString name = point->GetDevName();
+      if (name.Contains("TW"))
+         energyLoss += point->GetEnergyLoss();
+   }
+
+   return energyLoss;
+}
+
+//------------------------------------------+-----------------------------------
+TArrayI TAGtrack::GetMcTrackIdx()
+{
+   fMcTrackMap.clear();
+   fMcTrackIdx.Set(0);
+   for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
+      const TAGpoint* point = GetPoint(iPoint);
+      for( Int_t i = 0; i < point->GetMcTracksN(); ++i) {
+         Int_t trackIdx = point->GetMcTrackIdx(i);
+         if (fMcTrackMap[trackIdx] == 0) {
+            fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
+            fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
+            fMcTrackMap[trackIdx] = 1;
+         }
+      }
+   }
+
+   return fMcTrackIdx;
+}
 
 
 //##############################################################################
@@ -309,7 +389,7 @@ TAGtrack* TAGntuGlbTrack::NewTrack(Double_t mass, Double_t mom, Double_t charge,
    TClonesArray &trackArray = *fListOfTracks;
    TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(mass, mom, charge, tof);
    track->SetTrackId(trkId);
-   
+
    return track;
 }
 
@@ -338,7 +418,7 @@ void TAGntuGlbTrack::ToStream(ostream& os, Option_t* option) const
    os << "TAGntuGlbTrack " << GetName()
    << Form("  nPixels=%3d", GetTracksN())
    << endl;
-   
+
    //TODO properly
    for (Int_t j = 0; j < GetTracksN(); j++) {
       const TAGtrack*  track = GetTrack(j);
@@ -347,4 +427,3 @@ void TAGntuGlbTrack::ToStream(ostream& os, Option_t* option) const
       os << endl;
    }
 }
-

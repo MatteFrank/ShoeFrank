@@ -44,7 +44,10 @@ TAGactTreeReader::TAGactTreeReader(const char* name)
     fpTree(0),
     fiNEntry(0),
     fiCurrentEntry(-1),
-    fbDscBranch(true)
+    fbDscBranch(true),
+    fpFriendFileName(""),
+    fpFriendFile(0x0),
+    fpFriendTreeName("")
 {
   fpBranchList = new TList();
   fpBranchList->SetOwner(kTRUE);
@@ -106,7 +109,16 @@ Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TStrin
   Close();
   if (option == 0) option = fOpenOpt.Data();
   fpFile = TFile::Open(name, option);
-
+   if (!fpFriendFileName.IsNull()) {
+      fpFriendFile = TFile::Open(fpFriendFileName.Data(), option);
+      if (!fpFriendFile->IsOpen()) {
+         Error("Open()", "Failed to open friend file '%s'", fpFriendFileName.Data());
+         delete fpFriendFile;
+         fpFriendFile = 0;
+         return 1;
+      }
+   }
+   
   if (!fpFile->IsOpen()) {
     Error("Open()", "Failed to open file '%s'", name.Data());
     delete fpFile;
@@ -116,6 +128,9 @@ Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TStrin
   }
 
   fpTree = (TTree*) fpFile->Get(treeName.Data());
+   if (!fpFriendFileName.IsNull())
+      fpTree->AddFriend(fpFriendTreeName.Data(), fpFriendFile);
+   
   if (!fpTree) {
     Error("Open()", "No object named 'tree' found");
     Close();
@@ -180,6 +195,15 @@ void TAGactTreeReader::Close()
 Bool_t TAGactTreeReader::IsOpen() const
 {
   return fpFile != 0;
+}
+
+//------------------------------------------+-----------------------------------
+//! Add friend tree
+
+void TAGactTreeReader::AddFriendTree(TString fileName, TString treeName)
+{
+   fpFriendFileName = fileName;
+   fpFriendTreeName = treeName;
 }
 
 //------------------------------------------+-----------------------------------

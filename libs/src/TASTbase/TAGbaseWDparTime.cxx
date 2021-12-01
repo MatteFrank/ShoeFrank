@@ -134,12 +134,19 @@ bool TAGbaseWDparTime::FromFile(TString tcal_filename, TString cfd_filename)
             cfddel[string(det)] = 0;
             if(FootDebugLevel(1))
                cout << "detector::" << det << "   CFDalgo::" << algo << "   frac::" << frac << endl;
+	 }else if(strcmp(algo,"zarrCFD")==0){
+	   sscanf(line, "%s %s %lf %lf", det, algo,&frac,&del);
+	   cfdalgo[string(det)] = string(algo);
+	   cfdfrac[string(det)] = frac;
+	   cfddel[string(det)] = 0;
+	   if(FootDebugLevel(1))
+	     cout << "detector::" << det << "   CFDalgo::" << algo << "   frac::" << frac << endl;
          }else{
-            cfdalgo[string(det)] = "simpleCFD";
-            cfdfrac[string(det)] = 0.3;
-            cfddel[string(det)] = 0;
-            if(FootDebugLevel(1))
-               cout << "detector::" << det << "   CFDalgo::" << algo << "   frac::" << frac << endl;
+	   cfdalgo[string(det)] = "simpleCFD";
+	   cfdfrac[string(det)] = 0.3;
+	   cfddel[string(det)] = 0;
+	   if(FootDebugLevel(1))
+	     cout << "detector::" << det << "   CFDalgo::" << algo << "   frac::" << frac << endl;
          }
       }
    }

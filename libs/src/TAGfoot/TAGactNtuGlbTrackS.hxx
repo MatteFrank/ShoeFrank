@@ -60,6 +60,8 @@ private:
    void       UpdateParam(TAGtrack* track, Int_t viewX = -1);
    
    void       ComputeMass(TAGtrack* track);
+   void       FillMcTrackId(TAGcluster* cluster, TAGpoint* point);
+
 
    vector<double> GetLinearFit(const vector<double>& z, const vector<double>& x, const vector<double>& dx);
 

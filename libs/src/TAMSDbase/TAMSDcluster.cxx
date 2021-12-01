@@ -77,12 +77,12 @@ void TAMSDcluster::AddStrip(TAMSDhit* strip)
 //
 void TAMSDcluster::SetPositionG(TVector3& posGlo)
 {
-   fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   fPosition2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
    
    if (GetPlaneView() == 0)
-      fPosErrorG.SetXYZ(fPosErrorF, 0, 0.01);
+      fPosError2.SetXYZ(fPosErrorF, 0, 0.01);
    else
-      fPosErrorG.SetXYZ(0, fPosErrorF, 0.01);
+      fPosError2.SetXYZ(0, fPosErrorF, 0.01);
 }
 
 //______________________________________________________________________________

@@ -294,8 +294,7 @@ Bool_t TATWactNtuHit::Action() {
 	    // get time calibrated time in ns
 	    Double_t Time    = GetTime(rawTime,Layer,PosId,BarId);
 	    Double_t TimeOth = GetTimeOth(rawTimeOth,Layer,PosId,BarId);
-
-	    
+	    	    
 	    
 	    if(FootDebugLevel(1)) {
 	      if(posAlongBar<-22 || posAlongBar>22) {
@@ -305,7 +304,7 @@ Bool_t TATWactNtuHit::Action() {
 	    }
 
 
-	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,TimeOth,posAlongBar,chargeCOM,ChargeA,ChargeB,AmplitudeA, AmplitudeB,TimeA,TimeB,TimeAOth,TimeBOth,TrigType);
+	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,rawTime,posAlongBar,chargeCOM,ChargeA,ChargeB,AmplitudeA, AmplitudeB,TimeA,TimeB,TimeAOth,TimeBOth,TrigType);
 
 	    Int_t Zrec = f_parcal->GetChargeZ(Energy,Time,Layer);
 	    fCurrentHit->SetChargeZ(Zrec);

@@ -213,6 +213,9 @@ public:
   
    // Campaign checks
    void CampaignChecks();
+   
+   // Add friend tree
+   void AddFriendTree(TString fileName, TString treeName);
 
    //! Par geo getters
    TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }
@@ -276,12 +279,19 @@ public:
    static void EnableMsdTracking()  { fgMsdTrackFlag = true;  }
    static Bool_t IsMsdTracking()    { return fgMsdTrackFlag;  }
    
+   //! Disable/Enable MC info saving in output tree
+   static void DisableSaveMc() { fSaveMcFlag = false; }
+   static void EnableSaveMc()  { fSaveMcFlag = true;  }
+   static Bool_t IsSaveMc()    { return fSaveMcFlag;  }
+   
 protected:
    TString               fExpName;
    TAGcampaignManager*   fCampManager;
    Int_t                 fRunNumber;
    TAGroot*              fTAGroot;             // pointer to TAGroot
    TAGgeoTrafo*          fpFootGeo;           // trafo prointer
+   TString               fFriendFileName;
+   TString               fFriendTreeName;
 
    TAGparaDsc*           fpParTimeWD;
 
@@ -416,6 +426,7 @@ protected:
 protected:
    static Bool_t fgItrTrackFlag;
    static Bool_t fgMsdTrackFlag;
+   static Bool_t fSaveMcFlag;
 
    ClassDef(BaseReco, 1); // Base class for event display
 };

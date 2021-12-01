@@ -21,7 +21,8 @@ public:
   virtual          ~TAGWDtrigInfo();
 
   Int_t GetTriggerID()const {return fTriggerID;}
-  void GetTriggersStatus(Int_t status[NMAXTRIG]){status=fTriggersStatus;}
+  inline Int_t* GetTriggersStatus(){return fTriggersStatus;}
+  //void GetTriggersStatus(Int_t status[NMAXTRIG]){status=fTriggersStatus;}
   void GetTriggersTiming(Int_t timing[NMONTRIG][NCLK]){timing=fTriggersTiming;}
 
 
