@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TAVTrawEvent.cxx $
-  \brief   Implementation of TAVTrawEvent.
+  \version $Id: TAVTrawEvent.cxx
+  \brief    Representation of ascii raw data event
 */
 
 #include <string.h>
@@ -11,8 +11,8 @@
 #include "TAVTrawEvent.hxx"
 
 /*!
-  \class TAVTrawEvent TAVTrawEvent.hxx "TAVTrawEvent.hxx"
-  \brief Representation of ascii raw data event. **
+  \class TAVTrawEvent
+  \brief Representation of ascii raw data event
 */
 
 ClassImp(TAVTrawEvent);
