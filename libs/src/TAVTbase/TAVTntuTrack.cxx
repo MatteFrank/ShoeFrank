@@ -12,7 +12,7 @@
 #include "TAVTntuTrack.hxx"
 
 /*!
- \class TAVTntuHit
+ \class TAVTntuTrack
  \brief  Container class for VTX tracks
  */
 
