@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TAITparCal.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TAITparCal.
+  \version $Id: TAITparCal.cxx
+  \brief    Charge (raw) calibration for ITR
 */
 
 #include <Riostream.h>
@@ -18,7 +18,7 @@
 
 /*!
   \class TAITparCal TAITparCal.hxx "TAITparCal.hxx"
-  \brief Charge (raw) calibration for vertex. **
+  \brief Charge (raw) calibration for ITR
 */
 
 ClassImp(TAITparCal);

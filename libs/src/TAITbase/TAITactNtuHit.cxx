@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
- \brief   Implementation of TAITactNtuHit.
+ \version $Id: TAITactNtuHit.cxx
+ \brief   Ntuplizer for ITR raw data
  */
 
 #include "TH2F.h"
@@ -18,8 +18,8 @@
 #include "TAITactNtuHit.hxx"
 
 /*!
- \class TAITactNtuHit TAITactNtuHit.hxx "TAITactNtuHit.hxx"
- \brief Get vertex raw data from MBS. **
+ \class TAITactNtuHit
+ \brief Ntuplizer for ITR raw data
  */
 
 ClassImp(TAITactNtuHit);

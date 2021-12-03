@@ -1,12 +1,16 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAITcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file
+ \version $Id: TAITntuCluster.cxx
+ \brief Class for ITR cluster container
+ */
 
 #include "TAITparGeo.hxx"
 #include "TAITntuCluster.hxx"
 
+/*!
+ \class TAITntuCluster
+ \brief Class for ITR cluster container
+ */
 
 ClassImp(TAITntuCluster);
 

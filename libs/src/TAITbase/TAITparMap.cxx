@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITparMap.cxx,v 1.5 2003/06/09 18:41:04 mueller Exp $
- \brief   Implementation of TAITparMap.
+ \version $Id: TAITparMap.cxx
+ \brief    Map parameters for ITR
  */
 
 #include "TAITparMap.hxx"
@@ -9,8 +9,8 @@
 //##############################################################################
 
 /*!
- \class TAITparMap TAITparMap.hxx "TAITparMap.hxx"
- \brief Map and Geometry parameters for Tof wall. **
+ \class TAITparMap
+ \brief Map parameters for ITR
  */
 
 ClassImp(TAITparMap);

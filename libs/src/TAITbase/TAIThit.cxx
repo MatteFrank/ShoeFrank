@@ -1,5 +1,16 @@
 
+/*!
+ \file  TAIThit.cxx
+ \version $Id: TAVThit
+ \brief Class for ITR hit
+ */
+
 #include "TAIThit.hxx"
+
+/*!
+ \class TAIThit
+ \brief  Class for ITR hit
+ */
 
 ClassImp(TAIThit) // Description of Single Detector TAIThit 
 

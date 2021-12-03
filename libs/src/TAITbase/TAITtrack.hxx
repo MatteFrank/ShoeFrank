@@ -26,7 +26,6 @@ public:
    ~TAITtrack();
    TAITtrack(const TAGbaseTrack& aTrack);
 
-   
    //! Set up clones
    void           SetupClones();
 

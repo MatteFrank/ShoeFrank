@@ -1,3 +1,9 @@
+/*!
+ \file
+ \version $Id: TAITtrack.cxx
+ \brief   Class for ITR tracks
+ */
+
 #include "TMath.h"
 #include "TClonesArray.h"
 
@@ -19,6 +25,11 @@
   //                                                              //
   //////////////////////////////////////////////////////////////////
 
+
+/*!
+ \class TAITtrack
+ \brief Class for ITR tracks
+ */
 
 ClassImp(TAITtrack) // Description of a Track
 

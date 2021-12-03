@@ -29,27 +29,39 @@ public:
    TAITntuTrack();
    virtual         ~TAITntuTrack();
    
+   //! Get track
    TAITtrack*       GetTrack(Int_t i);
+   //! Get track (const)
    const TAITtrack* GetTrack(Int_t i) const;
+   //! Get number of tracks
    Int_t            GetTracksN()      const; 
    
+   //! Get beam position
    TVector3         GetBeamPosition() const         { return fBeamPosition; }
+   //! Set beam position
    void             SetBeamPosition(TVector3& pos)  { fBeamPosition = pos;  }
+   //! Get pileup
    Bool_t           IsPileUp()        const         { return   fPileup;     }
+   //! Set pileup
    void             SetPileUp(Bool_t pileup = true) { fPileup = pileup;     }
 
+   //! Get list of tracks
    TClonesArray*    GetListOfTracks() { return fListOfTracks; }
 
+   //! Create new track
    TAITtrack*       NewTrack();
+   //! Create new track from existing one
    TAITtrack*       NewTrack(TAITtrack& track);
-      
+   
+   //! Set up clones
    virtual void     SetupClones();
+   //! Clear
    virtual void     Clear(Option_t* opt="");
-   
-   
+   //! To stream
    virtual void     ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:
+   //! Get branch
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }  
    
    ClassDef(TAITntuTrack,2)

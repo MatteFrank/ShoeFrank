@@ -2,7 +2,7 @@
 #define _TAITparMap_HXX
 /*!
  \file
- \version $Id: TAITparMap.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+ \version $Id: TAITparMap.hxx
  \brief   Declaration of TAITparMap.
  */
 /*------------------------------------------+---------------------------------*/

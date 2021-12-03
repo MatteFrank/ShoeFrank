@@ -1,12 +1,17 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAITcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file
+ \version $Id: TAITcluster.cxx
+ \brief   Class for ITR cluster
+ */
 
 #include "TAITcluster.hxx"
 #include "TAITtrack.hxx"
 #include "TAIThit.hxx"
+
+/*!
+ \class TAITcluster
+ \brief  Class for ITR cluster
+ */
 
 ClassImp(TAITcluster) // Description of a cluster
 

@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITactNtuCluster.cxx $
- \brief   Implementation of TAITactNtuCluster.
+ \version $Id: TAITactNtuCluster.cxx 
+ \brief   NTuplizer for ITR raw hits
  */
 #include "TClonesArray.h"
 #include "TH1F.h"
@@ -18,7 +18,7 @@
 
 /*!
  \class TAITactNtuCluster 
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for ITR raw hits
  */
 
 ClassImp(TAITactNtuCluster);
