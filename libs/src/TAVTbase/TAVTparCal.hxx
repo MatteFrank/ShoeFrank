@@ -2,7 +2,7 @@
 #define _TAVTparCal_HXX
 /*!
   \file
-  \version $Id: TAVTparCal.hxx,v 1.2 2003/06/22 19:33:36 mueller Exp $
+  \version $Id: TAVTparCal.hxx
   \brief   Declaration of TAVTparCal.
 */
 /*------------------------------------------+---------------------------------*/

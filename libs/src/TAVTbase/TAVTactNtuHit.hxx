@@ -7,7 +7,7 @@
 
 /*!
  \file
- \version $Id: TAVTactNtuHit.hxx $
+ \version $Id: TAVTactNtuHit.hxx
  \brief   Declaration of TAVTactNtuHit.
  */
 
@@ -25,18 +25,19 @@ public:
    virtual Bool_t  Action();
    
 public:
+   //! Set tolerance for time stamp
    void   SetTStolerance(UInt_t ts) { fgTStolerance = ts;   }
+   //! Get tolerance for time stamp
    UInt_t GetTStolerance()          { return fgTStolerance; }
 
 protected:
-   TAGdataDsc*         fpDatDaq;		    // input data dsc
-   UInt_t              fFirstBcoTrig;
-   queue<const DECardEvent*> fQueueEvt;
-   UInt_t              fQueueEvtsN;
+   TAGdataDsc*         fpDatDaq;		     /// input data dsc
+   UInt_t              fFirstBcoTrig;    /// First BCO trigger number
+   queue<const DECardEvent*> fQueueEvt;  /// Event queue container
+   UInt_t              fQueueEvtsN;      /// Number of events in queue
    
 private:
-   static UInt_t       fgTStolerance;
-   
+   static UInt_t       fgTStolerance;    /// Tolerance for time stamp
    
    ClassDef(TAVTactNtuHit,0)
 };

@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAVTactNtuTrackF.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactNtuTrackF.
+ \version $Id: TAVTactNtuTrackF.cxx
+ \brief  NTuplizer for VTX tracks using combinatory algorithm
  */
 
 #include "TClonesArray.h"
@@ -29,7 +29,7 @@
 
 /*!
  \class TAVTactNtuTrackF 
- \brief NTuplizer for vertex tracks. **
+ \brief  NTuplizer for VTX tracks using combinatory algorithm
  */
 
 ClassImp(TAVTactNtuTrackF);

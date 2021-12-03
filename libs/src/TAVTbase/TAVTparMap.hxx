@@ -2,7 +2,7 @@
 #define _TAVTparMap_HXX
 /*!
  \file
- \version $Id: TAVTparMap.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+ \version $Id: TAVTparMap.hxx
  \brief   Declaration of TAVTparMap.
  */
 /*------------------------------------------+---------------------------------*/

@@ -1,7 +1,15 @@
-
+/*!
+ \file  TAVThit.cxx
+ \version $Id: TAVThit
+ \brief Class for VTX hit
+ */
 
 #include "TAVThit.hxx"
 
+/*!
+ \class TAVThit
+ \brief  Class for VTX hit
+ */
 
 ClassImp(TAVThit) // Description of Single Detector TAVThit 
 

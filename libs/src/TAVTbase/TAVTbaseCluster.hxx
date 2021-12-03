@@ -24,9 +24,9 @@ class TAVTparGeo;
 class TAVTbaseCluster : public TAGcluster {
    
 protected:
-   TClonesArray*      fListOfPixels;             // list of pixel attached to this cluster
+   TClonesArray*      fListOfPixels;             /// list of pixel attached to this cluster
    
-   Float_t            fCharge;                   // sum of pulseheight
+   Float_t            fCharge;                   /// sum of pulseheight
    
 public:
    TAVTbaseCluster(); 
@@ -69,6 +69,7 @@ public:
    
    //! Compute distance from another cluster
 //   Float_t            Distance(TAGcluster *aClus);
+   
    //! reset pixels
    void               ResetPixels();
    

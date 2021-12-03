@@ -23,7 +23,7 @@ public:
    virtual Bool_t  Action();
    
 private:
-   TAGdataDsc*     fpDatDaq;		    // input data dsc
+   TAGdataDsc*     fpDatDaq;		    /// input data dsc
    
 private:   
    //! Find vertex data

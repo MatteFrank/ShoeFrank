@@ -1,5 +1,5 @@
 /*!
-  \file
+  \file TAVTactVmeReader.cxx
  \brief Get vertex raw data from stanbd alone files (ascii format)
   Keep VME name, though new card is no more VME standard
 */

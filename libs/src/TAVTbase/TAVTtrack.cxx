@@ -1,3 +1,9 @@
+/*!
+ \file
+ \version $Id: TAVTtrack.cxx
+ \brief   Class for VTX tracks
+ */
+
 #include "TMath.h"
 #include "TClonesArray.h"
 
@@ -18,6 +24,10 @@
   //                                                              //
   //////////////////////////////////////////////////////////////////
 
+/*!
+ \class TAVTtrack
+ \brief Class for VTX tracks
+ */
 
 ClassImp(TAVTtrack) // Description of a Track
 

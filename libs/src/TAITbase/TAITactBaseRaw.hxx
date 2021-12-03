@@ -15,7 +15,7 @@ class TH1F;
 
 /*!
  \file
- \version $Id: TAITactBaseRaw.hxx $
+ \version $Id: TAITactBaseRaw.hxx 
  \brief   Declaration of TAITactBaseRaw.
  */
 /*------------------------------------------+---------------------------------*/

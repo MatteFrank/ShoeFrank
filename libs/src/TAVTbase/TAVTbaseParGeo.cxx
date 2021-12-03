@@ -23,8 +23,8 @@ using namespace std;
 //##############################################################################
 
 /*!
-  \class TAVTbaseParGeo TAVTbaseParGeo.hxx "TAVTbaseParGeo.hxx"
-  \brief Map and Geometry parameters for vertex. **
+  \class TAVTbaseParGeo
+  \brief Map and Geometry parameters for VTX
 */
 
 ClassImp(TAVTbaseParGeo);

@@ -2,7 +2,7 @@
 #define _TAITparConf_HXX
 /*!
   \file
-  \version $Id: TAITparConf.hxx,v 1.2 2003/06/22 19:33:36 mueller Exp $
+  \version $Id: TAITparConf.hxx
   \brief   Declaration of TAITparConf.
 */
 /*------------------------------------------+---------------------------------*/

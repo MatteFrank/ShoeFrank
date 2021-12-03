@@ -40,18 +40,27 @@ public:
    Bool_t   ThreadStop();
    
 protected:
-   Bool_t          fOk;
-   pthread_t*      fThread[8];
+   Bool_t          fOk;          /// ok flag
+   pthread_t*      fThread[8];   /// thread array
 
 protected:
+   //! Thread function 0
    static void* Thread0(void* arg);
+   //! Thread function 1
    static void* Thread1(void* arg);
+   //! Thread function 2
    static void* Thread2(void* arg);
+   //! Thread function 3
    static void* Thread3(void* arg);
+   //! Thread function 4
    static void* Thread4(void* arg);
+   //! Thread function 5
    static void* Thread5(void* arg);
+   //! Thread function 6
    static void* Thread6(void* arg);
+   //! Thread function 7
    static void* Thread7(void* arg);
+   //! Flag for offline sensor
    static Int_t fgSensorOff;
 
    ClassDef(TAVTactBaseNtuClusterMT,0)

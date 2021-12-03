@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TAITparGeo.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TAITparGeo.
+  \version $Id: TAITparGeo.cxx
+  \brief    Geometry parameters for ITR
 */
 
 #include <Riostream.h>
@@ -17,6 +17,13 @@
 
 #include "TAITparGeo.hxx"
 #include "TAGroot.hxx"
+
+/*!
+ \class TAITparGeo
+ \brief Geometry parameters for ITR
+ */
+
+ClassImp(TAITparGeo);
 
 //##############################################################################
 

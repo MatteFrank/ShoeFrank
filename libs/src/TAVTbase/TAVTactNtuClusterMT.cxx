@@ -1,6 +1,6 @@
 /*!
  \file
- \version $Id: TAVTactNtuClusterMT.cxx $
+ \version $Id: TAVTactNtuClusterMT.cxx
  \brief   Implementation of TAVTactNtuClusterMT.
  */
 
@@ -22,7 +22,7 @@
 
 /*!
  \class TAVTactNtuClusterMT
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for VTX cluster in Multi-thread mode
  */
 
 ClassImp(TAVTactNtuClusterMT);

@@ -1,10 +1,7 @@
 #ifndef _TAVTcluster_HXX
 #define _TAVTcluster_HXX
 
-// ROOT classes
-
 #include "TAVTbaseCluster.hxx"
-
 
 /** TAVTcluster class, simple container class for tracks with the associated clusters                    
  
@@ -22,6 +19,7 @@ public:
    TAVTcluster(const TAVTcluster& cluster);
    ~TAVTcluster();
    
+   //! Set clones
    virtual void       SetupClones();
 
 

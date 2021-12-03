@@ -1,3 +1,8 @@
+/*!
+ \file
+ \version $Id: TAVTvertex.cxx
+ \brief   Class for VTX vertices
+ */
 
 #include "TMath.h"
 #include "TAGgeoTrafo.hxx" 
@@ -8,6 +13,10 @@
 
 //################################################################
 
+/*!
+ \class TAVTntuHit
+ \brief Class for VTX vertices
+ */
 
 ClassImp(TAVTvertex) // Description of a vertex
 

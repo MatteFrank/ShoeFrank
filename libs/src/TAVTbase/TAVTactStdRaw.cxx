@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactStdRaw.
+ \file TAVTactStdRaw.cxx
+ \brief    Read raw data from single VTX file ()ascii format) from new firmware
  */
 
 #include "DECardEvent.hh"
@@ -15,7 +15,7 @@
 
 /*!
  \class TAVTactStdRaw TAVTactStdRaw.hxx "TAVTactStdRaw.hxx"
- \brief Read raw data from single VTX file ()ascii format) from new firmware **
+ \brief Read raw data from single VTX file ()ascii format) from new firmware
  */
 
 ClassImp(TAVTactStdRaw);

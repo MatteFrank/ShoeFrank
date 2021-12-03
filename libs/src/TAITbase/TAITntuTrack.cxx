@@ -1,9 +1,18 @@
+/*!
+ \file
+ \version $Id: TAITntuTrack.cxx
+ \brief   Container class for ITR tracks
+ */
+
 #include "TMath.h"
 #include "TAGgeoTrafo.hxx"
 #include "TAITparGeo.hxx"
 #include "TAITntuTrack.hxx"
 
-
+/*!
+ \class TAITntuTrack
+ \brief  Container class for ITR tracks
+ */
 ClassImp(TAITntuTrack);
 
 TString TAITntuTrack::fgkBranchName   = "ittrack.";

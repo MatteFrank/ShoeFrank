@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITntuHit.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
- \brief   Implementation of TAITntuHit.
+ \version $Id: TAITntuHit.cxx
+ \brief   Container class for ITR raw hit
  */
 
 #include "TString.h"
@@ -10,8 +10,8 @@
 #include "TAITntuHit.hxx"
 
 /*!
- \class TAITntuHit TAITntuHit.hxx "TAITntuHit.hxx"
- \brief Container class for VTX ntu hit **
+ \class TAITntuHit
+ \brief Container class for ITR raw hit
  */
 
 ////////////////////////////////////////////////////////////

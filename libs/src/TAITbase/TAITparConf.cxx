@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TAITparConf.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TAITparConf.
+  \version $Id: TAITparConf.cxx
+  \brief   Configuration parameters for ITR
 */
 
 #include <Riostream.h>
@@ -21,8 +21,8 @@
 //##############################################################################
 
 /*!
-  \class TAITparConf TAITparConf.hxx "TAITparConf.hxx"
-  \brief Map and Geometry parameters for Inner Tracker **
+  \class TAITparConf
+  \brief Configuration parameters for ITR
 */
 
 ClassImp(TAITparConf);

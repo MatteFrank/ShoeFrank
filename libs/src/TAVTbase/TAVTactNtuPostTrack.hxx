@@ -31,10 +31,10 @@ public:
    Bool_t  AppyCuts(TAVTtrack* track);
 
 private:
-   TAGdataDsc* fpNtuVertex;		 // input data dsc
+   TAGdataDsc* fpNtuVertex;		 /// vertex input data dsc
 
 private:    
-   
+   //! Find tilted tracks
    Bool_t FindTiltedTracks();
    
    ClassDef(TAVTactNtuPostTrack,0)

@@ -9,7 +9,6 @@
 #include "TClonesArray.h"
 #include "TVector3.h"
 
-// all 3 needed to take from gTagROOT
 #include "TAGroot.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAGparaDsc.hxx"
@@ -32,21 +31,21 @@
 class TAVTbaseHit : public TAGobject {
    
 protected:
-	Int_t              fSensorId;                 // number of the sensor
-	TVector3           fPosition;                 // pixel position in the detector frame
-	// TVector3           fSize;                  // size in uvw directions
+	Int_t              fSensorId;                 /// number of the sensor
+	TVector3           fPosition;                 /// pixel position in the detector frame
+	// TVector3           fSize;                  /// size in uvw directions
 
-   Int_t              fPixelIndex;               // index of the pixel
-	Int_t              fPixelLine;                // line in the matrix
-	Int_t              fPixelColumn;              // column in the matrix
+   Int_t              fPixelIndex;               /// index of the pixel
+	Int_t              fPixelLine;                /// line in the matrix
+	Int_t              fPixelColumn;              /// column in the matrix
 	Int_t              fLayer;
 
-	Double32_t         fRawValue;                 // the rawvalue
-	Double32_t         fPulseHeight;              // pulseheight on pixel
-   Bool_t             fValidFrames;              // ok when 3 consecutive frame numbers 
+	Double32_t         fRawValue;                 /// the rawvalue
+	Double32_t         fPulseHeight;              /// pulseheight on pixel
+   Bool_t             fValidFrames;              /// ok when 3 consecutive frame numbers
 
-   TArrayI            fMCindex;                  // Index of the hit created in the simulation
-   TArrayI            fMcTrackIdx;               // Index of the track created in the simulation
+   TArrayI            fMCindex;                  /// Index of the hit created in the simulation
+   TArrayI            fMcTrackIdx;               /// Index of the track created in the simulation
 
 public:
 
@@ -94,12 +93,14 @@ public:
     Double_t           DistanceV( const TVector3&     aPosition);
 
 
-   // MC track id
+   //! Get MC index
    Int_t      GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
+   //! Get MC track index
    Int_t      GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+   //! Get MC track number
    Int_t      GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
    
-   // Add MC track Id
+   //! Add MC track Id
    void       AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
 
     ClassDef(TAVTbaseHit,4)                            // Pixel or Pixel of a Detector Plane

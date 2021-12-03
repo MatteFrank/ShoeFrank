@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITactNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAITactNtuTrack.
+ \version $Id: TAITactNtuTrack.cxx
+ \brief   NTuplizer for ITR tracks
  */
 #include "TClonesArray.h"
 #include "TMath.h"
@@ -25,7 +25,7 @@
 
 /*!
  \class TAITactNtuTrack
- \brief NTuplizer for Inner tracker tracks. **
+ \brief NTuplizer for ITR tracks
  */
 
 ClassImp(TAITactNtuTrack);

@@ -1,6 +1,6 @@
 /*!
-  \file
-  \brief   Implementation of TAVTactVmeWriter.
+ \file TAVTactVmeWriter.cxx
+ \brief Read stand alone files (ascii format) and write them in a single DAQ file (binary format)
 */
 
 #include <limits.h>
@@ -15,7 +15,7 @@
 
 /*!
   \class TAVTactVmeWriter 
-  \brief Read stand alone files (ascii format) and write them in a single DAQ file (binary format) **
+  \brief Read stand alone files (ascii format) and write them in a single DAQ file (binary format)
 */
 
 ClassImp(TAVTactVmeWriter);

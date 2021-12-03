@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TAVTbaseParCal.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TAVTbaseParCal.
+  \version $Id: TAVTbaseParCal.cxx
+  \brief  Charge (raw) calibration for vertex.
 */
 
 #include <Riostream.h>
@@ -18,8 +18,8 @@
 //##############################################################################
 
 /*!
-  \class TAVTbaseParCal TAVTbaseParCal.hxx "TAVTbaseParCal.hxx"
-  \brief Charge (raw) calibration for vertex. **
+  \class TAVTbaseParCal 
+  \brief Charge (raw) calibration for vertex
 */
 
 ClassImp(TAVTbaseParCal);

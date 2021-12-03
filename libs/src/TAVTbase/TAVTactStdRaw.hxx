@@ -22,6 +22,7 @@ public:
    explicit TAVTactStdRaw(const char* name=0, TAGdataDsc* p_datraw=0, TAGparaDsc* p_pargeo=0, TAGparaDsc* p_parconf=0, TAGparaDsc* pParMap=0);
    virtual  ~TAVTactStdRaw();
    
+   //! Action
    virtual Bool_t  Action();
    
    //! Open file with a given prefix and suffix for the files
@@ -31,22 +32,23 @@ public:
    virtual void    Close();
    
 public:
+   //! Set default folder name
    static void     SetDefaultFolderName(const Char_t* name) { fgDefaultFolderName = name; }
+   //! Get default folder name
    static TString  GetDefaultFolderName()                   { return fgDefaultFolderName; }
    
 private:
-   ifstream          fRawFileAscii;    // file streamm
-   Int_t             fRunNumber;       // run number
+   ifstream          fRawFileAscii;     /// file streamm
+   Int_t             fRunNumber;        /// run number
    
-   TString           fPrefixName;       // prefix folder name
-   TString           fBaseName;         // base file name
+   TString           fPrefixName;       /// prefix folder name
+   TString           fBaseName;         /// base file name
    
 private:
-   static       TString fgDefaultFolderName;
-   static       TString fgDefaultExtName;
+   static       TString fgDefaultFolderName; /// default folder name
+   static       TString fgDefaultExtName;    /// default extension name
 
 private:
-
    //! Get Event
    Bool_t GetEvent();
    

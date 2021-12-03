@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITactBaseRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
- \brief   Implementation of TAITactBaseRaw.
+ \version $Id: TAITactBaseRaw.cxx
+ \brief    Base class to get Ntuplize ITR raw data
  */
 
 #include "DECardEvent.hh"
@@ -18,8 +18,8 @@
 #include "TAVTmi26Type.hxx"
 
 /*!
- \class TAITactBaseRaw TAITactBaseRaw.hxx "TAITactBaseRaw.hxx"
- \brief Base class to get ITR/VTX raw data. **
+ \class TAITactBaseRaw
+ \brief Base class to get Ntuplize ITR raw data
  */
 
 ClassImp(TAITactBaseRaw);

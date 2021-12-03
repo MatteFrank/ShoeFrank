@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactNtuVertexL. 
+ \file TAVTactNtuVertexPD.cxx
+ \brief    NTuplizer for VTX vertices with probality algorithm
  */
 #include "TClonesArray.h"
 
@@ -19,7 +19,7 @@
 
 /*!
  \class TAVTactNtuVertex
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for VTX vertices with probality algorithm
  */
 
 ClassImp(TAVTactNtuVertexPD);

@@ -88,80 +88,89 @@ public:
    Int_t        GetLineRegion(Float_t y) const;
 
 protected:
-   TAVTbaseParGeo* fpParGeo;
-   TF1*        fFuncClusterSize;   // cluster size function
-   TF1*        fFuncClusterHeight; // cluster charge height function
-   TF1*        fFuncClusterWidth;  // cluster charge width function
-   TF1*        fFuncTotAnalog;     // time over threshold analog function
-   TF1*        fFuncTotDigital;    // time over threshold digital function
+   TAVTbaseParGeo* fpParGeo;       /// pointer on par geo
+   TF1*        fFuncClusterSize;   /// cluster size function
+   TF1*        fFuncClusterHeight; /// cluster charge height function
+   TF1*        fFuncClusterWidth;  /// cluster charge width function
+   TF1*        fFuncTotAnalog;     /// time over threshold analog function
+   TF1*        fFuncTotDigital;    /// time over threshold digital function
 
-   std::map<int, double> fMap;   // map of found pixels
+   std::map<int, double> fMap;   /// map of found pixels
    
-   Int_t       fPixelsN;         // number of pixels for a given eloss
-   Double_t    fDe0Par;          // parameter shift in edep for the cluster size function
-   Double_t    fDe0ParErr;       // parameter shift in edep for the cluster size function
-   Double_t    fRsPar;           // parameter r_s for the cluster size function
-   Double_t    fRsParErr;        // parameter r_s for the cluster size function
-   Double_t    fThresPar;        // parameter threshold for cluster size function
-   Double_t    fThresParErr;     // parameter threshold for cluster size function
-   Double_t    fLinPar;          // parameter linear for cluster size function
-   Double_t    fLinParErr;       // parameter linear for cluster size function
+   Int_t       fPixelsN;         /// number of pixels for a given eloss
+   Double_t    fDe0Par;          /// parameter shift in edep for the cluster size function
+   Double_t    fDe0ParErr;       /// parameter shift in edep for the cluster size function
+   Double_t    fRsPar;           /// parameter r_s for the cluster size function
+   Double_t    fRsParErr;        /// parameter r_s for the cluster size function
+   Double_t    fThresPar;        /// parameter threshold for cluster size function
+   Double_t    fThresParErr;     /// parameter threshold for cluster size function
+   Double_t    fLinPar;          /// parameter linear for cluster size function
+   Double_t    fLinParErr;       /// parameter linear for cluster size function
 
-   Double_t    fClusterHeight;   // height of the cluster for a given eloss
-   Double_t    fLogHeightPar;    // Log parameter for the cluster height function
-   Double_t    fLogHeightParErr; // Log parameter for the cluster height function
-   Double_t    fCstHeightPar;    // constant parameter for cluster height function
-   Double_t    fCstHeightParErr; // constant parameter for cluster height function
-   Double_t    fZcstHeightPar;   // z constant parameter for the cluster height function
-   Double_t    fZgainHeightPar;  // z gain parameter for the cluster height function
+   Double_t    fClusterHeight;   /// height of the cluster for a given eloss
+   Double_t    fLogHeightPar;    /// Log parameter for the cluster height function
+   Double_t    fLogHeightParErr; /// Log parameter for the cluster height function
+   Double_t    fCstHeightPar;    /// constant parameter for cluster height function
+   Double_t    fCstHeightParErr; /// constant parameter for cluster height function
+   Double_t    fZcstHeightPar;   /// z constant parameter for the cluster height function
+   Double_t    fZgainHeightPar;  /// z gain parameter for the cluster height function
 
-   Double_t    fClusterWidth;    // width of the cluster for a given eloss
-   Double_t    fLogWidthPar;     // log parameter for the cluster width function
-   Double_t    fLogWidthParErr;  // log parameter for the cluster width function
-   Double_t    fCstWidthPar;     // constant parameter for cluster width function
-   Double_t    fCstWidthParErr;  // constant parameter for cluster width function
-   Double_t    fZcstWidthPar;    // z constant parameter for the cluster width function
-   Double_t    fZgainWidthPar;   // z gain parameter for the cluster width function
+   Double_t    fClusterWidth;    /// width of the cluster for a given eloss
+   Double_t    fLogWidthPar;     /// log parameter for the cluster width function
+   Double_t    fLogWidthParErr;  /// log parameter for the cluster width function
+   Double_t    fCstWidthPar;     /// constant parameter for cluster width function
+   Double_t    fCstWidthParErr;  /// constant parameter for cluster width function
+   Double_t    fZcstWidthPar;    /// z constant parameter for the cluster width function
+   Double_t    fZgainWidthPar;   /// z gain parameter for the cluster width function
 
-   Double_t     fTotConversion; // conversion factor for Time over threshold
-   Double_t     fTotExponent;   // exponent factor for Time over threshold
-   Double_t     fTotThres;      // threshold factor for Time over threshold
+   Double_t     fTotConversion;  /// conversion factor for Time over threshold
+   Double_t     fTotExponent;    /// exponent factor for Time over threshold
+   Double_t     fTotThres;       /// threshold factor for Time over threshold
 
-   Int_t       fPixelsNx;        // number of pixels in X (colummn)
-   Int_t       fPixelsNy;        // number of pixels in Y (line)
+   Int_t       fPixelsNx;        /// number of pixels in X (colummn)
+   Int_t       fPixelsNy;        /// number of pixels in Y (line)
    
-   Float_t     fPitchX;          // pitch in X
-   Float_t     fPitchY;          // pitch in Y
+   Float_t     fPitchX;          /// pitch in X
+   Float_t     fPitchY;          /// pitch in Y
    
-   Int_t*      fShel;
+   Int_t*      fShel;            /// pointer to current shell
    
 protected:
+   //! Set functoins
    void        SetFunctions();
+   //! Compute last shell
    Int_t       GetLastShell(Int_t* shell, Int_t maxTurn) const;
    
 public:
+   //! Get smearing flag
    static Bool_t  GetSmearFlag()                    { return fgSmearFlag;        }
+   //! Set smearing flag
    static void    SetSmearFlag(Bool_t flag)         { fgSmearFlag = flag;        }
    
+   //! Get default smear parameter
    static Float_t GetDefSmearPos()                  { return fgDefSmearPos;      }
+   //! Set default smear parameter
    static void    SetDefSmearPos(Float_t pos)       { fgDefSmearPos = pos;       }
-   
+   //! Get random function
    static Int_t   GetRandom (Int_t i)               { return std::rand() % i;    }
    
+   //! Get time over threshold adc depth
    static Int_t   GetTotAdcDepth()                  { return fgTotAdcDepth;      }
+   //! Set time over threshold adc depth
    static void    SetTotAdcDepth(Int_t adc)         { fgTotAdcDepth = adc;       }
-   
+   //! Get time over threshold maximum value
    static Float_t GetTotMaxValue()                  { return fgTotMaxValue;      }
+   //! Set time over threshold maximum value
    static void    SetTotMaxValue(Float_t value)     { fgTotMaxValue = value;     }
    
 protected:
-   static Float_t  fgDefSmearPos;
-   static Bool_t   fgSmearFlag;
-   static Float_t  fgkPairCreation;
-   static Float_t  fgkFanoFactor;
-   static Float_t  fgkNormFactor;
-   static Float_t  fgTotMaxValue;
-   static Int_t    fgTotAdcDepth;
+   static Float_t  fgDefSmearPos;   /// default smear parameter
+   static Bool_t   fgSmearFlag;     /// smearing flag
+   static Float_t  fgkPairCreation; /// pair creation energy
+   static Float_t  fgkFanoFactor;   /// fano factor
+   static Float_t  fgkNormFactor;   /// normalization factor
+   static Float_t  fgTotMaxValue;   /// Time over threshold maximum value
+   static Int_t    fgTotAdcDepth;   /// Time over threshold adc depth
 
 };
 

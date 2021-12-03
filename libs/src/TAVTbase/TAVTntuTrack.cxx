@@ -1,3 +1,8 @@
+/*!
+ \file
+ \version $Id: TAVTntuTrack.cxx
+ \brief   Container class for VTX tracks
+ */
 
 #include "TMath.h"
 #include "TAGrecoManager.hxx"
@@ -5,6 +10,11 @@
 #include "TAVTparGeo.hxx"
 #include "TAVTtrack.hxx"
 #include "TAVTntuTrack.hxx"
+
+/*!
+ \class TAVTntuTrack
+ \brief  Container class for VTX tracks
+ */
 
 ClassImp(TAVTntuTrack);
 

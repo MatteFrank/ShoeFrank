@@ -1,7 +1,18 @@
+/*!
+ \file
+ \version $Id: TAVTdigitizerG.cxx
+ \brief VTX gaussian digitizer
+ */
+
 #include "TAVTdigitizerG.hxx"
 #include "TAVTparGeo.hxx"
 
 #include "TAGrecoManager.hxx"
+
+/*!
+ \class TAVTdigitizerG
+ \brief VTX gaussian digitizer
+ */
 
 using namespace std;
 

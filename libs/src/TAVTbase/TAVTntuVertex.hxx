@@ -21,12 +21,12 @@ class TClonesArray;
 class TAVTvertex : public TAGobject {
     
 private:
-    TClonesArray*   fListOfTracks;      // list of track associated to the vertex 
-    TVector3        fVertexPosition;    // vertex position
-    TVector3        fVertexPosError;    // vertex position error
-    Int_t           fIsValid;           // is zero if not valid 1 if it has almost two tracks
-    Bool_t          fIsBmMatched;       // Matched flag with BM
-    Double_t        fDistanceMin;       // distance value between the vertex point and the track. Sum of distance of all tracks
+    TClonesArray*   fListOfTracks;      /// list of track associated to the vertex
+    TVector3        fVertexPosition;    /// vertex position
+    TVector3        fVertexPosError;    /// vertex position error
+    Int_t           fIsValid;           /// is zero if not valid 1 if it has almost two tracks
+    Bool_t          fIsBmMatched;       /// Matched flag with BM
+    Double_t        fDistanceMin;       /// distance value between the vertex point and the track. Sum of distance of all tracks
 
 public:
     TAVTvertex();                                 
@@ -88,26 +88,34 @@ public:
 class TAVTntuVertex : public TAGdata {
 
 private:
-   TClonesArray*       fListOfVertex;		// list of vertice, return an object TAVTvertex
+   TClonesArray*       fListOfVertex;	 /// list of vertice, return an object TAVTvertex
 
 private:
-   static TString fgkBranchName;    // Branch name in TTree
+   static TString      fgkBranchName;   /// Branch name in TTree
    
 public:
     TAVTntuVertex();
     virtual           ~TAVTntuVertex();
-    
+   
+    //! Get vertex
     TAVTvertex*        GetVertex(Int_t i);
+    //! Get vertex (const)
     const TAVTvertex*  GetVertex(Int_t i) const;
+    //! Get number of vertices
     Int_t              GetVertexN()  const;
    
+    //! Create new vertex
     TAVTvertex*        NewVertex();
+    //! Creat new vertex from existing one
     TAVTvertex*        NewVertex(TAVTvertex& vertex);
-    
+   
+    //! Set up clones
     virtual void       SetupClones();
+    //! Clear
     virtual void       Clear(Option_t* opt="");
         
 public:
+    //! Get branch
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
 
     ClassDef(TAVTntuVertex,1)

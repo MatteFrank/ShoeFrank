@@ -20,32 +20,33 @@
 class TAVTbaseParCal : public TAGparTools {
       
 protected:
-   TF1*     fLandau[6];
-   TF1*     fLandauNorm[6];
-   TF1*     fLandauTot;
-   TArrayF* fChargeProba;
-   TArrayF* fChargeProbaNorm;
-   Int_t    fChargeWithMaxProba;
-   Float_t  fChargeMaxProba;
-   Int_t    fChargeWithMaxProbaNorm;
-   Float_t  fChargeMaxProbaNorm;
+   TF1*     fLandau[6];              /// Landau functions
+   TF1*     fLandauNorm[6];          /// Landau normalized functions
+   TF1*     fLandauTot;              /// Landau functions
+   TArrayF* fChargeProba;            /// Charge proba array
+   TArrayF* fChargeProbaNorm;        /// Normalized Charge proba array
+   Int_t    fChargeWithMaxProba;     /// Charge with the maximum proba
+   Float_t  fChargeMaxProba;         /// Maximum charge
+   Int_t    fChargeWithMaxProbaNorm; /// Charge with the maximum proba normalized
+   Float_t  fChargeMaxProbaNorm;     /// Maximum charge normalized
 
    struct LandauParameter_t : public  TObject {
-	  Int_t   Charge;   // charge
-	  Float_t Constant; // constant value
-	  Float_t MPV;      // MPV of Landau
-	  Float_t Sigma;    // sigma of Landau  
-	  Float_t Quench;   // quenching factor of Landau
+	  Int_t   Charge;   /// charge
+	  Float_t Constant; /// constant value
+	  Float_t MPV;      /// MPV of Landau
+	  Float_t Sigma;    /// sigma of Landau
+	  Float_t Quench;   /// quenching factor of Landau
    };
    
-   LandauParameter_t  fLandauParameter[6];
+   LandauParameter_t  fLandauParameter[6]; /// Landau parameters
 
-   TString fkDefaultCalName; // default detector charge calibration file
+   TString fkDefaultCalName;   /// default detector charge calibration file
 
 private:
-   static Int_t   fgkChargesN;       // number of charge states
+   static Int_t   fgkChargesN; /// number of charge states
    
 private:
+   //! Set function
    void SetFunction();
    
 public:
@@ -101,7 +102,6 @@ public:
    //! Quenched Landau function
    Double_t           QLandauNorm(Double_t *x, Double_t *par);
 
-   
    //! Total quenched Landau function
    Double_t           QLandauTot(Double_t *x, Double_t *par);
    
