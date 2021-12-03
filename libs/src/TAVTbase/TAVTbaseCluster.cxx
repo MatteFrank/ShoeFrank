@@ -1,5 +1,5 @@
 /*!
- \file TAVTbaseCluster.cc
+ \file TAVTbaseCluster.cxx
  \brief Base class for VTX cluster containers
  */
 
