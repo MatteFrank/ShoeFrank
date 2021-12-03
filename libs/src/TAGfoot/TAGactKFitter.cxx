@@ -6,14 +6,10 @@
 // ClassImp(TAGactKFitter);
 
 //----------------------------------------------------------------------------------------------------
-// TAGactKFitter::TAGactKFitter (const char* name) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker") {
-// TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepoGenFit, TAGdataDsc* outTrackRepo) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"), fpGlobTrackRepoGenFit(outTrackRepoGenFit), fpGlobTrackRepo(outTrackRepo) {
+
+//! Default constructor for GenFit Kalman fitter
 TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"), fpGlobTrackRepo(outTrackRepo) {
 
-	// cout << "TAGactKFitter::TAGactKFitter -- begin" << endl;
-
-	// AddDataOut(outTrackRepoGenFit, "TAGtrackRepoKalman");
-	// AddDataOut(outTrackRepo, "TAGntuTrackRepository");
 	AddDataOut(outTrackRepo, "TAGntuGlbTrack");
 
 	if ( TAGrecoManager::GetPar()->IsMC() )
@@ -22,12 +18,12 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 	int nIter = 20; // max number of iterations
 	double dPVal = 1.E-3; // convergence criterion
 	m_AMU = 0.9310986964; // in GeV // conversion betweem mass in GeV and atomic mass unit
+	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
 
 	gGeoManager->ClearPhysicalNodes();
 
 	m_sensorIDmap = new TAGFdetectorMap();
 	genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
-	// genfit::MaterialEffects::getInstance()->setDebugLvl(1);
 	genfit::MaterialEffects::getInstance()->setNoEffects(false);
 
 	m_Particles = { "H", "He", "Li", "Be", "B", "C", "N", "O" };
@@ -49,10 +45,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 
 	m_mapTrack.clear();
 
-	// new one
-	// m_outTrackRepoGenFit = (TAGtrackRepoKalman*) fpGlobTrackRepoGenFit->Object();
 	m_outTrackRepo = (TAGntuGlbTrack*) fpGlobTrackRepo->Object();
-	// m_outTrackRepo = (TAGntuTrackRepository*) fpGlobTrackRepo->Object();
 
 	// checks for the detector to be used for kalman
 	IncludeDetectors();
@@ -61,26 +54,26 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 	m_fitter_extrapolation = new KalmanFitter(1, dPVal);
 	
 	// initialise the kalman method selected from param file
-	if ( TAGrecoManager::GetPar()->KalMode() == "ON" )
-	m_fitter = new KalmanFitter(nIter, dPVal);
+	if ( TAGrecoManager::GetPar()->KalMode() == "on" )
+		m_fitter = new KalmanFitter(nIter, dPVal);
 	else if ( TAGrecoManager::GetPar()->KalMode() == "ref" )
-	m_refFitter = new KalmanFitterRefTrack(nIter, dPVal);
+		m_refFitter = new KalmanFitterRefTrack(nIter, dPVal);
 	else if ( TAGrecoManager::GetPar()->KalMode() == "daf" )
-	m_dafRefFitter = new DAF(true, nIter, dPVal);
+		m_dafRefFitter = new DAF(true, nIter, dPVal);
 	else if ( TAGrecoManager::GetPar()->KalMode() == "dafsimple" )
-	m_dafSimpleFitter = new DAF(false, nIter, dPVal);
+		m_dafSimpleFitter = new DAF(false, nIter, dPVal);
+	else
+	{
+		Error("TAGactKFitter()", "Undexpected value for Kalman Mode! Given %s", TAGrecoManager::GetPar()->KalMode().c_str());
+		exit(0);
+	}
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )	    InitEventDisplay();
-	//---------------------------------------------------------------
-	//---------------------------------------------------------------
-
 
 	TAGrecoManager::GetPar()->Print("all");
 	cout << "TAGactKFitter::TAGactKFitter -- 1" << endl;
 	m_uploader = new TAGFuploader( m_sensorIDmap );
 	cout << "TAGactKFitter::TAGactKFitter -- 2" << endl;
 	m_trackAnalysis = new TAGF_KalmanStudies();
-
-	// cout << "TAGactKFitter::TAGactKFitter -- end" << endl;
 
 	for(int i=0; i<m_sensorIDmap->GetFitPlanesN(); ++i)
 	{
@@ -100,6 +93,8 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! Default destructor
 TAGactKFitter::~TAGactKFitter() {
     delete m_fitter;
     delete m_fitter_extrapolation;
@@ -110,6 +105,9 @@ TAGactKFitter::~TAGactKFitter() {
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! Fill counter of all the MC paticles generated in the FOOT setup
+//! \param[in] mappa Map containing the name and number of all MC particles in the event
 void TAGactKFitter::FillGenCounter( map< string, int > mappa )	{
 	
 	for( map<string, int>::iterator it = mappa.begin(); it != mappa.end(); ++it )	{
@@ -126,12 +124,13 @@ void TAGactKFitter::FillGenCounter( map< string, int > mappa )	{
 
 
 //------------------------------------------+-----------------------------------
-//! Action.
+
+//! Action: upload clusters/opints in GenFit format, categorize them and fit the selected tracks
+//! \return True if the action was successful
 Bool_t TAGactKFitter::Action()	{
 
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
 
-	// m_allHitMeasGF[1000]= vector<int>(3,new AbsMeasurement()) ;
 	if(m_debug > 0) cout << "TAGactKFitter::Action()  ->  " << m_allHitMeasGF.size() << endl;
 
 	m_uploader->TakeMeasHits4Fit( m_allHitMeasGF );
@@ -199,7 +198,8 @@ Bool_t TAGactKFitter::Action()	{
 
 
 //----------------------------------------------------------------------------------------------------
-// Called from outside!
+
+//! Function used to finalize all the needed histograms for GenFit studies. Called from outside, at the end of the event cycle
 void TAGactKFitter::Finalize() {
 
   // make a directory for each hit category that forms a track candidate
@@ -210,7 +210,7 @@ void TAGactKFitter::Finalize() {
   //     system(("mkdir "+pathName).c_str());
   // }
 
-	if ( TAGrecoManager::GetPar()->IsMC() ) 		m_trackAnalysis->EvaluateAndFill_MomentumResolution( &h_dPOverP_x_bin, &h_resoP_over_Pkf, &h_biasP_over_Pkf );
+	// if ( TAGrecoManager::GetPar()->IsMC() ) 		m_trackAnalysis->EvaluateAndFill_MomentumResolution( &h_dPOverP_x_bin, &h_resoP_over_Pkf, &h_biasP_over_Pkf );
 	if ( TAGrecoManager::GetPar()->IsMC() ) 		PrintPurity();
 	PrintEfficiency();
 	if ( TAGrecoManager::GetPar()->IsMC() ) 		PrintSelectionEfficiency();
@@ -287,7 +287,8 @@ void TAGactKFitter::Finalize() {
 
 
 //----------------------------------------------------------------------------------------------------
-// check and print which detectors included and/or used in the kalman
+
+//! Check and print which detectors included and/or used in the kalman
 void TAGactKFitter::IncludeDetectors() {
 
 	// check kalman detectors set in param file are correct
@@ -331,6 +332,8 @@ void TAGactKFitter::IncludeDetectors() {
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! Create the FOOT geometry and declare the detectors in GenFit format
 void TAGactKFitter::CreateGeometry()  {
 
 	if(m_debug > 0)	cout << "TAGactKFitter::CreateGeometry() -- START" << endl;
@@ -522,12 +525,17 @@ void TAGactKFitter::CreateGeometry()  {
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! Perform the actual fit of the selected tracks
+//! \param[in] evNum Event number
+//! \return Number of fitted tracks in the event
 int TAGactKFitter::MakeFit( long evNum ) {
 
 	if ( m_debug > 0 )		cout << "Starting MakeFit " << endl;
 
 	int isConverged = 0;
 	int trackCounter = -1;
+	int NconvTracks = 0;
 
 	m_evNum = evNum;
 	if(m_debug > 0)			
@@ -545,12 +553,11 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 		// check if the category is defined in UpdatePDG  -->  also done in GetPdgCode()
 		if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" )  {
-		int MeasId = trackIt->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
-		if( m_sensorIDmap->GetFitPlaneIDFromMeasID(MeasId) != m_sensorIDmap->GetFitPlaneTW())
+			int MeasId = trackIt->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
+			if( m_sensorIDmap->GetFitPlaneIDFromMeasID(MeasId) != m_sensorIDmap->GetFitPlaneTW())
 			continue;
 			
-			string partName = tok.at(0) + tok.at(1);
-			if ( !UpdatePDG::GetPDG()->IsParticleDefined( partName ) )
+			if ( !UpdatePDG::GetPDG()->IsParticleDefined( tok.at(0) + tok.at(1) ) )
 			{
 				Error("MakeFit()", "Category %s%s not found in UpdatePDG!" , tok.at(0).c_str(), tok.at(1).c_str());
 				throw -1;
@@ -592,6 +599,14 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		if( TAGrecoManager::GetPar()->IsMC() )
 			EvaluateProjectionEfficiency(&PartName, fitTrack);
 
+		std::string newTrackName = trackIt->first.Data();
+		if(PartName != tok.at(0))
+		{
+			int NewCharge = m_ParticleIndex[PartName] + 1;
+			int NewMass = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(NewCharge) );
+			newTrackName = Form("%s_%d_%s", PartName.c_str(), NewMass, tok.at(2).c_str());
+		}
+
 		// map of the number of converged tracks for each track hypothesis
 		if ( m_nSelectedTrackCandidates.find( PartName ) == m_nSelectedTrackCandidates.end() )	m_nSelectedTrackCandidates[ PartName ] = 0;
 		m_nSelectedTrackCandidates[ PartName ]++;
@@ -618,7 +633,9 @@ int TAGactKFitter::MakeFit( long evNum ) {
 				fitTrack->getCardinalRep()->Print();
 			}
 
-			if ( TAGrecoManager::GetPar()->KalMode() == "ON" ) {
+			if ( TAGrecoManager::GetPar()->KalMode() == "on" ) {
+				if(m_debug > 1)
+					std::cout << "Event::" << m_evNum << "\tTrack::" << trackCounter << std::endl;
 				m_fitter->processTrackWithRep( fitTrack, fitTrack->getCardinalRep() );
 			}
 			else if ( TAGrecoManager::GetPar()->KalMode() == "ref" ) {
@@ -630,9 +647,9 @@ int TAGactKFitter::MakeFit( long evNum ) {
 			else if ( TAGrecoManager::GetPar()->KalMode() == "dafsimple" )
 				m_dafSimpleFitter->processTrack( fitTrack );
 			else {
-				cout << "TAGactKFitter::MakeFit -- ERROR :: wrong  TAGrecoManager::GetPar()->KalMode()" << endl, exit(0);
+				cout << "TAGactKFitter::MakeFit -- ERROR :: wrong  TAGrecoManager::GetPar()->KalMode() -> " << TAGrecoManager::GetPar()->KalMode() << endl, exit(0);
 			}
-			// delete preFitter;
+			delete preFitter;
 		}
 		catch (genfit::Exception& e) {
 			std::cerr << e.what();
@@ -656,18 +673,18 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		if (isConverged) {			
 
 			if ( (TAGrecoManager::GetPar()->Chi2Cut() < 0) || ( m_refFitter->getRedChiSqu(fitTrack, fitTrack->getCardinalRep()) <= TAGrecoManager::GetPar()->Chi2Cut() ) ) {
+				NconvTracks++;
 
 				if ( m_nConvergedTracks_all.find( PartName ) == m_nConvergedTracks_all.end() )	m_nConvergedTracks_all[ PartName ] = 0;
 				m_nConvergedTracks_all[ PartName ]++;
 
-				RecordTrackInfo( fitTrack, trackIt->first.Data() );
+				RecordTrackInfo( fitTrack, newTrackName );
 				if(m_debug > 0) cout << "DONE\n";
 				m_vectorConvergedTrack.push_back( fitTrack );
 
 			}
 		}
 		
-
 		// // fill a vector with the categories fitted at least onece
 		// if ( find( m_categoryFitted.begin(), m_categoryFitted.end(), (*hitSample).first ) == m_categoryFitted.end() )
 		// m_categoryFitted.push_back( (*hitSample).first );
@@ -683,7 +700,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 	if ( m_debug > 0 )		cout << "Ready for the next track fit!\n";
 
-	return isConverged;
+	return NconvTracks;
 }
 
 
@@ -694,7 +711,8 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 
 
-//----------------------------------------------------------------------------------------------------
+//! Make the prefit of selected tracks
+//! Currently not used
 void TAGactKFitter::MakePrefit() {
 // try{
 	 //        if ( m_debug > 0 ) 		cout<<"Starting the fitter"<<endl;
@@ -725,8 +743,9 @@ void TAGactKFitter::MakePrefit() {
 
 
 
-//----------------------------------------------------------------------------------------------------
-//
+//! Record the information regarding a fitted+converged track
+//! \param[in] track Ptr to fitted track to save
+//! \param[in] fitTrackName Name of the fitted track (example He_4_2001 -> tracklet 1 of VTX 2, with Helium 4 as starting particle hypothesis
 void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 	if(m_debug > 0)		cout << "RECORD START" << endl;
@@ -825,7 +844,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		cout << "Track length after vertexing::" << fabs(extL_Tgt) + track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
 	}
 
-
 	//End VTX; start TW: extrap some mm after TW for fitted total energy loss
 
 	StateOnPlane state_TW = track->getFittedState(-1);
@@ -855,17 +873,20 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	TMatrixD recoPos_target_cov(3,3);
 	TMatrixD recoMom_target_cov(3,3);
 	
-	// GetRecoTrackInfo( &state_target, &recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov );
-
 	GetRecoTrackInfo(0, track, &recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov ); //This might be unnecessary...
+
 	// // getRecoInfo
 	TVector3 recoPos_TW, recoMom_TW;
 	TMatrixD recoPos_TW_cov(3,3);
 	TMatrixD recoMom_TW_cov(3,3);
 	GetRecoTrackInfo(-1, track, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
 
-	double length = track->getTrackLen( track->getCardinalRep(), 0, -1 ) + fabs(extL_Tgt); //Track length from Tgt to TW
-	double tof	= track->getCardinalRep()->getTime(track->getFittedState(-1)) - track->getCardinalRep()->getTime(state_target_point); //TOF from Tgt to TW
+	double length, tof;
+	if( track->hasKalmanFitStatus(track->getCardinalRep()) )
+	{
+		length = track->getKalmanFitStatus( track->getCardinalRep() )->getTrackLen() + fabs(extL_Tgt); //Track length from Tgt to TW
+		tof	= track->getCardinalRep()->getTime(track->getFittedState(-1)) - track->getCardinalRep()->getTime(state_target_point); //TOF from Tgt to TW
+	}
 	double energyAtTgt = TMath::Sqrt( pow(track->getCardinalRep()->getMomMag(state_target_point), 2) + pow(fitMass, 2) ) - fitMass; //Energy at Tgt
 	
 	if(energyOutTw != 0)	energyOutTw = TMath::Sqrt( pow(track->getCardinalRep()->getMomMag(state_TW), 2) + pow(fitMass, 2) ) - fitMass; //Energy after TW
@@ -902,14 +923,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	recoMom_TW *= 1000./(Double_t)nucleonsN;
 	recoMom_TW_cov *= 1000./(Double_t)nucleonsN;
 
-	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, 
-										(long)gTAGroot->CurrentEventId().EventNumber(),
+	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, (long)gTAGroot->CurrentEventId().EventNumber(),
 										pdgID, startMass, fitCh, fitMass, length, tof, chi2, ndof, pVal, 
 										&recoPos_target, &recoMom_target, &recoPos_target_cov, 
 										&recoMom_target_cov, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov,
-										&recoMom_TW_cov, &shoeTrackPointRepo
-										);
-	
+										&recoMom_TW_cov, &shoeTrackPointRepo);
 	//Set additional variables
 	shoeOutTrack->SetTwChargeZ(TwChargeZ);
 	shoeOutTrack->SetTwTof(TwTof);
@@ -951,6 +969,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
 		}
 
+		recoMom_target *= (Double_t)nucleonsN/1000.;
+		recoMom_target_cov *= (Double_t)nucleonsN/1000.;
+
 		m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin );
 
 		m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
@@ -988,8 +1009,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	h_eta->Fill ( recoMom_target.Eta() );
 	h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
 	h_dy_dz->Fill ( recoMom_target.y() / recoMom_target.z() );
-	
-
 
 	h_nMeas->Fill ( nMeas );
 	h_mass->Fill( fitMass );
@@ -998,7 +1017,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	h_chargeMeas->Fill( fitCh );
 	h_chargeFlip->Fill( pdgCh - fitCh );
 
-	
 	h_length->Fill( length );
 	h_tof->Fill( tof );
 	h_pVal->Fill( pVal );
@@ -1016,9 +1034,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 
 
-
-
-
+//! Find the MC particle that appears more frequently in the selected track
+//! \param[in] mcParticleID_track ptr to vector containing all the vectors of MC particles crossing each cluster/point
+//! \return Id of the most frequent MC particle
 int TAGactKFitter::FindMostFrequent( vector<vector<int>>* mcParticleID_track ) {
 
 	map<int,int> qualityMap; // [ID in the shoe particle container, multiplicity in the track points]
@@ -1042,11 +1060,11 @@ int TAGactKFitter::FindMostFrequent( vector<vector<int>>* mcParticleID_track ) {
 }
 
 
+//----------------------------------------------------------------------------------------------------
 
-
-
-
-
+//! Compute the quality of the track under study as occurences of most frequent particle over number of track points
+//! \param[in] mcParticleID_track Ptr to vector containing all the vectors of MC particles crossing each cluster/point
+//! \return Quality of the selected track
 double TAGactKFitter::TrackQuality( vector<vector<int>>* mcParticleID_track ) {
 
 	map<int,int> qualityMap;
@@ -1081,10 +1099,14 @@ double TAGactKFitter::TrackQuality( vector<vector<int>>* mcParticleID_track ) {
 
 
 
-
-
-
 //----------------------------------------------------------------------------------------------------
+
+//! Get additional information on a measurement
+//! \param[in] detID Id of the detector
+//! \param[in] hitID Global measurement Id
+//! \param[out] iSensor Ptr to local sensor Id
+//! \param[out] iClus Ptr to local cluster Id
+//! \param[out] iPart Ptr to vector of MC particles of the cluster
 void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus, vector<int>* iPart ) {
 
 	// check
@@ -1108,16 +1130,17 @@ void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus,
 
 
 //----------------------------------------------------------------------------------------------------
-void TAGactKFitter::GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr ) {
 
-	// cout << "TAGactKFitter::GetMeasTrackInfo - start" << endl;
+//! Get info on the position measurement and error for an hit
+//! \param[in] hitID Global Id of the hit
+//! \param[out] pos Ptr to vector where to store the measured position
+//! \param[out] posErr Ptr to vector where to store the position error
+void TAGactKFitter::GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr ) {
 
 	string det = m_sensorIDmap->GetDetNameFromMeasID( hitID );
 
 	int iSensor = m_sensorIDmap->GetSensorIDFromMeasID( hitID );
 	int iClus = m_sensorIDmap->GetHitIDFromMeasID( hitID );
-
-	// cout << "TAGactKFitter::GetMeasTrackInfo - start - " << det << " sensor= "<< iSensor << " clus="<< iClus << endl;
 
 	if ( det == "VT" ) {
 		TAVTcluster* clus = ( (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object() )->GetCluster( iSensor, iClus );
@@ -1151,6 +1174,14 @@ void TAGactKFitter::GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! Get the reconstructed information for a Track Point
+//! \param[in] i Index of the Track Point
+//! \param[in] track Ptr to track under study
+//! \param[out] KalmanPos ptr to vector used to store the fitted position
+//! \param[out] KalmanMom ptr to vector used to store the fitted momentum
+//! \param[out] KalmanPos_cov ptr to matrix used to store the covariance of fitted position
+//! \param[out] KalmanMom_cov ptr to matrix used to store the covariance of fitted momentum
 void TAGactKFitter::GetRecoTrackInfo ( int i, Track* track,
 										TVector3* KalmanPos, TVector3* KalmanMom,
 										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov ) {
@@ -1177,34 +1208,34 @@ void TAGactKFitter::GetRecoTrackInfo ( int i, Track* track,
 
 
 //----------------------------------------------------------------------------------------------------
-void TAGactKFitter::GetRecoTrackInfo (  StateOnPlane* state,
-										TVector3* KalmanPos, TVector3* KalmanMom,
-										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov ) {
+// void TAGactKFitter::GetRecoTrackInfo (  StateOnPlane* state,
+// 										TVector3* KalmanPos, TVector3* KalmanMom,
+// 										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov ) {
 
 
-	// Get reco track kinematics and errors
-	*KalmanPos = TVector3( (state->get6DState())[0],	(state->get6DState())[1],	(state->get6DState())[2] );
-	*KalmanMom = TVector3( (state->get6DState())[3], (state->get6DState())[4],	(state->get6DState())[5] );
+// 	// Get reco track kinematics and errors
+// 	*KalmanPos = TVector3( (state->get6DState())[0],	(state->get6DState())[1],	(state->get6DState())[2] );
+// 	*KalmanMom = TVector3( (state->get6DState())[3], (state->get6DState())[4],	(state->get6DState())[5] );
 
-	MatrixToZero(KalmanPos_cov);
-	MatrixToZero(KalmanMom_cov);
+// 	MatrixToZero(KalmanPos_cov);
+// 	MatrixToZero(KalmanMom_cov);
 
-	// incertainty given only in fitting a StateOnPlane, not for extrapolation, even if in RKTrackRep the noise Jacobian can  be calcualted 
-	// for ( int j=0; j<3; j++ ) {
-	// 	for ( int k=0; k<3; k++ ) {
-	// 		(*KalmanMom_cov)(j,k) = (state->get6DCov())[j+3][k+3];
-	// 		(*KalmanPos_cov)(j,k) = (state->get6DCov())[j][k];
-	// 	}
-	// }
+// 	// incertainty given only in fitting a StateOnPlane, not for extrapolation, even if in RKTrackRep the noise Jacobian can  be calcualted 
+// 	// for ( int j=0; j<3; j++ ) {
+// 	// 	for ( int k=0; k<3; k++ ) {
+// 	// 		(*KalmanMom_cov)(j,k) = (state->get6DCov())[j+3][k+3];
+// 	// 		(*KalmanPos_cov)(j,k) = (state->get6DCov())[j][k];
+// 	// 	}
+// 	// }
 
-}
-
-
+// }
 
 
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! Print the overall purity of fitted tracks for each charge value
 void TAGactKFitter::PrintPurity() {
 
 	int nCollection = m_nConvergedTracks_all.size();
@@ -1249,10 +1280,9 @@ void TAGactKFitter::PrintPurity() {
 
 
 
-
-
-
 //----------------------------------------------------------------------------------------------------
+
+//! Print the overall efficiency of the fit algorithm for each charge value
 void TAGactKFitter::PrintEfficiency() {
 
 	int nCollection = m_nSelectedTrackCandidates.size();
@@ -1312,6 +1342,8 @@ void TAGactKFitter::PrintEfficiency() {
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! Print the overall selection efficiency of tracks for each charge value
 void TAGactKFitter::PrintSelectionEfficiency() {
 
 	int nCollection = m_genCount_vector.size();
@@ -1369,9 +1401,7 @@ void TAGactKFitter::PrintSelectionEfficiency() {
 
 
 
-
-
-
+//! Declare the GenFit histograms
 void TAGactKFitter::CreateHistogram()	{
 
 	h_trackMC_true_id = new TH1F("h_trackMC_true_id", "h_trackMC_true_id", 45, 0., 45);
@@ -1469,7 +1499,8 @@ void TAGactKFitter::CreateHistogram()	{
 
 
 //----------------------------------------------------------------------------------------------------
-// init matrix to zero
+
+//! Reset matrix values to zero
 void TAGactKFitter::MatrixToZero( TMatrixD *matrix ) {
   for ( int j=0; j<matrix->GetNrows(); j++ ) {
     for ( int k=0; k<matrix->GetNcols(); k++ ) {
@@ -1484,9 +1515,9 @@ void TAGactKFitter::MatrixToZero( TMatrixD *matrix ) {
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! Initialize GenFit event display
 void TAGactKFitter::InitEventDisplay() {
-
-
 
   // init event display
   display = genfit::EventDisplay::getInstance();
@@ -1511,11 +1542,12 @@ void TAGactKFitter::InitEventDisplay() {
 
   //m_fitter->setMultipleMeasurementHandling(mmHandling);
   //f_fitter->setMultipleMeasurementHandling(unweightedClosestToPredictionWire);
-
-
 }
 
 
+//! Evaluate the efficiency of the forward projection and check if the current charge hypothesis matches the value obtained from TW. In case of mismatch, correct the hypothesis and reset the fit seed
+//! \param[in,out] PartName Ptr to the name of the particle ("H,"He","Li"...). If the particle hypothesis changes, this variable is updated with the new name
+//! \param[in] fitTrack Ptr to the track under study
 void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTrack)
 {
 	int MeasId, PlaneId;
@@ -1556,6 +1588,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTra
 
 	m_NTWTracks++;
 
+	//Charge hypo != form TW -> change PartName and reset seed
 	if(chargeFromTW != fitTrack->getCardinalRep()->getPDGCharge())
 	{
 		if(m_debug > 0)	Info("EvaluateProjectionEfficiency()", "Charge Hypo (%d) wrong, changing to measured from TW (%d)", int(fitTrack->getCardinalRep()->getPDGCharge()), chargeFromTW);
@@ -1568,6 +1601,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTra
 			}
 		}
 
+		//Reset track seed
 		double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(chargeFromTW) );
 		int A_Hypo = round(mass_Hypo/m_AMU);
 
@@ -1579,13 +1613,12 @@ void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTra
 		mom.SetX(seed(3)); mom.SetY(seed(4)); mom.SetZ(seed(5));
 		if(m_debug > 1)	mom.Print();
 
-
-		mom.SetMag(TMath::Sqrt( pow(0.2*A_Hypo,2) + 2*mass_Hypo*0.2*A_Hypo ));
+		mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
 		if(m_debug > 1)	mom.Print();
 
 		fitTrack->setStateSeed(pos,mom);
 
-		//change name of the particle associated to track
+		//update the name of the particle associated to track
 		switch(chargeFromTW)
 		{
 			case 1:	*PartName = "H";	break;
@@ -1601,19 +1634,9 @@ void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTra
 		}
 	}
 	else
-	{
 		m_NTWTracksGoodHypo++;
 
-	}
-
 }
-
-
-
-
-
-
-
 
 
 

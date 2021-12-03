@@ -1,7 +1,7 @@
 #include "TAGFdetectorMap.hxx"
 
 
-//Constructor -> Detector indices are determined through a static map
+//! Default constructor -> Detector indices are determined through a static map
 TAGFdetectorMap::TAGFdetectorMap()
 { 
 	m_detectorIndex.clear();
@@ -15,7 +15,7 @@ TAGFdetectorMap::TAGFdetectorMap()
 	m_debug = TAGrecoManager::GetPar()->Debug();
 }
 
-//Destructor -> clean all the maps
+//Default destructor -> clean all the maps
 TAGFdetectorMap::~TAGFdetectorMap()
 {
 	m_detectorIndex.clear();
@@ -38,6 +38,9 @@ TAGFdetectorMap::~TAGFdetectorMap()
 
 /***********************SENSOR/PLANE MAP****************************/
 
+//! Add an index to FitPlane for a detector
+//! \param[in] planeId Index of the FitPlane to add
+//! \param[in] detName Name of the detector where to add the plane
 void TAGFdetectorMap::AddFitPlaneIDToDet(int planeId, string detName)
 {
 	if(m_DetToFitPlaneMap.find(detName) == m_DetToFitPlaneMap.end())
@@ -49,6 +52,9 @@ void TAGFdetectorMap::AddFitPlaneIDToDet(int planeId, string detName)
 }
 
 
+//! Add an IT plane to the map assigned to its Z coordinate
+//! \param[in] zPos Z coordinate of the FitPlane to add
+//! \param[in] indexOfPlane Index of the plane to add
 void TAGFdetectorMap::AddPlane_Zorder(float zPos, int indexOfPlane)	{
 
 	if ( m_zOrderingPlanes.find(zPos) == m_zOrderingPlanes.end())
@@ -71,22 +77,27 @@ void TAGFdetectorMap::AddPlane_Zorder(float zPos, int indexOfPlane)	{
 }
 
 
-
-
-
+//! Get the vector of IT planes' indices at a given Z coordinate
+//! \param[in] zPos Z coordinate of the IT planes
+//! \return Ptr to the vector of plane indices
 vector<int>* TAGFdetectorMap::GetPlanesAtZ( float zPos ) {
 
 	return &m_zOrderingPlanes[zPos];
 }
 
 
+//! Get the possible values for the Z coordinate of IT planes
+//! \return Ptr to vector of possible values for Z coordinate of IT planes
 vector<float>* TAGFdetectorMap::GetPossibleITz() {
 
 	return &m_itPossibleZ;
 }
 
 
-
+//! Get the index of a FitPlane
+//! \param[in] detName name of the detector
+//! \param[in] sensorId Local index of the sensor
+//! \return Index of a FitPlane
 int TAGFdetectorMap::GetFitPlaneID(string detName, int sensorId)
 {
 	if(m_DetToFitPlaneMap.find(detName) == m_DetToFitPlaneMap.end())
@@ -104,6 +115,9 @@ int TAGFdetectorMap::GetFitPlaneID(string detName, int sensorId)
 }
 
 
+//! Get the minimum FitPlane index for a detector
+//! \param[in] detName Name of the detector
+//! \return Minimum FitPlane index for the detector
 int TAGFdetectorMap::GetMinFitPlane(string detName)
 {
 	if(m_DetToFitPlaneMap.find(detName) == m_DetToFitPlaneMap.end())
@@ -116,6 +130,9 @@ int TAGFdetectorMap::GetMinFitPlane(string detName)
 }
 
 
+//! Get the maximum FitPlane index for a detector
+//! \param[in] detName Name of the detector
+//! \return Maximum FitPlane index for the detector
 int TAGFdetectorMap::GetMaxFitPlane(string detName)
 {
 	if(m_DetToFitPlaneMap.find(detName) == m_DetToFitPlaneMap.end())
@@ -128,6 +145,8 @@ int TAGFdetectorMap::GetMaxFitPlane(string detName)
 }
 
 
+//! Get the index of the TW FitPlane
+//! \return Index of the TW FitPlane
 int TAGFdetectorMap::GetFitPlaneTW()
 {
 	if(m_DetToFitPlaneMap.find("TW") == m_DetToFitPlaneMap.end())
@@ -148,6 +167,9 @@ int TAGFdetectorMap::GetFitPlaneTW()
 }
 
 
+//! Get the number of FitPlanes for the whole setup or for a detector
+//! \param[in] detName Name of the detector (default=="all")
+//! \return Number of FitPlanes in the detector or in the full setup if detName=="all"
 int TAGFdetectorMap::GetFitPlanesN(string detName)
 {
 	if(detName == "all")
@@ -157,6 +179,10 @@ int TAGFdetectorMap::GetFitPlanesN(string detName)
 }
 
 
+//! Check if a FitPlane is contained in a detector
+//! \param[in] planeId Index of the FitPlane
+//! \param[in] detName Name of the detector
+//! \return True if the FitPlane is associated to the detector
 bool TAGFdetectorMap::IsFitPlaneInDet(int planeId, string detName)
 {
 	if(planeId >= GetFitPlanesN())
@@ -178,6 +204,10 @@ bool TAGFdetectorMap::IsFitPlaneInDet(int planeId, string detName)
 }
 
 
+//! Get the local sensor index of a FitPlane
+//! \param[in] planeId Index of the FitPlane
+//! \param[out] sensorId Ptr to store the local index of the sensor
+//! \return True if the sensor was found
 bool TAGFdetectorMap::GetSensorID(int planeId, int* sensorId)
 {
 	bool check = false;
@@ -209,6 +239,7 @@ bool TAGFdetectorMap::GetSensorID(int planeId, int* sensorId)
 
 /**************** GENFIT PLANES HANDLING *************/
 
+//! Add a FitPlane 
 void TAGFdetectorMap::AddFitPlane(int planeId, SharedPlanePtr genfitPlane)
 {
 	m_detectorPlanes[planeId] = genfitPlane;

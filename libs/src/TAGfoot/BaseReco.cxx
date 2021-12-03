@@ -893,16 +893,8 @@ void BaseReco::CreateRecActionGlbGF()	{
 		// include the nucleon into the genfit pdg repository
 		UpdatePDG::Instance();
 
-		// study for kalman Filter
-		// fActGlbTrackStudies = new TAGFtrackingStudies("glbActTrackStudyGF");
-		// if (fFlagHisto)
-		//    fActGlbTrackStudies->CreateHistogram();
-
 		// Initialisation of KFfitter
-		// m_GlobTrackRepo = new TAGdataDsc("TAGtrackRepoKalman", new TAGtrackRepoKalman());
-		// m_newGlobTrackRepo = new TAGdataDsc("TAGntuTrackRepository", new TAGntuTrackRepository());
 		m_newGlobTrackRepo = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-		// fActGlbkFitter = new TAGactKFitter("glbActKFitter", m_GlobTrackRepo, m_newGlobTrackRepo);
 		fActGlbkFitter = new TAGactKFitter("glbActKFitter", m_newGlobTrackRepo);
 		if (fFlagHisto)
 			fActGlbkFitter->CreateHistogram();
@@ -1037,8 +1029,6 @@ void BaseReco::SetTreeBranches()
  	// genfit 
    if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
       if (fFlagTrack) {
-         // fActEvtWriter->SetupElementBranch(m_GlobTrackRepo, TAGtrackRepoKalman::GetBranchName());
-         // fActEvtWriter->SetupElementBranch(m_newGlobTrackRepo, TAGntuTrackRepository::GetBranchName());
       	fActEvtWriter->SetupElementBranch(m_newGlobTrackRepo, TAGntuGlbTrack::GetBranchName());
       }
    }

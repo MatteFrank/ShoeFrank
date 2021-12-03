@@ -109,7 +109,6 @@ public:
 
 	ClassDef(TAGactKFitter,0);
 
-
 	int MakeFit(long evNum);
 	void MakePrefit();
 
@@ -117,7 +116,6 @@ public:
 
 	void IncludeDetectors();
 	void CreateGeometry();
-
 
 	void Finalize();	// save control plot and calculate resolutions
 
@@ -137,9 +135,9 @@ public:
 	void GetRecoTrackInfo ( int i, Track* track,
 											TVector3* KalmanPos, TVector3* KalmanMom,
 											TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
-	void GetRecoTrackInfo ( StateOnPlane* state,
-											TVector3* KalmanPos, TVector3* KalmanMom,
-											TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
+	// void GetRecoTrackInfo ( StateOnPlane* state,
+	// 										TVector3* KalmanPos, TVector3* KalmanMom,
+	// 										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
 	void GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
 
 	void FillGenCounter( map<string, int> mappa );
@@ -154,11 +152,10 @@ private:
 	KalmanFitter* m_fitter_extrapolation;
 
 	KalmanFitter* m_fitter;
-	AbsKalmanFitter*  m_refFitter;    		 //KalmanFitterRefTrack()
+	AbsKalmanFitter*  m_refFitter;    		 /// KalmanFitterRefTrack()
 	AbsKalmanFitter*  m_dafRefFitter;    	         //DAF with kalman ref
 	AbsKalmanFitter*  m_dafSimpleFitter;    	 //DAF with simple kalman
 
-	// TAGtrackRepoKalman* m_outTrackRepoGenFit;
 	TAMCntuPart*  m_trueParticleRep;
 
 	TAGFuploader* m_uploader;
@@ -236,6 +233,7 @@ private:
 	string m_kalmanOutputDir;
 
 	double m_AMU; // conversion betweem mass in GeV and atomic mass unit
+	double m_BeamEnergy; 
 
 	int m_debug;
 

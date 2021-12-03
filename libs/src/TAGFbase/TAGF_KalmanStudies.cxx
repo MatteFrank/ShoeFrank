@@ -4,14 +4,12 @@
 
 ClassImp(TAGF_KalmanStudies);
 
-// TString TAGtrackRepoKalman::fgkBranchName = "glbtrackGF.";
 
 //Default constructor
 TAGF_KalmanStudies::TAGF_KalmanStudies()   {
 
 	m_debug = 0;
 	m_resoP_step = 0.2;
-    // m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman";
     
 }
 
@@ -44,7 +42,6 @@ double TAGF_KalmanStudies::EvalError( TVector3 mom, TVector3 err ) {
 double TAGF_KalmanStudies::EvalError( TVector3 mom, TMatrixD cov ) {
 
   // if ( cov.GetNcols() != 3 || cov.GetNrows() != 3 )
-  //   cout << "ERROR :: TAGtrackRepoKalman::EvalError  >>  covariance dimension (should be 6) is wrong " << cov.GetNcols() << " x " << cov.GetNrows() << endl, exit(0);
 
   array<double,3> partialDer = { mom.x()/sqrt(mom.Mag()), mom.y()/sqrt(mom.Mag()), mom.z()/sqrt(mom.Mag()) };
 
@@ -62,18 +59,6 @@ double TAGF_KalmanStudies::EvalError( TVector3 mom, TMatrixD cov ) {
 
   return dp;
 }
-
-
-
-
-
-// //----------------------------------------------------------------------------------------------------
-// void TAGtrackRepoKalman::GetPositionResidual( TVector3 pos, TVector3 expectedPos, string hitSampleName ) {
-//   double dR = pos.DeltaR( expectedPos );
-//   // h_posRes[ hitSampleName ]->Fill(dR);
-// }
-
-
 
 
 
@@ -139,8 +124,8 @@ void TAGF_KalmanStudies::Fill_MomentumResidual( TVector3 meas, TVector3 expected
 		cout<< "ERROR::TAGF_KalmanStudies::PrintMomentumResidual  -->  track momentum - 0. "<< endl, exit(0);
 
 	// find the center of the momentum bin
-	int roundUp = ceil( (double)expected.Mag() );
-	int roundDown = floor( (double)expected.Mag() );
+	int roundUp = 11;//ceil( (double)expected.Mag() );
+	int roundDown = 0;//floor( (double)expected.Mag() );
 	float binCenter = -666;
 	int nstep = ((float)(roundUp - roundDown)) / m_resoP_step;
 
@@ -156,7 +141,7 @@ void TAGF_KalmanStudies::Fill_MomentumResidual( TVector3 meas, TVector3 expected
 	if ( (*h_dPOverP_x_bin).find( hitSampleName ) == (*h_dPOverP_x_bin).end() ) {
 		map<float, TH1F*> tmp_dPOverP_x_bin;
 		string name = "dPOverP_dist_" + hitSampleName + "_" + build_string( binCenter );
-		TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -0.2, 0.2 );
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 400 , -1., 1. );
 		tmp_dPOverP_x_bin[ binCenter ] = h;
 		(*h_dPOverP_x_bin)[ hitSampleName ] = tmp_dPOverP_x_bin;
 	}
@@ -164,7 +149,7 @@ void TAGF_KalmanStudies::Fill_MomentumResidual( TVector3 meas, TVector3 expected
 	// create plot the h_dPOverP_x_bin if not already defined
 	else if ( (*h_dPOverP_x_bin)[ hitSampleName ].find( binCenter ) == (*h_dPOverP_x_bin)[ hitSampleName ].end() ) {
 		string name = "dPOverP_dist_" + hitSampleName + "_" + build_string( binCenter );
-		TH1F* h = new TH1F( name.c_str(), name.c_str(), 80 , -0.2, 0.2 );
+		TH1F* h = new TH1F( name.c_str(), name.c_str(), 400 , -1., 1. );
 		(*h_dPOverP_x_bin)[ hitSampleName ][ binCenter ] = h;
 	}
 	if ( m_debug > 0 ) cout << "Filling h_dPOverP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP/expected.Mag() << endl;
@@ -175,7 +160,7 @@ void TAGF_KalmanStudies::Fill_MomentumResidual( TVector3 meas, TVector3 expected
 	( ((*h_dPOverP_x_bin).at( hitSampleName )).at(binCenter) )->Fill( dP/expected.Mag() );
 
 	if ( m_debug > 1 )		
-		cout << "TAGtrackRepoKalman::PrintMomentumResidual -- End!!!!  " << ( ((*h_dPOverP_x_bin).at( hitSampleName )).at(binCenter) )->GetTitle() << endl;
+		cout << "TAGF_KalmanStudies::PrintMomentumResidual -- End!!!!  " << ( ((*h_dPOverP_x_bin).at( hitSampleName )).at(binCenter) )->GetTitle() << endl;
 }
 
 
@@ -266,94 +251,6 @@ void TAGF_KalmanStudies::EvaluateAndFill_MomentumResolution( map<string, map<flo
 }
 
 
-
-
-
-// //! ostream insertion.
-// void TAGtrackRepoKalman::ToStream(ostream& os, Option_t* option) const
-// {
-//    //TODO properly
-//    os << "globTrackRepo " << endl; //GetName()
-// //    << Form("  nPixels=%3d", GetTracksN())
-// //    << endl;
-   
-// //    for (Int_t j = 0; j < GetTracksN(); j++) {
-// //       const GlobalTrack*  track = GetTrack(j);
-// //       if (track)
-// //          os << Form("%4d", track->GetTrackId());
-// //       os << endl;
-// //    }
-// }
-
-
-
-
-
-
-
-
-// //----------------------------------------------------------------------------------------------------
-// void TAGtrackRepoKalman::Save( ) {
-
-// 	struct stat info;
-
-// 	TCanvas* mirror = new TCanvas("TrackChi2Plot", "TrackChi2Plot", 700, 700);
-
-// 	// for ( map<string, map<float, TH1F*> >::iterator collIt=h_dP_x_bin.begin(); collIt != h_dP_x_bin.end(); collIt++ ) {
-// 	// 	string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dP_x_bin";
-// 	// 	if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
-// 	// 	system(("mkdir "+pathName).c_str());
-// 	// 	for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
-// 	// 		(*it).second->GetXaxis()->SetTitle("dP(GeV)");
-// 	// 		(*it).second->Draw();
-// 	// 		mirror->SaveAs(( pathName+"/"+"dP_x_bin__"+(*collIt).first+"__"+build_string( (*it).first )+".png").c_str());
-// 	// 	}
-// 	// }
-// 	gStyle->SetOptFit(111111);
-// 	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ ) {
-// 		string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dPOverP_x_bin";
-// 		if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
-// 		system(("mkdir "+pathName).c_str());
-// 		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
-// 			(*it).second->GetXaxis()->SetTitle("dP/P");
-// 			(*it).second->Draw();
-// 			mirror->SaveAs(( pathName+"/"+"dPOverP_x_bin__"+(*collIt).first+"__"+build_string( (*it).first )+".png").c_str());
-// 		}
-// 	}
-// 	// gStyle->SetOptFit(111);
-// 	// for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverSigmaP_x_bin.begin(); collIt != h_dPOverSigmaP_x_bin.end(); collIt++ ) {
-// 	// 	string pathName = m_kalmanOutputDir+"/"+(*collIt).first+"/dPOverSigmaP_x_bin";
-// 	// 	if( stat( pathName.c_str(), &info ) != 0 )		//cannot access
-// 	// 	system(("mkdir "+pathName).c_str());
-// 	// 	for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
-// 	// 		(*it).second->GetXaxis()->SetTitle("dP/sigmaP");
-// 	// 		(*it).second->Draw();
-// 	// 		mirror->SaveAs(( pathName+"/"+"dPOverSigmaP_x_bin__"+(*collIt).first+"__"+build_string( (*it).first )+".png").c_str());
-// 	// 	}
-// 	// }
-
-// 	for ( map< string, TH1F* >::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); it++ ) {
-// 		(*it).second->GetXaxis()->SetTitle("p(GeV)");
-// 		(*it).second->GetYaxis()->SetTitle("dp/p");
-// 		(*it).second->Draw();
-
-// 		mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialMomentumReso" + ".png").c_str() );
-// 		mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialMomentumReso" + ".root").c_str() );
-// 		// string aaa = mirror->GetName();
-// 		// mirror->SetName( (*it).second->GetName() );
-//     // mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialMomentumReso" + ".root").c_str() );
-// 		// mirror->SetName( aaa.c_str() );
-// 	}
-
-//   for ( map< string, TH1F* >::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); it++ ) {
-// 		(*it).second->GetXaxis()->SetTitle("p(GeV)");
-// 		(*it).second->GetYaxis()->SetTitle("Bias(dp/p)");
-// 		(*it).second->Draw();
-// 		mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialResoBias" + ".png").c_str() );
-// 		mirror->SaveAs( (m_kalmanOutputDir+"/"+(*it).first+"/"+"differentialResoBias" + ".root").c_str() );
-//   }
-
-// }
 
 
 
@@ -461,26 +358,5 @@ void TAGF_KalmanStudies::EvaluateAndFill_MomentumResolution( map<string, map<flo
 
 // }
 // //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

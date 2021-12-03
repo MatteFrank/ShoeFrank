@@ -144,6 +144,7 @@ map<string, int> TAGFselector::CountParticleGenaratedAndVisible() {
 			genCount_vector[ outName ] = 0;
 
 		int foundHit = 0;
+		int foundHitTW = 0;
 
 		for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)    {
 		
@@ -160,7 +161,10 @@ map<string, int> TAGFselector::CountParticleGenaratedAndVisible() {
 					
 					int tmpID = ( *(itTrackMC) );
 					if ( tmpID == iPart ) 
+					{
 						match = 1;
+						if( iPlane == m_SensorIDMap->GetFitPlaneTW() )	foundHitTW++;
+					}
 				}
 
 
@@ -170,8 +174,8 @@ map<string, int> TAGFselector::CountParticleGenaratedAndVisible() {
 			}
 		}
 
-		//		if ( foundHit < TAGrecoManager::GetPar()->MeasureN() ) 
-		//			continue;
+		if ( foundHit < TAGrecoManager::GetPar()->MeasureN() && !foundHitTW ) 
+			continue;
 
 		genCount_vector.at( outName ) += 1;
 
@@ -449,7 +453,7 @@ void TAGFselector::CategorizeVT()
 			cout << "Vertex number " << iVtx << " seems to be empty\n";
 			continue;
 		}
-		else if( !vtxPD->IsBmMatched() )
+		else if( !TAGrecoManager::GetPar()->IsMC() && !vtxPD->IsBmMatched() )
 		{
 			if(m_debug > 0)
 			{
@@ -589,7 +593,7 @@ void TAGFselector::CategorizeIT()	{
 			// cout << "planes at z::" << tmpITz << " -> " << planesAtZ->size() << "\n";
 
 			// select a matching plane -> CHECK!!!!!!!!!!!!!!!
-			// RZ: there is a potentially bad issue here with the bending plane!!! the intersection might be in another sensor since it is done with a linear extrapolation. Would i tbe better to only check the y? how much do we risk of f-ing this up?
+			// RZ: there is a potentially bad issue here with the bending plane!!! the intersection might be in another sensor since it is done with a linear extrapolation. Would it be better to only check the y? how much do we risk of f-ing this up?
 			
 
 			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); iPlane++ ) {
@@ -983,7 +987,7 @@ void TAGFselector::CategorizeTW()
 {
 	int planeTW = m_SensorIDMap->GetFitPlaneTW();
 	if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
-		if(m_debug > -1) cout << "TAGFselector::CategorizeTW() -- no measurement found in TW layer\n";
+		if(m_debug > 0) cout << "TAGFselector::CategorizeTW() -- no measurement found in TW layer\n";
 		return;
 	}
 

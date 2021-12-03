@@ -2,11 +2,11 @@
 #include "TAGFuploader.hxx"
 
 
-
+//! Default constructor for the Uploader of GenFit TrackPoints. The class converts clusters/points in GenFit format
+//! \param[in] aSensorIDmap Ptr to the TAGFdetectorMap object that handles the GenFit geometry
 TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
 
 	m_sensorIDmap = aSensorIDmap;
-	// m_detectorPlaneID = 
 
 	m_measParticleMC_collection = new map< int, vector<int> >();
 	
@@ -21,7 +21,6 @@ TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
 	}
 
 	switchOff_HHe = true;
-
 }
 
 
@@ -30,7 +29,10 @@ TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
 
 
 //----------------------------------------------------------------------------------------------------
-// pack together the hits to be fitted, from all the detectors, selct different preselecion m_systemsONs
+
+//! Upload the hits to be fitted in GenFit format from all the detectors included in the campaign
+//! \param[in,out] allHitMeas Map associating each GenFit plane with the vector of measurements obtained in it
+//! \return 1 if everything worked properly
 int TAGFuploader::TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  ) {
 
 	m_allHitMeas = &allHitMeas;
@@ -64,17 +66,16 @@ int TAGFuploader::TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHit
 	if(m_debug > 0) cout << "TAGFuploader::TakeMeasHits4Fit  ->  " << m_allHitMeas->size() << endl;
 
 	return 1;
-  
 }
 
 
 
 
 
-
-
-
 //-------------------------------------------------------------------------------------------------
+
+//! Upload the VT clusters in GenFit format
+//! \return Number of all the VT clusters found in the event
 int TAGFuploader::UploadClusVT(){
 
 	//cluster test
@@ -116,11 +117,10 @@ int TAGFuploader::UploadClusVT(){
 
 
 
-
-
-
-
 //---------------------------------------------------------------------------------------------------
+
+//! Upload the IT clusters in GenFit format
+//! \return Number of all the IT clusters found in the event
 int TAGFuploader::UploadClusIT(){
 
 	TAITntuCluster* itclus = (TAITntuCluster*) gTAGroot->FindDataDsc("itClus","TAITntuCluster")->Object();
@@ -162,7 +162,9 @@ int TAGFuploader::UploadClusIT(){
 
 
 //----------------------------------------------------------------------------------------------------
-// upload clusters from micro strip
+
+//! Upload the MSD clusters in GenFit format
+//! \return Number of all the MSD clusters found in the event
 int TAGFuploader::UploadClusMSD() {
 
 	TAMSDntuCluster* msdclus = (TAMSDntuCluster*) gTAGroot->FindDataDsc("msdClus","TAMSDntuCluster")->Object();
@@ -202,11 +204,10 @@ int TAGFuploader::UploadClusMSD() {
 
 
 
-
-
-
 //----------------------------------------------------------------------------------------------------
-// upload measurement points from Scintillator TofWall
+
+//! Upload measurement points from TOF-Wall
+//! \return Number of points found in the TW
 int TAGFuploader::UploadHitsTW() {
 
 	// take the ntuple object already filled
@@ -215,13 +216,20 @@ int TAGFuploader::UploadHitsTW() {
 
 	int totPoints = ntup->GetPointsN();
 
+	if(totPoints < 1 && m_debug > 0)
+		Warning("TAGFuploader()", "Found %d points in TW for event %d", totPoints, gTAGroot->CurrentEventId().EventNumber());
+
 	// save hits in the collection
 	for ( int iPoint = 0; iPoint < totPoints; iPoint++ ) {
 
 		TATWpoint* point = ntup->GetPoint(iPoint);
 
 		//HACK to prevent fake points (try)
-		if ( point->GetToF() > 15 ) 	continue;
+		if ( point->GetToF() > 15 )
+		{
+			if(m_debug > 0) Warning("UploadHitsTW()", "Found point with high TOF:: %lf", point->GetToF());
+			continue;
+		}
 		//if (point->GetMcTracksN() == 0) continue;
 		//if ( point->GetChargeZ() < 1 ) continue; // wrong association, maybe neutron from calo
 
@@ -239,12 +247,18 @@ int TAGFuploader::UploadHitsTW() {
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! Get the map containing the vector of MC particles for each measurement
+//! \return Ptr to the map GlobalMeasureId -> vector of MC particles
 map< int, vector<int> >* TAGFuploader::TakeMeasParticleMC_Collection() {
 
-  //	if ( !TAGrecoManager::GetPar()->IsMC() ) 
-  //		cout << "ERROR in TAGFuploader::TakeMeasParticleMC_Collection() :: not runnninng onn MC!" << endl, exit(0);
+	if ( !TAGrecoManager::GetPar()->IsMC() )
+	{
+		Error("TakeMeasParticleMC_Collection()", "Not running on MC!!")
+		exit(0);
+	}
 
-  	return m_measParticleMC_collection;
+ 	return m_measParticleMC_collection;
 }
 
 
@@ -280,7 +294,8 @@ int TAGFuploader::GetTWTrackFixed ( TATWpoint* point ) {
 
 
 
-
+//! Get all the possible charges measured by the TOF-Wall in the event
+//! \param[out] chVect Ptr to vector where to store the possible charge values
 void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 
 	// // -------- TW CHARGE RETRIEVE NOT WORKING with Sept2020 but only with TruthParticles -----------------
@@ -337,10 +352,10 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 
 
 
-
+//! Get the total number of particles generated in the MC event
+//! \return Number of particles generated in the event
 int TAGFuploader::GetNumGenParticle_noFrag() {
 
-	
 	TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 	
 	int count = 0;
@@ -365,10 +380,11 @@ int TAGFuploader::GetNumGenParticle_noFrag() {
 
 
 
-
-
 //----------------------------------------------------------------------------------------------------
-// taking all clusters
+
+//! Upload a single VT cluster to the GenFit hit collection
+//! \param[in] clus Ptr to VT cluster
+//! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 
 	if ( m_debug > 0 )		cout << "\nPrepare4Vertex::Entered\n";
@@ -439,10 +455,11 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 
 
 
-
-
-
 //----------------------------------------------------------------------------------------------------
+
+//! Upload a single IT cluster to the GenFit hit collection
+//! \param[in] clus Ptr to IT cluster
+//! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 
 	if ( m_debug > 0 )	  cout << "\nPrepare4InnerTracker::Entered\n";
@@ -512,9 +529,11 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 
 
 
-
-
 //----------------------------------------------------------------------------------------------------
+
+//! Upload a single MSD cluster to the GenFit hit collection
+//! \param[in] clus Ptr to MSD cluster
+//! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 	if ( m_debug > 0 )	 cout << "\nPrepare4Strip::Entered\n";
@@ -593,9 +612,11 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 
 
-
-
 //----------------------------------------------------------------------------------------------------
+
+//! Upload a single TW point to the GenFit hit collection
+//! \param[in] point Ptr to TW point
+//! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 
 	if ( m_debug > 0 )	  cout << "\nPrepare4TofWall::Entered\n";
@@ -650,57 +671,6 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	if ( m_debug > 0 )	  cout << "\nPrepare4TofWall::Exiting\n";
 
 }
-
-
-
-
-
-
-
-
-
-// void GetTrueInfo() {
-// 	GetMcTrackIdx(Int_t index);
-//    	GetMcTracksN();
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -10,11 +10,6 @@
 #pragma link C++ class TAGactNtuEvent+;
 
 #pragma link C++ class TAGactKFitter;
-#pragma link C++ class TAGglobalTrack;
-#pragma link C++ class TAGntuTrackRepository;
-#pragma link C++ class TAGshoeTrackPoint;
-#pragma link C++ class TAGtrackKalman;
-#pragma link C++ class TAGtrackRepoKalman;
 #pragma link C++ class GlobalRecoMC;
 #pragma link C++ class GlobalReco;
 
