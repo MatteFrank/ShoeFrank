@@ -35,11 +35,12 @@ public:
    virtual TClonesArray* GetListOfPixels(Int_t sensorId);
 
 private:
-   TAGdataDsc*     fpNtuRaw;		  // input data dsc
-   TAGdataDsc*     fpNtuClus;		  // output data dsc
-   Bool_t          fOk;
+   TAGdataDsc*     fpNtuRaw;		  /// input data dsc
+   TAGdataDsc*     fpNtuClus;		  /// output data dsc
+   Bool_t          fOk;            /// ok flag
 
 private:
+   //! Create cluster per thread
    Bool_t  CreateClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr);
 
    ClassDef(TAVTactNtuClusterMT,0)

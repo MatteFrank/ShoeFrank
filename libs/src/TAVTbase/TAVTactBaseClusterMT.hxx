@@ -44,7 +44,7 @@ public:
    virtual  void   CreateHistogram();
    
    //! Return seed pixel
-   TAVThit*     GetSeedPixel()      const { return fPSeed;           }
+   TAVThit*     GetSeedPixel()         const { return fPSeed;           }
    //! Get total charge
    Float_t GetClusterPulseSum()        const { return fClusterPulseSum; }
    
@@ -60,27 +60,27 @@ public:
    //! Compute position
    virtual void ComputePosition();
    
-   // Get object in list
+   //! Get object in list
    TAGobject*  GetHitObject(Int_t idx, TClonesArray* listOfPixels) const;
    
 protected:
-   TAGparaDsc*     fpConfig;		  // config para dsc
-   TAGparaDsc*     fpGeoMap;		  // geometry para dsc
+   TAGparaDsc*     fpConfig;		     /// config para dsc
+   TAGparaDsc*     fpGeoMap;		     /// geometry para dsc
    
-   TAVThit*    fPSeed;             // seed pixel
-   TVector3       fCurrentPosition;   // pointer to current position
-   TVector3       fCurrentPosError ;  // pointer to current position error
-   TClonesArray*  fCurListOfPixels;   // list of pixels in current cluster
-   Float_t        fClusterPulseSum;   // total charge of cluster
+   TAVThit*       fPSeed;             /// seed pixel
+   TVector3       fCurrentPosition;   /// pointer to current position
+   TVector3       fCurrentPosError ;  /// pointer to current position error
+   TClonesArray*  fCurListOfPixels;   /// list of pixels in current cluster
+   Float_t        fClusterPulseSum;   /// total charge of cluster
    
-   Int_t          fClustersN[4];     // number of cluster
+   Int_t          fClustersN[4];      /// number of cluster
 
-   TH1F*          fpHisPixelTot;	     // Total number of pixels per cluster
-   TH1F*          fpHisPixel[32];	  // number of pixels per cluster per sensor
-   TH2F*          fpHisClusMap[32];   // cluster map per sensor
+   TH1F*          fpHisPixelTot;	     /// Total number of pixels per cluster
+   TH1F*          fpHisPixel[32];	  /// number of pixels per cluster per sensor
+   TH2F*          fpHisClusMap[32];   /// cluster map per sensor
    
-   TString        fPrefix;            // prefix of histogram
-   TString        fTitleDev;          // device name for histogram title
+   TString        fPrefix;            /// prefix of histogram
+   TString        fTitleDev;          /// device name for histogram title
 
 protected:
    void   SearchCluster(TClonesArray* listOfPixels, Int_t thr);

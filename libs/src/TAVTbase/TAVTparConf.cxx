@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TAVTparConf.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TAVTparConf.
+  \version $Id: TAVTparConf.cxx
+  \brief   Configuration parameters for VTX
 */
 
 #include <Riostream.h>
@@ -21,8 +21,8 @@
 //##############################################################################
 
 /*!
-  \class TAVTparConf TAVTparConf.hxx "TAVTparConf.hxx"
-  \brief Map and Geometry parameters for vertex **
+  \class TAVTparConf 
+  \brief Configuration parameters for VTX
 */
 
 ClassImp(TAVTparConf);

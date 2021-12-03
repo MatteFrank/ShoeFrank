@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactStdDaqRaw.
+ \file  TAVTactStdDaqRaw.cxx
+ \brief   Get vertex raw data from re-synchronized sensors in single file (binary format)
  */
 
 #include "DECardEvent.hh"
@@ -14,8 +14,8 @@
 #include "TAVTactStdDaqRaw.hxx"
 
 /*!
- \class TAVTactStdDaqRaw TAVTactStdDaqRaw.hxx "TAVTactStdDaqRaw.hxx"
- \brief Get vertex raw data from re-synchronized sensors in single file (binary format)**
+ \class TAVTactStdDaqRaw
+ \brief Get vertex raw data from re-synchronized sensors in single file (binary format)
  */
 
 ClassImp(TAVTactStdDaqRaw);

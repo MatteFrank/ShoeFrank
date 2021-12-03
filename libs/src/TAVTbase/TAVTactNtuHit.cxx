@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactNtuHit.
+ \file TAVTactNtuHit.cxx
+ \brief   Get vertex raw data from DAQ (binary format)
  */
 
 #include "TH1F.h"
@@ -17,8 +17,8 @@
 #include "TAVTactNtuHit.hxx"
 
 /*!
- \class TAVTactNtuHit TAVTactNtuHit.hxx "TAVTactNtuHit.hxx"
- \brief Get vertex raw data from DAQ (binary format) **
+ \class TAVTactNtuHit
+ \brief Get vertex raw data from DAQ (binary format)
  */
 
 

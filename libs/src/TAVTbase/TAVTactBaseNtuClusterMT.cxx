@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAVTactBaseNtuClusterMT.cxx $
- \brief   Implementation of TAVTactBaseNtuClusterMT.
+ \version $Id: TAVTactBaseNtuClusterMT.cxx
+ \brief  Base action for MT clustering
  */
 
 #include <pthread.h>
@@ -22,7 +22,7 @@
 
 /*!
  \class TAVTactBaseNtuClusterMT
- \brief NTuplizer for vertex raw hits. **
+ \brief Base action for MT clustering
  */
 
 ClassImp(TAVTactBaseNtuClusterMT);

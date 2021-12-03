@@ -1,13 +1,17 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAVTcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file
+ \version $Id: TAVTntuCluster.cxx
+ \brief Class for VTX cluster container
+ */
 
 #include "TAVTparGeo.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
 
+/*!
+ \class TAVTntuCluster
+ \brief Class for VTX cluster container
+ */
 
 ClassImp(TAVTntuCluster);
 

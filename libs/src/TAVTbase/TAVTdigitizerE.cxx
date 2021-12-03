@@ -1,3 +1,9 @@
+/*!
+ \file
+ \version $Id: TAVTdigitizerG.cxx
+ \brief VTX elipsoidal digitizer
+ */
+
 #include "TAVTdigitizerE.hxx"
 #include "TAVTparGeo.hxx"
 
@@ -7,6 +13,11 @@
 #include "TList.h"
 
 #include "TAGrecoManager.hxx"
+
+/*!
+ \class TAVTdigitizerE
+ \brief VTX elipsoidal digitizer
+ */
 
 using namespace std;
 

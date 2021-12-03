@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAVTactNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactNtuTrack.
+ \version $Id: TAVTactNtuTrack.cxx
+ \brief   NTuplizer for VTX track
  */
 #include "TClonesArray.h"
 #include "TMath.h"
@@ -25,7 +25,7 @@
 
 /*!
  \class TAVTactNtuTrack 
- \brief NTuplizer for vertex tracks. **
+ \brief NTuplizer for VTX tracks using road algorithm
  */
 
 ClassImp(TAVTactNtuTrack);

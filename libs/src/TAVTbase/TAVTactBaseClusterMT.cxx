@@ -1,8 +1,8 @@
 /*!
- \file
- \version $Id: TAVTactBaseClusterMT.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactBaseClusterMT.
+ \file TAVTactBaseClusterMT.cxx
+ \brief NTuplizer for cluster with multi-thread.
  */
+
 #include "TClonesArray.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -17,7 +17,7 @@
 
 /*!
  \class TAVTactBaseClusterMT
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for cluster with multi-thread.
  */
 
 ClassImp(TAVTactBaseClusterMT);

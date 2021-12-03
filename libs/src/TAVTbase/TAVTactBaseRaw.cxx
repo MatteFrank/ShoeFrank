@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAVTactBaseRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
- \brief   Implementation of TAVTactBaseRaw.
+ \version $Id: TAVTactBaseRaw.cxx
+ \brief    Base class to decode vertex raw data
  */
 
 #include "DECardEvent.hh"
@@ -18,8 +18,8 @@
 #include "TAVTmi26Type.hxx"
 
 /*!
- \class TAVTactBaseRaw TAVTactBaseRaw.hxx "TAVTactBaseRaw.hxx"
- \brief Base class to decode vertex raw data. **
+ \class TAVTactBaseRaw
+ \brief Base class to decode vertex raw data
  */
 
 ClassImp(TAVTactBaseRaw);

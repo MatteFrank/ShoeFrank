@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TAVTbaseParConf.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TAVTbaseParConf.
+  \version $Id: TAVTbaseParConf.cxx
+  \brief    Base class of configuration parameters for VTX
 */
 
 #include <Riostream.h>
@@ -22,8 +22,8 @@
 //##############################################################################
 
 /*!
-  \class TAVTbaseParConf TAVTbaseParConf.hxx "TAVTbaseParConf.hxx"
-  \brief Map and Geometry parameters for Tof wall. **
+  \class TAVTbaseParConf
+  \brief Base class of configuration parameters for VTX
 */
 
 ClassImp(TAVTbaseParConf);

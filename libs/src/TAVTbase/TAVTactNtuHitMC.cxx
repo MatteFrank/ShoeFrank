@@ -1,7 +1,7 @@
 /*!
   \file
-  \version $Id: TAVTactNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
-  \brief   Implementation of TAVTactNtuHitMC.
+  \version $Id: TAVTactNtuHitMC.cxx
+  \brief   NTuplizer for VTX MC hits
 */
 
 #include "TH2F.h"
@@ -28,7 +28,7 @@
 
 /*!
   \class TAVTactNtuHitMC"
-  \brief NTuplizer for vertex raw hits. **
+  \brief NTuplizer for VTX MC hits
 */
 
 using namespace std;

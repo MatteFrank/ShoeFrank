@@ -39,11 +39,12 @@ public:
    
    virtual ~TAVTactBaseNtuTrack();
    
-   // Base action
+   //! Base action
    virtual         Bool_t  Action();
    
-   // Check BM info
+   //! Check BM info
    void            CheckBM();
+   
    //! Base creation of histogram
    virtual  void   CreateHistogram();
    
@@ -51,32 +52,38 @@ public:
    void             SetBMntuTrack(TAGdataDsc* pBMtrack) { fpBMntuTrack = pBMtrack;     }
    
 protected:
+   //! Fill BM histogram from BM track
    void   FillBmHistogramm(TVector3 bmTrackPos);
+   //! Fill VTX histogram from VTX track
    void   FillHistogramm(TAGbaseTrack* track);
+   //! Fill VTX histogram
    void   FillHistogramm();
+   //! Compute straight tracks
    virtual Bool_t FindStraightTracks();
+   //! Compute tilted tracks (virtual)
    virtual Bool_t FindTiltedTracks() { return true; }
+   //! Compute vertices (virtual)
    virtual Bool_t FindVertices()     { return false; }
+   //! Set charge probability
    void           SetChargeProba();
    
-
 protected:
-   TAGdataDsc*     fpBMntuTrack;	     // BM track pointer
+   TAGdataDsc*      fpBMntuTrack;	     /// BM track pointer
 	
-   Bool_t           fBmTrackOk;          // flag for BM track chi2 cut
-   TABMtrack*       fBmTrack;            // BM track pointer 
-   TVector3         fBmTrackPos;         // BM track position 
+   Bool_t           fBmTrackOk;          /// flag for BM track chi2 cut
+   TABMtrack*       fBmTrack;            /// BM track pointer
+   TVector3         fBmTrackPos;         /// BM track position
    
-   TH1F*            fpHisPixelTot;       // Total number of pixels per tracked cluster
-   TH1F*            fpHisPixel[36];      // Total number of pixels per tracked cluster for each sensor
-   TH2F*            fpHisClusLeftPix;    // number of clusters left (not tracked) vs # pixels
-   TH1F*            fpHisClusLeft;       // number of clusters left (not tracked)
-   TH2F*            fpHisBmBeamProf;     // BM Beam profile extrapolated to target
-   TH2F*            fpHisVtxResX;        // residualX between BM position and track intersection at target
-   TH2F*            fpHisVtxResY;        // residualY between BM position and track intersection at target
-   TH1F*            fpHisBmChi2;         // number of clusters per track
-   TH1F*            fpHiVtxTgResX;       // Vertex resolution at Target X
-   TH1F*            fpHiVtxTgResY;       // Vertex resolution at Target Y
+   TH1F*            fpHisPixelTot;       /// Total number of pixels per tracked cluster
+   TH1F*            fpHisPixel[36];      /// Total number of pixels per tracked cluster for each sensor
+   TH2F*            fpHisClusLeftPix;    /// number of clusters left (not tracked) vs # pixels
+   TH1F*            fpHisClusLeft;       /// number of clusters left (not tracked)
+   TH2F*            fpHisBmBeamProf;     /// BM Beam profile extrapolated to target
+   TH2F*            fpHisVtxResX;        /// residualX between BM position and track intersection at target
+   TH2F*            fpHisVtxResY;        /// residualY between BM position and track intersection at target
+   TH1F*            fpHisBmChi2;         /// number of clusters per track
+   TH1F*            fpHiVtxTgResX;       /// Vertex resolution at Target X
+   TH1F*            fpHiVtxTgResY;       /// Vertex resolution at Target Y
    
    ClassDef(TAVTactBaseNtuTrack,0)
 };

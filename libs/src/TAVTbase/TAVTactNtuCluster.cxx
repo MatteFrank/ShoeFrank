@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAVTactNtuCluster.cxx $
- \brief   Implementation of TAVTactNtuCluster.
+ \version $Id: TAVTactNtuCluster.cxx
+ \brief  NTuplizer for VTX clusters
  */
 #include "TClonesArray.h"
 #include "TH1F.h"
@@ -18,7 +18,7 @@
 
 /*!
  \class TAVTactNtuCluster 
- \brief NTuplizer for vertex clusters. **
+ \brief NTuplizer for VTX clusters
  */
 
 ClassImp(TAVTactNtuCluster);

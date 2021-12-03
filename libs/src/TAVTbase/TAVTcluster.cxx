@@ -1,11 +1,16 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAVTcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file
+ \version $Id: TAVTcluster.cxx
+ \brief  Class VTX cluster
+ */
 
 #include "TAVTcluster.hxx"
 #include "TAVTtrack.hxx"
+
+/*!
+ \class TAVTbaseParMap
+ \brief Base class of map parameters for VTX
+ */
 
 ClassImp(TAVTcluster) // Description of a cluster
 

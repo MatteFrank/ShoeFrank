@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAVTactBaseNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactBaseNtuTrack.
+ \version $Id: TAVTactBaseNtuTrack.cxx
+ \brief   Base class to NTuplize VTX tracks
  */
 #include "TClonesArray.h"
 #include "TMath.h"
@@ -32,7 +32,7 @@
 
 /*!
  \class TAVTactBaseNtuTrack 
- \brief NTuplizer for vertex raw hits. **
+ \brief Base class to NTuplize VTX tracks
  */
 
 ClassImp(TAVTactBaseNtuTrack);

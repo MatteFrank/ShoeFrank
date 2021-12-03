@@ -37,6 +37,7 @@ public:
    
     //! Get cluster
    TAVTbaseCluster*       GetCluster(Int_t index)       { return (TAVTcluster*)fListOfClusters->At(index); }
+   //! Get cluster (const)
    TAVTbaseCluster const* GetCluster(Int_t index) const { return (TAVTcluster*)fListOfClusters->At(index); }
 
    //! Get pos vertex
@@ -44,7 +45,6 @@ public:
    
    //! Add cluster
    void                   AddCluster(TAGcluster* cluster);
-   
    
    ClassDef(TAVTtrack,9)                      // Describes TAVTtrack
 };

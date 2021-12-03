@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAVTbaseParMap.cxx,v 1.5 2003/06/09 18:41:04 mueller Exp $
- \brief   Implementation of TAVTbaseParMap.
+ \version $Id: TAVTbaseParMap.cxx
+ \brief   Base class of map parameters for VTX
  */
 #include "TAGrecoManager.hxx"
 #include "TAVTbaseParMap.hxx"
@@ -9,8 +9,8 @@
 //##############################################################################
 
 /*!
- \class TAVTbaseParMap TAVTbaseParMap.hxx "TAVTbaseParMap.hxx"
- \brief Map and Geometry parameters for Tof wall. **
+ \class TAVTbaseParMap
+ \brief Base class of map parameters for VTX
  */
 
 ClassImp(TAVTbaseParMap);

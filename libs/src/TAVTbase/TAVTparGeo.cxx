@@ -39,8 +39,8 @@
 //##############################################################################
 
 /*!
-  \class TAVTparGeo TAVTparGeo.hxx "TAVTparGeo.hxx"
-  \brief Map and Geometry parameters for vertex. **
+  \class TAVTparGeo
+  \brief Geometry parameters for VTX. **
 */
 
 ClassImp(TAVTparGeo);

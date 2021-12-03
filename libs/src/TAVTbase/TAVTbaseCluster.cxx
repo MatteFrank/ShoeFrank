@@ -1,12 +1,17 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAVTbaseCluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file TAVTbaseCluster.cc
+ \brief Base class for VTX cluster containers
+ */
 
 #include "TAVTparGeo.hxx"
 #include "TAVTbaseCluster.hxx"
 #include "TAVTntuTrack.hxx"
+
+
+/*!
+ \class TAVTbaseCluster
+ \brief Base class for VTX cluster containers
+ */
 
 ClassImp(TAVTbaseCluster) // Description of a cluster
 

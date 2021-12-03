@@ -32,7 +32,7 @@ public:
    TAVTparGeo();
     virtual ~TAVTparGeo();
   
-   // Define materials
+   //! Define materials
    virtual void  DefineMaterial();
 
    //! Add CMOS module geometry to vertex
@@ -45,28 +45,39 @@ public:
    TGeoVolume* BuildVertex( const char *name = GetBaseName(), const char* basemoduleName = "M28", Bool_t board = false);
    
    //crossing regions (n = layer number; 0<=n<=3)
+   //! Get expitaxial region
    Int_t          GetRegEpitaxial(Int_t n);
+   //! Get module region
    Int_t          GetRegModule(Int_t n);
+   //! Get pixel region
    Int_t          GetRegPixel(Int_t n);
 
    // to print fluka files
+   //! Fluka parameters
    virtual string PrintParameters();
+   //! Fluka rorations
    virtual string PrintRotations();
+   //! Fluka bodies
    virtual string PrintBodies();
+   //! Fluka regions
    virtual string PrintRegions();
+   //! Fluka material assignment
    virtual string PrintAssignMaterial(TAGmaterials *Material);
+   //! Fluka air substraction
    virtual string PrintSubtractBodiesFromAir();
    
 protected:
-   vector<string> fvEpiBody;   //!
-   vector<string> fvModBody;   //!
-   vector<string> fvPixBody;   //!
-   vector<string> fvEpiRegion; //!
-   vector<string> fvModRegion; //!
-   vector<string> fvPixRegion; //!
+   vector<string> fvEpiBody;   //!<
+   vector<string> fvModBody;   //!<
+   vector<string> fvPixBody;   //!<
+   vector<string> fvEpiRegion; //!<
+   vector<string> fvModRegion; //!<
+   vector<string> fvPixRegion; //!<
 
 public:
+   //! Get base name
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
+   //! Get default parameter name
    static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
 
    ClassDef(TAVTparGeo,1)
