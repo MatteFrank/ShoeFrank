@@ -1,6 +1,15 @@
 #ifndef TADIgeoField_H
 #define TADIgeoField_H
 
+/*!
+\file TADIgeoField.hxx
+\brief   Declaration of TADIgenField.
+
+\author Ch. Finck & A. Sécher
+*/
+/*------------------------------------------+---------------------------------*/
+
+
 #include <vector>
 #include <utility>
 
@@ -42,32 +51,41 @@ public:
 
    ~TADIgeoField();
 
+   //! Get field from position
    TVector3 GetField(const TVector3& position)    const;
+   //! Interpolate position
    TVector3 Interpolate(const TVector3& position) const;
    
+   //! Get field from psoition
    void     Field(const Double_t* pos, Double_t* fieldB);
-   
+   //! Read field from file
    void     FromFile(TString& name);
 
 public:
+   //! Get default parameter name
    static const Char_t* GetDefParaName()      { return fgkDefParaName.Data(); }
    
 private:
+   //! Compute dimensions
    DimensionsProperties RetrieveProperties(TADIparGeo const* ) const;
+   //! Compute upper point
    point    ComputeUpperPoint( point const& input_p ) const;
+   //! Compute lower point
    point    ComputeLowerPoint( point const& input_p ) const;
+   //! Retrieve field point
    point    const * RetrieveField( point const& input_p ) const;
+   //! Compute is outside the field box
    bool     IsOutside( point const& input_p ) const;
   
 private:
-   TADIparGeo*          fpDiGeoMap;
-   TAGgeoTrafo*         fpFootGeo;
+   TADIparGeo*          fpDiGeoMap; ///< dipole geometry
+   TAGgeoTrafo*         fpFootGeo;  ///< FOOT global tranformation
 
-   DimensionsProperties fProperties;  //not const because of ROOT
-   std::vector<point>   fField;
+   DimensionsProperties fProperties;  ///< not const because of ROOT
+   std::vector<point>   fField;       ///< field vector
  
 private:
-   static const TString fgkDefParaName;
+   static const TString fgkDefParaName; ///< default paramater name
    
    ClassDef(TADIgeoField,2)
 };

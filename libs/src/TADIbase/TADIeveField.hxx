@@ -1,7 +1,7 @@
 #ifndef _TADIeveField_HXX
 #define _TADIeveField_HXX
 /*!
-  \file
+  \file TADIeveField.hxx
   \brief   Declaration of TADIeveField.
  
   \author Ch. Finck

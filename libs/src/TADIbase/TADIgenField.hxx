@@ -1,7 +1,7 @@
 #ifndef _TADIgenField_HXX
 #define _TADIgenField_HXX
 /*!
-  \file
+  \file TADIgenField.hxx
   \brief   Declaration of TADIgenField.
  
   \author Ch. Finck
