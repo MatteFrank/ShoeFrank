@@ -42,7 +42,7 @@ public:
    //! Add cluster
    void           AddCluster(TAGcluster* cluster);
    
-   ClassDef(TAITtrack,8)                      // Describes TAITtrack
+   ClassDef(TAITtrack,8)                      ///< Describes TAITtrack
 };
 
 #endif

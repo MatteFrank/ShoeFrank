@@ -21,7 +21,7 @@ protected:
     std::map<pair<int, int>, int > fMap; //!
     
 private:
-   static TString    fgkBranchName;    // Branch name in TTree
+   static TString    fgkBranchName;    ///< Branch name in TTree
    
 public:
    TAITntuHit();

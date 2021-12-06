@@ -18,43 +18,43 @@ class TGeoVolume;
 class TAITparGeo : public TAVTparGeo {
    
 private:
-   Int_t      fSensPerPlume;      /// number of sensors per Plume
-   TVector3   fSupportSize;       /// Support size
-   TVector3   fSupportOffset;     /// Support offset
-   Float_t    fFoamThickness;     /// Foam thickness
-   TString    fFoamMat;           /// Material of foam
-   TString    fFoamMatDensities;  /// Density of foam material for each component
-   TString    fFoamMatProp;       /// Material of foam component proportion
-   Float_t    fFoamMatDensity;    /// Density of foam material
+   Int_t      fSensPerPlume;      ///< number of sensors per Plume
+   TVector3   fSupportSize;       ///< Support size
+   TVector3   fSupportOffset;     ///< Support offset
+   Float_t    fFoamThickness;     ///< Foam thickness
+   TString    fFoamMat;           ///< Material of foam
+   TString    fFoamMatDensities;  ///< Density of foam material for each component
+   TString    fFoamMatProp;       ///< Material of foam component proportion
+   Float_t    fFoamMatDensity;    ///< Density of foam material
 
-   Float_t    fKaptonThickness;   /// Kapton thickness
-   TString    fKaptonMat;         /// Material of kapton
-   Float_t    fKaptonMatDensity;  /// Density of kapton material
+   Float_t    fKaptonThickness;   ///< Kapton thickness
+   TString    fKaptonMat;         ///< Material of kapton
+   Float_t    fKaptonMatDensity;  ///< Density of kapton material
    
-   Float_t    fEpoxyThickness;    /// Epoxy thickness
-   TString    fEpoxyMat;          /// Material of expoxy
-   Float_t    fEpoxyMatDensity;   /// Density of epoxy material
+   Float_t    fEpoxyThickness;    ///< Epoxy thickness
+   TString    fEpoxyMat;          ///< Material of expoxy
+   Float_t    fEpoxyMatDensity;   ///< Density of epoxy material
    
-   Float_t    fAlThickness;       /// Aluminum thickness
-   TString    fAlMat;             /// Material of aluminum
-   Float_t    fAlMatDensity;      /// Density of aluminum material
+   Float_t    fAlThickness;       ///< Aluminum thickness
+   TString    fAlMat;             ///< Material of aluminum
+   Float_t    fAlMatDensity;      ///< Density of aluminum material
 
 private:
-   vector<string> fvFoamBody;     //!<
-   vector<string> fvKaptonBody;   //!<
-   vector<string> fvEpoxyBody;    //!<
-   vector<string> fvAlBody;       //!<
-   vector<string> fvFoamRegion;   //!<
-   vector<string> fvKaptonRegion; //!<
-   vector<string> fvEpoxyRegion;  //!<
-   vector<string> fvAlRegion;     //!<
+   vector<string> fvFoamBody;     //!< Fluka foam body
+   vector<string> fvKaptonBody;   //!< Fluka kapton body
+   vector<string> fvEpoxyBody;    //!< Fluka epoxy body
+   vector<string> fvAlBody;       //!< Fluka aluminum body
+   vector<string> fvFoamRegion;   //!< Fluka foam region
+   vector<string> fvKaptonRegion; //!< Fluka kapton region
+   vector<string> fvEpoxyRegion;  //!< Fluka epoxy body
+   vector<string> fvAlRegion;     //!< Fluka aluminum body
 
 protected:
-   static const TString fgkBaseNameIt;      /// IT base name
-   static const TString fgkDefParaNameIt;   /// Default parameter name
-   static const Int_t   fgkDefSensPerLayer; /// Def number of sensors per layer
-   static const Int_t   fgkDefSensPerPlume; /// Def number of sensors per plume module
-   static const Int_t   fgkDefLayersN;      /// Def number of layers
+   static const TString fgkBaseNameIt;      ///< IT base name
+   static const TString fgkDefParaNameIt;   ///< Default parameter name
+   static const Int_t   fgkDefSensPerLayer; ///< Def number of sensors per layer
+   static const Int_t   fgkDefSensPerPlume; ///< Def number of sensors per plume module
+   static const Int_t   fgkDefLayersN;      ///< Def number of layers
    
 private:
    Float_t GetPassiveLayerPosZ(Int_t layer);
@@ -135,13 +135,13 @@ public:
 
    //!crossing regions
    Int_t          GetRegEpitaxial(Int_t n);
-   Int_t          GetRegModule(Int_t n);                            ///n=number of sensor (0<=n<=31)
-   Int_t          GetRegPixel(Int_t n);                             ///n=number of sensor (0<=n<=31)
+   Int_t          GetRegModule(Int_t n);                            ///<n=number of sensor (0<=n<=31)
+   Int_t          GetRegPixel(Int_t n);                             ///<n=number of sensor (0<=n<=31)
                                                                     
-   Int_t          GetRegFoam(Int_t n);                              ///n=ladders (0<=n<=3)
-   Int_t          GetRegKapton(Int_t n, Int_t lay, Bool_t side);    ///n=ladders (0<=n<=3); side: true=positive, false=negative; lay=number of layer (lay=0,1,2)
-   Int_t          GetRegAluminum(Int_t n, Int_t lay, Bool_t side);  ///n=ladders (0<=n<=3); side: true=positive, false=negative; lay=number of layer (lay=0,1)
-   Int_t          GetRegEpoxy(Int_t n, Bool_t side);                ///n=ladders (0<=n<=3); side: true=positive, false=negative;
+   Int_t          GetRegFoam(Int_t n);                              ///<n=ladders (0<=n<=3)
+   Int_t          GetRegKapton(Int_t n, Int_t lay, Bool_t side);    ///<n=ladders (0<=n<=3); side: true=positive, false=negative; lay=number of layer (lay=0,1,2)
+   Int_t          GetRegAluminum(Int_t n, Int_t lay, Bool_t side);  ///<n=ladders (0<=n<=3); side: true=positive, false=negative; lay=number of layer (lay=0,1)
+   Int_t          GetRegEpoxy(Int_t n, Bool_t side);                ///<n=ladders (0<=n<=3); side: true=positive, false=negative;
 
    // to print fluka files
    //! Fluka Parameters

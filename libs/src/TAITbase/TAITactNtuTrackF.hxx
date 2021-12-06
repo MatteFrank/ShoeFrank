@@ -25,7 +25,7 @@ public:
    virtual ~TAITactNtuTrackF();
    
 private:
-   TAGparaDsc*     fpGeoMapG;       /// Global geometry para dsc
+   TAGparaDsc*     fpGeoMapG;       ///< Global geometry para dsc
    
 private:
    //! Check candidate

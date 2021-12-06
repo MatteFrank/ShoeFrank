@@ -2,7 +2,6 @@
 #define _TAITactNtuCluster_HXX
 /*!
  \file TAITactNtuCluster.hxx
- \version $Id: TAITactNtuCluster.hxx
  \brief   Declaration of TAITactNtuCluster.
  */
 /*------------------------------------------+---------------------------------*/
@@ -31,8 +30,8 @@ public:
    virtual Bool_t  FindClusters(Int_t iSensor);
    
 private:
-   TAGdataDsc*     fpNtuRaw;		  /// input data dsc
-   TAGdataDsc*     fpNtuClus;		  /// output data dsc
+   TAGdataDsc*     fpNtuRaw;		  ///< input data dsc
+   TAGdataDsc*     fpNtuClus;		  ///< output data dsc
    
 private:
    //! Create cluster
