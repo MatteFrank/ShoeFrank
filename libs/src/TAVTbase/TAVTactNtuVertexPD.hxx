@@ -58,17 +58,17 @@ private:
     TVector3 ComputeMaxVMaxIMaxJ(); 
 
 private:
-    Double_t fTracksN;             /// Number of tracks in vertex
-    Double_t fImpactParameterCut;  /// Impact cut
-    Double_t fProbabilityCut;      /// proba cut
+    Double_t fTracksN;             ///< Number of tracks in vertex
+    Double_t fImpactParameterCut;  ///< Impact cut
+    Double_t fProbabilityCut;      ///< proba cut
    
-    TVector3 fErr;                 /// vertex error
+    TVector3 fErr;                 ///< vertex error
     
-    TArrayD  fProbValuesMax;       /// array of proba values
-    TArrayD  fFlagValidity;        /// array of flag validity
-    TArrayD  fVvalues;             /// array of values
-    TArrayI  fNotValidTrack;       /// array of valid tracks
-    map <Int_t, TVector3> fRValuesMax; /// map for R max values
+    TArrayD  fProbValuesMax;       ///< array of proba values
+    TArrayD  fFlagValidity;        ///< array of flag validity
+    TArrayD  fVvalues;             ///< array of values
+    TArrayI  fNotValidTrack;       ///< array of valid tracks
+    map <Int_t, TVector3> fRValuesMax; ///< map for R max values
         
     ClassDef(TAVTactNtuVertexPD,0)
 };

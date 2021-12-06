@@ -3,7 +3,6 @@
 
 /*!
  \file TAVTntuCluster.hxx
- \version $Id: TAVTntuCluster
  \brief  Class, simple container class for tracks with the associated clusters
  
  \author Ch. Finck
@@ -32,10 +31,10 @@ class TAVTntuCluster : public TAGdata {
    
 protected:
    TAVTbaseParGeo*    fGeometry;        //!< do NOT stored this pointer !
-   TObjArray*         fListOfClusters;  /// list of clusters
+   TObjArray*         fListOfClusters;  ///< list of clusters
 
 private:   
-   static TString    fgkBranchName;    /// Branch name in TTree
+   static TString    fgkBranchName;    ///< Branch name in TTree
 
 public:
    TAVTntuCluster();

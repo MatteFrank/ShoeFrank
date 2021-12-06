@@ -4,7 +4,6 @@
 
 /*!
  \file TAVTbaseHit.hxx
- \version $Id: TAVTbaseHit
  \brief  contains information respect to a pixel in cmos detectors
  index, position, noise, pulse height, size, etc...
  
@@ -34,21 +33,21 @@
 class TAVTbaseHit : public TAGobject {
    
 protected:
-	Int_t              fSensorId;                 /// number of the sensor
-	TVector3           fPosition;                 /// pixel position in the detector frame
-	// TVector3           fSize;                  /// size in uvw directions
+	Int_t              fSensorId;                 ///< number of the sensor
+	TVector3           fPosition;                 ///< pixel position in the detector frame
+	// TVector3           fSize;                  ///< size in uvw directions
 
-   Int_t              fPixelIndex;               /// index of the pixel
-	Int_t              fPixelLine;                /// line in the matrix
-	Int_t              fPixelColumn;              /// column in the matrix
-	Int_t              fLayer;
+   Int_t              fPixelIndex;               ///< index of the pixel
+	Int_t              fPixelLine;                ///< line in the matrix
+	Int_t              fPixelColumn;              ///< column in the matrix
+	Int_t              fLayer;                    ///< layer number
 
-	Double32_t         fRawValue;                 /// the rawvalue
-	Double32_t         fPulseHeight;              /// pulseheight on pixel
-   Bool_t             fValidFrames;              /// ok when 3 consecutive frame numbers
+	Double32_t         fRawValue;                 ///< the rawvalue
+	Double32_t         fPulseHeight;              ///< pulseheight on pixel
+   Bool_t             fValidFrames;              ///< ok when 3 consecutive frame numbers
 
-   TArrayI            fMCindex;                  /// Index of the hit created in the simulation
-   TArrayI            fMcTrackIdx;               /// Index of the track created in the simulation
+   TArrayI            fMCindex;                  ///< Index of the hit created in the simulation
+   TArrayI            fMcTrackIdx;               ///< Index of the track created in the simulation
 
 public:
 
@@ -57,29 +56,40 @@ public:
     TAVTbaseHit( Int_t iSensor, Double_t aValue, Int_t aLine, Int_t aColumn);
     virtual ~TAVTbaseHit();
 
+    //! Clear
     void               Clear(Option_t* option = "C");
-
+    //! Equal method
     Bool_t	           IsEqual(const TObject* obj) const;
    
     // Setter methods
+    //! Set raw value
     void               SetRawValue(Double_t aRV)       { fRawValue = aRV;         }
+    //! Set pulse height
     void               SetPulseHeight(Double_t aPH)    { fPulseHeight = aPH;      }
+    //! Set position
     void               SetPosition(TVector3 aPosition) { fPosition = aPosition;   }
+    //! Set valid frame
     void               SetValidFrames(Bool_t ok)       { fValidFrames = ok;       }
 
     // Getter methods
+    //! Get pixel index
     Int_t              GetPixelIndex()   const         { return  fPixelIndex;     }
+    //! Get pixel line
     Int_t              GetPixelLine()    const         { return  fPixelLine;      }
+    //! Get pixel column
     Int_t              GetPixelColumn()  const         { return  fPixelColumn;    }
+    //! Get layer
     Int_t              GetLayer()        const         { return  fLayer;          }
-    Int_t              GetSensorID()     const         { return  fSensorId;       }
+    //! Get sensor ID
+    Int_t              GetSensorId()     const         { return  fSensorId;       }
    
-   
+    //! Get raw value
     Double_t           GetRawValue()     const         { return  fRawValue;       }
+    //! Get pulse height
     Double_t           GetPulseHeight()  const         { return  fPulseHeight;    }
-
+    //! Check valid frames
     Bool_t             IsValidFrames()   const         { return fValidFrames;     }
-   
+    //! Get position
     TVector3&          GetPosition()                   { return fPosition;        }
    
     //! Compute distance from a given pixel

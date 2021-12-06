@@ -28,10 +28,10 @@ public:
    virtual Bool_t  Process();
    
 private:
-   ofstream        fDaqFile;   /// out stream
+   ofstream        fDaqFile;   ///< out stream
 
-   vector<UInt_t>  fDaqEvent;  /// array of event
-   Int_t           fDaqSize;   /// event size
+   vector<UInt_t>  fDaqEvent;  ///< array of event
+   Int_t           fDaqSize;   ///< event size
    
    
 private:

@@ -40,8 +40,8 @@ public:
    Bool_t   ThreadStop();
    
 protected:
-   Bool_t          fOk;          /// ok flag
-   pthread_t*      fThread[8];   /// thread array
+   Bool_t          fOk;          ///< ok flag
+   pthread_t*      fThread[8];   ///< thread array
 
 protected:
    //! Thread function 0

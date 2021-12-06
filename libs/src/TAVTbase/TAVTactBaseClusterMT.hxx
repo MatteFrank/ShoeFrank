@@ -64,30 +64,34 @@ public:
    TAGobject*  GetHitObject(Int_t idx, TClonesArray* listOfPixels) const;
    
 protected:
-   TAGparaDsc*     fpConfig;		     /// config para dsc
-   TAGparaDsc*     fpGeoMap;		     /// geometry para dsc
+   TAGparaDsc*     fpConfig;		     ///< config para dsc
+   TAGparaDsc*     fpGeoMap;		     ///< geometry para dsc
    
-   TAVThit*       fPSeed;             /// seed pixel
-   TVector3       fCurrentPosition;   /// pointer to current position
-   TVector3       fCurrentPosError ;  /// pointer to current position error
-   TClonesArray*  fCurListOfPixels;   /// list of pixels in current cluster
-   Float_t        fClusterPulseSum;   /// total charge of cluster
+   TAVThit*       fPSeed;             ///< seed pixel
+   TVector3       fCurrentPosition;   ///< pointer to current position
+   TVector3       fCurrentPosError ;  ///< pointer to current position error
+   TClonesArray*  fCurListOfPixels;   ///< list of pixels in current cluster
+   Float_t        fClusterPulseSum;   ///< total charge of cluster
    
-   Int_t          fClustersN[4];      /// number of cluster
+   Int_t          fClustersN[4];      ///< number of cluster
 
-   TH1F*          fpHisPixelTot;	     /// Total number of pixels per cluster
-   TH1F*          fpHisPixel[32];	  /// number of pixels per cluster per sensor
-   TH2F*          fpHisClusMap[32];   /// cluster map per sensor
+   TH1F*          fpHisPixelTot;	     ///< Total number of pixels per cluster
+   TH1F*          fpHisPixel[32];	  ///< number of pixels per cluster per sensor
+   TH2F*          fpHisClusMap[32];   ///< cluster map per sensor
    
-   TString        fPrefix;            /// prefix of histogram
-   TString        fTitleDev;          /// device name for histogram title
+   TString        fPrefix;            ///< prefix of histogram
+   TString        fTitleDev;          ///< device name for histogram title
 
 protected:
+   //! Search cluster per thread
    void   SearchCluster(TClonesArray* listOfPixels, Int_t thr);
+   //! Fill map per thread
    void   FillMaps(TClonesArray* listOfPixels, Int_t thr);
-
+   //! Compute Seed position
    void   ComputeSeedPosition();
+   //! Compute CoG position
    void   ComputeCoGPosition();
+   //! Fill cluster info
    void   FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster);
    
 protected:

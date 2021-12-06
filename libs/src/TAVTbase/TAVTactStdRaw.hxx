@@ -6,9 +6,8 @@
 #include "TAVTactBaseNtuHit.hxx"
 
 /*!
- \file
- \version $Id: TAVTactStdRaw.hxx 
- \brief   Declaration of TAVTactStdRaw.
+ \file TAVTactStdRaw.hxx
+  \brief   Declaration of TAVTactStdRaw.
  */
 
 /*------------------------------------------+---------------------------------*/
@@ -38,15 +37,15 @@ public:
    static TString  GetDefaultFolderName()                   { return fgDefaultFolderName; }
    
 private:
-   ifstream          fRawFileAscii;     /// file streamm
-   Int_t             fRunNumber;        /// run number
+   ifstream          fRawFileAscii;     ///< file streamm
+   Int_t             fRunNumber;        ///< run number
    
-   TString           fPrefixName;       /// prefix folder name
-   TString           fBaseName;         /// base file name
+   TString           fPrefixName;       ///< prefix folder name
+   TString           fBaseName;         ///< base file name
    
 private:
-   static       TString fgDefaultFolderName; /// default folder name
-   static       TString fgDefaultExtName;    /// default extension name
+   static       TString fgDefaultFolderName; ///< default folder name
+   static       TString fgDefaultExtName;    ///< default extension name
 
 private:
    //! Get Event

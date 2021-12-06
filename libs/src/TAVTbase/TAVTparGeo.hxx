@@ -1,7 +1,7 @@
 #ifndef _TAVTparGeo_HXX
 #define _TAVTparGeo_HXX
 /*!
-  \file
+  \file TAVTparGeo.hxx
   \brief   Declaration of TAVTparGeo.
  
   \author Ch. Finck
@@ -25,8 +25,8 @@ class TAVTparGeo : public TAVTbaseParGeo {
       
 
 protected:
-   static const TString fgkBaseName;   // Vtx base name
-   static const TString fgkDefParaName;
+   static const TString fgkBaseName;    ///< Vtx base name
+   static const TString fgkDefParaName; ///< default parameter name
 
 public:
    TAVTparGeo();
@@ -67,12 +67,12 @@ public:
    virtual string PrintSubtractBodiesFromAir();
    
 protected:
-   vector<string> fvEpiBody;   //!<
-   vector<string> fvModBody;   //!<
-   vector<string> fvPixBody;   //!<
-   vector<string> fvEpiRegion; //!<
-   vector<string> fvModRegion; //!<
-   vector<string> fvPixRegion; //!<
+   vector<string> fvEpiBody;   //!< Fluka epitaxial body
+   vector<string> fvModBody;   //!< Fluka module body
+   vector<string> fvPixBody;   //!< Fluka pixel body
+   vector<string> fvEpiRegion; //!< Fluka epitaxial region
+   vector<string> fvModRegion; //!< Fluka module region
+   vector<string> fvPixRegion; //!< Fluka pixel region
 
 public:
    //! Get base name

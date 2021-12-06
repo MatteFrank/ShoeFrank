@@ -3,7 +3,6 @@
 
 /*!
  \file TAVTcluster.hxx
- \version $Id: TAVTcluster
  \brief   Class, simple container class for tracks with the associated clusters
  \author Ch. Finck
  */
@@ -29,7 +28,7 @@ public:
    //! Add pixel to the list
    void               AddPixel(TAVThit* pixel);
    
-   ClassDef(TAVTcluster,2)                          // Describes TAVTcluster
+   ClassDef(TAVTcluster,2)                          ///< Describes TAVTcluster
 };
 
 

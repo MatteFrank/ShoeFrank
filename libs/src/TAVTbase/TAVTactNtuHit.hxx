@@ -31,13 +31,13 @@ public:
    UInt_t GetTStolerance()          { return fgTStolerance; }
 
 protected:
-   TAGdataDsc*         fpDatDaq;		     /// input data dsc
-   UInt_t              fFirstBcoTrig;    /// First BCO trigger number
-   queue<const DECardEvent*> fQueueEvt;  /// Event queue container
-   UInt_t              fQueueEvtsN;      /// Number of events in queue
+   TAGdataDsc*         fpDatDaq;		     ///< input data dsc
+   UInt_t              fFirstBcoTrig;    ///< First BCO trigger number
+   queue<const DECardEvent*> fQueueEvt;  ///< Event queue container
+   UInt_t              fQueueEvtsN;      ///< Number of events in queue
    
 private:
-   static UInt_t       fgTStolerance;    /// Tolerance for time stamp
+   static UInt_t       fgTStolerance;    ///< Tolerance for time stamp
    
    ClassDef(TAVTactNtuHit,0)
 };

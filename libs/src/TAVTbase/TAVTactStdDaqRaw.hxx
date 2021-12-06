@@ -6,8 +6,7 @@
 #include "TAVTactBaseNtuHit.hxx"
 
 /*!
- \file
- \version $Id: TAVTactStdDaqRaw.hxx 
+ \file TAVTactStdDaqRaw.hxx
  \brief   Declaration of TAVTactStdDaqRaw.
  */
 
@@ -32,8 +31,8 @@ public:
    virtual void    Close();
       
 private:
-   ifstream          fDaqFile;    /// file streamm
-   Int_t             fRunNumber;  /// run number
+   ifstream          fDaqFile;    ///< file streamm
+   Int_t             fRunNumber;  ///< run number
    
 private:
 

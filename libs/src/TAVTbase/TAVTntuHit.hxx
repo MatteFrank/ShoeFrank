@@ -16,13 +16,13 @@ class TAVTntuHit : public TAGdata {
    
 protected:
    //using TObjArray here
-   TObjArray*        fListOfPixels;    /// list of pixels
+   TObjArray*        fListOfPixels;    ///< list of pixels
    TAVTparGeo*       fpGeoMap;         //!< do not store
    
     std::map<pair<int, int>, int > fMap; //!< pixel map
     
 private:
-   static TString    fgkBranchName;    /// Branch name in TTree
+   static TString    fgkBranchName;    ///< Branch name in TTree
    
 public:
    TAVTntuHit();

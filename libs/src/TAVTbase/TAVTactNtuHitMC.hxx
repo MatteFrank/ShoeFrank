@@ -40,10 +40,10 @@ public:
    void           FillNoise();
 
 private:
-   TAGdataDsc*    fpNtuMC;          /// input mc hit
-   TAGdataDsc*    fpNtuEve;         /// input eve track dsc
-   TAGdataDsc*    fpNtuRaw;         /// output data dsc
-   EVENT_STRUCT*  fEventStruct;     /// Fluka structure
+   TAGdataDsc*    fpNtuMC;          ///< input mc hit
+   TAGdataDsc*    fpNtuEve;         ///< input eve track dsc
+   TAGdataDsc*    fpNtuRaw;         ///< output data dsc
+   EVENT_STRUCT*  fEventStruct;     ///< Fluka structure
 
    map<pair<int, int>, TAVThit*> fMap;     //!< map for pilepup
 

@@ -32,8 +32,8 @@ public:
    virtual Bool_t  FindClusters(Int_t iSensor);
    
 private:
-   TAGdataDsc*     fpNtuRaw;		  /// input data dsc
-   TAGdataDsc*     fpNtuClus;		  /// output data dsc
+   TAGdataDsc*     fpNtuRaw;		  ///< input data dsc
+   TAGdataDsc*     fpNtuClus;		  ///< output data dsc
    
 private:
    //! Create clusters

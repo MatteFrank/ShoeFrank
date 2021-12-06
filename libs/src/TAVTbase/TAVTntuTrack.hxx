@@ -3,7 +3,6 @@
 
 /*!
  \file TAVTntuTrack.hxx
- \version $Id: TAVTntuTrack
  \brief  class, simple container class for tracks with the associated clusters
  \author Ch. Finck
  */
@@ -22,12 +21,12 @@ class TAVTtrack;
 class TAVTntuTrack : public TAGdata {
    
 private:
-   TClonesArray*    fListOfTracks;		/// tracks
-   TVector3         fBeamPosition;     /// Position of beam in x-y direction at z-target given by BM
-   Bool_t           fPileup;           /// true if pileup events
+   TClonesArray*    fListOfTracks;		///< List of tracks
+   TVector3         fBeamPosition;     ///< Position of beam in x-y direction at z-target given by BM
+   Bool_t           fPileup;           ///< True if pileup events
    
 private:
-   static TString fgkBranchName;      /// Branch name in TTree
+   static TString fgkBranchName;      ///< Branch name in TTree
    
 public:
    TAVTntuTrack();

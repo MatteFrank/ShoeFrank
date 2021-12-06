@@ -2,7 +2,6 @@
 #define _TAVTbaseParConf_HXX
 /*!
   \file TAVTbaseParConf.hxx
-  \version $Id: TAVTbaseParConf.hxx
   \brief   Declaration of TAVTbaseParConf.
 */
 /*------------------------------------------+---------------------------------*/
@@ -24,29 +23,29 @@ using namespace std;
 class TAVTbaseParConf : public TAGparTools {
       
 protected:
-   Int_t      fSensorsN;         /// Number of sensors
-   TString    fkDefaultConfName; /// default detector configuration file
+   Int_t      fSensorsN;         ///< Number of sensors
+   TString    fkDefaultConfName; ///< default detector configuration file
 
 
    struct SensorParameter_t : public  TObject {
-	  Int_t     SensorIdx;              /// sensor index
-     Int_t     Type;                   /// sensor type
-	  Int_t     Status;                 /// Status flag: Primary Reference = 1., Secondary Reference = 2. DeviceUunderTest = 3. Out = -1.
-	  Int_t     MinNofPixelsInCluster;  /// minimum pixels in a cluster
-	  Int_t     MaxNofPixelsInCluster;  /// maximum pixels in a cluster
-     map< pair<int, int>, int > DeadPixelMap;    /// dead pixel map
+	  Int_t     SensorIdx;              ///< sensor index
+     Int_t     Type;                   ///< sensor type
+	  Int_t     Status;                 ///< Status flag: Primary Reference = 1., Secondary Reference = 2. DeviceUunderTest = 3. Out = -1.
+	  Int_t     MinNofPixelsInCluster;  ///< minimum pixels in a cluster
+	  Int_t     MaxNofPixelsInCluster;  ///< maximum pixels in a cluster
+     map< pair<int, int>, int > DeadPixelMap;    ///< dead pixel map
    };
    
    struct AnalysisParameter_t : public  TObject {
-	  Int_t      TracksMaximum;          /// maximum number of tracks to be allowed
-	  Int_t      PlanesForTrackMinimum;  /// min # planes to build a track in an event
-	  Float_t    SearchHitDistance;      /// max distance hit-track to add hit to track
-	  Float_t    TrackChi2Limit;         /// chi2 limit on the track
-	  Float_t    BmTrackChi2Limit;       /// chi2 limit on the BM track
+	  Int_t      TracksMaximum;          ///< maximum number of tracks to be allowed
+	  Int_t      PlanesForTrackMinimum;  ///< min # planes to build a track in an event
+	  Float_t    SearchHitDistance;      ///< max distance hit-track to add hit to track
+	  Float_t    TrackChi2Limit;         ///< chi2 limit on the track
+	  Float_t    BmTrackChi2Limit;       ///< chi2 limit on the BM track
    };
    
-   SensorParameter_t fSensorParameter[32]; /// sensor parameters
-   AnalysisParameter_t fAnalysisParameter; /// analysis parameters
+   SensorParameter_t fSensorParameter[32]; ///< sensor parameters
+   AnalysisParameter_t fAnalysisParameter; ///< analysis parameters
 
 public:
    TAVTbaseParConf();

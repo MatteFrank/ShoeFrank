@@ -2,7 +2,6 @@
 #define _TAVTdigitizerG_HXX
 /*!
  \file TAVTdigitizerG.hxx
- \version $Id: TAVTdigitizerG.hxx
  \brief   Declaration of TAVTdigitizerG
  */
 /*------------------------------------------+---------------------------------*/
@@ -32,8 +31,8 @@ public:
    Bool_t   MakeCluster(Double_t x0, Double_t y0, Double_t zin, Double_t zout);
    
 private:
-   TF1*     fFuncClusterDisX;   /// cluster distribution function in X
-   TF1*     fFuncClusterDisY;   /// cluster distribution function in Y
+   TF1*     fFuncClusterDisX;   ///< cluster distribution function in X
+   TF1*     fFuncClusterDisY;   ///< cluster distribution function in Y
    
 private:
    //! Set functions
@@ -42,8 +41,8 @@ private:
    Int_t    GetAdcValue(Float_t charge);
 
 private:
-   static Float_t  fgkThres; /// value threshold
-   static Float_t  fgkFWTH;  /// width at 10% gaussian
+   static Float_t  fgkThres; ///< value threshold
+   static Float_t  fgkFWTH;  ///< width at 10% gaussian
 };
         
 

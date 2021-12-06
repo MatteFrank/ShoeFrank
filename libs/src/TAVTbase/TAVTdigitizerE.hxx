@@ -3,7 +3,6 @@
 
 /*!
  \file TAVTdigitizerE.hxx
- \version $Id: TAVTdigitizerE.hxx
  \brief   Declaration of TAVTdigitizerE
  */
 /*------------------------------------------+---------------------------------*/
@@ -35,10 +34,10 @@ public:
    Bool_t         MakeCluster(Double_t x0, Double_t y0, Double_t zin, Double_t zout);
    
 private:
-   std::map<Int_t, Float_t>  fMapRadius55;  /// map radius for half-half pixel impact
-   std::map<Int_t, Float_t>  fMapRadius50;  /// map radius for half-edge pixel impact
-   std::map<Int_t, Float_t>  fMapRadius00;  /// map radius for edge-edge pixel impact
-   std::map<Int_t, Float_t>* fMapRadius;    /// current map radius
+   std::map<Int_t, Float_t>  fMapRadius55;  ///< map radius for half-half pixel impact
+   std::map<Int_t, Float_t>  fMapRadius50;  ///< map radius for half-edge pixel impact
+   std::map<Int_t, Float_t>  fMapRadius00;  ///< map radius for edge-edge pixel impact
+   std::map<Int_t, Float_t>* fMapRadius;    ///< current map radius
 
 private:
    //! Set region of impact
@@ -51,11 +50,11 @@ private:
    void            DefineRadius55();
    
 private:
-   static Int_t    fgkMaxTurn;   /// maximum turn
-   static Int_t    fgkShel00[];  /// shell array 00
-   static Int_t    fgkShel55[];  /// shell array 55
-   static Int_t    fgkShel50[];  /// shell array 50
-   static Int_t    fgkMeshWidth; /// Mesh width
+   static Int_t    fgkMaxTurn;   ///< maximum turn
+   static Int_t    fgkShel00[];  ///< shell array 00
+   static Int_t    fgkShel55[];  ///< shell array 55
+   static Int_t    fgkShel50[];  ///< shell array 50
+   static Int_t    fgkMeshWidth; ///< Mesh width
    
 };
         

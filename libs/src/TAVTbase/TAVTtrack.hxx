@@ -3,7 +3,6 @@
 
 /*!
  \file TAVTtrack.hxx
- \version $Id: TAVTtrack
  \brief   class for tracks with the associated clusters
   \author Ch. Finck
  */
@@ -21,7 +20,7 @@ class TClonesArray;
 class TAVTtrack : public TAGbaseTrack {
  
 private:
-   TVector3       fPosVertex;                    // vertex position
+   TVector3       fPosVertex;                    ///< vertex position
    
 public:
    TAVTtrack();
@@ -46,7 +45,7 @@ public:
    //! Add cluster
    void                   AddCluster(TAGcluster* cluster);
    
-   ClassDef(TAVTtrack,9)                      // Describes TAVTtrack
+   ClassDef(TAVTtrack,9)                      ///< Describes TAVTtrack
 };
 
 #endif

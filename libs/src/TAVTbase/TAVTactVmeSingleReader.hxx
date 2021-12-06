@@ -43,21 +43,21 @@ public:
    static void     SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump);
    
 protected:
-   ifstream        fRawFileAscii;        /// file streamm
-   Int_t           fRunNumber;           /// run number
+   ifstream        fRawFileAscii;        ///< file streamm
+   Int_t           fRunNumber;           ///< run number
 
-   TString         fPrefixName;          // prefix folder name
-   TString         fBaseName;            // base file name
+   TString         fPrefixName;          ///< prefix folder name
+   TString         fBaseName;            ///< base file name
    
-   Int_t            fTrigJumpStart;      /// trigger jump
-   Int_t            fTrigReset;          /// trigger reset
-   map<pair<int,int>,  int>  fTrigJurst; /// map of trigger jumpmpFirst;
+   Int_t            fTrigJumpStart;      ///< trigger jump
+   Int_t            fTrigReset;          ///< trigger reset
+   map<pair<int,int>,  int>  fTrigJurst; ///< map of trigger jumpmpFirst;
    
 protected:
-   static           TString fgDefaultFolderName;             /// default folder name
-   static           TString fgDefaultExtName;                /// default extension name
-   static           map< pair<int, int>, int> fgTrigJumpMap; /// map of trigger jump
-   static           Bool_t fgTrigJumpAuto;                   /// flag for jump detection
+   static           TString fgDefaultFolderName;             ///< default folder name
+   static           TString fgDefaultExtName;                ///< default extension name
+   static           map< pair<int, int>, int> fgTrigJumpMap; ///< map of trigger jump
+   static           Bool_t fgTrigJumpAuto;                   ///< flag for jump detection
    
 protected:
    //! Get the event

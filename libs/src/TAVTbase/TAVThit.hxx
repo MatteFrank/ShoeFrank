@@ -4,7 +4,6 @@
 
 /*!
  \file TAVThit.hxx
- \version $Id: TAVThit
  \brief   class interface to base class
  */
 /*------------------------------------------+---------------------------------*/

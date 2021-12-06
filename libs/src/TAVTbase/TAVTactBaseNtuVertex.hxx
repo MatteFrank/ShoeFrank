@@ -44,31 +44,31 @@ public:
     void     SetBMntuTrack(TAGdataDsc* bmTrack) { fpBMntuTrack = bmTrack; }
       
 protected:
-    TAGgeoTrafo*    fpFootGeo;       /// geo trafo
-    TAGdataDsc*     fpNtuTrack;		 /// input data dsc
-    TAGdataDsc*     fpNtuVertex;		 /// output data dsc
-    TAGparaDsc*     fpConfig;		    /// configuration dsc
-    TAGparaDsc*     fpGeoMap;		    /// geometry para dsc
-    TAGparaDsc*     fpGeoMapG;       /// Global geometry para dsc
-    TAGdataDsc*     fpBMntuTrack;	 /// bm track data dsc
+    TAGgeoTrafo*    fpFootGeo;       ///< geo trafo
+    TAGdataDsc*     fpNtuTrack;		 ///< input data dsc
+    TAGdataDsc*     fpNtuVertex;		 ///< output data dsc
+    TAGparaDsc*     fpConfig;		    ///< configuration dsc
+    TAGparaDsc*     fpGeoMap;		    ///< geometry para dsc
+    TAGparaDsc*     fpGeoMapG;       ///< Global geometry para dsc
+    TAGdataDsc*     fpBMntuTrack;	 ///< bm track data dsc
    
-    TADItrackEmProperties* fEmProp;   /// EM properties
+    TADItrackEmProperties* fEmProp;   ///< EM properties
 
-    Float_t         fSearchClusDistance; /// distance for pileup
-    TVector3        fVtxPos;             /// vertex pos
+    Float_t         fSearchClusDistance; ///< distance for pileup
+    TVector3        fVtxPos;             ///< vertex pos
 
-    Double_t        fEps;             /// Tolerance
-    Double_t        fMinZ;            /// Minimum value of Z
-    Double_t        fMaxZ;            /// Maximum value of Z
-    Double_t        fScatterAng;      /// Scattering angle
+    Double_t        fEps;             ///< Tolerance
+    Double_t        fMinZ;            ///< Minimum value of Z
+    Double_t        fMaxZ;            ///< Maximum value of Z
+    Double_t        fScatterAng;      ///< Scattering angle
 
-    TH1F*           fpHisPosZ;        /// Vertex postion Z histogram
-    TH2F*           fpHisPosXY;       /// Vertex postion X-Y histogram
-    TH1F*           fpHisBmMatchX;    /// Vertex BM matching in postion X histogram
-    TH1F*           fpHisBmMatchY;    /// Vertex BM matching in postion Y histogram
+    TH1F*           fpHisPosZ;        ///< Vertex postion Z histogram
+    TH2F*           fpHisPosXY;       ///< Vertex postion X-Y histogram
+    TH1F*           fpHisBmMatchX;    ///< Vertex BM matching in postion X histogram
+    TH1F*           fpHisBmMatchY;    ///< Vertex BM matching in postion Y histogram
     
 protected:
-   static Bool_t    fgCheckBmMatching; /// Flag to enable checking with BM track matching
+   static Bool_t    fgCheckBmMatching; ///< Flag to enable checking with BM track matching
 
 protected:
    //! Enable BM matching

@@ -1,5 +1,5 @@
 /*!
- \file TAVTvertex.cxx
+ \file TAVTntuVertex.cxx
  \brief   Class for VTX vertices
  */
 
@@ -13,7 +13,7 @@
 //################################################################
 
 /*!
- \class TAVTntuHit
+ \class TAVTvertex
  \brief Class for VTX vertices
  */
 
@@ -70,6 +70,12 @@ void TAVTvertex::Reset()
 }
 
 //##############################################################################
+
+/*!
+ \class TAVTntuVertex
+ \brief Class for VTX vertices containers
+ */
+
 
 ClassImp(TAVTntuVertex);
 

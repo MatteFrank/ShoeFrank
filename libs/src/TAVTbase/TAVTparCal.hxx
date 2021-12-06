@@ -1,8 +1,7 @@
 #ifndef _TAVTparCal_HXX
 #define _TAVTparCal_HXX
 /*!
-  \file
-  \version $Id: TAVTparCal.hxx
+  \file TAVTparCal.hxx
   \brief   Declaration of TAVTparCal.
 */
 /*------------------------------------------+---------------------------------*/

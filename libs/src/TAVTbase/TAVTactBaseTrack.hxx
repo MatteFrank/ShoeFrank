@@ -90,42 +90,42 @@ protected:
    virtual TAVTbaseParConf* GetParConf();
    
 protected:
-   TAGdataDsc*     fpNtuTrack;		    /// input data dsc
-   TAGdataDsc*     fpNtuClus;		       /// output data dsc
-   TAGparaDsc*     fpConfig;		       /// configuration dsc
-   TAGparaDsc*     fpGeoMap;		       /// geometry para dsc
-   TAGparaDsc*     fpCalib;		       /// calib para dsc
-   TAGgeoTrafo*    fpFootGeo;	          /// First geometry transformer
+   TAGdataDsc*     fpNtuTrack;		    ///< input data dsc
+   TAGdataDsc*     fpNtuClus;		       ///< output data dsc
+   TAGparaDsc*     fpConfig;		       ///< configuration dsc
+   TAGparaDsc*     fpGeoMap;		       ///< geometry para dsc
+   TAGparaDsc*     fpCalib;		       ///< calib para dsc
+   TAGgeoTrafo*    fpFootGeo;	          ///< First geometry transformer
 	
-   Int_t           fTracksMaximum;      /// maximum number of tracks allowed
+   Int_t           fTracksMaximum;      ///< maximum number of tracks allowed
    Int_t           fRequiredClusters;   //!< number of clusters required to make a track
    Double_t        fSearchClusDistance; //!< Max distance to associate a track and a cluster
-   Float_t         fPlaneResolution;    /// plane resolution
+   Float_t         fPlaneResolution;    ///< plane resolution
       
-   TGraphErrors*   fGraphU;             /// pointer to graph for fit in U
-   TGraphErrors*   fGraphV;             /// pointer to graph for fit in V
+   TGraphErrors*   fGraphU;             ///< pointer to graph for fit in U
+   TGraphErrors*   fGraphV;             ///< pointer to graph for fit in V
       
-   TH1F*           fpHisResX[36];       /// Residual in X histogram
-   TH1F*           fpHisResY[36];       /// Residual in Y histogram
-   TH1F*           fpHisResTotX;        /// Total Residual in X histogram
-   TH1F*           fpHisResTotY;        /// Total Residual in Y histogram
-   TH2F*           fpHisTrackMap[36];   /// track map per sensor histogram
-   TH1F*           fpHisMeanCharge;     /// Mwean Charge per tracked cluster histogram
-   TH1F*           fpHisMeanPixel;      /// Mean number of pixels per tracked cluster histogram
-   TH2F*           fpHisBeamProf;       /// VTX Beam profile extrapolated to target histogram
-   TH1F*           fpHisChi2TotX;       /// Total Chi2 in X direction histogram
-   TH1F*           fpHisChi2TotY;       /// Total Chi2 in Y direction histogram
-   TH1F*           fpHisTrackEvt;       /// number of track per event histogram
-   TH1F*           fpHisTrackClus;      /// number of clusters per track histogram
-   TH1F*           fpHisClusSensor;     /// number of tracked clusters per sensor histogram
-   TH1F*           fpHisTheta;          /// Polar angular distribution histogram
-   TH1F*           fpHisPhi;            /// Azimutal angular distribution histogram
+   TH1F*           fpHisResX[36];       ///< Residual in X histogram
+   TH1F*           fpHisResY[36];       ///< Residual in Y histogram
+   TH1F*           fpHisResTotX;        ///< Total Residual in X histogram
+   TH1F*           fpHisResTotY;        ///< Total Residual in Y histogram
+   TH2F*           fpHisTrackMap[36];   ///< track map per sensor histogram
+   TH1F*           fpHisMeanCharge;     ///< Mwean Charge per tracked cluster histogram
+   TH1F*           fpHisMeanPixel;      ///< Mean number of pixels per tracked cluster histogram
+   TH2F*           fpHisBeamProf;       ///< VTX Beam profile extrapolated to target histogram
+   TH1F*           fpHisChi2TotX;       ///< Total Chi2 in X direction histogram
+   TH1F*           fpHisChi2TotY;       ///< Total Chi2 in Y direction histogram
+   TH1F*           fpHisTrackEvt;       ///< number of track per event histogram
+   TH1F*           fpHisTrackClus;      ///< number of clusters per track histogram
+   TH1F*           fpHisClusSensor;     ///< number of tracked clusters per sensor histogram
+   TH1F*           fpHisTheta;          ///< Polar angular distribution histogram
+   TH1F*           fpHisPhi;            ///< Azimutal angular distribution histogram
   
-   TString         fPrefix;             /// prefix of histogram
-   TString         fTitleDev;           /// device name for histogram title
+   TString         fPrefix;             ///< prefix of histogram
+   TString         fTitleDev;           ///< device name for histogram title
 
 protected:
-   static Bool_t    fgRefit;            /// flag to update parameter during tracking
+   static Bool_t    fgRefit;            ///< flag to update parameter during tracking
       
    ClassDef(TAVTactBaseTrack,1)
 };
