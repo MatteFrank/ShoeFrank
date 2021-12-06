@@ -1,7 +1,7 @@
 #ifndef _TAVTactVmeReader_HXX
 #define _TAVTactVmeReader_HXX
 /*!
-  \file
+  \file TAVTactVmeReader.hxx
   \brief   Declaration of TAVTactVmeReader.
 */
 /*------------------------------------------+---------------------------------*/

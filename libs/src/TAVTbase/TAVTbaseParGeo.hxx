@@ -1,7 +1,7 @@
 #ifndef _TAVTbaseParGeo_HXX
 #define _TAVTbaseParGeo_HXX
 /*!
-  \file
+  \file TAVTbaseParGeo.hxx
   \brief   Declaration of TAVTbaseParGeo.
  
   \author Ch. Finck

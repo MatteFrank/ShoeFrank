@@ -2,6 +2,21 @@
 #ifndef _TAVTbaseHit_HXX
 #define _TAVTbaseHit_HXX
 
+/*!
+ \file TAVTbaseHit.hxx
+ \version $Id: TAVTbaseHit
+ \brief  contains information respect to a pixel in cmos detectors
+ index, position, noise, pulse height, size, etc...
+ 
+ Revised in 2018 by Matteo Franchini franchinim@bo.infn.it
+ Back to a class compliant with storing in a root file by Ch. Finck
+ 
+ All the coordinates are in cm and in the detector reference frame, i.e. the center
+ is the center of the detector.
+ 
+ \author Ch. Finck
+ */
+
 // ROOT classes
 #include "TObject.h"
 #include "TArrayI.h"
@@ -14,18 +29,6 @@
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
 
-// class TAVTrawHit;
-
-/** TAVTbaseHit class contains information respect to a pixel in cmos detectors
- index, position, noise, pulse height, size, etc...
- 
-    Revised in 2018 by Matteo Franchini franchinim@bo.infn.it
-    Back to a class compliant with storing in a root file by Ch. Finck
-
-    All the coordinates are in cm and in the detector reference frame, i.e. the center
-    is the center of the detector.
-
-*/
 /*------------------------------------------+---------------------------------*/
 
 class TAVTbaseHit : public TAGobject {

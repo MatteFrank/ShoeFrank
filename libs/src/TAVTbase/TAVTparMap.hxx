@@ -1,7 +1,7 @@
 #ifndef _TAVTparMap_HXX
 #define _TAVTparMap_HXX
 /*!
- \file
+ \file TAVTparMap.hxx
  \version $Id: TAVTparMap.hxx
  \brief   Declaration of TAVTparMap.
  */

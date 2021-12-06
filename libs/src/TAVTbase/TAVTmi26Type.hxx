@@ -1,5 +1,11 @@
 #ifndef _TAVTmi26Type_HXX_
 #define _TAVTmi26Type_HXX_
+/*!
+ \file TAVTmi26Type.hxx
+ \version $Id: TAVTmi26Type
+ \brief   Declaration of TAVTmi26Type
+ */
+/*------------------------------------------+---------------------------------*/
 /*
  *  TAVTmi26Type.h
  *  First

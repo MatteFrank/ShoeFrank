@@ -2,7 +2,7 @@
 #define _TAVTactNtuPostTrack_HXX
 /*!
  \file
- \version $Id: TAVTactNtuPostTrack.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \version $Id: TAVTactNtuPostTrack.hxx
  \brief   Declaration of TAVTactNtuPostTrack.
  */
 /*------------------------------------------+---------------------------------*/

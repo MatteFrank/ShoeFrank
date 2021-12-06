@@ -1,7 +1,7 @@
 #ifndef _TAVTactVmeWriter_HXX
 #define _TAVTactVmeWriter_HXX
 /*!
-  \file
+  \file TAVTactVmeWriter.hxx
   \brief   Declaration of TAVTactVmeWriter.
 */
 /*------------------------------------------+---------------------------------*/

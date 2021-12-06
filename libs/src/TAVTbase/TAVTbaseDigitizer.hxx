@@ -2,7 +2,7 @@
 #define _TAVTbaseDigitizer_HXX
 /*!
  \file
- \version $Id: TAVTbaseDigitizer.hxx,v $
+ \version $Id: TAVTbaseDigitizer.hxx
  \brief   Declaration of TAVTbaseDigitizer.
  */
 /*------------------------------------------+---------------------------------*/

@@ -1,7 +1,7 @@
 #ifndef _TAVTbaseParConf_HXX
 #define _TAVTbaseParConf_HXX
 /*!
-  \file
+  \file TAVTbaseParConf.hxx
   \version $Id: TAVTbaseParConf.hxx
   \brief   Declaration of TAVTbaseParConf.
 */

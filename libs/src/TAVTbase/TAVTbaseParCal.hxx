@@ -1,8 +1,8 @@
 #ifndef _TAVTbaseParCal_HXX
 #define _TAVTbaseParCal_HXX
 /*!
-  \file
-  \version $Id: TAVTbaseParCal.hxx,v 1.2 2003/06/22 19:33:36 mueller Exp $
+  \file TAVTbaseParCal.hxx
+  \version $Id: TAVTbaseParCal.hxx
   \brief   Declaration of TAVTbaseParCal.
 */
 /*------------------------------------------+---------------------------------*/

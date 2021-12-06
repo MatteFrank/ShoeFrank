@@ -2,7 +2,7 @@
 #define _TAVTntuHit_HXX
 /*!
  \file
- \version $Id: TAVTntuHit.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+ \version $Id: TAVTntuHit.hxx
  \brief   Declaration of TAVTntuHit.
  */
 /*------------------------------------------+---------------------------------*/

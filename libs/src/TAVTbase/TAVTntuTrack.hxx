@@ -1,6 +1,14 @@
 #ifndef _TAVTntuTrack_HXX
 #define _TAVTntuTrack_HXX
 
+/*!
+ \file TAVTntuTrack.hxx
+ \version $Id: TAVTntuTrack
+ \brief  class, simple container class for tracks with the associated clusters
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
 // ROOT classes
 #include "TClonesArray.h"
 #include "TVector3.h"
@@ -8,13 +16,6 @@
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
-
-//##############################################################################
-
-/** TAVTtrack class, simple container class for tracks with the associated clusters                    
- 
- \author Ch. Finck
- */
 
 class TClonesArray;
 class TAVTtrack;

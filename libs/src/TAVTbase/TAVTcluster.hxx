@@ -1,12 +1,15 @@
 #ifndef _TAVTcluster_HXX
 #define _TAVTcluster_HXX
 
-#include "TAVTbaseCluster.hxx"
-
-/** TAVTcluster class, simple container class for tracks with the associated clusters                    
- 
+/*!
+ \file TAVTcluster.hxx
+ \version $Id: TAVTcluster
+ \brief   Class, simple container class for tracks with the associated clusters
  \author Ch. Finck
  */
+/*------------------------------------------+---------------------------------*/
+
+#include "TAVTbaseCluster.hxx"
 
 class TAVTtrack;
 class TAVThit;

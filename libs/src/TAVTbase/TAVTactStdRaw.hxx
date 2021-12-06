@@ -7,7 +7,7 @@
 
 /*!
  \file
- \version $Id: TAVTactStdRaw.hxx $
+ \version $Id: TAVTactStdRaw.hxx 
  \brief   Declaration of TAVTactStdRaw.
  */
 

@@ -2,7 +2,7 @@
 #define _TAVTactNtuClusterMT_HXX
 /*!
  \file
- \version $Id: TAVTactNtuClusterMT.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \version $Id: TAVTactNtuClusterMT.hxx
  \brief   Declaration of TAVTactNtuClusterMT.
  */
 /*------------------------------------------+---------------------------------*/

@@ -1,8 +1,8 @@
 #ifndef _TAVTbaseParMap_HXX
 #define _TAVTbaseParMap_HXX
 /*!
- \file
- \version $Id: TAVTbaseParMap.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+ \file TAVTbaseParMap.hxx
+ \version $Id: TAVTbaseParMap.hxx
  \brief   Declaration of TAVTbaseParMap.
  */
 /*------------------------------------------+---------------------------------*/

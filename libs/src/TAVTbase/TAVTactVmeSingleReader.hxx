@@ -1,7 +1,7 @@
 #ifndef _TAVTactVmeSingleReader_HXX
 #define _TAVTactVmeSingleReader_HXX
 /*!
-  \file
+  \file TAVTactVmeSingleReader.hxx
   \brief   Declaration of TAVTactVmeSingleReader.
 */
 /*------------------------------------------+---------------------------------*/

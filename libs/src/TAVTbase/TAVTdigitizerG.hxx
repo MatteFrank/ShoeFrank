@@ -1,5 +1,11 @@
 #ifndef _TAVTdigitizerG_HXX
 #define _TAVTdigitizerG_HXX
+/*!
+ \file TAVTdigitizerG.hxx
+ \version $Id: TAVTdigitizerG.hxx
+ \brief   Declaration of TAVTdigitizerG
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include <map>
 

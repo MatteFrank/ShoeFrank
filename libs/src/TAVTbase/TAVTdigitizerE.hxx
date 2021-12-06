@@ -1,6 +1,13 @@
 #ifndef _TAVTdigitizerE_HXX
 #define _TAVTdigitizerE_HXX
 
+/*!
+ \file TAVTdigitizerE.hxx
+ \version $Id: TAVTdigitizerE.hxx
+ \brief   Declaration of TAVTdigitizerE
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include <map>
 
 #include "Riostream.h"

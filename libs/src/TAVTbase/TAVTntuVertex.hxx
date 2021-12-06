@@ -1,6 +1,14 @@
 #ifndef _TAVTntuVertex_HXX
 #define _TAVTntuVertex_HXX
 
+/*!
+ \file TAVTntuVertex.hxx
+ \version $Id: TAVTvertex
+ \brief   class, simple container class for vertices with the associated tracks
+ \author Ch. Finck, R. Rescigno
+ */
+/*------------------------------------------+---------------------------------*/
+
 // ROOT classes
 #include "TClonesArray.h"
 #include "TVector3.h"
@@ -8,13 +16,6 @@
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
 #include "TAVTntuTrack.hxx"
-
-//##############################################################################
-
-/** TAVTvertex class, simple container class for vertices with the associated tracks                    
- 
- \author R. Rescigno
- */
 
 class TAVTtrack;
 class TClonesArray;

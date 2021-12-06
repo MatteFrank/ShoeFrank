@@ -1,6 +1,15 @@
 #ifndef _TAVTntuCluster_HXX
 #define _TAVTntuCluster_HXX
 
+/*!
+ \file TAVTntuCluster.hxx
+ \version $Id: TAVTntuCluster
+ \brief  Class, simple container class for tracks with the associated clusters
+ 
+ \author Ch. Finck
+ */
+
+
 // ROOT classes
 #include "TObject.h"
 #include "TList.h"
@@ -16,12 +25,6 @@
 
 class TAVTtrack;
 class TAVTbaseParGeo;
-
-/** TAVTcluster class, simple container class for tracks with the associated clusters                    
- 
- \author Ch. Finck
- */
-
 
 //##############################################################################
 

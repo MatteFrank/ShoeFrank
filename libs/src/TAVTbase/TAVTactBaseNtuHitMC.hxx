@@ -2,7 +2,7 @@
 #define _TAVTactBaseNtuHitMC_HXX
 /*!
  \file
- \version $Id: TAVTactBaseNtuHitMC.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \version $Id: TAVTactBaseNtuHitMC.hxx
  \brief   Declaration of TAVTactBaseNtuHitMC.
  */
 /*------------------------------------------+---------------------------------*/

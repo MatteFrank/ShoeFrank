@@ -2,7 +2,7 @@
 #define _TAVTactNtuTrackF_HXX
 /*!
  \file
- \version $Id: TAVTactNtuTrackF.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \version $Id: TAVTactNtuTrackF.hxx
  \brief   Declaration of TAVTactNtuTrackF.
  */
 /*------------------------------------------+---------------------------------*/

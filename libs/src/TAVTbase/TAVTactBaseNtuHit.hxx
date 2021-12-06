@@ -5,7 +5,7 @@
 
 /*!
  \file
- \version $Id: TAVTactBaseNtuHit.hxx $
+ \version $Id: TAVTactBaseNtuHit.hxx 
  \brief   Declaration of TAVTactBaseNtuHit.
  */
 

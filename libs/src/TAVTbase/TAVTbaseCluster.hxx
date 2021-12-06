@@ -16,7 +16,9 @@
 
 class TAVTparGeo;
 
-/** TAVTbaseCluster class, simple container class for tracks with the associated clusters                    
+/*!
+ \file TAVTbaseCluster.hxx
+ \brief  TAVTbaseCluster class, simple container class for tracks with the associated clusters
  
  \author Ch. Finck
  */
