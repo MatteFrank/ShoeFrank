@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTparMap.cxx
- \brief   Map parameters for VTX
+ \file TAVTparMap.cxx
+  \brief   Map parameters for VTX
  */
 
 #include "TAVTparMap.hxx"

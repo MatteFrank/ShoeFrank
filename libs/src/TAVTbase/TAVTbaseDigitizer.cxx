@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTbaseDigitizer.cxx
+ \file TAVTbaseDigitizer.cxx
  \brief   Implementation of TAVTbaseDigitizer.
  */
 #include "TMath.h"

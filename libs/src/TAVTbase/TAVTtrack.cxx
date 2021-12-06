@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTtrack.cxx
+ \file TAVTtrack.cxx
  \brief   Class for VTX tracks
  */
 

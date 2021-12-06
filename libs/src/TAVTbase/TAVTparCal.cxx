@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TAVTparCal.cxx
-  \brief    Charge (raw) calibration for vertex
+  \file TAVTparCal.cxx
+   \brief    Charge (raw) calibration for vertex
 */
 
 #include <Riostream.h>

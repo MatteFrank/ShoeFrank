@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTactBaseNtuTrack.cxx
+ \file TAVTactBaseNtuTrack.cxx
  \brief   Base class to NTuplize VTX tracks
  */
 #include "TClonesArray.h"

@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTdigitizerG.cxx
+ \file TAVTdigitizerE.cxx
  \brief VTX elipsoidal digitizer
  */
 

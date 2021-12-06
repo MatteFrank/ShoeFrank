@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTactNtuTrack.cxx
- \brief   NTuplizer for VTX track
+ \file TAVTactNtuTrack.cxx
+  \brief   NTuplizer for VTX track
  */
 #include "TClonesArray.h"
 #include "TMath.h"

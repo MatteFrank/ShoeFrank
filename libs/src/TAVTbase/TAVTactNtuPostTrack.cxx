@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTactNtuPostTrack.cxx
+ \file TAVTactNtuPostTrack.cxx
  \brief   Class for post tracking refiting including vertex
  */
 #include "TClonesArray.h"

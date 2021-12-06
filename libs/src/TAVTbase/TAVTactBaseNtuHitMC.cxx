@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAVTactBaseNtuHitMC.cxx
+  \file TAVTactBaseNtuHitMC.cxx
   \brief   Base class to NTuplize MC hits
 */
 

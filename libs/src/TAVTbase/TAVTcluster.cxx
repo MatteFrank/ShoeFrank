@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTcluster.cxx
+ \file TAVTcluster.cxx
  \brief  Class VTX cluster
  */
 
@@ -8,8 +7,8 @@
 #include "TAVTtrack.hxx"
 
 /*!
- \class TAVTbaseParMap
- \brief Base class of map parameters for VTX
+ \class TAVTcluster
+ \brief Class for cluster in VTX
  */
 
 ClassImp(TAVTcluster) // Description of a cluster

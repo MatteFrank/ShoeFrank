@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTntuHit.cxx
+ \file TAVTntuHit.cxx
  \brief   Container class for VTX ntu hit
  */
 

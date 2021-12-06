@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTntuCluster.cxx
- \brief Class for VTX cluster container
+ \file TAVTntuCluster.cxx
+  \brief Class for VTX cluster container
  */
 
 #include "TAVTparGeo.hxx"

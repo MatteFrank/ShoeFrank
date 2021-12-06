@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTactBaseNtuCluster.cxx
+ \file TAVTactBaseNtuCluster.cxx
  \brief   Base class to NTuplize cluster
  */
 #include "TClonesArray.h"

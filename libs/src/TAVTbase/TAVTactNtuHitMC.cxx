@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAVTactNtuHitMC.cxx
+  \file TAVTactNtuHitMC.cxx
   \brief   NTuplizer for VTX MC hits
 */
 

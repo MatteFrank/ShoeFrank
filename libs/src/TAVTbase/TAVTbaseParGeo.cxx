@@ -1,4 +1,9 @@
 
+/*!
+ \file TAVTbaseParGeo.hxx
+ \brief Base class of geometrical parameters for VTX
+ */
+
 #include <Riostream.h>
 
 #include "TGeoBBox.h"

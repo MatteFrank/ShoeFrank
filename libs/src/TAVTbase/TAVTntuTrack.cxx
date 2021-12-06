@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTntuTrack.cxx
- \brief   Container class for VTX tracks
+ \file TAVTntuTrack.cxx
+  \brief   Container class for VTX tracks
  */
 
 #include "TMath.h"

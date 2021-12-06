@@ -2,7 +2,6 @@
 #define _TAVTmi26Type_HXX_
 /*!
  \file TAVTmi26Type.hxx
- \version $Id: TAVTmi26Type
  \brief   Declaration of TAVTmi26Type
  */
 /*------------------------------------------+---------------------------------*/

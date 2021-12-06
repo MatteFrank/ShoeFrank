@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTactBaseRaw.cxx
+ \file TAVTactBaseRaw.cxx
  \brief    Base class to decode vertex raw data
  */
 

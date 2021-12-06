@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTactBaseNtuClusterMT.cxx
+ \file TAVTactBaseNtuClusterMT.cxx
  \brief  Base action for MT clustering
  */
 

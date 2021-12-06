@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TAVTbaseParConf.cxx
-  \brief    Base class of configuration parameters for VTX
+  \file TAVTbaseParConf.cxx
+   \brief Base class of configuration parameters for VTX
 */
 
 #include <Riostream.h>

@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAVTparConf.cxx
+  \file TAVTparConf.cxx
   \brief   Configuration parameters for VTX
 */
 

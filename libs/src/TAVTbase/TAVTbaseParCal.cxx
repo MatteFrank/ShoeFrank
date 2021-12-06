@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAVTbaseParCal.cxx
+  \file TAVTbaseParCal.cxx
   \brief  Charge (raw) calibration for vertex.
 */
 

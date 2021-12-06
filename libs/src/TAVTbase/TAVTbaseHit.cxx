@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTbaseHit.cxx
- \brief   Base class of VTX hits
+ \file TAVTbaseHit.cxx
+  \brief   Base class of VTX hits
  */
 
 #include "TString.h"

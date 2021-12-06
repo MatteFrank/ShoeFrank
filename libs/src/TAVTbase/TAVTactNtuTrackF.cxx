@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTactNtuTrackF.cxx
- \brief  NTuplizer for VTX tracks using combinatory algorithm
+ \file TAVTactNtuTrackF.cxx
+  \brief  NTuplizer for VTX tracks using combinatory algorithm
  */
 
 #include "TClonesArray.h"

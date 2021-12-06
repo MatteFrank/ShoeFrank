@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTactNtuCluster.cxx
+ \file TAVTactNtuCluster.cxx
  \brief  NTuplizer for VTX clusters
  */
 #include "TClonesArray.h"

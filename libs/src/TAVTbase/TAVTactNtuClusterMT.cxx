@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTactNtuClusterMT.cxx
+ \file TAVTactNtuClusterMT.cxx
  \brief   Implementation of TAVTactNtuClusterMT.
  */
 

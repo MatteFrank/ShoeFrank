@@ -1,6 +1,5 @@
 /*!
  \file  TAVThit.cxx
- \version $Id: TAVThit
  \brief Class for VTX hit
  */
 

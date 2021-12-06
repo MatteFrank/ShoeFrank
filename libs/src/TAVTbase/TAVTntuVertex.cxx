@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTvertex.cxx
+ \file TAVTvertex.cxx
  \brief   Class for VTX vertices
  */
 

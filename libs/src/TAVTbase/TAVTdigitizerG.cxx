@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTdigitizerG.cxx
- \brief VTX gaussian digitizer
+ \file TAVTdigitizerG.cxx
+  \brief VTX gaussian digitizer
  */
 
 #include "TAVTdigitizerG.hxx"

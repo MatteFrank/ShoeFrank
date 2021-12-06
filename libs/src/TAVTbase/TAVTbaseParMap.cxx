@@ -1,8 +1,8 @@
 /*!
- \file
- \version $Id: TAVTbaseParMap.cxx
- \brief   Base class of map parameters for VTX
+ \file TAVTbaseParMap.cxx
+  \brief   Base class of map parameters for VTX
  */
+
 #include "TAGrecoManager.hxx"
 #include "TAVTbaseParMap.hxx"
 
