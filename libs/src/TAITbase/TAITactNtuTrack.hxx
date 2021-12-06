@@ -1,8 +1,7 @@
 #ifndef _TAITactNtuTrack_HXX
 #define _TAITactNtuTrack_HXX
 /*!
- \file
- \version $Id: TAITactNtuTrack.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAITactNtuTrack.hxx
  \brief   Declaration of TAITactNtuTrack.
  */
 /*------------------------------------------+---------------------------------*/

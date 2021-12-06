@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAITcluster.cxx
+ \file TAITcluster.cxx
  \brief   Class for ITR cluster
  */
 

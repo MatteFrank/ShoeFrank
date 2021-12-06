@@ -1,7 +1,7 @@
 #ifndef _TAITparGeo_HXX
 #define _TAITparGeo_HXX
 /*!
-  \file
+  \file TAITparGeo.hxx
   \brief   Declaration of TAITparGeo.
  
   \author Ch. Finck

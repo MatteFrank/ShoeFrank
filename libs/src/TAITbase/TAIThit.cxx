@@ -1,7 +1,6 @@
 
 /*!
  \file  TAIThit.cxx
- \version $Id: TAVThit
  \brief Class for ITR hit
  */
 

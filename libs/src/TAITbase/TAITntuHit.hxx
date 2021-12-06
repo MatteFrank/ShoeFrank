@@ -1,9 +1,8 @@
 #ifndef _TAITntuHit_HXX
 #define _TAITntuHit_HXX
 /*!
- \file
- \version $Id: TAITntuHit.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
- \brief   Declaration of TAITntuHit.
+ \file TAITntuHit.hxx
+  \brief   Declaration of TAITntuHit.
  */
 /*------------------------------------------+---------------------------------*/
 

@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAITparCal.cxx
+  \file TAITparCal.cxx
   \brief    Charge (raw) calibration for ITR
 */
 
@@ -17,7 +16,7 @@
 //##############################################################################
 
 /*!
-  \class TAITparCal TAITparCal.hxx "TAITparCal.hxx"
+  \class TAITparCal 
   \brief Charge (raw) calibration for ITR
 */
 

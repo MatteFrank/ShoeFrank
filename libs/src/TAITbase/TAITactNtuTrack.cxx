@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAITactNtuTrack.cxx
+ \file TAITactNtuTrack.cxx
  \brief   NTuplizer for ITR tracks
  */
 #include "TClonesArray.h"

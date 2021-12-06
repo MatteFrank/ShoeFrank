@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAITntuTrack.cxx
+ \file TAITntuTrack.cxx
  \brief   Container class for ITR tracks
  */
 

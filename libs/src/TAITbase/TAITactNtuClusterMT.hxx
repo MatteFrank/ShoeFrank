@@ -1,8 +1,7 @@
 #ifndef _TAITactNtuClusterMT_HXX
 #define _TAITactNtuClusterMT_HXX
 /*!
- \file
- \version $Id: TAITactNtuClusterMT.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAITactNtuClusterMT.hxx
  \brief   Declaration of TAITactNtuClusterMT.
  */
 /*------------------------------------------+---------------------------------*/

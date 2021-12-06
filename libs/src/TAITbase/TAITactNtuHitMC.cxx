@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAITactNtuHitMC.cxx
+  \file TAITactNtuHitMC.cxx
   \brief   NTuplizer for ITR MC hits
 */
 
@@ -29,7 +28,7 @@
 
 
 /*!
-  \class TAITactNtuHitMC"
+  \class TAITactNtuHitMC
   \brief NTuplizer for ITR MC hits
 */
 

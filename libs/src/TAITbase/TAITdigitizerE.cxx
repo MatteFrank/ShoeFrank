@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAITdigitizerE.cxx
+ \file TAITdigitizerE.cxx
  \brief   Interface class to VTX elipsoidale digitizer
  */
 

@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAITactNtuTrackF.cxx
+ \file TAITactNtuTrackF.cxx
  \brief   NTuplizer for ITR tracks using combinatory algorithm
  */
 #include "TClonesArray.h"

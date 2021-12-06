@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAITntuHit.cxx
+ \file TAITntuHit.cxx
  \brief   Container class for ITR raw hit
  */
 

@@ -1,8 +1,7 @@
 #ifndef _TAITparCal_HXX
 #define _TAITparCal_HXX
 /*!
-  \file
-  \version $Id: TAITparCal.hxx
+  \file TAITparCal.hxx
   \brief   Declaration of TAITparCal.
 */
 /*------------------------------------------+---------------------------------*/

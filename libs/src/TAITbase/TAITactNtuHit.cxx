@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAITactNtuHit.cxx
+ \file TAITactNtuHit.cxx
  \brief   Ntuplizer for ITR raw data
  */
 

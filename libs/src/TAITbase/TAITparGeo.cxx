@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAITparGeo.cxx
+  \file TAITparGeo.cxx
   \brief    Geometry parameters for ITR
 */
 

@@ -17,13 +17,12 @@
 class TAVTtrack;
 class TAVTbaseParGeo;
 
-/** TAITcluster class, simple container class for tracks with the associated clusters                    
- 
+/*!
+ \file TAITntuCluster.hxx
+ \brief   TAITcluster class, simple container class for tracks with the associated clusters
  \author Ch. Finck
  */
 
-
-//##############################################################################
 
 class TAITntuCluster : public TAGdata {
    

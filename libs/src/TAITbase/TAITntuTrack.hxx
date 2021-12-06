@@ -1,6 +1,12 @@
 #ifndef _TAITntuTrack_HXX
 #define _TAITntuTrack_HXX
 
+/*!
+ \file TAITntuTrack.hxx
+ \brief   Declaration of TAITntuTrack.
+ */
+/*------------------------------------------+---------------------------------*/
+
 // ROOT classes
 #include "TClonesArray.h"
 #include "TVector3.h"

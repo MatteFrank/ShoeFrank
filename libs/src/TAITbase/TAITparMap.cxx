@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAITparMap.cxx
+ \file TAITparMap.cxx
  \brief    Map parameters for ITR
  */
 

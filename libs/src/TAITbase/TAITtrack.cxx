@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAITtrack.cxx
+ \file TAITtrack.cxx
  \brief   Class for ITR tracks
  */
 

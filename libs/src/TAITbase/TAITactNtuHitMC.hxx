@@ -1,8 +1,7 @@
 #ifndef _TAITactNtuHitMC_HXX
 #define _TAITactNtuHitMC_HXX
 /*!
- \file
- \version $Id: TAITactNtuHitMC.hxx
+ \file TAITactNtuHitMC.hxx
  \brief   Declaration of TAITactNtuHitMC.
  */
 /*------------------------------------------+---------------------------------*/

@@ -1,15 +1,14 @@
 #ifndef _TAITcluster_HXX
 #define _TAITcluster_HXX
 
-// ROOT classes
-
-#include "TAVTbaseCluster.hxx"
-
-
-/** TAITcluster class, simple container class for tracks with the associated clusters                    
- 
+/*!
+ \file TAITcluster.hxx
+ \brief   Declaration of TAITactNtuTrackF.
  \author Ch. Finck
  */
+/*------------------------------------------+---------------------------------*/
+
+#include "TAVTbaseCluster.hxx"
 
 class TAIThit;
 class TAITtrack;

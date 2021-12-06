@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAITparConf.cxx
+  \file TAITparConf.cxx
   \brief   Configuration parameters for ITR
 */
 
