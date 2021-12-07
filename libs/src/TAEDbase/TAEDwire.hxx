@@ -1,13 +1,17 @@
 #ifndef _TAEDwire_HXX_
 #define _TAEDwire_HXX_
 
+/*!
+ \file TAEDwire.hxx
+ \brief Class to display wire on event
+ 
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
 #ifndef ROOT_TEveStraightLineSet
 #include "TEveStraightLineSet.h"
 #endif
-
-/** TAEDwire a class to display wire on event
- 
-*/
 
 class TAEDwire : public  TEveStraightLineSet
 {

@@ -1,7 +1,16 @@
+/*!
+ \file TAEDglbTrack.cxx
+ \brief  Class to display global track line on event.
+ */
 
 #include "TEveChunkManager.h"
 
 #include "TAEDglbTrack.hxx"
+
+/*!
+ \class TAEDglbTrack
+ \brief  Class to display global track line on event.
+ */
 
 ClassImp(TAEDglbTrack);
 

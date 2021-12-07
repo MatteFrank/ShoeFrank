@@ -1,7 +1,16 @@
+/*!
+ \file TAEDcluster.cxx
+ \brief  Event display for cluster
+ */
 
 #ifndef _TAEDcluster_included_HXX
 #include "TAEDcluster.hxx"
 #endif
+
+/*!
+ \class TAEDcluster
+ \brief Event display for cluster. **
+ */
 
 //__________________________________________________________
 TAEDcluster::TAEDcluster(const Text_t* name) 

@@ -1,3 +1,8 @@
+/*!
+ \file TAEDeveGlbTrack.cxx
+ \brief  class to display global tracks on event.
+ */
+
 #include <Riostream.h>
 
 #include "TEveTrackPropagator.h"
@@ -5,6 +10,11 @@
 #include "TColor.h"
 
 #include "TAEDeveGlbTrack.hxx"
+
+/*!
+ \class TAEDeveGlbTrack
+ \brief  class to display global tracks on event.
+ */
 
 //__________________________________________________________
 TAEDeveGlbTrack::TAEDeveGlbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop)

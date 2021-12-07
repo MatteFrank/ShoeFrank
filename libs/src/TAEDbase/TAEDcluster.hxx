@@ -1,15 +1,15 @@
 #ifndef _TAEDcluster_HXX_
 #define _TAEDcluster_HXX_
 
-#ifndef ROOT_TEveQuadSet
-#include "TEveQuadSet.h"
-#endif
-
-
-
-/** TAEDcluster a class to display hits on event
+/*!
+ \file TAEDcluster.hxx
+ \brief  TAEDcluster a class to display hits on event.
  
-*/
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
+#include "TEveQuadSet.h"
 
 class TAEDcluster : public TEveQuadSet
 {
@@ -53,15 +53,15 @@ public:
   
 private:
   
-  TEveRGBAPalette *fPalette; // color palette 
+  TEveRGBAPalette *fPalette; ///< color palette
 
-  Int_t   fMaxEnergy;        // max energy
+  Int_t   fMaxEnergy;        ///< max energy
 
-  Float_t fQuadWidth;        // width of hit quad
-  Float_t fQuadHeight;       // height of hit quad
+  Float_t fQuadWidth;        ///< width of hit quad
+  Float_t fQuadHeight;       ///< height of hit quad
   
-  Int_t fSelectedIdx;        // selected digit index
-  Int_t fSelectedValue;      // selected digit value
+  Int_t fSelectedIdx;        ///< selected digit index
+  Int_t fSelectedValue;      ///< selected digit value
   
 };
 

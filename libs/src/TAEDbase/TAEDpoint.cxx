@@ -1,7 +1,17 @@
 
-#include "TClass.h"
+/*!
+ \file TAEDpoint.cxx
+ \brief  Class to display point on event.
+ */
 
+#include "TClass.h"
 #include "TAEDpoint.hxx"
+
+/*!
+ \class TAEDpoint
+ \brief  Class to display point on event.
+ */
+
 
 //__________________________________________________________
 TAEDpoint::TAEDpoint(const Text_t* name) 

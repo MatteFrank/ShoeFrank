@@ -1,4 +1,9 @@
 
+/*!
+ \class TAEDbaseInterface
+ \brief  Base class for event display interface
+ */
+
 #include "TMath.h"
 #include "TGeoMedium.h"
 #include "TGeoMaterial.h"

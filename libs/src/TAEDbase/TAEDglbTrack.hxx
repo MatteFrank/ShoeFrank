@@ -1,14 +1,18 @@
 #ifndef _TAEDglbTrack_HXX_
 #define _TAEDglbTrack_HXX_
 
+/*!
+ \file TAEDglbTrack.hxx
+ \brief  Class to display global track line on event
+ 
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "TEveStraightLineSet.h"
 #include "TEveSecondarySelectable.h"
 
 #include "TVector3.h"
-
-/** TAEDglbTrack a class to display global track line on event
- 
- */
 
 class TAEDglbTrack : public  TEveStraightLineSet, public TEveSecondarySelectable
 {

@@ -1,4 +1,8 @@
-
+/*!
+ \file TAEDwire.cxx
+ \brief Class to display wire on event
+ */
+/*------------------------------------------+---------------------------------*/
 
 #ifndef _TAEDwire_HXX_
 #include "TAEDwire.hxx"
@@ -8,7 +12,12 @@
 #include "TEveChunkManager.h"
 #endif
 
-//
+/*!
+ \class TAEDwire
+ \brief Class to display wire on event
+ */
+/*------------------------------------------+---------------------------------*/
+
 
 //__________________________________________________________
 TAEDwire::TAEDwire(const Text_t* name) 

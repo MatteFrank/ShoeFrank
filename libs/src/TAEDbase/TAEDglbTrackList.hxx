@@ -1,22 +1,25 @@
 #ifndef _TAEDglbTrackList_HXX_
 #define _TAEDglbTrackList_HXX_
 
+/*!
+ \file TAEDglbTrackList.hxx
+ \brief  Class to display global tracks list on event
+ 
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include "TEveElement.h"
 #include "TVector3.h"
 
-/** TAEDglbTrackList a class to display global tracks on event
- 
-*/
 class TAEDglbTrack;
-
 class TAEDglbTrackList : public TEveElementList {
 
 public:
    TAEDglbTrackList(const Char_t* name = "");
    virtual ~TAEDglbTrackList();
   
-   //! return number of tracks
+   //! Return number of tracks
    Int_t      GetNofTracks()     const { return fNofTracks; }
    
    //! Add Track
@@ -26,7 +29,7 @@ public:
    void ResetTracks();
       
 private:
-   Int_t            fNofTracks;   // number of tracks
+   Int_t            fNofTracks;   ///< number of tracks
    
    ClassDef(TAEDglbTrackList, 0);
 };

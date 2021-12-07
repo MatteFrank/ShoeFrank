@@ -1,4 +1,7 @@
-
+/*!
+ \file TAEDtrack.cxx
+ \brief Class to display tracks on event
+ */
 
 #ifndef _TAEDtrack_HXX_
 #include "TAEDtrack.hxx"
@@ -15,6 +18,11 @@
 #include <Riostream.h>
 
 using namespace std;
+
+/*!
+ \class TAEDtrack
+ \brief Class to display tracks on event
+ */
 
 //__________________________________________________________
 TAEDtrack::TAEDtrack(const Text_t* name) 
