@@ -176,7 +176,7 @@ public:
     }
 
     void Action() override {
-        
+//        puts(__PRETTY_FUNCTION__);
         
         ++event;
 //        std::cout << "---event---\n";
@@ -209,11 +209,11 @@ public:
 //        }
 
         track_c = compute_track_parameters( std::move(track_c) );
+//        track_c = compute_track_parameters_splitted( std::move(track_c) );
         track_c = compute_arc_length( std::move(track_c) );
         track_c = compute_time_of_flight( std::move(track_c));
         track_c = compute_momentum( std::move(track_c ));
-//        track_c = refine_hypotheses_using_track( std::move(track_c) );
-//        track_c = refine_hypotheses_using_clusters( std::move(track_c) );
+        track_c = refine_hypotheses( std::move(track_c) );
         
         register_tracks_upward( std::move( track_c ) );
         
@@ -354,7 +354,7 @@ public:
 //            TFile file{"tol_16O200C2H4_5e4_refinepht100m11pwr2-5_effc.root", "RECREATE"};
 //            TFile file{"tol_16O200C2H4_5e4_refinephol5p_effc.root", "RECREATE"};
 //            TFile file{"tol_12C200C_3e4_refinep_outw_effc.root", "RECREATE"};
-            TFile file{"tol_16O200C2H4_5e4_refinep_outw_effc.root", "RECREATE"};
+            TFile file{"tol_16O200C2H4_5e4_refinephcol_effc.root", "RECREATE"};
 //            TFile file{"tol_16O400C_25e3_refinep_effc.root", "RECREATE"};
 //            TFile file{"tol_16O200C2H4_25e3_refinemn_effGc.root", "RECREATE"};
 //            TFile file{"tol_16O200C2H4_25e3_refinenm_rdfc_effc.root", "RECREATE"};
@@ -1719,6 +1719,107 @@ private:
         return std::move(track_pc);
     }
     
+    template<std::size_t N, std::size_t Order>
+    std::array<double, Order> compute_polynomial_parameters_x( std::vector<full_state> const& cluster_pc ) const {
+        //fit in x/y
+        //retrieve fit parameters
+        
+        std::array<double, N> z_c{};
+        std::array<double, N> x_c{};
+        std::array<double, N * N> weight_x_c{};
+        
+        std::size_t index{0};
+        for( auto cluster_i{cluster_pc.begin()+1}; cluster_i != cluster_pc.end()-1 ; ++cluster_i ){
+            auto * msd_h =dynamic_cast<TAMSDcluster const*>( cluster_i->data );
+            if( msd_h ){
+                if( !msd_h->GetPlaneView() ){
+                    z_c[index] = cluster_i->evaluation_point;
+                    x_c[index] = cluster_i->data->GetPositionG().X();
+                    weight_x_c[index + N * index] = pow( cluster_i->data->GetPosErrorG().X(), 2 );
+                    ++index;
+                }
+            } else {
+                z_c[index] = cluster_i->evaluation_point;
+                x_c[index]  = cluster_i->data->GetPositionG().X();
+                weight_x_c[index + index * N] = cluster_i->data->GetPosErrorG().X();
+                
+                ++index;
+            }
+        }
+        
+        
+        constexpr std::size_t const order_x = Order;
+        auto const regressor_x = make_custom_matrix<N, order_x>(
+                                            [&z_c, &order_x]( std::size_t index_p ){
+                                                std::size_t column_index = index_p % order_x;
+                                                std::size_t row_index = index_p / order_x;
+                                                return pow( z_c[row_index], column_index );
+                                                                                    }
+                                                                );
+//        std::cout << "zx:\n";
+//        for( auto const& z : z_c ){ std::cout << z << '\n';}
+        auto const observation_x = matrix<N, 1>{ std::move(x_c) };
+//        std::cout << "observation_x: \n" << observation_x;
+        auto const weight_x = matrix<N, N>{ std::move(weight_x_c)};
+        
+        //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
+        auto const part1_x = form_inverse( expr::compute( transpose(regressor_x) * weight_x * regressor_x ) );
+        auto const part2_x = expr::compute( transpose( regressor_x ) * weight_x * observation_x );
+        auto const parameter_x = expr::compute( part1_x * part2_x );
+
+        return std::move(parameter_x.data());
+    }
+    
+    template<std::size_t N, std::size_t Order>
+    std::array<double, Order> compute_polynomial_parameters_y( std::vector<full_state> const& cluster_pc ) const {
+        
+        //fit in x/y
+        //retrieve fit parameters
+        std::array<double, N> z_c{};
+        std::array<double, N> y_c{};
+        std::array<double, N * N> weight_y_c{};
+        
+        std::size_t index{0};
+        for( auto cluster_i{cluster_pc.begin()+1}; cluster_i != cluster_pc.end()-1 ; ++cluster_i ){
+            auto * msd_h =dynamic_cast<TAMSDcluster const*>( cluster_i->data );
+            if( msd_h ){
+                if( msd_h->GetPlaneView() ){
+                    z_c[index] = cluster_i->evaluation_point;
+                    y_c[index] = cluster_i->data->GetPositionG().Y();
+                    weight_y_c[index + N * index] = pow( cluster_i->data->GetPosErrorG().Y(), 2 );
+                    ++index;
+                }
+            } else {
+                z_c[index] = cluster_i->evaluation_point;
+                y_c[index] = cluster_i->data->GetPositionG().Y();
+                weight_y_c[index + index * N] = cluster_i->data->GetPosErrorG().Y();
+                
+                ++index;
+            }
+        }
+
+        constexpr std::size_t const order_y = Order;
+        auto const regressor_y = make_custom_matrix<N, order_y>(
+                                                                [&z_c, &order_y]( std::size_t index_p ){
+                                                                    std::size_t column_index = index_p % order_y;
+                                                                    std::size_t row_index = index_p / order_y;
+                                                                    return pow( z_c[row_index], column_index );
+                                                                }
+                                                                );
+//        std::cout << "zy:\n";
+//        for( auto const& z : z_c ){ std::cout << z << '\n';}
+        auto const observation_y = matrix<N, 1>{ std::move(y_c) };
+//        std::cout << "observation_y: \n" << observation_y;
+        auto const weight_y = matrix<N, N>{ std::move(weight_y_c)};
+        
+        //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
+        auto const part1_y = form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) );
+        auto const part2_y = expr::compute( transpose( regressor_y ) * weight_y * observation_y );
+        auto const parameter_y = expr::compute( part1_y * part2_y );
+
+        return std::move(parameter_y.data());
+    }
+    
     template<std::size_t N>
     polynomial_fit_parameters compute_polynomial_parameters( std::vector<full_state> const& cluster_pc ) const {
         
@@ -1801,61 +1902,63 @@ private:
         for( auto& track : track_pc) {
             auto cluster_c = track.get_clusters();
             switch( cluster_c.size() ){
-                case 4:{
-                    track.parameters = compute_polynomial_parameters<4>( cluster_c );
-                    break;
-                }
-                case 5:{
-                    track.parameters = compute_polynomial_parameters<5>( cluster_c );
-                    break;
-                }
-                case 6:{
-                    track.parameters = compute_polynomial_parameters<6>( cluster_c );
-                    break;
-                }
-                case 7:{
-                    track.parameters = compute_polynomial_parameters<7>( cluster_c );
-                    break;
-                }
-                case 8:{
-                    track.parameters = compute_polynomial_parameters<8>( cluster_c );
-                    break;
-                }
-                case 9:{
-                    track.parameters = compute_polynomial_parameters<9>( cluster_c );
-                    break;
-                }
-                case 10:{
-                    track.parameters = compute_polynomial_parameters<10>( cluster_c );
-                    break;
-                }
-                case 11:{
-                    track.parameters = compute_polynomial_parameters<11>( cluster_c );
-                    break;
-                }
-                case 12:{
-                    track.parameters = compute_polynomial_parameters<12>( cluster_c );
-                    break;
-                }
-                case 13:{
-                    track.parameters = compute_polynomial_parameters<13>( cluster_c );
-                    break;
-                }
-                case 14:{
-                    track.parameters = compute_polynomial_parameters<14>( cluster_c );
-                    break;
-                }
-                case 15:{
-                    track.parameters = compute_polynomial_parameters<15>( cluster_c );
-                    break;
-                }
-                case 16:{
-                    track.parameters = compute_polynomial_parameters<16>( cluster_c );
-                    break;
-                }
+                case  4:{ track.parameters = compute_polynomial_parameters< 4>( cluster_c ); break; }
+                case  5:{ track.parameters = compute_polynomial_parameters< 5>( cluster_c ); break; }
+                case  6:{ track.parameters = compute_polynomial_parameters< 6>( cluster_c ); break; }
+                case  7:{ track.parameters = compute_polynomial_parameters< 7>( cluster_c ); break; }
+                case  8:{ track.parameters = compute_polynomial_parameters< 8>( cluster_c ); break; }
+                case  9:{ track.parameters = compute_polynomial_parameters< 9>( cluster_c ); break; }
+                case 10:{ track.parameters = compute_polynomial_parameters<10>( cluster_c ); break; }
+                case 11:{ track.parameters = compute_polynomial_parameters<11>( cluster_c ); break; }
+                case 12:{ track.parameters = compute_polynomial_parameters<12>( cluster_c ); break; }
+                case 13:{ track.parameters = compute_polynomial_parameters<13>( cluster_c ); break; }
+                case 14:{ track.parameters = compute_polynomial_parameters<14>( cluster_c ); break; }
+                case 15:{ track.parameters = compute_polynomial_parameters<15>( cluster_c ); break; }
+                case 16:{ track.parameters = compute_polynomial_parameters<16>( cluster_c ); break; }
             }
             
 
+        }
+
+        return std::move( track_pc );
+    }
+    
+    constexpr std::vector< track > compute_track_parameters_splitted( std::vector<track>&& track_pc ) const {
+        for( auto& track : track_pc) {
+            auto cluster_c = track.get_clusters();
+            std::size_t msd_cluster_x_counter{0};
+            std::size_t msd_cluster_y_counter{0};
+            for( auto const& cluster : cluster_c){
+                auto * msd_h =dynamic_cast<TAMSDcluster const*>( cluster.data );
+                if( msd_h ){
+                    if( msd_h->GetPlaneView() ){ ++msd_cluster_y_counter; }
+                    else{ ++msd_cluster_x_counter; }
+                }
+            }
+            polynomial_fit_parameters result;
+            std::size_t const x_cluster_count = cluster_c.size() -2 - msd_cluster_y_counter;
+            switch( x_cluster_count ){
+                case 4:{result.x = compute_polynomial_parameters_x<4, 4>( cluster_c ); break;}
+                case 5:{result.x = compute_polynomial_parameters_x<5, 4>( cluster_c ); break;}
+                case 6:{result.x = compute_polynomial_parameters_x<6, 4>( cluster_c ); break;}
+                case 7:{result.x = compute_polynomial_parameters_x<7, 4>( cluster_c ); break;}
+                case 8:{result.x = compute_polynomial_parameters_x<8, 4>( cluster_c ); break;}
+                case 9:{result.x = compute_polynomial_parameters_x<9, 4>( cluster_c ); break;}
+                case 10:{result.x = compute_polynomial_parameters_x<10, 4>( cluster_c ); break;}
+                case 11:{result.x = compute_polynomial_parameters_x<11, 4>( cluster_c ); break;}
+            }
+            std::size_t const y_cluster_count = cluster_c.size() -2 - msd_cluster_x_counter;
+            switch( y_cluster_count ){
+                case 4:{result.y = compute_polynomial_parameters_y<4, 2>( cluster_c ); break;}
+                case 5:{result.y = compute_polynomial_parameters_y<5, 2>( cluster_c ); break;}
+                case 6:{result.y = compute_polynomial_parameters_y<6, 2>( cluster_c ); break;}
+                case 7:{result.y = compute_polynomial_parameters_y<7, 2>( cluster_c ); break;}
+                case 8:{result.y = compute_polynomial_parameters_y<8, 2>( cluster_c ); break;}
+                case 9:{result.y = compute_polynomial_parameters_y<9, 2>( cluster_c ); break;}
+                case 10:{result.y = compute_polynomial_parameters_y<10, 2>( cluster_c ); break;}
+                case 11:{result.y = compute_polynomial_parameters_y<11, 2>( cluster_c ); break;}
+            }
+            track.parameters = std::move(result);
         }
 
         return std::move( track_pc );
@@ -1885,7 +1988,7 @@ private:
         return std::move( track_pc );
     }
     
-    std::vector< track > refine_hypotheses_using_track( std::vector<track>&& track_pc ) const {
+    std::vector< track > refine_hypotheses( std::vector<track>&& track_pc ) const {
 //        puts(__PRETTY_FUNCTION__);
         int charge{};
         double momentum{};
@@ -1946,7 +2049,7 @@ private:
             charge = track.hypothesis.properties.charge;
             double relative_momentum = track.momentum / track.hypothesis.properties.nucleon_number;
             std::vector<score_and_momentum> refined_c;
-            
+//
 //            for( double factor{ track.hypothesis.properties.nucleon_number - 1.5 > 0 ? track.hypothesis.properties.nucleon_number - 1.5 : 0.5 };
 //                 factor < track.hypothesis.properties.nucleon_number + 1.6 ;
 //                 factor+=0.1 ){
@@ -1954,63 +2057,40 @@ private:
                  factor < track.hypothesis.properties.nucleon_number + 2.05 ;
                  factor+=0.01 ){
                 momentum = factor * relative_momentum;
-                if(momentum < 100){  continue; }
+                if(momentum < 150){  continue; }
 
-                auto starting_z = track.get_clusters().begin()->evaluation_point;
+                auto starting_point = track.get_clusters().front();
                 auto position_os = operating_state< matrix<2,1>, 2> {
-                    starting_z,
+                    starting_point.evaluation_point,
+//                    {
+//                        matrix<2,1>{ compute_x_l(starting_point.evaluation_point, track), compute_y_l(starting_point.evaluation_point, track) },
+//                        matrix<2,1>{ compute_dxdz_l(starting_point.evaluation_point, track), compute_dydz_l(starting_point.evaluation_point, track) }
+//                    }
                     {
-                        matrix<2,1>{ compute_x_l(starting_z, track), compute_y_l(starting_z, track) },
-                        matrix<2,1>{ compute_dxdz_l(starting_z, track), compute_dydz_l(starting_z, track) }
+                    matrix<2,1>{starting_point.vector(0,0), starting_point.vector(1,0)},
+                    matrix<2,1>{starting_point.vector(2,0), starting_point.vector(3,0)}
                     }
                 };
-                double distance{0};
-//                for( auto cluster_i = track.get_clusters().begin() + 1 ; cluster_i != track.get_clusters().end() ; ++cluster_i ){
-//                std::size_t const matching_points = 100;
-//                double const z_increment = (track.get_clusters().back().evaluation_point - track.get_clusters().front().evaluation_point)/(matching_points+1);
-//                for( auto i{1}; i < matching_points +1 ; ++i){
-//                    double const z = starting_z + i * z_increment;
-//                    auto step = 1e-3;
-////                    while( position_os.evaluation_point + step < cluster_i->evaluation_point ){
-//                    while( position_os.evaluation_point + step < z ){
-//                        auto step_result = position_stepper.step( std::move(position_os), step );
-//                        auto new_step_length = position_stepper.optimize_step_length(step, step_result.second);
-//                        step = ( new_step_length > 10 ) ?
-//                                10 :
-//                                (new_step_length < 1e-3) ? 1e-3 : new_step_length;
-//                        position_os = std::move(step_result.first);
-//                    }
-////                    step = cluster_i->evaluation_point - position_os.evaluation_point;
-//                    step = z - position_os.evaluation_point;
-//                    position_os = position_stepper.force_step( std::move(position_os), step );
-//
-//                    matrix<2,1> track_position{ compute_x_l(position_os.evaluation_point, track), compute_y_l(position_os.evaluation_point, track)  };
-//                    auto residuals = expr::compute(position_os.state( details::order_tag<0>{}) - track_position );
-//                    distance += expr::compute( transpose(residuals) * residuals );
-//                }
                 double const z = track.get_clusters().back().evaluation_point;
-                    auto step = 1e-3;
-//                    while( position_os.evaluation_point + step < cluster_i->evaluation_point ){
-                    while( position_os.evaluation_point + step < z ){
-                        auto step_result = position_stepper.step( std::move(position_os), step );
-                        auto new_step_length = position_stepper.optimize_step_length(step, step_result.second);
-                        step = ( new_step_length > 10 ) ?
+                auto step = 1e-3;
+                while( position_os.evaluation_point + step < z ){
+                    auto step_result = position_stepper.step( std::move(position_os), step );
+                    auto new_step_length = position_stepper.optimize_step_length(step, step_result.second);
+                    step = ( new_step_length > 10 ) ?
                                 10 :
                                 (new_step_length < 1e-3) ? 1e-3 : new_step_length;
-                        position_os = std::move(step_result.first);
-                    }
-//                    step = cluster_i->evaluation_point - position_os.evaluation_point;
-                    step = z - position_os.evaluation_point;
-                    position_os = position_stepper.force_step( std::move(position_os), step );
-                    
-                    matrix<2,1> track_position{ compute_x_l(position_os.evaluation_point, track), compute_y_l(position_os.evaluation_point, track)  };
-                    auto residuals = expr::compute(position_os.state( details::order_tag<0>{}) - track_position );
-                    distance += expr::compute( transpose(residuals) * residuals );
-//                }
-//                distance = sqrt(distance/track.get_clusters().size()-2);
-                distance = sqrt(distance);
+                    position_os = std::move(step_result.first);
+                }
+                step = z - position_os.evaluation_point;
+                position_os = position_stepper.force_step( std::move(position_os), step );
+
+//                matrix<2,1> position{ compute_x_l(position_os.evaluation_point, track), compute_y_l(position_os.evaluation_point, track)  };
+                matrix<2,1> position{track.get_clusters().back().vector(0, 0), track.get_clusters().back().vector(1,0)  };
+                auto residuals = expr::compute(position_os.state( details::order_tag<0>{}) - position );
+                double distance = sqrt( expr::compute( transpose(residuals) * residuals ) );
                 refined_c.push_back( score_and_momentum{distance, momentum} );
             }
+            
 //////
 //            std::vector<double> score_c, momentum_c;
 //            for(auto const& refined : refined_c){
@@ -2021,21 +2101,15 @@ private:
 //            tree_h->Fill();
 //            std::sort(refined_c.begin(), refined_c.end(),
 //                      [](auto const& v1_p, auto const& v2_p){ return v1_p.score < v2_p.score; });
+            
             std::size_t const size{5};
             std::size_t const lower_limit{size/2};
             std::size_t const upper_limit{size/2 +1 };
-//            double const weight_refine = 1 - 1./2 * ( );
-//            double const weight_refine = 1.258753;
-//            double const weight_computation = 1 - weight_refine;
             
             auto minimum_i = std::min_element( refined_c.begin(), refined_c.end(),
                                                [](auto const& v1_p, auto const& v2_p){ return v1_p.score < v2_p.score; } );
             if( minimum_i == refined_c.end() ){ ++skip_counter; continue ;}
             if( std::distance(refined_c.begin(), minimum_i) < lower_limit || std::distance(minimum_i, refined_c.end()) < upper_limit ){
-//                double const weight_refine = 1 - 1./2 * abs( track.momentum - minimum_i->momentum )/track.momentum;
-//                double const weight_computation = 1 - weight_refine;
-//                track.momentum = weight_refine * minimum_i->momentum + track.momentum * weight_computation;
-                track.hypothesis.properties.momentum = track.momentum;
                 track.momentum = minimum_i->momentum;
                 ++minimal_counter;
             }
@@ -2059,28 +2133,16 @@ private:
                                    return pow( momentum_c[row_index], column_index );
                                }
                                                                   );
-//                std::cout << "regressor: \n" << regressor;
                 auto const observation = matrix<size, 1>{ std::move(score_c) };
-//                std::cout << "observation: \n" << observation;
                 auto const parameter = expr::compute( form_inverse( expr::compute( transpose(regressor) * regressor ) ) *
                                                       expr::compute( transpose( regressor ) * observation ) );
-//                std::cout << "parameter: \n" << parameter;
                 auto const projection = expr::compute( regressor * form_inverse( expr::compute( transpose(regressor) * regressor ) ) * transpose(regressor) );
-////                std::cout << "projection: \n" << projection;
                 auto const centering = expr::compute( make_identity_matrix<size>() - 1./size * make_custom_matrix<size,size>([](std::size_t){return 1.;}) );
-////                std::cout << "centering: \n" << centering;
                 double determination_coefficient = expr::compute( transpose( observation) * transpose(projection) * centering * projection * observation) * form_inverse( expr::compute( transpose(observation) * centering * observation ) ) ;
                 determination_coefficient > 0.95 ? ++over_counter : ++below_counter;
 //                R2 = determination_coefficient;
-//
-                
-//                double const weight_refine = 1 - 1./2 * determination_coefficient * abs( track.momentum - (-parameter(1,0)/(2*parameter(2,0))) )/track.momentum;
-//                double const weight_computation = 1 - weight_refine;
-//                track.momentum = (-parameter(1,0)/(2*parameter(2,0))) * weight_refine * determination_coefficient + track.momentum * (1 - weight_refine * determination_coefficient);
-//                track.momentum = (-parameter(1,0)/(2*parameter(2,0))) * weight_refine  + track.momentum * (1 - weight_refine);
-                track.hypothesis.properties.momentum = track.momentum;
+
                 track.momentum = (-parameter(1,0)/(2*parameter(2,0)));
-            
                 ++final_counter;
             }
 
@@ -2092,185 +2154,6 @@ private:
             }
             
 //            tree_h->Fill();
-        }
-        
-//        tree_h->Write();
-        return track_pc;
-    }
-
-    std::vector< track > refine_hypotheses_using_clusters( std::vector<track>&& track_pc ) const {
-//        puts(__PRETTY_FUNCTION__);
-        int charge{};
-        double momentum{};
-        struct point{
-            double x;
-            double y;
-            double z;
-        };
-        
-        struct score_and_momentum{
-            double score;
-            double momentum;
-        };
-        
-        auto position_ode = make_ode< matrix<2,1>, 2>(
-                [&charge, &momentum, this](operating_state<matrix<2, 1>, 2> const& os_p){
-                    double const dx_dz = os_p.state( details::order_tag<1>{} )(0,0);
-                    double const dy_dz = os_p.state( details::order_tag<1>{} )(1,0);
-                    double const R = sqrt( dx_dz*dx_dz + dy_dz*dy_dz + 1 );
-                    auto field = field_mh->GetField( TVector3{ os_p.state( details::order_tag<0>{} )(0,0), os_p.state( details::order_tag<0>{} )(1,0), os_p.evaluation_point});
-                    point field_point{ field.X(), field.Y(), field.Z()};
-                    double const change_x = dx_dz*dy_dz * field_point.x - (1+dx_dz*dx_dz) * field_point.y + dy_dz*field_point.z;
-                    double const change_y = (1+dy_dz*dy_dz)*field_point.x - dx_dz*dy_dz*field_point.y - dx_dz*field_point.z;
-                    return 0.000299792458 * charge/momentum * R * matrix<2,1>{ change_x, change_y };
-                }
-                                                      );
-        auto position_stepper = make_stepper<data_grkn56>( std::move(position_ode) );
-        position_stepper.specify_tolerance(1e-8);
-
-//        TFile file{"momentum_scan.root", "UPDATE"};
-//        std::unique_ptr<TTree> tree_h{nullptr};
-//        auto * temp_tree_h = static_cast<TTree*>( file.Get( "data" ) );
-//        if( temp_tree_h ){ tree_h.reset( temp_tree_h ); }
-//        else{ tree_h.reset( new TTree{ "data", ""} ); }
-//        auto * g_h = new TGraph{};
-////        double R2;
-//        if( tree_h->GetBranch("graphs") ){ tree_h->SetBranchAddress( "graphs" , &g_h ); }
-//        else{ tree_h->Branch("graphs", &g_h); }
-//        if( tree_h->GetBranch("R2") ){ tree_h->SetBranchAddress( "R2" , &R2); }
-//        else{ tree_h->Branch("R2", &R2); }
-                        
-        
-        for( auto && track : track_pc ){
-            charge = track.hypothesis.properties.charge;
-            double relative_momentum = track.momentum / track.hypothesis.properties.nucleon_number;
-            std::vector<score_and_momentum> refined_c;
-            
-            for( double factor{ track.hypothesis.properties.nucleon_number - 1.5 > 0 ? track.hypothesis.properties.nucleon_number - 1.5 : 0.5 };
-                 factor < track.hypothesis.properties.nucleon_number + 1.6 ;
-                 factor+=0.1 ){
-                momentum = factor * relative_momentum;
-                if(momentum < 100){ continue; }
-                auto starting_point = *(track.get_clusters().begin() +1);
-                auto position_os = operating_state< matrix<2,1>, 2>{
-                    starting_point.evaluation_point,
-                    {
-                    matrix<2,1>{starting_point.vector(0,0), starting_point.vector(1,0)},
-                    matrix<2,1>{starting_point.vector(2,0), starting_point.vector(3,0)}
-                    }
-                };
-                double distance{0};
-                for( auto cluster_i = track.get_clusters().begin() + 1 ; cluster_i != track.get_clusters().end() ; ++cluster_i ){
-                    auto step = 1e-3;
-                    while( position_os.evaluation_point + step < cluster_i->evaluation_point ){
-                        auto step_result = position_stepper.step( std::move(position_os), step );
-                        auto new_step_length = position_stepper.optimize_step_length(step, step_result.second);
-                        step = ( new_step_length > 10 ) ?
-                                10 :
-                                (new_step_length < 1e-3) ? 1e-3 : new_step_length;
-                        position_os = std::move(step_result.first);
-                    }
-                    step = cluster_i->evaluation_point - position_os.evaluation_point;
-                    position_os = position_stepper.force_step( std::move(position_os), step );
-                    
-                    auto const * msd_h = dynamic_cast<TAMSDcluster const*>( cluster_i->data );
-                    auto cluster_distance{0.};
-                    if( msd_h ){
-                        if( msd_h->GetPlaneView() ){
-//                            cluster_distance =  pow(position_os.state( details::order_tag<0>{} )(1,0) - cluster_i->data->GetPositionG().Y(), 2)/cluster_i->data->GetPosErrorG().Y();
-                            cluster_distance = pow(position_os.state( details::order_tag<0>{} )(1,0) - cluster_i->data->GetPositionG().Y(), 2 );
-                        }
-                        else{
-//                            cluster_distance =  pow(position_os.state( details::order_tag<0>{} )(0,0) - cluster_i->data->GetPositionG().X(), 2)/cluster_i->data->GetPosErrorG().X();
-                            cluster_distance =  pow(position_os.state( details::order_tag<0>{} )(0,0) - cluster_i->data->GetPositionG().X(), 2);
-                        }
-                    }
-                    else{
-                        matrix<2,1> measured_position{cluster_i->data->GetPositionG().X(), cluster_i->data->GetPositionG().Y()  };
-                        auto residuals = expr::compute(position_os.state( details::order_tag<0>{}) - measured_position);
-//                        matrix<2,2> covariance{ pow(cluster_i->data->GetPosErrorG().X(), 2), 0,
-//                                                0, pow(cluster_i->data->GetPosErrorG().Y(),2 )   };
-//                        cluster_distance = expr::compute(transpose(residuals) * form_inverse(std::move(covariance)) * residuals);
-                        cluster_distance = expr::compute(transpose(residuals) * residuals);
-                    }
-                    distance += cluster_distance;
-//                    position_os.state( details::order_tag<0>{} )(0,0) = cluster_i->vector(0,0);
-//                    position_os.state( details::order_tag<0>{} )(1,0) = cluster_i->vector(1,0);
-//                    position_os.state( details::order_tag<1>{} )(0,0) = cluster_i->vector(2,0);
-//                    position_os.state( details::order_tag<1>{} )(1,0) = cluster_i->vector(3,0);
-                }
-                distance = sqrt(distance/track.get_clusters().size()-2);
-//                std::cout << distance << "]\n";
-                refined_c.push_back( score_and_momentum{distance, momentum} );
-            }
-//////
-//            std::vector<double> score_c, momentum_c;
-//            for(auto const& refined : refined_c){
-//                score_c.push_back( refined.score );
-//                momentum_c.push_back( refined.momentum );
-//            }
-//            *g_h = TGraph(score_c.size(), momentum_c.data(), score_c.data() );
-//            tree_h->Fill();
-//            std::sort(refined_c.begin(), refined_c.end(),
-//                      [](auto const& v1_p, auto const& v2_p){ return v1_p.score < v2_p.score; });
-            std::size_t const size{11};
-            
-            auto minimum_i = std::min_element( refined_c.begin(), refined_c.end(),
-                                               [](auto const& v1_p, auto const& v2_p){ return v1_p.score < v2_p.score; } );
-            if( minimum_i == refined_c.end() ){ ++skip_counter; continue ;}
-            if( std::distance(refined_c.begin(), minimum_i) < 5 || std::distance(minimum_i, refined_c.end()) < 6 ){
-                track.momentum = minimum_i->momentum;
-                ++minimal_counter;
-            }
-            else{
-                auto copy_l = [](auto begin_pi, auto end_pi, auto output_i, auto policy_pl){
-                    while( begin_pi != end_pi) {
-                        *output_i++ = policy_pl( *begin_pi );
-                        begin_pi++;
-                    }
-                };
-                
-                std::array<double, size> score_c;
-                std::array<double, size> momentum_c;
-                copy_l( minimum_i-5, minimum_i+6, score_c.begin(), [](auto const& value_p){ return value_p.score; } );
-                copy_l( minimum_i-5, minimum_i+6, momentum_c.begin(), [](auto const& value_p){ return value_p.momentum; } );
-                constexpr std::size_t const order = 3;
-                auto const regressor = make_custom_matrix<size, order>(
-                                   [&momentum_c, &order]( std::size_t index_p ){
-                                   std::size_t column_index = index_p % order;
-                                   std::size_t row_index = index_p / order;
-                                   return pow( momentum_c[row_index], column_index );
-                               }
-                                                                  );
-//                std::cout << "regressor: \n" << regressor;
-                auto const observation = matrix<size, 1>{ std::move(score_c) };
-//                std::cout << "observation: \n" << observation;
-                auto const parameter = expr::compute( form_inverse( expr::compute( transpose(regressor) * regressor ) ) *
-                                                      expr::compute( transpose( regressor ) * observation ) );
-//                std::cout << "parameter: \n" << parameter;
-                auto const projection = expr::compute( regressor * form_inverse( expr::compute( transpose(regressor) * regressor ) ) * transpose(regressor) );
-////                std::cout << "projection: \n" << projection;
-                auto const centering = expr::compute( make_identity_matrix<size>() - 1./size * make_custom_matrix<size,size>([](std::size_t){return 1.;}) );
-////                std::cout << "centering: \n" << centering;
-                double determination_coefficient = expr::compute( transpose( observation) * transpose(projection) * centering * projection * observation) * form_inverse( expr::compute( transpose(observation) * centering * observation ) ) ;
-                determination_coefficient > 0.95 ? ++over_counter : ++below_counter;
-//                R2 = expr::compute( transpose( observation) * transpose(projection) * centering * projection * observation * form_inverse( expr::compute( transpose(observation) * centering * observation ) ) );
-////                std::cout << "determination_coefficient: " << determination_coefficient << '\n';
-//
-                track.momentum = -parameter(1,0)/(2*parameter(2,0));
-//                if( track.momentum > 6000 ){ tree_h->Fill(); }
-                
-                ++final_counter;
-//                std::cout << "final_momentum: " << track.momentum << '\n';
-            }
-            //should mass be modified accordingly?
-            double beta = track.length/track.tof * 1./30;
-            if( beta < 1){
-                double gamma = 1./sqrt(1 - pow(beta, 2));
-//                track.mass = track.momentum/(931.5 * beta * gamma);
-                track.nucleon_number = track.momentum/( 931.5 * beta * gamma );
-                track.mass = track.momentum/(beta * gamma);
-            }
         }
         
 //        tree_h->Write();

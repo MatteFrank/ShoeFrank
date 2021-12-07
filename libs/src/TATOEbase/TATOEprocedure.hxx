@@ -182,6 +182,37 @@ struct momentum_scorer{
     }
 };
 
+struct new_baseline_scorer{
+    struct score_holder{
+        double value;
+        double efficiency;
+        double residuals;
+        friend std::ostream& operator<<(std::ostream& os_p, score_holder const& s_p){
+            return os_p << "[efficiency, momentum_residuals : score] -> [" << s_p.efficiency << ", " << s_p.residuals << " : " << s_p.value << "]";
+        }
+    };
+    template<class O>
+    constexpr score_holder compute_score( O const* o_ph) const {
+        auto reconstructible = o_ph->retrieve_reconstructible();
+        auto reconstructed = o_ph->retrieve_reconstructed();
+        auto efficiency = reconstructed.value / reconstructible.value;
+        
+        auto residuals = o_ph->retrieve_momentum_residuals();
+        
+        auto score = pow( ( efficiency - o_ph->baseline.efficiency )/o_ph->baseline.efficiency, 3) +
+                     -( residuals.value - o_ph->baseline.residuals )/o_ph->baseline.residuals;
+        
+        return score_holder{ std::move(score), std::move(efficiency), std::move(residuals.value)};
+    }
+    template<class O>
+    constexpr score_holder compute_first_score( O const* o_ph) const {
+        auto reconstructible = o_ph->retrieve_reconstructible();
+        auto reconstructed = o_ph->retrieve_reconstructed();
+        auto efficiency = reconstructed.value / reconstructible.value;
+        return score_holder{0, efficiency, o_ph->retrieve_momentum_residuals().value};
+    }
+};
+
 struct overall_scorer{
     struct score_holder{
         double value;
@@ -525,7 +556,7 @@ private:
 
 
 template<class S>
-using rough_scan_procedure = local_scan_procedure_impl<details::local_scan_parameters<3,3>, S, caller, cut_setter, rough_scan_setter, rough_scan_finaliser >;
+using rough_scan_procedure = local_scan_procedure_impl<details::local_scan_parameters<4,3>, S, caller, cut_setter, rough_scan_setter, rough_scan_finaliser >;
 
 
 
