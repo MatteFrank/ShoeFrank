@@ -1,10 +1,25 @@
+/*!
+ \file
+ \version $Id: TAGFselector.cxx
+ \brief  Class for track finding/selection in GenFit Global Reconstruction
+*/
 
 #include "TAGFselector.hxx"
 
+/*!
+ \class TAGFselector
+ \brief Class for track finding/selection in GenFit Global Reconstruction
+
+ There are already different algorithms implemented for track finding:
+ - "TrueParticle": MC truth particle tracking
+ - "Sept2020": Data-like base algorithm, no MC used
+ - "Linear": First implementation of track finding w/out magnetic field
+*/
 
 
 //----------------------------------------------------------------------------------------------------
-//
+
+//! Default constructor
 TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vector<int>* chargeVect, 
 								TAGFdetectorMap* SensorIDmap , map<TString, Track*>* trackCategoryMap, 
 								map< int, vector<int> >* measParticleMC_collection) {
@@ -35,7 +50,9 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 
 
 //----------------------------------------------------------------------------------------------------
-//
+
+//! Base function for track finding/selection/categorization; called from TAGactKFitter
+//! \return 0 if there were no errors
 int TAGFselector::Categorize( ) {
 
 	if ( FillTrackRepVector() != 0) 
@@ -66,7 +83,9 @@ int TAGFselector::Categorize( ) {
 
 
 //----------------------------------------------------------------------------------------------------
-//Check the charges seen by TW and fill the track representation vector 
+
+//! Check the charges seen by TW and fill the track representation vector
+//! \return 0 if track representation vector was filled w/out errors
 int TAGFselector::FillTrackRepVector()	{
 
 	m_trackRepVec.clear();
@@ -90,7 +109,8 @@ int TAGFselector::FillTrackRepVector()	{
 
 
 
-
+//! Count the particles generated in the MC and visible in the acceptance of FOOT -> used for Selection Efficiency
+//! \return Map containing the name of MC particles seen in the event ("H", "He", "Li"...) and their number
 map<string, int> TAGFselector::CountParticleGenaratedAndVisible() { 
 
 	if(m_debug > 0) cout << "TAGFselector::CountParticleGenaratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
@@ -190,14 +210,14 @@ map<string, int> TAGFselector::CountParticleGenaratedAndVisible() {
 
 
 //----------------------------------------------------------------------------------------------------
-//
+
+//! Main function of MC track selection algorithm
+//! \return 0 if no errors occured during track selection
 int TAGFselector::Categorize_TruthMC( )
 {
 	//Categorize events using MC truth
 	int flukaID, charge;
 	double mass;
-
-	// m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 
 	if(m_debug > 0)
 	{
@@ -307,7 +327,9 @@ int TAGFselector::Categorize_TruthMC( )
 
 
 //----------------------------------------------------------------------------------------------------
-// Categorize tracks and representations -> data-like approach avoiding MC truth info
+
+//! Categorize tracks and representations -> data-like approach avoiding MC truth info; Currently depending on VT presence
+//! \return 0 if no errors occured during track finding
 int TAGFselector::Categorize_dataLike( ) {
 
 	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
@@ -349,9 +371,8 @@ int TAGFselector::Categorize_dataLike( ) {
 }
 
 
-/*Function used to handle linear tracks when no magnetic field is used -> GSI2021 
-*
-*/
+//! Function used to handle linear tracks when no magnetic field is used -> GSI2021
+//! \return 0 if no errors occured during track finding
 int TAGFselector::Categorize_Linear()
 {
 	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
@@ -431,7 +452,7 @@ int TAGFselector::Categorize_Linear()
 }
 
 
-
+//! Track selection in the VT -> Currently starting from VT tracklets
 void TAGFselector::CategorizeVT()
 {
 	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object();
@@ -551,7 +572,7 @@ void TAGFselector::CategorizeVT()
 }
 
 
-
+//! Track selection at IT -> Currently w/ linear extrapolation
 void TAGFselector::CategorizeIT()	{
 
 	// ExtrapFromVTXtoIT 
@@ -650,14 +671,10 @@ void TAGFselector::CategorizeIT()	{
 					addedMeas++;
 					
 				}
-	// cout << "TAGFselector::CategorizeIT()     check3\n";
 			}	// end loop on IT planes
 		} // end loop over z
-// cout << "TAGFselector::CategorizeIT()     check4"<<\n";
 
 		++itTrack;
-
-		// cout << "TAGFselector::CategorizeIT()     check5\n";
 
 	}	// end loop on GF Track candidates
 }
@@ -666,24 +683,8 @@ void TAGFselector::CategorizeIT()	{
 
 
 
-
-
-
-
-
+//! Track selection at the MSD -> KF extrapolation
 void TAGFselector::CategorizeMSD()	{
-
-	// cout << "TAGFselector::CategorizeMSD()     MSDcheck\n";
-
-	// for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); itTrack++)
-	// {
-	// 	for(int i = 0; i< m_chargeVect->size(); ++i)
-	// 	{
-	// 		(itTrack->second)->addTrackRep( new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( m_chargeVect->at(i) ) ) );
-	// 	}
-	// }
-// cout << "TAGFselector::CategorizeMSD()     MSDcheck1\n";
-	// ClearTrackMap();
 
 	//RZ: CHECK!!! ADDED TO AVOID ERRORS
 	int findMSD;
@@ -879,13 +880,10 @@ void TAGFselector::CategorizeMSD()	{
 
 	}// end loop on GF Track candidates
 
-
 }
 
 
-/*MSD selection algorithm when no magnetic field is present
-*
-*/
+//! MSD selection algorithm when no magnetic field is present -> linear extrapolation
 void TAGFselector::CategorizeMSD_Linear()
 {
 	int findMSD;
@@ -982,7 +980,7 @@ void TAGFselector::CategorizeMSD_Linear()
 
 
 
-
+//! TW track selection for data-like categorization -> KF extrapolation
 void TAGFselector::CategorizeTW()
 {
 	int planeTW = m_SensorIDMap->GetFitPlaneTW();
@@ -1048,9 +1046,7 @@ void TAGFselector::CategorizeTW()
 
 
 
-/*TW selection algorithm when no magnetic field is present
-*
-*/
+//! TW selection algorithm when no magnetic field is present -> linear extrapolation
 void TAGFselector::CategorizeTW_Linear()
 {
 	// Extrapolate to TW
@@ -1117,7 +1113,7 @@ void TAGFselector::CategorizeTW_Linear()
 
 
 
-
+//! Fill the final track map to process in TAGactKFitter w/ the selected tracks
 void TAGFselector::FillTrackCategoryMap()  {
 
 	for(map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
@@ -1196,9 +1192,12 @@ void TAGFselector::FillTrackCategoryMap()  {
 
 
 //----------------------------------------------------------------------------------------------------
-//RZ: Think of a way of passing the raw TW measurements to this function. The vector of possible charge values is already available at this point -> THIS FUNCTION DOES NOTHING RIGHT NOW!!
+
+//! Get the possible charge of a selected track from the TW measurement -> Currently uses MC information OR all charges from 1 to 8 since we have problems w/ TWpoints
+//! \return Charge measured from the TW for the track
 int TAGFselector::GetChargeFromTW(Track* trackToCheck){
 
+// RZ: Think of a way of passing the raw TW measurements to this function. The vector of possible charge values is already available at this point -> THIS FUNCTION DOES NOTHING RIGHT NOW!!
 	int charge = -1;
 
 	if( !TAGrecoManager::GetPar()->IsMC() ) //do not use MC!
@@ -1270,6 +1269,12 @@ int TAGFselector::GetChargeFromTW(Track* trackToCheck){
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! Extrapolate a track to a GenFit FitPlane
+//! \param[in] trackToFit Ptr to track to extrapolate
+//! \param[in] whichPlane Index of the FitPlane where to extrapolate the track
+//! \param[in] repId Index of the track representation to use for the extrapolation
+//! \return Extrapolated position vector in the FitPlane local reference frame
 TVector3 TAGFselector::ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane, int repId){
 
 	//+++++++++++++++++++++++++++++++++++++++
@@ -1322,7 +1327,8 @@ TVector3 TAGFselector::ExtrapolateToOuterTracker( Track* trackToFit, int whichPl
 
 
 //----------------------------------------------------------------------------------------------------
-// pre-fit requirements to be applied to EACH of the hitCollections
+
+//! pre-fit requirements to be applied to EACH of the hitCollections -> CURRENTLY NOT USED!
 bool TAGFselector::PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element ) {
 
 	if ( m_debug > 0 )		cout << "SelctorKalmanGF::PrefitRequirements()  -  Category = " << (*element).first << " " << m_systemsON << "\n";
@@ -1396,11 +1402,13 @@ bool TAGFselector::PrefitRequirements( map< string, vector<AbsMeasurement*> >::i
 
 
 
-
-
-
-
-
+//! Get the MC true particle information from its MC track index
+//! \param[in] trackId Index of the MC track
+//! \param[in,out] flukaID Ptr where to save the FLUKA ID
+//! \param[in,out] charge Ptr where to save the true charge of the particle
+//! \param[in,out] mass Ptr where to save the true mass of the particle
+//! \param[in,out] posV Ptr where to save the initial position of the particle
+//! \param[in,out] momV Ptr where to save the initial momentum of the particle
 void TAGFselector::GetTrueParticleType(int trackid, int* flukaID, int* charge, double* mass, TVector3* posV, TVector3* momV ) {
 
 	TAMCpart* particle = m_McNtuEve->GetTrack(trackid);
@@ -1415,6 +1423,9 @@ void TAGFselector::GetTrueParticleType(int trackid, int* flukaID, int* charge, d
 }
 
 
+//! Get the name of a track
+//! \param[in] tr Ptr to the GenFit track
+//! \return Name of the track
 TString TAGFselector::GetRecoTrackName(Track* tr)
 {
 	for(map<TString, Track*>::iterator it = m_trackCategoryMap->begin(); it != m_trackCategoryMap->end(); ++it)

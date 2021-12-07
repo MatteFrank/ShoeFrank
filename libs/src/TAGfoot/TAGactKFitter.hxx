@@ -1,3 +1,8 @@
+/*!
+ \file
+ \version $Id: TAGactKFitter.hxx
+ \brief  Header for main class of GenFit Global Reconstruction
+*/
 #ifndef TAGACTKFITTER_HXX
 #define TAGACTKFITTER_HXX
 

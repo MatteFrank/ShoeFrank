@@ -1,3 +1,10 @@
+/*!
+ \file
+ \version $Id: TAGFdetectorMap.hxx
+ \brief  Header for TAGFdetectorMap class
+ \author R. Zarrella
+*/
+
 #ifndef TAGFdetectorMap_H
 #define TAGFdetectorMap_H
 
@@ -24,15 +31,6 @@
 
 using namespace std;
 using namespace genfit;
-
-/**** Class used to handle all the indices used in the global reconstruciton routine with GenFit
- * Detector -> Either name ("VT", "MSD", etc....) or index
- * Sensor -> Local index of sensor in the detector (e.g. 0-3 for "VT", 0-32 for "IT", etc....)
- * FitPlane -> Global GenFit plane index (does not restart for each detector)
- * Hit -> Local index of the hit in the current sensor/plane
- * Measurement -> Global index of the measurement defined combining detector, sensor and hit indices
- */
-
 
 class TAGFdetectorMap {
   
@@ -70,14 +68,14 @@ public:
 	vector<float>* GetPossibleITz();
 
 private:
-	map<string, vector<int>> m_DetToFitPlaneMap;
-	map<int, SharedPlanePtr> m_detectorPlanes;
-	map<string, int> m_detectorIndex;
+	map<string, vector<int>> m_DetToFitPlaneMap;	///< Map linking detector names to corresponding GenFit FitPlanes
+	map<int, SharedPlanePtr> m_detectorPlanes;		///< Map linking FitPlane indices to the actual FitPlane objects
+	map<string, int> m_detectorIndex;				///< Map linking detector names to their index
 
-	map<float, vector<int> > m_zOrderingPlanes;
-	vector<float> m_itPossibleZ;
+	map<float, vector<int> > m_zOrderingPlanes;		///< Map linking possible Z coordinates of IT planes w/ vector of their indices
+	vector<float> m_itPossibleZ;					///< Vector with possible values for Z coordinate of IT planes
 
-	int m_debug;
+	int m_debug;									///< Global debug value
 };
 
 #endif

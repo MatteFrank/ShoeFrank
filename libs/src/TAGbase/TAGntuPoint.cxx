@@ -166,7 +166,6 @@ TVector3 TAGpoint::EvalError( TMatrixD cov ) {
 double TAGpoint::EvalError( TVector3 mom, TMatrixD cov ) {
 
   // if ( cov.GetNcols() != 3 || cov.GetNrows() != 3 )
-  //   cout << "ERROR :: TAGtrackRepoKalman::EvalError  >>  covariance dimension (should be 6) is wrong " << cov.GetNcols() << " x " << cov.GetNrows() << endl, exit(0);
 
   array<double,3> partialDer = { mom.x()/sqrt(mom.Mag()), mom.y()/sqrt(mom.Mag()), mom.z()/sqrt(mom.Mag()) };
 

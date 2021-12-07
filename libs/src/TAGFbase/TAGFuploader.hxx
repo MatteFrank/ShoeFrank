@@ -1,3 +1,10 @@
+/*!
+ \file
+ \version $Id: TAGFuploader.hxx
+ \brief  Header for TAGFuploader class
+ \author M. Franchini and R. Zarrella
+*/
+
 #ifndef TAGFuploader_H
 #define TAGFuploader_H
 
@@ -18,14 +25,10 @@
 #include "TVector3.h"
 #include "TAGobject.hxx"
 
-// #include "WireMeasurement.h"
 #include "PlanarMeasurement.h"
-// #include "SpacepointMeasurement.h"
 #include "SharedPlanePtr.h"
-// #include "RectangularFinitePlane.h"
 
 #include "TAGrecoManager.hxx"
-
 #include "TAGroot.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
@@ -77,18 +80,16 @@ private:
 	void Prepare4Strip( TAMSDcluster* clus, int iClus );
 	void Prepare4TofWall( TATWpoint* point, int iPoint);
 
-	TAGgeoTrafo* m_GeoTrafo;
+	TAGgeoTrafo* m_GeoTrafo;								///< GeoTrafo object for reference frame changes
 
-	TAGFdetectorMap* m_sensorIDmap;
+	TAGFdetectorMap* m_sensorIDmap;							///< TAGFdetectorMap ptr for index handling
 
-	map< int, vector<AbsMeasurement*> >* m_allHitMeas;
-	map< int, vector<int> >* m_measParticleMC_collection;
+	map< int, vector<AbsMeasurement*> >* m_allHitMeas;		///< Container for GenFit AbsMeasurements, FitPlane index to vector of respective measurements
+	map< int, vector<int> >* m_measParticleMC_collection;	///< Maps global measurement index to MC particles in the cluster/point
 
-	map<int, int> m_detectorPlaneID;
-
-	string m_systemsON;
-	int m_debug;
-	bool switchOff_HHe;
+	string m_systemsON;										///< String containing all systems on in the campaign
+	int m_debug;											///< Global debug value
+	bool switchOff_HHe;										///< Boolean flag to switch off light fragments
 
 };
 

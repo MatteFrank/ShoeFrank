@@ -1,5 +1,22 @@
+/*!
+ \file
+ \version $Id: TAGFdetectorMap.cxx
+ \brief  Utility class used to handle the detectors, sensors, clusters/points and GenFit planes indices
+*/
+
 #include "TAGFdetectorMap.hxx"
 
+/*!
+ \class TAGFdetectorMap
+ \brief Utility class used to handle the detectors, sensors, clusters/points and GenFit planes indices
+
+ Class used to handle all the indices used in the global reconstruciton routine with GenFit:
+ Detector -> Either name ("VT", "MSD", etc....) or index
+ Sensor -> Local index of sensor in the detector (e.g. 0-3 for "VT", 0-32 for "IT", etc....)
+ FitPlane -> Global GenFit plane index (does not restart for each detector)
+ Hit -> Local index of the hit in the current sensor/plane
+ Measurement -> Global index of the measurement defined combining detector, sensor and hit indices
+*/
 
 //! Default constructor -> Detector indices are determined through a static map
 TAGFdetectorMap::TAGFdetectorMap()
@@ -239,13 +256,17 @@ bool TAGFdetectorMap::GetSensorID(int planeId, int* sensorId)
 
 /**************** GENFIT PLANES HANDLING *************/
 
-//! Add a FitPlane 
+//! Add a FitPlane to the detector map
+//! \param[in] planeId Index of the Plane
+//! \param[in] genfitPlane Ptr to the allocated plane
 void TAGFdetectorMap::AddFitPlane(int planeId, SharedPlanePtr genfitPlane)
 {
 	m_detectorPlanes[planeId] = genfitPlane;
 }
 
-
+//! Get a GenFit FitPlane
+//! \param[in] planeId Index of the FitPlane
+//! \return Ptr to the FitPlane
 SharedPlanePtr TAGFdetectorMap::GetFitPlane(int planeId)
 {
 	if(m_detectorPlanes.find(planeId) == m_detectorPlanes.end())
@@ -261,6 +282,9 @@ SharedPlanePtr TAGFdetectorMap::GetFitPlane(int planeId)
 
 /******************** DETECTOR MAP ********************/
 
+//! Get the index of a detector
+//! \param[in] deteName name of the detector
+//! \return index of the detector
 int TAGFdetectorMap::GetDetIDFromName(string detName)
 {
 	if(m_detectorIndex.find(detName) == m_detectorIndex.end())
@@ -272,7 +296,9 @@ int TAGFdetectorMap::GetDetIDFromName(string detName)
 		return m_detectorIndex.at(detName);
 }
 
-
+//! Get the name of a detector
+//! \param[in] detId Index of the detector
+//! \return Name of the detector
 string TAGFdetectorMap::GetDetNameFromID(int detId)
 {
 	for(map<string, int>::iterator it = m_detectorIndex.begin(); it != m_detectorIndex.end(); ++it)
@@ -284,6 +310,9 @@ string TAGFdetectorMap::GetDetNameFromID(int detId)
 	throw -1;
 }
 
+//! Check if a detector has been loaded in the map
+//! \param[in] detName Name of the detector
+//! \return True if the detector has been loaded correctly
 bool TAGFdetectorMap::IsDetectorInMap(string detName)
 {
 	if(m_detectorIndex.find(detName) == m_detectorIndex.end())
@@ -296,6 +325,11 @@ bool TAGFdetectorMap::IsDetectorInMap(string detName)
 
 /************************ GLOBAL MEASUREMENT ID ******************************/
 
+//! Get the global index of the measurement 
+//! \param[in] detName Name of the detector
+//! \param[in] sensorId Local index of the sensor
+//! \param[in] hitId Index of the cluster in the sensor
+//! \return Global index of the measurement constructed as 1E7*(detector index) + 1E5*(sensor index) + cluster index
 int TAGFdetectorMap::GetMeasID_eventLevel(string detName, int sensorId, int hitId)
 {
 	if(m_detectorIndex.find(detName) == m_detectorIndex.end())
@@ -310,12 +344,14 @@ int TAGFdetectorMap::GetMeasID_eventLevel(string detName, int sensorId, int hitI
 		throw -1;
 	}
 
-	// cout << "TAGFdetectorMap::GetMeasID_eventLevel    = " << m_detectorIndex.at(detName)*1E7 <<" " << sensorId*1E5 << " "<< hitId <<"  =  "  << (m_detectorIndex.at(detName)*1E7 + sensorId*1E5 + hitId) << "\n";
-
 	return m_detectorIndex.at(detName)*1E7 + sensorId*1E5 + hitId;
 }
 
 
+//! Get the global index of the measurement 
+//! \param[in] planeId Index of the GenFit FitPlane
+//! \param[in] hitId Index of the cluster in the sensor
+//! \return Global index of the measurement constructed as 1E7*(detector index) + 1E5*(sensor index) + cluster index
 int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 {
 	string detName = "dummy";
@@ -334,15 +370,20 @@ int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 		if(found)
 			break;
 
-		cout << "GetMeasID_eventLevel()\t" << itDet->first << "\t" << itDet->second << "\n";
-		cout << "IsFitPlaneInDet\tplane::" << planeId << "\tbool::" << IsFitPlaneInDet(planeId, itDet->first) << "\n";
+		if(m_debug > 1)
+		{
+			Info("GetMeasId_eventLevel()", "%s\t%d", itDet->first.c_str(), itDet->second);
+			Info("GetMeasId_eventLevel()", "plane::%d\tIsFitPlaneInDet::%d", planeId, IsFitPlaneInDet(planeId, itDet->first));
+		}
 		//WRITE THIS IN A MORE EFFICIENT WAY!!! It just works right now
 		if(!found && IsFitPlaneInDet(planeId, itDet->first))
 		{
-			cout << "GetMeasID_eventLevel()\tDetGood\n";
+			if(m_debug > 1)	cout << "GetMeasID_eventLevel()\tDetGood\n";
+			
 			for(int i=0; i < m_DetToFitPlaneMap.at(itDet->first).size(); ++i)
 			{
-				cout << "GetMeasID_eventLevel()\ti::" << i << "\n";
+				if(m_debug > 1)	cout << "GetMeasID_eventLevel()\ti::" << i << "\n";
+				
 				if( m_DetToFitPlaneMap.at(itDet->first).at(i) == planeId )
 				{
 					sensorId = i;
@@ -361,14 +402,16 @@ int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 	}
 
 
-	cout << "det::" << detName << "\tsensorId::" << sensorId << "\thitId::" << hitId << "\n";
+	if(m_debug > 1)
+		cout << "det::" << detName << "\tsensorId::" << sensorId << "\thitId::" << hitId << "\n";
 	return GetMeasID_eventLevel(detName, sensorId, hitId);
 }
 
 
 
-
-
+//! Get the detector index from the global measurement id
+//! \param[in] measId Global measurement index
+//! \return Detector index
 int TAGFdetectorMap::GetDetIDFromMeasID(int measId)
 {
 	int Index = measId/1E7;
@@ -383,10 +426,9 @@ int TAGFdetectorMap::GetDetIDFromMeasID(int measId)
 
 
 
-
-
-
-
+//! Get the detector name from the global measurement index
+//! \param[in] measId Global measurement index
+//! \return Detector name
 string TAGFdetectorMap::GetDetNameFromMeasID(int measId)
 {
 	int Index = measId/1E7;
@@ -401,6 +443,9 @@ string TAGFdetectorMap::GetDetNameFromMeasID(int measId)
 }
 
 
+//! Get local sensor Id from measurement index
+//! \param[in] measId Global measurement index
+//! \return Local sensor index
 int TAGFdetectorMap::GetSensorIDFromMeasID(int measId)
 {
 	int sensorId = ( measId % int(1E7) ) / 1E5;
@@ -415,6 +460,9 @@ int TAGFdetectorMap::GetSensorIDFromMeasID(int measId)
 }
 
 
+//! Get FitPlane index from global measurement id
+//! \param[in] measId Global measurement index
+//! \return FitPlane index
 int TAGFdetectorMap::GetFitPlaneIDFromMeasID(int measId)
 {
 	int sensorId = GetSensorIDFromMeasID(measId);
@@ -424,12 +472,18 @@ int TAGFdetectorMap::GetFitPlaneIDFromMeasID(int measId)
 }
 
 
+//! Get local cluster/point index from global measurement id
+//! \param[in] measId Global measurement index
+//! \return Local cluster/point index
 int TAGFdetectorMap::GetHitIDFromMeasID(int measId)
 {
 	return measId % int(1E5);
 }
 
 
+//! Get all detector-sensor-cluster information from global measurement index
+//! \param[in] measId Global measurement index
+//! \return Tuple containing detector name, local sensor index and cluster/point index
 tuple<string, int, int> TAGFdetectorMap::GetDetSensorHitFromMeasID(int measId)
 {
 	string detName = GetDetNameFromMeasID(measId);
@@ -437,10 +491,3 @@ tuple<string, int, int> TAGFdetectorMap::GetDetSensorHitFromMeasID(int measId)
 	int hitID = GetHitIDFromMeasID(measId);
 	return make_tuple(detName, sensorId, hitID);
 }
-
-
-
-
-
-
-

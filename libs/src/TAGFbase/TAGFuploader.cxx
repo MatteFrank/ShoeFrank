@@ -1,5 +1,15 @@
+/*!
+ \file
+ \version $Id: TAGFuploader.cxx
+ \brief  Class that uploads all the clusters/points in GenFit format
+*/
 
 #include "TAGFuploader.hxx"
+
+/*!
+ \class TAGFuploader
+ \brief  Class that uploads all the clusters/points in GenFit format
+*/
 
 
 //! Default constructor for the Uploader of GenFit TrackPoints. The class converts clusters/points in GenFit format
@@ -254,7 +264,7 @@ map< int, vector<int> >* TAGFuploader::TakeMeasParticleMC_Collection() {
 
 	if ( !TAGrecoManager::GetPar()->IsMC() )
 	{
-		Error("TakeMeasParticleMC_Collection()", "Not running on MC!!")
+		Error("TakeMeasParticleMC_Collection()", "Not running on MC!!");
 		exit(0);
 	}
 
@@ -513,7 +523,6 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 	// nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
 	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr );
 	hit->setPlane( m_sensorIDmap->GetFitPlane(sensorID), sensorID );	 
-	// m_detectorPlanes[tempPlane]->Print();
 
 	// m_allHitMeas[ sensorID ].push_back(hit);
 	(*m_allHitMeas)[ sensorID ].push_back(hit);

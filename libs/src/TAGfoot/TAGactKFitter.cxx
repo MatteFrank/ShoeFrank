@@ -1,5 +1,15 @@
+/*!
+ \file
+ \version $Id: TAGactKFitter.cxx
+ \brief  Main class of the GenFit Global Reconstruction -> Action
+*/
+
 #include "TAGactKFitter.hxx"
 
+/*!
+ \class TAGactKFitter
+ \brief Main action of the GenFit Global Reconstruction
+*/
 
 
 

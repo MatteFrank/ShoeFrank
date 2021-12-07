@@ -1,3 +1,9 @@
+/*!
+ \file
+ \version $Id: TAGFselector.cxx
+ \brief  Header of GenFit track finding/selection class
+*/
+
 #ifndef TAGFselector_H
 #define TAGFselector_H
 
@@ -99,26 +105,26 @@ private:
 	TVector3	ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane, int repId =-1);
 
 
-	vector<int>* m_chargeVect; //Vector with charge values seen by TW -> used for track representation
-	map<int, vector<AbsMeasurement*> >* m_allHitMeas; //Vector with all the Measurements in GenFit format
-	TAGFdetectorMap* m_SensorIDMap;
-	vector<AbsTrackRep*> m_trackRepVec;
+	vector<int>* m_chargeVect;								///< Vector with charge values seen by TW -> used for track representation declaration
+	map<int, vector<AbsMeasurement*> >* m_allHitMeas;		///< Map with all the Measurements in GenFit format
+	TAGFdetectorMap* m_SensorIDMap;							///< TAGFdetectorMap for index handling
+	vector<AbsTrackRep*> m_trackRepVec;						///< Track representation vector
 	
-	map<TString, Track*>* m_trackCategoryMap;
-	map<int, Track*> m_trackTempMap;
-	map<int, TVector3> m_trackSlopeMap;
-	map< int, vector<int> >* m_measParticleMC_collection;
+	map<TString, Track*>* m_trackCategoryMap;				///< Final map of selected tracks to process in TAGactKFitter (name = track representation + vertex-tracklet index)
+	map<int, Track*> m_trackTempMap;						///< Temporary map where to store tracks during selection
+	map<int, TVector3> m_trackSlopeMap;						///< Map of track slopes @ VT
+	map< int, vector<int> >* m_measParticleMC_collection;	///< Map of MC particles associated w/ global measurement index
 	
-	TAGgeoTrafo* m_GeoTrafo;
+	TAGgeoTrafo* m_GeoTrafo;								///< GeoTrafo object for reference frame transformations
 
-	TAMCntuPart* m_McNtuEve;
+	TAMCntuPart* m_McNtuEve;								///< MC eve for efficiency/quality checks
 
-	Bool_t flagMC; 
-	int m_debug;
-	string m_systemsON;
+	Bool_t flagMC; 											///< flag for MC variables
+	int m_debug;											///< Global debug value
+	string m_systemsON;										///< String w/ systems on in the campaign
 	
-	double m_BeamEnergy;
-	double m_AMU = 0.9310986964; // in GeV // conversion betweem mass in GeV and atomic mass unit
+	double m_BeamEnergy;									///< Beam energy in GeV/u
+	double m_AMU = 0.9310986964;							///< Conversion betweem mass in GeV and atomic mass unit
 };
 
 #endif
