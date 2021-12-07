@@ -12,7 +12,7 @@
 #include <cmath>
 #include <array>
 #include <iostream>
-
+#include "math.h"
 
 #include "utility_types.hpp"
 #include "state.hpp"
