@@ -9,7 +9,7 @@
 //##############################################################################
 
 /*!
-  \class TADItrackPropagator TADItrackPropagator.hxx "TADItrackPropagator.hxx"
+  \class TADItrackPropagator 
   \brief Track Propagator in Mag field base on RK4 **
    units: B (Gaus), pos (cm), momentum (MeV/c)
 */

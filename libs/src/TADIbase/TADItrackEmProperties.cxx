@@ -11,7 +11,7 @@
 //##############################################################################
 
 /*!
- \class TADItrackEmProperties TADItrackEmProperties.hxx "TADItrackEmProperties.hxx"
+ \class TADItrackEmProperties 
  \brief  Functions for EM track properties **
  */
 
