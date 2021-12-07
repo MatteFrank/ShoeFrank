@@ -1,0 +1,16 @@
+// Campaign file
+CamName: "MSDPS"
+RunNumber: 7048-7082;
+NumberDevices: 2
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/MSDPS/FOOT.geo": -1;
+
+DetectorName: "MSD"
+NumberFiles: 5
+"./geomaps/MSDPS/TAMSDdetector.geo": -1;
+"./config/MSDPS/TAMSDdetector.cfg": -1;
+"./config/MSDPS/TAMSDdetector.map": -1;
+"./calib/MSDPS/TAMSD_Pedestal.cal": -1;
+"./calib/MSDPS/TAMSD_Energy_Calibration.cal": -1
