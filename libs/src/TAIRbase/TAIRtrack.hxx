@@ -33,7 +33,7 @@ public:
 
     //! Get cluster
    TAIRcluster* GetCluster(Int_t index)  { return (TAIRcluster*)fListOfClusters->At(index); }
-   
+   //! Get last cluster
    TAIRcluster* GetLastCluster()         { return (TAIRcluster*)fListOfClusters->Last(); }
  
    //! Add cluster
