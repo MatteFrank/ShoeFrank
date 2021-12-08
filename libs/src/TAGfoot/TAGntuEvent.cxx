@@ -1,8 +1,19 @@
+/*!
+ \file TAGntuEvent.cxx
+ \brief Simple container event informations from DAQ
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include <sys/time.h>
 #include <math.h>
 
 #include "TAGntuEvent.hxx"
 
+/*!
+ \class TAGntuEvent
+ \brief Simple container event informations from DAQ
+ */
+/*------------------------------------------+---------------------------------*/
 ClassImp(TAGntuEvent);
 
 TString  TAGntuEvent::fgkBranchName = "evt.";

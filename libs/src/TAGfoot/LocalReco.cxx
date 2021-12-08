@@ -1,4 +1,9 @@
 
+/*!
+ \file LocalReco.cxx
+ \brief Reconstruction class from raw data
+ */
+/*------------------------------------------+---------------------------------*/
 
 
 #include "LocalReco.hxx"
@@ -17,6 +22,11 @@
 #include "TABMntuRaw.hxx"
 #include "TAMSDntuRaw.hxx"
 
+/*!
+ \class LocalReco
+ \brief Reconstruction class from raw data
+ */
+/*------------------------------------------+---------------------------------*/
 
 ClassImp(LocalReco)
 

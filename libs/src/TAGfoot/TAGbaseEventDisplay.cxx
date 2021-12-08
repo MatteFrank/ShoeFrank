@@ -1,4 +1,9 @@
 
+/*!
+ \file TAGbaseEventDisplay.cxx
+ \brief FOOT base class to work on event display
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include "TAGbaseEventDisplay.hxx"
 
@@ -37,6 +42,11 @@
 #include "LocalReco.hxx"
 #include "LocalRecoMC.hxx"
 
+/*!
+ \Class TAGbaseEventDisplay
+ \brief FOOT base class to work on event display
+ */
+/*------------------------------------------+---------------------------------*/
 ClassImp(TAGbaseEventDisplay)
 
 TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Full";

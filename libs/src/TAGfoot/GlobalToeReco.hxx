@@ -2,6 +2,12 @@
 #ifndef _GlobalToeReco_HXX_
 #define _GlobalToeReco_HXX_
 
+/*!
+ \file GlobalToeReco.hxx
+ \brief Global reconstruction class using TOE from L0 tree
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "TString.h"
 #include "TAGobject.hxx"
 #include "TAGactTreeReader.hxx"

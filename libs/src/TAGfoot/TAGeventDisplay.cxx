@@ -1,3 +1,8 @@
+/*!
+ \file TAGeventDisplay.cxx
+ \brief FOOT class to work on event display
+ */
+/*------------------------------------------+---------------------------------*/
 
 
 #include "TAGeventDisplay.hxx"
@@ -33,6 +38,12 @@
 
 #include "LocalReco.hxx"
 #include "GlobalToeReco.hxx"
+
+/*!
+ \class TAGeventDisplay
+ \brief FOOT class to work on event display
+ */
+/*------------------------------------------+---------------------------------*/
 
 ClassImp(TAGeventDisplay)
 

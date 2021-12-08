@@ -2,20 +2,21 @@
 #ifndef _TAGeventDisplay_HXX_
 #define _TAGeventDisplay_HXX_
 
+/*!
+ \file TAGeventDisplay.hxx
+ \brief FOOT class to work on event display
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
+#include <map>
+
 #include "TAEDbaseInterface.hxx"
 
-/** TAGeventDisplay FOOT class to work on event display
- 
- */
 #include "TAEDcluster.hxx"
 #include "TAEDtrack.hxx"
 #include "TAEDwire.hxx"
 #include "TAGbaseEventDisplay.hxx"
-
-/** TAFOeventnDisplay FOOT class to work on event display
- 
- */
-#include <map>
 
 #include "TVirtualMagField.h"
 
@@ -35,7 +36,7 @@ protected:
    TAGeventDisplay(const TString expName, Int_t runNumber, Int_t type);
    
 protected:
-   static TAGeventDisplay* fgInstance; // static instance of class
+   static TAGeventDisplay* fgInstance; ///< static instance of class
 
 public:
    //! Instance of class
@@ -49,7 +50,7 @@ public:
    //! skip event
    Bool_t SkipEvent();
    
-   ClassDef(TAGeventDisplay, 1); // Base class for event display
+   ClassDef(TAGeventDisplay, 1); ///< Base class for event display
 };
 
 
