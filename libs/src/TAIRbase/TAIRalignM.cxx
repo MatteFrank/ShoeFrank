@@ -1,7 +1,5 @@
 /*!
- // C.A. Reidel & Ch. Finck
- 
- \file
+ \file TAIRalignM.cxx
  \brief   Implementation of TAIRalignM.
  */
 #include "TMath.h"
@@ -34,7 +32,7 @@
 
 /*!
  \class TAIRalignM
- \brief Alignment class for vertex tracks. **
+ \brief Alignment class for ITR tracks. **
   Input of TAIRtracks, vertex Sensor already aligned, all vertex Sensors nust be set as reference (status = 1)
   All inner tracker set to status 2.
  */
