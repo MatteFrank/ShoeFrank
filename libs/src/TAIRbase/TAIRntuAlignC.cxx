@@ -1,7 +1,5 @@
 /*!
- // C.A. Reidel & Ch. Finck
- 
- \file
+ \file TAIRntuAlignC.cxx
  \brief   Implementation of TAIRntuAlignC.
  */
 #include "TMath.h"
