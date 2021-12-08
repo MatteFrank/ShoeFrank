@@ -1,7 +1,7 @@
 #ifndef _TAMCparTools_HXX
 #define _TAMCparTools_HXX
 /*!
-  \file
+  \file TAMCparTools.hxx
   \brief   Declaration of TAMCparTools.
  
   \author Ch. Finck
@@ -20,11 +20,11 @@
 class TAMCparTools : public TAGpara {
       
 private:
-   static map<TString, Int_t> fgkG4PartNameToFlukaId;
-   static map<Int_t, TString> fgFlukaIdToPartName;
-   static map<TString, Int_t> fgkUpdatePdgMap;
-   static map<TString, double> fgkUpdatePdgMass;
-   static map<TString, double> fgkUpdatePdgCharge;
+   static map<TString, Int_t>  fgkG4PartNameToFlukaId; ///< Map of G4 particle name to Fluka Id conversion
+   static map<Int_t, TString>  fgFlukaIdToPartName;    ///< Map of Fluka Id to G4 particle name conversion
+   static map<TString, Int_t>  fgkUpdatePdgMap;        ///< Fluka Pdg map
+   static map<TString, double> fgkUpdatePdgMass;       ///< Update pdg mass map
+   static map<TString, double> fgkUpdatePdgCharge;     ///< Update pdg charge map
 
 public:
    TAMCparTools();

@@ -1,4 +1,9 @@
 
+/*!
+ \file TAMCparTools.cxx
+ \brief Helper for different conversion. **
+ */
+
 #include "TDatabasePDG.h"
 
 #include "TAMCparTools.hxx"
@@ -9,7 +14,7 @@
 //##############################################################################
 
 /*!
- \class TAMCparTools TAMCparTools.hxx "TAMCparTools.hxx"
+ \class TAMCparTools 
  \brief Helper for different conversion. **
  */
 

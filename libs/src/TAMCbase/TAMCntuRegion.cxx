@@ -2,8 +2,8 @@
 #include "TAMCntuRegion.hxx"
 
 /*!
-  \class TAMCregion TAMCntuRegion.hxx "TAMCntuRegion.hxx"
-  \brief Ntuplize crossing region - region object. **
+  \class TAMCregion
+  \brief Crossing region - region object. **
 */
 
 ClassImp(TAMCregion);
@@ -53,8 +53,8 @@ TAMCregion::~TAMCregion()
 //##############################################################################
 
 /*!
-  \class TAMCntuRegion TAMCntuRegion.hxx "TAMCntuRegion.hxx"
-  \brief Ntuplize crossing region - container. **
+  \class TAMCntuRegion
+  \brief Crossing region - container. **
 */
 
 ClassImp(TAMCntuRegion);

@@ -1,11 +1,16 @@
 
+/*!
+ \file TAMCactNtuRegion.cxx
+ \brief NTuplizer for MC events. **
+ */
+
 #include "TAMCntuRegion.hxx"
 #include "TAMCactNtuRegion.hxx"
 
 #include "TAGroot.hxx"
 
 /*!
-  \class TAMCactNtuRegion TAMCactNtuRegion.hxx "TAMCactNtuRegion.hxx"
+  \class TAMCactNtuRegion
   \brief NTuplizer for MC events. **
 */
 
