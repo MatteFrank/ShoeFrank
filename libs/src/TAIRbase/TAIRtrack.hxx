@@ -1,6 +1,14 @@
 #ifndef _TAIRtrack_HXX
 #define _TAIRtrack_HXX
 
+/*!
+ \file TAIRtrack.hxx
+ \brief Simple class for tracks with the associated clusters
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 // ROOT classes
 #include "TClonesArray.h"
 
@@ -9,13 +17,6 @@
 #include "TAIRcluster.hxx"
 #include "TAGbaseTrack.hxx"
 
-
-//##############################################################################
-
-/** TAIRtrack class, simple container class for tracks with the associated clusters
- 
- \author Ch. Finck
- */
 
 class TAVTbaseCluster;
 class TAIRcluster;
@@ -27,7 +28,6 @@ public:
    ~TAIRtrack();
    TAIRtrack(const TAIRtrack& aTrack);
 
-   
    //! Set up clones
    void           SetupClones();
 
@@ -39,7 +39,7 @@ public:
    //! Add cluster
    void           AddCluster(TAGcluster* cluster);
    
-   ClassDef(TAIRtrack,1)                      // Describes TAIRtrack
+   ClassDef(TAIRtrack,1)                      ///< Describes TAIRtrack
 };
 
 #endif

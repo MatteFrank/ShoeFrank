@@ -1,6 +1,13 @@
 #ifndef _TAIRntuTrack_HXX
 #define _TAIRntuTrack_HXX
 
+/*!
+ \file TAIRntuTrack.hxx
+ \brief Simple container class for tracks with the associated clusters
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
 // ROOT classes
 #include "TClonesArray.h"
 #include "TVector3.h"

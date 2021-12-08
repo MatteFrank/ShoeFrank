@@ -1,7 +1,16 @@
+/*!
+ \file  TAIRntuTrack.cxx
+ \brief Simple container class for tracks with the associated clusters
+ */
+
 #include "TMath.h"
 #include "TAGgeoTrafo.hxx"
 #include "TAIRntuTrack.hxx"
 
+/*!
+ \class TAIRntuTrack
+ \brief Simple container class for tracks with the associated clusters
+ */
 
 ClassImp(TAIRntuTrack);
 
