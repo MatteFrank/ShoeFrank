@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGntuGlbTrack.cxx
+  \file TAGntuGlbTrack.cxx
   \brief   Implementation of TAGntuGlbTrack.
 */
 
@@ -10,8 +9,8 @@
 #include "TAGntuGlbTrack.hxx"
 
 /*!
-  \class TAGntuGlbTrack TAGntuGlbTrack.hxx "TAGntuGlbTrack.hxx"
-  \brief container for global tracks **
+  \class TAGtrack
+  \brief Global tracks **
 */
 
 ClassImp(TAGtrack);
@@ -316,6 +315,11 @@ TArrayI TAGtrack::GetMcTrackIdx()
 
 
 //##############################################################################
+
+/*!
+ \class TAGntuGlbTrack
+ \brief container for global tracks **
+ */
 
 ClassImp(TAGntuGlbTrack);
 

@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGnamed.cxx,v 1.4 2003/06/09 18:39:32 mueller Exp $
+  \file TAGnamed.cxx
   \brief   Implementation of TAGnamed.
 */
 
@@ -9,7 +8,7 @@
 #include "TAGnamed.hxx"
 
 /*!
-  \class TAGnamed TAGnamed.hxx "TAGnamed.hxx"
+  \class TAGnamed 
   \brief Mother of all named TAG objects. **
 */
 

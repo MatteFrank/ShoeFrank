@@ -1,9 +1,8 @@
 #ifndef _TAGntuPoint_HXX
 #define _TAGntuPoint_HXX
 /*!
- \file
- \version $Id: TAGntuPoint.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
- \brief   Declaration of TAGntuPoint.
+ \file TAGntuPoint.hxx
+ \brief   class is the global point for global reconstruction.
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -16,18 +15,14 @@
 #include "TAGdata.hxx"
 #include "TAGcluster.hxx"
 
-/** TAGpoint class is the global point for global reconstruction
- 
- */
-/*------------------------------------------+---------------------------------*/
 class TClonesArray;
 class TAGpoint : public TAGcluster {
    
 private:
-   TString     fDevName;       // Device name (VT,IT, MSD, TW, CA)
-   TVector3    fMomentum;        // fitted momentum in FOOT framework
+   TString     fDevName;    // Device name (VT,IT, MSD, TW, CA)
+   TVector3    fMomentum;   // fitted momentum in FOOT framework
    TVector3    fMomError;   // fitted momentum error in FOOT framework
-   Double32_t  fEnergyLoss;    // Energy loss in sensor
+   Double32_t  fEnergyLoss; // Energy loss in sensor
 
 public:
    TAGpoint();

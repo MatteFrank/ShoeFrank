@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGaction.cxx,v 1.16 2003/06/22 10:48:07 mueller Exp $
+  \file TAGaction.cxx
   \brief   Implementation of TAGaction.
 */
 
@@ -11,7 +10,7 @@
 #include "TAGaction.hxx"
 
 /*!
-  \class TAGaction TAGaction.hxx "TAGaction.hxx"
+  \class TAGaction 
   \brief Base class for actions. **
 */
 

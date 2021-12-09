@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAGactNtuCluster2D.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \file TAGactNtuCluster2D.cxx
  \brief   Implementation of TAGactNtuCluster2D.
  */
 

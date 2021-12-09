@@ -1,8 +1,17 @@
+/*!
+ \file TAGntuPoint.cxx
+ \brief   Implementation of TAGntuPoint.
+ */
+
 
 #include "TString.h"
 #include "TClonesArray.h"
 #include "TAGntuPoint.hxx"
 
+/*!
+ \class TAGpoint
+ \brief Global point. **
+ */
 
 ClassImp(TAGpoint) // Description of Single Detector TAGpoint
 
@@ -99,8 +108,13 @@ void TAGpoint::Clear(Option_t*)
 
 
 //##############################################################################
-ClassImp(TAGntuPoint);
 
+/*!
+ \class TAGntuPoint
+ \brief Global point container. **
+ */
+
+ClassImp(TAGntuPoint);
 
 TString TAGntuPoint::fgkBranchName   = "glbpoint.";
 

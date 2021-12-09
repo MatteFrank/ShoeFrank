@@ -1,3 +1,8 @@
+/*!
+ \file TAGcampaignManager.cxx
+ \brief Implemented of TAGcampaignManager
+ */
+
 #include "TAGcampaignManager.hxx"
 #include <fstream>
 #include <unistd.h>
@@ -5,7 +10,10 @@
 
 #include "TAGrecoManager.hxx"
 
-//Class that manage the campaigns
+/*!
+ \class TAGcampaignManager
+ \brief Class that manage the campaigns. **
+ */
 
 ClassImp(TAGcampaignManager);
 
@@ -151,6 +159,11 @@ void TAGcampaignManager::Print(Option_t* opt) const
 }
 
 //##############################################################################
+
+/*!
+ \class TAGcampaign
+ \brief Class for campaign. **
+ */
 
 ClassImp(TAGcampaign);
 

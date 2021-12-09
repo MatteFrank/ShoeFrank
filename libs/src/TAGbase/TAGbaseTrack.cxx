@@ -1,45 +1,37 @@
-//////////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                          //
-//                                                                                          //
-//                                                                                          //
-// a Line is defined by its                                                                 //
-//                  origin     = (x_0,y_0,z_0),                                             //
-//                  slope      = (dx/dz,dy/dz,1),                                           //
-// and              length.                                                                 //
-// Points on the line at r_i are given as a function                                        //
-// of the parameter beta. beta has no dimension.                                            //
-// r_i(beta) = origin_i + beta * direction_i                                                //
-// If one wants the pair (x,y) as a function of z along (0,0,dz) then beta = z/dz           //
-//    and r_1(beta) = x_0 + z * dx/dz                                                       //
-//        r_2(beta) = y_0 + z * dy/dz                                                       //
-//        r_3(beta) = z_0 + z * 1                                                           //  
-// In case one needs pair (x,y,z) as a function of l along (dx,dy,dz) then beta' = l/dl     //
-//    and r_1(beta') = x_0 + l * dx/dl                                                      //
-//        r_2(beta') = y_0 + l * dy/dl                                                      //
-//        r_3(beta') = z_0 + l * dz/dl                                                      //
-// with the relation beta^2 = beta'^2 * (1-x^2/l^2-y^2/l^2) / (1-dx^2/dl^2-dy^2/dl^2)       //
-//                                                                                          //
-//////////////////////////////////////////////////////////////////////////////////////////////
+/*!
+ \file TAGbaseTrack.cxx
+ \brief   Implementation of TAGbaseTrack.
+ */
 
 #include "TMath.h"
 #include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx" 
 #include "TAGbaseTrack.hxx"
 
-
-//#################################################################
-
-  //////////////////////////////////////////////////////////////////
-  // Class Description of TAGbaseTrack                               //
-  //                                                              //
-  // A particle track from e.g. accelerator passing the tracker   //
-  // The track is measured by the tracker with its silicon        //
-  // reference planes                                             //
-  // The track is e.g. a straight line                            //
-  // The line is found by a fit to the hits in the silicon planes // 
-  //                                                              //
-  //////////////////////////////////////////////////////////////////
-
+/*!
+ \class TAGbaseTrack
+ \brief Base class for track
+ 
+ A particle track from e.g. accelerator passing the tracker
+ The track is measured by the tracker with its reference planes
+ 
+ A line is defined by its
+                   origin     = (x_0,y_0,z_0),
+                   slope      = (dx/dz,dy/dz,1),
+  and              length.
+  Points on the line at r_i are given as a function
+  of the parameter beta. beta has no dimension.
+  r_i(beta) = origin_i + beta * direction_i
+  If one wants the pair (x,y) as a function of z along (0,0,dz) then beta = z/dz
+     and r_1(beta) = x_0 + z * dx/dz
+         r_2(beta) = y_0 + z * dy/dz
+         r_3(beta) = z_0 + z * 1
+  In case one needs pair (x,y,z) as a function of l along (dx,dy,dz) then beta' = l/dl
+     and r_1(beta') = x_0 + l * dx/dl
+         r_2(beta') = y_0 + l * dy/dl
+         r_3(beta') = z_0 + l * dz/dl
+  with the relation beta^2 = beta'^2 * (1-x^2/l^2-y^2/l^2) / (1-dx^2/dl^2-dy^2/dl^2)
+ */
 
 ClassImp(TAGbaseTrack) // Description of a Track
 

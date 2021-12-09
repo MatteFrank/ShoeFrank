@@ -1,9 +1,9 @@
 #ifndef _TAGcluster_HXX
 #define _TAGcluster_HXX
 /*!
-  \file
-  \version $Id: TAGcluster.hxx
+  \file TAGcluster.hxx
   \brief   Declaration of TAGcluster.
+  \author Ch. Finck
 */
 /*------------------------------------------+---------------------------------*/
 #include <map>
@@ -18,17 +18,17 @@ class TAGbaseTrack;
 class TAGcluster : public TAGobject {
    
 protected:
-   TVector3           fPosition1;                // position of the cluster in plane frame / measured position in FOOT frame
-   TVector3           fPosError1;                // position's errors of the cluster in plane frame / measured position's error in FOOT frame
-   TVector3           fPosition2;                // position of the clus in tracker frame / / fitted position in FOOT frame
-   TVector3           fPosError2;                // position's errors of the clus in tracker frame /  fitted position's error in FOOT frame
-   TArrayI            fMcTrackIdx;               // Idx of the track created in the simulation
-   map<int, int>      fMcTrackMap;               //! Map of MC track Id
-   Int_t              fClusterIdx;               // cluster index
-   Int_t              fElementsN;                // number of cluster elements (pixels, strips, points...)
-   Int_t              fSensorIdx;                // sensor index
-   Int_t              fDeviceType;               // type of sensor VT: 40, IT: 50, MSD: 60, TW: 70, CA: 80
-   Bool_t             fIsValid;                  // validity flag
+   TVector3           fPosition1;                ///< position of the cluster in plane frame / measured position in FOOT frame
+   TVector3           fPosError1;                ///< position's errors of the cluster in plane frame / measured position's error in FOOT frame
+   TVector3           fPosition2;                ///< position of the clus in tracker frame / / fitted position in FOOT frame
+   TVector3           fPosError2;                ///< position's errors of the clus in tracker frame /  fitted position's error in FOOT frame
+   TArrayI            fMcTrackIdx;               ///< Idx of the track created in the simulation
+   map<int, int>      fMcTrackMap;               //!< Map of MC track Id
+   Int_t              fClusterIdx;               ///< cluster index
+   Int_t              fElementsN;                ///< number of cluster elements (pixels, strips, points...)
+   Int_t              fSensorIdx;                ///< sensor index
+   Int_t              fDeviceType;               ///< type of sensor VT: 40, IT: 50, MSD: 60, TW: 70, CA: 80
+   Bool_t             fIsValid;                  ///< validity flag
    
 public:
                       TAGcluster();
