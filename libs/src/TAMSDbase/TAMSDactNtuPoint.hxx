@@ -39,8 +39,8 @@ private:
    TAGdataDsc*     fpNtuPoint;	 	// output data dsc
    TAGparaDsc*     fpGeoMap;		 // geometry para dsc
 
-   TH2F*           fpHisPointMap[3];    // cluster map per station
-   TH1F*           fpHisPointCharge[3]; // cluster charge per station
+   TH2F*           fpHisPointMap[8];    // cluster map per station
+   TH1F*           fpHisPointCharge[8]; // cluster charge per station
    TH1F*           fpHisPointChargeTot; // Total cluster charge for all stations
 
    ClassDef(TAMSDactNtuPoint,0)
