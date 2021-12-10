@@ -1,5 +1,5 @@
 /*!
- \file TAGactNtuEvent/cxx
+ \file TAGactNtuEvent.cxx
  \brief   Implementation of TAGactNtuEvent.
  */
 

@@ -1,6 +1,6 @@
 /*!
-  \file TATntuRaw.cxx
-  \brief   Implementation of TATntuRaw.
+  \file TAMChit.cxx
+  \brief   Implementation of TAMChit.
 */
 
 #include "TAMCntuHit.hxx"

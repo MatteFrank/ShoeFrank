@@ -1,5 +1,5 @@
 /*!
- \file LocalRecoMC.hxx
+ \file LocalRecoMC.cxx
  \brief Reconstruction class from MC data
  */
 /*------------------------------------------+---------------------------------*/

@@ -1,6 +1,6 @@
 /*!
-  \file TAMCpart.cxx
-  \brief   Implementation of TAMCpart.
+  \file TAMCntuPart.cxx
+  \brief   Implementation of TAMCntuPart & TAMCpart.
 */
 
 #include <bitset>
