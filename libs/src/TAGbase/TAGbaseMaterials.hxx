@@ -28,7 +28,7 @@ public:
    virtual ~TAGbaseMaterials();
    
 protected:
-   TAGionisMaterials* fIonisation; //!< pointer for ionisation property
+   TAGionisMaterials* fIonisation; //! pointer for ionisation property
 
    static map<TString, TString> fgkCommonName; ///< Common name for some material map
    static map<TString, Int_t>   fgkLowMat;     ///< Low material map for Fluka

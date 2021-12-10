@@ -44,17 +44,17 @@ protected:
    TVector3       fPosVertex;                    ///< vertex position
   
    Int_t          fValidity;                     ///< if = 1 track attached to vertex,
-   TArrayF*       fChargeProba;                  //!< charge probability array
-   Int_t          fChargeWithMaxProba;           //!< charge with maximum probability
-   Float_t        fChargeMaxProba;               //!< charge maximum probability
-   TArrayF*       fChargeProbaNorm;              //!< charge probability array for normalized charge disttribution
-   Int_t          fChargeWithMaxProbaNorm;       //!< charge with maximum probability for normalized charge disttribution
-   Float_t        fChargeMaxProbaNorm;           //!< charge maximum probability for normalized charge disttribution
+   TArrayF*       fChargeProba;                  //! charge probability array
+   Int_t          fChargeWithMaxProba;           //! charge with maximum probability
+   Float_t        fChargeMaxProba;               //! charge maximum probability
+   TArrayF*       fChargeProbaNorm;              //! charge probability array for normalized charge disttribution
+   Int_t          fChargeWithMaxProbaNorm;       //! charge with maximum probability for normalized charge disttribution
+   Float_t        fChargeMaxProbaNorm;           //! charge maximum probability for normalized charge disttribution
    Double32_t     fMeanEltsN;                    ///< Average number of pixels/strips per track
    Double32_t     fMeanCharge;                   ///< Average charge (for analogic sensor) per track
 
    TArrayI            fMcTrackIdx;               ///< Idx of the track created in the simulation
-   std::map<int, int> fMcTrackMap;               //!< Map of MC track Id
+   std::map<int, int> fMcTrackMap;               //! Map of MC track Id
    
 public:
    TAGbaseTrack();

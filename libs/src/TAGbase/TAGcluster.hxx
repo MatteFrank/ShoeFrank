@@ -23,7 +23,7 @@ protected:
    TVector3           fPosition2;                ///< position of the clus in tracker frame / / fitted position in FOOT frame
    TVector3           fPosError2;                ///< position's errors of the clus in tracker frame /  fitted position's error in FOOT frame
    TArrayI            fMcTrackIdx;               ///< Idx of the track created in the simulation
-   map<int, int>      fMcTrackMap;               //!< Map of MC track Id
+   map<int, int>      fMcTrackMap;               //! Map of MC track Id
    Int_t              fClusterIdx;               ///< cluster index
    Int_t              fElementsN;                ///< number of cluster elements (pixels, strips, points...)
    Int_t              fSensorIdx;                ///< sensor index

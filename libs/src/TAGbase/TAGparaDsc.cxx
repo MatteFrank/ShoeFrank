@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGparaDsc.cxx,v 1.10 2003/06/19 17:43:58 mueller Exp $
+  \file TAGparaDsc.cxx
   \brief   Implementation of TAGparaDsc.
 */
 
@@ -12,7 +11,7 @@
 #include "TAGparaDsc.hxx"
 
 /*!
-  \class TAGparaDsc TAGparaDsc.hxx "TAGparaDsc.hxx"
+  \class TAGparaDsc 
   \brief Persistent descriptor for parameter object . **
 */
 

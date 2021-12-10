@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGrunInfo.cxx
+  \file TAGrunInfo.cxx
   \brief   Implementation of TAGrunInfo.
 */
 
@@ -9,7 +8,7 @@
 #include "TAGrunInfo.hxx"
 
 /*!
-  \class TAGrunInfo TAGrunInfo.hxx "TAGrunInfo.hxx"
+  \class TAGrunInfo
   \brief Run number info. **
 */
 

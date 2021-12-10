@@ -267,8 +267,8 @@ private:
 
    TClonesArray*    fListOfPoints;    ///< Attached measured points
    
-   TArrayI           fMcTrackIdx;     //!< Idx of the track created in the simulation
-   map<int, int>     fMcTrackMap;     //!< Map of MC track Id
+   TArrayI           fMcTrackIdx;     //! Idx of the track created in the simulation
+   map<int, int>     fMcTrackMap;     //! Map of MC track Id
 
 
    polynomial_fit_parameters fParameters; ///< polynomial parameter

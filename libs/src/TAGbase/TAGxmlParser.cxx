@@ -2,9 +2,18 @@
 #include "TError.h"
 
 #include "TAGxmlParser.hxx"
+/*!
+ \file TAGxmlParser.cxx
+ \brief   Implementation of TAGxmlParser.
+ */
 
 #include <TSystem.h>
 #include "TAGobject.hxx"
+
+/*!
+ \class TAGxmlParser
+ \brief XML parser class. **
+ */
 
 TAGxmlParser::TAGxmlParser()
 {

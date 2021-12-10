@@ -69,7 +69,7 @@ public:
    static const Char_t* GetBirksName(TString matName)                 { return (fgkBirks+matName).Data();                 }
    
 private:
-   TGeoMaterial* fMaterial;                        //!< pointer to material
+   TGeoMaterial* fMaterial;                        //! pointer to material
    
    // parameters for mean energy loss calculation
    Double_t      fMeanExcitationEnergy;            ///< Mean excitation energy

@@ -1,3 +1,8 @@
+/*!
+ \file TAGrecoManager.cxx
+ \brief   Implementation of TAGrecoManager.
+ */
+
 #include "cxxabi.h"
 
 #include "Varargs.h"
@@ -7,12 +12,16 @@
 #include "TAGparTools.hxx"
 #include "TAGrecoManager.hxx"
 
+/*!
+ \class TAGrecoManager
+ \brief Reconstruction manager. **
+ */
+
 map<TString, TString> TAGrecoManager::fgkDectFullName = {{"ST", "Start Counter"}, {"BM", "Beam Monitor"}, {"DI", "Dipole"}, {"TG", "Target"},
                                                          {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "MicroStrip Detector"}, {"TW", "ToF Wall"},
                                                          {"CA", "Calorimeter"}};
 
 const TString TAGrecoManager::fgkDefParName = "FootGlobal.par";
-
 
 //_____________________________________________________________________________
 // Global static pointer used to ensure a single instance of the class.

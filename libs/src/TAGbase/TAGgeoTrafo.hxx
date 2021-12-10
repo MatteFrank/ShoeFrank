@@ -33,35 +33,35 @@ private:
    
 private:
    static TString fgDefaultActName;
-   static const Float_t fgkCmToMu;        //!< conversion factor bw cm and micron
-   static const Float_t fgkMuToCm;        //!< conversion factor bw micron and cm
-   static const Float_t fgkMmToMu;        //!< conversion factor bw mm and micron
-   static const Float_t fgkMuToMm;        //!< conversion factor bw micron and mm
-   static const Float_t fgkMmToCm;        //!< conversion factor bw mm and cm
-   static const Float_t fgkCmToMm;        //!< conversion factor bw cm and mm
-   static const Float_t fgkSecToNs;       //!< conversion factor bw second and nanosecond
-   static const Float_t fgkNsToSec;       //!< conversion factor bw nanosecond and second
-   static const Float_t fgkSecToPs;       //!< conversion factor bw second and picosecond
-   static const Float_t fgkPsToSec;       //!< conversion factor bw picosecond and second
-   static const Float_t fgkPsToNs;        //!< conversion factor bw picosecond and nanosecond
-   static const Float_t fgkNsToPs;        //!< conversion factor bw nanosecond and picosecond
-   static const Float_t fgkCmToM;         //!< conversion factor bw cm and m
-   static const Float_t fgkMToCm;         //!< conversion factor bw m and cm
-   static const Float_t fgkGevToMev;      //!< conversion factor bw GeV and MeV
-   static const Float_t fgkGevToKev;      //!< conversion factor bw GeV and keV
-   static const Float_t fgkMevToGev;      //!< conversion factor bw MeV and GeV
-   static const Float_t fgkGausToTesla;   //!< conversion factor bw Gaus and Tesla
-   static const Float_t fgkGausToKGaus;   //!< conversion factor bw Gaus and kGaus
+   static const Float_t fgkCmToMu;        //! conversion factor bw cm and micron
+   static const Float_t fgkMuToCm;        //! conversion factor bw micron and cm
+   static const Float_t fgkMmToMu;        //! conversion factor bw mm and micron
+   static const Float_t fgkMuToMm;        //! conversion factor bw micron and mm
+   static const Float_t fgkMmToCm;        //! conversion factor bw mm and cm
+   static const Float_t fgkCmToMm;        //! conversion factor bw cm and mm
+   static const Float_t fgkSecToNs;       //! conversion factor bw second and nanosecond
+   static const Float_t fgkNsToSec;       //! conversion factor bw nanosecond and second
+   static const Float_t fgkSecToPs;       //! conversion factor bw second and picosecond
+   static const Float_t fgkPsToSec;       //! conversion factor bw picosecond and second
+   static const Float_t fgkPsToNs;        //! conversion factor bw picosecond and nanosecond
+   static const Float_t fgkNsToPs;        //! conversion factor bw nanosecond and picosecond
+   static const Float_t fgkCmToM;         //! conversion factor bw cm and m
+   static const Float_t fgkMToCm;         //! conversion factor bw m and cm
+   static const Float_t fgkGevToMev;      //! conversion factor bw GeV and MeV
+   static const Float_t fgkGevToKev;      //! conversion factor bw GeV and keV
+   static const Float_t fgkMevToGev;      //! conversion factor bw MeV and GeV
+   static const Float_t fgkGausToTesla;   //! conversion factor bw Gaus and Tesla
+   static const Float_t fgkGausToKGaus;   //! conversion factor bw Gaus and kGaus
 
-   static const Float_t fgkMassFactor;     //!< default proton mass
-   static const Float_t fgkElectronMass;   //!< default electron mass
-   static const Float_t fgkLightVelocity;  //!< Speed of light in vacuum
+   static const Float_t fgkMassFactor;     //! default proton mass
+   static const Float_t fgkElectronMass;   //! default electron mass
+   static const Float_t fgkLightVelocity;  //! Speed of light in vacuum
 
-   static const Char_t* fgkGeomName;       //!< name of GeoManager
-   static const Char_t* fgkGeomTitle;      //!< title of GeoManager
-   static       Char_t  fgDefaultTransp;   //!< default transparency value
-   static const Char_t* fgkTrafoBaseName;  //!< name of GeoManager
-   static map<TString, Int_t> fgkDeviceType; //!< device name
+   static const Char_t* fgkGeomName;       //! name of GeoManager
+   static const Char_t* fgkGeomTitle;      //! title of GeoManager
+   static       Char_t  fgDefaultTransp;   //! default transparency value
+   static const Char_t* fgkTrafoBaseName;  //! name of GeoManager
+   static map<TString, Int_t> fgkDeviceType; //! device name
 
 public:
    TAGgeoTrafo(const TString expName = "FOOT");

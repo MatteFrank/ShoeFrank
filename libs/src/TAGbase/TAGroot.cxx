@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGroot.cxx,v 1.13 2003/07/08 18:55:38 mueller Exp $
+  \file TAGroot.cxx
   \brief   Implementation of TAGroot.
 */
 
@@ -21,13 +20,14 @@
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 
+
 /*!
-  \class TAGroot TAGroot.hxx "TAGroot.hxx"
-  \brief TAG top level object description. **
-*/
+ \class TAGrootInterruptHandler
+ \brief TAG interrupt handler. **
+ */
+
 
 //------------------------------------------+-----------------------------------
-
 class TAGrootInterruptHandler : public TSignalHandler {
   public:
                     TAGrootInterruptHandler();
@@ -47,6 +47,12 @@ Bool_t TAGrootInterruptHandler::Notify()
 }
 
 //##############################################################################
+
+/*!
+ \class TAGroot
+ \brief TAG top level object description. **
+ */
+
 
 ClassImp(TAGroot);
 
