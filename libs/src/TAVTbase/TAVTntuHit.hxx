@@ -17,9 +17,9 @@ class TAVTntuHit : public TAGdata {
 protected:
    //using TObjArray here
    TObjArray*        fListOfPixels;    ///< list of pixels
-   TAVTparGeo*       fpGeoMap;         //!< do not store
+   TAVTparGeo*       fpGeoMap;         //! do not store
    
-    std::map<pair<int, int>, int > fMap; //!< pixel map
+    std::map<pair<int, int>, int > fMap; //! pixel map
     
 private:
    static TString    fgkBranchName;    ///< Branch name in TTree

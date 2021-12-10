@@ -36,7 +36,7 @@ private:
    TAGdataDsc*    fpNtuEve;         ///< input eve track dsc
    TAGdataDsc*    fpNtuRaw;		   ///< output data dsc
    EVENT_STRUCT*  fEventStruct;
-   map<pair<int,int>, TAIThit*> fMap;      //!< map for pilepup
+   map<pair<int,int>, TAIThit*> fMap;      //! map for pilepup
 
 private:
    //! Fill noise per sensor
