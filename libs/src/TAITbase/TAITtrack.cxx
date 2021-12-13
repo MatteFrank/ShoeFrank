@@ -33,7 +33,7 @@
 ClassImp(TAITtrack) // Description of a Track
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TAITtrack::TAITtrack()
 :  TAGbaseTrack()
 {
@@ -41,13 +41,13 @@ TAITtrack::TAITtrack()
 }
 
 //______________________________________________________________________________
-//  
+//! Destructor
 TAITtrack::~TAITtrack()
 {
 }
 
 //______________________________________________________________________________
-//
+//! Copy constructor
 TAITtrack::TAITtrack(const TAGbaseTrack& aTrack)
 : TAGbaseTrack::TAGbaseTrack(aTrack)
 {

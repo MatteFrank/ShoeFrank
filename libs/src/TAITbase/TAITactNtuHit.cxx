@@ -25,7 +25,6 @@ ClassImp(TAITactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAITactNtuHit::TAITactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pDatDaq, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAITactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap),
   fpDatDaq(pDatDaq)
@@ -55,7 +54,7 @@ TAITactNtuHit::~TAITactNtuHit()
 }
 
 //------------------------------------------+-----------------------------------
-//! Action.
+// Action.
 Bool_t TAITactNtuHit::Action()
 {
    

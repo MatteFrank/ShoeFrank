@@ -16,7 +16,6 @@ ClassImp(TAITparMap);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAITparMap::TAITparMap() 
 : TAVTparMap()
 {
@@ -25,6 +24,5 @@ TAITparMap::TAITparMap()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAITparMap::~TAITparMap()
 {}

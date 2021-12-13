@@ -26,17 +26,16 @@
 
 ClassImp(TAITparConf);
 
-
 //______________________________________________________________________________
+//! Standard constructor
 TAITparConf::TAITparConf()
 : TAVTbaseParConf()
 {
-   // Standard constructor
    fkDefaultConfName = "./config/TAITdetector.cfg";
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAITparConf::~TAITparConf()
 {
-   // Destructor
 }
