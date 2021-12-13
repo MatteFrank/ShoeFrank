@@ -25,13 +25,12 @@ TAGdaqEvent::TAGdaqEvent()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGdaqEvent::~TAGdaqEvent()
 {
 }
 
 //------------------------------------------+-----------------------------------
-//! Add fragment
+// Add fragment
 void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 {
    fListOfFragments.push_back(frag);
@@ -41,7 +40,7 @@ void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear event.
+// Clear event.
 void TAGdaqEvent::Clear(Option_t*)
 {
    TAGdata::Clear();
@@ -50,7 +49,7 @@ void TAGdaqEvent::Clear(Option_t*)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
+// ostream insertion.
 void TAGdaqEvent::ToStream(ostream& /*os*/, Option_t* /*option*/) const
 {
 }

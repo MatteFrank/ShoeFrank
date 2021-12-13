@@ -20,16 +20,16 @@
 
 
 //__________________________________________________________
+//! default constructor
 TAEDwire::TAEDwire(const Text_t* name) 
   : TEveStraightLineSet(name)
 { 
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDwire::~TAEDwire()
 {
-  // default destructor
 }
 
 //__________________________________________________________

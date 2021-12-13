@@ -17,18 +17,17 @@
 ClassImp(TAEDglbTrackGL);
 
 //__________________________________________________________
+//! default constructor
 TAEDglbTrackGL::TAEDglbTrackGL()
   : TEveStraightLineSetGL()
 {
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDglbTrackGL::~TAEDglbTrackGL()
 {
-   // default destructor
 }
-
 
 //__________________________________________________________
 void TAEDglbTrackGL::ProcessSelection(TGLRnrCtx& /*rnrCtx*/, TGLSelectRecord& rec)

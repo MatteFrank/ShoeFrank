@@ -14,16 +14,16 @@
 
 
 //__________________________________________________________
+//! default constructor
 TAEDpoint::TAEDpoint(const Text_t* name) 
   : TEvePointSet(name)
 {
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDpoint::~TAEDpoint()
 {
-  // default destructor
 }
 
 //__________________________________________________________

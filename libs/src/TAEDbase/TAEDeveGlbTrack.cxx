@@ -17,15 +17,16 @@
  */
 
 //__________________________________________________________
+//! Default constructor
 TAEDeveGlbTrack::TAEDeveGlbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop)
  : TEveTrack(track, prop)
 {
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDeveGlbTrack::~TAEDeveGlbTrack()
 {
-  // default destructor
 }
 
 //__________________________________________________________

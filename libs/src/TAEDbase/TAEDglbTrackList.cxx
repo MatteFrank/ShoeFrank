@@ -14,6 +14,7 @@
  */
 
 //__________________________________________________________
+//! Default constructor
 TAEDglbTrackList::TAEDglbTrackList(const Char_t* name)
  : TEveElementList(name),
    fNofTracks(0)
@@ -21,9 +22,9 @@ TAEDglbTrackList::TAEDglbTrackList(const Char_t* name)
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDglbTrackList::~TAEDglbTrackList()
 {
-  // default destructor
 }
 
 //__________________________________________________________

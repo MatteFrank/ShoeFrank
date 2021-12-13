@@ -15,17 +15,17 @@
 ClassImp(TAEDglbTrack);
 
 //__________________________________________________________
+//! default constructor
 TAEDglbTrack::TAEDglbTrack(const Text_t* name)
   : TEveStraightLineSet(name),
     fTrackId(0x0)
 { 
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDglbTrack::~TAEDglbTrack()
 {
-   // default destructor
 }
 
 //__________________________________________________________

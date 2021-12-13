@@ -33,7 +33,7 @@ TAGactDaqReader::~TAGactDaqReader()
 }
 
 //------------------------------------------+-----------------------------------
-//! Open data source.
+// Open data source.
 Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString, Bool_t )
 {
    fCurFileName = name;
@@ -83,21 +83,21 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString
 }
 
 //------------------------------------------+-----------------------------------
-//! Close input file.
+// Close input file.
 void TAGactDaqReader::Close()
 {
    fDaqFileReader->closeFile();
 }
 
 //------------------------------------------+-----------------------------------
-//! Returns \a true if an input file or connection is open.
+// Returns \a true if an input file or connection is open.
 Bool_t TAGactDaqReader::IsOpen() const
 {
    return fDaqFileReader->getIsOpened();
 }
 
 //------------------------------------------+-----------------------------------
-//! Reset
+// Reset
 void TAGactDaqReader::SkipEvents(Int_t nEvents)
 {
    for (Int_t i = 0; i < nEvents; ++i)
@@ -105,7 +105,7 @@ void TAGactDaqReader::SkipEvents(Int_t nEvents)
 }
 
 //------------------------------------------+-----------------------------------
-//! Process Reader.
+// Process Reader.
 Bool_t TAGactDaqReader::Process()
 {
   if (Valid()) return kTRUE;
