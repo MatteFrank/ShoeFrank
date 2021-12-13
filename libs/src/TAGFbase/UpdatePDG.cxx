@@ -1,12 +1,25 @@
-
+/*!
+ \file UpdatePDG.cxx
+ \brief  Updated PDG database used for GenFit Global Reconstruction
+ \author M. Franchini, R. Ridolfi and R. Zarrella
+*/
 
 #include "UpdatePDG.hxx"
+
+/*!
+ \class UpdatePDG
+ \brief Utility class used in GenFit global Reconstruction to handle all the possible particles detectable in the FOOT experiment
+
+ The class defines an updated version of the PDG database used by GenFit
+ */
 
 // Global static pointer used to ensure a single instance of the class.
 UpdatePDG* UpdatePDG::m_pInstance = NULL;
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! \brief Instance of the UpdatePDG object
 UpdatePDG* UpdatePDG::Instance()  {
   
   if (!m_pInstance) {  // Only allow one instance of class to be generated.
@@ -21,6 +34,8 @@ UpdatePDG* UpdatePDG::Instance()  {
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! \brief Get the UpdatePDG object from outside class
 UpdatePDG* UpdatePDG::GetPDG()  {
   
   if (!m_pInstance) 
@@ -31,14 +46,26 @@ UpdatePDG* UpdatePDG::GetPDG()  {
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! \brief Default constructor
 UpdatePDG::UpdatePDG() {
   
   MakePdgDatabase();
   
 }
 
+//----------------------------------------------------------------------------------------------------
+
+//! \brief Default destructor
+//!
+//! CURRENTLY NOT USED -> CHECK
+UpdatePDG::~UpdatePDG() {
+}
+
 
 //----------------------------------------------------------------------------------------------------
+
+//! \brief Create the UpdatePDG database of all particles
 void UpdatePDG::MakePdgDatabase() {
   
   
@@ -101,6 +128,11 @@ void UpdatePDG::MakePdgDatabase() {
 }
 
 //----------------------------------------------------------------------------------------------------
+
+//! \brief Check if a particle is defined in the UpdatePDG database
+//!
+//! \param partName Name of the particle to check (e.g. "He4", "Li9"...)
+//! \return True if the particle exists in the database, False otherwise
 bool UpdatePDG::IsParticleDefined( string partName ){
   
   // check if the category is defined in m_pdgCodeMap
@@ -115,6 +147,11 @@ bool UpdatePDG::IsParticleDefined( string partName ){
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! \brief Get the particle identifier in the UpdatePDG database
+//!
+//! \param partName Name of the particle to check (e.g. "He4", "Li9"...)
+//! \return PDG identifier of the particle in the database
 int UpdatePDG::GetPdgCode( string partName ) {
   
   if ( !IsParticleDefined( partName ) ) return -1;
@@ -125,7 +162,12 @@ int UpdatePDG::GetPdgCode( string partName ) {
 
 
 //----------------------------------------------------------------------------------------------------
-int UpdatePDG::GetPdgMass( string partName ) {
+
+//! \brief Get the particle mass from the UpdatePDG database
+//!
+//! \param partName Name of the particle to check (e.g. "He4", "Li9"...)
+//! \return Mass in GeV of the particle
+float UpdatePDG::GetPdgMass( string partName ) {
   
   if ( !IsParticleDefined( partName ) ) return -1;
   
@@ -134,7 +176,12 @@ int UpdatePDG::GetPdgMass( string partName ) {
 
 
 //----------------------------------------------------------------------------------------------------
-int UpdatePDG::GetPdgMass( int PdgCode ) {
+
+//! \brief Get the particle mass from the UpdatePDG database
+//!
+//! \param PdgCode Particle identifier in the UpdatePDG database
+//! \return Mass in GeV of the particle
+float UpdatePDG::GetPdgMass( int PdgCode ) {
   
   if ( PdgCode == -999 )	return -1;
 
@@ -144,6 +191,11 @@ int UpdatePDG::GetPdgMass( int PdgCode ) {
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! \brief Get the PDG name of a particle
+//!
+//! \param[in] pdgCode PDG identifier of the particle
+//! \return Name of the particle in the UpdatePDG database
 string UpdatePDG::GetPdgName( int pdgCode ) {
   return TDatabasePDG::Instance()->GetParticle( pdgCode )->GetName();
 }
@@ -151,6 +203,11 @@ string UpdatePDG::GetPdgName( int pdgCode ) {
 
 
 //----------------------------------------------------------------------------------------------------
+
+//! \brief Get the PDG identifier of the most common isotope with a given charge
+//!
+//! \param[in] partCharge Charge of the particle
+//! \return PDG identifier of the most common isotope with the wanted charge
 int UpdatePDG::GetPdgCodeMainIsotope(int partCharge)  {
 
   string partName;

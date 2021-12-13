@@ -1,7 +1,7 @@
 /*!
- \file
- \version $Id: TAGFuploader.cxx
+ \file TAGFuploader.cxx
  \brief  Class that uploads all the clusters/points in GenFit format
+ \author M. Franchini and R. Zarrella
 */
 
 #include "TAGFuploader.hxx"
@@ -12,8 +12,10 @@
 */
 
 
-//! Default constructor for the Uploader of GenFit TrackPoints. The class converts clusters/points in GenFit format
-//! \param[in] aSensorIDmap Ptr to the TAGFdetectorMap object that handles the GenFit geometry
+//! \brief Default constructor for the Uploader of GenFit TrackPoints.
+//! 
+//! The class converts clusters/points in GenFit format
+//! \param[in] aSensorIDmap Pointer to the TAGFdetectorMap object that handles the GenFit geometry
 TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
 
 	m_sensorIDmap = aSensorIDmap;
@@ -34,13 +36,17 @@ TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
 }
 
 
-
-
+//! \brief Default destructor
+//!
+//! CURRENTLY NOT USED -> CHECK. Added to have a complete documentation of the class
+TAGFuploader::~TAGFuploader()
+{}
 
 
 //----------------------------------------------------------------------------------------------------
 
-//! Upload the hits to be fitted in GenFit format from all the detectors included in the campaign
+//! \brief Upload the hits to be fitted in GenFit format from all the detectors included in the campaign
+//!
 //! \param[in,out] allHitMeas Map associating each GenFit plane with the vector of measurements obtained in it
 //! \return 1 if everything worked properly
 int TAGFuploader::TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  ) {
@@ -84,7 +90,8 @@ int TAGFuploader::TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHit
 
 //-------------------------------------------------------------------------------------------------
 
-//! Upload the VT clusters in GenFit format
+//! \brief Upload the VT clusters in GenFit format
+//!
 //! \return Number of all the VT clusters found in the event
 int TAGFuploader::UploadClusVT(){
 
@@ -129,7 +136,8 @@ int TAGFuploader::UploadClusVT(){
 
 //---------------------------------------------------------------------------------------------------
 
-//! Upload the IT clusters in GenFit format
+//! \brief Upload the IT clusters in GenFit format
+//!
 //! \return Number of all the IT clusters found in the event
 int TAGFuploader::UploadClusIT(){
 
@@ -173,7 +181,8 @@ int TAGFuploader::UploadClusIT(){
 
 //----------------------------------------------------------------------------------------------------
 
-//! Upload the MSD clusters in GenFit format
+//! \brief Upload the MSD clusters in GenFit format
+//!
 //! \return Number of all the MSD clusters found in the event
 int TAGFuploader::UploadClusMSD() {
 
@@ -216,7 +225,8 @@ int TAGFuploader::UploadClusMSD() {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Upload measurement points from TOF-Wall
+//! \brief Upload measurement points from TOF-Wall
+//!
 //! \return Number of points found in the TW
 int TAGFuploader::UploadHitsTW() {
 
@@ -258,8 +268,9 @@ int TAGFuploader::UploadHitsTW() {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Get the map containing the vector of MC particles for each measurement
-//! \return Ptr to the map GlobalMeasureId -> vector of MC particles
+//! \brief Get the map containing the vector of MC particles for each measurement
+//!
+//! \return Pointer to the map GlobalMeasureId -> vector of MC particles
 map< int, vector<int> >* TAGFuploader::TakeMeasParticleMC_Collection() {
 
 	if ( !TAGrecoManager::GetPar()->IsMC() )
@@ -304,8 +315,9 @@ int TAGFuploader::GetTWTrackFixed ( TATWpoint* point ) {
 
 
 
-//! Get all the possible charges measured by the TOF-Wall in the event
-//! \param[out] chVect Ptr to vector where to store the possible charge values
+//! \brief Get all the possible charges measured by the TOF-Wall in the event
+//!
+//! \param[out] chVect Pointer to vector where to store the possible charge values
 void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 
 	// // -------- TW CHARGE RETRIEVE NOT WORKING with Sept2020 but only with TruthParticles -----------------
@@ -362,7 +374,8 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 
 
 
-//! Get the total number of particles generated in the MC event
+//! \brief Get the total number of particles generated in the MC event
+//!
 //! \return Number of particles generated in the event
 int TAGFuploader::GetNumGenParticle_noFrag() {
 
@@ -392,8 +405,9 @@ int TAGFuploader::GetNumGenParticle_noFrag() {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Upload a single VT cluster to the GenFit hit collection
-//! \param[in] clus Ptr to VT cluster
+//! \brief Upload a single VT cluster to the GenFit hit collection
+//!
+//! \param[in] clus Pointer to VT cluster
 //! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 
@@ -467,8 +481,9 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Upload a single IT cluster to the GenFit hit collection
-//! \param[in] clus Ptr to IT cluster
+//! \brief Upload a single IT cluster to the GenFit hit collection
+//!
+//! \param[in] clus Pointer to IT cluster
 //! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 
@@ -540,8 +555,9 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Upload a single MSD cluster to the GenFit hit collection
-//! \param[in] clus Ptr to MSD cluster
+//! \brief Upload a single MSD cluster to the GenFit hit collection
+//!
+//! \param[in] clus Pointer to MSD cluster
 //! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
@@ -623,8 +639,9 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Upload a single TW point to the GenFit hit collection
-//! \param[in] point Ptr to TW point
+//! \brief Upload a single TW point to the GenFit hit collection
+//!
+//! \param[in] point Pointer to TW point
 //! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 

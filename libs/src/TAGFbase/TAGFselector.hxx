@@ -1,7 +1,7 @@
 /*!
- \file
- \version $Id: TAGFselector.cxx
+ \file TAGFselector.hxx
  \brief  Header of GenFit track finding/selection class
+ \author M. Franchini and R. Zarrella
 */
 
 #ifndef TAGFselector_H
@@ -77,10 +77,10 @@ public:
 	TAGFselector(map< int, vector<AbsMeasurement*> >* allHitMeas, vector<int>* chVect, 
 						TAGFdetectorMap* SensorIDmap, map<TString, Track*>* trackCategoryMap, 
 						map< int, vector<int> >* measParticleMC_collection);
-
 	virtual ~TAGFselector() { }
 
-	int					Categorize( );
+	int					Categorize();
+
 	TString				GetRecoTrackName(Track* tr);
 	int					GetChargeFromTW(Track* trackToCheck);
 	map<string, int>	CountParticleGenaratedAndVisible();
@@ -88,7 +88,7 @@ public:
 private:
 
 	int			FillTrackRepVector();
-	bool		PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element ); //CHECK!!!!!!
+	bool		PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element ); 
 
 	int			Categorize_TruthMC( );
 	void		GetTrueParticleType(int trackid, int* flukaID, int* charge, double* mass, TVector3* posV, TVector3* momV );
@@ -98,8 +98,8 @@ private:
 	void		CategorizeVT();
 	void		CategorizeIT();
 	void		CategorizeMSD();
-	void		CategorizeMSD_Linear();
 	void		CategorizeTW();
+	void		CategorizeMSD_Linear();
 	void		CategorizeTW_Linear();
 	void		FillTrackCategoryMap();
 	TVector3	ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane, int repId =-1);

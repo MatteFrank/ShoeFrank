@@ -1,7 +1,7 @@
 /*!
- \file
- \version $Id: TAGactKFitter.cxx
+ \file TAGactKFitter.cxx
  \brief  Main class of the GenFit Global Reconstruction -> Action
+ \author M. Franchini, R. Zarrella and R. Ridolfi
 */
 
 #include "TAGactKFitter.hxx"
@@ -11,13 +11,11 @@
  \brief Main action of the GenFit Global Reconstruction
 */
 
-
-
 // ClassImp(TAGactKFitter);
 
 //----------------------------------------------------------------------------------------------------
 
-//! Default constructor for GenFit Kalman fitter
+//! \brief Default constructor for GenFit Kalman fitter
 TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"), fpGlobTrackRepo(outTrackRepo) {
 
 	AddDataOut(outTrackRepo, "TAGntuGlbTrack");
@@ -104,7 +102,9 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 
 //----------------------------------------------------------------------------------------------------
 
-//! Default destructor
+//! \brief Default destructor
+//!
+//! Delete all the objects used for Kalman Filter extrapolation
 TAGactKFitter::~TAGactKFitter() {
     delete m_fitter;
     delete m_fitter_extrapolation;
@@ -116,7 +116,7 @@ TAGactKFitter::~TAGactKFitter() {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Fill counter of all the MC paticles generated in the FOOT setup
+//! \brief Fill counter of all the MC paticles generated in the FOOT setup
 //! \param[in] mappa Map containing the name and number of all MC particles in the event
 void TAGactKFitter::FillGenCounter( map< string, int > mappa )	{
 	
@@ -135,7 +135,9 @@ void TAGactKFitter::FillGenCounter( map< string, int > mappa )	{
 
 //------------------------------------------+-----------------------------------
 
-//! Action: upload clusters/opints in GenFit format, categorize them and fit the selected tracks
+//! \brief Main action of the class
+//!
+//! Upload clusters/points in GenFit format, categorize them and fit the selected tracks
 //! \return True if the action was successful
 Bool_t TAGactKFitter::Action()	{
 
@@ -209,7 +211,9 @@ Bool_t TAGactKFitter::Action()	{
 
 //----------------------------------------------------------------------------------------------------
 
-//! Function used to finalize all the needed histograms for GenFit studies. Called from outside, at the end of the event cycle
+//! \brief Finalize all the needed histograms for GenFit studies
+//!
+//! Save control plots and calculate resolution. Called from outside, at the end of the event cycle
 void TAGactKFitter::Finalize() {
 
   // make a directory for each hit category that forms a track candidate
@@ -298,7 +302,7 @@ void TAGactKFitter::Finalize() {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Check and print which detectors included and/or used in the kalman
+//! \brief Check and print which detectors included and/or used in the kalman
 void TAGactKFitter::IncludeDetectors() {
 
 	// check kalman detectors set in param file are correct
@@ -343,7 +347,7 @@ void TAGactKFitter::IncludeDetectors() {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Create the FOOT geometry and declare the detectors in GenFit format
+//! \brief Create the FOOT geometry and declare the detectors in GenFit format
 void TAGactKFitter::CreateGeometry()  {
 
 	if(m_debug > 0)	cout << "TAGactKFitter::CreateGeometry() -- START" << endl;
@@ -536,7 +540,8 @@ void TAGactKFitter::CreateGeometry()  {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Perform the actual fit of the selected tracks
+//! \brief Perform the actual fit of the selected tracks
+//!
 //! \param[in] evNum Event number
 //! \return Number of fitted tracks in the event
 int TAGactKFitter::MakeFit( long evNum ) {
@@ -721,8 +726,9 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 
 
-//! Make the prefit of selected tracks
-//! Currently not used
+//! \brief Make the prefit of selected tracks
+//!
+//! FUNCTION CURRENTLY NOT USED
 void TAGactKFitter::MakePrefit() {
 // try{
 	 //        if ( m_debug > 0 ) 		cout<<"Starting the fitter"<<endl;
@@ -753,9 +759,10 @@ void TAGactKFitter::MakePrefit() {
 
 
 
-//! Record the information regarding a fitted+converged track
-//! \param[in] track Ptr to fitted track to save
-//! \param[in] fitTrackName Name of the fitted track (example He_4_2001 -> tracklet 1 of VTX 2, with Helium 4 as starting particle hypothesis
+//! \brief Record the information regarding a fitted+converged track
+//!
+//! \param[in] track Pointer to fitted track to save
+//! \param[in] fitTrackName Name of the fitted track (example He_4_2001 -> tracklet 1 of VTX 2, with Helium 4 as starting particle hypothesis)
 void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 	if(m_debug > 0)		cout << "RECORD START" << endl;
@@ -1044,8 +1051,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 
 
-//! Find the MC particle that appears more frequently in the selected track
-//! \param[in] mcParticleID_track ptr to vector containing all the vectors of MC particles crossing each cluster/point
+//! \brief Find the MC particle that appears more frequently in the selected track
+//!
+//! \param[in] mcParticleID_track Ponter to vector containing all the vectors of MC particles crossing each cluster/point
 //! \return Id of the most frequent MC particle
 int TAGactKFitter::FindMostFrequent( vector<vector<int>>* mcParticleID_track ) {
 
@@ -1072,8 +1080,10 @@ int TAGactKFitter::FindMostFrequent( vector<vector<int>>* mcParticleID_track ) {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Compute the quality of the track under study as occurences of most frequent particle over number of track points
-//! \param[in] mcParticleID_track Ptr to vector containing all the vectors of MC particles crossing each cluster/point
+//! \brief Compute the quality of the track under study
+//!
+//! The track quality is defined as the occurences of the most frequent particle over the number of track points
+//! \param[in] mcParticleID_track Pointer to vector containing all the vectors of MC particles crossing each cluster/point
 //! \return Quality of the selected track
 double TAGactKFitter::TrackQuality( vector<vector<int>>* mcParticleID_track ) {
 
@@ -1111,12 +1121,13 @@ double TAGactKFitter::TrackQuality( vector<vector<int>>* mcParticleID_track ) {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Get additional information on a measurement
+//! \brief Get additional information on a measurement
+//!
 //! \param[in] detID Id of the detector
 //! \param[in] hitID Global measurement Id
-//! \param[out] iSensor Ptr to local sensor Id
-//! \param[out] iClus Ptr to local cluster Id
-//! \param[out] iPart Ptr to vector of MC particles of the cluster
+//! \param[out] iSensor Pointer to local sensor Id
+//! \param[out] iClus Pointer to local cluster Id
+//! \param[out] iPart Pointer to vector of MC particles of the cluster
 void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus, vector<int>* iPart ) {
 
 	// check
@@ -1141,10 +1152,11 @@ void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus,
 
 //----------------------------------------------------------------------------------------------------
 
-//! Get info on the position measurement and error for an hit
+//! \brief Get info on the position measurement and error for an hit
+//!
 //! \param[in] hitID Global Id of the hit
-//! \param[out] pos Ptr to vector where to store the measured position
-//! \param[out] posErr Ptr to vector where to store the position error
+//! \param[out] pos Pointer to vector where to store the measured position
+//! \param[out] posErr Pointer to vector where to store the position error
 void TAGactKFitter::GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr ) {
 
 	string det = m_sensorIDmap->GetDetNameFromMeasID( hitID );
@@ -1185,13 +1197,14 @@ void TAGactKFitter::GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr
 
 //----------------------------------------------------------------------------------------------------
 
-//! Get the reconstructed information for a Track Point
+//! \brief Get the reconstructed information for a Track Point
+//!
 //! \param[in] i Index of the Track Point
-//! \param[in] track Ptr to track under study
-//! \param[out] KalmanPos ptr to vector used to store the fitted position
-//! \param[out] KalmanMom ptr to vector used to store the fitted momentum
-//! \param[out] KalmanPos_cov ptr to matrix used to store the covariance of fitted position
-//! \param[out] KalmanMom_cov ptr to matrix used to store the covariance of fitted momentum
+//! \param[in] track Pointer to track under study
+//! \param[out] KalmanPos Pointer to vector used to store the fitted position
+//! \param[out] KalmanMom Pointer to vector used to store the fitted momentum
+//! \param[out] KalmanPos_cov Pointer to matrix used to store the covariance of fitted position
+//! \param[out] KalmanMom_cov Pointer to matrix used to store the covariance of fitted momentum
 void TAGactKFitter::GetRecoTrackInfo ( int i, Track* track,
 										TVector3* KalmanPos, TVector3* KalmanMom,
 										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov ) {
@@ -1245,7 +1258,7 @@ void TAGactKFitter::GetRecoTrackInfo ( int i, Track* track,
 
 //----------------------------------------------------------------------------------------------------
 
-//! Print the overall purity of fitted tracks for each charge value
+//! \brief Print the overall purity of fitted tracks for each charge value
 void TAGactKFitter::PrintPurity() {
 
 	int nCollection = m_nConvergedTracks_all.size();
@@ -1292,7 +1305,7 @@ void TAGactKFitter::PrintPurity() {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Print the overall efficiency of the fit algorithm for each charge value
+//! \brief Print the overall efficiency of the fit algorithm for each charge value
 void TAGactKFitter::PrintEfficiency() {
 
 	int nCollection = m_nSelectedTrackCandidates.size();
@@ -1353,7 +1366,7 @@ void TAGactKFitter::PrintEfficiency() {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Print the overall selection efficiency of tracks for each charge value
+//! \brief Print the overall selection efficiency of tracks for each charge value
 void TAGactKFitter::PrintSelectionEfficiency() {
 
 	int nCollection = m_genCount_vector.size();
@@ -1411,7 +1424,7 @@ void TAGactKFitter::PrintSelectionEfficiency() {
 
 
 
-//! Declare the GenFit histograms
+//! \brief Declare the GenFit histograms
 void TAGactKFitter::CreateHistogram()	{
 
 	h_trackMC_true_id = new TH1F("h_trackMC_true_id", "h_trackMC_true_id", 45, 0., 45);
@@ -1510,7 +1523,7 @@ void TAGactKFitter::CreateHistogram()	{
 
 //----------------------------------------------------------------------------------------------------
 
-//! Reset matrix values to zero
+//! \brief Reset matrix values to zero
 void TAGactKFitter::MatrixToZero( TMatrixD *matrix ) {
   for ( int j=0; j<matrix->GetNrows(); j++ ) {
     for ( int k=0; k<matrix->GetNcols(); k++ ) {
@@ -1526,7 +1539,7 @@ void TAGactKFitter::MatrixToZero( TMatrixD *matrix ) {
 
 //----------------------------------------------------------------------------------------------------
 
-//! Initialize GenFit event display
+//! \brief Initialize GenFit event display
 void TAGactKFitter::InitEventDisplay() {
 
   // init event display
@@ -1555,9 +1568,11 @@ void TAGactKFitter::InitEventDisplay() {
 }
 
 
-//! Evaluate the efficiency of the forward projection and check if the current charge hypothesis matches the value obtained from TW. In case of mismatch, correct the hypothesis and reset the fit seed
-//! \param[in,out] PartName Ptr to the name of the particle ("H,"He","Li"...). If the particle hypothesis changes, this variable is updated with the new name
-//! \param[in] fitTrack Ptr to the track under study
+//! \brief Evaluate the efficiency of the forward projection and check if the current charge hypothesis matches the value obtained from TW
+//!
+//! In case of mismatch, the function corrects the intial hypothesis and reset the seed for the track fit
+//! \param[in,out] PartName Pointer to the name of the particle ("H,"He","Li"...). If the particle hypothesis changes, this variable is updated with the new name
+//! \param[in] fitTrack Pointer to the track under study
 void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTrack)
 {
 	int MeasId, PlaneId;

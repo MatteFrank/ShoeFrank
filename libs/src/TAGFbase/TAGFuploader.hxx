@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAGFuploader.hxx
+ \file TAGFuploader.hxx
  \brief  Header for TAGFuploader class
  \author M. Franchini and R. Zarrella
 */
@@ -53,19 +52,18 @@ using namespace std;
 using namespace genfit;
 
 class TAGFuploader {
-  
-public:
-  
-  TAGFuploader ( TAGFdetectorMap* aSensorIDmap );
-  
-  virtual ~TAGFuploader() {}
-  
-  int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  );
-  void GetPossibleCharges( vector<int>* chVect );
-  int GetNumGenParticle_noFrag();
 
-  map< int, vector<int> >* TakeMeasParticleMC_Collection();
-  
+public:
+	
+	TAGFuploader ( TAGFdetectorMap* aSensorIDmap );
+	virtual ~TAGFuploader() {}
+	
+	int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  );
+	void GetPossibleCharges( vector<int>* chVect );
+	int GetNumGenParticle_noFrag();
+
+	map< int, vector<int> >* TakeMeasParticleMC_Collection();
+	
 private:
 
 	int UploadClusVT();

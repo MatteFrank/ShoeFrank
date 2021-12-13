@@ -1,8 +1,7 @@
 /*!
- \file
- \version $Id: TAGFdetectorMap.hxx
+ \file TAGFdetectorMap.hxx
  \brief  Header for TAGFdetectorMap class
- \author R. Zarrella
+ \author R. Zarrella and M. Franchini
 */
 
 #ifndef TAGFdetectorMap_H

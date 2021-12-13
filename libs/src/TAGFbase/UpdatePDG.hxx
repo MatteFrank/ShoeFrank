@@ -1,3 +1,10 @@
+/*!
+ \file UpdatePDG.hxx
+ \brief  Header of UpdatePDG class
+ \author M. Franchini, R. Ridolfi and R. Zarrella
+*/
+
+
 #ifndef UpdatePDG_HXX
 #define UpdatePDG_HXX
 
@@ -31,8 +38,8 @@ public:
   int GetPdgCode( string partName );
   int GetPdgCodeMainIsotope(int partCharge);
 
-  int GetPdgMass( string partName );
-  int GetPdgMass( int PdgCode );
+  float GetPdgMass( string partName );
+  float GetPdgMass( int PdgCode );
   
   string GetPdgName( int code );
   
@@ -42,9 +49,9 @@ public:
 private:
 
   UpdatePDG();
-  static UpdatePDG* m_pInstance;
+  static UpdatePDG* m_pInstance;      ///< Instance of the UpdatePDG object
 
-  map<string, int> m_pdgCodeMap;
+  map<string, int> m_pdgCodeMap;      ///< Map linking the particle names to their identifier in the UpdatePDG database
 
 
 };

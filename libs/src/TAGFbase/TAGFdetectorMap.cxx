@@ -1,7 +1,7 @@
 /*!
- \file
- \version $Id: TAGFdetectorMap.cxx
+ \file TAGFdetectorMap.cxx
  \brief  Utility class used to handle the detectors, sensors, clusters/points and GenFit planes indices
+ \author R. Zarrella and M. Franchini
 */
 
 #include "TAGFdetectorMap.hxx"
@@ -11,14 +11,16 @@
  \brief Utility class used to handle the detectors, sensors, clusters/points and GenFit planes indices
 
  Class used to handle all the indices used in the global reconstruciton routine with GenFit:
- Detector -> Either name ("VT", "MSD", etc....) or index
- Sensor -> Local index of sensor in the detector (e.g. 0-3 for "VT", 0-32 for "IT", etc....)
- FitPlane -> Global GenFit plane index (does not restart for each detector)
- Hit -> Local index of the hit in the current sensor/plane
- Measurement -> Global index of the measurement defined combining detector, sensor and hit indices
+ - Detector -> Either name ("VT", "MSD", etc....) or index
+ - Sensor -> Local index of sensor in the detector (e.g. 0-3 for "VT", 0-32 for "IT", etc....)
+ - FitPlane -> Global GenFit plane index (does not restart for each detector)
+ - Hit -> Local index of the hit in the current sensor/plane
+ - Measurement -> Global index of the measurement defined combining detector, sensor and hit indices
 */
 
-//! Default constructor -> Detector indices are determined through a static map
+//! \brief Default constructor
+//!
+//! Detector indices are determined through a static map: { "SC", "BM", "TG", "VT", "IT", "MSD", "TW", "CA" }
 TAGFdetectorMap::TAGFdetectorMap()
 { 
 	m_detectorIndex.clear();
@@ -32,7 +34,9 @@ TAGFdetectorMap::TAGFdetectorMap()
 	m_debug = TAGrecoManager::GetPar()->Debug();
 }
 
-//Default destructor -> clean all the maps
+//! \brief Default destructor
+//!
+//! Clean all the maps
 TAGFdetectorMap::~TAGFdetectorMap()
 {
 	m_detectorIndex.clear();
@@ -55,7 +59,8 @@ TAGFdetectorMap::~TAGFdetectorMap()
 
 /***********************SENSOR/PLANE MAP****************************/
 
-//! Add an index to FitPlane for a detector
+//! \brief Add an index to FitPlane for a detector
+//!
 //! \param[in] planeId Index of the FitPlane to add
 //! \param[in] detName Name of the detector where to add the plane
 void TAGFdetectorMap::AddFitPlaneIDToDet(int planeId, string detName)
@@ -69,7 +74,8 @@ void TAGFdetectorMap::AddFitPlaneIDToDet(int planeId, string detName)
 }
 
 
-//! Add an IT plane to the map assigned to its Z coordinate
+//! \brief Add an IT plane to the map assigned to its Z coordinate
+//!
 //! \param[in] zPos Z coordinate of the FitPlane to add
 //! \param[in] indexOfPlane Index of the plane to add
 void TAGFdetectorMap::AddPlane_Zorder(float zPos, int indexOfPlane)	{
@@ -94,24 +100,27 @@ void TAGFdetectorMap::AddPlane_Zorder(float zPos, int indexOfPlane)	{
 }
 
 
-//! Get the vector of IT planes' indices at a given Z coordinate
+//! \brief Get the vector of IT planes' indices at a given Z coordinate
+//!
 //! \param[in] zPos Z coordinate of the IT planes
-//! \return Ptr to the vector of plane indices
+//! \return Pointer to the vector of plane indices
 vector<int>* TAGFdetectorMap::GetPlanesAtZ( float zPos ) {
 
 	return &m_zOrderingPlanes[zPos];
 }
 
 
-//! Get the possible values for the Z coordinate of IT planes
-//! \return Ptr to vector of possible values for Z coordinate of IT planes
+//! \brief Get the possible values for the Z coordinate of IT planes
+//!
+//! \return Pointer to vector of possible values for Z coordinate of IT planes
 vector<float>* TAGFdetectorMap::GetPossibleITz() {
 
 	return &m_itPossibleZ;
 }
 
 
-//! Get the index of a FitPlane
+//! \brief Get the index of a FitPlane
+//!
 //! \param[in] detName name of the detector
 //! \param[in] sensorId Local index of the sensor
 //! \return Index of a FitPlane
@@ -132,7 +141,8 @@ int TAGFdetectorMap::GetFitPlaneID(string detName, int sensorId)
 }
 
 
-//! Get the minimum FitPlane index for a detector
+//! \brief Get the minimum FitPlane index for a detector
+//!
 //! \param[in] detName Name of the detector
 //! \return Minimum FitPlane index for the detector
 int TAGFdetectorMap::GetMinFitPlane(string detName)
@@ -147,7 +157,8 @@ int TAGFdetectorMap::GetMinFitPlane(string detName)
 }
 
 
-//! Get the maximum FitPlane index for a detector
+//! \brief Get the maximum FitPlane index for a detector
+//!
 //! \param[in] detName Name of the detector
 //! \return Maximum FitPlane index for the detector
 int TAGFdetectorMap::GetMaxFitPlane(string detName)
@@ -162,7 +173,8 @@ int TAGFdetectorMap::GetMaxFitPlane(string detName)
 }
 
 
-//! Get the index of the TW FitPlane
+//! \brief Get the index of the TW FitPlane
+//!
 //! \return Index of the TW FitPlane
 int TAGFdetectorMap::GetFitPlaneTW()
 {
@@ -184,7 +196,8 @@ int TAGFdetectorMap::GetFitPlaneTW()
 }
 
 
-//! Get the number of FitPlanes for the whole setup or for a detector
+//! \brief Get the number of FitPlanes for the whole setup or for a detector
+//!
 //! \param[in] detName Name of the detector (default=="all")
 //! \return Number of FitPlanes in the detector or in the full setup if detName=="all"
 int TAGFdetectorMap::GetFitPlanesN(string detName)
@@ -196,7 +209,8 @@ int TAGFdetectorMap::GetFitPlanesN(string detName)
 }
 
 
-//! Check if a FitPlane is contained in a detector
+//! \brief Check if a FitPlane is contained in a detector
+//!
 //! \param[in] planeId Index of the FitPlane
 //! \param[in] detName Name of the detector
 //! \return True if the FitPlane is associated to the detector
@@ -221,9 +235,10 @@ bool TAGFdetectorMap::IsFitPlaneInDet(int planeId, string detName)
 }
 
 
-//! Get the local sensor index of a FitPlane
+//! \brief Get the local sensor index of a FitPlane
+//!
 //! \param[in] planeId Index of the FitPlane
-//! \param[out] sensorId Ptr to store the local index of the sensor
+//! \param[out] sensorId Pointer used to store the local index of the sensor
 //! \return True if the sensor was found
 bool TAGFdetectorMap::GetSensorID(int planeId, int* sensorId)
 {
@@ -256,17 +271,19 @@ bool TAGFdetectorMap::GetSensorID(int planeId, int* sensorId)
 
 /**************** GENFIT PLANES HANDLING *************/
 
-//! Add a FitPlane to the detector map
+//! \brief Add a FitPlane to the detector map
+//!
 //! \param[in] planeId Index of the Plane
-//! \param[in] genfitPlane Ptr to the allocated plane
+//! \param[in] genfitPlane Pointer to the allocated plane
 void TAGFdetectorMap::AddFitPlane(int planeId, SharedPlanePtr genfitPlane)
 {
 	m_detectorPlanes[planeId] = genfitPlane;
 }
 
-//! Get a GenFit FitPlane
+//! \brief Get a GenFit FitPlane
+//!
 //! \param[in] planeId Index of the FitPlane
-//! \return Ptr to the FitPlane
+//! \return Pointer to the FitPlane
 SharedPlanePtr TAGFdetectorMap::GetFitPlane(int planeId)
 {
 	if(m_detectorPlanes.find(planeId) == m_detectorPlanes.end())
@@ -282,7 +299,8 @@ SharedPlanePtr TAGFdetectorMap::GetFitPlane(int planeId)
 
 /******************** DETECTOR MAP ********************/
 
-//! Get the index of a detector
+//! \brief Get the index of a detector
+//!
 //! \param[in] deteName name of the detector
 //! \return index of the detector
 int TAGFdetectorMap::GetDetIDFromName(string detName)
@@ -296,7 +314,8 @@ int TAGFdetectorMap::GetDetIDFromName(string detName)
 		return m_detectorIndex.at(detName);
 }
 
-//! Get the name of a detector
+//! \brief Get the name of a detector
+//!
 //! \param[in] detId Index of the detector
 //! \return Name of the detector
 string TAGFdetectorMap::GetDetNameFromID(int detId)
@@ -310,7 +329,8 @@ string TAGFdetectorMap::GetDetNameFromID(int detId)
 	throw -1;
 }
 
-//! Check if a detector has been loaded in the map
+//! \brief Check if a detector has been loaded in the map
+//!
 //! \param[in] detName Name of the detector
 //! \return True if the detector has been loaded correctly
 bool TAGFdetectorMap::IsDetectorInMap(string detName)
@@ -325,7 +345,8 @@ bool TAGFdetectorMap::IsDetectorInMap(string detName)
 
 /************************ GLOBAL MEASUREMENT ID ******************************/
 
-//! Get the global index of the measurement 
+//! \brief Get the global index of the measurement 
+//!
 //! \param[in] detName Name of the detector
 //! \param[in] sensorId Local index of the sensor
 //! \param[in] hitId Index of the cluster in the sensor
@@ -348,7 +369,8 @@ int TAGFdetectorMap::GetMeasID_eventLevel(string detName, int sensorId, int hitI
 }
 
 
-//! Get the global index of the measurement 
+//! \brief Get the global index of the measurement 
+//!
 //! \param[in] planeId Index of the GenFit FitPlane
 //! \param[in] hitId Index of the cluster in the sensor
 //! \return Global index of the measurement constructed as 1E7*(detector index) + 1E5*(sensor index) + cluster index
@@ -409,7 +431,8 @@ int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 
 
 
-//! Get the detector index from the global measurement id
+//! \brief Get the detector index from the global measurement id
+//!
 //! \param[in] measId Global measurement index
 //! \return Detector index
 int TAGFdetectorMap::GetDetIDFromMeasID(int measId)
@@ -426,7 +449,8 @@ int TAGFdetectorMap::GetDetIDFromMeasID(int measId)
 
 
 
-//! Get the detector name from the global measurement index
+//! \brief Get the detector name from the global measurement index
+//!
 //! \param[in] measId Global measurement index
 //! \return Detector name
 string TAGFdetectorMap::GetDetNameFromMeasID(int measId)
@@ -443,7 +467,8 @@ string TAGFdetectorMap::GetDetNameFromMeasID(int measId)
 }
 
 
-//! Get local sensor Id from measurement index
+//! \brief Get local sensor Id from measurement index
+//!
 //! \param[in] measId Global measurement index
 //! \return Local sensor index
 int TAGFdetectorMap::GetSensorIDFromMeasID(int measId)
@@ -460,7 +485,8 @@ int TAGFdetectorMap::GetSensorIDFromMeasID(int measId)
 }
 
 
-//! Get FitPlane index from global measurement id
+//! \brief Get FitPlane index from global measurement id
+//!
 //! \param[in] measId Global measurement index
 //! \return FitPlane index
 int TAGFdetectorMap::GetFitPlaneIDFromMeasID(int measId)
@@ -472,7 +498,8 @@ int TAGFdetectorMap::GetFitPlaneIDFromMeasID(int measId)
 }
 
 
-//! Get local cluster/point index from global measurement id
+//! \brief Get local cluster/point index from global measurement id
+//!
 //! \param[in] measId Global measurement index
 //! \return Local cluster/point index
 int TAGFdetectorMap::GetHitIDFromMeasID(int measId)
@@ -481,7 +508,8 @@ int TAGFdetectorMap::GetHitIDFromMeasID(int measId)
 }
 
 
-//! Get all detector-sensor-cluster information from global measurement index
+//! \brief Get all detector-sensor-cluster information from global measurement index
+//!
 //! \param[in] measId Global measurement index
 //! \return Tuple containing detector name, local sensor index and cluster/point index
 tuple<string, int, int> TAGFdetectorMap::GetDetSensorHitFromMeasID(int measId)
