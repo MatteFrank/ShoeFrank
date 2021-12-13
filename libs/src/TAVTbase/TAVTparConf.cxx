@@ -28,15 +28,15 @@ ClassImp(TAVTparConf);
 
 
 //______________________________________________________________________________
+//! Standard constructor
 TAVTparConf::TAVTparConf()
 : TAVTbaseParConf()
 {
-   // Standard constructor
    fkDefaultConfName = "./config/TAVTdetector.cfg";
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAVTparConf::~TAVTparConf()
 {
-   // Destructor
 }

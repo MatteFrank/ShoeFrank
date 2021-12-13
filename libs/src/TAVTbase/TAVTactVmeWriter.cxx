@@ -39,7 +39,7 @@ TAVTactVmeWriter::~TAVTactVmeWriter()
 }
 
 //------------------------------------------+-----------------------------------
-//! Open ascii data sources.
+// Open ascii data sources.
 Int_t TAVTactVmeWriter::Open(const TString& name, Option_t* opt)
 {
    // open reading
@@ -52,7 +52,7 @@ Int_t TAVTactVmeWriter::Open(const TString& name, Option_t* opt)
 }
 
 //------------------------------------------+-----------------------------------
-//! Close input file.
+// Close input file.
 void TAVTactVmeWriter::Close()
 {
    // Closing input files
@@ -63,7 +63,7 @@ void TAVTactVmeWriter::Close()
 }
 
 //------------------------------------------+-----------------------------------
-//! Process
+// Process
 Bool_t TAVTactVmeWriter::Process()
 {
    Int_t size = (sizeof(MI26_FrameRaw)/4)*3 + 3;

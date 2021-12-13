@@ -20,7 +20,7 @@
 ClassImp(TAVTvertex) // Description of a vertex
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TAVTvertex::TAVTvertex()
 :  TAGobject(),
    fListOfTracks(new TClonesArray("TAVTtrack")),
@@ -34,7 +34,7 @@ TAVTvertex::TAVTvertex()
 }
 
 //______________________________________________________________________________
-//  
+//! Copy constructor
 TAVTvertex::TAVTvertex(const TAVTvertex& aVertex)
 :  TAGobject(aVertex),
    fVertexPosition(aVertex.fVertexPosition),
@@ -47,7 +47,7 @@ TAVTvertex::TAVTvertex(const TAVTvertex& aVertex)
 }
 
 //______________________________________________________________________________
-//  
+//! Destructor
 TAVTvertex::~TAVTvertex()
 {
     delete fListOfTracks;
@@ -98,14 +98,14 @@ TAVTntuVertex::~TAVTntuVertex()
 }
 
 //------------------------------------------+-----------------------------------
-//!return the number of vertex
+// return the number of vertex
 Int_t TAVTntuVertex::GetVertexN() const
 {
     return fListOfVertex->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-//! return vertex for a given sensor
+//  return vertex for a given sensor
 TAVTvertex* TAVTntuVertex::GetVertex(Int_t i)
 {
     if(i>=0 || i< GetVertexN())
@@ -116,7 +116,7 @@ TAVTvertex* TAVTntuVertex::GetVertex(Int_t i)
 }
 
 //------------------------------------------+-----------------------------------
-//! return vertex for a given sensor
+//  return vertex for a given sensor
 const TAVTvertex* TAVTntuVertex::GetVertex(Int_t i) const
 {
     if(i>=0 || i< GetVertexN())
@@ -126,7 +126,7 @@ const TAVTvertex* TAVTntuVertex::GetVertex(Int_t i) const
 }
 
 //------------------------------------------+-----------------------------------
-//! clear
+// clear
 void TAVTntuVertex::Clear(Option_t*)
 {
     fListOfVertex->Delete();

@@ -37,6 +37,7 @@ ClassImp(TAVTbaseParGeo);
 const Int_t TAVTbaseParGeo::fgkDefSensorsN   = 32;
 
 //______________________________________________________________________________
+//! Standard constructor
 TAVTbaseParGeo::TAVTbaseParGeo()
  : TAGparTools(),
    fIonisation(new TAGionisMaterials()),
@@ -48,13 +49,12 @@ TAVTbaseParGeo::TAVTbaseParGeo()
    fSensPerLayer(0),
    fSensorArray(0x0)
 {
-   // Standard constructor
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAVTbaseParGeo::~TAVTbaseParGeo()
 {
-   // Destructor
    delete fIonisation;
    delete [] fSensorArray;
 }

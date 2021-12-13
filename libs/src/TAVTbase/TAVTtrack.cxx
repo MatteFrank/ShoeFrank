@@ -31,7 +31,7 @@
 ClassImp(TAVTtrack) // Description of a Track
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TAVTtrack::TAVTtrack()
 :  TAGbaseTrack(),
    fPosVertex(0.,0.,0.)
@@ -40,7 +40,7 @@ TAVTtrack::TAVTtrack()
 }
 
 //______________________________________________________________________________
-//
+//! Copy constructor
 TAVTtrack::TAVTtrack(const TAVTtrack& aTrack)
 :  TAGbaseTrack(aTrack),
    fPosVertex(aTrack.fPosVertex)
@@ -49,7 +49,7 @@ TAVTtrack::TAVTtrack(const TAVTtrack& aTrack)
 }
 
 //______________________________________________________________________________
-//  
+//! Destructor
 TAVTtrack::~TAVTtrack()
 {
 }

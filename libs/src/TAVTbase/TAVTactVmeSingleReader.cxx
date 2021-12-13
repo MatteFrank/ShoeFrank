@@ -65,7 +65,7 @@ void TAVTactVmeSingleReader::SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t 
 }
 
 //------------------------------------------+-----------------------------------
-//! Open ascii data sources.
+// Open ascii data sources.
 Int_t TAVTactVmeSingleReader::Open(const TString& name, Option_t* opt, const TString, Bool_t )
 {
    TString inputFileName;
@@ -100,14 +100,14 @@ Int_t TAVTactVmeSingleReader::Open(const TString& name, Option_t* opt, const TSt
 }
 
 //------------------------------------------+-----------------------------------
-//! Close input file.
+// Close input file.
 void TAVTactVmeSingleReader::Close()
 {
 	  fRawFileAscii.close();
 }
 
 //------------------------------------------+-----------------------------------
-//! Process
+// Process
 Bool_t TAVTactVmeSingleReader::Process()
 {
    Char_t tmp[255];

@@ -16,7 +16,6 @@ ClassImp(TAVTparMap);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAVTparMap::TAVTparMap() 
  : TAVTbaseParMap()
 {
@@ -25,7 +24,6 @@ TAVTparMap::TAVTparMap()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAVTparMap::~TAVTparMap()
 {
 }

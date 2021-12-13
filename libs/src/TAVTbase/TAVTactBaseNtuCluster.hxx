@@ -38,7 +38,7 @@ public:
    //! Apply basic cuts
    virtual Bool_t  ApplyCuts(TAVTbaseCluster* cluster);
 
-   //! Base creation of histogram
+   // Base creation of histogram
    virtual  void   CreateHistogram();
    
     //! Get list of pixels for a given plane

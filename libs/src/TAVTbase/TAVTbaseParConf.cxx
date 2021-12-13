@@ -28,17 +28,17 @@
 ClassImp(TAVTbaseParConf);
 
 //______________________________________________________________________________
+//! Standard constructor
 TAVTbaseParConf::TAVTbaseParConf()
 : TAGparTools(),
   fSensorsN(0)
 {
-   // Standard constructor
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAVTbaseParConf::~TAVTbaseParConf()
 {
-   // Destructor
 }
 
 //______________________________________________________________________________
@@ -118,7 +118,7 @@ Bool_t TAVTbaseParConf::FromFile(const TString& name)
 }
 
 //------------------------------------------+-----------------------------------
-//! Get major number status
+// Get major number status
 Int_t TAVTbaseParConf::GetStatus(Int_t idx) const
 {
    Int_t major = fSensorParameter[idx].Status/10;
@@ -130,7 +130,7 @@ Int_t TAVTbaseParConf::GetStatus(Int_t idx) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Get minor number status
+// Get minor number status
 Int_t TAVTbaseParConf::GetStatusMinor(Int_t idx) const
 {
    Int_t major = fSensorParameter[idx].Status/10;
@@ -142,7 +142,7 @@ Int_t TAVTbaseParConf::GetStatusMinor(Int_t idx) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear geometry info.
+// Clear geometry info.
 void TAVTbaseParConf::Clear(Option_t*)
 {
   return;

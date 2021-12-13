@@ -24,15 +24,16 @@ ClassImp(TAVTparCal);
 
 
 //------------------------------------------+-----------------------------------
+//! Standard constructor
 TAVTparCal::TAVTparCal()
 : TAVTbaseParCal()
 {
-  // Standard constructor
    fkDefaultCalName = "./calib/TAVTdetector.cal";
 
 }
 
 //------------------------------------------+-----------------------------------
+//! Destructor
 TAVTparCal::~TAVTparCal()
 {
 }
