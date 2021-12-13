@@ -29,7 +29,7 @@ private:
       TArrayC   DeadStripMap;           // dead strip map
    };
    
-   SensorParameter_t   fSensorParameter[6];
+   SensorParameter_t   fSensorParameter[16];
 
 public:
    Bool_t               FromFile(const TString& name = "");

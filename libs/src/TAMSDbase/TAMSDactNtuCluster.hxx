@@ -78,9 +78,9 @@ private:
    Int_t          fClustersN;     // number of cluster
    
    TH1F*          fpHisStripTot;	     // Total number of strips per cluster
-   TH1F*          fpHisStrip[6];	     // number of strips per cluster per sensor
-   TH1F*          fpHisClusMap[6];    // cluster map per sensor
-   TH1F*          fpHisClusCharge[6]; // cluster charge per sensor
+   TH1F*          fpHisStrip[16];	     // number of strips per cluster per sensor
+   TH1F*          fpHisClusMap[16];    // cluster map per sensor
+   TH1F*          fpHisClusCharge[16]; // cluster charge per sensor
    TH1F*          fpHisClusChargeTot; // Total cluster charge for all sensors
 
 private:

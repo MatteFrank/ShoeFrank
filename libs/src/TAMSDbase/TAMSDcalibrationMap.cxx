@@ -10,8 +10,8 @@ TAMSDcalibrationMap::TAMSDcalibrationMap(int strip_number_p)
 : TAGobject(),
   fStripsN{strip_number_p}
 {
-    fEloss.reserve( fStripsN * 6 );
-    fPedestal.reserve( fStripsN * 6 );
+    fEloss.reserve( fStripsN * 16 );
+    fPedestal.reserve( fStripsN * 16 );
 }
 
 //_____________________________________________________________________

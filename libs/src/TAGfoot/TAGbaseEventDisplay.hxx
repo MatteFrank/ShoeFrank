@@ -130,7 +130,7 @@ public:
       }
    }
    
-   //! Set Itr Tracking algorithm
+   //! Set MSD Tracking algorithm
    static void SetMsdTrackingAlgo(char c)
    {
       switch (c) {
@@ -141,7 +141,7 @@ public:
             fgMsdTrackingAlgo = "Full";
             break;
          default:
-            printf("SetItrTrackingAlgo: Wrongly set tracking algorithm");
+            printf("SetMsdTrackingAlgo: Wrongly set tracking algorithm");
       }
    }
    
