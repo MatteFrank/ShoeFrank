@@ -12,6 +12,7 @@
 ClassImp(TADIgenField);
 
 //______________________________________________________________________________
+//! Constructor
 TADIgenField::TADIgenField(TADIgeoField* field)
 : AbsBField(),
   fField(field)
@@ -19,9 +20,9 @@ TADIgenField::TADIgenField(TADIgeoField* field)
 }
 
 //______________________________________________________________________________
+//! Destructor
 TADIgenField::~TADIgenField()
 {
-   // Destructor
 }
 
 //______________________________________________________________________________
