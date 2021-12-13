@@ -26,6 +26,7 @@ ClassImp(TAGparTools);
 Int_t TAGparTools::fgPrecisionLevel = 6;
 
 //______________________________________________________________________________
+//! Standard constructor
 TAGparTools::TAGparTools()
 : TAGpara(),
   fFileStream(),
@@ -33,13 +34,12 @@ TAGparTools::TAGparTools()
   fMatrixList(0x0),
   fCurrentPosition(0,0,0)
 {
-   // Standard constructor
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAGparTools::~TAGparTools()
 {
-   // Destructor
    if (fMatrixList)
       delete fMatrixList;
 }

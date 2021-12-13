@@ -56,11 +56,11 @@ class TAGroot : public TAGobject {
     //! Return list of parameter dsc
     TList*          ListOfParaDsc() const { return fpParaDscList; }
 
-    //! Find action
+    // Find action
     TAGaction*      FindAction(const char* name, const char* type=0) const;
-    //! Find  data dsc
+    // Find  data dsc
     TAGdataDsc*     FindDataDsc(const char* name, const char* type=0) const;
-    //! Find parameters dsc
+    // Find parameters dsc
     TAGparaDsc*     FindParaDsc(const char* name, const char* type=0) const;
 
     //! Default action name

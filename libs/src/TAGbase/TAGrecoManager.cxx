@@ -47,6 +47,7 @@ TAGrecoManager* TAGrecoManager::GetPar()  {
 }
 
 //_____________________________________________________________________________
+//! Destructor
 TAGrecoManager::~TAGrecoManager()
 {
   fClassDebugLevels.Delete();
@@ -57,7 +58,7 @@ TAGrecoManager::~TAGrecoManager()
 }
 
 //_____________________________________________________________________________
-// private constructor
+//! Private constructor
 TAGrecoManager::TAGrecoManager( const TString expName )
 : fParFileName(""),        fDebugLevel(0),
   fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),       fVTreso(0.),            fITreso(0.),            fMSDreso(0.),             fTWreso(0.),

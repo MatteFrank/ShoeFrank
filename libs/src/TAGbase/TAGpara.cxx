@@ -16,7 +16,6 @@ ClassImp(TAGpara);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGpara::TAGpara()
 : TObject()
 {}
@@ -24,13 +23,11 @@ TAGpara::TAGpara()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGpara::~TAGpara()
 {}
 
 //------------------------------------------+-----------------------------------
-//! Invalidate parameter object.
-
+// Invalidate parameter object.
 void TAGpara::Clear(Option_t*)
 {
   ResetBit(kFail);
@@ -38,8 +35,7 @@ void TAGpara::Clear(Option_t*)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGpara::ToStream(ostream& os, Option_t* option) const
 {
   os <<"TAGpara: " << IsA()->GetName();
@@ -49,8 +45,7 @@ void TAGpara::ToStream(ostream& os, Option_t* option) const
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGpara::Print(Option_t* option) const
 {
   ToStream(cout, option);

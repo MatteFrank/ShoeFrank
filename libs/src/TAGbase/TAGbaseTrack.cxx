@@ -36,7 +36,7 @@
 ClassImp(TAGbaseTrack) // Description of a Track
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TAGbaseTrack::TAGbaseTrack()
 :  TAGobject(),
    fOrigin(new TVector3()),
@@ -65,7 +65,7 @@ TAGbaseTrack::TAGbaseTrack()
 }
 
 //______________________________________________________________________________
-//  
+//! Copy constructor
 TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack& aTrack)
 :  TAGobject(aTrack),
    fOrigin(new TVector3(*aTrack.fOrigin)),
@@ -95,7 +95,7 @@ TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack& aTrack)
 }
 
 //______________________________________________________________________________
-//  
+//! Destructor
 TAGbaseTrack::~TAGbaseTrack()
 {
    delete fOrigin;

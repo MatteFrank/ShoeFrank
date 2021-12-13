@@ -17,7 +17,6 @@ ClassImp(TAGtrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGtrack::TAGtrack()
  : TAGnamed(),
    fEvtNumber(-1),
@@ -87,7 +86,7 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
 }
 
 //______________________________________________________________________________
-//
+//! Copy constructor
 TAGtrack::TAGtrack(const TAGtrack& aTrack)
 :  TAGnamed(aTrack),
    fEvtNumber(aTrack.fEvtNumber),
@@ -203,9 +202,6 @@ Double_t TAGtrack::GetTgtPhi() const
 
    return phi;
 }
-
-
-
 
 //______________________________________________________________________________
 //
@@ -341,14 +337,14 @@ TAGntuGlbTrack::~TAGntuGlbTrack()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of tracks
+// return number of tracks
 Int_t TAGntuGlbTrack::GetTracksN() const
 {
    return fListOfTracks->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-//! return a Track for a given sensor
+// return a Track for a given sensor
 TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack)
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -358,7 +354,7 @@ TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+// return a pixel for a given sensor
 const TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack) const
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -367,9 +363,8 @@ const TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack) const
       return 0x0;
 }
 
-
 //------------------------------------------+-----------------------------------
-//! Setup clones.
+// Setup clones.
 void TAGntuGlbTrack::SetupClones()
 {
    if (!fListOfTracks) {
@@ -379,7 +374,7 @@ void TAGntuGlbTrack::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear event.
+// Clear event.
 void TAGntuGlbTrack::Clear(Option_t*)
 {
    fListOfTracks->Delete();
@@ -416,7 +411,7 @@ TAGtrack* TAGntuGlbTrack::NewTrack(TAGtrack& trk)
 }
 
 //______________________________________________________________________________
-//! ostream insertion.
+// ostream insertion.
 void TAGntuGlbTrack::ToStream(ostream& os, Option_t* option) const
 {
    os << "TAGntuGlbTrack " << GetName()

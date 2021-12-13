@@ -17,7 +17,6 @@ Int_t TAGactNtuClusterMT::fgkLimThreadsN = 8;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGactNtuClusterMT::TAGactNtuClusterMT(const char* name, const char* title )
  : TAGaction(name, title),
    fDimX(-1),

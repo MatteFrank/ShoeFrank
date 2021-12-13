@@ -23,6 +23,7 @@ const TString TAGionisMaterials::fgkBirks                  = "kBirks";
 ClassImp(TAGionisMaterials);
 
 //______________________________________________________________________________
+//! Constructor
 TAGionisMaterials::TAGionisMaterials(TGeoMaterial* mat)
  : TAGobject(),
    fMaterial(mat),
@@ -34,6 +35,7 @@ TAGionisMaterials::TAGionisMaterials(TGeoMaterial* mat)
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAGionisMaterials::TAGionisMaterials()
 : TAGobject(),
    fMaterial(0x0),

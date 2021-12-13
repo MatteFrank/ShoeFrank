@@ -24,6 +24,7 @@ const TString TAGcampaignManager::fgkDefaultCamName = "FOOT.cam";
 
 
 //_____________________________________________________________________________
+//! Constructor
 TAGcampaignManager::TAGcampaignManager(const TString exp)
  : TAGaction(fgkDefaultActName.Data(), "TAGcampaignManager - Campaign Manager"),
    fFileStream(new TAGparTools()),
@@ -38,6 +39,7 @@ TAGcampaignManager::TAGcampaignManager(const TString exp)
 }
 
 //_____________________________________________________________________________
+//! Destructor
 TAGcampaignManager::~TAGcampaignManager()
 {
    delete fFileStream;
@@ -172,6 +174,7 @@ map<Int_t, TString> TAGcampaign::fgCAcalFileType = {{0, "TACA_Energy"},{1, "TACA
 map<Int_t, TString> TAGcampaign::fgTWmapFileType = {{0, "TATWChannel"},{1, "TATWbars"} };
 
 //_____________________________________________________________________________
+//! Constructor
 TAGcampaign::TAGcampaign()
  : TAGparTools(),
    fName(""),
@@ -181,6 +184,7 @@ TAGcampaign::TAGcampaign()
 }
 
 //_____________________________________________________________________________
+//! Destructor
 TAGcampaign::~TAGcampaign()
 {
 }

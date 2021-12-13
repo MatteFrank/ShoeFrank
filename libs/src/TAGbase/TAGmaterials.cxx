@@ -24,6 +24,7 @@ TAGmaterials* TAGmaterials::fgInstance = 0;
 ClassImp(TAGmaterials);
 
 //______________________________________________________________________________
+//! Constructor
 TAGmaterials::TAGmaterials()
  : TAGbaseMaterials()
 {
@@ -31,6 +32,7 @@ TAGmaterials::TAGmaterials()
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAGmaterials::~TAGmaterials()
 {
 }

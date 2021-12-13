@@ -19,7 +19,6 @@ TString TAGrunInfo::fgkObjectName = "runinfo";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGrunInfo::TAGrunInfo()
  : fsCam(""),
    fiRun(-1)
@@ -27,7 +26,6 @@ TAGrunInfo::TAGrunInfo()
 
 //------------------------------------------+-----------------------------------
 //! Construct with campaign and run number.
-
 TAGrunInfo::TAGrunInfo(TString s_cam, Short_t i_run)
  : fsCam(s_cam),
    fiRun(i_run)
@@ -66,12 +64,11 @@ TAGrunInfo::TAGrunInfo(const TAGrunInfo& right)
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGrunInfo::~TAGrunInfo()
 {}
 
 //------------------------------------------+-----------------------------------
-//! operator =
+// operator =
 const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
 {
    fiRun = right.fiRun;
@@ -106,8 +103,7 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear run info.
-
+// Clear run info.
 void TAGrunInfo::Clear(Option_t*)
 {
   fsCam = "";
@@ -116,8 +112,7 @@ void TAGrunInfo::Clear(Option_t*)
 }
 
 //------------------------------------------+-----------------------------------
-//! ostream insertion.
-
+// ostream insertion.
 void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
 {
   os << "Run info:     "
@@ -161,7 +156,6 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
 
 //------------------------------------------+-----------------------------------
 // Returns true of run info lhs and rhs are equal
-
 bool operator==(const TAGrunInfo& lhs, const TAGrunInfo& rhs)
 {
    return lhs.fsCam==rhs.fsCam && lhs.fiRun==rhs.fiRun;

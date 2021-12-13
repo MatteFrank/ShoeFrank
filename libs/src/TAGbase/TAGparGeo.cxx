@@ -39,19 +39,19 @@ const TString TAGparGeo::fgkDefParaName = "tgGeo";
 
 
 //______________________________________________________________________________
+//! Standard constructor
 TAGparGeo::TAGparGeo()
 : TAGparTools(),
   fIonisation(new TAGionisMaterials()),
   fFileName("")
 {
-   // Standard constructor
    fDefaultGeoName = "./geomaps/TAGdetector.geo";
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAGparGeo::~TAGparGeo()
 {
-   // Destructor
    delete fIonisation;
 }
 

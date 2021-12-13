@@ -27,6 +27,7 @@ map<TString, Int_t>   TAGbaseMaterials::fgkLowMat = {{"Graphite", 1}};
 ClassImp(TAGbaseMaterials);
 
 //______________________________________________________________________________
+//! Default constructor
 TAGbaseMaterials::TAGbaseMaterials()
  : TAGobject(),
    fIonisation(new TAGionisMaterials()),
@@ -39,6 +40,7 @@ TAGbaseMaterials::TAGbaseMaterials()
 }
 
 //______________________________________________________________________________
+//! Default destructor
 TAGbaseMaterials::~TAGbaseMaterials()
 {
    delete fIonisation;
@@ -145,7 +147,6 @@ TString TAGbaseMaterials::GetSubFormula(const TString formula)
 //______________________________________________________________________________
 void TAGbaseMaterials::GetIsotopeAndWeight(const TString formula)
 {
-   
    TString key = formula;
    Int_t length = key.Length();
    
@@ -220,7 +221,6 @@ void TAGbaseMaterials::CreateDefaultMaterials()
 //______________________________________________________________________________
 Bool_t TAGbaseMaterials::ReadFlukaDefMat()
 {
-
   ifstream file;
  
   string buff;
@@ -242,11 +242,7 @@ Bool_t TAGbaseMaterials::ReadFlukaDefMat()
   }
    
   return true;
-
-
 }
-
-
 
 //______________________________________________________________________________
 Int_t TAGbaseMaterials::GetFlukaMatId(Double_t Z)
@@ -261,7 +257,6 @@ Int_t TAGbaseMaterials::GetFlukaMatId(Double_t Z)
     }
   
   return m;
-  
 }
 
 //______________________________________________________________________________

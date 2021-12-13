@@ -119,7 +119,7 @@ ClassImp(TAGntuPoint);
 TString TAGntuPoint::fgkBranchName   = "glbpoint.";
 
 //------------------------------------------+-----------------------------------
-//! 
+//!  Constructor
 TAGntuPoint::TAGntuPoint() 
 : TAGdata(),
   fListOfPoints(0x0)
@@ -135,7 +135,7 @@ TAGntuPoint::~TAGntuPoint()
 }
 
 //______________________________________________________________________________
-//  standard
+//!  standard constructor
 TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr)
 {
    TClonesArray &pixelArray = *fListOfPoints;
@@ -145,7 +145,7 @@ TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 
 }
 
 //______________________________________________________________________________
-//  standard + momentum
+//!  standard + momentum constructor
 TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
 {
 	TClonesArray &pixelArray = *fListOfPoints;
@@ -161,7 +161,7 @@ Int_t TAGntuPoint::GetPointsN()
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+// return a pixel for a given sensor
 TAGpoint* TAGntuPoint::GetPoint(Int_t iPoint) {
 
 	if ( iPoint < 0  || iPoint >= GetPointsN() ) {
@@ -171,7 +171,7 @@ TAGpoint* TAGntuPoint::GetPoint(Int_t iPoint) {
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup clones. Crate and initialise the list of pixels
+// Setup clones. Crate and initialise the list of pixels
 void TAGntuPoint::SetupClones()
 {
    if (fListOfPoints) return;
@@ -179,18 +179,14 @@ void TAGntuPoint::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear event.
+// Clear event.
 void TAGntuPoint::Clear(Option_t*)
 {
 	fListOfPoints->Clear("C");
 }
 
-
-
-
-
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
+// ostream insertion.
 void TAGntuPoint::ToStream(ostream& os, Option_t* option) const
 {
    // for (Int_t i = 0; i < m_vtxGeo->GetSensorsN(); ++i) {
