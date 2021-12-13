@@ -76,3 +76,21 @@ CamName:    "16O_400"
 CamDataMC:    1
 CamDate: "9 November 2021"
 CamSum: "Simulation data for 16O on 12C 5mm target thickness @ 400MeV/u"
+
+CamNumber:    13
+CamName:    "MSDTRENTO"
+CamDataMC:    0
+CamDate: "July 2021"
+CamSum: "MSD beam test at Trento"
+
+CamNumber:    14
+CamName:    "MSDPS"
+CamDataMC:    0
+CamDate: "Nov 2021"
+CamSum: "MSD beam test at CERN PS"
+
+CamNumber:    15
+CamName:    "MSDCNAO"
+CamDataMC:    0
+CamDate: "Dec 2021"
+CamSum: "MSD beam test at CNAO"

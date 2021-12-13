@@ -25,7 +25,7 @@
 ClassImp(BaseReco)
 
 Bool_t  BaseReco::fgItrTrackFlag  = false;
-Bool_t  BaseReco::fgMsdTrackFlag  = false;
+Bool_t  BaseReco::fgMsdTrackFlag  = true;
 Bool_t  BaseReco::fSaveMcFlag     = true;
 
 //__________________________________________________________
