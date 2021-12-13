@@ -1,4 +1,11 @@
 
+/*!
+ \file TAGeventDisplay.cxx
+ \brief FOOT class to work on MC event display
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include "TAGeventDisplayMC.hxx"
 #include "TEveGeoNode.h"
 #include "TEveManager.h"
@@ -9,6 +16,12 @@
 #include "TAGrecoManager.hxx"
 #include "LocalRecoMC.hxx"
 #include "GlobalToeReco.hxx"
+
+/*!
+ \class TAGeventDisplay
+ \brief FOOT class to work on MC event display
+ */
+/*------------------------------------------+---------------------------------*/
 
 ClassImp(TAGeventDisplayMC)
 

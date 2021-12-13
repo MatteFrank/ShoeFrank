@@ -14,14 +14,15 @@
 #include "TAIRcluster.hxx"
 
 
-class TAVTtrack;
-class TAVTbaseParGeo;
-
-/** TAIRcluster class, simple container class for tracks with the associated clusters
- 
+/*!
+ \file TAIRntuCluster.hxx
+ \brief Simple container class for clusters
  \author Ch. Finck
  */
+/*------------------------------------------+---------------------------------*/
 
+class TAVTtrack;
+class TAVTbaseParGeo;
 
 //##############################################################################
 

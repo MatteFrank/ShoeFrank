@@ -45,7 +45,7 @@ private:
    TAGdataDsc*    fpNtuRaw;         ///< output data dsc
    EVENT_STRUCT*  fEventStruct;     ///< Fluka structure
 
-   map<pair<int, int>, TAVThit*> fMap;     //!< map for pilepup
+   map<pair<int, int>, TAVThit*> fMap;     //! map for pilepup
 
 private:
    //! Fill noise per sensor

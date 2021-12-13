@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAGactNtuGlbTrack.cxx
+ \file TAGactNtuGlbTrack.cxx
  \brief   Implementation of TAGactNtuGlbTrack.
  */
 
@@ -48,8 +47,8 @@ struct ms2d_tag;
 }
 
 /*!
- \class TAGactNtuGlbTrack TAGactNtuGlbTrack.hxx "TAGactNtuGlbTrack.hxx"
- \brief  Read back detector clusters to reconstruct global tracks**
+ \class TAGactNtuGlbTrack
+ \brief  Read back detector clusters to reconstruct global tracks with TOE**
  */
 
 ClassImp(TAGactNtuGlbTrack)

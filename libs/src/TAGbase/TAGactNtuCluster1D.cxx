@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAGactNtuCluster1D.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \file TAGactNtuCluster1D.cxx
  \brief   Implementation of TAGactNtuCluster1D.
  */
 
@@ -8,7 +7,7 @@
 
 /*!
  \class TAGactNtuCluster1D 
- \brief General class for 2D clustering **
+ \brief General class for 1D clustering **
  */
 
 ClassImp(TAGactNtuCluster1D);

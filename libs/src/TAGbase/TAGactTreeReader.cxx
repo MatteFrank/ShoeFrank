@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGactTreeReader.cxx,v 1.17 2003/07/16 19:32:54 mueller Exp $
+  \file TAGactTreeReader.cxx
   \brief   Implementation of TAGactTreeReader.
 */
 
@@ -16,7 +15,7 @@
 #include "TAGactTreeReader.hxx"
 
 /*!
-  \class TAGactTreeReader TAGactTreeReader.hxx "TAGactTreeReader.hxx"
+  \class TAGactTreeReader
   \brief Read object tree's. **
 */
 

@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGview.cxx,v 1.5 2003/05/01 21:29:39 mueller Exp $
+  \file TAGview.cxx
   \brief   Implementation of TAGview.
 */
 
@@ -12,7 +11,7 @@
 #include "TAGview.hxx"
 
 /*!
-  \class TAGview TAGview.hxx "TAGview.hxx"
+  \class TAGview 
   \brief Base class for all views . **
 */
 

@@ -1,3 +1,10 @@
+/*!
+ \file LocalRecoMC.hxx
+ \brief Reconstruction class from MC data
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include "TTree.h"
 
 #include "LocalRecoMC.hxx"
@@ -17,6 +24,12 @@
 #include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuHit.hxx"
+
+/*!
+ \file LocalRecoMC
+ \brief Reconstruction class from MC data
+ */
+/*------------------------------------------+---------------------------------*/
 
 ClassImp(LocalRecoMC)
 

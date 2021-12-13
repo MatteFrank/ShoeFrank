@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGdata.cxx,v 1.5 2003/06/09 18:37:01 mueller Exp $
+  \file TAGdata.cxx
   \brief   Implementation of TAGdata.
 */
 
@@ -9,7 +8,7 @@
 #include "TAGdata.hxx"
 
 /*!
-  \class TAGdata TAGdata.hxx "TAGdata.hxx"
+  \class TAGdata 
   \brief Mother of all data objects. **
 */
 

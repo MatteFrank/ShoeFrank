@@ -1,7 +1,15 @@
-
+/*!
+ \file TAGactDaqReader.cxx
+ \brief  Interface for DAQ file reader
+ */
 
 #include "TAGactDaqReader.hxx"
 #include "TAGrecoManager.hxx"
+
+/*!
+ \class TAGactDaqReader
+ \brief  Interface for DAQ file reader
+ */
 
 ClassImp(TAGactDaqReader);
 
@@ -40,17 +48,17 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString
 
    // all hard coded for the moment
    if (fDaqFileChain) {
-      if (name.EndsWith(".data")){
+      if (name.EndsWith(".data")) {
         Int_t pos = name.Last('.');
         pos -= 4;
         TString tmp = name(0, pos);
         fCurFileName = tmp + Form("%04d", fDaqFileIndex) + ".data";
-      }else if(name.EndsWith(".data.moved")){
+      } else if(name.EndsWith(".data.moved")) {
         Int_t pos = name.Last('.');
         pos -= 9;
         TString tmp = name(0, pos);
         fCurFileName = tmp + Form("%04d", fDaqFileIndex) + ".data.moved";
-      }else
+      } else
         Error("Open()", "wrong file extension file, must be .data or .data.moved");
    }
 

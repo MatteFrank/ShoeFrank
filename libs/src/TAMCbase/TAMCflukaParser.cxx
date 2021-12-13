@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAMCflukaParser.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \file TAMCflukaParser.cxx
  \brief   Implementation of TAMCflukaParser.
  */
 
@@ -12,7 +11,7 @@
 #include "TAGgeoTrafo.hxx"
 
 /*!
- \class TAMCflukaParser TAMCflukaParser.hxx "TAMCflukaParser.hxx"
+ \class TAMCflukaParser 
  \brief Parser for Fluka MC events. **
  */
 

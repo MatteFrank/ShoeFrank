@@ -1,4 +1,7 @@
-
+/*!
+ \file TAGparGeo.cxx
+ \brief   Implementation of TAGparGeo.
+ */
 
 #include <Riostream.h>
 #include <fstream>
@@ -25,8 +28,8 @@
 //##############################################################################
 
 /*!
- \class TAGparGeo TAGparGeo.hxx "TAGparGeo.hxx"
- \brief Map and Geometry parameters for vertex. **
+ \class TAGparGeo
+ \brief Map and Geometry parameters for beam/target. **
  */
 
 ClassImp(TAGparGeo);

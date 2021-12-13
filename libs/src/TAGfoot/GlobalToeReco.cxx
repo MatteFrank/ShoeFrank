@@ -5,12 +5,23 @@
  author: Ch. Finck
  */
 
+/*!
+ \file GlobalToeReco.cxx
+ \brief Global reconstruction class using TOE from L0 tree
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "BaseReco.hxx"
 #include "TAMCntuEvent.hxx"
 #include "TAMCntuRegion.hxx"
 
 #include "GlobalToeReco.hxx"
 
+/*!
+ \class GlobalToeReco.
+ \brief Global reconstruction class using TOE from L0 tree
+ */
+/*------------------------------------------+---------------------------------*/
 
 ClassImp(GlobalToeReco)
 

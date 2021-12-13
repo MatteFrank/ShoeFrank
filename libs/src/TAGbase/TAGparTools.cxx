@@ -1,4 +1,7 @@
-
+/*!
+ \file TAGparTools.cxx
+ \brief   Implementation of TAGparTools.
+ */
 
 #include "TMath.h"
 #include "TObjArray.h"

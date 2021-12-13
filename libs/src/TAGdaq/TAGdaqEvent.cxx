@@ -1,13 +1,12 @@
 /*!
-  \file
-  \version $Id: TAGdaqEvent.cxx,v 1.6 2003/06/19 17:53:28 mueller Exp $
+  \file TAGdaqEvent.cxx
   \brief   Implementation of TAGdaqEvent.
 */
 
 #include "TAGdaqEvent.hxx"
 
 /*!
-  \class TAGdaqEvent TAGdaqEvent.hxx "TAGdaqEvent.hxx"
+  \class TAGdaqEvent 
   \brief Representation of raw data event. **
 */
 

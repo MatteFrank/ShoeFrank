@@ -1,7 +1,7 @@
 #ifndef _TAIRntuAlignC_HXX
 #define _TAIRntuAlignC_HXX
 /*!
- \file
+ \file TAIRntuAlignC
  \brief   Declaration of TAIRntuAlignC.
  
  \author C.A. Reidel & Ch. Finck
@@ -22,57 +22,65 @@ public:
    ~TAIRntuAlignC();
    
 public:
+   //! Reset
    void   Reset();
+   //! Define constants
    void   DefineConstant(Double_t* weightQ, Double_t* position);
+   //! Accumulate
    Bool_t Accumulate(Double_t* Ucluster, Double_t* Vcluster);
+   //! Sum
    void   Sum();
+   //! Constraint
    void   Constraint(Int_t planeRef1, Int_t planeRef2);
+   //! Minimize
    void   Minimize();
    
+   //! Return offset U
    Float_t*     GetOffsetU() const { return fAlignOffsetU; }
+   //! Return offset V
    Float_t*     GetOffsetV() const { return fAlignOffsetV; }
+   //! Return tilt angle W
    Float_t*     GetTiltW()   const { return fAlignTiltW;   }
    
 private:
-   Int_t*      fpDevStatus;
-   TArrayI*    fSensorArray;           // contains the sensor number to be aligned
+   Int_t*      fpDevStatus;      ///< device status array
+   TArrayI*    fSensorArray;     ///< contains the sensor number to be aligned
    
-   Float_t*    fAlignTiltW;
-   Float_t*    fAlignOffsetU;
-   Float_t*    fAlignOffsetV;
+   Float_t*    fAlignTiltW;      ///< Tilt angle array
+   Float_t*    fAlignOffsetU;    ///< Alignment in U
+   Float_t*    fAlignOffsetV;    ///< Alignment in V
    
-   Double_t    fSumZiWiQ;
-   Double_t    fSumZiQWiQ;
+   Double_t    fSumZiWiQ;        ///< Sum of weighted Q
+   Double_t    fSumZiQWiQ;       ///< Sum Q
    
-   Int_t       fColumnY;
-   Int_t       fColumnPhi;
+   Int_t       fColumnY;         ///< Column Y
+   Int_t       fColumnPhi;       ///< Column phi
    
-   TMatrixD    fQ;
+   TMatrixD    fQ;               ///< Q matrices
 
    
-   TMatrixD    fCxInit;   // = Q . Px
-   TMatrixD    fCyInit;   // = Q . Py
-   TMatrixD    fCx;
-   TMatrixD    fCy;
-   TMatrixD    fCxtCx;
-   TMatrixD    fCytCy;
-   TMatrixD    fCxtCxT;
-   TMatrixD    fCytCyT;
+   TMatrixD    fCxInit;          ///< = Q . Px
+   TMatrixD    fCyInit;          ///< = Q . Py
+   TMatrixD    fCx;              ///< base matrix in X
+   TMatrixD    fCy;              ///< base matrix in Y
+   TMatrixD    fCxtCx;           ///< Product matrices
+   TMatrixD    fCytCy;           ///< Product matrices
+   TMatrixD    fCxtCxT;          ///< Product matrices
+   TMatrixD    fCytCyT;          ///< Product matrices
    
-   TMatrixD    fDxInit;  // vector = Q . Xvector
-   TMatrixD    fDyInit;  // vector = Q . Yvector
-   TMatrixD    fDx;
-   TMatrixD    fDy;
+   TMatrixD    fDxInit;          ///< vector = Q . Xvector
+   TMatrixD    fDyInit;          ///< vector = Q . Yvector
+   TMatrixD    fDx;              ///< base vector in X
+   TMatrixD    fDy;              ///< base vector in Y
    
-   TMatrixD    fTermeL;
-   TMatrixD    fTermeCst;
+   TMatrixD    fTermeL;          ///< termL
+   TMatrixD    fTermeCst;        ///< term constant
    
-   TMatrixD    fCm;
-   TMatrixD    fDm;
-   TMatrixD    fCmf;
-   TMatrixD    fDmf;
-   
-   TMatrixD fAv;
+   TMatrixD    fCm;              ///< tmp matrix
+   TMatrixD    fDm;              ///< tmp matrix
+   TMatrixD    fCmf;             ///< tmp matrix
+   TMatrixD    fDmf;             ///< tmp matrix
+   TMatrixD    fAv;              ///< tmp matrix
    
    ClassDef(TAIRntuAlignC,0)
 };

@@ -1,8 +1,7 @@
 #ifndef _TAIRactNtuTrack_HXX
 #define _TAIRactNtuTrack_HXX
 /*!
- \file
- \version $Id: TAIRactNtuTrack.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAIRactNtuTrack.hxx
  \brief   Declaration of TAIRactNtuTrack.
  */
 /*------------------------------------------+---------------------------------*/
@@ -32,26 +31,33 @@ public:
    virtual  Bool_t  Action();
 
 public:
+   //! Return matching with BM flag
    static Bool_t  IsBmMatched()             { return fgBmMatched; }
+   //! Set matching with BM flag
    static void    SetBmMatched(Bool_t flag) { fgBmMatched = flag; }
 
 private:
+   //! Find track
     Bool_t    FindTracks();
+   //! Check VTX
     Bool_t    CheckVtx();
+   //! Fill interaction region track
    TAIRtrack* FillTracks(TAVTtrack* vtTrack);
+   //! Fill histogram from track
    void       FillHistogramm(TAGbaseTrack* track);
+   //! Fill histogram
    void       FillHistogramm();
 
 private:
-   TAGdataDsc*  fpVtVertex;        // VT vertex container
-   TAVTvertex*  fVtVertex;         // VT vertex pointer
-   TAGparaDsc*  fpVtGeoMap;        // VT par geo
+   TAGdataDsc*  fpVtVertex;        ///< VT vertex container
+   TAVTvertex*  fVtVertex;         ///< VT vertex pointer
+   TAGparaDsc*  fpVtGeoMap;        ///< VT par geo
 
-   TH1F*        fpHisPixelTot;        // Total number of pixels per cluster
-   TH1F*        fpHisPixel[36];      // Total number of pixels per tracked cluster for each sensor
+   TH1F*        fpHisPixelTot;     ///< Total number of pixels per cluster
+   TH1F*        fpHisPixel[36];    ///< Total number of pixels per tracked cluster for each sensor
 
 private:
-   static Bool_t fgBmMatched;      // vertex matched with BM flag
+   static Bool_t fgBmMatched;      ///< vertex matched with BM flag
 
 };
 

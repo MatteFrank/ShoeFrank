@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGactTreeWriter.cxx,v 1.17 2003/07/08 18:54:43 mueller Exp $
+  \file TAGactTreeWriter.cxx
   \brief   Implementation of TAGactTreeWriter.
 */
 
@@ -19,7 +18,7 @@
 #include "TAGactTreeWriter.hxx"
 
 /*!
-  \class TAGactTreeWriter TAGactTreeWriter.hxx "TAGactTreeWriter.hxx"
+  \class TAGactTreeWriter 
   \brief Write tree's. **
 */
 

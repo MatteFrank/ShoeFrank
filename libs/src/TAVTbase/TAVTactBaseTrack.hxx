@@ -98,8 +98,8 @@ protected:
    TAGgeoTrafo*    fpFootGeo;	          ///< First geometry transformer
 	
    Int_t           fTracksMaximum;      ///< maximum number of tracks allowed
-   Int_t           fRequiredClusters;   //!< number of clusters required to make a track
-   Double_t        fSearchClusDistance; //!< Max distance to associate a track and a cluster
+   Int_t           fRequiredClusters;   //! number of clusters required to make a track
+   Double_t        fSearchClusDistance; //! Max distance to associate a track and a cluster
    Float_t         fPlaneResolution;    ///< plane resolution
       
    TGraphErrors*   fGraphU;             ///< pointer to graph for fit in U

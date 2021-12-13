@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGeventId.cxx,v 1.1 2001/12/10 21:28:24 mueller Exp $
+  \file TAGeventId.cxx
   \brief   Implementation of TAGeventId.
 */
 
@@ -9,8 +8,8 @@
 #include "TAGeventId.hxx"
 
 /*!
-  \class TAGeventId TAGeventId.hxx "TAGeventId.hxx"
-  \brief MBS raw event info. **
+  \class TAGeventId 
+  \brief DAQ raw event info. **
 */
 
 ClassImp(TAGeventId);

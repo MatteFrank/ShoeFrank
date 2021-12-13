@@ -1,9 +1,13 @@
+/*!
+ \file TAGcluster.cxx
+ \brief   Implementation of TAGactTreeReader.
+ */
 
 #include "TAGcluster.hxx"
 #include "TAGbaseTrack.hxx"
 
 /*!
-  \class TAGcluster TAGcluster.hxx
+  \class TAGcluster
   \brief Mother of all cluster/point objects. **
 */
 

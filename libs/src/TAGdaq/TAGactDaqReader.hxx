@@ -1,8 +1,9 @@
 #ifndef _TAGactDaqReader_HXX
 #define _TAGactDaqReader_HXX
 
-/*------------------------------------------+---------------------------------*/
-/* Interface for DAQ file reader
+/*!
+ \file TAGactDaqReader.hxx
+ \brief  Interface for DAQ file reader
 */
 
 #include "TList.h"
@@ -28,25 +29,27 @@ class TAGactDaqReader : public TAGactionFile {
 public:
    explicit        TAGactDaqReader(const char* name=0, TAGdataDsc* p_datdaq=0);
    virtual         ~TAGactDaqReader();
-      
+   
+   //! Open DAQ file
    virtual Int_t   Open(const TString& name, Option_t* option="chain", const TString treeName="", Bool_t dscBranch = true);
+   //! Close file
    virtual void    Close();
-   
+   //! Check open file
    virtual Bool_t  IsOpen() const;
-   
+   //! Process action
    virtual Bool_t  Process();
-
+   //! Skip event
    virtual void    SkipEvents(Int_t nEvents);
-
+   //! return DAQ header file
    DAQFileHeader*  GetFileHeader()  const { return fDaqFileHeader;  }
 
 private:
-   EventReader*    fDaqFileReader;
-   DAQFileHeader*  fDaqFileHeader;
-   TAGdataDsc*     fDaqEvent;		    // input data dsc
-   TString         fCurFileName;
-   Int_t           fDaqFileIndex;
-   Bool_t          fDaqFileChain;    // chaining files in reading
+   EventReader*    fDaqFileReader;  ///< Event header
+   DAQFileHeader*  fDaqFileHeader;  ///< DAQ file stream
+   TAGdataDsc*     fDaqEvent;		   ///< input data dsc
+   TString         fCurFileName;    ///< Current file name
+   Int_t           fDaqFileIndex;   ///< current DAQ file index
+   Bool_t          fDaqFileChain;   ///< chaining files in reading
 
    ClassDef(TAGactDaqReader,0)
 };

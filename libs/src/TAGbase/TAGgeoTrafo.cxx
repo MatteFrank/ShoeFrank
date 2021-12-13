@@ -1,3 +1,8 @@
+/*!
+ \file TAGgeoTrafo.cxx
+ \brief   Implementation of TAGgeoTrafo.
+ */
+
 #include "TAGgeoTrafo.hxx"
 #include <fstream>
 
@@ -5,7 +10,11 @@
 
 #include "TAGrecoManager.hxx"
 
-//Class that handles the Geometrical transformations in FOOT
+
+/*!
+ \class TAGgeoTrafo 
+ \brief/Class that handles the Geometrical transformations in FOOT. **
+ */
 
 ClassImp(TAGgeoTrafo);
 

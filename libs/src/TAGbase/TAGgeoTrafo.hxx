@@ -1,6 +1,12 @@
 #ifndef _TAGgeoTrafo_HXX
 #define _TAGgeoTrafo_HXX
 
+/*!
+ \file TAGgeoTrafo.hxx
+ \brief   Declaration of TAGgeoTrafo.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include <map>
 #include <TVector3.h>
 #include <TString.h>
@@ -9,9 +15,6 @@
 
 #include "TAGaction.hxx"
 #include "TAGparTools.hxx"
-
-//Everything is in cm... Conversion to other units must be performed
-//by the user
 
 class TObjArray;
 
@@ -50,15 +53,15 @@ private:
    static const Float_t fgkGausToTesla;   //! conversion factor bw Gaus and Tesla
    static const Float_t fgkGausToKGaus;   //! conversion factor bw Gaus and kGaus
 
-   static const Float_t fgkMassFactor;     // default proton mass
-   static const Float_t fgkElectronMass;   // default electron mass
-   static const Float_t fgkLightVelocity;  // Speed of light in vacuum
+   static const Float_t fgkMassFactor;     //! default proton mass
+   static const Float_t fgkElectronMass;   //! default electron mass
+   static const Float_t fgkLightVelocity;  //! Speed of light in vacuum
 
-   static const Char_t* fgkGeomName;      //! name of GeoManager
-   static const Char_t* fgkGeomTitle;     //! title of GeoManager
-   static       Char_t  fgDefaultTransp;  // default transparency value
-   static const Char_t* fgkTrafoBaseName; //! name of GeoManager
-   static map<TString, Int_t> fgkDeviceType; // device name
+   static const Char_t* fgkGeomName;       //! name of GeoManager
+   static const Char_t* fgkGeomTitle;      //! title of GeoManager
+   static       Char_t  fgDefaultTransp;   //! default transparency value
+   static const Char_t* fgkTrafoBaseName;  //! name of GeoManager
+   static map<TString, Int_t> fgkDeviceType; //! device name
 
 public:
    TAGgeoTrafo(const TString expName = "FOOT");
@@ -208,6 +211,7 @@ public:
    static           void    SetDefaultTransparency(Char_t transparency) { fgDefaultTransp = transparency; }
    static           Int_t   GetDeviceType(const TString name) { return fgkDeviceType[name];}
    static    const Char_t*  GetDeviceName(Int_t devType);
+   
    ClassDef(TAGgeoTrafo,1)
 };
 

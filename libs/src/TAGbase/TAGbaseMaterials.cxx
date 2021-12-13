@@ -1,7 +1,9 @@
-// ********************************************************************
-//
-// Base class to define materials
-// author: M. Vanstalle
+/*!
+ \file TAGbaseMaterials.cxx
+ \brief    Base class to define materials
+ \author: M. Vanstalle
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include "TAGbaseMaterials.hxx"
 #include "TAGionisMaterials.hxx"

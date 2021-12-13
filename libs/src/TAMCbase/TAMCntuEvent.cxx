@@ -1,4 +1,17 @@
+/*!
+ \file TAMCntuEvent.cxx
+ \brief   Implementation of TAMCntuEvent.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "TAMCntuEvent.hxx"
+
+/*!
+ \class TAMCntuEvent
+ \brief MC event container
+ */
+/*------------------------------------------+---------------------------------*/
+
 
 ClassImp(TAMCntuEvent);
 

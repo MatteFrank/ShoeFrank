@@ -1,12 +1,15 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAIRcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file  TAIRntuCluster.cxx
+ \brief Simple container class for clusters
+ */
 
 #include "TAITparGeo.hxx"
 #include "TAIRntuCluster.hxx"
 
+/*!
+ \class TAIRntuCluster
+ \brief  Simple container class for clusters
+ */
 
 ClassImp(TAIRntuCluster);
 

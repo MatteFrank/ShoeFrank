@@ -1,9 +1,9 @@
 #ifndef _TAGactNtuGlbTrack_HXX
 #define _TAGactNtuGlbTrack_HXX
 /*!
- \file
- \version $Id: TAGactNtuGlbTrack.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
+ \file TAGactNtuGlbTrack.hxx
  \brief   Declaration of TAGactNtuGlbTrack.
+ \author A. Sécher
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -25,22 +25,22 @@ class TAGgeoTrafo;
 class TAGactNtuGlbTrack : public TAGaction {
 public:
    
-   explicit  TAGactNtuGlbTrack(const char* name       = 0,
-                               TAGdataDsc* p_vtxclus  = 0,
+   explicit  TAGactNtuGlbTrack(const char* name        = 0,
+                               TAGdataDsc* p_vtxclus   = 0,
                                TAGdataDsc* p_vtxtrack  = 0,
                                TAGdataDsc* p_vtxvertex = 0,
-                               TAGdataDsc* p_itrclus  = 0,
-                               TAGdataDsc* p_msdclus  = 0,
+                               TAGdataDsc* p_itrclus   = 0,
+                               TAGdataDsc* p_msdclus   = 0,
                                TAGdataDsc* p_msdpoint  = 0,
-                               TAGdataDsc* p_twpoint  = 0,
-                               TAGdataDsc* p_glbtrack = 0,
-                               TAGparaDsc* p_geoG     = 0,
-                               TAGparaDsc* p_geodi    = 0,
-                               TAGparaDsc* p_geoVtx   = 0,
-                               TAGparaDsc* p_geoItr   = 0,
-                               TAGparaDsc* p_geoMsd   = 0,
-                               TAGparaDsc* p_geoTof   = 0,
-                               TADIgeoField* field = nullptr);
+                               TAGdataDsc* p_twpoint   = 0,
+                               TAGdataDsc* p_glbtrack  = 0,
+                               TAGparaDsc* p_geoG      = 0,
+                               TAGparaDsc* p_geodi     = 0,
+                               TAGparaDsc* p_geoVtx    = 0,
+                               TAGparaDsc* p_geoItr    = 0,
+                               TAGparaDsc* p_geoMsd    = 0,
+                               TAGparaDsc* p_geoTof    = 0,
+                               TADIgeoField* field     = nullptr);
    
    virtual  ~TAGactNtuGlbTrack();
    
@@ -50,38 +50,44 @@ public:
    //! Base creation of histogram
    void      CreateHistogram();
   
-    TAGntuGlbTrack* GetTrackContainer() {return static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() );}
-    
-    void Output(){ fActTOE->Output(); }
-    void WriteHistogram();
+   //! return Global track container
+   TAGntuGlbTrack* GetTrackContainer() {return static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() );}
+   
+   //! output from TOE action
+   void Output(){ fActTOE->Output(); }
+   
+   //! Write histogram
+   void WriteHistogram();
     
 private:
-    TATOEbaseAct* SetupAction() const;
-    TADIgeoField*        GetFootField()      const { return fField;  }
+   //! Set up action
+   TATOEbaseAct* SetupAction() const;
+   //! Get field
+   TADIgeoField*        GetFootField()      const { return fField;  }
     
 private:
    TAGgeoTrafo*      fpFootGeo;        // geo trafo
-   TAGdataDsc*       fpVtxVertex;		// Vertex
-   TAGdataDsc*       fpVtxTrack;
-   TAGdataDsc*       fpVtxClus;
+   TAGdataDsc*       fpVtxVertex;		// VTX Vertex
+   TAGdataDsc*       fpVtxTrack;       // VTX tracks
+   TAGdataDsc*       fpVtxClus;        // VTX clusters
    TAGdataDsc*       fpItrClus;		   // ITR clusters
    TAGdataDsc*       fpMsdClus;		   // MSD clusters
-    TAGdataDsc*       fpMsdPoint;           // MSD clusters
+   TAGdataDsc*       fpMsdPoint;       // MSD clusters
    TAGdataDsc*       fpTwPoint;		   // TOF points, should be cluster
    TAGdataDsc*       fpGlbTrack;		   // global tracks
-   TAGparaDsc*       fpGGeoMap;
+   TAGparaDsc*       fpGGeoMap;        // par geo for beam/target
    TAGparaDsc*       fpDiGeoMap;       // par geo for dipole
    TAGparaDsc*       fpVtxGeoMap;      // par geo for vertex
    TAGparaDsc*       fpItrGeoMap;      // par geo for inner tracker
    TAGparaDsc*       fpMsdGeoMap;      // par geo for MSD
    TAGparaDsc*       fpTofGeoMap;      // par geo for ToF
-   TADIgeoField*     fField;
+   TADIgeoField*     fField;           // Masgnetic field
    
    TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
    
-   TATOEbaseAct*     fActTOE;
+   TATOEbaseAct*     fActTOE;          // TOE action
     
-   TH1F*             fpHisMass;
+   TH1F*             fpHisMass;        // mass histogram
    
    ClassDef(TAGactNtuGlbTrack,0)
 };

@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAIRcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file TAIRcluster.cxx
+ \brief   Cluster for interaction region
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include "TAIRcluster.hxx"
 #include "TAIRtrack.hxx"

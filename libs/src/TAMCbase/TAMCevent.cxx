@@ -1,3 +1,10 @@
+/*!
+ \file TAMCevent.cxx
+ \brief   Implementation of TAMCevent.
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -10,6 +17,12 @@
 #include "TAGrecoManager.hxx"
 
 using namespace std;
+
+/*!
+ \class TAMCevent
+ \brief Manage MC branches and filling
+ */
+/*------------------------------------------+---------------------------------*/
 
 ClassImp(TAMCevent);
 

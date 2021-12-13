@@ -1,3 +1,7 @@
+/*!
+ \file  TAIRtrack.cxx
+ \brief Simple  class for tracks with the associated clusters
+ */
 #include "TMath.h"
 #include "TClonesArray.h"
 
@@ -5,20 +9,16 @@
 #include "TAIRcluster.hxx"
 #include "TAIRtrack.hxx"
 
-
-//#################################################################
-
-  //////////////////////////////////////////////////////////////////
-  // Class Description of TAIRtrack                               //
-  //                                                              //
-  // A particle track from e.g. accelerator passing the tracker   //
-  // The track is measured by the tracker with its silicon        //
-  // reference planes                                             //
-  // The track is e.g. a straight line                            //
-  // The line is found by a fit to the hits in the silicon planes // 
-  //                                                              //
-  //////////////////////////////////////////////////////////////////
-
+/*!
+ \class  TAIRtrack
+ \brief Simple  class for tracks with the associated clusters
+ 
+ A particle track from e.g. accelerator passing the tracker
+ The track is measured by the tracker with its silicon
+ reference planes
+ The track is e.g. a straight line                          
+ The line is found by a fit to the hits in the silicon planes
+ */
 
 ClassImp(TAIRtrack) // Description of a Track
 

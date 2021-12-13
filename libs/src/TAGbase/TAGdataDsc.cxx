@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGdataDsc.cxx,v 1.12 2003/06/19 17:44:21 mueller Exp $
+  \file TAGdataDsc.cxx
   \brief   Implementation of TAGdataDsc.
 */
 
@@ -12,7 +11,7 @@
 #include "TAGdataDsc.hxx"
 
 /*!
-  \class TAGdataDsc TAGdataDsc.hxx "TAGdataDsc.hxx"
+  \class TAGdataDsc 
   \brief Persistent descriptor for data object . **
 */
 

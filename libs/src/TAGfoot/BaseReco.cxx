@@ -1,5 +1,11 @@
 
 
+/*!
+ \file BaseReco.cxx
+ \brief  Base class for reconstruction
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "BaseReco.hxx"
 
 #include "TAGroot.hxx"
@@ -21,6 +27,12 @@
 #include "TAVTactNtuVertexPD.hxx"
 
 #include "TAGrecoManager.hxx"
+
+/*!
+ \class BaseReco
+ \brief  Base class for reconstruction
+ */
+/*------------------------------------------+---------------------------------*/
 
 ClassImp(BaseReco)
 

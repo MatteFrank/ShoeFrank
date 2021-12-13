@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGobject.cxx,v 1.4 2003/06/09 18:40:09 mueller Exp $
+  \file TAGobject.cxx
   \brief   Implementation of TAGobject.
 */
 
@@ -9,7 +8,7 @@
 #include "TAGobject.hxx"
 
 /*!
-  \class TAGobject TAGobject.hxx "TAGobject.hxx"
+  \class TAGobject 
   \brief Mother of most unnamed TAG objects. **
 */
 

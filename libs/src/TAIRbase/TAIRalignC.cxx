@@ -1,8 +1,7 @@
 /*!
- // C.A. Reidel & Ch. Finck
- 
- \file
+ \file TAIRalignC.cxx
  \brief   Implementation of TAIRalignC.
+ \author C.A. Reidel & Ch. Finck
  */
 #include "TMath.h"
 #include "TVector3.h"

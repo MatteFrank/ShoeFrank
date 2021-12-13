@@ -40,14 +40,14 @@ private:
    Float_t    fAlMatDensity;      ///< Density of aluminum material
 
 private:
-   vector<string> fvFoamBody;     //!< Fluka foam body
-   vector<string> fvKaptonBody;   //!< Fluka kapton body
-   vector<string> fvEpoxyBody;    //!< Fluka epoxy body
-   vector<string> fvAlBody;       //!< Fluka aluminum body
-   vector<string> fvFoamRegion;   //!< Fluka foam region
-   vector<string> fvKaptonRegion; //!< Fluka kapton region
-   vector<string> fvEpoxyRegion;  //!< Fluka epoxy body
-   vector<string> fvAlRegion;     //!< Fluka aluminum body
+   vector<string> fvFoamBody;     //! Fluka foam body
+   vector<string> fvKaptonBody;   //! Fluka kapton body
+   vector<string> fvEpoxyBody;    //! Fluka epoxy body
+   vector<string> fvAlBody;       //! Fluka aluminum body
+   vector<string> fvFoamRegion;   //! Fluka foam region
+   vector<string> fvKaptonRegion; //! Fluka kapton region
+   vector<string> fvEpoxyRegion;  //! Fluka epoxy body
+   vector<string> fvAlRegion;     //! Fluka aluminum body
 
 protected:
    static const TString fgkBaseNameIt;      ///< IT base name

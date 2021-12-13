@@ -1,5 +1,5 @@
 /*!
- \file
+ \file TAGactNtuEvent/cxx
  \brief   Implementation of TAGactNtuEvent.
  */
 
@@ -13,8 +13,8 @@
 #include "TAGactNtuEvent.hxx"
 
 /*!
- \class TAGactNtuEvent TAGactNtuEvent.hxx "TAGactNtuEvent.hxx"
- \brief Get trigger from DAQ **
+ \class TAGactNtuEvent
+ \brief Get trigger event from DAQ **
  */
 
 ClassImp(TAGactNtuEvent);

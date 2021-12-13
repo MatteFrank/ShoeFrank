@@ -67,12 +67,12 @@ public:
    virtual string PrintSubtractBodiesFromAir();
    
 protected:
-   vector<string> fvEpiBody;   //!< Fluka epitaxial body
-   vector<string> fvModBody;   //!< Fluka module body
-   vector<string> fvPixBody;   //!< Fluka pixel body
-   vector<string> fvEpiRegion; //!< Fluka epitaxial region
-   vector<string> fvModRegion; //!< Fluka module region
-   vector<string> fvPixRegion; //!< Fluka pixel region
+   vector<string> fvEpiBody;   //! Fluka epitaxial body
+   vector<string> fvModBody;   //! Fluka module body
+   vector<string> fvPixBody;   //! Fluka pixel body
+   vector<string> fvEpiRegion; //! Fluka epitaxial region
+   vector<string> fvModRegion; //! Fluka module region
+   vector<string> fvPixRegion; //! Fluka pixel region
 
 public:
    //! Get base name

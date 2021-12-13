@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAGactNtuGlbTrackS.cxx
+ \file TAGactNtuGlbTrackS.cxx
  \brief   Implementation of TAGactNtuGlbTrackS.
  */
 #include "TClonesArray.h"
@@ -54,8 +53,9 @@
 
 /*!
  \class TAGactNtuGlbTrackS
- \brief NTuplizer for Inner tracker tracks. **
- Combining VTX tracks with IT-MSD & TW clusters
+ \brief Global straight line tracking
+ Combining VTX tracks with IT-MSD & TW clusters (& CAL)
+ Computing energy loss and scattering angle
  */
 
 Bool_t  TAGactNtuGlbTrackS::fgBmMatched = false;
