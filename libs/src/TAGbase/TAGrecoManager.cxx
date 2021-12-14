@@ -169,7 +169,7 @@ void TAGrecoManager::FromFile ()
     if (key.Contains("Chi2 cut:")) {
       fChi2 = item.Atof();
       if (fDebugLevel > 0)
-        printf("Chi2 cut: %d\n", fChi2);
+        printf("Chi2 cut: %f\n", fChi2);
     }
 
     if (key.Contains("N measure in global tracking:")) {

@@ -39,15 +39,23 @@ public:
 public:
 	~TAGrecoManager();
 
-	void             FromFile();
-	void             Print(Option_t* opt = "");
+   //! From file
+	void  FromFile();
+   //! Print info
+	void  Print(Option_t* opt = "");
+   //! Get run info
    const TAGrunInfo GetGlobalInfo();
-   Bool_t           Find_MCParticle( string villain );
+   //! Find MC particle
+   Bool_t Find_MCParticle( string villain );
 
+   //! Debug level
 	Int_t  Debug()                const { return fDebugLevel;          }
-	float  Chi2Cut()             	const { return fChi2;                }
-	int  MeasureN()               const { return fMeasureN;            }
-	int  SkipN()              		const { return fSkipN;               }
+   //! Get chi2 cut
+	Float_t  Chi2Cut()            const { return fChi2;                }
+   //! Get number of measurements
+	Int_t  MeasureN()             const { return fMeasureN;            }
+   //! Get skip events
+	Int_t  SkipN()              	const { return fSkipN;               }
 
    //! Kalman Getter
    //! Kalman mode
