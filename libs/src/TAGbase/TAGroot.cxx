@@ -212,7 +212,7 @@ void TAGroot::AbortEventLoop()
 
 /*------------------------------------------+---------------------------------*/
 // Process required items of next event
-Bool_t TAGroot::NextEvent()
+Bool_t TAGroot::NextEvent(long nEv)
 {
   Bool_t b_ok = kFALSE;
   if (fbAbortEventLoop) {
@@ -225,7 +225,10 @@ Bool_t TAGroot::NextEvent()
   ClearAllAction();
   ClearAllData();
 
-  fEventId.SetEventNumber(1+fEventId.EventNumber()); // increment event number
+  if(nEv == -999)
+    fEventId.SetEventNumber(1+fEventId.EventNumber()); // increment event number
+  else
+    fEventId.SetEventNumber( nEv );
   
   //break segmentation all'ultimo giro del for
   for (TObjLink* lnk = fpRequiredActionList->FirstLink(); 

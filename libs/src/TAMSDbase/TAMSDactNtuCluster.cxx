@@ -13,6 +13,7 @@
 #include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TAMSDactNtuCluster.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
  \class TAMSDactNtuCluster 
@@ -197,6 +198,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     if ( clusterN != -1 ) {
       cluster = pNtuClus->GetCluster(iSensor, clusterN);
       cluster->AddStrip(strip);
+      cluster->SetPlaneView(strip->GetView());
     }
   }
 
@@ -204,6 +206,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
   // Compute position and fill clusters info
   for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
     cluster = pNtuClus->GetCluster(iSensor, i);
+
     cluster->SetSensorIdx(iSensor);
     cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
     fCurListOfStrips = cluster->GetListOfStrips();

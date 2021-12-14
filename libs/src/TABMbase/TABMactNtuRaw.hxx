@@ -60,6 +60,16 @@ class TABMactNtuRaw : public TAGaction {
     TH1F*            fpRawSTFitTrigger;    //Start Counter post analysis fitted trigger Time
     TH1F*            fpRawMagorTrigger;      //Daq trigger Time
     TH1F*            fpRawTdcTrigger;   //Tdc trigger Time
+    
+    TH1F*            fpRawbmTdcLessSTFITLessMagorTrigger;   //Tdc trigger Time
+    TH1F*            fpRawbmTdcLessSTFITPlusMagorTrigger;   //Tdc trigger Time
+    TH1F*            fpRawbmTdcPlusSTFITPlusMagorTrigger;   //Tdc trigger Time
+    TH1F*            fpRawbmTdcPlusSTFITLessMagorTrigger;   //Tdc trigger Time
+    TH1F*            fpRawbmTdcLessSTFITTrigger;   //Tdc trigger Time
+    TH1F*            fpRawbmTdcPlusSTFITTrigger;   //Tdc trigger Time
+
+
+
     TH1I*            fpRawMagorDouble;   //Number of Margherita or signals in the +- 10 ns window
     std::vector<TH1F*> fpRawTdcMeas;    //vector of tdc channel raw measurements
     std::vector<TH1F*> fpRawTdcLessSync;//vector of tdc channel meas - used_trigger

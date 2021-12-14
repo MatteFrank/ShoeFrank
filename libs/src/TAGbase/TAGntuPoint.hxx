@@ -8,9 +8,12 @@
 /*------------------------------------------+---------------------------------*/
 
 #include <map>
+#include <string>
+#include <vector>
 
 ///< ROOT classes
 #include "TVector3.h"
+#include <TMatrixD.h>
 #include "TArrayI.h"
 
 #include "TAGdata.hxx"
@@ -32,7 +35,13 @@ public:
    TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr);
    TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr);
    TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr);
+   TAGpoint(string trackDetID, int iPlane, int iClus, vector<int>* iPart, TVector3* measPos, TVector3* measPosErr);
    ~TAGpoint() {};
+
+   void SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* recoPos_cov, TMatrixD* recoMom_cov );
+
+   double EvalError( TVector3 mom, TMatrixD cov );
+   TVector3 EvalError( TMatrixD cov );
   
    //! return detector name
    const Char_t*    GetDevName()     const  { return fDevName.Data(); }

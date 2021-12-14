@@ -16,6 +16,7 @@
 #include "TAMSDntuPoint.hxx"
 
 #include "TAMSDactNtuPoint.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
  \class TAMSDactNtuPoint
@@ -92,9 +93,13 @@ Bool_t TAMSDactNtuPoint::FindPoints()
   TAMSDntuCluster* pNtuCluster  = (TAMSDntuCluster*) fpNtuCluster->Object();
   TAMSDntuPoint* pNtuPoint      = (TAMSDntuPoint*) fpNtuPoint->Object();
   TAMSDparGeo* pGeoMap          = (TAMSDparGeo*) fpGeoMap->Object();
+  if(FootDebugLevel(1)) {  
+    cout<<"****************************"<<endl;
+    cout<<"  NtuPoint hits "<<endl;
+    cout<<"****************************"<<endl;
+  }
   
-  bool xyOrder = true;
-  
+  int plane(0);
   for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
 
     // fill points
@@ -135,7 +140,8 @@ Bool_t TAMSDactNtuPoint::FindPoints()
             fpHisPointChargeTot->Fill(point->GetEnergyLoss());
          }
       }
-    }
+    } 
+    plane++;
   }
   return true;
 }

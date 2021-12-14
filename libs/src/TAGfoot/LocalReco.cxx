@@ -248,7 +248,6 @@ void LocalReco::SetRawHistogramDir()
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
       fActWdRaw->SetHistogramDir(subfolder);
     }
-
 }
 
 //__________________________________________________________
@@ -343,8 +342,10 @@ void LocalReco::SetTreeBranches()
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
-     if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
+     if (fFlagHits) {
+         fActEvtWriter->SetupElementBranch(fpDatRawMsd, TAMSDntuRaw::GetBranchName());
+     }
+     fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
@@ -356,6 +357,8 @@ void LocalReco::SetTreeBranches()
 
    if (TAGrecoManager::GetPar()->IncludeCA()) {
      if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpDatRawCa, TACAntuRaw::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
+
    }
 }

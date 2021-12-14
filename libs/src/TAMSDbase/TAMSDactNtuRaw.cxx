@@ -169,14 +169,14 @@ Bool_t TAMSDactNtuRaw::Action()
 
    Int_t nFragments = p_datdaq->GetFragmentsN();
 
-  if(FootDebugLevel(1))
+   if(FootDebugLevel(1))
     cout<<"TAMSDactNtuRaw::Action():: I'm going to charge "<<nFragments<<" number of fragments"<<endl;
 
    for (Int_t i = 0; i < nFragments; ++i) {
        TString type = p_datdaq->GetClassType(i);
        if (type.Contains("DEMSDEvent")) {
          const DEMSDEvent* evt = static_cast<const DEMSDEvent*> (p_datdaq->GetFragment(i));
-          if (FootDebugLevel(1))
+	 if (FootDebugLevel(1))
             evt->printData();
          DecodeHits(evt);
        }
@@ -199,6 +199,11 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
    TAMSDparCal*    p_parcal = (TAMSDparCal*)    fpParCal->Object();
    TAMSDparMap*    p_parmap = (TAMSDparMap*)    fpParMap->Object();
 
+   if(FootDebugLevel(2)) {
+     cout<<"****************************"<<endl;
+     cout<<"  NtuRaw hits "<<endl;
+     cout<<"****************************"<<endl;
+   }
    // decode here
    Int_t boardId = (evt->boardHeader & 0xF)-1;
    Double_t cnX = 0;
@@ -281,6 +286,10 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                fpHisCommonMode[sensorId]->Fill(cnY);
             }
          }
+      }
+      if(FootDebugLevel(2)) {
+	if(valueX>0 || valueY>0)
+	  cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
       }
    }
    

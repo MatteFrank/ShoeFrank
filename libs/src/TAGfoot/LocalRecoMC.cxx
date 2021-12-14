@@ -57,6 +57,8 @@ LocalRecoMC::~LocalRecoMC()
 //__________________________________________________________
 void LocalRecoMC::CreateRawAction()
 {
+
+	if(!fFlagMC)	 return;
    fActEvtReader = new TAGactTreeReader("actEvtReader");
 
    if ( TAGrecoManager::GetPar()->IsRegionMc()) {

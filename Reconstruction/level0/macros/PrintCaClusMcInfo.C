@@ -16,7 +16,7 @@
 #include <TString.h>
 #include <TVector3.h>
 
-#include "TAMCntuEve.hxx"
+#include "TAMCntuPart.hxx"
 #include "TAMCntuHit.hxx"
 
 #include "TACAparGeo.hxx"
@@ -81,8 +81,8 @@ void PrintCaClusMcInfo(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root
    tree->SetBranchAddress(TAMCntuHit::GetCalBranchName(), &caMc);
    tree->SetBranchAddress("mcca.", &caMc);
    
-   TAMCntuEve *eve = new TAMCntuEve();
-   tree->SetBranchAddress(TAMCntuEve::GetBranchName(), &eve);
+   TAMCntuPart *eve = new TAMCntuPart();
+   tree->SetBranchAddress(TAMCntuPart::GetBranchName(), &eve);
    tree->SetBranchAddress("mctrack.", &eve);
    
    if (nentries == 0)

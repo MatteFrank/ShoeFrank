@@ -93,8 +93,9 @@
 #include "TAGactNtuGlbTrack.hxx"
 
 #include "TAGactKFitter.hxx"
+#include "UpdatePDG.hxx"
 
-#include "GlobalTrackRepostory.hxx"
+#include "TAGFtrackingStudies.hxx"
 
 class TAMCntuHit;
 class TAMCntuPart;
@@ -284,6 +285,7 @@ public:
    TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
+   TAGntuGlbTrack*  GetGlobTrackRepo() const { return (TAGntuGlbTrack*) m_newGlobTrackRepo->Object(); }
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
    //! MC container Getter
@@ -401,8 +403,9 @@ protected:
    TAGdataDsc*           fpNtuVtx;       ///< input Vtx data dsc for VTX
 
    TAGdataDsc*           fpNtuGlbTrack;  ///< input data dsc global track TOE
-   TAGdataDsc*           fpNtuGlbTrackK; ///< input data dsc global track GF
-
+ //  TAGdataDsc*           fpNtuGlbTrackK; ///< input data dsc global track GF
+   TAGdataDsc*           m_newGlobTrackRepo;      // input data dsc
+   
    TAGactionFile*        fActEvtReader;  ///< Tree/event reader
    TAGactTreeWriter*     fActEvtWriter;  ///< write histo and tree
 
@@ -429,6 +432,7 @@ protected:
    TAGactNtuGlbTrackS*   fActGlbTrackS;  ///< action for straight tracks
   
    TAGactKFitter*        fActGlbkFitter; ///< Global tracking kalman Fitter
+   TAGFtrackingStudies*  fActGlbTrackStudies;    // Global tracking studies with GenFit
 
    Bool_t                fFlagOut;          ///< flag for output file
    Bool_t                fFlagTree;         ///< flag to save in tree
@@ -448,7 +452,7 @@ protected:
    Bool_t                fM28ClusMtFlag;    ///< flag for multi-threading clustering
    Bool_t                fFlagRecCutter;    ///< cutter flag for TOE Glb reco
    Int_t                 fSkipEventsN;      ///< number of events to skip
-    
+   
  protected:
    //! Create reconstruction action for BM
    void CreateRecActionBm();

@@ -37,7 +37,7 @@ class TAGroot : public TAGobject {
     //! Abort event loop
     void            AbortEventLoop();
     //! Next event
-    Bool_t          NextEvent();
+    Bool_t          NextEvent(long nEv=-999);
 
     //! Wait
     void            Wait(Int_t i_msec);

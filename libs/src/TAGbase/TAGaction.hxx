@@ -80,6 +80,8 @@ class TAGaction : public TAGnamed {
     // Set bit all data container out
     void            SetBitAllDataOut(UInt_t i_bits);
 
+    TDirectory* m_dir;
+
   private:
     TList*          fpDataOutList;   ///< List of data containers out
     TList*          fpDataInList;    ///< List of data containers in
