@@ -3,7 +3,7 @@
  \brief  Main class of the GenFit Global Reconstruction -> Action
  \author M. Franchini, R. Zarrella and R. Ridolfi
 */
-
+#include "TAGparTools.hxx"
 #include "TAGactKFitter.hxx"
 
 /*!
@@ -561,7 +561,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 		
 		
-		vector<string> tok = Tokenize( trackIt->first.Data() , "_" );
+		vector<string> tok = TAGparTools::Tokenize( trackIt->first.Data() , "_" );
 		string PartName = tok.at(0);
 
 		if(m_debug > 0) cout << "Track candidate: "<<trackCounter<< "  "<< PartName << " " << trackIt->first.Data() << "\n";
@@ -770,7 +770,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	vector<TAGpoint*> shoeTrackPointRepo;
 	Int_t TwChargeZ = -1;
 	Float_t TwTof = -1;
-	vector<string> tok = Tokenize( fitTrackName , "_" );
+	vector<string> tok = TAGparTools::Tokenize( fitTrackName , "_" );
 	string PartName = tok.at(0);
 
 	// Fill Points and retrieve the true MC particle for each measuerement [ nMeasurement, shoeID of generated particle in the particle array ]
