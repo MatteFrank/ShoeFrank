@@ -123,7 +123,9 @@ public:
    static Int_t GetPrecisionLevel()            { return fgPrecisionLevel;  }
    //! Set precision level for cout
    static void  SetPrecisionLevel(Int_t level) { fgPrecisionLevel = level; }
-
+   //! Tokenize string
+   static vector<string> Tokenize(string inString, string divisor);
+   
 protected:
    static Int_t fgPrecisionLevel; ///< Precision level for cout
 

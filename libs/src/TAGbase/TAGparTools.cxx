@@ -657,6 +657,32 @@ string  TAGparTools::PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, T
 }
 
 //_____________________________________________________________________________
-Int_t  TAGparTools::GetCrossReg(TString &regname) {
+Int_t  TAGparTools::GetCrossReg(TString &regname)
+{
   return gTAGroot->CurrentRunInfo().GetRegion(regname);
+}
+
+//____________________________________________________________________________
+vector<string>  TAGparTools::Tokenize(const string str,
+                         const string delimiters)
+{
+   
+   
+   vector<string> tokens;
+   // Skip delimiters at beginning.
+   string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+   // Find first "non-delimiter".
+   string::size_type pos     = str.find(delimiters, lastPos);
+   
+   while (string::npos != pos || string::npos != lastPos)
+   {
+      // Found a token, add it to the vector.
+      tokens.push_back(str.substr(lastPos, pos - lastPos));
+      // Skip delimiters.  Note the "not_of"
+      lastPos = str.find_first_not_of(delimiters, pos);
+      // Find next "non-delimiter"
+      pos = str.find(delimiters, lastPos);
+      
+   }
+   return tokens;
 }
