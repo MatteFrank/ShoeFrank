@@ -1,13 +1,9 @@
 
 #include "TCFObaseEventAction.hxx"
 
-//include hit class
-//Endo of event:
-//collection hits: all hits of this collections contains the information about what happened in the sensitive volume (epitaxial layer)
-//each hit represents a step and in the epi layer there may have been many
-//than the position to send to CmosDigitizer is the PosIn of the first hits and the pos out of the last hits
-//the energy deposited is the sum of the energy deposited in each step
-//All positon in microns and all energy in eV
+/*! \file TCFObaseEventAction.cxx
+ \brief Implementation of TCFObaseEventAction.
+*/
 
 
 #include "G4Event.hh"
@@ -43,15 +39,26 @@
 #include "TGeoMatrix.h"
 #include "TFile.h"
 
-//
-//---------------------------------------------------------------------------
-//
+/*! \class TCFObaseEventAction
+ \brief Base event action class for FOOT
+ 
+ //include hit class
+ //Endo of event:
+ //collection hits: all hits of this collections contains the information about what happened in the sensitive volume (epitaxial layer)
+ //each hit represents a step and in the epi layer there may have been many
+ //than the position to send to CmosDigitizer is the PosIn of the first hits and the pos out of the last hits
+ //the energy deposited is the sum of the energy deposited in each step
+ //All positon in microns and all energy in eV
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TAGeventInterruptHandler::TAGeventInterruptHandler()
 : TSignalHandler(kSigInterrupt, kFALSE)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 Bool_t TAGeventInterruptHandler::Notify()
 {
     G4RunManager::GetRunManager()->AbortRun(false);

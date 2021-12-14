@@ -1,4 +1,9 @@
 
+/*!
+ \file TCCAgeometryConstructor.cxx
+ \brief Implementation of TCCAgeometryConstructor.
+ */
+
 #include "TCCAgeometryConstructor.hxx"
 
 #include "G4NistManager.hh"
@@ -31,7 +36,13 @@ using namespace CLHEP;
 
 TString TCCAgeometryConstructor::fgkCalSDname  = "caSD";
 
+/*!
+ \class TCCAgeometryConstructor
+ \brief  Building detector geometry
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCCAgeometryConstructor::TCCAgeometryConstructor(TACAparGeo* pParGeo)
 : TCGbaseConstructor("TCCAgeometryConstructor", "1.0"),
   fBoxLog(0x0),
@@ -42,6 +53,7 @@ TCCAgeometryConstructor::TCCAgeometryConstructor(TACAparGeo* pParGeo)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor 
 TCCAgeometryConstructor::~TCCAgeometryConstructor()
 {
 }

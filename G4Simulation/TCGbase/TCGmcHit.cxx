@@ -1,4 +1,7 @@
-//my hits class
+/*!
+ \file TCGmcHit.cxx
+ \brief Implementation of TCGmcHit.
+ */
 
 #include "TCGmcHit.hxx"
 #include "G4ios.hh"
@@ -7,7 +10,13 @@
 
 G4Allocator<TCGmcHit> TCGmcHitAllocator;
 
+/*!
+ \class TCGmcHit
+ \brief G4 hit class
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCGmcHit::TCGmcHit()
 : G4VHit(),
   fEdep(0.),
@@ -35,6 +44,7 @@ TCGmcHit::TCGmcHit()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCGmcHit::~TCGmcHit()
 {
 }
