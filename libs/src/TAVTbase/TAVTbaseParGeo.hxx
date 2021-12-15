@@ -54,6 +54,10 @@ protected:
    Bool_t     fFlagMC;           ///< MC flag
    Bool_t     fFlagIt;           ///< IT flag
    
+   /*!
+    \struct SensorParameter_t
+    \brief  Sensors parameters
+   */
    struct SensorParameter_t : public  TObject {
 	  Int_t     SensorIdx;   ///< sensor index
 	  Int_t     TypeIdx;     ///< type index

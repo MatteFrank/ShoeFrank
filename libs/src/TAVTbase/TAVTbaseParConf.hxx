@@ -26,7 +26,10 @@ protected:
    Int_t      fSensorsN;         ///< Number of sensors
    TString    fkDefaultConfName; ///< default detector configuration file
 
-
+   /*!
+    \struct SensorParameter_t
+    \brief  Sensors parameters
+    */
    struct SensorParameter_t : public  TObject {
 	  Int_t     SensorIdx;              ///< sensor index
      Int_t     Type;                   ///< sensor type
@@ -36,6 +39,10 @@ protected:
      map< pair<int, int>, int > DeadPixelMap;    ///< dead pixel map
    };
    
+   /*!
+    \struct AnalysisParameter_t
+    \brief  Analysis parameters
+    */
    struct AnalysisParameter_t : public  TObject {
 	  Int_t      TracksMaximum;          ///< maximum number of tracks to be allowed
 	  Int_t      PlanesForTrackMinimum;  ///< min # planes to build a track in an event

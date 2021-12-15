@@ -13,6 +13,10 @@ const int MAXSCN   = 5000;
 const int MAXCAL   = 6000;  
 const int MAXCROSS = 10000;
 
+/*!
+ \struct EVENT_STRUCT
+ \brief  Fluka event structure
+ */
 typedef struct {
   
   Int_t EventNumber;

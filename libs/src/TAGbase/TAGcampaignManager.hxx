@@ -95,6 +95,10 @@ private:
 
 class TAGcampaignManager : public TAGaction {
 private:
+   /*!
+    \struct CamParameter_t
+    \brief  Campaign parameters
+    */
    struct CamParameter_t : public  TNamed {
       TString   Name;      ///< Campaign name
       Int_t     Number;    ///< Campaign number

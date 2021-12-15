@@ -43,6 +43,10 @@ private:
   TString   fMagMat;        /// Magnet material
   Float_t   fMagDensity;    /// Magnet material density
   
+   /*!
+    \struct MagnetParameter_t
+    \brief  Magnet parameters
+   */
   struct MagnetParameter_t : public  TObject {
     Int_t     MagnetIdx;    /// Magnet index
     TVector3  Size;         /// current size

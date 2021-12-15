@@ -35,6 +35,10 @@ protected:
    static TString               fgkWhat;       ///< kWhat symbol for Fluka
    static Int_t                 fgkWhatWidth;
 
+   /*!
+    \struct FlukaMat_t
+    \brief  Fluka material parameters
+    */
    struct FlukaMat_t {
       TString     Name;      ///< material name
       Int_t       Z;         ///< atomic number
