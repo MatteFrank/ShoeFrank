@@ -95,7 +95,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuTrackIt(0x0),
    fpNtuVtx(0x0),
    fpNtuGlbTrack(0x0),
-   m_newGlobTrackRepo(0x0),
+   fpNtuGlbTrackK(0x0),
    fActEvtReader(0x0),
    fActEvtWriter(0x0),
    fActTrackBm(0x0),
@@ -897,14 +897,13 @@ void BaseReco::CreateRecActionGlb()
 }
 
 //__________________________________________________________
-void BaseReco::CreateRecActionGlbGF()	{
+void BaseReco::CreateRecActionGlbGF()
+{
 	if(fFlagTrack) {
 		SetL0TreeBranches();
 
-
 		if (TAGrecoManager::GetPar()->IncludeDI()) {
 			genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
-
 			genfit::FieldManager::getInstance()->getFieldVal( TVector3(0,0,14) ).Print();
 		}
 
@@ -916,12 +915,10 @@ void BaseReco::CreateRecActionGlbGF()	{
 		UpdatePDG::Instance();
 
 		// Initialisation of KFfitter
-		m_newGlobTrackRepo = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-		fActGlbkFitter = new TAGactKFitter("glbActKFitter", m_newGlobTrackRepo);
+		fpNtuGlbTrackK = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+		fActGlbkFitter = new TAGactKFitter("glbActKFitter", fpNtuGlbTrackK);
 		if (fFlagHisto)
 			fActGlbkFitter->CreateHistogram();
-
-
 	}
 }
 
@@ -1057,7 +1054,7 @@ void BaseReco::SetTreeBranches()
  	// genfit 
    if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
       if (fFlagTrack) {
-      	fActEvtWriter->SetupElementBranch(m_newGlobTrackRepo, TAGntuGlbTrack::GetBranchName());
+      	fActEvtWriter->SetupElementBranch(fpNtuGlbTrackK, TAGntuGlbTrack::GetBranchName());
       }
    }
    
