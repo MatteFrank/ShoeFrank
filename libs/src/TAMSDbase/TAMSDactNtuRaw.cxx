@@ -205,6 +205,14 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
      cout<<"****************************"<<endl;
    }
    // decode here
+   if (evt->detectorHeader == 0x00000bad)
+   {
+      if (FootDebugLevel(1))
+         cout << "Data is empty, skipping DecodeHits" << endl;
+         sleep(1);
+      return kFALSE;
+   }
+
    Int_t boardId = (evt->boardHeader & 0xF)-1;
    Double_t cnX = 0;
    Double_t cnY = 0;
