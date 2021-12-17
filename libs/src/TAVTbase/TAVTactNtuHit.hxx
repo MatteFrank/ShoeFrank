@@ -6,8 +6,7 @@
 #include "TAVTactBaseNtuHit.hxx"
 
 /*!
- \file
- \version $Id: TAVTactNtuHit.hxx
+ \file TAVTactNtuHit.hxx
  \brief   Declaration of TAVTactNtuHit.
  */
 

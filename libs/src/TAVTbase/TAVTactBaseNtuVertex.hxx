@@ -1,7 +1,7 @@
 #ifndef _TAVTactBaseNtuVertex_HXX
 #define _TAVTactBaseNtuVertex_HXX
 /*!
- \file
+ \file TAVTactBaseNtuVertex.hxx
  \brief   Declaration of TAVTactBaseNtuVertex.
  
  \author R. Rescigno

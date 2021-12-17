@@ -1,7 +1,7 @@
 #ifndef _TAVTactNtuVertexPD_HXX
 #define _TAVTactNtuVertexPD_HXX
 /*!
- \file
+ \file TAVTactNtuVertexPD.hxx
  \brief   Declaration of TAVTactNtuVertexPD
  
  \author R. Rescigno, optimized and cleanup Ch. Finck
