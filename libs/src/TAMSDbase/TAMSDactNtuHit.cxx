@@ -6,6 +6,7 @@
 
 #include "TAMSDparMap.hxx"
 #include "TAMSDparCal.hxx"
+#include "TAMSDparConf.hxx"
 #include "TAMSDactNtuHit.hxx"
 #include "TAGrecoManager.hxx"
 
@@ -23,17 +24,20 @@ TAMSDactNtuHit::TAMSDactNtuHit(const char* name,
                                TAGdataDsc* p_datraw,
                                TAGdataDsc* p_nturaw,
                                TAGparaDsc* p_pargeo,
+                               TAGparaDsc* p_parconf,
                                TAGparaDsc* p_parcal)
  : TAGaction(name, "TAMSDactNtuHit - Unpack MSD calibrated data"),
    fpDatRaw(p_datraw),
    fpNtuRaw(p_nturaw),
    fpGeoMap(p_pargeo),
+   fpParConf(p_parconf),
    fpParCal(p_parcal)
 {
    AddDataIn(p_datraw, "TAMSDntuRaw");
    AddDataOut(p_nturaw, "TAMSDntuHit");
    
    AddPara(p_pargeo, "TAMSDparGeo");
+   AddPara(p_parconf, "TAMSDparConf");
    AddPara(p_parcal, "TAMSDparCal");
 }
 
@@ -48,9 +52,10 @@ TAMSDactNtuHit::~TAMSDactNtuHit()
 
 Bool_t TAMSDactNtuHit::Action()
 {
-   TAMSDntuRaw*   p_datraw = (TAMSDntuRaw*) fpDatRaw->Object();
-   TAMSDntuHit*   p_nturaw = (TAMSDntuHit*) fpNtuRaw->Object();
-   TAMSDparGeo*   p_geoMap = (TAMSDparGeo*) fpGeoMap->Object();
+   TAMSDntuRaw*   p_datraw = (TAMSDntuRaw*)  fpDatRaw->Object();
+   TAMSDntuHit*   p_nturaw = (TAMSDntuHit*)  fpNtuRaw->Object();
+   TAMSDparGeo*   p_geoMap = (TAMSDparGeo*)  fpGeoMap->Object();
+   TAMSDparConf*  p_config = (TAMSDparConf*) fpParConf->Object();
 
    if(FootDebugLevel(2)) {
      cout<<"****************************"<<endl;
@@ -71,12 +76,14 @@ Bool_t TAMSDactNtuHit::Action()
          Int_t view       = strip->GetView();
          UInt_t charge    = strip->GetCharge();
          Float_t posStrip = p_geoMap->GetPosition(stripId);
-	 if(FootDebugLevel(2))
-	   cout<<" Sens "<<sensorId<<" strip "<<stripId<<" View "<<view<<" position (cm) "<<posStrip<<" "<<endl;
+         if(FootDebugLevel(2))
+            cout<<" Sens "<<sensorId<<" strip "<<stripId<<" View "<<view<<" position (cm) "<<posStrip<<" "<<endl;
 	 
-	 if (FootDebugLevel(1))
+         if (FootDebugLevel(1))
             printf("sensor: %d strip: %d view: %d charge: %d\n", sensorId, stripId, view, charge);
          
+         if (p_config->GetSensorPar(sensorId).DeadStripMap[stripId] == 1) continue;
+
          // here we need the calibration file
          Double_t energy = GetEnergy(charge, sensorId, stripId);
          TAMSDhit* hit = p_nturaw->NewStrip(sensorId, energy, view, stripId);
