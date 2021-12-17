@@ -234,39 +234,63 @@ public:
    //! Get default action name
    static TString   GetDefaultActName()              { return fgDefaultActName; }
 
+   //! Conversion factor of centimeter in micrometer
    static           Float_t CmToMu()                 { return fgkCmToMu;        }
+   //! Conversion factor of micrometer in centimeter
    static           Float_t MuToCm()                 { return fgkMuToCm;        }
 
+   //! Conversion factor of milimeter in micrometer
    static           Float_t MmToMu()                 { return fgkMmToMu;        }
+   //! Conversion factor of micrometer in milimeter
    static           Float_t MuToMm()                 { return fgkMuToMm;        }
 
+   //! Conversion factor of milimeter in centimeter
    static           Float_t MmToCm()                 { return fgkMmToCm;        }
+   //! Conversion factor of centimeter in milimeter
    static           Float_t CmToMm()                 { return fgkCmToMm;        }
 
+   //! Conversion factor of meter in centimeter
    static           Float_t MToCm()                  { return fgkMToCm;         }
+   //! Conversion factor of centimeter in meter
    static           Float_t CmToM()                  { return fgkCmToM;         }
 
+   //! Conversion factor of second in nanosecond
    static           Float_t SecToNs()                { return fgkSecToNs;       }
+   //! Conversion factor of nanosecond in second
    static           Float_t NsToSec()                { return fgkNsToSec;       }
 
+   //! Conversion factor of second in picosecond
    static           Float_t SecToPs()                { return fgkSecToPs;       }
+   //! Conversion factor of picosecond in second
    static           Float_t PsToSec()                { return fgkPsToSec;       }
 
+   //! Conversion factor of picosecond in nanosecond
    static           Float_t PsToNs()                 { return fgkPsToNs;        }
+   //! Conversion factor of nanosecond in picosecond
    static           Float_t NsToPs()                 { return fgkNsToPs;        }
 
+   //! Conversion factor of GeV in MeV
    static           Float_t GevToMev()               { return fgkGevToMev;      }
+   //! Conversion factor of MeV in GeV
    static           Float_t MevToGev()               { return fgkMevToGev;      }
-
+   //! Conversion factor of GeV in keV
    static           Float_t GevToKev()               { return fgkGevToKev;      }
+   
+   //! Conversion factor of Gass in Tesla
    static           Float_t GausToTesla()            { return fgkGausToTesla;   }
+   //! Conversion factor of Gass in KiloGaus
    static           Float_t GausToKGaus()            { return fgkGausToKGaus;   }
 
+   //! Get mass factor in MeV (938.3 MeV/c^2)
    static           Float_t GetMassFactorMeV()       { return fgkMassFactor*fgkGevToMev;  }
+   //! Get mass factor in GeV (0.9383 GeV/c^2)
    static           Float_t GetMassFactor()          { return fgkMassFactor;    }
 
+   //! Get Electron mass in MeV (510.9 MeV/c^2)
    static           Float_t GetElectronMassMeV()     { return fgkElectronMass;  }
+   //! Get Electron mass in GeV (0.5109 GeV/c^2)
    static           Float_t GetElectronMass()        { return fgkElectronMass*fgkMevToGev; }
+   //! Get speed of light in cm/ns (29.98 cm/ns)
    static           Float_t GetLightVelocity()       { return fgkLightVelocity; }
 
    //! Get base name
