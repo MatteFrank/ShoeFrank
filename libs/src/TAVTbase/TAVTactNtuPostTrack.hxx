@@ -1,8 +1,7 @@
 #ifndef _TAVTactNtuPostTrack_HXX
 #define _TAVTactNtuPostTrack_HXX
 /*!
- \file
- \version $Id: TAVTactNtuPostTrack.hxx
+ \file TAVTactNtuPostTrack.hxx
  \brief   Declaration of TAVTactNtuPostTrack.
  */
 /*------------------------------------------+---------------------------------*/

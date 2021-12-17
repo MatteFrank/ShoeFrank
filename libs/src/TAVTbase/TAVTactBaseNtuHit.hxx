@@ -4,8 +4,7 @@
 #include "TAVTactBaseRaw.hxx"
 
 /*!
- \file
- \version $Id: TAVTactBaseNtuHit.hxx 
+ \file TAVTactBaseNtuHit.hxx
  \brief   Declaration of TAVTactBaseNtuHit.
  */
 

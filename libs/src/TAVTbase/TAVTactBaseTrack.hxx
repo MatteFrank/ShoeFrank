@@ -1,8 +1,7 @@
 #ifndef _TAVTactBaseTrack_HXX
 #define _TAVTactBaseTrack_HXX
 /*!
- \file
- \version $Id: TAVTactBaseTrack.hxx
+ \file TAVTactBaseTrack.hxx
  \brief   Declaration of TAVTactBaseTrack.
  */
 /*------------------------------------------+---------------------------------*/

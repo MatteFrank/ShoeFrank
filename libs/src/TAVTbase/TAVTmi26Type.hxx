@@ -35,7 +35,7 @@ typedef struct {
 // structure of state and line
 
 /*!
- \typedef MI26__TStatesLine
+ \struct MI26__TStatesLine
  \brief  State line status
 */
 typedef union {
@@ -54,7 +54,7 @@ typedef union {
 } MI26__TStatesLine;
 
 /*!
- \typedef MI26__TState
+ \struct MI26__TState
  \brief  State status
  */
 typedef union {
