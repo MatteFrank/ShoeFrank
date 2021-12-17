@@ -57,7 +57,7 @@ const TAGeventId& TAGeventId::operator=(const TAGeventId &right)
 }
 
 /*------------------------------------------+---------------------------------*/
-// Custom streamer.
+//! Custom streamer.
 void TAGeventId::Streamer(TBuffer &R__b)
 {
   UInt_t R__s, R__c;
