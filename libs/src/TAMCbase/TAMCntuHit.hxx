@@ -1,7 +1,7 @@
 #ifndef _TAMntuHit_HXX
 #define _TAMntuHit_HXX
 /*!
- \file TAMntuHit.hxx
+ \file TAMCntuHit.hxx
  \brief   Declaration of TAMntuHit.
  */
 /*------------------------------------------+---------------------------------*/

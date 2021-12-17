@@ -35,8 +35,6 @@ class TABMactNtuHit : public TAGaction {
     virtual  void   CreateHistogram();
     virtual Bool_t  Action();
 
-    ClassDef(TABMactNtuHit,0)
-
   private:
     TAGdataDsc*       fpNtuRaw;		    // output data dsc
     TAGdataDsc*       fpDatRaw;		    // input data dsc
@@ -45,7 +43,6 @@ class TABMactNtuHit : public TAGaction {
     TAGparaDsc*       fpParCal;		    // calibration para dsc
 
     map<Int_t,Int_t>  fDrawMap;       //map to draw fpHisMapX and fpHisMapY <cellid,bin number>
-
 
     //histos
     TH2I*              fpHisMapX;                 //raw hit map X view
@@ -66,6 +63,8 @@ class TABMactNtuHit : public TAGaction {
     TH1F*              fpHisTdrift;               //hits tdrift
     TH1I*              fpHisDiscAccept;           //discharged vs accepted number of hits
     TH1F*              fpHisDiscTime;             //raw discharged hit time difference
+   
+   ClassDef(TABMactNtuHit,0)
 };
 
 #endif

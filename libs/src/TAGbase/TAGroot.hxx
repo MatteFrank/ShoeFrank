@@ -96,8 +96,6 @@ class TAGroot : public TAGobject {
     //! To stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
 
-    ClassDef(TAGroot,0)
-
   private:
     TList*          fpActionList;              ///< action list
     TList*          fpDataDscList;             ///< data dsc list
@@ -113,6 +111,8 @@ class TAGroot : public TAGobject {
     Bool_t          fbAbortEventLoop;          ///< ABort Handler loop flag
     TAGrunInfo      fRunInfo;                  ///< Run info
     TAGeventId      fEventId;                  ///< Event id
+   
+   ClassDef(TAGroot,0)
 };
 
 extern TAGroot* gTAGroot;

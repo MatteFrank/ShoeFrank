@@ -36,8 +36,6 @@ class WDEvent;
 class TAGactWDreader : public TAGaction {
 
 public:
-
-  
   explicit        TAGactWDreader(const char* name,
 				 TAGdataDsc* p_datdaq,
 				 TAGdataDsc* p_stwd, 
@@ -50,11 +48,8 @@ public:
   virtual         ~TAGactWDreader();
   void CreateHistogram();
   virtual Bool_t  Action();
-  
-  ClassDef(TAGactWDreader,0)
-    
-  private:
-    
+   
+private:
   TAGdataDsc*     fpDatDaq;		    // input data dsc
   TAGdataDsc*     fpStWd;		    // output data dsc
   TAGdataDsc*     fpTwWd;		    // output data dsc
@@ -65,12 +60,7 @@ public:
 
   int             fEventsN;
 
-  //vector<TH1F *> wv0;
-  
-
-  
- private:
-
+private:
   Int_t DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
   Bool_t WaveformsTimeCalibration();
   Bool_t CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw);
@@ -86,7 +76,7 @@ public:
   vector<TWaveformContainer*> ca_waves;
   map<pair<int,int>, TWaveformContainer*> clk_waves;
 
-  
+   ClassDef(TAGactWDreader,0)
 };
 
 #endif

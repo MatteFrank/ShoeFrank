@@ -1,5 +1,5 @@
 /*!
-  \file TAMChit.cxx
+  \file TAMCntuHit.cxx
   \brief   Implementation of TAMChit.
 */
 

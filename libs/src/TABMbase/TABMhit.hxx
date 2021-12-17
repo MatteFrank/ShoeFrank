@@ -59,12 +59,8 @@ class TABMhit : public TAGdata {
     void     SetWireDir(TVector3 w_in)         { fWireDir=w_in;return;};
     void     SetIsFake(Int_t in_fake)          { fIsFake=in_fake;return;};
    
-   
    void      Clear(Option_t* option = "C");
    void      AddMcTrackIdx(Int_t trackId, Int_t mcId = -1);
-
-
-  ClassDef(TABMhit,1)
 
   private:
     Int_t     fView;         //0=hit relevant for yz plane (sense wire on x direction), 1= hit relevant for xz plane (sense wire on y direction)
@@ -84,6 +80,8 @@ class TABMhit : public TAGdata {
     Int_t     fIsFake;       //-1=not set, 0=primary hit, 1=secondary hit, 2=fake creator hit
     TArrayI   fMCindex;      // Id of the hit created in the simulation
     TArrayI   fMcTrackIdx;   // Id of the track created in the simulation
+   
+   ClassDef(TABMhit,1)
 };
 
 

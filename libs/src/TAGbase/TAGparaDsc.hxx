@@ -41,12 +41,12 @@ class TAGparaDsc : public TAGnamed {
     //! Recursive removing
     virtual void    RecursiveRemove(TObject* p_obj);
 
-    ClassDef(TAGparaDsc,0)
-
   private:
     TAGpara*        fpObject;       ///< Object
     TClass*         fpObjectClass;  ///< Object class
     TList*          fpConsumerList; ///< Consumer list
+   
+   ClassDef(TAGparaDsc,0)
 };
 
 #endif

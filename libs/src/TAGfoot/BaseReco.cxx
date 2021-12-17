@@ -34,11 +34,11 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-ClassImp(BaseReco)
-
 Bool_t  BaseReco::fgItrTrackFlag  = false;
 Bool_t  BaseReco::fgMsdTrackFlag  = true;
 Bool_t  BaseReco::fSaveMcFlag     = true;
+
+ClassImp(BaseReco)
 
 //__________________________________________________________
 BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)

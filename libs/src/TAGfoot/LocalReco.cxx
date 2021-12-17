@@ -28,9 +28,9 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-ClassImp(LocalReco)
-
 Bool_t  LocalReco::fgStdAloneFlag = false;
+
+ClassImp(LocalReco)
 
 //__________________________________________________________
 LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)

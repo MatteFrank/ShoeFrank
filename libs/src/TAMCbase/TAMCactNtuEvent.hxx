@@ -23,11 +23,11 @@ class TAMCactNtuEvent : public TAGaction {
     //! Action
     virtual Bool_t  Action();
 
-    ClassDef(TAMCactNtuEvent,0)
-
   private:
     TAGdataDsc*     fpNtuMC;   ///< output data dsc
     EVENT_STRUCT*   fpEvtStr;  ///< Fluka structure
+   
+   ClassDef(TAMCactNtuEvent,0)
 };
 
 #endif

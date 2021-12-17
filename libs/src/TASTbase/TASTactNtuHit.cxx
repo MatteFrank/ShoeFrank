@@ -121,7 +121,7 @@ void TASTactNtuHit::SavePlot(TGraph WaveGraph, TF1 fun1, TF1 fun2, TASTrawHit *m
   fun1.Draw("same");
   fun2.Draw("same");
 
-  c.Print(Form("waveform_ch%d_nev%d.png", myHit->GetChID(), m_nev));
+  c.Print(Form("waveform_ch%d_nev%d.png", myHit->GetChID(), fEventsN));
   
 }
 

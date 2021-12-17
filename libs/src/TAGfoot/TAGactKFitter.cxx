@@ -278,7 +278,7 @@ void TAGactKFitter::Finalize() {
 
 	cout << "TAGactKFitter::Finalize() -- END"<< endl;
 	SetValidHistogram(kTRUE);
-	SetHistogramDir(m_dir);
+	SetHistogramDir(fDirectory);
 
 	//show event display
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )		display->open();

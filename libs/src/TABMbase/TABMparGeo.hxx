@@ -147,9 +147,6 @@ public:
    string PrintParameters();
    string PrintSubtractBodiesFromAir();
 
-
-  ClassDef(TABMparGeo,1)
-
 private:
    Int_t           fWireLayersN;
    Int_t           fLayersN;
@@ -215,6 +212,7 @@ public:
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
    static Int_t   GetLayerOffset()       { return fgkLayerOffset;        }
 
+   ClassDef(TABMparGeo,1)
 };
 
 #endif

@@ -43,9 +43,9 @@ class TAGaction : public TAGnamed {
     // Set histogram directory
     void            SetHistogramDir(TDirectory* dir);
 
-    // To stream
+    //! To stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-    // Recursive removing object
+    //! Recursive removing object
     virtual void    RecursiveRemove(TObject* p_obj);
 
     //! Returns setting of the kValid status bit.
@@ -60,8 +60,6 @@ class TAGaction : public TAGnamed {
     //! Set histogram booking state
     TList*          GetHistogrammList() const { return fpHistList;      }
   
-    ClassDef(TAGaction,0)
-
   protected:
     // Add data constainer out
     void            AddDataOut(TAGdataDsc* p_data, const char* baseclass);
@@ -80,7 +78,8 @@ class TAGaction : public TAGnamed {
     // Set bit all data container out
     void            SetBitAllDataOut(UInt_t i_bits);
 
-    TDirectory* m_dir;
+protected:
+    TDirectory*     fDirectory;     ///< Directory
 
   private:
     TList*          fpDataOutList;   ///< List of data containers out
@@ -89,6 +88,8 @@ class TAGaction : public TAGnamed {
     TList*          fpHistList;      ///< List of histograms
     Bool_t          fbHistValid;     ///< Histogram filling flag
     Bool_t          fbIsOpenFile;    ///< Open file status flag
+   
+   ClassDef(TAGaction,0)
 };
 
 #endif

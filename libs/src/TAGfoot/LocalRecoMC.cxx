@@ -26,7 +26,7 @@
 #include "TACAntuHit.hxx"
 
 /*!
- \file LocalRecoMC
+ \class LocalRecoMC
  \brief Reconstruction class from MC data
  */
 /*------------------------------------------+---------------------------------*/

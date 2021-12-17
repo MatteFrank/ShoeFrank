@@ -39,15 +39,15 @@ class TASTparMap : public TAGpara {
   double GetChannelWeight(int ch_num, int bo_num);
   pair<int,int> GetClockChannel(int ch_num, int bo_num);
   
-    ClassDef(TASTparMap,1)
-
   private:
 
    vector<int> TDclkID;
    vector<int> TDchaID;
    vector<int> TDboaID;
 
-  map<pair<int,int>, double> reso;
+   map<pair<int,int>, double> reso;
+
+   ClassDef(TASTparMap,1)
 
 };
 

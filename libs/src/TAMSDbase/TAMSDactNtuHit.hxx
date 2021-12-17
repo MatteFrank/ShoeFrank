@@ -31,11 +31,7 @@ public:
    
    void     CreateHistogram();
    
-   
    Double_t GetEnergy(Double_t rawEnergy, Int_t sensor, Int_t strip);
-   
-   
-   ClassDef(TAMSDactNtuHit,0)
    
 private:
    TAGdataDsc*     fpDatRaw;		    // input data dsc
@@ -43,6 +39,7 @@ private:
    TAGparaDsc*     fpGeoMap;        // output data dsc
    TAGparaDsc*     fpParCal;        // output data dsc
    
+   ClassDef(TAMSDactNtuHit,0)
 };
 
 #endif
