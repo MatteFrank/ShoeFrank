@@ -361,23 +361,6 @@ TArrayI TAGtrack::GetMcTrackIdx()
    return fMcTrackIdx;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //##############################################################################
 
 /*!
@@ -395,11 +378,6 @@ TAGntuGlbTrack::TAGntuGlbTrack()
  : TAGdata(),
    fListOfTracks(new TClonesArray("TAGtrack"))
 {
-  //	SetupClones();
-	m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman_new";
-    // m_debug = TAGrecoManager::GetPar()->Debug();
-    m_debug = 0;
-
 }
 
 //------------------------------------------+-----------------------------------

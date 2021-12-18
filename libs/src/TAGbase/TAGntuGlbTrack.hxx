@@ -338,9 +338,6 @@ public:
    //! Get branch name
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
-   int m_debug;
-	string m_kalmanOutputDir;
-
    ClassDef(TAGntuGlbTrack,2)
 };
 
