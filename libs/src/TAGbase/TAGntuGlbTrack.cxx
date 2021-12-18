@@ -119,20 +119,17 @@ TAGtrack::TAGtrack(const TAGtrack& aTrack)
    fListOfPoints = (TClonesArray*)aTrack.fListOfPoints->Clone();
 }
 
-
-
-
-//Alternative constructor
-TAGtrack::TAGtrack( string name, long evNum, 
-								int pdgID, float startMass, int fitCh, float fitMass, 
-								float length, float tof, 
-								float chi2, int ndof, float pVal, 
-								TVector3* TgtPos, TVector3* TgtMom,
-								TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov,
-								TVector3* TwPos, TVector3* TwMom,
-								TMatrixD* TwPos_cov, TMatrixD* TwMom_cov,
-								vector<TAGpoint*>* shoeTrackPointRepo 
-					) 
+//______________________________________________________________________________
+//! Alternative constructor
+TAGtrack::TAGtrack(string name, long evNum,
+                   int pdgID, float startMass, int fitCh, float fitMass,
+                   float length, float tof,
+                   float chi2, int ndof, float pVal,
+                   TVector3* TgtPos, TVector3* TgtMom,
+                   TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov,
+                   TVector3* TwPos, TVector3* TwMom,
+                   TMatrixD* TwPos_cov, TMatrixD* TwMom_cov,
+                   vector<TAGpoint*>* shoeTrackPointRepo)
 	: TAGnamed(),
 	fListOfPoints(0x0)
 {
@@ -174,28 +171,6 @@ TAGtrack::TAGtrack( string name, long evNum,
 		new (pointArray[pointArray.GetEntriesFast()]) TAGpoint( *(shoeTrackPointRepo->at(i)) );
 	}
 }
-
-
-
-void TAGtrack::SetMCInfo( int MCparticle_id, float trackQuality ) {
-
-	fMcTrackIdx.Set(fMcTrackIdx.GetSize() + 1);
-	fMcTrackIdx[fMcTrackIdx.GetSize() - 1] = MCparticle_id;
-	fQuality = trackQuality;
-
-}
-
-
-void TAGtrack::SetExtrapInfoTW( TVector3* pos, TVector3* mom, TMatrixD* pos_cov, TMatrixD* mom_cov ) {
-
-   fTwMom = *mom;
-	fTwPos = *pos;
-	// m_pos_TW_cov = *pos_cov;
-	// m_mom_TW_cov = *mom_cov;
-}
-
-
-
 
 //------------------------------------------+-----------------------------------
 //! Destructor.

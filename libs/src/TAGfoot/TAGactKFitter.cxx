@@ -1006,7 +1006,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			if(m_debug > 0)	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tfitCh::" << fitCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
 		}
 
-		shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
+	//	shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
 
 		h_chargeMC->Fill( mcCharge );
 		h_trackQuality->Fill( trackQuality );

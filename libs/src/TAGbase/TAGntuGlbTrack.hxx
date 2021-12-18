@@ -51,11 +51,7 @@ public:
    			TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov, 
    			TVector3* TwPos, TVector3* TwMom, 
    			TMatrixD* TwPos_cov, TMatrixD* TwMom_cov, 
-   			vector<TAGpoint*>* shoeTrackPointRepo
-		);   
-
-   void SetMCInfo( int MCparticle_id, float trackQuality );
-   void SetExtrapInfoTW( TVector3* pos, TVector3* mom, TMatrixD* pos_cov, TMatrixD* mom_cov );
+   			vector<TAGpoint*>* shoeTrackPointRepo);   
 
    virtual         ~TAGtrack();
    
