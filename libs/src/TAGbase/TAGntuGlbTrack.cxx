@@ -194,7 +194,6 @@ TAGpoint* TAGtrack::AddPoint(TAGpoint* point)
    return new(pointArray[pointArray.GetEntriesFast()]) TAGpoint(*point);
 }
 
-
 // __________________________________________________________________________
 //
 TAGpoint* TAGtrack::AddPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
@@ -431,24 +430,18 @@ void TAGntuGlbTrack::Clear(Option_t*)
    fListOfTracks->Delete();
 }
 
-
-/* Add a new track to the repo  --- Genfit
-*
-*/
+//______________________________________________________________________________
+//
 TAGtrack* TAGntuGlbTrack::NewTrack(string name, long evNum, int pdgID, float pdgMass, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* recoPos_target, TVector3* recoMom_target, TMatrixD* recoPos_target_cov, TMatrixD* recoMom_target_cov, TVector3* recoPos_Tw, TVector3* recoMom_Tw, TMatrixD* recoPos_Tw_cov, TMatrixD* recoMom_Tw_cov, vector<TAGpoint*>* shoeTrackPointRepo)
 {
 	TClonesArray &trackArray = *fListOfTracks;
-	TAGtrack* track = new (trackArray[trackArray.GetEntriesFast()]) TAGtrack(
-													name, evNum,
-													pdgID, pdgMass, measCh, mass, length, tof, chi2, ndof, pVal, 
-													recoPos_target, recoMom_target, recoPos_target_cov, recoMom_target_cov,
-													recoPos_Tw, recoMom_Tw, recoPos_Tw_cov, recoMom_Tw_cov,
-													shoeTrackPointRepo
-												);
+	TAGtrack* track = new (trackArray[trackArray.GetEntriesFast()]) TAGtrack(name, evNum,
+                                                                            pdgID, pdgMass, measCh, mass, length, tof, chi2, ndof, pVal,
+                                                                            recoPos_target, recoMom_target, recoPos_target_cov, recoMom_target_cov,
+                                                                            recoPos_Tw, recoMom_Tw, recoPos_Tw_cov, recoMom_Tw_cov,
+                                                                            shoeTrackPointRepo);
 	return track;
 }
-
-
 
 //______________________________________________________________________________
 //
@@ -479,9 +472,6 @@ TAGtrack* TAGntuGlbTrack::NewTrack(TAGtrack& trk)
    TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(trk);
    return track;
 }
-
-
-
 
 //______________________________________________________________________________
 // ostream insertion.

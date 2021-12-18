@@ -322,9 +322,9 @@ public:
    TAGtrack*        NewTrack();
    //! New track with mass, momentum, charge and tof
    TAGtrack*        NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof);
-   //! New track with copy cstr
+   //! Add a new track to the repo  --- Genfit
    TAGtrack* 		NewTrack(string name, long evNum, int pdgID, float pdgMass, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* TgtPos, TVector3* TgtMom, TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov, TVector3* TwPos, TVector3* TwMom, TMatrixD* TwPos_cov, TMatrixD* TwMom_cov, vector<TAGpoint*>* shoeTrackPointRepo);   
-
+   //! New track with copy cstr
    TAGtrack*        NewTrack(TAGtrack& track);
 
    //! Set up clones
