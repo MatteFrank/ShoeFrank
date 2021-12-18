@@ -23,10 +23,6 @@
 #include "TAGdata.hxx"
 #include "TAGntuPoint.hxx"
 
-
-#define build_string(expr) \
-    (static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
-
 using namespace std;
 
 //
@@ -51,7 +47,7 @@ public:
    			TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov, 
    			TVector3* TwPos, TVector3* TwMom, 
    			TMatrixD* TwPos_cov, TMatrixD* TwMom_cov, 
-   			vector<TAGpoint*>* shoeTrackPointRepo);   
+   			vector<TAGpoint*>* shoeTrackPointRepo);
 
    virtual         ~TAGtrack();
    
