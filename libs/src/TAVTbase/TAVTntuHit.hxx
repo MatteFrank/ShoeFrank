@@ -1,8 +1,7 @@
 #ifndef _TAVTntuHit_HXX
 #define _TAVTntuHit_HXX
 /*!
- \file
- \version $Id: TAVTntuHit.hxx
+ \file TAVTntuHit.hxx
  \brief   Declaration of TAVTntuHit.
  */
 /*------------------------------------------+---------------------------------*/

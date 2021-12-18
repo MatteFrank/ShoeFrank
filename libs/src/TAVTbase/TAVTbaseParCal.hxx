@@ -2,7 +2,6 @@
 #define _TAVTbaseParCal_HXX
 /*!
   \file TAVTbaseParCal.hxx
-  \version $Id: TAVTbaseParCal.hxx
   \brief   Declaration of TAVTbaseParCal.
 */
 /*------------------------------------------+---------------------------------*/

@@ -3,7 +3,6 @@
 
 /*!
  \file TAVTntuVertex.hxx
- \version $Id: TAVTvertex
  \brief   class, simple container class for vertices with the associated tracks
  \author Ch. Finck, R. Rescigno
  */

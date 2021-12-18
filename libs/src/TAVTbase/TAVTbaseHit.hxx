@@ -6,10 +6,7 @@
  \file TAVTbaseHit.hxx
  \brief  contains information respect to a pixel in cmos detectors
  index, position, noise, pulse height, size, etc...
- 
- Revised in 2018 by Matteo Franchini franchinim@bo.infn.it
- Back to a class compliant with storing in a root file by Ch. Finck
- 
+  
  All the coordinates are in cm and in the detector reference frame, i.e. the center
  is the center of the detector.
  
