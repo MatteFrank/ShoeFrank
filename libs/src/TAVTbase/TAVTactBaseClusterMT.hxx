@@ -1,8 +1,7 @@
 #ifndef _TAVTactBaseClusterMT_HXX
 #define _TAVTactBaseClusterMT_HXX
 /*!
- \file
- \version $Id: TAVTactBaseClusterMT.hxx
+ \file TAVTactBaseClusterMT.hxx
  \brief   Declaration of TAVTactBaseClusterMT.
  */
 /*------------------------------------------+---------------------------------*/
@@ -40,7 +39,7 @@ public:
    //! Apply basic cuts
    virtual Bool_t  ApplyCuts(TAVTbaseCluster* cluster);
 
-   //! Base creation of histogram
+   // Base creation of histogram
    virtual  void   CreateHistogram();
    
    //! Return seed pixel

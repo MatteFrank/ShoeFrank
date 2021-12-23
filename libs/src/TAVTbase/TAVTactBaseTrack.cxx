@@ -94,7 +94,7 @@ TAVTactBaseTrack::~TAVTactBaseTrack()
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup all histograms.
+// Setup all histograms.
 void TAVTactBaseTrack::CreateHistogram()
 {
    DeleteHistogram();   

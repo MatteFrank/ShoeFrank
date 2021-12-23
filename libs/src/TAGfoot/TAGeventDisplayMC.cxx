@@ -5,7 +5,6 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-
 #include "TAGeventDisplayMC.hxx"
 #include "TEveGeoNode.h"
 #include "TEveManager.h"
@@ -23,9 +22,9 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-ClassImp(TAGeventDisplayMC)
-
 TAGeventDisplayMC* TAGeventDisplayMC::fgInstance = 0x0;
+
+ClassImp(TAGeventDisplayMC)
 
 //__________________________________________________________
 TAGeventDisplayMC* TAGeventDisplayMC::Instance(const TString name, Int_t runNumber, Int_t type)

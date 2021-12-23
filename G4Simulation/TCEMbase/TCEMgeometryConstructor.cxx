@@ -1,4 +1,8 @@
 
+/*! \file TCEMgeometryConstructor.cxx
+ \brief Implementation of TCEMgeometryConstructor.
+ */
+
 #include "TCEMgeometryConstructor.hxx"
 
 #include "G4NistManager.hh"
@@ -25,7 +29,14 @@
 
 using namespace CLHEP;
 
+
+/*! \class TCEMgeometryConstructor
+ \brief Dipole geometry construction
+ */
+
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Default constructor
 TCEMgeometryConstructor::TCEMgeometryConstructor(TADIparGeo* pParGeo)
 : TCGbaseConstructor("TCEMgeometryConstructor", "1.0"),
   fBoxLog(0x0),
@@ -36,6 +47,7 @@ TCEMgeometryConstructor::TCEMgeometryConstructor(TADIparGeo* pParGeo)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Default destructor
 TCEMgeometryConstructor::~TCEMgeometryConstructor()
 {
 }

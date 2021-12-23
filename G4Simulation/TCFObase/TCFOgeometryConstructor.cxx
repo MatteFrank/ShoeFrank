@@ -26,6 +26,10 @@
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+/*! \file TCFOgeometryConstructor.cxx
+ \brief Implementation of TCFOgeometryConstructor.
+ */
+
 #include "TCFOgeometryConstructor.hxx"
 
 #include "Riostream.h"
@@ -72,7 +76,12 @@
 
 using namespace CLHEP;
 
+/*! \class TCFOgeometryConstructor
+ \brief  Geometry construction class of FOOT
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t runNumber)
 : TCGbaseGeometryConstructor(expName, runNumber),
   fStartCounter(0x0),
@@ -161,6 +170,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
  }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCFOgeometryConstructor::~TCFOgeometryConstructor()
 {
    if (fStartCounter) delete fStartCounter;

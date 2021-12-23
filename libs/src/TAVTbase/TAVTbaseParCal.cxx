@@ -26,6 +26,7 @@ ClassImp(TAVTbaseParCal);
 Int_t TAVTbaseParCal::fgkChargesN = 6;
 
 //------------------------------------------+-----------------------------------
+//! Standard constructor
 TAVTbaseParCal::TAVTbaseParCal()
 : TAGparTools(),
   fChargeProba(new TArrayF(6)),
@@ -34,13 +35,12 @@ TAVTbaseParCal::TAVTbaseParCal()
   fChargeMaxProba(0.),
   fkDefaultCalName("")
 {
-  // Standard constructor
 }
 
 //------------------------------------------+-----------------------------------
+//! Destructor
 TAVTbaseParCal::~TAVTbaseParCal()
 {
-   // Destructor
    delete fChargeProba;
    delete fChargeProbaNorm;
    for (Int_t p = 0; p < fgkChargesN; p++) {
@@ -87,7 +87,7 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
 }
 
 //------------------------------------------+-----------------------------------
-//! Get Proba
+// Get Proba
 const TArrayF* TAVTbaseParCal::GetChargeProba(Float_t pixelsN)
 {
    Float_t value[fgkChargesN];
@@ -113,7 +113,7 @@ const TArrayF* TAVTbaseParCal::GetChargeProba(Float_t pixelsN)
 }
 
 //------------------------------------------+-----------------------------------
-//! Get Proba
+// Get Proba
 const TArrayF* TAVTbaseParCal::GetChargeProbaNorm(Float_t pixelsN)
 {
    Float_t value[fgkChargesN];
@@ -139,14 +139,14 @@ const TArrayF* TAVTbaseParCal::GetChargeProbaNorm(Float_t pixelsN)
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear geometry info.
+// Clear geometry info.
 void TAVTbaseParCal::Clear(Option_t*)
 {
   return;
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
+// ostream insertion.
 void TAVTbaseParCal::ToStream(ostream& os, Option_t*) const
 {
 //  os << "TAVTbaseParCal " << GetName() << endl;
@@ -157,7 +157,7 @@ void TAVTbaseParCal::ToStream(ostream& os, Option_t*) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Set up quenched Landau parameters
+// Set up quenched Landau parameters
 void TAVTbaseParCal::SetFunction()
 {
    for (Int_t p = 0; p < fgkChargesN; p++) { // Loop on each charge
@@ -185,7 +185,7 @@ void TAVTbaseParCal::SetFunction()
 }
 
 //------------------------------------------+-----------------------------------
-//! Quenched Landau
+// Quenched Landau
 Double_t TAVTbaseParCal::QLandau(Double_t* x, Double_t* par)
 {
    Float_t xx = (x[0]-par[1])/par[2];
@@ -194,7 +194,7 @@ Double_t TAVTbaseParCal::QLandau(Double_t* x, Double_t* par)
 }
 
 //------------------------------------------+-----------------------------------
-//! Quenched Landau
+// Quenched Landau
 Double_t TAVTbaseParCal::QLandauNorm(Double_t* x, Double_t* par)
 {
    Float_t xx = (x[0]-par[1])/par[2];
@@ -202,9 +202,8 @@ Double_t TAVTbaseParCal::QLandauNorm(Double_t* x, Double_t* par)
    return f;
 }
 
-
 //------------------------------------------+-----------------------------------
-//! Total Quenched Landau
+// Total Quenched Landau
 Double_t TAVTbaseParCal::QLandauTot(Double_t* x, Double_t* /*par*/)
 {
    Float_t xx = x[0];

@@ -39,19 +39,19 @@ const TString TAGparGeo::fgkDefParaName = "tgGeo";
 
 
 //______________________________________________________________________________
+//! Standard constructor
 TAGparGeo::TAGparGeo()
 : TAGparTools(),
   fIonisation(new TAGionisMaterials()),
   fFileName("")
 {
-   // Standard constructor
    fDefaultGeoName = "./geomaps/TAGdetector.geo";
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAGparGeo::~TAGparGeo()
 {
-   // Destructor
    delete fIonisation;
 }
 
@@ -357,7 +357,9 @@ void TAGparGeo::Print(Option_t* option) const
       }
       cout << endl;
    } else {
-      printf("\nIn file %s the following beam parameters for a %.0f%s beam have been set:\n", fFileName.Data(), fBeamParameter.AtomicMass,
+      printf("\nIn file %s the following beam parameters for a %.0f%s beam impinging on %s target have been set:\n",
+	     fFileName.Data(), fBeamParameter.AtomicMass,
+	     fBeamParameter.Material.Data(),
              fTargetParameter.Material.Data());
 
       printf("BeamEnergy:          %.3f GeV/u\n", fBeamParameter.Energy);

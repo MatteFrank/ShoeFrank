@@ -13,6 +13,7 @@
  */
 
 //__________________________________________________________
+//! default constructor
 TAEDcluster::TAEDcluster(const Text_t* name) 
   : TEveQuadSet(name),
     fPalette(new TEveRGBAPalette()),
@@ -22,13 +23,12 @@ TAEDcluster::TAEDcluster(const Text_t* name)
     fSelectedIdx(-1),
     fSelectedValue(-1)
 { 
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDcluster::~TAEDcluster()
 {
-  // default destructor
   delete fPalette;
 }
 

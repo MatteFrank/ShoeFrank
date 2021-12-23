@@ -45,9 +45,9 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-ClassImp(TAGeventDisplay)
-
 TAGeventDisplay* TAGeventDisplay::fgInstance = 0x0;
+
+ClassImp(TAGeventDisplay)
 
 //__________________________________________________________
 TAGeventDisplay* TAGeventDisplay::Instance(const TString name, Int_t runNumber, Int_t type)

@@ -33,7 +33,7 @@ TAITntuCluster::~TAITntuCluster()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of clusters
+// return number of clusters
 Int_t TAITntuCluster::GetClustersN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -44,7 +44,7 @@ Int_t TAITntuCluster::GetClustersN(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of clusters
+// return number of clusters
 TClonesArray* TAITntuCluster::GetListOfClusters(Int_t iSensor)
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -55,7 +55,7 @@ TClonesArray* TAITntuCluster::GetListOfClusters(Int_t iSensor)
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of clusters
+// return number of clusters
 TClonesArray* TAITntuCluster::GetListOfClusters(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -67,7 +67,7 @@ TClonesArray* TAITntuCluster::GetListOfClusters(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
-//! return a cluster
+// return a cluster
 TAITcluster* TAITntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 {
    if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
@@ -78,7 +78,7 @@ TAITcluster* TAITntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+// return a pixel for a given sensor
 const TAITcluster* TAITntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) const
 {
    if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
@@ -89,7 +89,7 @@ const TAITcluster* TAITntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) con
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup clones.
+// Setup clones.
 void TAITntuCluster::SetupClones()
 {
    fGeometry = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
@@ -105,7 +105,7 @@ void TAITntuCluster::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear event.
+// Clear event.
 void TAITntuCluster::Clear(Option_t*)
 {
    for (Int_t i = 0; i < fGeometry->GetSensorsN(); ++i) {
@@ -145,7 +145,7 @@ TAITcluster* TAITntuCluster::NewCluster(TAITcluster* clus, Int_t iSensor)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
+// ostream insertion.
 void TAITntuCluster::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < fGeometry->GetSensorsN(); ++i) {

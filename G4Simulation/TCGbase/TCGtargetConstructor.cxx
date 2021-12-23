@@ -26,6 +26,11 @@
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+/*!
+ \file TCGtargetConstructor.cxx
+ \brief Implementation of TCGtargetConstructor.
+*/
+
 #include "TCGtargetConstructor.hxx"
 
 #include "Riostream.h"
@@ -47,8 +52,13 @@
 using namespace CLHEP;
 TString TCGtargetConstructor::fgkTargetName  = "targetPhy";
 
+/*!
+ \class TCGtargetConstructor
+ \brief  Target construction
+*/
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCGtargetConstructor::TCGtargetConstructor(TAGparGeo* parGeo)
 : TCGbaseConstructor("TCGtargetConstructor", "1.0"),
   fpParGeo(parGeo),
@@ -61,6 +71,7 @@ TCGtargetConstructor::TCGtargetConstructor(TAGparGeo* parGeo)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCGtargetConstructor::~TCGtargetConstructor()
 {
 }
@@ -69,7 +80,6 @@ TCGtargetConstructor::~TCGtargetConstructor()
 G4LogicalVolume* TCGtargetConstructor::Construct()
 {
    // Target logical volume
-   
    Float_t sizeX, sizeY, sizeZ;
    
    if (fpParGeo->GetTargetPar().Shape.Contains("cubic")) {

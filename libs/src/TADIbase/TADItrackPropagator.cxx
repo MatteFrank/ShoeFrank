@@ -17,6 +17,7 @@
 const  Double_t TADItrackPropagator::fgkConvFactor = 0.299792458;
 
 //______________________________________________________________________________
+//! Constructor
 TADItrackPropagator::TADItrackPropagator(TADIgeoField* field)
  : TAGobject(),
    fField(field),
@@ -31,6 +32,7 @@ TADItrackPropagator::TADItrackPropagator(TADIgeoField* field)
 }
 
 //______________________________________________________________________________
+//! Destructor
 Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, TVector3& vOut, TVector3& pOut)
 {
    // Propagate particle with momentum p to pos Z with an initial position v.

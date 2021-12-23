@@ -14,8 +14,7 @@ class TH2F;
 class TH1F;
 
 /*!
- \file
- \version $Id: TAVTactBaseRaw.hxx 
+ \file TAVTactBaseRaw.hxx
  \brief   Declaration of TAVTactBaseRaw.
  */
 /*------------------------------------------+---------------------------------*/

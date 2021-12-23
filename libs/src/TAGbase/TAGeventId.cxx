@@ -16,7 +16,6 @@ ClassImp(TAGeventId);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGeventId::TAGeventId()
 : fiCam(-1),
   fiRun(-1),
@@ -25,7 +24,6 @@ TAGeventId::TAGeventId()
 
 //------------------------------------------+-----------------------------------
 //! Construct with campaign, run, and event number.
-
 TAGeventId::TAGeventId(Short_t i_cam, Short_t i_run, Int_t i_evt)
 : fiCam(i_cam),
   fiRun(i_run),
@@ -34,13 +32,11 @@ TAGeventId::TAGeventId(Short_t i_cam, Short_t i_run, Int_t i_evt)
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGeventId::~TAGeventId()
 {}
 
 //------------------------------------------+-----------------------------------
-//! Clear event id.
-
+// Clear event id.
 void TAGeventId::Clear()
 {
   fiCam = -1;
@@ -50,7 +46,7 @@ void TAGeventId::Clear()
 }
 
 //------------------------------------------+-----------------------------------
-//! operator =
+// operator =
 const TAGeventId& TAGeventId::operator=(const TAGeventId &right)
 {
    fiCam = right.fiCam;          // campaign number
@@ -62,7 +58,6 @@ const TAGeventId& TAGeventId::operator=(const TAGeventId &right)
 
 /*------------------------------------------+---------------------------------*/
 //! Custom streamer.
-
 void TAGeventId::Streamer(TBuffer &R__b)
 {
   UInt_t R__s, R__c;

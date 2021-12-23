@@ -12,6 +12,7 @@
 ClassImp(TADIeveField);
 
 //______________________________________________________________________________
+//! Default constructor
 TADIeveField::TADIeveField(TADIgeoField* field)
 : TEveMagField(),
   fField(field)
@@ -19,9 +20,9 @@ TADIeveField::TADIeveField(TADIgeoField* field)
 }
 
 //______________________________________________________________________________
+//! Destructor
 TADIeveField::~TADIeveField()
 {
-   // Destructor
 }
 
 //______________________________________________________________________________

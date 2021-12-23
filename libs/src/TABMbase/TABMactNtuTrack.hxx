@@ -84,8 +84,6 @@ public:
   //not used methods
   void SaveLegpol();                                // extra method adopted to save fLegPolSum in a different file,
 
-  ClassDef(TABMactNtuTrack,0)
-
   private:
 
   TAGdataDsc*       fpNtuTrk;		    // output data dsc
@@ -110,7 +108,13 @@ public:
   //histos
   TH2F*            fpResTot;
   TH2F*            fpHisMap;
+  TH2F*            fpHisMapTW;
   TH2F*            fpHisMylar12d;
+
+  // TH2F*            fpHis0MSD;
+  // TH2F*            fpHis1MSD;
+  // TH2F*            fpHis2MSD;
+
   TH1F*            fpHisAngleX;
   TH1F*            fpHisAngleY;
   TH1F*            fpHisChi2Red;
@@ -140,6 +144,7 @@ public:
   std::vector<TH1F*> fpResTimeBin; //for the STREL calibration
   std::vector<TH1F*> fpResDistBin; //for the STREL calibration
 
+   ClassDef(TABMactNtuTrack,0)
 };
 
 

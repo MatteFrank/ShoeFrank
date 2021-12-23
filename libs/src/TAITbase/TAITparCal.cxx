@@ -24,14 +24,15 @@ ClassImp(TAITparCal);
 
 
 //------------------------------------------+-----------------------------------
+//! Standard constructor
 TAITparCal::TAITparCal()
 : TAVTbaseParCal()
 {
-  // Standard constructor
    fkDefaultCalName = "./calib/TAITdetector.cal";
 }
 
 //------------------------------------------+-----------------------------------
+//! Destructor
 TAITparCal::~TAITparCal()
 {
 }

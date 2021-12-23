@@ -1,8 +1,7 @@
 #ifndef _TAVTactBaseNtuCluster_HXX
 #define _TAVTactBaseNtuCluster_HXX
 /*!
- \file
- \version $Id: TAVTactBaseNtuCluster.hxx
+ \file TAVTactBaseNtuCluster.hxx
  \brief   Declaration of TAVTactBaseNtuCluster.
  */
 /*------------------------------------------+---------------------------------*/
@@ -38,7 +37,7 @@ public:
    //! Apply basic cuts
    virtual Bool_t  ApplyCuts(TAVTbaseCluster* cluster);
 
-   //! Base creation of histogram
+   // Base creation of histogram
    virtual  void   CreateHistogram();
    
     //! Get list of pixels for a given plane

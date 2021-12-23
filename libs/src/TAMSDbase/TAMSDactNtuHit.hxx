@@ -24,6 +24,7 @@ public:
                                   TAGdataDsc* p_datraw=0,
                                   TAGdataDsc* p_datdaq=0,
                                   TAGparaDsc* p_pargeo=0,
+                                  TAGparaDsc* p_parconf=0,
                                   TAGparaDsc* p_parcal=0);
    virtual         ~TAMSDactNtuHit();
    
@@ -31,18 +32,16 @@ public:
    
    void     CreateHistogram();
    
-   
    Double_t GetEnergy(Double_t rawEnergy, Int_t sensor, Int_t strip);
-   
-   
-   ClassDef(TAMSDactNtuHit,0)
    
 private:
    TAGdataDsc*     fpDatRaw;		    // input data dsc
    TAGdataDsc*     fpNtuRaw;		    // output data dsc
    TAGparaDsc*     fpGeoMap;        // output data dsc
+   TAGparaDsc*     fpParConf;       // output data dsc
    TAGparaDsc*     fpParCal;        // output data dsc
-   
+
+   ClassDef(TAMSDactNtuHit,0)
 };
 
 #endif

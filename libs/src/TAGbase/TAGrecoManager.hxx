@@ -39,12 +39,23 @@ public:
 public:
 	~TAGrecoManager();
 
-	void             FromFile();
-	void             Print(Option_t* opt = "");
+   //! From file
+	void  FromFile();
+   //! Print info
+	void  Print(Option_t* opt = "");
+   //! Get run info
    const TAGrunInfo GetGlobalInfo();
-   Bool_t           Find_MCParticle( string villain );
+   //! Find MC particle
+   Bool_t Find_MCParticle( string villain );
 
+   //! Debug level
 	Int_t  Debug()                const { return fDebugLevel;          }
+   //! Get chi2 cut
+	Float_t  Chi2Cut()            const { return fChi2;                }
+   //! Get number of measurements
+	Int_t  MeasureN()             const { return fMeasureN;            }
+   //! Get skip events
+	Int_t  SkipN()              	const { return fSkipN;               }
 
    //! Kalman Getter
    //! Kalman mode
@@ -78,6 +89,9 @@ public:
 
     //! Reconstruction parameters Getter
     //! Local reconstruction flag
+    bool IsMC()								{ return fIsMC; }
+
+    // Reconstruction parameters Getter
     Bool_t IsLocalReco()         const { return fEnableLocalReco;     }
     //! Saving tree flag
     Bool_t IsSaveTree()          const { return fEnableTree;          }
@@ -207,6 +221,10 @@ private:
    TObjArray            fClassDebugLevels;      ///< List of debug level per class
    
    //! Kalman parameters
+   Float_t              fChi2;                  ///< Chi2 cut
+   Int_t                fMeasureN;              ///< Number of measurements
+   Int_t                fSkipN;                 ///< Number of events to skip
+   Bool_t               fIsMC;                  ///< MC flag
 	vector<string>       fMcParticles;           ///< Kalman MC particles
    string               fKalmanMode;            ///< Kalman mode
    string               fKPreselectStrategy;    ///< Kalman preselection strategy

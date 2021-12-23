@@ -12,12 +12,14 @@
  */
 
 // --------------------------------------------------------------------------------------
+//! Constructor
 TAITdigitizerE::TAITdigitizerE(TAVTbaseParGeo* parGeo)
 : TAVTdigitizerE(parGeo)
 {
 }
 
 // --------------------------------------------------------------------------------------
+//! Destructor
 TAITdigitizerE::~TAITdigitizerE() 
 {   
 }

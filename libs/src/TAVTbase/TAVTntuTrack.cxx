@@ -38,14 +38,14 @@ TAVTntuTrack::~TAVTntuTrack()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of tracks
+// return number of tracks
 Int_t TAVTntuTrack::GetTracksN() const
 {
    return fListOfTracks->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-//! return a Track for a given sensor
+// return a Track for a given sensor
 TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack)
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -55,7 +55,7 @@ TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+// return a pixel for a given sensor
 const TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack) const
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -66,7 +66,7 @@ const TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack) const
 
 
 //------------------------------------------+-----------------------------------
-//! Setup clones.
+// Setup clones.
 void TAVTntuTrack::SetupClones()
 {
    if (!fListOfTracks) {
@@ -76,7 +76,7 @@ void TAVTntuTrack::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear event.
+// Clear event.
 void TAVTntuTrack::Clear(Option_t*)
 {
    fListOfTracks->Delete();
@@ -101,7 +101,7 @@ TAVTtrack* TAVTntuTrack::NewTrack(TAVTtrack& trk)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
+// ostream insertion.
 void TAVTntuTrack::ToStream(ostream& os, Option_t* option) const
 {
 	  

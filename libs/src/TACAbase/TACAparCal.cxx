@@ -2,11 +2,9 @@
 
 #include "TACAparCal.hxx"
 
-ClassImp(TACAparCal)
-
-
-
 TString TACAparCal::fgkCrysStatus = "./config/TACACrysMapStatus.map";
+
+ClassImp(TACAparCal)
 
 //_____________________________________________________________________
 TACAparCal::TACAparCal()

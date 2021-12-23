@@ -46,6 +46,7 @@ Int_t  TAEDbaseInterface::fgMaxHistosN   =  4;
 ClassImp(TAEDbaseInterface)
 
 //__________________________________________________________
+//! Destructor
 TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName, Int_t runNumber)
 : TEveEventManager(),
   fExpName(expName),
@@ -74,9 +75,7 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName, Int_t ru
   fEventProgress(0),
   fHistoListBox(0),
   fListOfCanvases(new TList())
-{ 
-  // default constructor
-
+{
    fListOfCanvases->SetOwner(false);
    
    // check geometry manager
@@ -92,9 +91,9 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName, Int_t ru
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDbaseInterface::~TAEDbaseInterface()
 {
-   // default destructor
    delete fListOfCanvases;
    delete fSelHistoListBox;
    delete fSelHistoList;

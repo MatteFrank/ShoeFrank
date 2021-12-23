@@ -14,11 +14,11 @@
 ClassImp(TAVTcluster) // Description of a cluster
 
 //______________________________________________________________________________
-//  
+//!  constructor
 TAVTcluster::TAVTcluster()
 :  TAVTbaseCluster()
 {
-   // TAVTcluster constructor
+ 
    SetupClones();
 }
 
@@ -38,10 +38,9 @@ TAVTcluster::TAVTcluster(const TAVTcluster& cluster)
 }
 
 //______________________________________________________________________________
-//  
+//! default destructor
 TAVTcluster::~TAVTcluster()
 { 
-   // TAVTcluster default destructor
 }
 
 //______________________________________________________________________________

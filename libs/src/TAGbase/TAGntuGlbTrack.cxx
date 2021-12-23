@@ -17,7 +17,6 @@ ClassImp(TAGtrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGtrack::TAGtrack()
  : TAGnamed(),
    fEvtNumber(-1),
@@ -87,7 +86,7 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
 }
 
 //______________________________________________________________________________
-//
+//! Copy constructor
 TAGtrack::TAGtrack(const TAGtrack& aTrack)
 :  TAGnamed(aTrack),
    fEvtNumber(aTrack.fEvtNumber),
@@ -119,6 +118,83 @@ TAGtrack::TAGtrack(const TAGtrack& aTrack)
 {
    fListOfPoints = (TClonesArray*)aTrack.fListOfPoints->Clone();
 }
+
+
+
+
+//Alternative constructor
+TAGtrack::TAGtrack( string name, long evNum, 
+								int pdgID, float startMass, int fitCh, float fitMass, 
+								float length, float tof, 
+								float chi2, int ndof, float pVal, 
+								TVector3* TgtPos, TVector3* TgtMom,
+								TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov,
+								TVector3* TwPos, TVector3* TwMom,
+								TMatrixD* TwPos_cov, TMatrixD* TwMom_cov,
+								vector<TAGpoint*>* shoeTrackPointRepo 
+					) 
+	: TAGnamed(),
+	fListOfPoints(0x0)
+{
+	SetupClones();
+
+	fName = name;
+	fEvtNumber = evNum;
+	fPdgId = pdgID;
+   fMass = startMass;
+	fFitChargeZ = fitCh;
+	fFitMass = fitMass;
+	fLength = length;
+	fFitTof = tof;
+	fChi2 = chi2;
+	fNdof = ndof;
+	fPval = pVal;
+
+	fTgtPos = *TgtPos;
+	TVector3 temp = TVector3(pow( (*TgtPos_cov)(0,0),2), pow( (*TgtPos_cov)(1,1),2), pow( (*TgtPos_cov)(2,2),2) );
+	fTgtPosError = temp;
+
+	fTgtMom = *TgtMom;
+	temp = TVector3(pow( (*TgtMom_cov)(0,0),2), pow( (*TgtMom_cov)(1,1),2), pow( (*TgtMom_cov)(2,2),2) );
+	fTgtMomError = temp;
+	fMomModule = TgtMom->Mag();
+	fTgtDir = TgtMom->Unit();
+
+	fTwPos = *TwPos;
+	temp = TVector3(pow( (*TwPos_cov)(0,0),2), pow( (*TwPos_cov)(1,1),2), pow( (*TwPos_cov)(2,2),2) );
+	fTwPosError = temp;
+
+	fTwMom = *TwMom;
+	temp = TVector3(pow( (*TwMom_cov)(0,0),2), pow( (*TwMom_cov)(1,1),2), pow( (*TwMom_cov)(2,2),2) );
+	fTwMomError = temp;
+
+	TClonesArray &pointArray = *fListOfPoints;
+	for(int i=0; i < shoeTrackPointRepo->size(); ++i)	{
+
+		new (pointArray[pointArray.GetEntriesFast()]) TAGpoint( *(shoeTrackPointRepo->at(i)) );
+	}
+}
+
+
+
+void TAGtrack::SetMCInfo( int MCparticle_id, float trackQuality ) {
+
+	fMcTrackIdx.Set(fMcTrackIdx.GetSize() + 1);
+	fMcTrackIdx[fMcTrackIdx.GetSize() - 1] = MCparticle_id;
+	fQuality = trackQuality;
+
+}
+
+
+void TAGtrack::SetExtrapInfoTW( TVector3* pos, TVector3* mom, TMatrixD* pos_cov, TMatrixD* mom_cov ) {
+
+   fTwMom = *mom;
+	fTwPos = *pos;
+	// m_pos_TW_cov = *pos_cov;
+	// m_mom_TW_cov = *mom_cov;
+}
+
+
 
 
 //------------------------------------------+-----------------------------------
@@ -203,9 +279,6 @@ Double_t TAGtrack::GetTgtPhi() const
 
    return phi;
 }
-
-
-
 
 //______________________________________________________________________________
 //
@@ -314,6 +387,22 @@ TArrayI TAGtrack::GetMcTrackIdx()
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //##############################################################################
 
 /*!
@@ -331,6 +420,11 @@ TAGntuGlbTrack::TAGntuGlbTrack()
  : TAGdata(),
    fListOfTracks(new TClonesArray("TAGtrack"))
 {
+  //	SetupClones();
+	m_kalmanOutputDir = (string)getenv("FOOTRES")+"/Kalman_new";
+    // m_debug = TAGrecoManager::GetPar()->Debug();
+    m_debug = 0;
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -341,14 +435,14 @@ TAGntuGlbTrack::~TAGntuGlbTrack()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of tracks
+// return number of tracks
 Int_t TAGntuGlbTrack::GetTracksN() const
 {
    return fListOfTracks->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-//! return a Track for a given sensor
+// return a Track for a given sensor
 TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack)
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -358,7 +452,7 @@ TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+// return a pixel for a given sensor
 const TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack) const
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -367,9 +461,8 @@ const TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack) const
       return 0x0;
 }
 
-
 //------------------------------------------+-----------------------------------
-//! Setup clones.
+// Setup clones.
 void TAGntuGlbTrack::SetupClones()
 {
    if (!fListOfTracks) {
@@ -379,11 +472,30 @@ void TAGntuGlbTrack::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear event.
+// Clear event.
 void TAGntuGlbTrack::Clear(Option_t*)
 {
    fListOfTracks->Delete();
 }
+
+
+/* Add a new track to the repo  --- Genfit
+*
+*/
+TAGtrack* TAGntuGlbTrack::NewTrack(string name, long evNum, int pdgID, float pdgMass, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* recoPos_target, TVector3* recoMom_target, TMatrixD* recoPos_target_cov, TMatrixD* recoMom_target_cov, TVector3* recoPos_Tw, TVector3* recoMom_Tw, TMatrixD* recoPos_Tw_cov, TMatrixD* recoMom_Tw_cov, vector<TAGpoint*>* shoeTrackPointRepo)
+{
+	TClonesArray &trackArray = *fListOfTracks;
+	TAGtrack* track = new (trackArray[trackArray.GetEntriesFast()]) TAGtrack(
+													name, evNum,
+													pdgID, pdgMass, measCh, mass, length, tof, chi2, ndof, pVal, 
+													recoPos_target, recoMom_target, recoPos_target_cov, recoMom_target_cov,
+													recoPos_Tw, recoMom_Tw, recoPos_Tw_cov, recoMom_Tw_cov,
+													shoeTrackPointRepo
+												);
+	return track;
+}
+
+
 
 //______________________________________________________________________________
 //
@@ -415,8 +527,11 @@ TAGtrack* TAGntuGlbTrack::NewTrack(TAGtrack& trk)
    return track;
 }
 
+
+
+
 //______________________________________________________________________________
-//! ostream insertion.
+// ostream insertion.
 void TAGntuGlbTrack::ToStream(ostream& os, Option_t* option) const
 {
    os << "TAGntuGlbTrack " << GetName()

@@ -40,7 +40,7 @@ Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 
 //------------------------------------------+-----------------------------------
-//
+//! Default constructor
 TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
  : TAGaction(name, "TAVTactBaseNtuHitMC - NTuplize hit MC data"),
    fpGeoMap(pGeoMap),
@@ -77,7 +77,7 @@ TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup all histograms.
+// Setup all histograms.
 void TAVTactBaseNtuHitMC::CreateHistogram()
 {
 

@@ -23,15 +23,11 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-/// \file field/field01/src/TCEMfieldSetup.cc
-/// \brief Implementation of the TCEMfieldSetup class
-//
-//
-// $Id: TCEMfieldSetup.cc 77115 2013-11-21 15:06:37Z gcosmo $
-//
-//   User Field setup class implementation.
-//
-//
+/*!
+ \file TCEMfieldSetup.cxx
+ \brief Implementation of TCEMfieldSetup.
+*/
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -64,9 +60,15 @@
 
 #include <Riostream.h>
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+/*!
+ \class TCEMfieldSetup
+ \brief Implementation of the TCEMfieldSetup class
+ 
+ User Field setup class implementation.
+ */
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCEMfieldSetup::TCEMfieldSetup(TCEMfield* field)
  : fFieldManager(0),
    fChordFinder(0),
@@ -80,6 +82,7 @@ TCEMfieldSetup::TCEMfieldSetup(TCEMfield* field)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 void TCEMfieldSetup::Initialize()
 {
   fEquation       = new G4Mag_UsualEqRhs(fMagneticField);
@@ -91,7 +94,6 @@ void TCEMfieldSetup::Initialize()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 TCEMfieldSetup::~TCEMfieldSetup()
 {
   delete fChordFinder;

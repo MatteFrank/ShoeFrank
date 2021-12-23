@@ -23,11 +23,11 @@ class TAMCactNtuRegion : public TAGaction {
    //! Action
     virtual Bool_t  Action();
 
-    ClassDef(TAMCactNtuRegion,0)
-
   private:
     TAGdataDsc*     fpNtuMC;	 ///< output data dsc
-    EVENT_STRUCT*   fpEvtStr; ///< Fluka structure
+    EVENT_STRUCT*   fpEvtStr;  ///< Fluka structure
+   
+   ClassDef(TAMCactNtuRegion,0)
 };
 
 #endif

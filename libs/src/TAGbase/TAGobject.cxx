@@ -15,20 +15,17 @@
 ClassImp(TAGobject);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGobject::TAGobject()
 : fFound(false)
 {}
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGobject::~TAGobject()
 {}
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGobject::ToStream(ostream& os, Option_t* option) const
 {
   os <<"TAGobject: " << IsA()->GetName() << "  " << GetName() 
@@ -37,8 +34,7 @@ void TAGobject::ToStream(ostream& os, Option_t* option) const
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGobject::Print(Option_t* option) const
 {
   ToStream(cout, option);

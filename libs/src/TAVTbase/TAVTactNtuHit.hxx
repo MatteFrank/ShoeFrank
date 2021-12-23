@@ -6,8 +6,7 @@
 #include "TAVTactBaseNtuHit.hxx"
 
 /*!
- \file
- \version $Id: TAVTactNtuHit.hxx
+ \file TAVTactNtuHit.hxx
  \brief   Declaration of TAVTactNtuHit.
  */
 
@@ -21,7 +20,7 @@ public:
    
    explicit TAVTactNtuHit(const char* name=0, TAGdataDsc* p_datraw=0, TAGdataDsc* p_datmbs=0, TAGparaDsc* p_pargeo=0, TAGparaDsc* p_parconf=0, TAGparaDsc* pParMap=0);
    virtual  ~TAVTactNtuHit();
-   
+   //! Action
    virtual Bool_t  Action();
    
 public:

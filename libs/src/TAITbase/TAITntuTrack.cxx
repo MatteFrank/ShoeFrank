@@ -35,14 +35,14 @@ TAITntuTrack::~TAITntuTrack()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of tracks
+// return number of tracks
 Int_t TAITntuTrack::GetTracksN() const
 {
    return fListOfTracks->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-//! return a Track for a given sensor
+// return a Track for a given sensor
 TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack)
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -52,7 +52,7 @@ TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+// return a pixel for a given sensor
 const TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack) const
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -61,9 +61,8 @@ const TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack) const
 	  return 0x0;
 }
 
-
 //------------------------------------------+-----------------------------------
-//! Setup clones.
+// Setup clones.
 void TAITntuTrack::SetupClones()
 {
    if (!fListOfTracks) {
@@ -73,7 +72,7 @@ void TAITntuTrack::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear event.
+// Clear event.
 void TAITntuTrack::Clear(Option_t*)
 {
    fListOfTracks->Delete();
@@ -98,7 +97,7 @@ TAITtrack* TAITntuTrack::NewTrack(TAITtrack& trk)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
+// ostream insertion.
 void TAITntuTrack::ToStream(ostream& os, Option_t* option) const
 {
 	  

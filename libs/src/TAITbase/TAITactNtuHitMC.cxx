@@ -38,7 +38,7 @@ ClassImp(TAITactNtuHitMC);
 
 
 //------------------------------------------+-----------------------------------
-//
+//! Constructor
 TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
 : TAVTactBaseNtuHitMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
@@ -57,7 +57,7 @@ TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
 }
 
 //------------------------------------------+-----------------------------------
-//! Create histogram
+// Create histogram
 void TAITactNtuHitMC::CreateDigitizer()
 {
    TAITparGeo* pGeoMap  = (TAITparGeo*) fpGeoMap->Object();
@@ -66,9 +66,8 @@ void TAITactNtuHitMC::CreateDigitizer()
       ComputeNoiseLevel();
 }
 
-
 //------------------------------------------+-----------------------------------
-//! Action.
+// Action.
 bool TAITactNtuHitMC::Action()
 {
 	

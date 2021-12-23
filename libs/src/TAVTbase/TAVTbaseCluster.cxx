@@ -16,7 +16,7 @@
 ClassImp(TAVTbaseCluster) // Description of a cluster
 
 //______________________________________________________________________________
-//  
+//! Default constructor
 TAVTbaseCluster::TAVTbaseCluster()
 :  TAGcluster(),
    fListOfPixels(0x0),
@@ -25,7 +25,7 @@ TAVTbaseCluster::TAVTbaseCluster()
 }
 
 //______________________________________________________________________________
-//  
+//! Copy constructor
 TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
 :  TAGcluster(cluster),
    fCharge(cluster.fCharge)
@@ -36,11 +36,9 @@ TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
 }
 
 //______________________________________________________________________________
-//  
+//! Default destructor 
 TAVTbaseCluster::~TAVTbaseCluster()
-{ 
-   // TAVTbaseCluster default destructor 
-   
+{
    delete fListOfPixels;
 }
 

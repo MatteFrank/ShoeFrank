@@ -34,11 +34,11 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-ClassImp(BaseReco)
-
 Bool_t  BaseReco::fgItrTrackFlag  = false;
-Bool_t  BaseReco::fgMsdTrackFlag  = false;
+Bool_t  BaseReco::fgMsdTrackFlag  = true;
 Bool_t  BaseReco::fSaveMcFlag     = true;
+
+ClassImp(BaseReco)
 
 //__________________________________________________________
 BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
@@ -95,6 +95,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuTrackIt(0x0),
    fpNtuVtx(0x0),
    fpNtuGlbTrack(0x0),
+   fpNtuGlbTrackK(0x0),
    fActEvtReader(0x0),
    fActEvtWriter(0x0),
    fActTrackBm(0x0),
@@ -304,9 +305,11 @@ void BaseReco::LoopEvent(Int_t nEvents)
 //__________________________________________________________
 void BaseReco::AfterEventLoop()
 {
-   fTAGroot->EndEventLoop();
-
+//    if(fActRecCutter){ fActRecCutter->Output(); }
    if (TAGrecoManager::GetPar()->IncludeKalman())	fActGlbkFitter->Finalize();
+   
+   fTAGroot->EndEventLoop();
+    
    if (fFlagOut)
       CloseFileOut();
    CloseFileIn();
@@ -376,6 +379,7 @@ void BaseReco::SetRecHistogramDir()
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAMSDparGeo::GetBaseName());
       fActClusMsd->SetHistogramDir(subfolder);
+      fActPointMsd->SetHistogramDir(subfolder);
    }
 
    // TW
@@ -595,7 +599,6 @@ void BaseReco::ReadParFiles()
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       Bool_t isTof_calib = false;
-
       if(fFlagTWbarCalib) {
          parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
                                                    isTof_calib,fFlagTWbarCalib);
@@ -668,10 +671,9 @@ void BaseReco::ReadParFiles()
      } else {
         fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
         TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
-
-        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parMap->FromFile(parFileName.Data());
-
+	parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+	parMap->FromFile(parFileName.Data());
+        
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
         parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
 
@@ -897,25 +899,27 @@ void BaseReco::CreateRecActionGlb()
 //__________________________________________________________
 void BaseReco::CreateRecActionGlbGF()
 {
-  if(fFlagTrack) {
-    SetL0TreeBranches();
+	if(fFlagTrack) {
+		SetL0TreeBranches();
 
-    genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
+		if (TAGrecoManager::GetPar()->IncludeDI()) {
+			genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
+			genfit::FieldManager::getInstance()->getFieldVal( TVector3(0,0,14) ).Print();
+		}
 
-    // set material and geometry into genfit
-    MaterialEffects* materialEffects = MaterialEffects::getInstance();
-    materialEffects->init(new TGeoMaterialInterface());
+		// set material and geometry into genfit
+		MaterialEffects* materialEffects = MaterialEffects::getInstance();
+		materialEffects->init(new TGeoMaterialInterface());
 
-    // include the nucleon into the genfit pdg repository
-    TAMCparTools::UpdatePDG();
+		// include the nucleon into the genfit pdg repository
+		UpdatePDG::Instance();
 
-    // Initialisation of KFfitter
-    fpNtuGlbTrackK = new TAGdataDsc("GlobalTrackRepostory", new GlobalTrackRepostory());
-    fActGlbkFitter = new TAGactKFitter("glbActkFitter", fpNtuGlbTrackK);
-    if (fFlagHisto)
-      fActGlbkFitter->CreateHistogram();
-
-  }
+		// Initialisation of KFfitter
+		fpNtuGlbTrackK = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+		fActGlbkFitter = new TAGactKFitter("glbActKFitter", fpNtuGlbTrackK);
+		if (fFlagHisto)
+			fActGlbkFitter->CreateHistogram();
+	}
 }
 
 //__________________________________________________________
@@ -1016,48 +1020,44 @@ void BaseReco::SetL0TreeBranches()
 //__________________________________________________________
 void BaseReco::SetTreeBranches()
 {
-   if (TAGrecoManager::GetPar()->IncludeTOE()) {
-      if (fFlagTrack && !fFlagRecCutter)
-         fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeBM()) {
-      if (fFlagTrack)
-         fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeVT()) {
-      if (!fFlagTrack)
-         fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-      else {
-         fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-         fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
-         if (TAGrecoManager::GetPar()->IncludeTG())
-            fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
-      }
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeIT()) {
-      fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
-      if (fgItrTrackFlag)
-         fActEvtWriter->SetupElementBranch(fpNtuTrackIt, TAITntuTrack::GetBranchName());
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
-      fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
-      if (fgMsdTrackFlag)
-         fActEvtWriter->SetupElementBranch(fpNtuTrackMsd, TAMSDntuTrack::GetBranchName());
-
-   }
+  if (TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
+    if (fFlagTrack && !fFlagRecCutter)
+      fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
+  }
+  
+  if (TAGrecoManager::GetPar()->IncludeVT()) {
+    if (!fFlagTrack)
+      fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+    else {
+      fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
+      if (TAGrecoManager::GetPar()->IncludeTG())
+	fActEvtWriter->SetupElementBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
+    }
+  }
+  
+  if (TAGrecoManager::GetPar()->IncludeIT())
+    fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
+  
+  if (TAGrecoManager::GetPar()->IncludeMSD()) {
+    fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
+    fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
+  }
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW())
       fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
 
    if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    if (TAGrecoManager::GetPar()->IncludeCA())
-      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
 
+ 	// genfit 
+   if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
+      if (fFlagTrack) {
+      	fActEvtWriter->SetupElementBranch(fpNtuGlbTrackK, TAGntuGlbTrack::GetBranchName());
+      }
+   }
+   
    if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
        && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
        && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
@@ -1136,7 +1136,9 @@ void BaseReco::AddRecRequiredItem()
 
       if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
       //   gTAGroot->AddRequiredItem("glbActTrackStudyGF");
-         gTAGroot->AddRequiredItem("glbActkFitter");
+         // gTAGroot->AddRequiredItem("TAGntuTrackRepository");
+         gTAGroot->AddRequiredItem("glbTrack");
+         gTAGroot->AddRequiredItem("glbActKFitter");
       }
    }
 

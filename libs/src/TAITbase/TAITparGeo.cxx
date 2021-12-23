@@ -33,10 +33,10 @@ const Int_t   TAITparGeo::fgkDefSensPerPlume = 4;
 const Int_t   TAITparGeo::fgkDefLayersN      = 2;
 
 //_____________________________________________________________________________
+//! Constructor
 TAITparGeo::TAITparGeo()
 : TAVTparGeo()
 {
-   // Constructor
    fFlagIt          = true;
    fLayersN         = fgkDefLayersN;
    fSensPerLayer    = fgkDefSensPerLayer;
@@ -45,9 +45,9 @@ TAITparGeo::TAITparGeo()
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAITparGeo::~TAITparGeo()
 {
-   // Destructor
 }
 
 //_____________________________________________________________________________

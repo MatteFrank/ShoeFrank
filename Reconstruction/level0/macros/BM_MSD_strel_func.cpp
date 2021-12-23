@@ -25,6 +25,7 @@
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TAMSDcluster.hxx"
+#include "TAMSDntuPoint.hxx"
 
 
 #include "TAGgeoTrafo.hxx"
@@ -44,6 +45,7 @@ static TAGgeoTrafo* geoTrafo;
 static TABMntuHit*  bmNtuHit;
 static TABMntuTrack*  bmNtuTrack;
 static TAMSDntuCluster* msdNtuCluster;
+static TAMSDntuPoint* msdNtuPoint;
 
 
 //*********************************************  combined functions  *****************************************
@@ -81,6 +83,12 @@ void BookingBMVTX(TFile* f_out){
 
   h = new TH1D("bm_polar_angle","BM polar angle distribution ;AngZ(deg);Events",400,0.,10.);
   h = new TH1D("bm_azimuth_angle","BM azimuth angle distribution ;Phi(deg);Events",180,0.,180.);
+
+  //bm-vtx combined
+  h2 = new TH2D("Sensor_0","sns1",500,-5.,5.,500,-5.,5.);
+  h2 = new TH2D("Sensor_1","sns2",500,-5.,5.,500,-5.,5.);
+  h2 = new TH2D("Sensor_2","sns3",500,-5.,5.,500,-5.,5.);
+
 
   //bm-vtx combined
   h2 = new TH2D("origin_xx_bmvtx","BM originX vs VTX originX;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);

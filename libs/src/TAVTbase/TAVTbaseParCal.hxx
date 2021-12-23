@@ -30,6 +30,10 @@ protected:
    Int_t    fChargeWithMaxProbaNorm; ///< Charge with the maximum proba normalized
    Float_t  fChargeMaxProbaNorm;     ///< Maximum charge normalized
 
+   /*!
+    \struct LandauParameter_t
+    \brief  Landau parameters
+    */
    struct LandauParameter_t : public  TObject {
 	  Int_t   Charge;   ///< charge
 	  Float_t Constant; ///< constant value

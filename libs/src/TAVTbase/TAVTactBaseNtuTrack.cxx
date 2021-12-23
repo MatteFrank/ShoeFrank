@@ -56,7 +56,7 @@ TAVTactBaseNtuTrack::~TAVTactBaseNtuTrack()
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup all histograms.
+// Setup all histograms.
 void TAVTactBaseNtuTrack::CreateHistogram()
 {   
    TAVTactBaseTrack::CreateHistogram();

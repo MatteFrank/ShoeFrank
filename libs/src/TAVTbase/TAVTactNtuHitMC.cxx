@@ -35,7 +35,7 @@ using namespace std;
 ClassImp(TAVTactNtuHitMC);
 
 //------------------------------------------+-----------------------------------
-//
+//! Constructor
 TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
 : TAVTactBaseNtuHitMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
@@ -54,7 +54,7 @@ TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
 }
 
 //------------------------------------------+-----------------------------------
-//! Create digitizer
+// Create digitizer
 void TAVTactNtuHitMC::CreateDigitizer()
 {
    TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
@@ -68,7 +68,7 @@ void TAVTactNtuHitMC::CreateDigitizer()
 }
 
 //------------------------------------------+-----------------------------------
-//! Action.
+// Action.
 bool TAVTactNtuHitMC::Action()
 {
 	TAVTntuHit* pNtuRaw = (TAVTntuHit*) fpNtuRaw->Object();

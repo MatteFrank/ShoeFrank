@@ -1,8 +1,7 @@
 #ifndef _TAVTactBaseNtuClusterMT_HXX
 #define _TAVTactBaseNtuClusterMT_HXX
 /*!
- \file
- \version $Id: TAVTactBaseNtuClusterMT.hxx
+ \file TAVTactBaseNtuClusterMT.hxx
  \brief   Declaration of TAVTactBaseNtuClusterMT.
  */
 /*------------------------------------------+---------------------------------*/

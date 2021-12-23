@@ -32,19 +32,19 @@ const TString TADIparGeo::fgkDevBaseName   = "DI";
 const Int_t   TADIparGeo::fgkDefMagnetsN   = 2;
 
 //______________________________________________________________________________
+//! Standard constructor
 TADIparGeo::TADIparGeo()
 : TAGparTools(),
   fMagnetsN(0),
   fType(-1),
   fMapName("")
 {
-   // Standard constructor
 }
 
 //______________________________________________________________________________
+//! Destructor
 TADIparGeo::~TADIparGeo()
 {
-   // Destructor
 }
 
 //______________________________________________________________________________

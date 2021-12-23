@@ -44,8 +44,6 @@ class TABMvieTrackFOOT : public TAGview {
     void SetCelloccupy(vector< vector<Int_t> > &vec_in){fCellOccupancy=&vec_in; return;};
     //~ void SetTrackRaw(TABMntuTrack* p_ntutrk_in, TABMntuHit* p_nturaw_in){p_ntutrk=p_ntutrk_in;p_nturaw=p_nturaw_in; return;};
 
-    ClassDef(TABMvieTrackFOOT,0)
-
   private:
     //~ TAGdataDsc*     fpNtuTrk;
     //~ TAGdataDsc*     fpNtuRaw;
@@ -58,6 +56,7 @@ class TABMvieTrackFOOT : public TAGview {
     TABMntuHit* p_nturaw;
     TABMparGeo* p_bmgeo;
 
+   ClassDef(TABMvieTrackFOOT,0)
 };
 
 #endif

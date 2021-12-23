@@ -84,7 +84,7 @@ TAVTactBaseNtuVertex::~TAVTactBaseNtuVertex()
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup all histograms.
+// Setup all histograms.
 void TAVTactBaseNtuVertex::CreateHistogram()
 {
    DeleteHistogram();
@@ -120,7 +120,7 @@ void TAVTactBaseNtuVertex::CreateHistogram()
 }
 
 //_______________________________________________________________________________
-//!Action
+//Action
 Bool_t TAVTactBaseNtuVertex::Action()
 {
    Bool_t ok = true;
@@ -158,7 +158,7 @@ Bool_t TAVTactBaseNtuVertex::Action()
 }
 
 //-------------------------------------------------------------------------------------
-//!Check BM matching
+//Check BM matching
 Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 {
    if (!fpBMntuTrack || !fpNtuVertex) return false;
@@ -208,7 +208,7 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 
 
 //--------------------------------------------------------------
-//!Compute the point interaction of diffusion (not used anymore)
+// Compute the point interaction of diffusion (not used anymore)
 void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMtrack* lbm, TAVTtrack lvtx)
 {
    //taking point A of the straight line of bm
@@ -247,7 +247,7 @@ void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMtrack* lbm, TAVTtrack lv
 }
 
 //------------------------------------------------------------------------------------
-//!Set vertex not valid
+// Set vertex not valid
 Bool_t TAVTactBaseNtuVertex::SetNotValidVertex(Int_t idTk)
 {
    TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
@@ -279,8 +279,7 @@ Bool_t TAVTactBaseNtuVertex::SetNotValidVertex(Int_t idTk)
 }
 
 //-----------------------------------------------------------------
-//!SetValid Vertex
-
+// SetValid Vertex
 void TAVTactBaseNtuVertex::SetValidVertex()
 {
    TAVTntuVertex* ntuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
@@ -304,7 +303,7 @@ void TAVTactBaseNtuVertex::SetValidVertex()
 }
 
 //--------------------------------------------
-//!compute scattering angle after target
+// compute scattering angle after target
 Double_t TAVTactBaseNtuVertex::ComputeScatterAngle()
 {
    TAGparGeo* geoMapG = (TAGparGeo*) fpGeoMapG->Object();
@@ -319,7 +318,7 @@ Double_t TAVTactBaseNtuVertex::ComputeScatterAngle()
 }
 
 //--------------------------------------------
-//! Check scattering of track
+// Check scattering of track
 Int_t TAVTactBaseNtuVertex::SearchNucReac(TAVTtrack* track0)
 {
    // returns -1 no BM, 2 nuclear reaction, 0, diffusion

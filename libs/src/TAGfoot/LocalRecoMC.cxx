@@ -1,5 +1,5 @@
 /*!
- \file LocalRecoMC.hxx
+ \file LocalRecoMC.cxx
  \brief Reconstruction class from MC data
  */
 /*------------------------------------------+---------------------------------*/
@@ -26,7 +26,7 @@
 #include "TACAntuHit.hxx"
 
 /*!
- \file LocalRecoMC
+ \class LocalRecoMC
  \brief Reconstruction class from MC data
  */
 /*------------------------------------------+---------------------------------*/
@@ -57,6 +57,8 @@ LocalRecoMC::~LocalRecoMC()
 //__________________________________________________________
 void LocalRecoMC::CreateRawAction()
 {
+
+	if(!fFlagMC)	 return;
    fActEvtReader = new TAGactTreeReader("actEvtReader");
 
    if ( TAGrecoManager::GetPar()->IsRegionMc()) {

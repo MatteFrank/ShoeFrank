@@ -65,7 +65,7 @@ EventDisplay* EventDisplay::eventDisplay_ = nullptr;
 
 EventDisplay::EventDisplay() :
   errorScale_(1.),
-  drawGeometry_(false),
+  drawGeometry_(true),
   drawDetectors_(true),
   drawHits_(true),
   drawErrors_(true),
@@ -75,7 +75,7 @@ EventDisplay::EventDisplay() :
   drawRefTrack_(true),
   drawForward_(true),
   drawBackward_(true),
-  drawAutoScale_(true),
+  drawAutoScale_(false),
   drawScaleMan_(false),
   drawSilent_(false),
   drawCardinalRep_(true),

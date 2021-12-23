@@ -1,3 +1,4 @@
+#include "TROOT.h"
 #include "BM_MSD_strel_func.cpp"
 
 using namespace std;
@@ -67,13 +68,17 @@ void BM_MSD_strel_main(TString in_filename = "", Int_t nentries = 0){
   tree->SetBranchAddress(TAMSDntuCluster::GetBranchName(), &msdNtuCluster);
   TBranch *msdBraNtuTrackN=tree->GetBranch(TAMSDntuCluster::GetBranchName());
 
+  msdNtuPoint = new TAMSDntuPoint();
+  tree->SetBranchAddress(TAMSDntuPoint::GetBranchName(), &msdNtuPoint);
+  TBranch *msdBraNtuPointN=tree->GetBranch(TAMSDntuPoint::GetBranchName());
+
   BookingBMVTX(f_out);
   //used for alignment:
   vector<TVector3> vtxslopevec;
   vector<TVector3> vtxoriginvec;
   vector<TVector3> bmslopevec;
   vector<TVector3> bmoriginvec;
-
+  char hname[200];
   //****************************************** Event Loop ****************************************
 
   //read BM and Vertex loop
@@ -86,9 +91,23 @@ void BM_MSD_strel_main(TString in_filename = "", Int_t nentries = 0){
     bmBraNtuHit->GetEntry(evnum);
     bmBraNtuTrack->GetEntry(evnum);
     msdBraNtuTrackN->GetEntry(evnum);
+    msdBraNtuPointN->GetEntry(evnum);
 
     FillSeparated();
 
+    for(int iL=0; iL<3; iL++) {
+      if(msdNtuPoint->GetPointN(iL)) {
+
+	for(int iPoi=0; iPoi<msdNtuPoint->GetPointN(iL); iPoi++) {
+	  TAMSDpoint* aPoi = msdNtuPoint->GetPoint(iL,iPoi);
+	  sprintf(hname,"Sensor_%d",iL);
+	  ((TH2D*)gDirectory->Get(hname))->Fill(aPoi->GetPosition().X(),aPoi->GetPosition().Y());
+	}
+	
+      }
+    }
+    
+    
     if(msdNtuCluster->GetClustersN(msdplane) == 1 && bmNtuTrack->GetTracksN()==1){
       TABMtrack* bmtrack = bmNtuTrack->GetTrack(0);
       TAMSDcluster* msdclus=msdNtuCluster->GetCluster(msdplane,0);

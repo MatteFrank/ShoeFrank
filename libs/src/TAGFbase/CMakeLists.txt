@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI}  ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAMC} ${TAED} ${GENFIT_LIBRARIES} ${TOE_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAMC} ${TAED} ${GENFIT_LIBRARIES})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -19,10 +19,18 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 
-set( without_dictionnaries
+set( with_dictionnaries
+   TAGF_KalmanStudies
+   TAGFtrackingStudies
    TAGFuploader
-   TAGFutilities
+   TAGFselector
+   TAGFdetectorMap
+   UpdatePDG
 )
+
+set( without_dictionnaries
+)
+
 
 # add includes : root + current + dependencies
 #
@@ -37,6 +45,7 @@ include_directories(${TAMC_INCLUDE_DIR})
 include_directories(${TAMSD_INCLUDE_DIR})
 include_directories(${TATW_INCLUDE_DIR})
 include_directories(${TACA_INCLUDE_DIR})
+include_directories(${TAED_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 #
@@ -47,6 +56,23 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 #
 set(headers "")
 set(sources "")
+set(dictionnaries "")
+set(linkdefs "")
+#
+# set headers/ etc and generate dictionnary for the files which require it 
+#
+foreach( f ${with_dictionnaries} )
+  set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.cxx)
+  set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
+endforeach()
+
+if (ROOT6_USED)
+  ROOT6_GENERATE_DICTIONARY(G_${LIBNAME} ${headers} MODULE ${LIBNAME} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}.LinkDef.h OPTIONS "")
+else()
+  ROOT5_GENERATE_DICTIONARY(G_${LIBNAME} ${all_headers} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}.LinkDef.h OPTIONS "")
+endif()
+
+set(sources ${sources} ${PROJECT_BINARY_DIR}/G_${LIBNAME}.cxx)
 
 #
 foreach( f ${without_dictionnaries} )
@@ -54,19 +80,24 @@ foreach( f ${without_dictionnaries} )
 	set(headers ${headers} ${CMAKE_CURRENT_SOURCE_DIR}/${f}.hxx)
 endforeach()
 #
+file(GLOB incsrc ${PROJECT_SOURCE_DIR}/*.icc)
+
+#MESSAGE("headers ${headers}")
+#MESSAGE("sources ${sources}")
+#MESSAGE("dictionnaries ${dictionnaries}")
+#MESSAGE("ROOT ${ROOT_INCLUDE_DIR}")
+#MESSAGE("ROOT ${ROOT_LIBRARY_DIR}")
 
 #----------------------------------------------------------------------------
 #
-# Generate the library
+# Use root functions to generate the library and the root map file 
 #
-add_library(${LIBNAME} SHARED  ${sources} )
+ROOT_LINKER_LIBRARY(${LIBNAME} ${sources} CMAKENOEXPORT LIBRARIES ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+if (!ROOT6_USED)
+  ROOT_GENERATE_ROOTMAP(${LIBNAME} LINKDEF ${linkdefs} DEPENDENCIES ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+endif()
 #
-set_target_properties(${LIBNAME} PROPERTIES ${ROOT_LIBRARY_PROPERTIES})
-#
-target_link_libraries(${LIBNAME} ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
-
-#
-# Install lib and headers
+# Install lib and headers 
 #
 install(TARGETS ${LIBNAME}  RUNTIME DESTINATION bin
 							LIBRARY DESTINATION lib

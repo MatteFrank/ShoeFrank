@@ -37,7 +37,7 @@ class TAGroot : public TAGobject {
     //! Abort event loop
     void            AbortEventLoop();
     //! Next event
-    Bool_t          NextEvent();
+    Bool_t          NextEvent(long nEv=-999);
 
     //! Wait
     void            Wait(Int_t i_msec);
@@ -56,11 +56,11 @@ class TAGroot : public TAGobject {
     //! Return list of parameter dsc
     TList*          ListOfParaDsc() const { return fpParaDscList; }
 
-    //! Find action
+    // Find action
     TAGaction*      FindAction(const char* name, const char* type=0) const;
-    //! Find  data dsc
+    // Find  data dsc
     TAGdataDsc*     FindDataDsc(const char* name, const char* type=0) const;
-    //! Find parameters dsc
+    // Find parameters dsc
     TAGparaDsc*     FindParaDsc(const char* name, const char* type=0) const;
 
     //! Default action name
@@ -96,8 +96,6 @@ class TAGroot : public TAGobject {
     //! To stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
 
-    ClassDef(TAGroot,0)
-
   private:
     TList*          fpActionList;              ///< action list
     TList*          fpDataDscList;             ///< data dsc list
@@ -113,6 +111,8 @@ class TAGroot : public TAGobject {
     Bool_t          fbAbortEventLoop;          ///< ABort Handler loop flag
     TAGrunInfo      fRunInfo;                  ///< Run info
     TAGeventId      fEventId;                  ///< Event id
+   
+   ClassDef(TAGroot,0)
 };
 
 extern TAGroot* gTAGroot;

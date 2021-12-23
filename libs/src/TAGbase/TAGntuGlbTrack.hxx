@@ -9,10 +9,12 @@
 
 #include <map>
 #include <array>
+#include <vector>
 #include "TVector3.h"
+#include <TMatrixD.h>
 #include "TH1.h"
 #include "TH2.h"
-using namespace std;
+
 
 
 #include "TClonesArray.h"
@@ -20,6 +22,13 @@ using namespace std;
 #include "TAGnamed.hxx"
 #include "TAGdata.hxx"
 #include "TAGntuPoint.hxx"
+
+
+#define build_string(expr) \
+    (static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
+
+using namespace std;
+
 //
 class TAGtrack : public TAGnamed {
 public:
@@ -32,6 +41,22 @@ public:
    TAGtrack();
    TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof);
    TAGtrack(const TAGtrack& aTrack);
+
+   // Genfit
+   TAGtrack(string name, long evNum, 
+   			int pdgID, float startMass, int fitCh, float fitMass, 
+   			float length, float tof, 
+   			float chi2, int ndof, float pVal, 
+   			TVector3* TgtPos, TVector3* TgtMom, 
+   			TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov, 
+   			TVector3* TwPos, TVector3* TwMom, 
+   			TMatrixD* TwPos_cov, TMatrixD* TwMom_cov, 
+   			vector<TAGpoint*>* shoeTrackPointRepo
+		);   
+
+   void SetMCInfo( int MCparticle_id, float trackQuality );
+   void SetExtrapInfoTW( TVector3* pos, TVector3* mom, TMatrixD* pos_cov, TMatrixD* mom_cov );
+
    virtual         ~TAGtrack();
    
    //! Set event number
@@ -139,15 +164,14 @@ public:
    //! Get Target track position
    TVector3         GetTgtPosition()              { return fTgtPos;     }
    
-   //! Set Target track momentum
    void             SetTgtMomentum(TVector3 pos)  { fTgtMom = pos;      }
    //! Get Target track momentum
    TVector3         GetTgtMomentum()              { return fTgtMom;     }
    
    //! Set Target track momentum error
-   void             SetTgtMomError(TVector3 err)   { fTgtMomError = err;  }
+   void             SetTgtMomError(TVector3 err)  { fTgtMomError = err;  }
    //! Get Target track momentum error
-   TVector3         GetTgtMomError()               { return fTgtMomError; }
+   TVector3         GetTgtMomError()              { return fTgtMomError; }
    
    //! Set TW track position
    void             SetTwPosition(TVector3 pos)   { fTwPos = pos;       }
@@ -196,15 +220,16 @@ public:
    //! Intersection near target
    TVector3         Intersection(Double_t posZ) const;
    
-   //! Get Totol Energy Loss (MSD+TW+CAL)
+   //! Get Total Energy Loss (MSD+TW+CAL)
    Double_t         GetTotEnergyLoss()      const;
    
-   //! Get Totol Energy Loss (MSD+TW+CAL)
+   //! Get Total Energy Loss (MSD+TW+CAL)
    Double_t         GetMsdEnergyLoss()      const;
    
-   //! Get Totol Energy Loss (MSD+TW+CAL)
+   //! Get Total Energy Loss (MSD+TW+CAL)
    Double_t         GetTwEnergyLoss()       const;
    
+
    //! Add measured point
    //! with copy cstr
    TAGpoint*        AddPoint(TAGpoint* point);
@@ -306,6 +331,8 @@ public:
    //! New track with mass, momentum, charge and tof
    TAGtrack*        NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof);
    //! New track with copy cstr
+   TAGtrack* 		NewTrack(string name, long evNum, int pdgID, float pdgMass, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* TgtPos, TVector3* TgtMom, TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov, TVector3* TwPos, TVector3* TwMom, TMatrixD* TwPos_cov, TMatrixD* TwMom_cov, vector<TAGpoint*>* shoeTrackPointRepo);   
+
    TAGtrack*        NewTrack(TAGtrack& track);
 
    //! Set up clones
@@ -319,6 +346,9 @@ public:
    //! Get branch name
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
+   int m_debug;
+	string m_kalmanOutputDir;
+
    ClassDef(TAGntuGlbTrack,2)
 };
 

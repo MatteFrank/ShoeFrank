@@ -19,6 +19,7 @@
  */
 
 //__________________________________________________________
+//! Default constructor
 TAEDeveGlbTrackList::TAEDeveGlbTrackList(const Char_t* name, TADIeveTrackPropagator* prop)
  : TEveTrackList(name, prop),
    fPalette(new TEveRGBAPalette()),
@@ -30,9 +31,9 @@ TAEDeveGlbTrackList::TAEDeveGlbTrackList(const Char_t* name, TADIeveTrackPropaga
 }
 
 //__________________________________________________________
+//! Default destructor
 TAEDeveGlbTrackList::~TAEDeveGlbTrackList()
 {
-  // default destructor
    delete fPalette;
 }
 

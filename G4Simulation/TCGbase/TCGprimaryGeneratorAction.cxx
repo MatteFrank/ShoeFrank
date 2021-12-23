@@ -1,4 +1,7 @@
-//The particle, a proton can touched all detector surface
+/*!
+ \file TCGprimaryGeneratorAction.cxx
+ \brief Implementation of TCGprimaryGeneratorAction.
+*/
 
 #include "TCGprimaryGeneratorAction.hxx"
 
@@ -13,7 +16,13 @@
 
 using namespace CLHEP;
 
+/*!
+ \class TCGprimaryGeneratorAction
+ \brief  Primary generation action for FOOT
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCGprimaryGeneratorAction::TCGprimaryGeneratorAction(TAGparGeo *pParGeo)
 : G4VUserPrimaryGeneratorAction(),
   fParticleGun(new G4ParticleGun(1)),
@@ -26,6 +35,7 @@ TCGprimaryGeneratorAction::TCGprimaryGeneratorAction(TAGparGeo *pParGeo)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCGprimaryGeneratorAction::~TCGprimaryGeneratorAction()
 {
    delete fParticleGun;

@@ -61,6 +61,7 @@ const Char_t* TAGgeoTrafo::GetDeviceName(Int_t devType)
 }
 
 //_____________________________________________________________________________
+//! Constructor
 TAGgeoTrafo::TAGgeoTrafo(const TString expName)
 : TAGaction(fgDefaultActName.Data(), "TAGgeoTrafo - Geometry Transformations"),
   fFileStream(new TAGparTools()),
@@ -73,6 +74,7 @@ TAGgeoTrafo::TAGgeoTrafo(const TString expName)
 }
 
 //_____________________________________________________________________________
+//! Destructor
 TAGgeoTrafo::~TAGgeoTrafo() 
 {
    delete fMatrixList;

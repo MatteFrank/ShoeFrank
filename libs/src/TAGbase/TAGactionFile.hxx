@@ -17,21 +17,21 @@ class TAGactionFile : public TAGaction {
 				  const char* openopt=0);
     virtual         ~TAGactionFile();
 
-    //! Virtual Open file
+    // Virtual Open file
     virtual Int_t   Open(const TString& name, Option_t* option=0, const TString treeName="tree", Bool_t dscBranch = true);
-    //! virtual set up channel
+    // virtual set up channel
     virtual void    SetupChannel(TAGdataDsc* p_data, TAGnamed* p_filt);
-    //! virtual set up branch
+    // virtual set up branch
     virtual void    SetupBranch(TAGdataDsc* p_data, const char* branch);
-    //! virtual adding a friend tree
+    // virtual adding a friend tree
     virtual void    AddFriendTree(TString fileName = "", TString treeName = "EventTree");
 
-    //! virtual close file
+    // virtual close file
     virtual void    Close();
-    //! virtual open file flag
+    // virtual open file flag
     virtual Bool_t  IsOpen() const;
    
-    //! Reset event
+    // Reset event
     virtual void    Reset(Int_t iEvent = 0);
 
   public:
@@ -41,7 +41,7 @@ class TAGactionFile : public TAGaction {
     static void   SetCurrentTriger(UInt_t trig) { fgCurrentTriggerCnt = trig; }
     //! Increment trigger
     static void   IncrementTrigger()            { fgCurrentTriggerCnt++; }
-    //! Check trigger
+    // Check trigger
     static Bool_t CheckTriggerCnt(UInt_t trig);
 
   protected:

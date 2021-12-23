@@ -14,7 +14,6 @@ ClassImp(TAGactNtuCluster1D);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGactNtuCluster1D::TAGactNtuCluster1D(const char* name, 
 											 const char* title )
 : TAGaction(name, title)

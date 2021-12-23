@@ -58,8 +58,6 @@ class TABMparConf : public TAGparTools {
     virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
     TString         fkDefaultParName;  // default par file name
 
-    ClassDef(TABMparConf,1)
-
   private:
 
     //cuts
@@ -88,6 +86,8 @@ class TABMparConf : public TAGparTools {
     //other parameters
     Float_t   fRDriftErr;         //rdrift default error (used if from parcon file the error isn't loaded)
     TArrayI   fDeadCha;           //BM dead channels
+   
+   ClassDef(TABMparConf,1)
 };
 
 #endif

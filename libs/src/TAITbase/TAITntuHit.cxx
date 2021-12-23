@@ -54,7 +54,7 @@ TAITntuHit::~TAITntuHit()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of pixels for a given sensor.
+// return number of pixels for a given sensor.
 Int_t TAITntuHit::GetPixelsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -91,7 +91,7 @@ TClonesArray* TAITntuHit::GetListOfPixels(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+// return a pixel for a given sensor
 TAIThit* TAITntuHit::GetPixel(Int_t iSensor, Int_t iPixel)
 {
    if (iPixel >=0 || iPixel < GetPixelsN(iSensor)) {
@@ -104,7 +104,7 @@ TAIThit* TAITntuHit::GetPixel(Int_t iSensor, Int_t iPixel)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+// return a pixel for a given sensor
 const TAIThit* TAITntuHit::GetPixel(Int_t iSensor, Int_t iPixel) const
 {
    if (iPixel >=0 || iPixel < GetPixelsN(iSensor)) {
@@ -117,7 +117,7 @@ const TAIThit* TAITntuHit::GetPixel(Int_t iSensor, Int_t iPixel) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup clones.
+// Setup clones.
 void TAITntuHit::SetupClones()
 {
    if (fListOfPixels) return;
@@ -133,7 +133,7 @@ void TAITntuHit::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear event.
+// Clear event.
 void TAITntuHit::Clear(Option_t*)
 {
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
@@ -169,10 +169,8 @@ TAIThit* TAITntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t 
    }
 }
 
-
-
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
+// ostream insertion.
 void TAITntuHit::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {

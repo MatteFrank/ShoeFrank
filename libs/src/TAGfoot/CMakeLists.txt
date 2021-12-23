@@ -22,8 +22,7 @@ set( with_dictionnaries
    TAGntuEvent
    TAGactNtuEvent
    TAGactKFitter
-   GlobalTrackRepostory
-   GlobalTrackKalman
+   GlobalRecoMC
    TAGbaseEventDisplay
    TAGeventDisplay
    TAGeventDisplayMC

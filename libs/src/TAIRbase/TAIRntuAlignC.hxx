@@ -1,7 +1,7 @@
 #ifndef _TAIRntuAlignC_HXX
 #define _TAIRntuAlignC_HXX
 /*!
- \file TAIRntuAlignC
+ \file TAIRntuAlignC.hxx
  \brief   Declaration of TAIRntuAlignC.
  
  \author C.A. Reidel & Ch. Finck

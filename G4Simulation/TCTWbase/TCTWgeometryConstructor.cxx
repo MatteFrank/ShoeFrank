@@ -1,3 +1,7 @@
+/*!
+ \file TCTWgeometryConstructor.cxx
+ \brief Implementation of TCTWgeometryConstructor.
+*/
 
 #include "TCTWgeometryConstructor.hxx"
 
@@ -26,9 +30,15 @@
 
 using namespace CLHEP;
 
-TString TCTWgeometryConstructor::fgkTofSDname   = "TwSD";
+TString TCTWgeometryConstructor::fgkTwSDname   = "TwSD";
+
+/*!
+ \class TCTWgeometryConstructor
+ \brief Building TW detector geometry
+ */
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCTWgeometryConstructor::TCTWgeometryConstructor(TATWparGeo* pParGeo)
 : TCGbaseConstructor("TCTWgeometryConstructor", "1.0"),
   fBoxLog(0x0),
@@ -39,6 +49,7 @@ TCTWgeometryConstructor::TCTWgeometryConstructor(TATWparGeo* pParGeo)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCTWgeometryConstructor::~TCTWgeometryConstructor()
 {
 }
@@ -49,14 +60,14 @@ G4LogicalVolume* TCTWgeometryConstructor::Construct()
    InfoMcMsg("Construct()", "Construct ToF Wall");
 
    for(Int_t i = 0; i< 3; ++i)
-      fSizeBoxTof[i] = (fMaxPosition[i] - fMinPosition[i]);
+      fSizeBoxTw[i] = (fMaxPosition[i] - fMinPosition[i]);
    
    // Vtx box
    G4Material* vacuum = G4NistManager::Instance()->FindOrBuildMaterial("Air");
    G4Material* matEJ232 = G4NistManager::Instance()->FindOrBuildMaterial("EJ232");
-   G4Box* boxTof = new G4Box("boxMag", 0.5*fSizeBoxTof.X(), 0.5*fSizeBoxTof.Y(), 0.5*fSizeBoxTof.Z());
+   G4Box* boxTw = new G4Box("boxMag", 0.5*fSizeBoxTw.X(), 0.5*fSizeBoxTw.Y(), 0.5*fSizeBoxTw.Z());
    
-   fBoxLog = new G4LogicalVolume(boxTof, vacuum, "boxTofoLog");
+   fBoxLog = new G4LogicalVolume(boxTw, vacuum, "boxTwoLog");
    fBoxLog->SetVisAttributes(G4VisAttributes::Invisible);
    
    Float_t height = fpParGeo->GetBarHeight()*cm;
@@ -67,11 +78,11 @@ G4LogicalVolume* TCTWgeometryConstructor::Construct()
    
    //logical
    G4Box* tof     = new G4Box("Slat", width/2., height/2., thick/2.);
-   fTofLog        = new G4LogicalVolume(tof, matEJ232, "SlatLog");
+   fTwLog        = new G4LogicalVolume(tof, matEJ232, "SlatLog");
    
    G4VisAttributes* targetLog_att = new G4VisAttributes(G4Colour(0.,0.8,1)); //light blue
    targetLog_att->SetForceWireframe(true);
-   fTofLog->SetVisAttributes(targetLog_att);
+   fTwLog->SetVisAttributes(targetLog_att);
    
    G4RotationMatrix* rot = new G4RotationMatrix;
    rot->rotateX(0);
@@ -84,9 +95,9 @@ G4LogicalVolume* TCTWgeometryConstructor::Construct()
       for (Int_t j = 0; j < slatsN; ++j) {
          TVector3 pos = fpParGeo->GetBarPosition(i, j)*cm;
          if (i == 0)
-            new G4PVPlacement(0,   G4ThreeVector(pos[0], pos[1], pos[2]), fTofLog, "Tof", fBoxLog, false, j + TATWparGeo::GetLayerOffset()*i);
+            new G4PVPlacement(0,   G4ThreeVector(pos[0], pos[1], pos[2]), fTwLog, "Tw", fBoxLog, false, j + TATWparGeo::GetLayerOffset()*i);
          else
-            new G4PVPlacement(rot, G4ThreeVector(pos[0], pos[1], pos[2]), fTofLog, "Tof", fBoxLog, false, j + TATWparGeo::GetLayerOffset()*i);
+            new G4PVPlacement(rot, G4ThreeVector(pos[0], pos[1], pos[2]), fTwLog, "Tw", fBoxLog, false, j + TATWparGeo::GetLayerOffset()*i);
       }
    }
    
@@ -102,13 +113,13 @@ void  TCTWgeometryConstructor::DefineSensitive()
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    
    G4String twSDname;
-   twSDname = fgkTofSDname;
+   twSDname = fgkTwSDname;
    InfoMcMsg("DefineSensitive()", "Define sensitive for ToF Wall");
   
    TCTWsensitiveDetector* twSensitive = new TCTWsensitiveDetector(twSDname);
    twSensitive->SetCopyLevel(0);
    SDman->AddNewDetector(twSensitive);
-   fTofLog->SetSensitiveDetector(twSensitive);
+   fTwLog->SetSensitiveDetector(twSensitive);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

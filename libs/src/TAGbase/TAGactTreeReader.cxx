@@ -35,7 +35,6 @@ TAGactTreeReaderBranch::TAGactTreeReaderBranch(TAGdataDsc* p_data, TString name)
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGactTreeReader::TAGactTreeReader(const char* name)
   : TAGactionFile(name, "TAGactTreeReader - Tree reader", "READ"),
     fpBranchList(0),
@@ -62,8 +61,7 @@ TAGactTreeReader::~TAGactTreeReader()
 }
 
 //------------------------------------------+-----------------------------------
-//! Add input data descriptor.
-
+// Add input data descriptor.
 void TAGactTreeReader::SetupBranch(TAGdataDsc* p_data, const char* branch)
 {
   TAGactTreeReaderBranch* p_chan = new TAGactTreeReaderBranch(p_data, branch);
@@ -73,16 +71,14 @@ void TAGactTreeReader::SetupBranch(TAGdataDsc* p_data, const char* branch)
 }
 
 //------------------------------------------+-----------------------------------
-//! Open root file.
-
+// Open root file.
 Int_t TAGactTreeReader::NEvents()
 {
   return fiNEntry;
 }
 
 //------------------------------------------+-----------------------------------
-//! Check branch
-
+// Check branch
 Bool_t TAGactTreeReader::CheckBranch(const char* branch, Bool_t verbose)
 {
   TBranch* p_branch = fpTree->GetBranch(branch);
@@ -96,8 +92,7 @@ Bool_t TAGactTreeReader::CheckBranch(const char* branch, Bool_t verbose)
 }
 
 //------------------------------------------+-----------------------------------
-//! Open root file.
-
+// Open root file.
 Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TString treeName, Bool_t dscBranch)
 {
   fbDscBranch = dscBranch;
@@ -176,8 +171,7 @@ Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TStrin
 }
 
 //------------------------------------------+-----------------------------------
-//! Close file.
-
+// Close file.
 void TAGactTreeReader::Close()
 {
   delete fpFile;
@@ -189,16 +183,14 @@ void TAGactTreeReader::Close()
 }
 
 //------------------------------------------+-----------------------------------
-//! Returns \a true if a file is currently open.
-
+// Returns \a true if a file is currently open.
 Bool_t TAGactTreeReader::IsOpen() const
 {
   return fpFile != 0;
 }
 
 //------------------------------------------+-----------------------------------
-//! Add friend tree
-
+// Add friend tree
 void TAGactTreeReader::AddFriendTree(TString fileName, TString treeName)
 {
    fpFriendFileName = fileName;
@@ -206,8 +198,7 @@ void TAGactTreeReader::AddFriendTree(TString fileName, TString treeName)
 }
 
 //------------------------------------------+-----------------------------------
-//! Reset
-
+// Reset
 void TAGactTreeReader::Reset(Int_t iEvent)
 {
    fiCurrentEntry = iEvent-1;
@@ -215,8 +206,7 @@ void TAGactTreeReader::Reset(Int_t iEvent)
 }
 
 //------------------------------------------+-----------------------------------
-//! Process TreeReader.
-
+// Process TreeReader.
 Bool_t TAGactTreeReader::Process()
 {
   if (Valid()) return kTRUE;
@@ -256,8 +246,7 @@ Bool_t TAGactTreeReader::Process()
 }
 
 //------------------------------------------+-----------------------------------
-//! ostream insertion.
-
+// ostream insertion.
 void TAGactTreeReader::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGactTreeReader:   " << IsA()->GetName() << " '" << GetName() 

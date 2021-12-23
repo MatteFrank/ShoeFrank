@@ -25,6 +25,7 @@ using namespace std;
  */
 
 //__________________________________________________________
+//! default constructor
 TAEDtrack::TAEDtrack(const Text_t* name) 
   : TEveBoxSet(name),
     fPalette(new TEveRGBAPalette()),
@@ -38,14 +39,13 @@ TAEDtrack::TAEDtrack(const Text_t* name)
     fHitIdPerTrack(0),
 	 fStyle("Rectangle")
 { 
-  // default constructor
   fBoxVert.Set(32);
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDtrack::~TAEDtrack()
 {
-  // default destructor
 }
 
 //__________________________________________________________

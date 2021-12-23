@@ -1,8 +1,7 @@
 #ifndef _TAVTactNtuCluster_HXX
 #define _TAVTactNtuCluster_HXX
 /*!
- \file
- \version $Id: TAVTactNtuCluster.hxx
+ \file TAVTactNtuCluster.hxx
  \brief   Declaration of TAVTactNtuCluster.
  */
 /*------------------------------------------+---------------------------------*/

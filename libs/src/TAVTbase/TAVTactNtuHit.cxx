@@ -28,7 +28,6 @@ ClassImp(TAVTactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAVTactNtuHit::TAVTactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pDatDaq, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap),
   fpDatDaq(pDatDaq),
@@ -45,7 +44,7 @@ TAVTactNtuHit::~TAVTactNtuHit()
 }
 
 //------------------------------------------+-----------------------------------
-//! Action.
+// Action.
 Bool_t TAVTactNtuHit::Action()
 {
    TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();

@@ -32,7 +32,6 @@ const UInt_t TAVTactBaseRaw::fgkKeyTail[]       = {0x8bb08bb0, 0x8bb18bb1, 0x8bb
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAGactionFile(name, "TAVTactBaseRaw - Base action for unpack vertex raw data"),
   fpNtuRaw(pNtuRaw),
@@ -73,7 +72,7 @@ TAVTactBaseRaw::~TAVTactBaseRaw()
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup all histograms.
+// Setup all histograms.
 void TAVTactBaseRaw::CreateHistogram()
 {
    DeleteHistogram();

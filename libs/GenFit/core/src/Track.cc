@@ -973,7 +973,7 @@ double Track::getTOF(AbsTrackRep* rep, int startId, int endId) const {
     std::swap(startId, endId);
   }
 
-  endId += 1;
+  // endId += 1;
 
   if (rep == nullptr)
     rep = getCardinalRep();

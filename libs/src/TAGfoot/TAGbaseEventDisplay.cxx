@@ -47,7 +47,6 @@
  \brief FOOT base class to work on event display
  */
 /*------------------------------------------+---------------------------------*/
-ClassImp(TAGbaseEventDisplay)
 
 TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Full";
 TString TAGbaseEventDisplay::fgItrTrackingAlgo = "Full";
@@ -56,6 +55,7 @@ Bool_t  TAGbaseEventDisplay::fgStdAloneFlag    = false;
 Bool_t  TAGbaseEventDisplay::fgBmSelectHit     = false;
 Bool_t  TAGbaseEventDisplay::fgM28ClusMtFlag   = false;
 
+ClassImp(TAGbaseEventDisplay)
 
 //__________________________________________________________
 TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber, Int_t type)

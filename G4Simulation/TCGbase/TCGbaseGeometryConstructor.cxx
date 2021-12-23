@@ -26,6 +26,11 @@
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+/*!
+ \file TCGbaseGeometryConstructor.cxx
+ \brief Implementation of TCGbaseGeometryConstructor.
+*/
+
 #include "TMath.h"
 #include "TCGbaseGeometryConstructor.hxx"
 
@@ -61,7 +66,13 @@
 
 using namespace CLHEP;
 
+/*!
+ \class TCGbaseGeometryConstructor
+ \brief  Geometry construction class for target/beam
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName, Int_t runNumber)
 : G4VUserDetectorConstruction(),
   fExpName(expName),
@@ -109,6 +120,7 @@ TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName, In
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCGbaseGeometryConstructor::~TCGbaseGeometryConstructor()
 {
 	 delete fTarget;

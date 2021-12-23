@@ -15,7 +15,7 @@
 ClassImp(TAITcluster) // Description of a cluster
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TAITcluster::TAITcluster()
 :  TAVTbaseCluster()
 {
@@ -32,17 +32,17 @@ void TAITcluster::SetupClones()
 }
 
 //______________________________________________________________________________
-//  
+//! Copy constructor
 TAITcluster::TAITcluster(const TAITcluster& cluster)
 :  TAVTbaseCluster(cluster)
 {
 }
 
 //______________________________________________________________________________
-//  
+//! Default destructor
 TAITcluster::~TAITcluster()
 { 
-   // TAITcluster default destructor
+   
 }
 
 //______________________________________________________________________________
