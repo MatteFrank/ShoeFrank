@@ -24,8 +24,10 @@ TString TABMntuTrack::fgkBranchName   = "bmtrack.";
 TABMntuTrack::TABMntuTrack()
  : TAGdata(),
    fListOfTracks(0),
-   fStatus(-1000)
+   fStatus(-1000),
+   fPrunedStatus(-1)
 {
+   fPrunedTrack=nullptr;
    SetupClones();
 }
 
@@ -36,6 +38,7 @@ TABMntuTrack::~TABMntuTrack()
 {
   if(fListOfTracks)
     fListOfTracks->Delete();
+  fPrunedTrack->Delete();
 }
 
 //------------------------------------------+-----------------------------------
@@ -55,6 +58,9 @@ void TABMntuTrack::Clear(Option_t*)
 {
   TAGdata::Clear();
   fStatus=-1000;
+  fPrunedStatus=-1;
+  if(fPrunedTrack)
+    fPrunedTrack->Clear();
   if(fListOfTracks)
     fListOfTracks->Delete();
 
@@ -68,7 +74,13 @@ TABMtrack* TABMntuTrack::NewTrack(TABMtrack trk)
    return track;
 }
 
-//*************************************************** OLD TRACKING ********************************************************
+TABMtrack* TABMntuTrack::NewPrunedTrack(TABMtrack trk, Int_t view)
+{
+  fPrunedStatus=view;
+  fPrunedTrack = new TABMtrack(trk);
+  return fPrunedTrack;
+}
+
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.

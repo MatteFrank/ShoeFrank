@@ -24,7 +24,7 @@ NumberFiles: 4
 "./geomaps/GSI2021/TABMdetector.geo": -1
 "./config/GSI2021/TABMdetector.cfg": -1
 "./config/GSI2021/TABMdetector.map": -1
-"./calib/GSI2021/TABM_T0_Calibration.cal": 4100; 4271; 4319;
+"./calib/GSI2021/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1
