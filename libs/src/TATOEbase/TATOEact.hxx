@@ -2038,7 +2038,7 @@ private:
                    track_p.parameters.x[1] * z +
                    track_p.parameters.x[0];
         };
-        auto compute_dydz_l = []( double z, auto const& track_p ){ return track_p.parameters.y[1];  };
+        auto compute_dydz_l = []( double /*z*/, auto const& track_p ){ return track_p.parameters.y[1];  };
         auto compute_dxdz_l = []( double z, auto const& track_p ){
             return 3*track_p.parameters.x[3] * z * +
                    2*track_p.parameters.x[2] * z +
