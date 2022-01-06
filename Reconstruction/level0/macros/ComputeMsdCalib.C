@@ -74,7 +74,7 @@ void FillDetectors(Int_t runNumber)
    daqActReaderMSD = new TAGactDaqReader("daqActReader", msdDaq);
 
    msdActRaw = new TAMSDactNtuRaw("msdActRaw", msdDat, msdDaq, msdMap, msdCal, msdGeo);
-   msdActHit = new TAMSDactNtuHit("msdActHit", msdDat, msdHit, msdGeo, msdCal);
+   msdActHit = new TAMSDactNtuHit("msdActHit", msdDat, msdHit, msdGeo, msdConf, msdCal);
    msdActHit->CreateHistogram();
 }
 
@@ -204,7 +204,8 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
          if (type.Contains("DEMSDEvent"))
          {
             const DEMSDEvent *evt = static_cast<const DEMSDEvent *>(rawevent->GetFragment(i));
-            if(evt->boardHeader == 0x0000dead) continue;
+            if (evt->boardHeader == 0x0000dead)
+               continue;
 
             boardId = (evt->boardHeader & 0xF) - 1;
 
@@ -243,6 +244,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
             fittedgaus = (TF1 *)hADC[sen][ch]->GetListOfFunctions()->FindObject("gaus");
             pedestals[sen][ch] = fittedgaus->GetParameter(1);
             rsigma[sen][ch] = fittedgaus->GetParameter(2);
+            hADC[sen][ch]->Delete();
          }
          else
          {
@@ -315,6 +317,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
             hSignal[sen][ch]->Fit("gaus", "QS");
             fittedgaus = (TF1 *)hSignal[sen][ch]->GetListOfFunctions()->FindObject("gaus");
             sigma[sen][ch] = fittedgaus->GetParameter(2);
+            hSignal[sen][ch]->Delete();
          }
          else
          {
@@ -363,4 +366,6 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    signals.shrink_to_fit();
    sigma.clear();
    sigma.shrink_to_fit();
+   
+   return;
 }

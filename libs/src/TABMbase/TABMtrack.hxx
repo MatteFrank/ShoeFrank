@@ -50,6 +50,8 @@ class TABMtrack : public TObject {
     void SetChiSquareX(Double_t chi2x_in)               { fChiSquareX=chi2x_in;}
     void SetChiSquareY(Double_t chi2y_in)               { fChiSquareY=chi2y_in;}
     void SetGhost(Int_t gho_in)                         { fGhost=gho_in;}
+    void SetTrackIdX(Int_t trk_in)                      { fTrackIdX=trk_in;}
+    void SetTrackIdY(Int_t trk_in)                      { fTrackIdY=trk_in;}
     // void NewSet(TVectorD ftrackpar);//set fSlope and fOrigin, used for the FIRST tracking
 
     //Getters
@@ -63,6 +65,8 @@ class TABMtrack : public TObject {
     TVector3 GetOrigin()          const {return fOrigin;}
     TVector3 GetSlope()           const {return fSlope;}
     Int_t GetIsGhost()            const {return fGhost;}
+    Int_t GetTrackIdX()           const {return fTrackIdX;}
+    Int_t GetTrackIdY()           const {return fTrackIdY;}
 
     //others
     void PrintTrackPosDir();
@@ -80,6 +84,8 @@ private:
     TVector3      fSlope;               //direction of the track from mylar1_pos to mylar2_pos
     TVector3      fOrigin;              //position of the track on the xy plane at z=0
     Int_t         fGhost;               //to be checked with the vertex: -1=not set, 0=not fGhost, 1=fGhost
+    Int_t         fTrackIdX;            //track id for the XZ view (view==1)
+    Int_t         fTrackIdY;            //track id for the YZ view (view==0)
 
     ClassDef(TABMtrack,2)
 

@@ -86,9 +86,9 @@ Bool_t TABMparConf::FromFile(const TString& name) {
   ReadItem(fMaxHitCut);
   if(FootDebugLevel(1))
      cout<<"fMaxHitCut="<<fMaxHitCut<<endl;
-  ReadItem(fRejMaxCut);
+  ReadItem(fPlaneHitCut);
   if(FootDebugLevel(1))
-     cout<<"fRejMaxCut="<<fRejMaxCut<<endl;
+     cout<<"fPlaneHitCut="<<fPlaneHitCut<<endl;
   ReadItem(fChi2Cut);
   if(FootDebugLevel(1))
      cout<<"fChi2Cut="<<fChi2Cut<<endl;
