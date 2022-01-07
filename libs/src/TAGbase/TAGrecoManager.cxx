@@ -60,13 +60,13 @@ TAGrecoManager::~TAGrecoManager()
 //_____________________________________________________________________________
 //! Private constructor
 TAGrecoManager::TAGrecoManager( const TString expName )
-: fParFileName(""),        fDebugLevel(0),  fChi2(-1),				fMeasureN(11),			fSkipN(-1),			fIsMC(true),
-  fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),       fVTreso(0.),            fITreso(0.),            fMSDreso(0.),             fTWreso(0.),
+: fParFileName(""),        fDebugLevel(0),       fChi2(-1),				    fMeasureN(11),			 fSkipN(-1),			    fIsMC(true),
+  fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),
   fEnableLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
   fEnableTWZmc(false),     fEnableTWnoPU(false), fEnableTWZmatch(false), fEnableTWCalBar(false), fDoCalibTW(false),      fDoCalibBM(false),        fEnableRegionMc(false),
   fIncludeST(false),       fIncludeBM(false),    fIncludeTG(false),      fIncludeDI(false),      fIncludeTW(false),      fIncludeMSD(false),
   fIncludeCA(false),       fIncludeIT(false),    fIncludeVT(false),
-  fIncludeKalman(false),   fIncludeTOE(false)
+  fIncludeKalman(false),   fIncludeTOE(false),   fIncludeStraight(false)
 {
     TString absName = Form("./config/%s/%s", expName.Data(), fgkDefParName.Data());
     fParFileName = absName.Data();
@@ -242,6 +242,13 @@ void TAGrecoManager::FromFile ()
       if (fDebugLevel > 0)
         printf("IncludeTOE: %d\n", fIncludeTOE);
     }
+     
+     if (key.Contains("IncludeStraight:")) {
+        if ( item.Contains("y")) fIncludeStraight = true;
+        else                     fIncludeStraight = false;
+        if (fDebugLevel > 0)
+           printf("IncludeTOE: %d\n", fIncludeStraight);
+     }
     
     if (key.Contains("EnableLocalReco:")  ) {
       if ( item.Contains("y"))  fEnableLocalReco = true;
@@ -312,31 +319,6 @@ void TAGrecoManager::FromFile ()
         fKalReverse = false;
       if (fDebugLevel > 0)
         printf("Reverse Tracking: %d\n", fKalReverse);
-    }
-    
-    
-    if (key.Contains("VT  Reso:") ) {
-      fVTreso = item.Atof();
-      if (fDebugLevel > 0)
-        printf("VT  Reso: %g\n", fVTreso);
-    }
-    
-    if (key.Contains("IT  Reso:") ) {
-      fITreso = item.Atof();
-      if (fDebugLevel > 0)
-        printf("IT  Reso: %g\n", fITreso);
-    }
-    
-    if (key.Contains("MSD Reso:")  ) {
-      fMSDreso = item.Atof();
-      if (fDebugLevel > 0)
-        printf("MSD  Reso: %g\n", fMSDreso);
-    }
-    
-    if (key.Contains("TW  Reso:") ) {
-      fTWreso = item.Atof();
-      if (fDebugLevel > 0)
-        printf("TW  Reso: %g\n", fTWreso);
     }
     
     if (key.Contains("Kalman Particle Types:")) {
@@ -719,6 +701,9 @@ void TAGrecoManager::Print(Option_t* opt) {
       
       if (fIncludeTOE)
          cout << "Using TOE for Global Recontruction" << endl;
+      
+      if (fIncludeStraight)
+         cout << "Using straight line extrapolation for Global Recontruction" << endl;
 
       printf("\n\n");
 

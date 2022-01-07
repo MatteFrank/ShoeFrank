@@ -393,9 +393,7 @@ void BaseReco::SetRecHistogramDir()
    }
 
    // Global straight track
-   if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
-       && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
-       && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAGgeoTrafo::GetBaseName());
       fActGlbTrackS->SetHistogramDir(subfolder);
    }
@@ -710,9 +708,7 @@ void BaseReco::CreateRecAction()
    if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman())
       CreateRecActionGlbGF();
 
-   if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
-       && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
-       && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman())
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI())
        CreateRecActionGlbS();
 }
 
@@ -1056,9 +1052,7 @@ void BaseReco::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeCA())
      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
 
-   if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
-       && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
-       && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
       if (fFlagTrack)
          fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
    }
@@ -1138,9 +1132,7 @@ void BaseReco::AddRecRequiredItem()
       }
    }
 
-   if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
-       && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
-       && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman())
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) 
       gTAGroot->AddRequiredItem("glbActTrackS");
 }
 
