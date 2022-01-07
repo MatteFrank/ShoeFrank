@@ -304,7 +304,6 @@ void BaseReco::LoopEvent(Int_t nEvents)
 //__________________________________________________________
 void BaseReco::AfterEventLoop()
 {
-//    if(fActRecCutter){ fActRecCutter->Output(); }
    if (TAGrecoManager::GetPar()->IncludeKalman())	fActGlbkFitter->Finalize();
    
    fTAGroot->EndEventLoop();
@@ -317,7 +316,6 @@ void BaseReco::AfterEventLoop()
 //__________________________________________________________
 void BaseReco::OpenFileOut()
 {
-
   if (fFlagTree)  SetTreeBranches();
    fActEvtWriter->Open(GetTitle(), "RECREATE");
 
@@ -331,7 +329,8 @@ void BaseReco::OpenFileOut()
 void BaseReco::SetRecHistogramDir()
 {
    //Global track
-    if(fFlagRecCutter){return;}
+   if(fFlagRecCutter) return;
+   
    if (fFlagTrack) {
 
       if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
@@ -598,6 +597,7 @@ void BaseReco::ReadParFiles()
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       Bool_t isTof_calib = false;
+      
       if(fFlagTWbarCalib) {
          parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
                                                    isTof_calib,fFlagTWbarCalib);
@@ -670,8 +670,8 @@ void BaseReco::ReadParFiles()
      } else {
         fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
         TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
-	parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-	parMap->FromFile(parFileName.Data());
+        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parMap->FromFile(parFileName.Data());
         
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
         parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
@@ -735,10 +735,10 @@ void BaseReco::CreateRecActionVtx()
    if(fFlagTrack) {
       fpNtuTrackVtx = new TAGdataDsc("vtTrack", new TAVTntuTrack());
       if (TAGrecoManager::GetPar()->IncludeTG() || TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman())
-         fpNtuVtx      = new TAGdataDsc("vtVtx",   new TAVTntuVertex());
+         fpNtuVtx = new TAGdataDsc("vtVtx",   new TAVTntuVertex());
    }
 
-   fpNtuClusVtx  = new TAGdataDsc("vtClus", new TAVTntuCluster());
+  fpNtuClusVtx  = new TAGdataDsc("vtClus", new TAVTntuCluster());
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    if (fM28ClusMtFlag)
@@ -783,28 +783,28 @@ void BaseReco::CreateRecActionVtx()
 //__________________________________________________________
 void BaseReco::CreateRecActionIt()
 {
-   fpNtuClusIt  = new TAGdataDsc("itClus", new TAITntuCluster());
+   fpNtuClusIt = new TAGdataDsc("itClus", new TAITntuCluster());
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    if (fM28ClusMtFlag)
-      fActClusIt   = new TAITactNtuClusterMT("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
+      fActClusIt = new TAITactNtuClusterMT("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
    else
-      fActClusIt   = new TAITactNtuCluster("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
+      fActClusIt = new TAITactNtuCluster("itActClus", fpNtuHitIt, fpNtuClusIt, fpParConfIt, fpParGeoIt);
 
    if (fFlagHisto)
      fActClusIt->CreateHistogram();
 
    if (fgItrTrackFlag) {
-      fpNtuTrackIt  = new TAGdataDsc("itTrack", new TAITntuTrack());
+      fpNtuTrackIt = new TAGdataDsc("itTrack", new TAITntuTrack());
 
       if (fgItrTrackingAlgo.Contains("Std") ) {
          if (TAGrecoManager::GetPar()->IncludeBM())
-            fActTrackIt  = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpNtuTrackBm);
+            fActTrackIt = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpNtuTrackBm);
          else
-            fActTrackIt  = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt);
+            fActTrackIt = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt);
 
       }  else if (fgItrTrackingAlgo.Contains("Full")) {
-         fActTrackIt  = new TAITactNtuTrackF("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpParGeoG);
+         fActTrackIt = new TAITactNtuTrackF("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpParGeoG);
       }
 
       if (fFlagHisto)
@@ -815,26 +815,26 @@ void BaseReco::CreateRecActionIt()
 //__________________________________________________________
 void BaseReco::CreateRecActionMsd()
 {
-   fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
-    fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
+   fpNtuClusMsd = new TAGdataDsc("msdClus", new TAMSDntuCluster());
+    fpNtuRecMsd = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
-   fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
+   fActClusMsd = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
    if (fFlagHisto)
       fActClusMsd->CreateHistogram();
 
-   fActPointMsd  = new TAMSDactNtuPoint("msdActPoint", fpNtuClusMsd, fpNtuRecMsd, fpParGeoMsd);
+   fActPointMsd = new TAMSDactNtuPoint("msdActPoint", fpNtuClusMsd, fpNtuRecMsd, fpParGeoMsd);
    if (fFlagHisto)
       fActPointMsd->CreateHistogram();
 
    if (fgMsdTrackFlag) {
-      fpNtuTrackMsd  = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
+      fpNtuTrackMsd = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
 
       if (fgMsdTrackingAlgo.Contains("Std") ) {
-         fActTrackMsd  = new TAMSDactNtuTrack("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd);
+         fActTrackMsd = new TAMSDactNtuTrack("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd);
 
       }  else if (fgMsdTrackingAlgo.Contains("Full")) {
-         fActTrackMsd  = new TAMSDactNtuTrackF("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd, fpParGeoG);
+         fActTrackMsd = new TAMSDactNtuTrackF("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd, fpParGeoG);
       }
 
       if (fFlagHisto)
@@ -845,7 +845,7 @@ void BaseReco::CreateRecActionMsd()
 //__________________________________________________________
 void BaseReco::CreateRecActionTw()
 {
-   fpNtuRecTw  = new TAGdataDsc("twPoint", new TATWntuPoint());
+   fpNtuRecTw = new TAGdataDsc("twPoint", new TATWntuPoint());
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuHitTw, fpNtuRecTw, fpParGeoTw, fpParCalTw,fFlagZmatch_TW,fFlagZtrueMC);
@@ -856,10 +856,10 @@ void BaseReco::CreateRecActionTw()
 //__________________________________________________________
 void BaseReco::CreateRecActionCa()
 {
-   fpNtuClusCa  = new TAGdataDsc("caClus", new TACAntuCluster());
+   fpNtuClusCa = new TAGdataDsc("caClus", new TACAntuCluster());
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
-   fActClusCa   = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpNtuRecTw);
+   fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpNtuRecTw);
    if (fFlagHisto)
       fActClusCa->CreateHistogram();
 }
@@ -867,10 +867,11 @@ void BaseReco::CreateRecActionCa()
 //__________________________________________________________
 void BaseReco::CreateRecActionGlb()
 {
-    if( fFlagRecCutter ){
-        SetL0TreeBranches();
-        return;
-    }
+  if(fFlagRecCutter) {
+     SetL0TreeBranches();
+     return;
+  }
+   
   if(fFlagTrack) {
     SetL0TreeBranches();
     fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
@@ -880,7 +881,7 @@ void BaseReco::CreateRecActionGlb()
 					   fpNtuVtx,
 					   fpNtuClusIt,
 					   fpNtuClusMsd,
-                       fpNtuRecMsd,
+                  fpNtuRecMsd,
 					   fpNtuRecTw,
 					   fpNtuGlbTrack,
 					   fpParGeoG,
@@ -926,11 +927,11 @@ void BaseReco::CreateRecActionGlbS()
 {
    if(fFlagTrack) {
       fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-      fActGlbTrackS  = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuRecMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw, fpParGeoG);
+      fActGlbTrackS = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuRecMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw, fpParGeoG);
+      
       if (fFlagHisto)
          fActGlbTrackS->CreateHistogram();
    }
-
 }
 
 //__________________________________________________________
@@ -1132,8 +1133,6 @@ void BaseReco::AddRecRequiredItem()
          gTAGroot->AddRequiredItem("glbActTrack");
 
       if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
-      //   gTAGroot->AddRequiredItem("glbActTrackStudyGF");
-         // gTAGroot->AddRequiredItem("TAGntuTrackRepository");
          gTAGroot->AddRequiredItem("glbTrack");
          gTAGroot->AddRequiredItem("glbActKFitter");
       }
@@ -1143,7 +1142,6 @@ void BaseReco::AddRecRequiredItem()
        && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
        && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman())
       gTAGroot->AddRequiredItem("glbActTrackS");
-
 }
 
 //__________________________________________________________
