@@ -95,7 +95,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpNtuTrackIt(0x0),
    fpNtuVtx(0x0),
    fpNtuGlbTrack(0x0),
-   fpNtuGlbTrackK(0x0),
    fActEvtReader(0x0),
    fActEvtWriter(0x0),
    fActTrackBm(0x0),
@@ -915,8 +914,8 @@ void BaseReco::CreateRecActionGlbGF()
 		UpdatePDG::Instance();
 
 		// Initialisation of KFfitter
-		fpNtuGlbTrackK = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
-		fActGlbkFitter = new TAGactKFitter("glbActKFitter", fpNtuGlbTrackK);
+		fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+		fActGlbkFitter = new TAGactKFitter("glbActKFitter", fpNtuGlbTrack);
 		if (fFlagHisto)
 			fActGlbkFitter->CreateHistogram();
 	}
@@ -1056,16 +1055,9 @@ void BaseReco::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeCA())
      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
 
- 	// genfit 
-   if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
-      if (fFlagTrack) {
-      	fActEvtWriter->SetupElementBranch(fpNtuGlbTrackK, TAGntuGlbTrack::GetBranchName());
-      }
-   }
-   
    if (TAGrecoManager::GetPar()->IncludeST()     && TAGrecoManager::GetPar()->IncludeTG()
        && TAGrecoManager::GetPar()->IncludeVT()  && TAGrecoManager::GetPar()->IncludeTW()
-       && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
+       && !TAGrecoManager::GetPar()->IncludeDI() && !TAGrecoManager::GetPar()->IncludeTOE()) {
       if (fFlagTrack)
          fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
    }
