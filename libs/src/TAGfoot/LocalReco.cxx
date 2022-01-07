@@ -320,15 +320,16 @@ void LocalReco::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeST()) {
      if (fFlagHits) {
        fActEvtWriter->SetupElementBranch(fpDatRawSt, TASTntuRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
      }
-     fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
      fActEvtWriter->SetupElementBranch(fpNtuWDtrigInfo, TAGWDtrigInfo::GetBranchName());
    }
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
-      if (fFlagHits)
+      if (fFlagHits) {
          fActEvtWriter->SetupElementBranch(fpDatRawBm, TABMntuRaw::GetBranchName());
-     fActEvtWriter->SetupElementBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
+      }
    }
 
    if (TAGrecoManager::GetPar()->IncludeVT()) {
@@ -344,21 +345,21 @@ void LocalReco::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
      if (fFlagHits) {
          fActEvtWriter->SetupElementBranch(fpDatRawMsd, TAMSDntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
      }
-     fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
      if (fFlagHits) {
          fActEvtWriter->SetupElementBranch(fpDatRawTw, TATWntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitTw, TATWntuHit::GetBranchName());
      }
-     fActEvtWriter->SetupElementBranch(fpNtuHitTw, TATWntuHit::GetBranchName());
    }
 
    if (TAGrecoManager::GetPar()->IncludeCA()) {
-     if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpDatRawCa, TACAntuRaw::GetBranchName());
-     fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
-
+      if (fFlagHits) {
+        fActEvtWriter->SetupElementBranch(fpDatRawCa, TACAntuRaw::GetBranchName());
+        fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
+      }
    }
 }
