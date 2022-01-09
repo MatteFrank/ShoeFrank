@@ -21,6 +21,8 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
 
   ///////// read the file with Charge calibration
 
+ // Info("********************LoadCryTemperatureCalibrationMap()","File Calibration Energy %s open!!",FileName.data());
+
   ifstream fin;
   fin.open(FileName,std::ifstream::in);
   
@@ -60,6 +62,8 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
        
        if(FootDebugLevel(1))
         Info("LoadCryTemperatureCalibrationMap()","%d %f %f\n",cryId, temp, equalis);
+
+      //Info("********************LoadCryTemperatureCalibrationMap()","%d %f %f\n",cryId, temp, equalis);
     }
   }
   else

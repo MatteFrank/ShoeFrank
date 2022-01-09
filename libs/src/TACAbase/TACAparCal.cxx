@@ -73,6 +73,7 @@ Double_t TACAparCal::GetTemperatureCry(Int_t crysId)
 //_____________________________________________________________________
 Double_t TACAparCal::GetEqualiseCry(Int_t crysId)
 {
+   cout<<"*************************************cryId: "<<crysId<<" eq fun "<<fMapCal->GetEqualiseCry(crysId)<<endl;
    return fMapCal->GetEqualiseCry(crysId);
 }
 

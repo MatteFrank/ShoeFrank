@@ -54,6 +54,7 @@
 #include "TAMSDntuPoint.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuHit.hxx"
+#include "TACAactNtuHit.hxx"
 #include "TACAntuCluster.hxx"
 #include "TAIRntuTrack.hxx"
 #include "TAGntuGlbTrack.hxx"
@@ -317,6 +318,7 @@ protected:
    TAGdataDsc*           fpNtuRecMsd;
    TAGdataDsc*           fpNtuRecTw;     // input data dsc
    TAGdataDsc*           fpNtuClusCa;     // input cluster data dsc
+   TAGdataDsc*           fpRecCa;
   
    TAGdataDsc*           fpNtuMcEvt;    // input data dsc
    TAGdataDsc*           fpNtuMcTrk;    // input data dsc
@@ -358,6 +360,7 @@ protected:
    TATWactCalibTW*       fActCalibTw;
 
    TACAactNtuCluster*    fActClusCa;    // action for clusters
+   TACAactNtuHit*        fActNtuHitCa;    // action for hit
 
    TAGactNtuGlbTrack*    fActGlbTrack;    // Global tracking action
     

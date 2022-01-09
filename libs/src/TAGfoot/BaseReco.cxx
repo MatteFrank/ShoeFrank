@@ -378,6 +378,7 @@ void BaseReco::SetRecHistogramDir()
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TACAparGeo::GetBaseName());
       fActClusCa->SetHistogramDir(subfolder);
+      //fActNtuHitCa->SetHistogramDir(subfolder);
    }
    
    // Global straight track
@@ -662,10 +663,15 @@ void BaseReco::ReadParFiles()
         parMap->FromFile(parFileName.Data());
 
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
-        
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
         parCal->LoadEnergyCalibrationMap(parFileName.Data());
+        //cout<<"************************ Base Reco "<<parFileName.Data()<<endl;
+        
+        
+       // parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
+        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
+        parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
+        //cout<<"************************ Base Reco "<<parFileName.Data()<<endl;
+  
      }
      
    }
@@ -805,7 +811,7 @@ void BaseReco::CreateRecActionIt()
 void BaseReco::CreateRecActionMsd()
 {
    fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuCluster());
-    fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
+   fpNtuRecMsd   = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    fActClusMsd   = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
@@ -832,11 +838,17 @@ void BaseReco::CreateRecActionTw()
 void BaseReco::CreateRecActionCa()
 {
    fpNtuClusCa  = new TAGdataDsc("caClus", new TACAntuCluster());
+   //fpRecCa   = new TAGdataDsc("caHit", new TACAntuHit());
+
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    fActClusCa   = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpNtuRecTw);
    if (fFlagHisto)
       fActClusCa->CreateHistogram();
+
+   /*fActNtuHitCa = new TACAactNtuHit("caActNtu", fpDatRawCa, fpNtuHitCa, fpParMapCa, fpParCalCa);
+   if (fFlagHisto)
+      fActNtuHitCa->CreateHistogram(); */
 }
 
 //__________________________________________________________

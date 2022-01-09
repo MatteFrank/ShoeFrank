@@ -65,6 +65,7 @@ private:
   TH1F *hTrigTime;
   TH1F *hTotCharge;
   TH1F *hEventTime;
+  TH1F *hChannelMap;
 
   TF1 *fTcorr1;
   TF1 *fTcorr2;
